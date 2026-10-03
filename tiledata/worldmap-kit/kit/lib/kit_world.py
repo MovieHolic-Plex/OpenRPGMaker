@@ -205,6 +205,8 @@ def world_dict(w, journey, assign):
     for s in d['sites']:
         p = byid[s['name']]
         d['places'].append(dict(id=s['name'], role=p['role'], act=p['act'], x=s['x'], y=s['y'], w=s['w'], h=s['h'], icon=assign[s['name']]))
+        if p.get('label'):
+            d['places'][-1]['label'] = p['label']                   # 표시 이름(우주 여정 등) — id 는 지형 코드·검사가 부르는 이름이라 그대로
     d['roads'] = d.pop('routes')
     d.pop('note', None)
     return d

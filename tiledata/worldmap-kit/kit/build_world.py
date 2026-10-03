@@ -280,7 +280,7 @@ def main():
     ap.add_argument('--theme', help='themes/<id> — 아이콘 세트·팔레트·지형 덧칠(포장도로·철길·시가지·그을음·우주)을 한 번에 고른다')
     ap.add_argument('--iconset', help='테마가 없으면 필수')
     ap.add_argument('--palette', help='palettes/<id> — 쉼표로 여러 개, all = palettes/ 전부. 테마가 없으면 필수')
-    ap.add_argument('--journey', required=True)
+    ap.add_argument('--journey', help='journeys/<id> — 없으면 테마의 journey(없으면 fantasy-5act)')
     ap.add_argument('--out', required=True)
     ap.add_argument('--tint-icons', type=float, default=None, help='아이콘 색을 팔레트 빛으로 옮기는 정도 0..1 (기본 0.25, 팔레트 icon_tint 가 있으면 그 값)')
     ap.add_argument('--cache', help='지형 캐시 폴더')
@@ -326,6 +326,7 @@ def _main(a):
         if not a.iconset or not a.palette:
             raise K.KitError('--theme 이 없으면 --iconset 과 --palette 가 필요하다')
         roles, roles_data = K.load_roles()
+        a.journey = a.journey or (theme or {}).get('journey') or 'fantasy-5act'
         journey = K.load_journey(a.journey)
         import kit_terrain as KTer
         try:

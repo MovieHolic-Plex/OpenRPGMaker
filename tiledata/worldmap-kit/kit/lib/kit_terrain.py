@@ -141,12 +141,11 @@ def merge(base, edit):
     """테마 지형(base) 위에 편집(edit)의 작업을 잇는다. 둘 중 하나가 없으면 다른 하나."""
     if base is None or edit is None:
         return base if edit is None else edit
-    if edit.get('base') == 'generate' and base.get('base', 'shared-v9') != 'generate':
-        return edit                                  # 새 구조를 만들면 테마의 손 대륙 지형 작업은 버린다
+    bb = base.get('base', 'shared-v9')
+    if 'base' in edit and edit['base'] != bb:
+        return edit                                  # 바탕을 바꾸면(공용 ↔ 생성) 테마 지형 작업은 버린다
     out = dict(edit)
-    out['base'] = base.get('base', 'shared-v9') if 'base' not in edit else edit['base']
-    if base.get('base') == 'generate' and edit.get('base', 'generate') == 'generate':
-        out['base'] = 'generate'
+    out['base'] = bb
     out['id'] = '%s+%s' % (base['id'], edit.get('id', 'edit'))
     out['ops'] = list(base.get('ops', [])) + list(edit.get('ops', []))
     return validate(out)

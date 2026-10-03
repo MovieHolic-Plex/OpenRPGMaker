@@ -5,5 +5,7 @@
  "iconset": "starmap",
  "palette": "original",
  "overlays": [],
- "kind": "space"
+ "kind": "space",
+ "terrain": "galaxy",
+ "journey": "space-5act"
 }

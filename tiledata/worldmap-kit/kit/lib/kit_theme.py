@@ -1266,15 +1266,15 @@ def draw_galaxy(img, ctx, seed=11):
         # 궤도 두 개(점선 타원) — 장소·길·사구 둘레는 건너뛴다
         for k, f in enumerate((.42, .7)):
             rx, ry = r * f * TS, r * f * TS * .62
-            n = int(2 * np.pi * max(rx, ry) / 3)
+            n = int(2 * np.pi * max(rx, ry) / 2)
             ph = (i * 37 + k * 11) % 7
             for j in range(n):
-                if (j + ph) % 3:
+                if (j + ph) % 2:
                     continue
                 a = 2 * np.pi * j / n
                 X, Y = int(cx + np.cos(a) * rx), int(cy + np.sin(a) * ry)
                 if 0 <= X < W and 0 <= Y < H and not occ_px[Y, X]:
-                    img[Y, X] = (img[Y, X].astype(np.float32) * .35 + rim_c.astype(np.float32) * .65).astype(np.uint8)
+                    img[Y, X] = (img[Y, X].astype(np.float32) * .2 + glow_c.astype(np.float32) * .8).astype(np.uint8)
             a = 2 * np.pi * ((i * 0.37 + k * .5) % 1.0)          # 궤도 위 행성 하나
             X, Y = int(cx + np.cos(a) * rx), int(cy + np.sin(a) * ry)
             if 2 <= X < W - 2 and 2 <= Y < H - 2 and not occ_px[Y - 2:Y + 3, X - 2:X + 3].any():
@@ -1282,9 +1282,9 @@ def draw_galaxy(img, ctx, seed=11):
                 img[Y - 1, X - 1] = glow_c
         if occ[gy, gx]:
             continue
-        rad = 3 if r < 4 else 4
-        for dy in range(-rad - 5, rad + 6):
-            for dx in range(-rad - 5, rad + 6):
+        rad = 4 if r < 4 else 6
+        for dy in range(-rad - 7, rad + 8):
+            for dx in range(-rad - 7, rad + 8):
                 X, Y = cx + dx, cy + dy
                 if not (0 <= X < W and 0 <= Y < H) or occ_px[Y, X]:
                     continue
@@ -1293,7 +1293,7 @@ def draw_galaxy(img, ctx, seed=11):
                     img[Y, X] = core_c
                 elif d <= rad:
                     img[Y, X] = glow_c if (-dx - dy) > -rad * .3 else rim_c
-                elif d <= rad + 5 and BAYER4[Y % 4, X % 4] < (1 - (d - rad) / 5) * .7:
+                elif d <= rad + 7 and BAYER4[Y % 4, X % 4] < (1 - (d - rad) / 7) * .8:
                     img[Y, X] = (img[Y, X].astype(np.float32) * .5 + glow_c.astype(np.float32) * .5).astype(np.uint8)
         _cross(img, cx, cy, core_c, rad + 3)
 
