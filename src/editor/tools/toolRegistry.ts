@@ -67,6 +67,7 @@ import { VILLAGE_TOOLS } from "./villageBuilder";
 import { VILLAGE_SESSION_TOOLS } from "./villageSession";
 import { INTERIOR_ROOM_SESSION_TOOLS } from "./interiorRoomSession";
 import { HAND_INTERIOR_TOOLS } from "./handInteriorTools";
+import { JP_CITY_TOOLS } from "./jpCityTools";
 import { DUNGEON_ROOM_SESSION_TOOLS } from "./dungeonRoomSession";
 import { AI_DOC_TOOLS } from "./aiDocTools";
 import { RETRO_CHOREOGRAPHY_TOOLS } from "./retroChoreographyTools";
@@ -215,6 +216,8 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   // 손 도트 실내 v5 — 실내를 까는 유일한 조수 경로(2026-09-29). 옛 EasyRPG·Tibo 실내 칸 번호로 짓는 방 세션·개념 시설 시공은
   // 조수 목록에서 뺀다(deprecated: 노출 제외, 실행 호환은 유지 — 옛 세션 재생·테스트).
   ...withDomain(HAND_INTERIOR_TOOLS, "tile"),
+  // 일본 도시(jp_city) 건물 조립 — 부품 사전으로 가변 폭·층수 건물을 jp_city 맵에 짓는다(M3). oprn-jp 맵에서만 동작한다.
+  ...withDomain(JP_CITY_TOOLS, "tile"),
   ...withDomain(INTERIOR_ROOM_SESSION_TOOLS, "tile").map(retireOldInteriorTool),
   ...withDomain(DUNGEON_ROOM_SESSION_TOOLS, "tile"),
   ...withDomain(CASTLE_TOOLS, "tile"),
