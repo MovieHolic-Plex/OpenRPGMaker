@@ -3,6 +3,7 @@
 평면 문자:
   '#'  막힘(천장·벽 덩어리·어둠). 방에 닿은 칸은 천장 띠(서까래 끝), 나머지는 어둠.
   o 온돌(장판)+회벽 · c 온돌+창호벽 · m 마루+회벽 · k 마루+창호벽 · M 마루+목재벽 · d 흙바닥+황토벽 · s 돌바닥+돌벽 · b 흙바닥+돌벽
+  e 흙바닥+회벽(부엌: 황토 띠 대신 깨끗한 벽) · S 돌바닥(박석)+목재벽(관아 마당형 대청)
   D  남쪽 벽 틈의 출입구 칸(걸어 나가는 칸, in_exit_mat). 그 한 칸 북쪽이 들어오는 칸.
 규칙(스킬 interior-chipset-authoring 0절 · 메모리 map-structure-ceiling-wall-rooms):
   * 막힌 칸 바로 아래 두 줄은 벽면(못 걸음)이다 — 평면에서 유도하고 손으로 칠하지 않는다.
@@ -12,7 +13,8 @@
 import sys
 
 CH = {'o': ('ondol', 'hoe'), 'c': ('ondol', 'changho'), 'm': ('maru', 'hoe'), 'k': ('maru', 'changho'), 'M': ('maru', 'mok'),
-      'd': ('dirt', 'heuk'), 's': ('stone', 'dol'), 'b': ('dirt', 'dol'), 'D': ('dirt', 'heuk')}
+      'd': ('dirt', 'heuk'), 's': ('stone', 'dol'), 'b': ('dirt', 'dol'), 'D': ('dirt', 'heuk'),
+      'e': ('dirt', 'hoe'), 'S': ('stone', 'mok')}
 FLOOR_CHARS = set(CH)
 
 

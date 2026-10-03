@@ -1019,6 +1019,48 @@
   },
   "in_b_mat_hopi": {
    "all": "F"
+  },
+  "in_b_throne": {
+   "grid": [
+    "CC",
+    "XX"
+   ]
+  },
+  "in_b_mat_carpet_v4": {
+   "all": "F"
+  },
+  "in_b_stair_dais_wood_3": {
+   "all": "F"
+  },
+  "in_b_stair_dais_wood_2": {
+   "all": "F"
+  },
+  "in_b_gonjang_geori": {
+   "grid": [
+    "C",
+    "X"
+   ]
+  },
+  "in_b_pyeongsang_3b": {
+   "all": "X"
+  },
+  "in_b_pyeongsang_2b": {
+   "all": "X"
+  },
+  "in_b_pyeongsang_2c": {
+   "all": "X"
+  },
+  "in_b_pyeongsang_3c": {
+   "all": "X"
+  },
+  "in_b_mangchi_teul": {
+   "all": "X"
+  },
+  "in_b_yakseonban_2": {
+   "grid": [
+    "CC",
+    "XX"
+   ]
   }
  },
  "terrain": {

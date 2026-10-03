@@ -78,6 +78,40 @@ def _shade(t, mode):
     """바닥 칸의 벽 밑 그늘: n=위 3줄(0.72/0.84/0.93), w=왼쪽 5줄(서쪽 벽 덩어리 그림자), nw=둘 다."""
     o = Cv(T, T)
     o.a = t.a.copy()
+    # 옹이·못 자국처럼 드물고 어두운 점은 그늘 띠 안에서 떠 보인다(「문 밑 막대기」) — 그늘 띠 안에선 이웃 색으로 덮는다
+    cols = {}
+    for y in range(T):
+        for x in range(T):
+            cols[tuple(o.a[y, x, :3])] = cols.get(tuple(o.a[y, x, :3]), 0) + 1
+    lum = lambda c: 0.3 * c[0] + 0.59 * c[1] + 0.11 * c[2]
+    med = sorted(lum(tuple(o.a[y, x, :3])) for y in range(T) for x in range(T))[T * T // 2]
+    src = o.a.copy()
+    for y in range(T):
+        for x in range(T):
+            inband = ('n' in mode and y < 3) or ('w' in mode and x < 5)
+            c = tuple(src[y, x, :3])
+            if inband and cols[c] < 8 and lum(c) < med:
+                nb = {}
+                for dy in (-1, 0, 1):
+                    for dx in (-1, 0, 1):
+                        yy, xx = y + dy, x + dx
+                        if (dy or dx) and 0 <= yy < T and 0 <= xx < T:
+                            k = tuple(src[yy, xx, :3])
+                            if cols[k] >= 8:
+                                nb[k] = nb.get(k, 0) + 1
+                if nb:
+                    best = max(nb, key=nb.get)
+                    o.a[y, x, :3] = best
+    if 'n' in mode:                                     # 위 그늘 띠(0~2줄) 안의 널 이음새 끝 막대는 그늘 속에서 떠 보인다 → 줄의 바탕색으로 덮는다
+        darkest = min(cols, key=lambda c: lum(c))
+        for y in range(3):
+            row = [tuple(o.a[y, x, :3]) for x in range(T)]
+            rest = [c for c in row if c != darkest]
+            if rest and len(rest) < T:
+                base = max(set(rest), key=rest.count)
+                for x in range(T):
+                    if row[x] == darkest:
+                        o.a[y, x, :3] = base
     fy = {0: 0.72, 1: 0.84, 2: 0.93}
     fx = {0: 0.80, 1: 0.86, 2: 0.91, 3: 0.95, 4: 0.98}
     for y in range(T):

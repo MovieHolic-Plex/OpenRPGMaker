@@ -94,7 +94,7 @@ def analyze(room, sheet):
                 if need((x, y)) == 'X':
                     rep['fails'].append(f'C3 통로 칸 ({x},{y}) 이 가구에 막혔다')
     # C4 사용 칸
-    furniture = [(n, x, y, w, h) for (n, x, y, w, h) in room.placed if not n.startswith(WALLP + MATS + ('in_b_exit_mat', 'in_b_hang_', 'in_b_jokja_'))]
+    furniture = [(n, x, y, w, h) for (n, x, y, w, h) in room.placed if not n.startswith(WALLP + MATS + ('in_b_exit_mat', 'in_b_hang_', 'in_b_jokja_', 'in_b_dais_', 'in_b_stair_dais'))]
     for (n, x, y, w, h) in furniture:
         ok = False
         for i in range(w):

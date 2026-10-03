@@ -3598,5 +3598,93 @@
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-04"
+ },
+ "in_b_throne": {
+  "hash": "5d7574cefd0f",
+  "status": "note",
+  "line": "사또 큰 의자 2×2. 구름 머리 등받이·붉은 등판·붉은 방석·팔걸이가 읽히고 이전 1×2 교의보다 폭이 두 배. v5 throne 만큼 장식은 없다(호피 없음)",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_b_mat_carpet_v4": {
+  "hash": "e5ccdb6057ec",
+  "status": "pass",
+  "line": "붉은 길 깔개 1×4. 테두리+금실 줄+마름모 무늬가 4칸에 되풀이, v5 rug red 보다 길고 좁은 길 깔개 — 바닥에 붙은 윗면",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_b_stair_dais_wood_3": {
+  "hash": "691227f752ed",
+  "status": "note",
+  "line": "목재 단 앞 계단(3·2칸). 윗 디딤 넓은 면 + 챌판 두 단이 계단으로 읽히나 단색 널이라 v5 stairs up wood 의 줄 정보량보다 적다. 관아·서당 단 앞에서 시험",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_b_stair_dais_wood_2": {
+  "hash": "160f7a317a65",
+  "status": "note",
+  "line": "목재 단 앞 계단(3·2칸). 윗 디딤 넓은 면 + 챌판 두 단이 계단으로 읽히나 단색 널이라 v5 stairs up wood 의 줄 정보량보다 적다. 관아·서당 단 앞에서 시험",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_b_gonjang_geori": {
+  "hash": "a6e7e2676b79",
+  "status": "note",
+  "line": "곤장 걸이 1×2. 기둥+가로대에 곤장 셋, 곤장 폭 1~2px 라 작은 크기에서 막대 묶음으로만 읽힌다(thin_ok 사유 있음)",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_b_pyeongsang_3b": {
+  "hash": "5879853e621a",
+  "status": "pass",
+  "line": "평상 3칸(세로 널). 널 방향·다리 모양이 기본 평상(가로 널)과 달라 같은 가구 반복을 깬다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_b_pyeongsang_2b": {
+  "hash": "c56cd8f91f61",
+  "status": "pass",
+  "line": "평상 2칸(세로 널). 3b 와 같은 널 문법",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_b_pyeongsang_2c": {
+  "hash": "33f0976dbfad",
+  "status": "pass",
+  "line": "평상 2칸(가로보 보강·곧은 다리). 기본 평상과 널 이음·다리가 다르다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_b_pyeongsang_3c": {
+  "hash": "40f7dd1f2570",
+  "status": "pass",
+  "line": "평상 3칸(가로보 보강·곧은 다리). 2c 와 같은 문법",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_b_mangchi_teul": {
+  "hash": "fcb7c8d053c9",
+  "status": "note",
+  "line": "망치 그루터기 1×1. 그루터기 위 망치·집게. 모루와 윤곽이 달라 읽히나 망치 머리가 작아 한눈에 안 읽힌다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_b_yakseonban_2": {
+  "hash": "18d099c2cd14",
+  "status": "pass",
+  "line": "약 선반 2×2. 박 약병 셋(초록·황·주황)·단지·서랍 둘이 칸마다 읽히고 v5 apothecary drawers 와 다른 호리병 선반 문법",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
  }
 }

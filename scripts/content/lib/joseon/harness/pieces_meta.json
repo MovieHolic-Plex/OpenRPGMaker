@@ -3806,5 +3806,83 @@
    "v5:fur rug"
   ],
   "front_only": true
+ },
+ "in_b_throne": {
+  "cls": "prop",
+  "refs": [
+   "v5:throne",
+   "v5:chair S"
+  ]
+ },
+ "in_b_mat_carpet_v4": {
+  "cls": "prop",
+  "refs": [
+   "v5:rug red",
+   "v5:fur rug"
+  ],
+  "front_only": true
+ },
+ "in_b_stair_dais_wood_3": {
+  "cls": "prop",
+  "refs": [
+   "v5:stairs up stone"
+  ],
+  "front_only": true
+ },
+ "in_b_stair_dais_wood_2": {
+  "cls": "prop",
+  "refs": [
+   "v5:stairs up stone"
+  ],
+  "front_only": true
+ },
+ "in_b_gonjang_geori": {
+  "cls": "prop",
+  "refs": [
+   "v5:weapon barrel"
+  ],
+  "thin_ok": "곤장 자루·기둥이 폭 1~2px(가는 막대가 본질) — 굵히면 걸이가 아니라 판자로 읽힌다"
+ },
+ "in_b_pyeongsang_3b": {
+  "cls": "prop",
+  "refs": [
+   "v5:bench 3",
+   "v5:bench 2"
+  ]
+ },
+ "in_b_pyeongsang_2b": {
+  "cls": "prop",
+  "refs": [
+   "v5:bench 3",
+   "v5:bench 2"
+  ]
+ },
+ "in_b_pyeongsang_2c": {
+  "cls": "prop",
+  "refs": [
+   "v5:bench 3",
+   "v5:bench 2"
+  ]
+ },
+ "in_b_pyeongsang_3c": {
+  "cls": "prop",
+  "refs": [
+   "v5:bench 3",
+   "v5:bench 2"
+  ]
+ },
+ "in_b_mangchi_teul": {
+  "cls": "prop",
+  "refs": [
+   "v5:anvil",
+   "v5:work 2x1"
+  ]
+ },
+ "in_b_yakseonban_2": {
+  "cls": "prop",
+  "refs": [
+   "v5:apothecary drawers",
+   "v5:bookshelf 2w"
+  ]
  }
 }

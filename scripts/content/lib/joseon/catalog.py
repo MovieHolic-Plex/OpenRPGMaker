@@ -237,9 +237,9 @@ _terrain_before_interior_b = terrain
 
 
 def objects():
-    import inb_kit as _IK, inb_props as _IP, inb_props2 as _IP2, inb_props3 as _IP3
+    import inb_kit as _IK, inb_props as _IP, inb_props2 as _IP2, inb_props3 as _IP3, inb_props4 as _IP4
     d = _objects_before_interior_b()
-    for m in (_IK, _IP, _IP2, _IP3):
+    for m in (_IK, _IP, _IP2, _IP3, _IP4):
         d.update(m.objects())
     return d
 
