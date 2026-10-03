@@ -3598,5 +3598,621 @@
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-04"
+ },
+ "pal_wall_gung_m": {
+  "hash": "fc283220d7dc",
+  "status": "pass",
+  "line": "정면 벽. 회벽 + 붉은 중방 + 단청 창방 + 돌 걸레받이, 끝 변형은 붉은 기둥. 후보 B wall_hoe 보다 단청 띠가 있어 궁 전용으로 구분된다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_wall_gung_l": {
+  "hash": "968e6d736df2",
+  "status": "pass",
+  "line": "정면 벽. 회벽 + 붉은 중방 + 단청 창방 + 돌 걸레받이, 끝 변형은 붉은 기둥. 후보 B wall_hoe 보다 단청 띠가 있어 궁 전용으로 구분된다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_wall_gung_r": {
+  "hash": "7ba316160875",
+  "status": "pass",
+  "line": "정면 벽. 회벽 + 붉은 중방 + 단청 창방 + 돌 걸레받이, 끝 변형은 붉은 기둥. 후보 B wall_hoe 보다 단청 띠가 있어 궁 전용으로 구분된다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_wall_gung_lr": {
+  "hash": "16f5171fa86c",
+  "status": "pass",
+  "line": "정면 벽. 회벽 + 붉은 중방 + 단청 창방 + 돌 걸레받이, 끝 변형은 붉은 기둥. 후보 B wall_hoe 보다 단청 띠가 있어 궁 전용으로 구분된다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_wall_gungho_m": {
+  "hash": "e2d75b2a78dd",
+  "status": "pass",
+  "line": "정면 벽. 붉은 틀 격자 창호 + 위 단청 창방 + 돌 걸레받이. 후보 B wall_changho 와 같은 구성에 붉은 칠·단청만 다르다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_wall_gungho_l": {
+  "hash": "b7179a1d79ea",
+  "status": "pass",
+  "line": "정면 벽. 붉은 틀 격자 창호 + 위 단청 창방 + 돌 걸레받이. 후보 B wall_changho 와 같은 구성에 붉은 칠·단청만 다르다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_wall_gungho_r": {
+  "hash": "a425c5368aaf",
+  "status": "pass",
+  "line": "정면 벽. 붉은 틀 격자 창호 + 위 단청 창방 + 돌 걸레받이. 후보 B wall_changho 와 같은 구성에 붉은 칠·단청만 다르다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_wall_gungho_lr": {
+  "hash": "d95d8c7ea348",
+  "status": "pass",
+  "line": "정면 벽. 붉은 틀 격자 창호 + 위 단청 창방 + 돌 걸레받이. 후보 B wall_changho 와 같은 구성에 붉은 칠·단청만 다르다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_door_gung_l": {
+  "hash": "238e6ec533ea",
+  "status": "pass",
+  "line": "창호 쌍문 한 짝(l/r 두 칸이 한 쌍). 붉은 틀·빗살·놋쇠 손잡이·단청 윗창방·돌 문턱, 후보 B door_slide 와 같은 크기·구성",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_door_gung_open_l": {
+  "hash": "13bed74f05a6",
+  "status": "note",
+  "line": "열린 쌍문 한 짝. 안쪽 어두운 체크 면이 넓어 깊이 단서가 약하다(후보 B door_open 과 같은 한계). 회랑 가운데 한 곳에만 썼다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_door_gung_r": {
+  "hash": "2117106315af",
+  "status": "pass",
+  "line": "창호 쌍문 한 짝(l/r 두 칸이 한 쌍). 붉은 틀·빗살·놋쇠 손잡이·단청 윗창방·돌 문턱, 후보 B door_slide 와 같은 크기·구성",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_door_gung_open_r": {
+  "hash": "dbe4b70ab487",
+  "status": "note",
+  "line": "열린 쌍문 한 짝. 안쪽 어두운 체크 면이 넓어 깊이 단서가 약하다(후보 B door_open 과 같은 한계). 회랑 가운데 한 곳에만 썼다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_pillar_dan_2a": {
+  "hash": "1cfcb8f9ae05",
+  "status": "pass",
+  "line": "단청 기둥 2칸. 붉은 둥근 몸 + 머리초 띠 + 주두 + 돌 초석. 후보 B pillar_red 와 같은 굵기(8px)·왼쪽 위 빛, 머리초가 다르다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_pillar_dan_3a": {
+  "hash": "5e0ad41d22c9",
+  "status": "pass",
+  "line": "단청 기둥 3칸(정전·회랑). 2칸과 같은 문법, 세 변형(a 청녹 마름모·b 적청 줄·c 녹적 점)이 줄지을 때 같은 무늬가 반복되지 않는다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_pillar_dan_2b": {
+  "hash": "7454350acbfc",
+  "status": "pass",
+  "line": "단청 기둥 2칸. 붉은 둥근 몸 + 머리초 띠 + 주두 + 돌 초석. 후보 B pillar_red 와 같은 굵기(8px)·왼쪽 위 빛, 머리초가 다르다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_pillar_dan_3b": {
+  "hash": "eacf3215cf11",
+  "status": "pass",
+  "line": "단청 기둥 3칸(정전·회랑). 2칸과 같은 문법, 세 변형(a 청녹 마름모·b 적청 줄·c 녹적 점)이 줄지을 때 같은 무늬가 반복되지 않는다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_pillar_dan_2c": {
+  "hash": "3c44eb331a6e",
+  "status": "pass",
+  "line": "단청 기둥 2칸. 붉은 둥근 몸 + 머리초 띠 + 주두 + 돌 초석. 후보 B pillar_red 와 같은 굵기(8px)·왼쪽 위 빛, 머리초가 다르다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_pillar_dan_3c": {
+  "hash": "f919f63700dc",
+  "status": "pass",
+  "line": "단청 기둥 3칸(정전·회랑). 2칸과 같은 문법, 세 변형(a 청녹 마름모·b 적청 줄·c 녹적 점)이 줄지을 때 같은 무늬가 반복되지 않는다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_beam_dan_m": {
+  "hash": "47de402d4ca2",
+  "status": "note",
+  "line": "단청 들보 한 칸(l/m/r). 8px 정면 띠라 윗면이 보이지 않고 막대로 읽힌다 — 기둥 머리 사이에 놓은 방 안(정전·회랑)에서는 들보로 읽혔다. 단독으로는 약하다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_beam_dan_l": {
+  "hash": "48ae22608c50",
+  "status": "note",
+  "line": "단청 들보 한 칸(l/m/r). 8px 정면 띠라 윗면이 보이지 않고 막대로 읽힌다 — 기둥 머리 사이에 놓은 방 안(정전·회랑)에서는 들보로 읽혔다. 단독으로는 약하다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_beam_dan_r": {
+  "hash": "b19d4437e7d9",
+  "status": "note",
+  "line": "단청 들보 한 칸(l/m/r). 8px 정면 띠라 윗면이 보이지 않고 막대로 읽힌다 — 기둥 머리 사이에 놓은 방 안(정전·회랑)에서는 들보로 읽혔다. 단독으로는 약하다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_dais_top_l_m": {
+  "hash": "4b8ecfd23c35",
+  "status": "pass",
+  "line": "단 윗면 한 칸(마루 널, l/m/r × 뒷줄 그늘/일반). 바닥보다 밝은 마루로 한 단 올라 보이고 끝 칸은 가장자리 윤곽",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_dais_top_l_b": {
+  "hash": "78efad1a1b49",
+  "status": "pass",
+  "line": "단 윗면 한 칸(마루 널, l/m/r × 뒷줄 그늘/일반). 바닥보다 밝은 마루로 한 단 올라 보이고 끝 칸은 가장자리 윤곽",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_dais_face_l": {
+  "hash": "755fd977989a",
+  "status": "pass",
+  "line": "단 앞면 한 칸(l/m/r). 윗 돌띠 + 들어간 판 문양 + 밑 접지 그림자. 후보 B dais_stone 보다 판 문양이 있어 장대석 단으로 읽힌다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_dais_top_m_m": {
+  "hash": "0b2f4b27311d",
+  "status": "pass",
+  "line": "단 윗면 한 칸(마루 널, l/m/r × 뒷줄 그늘/일반). 바닥보다 밝은 마루로 한 단 올라 보이고 끝 칸은 가장자리 윤곽",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_dais_top_m_b": {
+  "hash": "4d9dcc9d297c",
+  "status": "pass",
+  "line": "단 윗면 한 칸(마루 널, l/m/r × 뒷줄 그늘/일반). 바닥보다 밝은 마루로 한 단 올라 보이고 끝 칸은 가장자리 윤곽",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_dais_face_m": {
+  "hash": "539f7eec2de0",
+  "status": "pass",
+  "line": "단 앞면 한 칸(l/m/r). 윗 돌띠 + 들어간 판 문양 + 밑 접지 그림자. 후보 B dais_stone 보다 판 문양이 있어 장대석 단으로 읽힌다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_dais_top_r_m": {
+  "hash": "fc544248cd5e",
+  "status": "pass",
+  "line": "단 윗면 한 칸(마루 널, l/m/r × 뒷줄 그늘/일반). 바닥보다 밝은 마루로 한 단 올라 보이고 끝 칸은 가장자리 윤곽",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_dais_top_r_b": {
+  "hash": "a62711ea1c15",
+  "status": "pass",
+  "line": "단 윗면 한 칸(마루 널, l/m/r × 뒷줄 그늘/일반). 바닥보다 밝은 마루로 한 단 올라 보이고 끝 칸은 가장자리 윤곽",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_dais_face_r": {
+  "hash": "5bdf029c76a8",
+  "status": "pass",
+  "line": "단 앞면 한 칸(l/m/r). 윗 돌띠 + 들어간 판 문양 + 밑 접지 그림자. 후보 B dais_stone 보다 판 문양이 있어 장대석 단으로 읽힌다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_dais_stair_3": {
+  "hash": "99512686acd5",
+  "status": "note",
+  "line": "단 앞 돌계단 3칸 폭. 세 단이 전부 붉은 카펫으로 덮여 디딤/챌판 대비가 줄어 줄무늬 띠로 읽힌다. 정전 방 안에서는 단 앞 어도 계단으로 읽혔다(양 끝 소맷돌 돌)",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_mat_carpet_l_a": {
+  "hash": "2a1bb3e28c8f",
+  "status": "pass",
+  "line": "어도 카펫(l/m/r × 연꽃 줄/마름모 줄/아래 술 끝). 바닥에 붙은 윗면, 붉은 바탕·금 테두리, v5 runner 와 같은 문법(더 밝고 얼룩을 줄임)",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_mat_carpet_l_b": {
+  "hash": "2a1bb3e28c8f",
+  "status": "pass",
+  "line": "어도 카펫(l/m/r × 연꽃 줄/마름모 줄/아래 술 끝). 바닥에 붙은 윗면, 붉은 바탕·금 테두리, v5 runner 와 같은 문법(더 밝고 얼룩을 줄임)",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_mat_carpet_l_s": {
+  "hash": "9ec774e114d3",
+  "status": "pass",
+  "line": "어도 카펫(l/m/r × 연꽃 줄/마름모 줄/아래 술 끝). 바닥에 붙은 윗면, 붉은 바탕·금 테두리, v5 runner 와 같은 문법(더 밝고 얼룩을 줄임)",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_mat_carpet_m_a": {
+  "hash": "bb70cafb8370",
+  "status": "pass",
+  "line": "어도 카펫(l/m/r × 연꽃 줄/마름모 줄/아래 술 끝). 바닥에 붙은 윗면, 붉은 바탕·금 테두리, v5 runner 와 같은 문법(더 밝고 얼룩을 줄임)",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_mat_carpet_m_b": {
+  "hash": "12b70c11c31f",
+  "status": "pass",
+  "line": "어도 카펫(l/m/r × 연꽃 줄/마름모 줄/아래 술 끝). 바닥에 붙은 윗면, 붉은 바탕·금 테두리, v5 runner 와 같은 문법(더 밝고 얼룩을 줄임)",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_mat_carpet_m_s": {
+  "hash": "6764ac18baa3",
+  "status": "pass",
+  "line": "어도 카펫(l/m/r × 연꽃 줄/마름모 줄/아래 술 끝). 바닥에 붙은 윗면, 붉은 바탕·금 테두리, v5 runner 와 같은 문법(더 밝고 얼룩을 줄임)",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_mat_carpet_r_a": {
+  "hash": "a2c6c010828f",
+  "status": "pass",
+  "line": "어도 카펫(l/m/r × 연꽃 줄/마름모 줄/아래 술 끝). 바닥에 붙은 윗면, 붉은 바탕·금 테두리, v5 runner 와 같은 문법(더 밝고 얼룩을 줄임)",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_mat_carpet_r_b": {
+  "hash": "a2c6c010828f",
+  "status": "pass",
+  "line": "어도 카펫(l/m/r × 연꽃 줄/마름모 줄/아래 술 끝). 바닥에 붙은 윗면, 붉은 바탕·금 테두리, v5 runner 와 같은 문법(더 밝고 얼룩을 줄임)",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_mat_carpet_r_s": {
+  "hash": "157e47e780aa",
+  "status": "pass",
+  "line": "어도 카펫(l/m/r × 연꽃 줄/마름모 줄/아래 술 끝). 바닥에 붙은 윗면, 붉은 바탕·금 테두리, v5 runner 와 같은 문법(더 밝고 얼룩을 줄임)",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_nangan_m": {
+  "hash": "b22d425c74f2",
+  "status": "note",
+  "line": "붉은 난간 한 칸(m/l/r). 윗 난간대 윗면 3px 와 동자기둥·석단이 읽히나 동자기둥이 2px 로 가늘다. 맞는 기준 기물이 v5 에 없어 후보 B bench 와만 견줬다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_mat_run_m": {
+  "hash": "5044700fb612",
+  "status": "pass",
+  "line": "회랑 마루깔개 1×2(l/m/r). 붉은 바탕 + 금 줄 두 가닥 + 가운데 마름모, 앞 두께 2px",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_nangan_l": {
+  "hash": "3fe5771c86bd",
+  "status": "note",
+  "line": "붉은 난간 한 칸(m/l/r). 윗 난간대 윗면 3px 와 동자기둥·석단이 읽히나 동자기둥이 2px 로 가늘다. 맞는 기준 기물이 v5 에 없어 후보 B bench 와만 견줬다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_mat_run_l": {
+  "hash": "a360ff490f36",
+  "status": "pass",
+  "line": "회랑 마루깔개 1×2(l/m/r). 붉은 바탕 + 금 줄 두 가닥 + 가운데 마름모, 앞 두께 2px",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_nangan_r": {
+  "hash": "695ca1b400ad",
+  "status": "note",
+  "line": "붉은 난간 한 칸(m/l/r). 윗 난간대 윗면 3px 와 동자기둥·석단이 읽히나 동자기둥이 2px 로 가늘다. 맞는 기준 기물이 v5 에 없어 후보 B bench 와만 견줬다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_mat_run_r": {
+  "hash": "19fd2d37a09a",
+  "status": "pass",
+  "line": "회랑 마루깔개 1×2(l/m/r). 붉은 바탕 + 금 줄 두 가닥 + 가운데 마름모, 앞 두께 2px",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_mat_gung_a": {
+  "hash": "1a7a2e6b1f13",
+  "status": "pass",
+  "line": "문 앞 깔개 2×1(붉은·청). 바닥에 붙은 윗면, 금 테두리 + 꽃무늬",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_mat_gung_b": {
+  "hash": "d61ed9bcbc1e",
+  "status": "pass",
+  "line": "문 앞 깔개 2×1(붉은·청). 바닥에 붙은 윗면, 금 테두리 + 꽃무늬",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_ilwol_byeongpung": {
+  "hash": "9aa09b62a3a0",
+  "status": "pass",
+  "line": "일월오봉도 병풍 7×3. 붉은 칠 틀 윗면 + 청 바탕·해·달·다섯 봉우리·물결·양끝 소나무. 후보 B byeongpung_royal 의 큰 판, 정면 병풍이라 윗면은 틀 위 3px",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_yongsang": {
+  "hash": "a22b35552b5f",
+  "status": "note",
+  "line": "용상 3×2. 금박 붉은 등받이 + 용 + 팔걸이(윗면 2px) + 방석 윗면 + 족좌. 금빛 용(굽이친 몸통·뿔·여의주)이 읽히나 8×8px 머리가 뭉툭하다. 의자로는 읽힌다(v5 throne 보다 넓다)",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_hyangro_a": {
+  "hash": "b6b15b13ab2b",
+  "status": "pass",
+  "line": "대형 향로(돌 몸통 + 놋쇠 뚜껑과 꼭지 + 연기). 세 발·두 귀, 윗면 타원이 보이고 후보 B hwaro 보다 크다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_hyangro_b": {
+  "hash": "6f9fee9d49ae",
+  "status": "pass",
+  "line": "대형 향로(놋쇠 몸통 + 열린 화구에 불씨 + 연기 두 줄기). 윗면 타원 속 불씨가 보이는 것이 a 와 다르다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_buk_big": {
+  "hash": "1ba1cd48fefa",
+  "status": "pass",
+  "line": "큰 북 2×3. 나무 틀 윗가로대 윗면 + 붉은 테·금 못·삼태극 가죽 면. 정면 소품(가죽 면이 앞을 본다) — 틀 윗면과 북 윗 두께로 3/4",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_jong_geori": {
+  "hash": "d8d25e6d614c",
+  "status": "pass",
+  "line": "종 걸이 3×3. 단청 가로대 윗면 + 놋쇠 범종(어깨·유두·허리 띠·입술) + 당목 + 마루 받침. 종 윤곽은 단 진 것이 아직 있으나 종으로 읽힌다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_deungnong_a": {
+  "hash": "0275b2423121",
+  "status": "pass",
+  "line": "서 있는 등롱 1×2(a 붉은·b 청 띠). 나무 기둥 + 십자 받침 + 종이 등. 후보 B deungjan_stand 보다 크다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_deungnong_b": {
+  "hash": "df0d84080cef",
+  "status": "pass",
+  "line": "서 있는 등롱 1×2(a 붉은·b 청 띠). 나무 기둥 + 십자 받침 + 종이 등. 후보 B deungjan_stand 보다 크다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_hang_deungnong_a": {
+  "hash": "fdd2a7fe796c",
+  "status": "pass",
+  "line": "벽에 거는 등롱 1×1(a·b). 쇠 팔 + 등 + 술. 방 안에서 벽면 윗줄에 걸려 읽힌다(그리는 순서를 벽면 위로 맞춤)",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_hang_deungnong_b": {
+  "hash": "609fdcb9c20a",
+  "status": "pass",
+  "line": "벽에 거는 등롱 1×1(a·b). 쇠 팔 + 등 + 술. 방 안에서 벽면 윗줄에 걸려 읽힌다(그리는 순서를 벽면 위로 맞춤)",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_deumeu_a": {
+  "hash": "e01a3a6d7735",
+  "status": "pass",
+  "line": "드므 2×2(a 맑은 물·b 낙엽). 돌 받침 + 청동 독 윗면 타원 속 물. 후보 B 에 대응 기물 없음",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_deumeu_b": {
+  "hash": "56d713414780",
+  "status": "pass",
+  "line": "드므 2×2(a 맑은 물·b 낙엽). 돌 받침 + 청동 독 윗면 타원 속 물. 후보 B 에 대응 기물 없음",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_byeongpung_gung": {
+  "hash": "d77e64d3f8d4",
+  "status": "pass",
+  "line": "궁중 병풍 4폭. 붉은 칠 틀·금 안테두리·모란, 폭이 윗선에서 지그재그로 어긋난다. 후보 B byeongpung_b 의 궁중판",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_chimgu": {
+  "hash": "72104e584294",
+  "status": "pass",
+  "line": "침구 2×2. 바닥에 놓인 청 비단 요 + 붉은 금박 이불 + 원앙 베개 둘, 윗면이 크고 앞 두께 3px",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_seoan": {
+  "hash": "3039e8279afd",
+  "status": "pass",
+  "line": "궁중 서안 2×1. 붉은 옻칠 윗면 5px + 앞 판 + 다리, 윗면에 두루마리·붓통·벼루(무거운 벼루는 오른쪽)",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_hwaro": {
+  "hash": "7424a6ce214e",
+  "status": "note",
+  "line": "궁중 청동 화로 1×1. 세 발 + 놋쇠 몸통 + 윗면 타원 속 불씨. 작은 크기라 바구니처럼도 보인다. 후보 B hwaro(쇠)보다 놋쇠·금 띠",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_chotdae_big": {
+  "hash": "3c72eb8c83e2",
+  "status": "pass",
+  "line": "큰 촛대 1×2. 세 발 받침 + 놋쇠 기둥 마디 + 위 접시 + 굵은 붉은 초 + 불꽃. v5 candelabra 보다 단순하다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_yong_jang": {
+  "hash": "23469c612bf3",
+  "status": "note",
+  "line": "용 문양 대형 장 2×3. 검붉은 칠 두 짝 문에 금빛 용(S 곡선 + 머리) + 놋쇠 경첩 + 윗면 4px 처마 + 받침 다리. 두 짝 문마다 오르는 금빛 용이 읽히나 비늘이 점 몇 개라 용보다 덩굴에 가깝다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_bangseok_a": {
+  "hash": "34a76cd67aff",
+  "status": "pass",
+  "line": "비단 방석 1×1(a 붉은·b 청·c 녹). 윗면 + 금 테두리 + 금 단추 + 귀 술, 후보 B banseok 의 비단판",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_bangseok_b": {
+  "hash": "0586e7d8472c",
+  "status": "pass",
+  "line": "비단 방석 1×1(a 붉은·b 청·c 녹). 윗면 + 금 테두리 + 금 단추 + 귀 술, 후보 B banseok 의 비단판",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_bangseok_c": {
+  "hash": "d331a35e41b9",
+  "status": "pass",
+  "line": "비단 방석 1×1(a 붉은·b 청·c 녹). 윗면 + 금 테두리 + 금 단추 + 귀 술, 후보 B banseok 의 비단판",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_mat_sinha_b1": {
+  "hash": "e7f229b56e66",
+  "status": "pass",
+  "line": "신하 깔개 2×1(청록 b1~3 문신·붉은 r1~3 무신). 돗자리 + 방석 + 홀, 무늬·방석 위치가 다르다. 바닥에 붙은 윗면",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_mat_sinha_b2": {
+  "hash": "04cc357c1808",
+  "status": "pass",
+  "line": "신하 깔개 2×1(청록 b1~3 문신·붉은 r1~3 무신). 돗자리 + 방석 + 홀, 무늬·방석 위치가 다르다. 바닥에 붙은 윗면",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_mat_sinha_b3": {
+  "hash": "a6652bfd550d",
+  "status": "pass",
+  "line": "신하 깔개 2×1(청록 b1~3 문신·붉은 r1~3 무신). 돗자리 + 방석 + 홀, 무늬·방석 위치가 다르다. 바닥에 붙은 윗면",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_mat_sinha_r1": {
+  "hash": "338e2409a606",
+  "status": "pass",
+  "line": "신하 깔개 2×1(청록 b1~3 문신·붉은 r1~3 무신). 돗자리 + 방석 + 홀, 무늬·방석 위치가 다르다. 바닥에 붙은 윗면",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_mat_sinha_r2": {
+  "hash": "ebf318d4dc1b",
+  "status": "pass",
+  "line": "신하 깔개 2×1(청록 b1~3 문신·붉은 r1~3 무신). 돗자리 + 방석 + 홀, 무늬·방석 위치가 다르다. 바닥에 붙은 윗면",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_mat_sinha_r3": {
+  "hash": "92f86806756e",
+  "status": "pass",
+  "line": "신하 깔개 2×1(청록 b1~3 문신·붉은 r1~3 무신). 돗자리 + 방석 + 홀, 무늬·방석 위치가 다르다. 바닥에 붙은 윗면",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_hang_jokja_a": {
+  "hash": "fa1bf30dc5e8",
+  "status": "pass",
+  "line": "벽에 거는 궁중 족자 1×2(a 산수·b 글씨). 위·아래 축 + 붉은 천 두름 + 그림. 벽면 두 줄을 채운다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_hang_jokja_b": {
+  "hash": "412cdbd6cfaa",
+  "status": "pass",
+  "line": "벽에 거는 궁중 족자 1×2(a 산수·b 글씨). 위·아래 축 + 붉은 천 두름 + 그림. 벽면 두 줄을 채운다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
  }
 }

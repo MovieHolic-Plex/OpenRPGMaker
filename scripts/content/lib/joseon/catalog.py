@@ -249,3 +249,23 @@ def terrain():
     d = _terrain_before_interior_b()
     d.update(_IK.terrain())
     return d
+
+
+# --- 조선 궁 내부(pal_kit.py·pal_props*.py, 접두 pal_): 맨 끝에 덧붙인다. 후보 B(in_b_)와 이름이 겹치지 않는다.
+_objects_before_palace_int = objects
+_terrain_before_palace_int = terrain
+
+
+def objects():
+    import pal_kit as _PK, pal_props as _PP, pal_props2 as _PP2
+    d = _objects_before_palace_int()
+    for m in (_PK, _PP, _PP2):
+        d.update(m.objects())
+    return d
+
+
+def terrain():
+    import pal_kit as _PK
+    d = _terrain_before_palace_int()
+    d.update(_PK.terrain())
+    return d
