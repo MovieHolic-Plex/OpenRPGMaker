@@ -24,12 +24,12 @@ MW = MH = 96
 kit = Kit(MW, MH, 'field', OUT, 'joseon-field')
 tr_ = kit.terr
 FACEG = 'fld_face32' if 'fld_face32' in tr_ else 'fld_face16'     # 앞면 묶음(tier 0 = 땅에 닿는 두 줄이 앞 16칸)
-for g in ('grass8', 'road64', 'yard64', 'slab', 'slab_edge16', 'fld_trail32', 'fld_tall32', 'fld_forest32', 'fld_bog94', 'fld_rock32', FACEG):
+for g in ('grass8', 'road64', 'yard64', 'slab', 'slab_edge16', 'fld_trail32', 'fld_tall32', 'fld_forest32', 'fld_bog94', 'fld_rock32', 'fld_rock_in8', FACEG):
     kit.add_group(g, tr_[g])
 GID = {g: kit.gid(g) for g in kit.pieces}
 KG = kit.KG
 inb = kit.inb
-SOLIDK = ('rock', 'face0', 'face1', 'bog')
+SOLIDK = ('rock', 'face0', 'face1', 'tface0', 'tface1', 'bog', 'cityback')
 VIS = set()          # 길·마당·문 앞: 물체(수관 포함)가 가리면 안 되는 칸
 ANCH = []            # 막다른 길이 끝나도 되는 목적 칸
 PEOPLE = kit.PEOPLE
@@ -68,41 +68,71 @@ def setk(cells, kind, only=(None,)):
 
 
 # ================================================================ 1단계: 바닥
-# --- 서쪽 바위산(윗면 + 앞면 2줄): 아랫단 큰 고원 + 윗단 봉우리(앞면이 따로 선다) + 동쪽 곁봉우리. 굴 입구 자리(x4..22)는 바닥선이 평평하다.
-ROCK = set()
-for x in range(0, 25):                                   # 아랫단 고원: 윗선은 4칸 이상 폭의 단으로만 바뀐다(1~2칸 톱니·성가퀴 금지)
-    yt = 34 + (hsh(x // 4, 1, 3) % 2)
+def smooth(cells, rounds=2, keep=None):
+    """집합 윤곽의 1칸 가시·홈을 다수결(3×3 중 5칸 이상)로 다듬는다. keep 은 지우지 않을 칸."""
+    cells = set(cells)
+    for _ in range(rounds):
+        cand = {(x + dx, y + dy) for (x, y) in cells for dx in (-1, 0, 1) for dy in (-1, 0, 1)}
+        new = set()
+        for (x, y) in cand:
+            n = sum(1 for dx in (-1, 0, 1) for dy in (-1, 0, 1) if (x + dx, y + dy) in cells)
+            if n >= 5 or (keep and (x, y) in keep and (x, y) in cells):
+                new.add((x, y))
+        cells = new
+    return {c for c in cells if inb(*c)}
+
+
+# --- 북쪽 성벽(국내성 남쪽 성벽을 밖에서 올려다본 3/4 앞면)과 남문: 윗면 줄(y0..3)은 걸을 수 없는 포장, 앞면은 성벽 조각이 덮는다.
+GATE_X = 43                                                  # fort_gate 10칸 폭: 문길 칸은 x47..48
+FM.SOLID_GROUND = FM.SOLID_GROUND + ('cityback',)            # 성벽 너머 도성 안 포장(걸을 수 없는 바닥, 성벽 윗면 뒤로 보이는 면)
+for y in range(0, 9):
+    for x in range(MW):
+        KG[y][x] = 'cityback'
+for y in range(0, 9):
+    for x in (47, 48): KG[y][x] = 'slab'
+
+# --- 서쪽 바위산: 3단 계단 산. 아랫단(큰 고원) 위에 가운데단, 그 위에 봉우리단이 얹히고 단마다 앞면 두 줄이 아랫단 윗면에 선다. 굴 입구 자리(x4..22)는 바닥선이 평평하다.
+ROCK, TROCK = set(), set()
+FACE0, FACE1, TFACE0, TFACE1 = set(), set(), set(), set()
+for x in range(0, 25):                                       # 아랫단: 윗선 y38 고정(가운데단 밑동이 서는 열)·가장자리는 울퉁불퉁
+    yt = 38 if 3 <= x <= 21 else 38 + (hsh(x // 2, 1, 3) % 3)
     yb = 43 if 4 <= x <= 22 else (40 if x < 4 else 41)
-    for y in range(yt, yb + 1):
-        ROCK.add((x, y))
-for x in range(6, 18):                                   # 윗단 봉우리: 좌우 끝을 한 칸씩 안으로 접는 사다리꼴(윗선 폭 4칸 이상 단)
-    yt = 22 + (hsh(x // 4, 2, 3) % 2) + (1 if x in (6, 17) else 0)
-    for y in range(yt, 31):
-        ROCK.add((x, y))
-for x in range(24, 31):                                  # 동쪽 곁봉우리: 윗선 평평(끝만 한 칸 낮춤)
-    for y in range(23 + (x in (24, 30)), 31):
-        ROCK.add((x, y))
-for x in range(53, 62):                                  # 초원 한가운데 낮은 바위 언덕
-    for y in range(39 + (x in (53, 61)), 42):
-        ROCK.add((x, y))
-FACE0 = {(x, y + 1) for (x, y) in ROCK if (x, y + 1) not in ROCK}
+    for y in range(yt, yb + 1): ROCK.add((x, y))
+for x in range(3, 22):                                       # 가운데단: 윗선 y32(봉우리 밑동 열은 고정)
+    yt = 32 if 7 <= x <= 17 else 32 + 1 + (hsh(x, 2, 3) % 2)
+    for y in range(yt, 36): ROCK.add((x, y))
+    for y in (36, 37): (TFACE0 if y == 36 else TFACE1).add((x, y))
+for x in range(7, 18):                                       # 봉우리단
+    yt = 26 + (hsh(x // 2, 3, 3) % 2)
+    for y in range(yt, 30): ROCK.add((x, y))
+    for y in (30, 31): (TFACE0 if y == 30 else TFACE1).add((x, y))
+for x in range(25, 32):                                      # 동쪽 곁봉우리(땅에 선다)
+    yt = 29 + (x % 2) + (hsh(x, 4, 3) % 2)
+    for y in range(yt, 34): ROCK.add((x, y))
+for x in range(53, 63):                                      # 초원 한가운데 낮은 바위 언덕(땅에 선다)
+    for y in range(37 + (x in (53, 62)) + (hsh(x, 5, 3) % 2), 41): ROCK.add((x, y))
+UPPER = {(x, y) for (x, y) in ROCK if y <= 35 and 3 <= x < 22}
+GROUND_ROCK = ROCK - UPPER
+FACE0 = {(x, y + 1) for (x, y) in GROUND_ROCK if (x, y + 1) not in ROCK}
 FACE1 = {(x, y + 1) for (x, y) in FACE0}
-assert not (FACE1 & ROCK), '바위 아래 두 줄이 다른 바위와 겹친다(벽 두께 2줄이 안 나옴)'
-setk(ROCK, 'rock', only=(None,)); setk(FACE0, 'face0', only=(None,)); setk(FACE1, 'face1', only=(None,))
+assert not (FACE1 & ROCK) and not (FACE0 & ROCK) and not ((FACE0 | FACE1) & (TFACE0 | TFACE1)), '바위 아래 두 줄이 다른 바위와 겹친다(벽 두께 2줄이 안 나옴)'
+for (x, y) in TFACE1: assert (x, y + 1) in ROCK, ('윗단 앞면 밑이 아랫단 윗면이 아님', x, y)
+for (x, y) in ROCK: KG[y][x] = 'rock'
+for (x, y) in FACE0: KG[y][x] = 'face0'
+for (x, y) in FACE1: KG[y][x] = 'face1'
+for (x, y) in TFACE0: KG[y][x] = 'tface0'
+for (x, y) in TFACE1: KG[y][x] = 'tface1'
 
-# --- 어귀 큰길(석판 → 흙길) + 어귀 마당
-for y in range(0, 6):
-    for x in range(46, 50): KG[y][x] = 'slab'
-for y in range(6, 17):
+# --- 어귀 큰길(성문 밑 흙길) + 어귀 마당
+for y in range(9, 17):
     for x in range(46, 50): KG[y][x] = 'road'
-for y in range(17, 23):
-    for x in range(42, 54): KG[y][x] = 'yard'
+YARD = {(x, y) for y in range(17, 23) for x in range(42, 54) if not ((x in (42, 53)) and y in (17, 22))}
+setk(YARD, 'yard')
 
-# --- 숲(동쪽)·늪·야영지·초원 키 큰 풀
-FOREST = blob(82, 36, 14, 29, 5, 0.22) | blob(86, 14, 9, 8, 6, 0.3)
-FOREST = {c for c in FOREST if c[0] >= 68}
+# --- 숲(동쪽)·늪·야영지·공터
+FOREST = smooth(blob(84, 34, 16, 31, 5, 0.32) | blob(88, 12, 10, 9, 6, 0.4) | blob(72, 52, 6, 8, 7, 0.4), 2)
 setk(FOREST, 'forest')
-BOG = blob(78, 84, 11.5, 6.5, 9, 0.2) | blob(70, 82, 5, 4, 10, 0.2)
+BOG = smooth(blob(78, 84, 11.5, 6.5, 9, 0.28) | blob(70, 82, 5, 4, 10, 0.3), 3)
 setk(BOG, 'bog', only=(None, 'forest'))
 for _r in range(3):                                        # 늪 윤곽 다듬기: 1칸 가시(이웃 늪 ≤1)는 지우고 1칸 홈(이웃 늪 ≥3)은 메운다
     rm = [(x, y) for y in range(MH) for x in range(MW) if KG[y][x] == 'bog' and sum(1 for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)) if inb(x + dx, y + dy) and KG[y + dy][x + dx] == 'bog') <= 1]
@@ -110,67 +140,66 @@ for _r in range(3):                                        # 늪 윤곽 다듬�
     for (x, y) in rm: KG[y][x] = None
     for (x, y) in ad: KG[y][x] = 'bog'
 BOGNEAR = {(x + dx, y + dy) for y in range(MH) for x in range(MW) if KG[y][x] == 'bog' for dx in range(-2, 3) for dy in range(-2, 3)}
-TALL = blob(33, 31, 5.5, 4.2, 21) | blob(60, 30, 6.5, 4.5, 22) | blob(36, 53, 5.5, 4.5, 23) | blob(60, 54, 6, 4.5, 24) | blob(46, 58, 3, 2.5, 25) | blob(32, 74, 6, 4, 26) | blob(20, 82, 4, 3, 27)
-setk(TALL, 'tall')
-CAMP = blob(48, 71, 8.5, 6.0, 31, 0.15)
-setk(CAMP, 'yard', only=(None, 'tall'))
-CLEAR = blob(80, 38, 5.5, 4.5, 32, 0.15)
-setk(CLEAR, 'yard', only=(None, 'forest'))
-for y in (46, 47, 48):                                     # 바위산 앞마당(굴 앞) 두 줄
-    for x in range(5, 31): KG[y][x] = 'yard'
+CAMP = smooth(blob(48, 71, 8.5, 6.0, 31, 0.3), 2)
+CLEAR = smooth(blob(80, 38, 5.5, 4.5, 32, 0.3), 2)
+RUINP = smooth(blob(20, 71, 4.5, 3.2, 33, 0.3), 2)                  # 폐허 석탑 앞 참배 마당
+setk(CAMP, 'yard', only=(None, 'forest')); setk(CLEAR, 'yard', only=(None, 'forest')); setk(RUINP, 'yard')
+for y in (46, 47, 48):                                     # 바위산 앞마당(굴 앞) 세 줄: 끝은 둥글게
+    for x in range(5, 31):
+        if not (y == 46 and x in (5, 30)) and not (y == 48 and x in (5, 6, 30)): KG[y][x] = 'yard'
+
+# --- 키 큰 풀·억새: 둥근 잡음 덩이(직사각 도장 금지). 구역마다 짙기가 다르다.
+for y in range(23, 95):
+    for x in range(0, MW):
+        if KG[y][x] is None:
+            v = 0.62 * vnoise(x, y, 31, 8.0) + 0.38 * vnoise(x, y, 32, 3.5)
+            if v > 0.585: KG[y][x] = 'tall'
+TALLC0 = {(x, y) for y in range(MH) for x in range(MW) if KG[y][x] == 'tall'}
+for (x, y) in TALLC0 - smooth(TALLC0, 1): KG[y][x] = None
 
 
-def trail(points, kind='trail', seed=0, smooth=False):
-    """웨이포인트를 4방향으로 잇는 1칸 폭 길. 한 번에 2~5칸씩 꺾어 가며 간다. smooth=True 면 한 구간을 한 번만 꺾는다(곧은 길: 사다리·계단·ㄷ자 금지)."""
+def curve(points, seed=0, width=2, kind='trail', wob=0.0):
+    """웨이포인트를 부드러운 곡선(Catmull-Rom)으로 잇고 width×width 붓으로 칠한다. 4방향 계단은 폭 때문에 둥글게 읽힌다."""
     rg = random.Random(seed)
+    pts = [(float(x), float(y)) for (x, y) in points]
+    pts = [pts[0]] + pts + [pts[-1]]
     cells = []
-    x, y = points[0]
-    for (tx, ty) in points[1:]:
-        if smooth:
-            while x != tx:
-                x += 1 if tx > x else -1; cells.append((x, y))
-            while y != ty:
-                y += 1 if ty > y else -1; cells.append((x, y))
-            continue
-        while (x, y) != (tx, ty):
-            dx, dy = tx - x, ty - y
-            horiz = (rg.random() < (abs(dx) / float(abs(dx) + abs(dy)))) if (dx and dy) else bool(dx)
-            for _ in range(rg.randint(2, 5)):
-                if horiz and x != tx: x += 1 if tx > x else -1
-                elif y != ty: y += 1 if ty > y else -1
-                elif x != tx: x += 1 if tx > x else -1
-                cells.append((x, y))
-                if (x, y) == (tx, ty): break
-    cells = [points[0]] + cells
+    seen = set()
+    for i in range(1, len(pts) - 2):
+        p0, p1, p2, p3 = pts[i - 1], pts[i], pts[i + 1], pts[i + 2]
+        n = max(4, int(math.hypot(p2[0] - p1[0], p2[1] - p1[1]) * 2))
+        for k in range(n + 1):
+            t = k / float(n)
+            x = 0.5 * ((2 * p1[0]) + (-p0[0] + p2[0]) * t + (2 * p0[0] - 5 * p1[0] + 4 * p2[0] - p3[0]) * t * t + (-p0[0] + 3 * p1[0] - 3 * p2[0] + p3[0]) * t ** 3)
+            y = 0.5 * ((2 * p1[1]) + (-p0[1] + p2[1]) * t + (2 * p0[1] - 5 * p1[1] + 4 * p2[1] - p3[1]) * t * t + (-p0[1] + 3 * p1[1] - 3 * p2[1] + p3[1]) * t ** 3)
+            if wob:
+                x += (vnoise(int(x * 3), int(y * 3), seed + 7, 4.0) - 0.5) * wob
+            cx, cy = int(math.floor(x)), int(math.floor(y))
+            for ox in range(width):
+                for oy in range(width):
+                    c = (cx + ox, cy + oy)
+                    if c not in seen:
+                        seen.add(c); cells.append(c)
     for (cx, cy) in cells:
         if inb(cx, cy) and KG[cy][cx] in (None, 'tall', 'forest'):
             KG[cy][cx] = kind
     return cells
 
 
-def widen(cells, dx, dy):
-    for (x, y) in cells:
-        X, Y = x + dx, y + dy
-        if inb(X, Y) and KG[Y][X] in (None, 'tall', 'forest'):
-            KG[Y][X] = 'trail'
-
-
 TRAILS = {}
-TRAILS['W'] = trail([(41, 20), (35, 20), (35, 27), (34, 38), (32, 45), (31, 46)], seed=3)                  # 어귀 → 바위산 앞마당
-TRAILS['A'] = trail([(31, 47), (47, 47)], seed=4, smooth=True)                                       # 앞마당 → 초원 줄기길(곧은 한 줄)
-TRAILS['S'] = trail([(47, 23), (47, 30), (46, 37), (47, 44), (47, 52), (47, 58), (47, 63)], seed=5)        # 어귀 → 야영지
-TRAILS['S2'] = trail([(48, 78), (48, 86), (47, 91), (47, 95)], seed=6)                                     # 야영지 → 남쪽 출구
-TRAILS['E'] = trail([(54, 20), (62, 20), (62, 24), (70, 24), (72, 30), (76, 34)], seed=7)                  # 어귀 → 숲 쉼터
-TRAILS['F'] = trail([(80, 43), (80, 52), (79, 60), (80, 66), (80, 72)], seed=8)                            # 쉼터 → 늪가
-TRAILS['SW'] = trail([(55, 72), (66, 72), (80, 72), (88, 72), (92, 72), (92, 82)], seed=9)                 # 야영지 → 늪가 → 늪 끝 표지
-TRAILS['R'] = trail([(42, 72), (11, 72)], seed=10, smooth=True)                                        # 야영지 → 무덤터(곧은 한 줄)
-TRAILS['R2'] = trail([(20, 72), (20, 70)], seed=16, smooth=True)                                           # 곁가지 → 폐허 석탑 앞
-TRAILS['G'] = trail([(11, 72), (11, 76)], seed=11, smooth=True)                                            # 무덤터 → 가운데 석비 앞
-TRAILS['P1'] = trail([(47, 31), (37, 31)], seed=12, smooth=True)                                           # 줄기길 → 서쪽 짐승굴(스폰)
-TRAILS['P2'] = trail([(47, 31), (58, 31)], seed=13, smooth=True)                                           # 줄기길 → 동쪽 이정표
-TRAILS['P4'] = trail([(47, 56), (56, 56)], seed=15, smooth=True)                                           # 줄기길 → 동남 이정표
-for k, (dx, dy) in (('S', (1, 0)), ('W', (0, 1)), ('E', (0, 1)), ('S2', (1, 0))):
-    widen(TRAILS[k], dx, dy)
+# 큰 줄기: 성문 마당 → 중앙 초원 → 야영지 → 남쪽 출구. 모든 짐승길은 이 줄기·마당에서 갈라져 목적지(굴·쉼터·야영지·표지·무덤)에서 끝난다.
+TRAILS['S'] = curve([(47, 23), (46, 31), (48, 40), (47, 49), (48, 57), (47, 64)], seed=5, width=2)
+TRAILS['S2'] = curve([(48, 76), (47, 84), (48, 90), (47, 95)], seed=6, width=2)
+TRAILS['W'] = curve([(42, 21), (36, 24), (34, 32), (36, 40), (33, 46)], seed=3, width=2)                      # 어귀 → 바위산 앞마당
+TRAILS['A'] = curve([(30, 48), (36, 52), (42, 51), (47, 50)], seed=4, width=2)                                # 앞마당 → 줄기길(굽이)
+TRAILS['E'] = curve([(53, 20), (61, 22), (68, 27), (73, 33), (77, 36)], seed=7, width=2)                      # 어귀 → 숲 쉼터
+TRAILS['F'] = curve([(80, 43), (79, 52), (81, 60), (80, 67), (81, 72)], seed=8, width=2)                      # 쉼터 → 늪가 길
+TRAILS['SW'] = curve([(56, 72), (66, 73), (76, 72), (86, 73), (91, 77), (92, 82)], seed=9, width=2)           # 야영지 → 늪 북쪽 둑 → 늪 끝 표지
+TRAILS['R'] = curve([(40, 72), (32, 73), (26, 71), (23, 71)], seed=10, width=2)                               # 야영지 → 폐허 참배 마당
+TRAILS['G'] = curve([(16, 73), (12, 74), (9, 75)], seed=11, width=2)                                          # 폐허 → 무덤터 석비
+TRAILS['P1'] = curve([(46, 31), (41, 30), (37, 31)], seed=12, width=2)                                        # 줄기 → 서쪽 짐승굴
+TRAILS['P2'] = curve([(48, 40), (54, 41), (58, 40)], seed=13, width=2)                                        # 줄기 → 동쪽 이정표(언덕 앞)
+TRAILS['P4'] = curve([(48, 57), (53, 58), (57, 56)], seed=15, width=2)                                        # 줄기 → 동남 이정표
 
 
 def fix_pockets():
@@ -188,7 +217,7 @@ def fix_pockets():
     return n
 
 
-PROT = {(37, 31), (58, 31), (56, 56), (20, 70), (11, 76), (92, 82), (47, 95), (47, 0)}
+PROT = {(37, 31), (58, 40), (57, 56), (23, 71), (9, 76), (92, 82), (47, 95), (47, 0), (48, 0), (33, 46), (77, 36), (81, 72), (47, 50)}
 
 
 def prune_spurs():
@@ -226,9 +255,9 @@ def mset(cs, x, y, open_edge=False):
 
 
 def ground_ids():
-    fam = {k: kit.cells_of(k) for k in ('road', 'yard', 'slab', 'trail', 'tall', 'forest', 'bog', 'rock', 'face0', 'face1')}
+    fam = {k: kit.cells_of(k) for k in ('road', 'yard', 'slab', 'trail', 'tall', 'forest', 'bog', 'rock', 'face0', 'face1', 'tface0', 'tface1')}
     dirt = fam['road'] | fam['yard'] | fam['slab'] | fam['trail']
-    mass = fam['rock'] | fam['face0'] | fam['face1']
+    mass = fam['rock'] | fam['face0'] | fam['face1'] | fam['tface0'] | fam['tface1']
     gr = [[0] * MW for _ in range(MH)]
     for y in range(MH):
         for x in range(MW):
@@ -253,16 +282,18 @@ def ground_ids():
                 for bit, (dx, dy) in ((WB.N, (0, -1)), (WB.E, (1, 0)), (WB.S, (0, 1)), (WB.W, (-1, 0)), (WB.NE, (1, -1)), (WB.SE, (1, 1)), (WB.SW, (-1, 1)), (WB.NW, (-1, -1))):
                     if (x + dx, y + dy) in fam['bog']: m8 |= bit
                 gid = GID['fld_bog94'] + WB.index47(m8) + 47 * (hsh(x, y, 29) % 2)
+            elif k == 'cityback':
+                gid = GID['slab'] + (hsh(x, y, 19) % 5)
             elif k == 'rock':
                 m = 0
-                for bit, (dx, dy) in ((1, (0, -1)), (2, (1, 0)), (8, (-1, 0))):
-                    if (x + dx, y + dy) in fam['rock']: m |= bit
-                if (x, y + 1) in mass: m |= 4
-                gid = GID['fld_rock32'] + 16 * (hsh(x, y, 59) % 2) + m
-            elif k in ('face0', 'face1'):
+                for bit, (dx, dy) in ((1, (0, -1)), (2, (1, 0)), (4, (0, 1)), (8, (-1, 0))):
+                    X, Y = x + dx, y + dy
+                    if (X, Y) in mass or (not inb(X, Y) and y < 9): m |= bit       # 지도 위·옆 가장자리(성벽 줄)는 이어진 것으로 본다
+                gid = GID['fld_rock_in8'] + hsh(x, y, 59) % 8 if m == 15 else GID['fld_rock32'] + 16 * (hsh(x, y, 59) % 2) + m
+            elif k in ('face0', 'face1', 'tface0', 'tface1'):
                 same = fam[k]
                 we = (1 if (x - 1, y) in same else 0) | (2 if (x + 1, y) in same else 0)
-                gid = GID[FACEG] + 8 * (hsh(x // 3, y, 61) % 2) + (0 if k == 'face0' else 4) + we
+                gid = GID[FACEG] + 24 * (1 if k.startswith('t') else 0) + 8 * (hsh(x // 3, y, 61) % 3) + (0 if k.endswith('0') else 4) + we
             else:
                 gid = GID['grass8']
             gr[y][x] = gid
@@ -341,9 +372,19 @@ for (nm, mx) in MOUTHS:
             kit.DOORS.append({'x': c[0], 'y': c[1] + 1, 'piece': nm})
             kit.EXITS.append({'to': 'joseon_cave', 'x': c[0], 'y': c[1], 'piece': nm})
             pw(c[0], c[1])
-kit.EXITS.append({'to': 'gungnae_full', 'side': 'N', 'x0': 46, 'x1': 49, 'y': 0})
+kit.EXITS.append({'to': 'gungnae_full', 'side': 'N', 'x0': 47, 'x1': 48, 'y': 0})
 kit.EXITS.append({'to': 'next_field', 'side': 'S', 'x0': 47, 'x1': 48, 'y': 95})
-pw(47, 95); pw(46, 0); pw(49, 0)
+pw(47, 95); pw(47, 0); pw(48, 0)
+
+# --- 북쪽 성벽 + 남문(fort_gate): 성벽 앞면 5줄(y4..8)을 문 양옆으로 지도 끝까지 잇는다. 문길 x47..48 은 문 조각의 통과 칸.
+put('fort_gate', GATE_X, 0, ok=('cityback', 'slab'), vis=False)
+WALLN = ['fort_wall_h', 'fort_wall_h1', 'fort_wall_h2']
+_prev = None
+for x in list(range(0, GATE_X)) + list(range(GATE_X + 10, MW)):
+    k = hsh(x, 8, 71) % 3
+    if k == _prev: k = (k + 1) % 3
+    _prev = k
+    put(WALLN[k], x, 4, ok=('cityback',), vis=False)
 
 # --- 어귀: 장승 한 쌍 + 이정표
 for nm, x, y in (('jangseung_m', 44, 17), ('jangseung_f', 51, 17)):
@@ -380,10 +421,10 @@ def keep_visible(name, x, y, up=3, side=1):
 
 if put('fld_ruin_pagoda', 16, 66, ok=OKG, vis=False): keep_visible('fld_ruin_pagoda', 16, 66, up=4, side=2)
 pw(20, 70)
-for (nm, x, y) in (('fld_tombstone', 11, 77), ('fld_grave_a', 5, 73), ('fld_grave_b', 15, 74), ('fld_grave_a', 5, 79), ('fld_grave_b', 16, 80), ('fld_cairn', 24, 71)):   # 석비를 무덤터 한가운데에 둔다
+for (nm, x, y) in (('fld_tombstone', 9, 77), ('fld_grave_a', 4, 74), ('fld_grave_b', 14, 77), ('fld_grave_a', 4, 80), ('fld_grave_b', 13, 81), ('fld_cairn', 27, 69)):   # 석비를 무덤터 한가운데에 둔다
     if put(nm, x, y, ok=OKG, vis=False): keep_visible(nm, x, y, up=3, side=1)
     else: print('  못 놓음', nm, x, y)
-pw(11, 76)
+pw(9, 76)
 # 줄기길 곁가지 끝의 목적지: 짐승굴(스폰)·이정표
 put('fld_burrow', 34, 31, ok=OKG, vis=False); put('fld_bones_a', 35, 32, ok=OKG, vis=False); pw(37, 31)
 put('fld_signpost', 59, 30, ok=OKG, vis=False); pw(58, 31)
@@ -414,6 +455,11 @@ BUSH = ['bush_a', 'bush_b', 'bush_c', 'bush_d', 'bush_e', 'bush_f', 'bush_l_a', 
 TREEPOS = []        # (이름, x, y) 왼쪽 위
 
 
+def base_of(nm, x, y):
+    cv = kit.objects[nm]
+    return (x + (cv.w // T) / 2.0, y + cv.h // T - 1)
+
+
 def tree_name_ok(nm, x, y):
     if nm.startswith(('bush', 'fld_bush')):
         return True
@@ -423,43 +469,92 @@ def tree_name_ok(nm, x, y):
     return True
 
 
-def near_trunk(nm, x, y, dx=2, dy=2):
-    """이미 놓은 나무 몸통(맨 아래 줄)과 너무 붙지 않게."""
-    w, h = kit.objects[nm].w // T, kit.objects[nm].h // T
+def near_trunk(nm, x, y, dmin=2.4, dvar=1.8):
+    """이미 놓은 나무 밑동과 너무 붙지 않게: 최소 거리가 자리마다 잡음으로 달라(dmin..dmin+dvar) 간격이 고르지 않다."""
+    bx, by = base_of(nm, x, y)
+    need = dmin + dvar * vnoise(int(bx * 2), int(by * 2), 91, 4.0)
     for (n2, x2, y2) in TREEPOS:
         if n2.startswith('bush'): continue
-        h2 = kit.objects[n2].h // T
-        if abs((y + h) - (y2 + h2)) <= dy and abs((x + w / 2.0) - (x2 + kit.objects[n2].w // T / 2.0)) < dx + 1.6:
+        b2x, b2y = base_of(n2, x2, y2)
+        if (b2x - bx) ** 2 + ((b2y - by) * 1.35) ** 2 < need * need:
             return True
     return False
 
 
-def grow(region, names, tries, ok=OKG, conn=True, seed=0, passes=6, dx=2, dy=2):
-    """region 의 칸을 발 자리로 삼아 나무를 심는다. 같은 칸을 이름만 바꿔 passes 번 시도하므로 촘촘한 숲도 나온다."""
+def skewer(nm, x, y):
+    """같은 열(밑동 x ±1)·같은 줄(밑동 y ±1)에 나무가 이미 둘 있으면(꼬치·줄 심기) 새 나무를 거른다. 창 길이 12칸."""
+    bx, by = base_of(nm, x, y)
+    col = row = 0
+    for (n2, x2, y2) in TREEPOS:
+        if n2.startswith('bush'): continue
+        b2x, b2y = base_of(n2, x2, y2)
+        if abs(b2x - bx) <= 1.0 and abs(b2y - by) <= 12: col += 1
+        if abs(b2y - by) <= 1.0 and abs(b2x - bx) <= 12: row += 1
+    return col >= 2 or row >= 2
+
+
+TB = set()          # 나무 밑동 칸(왼쪽 위 + 폭//... audit_line3 와 같은 기준: (x, y+h-1))
+
+
+def tri_line(nm, x, y):
+    """새 나무가 기존 밑동과 등간격 일렬 셋(가로·세로·대각, 간격 2..7)을 이루면 True — audit_line3 와 같은 조건을 심기 전에 막는다."""
+    p = (x, y + kit.objects[nm].h // T - 1)
+    for dx, dy in ((1, 0), (0, 1), (1, 1), (1, -1)):
+        for g in range(2, 8):
+            a, b = (p[0] + dx * g, p[1] + dy * g), (p[0] + 2 * dx * g, p[1] + 2 * dy * g)
+            if a in TB and b in TB: return True
+            a, b = (p[0] - dx * g, p[1] - dy * g), (p[0] - 2 * dx * g, p[1] - 2 * dy * g)
+            if a in TB and b in TB: return True
+            a, b = (p[0] + dx * g, p[1] + dy * g), (p[0] - dx * g, p[1] - dy * g)
+            if a in TB and b in TB: return True
+    return False
+
+
+def bog_close(nm, x, y):
+    return any((X + dx, Y + dy) in BOGNEAR1 for (X, Y, ch) in kit.cells_for(nm, x, y) if ch == 'X' for dx in (-1, 0, 1) for dy in (-1, 0, 1))
+
+
+BOGNEAR1 = {(x + dx, y + dy) for y in range(MH) for x in range(MW) if KG[y][x] == 'bog' for dx in (-1, 0, 1) for dy in (-1, 0, 1)}
+GROUPS = {'z': ZEL, 'p': PIN, 'm': MID}
+
+
+def pick_species(rg, x, y, mix=0.62):
+    v = vnoise(x, y, 93, 10.0)                      # 구역마다 우세 수종이 다르다(섞어 심기 + 덩이)
+    dom = 'z' if v < 0.4 else ('p' if v < 0.72 else 'm')
+    if rg.random() < mix:
+        return rg.choice(GROUPS[dom])
+    return rg.choice(ZEL + PIN + MID)
+
+
+def glade(x, y):
+    """숲 속 빈터(나무를 안 심는 둥근 구석): 그루터기·통나무·꽃·뼈가 곁들이로 앉는다."""
+    return vnoise(x, y, 95, 6.5) < 0.27
+
+
+def plant(region, seed, dmin=2.4, dvar=1.8, tries=20000, ok=OKG, conn=True, use_glade=False, density=1.0, names=None):
     rg = random.Random(seed)
-    base = sorted(region)
+    cand = sorted(region)
+    rg.shuffle(cand)
     n = 0
-    for _p in range(passes):
-        cand = list(base)
-        rg.shuffle(cand)
-        for (cx, cy) in cand[:tries]:
-            nm = rg.choice(names)
-            cv = kit.objects[nm]
-            w, h = cv.w // T, cv.h // T
-            x, y = cx - w // 2, cy - h + 1
-            if not tree_name_ok(nm, x, y) or near_trunk(nm, x, y, dx, dy):
-                continue
-            if put(nm, x, y, ok=ok, conn=conn):
-                TREEPOS.append((nm, x, y)); n += 1
+    for (cx, cy) in cand[:tries]:
+        if density < 1.0 and rg.random() > density: continue
+        if use_glade and glade(cx, cy): continue
+        nm = rg.choice(names) if names else pick_species(rg, cx, cy)
+        cv = kit.objects[nm]
+        w, h = cv.w // T, cv.h // T
+        x, y = cx - w // 2, cy - h + 1
+        if not tree_name_ok(nm, x, y) or near_trunk(nm, x, y, dmin, dvar) or skewer(nm, x, y) or tri_line(nm, x, y) or bog_close(nm, x, y):
+            continue
+        if put(nm, x, y, ok=ok, conn=conn):
+            TREEPOS.append((nm, x, y)); TB.add((x, y + kit.objects[nm].h // T - 1)); n += 1
     return n
 
 
 FOR_BOT = {c for c in FOREST if KG[c[1]][c[0]] == 'forest'}
-n1 = grow({c for c in FOR_BOT if c[1] >= 3}, ZEL + PIN + MID, 9000, seed=1, passes=6, dx=3, dy=2)
-for (nm, x, y) in (('fld_grove_broad', 86, 20), ('fld_grove_pine', 70, 52), ('fld_grove_pine', 88, 28)):
-    if put(nm, x, y, ok=OKG, conn=True): TREEPOS.append((nm, x, y))
-n2 = grow({c for c in FOR_BOT if c[1] >= 3}, MID, 4000, seed=2, dx=3, dy=2)
-print('숲 나무', n1, n2)
+n1 = plant({c for c in FOR_BOT if c[1] >= 10}, seed=1, dmin=2.0, dvar=1.6, use_glade=True)
+for (nm, x, y) in (('fld_grove_broad', 86, 20), ('fld_grove_pine', 72, 54), ('fld_grove_pine', 88, 28)):
+    if put(nm, x, y, ok=OKG, conn=True): TREEPOS.append((nm, x, y)); TB.add((x, y + kit.objects[nm].h // T - 1))
+print('숲 나무', n1)
 if STAGE <= 3:
     stage_png('b'); sys.exit(0)
 
@@ -501,11 +596,11 @@ def scatter(names, region, n, ok=OKG, gap=3, seed=0, conn=True, vis=True, tries=
         if not prop_ok(nm, x, y, gap):
             continue
         tr_like = is_tree(nm) or nm.startswith('small_')
-        if tr_like and not tree_name_ok(nm, x, y):
+        if tr_like and (not tree_name_ok(nm, x, y) or near_trunk(nm, x, y, 3.0, 2.0) or tri_line(nm, x, y) or skewer(nm, x, y) or bog_close(nm, x, y)):
             continue
         if put(nm, x, y, ok=ok, conn=conn, vis=vis):
             PROPPOS.append((nm, x, y)); done += 1
-            if tr_like: TREEPOS.append((nm, x, y))
+            if tr_like: TREEPOS.append((nm, x, y)); TB.add((x, y + h - 1))
     return done
 
 
@@ -533,15 +628,19 @@ LOG['ore'] = scatter(['fld_ore_a', 'fld_ore_b'], RK, 4, ok=('rock',), gap=7, see
 
 # --- 가장자리 나무: 북쪽 띠(어귀 길 둘레는 비운다)·서쪽·남쪽·바위산 북쪽 발치
 ALLT = ZEL + PIN
-north = {(x, y) for y in range(0, 10) for x in range(0, MW) if not (40 <= x <= 56) and KG[y][x] is None}
-foot = {(x, y) for y in range(10, 22) for x in range(0, 41) if KG[y][x] is None}
-westedge = {(x, y) for y in range(46, MH) for x in range(0, 5) if KG[y][x] is None}
-south = {(x, y) for y in range(86, MH) for x in range(0, MW) if KG[y][x] is None}
-LOG['t_north'] = grow(north, ALLT + MID, 6000, seed=31)
-LOG['t_foot'] = grow(foot, ALLT + MID, 2500, seed=32, passes=3)
-LOG['t_west'] = grow(westedge, ALLT, 2500, seed=33)
-LOG['t_south'] = grow(south, ALLT + MID, 4000, seed=34, dx=3, dy=2)
-LOG['t_mid'] = grow({(x, y) for (x, y) in kcells(None, 'tall', x0=26, y0=24, x1=66, y1=60) if (x, y) not in near_trail({(x, y)}, 2)}, ZEL + PIN + MID, 90, seed=35, passes=1)
+fre = lambda x0, y0, x1, y1: {(x, y) for y in range(y0, y1 + 1) for x in range(x0, x1 + 1) if KG[y][x] in (None, 'tall', 'forest')}
+wood = lambda x, y, s, th: vnoise(x, y, s, 8.0) > th                                      # 숲덩이 모양(직선 줄 금지): 잡음이 높은 곳만 숲
+NW = {c for c in fre(0, 9, 40, 25) if wood(c[0], c[1], 96, 0.30)}
+NE = {c for c in fre(56, 9, 72, 24) if wood(c[0], c[1], 97, 0.45)}
+SOUTH = {c for c in fre(0, 85, 95, 95) if wood(c[0], c[1], 98, 0.22)}
+WESTE = {c for c in fre(0, 49, 6, 84) if wood(c[0], c[1], 99, 0.35)}
+SE = {c for c in fre(82, 55, 95, 84) if wood(c[0], c[1], 100, 0.30)}
+LOG['t_nw'] = plant(NW, seed=31, dmin=2.6, dvar=2.0)
+LOG['t_ne'] = plant(NE, seed=32, dmin=3.0, dvar=2.2)
+LOG['t_west'] = plant(WESTE, seed=33, dmin=3.0, dvar=2.2)
+LOG['t_south'] = plant(SOUTH, seed=34, dmin=2.6, dvar=2.0)
+LOG['t_se'] = plant(SE, seed=35, dmin=2.8, dvar=2.0)
+LOG['t_mid'] = plant({(x, y) for (x, y) in kcells(None, 'tall', x0=26, y0=24, x1=66, y1=60) if (x, y) not in near_trail({(x, y)}, 3)}, seed=36, dmin=6.0, dvar=3.0, tries=400)
 
 # --- 초원: 바위·꽃·덤불·뼈·짐승굴
 MEAD = kcells(None, 'tall', x0=24, y0=22, x1=68, y1=62)
@@ -727,7 +826,7 @@ def audit_all():
     # 1) 모든 걸을 칸이 어귀에서 닿는다(끊긴 길·외톨이 땅 없음) + 출구·굴 앞 칸 도달
     iso = FM.audit_unreachable_walk(kit, seen)
     if iso: probs.append('어귀에서 못 닿는 걸을 칸 덩어리 %d개: %s' % (len(iso), iso[:5]))
-    for nm, (x, y) in (('북 출구', (47, 0)), ('남 출구', (47, 95)), ('북 출구 끝', (49, 0))):
+    for nm, (x, y) in (('북 출구', (47, 0)), ('남 출구', (47, 95)), ('북 출구 끝', (48, 0))):
         if (x, y) not in seen: probs.append(nm + ' 못 닿음 %s' % ((x, y),))
     for (x, y, nm) in CAVE_F:
         if (x, y) not in seen: probs.append('굴 입구 앞 칸 못 닿음 %s %s' % (nm, (x, y)))
@@ -763,15 +862,20 @@ def audit_all():
                 for bit, (dx, dy) in ((WB.N, (0, -1)), (WB.E, (1, 0)), (WB.S, (0, 1)), (WB.W, (-1, 0)), (WB.NE, (1, -1)), (WB.SE, (1, 1)), (WB.SW, (-1, 1)), (WB.NW, (-1, -1))):
                     if (x + dx, y + dy) in fam['bog']: m8 |= bit
                 if k % 47 != WB.index47(m8): bad_mask.append(('bog', x, y))
-    # 절벽 이음: 앞면 윗줄 위는 바위, 아랫줄 위는 윗줄, 아랫줄 아래는 바위·앞면이 아니다(벽 두께 정확히 2줄). 바위 아래는 바위나 앞면 윗줄.
+    # 절벽 이음: 앞면 윗줄 위는 바위, 아랫줄 위는 윗줄, 아랫단 앞면(face)은 땅에 서고 윗단 앞면(tface)은 아랫단 윗면(바위)에 선다. 바위 아래는 바위나 앞면 윗줄.
+    fam['tface0'] = kit.cells_of('tface0'); fam['tface1'] = kit.cells_of('tface1')
     for (x, y) in fam['face0']:
         if (x, y - 1) not in fam['rock']: bad_mask.append(('face0 위가 바위 아님', x, y))
         if (x, y + 1) not in fam['face1'] and (x, y + 1) not in CAVEF: bad_mask.append(('face0 아래가 face1 아님', x, y))
     for (x, y) in fam['face1']:
         if (x, y - 1) not in fam['face0']: bad_mask.append(('face1 위가 face0 아님', x, y))
         if (x, y + 1) in fam['rock'] or (x, y + 1) in fam['face0']: bad_mask.append(('face1 아래가 벽·바위', x, y))
+    for (x, y) in fam['tface0']:
+        if (x, y - 1) not in fam['rock'] or (x, y + 1) not in fam['tface1']: bad_mask.append(('tface0 이음', x, y))
+    for (x, y) in fam['tface1']:
+        if (x, y - 1) not in fam['tface0'] or (x, y + 1) not in fam['rock']: bad_mask.append(('tface1 이음(밑이 아랫단 바위여야)', x, y))
     for (x, y) in fam['rock']:
-        if (x, y + 1) not in fam['rock'] and (x, y + 1) not in fam['face0']: bad_mask.append(('바위 아래 앞면 없음', x, y))
+        if (x, y + 1) not in fam['rock'] and (x, y + 1) not in fam['face0'] and (x, y + 1) not in fam['tface0']: bad_mask.append(('바위 아래 앞면 없음', x, y))
     if bad_mask: probs.append('이음 마스크 불일치 %d: %s' % (len(bad_mask), bad_mask[:6]))
     # 6) 사람은 걸을 칸에, 머리 칸도 막힌 몸체가 아니게
     for p in PEOPLE:
