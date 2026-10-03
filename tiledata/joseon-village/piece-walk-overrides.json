@@ -836,6 +836,76 @@
   },
   "in_mul_dongi": {
    "all": "X"
+  },
+  "in_runner_m": {
+   "all": "X"
+  },
+  "in_runner_n": {
+   "all": "X"
+  },
+  "in_byeongpung_royal": {
+   "all": "X"
+  },
+  "in_ibul_folded": {
+   "all": "X"
+  },
+  "in_boryo_2": {
+   "all": "X"
+  },
+  "in_ansuk": {
+   "all": "X"
+  },
+  "in_seoan": {
+   "all": "X"
+  },
+  "in_seoan_2": {
+   "all": "X"
+  },
+  "in_mat_hopi": {
+   "all": "F"
+  },
+  "in_chaekdemi": {
+   "all": "X"
+  },
+  "in_yak_table": {
+   "all": "X"
+  },
+  "in_sokuri_veg": {
+   "all": "X"
+  },
+  "in_sokuri_grain": {
+   "all": "X"
+  },
+  "in_sokuri_fruit": {
+   "all": "X"
+  },
+  "in_sewing": {
+   "all": "X"
+  },
+  "in_dameum": {
+   "all": "X"
+  },
+  "in_hang_sirae": {
+   "all": "X"
+  },
+  "in_hang_gochu": {
+   "all": "X"
+  },
+  "in_hang_meju": {
+   "all": "X"
+  },
+  "in_hang_bagaji": {
+   "all": "X"
+  },
+  "in_mat_dot_2x2": {
+   "all": "F"
+  },
+  "in_ladder_loft": {
+   "grid": [
+    "X",
+    "X",
+    "F"
+   ]
   }
  },
  "terrain": {

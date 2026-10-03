@@ -13,4 +13,7 @@ def objects():
         d.update(_B.objects())
     except ImportError:
         pass
+    import in_extra as _X                      # 보강 기물(일월오봉도 병풍·호피·보료·서안·소쿠리 …), 이름은 위와 겹치지 않는다
+    for k, v in _X.objects().items():
+        d.setdefault(k, v)
     return d

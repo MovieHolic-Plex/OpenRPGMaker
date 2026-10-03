@@ -465,6 +465,25 @@ def chotdae():
     return c
 
 
+def runner(kind='m'):
+    """붉은 비단 길(1×1, 걷는 바닥 장식): 동헌·정전 가운데 길 — 금실 테두리 + 붉은 바탕 바둑 무늬. kind m(몸통)/n(윗 끝 마감)."""
+    c = new(1, 1)
+    for y in range(T):
+        for x in range(2, 14):
+            ee = min(x - 2, 13 - x)
+            if ee < 1:
+                col = Pe[4] if x == 2 else Pe[3]
+            elif ee < 2:
+                col = Rd[2]
+            else:
+                col = Rd[5] if ((x // 3 + (y + (0 if kind == 'm' else 2)) // 3) % 2 == 0) else Rd[4]
+            c.put(x, y, col)
+    if kind == 'n':
+        for x in range(2, 14):
+            c.put(x, 0, Pe[4]); c.put(x, 1, Pe[3])
+    return c
+
+
 def objects():
     d = {
         'in_byeongpung_a': byeongpung('a', 3), 'in_byeongpung_b': byeongpung('b', 3), 'in_byeongpung_c': byeongpung('c', 3),
@@ -478,6 +497,6 @@ def objects():
         'in_suldok': suldok(), 'in_dwiju': dwiju(), 'in_pyeongsang_3': pyeongsang3(),
         'in_bangseok_r': bangseok('r'), 'in_bangseok_b': bangseok('b'), 'in_bangseok_g': bangseok('g'),
         'in_ibul_r': ibul('r'), 'in_ibul_b': ibul('b'), 'in_jipjari_2': jipjari(2), 'in_jipjari_1': jipjari(1),
-        'in_jokja_a': jokja('a'), 'in_jokja_b': jokja('b'), 'in_deungjan': deungjan(), 'in_chotdae': chotdae(),
+        'in_runner_m': runner('m'), 'in_runner_n': runner('n'), 'in_jokja_a': jokja('a'), 'in_jokja_b': jokja('b'), 'in_deungjan': deungjan(), 'in_chotdae': chotdae(),
     }
     return d

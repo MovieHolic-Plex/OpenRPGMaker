@@ -3722,5 +3722,203 @@
    "bench_wood"
   ],
   "interior": true
+ },
+ "in_runner_m": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_runner_n": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_byeongpung_royal": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_ibul_folded": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_boryo_2": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_ansuk": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_seoan": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_seoan_2": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_mat_hopi": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_chaekdemi": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_yak_table": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_sokuri_veg": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_sokuri_grain": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_sokuri_fruit": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_sewing": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_dameum": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_hang_sirae": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_hang_gochu": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_hang_meju": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_hang_bagaji": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_mat_dot_2x2": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_ladder_loft": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
  }
 }

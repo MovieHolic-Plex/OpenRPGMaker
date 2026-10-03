@@ -14,14 +14,14 @@ TERRAIN['in_ceil47'] = {'kind': 'blob47', 'name': '조선 실내 천장 (기와 
                         'connect': ['in_ceil47'], 'edgeConnects': True}
 
 F_ALL = ('in_door_sill', 'in_exit_door', 'in_exit_door2', 'in_stairs_down', 'in_dais_steps', 'in_jipjari_1', 'in_jipjari_2',
-         'in_bangseok_r', 'in_bangseok_b', 'in_bangseok_g')
+         'in_bangseok_r', 'in_bangseok_b', 'in_bangseok_g', 'in_mat_hopi', 'in_mat_dot_2x2')
 GRIDS = {
     'in_stairs_wood_3': ['XXX', 'FFF', 'FFF'], 'in_stairs_stone_3': ['XXX', 'FFF', 'FFF'], 'in_stairs_wood_2': ['XX', 'FF', 'FF'],
-    'in_pillar': ['C', 'X'], 'in_pillar_3': ['C', 'C', 'X'],
+    'in_pillar': ['C', 'X'], 'in_pillar_3': ['C', 'C', 'X'], 'in_ladder_loft': ['X', 'X', 'F'],
 }
 C_ALL = ('in_ceil_beam_m', 'in_ceil_beam_l', 'in_ceil_beam_r')
 # 벽·천장에 걸리는 조각(벽면 두 줄 위에만 놓는다): 놓는 자리 검사에 쓴다
-HUNG = ('in_jokja_a', 'in_jokja_b', 'in_herb_hang', 'in_tool_rack', 'in_seonban', 'in_seonban_bottles')
+HUNG = ('in_jokja_a', 'in_jokja_b', 'in_herb_hang', 'in_tool_rack', 'in_seonban', 'in_seonban_bottles', 'in_hang_sirae', 'in_hang_gochu', 'in_hang_meju', 'in_hang_bagaji')
 THIN = {'in_betl': '날실이 폭 1px 실이다(베틀의 본질) — 실 한 가닥을 2px 로 그리면 천이 판자로 읽힌다', 'in_mulle': '바퀴 살·테가 폭 1px 가늘다(물레의 본질) — 2px 로 굵히면 바퀴가 접시로 읽힌다'}
 REFS = ['table_mugs', 'fish_barrel', 'bench_wood']
 

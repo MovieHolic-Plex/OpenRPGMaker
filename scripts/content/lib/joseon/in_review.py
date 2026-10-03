@@ -24,6 +24,7 @@ REFS = {
     'in_byeongpung_a': ['wall map', 'tapestry'], 'in_seonban': ['shelf pots', 'bookshelf 2w'], 'in_yakjang': ['apothecary drawers', 'bookshelf 2w'],
     'in_seoga': ['bookshelf 2w', 'bookshelf 3w'], 'in_forge': ['forge'], 'in_morus': ['anvil'], 'in_pulmu': ['forge', 'bread oven'],
     'in_tub': ['quench barrel', 'barrel'], 'in_charcoal': ['coal bin'], 'in_jumak_counter': ['counter 3x1', 'counter 2x1'], 'in_gwan_desk': ['desk 3x1', 'counter 3x1'],
+    'in_byeongpung_royal': ['wall map', 'tapestry'], 'in_mat_hopi': ['fur rug'], 'in_boryo_2': ['runner'], 'in_ansuk': ['stool'], 'in_seoan': ['desk 1x1'], 'in_seoan_2': ['desk 2x1'], 'in_chaekdemi': ['table:book+scroll'], 'in_yak_table': ['work 2x1', 'balance scale'], 'in_sokuri_veg': ['basket:cabbage'], 'in_sewing': ['chest'], 'in_dameum': ['quench barrel'], 'in_ladder_loft': ['stairs up wood'], 'in_ibul_folded': ['bed green'],
     'in_buk': ['barrel', 'piano'], 'in_hyeongtul': ['weapon rack', 'pew'], 'in_tool_rack': ['tool wall', 'weapon rack'],
 }
 FLOORS = {'maru': (0xc6, 0x87, 0x5e), 'ondol': (0xc8, 0x9a, 0x66), 'dirt': (0x81, 0x6a, 0x56), 'stone': (0x92, 0x94, 0x91)}
