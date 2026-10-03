@@ -56,6 +56,7 @@ import type { PlaySceneContext } from "@/player/playSceneTypes";
 
 export function createPlayerStatusMenuController(options: PlayerStatusMenuControllerOptions): PlayerStatusMenuController {
   let selectedCommand: StatusMenuRailId = "items";
+  let initialMenuSelection = true;
   // 접힌 그룹을 통해 들어온 경우의 부모 — 취소하면 레일이 아니라 그룹 목록으로 돌아간다.
   let openGroupId: StatusMenuGroupEntryId | undefined;
   let mode: "main" | "function" = "main";
@@ -81,6 +82,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
   let waitModeEnabled = true;
 
   const reset = (): void => {
+    initialMenuSelection = true;
     const session = options.getActiveScene()?.getSession();
     selectedCommand = session ? listStatusMenuRailIds(store.getCurrent(), session)[0] ?? 'items' : 'items';
     openGroupId = undefined;
@@ -135,6 +137,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     if (!session) return null;
     const available = listStatusMenuRailIds(project, session);
     selectedCommand = available.includes(nextCommand) ? nextCommand : available[0] ?? "items";
+    initialMenuSelection = false;
     selectedDetailActionIndex = detailCursors.get(detailStateKey()) ?? defaultDetailCursor();
     const panel = renderPlayerStatusMenu({
       project,
@@ -360,7 +363,9 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       return;
     }
     mode = "main";
-    selectedCommand = statusMenuRailIdForCommand(selectedCommand, store.getCurrent(), options.getActiveScene()?.getSession());
+    selectedCommand = initialMenuSelection && session
+      ? listStatusMenuRailIds(store.getCurrent(), session)[0] ?? "items"
+      : statusMenuRailIdForCommand(selectedCommand, store.getCurrent(), session);
     openGroupId = undefined;
     resetSubscreenState();
     options.emitMenuJuice("menu-open", renderMenu());
@@ -747,7 +752,9 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       options.emitMenuJuice("menu-back", renderMenu(undefined, selectedCommand));
       return;
     }
-    selectedCommand = statusMenuRailIdForCommand(selectedCommand, store.getCurrent(), options.getActiveScene()?.getSession());
+    selectedCommand = initialMenuSelection && session
+      ? listStatusMenuRailIds(store.getCurrent(), session)[0] ?? "items"
+      : statusMenuRailIdForCommand(selectedCommand, store.getCurrent(), session);
     openGroupId = undefined;
     mode = "main";
     options.emitMenuJuice("menu-back", renderMenu(undefined, selectedCommand));
