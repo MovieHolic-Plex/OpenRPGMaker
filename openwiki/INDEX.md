@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **125쪽 / 4367KB / 약 1,262,202 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **125쪽 / 4370KB / 약 1,262,772 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -821,17 +821,18 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L290` Recovered native emote command (2026-09-05)
 - `L294` 패배·엔딩 저작 (2026-09-22)
 
-### `openwiki/editor-genre-packs.md` — 22KB · 168줄 · ~5,680 토큰
+### `openwiki/editor-genre-packs.md` — 23KB · 176줄 · ~6,072 토큰
 
 - `L5` Ownership
 - `L16` Safe blank-project system-preset flow
 - `L44` Preset AI connection gate and first team build (2026-09-27)
 - `L52` Playable first segment — code builds it, code judges it (2026-09-28)
 - `L70` Preset interview and confirmed design (2026-09-22)
-- `L82` Vocabulary and readiness
-- `L93` Dialog layering and receipt fixtures (2026-09-08)
-- `L106` Validation
-- `L108` Two new-project surfaces, one choice model (2026-09-11)
+  - `L82` Internal execution handoff (2026-10-03)
+- `L90` Vocabulary and readiness
+- `L101` Dialog layering and receipt fixtures (2026-09-08)
+- `L114` Validation
+- `L116` Two new-project surfaces, one choice model (2026-09-11)
 
 ### `openwiki/editor-interior-room-harness.md` — 98KB · 469줄 · ~28,406 토큰 · 통째읽기 잘림
 
@@ -1989,38 +1990,38 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L316` 칩셋 계열 규칙 (2026-09-25 사용자 결정)
 - `L351` 문서의 번호가 새 프로젝트에 있어야 한다 (2026-09-25)
 
-### `openwiki/team-project-host.md` — 40KB · 462줄 · ~12,445 토큰
+### `openwiki/team-project-host.md` — 41KB · 466줄 · ~12,540 토큰
 
 - `L5` 소유와 실행 위치
 - `L22` 실행
-  - `L27` 앱끼리 참여 (2026-09-28)
-  - `L74` HTTP 참여의 지연 원인과 개선 (2026-09-28, Tailscale 실측)
-  - `L102` 동료 저장 반영·부팅·첫 참여 전송량 (2026-09-28 2차)
-- `L158` 기존 mdc-server 시작 명령의 SQLite 연결 (2026-09-18)
-- `L176` 저장·협업 계약
-- `L208` 큰 프로젝트의 HTTP 저장 전송 (2026-09-24)
-  - `L228` 큰 문서 저장 봉투 (2026-09-28)
-  - `L272` 헤드리스 대용량 콘텐츠 설치 (2026-09-25)
-- `L285` 백업과 이전
-- `L295` 검증 근거
-- `L304` 호스트 페이지 CSP (2026-09-22)
-- `L313` 적대적 리뷰 수정 (2026-09-18)
-- `L326` 웹 새 프로젝트 생성 (2026-09-18)
-  - `L344` 새 프로젝트의 공용 기본 자료 보장 (2026-09-24)
-- `L363` 운영 systemd가 Vite preview에 고정된 경우 (2026-09-18)
-- `L383` 맵 편집 권한 가져오기 (2026-09-18)
-- `L398` 운영 AI와 로그인 유지 (2026-09-18)
-- `L411` 내부 웹 기본 접속 (2026-09-18)
-- `L422` Large bridge save requests (2026-09-24)
-- `L428` 웹 편집기 저장 경로 경량화 (2026-09-25)
-  - `L443` 저장 경로의 전체 복제·직렬화 제거 (2026-09-26~27)
+  - `L31` 앱끼리 참여 (2026-09-28)
+  - `L78` HTTP 참여의 지연 원인과 개선 (2026-09-28, Tailscale 실측)
+  - `L106` 동료 저장 반영·부팅·첫 참여 전송량 (2026-09-28 2차)
+- `L162` 기존 mdc-server 시작 명령의 SQLite 연결 (2026-09-18)
+- `L180` 저장·협업 계약
+- `L212` 큰 프로젝트의 HTTP 저장 전송 (2026-09-24)
+  - `L232` 큰 문서 저장 봉투 (2026-09-28)
+  - `L276` 헤드리스 대용량 콘텐츠 설치 (2026-09-25)
+- `L289` 백업과 이전
+- `L299` 검증 근거
+- `L308` 호스트 페이지 CSP (2026-09-22)
+- `L317` 적대적 리뷰 수정 (2026-09-18)
+- `L330` 웹 새 프로젝트 생성 (2026-09-18)
+  - `L348` 새 프로젝트의 공용 기본 자료 보장 (2026-09-24)
+- `L367` 운영 systemd가 Vite preview에 고정된 경우 (2026-09-18)
+- `L387` 맵 편집 권한 가져오기 (2026-09-18)
+- `L402` 운영 AI와 로그인 유지 (2026-09-18)
+- `L415` 내부 웹 기본 접속 (2026-09-18)
+- `L426` Large bridge save requests (2026-09-24)
+- `L432` 웹 편집기 저장 경로 경량화 (2026-09-25)
+  - `L447` 저장 경로의 전체 복제·직렬화 제거 (2026-09-26~27)
 
-### `openwiki/terrain-placement-tools.md` — 5KB · 55줄 · ~1,466 토큰
+### `openwiki/terrain-placement-tools.md` — 5KB · 57줄 · ~1,549 토큰
 
-- `L6` 소유 경로
-- `L15` 동작
-- `L41` 저장·크기 변경
-- `L50` 확인
+- `L8` 소유 경로
+- `L17` 동작
+- `L43` 저장·크기 변경
+- `L52` 확인
 
 ### `openwiki/testing.md` — 213KB · 2013줄 · ~59,223 토큰 · 통째읽기 잘림
 

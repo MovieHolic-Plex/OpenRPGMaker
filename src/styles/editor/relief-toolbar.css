@@ -26,6 +26,11 @@
   pointer-events: none;
 }
 
+/* The persistent host badge occupies the bottom left of the canvas. */
+body:has(.oprn-team-session-bar) .relief-bar-dock {
+  bottom: 64px;
+}
+
 .relief-bar {
   display: flex;
   flex-wrap: wrap;
