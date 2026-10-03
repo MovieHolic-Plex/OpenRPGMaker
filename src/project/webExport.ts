@@ -81,7 +81,7 @@ function exportProjection(project: Project): Project {
       occurrences: Object.fromEntries(Object.entries(project.spatialAuthoring.occurrences).map(([id, occurrence]) =>
         [id, { ...occurrence, snapshot: { ...occurrence.snapshot,
           library: withoutLibraryReferences(occurrence.snapshot.library),
-        } }])),
+        } }])) as typeof project.spatialAuthoring.occurrences,
     };
   }
   const usedUploadedIds = collectUsedUploadedAssetIds(projection);
