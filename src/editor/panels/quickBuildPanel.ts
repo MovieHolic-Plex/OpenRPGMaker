@@ -27,7 +27,8 @@ export function mountQuickBuildPanel(host: HTMLElement): () => void {
     const s = editorState.get(), p = store.getCurrent(), map = s.currentMapId ? p.maps[s.currentMapId] : undefined, tileset = map ? p.tilesets[map.tilesetId] : undefined;
     house.hidden = s.terrainBrush !== "house"; road.hidden = s.terrainBrush !== "road"; drag.checked = s.terrainRoadDrag;
     width.value = String(s.terrainHouseWidth); stories.value = String(s.terrainHouseStories);
-    const styles = tileset ? quickHouseStyles(tileset) : [], catalog = tileset ? quickHouseCatalog(tileset) : [], effectiveKit = s.terrainHouseKitId ?? (!styles.length ? catalog[0]?.id : null);
+    const styles = tileset ? quickHouseStyles(tileset) : [], catalog = tileset ? quickHouseCatalog(tileset) : [];
+    const effectiveKit = catalog.some(k => k.id === s.terrainHouseKitId) ? s.terrainHouseKitId : !styles.length ? catalog[0]?.id : null;
     width.closest("label")!.hidden = stories.closest("label")!.hidden = !!effectiveKit;
     saved.closest("label")!.hidden = !catalog.length;
     if (house.hidden) return;

@@ -24,7 +24,8 @@ const kits = new Map<string, SectionStructureKitDef>();
 /** Public house assembler: actual lower roofs/walls and transparent upper caps, never copied raster art. */
 export function quickHouseKit(tileset: TilesetDef, options: QuickHouseOptions): SectionStructureKitDef | undefined {
   const catalog = quickHouseCatalog(tileset);
-  if (options.kitId) return catalog.find(k => k.id === options.kitId);
+  const selected = options.kitId ? catalog.find(k => k.id === options.kitId) : undefined;
+  if (selected) return selected;
   if (!quickHouseStyles(tileset).length) return catalog[0];
   const style = houseKitForTileset(options.style, tilesetHasHouseParts(tileset)), width = Math.max(5, Math.min(15, Math.round(options.width) | 1));
   const plan = { x: 0, y: 0, width, stories: options.stories, roofBodyRows: 2, kitId: style }, height = rectHouseHeight(plan);
