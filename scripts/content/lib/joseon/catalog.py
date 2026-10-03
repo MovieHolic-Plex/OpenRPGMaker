@@ -229,3 +229,23 @@ def objects():
     d = _objects_before_gnf()
     d.update(_GF.objects())
     return d
+
+
+# --- 조선 실내 후보 B(inb_kit.py·inb_props*.py, 접두 in_b_): 맨 끝에 덧붙인다. 다른 후보(in_*)와 이름이 겹치지 않는다.
+_objects_before_interior_b = objects
+_terrain_before_interior_b = terrain
+
+
+def objects():
+    import inb_kit as _IK, inb_props as _IP, inb_props2 as _IP2, inb_props3 as _IP3
+    d = _objects_before_interior_b()
+    for m in (_IK, _IP, _IP2, _IP3):
+        d.update(m.objects())
+    return d
+
+
+def terrain():
+    import inb_kit as _IK
+    d = _terrain_before_interior_b()
+    d.update(_IK.terrain())
+    return d
