@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { deserialize, serialize } from "@/project/io";
 import { normalizeRelief, resizeRelief } from "@/project/relief/edit";
 import { effectiveHeights, renderRelief } from "@/project/relief/render";
-import { reliefSignature } from "@/project/relief/screen";
+import { reliefRenderOptions, reliefSignature } from "@/project/relief/screen";
 import { compileReliefStyle, RELIEF_STYLES, RELIEF_WALL_FAMILIES, reliefStyleForTileset } from "@/project/relief/styles";
 import { gridFromRelief, type ReliefData } from "@/project/relief/types";
 import { createBlankProject } from "@/project/defaults";
@@ -21,6 +21,20 @@ const wallPixels = (style?: string) => {
 };
 
 describe("relief wall styles", () => {
+  it("renders a bridge underside with the default two-ramp palette and biome accent palettes", () => {
+    for (const style of [undefined, "grass-cliff"]) {
+      const relief: ReliefData = { width: W, height: H, levels: new Array(W * H).fill(0), ramps: new Array(W * H).fill(0), ...(style ? { style } : {}) };
+      for (let y = 2; y < 7; y++) for (let x = 1; x < W - 1; x++) {
+        if (x < 4 || x > 7) relief.levels[y * W + x] = 3;
+        else if (y === 4 || y === 5) { relief.levels[y * W + x] = 3; relief.ramps![y * W + x] = 9; }
+      }
+      const result = renderRelief(effectiveHeights(gridFromRelief(relief)), reliefRenderOptions(relief));
+      const underside = Array.from(result.kind.keys()).filter(i => result.kind[i] === 1 && relief.ramps![result.src[i]!] === 9);
+      expect(underside.length).toBeGreaterThan(0);
+      expect(underside.some(i => result.rgba[i * 4 + 3]! > 0)).toBe(true);
+    }
+  });
+
   it("every family is a literal pixel grid of even rows and legal glyphs", () => {
     for (const [name, art] of Object.entries(RELIEF_WALL_FAMILIES)) {
       for (const g of [art.lip, ...art.body]) {
