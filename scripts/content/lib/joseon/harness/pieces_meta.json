@@ -3127,5 +3127,112 @@
    "tree"
   ],
   "thin_ok": "마른 잔가지"
+ },
+ "fld_cave_a": {
+  "cls": "prop",
+  "refs": [
+   "castle.gatehouse",
+   "castle.bailey",
+   "forum.gate"
+  ],
+  "thin_ok": "굴 둘레 쐐기돌 틈·바위결 세로줄·균열"
+ },
+ "fld_cave_b": {
+  "cls": "prop",
+  "refs": [
+   "castle.gatehouse",
+   "castle.bailey",
+   "forum.gate"
+  ],
+  "thin_ok": "굴 둘레 쐐기돌 틈·바위결 세로줄·균열"
+ },
+ "fld_cave_c": {
+  "cls": "prop",
+  "refs": [
+   "castle.gatehouse",
+   "castle.bailey",
+   "forum.gate"
+  ],
+  "thin_ok": "굴 둘레 쐐기돌 틈·바위결 세로줄·균열"
+ },
+ "cav_stalagmite": {
+  "cls": "prop",
+  "refs": [
+   "fish_barrel",
+   "door_pots",
+   "planter_round"
+  ],
+  "thin_ok": "결정 끝·석순 끝·버섯 기둥"
+ },
+ "cav_rock_a": {
+  "cls": "prop",
+  "refs": [
+   "fish_barrel",
+   "door_pots",
+   "planter_round"
+  ],
+  "thin_ok": "결정 끝·석순 끝·버섯 기둥"
+ },
+ "cav_rock_b": {
+  "cls": "prop",
+  "refs": [
+   "fish_barrel",
+   "door_pots",
+   "planter_round"
+  ],
+  "thin_ok": "결정 끝·석순 끝·버섯 기둥"
+ },
+ "cav_crystal": {
+  "cls": "prop",
+  "refs": [
+   "fish_barrel",
+   "door_pots",
+   "planter_round"
+  ],
+  "thin_ok": "결정 끝·석순 끝·버섯 기둥"
+ },
+ "cav_mushroom_a": {
+  "cls": "prop",
+  "refs": [
+   "fish_barrel",
+   "door_pots",
+   "planter_round"
+  ],
+  "thin_ok": "결정 끝·석순 끝·버섯 기둥"
+ },
+ "cav_mushroom_b": {
+  "cls": "prop",
+  "refs": [
+   "fish_barrel",
+   "door_pots",
+   "planter_round"
+  ],
+  "thin_ok": "결정 끝·석순 끝·버섯 기둥"
+ },
+ "cav_pillar": {
+  "cls": "prop",
+  "refs": [
+   "column_monument",
+   "statue_sage",
+   "forum.statue"
+  ],
+  "front_only": true
+ },
+ "cav_brazier": {
+  "cls": "prop",
+  "refs": [
+   "lamp_crook",
+   "lamp_double",
+   "fish_barrel"
+  ],
+  "thin_ok": "불꽃 끝·화로 다리"
+ },
+ "cav_chest": {
+  "cls": "prop",
+  "refs": [
+   "crate_apple",
+   "fish_crates",
+   "goods_pile"
+  ]
  }
 }

@@ -493,6 +493,27 @@
     8,
     9
    ]
+  },
+  "fld_cave_a": {
+   "grid": [
+    "XXXXX",
+    "XXXXX",
+    "XXFXX"
+   ]
+  },
+  "fld_cave_b": {
+   "grid": [
+    "XXXX",
+    "XXXX",
+    "XFFX"
+   ]
+  },
+  "fld_cave_c": {
+   "grid": [
+    "XXX",
+    "XXX",
+    "XFX"
+   ]
   }
  },
  "terrain": {

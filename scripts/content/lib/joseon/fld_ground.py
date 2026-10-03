@@ -285,22 +285,32 @@ def face(row, m, v=0, cave=False):
     c = Cv(T, T)
     wc, ec = bool(m & 1), bool(m & 2)
     base = (ST[2], ST[3], ST[4]) if cave else (ST[4], ST[3], ST[5])
+    # 세로 줄무늬 바위결: 16주기로 이어지는 폭 2~5px 기둥, 기둥마다 밝기가 다르고 위아래로 끊겨 어긋난다
+    edges = [0]
+    while edges[-1] < T:
+        edges.append(edges[-1] + 2 + hsh(len(edges), v, 55) % 4)
+    edges[-1] = T
+    band = [0] * T
+    for i in range(len(edges) - 1):
+        off = (hsh(i, v, 56) % 3) - 1
+        for x in range(edges[i], edges[i + 1]):
+            band[x] = off
     for y in range(T):
         for x in range(T):
-            q = 0.5 * rnd(x // 2, y, 890 + v + row * 3) + 0.5 * rnd(x, y, 891 + v + row)
+            q = rnd(x, y // 2 + 3 * row, 890 + v)
             col = base[0]
-            if q < 0.3: col = base[1]
-            elif q > 0.86: col = base[2]
-            # 세로 층리(16주기 가로 줄): 4줄마다 한 단 어두운 켜
-            if (y + 2 * row + v) % 8 == 7: col = ST[2] if not cave else ST[1]
+            if band[x] < 0 or (band[x] == 0 and q < 0.3): col = base[1]
+            elif band[x] > 0 and q > 0.72: col = base[2]
+            elif q > 0.96: col = base[2]
+            if x in edges[1:-1] and rnd(x, y // 3, 57 + v) < 0.7:     # 기둥 사이 어두운 틈(끊겼다 이어진다)
+                col = ST[2] if not cave else ST[1]
             c.put(x, y, col)
-    # 세로 균열: 변형마다 다른 자리, 위에서 아래로 2~7px, 한 칸 어긋나며 이어진다
-    for k in range(3):
-        cx = 2 + (hsh(k, v, 61 + row) % 12)
-        cy = hsh(k, v, 62 + row) % 8
-        ln = 5 + hsh(k, v, 63) % 4
-        for i in range(ln):
-            c.put(cx + (1 if i > ln // 2 else 0), (cy + i) % T, ST[1] if not cave else ST[0])
+    # 비스듬한 균열(2px 사선) 한두 개
+    for k in range(2):
+        cx = 2 + hsh(k, v, 61 + row) % 11
+        cy = hsh(k, v, 62 + row) % 9
+        for i in range(5):
+            c.put(cx + i // 2, (cy + i) % T, ST[1] if not cave else ST[0])
     if row == 0:
         for x in range(T):
             c.put(x, 0, ST[6] if not cave else ST[4]); c.put(x, 1, ST[5] if not cave else ST[3])
