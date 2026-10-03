@@ -510,7 +510,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   if (openingProduction.requested) systemPrompt.push(OPENING_PRODUCTION_PROMPT);
   if (modernTilesetPolicy) systemPrompt.push(modernTilesetPolicyPrompt(modernTilesetPolicy));
   if (allowedDefinitions.some(tool => tool.name === "find_tools")) {
-    systemPrompt.push(buildToolCapabilityIndex(allowedDefinitions));
+    const openingSupport = new Set(['find_tools', 'get_project_summary', 'get_database_records', 'get_event', 'find_events', 'list_resources', 'recommend_bgm', 'read_project_wiki']);
+    systemPrompt.push(buildToolCapabilityIndex(openingProduction.requested ? allowedDefinitions.filter(t => /opening|animatic/.test(t.name) || openingSupport.has(t.name)) : allowedDefinitions));
   }
   // 읽기 전용은 툴 목록으로 강제된다(options.readOnlyTools). 이 한 줄은 모델이 "왜 답만 하는지" 알게 한다 —
   // 이유를 모르면 쓰기를 시도하며 턴을 태운다.

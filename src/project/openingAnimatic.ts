@@ -18,6 +18,7 @@ export type AnimaticLayer = {
   space?: 'world' | 'screen'; parallax?: number;
   blend?: 'source-over' | 'lighter' | 'screen' | 'multiply';
   keys?: AnimaticTracks;
+  sampling?: 'nearest' | 'linear';
   crop?: { x: number; y: number; width: number; height: number };
   sheet?: { frameWidth: number; frameHeight: number; columns: number; count: number; fps: number; loop?: boolean };
   typography?: { fontSize?: number; weight?: number; align?: 'left' | 'center' | 'right'; typewriterMs?: number };
@@ -81,7 +82,7 @@ export function validateOpeningAnimatic(value: unknown, durationMs: number, path
   const ids = new Set<string>();
   for (const [i, raw] of a.layers.entries()) {
     const p = `${path}.layers[${i}]`, l = object(raw, p);
-    fields(l, ['id', 'kind', 'role', 'resourceId', 'text', 'color', 'shape', 'x', 'y', 'width', 'height', 'anchorX', 'anchorY', 'scaleX', 'scaleY', 'rotation', 'opacity', 'startMs', 'endMs', 'space', 'parallax', 'blend', 'keys', 'crop', 'sheet', 'typography', 'particles'], p);
+    fields(l, ['id', 'kind', 'role', 'resourceId', 'text', 'color', 'shape', 'x', 'y', 'width', 'height', 'anchorX', 'anchorY', 'scaleX', 'scaleY', 'rotation', 'opacity', 'startMs', 'endMs', 'space', 'parallax', 'blend', 'keys', 'sampling', 'crop', 'sheet', 'typography', 'particles'], p);
     id(l.id, p + '.id'); if (ids.has(String(l.id))) throw Error(p + ': duplicate layer id'); ids.add(String(l.id));
     option(l.kind, ['image', 'text', 'shape', 'particles'], p + '.kind'); if (!l.kind) throw Error(p + ': kind required');
     option(l.role, ['background', 'actor', 'foreground', 'prop', 'effect', 'credit'], p + '.role');
@@ -96,8 +97,8 @@ export function validateOpeningAnimatic(value: unknown, durationMs: number, path
     if (end <= start) throw Error(p + ': endMs must exceed startMs');
     option(l.space, ['world', 'screen'], p + '.space'); option(l.blend, ['source-over', 'lighter', 'screen', 'multiply'], p + '.blend'); color(l.color, p + '.color');
     validateAnimaticTracks(l.keys, ANIMATIC_PROPERTIES, durationMs, p + '.keys');
-    if (l.kind === 'image') id(l.resourceId, p + '.resourceId');
-    else if (l.resourceId !== undefined || l.crop !== undefined || l.sheet !== undefined) throw Error(p + ': image fields on nonimage layer');
+    if (l.kind === 'image') { id(l.resourceId, p + '.resourceId'); option(l.sampling, ['nearest', 'linear'], p + '.sampling'); }
+    else if (l.resourceId !== undefined || l.sampling !== undefined || l.crop !== undefined || l.sheet !== undefined) throw Error(p + ': image fields on nonimage layer');
     if (l.kind === 'text') { if (typeof l.text !== 'string' || l.text.length > 4000) throw Error(p + ': text length must be0..4000'); }
     else if (l.text !== undefined || l.typography !== undefined) throw Error(p + ': typography on nontext layer');
     if (l.kind === 'shape') option(l.shape, ['rect', 'ellipse', 'line'], p + '.shape');

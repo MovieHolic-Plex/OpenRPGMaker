@@ -728,6 +728,8 @@ export interface Project {
     terms: Terms;
     publication?: import("../publication").Publication;
     /** 부팅 정규화를 마친 «빌드·공용 판본» 짝. 짝이 맞으면 다음 로드가 정규화기를 건너뛴다(bootNormalization.ts). */
+    /** Full timelines preserved through older host schema validators. */
+    oprnCinematicTimelines?: import("../cinematicWire").CinematicWireCapsule;
     bootNormalization?: { v: number; lib: string };
   };
   assets: AssetSet;

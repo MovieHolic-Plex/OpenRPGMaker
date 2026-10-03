@@ -34,7 +34,7 @@ export const OPENING_ANIMATIC_TOOLS: readonly ToolDefinition[] = [
     layer: { required: 'id,kind,x,y,width,height', kinds: 'image/text/shape/particles', order: 'array back-to-front',
       optional: 'role(background/actor/foreground/prop/effect/credit), resourceId(image), text(text), color, shape(rect/ellipse/line), anchorX/Y, scaleX/Y(negative mirrors), rotation,opacity,startMs,endMs,space(world/screen),parallax(0..2),blend(source-over/lighter/screen/multiply)',
       keys: '{x/y/scaleX/scaleY/rotation/opacity/frame:[{atMs,value,ease?}]}',
-      crop: '{x,y,width,height} source pixels', sheet: '{frameWidth,frameHeight,columns,count,fps,loop?}; frame keys select poses; crop and sheet exclusive',
+      sampling: 'nearest/linear; sheets default nearest, other images default linear', crop: '{x,y,width,height} source pixels', sheet: '{frameWidth,frameHeight,columns,count,fps,loop?}; frame keys select poses; crop and sheet exclusive',
       typography: '{fontSize?,weight?,align:left/center/right,typewriterMs?}', particles: '{preset:rain/snow/sparks/dust/stars,count,seed,speed?,size?}' },
     composition: 'width,height,layers; background?,letterbox(0..0.25)?, camera?, transition?, audioCues?',
     camera: '{x?,y?,zoom?,rotation?,keys:{x/y/zoom/rotation:[{atMs,value,ease?}]},shake:{atMs,durationMs,amplitude,frequency?,seed?}}',
@@ -48,12 +48,23 @@ export const OPENING_ANIMATIC_TOOLS: readonly ToolDefinition[] = [
   } })),
   definition('get_opening_references', '조사한 게임/영상·연출기법·도구 대응표. query 또는 id.', 'read', schema({ query: str, id: str }, []), (_p, args) => {
     const q = String(args.query ?? '').toLowerCase(), rows = references as Record<string, unknown>[];
-    const matches = rows.filter(r => (!args.id || r.id === args.id) && (!q || JSON.stringify(r).toLowerCase().includes(q)));
-    return { summary: `조사 사례 ${matches.length}개. 공식/플레이 관찰/트레일러를 구별합니다.`, data: { cases: matches, exhaustiveAllGames: false, usage: 'Study composition/timing principles; author new assets/story. Source video is a reference, not project media.' } };
+    const matches = rows.filter(r => (!args.id || r.id === args.id) && (!q || JSON.stringify(r).toLowerCase().includes(q))).map(row => {
+      const { toolRequirements, ...facts } = row;
+      return { ...facts, conceptualRequirements: toolRequirements, actualAuthoringTools: [
+        { tool: 'upsert_opening_layer', fields: 'image/text/shape/particles; image.sheet loops supplied frames; frame keys select supplied poses' },
+        { tool: 'animate_opening_layer', fields: 'keys.x/y/scaleX/scaleY/rotation/opacity/frame; repeated movement must be authored as keys and/or duplicated layers' },
+        { tool: 'animate_opening_camera', fields: 'camera.x/y/zoom/rotation/keys/shake' },
+        { tool: 'set_opening_transition', fields: 'cut/fade/wipe-left/wipe-right/iris/flash; entry reveal, not cross-dissolve' },
+        { tool: 'upsert_opening_audio_cue', fields: 'cue.resourceId/atMs/durationMs/volume/fades; whole-sequence BGM uses set_opening' },
+        { tool: 'preview_opening_reference', fields: 'id; inspect actual bundled research frames' },
+        { tool: 'preview_opening_animatic', fields: 'inspect actual authored timeline frames before declaring completion' },
+      ], implementationLimits: 'Conceptual labels such as actor.pose, layer.loopScroll or text.creditsTrack ARE NOT callable tools. No dedicated seamless scrolling layer, skeletal pose invention, 3D rig or synthesized voice. Translate to the actual tools above and state approximations.' };
+    });
+    return { summary: `조사 사례 ${matches.length}개. 개념 요구사항과 실제 등록 도구를 구분합니다.`, data: { cases: matches, exhaustiveAllGames: false, usage: 'Use actualAuthoringTools names when explaining or executing. conceptualRequirements are research labels, not tool names. Source video is a reference, not project media.' } };
   }),
   definition('preview_opening_reference', '조사한 공식 영상의 실제 확인 프레임을 모델에 전달. 게임 소재가 아님.', 'read', schema({ id: str }), (_p, args) => {
     const row = (references as Record<string, unknown>[]).find(r => r.id === args.id);
-    const frames = row?.referenceFrames as { path: string; timeSeconds: number; sourceUrl: string }[] | undefined;
+    const frames = row?.referenceFrames as { publicPath: string; timeSeconds: number; sourceUrl: string }[] | undefined;
     if (!frames?.length) throw new ToolError('이 사례는 실제 확인 프레임이 없습니다. 문헌 확인 범위를 읽으세요.', { code: 'reference-frames-unavailable' });
     return { summary: '연구용 실제 프레임 전달 요청. 프로젝트 리소스가 아닙니다.', data: { id: row!.id, frames: frames.slice(0, 4) } };
   }),

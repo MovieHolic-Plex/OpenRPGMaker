@@ -74,11 +74,12 @@ export function drawAnimaticFrame(canvas: HTMLCanvasElement, a: OpeningAnimatic,
     if (t < (l.startMs ?? 0) || l.endMs !== undefined && t >= l.endMs) continue;
     const at = reduced ? l.startMs ?? 0 : t, sample = (property: keyof NonNullable<AnimaticLayer['keys']>, fallback: number) => sampleAnimaticTrack(l.keys?.[property], at, fallback);
     ctx.save(); try {
-    if (l.space !== 'screen') { const p = l.parallax ?? 1; ctx.translate(a.width / 2, a.height / 2); ctx.rotate(-radians(rotation * p)); ctx.scale(1 + (zoom - 1) * p, 1 + (zoom - 1) * p); ctx.translate(-(a.width / 2 + (cx - a.width / 2) * p), -(a.height / 2 + (cy - a.height / 2) * p)); }
+    if (l.space !== 'screen') { const p = l.parallax ?? 1; ctx.translate(a.width / 2, a.height / 2); ctx.rotate(-radians(rotation * p)); ctx.scale(zoom ** p, zoom ** p); ctx.translate(-(a.width / 2 + (cx - a.width / 2) * p), -(a.height / 2 + (cy - a.height / 2) * p)); }
     ctx.translate(sample('x', l.x), sample('y', l.y)); ctx.rotate(radians(sample('rotation', l.rotation ?? 0))); ctx.scale(sample('scaleX', l.scaleX ?? 1), sample('scaleY', l.scaleY ?? 1));
     ctx.translate(-l.width * (l.anchorX ?? 0), -l.height * (l.anchorY ?? 0));
     ctx.globalAlpha *= sampleAnimaticTrack(l.keys?.opacity, t, l.opacity ?? 1); ctx.globalCompositeOperation = l.blend ?? 'source-over'; ctx.fillStyle = l.color ?? '#ffffff'; ctx.strokeStyle = l.color ?? '#ffffff';
     if (l.kind === 'image') {
+      ctx.imageSmoothingEnabled = l.sampling ? l.sampling === 'linear' : !l.sheet;
       const image = images.get(l.resourceId!); if (!image) throw Error('그림 로딩 누락: ' + l.resourceId);
       let crop = l.crop;
       if (l.sheet) {

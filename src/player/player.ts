@@ -875,7 +875,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     document.addEventListener('pointerdown', input, true);
     detachAttractInput = () => { document.removeEventListener('keydown', input, true); document.removeEventListener('pointerdown', input, true); };
     const begin = (): void => {
-      if (!shellActive || !title.isConnected || titleConfirming || document.hidden || layout.querySelector('[data-testid="main-menu"]')) { reset(); return; }
+      if (!shellActive || !title.isConnected || titleConfirming || document.hidden || title.ownerDocument.querySelector('dialog[open]') || layout.querySelector('[data-testid="main-menu"]')) { reset(); return; }
       detachAttractInput?.(); detachAttractInput = undefined;
       const controller = new AbortController(); openingController = controller;
       // Retain the existing title track when the authored sequence requests that same track.
