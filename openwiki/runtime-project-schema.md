@@ -64,6 +64,9 @@ width/height와 기존 전체 셀 배열 형태는 그대로이며 스키마/릴
 - 의존성 폐쇄: `retroRosterDependencies.ts`는 **새로 추가한 행만** 큐로 따라가며 배우·직업·기술·장비·상태·배틀 애니메이션·속성의 참조를 함께 채운다. 같은 ID의 저자 행은 그대로 둔다. `state_death`는 DB 행을 요구하지 않는 엔진 sentinel이다. 비어 있던 커스텀 DB에서도 보충 후 serialize/deserialize 두 번과 참조 0건을 확인했다(`verify-shots/battle-fix-2026-09-30/rules-probe.json`).
 - 호출 위치: `store.ts` `normalizeCurrentProject` 의 정규화 목록 `["retroRoster", ...]`(팀 프로젝트 쓰기 권한이 있을 때만), 헤드리스 `headless/index.ts` `normalizeHeadlessProject` 의 `ensureBundledBattleAnimations` 바로 뒤.
 - 증거: `verify-shots/retro-editable/d-old-project-classes-*` (로스터를 뺀 프로젝트 → 로드 후 「발키리 #134」·「암흑기사 #135」 가 클래스 목록에 나타남).
+- 2026-10-03 호스트 로드 복구: 농부 로스터·잎날 기술의 `elementId: grass`는 기본 속성 목록에도 있어야 한다.
+  `defaultDatabaseUtilityRecords.ts`는 기존 17개 슬롯 뒤에 grass를 추가한다. 의존성 폐쇄가 빠진 행만 보충하고 같은 ID의 저자 행은 유지한다.
+  누락 시 기존 프로젝트 부팅이 `Bundled retro roster dependency missing: elements.grass`로 중단된다.
 
 ## 스킬 HP 대가·흡수 — 선택 필드 (2026-09-29)
 
