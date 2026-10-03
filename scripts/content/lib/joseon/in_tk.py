@@ -116,6 +116,7 @@ def under_shadow(cv, x0, x1, y, c):
 
 
 def line(cv, x0, y0, x1, y1, c):
+    x0, y0, x1, y1 = int(round(x0)), int(round(y0)), int(round(x1)), int(round(y1))
     dx, dy = abs(x1 - x0), abs(y1 - y0)
     sx = 1 if x0 < x1 else -1
     sy = 1 if y0 < y1 else -1

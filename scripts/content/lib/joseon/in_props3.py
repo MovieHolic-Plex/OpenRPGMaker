@@ -252,7 +252,7 @@ def hoechori():
     cv = Cv(16, 16)
     P5.jar(cv, 8, 15, 10, 4.6, lid=False)
     for k, x in enumerate((5, 7, 9, 11)):
-        line(cv, 8, 6, x + (k - 1.5) * 1.2, 0, WD[5] if k % 2 else WD[3])
+        line(cv, 8, 6, int(x + (k - 1.5) * 1.2), 0, WD[5] if k % 2 else WD[3])
     B.outline(cv)
     return cv
 

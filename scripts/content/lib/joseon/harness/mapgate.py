@@ -25,9 +25,15 @@ if os.environ.get('JS_PROFILE') == 'gungnae_full':
     # 국내성 원작 규모(200×208): 96×96 국내성형과 같은 이유(해자·성벽·궁 포장·큰 흙 마당이 넓고 건물은 듬성듬성한 대형 경관, 조사 §⑧)에
     # 더해, 원작 지도는 숲·논밭·정원이 넓다 — 맨 잔디 창은 96×96 과 같은 0.25 로 두되, 물체 피복은 건물이 듬성하므로 0.22 까지 허용한다.
     LAWN_MAX, TREE_MIN, OBJ_MIN = 0.25, 0.07, 0.22
+if os.environ.get('JS_PROFILE') == 'interior':
+    # 조선 실내(민가·상점·관아 방 맵): 맨 잔디·수관·건물 밀도·층 깊이는 실외 지표라 실내에는 잴 대상이 없다 — 0 으로 둔다
+    # (통과시키려고 푸는 것이 아니다). 실내의 합격선은 아래 check_interior 의 I1~I6 이다.
+    LAWN_MAX, TREE_MIN, OBJ_MIN, DEPTH_MIN = 1.0, 0.0, 0.0, 0
 TREE_KINDS = ('zelkova', 'pine', 'persimmon', 'willow', 'bamboo', 'small', 'bush')
 BUILDINGS = ('giwa', 'thatch', 'gate', 'pavilion', 'gwanah', 'nugak', 'fort')
 BLD_MIN, HEIGHTS_MIN = 0.0060, 3        # 0.0072 → 0.0060: 20채 마을 데모(64×56)는 논·연못·밭이 넓다
+if os.environ.get('JS_PROFILE') == 'interior':
+    BLD_MIN, HEIGHTS_MIN = 0.0, 0         # 실내: 건물 몸체·나무 키는 없다(위 사유)
 _GN = os.environ.get('JS_PROFILE') in ('gungnae', 'gungnae_full')
 if _GN:
     # 국내성형: 새 조각 이름(gn_·palace_·tower_·gungnae_)도 건물로 센다. 담·문·소품은 세지 않는다(정규식은 건물 몸체 조각만).
@@ -83,3 +89,20 @@ def check(placed, direct, objlayer, T=16):
     if depth < DEPTH_MIN:
         fails.append(f"M5 겹침 {depth} < {DEPTH_MIN} — 물체가 평면에 흩어져 있다")
     return fails, rep
+
+
+# ---- 조선 실내 합격선(JS_PROFILE=interior 의 방 맵). interior_checks.analyze() 가 만든 보고(rep)를 판정한다.
+INT_BARE_RUN = 10          # I5 맨바닥(물체가 하나도 안 덮은 걷는 칸)이 가로·세로로 이만큼 이어지면 FAIL — 「공간이 남으면 방이 너무 크다」
+INT_TRIPLE = 3             # I3 같은 기물이 이 개수 이상 한 줄(가로 또는 세로, 칸 간격 ≤1)이면 FAIL
+INT_DOOR_CLEAR = 2         # I2 출입구 위 칸부터 이만큼은 비워 둔다(기물이 입구를 막지 않는다)
+
+
+def check_interior(rep):
+    """rep: interior_checks.analyze 의 결과. 반환 (fails, 요약 보고)."""
+    fails = []
+    for key, label in (('exit_unreached', 'I1 출입구 앞 칸에서 닿지 못하는 걷는 칸'), ('use_unreached', 'I2 접근 칸이 없는/막힌 기물'),
+                       ('door_blocked', 'I2 출입구 앞이 기물에 막힘'), ('triples', f'I3 같은 기물 {INT_TRIPLE}개 일렬'),
+                       ('wall_rule', 'I4 천장 밑 벽·벽 가구 규칙'), ('overlap', 'I4 기물 겹침'), ('bare_runs', f'I5 맨바닥 {INT_BARE_RUN}칸 이상 연속')):
+        if rep.get(key):
+            fails.append(f"{label}: {rep[key][:6]}" + (f" 외 {len(rep[key]) - 6}" if len(rep[key]) > 6 else ''))
+    return fails, {k: (len(v) if isinstance(v, list) else v) for k, v in rep.items()}

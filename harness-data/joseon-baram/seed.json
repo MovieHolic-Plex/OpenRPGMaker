@@ -123,7 +123,8 @@
    "default": { "lawnMax": 0.2, "treeMin": 0.08, "objMin": 0.3, "depthMin": 6, "bldMin": 0.006, "heightsMin": 3 },
    "village20": { "lawnMax": 0.33, "treeMin": 0.06, "objMin": 0.22, "depthMin": 6, "bldMin": 0.006, "heightsMin": 3 },
    "gungnae": { "lawnMax": 0.25, "treeMin": 0.07, "objMin": 0.3, "depthMin": 6, "bldMin": 0.004, "heightsMin": 3 },
-   "gungnae_full": { "lawnMax": 0.25, "treeMin": 0.07, "objMin": 0.22, "depthMin": 6, "bldMin": 0.0007, "heightsMin": 3 }
+   "gungnae_full": { "lawnMax": 0.25, "treeMin": 0.07, "objMin": 0.22, "depthMin": 6, "bldMin": 0.0007, "heightsMin": 3 },
+   "interior": { "lawnMax": 1.0, "treeMin": 0.0, "objMin": 0.0, "depthMin": 0, "bldMin": 0.0, "heightsMin": 0 }
   }
  },
  "reviewZones": {
