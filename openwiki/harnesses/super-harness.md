@@ -16,11 +16,36 @@
 - 요청 문장에 카드 별칭이 있으면(제외 구절이 없으면) 의도 노트 **맨 앞**에 카드가 붙는다 — `executionRoute.buildPiIntentNote`.
 - 카드 `skipLayoutQuality: true` 면 배치 품질 수리 턴을 건너뛴다 — `scripts/lib/piAgentRuntime.ts`(브라우저 워커도 같은 함수).
 - 재료는 `as: "tile" | "event"` 로 나뉜다. 동작하는 것(상자·함정·세이브·스위치·문)은 이벤트 도구로.
+- 예제는 조수 노트에 호출을 싣지 않는다. 조수는 `build_concept_example({card, variant, example, newMapId?, name?})`
+  (`src/editor/tools/conceptExampleTool.ts`) 한 번으로 검수된 예제를 통째로 짓는다 — 예제의 맵 id 가 겹치면 `_2`… 로 바꾼다.
+  구운 카드의 호출은 `src/assets/conceptCardExamples/<카드 id>.json`(`"변형/예제": calls`)에 따로 두고 도구 `prepare` 가 지연 로드한다
+  (80×80 미궁 평면만 6.7천 자 — 첫 번들·노트에 실을 수 없다). 카드가 붙은 턴에만 `plainTurn` 이 이 도구를 도구 목록에 더한다.
+- 예제는 자기 맵만 만든다(`map_blank_start` 등 기존 맵을 가리키면 `node/example.mts` 가 떨어뜨린다).
 - 시험용: `qa:game gen --text "<한 줄>" --concept-card <card.json>` 이 굽기 전 카드를 그 실행에만 얹는다(`overrideConceptCards`).
+
+## 격언 세 개 — 숫자로 막는다 (2026-10-03 사용자)
+
+작업자·검수자는 `prompts/space-design.md` 를 같이 받는다(친밀도 기울기·space syntax 깊이·구역 먼저, Dormans 임무→공간 그래프·Unexplored 순환 생성).
+`node/example.mts` 가 맵마다 `space`(`node/lib.mts spaceStats`)를 재고 막는다:
+
+1. **빈 공간이 많으면 그 맵은 너무 넓은 것이다** — 외딴 바닥(곁 8칸에 벽·가구·이벤트 없음) ≤ 30%(야외 35), 빈 정사각형 한 변 ≤ 6(야외 8).
+   기준 맞추기 실측: 사용자가 「너무 넓다」고 한 주막 50.6%·빈 사각 6, 80×80 미궁 23%·3.
+2. **방은 ㅁ자 하나가 아니다** — 바닥 80칸 이상에서 오목 모서리 ≤ 2 이고 꽉 찬 정도 ≥ 0.9 면 반려. `layout:"dungeon"` 은 고리 ≥ 1.
+3. **세계관의 재료로만** — 변형 `worldviewId` 는 `seed.json worldviews` 중 하나, 맵 칩셋은 그 `native`. 손 도트 실내 v5 는 중세 판타지 세트라
+   다른 세계관은 바닥·벽(구조)만 빌리고 기물은 못 쓴다. 기물이 없으면 카드에 `needsArt:true` + `gaps.json` 그림 주문서(`item`) → 새 단계 **재료 기다림(art)**.
+   2026-10-03 현재 현대·일본·조선 칩셋은 외관뿐이고 무림·SF 는 칩셋이 없다 — 그쪽 실내 개념은 그림이 들어올 때까지 art 에 쌓인다.
 
 ## 한 바퀴
 
-`discovered → build → review → probe → bake → done` (반려되면 이유를 들고 build, 3번 넘으면 blocked)
+`discovered → build → (waiting | art) → review → probe → bake → done` (반려되면 이유를 들고 build, 3번 넘으면 blocked)
+
+- **시드**: 카드의 `children`(카타콤 → 카타콤 2층)은 적대 검수를 통과하면 하위 개념으로 큐에 들어간다(`parent` 연결, 개념당 4개까지).
+  하위 개념의 작업자는 상위 카드를 먼저 읽고 같은 재료로 잇는다.
+- **선행 개념**: 카드의 `requires`(학교 복도 → 학교)가 재고에 없으면 높은 우선으로 새로 넣고, 이 개념은 `waiting` 에서 기다린다.
+  선행 개념이 구워지면 「그 카드에 맞춰 다시 맞춰라」를 들고 build 로 돌아간다. 서로를 기다리는 쌍은 만들지 않는다.
+- **크기**: 작업 지시(`prompts/build.md`)의 표 — 미궁 80×80, 던전 층 60~100, 큰 건물 50~80, 성도 150×150, 방 20~40. 검수자가 그 크기의 예제가 없으면 떨어뜨린다.
+  `build_hand_interior_room` 평면은 벽 아래 두 줄이 벽면이라 가로 통로는 바닥 3줄·벽 2줄(80×80 미로 실측 5초).
+- **부족분 주문서**: `gaps.json` 의 그림 항목은 `item`(id·ko·w·h·category·desc) 을 달아 그림 하네스가 그대로 받게 한다.
 
 | 단계 | 누가 | 무엇 |
 |---|---|---|

@@ -21,7 +21,7 @@ export const TILESET_REFERENCE_WRITERS: ReadonlySet<string> = new Set([
   "start_interior_room_session", "advance_interior_room_build", "run_interior_room_pipeline", "furnish_interior_space",
   "start_dungeon_room_session", "advance_dungeon_room_build", "run_dungeon_room_pipeline",
   "run_village_pipeline", "start_village_session", "advance_village_build", "run_village_session", "plant_tree_clusters",
-  "arrange_tall_grass", "author_beodeul_town",
+  "arrange_tall_grass", "author_beodeul_town", "build_concept_example",
 ]);
 
 /**

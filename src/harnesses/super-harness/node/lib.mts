@@ -112,3 +112,105 @@ export function renderAnnotated(project: Project, map: GameMap, file: string): v
   fs.mkdirSync(path.dirname(file), { recursive: true });
   fs.writeFileSync(file, PNG.sync.write(png));
 }
+
+// ── 공간 지표 — 「빈 공간이 많으면, 그 맵은 너무 넓은 것이다」 ─────────────────────────
+export interface SpaceStats {
+  /** 걷는 바닥 칸(가구 칸 제외). */
+  floor: number;
+  /** 열린 칸 — 사방 2칸 안(5×5)에 벽·가구·이벤트가 하나도 없는 바닥. 통로·가구 곁은 열린 칸이 아니다. */
+  openShare: number;
+  /** 외딴 칸 — 바로 곁 8칸에 벽·가구·이벤트가 하나도 없는 바닥. 사람이 「휑하다」고 느끼는 칸. */
+  lonelyShare: number;
+  /** 가구·벽·이벤트 없는 가장 큰 정사각형 한 변. */
+  emptySquare: number;
+  emptySquareAt?: { x: number; y: number };
+  /** 방 외곽선의 오목 모서리 수(2×2 창에 방 칸이 3개). ㅁ자 하나뿐인 방은 0. */
+  reflexCorners: number;
+  /** 고리 수 — 방 칸에 둘러싸인 벽 덩어리(지도 가장자리에 안 닿음). 돌아가는 길이 몇 개인가. */
+  loops: number;
+  /** 방 칸 / 방 칸을 감싸는 사각형 — 1.0 이면 꽉 찬 직사각형. */
+  rectangularity: number;
+}
+
+export function spaceStats(project: Project, map: GameMap): SpaceStats {
+  const tileset = project.tilesets[map.tilesetId];
+  const { width: w, height: h } = map;
+  const room = new Uint8Array(w * h);   // 바닥으로 깔린 칸(가구가 있어도)
+  const floor = new Uint8Array(w * h);  // 걷는 바닥(가구 없음)
+  const anchor = new Uint8Array(w * h); // 벽·가구·이벤트
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    const i = y * w + x;
+    const { lower, upper, layers } = tileAt(map, x, y);
+    const pass = lower >= 0 ? tileset?.passability[lower] : undefined;
+    const walkable = !!pass && (pass.up || pass.down || pass.left || pass.right);
+    const furniture = upper >= 0 || (layers[1] ?? -1) >= 0 || (layers[3] ?? -1) >= 0;
+    room[i] = walkable ? 1 : 0;
+    floor[i] = walkable && !furniture ? 1 : 0;
+    anchor[i] = !walkable || furniture ? 1 : 0;
+  }
+  for (const e of map.events ?? []) if (e.x >= 0 && e.y >= 0 && e.x < w && e.y < h) { anchor[e.y * w + e.x] = 1; floor[e.y * w + e.x] = 0; }
+  let floorCells = 0, open = 0, lonely = 0;
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    if (!floor[y * w + x]) continue;
+    floorCells++;
+    let close = false;
+    for (let dy = -1; dy <= 1 && !close; dy++) for (let dx = -1; dx <= 1; dx++) {
+      const nx = x + dx, ny = y + dy;
+      if (nx < 0 || ny < 0 || nx >= w || ny >= h || anchor[ny * w + nx]) { close = true; break; }
+    }
+    if (!close) lonely++;
+    let near = false;
+    for (let dy = -2; dy <= 2 && !near; dy++) for (let dx = -2; dx <= 2; dx++) {
+      const nx = x + dx, ny = y + dy;
+      if (nx < 0 || ny < 0 || nx >= w || ny >= h || anchor[ny * w + nx]) { near = true; break; }
+    }
+    if (!near) open++;
+  }
+  let square = 0; let at: { x: number; y: number } | undefined;
+  const dp = new Uint16Array((w + 1) * (h + 1));
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    if (!floor[y * w + x]) continue;
+    const k = (y + 1) * (w + 1) + x + 1;
+    dp[k] = Math.min(dp[k - w - 1]!, dp[k - 1]!, dp[k - w - 2]!) + 1;
+    if (dp[k]! > square) { square = dp[k]!; at = { x: x - square + 1, y: y - square + 1 }; }
+  }
+  let reflex = 0, minX = w, minY = h, maxX = -1, maxY = -1, roomCells = 0;
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    if (room[y * w + x]) { roomCells++; minX = Math.min(minX, x); maxX = Math.max(maxX, x); minY = Math.min(minY, y); maxY = Math.max(maxY, y); }
+    if (x + 1 < w && y + 1 < h) {
+      const n = room[y * w + x]! + room[y * w + x + 1]! + room[(y + 1) * w + x]! + room[(y + 1) * w + x + 1]!;
+      if (n === 3) reflex++;
+    }
+  }
+  // 고리: 방 칸이 아닌 덩어리(8방향) 중 가장자리에 안 닿는 것.
+  const seen = new Uint8Array(w * h);
+  let loops = 0;
+  for (let s = 0; s < w * h; s++) {
+    if (room[s] || seen[s]) continue;
+    let edge = false, size = 0;
+    const stack = [s]; seen[s] = 1;
+    while (stack.length) {
+      const i = stack.pop()!; size++;
+      const x = i % w, y = (i - x) / w;
+      if (x === 0 || y === 0 || x === w - 1 || y === h - 1) edge = true;
+      for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+        const nx = x + dx, ny = y + dy;
+        if (nx < 0 || ny < 0 || nx >= w || ny >= h) continue;
+        const j = ny * w + nx;
+        if (!room[j] && !seen[j]) { seen[j] = 1; stack.push(j); }
+      }
+    }
+    if (!edge && size >= 2) loops++;
+  }
+  const box = maxX >= 0 ? (maxX - minX + 1) * (maxY - minY + 1) : 1;
+  return {
+    floor: floorCells,
+    openShare: floorCells ? Math.round(1000 * open / floorCells) / 10 : 0,
+    lonelyShare: floorCells ? Math.round(1000 * lonely / floorCells) / 10 : 0,
+    emptySquare: square,
+    ...(at ? { emptySquareAt: at } : {}),
+    reflexCorners: reflex,
+    loops,
+    rectangularity: Math.round(100 * roomCells / box) / 100,
+  };
+}
