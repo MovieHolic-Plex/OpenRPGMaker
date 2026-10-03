@@ -4,6 +4,7 @@
 // (`scripts/qa-game/gen.mts`)가 **같은 함수**를 부른다. 문장·상수를 두 곳에 베끼면 헤드리스 결과가
 // 브라우저 결과를 대표하지 못한다 — 여기 하나만 고치면 두 경로가 같이 바뀐다.
 
+import { conceptCardsForText } from "../conceptCards";
 import { packTownTargetFor } from "./packTownRoute";
 import { beodeulTownTargetFor } from "./beodeulTownRoute";
 import type { AutonomyResolution } from "@/ai/autonomyLevels";
@@ -145,6 +146,8 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
       initialToolNames = requestsModernMap(project, text, currentMapId ? [currentMapId] : [])
         ? [...MODERN_MAP_INITIAL_TOOLS]
         : buildSessionRegistryTools({ requestText: text, intent: declared.intent, contextWindow: input.contextWindow }).map(tool => tool.function.name);
+      // 개념 카드 노트가 붙는 요청이면 예제를 짓는 도구를 처음부터 쥐여 준다 — 노트가 이 도구 이름을 부른다.
+      if (conceptCardsForText(text).length && !initialToolNames.includes("build_concept_example")) initialToolNames = [...initialToolNames, "build_concept_example"];
     }
   }
   const team = input.piTeam && !plan.readOnly;

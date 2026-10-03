@@ -9,6 +9,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { buildBrowserSeed, type QaBrief } from "../../../../scripts/qa-game/lib/seed.ts";
 import { runTool } from "../../../editor/tools/index.ts";
+import { exampleMapIds } from "../../../editor/tools/conceptExampleTool.ts";
 import type { ConceptCard } from "../../../ai/conceptCards.ts";
 import { eventCounts, gimmicksWithoutEvents, renderAnnotated } from "./lib.mts";
 
@@ -32,6 +33,8 @@ for (const variant of card.variants ?? []) {
     delete (seed as { gameDesignBrief?: unknown }).gameDesignBrief;
     const ctx = { project: seed } as { project: typeof seed };
     const before = new Set(Object.keys(seed.maps));
+    const external = exampleMapIds(example.calls ?? []).filter((id) => before.has(id));
+    for (const id of external) problems.push(`${variant.id}/${example.id}: 예제가 기존 맵 ${id} 를 가리킨다 — 예제는 자기가 만드는 맵만 쓴다(기존 맵과 잇기는 조수가 한다)`);
     const calls: { name: string; ok: boolean; summary: string }[] = [];
     for (const call of example.calls ?? []) {
       let ok = false, summary = "";
