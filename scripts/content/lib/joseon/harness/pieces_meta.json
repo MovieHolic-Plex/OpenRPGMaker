@@ -2569,5 +2569,139 @@
    "tree"
   ],
   "thin_ok": "대 줄기 폭 2~3px"
+ },
+ "gnf_gate_side_5": {
+  "cls": "prop",
+  "refs": [
+   "castle.gatehouse",
+   "forum.gate",
+   "castle.bailey"
+  ],
+  "passage": {
+   "cols": [
+    0,
+    5
+   ],
+   "rows": [
+    7,
+    11
+   ],
+   "note": "맨 아래 4행이 동서 통로(문설주는 통로 양끝 행에만)"
+  }
+ },
+ "gnf_palace_gate_side_3": {
+  "cls": "prop",
+  "refs": [
+   "castle.gatehouse",
+   "forum.gate",
+   "castle.bailey"
+  ],
+  "passage": {
+   "cols": [
+    0,
+    3
+   ],
+   "rows": [
+    7,
+    11
+   ],
+   "note": "맨 아래 4행이 동서 통로(문설주는 통로 양끝 행에만)"
+  }
+ },
+ "gnf_gate_great_12": {
+  "cls": "prop",
+  "refs": [
+   "castle.gatehouse",
+   "forum.gate",
+   "castle.bailey"
+  ],
+  "passage": {
+   "cols": [
+    4,
+    8
+   ],
+   "rows": [
+    11,
+    13
+   ],
+   "note": "아치 통로 바닥(큰 석판 길) 3칸 높이를 걷는다."
+  }
+ },
+ "gnf_sarip_stone": {
+  "cls": "built",
+  "sym": true,
+  "refs": [
+   "forum.gate",
+   "castle.gatehouse"
+  ],
+  "kit": "gungnae_houses._mud_face/_stone_face(blocks 조립) 한 칸 폭 기둥 2개 + 가는 널 문짝: 열린 폭 정확히 2칸"
+ },
+ "gnf_sarip_mud": {
+  "cls": "built",
+  "sym": true,
+  "refs": [
+   "forum.gate",
+   "castle.gatehouse"
+  ],
+  "kit": "gungnae_houses._mud_face/_stone_face(blocks 조립) 한 칸 폭 기둥 2개 + 가는 널 문짝: 열린 폭 정확히 2칸"
+ },
+ "gnf_bastion_w": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_v",
+   "castle.bailey"
+  ],
+  "thin_ok": "세로 성벽 치 윗면의 성가퀴·걷는 길 띠"
+ },
+ "gnf_bastion_e": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_v",
+   "castle.bailey"
+  ],
+  "thin_ok": "세로 성벽 치 윗면의 성가퀴·걷는 길 띠"
+ },
+ "gnf_bastion_w2": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_v",
+   "castle.bailey"
+  ],
+  "thin_ok": "세로 성벽 치 윗면의 성가퀴·걷는 길 띠"
+ },
+ "gnf_bastion_e2": {
+  "cls": "wall",
+  "refs": [
+   "castle.wall_v",
+   "castle.bailey"
+  ],
+  "thin_ok": "세로 성벽 치 윗면의 성가퀴·걷는 길 띠"
+ },
+ "gnf_cave_dark": {
+  "cls": "prop",
+  "refs": [
+   "rocks",
+   "castle.bailey",
+   "forum.gate"
+  ],
+  "thin_ok": "굴 둘레 쐐기돌 틈·팻말"
+ },
+ "gnf_cave_white": {
+  "cls": "prop",
+  "refs": [
+   "rocks",
+   "castle.bailey",
+   "forum.gate"
+  ],
+  "thin_ok": "굴 둘레 쐐기돌 틈·팻말"
+ },
+ "gnf_cave_moss": {
+  "cls": "prop",
+  "refs": [
+   "rocks",
+   "castle.bailey",
+   "forum.gate"
+  ],
+  "thin_ok": "굴 둘레 쐐기돌 틈·팻말"
  }
 }

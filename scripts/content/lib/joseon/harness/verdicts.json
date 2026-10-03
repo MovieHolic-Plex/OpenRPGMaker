@@ -2302,5 +2302,101 @@
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-03"
+ },
+ "gnf_gate_side_5": {
+  "hash": "9de612e4e91e",
+  "status": "pass",
+  "line": "측면 문루: 지붕 윗면(앞사면)+ 처마 보이고 통로 석판이 훤히 보인다. 기준 gungnae_gate_side_5 와 같은 문법, 통로 안 문설주는 양끝 행뿐",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-03"
+ },
+ "gnf_palace_gate_side_3": {
+  "hash": "4a59be3258ff",
+  "status": "pass",
+  "line": "궁 측면문 3칸: 기와 앞사면+처마+오색 단청 보임, 통로 열림. 기준 palace_gate_side_3 와 같은 문법",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-03"
+ },
+ "gnf_gate_great_12": {
+  "hash": "a9a00199ff69",
+  "status": "pass",
+  "line": "대문루: 아치 안 통로 바닥이 큰 석판 길로 보인다(어둠은 위쪽만). 지붕 윗면·처마 기준 gungnae_gate_great_12 와 같음",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-03"
+ },
+ "gnf_sarip_stone": {
+  "hash": "d862f2dd7112",
+  "status": "pass",
+  "line": "사립문 4칸: 양끝 한 칸 기둥(윗면 덮개 띠 보임)+가는 널 문짝, 열린 폭 정확히 2칸. 기준 gn_sarip_stone 과 같은 문법",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-03"
+ },
+ "gnf_sarip_mud": {
+  "hash": "01725ad2a29d",
+  "status": "pass",
+  "line": "사립문 4칸(흙담): 초가 덮개 띠 윗면 보임, 열린 폭 2칸. 기준 gn_sarip_mud 과 같은 문법",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-03"
+ },
+ "gnf_bastion_w": {
+  "hash": "2fb6aa67ab72",
+  "status": "pass",
+  "line": "세로 성벽 치: 윗면(걷는 길+성가퀴 줄)과 남쪽 앞면(장대석+막돌)이 함께 보임, 기준 gungnae_wall_v 와 같은 문법의 돌출부",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-03"
+ },
+ "gnf_bastion_e": {
+  "hash": "095abd446022",
+  "status": "pass",
+  "line": "세로 성벽 치: 윗면(걷는 길+성가퀴 줄)과 남쪽 앞면(장대석+막돌)이 함께 보임, 기준 gungnae_wall_v 와 같은 문법의 돌출부",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-03"
+ },
+ "gnf_bastion_w2": {
+  "hash": "d0f2bf8613f6",
+  "status": "pass",
+  "line": "세로 성벽 치: 윗면(걷는 길+성가퀴 줄)과 남쪽 앞면(장대석+막돌)이 함께 보임, 기준 gungnae_wall_v 와 같은 문법의 돌출부",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-03"
+ },
+ "gnf_bastion_e2": {
+  "hash": "e403258d8e94",
+  "status": "pass",
+  "line": "세로 성벽 치: 윗면(걷는 길+성가퀴 줄)과 남쪽 앞면(장대석+막돌)이 함께 보임, 기준 gungnae_wall_v 와 같은 문법의 돌출부",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-03"
+ },
+ "gnf_cave_dark": {
+  "hash": "18b3236d991d",
+  "status": "pass",
+  "line": "굴 입구: 둥근 돌무더기 윗면+앞면 쐐기돌, 어두운 아치 구멍 앞에 문턱 흙, 정면 소품이지만 윗면 돌덩이 보임",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-03"
+ },
+ "gnf_cave_white": {
+  "hash": "92d9c68d14d1",
+  "status": "pass",
+  "line": "굴 입구: 둥근 돌무더기 윗면+앞면 쐐기돌, 어두운 아치 구멍 앞에 문턱 흙, 정면 소품이지만 윗면 돌덩이 보임",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-03"
+ },
+ "gnf_cave_moss": {
+  "hash": "0d7485f0a172",
+  "status": "pass",
+  "line": "굴 입구: 둥근 돌무더기 윗면+앞면 쐐기돌, 어두운 아치 구멍 앞에 문턱 흙, 정면 소품이지만 윗면 돌덩이 보임",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-03"
  }
 }
