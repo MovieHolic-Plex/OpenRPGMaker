@@ -25,6 +25,13 @@ REFS = {
     'in_seoga': ['bookshelf 2w', 'bookshelf 3w'], 'in_forge': ['forge'], 'in_morus': ['anvil'], 'in_pulmu': ['forge', 'bread oven'],
     'in_tub': ['quench barrel', 'barrel'], 'in_charcoal': ['coal bin'], 'in_jumak_counter': ['counter 3x1', 'counter 2x1'], 'in_gwan_desk': ['desk 3x1', 'counter 3x1'],
     'in_byeongpung_royal': ['wall map', 'tapestry'], 'in_mat_hopi': ['fur rug'], 'in_boryo_2': ['runner'], 'in_ansuk': ['stool'], 'in_seoan': ['desk 1x1'], 'in_seoan_2': ['desk 2x1'], 'in_chaekdemi': ['table:book+scroll'], 'in_yak_table': ['work 2x1', 'balance scale'], 'in_sokuri_veg': ['basket:cabbage'], 'in_sewing': ['chest'], 'in_dameum': ['quench barrel'], 'in_ladder_loft': ['stairs up wood'], 'in_ibul_folded': ['bed green'],
+    'pal_throne': ['throne', 'stone throne'], 'pal_byeongpung_ilwol': ['tapestry', 'wall map'], 'pal_hyangro': ['brazier', 'cauldron'], 'pal_chotdae_tall': ['candelabra', 'paschal candle'],
+    'pal_deungrong': ['wall sconce', 'hanging lantern'], 'pal_deung_hang': ['hanging lantern'], 'pal_uija': ['armchair', 'chair S'], 'pal_seoan_gwan': ['desk 2x1', 'table:book+scroll'],
+    'pal_munseo_ham': ['royal chest', 'chest'], 'pal_buk_big': ['barrel', 'gear wall'], 'pal_jong': ['bell rope', 'orrery'], 'pal_chimsang': ['canopy bed', 'double bed red'],
+    'pal_jangnong': ['wardrobe', 'cupboard'], 'pal_hwajangdae': ['vanity mirror', 'nightstand'], 'pal_gyeongdae': ['tailor mirror'], 'pal_surasang': ['dining 2x1', 'table:plate+cup'],
+    'pal_yaktang': ['alembic', 'cauldron'], 'pal_seoga_tall': ['bookshelf 2w', 'cabinet:book+bookb+bookg'], 'pal_chaekgap': ['table:book+scroll'], 'pal_gwan_seat': ['desk 2x1', 'stool'],
+    'pal_gungnyeo_jari': ['tea 1x1', 'stool'], 'pal_changgeori': ['weapon rack', 'armor stand'], 'pal_pillar': ['column wood', 'column stone'], 'pal_pillar_2': ['column wood'],
+    'pal_bangseok_red': ['stool'], 'pal_bangseok_blue': ['stool'],
     'in_buk': ['barrel', 'piano'], 'in_hyeongtul': ['weapon rack', 'pew'], 'in_tool_rack': ['tool wall', 'weapon rack'],
 }
 FLOORS = {'maru': (0xc6, 0x87, 0x5e), 'ondol': (0xc8, 0x9a, 0x66), 'dirt': (0x81, 0x6a, 0x56), 'stone': (0x92, 0x94, 0x91)}
@@ -88,8 +95,8 @@ def sheet(objs, names, out, sc=4, floor='maru', cols=4, with_ref=True):
 
 
 if __name__ == '__main__':
-    import interior_room as IR
-    objs = IR.all_objects()
+    import catalog
+    objs = catalog.objects()                       # 실내 키트(in_) + 궁 내부(pal_) 전부
     out = sys.argv[1]
     cols = 4
     if '--cols' in sys.argv:

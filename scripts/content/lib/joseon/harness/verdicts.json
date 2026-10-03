@@ -3550,5 +3550,477 @@
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-04"
+ },
+ "pal_floor_jeon": {
+  "hash": "688e01ec0150",
+  "status": "pass",
+  "line": "궁 전돌: 16×16 한 칸이 한 장인 회청색 방전 — 이음 1px(한 단 어둡게)와 왼쪽 위 하이라이트로 장이 읽히고 속은 조용하다. 실내 전돌 바닥(8×8 벽돌)보다 큰 장이라 궁 바닥으로 구분된다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_floor_maru": {
+  "hash": "906b5ccee437",
+  "status": "note",
+  "line": "궁 마루: 폭 8px 넓은 널 2장(위 밝음 · 아래 어두움) + 윗줄 옻칠 윤, 널 끝 이음은 한 변형의 아래 널에만 — 벽돌처럼 줄마다 어긋나지 않는다. 그래도 큰 면에 깔면 가로줄이 조금 촘촘하다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_floor_ondol": {
+  "hash": "f4f674af8e69",
+  "status": "pass",
+  "line": "침전 황장판: 황갈 한 톤에 16px 이음 줄과 칸 가운데 작은 마름모 점 — 흙바닥과 갈리는 밝은 장판. 잔 얼룩이 다소 있으나 바닥 대비는 낮다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_floor_dais": {
+  "hash": "19fce47a3d3b",
+  "status": "pass",
+  "line": "월대 윗면·마당 박석: 어좌전 전돌보다 한 단 밝은 화강 장대석, 이음 1px + 왼쪽 위 하이라이트. 단이 바닥보다 높은 판으로 읽힌다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_floor_carpet": {
+  "hash": "c1bf21d4d9b6",
+  "status": "pass",
+  "line": "붉은 카펫 16칸(4방 이웃 자동 이음): 이어지지 않는 변에 바깥 짙은 붉음 · 금실 · 안쪽 붉음 3줄 띠, 사방이 이어진 칸에는 작은 마름모 무늬. 띠로 깔면 끝·모서리가 맞는다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_ceil47": {
+  "hash": "8b62b37dc6a8",
+  "status": "pass",
+  "line": "궁 단청 천장 띠(블롭 47): 기와 덮개 위 아래 변에 6줄 단청(짙은 붉음 · 금 · 8px 마다 녹→적→청 모로 무늬 · 금 점 · 금 선), 위·옆 변은 붉음+금 3줄. 실내 키트와 같은 규칙에 두께만 키웠다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_ceil_front": {
+  "hash": "a1ece64ed9e4",
+  "status": "pass",
+  "line": "궁 바깥 아랫벽: 위 7줄 단청 띠 두른 벽 윗면 + 아래 9줄 바깥 회벽면·돌 굽, l/r 끝에 붉은 모서리 기둥 — 남벽에 윗면과 앞면이 같이 보인다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_wall_bun_m": {
+  "hash": "c595f72a0b86",
+  "status": "pass",
+  "line": "분합문 벽면 1×2: 꽃살 마름모 살창(2px 살)이 창방 밑에서 머름까지, 칸마다 붉은 문설주와 가운데 인방, 밑 머름 널에 금 장식 + 돌 굽. 위 단청 창방 4줄",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_wall_bun_l": {
+  "hash": "a4e1b619990c",
+  "status": "pass",
+  "line": "분합문 벽면 왼쪽 끝: 붉은 기둥 3px(왼쪽 밝고 오른쪽 어둡다) + 초석 — 끝 변형",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_wall_bun_r": {
+  "hash": "884b8d838d9d",
+  "status": "pass",
+  "line": "분합문 벽면 오른쪽 끝: 붉은 기둥 3px(어두운 쪽이 바깥) + 초석",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_wall_bun_lr": {
+  "hash": "1bec7a612fce",
+  "status": "pass",
+  "line": "분합문 벽면 한 칸 짜리: 양끝 붉은 기둥",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_wall_chang_m": {
+  "hash": "726b505603a5",
+  "status": "pass",
+  "line": "창호 벽면: 회벽 가운데 붉은 틀 격자창(살 4px 간격), 창 밑 금 턱, 아래 줄은 한 톤 어두운 회벽 + 돌 굽. 위 단청 창방",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_wall_chang_l": {
+  "hash": "fb519c46c754",
+  "status": "pass",
+  "line": "창호 벽면 왼쪽 끝: 붉은 기둥 3px",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_wall_chang_r": {
+  "hash": "ee6404e90de9",
+  "status": "pass",
+  "line": "창호 벽면 오른쪽 끝: 붉은 기둥 3px",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_wall_chang_lr": {
+  "hash": "b4914d5aa5fe",
+  "status": "pass",
+  "line": "창호 벽면 한 칸: 양끝 붉은 기둥",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_wall_hoe_m": {
+  "hash": "3a693373aa45",
+  "status": "pass",
+  "line": "회벽 벽면: 말끔한 회벽 + 가운데 붉은 인방(금 점) + 돌 굽. 어좌 뒤 큰 벽",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_wall_hoe_l": {
+  "hash": "3804a245f6ac",
+  "status": "pass",
+  "line": "회벽 벽면 왼쪽 끝: 붉은 기둥 3px",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_wall_hoe_r": {
+  "hash": "e29b84444d35",
+  "status": "pass",
+  "line": "회벽 벽면 오른쪽 끝: 붉은 기둥 3px",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_wall_hoe_lr": {
+  "hash": "76a44d8f8f3e",
+  "status": "pass",
+  "line": "회벽 벽면 한 칸: 양끝 붉은 기둥",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_wall_hoe_doorl": {
+  "hash": "7c70aa9cc120",
+  "status": "pass",
+  "line": "궁 문짝 왼짝: 붉은 옻칠 널문, 금 못 2열×4, 오른쪽 가장자리 금 문고리. 위 단청 창방과 돌 굽은 벽면과 같다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_wall_hoe_doorr": {
+  "hash": "510f01d57e21",
+  "status": "pass",
+  "line": "궁 문짝 오른짝: 왼쪽 가장자리 금 문고리 — 왼짝과 한 쌍(두 칸 폭 여닫이)",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_pillar": {
+  "hash": "029b639eaac8",
+  "status": "pass",
+  "line": "굵은 붉은 기둥 1×3: 위 창방(단청) + 녹청 두공, 몸통 10px(왼쪽 밝고 오른쪽 어둡다) + 금 띠, 밑 둥근 주춧돌. 위 두 칸은 사람 위에 그려지고 밑 한 칸만 막힌다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_pillar_2": {
+  "hash": "3e0385ee1430",
+  "status": "pass",
+  "line": "굵은 붉은 기둥 1×2: 같은 구성, 키만 짧다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_ceil_beam_m": {
+  "hash": "e382cad88875",
+  "status": "pass",
+  "line": "궁 천장 들보: 붉은 옻칠 보 + 녹·청 단청 두 줄, 위 한 줄 밝고 밑에 그늘. 걸어 지난다(C)",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_ceil_beam_l": {
+  "hash": "be88a1ab9fd6",
+  "status": "pass",
+  "line": "궁 들보 왼쪽 끝: 기둥 쪽 마구리가 어둡다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_ceil_beam_r": {
+  "hash": "fedd5da600ab",
+  "status": "pass",
+  "line": "궁 들보 오른쪽 끝: 마구리",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_dais_front_m": {
+  "hash": "8149206a6324",
+  "status": "pass",
+  "line": "월대 앞면: 위 6줄 월대 윗면(밝은 화강 · 앞 모서리 턱) + 아래 9줄 장대석 앞면(이음) + 접지 — 3/4 월대 앞면",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_dais_front_l": {
+  "hash": "026d468b0560",
+  "status": "pass",
+  "line": "월대 앞면 왼쪽 끝: 2px 밝은 모서리 면",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_dais_front_r": {
+  "hash": "5be3fab1fdae",
+  "status": "pass",
+  "line": "월대 앞면 오른쪽 끝: 어두운 모서리 면",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_dais_steps_4": {
+  "hash": "b2fb0d7324c9",
+  "status": "pass",
+  "line": "월대 큰 계단 4칸 폭: 위 5줄 월대 윗면 + 석 디딤 세 단(밝은 윗면 · 어두운 챌) + 양끝 소맷돌. 걷는 칸",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_dais_steps_6": {
+  "hash": "22d0955bba26",
+  "status": "pass",
+  "line": "월대 큰 계단 6칸 폭: 같은 구성, 폭만 넓다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_exit_door": {
+  "hash": "3567ceb1f22f",
+  "status": "pass",
+  "line": "궁 출입구 1칸: 박석 바닥이 돌 문턱(3줄 밝은 윗면)으로 이어지고 밑 네 줄은 바깥 어둠. 밑에 박석 마당이 이어진다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_exit_door2": {
+  "hash": "06d318960392",
+  "status": "pass",
+  "line": "궁 출입구 2칸: 같은 구성",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_exit_door3": {
+  "hash": "107927655217",
+  "status": "pass",
+  "line": "궁 출입구 3칸: 같은 구성",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_exit_door4": {
+  "hash": "600e51eb4204",
+  "status": "pass",
+  "line": "궁 출입구 4칸 폭(정전 문): 같은 구성, 폭 64px",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_throne": {
+  "hash": "2b838ae1de42",
+  "status": "pass",
+  "line": "어좌: 붉은 옻칠 높은 등받이(금테 + 금 원문 + 금 관) · 붉은 팔걸이 · 금 띠 두른 앉는 자리와 앞 널 · 발받침. 정면-위 3/4, v5 왕좌(석좌)와 같은 정면 가구 문법에 궁 색(붉음+금)",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_byeongpung_ilwol": {
+  "hash": "194770e6cfba",
+  "status": "pass",
+  "line": "일월오봉도 병풍 6폭: 청색 바탕 + 붉은 해 + 흰 달 + 가운데가 높은 오봉(녹청) + 양끝 소나무 + 밑 물결, 붉은 틀에 금테. 폭 이음선. v5 태피스트리·벽지도보다 크다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_hyangro": {
+  "hash": "1ae6d45c33da",
+  "status": "pass",
+  "line": "향로: 석대 위 청동 세발 향로(몸통·귀 손잡이·뚜껑 꼭지) + 흰 연기 한 줄기",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_chotdae_tall": {
+  "hash": "81242b92427b",
+  "status": "pass",
+  "line": "큰 촛대: 황동 받침·마디진 기둥·접시 위 굵은 붉은 초와 큰 불꽃 — 어좌 양옆 한 쌍. v5 촛대보다 단순하다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_deungrong": {
+  "hash": "7da9e3bbde7b",
+  "status": "pass",
+  "line": "회랑 등롱: 돌 받침 + 붉은 기둥 위의 육각 붉은 등(밝은 한지 창) + 기와 갓",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_deung_hang": {
+  "hash": "5fd1997faedc",
+  "status": "pass",
+  "line": "매단 등: 쇠사슬 + 붉은 등 + 금 술. 사람 위에 그려진다(C)",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_bangseok_red": {
+  "hash": "0428ae1f7c65",
+  "status": "pass",
+  "line": "붉은 비단 방석: 12×7 두툼한 방석 + 금실 띠 + 가운데 금 점. 걷는 바닥 장식(F)",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_bangseok_blue": {
+  "hash": "0123d9728a3a",
+  "status": "pass",
+  "line": "푸른 비단 방석: 붉은 방석과 색만 다르다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_uija": {
+  "hash": "6b6d0b678b20",
+  "status": "pass",
+  "line": "교의: 높은 등받이(푸른 비단 판 + 금 장식) · 앉는 널 · 팔걸이 — 관리 의자",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_seoan_gwan": {
+  "hash": "e4d22ea86a26",
+  "status": "pass",
+  "line": "관리 서안: 붉은 옻칠 다리 + 윗면 펼친 두루마리·벼루·붓통, 앞 모서리 금 띠 — v5 책상보다 낮고 길다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_munseo_ham": {
+  "hash": "2ed0965f09e7",
+  "status": "pass",
+  "line": "문서함: 붉은 옻칠 궤 + 놋 자물쇠판 + 네 귀 금 + 위에 두루마리 두 통 — v5 왕실 궤와 같은 문법",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_buk_big": {
+  "hash": "cd0a39b2bbab",
+  "status": "pass",
+  "line": "큰 북: 두 기둥 틀에 걸린 붉은 큰 북(가죽 면 + 붉은 테 + 금 징 둘레 + 태극 점) + 받침 널 + 북채",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_jong": {
+  "hash": "94067b1b1043",
+  "status": "pass",
+  "line": "종: 붉은 틀 두 기둥 대들보에 걸린 청동 종(둥근 어깨 · 띠 둘 · 젖꼭지 무늬) + 받침 널",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_chimsang": {
+  "hash": "e56b0e4f0cc4",
+  "status": "pass",
+  "line": "금침 침상: 붉은 옻칠 평상 + 금 띠 + 위 금빛 비단 이불(붉은 능문) + 왼쪽 푸른 베개 둘 — v5 이중 침대(붉은 침구)와 같은 높이·시점",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_jangnong": {
+  "hash": "40b2957bcaa5",
+  "status": "pass",
+  "line": "장롱: 붉은 옻칠 이층 농 — 위 두 짝 문(금 문양 판 + 놋 자물쇠) + 아래 서랍 둘 + 네 귀 금 + 짧은 발. v5 옷장보다 크고 붉다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_hwajangdae": {
+  "hash": "9946dd7add52",
+  "status": "pass",
+  "line": "화장대: 붉은 서랍 상 위 거울걸이 + 둥근 청동 거울 + 연지 합 둘 — v5 화장 거울과 같은 문법",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_gyeongdae": {
+  "hash": "1b21a091ca9a",
+  "status": "pass",
+  "line": "경대: 서랍 달린 작은 목함 위 거울판(은빛) + 금 테",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_surasang": {
+  "hash": "1e825eddf9cc",
+  "status": "pass",
+  "line": "수라상: 붉은 소반 위 사발·접시 여섯과 가운데 밥·국, 놋 반짝임 — v5 식탁 위 접시와 같은 크기감",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_yaktang": {
+  "hash": "27a83da2b993",
+  "status": "pass",
+  "line": "약탕: 숯 화로 위 질그릇 약탕관(뚜껑·주둥이·손잡이) + 불구멍 붉은 숯 + 김",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_seoga_tall": {
+  "hash": "d79e7f4b5e4d",
+  "status": "pass",
+  "line": "서고 서가 2×3: 붉은 갈색 틀 네 칸, 칸마다 색 비단 책갑(청·백·적·녹)이 세로로 — v5 3칸 책장과 같은 시점",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_chaekgap": {
+  "hash": "862204239363",
+  "status": "pass",
+  "line": "책갑 더미: 청·백·적 책갑 세 켜 + 금 매듭 끈",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_gwan_seat": {
+  "hash": "b6fac48b20e5",
+  "status": "pass",
+  "line": "관리 자리: 낮은 붉은 서안(두루마리·벼루) + 오른쪽 푸른 방석 — 좌우 밝기 차는 서안이 왼쪽에 있어 게이트 L 통과",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_gungnyeo_jari": {
+  "hash": "ea5063073269",
+  "status": "pass",
+  "line": "궁녀 자리: 쟁반(찻주전자·찻잔) + 붉은 방석. 걷는 바닥 장식(F)",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "pal_changgeori": {
+  "hash": "284ef5f6a85f",
+  "status": "pass",
+  "line": "호위 창 거치대: 두 단 나무 받침틀에 창 넷(2px 창대, 은빛 창날, 붉은 술) — v5 무기대와 같은 높이",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
  }
 }

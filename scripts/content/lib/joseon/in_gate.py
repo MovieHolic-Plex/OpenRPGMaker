@@ -4,10 +4,10 @@ import sys, os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__))); sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'harness'))
 import gate
 rows, fails, warns, objs = gate.run(skip_a=True)
-ins = [r for r in rows if r[0].startswith('in_')]
+ins = [r for r in rows if r[0].startswith(('in_', 'pal_'))]
 bad = [r for r in ins if not r[2].startswith('ok')]
 for n, c, st, info in (ins if '--all' in sys.argv else bad):
     print(f'{n:24s} {c:6s} {st}' + (f'  [{info}]' if info else ''))
 nf = sum(1 for r in ins if r[2].startswith('FAIL'))
 nw = sum(1 for r in ins if r[2].startswith('WARN'))
-print(f'\nin_ 전체 {len(ins)} / FAIL {nf} / WARN {nw} (카탈로그 전체 FAIL {fails})')
+print(f'\n실내(in_·pal_) 전체 {len(ins)} / FAIL {nf} / WARN {nw} (카탈로그 전체 FAIL {fails})')

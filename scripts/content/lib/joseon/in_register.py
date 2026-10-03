@@ -26,6 +26,17 @@ def merge():
     for k, v in in_meta.TERRAIN.items():
         if ov['terrain'].get(k) != v:
             ov['terrain'][k] = v; ch += 1
+    import palace                                     # 궁 내부 키트(pal_) — 같은 방식으로 합친다
+    pmeta, pwalk, pter = palace.meta_and_walk()
+    for k, v in pmeta.items():
+        if pm.get(k) != v:
+            pm[k] = v; ch += 1
+    for k, v in pwalk.items():
+        if ov['pieces'].get(k) != v:
+            ov['pieces'][k] = v; ch += 1
+    for k, v in pter.items():
+        if ov['terrain'].get(k) != v:
+            ov['terrain'][k] = v; ch += 1
     return pm, ov, ch
 
 
