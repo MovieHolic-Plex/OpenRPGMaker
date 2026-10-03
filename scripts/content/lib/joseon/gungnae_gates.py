@@ -610,12 +610,14 @@ def gate_small(bays=6, pass_w=32):
     return c
 
 
-def gate_side(bays=5, rows=8, ramp='teal', seed=3, post=(18, 62), pw=6, roof=(8, 72), wall=None, wall_x=16, plaster=False):
+def gate_side(bays=5, rows=8, ramp='teal', seed=3, post=(18, 62), pw=6, roof=(8, 72), wall=None, wall_x=16, plaster=False, open_passage=False):
     """측면 문루 (동·서문용): 세로 성벽 한 줄을 동서로 가로지르는 열린 문루. 통로(맨 아래 4행)를 기준으로 짠다.
     3/4 시점에서 용마루가 남북(성벽 방향)으로 달리는 맞배 지붕이 통로 바로 위에 얹히고(rows-4 행), 지붕 밑 남쪽 처마 아래 양끝(=벽 몸체 양끝)에 기둥,
     기둥 사이로 통로 바닥(길)이 보인다. 지붕·기둥은 같은 중심선을 쓰고 기둥 바깥 끝 = 성벽 몸체 바깥 끝. 위쪽에는 wall(성벽 한 칸 그림)을 붙여
     지붕 뒤로 성벽이 이어지게 한다. post = (왼쪽 기둥 x, 오른쪽 기둥 바깥 끝 x), pw = 기둥 굵기, roof = 지붕 x 범위.
-    통행: 맨 아래 4행. 지붕 행(위 rows-4)은 막힘."""
+    통행: 맨 아래 4행. 지붕 행(위 rows-4)은 막힘.
+    open_passage=True(국내성 원작 규모 맵 G01): 문설주를 통로의 북쪽 끝(뒤 설주, 지붕 처마에 가려 짧게)과 남쪽 끝(앞 설주) 한 칸에만 세우고
+    그 사이(통로 가운데 두 행)는 석판 길이 훤히 보이게 둔다 — 세로로 4칸 이어진 기둥이 닫힌 문틀·복도로 읽히던 문제."""
     import gungnae_houses as GH
     W, H = bays * T, rows * T
     c = Cv(W, H)
@@ -632,10 +634,11 @@ def gate_side(bays=5, rows=8, ramp='teal', seed=3, post=(18, 62), pw=6, roof=(8,
     GH.gable_band(c, x0, x1, 8, yb, y_e, G, 'tile', 'cap', 'gable', wall=wl, seed=seed)
     Wd = RGB['persimmon'] if plaster else RGB['wood']                    # 궁문 기둥은 주황(정면 소문루와 같은 단청 기둥)
     k0 = (5, 4, 4, 3, 3, 2) if not plaster else (6, 5, 4, 4, 3, 2)
+    BH_BACK0 = 9                                                        # 뒤 설주는 처마 보(BH) 밑에서 시작한다
     PH = 24                                                             # 남쪽 문설주 높이(px). 위쪽 긴 띠는 설주를 잇는 상인방(들보)을 위에서 본 면이지 기둥이 아니다
     yp0 = H - 2 - PH
     for xp in (px0, px1 - pw):
-        for y in range(y_e, yp0):                                       # 상인방: 기둥보다 한 톤 어둡고 가는 면 + 윗모서리 밝은 선
+        for y in range(y_e, (yp0 if not open_passage else y_e)):        # 상인방: 기둥보다 한 톤 어둡고 가는 면 + 윗모서리 밝은 선
             for k in range(pw):
                 kk = min(5, k * 6 // pw)
                 t = max(1, k0[kk] - 1)
@@ -643,6 +646,13 @@ def gate_side(bays=5, rows=8, ramp='teal', seed=3, post=(18, 62), pw=6, roof=(8,
                 c.put(xp + k, y, S[t] if not plaster else Wd[t])
             if y % 6 == 0:
                 c.put(xp + 1, y, S[2] if not plaster else Wd[2])
+        if open_passage:                                                # 뒤 설주: 통로 북쪽 끝 한 칸 높이만(지붕 처마 밑)
+            for y in range(y_e + BH_BACK0, y_e + T - 2):
+                for k in range(pw):
+                    kk = min(5, k * 6 // pw)
+                    c.put(xp + k, y, S[max(1, k0[kk] - 1)] if not plaster else Wd[max(1, k0[kk] - 1)])
+            for k in range(pw + 2):
+                c.put(xp - 1 + k, y_e + T - 3, S[5] if not plaster else Wd[5]); c.put(xp - 1 + k, y_e + T - 2, S[3] if not plaster else Wd[3])
         for y in range(yp0, H - 2):                                     # 문설주(통짜 기둥)
             for k in range(pw):
                 kk = min(5, k * 6 // pw)

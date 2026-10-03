@@ -101,13 +101,23 @@ def inb(x, y):
     return 0 <= x < MW and 0 <= y < MH
 
 
+PALBOX = None      # (x0, y0, x1, y1) 궁 담 사각형 — 궁이 놓인 뒤에는 길·마당 칠하기가 담 안으로 들어오지 못한다(G05)
+
+
 def paint(kind, x0, y0, x1, y1):
-    """x0..x1, y0..y1 (끝 포함) 사각형을 kind 로. 물·다리 칸은 길·석판이 덮지 않는다(다리 홍예 밑이 물이어야 한다)."""
+    """x0..x1, y0..y1 (끝 포함) 사각형을 kind 로. 물·다리 칸은 길·석판이 덮지 않는다(다리 홍예 밑이 물이어야 한다).
+    석판·포장 칸은 흙길·마당·마름모가 덮지 않는다(G03: 대로가 흙 마당에 끊기던 문제)."""
+    dirty = kind in ('road', 'yard', 'diamond')
     for y in range(max(0, y0), min(MH - 1, y1) + 1):
         for x in range(max(0, x0), min(MW - 1, x1) + 1):
-            if KG[y][x] in ('bridge', 'water') and kind not in ('bridge', 'water'):
+            k0 = KG[y][x]
+            if k0 in ('bridge', 'water') and kind not in ('bridge', 'water'):
                 continue
-            if KG[y][x] == 'wall' and kind in ('road', 'yard'):
+            if k0 == 'wall' and kind in ('road', 'yard'):
+                continue
+            if dirty and k0 in ('slab', 'paving'):
+                continue
+            if dirty and PALBOX is not None and PALBOX[0] <= x <= PALBOX[2] and PALBOX[1] <= y <= PALBOX[3]:
                 continue
             KG[y][x] = kind
 
@@ -282,7 +292,7 @@ GAP_Y0, GAP_Y1 = 99, 102       # 측면 통로 행(원작 서·동문 y≈98 →
 IN_X0, IN_X1, IN_Y0, IN_Y1 = XW + 3, XE - 1, YN + 1, YS - 5      # 성 안 칸 범위(13..187, 15..194)
 
 # --- 바깥 흙길 고리(폭 2): 북 y0..1 · 남 y205..206 · 서 x4..5 · 동 x195..196
-paint('road', 0, 0, MW - 1, 1); paint('road', 0, MH - 3, MW - 1, MH - 2)
+paint('road', 4, 0, MW - 4, 1); paint('road', 4, MH - 3, MW - 4, MH - 2)           # 가로 길은 세로 길 바깥으로 나가지 않는다(G34)
 paint('road', 4, 0, 5, MH - 1); paint('road', MW - 5, 0, MW - 4, MH - 1)
 # --- 성벽 밑(막힘)
 paint('wall', XW, YN - 4, XE + 2, YN); paint('wall', XW, YS - 4, XE + 2, YS)
@@ -291,7 +301,7 @@ paint('wall', XW, YN, XW + 2, YS); paint('wall', XE, YN, XE + 2, YS)
 paint('slab', AV0, 2, AV1, YN)
 paint('slab', AV0, YS - 12, AV1, MH - 3)
 # --- 동·서 측면 문루 통로(성벽을 동서로 가로지르는 길, 폭 4)
-paint('road', 0, GAP_Y0, XW - 1, GAP_Y1); paint('road', XE + 3, GAP_Y0, MW - 1, GAP_Y1)
+paint('road', 4, GAP_Y0, XW - 1, GAP_Y1); paint('road', XE + 3, GAP_Y0, MW - 5, GAP_Y1)
 paint('slab', XW, GAP_Y0, XW + 2, GAP_Y1); paint('slab', XE, GAP_Y0, XE + 2, GAP_Y1)
 
 
@@ -347,6 +357,11 @@ wall_ring()
 # ================================================================ 2단계: 해자(원작 윤곽) + 다리
 WATER = set()
 from gungnae_full_layout import WATER_ROWS
+# 라벨이 가린 틈 복구(G07-c): 원작 y160..167 의 x27..31 · y168..170 의 x30..34 — 서남 연못 A(y150..159)와 B(y171..)를 이어 준다.
+for _yo in range(160, 168):
+    WATER_ROWS[_yo] = list(WATER_ROWS.get(_yo, [])) + [(27, 31)]
+for _yo in range(168, 171):
+    WATER_ROWS[_yo] = list(WATER_ROWS.get(_yo, [])) + [(30, 34)]
 for _y0, _runs in WATER_ROWS.items():
     _y = OY(_y0)
     if _y < 22 or _y > 190:
@@ -384,6 +399,9 @@ def w_clean(it=4):
 
 
 w_clean(3)
+# 섬(연못 안 땅)은 다리를 놓기 전에 깎는다 — 나중에 깎으면 다리 아래 물이 지워져 땅 위 다리가 된다(G07-b).
+for (_a, _b, _c, _d) in ((127, 138, 146, 152), (126, 165, 143, 181), (149, 148, 163, 162)):
+    w_cut(_a, OY(_b), _c, OY(_d))
 
 BRIDGES = []   # (종류, 데크 좌상 칸 x, y, 데크 w, h) 기록(통행 검사·그림용)
 
@@ -524,8 +542,10 @@ def place_bridges():
     bridge_v(156, OY(175))                   # 호수를 가로지르는 긴 돌길(도사의 길 · 섬 집)
     bridge_v(99, OY(152), 3)
     # 서·동 큰 운하를 가로지르는 다리(동서)
-    for (xo, yo) in ((26, 30), (26, 99), (26, 131), (54, 95), (111, 136), (165, 100), (165, 123), (34, 182)):
+    for (xo, yo) in ((26, 30), (26, 131), (111, 136), (165, 123), (34, 182)):
         bridge_h(xo, OY(yo))
+    for xo in (26, 54, 165):                 # 서문↔궁↔동문 큰길(y99..102)이 해자를 건너는 다리: 걷는 행이 큰길과 같다(G04)
+        bridge_h(xo, GAP_Y0 - 1)
 
 
 place_bridges()
@@ -545,6 +565,29 @@ for (_k, _x, _y, _w, _h) in BRIDGES:         # 다리 칸은 다리 종류로 �
     else:
         for xx in range(_x, _x + _w):
             KG[_y + 1][xx] = 'bridge'
+
+
+def _apron_cell(x, y):
+    if inb(x, y) and KG[y][x] in (None, 'yard'):
+        KG[y][x] = 'road'
+    if inb(x, y):
+        KEEP.add((x, y))
+
+
+def bridge_aprons():
+    """다리 양끝 착지 앞마당(G06): 데크 폭 전체 × 앞뒤 2칸을 흙길로 깔아 4칸 데크가 1칸 샛길에 닿지 않게 한다."""
+    for (k, x, y, w, h) in BRIDGES:
+        if k == 'v':
+            for yy in (y - 2, y - 1, y + h, y + h + 1):
+                for xx in range(x, x + w):
+                    _apron_cell(xx, yy)
+        elif k == 'h':
+            for xx in (x - 2, x - 1, x + w, x + w + 1):
+                for yy in range(y + 1, y + h - 1):
+                    _apron_cell(xx, yy)
+
+
+bridge_aprons()
 
 
 # ================================================================ 3단계: 중앙 왕궁(담 + 정전 + 전각 + 행각 + 궁문 + 연못 + 소나무)
@@ -621,8 +664,7 @@ def palace():
 
 
 palace()
-
-
+PALBOX = (PX0_, PY0_, PX1_, PY1_)
 
 
 if STAGE <= 3:
@@ -708,16 +750,35 @@ def walkable_free(x, y):
     return inb(x, y) and KG[y][x] not in ('water', 'bridge', 'wall') and (x, y) not in BODY
 
 
-def fits(x, y, w, h, apron=True):
-    """건물 사각형(x, y, w, h)이 물·다리·성벽·다른 건물과 겹치지 않고 문 앞이 걸을 수 있는가."""
+def _gate_rects():
+    return [(x, y, w, h) for (n, x, y, w, h) in placed if n.startswith(('gungnae_gate', 'palace_gate', 'gungnae_tower', 'gungnae_wall_corner', 'tower_corner'))]
+
+
+def fits(x, y, w, h, apron=True, wmargin=True, keepok=False):
+    """건물 사각형(x, y, w, h)이 물·다리·성벽·길·석판·문루·다른 건물과 겹치지 않고, 둘레 1칸(위·좌우)에 물이 없으며(뒤뜰),
+    문 앞(apron) 행이 걸을 수 있는가(G10)."""
     if x < IN_X0 + 3 or x + w > IN_X1 - 3 or y < IN_Y0 + 2 or y + h > IN_Y1 - 1:
         return False
-    for yy in range(y, y + h + (1 if apron else 0)):
-        for xx in range(x, x + w):
-            if not inb(xx, yy) or KG[yy][xx] in ('water', 'bridge', 'wall') or (xx, yy) in USED or (xx, yy) in BODY:
+    for (gx, gy, gw, gh) in _gate_rects():                       # 문루·망루 사각형(둘레 1칸 포함)과 겹치면 안 된다
+        if x - 1 < gx + gw and gx - 1 < x + w and y - 1 < gy + gh and gy - 1 < y + h + 1:
+            return False
+    for yy in range(y - 1, y + h + (1 if apron else 0)):
+        for xx in range(x - 1, x + w + 1):
+            if not inb(xx, yy):
                 return False
-            if KG[yy][xx] in ('slab', 'paving', 'paddy', 'field', 'diamond') and yy >= y + h - 4:
-                return False
+            k = KG[yy][xx]
+            body = (y <= yy < y + h) and (x <= xx < x + w)
+            front = apron and yy == y + h and x <= xx < x + w
+            if body or front:
+                if k in ('water', 'bridge', 'wall') or (xx, yy) in USED or (xx, yy) in BODY:
+                    return False
+                if body and (k in ('slab', 'paving', 'diamond', 'road', 'paddy', 'field') or ((xx, yy) in KEEP and not keepok)):
+                    return False
+                if front and k in ('slab', 'paving', 'paddy', 'field'):
+                    return False
+            elif wmargin or k == 'wall':                          # 둘레 한 칸: 물·성벽에 붙이지 않는다(섬 위 건물은 wmargin=False)
+                if k in ('water', 'wall'):
+                    return False
     return True
 
 
@@ -727,7 +788,7 @@ def mark_used(x, y, w, h, m=1):
             USED.add((xx, yy))
 
 
-def near(name_w, name_h, x, y, R=9, dx_pref=0):
+def near(name_w, name_h, x, y, R=9, dx_pref=0, wmargin=True, keepok=False):
     """(x, y) 에 가장 가까운 놓을 수 있는 자리(없으면 None)."""
     best = None
     for dy in range(-R, R + 1):
@@ -735,19 +796,39 @@ def near(name_w, name_h, x, y, R=9, dx_pref=0):
             d = dx * dx + dy * dy
             if best is not None and d >= best[0]:
                 continue
-            if fits(x + dx, y + dy, name_w, name_h):
+            if fits(x + dx, y + dy, name_w, name_h, wmargin=wmargin, keepok=keepok):
                 best = (d, x + dx, y + dy)
     return None if best is None else (best[1], best[2])
 
 
-def building(name, x, yb_orig, door=None, apron=True, solid='body', notree=True, R=9, yb=None):
+def _why_fit(x, y, w, h, wm=True, ko=False):
+    """fits() 가 거절하는 이유를 칸 종류별로 센다(자리 없음 진단용)."""
+    r = {}
+    for (gx, gy, gw, gh) in _gate_rects():
+        if x - 1 < gx + gw and gx - 1 < x + w and y - 1 < gy + gh and gy - 1 < y + h + 1:
+            r['gate'] = 1
+    for yy in range(y - 1, y + h + 1):
+        for xx in range(x - 1, x + w + 1):
+            if not inb(xx, yy):
+                r['oob'] = r.get('oob', 0) + 1; continue
+            k = KG[yy][xx]; body = (y <= yy < y + h) and (x <= xx < x + w); front = yy == y + h and x <= xx < x + w
+            if body or front:
+                for cond, nm in ((k in ('water', 'bridge', 'wall'), 'bad:' + str(k)), ((xx, yy) in USED, 'USED'), ((xx, yy) in BODY, 'BODY'),
+                                 (body and k in ('slab', 'paving', 'diamond', 'road', 'paddy', 'field'), 'road:' + str(k)), (body and (xx, yy) in KEEP and not ko, 'KEEP')):
+                    if cond: r[nm] = r.get(nm, 0) + 1
+            elif wm and k in ('water', 'wall'):
+                r['margin:' + str(k)] = r.get('margin:' + str(k), 0) + 1
+    return r
+
+
+def building(name, x, yb_orig, door=None, apron=True, solid='body', notree=True, R=9, yb=None, wmargin=True, keepok=False):
     """건물: 원작 좌표 (x, 바닥 행) 근처의 빈자리에 놓고, 발 밑 한 줄을 흙(yard) 앞마당으로 깔고, 문 앞 칸을 DOORS 에 적는다."""
     cv = objects[name]
     w, h = cv.w // T, cv.h // T
     yy = (OY(yb_orig) if yb is None else yb) + 1 - h
-    pos = near(w, h, x, yy, R)
+    pos = near(w, h, x, yy, R, wmargin=wmargin, keepok=keepok)
     if pos is None:
-        print('건물 자리 없음', name, x, yy); return None
+        print('건물 자리 없음', name, x, yy, _why_fit(x, yy, w, h, wmargin, keepok)); return None
     x, y = pos
     P(name, x, y, solid)
     d = (w // 2) if door is None else door
@@ -834,25 +915,35 @@ def jumak2(x0, y0, W_=26, H_=24, wall='gn_mudg'):
             USED.add((xx, yy))
 
 
-# --- 큰 주막 둘(원작: 서남 · 동북)
+def _gate_conflict(x0, y0, W_, H_):
+    """구획 담 사각형이 이미 쓴 칸(USED)과 겹치면 알린다(G10: 술사 마당·동북 주막 담이 겹치던 문제)."""
+    bad = [(xx, yy) for yy in range(y0, y0 + H_) for xx in range(x0, x0 + W_) if (xx, yy) in USED]
+    if bad:
+        print('경고: 구획 담이 기존 구획과 겹침', (x0, y0, W_, H_), len(bad))
+
+
+# --- 큰 주막 둘(원작: 서남 · 동북). 동북 주막은 원작 y74~96 → 우리 y78~97 로 올려 서·동 큰길(y99..102)을 침범하지 않게 한다(G03).
+_gate_conflict(36, OY(135), 26, 24)
 jumak2(36, OY(135), 26, 24)
-jumak2(135, OY(76), 26, 22)
+_gate_conflict(135, 78, 26, 20)
+jumak2(135, 78, 26, 20)
 # --- 담 두른 구획들(원작): 좌·우 성황당(섬 위 돌담 사당), 술사의 길, 동북 별채, 도사의 길
-_g = walled(37, OY(77), 11, 15, 'gn_stone', 'gn_sarip_stone')
-P('seonangdang', 41, OY(77) + 3, 'foot'); P('lantern', 39, OY(77) + 9, 'foot'); P('lantern', 45, OY(77) + 9, 'foot')
-_g = walled(172, OY(83), 11, 15, 'gn_stone', 'gn_sarip_stone')
-P('seonangdang', 176, OY(83) + 3, 'foot'); P('lantern', 174, OY(83) + 9, 'foot'); P('lantern', 180, OY(83) + 9, 'foot')
-_g = walled(143, OY(50), 25, 27, 'gn_stone', 'gn_sarip_stone', gate_dx=22, gate_side='N')
-P('tower_sulsa_5', 143 + 8, OY(50) + 5, 'body'); DOORS.append({'x': 143 + 8 + 4, 'y': OY(50) + 5 + 14, 'piece': 'tower_sulsa_5'})
-P('stone_pagoda', 146, OY(50) + 21, 'foot'); P('lantern', 160, OY(50) + 22, 'foot'); P('stele', 164, OY(50) + 22, 'foot')
-_g = walled(161, OY(21), 22, 18, 'gn_stone', 'gn_sarip_stone')
-P('giwa_seowon', 161 + 6, OY(21) + 3, 'body'); DOORS.append({'x': 161 + 6 + 4, 'y': OY(21) + 3 + 6, 'piece': 'giwa_seowon'})
-P('stone_pagoda', 165, OY(21) + 11, 'foot'); P('lantern', 177, OY(21) + 11, 'foot')
+#     폭·높이는 해자 줄기를 깎지 않고(G07-a) 큰길 행(y99..102)을 침범하지 않게(G03) 줄였다.
+_g = walled(37, OY(77), 9, 15, 'gn_stone', 'gn_sarip_stone')
+P('seonangdang', 40, OY(77) + 3, 'foot'); P('lantern', 39, OY(77) + 9, 'foot'); P('lantern', 43, OY(77) + 9, 'foot')
+_g = walled(172, 84, 11, 14, 'gn_stone', 'gn_sarip_stone')
+P('seonangdang', 176, 84 + 3, 'foot'); P('lantern', 174, 84 + 9, 'foot'); P('lantern', 180, 84 + 9, 'foot')
+_g = walled(143, 55, 25, 21, 'gn_stone', 'gn_sarip_stone', gate_dx=22, gate_side='N')
+P('tower_sulsa_5', 143 + 8, 58, 'body'); DOORS.append({'x': 143 + 8 + 4, 'y': 58 + 14, 'piece': 'tower_sulsa_5'})
+P('stone_pagoda', 146, 72, 'foot'); P('lantern', 160, 73, 'foot'); P('stele', 164, 73, 'foot')
+segy(135, 76, 167, 77, 'yard')           # 술사 마당과 동북 주막 사이 골목(막힌 틈 대신 지나는 길)
+_g = walled(161, 27, 17, 18, 'gn_stone', 'gn_sarip_stone', gate_dx=4)       # 문 x165..167 = 아래 해자 다리 데크(165..168)와 같은 축(G06-4)
+P('giwa_seowon', 162, 27 + 3, 'body'); DOORS.append({'x': 166, 'y': 27 + 3 + 6, 'piece': 'giwa_seowon'})
+P('stone_pagoda', 163, 38, 'foot'); P('lantern', 174, 38, 'foot')
 _g = walled(158, OY(168), 12, 9, 'gn_stone', 'gn_sarip_stone')
 P('stele', 163, OY(168) + 2, 'foot'); P('stone_pagoda', 165, OY(168) + 2, 'foot'); P('rocks', 162, OY(168) + 4, 'foot'); P('rocks', 167, OY(168) + 4, 'foot')
 
 # --- 섬(연못 안 땅): 감옥 · 예식장 터 · 섬 집
-cut_water(127, OY(138), 146, OY(152)); cut_water(126, OY(165), 143, OY(181)); cut_water(149, OY(148), 163, OY(162))
 
 
 def causeway_v(x, y_top, y_bot):
@@ -886,15 +977,22 @@ for _cx, _cy in ((73, 45), (157, 166)):
 for (nm, x, yb, dr, R) in (
         ('gn_shop_cloth', 30, 24, 4, 22), ('gwanah_5', 84, 50, 3, 9), ('pavilion_5', 60, 64, 3, 6), ('giwa_house_5b', 28, 60, 3, 6),
         ('gn_shop_smithy', 50, 114, 4, 8), ('gn_shop_butcher', 34, 127, 3, 8), ('giwa_house_4', 64, 137, 3, 6), ('gn_shop_cloth', 78, 152, 4, 4),
-        ('gn_shop_armory', 66, 160, 6, 5), ('gn_u_giwa_7', 63, 181, 4, 6), ('giwa_house_3', 60, 190, 2, 14),
-        ('giwa_haengnang_7', 108, 166, 4, 6), ('gwanah_7', 132, 150, 4, 4), ('tower_yesik_7', 131, 180, 5, 4), ('giwa_house_3b', 155, 160, 2, 6),
+        ('gn_shop_armory', 66, 160, 6, 5), ('giwa_house_6', 66, 182, 4, 10), ('giwa_house_3', 60, 190, 2, 14),
+        ('giwa_haengnang_7', 108, 166, 4, 14), ('gwanah_7', 132, 150, 4, 4), ('giwa_house_3b', 155, 160, 2, 6),
         ('giwa_house_5', 176, 190, 3, 14), ('giwa_house_4w', 114, 190, 3, 14),
         ('thatch_house_4k', 14, 189, 3, 6), ('thatch_hut_2', 20, 190, 1, 6), ('thatch_house_3', 23, 186, 2, 6)):
+    building(nm, x, yb, dr, R=R)
+building('tower_yesik_7', 134, 180, 5, R=3, wmargin=False, keepok=True)           # 예식장: 섬 위(둘레가 물이라 wmargin 끄기)
+# 원작에 있고 맵에 없던 건물(G14): 기존 조각 어휘로 자리를 먼저 확보한다. 굴 입구는 아래 cave_mouth 로.
+for (nm, x, yb, dr, R) in (('giwa_numa', 88, 43, 3, 10),             # 소극장(북 호수 아래 풀밭)
+                           ('giwa_house_6', 121, 156, 4, 8),      # 기원·놀이방(큰 흙 마당 남쪽)
+                           ('gn_l_giwa_6', 21, 178, 4, 8),        # 도호귀인의 집(서남 시장 마당 남쪽)
+                           ):
     building(nm, x, yb, dr, R=R)
 for (nm, x, yb) in (('thatch_house_4', 31, 30), ('giwa_house_4', 70, 30), ('thatch_house_3b', 120, 33), ('giwa_house_3', 142, 30),
                     ('thatch_house_5', 178, 112), ('giwa_house_5b', 182, 128), ('thatch_house_4k', 72, 182), ('giwa_house_3b', 100, 197),
                     ('thatch_house_3', 20, 140), ('giwa_house_4', 45, 100), ('thatch_house_5', 120, 120), ('giwa_house_3', 72, 120)):
-    building(nm, x, yb, None, R=10)
+    building(nm, x, yb, None, R=6)
 
 if STAGE <= 4:
     _stage_png('s%d' % STAGE)
@@ -1002,6 +1100,60 @@ def drop_orphans():
 
 
 print('뜬 길·마당 칸 지움', drop_orphans())
+
+
+def conn_audit(verbose=True):
+    """길망 점검(G06·G09 단언): 문·다리 끝·성문 앞 도달, 외톨이 길, 큰길(y99..102) 연속, 다리 양끝 4칸 apron, 건물·문루 겹침."""
+    net = network()
+    bad_d = [d for d in DOORS if (d['x'], d['y']) not in net]
+    bad_e = [d for d in ENDS if (d['x'], d['y']) not in net]
+    walk = {(x, y) for y in range(MH) for x in range(MW) if KG[y][x] in WALKK and ((x, y) not in BODY or KG[y][x] == 'bridge')}
+    rest = set(walk) - net
+    comps = []
+    while rest:
+        c0 = next(iter(rest)); st = [c0]; seen = {c0}
+        while st:
+            x, y = st.pop()
+            for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                n = (x + dx, y + dy)
+                if n in rest and n not in seen:
+                    seen.add(n); st.append(n)
+        rest -= seen; comps.append(sorted(seen)[:2] + [len(seen)])
+    # 큰길: 서문→동문 행 y99..102 가 모두 걷는 칸(석판·다리·길)인가 — 막힌 열을 센다
+    cut = [x for x in range(XW, XE + 3) if not all(KG[y][x] in WALKK for y in range(GAP_Y0, GAP_Y1 + 1))]
+    # 다리 양끝 apron: 데크 폭 전체가 길인 끝
+    thin = []
+    for (k, x, y, w, h) in BRIDGES:
+        if k == 'v':
+            ends = [[(xx, y - 1) for xx in range(x, x + w)], [(xx, y + h) for xx in range(x, x + w)]]
+        elif k == 'h':
+            ends = [[(x - 1, yy) for yy in range(y + 1, y + h - 1)], [(x + w, yy) for yy in range(y + 1, y + h - 1)]]
+        else:
+            continue
+        for e in ends:
+            n_ok = sum(1 for (xx, yy) in e if inb(xx, yy) and KG[yy][xx] in WALKK)
+            if n_ok < len(e):
+                thin.append((k, x, y, n_ok, len(e)))
+    # 다리 아래 물: 데크 둘레 물 칸이 충분한가(땅 위 다리 금지)
+    dry = []
+    for (k, x, y, w, h) in BRIDGES:
+        if k in ('v', 'h'):
+            nwat = sum(1 for yy in range(y - 1, y + h + 1) for xx in range(x - 1, x + w + 1) if inb(xx, yy) and KG[yy][xx] == 'water')
+            if nwat < 6:
+                dry.append((k, x, y, nwat))
+    if verbose:
+        print('길 안 닿는 문', len(bad_d), bad_d[:6]); print('길 안 닿는 다리 끝', len(bad_e), bad_e[:6])
+        print('외톨이 길 조각', len(comps), comps[:6]); print('큰길 막힌 열', len(cut), cut[:8])
+        print('다리 끝 apron 부족', len(thin), thin[:8]); print('물 없는 다리', len(dry), dry[:6])
+    return len(bad_d), len(bad_e), len(comps), len(cut), len(thin), len(dry)
+
+
+if os.environ.get('JS_QUICK'):
+    print('QUICK', conn_audit())
+    if os.environ.get('JS_DBG'):
+        exec(open(os.environ['JS_DBG']).read())
+    _stage_png('q')
+    sys.exit(0)
 
 # ---------------------------------------------------------------- 나무 엔진(칸 배열 + 구역 색인: 큰 맵에서도 빠르게)
 ZEL = ['zelkova_' + c for c in 'abcdefghij']
@@ -1217,7 +1369,7 @@ def prop(name, x, yb, kinds=(None,)):
     w, h = cv.w // T, cv.h // T
     doorc = {(d['x'], d['y']) for d in DOORS}
     for xx in range(x, x + w):
-        if not inb(xx, yb) or KG[yb][xx] not in kinds or (xx, yb) in BODY or (xx, yb) in doorc or OCC[yb, xx]:
+        if not inb(xx, yb) or KG[yb][xx] not in kinds or (xx, yb) in BODY or (xx, yb) in doorc or OCC[yb, xx] or (xx, yb) in KEEP:
             return False
     for (bn, bx, by, bw, bh) in placed:                      # 소품이 건물(지붕 포함) 칸 위·뒤에 서지 않는다
         if bn.startswith(_SHADOWED) and bh >= 3 and bx < x + w and x < bx + bw and by - 1 <= yb < by + bh:
