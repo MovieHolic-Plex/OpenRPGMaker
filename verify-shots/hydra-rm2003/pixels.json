@@ -1,0 +1,111 @@
+{
+  "source": "scripts/asset-gen/pixel-enemy/hydra-three.py",
+  "cell": 96,
+  "palette": {
+    "o": "#17282e",
+    "d": "#253c3b",
+    "s": "#355348",
+    "m": "#526c4c",
+    "g": "#7b8a53",
+    "h": "#b2b575",
+    "b": "#5c503e",
+    "c": "#8c7046",
+    "t": "#bea05d",
+    "y": "#e4cb85",
+    "i": "#f3e3ae",
+    "r": "#542d38",
+    "R": "#a6514b",
+    "e": "#eeac42",
+    "z": "#fff0a1",
+    "v": "#3c3542"
+  },
+  "alpha": [
+    0,
+    255
+  ],
+  "uniquePoses": 9,
+  "sheetSha256": "d7ecbeb5bea35d3c6105080df1b7db663fa67fec23353b4cf21698323eb19b20",
+  "frames": {
+    "idle_a": {
+      "bbox": [
+        4,
+        7,
+        88,
+        93
+      ],
+      "sha256": "13373466c2da7c629a3c0fc504f3bc153d39b45031f8e0f739c9a206874716d2"
+    },
+    "idle_b": {
+      "bbox": [
+        4,
+        7,
+        88,
+        93
+      ],
+      "sha256": "fffd261d69c4acac5223fd0285cd5f53efd7ea94f89feb0350d3f68dfb3772d3"
+    },
+    "idle_c": {
+      "bbox": [
+        4,
+        8,
+        88,
+        93
+      ],
+      "sha256": "ee3d1c3b140908e0e6688a664d9d6a57b6f0ff63ecac589c3dec8f8712ce051a"
+    },
+    "windup": {
+      "bbox": [
+        3,
+        5,
+        85,
+        93
+      ],
+      "sha256": "0aa020b464a0eb1752631054813881811c1901caa23346908b88b729d249b6de"
+    },
+    "move": {
+      "bbox": [
+        5,
+        7,
+        89,
+        93
+      ],
+      "sha256": "a4cb68a3e47fcda2817225c7988235387b7808241670acd6ec60c64502e9b218"
+    },
+    "attack": {
+      "bbox": [
+        5,
+        9,
+        92,
+        93
+      ],
+      "sha256": "71e30d2982c2c522d1b717730879dfa02f52c876e7cea5111c9cdca7d033a16e"
+    },
+    "recover": {
+      "bbox": [
+        5,
+        8,
+        89,
+        93
+      ],
+      "sha256": "59ff614a8d06b10583e04b2f907a138dd0e370319f551a0b614495cc0ea268cd"
+    },
+    "hit": {
+      "bbox": [
+        3,
+        8,
+        85,
+        93
+      ],
+      "sha256": "62c8e9168a99ca8c3c12caa05332f0ca18d6d7652d4e7a6776e61817bbf79e8c"
+    },
+    "dead": {
+      "bbox": [
+        10,
+        63,
+        88,
+        93
+      ],
+      "sha256": "cd682fdfeb4a41f75ebdd897b39dc10107b8707b3d01531c7bd6a80e1391d4d2"
+    }
+  }
+}

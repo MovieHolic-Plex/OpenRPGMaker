@@ -31,7 +31,8 @@ const BATTLE_SCENERY_PREVIEW = Object.fromEntries(BATTLE_SCENERY_CATALOG.map((en
 // 남긴다**. 이 값은 프로젝트 파일의 titleResourceId/backgroundResourceId 에 저장되므로
 // 구 id 를 지우면 사용자가 만든 기존 프로젝트의 타이틀 화면이 빈 화면이 된다.
 // 파일 경로(*.png) 자체는 안 옮겼다 — 에셋 파일 개명은 별도 라운드(Phase 5).
-const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string> = {
+// null entries preserve saved IDs of the removed starter artwork.
+const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string | null> = {
   ...Object.fromEntries(CHARSET_BATTLERS.flatMap((entry) => [
     [entry.resourceId, `/${entry.path}`],
     [`${entry.resourceId}-cast`, `/${entry.castPath}`],
@@ -43,7 +44,7 @@ const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string> = {
   ...Object.fromEntries(BATTLE_SCENERY_CATALOG.map((entry) => [entry.resourceId, `/${entry.preview}`])),
   // 도트 측면 전투의 도트 효과 시트(anim_px_* 레코드가 쓴다).
   ...RETRO_PIXEL_FX_URLS,
-  hero: "/assets/generated/starter/hero-01-battle.png",
+  hero: null,
   "oprn-title-bright": "/assets/generated/title/oprn-title-bright-v2.png",
   "oprn-title-blue": "/assets/generated/title/default-title-blue.png",
   "oprn-title-field": "/assets/generated/title/oprn-title-field.png",
@@ -82,37 +83,32 @@ const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string> = {
   "oprn-still-desert-ruin": "/assets/generated/opening/desert-ruin.png",
   "oprn-still-kingdom-day": "/assets/generated/opening/kingdom-day.png",
   "oprn-still-dark-citadel": "/assets/generated/opening/dark-citadel.png",
-  "generated-actor-hero-01-battle": "/assets/generated/starter/hero-01-battle.png",
-  "generated-actor-hero-01-charset": "/assets/generated/starter/hero-01-charset.png",
-  "generated-actor-hero-01-face": "/assets/generated/starter/hero-01-face.png",
-  "generated-actor-hero-02-battle": "/assets/generated/starter/hero-02-battle.png",
-  "generated-actor-hero-02-face": "/assets/generated/starter/hero-02-face.png",
+  "generated-actor-hero-01-battle": null,
+  "generated-actor-hero-01-charset": null,
+  "generated-actor-hero-01-face": null,
+  "generated-actor-hero-02-battle": null,
+  "generated-actor-hero-02-face": null,
   "generated-face-actor1-bust": "/assets/generated/faces/actor1-bust.png",
   "generated-face-actor1-full": "/assets/generated/faces/actor1-bust.png",
-  "generated-actor-hero-03-battle": "/assets/generated/starter/hero-03-battle.png",
-  // NOTE: hero-03-face.png 파일은 아직 생성되지 않았다(189개 등록 중 유일하게 파일이 없던 항목).
-  // 그래도 등록은 유지한다 — 등록을 지우면 builtinGeneratedResourceIds() 에서 이 id 가 빠져,
-  // resourceReferenceValidation 의 validateOptionalResource 가 알려진 id 집합에 없다며 assert 로 던진다.
-  // 그러면 이 id 를 참조하는 프로젝트는 얼굴만 빠지는 게 아니라 **역직렬화 자체가 실패**한다(실측).
-  // 파일이 없어 생기는 404 이미지 로드 실패는 battleFieldDom 의 removeFaceNodeOnLoadError onerror
-  // 가드가 얼굴 노드를 제거하는 쪽으로 처리한다.
-  "generated-actor-hero-03-face": "/assets/generated/starter/hero-03-face.png",
-  "generated-actor-hero-04-battle": "/assets/generated/starter/hero-04-battle.png",
+  "generated-actor-hero-03-battle": null,
+  // Keep the saved ID recognized; retired starter faces have no runtime URL.
+  "generated-actor-hero-03-face": null,
+  "generated-actor-hero-04-battle": null,
   // 성직자·궁수 배틀러(2026-08-29). DB 액터 actor_cleric / actor_ranger 가 여태 hero-02 /
   // hero-01 시트를 돌려 썼다 — 시작 파티는 아니지만 작성자가 파티에 넣으면 전투 화면에
   // 같은 그림이 두 번 선다.
   // charset/face 는 아직 없다 — hero-03 처럼 없는 파일을 등록하면 404 가드에 의존해야 하므로
   // 만들 때 같이 등록한다.
-  "generated-actor-hero-05-battle": "/assets/generated/starter/hero-05-battle.png",
-  "generated-actor-hero-06-battle": "/assets/generated/starter/hero-06-battle.png",
-  "generated-equipment-bronze-sword-icon": "/assets/generated/starter/bronze-sword-icon.png",
-  "generated-equipment-bronze-sword-image": "/assets/generated/starter/bronze-sword-image.png",
-  "generated-equipment-oak-shield-icon": "/assets/generated/starter/oak-shield-icon.png",
-  "generated-equipment-oak-shield-image": "/assets/generated/starter/oak-shield-image.png",
-  "generated-item-ether-blue-icon": "/assets/generated/starter/ether-blue-icon.png",
-  "generated-item-ether-blue-image": "/assets/generated/starter/ether-blue-image.png",
-  "generated-item-potion-red-icon": "/assets/generated/starter/potion-red-icon.png",
-  "generated-item-potion-red-image": "/assets/generated/starter/potion-red-image.png",
+  "generated-actor-hero-05-battle": null,
+  "generated-actor-hero-06-battle": null,
+  "generated-equipment-bronze-sword-icon": null,
+  "generated-equipment-bronze-sword-image": null,
+  "generated-equipment-oak-shield-icon": null,
+  "generated-equipment-oak-shield-image": null,
+  "generated-item-ether-blue-icon": null,
+  "generated-item-ether-blue-image": null,
+  "generated-item-potion-red-icon": null,
+  "generated-item-potion-red-image": null,
   "generated-troop-preview-slime": PIXEL_ENEMY_PORTRAIT_URLS["generated-enemy-slime-01"],
   // The existing human selection from monster-collect-species/ledger.json.
   "generated-enemy-sparkit-fire": "/assets/harnesses/monster-collect-species/sparkit/front.png",
@@ -165,6 +161,11 @@ const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string> = {
   // 그래야 builtinGeneratedResourceIds() 에도 실려 collectResourceIds 가 알아본다.
   ...PIXEL_ENEMY_PORTRAIT_URLS,
   ...generatedFacesetFaceUrls(),
+  ...Object.fromEntries([1, 2].flatMap((hero) =>
+    Array.from({ length: 16 }, (_, cell) => [
+      `generated-actor-hero-0${hero}-face-${String(cell).padStart(2, "0")}`, null,
+    ])
+  )),
   // 공용 표정 세트 76종의 흉상·전신 760장(sharedPortraitAssets.ts). 같은 이유로 여기 싣는다.
   ...Object.fromEntries(SHARED_PORTRAIT_ASSETS.map((asset) => [asset.id, `/${asset.path}`])),
 };
@@ -228,8 +229,10 @@ export function resolveAssetResourceUrl(resourceId: string | undefined, options:
   return generated === null ? null : withInlineAsset(generated);
 }
 
-export function builtinGeneratedResourceIds(): string[] {
-  return Object.keys(BUILTIN_GENERATED_RESOURCE_URLS);
+export function builtinGeneratedResourceIds(includeRetired = false): string[] {
+  return Object.keys(BUILTIN_GENERATED_RESOURCE_URLS).filter(
+    (id) => includeRetired || BUILTIN_GENERATED_RESOURCE_URLS[id] !== null
+  );
 }
 
 /** 릴리스 팩 스틸 — 설치되지 않은 환경에서도 경로는 결정론적이다(그림이 404 나면 onerror 처리). */
@@ -245,7 +248,7 @@ export function resolveGeneratedAssetResourceUrl(resourceId: string, manifest?: 
   if (portrait) return portrait;
   if (manifest === undefined) {
     const direct = Object.hasOwn(BUILTIN_GENERATED_RESOURCE_URLS, resourceId) ? BUILTIN_GENERATED_RESOURCE_URLS[resourceId] : undefined;
-    if (direct) return direct;
+    if (Object.hasOwn(BUILTIN_GENERATED_RESOURCE_URLS, resourceId)) return direct ?? null;
     // Unknown names/numbers have no verified species mapping. Never guess a slime.
     return null;
   }
@@ -303,6 +306,7 @@ function isAllowedGeneratedRuntimePath(path: string): boolean {
   const normalizedPath = path.toLowerCase();
   return (
     normalizedPath.startsWith("assets/generated/") &&
+    !normalizedPath.startsWith("assets/generated/starter/") &&
     normalizedPath.endsWith(".png") &&
     !normalizedPath.includes("assets/easyrpg/") &&
     !hasUnsafePathSegment(normalizedPath)

@@ -1499,14 +1499,15 @@
     },
     "generated-enemy-hydra-three": {
       "url": "/assets/generated/pixel-enemy-portraits/hydra-three.png",
-      "sha256": "dfa5282b18300bcd1ee7bd6d0fec1a2f471b7c2ea074b02ed0a65f2ad47f91e9",
-      "observation": "짙은 녹색 비늘과 황갈색 배를 가진, 머리가 세 개 달린 용 형태의 생물입니다. 뿔이 달린 세 개의 머리 모두 입을 벌리고 날카로운 이빨을 드러내며 포효하는 듯한 자세를 취하고 있습니다.",
+      "sha256": "26013e74abe5e2597a7054621b6056640a10730c085408f3f2ff40767e6826d5",
+      "observation": "올리브색 비늘과 황갈색 배판, 뿔이 달린 세 머리와 네 발, 말린 꼬리. 대기 중 두 머리는 입을 벌리고 오른쪽 머리는 닫는다.",
       "index": 137,
-      "inspectionMethod": "Direct native image review; idle contacts and the complete retirement batch pose boards.",
+      "inspectionMethod": "Direct review of hand-authored final-grid pixels; 9 poses and native RM2003 player capture.",
       "nativeSheet": "assets/generated/pixel-enemies/hydra-three.png",
-      "nativeSheetSha256": "bf577144b87e91f993951bdc4575409070569f8528a408a016818cef4487365c",
+      "nativeSheetSha256": "d7ecbeb5bea35d3c6105080df1b7db663fa67fec23353b4cf21698323eb19b20",
       "cell": 96,
-      "reviewEvidence": "verify-shots/legacy-monsters/native-contact-1.png + native-contact-2.png; organic/all-poses-1..5, arcane/pose-review-01..07, humanoid/all-poses-1..3"
+      "reviewEvidence": "verify-shots/hydra-rm2003/hydra-idle-4x.png + poses.png + battle.png",
+      "source": "scripts/asset-gen/pixel-enemy/hydra-three.py"
     },
     "generated-enemy-behemoth-horn": {
       "url": "/assets/generated/pixel-enemy-portraits/behemoth-horn.png",

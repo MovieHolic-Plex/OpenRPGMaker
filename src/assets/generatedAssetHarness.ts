@@ -100,11 +100,14 @@ export async function validateGeneratedAssetBytes(request: ValidationRequest): P
 
 export function buildPromotionMetadata(entry: GeneratedAssetManifestEntry, validation: GeneratedAssetValidation): PromotionMetadata | null {
   if (!validation.ok || validation.sha256 === null) return null;
+  // Promotion requires an explicit destination; retired starter assets have none.
+  const promotedPath = entry.promotedPath;
+  if (!promotedPath || promotedPath.replaceAll("\\", "/").includes("assets/generated/starter/")) return null;
   return {
     entryId: entry.id,
     resourceId: entry.resourceId,
     rawPath: validation.path,
-    promotedPath: `public/assets/generated/starter/${entry.id}.png`,
+    promotedPath,
     sha256: validation.sha256,
     status: "promoted",
   };

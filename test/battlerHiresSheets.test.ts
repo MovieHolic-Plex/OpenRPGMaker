@@ -1,17 +1,7 @@
 /** @vitest-environment happy-dom */
-/**
- * 48px 영웅 전투 시트의 고해상도 짝(xBR 4배, 192px 셀) 계약.
- *
- * 왜(실측 2026-09-03): 몬스터 배틀러는 384px 원본이 필드에서 밀도 1.6 인데 영웅은 48px 셀을 2배로 그려
- * 0.5 였다. 픽셀아트를 모델에 다시 그리게 하면 다른 사람이 되므로 결정적 업스케일러로 형태·색을 그대로
- * 두고 계단만 잇는다. 여기서 세 조각을 묶는다: 카탈로그 · 커밋된 PNG(생성기 재현) · 런타임이 그걸 쓰는지.
- */
-import { existsSync, readFileSync } from "node:fs";
-import path from "node:path";
-import { PNG } from "pngjs";
+// Starter companions are retired; the reusable upscale kernel remains independent.
 import { describe, expect, it } from "vitest";
 import {
-  BATTLER_HIRES_CELL,
   BATTLER_HIRES_SHEETS,
   battlerHiresSheet,
   battlerHiresSheetUrl,
@@ -22,56 +12,24 @@ import { createBattleRuntime, type BattleSnapshot } from "@/battle/runtime";
 import { battleField } from "@/player/battleFieldDom";
 import { deserialize } from "@/project/io";
 import { store } from "@/project/store";
-import { hiresTargets, renderHiresPng } from "../scripts/asset-gen/gen-battler-hires-sheets.mjs";
 import { xbr2x } from "../scripts/lib/pixelUpscale.mjs";
 import battleFixture from "./fixtures/projects/battle-v3.json";
 
-const REPO_ROOT = path.resolve(__dirname, "..");
-const publicPath = (relative: string): string => path.join(REPO_ROOT, "public", relative);
-
-function pngSize(file: string): { width: number; height: number } {
-  const bytes = readFileSync(file);
-  return { width: bytes.readUInt32BE(16), height: bytes.readUInt32BE(20) };
-}
-
-describe("카탈로그와 커밋된 PNG", () => {
-  it("여섯 영웅 + 레거시 별칭 hero 가 192px 셀 시트를 가리키고 파일이 존재한다", () => {
-    expect(BATTLER_HIRES_SHEETS.map((entry) => entry.resourceId)).toEqual([
-      ...[1, 2, 3, 4, 5, 6].map((index) => `generated-actor-hero-0${index}-battle`),
-      "hero",
-    ]);
-    for (const entry of BATTLER_HIRES_SHEETS) {
-      expect(entry.cellWidth).toBe(BATTLER_HIRES_CELL);
-      expect(existsSync(publicPath(entry.path)), entry.path).toBe(true);
-      // 3열 × 8행 전투 시트 규격 × 4.
-      expect(pngSize(publicPath(entry.path))).toEqual({ width: 192 * 3, height: 192 * 8 });
+describe("폐기된 starter 고해상도 짝", () => {
+  it("전투 시트와 idle 스트립을 등록하지 않는다", () => {
+    expect(BATTLER_HIRES_SHEETS).toEqual([]);
+    for (const id of ["hero", ...[1, 2, 3, 4, 5, 6].map(i => `generated-actor-hero-0${i}-battle`)]) {
+      expect(battlerHiresSheet(id)).toBeUndefined();
+      expect(battlerIdleAnimation(id)).toBeUndefined();
     }
-    expect(battlerHiresSheet("hero")?.path).toBe(battlerHiresSheet("generated-actor-hero-01-battle")?.path);
-    expect(battlerHiresSheet("generated-actor-hero-99-battle")).toBeUndefined();
     expect(battlerHiresSheet(undefined)).toBeUndefined();
-  });
-
-  it("고해상도 시트는 논리 px 배율 0.5, 없는 시트는 320 시대 자산(2)이다", () => {
-    expect(battlerSheetAssetScale(battlerHiresSheet("generated-actor-hero-01-battle"))).toBe(0.5);
     expect(battlerSheetAssetScale(undefined)).toBe(2);
-    expect(battlerHiresSheetUrl(BATTLER_HIRES_SHEETS[0]!)).toBe("/assets/generated/starter/hires/hero-01-battle.png");
   });
 
-  it("커밋된 시트·idle 스트립은 생성기가 원본에서 다시 만든 바이트와 같다(재현성)", () => {
-    for (const target of hiresTargets()) {
-      expect(existsSync(target.output), target.output).toBe(true);
-      const rendered = Buffer.from(renderHiresPng(target.source).bytes);
-      expect(rendered.equals(readFileSync(target.output)), `${target.kind} ${target.slug}`).toBe(true);
-    }
-  });
-
-  it("액터 idle 스트립도 같은 192px 셀의 고해상도 짝을 쓴다 — idle 로 넘어갈 때 화질이 튀지 않는다", () => {
-    for (const index of [1, 2, 3, 4, 5, 6]) {
-      const idle = battlerIdleAnimation(`generated-actor-hero-0${index}-battle`);
-      expect(idle?.cellWidth).toBe(BATTLER_HIRES_CELL);
-      expect(idle?.path).toContain("starter/hires/idle/");
-      expect(pngSize(publicPath(idle!.path))).toEqual({ width: 192 * 4, height: 192 });
-    }
+  it("직접 등록한 짝의 URL과 논리 크기는 기존 계약을 유지한다", () => {
+    const entry = { resourceId: "uploaded-custom-battler", path: "assets/custom/hires.png", cellWidth: 192, cellHeight: 192 };
+    expect(battlerSheetAssetScale(entry)).toBe(0.5);
+    expect(battlerHiresSheetUrl(entry)).toBe("/assets/custom/hires.png");
   });
 });
 
@@ -122,19 +80,19 @@ describe("런타임 — 필드의 액터 스프라이트", () => {
     return battleField(snapshot);
   }
 
-  it("등록된 영웅 시트는 고해상도 짝을 같은 논리 크기(288×768)로 부드럽게 그린다", () => {
+  it("삭제된 영웅 시트는 starter URL을 그리지 않는다", () => {
     const field = renderField("generated-actor-hero-03-battle");
-    const sprite = field.querySelector<HTMLElement>("[data-testid='battle-actor-sprite-generated-actor-hero-03-battle']");
-    // 정적 시트(포즈 전환 때 복원되는 원본)는 고해상도 짝이다.
-    expect(sprite?.dataset.battlerSheetUrl).toBe("/assets/generated/starter/hires/hero-03-battle.png");
-    expect(sprite?.dataset.rendering).toBe("smooth");
-    expect(sprite?.dataset.battlerSheetCell).toBe("192");
-    // 화면 크기는 시트 해상도와 무관하게 48 셀 × 2 × (3열 × 8행) 논리 px 다.
-    expect(sprite?.dataset.battlerSheetSize).toBe("288px 768px");
-    expect(sprite?.style.getPropertyValue("--battle-sprite-frame-width")).toBe("96px");
-    // 마운트 시점 포즈가 idle 이라 보이는 배경은 같은 192px 셀의 고해상도 idle 스트립이고, 크기는 4칸 × 96 논리 px.
-    expect(sprite?.style.backgroundImage).toContain("/assets/generated/starter/hires/idle/hero-03-battle.png");
-    expect(sprite?.style.backgroundSize).toBe("384px 96px");
+    expect(field.querySelector("[data-testid='battle-actor-sprite-generated-actor-hero-03-battle']")).toBeNull();
+    expect(field.innerHTML).not.toContain("generated/starter/");
   });
 
+  it("현재 걷기 칩 전투 시트는 48px 셀을 정수 배율로 그린다", () => {
+    const field = renderField("charset-battler-actor1-0");
+    const sprite = field.querySelector<HTMLElement>("[data-testid='battle-actor-sprite-charset-battler-actor1-0']");
+    expect(sprite?.dataset.rendering).toBe("pixelated");
+    expect(sprite?.dataset.battlerSheetSize).toBe("288px 768px");
+    expect(sprite?.style.getPropertyValue("--battle-sprite-frame-width")).toBe("96px");
+    expect(sprite?.style.backgroundImage).toContain("charset-battlers/actor1-0.png");
+    expect(sprite?.style.backgroundImage).not.toContain("starter/");
+  });
 });

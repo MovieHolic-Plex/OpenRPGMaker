@@ -40,3 +40,11 @@
 - 실제 플레이어: `node scripts/qa/runtime/native-enemy-retirement.mjs`. `player.html` + export shim의 retro2003/rm2000/업로드 3사례, native 140종 초상과 시트 모두 브라우저 디코드. `runtime/SUMMARY.md`부터 읽는다. 전투 도입 실루엣이 끝난 명령 화면을 캡처한다.
 - 효과 비교: `verify-shots/legacy-monsters/skill-comparison/`, 현재 계약·원본 시안·합성 코드·4개 비교 GIF·실제 스킬 녹화 report. 시안은 공용 효과 카탈로그에 등록하지 않았다.
 - 세션 규칙에 따라 gates/vitest/typecheck는 실행하지 않았다. 이 문서의 자산/브라우저 관찰은 전체 테스트 통과 주장이 아니다.
+
+## 히드라 재저작 (2026-10-03)
+
+`hydra-three`는 `scripts/asset-gen/pixel-enemy/hydra-three.py`의 직접 저작 도트로 교체했다.
+96px·16색·9포즈 계약과 기존 공용 ID/시트/초상 경로를 유지하고 humanoid 일괄 생성도 이 원본을 쓴다.
+실제 RM2003 플레이어/네 native 아군 증거는 `verify-shots/hydra-rm2003/SUMMARY.md`,
+저작 설명은 `tiledata/pixel-enemies/hydra-three/README.md`.
+기존 프로젝트 행/정본 SQLite는 수정하지 않는다.

@@ -1,5 +1,5 @@
-// v4(2026-10-03): 도트 적 그림이 같은 주소에서 바뀌었고 옛 전투 그림을 deprecated/ 로 옮겼다 — 옛 캐시를 비운다.
-const CACHE_NAME = "oprn-pwa-v4";
+// v5(2026-10-03): 히드라 도트를 교체하고 starter 그림을 삭제했다 — 같은 PNG 주소의 옛 캐시를 비운다.
+const CACHE_NAME = "oprn-pwa-v5";
 const APP_SHELL_URLS = [
   "/",
   "/index.html",

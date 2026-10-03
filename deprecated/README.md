@@ -17,7 +17,9 @@
 | `generated/battle-skins/sprites/reference-{cocoon-front,seed-back}.png` | 몬스터 고르기·조수 목록 | 목록에서 뺐고 id 는 도트 말벌·Scarloxy 뒷모습 별칭 |
 | `easyrpg/monster/Hornet.png` | 숲 말벌 종족, 이슬마을 적 4종, 고르기·조수 목록 | 기본값·픽스처는 도트 몬스터로, id 는 도트 말벌 별칭 |
 | `easyrpg/battle/{Blow,Sword1,Arrow}.png` | retro2003 일반 공격(anim_hit) | anim_hit/sword/arrow 는 번들 효과 시트, 불러오기 때 옛 기록 수리(`ensureBundledBattleAnimations`), retro2003 은 도트 효과(`retroPixelAnimations.ts`)로 바꿔 그림 |
-| `generated/starter/generated-monster-manifest.json` | 참조 없음(이미 지운 몬스터 그림 목록) | — |
 
 남긴 것: 384px 생성 효과(`generated/effects`, 포켓몬 전투가 씀), Scarloxy, EasyRPG 하늘 배경(오프닝·게임 오버에서 씀),
-OGA 배경(맵 배경), 영웅 48px·고해상도 전투 시트(`starter/hero-0N-battle`, `starter/hires/` — 지금 전투에는 안 나오고 자료집 미리보기·테스트가 묶여 있어 다음 차례).
+OGA 배경(맵 배경).
+
+이후 사용자 지시로 starter 디렉터리 전체와 여기로 옮겼던 `generated-monster-manifest.json`도 삭제했다.
+영웅 48px·고해상도 시트·idle·얼굴·아이콘은 보관소에도 복구하지 않는다.

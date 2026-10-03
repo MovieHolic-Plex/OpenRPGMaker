@@ -42,15 +42,16 @@ function withoutGeneratedHeroes(project: Project): Project {
   } as Project;
 }
 
-describe("web export runtime assets — 영웅 전투 시트 고해상도 짝", () => {
-  it("기본 프로젝트(액터가 생성 영웅 시트를 쓴다)는 시트·idle 스트립을 싣는다", () => {
+describe("web export runtime assets — 폐기된 starter 전투 시트", () => {
+  it("기본 도트 프로젝트는 삭제된 starter 시트와 idle 스트립을 싣지 않는다", () => {
     const project = createBlankProject();
-    expect(usesGeneratedHeroBattlers(project)).toBe(true);
+    expect(usesGeneratedHeroBattlers(project)).toBe(false);
     const required = requiredRuntimeAssetPaths(project);
-    for (const path of heroBattlerPaths) expect(required.has(path), path).toBe(true);
-    // 내보내기 계획에도 들어간다 — 리소스 id 스캔이 아니라 이 그룹이 싣는 경로다.
     const planned = new Set(collectWebExportAssets(project).map((asset) => asset.zipPath));
-    for (const path of heroBattlerPaths) expect(planned.has(path), path).toBe(true);
+    for (const path of heroBattlerPaths) {
+      expect(required.has(path), path).toBe(false);
+      expect(planned.has(path), path).toBe(false);
+    }
   });
 
   it("생성 영웅 시트를 쓰는 액터가 없으면 그 경로를 뺀다", () => {
