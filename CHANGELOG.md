@@ -5,6 +5,12 @@
 
 <!-- releases -->
 
+## 0.99.0 — 2026-10-03
+
+### 기능
+
+- clarify first start and safely restore project backups (#1956) (`157ce43`)
+
 ## 0.98.0 — 2026-10-03
 
 ### 기능
