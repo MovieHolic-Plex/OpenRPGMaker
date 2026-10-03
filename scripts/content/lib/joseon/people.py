@@ -9,6 +9,13 @@ SRC = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..', 
 _a = np.array(Image.open(SRC).convert('RGBA'))
 _a[(_a[..., :3] == _a[0, 0, :3]).all(axis=2)] = 0
 UP, RIGHT, FRONT, LEFT = 0, 1, 2, 3
+# 조선에 맞는 Actor1 프레임만(적대 검수 R5 → 2차 S3): Actor1 은 캐릭터 8명(블록 4×2, 블록당 3걸음×4방향 = 96프레임)뿐이다.
+#   0 갈색 머리 머리띠 평민(푸른 저고리·붉은 장갑)  ← 저채도·갈색 머리라 허용
+#   6 검은 머리 푸른 도포(선비·관리·훈장)           ← 허용
+#   1 파란 머리 여인 ✗(머리가 파랑) · 2·3 붉은 뿔 투구 전사 ✗ · 4 광대 모자 ✗ · 5 마녀 모자·보라 머리 ✗ · 7 푸른 마법사 모자 ✗
+# 그래서 한 방에 같은 캐릭터를 둘 이상 두지 않는다(복제 금지, interior_checks people_dup) — 방마다 인물은 최대 둘, 맞는 역할이 없으면 뺀다.
+# 근거 캡처: ~/claude-viz/work/actor1.png (Actor1 전 프레임 3배)
+OK_CHARS = {0: '평민(머리띠·갈색 머리)', 6: '선비·관리(푸른 도포·검은 머리)'}
 
 
 def frame(char, row, col=1):
@@ -39,7 +46,7 @@ def overlay(img, people=PEOPLE, T=16):
         px = sh.load()
         for yy in range(5):
             for xx in range(14):
-                if ((xx - 6.5) / 6.5) ** 2 + ((yy - 2) / 2.2) ** 2 <= 1: px[xx, yy] = (12, 17, 16, 90)
+                if ((xx - 6.5) / 6.5) ** 2 + ((yy - 2) / 2.2) ** 2 <= 1: px[xx, yy] = (12, 17, 16, 150)
         out.alpha_composite(sh, (tx * T + 1, (ty + 1) * T - 4))
         out.alpha_composite(sp, (x, y))
     return out

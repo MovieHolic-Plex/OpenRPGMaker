@@ -74,7 +74,9 @@ function checkReach(api, p, map, src, waterMembers) {
     // 양끝 중 한쪽이 막힌 줄(기둥·벽에 닿은 가장자리 줄)은 세지 않되, 건너는 곳 하나에 건널 수 있는 줄이 하나도 없으면 실패다.
     let okLines = 0, tested = 0;
     for (const ln of c.lines) {
-      const a = c.axis === "h" ? [c.x - 1, ln] : [ln, c.y + c.h], b = c.axis === "h" ? [c.x + c.w, ln] : [ln, c.y - 1];
+      // 지도 가장자리에 붙은 문루(사냥터 북문 등): 지도 밖 한쪽 끝은 출구이므로 조각 안의 가장자리 칸을 끝으로 본다.
+      const inMap = (q) => [Math.min(Math.max(q[0], 0), map.width - 1), Math.min(Math.max(q[1], 0), map.height - 1)];
+      const a = inMap(c.axis === "h" ? [c.x - 1, ln] : [ln, c.y + c.h]), b = inMap(c.axis === "h" ? [c.x + c.w, ln] : [ln, c.y - 1]);
       const box = c.axis === "h" ? { x0: c.x - 1, x1: c.x + c.w, y0: c.y, y1: c.y + c.h - 1 } : { x0: c.x, x1: c.x + c.w - 1, y0: c.y - 1, y1: c.y + c.h };
       crossLines += 1;
       if (!api.isPassable(p, map, a[0], a[1]) || !api.isPassable(p, map, b[0], b[1])) { crossLinesBlockedEnd += 1; continue; }
@@ -98,6 +100,14 @@ function checkReach(api, p, map, src, waterMembers) {
   const okPeople = allowedMismatch[src.id]?._people || [];
   miss.people = miss.people.filter(([px, py]) => { const e = okPeople.find((q) => q.x === px && q.y === py); if (e) info.exemptPeople.push({ x: px, y: py, why: e.why }); return !e; });
   for (const f of src.fronts || []) for (const [fx, fy] of f.cells) if (!at(fx, fy)) miss.front.push([f.piece, fx, fy]);
+  // 실내 기물 앞: 기물마다 둘레 칸 중 하나는 걸어 닿아야 한다. 벽에 걸린 것(시래기·메주·고추 걸이·족자·약초 횃대·연장대)은 닿을 필요가 없다.
+  miss.itemFront = []; info.itemFronts = { total: 0, reached: 0, wallHung: [] };
+  for (const f of src.itemFronts || []) {
+    info.itemFronts.total += 1;
+    if (f.cells.some(([cx, cy]) => at(cx, cy))) { info.itemFronts.reached += 1; continue; }
+    if (/^(in|pal)_(hang_|jokja|herb_hang|tool_rack)/.test(f.piece)) { info.itemFronts.wallHung.push([f.piece, f.x, f.y]); continue; }
+    miss.itemFront.push([f.piece, f.x, f.y]);
+  }
   // negative control: a wall cell of every door's building (row above the step) must stay blocked
   const gatePieces = new Set(src.passages.map((g) => g.piece));
   const wallOpen = src.doors.filter((d) => d.step && !gatePieces.has(d.piece) && api.canMove(p, map, d.step[0], d.step[1] - 1, d.step[0], d.step[1] - 2)).length;
@@ -122,7 +132,7 @@ function checkMasks(api, p, map, ts) {
       if (!members.has(t)) continue;
       cells += 1;
       const v = api.autotileVariantForCell(view, g, x, y);
-      if ((eq[v] ?? v) !== (eq[t] ?? t)) { mismatch += 1; if (samples.length < MASK_SAMPLES) samples.push([x, y]); }
+      if ((eq[v] ?? v) !== (eq[t] ?? t)) { mismatch += 1; if (samples.length < MASK_SAMPLES) samples.push(process.env.JOSEON_MASK_DETAIL ? [x, y, t, v] : [x, y]); }
     }
     out.push({ group: g.id, cells, mismatch, edgeConnects: g.edgeConnects === true, samples });
   }
