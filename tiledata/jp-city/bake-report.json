@@ -1,17 +1,17 @@
 {
  "tiles": {
-  "count": 3616,
+  "count": 3728,
   "tilesPerRow": 48,
-  "rows": 76,
+  "rows": 78,
   "sheetPx": [
    768,
-   1216
+   1248
   ],
   "height_ok": true,
   "original": 2880,
   "pc_variant_copies": 4,
   "composite_cells": 253,
-  "block_cells": 479,
+  "block_cells": 591,
   "legacy": 0,
   "legacy_ids": [],
   "unused_source": 110,
@@ -24,39 +24,40 @@
    "prop": 1692,
    "people-reserve": 155,
    "composite": 253,
-   "block": 479
+   "block": 591
   }
  },
  "pc_counts": {
-  "star": 2265,
-  "solid": 453,
-  "floor": 337,
+  "star": 2275,
+  "solid": 490,
+  "floor": 384,
   "solidfloor": 155,
-  "flat": 251,
+  "flat": 269,
   "blank": 155
  },
  "kits": {
-  "total": 176,
+  "total": 205,
   "by_kind": {
    "recipe": 22,
    "recipe-L": 3,
    "door": 9,
-   "prop": 142
+   "prop": 142,
+   "block-kit": 29
   },
   "prop": 142,
   "recipe": 22,
   "recipe_L": 3,
   "door": 9,
-  "block_kit": 0
+  "block_kit": 29
  },
  "groups": {
-  "total": 169,
+  "total": 174,
   "by_kind": {
    "street": 9,
    "band": 60,
    "deco": 73,
    "prop": 11,
-   "block": 16
+   "block": 21
   }
  },
  "autotiles": {
@@ -84,11 +85,13 @@
  "blocks": {
   "order": [
    "autotiles_ground",
-   "autotiles_lines"
+   "autotiles_lines",
+   "roads"
   ],
   "merged": [
    "autotiles_ground",
-   "autotiles_lines"
+   "autotiles_lines",
+   "roads"
   ],
   "missing": [],
   "on_disk_not_in_order": [],
@@ -108,15 +111,27 @@
     "groups": 9,
     "kits": 0,
     "notes": "선형 오토타일 9세트(10 오토타일), 4방 16키. 막힘 4세트(블록담·생울타리·철망·가드레일)는 pc=solid(위층) — 담 칸은 한 칸 안(윗면 rows 2..5 + 앞면 6..13)에 그려 사람이 담 남쪽 칸에 서면 머리 윗 8px 가 담 앞면에 가려진다(solid 는 항상 캐릭터 위층). 선로는 불투명 floor. 표시류(중앙선·점선·횡단보도·점자블록)는 투명 flat 오버레이. 횡단보도의 양 끝·몸통·외딴 4칸은 줄 간격이 칸 주기(8px)라 그림이 같다(키만 4종). 선로 T·십자는 분기기 없이 평면 교차로 그린다."
+   },
+   {
+    "name": "roads",
+    "cells": 112,
+    "autotiles": 0,
+    "groups": 5,
+    "kits": 29,
+    "notes": "도로 키트 블록. 오토타일(autotiles_ground 생활도로·보도 연석, autotiles_lines 선로·생울타리·횡단보도·점자블록)의 칸을 화소 그대로 복사해 쓰고(키트 칸은 같은 블록 칸만 가리킬 수 있어서), 새로 그린 칸은 차선 경계 점선·정지선·방향 화살표 5종×회전·자전거 정차선·건널목 바닥판·경보기·차단기(올림/내림 팔)·지하도·육교·지시 표지뿐이다. 키트는 canonical 방향 하나로 사양을 쓰고 90도 회전해 4방향을 만든다(오토타일 칸은 회전한 지역에서 마스크를 다시 재서 고른다). 한계: (1) 止まれ 글자는 글리프(glyphs.json)에 없고 16px 에서 읽히지 않아 역삼각 도형만. (2) 차선 폭 3칸 → 간선 4차선 키트가 17칸 높이, 십자는 27×27. (3) 건널목은 단선·생활도로(폭 4) 한 가지. (4) 지하도·육교는 북쪽을 향한 한 방향. (5) 신호기·가로등은 시트의 기존 소품(jp-prop-signal 등)을 쓴다."
    }
   ]
  },
  "reassembly": {
-  "kits_checked": 176,
+  "kits_checked": 205,
   "by_kind": {
    "recipe": 25,
    "door": 9,
-   "prop": 142
+   "prop": 142,
+   "road": 23,
+   "fumikiri": 4,
+   "underpass": 1,
+   "footbridge": 1
   },
   "mismatched_kits": 0,
   "mismatched_pixels": 0,
@@ -126,9 +141,9 @@
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 3616,
-  "kits_checked": 176,
-  "groups_checked": 169,
+  "tiles_checked": 3728,
+  "kits_checked": 205,
+  "groups_checked": 174,
   "autotiles_checked": 17
  },
  "relayout_identical": {
@@ -143,14 +158,18 @@
   "marker_pixels": 0,
   "partial_alpha_pixels": 0
  },
- "sheet_hash": "234d30814683284c8c53c60dd4d58893bad75fd2",
+ "sheet_hash": "0b0232979ce4f873e26e4a043d2a7fdf3ff53b92",
  "pc_rule": "tiledata/jp-city/bake/PC-RULES.md",
  "reassembly_from_files": {
-  "kits_checked": 176,
+  "kits_checked": 205,
   "by_kind": {
    "recipe": 25,
    "door": 9,
-   "prop": 142
+   "prop": 142,
+   "road": 23,
+   "fumikiri": 4,
+   "underpass": 1,
+   "footbridge": 1
   },
   "mismatched_kits": 0,
   "mismatched_pixels": 0,
@@ -160,9 +179,9 @@
   "violations": 0,
   "by_code": {},
   "examples": {},
-  "tiles_checked": 3616,
-  "kits_checked": 176,
-  "groups_checked": 169,
+  "tiles_checked": 3728,
+  "kits_checked": 205,
+  "groups_checked": 174,
   "autotiles_checked": 17
  },
  "files": {
@@ -185,13 +204,13 @@
   },
   "rebake_all_identical": true,
   "add_block": {
-   "old_count": 3616,
-   "new_count": 3619,
+   "old_count": 3728,
+   "new_count": 3731,
    "added_cells": 3,
    "pinned_moved": 0,
    "kits_changed": 0,
    "old_cell_pixels_unchanged": true,
-   "new_ids_start_at": 3616,
+   "new_ids_start_at": 3728,
    "pass_": true
   },
   "remove_block": {

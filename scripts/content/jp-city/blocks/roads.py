@@ -255,11 +255,11 @@ def extra_kit_defs():
     return [
         L('jp-underpass-entrance', '지하도 입구(내려가는 계단)', '보행자 지하도 입구 4×4: 북쪽 벽의 어두운 터널 입구, 양쪽 난간벽, 아래로 내려가는 계단(가장 아래에 노란 점자 띠). 위에서 보이는 3/4 시점의 단순형.',
           '보도·광장 위에 놓는다. 계단 아래 칸(키트 맨 아래 줄 가운데 두 칸)이 입구이고 그 아래(남쪽) 칸으로 접근한다. 계단 안은 걸을 수 있고 워프 이벤트를 심는다.',
-          cellsfn=_ug, snap='free', role='prop', tags=['지하도', '계단', '입구', '키트'], parts=[dict(kind='entrance', x=1, y=3, w=2, h=1, label='지하도 입구(계단 아래)')],
+          cellsfn=_ug, snap='free', role='prop', tags=['지하도', '계단', '입구', '키트'], parts=[dict(kind='anchor', x=1, y=3, w=2, h=1, label='지하도 입구(계단 아래)')],
           access=[dict(x=1, y=4), dict(x=2, y=4)]),
         L('jp-footbridge-stairs', '육교 계단', '보행교(육교) 계단 한 세트 4×5: 위쪽 보행교 바닥 앞면·난간, 양쪽 난간벽, 올라가는 계단(가장 아래에 노란 점자 띠).',
           '큰 도로 옆 보도에 놓는다. 계단 아래 칸(키트 맨 아래 줄 가운데 두 칸)으로 접근한다. 윗줄(난간·바닥)은 지나갈 수 있는 위층이고 바닥 앞면은 막힌다. 계단 안은 걸을 수 있고 워프 이벤트를 심는다.',
-          cellsfn=_fb, snap='free', role='prop', tags=['육교', '계단', '보행교', '키트'], parts=[dict(kind='entrance', x=1, y=4, w=2, h=1, label='육교 계단 아래')],
+          cellsfn=_fb, snap='free', role='prop', tags=['육교', '계단', '보행교', '키트'], parts=[dict(kind='anchor', x=1, y=4, w=2, h=1, label='육교 계단 아래')],
           access=[dict(x=1, y=5), dict(x=2, y=5)]),
         L('jp-road-sign-tomare', '일시정지 표지(역삼각)', '빨간 역삼각 일시정지 표지 1×2(止まれ). 글자는 16px 에서 읽히지 않아 역삼각 도형으로 그렸다.', SG, cellsfn=_sg('tomare'), snap='free', role='prop', tags=['표지', '일시정지', '키트']),
         L('jp-road-sign-mirror', '커브 미러', '둥근 커브 미러 1×2(주황 기둥).', SG, cellsfn=_sg('mirror'), snap='free', role='prop', tags=['표지', '커브미러', '키트']),
