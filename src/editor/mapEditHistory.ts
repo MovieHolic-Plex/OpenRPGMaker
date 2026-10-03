@@ -2,6 +2,7 @@ import type { GameMap, MapId, Project } from "@/project/types";
 import { mapWithCommittedEvents, projectWithoutEventDrafts } from "@/project/eventDrafts";
 import { store } from "@/project/store";
 import { canWriteTeamProject } from "@/project/teamAccess";
+import { cloneProjectSharingSharedDictionaries } from "@/project/projectClone";
 import { jsonEqual } from "@/util/structuralJson";
 
 const MAX_HISTORY = 50;
@@ -15,7 +16,7 @@ export const MAP_EDIT_HISTORY_EVENT = "oprn:map-edit-history-change";
  * 프로젝트 전체를 structuredClone 해서 1.3s 가 걸렸다. 스토어는 타일셋·자산 객체를 제자리에서 고치지 않는다
  * (store.update 는 cloneProjectForMutation 으로 읽은 타일셋만 복제하고, 도구는 createDraft 사본을 고친다) —
  * 그래서 스냅샷이 옛 객체를 붙들고 있으면 그것이 곧 옛 내용이다. 되돌리기(applySnapshotToProject)는 스냅샷을
- * 다시 복제하므로 공유 객체가 스토어로 새어 나가 고쳐지는 일은 없다.
+ * 나머지만 다시 복제하고, 공유 항목은 스토어의 쓰기 시 복제 계약으로 보호한다.
  */
 function projectSnapshotSharingTilesets(project: Project): Project {
   const { tilesets, assets, ...rest } = project;
@@ -151,12 +152,14 @@ function makeCurrentSnapshotForEntry(entry: HistoryEntry): HistorySnapshot | nul
       }
       : null;
   }
-  return { kind: "project", before: projectWithoutEventDrafts(current) };
+  return { kind: "project", before: projectSnapshotSharingTilesets(current) };
 }
 
 function applySnapshotToProject(base: Project, snapshot: HistorySnapshot): Project {
-  if (snapshot.kind === "project") return structuredClone(snapshot.before);
-  const next = structuredClone(base);
+  // 타일셋·업로드 항목은 store의 쓰기 시 복제 계약을 따른다. 매 undo/redo마다
+  // 전체 사전을 깊게 복제하면 기본 프로젝트에서도 Chromium 탭이 죽는다.
+  if (snapshot.kind === "project") return cloneProjectSharingSharedDictionaries(snapshot.before);
+  const next = cloneProjectSharingSharedDictionaries(base);
   next.maps[snapshot.mapId] = structuredClone(snapshot.before);
   if (snapshot.beforeTilesets) next.tilesets = structuredClone(snapshot.beforeTilesets);
   return next;

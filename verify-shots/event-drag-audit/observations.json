@@ -1,0 +1,20 @@
+{
+  "fixture": "No persistence bridge; isolated component",
+  "externalDrop": {
+    "oldCalls": [],
+    "currentCalls": [],
+    "externalCalls": []
+  },
+  "ownedDragAfterHostReuse": {
+    "oldCalls": [],
+    "currentCalls": [
+      {
+        "path": [
+          0
+        ],
+        "index": 9007199254740991
+      }
+    ],
+    "externalCalls": []
+  }
+}

@@ -409,3 +409,20 @@ export async function processBackdropArt(sourceDataUrl: string, viewport: { read
   const dotted = pixelate(covered, viewport.width, viewport.height, colors);
   return { dataUrl: await encodePng(dotted), width: dotted.width, height: dotted.height };
 }
+
+/** 일러스트 소품: 배경 제거·여백 제거·크기 맞춤만 한다(도트화·윤곽 보강 없음). 회상·환영 등 맵 위에 올라가지 않는 그림용. */
+export async function processIllustrationSprite(sourceDataUrl: string, maxSide = 256): Promise<ProcessedArt> {
+  const keyed = chromaKeyFromBorder(await decodeImage(sourceDataUrl));
+  const cropped = cropToOpaqueBounds(keyed);
+  if (!cropped) throw new Error("배경을 지운 뒤 남은 그림이 없습니다 — 단색 배경이 아니거나 그림이 비었습니다.");
+  const fitted = fitWithin(cropped, maxSide);
+  return { dataUrl: await encodePng(fitted), width: fitted.width, height: fitted.height };
+}
+
+/** 일러스트 배경: 뷰포트 비율로 가운데를 자르고 2배 해상도(가로)로 줄인다 — 화면에는 scale 50 으로 놓인다. */
+export async function processIllustrationBackdrop(sourceDataUrl: string, viewport: { readonly width: number; readonly height: number }): Promise<ProcessedArt> {
+  const covered = coverCrop(await decodeImage(sourceDataUrl), viewport.width / viewport.height);
+  const width = Math.min(covered.width, viewport.width * 2);
+  const fitted = resize(covered, width, Math.round(width * (viewport.height / viewport.width)));
+  return { dataUrl: await encodePng(fitted), width: fitted.width, height: fitted.height };
+}

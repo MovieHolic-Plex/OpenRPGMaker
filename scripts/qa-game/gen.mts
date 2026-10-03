@@ -24,7 +24,7 @@ import { createPiRunRecorder } from "./lib/recorder.ts";
 import { buildBrowserSeed, type QaBrief } from "./lib/seed.ts";
 export { buildBrowserSeed, type QaBrief };
 import { store } from "../../src/project/store.ts";
-import { serialize } from "../../src/project/io.ts";
+import { deserialize, serialize } from "../../src/project/io.ts";
 import { buildWelcomeGenrePresetPrompt, welcomeGenrePresetById } from "../../src/editor/welcomeGenrePresets.ts";
 import { defaultAiConfig, type AiConfig, type ChatRequest, type ChatResult } from "../../src/ai/llmClient.ts";
 import { createLlmIntentDeclarer } from "../../src/ai/intentDeclarationClient.ts";
@@ -111,7 +111,10 @@ export async function genMain(argv: readonly string[] = process.argv.slice(2)): 
     ...(arg("autonomy") ? { autonomyLevel: arg("autonomy") as AutonomyLevel } : {}),
     ...(arg("apply") ? { piApply: arg("apply") as AiConfig["piApply"] } : {}),
   };
-  const { project: seed, brief } = buildBrowserSeed(input);
+  const built = buildBrowserSeed(input);
+  // --seed-project <project.json>: 새 프로젝트 대신 이미 있는 프로젝트(예: 포켓몬풍 데모) 위에서 같은 기획을 시킨다.
+  const seed = arg("seed-project") ? deserialize(fs.readFileSync(arg("seed-project")!, "utf8")) : built.project;
+  const brief = built.brief;
   const preset = welcomeGenrePresetById(input.presetId);
   if (!preset) throw new Error(`첫 화면 프리셋이 없습니다: ${input.presetId}`);
   const instruction = buildWelcomeGenrePresetPrompt(preset, brief);

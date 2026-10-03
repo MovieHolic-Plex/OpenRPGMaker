@@ -16,7 +16,7 @@ import battleFixture from "./fixtures/projects/battle-v3.json";
 // 하므로 렌더 성공만 보는 테스트는 통과한다. 그래서 **어느 파일이 붙었는지**를 못 박는다.
 
 // "rm2000"·"classic" 은 지운 정면 스킨의 저장값이다 — resolveSkinId 가 기본(retro2003)으로 푼다.
-type Skin = "pokemon" | "rm2000" | "rm2003" | "retro2003" | "classic";
+type Skin = "pokemon" | "rm2000" | "retro2003" | "classic";
 
 function renderField(options: {
   readonly skin?: Skin;
@@ -150,8 +150,8 @@ describe("아군 배틀러 스프라이트 선택", () => {
 
   it("명시적 측면 구도는 저작된 아군 전투 시트를 표시한다", () => {
     const field = renderField({
-      skin: "rm2003",
-      battleCharacterResourceId: "generated-actor-hero-02-battle",
+      skin: "retro2003",
+      battleCharacterResourceId: "charset-battler-actor2-0",
     });
     const group = field.querySelector<HTMLElement>(".battle-actor-group");
     expect(group?.dataset.partyFacing).toBe("front");
@@ -161,7 +161,7 @@ describe("아군 배틀러 스프라이트 선택", () => {
     const first = nodes[0]!;
     expect(first.dataset.partyFacing).toBe("front");
     expect(first.dataset.authoredBattler).toBe("true");
-    expect(first.dataset.battleCharsetResourceId).toBe("generated-actor-hero-02-battle");
+    expect(first.dataset.battleCharsetResourceId).toBe("charset-battler-actor2-0");
     expect(first.querySelector(".battle-actor-sprite")).not.toBeNull();
   });
 });

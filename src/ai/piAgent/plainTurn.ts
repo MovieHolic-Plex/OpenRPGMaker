@@ -56,6 +56,8 @@ export interface PlainPiTurnInput {
   readonly piTeam: boolean;
   /** 선언 호출 직전 — 패널은 「의도 읽는 중…」 을 띄운다. */
   readonly onDeclaring?: () => void;
+  /** 실행 모델의 컨텍스트 창. 주면 폴백 의도라도 창에 안 들어가는 전체 카탈로그를 보내지 않는다(buildSessionRegistryTools). */
+  readonly contextWindow?: number;
 }
 
 export interface PlainPiTurnClassification {
@@ -142,7 +144,7 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
       // This is exposure only: discovery can expand it, including full fallback.
       initialToolNames = requestsModernMap(project, text, currentMapId ? [currentMapId] : [])
         ? [...MODERN_MAP_INITIAL_TOOLS]
-        : buildSessionRegistryTools({ requestText: text, intent: declared.intent }).map(tool => tool.function.name);
+        : buildSessionRegistryTools({ requestText: text, intent: declared.intent, contextWindow: input.contextWindow }).map(tool => tool.function.name);
     }
   }
   const team = input.piTeam && !plan.readOnly;

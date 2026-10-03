@@ -1,0 +1,60 @@
+// jp-city 하네스 팔레트 — 생성 파일(palette.py). 정본 tiledata/atlas-pick/palette/modern3.pal (28램프 · 154색). 손으로 색을 더하지 마라.
+// 격자 쓰는 법: `@mat 글자 램프 기본단` 으로 재료 글자를 정하고 `@mblock`(재료)·`@tblock`(단)·`@tadj`(단 옮김). 단 0 = 가장 어두움. 반투명 없음.
+// `.` 투명/그대로, `_` 지우기, `#` 실루엣 단계 표시색(최종본에 남으면 불합격)
+// 아스팔트(차도)
+@rampc yoru #211f26 #2b2a33 #393742 #464452 #5b5463 #6f6675 #817887
+// 보도 블록·연석·콘크리트 바닥
+@rampc hodo #464552 #575666 #69687a #7b7b8f #948fa3 #aba4b8 #c0b9cc
+// 밝은 콘크리트·흰 타일 벽
+@rampc conc #504f5c #666775 #7f8191 #999dad #b4b2c7 #cdc9de #e3dff2
+// 푸른 타일 벽
+@rampc tairu #282a3d #373d52 #465166 #57697d #6d7494 #8588ad #a0a2c7
+// 널판(목재 외장)·문·간판판
+@rampc ita #331f21 #452b2d #593e39 #705c4a #87735e #a18d76 #baa990
+// 유리 커튼월·쇼윈도
+@rampc garasu #1b2138 #293952 #39536b #4a7387 #627ca3 #7d8ebf #9eb0e0
+// 기와(테라코타)
+@rampc kawara #3d151f #521e21 #6b302a #854a38 #9e644d #b88165 #d1a181
+// 붉은 벽·벽돌
+@rampc renga #331620 #472027 #5e2d2f #78423c #915b51 #ab7869 #c49884
+// 철·실외기·난간·창틀
+@rampc tekko #28272e #3a3942 #4e4d59 #646473 #817c8c #9f97a8 #bbb4c4
+// 가로수 잎
+@rampc ki #0e1f1a #183327 #254a32 #34633c #49804c #689e63 #91bf83
+// 불 켜진 창
+@rampc mado #52351e #856437 #b89d53 #e0c57a #fae29f
+// 크림 띠·가드레일
+@rampc kinari #6b5b50 #948771 #bdb793 #e0dbb7 #f7f2d3
+// 흰 페인트·횡단보도
+@rampc shiro #777580 #a3a0ad #cac7d6 #e6e2f0 #f6f1fc
+// 빨강(간판·차양·단풍)
+@rampc aka #4c0717 #801223 #b22430 #db4d4a #f78175
+// 주황
+@rampc daidai #571108 #8a3014 #c26027 #eb8e4f #ffb278
+// 노랑(보도 블록·표지)
+@rampc kii #572c02 #8f610b #c7a51c #f0cd45 #ffe26e
+// 초록(편의점·신호)
+@rampc midori #0c3d35 #1b6b50 #2e9963 #53c776 #81f093
+// 하늘·파랑(간판)
+@rampc sora #0a2847 #164d75 #287ea8 #4f80d6 #7b9cf7
+// 분홍
+@rampc pinku #521e41 #803360 #b24f81 #db7598 #fa9eb4
+// 흙·화단·운동장
+@rampc soil #331a18 #4c3027 #694d38 #876d54 #a68e73
+// 교실 마루·체육관 바닥·코르크
+@rampc yuka #5c302a #80543e #a17d54 #c2a175 #e0c599
+// 칠판(짙은 초록)·게시판
+@rampc kokuban #162324 #243835 #344f46 #4b6958 #678570
+// 리놀륨·복도 바닥·식판
+@rampc lino #3f5250 #546b64 #6c8779 #88a38e #a6bfa8
+// 보라(유니폼·매트·간판)
+@rampc murasaki #3b1d42 #62326b #8a4a94 #bd6eb5 #e69ad2
+// 감색(교복·남색 간판·藍)
+@rampc kon #12173d #1f295c #304080 #6352a8 #8d7cd1
+// 네온 분홍
+@rampc neonP #9e2070 #e043a7 #ff89d4
+// 네온 청록
+@rampc neonC #20919e #43d1e0 #89f3ff
+// 윤곽·깊은 그늘(보라 검정)
+@rampc sumi #100a1a #1a1226 #2c2538
+# #e040c0   // 실루엣 단계 표시색(최종본 금지)

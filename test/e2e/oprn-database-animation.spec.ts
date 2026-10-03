@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { applyDatabaseChanges, closeAndReopenDatabase, exportedProject, openDatabase } from "./oprn-database-helpers";
+import { applyDatabaseChanges, closeAndReopenDatabase, exportedProject, openAnimationsSubview, openDatabase } from "./oprn-database-helpers";
 
 test.setTimeout(90_000);
 
@@ -12,7 +12,7 @@ test("RM2K3 animation tab exposes sheet frames cells timings", async ({ page }, 
   });
 
   await page.getByTestId("toolbar-database").click();
-  await page.getByTestId("db-tab-animations").click();
+  await openAnimationsSubview(page);
 
   await expect(page.getByTestId("db-animation-setup")).toBeVisible();
   await expect(page.getByTestId("db-animation-rm2003-editor")).toBeVisible();
@@ -47,9 +47,9 @@ test("RM2K3 resource animation and tileset tabs persist canonical project edits"
 
   await openDatabase(page);
 
-  await page.getByTestId("db-tab-animations").click();
+  await openAnimationsSubview(page);
   await page.getByTestId("db-field-name").fill("Impact Burst");
-  await page.getByTestId("db-field-animation-resource").fill("easyrpg-battle-blow");
+  await page.getByTestId("db-field-animation-resource").fill("scarloxy-battle-anim-scratch");
   await page.getByTestId("db-field-animation-frame-width").fill("80");
   await page.getByTestId("db-field-animation-frame-height").fill("88");
   await page.getByTestId("db-field-animation-columns").fill("4");
@@ -70,7 +70,7 @@ test("RM2K3 resource animation and tileset tabs persist canonical project edits"
     large: true,
     name: "Impact Burst",
     position: "screen",
-    resourceId: "easyrpg-battle-blow",
+    resourceId: "scarloxy-battle-anim-scratch",
     scope: "screen",
     sheet: { columns: 4, frameHeight: 88, frameWidth: 80 },
   });
@@ -88,7 +88,7 @@ test("RM2K3 resource animation and tileset tabs persist canonical project edits"
   await applyDatabaseChanges(page);
   await closeAndReopenDatabase(page);
 
-  await page.getByTestId("db-tab-animations").click();
+  await openAnimationsSubview(page);
   await expect(page.getByTestId("db-field-name")).toHaveValue("Impact Burst");
   await page.getByTestId("db-tab-tilesets").click();
   await expect(page.getByTestId("tileset-oprn-name").locator("input")).toHaveValue("Town Proof Tileset");

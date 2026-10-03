@@ -1,0 +1,11 @@
+{
+  "errors": [],
+  "status": {
+    "ready": true,
+    "turnBusy": false,
+    "configReady": true,
+    "lastStatus": "대기",
+    "bridgeConnected": false,
+    "panelMounted": true
+  }
+}

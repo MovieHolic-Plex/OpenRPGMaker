@@ -23,9 +23,40 @@ import { layerTilePickAt, visibleTilePickAt, type VisibleTilePick } from "@/edit
 import { store } from "@/project/store";
 import type { MapId, TilesetDef } from "@/project/types";
 import { reliefInverseMode } from "@/editor/reliefBrushMode";
+import { paintRoughRelief, tidyReliefStroke } from "@/editor/reliefActions";
+import { findReliefDoodad } from "@/editor/reliefDoodads";
+import { planEditorTerrainDoodad, planEditorGroupMove } from "./terrainDoodadPlan";
+import { groupAt } from "./terrainClusters";
+import { paintTerrainBrush } from "./terrainBrush";
+import type { ReliefBrushMode } from "@/project/relief/edit";
+import { RELIEF_ROUGH_RADII } from "@/project/relief/roughBrush";
+import { reliefPickCell } from "@/project/relief/screen";
 import { toast } from "@/util/toast";
+import { handleTerrainDesignPointer, isTerrainDesignTool } from "./terrainDesignActions";
+import { symmetricPoints, symmetryVariants, transformPoint } from "./terrainDesignGeometry";
+import { planReliefDoodad } from "./reliefDoodads";
 
 export type TileLayer = "lower" | "upper";
+
+/** 러프 높이 붓 한 스트로크 — 누르고 있으면 봉우리가 자라고, 뗄 때 지나간 사각형만 정리한다. */
+type ReliefRoughStroke = {
+  readonly mapId: MapId;
+  readonly mode: ReliefBrushMode;
+  readonly cap: number;
+  readonly radius: number;
+  peak: number;
+  last: { x: number; y: number };
+  box: { x0: number; y0: number; x1: number; y1: number };
+  timer: ReturnType<typeof setInterval> | null;
+};
+
+/** 러프 높이 붓을 누르고 있을 때 봉우리가 한 단 자라는 간격. */
+const RELIEF_GROW_INTERVAL_MS = 350;
+
+function pointerShiftKey(ptr: Phaser.Input.Pointer): boolean {
+  const event = ptr.event as { readonly shiftKey?: boolean } | undefined;
+  return event?.shiftKey === true;
+}
 
 type TilePickTarget = {
   readonly mapId: MapId;
@@ -65,6 +96,10 @@ export class TilePaintEngine {
   private reliefStrokeBase = 0;
   /** 이 스트로크를 오른쪽 버튼으로 시작했는가 — 높이 붓은 왼쪽과 반대 방식으로 칠한다. */
   private reliefStrokeInverted = false;
+  /** Shift 로 시작한 스트로크 — 예전 정밀 붓(작은 원, 첫 칸 ±1단). */
+  private reliefStrokePrecise = false;
+  private reliefRough: ReliefRoughStroke | null = null;
+  private terrainLast: { x: number; y: number } | null = null;
 
   constructor(private readonly deps: TilePaintEngineDeps) {}
 
@@ -225,29 +260,9 @@ export class TilePaintEngine {
       case "collision":
         this.applyStrokeEdit(mid, () => toggleCollision(mid, x, y), { includeTilesets: true });
         break;
-      case "relief": {
-        // 붓 크기 N = 반지름 N-1 원. 올리기/내리기는 스트로크 첫 칸 높이 ±1 을 상한으로 삼아
-        // 드래그가 같은 언덕을 계속 쌓아 올리지 않게 한다. 평탄은 첫 칸 높이로 맞춘다.
-        // 오른쪽 버튼 스트로크는 반대 방식(reliefInverseMode)이다.
-        const { reliefLevel } = editorState.get();
-        const relief = store.getCurrent().maps[mid]?.relief;
-        if (firstStrokeTile) {
-          this.reliefStrokeBase = relief ? relief.levels[y * relief.width + x] ?? 0 : 0;
-          this.reliefStrokeInverted = ptr.button === 2 || ptr.rightButtonDown();
-        }
-        const selectedMode = editorState.get().reliefMode;
-        const reliefMode = this.reliefStrokeInverted ? reliefInverseMode(selectedMode) : selectedMode;
-        const base = this.reliefStrokeBase;
-        const level = reliefMode === "raise" ? base + 1
-          : reliefMode === "lower" ? base - 1
-          : reliefMode === "set" && this.reliefStrokeInverted ? 0
-          : reliefLevel;
-        this.applyStrokeEdit(mid, () => {
-          // 1칸 폭 돌기·홈은 렌더 규칙이 깎아 안 보인다 — 붓은 최소 반지름 1(3칸 폭)로 칠한다.
-          paintRelief(mid, x, y, reliefMode, { radius: Math.max(1, brushSize - 1), level, flattenTo: base });
-        });
+      case "relief":
+        this.applyRelief(mid, ptr, x, y, firstStrokeTile);
         break;
-      }
       case "event":
         this.deps.setPaintState({ isPainting: false, lastPaintKey: "" });
         this.deps.handleEventClick(mid, x, y, clickCount >= 2);
@@ -261,6 +276,161 @@ export class TilePaintEngine {
       case "pan":
         break;
     }
+  }
+
+  /**
+   * 「높이」 붓 한 표본. 들린 언덕은 북쪽으로 올라가 그려지므로 땅 좌표 대신 화면에 보이는 칸(reliefPickCell)을 집는다.
+   * 지형지물을 고른 동안은 클릭 한 번이 그것을 놓는다(드래그로 여러 개 찍지 않는다).
+   */
+  private applyRelief(mid: MapId, ptr: Phaser.Input.Pointer, groundX: number, groundY: number, firstStrokeTile: boolean): void {
+    const state = editorState.get();
+    const map = store.getCurrent().maps[mid];
+    if (!map) return;
+    const pick = reliefPickCell(map.relief, groundX, groundY);
+    const tileset=store.getCurrent().tilesets[map.tilesetId];
+    if (!tileset) return;
+    if (isTerrainDesignTool(state.terrainBrush)) {
+      this.stopReliefGrowth();
+      handleTerrainDesignPointer(mid, pick, firstStrokeTile, ptr.button === 2 || ptr.rightButtonDown());
+      return;
+    }
+    if (state.terrainBrush === "group") {
+      if (!firstStrokeTile) return;
+      if (ptr.button === 2 || ptr.rightButtonDown()) { editorState.set({terrainMoveGroup:false,terrainSelectedGroup:null}); return; }
+      if (state.terrainMoveGroup) {
+        const plan=planEditorGroupMove(map,tileset,pick.x,pick.y);
+        if (plan.ok && plan.apply) { this.applyStrokeEdit(mid,()=>store.updateMapTiles(mid,plan.apply!,{label:"군집 이동",relief:true,cells:plan.cells})); editorState.set({terrainMoveGroup:false,terrainSelectedGroup:null}); }
+        else toast(plan.reason,"info");
+      } else {
+        const group=groupAt(map,pick.x,pick.y);
+        editorState.set({terrainSelectedGroup:group?{mapId:mid,id:group.id,x:pick.x,y:pick.y}:null});
+      }
+      return;
+    }
+    if (state.terrainBrush === "surface" || state.terrainBrush === "river") {
+      if (firstStrokeTile) {this.stopReliefGrowth();this.terrainLast=null;this.reliefStrokeBase=map.relief?.levels[pick.y*map.width+pick.x]??0;}
+      const centers=strokeCenters(this.terrainLast?`${this.terrainLast.x},${this.terrainLast.y}`:"",pick.x,pick.y);
+      this.applyStrokeEdit(mid,()=>{for(const c of centers)for(const p of symmetricPoints(c,state.terrainSymmetry,map.width,map.height))paintTerrainBrush(mid,p.x,p.y,state.terrainBrush==="river"?"water":state.terrainMaterial,state.terrainWidth,this.reliefStrokeBase);});
+      this.terrainLast={x:pick.x,y:pick.y};
+      return;
+    }
+    const doodad = findReliefDoodad(tileset, state.reliefDoodad);
+    if (doodad) {
+      if (!firstStrokeTile) return;
+      if (ptr.button === 2 || ptr.rightButtonDown()) { editorState.set({ reliefDoodad: null, reliefBridgeStart:null }); return; }
+      if (doodad.kind === "bridge" && state.reliefBridgeStart?.mapId !== mid) {
+        editorState.set({reliefBridgeStart:{mapId:mid,x:pick.x,y:pick.y}});return;
+      }
+      for (const variant of symmetryVariants(state.terrainSymmetry, map.width, map.height)) {
+      const current = store.getCurrent().maps[mid]!, at = { ...transformPoint(pick, map.width, map.height, variant), face: pick.face };
+      const plan=doodad.kind === "bridge" && state.reliefBridgeStart
+        ? planReliefDoodad(current,doodad,at,{width:state.reliefRampWidth,bridgeStart:transformPoint(state.reliefBridgeStart,map.width,map.height,variant)})
+        : planEditorTerrainDoodad(current,tileset,doodad,at);
+      if (plan.ok) {
+        if(plan.apply)this.applyStrokeEdit(mid,()=>store.updateMapTiles(mid,plan.apply!,{label:`지형지물 · ${doodad.label}`,relief:true,cells:plan.cells}));
+        else if(plan.stamp)this.applyStrokeEdit(mid,()=>paintTilesBulk(mid,plan.stamp!,{autoConnect:false,preservePattern:true,clusterExpand:false}));
+      } else toast(`${doodad.label}: ${plan.reason}`, "info");
+      }
+      if(doodad.kind==="bridge")editorState.set({reliefBridgeStart:null});
+      return;
+    }
+    const { x, y } = pick;
+    if (x < 0 || y < 0 || x >= map.width || y >= map.height) return;
+    if (firstStrokeTile) {
+      this.stopReliefGrowth();
+      this.reliefStrokeBase = map.relief ? map.relief.levels[y * map.width + x] ?? 0 : 0;
+      this.reliefStrokeInverted = ptr.button === 2 || ptr.rightButtonDown();
+      this.reliefStrokePrecise = pointerShiftKey(ptr);
+    }
+    const reliefMode = this.reliefStrokeInverted ? reliefInverseMode(state.reliefMode) : state.reliefMode;
+    const base = this.reliefStrokeBase;
+    if (this.reliefStrokePrecise) {
+      // 정밀 붓(예전 동작): 붓 크기 N = 반지름 max(1, N-1) 원, 올리기/내리기는 첫 칸 ±1단이 상한, 평탄은 첫 칸 높이로.
+      // 1칸 폭 돌기·홈은 렌더 규칙이 깎아 안 보인다 — 최소 반지름 1(3칸 폭)로 칠한다.
+      const level = reliefMode === "raise" ? base + 1
+        : reliefMode === "lower" ? base - 1
+        : reliefMode === "set" && this.reliefStrokeInverted ? 0
+        : state.reliefLevel;
+      this.applyStrokeEdit(mid, () => {
+        for (const p of symmetricPoints({x,y},state.terrainSymmetry,map.width,map.height)) paintRelief(mid, p.x, p.y, reliefMode, { radius: Math.max(1, state.brushSize - 1), level, flattenTo: base, topGrass: state.reliefTopGrass });
+      });
+      return;
+    }
+    if (firstStrokeTile) {
+      // 러프 붓: 상한은 「누른 칸 + 1」보다 낮을 수 없다 — 상한 4단 고원 위에서 올리기가 아무 일도 안 하면 고장처럼 보인다.
+      const cap = reliefMode === "set" && this.reliefStrokeInverted ? 0 : Math.max(state.reliefLevel, reliefMode === "raise" || reliefMode === "mountain" ? base + 1 : 0);
+      const peak = reliefMode === "raise" ? Math.min(cap, base + 1)
+        : reliefMode === "lower" ? Math.max(0, base - 1)
+        : reliefMode === "mountain" ? cap
+        : reliefMode === "canyon" ? 0
+        : base;
+      const radius = RELIEF_ROUGH_RADII[state.reliefRoughSize];
+      this.reliefRough = { mapId: mid, mode: reliefMode, cap, radius, peak, last: { x, y }, box: { x0: x, y0: y, x1: x, y1: y }, timer: null };
+      if (reliefMode === "raise" || reliefMode === "lower") {
+        this.reliefRough.timer = setInterval(() => this.growRelief(), RELIEF_GROW_INTERVAL_MS);
+      }
+    }
+    const rough = this.reliefRough;
+    if (!rough || rough.mapId !== mid) return;
+    rough.last = { x, y };
+    this.applyRoughAt(rough, x, y);
+  }
+
+  private applyRoughAt(rough: ReliefRoughStroke, x: number, y: number): void {
+    const reach = Math.ceil(rough.radius * 1.3) + Math.abs(rough.peak - this.reliefStrokeBase) * 3 + 3;
+    rough.box = {
+      x0: Math.min(rough.box.x0, x - reach), y0: Math.min(rough.box.y0, y - reach),
+      x1: Math.max(rough.box.x1, x + reach), y1: Math.max(rough.box.y1, y + reach),
+    };
+    const topGrass = editorState.get().reliefTopGrass;
+    this.applyStrokeEdit(rough.mapId, () => {
+      const map = store.getCurrent().maps[rough.mapId]; if (!map) return;
+      for (const p of symmetricPoints({x,y},editorState.get().terrainSymmetry,map.width,map.height)) paintRoughRelief(rough.mapId, p.x, p.y, rough.mode, {
+        radius: rough.radius, base: this.reliefStrokeBase, peak: rough.peak, cap: rough.cap, topGrass,
+      });
+    });
+  }
+
+  /** 누르고 있는 동안 봉우리(올리기)·바닥(내리기)을 한 단씩 — 상한·0단에서 멈춘다. */
+  private growRelief(): void {
+    const rough = this.reliefRough;
+    if (!rough || !this.deps.getPaintState().isPainting || this.deps.mapId() !== rough.mapId || editorState.get().tool !== "relief") {
+      this.stopReliefGrowth();
+      return;
+    }
+    const next = rough.mode === "raise" ? Math.min(rough.cap, rough.peak + 1) : Math.max(0, rough.peak - 1);
+    if (next === rough.peak) {
+      this.stopReliefGrowth();
+      return;
+    }
+    rough.peak = next;
+    this.applyRoughAt(rough, rough.last.x, rough.last.y);
+  }
+
+  private stopReliefGrowth(): void {
+    if (this.reliefRough?.timer) clearInterval(this.reliefRough.timer);
+    if (this.reliefRough) this.reliefRough.timer = null;
+  }
+
+  /**
+   * 스트로크가 끝났다(포인터를 뗐거나 되돌리기로 버렸다). 러프 높이 붓은 지나간 사각형 안의
+   * 작은 섬·구멍과 1칸 폭 돌기를 정리한다 — 같은 되돌리기 한 번에 묶인다(스트로크 스냅숏은 이미 찍혔다).
+   * commit=false(되돌리기로 버린 스트로크)면 정리하지 않는다.
+   */
+  endStroke(commit = true): void {
+    this.terrainLast=null;
+    const rough = this.reliefRough;
+    this.stopReliefGrowth();
+    this.reliefRough = null;
+    if (!commit || !rough || this.reliefStrokePrecise) return;
+    const topGrass = editorState.get().reliefTopGrass;
+    this.applyStrokeEdit(rough.mapId, () => {
+      const map = store.getCurrent().maps[rough.mapId]; if (!map) return;
+      for (const v of symmetryVariants(editorState.get().terrainSymmetry,map.width,map.height)) {
+        const corners = [{x:rough.box.x0,y:rough.box.y0},{x:rough.box.x1,y:rough.box.y1}].map(p=>transformPoint(p,map.width,map.height,v));
+        tidyReliefStroke(rough.mapId,{x0:Math.min(...corners.map(p=>p.x)),y0:Math.min(...corners.map(p=>p.y)),x1:Math.max(...corners.map(p=>p.x)),y1:Math.max(...corners.map(p=>p.y))},topGrass);
+      }
+    });
   }
 
   private applyStrokeEdit(mapId: MapId, edit: () => void, options: { readonly includeTilesets?: boolean } = {}): void {

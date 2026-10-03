@@ -1,0 +1,62 @@
+{
+ "categories": [
+  {
+   "id": "jp-start",
+   "name": "일본 도시 · 읽는 순서·시트 지도",
+   "documents": 3,
+   "images": 3,
+   "chars": 29729
+  },
+  {
+   "id": "jp-autotile",
+   "name": "일본 도시 · 오토타일 17세트",
+   "documents": 18,
+   "images": 51,
+   "chars": 94476
+  },
+  {
+   "id": "jp-building",
+   "name": "일본 도시 · 건물 조립 도구",
+   "documents": 11,
+   "images": 42,
+   "chars": 102457
+  },
+  {
+   "id": "jp-road",
+   "name": "일본 도시 · 도로·교차로 키트",
+   "documents": 7,
+   "images": 12,
+   "chars": 66811
+  },
+  {
+   "id": "jp-shop",
+   "name": "일본 도시 · 상가 키트·문·소품",
+   "documents": 5,
+   "images": 15,
+   "chars": 68713
+  },
+  {
+   "id": "jp-errors",
+   "name": "일본 도시 · 정상/오류·자동 좌표 검증·층 정정",
+   "documents": 3,
+   "images": 1,
+   "chars": 15435
+  }
+ ],
+ "totals": {
+  "categories": 6,
+  "documents": 47,
+  "images": 124,
+  "chars": 377621,
+  "maxDocChars": 38250,
+  "maxImagePx": 820
+ },
+ "tilesEmitted": 3463,
+ "kitsEmitted": 205,
+ "kitArrayItemsRoundtrip": 205,
+ "unknownTokens": [],
+ "sha256": {
+  "json": "a3f68fa97fd3460ab1bebaf6c426ea5ee2d436910374240ae88c981a73874d0f",
+  "images": "8a19321fc021336e2c58ccac8063fbbc3c739d0206bd13e0666395905fc927a1"
+ }
+}

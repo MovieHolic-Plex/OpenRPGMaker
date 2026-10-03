@@ -31,7 +31,6 @@ import type {
   ItemCareProfile,
   FarmTool,
   ItemConsumptionLimit,
-  ItemEquipmentProfile,
   ItemRecord,
   ItemScope,
   ItemType,
@@ -697,7 +696,7 @@ function seedPanels(record: ItemRecord, refreshStory: () => void): HTMLElement[]
       sectionCard({
         title: "영구 능력치 보정",
         testid: "db-item-card-seed-bonuses",
-        children: [el("div", { class: "db-item-grid", children: statBonusFields(record, record.seedParameterBonuses, "seedParameterBonuses", "db-field-item-seed", refreshStory) })],
+        children: [el("div", { class: "db-item-grid", children: statBonusFields(record, record.seedParameterBonuses, "db-field-item-seed", refreshStory) })],
       }),
     ]),
   ];
@@ -743,35 +742,30 @@ function switchPanels(record: ItemRecord, refreshStory: () => void): HTMLElement
 function statBonusFields(
   record: ItemRecord,
   bonuses: EquipmentStatBonuses,
-  target: "equipmentProfile" | "seedParameterBonuses",
   testIdPrefix: string,
   refreshStory?: () => void,
 ): HTMLElement[] {
   return [
-    statBonusField(record, bonuses, target, "attack", "공격력", `${testIdPrefix}-attack`, refreshStory),
-    statBonusField(record, bonuses, target, "defense", "방어력", `${testIdPrefix}-defense`, refreshStory),
-    statBonusField(record, bonuses, target, "mind", "정신력", `${testIdPrefix}-mind`, refreshStory),
-    statBonusField(record, bonuses, target, "agility", "민첩성", `${testIdPrefix}-agility`, refreshStory),
+    statBonusField(record, bonuses, "attack", "공격력", `${testIdPrefix}-attack`, refreshStory),
+    statBonusField(record, bonuses, "defense", "방어력", `${testIdPrefix}-defense`, refreshStory),
+    statBonusField(record, bonuses, "mind", "정신력", `${testIdPrefix}-mind`, refreshStory),
+    statBonusField(record, bonuses, "agility", "민첩성", `${testIdPrefix}-agility`, refreshStory),
   ];
 }
 
 function statBonusField(
   record: ItemRecord,
   bonuses: EquipmentStatBonuses,
-  target: "equipmentProfile" | "seedParameterBonuses",
   key: keyof EquipmentStatBonuses,
   label: string,
   testid: string,
   refreshStory?: () => void,
 ): HTMLElement {
-  // store normalize 와 동일 범위: 씨앗 보정 -50..50, 장비형 아이템 보정 -500..500 (P4).
-  const bounds = target === "seedParameterBonuses" ? { min: -50, max: 50 } : { min: -500, max: 500 };
+  // store normalize 와 동일 범위: 씨앗 보정 -50..50 (P4). 옛 아이템 장비형 보정(equipmentProfile)은 화면에서 지웠다 — 장비는 장비 탭이 맡는다.
+  const bounds = { min: -50, max: 50 };
   return numberField(label, testid, bonuses[key], (value) => {
     const current = currentItem(record);
-    const currentBonuses = target === "seedParameterBonuses" ? current.seedParameterBonuses : current.equipmentProfile.statBonuses;
-    const next = { ...currentBonuses, [key]: value };
-    if (target === "seedParameterBonuses") updateDatabaseRecord("items", record.id, { seedParameterBonuses: next });
-    if (target === "equipmentProfile") updateEquipmentProfile(current, { ...current.equipmentProfile, statBonuses: next });
+    updateDatabaseRecord("items", record.id, { seedParameterBonuses: { ...current.seedParameterBonuses, [key]: value } });
     refreshStory?.();
   }, bounds);
 }
@@ -1014,10 +1008,6 @@ function updateItemType(record: ItemRecord, type: ItemType): void {
     occasionBattle: occasion === "always" || occasion === "battle",
     onlyUsableInMenu: occasion === "field",
   });
-}
-
-function updateEquipmentProfile(record: ItemRecord, equipmentProfile: ItemEquipmentProfile): void {
-  updateDatabaseRecord("items", record.id, { equipmentProfile });
 }
 
 function currentItem(record: ItemRecord): ItemRecord {

@@ -1,0 +1,141 @@
+{
+  "scenarioId": "interview-handoff",
+  "projectPath": "output/qa/interview-e2e/runtime-project.json",
+  "seed": 1,
+  "viewport": {
+    "width": 1024,
+    "height": 768
+  },
+  "errors": [
+    "QA scene did not become ready"
+  ],
+  "beats": [
+    {
+      "index": 0,
+      "id": "title",
+      "note": "저장된 AI 타이틀이 내보내기 플레이어에서 열린다",
+      "shot": "01-title.png",
+      "failures": [],
+      "state": null,
+      "actions": []
+    },
+    {
+      "index": 1,
+      "id": "opening",
+      "note": "새 게임에서 시네마틱 오프닝으로 들어간다",
+      "shot": "02-opening.png",
+      "failures": [
+        "op waitFor 실패: page.waitForFunction: Timeout 30000ms exceeded.",
+        "testid 누락: cinematic-sequence"
+      ],
+      "state": null,
+      "actions": [
+        {
+          "kind": "key",
+          "key": "Enter"
+        },
+        {
+          "kind": "waitFor",
+          "testid": "cinematic-sequence",
+          "state": "present"
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "id": "field",
+      "note": "오프닝 건너뛰기 → 실제 시작 맵과 스프라이트",
+      "shot": "03-field.png",
+      "failures": [
+        "op waitForRuntime 실패: page.waitForFunction: Timeout 30000ms exceeded.",
+        "런타임 훅 없음 — 상태를 읽을 수 없다(mapId 확인 불가)",
+        "런타임 훅 없음 — 상태를 읽을 수 없다(x 확인 불가)",
+        "런타임 훅 없음 — 상태를 읽을 수 없다(y 확인 불가)",
+        "playerSprite: 텍스처가 로드되지 않았다(없음) — resourceId=없음"
+      ],
+      "state": null,
+      "actions": [
+        {
+          "kind": "key",
+          "key": "Escape"
+        },
+        {
+          "kind": "waitForRuntime"
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "id": "neighbor",
+      "note": "AI가 저장한 이웃 NPC 첫 대사를 읽는다",
+      "shot": "04-neighbor.png",
+      "failures": [
+        "op face 실패: page.evaluate: QA scene did not become ready",
+        "testid 누락: dialogue-box"
+      ],
+      "state": null,
+      "actions": [
+        {
+          "kind": "face",
+          "dir": "right"
+        },
+        {
+          "kind": "action"
+        },
+        {
+          "kind": "waitFor",
+          "testid": "dialogue-box",
+          "state": "present"
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "id": "choices",
+      "note": "첫 대사를 넘기면 두 선택지가 표시된다",
+      "shot": "05-choices.png",
+      "failures": [
+        "op pressUntil 실패: pressUntil: Enter 12회 뒤에도 runtime-choices 가 present 가 되지 않았다",
+        "testid 누락: runtime-choices",
+        "visibleText: runtime-choices 노드가 DOM 에 없다(기대 \"반갑게 인사한다\")"
+      ],
+      "state": {
+        "currentMapId": "map_blank_start",
+        "x": 10,
+        "y": 8,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {},
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "map_blank_start",
+          "handled": false,
+          "farmAttempts": [
+            {
+              "kind": "ignored",
+              "x": 10,
+              "y": 9,
+              "reason": "not-farmable"
+            },
+            {
+              "kind": "ignored",
+              "x": 10,
+              "y": 8,
+              "reason": "not-farmable"
+            }
+          ],
+          "sequence": 11
+        }
+      },
+      "actions": [
+        {
+          "kind": "pressUntil",
+          "key": "Enter",
+          "testid": "runtime-choices",
+          "state": "present"
+        }
+      ]
+    }
+  ]
+}

@@ -2,7 +2,7 @@
 //
 // 이 카탈로그가 **유일한 정본**이다. 생성기·런타임·계약 테스트가 같은 목록을 봐야 한다
 // (`generatedEffectSheets.ts` 가 같은 이유로 카탈로그 단일 정본을 못 박아 뒀다).
-// **파일이름 규약**: 스트립은 원본과 같은 파일이름으로 `starter/idle/` 아래에 둔다. 그러면
+// **파일이름 규약**: 스트립은 원본과 같은 파일이름으로 원본 옆 `idle/` 아래에 둔다. 그러면
 // 배경 URL 이 원본 파일이름을 그대로 포함해서, "이 배틀러가 자기 자산을 쓰고 있다" 를 재는
 // 기존 계약(`test/battleFieldAllySprite.test.ts` 의 부분및자열 단언)이 애니메이션에도 성립한다.
 //
@@ -26,7 +26,6 @@
 // 영상 티어의 `frameDurationMs` 는 **원본 클립에서 잰 값**이다(루프 구간 프레임 수 ÷ 24fps ÷ 뽑은
 // 장수). 임의로 고르면 슬라임이 경련하고 골렘이 슬로모션이 된다. 절차 티어는 전투 애니메이션
 // 프레임 간격(`BATTLE_ANIMATION_FRAME_MS` = 120ms)을 그대로 쓴다.
-import { BATTLE_ANIMATION_FRAME_MS } from "@/player/battleAnimationPlayback";
 import { withInlineAsset } from "@/assets/inlineAssetStore";
 
 export type BattlerIdleAnimationTier = "image-strip" | "sheet-cell";
@@ -42,23 +41,6 @@ export type BattlerIdleAnimation = {
   readonly frameDurationMs: number;
   readonly tier: BattlerIdleAnimationTier;
 };
-
-/**
- * 절차 생성한 액터 숨쉬기. 2026-09-03 부터 **고해상도 짝**(`starter/hires/idle/`, 셀 192px = 48px 스트립을
- * xBR 로 4배)을 쓴다 — 정적 시트가 `battlerHiresSheets.ts` 의 192px 시트로 바뀌었으니 idle 로 넘어갈 때
- * 48px 로 떨어지면 숨 쉴 때마다 화질이 튄다. 화면 크기는 `frameW / cellWidth` 배율로 같게 유지된다
- * (`battleFieldDom.applyIdleAnimationToSheetSprite`). 프레임 0 == 시트 idle 칸 계약은 셀 단위 업스케일이라
- * 4배에서도 성립한다(`test/battlerIdleAnimation.test.ts`).
- */
-const ACTOR_IDLE: readonly BattlerIdleAnimation[] = [1, 2, 3, 4, 5, 6].map((index) => ({
-  resourceId: `generated-actor-hero-0${index}-battle`,
-  path: `assets/generated/starter/hires/idle/hero-0${index}-battle.png`,
-  frameCount: 4,
-  cellWidth: 192,
-  cellHeight: 192,
-  frameDurationMs: BATTLE_ANIMATION_FRAME_MS,
-  tier: "sheet-cell",
-}));
 
 /**
  * 후면(뒷모습) 액터 idle — 영상 클립에서 뽑았다.
@@ -115,21 +97,8 @@ function backActor(slug: string, frameDurationMs: number): BattlerIdleAnimation 
   };
 }
 
-/**
- * 레거시 별칭 `hero` — 리졸버가 `hero-01-battle.png` 로 보내는 옛 id 다
- * (`generatedAssetResourceResolver.ts:18`). 많은 기존 프로젝트·픽스처가 아직 이 id 를 쓰고
- * `actorBattleImage` 도 생성 시트와 똑같이 3×8 로 다루므로, 같은 스트립을 그대로 붙인다.
- */
-const LEGACY_HERO_IDLE: BattlerIdleAnimation = {
-  ...ACTOR_IDLE[0],
-  resourceId: "hero",
-};
-
-export const BATTLER_IDLE_ANIMATIONS: readonly BattlerIdleAnimation[] = [
-  ...ACTOR_IDLE,
-  ...BACK_IDLE,
-  LEGACY_HERO_IDLE,
-];
+// Starter front sheets were removed; the back catalog is independent.
+export const BATTLER_IDLE_ANIMATIONS: readonly BattlerIdleAnimation[] = [...BACK_IDLE];
 
 const BY_RESOURCE_ID = new Map(BATTLER_IDLE_ANIMATIONS.map((entry) => [entry.resourceId, entry]));
 

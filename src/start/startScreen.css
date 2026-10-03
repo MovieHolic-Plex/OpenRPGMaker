@@ -1,8 +1,9 @@
 /* Launcher uses the same warm studio palette as the editor. Existing recent-project covers stay image-led. */
-@layer tokens, start, start-onboarding;
+@layer tokens, start, start-onboarding, start-lobby, shell;
 
 @import "../styles/tokens.css" layer(tokens);
 @import "./startOnboarding.css";
+@import "./startLobby.css";
 
 @font-face {
   font-family: "NeoDunggeunmo";

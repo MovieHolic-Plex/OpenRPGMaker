@@ -72,8 +72,7 @@ test.describe("QA — enemies tab", () => {
     await page.getByTestId("db-field-enemy-max-mp").fill("33");
     await page.getByTestId("db-field-enemy-defense").fill("22");
     await page.getByTestId("db-field-enemy-agility").fill("11");
-    await page.getByTestId("db-field-enemy-transparent").check();
-    await page.getByTestId("db-field-enemy-flying").check();
+    // 투명·비행 칸은 2026-10-02 자료집에서 지웠다(런타임이 읽지 않던 칸).
 
     // graphic dialog: open, pick first resource, confirm
     await page.getByTestId("db-enemy-graphic-set").click();
@@ -114,8 +113,6 @@ test.describe("QA — enemies tab", () => {
     await expect(page.locator(".db-list-row.active")).toContainText("QA 몬스터");
     await expect(page.getByTestId("db-field-name")).toHaveValue("QA 몬스터");
     await expect(page.getByTestId("db-field-enemy-max-hp")).toHaveValue("777");
-    await expect(page.getByTestId("db-field-enemy-transparent")).toBeChecked();
-    await expect(page.getByTestId("db-field-enemy-flying")).toBeChecked();
     await expect(page.getByTestId("db-field-enemy-drop-rate")).toHaveValue("42");
     await expect(page.getByTestId("db-field-enemy-critical-one-in")).toHaveValue("8");
     await expect(page.getByTestId("db-picker-enemy-state-rate-state_death")).toHaveValue("A");
@@ -127,8 +124,6 @@ test.describe("QA — enemies tab", () => {
     expect(enemy, "exported enemy should exist").toBeTruthy();
     expect(enemy?.name).toBe("QA 몬스터");
     expect(enemy?.stats).toMatchObject({ maxHp: 777, attack: 55, mind: 44, maxMp: 33, defense: 22, agility: 11 });
-    expect(enemy?.transparent).toBe(true);
-    expect(enemy?.flying).toBe(true);
     if (pickedResourceId) expect(enemy?.monsterResourceId).toBe(pickedResourceId);
     if (speciesValue) expect(enemy?.speciesId).toBe(speciesValue);
     expect(enemy?.rewards).toMatchObject({ exp: 321, gold: 654, dropRatePercent: 42 });
@@ -253,7 +248,7 @@ test.describe("QA — Species tab", () => {
     const id = await selectedRecordId(page);
 
     // wave2 fix: updateSpecies 콜백들이 store에서 레코드를 refetch하므로(currentSpecies)
-    // 리소스 다이얼로그 확정 순서와 Hue 입력 순서가 서로의 값을 지우지 않는다.
+    // 리소스 다이얼로그 확정 뒤 이어지는 편집이 그 값을 지우지 않는다(색조 칸은 2026-10-02 지웠다).
     await page.getByTestId("db-monster-species-resource-set").click();
     const resourceDialog = page.getByTestId("db-monster-species-resource-dialog");
     await expect(resourceDialog).toBeVisible();
@@ -267,7 +262,6 @@ test.describe("QA — Species tab", () => {
     await page.getByTestId("db-monster-species-name").fill("QA종");
     await page.getByTestId("db-monster-species-type-fire").check();
     await page.getByTestId("db-monster-species-type-water").check();
-    await page.getByTestId("db-monster-species-hue").fill("120");
     await openSpeciesSection(page, "capture");
     await page.getByTestId("db-monster-species-capture-rate").fill("0.5");
     await openSpeciesSection(page, "growth");
@@ -301,7 +295,6 @@ test.describe("QA — Species tab", () => {
     await expect(page.getByTestId("db-monster-species-name")).toHaveValue("QA종");
     await expect(page.getByTestId("db-monster-species-type-fire")).toBeChecked();
     await expect(page.getByTestId("db-monster-species-type-water")).toBeChecked();
-    await expect(page.getByTestId("db-monster-species-hue")).toHaveValue("120");
     await expect(page.getByTestId("db-monster-species-capture-rate")).toHaveValue("0.5");
     await expect(page.getByTestId("db-monster-species-hp")).toHaveValue("64");
     await expect(page.getByTestId("db-monster-species-mp")).toHaveValue("30");
@@ -323,7 +316,6 @@ test.describe("QA — Species tab", () => {
     expect(species, "exported species should exist").toBeTruthy();
     expect(species?.name).toBe("QA종");
     expect(species?.types).toEqual(["fire", "water"]);
-    expect(species?.graphic.graphicHue).toBe(120);
     expect(species?.captureRate).toBe(0.5);
     expect(species?.baseStats.maxHp).toBe(64);
     expect(species?.baseStats.maxMp).toBe(30);
@@ -359,7 +351,7 @@ test.describe("QA — Species tab", () => {
     await expect(page.getByTestId(`db-monster-species-row-${id}`)).toBeVisible();
   });
 
-  test("boundary clamps: captureRate 0~1, hue 0~360, stats min, types max 2", async ({ page }) => {
+  test("boundary clamps: captureRate 0~1, stats min, types max 2", async ({ page }) => {
     await gotoExpertDatabase(page);
     await switchDatabaseTab(page, SPECIES_TAB);
     await page.getByTestId("db-monster-species-add").click();
@@ -369,7 +361,6 @@ test.describe("QA — Species tab", () => {
     await openSpeciesSection(page, "growth");
     await page.getByTestId("db-monster-species-hp").fill("-10");
     await openSpeciesSection(page, "basic");
-    await page.getByTestId("db-monster-species-hue").fill("999");
     await page.getByTestId("db-monster-species-type-fire").check();
     await page.getByTestId("db-monster-species-type-water").check();
     await page.getByTestId("db-monster-species-type-grass").click();
@@ -377,7 +368,6 @@ test.describe("QA — Species tab", () => {
     await switchDatabaseTab(page, ENEMIES_TAB);
     await switchDatabaseTab(page, SPECIES_TAB);
     await expect(page.getByTestId("db-monster-species-capture-rate")).toHaveValue("1");
-    await expect(page.getByTestId("db-monster-species-hue")).toHaveValue("360");
     await expect(page.getByTestId("db-monster-species-hp")).toHaveValue("1");
     await expect(page.getByTestId("db-monster-species-type-fire")).toBeChecked();
     await expect(page.getByTestId("db-monster-species-type-water")).toBeChecked();

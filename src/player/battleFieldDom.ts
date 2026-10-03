@@ -1,6 +1,6 @@
 import { beginEnemyCollapse, markEnemyCollapsed } from "@/player/battleEnemyCollapse";
 import { opaqueBounds, snapshotSprite } from "@/player/battleSpriteSnapshot";
-import { charsetBattler, resolvePartyBattleCharset } from "@/assets/charsetBattlers";
+import { charsetBattler, resolvePartyBattleCharset, retroFallbackPartyBattler } from "@/assets/charsetBattlers";
 import { resolveBattlerAuras } from "@/assets/battleStateAuras";
 import { retroCastFrameFor, retroMotionPose, retroPartyPixelCell, retroPixelEnemyCell } from "@/player/battleRetroMotion";
 import { PIXEL_ENEMY_FRAME, pixelEnemySheet, pixelEnemySheetUrl } from "@/assets/pixelEnemySheets";
@@ -46,6 +46,8 @@ import { scheduleBattleTimer } from "@/player/battleTimerScope";
 import { LIMIT_GAUGE_MAX, limitGaugeConfig, partyGaugeConfig, partyGaugeMax, resource2Config, resource2Max } from "@/battle/battleGauges";
 import { applyBattleBackdropMotion, clearBattleBackdropMotion } from "@/player/battleBackdropMotion";
 import { syncBattleBackdropLayers } from "@/player/battleBackdropLayersDom";
+import { pokemonBattleBackdropId } from "@/battle/battleBackdrop";
+import { DEFAULT_BATTLE_FIELD_BACKGROUND_ID, normalizeBattleFieldBackgroundId } from "@/project/databaseEnemyTroopRecordModel";
 import type { RollingHpMeter } from "@/player/rollingHp";
 
 /** 같은 이름이 둘 이상이면 1-base 순번을 붙여 구분한다("초원 슬라임 1/2").
@@ -311,7 +313,7 @@ function presentedForm(battler: BattleBattlerSnapshot, presentation: BattleField
     const id = states.find((state) => state.id === stateId)?.runtimeEffects?.transformResourceId?.trim();
     if (id) form = id;
   }
-  return form;
+  return form ?? battler.gimmicks?.find((status) => status.kind === "transform")?.resourceId;
 }
 
 /** 롤링 미터가 있으면 아군 HP 표시값과 「쓰러지는 중」 여부를 미터에서 얻는다. */
@@ -460,7 +462,9 @@ function partyRowsMatchSnapshot(party: HTMLElement, snapshot: BattleSnapshot): b
 /** 트룹/시스템에서 지정한 배경을 스킨 기본 배경보다 우선한다.
  *  트룹 배경이 없으면 스킨 기본 배경으로 폴백한다. */
 function effectiveBackdropId(resourceId: string | undefined): string | undefined {
-  return resourceId ?? activeSkin().defaultBackdropResourceId;
+  // 옛 배경 id(은퇴 스킨·숲 레퍼런스·EasyRPG 하늘)는 도트 겹 배경으로, 포켓몬은 GBA 줄무늬 바닥으로 돌린다.
+  const id = normalizeBattleFieldBackgroundId(resourceId) ?? activeSkin().defaultBackdropResourceId;
+  return id && activeSkin().id === "pokemon" ? pokemonBattleBackdropId(id) : id;
 }
 
 function syncBackdrop(field: HTMLElement, resourceId: string | undefined): void {
@@ -627,6 +631,7 @@ function syncActorGroup(field: HTMLElement, snapshot: BattleSnapshot, presentati
     syncStatusIcons(node, { ...actor, defeated: presented.defeated, stateIds: presentedStateIds(actor, presentation) });
     syncBattleAura(node, presented.defeated ? [] : presentedStateIds(actor, presentation));
     syncChargeMark(node, presented.defeated ? undefined : actor.charging);
+    syncGimmickMarks(node,presented.defeated?[]:actor.gimmicks??[]);
   }
 }
 
@@ -685,6 +690,7 @@ function syncEnemyNode(node: HTMLElement, enemy: BattleBattlerSnapshot, snapshot
   syncStatusIcons(node, { ...enemy, defeated: presented.defeated, stateIds: presentedStateIds(enemy, presentation) });
   syncBattleAura(node, presented.defeated ? [] : presentedStateIds(enemy, presentation));
   syncChargeMark(node, presented.defeated ? undefined : enemy.charging);
+  syncGimmickMarks(node,presented.defeated?[]:enemy.gimmicks??[]);
 }
 
 /**
@@ -958,12 +964,10 @@ function battleBackdrop(resourceId: string | undefined): HTMLElement {
   backdrop.className = "battle-backdrop";
   backdrop.dataset.testid = "battle-backdrop";
   // 활성 스킨의 전용 배경이 전투장을 결정한다. 없으면 troop/system 배경,
-  // 그것도 없으면 forest 레퍼런스로 폴백한다.
+  // 그것도 없으면 도트 숲 겹 배경으로 폴백한다.
   const effectiveId = effectiveBackdropId(resourceId);
-  const resolvedId = effectiveId || "generated-battle-reference-forest";
-  const url =
-    resolveAssetResourceUrl(resolvedId, { project: store.getCurrent() })
-    ?? (!effectiveId ? "/generated/battle-reference-forest.png" : undefined);
+  const resolvedId = effectiveId || DEFAULT_BATTLE_FIELD_BACKGROUND_ID;
+  const url = resolveAssetResourceUrl(resolvedId, { project: store.getCurrent() });
   if (effectiveId) backdrop.dataset.backdropResourceId = effectiveId;
   else backdrop.dataset.backdropFallback = "forest";
   backdrop.setAttribute("aria-label", "전투 배경");
@@ -1261,7 +1265,10 @@ function actorNode(view: BattleBattlerSnapshot, index = 0, count = 4): HTMLEleme
   }
   // 정면 사이드뷰에서는 배우가 저작한 전투 시트를 최우선으로 쓴다. 스킨 공용 전사/마법사를
   // 먼저 쓰면 모든 짝수 배우와 홀수 배우가 각각 같은 사람으로 보이고 faceset과도 어긋난다.
-  const resourceId = place.partyFacing === "front" ? resolvePartyBattleCharset(actor, activeSkin().motionStyle === "retro") : undefined;
+  const retroParty = activeSkin().motionStyle === "retro";
+  const resourceId = place.partyFacing === "front"
+    ? resolvePartyBattleCharset(actor, retroParty) ?? (retroParty ? retroFallbackPartyBattler(index) : undefined)
+    : undefined;
   if (resourceId) {
     node.dataset.authoredBattler = "true";
     node.dataset.battleCharsetResourceId = resourceId;
@@ -1846,6 +1853,15 @@ function fitAuraLayerToSprite(node: HTMLElement, layer: HTMLElement): void {
 }
 
 /** 힘 모으기(SkillRecord.chargeTurns) 예고 표식: 몸이 빛나고(CSS) 머리 위에 「기술 · 남은 차례」 띠가 뜬다. */
+function syncGimmickMarks(node:HTMLElement,statuses:NonNullable<BattleBattlerSnapshot["gimmicks"]>):void {
+  const key=JSON.stringify(statuses);if(node.dataset.gimmicks===key)return;node.dataset.gimmicks=key;
+  node.querySelector(":scope > .battle-gimmick-marks")?.remove();if(!statuses.length)return;
+  const host=document.createElement("span");host.className="battle-gimmick-marks";
+  const labels={mark:"표식",airborne:"공중",trap:"설치",zone:"장판",summon:"지원",counter:"반격",cover:"엄호",absorb:"흡수",transform:"변신"};
+  for(const s of statuses){const tag=document.createElement("span");tag.textContent=`${labels[s.kind]} ${s.kind==="mark"?s.stacks:s.kind==="absorb"?s.stored:s.turnsLeft}`;host.append(tag);
+    if(s.kind==="summon"){const sheet=partyPixelSheet(s.resourceId??"party-pixel-animal-7");if(sheet){const sprite=document.createElement("span");sprite.className="battle-gimmick-summon";Object.assign(sprite.style,{backgroundImage:`url("${partyPixelSheetUrl(sheet)}")`,backgroundSize:`300% ${sheet.rows*100}%`,backgroundPosition:partyPixelBackgroundPosition(sheet,"idle_a")});host.append(sprite);}}
+  }node.append(host);
+}
 function syncChargeMark(node: HTMLElement, charging: BattleBattlerSnapshot["charging"]): void {
   const key = charging ? `${charging.skillName} · ${charging.turnsLeft}` : "";
   if ((node.dataset.charging ?? "") === key) return;

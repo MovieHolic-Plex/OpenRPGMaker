@@ -47,7 +47,7 @@ export async function makeFixture(kind, root = process.env.NPC_QA_ROOT ?? fileUR
   p.commonEvents = [];
   p.villageInfoDocuments = [];
   p.system.startActorIds = ['actor_hero'];
-  p.system.battleUiStyle = 'rm2003';
+  p.system.battleUiStyle = 'retro2003';
   // Explicit silence survives normalization; omission would restore the default streamed BGM.
   p.system.defaultBgmResourceId = '';
   p.system.battleBgmResourceId = '';

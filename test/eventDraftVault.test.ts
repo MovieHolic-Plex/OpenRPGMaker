@@ -168,5 +168,11 @@ describe("event draft vault recovery", () => {
     expect(kept?.draft?.conflict?.kind).toBe("remote-delete");
     expect(projectWithoutEventDrafts(merged).maps[mapId].events.some((event) => event.id === eventId)).toBe(false);
     expect(getEventDraftVaultEntry(mapId, eventId)?.event.draft?.conflict?.kind).toBe("remote-delete");
+
+    store.replace(merged);
+    expect(discardEventDraft(mapId, eventId)).toBe(true);
+    expect(store.getCurrent().maps[mapId].events.some((event) => event.id === eventId)).toBe(false);
+    expect(projectWithoutEventDrafts(store.getCurrent()).maps[mapId].events.some((event) => event.id === eventId)).toBe(false);
+    expect(getEventDraftVaultEntry(mapId, eventId)).toBeNull();
   });
 });

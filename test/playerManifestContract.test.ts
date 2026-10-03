@@ -347,7 +347,7 @@ describe("player deployment manifest", () => {
     })).rejects.toMatchObject({ code: "zip-path-collision" });
   });
 
-  it.each([undefined, "pokemon", "rm2003"] as const)("writes the exact verified deployment closure and project payload into the ZIP for %s", async skin => {
+  it.each([undefined, "pokemon", "retro2003"] as const)("writes the exact verified deployment closure and project payload into the ZIP for %s", async skin => {
     const fixture = await deploymentFixture();
     const project = createBlankProject();
     project.system.battleUiStyle = skin;

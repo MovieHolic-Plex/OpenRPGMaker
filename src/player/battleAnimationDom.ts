@@ -4,6 +4,7 @@ import { activeTimingEffects, type ActiveTimingEffects } from "@/battle/animatio
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { applyAutoTransparencyKey } from "@/assets/transparentColorKey";
 import { store } from "@/project/store";
+import { bundledRetroPixelAnimation } from "@/project/defaults/retroPixelAnimationRecords";
 import type { BattleAnimationRecord, BattleAnimationTiming } from "@/project/types";
 import {
   battleAnimationFrameDurationMs,
@@ -292,7 +293,9 @@ function setOptionalDataset(element: HTMLElement, key: string, value: string | u
 }
 
 function battleAnimationRecord(animationId: string): BattleAnimationRecord | undefined {
-  return store.getCurrent().database.battleAnimations.find((record) => record.id === animationId);
+  // 도트 측면 전투가 바꿔 그리는 anim_px_* 는 불러오기 수리를 안 탄 프로젝트(내보낸 플레이어)에도 있어야 한다.
+  return store.getCurrent().database.battleAnimations.find((record) => record.id === animationId)
+    ?? bundledRetroPixelAnimation(animationId);
 }
 
 /**

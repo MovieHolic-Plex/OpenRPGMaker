@@ -1,0 +1,902 @@
+{
+  "checks": 1214,
+  "rows": [
+    {
+      "pattern": "stationary",
+      "side": "class",
+      "contacts": {
+        "hit": 1,
+        "miss": 1,
+        "cancel": 0
+      },
+      "duration": {
+        "hit": 1310,
+        "miss": 1310,
+        "cancel": 500
+      }
+    },
+    {
+      "pattern": "stationary",
+      "side": "monster",
+      "contacts": {
+        "hit": 1,
+        "miss": 1,
+        "cancel": 0
+      },
+      "duration": {
+        "hit": 1390,
+        "miss": 1390,
+        "cancel": 500
+      }
+    },
+    {
+      "pattern": "walk",
+      "side": "class",
+      "contacts": {
+        "hit": 1,
+        "miss": 1,
+        "cancel": 0
+      },
+      "duration": {
+        "hit": 1400,
+        "miss": 1400,
+        "cancel": 500
+      }
+    },
+    {
+      "pattern": "walk",
+      "side": "monster",
+      "contacts": {
+        "hit": 1,
+        "miss": 1,
+        "cancel": 0
+      },
+      "duration": {
+        "hit": 1400,
+        "miss": 1400,
+        "cancel": 500
+      }
+    },
+    {
+      "pattern": "dash",
+      "side": "class",
+      "contacts": {
+        "hit": 1,
+        "miss": 1,
+        "cancel": 0
+      },
+      "duration": {
+        "hit": 1060,
+        "miss": 1060,
+        "cancel": 500
+      }
+    },
+    {
+      "pattern": "dash",
+      "side": "monster",
+      "contacts": {
+        "hit": 1,
+        "miss": 1,
+        "cancel": 0
+      },
+      "duration": {
+        "hit": 1060,
+        "miss": 1060,
+        "cancel": 500
+      }
+    },
+    {
+      "pattern": "jump",
+      "side": "class",
+      "contacts": {
+        "hit": 1,
+        "miss": 1,
+        "cancel": 0
+      },
+      "duration": {
+        "hit": 1300,
+        "miss": 1300,
+        "cancel": 500
+      }
+    },
+    {
+      "pattern": "jump",
+      "side": "monster",
+      "contacts": {
+        "hit": 1,
+        "miss": 1,
+        "cancel": 0
+      },
+      "duration": {
+        "hit": 1300,
+        "miss": 1300,
+        "cancel": 500
+      }
+    },
+    {
+      "pattern": "blink",
+      "side": "class",
+      "contacts": {
+        "hit": 1,
+        "miss": 1,
+        "cancel": 0
+      },
+      "duration": {
+        "hit": 1200,
+        "miss": 1200,
+        "cancel": 500
+      }
+    },
+    {
+      "pattern": "blink",
+      "side": "monster",
+      "contacts": {
+        "hit": 1,
+        "miss": 1,
+        "cancel": 0
+      },
+      "duration": {
+        "hit": 1200,
+        "miss": 1200,
+        "cancel": 500
+      }
+    },
+    {
+      "pattern": "fire",
+      "side": "class",
+      "contacts": {
+        "hit": 1,
+        "miss": 1,
+        "cancel": 0
+      },
+      "duration": {
+        "hit": 1590,
+        "miss": 1590,
+        "cancel": 500
+      }
+    },
+    {
+      "pattern": "fire",
+      "side": "monster",
+      "contacts": {
+        "hit": 1,
+        "miss": 1,
+        "cancel": 0
+      },
+      "duration": {
+        "hit": 1610,
+        "miss": 1610,
+        "cancel": 500
+      }
+    },
+    {
+      "pattern": "sky",
+      "side": "class",
+      "contacts": {
+        "hit": 1,
+        "miss": 1,
+        "cancel": 0
+      },
+      "duration": {
+        "hit": 1520,
+        "miss": 1520,
+        "cancel": 500
+      }
+    },
+    {
+      "pattern": "sky",
+      "side": "monster",
+      "contacts": {
+        "hit": 1,
+        "miss": 1,
+        "cancel": 0
+      },
+      "duration": {
+        "hit": 1520,
+        "miss": 1520,
+        "cancel": 500
+      }
+    },
+    {
+      "pattern": "through",
+      "side": "class",
+      "contacts": {
+        "hit": 1,
+        "miss": 1,
+        "cancel": 0
+      },
+      "duration": {
+        "hit": 1060,
+        "miss": 1060,
+        "cancel": 500
+      }
+    },
+    {
+      "pattern": "through",
+      "side": "monster",
+      "contacts": {
+        "hit": 1,
+        "miss": 1,
+        "cancel": 0
+      },
+      "duration": {
+        "hit": 1060,
+        "miss": 1060,
+        "cancel": 500
+      }
+    },
+    {
+      "pattern": "clones",
+      "side": "class",
+      "contacts": {
+        "hit": 3,
+        "miss": 3,
+        "cancel": 0
+      },
+      "duration": {
+        "hit": 1715,
+        "miss": 1715,
+        "cancel": 500
+      }
+    },
+    {
+      "pattern": "clones",
+      "side": "monster",
+      "contacts": {
+        "hit": 3,
+        "miss": 3,
+        "cancel": 0
+      },
+      "duration": {
+        "hit": 1795,
+        "miss": 1795,
+        "cancel": 500
+      }
+    },
+    {
+      "pattern": "pull",
+      "side": "class",
+      "contacts": {
+        "hit": 1,
+        "miss": 1,
+        "cancel": 0
+      },
+      "duration": {
+        "hit": 1310,
+        "miss": 1310,
+        "cancel": 500
+      }
+    },
+    {
+      "pattern": "pull",
+      "side": "monster",
+      "contacts": {
+        "hit": 1,
+        "miss": 1,
+        "cancel": 0
+      },
+      "duration": {
+        "hit": 1390,
+        "miss": 1390,
+        "cancel": 500
+      }
+    },
+    {
+      "pattern": "freeze",
+      "side": "class",
+      "contacts": {
+        "hit": 3,
+        "miss": 3,
+        "cancel": 0
+      },
+      "duration": {
+        "hit": 1560,
+        "miss": 1560,
+        "cancel": 500
+      }
+    },
+    {
+      "pattern": "freeze",
+      "side": "monster",
+      "contacts": {
+        "hit": 3,
+        "miss": 3,
+        "cancel": 0
+      },
+      "duration": {
+        "hit": 1560,
+        "miss": 1560,
+        "cancel": 500
+      }
+    },
+    {
+      "pattern": "counter",
+      "side": "class",
+      "contacts": {
+        "hit": 0,
+        "miss": 0,
+        "cancel": 0
+      },
+      "duration": {
+        "hit": 1200,
+        "miss": 500,
+        "cancel": 500
+      }
+    },
+    {
+      "pattern": "counter",
+      "side": "monster",
+      "contacts": {
+        "hit": 1,
+        "miss": 0,
+        "cancel": 0
+      },
+      "duration": {
+        "hit": 1200,
+        "miss": 500,
+        "cancel": 500
+      }
+    },
+    {
+      "pattern": "air-chase",
+      "side": "class",
+      "contacts": {
+        "hit": 3,
+        "miss": 1,
+        "cancel": 0
+      },
+      "duration": {
+        "hit": 1745,
+        "miss": 1200,
+        "cancel": 500
+      }
+    },
+    {
+      "pattern": "air-chase",
+      "side": "monster",
+      "contacts": {
+        "hit": 3,
+        "miss": 1,
+        "cancel": 0
+      },
+      "duration": {
+        "hit": 1720,
+        "miss": 1200,
+        "cancel": 500
+      }
+    },
+    {
+      "pattern": "throw",
+      "side": "class",
+      "contacts": {
+        "hit": 2,
+        "miss": 1,
+        "cancel": 0
+      },
+      "duration": {
+        "hit": 1328,
+        "miss": 1060,
+        "cancel": 500
+      }
+    },
+    {
+      "pattern": "throw",
+      "side": "monster",
+      "contacts": {
+        "hit": 2,
+        "miss": 1,
+        "cancel": 0
+      },
+      "duration": {
+        "hit": 1320,
+        "miss": 1060,
+        "cancel": 500
+      }
+    },
+    {
+      "pattern": "return-weapon",
+      "side": "class",
+      "contacts": {
+        "hit": 2,
+        "miss": 2,
+        "cancel": 0
+      },
+      "duration": {
+        "hit": 2213,
+        "miss": 2213,
+        "cancel": 500
+      }
+    },
+    {
+      "pattern": "return-weapon",
+      "side": "monster",
+      "contacts": {
+        "hit": 2,
+        "miss": 2,
+        "cancel": 0
+      },
+      "duration": {
+        "hit": 2233,
+        "miss": 2233,
+        "cancel": 500
+      }
+    },
+    {
+      "pattern": "bounce",
+      "side": "class",
+      "contacts": {
+        "hit": 3,
+        "miss": 1,
+        "cancel": 0
+      },
+      "duration": {
+        "hit": 1995,
+        "miss": 1590,
+        "cancel": 500
+      }
+    },
+    {
+      "pattern": "bounce",
+      "side": "monster",
+      "contacts": {
+        "hit": 3,
+        "miss": 1,
+        "cancel": 0
+      },
+      "duration": {
+        "hit": 2015,
+        "miss": 1610,
+        "cancel": 500
+      }
+    },
+    {
+      "pattern": "orbit",
+      "side": "class",
+      "contacts": {
+        "hit": 1,
+        "miss": 1,
+        "cancel": 0
+      },
+      "duration": {
+        "hit": 1590,
+        "miss": 1590,
+        "cancel": 500
+      }
+    },
+    {
+      "pattern": "orbit",
+      "side": "monster",
+      "contacts": {
+        "hit": 1,
+        "miss": 1,
+        "cancel": 0
+      },
+      "duration": {
+        "hit": 1610,
+        "miss": 1610,
+        "cancel": 500
+      }
+    },
+    {
+      "pattern": "trap",
+      "side": "class",
+      "contacts": {
+        "hit": 0,
+        "miss": 0,
+        "cancel": 0
+      },
+      "duration": {
+        "hit": 1200,
+        "miss": 500,
+        "cancel": 500
+      }
+    },
+    {
+      "pattern": "trap",
+      "side": "monster",
+      "contacts": {
+        "hit": 1,
+        "miss": 0,
+        "cancel": 0
+      },
+      "duration": {
+        "hit": 1200,
+        "miss": 500,
+        "cancel": 500
+      }
+    },
+    {
+      "pattern": "mark",
+      "side": "class",
+      "contacts": {
+        "hit": 3,
+        "miss": 3,
+        "cancel": 0
+      },
+      "duration": {
+        "hit": 1715,
+        "miss": 1715,
+        "cancel": 500
+      }
+    },
+    {
+      "pattern": "mark",
+      "side": "monster",
+      "contacts": {
+        "hit": 3,
+        "miss": 3,
+        "cancel": 0
+      },
+      "duration": {
+        "hit": 1795,
+        "miss": 1795,
+        "cancel": 500
+      }
+    },
+    {
+      "pattern": "absorb",
+      "side": "class",
+      "contacts": {
+        "hit": 1,
+        "miss": 0,
+        "cancel": 0
+      },
+      "duration": {
+        "hit": 1590,
+        "miss": 500,
+        "cancel": 500
+      }
+    },
+    {
+      "pattern": "absorb",
+      "side": "monster",
+      "contacts": {
+        "hit": 1,
+        "miss": 0,
+        "cancel": 0
+      },
+      "duration": {
+        "hit": 1610,
+        "miss": 500,
+        "cancel": 500
+      }
+    },
+    {
+      "pattern": "cover",
+      "side": "class",
+      "contacts": {
+        "hit": 0,
+        "miss": 0,
+        "cancel": 0
+      },
+      "duration": {
+        "hit": 1200,
+        "miss": 500,
+        "cancel": 500
+      }
+    },
+    {
+      "pattern": "cover",
+      "side": "monster",
+      "contacts": {
+        "hit": 1,
+        "miss": 0,
+        "cancel": 0
+      },
+      "duration": {
+        "hit": 1200,
+        "miss": 500,
+        "cancel": 500
+      }
+    },
+    {
+      "pattern": "swap",
+      "side": "class",
+      "contacts": {
+        "hit": 2,
+        "miss": 2,
+        "cancel": 0
+      },
+      "duration": {
+        "hit": 1248,
+        "miss": 1248,
+        "cancel": 500
+      }
+    },
+    {
+      "pattern": "swap",
+      "side": "monster",
+      "contacts": {
+        "hit": 2,
+        "miss": 2,
+        "cancel": 0
+      },
+      "duration": {
+        "hit": 1240,
+        "miss": 1240,
+        "cancel": 500
+      }
+    },
+    {
+      "pattern": "relay",
+      "side": "class",
+      "contacts": {
+        "hit": 2,
+        "miss": 1,
+        "cancel": 0
+      },
+      "duration": {
+        "hit": 1248,
+        "miss": 1060,
+        "cancel": 500
+      }
+    },
+    {
+      "pattern": "relay",
+      "side": "monster",
+      "contacts": {
+        "hit": 2,
+        "miss": 1,
+        "cancel": 0
+      },
+      "duration": {
+        "hit": 1240,
+        "miss": 1060,
+        "cancel": 500
+      }
+    },
+    {
+      "pattern": "summon",
+      "side": "class",
+      "contacts": {
+        "hit": 0,
+        "miss": 0,
+        "cancel": 0
+      },
+      "duration": {
+        "hit": 1200,
+        "miss": 500,
+        "cancel": 500
+      }
+    },
+    {
+      "pattern": "summon",
+      "side": "monster",
+      "contacts": {
+        "hit": 1,
+        "miss": 0,
+        "cancel": 0
+      },
+      "duration": {
+        "hit": 1200,
+        "miss": 500,
+        "cancel": 500
+      }
+    },
+    {
+      "pattern": "transform",
+      "side": "class",
+      "contacts": {
+        "hit": 0,
+        "miss": 0,
+        "cancel": 0
+      },
+      "duration": {
+        "hit": 1200,
+        "miss": 500,
+        "cancel": 500
+      }
+    },
+    {
+      "pattern": "transform",
+      "side": "monster",
+      "contacts": {
+        "hit": 1,
+        "miss": 0,
+        "cancel": 0
+      },
+      "duration": {
+        "hit": 1200,
+        "miss": 500,
+        "cancel": 500
+      }
+    },
+    {
+      "pattern": "charge",
+      "side": "class",
+      "contacts": {
+        "hit": 1,
+        "miss": 1,
+        "cancel": 0
+      },
+      "duration": {
+        "hit": 1310,
+        "miss": 1310,
+        "cancel": 500
+      }
+    },
+    {
+      "pattern": "charge",
+      "side": "monster",
+      "contacts": {
+        "hit": 1,
+        "miss": 1,
+        "cancel": 0
+      },
+      "duration": {
+        "hit": 1390,
+        "miss": 1390,
+        "cancel": 500
+      }
+    },
+    {
+      "pattern": "zone",
+      "side": "class",
+      "contacts": {
+        "hit": 1,
+        "miss": 1,
+        "cancel": 0
+      },
+      "duration": {
+        "hit": 1310,
+        "miss": 1310,
+        "cancel": 500
+      }
+    },
+    {
+      "pattern": "zone",
+      "side": "monster",
+      "contacts": {
+        "hit": 1,
+        "miss": 1,
+        "cancel": 0
+      },
+      "duration": {
+        "hit": 1390,
+        "miss": 1390,
+        "cancel": 500
+      }
+    },
+    {
+      "pattern": "sacrifice",
+      "side": "class",
+      "contacts": {
+        "hit": 1,
+        "miss": 1,
+        "cancel": 0
+      },
+      "duration": {
+        "hit": 1060,
+        "miss": 1060,
+        "cancel": 500
+      }
+    },
+    {
+      "pattern": "sacrifice",
+      "side": "monster",
+      "contacts": {
+        "hit": 1,
+        "miss": 1,
+        "cancel": 0
+      },
+      "duration": {
+        "hit": 1060,
+        "miss": 1060,
+        "cancel": 500
+      }
+    },
+    {
+      "pattern": "sky-crush",
+      "side": "class",
+      "contacts": {
+        "hit": 3,
+        "miss": 1,
+        "cancel": 0
+      },
+      "duration": {
+        "hit": 1745,
+        "miss": 1200,
+        "cancel": 500
+      }
+    },
+    {
+      "pattern": "sky-crush",
+      "side": "monster",
+      "contacts": {
+        "hit": 3,
+        "miss": 1,
+        "cancel": 0
+      },
+      "duration": {
+        "hit": 1720,
+        "miss": 1200,
+        "cancel": 500
+      }
+    },
+    {
+      "pattern": "marked-spear",
+      "side": "class",
+      "contacts": {
+        "hit": 2,
+        "miss": 2,
+        "cancel": 0
+      },
+      "duration": {
+        "hit": 2213,
+        "miss": 2213,
+        "cancel": 500
+      }
+    },
+    {
+      "pattern": "marked-spear",
+      "side": "monster",
+      "contacts": {
+        "hit": 2,
+        "miss": 2,
+        "cancel": 0
+      },
+      "duration": {
+        "hit": 2233,
+        "miss": 2233,
+        "cancel": 500
+      }
+    },
+    {
+      "pattern": "mirror-counter",
+      "side": "class",
+      "contacts": {
+        "hit": 1,
+        "miss": 0,
+        "cancel": 0
+      },
+      "duration": {
+        "hit": 1590,
+        "miss": 500,
+        "cancel": 500
+      }
+    },
+    {
+      "pattern": "mirror-counter",
+      "side": "monster",
+      "contacts": {
+        "hit": 1,
+        "miss": 0,
+        "cancel": 0
+      },
+      "duration": {
+        "hit": 1610,
+        "miss": 500,
+        "cancel": 500
+      }
+    },
+    {
+      "pattern": "blood-summon",
+      "side": "class",
+      "contacts": {
+        "hit": 2,
+        "miss": 2,
+        "cancel": 0
+      },
+      "duration": {
+        "hit": 1248,
+        "miss": 1248,
+        "cancel": 500
+      }
+    },
+    {
+      "pattern": "blood-summon",
+      "side": "monster",
+      "contacts": {
+        "hit": 2,
+        "miss": 2,
+        "cancel": 0
+      },
+      "duration": {
+        "hit": 1240,
+        "miss": 1240,
+        "cancel": 500
+      }
+    }
+  ],
+  "failures": []
+}

@@ -621,7 +621,7 @@
   "1 1 auto",
   "radial-gradient(ellipse at 50% 61%, rgba(223, 216, 120, 0.18), transparent 28%), radial-gradient(ellipse at 18% 74%, rgba(77, 136, 77, 0.26), transparent 24%), linear-gradient(180deg, rgba(0, 7, 24, 0.12), rgba(0, 0, 0, 0.2))",
   "battle-backdrop-drift 38s ease-in-out infinite alternate",
-  "linear-gradient(180deg, rgba(5, 16, 38, 0.08), rgba(2, 5, 12, 0.28)), url(\"/generated/battle-reference-forest.png\"), radial-gradient(ellipse at 50% 70%, #274f3c 0%, #081834 75%)",
+  "linear-gradient(180deg, rgba(5, 16, 38, 0.08), rgba(2, 5, 12, 0.28)), radial-gradient(ellipse at 50% 70%, #274f3c 0%, #081834 75%)",
   "cover",
   "saturate(1.12) contrast(1.06)",
   "50% 40%",

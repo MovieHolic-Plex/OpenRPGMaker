@@ -33,6 +33,7 @@ export type CutsceneBeat =
   | CutsceneDistortBeat
   | CutsceneBackgroundBeat
   | CutsceneFlashBeat
+  | CutsceneAnimationBeat
   | CutsceneShakeBeat
   | CutsceneWaitBeat
   | CutsceneParallelBeat
@@ -61,6 +62,8 @@ export type CutsceneSayBeat = {
   readonly style?: string;
   /** 대사 그릇(box·balloon·bark·corner). 흘림·코너는 게임을 멈추지 않는다. */
   readonly container?: string;
+  /** 대화창 위치 — auto(주인공을 가리지 않게 자동)·top·center·bottom. 인물이 화면 아래쪽에 있으면 top. */
+  readonly position?: "auto" | "top" | "center" | "bottom";
 };
 
 export type CutsceneMoveActorBeat = {
@@ -156,6 +159,15 @@ export type CutsceneBackgroundBeat = {
   /** 0~400, 100 = 맵에 저작한 흐름 속도. 생략하면 100. */
   readonly flowPercent?: number;
   readonly durationMs?: number;
+  readonly wait?: boolean;
+};
+
+/** 게임에 등록된 전투 애니메이션(화염·폭발·할퀴기…)을 맵 위 인물·이벤트 위에서 재생한다. 그림을 새로 만들지 않고 게임 소재로 공격을 보여 줄 때. */
+export type CutsceneAnimationBeat = {
+  readonly kind: "animation";
+  readonly animationId: string;
+  /** "player"(기본) 또는 이벤트 id. */
+  readonly target?: string;
   readonly wait?: boolean;
 };
 
@@ -562,6 +574,14 @@ export function validateCutscene(
     validateFlowBeat(beat, path, context, errors);
     validateStagingBeat(beat, path, errors);
   });
+  // 암전(fade out)으로 끝나고 화면을 되돌리지 않으면 컷신이 끝난 뒤에도 검은 화면에 조작만 돌아온다(2026-10-02 조수 시험:
+  // 불 몬스터 컷신이 어두워진 채 끝나 게임이 «멈춘 것처럼» 보였다). 맵 이동·엔딩이 뒤따르거나 fade in 이 있으면 통과.
+  const topKinds = beats.map((beat) => (isRecord(beat) ? beat.kind : undefined));
+  const lastFade = topKinds.lastIndexOf("fade");
+  if (lastFade >= 0 && (beats[lastFade] as { direction?: unknown }).direction === "out"
+    && !topKinds.slice(lastFade + 1).some((kind) => kind === "transfer" || kind === "ending")) {
+    errors.push(`beats[${lastFade}]: 컷신이 암전(fade out)으로 끝나 화면이 검게 남습니다 — 끝에 {kind:'fade',direction:'in'} 를 넣어 되돌리거나, 맵 이동(transfer)·엔딩으로 이어 가세요.`);
+  }
   return errors.length === 0 ? { ok: true, errors: [] } : { ok: false, errors };
 }
 
@@ -597,6 +617,8 @@ function compileBeat(
       return compileDistortBeat(beat, state, options.forceNonBlocking);
     case "background":
       return compileBackgroundBeat(beat, state, options.forceNonBlocking);
+    case "animation":
+      return [{ kind: "showAnimation", target: !beat.target || beat.target === "player" ? "player" : { eventId: beat.target }, animationId: beat.animationId, wait: options.forceNonBlocking ? false : beat.wait ?? true } as Command];
     case "flash":
       return [m2Command("Flash Screen", { color: beat.color ?? "white", durationMs: durationMs(beat.durationMs, 300) })];
     case "shake":
@@ -699,6 +721,7 @@ function compileSayBeat(beat: CutsceneSayBeat, state: CompileState): Command[] {
       ...(beat.context ? { context: beat.context } : {}),
       ...(beat.style ? { style: beat.style } : {}),
       ...(beat.container ? { container: beat.container } : {}),
+      ...(beat.position ? { position: beat.position } : {}),
     });
   }
   return commands;
@@ -1206,6 +1229,7 @@ const KNOWN_BEAT_KINDS: ReadonlySet<string> = new Set([
   "distort",
   "background",
   "flash",
+  "animation",
   "shake",
   "wait",
   "parallel",

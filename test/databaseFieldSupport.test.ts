@@ -22,16 +22,13 @@ const EXPECTED_FIELDS = [
   "stateInflictIds",
   "stateInflictionChance",
   "stateResistanceChance",
-  // 적(enemy) 저작 전용 필드 — 런타임 소비자가 없음을 공시한다.
-  "transparent",
-  "flying",
-  "graphicHue",
+  // 적의 투명·비행·색조는 화면에서 지운 칸이라(2026-10-02) 공시도 없다.
 ];
 
 describe("database field support descriptor", () => {
-  it("is the unique exhaustive source for the twenty-one-field truth contract", () => {
+  it("is the unique exhaustive source for the eighteen-field truth contract", () => {
     expect(DATABASE_FIELD_SUPPORT.map((entry) => entry.field)).toEqual(EXPECTED_FIELDS);
-    expect(new Set(DATABASE_FIELD_SUPPORT.map((entry) => entry.field)).size).toBe(21);
+    expect(new Set(DATABASE_FIELD_SUPPORT.map((entry) => entry.field)).size).toBe(18);
     expect(DATABASE_FIELD_SUPPORT.filter((entry) => entry.support === "runtime").map((entry) => entry.field)).toEqual([
       "imageResourceId",
       "iconResourceId",

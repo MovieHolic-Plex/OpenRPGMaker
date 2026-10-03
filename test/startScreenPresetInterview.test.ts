@@ -4,7 +4,7 @@ import { store } from "@/project/store";
 import { interviewBrief } from "./helpers/gameDesignBrief";
 import type { Project } from "@/project/types";
 
-vi.mock("@/project/store", () => ({ store: { getCurrent: vi.fn(), getProjectIdentity: vi.fn(), update: vi.fn(), flush: vi.fn(), replaceProject: vi.fn() } }));
+vi.mock("@/project/store", () => ({ store: { getCurrent: vi.fn(), subscribe: vi.fn(() => () => {}), getProjectIdentity: vi.fn(), update: vi.fn(), flush: vi.fn(), replaceProject: vi.fn() } }));
 vi.mock("@/editor/mapSelection", () => ({ focusProjectStartMap: vi.fn() }));
 
 let project: Project;
@@ -63,3 +63,17 @@ it("빈 프로젝트는 인터뷰를 열지 않는다", async () => {
   expect(interview).not.toHaveBeenCalled();
 });
 
+it("an interview genre change replaces fresh system defaults and preserves the folder's map and resolution", async () => {
+  const { createNewProjectSeed } = await import("@/editor/genrePacks");
+  project = createNewProjectSeed("monster-collect", "우리 이야기");
+  project.system.playResolution = { width: 640, height: 360 };
+  const maps = project.maps;
+  const brief = interviewBrief("story-cutscene");
+  expect(await runStartScreenPresetInterview(handoff("monster-collect"), { ensureAiConnected: async () => true, interview: async () => brief })).toBe("brief");
+  expect(project.system.genre).toBe("story-cutscene");
+  expect(project.system.monsterCollection).not.toBe(true);
+  expect(project.system.playResolution).toEqual({ width: 640, height: 360 });
+  expect(project.maps).toBe(maps);
+  expect(project.meta.title).toBe("우리 이야기");
+  expect(project.gameDesignBrief?.generationPending).toBe(true);
+});

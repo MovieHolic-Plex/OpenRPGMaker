@@ -25,6 +25,8 @@ import { switchDatabaseActiveTab } from "@/editor/panels/database";
 import { setSelectedRecordId } from "@/editor/panels/databaseRecordViewSession";
 import { emptyToUndefined, numberField, selectField, textField } from "@/editor/panels/databaseControls";
 import { resourcePickerControl } from "@/editor/panels/databaseResourcePickerDialog";
+import { battleBackdropPreviewUrl, battleSceneryField, customPickerResourceId, nextBattleScenery } from "@/editor/panels/battleSceneryPicker";
+import { battleMethodOf, BATTLE_METHOD_LABELS } from "@/project/battleMethod";
 import { requestDatabaseModalClose } from "@/editor/panels/databaseModal";
 import { renderTroopBattleEventPanel } from "@/editor/panels/databaseTroopBattleEventPanel";
 import { renderTroopAfterBattlePanel } from "@/editor/panels/databaseTroopAfterBattlePanel";
@@ -293,9 +295,12 @@ function troopSummary(record: TroopRecord): HTMLElement {
 }
 
 function configurationPanel(record: TroopRecord, rerender: () => void): HTMLElement {
+  const side = battleMethodOf(store.getCurrent()) === "side";
   return studioCard({
     title: "설정",
-    hint: "전투 배경은 지형 레코드에 등록된 것에서 고릅니다.",
+    hint: side
+      ? "전투 배경은 종류(풀밭·숲·동굴·설원·사막)로 고릅니다. 자동이면 싸우는 곳의 지형 효과를 따릅니다."
+      : "전투 배경은 지형 레코드에 등록된 것에서 고릅니다.",
     children: [
       el("div", {
         class: "db-troop-config-grid",
@@ -324,7 +329,9 @@ function configurationPanel(record: TroopRecord, rerender: () => void): HTMLElem
         ],
       }),
       backdropField(record, rerender),
-      backdropAnimationField(record, rerender),
+      // 스크롤·물결·색 순환은 그림 한 장을 움직이는 효과라 그림을 그대로 까는 몬스터 대치에서만 보인다.
+      // 도트 측면은 겹 배경이 그 그림을 덮는다(battleFieldDom: scenery "layered" 면 applyBattleBackdropMotion 을 건너뜀).
+      ...(side ? [] : [backdropAnimationField(record, rerender)]),
       backdropLayersField(record, rerender),
       el("div", {
         class: "db-troop-check-row",
@@ -336,38 +343,55 @@ function configurationPanel(record: TroopRecord, rerender: () => void): HTMLElem
   });
 }
 
-/** 전투 배경 — 지형 레코드 배경 중에서 고르거나(「배경 변경」) 직접 고른다. */
+/** 전투 배경 — 도트 측면은 배경 종류를, 몬스터 대치는 그림을 고른다. 「배경 변경」은 차례로 넘긴다. */
 function backdropField(record: TroopRecord, rerender: () => void): HTMLElement {
+  const project = store.getCurrent();
+  const side = battleMethodOf(project) === "side";
+  const picker = resourcePickerControl({
+    label: side ? "직접 그림" : "전투 배경",
+    resourceId: side ? customPickerResourceId(project, record.previewBackgroundResourceId) : record.previewBackgroundResourceId,
+    kind: "backdrop",
+    testid: "db-field-troop-backdrop",
+    queueKey: `troop-backdrop:${record.id}`,
+    dialogTitle: "전투 배경",
+    allowClear: true,
+    onChange: (result) => {
+      updateDatabaseRecord("troops", record.id, { previewBackgroundResourceId: emptyToUndefined(result.resourceId) });
+    },
+    rerender,
+  });
+  // 라벨은 e2e 계약이다(oprn-database-battle-records.spec.ts 가 "배경 변경" 을 요구).
+  // "차례로 넘긴다"는 사실은 title 과 아래 토스트가 말한다.
+  const cycle = listToolbar([{
+    label: "배경 변경",
+    testid: "db-troop-change-background",
+    title: side ? "배경 종류를 차례로 넘깁니다" : "지형 레코드에 등록된 전투 배경을 차례로 넘깁니다",
+    onClick: () => {
+      const next = side ? nextBattleScenery(record.previewBackgroundResourceId) : nextBattleBackground(record.previewBackgroundResourceId);
+      updateDatabaseRecord("troops", record.id, { previewBackgroundResourceId: next });
+      toast("전투 배경을 다음 것으로 넘겼습니다 — Ctrl+Z로 되돌릴 수 있습니다.", "ok");
+      rerender();
+    },
+  }]);
   return el("div", {
     class: "db-troop-backdrop-field",
     dataset: { testid: "db-troop-backdrop-card" },
-    children: [
-      resourcePickerControl({
-        label: "전투 배경",
-        resourceId: record.previewBackgroundResourceId,
-        kind: "backdrop",
-        testid: "db-field-troop-backdrop",
-        queueKey: `troop-backdrop:${record.id}`,
-        dialogTitle: "전투 배경",
-        allowClear: true,
-        onChange: (result) => {
-          updateDatabaseRecord("troops", record.id, { previewBackgroundResourceId: emptyToUndefined(result.resourceId) });
-        },
-        rerender,
-      }),
-      // 라벨은 e2e 계약이다(oprn-database-battle-records.spec.ts 가 "배경 변경" 을 요구).
-      // "차례로 넘긴다"는 사실은 title 과 아래 토스트가 말한다.
-      listToolbar([{
-        label: "배경 변경",
-        testid: "db-troop-change-background",
-        title: "지형 레코드에 등록된 전투 배경을 차례로 넘깁니다",
-        onClick: () => {
-          updateDatabaseRecord("troops", record.id, { previewBackgroundResourceId: nextBattleBackground(record.previewBackgroundResourceId) });
-          toast("전투 배경을 다음 것으로 넘겼습니다 — Ctrl+Z로 되돌릴 수 있습니다.", "ok");
-          rerender();
-        },
-      }]),
-    ],
+    children: side
+      ? [
+        battleSceneryField({
+          project,
+          resourceId: record.previewBackgroundResourceId,
+          testid: "db-troop-scenery",
+          autoHint: "싸우는 곳의 지형 효과·기후를 따릅니다. 없으면 숲.",
+          onChange: (resourceId) => {
+            updateDatabaseRecord("troops", record.id, { previewBackgroundResourceId: resourceId });
+            rerender();
+          },
+          customPicker: picker,
+        }),
+        cycle,
+      ]
+      : [picker, cycle],
   });
 }
 
@@ -669,31 +693,32 @@ function troopBattlePreview(record: TroopRecord, selectedIndex: number, rerender
   const stage = el("div", {
     class: "db-troop-battle-preview-stage",
     dataset: { testid: "db-troop-preview-stage" },
-    children: layout === "sideview" || layout === "active"
+    children: layout === "sideview"
       ? [recenterGuideLine(), ...partyMarkers(skinId), ...children]
       : [...partyMarkers(skinId), ...children],
   });
-  const backgroundUrl = resolveAssetResourceUrl(record.previewBackgroundResourceId, { project });
+  // 도트 측면은 배경 종류의 겹 배경을 깐다 — 미리보기도 그 종류의 그림으로 보인다(업로드 그림만 그대로).
+  const backgroundUrl = battleBackdropPreviewUrl(project, record.previewBackgroundResourceId, { showAuto: true });
   if (backgroundUrl) {
     stage.style.backgroundImage = `linear-gradient(180deg, rgba(128, 184, 232, 0.18), rgba(85, 161, 61, 0.12)), url("${cssUrl(backgroundUrl)}")`;
   }
 
   const card = studioCard({
     title: "배치 미리보기",
-    hint: previewHint(record, skinId),
+    hint: previewHint(record),
     children: [
       stage,
       el("div", { class: "db-troop-preview-caption", dataset: { testid: "db-troop-preview-caption" }, text: previewCaption(record) }),
       el("div", {
         class: "db-troop-preview-legend",
         children:
-          layout === "sideview" || layout === "active"
+          layout === "sideview"
             ? [
               legendChip("db-troop-legend-party", "① ~ ④ 아군 진형 (읽기 전용)"),
               legendChip("db-troop-legend-recenter", "점선 = 재배치 경계 (x > 150)"),
             ]
             : [
-              legendChip("db-troop-legend-party", "현재 전투 스킨 기준 배치 미리보기"),
+              legendChip("db-troop-legend-party", "현재 전투 방식 기준 배치 미리보기"),
               ...(manualDivergenceCount(record, skinId) > 0
                 ? [legendChip("db-troop-legend-recenter", "표시 위치가 저작 좌표와 다릅니다")]
                 : []),
@@ -706,9 +731,10 @@ function troopBattlePreview(record: TroopRecord, selectedIndex: number, rerender
   return card;
 }
 
-function previewHint(record: TroopRecord, skinId: string): string {
-  if (record.autoAlign) return `현재 전투 스킨(${skinId})의 자동 진형으로 싸웁니다.`;
-  return `수동 배치 · ${skinId} 스킨의 실제 표시 위치입니다.`;
+function previewHint(record: TroopRecord): string {
+  const method = BATTLE_METHOD_LABELS[battleMethodOf(store.getCurrent())];
+  if (record.autoAlign) return `${method} 전투의 자동 진형으로 싸웁니다.`;
+  return `수동 배치 · ${method} 전투의 실제 표시 위치입니다.`;
 }
 
 function legendChip(className: string, text: string): HTMLElement {
@@ -970,7 +996,7 @@ function backdropLayersField(record: TroopRecord, rerender: () => void): HTMLEle
   return el("div", {
     class: "db-troop-backdrop-motion",
     dataset: { testid: "db-troop-backdrop-layers" },
-    attrs: { title: "모든 전투 스킨에서 보입니다. 움직임 줄이기를 켠 플레이어에게는 흐르지 않습니다." },
+    attrs: { title: "두 전투 방식 모두에서 보입니다. 움직임 줄이기를 켠 플레이어에게는 흐르지 않습니다." },
     children: [
       el("span", { class: "db-troop-field-label", text: "배경 겹 (안개·구름·비·눈…)" }),
       ...rows,

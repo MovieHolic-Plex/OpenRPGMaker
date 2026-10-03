@@ -12,6 +12,7 @@ export function interviewBrief(presetId: GamePresetId = "monster-collect"): Game
 }
 
 export async function completeInterviewChoices(): Promise<void> {
+  document.querySelector<HTMLButtonElement>('[data-testid="project-interview-begin"]')?.click();
   vi.useFakeTimers();
   try {
     for (let i = 0; i < 5; i++) {

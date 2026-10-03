@@ -5,23 +5,14 @@
 
 /* ── 컬러 아이콘 레일 ─────────────────────────────────────────────────────────
    글리프(::before content:attr(data-icon))를 비우고 data-icon-name 별 배경 이미지를 깐다.
-   그림은 전투 HUD 가 쓰는 starter battle-icon-* 와 CC0 아이템 아이콘 — 새 리소스가 아니다. */
+   남아 있는 CC0 아이템 아이콘을 사용한다. 삭제된 starter 아이콘은 기존 글리프를 표시한다. */
 .oprn-status-menu[data-menu-skin-icons="painted"] .status-menu-command-icon {
   background: center / contain no-repeat;
   flex: 0 0 10px;
   height: 10px;
   width: 10px;
 }
-.oprn-status-menu[data-menu-skin-icons="painted"] .status-menu-command-icon::before { content: ""; }
-.oprn-status-menu[data-menu-skin-icons="painted"] .status-menu-command-icon[data-icon-name="bag"] { background-image: url("/assets/generated/starter/battle-icon-bag.png"); }
-.oprn-status-menu[data-menu-skin-icons="painted"] .status-menu-command-icon[data-icon-name="fire"] { background-image: url("/assets/generated/starter/battle-icon-fire.png"); }
-.oprn-status-menu[data-menu-skin-icons="painted"] .status-menu-command-icon[data-icon-name="sword"] { background-image: url("/assets/generated/starter/battle-icon-sword.png"); }
-.oprn-status-menu[data-menu-skin-icons="painted"] .status-menu-command-icon[data-icon-name="cross"] { background-image: url("/assets/generated/starter/battle-icon-cross.png"); }
-.oprn-status-menu[data-menu-skin-icons="painted"] .status-menu-command-icon[data-icon-name="next"] { background-image: url("/assets/generated/starter/battle-icon-next.png"); }
-.oprn-status-menu[data-menu-skin-icons="painted"] .status-menu-command-icon[data-icon-name="shield"] { background-image: url("/assets/generated/starter/battle-icon-shield.png"); }
-.oprn-status-menu[data-menu-skin-icons="painted"] .status-menu-command-icon[data-icon-name="shard"] { background-image: url("/assets/generated/starter/battle-icon-shard.png"); }
-.oprn-status-menu[data-menu-skin-icons="painted"] .status-menu-command-icon[data-icon-name="world"] { background-image: url("/assets/generated/starter/battle-icon-world.png"); }
-.oprn-status-menu[data-menu-skin-icons="painted"] .status-menu-command-icon[data-icon-name="boot"] { background-image: url("/assets/generated/starter/battle-icon-boot.png"); }
+.oprn-status-menu[data-menu-skin-icons="painted"] .status-menu-command-icon:is([data-icon-name="map"], [data-icon-name="gear"], [data-icon-name="crystal"], [data-icon-name="warp-scroll"], [data-icon-name="clock"], [data-icon-name="book-magic"])::before { content: ""; }
 .oprn-status-menu[data-menu-skin-icons="painted"] .status-menu-command-icon[data-icon-name="map"] { background-image: url("/assets/cc0/jetrel/icons/map.png"); }
 .oprn-status-menu[data-menu-skin-icons="painted"] .status-menu-command-icon[data-icon-name="gear"] { background-image: url("/assets/cc0/jetrel/icons/gear.png"); }
 .oprn-status-menu[data-menu-skin-icons="painted"] .status-menu-command-icon[data-icon-name="crystal"] { background-image: url("/assets/cc0/jetrel/icons/crystal.png"); }

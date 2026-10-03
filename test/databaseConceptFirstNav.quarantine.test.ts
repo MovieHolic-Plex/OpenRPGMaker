@@ -151,7 +151,7 @@ describe("concept-first Map navigation", () => {
   });
 
   it.each([
-    ["ani", "animations", "db-tab-animations"],
+    ["retro", "retroChoreographies", "db-tab-retro-choreographies"],
     ["act", "actors", "db-tab-actors"],
   ] as const)("exposes the existing %s route for English prefix %s", (query, tab, testid) => {
     const host = renderHost();

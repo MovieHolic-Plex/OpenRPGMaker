@@ -122,7 +122,7 @@ describe("enemy battle size at the authoring and project IO seams", () => {
 });
 
 describe("enemy size in the supported battle presentations", () => {
-  it.each(["retro2003", "rm2003", "pokemon"] as const)("applies independent sizes in %s and retains them through hit/idle sync", (skin) => {
+  it.each(["retro2003", "pokemon"] as const)("applies independent sizes in %s and retains them through hit/idle sync", (skin) => {
     // Given: two differently sized records in an existing multi-enemy troop.
     const project = createBlankProject();
     project.system.battleUiStyle = skin;
@@ -158,7 +158,7 @@ describe("enemy size in the supported battle presentations", () => {
     expect(golem?.style.transform).toBe("");
   });
 
-  it.each(["retro2003", "rm2003", "pokemon"] as const)("uses unchanged 100 percent dimensions for a legacy %s enemy", (skin) => {
+  it.each(["retro2003", "pokemon"] as const)("uses unchanged 100 percent dimensions for a legacy %s enemy", (skin) => {
     const project = createBlankProject();
     project.system.battleUiStyle = skin;
     store.replace(project);
@@ -168,7 +168,7 @@ describe("enemy size in the supported battle presentations", () => {
   });
 
   it.each([
-    ["_rm2000.css", "rm2003", 2, 160, 180],
+    ["_rm2000.css", "retro2003", 2, 160, 180],
     ["_rm2000.css", "retro2003", 1, 200, 240],
     ["_battlers.css", "pokemon", 1, 148, 148],
   ] as const)("consumes the multiplier in the shipped %s size rule (%s, %s enemies)", (file, skin, count, width, height) => {

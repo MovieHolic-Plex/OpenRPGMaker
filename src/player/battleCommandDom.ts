@@ -305,6 +305,13 @@ function commandControl(
       return commandButton(label, commandTestId(command), "boot", "", () => {
         if (!targetMode) options.runActorCommand({ kind: "escape" });
       }, targetMode || !snapshot.canEscape);
+    case "commonEvent": {
+      // RM2003 「이벤트 연결」 — 대상 없이 바로 행동이 되고, 차례가 오면 공통 이벤트를 실행한다.
+      const commonEventId = command.commonEventId;
+      return commandButton(label, commandTestId(command), "fire", "", () => {
+        if (!targetMode && commonEventId) options.runActorCommand({ kind: "commonEvent", commonEventId });
+      }, targetMode || !commonEventId);
+    }
     case "switch": {
       const candidates = switchCandidates(snapshot);
       return commandButton(command.name, commandTestId(command), "switch", candidates.length > 0 ? `${candidates.length}명` : "없음", () => {
@@ -332,6 +339,8 @@ function commandTestId(command: RuntimeBattleCommand): string {
       return command.skillId ? `actor-command-skill-${command.skillId}` : command.id === "cmd_skill" ? "actor-command-skill" : `actor-command-${command.id}`;
     case "switch":
       return "actor-command-switch";
+    case "commonEvent":
+      return `actor-command-${command.id}`;
   }
 }
 

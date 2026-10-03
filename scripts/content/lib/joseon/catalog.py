@@ -1,0 +1,231 @@
+"""조각 목록(지형·물체). demo.py 와 harness/gate.py 가 같은 목록을 쓴다."""
+import water_blob as WB, village_pieces as VP, village_gates as VG, village_props as VPR, props5 as P5, structs as ST, ground as G, build as B, props as P, blocks as K, props2 as Q, trees as TR, props3 as P3, props4 as P4
+_L = None
+
+
+def lib():
+    global _L
+    if _L is None:
+        _L = K.library()
+    return _L
+
+
+
+def terrain():
+    return {
+        'grass': [G.grass(v) for v in range(4)],
+        'yard': [G.yard(v) for v in range(2)],
+        'paving': [G.paving(v) for v in range(2)],
+        'field': [G.field(v) for v in range(2)],
+        'road16': [G.road(m) for m in range(16)],
+        'yard16': [G.yard_edge(m) for m in range(16)],
+        'stream16': [G.stream(m) for m in range(16)],
+        'water47': WB.water47_set(2),
+        'paddy16': [G.paddy_edge(m) for m in range(16)],
+        'rice16': [VPR.paddy_edge_rice(m) for m in range(16)],
+    }
+
+
+def objects():
+    return {
+        'giwa_house_6': K.assemble(K.house('jo', 6, 'lwddwr', 'lfddfr', steps=(2, 3), hip=True), lib(), post=lambda cv: K.roof_baram(cv, 3, 'giwa', wing=24)),
+        'thatch_house_5': K.assemble(K.house('jc', 5, 'lwdwr', 'lfdfr', steps=(2,), hip=True, chimi=False), lib(), post=lambda cv: K.thatch_baram(cv, 3)),
+        'gate_4': K.assemble(K.house('jo', 4, 'lggr', 'lggr', rows=3, dan=False, steps=(1, 2), chimi=False, hip=True), lib(), post=lambda cv: K.roof_baram(cv, 3, 'giwa', wing=22)),
+        'pavilion_5g': K.assemble(K.house('pv', 5, 'ooooo', 'kkkkk', rows=3, dan=False, steps=(2,), hip=True), lib(), post=lambda cv: (K.roof_baram(cv, 3, 'giwa', wing=24), K.pavilion_open(cv, 5))),
+        'pavilion_5': K.assemble(K.house('pv', 5, 'ooooo', 'kkkkk', rows=3, dan=False, steps=(2,), hip=True), lib(), post=lambda cv: (K.roof_baram(cv, 3, 'dg', wing=24), K.pavilion_open(cv, 5))),
+        'thatch_house_4': K.assemble(K.house('jc', 4, 'lwdr', 'lfdr', steps=(2,), hip=True, chimi=False), lib(), post=lambda cv: K.thatch_baram(cv, 3)),
+        'giwa_house_5': K.assemble(K.house('jo', 5, 'lwdwr', 'lfdfr', steps=(2,), hip=True), lib(), post=lambda cv: K.roof_baram(cv, 3, 'giwa', wing=24)),
+        'zelkova_a': TR.zelkova(0),
+        'zelkova_b': TR.zelkova(1, 1),
+        'zelkova_c': TR.zelkova(2, -1),
+        'zelkova_d': TR.zelkova(3, 0),
+        'zelkova_e': TR.zelkova(4, 1),
+        'zelkova_f': TR.zelkova(5, 0, 1),
+        'zelkova_g': TR.zelkova(6, -1, 2),
+        'zelkova_h': TR.zelkova(7, 1, 3),
+        'zelkova_i': TR.zelkova(8, 0, 1),
+        'zelkova_j': TR.zelkova(9, 1, 2),
+        'pine_c': TR.pine(2, 0),
+        'pine_d': TR.pine(3, 1),
+        'pine_e': TR.pine(4, 0, 1),
+        'pine_f': TR.pine(5, 1, 1),
+        'persimmon_c': TR.persimmon_tree(2, 0),
+        'persimmon_d': TR.persimmon_tree(3, 1),
+        'persimmon_e': TR.persimmon_tree(4, 0),
+        'persimmon_f': TR.persimmon_tree(5, 1),
+        'pine_a': TR.pine(0),
+        'pine_b': TR.pine(1, 1),
+        'persimmon_a': TR.persimmon_tree(0),
+        'persimmon_b': TR.persimmon_tree(1, 0),
+        'willow': TR.willow(0),
+        'bamboo': TR.bamboo(0),
+        'bush_l_a': TR.bush_size('l', 0),
+        'bush_l_b': TR.bush_size('l', 1),
+        'bush_s_a': TR.bush_size('s', 0),
+        'bush_s_b': TR.bush_size('s', 1),
+        'bamboo_grove': TR.bamboo_grove(0),
+        'bush_a': TR.bush('a', 0),
+        'bush_b': TR.bush('b', 6),
+        'bush_c': TR.bush('c', 0),
+        'bush_d': TR.bush('a', 3),
+        'bush_e': TR.bush('b', 9),
+        'bush_f': TR.bush('c', 4),
+        'bush_l_c': TR.bush_size('l', 2),
+        'bush_l_d': TR.bush_size('l', 3),
+        'bush_s_c': TR.bush_size('s', 2),
+        'bush_s_d': TR.bush_size('s', 3),
+        'giwa_house_3b': K.assemble(K.house('jo', 3, 'ldr', 'ldr', steps=(1,), hip=True), lib(), post=lambda cv: K.roof_baram(cv, 3, 'brown', wing=20)),
+        'giwa_haengnang_7': VP.haengnang(7),
+        'giwa_seodang': VP.seodang(),
+        'thatch_jumak': VP.jumak(),
+        'thatch_smithy': VP.smithy(),
+        'thatch_bangatgan': VP.bangatgan(),
+        'yeonja_mill': VP.yeonja_mill(),
+        'seonangdang': VP.seonangdang(),
+        'chimney': VP.chimney(),
+        'sarip': VP.sarip(),
+        'toldam': VP.toldam(),
+        'giwa_house_5b': K.assemble(K.house('jo', 5, 'lwdwr', 'lfdfr', steps=(2,), hip=True), lib(), post=lambda cv: K.roof_baram(cv, 3, 'brown', wing=24)),
+        'thatch_house_3': K.assemble(K.house('jc', 3, 'ldr', 'ldr', steps=(1,), hip=True, chimi=False), lib(), post=lambda cv: K.thatch_baram(cv, 3)),
+        'thatch_house_3b': K.assemble(K.house('jc', 3, 'lgr', 'lgr', steps=(1,), hip=True, chimi=False), lib(), post=lambda cv: K.thatch_baram(cv, 3)),
+        'thatch_porch_5': K.assemble(K.house('jc', 5, 'lwoor', 'lfoor', steps=(2,), hip=True, chimi=False), lib(), post=lambda cv: K.thatch_baram(cv, 3)),
+        'thatch_porch_4': K.assemble(K.house('jc', 4, 'lwor', 'lfor', steps=(2,), hip=True, chimi=False), lib(), post=lambda cv: K.thatch_baram(cv, 3)),
+        'giwa_house_4': K.assemble(K.house('jo', 4, 'lwdr', 'lfdr', steps=(2,), hip=True), lib(), post=lambda cv: K.roof_baram(cv, 3, 'giwa', wing=22)),
+        'giwa_house_3': K.assemble(K.house('jo', 3, 'ldr', 'ldr', steps=(1,), hip=True), lib(), post=lambda cv: K.roof_baram(cv, 3, 'giwa', wing=20)),
+        'gwanah_7': K.assemble(K.house('gw', 7, 'lwdddwr', 'lfdddfr', steps=(3,), hip=True, chimi=False, dan=True), lib(), post=lambda cv: K.roof_baram(cv, 3, 'giwa', wing=26, trim=True)),
+        'gwanah_5': K.assemble(K.house('gw', 5, 'lwdwr', 'lfdfr', steps=(2,), hip=True, chimi=False, dan=True), lib(), post=lambda cv: K.roof_baram(cv, 3, 'giwa', wing=24, trim=True)),
+        'gwanah_5b': K.assemble(K.house('gw', 5, 'lwdwr', 'lfdfr', steps=(2,), hip=True, chimi=False, dan=True), lib(), post=lambda cv: K.roof_baram(cv, 3, 'giwa', wing=24, trim=True)),
+        'fort_gate': ST.fort_gate(),
+        'fort_wall_h': ST.fort_wall_h(0),
+        'fort_wall_h1': ST.fort_wall_h(1),
+        'fort_wall_h2': ST.fort_wall_h(2),
+        'fort_wall_end_l': ST.fort_wall_end('l'),
+        'fort_wall_end_r': ST.fort_wall_end('r'),
+        'fort_wall_sluice': ST.fort_wall_sluice(),
+        'stone_pagoda': ST.stone_pagoda(),
+        'hongsalmun': ST.hongsalmun(),
+        'deungrong_mun': ST.deungrong_mun(),
+        'market_stall': ST.market_stall(),
+        'market_stall_thatch': ST.market_stall(True),
+        'market_stall_cloth': ST.market_stall(True, 1),
+        'market_stall_pots': ST.market_stall(True, 2),
+        'wondumak': ST.wondumak(),
+        'nugak': ST.nugak(),
+        'laundry': P4.laundry(),
+        'flower_bed': P5.flower_bed(),
+        'bank_stairs': P5.bank_stairs(),
+        'small_z_a': TR.small_tree('z', 0),
+        'small_z_b': TR.small_tree('z', 1),
+        'small_p': TR.small_tree('p', 0),
+        'stone_bank': P5.stone_bank(),
+        'reeds': P3.reeds(),
+        'rocks': P3.rocks(),
+        'fence_h': P5.fence_h(),
+        'haystack': P5.haystack(),
+        'well': P5.well(),
+        'bridge': P5.bridge(),
+        'jars': P5.jars(),
+        'bench': P5.bench(),
+        'mat_peppers': P5.mat_peppers(),
+        'jangseung_m': P4.jangseung(False),
+        'jangseung_f': P4.jangseung(True),
+        'sotdae': P4.sotdae(),
+        'lantern': P4.lantern(),
+        'wall_h': P5.wall_h2(0),
+        'wall_h1': P5.wall_h2(1),
+        'wall_h2': P5.wall_h2(2),
+        'wall_v': P5.wall_v2(),
+        'wall_v_e': P5.wall_v2(True),
+        'wall_corner_nw': P5.wall_corner4('NW'),
+        'wall_corner_ne': P5.wall_corner4('NE'),
+        'wall_corner_sw': P5.wall_corner4('SW'),
+        'wall_corner_se': P5.wall_corner4('SE'),
+        # --- 2차: 문·집 변형·생활 소품
+        'gate_solseul': VG.solseul_daemun(),
+        'gate_pyeong': VG.pyeong_daemun(),
+        'thatch_hut_2': VG.thatch_hut_2(),
+        'thatch_house_4k': VG.thatch_house_4k(),
+        'thatch_house_6': VG.thatch_house_6(),
+        'giwa_house_4w': VG.giwa_house_4w(),
+        'giwa_numa': VG.giwa_numa(),
+        'giwa_seowon': VG.seowon_hall(),
+        'thatch_gotgan': VG.gotgan(),
+        'thatch_maguan': VG.maguan(),
+        'giwa_sadang': VPR.sadang(),
+        'waterwheel': VPR.waterwheel(),
+        'dilbang': VPR.dilbang(),
+        'millstone': VPR.millstone(),
+        'pyeongsang': VPR.pyeongsang(),
+        'jangdokdae': VPR.jangdokdae(),
+        'scarecrow': VPR.scarecrow(),
+        'firewood': VPR.firewood(),
+        'gochu_mat': VPR.gochu_mat(),
+        'dolmadam': VPR.dolmadam(),
+        'jukbyeok': VPR.jukbyeok(),
+        'geumjul_altar': VPR.geumjul_altar(),
+        'stepping_stones': VPR.stepping_stones(),
+        'boat': VPR.boat(),
+        'dock': VPR.dock(),
+        'stele': VPR.stele(),
+        'stove_pot': VPR.stove_pot(),
+    }
+
+
+# --- 국내성 왕궁 구역(gungnae_palace.py) — 맨 끝에 덧붙임
+import gungnae_palace as _GP
+_objects_before_palace = objects
+_terrain_before_palace = terrain
+
+
+def objects():
+    d = _objects_before_palace()
+    d.update(_GP.objects())
+    return d
+
+
+def terrain():
+    d = _terrain_before_palace()
+    d.update(_GP.terrain())
+    return d
+
+
+
+# --- 국내성 성벽·성문·다리·석판 지형 (gungnae_gates.py). 기존 키는 건드리지 않고 덧붙인다.
+import gungnae_gates as _GG
+_terrain_before_gungnae, _objects_before_gungnae = terrain, objects
+
+
+def terrain():
+    d = _terrain_before_gungnae()
+    d.update(_GG.terrain_tiles())
+    return d
+
+
+def objects():
+    d = _objects_before_gungnae()
+    d.update(_GG.objects())
+    return d
+
+
+
+# --- 국내성식 집 변형 세트(gungnae_houses.py): 맨 끝에 덧붙인다.
+_objects_before_houses = objects
+objects_base = _objects_before_houses          # 국내성 조각을 더하기 전의 목록(조합 예가 기존 소품을 가져다 쓴다)
+
+
+def objects():
+    import gungnae_houses as GH
+    d = _objects_before_houses()
+    d.update(GH.objects())
+    return d
+
+
+# --- 국내성 원작 규모 맵(gungnae_full_pieces.py): 맨 끝에 덧붙인다.
+_objects_before_gnf = objects
+
+
+def objects():
+    import gungnae_full_pieces as _GF
+    d = _objects_before_gnf()
+    d.update(_GF.objects())
+    return d

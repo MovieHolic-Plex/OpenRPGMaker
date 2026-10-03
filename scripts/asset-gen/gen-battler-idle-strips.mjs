@@ -124,6 +124,7 @@ async function buildStrip(heroIndex, { check }) {
 }
 
 async function main() {
+  throw new Error("Starter artwork was removed on 2026-10-03; this generator is retired.");
   const check = Boolean(arg("check", false));
   const only = arg("hero");
   const indices = typeof only === "string" ? [Number(only)] : [1, 2, 3, 4, 5, 6];

@@ -41,7 +41,7 @@ export function battleEventCommandControls(record: TroopRecord, page: BattleEven
       "전투 배경 변경 추가",
       "db-troop-event-add-change-battleback",
       () => {
-        addM2Command(record, page, { commandId: CHANGE_BATTLEBACK_ID, fields: { resourceId: "easyrpg-backdrop-dawn1" } });
+        addM2Command(record, page, { commandId: CHANGE_BATTLEBACK_ID, fields: { resourceId: "battle-scenery-plains" } });
         rerender();
       }
     ),

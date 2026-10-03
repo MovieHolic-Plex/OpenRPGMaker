@@ -257,7 +257,6 @@ describe("shared MP validation and target UI", () => {
 
   it.each([
     { skin: "retro2003", spriteCount: 2 },
-    { skin: "rm2003", spriteCount: 2 },
   ] as const)("selects allies through the shared menu cursor and restores the skill submenu on cancel ($skin)", ({ skin, spriteCount }) => {
     vi.useFakeTimers();
     const project = battleProject();

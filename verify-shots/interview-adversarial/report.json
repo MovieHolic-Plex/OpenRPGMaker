@@ -1,0 +1,437 @@
+{
+  "checks": [
+    {
+      "name": "complete:romance+single",
+      "pass": true,
+      "evidence": {
+        "preset": "story-cutscene",
+        "count": 1
+      }
+    },
+    {
+      "name": "complete:romance+monster",
+      "pass": true,
+      "evidence": {
+        "preset": "monster-collect",
+        "count": 1
+      }
+    },
+    {
+      "name": "complete:romance+adventure",
+      "pass": true,
+      "evidence": {
+        "preset": "adventure-jrpg",
+        "count": 1
+      }
+    },
+    {
+      "name": "complete:romance+mystery",
+      "pass": true,
+      "evidence": {
+        "preset": "story-cutscene",
+        "count": 1
+      }
+    },
+    {
+      "name": "complete:monster+single",
+      "pass": true,
+      "evidence": {
+        "preset": "monster-collect",
+        "count": 1
+      }
+    },
+    {
+      "name": "complete:monster+romance",
+      "pass": true,
+      "evidence": {
+        "preset": "monster-collect",
+        "count": 1
+      }
+    },
+    {
+      "name": "complete:monster+adventure",
+      "pass": true,
+      "evidence": {
+        "preset": "monster-collect",
+        "count": 1
+      }
+    },
+    {
+      "name": "complete:monster+mystery",
+      "pass": true,
+      "evidence": {
+        "preset": "monster-collect",
+        "count": 1
+      }
+    },
+    {
+      "name": "complete:adventure+single",
+      "pass": true,
+      "evidence": {
+        "preset": "adventure-jrpg",
+        "count": 1
+      }
+    },
+    {
+      "name": "complete:adventure+romance",
+      "pass": true,
+      "evidence": {
+        "preset": "adventure-jrpg",
+        "count": 1
+      }
+    },
+    {
+      "name": "complete:adventure+monster",
+      "pass": true,
+      "evidence": {
+        "preset": "monster-collect",
+        "count": 1
+      }
+    },
+    {
+      "name": "complete:adventure+mystery",
+      "pass": true,
+      "evidence": {
+        "preset": "adventure-jrpg",
+        "count": 1
+      }
+    },
+    {
+      "name": "complete:mystery+single",
+      "pass": true,
+      "evidence": {
+        "preset": "story-cutscene",
+        "count": 1
+      }
+    },
+    {
+      "name": "complete:mystery+romance",
+      "pass": true,
+      "evidence": {
+        "preset": "story-cutscene",
+        "count": 1
+      }
+    },
+    {
+      "name": "complete:mystery+monster",
+      "pass": true,
+      "evidence": {
+        "preset": "monster-collect",
+        "count": 1
+      }
+    },
+    {
+      "name": "complete:mystery+adventure",
+      "pass": true,
+      "evidence": {
+        "preset": "adventure-jrpg",
+        "count": 1
+      }
+    },
+    {
+      "name": "layout:320",
+      "pass": true,
+      "evidence": {
+        "viewport": 320,
+        "document": 320,
+        "panel": 320,
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 320,
+          "height": 600,
+          "top": 0,
+          "right": 320,
+          "bottom": 600,
+          "left": 0
+        },
+        "bodyOverflow": false,
+        "inputFont": 16,
+        "motionTarget": 44
+      }
+    },
+    {
+      "name": "touch-readability:320",
+      "pass": true,
+      "evidence": {
+        "viewport": 320,
+        "document": 320,
+        "panel": 320,
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 320,
+          "height": 600,
+          "top": 0,
+          "right": 320,
+          "bottom": 600,
+          "left": 0
+        },
+        "bodyOverflow": false,
+        "inputFont": 16,
+        "motionTarget": 44
+      }
+    },
+    {
+      "name": "new-step-heading-visible:320",
+      "pass": true,
+      "evidence": {
+        "x": 23,
+        "y": 322.59375,
+        "width": 274,
+        "height": 34.796875
+      }
+    },
+    {
+      "name": "layout:360",
+      "pass": true,
+      "evidence": {
+        "viewport": 360,
+        "document": 360,
+        "panel": 360,
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 360,
+          "height": 600,
+          "top": 0,
+          "right": 360,
+          "bottom": 600,
+          "left": 0
+        },
+        "bodyOverflow": false,
+        "inputFont": 16,
+        "motionTarget": 44
+      }
+    },
+    {
+      "name": "touch-readability:360",
+      "pass": true,
+      "evidence": {
+        "viewport": 360,
+        "document": 360,
+        "panel": 360,
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 360,
+          "height": 600,
+          "top": 0,
+          "right": 360,
+          "bottom": 600,
+          "left": 0
+        },
+        "bodyOverflow": false,
+        "inputFont": 16,
+        "motionTarget": 44
+      }
+    },
+    {
+      "name": "new-step-heading-visible:360",
+      "pass": true,
+      "evidence": {
+        "x": 23,
+        "y": 322.59375,
+        "width": 314,
+        "height": 34.796875
+      }
+    },
+    {
+      "name": "layout:390",
+      "pass": true,
+      "evidence": {
+        "viewport": 390,
+        "document": 390,
+        "panel": 390,
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 390,
+          "height": 600,
+          "top": 0,
+          "right": 390,
+          "bottom": 600,
+          "left": 0
+        },
+        "bodyOverflow": false,
+        "inputFont": 16,
+        "motionTarget": 44
+      }
+    },
+    {
+      "name": "touch-readability:390",
+      "pass": true,
+      "evidence": {
+        "viewport": 390,
+        "document": 390,
+        "panel": 390,
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 390,
+          "height": 600,
+          "top": 0,
+          "right": 390,
+          "bottom": 600,
+          "left": 0
+        },
+        "bodyOverflow": false,
+        "inputFont": 16,
+        "motionTarget": 44
+      }
+    },
+    {
+      "name": "new-step-heading-visible:390",
+      "pass": true,
+      "evidence": {
+        "x": 23,
+        "y": 322.59375,
+        "width": 344,
+        "height": 34.796875
+      }
+    },
+    {
+      "name": "layout:768",
+      "pass": true,
+      "evidence": {
+        "viewport": 768,
+        "document": 768,
+        "panel": 768,
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 768,
+          "height": 600,
+          "top": 0,
+          "right": 768,
+          "bottom": 600,
+          "left": 0
+        },
+        "bodyOverflow": false,
+        "inputFont": 16,
+        "motionTarget": 44
+      }
+    },
+    {
+      "name": "layout:850",
+      "pass": true,
+      "evidence": {
+        "viewport": 850,
+        "document": 850,
+        "panel": 850,
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 850,
+          "height": 700,
+          "top": 0,
+          "right": 850,
+          "bottom": 700,
+          "left": 0
+        },
+        "bodyOverflow": false,
+        "inputFont": 16,
+        "motionTarget": 44
+      }
+    },
+    {
+      "name": "layout:1024",
+      "pass": true,
+      "evidence": {
+        "viewport": 1024,
+        "document": 1024,
+        "panel": 978,
+        "rect": {
+          "x": 22,
+          "y": 22,
+          "width": 980,
+          "height": 656,
+          "top": 22,
+          "right": 1002,
+          "bottom": 678,
+          "left": 22
+        },
+        "bodyOverflow": false,
+        "inputFont": 13,
+        "motionTarget": 34
+      }
+    },
+    {
+      "name": "layout:1440",
+      "pass": true,
+      "evidence": {
+        "viewport": 1440,
+        "document": 1440,
+        "panel": 1394,
+        "rect": {
+          "x": 22,
+          "y": 22,
+          "width": 1396,
+          "height": 656,
+          "top": 22,
+          "right": 1418,
+          "bottom": 678,
+          "left": 22
+        },
+        "bodyOverflow": false,
+        "inputFont": 13,
+        "motionTarget": 34
+      }
+    },
+    {
+      "name": "live-reduced-motion",
+      "pass": true,
+      "evidence": {
+        "paused": true,
+        "still": true
+      }
+    },
+    {
+      "name": "rapid-scene-clicks",
+      "pass": true,
+      "evidence": {
+        "latest": "new:romance-town"
+      }
+    },
+    {
+      "name": "image-failure-retry",
+      "pass": true,
+      "evidence": {
+        "failureMessage": "참고 그림을 불러오지 못했어요. 답변은 계속 고를 수 있어요.",
+        "recovered": "new:romance-palace"
+      }
+    },
+    {
+      "name": "long-answer-no-overflow",
+      "pass": true,
+      "evidence": {
+        "width": 320,
+        "document": 320,
+        "bodyOverflow": false
+      }
+    },
+    {
+      "name": "confirm-once-at-limit",
+      "pass": true,
+      "evidence": {
+        "count": 1,
+        "summaryLength": 4000
+      }
+    },
+    {
+      "name": "keyboard-focus-and-cancel",
+      "pass": true,
+      "evidence": {
+        "reverse": true,
+        "forward": true
+      }
+    },
+    {
+      "name": "uncaught-errors",
+      "pass": true,
+      "evidence": []
+    }
+  ],
+  "errors": [],
+  "failures": []
+}
