@@ -96,12 +96,16 @@ try {
     void presentEditorWelcome(document.getElementById('root'), {
       applySystemPreset: async (plan, brief) => { window.welcomeSaves.push({ plan, brief }); },
       canGenerate: () => false,
+      ensureAiConnected: async () => true,
     }).then(result => { window.welcomeResult = result; });
   });
   await page.getByTestId('editor-welcome-template-card-0').click();
+  await page.getByTestId('editor-welcome-prompt-input').fill('풀숲에서 만나는 작은 친구들의 이야기');
+  await page.getByTestId('editor-welcome-prompt-submit').click();
   await page.keyboard.press('Escape');
   assert.equal(await page.evaluate(() => window.welcomeSaves.length), 0);
   await page.getByTestId('editor-welcome-template-card-0').click();
+  await page.getByTestId('editor-welcome-prompt-submit').click();
   await page.getByTestId('project-interview-genre-mystery').click();
   await page.getByTestId('project-interview-begin').click();
   for (const i of [0, 1, 0, 1, 0]) await pick(i);
@@ -120,7 +124,8 @@ try {
     });
   });
   await page.getByTestId('start-new-game').click();
-  assert.match(await page.getByTestId('start-create').innerText(), /게임 기획/);
+  assert.match(await page.getByTestId('start-create').innerText(), /이 이야기로 시작/);
+  await page.getByTestId('start-genre-option-monster-collect').click();
   assert.equal(await page.getByTestId('start-intent-input').count(), 1);
   await page.getByTestId('start-back').click();
   assert.equal(await page.locator('.start-example-card').count(), 3);
