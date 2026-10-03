@@ -1204,7 +1204,18 @@ bytes after real remote reload and Test Play. The default is not remote proof.
 - Combined Town defaults seed conifer/dry-tree/broadleaf hard adjacency plus flower medium and bush soft examples, and expose 흙길/모래/lake-water terrain clusters for palette discovery. Harness re-application preserves an existing harness group as authored state, only backfilling default `rules` when the group has no `rules` property. Deleted Combined Town harness groups are persisted through `TilesetDef.suppressedHarnessGroupIds` tombstones so load/normalize does not recreate them.
 
 
+## Optional medicine PP recovery (2026-10-03)
+
+`ItemRecord.ppRecovery?: {flat:number, percentMax:number}` is an explicit medicine effect,
+independent of `mpRecovery`. Normalization uses the existing recovery bounds (flat 0–999,
+percentage 0–100) and omits absent or zero effects. Existing items retain their MP semantics.
+Field and battle use `restoredMovePp` in `project/monsterMedicine.ts`: each known move with
+an authored positive `maxPp` gains flat + floor(cap × percentage / 100), capped at `maxPp`.
+Missing session PP entries mean full PP. Both monster `skillPp` and actor `actorSkillPp`
+already persist through the existing session/save contract; no schema version changes.
+
 ## Variable arithmetic & loop runtime (2026-08-07)
+
 - 변수 연산: `session.setVariable`는 `/=`에서 `Math.trunc`(0 방향) + `-9,999,999..9,999,999` 클램프, `0` 나누기는 기존값 유지+경고. `previewSimulation.applyVariableOp` 동일 규격. 프리뷰 값 소스는 시뮬 상태 기준.
 - 루프 스택: `stack.breakLoop`는 가장 가까운 `loopOwner`만 끊고, 루프 없으면 스택을 비우지 않고 경고를 반환한 뒤 현재 `breakLoop` 명령을 한 칸 넘긴다. 같은 명령을 재실행해 instruction budget을 소진하지 않는다. `hasLoopFrame` / `maxLoopIterations=100,000` / `maxStackDepth` 가드는 유지.
 

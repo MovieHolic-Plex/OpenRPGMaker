@@ -756,6 +756,8 @@ export function normalizeItemRecord(record: Partial<ItemRecord> & Pick<ItemRecor
     healStateIds: cleanIds(record.healStateIds),
     hpRecovery: normalizeRecovery(record.hpRecovery),
     mpRecovery: normalizeRecovery(record.mpRecovery),
+    ...(record.ppRecovery && (record.ppRecovery.flat > 0 || record.ppRecovery.percentMax > 0)
+      ? { ppRecovery: normalizeRecovery(record.ppRecovery) } : {}),
     onlyUsableInMenu: record.onlyUsableInMenu ?? false,
     onlyEffectiveOnDeadActors: record.onlyEffectiveOnDeadActors ?? false,
     learnedSkillId: cleanOptionalId(record.learnedSkillId),

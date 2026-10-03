@@ -11,7 +11,7 @@ import { actorOwnedSkillIds } from '@/project/growth/runtime';
 import { canCraft, combinationPartnersOf, combinationRecipeFor } from "@/project/craftRecipes";
 import { actorLoadoutSlots, equippedBattleSkillIds } from "@/project/skillLoadout";
 import { actorDerivedStats } from '@/battle/battleBattlers';
-import { menuItemUnavailableReason, previewMenuItemTarget } from "@/player/playerItemUse";
+import { menuItemUnavailableReason, previewMenuItemTarget, previewMonsterMedicine, targetsPartyMonsters } from "@/player/playerItemUse";
 import type { SaveSlotIndex, SaveSlotReadResult } from "@/player/saveSlots";
 import { canEquip, effectiveActorEquipment, equipmentSlotAccepts } from "@/project/equipmentRules";
 import { resolveActorName, resolveActorFaceResourceId } from "@/project/sessionActorCommands";
@@ -234,6 +234,34 @@ function itemDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
         hint: "사용할 대상을 선택하세요.",
       };
     }
+    if (targetsPartyMonsters(project, item)) {
+      const anyTarget = item.scope === "allAllies" && (session.monsterParty ?? []).some(id => !previewMonsterMedicine(project, session, item, id).reason);
+      return {
+        title: `${item.name} · ${session.inventory[item.id] ?? 0}개`,
+        entries: (session.monsterParty ?? []).flatMap(instanceId => {
+          const instance = session.monsterInstances?.[instanceId];
+          if (!instance) return [];
+          const preview = previewMonsterMedicine(project, session, item, instanceId);
+          const stateName = (id: string) => project.database.states.find(state => state.id === id)?.name ?? id;
+          const remaining = preview.stateIds.filter(id => !preview.curedStateIds.includes(id));
+          const states = preview.stateIds.map(stateName).join(" · ") || "정상";
+          const after = remaining.map(stateName).join(" · ") || "정상";
+          const pp = item.ppRecovery ? `PP ${preview.pp}/${preview.maxPp} → ${preview.ppAfter}/${preview.maxPp}` : "";
+          return [{
+            label: `${monsterDisplayName(project, instance)}  Lv.${instance.level}`,
+            value: `HP ${preview.hp}/${preview.maxHp}${preview.hpAfter !== preview.hp ? ` → ${preview.hpAfter}/${preview.maxHp}` : ""}`,
+            description: anyTarget ? "사용 가능한 파티 몬스터 모두에게 적용됩니다." : preview.reason ?? [pp, preview.curedStateIds.length ? `${states} → ${after}` : states].filter(Boolean).join(" · "),
+            disabled: !anyTarget && Boolean(preview.reason),
+            unavailableReason: anyTarget ? undefined : preview.reason,
+            testId: `status-menu-monster-${instanceId}`,
+            attributes: { monsterMedicineTarget: "true" },
+            onActivate: options.onUseItem ? () => options.onUseItem?.(item.id, undefined, instanceId) : undefined,
+          }];
+        }),
+        emptyLabel: "파티 몬스터가 없습니다",
+        hint: "Enter 사용 · Esc 아이템 목록",
+      };
+    }
     return {
       title: `${item.name} · ${session.inventory[item.id] ?? 0}개`,
       entries: partyActors(project, session).map((actor) => {
@@ -245,7 +273,7 @@ function itemDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
         const eligible = anyTarget || canUseMenuItemOnActor(project, session, item, actor.id);
         return {
           label: resolveActorName(session, actor),
-          value: `HP ${preview.hp}/${preview.maxHp}  MP ${preview.mp}/${preview.maxMp}`,
+          value: `HP ${preview.hp}/${preview.maxHp}  ${item.ppRecovery ? `PP ${preview.pp}/${preview.maxPp} → ${preview.ppAfter}/${preview.maxPp}` : `MP ${preview.mp}/${preview.maxMp}`}`,
           vitals: { ...preview, stateNames, curedStateNames },
           unavailableReason: anyTarget ? undefined : preview.reason,
           description: anyTarget ? "사용 가능한 파티원 모두에게 적용됩니다." : preview.reason,
@@ -755,7 +783,7 @@ function itemFacts(project: Project, session: PlaySession, item: ItemRecord): re
   const usesPerCopy = item.consumptionLimit === "noLimit" ? 1 : item.consumptionLimit;
   const remainingCopyUses = usesPerCopy - (session.itemUseCharges?.[item.id] ?? 0);
   // Match menu dispatch precedence, not scope left over from a previous type.
-  const scope = item.careProfile ? "partyMonster"
+  const scope = item.careProfile || targetsPartyMonsters(project, item) ? "partyMonster"
     : item.learnedSkillId || Object.values(item.seedParameterBonuses).some((delta) => delta !== 0) ? "ally"
     : item.type === "switch" ? "none"
     : item.captureProfile ? "enemy"
@@ -788,6 +816,8 @@ function itemEffectTokens(project: Project, item: ItemRecord): string[] {
   if (item.hpRecovery.percentMax > 0) tokens.push(`hp%:${item.hpRecovery.percentMax}`);
   if (item.mpRecovery.flat > 0) tokens.push(`mp:${item.mpRecovery.flat}`);
   if (item.mpRecovery.percentMax > 0) tokens.push(`mp%:${item.mpRecovery.percentMax}`);
+  if (item.ppRecovery?.flat && item.ppRecovery.flat > 0) tokens.push(`pp:${item.ppRecovery.flat}`);
+  if (item.ppRecovery?.percentMax && item.ppRecovery.percentMax > 0) tokens.push(`pp%:${item.ppRecovery.percentMax}`);
   const healedStateIds = new Set(item.healStateIds);
   for (const stateId of healedStateIds) tokens.push(`heal:${encodeURIComponent(stateId)}`);
   for (const effect of item.stateEffects) {

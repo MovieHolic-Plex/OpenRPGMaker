@@ -428,6 +428,9 @@ export interface ItemRecord {
   healStateIds: StateId[];
   hpRecovery: SkillMpCost;
   mpRecovery: SkillMpCost;
+  /** Restore this flat amount plus percentage of each known move's PP cap.
+   * Explicit and independent of MP recovery; absent means no move-PP effect. */
+  ppRecovery?: SkillMpCost;
   onlyUsableInMenu: boolean;
   onlyEffectiveOnDeadActors: boolean;
   learnedSkillId?: SkillId;

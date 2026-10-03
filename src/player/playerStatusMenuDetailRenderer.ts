@@ -422,6 +422,8 @@ function itemEffectTokenLabel(project: Project, token: string): string {
     case "hp%": return `HP ${value}%`;
     case "mp": return `MP +${value}`;
     case "mp%": return `MP ${value}%`;
+    case "pp": return `각 기술 PP +${value}`;
+    case "pp%": return `각 기술 PP ${value}%`;
     case "heal": return `치료 ${project.database.states.find((state) => state.id === value)?.name ?? value}`;
     case "state": return `상태 ${project.database.states.find((state) => state.id === value)?.name ?? value} ${amount}%`;
     case "learn": return `습득 ${project.database.skills.find((skill) => skill.id === value)?.name ?? value}`;
