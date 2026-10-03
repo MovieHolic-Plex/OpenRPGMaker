@@ -61,7 +61,7 @@ export function applyRomanceScene(project: Project, prose: SceneProse, draft = f
   ] };
   map.events = [...map.events.filter(e => e.id !== I.npc), npc];
   if (!(project.endings ?? []).some(e => e.id === I.ending)) project.endings = [...(project.endings ?? []),
-    { id: I.ending, name: '첫 만남', conditions: [], epilogue: [] }];
+    { id: I.ending, name: '첫 만남', conditions: [], priority: 0, epilogue: [] }];
 }
 
 export function seedRomanceScene(input: Project): Project | undefined {
@@ -122,7 +122,7 @@ function inspectScene(project: Project, expected?: Project, options: { allowDraf
     const memory = repeated.finalState.messages.at(-1) ?? ''; memories.push(memory);
     const finished = runSceneTest(project, { mapId: c.mapId, start: project.startPos, steps: [...prefix,
       ...approach(npc), { kind: 'choose', index: 1 }, { kind: 'expect', endingReached: I.ending, cutsceneLocked: false }] });
-    const active = resolveEventPage(npc, repeated.session, c.mapId);
+    const active = resolveEventPage(npc, repeated.session, { locations: map.locations });
     const restored = applySaveSnapshot(project, JSON.parse(JSON.stringify(createSaveSnapshot(project, chosen.session))));
     const resumed = runSceneTest(project, { mapId: c.mapId, start: { x: restored.x, y: restored.y }, steps: [
       ...approach(npc), { kind: 'choose', index: 0 },
