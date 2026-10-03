@@ -2722,5 +2722,410 @@
    ],
    "note": "통행 불가(성벽 모서리 장애물). 기단 폭 = 성벽 3칸."
   }
+ },
+ "fld_rock_s_a": {
+  "cls": "prop",
+  "refs": [
+   "fish_barrel",
+   "door_pots",
+   "planter_round"
+  ],
+  "thin_ok": "바위 틈·이끼·풀잎 점"
+ },
+ "fld_rock_s_b": {
+  "cls": "prop",
+  "refs": [
+   "fish_barrel",
+   "door_pots",
+   "planter_round"
+  ],
+  "thin_ok": "바위 틈·이끼·풀잎 점"
+ },
+ "fld_rock_s_c": {
+  "cls": "prop",
+  "refs": [
+   "fish_barrel",
+   "door_pots",
+   "planter_round"
+  ],
+  "thin_ok": "바위 틈·이끼·풀잎 점"
+ },
+ "fld_rock_m_a": {
+  "cls": "prop",
+  "refs": [
+   "fish_barrel",
+   "door_pots",
+   "planter_round"
+  ],
+  "thin_ok": "바위 틈·이끼·풀잎 점"
+ },
+ "fld_rock_m_b": {
+  "cls": "prop",
+  "refs": [
+   "fish_barrel",
+   "door_pots",
+   "planter_round"
+  ],
+  "thin_ok": "바위 틈·이끼·풀잎 점"
+ },
+ "fld_rock_l_a": {
+  "cls": "prop",
+  "refs": [
+   "fish_barrel",
+   "door_pots",
+   "planter_round"
+  ],
+  "thin_ok": "바위 틈·이끼·풀잎 점"
+ },
+ "fld_rock_l_b": {
+  "cls": "prop",
+  "refs": [
+   "fish_barrel",
+   "door_pots",
+   "planter_round"
+  ],
+  "thin_ok": "바위 틈·이끼·풀잎 점"
+ },
+ "fld_boulder_mass": {
+  "cls": "prop",
+  "refs": [
+   "fish_barrel",
+   "door_pots",
+   "planter_round"
+  ],
+  "thin_ok": "바위 틈·이끼·풀잎 점"
+ },
+ "fld_flowers_a": {
+  "cls": "prop",
+  "refs": [
+   "flowerbed",
+   "planter_round",
+   "flower_cart"
+  ],
+  "thin_ok": "꽃줄기 2~4px 세로줄"
+ },
+ "fld_flowers_b": {
+  "cls": "prop",
+  "refs": [
+   "flowerbed",
+   "planter_round",
+   "flower_cart"
+  ],
+  "thin_ok": "꽃줄기 2~4px 세로줄"
+ },
+ "fld_flowers_c": {
+  "cls": "prop",
+  "refs": [
+   "flowerbed",
+   "planter_round",
+   "flower_cart"
+  ],
+  "thin_ok": "꽃줄기 2~4px 세로줄"
+ },
+ "fld_bush_flower_a": {
+  "cls": "bush",
+  "refs": [
+   "tree",
+   "tree",
+   "tree"
+  ]
+ },
+ "fld_bush_flower_b": {
+  "cls": "bush",
+  "refs": [
+   "tree",
+   "tree",
+   "tree"
+  ]
+ },
+ "fld_bush_berry": {
+  "cls": "bush",
+  "refs": [
+   "tree",
+   "tree",
+   "tree"
+  ]
+ },
+ "fld_fern": {
+  "cls": "prop",
+  "refs": [
+   "flowerbed",
+   "planter_round",
+   "forum.planter_box"
+  ],
+  "thin_ok": "고사리 잎맥"
+ },
+ "fld_log_a": {
+  "cls": "prop",
+  "refs": [
+   "bench_wood",
+   "sword_barrel",
+   "fish_barrel"
+  ]
+ },
+ "fld_log_b": {
+  "cls": "prop",
+  "refs": [
+   "bench_wood",
+   "sword_barrel",
+   "fish_barrel"
+  ]
+ },
+ "fld_stump_a": {
+  "cls": "prop",
+  "refs": [
+   "bench_wood",
+   "sword_barrel",
+   "fish_barrel"
+  ],
+  "thin_ok": "나이테 한 줄·뿌리 끝"
+ },
+ "fld_stump_b": {
+  "cls": "prop",
+  "refs": [
+   "bench_wood",
+   "sword_barrel",
+   "fish_barrel"
+  ],
+  "thin_ok": "나이테 한 줄·뿌리 끝"
+ },
+ "fld_burrow": {
+  "cls": "prop",
+  "refs": [
+   "fish_barrel",
+   "door_pots",
+   "planter_round"
+  ],
+  "thin_ok": "뼈 마디·결정 끝·흙 알갱이"
+ },
+ "fld_cairn": {
+  "cls": "prop",
+  "refs": [
+   "fish_barrel",
+   "door_pots",
+   "planter_round"
+  ],
+  "thin_ok": "뼈 마디·결정 끝·흙 알갱이"
+ },
+ "fld_ore_a": {
+  "cls": "prop",
+  "refs": [
+   "fish_barrel",
+   "door_pots",
+   "planter_round"
+  ],
+  "thin_ok": "뼈 마디·결정 끝·흙 알갱이"
+ },
+ "fld_ore_b": {
+  "cls": "prop",
+  "refs": [
+   "fish_barrel",
+   "door_pots",
+   "planter_round"
+  ],
+  "thin_ok": "뼈 마디·결정 끝·흙 알갱이"
+ },
+ "fld_bones_a": {
+  "cls": "prop",
+  "refs": [
+   "fish_barrel",
+   "door_pots",
+   "planter_round"
+  ],
+  "thin_ok": "뼈 마디·결정 끝·흙 알갱이"
+ },
+ "fld_bones_b": {
+  "cls": "prop",
+  "refs": [
+   "fish_barrel",
+   "door_pots",
+   "planter_round"
+  ],
+  "thin_ok": "뼈 마디·결정 끝·흙 알갱이"
+ },
+ "fld_signpost": {
+  "cls": "prop",
+  "refs": [
+   "sandwich_board",
+   "lamp_crook",
+   "forum.menu_board"
+  ],
+  "front_only": true
+ },
+ "fld_campfire": {
+  "cls": "prop",
+  "refs": [
+   "lamp_crook",
+   "fish_barrel",
+   "planter_round"
+  ],
+  "thin_ok": "불꽃 끝"
+ },
+ "fld_tent_a": {
+  "cls": "prop",
+  "refs": [
+   "stall_veg",
+   "parasol_table",
+   "stall_herb_flower"
+  ],
+  "sym": true,
+  "thin_ok": "밧줄·깃대·말뚝"
+ },
+ "fld_tent_b": {
+  "cls": "prop",
+  "refs": [
+   "stall_veg",
+   "parasol_table",
+   "stall_herb_flower"
+  ],
+  "sym": true,
+  "thin_ok": "밧줄·깃대·말뚝"
+ },
+ "fld_rack": {
+  "cls": "prop",
+  "refs": [
+   "laundry_rack",
+   "net_rack",
+   "cloth_stand"
+  ],
+  "thin_ok": "가죽 끝·기둥"
+ },
+ "fld_grave_a": {
+  "cls": "prop",
+  "refs": [
+   "statue_sage",
+   "column_monument",
+   "forum.statue"
+  ],
+  "front_only": true,
+  "thin_ok": "글줄·이끼 점"
+ },
+ "fld_grave_b": {
+  "cls": "prop",
+  "refs": [
+   "statue_sage",
+   "column_monument",
+   "forum.statue"
+  ],
+  "front_only": true,
+  "thin_ok": "글줄·이끼 점"
+ },
+ "fld_tombstone": {
+  "cls": "prop",
+  "refs": [
+   "statue_sage",
+   "column_monument",
+   "forum.statue"
+  ],
+  "front_only": true,
+  "thin_ok": "글줄·이끼 점"
+ },
+ "fld_ruin_pagoda": {
+  "cls": "prop",
+  "refs": [
+   "statue_sage",
+   "column_monument",
+   "forum.statue"
+  ],
+  "front_only": true,
+  "thin_ok": "글줄·이끼 점"
+ },
+ "fld_zelkova_a": {
+  "cls": "tree",
+  "refs": [
+   "tree",
+   "tree",
+   "tree"
+  ]
+ },
+ "fld_zelkova_b": {
+  "cls": "tree",
+  "refs": [
+   "tree",
+   "tree",
+   "tree"
+  ]
+ },
+ "fld_zelkova_c": {
+  "cls": "tree",
+  "refs": [
+   "tree",
+   "tree",
+   "tree"
+  ]
+ },
+ "fld_zelkova_d": {
+  "cls": "tree",
+  "refs": [
+   "tree",
+   "tree",
+   "tree"
+  ]
+ },
+ "fld_pine_a": {
+  "cls": "tree",
+  "refs": [
+   "tree",
+   "tree",
+   "tree"
+  ]
+ },
+ "fld_pine_b": {
+  "cls": "tree",
+  "refs": [
+   "tree",
+   "tree",
+   "tree"
+  ]
+ },
+ "fld_pine_c": {
+  "cls": "tree",
+  "refs": [
+   "tree",
+   "tree",
+   "tree"
+  ]
+ },
+ "fld_pine_d": {
+  "cls": "tree",
+  "refs": [
+   "tree",
+   "tree",
+   "tree"
+  ]
+ },
+ "fld_grove_broad": {
+  "cls": "tree",
+  "refs": [
+   "tree",
+   "tree",
+   "tree"
+  ]
+ },
+ "fld_grove_pine": {
+  "cls": "tree",
+  "refs": [
+   "tree",
+   "tree",
+   "tree"
+  ]
+ },
+ "fld_dead_a": {
+  "cls": "prop",
+  "refs": [
+   "tree",
+   "tree",
+   "tree"
+  ],
+  "thin_ok": "마른 잔가지"
+ },
+ "fld_dead_b": {
+  "cls": "prop",
+  "refs": [
+   "tree",
+   "tree",
+   "tree"
+  ],
+  "thin_ok": "마른 잔가지"
  }
 }

@@ -240,3 +240,15 @@ def terrain():
     d = _terrain_before_fld()
     d.update(_FG.terrain())
     return d
+
+
+# --- 사냥터 물체(fld_props.py, fld_props2.py): 맨 끝에 덧붙인다.
+_objects_before_fld = objects
+
+
+def objects():
+    import fld_props as _FP, fld_props2 as _FP2
+    d = _objects_before_fld()
+    d.update(_FP.objects())
+    d.update(_FP2.objects())
+    return d
