@@ -114,12 +114,13 @@ const probe = { scratch };
   await page.waitForFunction(() => document.querySelector("[data-testid='start-location']")?.textContent?.includes("/"), null, { timeout: 10_000 });
   await page.click("[data-testid='start-genre-option-monster-collect']");
   await page.fill("[data-testid='start-intent-input']", "풀숲에서 첫 몬스터를 만나는 마을");
+  await page.locator(".start-arrival-settings summary").click();
   await page.fill("[data-testid='start-title-input']", "QA 몬스터 마을");
   await page.waitForFunction(() => document.querySelector("[data-testid='start-location']")?.textContent?.endsWith("QA 몬스터 마을"), null, { timeout: 10_000 });
   await shot(page, "03-new-game");
   probe.newGame = await page.evaluate(() => ({
     location: document.querySelector("[data-testid='start-location']")?.textContent ?? null,
-    pressed: [...document.querySelectorAll(".start-poster[aria-pressed='true']")].map((node) => node.getAttribute("data-testid")),
+    pressed: [...document.querySelectorAll(".first-world-poster[aria-pressed='true']")].map((node) => node.getAttribute("data-testid")),
   }));
 
   await page.click("[data-testid='start-create']");

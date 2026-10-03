@@ -81,9 +81,10 @@ affects mp 면 MP). 둘 다 0/생략이면 키가 없다 — 옛 프로젝트는
 빈 편집기로 넘어간 뒤 캔버스 브리핑이 다시 「어떤 게임을 만들까요?」를 물었다.
 
 - **엔트리**: 루트 `start-screen.html` → `src/start/startScreen.ts` + `startScreen.css`(tokens.css 만 싣는 자기완결 시트).
+- **첫 문장 입구(2026-10-03)**: 숨기지 않은 최근 프로젝트가 없으면 홈에 `src/start/firstWorldArrival.ts`의 장르 참고 장면 3개를 표시한다. 새 게임의 AI 경로도 같은 컴포넌트다. 장르 선택은 그림 전환과 입력창 열기만 하고, ‘이 이야기로 시작’을 눌러야 폴더 생성·인계를 시작한다. 이름·저장 위치·해상도는 ‘게임 이름과 저장 위치’를 펼쳐 바꾼다. 예제·빈 프로젝트도 접근할 수 있다. 폴더 생성 실패는 선택과 문장을 유지한다. 예제·빈 프로젝트로 갔다가 새 게임으로 돌아와도 문장은 유지한다. 원문·선택·제목은 기존 `startIntent.ts` 계약으로 전달하며, 무장르 문장은 인터뷰를 열기 위해 `story-cutscene`으로 시작한다(인터뷰에서 변경 가능).
 - **모양(2026-10-03)**: 상단 헤더에 홈·새 게임·폴더 열기·팀 참여·언어를 두고, 홈 전체 폭에 시네마틱 장면을 보여 준다.
   `src/start/startLobby.ts` / `startLobby.css`가 로비만 소유한다(`start-lobby` layer는 기존 생성 폼 시트 뒤).
-  첫 방문은 기존 공용 참고 장면 `river-fortress.png` / `lake-village.png` / `outdoor-opening-overlook.png` 중 하나를 고른다.
+  첫 문장 입구는 기존 `project-interview`의 세계 지도 영상/포스터와 장르별 그림을 쓰고, 일반 로비의 공용 장면은 `river-fortress.png` / `lake-village.png` / `outdoor-opening-overlook.png`다.
   최근 작업이 있으면 가장 최근의 **숨기지 않은** 프로젝트 표지를 배경으로 쓴다(`start-continue`).
   실제 「계속 만들기」 버튼(`start-continue-open`)이 프로젝트를 연다. 장면 전체를 덮는 투명 버튼은 없다.
   표지가 없을 때는 「OPRN 장면 미리보기」로 공용 그림임을 알리고, 기존 `applyCover`가 그림을 굽는 대로 배경만 교체한다.
@@ -109,14 +110,14 @@ affects mp 면 MP). 둘 다 0/생략이면 키가 없다 — 옛 프로젝트는
     `mapTileDraw.ts` 는 그 코어를 다시 내보내고 편집기 쪽 그림 로드만 더한다. 시작 화면은 이식(tileGrafts)·투명색을 편집기와 같이 합성하고,
     재료가 하나라도 없으면(번들에 없는 칩셋 등) 반쪽 그림 대신 첫 글자로 둔다. 맵 없는 빈 폴더도 첫 글자.
   - 팀 호스트 브라우저 브리지에는 두 채널이 없다.
-- **새 게임**: 한 문장(선택)·장르 포스터(featured 3 + 빈 프로젝트)·이름·저장 위치를 한 화면에서 정한다. 저장 위치는
+- **새 게임**: AI 경로는 장르 미리보기 → 한 문장(필수) → 시작, 예제·빈 프로젝트 경로는 기존 생성 폼이다. 이름·저장 위치의 기본값을 바로 사용할 수 있다. 저장 위치는
   `oprn:start.suggestProjectDir` 가 `문서/OPRN Games/<이름>`(겹치면 `<이름> 2`…)를 추천하고, 「바꾸기」가 상위 폴더 대화상자를 연다.
   `start.createProject` 에 `projectDir` 를 주면 대화상자 없이 그 **비어 있는** 폴더에 만든다(파일이 있으면 거절). 메뉴 경로는 예전대로 대화상자.
   `OPRN_NEW_PROJECT_ROOT` 가 기본 상위 위치를 덮는다(QA 전용 — 대화상자를 자동화할 수 없다).
 - **인계**: 시작 화면은 빈 폴더만 만들고 `sessionStorage` 의 `oprn:start-screen-intent`(`src/start/startIntent.ts`)에 장르·한 문장을 남긴다.
   편집기 `finishEditorBoot` 가 **그 폴더가 열렸을 때만**(`projectDir` 일치, 10분 이내) 꺼내 `createNewProjectSeed` 씨앗을 채택·flush 하고
   (`src/editor/startScreenHandoff.ts`), 한 문장이 있으면 조수 파이프라인(AI 준비 시 자동 전송, 아니면 입력창에 담기)으로 넘긴다.
-  인계가 있으면 캔버스 브리핑을 띄우지 않고 `oprn:editor-welcome-dismissed` 를 켠다. 호스트는 인계 비교를 위해 세션이 정규화한 경로를 돌려준다.
+  인계가 있으면 첫 방문 화면을 다시 띄우지 않고 `oprn:editor-welcome-dismissed` 를 켠다. 호스트는 인계 비교를 위해 세션이 정규화한 경로를 돌려준다.
 - **프리셋 장르는 인터뷰를 거친다 (2026-09-28):** 장르를 고른 인계(`presetId`)면 셸이 뜬 뒤 `runStartScreenPresetInterview` 가
   메뉴 「새 프로젝트」와 같은 AI 연결 관문(`ensureAiConnectedForPreset`) → 기획 인터뷰(`showProjectInterview`, 한 문장은 첫 질문 입력칸에
   `initialAnswer` 로 담김)를 연다. 확정하면 `gameDesignBrief` 를 `generationPending: true` 로 심고, 같은 부팅의 `prepareProjectInterviewStartup`
@@ -124,6 +125,7 @@ affects mp 면 MP). 둘 다 0/생략이면 키가 없다 — 옛 프로젝트는
   한 문장을 비우면 장르만 켜진 빈 맵에서 아무 일도 없었다. 「나중에」·취소면 예전 한 문장 경로로 돌아간다. 단위: `test/startScreenPresetInterview.test.ts`.
 - **증거**: `xvfb-run -a node scripts/qa/electronStartScreenProbe.mjs`(`build:fast` + `build:electron` 뒤) — 격리 `--user-data-dir` 로
   홈·숨김·새 게임·편집기(저장된 제목/장르 재로드)·cover.jpg·재기동을 확인하고 `verify-shots/start-screen/` 에 남긴다. 단위: `test/startScreen.test.ts`.
+  첫 문장 화면의 이번 증거는 `verify-shots/first-world-arrival/browser.json`과 `scripts/capture-first-world-arrival.mjs`다. 실제 시작 엔트리·편집기 환영 컴포넌트를 사용하되 브리지/저장 콜백은 격리한다. 이 증거는 Electron 패키지와 SQLite 재로드 검증을 대신하지 않는다.
 
 ## 강하게 다시 하기·장 표시 선택 필드 (2026-09-26)
 
