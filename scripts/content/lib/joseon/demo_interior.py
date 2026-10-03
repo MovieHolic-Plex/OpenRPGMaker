@@ -154,6 +154,43 @@ def joseon_in_pharmacy():
     return r
 
 
+@room
+def joseon_in_school():
+    """서당 18×12: 창호 벽 마루방. 북쪽에 온돌 단(훈장 자리: 서가·병풍·훈장 상·방석), 앞으로 학동 책상 두 줄. 출구는 남벽 x=9."""
+    plan = """
+##################
+#mmmmmmmmmmmmmmmm#
+#mmmmmmmmmmmmmmmm#
+#mmmmoooooooommmm#
+#mmmmoooooooommmm#
+#mmmmmmmmmmmmmmmm#
+#mmmmmmmmmmmmmmmm#
+#mmmmmmmmmmmmmmmm#
+#mmmmmmmmmmmmmmmm#
+#mmmmmmmmmmmmmmmm#
+#mmmmmmmmmmmmmmmm#
+#########E########
+""".strip('\n')
+    r = IR.Room('joseon_in_school', '조선 서당 내부(훈장 단·학동 책상)', plan, wall_of={'m': 'chang'})
+    P = r.put
+    # 훈장 단: 앞면 + 가운데 계단 두 칸, 서가·병풍·훈장 상
+    P('in_dais_front_l', 5, 5); P('in_dais_steps', 8, 5); P('in_dais_steps', 9, 5)
+    for x in (6, 7, 10, 11):
+        P('in_dais_front_m', x, 5)
+    P('in_dais_front_r', 12, 5)
+    P('in_seoga', 5, 2); P('in_byeongpung_s', 8, 2); P('in_seoga', 11, 2)
+    P('in_bangseok_r', 8, 4); P('in_hunjang_sang', 11, 4)
+    # 벽: 족자 둘, 회초리 통
+    P('in_jokja_a', 2, 1); P('in_jokja_b', 15, 1); P('in_gonjang_rack', 3, 3)
+    # 학동 책상 두 줄 (앞에 방석)
+    for y in (7, 9):
+        for i, x in enumerate((3, 6, 11, 14)):
+            P('in_hakdong_sang', x, y); P(('in_bangseok_r', 'in_bangseok_g', 'in_bangseok_b', 'in_bangseok_r')[(i + (y == 9)) % 4], x, y + 1)
+    P('in_hwaro', 2, 6); P('in_hwaro', 15, 6); P('in_soban_c', 9, 6)
+    r.people += [(9, 4, 1, FRONT, 1), (6, 8, 0, UP, 1), (11, 10, 2, UP, 0)]
+    return r
+
+
 def build(names, outdir, png=False):
     sheet = IR.Sheet()
     res = {}
