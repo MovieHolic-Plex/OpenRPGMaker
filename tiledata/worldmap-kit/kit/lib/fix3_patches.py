@@ -11,6 +11,7 @@ import sys
 from pathlib import Path
 
 import numpy as np
+import scipy.ndimage as ndi
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE / 'src' / 'journey'))
@@ -104,13 +105,18 @@ def island_mask(M, ic):
     return region & (G >= 10) & (G != M4.DUNE) & (O == V.MESA)
 
 
-def dune_fx3(img, M, ic, dune, rnd, vnoise, mesa=None):
-    """journey_fx_v9.apply_dune_fx 복사본. dune: 그리는 사구 칸(메사 칸 포함). 사구 속 섬 장소는 마루 무늬를 지운다."""
+def dune_fx3(img, M, ic, dune, rnd, vnoise, mesa=None, label=None):
+    """journey_fx_v9.apply_dune_fx 복사본. dune: 그리는 사구 칸(메사 칸 포함). 사구 속 섬 장소는 마루 무늬를 지운다.
+    label: 바닥 경계 v9 의 픽셀 라벨(M._label_px). 주면 사구 경계 능선을 칸 직선 대신 라벨 경계를 따라 긋는다."""
     CELL = 16
     img = img.copy()
     H, W = dune.shape
     h, w = H * CELL, W * CELL
     dune_px = np.kron(dune.astype(np.uint8), np.ones((CELL, CELL), np.uint8)).astype(bool)
+    if label is not None:
+        import terrain_v4 as V4
+        isl = dune & (M.G != V4.DUNE)
+        dune_px = (label == V4.DUNE) | np.kron(isl.astype(np.uint8), np.ones((CELL, CELL), np.uint8)).astype(bool)
     Y, X = np.mgrid[0:h, 0:w]
     r, g, b = img[..., 0].astype(int), img[..., 1].astype(int), img[..., 2].astype(int)
     sandy = (r > g) & (g > b) & (r > 150) & ((r - b) > 25)
@@ -145,6 +151,21 @@ def dune_fx3(img, M, ic, dune, rnd, vnoise, mesa=None):
     ridge_dark = np.array([139, 111, 63], np.uint8)
     ridge_light = np.array([255, 240, 196], np.uint8)
     pre_ridge = img.copy()
+    if label is not None:                             # 라벨 경계를 따라 3px 능선 + 안쪽 1px 빛
+        up = lambda m: np.kron(m.astype(np.uint8), np.ones((CELL, CELL), np.uint8)).astype(bool)
+        flat = np.array([[M.Hh[y, x] == 0 and not M.is_face(x, y) for x in range(W)] for y in range(H)])
+        edge = (up(land & flat) | up(foot)) & ~dune_px            # 고원·절벽 곁은 절벽이 곧 경계 — 능선을 두르지 않는다
+        de = ndi.distance_transform_edt(~edge) + vnoise(h, w, 9, 906) * 1.1
+        img[dune_px & (de > .5) & (de <= 3.5)] = ridge_dark
+        img[dune_px & (de > 3.5) & (de <= 4.5)] = ridge_light
+    else:
+        _dune_ridges_cells(img, dune, land, foot, rnd, ridge_dark, ridge_light, CELL, w, h)
+    img[mesa_px] = pre_ridge[mesa_px]                 # 메사 그림 위로는 능선을 긋지 않는다
+    return img
+
+
+def _dune_ridges_cells(img, dune, land, foot, rnd, ridge_dark, ridge_light, CELL, w, h):
+    H, W = dune.shape
     for y in range(H):
         for x in range(W):
             if not dune[y, x]:
@@ -174,8 +195,6 @@ def dune_fx3(img, M, ic, dune, rnd, vnoise, mesa=None):
                         ly = py - 1 if dy > 0 else py + 3
                         if 0 <= ly < h:
                             img[ly, x0 + t] = ridge_light
-    img[mesa_px] = pre_ridge[mesa_px]                 # 메사 그림 위로는 능선을 긋지 않는다
-    return img
 
 
 # ───────────────────────── 3) 아이콘 붙이기(부드러운 그림자) ─────────────────────────

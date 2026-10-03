@@ -21,6 +21,7 @@ import make_map_v5 as m5  # noqa: E402
 import terrain_v4 as V  # noqa: E402
 import worldmap_easyrpg_plus as wm  # noqa: E402
 import boundary_v5 as B5  # noqa: E402
+import boundary_v9 as B9  # noqa: E402
 import fix3_patches as P  # noqa: E402
 import fix4_patches as P4  # noqa: E402
 import journey_world_v9 as J  # noqa: E402
@@ -79,7 +80,7 @@ def install(journey, roles, iconset, assign):
     def kit_build_v5(*a, **k):
         M4.SITES[:] = sites
         M4.ROUTES[:] = routes
-        M4.render_ground = B5.render_ground_v5
+        M4.render_ground = B9.render_ground_v9                  # 경계 v9(쌍 종류별 전이) — v5 의 일괄 어두운 테두리·칸 계단을 대신한다
         M4.render_depth = B5.render_depth_v5
         import coast_v6
         coast_v6.install(M4)
@@ -153,11 +154,12 @@ def render_terrain(w):
     M4.render_ramps = lambda M_, img_: P.render_ramps_fix3(M_, img_, old_ramps)
     img, info, snap = _render_base(w)
     M4.render_ramps = old_ramps
-    img = swamp_final.run(img, snap, w.M.G)
+    lab = getattr(w.M, '_label_px', None)                       # 바닥 경계 v9 라벨 — 늪·사구 후처리가 같은 경계를 따른다
+    img = swamp_final.run(img, snap, w.M.G, label=lab)
     if J.LAYOUT is None:
         img = P4.paint_pond(img)
     island = P.island_mask(w.M, w.ic)
-    C = P.dune_fx3(img, w.M, w.ic, w.dune | island, rnd, FX._vnoise, mesa=island)
+    C = P.dune_fx3(img, w.M, w.ic, w.dune | island, rnd, FX._vnoise, mesa=island, label=lab)
     _paint_volcano_peaks(C)
     paths_same = [list(map(list, c)) for _, c in info['paths']] == [list(map(list, c)) for _, c in w.paths]
     return C, info, paths_same
