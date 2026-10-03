@@ -1,9 +1,9 @@
 {
- "projectId": "3cc150d3-ae59-423f-812b-1150612ec79a",
+ "projectId": "f252511e-125b-48f9-b920-5d8a3d9c64a2",
  "projectDir": "/tmp/oprn-joseon-baram-proof",
  "note": "임시 증명 폴더(사용자의 실제 프로젝트 아님)",
  "revision": 1,
- "sha256": "1148833282f45f37972943de4a075d7d98e2f4e8e95dcd8fc004a89b009b306d",
+ "sha256": "e07f93340baa52c7ce6a6fab08b9d6b3a6ab27dce95fe8394b9a3724625b7250",
  "saved": true,
  "reopened": true,
  "deepEqual": {
@@ -15,14 +15,14 @@
  "tileset": {
   "id": "joseon_baram",
   "family": "oprn-joseon",
-  "count": 12928,
+  "count": 13632,
   "tilesPerRow": 64,
   "image": {
    "type": "bundled",
    "id": "tex_joseon_baram"
   },
-  "structureKits": 278,
-  "tileGroups": 298,
+  "structureKits": 291,
+  "tileGroups": 311,
   "autotileGroups": [
    "jb_road16_autotile",
    "jb_yard16_autotile",
@@ -53,8 +53,8 @@
    },
    {
     "id": "joseon-baram-props",
-    "docs": 9,
-    "images": 5
+    "docs": 10,
+    "images": 6
    },
    {
     "id": "joseon-baram-examples",
@@ -84,7 +84,7 @@
     208
    ],
    "lower": 41600,
-   "upper": 23553,
+   "upper": 23102,
    "npcs": 40
   },
   "joseon_v20": {
@@ -360,7 +360,7 @@
     {
      "group": "jb_road64_autotile",
      "cells": 1623,
-     "mismatch": 252,
+     "mismatch": 332,
      "edgeConnects": true,
      "samples": [
       [
@@ -416,9 +416,58 @@
     {
      "group": "jb_yard64_autotile",
      "cells": 856,
-     "mismatch": 0,
+     "mismatch": 94,
      "edgeConnects": false,
-     "samples": []
+     "samples": [
+      [
+       37,
+       36
+      ],
+      [
+       38,
+       36
+      ],
+      [
+       39,
+       36
+      ],
+      [
+       40,
+       36
+      ],
+      [
+       41,
+       36
+      ],
+      [
+       42,
+       36
+      ],
+      [
+       43,
+       36
+      ],
+      [
+       44,
+       36
+      ],
+      [
+       45,
+       36
+      ],
+      [
+       50,
+       36
+      ],
+      [
+       51,
+       36
+      ],
+      [
+       52,
+       36
+      ]
+     ]
     },
     {
      "group": "jb_water47g_autotile",
@@ -430,9 +479,58 @@
     {
      "group": "jb_slab_edge16_autotile",
      "cells": 307,
-     "mismatch": 0,
+     "mismatch": 69,
      "edgeConnects": true,
-     "samples": []
+     "samples": [
+      [
+       46,
+       2
+      ],
+      [
+       47,
+       2
+      ],
+      [
+       48,
+       2
+      ],
+      [
+       49,
+       2
+      ],
+      [
+       46,
+       15
+      ],
+      [
+       49,
+       15
+      ],
+      [
+       46,
+       16
+      ],
+      [
+       49,
+       16
+      ],
+      [
+       29,
+       17
+      ],
+      [
+       30,
+       17
+      ],
+      [
+       31,
+       17
+      ],
+      [
+       32,
+       17
+      ]
+     ]
     },
     {
      "group": "jb_palace_court16_autotile",
@@ -449,29 +547,16 @@
     "same": 41600,
     "mismatch": 0,
     "samples": [],
-    "walkable": 21340
+    "walkable": 20496
    },
    "reach": {
-    "crossLines": 118,
-    "crossLinesBlockedEnd": 9,
-    "exemptCrossings": [
-     {
-      "piece": "gn_sarip_stone",
-      "x": 163,
-      "y": 177,
-      "why": "사립 (163,177 3×1, 통로 164): 남쪽 끝 (164,178) 을 짚가리(haystack, 164,178 2×2)가 막고 북쪽은 돌담으로 둘러싼 안뜰(159~168,170~177, 61칸: 비석·돌탑이 선 곳)이라 문 하나가 막다른 길이다. 안뜰 61칸 전체가 도달 불가 섬이 된다(국내성 원작 규모 맵 빌더 쪽 결함 — 짚가리 위치)."
-     }
-    ],
-    "exemptPeople": [
-     {
-      "x": 80,
-      "y": 110,
-      "why": "주민 (80,110) 가 연못(palace_pond_6, 80,110 6×3) 칸 안에 서 있어 걸어 닿지 못한다(국내성 원작 규모 맵 빌더 쪽 결함)."
-     }
-    ],
+    "crossLines": 123,
+    "crossLinesBlockedEnd": 4,
+    "exemptCrossings": [],
+    "exemptPeople": [],
     "crossingDetail": [
      {
-      "piece": "gungnae_gate_great_12",
+      "piece": "gnf_gate_great_12",
       "axis": "v",
       "x": 94,
       "y": 2,
@@ -480,7 +565,7 @@
       "crossed": 4
      },
      {
-      "piece": "gungnae_gate_great_12",
+      "piece": "gnf_gate_great_12",
       "axis": "v",
       "x": 94,
       "y": 187,
@@ -489,7 +574,7 @@
       "crossed": 4
      },
      {
-      "piece": "gungnae_gate_side_5",
+      "piece": "gnf_gate_side_5",
       "axis": "h",
       "x": 9,
       "y": 95,
@@ -498,7 +583,7 @@
       "crossed": 4
      },
      {
-      "piece": "gungnae_gate_side_5",
+      "piece": "gnf_gate_side_5",
       "axis": "h",
       "x": 187,
       "y": 95,
@@ -573,7 +658,7 @@
       "piece": "gungnae_bridge_v5",
       "axis": "v",
       "x": 129,
-      "y": 165,
+      "y": 161,
       "lines": 3,
       "tested": 3,
       "crossed": 3
@@ -617,29 +702,11 @@
      {
       "piece": "gungnae_bridge_h6",
       "axis": "h",
-      "x": 23,
-      "y": 103,
-      "lines": 4,
-      "tested": 3,
-      "crossed": 3
-     },
-     {
-      "piece": "gungnae_bridge_h6",
-      "axis": "h",
       "x": 24,
       "y": 133,
       "lines": 4,
       "tested": 4,
       "crossed": 4
-     },
-     {
-      "piece": "gungnae_bridge_h6",
-      "axis": "h",
-      "x": 50,
-      "y": 99,
-      "lines": 4,
-      "tested": 3,
-      "crossed": 3
      },
      {
       "piece": "gungnae_bridge_h6",
@@ -654,19 +721,10 @@
       "piece": "gungnae_bridge_h6",
       "axis": "h",
       "x": 161,
-      "y": 104,
+      "y": 126,
       "lines": 4,
       "tested": 4,
       "crossed": 4
-     },
-     {
-      "piece": "gungnae_bridge_h6",
-      "axis": "h",
-      "x": 161,
-      "y": 126,
-      "lines": 4,
-      "tested": 2,
-      "crossed": 2
      },
      {
       "piece": "gungnae_bridge_h6",
@@ -676,6 +734,33 @@
       "lines": 4,
       "tested": 2,
       "crossed": 2
+     },
+     {
+      "piece": "gungnae_bridge_h6",
+      "axis": "h",
+      "x": 23,
+      "y": 98,
+      "lines": 4,
+      "tested": 4,
+      "crossed": 4
+     },
+     {
+      "piece": "gungnae_bridge_h6",
+      "axis": "h",
+      "x": 50,
+      "y": 98,
+      "lines": 4,
+      "tested": 4,
+      "crossed": 4
+     },
+     {
+      "piece": "gungnae_bridge_h6",
+      "axis": "h",
+      "x": 162,
+      "y": 98,
+      "lines": 4,
+      "tested": 4,
+      "crossed": 4
      },
      {
       "piece": "gungnae_bridge_narrow_h",
@@ -689,14 +774,14 @@
      {
       "piece": "gungnae_bridge_narrow_h6",
       "axis": "h",
-      "x": 24,
+      "x": 23,
       "y": 90,
       "lines": 1,
       "tested": 1,
       "crossed": 1
      },
      {
-      "piece": "palace_gate_side_3",
+      "piece": "gnf_palace_gate_side_3",
       "axis": "h",
       "x": 72,
       "y": 95,
@@ -705,7 +790,7 @@
       "crossed": 4
      },
      {
-      "piece": "palace_gate_side_3",
+      "piece": "gnf_palace_gate_side_3",
       "axis": "h",
       "x": 126,
       "y": 95,
@@ -735,16 +820,16 @@
       "piece": "gn_jm_daemun_6",
       "axis": "v",
       "x": 45,
-      "y": 154,
+      "y": 153,
       "lines": 2,
       "tested": 2,
       "crossed": 2
      },
      {
-      "piece": "gn_sarip_mud",
+      "piece": "gnf_sarip_mud",
       "axis": "v",
-      "x": 48,
-      "y": 160,
+      "x": 47,
+      "y": 159,
       "lines": 2,
       "tested": 2,
       "crossed": 2
@@ -753,64 +838,64 @@
       "piece": "gn_jm_daemun_6",
       "axis": "v",
       "x": 144,
+      "y": 91,
+      "lines": 2,
+      "tested": 2,
+      "crossed": 2
+     },
+     {
+      "piece": "gnf_sarip_mud",
+      "axis": "v",
+      "x": 146,
+      "y": 97,
+      "lines": 2,
+      "tested": 2,
+      "crossed": 2
+     },
+     {
+      "piece": "gnf_sarip_stone",
+      "axis": "v",
+      "x": 39,
       "y": 95,
       "lines": 2,
       "tested": 2,
       "crossed": 2
      },
      {
-      "piece": "gn_sarip_mud",
+      "piece": "gnf_sarip_stone",
       "axis": "v",
-      "x": 147,
-      "y": 101,
+      "x": 175,
+      "y": 97,
       "lines": 2,
       "tested": 2,
       "crossed": 2
      },
      {
-      "piece": "gn_sarip_stone",
-      "axis": "v",
-      "x": 41,
-      "y": 95,
-      "lines": 1,
-      "tested": 1,
-      "crossed": 1
-     },
-     {
-      "piece": "gn_sarip_stone",
-      "axis": "v",
-      "x": 176,
-      "y": 101,
-      "lines": 1,
-      "tested": 1,
-      "crossed": 1
-     },
-     {
-      "piece": "gn_sarip_stone",
-      "axis": "v",
-      "x": 165,
-      "y": 55,
-      "lines": 1,
-      "tested": 1,
-      "crossed": 1
-     },
-     {
-      "piece": "gn_sarip_stone",
-      "axis": "v",
-      "x": 171,
-      "y": 44,
-      "lines": 1,
-      "tested": 1,
-      "crossed": 1
-     },
-     {
-      "piece": "gn_sarip_stone",
+      "piece": "gnf_sarip_stone",
       "axis": "v",
       "x": 163,
+      "y": 55,
+      "lines": 2,
+      "tested": 2,
+      "crossed": 2
+     },
+     {
+      "piece": "gnf_sarip_stone",
+      "axis": "v",
+      "x": 165,
+      "y": 44,
+      "lines": 2,
+      "tested": 2,
+      "crossed": 2
+     },
+     {
+      "piece": "gnf_sarip_stone",
+      "axis": "v",
+      "x": 162,
       "y": 177,
-      "lines": 1,
-      "tested": 0,
-      "crossed": 0
+      "lines": 2,
+      "tested": 2,
+      "crossed": 2
      },
      {
       "piece": "gungnae_bridge_narrow_v",
@@ -831,30 +916,17 @@
       "crossed": 1
      }
     ],
-    "exemptDoors": [
-     {
-      "kind": "doorFront",
-      "x": 104,
-      "y": 193,
-      "why": "집 giwa_house_3b (102,187 5×6) 가 남문(gungnae_gate_great_12, 94,187 12×13)의 오른쪽 문루 밑에 겹쳐 깔려 문 앞 (104,193) 이 문루 칸(막힘)이다(국내성 원작 규모 맵 빌더 쪽 결함 — 집 문이 문루에 덮임)."
-     },
-     {
-      "kind": "doorStep",
-      "x": 104,
-      "y": 192,
-      "why": "같은 집의 디딤돌 (104,192) 도 남문 문루 칸이다(위와 같은 겹침)."
-     }
-    ],
+    "exemptDoors": [],
     "crossings": 40,
-    "fronts": 0,
+    "fronts": 1,
     "waterOpenBare": 0,
-    "waterUnderObject": 489,
+    "waterUnderObject": 488,
     "start": [
      100,
      104
     ],
-    "reachable": 20316,
-    "walkable": 21340,
+    "reachable": 18677,
+    "walkable": 20496,
     "missed": {
      "doorFront": [],
      "doorStep": [],
@@ -906,84 +978,146 @@
     },
     {
      "group": "jb_road64_autotile",
-     "cells": 3609,
-     "mismatch": 0,
+     "cells": 4010,
+     "mismatch": 22,
      "edgeConnects": true,
-     "samples": []
-    },
-    {
-     "group": "jb_yard64_autotile",
-     "cells": 5430,
-     "mismatch": 51,
-     "edgeConnects": false,
      "samples": [
       [
-       187,
-       103
-      ],
-      [
-       187,
-       104
-      ],
-      [
-       187,
-       105
-      ],
-      [
-       187,
-       106
-      ],
-      [
-       187,
-       107
-      ],
-      [
-       187,
-       108
-      ],
-      [
-       187,
-       109
-      ],
-      [
-       187,
-       110
-      ],
-      [
-       187,
-       111
-      ],
-      [
-       187,
-       112
-      ],
-      [
-       187,
-       113
+       13,
+       116
       ],
       [
        13,
-       169
+       117
+      ],
+      [
+       13,
+       118
+      ],
+      [
+       13,
+       119
+      ],
+      [
+       13,
+       120
+      ],
+      [
+       13,
+       121
+      ],
+      [
+       13,
+       122
+      ],
+      [
+       13,
+       123
+      ],
+      [
+       13,
+       124
+      ],
+      [
+       13,
+       125
+      ],
+      [
+       13,
+       126
+      ],
+      [
+       13,
+       127
+      ]
+     ]
+    },
+    {
+     "group": "jb_yard64_autotile",
+     "cells": 5431,
+     "mismatch": 102,
+     "edgeConnects": false,
+     "samples": [
+      [
+       91,
+       15
+      ],
+      [
+       92,
+       15
+      ],
+      [
+       93,
+       15
+      ],
+      [
+       94,
+       15
+      ],
+      [
+       95,
+       15
+      ],
+      [
+       96,
+       15
+      ],
+      [
+       97,
+       15
+      ],
+      [
+       102,
+       15
+      ],
+      [
+       103,
+       15
+      ],
+      [
+       104,
+       15
+      ],
+      [
+       105,
+       15
+      ],
+      [
+       106,
+       15
       ]
      ]
     },
     {
      "group": "jb_water47g_autotile",
-     "cells": 6831,
+     "cells": 7189,
      "mismatch": 0,
      "edgeConnects": false,
      "samples": []
     },
     {
      "group": "jb_slab_edge16_autotile",
-     "cells": 957,
-     "mismatch": 0,
+     "cells": 1196,
+     "mismatch": 3,
      "edgeConnects": true,
-     "samples": []
+     "samples": [
+      [
+       29,
+       102
+      ],
+      [
+       98,
+       153
+      ],
+      [
+       98,
+       159
+      ]
+     ]
     },
     {
      "group": "jb_palace_court16_autotile",
-     "cells": 1610,
+     "cells": 1634,
      "mismatch": 0,
      "edgeConnects": false,
      "samples": []
@@ -1255,7 +1389,7 @@
    "same": 41600,
    "mismatch": 0,
    "samples": [],
-   "walkable": 21340
+   "walkable": 20496
   },
   "joseon_v20": {
    "cells": 3584,

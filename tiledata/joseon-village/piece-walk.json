@@ -3903,6 +3903,139 @@
 "source": "override",
 "steps": []
 },
+"gnf_gate_great_12": {
+"w": 12,
+"h": 13,
+"cls": "prop",
+"rows": [
+"...XCCCCX...",
+"...XCCCCX...",
+"XXXXCCCCXXXX",
+"XXXXCCCCXXXX",
+"XXXXCCCCXXXX",
+"XXXXCCCCXXXX",
+"XXXXCCCCXXXX",
+"XXXXCCCCXXXX",
+"XXXXCCCCXXXX",
+"XXXXCCCCXXXX",
+"XXXXFFFFXXXX",
+"XXXXFFFFXXXX",
+"XXXXFFFFXXXX"
+],
+"source": "override",
+"steps": []
+},
+"gnf_bastion_w": {
+"w": 5,
+"h": 5,
+"cls": "wall",
+"rows": [
+"XXXXX",
+"XXXXX",
+"XXXXX",
+"XXXXX",
+"XXXXX"
+],
+"source": "auto",
+"steps": []
+},
+"gnf_bastion_e2": {
+"w": 5,
+"h": 5,
+"cls": "wall",
+"rows": [
+"XXXXX",
+"XXXXX",
+"XXXXX",
+"XXXXX",
+"XXXXX"
+],
+"source": "auto",
+"steps": []
+},
+"gnf_bastion_w2": {
+"w": 5,
+"h": 5,
+"cls": "wall",
+"rows": [
+"XXXXX",
+"XXXXX",
+"XXXXX",
+"XXXXX",
+"XXXXX"
+],
+"source": "auto",
+"steps": []
+},
+"gnf_bastion_e": {
+"w": 5,
+"h": 5,
+"cls": "wall",
+"rows": [
+"XXXXX",
+"XXXXX",
+"XXXXX",
+"XXXXX",
+"XXXXX"
+],
+"source": "auto",
+"steps": []
+},
+"gnf_gate_side_5": {
+"w": 5,
+"h": 8,
+"cls": "prop",
+"rows": [
+".XXX.",
+"XXXXX",
+"XXXXX",
+"XXXXX",
+".FFFF",
+".FFFF",
+".FFFF",
+".F.FF"
+],
+"source": "override",
+"steps": []
+},
+"gnf_tower_corner_5w": {
+"w": 5,
+"h": 12,
+"cls": "prop",
+"rows": [
+"FXXXF",
+"XXXXX",
+"XXXXX",
+"XXXXX",
+"XXXXX",
+"XXXXX",
+".XXX.",
+".XXX.",
+".XXX.",
+".XXX.",
+".XXX.",
+"FXXXF"
+],
+"source": "auto",
+"steps": []
+},
+"gnf_palace_gate_side_3": {
+"w": 3,
+"h": 8,
+"cls": "prop",
+"rows": [
+"FXF",
+"XXX",
+"XXX",
+"XXX",
+"FFF",
+".FF",
+"FFF",
+"FFF"
+],
+"source": "override",
+"steps": []
+},
 "gnf_palace_hall_wide_14": {
 "w": 18,
 "h": 10,
@@ -3918,6 +4051,65 @@
 "..XXXXXXXXXXXXXX..",
 "XXXXXXXXXXXXXXXXXX",
 "XXXXXXXXXXXXXXXXXX"
+],
+"source": "override",
+"steps": []
+},
+"gnf_sarip_mud": {
+"w": 4,
+"h": 1,
+"cls": "built",
+"rows": [
+"XF.X"
+],
+"source": "override",
+"steps": []
+},
+"gnf_sarip_stone": {
+"w": 4,
+"h": 1,
+"cls": "built",
+"rows": [
+"XF.X"
+],
+"source": "override",
+"steps": []
+},
+"gnf_cave_dark": {
+"w": 5,
+"h": 4,
+"cls": "prop",
+"rows": [
+".XXX.",
+"XXXXX",
+"XXXXX",
+"XXXXX"
+],
+"source": "auto",
+"steps": []
+},
+"gnf_cave_white": {
+"w": 5,
+"h": 4,
+"cls": "prop",
+"rows": [
+".XXX.",
+"XXXXX",
+"XXXXX",
+"XXXXX"
+],
+"source": "auto",
+"steps": []
+},
+"gnf_cave_moss": {
+"w": 5,
+"h": 4,
+"cls": "prop",
+"rows": [
+".XXX.",
+"XXXXX",
+"XXXXX",
+"XXXXX"
 ],
 "source": "auto",
 "steps": []

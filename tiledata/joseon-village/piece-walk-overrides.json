@@ -439,6 +439,60 @@
     5,
     6
    ]
+  },
+  "gnf_gate_great_12": {
+   "passage": {
+    "cols": [
+     4,
+     5,
+     6,
+     7
+    ],
+    "from": 10
+   },
+   "cross": "v"
+  },
+  "gnf_gate_side_5": {
+   "rect": [
+    [
+     4,
+     0,
+     7,
+     4,
+     "F"
+    ]
+   ],
+   "cross": "h"
+  },
+  "gnf_palace_gate_side_3": {
+   "rect": [
+    [
+     4,
+     0,
+     7,
+     2,
+     "F"
+    ]
+   ],
+   "cross": "h"
+  },
+  "gnf_sarip_mud": {
+   "grid": [
+    "XFFX"
+   ],
+   "cross": "v"
+  },
+  "gnf_sarip_stone": {
+   "grid": [
+    "XFFX"
+   ],
+   "cross": "v"
+  },
+  "gnf_palace_hall_wide_14": {
+   "front": [
+    8,
+    9
+   ]
   }
  },
  "terrain": {
@@ -526,9 +580,6 @@
    "connect": [
     "slab",
     "slab_edge16",
-    "road64",
-    "yard64",
-    "diamond",
     "water47g",
     "water_deep",
     "palace_court",
@@ -593,7 +644,13 @@
     "yard64",
     "diamond",
     "slab",
-    "slab_edge16"
+    "slab_edge16",
+    "palace_court",
+    "palace_court16",
+    "water47g",
+    "water_deep",
+    "rice16",
+    "field"
    ],
    "edgeConnects": true
   },
@@ -606,7 +663,13 @@
     "yard64",
     "diamond",
     "slab",
-    "slab_edge16"
+    "slab_edge16",
+    "palace_court",
+    "palace_court16",
+    "water47g",
+    "water_deep",
+    "rice16",
+    "field"
    ],
    "edgeConnects": false
   }
