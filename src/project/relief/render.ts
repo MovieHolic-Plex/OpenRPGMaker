@@ -11,6 +11,8 @@ import { compileReliefStyle, type ReliefWallStyle } from "./styles";
 type Rgb = [number, number, number];
 const D = palette as { G: Rgb[]; B: Rgb[]; TOP: number[]; GROUND: number[]; LIP: Record<"L" | "M" | "R", number[]>; TILES: number[][] };
 const RAMPS = [D.G, D.B];
+// 바이옴의 별도 계단 양식이 없으면 돌 계단을 쓴다. 땅·흙벽 팔레트와 분리해 잔디 계단이 되지 않게 한다.
+const STONE_STAIR_RAMP: Rgb[] = [[47, 49, 46], [72, 75, 70], [103, 107, 98], [137, 141, 129], [176, 180, 165], [210, 213, 199]];
 const { TOP, GROUND, LIP, TILES } = D;
 const LV = Array.from({ length: RELIEF_MAX_LEVEL + 1 }, (_, i) => Math.min(3, Math.floor(i / 3)));
 const OUT_G = 0, OUT_B = 6, DRIP = 6, CW = 14, CH = 8;
@@ -341,14 +343,18 @@ function carvedRiser(S: ReliefWallStyle, s: ReliefSlope, px: number, py: number,
 
 export function renderRelief(h: HeightGrid, opt: ReliefRenderOptions = {}): ReliefRender {
   const S = compileReliefStyle(opt.style);
-  const ramps = opt.ramps ?? S?.ramps ?? RAMPS;
+  const slopes = opt.slopes ?? [];
+  const stoneStairs = !S?.carvedStairs && slopes.some(s => !!s.steps);
+  const baseRamps = opt.ramps ?? S?.ramps ?? RAMPS;
+  const stoneOffset = baseRamps.length * 6;
+  const ramps = stoneStairs ? [...baseRamps, STONE_STAIR_RAMP] : baseRamps;
   const art = !!opt.rampArt;
   // 경사로 도트 맵: 경사로와 그 둘레 한 칸은 네모 절벽 — 대각선으로 깎이면 경사로 입구가 비스듬히 잘려 비탈이 땅에 붙지 않는다
   const nearRamp = opt.rampArt && opt.slopes?.length
     ? (x: number, y: number) => opt.slopes!.some((s) => x >= s.x - 1 && x <= s.x + s.w && y >= s.y - 1 && y <= s.y + s.h)
     : undefined;
-  // carved stairs: the stair and its ring are square too (a diagonal cut beside the stair made its wall look chamfered away)
-  const nearCut = S?.carvedStairs && opt.slopes?.some((s) => s.steps)
+  // 계단과 둘레는 네모로 맞춘다. 접합부를 대각선으로 깎으면 벽과 계단 사이가 벌어진다.
+  const nearCut = opt.slopes?.some((s) => s.steps)
     ? (x: number, y: number) => opt.slopes!.some((s) => !!s.steps && x >= s.x - 1 && x <= s.x + s.w && y >= s.y - 1 && y <= s.y + s.h)
     : undefined;
   const BW = h[0]?.length ?? 0, bridge = opt.bridges && Array.prototype.some.call(opt.bridges, (v: number) => v > 0) ? opt.bridges : undefined;
@@ -356,7 +362,6 @@ export function renderRelief(h: HeightGrid, opt: ReliefRenderOptions = {}): Reli
   const nearBridge = bridge ? (x: number, y: number) => { for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) if (isBridge(x + dx, y + dy)) return true; return false; } : undefined;
   const square = nearRamp || nearCut || nearBridge ? (x: number, y: number) => !!(nearRamp?.(x, y) || nearCut?.(x, y) || nearBridge?.(x, y)) : undefined;
   const { hp, PW, PH } = buildPixelHeights(h, opt.diag !== false, square);
-  const slopes = opt.slopes ?? [];
   const { hf, sid, st } = slopeHeights(hp, PW, PH, slopes);
   let mx = 0; for (let i = 0; i < hp.length; i++) if (hf[i] > mx) mx = hf[i];
   mx = Math.ceil(mx);
@@ -371,7 +376,7 @@ export function renderRelief(h: HeightGrid, opt: ReliefRenderOptions = {}): Reli
   const topN = new Int32Array(NC), hidN = new Int32Array(NC);
   const edge = new Uint8Array(N);
   const fl = new Float32Array(N), mpy = new Int32Array(N).fill(-1), ssl = new Int16Array(N), sst = new Float32Array(N);
-  const cut = new Int16Array(S?.carvedStairs ? N : 0);   // carved-stair riser: its slope number + 1
+  const cut = new Int16Array(slopes.some(s => !!s.steps) ? N : 0);   // stair riser: its slope number + 1, including the plateau landing
   const underDeck = new Uint8Array(bridge ? N : 0), deckUnder = new Uint8Array(bridge ? N : 0);   // gorge floor under a deck · the deck's underside
   // 경사로 화소끼리는 조금 달라도 같은 면으로 본다 (경사로 없으면 정수 비교와 같다)
   const tol = (i: number, j: number) => (ssl[i] || ssl[j] ? 0.3 : 0);
@@ -386,6 +391,7 @@ export function renderRelief(h: HeightGrid, opt: ReliefRenderOptions = {}): Reli
     if (S?.cornice && sid[m] && slopes[sid[m] - 1].steps) out[i] = 6 + (Math.floor(st[m] * slopes[sid[m] - 1].steps! * 2) % 2 ? 4 : 5) - (px % T === 0 || px % T === 15 ? 2 : 0);
     if (S?.carvedStairs && sid[m] && slopes[sid[m] - 1].steps) out[i] = carvedTread(S, slopes[sid[m] - 1], px, py, st[m], out[i]);
     kind[i] = 0; lev[i] = lc; src[i] = cell; fl[i] = c; mpy[i] = py; ssl[i] = sid[m]; sst[i] = st[m];
+    if (cut.length) cut[i] = 0; // 뒤 계단의 챌면을 앞 윗면이 가리면 계단 소유권도 걷는다.
     const onBridge = !!bridge && bridge[cell]! > 0 && c > 0;
     if (onBridge) {
       // the gorge floor under the deck, where this map pixel would lie at height 0: shaded ground (the deck's cell has no
@@ -414,13 +420,13 @@ export function renderRelief(h: HeightGrid, opt: ReliefRenderOptions = {}): Reli
       }
       continue;
     }
-    // carved stairs: the riser under the landing (the plateau pixel over the top tread) belongs to the stair too
-    const own = S?.carvedStairs ? (sid[m] && slopes[sid[m] - 1].steps ? sid[m] : py + 1 < PH && sid[m + PW] && slopes[sid[m + PW] - 1].steps ? sid[m + PW] : 0) : 0;
+    // 층계참 아래 챌면도 계단에 속한다.
+    const own = cut.length ? (sid[m] && slopes[sid[m] - 1].steps ? sid[m] : py + 1 < PH && sid[m + PW] && slopes[sid[m + PW] - 1].steps ? sid[m + PW] : 0) : 0;
     for (let d = 0; d < n; d++) {
       const w = (sy + 1 + d) * PW + px;
       hide(w, c);
       kind[w] = 1; lev[w] = lc; dep[w] = d; run[w] = n; src[w] = cell; fl[w] = c; mpy[w] = py; ssl[w] = sid[m]; sst[w] = st[m];
-      if (own) cut[w] = own;
+      if (cut.length) cut[w] = own;
     }
   }
   // 벽 조각
@@ -479,7 +485,7 @@ export function renderRelief(h: HeightGrid, opt: ReliefRenderOptions = {}): Reli
     if (S?.carvedStairs && cut[i]) p = carvedRiser(S, slopes[cut[i] - 1], sx, mpy[i], d, n);
     // 바이옴 양식은 강조색(세 번째 램프)이 있지만 기본 흙벽은 두 램프뿐이다.
     // 기본 양식의 다리 밑면을 13번 색으로 칠하면 팔레트 바깥을 읽어 렌더가 죽는다.
-    if (bridge && deckUnder[i]) p = d === 0 ? (ramps.length > 2 ? 13 : 7) : 6;
+    if (bridge && deckUnder[i]) p = d === 0 ? (baseRamps.length > 2 ? 13 : 7) : 6;
     out[i] = p;
   }
   // 윗면 가장자리와 그늘
@@ -667,6 +673,28 @@ export function renderRelief(h: HeightGrid, opt: ReliefRenderOptions = {}): Reli
       out[i] = p;
     }
   }
+  const stairOwner = (i: number): number => (cut.length ? cut[i] : 0) || (ssl[i] && kind[i] === 0 && slopes[ssl[i] - 1]?.steps ? ssl[i] : 0);
+  if (stoneStairs) {
+    for (let i = 0; i < N; i++) {
+      const owner = stairOwner(i);
+      if (!owner) continue;
+      const s = slopes[owner - 1]!, sx = i % PW, py = mpy[i];
+      const [across, width] = stairAcross(s, sx, py);
+      let shade: number;
+      if (across === 0 || across === width - 1) shade = 1;
+      else if (kind[i] === 1) {
+        // 흙벽 무늬 대신 디딤판 아래 그늘과 짧은 돌 챌면을 구분한다.
+        shade = dep[i] === 0 ? 1 : dep[i] === run[i] - 1 ? 2 : 3;
+        if (run[i] > 4 && (across + Math.floor(sst[i] * s.steps!) * 7) % 16 === 0) shade = Math.max(1, shade - 1);
+      } else {
+        const t = sst[i] * s.steps!, phase = t - Math.floor(t);
+        const treadPixels = (s.dir === "n" || s.dir === "s" ? s.h : s.w) * T / s.steps!;
+        shade = phase < 1 / treadPixels ? 5 : phase > 1 - 1 / treadPixels ? 2 : 4;
+        if (shade === 4 && across % 16 === (Math.floor(t) % 2 ? 8 : 0)) shade = 3;
+      }
+      out[i] = stoneOffset + shade;
+    }
+  }
   const hidCell = new Uint8Array(NC);
   for (let k = 0; k < NC; k++) hidCell[k] = topN[k] && hidN[k] * 2 >= topN[k] ? 1 : 0;
   for (let sy = 0; sy < SH; sy++) for (let sx = 0; sx < PW; sx++) {
@@ -676,7 +704,7 @@ export function renderRelief(h: HeightGrid, opt: ReliefRenderOptions = {}): Reli
     if (opt.transparentGround && kind[i] < 0) continue;
     // 투명 땅은 제자리(높이 0)만. 경사로 아랫도리는 반올림 단이 0 이어도 위로 밀려 그려져 그 자리에 타일이 없다 — 불투명으로 칠한다.
     // 윗단 칸의 모서리 깎임(diag)도 화소는 높이 0 이지만 그 칸 타일은 위로 들려 그려진다 — 원천 칸이 높이 0 일 때만 비운다.
-    if (opt.transparentGround && kind[i] === 0 && lev[i] === 0 && fl[i] < 1e-6 && !(S && ssl[i]) && !h[(src[i] / W) | 0]?.[src[i] % W]) {
+    if (opt.transparentGround && kind[i] === 0 && lev[i] === 0 && fl[i] < 1e-6 && !(S && ssl[i]) && !stairOwner(i) && !h[(src[i] / W) | 0]?.[src[i] % W]) {
       const shade = GROUND[(sy % T) * T + sx % T] - p;
       rgba[o + 3] = shade > 0 ? Math.min(150, 55 * shade) : 0;
       // 경사로 도트 맵: 반투명으로 섞으면 칩셋에 없는 색이 나온다 — 윗면 램프의 풀색(1단 그늘 = 2번, 짙은 그늘 = 1번)으로 불투명하게
@@ -684,8 +712,9 @@ export function renderRelief(h: HeightGrid, opt: ReliefRenderOptions = {}): Reli
     } else {
       rgba[o] = col[0] * f; rgba[o + 1] = col[1] * f; rgba[o + 2] = col[2] * f; rgba[o + 3] = 255;
     }
-    if (shadeA && shadeA[i] && !(rimPx && rimPx[i] >= 0)) { const g = ramps[0][0]; rgba[o] = g[0]; rgba[o + 1] = g[1]; rgba[o + 2] = g[2]; rgba[o + 3] = shadeA[i]; edge[i] = 1; }
-    if (rimPx && rimPx[i] >= 0) { const rc = ramps[(rimPx[i] / 6) | 0][rimPx[i] % 6]; rgba[o] = rc[0]; rgba[o + 1] = rc[1]; rgba[o + 2] = rc[2]; rgba[o + 3] = 255; }
+    const stone = stoneStairs && stairOwner(i);
+    if (!stone && shadeA && shadeA[i] && !(rimPx && rimPx[i] >= 0)) { const g = ramps[0][0]; rgba[o] = g[0]; rgba[o + 1] = g[1]; rgba[o + 2] = g[2]; rgba[o + 3] = shadeA[i]; edge[i] = 1; }
+    if (!stone && rimPx && rimPx[i] >= 0) { const rc = ramps[(rimPx[i] / 6) | 0][rimPx[i] % 6]; rgba[o] = rc[0]; rgba[o + 1] = rc[1]; rgba[o + 2] = rc[2]; rgba[o + 3] = 255; }
     if (hid[i] >= 0 && hidCell[hidSrc[i]]) {
       const edge = [1, -1, PW, -PW].some((dd) => { const jj = i + dd; return jj < 0 || jj >= N || hid[jj] < 0 || !hidCell[hidSrc[jj]]; });
       if (edge) { xray[o] = 90; xray[o + 1] = 230; xray[o + 2] = 255; xray[o + 3] = 255; }
@@ -701,7 +730,7 @@ export function renderRelief(h: HeightGrid, opt: ReliefRenderOptions = {}): Reli
   let overSlope: Uint8Array | undefined;
   if (opt.rampArt && slopes.length) {
     overSlope = new Uint8Array(N);
-    for (let k = 0; k < N; k++) if (ssl[k] && kind[k] === 0) overSlope[k] = 1;
+    for (let k = 0; k < N; k++) if (ssl[k] && kind[k] === 0 && !slopes[ssl[k] - 1]?.steps) overSlope[k] = 1;
     paintRamps(opt.rampArt, slopes, { rgba, kind, ssl, sst, mpy, PW, SH });
   }
   return { rgba, xray, PW, SH, pad, src, kind, lev, hidden, slope: ssl, slopeT: sst, mpy, height: fl, edge, ...(overSlope ? { overSlope } : {}) };
@@ -723,6 +752,7 @@ function paintRamps(
     const i = sy * PW + sx, sid = ssl[i];
     if (!sid || kind[i] !== 0) continue;
     const s = slopes[sid - 1]!, ns = s.dir === "n" || s.dir === "s", my = mpy[i]!;
+    if (s.steps) continue;
     // t = 0 at the low end, 1 at the high end (render.ts slopeHeights)
     const t = sst[i]!, len = (ns ? s.h : s.w) * T;
     // the face art's rows are contour lines across the slope: north-south ramps take it as drawn, east-west ramps

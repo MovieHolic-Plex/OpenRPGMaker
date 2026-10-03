@@ -1,0 +1,77 @@
+{
+  "findings": [
+    {
+      "height": 1,
+      "stairs": 4,
+      "slopes": [
+        {
+          "x": 12,
+          "y": 18,
+          "w": 2,
+          "h": 2,
+          "dir": "n",
+          "lo": 0,
+          "hi": 1,
+          "steps": 4
+        }
+      ],
+      "undo": true,
+      "redo": true
+    },
+    {
+      "height": 2,
+      "stairs": 6,
+      "slopes": [
+        {
+          "x": 12,
+          "y": 18,
+          "w": 2,
+          "h": 3,
+          "dir": "n",
+          "lo": 0,
+          "hi": 2,
+          "steps": 6
+        }
+      ],
+      "undo": true,
+      "redo": true
+    },
+    {
+      "height": 3,
+      "stairs": 8,
+      "slopes": [
+        {
+          "x": 12,
+          "y": 18,
+          "w": 2,
+          "h": 4,
+          "dir": "n",
+          "lo": 0,
+          "hi": 3,
+          "steps": 8
+        }
+      ],
+      "undo": true,
+      "redo": true
+    },
+    {
+      "height": 4,
+      "stairs": 10,
+      "slopes": [
+        {
+          "x": 12,
+          "y": 18,
+          "w": 2,
+          "h": 5,
+          "dir": "n",
+          "lo": 0,
+          "hi": 4,
+          "steps": 10
+        }
+      ],
+      "undo": true,
+      "redo": true
+    }
+  ],
+  "errors": []
+}
