@@ -8,7 +8,7 @@ import type { ReliefRoughSize } from "@/project/relief/roughBrush";
 import type { MapId } from "@/project/types";
 import type { PaletteStamp } from "@/editor/tilePaletteStamp";
 import type { TerrainPoint, TerrainSymmetry } from "./terrainDesignGeometry";
-export type TerrainDesignTool = "contour" | "road" | "ridge" | "valley" | "lake" | "mix" | "mixedCluster" | "stamp" | "lock" | "route";
+export type TerrainDesignTool = "contour" | "road" | "ridge" | "valley" | "lake" | "mix" | "mixedCluster" | "stamp" | "lock" | "route" | "finish";
 
 export type Tool = "paint" | "fill" | "collision" | "event" | "erase" | "select" | "eyedropper" | "pan" | "relief";
 export type PaintShape = "pen" | "rect" | "round";
@@ -105,6 +105,17 @@ export interface EditorState {
   terrainStampCapture: boolean;
   terrainRoute: { mapId: string; start: TerrainPoint; end: TerrainPoint } | null;
   terrainRouteWidth: number;
+  terrainFeatureId: string | null;
+  terrainDragPoint: number | null;
+  terrainFinishMethod: "smooth" | "erode" | "corners";
+  terrainFinishPasses: number;
+  terrainRouteBody: [number, number, number];
+  terrainRouteDoorId: string;
+  terrainRouteEvents: boolean;
+  terrainRouteDoors: "authored" | "open" | "closed";
+  terrainRouteSwitches: Record<string, boolean>;
+  terrainVisionPreview: boolean;
+  terrainVisionOrigin: TerrainPoint | null;
   terrainMaterial: "grass" | "dirt" | "stone";
   terrainWidth: number;
   reliefRampWidth: 2 | 4 | 6;
@@ -171,6 +182,10 @@ class EditorStateStore {
     terrainStampCapture: true,
     terrainRoute: null,
     terrainRouteWidth: 3,
+    terrainFeatureId: null, terrainDragPoint: null,
+    terrainFinishMethod: "smooth", terrainFinishPasses: 2,
+    terrainRouteDoorId: "", terrainRouteBody: [1,1,1], terrainRouteEvents: true, terrainRouteDoors: "authored", terrainRouteSwitches: {},
+    terrainVisionPreview: false, terrainVisionOrigin: null,
     terrainMaterial: "dirt",
     terrainWidth: 3,
     reliefRampWidth: 4,
@@ -226,7 +241,7 @@ export const editorState = new EditorStateStore();
  * 우클릭 영역 드래그·Ctrl+V 고스트 추적은 pointermove 마다 여기만 흔든다.
  */
 const CANVAS_OVERLAY_EDITOR_KEYS = new Set<keyof EditorState>([
-  "terrainPoints", "terrainRoute",
+  "terrainPoints", "terrainRoute", "terrainVisionPreview", "terrainVisionOrigin", "terrainRouteDoorId", "terrainRouteBody", "terrainRouteEvents", "terrainRouteDoors", "terrainRouteSwitches",
   "selection",
   "pastePreview",
   "clipboard",
@@ -332,6 +347,7 @@ const EVENT_EDITOR_IGNORED_KEYS: ReadonlySet<keyof EditorState> = new Set<keyof 
   "terrainBrush", "terrainMaterial", "terrainWidth", "reliefRampWidth", "reliefBridgeStart",
   "terrainDesignOpen", "terrainSymmetry", "terrainDelta", "terrainAreaShape", "terrainStampName", "terrainSeed", "terrainMixWeights",
   "terrainLakeLevel", "terrainLakeDepth", "terrainShallowWidth", "terrainRoadFlatten", "terrainUnlock",
+  "terrainFeatureId", "terrainDragPoint", "terrainFinishMethod", "terrainFinishPasses",
   "terrainStampId", "terrainStampRotation", "terrainStampMirror", "terrainStampCapture", "terrainRouteWidth",
   "reliefClusterDensity", "reliefClusterEnabled", "terrainSelectedGroup", "terrainMoveGroup", "terrainReachability",
 ]);

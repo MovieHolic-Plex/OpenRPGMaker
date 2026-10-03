@@ -1,3 +1,5 @@
+import { syncTerrainVision } from "./terrainVision";
+import { syncTerrainWater } from "./terrainWater";
 import { prepareFieldAbility } from "@/player/fieldAbility";
 import { installPointerMove } from "@/player/playScenePointerMove";
 import { createDefeatRecovery } from "@/player/defeatRecovery";
@@ -392,6 +394,8 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   update(_time: number, deltaMs: number): void {
     this.perfCounters.frames += 1;
     updatePlayScene(this, deltaMs);
+    syncTerrainWater(this, this.map);
+    syncTerrainVision(this, this.map, this.tileX, this.tileY);
     updateGameTime(this, deltaMs);
     tickNpcSchedules(this, isGameTimePausedForRuntime(this), deltaMs);
     updateWeather(this, deltaMs);

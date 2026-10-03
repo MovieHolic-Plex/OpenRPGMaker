@@ -418,6 +418,7 @@ export class TilePaintEngine {
    * commit=false(되돌리기로 버린 스트로크)면 정리하지 않는다.
    */
   endStroke(commit = true): void {
+    if (editorState.get().terrainDragPoint !== null) editorState.set({ terrainDragPoint: null });
     this.terrainLast=null;
     const rough = this.reliefRough;
     this.stopReliefGrowth();

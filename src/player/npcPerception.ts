@@ -1,3 +1,4 @@
+import { terrainLineOfSight, terrainVisionRange } from "@/project/terrainGameplay";
 import { isPassable } from '@/project/collision';
 import { pointRect } from '@/project/footprint';
 import { findBlockingEventOverlappingRect, type RuntimeEventView } from '@/project/runtimeEventState';
@@ -9,12 +10,13 @@ import type { PursuitWorld } from './pursuitNavigation';
 /** Explicit policy, current facing, and a supercover ray (including corner-touching cells). */
 export function npcSeesPoint(world: PursuitWorld, view: RuntimeEventView, target: ChasePoint, sight: NpcSight, facing: Dir = view.direction ?? 'down'): boolean {
   const dx = target.x - view.x, dy = target.y - view.y;
-  if (isInSafeZone(world.map.safeZones, target) || Math.abs(dx) + Math.abs(dy) > sight.range) return false;
+  if (isInSafeZone(world.map.safeZones, target) || Math.abs(dx) + Math.abs(dy) > terrainVisionRange(world.map, view, sight.range)) return false;
   if (sight.facing === 'forward') {
     const forward = facing === 'down' ? dx === 0 && dy >= 0 : facing === 'up' ? dx === 0 && dy <= 0
       : facing === 'right' ? dy === 0 && dx >= 0 : dy === 0 && dx <= 0;
     if (!forward) return false;
   }
+  if (!terrainLineOfSight(world.map, view, target)) return false;
   if (!sight.lineOfSight) return true;
   const blocked = (x: number, y: number): boolean => {
     if ((x === view.x && y === view.y) || (x === target.x && y === target.y)) return false;
