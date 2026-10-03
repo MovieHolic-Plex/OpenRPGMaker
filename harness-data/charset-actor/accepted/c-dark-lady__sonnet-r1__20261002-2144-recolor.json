@@ -1,0 +1,43 @@
+{
+ "id": "20261002-2144-recolor/c-dark-lady__sonnet-r1",
+ "brief": "c-dark-lady",
+ "name": "검은 머리 귀부인",
+ "base": "People2:1",
+ "base_label": "People2 2번",
+ "strength": "normal",
+ "files": {
+  "chr": "c-dark-lady__sonnet-r1__20261002-2144-recolor.chr.txt",
+  "sheet": "c-dark-lady__sonnet-r1__20261002-2144-recolor.png"
+ },
+ "description": {
+  "label": "검은 긴 머리 보라 드레스 귀부인",
+  "gender": "여",
+  "attributes": {
+   "kind": "사람",
+   "age": "청년",
+   "hair": "검은 머리"
+  },
+  "role": "귀부인 (귀족 여성)",
+  "appearance": "허리까지 내려오는 칠흑색 긴 머리를 가운데 가르마로 늘어뜨리고 밝은 살구빛 피부에 푸른빛 도는 눈을 가졌다. 짙은 보라색 긴 드레스에 은빛·연보라 장식 띠와 칼라, 밑단이 달려 있다.",
+  "colors": [
+   "검은 긴 머리",
+   "짙은 보라 드레스",
+   "은빛 연보라 장식 띠와 밑단",
+   "밝은 살구빛 피부",
+   "푸른 눈"
+  ],
+  "tags": [
+   "귀부인",
+   "귀족",
+   "드레스",
+   "보라색",
+   "검은 머리",
+   "저택",
+   "궁정",
+   "중세 서양"
+  ],
+  "fits": "귀족 저택, 궁정, 무도회장, 성 안의 귀부인이나 영주의 부인 NPC 로 어울린다.",
+  "by": "Claude Sonnet 5.5 · medium",
+  "at": "2026-10-02T22:40:39+00:00"
+ }
+}

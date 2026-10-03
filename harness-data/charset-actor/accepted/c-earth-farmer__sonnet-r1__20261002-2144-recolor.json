@@ -1,0 +1,43 @@
+{
+ "id": "20261002-2144-recolor/c-earth-farmer__sonnet-r1",
+ "brief": "c-earth-farmer",
+ "name": "갈색 머리 농부",
+ "base": "People1:2",
+ "base_label": "People1 3번",
+ "strength": "normal",
+ "files": {
+  "chr": "c-earth-farmer__sonnet-r1__20261002-2144-recolor.chr.txt",
+  "sheet": "c-earth-farmer__sonnet-r1__20261002-2144-recolor.png"
+ },
+ "description": {
+  "label": "곱슬 갈색 머리 황토 상의 농부",
+  "gender": "남",
+  "attributes": {
+   "kind": "사람",
+   "age": "청년",
+   "hair": "짙은 갈색 머리"
+  },
+  "role": "농부",
+  "appearance": "덥수룩하고 흐트러진 짙은 갈색 머리에 그을린 피부, 갈색 눈의 청년. 황토색 긴팔 상의와 갈색 바지, 어두운 갈색 신발 차림이며 소매 끝으로 손이 드러난다.",
+  "colors": [
+   "짙은 갈색 머리",
+   "황토색 상의",
+   "갈색 바지",
+   "어두운 갈색 신발",
+   "그을린 살구빛 피부"
+  ],
+  "tags": [
+   "농부",
+   "마을 사람",
+   "시골",
+   "농촌",
+   "청년",
+   "일꾼",
+   "중세",
+   "평민"
+  ],
+  "fits": "농장·밭·시골 마을에서 일하거나 오가는 평범한 일꾼 NPC로 어울린다.",
+  "by": "Claude Sonnet 5.5 · medium",
+  "at": "2026-10-02T22:40:46+00:00"
+ }
+}
