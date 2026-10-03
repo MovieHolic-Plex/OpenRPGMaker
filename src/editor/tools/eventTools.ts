@@ -3707,10 +3707,71 @@ function cutsceneMoveWarnings(project: Project, map: GameMap, beats: readonly Cu
   return warnings;
 }
 
+/**
+ * 생성한 소품·캐릭터셋 조각·몬스터 도트 그림을 picture move 로 손수 움직이는 컷신은 거부한다 — 좌표를 모델이 어림하면
+ * 닿지 않거나 어긋난다(2026-10-02 트럭 시험). 같은 일을 script_cutscene_staged 가 그림 크기로 계산해 준다.
+ * 배경·정지 컷·페이드 같은 일반 picture 사용은 막지 않는다. staged/impact 도구는 내부 호출이라 _composedByStageTool 로 통과한다.
+ */
+const HAND_MOVED_ACTOR_PICTURE = /^(cutscene_sprite_|cutscene_char_|scarloxy-monster-|.*-monster-)/u;
+function rejectHandMovedActorPictures(rawBeats: unknown): void {
+  const resourceOf = new Map<string, string>();
+  const offenders = new Set<string>();
+  const visit = (beats: unknown): void => {
+    if (!Array.isArray(beats)) return;
+    for (const beat of beats) {
+      if (!beat || typeof beat !== "object") continue;
+      const b = beat as Record<string, unknown>;
+      if (b.kind === "parallel") { visit(b.beats); continue; }
+      if (b.kind !== "picture") continue;
+      const id = String(b.pictureId ?? b.id ?? "");
+      if (typeof b.resourceId === "string") resourceOf.set(id, b.resourceId);
+      const resource = resourceOf.get(id);
+      if ((b.action === "move" || b.action === "show" || (b.action === undefined && typeof b.resourceId === "string")) && resource && HAND_MOVED_ACTOR_PICTURE.test(resource)) offenders.add(resource);
+    }
+  };
+  visit(rawBeats);
+  if (offenders.size > 0) {
+    throw new ToolError(
+      `그림 ${[...offenders].join(", ")} 를 picture show·move 로 손수 세우고 움직이는 컷신은 만들지 않습니다 — 좌표·크기를 어림하면 화면을 덮거나 닿지 않고, 지우는 것도 빠뜨립니다. `
+      + "script_cutscene_staged 로 다시 만드세요: actors 에 이 그림을 배우(resourceId)로 넣고, steps 에 enter/move/exit/fling/expect touching 으로 관계를 선언하면 도구가 좌표를 계산합니다(find_tools 로 script_cutscene_staged 를 찾으세요).",
+      { code: "use-staged-cutscene" },
+    );
+  }
+}
+
+/**
+ * 맵 NPC(차셋) 몬스터가 다가와 공격 애니메이션을 쏘는 컷신 — 차셋 시트에는 몬스터 그림이 없어 사람·동물 그림이 몬스터 행세를 한다
+ * (2026-10-02 조수 시험: 엠버킷이 사람 그림으로 나옴). 몬스터는 staged 의 그림 배우(list_monster_resources 소재)로 세운다.
+ */
+function rejectCharsetMonsterAttack(rawBeats: unknown): void {
+  let movesOtherActor = false;
+  let animates = false;
+  const visit = (beats: unknown): void => {
+    if (!Array.isArray(beats)) return;
+    for (const beat of beats) {
+      if (!beat || typeof beat !== "object") continue;
+      const b = beat as Record<string, unknown>;
+      if (b.kind === "parallel") { visit(b.beats); continue; }
+      if (b.kind === "animation") animates = true;
+      const mover = b.target ?? b.eventId ?? b.actorId;
+      if (b.kind === "moveActor" && typeof mover === "string" && mover !== "player" && mover !== "@player" && mover !== "this-event" && mover !== "screen") movesOtherActor = true;
+    }
+  };
+  visit(rawBeats);
+  if (movesOtherActor && animates) {
+    throw new ToolError(
+      "다른 NPC 를 움직여 공격 애니메이션을 쏘는 컷신은 script_cutscene 으로 만들지 않습니다 — 차셋 NPC 로는 몬스터 그림이 나오지 않아 사람·동물 그림이 몬스터 행세를 합니다. "
+      + "script_cutscene_staged 로 만드세요: actors 에 {name:'몬스터', resourceId:<list_monster_resources 의 scarloxy-monster-… 소재>}, 주인공은 {ghost:true, tile:{x,y}}, "
+      + "steps 에 enter/move → turn(주인공 방향 확인) → animate(animationId:'anim_…', actor:'주인공')·se·shake 를 선언하세요.",
+      { code: "use-staged-cutscene" },
+    );
+  }
+}
+
 const scriptCutscene: ToolDefinition = {
   name: "script_cutscene",
   description:
-    "한 장면 컷신을 beat 타임라인으로 작성해 이벤트 페이지로 추가한다.  컷신·연출·대화 장면·회상 요청의 정본. 투더문식 회상/엔딩 프리셋은 script_cutscene_preset." +
+    "한 장면 컷신을 beat 타임라인으로 작성해 이벤트 페이지로 추가한다. 대사·카메라·진행(스위치·맵 이동·엔딩) 중심 컷신의 정본. 그림이나 주인공·NPC·몬스터가 화면을 걷고 달리고 부딪히고 공격하는 «움직임 연출»(트럭에 치임, 몬스터 등장·공격, 둘러보기)은 좌표를 손으로 짜지 말고 script_cutscene_staged 로 만든다. 투더문식 회상/엔딩 프리셋은 script_cutscene_preset." +
     "**플레이어 조작(이동·조사·공격·메뉴)을 잠그고 시청만 하게 만드는 장면 전용 도구다** — " +
     "회상/플래시백, 오프닝, 엔딩, 시네마틱, '플레이어가 아무것도 못 하는 장면' 요청은 모두 이 툴이다. " +
     "잠금/해제와 스킵 라벨은 컴파일러가 자동으로 감싸므로 upsert_event 로 수동 조립하지 말 것. beat 종류: " +
@@ -3760,6 +3821,7 @@ const scriptCutscene: ToolDefinition = {
     const map = requireMap(draft, args.mapId as string);
     const trigger = triggerFromArg(args.trigger);
     const warnings: string[] = [];
+    if (args._composedByStageTool !== true) { rejectHandMovedActorPictures(args.beats); rejectCharsetMonsterAttack(args.beats); }
     const aliased = canonicalizeSayBeatAliases(args.beats);
     if (aliased.moved > 0) warnings.push(SAY_BEAT_ALIAS_WARNING(aliased.moved));
     if (aliased.inferred > 0) warnings.push(BEAT_KIND_INFERRED_WARNING(aliased.inferred));

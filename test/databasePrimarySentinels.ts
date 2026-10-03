@@ -17,7 +17,7 @@ export const DATABASE_PRIMARY_SENTINELS: Readonly<Record<string, string>> = {
   elements: '[data-testid="db-elements-search"]',
   states: '.oprn-detail-states .db-state-oprn-workbench',
   animations: '[data-testid="db-animation-play"]',
-  battleScreen: '[data-testid="db-battle-screen-troop-search"]',
+  battleScreen: '[data-testid="db-battle-method-side"]',
   battleCommands: '[data-testid="db-battle-command-search"]',
   crops: '[data-testid="db-crop-search"]',
   characters: '[data-testid="db-character-search"]',

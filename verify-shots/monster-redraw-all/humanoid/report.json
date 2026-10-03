@@ -1,0 +1,2522 @@
+[
+  {
+    "slug": "goblin-scout",
+    "cell": 64,
+    "colors": 18,
+    "sheetSha256": "8551d1e1d357ee705b0effffff7ba00353c58e690102f0c5e6c312e368c05c0a",
+    "portraitSha256": "befd2c3d3c49cd78e2bd80493e45fe092b83573b9d84070e8d1328d4f4727033",
+    "frames": {
+      "idle_a": {
+        "bbox": [
+          15,
+          7,
+          52,
+          61
+        ],
+        "sha256": "6945cfb617f7d52e5563f9496063511dfd06c02d8aedc0398963893be15551cf"
+      },
+      "idle_b": {
+        "bbox": [
+          15,
+          8,
+          51,
+          61
+        ],
+        "sha256": "7d9ef3c6920af2db12107d2249d2ad37c8832a0e66ef666b036f8d644eb9a90d"
+      },
+      "idle_c": {
+        "bbox": [
+          15,
+          6,
+          53,
+          61
+        ],
+        "sha256": "9f64db7a581b9b10706f959c49aca63b1e9886650187eedf7e454617df1a5d72"
+      },
+      "windup": {
+        "bbox": [
+          16,
+          8,
+          49,
+          61
+        ],
+        "sha256": "eaa89ad0938deb90671b59924119d6ac648c45464b78f63b0fdc7e838ec2730d"
+      },
+      "move": {
+        "bbox": [
+          12,
+          6,
+          54,
+          61
+        ],
+        "sha256": "a5baebe2c6039304b732906523770349c3141edb3ef5c7eabdbe3d7abf5bf344"
+      },
+      "attack": {
+        "bbox": [
+          13,
+          9,
+          56,
+          61
+        ],
+        "sha256": "514c3738891442764c6c0f578ba8ad70404f37ea12299a4e919e35445a111bbc"
+      },
+      "recover": {
+        "bbox": [
+          14,
+          9,
+          53,
+          61
+        ],
+        "sha256": "44409edcfb4e23245be617507a5e5a02af801f0cdd99b814d670265a2e8f5742"
+      },
+      "hit": {
+        "bbox": [
+          15,
+          10,
+          48,
+          61
+        ],
+        "sha256": "e8b0fa0ec6c2098b7688ee2d130240fd9202580a5abdf027b68800fab7124e69"
+      },
+      "dead": {
+        "bbox": [
+          4,
+          40,
+          60,
+          61
+        ],
+        "sha256": "c9997aa0ad2a64847d265d2529de2baa19e5818b30c691140d2260f4cf7e60e2"
+      }
+    }
+  },
+  {
+    "slug": "orc-warrior",
+    "cell": 64,
+    "colors": 19,
+    "sheetSha256": "c526a869ecf254e45033eec9dceb0b00eeac5f2748305aca4cbe7771712e107c",
+    "portraitSha256": "a0e8ac1d96adb3c9bb0be87227693eb7a8c628df2d65474d2b8b1fb524df569a",
+    "frames": {
+      "idle_a": {
+        "bbox": [
+          4,
+          4,
+          60,
+          61
+        ],
+        "sha256": "1907fb75e21facfe0e3f1c3544daf304f3548b15fd7296130f79878fcc176d6c"
+      },
+      "idle_b": {
+        "bbox": [
+          4,
+          5,
+          60,
+          61
+        ],
+        "sha256": "a4bc8fd57ae14a16eb785efd925a45bcd1ade76653dde3915e736eba1cf0afe1"
+      },
+      "idle_c": {
+        "bbox": [
+          4,
+          3,
+          61,
+          61
+        ],
+        "sha256": "a95a80e1f25dbc5d550a42b76401d5f91133f5f06d8dc9c39cb473ecab4a02d0"
+      },
+      "windup": {
+        "bbox": [
+          5,
+          5,
+          51,
+          61
+        ],
+        "sha256": "4a844e58752e25422f21adfa368a8a2c7b6924f8f7e89ad9a045d055473cb1b0"
+      },
+      "move": {
+        "bbox": [
+          4,
+          3,
+          62,
+          61
+        ],
+        "sha256": "5a923797a10e325143e6e74fc4be7ec8b8eae1683f473e1c0d8209c83d90651c"
+      },
+      "attack": {
+        "bbox": [
+          7,
+          6,
+          63,
+          61
+        ],
+        "sha256": "9d5778989293b026b2a64fdb75b22475e7161603af95d23d8930ddeafc43af4d"
+      },
+      "recover": {
+        "bbox": [
+          4,
+          6,
+          62,
+          61
+        ],
+        "sha256": "76680623a59e59ad7f0a456fd774a4ed1362b4005c59fd4bab24603a7d9c9107"
+      },
+      "hit": {
+        "bbox": [
+          4,
+          7,
+          50,
+          61
+        ],
+        "sha256": "1cf5df1589c78497924347b901c27e7a12a156d5bacb504a107d1b424ca34ce2"
+      },
+      "dead": {
+        "bbox": [
+          5,
+          36,
+          60,
+          61
+        ],
+        "sha256": "a6d0cb4c098857c3f82f319ec613290ae9dce424d06311a532b862656562a109"
+      }
+    }
+  },
+  {
+    "slug": "orc-shaman",
+    "cell": 64,
+    "colors": 18,
+    "sheetSha256": "fd8b3d82927b0a8975e3e934dbdf75324eeaa260311958caa539f6608198e5bb",
+    "portraitSha256": "2a6a63875b968eb98e17275fb56112a86c97687459da14acb139fcd1e5745186",
+    "frames": {
+      "idle_a": {
+        "bbox": [
+          10,
+          4,
+          54,
+          61
+        ],
+        "sha256": "88fcded9fd3797a600b0e92775c2a61c2899fe45ee0034f7b0117ff612c9d337"
+      },
+      "idle_b": {
+        "bbox": [
+          10,
+          5,
+          55,
+          61
+        ],
+        "sha256": "9f8accfe0b6e076a4d85300bb8306dca0027673f902bed44c6d5fb865d49c700"
+      },
+      "idle_c": {
+        "bbox": [
+          10,
+          3,
+          53,
+          61
+        ],
+        "sha256": "2ec66625b7473df9f8f4b1a6927f594de8224218793b8b50c7027c3977017e10"
+      },
+      "windup": {
+        "bbox": [
+          11,
+          5,
+          49,
+          61
+        ],
+        "sha256": "6bbe3077075f0bba3f27612950658bbec7769e1b2b28a319cd2deb4d45fdefe4"
+      },
+      "move": {
+        "bbox": [
+          7,
+          3,
+          58,
+          61
+        ],
+        "sha256": "37b0cafbe3efb7123ca599873645826bfb6ef8733ddc6bc66259457b41c9933e"
+      },
+      "attack": {
+        "bbox": [
+          8,
+          6,
+          63,
+          61
+        ],
+        "sha256": "7f64b74404a8abe49a2d7bba51c34a11073ea69416e0e02a69436de818ac11e9"
+      },
+      "recover": {
+        "bbox": [
+          9,
+          6,
+          55,
+          61
+        ],
+        "sha256": "439115b059200371a6275fbb503a536011ffdde36c46e662f00e45ad6e40ec02"
+      },
+      "hit": {
+        "bbox": [
+          11,
+          7,
+          48,
+          61
+        ],
+        "sha256": "bf8e291ab945f77aa71062884fd87ed7f1f5888489a05ec2f26dbe332be5f9a5"
+      },
+      "dead": {
+        "bbox": [
+          2,
+          41,
+          58,
+          61
+        ],
+        "sha256": "8b48f23761d2de1afd39ceefedc5506d143e779a0e8289b1535bb21ad98f6351"
+      }
+    }
+  },
+  {
+    "slug": "bandit-mask",
+    "cell": 64,
+    "colors": 16,
+    "sheetSha256": "23f439c1276342cffeec00f821bb2fd86e6701c6691dfe82abfb63b1db83aeca",
+    "portraitSha256": "7aab7ced33432ea54a407e50e69550c4b4fef00596355090ba59699e99648d83",
+    "frames": {
+      "idle_a": {
+        "bbox": [
+          11,
+          5,
+          51,
+          61
+        ],
+        "sha256": "fc705556450de84ac0e9296f734688146b3cd9a0ab1d599bd13d58f8a1dd7537"
+      },
+      "idle_b": {
+        "bbox": [
+          11,
+          6,
+          52,
+          61
+        ],
+        "sha256": "dcf0dc89709c3e3b3189320011ec65d4e7eb1793393fe49ea54a15017d70426b"
+      },
+      "idle_c": {
+        "bbox": [
+          11,
+          4,
+          50,
+          61
+        ],
+        "sha256": "8eed626b961542f4ae58a93d8fbea555bcaab040c67cf18cc927ab30292c4171"
+      },
+      "windup": {
+        "bbox": [
+          10,
+          6,
+          46,
+          61
+        ],
+        "sha256": "5de8c19594809359fe882ac97409d13618f60175750862b0cb2c4397fcfcfc61"
+      },
+      "move": {
+        "bbox": [
+          8,
+          4,
+          55,
+          61
+        ],
+        "sha256": "dc7bebf66e889bec755ee1911725195093e85d8386daa59865d18a9c84674dc9"
+      },
+      "attack": {
+        "bbox": [
+          9,
+          7,
+          56,
+          61
+        ],
+        "sha256": "687dee4e2ac0e504523129eae03e73f8935a5c52244692dc83cd9aba521af3f0"
+      },
+      "recover": {
+        "bbox": [
+          10,
+          7,
+          52,
+          61
+        ],
+        "sha256": "8c3fa4663756c7ed058b7493ce268f603e2c42955a52c63135dea67b8c5bfb67"
+      },
+      "hit": {
+        "bbox": [
+          8,
+          8,
+          45,
+          61
+        ],
+        "sha256": "fad611d4f3ef2b1c0d87961d4f38d4eb54f2cfc6d643c02cdd5736040224f2fb"
+      },
+      "dead": {
+        "bbox": [
+          5,
+          42,
+          57,
+          61
+        ],
+        "sha256": "71045651e3012a62d54f2e7bbb652184168769fb6e48bffeadbf0d145b907d4d"
+      }
+    }
+  },
+  {
+    "slug": "lizardman-spear",
+    "cell": 64,
+    "colors": 19,
+    "sheetSha256": "152cd60c21c388960efd4d6d74d57e20b92cac7492e88a287142fe6f14d30080",
+    "portraitSha256": "762cb476a4b19cccb5516611f4c317d8120a5c3378426513f06af6a4967d56c3",
+    "frames": {
+      "idle_a": {
+        "bbox": [
+          3,
+          8,
+          53,
+          61
+        ],
+        "sha256": "bbac4ebe33d211ad16baf9c0681ec999e012c5d3dcc841cd563d9927373089b4"
+      },
+      "idle_b": {
+        "bbox": [
+          3,
+          9,
+          53,
+          61
+        ],
+        "sha256": "b60a2b309b4ca777c34b46501e80ea9231a3c57c81ec2d9c3fa7650a8370c20f"
+      },
+      "idle_c": {
+        "bbox": [
+          3,
+          7,
+          54,
+          61
+        ],
+        "sha256": "a18e57ff1ed11bbc535ea37d6053471178e29ae9dbc872680c47bcc9cd3543e3"
+      },
+      "windup": {
+        "bbox": [
+          3,
+          9,
+          50,
+          61
+        ],
+        "sha256": "4df71768744e3cf86f6488ed889571f6b70b7a69b0d6799ed42710470e232788"
+      },
+      "move": {
+        "bbox": [
+          4,
+          7,
+          56,
+          61
+        ],
+        "sha256": "2dddc92d030ea814b8421ab90ccad75245437cfc2e1649a311636b393e388dec"
+      },
+      "attack": {
+        "bbox": [
+          6,
+          10,
+          57,
+          61
+        ],
+        "sha256": "4764a20f9d6ac89fbc8990a25daf4c7b796835db525cef9124cee05f30562f1d"
+      },
+      "recover": {
+        "bbox": [
+          3,
+          10,
+          54,
+          61
+        ],
+        "sha256": "d249216e82ff665aaf8d43c3917df8199d7be612d3a7c9ae87108c802f604a95"
+      },
+      "hit": {
+        "bbox": [
+          2,
+          11,
+          49,
+          61
+        ],
+        "sha256": "b2afe7b5e4dcbb1fcc06e2479545f417ebd47b11e8baebd686805f4dd59f252e"
+      },
+      "dead": {
+        "bbox": [
+          4,
+          40,
+          63,
+          61
+        ],
+        "sha256": "58339564ce604cff86b80579c86001196aebae323667497bad37430ead4ac4d4"
+      }
+    }
+  },
+  {
+    "slug": "harpy-cliff",
+    "cell": 64,
+    "colors": 17,
+    "sheetSha256": "05af1c9234a049b258ca9f4858705df691b7c61c42f6ce581b85adb59d20dd28",
+    "portraitSha256": "efbb7827af74a4c8de1317c766c964de4ca1f0e7a02c5644bd30bb521dea1c9a",
+    "frames": {
+      "idle_a": {
+        "bbox": [
+          4,
+          3,
+          60,
+          61
+        ],
+        "sha256": "9a4862262ce022d98029cb2232b318900639c03eede6341a566b85e59a78efde"
+      },
+      "idle_b": {
+        "bbox": [
+          5,
+          4,
+          60,
+          61
+        ],
+        "sha256": "133be347c26a1b1b0a5f01519f6d311eb1825743ac98f4199809137adaf3776b"
+      },
+      "idle_c": {
+        "bbox": [
+          3,
+          2,
+          60,
+          61
+        ],
+        "sha256": "250d09d29cadda4b6018da8c23a6b64c62c3945a165ad4f2fcf2aadcce7509b5"
+      },
+      "windup": {
+        "bbox": [
+          8,
+          4,
+          60,
+          61
+        ],
+        "sha256": "c0da568944c400ff108b551f114183b38065ffe57d916369490b2560bfba4697"
+      },
+      "move": {
+        "bbox": [
+          4,
+          2,
+          60,
+          61
+        ],
+        "sha256": "e164068de4e5828d007a27e6da5219203937083aee8eb5fbfd73307f3210e5ae"
+      },
+      "attack": {
+        "bbox": [
+          4,
+          5,
+          60,
+          61
+        ],
+        "sha256": "d33aa41cb8af3f36a2cce2ff42d560f77a1a0ee4ab556a85bbd90f8fed5f7e59"
+      },
+      "recover": {
+        "bbox": [
+          3,
+          5,
+          60,
+          61
+        ],
+        "sha256": "7f480fb0934ab83c37c5c8a6ace6a9347d9f47b3f682e338f1781549354a6f6e"
+      },
+      "hit": {
+        "bbox": [
+          7,
+          6,
+          60,
+          61
+        ],
+        "sha256": "110689746dbee0a0b1d6c58cb851713b845f65ad5cdcead69b58301fae9620ef"
+      },
+      "dead": {
+        "bbox": [
+          6,
+          39,
+          56,
+          61
+        ],
+        "sha256": "7e1317023c419b6327806afffc74759fad6721f67ce6244c6655c113783c17fe"
+      }
+    }
+  },
+  {
+    "slug": "gargoyle-stone",
+    "cell": 64,
+    "colors": 15,
+    "sheetSha256": "00542d4f70efc95153288e3d8b21eb07becde8ae07303051ab18f869d0e10e0a",
+    "portraitSha256": "162ce32bba3732e171d5ec0f0ff4eb96e3ae19e03ccfdb5b44d5a0dca0d0cf0c",
+    "frames": {
+      "idle_a": {
+        "bbox": [
+          4,
+          3,
+          63,
+          61
+        ],
+        "sha256": "6bfc1d1a81268b464615395944b473ae669662dfc8cc8fc250baa3dee823d408"
+      },
+      "idle_b": {
+        "bbox": [
+          4,
+          4,
+          63,
+          61
+        ],
+        "sha256": "41054b1d7d9eca3dc53ff670410c78f5d62a35d4332b67057a763a1a43d527ee"
+      },
+      "idle_c": {
+        "bbox": [
+          4,
+          2,
+          63,
+          61
+        ],
+        "sha256": "fe962a97b645554dc6f3076763d8cea53f04a2826289cf073e07ded9c5da4f83"
+      },
+      "windup": {
+        "bbox": [
+          4,
+          3,
+          63,
+          61
+        ],
+        "sha256": "547beb9aecf30926a0652e0d362157d49f6802a521868db4e03282961c62fee3"
+      },
+      "move": {
+        "bbox": [
+          5,
+          2,
+          63,
+          61
+        ],
+        "sha256": "97be89cbf758d82274c5cd033080d24c34b6a01bff8e75f69c0985cd4f3be9ca"
+      },
+      "attack": {
+        "bbox": [
+          6,
+          5,
+          63,
+          61
+        ],
+        "sha256": "dedb8b336f169f72caf79835990c7e426ec3524dac7299e0743ea31c470c8639"
+      },
+      "recover": {
+        "bbox": [
+          4,
+          5,
+          63,
+          61
+        ],
+        "sha256": "320fceffe8de3265a800cc0adba1c1e92973ffab422596bdc9f756f60c2a5934"
+      },
+      "hit": {
+        "bbox": [
+          3,
+          6,
+          63,
+          61
+        ],
+        "sha256": "c75119b8e4859b469f6619a7d59290ee025b6ba3c50d1fd768fd87815e531380"
+      },
+      "dead": {
+        "bbox": [
+          7,
+          34,
+          61,
+          61
+        ],
+        "sha256": "af080b7e718071d1f629c792bdec0abfae272b678d27d2ba75aa675ff9420245"
+      }
+    }
+  },
+  {
+    "slug": "zombie-01",
+    "cell": 64,
+    "colors": 18,
+    "sheetSha256": "22bf5f27a049a959edcd6e695eeb3d0e251a36e67eea0199d32f8bbd927343a5",
+    "portraitSha256": "514ed69cf77c640cef0b32b0bd5d61df942b16a669d493f06915bccec3d62b96",
+    "frames": {
+      "idle_a": {
+        "bbox": [
+          8,
+          9,
+          56,
+          61
+        ],
+        "sha256": "2be20532e86325cd72d4cfd99f8d19514b983d27c5701624c6d6cada39245998"
+      },
+      "idle_b": {
+        "bbox": [
+          8,
+          10,
+          57,
+          61
+        ],
+        "sha256": "6023176dbcfc7c6822470ab9661d415632693f696fad06353297b3efa74f9c98"
+      },
+      "idle_c": {
+        "bbox": [
+          8,
+          8,
+          55,
+          61
+        ],
+        "sha256": "865c62825b5b97a0fca7e2df31efa18c52dcb7db94d0982255787946edbb86b1"
+      },
+      "windup": {
+        "bbox": [
+          9,
+          10,
+          48,
+          61
+        ],
+        "sha256": "cda19b66da6c0ffd87f13dd3a5f9b7bbe414d8eded845a9202306a532492beb2"
+      },
+      "move": {
+        "bbox": [
+          4,
+          8,
+          60,
+          61
+        ],
+        "sha256": "25b0b19ef1f7f1ee310ebe9bba519146063e2dfb2ad528a43c28e4547f7d5cc5"
+      },
+      "attack": {
+        "bbox": [
+          5,
+          11,
+          61,
+          61
+        ],
+        "sha256": "6792fa6cf036db73c45664f098bbf55a1a933575677258b2a3590dc95a3c3aa7"
+      },
+      "recover": {
+        "bbox": [
+          7,
+          11,
+          54,
+          61
+        ],
+        "sha256": "167e7978cb0ced671f77fc396813aa7eac15fc917f8f42e4719aba0e119046d0"
+      },
+      "hit": {
+        "bbox": [
+          9,
+          12,
+          47,
+          61
+        ],
+        "sha256": "349cc967533bcd9e1fec13b473e9adfeb433895e711e5a3d89c979f028843485"
+      },
+      "dead": {
+        "bbox": [
+          5,
+          41,
+          61,
+          61
+        ],
+        "sha256": "5aedd369f78374cf6c5b4a952948710b04eb11c15c885b842c8d7da7f2dc32a9"
+      }
+    }
+  },
+  {
+    "slug": "orc-01",
+    "cell": 64,
+    "colors": 22,
+    "sheetSha256": "c7702001b0e19a224b8241fb8ebde05255d343030b964a87f7c4c3e3f0c428da",
+    "portraitSha256": "299a207ac5d39b822104728271031f37d7f75e73cadac90f01c1a704bf023d63",
+    "frames": {
+      "idle_a": {
+        "bbox": [
+          8,
+          4,
+          54,
+          61
+        ],
+        "sha256": "0d396cd15a919adc0e7a6e14c93e9e5e2eb0e7cab411fab1a7a80b66245ce108"
+      },
+      "idle_b": {
+        "bbox": [
+          8,
+          5,
+          55,
+          61
+        ],
+        "sha256": "e4044dfdb9b5891bc3e5f1efa9f9cf54ff11f3a88e95c9e61b99f239ce93e6f5"
+      },
+      "idle_c": {
+        "bbox": [
+          8,
+          3,
+          53,
+          61
+        ],
+        "sha256": "be7b27fbad5cc8d7d3b4475d62a0966369631d1d7dc963f95783c443b11e460f"
+      },
+      "windup": {
+        "bbox": [
+          8,
+          5,
+          49,
+          61
+        ],
+        "sha256": "42239e3a68787f9bb5e6fb86cb8497ebd2f4e8c5f8fcacbc88e83bddf6bf9675"
+      },
+      "move": {
+        "bbox": [
+          7,
+          3,
+          58,
+          61
+        ],
+        "sha256": "b30ad6277efc40190466991076cafbd751cf1d55f230da75f3585a569ce57ac7"
+      },
+      "attack": {
+        "bbox": [
+          8,
+          6,
+          56,
+          61
+        ],
+        "sha256": "0c6b3d1f01f00ac5a14cbca0487b483fbcdcc2bbb517c3cd63afcd6b04661e9b"
+      },
+      "recover": {
+        "bbox": [
+          8,
+          6,
+          54,
+          61
+        ],
+        "sha256": "c997a7d06b8171e6a28705897549de41381aac5cffca4abd092206a35025027b"
+      },
+      "hit": {
+        "bbox": [
+          7,
+          7,
+          48,
+          61
+        ],
+        "sha256": "148c26b11cd606cde3515aa7d268575abac43850d7525e910cbb1fef9551126a"
+      },
+      "dead": {
+        "bbox": [
+          6,
+          36,
+          59,
+          61
+        ],
+        "sha256": "bd0d915a7570e424114e95168ab33c6cd9d8c8795a28305f2a085d1752adfffc"
+      }
+    }
+  },
+  {
+    "slug": "harpy-01",
+    "cell": 64,
+    "colors": 17,
+    "sheetSha256": "4c02d946dd654b1c22addd315d230184ee233108759085e123e71d93291e65e7",
+    "portraitSha256": "50c895017660dc3c7c058c7a1d043faf7a6a09c206ca45f2e8ab2d9e8dab90ca",
+    "frames": {
+      "idle_a": {
+        "bbox": [
+          4,
+          3,
+          60,
+          61
+        ],
+        "sha256": "13cc98e32ddc6c07a5d6e55d470038a488accc76a66cb53ac16f66e615b2ce09"
+      },
+      "idle_b": {
+        "bbox": [
+          5,
+          4,
+          60,
+          61
+        ],
+        "sha256": "5c4dc57236134d99ad3215751f4299c38df39d33d32e2a4031d3cfb6e6ec8bf7"
+      },
+      "idle_c": {
+        "bbox": [
+          3,
+          2,
+          60,
+          61
+        ],
+        "sha256": "23585a243c398e240ea7d9dab82526fe39d0180f674cad6ed5eb2ccbc559261e"
+      },
+      "windup": {
+        "bbox": [
+          8,
+          4,
+          60,
+          61
+        ],
+        "sha256": "5753ca99fb811c7780c50d267e1abaf14a176412078ce8ecdc04d1b42470dfee"
+      },
+      "move": {
+        "bbox": [
+          4,
+          2,
+          60,
+          61
+        ],
+        "sha256": "e8e2aaaab58bca767d43aa2db490cfffabf89024dbb8d0c58fd0bcad0c5b4a11"
+      },
+      "attack": {
+        "bbox": [
+          4,
+          5,
+          60,
+          61
+        ],
+        "sha256": "2b2a3e5cf27bd3e5944c7c3d9273f98cc082b46628bd575474619e076a33ec64"
+      },
+      "recover": {
+        "bbox": [
+          3,
+          5,
+          60,
+          61
+        ],
+        "sha256": "6c029b9b7c0a9e0811a130c6709c26509821db9d73734d58e7553820623de3cb"
+      },
+      "hit": {
+        "bbox": [
+          7,
+          6,
+          60,
+          61
+        ],
+        "sha256": "a81ccfd75672e1025a5711d1c646fb8b82e3cbaab48c27d4693245c6a0eaee01"
+      },
+      "dead": {
+        "bbox": [
+          6,
+          39,
+          56,
+          61
+        ],
+        "sha256": "3b29dd56fd079422876199522ce0b69a46cf998338a86c9a0ebcc74aed439ce1"
+      }
+    }
+  },
+  {
+    "slug": "salamander-01",
+    "cell": 64,
+    "colors": 15,
+    "sheetSha256": "2c4c7b47c76c49dad6a7b15efdfdbb3557b604f75e62980bb0d94637b7baa771",
+    "portraitSha256": "7e3e22dad5e2820019b08b277b7d817bef14995707927a8b5a86f2d138ad9019",
+    "frames": {
+      "idle_a": {
+        "bbox": [
+          3,
+          13,
+          57,
+          61
+        ],
+        "sha256": "218cb4f231920b79891082c1184f51dc4c23b53a34c1d0a91be11a33262f0982"
+      },
+      "idle_b": {
+        "bbox": [
+          3,
+          14,
+          57,
+          61
+        ],
+        "sha256": "37e9c35d41b80c759282db6f8032f2fe070564aee1713baccd3d515cd46decde"
+      },
+      "idle_c": {
+        "bbox": [
+          3,
+          12,
+          58,
+          61
+        ],
+        "sha256": "b4d05a38b304820ae56153f8501885ea8ced69511b7a42159ff9493dc9c6e868"
+      },
+      "windup": {
+        "bbox": [
+          3,
+          14,
+          56,
+          61
+        ],
+        "sha256": "92d404b167f54fe0f8c455f251b1507c0aa31d8804d37aa345125a67e8324bc4"
+      },
+      "move": {
+        "bbox": [
+          3,
+          12,
+          61,
+          61
+        ],
+        "sha256": "a94acf393ab91ff8d749b2e138fc65eb34ca70e99ed833bccd8d2430a10422ea"
+      },
+      "attack": {
+        "bbox": [
+          7,
+          15,
+          61,
+          61
+        ],
+        "sha256": "649dd94680897968b7ae56f4ac9e449eb0ae4f42b2c27cc7e671f4dbac181ce0"
+      },
+      "recover": {
+        "bbox": [
+          3,
+          15,
+          58,
+          61
+        ],
+        "sha256": "faca8f8fb312ef978ed18c8883295b9c375be7f7a63238cd3c9ce4980f57d171"
+      },
+      "hit": {
+        "bbox": [
+          2,
+          16,
+          55,
+          61
+        ],
+        "sha256": "2cf0d926e3c3e52cf027a8e1a5fc62832a8f049e4e57305a04ccf4c2329acc41"
+      },
+      "dead": {
+        "bbox": [
+          4,
+          36,
+          61,
+          61
+        ],
+        "sha256": "705af8c135de03213bef097df275cb467949f524e63ece4b380d23f5f8476cf5"
+      }
+    }
+  },
+  {
+    "slug": "leafling-01",
+    "cell": 64,
+    "colors": 15,
+    "sheetSha256": "7c7fc9763e49a45cd0b2f9f218bbe7a970c4d9e6adc993e08c5dd3733462405a",
+    "portraitSha256": "380b87d093a476acd3298ea279e7347a0456b777ac11744550998fa9bbeff337",
+    "frames": {
+      "idle_a": {
+        "bbox": [
+          5,
+          2,
+          52,
+          61
+        ],
+        "sha256": "12a5cb35b9a866da324eaa24e1a31298e08610fb9f506d00217effbf1bda8546"
+      },
+      "idle_b": {
+        "bbox": [
+          5,
+          3,
+          53,
+          61
+        ],
+        "sha256": "3e5eefc0bfa6053399d11b63c6516ecce8c7bf05fc6148f3f70b4953b9a93a8c"
+      },
+      "idle_c": {
+        "bbox": [
+          5,
+          1,
+          52,
+          61
+        ],
+        "sha256": "7a52d1bdcda4da5abe83e1c0f1e404c263367626e512405b8f110a890392a26d"
+      },
+      "windup": {
+        "bbox": [
+          5,
+          3,
+          48,
+          61
+        ],
+        "sha256": "44613acd0d05a31c6eb75671ee03d4f654f167120148f13d739aff98147d4064"
+      },
+      "move": {
+        "bbox": [
+          6,
+          1,
+          56,
+          61
+        ],
+        "sha256": "26ee59c6ba4fcca30346f4672d4f47b7c7c8ed9b00d270197ba670ed2d0c977c"
+      },
+      "attack": {
+        "bbox": [
+          8,
+          4,
+          57,
+          61
+        ],
+        "sha256": "34271e22df7b6a6ac49bba2835a512b8c11ed9c479b6d269c1101f55d10ca2b4"
+      },
+      "recover": {
+        "bbox": [
+          5,
+          4,
+          52,
+          61
+        ],
+        "sha256": "d12cc8e017507c5ca745c11cf9b4a7d1b72e11615f38424311ccd0d8df53a9e0"
+      },
+      "hit": {
+        "bbox": [
+          4,
+          5,
+          47,
+          61
+        ],
+        "sha256": "90f12bacccc5c5b7f697409ed1e6edc23c9dd478b1ed839113ab3ba6227c01b7"
+      },
+      "dead": {
+        "bbox": [
+          6,
+          43,
+          60,
+          61
+        ],
+        "sha256": "80de98fbf5e050632b8e14a2c86b095a31b5680fb4141f001bfb76971c13d160"
+      }
+    }
+  },
+  {
+    "slug": "sparkit-01",
+    "cell": 64,
+    "colors": 13,
+    "sheetSha256": "e5194977ceca9b1881b54056d57533e92ecfbfd5f08a9ac27f7e252f0772b1ed",
+    "portraitSha256": "f9e513410460658a536edb09aed2e8dfbbe48e7c69807b1d7e301ba44265fe2f",
+    "frames": {
+      "idle_a": {
+        "bbox": [
+          6,
+          3,
+          53,
+          61
+        ],
+        "sha256": "d0a007d2201a6eaf4d361dd5247d1c5876cec79a0994a590f32425993bf6cdbf"
+      },
+      "idle_b": {
+        "bbox": [
+          6,
+          4,
+          54,
+          61
+        ],
+        "sha256": "b61ead2e60d62a33c4596e39474b58875625f52bcef428f88e81c9287fb00e29"
+      },
+      "idle_c": {
+        "bbox": [
+          6,
+          2,
+          53,
+          61
+        ],
+        "sha256": "57d09fd47ec6d54ef9a595ee62029e7aa9a3495c63bb4b6003dca98c34ea7ab3"
+      },
+      "windup": {
+        "bbox": [
+          7,
+          4,
+          49,
+          61
+        ],
+        "sha256": "e0d71ac43dc1f84308dc8ebdac31099b280a0062cbb6b6f7894833c50e4db859"
+      },
+      "move": {
+        "bbox": [
+          6,
+          2,
+          57,
+          61
+        ],
+        "sha256": "4fc9b6fde26bd884603e00e2c8bd45c6b0f31337f41b33802159a819346fb05d"
+      },
+      "attack": {
+        "bbox": [
+          10,
+          5,
+          59,
+          61
+        ],
+        "sha256": "15ae0ccb2e821639e348e4b615374a9e60a4926fc7880cae6b0ba92b60a12258"
+      },
+      "recover": {
+        "bbox": [
+          6,
+          5,
+          53,
+          61
+        ],
+        "sha256": "47ba93fdc550adff2af15cfdc8892157c26231c5c715998b6ba2d31208018fb3"
+      },
+      "hit": {
+        "bbox": [
+          6,
+          6,
+          48,
+          61
+        ],
+        "sha256": "11db21b3eaaaef4040377aafb4e59771f2e7ffd66610e6466f934227b539cedb"
+      },
+      "dead": {
+        "bbox": [
+          7,
+          41,
+          61,
+          61
+        ],
+        "sha256": "9934c6566451bacf2774db2c671ad4921c69044c2a6e183a1b140761a7e28200"
+      }
+    }
+  },
+  {
+    "slug": "aqualing-01",
+    "cell": 64,
+    "colors": 10,
+    "sheetSha256": "ab45c28c2e4dfcd3e4631b8f8d369423260a4a8b7ab801734c9f2a512a0dd825",
+    "portraitSha256": "476f3954f1b038b038a9bab20667deb1d9c744fb7b007568a5bcd604e35d00cf",
+    "frames": {
+      "idle_a": {
+        "bbox": [
+          4,
+          12,
+          53,
+          61
+        ],
+        "sha256": "65cfbf32c0aa564e28469cdcb2c1236eec6f3f3de6559f824d7eb30b4983b12d"
+      },
+      "idle_b": {
+        "bbox": [
+          4,
+          13,
+          54,
+          61
+        ],
+        "sha256": "4fa042e42691dd56d9e58a706bb0d450e3a85795f5a144cda4340ee763dc555c"
+      },
+      "idle_c": {
+        "bbox": [
+          4,
+          11,
+          53,
+          61
+        ],
+        "sha256": "b82c8bc2924532450ed84cc57e5146342f71acfd28f9c4d2160f1fb24d5e3b44"
+      },
+      "windup": {
+        "bbox": [
+          5,
+          13,
+          49,
+          61
+        ],
+        "sha256": "bba2d6095dede47b6b0a117dee6298d4cab7e1962f41d8504e9a463491956ea2"
+      },
+      "move": {
+        "bbox": [
+          4,
+          11,
+          57,
+          61
+        ],
+        "sha256": "c9301f10c1ca1a720094a4b504880273c221b4a850c2da50c14d57150c0b8ba6"
+      },
+      "attack": {
+        "bbox": [
+          8,
+          14,
+          58,
+          61
+        ],
+        "sha256": "40cad45022b32dfc87a2095001a625ca949fa43d773205d06285f1514518746f"
+      },
+      "recover": {
+        "bbox": [
+          4,
+          14,
+          53,
+          61
+        ],
+        "sha256": "6ae25c7e53a169ae4a5b74c3975614228d2d94fa437708d413008781369fef91"
+      },
+      "hit": {
+        "bbox": [
+          4,
+          15,
+          48,
+          61
+        ],
+        "sha256": "186d1bd33bc277f35e2f517cba05982a5ab094c903d7a2f9d39bb5bda13d21b8"
+      },
+      "dead": {
+        "bbox": [
+          4,
+          42,
+          61,
+          61
+        ],
+        "sha256": "07d4fc6bbfa88491e721b83916bb628d2d6dfabeb54ee144057ccb7a0d6ac0a5"
+      }
+    }
+  },
+  {
+    "slug": "salamander-flame",
+    "cell": 64,
+    "colors": 15,
+    "sheetSha256": "2738f549e4028f06b0a2f89edd42bd80195d9b84e5bcbd65f1a1c184af886b92",
+    "portraitSha256": "02b209fb72da9d8b1e1eebcb2a84493e96ee869c86c4338970c3d562e3c7ff56",
+    "frames": {
+      "idle_a": {
+        "bbox": [
+          3,
+          13,
+          57,
+          61
+        ],
+        "sha256": "bf00c18e475e629fa5b48a0a7f572b2e5a89a405f948d5cd45a17673ed55f30e"
+      },
+      "idle_b": {
+        "bbox": [
+          3,
+          14,
+          57,
+          61
+        ],
+        "sha256": "7ea654ceda7a4b8d74d5bb4e099673471fa7e98c0e64025689f61cba04a51eef"
+      },
+      "idle_c": {
+        "bbox": [
+          3,
+          12,
+          58,
+          61
+        ],
+        "sha256": "97d802af30c8f5ca615a4197dfb52b79db9e4db84252911e8cae6e22a6930c84"
+      },
+      "windup": {
+        "bbox": [
+          3,
+          14,
+          56,
+          61
+        ],
+        "sha256": "82a7006ab42abdd87233f419fae4128a617c47934e45da79f32e301f67f59295"
+      },
+      "move": {
+        "bbox": [
+          3,
+          12,
+          61,
+          61
+        ],
+        "sha256": "aaa3f76dff61fa51ebc52f754d68c6a48710bfb993bbda05f7453412471a421b"
+      },
+      "attack": {
+        "bbox": [
+          7,
+          14,
+          61,
+          61
+        ],
+        "sha256": "8133026cc0474b8bbad37af8a7b166d15ece0375a894813211344999f5cdd4a0"
+      },
+      "recover": {
+        "bbox": [
+          3,
+          14,
+          58,
+          61
+        ],
+        "sha256": "db59e8e460e0e06d7140a6648962f400672eb6ce874b34a7e27620ac166c8d26"
+      },
+      "hit": {
+        "bbox": [
+          2,
+          15,
+          55,
+          61
+        ],
+        "sha256": "786187fd6a99f61a563f823b90950b8c18f8885bf112c0251818a55b5275bd15"
+      },
+      "dead": {
+        "bbox": [
+          4,
+          36,
+          61,
+          61
+        ],
+        "sha256": "f2eaaa6779b57671c49bfb812c2b8c82b20cb0238c6b9dbdc621a007e7614c97"
+      }
+    }
+  },
+  {
+    "slug": "goblin-brute",
+    "cell": 64,
+    "colors": 22,
+    "sheetSha256": "fd3a4e5b286b1c2654d141072bf7cef7564d84047667db5d12059851a9204747",
+    "portraitSha256": "3bfa1ab73b9c4e43232417cfe991f3a9126571b3024755a02947eb45613d9c3c",
+    "frames": {
+      "idle_a": {
+        "bbox": [
+          9,
+          5,
+          56,
+          61
+        ],
+        "sha256": "39e126850bdfef3b23f45dc0008812d5353432b0340c76641391cee30d3b9132"
+      },
+      "idle_b": {
+        "bbox": [
+          9,
+          6,
+          57,
+          61
+        ],
+        "sha256": "2407bb7ffefc76f1af5524e245883d804b4c497fba818d179e3ed10afb7e515c"
+      },
+      "idle_c": {
+        "bbox": [
+          9,
+          4,
+          55,
+          61
+        ],
+        "sha256": "188b457b087d18817368e2352c3ee7db0149f82830f12231eefe3513471fff28"
+      },
+      "windup": {
+        "bbox": [
+          10,
+          6,
+          48,
+          61
+        ],
+        "sha256": "495bad9b65caccb074131b5b343f030a1dc390739a9b6a8dedcfb0b386006528"
+      },
+      "move": {
+        "bbox": [
+          6,
+          4,
+          60,
+          61
+        ],
+        "sha256": "cdaa9160c688835a4ddd83123cfad36d0edd5865012b7962c0a0e670684eee30"
+      },
+      "attack": {
+        "bbox": [
+          7,
+          7,
+          59,
+          61
+        ],
+        "sha256": "8dda73b962b37166cb233c597bf265b6d87910b3ad78e6f0b304a14a271c5178"
+      },
+      "recover": {
+        "bbox": [
+          8,
+          7,
+          56,
+          61
+        ],
+        "sha256": "e178dfd2bd447496ec44fe9e95eed2977d6be6fbe1268943e9c64b0fb35aeb5b"
+      },
+      "hit": {
+        "bbox": [
+          9,
+          8,
+          47,
+          61
+        ],
+        "sha256": "6d93ff5afa1de10bf6d7a9ead240375bfb85f7dc951d16352d0dd078d50beed5"
+      },
+      "dead": {
+        "bbox": [
+          6,
+          39,
+          58,
+          61
+        ],
+        "sha256": "e1713551a03559f77a424446b7f816922e7ec21493de3373c3cafbbacff5b38f"
+      }
+    }
+  },
+  {
+    "slug": "kobold-digger",
+    "cell": 64,
+    "colors": 17,
+    "sheetSha256": "a17dcaf6bb3f2a6c4ed52e83f087e9892dad72425cd5e036c4ba37d4c41b674d",
+    "portraitSha256": "51fe9d26a1957e6b287be5074046d5677032a53977aabb802c3073d2726c4fc5",
+    "frames": {
+      "idle_a": {
+        "bbox": [
+          4,
+          7,
+          56,
+          61
+        ],
+        "sha256": "1f5a64a69852bff4f8b8fb668509ce5f86ad7a81f180c2d11902c0241a7d500e"
+      },
+      "idle_b": {
+        "bbox": [
+          4,
+          8,
+          56,
+          61
+        ],
+        "sha256": "86d28b4fa30aaad9bca82b27141642bc699720ece2e3d764820f16117d2e5b95"
+      },
+      "idle_c": {
+        "bbox": [
+          4,
+          6,
+          56,
+          61
+        ],
+        "sha256": "2bc5bb5018d6b4c39e1b0017b77a1d84e3a6e40122cf705ca671d6ed45a451f6"
+      },
+      "windup": {
+        "bbox": [
+          3,
+          8,
+          50,
+          61
+        ],
+        "sha256": "588b7ebfa9d93aaec8f251394d7ca2a0e680a742820ae212e512fd7919cbe086"
+      },
+      "move": {
+        "bbox": [
+          5,
+          6,
+          58,
+          61
+        ],
+        "sha256": "63b5170c0760c8ebcac081c5a7e38522f645b8c3509dae8722857973774c3129"
+      },
+      "attack": {
+        "bbox": [
+          6,
+          9,
+          58,
+          61
+        ],
+        "sha256": "58e41eb7cda22f1741ffcf3c840cef5c16e36cda9366af03e2439ede890d24f3"
+      },
+      "recover": {
+        "bbox": [
+          4,
+          9,
+          58,
+          61
+        ],
+        "sha256": "f49ccd809bb46056cf4403bdf5cbd6880a9483b8969c36b1a428203b0acfc76b"
+      },
+      "hit": {
+        "bbox": [
+          2,
+          10,
+          49,
+          61
+        ],
+        "sha256": "76ec533c5aee87c719d0efb935e53a9bd4e01c90d9eb64e58de14ae10c63b425"
+      },
+      "dead": {
+        "bbox": [
+          6,
+          38,
+          62,
+          61
+        ],
+        "sha256": "f9102e7a3516fad44d74e0cbc5fc2a560c07f7fa9eb537b2a86a338156efc086"
+      }
+    }
+  },
+  {
+    "slug": "mage-rogue",
+    "cell": 64,
+    "colors": 16,
+    "sheetSha256": "29b5f8698bb0c0a5f280de3197e673b667765533bd4084e6d4c914eb5800336f",
+    "portraitSha256": "7acd6b65a09646b012ac6bcd7dfb04618993d802da4bd10c3965c8643a61ec32",
+    "frames": {
+      "idle_a": {
+        "bbox": [
+          12,
+          3,
+          52,
+          61
+        ],
+        "sha256": "3fa69dd35602daac5684e425b06601fd12a02323407f8d824c963c29396e5d7f"
+      },
+      "idle_b": {
+        "bbox": [
+          12,
+          4,
+          53,
+          61
+        ],
+        "sha256": "d4a0fc1d4edb0ff6076598b53d817f65ad852a70bb0bc2e4921ae0f5d45e3a64"
+      },
+      "idle_c": {
+        "bbox": [
+          12,
+          2,
+          51,
+          61
+        ],
+        "sha256": "2c5bbe4ecde4d9da0456abed95f26e98cc1199f5aa22b0a6883ad5da31948c8c"
+      },
+      "windup": {
+        "bbox": [
+          8,
+          4,
+          46,
+          61
+        ],
+        "sha256": "7b9cc74befe2f2cd5333c310c6acd3d109fce889a4f93c6db3f889a2231ada2b"
+      },
+      "move": {
+        "bbox": [
+          9,
+          2,
+          56,
+          61
+        ],
+        "sha256": "9e908b3542b19a9000f7ff9ee07079d36e10f897a40fbb50da8840b27d06f8bf"
+      },
+      "attack": {
+        "bbox": [
+          9,
+          5,
+          62,
+          61
+        ],
+        "sha256": "4b2011a0ca52cc1631f0a00631a41c34723f1deda89fca0acb27645cd4e6b26a"
+      },
+      "recover": {
+        "bbox": [
+          11,
+          5,
+          53,
+          61
+        ],
+        "sha256": "869ae82d3af6dadf64acd091b03497f51d22ffea29985f2b49aa5a5862c7c61e"
+      },
+      "hit": {
+        "bbox": [
+          6,
+          6,
+          44,
+          61
+        ],
+        "sha256": "83bd021ed834697df58b9a2c5d12d664bff3bda8bdf87f472e169ff0df8a75a7"
+      },
+      "dead": {
+        "bbox": [
+          2,
+          39,
+          55,
+          61
+        ],
+        "sha256": "0b0e38a8f17a8d4f9bb3bee29cdc538474f94aa227d16ac3cb30ddeac94111df"
+      }
+    }
+  },
+  {
+    "slug": "knight-fallen",
+    "cell": 64,
+    "colors": 15,
+    "sheetSha256": "2363ae89abfa96e745070b14a772e3159b43d01280461f2785cd61fb0951bde9",
+    "portraitSha256": "8e0b97514640982d70aab7f58fec07fd4e74981ccf93e964be46c076dc19ee06",
+    "frames": {
+      "idle_a": {
+        "bbox": [
+          10,
+          3,
+          56,
+          61
+        ],
+        "sha256": "ab9a9d38f05400a6d581f18264bcfd22ec376d1d385dc41b26a46f7bfcbd307c"
+      },
+      "idle_b": {
+        "bbox": [
+          10,
+          4,
+          57,
+          61
+        ],
+        "sha256": "7311d18cce49a7dc656ce43c55aa656a0b42056d1ed0bc03140fc9e8cb488bd7"
+      },
+      "idle_c": {
+        "bbox": [
+          10,
+          2,
+          55,
+          61
+        ],
+        "sha256": "c9a591d760e1219d324248676ed5cf6cbc0ed360ee434844b810e83ac6a308e9"
+      },
+      "windup": {
+        "bbox": [
+          8,
+          4,
+          48,
+          61
+        ],
+        "sha256": "8a613c1ef1c856fa3a60d39ce75592971fef2a5222fa222ed27ccaf9dd48b405"
+      },
+      "move": {
+        "bbox": [
+          7,
+          2,
+          59,
+          61
+        ],
+        "sha256": "efc8e70935cd4e8845c1e5f72b8e414fc19d402e2a9e316c6eb34d97f6fc7947"
+      },
+      "attack": {
+        "bbox": [
+          8,
+          5,
+          61,
+          61
+        ],
+        "sha256": "5781b9a5bec78b18806e645510218388e1ddaf6b7d5b270e9674b7544a262ae8"
+      },
+      "recover": {
+        "bbox": [
+          9,
+          5,
+          55,
+          61
+        ],
+        "sha256": "7985bf117b68b586a1eab2a70bef42f5b22cd702123c4434df737ad9a5349f4a"
+      },
+      "hit": {
+        "bbox": [
+          7,
+          6,
+          46,
+          61
+        ],
+        "sha256": "09e2ebfb666f6d57e24b2c0c4022bcba675701ec7b3f5a06057d531d4205d810"
+      },
+      "dead": {
+        "bbox": [
+          6,
+          37,
+          57,
+          61
+        ],
+        "sha256": "d8df312f5714c11850cbf221c49e23db16cd3c85be9004e42c7a9b99b04253a9"
+      }
+    }
+  },
+  {
+    "slug": "centaur-plains",
+    "cell": 96,
+    "colors": 14,
+    "sheetSha256": "8625e3fc82dfac0c0d7d11ffcbe9c9b47eed30f04ddabc9c943138671355961a",
+    "portraitSha256": "0e79a5ec8489d37025b8fd861beb30b9d6a35c332c20b0357e6fdcdef9425018",
+    "frames": {
+      "idle_a": {
+        "bbox": [
+          7,
+          4,
+          87,
+          93
+        ],
+        "sha256": "87fc72e5b9013fa3093c8d17a2d094f1ddc8f7e8755e58df91b48f86abc919ed"
+      },
+      "idle_b": {
+        "bbox": [
+          7,
+          6,
+          88,
+          93
+        ],
+        "sha256": "59f9ea168e82096a1926eeb8912ac0c77e3733079cffeaeb68987f1a794dbd9f"
+      },
+      "idle_c": {
+        "bbox": [
+          7,
+          2,
+          86,
+          93
+        ],
+        "sha256": "d6d3573f5fee39ccb0f18db2d1478fdaa8a6b8b534b459dbde4d9cb5fbdd9482"
+      },
+      "windup": {
+        "bbox": [
+          4,
+          6,
+          85,
+          93
+        ],
+        "sha256": "441fdef688eb7170dde6417b9124919b256c17c8494ebb1ac3bbc5b80a158a3b"
+      },
+      "move": {
+        "bbox": [
+          9,
+          2,
+          92,
+          93
+        ],
+        "sha256": "8e5e39c408be47ed073d38c4aed093bdb4d46f153bd51184741995733a9347d3"
+      },
+      "attack": {
+        "bbox": [
+          8,
+          7,
+          95,
+          93
+        ],
+        "sha256": "c7826878b07249d3ff0804ad98e8c9d32804c76bdf5c0d3aca3d0586919f05c4"
+      },
+      "recover": {
+        "bbox": [
+          7,
+          7,
+          87,
+          93
+        ],
+        "sha256": "baab69734901a7fecac133cf5d163a86879a017eae2c374853108c82fce73a0b"
+      },
+      "hit": {
+        "bbox": [
+          2,
+          8,
+          83,
+          93
+        ],
+        "sha256": "0e77301ddd17505a9b7804c16e8ef4191d28458dcbfc3c0465ae4dccba10c1b6"
+      },
+      "dead": {
+        "bbox": [
+          11,
+          56,
+          89,
+          93
+        ],
+        "sha256": "8b447ba4ca403f9e10b16df19195f99fe6c5071cfb9d10d79732482a8899e4de"
+      }
+    }
+  },
+  {
+    "slug": "ogre-club",
+    "cell": 96,
+    "colors": 18,
+    "sheetSha256": "89214990177495ac71b1ffe9246486d483c3fd0ff2a18244e50d225476ec7d38",
+    "portraitSha256": "de6522712a77e049a1909053c4c5d8f3fa4309547a6d80cb88b5c5a2ab0f425a",
+    "frames": {
+      "idle_a": {
+        "bbox": [
+          8,
+          6,
+          84,
+          93
+        ],
+        "sha256": "929e24b10ec502266fd93f26687c16b2f0d1e4532d6668d2dcd31353ed530636"
+      },
+      "idle_b": {
+        "bbox": [
+          8,
+          8,
+          84,
+          93
+        ],
+        "sha256": "d5da849188e0affdd14f685fe5a5df727500a23611441445af55e6ed683caf56"
+      },
+      "idle_c": {
+        "bbox": [
+          8,
+          4,
+          84,
+          93
+        ],
+        "sha256": "7bd7363709351046a2cb23601be43c06ed5e55aaaf7f77df0ec567187a8a63bb"
+      },
+      "windup": {
+        "bbox": [
+          9,
+          8,
+          83,
+          93
+        ],
+        "sha256": "2de1275f8a75dd81c103e5d769ce8654e27fe7e98056d9de4fe69b3105362ec6"
+      },
+      "move": {
+        "bbox": [
+          5,
+          4,
+          90,
+          93
+        ],
+        "sha256": "b068afea4d6b912f0fcd38f6d281721b281e572a0b011244f441f2ce3c7aa667"
+      },
+      "attack": {
+        "bbox": [
+          7,
+          9,
+          89,
+          93
+        ],
+        "sha256": "733afce6e0023c2fa215f8a2349f3e7b927f9c33b879072563403b2a7305e146"
+      },
+      "recover": {
+        "bbox": [
+          8,
+          9,
+          85,
+          93
+        ],
+        "sha256": "c3bac7087cdae88e5fb350d6fc1f954cf2135cdbe7e921bf575940d0390f6f83"
+      },
+      "hit": {
+        "bbox": [
+          8,
+          10,
+          81,
+          93
+        ],
+        "sha256": "9241bbf17a6ee8a7004c0dfc01116c2f80c6e3ef588e224cbec601d4df9dfa15"
+      },
+      "dead": {
+        "bbox": [
+          8,
+          57,
+          94,
+          93
+        ],
+        "sha256": "1e893f8e135012d52a5abdc9b42b93ce7f43ce0a7c93f0d6348e992dc184de00"
+      }
+    }
+  },
+  {
+    "slug": "imp-mischief",
+    "cell": 64,
+    "colors": 16,
+    "sheetSha256": "ae1e1e9549780cd96086f71981a2015a1cc59f43569b14fc725d4be4469ab0fc",
+    "portraitSha256": "8b8f0a46085c9bb06ad7879ce28ac0138d527f5e80d7b3fe242a2bb7a026f11f",
+    "frames": {
+      "idle_a": {
+        "bbox": [
+          6,
+          4,
+          63,
+          61
+        ],
+        "sha256": "91a7705d0df0e2f8c76611bbaac4a200d2beec08f8184ba655940081f808628f"
+      },
+      "idle_b": {
+        "bbox": [
+          6,
+          5,
+          63,
+          61
+        ],
+        "sha256": "c1d40f33fdd6e9e9d06d6a8d05462fd6c26f0a6b5dac0c2c75f569524d9f4113"
+      },
+      "idle_c": {
+        "bbox": [
+          5,
+          3,
+          63,
+          61
+        ],
+        "sha256": "766feb067d8550b521cb3d932959337a44a91e9a4f43b589e105e5b97f3f0add"
+      },
+      "windup": {
+        "bbox": [
+          5,
+          3,
+          63,
+          61
+        ],
+        "sha256": "7908cd910cead579fef12ae5f72d1de113ff1e50fe6fa2cd08797ee4445ef505"
+      },
+      "move": {
+        "bbox": [
+          6,
+          3,
+          63,
+          61
+        ],
+        "sha256": "e1587838febe16e7c08ce0553f14a0ce7ba61d3a7422b010c7f2fc7f939684a9"
+      },
+      "attack": {
+        "bbox": [
+          6,
+          6,
+          63,
+          61
+        ],
+        "sha256": "2cb2e6b348f97b8fc3d2be427cdedc9eda9724be07d59a5df2eaf9efcc50a1fb"
+      },
+      "recover": {
+        "bbox": [
+          5,
+          6,
+          63,
+          61
+        ],
+        "sha256": "23ce31fcd88056962a7aa55ef1550c74b2daaf36417d68a5b5045c66901c596a"
+      },
+      "hit": {
+        "bbox": [
+          4,
+          7,
+          63,
+          61
+        ],
+        "sha256": "d483e7cd5201424673d9ba22f0479bc362d71cd93b29865a1184a3ca27397fe8"
+      },
+      "dead": {
+        "bbox": [
+          5,
+          35,
+          59,
+          61
+        ],
+        "sha256": "d0f22131ebc42c6ec2214df7fd89f4f56beb4d19b3c5b939988771d14ae6a287"
+      }
+    }
+  },
+  {
+    "slug": "griffin-sky",
+    "cell": 96,
+    "colors": 19,
+    "sheetSha256": "effd12b4b624bca579f653af0732a1b2c8c68b42c05c0fd8119e1a15dd5bfd42",
+    "portraitSha256": "0c8f730217fc081745e31b575596dfb57ad411bb4d26db348953cd013a3fab01",
+    "frames": {
+      "idle_a": {
+        "bbox": [
+          4,
+          7,
+          89,
+          93
+        ],
+        "sha256": "f36d021a7f8d1a19a33df883ae24f100bcef05a2f169e813dfabb18d209bb3ea"
+      },
+      "idle_b": {
+        "bbox": [
+          4,
+          4,
+          89,
+          93
+        ],
+        "sha256": "481c1ee76573b63793100445f7f83191525931b6c0f8ad60e24b7b107be122fd"
+      },
+      "idle_c": {
+        "bbox": [
+          4,
+          11,
+          89,
+          93
+        ],
+        "sha256": "bab33db9e530ae776d4883b554424c9b59fb48b261548d36a26e43b711f0336c"
+      },
+      "windup": {
+        "bbox": [
+          3,
+          3,
+          87,
+          93
+        ],
+        "sha256": "b8a1ed33663020cf0a16bb5f786d2d389f89b82aa6e7ad8f611a682bbdf2e6a6"
+      },
+      "move": {
+        "bbox": [
+          5,
+          10,
+          95,
+          93
+        ],
+        "sha256": "7e0f1b1aa32255d9448f08ec6a43abe240d20acba5bc6516d8242dc29bfcbe53"
+      },
+      "attack": {
+        "bbox": [
+          6,
+          21,
+          93,
+          93
+        ],
+        "sha256": "e558bf2abe293169cd87ef821bbb685a3275597b0b3fdd4ca0b33ed1c113064d"
+      },
+      "recover": {
+        "bbox": [
+          4,
+          11,
+          91,
+          93
+        ],
+        "sha256": "1f0a764494cc13d0a064031318b2d1199ca2f89f7f9500a7ad7f0446c7bca7ce"
+      },
+      "hit": {
+        "bbox": [
+          2,
+          23,
+          87,
+          93
+        ],
+        "sha256": "ddb989073a30f23248f8806fa0c616f8b4f351dd1b70dcd03f9e1097c957e469"
+      },
+      "dead": {
+        "bbox": [
+          7,
+          62,
+          86,
+          93
+        ],
+        "sha256": "0004f024342d2898377718cc99358d67457819923009dc460d04d847af48400d"
+      }
+    }
+  },
+  {
+    "slug": "roc-giant",
+    "cell": 64,
+    "colors": 12,
+    "sheetSha256": "88c6722c08c86fc538d29b544ea192c636a7ef87849990850ea45c5d62728414",
+    "portraitSha256": "fe2c097e2aa78bd09f32373ccdba2af67fc954837b603e1c98975cf820c0a9a7",
+    "frames": {
+      "idle_a": {
+        "bbox": [
+          4,
+          10,
+          60,
+          61
+        ],
+        "sha256": "1f92428658b0f8620511a4a340344dd85b85d5df300673e3172972b1568d32bc"
+      },
+      "idle_b": {
+        "bbox": [
+          5,
+          7,
+          60,
+          61
+        ],
+        "sha256": "1d00c59301068a4b92f7f095a3dedeb96c34691ac2034a0401c6e7ae3493d760"
+      },
+      "idle_c": {
+        "bbox": [
+          3,
+          9,
+          60,
+          61
+        ],
+        "sha256": "6439f074bad75e5927c45049dd2ea4a75c529d0495786654d618a5809504b275"
+      },
+      "windup": {
+        "bbox": [
+          2,
+          5,
+          60,
+          61
+        ],
+        "sha256": "3bed9ab515d7dbece9fc9766be67f5d55a7ac8bfc53e59b1122b03e33d62e9a6"
+      },
+      "move": {
+        "bbox": [
+          4,
+          8,
+          60,
+          61
+        ],
+        "sha256": "55f386237fbdbd0be4cf0d250a27338cce5c3484f72dee0f3d85d60f0aca26dd"
+      },
+      "attack": {
+        "bbox": [
+          4,
+          12,
+          60,
+          61
+        ],
+        "sha256": "19495afa0e4919c355fc08e504a85216697aeab5fc5d95cd5788659f8b8358a9"
+      },
+      "recover": {
+        "bbox": [
+          3,
+          12,
+          60,
+          61
+        ],
+        "sha256": "1f5d71f3c19a9c770c94596ce89cbe324c268c8a8b183206026ff98481c26e92"
+      },
+      "hit": {
+        "bbox": [
+          1,
+          13,
+          60,
+          61
+        ],
+        "sha256": "a3f048fba218031bfd3928f0559184bee14ac8cbf2ba86ca213e0cb2eb84f201"
+      },
+      "dead": {
+        "bbox": [
+          5,
+          43,
+          58,
+          61
+        ],
+        "sha256": "ced32580b85dd85d901a98dd4496377075e9cf741dc100e4ad43d621ecc34112"
+      }
+    }
+  },
+  {
+    "slug": "phoenix-rebirth",
+    "cell": 96,
+    "colors": 16,
+    "sheetSha256": "0f2ade33be26b3ecd01a14e74a8baaa16fb6e24f70c65c041e35e6ddbf3e57f7",
+    "portraitSha256": "4d489d2a57d5e52354fdec9b700976029456120d949bdeff07f0543f32b38ee0",
+    "frames": {
+      "idle_a": {
+        "bbox": [
+          7,
+          10,
+          88,
+          91
+        ],
+        "sha256": "23d7504bee9f244a6f142a2d4716eb09c86ba7421cbe1cd20d46d489eb8670bd"
+      },
+      "idle_b": {
+        "bbox": [
+          8,
+          11,
+          88,
+          91
+        ],
+        "sha256": "1c44307d8ea09e0a9e93937bb93bc0acafb9c1c509180717e80ca90614f329c8"
+      },
+      "idle_c": {
+        "bbox": [
+          6,
+          8,
+          88,
+          91
+        ],
+        "sha256": "7d553f255d38963e4686b89fdb538175e6fdb73a5e5efbe267a608fa59ec8495"
+      },
+      "windup": {
+        "bbox": [
+          3,
+          8,
+          88,
+          91
+        ],
+        "sha256": "8dbe9c3ced37ce1463731cfdb651518c2a0b195d4d7a052d414ff881aba1f9c0"
+      },
+      "move": {
+        "bbox": [
+          7,
+          8,
+          88,
+          91
+        ],
+        "sha256": "cda1c691d7641aef0bfaf2d06ffc874c1b283dedaed21cec46232ac7f79a57be"
+      },
+      "attack": {
+        "bbox": [
+          6,
+          14,
+          88,
+          91
+        ],
+        "sha256": "4aadb260c675897340af1a51584ef85b7d2688072f83d28a91b181e2d6cf0740"
+      },
+      "recover": {
+        "bbox": [
+          6,
+          14,
+          88,
+          91
+        ],
+        "sha256": "9593923700bb3a5d6f0bc649dd503ccbdfd1ed58b2d82c6086e23028673291ac"
+      },
+      "hit": {
+        "bbox": [
+          1,
+          14,
+          88,
+          91
+        ],
+        "sha256": "9c5b51eab23182b48a77eb790f5265b01115a674e95711fe18d8b9890c400b0b"
+      },
+      "dead": {
+        "bbox": [
+          8,
+          60,
+          87,
+          91
+        ],
+        "sha256": "a86be6ea73ff800a94883468f045375f2dfa1b69c130e307d76e2f48c01bc3f3"
+      }
+    }
+  },
+  {
+    "slug": "dragon-whelp",
+    "cell": 64,
+    "colors": 18,
+    "sheetSha256": "3127966fb2d2699e9c9a217df0ff6db5d99fa5a01c7f8508b03b8767091f6fc6",
+    "portraitSha256": "d8133d4ada96b01c8cf0b1ab5944b58adaf1d56b58a9c2b6edf21187e4c64223",
+    "frames": {
+      "idle_a": {
+        "bbox": [
+          4,
+          4,
+          61,
+          61
+        ],
+        "sha256": "3e0b729a272e40e2fc3eadbeaadcef6fb11e24b1d70ff24f48664ad4a55dbed1"
+      },
+      "idle_b": {
+        "bbox": [
+          4,
+          5,
+          61,
+          61
+        ],
+        "sha256": "0cd2bdcc183615f8c8407754615d2c7bf7e1add3e95f9efd08bc80d1d74512ef"
+      },
+      "idle_c": {
+        "bbox": [
+          4,
+          3,
+          61,
+          61
+        ],
+        "sha256": "d68e039b05efeaefd84c8fa3c8dc8edcf82c70c7bc8f6770b78f420b646eee3b"
+      },
+      "windup": {
+        "bbox": [
+          4,
+          3,
+          61,
+          61
+        ],
+        "sha256": "83b4e62a5d4bbced2c8f58b7182e625ea36d3c8cc088c658655695dc383a43f3"
+      },
+      "move": {
+        "bbox": [
+          4,
+          3,
+          61,
+          61
+        ],
+        "sha256": "0ae14b050d4736cc19430dae78d1daa648bcbde1c72a8c5e22b910a210fd865c"
+      },
+      "attack": {
+        "bbox": [
+          7,
+          6,
+          61,
+          61
+        ],
+        "sha256": "26f8648734e6ec9fefe7412205ba800a3f14ca4bceb58a31b82d70356b8d58af"
+      },
+      "recover": {
+        "bbox": [
+          4,
+          6,
+          61,
+          61
+        ],
+        "sha256": "2ec17b51802cf7d90846d119062de8b69e3a5a037f3ef24242ffbc5b2450ef14"
+      },
+      "hit": {
+        "bbox": [
+          3,
+          7,
+          61,
+          61
+        ],
+        "sha256": "cc3826952c2e1ac150714b543536e47d8f0a1187faa2bb54197c4de50a03aa9f"
+      },
+      "dead": {
+        "bbox": [
+          4,
+          38,
+          61,
+          61
+        ],
+        "sha256": "9dbbbf9b726c1caafb019350b4549b30a36f844db37ef135963342940f431d73"
+      }
+    }
+  },
+  {
+    "slug": "behemoth-horn",
+    "cell": 96,
+    "colors": 14,
+    "sheetSha256": "e4f06ff08a9e9581f4de1a9c5abfdf4bac91b6689e0675d9ceb097b6fbba1c9a",
+    "portraitSha256": "f9944162d238e6cc7ca3df38523ad550da2456d75da45d0844bfc6ff08fb6a35",
+    "frames": {
+      "idle_a": {
+        "bbox": [
+          5,
+          5,
+          89,
+          93
+        ],
+        "sha256": "d1ea36cc4aa43cdb6600d95b0c8af8c3a333d484f1b7fc712541f80eb6aec2e7"
+      },
+      "idle_b": {
+        "bbox": [
+          5,
+          7,
+          89,
+          93
+        ],
+        "sha256": "8f1a7c259f3964cacd4d1b769083512ee653e007946815a52357b0e1f6724efd"
+      },
+      "idle_c": {
+        "bbox": [
+          5,
+          3,
+          89,
+          93
+        ],
+        "sha256": "f2f6414c08ad14d091d68e65d9f1cbe02f2b1422510fe8c9bc46b0e571b010f1"
+      },
+      "windup": {
+        "bbox": [
+          5,
+          7,
+          87,
+          93
+        ],
+        "sha256": "25501752a6af9f2a297ed5e3279c3f4d31978eef20b145a2e3fcbe9daf2de0c6"
+      },
+      "move": {
+        "bbox": [
+          6,
+          3,
+          95,
+          93
+        ],
+        "sha256": "ed91985ecd411d8f0ec234a734b95460c2f6d91ba96676cf8e69341fccb6b2be"
+      },
+      "attack": {
+        "bbox": [
+          9,
+          8,
+          93,
+          93
+        ],
+        "sha256": "ac3fb70fd6bbac4f731557834c0dcd477c5461941cbd533d705c4f3f4a3f1d17"
+      },
+      "recover": {
+        "bbox": [
+          5,
+          8,
+          91,
+          93
+        ],
+        "sha256": "88b6cef6c798af93a46ca81bc6f04e6de0f2eb69d0e5632c1979a5eec7ac2ff8"
+      },
+      "hit": {
+        "bbox": [
+          4,
+          9,
+          87,
+          93
+        ],
+        "sha256": "e6fa6b1039b2bc3ef08f3b26b1006bc2826fba4530c4c655669ee28a0ac64d49"
+      },
+      "dead": {
+        "bbox": [
+          3,
+          46,
+          93,
+          93
+        ],
+        "sha256": "7c7f15a636dc5788b06e5e61d2645c305e326224645baae54e7a338a7970da96"
+      }
+    }
+  },
+  {
+    "slug": "angel-fallen",
+    "cell": 64,
+    "colors": 18,
+    "sheetSha256": "ff12de7bb68371eb5fe643aa6d92e5690e4411d10a0157b6efabeacb5aef9739",
+    "portraitSha256": "5175c19baa4c6b99bc90e69377842f6a61ce0a2bc76f16fc2ae84f5deb09f958",
+    "frames": {
+      "idle_a": {
+        "bbox": [
+          4,
+          3,
+          60,
+          61
+        ],
+        "sha256": "66d4936793acf2429fede2aa9f8cbb396820ec3dd18baf97aa65b042c5c037f7"
+      },
+      "idle_b": {
+        "bbox": [
+          5,
+          4,
+          60,
+          61
+        ],
+        "sha256": "87752c8968c80e5fa1d1ee73ae8a34cbdc673b1d2a49e14ebec5f9e4b9fe57f2"
+      },
+      "idle_c": {
+        "bbox": [
+          3,
+          2,
+          60,
+          61
+        ],
+        "sha256": "c032f37f86dd5f5b7c6bb1467cb8be1e21cfcae46fc44fdf8572bf948feb80d0"
+      },
+      "windup": {
+        "bbox": [
+          8,
+          4,
+          60,
+          61
+        ],
+        "sha256": "a98cb7bcabd28648a4c2b3dc71579ce454cd64644c088d9f5860557cbf197dac"
+      },
+      "move": {
+        "bbox": [
+          4,
+          2,
+          60,
+          61
+        ],
+        "sha256": "a905f47e2264c70f33e0c0ce0df96da2bdd4d3ebf283e20e16a177c990668550"
+      },
+      "attack": {
+        "bbox": [
+          4,
+          5,
+          60,
+          61
+        ],
+        "sha256": "da48aa90bab56f278776d8bb4df4009a7758db4e8c71bb93b81e3c7622d43ace"
+      },
+      "recover": {
+        "bbox": [
+          3,
+          5,
+          60,
+          61
+        ],
+        "sha256": "b23ff4c12cb7609ccbeccfa7b1738313c682b43a564d86ee2afd588a94ae65d8"
+      },
+      "hit": {
+        "bbox": [
+          7,
+          6,
+          60,
+          61
+        ],
+        "sha256": "0a623890603769611eedeaa083af073ef3c1fac728cda5e6f7d40db90dd1299b"
+      },
+      "dead": {
+        "bbox": [
+          5,
+          39,
+          57,
+          61
+        ],
+        "sha256": "100b9faa19b2433d3d5dca1759cf64261089abceb460a756c0d63eeeb5bc829f"
+      }
+    }
+  }
+]

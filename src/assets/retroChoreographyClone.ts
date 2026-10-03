@@ -1,3 +1,4 @@
+import { BUNDLED_BATTLE_MOTIONS } from "@/assets/battleMotionCatalog";
 // 연출 레코드 복제·새 id 의 유일한 구현. 조수 도구(duplicate_choreography)와 자료집 「도트 연출」 탭이 같이 쓴다.
 // 기본 연출(번들 계약)은 읽기 전용이라, 고치려면 이 모듈로 프로젝트 레코드(chor_*)를 만든다.
 import { retroChoreographyEntries, retroClassSkill } from "@/assets/retroSkillCatalog";
@@ -27,6 +28,8 @@ export function choreographyCloneBase(records: readonly SkillChoreographyRecord[
     // 원본이 이미 기본 연출을 복제한 것이면 그 계보(직업/몬스터 편)를 지키고, 아니면 이 프로젝트 원본을 가리킨다.
     return { base: { ...rest, sourceId: project.sourceId ?? project.id }, sourceName: project.name, fromProject: true };
   }
+  const bundled=BUNDLED_BATTLE_MOTIONS.find(r=>r.id===sourceId);
+  if(bundled){const {id:_id,name,...base}=structuredClone(bundled);return {base:{...base,sourceId},sourceName:name,fromProject:false};}
   const skill = retroClassSkill(sourceId) ?? retroMonsterSkill(sourceId);
   if (!skill) return undefined;
   const entry = retroChoreographyEntries().find((row) => row.id === sourceId);

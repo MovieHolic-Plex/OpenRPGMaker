@@ -101,27 +101,30 @@ describe("새 프로젝트 선택 정본", () => {
 
 describe("새 프로젝트 다이얼로그", () => {
   const click = (id: string) => document.querySelector<HTMLButtonElement>(`[data-testid="${id}"]`)!.click();
-  it("offers three examples and a separate empty project", async () => {
+  it("opens AI planning and preserves explicit example and blank alternatives", async () => {
     const pending = showNewProjectDialog();
+    expect(document.querySelector('[data-testid="new-project-confirm"]')?.textContent).toContain("게임 기획");
+    click("new-project-back");
     expect(document.querySelectorAll(".project-start-example")).toHaveLength(3);
     expect(document.querySelector(`[data-testid="${newProjectGenreOptionTestId(null)}"]`)).not.toBeNull();
     click("new-project-cancel"); expect(await pending).toBeNull();
   });
   it("creates an empty project after its explicit choice", async () => {
     const pending = showNewProjectDialog({ defaultValue: "달빛 항구" });
+    click("new-project-back");
     click(newProjectGenreOptionTestId(null)); click("new-project-confirm");
     expect(await pending).toEqual({ title: "달빛 항구", choiceId: null, screenSize: "classic", startMode: "blank" });
   });
   it("the example path needs no AI connection or interview", async () => {
     let gateCalls = 0;
     const pending = showNewProjectDialog({ ensureAiConnected: async () => { gateCalls++; return false; } });
+    click("new-project-back");
     click(newProjectGenreOptionTestId("monster-collect")); click("new-project-confirm");
     expect(await pending).toMatchObject({ choiceId: "monster-collect", startMode: "example", screenSize: "classic" });
     expect(gateCalls).toBe(0); expect(document.querySelector('[data-testid="project-interview"]')).toBeNull();
   });
   it("an AI gate decline keeps the dialog and draft intact", async () => {
     const pending = showNewProjectDialog({ ensureAiConnected: async () => false });
-    click("new-project-ai");
     const input = document.querySelector<HTMLInputElement>('[data-testid="new-project-name-input"]')!;
     input.value = "내 게임"; input.dispatchEvent(new Event("input"));
     click("new-project-confirm"); await Promise.resolve(); await Promise.resolve(); await Promise.resolve();
@@ -130,6 +133,7 @@ describe("새 프로젝트 다이얼로그", () => {
   });
   it("empty names use the supplied default without an extra wizard", async () => {
     const pending = showNewProjectDialog({ defaultValue: "새 프로젝트" });
+    click("new-project-back");
     click(newProjectGenreOptionTestId(null));
     const input = document.querySelector<HTMLInputElement>('[data-testid="new-project-name-input"]')!;
     input.value = " "; input.dispatchEvent(new Event("input")); click("new-project-confirm");

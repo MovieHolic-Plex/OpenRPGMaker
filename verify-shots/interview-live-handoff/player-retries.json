@@ -1,0 +1,8 @@
+{
+  "initial": "title passed; four beats failed under single-input/30sec waits; later field screenshot showed actors but no dialogue",
+  "correctedFirefox": "title did not appear before 120sec deadline",
+  "correctedChromium": "title did not appear before 120sec deadline",
+  "resolved": false,
+  "latest": "Packaged Firefox player also timed out before title visibility (120sec); no runtime dialogue/choices pass claimed",
+  "packagedPlayer": "http://127.0.0.1:9896/player.html; production build; canonical fixture unchanged"
+}

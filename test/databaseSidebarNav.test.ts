@@ -29,7 +29,7 @@ const EXPECTED_TABS = [
   // 전투 규칙
   "db-tab-elements",
   "db-tab-states",
-  "db-tab-animations",
+  "db-tab-retro-choreographies",
   "db-tab-battle-screen",
   "db-tab-battle-commands",
   // 생활

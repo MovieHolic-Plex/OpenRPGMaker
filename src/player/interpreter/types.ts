@@ -36,7 +36,7 @@ export type StepResult =
   | import("./minigameCommands").TimedChoiceStep
   | import("./minigameCommands").QuickTimeStep
   | import("./minigameCommands").TeleportMenuStep
-  | { kind: "text"; speaker?: string; body: string; face?: FaceGraphic; settings?: MessageWindowSettings; autoAdvance?: boolean; emotion?: string; style?: string; context?: string; container?: string; voiceResourceId?: string }
+  | { kind: "text"; speaker?: string; body: string; face?: FaceGraphic; settings?: MessageWindowSettings; autoAdvance?: boolean; emotion?: string; style?: string; context?: string; container?: string; position?: "auto" | "top" | "center" | "bottom"; voiceResourceId?: string }
   | {
       kind: "choices";
       prompt?: string;

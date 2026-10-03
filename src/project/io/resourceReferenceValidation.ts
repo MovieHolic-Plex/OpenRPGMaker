@@ -34,7 +34,7 @@ export function collectResourceIds(project: Project): Set<string> {
   for (const asset of GENERATED_ASSET_PLAN.assets) {
     if (asset.status === "promoted") ids.add(asset.resourceId);
   }
-  for (const id of builtinGeneratedResourceIds()) ids.add(id);
+  for (const id of builtinGeneratedResourceIds(true)) ids.add(id);
   for (const id of listOpeningStillPackIds()) ids.add(id);
   for (const asset of EASYRPG_RTP_ASSETS) {
     ids.add(asset.id);

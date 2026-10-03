@@ -1,0 +1,4157 @@
+{
+"_doc": "조각별 칸 통행 격자 — 자동 규칙(lib/joseon_tileset/walk.py) + piece-walk-overrides.json. X 막힘 / C 걸음★(사람 위) / F 걸음(바닥) / . 그림 없음. build-joseon-tileset.py 가 매번 다시 쓴다(손 수정은 overrides 에).",
+"pieces": {
+"giwa_house_6": {
+"w": 8,
+"h": 6,
+"cls": "built",
+"rows": [
+"CXXXXXXC",
+"CXXXXXXC",
+"CXXXXXXC",
+"FXXXXXXC",
+".XXXXXXF",
+".XXFFXXF"
+],
+"source": "auto",
+"steps": [
+[
+5,
+3
+],
+[
+5,
+4
+]
+]
+},
+"thatch_house_5": {
+"w": 7,
+"h": 6,
+"cls": "built",
+"rows": [
+"CXXXXXC",
+"CXXXXXC",
+"CXXXXXC",
+"FXXXXXC",
+".XXXXXF",
+".XXFXXF"
+],
+"source": "auto",
+"steps": [
+[
+5,
+3
+]
+]
+},
+"gate_4": {
+"w": 6,
+"h": 6,
+"cls": "built",
+"rows": [
+"CXXXXC",
+"CXXXXC",
+"CXXXXC",
+"FXXXXC",
+".XXXXF",
+".XFFXF"
+],
+"source": "auto",
+"steps": [
+[
+5,
+2
+],
+[
+5,
+3
+]
+]
+},
+"pavilion_5g": {
+"w": 7,
+"h": 6,
+"cls": "built",
+"rows": [
+"CXXXXXC",
+"CXXXXXC",
+"CXXXXXC",
+"CXXXXXC",
+"FXXXXXC",
+".XXFXXF"
+],
+"source": "auto",
+"steps": [
+[
+5,
+3
+]
+]
+},
+"pavilion_5": {
+"w": 7,
+"h": 6,
+"cls": "built",
+"rows": [
+"CXXXXXC",
+"CXXXXXC",
+"CXXXXXC",
+"CXXXXXC",
+"FXXXXXC",
+".XXFXXF"
+],
+"source": "auto",
+"steps": [
+[
+5,
+3
+]
+]
+},
+"thatch_house_4": {
+"w": 6,
+"h": 6,
+"cls": "built",
+"rows": [
+".CCCC.",
+"CXXXXC",
+"CXXXXC",
+"FXXXXC",
+".XXXXF",
+".XXFXF"
+],
+"source": "auto",
+"steps": [
+[
+5,
+3
+]
+]
+},
+"giwa_house_5": {
+"w": 7,
+"h": 6,
+"cls": "built",
+"rows": [
+"CXXXXXC",
+"CXXXXXC",
+"CXXXXXC",
+"FXXXXXC",
+".XXXXXF",
+".XXFXXF"
+],
+"source": "auto",
+"steps": [
+[
+5,
+3
+]
+]
+},
+"zelkova_a": {
+"w": 4,
+"h": 5,
+"cls": "tree",
+"rows": [
+"CCCC",
+"CCCC",
+"CCCC",
+"CCCC",
+"FXXF"
+],
+"source": "auto",
+"steps": []
+},
+"zelkova_b": {
+"w": 4,
+"h": 5,
+"cls": "tree",
+"rows": [
+"CCCC",
+"CCCC",
+"CCCC",
+".CCC",
+"FXXF"
+],
+"source": "auto",
+"steps": []
+},
+"zelkova_c": {
+"w": 4,
+"h": 5,
+"cls": "tree",
+"rows": [
+"CCCC",
+"CCCC",
+"CCCC",
+"CCCC",
+"FXXF"
+],
+"source": "auto",
+"steps": []
+},
+"zelkova_d": {
+"w": 4,
+"h": 5,
+"cls": "tree",
+"rows": [
+"CCCC",
+"CCCC",
+"CCCC",
+"CCCC",
+"FXXF"
+],
+"source": "auto",
+"steps": []
+},
+"zelkova_e": {
+"w": 4,
+"h": 5,
+"cls": "tree",
+"rows": [
+"CCCC",
+"CCCC",
+"CCCC",
+"CCC.",
+"FXXF"
+],
+"source": "auto",
+"steps": []
+},
+"zelkova_f": {
+"w": 4,
+"h": 5,
+"cls": "tree",
+"rows": [
+"CCCC",
+"CCCC",
+"CCCC",
+"CCCC",
+"FXXF"
+],
+"source": "auto",
+"steps": []
+},
+"zelkova_g": {
+"w": 4,
+"h": 5,
+"cls": "tree",
+"rows": [
+".CC.",
+"CCCC",
+"CCCC",
+"CCC.",
+"FXXF"
+],
+"source": "auto",
+"steps": []
+},
+"zelkova_h": {
+"w": 4,
+"h": 5,
+"cls": "tree",
+"rows": [
+"CCCC",
+"CCCC",
+"CCCC",
+"CCCC",
+"FXXF"
+],
+"source": "auto",
+"steps": []
+},
+"zelkova_i": {
+"w": 4,
+"h": 5,
+"cls": "tree",
+"rows": [
+"CCCC",
+"CCCC",
+"CCCC",
+"CCCC",
+"FXXF"
+],
+"source": "auto",
+"steps": []
+},
+"zelkova_j": {
+"w": 4,
+"h": 5,
+"cls": "tree",
+"rows": [
+"CCCC",
+"CCCC",
+"CCCC",
+"CCCC",
+"FXXF"
+],
+"source": "auto",
+"steps": []
+},
+"pine_c": {
+"w": 4,
+"h": 5,
+"cls": "tree",
+"rows": [
+"CCC.",
+"CCCC",
+"CCCC",
+"CCC.",
+"FXFF"
+],
+"source": "auto",
+"steps": []
+},
+"pine_d": {
+"w": 4,
+"h": 5,
+"cls": "tree",
+"rows": [
+"CCC.",
+"CCCC",
+"CCCC",
+"CCC.",
+"FXFF"
+],
+"source": "auto",
+"steps": []
+},
+"pine_e": {
+"w": 4,
+"h": 5,
+"cls": "tree",
+"rows": [
+".CCC",
+"CCCC",
+"CCCC",
+".CCC",
+"FXXF"
+],
+"source": "auto",
+"steps": []
+},
+"pine_f": {
+"w": 4,
+"h": 5,
+"cls": "tree",
+"rows": [
+".CCC",
+"CCCC",
+"CCCC",
+".CCC",
+"FXXF"
+],
+"source": "auto",
+"steps": []
+},
+"persimmon_c": {
+"w": 3,
+"h": 4,
+"cls": "tree",
+"rows": [
+"CCC",
+"CCC",
+"CCC",
+"FXF"
+],
+"source": "auto",
+"steps": []
+},
+"persimmon_d": {
+"w": 3,
+"h": 4,
+"cls": "tree",
+"rows": [
+"CCC",
+"CCC",
+"CCC",
+"FXF"
+],
+"source": "auto",
+"steps": []
+},
+"persimmon_e": {
+"w": 3,
+"h": 4,
+"cls": "tree",
+"rows": [
+"CCC",
+"CCC",
+"CCC",
+"FXF"
+],
+"source": "auto",
+"steps": []
+},
+"persimmon_f": {
+"w": 3,
+"h": 4,
+"cls": "tree",
+"rows": [
+"CCC",
+"CCC",
+"CCC",
+"FXF"
+],
+"source": "auto",
+"steps": []
+},
+"pine_a": {
+"w": 4,
+"h": 5,
+"cls": "tree",
+"rows": [
+"CCC.",
+"CCCC",
+"CCCC",
+"CCC.",
+"FXFF"
+],
+"source": "auto",
+"steps": []
+},
+"pine_b": {
+"w": 4,
+"h": 5,
+"cls": "tree",
+"rows": [
+"CCC.",
+"CCCC",
+"CCCC",
+"CCC.",
+"FXFF"
+],
+"source": "auto",
+"steps": []
+},
+"persimmon_a": {
+"w": 3,
+"h": 4,
+"cls": "tree",
+"rows": [
+"CCC",
+"CCC",
+"CCC",
+"FXF"
+],
+"source": "auto",
+"steps": []
+},
+"persimmon_b": {
+"w": 3,
+"h": 4,
+"cls": "tree",
+"rows": [
+"CCC",
+"CCC",
+"CCC",
+"FXF"
+],
+"source": "auto",
+"steps": []
+},
+"willow": {
+"w": 4,
+"h": 5,
+"cls": "tree",
+"rows": [
+"CCCC",
+"CCCC",
+"CCCC",
+"CCCC",
+"FXXF"
+],
+"source": "auto",
+"steps": []
+},
+"bamboo": {
+"w": 2,
+"h": 4,
+"cls": "tree",
+"rows": [
+"CC",
+"CC",
+"CC",
+"XX"
+],
+"source": "auto",
+"steps": []
+},
+"bush_l_a": {
+"w": 3,
+"h": 2,
+"cls": "bush",
+"rows": [
+"CCC",
+"XXX"
+],
+"source": "auto",
+"steps": []
+},
+"bush_l_b": {
+"w": 3,
+"h": 2,
+"cls": "bush",
+"rows": [
+"CCC",
+"XXX"
+],
+"source": "auto",
+"steps": []
+},
+"bush_s_a": {
+"w": 2,
+"h": 1,
+"cls": "tuft",
+"rows": [
+"XX"
+],
+"source": "auto",
+"steps": []
+},
+"bush_s_b": {
+"w": 2,
+"h": 1,
+"cls": "tuft",
+"rows": [
+"XX"
+],
+"source": "auto",
+"steps": []
+},
+"bamboo_grove": {
+"w": 4,
+"h": 4,
+"cls": "tree",
+"rows": [
+"CCCC",
+"CCCC",
+"CCCC",
+"XXXX"
+],
+"source": "auto",
+"steps": []
+},
+"bush_a": {
+"w": 2,
+"h": 2,
+"cls": "bush",
+"rows": [
+"CC",
+"XX"
+],
+"source": "auto",
+"steps": []
+},
+"bush_b": {
+"w": 2,
+"h": 2,
+"cls": "bush",
+"rows": [
+"CC",
+"XX"
+],
+"source": "auto",
+"steps": []
+},
+"bush_c": {
+"w": 2,
+"h": 2,
+"cls": "bush",
+"rows": [
+"CC",
+"XX"
+],
+"source": "auto",
+"steps": []
+},
+"bush_d": {
+"w": 2,
+"h": 2,
+"cls": "bush",
+"rows": [
+"CC",
+"XX"
+],
+"source": "auto",
+"steps": []
+},
+"bush_e": {
+"w": 2,
+"h": 2,
+"cls": "bush",
+"rows": [
+"CC",
+"XX"
+],
+"source": "auto",
+"steps": []
+},
+"bush_f": {
+"w": 2,
+"h": 2,
+"cls": "bush",
+"rows": [
+"CC",
+"XX"
+],
+"source": "auto",
+"steps": []
+},
+"bush_l_c": {
+"w": 3,
+"h": 2,
+"cls": "bush",
+"rows": [
+"CCC",
+"XXX"
+],
+"source": "auto",
+"steps": []
+},
+"bush_l_d": {
+"w": 3,
+"h": 2,
+"cls": "bush",
+"rows": [
+"CCC",
+"XXX"
+],
+"source": "auto",
+"steps": []
+},
+"bush_s_c": {
+"w": 2,
+"h": 1,
+"cls": "tuft",
+"rows": [
+"XX"
+],
+"source": "auto",
+"steps": []
+},
+"bush_s_d": {
+"w": 2,
+"h": 1,
+"cls": "tuft",
+"rows": [
+"XX"
+],
+"source": "auto",
+"steps": []
+},
+"giwa_house_3b": {
+"w": 5,
+"h": 6,
+"cls": "built",
+"rows": [
+"CXXXC",
+"CXXXC",
+"CXXXC",
+"FXXXC",
+".XXXF",
+".XFXF"
+],
+"source": "auto",
+"steps": [
+[
+5,
+2
+]
+]
+},
+"giwa_haengnang_7": {
+"w": 9,
+"h": 6,
+"cls": "built",
+"rows": [
+"CXXXXXXXC",
+"CXXXXXXXC",
+"CXXXXXXXC",
+"FXXXXXXXC",
+".XXXXXXXF",
+".XFXFXXXF"
+],
+"source": "auto",
+"steps": [
+[
+5,
+2
+],
+[
+5,
+4
+]
+]
+},
+"giwa_seodang": {
+"w": 6,
+"h": 6,
+"cls": "built",
+"rows": [
+"CXXXXC",
+"CXXXXC",
+"CXXXXC",
+"FXXXXC",
+".XXXXF",
+".XFXXF"
+],
+"source": "auto",
+"steps": [
+[
+5,
+2
+]
+]
+},
+"thatch_jumak": {
+"w": 8,
+"h": 6,
+"cls": "built",
+"rows": [
+"CXXXXXCC",
+"CXXXXXCC",
+"CXXXXXCC",
+"FXXXXXCC",
+".XXXXXFC",
+".XXFXXFF"
+],
+"source": "auto",
+"steps": [
+[
+5,
+3
+]
+]
+},
+"thatch_smithy": {
+"w": 6,
+"h": 6,
+"cls": "built",
+"rows": [
+".CCCC.",
+"CXXXXC",
+"CXXXXC",
+"FXXXXC",
+".XXXXF",
+".XXXXF"
+],
+"source": "auto",
+"steps": []
+},
+"thatch_bangatgan": {
+"w": 7,
+"h": 6,
+"cls": "built",
+"rows": [
+"CXXXXXC",
+"CXXXXXC",
+"CXXXXXC",
+"FXXXXXC",
+".XXXXXF",
+".XXXXXF"
+],
+"source": "auto",
+"steps": []
+},
+"yeonja_mill": {
+"w": 2,
+"h": 2,
+"cls": "prop",
+"rows": [
+"XX",
+"XX"
+],
+"source": "auto",
+"steps": []
+},
+"seonangdang": {
+"w": 2,
+"h": 3,
+"cls": "prop",
+"rows": [
+"XX",
+"XX",
+"XX"
+],
+"source": "auto",
+"steps": []
+},
+"chimney": {
+"w": 1,
+"h": 2,
+"cls": "prop",
+"rows": [
+"X",
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"sarip": {
+"w": 2,
+"h": 1,
+"cls": "prop",
+"rows": [
+"FF"
+],
+"source": "override",
+"steps": []
+},
+"toldam": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"giwa_house_5b": {
+"w": 7,
+"h": 6,
+"cls": "built",
+"rows": [
+"CXXXXXC",
+"CXXXXXC",
+"CXXXXXC",
+"FXXXXXC",
+".XXXXXF",
+".XXFXXF"
+],
+"source": "auto",
+"steps": [
+[
+5,
+3
+]
+]
+},
+"thatch_house_3": {
+"w": 5,
+"h": 6,
+"cls": "built",
+"rows": [
+".....",
+"CXXXC",
+"CXXXC",
+"FXXXC",
+".XXXF",
+".XFXF"
+],
+"source": "auto",
+"steps": [
+[
+5,
+2
+]
+]
+},
+"thatch_house_3b": {
+"w": 5,
+"h": 6,
+"cls": "built",
+"rows": [
+".....",
+"CXXXC",
+"CXXXC",
+"FXXXC",
+".XXXF",
+".XFXF"
+],
+"source": "auto",
+"steps": [
+[
+5,
+2
+]
+]
+},
+"thatch_porch_5": {
+"w": 7,
+"h": 6,
+"cls": "built",
+"rows": [
+"CXXXXXC",
+"CXXXXXC",
+"CXXXXXC",
+"FXXXXXC",
+".XXXXXF",
+".XXFXXF"
+],
+"source": "auto",
+"steps": [
+[
+5,
+3
+]
+]
+},
+"thatch_porch_4": {
+"w": 6,
+"h": 6,
+"cls": "built",
+"rows": [
+".CCCC.",
+"CXXXXC",
+"CXXXXC",
+"FXXXXC",
+".XXXXF",
+".XXFXF"
+],
+"source": "auto",
+"steps": [
+[
+5,
+3
+]
+]
+},
+"giwa_house_4": {
+"w": 6,
+"h": 6,
+"cls": "built",
+"rows": [
+"CXXXXC",
+"CXXXXC",
+"CXXXXC",
+"FXXXXC",
+".XXXXF",
+".XXFXF"
+],
+"source": "auto",
+"steps": [
+[
+5,
+3
+]
+]
+},
+"giwa_house_3": {
+"w": 5,
+"h": 6,
+"cls": "built",
+"rows": [
+"CXXXC",
+"CXXXC",
+"CXXXC",
+"FXXXC",
+".XXXF",
+".XFXF"
+],
+"source": "auto",
+"steps": [
+[
+5,
+2
+]
+]
+},
+"gwanah_7": {
+"w": 9,
+"h": 6,
+"cls": "built",
+"rows": [
+"CXXXXXXXC",
+"CXXXXXXXC",
+"CXXXXXXXC",
+"FXXXXXXXC",
+".XXXXXXXF",
+".XXXFXXXF"
+],
+"source": "auto",
+"steps": [
+[
+5,
+4
+]
+]
+},
+"gwanah_5": {
+"w": 7,
+"h": 6,
+"cls": "built",
+"rows": [
+"CXXXXXC",
+"CXXXXXC",
+"CXXXXXC",
+"FXXXXXC",
+".XXXXXF",
+".XXFXXF"
+],
+"source": "auto",
+"steps": [
+[
+5,
+3
+]
+]
+},
+"gwanah_5b": {
+"w": 7,
+"h": 6,
+"cls": "built",
+"rows": [
+"CXXXXXC",
+"CXXXXXC",
+"CXXXXXC",
+"FXXXXXC",
+".XXXXXF",
+".XXFXXF"
+],
+"source": "auto",
+"steps": [
+[
+5,
+3
+]
+]
+},
+"fort_gate": {
+"w": 10,
+"h": 9,
+"cls": "prop",
+"rows": [
+"..XXCCXX..",
+"..XXCCXX..",
+"..XXCCXX..",
+"..XXCCXX..",
+"XXXXCCXXXX",
+"XXXXCCXXXX",
+"XXXXCCXXXX",
+"XXXXFFXXXX",
+"XXXXFFXXXX"
+],
+"source": "override",
+"steps": []
+},
+"fort_wall_h": {
+"w": 1,
+"h": 5,
+"cls": "wall",
+"rows": [
+"X",
+"X",
+"X",
+"X",
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"fort_wall_h1": {
+"w": 1,
+"h": 5,
+"cls": "wall",
+"rows": [
+"X",
+"X",
+"X",
+"X",
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"fort_wall_h2": {
+"w": 1,
+"h": 5,
+"cls": "wall",
+"rows": [
+"X",
+"X",
+"X",
+"X",
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"fort_wall_end_l": {
+"w": 1,
+"h": 5,
+"cls": "wall",
+"rows": [
+"X",
+"X",
+"X",
+"X",
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"fort_wall_end_r": {
+"w": 1,
+"h": 5,
+"cls": "wall",
+"rows": [
+"X",
+"X",
+"X",
+"X",
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"fort_wall_sluice": {
+"w": 4,
+"h": 5,
+"cls": "wall",
+"rows": [
+"XXXX",
+"XXXX",
+"XFFX",
+"X..X",
+"X..X"
+],
+"source": "auto",
+"steps": []
+},
+"stone_pagoda": {
+"w": 2,
+"h": 3,
+"cls": "prop",
+"rows": [
+"XX",
+"XX",
+"XX"
+],
+"source": "auto",
+"steps": []
+},
+"hongsalmun": {
+"w": 5,
+"h": 3,
+"cls": "prop",
+"rows": [
+"CCCC.",
+"CCCC.",
+"FFFFF"
+],
+"source": "override",
+"steps": []
+},
+"deungrong_mun": {
+"w": 4,
+"h": 4,
+"cls": "prop",
+"rows": [
+"X..X",
+"XCCX",
+"XCCX",
+"XFFX"
+],
+"source": "override",
+"steps": []
+},
+"market_stall": {
+"w": 3,
+"h": 3,
+"cls": "prop",
+"rows": [
+"XXX",
+"XXX",
+"XXX"
+],
+"source": "auto",
+"steps": []
+},
+"market_stall_thatch": {
+"w": 3,
+"h": 3,
+"cls": "prop",
+"rows": [
+"XXX",
+"XXX",
+"XXX"
+],
+"source": "auto",
+"steps": []
+},
+"market_stall_cloth": {
+"w": 3,
+"h": 3,
+"cls": "prop",
+"rows": [
+"XXX",
+"XXX",
+"XXX"
+],
+"source": "auto",
+"steps": []
+},
+"market_stall_pots": {
+"w": 3,
+"h": 3,
+"cls": "prop",
+"rows": [
+"XXX",
+"XXX",
+"XXX"
+],
+"source": "auto",
+"steps": []
+},
+"wondumak": {
+"w": 3,
+"h": 4,
+"cls": "prop",
+"rows": [
+"XXX",
+"XXX",
+"XXX",
+"XXX"
+],
+"source": "auto",
+"steps": []
+},
+"nugak": {
+"w": 8,
+"h": 8,
+"cls": "prop",
+"rows": [
+".XXXXXX.",
+".XXXXXX.",
+".XXXXXX.",
+".XXXXXX.",
+".XXXXXX.",
+"XXXXXXXX",
+"XXXFFXXX",
+"XXXFFXXX"
+],
+"source": "override",
+"steps": []
+},
+"laundry": {
+"w": 2,
+"h": 2,
+"cls": "prop",
+"rows": [
+"XX",
+"XX"
+],
+"source": "auto",
+"steps": []
+},
+"flower_bed": {
+"w": 2,
+"h": 1,
+"cls": "prop",
+"rows": [
+"FF"
+],
+"source": "override",
+"steps": []
+},
+"bank_stairs": {
+"w": 1,
+"h": 2,
+"cls": "prop",
+"rows": [
+"F",
+"F"
+],
+"source": "override",
+"steps": []
+},
+"small_z_a": {
+"w": 2,
+"h": 3,
+"cls": "sapling",
+"rows": [
+"CC",
+"CC",
+"XX"
+],
+"source": "auto",
+"steps": []
+},
+"small_z_b": {
+"w": 2,
+"h": 3,
+"cls": "sapling",
+"rows": [
+"CC",
+"CC",
+"XX"
+],
+"source": "auto",
+"steps": []
+},
+"small_p": {
+"w": 2,
+"h": 3,
+"cls": "sapling",
+"rows": [
+"CC",
+"CC",
+"XX"
+],
+"source": "auto",
+"steps": []
+},
+"stone_bank": {
+"w": 1,
+"h": 2,
+"cls": "prop",
+"rows": [
+"X",
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"reeds": {
+"w": 1,
+"h": 2,
+"cls": "prop",
+"rows": [
+"C",
+"C"
+],
+"source": "override",
+"steps": []
+},
+"rocks": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"fence_h": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"haystack": {
+"w": 2,
+"h": 2,
+"cls": "prop",
+"rows": [
+"XX",
+"XX"
+],
+"source": "auto",
+"steps": []
+},
+"well": {
+"w": 2,
+"h": 2,
+"cls": "prop",
+"rows": [
+"XX",
+"XX"
+],
+"source": "auto",
+"steps": []
+},
+"bridge": {
+"w": 5,
+"h": 4,
+"cls": "prop",
+"rows": [
+"XXXXX",
+"FFFFF",
+"FFFFF",
+"....."
+],
+"source": "override",
+"steps": []
+},
+"jars": {
+"w": 2,
+"h": 2,
+"cls": "prop",
+"rows": [
+"XF",
+"XX"
+],
+"source": "auto",
+"steps": []
+},
+"bench": {
+"w": 2,
+"h": 1,
+"cls": "prop",
+"rows": [
+"XX"
+],
+"source": "auto",
+"steps": []
+},
+"mat_peppers": {
+"w": 2,
+"h": 1,
+"cls": "prop",
+"rows": [
+"FF"
+],
+"source": "override",
+"steps": []
+},
+"jangseung_m": {
+"w": 1,
+"h": 2,
+"cls": "prop",
+"rows": [
+"X",
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"jangseung_f": {
+"w": 1,
+"h": 2,
+"cls": "prop",
+"rows": [
+"X",
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"sotdae": {
+"w": 1,
+"h": 2,
+"cls": "prop",
+"rows": [
+"X",
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"lantern": {
+"w": 1,
+"h": 2,
+"cls": "prop",
+"rows": [
+"X",
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"wall_h": {
+"w": 1,
+"h": 2,
+"cls": "wall",
+"rows": [
+"X",
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"wall_h1": {
+"w": 1,
+"h": 2,
+"cls": "wall",
+"rows": [
+"X",
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"wall_h2": {
+"w": 1,
+"h": 2,
+"cls": "wall",
+"rows": [
+"X",
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"wall_v": {
+"w": 1,
+"h": 1,
+"cls": "wall",
+"rows": [
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"wall_v_e": {
+"w": 1,
+"h": 1,
+"cls": "wall",
+"rows": [
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"wall_corner_nw": {
+"w": 1,
+"h": 2,
+"cls": "wall",
+"rows": [
+"X",
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"wall_corner_ne": {
+"w": 1,
+"h": 2,
+"cls": "wall",
+"rows": [
+"X",
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"wall_corner_sw": {
+"w": 1,
+"h": 2,
+"cls": "wall",
+"rows": [
+"X",
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"wall_corner_se": {
+"w": 1,
+"h": 2,
+"cls": "wall",
+"rows": [
+"X",
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"gate_solseul": {
+"w": 10,
+"h": 7,
+"cls": "built",
+"rows": [
+"..XXCCXX..",
+"CXXXCCXXXC",
+"CXXXCCXXXC",
+"CXXXCCXXXC",
+"FXXXFFXXXC",
+".XXXFFXXXF",
+".XXXFFXXXF"
+],
+"source": "override",
+"steps": [
+[
+6,
+4
+],
+[
+6,
+5
+]
+]
+},
+"gate_pyeong": {
+"w": 4,
+"h": 6,
+"cls": "built",
+"rows": [
+"CCCC",
+"CCCC",
+"CCCC",
+"FFFC",
+".FFF",
+".FFF"
+],
+"source": "override",
+"steps": []
+},
+"thatch_hut_2": {
+"w": 4,
+"h": 6,
+"cls": "built",
+"rows": [
+"....",
+"CXXC",
+"CXXC",
+"FXXC",
+".XXF",
+".FXF"
+],
+"source": "auto",
+"steps": [
+[
+5,
+1
+]
+]
+},
+"thatch_house_4k": {
+"w": 6,
+"h": 6,
+"cls": "built",
+"rows": [
+".CCCC.",
+"CXXXXC",
+"CXXXXC",
+"FXXXXC",
+".XXXXF",
+".XXFXF"
+],
+"source": "auto",
+"steps": [
+[
+5,
+3
+]
+]
+},
+"thatch_house_6": {
+"w": 8,
+"h": 6,
+"cls": "built",
+"rows": [
+"CXXXXXXC",
+"CXXXXXXC",
+"CXXXXXXC",
+"FXXXXXXC",
+".XXXXXXF",
+".XXFXFXF"
+],
+"source": "auto",
+"steps": [
+[
+5,
+3
+],
+[
+5,
+5
+]
+]
+},
+"giwa_house_4w": {
+"w": 6,
+"h": 6,
+"cls": "built",
+"rows": [
+"CXXXXC",
+"CXXXXC",
+"CXXXXC",
+"FXXXXC",
+".XXXXF",
+".XFXXF"
+],
+"source": "auto",
+"steps": [
+[
+5,
+2
+]
+]
+},
+"giwa_numa": {
+"w": 7,
+"h": 6,
+"cls": "built",
+"rows": [
+"CXXXXXC",
+"CXXXXXC",
+"CXXXXXC",
+"FXXXXXC",
+".XXXXXF",
+".XXFXXF"
+],
+"source": "auto",
+"steps": [
+[
+5,
+3
+]
+]
+},
+"giwa_seowon": {
+"w": 9,
+"h": 6,
+"cls": "built",
+"rows": [
+"CXXXXXXXC",
+"CXXXXXXXC",
+"CXXXXXXXC",
+"FXXXXXXXC",
+".XXXXXXXF",
+".XXXFXXXF"
+],
+"source": "auto",
+"steps": [
+[
+5,
+4
+]
+]
+},
+"thatch_gotgan": {
+"w": 5,
+"h": 6,
+"cls": "built",
+"rows": [
+".....",
+"CXXXC",
+"CXXXC",
+"FXXXC",
+".XXXF",
+".XFXF"
+],
+"source": "auto",
+"steps": [
+[
+5,
+2
+]
+]
+},
+"thatch_maguan": {
+"w": 6,
+"h": 6,
+"cls": "built",
+"rows": [
+".CCCC.",
+"CXXXXC",
+"CXXXXC",
+"FXXXXC",
+".XXXXF",
+".XXXXF"
+],
+"source": "auto",
+"steps": []
+},
+"giwa_sadang": {
+"w": 4,
+"h": 6,
+"cls": "built",
+"rows": [
+"CXXC",
+"CXXC",
+"CXXC",
+"FXXC",
+".XXF",
+".FXF"
+],
+"source": "auto",
+"steps": [
+[
+5,
+1
+]
+]
+},
+"waterwheel": {
+"w": 3,
+"h": 4,
+"cls": "prop",
+"rows": [
+"FFF",
+"XXX",
+"XXX",
+"XXX"
+],
+"source": "auto",
+"steps": []
+},
+"dilbang": {
+"w": 4,
+"h": 2,
+"cls": "prop",
+"rows": [
+".FXF",
+"XXXX"
+],
+"source": "auto",
+"steps": []
+},
+"millstone": {
+"w": 2,
+"h": 1,
+"cls": "prop",
+"rows": [
+"XX"
+],
+"source": "auto",
+"steps": []
+},
+"pyeongsang": {
+"w": 3,
+"h": 2,
+"cls": "prop",
+"rows": [
+"XXX",
+"XXX"
+],
+"source": "auto",
+"steps": []
+},
+"jangdokdae": {
+"w": 3,
+"h": 2,
+"cls": "prop",
+"rows": [
+"XXX",
+"XXX"
+],
+"source": "auto",
+"steps": []
+},
+"scarecrow": {
+"w": 1,
+"h": 2,
+"cls": "prop",
+"rows": [
+"X",
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"firewood": {
+"w": 2,
+"h": 1,
+"cls": "prop",
+"rows": [
+"XX"
+],
+"source": "auto",
+"steps": []
+},
+"gochu_mat": {
+"w": 2,
+"h": 1,
+"cls": "prop",
+"rows": [
+"FF"
+],
+"source": "override",
+"steps": []
+},
+"dolmadam": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"jukbyeok": {
+"w": 1,
+"h": 1,
+"cls": "prop",
+"rows": [
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"geumjul_altar": {
+"w": 3,
+"h": 2,
+"cls": "prop",
+"rows": [
+"XXX",
+"XXX"
+],
+"source": "auto",
+"steps": []
+},
+"stepping_stones": {
+"w": 2,
+"h": 1,
+"cls": "prop",
+"rows": [
+"FF"
+],
+"source": "override",
+"steps": []
+},
+"boat": {
+"w": 3,
+"h": 2,
+"cls": "prop",
+"rows": [
+"XXX",
+"XXX"
+],
+"source": "auto",
+"steps": []
+},
+"dock": {
+"w": 1,
+"h": 2,
+"cls": "prop",
+"rows": [
+"F",
+"F"
+],
+"source": "override",
+"steps": []
+},
+"stele": {
+"w": 1,
+"h": 2,
+"cls": "prop",
+"rows": [
+"X",
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"stove_pot": {
+"w": 2,
+"h": 2,
+"cls": "prop",
+"rows": [
+"XX",
+"XX"
+],
+"source": "auto",
+"steps": []
+},
+"palace_hall_5": {
+"w": 9,
+"h": 12,
+"cls": "built",
+"rows": [
+"..XXXXX..",
+"..XXXXX..",
+"..XXXXX..",
+".XXXXXXX.",
+".XXXXXXX.",
+".XXXXXXX.",
+".XXXXXXX.",
+"..XXXXX..",
+"CXXXXXXXC",
+"XXXFFFXXX",
+"XXXFFFXXX",
+"FFFFFFFFF"
+],
+"source": "override",
+"steps": []
+},
+"palace_hall_wide_8": {
+"w": 12,
+"h": 10,
+"cls": "built",
+"rows": [
+"...XXXXXX...",
+"...XXXXXX...",
+".XXXXXXXXXX.",
+".XXXXXXXXXX.",
+".XXXXXXXXXX.",
+".XXXXXXXXXX.",
+"..XXXXXXXX..",
+"..XXXXXXXX..",
+"XXXXXXXXXXXX",
+"XXXXXXXXXXXX"
+],
+"source": "override",
+"steps": []
+},
+"palace_haenggak_3": {
+"w": 5,
+"h": 4,
+"cls": "built",
+"rows": [
+"CXXXC",
+"CXXXC",
+"CXXXC",
+"FXXXF"
+],
+"source": "auto",
+"steps": []
+},
+"palace_hall_7": {
+"w": 11,
+"h": 12,
+"cls": "built",
+"rows": [
+"..XXXXXXX..",
+"..XXXXXXX..",
+"..XXXXXXX..",
+".XXXXXXXXX.",
+".XXXXXXXXX.",
+".XXXXXXXXX.",
+".XXXXXXXXX.",
+"..XXXXXXX..",
+"CXXXXXXXXXC",
+"XXXXFFFXXXX",
+"XXXXFFFXXXX",
+"FFFFFFFFFFF"
+],
+"source": "override",
+"steps": []
+},
+"palace_hall_5g": {
+"w": 9,
+"h": 12,
+"cls": "built",
+"rows": [
+"..XXXXX..",
+"..XXXXX..",
+"..XXXXX..",
+".XXXXXXX.",
+".XXXXXXX.",
+".XXXXXXX.",
+".XXXXXXX.",
+"..XXXXX..",
+"CXXXXXXXC",
+"XXXFFFXXX",
+"XXXFFFXXX",
+"FFFFFFFFF"
+],
+"source": "override",
+"steps": []
+},
+"palace_jeongak_a": {
+"w": 7,
+"h": 6,
+"cls": "built",
+"rows": [
+"CXXXXXC",
+"CXXXXXC",
+"CXXXXXC",
+"CXXXXXC",
+".XXXXX.",
+"FXXFXXF"
+],
+"source": "auto",
+"steps": [
+[
+5,
+3
+]
+]
+},
+"palace_jeongak_b": {
+"w": 6,
+"h": 6,
+"cls": "built",
+"rows": [
+"CXXXXC",
+"CXXXXC",
+"CXXXXC",
+"CXXXXC",
+".XXXX.",
+"FXXFXF"
+],
+"source": "auto",
+"steps": [
+[
+5,
+3
+]
+]
+},
+"palace_jeongak_c": {
+"w": 7,
+"h": 6,
+"cls": "built",
+"rows": [
+"CXXXXXC",
+"CXXXXXC",
+"CXXXXXC",
+"CXXXXXC",
+".XXXXX.",
+"FXXFXXF"
+],
+"source": "auto",
+"steps": [
+[
+5,
+3
+]
+]
+},
+"palace_haengnak_6": {
+"w": 6,
+"h": 6,
+"cls": "built",
+"rows": [
+"XXXXXX",
+"XXXXXX",
+"XXXXXX",
+"XXXXXX",
+"XXXXXX",
+"XXXXXX"
+],
+"source": "auto",
+"steps": []
+},
+"palace_haengnak_mid_4": {
+"w": 4,
+"h": 6,
+"cls": "built",
+"rows": [
+"XXXX",
+"XXXX",
+"XXXX",
+"XXXX",
+"XXXX",
+"XXXX"
+],
+"source": "auto",
+"steps": []
+},
+"palace_wall_h": {
+"w": 1,
+"h": 2,
+"cls": "wall",
+"rows": [
+"X",
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"palace_wall_h1": {
+"w": 1,
+"h": 2,
+"cls": "wall",
+"rows": [
+"X",
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"palace_wall_h2": {
+"w": 1,
+"h": 2,
+"cls": "wall",
+"rows": [
+"X",
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"palace_wall_v": {
+"w": 1,
+"h": 1,
+"cls": "wall",
+"rows": [
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"palace_wall_v_e": {
+"w": 1,
+"h": 1,
+"cls": "wall",
+"rows": [
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"palace_wall_nw": {
+"w": 1,
+"h": 2,
+"cls": "wall",
+"rows": [
+"X",
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"palace_wall_ne": {
+"w": 1,
+"h": 2,
+"cls": "wall",
+"rows": [
+"X",
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"palace_wall_sw": {
+"w": 1,
+"h": 2,
+"cls": "wall",
+"rows": [
+"X",
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"palace_wall_se": {
+"w": 1,
+"h": 2,
+"cls": "wall",
+"rows": [
+"X",
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"palace_gate_4": {
+"w": 6,
+"h": 6,
+"cls": "built",
+"rows": [
+"CXCCXC",
+"CXCCXC",
+"CXCCXC",
+"CXFFXC",
+".XFFX.",
+"FXFFXF"
+],
+"source": "override",
+"steps": [
+[
+5,
+2
+],
+[
+5,
+3
+]
+]
+},
+"palace_eodo": {
+"w": 4,
+"h": 1,
+"cls": "prop",
+"rows": [
+"FFFF"
+],
+"source": "override",
+"steps": []
+},
+"palace_eodo_end": {
+"w": 4,
+"h": 1,
+"cls": "prop",
+"rows": [
+"FFFF"
+],
+"source": "override",
+"steps": []
+},
+"palace_pond_4": {
+"w": 4,
+"h": 3,
+"cls": "prop",
+"rows": [
+"XXXX",
+"XXXX",
+"XXXX"
+],
+"source": "auto",
+"steps": []
+},
+"palace_pond_6": {
+"w": 6,
+"h": 3,
+"cls": "prop",
+"rows": [
+"XXXXXX",
+"XXXXXX",
+"XXXXXX"
+],
+"source": "auto",
+"steps": []
+},
+"palace_pine_a": {
+"w": 4,
+"h": 6,
+"cls": "tree",
+"rows": [
+"CCC.",
+"CCCC",
+"CCCC",
+"CCC.",
+"CCCC",
+"XXXX"
+],
+"source": "auto",
+"steps": []
+},
+"palace_pine_b": {
+"w": 4,
+"h": 6,
+"cls": "tree",
+"rows": [
+"CCC.",
+"CCCC",
+"CCCC",
+"CCC.",
+"CCCC",
+"XXXX"
+],
+"source": "auto",
+"steps": []
+},
+"palace_pine_c": {
+"w": 4,
+"h": 6,
+"cls": "tree",
+"rows": [
+"CCC.",
+"CCCC",
+"CCCC",
+"CCC.",
+"CCCC",
+"XXXX"
+],
+"source": "auto",
+"steps": []
+},
+"palace_lantern": {
+"w": 1,
+"h": 2,
+"cls": "prop",
+"rows": [
+"X",
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"palace_haetae": {
+"w": 2,
+"h": 2,
+"cls": "prop",
+"rows": [
+"XX",
+"XX"
+],
+"source": "auto",
+"steps": []
+},
+"palace_deumeu": {
+"w": 1,
+"h": 2,
+"cls": "prop",
+"rows": [
+"X",
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"palace_censer": {
+"w": 1,
+"h": 2,
+"cls": "prop",
+"rows": [
+"X",
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"tower_sulsa_5": {
+"w": 9,
+"h": 14,
+"cls": "built",
+"rows": [
+"....X....",
+"...XXX...",
+"...XXX...",
+"..XXXXX..",
+"..XXXXX..",
+".XXXXXXX.",
+".XXXXXXX.",
+".XXXXXXX.",
+".XXXXXXX.",
+"XXXFFFXXX",
+"FFFFFFFFF",
+"FFFFFFFFF",
+"FFFFFFFFF",
+"FFFFFFFFF"
+],
+"source": "override",
+"steps": []
+},
+"tower_yesik_7": {
+"w": 11,
+"h": 14,
+"cls": "built",
+"rows": [
+".....X.....",
+"...XXXXX...",
+"...XXXXX...",
+"..XXXXXXX..",
+"..XXXXXXX..",
+".XXXXXXXXX.",
+".XXXXXXXXX.",
+".XXXXXXXXX.",
+".XXXXXXXXX.",
+"XXXXFFFXXXX",
+"FFFFFFFFFFF",
+"FFFFFFFFFFF",
+"FFFFFFFFFFF",
+"FFFFFFFFFFF"
+],
+"source": "override",
+"steps": []
+},
+"gungnae_wall_h": {
+"w": 1,
+"h": 5,
+"cls": "wall",
+"rows": [
+"X",
+"X",
+"X",
+"X",
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"gungnae_wall_h1": {
+"w": 1,
+"h": 5,
+"cls": "wall",
+"rows": [
+"X",
+"X",
+"X",
+"X",
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"gungnae_wall_h2": {
+"w": 1,
+"h": 5,
+"cls": "wall",
+"rows": [
+"X",
+"X",
+"X",
+"X",
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"gungnae_wall_h3": {
+"w": 1,
+"h": 5,
+"cls": "wall",
+"rows": [
+"X",
+"X",
+"X",
+"X",
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"gungnae_wall_h4": {
+"w": 1,
+"h": 5,
+"cls": "wall",
+"rows": [
+"X",
+"X",
+"X",
+"X",
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"gungnae_wall_h5": {
+"w": 1,
+"h": 5,
+"cls": "wall",
+"rows": [
+"X",
+"X",
+"X",
+"X",
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"gungnae_wall_v": {
+"w": 3,
+"h": 1,
+"cls": "wall",
+"rows": [
+"XXX"
+],
+"source": "auto",
+"steps": []
+},
+"gungnae_wall_v_e": {
+"w": 3,
+"h": 1,
+"cls": "wall",
+"rows": [
+"XXX"
+],
+"source": "auto",
+"steps": []
+},
+"gungnae_wall_v1": {
+"w": 3,
+"h": 1,
+"cls": "wall",
+"rows": [
+"XXX"
+],
+"source": "auto",
+"steps": []
+},
+"gungnae_wall_v1_e": {
+"w": 3,
+"h": 1,
+"cls": "wall",
+"rows": [
+"XXX"
+],
+"source": "auto",
+"steps": []
+},
+"gungnae_wall_v2": {
+"w": 3,
+"h": 1,
+"cls": "wall",
+"rows": [
+"XXX"
+],
+"source": "auto",
+"steps": []
+},
+"gungnae_wall_v2_e": {
+"w": 3,
+"h": 1,
+"cls": "wall",
+"rows": [
+"XXX"
+],
+"source": "auto",
+"steps": []
+},
+"gungnae_wall_v3": {
+"w": 3,
+"h": 1,
+"cls": "wall",
+"rows": [
+"XXX"
+],
+"source": "auto",
+"steps": []
+},
+"gungnae_wall_v3_e": {
+"w": 3,
+"h": 1,
+"cls": "wall",
+"rows": [
+"XXX"
+],
+"source": "auto",
+"steps": []
+},
+"gungnae_wall_v4": {
+"w": 3,
+"h": 1,
+"cls": "wall",
+"rows": [
+"XXX"
+],
+"source": "auto",
+"steps": []
+},
+"gungnae_wall_v4_e": {
+"w": 3,
+"h": 1,
+"cls": "wall",
+"rows": [
+"XXX"
+],
+"source": "auto",
+"steps": []
+},
+"gungnae_wall_v5": {
+"w": 3,
+"h": 1,
+"cls": "wall",
+"rows": [
+"XXX"
+],
+"source": "auto",
+"steps": []
+},
+"gungnae_wall_v5_e": {
+"w": 3,
+"h": 1,
+"cls": "wall",
+"rows": [
+"XXX"
+],
+"source": "auto",
+"steps": []
+},
+"gungnae_wall_corner_nw": {
+"w": 3,
+"h": 5,
+"cls": "wall",
+"rows": [
+"XXX",
+"XXX",
+"XXX",
+"XXX",
+"XXX"
+],
+"source": "auto",
+"steps": []
+},
+"gungnae_wall_corner_ne": {
+"w": 3,
+"h": 5,
+"cls": "wall",
+"rows": [
+"XXX",
+"XXX",
+"XXX",
+"XXX",
+"XXX"
+],
+"source": "auto",
+"steps": []
+},
+"gungnae_wall_corner_sw": {
+"w": 3,
+"h": 5,
+"cls": "wall",
+"rows": [
+"XXX",
+"XXX",
+"XXX",
+"XXX",
+"XXX"
+],
+"source": "auto",
+"steps": []
+},
+"gungnae_wall_corner_se": {
+"w": 3,
+"h": 5,
+"cls": "wall",
+"rows": [
+"XXX",
+"XXX",
+"XXX",
+"XXX",
+"XXX"
+],
+"source": "auto",
+"steps": []
+},
+"gungnae_wall_end_l": {
+"w": 1,
+"h": 5,
+"cls": "wall",
+"rows": [
+"X",
+"X",
+"X",
+"X",
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"gungnae_wall_end_r": {
+"w": 1,
+"h": 5,
+"cls": "wall",
+"rows": [
+"X",
+"X",
+"X",
+"X",
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"gungnae_gate_great_12": {
+"w": 12,
+"h": 13,
+"cls": "prop",
+"rows": [
+"...XCCCCX...",
+"...XCCCCX...",
+"XXXXCCCCXXXX",
+"XXXXCCCCXXXX",
+"XXXXCCCCXXXX",
+"XXXXCCCCXXXX",
+"XXXXCCCCXXXX",
+"XXXXCCCCXXXX",
+"XXXXCCCCXXXX",
+"XXXXCCCCXXXX",
+"XXXXFFFFXXXX",
+"XXXXFFFFXXXX",
+"XXXXFFFFXXXX"
+],
+"source": "override",
+"steps": []
+},
+"gungnae_gate_great_8": {
+"w": 8,
+"h": 13,
+"cls": "prop",
+"rows": [
+"........",
+"..XCCX..",
+"XXXCCXXX",
+"XXXCCXXX",
+"XXXCCXXX",
+"XXXCCXXX",
+"XXXCCXXX",
+"XXXCCXXX",
+"XXXCCXXX",
+"XXXCCXXX",
+"XXXCCXXX",
+"XXXFFXXX",
+"XXXFFXXX"
+],
+"source": "override",
+"steps": []
+},
+"gungnae_gate_small_6": {
+"w": 6,
+"h": 9,
+"cls": "prop",
+"rows": [
+"XXCCXX",
+"XXCCXX",
+"XXCCXX",
+"XXCCXX",
+"XXCCXX",
+"XXCCXX",
+"XXCCXX",
+"XXFFXX",
+"XXFFXX"
+],
+"source": "override",
+"steps": []
+},
+"gungnae_gate_side_5": {
+"w": 5,
+"h": 8,
+"cls": "prop",
+"rows": [
+".XXX.",
+"XXXXX",
+"XXXXX",
+"XXXXX",
+".FFFF",
+".FFFF",
+".FFFF",
+".F.FF"
+],
+"source": "override",
+"steps": []
+},
+"palace_gate_side_3": {
+"w": 3,
+"h": 8,
+"cls": "prop",
+"rows": [
+"FXF",
+"XXX",
+"XXX",
+"XXX",
+"FFF",
+"FFF",
+"FFF",
+"FFF"
+],
+"source": "override",
+"steps": []
+},
+"gungnae_tower_corner_5": {
+"w": 5,
+"h": 12,
+"cls": "prop",
+"rows": [
+"FXXXF",
+"XXXXX",
+"XXXXX",
+"XXXXX",
+"XXXXX",
+"XXXXX",
+"XXXXX",
+"XXXXX",
+"XXXXX",
+"XXXXX",
+"XXXXX",
+"XXXXX"
+],
+"source": "auto",
+"steps": []
+},
+"gungnae_tower_corner_4": {
+"w": 4,
+"h": 12,
+"cls": "prop",
+"rows": [
+"FXXF",
+"XXXX",
+"XXXX",
+"XXXX",
+"XXXX",
+"XXXX",
+"XXXX",
+"XXXX",
+"XXXX",
+"XXXX",
+"XXXX",
+"XXXX"
+],
+"source": "auto",
+"steps": []
+},
+"gungnae_bridge_h4": {
+"w": 4,
+"h": 5,
+"cls": "prop",
+"rows": [
+"XXXX",
+"FFFF",
+"FFFF",
+"FFFF",
+"XXXX"
+],
+"source": "override",
+"steps": []
+},
+"gungnae_bridge_h5": {
+"w": 5,
+"h": 5,
+"cls": "prop",
+"rows": [
+"XXXXX",
+"FFFFF",
+"FFFFF",
+"FFFFF",
+"XXXXX"
+],
+"source": "override",
+"steps": []
+},
+"gungnae_bridge_h6": {
+"w": 6,
+"h": 6,
+"cls": "prop",
+"rows": [
+"XXXXXX",
+"FFFFFF",
+"FFFFFF",
+"FFFFFF",
+"FFFFFF",
+"XXXXXX"
+],
+"source": "override",
+"steps": []
+},
+"gungnae_bridge_v4": {
+"w": 4,
+"h": 5,
+"cls": "prop",
+"rows": [
+"FFF.",
+"FFFC",
+"FFFC",
+"FFFC",
+"FFF."
+],
+"source": "override",
+"steps": []
+},
+"gungnae_bridge_v5": {
+"w": 4,
+"h": 6,
+"cls": "prop",
+"rows": [
+"FFF.",
+"FFFC",
+"FFFC",
+"FFFC",
+"FFFC",
+"FFF."
+],
+"source": "override",
+"steps": []
+},
+"gungnae_bridge_v6": {
+"w": 5,
+"h": 7,
+"cls": "prop",
+"rows": [
+"FFFF.",
+"FFFFC",
+"FFFFC",
+"FFFFC",
+"FFFFC",
+"FFFFC",
+"FFFF."
+],
+"source": "override",
+"steps": []
+},
+"gungnae_bridge_narrow_h": {
+"w": 4,
+"h": 3,
+"cls": "prop",
+"rows": [
+"CCCC",
+"FFFF",
+"XCCX"
+],
+"source": "override",
+"steps": []
+},
+"gungnae_bridge_narrow_h5": {
+"w": 5,
+"h": 3,
+"cls": "prop",
+"rows": [
+"CCCCC",
+"FFFFF",
+"XCCCX"
+],
+"source": "override",
+"steps": []
+},
+"gungnae_bridge_narrow_h6": {
+"w": 6,
+"h": 3,
+"cls": "prop",
+"rows": [
+"CCCCCC",
+"FFFFFF",
+"XCCCCX"
+],
+"source": "override",
+"steps": []
+},
+"gungnae_bridge_narrow_v": {
+"w": 2,
+"h": 4,
+"cls": "prop",
+"rows": [
+"FC",
+"FC",
+"FC",
+"FC"
+],
+"source": "override",
+"steps": []
+},
+"gn_l_giwa_6": {
+"w": 8,
+"h": 9,
+"cls": "built",
+"rows": [
+"CXXXXXXC",
+"CXXXXXXC",
+"CXXXXXXC",
+"CXXXXXXC",
+"CXXXXXXC",
+".XXXXXXC",
+".XXFFXXF",
+".XFF....",
+"........"
+],
+"source": "auto",
+"steps": [
+[
+7,
+2
+]
+]
+},
+"gn_l_brown_5g": {
+"w": 7,
+"h": 9,
+"cls": "built",
+"rows": [
+"CXXXXXC",
+"CXXXXXC",
+"CXXXXXC",
+".XXXXXC",
+".XXXXXC",
+".XXXXXF",
+".XXXXXF",
+"....XFF",
+"......."
+],
+"source": "auto",
+"steps": [
+[
+7,
+5
+]
+]
+},
+"gn_l_teal_7": {
+"w": 9,
+"h": 10,
+"cls": "built",
+"rows": [
+"CXXXXXXXX",
+"CXXXXXXXX",
+"CXXXXXXXX",
+"CXXXXXXXC",
+"CXXXXXXXF",
+"CXXXXXXXF",
+".XXXFFXXX",
+".XXX.....",
+".XFXF....",
+"........."
+],
+"source": "auto",
+"steps": [
+[
+8,
+2
+]
+]
+},
+"gn_u_giwa_7": {
+"w": 9,
+"h": 10,
+"cls": "built",
+"rows": [
+"CXXXXXXXC",
+"CXXXXXXXC",
+"CXXXXXXXC",
+"CXXXXXXXC",
+"CXXXXXXXC",
+".XXXXXXXC",
+".XXXXXXXF",
+".XXF..XX.",
+".FFF..XXF",
+"........."
+],
+"source": "auto",
+"steps": []
+},
+"gn_u_brown_8g": {
+"w": 10,
+"h": 10,
+"cls": "built",
+"rows": [
+"CXXXXXXXXC",
+"CXXXXXXXXC",
+"CXXXXXXXXC",
+"CXXXXXXXXC",
+"CXXXXXXXXC",
+"CXXXXXXXXC",
+".XXFXXXXXF",
+".XX...XXX.",
+".XXF..XXXF",
+".........."
+],
+"source": "auto",
+"steps": []
+},
+"gn_l_thatch_5": {
+"w": 7,
+"h": 9,
+"cls": "built",
+"rows": [
+"CXXXXXC",
+"CXXXXXC",
+"CXXXXXC",
+"CXXXXXC",
+"CXXXXXC",
+"FXXXXXC",
+".XXFXXF",
+".XFF...",
+"......."
+],
+"source": "auto",
+"steps": [
+[
+7,
+2
+]
+]
+},
+"gn_u_thatch_6": {
+"w": 8,
+"h": 8,
+"cls": "built",
+"rows": [
+"CXXXXXXC",
+"CXXXXXXC",
+"CXXXXXXC",
+"CXXXXXXC",
+"CXXXXXXC",
+"FXXXXXXC",
+".XXFFXXF",
+".XXF.XXF"
+],
+"source": "auto",
+"steps": []
+},
+"gn_jm_corner_l": {
+"w": 5,
+"h": 6,
+"cls": "built",
+"rows": [
+"XXXXX",
+"XXXXX",
+"XXXXX",
+"XXXXX",
+"XXXXX",
+"XXXXX"
+],
+"source": "auto",
+"steps": []
+},
+"gn_jm_corner_r": {
+"w": 5,
+"h": 6,
+"cls": "built",
+"rows": [
+"XXXXX",
+"XXXXX",
+"XXXXX",
+"XXXXX",
+"XXXXX",
+"XXXXX"
+],
+"source": "auto",
+"steps": []
+},
+"gn_jm_anchae_4": {
+"w": 4,
+"h": 6,
+"cls": "built",
+"rows": [
+"XXXX",
+"XXXX",
+"XXXX",
+"XXXX",
+"XXXX",
+"XXFX"
+],
+"source": "auto",
+"steps": [
+[
+5,
+2
+]
+]
+},
+"gn_jm_anchae_5": {
+"w": 5,
+"h": 6,
+"cls": "built",
+"rows": [
+"XXXXX",
+"XXXXX",
+"XXXXX",
+"XXXXX",
+"XXXXX",
+"XXFXX"
+],
+"source": "auto",
+"steps": [
+[
+5,
+2
+]
+]
+},
+"gn_jm_daemun_6": {
+"w": 8,
+"h": 6,
+"cls": "built",
+"rows": [
+"CXXCCXXC",
+"CXXCCXXC",
+"CXXCCXXC",
+".XXFFXX.",
+".XXFFXX.",
+".XXFFXX."
+],
+"source": "override",
+"steps": [
+[
+5,
+3
+],
+[
+5,
+4
+]
+]
+},
+"gn_jm_row_room_4": {
+"w": 6,
+"h": 6,
+"cls": "built",
+"rows": [
+"CXXXXC",
+"CXXXXC",
+"CXXXXC",
+".XXXX.",
+".XXXX.",
+".XXXX."
+],
+"source": "auto",
+"steps": []
+},
+"gn_jm_row_store_5": {
+"w": 7,
+"h": 6,
+"cls": "built",
+"rows": [
+"CXXXXXC",
+"CXXXXXC",
+"CXXXXXC",
+".XXXXX.",
+".XXXXX.",
+".XXFXX."
+],
+"source": "auto",
+"steps": [
+[
+5,
+3
+]
+]
+},
+"gn_jm_row_back_6": {
+"w": 8,
+"h": 6,
+"cls": "built",
+"rows": [
+"CXXXXXXC",
+"CXXXXXXC",
+"CXXXXXXC",
+".XXXXXX.",
+".XXXXXX.",
+".XXXXXX."
+],
+"source": "auto",
+"steps": []
+},
+"gn_jm_row_v_3": {
+"w": 4,
+"h": 3,
+"cls": "built",
+"rows": [
+"XXXX",
+"XXXX",
+"XXXX"
+],
+"source": "auto",
+"steps": []
+},
+"gn_jm_row_v_end": {
+"w": 4,
+"h": 6,
+"cls": "built",
+"rows": [
+"CXXC",
+"CXXC",
+"CXXC",
+".XX.",
+".XX.",
+".XFF"
+],
+"source": "auto",
+"steps": [
+[
+5,
+2
+]
+]
+},
+"gn_jm_row_v_cap": {
+"w": 4,
+"h": 6,
+"cls": "built",
+"rows": [
+".CC.",
+"CXXC",
+"CXXC",
+".XX.",
+".XX.",
+".XFF"
+],
+"source": "auto",
+"steps": [
+[
+5,
+2
+]
+]
+},
+"gn_shop_smithy": {
+"w": 8,
+"h": 7,
+"cls": "built",
+"rows": [
+"CXXXXXXC",
+"CXXXXXXC",
+"CXXXXXXC",
+".XXXXXX.",
+".XXXXXXF",
+".XXXXXXF",
+".FXXXFFF"
+],
+"source": "auto",
+"steps": []
+},
+"gn_shop_butcher": {
+"w": 7,
+"h": 7,
+"cls": "built",
+"rows": [
+"CXXXXXC",
+"CXXXXXC",
+"CXXXXXC",
+"FXXXXXC",
+".XXXXXF",
+".XXXXXF",
+".XXXFFF"
+],
+"source": "auto",
+"steps": []
+},
+"gn_shop_cloth": {
+"w": 8,
+"h": 7,
+"cls": "built",
+"rows": [
+"CXXXXXXC",
+"CXXXXXXC",
+"CXXXXXXC",
+"FXXXXXXC",
+".XXXXXXF",
+".XXXXXXF",
+".FFFFXXC"
+],
+"source": "auto",
+"steps": []
+},
+"gn_shop_armory": {
+"w": 9,
+"h": 7,
+"cls": "built",
+"rows": [
+"CXXXXXXXC",
+"CXXXXXXXC",
+"CXXXXXXXC",
+".XXXXXXX.",
+".XXXXXXXF",
+".XXXXXXXF",
+".XXXFFFFF"
+],
+"source": "auto",
+"steps": []
+},
+"gn_g2_nugak_5": {
+"w": 7,
+"h": 10,
+"cls": "built",
+"rows": [
+"CXXXXXC",
+"CXXXXXC",
+"CXXXXXC",
+"CXXXXXC",
+"CXXXXXC",
+"CXXXXXC",
+"CXXXXXC",
+".XXXXX.",
+".XXXXXF",
+".XXFXXF"
+],
+"source": "auto",
+"steps": [
+[
+9,
+3
+]
+]
+},
+"gn_g2_inn_6": {
+"w": 8,
+"h": 10,
+"cls": "built",
+"rows": [
+"XXXXXXXC",
+"XXXXXXXC",
+"XXXXXXXC",
+".XXXXXX.",
+".XXXXXX.",
+"XXXXXXXC",
+"XXXXXXXC",
+"XXXXXXX.",
+"XXXXXXXF",
+"FFXXXFXF"
+],
+"source": "auto",
+"steps": [
+[
+9,
+0
+],
+[
+9,
+1
+],
+[
+9,
+5
+]
+]
+},
+"gn_g3_nugak_4t": {
+"w": 6,
+"h": 14,
+"cls": "built",
+"rows": [
+"CXXXXC",
+"CXXXXC",
+"CXXXXC",
+"CXXXXC",
+"CXXXXC",
+"CXXXXC",
+"CXXXXC",
+".XXXX.",
+".XXXX.",
+"CXXXXC",
+"CXXXXC",
+".XXXX.",
+".XXXXF",
+".XXFXF"
+],
+"source": "auto",
+"steps": [
+[
+13,
+3
+]
+]
+},
+"gn_g3_inn_7": {
+"w": 9,
+"h": 15,
+"cls": "built",
+"rows": [
+"CXXXXXXXC",
+"CXXXXXXXC",
+"CXXXXXXXC",
+".XXXXXXX.",
+".XXXXXXX.",
+"CXXXXXXXC",
+"CXXXXXXXC",
+".XXXXXXX.",
+".XXXXXXX.",
+"CXXXXXXXC",
+"CXXXXXXXC",
+".XXXXXXX.",
+".XXXXXXXF",
+".XXXXXXXF",
+".XXF....."
+],
+"source": "auto",
+"steps": []
+},
+"gn_thatch_a": {
+"w": 5,
+"h": 6,
+"cls": "built",
+"rows": [
+"CXXXC",
+"CXXXX",
+"CXXXX",
+"FXXXX",
+".XXXX",
+".XXXX"
+],
+"source": "auto",
+"steps": []
+},
+"gn_thatch_b": {
+"w": 6,
+"h": 6,
+"cls": "built",
+"rows": [
+"......",
+"XXXXXC",
+"XXXXXC",
+"XXXXXF",
+"XXXXX.",
+"FFXFX."
+],
+"source": "auto",
+"steps": [
+[
+5,
+0
+],
+[
+5,
+1
+],
+[
+5,
+3
+]
+]
+},
+"gn_thatch_c": {
+"w": 7,
+"h": 6,
+"cls": "built",
+"rows": [
+"CXXXXXC",
+"CXXXXXX",
+"CXXXXXX",
+"FXXXXXX",
+".XXXXXX",
+".XXFXFF"
+],
+"source": "auto",
+"steps": [
+[
+5,
+3
+],
+[
+5,
+5
+],
+[
+5,
+6
+]
+]
+},
+"gn_thatch_d": {
+"w": 8,
+"h": 6,
+"cls": "built",
+"rows": [
+".CXXC...",
+"CXXXXXXC",
+"CXXXXXXC",
+"FXXXXXXC",
+".XXXXXXF",
+".XXFXXXF"
+],
+"source": "auto",
+"steps": [
+[
+5,
+3
+]
+]
+},
+"gn_mud_h0": {
+"w": 1,
+"h": 1,
+"cls": "wall",
+"rows": [
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"gn_mud_h1": {
+"w": 1,
+"h": 1,
+"cls": "wall",
+"rows": [
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"gn_mud_h2": {
+"w": 1,
+"h": 1,
+"cls": "wall",
+"rows": [
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"gn_mud_v": {
+"w": 1,
+"h": 1,
+"cls": "wall",
+"rows": [
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"gn_mud_v1": {
+"w": 1,
+"h": 1,
+"cls": "wall",
+"rows": [
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"gn_mud_c_nw": {
+"w": 1,
+"h": 1,
+"cls": "wall",
+"rows": [
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"gn_mud_c_ne": {
+"w": 1,
+"h": 1,
+"cls": "wall",
+"rows": [
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"gn_mud_c_sw": {
+"w": 1,
+"h": 1,
+"cls": "wall",
+"rows": [
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"gn_mud_c_se": {
+"w": 1,
+"h": 1,
+"cls": "wall",
+"rows": [
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"gn_mudg_h0": {
+"w": 1,
+"h": 1,
+"cls": "wall",
+"rows": [
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"gn_mudg_h1": {
+"w": 1,
+"h": 1,
+"cls": "wall",
+"rows": [
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"gn_mudg_h2": {
+"w": 1,
+"h": 1,
+"cls": "wall",
+"rows": [
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"gn_mudg_v": {
+"w": 1,
+"h": 1,
+"cls": "wall",
+"rows": [
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"gn_mudg_v1": {
+"w": 1,
+"h": 1,
+"cls": "wall",
+"rows": [
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"gn_mudg_c_nw": {
+"w": 1,
+"h": 1,
+"cls": "wall",
+"rows": [
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"gn_mudg_c_ne": {
+"w": 1,
+"h": 1,
+"cls": "wall",
+"rows": [
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"gn_mudg_c_sw": {
+"w": 1,
+"h": 1,
+"cls": "wall",
+"rows": [
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"gn_mudg_c_se": {
+"w": 1,
+"h": 1,
+"cls": "wall",
+"rows": [
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"gn_stone_h0": {
+"w": 1,
+"h": 1,
+"cls": "wall",
+"rows": [
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"gn_stone_h1": {
+"w": 1,
+"h": 1,
+"cls": "wall",
+"rows": [
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"gn_stone_h2": {
+"w": 1,
+"h": 1,
+"cls": "wall",
+"rows": [
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"gn_stone_v": {
+"w": 1,
+"h": 1,
+"cls": "wall",
+"rows": [
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"gn_stone_v1": {
+"w": 1,
+"h": 1,
+"cls": "wall",
+"rows": [
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"gn_stone_c_nw": {
+"w": 1,
+"h": 1,
+"cls": "wall",
+"rows": [
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"gn_stone_c_ne": {
+"w": 1,
+"h": 1,
+"cls": "wall",
+"rows": [
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"gn_stone_c_sw": {
+"w": 1,
+"h": 1,
+"cls": "wall",
+"rows": [
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"gn_stone_c_se": {
+"w": 1,
+"h": 1,
+"cls": "wall",
+"rows": [
+"X"
+],
+"source": "auto",
+"steps": []
+},
+"gn_sarip_mud": {
+"w": 2,
+"h": 1,
+"cls": "built",
+"rows": [
+"FF"
+],
+"source": "override",
+"steps": []
+},
+"gn_sarip_stone": {
+"w": 3,
+"h": 1,
+"cls": "built",
+"rows": [
+"X.X"
+],
+"source": "override",
+"steps": []
+},
+"gn_samun_stone": {
+"w": 4,
+"h": 3,
+"cls": "built",
+"rows": [
+"CCCC",
+"CCCC",
+"XFFX"
+],
+"source": "override",
+"steps": []
+},
+"gn_samun_mud": {
+"w": 5,
+"h": 3,
+"cls": "built",
+"rows": [
+"CCCCC",
+"CCCCC",
+"XFFFX"
+],
+"source": "override",
+"steps": []
+},
+"gnf_gate_great_12": {
+"w": 12,
+"h": 13,
+"cls": "prop",
+"rows": [
+"...XCCCCX...",
+"...XCCCCX...",
+"XXXXCCCCXXXX",
+"XXXXCCCCXXXX",
+"XXXXCCCCXXXX",
+"XXXXCCCCXXXX",
+"XXXXCCCCXXXX",
+"XXXXCCCCXXXX",
+"XXXXCCCCXXXX",
+"XXXXCCCCXXXX",
+"XXXXFFFFXXXX",
+"XXXXFFFFXXXX",
+"XXXXFFFFXXXX"
+],
+"source": "override",
+"steps": []
+},
+"gnf_bastion_w": {
+"w": 5,
+"h": 5,
+"cls": "wall",
+"rows": [
+"XXXXX",
+"XXXXX",
+"XXXXX",
+"XXXXX",
+"XXXXX"
+],
+"source": "auto",
+"steps": []
+},
+"gnf_bastion_e2": {
+"w": 5,
+"h": 5,
+"cls": "wall",
+"rows": [
+"XXXXX",
+"XXXXX",
+"XXXXX",
+"XXXXX",
+"XXXXX"
+],
+"source": "auto",
+"steps": []
+},
+"gnf_bastion_w2": {
+"w": 5,
+"h": 5,
+"cls": "wall",
+"rows": [
+"XXXXX",
+"XXXXX",
+"XXXXX",
+"XXXXX",
+"XXXXX"
+],
+"source": "auto",
+"steps": []
+},
+"gnf_bastion_e": {
+"w": 5,
+"h": 5,
+"cls": "wall",
+"rows": [
+"XXXXX",
+"XXXXX",
+"XXXXX",
+"XXXXX",
+"XXXXX"
+],
+"source": "auto",
+"steps": []
+},
+"gnf_gate_side_5": {
+"w": 5,
+"h": 8,
+"cls": "prop",
+"rows": [
+".XXX.",
+"XXXXX",
+"XXXXX",
+"XXXXX",
+".FFFF",
+".FFFF",
+".FFFF",
+".F.FF"
+],
+"source": "override",
+"steps": []
+},
+"gnf_tower_corner_5w": {
+"w": 5,
+"h": 12,
+"cls": "prop",
+"rows": [
+"FXXXF",
+"XXXXX",
+"XXXXX",
+"XXXXX",
+"XXXXX",
+"XXXXX",
+".XXX.",
+".XXX.",
+".XXX.",
+".XXX.",
+".XXX.",
+"FXXXF"
+],
+"source": "auto",
+"steps": []
+},
+"gnf_palace_gate_side_3": {
+"w": 3,
+"h": 8,
+"cls": "prop",
+"rows": [
+"FXF",
+"XXX",
+"XXX",
+"XXX",
+"FFF",
+".FF",
+"FFF",
+"FFF"
+],
+"source": "override",
+"steps": []
+},
+"gnf_palace_hall_wide_14": {
+"w": 18,
+"h": 10,
+"cls": "built",
+"rows": [
+"...XXXXXXXXXXXX...",
+"...XXXXXXXXXXXX...",
+".XXXXXXXXXXXXXXXX.",
+".XXXXXXXXXXXXXXXX.",
+".XXXXXXXXXXXXXXXX.",
+".XXXXXXXXXXXXXXXX.",
+"..XXXXXXXXXXXXXX..",
+"..XXXXXXXXXXXXXX..",
+"XXXXXXXXXXXXXXXXXX",
+"XXXXXXXXXXXXXXXXXX"
+],
+"source": "override",
+"steps": []
+},
+"gnf_sarip_mud": {
+"w": 4,
+"h": 1,
+"cls": "built",
+"rows": [
+"XF.X"
+],
+"source": "override",
+"steps": []
+},
+"gnf_sarip_stone": {
+"w": 4,
+"h": 1,
+"cls": "built",
+"rows": [
+"XF.X"
+],
+"source": "override",
+"steps": []
+},
+"gnf_cave_dark": {
+"w": 5,
+"h": 4,
+"cls": "prop",
+"rows": [
+".XXX.",
+"XXXXX",
+"XXXXX",
+"XXXXX"
+],
+"source": "auto",
+"steps": []
+},
+"gnf_cave_white": {
+"w": 5,
+"h": 4,
+"cls": "prop",
+"rows": [
+".XXX.",
+"XXXXX",
+"XXXXX",
+"XXXXX"
+],
+"source": "auto",
+"steps": []
+},
+"gnf_cave_moss": {
+"w": 5,
+"h": 4,
+"cls": "prop",
+"rows": [
+".XXX.",
+"XXXXX",
+"XXXXX",
+"XXXXX"
+],
+"source": "auto",
+"steps": []
+},
+"bamboo_grove_b": {
+"w": 4,
+"h": 4,
+"cls": "tree",
+"rows": [
+"CCC.",
+"CCCC",
+"CCCC",
+"XXXX"
+],
+"source": "auto",
+"steps": []
+},
+"bamboo_b": {
+"w": 2,
+"h": 4,
+"cls": "tree",
+"rows": [
+"CC",
+"CC",
+"CC",
+"XX"
+],
+"source": "auto",
+"steps": []
+},
+"bamboo_c": {
+"w": 2,
+"h": 4,
+"cls": "tree",
+"rows": [
+"CC",
+"CC",
+"CC",
+"XX"
+],
+"source": "auto",
+"steps": []
+}
+}
+}

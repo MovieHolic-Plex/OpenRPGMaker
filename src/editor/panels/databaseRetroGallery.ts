@@ -1,3 +1,4 @@
+import { defaultBattleMotionSkills } from "@/assets/battleMotionCatalog";
 // 도트 연출 갤러리 — 이펙트 시트(910개)와 연출(약 1,130개)을 움직이는 썸네일 격자로 고른다.
 //
 // 썸네일은 시트 PNG 를 그대로 CSS `steps()` 애니메이션으로 재생한다(GIF 를 굽지 않는다).
@@ -88,6 +89,8 @@ export function representativeChoreographyForSheet(key: string): RetroChoreograp
 
 /** 연출 하나를 무대에 올리기 위한 임시 스킬(저장하지 않는다). 프로젝트 레코드·기본 연출 모두 retroChoreographyId 로 푼다. */
 export function choreographyPreviewSkill(entryId: string, name: string, scope: SkillRecord["scope"] = "enemy"): SkillRecord {
+  const common=defaultBattleMotionSkills().find(s=>s.retroChoreographyId===entryId);
+  if(common)return {...common,id:"preview_"+entryId,name,scope};
   return {
     id: "preview_" + entryId, name, scope, power: 10, description: "", type: "physical", mpCost: 0, successRate: 100, variance: 0, hitRate: 100,
     effect: { kind: "damage", statistic: "attack", affects: "hp" },

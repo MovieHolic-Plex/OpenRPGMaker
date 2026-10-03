@@ -35,7 +35,7 @@ export default {
       { kind: "pressUntil", key: "z", testid: "battle-scene", state: "present", maxPresses: 16 },
       { kind: "waitFor", testid: "battle-actor-sprites", state: "present" },
       { kind: "waitFor", testid: "actor-command-attack", state: "present", timeoutMs: 30000 },
-      { kind: "waitForAttr", testid: "battle-scene", attr: "data-battle-skin", value: "chrono", timeoutMs: 5000 },
+      { kind: "waitForAttr", testid: "battle-scene", attr: "data-battle-skin", value: "retro2003", timeoutMs: 5000 },
     ], expect: { testidPresent: ["battle-scene", "battle-actor-sprites"] }, shot: true },
     { id: "ct-battle-attack", note: "Confirm an attack in the gauge battle", ops: [
       { kind: "key", key: "z" }, { kind: "key", key: "z" },

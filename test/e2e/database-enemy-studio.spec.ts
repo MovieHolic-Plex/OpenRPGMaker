@@ -90,11 +90,7 @@ test("enemy studio keeps selection, updates previews and opens a disposable batt
   await page.getByTestId("db-field-name").fill("작업실 슬라임");
   await expect(page.locator(".oprn-record-enemies .db-list-row.active")).toContainText("작업실 슬라임");
   await expect(page.getByTestId("db-enemy-hero")).toContainText("작업실 슬라임");
-  const pause = page.getByTestId("db-enemy-preview-pause");
-  await expect(pause).toBeEnabled();
-  await pause.click();
-  await expect(pause).toHaveAttribute("aria-pressed", "true");
-  await expect(page.locator(".db-enemy-idle-strip")).toHaveCSS("animation-play-state", "paused");
+  // 미리보기 일시 정지 단추는 대기 애니메이션 스트립과 함께 2026-10-02 지웠다.
   await page.getByTestId("db-enemy-section-basic-tab").focus();
   await page.keyboard.press("End");
   await expect(page.getByTestId("db-enemy-section-rewards-tab")).toBeFocused();

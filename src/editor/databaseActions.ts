@@ -277,6 +277,7 @@ export function updateDatabaseRecord(collection: DatabaseCollection, id: string,
         if ("parameterCurves" in actorPatch && actorPatch.parameterCurves !== undefined) record.parameterCurves = actorPatch.parameterCurves;
         if ("expCurve" in actorPatch && actorPatch.expCurve !== undefined) record.expCurve = actorPatch.expCurve;
         if ("initialEquipment" in actorPatch && actorPatch.initialEquipment !== undefined) record.initialEquipment = actorPatch.initialEquipment;
+        if ("battleMotion" in actorPatch) record.battleMotion = actorPatch.battleMotion;
         if ("unarmedAnimationId" in actorPatch) record.unarmedAnimationId = actorPatch.unarmedAnimationId;
         if ("options" in actorPatch && actorPatch.options !== undefined) record.options = actorPatch.options;
         if ("learnedSkills" in actorPatch && actorPatch.learnedSkills !== undefined) record.learnedSkills = actorPatch.learnedSkills;
@@ -285,6 +286,10 @@ export function updateDatabaseRecord(collection: DatabaseCollection, id: string,
         if ("loadoutSlots" in actorPatch) {
           if (actorPatch.loadoutSlots === undefined) delete record.loadoutSlots;
           else record.loadoutSlots = actorPatch.loadoutSlots;
+        }
+        if ("battleCommandIds" in actorPatch) {
+          if (actorPatch.battleCommandIds === undefined) delete record.battleCommandIds;
+          else record.battleCommandIds = actorPatch.battleCommandIds;
         }
         Object.assign(record, normalizeActorRecord(record));
         return;

@@ -44,7 +44,7 @@ describe("export runtime-selected party battle dependencies", () => {
 
   it("does not derive back sprites for a front-facing skin or custom battlers", () => {
     const project = createBlankProject();
-    project.system.battleUiStyle = "rm2003";
+    project.system.battleUiStyle = "retro2003";
     expect(collectWebExportAssets(project).some((asset) => backPaths.includes(asset.zipPath))).toBe(false);
     project.system.battleUiStyle = "pokemon";
     project.database.actors = project.database.actors.map((actor) => ({ ...actor, battleCharacterResourceId: "hero" }));

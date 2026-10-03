@@ -7,11 +7,15 @@ import { harnessAppliesTo, type HarnessManifest } from "./manifest";
 import { MONSTER_COLLECT_SPECIES_HARNESS } from "../monster-collect-species/harness";
 import { MODERN_CHIPSET_HARNESS } from "../modern-chipset/harness";
 import { INTERIOR_PROPS_HARNESS } from "../interior-props/harness";
+import { JP_CITY_HARNESS } from "../jp-city/harness";
+import { JOSEON_BARAM_HARNESS } from "../joseon-baram/harness";
 
 export const HARNESSES: readonly HarnessManifest[] = [
   MONSTER_COLLECT_SPECIES_HARNESS,
   MODERN_CHIPSET_HARNESS,
   INTERIOR_PROPS_HARNESS,
+  JP_CITY_HARNESS,
+  JOSEON_BARAM_HARNESS,
 ];
 
 export function getHarness(id: string): HarnessManifest | undefined {

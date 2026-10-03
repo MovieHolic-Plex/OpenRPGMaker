@@ -100,13 +100,6 @@ const RETRO_SIDEVIEW: SkinBattlerPlacement = {
 
 export const BATTLER_PLACEMENTS: Record<BattleSkinId, SkinBattlerPlacement> = {
   pokemon: { partyFacing: "back", partyMax: 1, partyScale: 1.25, enemy: (i, n) => (n <= 1 ? { x: 239, y: 92 } : { x: 250 - i * 58, y: 100 - (i % 2) * 14 }), party: () => ({ x: 76, y: 152 }) },
-  // 측면 스킨은 2026-10-01 부터 모두 도트 측면 전투 뼈대(motionStyle "retro")라 retro2003 과 같은 배치다.
-  rm2003: RETRO_SIDEVIEW,
-  octopath: RETRO_SIDEVIEW,
-  chrono: RETRO_SIDEVIEW,
-  bravely: RETRO_SIDEVIEW,
-  ff: RETRO_SIDEVIEW,
-  goldensun: RETRO_SIDEVIEW,
   // 도트 측면 전투의 독립 접지·간격 계약.
   retro2003: RETRO_SIDEVIEW,
 };

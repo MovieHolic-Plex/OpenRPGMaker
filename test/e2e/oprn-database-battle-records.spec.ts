@@ -38,17 +38,13 @@ test("BM101-BM104 Enemies tab exposes Korean RPG Maker-style editable enemy sett
   await page.getByTestId("db-field-enemy-critical-enabled").check();
   await page.getByTestId("db-field-enemy-critical-one-in").fill("7");
   await page.getByTestId("db-field-enemy-normal-miss").check();
-  await page.getByTestId("db-enemy-section-appearance-tab").click();
-  await page.getByTestId("db-field-enemy-transparent").check();
-  await page.getByTestId("db-field-enemy-flying").check();
-  await page.getByTestId("db-enemy-section-combat-tab").click();
+  // 투명·비행·색조 칸은 2026-10-02 자료집에서 지웠다(런타임이 읽지 않던 칸).
   await page.getByTestId("db-picker-enemy-state-rate-state_poison").selectOption("A");
   await page.getByTestId("db-picker-enemy-element-rate-fire").selectOption("E");
 
   await page.getByTestId("db-enemy-section-appearance-tab").click();
   await page.getByTestId("db-enemy-graphic-set").click();
   await expect(page.getByTestId("db-enemy-graphic-dialog")).toBeVisible();
-  await page.getByTestId("db-enemy-graphic-hue").fill("120");
   await page.getByTestId("db-enemy-graphic-option-generated-enemy-slime-red").click();
   await page.getByTestId("db-enemy-graphic-ok").click();
   await expect(page.getByTestId("db-enemy-graphic-dialog")).toBeHidden();
@@ -78,8 +74,6 @@ test("BM101-BM104 Enemies tab exposes Korean RPG Maker-style editable enemy sett
   const project = await exportedProject(page);
   const enemy = project.database.enemies.find((record) => record.name === "테스트 슬라임");
   expect(enemy?.monsterResourceId).toBe("generated-enemy-slime-red");
-  expect(enemy?.transparent).toBe(true);
-  expect(enemy?.flying).toBe(true);
   expect(enemy?.stats).toMatchObject({ maxHp: 321, maxMp: 12, attack: 33, defense: 22, mind: 11, agility: 44 });
   expect(enemy?.rewards).toMatchObject({ exp: 77, gold: 88, dropRatePercent: 35 });
   expect(enemy?.criticalHit).toMatchObject({ enabled: true, oneIn: 7 });

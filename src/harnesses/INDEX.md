@@ -6,8 +6,10 @@
 | id | 무엇 | 범위 | 시드 | 문서 |
 |---|---|---|---|---|
 | `monster-collect-species` | 몬스터 수집 종 스프라이트 | 장르 `monster-collect` 전용 | `harness-data/monster-collect-species/seed.json` | `openwiki/harnesses/monster-collect-species.md` |
-| `modern-chipset` | 현대 칩셋 도트 (modern3) | 장르 무관 | `harness-data/modern-chipset/seed.json` | `openwiki/harnesses/modern-chipset.md` |
+| `modern-chipset` | 현대 칩셋 도트 (modern4) | 장르 무관 | `harness-data/modern-chipset/seed.json` | `openwiki/harnesses/modern-chipset.md` |
 | `interior-props` | 손 도트 실내 기물 (16px) | 장르 무관 | `src/assets/handInteriorSpec.json` | `openwiki/harnesses/interior-props.md` |
+| `jp-city` | 일본 도시 칩셋 도트 (jp_city · modern3) | 장르 무관 | `harness-data/jp-city/seed.json` | `openwiki/harnesses/jp-city.md` |
+| `joseon-baram` | 조선 칩셋 도트 (joseon_baram · 바람의나라풍) | 장르 무관 | `harness-data/joseon-baram/seed.json` | `openwiki/harnesses/joseon-baram.md` |
 
 ## monster-collect-species — 몬스터 수집 종 스프라이트
 
@@ -31,17 +33,17 @@
 
 **들어오는 길:** CLI 있음 · 에디터 화면 아직 없음 · 조수 도구 아직 없음
 
-## modern-chipset — 현대 칩셋 도트 (modern3)
+## modern-chipset — 현대 칩셋 도트 (modern4)
 
-modern3 팔레트 현대 거리 칩셋의 기물·건물·타일을 3/4 시점으로 찍는다. 현재 지원 종류는 탈것(vehicle)이고 소품·건물·바닥 타일로 넓힌다. 프로젝트 안에서 받아들여진 그림을 기준으로, 작업자 5명이 다른 방향으로 pxgrid 에 한 픽셀씩 놓고 기계 검사와 독립 검수를 거친 뒤 사람이 고른다. 다른 타일셋(조선·포켓몬풍 야외 등)은 별도 하네스다.
+modern4 팔레트 현대 거리 칩셋의 기물·건물·타일을 3/4 시점으로 찍는다. 현재 지원 종류는 탈것(vehicle)이고 소품·건물·바닥 타일로 넓힌다. 프로젝트 안에서 받아들여진 그림을 기준으로, 작업자 5명이 다른 방향으로 pxgrid 에 한 픽셀씩 놓고 기계 검사와 독립 검수를 거친 뒤 사람이 고른다. 다른 타일셋(조선·포켓몬풍 야외 등)은 별도 하네스다.
 
 **이럴 때 쓴다:**
-- modern3 팔레트 현대 거리/도시 칩셋에 자동차·버스·트럭·열차 같은 탈것(그리고 앞으로 소품·건물·바닥 타일)이 필요할 때
+- modern4 팔레트 현대 거리/도시 칩셋에 자동차·버스·트럭·열차 같은 탈것(그리고 앞으로 소품·건물·바닥 타일)이 필요할 때
 - 기존 탈것 도트가 순수 옆모습이라 3/4(윗면이 면으로 보임)이 안 지켜진다는 지적이 있을 때
-- modern3 가 아닌 다른 타일셋(조선·포켓몬풍·버들항 판타지)에는 쓰지 않는다 — 타일셋마다 별도 하네스
+- modern4 가 아닌 다른 타일셋(조선·포켓몬풍·버들항 판타지)에는 쓰지 않는다 — 타일셋마다 별도 하네스
 
 **단계** (`npm run harness -- modern-chipset <단계>`):
-- `palette` — 팔레트: modern3 램프에서 탈것 전용 pxgrid 팔레트(vehicles.pal)를 다시 쓴다.
+- `palette` — 팔레트: modern4 램프에서 탈것 전용 pxgrid 팔레트(palette.pal)를 다시 쓴다.
 - `draw` — 후보 그리기: 탈것·시점 하나에 후보 5장을 백그라운드로 그린다(작업자 → 기계 검사 → 독립 검수 → 최대 3번 다시 그림).
 - `status` — 현황: 판과 후보의 상태·검수 결과를 보여 준다.
 - `sheet` — 고르기 시트: 기준 경찰차·지금 것·후보를 나란히 놓은 자체완결 HTML 을 ~/claude-viz 에 쓴다.
@@ -66,3 +68,48 @@ modern3 팔레트 현대 거리 칩셋의 기물·건물·타일을 3/4 시점�
 - `pick` — 고르기: 사람이 고르거나 이유를 붙여 버린다. 버린 이유는 다음 판의 「하지 말 것」이 된다.
 
 **들어오는 길:** CLI 아직 없음 · 에디터 화면 있음 · 조수 도구 아직 없음
+
+## jp-city — 일본 도시 칩셋 도트 (jp_city · modern3)
+
+번들 타일셋 jp_city 에 넣을 주택가·역·공원·신사 그림(건물 부품·소품·바닥 타일·여러 칸 키트) 후보를 3/4 시점으로 찍는다. 항목마다 작업자 5명이 다른 방향으로 pxgrid 램프 격자에 한 글자씩 놓고, 기계 검사와 독립 검수를 거친 뒤 사람이 고른다. 고른 결과는 harness-data/jp-city/picked/ 까지만 남기고, 시트에 굽는 일은 scripts/content/jp-city/bake_jp.py 가 한다. 다른 타일셋은 별도 하네스다.
+
+**이럴 때 쓴다:**
+- jp_city 번들 타일셋의 주택가·역·공원·신사 그림(단독주택·아파트·담·승강장·개찰구·도리이·고마이누·배전·벚나무 등)을 새로 그리거나 다시 그릴 후보가 필요할 때
+- jp_city 에 들어갈 건물 부품·소품·바닥 타일·키트를 사람이 후보 중에서 고르게 하고 싶을 때
+- modern3 가 아닌 타일셋(조선·포켓몬풍·버들항 판타지·modern4 현대 거리)에는 쓰지 않는다 — 타일셋마다 별도 하네스
+
+**단계** (`npm run harness -- jp-city <단계>`):
+- `palette` — 팔레트: modern3 램프(28개·154색)에서 pxgrid 팔레트(palette.pal)와 재료 글자표(mats.txt)를 다시 쓴다.
+- `validate` — 시드 점검: 시드 항목의 크기·슬롯·칸·조립 예·참고 그림 해석을 점검한다.
+- `list` — 항목 목록: 묶음(houses·station·park·shrine)별 시드 항목과 고른 것을 보여 준다.
+- `draw` — 후보 그리기: 항목 하나에 후보 5장을 백그라운드로 그린다(작업자 → 기계 검사 → 독립 검수 → 최대 3번 다시 그림).
+- `status` — 현황: 판과 후보의 상태·검수 결과를 보여 준다.
+- `sheet` — 고르기 시트: 참고 그림·후보·맥락(조립 예·반복)을 한 장에 놓은 자체완결 HTML 을 ~/claude-viz 에 쓴다.
+- `review` — 다시 검수: 이미 그린 판을 참고 그림 옆에서 다시 독립 검수한다.
+- `pick` — 고르기: 사용자가 고른 후보를 기록하고 picked/<항목>.pxg|png 로 복사한다(굽기와 다음 판의 이웃 기준이 된다).
+- `reject` — 버리기: 사용자가 버린 후보와 이유를 기록한다(다음 판의 '하지 말 것').
+
+**들어오는 길:** CLI 있음 · 에디터 화면 아직 없음 · 조수 도구 아직 없음
+
+## joseon-baram — 조선 칩셋 도트 (joseon_baram · 바람의나라풍)
+
+번들 타일셋 joseon_baram 의 조선 조각(기와집·초가·문루·담·나무·소품·다리)과 지도(마을 20호·국내성·국내성 원작 규모)를 만드는 기존 도구를 한 입구로 묶는다. 팔레트 잠금 검사 → 조각 관문(P·E·T·L·S·A·K·TR·V) → 눈으로 본 판정(조각 해시에 묶임) → 지도 관문 → 재굽기 → 16구역 적대 검수 순서로 간다. 그림은 코드 도트(tk.py·blocks.py)로만 그리고 생성 이미지·생성 캐릭터(Actor1 을 쓴다)·바람의나라 스크린샷 커밋은 금지다. 다른 타일셋(버들항·jp_city·modern4)은 별도 하네스다.
+
+**이럴 때 쓴다:**
+- 조선(바람의나라풍) 타일셋 joseon_baram 의 조각(기와집·초가·문루·정자·담·성벽·나무·소품·다리)을 새로 그리거나 고친 뒤 게이트·판정을 돌릴 때
+- 조선 마을 20호·국내성·국내성 원작 규모 지도를 다시 굽거나(지도 관문 M1~M7) 번들 시트·타일셋·참고문서를 재생성(rebuild-joseon.sh)할 때
+- 조선 지도·조각을 독립 리뷰어(조선다움·3/4)에게 16구역 크롭으로 적대 검수시킬 때
+- 버들항·jp_city·modern4·포켓몬풍 등 joseon_baram 이 아닌 타일셋에는 쓰지 않는다 — 타일셋마다 별도 하네스
+
+**단계** (`npm run harness -- joseon-baram <단계>`):
+- `palette` — 팔레트 잠금 검사: palette.json 이 램프 합집합과 같고(허용 색 밖 없음) 시드의 색 수와 맞는지 본다. 파일을 쓰지 않는다.
+- `validate` — 시드·메타 점검: 시드 구조, 시드가 가리키는 파일, 조각 메타 분류, 지도 관문 임계 대조, 바람의나라 스크린샷 추적 여부를 점검한다(--deep 은 카탈로그와 판정 목록 대조).
+- `list` — 조각·지도 목록: 조각(분류·기록된 판정·적대 리뷰 기록)과 지도(크기·산출물)를 보여 준다. 해시 신선도는 gate 가 판단한다.
+- `gate` — 조각 관문: 조각 관문 P·E·T·L·S·A·K·TR·V 를 돌린다(--candidate 는 A 만 건너뜀, --sheets 는 기준 옆 검수 시트, --piece 로 좁힘).
+- `verdict` — 판정 기록: 검수 시트를 눈으로 본 뒤 조각마다 한 줄 판정(pass·note·user·redo)을 현재 해시에 묶어 기록한다(verdict.py).
+- `build` — 재굽기: rebuild-joseon.sh 로 번들 시트·타일셋·참고문서·저장 증명·장소 카드를 다시 만든다(--dry 는 계획과 입력 점검만, 약 70초).
+- `map` — 지도 빌드: 지도 빌더(demo20·demo_gungnae·demo_gungnae_full)를 돌려 지도 관문 M1~M7 을 통과해야 산출한다(--dry 는 계획만).
+- `review` — 적대 검수 묶음: 지도를 4x4 = 16구역 원 해상도 크롭으로 자르고(zones) 조각 6배 그림·기준 시트(pieces)를 만들어 렌즈 두 개(조선다움·3/4) 프롬프트와 함께 묶는다. record 로 리뷰어 출력을 해시에 묶어 기록한다.
+- `status` — 현황: 팔레트·판정·적대 리뷰·번들 산출물·기록(ledger) 현황. --fresh 는 게이트를 돌려 현재 해시 기준으로 센다.
+
+**들어오는 길:** CLI 있음 · 에디터 화면 아직 없음 · 조수 도구 아직 없음

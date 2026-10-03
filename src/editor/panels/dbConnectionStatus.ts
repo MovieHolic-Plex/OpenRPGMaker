@@ -80,7 +80,7 @@ export function renderOnlineSaveStatus(
     });
     return el("span", {
       class: "db-connection-status-group",
-      attrs: { role: "group", "aria-label": "온라인 저장 복구" },
+      attrs: { role: "group", "aria-label": "프로젝트 저장 복구" },
       children: [button, recover],
     });
   }
@@ -88,7 +88,7 @@ export function renderOnlineSaveStatus(
     const retry = el("button", {
       class: "db-autosave-retry-button",
       text: "다시 저장",
-      attrs: { type: "button", title: "온라인 저장을 다시 시도합니다." },
+      attrs: { type: "button", title: "프로젝트 저장을 다시 시도합니다." },
       dataset: { testid: "db-autosave-retry" },
       on: {
         click: () => {
@@ -103,7 +103,7 @@ export function renderOnlineSaveStatus(
     });
     return el("span", {
       class: "db-connection-status-group",
-      attrs: { role: "group", "aria-label": "온라인 저장 작업" },
+      attrs: { role: "group", "aria-label": "프로젝트 저장 작업" },
       children: [button, retry],
     });
   }
@@ -113,12 +113,12 @@ export function renderOnlineSaveStatus(
 function onlineSaveStatusText(status: DbPersistenceStatus): string {
   switch (status.kind) {
     case "ready":
-      return "온라인 저장";
+      return "프로젝트 저장";
     case "not-configured":
-      return "온라인 저장: 준비 안 됨";
+      return "저장 위치 없음";
     case "disabled":
       // 공용 데모는 "오프라인" 이 아니라 읽기 전용 예제 — 칩 라벨이 그 사실을 말한다.
-      return status.reason === "shared-demo" ? "공용 예제" : "온라인 저장: 오프라인";
+      return status.reason === "shared-demo" ? "공용 예제" : "임시 작업 · 저장 안 됨";
   }
 }
 
@@ -134,15 +134,15 @@ function onlineSaveButtonTitle(
 function onlineSaveStatusTitle(status: DbPersistenceStatus): string {
   switch (status.kind) {
     case "ready":
-      return "온라인 저장이 준비되어 있습니다.";
+      return "연결된 프로젝트 폴더에 자동 저장합니다.";
     case "not-configured":
-      return "온라인 저장을 준비하지 못했습니다. 잠시 후 다시 시도하세요.";
+      return "프로젝트 폴더가 연결되지 않았습니다. 프로젝트 파일을 내보내 작업을 보관하세요.";
     case "disabled":
-      if (status.reason === "dev-showcase") return "현재 예제 모드에서는 온라인 저장을 사용하지 않습니다.";
+      if (status.reason === "dev-showcase") return "임시 예제 세션입니다. 프로젝트 폴더에는 저장하지 않습니다. 프로젝트 파일을 내보내 작업을 보관하세요.";
       if (status.reason === "shared-demo") {
         return "공용 예제를 보고 있습니다 — 원본은 바뀌지 않습니다. 편집하려면 편집용 사본을 만드세요.";
       }
-      return "복구 모드에서는 온라인 저장을 잠시 사용하지 않습니다.";
+      return "이 세션은 프로젝트 폴더에 저장하지 않습니다. 프로젝트 파일을 내보내 작업을 보관하세요.";
   }
 }
 

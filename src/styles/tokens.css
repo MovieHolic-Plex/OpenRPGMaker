@@ -57,6 +57,12 @@
   --accent-border: rgba(74, 87, 214, 0.45);
   --on-accent: #ffffff;
 
+  /* The author-requested cinematic entry uses its own night/paper pairing over scene art.
+     Keep this palette here; dialog rules derive translucent surfaces from these tokens. */
+  --cinema-night: #101a29;
+  --cinema-paper: #fff9eb;
+  --cinema-accent: #edcea0;
+
   --danger: #C6403D;
   --danger-muted: rgba(198, 64, 61, 0.13);
   --success: #18764F;

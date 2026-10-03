@@ -1069,6 +1069,88 @@
   flex-basis: 100%;
 }
 
+/* 도트 측면 배경 종류 카드(battleSceneryPicker.ts) — 적 그룹 설정 카드와 지형 효과 「전투 · 표시」 카드가 같이 쓴다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-scenery-picker {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-scenery-cards {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-scenery-card {
+  background: var(--db-studio-inset);
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: var(--radius-s, 6px);
+  color: var(--db-studio-text-1);
+  cursor: pointer;
+  display: grid;
+  gap: 2px;
+  padding: 4px;
+  text-align: left;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-scenery-card:hover { border-color: var(--db-studio-border-default); }
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-scenery-card.is-active {
+  background: var(--db-studio-accent-soft);
+  border-color: var(--db-studio-accent);
+  box-shadow: 0 0 0 1px var(--db-studio-accent);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-scenery-card img,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-scenery-card-auto {
+  aspect-ratio: 16 / 9;
+  border-radius: 4px;
+  display: block;
+  image-rendering: pixelated;
+  object-fit: cover;
+  width: 100%;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-scenery-card-auto {
+  align-items: center;
+  background: repeating-linear-gradient(135deg, var(--db-studio-inset), var(--db-studio-inset) 6px, var(--db-studio-border-subtle) 6px, var(--db-studio-border-subtle) 7px);
+  color: var(--db-studio-text-2);
+  display: flex;
+  font: 600 12px/1 var(--font-ui);
+  justify-content: center;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-scenery-card strong { font: 600 12px/1.3 var(--font-ui); }
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-scenery-card small {
+  color: var(--db-studio-text-2);
+  display: -webkit-box;
+  font: 11px/1.3 var(--font-ui);
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-scenery-note {
+  color: var(--db-studio-text-2);
+  font: 12px/1.4 var(--font-ui);
+  margin: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-scenery-custom {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-scenery-custom-hint {
+  color: var(--db-studio-text-2);
+  flex-basis: 100%;
+  font: 11px/1.3 var(--font-ui);
+}
+
 /* ── 선택한 적 카드 ─────────────────────────────────────────────────────── */
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-troop-card-members > .db-ws-card-body {

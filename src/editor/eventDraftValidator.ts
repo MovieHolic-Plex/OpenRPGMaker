@@ -78,35 +78,43 @@ type CommandVisit = {
 };
 
 
-function checkCallDepth(project: Project, issues: EventDraftIssue[]): void {
+function checkCallDepth(project: Project, pages: readonly EventPage[], issues: EventDraftIssue[]): void {
   const maxDepth = 8;
-  const visiting = new Set<string>();
-  const visit = (commands: readonly import("@/project/types").Command[], depth: number): void => {
-    if (depth > maxDepth) {
-      issues.push({ severity: "warning", code: "callCommonEvent.recursionDepth", message: `호출 깊이가 ${maxDepth}를 넘었습니다.`, pageId: "" });
-      return;
-    }
-    for (const cmd of commands) {
-      const kind = (cmd as { kind: string }).kind;
-      if (kind === "callCommonEvent") {
-        const id = (cmd as { commonEventId: string }).commonEventId;
+  const commonEvents = new Map(project.commonEvents.map((event) => [event.id, event]));
+  const calls = new Map(project.commonEvents.map((event) => [event.id, [...new Set(
+    walkCommands(event.commands).flatMap(({ command }) => command.kind === "callCommonEvent" ? [command.commonEventId] : []),
+  )]]));
+  for (const page of pages) {
+    for (const root of walkCommands(page.commands ?? [])) {
+      if (root.command.kind !== "callCommonEvent") continue;
+      const visiting = new Set<string>();
+      const reported = new Set<string>();
+      const completed = new Set<string>();
+      const warn = (code: string, message: string): void => {
+        if (reported.has(code)) return;
+        reported.add(code);
+        issues.push({ severity: "warning", code, message, pageId: page.id, commandPath: root.path });
+      };
+      const visit = (id: string, depth: number): void => {
+        const commonEvent = commonEvents.get(id);
+        if (!commonEvent) return;
         if (visiting.has(id)) {
-          issues.push({ severity: "warning", code: "callCommonEvent.cycle", message: `다른 이벤트 ${id}가 순환 호출됩니다.`, pageId: "" });
-          continue;
+          warn("callCommonEvent.cycle", `다른 이벤트 ${id}가 순환 호출됩니다.`);
+          return;
         }
-        const ce = project.commonEvents?.find((e) => e.id === id);
-        if (!ce) continue;
+        if (depth > maxDepth) {
+          warn("callCommonEvent.recursionDepth", `호출 깊이가 ${maxDepth}를 넘었습니다.`);
+          return;
+        }
+        const key = `${depth}:${id}`;
+        if (completed.has(key)) return;
         visiting.add(id);
-        for (const pg of (ce as { pages?: readonly { commands?: readonly import("@/project/types").Command[] }[] }).pages ?? []) {
-          if (pg.commands) visit(pg.commands, depth + 1);
-        }
+        for (const calledId of calls.get(id) ?? []) visit(calledId, depth + 1);
         visiting.delete(id);
-      }
-      for (const branch of commandBranches(cmd as import("@/project/types").Command)) visit(branch.commands, depth);
+        completed.add(key);
+      };
+      visit(root.command.commonEventId, 1);
     }
-  };
-  for (const page of (project.commonEvents ?? []).flatMap((ce) => (ce as { pages?: readonly { commands?: readonly import("@/project/types").Command[] }[] }).pages ?? [])) {
-    if (page.commands) visit(page.commands, 1);
   }
 }
 
@@ -165,7 +173,7 @@ export function validateEventDraftBody(
   for (const page of pages) {
     validatePage(working, mapId, event, page, refs, issues);
   }
-  checkCallDepth(working, issues);
+  checkCallDepth(working, pages, issues);
   validateSchedule(working, event, refs, firstPageId, issues);
   return validationFromIssues(issues);
 }

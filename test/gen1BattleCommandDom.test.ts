@@ -33,11 +33,12 @@ describe("Gen1 monster battle command DOM", () => {
 
     expect(commandIds(root)).toEqual([
       "actor-command-fight",
-      "actor-command-pkmn",
       "actor-command-item",
+      "actor-command-pkmn",
       "actor-command-run",
     ]);
-    expect(commandLabels(root)).toEqual(["Fight", "PKMN", "Item", "Run"]);
+    // 한국어판 포켓몬 전투 화면 순서·이름(f115c53bb9): 싸운다 · 가방 / 몬스터 · 도망간다.
+    expect(commandLabels(root)).toEqual(["싸운다", "가방", "몬스터", "도망간다"]);
     expect(root.querySelector("[data-testid='actor-command-attack']")).toBeNull();
     expect(root.querySelector("[data-testid='actor-command-defend']")).toBeNull();
     expect(root.querySelector("[data-testid='actor-command-capture']")).toBeNull();
@@ -53,12 +54,12 @@ describe("Gen1 monster battle command DOM", () => {
 
     const fight = commandPanel(snapshot, { ...state.options, submenu: state.submenu() }) as unknown as FakeElement;
     expect(fight.querySelectorAll(".battle-command").filter((node) => node.dataset.testid?.startsWith("actor-skill-"))).toHaveLength(4);
-    expect(fight.textContent).toContain("PP 0/20");
-    expect(fight.textContent).toContain("PP 5/5");
+    expect(fight.textContent).toContain("횟수 0/20");
+    expect(fight.textContent).toContain("횟수 5/5");
     expect(fight.querySelector("[data-testid='actor-skill-skill_move_1']")).toBeNull();
-    // PP 0 인 기술은 `disabled` 가 아니라 `aria-disabled` 로 남긴다 — 커서가 서야 "PP가 없습니다" 를 읽는다.
+    // 횟수 0 인 기술은 `disabled` 가 아니라 `aria-disabled` 로 남긴다 — 커서가 서야 "남은 횟수가 없습니다" 를 읽는다.
     expect(button(fight, "actor-skill-skill_move_2").dataset.battleCommandInert).toBe("true");
-    expect(button(fight, "actor-skill-skill_move_2").textContent).toContain("PP가 없습니다");
+    expect(button(fight, "actor-skill-skill_move_2").textContent).toContain("남은 횟수가 없습니다");
     expect(button(fight, "actor-skill-skill_move_4").dataset.battleCommandInert).toBeUndefined();
     expect(button(fight, "actor-skill-skill_move_5").dataset.battleCommandInert).toBeUndefined();
   });
@@ -79,7 +80,7 @@ describe("Gen1 monster battle command DOM", () => {
     button(root, "actor-command-fight").click();
     const fight = commandPanel(exhausted, { ...state.options, submenu: state.submenu() }) as unknown as FakeElement;
 
-    expect(button(fight, "actor-command-struggle").textContent).toContain("Struggle");
+    expect(button(fight, "actor-command-struggle").textContent).toContain("발버둥");
     expect(button(root, "actor-command-fight").disabled).toBe(false);
   });
 
@@ -103,7 +104,7 @@ describe("Gen1 monster battle command DOM", () => {
     button(root, "actor-command-fight").click();
     const fight = commandPanel(exhausted, { ...state.options, submenu: state.submenu() }) as unknown as FakeElement;
 
-    expect(button(fight, "actor-command-struggle").textContent).toContain("Struggle");
+    expect(button(fight, "actor-command-struggle").textContent).toContain("발버둥");
   });
 
   it.each(["trainerBattle", "uncapturable"] as const)("omits balls from Item when %s forbids capture, preserving medicine", (flag) => {

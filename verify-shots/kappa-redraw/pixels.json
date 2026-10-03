@@ -1,0 +1,17 @@
+{
+  "status": "unapproved single-pose art draft",
+  "cell": 64,
+  "colors": 22,
+  "alpha": [
+    0,
+    255
+  ],
+  "bbox": [
+    7,
+    5,
+    62,
+    61
+  ],
+  "sha256": "b7446fafb8df7827fa492051446d27ac127f8b6ce3a5c3d01db3fb9de92c7e1f",
+  "catalogWritten": false
+}

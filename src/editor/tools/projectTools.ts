@@ -3,10 +3,11 @@ import { CAMERA_ZOOM_LIMITS, resolveCameraZoom, storeCameraZoom } from "@/projec
 import { applyGenrePreset, type GenrePresetId } from "@/project/genrePresets";
 import { replaceProjectContents } from "./historyTools";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
-import type { BattleUiStyle, Terms } from "@/project/types";
+import type { Terms } from "@/project/types";
 import { BATTLE_HIT_FEEL_IDS, DEFAULT_BATTLE_HIT_FEEL, isBattleHitFeel } from "@/project/battleHitFeel";
 import { DISPLAY_FILTER_LABELS, DISPLAY_FILTERS, isDisplayFilterName, normalizeDisplayFilter } from "@/project/displayFilter";
-import { BATTLE_SKINS, listActiveBattleSkinIds, listBattleSkinIds } from "@/battle/skins/registry";
+import { BATTLE_SKINS, isRetiredBattleSkinId, listActiveBattleSkinIds } from "@/battle/skins/registry";
+import { applyBattleMethod } from "@/project/battleMethod";
 import {
   BATTLE_LOOK_COMMAND_IDS,
   BATTLE_LOOK_COMMAND_LABELS,
@@ -184,7 +185,7 @@ const setProjectSettings: ToolDefinition = {
       resources: {
         type: "object",
         properties: {
-          titleResourceId: { type: "string" }, systemResourceId: { type: "string" }, battleSystemResourceId: { type: "string" },
+          titleResourceId: { type: "string" }, systemResourceId: { type: "string" },
           defaultBgmResourceId: { type: "string" }, battleBgmResourceId: { type: "string" },
           battleVictoryMeResourceId: { type: "string" }, battleDefeatSeResourceId: { type: "string" }, battleEscapeSeResourceId: { type: "string" },
         },
@@ -196,7 +197,7 @@ const setProjectSettings: ToolDefinition = {
           flow: { type: "string", enum: ["gauge", "strict"] },
           uiStyle: {
             type: "string",
-            description: `전투 스킨 = 배치(정면/측면)와 창 색. 도트 측면 스킨의 화면 꾸밈(파티·명령 배치, 창 모양, 글꼴, 연출)은 look 으로 따로 고른다. 가능: ${listActiveBattleSkinIds().map((id) => `${id}(${BATTLE_SKINS[id].label})`).join(", ")}`,
+            description: `전투 방식. 화면과 규칙을 같이 정한다 — retro2003 = 도트 측면(RM식 규칙, 기본), pokemon = 몬스터 대치(Gen1 규칙). 창 색·배치·글꼴·연출은 look 으로 고른다. 가능: ${listActiveBattleSkinIds().map((id) => `${id}(${BATTLE_SKINS[id].label})`).join(", ")}`,
           },
           hitFeel: { type: "string", enum: [...BATTLE_HIT_FEEL_IDS], description: "타격감. impact(묵직하게, 기본) · light(가볍게) · calm(차분하게 — 화면 흔들림·번쩍임 없음)" },
           look: {
@@ -385,7 +386,7 @@ const setProjectSettings: ToolDefinition = {
     }
     if (args.resources && typeof args.resources === "object" && !Array.isArray(args.resources)) {
       const resources = args.resources as Record<string, unknown>;
-      for (const key of ["titleResourceId", "systemResourceId", "battleSystemResourceId", "defaultBgmResourceId", "battleBgmResourceId", "battleVictoryMeResourceId", "battleDefeatSeResourceId", "battleEscapeSeResourceId"] as const) {
+      for (const key of ["titleResourceId", "systemResourceId", "defaultBgmResourceId", "battleBgmResourceId", "battleVictoryMeResourceId", "battleDefeatSeResourceId", "battleEscapeSeResourceId"] as const) {
         if (typeof resources[key] === "string") draft.system[key] = resources[key];
       }
       changed.push("리소스");
@@ -394,10 +395,12 @@ const setProjectSettings: ToolDefinition = {
       const battle = args.battle as Record<string, unknown>;
       if (battle.flow === "gauge" || battle.flow === "strict") draft.system.battleFlow = battle.flow;
       if (typeof battle.uiStyle === "string") {
-        if (!(listBattleSkinIds() as readonly string[]).includes(battle.uiStyle)) {
-          throw new ToolError(`알 수 없는 전투 스킨입니다: ${battle.uiStyle}. 가능: ${listActiveBattleSkinIds().join(", ")}`, { code: "invalid-args" });
+        if (!(listActiveBattleSkinIds() as readonly string[]).includes(battle.uiStyle)) {
+          const retired = isRetiredBattleSkinId(battle.uiStyle) ? " 지운 옛 스킨이다 — 도트 측면은 retro2003 이고 창 색은 look.window 로 고른다." : "";
+          throw new ToolError(`알 수 없는 전투 스킨입니다: ${battle.uiStyle}. 가능: ${listActiveBattleSkinIds().join(", ")}.${retired}`, { code: "invalid-args" });
         }
-        draft.system.battleUiStyle = battle.uiStyle as BattleUiStyle;
+        // 방식 하나가 화면과 규칙을 같이 정한다(자료집 「전투 방식」과 같은 규칙, project/battleMethod.ts).
+        applyBattleMethod(draft, battle.uiStyle === "pokemon" ? "monster" : "side");
       }
       if (isBattleHitFeel(battle.hitFeel)) {
         if (battle.hitFeel === DEFAULT_BATTLE_HIT_FEEL) delete draft.system.battleHitFeel;

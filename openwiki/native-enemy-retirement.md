@@ -1,5 +1,22 @@
 # 공용 몬스터 옛 그림 폐기와 RM2003 효과 비교 (2026-10-02)
 
+> **현재 그림 (2026-10-03 후속):** 긍정 평가를 받은 히드라·갓파·회색 늑대·동굴 박쥐·해골 전사5종을 유지하고,
+> 나머지135종을 `scripts/asset-gen/pixel-enemy/redraw/`의 새 원본으로 교체한다. 현재는 native64 126종·native96 14종이다.
+> 공용 ID·경로·이동 유형·9포즈 계약은 그대로다. 새135종의 사용자 그림 검토는 별도이며,
+> 재현과 확인 범위는 `tiledata/monster-redraw-all/README.md`, `verify-shots/monster-redraw-all/SUMMARY.md`를 본다.
+> `scripts/asset-gen/pixel-enemy/refresh/registry.py`가 기존 생성 명령도 최신 원본으로 연결한다. 아래는 이전 폐기·반려판 기록이다.
+
+> **현재 그림 (2026-10-03):** 히드라 외 139종 리프레시는 사용자에게 그림 품질을 반려된 로컬 초안이다.
+> 승인된 히드라를 제외한 새 그림은 미승인이며, 형식 확인을 완료/승인 근거로 쓰지 않는다.
+> 현재 원본은 `scripts/asset-gen/pixel-enemy/refresh/`이며, 개별/retirement 명령도 이 원본으로 연결한다.
+> 셀·ID·9포즈 계약은 유지하고, 현재 팔레트 상한은 32색이다. 아래 16색·옛 원본 경로는 첫 폐기판의 기록이다.
+> 현재 재생성·전후 비교·실제 RM2003 확인은 `tiledata/monster-refresh/README.md`,
+> `verify-shots/monster-refresh/SUMMARY.md`를 본다.
+
+후속 요청으로 갓파·회색 늑대·동굴 박쥐·해골 전사는 새 기본 그림과 9포즈를 native64로 다시 배선했다.
+이 네 종의 최신 원본·셀 계약·실제 전투 기록은 `tiledata/monster-battle-four/README.md`를 본다.
+나머지 일괄 초안에 대한 반려를 승인으로 바꾸는 작업은 아니다.
+
 사용자 결정: 옛 그림만 있는 **97종도 새 도트로 제작하여 유지**한다. 종/적 레코드를 지우거나 특정 프로젝트에만 그림을 저장하는 작업이 아니다.
 
 ## 공용 자산과 표시 계약
@@ -40,3 +57,11 @@
 - 실제 플레이어: `node scripts/qa/runtime/native-enemy-retirement.mjs`. `player.html` + export shim의 retro2003/rm2000/업로드 3사례, native 140종 초상과 시트 모두 브라우저 디코드. `runtime/SUMMARY.md`부터 읽는다. 전투 도입 실루엣이 끝난 명령 화면을 캡처한다.
 - 효과 비교: `verify-shots/legacy-monsters/skill-comparison/`, 현재 계약·원본 시안·합성 코드·4개 비교 GIF·실제 스킬 녹화 report. 시안은 공용 효과 카탈로그에 등록하지 않았다.
 - 세션 규칙에 따라 gates/vitest/typecheck는 실행하지 않았다. 이 문서의 자산/브라우저 관찰은 전체 테스트 통과 주장이 아니다.
+
+## 히드라 재저작 (2026-10-03)
+
+`hydra-three`는 `scripts/asset-gen/pixel-enemy/hydra-three.py`의 직접 저작 도트로 교체했다.
+96px·22색·9포즈 계약과 기존 공용 ID/시트/초상 경로를 유지하고 일괄 생성도 이 승인 원본을 쓴다.
+실제 RM2003 플레이어/네 native 아군 증거는 `verify-shots/hydra-rm2003/SUMMARY.md`,
+저작 설명은 `tiledata/pixel-enemies/hydra-three/README.md`.
+기존 프로젝트 행/정본 SQLite는 수정하지 않는다.

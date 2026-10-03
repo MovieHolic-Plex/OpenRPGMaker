@@ -655,6 +655,7 @@ export class EditScene extends PhaserRuntime.Scene {
   }
 
   private cleanup(): void {
+    this.tilePaintEngine?.endStroke(false);
     this.cancelTextureRedraw();
     this.cancelCameraFocus(false);
     this.unbindCanvasPanGuards();
@@ -2380,15 +2381,16 @@ export class EditScene extends PhaserRuntime.Scene {
     const tileset = map ? store.getCurrent().tilesets[map.tilesetId] : undefined;
     const key = relief ? `${mapId}|${tileSize}|${map?.tilesetId}|${reliefSignature(relief)}` : "";
     if (key === this.reliefRenderKey) return;
-    this.reliefRenderKey = key;
     // 띠 이미지만 걷는다 — 들린 타일은 같은 컨테이너에 있고 renderEditScene 이 따로 관리한다. 텍스처는 아래에서 고쳐 쓰거나 지운다.
     for (const child of [...layer.list]) if (child.name === RELIEF_STRIP_NAME) layer.remove(child, true);
     if (!map || !relief || reliefIsFlat(relief)) {
+      this.reliefRenderKey = key;
       removeReliefTextures(this.textures, this.reliefTextureKeys);
       this.reliefTextureKeys = [];
       return;
     }
     const built = buildReliefStripTextures(this.textures, relief, tileSize, { reuseKeys: this.reliefTextureKeys });
+    this.reliefRenderKey = key;
     this.reliefTextureKeys = built.textureKeys;
     const addStrip = (image: Phaser.GameObjects.Image, depth: number): void => {
       image.setName(RELIEF_STRIP_NAME).setDepth(depth);
@@ -2574,6 +2576,8 @@ export class EditScene extends PhaserRuntime.Scene {
       state.selectedEventId ?? "none",
       state.selectedEventPageId ?? "none",
       state.showGrid ? "grid" : "nogrid",
+      state.terrainReachability ? "reach" : "noreach",
+      JSON.stringify(state.terrainPoints), JSON.stringify(state.terrainRoute), state.terrainRouteWidth, state.terrainSymmetry, state.terrainBrush,
     ].join("|");
   }
 
@@ -2896,6 +2900,7 @@ export class EditScene extends PhaserRuntime.Scene {
    */
   /** 되돌리기·다시실행이 적용된 스트로크는 커밋하지 않고 끝낸다. */
   private abandonOpenPaintGesture(): void {
+    this.tilePaintEngine?.endStroke(false);
     this.isPainting = false;
     this.lastPaintKey = "";
     this.dragOperationHandler?.clear();
@@ -2914,6 +2919,8 @@ export class EditScene extends PhaserRuntime.Scene {
     // 승격되지 않은 팬 후보도 여기서 내려야 한다. 남으면 다음 pointermove(버튼을 뗀 뒤의
     // 단순 호버)가 옛 기준점으로 카메라를 밀어 버린다.
     this.eventLayerPanCandidate = null;
+    // 높이 붓: 누르면 자라던 타이머를 멈추고 지나간 자리를 정리한다(TilePaintEngine.endStroke).
+    if (this.isPainting) this.tilePaintEngine?.endStroke();
     this.isPainting = false;
     this.lastPaintKey = "";
     this.stopPan();

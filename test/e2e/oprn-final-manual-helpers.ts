@@ -30,7 +30,7 @@ const DATABASE_TABS = [
   "db-tab-enemies",
   "db-tab-troops",
   "db-tab-states",
-  "db-tab-animations",
+  "db-tab-retro-choreographies",
   "db-tab-tilesets",
   "db-tab-common-events",
   "db-tab-system",

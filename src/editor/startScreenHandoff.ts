@@ -1,6 +1,7 @@
 // Adopt the launcher intent into its matching SQLite folder using the same factory as the editor menu.
 // Example and blank starts open the first-edit guide; AI starts continue through the planning interview.
 
+import { createNewProjectSeed } from "./genrePacks";
 import { createProjectStartSeed } from "./projectStartSeed";
 import { projectStartMode } from "@/start/projectStart";
 import { focusProjectStartMap } from "@/editor/mapSelection";
@@ -121,8 +122,17 @@ export async function runStartScreenPresetInterview(
   const connected = await dependencies.ensureAiConnected(label).catch(() => false);
   if (!connected) return "declined";
   const brief = await dependencies.interview(presetId, handoff.intent.intent);
-  if (!brief || brief.presetId !== presetId || JSON.stringify(store.getProjectIdentity()) !== scope) return "declined";
+  if (!brief || JSON.stringify(store.getProjectIdentity()) !== scope) return "declined";
+  const chosen = newProjectChoiceById(brief.presetId);
+  if (!chosen) return "declined";
   store.update(project => {
+    // The fresh folder was seeded before the interview. Replace only its system defaults when
+    // the author chooses another engine; do not leave collection/battle flags from the first seed.
+    if (brief.presetId !== presetId) {
+      const playResolution = project.system.playResolution;
+      project.system = createNewProjectSeed(chosen.packId, project.meta.title).system;
+      if (playResolution) project.system.playResolution = playResolution;
+    }
     project.gameDesignBrief = { ...brief, generationPending: true };
   }, { scope: "project", label: "게임 기획 확정", origin: "human" });
   return "brief";

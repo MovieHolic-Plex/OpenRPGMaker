@@ -9,6 +9,8 @@ import { isNeutralScreenFilter, screenFilterFromFields } from "@/project/eventCo
 import { showPictureState } from "@/project/session";
 import { ACTOR_PARAMETER_KEYS } from "@/project/actorModel";
 import { changeActorClass } from "@/project/sessionClass";
+import { effectiveActorClassId } from "@/project/growth/lineage";
+import { baseBattleCommandIds } from "@/battle/battleCommands";
 import type { ActorParameterKey, M2CommandFields, Project } from "@/project/types";
 import type { M2RuntimeState, PlaySessionLike, RuntimeEventLocation, RuntimePictureState } from "@/project/sessionRuntimeTypes"
 import { executeModernCommand } from "./m2ModernRuntime";
@@ -449,7 +451,9 @@ function mutateActorState(
     actor.battleCommands = commandId;
     session.actorBattleCommands ??= {};
     for (const targetActorId of resolveActorTargets(session, actorId)) {
-      const current = session.actorBattleCommands[targetActorId] ?? [];
+      // 아직 바꾼 적 없는 배우는 지금 메뉴(배우 고유 목록 > 직업 명령)에서 더하고 뺀다.
+      const current = session.actorBattleCommands[targetActorId]
+        ?? (context.project ? baseBattleCommandIds(context.project, targetActorId, effectiveActorClassId(context.project, session, targetActorId)) : []);
       if (operation === "remove") {
         session.actorBattleCommands[targetActorId] = current.filter((id) => id !== commandId);
       } else if (operation === "set") {

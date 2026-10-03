@@ -33,9 +33,9 @@ import {
   renderTermsTab,
   renderVariablesTab,
 } from "@/editor/panels/databaseUtilityViews";
+import { renderBattleScreenTab } from "@/editor/panels/databaseBattleScreenTab";
 import {
   renderBattleCommandsTab,
-  renderBattleScreenTab,
   renderElementsTab,
   renderTerrainTab,
 } from "@/editor/panels/databaseUtilityRecordViews";
@@ -190,7 +190,9 @@ export const TAB_GROUPS: readonly DatabaseTabGroup[] = [
   {
     label: "전투 규칙",
     slug: "battle",
-    tabs: ["elements", "states", "animations", "retroChoreographies", "battleScreen", "battleCommands"],
+    // 옛 전투 애니메이션(셀 편집)은 도트 연출의 하위 보기다 — 도트 측면 전투는 스킬에 도트 연출이 있으면 셀 애니메이션을
+    // 그리지 않고, 연출 없는 스킬의 대체용·몬스터 대치(포켓몬)에서만 쓴다(2026-10-02).
+    tabs: ["elements", "states", "retroChoreographies", "battleScreen", "battleCommands"],
   },
   { label: "생활", slug: "life", tabs: ["crops", "characters", "lifeCrafting", "dailyWeather", "farmAnimals", "farmSpatial", "lifeCollections"] },
   { label: "맵", slug: "world", tabs: ["spatialTiles", "spatialObjects", "spatialPlaces", "spatialRegions", "spatialWorlds"] },
@@ -213,6 +215,7 @@ export const PARTY_SUBVIEW_PARENT: Partial<Record<DatabaseTab, DatabaseTab>> = {
   characterAppearances: "actors",
   promotionTree: "classes",
   skillTrees: "skills",
+  animations: "retroChoreographies",
 };
 
 const PARTY_SUBVIEWS: Partial<Record<DatabaseTab, readonly { readonly tab: DatabaseTab; readonly label: string; readonly slug: string }[]>> = {
@@ -227,6 +230,10 @@ const PARTY_SUBVIEWS: Partial<Record<DatabaseTab, readonly { readonly tab: Datab
   skills: [
     { tab: "skills", label: "스킬 편집", slug: "skills" },
     { tab: "skillTrees", label: "성장 트리", slug: "skill-trees" },
+  ],
+  retroChoreographies: [
+    { tab: "retroChoreographies", label: "도트 연출", slug: "retro-choreographies" },
+    { tab: "animations", label: "옛 전투 애니메이션 (대체용)", slug: "animations" },
   ],
 };
 
@@ -724,7 +731,8 @@ const LEGACY_TAB_SEARCH: Partial<Record<DatabaseTab, string>> = {
   structureKits: "구조물",
   tilesetSpaces: "공간 종류",
   worldGen: "생성 규칙",
-  retroChoreographies: "스킬 이펙트 연출 번개 도트 skillChoreographies",
+  // 옛 「전투 애니메이션」 레일 칸은 도트 연출의 하위 보기로 들어갔다(2026-10-02) — 그 이름으로 찾아도 연출 탭이 걸린다.
+  retroChoreographies: "스킬 이펙트 연출 번개 도트 skillChoreographies 전투 애니메이션 animations",
   spatialTiles: "타일셋 AI 참고문서 MD 이미지 통행 지형 tilesets references",
   spatialObjects: "구조물 부품 보관함 오브젝트 structureKits",
   spatialSpaces: "공간 종류 기존 방 규칙 tilesetSpaces",

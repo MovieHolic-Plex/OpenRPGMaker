@@ -1,0 +1,647 @@
+{
+ "buildings": [
+  {
+   "name": "bld_tower10",
+   "round": "v1002-190305",
+   "letters": [
+    "A",
+    "B",
+    "C"
+   ],
+   "w": 96,
+   "h": 208,
+   "door_px": [
+    36,
+    59
+   ],
+   "floors": 10,
+   "kind": "tower",
+   "note": "유리 커튼월 오피스 타워. 로비 이중문 24x30. 지붕 72행. B 가 가장 깔끔, C 는 창 얼룩 있음"
+  },
+  {
+   "name": "bld_tower10b",
+   "round": "v1002-190308",
+   "letters": [
+    "A",
+    "B",
+    "C"
+   ],
+   "w": 96,
+   "h": 208,
+   "door_px": [
+    36,
+    59
+   ],
+   "floors": 10,
+   "kind": "tower",
+   "note": "벽돌/베이지 발코니 줄무늬 주거 타워. 이중문 24x30. 창이 작다. C 는 불켜진 창 포인트"
+  },
+  {
+   "name": "bld_mid4",
+   "round": "v1002-190311",
+   "letters": [
+    "A",
+    "B",
+    "C"
+   ],
+   "w": 96,
+   "h": 144,
+   "door_px": [
+    40,
+    55
+   ],
+   "floors": 4,
+   "kind": "midrise",
+   "note": "민트 4층 사무·상가. A,C 문 16x30(40~55), B 이중문 24x30(36~59). 글자 없음"
+  },
+  {
+   "name": "bld_low3",
+   "round": "v1002-191617",
+   "letters": [
+    "A",
+    "B",
+    "C"
+   ],
+   "w": 96,
+   "h": 128,
+   "door_px": [
+    41,
+    55
+   ],
+   "floors": 3,
+   "kind": "lowrise",
+   "note": "3층 상가주택. 1층 상점+차양. 문 약 14~16x30 (A/B/C 모두 41~55 근방)"
+  },
+  {
+   "name": "bld_hotel",
+   "round": "v1002-191621",
+   "letters": [
+    "A",
+    "C"
+   ],
+   "w": 112,
+   "h": 176,
+   "door_px": [
+    44,
+    67
+   ],
+   "floors": 7,
+   "kind": "hotel",
+   "note": "7층 호텔. C 는 INN 와인 간판(가장 호텔답다), A 는 간판 띠만(무채색 창). 이중문 24x30"
+  },
+  {
+   "name": "bld_conv",
+   "round": "v1002-192133",
+   "letters": [
+    "A",
+    "B",
+    "C"
+   ],
+   "w": 80,
+   "h": 80,
+   "door_px": [
+    30,
+    49
+   ],
+   "floors": 1,
+   "kind": "lowrise",
+   "note": "편의점. 자동문 20x30"
+  },
+  {
+   "name": "bld_row",
+   "round": "v1002-192135",
+   "letters": [
+    "A",
+    "B",
+    "C"
+   ],
+   "w": 128,
+   "h": 96,
+   "door_px": [
+    [
+     5,
+     18
+    ],
+    [
+     37,
+     50
+    ],
+    [
+     69,
+     82
+    ],
+    [
+     101,
+     114
+    ]
+   ],
+   "floors": 2,
+   "kind": "row",
+   "note": "2층 연립 4호, 호별 색 다름. 호당 32px 레인, 문 14x30. 눈대중 좌표 ±1px"
+  },
+  {
+   "name": "bld_parking",
+   "round": "v1002-192806",
+   "letters": [
+    "B"
+   ],
+   "w": 96,
+   "h": 128,
+   "door_px": [
+    36,
+    59
+   ],
+   "floors": 4,
+   "kind": "parking",
+   "note": "주차 건물. 무채색이라 단조로움. B 가 깔끔, C 는 1px 선이 많고 지저분(마지못해 합격)"
+  },
+  {
+   "name": "bld_shop",
+   "round": "v1002-205223",
+   "letters": [
+    "A",
+    "B"
+   ],
+   "w": 80,
+   "h": 112,
+   "door_px": [
+    32,
+    48
+   ],
+   "floors": 2,
+   "kind": "shop",
+   "note": "화풍 통일판(2차)"
+  },
+  {
+   "name": "bld_office",
+   "round": "v1002-205225",
+   "letters": [
+    "A",
+    "B"
+   ],
+   "w": 96,
+   "h": 112,
+   "door_px": [
+    36,
+    60
+   ],
+   "floors": 4,
+   "kind": "office",
+   "note": "화풍 통일판"
+  },
+  {
+   "name": "bld_apartment",
+   "round": "v1002-205227",
+   "letters": [
+    "A",
+    "B",
+    "C"
+   ],
+   "w": 112,
+   "h": 144,
+   "door_px": [
+    48,
+    64
+   ],
+   "floors": 5,
+   "kind": "apt",
+   "note": "화풍 통일판"
+  },
+  {
+   "name": "bld_house",
+   "round": "v1002-205230",
+   "letters": [
+    "A",
+    "B",
+    "C"
+   ],
+   "w": 64,
+   "h": 96,
+   "door_px": [
+    24,
+    40
+   ],
+   "floors": 2,
+   "kind": "house",
+   "note": "화풍 통일판"
+  },
+  {
+   "name": "bld_cafe",
+   "round": "v1002-205303",
+   "letters": [
+    "A",
+    "B"
+   ],
+   "w": 80,
+   "h": 96,
+   "door_px": [
+    28,
+    52
+   ],
+   "floors": 2,
+   "kind": "cafe",
+   "note": "화풍 통일판"
+  },
+  {
+   "name": "bld_mid6",
+   "round": "v1002-205305",
+   "letters": [
+    "A",
+    "B",
+    "C"
+   ],
+   "w": 112,
+   "h": 160,
+   "door_px": [
+    44,
+    68
+   ],
+   "floors": 6,
+   "kind": "apt",
+   "note": "화풍 통일판"
+  },
+  {
+   "name": "bld_bank",
+   "round": "v1002-213658",
+   "letters": [
+    "A",
+    "B",
+    "C"
+   ],
+   "w": 112,
+   "h": 128,
+   "door_px": [
+    44,
+    68
+   ],
+   "floors": 3,
+   "kind": "office",
+   "unify": false,
+   "note": ""
+  },
+  {
+   "name": "bld_school",
+   "round": "v1002-213700",
+   "letters": [
+    "A",
+    "B",
+    "C"
+   ],
+   "w": 144,
+   "h": 112,
+   "door_px": [
+    60,
+    84
+   ],
+   "floors": 3,
+   "kind": "office",
+   "unify": false,
+   "note": ""
+  },
+  {
+   "name": "bld_hospital",
+   "round": "v1002-213703",
+   "letters": [
+    "A",
+    "B",
+    "C"
+   ],
+   "w": 112,
+   "h": 160,
+   "door_px": [
+    44,
+    68
+   ],
+   "floors": 6,
+   "kind": "office",
+   "unify": false,
+   "note": ""
+  },
+  {
+   "name": "bld_dept",
+   "round": "v1002-213705",
+   "letters": [
+    "A",
+    "C"
+   ],
+   "w": 128,
+   "h": 144,
+   "door_px": [
+    52,
+    76
+   ],
+   "floors": 5,
+   "kind": "office",
+   "unify": false,
+   "note": ""
+  },
+  {
+   "name": "bld_warehouse",
+   "round": "v1002-213707",
+   "letters": [
+    "A"
+   ],
+   "w": 128,
+   "h": 96,
+   "door_px": [
+    [
+     8,
+     52
+    ],
+    [
+     60,
+     80
+    ]
+   ],
+   "floors": 1,
+   "kind": "warehouse",
+   "unify": false,
+   "note": ""
+  },
+  {
+   "name": "bld_apt_balcony",
+   "round": "v1002-213710",
+   "letters": [
+    "A",
+    "B"
+   ],
+   "w": 96,
+   "h": 176,
+   "door_px": [
+    36,
+    60
+   ],
+   "floors": 8,
+   "kind": "apt",
+   "unify": false,
+   "note": ""
+  },
+  {
+   "name": "bld_house_modern",
+   "round": "v1002-213818",
+   "letters": [
+    "A",
+    "B",
+    "C"
+   ],
+   "w": 80,
+   "h": 96,
+   "door_px": [
+    [
+     12,
+     38
+    ],
+    [
+     50,
+     70
+    ]
+   ],
+   "floors": 2,
+   "kind": "house",
+   "unify": false,
+   "note": ""
+  },
+  {
+   "name": "bld_izakaya",
+   "round": "v1002-213820",
+   "letters": [
+    "A",
+    "B",
+    "C"
+   ],
+   "w": 80,
+   "h": 96,
+   "door_px": [
+    32,
+    48
+   ],
+   "floors": 2,
+   "kind": "shop",
+   "unify": false,
+   "note": ""
+  },
+  {
+   "name": "bld_neon4",
+   "round": "v1002-213822",
+   "letters": [
+    "A",
+    "C"
+   ],
+   "w": 80,
+   "h": 128,
+   "door_px": [
+    32,
+    48
+   ],
+   "floors": 4,
+   "kind": "shop",
+   "unify": false,
+   "note": ""
+  },
+  {
+   "name": "bld_office_wide",
+   "round": "v1002-213825",
+   "letters": [
+    "A",
+    "B",
+    "C"
+   ],
+   "w": 128,
+   "h": 160,
+   "door_px": [
+    52,
+    76
+   ],
+   "floors": 7,
+   "kind": "office",
+   "unify": false,
+   "note": ""
+  },
+  {
+   "name": "bld_slim",
+   "round": "v1002-213827",
+   "letters": [
+    "A",
+    "B"
+   ],
+   "w": 64,
+   "h": 176,
+   "door_px": [
+    24,
+    40
+   ],
+   "floors": 9,
+   "kind": "office",
+   "unify": false,
+   "note": ""
+  },
+  {
+   "name": "bld_bakery",
+   "round": "v1002-213829",
+   "letters": [
+    "A",
+    "B"
+   ],
+   "w": 64,
+   "h": 96,
+   "door_px": [
+    24,
+    40
+   ],
+   "floors": 2,
+   "kind": "shop",
+   "unify": false,
+   "note": ""
+  }
+ ],
+ "props2": {
+  "round": "v1002-190341",
+  "letters": [
+   "A",
+   "B",
+   "C"
+  ],
+  "h": 48,
+  "w": 176,
+  "slots": {
+   "bench": [
+    0,
+    32,
+    14
+   ],
+   "bike_rack": [
+    32,
+    16,
+    12
+   ],
+   "mailbox_red": [
+    48,
+    16,
+    20
+   ],
+   "planter": [
+    64,
+    16,
+    12
+   ],
+   "signboard": [
+    80,
+    16,
+    22
+   ],
+   "recycle3": [
+    96,
+    16,
+    14
+   ],
+   "bus_shelter": [
+    112,
+    32,
+    44
+   ],
+   "vending2": [
+    144,
+    16,
+    26
+   ],
+   "park_lamp": [
+    160,
+    16,
+    28
+   ]
+  },
+  "note": "슬롯 [x,폭,높이]. 모두 바닥 정렬. 실측 위치는 슬롯 안 1~3px 안쪽(예: 벤치 x1~30). A 는 우체통 wine(빨강), B 는 우체통 갈빛(빨강 아님), C 는 wine. A 의 recycle3 는 x97~110(가는 3개 병렬)"
+ },
+ "vehicles": [
+  {
+   "name": "truck",
+   "round": "v1002-191156",
+   "letters": [
+    "A",
+    "B",
+    "C"
+   ],
+   "w": 96,
+   "h": 48,
+   "note": "오른쪽 캡, 흰 짐칸 박스, 윗면 보임"
+  },
+  {
+   "name": "bus",
+   "round": "v1002-191159",
+   "letters": [
+    "A",
+    "C"
+   ],
+   "w": 128,
+   "h": 48,
+   "note": "옆면 위주, 지붕 윗면은 얇음(AC 박스 포함)"
+  },
+  {
+   "name": "van",
+   "round": "v1002-192803",
+   "letters": [
+    "A",
+    "B",
+    "C"
+   ],
+   "w": 80,
+   "h": 48,
+   "note": "오른쪽 앞, 슬라이딩 도어 창띠. A 파랑 창, B 청록 창+밝은 지붕, C 길쭉 낮은 차체"
+  }
+ ],
+ "rejected_by_eye": [
+  {
+   "round": "v1002-191159",
+   "letter": "B",
+   "why": "앞유리가 사다리꼴로 튀어나와 형태가 어색"
+  },
+  {
+   "round": "v1002-191621",
+   "letter": "B",
+   "why": "로비 유리가 초록(leaf 톤)이라 다른 건물과 톤이 안 맞고 간판 띠가 지저분"
+  },
+  {
+   "round": "v1002-192806",
+   "letter": "A",
+   "why": "검수기 FAIL(SIZE,FLAT) 상태로 재시도 미완료 — 합격 판정 불가"
+  },
+  {
+   "round": "v1002-205223",
+   "letter": "C",
+   "why": "문 옆 붉은 점 잡티 · 간판 띠가 지저분"
+  },
+  {
+   "round": "v1002-213705",
+   "letter": "B",
+   "why": "빨간 외곽선(1px 짙은 윤곽 계약 위반)"
+  },
+  {
+   "round": "v1002-213829",
+   "letter": "C",
+   "why": "밝은 외곽선"
+  },
+  {
+   "round": "v1002-213822",
+   "letter": "B",
+   "why": "창이 너무 불규칙"
+  }
+ ],
+ "park": {
+  "fountain": {
+   "round": "v1002-205326",
+   "letters": [
+    "A",
+    "B",
+    "C"
+   ]
+  },
+  "pond": {
+   "round": "v1002-205328",
+   "letters": [
+    "A",
+    "B",
+    "C"
+   ]
+  }
+ }
+}
