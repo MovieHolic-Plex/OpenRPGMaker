@@ -6,7 +6,22 @@ import base64, io, os, sys
 sys.path.insert(0, 'tiledata/hand-interior/v5'); sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import tiles as TL, room2, tiles5, tiles6 as T6
 from palette_snap import snap
-PLAN = ['#' * 14] + ['#' + '.' * 12 + '#'] * 6 + ['#' * 14]
+PLAN = ['#' * 14] + ['#' + '.' * 12 + '#'] * 8 + ['#' * 14]
+import json
+from PIL import Image
+SHEET = Image.open('public/assets/atlas-interior/interior-chipset.png').convert('RGBA')
+OBJS = json.load(open('src/assets/handInteriorSpec.json'))['objects']
+# 방 안 소품(크기 가늠용): genre -> [(object id, x, y)] — y 는 소품 기준 칸(바닥 첫 줄 = 3)
+FURN = {'modern': [('bookshelf 2w', 2, 3), ('potted fern', 5, 3), ('table:plate+cup', 8, 5), ('sofa', 8, 8), ('armchair', 11, 6)],
+        'east': [('pot', 2, 3), ('chest', 4, 3), ('table:book+scroll', 6, 5), ('potted sapling', 11, 3)],
+        'sf': [('gauge panel', 3, 1), ('gauge panel', 9, 1), ('chest', 2, 3), ('potted cactus', 11, 3), ('felt 2x1', 6, 5)]}
+def furnish(im, genre):
+    for oid, ox, oy in FURN[genre]:
+        for c in OBJS[oid]['cells']:
+            dx, dy, t = c[0], c[1], c[2]
+            tile = SHEET.crop(((t % 48) * 16, (t // 48) * 16, (t % 48) * 16 + 16, (t // 48) * 16 + 16))
+            im.alpha_composite(tile, ((ox + dx) * 16, (oy + dy) * 16))
+    return im
 PARTNER_WALL = {'modern': 'w_white_a', 'east': 'w_hanji_a', 'sf': 'w_sf_a'}
 PARTNER_FLOOR = {'modern': 'herring_a', 'east': 'jangpan_a', 'sf': 'sfdeck_a'}
 CEIL = {'modern': 'pale', 'east': 'lacquer', 'sf': 'navy'}
@@ -16,7 +31,7 @@ for wa, wb in T6.WALL_CANDS.values():
     room2.FACEFN[wa.__name__] = wa; room2.FACEFN[wb.__name__] = wb
 def render(floor, wall, genre, scale=3):
     room2.CEIL = T6.CEILS6[CEIL[genre]]
-    im = room2.render(PLAN, floor, wall); room2.CEIL = None
+    im = furnish(room2.render(PLAN, floor, wall), genre); room2.CEIL = None
     n = 0
     im = im.crop((16, 0, im.width - 16, im.height - 16)).resize(((im.width - 32) * scale, (im.height - 16) * scale), 0)
     b = io.BytesIO(); im.save(b, 'PNG'); return 'data:image/png;base64,' + base64.b64encode(b.getvalue()).decode(), n
