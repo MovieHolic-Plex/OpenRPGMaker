@@ -18,10 +18,12 @@ const CALIBRATED_MIN_BUDGET = 6000;
 // → 게임오버·오디오 탐색 파사드를 등록한 뒤 5,043자(활성 툴 238개).
 // → 범용 이미지 에셋 생성(generate_image_asset)을 등록한 뒤 5,065자(활성 툴 239개).
 // → 타이틀 키아트 한 번에 만들기(generate_title_art)를 등록한 뒤 5,085자(활성 툴 240개, 이름+쉼표 20자).
+// → main 이 상한을 넘은 채(5,959자, 활성 툴 약 288개) 쌓여 왔고, 일본 도시 건물 조립 두 툴(list/build_jp_city_building)이 53자를 더해 6,012자.
+//   색인 테스트가 이름을 «이름, 이름» 한 번씩 요구하므로 접두어 압축은 못 쓴다 — 상한을 실측에 맞춰 올린다.
 // 이 상한이 프롬프트 예산을 잡아먹지는 않는다 — buildSystemPrompt 가 색인 길이만큼 예산을 늘려
 // 기존 섹션 자리를 지키기 때문이다(아래 "does not push ... over its budget" 케이스가 그것을 고정한다).
 // 상한을 올릴 때는 이 주석의 실측 자수를 함께 갱신한다 — 조용한 상향은 금지다.
-const INDEX_CHAR_CEILING = 5100;
+const INDEX_CHAR_CEILING = 6100;
 
 function liveToolNames(): readonly string[] {
   return [...new Set(activeTools().filter((tool) => tool.deprecated !== true && tool.supersededBy === undefined).map((tool) => tool.name))];

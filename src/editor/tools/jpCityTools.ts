@@ -134,7 +134,7 @@ function buildingProps(): Record<string, JsonSchema> {
     wall: STR("기본 벽 재질 kinari·shiro·conc·hodo(기본 kinari)"),
     floorPlan: { type: "array", items: FLOOR_ITEM, description: "층별 지정(위에서 아래 순서). 주면 floors·floorKind·wall 대신 쓴다" },
     ground: STR("1층 종류: gr.izakaya · gr.konbini.0|1 · gr.garage · gr.shutter.aka|sora|kii · gr.glass.aka|sora|kii · gr.machiya (gr. 생략 가능)"),
-    shop: STR("ground 의 다른 이름(ground 가 있으면 무시)"),
+    shop: STR("ground 의 다른 이름"),
     groundVariants: { type: "array", items: { type: "integer", minimum: 0 }, description: "1층 몸통 변형 번호 목록(gr.machiya 만 0~5)" },
     door: DOOR_ITEM,
     roof: STR("지붕 띠: roof.plain.tank · roof.ac.plain · roof.stair.cyl · roof.tile · roof.slate · roof.hip · roof.hip.slate … (roof. 생략 가능). head 가 있으면 head 가 대신한다"),
@@ -144,8 +144,11 @@ function buildingProps(): Record<string, JsonSchema> {
     decos: { type: "array", items: DECO_ITEM, description: "간판·차양·실외기·비상계단 등 부착물" },
   };
 }
+// 별채는 본채 스키마를 통째로 되풀이하면 도구 정의가 두 배가 된다(토큰). 완성 예제 L자 3종이 실제로 쓰는 필드만 노출한다 —
+// floorPlan·shop·head·eave·setback 은 본채에서만 스키마에 있고, 실행기(toBuildingInput)는 별채에서도 받아들인다.
+const WING_OMIT = new Set(["floorPlan", "shop", "head", "eave", "setback"]);
 const WING_PROPS: Record<string, JsonSchema> = {
-  ...buildingProps(),
+  ...Object.fromEntries(Object.entries(buildingProps()).filter(([k]) => !WING_OMIT.has(k))),
   side: { type: "string", enum: ["L", "R"], description: "별채가 본채의 왼쪽(L)·오른쪽(R) 앞에 선다(기본 L)" },
   depth: INT("별채가 본채보다 앞(아래)으로 튀어나온 칸 수(기본 2)", 1, 12),
   yard: STR("본채 앞 남는 땅: lot(주차장, 기본) 또는 거리 칸 이름(sw 등)"),
@@ -195,9 +198,8 @@ export const BUILD_JP_CITY_BUILDING_TOOL: ToolDefinition = {
   description: "일본 도시(jp_city, 계열 oprn-jp) 맵에 상가·아파트·사무소·마치야 건물을 짓는다 — 폭·층수·벽 재질·1층 종류·지붕·문·간판 부착물을 정하면 부품 문법(왼쪽 끝 + 몸통 반복 + 오른쪽 끝 2칸)으로 칸을 계산해 위층에 찍는다. "
     + "건물을 낱칸으로 칠하지 말고 이 도구로 짓는다. x,y = 건물 발(왼쪽 아래 칸), 사각형은 위쪽으로 자란다. 한 층 = 위·아래 2줄, floorPlan[0] 이 맨 위 층. "
     + "먼저 list_jp_city_building_parts 로 id 를 확인한다(example 로 완성 예제 입력을 받을 수 있다). wing 을 주면 L자(본채 + 앞으로 튀어나온 별채·마당). "
-    + "결과: 오류가 하나라도 있으면 맵을 바꾸지 않고 코드·좌표를 돌려준다 — TOO_NARROW 너무 좁음 · ROOF_ORDER 지붕·처마 자리 오류 · FLOOR_PAIR 층 쌍 깨짐 · NO_DOOR 문 없음 · DOOR_NOT_BOTTOM 문이 맨 아래 줄이 아님 · "
-    + "DOOR_BLOCKED 문 앞 접근칸(문 바로 아래 한 줄)이 막힘·맵 밖·고립 · DECO_CLASH 부착물이 창을 가림·부착물끼리 겹침 · UNKNOWN_PART 사전에 없는 부품. "
-    + "문 앞에는 보도·도로 같은 걸을 수 있는 바닥을 먼저 깔아 두고, 뒷줄 건물을 앞줄 건물보다 먼저 찍는다. jp_city 가 아닌 맵은 거부한다.",
+    + "오류가 하나라도 있으면 맵을 바꾸지 않고 코드·좌표·고칠 방법을 돌려준다(TOO_NARROW·ROOF_ORDER·FLOOR_PAIR·NO_DOOR·DOOR_BLOCKED·DECO_CLASH·UNKNOWN_PART 등). "
+    + "문 앞에는 걸을 수 있는 바닥(보도·도로)을 먼저 깔고, 뒷줄 건물을 앞줄보다 먼저 찍는다. jp_city 맵에서만 동작한다.",
   parameters: {
     type: "object",
     properties: {
