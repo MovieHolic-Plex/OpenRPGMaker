@@ -1,4 +1,5 @@
 import { gameDesignExecutionContext } from "./gameDesignExecution";
+import { detailedAuthoringPresetContext } from "./gameAuthoringPresets";
 import { interviewPreset, normalizeGameInterview, type GameInterview } from "./gameInterview";
 import { assert, requireRecord, requireString } from "./io/guards";
 
@@ -81,6 +82,7 @@ export function gameDesignBriefContext(brief: GameDesignBrief | undefined): stri
     "기획에 맞는 핵심 행동 → 진행 → 사건의 결과를 실제로 연결하고, 첫 제작 범위 안에서 완주 가능한 구간을 만든다. 추천안을 사용자 원문으로 바꾸어 주장하지 않는다.",
     "인터뷰 그림은 분위기 참고용이다. 그림에서 주인공의 이름·성별·외형·관계나 게임 자산을 추론해 확정하지 않는다. interview의 원문과 선택을 보존하고, 명시하지 않은 주인공 설정은 임시 결정으로 구분한다.",
     JSON.stringify({ preset: brief.presetId, summary: brief.summary, answers: brief.answers, interview: brief.interview }),
+    detailedAuthoringPresetContext(brief),
     gameDesignExecutionContext(brief),
   ].join("\n");
 }

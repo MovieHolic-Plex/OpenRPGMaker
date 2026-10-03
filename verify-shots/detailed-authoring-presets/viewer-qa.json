@@ -1,0 +1,54 @@
+{
+  "results": [
+    {
+      "width": 736,
+      "genre": "romance",
+      "characters": 7632,
+      "overflow": false
+    },
+    {
+      "width": 736,
+      "genre": "monster",
+      "characters": 7323,
+      "overflow": false
+    },
+    {
+      "width": 736,
+      "genre": "adventure",
+      "characters": 7095,
+      "overflow": false
+    },
+    {
+      "width": 736,
+      "genre": "mystery",
+      "characters": 7217,
+      "overflow": false
+    },
+    {
+      "width": 320,
+      "genre": "romance",
+      "characters": 7632,
+      "overflow": false
+    },
+    {
+      "width": 320,
+      "genre": "monster",
+      "characters": 7323,
+      "overflow": false
+    },
+    {
+      "width": 320,
+      "genre": "adventure",
+      "characters": 7095,
+      "overflow": false
+    },
+    {
+      "width": 320,
+      "genre": "mystery",
+      "characters": 7217,
+      "overflow": false
+    }
+  ],
+  "errors": [],
+  "passed": true
+}

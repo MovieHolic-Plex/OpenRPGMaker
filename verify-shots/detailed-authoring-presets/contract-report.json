@@ -1,0 +1,144 @@
+{
+  "sourceDocuments": [
+    {
+      "id": "common",
+      "characters": 6491,
+      "sections": 12,
+      "sha256": "231d9b01127f000d3106bbf2104f12ab8b0461b55853e0cc869ccef50a9d8d73"
+    },
+    {
+      "id": "romance",
+      "characters": 7632,
+      "sections": 16,
+      "sha256": "c269fa8d0567c8b01d1edd0638c23dc93204ef783f051cd45822ad9c4588ef49"
+    },
+    {
+      "id": "monster",
+      "characters": 7323,
+      "sections": 16,
+      "sha256": "9ddc50d081a67005581f7662031d90cf9c6c7f51d3a1339335aa10fddfdbc3ad"
+    },
+    {
+      "id": "adventure",
+      "characters": 7095,
+      "sections": 16,
+      "sha256": "e0e4b8b571fcf85f3a865b7f82444202277d79cdb1408f496f4ca5604b839b1f"
+    },
+    {
+      "id": "mystery",
+      "characters": 7217,
+      "sections": 16,
+      "sha256": "67668b9e4c9f44b07efc3168e3adf17639e5ecdbe351a084082f13bd390a546a"
+    }
+  ],
+  "variants": [
+    {
+      "genre": "romance",
+      "characters": 38272,
+      "taskCount": 57,
+      "manualCharacters": 14123
+    },
+    {
+      "genre": "monster",
+      "characters": 37829,
+      "taskCount": 57,
+      "manualCharacters": 13814
+    },
+    {
+      "genre": "adventure",
+      "characters": 37510,
+      "taskCount": 57,
+      "manualCharacters": 13586
+    },
+    {
+      "genre": "mystery",
+      "characters": 37703,
+      "taskCount": 57,
+      "manualCharacters": 13708
+    }
+  ],
+  "mixed": [
+    {
+      "primary": "romance",
+      "secondary": "monster",
+      "characters": 53973,
+      "tasks": 73
+    },
+    {
+      "primary": "romance",
+      "secondary": "adventure",
+      "characters": 53721,
+      "tasks": 73
+    },
+    {
+      "primary": "romance",
+      "secondary": "mystery",
+      "characters": 53872,
+      "tasks": 73
+    },
+    {
+      "primary": "monster",
+      "secondary": "romance",
+      "characters": 53870,
+      "tasks": 73
+    },
+    {
+      "primary": "monster",
+      "secondary": "adventure",
+      "characters": 53282,
+      "tasks": 73
+    },
+    {
+      "primary": "monster",
+      "secondary": "mystery",
+      "characters": 53433,
+      "tasks": 73
+    },
+    {
+      "primary": "adventure",
+      "secondary": "romance",
+      "characters": 53547,
+      "tasks": 73
+    },
+    {
+      "primary": "adventure",
+      "secondary": "monster",
+      "characters": 53211,
+      "tasks": 73
+    },
+    {
+      "primary": "adventure",
+      "secondary": "mystery",
+      "characters": 53110,
+      "tasks": 73
+    },
+    {
+      "primary": "mystery",
+      "secondary": "romance",
+      "characters": 53742,
+      "tasks": 73
+    },
+    {
+      "primary": "mystery",
+      "secondary": "monster",
+      "characters": 53406,
+      "tasks": 73
+    },
+    {
+      "primary": "mystery",
+      "secondary": "adventure",
+      "characters": 53154,
+      "tasks": 73
+    }
+  ],
+  "checks": [
+    "Five source hashes match shipped full documents",
+    "Four complete genre manuals",
+    "60 illustrated choice variants",
+    "12 ordered mixed genre combinations",
+    "Dependency graphs have no missing ids or cycles",
+    "Latest edited summary preserved",
+    "Legacy story engine does not imply romance"
+  ],
+  "passed": true
+}
