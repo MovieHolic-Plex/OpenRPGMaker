@@ -10717,6 +10717,4405 @@
    "refs": [
     "folding screen"
    ]
+  },
+  {
+   "id": "tatami mat",
+   "name_ko": "다다미",
+   "name_en": "tatami mat",
+   "category": "east",
+   "category_ko": "동양 실내",
+   "kind": "flat",
+   "footprint": {
+    "w": 1,
+    "h": 2
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "바닥에 깐 다다미 한 장(1×2칸 남북, 밟을 수 있음) — 연두빛 짚 결이 가로로 촘촘하고 긴 두 변에 검푸른 천 테.",
+   "contextRoom": "hobbit",
+   "tags": [
+    "동양",
+    "일본",
+    "방"
+   ],
+   "use": [
+    "walk"
+   ],
+   "place": "일본식 방 바닥(여러 장 이어 깐다).",
+   "pair": [
+    "zabuton"
+   ],
+   "refs": [
+    "runner"
+   ]
+  },
+  {
+   "id": "zabuton",
+   "name_ko": "방석",
+   "name_en": "zabuton",
+   "category": "east",
+   "category_ko": "동양 실내",
+   "kind": "flat",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "바닥에 놓은 네모 방석(밟을 수 있음) — 쪽빛 천, 가운데 술 하나와 눌린 자국.",
+   "contextRoom": "hobbit",
+   "tags": [
+    "동양",
+    "방"
+   ],
+   "use": [
+    "sit"
+   ],
+   "place": "좌식 상 둘레.",
+   "pair": [
+    "low dining tray"
+   ],
+   "refs": [
+    "round rug"
+   ]
+  },
+  {
+   "id": "low dining tray",
+   "name_ko": "좌식 밥상",
+   "name_en": "low dining tray",
+   "category": "east",
+   "category_ko": "동양 실내",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "다리가 짧은 붉은 칠 밥상(8px 높이). 상판 윗면 6행에 밥그릇·국그릇·반찬 접시 셋과 수저, 남쪽 면에 상판 두께 1행과 다리.",
+   "contextRoom": "hobbit",
+   "tags": [
+    "동양",
+    "조선",
+    "방"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "좌식 방 가운데.",
+   "pair": [
+    "zabuton"
+   ],
+   "refs": [
+    "tea 2x2"
+   ]
+  },
+  {
+   "id": "futon bedding",
+   "name_ko": "요와 이불",
+   "name_en": "futon bedding",
+   "category": "east",
+   "category_ko": "동양 실내",
+   "kind": "flat",
+   "footprint": {
+    "w": 1,
+    "h": 2
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "바닥에 편 요(1×2칸 남북, 밟을 수 있음) — 북쪽 끝 메밀 베개, 남쪽으로 덮은 꽃무늬 솜이불, 아래 흰 요 가장자리가 비친다.",
+   "contextRoom": "hobbit",
+   "tags": [
+    "동양",
+    "침실"
+   ],
+   "use": [
+    "sleep"
+   ],
+   "place": "좌식 방 바닥.",
+   "pair": [
+    "folding screen"
+   ],
+   "refs": [
+    "straw bed"
+   ]
+  },
+  {
+   "id": "mother of pearl chest",
+   "name_ko": "자개장",
+   "name_en": "mother of pearl chest",
+   "category": "east",
+   "category_ko": "동양 실내",
+   "kind": "wall",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "description": "검은 옻칠 자개장(2칸, 16px 솟음). 꼭대기 윗면 3행, 남쪽 면 문짝 넷에 무지갯빛 자개 학·꽃 무늬, 놋쇠 경첩과 고리.",
+   "contextRoom": "manor",
+   "tags": [
+    "동양",
+    "조선",
+    "안방"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "안방 북쪽 벽.",
+   "pair": [
+    "futon bedding"
+   ],
+   "refs": [
+    "wardrobe"
+   ]
+  },
+  {
+   "id": "bandaji chest",
+   "name_ko": "반닫이",
+   "name_en": "bandaji chest",
+   "category": "east",
+   "category_ko": "동양 실내",
+   "kind": "wall",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "나무 반닫이 궤(12px 솟음). 뚜껑 윗면 4행, 남쪽 면 위쪽 절반이 앞으로 여는 문, 큰 놋쇠 경첩판과 자물쇠 장식.",
+   "contextRoom": "manor",
+   "tags": [
+    "동양",
+    "조선"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "방 벽 앞.",
+   "pair": [
+    "mother of pearl chest"
+   ],
+   "refs": [
+    "chest"
+   ]
+  },
+  {
+   "id": "low writing desk",
+   "name_ko": "서안",
+   "name_en": "low writing desk",
+   "category": "east",
+   "category_ko": "동양 실내",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "낮은 나무 서안(10px 높이). 상판 윗면 6행에 펼친 한지 책·붓 걸이·벼루, 양끝이 살짝 말려 올라간 판, 짧은 다리.",
+   "contextRoom": "scholar",
+   "tags": [
+    "동양",
+    "조선",
+    "서재"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "사랑방 창가.",
+   "pair": [
+    "zabuton"
+   ],
+   "refs": [
+    "desk 1x1"
+   ]
+  },
+  {
+   "id": "hanging scroll",
+   "name_ko": "족자",
+   "name_en": "hanging scroll",
+   "category": "east",
+   "category_ko": "동양 실내",
+   "kind": "hang",
+   "footprint": {
+    "w": 1,
+    "h": 0
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "벽에 건 세로 족자(벽면 윗줄) — 위아래 나무 축, 흰 비단에 먹으로 그린 대나무 한 그루.",
+   "contextRoom": "scholar",
+   "tags": [
+    "동양",
+    "서재"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "방 벽 윗줄.",
+   "pair": [],
+   "refs": [
+    "picture"
+   ]
+  },
+  {
+   "id": "paper lantern stand",
+   "name_ko": "등롱",
+   "name_en": "paper lantern stand",
+   "category": "east",
+   "category_ko": "동양 실내",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "나무 받침 위의 네모 한지 등롱(16px 솟음). 꼭대기 윗면 2행, 사면 한지가 안의 촛불로 노랗게 빛나고 나무 살 격자.",
+   "contextRoom": "hobbit",
+   "tags": [
+    "동양",
+    "방"
+   ],
+   "use": [
+    "light"
+   ],
+   "place": "방 구석·복도.",
+   "pair": [
+    "futon bedding"
+   ],
+   "refs": []
+  },
+  {
+   "id": "jangdok jars",
+   "name_ko": "장독 무리",
+   "name_en": "jangdok jars",
+   "category": "east",
+   "category_ko": "동양 실내",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "갈색 옹기 장독 셋(큰 것 하나 작은 것 둘, 14px 솟음). 독마다 둥근 뚜껑 윗면 3행이 밝고 배가 불룩, 유약 광택 한 점.",
+   "contextRoom": "hobbit",
+   "tags": [
+    "동양",
+    "조선",
+    "부엌"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "부엌 뒤·광.",
+   "pair": [
+    "clay cook hearth"
+   ],
+   "refs": [
+    "water jar",
+    "pot"
+   ]
+  },
+  {
+   "id": "ancestral offering table",
+   "name_ko": "제사상",
+   "name_en": "ancestral offering table",
+   "category": "east",
+   "category_ko": "동양 실내",
+   "kind": "floor",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "description": "붉은 칠 제사상(2칸, 12px 솟음). 상판 윗면 7행에 과일 접시(사과·배·감)·떡·향로·촛대 둘·위패, 남쪽 면에 다리와 앞 장식.",
+   "contextRoom": "chapel",
+   "tags": [
+    "동양",
+    "조선",
+    "제사"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "대청 북쪽.",
+   "pair": [
+    "incense burner"
+   ],
+   "refs": [
+    "altar"
+   ]
+  },
+  {
+   "id": "kamidana shelf",
+   "name_ko": "가미다나",
+   "name_en": "kamidana shelf",
+   "category": "east",
+   "category_ko": "동양 실내",
+   "kind": "hang",
+   "footprint": {
+    "w": 1,
+    "h": 0
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "벽 높은 곳의 작은 신단 선반(벽면 윗줄) — 흰 나무 사당 모양, 앞에 금줄과 흰 종이 술, 작은 술병 둘.",
+   "contextRoom": "hobbit",
+   "tags": [
+    "동양",
+    "일본"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "일본식 방 벽 윗줄.",
+   "pair": [],
+   "refs": [
+    "shelf:candle"
+   ]
+  },
+  {
+   "id": "samurai armor display",
+   "name_ko": "사무라이 갑옷",
+   "name_en": "samurai armor display",
+   "category": "east",
+   "category_ko": "동양 실내",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "받침 상자 위에 앉힌 붉은 실 사무라이 갑옷(16px 솟음). 투구 윗면 3행과 금 뿔 장식, 가슴판 가로 띠, 받침 윗면 2행.",
+   "contextRoom": "throne",
+   "tags": [
+    "동양",
+    "일본",
+    "무가"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "무가 저택 대청.",
+   "pair": [
+    "katana rack"
+   ],
+   "refs": [
+    "armor stand"
+   ]
+  },
+  {
+   "id": "katana rack",
+   "name_ko": "도검 걸이",
+   "name_en": "katana rack",
+   "category": "east",
+   "category_ko": "동양 실내",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "낮은 검은 칠 받침에 가로로 얹은 칼 둘(10px 높이). 받침 윗면 5행, 칼집은 검고 손잡이는 마름모 끈 무늬.",
+   "contextRoom": "throne",
+   "tags": [
+    "동양",
+    "일본",
+    "무가"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "도장·무가 저택.",
+   "pair": [
+    "samurai armor display"
+   ],
+   "refs": [
+    "weapon rack"
+   ]
+  },
+  {
+   "id": "noren curtain",
+   "name_ko": "노렌",
+   "name_en": "noren curtain",
+   "category": "east",
+   "category_ko": "동양 실내",
+   "kind": "hang",
+   "footprint": {
+    "w": 2,
+    "h": 0
+   },
+   "canvas": [
+    32,
+    16
+   ],
+   "description": "문 위에 늘어뜨린 쪽빛 천 노렌(벽면 윗줄 2칸) — 세 폭으로 갈라지고 가운데 흰 둥근 문양.",
+   "contextRoom": "tavern",
+   "tags": [
+    "동양",
+    "일본",
+    "가게"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "가게·주방 입구 위.",
+   "pair": [],
+   "refs": [
+    "curtained window"
+   ]
+  },
+  {
+   "id": "mahjong table",
+   "name_ko": "마작 탁자",
+   "name_en": "mahjong table",
+   "category": "east",
+   "category_ko": "동양 실내",
+   "kind": "floor",
+   "footprint": {
+    "w": 2,
+    "h": 2
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "description": "초록 펠트 네모 마작 탁자(2×2칸, 12px 높이). 남쪽 위에서 내려다본 3/4: 꼭대기 윗면 22행 — 초록 판 위에 네 변으로 늘어선 흰 패 줄과 가운데 주사위 둘, 그 아래 남쪽 면에 나무 테 두께 3행과 다리.",
+   "contextRoom": "casino",
+   "tags": [
+    "동양",
+    "중국",
+    "도박"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "찻집·도박장.",
+   "pair": [
+    "stool"
+   ],
+   "refs": [
+    "felt 2x2"
+   ]
+  },
+  {
+   "id": "bamboo blind",
+   "name_ko": "대나무 발",
+   "name_en": "bamboo blind",
+   "category": "east",
+   "category_ko": "동양 실내",
+   "kind": "hang",
+   "footprint": {
+    "w": 1,
+    "h": 0
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "창에 내린 대나무 발(벽면 윗줄) — 가는 가로 대 줄, 아래 끝을 말아 끈으로 묶었다.",
+   "contextRoom": "hobbit",
+   "tags": [
+    "동양",
+    "여름"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "방 창 윗줄.",
+   "pair": [],
+   "refs": [
+    "curtained window"
+   ]
+  },
+  {
+   "id": "tea brazier set",
+   "name_ko": "다기와 풍로",
+   "name_en": "tea brazier set",
+   "category": "east",
+   "category_ko": "동양 실내",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "작은 흙 풍로 위 쇠 주전자와 옆의 찻잔 둘(10px 높이). 주전자 뚜껑 윗면 3행, 풍로 구멍의 주황 불씨.",
+   "contextRoom": "hobbit",
+   "tags": [
+    "동양",
+    "다실"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "다실·사랑방.",
+   "pair": [
+    "low writing desk"
+   ],
+   "refs": [
+    "stove"
+   ]
+  },
+  {
+   "id": "buddhist altar cabinet",
+   "name_ko": "불단",
+   "name_en": "buddhist altar cabinet",
+   "category": "east",
+   "category_ko": "동양 실내",
+   "kind": "wall",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "검은 칠 금장 불단(16px 솟음). 지붕 모양 꼭대기 윗면 3행, 열린 문 안 금빛 불상 하나와 촛대·꽃병, 아래 서랍.",
+   "contextRoom": "chapel",
+   "tags": [
+    "동양",
+    "일본",
+    "신앙"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "집 안쪽 벽.",
+   "pair": [
+    "incense burner"
+   ],
+   "refs": [
+    "reredos"
+   ]
+  },
+  {
+   "id": "chinese moon screen",
+   "name_ko": "둥근 창 병풍",
+   "name_en": "chinese moon screen",
+   "category": "east",
+   "category_ko": "동양 실내",
+   "kind": "floor",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    48
+   ],
+   "description": "붉은 나무 틀에 둥근 달 창을 뚫은 칸막이(2칸, 32px 솟음). 위 가로대 윗면 2행, 둥근 창 안으로 뒤 벽이 비치고 둘레에 꽃살 격자.",
+   "contextRoom": "tower",
+   "tags": [
+    "동양",
+    "중국"
+   ],
+   "use": [
+    "block"
+   ],
+   "place": "중국풍 방 칸막이.",
+   "pair": [
+    "mahjong table"
+   ],
+   "refs": [
+    "folding screen"
+   ]
+  },
+  {
+   "id": "cryo pod",
+   "name_ko": "냉동 수면 캡슐",
+   "name_en": "cryo pod",
+   "category": "scifi",
+   "category_ko": "SF 우주선",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 2
+   },
+   "canvas": [
+    16,
+    48
+   ],
+   "description": "흰 냉동 수면 캡슐(1×2칸 남북, 16px 솟음). 남쪽 위에서 내려다본 3/4: 꼭대기 윗면 26행 — 둥근 유리 덮개 너머 하늘빛 냉기와 잠든 사람 실루엣, 덮개 둘레 흰 껍데기와 파란 불빛 띠. 남쪽 면에 조작판.",
+   "contextRoom": "magitek",
+   "tags": [
+    "SF",
+    "우주선"
+   ],
+   "use": [
+    "sleep"
+   ],
+   "place": "우주선 수면실 줄로.",
+   "pair": [
+    "ship console"
+   ],
+   "refs": [
+    "coffin"
+   ]
+  },
+  {
+   "id": "holo table",
+   "name_ko": "홀로그램 탁자",
+   "name_en": "holo table",
+   "category": "scifi",
+   "category_ko": "SF 우주선",
+   "kind": "floor",
+   "footprint": {
+    "w": 2,
+    "h": 2
+   },
+   "canvas": [
+    32,
+    48
+   ],
+   "description": "둥근 금속 작전 탁자(2×2칸, 12px 높이) 위에 떠 있는 하늘빛 행성 홀로그램(16px 위로). 남쪽 위에서 내려다본 3/4: 꼭대기 윗면 22행 — 빛나는 원판과 격자선, 그 아래 남쪽 면에 테 두께 3행과 불빛 띠.",
+   "contextRoom": "magitek",
+   "tags": [
+    "SF",
+    "우주선",
+    "함교"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "함교 가운데.",
+   "pair": [
+    "ship console"
+   ],
+   "refs": []
+  },
+  {
+   "id": "ship console",
+   "name_ko": "우주선 조종판",
+   "name_en": "ship console",
+   "category": "scifi",
+   "category_ko": "SF 우주선",
+   "kind": "wall",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "description": "벽에 붙은 금속 조종판(2칸, 16px 솟음). 기운 판 윗면 6행에 화면 둘(초록 레이더·파란 그래프)과 색 버튼 줄, 남쪽 면에 흰 패널과 환기 틈.",
+   "contextRoom": "magitek",
+   "tags": [
+    "SF",
+    "우주선"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "함교·기관실 벽.",
+   "pair": [
+    "captain seat sf"
+   ],
+   "refs": [
+    "control console"
+   ]
+  },
+  {
+   "id": "captain seat sf",
+   "name_ko": "함장 의자",
+   "name_en": "captain seat sf",
+   "category": "scifi",
+   "category_ko": "SF 우주선",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "흰 껍데기 함장 의자(16px 솟음), 남쪽을 본다. 좌판 윗면 4행, 둥근 등받이 윗면 2행, 팔걸이 끝 작은 조작판(불빛), 원기둥 받침.",
+   "contextRoom": "magitek",
+   "tags": [
+    "SF",
+    "우주선",
+    "함교"
+   ],
+   "use": [
+    "sit"
+   ],
+   "place": "함교 가운데.",
+   "pair": [
+    "ship console"
+   ],
+   "refs": [
+    "armchair"
+   ]
+  },
+  {
+   "id": "robot charger",
+   "name_ko": "로봇 충전대",
+   "name_en": "robot charger",
+   "category": "scifi",
+   "category_ko": "SF 우주선",
+   "kind": "wall",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    48
+   ],
+   "description": "벽 충전대에 선 작은 둥근 로봇(32px 솟음). 로봇 머리 윗면 3행과 파란 눈 둘, 등 뒤 충전 케이블, 아래 원형 받침판.",
+   "contextRoom": "magitek",
+   "tags": [
+    "SF",
+    "정비실"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "정비실 벽.",
+   "pair": [
+    "ship console"
+   ],
+   "refs": [
+    "mannequin"
+   ]
+  },
+  {
+   "id": "spacesuit locker",
+   "name_ko": "우주복 보관함",
+   "name_en": "spacesuit locker",
+   "category": "scifi",
+   "category_ko": "SF 우주선",
+   "kind": "wall",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    48
+   ],
+   "description": "유리문 보관함 안의 흰 우주복(32px 솟음). 보관함 꼭대기 윗면 2행, 유리 너머 헬멧 둥근 창과 몸통 주황 띠.",
+   "contextRoom": "magitek",
+   "tags": [
+    "SF",
+    "우주선"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "에어록 옆 벽.",
+   "pair": [
+    "robot charger"
+   ],
+   "refs": [
+    "armor stand"
+   ]
+  },
+  {
+   "id": "regen tank",
+   "name_ko": "재생 탱크",
+   "name_en": "regen tank",
+   "category": "scifi",
+   "category_ko": "SF 우주선",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    48
+   ],
+   "description": "초록 액체가 든 유리 원통 탱크(32px 솟음). 금속 뚜껑 윗면 2행, 원통 안 떠오르는 거품, 아래 받침과 관.",
+   "contextRoom": "magitek",
+   "tags": [
+    "SF",
+    "의무실",
+    "실험실"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "의무실.",
+   "pair": [
+    "cryo pod"
+   ],
+   "refs": [
+    "fish tank"
+   ]
+  },
+  {
+   "id": "cargo container",
+   "name_ko": "화물 컨테이너",
+   "name_en": "cargo container",
+   "category": "scifi",
+   "category_ko": "SF 우주선",
+   "kind": "floor",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "description": "골진 금속 화물 상자(2칸, 16px 솟음). 꼭대기 윗면 5행에 노란 경고 띠 모서리, 남쪽 면에 세로 골·문 손잡이·번호 표.",
+   "contextRoom": "magitek",
+   "tags": [
+    "SF",
+    "화물칸",
+    "부두"
+   ],
+   "use": [
+    "block"
+   ],
+   "place": "화물칸.",
+   "pair": [
+    "robot charger"
+   ],
+   "refs": [
+    "crate"
+   ]
+  },
+  {
+   "id": "hydroponic rack",
+   "name_ko": "수경 재배 선반",
+   "name_en": "hydroponic rack",
+   "category": "scifi",
+   "category_ko": "SF 우주선",
+   "kind": "wall",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "description": "보라 생장등 아래 수경 재배 선반(2칸, 16px 솟음). 위 등 윗면 2행, 두 단 판마다 초록 새싹 줄, 관 따라 흐르는 물빛.",
+   "contextRoom": "magitek",
+   "tags": [
+    "SF",
+    "농장"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "우주선 농장·연구소.",
+   "pair": [
+    "ship console"
+   ],
+   "refs": [
+    "seedling shelf"
+   ]
+  },
+  {
+   "id": "space window",
+   "name_ko": "우주 창",
+   "name_en": "space window",
+   "category": "scifi",
+   "category_ko": "SF 우주선",
+   "kind": "hang",
+   "footprint": {
+    "w": 2,
+    "h": 0
+   },
+   "canvas": [
+    32,
+    16
+   ],
+   "description": "벽 윗줄의 둥근 모서리 큰 창(2칸) — 검은 우주에 별 점과 푸른 행성 반쪽, 금속 테.",
+   "contextRoom": "magitek",
+   "tags": [
+    "SF",
+    "우주선"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "함교·선실 벽 윗줄.",
+   "pair": [],
+   "refs": [
+    "round window"
+   ]
+  },
+  {
+   "id": "energy core",
+   "name_ko": "에너지 핵",
+   "name_en": "energy core",
+   "category": "scifi",
+   "category_ko": "SF 우주선",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    48
+   ],
+   "description": "금속 고리 셋에 둘러싸인 빛나는 하늘빛 구(32px 솟음). 구 꼭대기가 가장 밝고, 고리 윗면이 밝다, 아래 받침과 관.",
+   "contextRoom": "magitek",
+   "tags": [
+    "SF",
+    "기관실"
+   ],
+   "use": [
+    "light"
+   ],
+   "place": "기관실 가운데.",
+   "pair": [
+    "ship console"
+   ],
+   "refs": [
+    "magitek engine"
+   ]
+  },
+  {
+   "id": "laser rifle rack",
+   "name_ko": "광선총 걸이",
+   "name_en": "laser rifle rack",
+   "category": "scifi",
+   "category_ko": "SF 우주선",
+   "kind": "hang",
+   "footprint": {
+    "w": 1,
+    "h": 0
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "벽 고정대에 건 흰 광선총 둘(벽면 윗줄) — 총열 끝 파란 렌즈, 아래 작은 충전 불빛.",
+   "contextRoom": "magitek",
+   "tags": [
+    "SF",
+    "무기고"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "무기고 벽 윗줄.",
+   "pair": [],
+   "refs": [
+    "weapon rack"
+   ]
+  },
+  {
+   "id": "teleporter pad sf",
+   "name_ko": "전송 패드",
+   "name_en": "teleporter pad sf",
+   "category": "scifi",
+   "category_ko": "SF 우주선",
+   "kind": "flat",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "바닥의 둥근 금속 전송 패드(밟을 수 있음) — 가운데 빛나는 하늘빛 원과 둘레 점 불빛 여섯.",
+   "contextRoom": "magitek",
+   "tags": [
+    "SF",
+    "우주선"
+   ],
+   "use": [
+    "walk"
+   ],
+   "place": "전송실 바닥.",
+   "pair": [
+    "ship console"
+   ],
+   "refs": []
+  },
+  {
+   "id": "med bay bed",
+   "name_ko": "의무실 침대",
+   "name_en": "med bay bed",
+   "category": "scifi",
+   "category_ko": "SF 우주선",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 2
+   },
+   "canvas": [
+    16,
+    48
+   ],
+   "description": "흰 금속 진단 침대(1×2칸 남북, 12px 솟음). 남쪽 위에서 내려다본 3/4: 꼭대기 윗면 26행 — 파란 패드와 북쪽 베개, 머리맡 위 진단 화면 판(윗면 2행), 침대 둘레 파란 불빛 띠. 남쪽 면은 기둥 받침.",
+   "contextRoom": "magitek",
+   "tags": [
+    "SF",
+    "의무실"
+   ],
+   "use": [
+    "sleep"
+   ],
+   "place": "의무실.",
+   "pair": [
+    "regen tank"
+   ],
+   "refs": [
+    "hospital bed"
+   ]
+  },
+  {
+   "id": "conveyor belt",
+   "name_ko": "컨베이어 벨트",
+   "name_en": "conveyor belt",
+   "category": "factory",
+   "category_ko": "공장·스팀펑크",
+   "kind": "floor",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "description": "쇠 틀 위 검은 고무 벨트(2칸, 12px 솟음). 벨트 윗면 6행에 가로 마디 줄과 실린 나무 상자 하나, 양끝 둥근 굴대, 남쪽 면에 쇠 다리.",
+   "contextRoom": "magitek",
+   "tags": [
+    "공장"
+   ],
+   "use": [
+    "block"
+   ],
+   "place": "공장 작업장.",
+   "pair": [
+    "pressure tank"
+   ],
+   "refs": [
+    "mine cart"
+   ]
+  },
+  {
+   "id": "pressure tank",
+   "name_ko": "압력 탱크",
+   "name_en": "pressure tank",
+   "category": "factory",
+   "category_ko": "공장·스팀펑크",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    48
+   ],
+   "description": "세운 놋쇠 압력 탱크(32px 솟음). 둥근 머리 윗면 3행과 압력계·밸브 바퀴, 몸통 리벳 띠, 아래 받침 다리.",
+   "contextRoom": "magitek",
+   "tags": [
+    "공장",
+    "스팀펑크"
+   ],
+   "use": [
+    "block"
+   ],
+   "place": "보일러실.",
+   "pair": [
+    "valve wheel"
+   ],
+   "refs": [
+    "steam boiler"
+   ]
+  },
+  {
+   "id": "valve wheel",
+   "name_ko": "밸브 바퀴",
+   "name_en": "valve wheel",
+   "category": "factory",
+   "category_ko": "공장·스팀펑크",
+   "kind": "hang",
+   "footprint": {
+    "w": 1,
+    "h": 0
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "벽 관에 달린 붉은 밸브 바퀴(벽면 윗줄) — 바퀴 살 넷, 관은 놋쇠, 옆에 작은 압력계.",
+   "contextRoom": "magitek",
+   "tags": [
+    "공장",
+    "스팀펑크"
+   ],
+   "use": [
+    "switch"
+   ],
+   "place": "기관실 벽 윗줄.",
+   "pair": [
+    "pressure tank"
+   ],
+   "refs": [
+    "wall lever"
+   ]
+  },
+  {
+   "id": "lathe machine",
+   "name_ko": "선반 기계",
+   "name_en": "lathe machine",
+   "category": "factory",
+   "category_ko": "공장·스팀펑크",
+   "kind": "floor",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "description": "쇠 선반 기계(2칸, 16px 솟음). 위 윗면 5행에 물린 쇠막대와 깎는 날, 서쪽 굴대 상자, 남쪽 면에 핸들 바퀴 둘과 기름때.",
+   "contextRoom": "smithy",
+   "tags": [
+    "공장",
+    "작업장"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "작업장.",
+   "pair": [
+    "tool cart"
+   ],
+   "refs": [
+    "grindstone"
+   ]
+  },
+  {
+   "id": "tool cart",
+   "name_ko": "공구 수레",
+   "name_en": "tool cart",
+   "category": "factory",
+   "category_ko": "공장·스팀펑크",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "빨간 철제 공구 수레(14px 솟음). 위 판 윗면 5행에 렌치·망치·드라이버, 서랍 셋, 아래 바퀴.",
+   "contextRoom": "smithy",
+   "tags": [
+    "공장",
+    "정비소",
+    "현대"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "작업장.",
+   "pair": [
+    "lathe machine"
+   ],
+   "refs": [
+    "tool wall"
+   ]
+  },
+  {
+   "id": "oil drum",
+   "name_ko": "기름 드럼통",
+   "name_en": "oil drum",
+   "category": "factory",
+   "category_ko": "공장·스팀펑크",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "파란 철제 드럼통(16px 솟음). 둥근 뚜껑 윗면 4행에 마개 둘, 몸통 가로 테 둘과 흘러내린 검은 기름 자국.",
+   "contextRoom": "magitek",
+   "tags": [
+    "공장",
+    "창고"
+   ],
+   "use": [
+    "block"
+   ],
+   "place": "창고·정비소.",
+   "pair": [
+    "tool cart"
+   ],
+   "refs": [
+    "barrel"
+   ]
+  },
+  {
+   "id": "pallet boxes",
+   "name_ko": "팔레트 짐",
+   "name_en": "pallet boxes",
+   "category": "factory",
+   "category_ko": "공장·스팀펑크",
+   "kind": "floor",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "description": "나무 팔레트 위에 쌓은 종이 상자 넷(2칸, 16px 솟음). 맨 위 상자 윗면 5행에 테이프 줄, 남쪽 면에 상자 옆면과 팔레트 틈.",
+   "contextRoom": "magitek",
+   "tags": [
+    "공장",
+    "창고",
+    "현대"
+   ],
+   "use": [
+    "block"
+   ],
+   "place": "창고.",
+   "pair": [
+    "cargo container"
+   ],
+   "refs": [
+    "crate"
+   ]
+  },
+  {
+   "id": "wall fan industrial",
+   "name_ko": "공장 환풍기",
+   "name_en": "wall fan industrial",
+   "category": "factory",
+   "category_ko": "공장·스팀펑크",
+   "kind": "hang",
+   "footprint": {
+    "w": 1,
+    "h": 0
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "벽 윗줄의 둥근 철망 환풍기(1칸) — 날개 넷이 비치고 둘레 쇠 테, 먼지 낀 그늘.",
+   "contextRoom": "magitek",
+   "tags": [
+    "공장"
+   ],
+   "use": [
+    "block"
+   ],
+   "place": "공장 벽 윗줄.",
+   "pair": [],
+   "refs": [
+    "gear wall"
+   ]
+  },
+  {
+   "id": "steam automaton",
+   "name_ko": "증기 자동인형",
+   "name_en": "steam automaton",
+   "category": "factory",
+   "category_ko": "공장·스팀펑크",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    48
+   ],
+   "description": "놋쇠 증기 자동인형(32px 솟음), 남쪽을 본다. 둥근 머리 윗면 2행과 렌즈 눈, 가슴 압력계, 등에서 오르는 김 한 줄, 굵은 쇠다리.",
+   "contextRoom": "magitek",
+   "tags": [
+    "스팀펑크",
+    "공방"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "스팀펑크 공방.",
+   "pair": [
+    "pressure tank"
+   ],
+   "refs": [
+    "magitek armor"
+   ]
+  },
+  {
+   "id": "punch clock",
+   "name_ko": "출근 기록기",
+   "name_en": "punch clock",
+   "category": "factory",
+   "category_ko": "공장·스팀펑크",
+   "kind": "wall",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "벽의 출근 기록기와 카드꽂이(16px 솟음). 위 시계 얼굴, 가운데 카드 넣는 틈, 옆 꽂이에 종이 카드 줄.",
+   "contextRoom": "magitek",
+   "tags": [
+    "공장"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "공장 입구 벽.",
+   "pair": [],
+   "refs": [
+    "wall clock"
+   ]
+  },
+  {
+   "id": "big scale",
+   "name_ko": "큰 저울",
+   "name_en": "big scale",
+   "category": "factory",
+   "category_ko": "공장·스팀펑크",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "바닥 쇠 저울판과 기둥 눈금(16px 솟음). 저울판 윗면 4행에 자루 하나, 뒤 기둥 꼭대기 둥근 눈금판.",
+   "contextRoom": "butcher",
+   "tags": [
+    "창고",
+    "가게"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "방앗간·창고.",
+   "pair": [
+    "sack:grain"
+   ],
+   "refs": [
+    "balance scale"
+   ]
+  },
+  {
+   "id": "easel canvas",
+   "name_ko": "이젤과 캔버스",
+   "name_en": "easel canvas",
+   "category": "atelier",
+   "category_ko": "아틀리에·음악",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    48
+   ],
+   "description": "나무 이젤에 세운 그리다 만 캔버스(32px 솟음). 캔버스 위 테 윗면 1행, 앞면에 푸른 하늘과 언덕 그림, 이젤 다리 셋.",
+   "contextRoom": "opera",
+   "tags": [
+    "아틀리에"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "화가 작업실.",
+   "pair": [
+    "paint table"
+   ],
+   "refs": [
+    "picture"
+   ]
+  },
+  {
+   "id": "paint table",
+   "name_ko": "물감 탁자",
+   "name_en": "paint table",
+   "category": "atelier",
+   "category_ko": "아틀리에·음악",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "물감 묻은 작은 탁자(12px 솟음). 상판 윗면 6행에 팔레트 판(색 점 여섯)·붓 꽂은 병·물감 튜브, 남쪽 면에 물감 얼룩.",
+   "contextRoom": "opera",
+   "tags": [
+    "아틀리에"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "이젤 옆.",
+   "pair": [
+    "easel canvas"
+   ],
+   "refs": [
+    "table:potion+flask"
+   ]
+  },
+  {
+   "id": "sculpture stand",
+   "name_ko": "조각대",
+   "name_en": "sculpture stand",
+   "category": "atelier",
+   "category_ko": "아틀리에·음악",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    48
+   ],
+   "description": "돌림 받침 위의 깎다 만 흰 돌 조각(32px 솟음) — 머리 윗면 2행은 매끈하고 아래는 거친 덩이, 받침 윗면 2행과 끌 하나.",
+   "contextRoom": "opera",
+   "tags": [
+    "아틀리에"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "조각가 작업실.",
+   "pair": [
+    "easel canvas"
+   ],
+   "refs": [
+    "statue"
+   ]
+  },
+  {
+   "id": "canvas stack",
+   "name_ko": "캔버스 더미",
+   "name_en": "canvas stack",
+   "category": "atelier",
+   "category_ko": "아틀리에·음악",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "벽에 기대 세운 캔버스 여럿(16px 솟음) — 맨 앞은 뒤판(나무 틀 십자), 뒤로 그림 모서리 셋이 삐져나온다.",
+   "contextRoom": "opera",
+   "tags": [
+    "아틀리에"
+   ],
+   "use": [
+    "block"
+   ],
+   "place": "작업실 구석.",
+   "pair": [
+    "easel canvas"
+   ],
+   "refs": [
+    "picture"
+   ]
+  },
+  {
+   "id": "drum kit",
+   "name_ko": "드럼 세트",
+   "name_en": "drum kit",
+   "category": "atelier",
+   "category_ko": "아틀리에·음악",
+   "kind": "floor",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "description": "드럼 세트(2칸, 16px 솟음). 위에서 본 북 윗면(흰 둥근 가죽) 넷과 금빛 심벌즈 둘, 가운데 큰 베이스 드럼 앞면(남쪽)과 의자.",
+   "contextRoom": "opera",
+   "tags": [
+    "음악",
+    "현대"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "무대·연습실.",
+   "pair": [
+    "amp speaker"
+   ],
+   "refs": [
+    "footlights"
+   ]
+  },
+  {
+   "id": "amp speaker",
+   "name_ko": "앰프 스피커",
+   "name_en": "amp speaker",
+   "category": "atelier",
+   "category_ko": "아틀리에·음악",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "검은 앰프 상자(16px 솟음). 위 윗면 3행에 손잡이와 다이얼 줄, 남쪽 면 그물 아래 둥근 스피커.",
+   "contextRoom": "opera",
+   "tags": [
+    "음악",
+    "현대"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "무대·연습실.",
+   "pair": [
+    "drum kit"
+   ],
+   "refs": [
+    "crate"
+   ]
+  },
+  {
+   "id": "mic stand",
+   "name_ko": "마이크 스탠드",
+   "name_en": "mic stand",
+   "category": "atelier",
+   "category_ko": "아틀리에·음악",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "검은 마이크 스탠드(16px 솟음) — 꼭대기 은빛 둥근 마이크 머리 2행, 가는 기둥, 세 갈래 받침, 늘어진 줄.",
+   "contextRoom": "opera",
+   "tags": [
+    "음악",
+    "무대"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "무대 앞.",
+   "pair": [
+    "amp speaker"
+   ],
+   "refs": [
+    "music stand"
+   ]
+  },
+  {
+   "id": "cello stand",
+   "name_ko": "첼로",
+   "name_en": "cello stand",
+   "category": "atelier",
+   "category_ko": "아틀리에·음악",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    48
+   ],
+   "description": "받침에 세운 첼로와 활(32px 솟음) — 머리 소용돌이 윗면 1행, 붉은 갈색 몸통의 f 구멍 둘·줄 넷, 아래 받침.",
+   "contextRoom": "opera",
+   "tags": [
+    "음악"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "연주실·극장.",
+   "pair": [
+    "music stand"
+   ],
+   "refs": [
+    "lute"
+   ]
+  },
+  {
+   "id": "gramophone",
+   "name_ko": "축음기",
+   "name_en": "gramophone",
+   "category": "atelier",
+   "category_ko": "아틀리에·음악",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "나무 상자 위 금빛 나팔 축음기(16px 솟음). 상자 윗면 4행에 검은 음반과 바늘 팔, 나팔꽃 모양 나팔이 북동쪽으로 벌어진다.",
+   "contextRoom": "manor",
+   "tags": [
+    "음악",
+    "저택"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "응접실·찻집.",
+   "pair": [
+    "armchair"
+   ],
+   "refs": [
+    "music box"
+   ]
+  },
+  {
+   "id": "stage spotlight",
+   "name_ko": "무대 조명",
+   "name_en": "stage spotlight",
+   "category": "atelier",
+   "category_ko": "아틀리에·음악",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "삼각대 위의 검은 원통 조명(16px 솟음), 북쪽 무대를 향한다. 원통 윗면 2행, 앞 렌즈의 노란 빛, 세 다리.",
+   "contextRoom": "opera",
+   "tags": [
+    "극장",
+    "무대"
+   ],
+   "use": [
+    "light"
+   ],
+   "place": "무대 옆.",
+   "pair": [
+    "mic stand"
+   ],
+   "refs": [
+    "footlights"
+   ]
+  },
+  {
+   "id": "christmas tree",
+   "name_ko": "성탄 나무",
+   "name_en": "christmas tree",
+   "category": "season",
+   "category_ko": "계절·행사",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    48
+   ],
+   "description": "화분 받침의 전나무(32px 솟음) — 꼭대기 금별, 층층 가지 윗면이 밝은 초록, 빨강·금 구슬과 노란 전구 점, 아래 선물 상자 하나.",
+   "contextRoom": "manor",
+   "tags": [
+    "계절",
+    "겨울",
+    "축제"
+   ],
+   "use": [
+    "light"
+   ],
+   "place": "거실·광장 실내.",
+   "pair": [
+    "gift boxes"
+   ],
+   "refs": [
+    "white tree"
+   ]
+  },
+  {
+   "id": "pumpkin lantern",
+   "name_ko": "호박 등",
+   "name_en": "pumpkin lantern",
+   "category": "season",
+   "category_ko": "계절·행사",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "눈·입을 판 주황 호박 등(12px 높이). 꼭지 윗면 2행, 파낸 구멍 안 노란 촛불 빛.",
+   "contextRoom": "manor",
+   "tags": [
+    "계절",
+    "가을",
+    "축제"
+   ],
+   "use": [
+    "light"
+   ],
+   "place": "현관·축제 방.",
+   "pair": [
+    "candle"
+   ],
+   "refs": [
+    "crate:pumpkin"
+   ]
+  },
+  {
+   "id": "birthday cake table",
+   "name_ko": "생일 케이크 탁자",
+   "name_en": "birthday cake table",
+   "category": "season",
+   "category_ko": "계절·행사",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "흰 천 덮은 작은 둥근 탁자(12px 솟음). 상판 윗면 7행에 초 꽂은 딸기 케이크(초 불꽃 셋)와 접시 둘, 천 자락이 남쪽으로.",
+   "contextRoom": "bakery",
+   "tags": [
+    "계절",
+    "축제"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "집·여관 잔치.",
+   "pair": [
+    "gift boxes"
+   ],
+   "refs": [
+    "table:cake+pie"
+   ]
+  },
+  {
+   "id": "festival lantern string",
+   "name_ko": "축제 등 줄",
+   "name_en": "festival lantern string",
+   "category": "season",
+   "category_ko": "계절·행사",
+   "kind": "hang",
+   "footprint": {
+    "w": 2,
+    "h": 0
+   },
+   "canvas": [
+    32,
+    16
+   ],
+   "description": "벽 윗줄에 늘어진 줄과 색 종이등 넷(2칸) — 빨강·노랑·초록·파랑, 등마다 아래 술.",
+   "contextRoom": "tavern",
+   "tags": [
+    "계절",
+    "축제"
+   ],
+   "use": [
+    "light"
+   ],
+   "place": "축제 날 방 벽 윗줄.",
+   "pair": [],
+   "refs": [
+    "hanging lantern"
+   ]
+  },
+  {
+   "id": "new year decoration",
+   "name_ko": "새해 장식",
+   "name_en": "new year decoration",
+   "category": "season",
+   "category_ko": "계절·행사",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "받침 위의 새해 장식(16px 솟음) — 대나무 세 대를 비스듬히 자른 끝 윗면이 밝고, 둘레 솔가지와 새끼줄.",
+   "contextRoom": "hobbit",
+   "tags": [
+    "계절",
+    "새해",
+    "동양"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "현관 옆.",
+   "pair": [],
+   "refs": [
+    "plant"
+   ]
+  },
+  {
+   "id": "snowman indoor",
+   "name_ko": "작은 눈사람",
+   "name_en": "snowman indoor",
+   "category": "season",
+   "category_ko": "계절·행사",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "쟁반 위 작은 눈사람(16px 솟음) — 머리 윗면 2행에 빨간 털모자, 숯 눈·당근 코, 몸통 둘.",
+   "contextRoom": "narshe",
+   "tags": [
+    "계절",
+    "겨울"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "창가·현관.",
+   "pair": [
+    "christmas tree"
+   ],
+   "refs": [
+    "statue"
+   ]
+  },
+  {
+   "id": "wreath",
+   "name_ko": "화환",
+   "name_en": "wreath",
+   "category": "season",
+   "category_ko": "계절·행사",
+   "kind": "hang",
+   "footprint": {
+    "w": 1,
+    "h": 0
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "벽에 건 둥근 솔가지 화환(벽면 윗줄) — 초록 고리에 빨간 열매와 아래 빨간 리본.",
+   "contextRoom": "manor",
+   "tags": [
+    "계절",
+    "겨울"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "문 위·벽 윗줄.",
+   "pair": [
+    "christmas tree"
+   ],
+   "refs": [
+    "hang:flower"
+   ]
+  },
+  {
+   "id": "dog bed",
+   "name_ko": "개 쿠션",
+   "name_en": "dog bed",
+   "category": "pet",
+   "category_ko": "동물",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "둥근 갈색 개 쿠션에 웅크려 자는 흰 개(10px 높이). 쿠션 테 윗면이 밝고 개 등이 가장 밝다, 옆에 밥그릇.",
+   "contextRoom": "manor",
+   "tags": [
+    "동물",
+    "집"
+   ],
+   "use": [
+    "sleep"
+   ],
+   "place": "거실 구석.",
+   "pair": [
+    "sleeping cat"
+   ],
+   "refs": [
+    "fur rug"
+   ]
+  },
+  {
+   "id": "cat tower",
+   "name_ko": "캣타워",
+   "name_en": "cat tower",
+   "category": "pet",
+   "category_ko": "동물",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    48
+   ],
+   "description": "천을 감은 기둥과 판 세 단의 캣타워(32px 솟음) — 맨 위 판 윗면 3행에 엎드린 얼룩 고양이, 중간 판과 둥근 굴.",
+   "contextRoom": "manor",
+   "tags": [
+    "동물",
+    "집"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "창가.",
+   "pair": [
+    "dog bed"
+   ],
+   "refs": [
+    "coat rack"
+   ]
+  },
+  {
+   "id": "rabbit hutch",
+   "name_ko": "토끼장",
+   "name_en": "rabbit hutch",
+   "category": "pet",
+   "category_ko": "동물",
+   "kind": "floor",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "description": "나무 토끼장(2칸, 16px 솟음). 지붕 윗면 4행, 남쪽 면 철망 너머 흰 토끼 둘과 당근, 아래 짚.",
+   "contextRoom": "stable",
+   "tags": [
+    "동물",
+    "농가"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "헛간·마당 창고.",
+   "pair": [
+    "hay bale"
+   ],
+   "refs": []
+  },
+  {
+   "id": "pet food bowls",
+   "name_ko": "먹이 그릇",
+   "name_en": "pet food bowls",
+   "category": "pet",
+   "category_ko": "동물",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "바닥 매트 위 그릇 둘(4px 높이) — 하나는 사료 알갱이, 하나는 물(하늘빛 반사).",
+   "contextRoom": "manor",
+   "tags": [
+    "동물",
+    "집"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "부엌 구석.",
+   "pair": [
+    "dog bed"
+   ],
+   "refs": [
+    "feed trough"
+   ]
+  },
+  {
+   "id": "terrarium",
+   "name_ko": "사육장",
+   "name_en": "terrarium",
+   "category": "pet",
+   "category_ko": "동물",
+   "kind": "wall",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "장 위 유리 사육장(16px 솟음) — 뚜껑 윗면 2행 철망, 안에 모래·돌·작은 도마뱀과 초록 풀, 유리 반사 한 줄.",
+   "contextRoom": "tower",
+   "tags": [
+    "동물",
+    "연구실"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "연구실·방 벽.",
+   "pair": [
+    "specimen jar big"
+   ],
+   "refs": [
+    "fish tank"
+   ]
+  },
+  {
+   "id": "parrot perch",
+   "name_ko": "앵무새 횃대",
+   "name_en": "parrot perch",
+   "category": "pet",
+   "category_ko": "동물",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "나무 횃대 기둥 위 빨강·파랑 앵무새(16px 솟음) — 가로 막대 윗면 1행, 새 머리가 가장 밝다, 아래 모이 접시.",
+   "contextRoom": "dwarf",
+   "tags": [
+    "동물",
+    "해적"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "선장실·가게.",
+   "pair": [],
+   "refs": [
+    "owl perch"
+   ]
+  },
+  {
+   "id": "horse stall gate",
+   "name_ko": "마구간 칸막이",
+   "name_en": "horse stall gate",
+   "category": "pet",
+   "category_ko": "동물",
+   "kind": "floor",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "description": "나무 마구간 칸막이 문(2칸, 16px 솟음). 위 가로 판 윗면 2행, 반쯤 열린 아래 문, 쇠 빗장, 안쪽 짚.",
+   "contextRoom": "stable",
+   "tags": [
+    "동물",
+    "마구간"
+   ],
+   "use": [
+    "gate"
+   ],
+   "place": "마구간 줄로.",
+   "pair": [
+    "saddle rack"
+   ],
+   "refs": [
+    "feed trough"
+   ]
+  },
+  {
+   "id": "sleeping bag",
+   "name_ko": "침낭",
+   "name_en": "sleeping bag",
+   "category": "camp",
+   "category_ko": "캠핑",
+   "kind": "flat",
+   "footprint": {
+    "w": 1,
+    "h": 2
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "바닥에 편 주황 침낭(1×2칸 남북, 밟을 수 있음) — 북쪽 둥근 머리 덮개, 가운데 지퍼 줄, 남쪽 끝 접힘.",
+   "contextRoom": "mine",
+   "tags": [
+    "캠핑",
+    "동굴"
+   ],
+   "use": [
+    "sleep"
+   ],
+   "place": "동굴·텐트 바닥.",
+   "pair": [
+    "camp lantern"
+   ],
+   "refs": [
+    "straw bed"
+   ]
+  },
+  {
+   "id": "camp lantern",
+   "name_ko": "캠핑 등",
+   "name_en": "camp lantern",
+   "category": "camp",
+   "category_ko": "캠핑",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "바닥에 둔 쇠 손잡이 등(12px 높이) — 위 손잡이와 뚜껑 윗면 2행, 유리 안 노란 불빛.",
+   "contextRoom": "mine",
+   "tags": [
+    "캠핑",
+    "동굴"
+   ],
+   "use": [
+    "light"
+   ],
+   "place": "침낭 옆.",
+   "pair": [
+    "sleeping bag"
+   ],
+   "refs": [
+    "candle"
+   ]
+  },
+  {
+   "id": "folding camp chair",
+   "name_ko": "접이 의자",
+   "name_en": "folding camp chair",
+   "category": "camp",
+   "category_ko": "캠핑",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "초록 천 접이 의자(14px 솟음), 남쪽을 본다. 천 좌판 윗면 4행, 등받이 천, X 자 쇠다리.",
+   "contextRoom": "mine",
+   "tags": [
+    "캠핑"
+   ],
+   "use": [
+    "sit"
+   ],
+   "place": "캠프 모닥불 둘레.",
+   "pair": [
+    "camp lantern"
+   ],
+   "refs": [
+    "stool"
+   ]
+  },
+  {
+   "id": "cooler box",
+   "name_ko": "아이스박스",
+   "name_en": "cooler box",
+   "category": "camp",
+   "category_ko": "캠핑",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "파랑·흰 아이스박스(12px 높이). 흰 뚜껑 윗면 5행과 손잡이, 남쪽 면 파란 몸통.",
+   "contextRoom": "mine",
+   "tags": [
+    "캠핑",
+    "현대"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "캠프·배.",
+   "pair": [
+    "folding camp chair"
+   ],
+   "refs": [
+    "chest"
+   ]
+  },
+  {
+   "id": "campfire pit",
+   "name_ko": "모닥불 화덕",
+   "name_en": "campfire pit",
+   "category": "camp",
+   "category_ko": "캠핑",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "돌로 두른 모닥불(12px 높이) — 돌 고리 윗면이 밝고 가운데 장작 십자 위 주황·노랑 불꽃.",
+   "contextRoom": "mine",
+   "tags": [
+    "캠핑",
+    "동굴"
+   ],
+   "use": [
+    "light"
+   ],
+   "place": "동굴 안 쉼터.",
+   "pair": [
+    "sleeping bag"
+   ],
+   "refs": [
+    "brazier"
+   ]
+  },
+  {
+   "id": "backpack pile",
+   "name_ko": "배낭 더미",
+   "name_en": "backpack pile",
+   "category": "camp",
+   "category_ko": "캠핑",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "기대 놓은 큰 배낭 둘(12px 높이) — 배낭 윗면 4행에 말아 묶은 깔개, 주머니와 끈.",
+   "contextRoom": "mine",
+   "tags": [
+    "캠핑",
+    "여행"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "쉼터 구석.",
+   "pair": [
+    "sleeping bag"
+   ],
+   "refs": [
+    "sack"
+   ]
+  },
+  {
+   "id": "floor cushions",
+   "name_ko": "바닥 쿠션 더미",
+   "name_en": "floor cushions",
+   "category": "desert",
+   "category_ko": "사막",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "바닥에 쌓은 비단 쿠션 셋(10px 높이) — 붉은·금·청록 천, 모서리 금 술, 윗면이 밝다.",
+   "contextRoom": "tailor",
+   "tags": [
+    "사막",
+    "아라비안"
+   ],
+   "use": [
+    "sit"
+   ],
+   "place": "사막 저택 방.",
+   "pair": [
+    "brass tray table"
+   ],
+   "refs": [
+    "round rug"
+   ]
+  },
+  {
+   "id": "brass tray table",
+   "name_ko": "놋쇠 쟁반 탁자",
+   "name_en": "brass tray table",
+   "category": "desert",
+   "category_ko": "사막",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "접는 나무 다리 위 둥근 놋쇠 쟁반(12px 솟음). 쟁반 윗면 7행에 새김 무늬와 찻주전자·작은 유리잔 둘, 아래 X 자 다리.",
+   "contextRoom": "tailor",
+   "tags": [
+    "사막",
+    "아라비안"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "쿠션 둘레 가운데.",
+   "pair": [
+    "floor cushions"
+   ],
+   "refs": [
+    "roundtable"
+   ]
+  },
+  {
+   "id": "magic lamp stand",
+   "name_ko": "요술 램프 받침",
+   "name_en": "magic lamp stand",
+   "category": "desert",
+   "category_ko": "사막",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "비단 덮은 받침 위의 금 기름 램프(16px 솟음) — 램프 뚜껑 윗면 2행과 긴 주둥이, 주둥이에서 오르는 보랏빛 연기.",
+   "contextRoom": "tower",
+   "tags": [
+    "사막",
+    "보물"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "보물 방·마법 상점.",
+   "pair": [
+    "treasure pile"
+   ],
+   "refs": []
+  },
+  {
+   "id": "big clay urn",
+   "name_ko": "큰 토기 항아리",
+   "name_en": "big clay urn",
+   "category": "desert",
+   "category_ko": "사막",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "사람 허리만 한 붉은 토기 항아리(16px 솟음) — 아가리 윗면 3행이 둥글고 어둡다, 배에 기하 무늬 띠.",
+   "contextRoom": "tailor",
+   "tags": [
+    "사막"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "사막 집 구석.",
+   "pair": [
+    "floor cushions"
+   ],
+   "refs": [
+    "pot",
+    "water jar"
+   ]
+  },
+  {
+   "id": "hanging carpet rack",
+   "name_ko": "양탄자 걸이",
+   "name_en": "hanging carpet rack",
+   "category": "desert",
+   "category_ko": "사막",
+   "kind": "floor",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    48
+   ],
+   "description": "나무 틀에 걸어 늘어뜨린 무늬 양탄자 셋(2칸, 32px 솟음) — 위 가로대 윗면 1행, 붉은·청록·금 무늬 천이 겹친다.",
+   "contextRoom": "tailor",
+   "tags": [
+    "사막",
+    "상점"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "양탄자 상점.",
+   "pair": [
+    "floor cushions"
+   ],
+   "refs": [
+    "tapestry"
+   ]
+  },
+  {
+   "id": "sand hourglass table",
+   "name_ko": "모래시계 탁자",
+   "name_en": "sand hourglass table",
+   "category": "desert",
+   "category_ko": "사막",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "작은 돌 탁자 위의 모래시계와 별자리 두루마리(16px 솟음). 탁자 윗면 5행, 모래시계 위 테 윗면 1행과 흐르는 금모래.",
+   "contextRoom": "tower",
+   "tags": [
+    "사막",
+    "마법"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "점성술사 방.",
+   "pair": [
+    "star chart"
+   ],
+   "refs": []
+  },
+  {
+   "id": "ski rack",
+   "name_ko": "스키 걸이",
+   "name_en": "ski rack",
+   "category": "snowland",
+   "category_ko": "설국",
+   "kind": "hang",
+   "footprint": {
+    "w": 1,
+    "h": 0
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "벽 걸이에 세운 나무 스키 한 벌과 지팡이 둘(벽면 윗줄) — 스키 끝이 위로 휘고 끈 묶음.",
+   "contextRoom": "narshe",
+   "tags": [
+    "설국",
+    "산장"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "산장 현관 벽 윗줄.",
+   "pair": [
+    "sled"
+   ],
+   "refs": [
+    "pick rack"
+   ]
+  },
+  {
+   "id": "sled",
+   "name_ko": "썰매",
+   "name_en": "sled",
+   "category": "snowland",
+   "category_ko": "설국",
+   "kind": "floor",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    16
+   ],
+   "description": "나무 썰매(2칸, 8px 높이). 판 윗면 6행에 묶은 짐 자루와 털가죽, 앞쪽이 위로 말린 쇠 날.",
+   "contextRoom": "narshe",
+   "tags": [
+    "설국"
+   ],
+   "use": [
+    "block"
+   ],
+   "place": "산장 현관·창고.",
+   "pair": [
+    "ski rack"
+   ],
+   "refs": [
+    "mine cart"
+   ]
+  },
+  {
+   "id": "fur coat rack",
+   "name_ko": "털옷 걸이",
+   "name_en": "fur coat rack",
+   "category": "snowland",
+   "category_ko": "설국",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    48
+   ],
+   "description": "나무 옷걸이에 건 두꺼운 털외투와 털모자(32px 솟음) — 모자 윗면 2행, 갈색 털옷 가장자리 흰 털, 아래 장화 한 켤레.",
+   "contextRoom": "narshe",
+   "tags": [
+    "설국",
+    "산장"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "산장 현관.",
+   "pair": [
+    "ski rack"
+   ],
+   "refs": [
+    "coat rack"
+   ]
+  },
+  {
+   "id": "ice fishing bucket",
+   "name_ko": "얼음 낚시 통",
+   "name_en": "ice fishing bucket",
+   "category": "snowland",
+   "category_ko": "설국",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "나무 통 안 얼음과 물고기 둘(10px 높이) — 통 안 윗면 6행, 옆에 짧은 낚싯대.",
+   "contextRoom": "narshe",
+   "tags": [
+    "설국",
+    "낚시"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "설국 오두막.",
+   "pair": [
+    "sled"
+   ],
+   "refs": [
+    "barrel:fish+ice"
+   ]
+  },
+  {
+   "id": "wood stove snow",
+   "name_ko": "무쇠 난로",
+   "name_en": "wood stove snow",
+   "category": "snowland",
+   "category_ko": "설국",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    48
+   ],
+   "description": "검은 무쇠 장작 난로와 위로 솟은 굴뚝 관(32px 솟음). 난로 윗면 4행에 끓는 주전자, 남쪽 면 유리문 안 불, 관은 위로 칸 밖까지.",
+   "contextRoom": "narshe",
+   "tags": [
+    "설국",
+    "산장"
+   ],
+   "use": [
+    "light"
+   ],
+   "place": "산장 거실.",
+   "pair": [
+    "firewood bundle"
+   ],
+   "refs": [
+    "stove"
+   ]
+  },
+  {
+   "id": "rum barrel",
+   "name_ko": "럼주 통",
+   "name_en": "rum barrel",
+   "category": "pirate",
+   "category_ko": "해적선",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "눕힌 작은 럼주 통 둘을 겹친 받침(14px 솟음) — 통 윗면 3행에 쇠테, 둥근 바닥면에 해골 낙인과 꼭지.",
+   "contextRoom": "dwarf",
+   "tags": [
+    "해적",
+    "배"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "선창·해적 주점.",
+   "pair": [
+    "captain chair"
+   ],
+   "refs": [
+    "barrel"
+   ]
+  },
+  {
+   "id": "captain chair",
+   "name_ko": "선장 의자",
+   "name_en": "captain chair",
+   "category": "pirate",
+   "category_ko": "해적선",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "붉은 벨벳 등받이 높은 나무 의자(16px 솟음), 남쪽을 본다. 좌판 윗면 4행, 등받이 꼭대기 조각 윗면 2행과 금 못.",
+   "contextRoom": "dwarf",
+   "tags": [
+    "해적",
+    "배",
+    "선장실"
+   ],
+   "use": [
+    "sit"
+   ],
+   "place": "선장실 해도 탁자 앞.",
+   "pair": [],
+   "refs": [
+    "armchair"
+   ]
+  },
+  {
+   "id": "wanted pirate flag",
+   "name_ko": "해적기",
+   "name_en": "wanted pirate flag",
+   "category": "pirate",
+   "category_ko": "해적선",
+   "kind": "hang",
+   "footprint": {
+    "w": 1,
+    "h": 0
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "벽에 편 검은 해적기(벽면 윗줄) — 흰 해골과 엇갈린 뼈, 가장자리 해진 올.",
+   "contextRoom": "dwarf",
+   "tags": [
+    "해적",
+    "배"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "선장실 벽 윗줄.",
+   "pair": [
+    "captain chair"
+   ],
+   "refs": [
+    "banner red"
+   ]
+  },
+  {
+   "id": "treasure map table",
+   "name_ko": "보물 지도 상자",
+   "name_en": "treasure map table",
+   "category": "pirate",
+   "category_ko": "해적선",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "작은 나무 상자 위 펼친 보물 지도(10px 높이) — 상자 뚜껑 윗면 6행, 지도의 점선과 빨간 X, 위에 나침반.",
+   "contextRoom": "dwarf",
+   "tags": [
+    "해적",
+    "보물"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "선장실.",
+   "pair": [
+    "captain chair"
+   ],
+   "refs": []
+  },
+  {
+   "id": "ship lantern",
+   "name_ko": "선박 등",
+   "name_en": "ship lantern",
+   "category": "pirate",
+   "category_ko": "해적선",
+   "kind": "hang",
+   "footprint": {
+    "w": 1,
+    "h": 0
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "벽 쇠고리에 건 놋쇠 선박 등(벽면 윗줄) — 유리 안 노란 불, 위 둥근 뚜껑과 손잡이.",
+   "contextRoom": "dwarf",
+   "tags": [
+    "배",
+    "해적"
+   ],
+   "use": [
+    "light"
+   ],
+   "place": "선실 벽 윗줄.",
+   "pair": [],
+   "refs": [
+    "wall sconce"
+   ]
+  },
+  {
+   "id": "capstan",
+   "name_ko": "닻줄 감개",
+   "name_en": "capstan",
+   "category": "pirate",
+   "category_ko": "해적선",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "나무 닻줄 감개(캡스턴, 16px 솟음) — 둥근 머리 윗면 4행에 막대 꽂는 구멍 여섯, 몸통에 감긴 굵은 밧줄.",
+   "contextRoom": "dwarf",
+   "tags": [
+    "배",
+    "해적"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "갑판 아래.",
+   "pair": [
+    "anchor"
+   ],
+   "refs": [
+    "rope coil"
+   ]
+  },
+  {
+   "id": "floating candles",
+   "name_ko": "떠 있는 촛불",
+   "name_en": "floating candles",
+   "category": "school_magic",
+   "category_ko": "마법학교",
+   "kind": "hang",
+   "footprint": {
+    "w": 2,
+    "h": 0
+   },
+   "canvas": [
+    32,
+    16
+   ],
+   "description": "벽 윗줄 높이에 떠 있는 흰 초 다섯(2칸) — 초마다 노란 불꽃과 아래 옅은 빛 점, 받침 없음.",
+   "contextRoom": "tower",
+   "tags": [
+    "마법학교",
+    "마법"
+   ],
+   "use": [
+    "light"
+   ],
+   "place": "마법학교 홀 벽 윗줄.",
+   "pair": [],
+   "refs": [
+    "wall sconce"
+   ]
+  },
+  {
+   "id": "house banner stand",
+   "name_ko": "기숙사 깃발대",
+   "name_en": "house banner stand",
+   "category": "school_magic",
+   "category_ko": "마법학교",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    48
+   ],
+   "description": "세운 깃대에 건 세로 깃발(32px 솟음) — 깃대 꼭대기 금 창끝, 초록 천에 금 뱀 문양, 아래 돌 받침 윗면 2행.",
+   "contextRoom": "tower",
+   "tags": [
+    "마법학교"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "학교 홀 양옆.",
+   "pair": [],
+   "refs": [
+    "banner green"
+   ]
+  },
+  {
+   "id": "potion class desk",
+   "name_ko": "물약 수업 책상",
+   "name_en": "potion class desk",
+   "category": "school_magic",
+   "category_ko": "마법학교",
+   "kind": "floor",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "description": "긴 나무 책상(2칸, 14px 솟음). 상판 윗면 6행에 작은 솥 둘(연기)·약재 접시·펼친 교과서, 남쪽 면에 칠 벗겨진 판.",
+   "contextRoom": "tower",
+   "tags": [
+    "마법학교",
+    "교실"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "물약 교실.",
+   "pair": [
+    "cauldron"
+   ],
+   "refs": [
+    "alchemy table"
+   ]
+  },
+  {
+   "id": "crystal ball shelf",
+   "name_ko": "수정구 선반",
+   "name_en": "crystal ball shelf",
+   "category": "school_magic",
+   "category_ko": "마법학교",
+   "kind": "wall",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "벽 선반 세 단의 작은 수정구들(16px 솟음) — 꼭대기 판 윗면 2행, 단마다 받침 위 구 둘(보라·하늘·연두 빛).",
+   "contextRoom": "tower",
+   "tags": [
+    "마법학교",
+    "점술"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "점술 교실 벽.",
+   "pair": [
+    "crystal lamp"
+   ],
+   "refs": [
+    "shelf:skull+crystal"
+   ]
+  },
+  {
+   "id": "wand box wall",
+   "name_ko": "지팡이 상자 벽",
+   "name_en": "wand box wall",
+   "category": "school_magic",
+   "category_ko": "마법학교",
+   "kind": "wall",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    48
+   ],
+   "description": "천장까지 쌓인 길쭉한 지팡이 상자 벽(2칸, 32px 솟음) — 꼭대기 판 윗면 2행, 칸마다 가는 상자 끝(갈색·검정·흰 뚜껑)이 줄로.",
+   "contextRoom": "tailor",
+   "tags": [
+    "마법학교",
+    "상점"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "지팡이 상점 벽.",
+   "pair": [
+    "staff rack"
+   ],
+   "refs": [
+    "scroll rack"
+   ]
+  },
+  {
+   "id": "sorting stool hat",
+   "name_ko": "모자 의자",
+   "name_en": "sorting stool hat",
+   "category": "school_magic",
+   "category_ko": "마법학교",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "세 발 나무 의자 위 낡은 뾰족 마법사 모자(16px 솟음) — 모자 끝이 꺾였다, 의자 좌판 윗면 3행.",
+   "contextRoom": "tower",
+   "tags": [
+    "마법학교"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "입학식 홀 앞.",
+   "pair": [],
+   "refs": [
+    "stool"
+   ]
+  },
+  {
+   "id": "mushroom table",
+   "name_ko": "버섯 탁자",
+   "name_en": "mushroom table",
+   "category": "fairy",
+   "category_ko": "요정·드워프",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "큰 빨간 버섯 갓을 상판으로 쓴 탁자(14px 솟음) — 갓 윗면 7행에 흰 점, 굵은 흰 자루.",
+   "contextRoom": "elf",
+   "tags": [
+    "요정",
+    "숲"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "요정 집.",
+   "pair": [
+    "mushroom stool"
+   ],
+   "refs": [
+    "roundtable"
+   ]
+  },
+  {
+   "id": "mushroom stool",
+   "name_ko": "버섯 의자",
+   "name_en": "mushroom stool",
+   "category": "fairy",
+   "category_ko": "요정·드워프",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "작은 갈색 버섯 의자(10px 높이) — 둥근 갓 윗면 5행, 짧은 자루.",
+   "contextRoom": "elf",
+   "tags": [
+    "요정",
+    "숲"
+   ],
+   "use": [
+    "sit"
+   ],
+   "place": "버섯 탁자 둘레.",
+   "pair": [
+    "mushroom table"
+   ],
+   "refs": [
+    "stool"
+   ]
+  },
+  {
+   "id": "vine chair",
+   "name_ko": "덩굴 의자",
+   "name_en": "vine chair",
+   "category": "fairy",
+   "category_ko": "요정·드워프",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "살아 있는 덩굴을 엮은 의자(16px 솟음), 남쪽을 본다. 좌판 윗면 4행에 이끼 방석, 등받이 덩굴 고리와 잎.",
+   "contextRoom": "elf",
+   "tags": [
+    "엘프",
+    "숲"
+   ],
+   "use": [
+    "sit"
+   ],
+   "place": "엘프 집.",
+   "pair": [
+    "elven bed"
+   ],
+   "refs": [
+    "armchair"
+   ]
+  },
+  {
+   "id": "glowing flower pot",
+   "name_ko": "빛나는 꽃 화분",
+   "name_en": "glowing flower pot",
+   "category": "fairy",
+   "category_ko": "요정·드워프",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "흙 화분의 종 모양 꽃 셋(16px 솟음) — 꽃마다 안에서 하늘빛으로 빛나고 둘레 반딧불 점.",
+   "contextRoom": "elf",
+   "tags": [
+    "엘프",
+    "마법"
+   ],
+   "use": [
+    "light"
+   ],
+   "place": "엘프 집·요정 방.",
+   "pair": [
+    "vine chair"
+   ],
+   "refs": [
+    "potted flowering"
+   ]
+  },
+  {
+   "id": "dwarf ale keg",
+   "name_ko": "드워프 큰 술통",
+   "name_en": "dwarf ale keg",
+   "category": "fairy",
+   "category_ko": "요정·드워프",
+   "kind": "floor",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "description": "받침에 눕힌 큰 술통(2칸, 16px 솟음) — 통 윗면 5행에 굵은 쇠테 셋과 룬 낙인, 둥근 앞면에 놋쇠 꼭지와 거품 잔.",
+   "contextRoom": "dwarf",
+   "tags": [
+    "드워프",
+    "주점"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "드워프 주점.",
+   "pair": [
+    "beer tap barrel"
+   ],
+   "refs": [
+    "keg rack"
+   ]
+  },
+  {
+   "id": "rune anvil",
+   "name_ko": "룬 모루",
+   "name_en": "rune anvil",
+   "category": "fairy",
+   "category_ko": "요정·드워프",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "돌 받침 위 검은 모루(14px 솟음) — 모루 윗면 4행에 빛나는 하늘빛 룬, 뿔 끝, 옆에 망치.",
+   "contextRoom": "dwarf",
+   "tags": [
+    "드워프",
+    "대장간"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "드워프 대장간.",
+   "pair": [
+    "forge"
+   ],
+   "refs": [
+    "anvil"
+   ]
+  },
+  {
+   "id": "mail sorting shelf",
+   "name_ko": "우편 분류함",
+   "name_en": "mail sorting shelf",
+   "category": "town",
+   "category_ko": "마을 관청·가게",
+   "kind": "wall",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "description": "작은 칸 스무 개의 나무 분류함(2칸, 16px 솟음) — 꼭대기 윗면 2행, 칸마다 꽂힌 하얀 편지 끝, 아래 판 위 소포 하나.",
+   "contextRoom": "scholar",
+   "tags": [
+    "우체국",
+    "마을"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "우체국 벽.",
+   "pair": [
+    "parcel pile"
+   ],
+   "refs": [
+    "scroll rack"
+   ]
+  },
+  {
+   "id": "parcel pile",
+   "name_ko": "소포 더미",
+   "name_en": "parcel pile",
+   "category": "town",
+   "category_ko": "마을 관청·가게",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "끈으로 묶은 갈색 종이 소포 넷(14px 솟음) — 맨 위 소포 윗면 4행에 십자 끈과 붉은 봉랍.",
+   "contextRoom": "scholar",
+   "tags": [
+    "우체국",
+    "마을"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "우체국 바닥.",
+   "pair": [
+    "mail sorting shelf"
+   ],
+   "refs": [
+    "crate"
+   ]
+  },
+  {
+   "id": "bank teller window",
+   "name_ko": "은행 창구",
+   "name_en": "bank teller window",
+   "category": "town",
+   "category_ko": "마을 관청·가게",
+   "kind": "floor",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    48
+   ],
+   "description": "대리석 창구와 위의 쇠창살 칸막이(2칸, 32px 솟음). 상판 윗면 5행에 동전 쟁반·장부, 위로 금빛 창살과 작은 창 구멍.",
+   "contextRoom": "throne",
+   "tags": [
+    "은행",
+    "마을"
+   ],
+   "use": [
+    "counter"
+   ],
+   "place": "은행.",
+   "pair": [
+    "safe"
+   ],
+   "refs": [
+    "counter 2x1"
+   ]
+  },
+  {
+   "id": "book display table",
+   "name_ko": "서점 평대",
+   "name_en": "book display table",
+   "category": "town",
+   "category_ko": "마을 관청·가게",
+   "kind": "floor",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "description": "낮은 나무 평대(2칸, 12px 솟음). 판 윗면 7행에 눕혀 쌓은 책 더미 넷(표지 색 다름)과 세운 추천 팻말.",
+   "contextRoom": "scholar",
+   "tags": [
+    "서점",
+    "가게"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "서점 가운데.",
+   "pair": [
+    "bookshelf 3w"
+   ],
+   "refs": [
+    "table:book+scroll"
+   ]
+  },
+  {
+   "id": "pawn shop shelf",
+   "name_ko": "전당포 진열장",
+   "name_en": "pawn shop shelf",
+   "category": "town",
+   "category_ko": "마을 관청·가게",
+   "kind": "wall",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "description": "유리문 진열장(2칸, 16px 솟음) — 꼭대기 윗면 2행, 단마다 잡동사니(회중시계·촛대·반지 상자·낡은 칼), 가격표.",
+   "contextRoom": "tailor",
+   "tags": [
+    "상점",
+    "전당포"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "전당포 벽.",
+   "pair": [
+    "pawn counter"
+   ],
+   "refs": [
+    "cabinet:gem+gemr"
+   ]
+  },
+  {
+   "id": "pawn counter",
+   "name_ko": "전당포 창구",
+   "name_en": "pawn counter",
+   "category": "town",
+   "category_ko": "마을 관청·가게",
+   "kind": "floor",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "description": "나무 창구(2칸, 16px 솟음) — 상판 윗면 6행에 돋보기·저울·장부, 남쪽 면에 쇠 보강판.",
+   "contextRoom": "tailor",
+   "tags": [
+    "상점",
+    "전당포"
+   ],
+   "use": [
+    "counter"
+   ],
+   "place": "전당포 안쪽.",
+   "pair": [
+    "pawn shop shelf"
+   ],
+   "refs": [
+    "counter 2x1"
+   ]
+  },
+  {
+   "id": "clock shop wall",
+   "name_ko": "시계방 벽",
+   "name_en": "clock shop wall",
+   "category": "town",
+   "category_ko": "마을 관청·가게",
+   "kind": "hang",
+   "footprint": {
+    "w": 2,
+    "h": 0
+   },
+   "canvas": [
+    32,
+    16
+   ],
+   "description": "벽 윗줄에 걸린 크기 다른 시계 넷(2칸) — 둥근·네모·뻐꾸기 시계, 바늘이 모두 다른 시각.",
+   "contextRoom": "tailor",
+   "tags": [
+    "상점",
+    "시계방"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "시계방 벽 윗줄.",
+   "pair": [],
+   "refs": [
+    "wall clock"
+   ]
+  },
+  {
+   "id": "town notice kiosk",
+   "name_ko": "관청 안내대",
+   "name_en": "town notice kiosk",
+   "category": "town",
+   "category_ko": "마을 관청·가게",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "기운 판의 안내대(16px 솟음) — 판 윗면 5행에 펼친 등록부와 깃펜, 앞에 「안내」 문장 판.",
+   "contextRoom": "throne",
+   "tags": [
+    "관청",
+    "마을"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "관청 입구.",
+   "pair": [],
+   "refs": [
+    "lectern"
+   ]
+  },
+  {
+   "id": "toy shop shelf",
+   "name_ko": "장난감 진열대",
+   "name_en": "toy shop shelf",
+   "category": "town",
+   "category_ko": "마을 관청·가게",
+   "kind": "wall",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "description": "색칠한 진열대(2칸, 16px 솟음) — 꼭대기 윗면 2행, 단마다 나무 병정·곰 인형·팽이·작은 배.",
+   "contextRoom": "tailor",
+   "tags": [
+    "상점",
+    "장난감"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "장난감 가게 벽.",
+   "pair": [
+    "rocking horse"
+   ],
+   "refs": [
+    "shelf:toy"
+   ]
+  },
+  {
+   "id": "treadmill",
+   "name_ko": "러닝머신",
+   "name_en": "treadmill",
+   "category": "m_hobby",
+   "category_ko": "현대 운동·취미",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 2
+   },
+   "canvas": [
+    16,
+    48
+   ],
+   "description": "러닝머신(1×2칸 남북, 16px 솟음), 앞이 북쪽. 남쪽 위에서 내려다본 3/4: 꼭대기 윗면 22행 — 검은 벨트 판과 양옆 회색 테, 북쪽 끝 손잡이 막대와 화면 판(윗면 2행). 남쪽 면에 판 두께.",
+   "contextRoom": "manor",
+   "tags": [
+    "현대",
+    "운동"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "헬스장·집.",
+   "pair": [
+    "dumbbell rack"
+   ],
+   "refs": [
+    "mine cart"
+   ]
+  },
+  {
+   "id": "dumbbell rack",
+   "name_ko": "아령 받침",
+   "name_en": "dumbbell rack",
+   "category": "m_hobby",
+   "category_ko": "현대 운동·취미",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "두 단 아령 받침(14px 솟음) — 단마다 검은 아령 셋(크기 다름), 받침 윗면 3행.",
+   "contextRoom": "manor",
+   "tags": [
+    "현대",
+    "운동"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "헬스장.",
+   "pair": [
+    "treadmill"
+   ],
+   "refs": [
+    "weapon rack"
+   ]
+  },
+  {
+   "id": "bench press",
+   "name_ko": "벤치 프레스",
+   "name_en": "bench press",
+   "category": "m_hobby",
+   "category_ko": "현대 운동·취미",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 2
+   },
+   "canvas": [
+    16,
+    48
+   ],
+   "description": "벤치 프레스(1×2칸 남북, 16px 솟음). 남쪽 위에서 내려다본 3/4: 꼭대기 윗면 22행 — 검은 가죽 벤치 판과 북쪽 끝 기둥 둘에 걸친 은빛 봉·검은 원판. 남쪽 면에 다리.",
+   "contextRoom": "manor",
+   "tags": [
+    "현대",
+    "운동"
+   ],
+   "use": [
+    "sit"
+   ],
+   "place": "헬스장.",
+   "pair": [
+    "dumbbell rack"
+   ],
+   "refs": [
+    "bench 2"
+   ]
+  },
+  {
+   "id": "guitar stand",
+   "name_ko": "기타 스탠드",
+   "name_en": "guitar stand",
+   "category": "m_hobby",
+   "category_ko": "현대 운동·취미",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "받침에 세운 통기타(16px 솟음) — 헤드 윗면 1행, 둥근 몸통 소리 구멍과 줄, 받침 다리.",
+   "contextRoom": "manor",
+   "tags": [
+    "현대",
+    "음악"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "방 구석.",
+   "pair": [
+    "amp speaker"
+   ],
+   "refs": [
+    "lute"
+   ]
+  },
+  {
+   "id": "gaming chair",
+   "name_ko": "게이밍 의자",
+   "name_en": "gaming chair",
+   "category": "m_hobby",
+   "category_ko": "현대 운동·취미",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "검정·빨강 게이밍 의자(16px 솟음), 북쪽 책상을 본다(등이 남쪽). 높은 등받이 꼭대기 윗면 2행, 빨간 줄무늬, 다섯 갈래 바퀴.",
+   "contextRoom": "manor",
+   "tags": [
+    "현대",
+    "방"
+   ],
+   "use": [
+    "sit"
+   ],
+   "place": "컴퓨터 책상 앞.",
+   "pair": [
+    "office pc desk"
+   ],
+   "refs": [
+    "office chair"
+   ]
+  },
+  {
+   "id": "aquarium cabinet small",
+   "name_ko": "작은 어항",
+   "name_en": "aquarium cabinet small",
+   "category": "m_hobby",
+   "category_ko": "현대 운동·취미",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "낮은 장 위의 둥근 금붕어 어항(16px 솟음) — 어항 아가리 윗면 3행, 물빛 안 주황 금붕어 둘과 물풀.",
+   "contextRoom": "manor",
+   "tags": [
+    "현대",
+    "집"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "거실·현관.",
+   "pair": [],
+   "refs": [
+    "fish tank"
+   ]
+  },
+  {
+   "id": "model train table",
+   "name_ko": "기차 모형 탁자",
+   "name_en": "model train table",
+   "category": "m_hobby",
+   "category_ko": "현대 운동·취미",
+   "kind": "floor",
+   "footprint": {
+    "w": 2,
+    "h": 2
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "description": "모형 기차 판(2×2칸, 12px 높이). 남쪽 위에서 내려다본 3/4: 꼭대기 윗면 22행 — 초록 판 위 둥근 선로와 작은 기차·집 둘·나무, 그 아래 남쪽 면에 판 두께 3행과 다리.",
+   "contextRoom": "manor",
+   "tags": [
+    "현대",
+    "취미"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "취미방.",
+   "pair": [],
+   "refs": [
+    "tea 2x2"
+   ]
+  },
+  {
+   "id": "sewing machine table",
+   "name_ko": "재봉틀",
+   "name_en": "sewing machine table",
+   "category": "m_hobby",
+   "category_ko": "현대 운동·취미",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "무쇠 다리 탁자 위 검은 재봉틀(16px 솟음) — 재봉틀 윗면 3행에 금 무늬, 옆 실패, 아래 발판.",
+   "contextRoom": "tailor",
+   "tags": [
+    "현대",
+    "옷가게"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "옷가게·방.",
+   "pair": [
+    "ironing board"
+   ],
+   "refs": [
+    "spinning wheel"
+   ]
+  },
+  {
+   "id": "telescope modern",
+   "name_ko": "천체 망원경(현대)",
+   "name_en": "telescope modern",
+   "category": "m_hobby",
+   "category_ko": "현대 운동·취미",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    48
+   ],
+   "description": "세 다리 위 흰 경통 천체 망원경(32px 솟음) — 경통이 북동쪽 하늘로 기울고 윗면이 밝다, 접안부와 작은 보조경.",
+   "contextRoom": "tower",
+   "tags": [
+    "현대",
+    "취미"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "옥상 방·창가.",
+   "pair": [],
+   "refs": [
+    "telescope"
+   ]
+  },
+  {
+   "id": "massage chair",
+   "name_ko": "안마 의자",
+   "name_en": "massage chair",
+   "category": "m_hobby",
+   "category_ko": "현대 운동·취미",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "두툼한 갈색 안마 의자(16px 솟음), 남쪽을 본다. 좌판 윗면 4행, 머리 받침 윗면 2행, 팔 덮개와 리모컨 줄.",
+   "contextRoom": "manor",
+   "tags": [
+    "현대",
+    "집"
+   ],
+   "use": [
+    "sit"
+   ],
+   "place": "거실·찜질방.",
+   "pair": [],
+   "refs": [
+    "armchair"
+   ]
+  },
+  {
+   "id": "operating table",
+   "name_ko": "수술대",
+   "name_en": "operating table",
+   "category": "m_hospital",
+   "category_ko": "현대 병원",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 2
+   },
+   "canvas": [
+    16,
+    48
+   ],
+   "description": "은빛 기둥 위 수술대(1×2칸 남북, 16px 솟음). 남쪽 위에서 내려다본 3/4: 꼭대기 윗면 22행 — 초록 천 덮은 좁은 판과 북쪽 머리 받침, 옆 은빛 기구 쟁반. 남쪽 면에 기둥 받침.",
+   "contextRoom": "pharmacy",
+   "tags": [
+    "현대",
+    "병원",
+    "수술실"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "수술실 가운데.",
+   "pair": [
+    "surgery lamp"
+   ],
+   "refs": [
+    "hospital bed"
+   ]
+  },
+  {
+   "id": "surgery lamp",
+   "name_ko": "수술등",
+   "name_en": "surgery lamp",
+   "category": "m_hospital",
+   "category_ko": "현대 병원",
+   "kind": "hang",
+   "footprint": {
+    "w": 1,
+    "h": 0
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "벽 윗줄에서 뻗은 팔 끝의 둥근 수술등(1칸) — 둥근 갓 안 흰 전구 여섯, 아래 빛 번짐.",
+   "contextRoom": "pharmacy",
+   "tags": [
+    "현대",
+    "병원"
+   ],
+   "use": [
+    "light"
+   ],
+   "place": "수술실 벽 윗줄.",
+   "pair": [
+    "operating table"
+   ],
+   "refs": [
+    "hanging lantern"
+   ]
+  },
+  {
+   "id": "medicine cart",
+   "name_ko": "약 카트",
+   "name_en": "medicine cart",
+   "category": "m_hospital",
+   "category_ko": "현대 병원",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "흰 서랍 약 카트(14px 솟음) — 위 판 윗면 5행에 약병·주사기 쟁반, 색 서랍 넷, 바퀴.",
+   "contextRoom": "pharmacy",
+   "tags": [
+    "현대",
+    "병원"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "병동 복도.",
+   "pair": [
+    "hospital bed"
+   ],
+   "refs": [
+    "apothecary drawers"
+   ]
+  },
+  {
+   "id": "oden pot counter",
+   "name_ko": "어묵통",
+   "name_en": "oden pot counter",
+   "category": "m_cafe",
+   "category_ko": "현대 카페·식당",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "편의점 계산대 옆 네모 어묵통(14px 솟음) — 칸 나눈 국물 윗면 6행에 꼬치 어묵·달걀·무, 김 한 줄.",
+   "contextRoom": "bakery",
+   "tags": [
+    "현대",
+    "편의점"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "편의점 계산대 옆.",
+   "pair": [
+    "price scanner counter"
+   ],
+   "refs": [
+    "cauldron"
+   ]
+  },
+  {
+   "id": "instant noodle shelf",
+   "name_ko": "컵라면 진열대",
+   "name_en": "instant noodle shelf",
+   "category": "m_shop",
+   "category_ko": "현대 가게",
+   "kind": "wall",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "세 단 진열대에 빽빽한 컵라면(16px 솟음) — 꼭대기 판 윗면 2행, 단마다 빨강·주황·초록 뚜껑 컵 줄.",
+   "contextRoom": "tailor",
+   "tags": [
+    "현대",
+    "편의점"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "편의점 벽.",
+   "pair": [
+    "store shelf"
+   ],
+   "refs": [
+    "shelf:jar+jarb+jarg"
+   ]
+  },
+  {
+   "id": "shower booth",
+   "name_ko": "샤워 부스",
+   "name_en": "shower booth",
+   "category": "m_home",
+   "category_ko": "현대 집",
+   "kind": "wall",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    48
+   ],
+   "description": "유리 샤워 부스(32px 솟음) — 위 은빛 샤워기 머리, 반투명 유리 벽에 물방울 점과 반사 한 줄, 바닥 흰 받침 윗면 3행.",
+   "contextRoom": "manor",
+   "tags": [
+    "현대",
+    "욕실"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "욕실 구석.",
+   "pair": [
+    "modern toilet"
+   ],
+   "refs": [
+    "bathtub"
+   ]
+  },
+  {
+   "id": "office partition",
+   "name_ko": "사무실 칸막이",
+   "name_en": "office partition",
+   "category": "m_office",
+   "category_ko": "현대 사무실",
+   "kind": "floor",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "description": "회색 천 사무실 칸막이(2칸, 16px 솟음) — 위 테 윗면 2행, 천 면에 꽂은 메모지 셋과 달력.",
+   "contextRoom": "magitek",
+   "tags": [
+    "현대",
+    "사무실"
+   ],
+   "use": [
+    "block"
+   ],
+   "place": "사무실 책상 사이.",
+   "pair": [
+    "office pc desk"
+   ],
+   "refs": [
+    "folding screen"
+   ]
+  },
+  {
+   "id": "boss desk",
+   "name_ko": "사장 책상",
+   "name_en": "boss desk",
+   "category": "m_office",
+   "category_ko": "현대 사무실",
+   "kind": "floor",
+   "footprint": {
+    "w": 3,
+    "h": 1
+   },
+   "canvas": [
+    48,
+    32
+   ],
+   "description": "짙은 나무 큰 사장 책상(3칸, 16px 솟음). 상판 윗면 6행에 초록 갓 스탠드·명패·서류 쟁반·만년필, 남쪽 면에 양쪽 서랍 장과 가운데 패널.",
+   "contextRoom": "manor",
+   "tags": [
+    "현대",
+    "사무실"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "사장실.",
+   "pair": [
+    "gaming chair"
+   ],
+   "refs": [
+    "desk 3x1"
+   ]
+  },
+  {
+   "id": "printer stand",
+   "name_ko": "프린터",
+   "name_en": "printer stand",
+   "category": "m_office",
+   "category_ko": "현대 사무실",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "작은 장 위의 회색 프린터(16px 솟음) — 프린터 윗면 4행에 종이 나오는 판과 흰 종이, 장 안 종이 묶음.",
+   "contextRoom": "scholar",
+   "tags": [
+    "현대",
+    "사무실"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "사무실 구석.",
+   "pair": [
+    "copy machine"
+   ],
+   "refs": [
+    "printing press"
+   ]
+  },
+  {
+   "id": "broken bed",
+   "name_ko": "부서진 침대",
+   "name_en": "broken bed",
+   "category": "horror",
+   "category_ko": "폐가",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 2
+   },
+   "canvas": [
+    16,
+    48
+   ],
+   "description": "한쪽 다리가 부러져 기운 쇠침대(1×2칸 남북, 12px 솟음). 남쪽 위에서 내려다본 3/4: 꼭대기 윗면 22행 — 얼룩진 매트리스와 찢긴 홑이불, 녹슨 머리판(윗면 2행). 남쪽 면에 부러진 다리.",
+   "contextRoom": "manor",
+   "tags": [
+    "공포",
+    "폐가"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "폐가 침실.",
+   "pair": [
+    "dusty doll pile"
+   ],
+   "refs": [
+    "bed red"
+   ]
+  },
+  {
+   "id": "dusty doll pile",
+   "name_ko": "인형 무더기",
+   "name_en": "dusty doll pile",
+   "category": "horror",
+   "category_ko": "폐가",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "바닥에 쌓인 낡은 인형 셋(12px 높이) — 단추 눈, 해진 옷, 하나는 고개가 꺾였다, 먼지 회색.",
+   "contextRoom": "manor",
+   "tags": [
+    "공포",
+    "폐가"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "폐가 아이 방.",
+   "pair": [
+    "broken bed"
+   ],
+   "refs": [
+    "old doll"
+   ]
+  },
+  {
+   "id": "static tv",
+   "name_ko": "노이즈 TV",
+   "name_en": "static tv",
+   "category": "horror",
+   "category_ko": "폐가",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "바닥에 놓인 브라운관 TV(16px 솟음) — TV 윗면 3행에 토끼귀 안테나, 남쪽 화면은 흰 노이즈 점.",
+   "contextRoom": "manor",
+   "tags": [
+    "공포",
+    "폐가"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "폐가 거실.",
+   "pair": [],
+   "refs": [
+    "crt tv stand"
+   ]
+  },
+  {
+   "id": "talisman box",
+   "name_ko": "부적 붙은 상자",
+   "name_en": "talisman box",
+   "category": "horror",
+   "category_ko": "폐가",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "노란 부적을 붙이고 붉은 끈으로 묶은 검은 상자(12px 솟음) — 뚜껑 윗면 5행에 부적 셋, 끈 매듭.",
+   "contextRoom": "chapel",
+   "tags": [
+    "공포",
+    "동양"
+   ],
+   "use": [
+    "open"
+   ],
+   "place": "봉인된 방.",
+   "pair": [
+    "candle circle"
+   ],
+   "refs": [
+    "chest"
+   ]
+  },
+  {
+   "id": "candle circle",
+   "name_ko": "촛불 원",
+   "name_en": "candle circle",
+   "category": "horror",
+   "category_ko": "폐가",
+   "kind": "flat",
+   "footprint": {
+    "w": 2,
+    "h": 2
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "description": "바닥에 둥글게 세운 초 여덟과 가운데 분필 원(2×2칸, 밟을 수 있음) — 초마다 노란 불꽃 점과 녹은 촛농.",
+   "contextRoom": "chapel",
+   "tags": [
+    "공포",
+    "의식"
+   ],
+   "use": [
+    "walk"
+   ],
+   "place": "의식 방 바닥.",
+   "pair": [
+    "talisman box"
+   ],
+   "refs": [
+    "magic circle"
+   ]
+  },
+  {
+   "id": "boarded closet",
+   "name_ko": "판자 박은 옷장",
+   "name_en": "boarded closet",
+   "category": "horror",
+   "category_ko": "폐가",
+   "kind": "wall",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "판자를 엇갈려 못 박은 낡은 옷장(16px 솟음) — 꼭대기 윗면 3행, 문틈 사이 검은 어둠, 판자 셋.",
+   "contextRoom": "manor",
+   "tags": [
+    "공포",
+    "폐가"
+   ],
+   "use": [
+    "open"
+   ],
+   "place": "폐가 방 벽.",
+   "pair": [
+    "broken bed"
+   ],
+   "refs": [
+    "wardrobe"
+   ]
+  },
+  {
+   "id": "rocking chair",
+   "name_ko": "흔들의자",
+   "name_en": "rocking chair",
+   "category": "horror",
+   "category_ko": "폐가",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "낡은 나무 흔들의자(16px 솟음), 남쪽을 본다. 좌판 윗면 4행에 접힌 숄, 등받이 살 넷, 아래 휜 흔들 다리.",
+   "contextRoom": "manor",
+   "tags": [
+    "집",
+    "공포"
+   ],
+   "use": [
+    "sit"
+   ],
+   "place": "거실·폐가.",
+   "pair": [
+    "fireplace"
+   ],
+   "refs": [
+    "armchair"
+   ]
   }
  ]
 }
