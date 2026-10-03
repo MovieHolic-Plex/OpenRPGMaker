@@ -227,7 +227,7 @@ export function buildWelcomeGenrePresetPrompt(preset: WelcomeGenrePreset, brief?
   if (brief) {
     if (brief.presetId !== preset.id) throw new Error("게임 기획과 프리셋이 다릅니다.");
     return [
-      `${GENRE_PRESET_BRIEF_PREFIX} ${preset.label}`,
+      `${GENRE_PRESET_BRIEF_PREFIX} ${brief.interview ? [sceneGenre(brief.interview.genre).label, ...(brief.interview.secondary ? [sceneGenre(brief.interview.secondary).label] : [])].join(" + ") : preset.label}`,
       gameDesignBriefContext(brief),
       "확정된 기획의 첫 제작 범위만 실제 편집 도구로 구현하세요. 핵심 행동 → 진행 → 사건의 결과가 이어지는 플레이 가능한 구간을 만드세요.",
       "현재 프로젝트의 시스템 설정·맵·DB·타일 참고문서를 먼저 읽으세요. 기존 실제 ID를 조회한 뒤 참조하고, 저작 도구의 실행 결과를 확인하세요.",
@@ -241,10 +241,10 @@ export function buildWelcomeGenrePresetPrompt(preset: WelcomeGenrePreset, brief?
       WELCOME_DIALOGUE_LOOK_LINE,
       "한국어로 진행하고, 생성 후 기획의 핵심 흐름을 검증하세요. 작성·실행 확인·미확인을 구별해 보고하세요.",
       `게임 제목이 아직 「${UNNAMED_GAME_TITLE}」 같은 기본값이면 기획에 맞는 제목을 지어 set_project_settings({title}) 로 저장하세요(타이틀 화면에도 반영됩니다).`,
-      ...(preset.packId === "monster-collect" ? [MONSTER_COLLECT_AUTHORING_GUIDE] : []),
-      ...(preset.packId === "adventure-jrpg" ? [ADVENTURE_JRPG_AUTHORING_GUIDE, welcomeBattleLookLine()] : []),
-      ...(preset.narrativeHorrorGenre === "moon-cutscene" ? [MOON_CUTSCENE_STAGING_LINE] : []),
-      ...(textAsksForMystery(brief.summary) || brief.interview?.genre === "mystery" || brief.interview?.secondary === "mystery" ? [MYSTERY_AUTHORING_GUIDE] : []),
+      ...(!brief.interview && preset.packId === "monster-collect" ? [MONSTER_COLLECT_AUTHORING_GUIDE] : []),
+      ...(!brief.interview && preset.packId === "adventure-jrpg" ? [ADVENTURE_JRPG_AUTHORING_GUIDE, welcomeBattleLookLine()] : []),
+      ...(!brief.interview && preset.narrativeHorrorGenre === "moon-cutscene" ? [MOON_CUTSCENE_STAGING_LINE] : []),
+      ...(!brief.interview && textAsksForMystery(brief.summary) ? [MYSTERY_AUTHORING_GUIDE] : []),
       ...(preset.id === "horror-gallery" ? [HORROR_GALLERY_AUTHORING_GUIDE] : []),
       ...(preset.id === "school-horror" ? [HORROR_CHASE_AUTHORING_GUIDE] : []),
     ].join("\n\n");

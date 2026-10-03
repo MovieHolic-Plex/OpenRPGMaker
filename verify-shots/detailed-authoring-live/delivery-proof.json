@@ -1,0 +1,96 @@
+{
+  "mocked": false,
+  "requestCharacters": 40114,
+  "requestChecks": [
+    {
+      "id": "common",
+      "fullTextMatches": true,
+      "sha256": "231d9b01127f000d3106bbf2104f12ab8b0461b55853e0cc869ccef50a9d8d73"
+    },
+    {
+      "id": "romance",
+      "fullTextMatches": true,
+      "sha256": "c269fa8d0567c8b01d1edd0638c23dc93204ef783f051cd45822ad9c4588ef49"
+    }
+  ],
+  "fieldChecks": {
+    "summary": true,
+    "concept": true,
+    "protagonist": true,
+    "notes": true,
+    "experience": true,
+    "activity": true,
+    "progression": true,
+    "detail": true,
+    "scope": true
+  },
+  "roleChecks": [
+    {
+      "agent": "orchestrator-1",
+      "model": "gemini-3.8-flash",
+      "boundary": "Pi provider payload · 전송 시도",
+      "at": 1791034705276,
+      "documents": [
+        {
+          "id": "common",
+          "sha256": "231d9b01127f000d3106bbf2104f12ab8b0461b55853e0cc869ccef50a9d8d73",
+          "characters": 6491,
+          "fullTextMatches": true,
+          "begin": true,
+          "end": true
+        },
+        {
+          "id": "romance",
+          "sha256": "c269fa8d0567c8b01d1edd0638c23dc93204ef783f051cd45822ad9c4588ef49",
+          "characters": 7632,
+          "fullTextMatches": true,
+          "begin": true,
+          "end": true
+        }
+      ],
+      "displayOmittedCharacters": 75177
+    },
+    {
+      "agent": "builder-1",
+      "model": "gemini-3.8-flash",
+      "boundary": "Pi provider payload · 전송 시도",
+      "at": 1791034743102,
+      "documents": [
+        {
+          "id": "common",
+          "sha256": "231d9b01127f000d3106bbf2104f12ab8b0461b55853e0cc869ccef50a9d8d73",
+          "characters": 6491,
+          "fullTextMatches": true,
+          "begin": true,
+          "end": true
+        },
+        {
+          "id": "romance",
+          "sha256": "c269fa8d0567c8b01d1edd0638c23dc93204ef783f051cd45822ad9c4588ef49",
+          "characters": 7632,
+          "fullTextMatches": true,
+          "begin": true,
+          "end": true
+        }
+      ],
+      "displayOmittedCharacters": 2131203
+    }
+  ],
+  "orchestratorVerified": true,
+  "builderVerified": true,
+  "canonicalFolder": "/home/main/.codex/worktrees/08da/rpg-zzu/output/qa/detailed-authoring-live/project/.oprn-projects/591750e4-afaf-4722-9529-a9ac36fb198c",
+  "projectId": "c7f38230-0a66-4ffb-8f6b-d87c7132f695",
+  "reloadVerified": true,
+  "nativeWrites": [
+    "set_project_settings",
+    "upsert_actor",
+    "set_map_properties"
+  ],
+  "savedFieldChecks": {
+    "protagonist": true,
+    "meetingPlace": true
+  },
+  "fullGameVerified": false,
+  "scope": "Full preset delivery and the first real model write were observed. This does not verify complete game authoring or all runtime branches.",
+  "passed": true
+}

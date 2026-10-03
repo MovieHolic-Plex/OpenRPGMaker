@@ -1,4 +1,5 @@
 import type { GameBriefSlot, GameDesignBrief } from "./gameDesignBrief";
+import { authoringPresetManifest, detailedAuthoringTasks } from "./gameAuthoringPresets";
 
 export interface GameDesignExecutionTask {
   id: string;
@@ -7,6 +8,10 @@ export interface GameDesignExecutionTask {
   action: string;
   output: string;
   acceptance: string;
+  input?: string;
+  presetDocument?: string;
+  presetSection?: string;
+  applicability?: string;
 }
 
 /** Derived model context, never user-facing copy or an assertion that work was performed. */
@@ -44,7 +49,9 @@ export function buildGameDesignExecution(brief: GameDesignBrief) {
   add("F01", ["Q05"], ["scope"], "기존 저장 서비스를 통해 정본에 저장하고 같은 project id를 재로드해 비교한다.", "저장 대상·revision·재로드 근거", "메모리 상태나 JSON 내보내기를 정본 저장으로 보고하지 않는다.");
   add("F02", ["F01"], ["scope", "activity"], "재로드된 게임으로 시작·핵심 행동·결과를 다시 확인한다.", "저장 후 실행 증거", "저장 전후의 핵심 흐름이 일치한다.");
   add("F03", ["F02"], ["scope"], "실제로 검증한 결과, 미확인 사항, 임시 결정과 이어갈 작업을 짧게 인계한다.", "실행 기록과 인계", "계획 작성만으로 제작 완료라고 보고하지 않는다.");
+  tasks.push(...detailedAuthoringTasks(brief));
   return { version: 1 as const, presetId: brief.presetId, authority: "latest-confirmed-summary" as const,
+    authoringPresets: authoringPresetManifest(brief),
     requirements: { summary: brief.summary, answers: structuredClone(brief.answers),
       ...(brief.interview ? { interview: structuredClone(brief.interview) } : {}) }, tasks };
 }
