@@ -73,6 +73,8 @@ function applyCustomChipsetMinimalHarness(tileset: TilesetDef): boolean {
     && (tileset.image.id === CASTLE_TILESET_TEXTURE_KEY || tileset.image.id === LPC_WOODEN_FURNITURE_TILESET_TEXTURE_KEY
       // 버들항 v6 sheet: every cell's layer is cut from the render (lower = ground, upper = objects), not the RM2k3 table
       || tileset.image.id === "tex_beodeul_city"
+      // 현대 도시 · 도쿄풍: 칸마다 통행·레이어를 하네스 굽기(bake_tileset.py)에서 정해 둔 정의다
+      || tileset.image.id === "tex_modern_city"
       // 생성 칩셋 공용 실내(손 도트 v5)·배·던전: 칸마다 통행·레이어를 구워 둔 정의라 RM2k3 표를 들이대지 않는다
       || tileset.image.id === "tex_atlas_biome_interior" || tileset.image.id === "tex_atlas_biome_dungeon")
   ) return false;
