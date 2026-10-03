@@ -3275,6 +3275,21 @@ validateVillageContract → applyProposedProject`로 처리한다. 의도 선언
   `scripts/lib/piRunRelay.mjs` 의 `resolveHeavyProject` 가 내용을 해시로 검증해 LRU 캐시(512MB)에 두고 워커 몸통에 다시 붙인다. 모르는 해시면
   `409 {error:"heavy-missing", missing}` 을 돌려주고, 클라이언트는 그 해시만 실어 한 번 더 보낸다(호스트 재시작·축출). 브라우저의 "보낸 해시" 표는
   추측일 뿐이고 권위는 409 다. `crypto.subtle` 이 없으면 예전처럼 통째로 보낸다. 체크포인트 슬림·복원(`protocol.ts`)도 `assets` 를 같은 무거운 키로 다룬다.
+- **실행 준비 속도 (2026-10-04):** 보내기 → 첫 도구가 실측 80s 였다(새 프로젝트 168MB, 부하 걸린 머신). 고친 뒤 반복 실행 14~15s, 호스트·워커가
+  막 뜬 첫 실행 43s. 단계별 시각은 `OPRN_PI_TIMING=1 npm run dev:worktree` 로 서버 로그에 `[pi-timing]` 줄로 찍힌다(`scripts/lib/piRunTiming.mjs`).
+  - **첫 시도는 해시만:** `client.ts` 의 `openRun` 은 이 탭이 아직 안 보낸 해시라도 내용 없이 먼저 보낸다. 호스트 캐시는 새로고침보다 오래 살아서
+    새로고침 뒤 첫 턴마다 150MB 를 다시 gzip·업로드·파싱했다(브라우저 약 7s + 호스트 약 6s). 모르면 409 한 번으로 받는다.
+  - **워커도 해시로 쥔다:** 어댑터가 `runAgentHeavyRefs: true` 면 중계는 프로젝트를 되살리지 않고(`resolveHeavyRefs`) 해시·글을 넘긴다.
+    `ohMyPiPiAi.runAgent` 는 워커에 해시만 보내고, 워커(`oh-my-pi-worker.ts` `resolveWorkerHeavy`)가 모르면 409 → 원문을 `heavyRaw` 로
+    문자열 감싸기 없이 이어 붙여 보낸다(워커가 `request.json()` 한 번으로 객체를 받는다). 워커는 파싱한 객체를 해시 6개까지 쥔다 — 실행은
+    요청 프로젝트를 `structuredClone` 해서 고치므로 쥔 객체는 오염되지 않는다. 없앤 것: 실행마다 호스트 JSON.parse(1.4~1.9s)·워커 몸통 직렬화
+    (1.5~1.7s)·워커 파싱(1.6~1.8s). 응답 헤더 `X-Oprn-Heavy-Refs: 1` 이 없는 옛 워커면 되살린 프로젝트로 다시 보낸다.
+  - **공용 카탈로그는 판본이 같으면 다시 안 읽는다:** 워커 `runPiAgent` 첫머리가 실행마다 shared-content.sqlite 의 payload(37행 505MB)를
+    `readSharedTileReferences`·`readSharedContent` 로 두 번 읽고 파싱했다 — 실행 준비 41s 의 거의 전부. 이제 `ensureWorkerSharedCatalogs` 가 행 판본만 세어
+    같으면 건너뛰고, 다시 읽을 때도 `readSharedCatalogsOnce` 로 한 번만 읽는다(따로 읽기 6.6~9.0s → 3.8~4.7s).
+  - 남은 것(반복 실행 기준): 의도 분류와 커버리지 감사가 차례로 두 번 부른다(합 4~6s — 감사는 라우팅 결과와 무관하게 같은 사실만 보므로 동시에 부를 수 있다),
+    워커의 `structuredClone(base)` 2s, 호스트·워커가 막 뜬 첫 실행의 409 왕복 뒤 브라우저 재압축. 「마을」 요청은 `author_village` 가 참고문서 관문에
+    0ms 로 거절된 뒤 모델이 참고문서를 읽느라 30초 넘게 헤맨다(고치기 전 실측도 같다) — 속도로 보이지만 관문 안내 문제다.
 - **실행 기록과 이어 받기 (2026-09-27):** 실행은 브라우저 연결이 아니라 호스트의 실행 기록에 묶인다(`piRunRelay.mjs`).
   POST `/v1/agent/run` 은 몸통의 `runId`(없으면 호스트가 만든다)로 기록을 열고, 워커 NDJSON 을 끝까지 읽어 쌓으며, 줄마다 `"seq"` 를 붙여 흘린다.
   응답 헤더 `X-Oprn-Run-Id` 가 이어 받기 가능 표시다 — 두 동반 서비스 진입점(`companion/middleware.mjs`, `chatgpt-oauth-companion.mjs`)은

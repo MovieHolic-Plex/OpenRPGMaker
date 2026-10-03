@@ -20,6 +20,7 @@ import {
   cancelProviderLogin,
 } from "./aiAuthRuntime.ts";
 import { applyLegacyEnvAliases } from "./oprnEnv.mjs";
+import { piTimer } from "./piRunTiming.mjs";
 
 applyLegacyEnvAliases();
 
@@ -150,6 +151,17 @@ async function workerJson(pathname, body) {
   return payload;
 }
 
+/**
+ * 워커 몸통 끝에 무거운 키 원문을 「heavyRaw」로 덧붙인다. 원문은 이미 JSON 이라 문자열로 감싸지 않고 그대로 이어 붙인다 —
+ * 워커가 request.json() 한 번으로 객체를 받는다. 왜(2026-10-04 실측, 새 프로젝트 168MB): 실행마다 호스트가 무거운 키를
+ * JSON.parse(1.4~1.9s) → 몸통째 JSON.stringify(1.5~1.7s) → 워커가 다시 파싱(1.6~1.8s) 했다. 워커가 해시로 쥐고 있으면 셋 다 없다.
+ */
+function withHeavyRaw(envelope, entries) {
+  if (!envelope.endsWith("}")) throw new Error("워커 몸통이 객체가 아닙니다.");
+  const raw = entries.map(([hash, json]) => `${JSON.stringify(hash)}:${json}`).join(",");
+  return `${envelope.slice(0, -1)}${envelope.length > 2 ? "," : ""}"heavyRaw":{${raw}}}`;
+}
+
 export function stopOhMyPiWorker() {
   workerChild?.kill();
   workerChild = null;
@@ -200,6 +212,8 @@ export async function createOhMyPiAdapters() {
     async resolveCheckpoint(body) {
       return workerJson("/agent/checkpoint", body);
     },
+    /** runAgent 가 options.heavy(해시·글)를 받아 워커까지 해시째 넘긴다 — 중계가 프로젝트를 되살리지 않는다. */
+    runAgentHeavyRefs: true,
     async runAgent(provider, body, options = {}) {
       const apiKey = await resolveRequestApiKey(provider);
       const providerApiKeys = { [provider]: apiKey };
@@ -219,14 +233,44 @@ export async function createOhMyPiAdapters() {
           codexApiKey = undefined;
         }
       }
+      const timer = piTimer("host runAgent");
       const port = await startWorker();
+      timer.mark("worker");
+      const heavy = options.heavy?.refs && Object.keys(options.heavy.refs).length ? options.heavy : null;
+      const envelope = JSON.stringify({ apiKey, providerApiKeys, codexApiKey, request: { ...body, provider }, ...(heavy ? { heavy: heavy.refs } : {}) });
+      timer.mark("stringify", `${Math.round(envelope.length / 1048576)}MB`);
       // 브라우저가 끊으면(중단 버튼) 그 신호를 워커까지 넘긴다 — 안 그러면 에이전트는 끝까지 돈다.
-      const response = await fetch(`http://127.0.0.1:${port}/agent/run`, {
+      const post = (raw) => fetch(`http://127.0.0.1:${port}/agent/run`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ apiKey, providerApiKeys, codexApiKey, request: { ...body, provider } }),
+        body: raw.length ? withHeavyRaw(envelope, raw.map((hash) => [hash, heavy.blobs[hash]])) : envelope,
         ...(options.signal ? { signal: options.signal } : {}),
       });
+      // 무거운 키는 해시만 보내고 워커가 파싱해 둔 것을 쓴다. 워커가 모르면(막 떴거나 밀어냈으면) 409 로 그 해시만 받는다.
+      let response = await post([]);
+      if (heavy && response.status === 409) {
+        const payload = await response.json().catch(() => ({}));
+        if (payload?.error !== "heavy-missing" || !Array.isArray(payload.missing)) {
+          throw Object.assign(new Error(payload?.error || "oh-my-pi worker 409"), { status: 409 });
+        }
+        const missing = payload.missing.filter((hash) => typeof heavy.blobs[hash] === "string");
+        timer.mark("workerMissing", `${missing.length}`);
+        response = await post(missing);
+      }
+      if (heavy && response.ok && response.headers.get("X-Oprn-Heavy-Refs") !== "1") {
+        // 해시를 모르는 옛 워커(패키지 빌드가 어긋난 경우) — 빈 키로 돌고 있다. 끊고 되살린 프로젝트로 다시 보낸다.
+        void response.body?.cancel().catch(() => undefined);
+        const project = { ...body.project };
+        for (const [key, hash] of Object.entries(heavy.refs)) project[key] = JSON.parse(heavy.blobs[hash]);
+        response = await fetch(`http://127.0.0.1:${port}/agent/run`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ apiKey, providerApiKeys, codexApiKey, request: { ...body, project, provider } }),
+          ...(options.signal ? { signal: options.signal } : {}),
+        });
+      }
+      timer.mark("workerHeaders");
+      timer.done();
       if (!response.ok) {
         const payload = await response.json().catch(() => ({}));
         const error = new Error(payload?.error || `oh-my-pi worker ${response.status}`);

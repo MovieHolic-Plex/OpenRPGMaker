@@ -1,3 +1,4 @@
+import { piTimer } from './piRunTiming.mjs';
 import { PiInteriorCompletion } from '../../src/ai/piAgent/interiorCompletion.ts';
 import type { InteriorRequirements } from '../../src/project/interiorPlacementAudit.ts';
 import { randomUUID } from "node:crypto";
@@ -197,14 +198,38 @@ function trimText(value: unknown, max: number): string {
   return text.length > max ? `${text.slice(0, max)}…` : text;
 }
 
+/**
+ * 워커는 브라우저 부팅을 안 거치므로 공용 카탈로그(장소·지역 참고·공용 콘텐츠)를 스스로 설치한다. 판본이 같으면 다시 읽지 않는다.
+ *
+ * 왜(2026-10-03 실측): 실행마다 2.4GB shared-content.sqlite 의 모든 payload(505MB) 를 두 번 읽어 파싱했다 — 실행 준비 41.4s 중
+ * 거의 전부였고, 동기 SQLite 라 그동안 워커가 응답 헤더도 못 보냈다(브라우저는 「작업 중」만 보며 40초 넘게 기다렸다).
+ * 판본은 행 판본만 읽어 센다(payload 안 읽음). 게시 스크립트가 행을 바꾸면 판본이 바뀌어 다음 실행이 다시 설치한다.
+ * 팀 모드는 팀원 실행이 동시에 들어오므로 한 번만 읽게 묶는다.
+ */
+let sharedCatalogs: { revision: string; loading: Promise<void> } | null = null;
+async function ensureWorkerSharedCatalogs(): Promise<void> {
+  const { sharedTileReferencesRevision } = await import('./sharedTileReferencesSqlite');
+  const revision = sharedTileReferencesRevision();
+  if (sharedCatalogs?.revision === revision) return sharedCatalogs.loading;
+  const loading = (async () => {
+    // 같은 행을 두 번 읽어 두 번 파싱하지 않는다(readSharedCatalogsOnce 주석).
+    const { readSharedCatalogsOnce } = await import('./sharedTileReferencesSqlite');
+    const { tileReferences, content } = readSharedCatalogsOnce();
+    const { installSharedSpatialReferences } = await import('../../src/project/sharedSpatialReferences');
+    installSharedSpatialReferences(tileReferences.spatial);
+    const { installSharedContent } = await import('../../src/project/sharedContent');
+    await installSharedContent(content);
+  })();
+  sharedCatalogs = { revision, loading };
+  // 실패한 설치를 기억하면 다음 실행도 같은 실패를 그냥 넘긴다 — 지우고 다시 시도하게 한다.
+  loading.catch(() => { if (sharedCatalogs?.loading === loading) sharedCatalogs = null; });
+  return loading;
+}
+
 export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOptions = {}): Promise<PiAgentDoneEvent> {
-  // Workers do not run browser boot; load the same host-wide region catalog for AI tools.
-  const { readSharedTileReferences } = await import('./sharedTileReferencesSqlite');
-  const { installSharedSpatialReferences } = await import('../../src/project/sharedSpatialReferences');
-  installSharedSpatialReferences(readSharedTileReferences().spatial);
-  const { readSharedContent } = await import('./sharedContentSqlite');
-  const { installSharedContent } = await import('../../src/project/sharedContent');
-  await installSharedContent(readSharedContent());
+  const setupTimer = piTimer("worker runPiAgent setup");
+  await ensureWorkerSharedCatalogs();
+  setupTimer.mark("sharedCatalogs");
   const emit = (event: PiAgentEvent) => options.onEvent?.({ ...event, at: event.at ?? Date.now() });
   const base = request.project;
   const modernTilesetPolicy = request.modernTilesetOnly || requestsModernMap(base, request.task, [...request.mapIds, ...(request.currentMapId ? [request.currentMapId] : [])]) ? createModernTilesetPolicy(base) : undefined;
@@ -214,6 +239,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     ...(request.currentMapId && base.maps[request.currentMapId] ? { currentMapId: request.currentMapId } : {}),
     ...(request.approvedTilesetFamilies?.length ? { approvedTilesetFamilies: [...request.approvedTilesetFamilies] } : {}),
   };
+  setupTimer.mark("clone");
   const referenceGate = new PiTilesetReferenceGate();
   const model = options.model ?? resolvePiModel(request.provider, request.model);
   // 어댑터와 코어 이벤트의 호출 id로 결과를 연결한다. 같은 이름의 병렬 호출도 섞지 않는다.
@@ -314,6 +340,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   };
   const incremental = !contract && !!request.applyMode && request.applyMode !== "review" && !request.readOnly && !options.readOnlyTools && !!options.onCheckpoint;
   let accepted = snapshotProjectKeepingHeavy(ctx.project);
+  setupTimer.mark("snapshot");
+  setupTimer.done();
   let rejected = false;
   const checkpoint = async (label: string, toolName: string, signal?: AbortSignal): Promise<void> => {
     if (!incremental || changedProjectKeys(accepted, ctx.project).length === 0) return;

@@ -9,6 +9,7 @@ import type { Project } from '../../src/project/types';
 import type { SharedSpatialReferences } from '../../src/project/sharedSpatialReferences';
 import { gunzipSync, gzipSync } from 'node:zlib';
 import { sharedContentPreviewUrl, sharedReferenceImageLinker } from './sharedContentSqlite';
+import type { SharedContentSnapshot } from '../../src/project/sharedContentSchema';
 const hash = (data: string | Uint8Array) => createHash('sha256').update(data).digest('hex');
 const defaultFile = () => process.env.OPRN_SHARED_CONTENT_SQLITE || join(process.env.XDG_DATA_HOME || join(homedir(), '.local', 'share'), 'oprn', 'shared-content.sqlite');
 /**
@@ -21,53 +22,75 @@ export function readSharedTileReferences(file = defaultFile(), options: { readon
   const db = new DatabaseSync(file, { readOnly: true });
   try {
     const rows = db.prepare('SELECT id, revision, payload FROM content_libraries ORDER BY id').all() as {id:string;revision:string;payload:string}[];
-    const link = options.linkImages ? sharedReferenceImageLinker(file) : null;
-    const entries: SharedTileReferenceSnapshot['entries'] = [], seen = new Set<string>();
-    const spatial: SharedSpatialReferences = {regions: [], maps: {}, tilesets: {}, assets: {}};
-    for (const row of rows) {
-      const lib = JSON.parse(row.payload) as { tilesets: Project['tilesets']; assets: Project['assets']['uploaded']; maps?: Project['maps']; regionReferences?: SharedSpatialReferences['regions']; regions?: Record<string, SharedSpatialReferences['regions'][number]> };
-      const regions = new Map((lib.regionReferences ?? []).map(reference => [reference.id, reference]));
-      for (const reference of Object.values(lib.regions ?? {})) {
-        const previous = regions.get(reference.id);
-        if (previous && JSON.stringify(previous) !== JSON.stringify(reference)) throw new Error(`Conflicting shared region reference: ${reference.id}`);
-        regions.set(reference.id, reference);
-      }
-      if (regions.size) {
-        for (const reference of regions.values()) {
-          // regions is keyed by the saved snapshot; sourceMapId is provenance and
-          // several snapshots can legitimately originate from the same source map.
-          const snapshot = lib.regions?.[reference.id] ? lib.maps?.[reference.id] : lib.maps?.[reference.sourceMapId];
-          const map = snapshot && { ...snapshot, id: reference.id }, tile = map && lib.tilesets[map.tilesetId];
-          if (!reference.id.startsWith('shared_') || !map || !tile || reference.width !== map.width || reference.height !== map.height
-            || reference.tilesetId !== map.tilesetId || map.lowerTiles.length !== map.width * map.height || map.upperTiles.length !== map.width * map.height) throw new Error('Invalid shared region reference');
-          if (reference.referenceDocuments) validateTilesetReferences(reference.referenceDocuments);
-          // 편집기 응답: 미리보기는 호스트 미리보기 주소로(regions 에 저장된 것만 그 경로로 읽힌다).
-          const preview = link && lib.regions?.[reference.id]?.preview.startsWith('data:') ? sharedContentPreviewUrl(row.id, row.revision, 'region', reference.id) : reference.preview;
-          if (link) { link(reference.referenceDocuments); link(tile.referenceDocuments); for (const kit of tile.structureKits ?? []) link(kit.referenceDocuments); }
-          spatial.regions.push({ ...reference, preview, sourceMapId: map.id }); spatial.maps[map.id] = map;
-          spatial.tilesets[tile.id] = options.libraryRefs ? { [SHARED_LIBRARY_REF]: row.id } as unknown as typeof tile : tile;
-          if (tile.image.type === 'uploaded' && lib.assets[tile.image.id]) {
-            spatial.assets[tile.image.id] = options.libraryRefs ? { [SHARED_LIBRARY_REF]: row.id } as unknown as typeof lib.assets[string] : lib.assets[tile.image.id];
-          }
+    return tileReferencesFromRows(rows.map(row => ({ id: row.id, revision: row.revision, lib: JSON.parse(row.payload) })), file, options);
+  } finally { db.close(); }
+}
+
+/**
+ * 공용 카탈로그(readSharedContent 와 같은 모양)와 지역·타일 참고 스냅숏을 **한 번 읽고 한 번 파싱해** 둘 다 만든다.
+ * 둘은 같은 content_libraries 행 전부(2026-10-04 기준 37행 505MB)를 따로 SELECT·JSON.parse 했다 — 워커의 첫 실행 준비가
+ * 부하 걸린 머신에서 35~41s 였다. 두 설치는 읽기 전용이라(installSharedContent·installSharedSpatialReferences) 객체를 같이 써도 된다.
+ */
+export function readSharedCatalogsOnce(file = defaultFile()): { readonly tileReferences: SharedTileReferenceSnapshot; readonly content: SharedContentSnapshot } {
+  if (!existsSync(file)) return { tileReferences: { revision: '', entries: [] }, content: { revision: hash(''), libraries: {} } };
+  const db = new DatabaseSync(file, { readOnly: true });
+  try {
+    const rows = (db.prepare('SELECT id, revision, payload FROM content_libraries ORDER BY id').all() as {id:string;revision:string;payload:string}[])
+      .map(row => ({ id: row.id, revision: row.revision, lib: JSON.parse(row.payload) }));
+    const tileReferences = tileReferencesFromRows(rows, file, {});
+    return { tileReferences, content: { revision: tileReferences.revision, libraries: Object.fromEntries(rows.map(row => [row.id, row.lib])) } };
+  } finally { db.close(); }
+}
+
+type SharedLibraryRow = { readonly id: string; readonly revision: string; readonly lib: { tilesets: Project['tilesets']; assets: Project['assets']['uploaded']; maps?: Project['maps']; regionReferences?: SharedSpatialReferences['regions']; regions?: Record<string, SharedSpatialReferences['regions'][number]> } };
+
+function tileReferencesFromRows(rows: readonly SharedLibraryRow[], file: string, options: { readonly linkImages?: boolean; readonly libraryRefs?: boolean }): SharedTileReferenceSnapshot {
+  const link = options.linkImages ? sharedReferenceImageLinker(file) : null;
+  const entries: SharedTileReferenceSnapshot['entries'] = [], seen = new Set<string>();
+  const spatial: SharedSpatialReferences = {regions: [], maps: {}, tilesets: {}, assets: {}};
+  for (const row of rows) {
+    const lib = row.lib;
+    const regions = new Map((lib.regionReferences ?? []).map(reference => [reference.id, reference]));
+    for (const reference of Object.values(lib.regions ?? {})) {
+      const previous = regions.get(reference.id);
+      if (previous && JSON.stringify(previous) !== JSON.stringify(reference)) throw new Error(`Conflicting shared region reference: ${reference.id}`);
+      regions.set(reference.id, reference);
+    }
+    if (regions.size) {
+      for (const reference of regions.values()) {
+        // regions is keyed by the saved snapshot; sourceMapId is provenance and
+        // several snapshots can legitimately originate from the same source map.
+        const snapshot = lib.regions?.[reference.id] ? lib.maps?.[reference.id] : lib.maps?.[reference.sourceMapId];
+        const map = snapshot && { ...snapshot, id: reference.id }, tile = map && lib.tilesets[map.tilesetId];
+        if (!reference.id.startsWith('shared_') || !map || !tile || reference.width !== map.width || reference.height !== map.height
+          || reference.tilesetId !== map.tilesetId || map.lowerTiles.length !== map.width * map.height || map.upperTiles.length !== map.width * map.height) throw new Error('Invalid shared region reference');
+        if (reference.referenceDocuments) validateTilesetReferences(reference.referenceDocuments);
+        // 편집기 응답: 미리보기는 호스트 미리보기 주소로(regions 에 저장된 것만 그 경로로 읽힌다).
+        const preview = link && lib.regions?.[reference.id]?.preview.startsWith('data:') ? sharedContentPreviewUrl(row.id, row.revision, 'region', reference.id) : reference.preview;
+        if (link) { link(reference.referenceDocuments); link(tile.referenceDocuments); for (const kit of tile.structureKits ?? []) link(kit.referenceDocuments); }
+        spatial.regions.push({ ...reference, preview, sourceMapId: map.id }); spatial.maps[map.id] = map;
+        spatial.tilesets[tile.id] = options.libraryRefs ? { [SHARED_LIBRARY_REF]: row.id } as unknown as typeof tile : tile;
+        if (tile.image.type === 'uploaded' && lib.assets[tile.image.id]) {
+          spatial.assets[tile.image.id] = options.libraryRefs ? { [SHARED_LIBRARY_REF]: row.id } as unknown as typeof lib.assets[string] : lib.assets[tile.image.id];
         }
       }
-      for (const [id, tile] of Object.entries(lib.tilesets)) {
-        if (!id.startsWith('shared_') || !tile.referenceDocuments?.length || tile.image?.type !== 'uploaded') continue;
-        const asset = lib.assets[tile.image.id], dataUrl = asset?.dataUrl;
-        if (!dataUrl?.startsWith('data:image/') || !dataUrl.includes(';base64,')) continue;
-        if (seen.has(id)) throw new Error(`Duplicate shared tileset ID: ${id}`);
-        validateTilesetReferences(tile.referenceDocuments); seen.add(id);
-        if (link) { link(tile.referenceDocuments); for (const kit of tile.structureKits ?? []) link(kit.referenceDocuments); }
-        const identity = { id, tileSize: tile.tileSize, tilesPerRow: tile.tilesPerRow, count: tile.count, assetId: tile.image.id,
-          imageSha256: hash(Buffer.from(dataUrl.split(',')[1], 'base64')), dataUrlSha256: hash(dataUrl) };
-        // 참고문서·구조 킷은 카탈로그 타일셋의 그것 그대로다(sharedTileReferenceKits 와 같은 거름).
-        entries.push(options.libraryRefs
-          ? { ...identity, library: row.id } as unknown as SharedTileReferenceSnapshot['entries'][number]
-          : { ...identity, documents: tile.referenceDocuments, kits: sharedTileReferenceKits(tile) });
-      }
     }
-    return { revision: hash(rows.map(r => r.id + ':' + r.revision).join('\n')), entries, spatial };
-  } finally { db.close(); }
+    for (const [id, tile] of Object.entries(lib.tilesets)) {
+      if (!id.startsWith('shared_') || !tile.referenceDocuments?.length || tile.image?.type !== 'uploaded') continue;
+      const asset = lib.assets[tile.image.id], dataUrl = asset?.dataUrl;
+      if (!dataUrl?.startsWith('data:image/') || !dataUrl.includes(';base64,')) continue;
+      if (seen.has(id)) throw new Error(`Duplicate shared tileset ID: ${id}`);
+      validateTilesetReferences(tile.referenceDocuments); seen.add(id);
+      if (link) { link(tile.referenceDocuments); for (const kit of tile.structureKits ?? []) link(kit.referenceDocuments); }
+      const identity = { id, tileSize: tile.tileSize, tilesPerRow: tile.tilesPerRow, count: tile.count, assetId: tile.image.id,
+        imageSha256: hash(Buffer.from(dataUrl.split(',')[1], 'base64')), dataUrlSha256: hash(dataUrl) };
+      // 참고문서·구조 킷은 카탈로그 타일셋의 그것 그대로다(sharedTileReferenceKits 와 같은 거름).
+      entries.push(options.libraryRefs
+        ? { ...identity, library: row.id } as unknown as SharedTileReferenceSnapshot['entries'][number]
+        : { ...identity, documents: tile.referenceDocuments, kits: sharedTileReferenceKits(tile) });
+    }
+  }
+  return { revision: hash(rows.map(r => r.id + ':' + r.revision).join('\n')), entries, spatial };
 }
 
 /**

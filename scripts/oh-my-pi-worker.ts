@@ -16,6 +16,7 @@ import { runPiTeam } from "./lib/piTeamRuntime.ts";
 import { createPiAgentNdjsonStream } from "./lib/piAgentStream.ts";
 import type { PiAgentRequest } from "../src/ai/piAgent/protocol.ts";
 import { applyLegacyEnvAliases } from "./lib/oprnEnv.mjs";
+import { piTimer } from "./lib/piRunTiming.mjs";
 
 applyLegacyEnvAliases();
 
@@ -26,6 +27,41 @@ function json(data: unknown, status = 200) {
     status,
     headers: { "Content-Type": "application/json; charset=utf-8" },
   });
+}
+
+/**
+ * 무거운 키(타일셋·DB·에셋)를 해시로 받아 파싱해 둔 객체를 쓴다. 호스트는 해시만 보내고, 여기 없으면 409 로 그 해시의
+ * 원문(heavyRaw, 이미 객체로 파싱돼 온다)을 받는다. 실행은 요청 프로젝트를 structuredClone 해서 고치므로(runPiAgent·runPiTeam)
+ * 여기 쥔 객체는 실행 사이에 오염되지 않는다.
+ * 왜(2026-10-04 실측, 새 프로젝트 168MB): 실행마다 호스트 파싱·직렬화·워커 파싱이 4.5~5s 였다.
+ */
+const HEAVY_KEYS = ["tilesets", "database", "assets"] as const;
+/** 쥐는 해시 수. 프로젝트 하나가 키 셋을 쓰므로 두 프로젝트 몫. 넘으면 오래 안 쓴 것부터 버린다(다음 요청이 409 로 다시 준다). */
+const HEAVY_CACHE_MAX = 6;
+const heavyCache = new Map<string, unknown>();
+function resolveWorkerHeavy(project: PiAgentRequest["project"], refs: Record<string, string>, raw: Record<string, unknown> | undefined):
+  { project: PiAgentRequest["project"]; missing?: undefined } | { missing: string[] } {
+  for (const [hash, value] of Object.entries(raw ?? {})) {
+    if (value && typeof value === "object") { heavyCache.delete(hash); heavyCache.set(hash, value); }
+  }
+  const missing: string[] = [];
+  const next = { ...project } as Record<string, unknown>;
+  for (const key of HEAVY_KEYS) {
+    const hash = refs[key];
+    if (typeof hash !== "string") continue;
+    const value = heavyCache.get(hash);
+    if (value === undefined) { missing.push(hash); continue; }
+    heavyCache.delete(hash);
+    heavyCache.set(hash, value);
+    next[key] = value;
+  }
+  while (heavyCache.size > HEAVY_CACHE_MAX) {
+    const oldest = heavyCache.keys().next().value;
+    if (oldest === undefined) break;
+    heavyCache.delete(oldest);
+  }
+  if (missing.length) return { missing };
+  return { project: next as unknown as PiAgentRequest["project"] };
 }
 
 const server = Bun.serve({
@@ -64,11 +100,18 @@ const server = Bun.serve({
       if (request.method === "POST" && url.pathname === "/agent/run") {
         // Pi 에이전트 실행. 진행 이벤트를 NDJSON 으로 흘리고 마지막 줄 `done` 에 결과 프로젝트를 싣는다.
         // 오류도 이벤트 줄로 보낸다 — 헤더가 이미 나간 뒤라 상태 코드로는 말할 수 없다.
-        const body = await request.json() as { apiKey?: string; providerApiKeys?: Record<string, string | undefined>; codexApiKey?: string; request?: PiAgentRequest };
-        const agentRequest = body.request;
-        if (!agentRequest || typeof agentRequest !== "object" || typeof agentRequest.task !== "string" || !agentRequest.project) {
+        const timer = piTimer("worker /agent/run");
+        const body = await request.json() as { apiKey?: string; providerApiKeys?: Record<string, string | undefined>; codexApiKey?: string; request?: PiAgentRequest; heavy?: Record<string, string>; heavyRaw?: Record<string, unknown> };
+        timer.mark("json");
+        const sentRequest = body.request;
+        if (!sentRequest || typeof sentRequest !== "object" || typeof sentRequest.task !== "string" || !sentRequest.project) {
           return json({ error: "request.task 와 request.project 가 필요합니다" }, 400);
         }
+        const resolved = body.heavy && typeof body.heavy === "object" ? resolveWorkerHeavy(sentRequest.project, body.heavy, body.heavyRaw) : null;
+        timer.mark("heavy", resolved?.missing ? `missing=${resolved.missing.length}` : "");
+        timer.done();
+        if (resolved?.missing) return json({ error: "heavy-missing", missing: resolved.missing }, 409);
+        const agentRequest: PiAgentRequest = resolved ? { ...sentRequest, project: resolved.project } : sentRequest;
         const apiKey = typeof body.apiKey === "string" ? body.apiKey : undefined;
         const stream = createPiAgentNdjsonStream((onEvent) => (agentRequest.mode === "team" ? runPiTeam : runPiAgent)(agentRequest, {
           apiKey,
@@ -81,7 +124,7 @@ const server = Bun.serve({
           ...(agentRequest.readOnly ? { readOnlyTools: true } : {}),
           ...(agentRequest.timeoutMs ? { timeoutMs: agentRequest.timeoutMs } : {}),
         }));
-        return new Response(stream, { status: 200, headers: { "Content-Type": "application/x-ndjson; charset=utf-8", "Cache-Control": "no-cache" } });
+        return new Response(stream, { status: 200, headers: { "Content-Type": "application/x-ndjson; charset=utf-8", "Cache-Control": "no-cache", "X-Oprn-Heavy-Refs": "1" } });
       }
       if (request.method === "POST" && url.pathname === "/image") {
         const body = await request.json() as Record<string, unknown>;
