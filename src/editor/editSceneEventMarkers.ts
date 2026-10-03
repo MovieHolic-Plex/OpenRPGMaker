@@ -1,4 +1,5 @@
 import { reliefCellLiftPx } from "@/player/reliefStrips";
+import { terrainPreviewSees } from "@/player/terrainVision";
 import { mapTileSize } from "@/project/tileGeometry";
 import type Phaser from "phaser";
 import { TILE_SIZE } from "@/assets/bundled";
@@ -136,6 +137,7 @@ export function renderEventMarkers(context: EventMarkerRenderContext, map: GameM
   const overlapping = activeLayer === "event" ? overlappingEventIds(events) : new Set<string>();
   const tileSize = context.tileSize ?? mapTileSize(map);
   for (const event of events) {
+    if (state.tool === "relief" && state.terrainVisionPreview && map.terrainDesign?.gameplay?.visionBlocking && !terrainPreviewSees(context.scene, map, event)) continue;
     const cx = event.x * tileSize + tileSize / 2;
     const cy = event.y * tileSize + tileSize / 2;
     const position = { x: cx, y: cy };

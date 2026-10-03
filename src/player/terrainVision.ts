@@ -10,6 +10,7 @@ interface VisionMask {
 interface VisionActor { active: boolean; visible: boolean }
 interface Actors { eventSprites?: Map<string, Phaser.GameObjects.Sprite>; eventPositions?: Record<string, TerrainSightPoint>; characterShadows?: Map<string, VisionActor> }
 const masks = new WeakMap<Phaser.Scene, VisionMask>();
+const previews = new WeakMap<Phaser.Scene, { map: GameMap; visible: Set<number> }>();
 const hidden = new WeakMap<Phaser.Scene, VisionActor[]>();
 let serial = 0;
 function restoreActors(scene: Phaser.Scene): void {
@@ -44,6 +45,10 @@ function bindActors(scene: Phaser.Scene): void {
 export function terrainRuntimeSees(scene: Phaser.Scene, point: TerrainSightPoint): boolean {
   const state = masks.get(scene); return !state || state.visible.has(Math.floor(point.y) * state.map.width + Math.floor(point.x));
 }
+export function terrainPreviewSees(scene: Phaser.Scene, map: GameMap, point: TerrainSightPoint): boolean {
+  const preview = previews.get(scene);
+  return preview?.map !== map || preview.visible.has(Math.floor(point.y) * map.width + Math.floor(point.x));
+}
 /** OFF removes all fog, including radius clipping. High-ground range remains an independent NPC rule. */
 export function syncTerrainVision(scene: Phaser.Scene, map: GameMap, x: number, y: number, tileset?: TilesetDef): void {
   if (!map.terrainDesign?.gameplay?.visionBlocking) { dispose(scene); return; }
@@ -68,7 +73,8 @@ export function addTerrainVisionPreview(scene: Phaser.Scene, layer: Phaser.GameO
   if (!map.terrainDesign?.gameplay?.visionBlocking) return;
   const size = mapTileSize(map), view = terrainVisionWindow(map, size, scene.cameras.main), canvas = document.createElement("canvas");
   canvas.width = view.width; canvas.height = view.height; const context = canvas.getContext("2d"); if (!context) return;
-  paintTerrainVision(context, map, size, terrainVisibleCells(map, origin, tileset), view);
+  const visible = terrainVisibleCells(map, origin, tileset); previews.set(scene, { map, visible });
+  paintTerrainVision(context, map, size, visible, view);
   const key = `terrain-vision-preview-${++serial}`, texture = scene.textures.addCanvas(key, canvas); if (!texture) return;
   texture.setFilter(0); const image = scene.add.image(view.left * size, view.worldY, key).setOrigin(0); layer.add(image);
   image.once("destroy", () => scene.textures.remove(key));

@@ -45,7 +45,7 @@
     "opaqueCells": 139
   },
   "film": {
-    "frames": 359,
+    "frames": 380,
     "skippedCaptureFrames": 0,
     "crop": {
       "x": 0,
@@ -55,27 +55,27 @@
     },
     "phases": [
       {
-        "seconds": 0.031,
+        "seconds": 0.042,
         "text": "집 · 모양을 고르고 문 위치 한 번 클릭"
       },
       {
-        "seconds": 9.815,
+        "seconds": 10.145,
         "text": "집 너비 · 층수 변경, 다른 모양으로 연속 배치"
       },
       {
-        "seconds": 17.941,
+        "seconds": 18.721,
         "text": "겹치는 위치는 붉게 표시 · 클릭해도 기존 집 보존"
       },
       {
-        "seconds": 23.792,
+        "seconds": 23.093,
         "text": "도로 · 끌고 놓으면 자동 적용, 모퉁이와 교차로 연결"
       },
       {
-        "seconds": 35.876,
+        "seconds": 34.839,
         "text": "시야 ON · 벽·나무 뒤 가림, 에디터와 게임이 같은 판정"
       },
       {
-        "seconds": 39.785,
+        "seconds": 38.206,
         "text": "시야 OFF · 고지 시야 확대가 켜져 있어도 가림 완전히 해제"
       }
     ],
