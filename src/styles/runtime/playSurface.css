@@ -266,6 +266,7 @@
   max-height: 65%;
   overflow-y: auto;
   white-space: pre-wrap;
+  word-break: keep-all;
   overflow-wrap: anywhere;
   font-size: 14px;
   line-height: 1.5;

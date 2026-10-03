@@ -635,3 +635,7 @@ fade에는 별도 `--cinematic-fade-ms`(최대 600ms, 더 짧은 장면은 해�
 실제 출하 브라우저에서 수정 전 1.4초 투명도 0.25/0.20과 수정 후 0.7초 투명도 1을 확인했다.
 증거와 재현: `verify-shots/monster-assistant-opening-2026-10-03/`,
 `scripts/qa/runtime/opening-assistant-native.cjs`. 전체 테스트/게이트 실행 결과가 아니다.
+
+한국어 시네마틱 자막은 `word-break: keep-all`로 단어 사이에서 줄을 바꾸고,
+한 단어 자체가 무대보다 길 때는 기존 `overflow-wrap:anywhere`로 넘침을 피한다.
+24.5초 도입의 초대 문장에서 “기다린/다”로 갈라지던 실제960×720 화면을 근거로 수정했다.

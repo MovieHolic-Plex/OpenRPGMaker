@@ -42,7 +42,7 @@ describe("AI 툴 카탈로그 예산", () => {
   it("오프닝 저작 툴 묶음의 몫을 기록한다", () => {
     const opening = toOpenAiTools(allTools()).filter(entry => entry.function.name.includes("opening"));
     expect(opening.map(entry => entry.function.name).sort()).toEqual([
-      "edit_opening", "generate_opening_image", "get_opening", "list_opening_media", "remove_opening", "set_opening",
+      "edit_opening", "generate_opening_image", "get_opening", "list_opening_media", "plan_opening", "remove_opening", "review_opening", "set_opening", "show_opening_image",
     ]);
     const openingTokens = estimateContextTokens([{ role: "system", content: JSON.stringify(opening) }]);
     expect(openingTokens).toBeLessThanOrEqual(OPENING_FAMILY_TOKEN_CEILING);
