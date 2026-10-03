@@ -7,7 +7,7 @@ import { MUSIC_VOICES, MUSIC_SCORE_LIMITS, renderMusicScore, musicDataUrl, type 
 import type { Project } from '@/project/types';
 const str:JsonSchema={type:'string'},obj:JsonSchema={type:'object'};
 const schema=(properties:Record<string,JsonSchema>,required:string[]):JsonSchema=>({type:'object',additionalProperties:false,properties,required});
-const tool=(name:string,description:string,mode:'read'|'write',parameters:JsonSchema,run:ToolDefinition['run']):ToolDefinition=>({name,description,mode,parameters,run});
+const tool=(name:string,description:string,mode:'read'|'write',parameters:JsonSchema,run:ToolDefinition['run']):ToolDefinition=>({name,description,mode,parameters,run,preservesAuthoredRaster:true});
 const text=(v:unknown)=>{if(typeof v!=='string'||!v.trim()||v.length>160)throw new ToolError('음악 ID/이름 문자열이 필요합니다.',{code:'invalid-args'});return v.trim();};
 
 const wavBytes=(url:string)=>{const m=/^data:audio\/wav;base64,(.+)$/.exec(url);if(!m)throw new ToolError('WAV 바이트를 확인할 수 없습니다.',{code:'invalid-audio'});return Uint8Array.from(atob(m[1]),c=>c.charCodeAt(0));};

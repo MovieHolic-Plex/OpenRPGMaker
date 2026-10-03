@@ -16,7 +16,7 @@ export const OPENING_STORYBOOK_TOOLS:readonly ToolDefinition[]=[
     reference:'Study Undertale for negative space, illustrated story hierarchy and a memorable motif. Do not copy its lines, art, melody or characters. Quality equivalence is subjective; review actual results, never declare it from a completed flag.',
     note:'A narrated fable may intentionally use text and still panels. Do not force a character montage or reject narration because another request preferred acting.',
   }})},
-  {name:'make_opening_storybook',description:'실제 그림과 원문으로 흑색 그림책 애니메이틱을 원자적으로 조립. 사건 역할·읽기 시간 검증. 맵·세션·타이틀 유지.',mode:'write',parameters:schema({
+  {name:'make_opening_storybook',description:'실제 그림과 원문으로 흑색 그림책 애니메이틱을 원자적으로 조립. 사건 역할·읽기 시간 검증. 맵·세션·타이틀 유지.',mode:'write',preservesAuthoredRaster:true,parameters:schema({
     slides:{type:'array',items:{type:'object',additionalProperties:false,required:['id','role','text','durationMs'],properties:{id:str,role:{type:'string',enum:['world','rupture','stakes','invitation','handoff']},imageResourceId:str,text:str,durationMs:{type:'integer'}}}},
     ink:{type:'string',enum:['amber','ivory']},musicResourceId:str,
   },['slides']),run:(p,args)=>{

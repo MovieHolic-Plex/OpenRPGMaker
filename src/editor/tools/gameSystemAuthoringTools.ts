@@ -8,7 +8,7 @@ import type { Project } from '@/project/types';
 import type { PlaySession } from '@/project/session';
 const str:JsonSchema={type:'string'};
 const schema=(properties:Record<string,JsonSchema>,required:string[]):JsonSchema=>({type:'object',additionalProperties:false,properties,required});
-const tool=(name:string,description:string,mode:'read'|'write',parameters:JsonSchema,run:ToolDefinition['run']):ToolDefinition=>({name,description,mode,parameters,run});
+const tool=(name:string,description:string,mode:'read'|'write',parameters:JsonSchema,run:ToolDefinition['run']):ToolDefinition=>({name,description,mode,parameters,run,preservesAuthoredRaster:true});
 function issues(p:Project):string[]{
   const errors:string[]=[],s=p.system,c=monsterCampaign(p),monsterParty=s.battleParty==='monsters'||s.monsterBattleParty===true;
   if(s.monsterCollection&&!monsterParty)errors.push('포획은 활성화됐지만 전투/공통 메뉴가 영웅 파티를 사용합니다.');
