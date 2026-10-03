@@ -11,6 +11,7 @@
 import { conceptCardsForText, formatConceptCardNote } from "../conceptCards";
 import { formatPackTownNote, type PackTownTarget } from "./packTownRoute";
 import { formatBeodeulTownNote, type BeodeulTownTarget } from "./beodeulTownRoute";
+import { formatJpCityNote, type JpCityTarget } from "@/ai/jpCityPolicy";
 import type { AutonomyResolution } from "@/ai/autonomyLevels";
 import { estimateVillageSize } from "@/ai/constructionDeclaration";
 import { formatVillageReferenceNote, villageReferenceExamples } from "@/ai/villageReferenceExamples";
@@ -84,6 +85,8 @@ export interface PiIntentNoteInput {
   readonly packTown?: PackTownTarget | null;
   /** 요청이 버들항 계열 마을이면 그 대상 — 숲마을 노트 대신 author_beodeul_town 노트(beodeulTownRoute). */
   readonly beodeulTown?: BeodeulTownTarget | null;
+  /** 요청·대상 맵이 일본 도시(jp_city) 칩셋이면 그 대상 — 숲마을 노트 대신 build_jp_city_building 노트(jpCityPolicy). */
+  readonly jpCity?: JpCityTarget | null;
   /**
    * 사용자 문장. 있으면 숲마을 노트에 요청에 가까운 완성 마을 사례([참고 마을])를 붙인다.
    * 2026-09-28: 사례 약 70곳이 Pi 프롬프트·노트·도구 결과 어디에도 없어 모델이 기본값(12채·강변촌)만 썼다.
@@ -112,8 +115,9 @@ export function buildPiIntentNote(input: PiIntentNoteInput): string | null {
   const intentNote = formatIntentNote(noteIntent, { clarifyBypassed: true, targetMap: input.targetMap });
   const villageNote = input.packTown ? formatPackTownNote(input.packTown, input.targetMap)
     : input.beodeulTown ? formatBeodeulTownNote(input.beodeulTown, input.targetMap)
+    : input.jpCity ? formatJpCityNote(input.jpCity, input.targetMap)
     : formatPiVillageNote(input);
-  const referenceNote = !input.packTown && !input.beodeulTown && villageNote && input.requestText !== undefined && input.project && "tilesets" in input.project
+  const referenceNote = !input.packTown && !input.beodeulTown && !input.jpCity && villageNote && input.requestText !== undefined && input.project && "tilesets" in input.project
     ? formatVillageReferenceNote(villageReferenceExamples(input.project as Project, input.requestText))
     : null;
   const scopeNote = input.selection
