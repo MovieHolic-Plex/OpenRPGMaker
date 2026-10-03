@@ -1551,8 +1551,19 @@ export interface MakerDefinition {
   readonly durationMinutes: number;
 }
 
+export interface MonsterCampaignConfig {
+  id: string;
+  name: string;
+  speciesIds: string[];
+  speciesNotes: Record<string, string>;
+  badges: { id: string; name: string; switchId: string; cityMapId: string }[];
+  locations: { mapId: string; name: string; x: number; y: number; kind: "town" | "route" | "dungeon" | "league" }[];
+  objectives: { id: string; title: string; switchId: string; requiresSwitchId?: string }[];
+}
+
 export interface SystemRecords {
   startActorIds: ActorId[];
+  monsterCampaign?: MonsterCampaignConfig;
   /** Omitted means the legacy 320x240 viewport. */
   playResolution?: PlayResolution;
   /**

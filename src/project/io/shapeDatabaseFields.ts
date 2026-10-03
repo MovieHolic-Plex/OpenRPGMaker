@@ -1,3 +1,4 @@
+import { validateMonsterCampaign } from "./shapeMonsterCampaign";
 import { validateFieldHud } from "./shapeFieldHud";
 import { isEquipmentSlotId } from "@/project/equipmentSlots";
 import { isGenrePackId } from "@/project/genrePackId";
@@ -133,6 +134,7 @@ export function validateSystem(value: unknown): void {
     }
   }
   if (system.monsterCollection !== undefined) requireBoolean("system.monsterCollection", system.monsterCollection);
+  if (system.monsterCampaign !== undefined) validateMonsterCampaign(system.monsterCampaign);
   if (system.pointerMovement !== undefined) requireBoolean("system.pointerMovement", system.pointerMovement);
   if (system.monsterBattleParty !== undefined) requireBoolean("system.monsterBattleParty", system.monsterBattleParty);
   if (system.giftSystem !== undefined) requireBoolean("system.giftSystem", system.giftSystem);
