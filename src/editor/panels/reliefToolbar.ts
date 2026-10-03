@@ -322,7 +322,7 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
       ? hover && hover.label === picked.label
         ? `${picked.label} — ${hover.ok ? "✓" : "✕"} ${hover.reason} · 오른쪽 버튼·Esc: 그만 놓기`
         : `${picked.label} — 언덕 가장자리에 대 보라 · 오른쪽 버튼·Esc: 그만 놓기`
-      : `왼쪽: ${MODE_LABEL[state.reliefMode]} · 오른쪽: ${rightButtonLabel(state.reliefMode)} · 누르고 있으면 계속 · Shift: 정밀(한 단·작은 붓)`;
+      : `왼쪽: ${MODE_LABEL[state.reliefMode]} · 오른쪽: ${rightButtonLabel(state.reliefMode)} · 누르고 있으면 계속 · Shift: 작은 정밀 붓`;
   };
   renderTabs();
   sync(editorState.get());

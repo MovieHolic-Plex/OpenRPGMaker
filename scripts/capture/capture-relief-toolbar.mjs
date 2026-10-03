@@ -20,6 +20,25 @@ try {
     if (!indexedDB.databases) return { available: false };
     return { aiRecordsPresent: (await indexedDB.databases()).some(db => db.name === "oprn-ai-records") };
   }));
+  note("grassRestore", await page.evaluate(async () => {
+    const { commitReliefEdit, reliefTopGrassTile } = await import("/src/editor/reliefActions.ts");
+    const { recordMapEditIfChanged, undoMapEdit, resetMapEditHistory } = await import("/src/editor/mapEditHistory.ts");
+    const { layerTileAt, setLayerTileAt } = await import("/src/project/mapLayers.ts");
+    const store = window.__oprnEditorStore, p = store.getCurrent(), map = p.maps[p.startMapId];
+    const grass = reliefTopGrassTile(p.tilesets[map.tilesetId]);
+    const ground = grass + 1, overlay = grass + 2;
+    store.updateMapTiles(map.id, draft => { setLayerTileAt(draft, 1, 0, ground); setLayerTileAt(draft, 2, 0, overlay); }, { label: "바닥 복원 확인용 칸" });
+    const edit = value => recordMapEditIfChanged(map.id, () => commitReliefEdit(map.id, relief => { relief.levels[0] = value; return true; }, { topGrass: true, label: "바닥 복원 확인" }));
+    const tiles = () => { const m = store.getCurrent().maps[map.id]; return [layerTileAt(m, 1, 0), layerTileAt(m, 2, 0)]; };
+    edit(1);
+    const covered = JSON.stringify(tiles()) === JSON.stringify([grass, -1]);
+    edit(0);
+    const restored = JSON.stringify(tiles()) === JSON.stringify([ground, overlay]);
+    undoMapEdit(); edit(0);
+    const restoredAfterUndo = JSON.stringify(tiles()) === JSON.stringify([ground, overlay]);
+    resetMapEditHistory();
+    return { covered, restored, restoredAfterUndo };
+  }));
   await page.evaluate(async () => {
     const { editorState } = await import("/src/editor/editorState.ts");
     const { createBlankMap } = await import("/src/project/defaults/defaultMaps.ts");

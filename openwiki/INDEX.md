@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **122쪽 / 4331KB / 약 1,251,284 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **122쪽 / 4331KB / 약 1,251,339 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -22,7 +22,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-event-commands.md` | 67KB | 32KB | 301 | ~18,613 |
 | `openwiki/editor-interior-room-harness.md` | 98KB | 6KB | 469 | ~28,406 |
 | `openwiki/editor-observability.md` | 57KB | 6KB | 653 | ~16,697 |
-| `openwiki/editor-pre-edit-routing.md` | 183KB | 70KB ⚠상한 초과 — 절을 더 쪼개라 | 1133 | ~53,749 |
+| `openwiki/editor-pre-edit-routing.md` | 183KB | 70KB ⚠상한 초과 — 절을 더 쪼개라 | 1133 | ~53,762 |
 | `openwiki/editor-workflows-misc.md` | 74KB | 33KB | 519 | ~20,470 |
 | `openwiki/runtime-battle.md` | 314KB | 32KB | 1688 | ~92,014 |
 | `openwiki/runtime-pre-edit-routing.md` | 108KB | 76KB ⚠상한 초과 — 절을 더 쪼개라 | 781 | ~32,382 |
@@ -898,7 +898,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L590` 조수 적용·체크리스트 경로의 전체 문서 비용 (2026-09-28)
 - `L630` store.update copy-on-write 와 자동저장 요약 (2026-09-30)
 
-### `openwiki/editor-pre-edit-routing.md` — 183KB · 1133줄 · ~53,749 토큰 · 통째읽기 잘림 · 깨진 줄 5
+### `openwiki/editor-pre-edit-routing.md` — 183KB · 1133줄 · ~53,762 토큰 · 통째읽기 잘림 · 깨진 줄 5
 
 - `L5` 공식 맵 상한 1024×1024 (2026-10-01)
 - `L22` 「높이」 붓 — 절벽 높이 지형 (2026-09-26)
@@ -1325,7 +1325,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L190` 검증
 - `L201` 자동화 — 제안 PR 과 발행 타이머
 
-### `openwiki/relief-terrain.md` — 11KB · 76줄 · ~3,304 토큰
+### `openwiki/relief-terrain.md` — 11KB · 76줄 · ~3,346 토큰
 
 - `L9` 파일 지도
 - `L25` depth 규칙(런타임, `playSceneRelief.ts` 머리말)

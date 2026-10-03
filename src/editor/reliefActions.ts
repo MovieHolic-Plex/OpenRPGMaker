@@ -60,7 +60,8 @@ export function commitReliefEdit(
       tileEdits.push({ index, ground: grass, overlay: -1 });
     } else if (was > 0 && now === 0 && memory?.has(index)) {
       const [ground, overlay] = memory.get(index)!;
-      memory.delete(index);
+      // 내리기를 undo하면 풀 윗면이 돌아온다. 다시 내려도 원래 바닥을 복원하도록
+      // 기록은 다음 0→양수 덮기나 프로젝트 전환까지 보관한다.
       tileEdits.push({ index, ground, overlay });
     }
   }

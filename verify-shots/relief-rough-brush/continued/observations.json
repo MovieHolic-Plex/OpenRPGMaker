@@ -2,6 +2,11 @@
   "records": {
     "aiRecordsPresent": true
   },
+  "grassRestore": {
+    "covered": true,
+    "restored": true,
+    "restoredAfterUndo": true
+  },
   "roughHold": {
     "cells": 274,
     "peak": 4
