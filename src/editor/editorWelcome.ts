@@ -12,6 +12,7 @@ import {
   type WelcomeGenrePresetId,
   type WelcomePosterCard,
   welcomeGenreSystemPresetPlanById,
+  welcomeGenrePresetById,
 } from "@/editor/welcomeGenrePresets";
 import type { GenreBlankProjectSystemPresetPlan } from "@/editor/genrePacks";
 import type { GameDesignBrief } from "@/project/gameDesignBrief";
@@ -325,14 +326,16 @@ export function presentEditorWelcome(
           ? await showProjectInterview(presetId, { confirmLabel: "열린 프로젝트를 바꾸고 이 기획으로 시작" })
           : undefined;
         if (brief === null || settled) return;
-        await options.applySystemPreset(systemPresetPlan, brief);
+        const selectedPreset = brief ? welcomeGenrePresetById(brief.presetId)! : preset;
+        const selectedPlan = brief ? welcomeGenreSystemPresetPlanById(brief.presetId) : systemPresetPlan;
+        await options.applySystemPreset(selectedPlan, brief);
         if (settled) return;
         settle({
           intent: label,
-          prompt: autoSend ? buildWelcomeGenrePresetPrompt(preset, brief) : null,
-          ...(autoSend ? { displayText: welcomeGenrePresetDisplayText(preset, brief) } : {}),
+          prompt: autoSend ? buildWelcomeGenrePresetPrompt(selectedPreset, brief) : null,
+          ...(autoSend ? { displayText: welcomeGenrePresetDisplayText(selectedPreset, brief) } : {}),
           autoSend: autoSend && (options.canGenerate?.() ?? true),
-          presetId,
+          presetId: selectedPreset.id,
           source: autoSend ? "chip" : "manual-system-preset",
           ...(autoSend ? {} : { systemPresetPlan }),
           dismiss: true,

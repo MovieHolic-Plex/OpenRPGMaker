@@ -1,6 +1,7 @@
 /** @vitest-environment happy-dom */
 import { afterEach, expect, it, vi } from "vitest";
-import { showProjectInterview } from "@/editor/ui/projectInterviewDialog";
+// Compatibility coverage for transcripts authored before the cinematic interview.
+import { showLegacyProjectInterview as showProjectInterview } from "@/editor/ui/legacyProjectInterviewDialog";
 import { extractAdditionalInterviewAnswers } from "@/ai/projectInterviewAnswers";
 import { resetModalStackForTest } from "@/editor/ui/modalStack";
 import { interviewBrief } from "./helpers/gameDesignBrief";
