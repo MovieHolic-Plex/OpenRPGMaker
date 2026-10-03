@@ -206,6 +206,7 @@ export interface PiChangeReceipt {
 }
 
 export interface PiCommandSurface {
+  readonly onEvent?: (event: PiAgentEvent) => void;
   readonly appendBubble: (role: "system" | "assistant", text: string) => unknown;
   /** 로그에 카드 같은 임의 요소를 붙인다(변경 영수증과 같은 자리). */
   readonly appendProcess?: (text: string) => void;
@@ -434,6 +435,7 @@ export async function runPiCommand(
   // 단일·병렬·팀이 다리 하나를 공유하며 검토 진입 시 실제 병합 결과로 보정한다.
   const ghost = createPiGhostBridge({ baseProject: base });
   const showConstructionEvent = (event: PiAgentEvent): void => {
+    surface.onEvent?.(event);
     let nested = event;
     while (nested.type === "agent_event") nested = nested.event;
     // Live modes preview authoritative checkpoints; post-commit deltas must not replay.
