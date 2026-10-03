@@ -205,6 +205,10 @@ paint_tiles·stamp_layer_block 으로 직접 깔라고, 정말 바꾸려면 tile
 
 회귀: `test/mzLayerWriteTools.test.ts`(도구별 + 옛 맵 11 호출 + 「고침 2차」 정리 범위·그림자 보호·목록), `test/uploadedTilesetSwapGuard.test.ts`, `test/autotileLayerView.test.ts`, `test/tilesetTeachingGuards.test.ts`.
 
+## 일본 도시(jp_city) 조수 연결 (2026-10-04)
+
+`build_jp_city_building` 이 있어도 조수가 칩셋을 모르면 못 쓴다. `src/ai/jpCityPolicy.ts` 가 ① `classifyPlainPiTurn` 의 jp 라우트(대상 맵 jp_city 이거나 생성 요청이 칩셋·일본 상가를 말함 → 마을 계약 건너뛰고 jp 노트, 첫 요청부터 `JP_CITY_EXPOSED_TOOLS` 노출) ② `buildPiAgentSystemPrompt` 한 줄(+jp_city 맵이면 상세 순서) ③ `requestsModernMap` 의 jp_city 직접 호출 예외 ④ `TASK_RECIPES` `jp-city`(레거시 채팅 경로만)를 맡는다. 노트·지시 문구에 현대·모던·modern 을 쓰지 않는다(노트는 task 에 실려 PAW 게이트를 켠다). 도구 오류 문장은 `NEXT_ACTION` 꼬리로 다음 행동을 알린다. 상세·실측·남은 일: `openwiki/jp-city.md` 「조수 연결」. 같은 시험이 **참고문서 게이트의 일반 결함**을 드러냈다 — Pi 도구 결과 12,000자 상한에서 잘린 쪽(`dataTruncated`)은 읽은 증거가 안 돼, 번들 참고문서 61쪽(12개 타일셋)은 몇 번을 읽어도 칠하기 도구가 통과하지 못했다. `toolAdapter` 가 `read_tileset_reference` 만 30,000자로 보낸다.
+
 ## 조수가 보는 네 층 — 읽기 도구·도구 이미지 (MZ식 4층, 2026-09-25)
 
 계획 `docs/superpowers/plans/2026-09-25-mz-layers-assistant.md` Task 1. 쓰기(위 절)와 짝이다.

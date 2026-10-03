@@ -81,6 +81,13 @@ export interface CreatePiToolsetOptions {
 }
 
 const DEFAULT_MAX_DATA_CHARS = 12_000;
+/**
+ * read_tileset_reference 한 쪽의 결과 상한. 쪽은 코드 울타리를 통째로 지키느라 최대 약 18,000자(JSON 으로 약 24,000)까지 갈 수 있는데,
+ * 기본 상한 12,000 에서 잘린 쪽(dataTruncated)은 선행 읽기 게이트가 «읽은 증거»로 인정하지 않는다(tilesetReferenceGate.payload) —
+ * 그 쪽은 몇 번을 다시 읽어도 영영 통과하지 못한다. 실측(2026-10-04): jp_city 입구 용도 jp-start 의 jp-dict-groups 첫 쪽(15,723자)이 그랬고
+ * fill_region·paint_tiles 가 끝내 막혀 새 맵의 땅을 못 깔았다. 모든 번들 참고문서 1,403쪽 중 61쪽(12개 타일셋)이 12,000자를 넘는다(최대 15,776).
+ */
+const REFERENCE_PAGE_MAX_DATA_CHARS = 30_000;
 const DEFAULT_MAX_ISSUES = 8;
 
 export function selectPiToolDefinitions(
@@ -245,7 +252,7 @@ export function createPiToolset(ctx: ToolContext, options: CreatePiToolsetOption
       const after = captureActivityVisuals(ctx.project, tool.name, args, result, !result.ok ? "failed" : tool.mode === "write" ? "draft" : "read");
       options.onCall?.({ toolCallId: _toolCallId, name: tool.name, args, result, visuals: [...before, ...after] });
       if (!result.ok) throw new Error(formatPiToolFailure(result, maxIssues));
-      const content: PiToolExecResult["content"] = [{ type: "text", text: formatPiToolSuccess(result, maxDataChars) }];
+      const content: PiToolExecResult["content"] = [{ type: "text", text: formatPiToolSuccess(result, tool.name === "read_tileset_reference" ? Math.max(maxDataChars, REFERENCE_PAGE_MAX_DATA_CHARS) : maxDataChars) }];
       if (tool.name === "read_tileset_reference") {
         for (const image of await referenceGate.read(ctx.project, result)) {
           const comma = image.dataUrl.indexOf(",");

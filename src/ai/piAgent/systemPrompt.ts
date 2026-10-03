@@ -11,6 +11,7 @@ import { referenceOwner } from "@/project/tilesetReferences";
 import { HOUSE_VARIETY_POLICY_LINE, TILESET_FAMILY_POLICY_LINE } from "../promptPolicies";
 import { MODERN_TILESET_POLICY_LINE } from '../modernTilesetPolicy';
 import { HAND_INTERIOR_POLICY_LINE } from "../handInteriorPolicy";
+import { jpCityPromptLines } from "../jpCityPolicy";
 
 export function describeScopedMaps(project: Project, mapIds: readonly string[]): string[] {
   return mapIds.map((id) => {
@@ -47,6 +48,8 @@ export function buildPiAgentSystemPrompt(project: Project, mapIds: readonly stri
     MODERN_TILESET_POLICY_LINE,
     `새 야외·마을의 기본 칩셋은 ${defaultOutdoorTilesetId(project)}이다. 사용자 선택이 있으면 우선하고 새 맵의 tilesetId 로 전달한다. 기존 맵의 칩셋은 유지한다(맵 계열이 다르면 섞지 않는다). 칩셋이 버들항(beodeul_city)이면 마을·항구·읍은 author_village(숲마을 생성기) 가 아니라 author_beodeul_town({mapId 또는 name, theme, width?, height?}) 한 호출로 짓고(theme: 강가 river 기본·포구 coast·사막 desert·설원 snow·늪 swamp, 로마풍 블록 도시는 city — 굽은 큰길·뒷길 고리·광장·길을 보는 집·일터 덩이를 도구가 짓는다) check_city_form·check_reachability 로 확인한다 — 길·집을 손으로 깔지 않는다. 버들항의 광산 마을·던전(하수도·카타콤·바다 동굴·신전·화산)·랜드마크(등대·난파선·마법사의 탑)·필드(해안·숲·산길·밀밭) 조각은 사용자가 고른 키트 bd-pick-<장소>-<이름> 이다 — 참고문서 용도 beodeul-picks-village·climate-village·dungeon·special·field 를 먼저 읽고 stamp_object(kit:beodeul_city/bd-pick-…)로 찍는다. 실내·던전은 해당 용도 칩셋을 선택한다. 기획·세계관이 눈·겨울·눈보라·설원이면 마을은 author_village groundTheme:"snow"(설원 칩셋·눈 날씨), 사막이면 groundTheme:"desert", 화산이면 "volcano", 가을이면 "autumn"(기후 칩셋·잎 없는 고목 덩이), 다른 야외 맵은 set_map_properties climate:{mode:"fixed",weather:"snow",intensity:0.6} 로 기후를 맞춘다 — 전투 배경이 맵 기후를 따른다.`,
     HAND_INTERIOR_POLICY_LINE,
+    // 일본 도시(jp_city) — 칩셋이 있다는 사실과 건물 조립 도구로 가는 길. 범위 맵이 jp_city 면 상세 순서가 더 붙는다.
+    ...jpCityPromptLines(project, mapIds),
     "이미 만들어 둔 장소·오브젝트를 먼저 쓴다: list_spatial_designs 의 data.shared 에서 찾아 장소는 import_region_reference({id}) 한 번으로 맵째 가져오고, 오브젝트(고목·봉우리·기후 지형·항구 부품·성문루·집 외형·마을 소품)는 stamp_object({objectId,mapId,x,y}) 로 찍는다. 행마다 owner(어디 곁에 두나)를 따르고, 칸 번호를 하나씩 칠해 다시 그리지 않는다. 태그 「요청 시에만」(사막 메사·짐승 뼈)은 사용자가 그 물건을 말했을 때만 찍는다 — 사막 기본 꾸밈은 고목 덩이·선인장·사구·물가 야자.",
     ...genreMechanicLines(project),
     "절차: 먼저 읽기 도구(get_map_region 등)로 현재 상태를 확인하고, 쓰기 도구를 호출한다. 도구가 ok:false 를 돌려주면 issues 를 읽고 인자를 고쳐 재시도한다. 같은 실패를 세 번 반복하지 않는다.",

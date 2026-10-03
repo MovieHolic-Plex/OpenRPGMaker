@@ -47,20 +47,27 @@ class Xf:
 
 # ───────────── 칸 사전 ─────────────
 class Reg:
-    def __init__(s): s.cells = collections.OrderedDict()
+    def __init__(s): s.cells = collections.OrderedDict(); s.prov = {}   # prov: 복사 칸 키 -> (원본 블록, 원본 로컬)
     def add(s, key, img, pc, label, desc, tags):
         if key in s.cells: return key
         s.cells[key] = dict(img=img, pc=pc, label=label, desc=desc, tags=list(tags)); return key
     def copy(s, block, local, key, label=None, desc=None, tags=None, pc=None):
         """다른 블록(g=autotiles_ground, l=autotiles_lines)의 칸을 화소 그대로 복사."""
         if key in s.cells: return key
-        c = src()[block]['cells'][local]
+        c = src()[block]['cells'][local]; s.prov[key] = (block, local)
         d = desc or ('[키트용 복사 칸: %s 의 %s 칸과 화소가 같다] ' % ({'g': 'autotiles_ground', 'l': 'autotiles_lines'}[block], local)) + c['desc']
         return s.add(key, c['img'].copy(), pc or c['pc'], label or c['label'], d, tags if tags is not None else c['tags'])
     def copy_ref(s, name, key, pc, label, desc, tags):
         """기준 시트(jp_shopstreet16) 칸 이름 → 이 블록 칸(화소 그대로)."""
         if key in s.cells: return key
         return s.add(key, ref_cell(name).copy(), pc, label, '[키트용 복사 칸: 시트 %s 와 화소가 같다] ' % name + desc, tags)
+    def connect_extra(s):
+        """복사 칸 → 원본 오토타일 id 별 목록. 에디터에서 키트 곁을 다시 칠할 때 복사 칸을 같은 땅으로 읽게 한다(굽기 bake_jp.py 의 connect_extra)."""
+        out = collections.OrderedDict()
+        for key, (blk, loc) in s.prov.items():
+            for a in src()[blk]['autotiles']:
+                if loc in a['member']: out.setdefault(a['id'], []).append(key)
+        return out
     def planar(s, fam, make, k, pc, label, desc, tags):
         """평면 표시: fam 기본 그림을 시계 방향 k 번 돌린 칸. 키 = fam (k=0) / fam.r<k>."""
         key = fam if k % 4 == 0 else '%s.r%d' % (fam, k % 4)

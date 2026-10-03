@@ -25,6 +25,7 @@ export { normalizePiThinkingLevel } from "./thinkingLevel";
 import { normalizePiThinkingLevel } from "./thinkingLevel";
 import { resolveVillageContract, type VillageContract } from "./villageContract";
 import { MODERN_MAP_INITIAL_TOOLS, requestsModernMap } from '../modernTilesetPolicy';
+import { JP_CITY_EXPOSED_TOOLS, jpCityTargetFor } from '../jpCityPolicy';
 import { isGenrePresetBriefRequest } from "@/ai/genrePresetBrief";
 import { PLAN_EXECUTION_PREAMBLE, ULTRABRAIN_PLAN_HEADING } from "./planExecution";
 
@@ -108,13 +109,20 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
     const noteTargetMap = noteTargetMapId ? project.maps[noteTargetMapId] : undefined;
     // 선언이 숲마을 도구를 고른 «마을» 요청일 때만 — 팩 맵에서 가로등 하나 고치는 요청에 마을 노트를 붙이지 않는다.
     const packTown = declared.intent.tools.includes("author_village") ? packTownTargetFor(project, text, noteTargetMapId) : null;
-    // 팩 마을이 아니고 대상 계열이 버들항이면 author_beodeul_town — 숲마을 생성기·마을 계약을 건너뛴다(beodeulTownRoute).
-    const beodeulTown = packTown ? null
+    // 일본 도시(jp_city) — 대상 맵이 jp_city 이거나 사용자가 칩셋·일본 거리를 말했을 때. 숲마을 계약·버들항 노트 대신 jp_city 노트가 간다(jpCityPolicy).
+    // 실측(2026-10-04): 새 프로젝트(버들항 맵)에서 「일본 상가 거리」+author_village 선언이면 버들항 마을 노트가 먼저 잡아 jp_city 는 어디에도 안 나왔다 — 그래서 버들항보다 앞선다.
+    // PAW 전용 게이트가 켜진 요청은 게이트가 이기고, 팩 도시 타일셋 마을은 그쪽이 이긴다.
+    const modernMap = requestsModernMap(project, text, currentMapId ? [currentMapId] : []);
+    const jpCity = packTown || modernMap ? null
+      : jpCityTargetFor(project, declared.intent, text, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
+    // 팩 마을·jp_city 가 아니고 대상 계열이 버들항이면 author_beodeul_town — 숲마을 생성기·마을 계약을 건너뛴다(beodeulTownRoute).
+    const beodeulTown = packTown || jpCity ? null
       : beodeulTownTargetFor(project, declared.intent, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
     intentNote = buildPiIntentNote({
       project,
       packTown,
       beodeulTown,
+      jpCity,
       requestText: text,
       intent: declared.intent,
       targetMap: noteTargetMap
@@ -130,11 +138,10 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
     // 팀을 켠 사용자에게는 마을 계약을 걸지 않는다. 계약은 단독 실행 전용이라(runPiCommand 가 계약이 있으면
     // 팀을 끈다) 「마을 만들어」 한 마디가 설정과 무관하게 조용히 혼자 실행이 됐다 — 2026-09-18 이후 일반 채팅
     // 67회 실행 중 팀 실행 0회. 팀은 팀장 배정·검수 팀원이 마을 품질을 맡는다.
-    const modernMap = requestsModernMap(project, text, currentMapId ? [currentMapId] : []);
-    const skipVillageContract = input.piTeam || modernMap || !!beodeulTown;
+    const skipVillageContract = input.piTeam || modernMap || !!beodeulTown || !!jpCity;
     plan = { ...plan, villageContract: skipVillageContract ? undefined : resolveVillageContract(project, declared.intent, currentMapId, selection ?? null, text) };
     // 계약이 없으면 왜 없는지까지 적는다 — 「마을 계약 없음」만으로는 팀 설정 때문인지 판정 때문인지 모른다.
-    const noContractReason = input.piTeam ? "팀 실행" : modernMap ? "현대 맵" : beodeulTown ? "버들항 마을" : "판정";
+    const noContractReason = input.piTeam ? "팀 실행" : modernMap ? "현대 맵" : beodeulTown ? "버들항 마을" : jpCity ? "일본 도시 맵" : "판정";
     routingAudit = `${formatIntentAudit(declared.intent, declared.elapsedMs)}${declared.error ? ` — 선언 오류: ${declared.error}` : ""}`
       + ` → ${plan.villageContract ? villageContractAudit(plan.villageContract) : `마을 계약 없음(${noContractReason})`}`;
     if (declared.intent.mode === "question") {
@@ -143,9 +150,13 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
     } else {
       // Send exact intent/adventure candidates through the real Pi request path.
       // This is exposure only: discovery can expand it, including full fallback.
-      initialToolNames = requestsModernMap(project, text, currentMapId ? [currentMapId] : [])
+      initialToolNames = modernMap
         ? [...MODERN_MAP_INITIAL_TOOLS]
-        : buildSessionRegistryTools({ requestText: text, intent: declared.intent, contextWindow: input.contextWindow }).map(tool => tool.function.name);
+        : [...new Set([
+          ...buildSessionRegistryTools({ requestText: text, intent: declared.intent, contextWindow: input.contextWindow }).map(tool => tool.function.name),
+          // jp_city 작업은 첫 요청부터 조립 도구·참고문서·도로 키트 스키마가 보인다 — 자연어 점수 승격은 «이자카야 빌딩 세워줘» 같은 문장을 놓친다.
+          ...(jpCity ? JP_CITY_EXPOSED_TOOLS : []),
+        ])];
       // 개념 카드 노트가 붙는 요청이면 예제를 짓는 도구를 처음부터 쥐여 준다 — 노트가 이 도구 이름을 부른다.
       if (conceptCardsForText(text).length && !initialToolNames.includes("build_concept_example")) initialToolNames = [...initialToolNames, "build_concept_example"];
     }

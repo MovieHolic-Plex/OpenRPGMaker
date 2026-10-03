@@ -31,7 +31,7 @@ const { canMove, isPassable } = await imp("src/project/collision.ts");
 const TS = createJpCityTileset();
 const KIT = Object.fromEntries(TS.structureKits.map((k) => [k.id, k]));
 const GRP = Object.fromEntries(TS.autotileGroups.map((g) => [g.id, g]));
-const W = 48, H = 40;
+const W = +(process.env.JP_W ?? 40), H = +(process.env.JP_H ?? 32);      // 간선 교차로는 북서 사분면(중앙분리대까지)만 보이게 자른다 — 동·남 팔과 반대편 차로는 맵 밖으로 이어진다
 const SW = 707;                      // 보도 포석(오토타일 3183 과 화소가 같은 평평한 포장 — 생활도로 바깥 칸)
 const PAVE_A = 839, PAVE_B = 840;    // 판석 A·B(가게 앞 포장)
 
@@ -63,7 +63,7 @@ const prop = (id, x, yFoot, tag = id) => stampKit(id, x, yFoot - KIT[id].height 
 
 // ───────────────────────── 1. 간선도로(키트)
 // 교차로 키트는 29×29 지만 동·남 팔(6칸)은 맵 밖이라 앞 23×23 만 보인다. 핵심(17×17)은 키트 칸 6..22.
-const TX = 25, TY = 17;
+const TX = +(process.env.JP_TX ?? 25), TY = +(process.env.JP_TY ?? 17);
 stampKit("jp-road-trunk-x", TX, TY, "trunk-x");
 // 세로 간선(북쪽 팔 연장): 8칸 키트를 위로 이어 붙이고 맨 위는 맵 밖으로 자른다.
 for (const y of [9, 1, -7]) stampKit("jp-road-trunk-v", TX + 6, y, "trunk-v");
@@ -81,9 +81,13 @@ for (let x = LANE_X0; x <= LANE_X1; x++) for (let y = 0; y <= 22; y++) if (y < L
 // 건널목 키트가 덮는 칸(도로 4줄 × 키트 9칸)은 키트 타일이 도로를 맡는다.
 const inFumikiri = (x, y) => x >= FK_X && x < FK_X + 9 && y >= FK_Y && y < FK_Y + 8;
 stampKit("jp-fumikiri-h", FK_X, FK_Y, "fumikiri");
+// 생활도로 횡단보도(상점가 길 서쪽, 마치야·카페 앞에서 남쪽 아치 쪽으로 건넌다): 키트 6×4 가 길 4줄을 대신한다.
+const CW_X = 6;
+const inLaneCw = (x, y) => x >= CW_X && x < CW_X + 6 && y >= LANE_Y0 && y <= LANE_Y1;
+stampKit("jp-road-lane-crosswalk-h", CW_X, LANE_Y0, "lane-crosswalk");
 const laneG = GRP["jp-lane-road"], railG = GRP["jp-rail-track"], fenceG = GRP["jp-fence-mesh"];
 const LANE_FULL = laneG.variantMap["255"];
-for (const [x, y] of laneCells) { if (inFumikiri(x, y)) continue; if (owner[idx(x, y)]) fail(`생활도로가 ${owner[idx(x, y)]} 위에 (${x},${y})`); owner[idx(x, y)] = "lane"; L1[idx(x, y)] = LANE_FULL; }
+for (const [x, y] of laneCells) { if (inFumikiri(x, y) || inLaneCw(x, y)) continue; if (owner[idx(x, y)]) fail(`생활도로가 ${owner[idx(x, y)]} 위에 (${x},${y})`); owner[idx(x, y)] = "lane"; L1[idx(x, y)] = LANE_FULL; }
 // 키트 안의 생활도로 칸(이름이 「생활도로」) 은 같은 도로로 이어 센다.
 const kitLaneIds = new Set(TS.tileMeta.map((m, i) => ((m.label ?? "").startsWith("생활도로") ? i : -1)).filter((i) => i >= 0));
 const laneConnect = new Set([...laneG.memberTileIds, ...kitLaneIds]);
@@ -99,7 +103,7 @@ function shape(group, view, cellsList, connectSet, edge) {
   for (const [x, y, v] of res) view.lowerTiles[idx(x, y)] = v;
   return res;
 }
-shape(laneG, view1, laneCells.filter(([x, y]) => !inFumikiri(x, y)), laneConnect, true);
+shape(laneG, view1, laneCells.filter(([x, y]) => !inFumikiri(x, y) && !inLaneCw(x, y)), laneConnect, true);
 
 // 선로: 맵 위에서 들어와 건널목을 지나 끝막이(측선)로 끝난다.
 const railCells = [];
@@ -173,10 +177,11 @@ for (const x of [26, 30]) for (let y = 18; y <= 22; y++) L1[idx(x, y)] = 722;
 put("jp-prop-car-silver", 26, 21, "코인 파킹 자리 안 차", false);
 put("jp-prop-coin-sign", 30, 19, "코인 파킹 요금판(주차장 안 모서리)", false);
 // 간선 교차로 모퉁이 신호기
-put("jp-prop-utility-pole2", 32, 21, "간선 보도 코인 파킹 곁 전봇대", false);
+put("jp-prop-utility-pole2", 31, 13, "간선 보도(남북 길 끝) 전봇대 — 교차로 신호기와 한 칸이라도 겹치지 않게 북쪽에 둔다", false);
 // 생활도로 교차 모퉁이: 커브 미러·일시정지 표지
-put("jp-road-sign-mirror", 16, 12, "골목 교차 모퉁이 커브 미러");
-put("jp-road-sign-tomare", 11, 11, "남북 골목 일시정지 표지");
+put("jp-road-sign-mirror", 11, 11, "골목 서쪽 길가 커브 미러(표지와 같은 쪽에 쌓지 않는다)");
+put("jp-road-sign-tomare", 16, 11, "남북 골목 북쪽 갈래, 남행 차 일시정지 표지(차가 달리는 동쪽 반의 길가)");
+// 노면 글자 止まれ(jp-road-mark-tomare-*)는 이 맵에 안 쓴다: 남행 접근이라 180° 돌린 글자가 ×3 에서 읽히지 않았다(눈 판정). 표지(역삼각)만 둔다.
 // 가게 곁
 put("jp-prop-vending-aka", 17, 12, "편의점 A2 곁 자판기");
 put("jp-prop-bike-rack", 20, 12, "편의점 A2 곁 자전거 거치대");
@@ -188,7 +193,6 @@ put("jp-prop-bollard", 30, 14, "동서 길 끝 볼라드(간선 보도 앞 차 �
 put("jp-prop-bollard", 30, 16, "동서 길 끝 볼라드(한 칸 띄움)", false);
 // 간선 위 정차 차량(정지선 앞)
 put("jp-prop-car-taxi", 15, 27, "간선 가로 서쪽 팔 동행(교차로 쪽) 차선 택시 — 왼쪽 통행이라 북쪽 반", false);
-put("jp-prop-car-blue-r", 7, 34, "간선 가로 서쪽 팔 서행 차선 차(반전 그림) — 남쪽 반", false);
 
 // ───────────────────────── 7. 검사
 const project = createEmptyToolProject("jp-shopstreet");
@@ -287,6 +291,9 @@ for (let y0 = 0; y0 + 13 <= H; y0++) for (let x0 = 0; x0 + 17 <= W; x0++) {
   const r = c / (17 * 13); if (r > worstWin) { worstWin = r; worstAt = [x0, y0]; }
 }
 report.emptiness = { bareCells, bareRatioOfMap: +(bareCells / (W * H)).toFixed(3), maxEmptySquare: maxSq, maxEmptySquareAt: maxSqAt, worst17x13: +worstWin.toFixed(3), worst17x13At: worstAt, note: "bare = 보도·판석 칸이고 3·4층이 비어 있는 칸(아스팔트·선로·주차 바닥은 동선·기능이라 제외)" };
+{ const ASPH = (t) => { const l = TS.tileMeta[t]?.label ?? ""; return l.startsWith("생활도로") || l.startsWith("아스팔트") || l.startsWith("간선도로"); };
+  let a = 0; for (let i = 0; i < W * H; i++) if (L1[i] >= 0 && ASPH(L1[i])) a++;
+  report.asphalt = { cells: a, ratio: +(a / (W * H)).toFixed(3) }; }
 report.buildings = buildingLog;
 report.props = SPOTS;
 report.reach = { start: START, reachableCells: reach.size, walkableCells: (() => { let n = 0; for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (pass(x, y)) n++; return n; })() };
@@ -320,18 +327,18 @@ if (PUBLISH) {
   fs.writeFileSync(join(snapDir, "jp-city-shopstreet.json"), JSON.stringify({ map: mapOut, tileset: slim }));
   const b = buildingLog;
   const entry = {
-    id: PLACE_ID, name: NAME, kind: "completed-place", placeKind: "settlement", revision: 1, x: 0, y: 0, width: W, height: H, tilesetId: "jp_city",
+    id: PLACE_ID, name: NAME, kind: "completed-place", placeKind: "settlement", revision: 2, x: 0, y: 0, width: W, height: H, tilesetId: "jp_city",
     preview: "/assets/region-references/jp-city-shopstreet.png", tilesetPreview: "/assets/jp-city/jp-city-chipset.png",
     projectDownload: "/assets/region-references/jp-city-shopstreet.oprn.json",
     sourceProjectId: "oprn-bundled-jp-city-shopstreet", sourceMapId: MAP.id, snapshotProjectId: "oprn-place-jp-city-shopstreet-v1",
     rules: [
-      `${W}×${H}칸 상가 거리. 오른쪽에 간선 4차선(중앙분리대 생울타리·정지선·화살표·횡단보도 4곳)이 교차하고, 왼쪽 위로 생활도로(폭 4칸, 보도 없음)가 동서·남북으로 뻗는다. 건물 ${b.length}채·소품 ${SPOTS.length}개·코인 파킹 1곳.`,
+      `${W}×${H}칸 상가 거리. 오른쪽 아래에 간선 4차선 교차로(키트 jp-road-trunk-x, 신호기·정지선·화살표·횡단보도 포함)의 북서 사분면이 걸치고(동·남 팔과 반대편 차로는 맵 밖으로 잘렸다), 왼쪽 위로 생활도로(폭 4칸, 보도 없음)가 동서·남북으로 뻗는다. 동서 길에는 생활도로 횡단보도 키트 1곳(jp-road-lane-crosswalk-h). 건물 ${b.length}채·소품 ${SPOTS.length}개·코인 파킹 1곳. 아스팔트 비율 ${Math.round(report.asphalt.ratio * 100)}%.`,
       "구역마다 앵커가 하나다: 편의점이 선로 곁 모퉁이를 잡고, 셔터 점포·카페·마치야·편의점·사무소 5채가 동서 길 북쪽 줄(문은 포장 앞마당에 면함)을 이루며, 단층 점포 3채와 상점가 아치(남북 골목의 입구)가 간선 보도에 면한다. 건널목(경보기 둘·올라간 차단기)은 동서 길과 남북 선로가 만나는 한 곳이고 선로 양옆은 철망 담이다.",
       "간선·건널목·아치·소품은 키트 격자 그대로 찍고(타일은 1층, 위층 칸은 3층), 생활도로·선로·철망은 오토타일 엔진 규칙(autotileNeighborMask)으로 칸마다 마스크를 계산해 썼다. 건물은 건물 조립기 결과다(뒷줄 먼저, 앞줄 나중).",
       `문 ${doors.length}개의 접근칸이 모두 한 길망(시작 (${START[0]},${START[1]}) 기준 걸을 수 있는 ${report.reach.walkableCells}칸 전부 도달)에서 이어지고, 건물 몸채 ${report.buildingBodies.solidCells}칸은 엔진 통행이 모두 막는다.`,
       "공용 AI 문서가 아니라 조립 예제다 — 키트 id·원점·건물 입력은 openwiki/jp-city.md 와 scripts/content/jp-city/maps/shopstreet.plan.md 를 본다.",
     ],
-    limitations: "지형·건물·소품 배치 참고 사례. 움직이는 열차·차·행인·이벤트는 없다. 간선 동·남 팔은 맵 밖으로 잘렸고(횡단보도에서 끝남), 선로는 위 모서리에서 들어와 건널목을 지나 간선 보도 앞에서 끝막이로 끝나는 측선이다. 주택·역·공원·신사는 쓰지 않았다. 자동 생성 프리셋이 아니다.",
+    limitations: "지형·건물·소품 배치 참고 사례. 움직이는 열차·차·행인·이벤트는 없다. 간선 교차로는 북서 사분면만 있고 동·남 팔·반대편 차로·신호기 둘(북동·남쪽)은 맵 밖이다(보이는 신호기 1기). 노면 글자 止まれ 는 키트(jp-road-mark-tomare-*)만 있고 이 맵에는 쓰지 않았다(180° 돌려야 해서 읽히지 않음). 생활도로·선로·철망 키트 칸 근처를 에디터에서 다시 칠하면 연결 목록에 키트 칸이 없어 끝막이로 바뀔 수 있다, 선로는 위 모서리에서 들어와 건널목을 지나 간선 보도 앞에서 끝막이로 끝나는 측선이다. 주택·역·공원·신사는 쓰지 않았다. 자동 생성 프리셋이 아니다.",
   };
   const ts = "// Generated by scripts/content/jp-city/maps/shopstreet.mjs --publish. 일본 도시(jp_city) 상가 거리 예제 under 장소; snapshot in regionReferences/jp-city-shopstreet.json.\nexport const JP_CITY_PLACE_REFERENCES = " + JSON.stringify([entry], null, 2) + " as const;\n";
   fs.writeFileSync(join(ROOT, "src/project/jpCityPlaceReferences.ts"), ts);

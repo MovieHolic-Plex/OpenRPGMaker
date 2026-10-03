@@ -29,6 +29,7 @@ def build() -> dict:                # 부작용 없음, 같은 입력이면 같�
 - `local` 키는 블록 안에서 **불변**(그림을 다듬어도 키는 유지). 번호 핀 키 = `"<BLOCK>/<local>"` (자리 키 핀 — 그림을 고쳐도 번호가 안 바뀐다, `scripts/content/hand-interior/pin_ids.py` 참고). 새 칸은 시트 끝에 덧붙고 기존 번호는 절대 안 움직인다.
 - 칸 `pc`(통행·층): `floor`(불투명 lower·통행), `solidfloor`(불투명 lower·막힘), `flat`(투명 lower 오버레이·통행·붓 홈 upper), `solid`(upper·막힘), `star`(upper·통행 ★), `blank`.
 - 오토타일: 8방 비트 N=1 E=2 S=4 W=8 NE=16 SE=32 SW=64 NW=128 (`src/project/defaults/autotileEngine.ts`). 정규화 `canon(m) = (m&15) | (두 변이 모두 켜진 대각 비트)`, 47종을 `sorted(canon 집합)` 오름차순으로 칸 0..46, 몸통 변형 2칸(b1,b2) = 49칸. variantMap 은 `{str(m): tiles[canon(m)] for m in 0..255}` (선례 `scripts/content/build-atlas-biome-chipsets.py:161-170`, `build-joseon-tileset.py:204-214,464-490`). 4방 그룹은 16키.
+- 블록은 `build()` 반환에 `"connect_extra": {<오토타일 id>: [<이 블록 로컬>, ...]}` 를 더할 수 있다. 굽기가 그 오토타일의 `connectTileIds` 에 덧붙인다(다른 블록의 오토타일 칸을 화소 그대로 복사해 키트에 쓰는 블록이, 복사 칸을 같은 땅으로 읽히게 할 때). 번호·그림은 안 바뀐다.
 - 같은 오토타일의 `member` 칸끼리만 서로 이웃으로 센다(`connect` 로 늘릴 수 있음). 바깥 이웃(다른 지형)의 질감은 **가장자리 칸 그림 안에 같이 구워** 둔다(오토타일 하나는 바깥 지형 하나 가정; 문서에 적는다).
 - 선형 오토타일(울타리·담·선로·차선 표시)은 `layer: upper` 또는 투명 오버레이이고 4방+대각이 필요 없으면 4방(16키)으로 둔다.
 - 팔레트: `tiledata/atlas-pick/palette/modern3.pal` 의 색만. 마커색 `#e040c0` 금지. 반투명 금지(알파 0 또는 255). 윤곽은 램프의 어두운 단(`sumi`/재질 어두운 단). 빛은 왼쪽 위, 그림자 오른쪽 아래. 3/4 시점(윗면 + 남쪽 정면).
