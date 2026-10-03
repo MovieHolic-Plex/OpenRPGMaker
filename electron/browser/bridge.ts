@@ -113,6 +113,8 @@ async function readAsset(payload: unknown): Promise<Uint8Array> {
     dataVersion: invoke(OPRN_CHANNELS.projectDataVersion),
     separateMedia: invoke(OPRN_CHANNELS.projectSeparateMedia),
     backup: invoke(OPRN_CHANNELS.projectBackup),
+    listBackups: invoke(OPRN_CHANNELS.projectListBackups),
+    restoreBackup: invoke(OPRN_CHANNELS.projectRestoreBackup),
   },
   commits: {
     record: invoke(OPRN_CHANNELS.commitsRecord),

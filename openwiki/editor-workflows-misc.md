@@ -8,6 +8,16 @@ Map/event search, audio test, help modal, themed dungeons, resource manager, vil
 
 ## Other Editor Workflows
 
+### 첫 사용자 시작과 저장 안내 (2026-10-03)
+
+- `editorWelcome.ts`의 포스터와 자유 입력은 AI 경로다. `canGenerate()`가 false면 인터뷰 전에 연결 안내를 표시하고 설정 버튼에 초점을 준다.
+- 각 장르 포스터 아래 `AI 없이 직접 만들기`는 작은 ⚙를 대체한다. 확인 창에서 빈 맵과 장르 기본 설정을 저장함을 설명하고, 실제 `store.flush()` 성공 후에만 환영 창을 닫는다. `mode.ts`의 성공 안내는 그리기 → 테스트 순서를 제시한다.
+- 환영 창은 `modalStack`에 등록하고 Tab 순환을 제공한다. 중첩 인터뷰/확인은 자신의 Escape만 처리한다. 저장 적용 중 Escape는 환영 창을 닫지 않는다.
+- `welcomeGenreSystemPresetAction.ts`는 새 시드를 채택하기 전 `prepareProjectMedia`로 inline 소재를 한 파일씩 저장하고 ref로 바꾼다. 공용 소재를 포함한 시드를 곧장 복제/직렬화하면 153MB JSON 저장 직전 renderer V8 OOM을 재현했다. 준비 실패/대상 폴더·projectId 변경이면 채택하지 않으며 기존 열린 문서는 유지된다. 채택 직전에도 대상과 원래 열린 문서 객체·버전을 다시 확인해 준비 중 로컬 편집/동료 갱신을 덮어쓰지 않는다. 준비 중 안내를 표시한다. 계약 회귀는 `test/persistence/prepareProjectMedia.test.ts`.
+- 저장 칩은 `프로젝트 저장`/`저장 위치 없음`/`임시 작업 · 저장 안 됨`을 구분한다. 임시 세션은 파일 내보내기를 안내한다. 도움말과 README도 같은 용어를 쓴다.
+- 프로젝트 메뉴의 `백업에서 복구...`는 목록 선택 → 검증한 새 사본 생성 → 현재 작업 저장 → 새 사본 열기다. 진행 안내를 표시하고 복구/저장 동안 열린 대상이 바뀌면 새 대상은 유지한다. 현재 저장 실패 시 사본은 남기고 현재 화면을 유지하며 내보내기/열기를 안내한다. 선택 취소는 쓰기를 하지 않는다.
+- 복구 UI: `src/editor/ui/backupRestoreDialog.ts`; 저장소 계약은 `team-project-host.md`의 백업과 이전 절. 회귀 사례는 `test/editorWelcome.test.ts`, `test/localStore/recovery.test.ts`에 추가했다. 테스트 실행은 감독자/사용자 지시를 따른다.
+
 ### New-project name and player title (2026-09-07)
 
 `store.loadNewRemoteProject` and `store.loadNewRemoteProjectTransactionally`

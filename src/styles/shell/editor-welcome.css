@@ -194,20 +194,18 @@
 
   /* Always visible at rest — a hover-only control is unreachable on touch. */
   .editor-welcome-briefing .editor-welcome-poster-system {
-    position: absolute;
-    top: 6px;
-    right: 6px;
-    display: grid;
-    place-items: center;
-    width: 26px;
-    height: 26px;
+    display: block;
+    width: 100%;
+    min-height: 36px;
+    margin-top: 8px;
+    padding: 8px 10px;
     border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-pill);
-    background: var(--bg-glass-panel);
-    color: var(--text-2);
+    border-radius: var(--radius-m);
+    background: var(--bg-raised);
+    color: var(--text-1);
     font-size: 12px;
     line-height: var(--line-height-solid);
-    opacity: 0.72;
+    word-break: keep-all;
     cursor: pointer;
     transition: opacity var(--transition-fast);
   }

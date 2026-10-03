@@ -18,6 +18,7 @@ import type { GenreBlankProjectSystemPresetPlan } from "@/editor/genrePacks";
 import type { GameDesignBrief } from "@/project/gameDesignBrief";
 import { showProjectInterview } from "@/editor/ui/projectInterviewDialog";
 import { showConfirm } from "@/editor/ui/modal";
+import { isTopModal, registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import { readProjectFromUrl } from "@/project/projectUrl";
 import { el } from "@/util/dom";
 import { isAutomationBootContext } from "@/editor/automationBootContext";
@@ -36,7 +37,7 @@ export const EDITOR_WELCOME_TESTIDS = {
   promptSubmit: "editor-welcome-prompt-submit",
   /** Poster button for a start-surface genre. */
   templateCard: "editor-welcome-template-card",
-  /** Gear on a poster — applies that pack's system preset without AI. */
+  /** Visible manual action under a poster — applies the system preset without AI. */
   starterCard: "editor-welcome-starter-card",
 } as const;
 
@@ -227,6 +228,7 @@ export function presentEditorWelcome(
     const settle = (result: EditorWelcomeResult): void => {
       if (settled) return;
       settled = true;
+      unregisterModal(root);
       window.removeEventListener("resize", onResize);
       document.body.classList.remove("director-briefing-open");
       if (result.dismiss) setEditorWelcomeDismissed(true);
@@ -272,7 +274,7 @@ export function presentEditorWelcome(
       attrs: { role: "status", "aria-live": "polite", hidden: "" },
       dataset: { testid: EDITOR_WELCOME_TESTIDS.aiNotice },
       children: [
-        el("span", { text: "AI 연결이 없어 초안을 만들 수 없습니다. 장르 카드의 ⚙ 로 AI 없이 시작할 수 있습니다." }),
+        el("span", { text: "AI를 연결하면 기획 질문과 자동 제작을 시작할 수 있어요. 직접 만들려면 장르 아래 ‘AI 없이 직접 만들기’를 누르세요." }),
         el("button", {
           class: "editor-welcome-ai-notice-action",
           text: "AI 설정 열기",
@@ -285,12 +287,19 @@ export function presentEditorWelcome(
 
     const startPreset = async (presetId: WelcomeGenrePresetId, label: string, autoSend: boolean): Promise<void> => {
       if (applyingSystemPreset) return;
+      if (autoSend && !options.ensureAiConnected && options.canGenerate && !options.canGenerate()) {
+        aiReadinessNotice.hidden = false;
+        aiReadinessNotice.scrollIntoView?.({ block: "nearest" });
+        aiReadinessNotice.querySelector<HTMLButtonElement>("button")?.focus();
+        return;
+      }
+      aiReadinessNotice.hidden = true;
       const systemPresetPlan = welcomeGenreSystemPresetPlanById(presetId);
       if (!autoSend) {
         const confirmed = await showConfirm({
-          title: "빈 프로젝트에 시스템 프리셋 적용",
-          message: "열려 있는 프로젝트를 선택한 장르의 빈 맵과 시스템 설정으로 바꾸고 저장합니다.",
-          confirmLabel: "시스템 설정 적용하고 저장",
+          title: `${label} 직접 만들기`,
+          message: "열려 있는 프로젝트를 이 장르의 빈 맵과 기본 설정으로 바꾸고 저장합니다. AI는 사용하지 않습니다. 시작한 뒤 왼쪽 ‘그리기’에서 타일을 골라 맵을 만들고, 위의 ‘테스트’로 확인하세요.",
+          confirmLabel: "빈 맵 준비하고 저장",
         });
         if (!confirmed || settled || applyingSystemPreset) return;
       }
@@ -315,19 +324,21 @@ export function presentEditorWelcome(
         if (!connected || settled) return;
       }
       applyingSystemPreset = true;
+      const presetOpener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
       systemPresetError.hidden = true;
       systemPresetError.textContent = "";
       const controls = Array.from(root.querySelectorAll<HTMLButtonElement | HTMLInputElement>("button, input"));
       controls.forEach((button) => { button.disabled = true; });
       try {
         // 포스터 경로는 별도 확인 창 없이 인터뷰가 곧 확인이다. 확정 단추가 열린 프로젝트를 이 장르의
-        // 빈 시작점으로 바꾸고 저장한다는 사실을 말해야 한다(⚙ 경로의 확인 문구와 같은 뜻).
+        // 빈 시작점으로 바꾸고 저장한다는 사실을 말해야 한다(직접 만들기 확인 문구와 같은 뜻).
         const brief = autoSend
           ? await showProjectInterview(presetId, { confirmLabel: "열린 프로젝트를 바꾸고 이 기획으로 시작" })
           : undefined;
         if (brief === null || settled) return;
         const selectedPreset = brief ? welcomeGenrePresetById(brief.presetId)! : preset;
         const selectedPlan = brief ? welcomeGenreSystemPresetPlanById(brief.presetId) : systemPresetPlan;
+        preparationNotice.hidden = false;
         await options.applySystemPreset(selectedPlan, brief);
         if (settled) return;
         settle({
@@ -341,12 +352,16 @@ export function presentEditorWelcome(
           dismiss: true,
           action: "start",
         });
-      } catch {
+      } catch (error) {
         systemPresetError.hidden = false;
-        systemPresetError.textContent = "프로젝트 저장을 완료하지 못해 생성을 시작하지 않았습니다. 저장 연결을 확인한 뒤 다시 시도해 주세요.";
+        systemPresetError.textContent = `시작을 완료하지 못했습니다. ${error instanceof Error ? error.message : "프로젝트 저장 연결을 확인한 뒤 다시 시도해 주세요."}`;
       } finally {
         applyingSystemPreset = false;
-        if (!settled) controls.forEach((button) => { button.disabled = false; });
+        preparationNotice.hidden = true;
+        if (!settled) {
+          controls.forEach((button) => { button.disabled = false; });
+          if (presetOpener?.isConnected) presetOpener.focus();
+        }
       }
     };
 
@@ -392,7 +407,7 @@ export function presentEditorWelcome(
             class: "editor-welcome-template-card editor-welcome-poster",
             attrs: {
               type: "button",
-              "aria-label": `${preset.label} — ${preset.blurb}`,
+              "aria-label": `${preset.label} — AI와 기획하고 만들기. ${preset.blurb}`,
             },
             dataset: {
               testid: `${EDITOR_WELCOME_TESTIDS.templateCard}-${index}`,
@@ -418,11 +433,10 @@ export function presentEditorWelcome(
           }),
           el("button", {
             class: "editor-welcome-poster-system",
-            text: "⚙",
+            text: "AI 없이 직접 만들기",
             attrs: {
               type: "button",
-              title: `${preset.label} — AI 없이 시스템 설정만 적용`,
-              "aria-label": `${preset.label} 빈 프로젝트 시스템 프리셋만 적용 (AI 생성 없음)`,
+              "aria-label": `${preset.label} — AI 없이 빈 맵과 기본 설정으로 시작`,
             },
             dataset: {
               testid: `${EDITOR_WELCOME_TESTIDS.starterCard}-${index}`,
@@ -439,6 +453,11 @@ export function presentEditorWelcome(
       children: WELCOME_FEATURED_POSTER_CARDS.map((card, index) => renderPosterOption(card, index)),
     });
 
+    const preparationNotice = el("p", {
+      class: "editor-welcome-note", text: "기본 소재를 준비하고 프로젝트를 저장하고 있어요…",
+      attrs: { role: "status", "aria-live": "polite", hidden: "" },
+      dataset: { testid: "editor-welcome-preparing" },
+    });
     const stage = el("div", {
       class: "editor-welcome-stage",
       attrs: {
@@ -455,7 +474,7 @@ export function presentEditorWelcome(
         }),
         el("p", {
           class: "editor-welcome-sub",
-          text: "만들고 싶은 게임을 한 문장으로 적어 주세요. AI가 맵과 인물, 이야기를 만들어 드려요.",
+          text: "AI와 만들려면 한 문장을 적거나 포스터를 고르세요. 직접 만들려면 장르 아래 ‘AI 없이 직접 만들기’를 누르세요.",
         }),
         el("div", {
           class: "editor-welcome-prompt-row",
@@ -465,9 +484,10 @@ export function presentEditorWelcome(
         cards,
         el("p", {
           class: "editor-welcome-note",
-          text: "포스터 오른쪽 위 ⚙ 는 AI 생성 없이 그 장르의 시스템 설정만 적용합니다.",
+          text: "포스터: AI와 기획·제작 · 직접 만들기: 빈 맵과 장르 기본 설정",
         }),
         systemPresetError,
+        preparationNotice,
         el("div", {
           class: "editor-welcome-footer",
           children: [
@@ -498,6 +518,19 @@ export function presentEditorWelcome(
     window.addEventListener("resize", onResize);
     document.body.classList.add("director-briefing-open");
     host.append(root);
+    const closeWelcome = (): void => {
+      if (applyingSystemPreset) registerModal(root, closeWelcome);
+      else finishSkip();
+    };
+    registerModal(root, closeWelcome);
+    stage.addEventListener("keydown", (event) => {
+      if (event.key !== "Tab" || !isTopModal(root)) return;
+      const controls = Array.from(stage.querySelectorAll<HTMLElement>("button:not(:disabled), input:not(:disabled)"))
+        .filter((control) => !control.closest("[hidden]"));
+      const first = controls[0], last = controls[controls.length - 1];
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
+    });
     syncBriefingPosition(root);
     queueMicrotask(() => {
       try {
