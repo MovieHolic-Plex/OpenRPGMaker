@@ -2,7 +2,7 @@
  "tile": 16,
  "cols": 16,
  "rows": 74,
- "tileCount": 1176,
+ "tileCount": 1172,
  "pieces": {
   "in_floor_ondol": {
    "id": 0,
@@ -2613,6 +2613,6 @@
  },
  "overlapTiles": {
   "start": 976,
-  "count": 200
+  "count": 196
  }
 }

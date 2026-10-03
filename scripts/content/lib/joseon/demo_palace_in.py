@@ -83,13 +83,13 @@ def joseon_in_throne():
         P('pal_pillar', 3, yb - 2); P('pal_pillar', 20, yb - 2)
     # 도열: 좌(문관) 서안 · 방석 / 우(무관) 방석 · 창 거치대
     P('pal_gwan_seat', 1, 13); P('pal_seoan_gwan', 1, 16); P('pal_munseo_ham', 1, 19)
-    P('pal_bangseok_red', 5, 14); P('pal_bangseok_blue', 7, 16); P('pal_bangseok_red', 5, 18)
-    P('pal_bangseok_blue', 18, 14); P('pal_bangseok_red', 16, 16); P('pal_bangseok_blue', 18, 18)
-    P('pal_changgeori', 21, 13); P('pal_changgeori', 21, 17); P('pal_hyangro', 22, 19)
+    P('pal_bangseok_red', 5, 14); P('pal_bangseok_blue', 7, 17); P('pal_bangseok_red', 5, 19); P('pal_seoan_gwan', 7, 14); P('pal_chaekgap', 5, 17)
+    P('pal_bangseok_blue', 17, 15); P('pal_bangseok_red', 18, 18); P('pal_chaekgap', 14, 17)
+    P('pal_changgeori', 21, 13); P('pal_hyangro', 22, 19); P('pal_munseo_ham', 21, 16)
     # 문 곁: 등롱 한 쌍 · 궁녀 자리
-    P('pal_deungrong', 8, 19); P('pal_deungrong', 15, 19)
+    P('pal_deungrong', 8, 19); P('pal_chotdae_tall', 15, 19)
     P('pal_gungnyeo_jari', 8, 12); P('pal_gungnyeo_jari', 15, 12)
-    r.people += [(8, 8, 6, FRONT, 1), (16, 16, 0, LEFT, 0)]                           # 월대 층계 곁 문관 하나 · 문 쪽 무관 하나(Actor1 조선풍 프레임은 둘뿐 — 복제하지 않는다)
+    r.people += [(7, 15, 6, UP, 1), (16, 16, 0, LEFT, 0)]                           # 월대 층계 곁 문관 하나 · 문 쪽 무관 하나(Actor1 조선풍 프레임은 둘뿐 — 복제하지 않는다)
     return r
 
 
@@ -153,7 +153,7 @@ def joseon_in_library():
     r = IR.Room('joseon_in_library', '조선 궁 서고·집무(서가·서안·약탕)', g.plan(), kit='pal')
     P = r.put
     # 북벽: 서가 넷(사이에 족자·문서함·책갑)
-    P('pal_seoga_tall', 1, 1); P('pal_seoga_tall', 6, 1); P('pal_seoga_tall', 12, 1); P('pal_seoga_tall', 17, 1)
+    P('pal_seoga_tall', 1, 1); P('pal_seoga_tall', 13, 1); P('pal_seoga_tall', 17, 1)
     P('in_jokja_a', 4, 1); P('in_jokja_b', 9, 1); P('in_jokja_a', 15, 1)
     P('pal_munseo_ham', 3, 3); P('pal_munseo_ham', 15, 3)
     # 집무: 교의 · 서안 · 방석 · 책갑·궤

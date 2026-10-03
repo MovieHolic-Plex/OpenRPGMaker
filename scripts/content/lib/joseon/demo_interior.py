@@ -54,7 +54,7 @@ def joseon_in_house():
     P('in_mul_dongi', 1, 11); P('in_soban_b', 5, 10); P('in_hangari_b', 7, 11)
     # 봉당(동쪽): 장독대(큰 독 · 중간 · 작은 독 비스듬히), 물레, 절구통(쌀)
     P('in_hangari_tall', 13, 9); P('in_hangari_a', 12, 10); P('in_sokuri_grain', 8, 9); P('in_mulle', 9, 11)
-    r.people += [(3, 5, 0, RIGHT, 0)]
+    r.people += [(9, 7, 0, FRONT, 1)]                                   # 마루에 선 평민 하나(안방 방석·촛대 위에 겹치지 않게)
     return r
 
 
@@ -178,10 +178,10 @@ def joseon_in_school():
     # 벽: 족자 둘, 회초리 통(서쪽 벽 밑), 화로, 항아리
     P('in_jokja_a', 1, 1); P('in_jokja_b', 13, 1); P('in_gonjang_rack', 2, 3); P('in_hwaro', 12, 4); P('in_hangari_b', 13, 6); P('in_soban_c', 1, 6)
     # 학동 책상 두 줄: 앞줄(y7) 네 개 · 뒷줄(y9) 네 개를 한 칸씩 엇갈리게 + 앞에 방석
-    for i, x in enumerate((3, 6, 10, 13)):
-        P('in_hakdong_sang', x, 7); P(('in_bangseok_r', 'in_bangseok_g', 'in_bangseok_b', 'in_bangseok_r')[i], x, 8)
-    for i, x in enumerate((2, 5, 11, 14)):
-        P('in_hakdong_sang', x, 9); P(('in_bangseok_b', 'in_bangseok_r', 'in_bangseok_g', 'in_bangseok_b')[i], x, 10)
+    for i, x in enumerate((3, 6, 12)):
+        P('in_hakdong_sang', x, 7); P(('in_bangseok_r', 'in_bangseok_g', 'in_bangseok_b')[i], x, 8)
+    for i, x in enumerate((2, 9, 13)):
+        P('in_hakdong_sang', x, 9); P(('in_bangseok_b', 'in_bangseok_r', 'in_bangseok_g')[i], x, 10)
     r.people += [(9, 4, 6, FRONT, 1), (6, 8, 0, UP, 1)]
     return r
 
