@@ -1,3 +1,4 @@
+import { showBattleAdmissionError } from "@/player/playSceneOverlays";
 import { store } from '@/project/store';
 import { evalCondition } from '@/project/session';
 import { runtimeEventViewById } from '@/project/runtimeEventState';
@@ -73,7 +74,7 @@ export function resumeScheduledBattle(scene: PlaySceneContext, key: string, proc
     console.error('[player] scheduled battle failed', error);
     if (valid() && lease.current()) {
       process.stopped = true;
-      scene.showRuntimeOverlay('runtime-error', error instanceof Error ? error.message : '전투 실행 오류');
+      showBattleAdmissionError(scene, error);
     }
   }).finally(() => lease.release()); // The token itself refuses to release any replacement owner.
 }

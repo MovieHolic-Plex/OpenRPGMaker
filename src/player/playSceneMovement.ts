@@ -1,3 +1,4 @@
+import { showBattleAdmissionError } from "@/player/playSceneOverlays";
 import { heldInputSnapshot, installHeldKeyTracker } from "@/player/heldKeyTracker";
 import { applyFieldStepStates } from "@/project/stateFieldSteps";
 import { mapTileSize } from "@/project/tileGeometry";
@@ -981,7 +982,7 @@ async function runRandomEncounterBattle(scene: PlaySceneContext, troopId: string
   } catch (error) {
     if (!(error instanceof BattleAdmissionError)) throw error;
     if (scene.session === session && scene.sys?.isActive() !== false) {
-      scene.showRuntimeOverlay("runtime-error", error.message);
+      showBattleAdmissionError(scene, error);
     }
   } finally {
     if (scene.session === session && !scene.battleAbortController && scene.sys?.isActive() !== false) {

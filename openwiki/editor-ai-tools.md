@@ -2589,3 +2589,9 @@ retired된 플래그도 설명은 고칠 수 있으나 다시 활성화하지 �
 ## Independent opening timelines
 
 See [opening-animatic-authoring.md](opening-animatic-authoring.md) for the actual assistant tools, shared renderer, sprite poses, timed audio, preview evidence, and title/idle/New Game entry contracts; [opening-reference-study.md](opening-reference-study.md) holds source-qualified game research.
+
+## Monster collector setup and verification (2026-10-03)
+
+`configure_monster_system` keeps its omitted `battleParty` compatibility contract. Its optional `presentation: "collector"` uses `configureMonsterPresentation` to set pixel menus and collector HUD; omitted/`preserve` retains existing presentation. The genre preset and bundled monster example explicitly apply the same helper. Only the unchanged built-in four-scene kingdom opening is disabled; independently authored opening text is preserved. No schema field or migration is added.
+
+The result declares `verificationScope: "configuration-only"`. Configuration success does not establish event execution, native combat, persistent saving, or campaign completion. After device interaction, call `run_scene_test` with `playerCanMove: true` and an exact `reachableTile` assertion before any `set`/`moveTo` injection. The runner now applies actual runtime tile overrides; its headless scope, starting position and injected steps are returned by both play tools. Actual exported-player input and canonical host save/fresh-load evidence remain separate requirements.

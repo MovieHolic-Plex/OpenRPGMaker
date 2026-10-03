@@ -39,6 +39,7 @@ import {
 } from "@/project/economyValues";
 import { syncMonsterPartyFollowers, syncPartyFollowers } from "@/project/followers";
 import { normalizeMonsterInstanceBattleState } from "@/project/monsterCollection";
+import { recoverPlayerFromTerrain } from "@/project/terrainLandingRecovery";
 import type { ActorVitals } from "@/project/sessionVitals";
 import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
 import { SYSTEM_AUDIO_SLOTS, systemAudioOverrideKey } from "@/player/systemAudioSlots";
@@ -851,6 +852,7 @@ export function applySaveSnapshot(project: Project, input: SaveSnapshot): PlaySe
   }
   syncMonsterPartyFollowers(project, reconciled);
   syncPartyFollowers(project, reconciled);
+  recoverPlayerFromTerrain(project, reconciled);
   return reconciled;
 }
 

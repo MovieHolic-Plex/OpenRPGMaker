@@ -5,10 +5,11 @@
 //   - 야생 전투에서 포획 구슬로 포획 (전투 '포획' 명령, HP가 낮을수록 성공률 상승)
 //   - 파티 몬스터는 전투 경험치를 나눠 받아 레벨업·기술 습득·진화 (스파르츄→신드릴→차마딜로 등)
 //   - 상태 메뉴 '몬스터'에서 파티/보관함 관리
-// 알려진 엔진 제약: 잡은 몬스터가 전투에 직접 나서지는 않는다(전투는 트레이너가 수행).
+// 전투·상태 메뉴·약 미리보기는 실제 몬스터 인스턴스 파티를 사용한다.
 // 지형/이벤트 헬퍼는 scarloxyDemoGame.ts 의 것을 재사용한다.
 
 import { PRODUCT_BRAND } from "@/brand";
+import { configureMonsterPresentation } from "@/project/monsterPresentation";
 import type { GameEvent, GameMap, Project } from "../types";
 import { normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
 import { PLAYER_MOVE_TARGET } from "@/project/moveRouteTarget";
@@ -161,6 +162,7 @@ export function configureScarloxyPokemonDemoProject(project: Project): void {
         }
       : {}),
   };
+  configureMonsterPresentation(project);
   project.startPos = { x: 13, y: 12 };
   project.mapTree = {
     mapId: TOWN_MAP_ID,
