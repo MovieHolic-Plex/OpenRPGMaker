@@ -302,7 +302,7 @@ def wall_corner(kind):
 
 
 # ---------------------------------------------------------------- 문루 공통 부품
-def _arch_passage(c, cx, ybot, pw, sh, ring=6, seed=0, bars=True):
+def _arch_passage(c, cx, ybot, pw, sh, ring=6, seed=0, bars=True, floor_h=4):
     """기단 앞면에 뚫린 반원 아치 통로(gate.png): 둘레는 쐐기돌 띠(밝은 돌), 안쪽은 어두운 창살, 아래는 석판 길.
     cx = 가운데 x, ybot = 통로 바닥 y(포함 안 함), pw = 통로 폭(px), sh = 곧은 기둥 부분 높이. 아치 윗부분은 반원(rx=pw/2, ry=pw*0.55)."""
     rx = pw / 2.0
@@ -324,12 +324,21 @@ def _arch_passage(c, cx, ybot, pw, sh, ring=6, seed=0, bars=True):
             if not outer:
                 continue
             if inner:
-                if y >= ybot - 4:                                           # 문턱 석판(길과 같은 결, 밝은 줄)
-                    t = 5 if (y - (ybot - 4)) < 1 else 4
-                    if (x // 8) % 2 and (y - (ybot - 4)) == 2: t = 3
+                if y >= ybot - floor_h:                                     # 문턱 석판(길과 같은 결, 밝은 줄)
+                    k = y - (ybot - floor_h)
+                    t = 5 if k < 1 else 4
+                    if floor_h <= 4:
+                        if (x // 8) % 2 and k == 2: t = 3
+                    else:                                                   # 큰 석판 길(G02): 대로와 같은 줄눈, 바닥이 안쪽까지 밝게 이어진다
+                        if k % 7 == 6: t = 3
+                        elif ((x + (k // 7) * 8) % 16) == 0: t = 3
+                        elif k < 2: t = 6
                     c.put(x, y, S[t]); continue
-                tt = (y - top) / max(1.0, (ybot - top))
+                tt = (y - top) / max(1.0, (ybot - (floor_h if floor_h > 4 else 0) - top))
                 col = S[0] if tt < 0.7 else S[1]
+                if floor_h > 4:                                             # 어둠은 위에서 아래로 약해진다(해칭 없음)
+                    col = S[0] if tt < 0.4 else (S[1] if tt < 0.8 else S[2])
+                    c.put(x, y, col); continue
                 if bars:
                     if tt > 0.55: col = S[1] if (x + y) % 5 else S[2]       # 열린 문: 안쪽이 깊어 어두워진다(창살 없음)
                     elif tt > 0.3 and x % 7 == 0: col = S[1]
@@ -506,10 +515,10 @@ def _bracket_band(c, x0, x1, y, h=8):
 
 
 # ---------------------------------------------------------------- 문루
-def _base_block(W, H, face_h, inset):
+def _base_block(W, H, face_h, inset, inset_bot=0):
     """문루 기단 앞면(사다리꼴: 아래가 넓다)의 좌우 경계 함수와 앞면 시작 y."""
     fy0 = H - face_h
-    lo = lambda y: int(round(inset * (1 - (y - fy0) / max(1, face_h - 1))))
+    lo = lambda y: int(round(inset_bot + (inset - inset_bot) * (1 - (y - fy0) / max(1, face_h - 1))))
     hi = lambda y: W - lo(y)
     return fy0, lo, hi
 
@@ -538,7 +547,7 @@ def _base_front(c, W, H, fy0, lo, hi, seed):
         c.put(lo(y), y, S[6]); c.put(lo(y) + 1, y, S[5]); c.put(hi(y) - 1, y, S[3])
 
 
-def gate_great(bays=12, pass_w=64, variant=0):
+def gate_great(bays=12, pass_w=64, variant=0, floor_h=4):
     """대문루 (북·남문용): 돌 기단(벽돌 쌓기·사다리꼴) + 반원 아치 통로(안쪽 어두운 창살) + 위에 청록 기와 이중 처마 누각 + 현판.
     폭 bays 칸(12 또는 8). pass_w = 통로 폭(px, 칸 수의 배수). 높이는 칸 단위로 맞춘다."""
     W = bays * T
@@ -572,7 +581,7 @@ def gate_great(bays=12, pass_w=64, variant=0):
     for xm in range(lo(fy0) + 4, hi(fy0) - 12, 16):
         _merlon(c, xm, fy0 - 8, 10, fh=4)
     _base_front(c, W, H, fy0, lo, hi, variant)
-    top = _arch_passage(c, W // 2, H, pass_w, sh=24 if pass_w >= 48 else 18, ring=6)
+    top = _arch_passage(c, W // 2, H, pass_w, sh=24 if pass_w >= 48 else 18, ring=6, floor_h=floor_h)
     _plaque(c, W // 2, max(fy0 + 3, top - 10), w=26 if pass_w >= 48 else 20, seed=variant + bays)
     outline(c)
     cx0 = (W // 2 - pass_w // 2) // T
@@ -610,12 +619,14 @@ def gate_small(bays=6, pass_w=32):
     return c
 
 
-def gate_side(bays=5, rows=8, ramp='teal', seed=3, post=(18, 62), pw=6, roof=(8, 72), wall=None, wall_x=16, plaster=False):
+def gate_side(bays=5, rows=8, ramp='teal', seed=3, post=(18, 62), pw=6, roof=(8, 72), wall=None, wall_x=16, plaster=False, open_passage=False):
     """측면 문루 (동·서문용): 세로 성벽 한 줄을 동서로 가로지르는 열린 문루. 통로(맨 아래 4행)를 기준으로 짠다.
     3/4 시점에서 용마루가 남북(성벽 방향)으로 달리는 맞배 지붕이 통로 바로 위에 얹히고(rows-4 행), 지붕 밑 남쪽 처마 아래 양끝(=벽 몸체 양끝)에 기둥,
     기둥 사이로 통로 바닥(길)이 보인다. 지붕·기둥은 같은 중심선을 쓰고 기둥 바깥 끝 = 성벽 몸체 바깥 끝. 위쪽에는 wall(성벽 한 칸 그림)을 붙여
     지붕 뒤로 성벽이 이어지게 한다. post = (왼쪽 기둥 x, 오른쪽 기둥 바깥 끝 x), pw = 기둥 굵기, roof = 지붕 x 범위.
-    통행: 맨 아래 4행. 지붕 행(위 rows-4)은 막힘."""
+    통행: 맨 아래 4행. 지붕 행(위 rows-4)은 막힘.
+    open_passage=True(국내성 원작 규모 맵 G01): 문설주를 통로의 북쪽 끝(뒤 설주, 지붕 처마에 가려 짧게)과 남쪽 끝(앞 설주) 한 칸에만 세우고
+    그 사이(통로 가운데 두 행)는 석판 길이 훤히 보이게 둔다 — 세로로 4칸 이어진 기둥이 닫힌 문틀·복도로 읽히던 문제."""
     import gungnae_houses as GH
     W, H = bays * T, rows * T
     c = Cv(W, H)
@@ -632,10 +643,11 @@ def gate_side(bays=5, rows=8, ramp='teal', seed=3, post=(18, 62), pw=6, roof=(8,
     GH.gable_band(c, x0, x1, 8, yb, y_e, G, 'tile', 'cap', 'gable', wall=wl, seed=seed)
     Wd = RGB['persimmon'] if plaster else RGB['wood']                    # 궁문 기둥은 주황(정면 소문루와 같은 단청 기둥)
     k0 = (5, 4, 4, 3, 3, 2) if not plaster else (6, 5, 4, 4, 3, 2)
+    BH_BACK0 = 9                                                        # 뒤 설주는 처마 보(BH) 밑에서 시작한다
     PH = 24                                                             # 남쪽 문설주 높이(px). 위쪽 긴 띠는 설주를 잇는 상인방(들보)을 위에서 본 면이지 기둥이 아니다
     yp0 = H - 2 - PH
     for xp in (px0, px1 - pw):
-        for y in range(y_e, yp0):                                       # 상인방: 기둥보다 한 톤 어둡고 가는 면 + 윗모서리 밝은 선
+        for y in range(y_e, (yp0 if not open_passage else y_e)):        # 상인방: 기둥보다 한 톤 어둡고 가는 면 + 윗모서리 밝은 선
             for k in range(pw):
                 kk = min(5, k * 6 // pw)
                 t = max(1, k0[kk] - 1)
@@ -643,6 +655,13 @@ def gate_side(bays=5, rows=8, ramp='teal', seed=3, post=(18, 62), pw=6, roof=(8,
                 c.put(xp + k, y, S[t] if not plaster else Wd[t])
             if y % 6 == 0:
                 c.put(xp + 1, y, S[2] if not plaster else Wd[2])
+        if open_passage:                                                # 뒤 설주: 통로 북쪽 끝 한 칸 높이만(지붕 처마 밑)
+            for y in range(y_e + BH_BACK0, y_e + T - 2):
+                for k in range(pw):
+                    kk = min(5, k * 6 // pw)
+                    c.put(xp + k, y, S[max(1, k0[kk] - 1)] if not plaster else Wd[max(1, k0[kk] - 1)])
+            for k in range(pw + 2):
+                c.put(xp - 1 + k, y_e + T - 3, S[5] if not plaster else Wd[5]); c.put(xp - 1 + k, y_e + T - 2, S[3] if not plaster else Wd[3])
         for y in range(yp0, H - 2):                                     # 문설주(통짜 기둥)
             for k in range(pw):
                 kk = min(5, k * 6 // pw)
@@ -677,7 +696,7 @@ def gate_side(bays=5, rows=8, ramp='teal', seed=3, post=(18, 62), pw=6, roof=(8,
     return c
 
 
-def tower_corner(bays=5):
+def tower_corner(bays=5, inset=8, inset_bot=0):
     """모서리 망루 (성벽 코너 위 2층 누각, 회색 돌 기단): 돌 기단 + 1층(어두운 살창 벽) + 가운데 처마 + 2층 열린 누각 + 청록 큰 지붕.
     폭 bays 칸, 통행 불가(성벽 모서리 장애물). 가로·세로 성벽이 아래 좌우로 붙는다."""
     W = bays * T
@@ -691,10 +710,10 @@ def tower_corner(bays=5):
     fy0 = H - face_h
     A = lambda r: fy0 + r
     c = Cv(W, H)
-    _, lo, hi = _base_block(W, H, face_h, inset=8)
+    _, lo, hi = _base_block(W, H, face_h, inset=inset, inset_bot=inset_bot)
     ground_shadow(c, W // 2 + 6, H - 2, W // 2 - 3, 3, 70)
     _base_top(c, lo, hi, fy0, A(top0))
-    _upper_hall(c, 8, W - 8, A(top1), f1 + 6)
+    _upper_hall(c, max(8, inset), W - max(8, inset), A(top1), f1 + 6)
     bot1 = _tile_roof(c, 0, A(ymid), W, mid_h, wing=16)
     _eave_shade(c, bot1, 3)
     _pavilion(c, 14, W - 14, A(top2), A(ymid) + 12, cols=3, rail=False)
@@ -708,7 +727,7 @@ def tower_corner(bays=5):
         for ay in range(fy0 + 18, fy0 + 32):
             c.put(ax, ay, S[1]); c.put(ax + 1, ay, S[1]); c.put(ax - 1, ay, S[5]); c.put(ax + 2, ay, S[3])
     outline(c)
-    PASSAGE[f'gungnae_tower_corner_{bays}'] = {'cols': (0, 0), 'rows': (0, 0), 'note': '통행 불가(성벽 모서리 장애물).'}
+    PASSAGE[f'gungnae_tower_corner_{bays}' if inset == 8 else f'gnf_tower_corner_{bays}w'] = {'cols': (0, 0), 'rows': (0, 0), 'note': '통행 불가(성벽 모서리 장애물).'}
     return c
 
 
