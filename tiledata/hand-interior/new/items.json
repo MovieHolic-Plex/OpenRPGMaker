@@ -15116,6 +15116,2284 @@
    "refs": [
     "armchair"
    ]
+  },
+  {
+   "id": "eight immortals table",
+   "name_ko": "팔선탁",
+   "name_en": "eight immortals table",
+   "category": "murim",
+   "category_ko": "무림",
+   "kind": "floor",
+   "footprint": {
+    "w": 2,
+    "h": 2
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "description": "객잔의 네모 나무 팔선탁(2×2칸, 12px 높이). 남쪽 위에서 내려다본 3/4: 꼭대기 윗면 22행 — 짙은 갈색 상판 위에 술병 하나·잔 넷·만두 찜통·젓가락, 그 아래 남쪽 면에 상판 두께 3행과 굵은 다리, 다리 사이 가로대.",
+   "contextRoom": "tavern",
+   "tags": [
+    "무림",
+    "객잔"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "객잔 마루 가운데.",
+   "pair": [
+    "long bench murim"
+   ],
+   "refs": [
+    "tea 2x2"
+   ]
+  },
+  {
+   "id": "long bench murim",
+   "name_ko": "객잔 긴 의자",
+   "name_en": "long bench murim",
+   "category": "murim",
+   "category_ko": "무림",
+   "kind": "floor",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    16
+   ],
+   "description": "등받이 없는 긴 나무 의자(2칸, 8px 높이) — 좌판 윗면 6행에 나뭇결, 양끝 굵은 다리.",
+   "contextRoom": "tavern",
+   "tags": [
+    "무림",
+    "객잔"
+   ],
+   "use": [
+    "sit"
+   ],
+   "place": "팔선탁 둘레.",
+   "pair": [
+    "eight immortals table"
+   ],
+   "refs": [
+    "bench 2"
+   ]
+  },
+  {
+   "id": "wine jar stack",
+   "name_ko": "술 항아리 더미",
+   "name_en": "wine jar stack",
+   "category": "murim",
+   "category_ko": "무림",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "붉은 천으로 아가리를 싸매 끈으로 묶은 흙 술 항아리 셋(14px 솟음) — 항아리 윗면 3행의 붉은 덮개, 몸통에 붙인 붉은 네모 종이.",
+   "contextRoom": "tavern",
+   "tags": [
+    "무림",
+    "객잔"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "객잔 주방·광.",
+   "pair": [
+    "eight immortals table"
+   ],
+   "refs": [
+    "pot",
+    "water jar"
+   ]
+  },
+  {
+   "id": "eighteen weapons rack",
+   "name_ko": "십팔반 무기대",
+   "name_en": "eighteen weapons rack",
+   "category": "murim",
+   "category_ko": "무림",
+   "kind": "wall",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    48
+   ],
+   "description": "붉은 칠 나무 무기대(2칸, 32px 솟음) — 위 가로대 윗면 2행, 세운 창·월도·곤·삼지창·검이 줄로, 아래 받침판 윗면 2행.",
+   "contextRoom": "inn",
+   "tags": [
+    "무림",
+    "문파"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "문파 연무장 벽.",
+   "pair": [
+    "wooden dummy"
+   ],
+   "refs": [
+    "weapon rack"
+   ]
+  },
+  {
+   "id": "wooden dummy",
+   "name_ko": "목인장",
+   "name_en": "wooden dummy",
+   "category": "murim",
+   "category_ko": "무림",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    48
+   ],
+   "description": "굵은 나무 기둥에 팔 셋·다리 하나가 튀어나온 목인장(32px 솟음) — 기둥 꼭대기 단면 윗면 2행, 손때로 밝아진 팔 끝, 아래 받침틀.",
+   "contextRoom": "smithy",
+   "tags": [
+    "무림",
+    "수련"
+   ],
+   "use": [
+    "block"
+   ],
+   "place": "연무장·수련실.",
+   "pair": [
+    "eighteen weapons rack"
+   ],
+   "refs": [
+    "armor stand"
+   ]
+  },
+  {
+   "id": "bronze ding small",
+   "name_ko": "청동 정",
+   "name_en": "bronze ding small",
+   "category": "murim",
+   "category_ko": "무림",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "세 발 달린 작은 청동 솥 향로(정, 14px 솟음) — 아가리 윗면 4행에 꽂힌 향 셋과 오르는 연기, 양 귀 손잡이, 몸통 푸른 녹 무늬.",
+   "contextRoom": "chapel",
+   "tags": [
+    "무림",
+    "사당"
+   ],
+   "use": [
+    "light"
+   ],
+   "place": "사당·문파 대청.",
+   "pair": [
+    "ancestral tablet shelf"
+   ],
+   "refs": [
+    "incense burner"
+   ]
+  },
+  {
+   "id": "sect plaque",
+   "name_ko": "문파 현판",
+   "name_en": "sect plaque",
+   "category": "murim",
+   "category_ko": "무림",
+   "kind": "hang",
+   "footprint": {
+    "w": 2,
+    "h": 0
+   },
+   "canvas": [
+    32,
+    16
+   ],
+   "description": "벽 윗줄의 검은 옻칠 현판(2칸) — 금 테두리 안에 금빛 굵은 획 무늬 셋(글자처럼 보이되 읽히지 않게), 양끝 붉은 매듭.",
+   "contextRoom": "manor",
+   "tags": [
+    "무림",
+    "문파"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "문파 대청 벽 윗줄.",
+   "pair": [],
+   "refs": [
+    "wall map"
+   ]
+  },
+  {
+   "id": "calligraphy table",
+   "name_ko": "서예 탁자",
+   "name_en": "calligraphy table",
+   "category": "murim",
+   "category_ko": "무림",
+   "kind": "floor",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "description": "긴 나무 서예 탁자(2칸, 12px 솟음). 상판 윗면 7행에 펼친 화선지(먹 획 몇)·벼루·붓 걸이·문진, 남쪽 면에 다리와 앞 판.",
+   "contextRoom": "scholar",
+   "tags": [
+    "무림",
+    "서재"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "서재·문파 서각.",
+   "pair": [
+    "hanging scroll"
+   ],
+   "refs": [
+    "desk 2x1"
+   ]
+  },
+  {
+   "id": "go board table",
+   "name_ko": "바둑판",
+   "name_en": "go board table",
+   "category": "murim",
+   "category_ko": "무림",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "다리 짧은 두꺼운 바둑판(10px 높이) — 판 윗면 7행에 격자 선과 흑백 돌 몇, 옆에 둥근 돌 통 둘.",
+   "contextRoom": "scholar",
+   "tags": [
+    "무림",
+    "동양"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "정자·사랑방.",
+   "pair": [
+    "zabuton"
+   ],
+   "refs": [
+    "felt 2x2"
+   ]
+  },
+  {
+   "id": "acupuncture chart",
+   "name_ko": "경락도",
+   "name_en": "acupuncture chart",
+   "category": "murim",
+   "category_ko": "무림",
+   "kind": "hang",
+   "footprint": {
+    "w": 1,
+    "h": 0
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "벽 윗줄의 누런 인체 경락도 족자(1칸) — 사람 윤곽에 붉은 점과 선, 위아래 나무 축.",
+   "contextRoom": "pharmacy",
+   "tags": [
+    "무림",
+    "의원"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "의원 벽 윗줄.",
+   "pair": [
+    "herbal decoction pot"
+   ],
+   "refs": [
+    "picture"
+   ]
+  },
+  {
+   "id": "herbal decoction pot",
+   "name_ko": "약탕기",
+   "name_en": "herbal decoction pot",
+   "category": "murim",
+   "category_ko": "무림",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "작은 숯 화로 위 흙 약탕기(12px 높이) — 뚜껑 윗면 3행과 대롱 주둥이, 오르는 김, 화로 구멍 불씨.",
+   "contextRoom": "pharmacy",
+   "tags": [
+    "무림",
+    "의원"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "의원 부엌.",
+   "pair": [
+    "acupuncture chart"
+   ],
+   "refs": [
+    "stove"
+   ]
+  },
+  {
+   "id": "kang bed",
+   "name_ko": "캉 침상",
+   "name_en": "kang bed",
+   "category": "murim",
+   "category_ko": "무림",
+   "kind": "wall",
+   "footprint": {
+    "w": 2,
+    "h": 2
+   },
+   "canvas": [
+    32,
+    48
+   ],
+   "description": "흙벽돌 온돌 침상 캉(2×2칸, 12px 높이) 위에 깐 붉은 꽃무늬 이불과 네모 베개. 남쪽 위에서 내려다본 3/4: 꼭대기 윗면 26행 — 대자리 위 이불과 작은 낮은 상, 그 아래 남쪽 면에 흙벽돌 앞면 4행과 아궁이 구멍.",
+   "contextRoom": "inn",
+   "tags": [
+    "무림",
+    "침실"
+   ],
+   "use": [
+    "sleep"
+   ],
+   "place": "객잔·민가 방 북쪽 벽.",
+   "pair": [
+    "low dining tray"
+   ],
+   "refs": [
+    "straw bed"
+   ]
+  },
+  {
+   "id": "red lacquer pillar",
+   "name_ko": "붉은 칠 기둥",
+   "name_en": "red lacquer pillar",
+   "category": "murim",
+   "category_ko": "무림",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    48
+   ],
+   "description": "붉은 옻칠 둥근 나무 기둥(32px 솟음) — 기둥 꼭대기 금 테 윗면 2행, 위쪽에 감은 금빛 용 무늬 띠, 아래 돌 주춧돌 윗면 2행.",
+   "contextRoom": "throne",
+   "tags": [
+    "무림",
+    "전각"
+   ],
+   "use": [
+    "block"
+   ],
+   "place": "전각·대청 기둥 줄.",
+   "pair": [
+    "sect plaque"
+   ],
+   "refs": [
+    "column wood"
+   ]
+  },
+  {
+   "id": "red silk lantern",
+   "name_ko": "붉은 비단 등",
+   "name_en": "red silk lantern",
+   "category": "murim",
+   "category_ko": "무림",
+   "kind": "hang",
+   "footprint": {
+    "w": 1,
+    "h": 0
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "처마·천장에서 늘어진 둥근 붉은 비단 등(벽면 윗줄) — 위아래 금 테, 안에서 비치는 따뜻한 빛, 아래 노란 술.",
+   "contextRoom": "tavern",
+   "tags": [
+    "무림",
+    "객잔"
+   ],
+   "use": [
+    "light"
+   ],
+   "place": "객잔·전각 윗줄.",
+   "pair": [],
+   "refs": [
+    "hanging lantern"
+   ]
+  },
+  {
+   "id": "martial manual shelf",
+   "name_ko": "비급 서가",
+   "name_en": "martial manual shelf",
+   "category": "murim",
+   "category_ko": "무림",
+   "kind": "wall",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "나무 서가(16px 솟음) — 꼭대기 윗면 3행, 칸마다 실로 묶은 누런 책 더미와 두루마리, 맨 아래 칸에 자물쇠 달린 작은 함.",
+   "contextRoom": "scholar",
+   "tags": [
+    "무림",
+    "장경각"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "장경각·서재 벽.",
+   "pair": [
+    "calligraphy table"
+   ],
+   "refs": [
+    "bookshelf 1w"
+   ]
+  },
+  {
+   "id": "escort banner stand",
+   "name_ko": "표국 깃발",
+   "name_en": "escort banner stand",
+   "category": "murim",
+   "category_ko": "무림",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    48
+   ],
+   "description": "돌 받침에 꽂은 세모 표국 깃발(32px 솟음) — 깃대 끝 붉은 술, 노란 천에 검은 굵은 무늬 하나, 받침 윗면 2행.",
+   "contextRoom": "stable",
+   "tags": [
+    "무림",
+    "표국"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "표국 마당·창고.",
+   "pair": [
+    "escort cargo chest"
+   ],
+   "refs": [
+    "banner red"
+   ]
+  },
+  {
+   "id": "escort cargo chest",
+   "name_ko": "표물 상자",
+   "name_en": "escort cargo chest",
+   "category": "murim",
+   "category_ko": "무림",
+   "kind": "floor",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "description": "쇠 모서리를 댄 큰 나무 상자 둘에 노란 봉인 띠(2칸, 14px 솟음) — 상자 뚜껑 윗면 5행에 X 자 봉인과 붉은 도장.",
+   "contextRoom": "stable",
+   "tags": [
+    "무림",
+    "표국"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "표국 창고.",
+   "pair": [
+    "escort banner stand"
+   ],
+   "refs": [
+    "chest",
+    "crate"
+   ]
+  },
+  {
+   "id": "stone guardian lion",
+   "name_ko": "돌사자",
+   "name_en": "stone guardian lion",
+   "category": "murim",
+   "category_ko": "무림",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "돌 받침 위 앉은 돌사자(16px 솟음), 남쪽을 본다 — 곱슬 갈기 머리 윗면 3행, 앞발 아래 둥근 공, 받침 윗면 2행.",
+   "contextRoom": "throne",
+   "tags": [
+    "무림",
+    "동양"
+   ],
+   "use": [
+    "block"
+   ],
+   "place": "문파 정문 안쪽 양옆.",
+   "pair": [
+    "red lacquer pillar"
+   ],
+   "refs": [
+    "statue"
+   ]
+  },
+  {
+   "id": "drum stool porcelain",
+   "name_ko": "자기 북의자",
+   "name_en": "drum stool porcelain",
+   "category": "murim",
+   "category_ko": "무림",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "북 모양 청화 자기 의자(10px 높이) — 둥근 윗면 6행, 옆면에 푸른 꽃 무늬와 둥근 손잡이 구멍.",
+   "contextRoom": "manor",
+   "tags": [
+    "무림",
+    "동양"
+   ],
+   "use": [
+    "sit"
+   ],
+   "place": "정원 정자·서재.",
+   "pair": [
+    "go board table"
+   ],
+   "refs": [
+    "stool"
+   ]
+  },
+  {
+   "id": "founder portrait",
+   "name_ko": "조사 초상",
+   "name_en": "founder portrait",
+   "category": "murim",
+   "category_ko": "무림",
+   "kind": "hang",
+   "footprint": {
+    "w": 1,
+    "h": 0
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "벽 윗줄의 족자 초상(1칸) — 흰 수염 노인의 앉은 모습, 비단 테와 나무 축.",
+   "contextRoom": "chapel",
+   "tags": [
+    "무림",
+    "사당"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "사당 벽 윗줄.",
+   "pair": [
+    "bronze ding small"
+   ],
+   "refs": [
+    "picture"
+   ]
+  },
+  {
+   "id": "ancestral tablet shelf",
+   "name_ko": "위패 단",
+   "name_en": "ancestral tablet shelf",
+   "category": "murim",
+   "category_ko": "무림",
+   "kind": "wall",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "description": "검은 칠 계단 단(2칸, 16px 솟음) — 세 층 단 윗면마다 금 글씨 위패(금 테 세로 판) 줄, 앞에 작은 촛대 둘.",
+   "contextRoom": "manor",
+   "tags": [
+    "무림",
+    "사당"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "사당 북쪽.",
+   "pair": [
+    "bronze ding small"
+   ],
+   "refs": [
+    "reredos"
+   ]
+  },
+  {
+   "id": "bamboo pot",
+   "name_ko": "대나무 화분",
+   "name_en": "bamboo pot",
+   "category": "murim",
+   "category_ko": "무림",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    48
+   ],
+   "description": "네모 청자 화분의 대나무 세 대(32px 솟음) — 마디 진 초록 줄기와 위쪽 가는 잎 무더기, 화분 테 윗면 2행.",
+   "contextRoom": "manor",
+   "tags": [
+    "무림",
+    "동양"
+   ],
+   "use": [
+    "block"
+   ],
+   "place": "정원 회랑·방 구석.",
+   "pair": [],
+   "refs": [
+    "potted sapling"
+   ]
+  },
+  {
+   "id": "lord high chair",
+   "name_ko": "영주 의자",
+   "name_en": "lord high chair",
+   "category": "medieval",
+   "category_ko": "중세",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "등받이가 높은 조각 나무 의자(16px 솟음), 남쪽을 본다 — 좌판 윗면 4행에 초록 방석, 등받이 꼭대기 문장 조각 윗면 2행.",
+   "contextRoom": "mead",
+   "tags": [
+    "중세",
+    "영주관"
+   ],
+   "use": [
+    "sit"
+   ],
+   "place": "영주관 홀 식탁 머리.",
+   "pair": [
+    "trestle table"
+   ],
+   "refs": [
+    "armchair",
+    "throne"
+   ]
+  },
+  {
+   "id": "trestle table",
+   "name_ko": "받침 다리 긴 탁자",
+   "name_en": "trestle table",
+   "category": "medieval",
+   "category_ko": "중세",
+   "kind": "floor",
+   "footprint": {
+    "w": 3,
+    "h": 1
+   },
+   "canvas": [
+    48,
+    32
+   ],
+   "description": "판자 상판을 X 자 받침 둘에 얹은 긴 탁자(3칸, 12px 솟음). 상판 윗면 7행에 나무 접시·빵 덩이·나무 잔·촛대, 남쪽 면에 X 자 받침.",
+   "contextRoom": "mead",
+   "tags": [
+    "중세",
+    "식당"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "영주관·수도원 식당.",
+   "pair": [
+    "lord high chair"
+   ],
+   "refs": [
+    "dining 3x2"
+   ]
+  },
+  {
+   "id": "monk cot",
+   "name_ko": "수도사 침상",
+   "name_en": "monk cot",
+   "category": "medieval",
+   "category_ko": "중세",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 2
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "좁은 나무 침상(1×2칸 남북, 8px 높이). 남쪽 위에서 내려다본 3/4: 꼭대기 윗면 22행 — 거친 갈색 모포와 북쪽 짚 베개, 판자 틀. 남쪽 면에 틀 두께와 짧은 다리.",
+   "contextRoom": "chapel",
+   "tags": [
+    "중세",
+    "수도원"
+   ],
+   "use": [
+    "sleep"
+   ],
+   "place": "수도원 방.",
+   "pair": [
+    "quill desk"
+   ],
+   "refs": [
+    "straw bed",
+    "prison cot"
+   ]
+  },
+  {
+   "id": "hand quern",
+   "name_ko": "맷돌",
+   "name_en": "hand quern",
+   "category": "medieval",
+   "category_ko": "중세",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "둥근 돌 두 장을 겹친 맷돌(10px 높이) — 윗돌 윗면 6행에 곡식 넣는 구멍과 세운 손잡이 막대, 둘레에 흘러나온 가루.",
+   "contextRoom": "mead",
+   "tags": [
+    "중세",
+    "농가",
+    "동양"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "농가 부엌·방앗간.",
+   "pair": [
+    "sack:grain"
+   ],
+   "refs": [
+    "grindstone"
+   ]
+  },
+  {
+   "id": "wash stand pitcher",
+   "name_ko": "세면 받침",
+   "name_en": "wash stand pitcher",
+   "category": "medieval",
+   "category_ko": "중세",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "세 다리 나무 받침 위 흰 세숫대야와 물주전자(14px 솟음) — 대야 안 윗면 4행의 물빛, 옆에 걸린 수건.",
+   "contextRoom": "inn",
+   "tags": [
+    "중세",
+    "여관"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "여관 방·영주관 침실.",
+   "pair": [
+    "bed red"
+   ],
+   "refs": [
+    "washbasin"
+   ]
+  },
+  {
+   "id": "halberd stand",
+   "name_ko": "미늘창 걸이",
+   "name_en": "halberd stand",
+   "category": "medieval",
+   "category_ko": "중세",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    48
+   ],
+   "description": "나무 받침에 세운 미늘창 둘(32px 솟음) — 도끼날과 창끝이 위로 밝게, 자루는 가늘다, 받침 윗면 2행.",
+   "contextRoom": "throne",
+   "tags": [
+    "중세",
+    "성",
+    "위병소"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "성 위병소·문 옆.",
+   "pair": [
+    "armor stand"
+   ],
+   "refs": [
+    "spear rack"
+   ]
+  },
+  {
+   "id": "arming table",
+   "name_ko": "갑옷 손질대",
+   "name_en": "arming table",
+   "category": "medieval",
+   "category_ko": "중세",
+   "kind": "floor",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "description": "두꺼운 나무 작업대(2칸, 14px 솟음). 상판 윗면 6행에 펼친 사슬 갑옷·투구·기름 단지·솔, 남쪽 면에 다리와 아래 선반의 방패.",
+   "contextRoom": "smithy",
+   "tags": [
+    "중세",
+    "무기고"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "성 무기고.",
+   "pair": [
+    "armor stand"
+   ],
+   "refs": [
+    "work 2x1"
+   ]
+  },
+  {
+   "id": "lance rack",
+   "name_ko": "기사 창 걸이",
+   "name_en": "lance rack",
+   "category": "medieval",
+   "category_ko": "중세",
+   "kind": "floor",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    48
+   ],
+   "description": "나무 틀에 세운 긴 마상 창 셋(2칸, 32px 솟음) — 줄무늬(빨강·흰·파랑) 창대, 위 가로대 윗면 1행, 아래 받침.",
+   "contextRoom": "stable",
+   "tags": [
+    "중세",
+    "기사"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "마구간·마상 시합장 대기실.",
+   "pair": [
+    "saddle rack"
+   ],
+   "refs": [
+    "weapon rack"
+   ]
+  },
+  {
+   "id": "falconry perch",
+   "name_ko": "매 횃대",
+   "name_en": "falconry perch",
+   "category": "medieval",
+   "category_ko": "중세",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "쇠 기둥 횃대 위 두건 쓴 매(16px 솟음) — 매 머리·두건 윗면이 밝다, 횃대 가로대에 가죽 끈, 아래 받침.",
+   "contextRoom": "mead",
+   "tags": [
+    "중세",
+    "영주관"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "영주관 홀 구석.",
+   "pair": [
+    "lord high chair"
+   ],
+   "refs": [
+    "owl perch"
+   ]
+  },
+  {
+   "id": "roasting spit hearth",
+   "name_ko": "꼬치구이 화덕",
+   "name_en": "roasting spit hearth",
+   "category": "medieval",
+   "category_ko": "중세",
+   "kind": "wall",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "description": "돌 화덕 위 가로 쇠꼬챙이에 꿴 통돼지 구이(2칸, 16px 솟음) — 화덕 돌 윗면 3행, 고기 윗면이 가장 밝은 갈색, 아래 불꽃, 옆 손잡이.",
+   "contextRoom": "bakery",
+   "tags": [
+    "중세",
+    "부엌"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "영주관·여관 부엌 벽.",
+   "pair": [
+    "trestle table"
+   ],
+   "refs": [
+    "kitchen range"
+   ]
+  },
+  {
+   "id": "chess table",
+   "name_ko": "체스 탁자",
+   "name_en": "chess table",
+   "category": "medieval",
+   "category_ko": "중세",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "작은 둥근 받침 탁자(12px 솟음) — 상판 윗면 7행에 흑백 체크 판과 말 몇(작은 세로 점), 가운데 기둥 다리.",
+   "contextRoom": "manor",
+   "tags": [
+    "중세",
+    "저택"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "응접실·서재.",
+   "pair": [
+    "armchair"
+   ],
+   "refs": [
+    "roundtable"
+   ]
+  },
+  {
+   "id": "herald shield wall",
+   "name_ko": "가문 방패 벽",
+   "name_en": "herald shield wall",
+   "category": "medieval",
+   "category_ko": "중세",
+   "kind": "hang",
+   "footprint": {
+    "w": 2,
+    "h": 0
+   },
+   "canvas": [
+    32,
+    16
+   ],
+   "description": "벽 윗줄에 나란히 건 가문 방패 셋(2칸) — 방패마다 다른 문장(사자·백합·탑), 위 깃발 띠.",
+   "contextRoom": "manor",
+   "tags": [
+    "중세",
+    "성"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "성 홀 벽 윗줄.",
+   "pair": [],
+   "refs": [
+    "shield"
+   ]
+  },
+  {
+   "id": "alms box",
+   "name_ko": "자선함",
+   "name_en": "alms box",
+   "category": "medieval",
+   "category_ko": "중세",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "나무 기둥 위 쇠테 상자(16px 솟음) — 뚜껑 윗면 4행에 동전 틈과 자물쇠, 기둥에 새긴 십자.",
+   "contextRoom": "chapel",
+   "tags": [
+    "중세",
+    "교회"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "교회 입구.",
+   "pair": [
+    "pew"
+   ],
+   "refs": [
+    "chest"
+   ]
+  },
+  {
+   "id": "pillory",
+   "name_ko": "칼 씌우는 형틀",
+   "name_en": "pillory",
+   "category": "medieval",
+   "category_ko": "중세",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    48
+   ],
+   "description": "기둥 위 구멍 셋 난 판(32px 솟음) — 판 윗면 2행, 반원 구멍 셋과 쇠 경첩, 기둥 아래 받침.",
+   "contextRoom": "dungeon",
+   "tags": [
+    "중세",
+    "감옥"
+   ],
+   "use": [
+    "block"
+   ],
+   "place": "광장 실내·감옥 앞.",
+   "pair": [
+    "wooden stocks"
+   ],
+   "refs": [
+    "shackles"
+   ]
+  },
+  {
+   "id": "scribe stool desk",
+   "name_ko": "서기 높은 책상",
+   "name_en": "scribe stool desk",
+   "category": "medieval",
+   "category_ko": "중세",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "높고 좁은 기운 책상과 붙은 걸상(16px 솟음) — 기운 판 윗면 5행에 장부와 깃펜, 판 위 촛대, 아래 긴 다리.",
+   "contextRoom": "scholar",
+   "tags": [
+    "중세",
+    "관청"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "관청·상단 사무실.",
+   "pair": [
+    "parcel pile"
+   ],
+   "refs": [
+    "lectern"
+   ]
+  },
+  {
+   "id": "tapestry frame",
+   "name_ko": "태피스트리 틀",
+   "name_en": "tapestry frame",
+   "category": "medieval",
+   "category_ko": "중세",
+   "kind": "floor",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    48
+   ],
+   "description": "나무 틀에 건 짜다 만 큰 태피스트리(2칸, 32px 솟음) — 위 가로대 윗면 1행, 기사와 용 그림 절반, 아래는 날실만.",
+   "contextRoom": "tailor",
+   "tags": [
+    "중세",
+    "공방"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "성 여인의 방·공방.",
+   "pair": [
+    "loom"
+   ],
+   "refs": [
+    "tapestry"
+   ]
+  },
+  {
+   "id": "phoenix perch",
+   "name_ko": "불사조 횃대",
+   "name_en": "phoenix perch",
+   "category": "fantasy",
+   "category_ko": "판타지",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    48
+   ],
+   "description": "금 횃대 위 불꽃 깃의 불사조(32px 솟음) — 머리 깃 윗면이 가장 밝은 노랑, 꼬리 깃이 주황·빨강으로 늘어지고, 아래 재 받침.",
+   "contextRoom": "tower",
+   "tags": [
+    "판타지",
+    "마법"
+   ],
+   "use": [
+    "light"
+   ],
+   "place": "대마법사 방.",
+   "pair": [
+    "crystal lamp"
+   ],
+   "refs": [
+    "owl perch"
+   ]
+  },
+  {
+   "id": "enchanted armor",
+   "name_ko": "마법 갑옷",
+   "name_en": "enchanted armor",
+   "category": "fantasy",
+   "category_ko": "판타지",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    48
+   ],
+   "description": "받침에 세운 은빛 판금 갑옷(32px 솟음) — 투구 윗면 2행, 가슴판 가운데 빛나는 하늘빛 룬, 둘레 빛 점.",
+   "contextRoom": "throne",
+   "tags": [
+    "판타지",
+    "보물"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "보물고·영웅의 방.",
+   "pair": [
+    "armor stand"
+   ],
+   "refs": [
+    "armor stand"
+   ]
+  },
+  {
+   "id": "stump table",
+   "name_ko": "그루터기 탁자",
+   "name_en": "stump table",
+   "category": "fantasy",
+   "category_ko": "판타지",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "큰 나무 그루터기 탁자(12px 솟음) — 나이테 윗면 7행에 버섯 수프 그릇과 도토리 잔, 옆면 껍질과 뿌리.",
+   "contextRoom": "elf",
+   "tags": [
+    "판타지",
+    "숲"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "숲 오두막·드루이드 집.",
+   "pair": [
+    "mushroom stool"
+   ],
+   "refs": [
+    "roundtable"
+   ]
+  },
+  {
+   "id": "elemental braziers",
+   "name_ko": "원소 화로",
+   "name_en": "elemental braziers",
+   "category": "fantasy",
+   "category_ko": "판타지",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "세 발 돌 화로(14px 솟음) — 그릇 윗면 4행에서 오르는 푸른 불꽃(얼음 결정 섞인), 화로 옆면 룬.",
+   "contextRoom": "tower",
+   "tags": [
+    "판타지",
+    "마법"
+   ],
+   "use": [
+    "light"
+   ],
+   "place": "원소 신전·마법 실험실.",
+   "pair": [
+    "mana fountain"
+   ],
+   "refs": [
+    "brazier"
+   ]
+  },
+  {
+   "id": "gargoyle statue",
+   "name_ko": "가고일 석상",
+   "name_en": "gargoyle statue",
+   "category": "fantasy",
+   "category_ko": "판타지",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "받침 위 웅크린 돌 가고일(16px 솟음), 남쪽을 본다 — 날개 끝·뿔 윗면이 밝은 회색, 이빨 드러낸 얼굴, 받침 윗면 2행.",
+   "contextRoom": "chapel",
+   "tags": [
+    "판타지",
+    "공포"
+   ],
+   "use": [
+    "block"
+   ],
+   "place": "성당 구석·마왕성.",
+   "pair": [
+    "statue"
+   ],
+   "refs": [
+    "statue"
+   ]
+  },
+  {
+   "id": "healer cot",
+   "name_ko": "치유사 침상",
+   "name_en": "healer cot",
+   "category": "fantasy",
+   "category_ko": "판타지",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 2
+   },
+   "canvas": [
+    16,
+    48
+   ],
+   "description": "흰 천 덮은 나무 침상(1×2칸 남북, 12px 솟음). 남쪽 위에서 내려다본 3/4: 꼭대기 윗면 22행 — 흰 시트와 북쪽 베개, 접힌 초록 모포, 머리맡 위 약초 다발. 남쪽 면에 틀과 다리.",
+   "contextRoom": "pharmacy",
+   "tags": [
+    "판타지",
+    "치유"
+   ],
+   "use": [
+    "sleep"
+   ],
+   "place": "치유의 집·교회 병실.",
+   "pair": [],
+   "refs": [
+    "bed green"
+   ]
+  },
+  {
+   "id": "summoning brazier",
+   "name_ko": "소환 화로",
+   "name_en": "summoning brazier",
+   "category": "fantasy",
+   "category_ko": "판타지",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "검은 쇠 화로 그릇(14px 솟음) — 그릇 윗면 4행에서 오르는 보랏빛 불꽃과 떠오르는 작은 룬 조각, 세 발 아래 분필 원 일부.",
+   "contextRoom": "throne",
+   "tags": [
+    "판타지",
+    "마법"
+   ],
+   "use": [
+    "light"
+   ],
+   "place": "소환실.",
+   "pair": [],
+   "refs": [
+    "brazier"
+   ]
+  },
+  {
+   "id": "potion barrel rack",
+   "name_ko": "물약 통 선반",
+   "name_en": "potion barrel rack",
+   "category": "fantasy",
+   "category_ko": "판타지",
+   "kind": "floor",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "description": "눕힌 작은 통 넷을 얹은 받침(2칸, 16px 솟음) — 통마다 둥근 바닥면에 꼭지와 색 표(빨강·파랑·초록·노랑), 위 판 윗면 3행.",
+   "contextRoom": "pharmacy",
+   "tags": [
+    "판타지",
+    "상점"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "물약 상점·연금술 공방.",
+   "pair": [],
+   "refs": [
+    "keg rack"
+   ]
+  },
+  {
+   "id": "dragon egg incubator",
+   "name_ko": "용알 부화로",
+   "name_en": "dragon egg incubator",
+   "category": "fantasy",
+   "category_ko": "판타지",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "불씨 깔린 돌 그릇 위 붉은 비늘 무늬 알(16px 솟음) — 알 꼭대기 윗면 2행이 밝고, 아래 숯과 주황 빛, 그릇 테 윗면 2행.",
+   "contextRoom": "tower",
+   "tags": [
+    "판타지",
+    "용"
+   ],
+   "use": [
+    "light"
+   ],
+   "place": "용 기사 숙소·마법사 탑.",
+   "pair": [
+    "dragon nest"
+   ],
+   "refs": [
+    "egg incubator"
+   ]
+  },
+  {
+   "id": "adventurer gear rack",
+   "name_ko": "모험 장비 걸이",
+   "name_en": "adventurer gear rack",
+   "category": "fantasy",
+   "category_ko": "판타지",
+   "kind": "wall",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    48
+   ],
+   "description": "벽 나무 걸이(32px 솟음) — 망토·배낭·밧줄 고리·랜턴이 걸리고 아래 장화, 꼭대기 걸이판 윗면 2행.",
+   "contextRoom": "inn",
+   "tags": [
+    "판타지",
+    "여관",
+    "모험"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "여관 방·길드 탈의실.",
+   "pair": [
+    "luggage pile"
+   ],
+   "refs": [
+    "coat rack"
+   ]
+  },
+  {
+   "id": "crystal ball table",
+   "name_ko": "점술 탁자",
+   "name_en": "crystal ball table",
+   "category": "fantasy",
+   "category_ko": "판타지",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "보라 천 덮은 둥근 탁자(14px 솟음) — 천 윗면 6행에 받침 위 수정구(안개 빛)와 타로 카드 셋, 천 자락 술.",
+   "contextRoom": "tower",
+   "tags": [
+    "판타지",
+    "점술"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "점술사 천막·탑.",
+   "pair": [
+    "crystal lamp"
+   ],
+   "refs": [
+    "crystal ball"
+   ]
+  },
+  {
+   "id": "slime tank",
+   "name_ko": "슬라임 수조",
+   "name_en": "slime tank",
+   "category": "fantasy",
+   "category_ko": "판타지",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    32
+   ],
+   "description": "유리 원통 수조 안 초록 슬라임(16px 솟음) — 금속 뚜껑 윗면 2행, 유리 안 눈 둘 달린 젤리 덩이와 거품.",
+   "contextRoom": "tower",
+   "tags": [
+    "판타지",
+    "몬스터"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "몬스터 연구실.",
+   "pair": [
+    "specimen jar big"
+   ],
+   "refs": [
+    "fish tank"
+   ]
+  },
+  {
+   "id": "great dragon statue",
+   "name_ko": "거대 용 석상",
+   "name_en": "great dragon statue",
+   "category": "big",
+   "category_ko": "대형 기물",
+   "kind": "floor",
+   "footprint": {
+    "w": 3,
+    "h": 2
+   },
+   "canvas": [
+    48,
+    64
+   ],
+   "description": "네모 돌 받침 위에 앉은 거대한 돌 용(3×2칸, 받침 위로 32px 솟음), 남쪽을 본다. **남쪽 위에서 내려다본 3/4**: 받침의 꼭대기 윗면 14행(밑그림 y=36~49) — 위에서 본 판석 받침 윗면(가장자리 테, 용 발톱 넷이 얹힘). 그 아래 남쪽 면 밑그림 y=50~63: 받침 앞면 새김 띠. 받침 위로 용의 몸·접은 날개·남쪽을 보는 머리가 솟는다(머리·날개 윗면이 밝고 아래가 어둡다, 눈은 붉은 보석). 옆모습 금지.",
+   "contextRoom": "throne",
+   "tags": [
+    "대형",
+    "성",
+    "용"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "왕성 홀·용 신전 가운데.",
+   "pair": [
+    "royal banner"
+   ],
+   "refs": [
+    "statue",
+    "dragon skeleton"
+   ],
+   "blockout": {
+    "top": [
+     36,
+     49
+    ],
+    "front": [
+     50,
+     63
+    ],
+    "cover": 0.6
+   }
+  },
+  {
+   "id": "sparring stage",
+   "name_ko": "비무대",
+   "name_en": "sparring stage",
+   "category": "big",
+   "category_ko": "대형 기물",
+   "kind": "floor",
+   "footprint": {
+    "w": 4,
+    "h": 3
+   },
+   "canvas": [
+    64,
+    64
+   ],
+   "description": "나무 판을 깐 네모 비무대(4×3칸, 12px 높이). **남쪽 위에서 내려다본 3/4**: 꼭대기 윗면 36행(밑그림 y=8~43) — 판자 마루 윗면과 네 귀퉁이 붉은 기둥 끝, 가장자리 붉은 난간 줄, 가운데 둥근 음양 무늬. 그 아래 남쪽 면 밑그림 y=44~63: 돌 기단 앞면과 가운데 오르는 계단 셋. 북쪽 두 귀퉁이 기둥 위로 붉은 깃발 둘. 옆모습 금지.",
+   "contextRoom": "magitek",
+   "tags": [
+    "대형",
+    "무림",
+    "연무장"
+   ],
+   "use": [
+    "walk"
+   ],
+   "place": "문파 연무장 가운데.",
+   "pair": [
+    "eighteen weapons rack",
+    "wooden dummy"
+   ],
+   "refs": [
+    "footlights"
+   ],
+   "blockout": {
+    "top": [
+     8,
+     43
+    ],
+    "front": [
+     44,
+     63
+    ],
+    "cover": 0.8
+   }
+  },
+  {
+   "id": "temple great bell",
+   "name_ko": "범종각",
+   "name_en": "temple great bell",
+   "category": "big",
+   "category_ko": "대형 기물",
+   "kind": "floor",
+   "footprint": {
+    "w": 3,
+    "h": 2
+   },
+   "canvas": [
+    48,
+    64
+   ],
+   "description": "나무 종틀에 매단 거대한 청동 범종(3×2칸, 32px 솟음). **남쪽 위에서 내려다본 3/4**: 기단 꼭대기 윗면 12행(밑그림 y=40~51) — 돌 기단 윗면과 네 기둥 밑동. 그 아래 남쪽 면 밑그림 y=52~63: 기단 앞면. 기단 위로 기둥 넷과 지붕 들보(들보 윗면 2행), 그 아래 매달린 종(종 꼭대기 용 고리, 몸통 윗면이 밝은 청록 녹, 아래 입이 어둡다), 옆에 가로로 매단 당목.",
+   "contextRoom": "throne",
+   "tags": [
+    "대형",
+    "무림",
+    "절"
+   ],
+   "use": [
+    "switch"
+   ],
+   "place": "절·문파 마당 실내 종각.",
+   "pair": [
+    "bronze ding small"
+   ],
+   "refs": [
+    "bell rope"
+   ],
+   "blockout": {
+    "top": [
+     40,
+     51
+    ],
+    "front": [
+     52,
+     63
+    ],
+    "cover": 0.7
+   }
+  },
+  {
+   "id": "great tripod cauldron",
+   "name_ko": "대형 청동 정",
+   "name_en": "great tripod cauldron",
+   "category": "big",
+   "category_ko": "대형 기물",
+   "kind": "floor",
+   "footprint": {
+    "w": 3,
+    "h": 2
+   },
+   "canvas": [
+    48,
+    48
+   ],
+   "description": "세 발 달린 거대한 청동 정 향로(3×2칸, 16px 솟음). **남쪽 위에서 내려다본 3/4**: 꼭대기 윗면 18행(밑그림 y=6~23) — 넓은 네모 아가리를 위에서 본 안쪽(재 위에 꽂힌 굵은 향 다섯, 오르는 연기 세 줄)과 양쪽 귀 손잡이. 그 아래 남쪽 면 밑그림 y=24~47: 도철 무늬 띠를 두른 몸통과 굵은 세 발. 옆모습 금지.",
+   "contextRoom": "throne",
+   "tags": [
+    "대형",
+    "무림",
+    "사당"
+   ],
+   "use": [
+    "light"
+   ],
+   "place": "사당·문파 대전 앞.",
+   "pair": [
+    "ancestral tablet shelf"
+   ],
+   "refs": [
+    "cauldron"
+   ],
+   "blockout": {
+    "top": [
+     6,
+     23
+    ],
+    "front": [
+     24,
+     47
+    ],
+    "cover": 0.7
+   }
+  },
+  {
+   "id": "siege ballista",
+   "name_ko": "노포",
+   "name_en": "siege ballista",
+   "category": "big",
+   "category_ko": "대형 기물",
+   "kind": "floor",
+   "footprint": {
+    "w": 3,
+    "h": 2
+   },
+   "canvas": [
+    48,
+    48
+   ],
+   "description": "나무 받침 위 거대한 쇠뇌(3×2칸, 16px 솟음), 북쪽을 겨눈다. **남쪽 위에서 내려다본 3/4**: 꼭대기 윗면 18행(밑그림 y=6~23) — 위에서 본 활 팔 둘(동서로 넓게)과 가운데 긴 활대·걸린 큰 화살, 감는 바퀴. 그 아래 남쪽 면 밑그림 y=24~47: 받침 틀 옆판과 바퀴 둘. 옆모습 금지.",
+   "contextRoom": "dwarf",
+   "tags": [
+    "대형",
+    "중세",
+    "공성"
+   ],
+   "use": [
+    "block"
+   ],
+   "place": "성 무기고·성벽 탑 안.",
+   "pair": [
+    "halberd stand"
+   ],
+   "refs": [],
+   "blockout": {
+    "top": [
+     6,
+     23
+    ],
+    "front": [
+     24,
+     47
+    ],
+    "cover": 0.6
+   }
+  },
+  {
+   "id": "big wine press",
+   "name_ko": "대형 포도 압착기",
+   "name_en": "big wine press",
+   "category": "big",
+   "category_ko": "대형 기물",
+   "kind": "floor",
+   "footprint": {
+    "w": 3,
+    "h": 2
+   },
+   "canvas": [
+    48,
+    48
+   ],
+   "description": "큰 나무 포도 압착기(3×2칸, 16px 솟음). **남쪽 위에서 내려다본 3/4**: 꼭대기 윗면 18행(밑그림 y=6~23) — 둥근 나무 통 안 으깬 보라 포도 면과 가운데 굵은 나무 나사, 그 위 가로 손잡이 들보. 그 아래 남쪽 면 밑그림 y=24~47: 통 옆 판자와 쇠테, 받침 홈에서 흐르는 붉은 즙과 받는 통. 옆모습 금지.",
+   "contextRoom": "mead",
+   "tags": [
+    "대형",
+    "중세",
+    "양조장"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "수도원·양조장 지하.",
+   "pair": [
+    "barrel:grape"
+   ],
+   "refs": [
+    "cheese press"
+   ],
+   "blockout": {
+    "top": [
+     6,
+     23
+    ],
+    "front": [
+     24,
+     47
+    ],
+    "cover": 0.65
+   }
+  },
+  {
+   "id": "feast table",
+   "name_ko": "연회 긴 식탁",
+   "name_en": "feast table",
+   "category": "big",
+   "category_ko": "대형 기물",
+   "kind": "floor",
+   "footprint": {
+    "w": 6,
+    "h": 2
+   },
+   "canvas": [
+    96,
+    48
+   ],
+   "description": "흰 천 덮은 아주 긴 연회 식탁(6×2칸, 12px 높이). **남쪽 위에서 내려다본 3/4**: 꼭대기 윗면 30행(밑그림 y=4~33) — 상판 위 통돼지 구이 접시·과일 탑·빵 바구니·잔 여섯·촛대 셋이 동서로 늘어서고, 붉은 가운데 띠. 그 아래 남쪽 면 밑그림 y=34~47: 늘어진 흰 천 자락과 다리 끝. 옆모습 금지.",
+   "contextRoom": "mead",
+   "tags": [
+    "대형",
+    "중세",
+    "연회"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "영주관·성 연회장 가운데.",
+   "pair": [
+    "lord high chair"
+   ],
+   "refs": [
+    "dining 4x2"
+   ],
+   "blockout": {
+    "top": [
+     4,
+     33
+    ],
+    "front": [
+     34,
+     47
+    ],
+    "cover": 0.9
+   }
+  },
+  {
+   "id": "alchemy apparatus",
+   "name_ko": "대형 연금 장치",
+   "name_en": "alchemy apparatus",
+   "category": "big",
+   "category_ko": "대형 기물",
+   "kind": "floor",
+   "footprint": {
+    "w": 3,
+    "h": 2
+   },
+   "canvas": [
+    48,
+    64
+   ],
+   "description": "놋쇠 관으로 이어진 큰 연금 장치(3×2칸, 32px 솟음). **남쪽 위에서 내려다본 3/4**: 받침대 꼭대기 윗면 14행(밑그림 y=34~47) — 돌 작업판 윗면에 불 위 둥근 플라스크 둘(초록·보라)과 관. 그 아래 남쪽 면 밑그림 y=48~63: 받침 앞면과 불구멍. 받침 위로 높은 유리 증류탑과 꼬인 냉각관이 솟는다(유리 윗면 반사, 방울 떨어짐). 옆모습 금지.",
+   "contextRoom": "tower",
+   "tags": [
+    "대형",
+    "판타지",
+    "연금술"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "연금술 공방 가운데.",
+   "pair": [
+    "alembic"
+   ],
+   "refs": [
+    "alchemy table",
+    "alembic"
+   ],
+   "blockout": {
+    "top": [
+     34,
+     47
+    ],
+    "front": [
+     48,
+     63
+    ],
+    "cover": 0.6
+   }
+  },
+  {
+   "id": "monster cage big",
+   "name_ko": "대형 몬스터 우리",
+   "name_en": "monster cage big",
+   "category": "big",
+   "category_ko": "대형 기물",
+   "kind": "floor",
+   "footprint": {
+    "w": 3,
+    "h": 2
+   },
+   "canvas": [
+    48,
+    64
+   ],
+   "description": "쇠창살 큰 우리(3×2칸, 32px 솟음) 안에 웅크린 어두운 몬스터. **남쪽 위에서 내려다본 3/4**: 우리 지붕 꼭대기 윗면 14행(밑그림 y=4~17) — 위에서 본 쇠 격자 지붕과 리벳. 그 아래 남쪽 면 밑그림 y=18~63: 세로 창살 너머 붉은 눈 둘과 털 덩이, 아래 쇠 바닥판과 자물쇠 문. 옆모습 금지.",
+   "contextRoom": "throne",
+   "tags": [
+    "대형",
+    "판타지",
+    "던전"
+   ],
+   "use": [
+    "block"
+   ],
+   "place": "마왕성 지하·투기장 대기실.",
+   "pair": [
+    "shackles"
+   ],
+   "refs": [],
+   "blockout": {
+    "top": [
+     4,
+     17
+    ],
+    "front": [
+     18,
+     63
+    ],
+    "cover": 0.85
+   }
+  },
+  {
+   "id": "great ancestral altar",
+   "name_ko": "대형 사당 제단",
+   "name_en": "great ancestral altar",
+   "category": "big",
+   "category_ko": "대형 기물",
+   "kind": "floor",
+   "footprint": {
+    "w": 4,
+    "h": 2
+   },
+   "canvas": [
+    64,
+    64
+   ],
+   "description": "검은 칠 금장 사당 제단(4×2칸, 32px 솟음). **남쪽 위에서 내려다본 3/4**: 제단 상판 꼭대기 윗면 16행(밑그림 y=32~47) — 위에서 본 상판 위 위패 다섯·과일 접시·촛대 둘·청동 정. 그 아래 남쪽 면 밑그림 y=48~63: 제단 앞판 금 구름 무늬. 상판 뒤로 금 테 감실 벽(지붕 모양 처마, 붉은 비단 휘장)이 솟는다. 옆모습 금지.",
+   "contextRoom": "dwarf",
+   "tags": [
+    "대형",
+    "무림",
+    "사당"
+   ],
+   "use": [
+    "read"
+   ],
+   "place": "문파 사당 북쪽 벽.",
+   "pair": [
+    "ancestral tablet shelf",
+    "bronze ding small"
+   ],
+   "refs": [
+    "reredos",
+    "altar"
+   ],
+   "blockout": {
+    "top": [
+     32,
+     47
+    ],
+    "front": [
+     48,
+     63
+    ],
+    "cover": 0.8
+   }
+  },
+  {
+   "id": "jade throne dais",
+   "name_ko": "맹주 옥좌 단",
+   "name_en": "jade throne dais",
+   "category": "big",
+   "category_ko": "대형 기물",
+   "kind": "floor",
+   "footprint": {
+    "w": 3,
+    "h": 2
+   },
+   "canvas": [
+    48,
+    64
+   ],
+   "description": "계단 셋 위 옥좌(3×2칸, 32px 솟음), 남쪽을 본다. **남쪽 위에서 내려다본 3/4**: 단 꼭대기 윗면 14행(밑그림 y=34~47) — 위에서 본 붉은 융단 깐 단 윗면과 옥좌 다리. 그 아래 남쪽 면 밑그림 y=48~63: 단 앞 계단 셋(계단 윗면마다 밝은 줄). 단 위로 비취색 옥좌(좌판 윗면 4행, 높은 등받이에 금 용 조각)와 뒤 병풍. 옆모습 금지.",
+   "contextRoom": "throne",
+   "tags": [
+    "대형",
+    "무림",
+    "대전"
+   ],
+   "use": [
+    "sit"
+   ],
+   "place": "무림맹 대전 북쪽.",
+   "pair": [
+    "red lacquer pillar",
+    "sect plaque"
+   ],
+   "refs": [
+    "throne",
+    "stone throne"
+   ],
+   "blockout": {
+    "top": [
+     34,
+     47
+    ],
+    "front": [
+     48,
+     63
+    ],
+    "cover": 0.75
+   }
+  },
+  {
+   "id": "dormant golem",
+   "name_ko": "잠든 골렘",
+   "name_en": "dormant golem",
+   "category": "big",
+   "category_ko": "대형 기물",
+   "kind": "floor",
+   "footprint": {
+    "w": 3,
+    "h": 2
+   },
+   "canvas": [
+    48,
+    64
+   ],
+   "description": "무릎 꿇고 잠든 돌 골렘(3×2칸, 32px 솟음), 남쪽을 본다. **남쪽 위에서 내려다본 3/4**: 어깨·등 꼭대기 윗면 12행(밑그림 y=6~17) — 이끼 낀 넓은 어깨 바위와 숙인 머리 정수리. 그 아래 남쪽 면 밑그림 y=18~63: 가슴의 꺼진 룬(어두운 하늘빛), 바닥 짚은 큰 두 주먹, 꿇은 무릎. 옆모습 금지.",
+   "contextRoom": "dwarf",
+   "tags": [
+    "대형",
+    "판타지",
+    "유적"
+   ],
+   "use": [
+    "block"
+   ],
+   "place": "드워프 유적·고대 신전.",
+   "pair": [
+    "rune stone"
+   ],
+   "refs": [
+    "statue",
+    "knight colossus"
+   ],
+   "blockout": {
+    "top": [
+     6,
+     17
+    ],
+    "front": [
+     18,
+     63
+    ],
+    "cover": 0.75
+   }
+  },
+  {
+   "id": "catapult",
+   "name_ko": "투석기",
+   "name_en": "catapult",
+   "category": "big",
+   "category_ko": "대형 기물",
+   "kind": "floor",
+   "footprint": {
+    "w": 3,
+    "h": 2
+   },
+   "canvas": [
+    48,
+    48
+   ],
+   "description": "나무 투석기(3×2칸, 16px 솟음), 북쪽을 향한다. **남쪽 위에서 내려다본 3/4**: 꼭대기 윗면 18행(밑그림 y=6~23) — 위에서 본 네모 받침 틀과 북쪽으로 젖힌 던지는 팔, 팔 끝 그릇에 둥근 돌, 감는 굴대. 그 아래 남쪽 면 밑그림 y=24~47: 틀 옆판과 바퀴 둘. 옆모습 금지.",
+   "contextRoom": "dwarf",
+   "tags": [
+    "대형",
+    "중세",
+    "공성"
+   ],
+   "use": [
+    "block"
+   ],
+   "place": "성 무기고·공성 진지 막사.",
+   "pair": [
+    "siege ballista"
+   ],
+   "refs": [],
+   "blockout": {
+    "top": [
+     6,
+     23
+    ],
+    "front": [
+     24,
+     47
+    ],
+    "cover": 0.6
+   }
+  },
+  {
+   "id": "big millstone",
+   "name_ko": "대형 연자방아",
+   "name_en": "big millstone",
+   "category": "big",
+   "category_ko": "대형 기물",
+   "kind": "floor",
+   "footprint": {
+    "w": 3,
+    "h": 2
+   },
+   "canvas": [
+    48,
+    48
+   ],
+   "description": "둥근 돌판 위를 굴러가는 세운 큰 돌바퀴(3×2칸, 16px 솟음). **남쪽 위에서 내려다본 3/4**: 꼭대기 윗면 20행(밑그림 y=4~23) — 위에서 본 넓은 둥근 맷돌판(곡식 가루가 흩어짐)과 가운데 축, 축에 끼운 세운 돌바퀴와 동쪽으로 뻗은 나무 끌대. 그 아래 남쪽 면 밑그림 y=24~47: 돌판 옆면과 받침 돌. 옆모습 금지.",
+   "contextRoom": "mead",
+   "tags": [
+    "대형",
+    "중세",
+    "방앗간"
+   ],
+   "use": [
+    "search"
+   ],
+   "place": "방앗간 가운데.",
+   "pair": [
+    "sack:grain",
+    "hand quern"
+   ],
+   "refs": [
+    "grindstone"
+   ],
+   "blockout": {
+    "top": [
+     4,
+     23
+    ],
+    "front": [
+     24,
+     47
+    ],
+    "cover": 0.7
+   }
+  },
+  {
+   "id": "portal arch",
+   "name_ko": "차원문",
+   "name_en": "portal arch",
+   "category": "big",
+   "category_ko": "대형 기물",
+   "kind": "floor",
+   "footprint": {
+    "w": 3,
+    "h": 1
+   },
+   "canvas": [
+    48,
+    64
+   ],
+   "description": "돌 기둥 둘과 위 아치로 된 차원문(3칸, 48px 솟음). 아치 꼭대기 쐐기돌 윗면 3행, 기둥 꼭대기 윗면 2행, 아치 안을 채운 소용돌이치는 보라·하늘빛 빛, 기둥에 새긴 빛나는 룬, 아래 계단 받침.",
+   "contextRoom": "throne",
+   "tags": [
+    "대형",
+    "판타지",
+    "마법"
+   ],
+   "use": [
+    "gate"
+   ],
+   "place": "마법사 탑·고대 유적 북쪽 벽.",
+   "pair": [
+    "rune stone"
+   ],
+   "refs": [
+    "round arch"
+   ]
+  },
+  {
+   "id": "vault door",
+   "name_ko": "금고 문",
+   "name_en": "vault door",
+   "category": "big",
+   "category_ko": "대형 기물",
+   "kind": "floor",
+   "footprint": {
+    "w": 3,
+    "h": 1
+   },
+   "canvas": [
+    48,
+    48
+   ],
+   "description": "벽에 박힌 둥근 강철 금고 문(3칸, 32px 솟음). 문틀 꼭대기 윗면 2행, 가운데 큰 바퀴 손잡이와 빗장 셋, 둘레 리벳, 아래 문턱.",
+   "contextRoom": "dwarf",
+   "tags": [
+    "대형",
+    "은행",
+    "보물고"
+   ],
+   "use": [
+    "gate"
+   ],
+   "place": "은행·보물고 북쪽 벽.",
+   "pair": [
+    "bank teller window"
+   ],
+   "refs": [
+    "round door"
+   ]
   }
  ]
 }
