@@ -157,7 +157,7 @@ describe("database-driven battle runtime", () => {
       {
         id: "anim_magic",
         name: "마법 광선",
-        resourceId: "easyrpg-battle-blow",
+        resourceId: "scarloxy-battle-anim-scratch",
         scope: "singleTarget",
         position: "center",
         sheet: { frameWidth: 96, frameHeight: 96, columns: 5 },
@@ -196,7 +196,7 @@ describe("database-driven battle runtime", () => {
     expect(runtime.snapshot().lastAnimation).toMatchObject({
       animationId: "anim_magic",
       name: "마법 광선",
-      resourceId: "easyrpg-battle-blow",
+      resourceId: "scarloxy-battle-anim-scratch",
       targetId: "enemy-1",
       scope: "singleTarget",
       position: "center",

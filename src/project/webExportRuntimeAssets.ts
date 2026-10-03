@@ -7,9 +7,8 @@ import type { Project } from "@/project/types";
 
 // 등록되지 않은 런타임 에셋은 **항상** 실린다 — 기본값이 안전한 쪽이다.
 // 덜어내지 않은 큰 것들의 이유(다시 지우려 들지 않도록):
-// - generated/battle-reference-forest.png (2.20MB) 는 battleFieldDom.ts 가 배틀백을 지정하지 않은
-//   전투의 **기본 배경 폴백**으로 쓴다. 전투 가능한 게임이면 필요하므로 조건부로 돌릴 수 없다.
-//   (1672×941 사진성 이미지를 PNG 로 담아 픽셀당 1.47B — 포맷을 고치는 게 맞는 해결이다.)
+// (옛 기본 배경 generated/battle-reference-forest.png 2.20MB 는 2026-10-03 deprecated/ 로 옮겼다 — 기본 배경은
+//  도트 겹 배경이고 webExportAssets 가 그 네 장을 싣는다.)
 // - assets/fonts/*.woff2 (1.05MB) 는 CSS 가 참조하는 UI 픽셀 폰트라 모든 화면이 쓴다.
 interface ConditionalRuntimeAssetGroup {
   readonly reason: string;

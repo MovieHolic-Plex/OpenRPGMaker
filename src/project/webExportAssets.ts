@@ -1,4 +1,4 @@
-import { charsetBattler, resolvePartyBattleCharset } from "@/assets/charsetBattlers";
+import { charsetBattler, RETRO_FALLBACK_PARTY_BATTLERS, resolvePartyBattleCharset } from "@/assets/charsetBattlers";
 import { BATTLE_SCENERY_CATALOG } from "@/assets/battleSceneryCatalog";
 import { findOpeningStillPackEntry } from "@/assets/openingStillPackRuntime";
 import { openingStillPackUrl } from "@/assets/openingStillPackCdn";
@@ -33,7 +33,6 @@ export function collectWebExportAssets(project: Project): readonly WebExportAsse
     assets.set(path, { kind: "public", sourcePath: path, zipPath: path });
   }
   if (getBattleSkin(resolveSkinId(project.system.battleUiStyle)).scenery === "layered") {
-    ids.add("generated-battle-reference-forest");
     // 겹 배경 5지형 × 4레이어는 저장소에 커밋된 번들 그림이다(public/assets/generated/battle-scenery).
     // 지형은 전투마다 위치·기후로 정해지므로 전부 싣는다(약 1.3MB).
     for (const entry of BATTLE_SCENERY_CATALOG) {
@@ -181,8 +180,11 @@ function collectProjectStrings(project: Project): Set<string> {
   // Include reserve actors too: party membership/order can change after export.
   for (const actor of project.database.actors) {
     if (facing === "front") {
-      const sheet = resolvePartyBattleCharset(actor, getBattleSkin(skinId).motionStyle === "retro");
+      const retro = getBattleSkin(skinId).motionStyle === "retro";
+      const sheet = resolvePartyBattleCharset(actor, retro);
       if (sheet) { values.add(sheet); continue; }
+      // 칩 대응이 없으면 자리 순서에 따라 두 기본 도트 중 하나가 선다 — 파티 순서는 내보낸 뒤에도 바뀐다.
+      if (retro) { for (const fallback of RETRO_FALLBACK_PARTY_BATTLERS) values.add(fallback); continue; }
     }
     // Either fallback slot can be selected after reordering the party.
     for (const index of [0, 1]) {

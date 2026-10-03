@@ -5,30 +5,6 @@
   },
   "assets": [
     {
-      "category": "battle",
-      "id": "easyrpg-battle-arrow",
-      "name": "Arrow · 전투 효과 · EasyRPG",
-      "sourcePath": "Battle/Arrow.png",
-      "path": "assets/easyrpg/battle/Arrow.png",
-      "fileName": "Arrow.png"
-    },
-    {
-      "category": "battle",
-      "id": "easyrpg-battle-blow",
-      "name": "Blow · 전투 효과 · EasyRPG",
-      "sourcePath": "Battle/Blow.png",
-      "path": "assets/easyrpg/battle/Blow.png",
-      "fileName": "Blow.png"
-    },
-    {
-      "category": "battle",
-      "id": "easyrpg-battle-sword1",
-      "name": "Sword1 · 전투 효과 · EasyRPG",
-      "sourcePath": "Battle/Sword1.png",
-      "path": "assets/easyrpg/battle/Sword1.png",
-      "fileName": "Sword1.png"
-    },
-    {
       "category": "battleWeapon",
       "id": "easyrpg-battle-weapon-weapon",
       "name": "Weapon · 전투 무기 · EasyRPG",
@@ -317,14 +293,6 @@
       "sourcePath": "GameOver/Game Over.png",
       "path": "assets/easyrpg/game-over/Game Over.png",
       "fileName": "Game Over.png"
-    },
-    {
-      "category": "monster",
-      "id": "easyrpg-monster-hornet",
-      "name": "Hornet · 몬스터 그림 · EasyRPG",
-      "sourcePath": "Monster/Hornet.png",
-      "path": "assets/easyrpg/monster/Hornet.png",
-      "fileName": "Hornet.png"
     },
     {
       "category": "music",

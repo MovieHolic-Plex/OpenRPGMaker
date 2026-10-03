@@ -4,7 +4,7 @@ import { remainingEnemyCollapseMs } from "@/player/battleEnemyCollapse";
 import { battleEntrySkillRecord, holdRetroSkillPlayback, stopRetroClassSkill, hasRetroChoreography, retroClassSkillBeatMs, retroClassSkillWeight, hasRetroSkillContract, retroSkillForEntry, retroSkillRecipe, startRetroSpecialSkill } from "@/player/retroSkillChoreography";
 import type { BattleActionWeight } from "@/player/battleActionBeats";
 import { retroTimelineEntry, retroCommandPose, initRetroMotion, isTravellingEffect, preloadRetroMotionSe, repaintRetroBattler, retroActionMotion, retroDamage, retroEnemyReach, retroHitRelease, retroVictory, retroWalk } from "@/player/battleRetroMotion";
-import type { BattleTimelineEntrySnapshot } from "@/battle/types";
+import type { BattleAnimationSnapshot, BattleTimelineEntrySnapshot } from "@/battle/types";
 import type {
   ActorCommand,
   BattleResult,
@@ -62,6 +62,7 @@ import {
 import { openBattleTimerScope, clearBattleTimerScope, scheduleBattleTimer } from "@/player/battleTimerScope";
 import { applyBattleSystemGraphic } from "@/player/systemGraphics";
 import { store } from "@/project/store";
+import { RETRO_PIXEL_FX_FRAMES, RETRO_PIXEL_FX_SOUNDS, retroPixelAnimationId, retroPixelFxForResource, retroPixelFxResourceId } from "@/assets/retroPixelAnimations";
 import { bindBattleStageScale } from "@/player/battleStageScale";
 import { applyRollingHpSurvival, createRollingHpMeter, startRollingHpTicker } from "@/player/rollingHp";
 import { syncBattleScreenFilter } from "@/player/battleScreenFilter";
@@ -494,7 +495,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       else delete root.dataset.battleAnimationSkipFrames;
       activeAnimation = syncBattleAnimationLayer(
         animationLayer,
-        { ...options.runtime.snapshot(), lastAnimation: retroMotion && (hasRetroChoreography(field) || isTravellingEffect(animation)) ? undefined : animation },
+        { ...options.runtime.snapshot(), lastAnimation: !retroMotion ? animation : hasRetroChoreography(field) || isTravellingEffect(animation) ? undefined : retroPixelAnimation(animation) },
         root,
       );
     },
@@ -1891,3 +1892,23 @@ function prefersReducedMotion(): boolean {
 
 // 도트 측면 전투에서는 날아가는 이펙트(화살·투사체)를 그리지 않는다 — 판정은 battleRetroMotion.isTravellingEffect.
 // 대상 위에서 제자리로 터지는 이펙트(불꽃·치유 빛·베기)는 남는다. 빠진 이펙트의 소리는 시전 방출음이 대신한다.
+
+/**
+ * 도트 측면 전투는 번들 효과(EasyRPG·384px 생성·Scarloxy)를 같은 계열의 도트 효과로 바꿔 그린다(2026-10-03).
+ * 일반 공격·아이템·연출 계약 없는 기술이 기록의 옛 시트를 그대로 띄우던 경로다. 저자가 올린 그림은 그대로 둔다.
+ */
+function retroPixelAnimation(animation: BattleAnimationSnapshot | undefined): BattleAnimationSnapshot | undefined {
+  if (!animation) return undefined;
+  const records = store.getCurrent().database.battleAnimations;
+  const record = records.find((entry) => entry.id === animation.animationId);
+  const key = retroPixelFxForResource(record?.resourceId ?? animation.resourceId);
+  if (!key) return animation;
+  // anim_px_* 기록이 프로젝트에 없어도 battleAnimationDom 이 번들 기본 기록으로 그린다.
+  return {
+    ...animation,
+    animationId: retroPixelAnimationId(key),
+    resourceId: retroPixelFxResourceId(key),
+    soundResourceIds: [RETRO_PIXEL_FX_SOUNDS[key]],
+    frameCount: RETRO_PIXEL_FX_FRAMES,
+  };
+}

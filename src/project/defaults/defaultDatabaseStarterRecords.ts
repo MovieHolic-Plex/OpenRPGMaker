@@ -1,9 +1,7 @@
 import { defaultBattleMotionSkills } from "@/assets/battleMotionCatalog";
 import type {
   BattleAnimationFlash,
-  BattleAnimationPosition,
   BattleAnimationRecord,
-  BattleAnimationScope,
   BattleAnimationScreenShake,
   BattleAnimationTiming,
   DatabaseStateEffect,
@@ -20,6 +18,7 @@ import {
   generatedEffectSheet,
   type GeneratedEffectSheetSeed,
 } from "@/assets/generatedEffectSheets";
+import { retroPixelAnimationRecords } from "./retroPixelAnimationRecords";
 import { applyGeneratedBattleEffectSkillBindings } from "./generatedBattleEffectBindings";
 import { normalizeBattleAnimationRecord } from "../databaseAnimationRecordModel";
 import { normalizeSkillRecord } from "../databaseRecordModel";
@@ -29,15 +28,6 @@ import { retroMonsterSkillRecords } from "./retroMonsterSkillRecords";
 import { retroRosterSkillRecords } from "./retroRosterRecords";
 import { defaultSharedItemBattleSkills } from "./defaultSharedItemSkills";
 export { defaultItemRecords } from "./defaultDatabaseItemRecords";
-
-type BattleEffectAnimationSeed = {
-  readonly id: string;
-  readonly name: string;
-  readonly resourceId: string;
-  readonly scope: BattleAnimationScope;
-  readonly position: BattleAnimationPosition;
-  readonly timings: readonly BattleAnimationTiming[];
-};
 
 type BattleAnimationFlashSeed = {
   readonly frameIndex: number;
@@ -202,30 +192,11 @@ export function defaultStateRecords(): StateRecord[] {
 
 export function defaultBattleAnimationRecords(): BattleAnimationRecord[] {
   return [
-    effectAnimation({
-      id: DEFAULT_ANIMATION_ID,
-      name: "타격",
-      resourceId: "easyrpg-battle-blow",
-      scope: "singleTarget",
-      position: "center",
-      timings: [timingFlash({ frameIndex: 0, target: "target", red: 255, green: 255, blue: 255, durationFrames: 4 })],
-    }),
-    effectAnimation({
-      id: "anim_sword",
-      name: "검격",
-      resourceId: "easyrpg-battle-sword1",
-      scope: "singleTarget",
-      position: "center",
-      timings: [timingFlash({ frameIndex: 1, target: "target", red: 255, green: 240, blue: 220, durationFrames: 5 })],
-    }),
-    effectAnimation({
-      id: "anim_arrow",
-      name: "화살",
-      resourceId: "easyrpg-battle-arrow",
-      scope: "singleTarget",
-      position: "center",
-      timings: [timingShake({ frameIndex: 1, power: 2, speed: 4, durationFrames: 5 })],
-    }),
+    // 타격·검격·화살(2026-10-03): EasyRPG Blow·Sword1·Arrow 시트는 deprecated/ 로 옮겼다. id 는 직업·배우·
+    // 기술이 들고 있으므로 그대로 두고 같은 역할의 번들 효과 시트를 쓴다(도트 측면 전투는 다시 도트로 바꿔 그린다).
+    legacyEffectAnimation(DEFAULT_ANIMATION_ID, "타격", "tackle-impact"),
+    legacyEffectAnimation("anim_sword", "검격", "slash-steel"),
+    legacyEffectAnimation("anim_arrow", "화살", "projectile-shot"),
     // Scarloxy MPWSP01 팩 이펙트 — 96x96 4프레임 가로 스트립(scripts/import-scarloxy-pack.py 변환).
     scarloxyEffectAnimation("anim_scarloxy_explosion", "폭발 (Scarloxy)", "explosion", [
       timingFlash({ frameIndex: 0, target: "target", red: 255, green: 200, blue: 120, durationFrames: 5 }),
@@ -248,8 +219,17 @@ export function defaultBattleAnimationRecords(): BattleAnimationRecord[] {
     ]),
     // 절차 생성 이펙트 — 96x96 셀을 용도별 8~12프레임으로 렌더한다.
     ...GENERATED_EFFECT_SHEETS.map(generatedEffectAnimation),
+    // 도트 측면 전투 전용 도트 효과 17종(retroPixelAnimations.ts). 번들 효과를 여기로 바꿔 그린다.
+    ...retroPixelAnimationRecords(),
   ];
 }
+
+function legacyEffectAnimation(id: string, name: string, slug: string): BattleAnimationRecord {
+  const seed = GENERATED_EFFECT_SHEETS.find((entry) => entry.slug === slug);
+  if (!seed) throw new Error(`generated effect missing: ${slug}`);
+  return { ...generatedEffectAnimation(seed), id, name, followUps: [] };
+}
+
 
 // 회복·마법·독은 원래 근접 타격 아트(blow/arrow)를 돌려썼다 — 화면에서 셋이 구분되지 않는
 // 근본 원인이었다. id 는 유지해야 기존 스킬·아이템 참조가 안 깨지므로 아트만 갈아탄다.
@@ -330,24 +310,6 @@ function supportSkill(id: string, name: string, scope: SkillRecord["scope"], des
     successRate,
     effect: { kind: "support" },
     stateEffects,
-  });
-}
-
-function effectAnimation(seed: BattleEffectAnimationSeed): BattleAnimationRecord {
-  return normalizeBattleAnimationRecord({
-    id: seed.id,
-    name: seed.name,
-    resourceId: seed.resourceId,
-    sheet: { frameWidth: 96, frameHeight: 96, columns: 5 },
-    scope: seed.scope,
-    position: seed.position,
-    large: seed.scope === "screen",
-    frames: [
-      { cells: [{ pattern: 0, x: 0, y: -8, zoom: 100, opacity: 255, visible: true }] },
-      { cells: [{ pattern: 1, x: 0, y: -8, zoom: 110, opacity: 220, visible: true }] },
-      { cells: [{ pattern: 2, x: 0, y: -8, zoom: 120, opacity: 180, visible: true }] },
-    ],
-    timings: [...seed.timings],
   });
 }
 
