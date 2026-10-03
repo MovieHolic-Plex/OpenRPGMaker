@@ -158,3 +158,30 @@ def school():
 
 
 ROOMS += [school()]
+
+
+# ------------------------------------------------------------------------------------------------ 6. 관아 동헌 24×16
+def office():
+    g = mk(21, 14)
+    rect(g, 1, 1, 11, 11, 'M')                   # 동헌(마루, 목재벽)
+    rect(g, 13, 1, 19, 5, 'o'); rect(g, 12, 3, 12, 5, 'm')            # 서기방 + 문(걷는 줄 (12,5))
+    rect(g, 13, 7, 19, 11, 'b'); rect(g, 12, 9, 12, 11, 'm')          # 곳간 + 문(걷는 줄 (12,11))
+    g[12][6] = 'D'
+    props = P([
+        # 북벽 중앙: 병풍(벽면에 걸침) 앞에 의자, 그 앞에 사또 책상(단 위). 단 양쪽 가름 돌·앞 계단
+        ('byeongpung_royal', 5, 1), ('gyoui', 6, 3), ('gwan_desk_2', 5, 5), ('stair_dais_2', 5, 7), ('dais_wood_lr', 7, 7),
+        ('pillar_red_2', 4, 7), ('pillar_red_2', 8, 8), ('pillar_red_2', 4, 10), ('pillar_red_2', 8, 10), ('chotdae', 4, 3), ('chotdae', 8, 3), ('seoan', 3, 5), ('banseok_g', 3, 6), ('seoan', 9, 5), ('banseok_b', 9, 6), ('hwaro', 11, 4), ('stool', 1, 4), ('soban_a', 2, 4),
+        # 좌우 벽: 서가·문서, 곤장 틀과 북, 아전 서안
+        ('seoga_2', 1, 2), ('seoga_2', 10, 2), ('hang_tools', 3, 1), ('hang_tools', 9, 1),
+        ('gonjang_teul', 1, 7), ('buk', 10, 6), ('seoan_2', 10, 8), ('banseok_g', 9, 8), ('seoan_2', 1, 9), ('banseok_b', 1, 10),
+        ('mat_jip_3x2', 5, 9),
+        # 서기방
+        ('ibuljang', 13, 2), ('nong_2', 15, 2), ('byeongpung_2', 17, 2), ('jokja_a', 19, 1), ('mat_dot_2x2', 15, 4), ('sang_low_2', 15, 5), ('banseok_r', 18, 4),
+        # 곳간: 쌀뒤주·독·문서함
+        ('ssal_dwiju', 13, 8), ('dok_big', 14, 8), ('mungseo_ham', 16, 10), ('hangari_m', 18, 10), ('chaekdemi', 17, 10), ('hangari_s', 19, 9),
+    ])
+    return dict(id='joseon_in_office_b', title='관아 동헌', plan=rows(g), props=props, door=(6, 12), replace={},
+                people=[(6, 8, 3, F, 1), (3, 8, 9, R, 0), (7, 10, 10, L, 0), (14, 4, 4, U, 0)])
+
+
+ROOMS += [office()]
