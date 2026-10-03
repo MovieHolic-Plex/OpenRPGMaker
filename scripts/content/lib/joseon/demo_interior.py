@@ -98,6 +98,62 @@ def joseon_in_inn():
     return r
 
 
+@room
+def joseon_in_smith():
+    """대장간 14×10: 돌벽 + 흙바닥. 북벽 가운데 화덕(풀무 붙임), 모루·담금 통, 숯더미, 연장 걸이, 문 곁 판매 상. 출구는 남벽 x=6."""
+    plan = """
+##############
+#dddddddddddd#
+#dddddddddddd#
+#dddddddddddd#
+#dddddddddddd#
+#dddddddddddd#
+#dddddddddddd#
+#dddddddddddd#
+#dddddddddddd#
+######E#######
+""".strip('\n')
+    r = IR.Room('joseon_in_smith', '조선 대장간 내부(화덕·모루·판매 상)', plan, wall_of={'d': 'dol'})
+    P = r.put
+    # 북벽: 연장 걸이 둘, 화덕 + 풀무
+    P('in_tool_rack', 2, 1); P('in_tool_rack', 9, 1)
+    P('in_hwadeok', 5, 2); P('in_pulmu', 7, 3)
+    # 작업 삼각: 화덕 – 모루 – 담금 통
+    P('in_morus', 5, 5); P('in_tub', 7, 5); P('in_charcoal', 3, 3); P('in_ingots', 10, 4)
+    P('in_hoechori', 3, 6)
+    # 곁: 작업대·숯 더미, 판매 상(문 곁)
+    P('in_workbench', 10, 6); P('in_charcoal', 1, 7); P('in_sang_2', 8, 8); P('in_geolsang', 11, 7)
+    r.people += [(6, 5, 6, FRONT, 0), (9, 7, 3, LEFT, 1)]
+    return r
+
+
+@room
+def joseon_in_pharmacy():
+    """약방 12×10: 마루방. 북벽 약장 둘 + 선반·약초 걸이, 약연·약탕관 화로, 동쪽 온돌 진료 자리(상 + 방석). 출구는 남벽 x=6."""
+    plan = """
+############
+#mmmmmmmmmm#
+#mmmmmmmmmm#
+#mmmmmmmmmm#
+#mmmmmmmmmm#
+#mmmmmmoooo#
+#mmmmmmoooo#
+#mmmmmmoooo#
+#mmmmmmoooo#
+######E#####
+""".strip('\n')
+    r = IR.Room('joseon_in_pharmacy', '조선 약방 내부(약장·약탕 화로·진료 자리)', plan)
+    P = r.put
+    # 북벽: 약장 둘 · 선반 · 약초 걸이
+    P('in_yakjang', 2, 2); P('in_yakjang', 4, 2); P('in_seonban_bottles', 6, 1); P('in_herb_hang', 8, 1)
+    # 약 짓는 자리: 약상 + 약연 + 약탕관 화로
+    P('in_yak_table', 2, 5); P('in_yakyeon', 6, 4); P('in_yakhwa', 2, 7); P('in_sokuri_grain', 10, 3); P('in_hangari_b', 1, 5)
+    # 진료 자리: 상 + 방석 둘 + 안석
+    P('in_sang_2', 8, 6); P('in_bangseok_r', 7, 6); P('in_bangseok_b', 10, 6); P('in_ansuk', 9, 8)
+    r.people += [(9, 5, 3, FRONT, 1), (4, 6, 6, UP, 0)]
+    return r
+
+
 def build(names, outdir, png=False):
     sheet = IR.Sheet()
     res = {}
