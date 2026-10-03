@@ -2,6 +2,30 @@
 
 # Editor AI Panel & Tools
 
+## 실제 첫 제작의 워커 준비와 사본 (2026-10-03)
+
+`scripts/lib/piWorkerSharedContent.ts`가 공용 SQLite 카탈로그 설치를 판본별로 재사용한다.
+`content_libraries`의 id·revision만 먼저 읽고, 변경된 판본일 때만 전체 자료를 읽는다.
+동시 팀원은 설치 Promise에 합류하며 실패한 설치는 재시도한다. 실제 워커의 `/agent/run`은
+최초 설치를 스트림을 열기 전에 마친다. 예전에는 팀원마다 전체 카탈로그를 다시 파싱해
+실제 모델 실행에서 heartbeat 공백 75초 → 브라우저의 30초 워치독 실패가 발생했다.
+
+Pi 단독·팀 작업 사본은 `cloneProjectSharingSharedDictionaries`를 사용한다.
+타일셋·업로드 자산 항목은 읽기 전용으로 공유하고, 사전과 맵·DB·세션은 분리한다.
+쓰기는 기존 `runTool`의 `createDraft`와 타일셋 복제 경계를 거친다. 팀원이 공유된 타일셋이나
+업로드 자산 항목을 직접 수정하는 코드를 추가하지 않는다.
+준비 비용과 첫 사용자 지연이 사라졌다는 뜻은 아니다. 실제 첫 생성 기록은
+`verify-shots/live-first-game/`과 `scripts/qa/live-first-game.mjs`를 본다.
+
+`piWorkerAudio`는 매 실행 전에 호스트의 `public/assets/cc0/audio/catalog/` 파일 목록을
+`setInstalledBgmFiles`에 넣는다. Vite define이 없는 헤드리스 워커가 모든 BGM을 설치된 것으로
+보던 차이를 없애 `list_opening_media` 등 기존 가용성 필터가 실제 설치를 반영하게 한다.
+CDN 설정이 있으면 기존 카탈로그 규칙을 따른다. 사용자가 직접 지정한 미설치 곡은 자동 대체하지 않는다.
+
+첫 생성 팀원 턴 상한은 `enabledMembers`가 공통 `workBudget`을 적용한 **뒤** 다시 제한한다.
+예전에는 120턴으로 줄인 멤버 값이 이 함수에서 300/600턴으로 덮였다. 더 작은 멤버 상한도 보존한다.
+상한 준수와 기획의 핵심 플레이를 먼저 만드는 것은 별개다. 후자는 실제 자동 생성에서 미완료였다.
+
 ## 도구 사용량 (2026-09-25)
 
 AI 설정의 「사용량」 탭은 이 브라우저의 실행 영수증, 대화 기록, 활동 로그에서 조수가 부른 도구를 센다.

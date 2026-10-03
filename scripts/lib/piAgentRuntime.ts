@@ -1,6 +1,7 @@
 import { PiInteriorCompletion } from '../../src/ai/piAgent/interiorCompletion.ts';
 import type { InteriorRequirements } from '../../src/project/interiorPlacementAudit.ts';
 import { randomUUID } from "node:crypto";
+import { cloneProjectSharingSharedDictionaries } from '../../src/project/projectClone.ts';
 import { PiTilesetReferenceGate } from "../../src/ai/piAgent/tilesetReferenceGate.ts";
 import { TILESET_REFERENCE_READ_TOOLS } from "../../src/editor/tools/tilesetReferenceTools.ts";
 import { SET_BUILD_SPEC_TOOL } from "../../src/ai/session/sessionTools.ts";
@@ -200,18 +201,14 @@ function trimText(value: unknown, max: number): string {
 
 export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOptions = {}): Promise<PiAgentDoneEvent> {
   // Workers do not run browser boot; load the same host-wide region catalog for AI tools.
-  const { readSharedTileReferences } = await import('./sharedTileReferencesSqlite');
-  const { installSharedSpatialReferences } = await import('../../src/project/sharedSpatialReferences');
-  installSharedSpatialReferences(readSharedTileReferences().spatial);
-  const { readSharedContent } = await import('./sharedContentSqlite');
-  const { installSharedContent } = await import('../../src/project/sharedContent');
-  await installSharedContent(readSharedContent());
+  const { preparePiWorkerSharedContent } = await import('./piWorkerSharedContent');
+  await preparePiWorkerSharedContent();
   const emit = (event: PiAgentEvent) => options.onEvent?.({ ...event, at: event.at ?? Date.now() });
   const base = request.project;
   const modernTilesetPolicy = request.modernTilesetOnly || requestsModernMap(base, request.task, [...request.mapIds, ...(request.currentMapId ? [request.currentMapId] : [])]) ? createModernTilesetPolicy(base) : undefined;
   // 지금 보는 맵·승인 계열은 실행기의 칩셋 계열 검사와 create_map 기본 칩셋이 읽는다(ToolContext 주석).
   const ctx: ToolContext = {
-    project: structuredClone(base) as Project,
+    project: cloneProjectSharingSharedDictionaries(base),
     ...(request.currentMapId && base.maps[request.currentMapId] ? { currentMapId: request.currentMapId } : {}),
     ...(request.approvedTilesetFamilies?.length ? { approvedTilesetFamilies: [...request.approvedTilesetFamilies] } : {}),
   };
@@ -293,7 +290,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
           doorFronts: receipt.data.village.doorFronts ?? [],
         });
         emit({ type: "execution_status", name: "village.connection", ok: linked.ok, summary: linked.summary });
-        if (linked.ok) receipt = { ...receipt, built: structuredClone(ctx.project), connection: linked.connection };
+        if (linked.ok) receipt = { ...receipt, built: cloneProjectSharingSharedDictionaries(ctx.project), connection: linked.connection };
       }
       // 계약 인자 그대로 부른 시공이 대상·범위·칩셋·설계서 규칙에 거부되면 몇 번을 다시 불러도 같다 — 계약을 푼다.
       // 2026-09-28: 풀 길이 없어서 village-requires-scope 로 5번 헛돌았다.
@@ -329,7 +326,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     const unchangedKeys: PiCheckpointHeavyKey[] = wire.unchangedKeys;
     try {
       const published = await options.onCheckpoint!({
-        project: structuredClone(wire.project) as Project,
+        project: cloneProjectSharingSharedDictionaries(wire.project),
         label, toolName, spatialProof: exportSpatialToolProof(project), unchangedKeys,
         ...(wire.unchangedTilesetIds.length ? { unchangedTilesetIds: wire.unchangedTilesetIds } : {}),
       }, signal ?? options.signal);
@@ -380,7 +377,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         if (!options.renderToolImage) throw new Error("맵 이미지 전달 경로가 없습니다. 배열만으로 시각 검토를 완료할 수 없습니다.");
         const inspectedMap = tool.name === 'inspect_interior_layout' ? ctx.project.maps[String((params as { mapId?: unknown }).mapId)] : undefined;
         const data = inspectedMap ? { mapId: inspectedMap.id, x: 0, y: 0, w: inspectedMap.width, h: inspectedMap.height } : (result.details as { data?: unknown } | undefined)?.data;
-        const png = await options.renderToolImage(structuredClone(ctx.project), tool.name, data, signal ?? options.signal);
+        const png = await options.renderToolImage(cloneProjectSharingSharedDictionaries(ctx.project), tool.name, data, signal ?? options.signal);
         result.content.push({ type: "image", mimeType: "image/png", data: png });
         if (png && data && typeof data === "object") interiorCompletion.recordPreview(ctx.project, data);
         options.onEvent?.({ type: "execution_status", name: "map.image.delivered", ok: true, summary: "현재 초안 이미지를 모델 도구 응답에 포함했습니다.", data: { toolCallId: id, base64Length: png.length } });

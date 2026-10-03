@@ -39,6 +39,7 @@ import { plainLine } from "../../src/ai/piAgent/teamBoardState.ts";
 import { defaultTeamSpec, enabledMembers, memberSystemPrompt, normalizeTeamSpec, type PiTeamMember } from "../../src/ai/piAgent/teamSpec.ts";
 import type { PiToolShape } from "../../src/ai/piAgent/toolAdapter.ts";
 import type { Project } from "../../src/project/types.ts";
+import { cloneProjectSharingSharedDictionaries } from '../../src/project/projectClone.ts';
 import type { RunPiAgentOptions } from "./piAgentRuntime.ts";
 
 export type RunPiAgentFn = (request: PiAgentRequest, options: RunPiAgentOptions) => Promise<PiAgentDoneEvent>;
@@ -107,7 +108,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   const runAgent: RunPiAgentFn = options.runAgent ?? (await import("./piAgentRuntime.ts")).runPiAgent;
   const emit = (event: PiAgentEvent) => options.onEvent?.(event);
   const base = request.project;
-  let working: Project = structuredClone(base) as Project;
+  let working: Project = cloneProjectSharingSharedDictionaries(base);
   const started = Date.now();
   const counters: Record<PiTeamRoleId, number> = { orchestrator: 0, builder: 0, reviewer: 0 };
   let toolCalls = 0;
@@ -127,8 +128,13 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   const team = isGenrePresetBriefRequest(request.task)
     ? { ...baseTeam, members: baseTeam.members.map((member) => ({ ...member, maxTurns: Math.min(member.maxTurns, PRESET_FIRST_BUILD_MEMBER_TURNS) })) }
     : baseTeam;
-  const builders = enabledMembers(team, "builder");
-  const reviewers = enabledMembers(team, "reviewer");
+  // enabledMembers applies the shared workBudget, which otherwise overwrites
+  // the preset cap above. Bound the actual child requests after normalization.
+  const boundMember = (member: PiTeamMember): PiTeamMember => isGenrePresetBriefRequest(request.task)
+    ? { ...member, maxTurns: Math.min(member.maxTurns, team.members.find(m => m.id === member.id)!.maxTurns) }
+    : member;
+  const builders = enabledMembers(team, "builder").map(boundMember);
+  const reviewers = enabledMembers(team, "reviewer").map(boundMember);
   // 끝낼 수 있는 첫 구간 판정(src/project/playableSegment.ts). 프리셋 첫 생성이고 시작 프로젝트가 합격한 뼈대일 때만 건다 —
   // 되돌릴 합격본이 없으면 finish 를 막을 근거가 없고, 이후 요청은 사용자가 구간을 넓히거나 바꿀 수 있어야 한다.
   const segmentGate = isGenrePresetBriefRequest(request.task) && playableSegmentGateApplies(base);
@@ -271,7 +277,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
         ...(wire.unchangedTilesetIds.length ? { unchangedTilesetIds: wire.unchangedTilesetIds } : {}),
         spatialProof: exportSpatialToolProof(proposed),
       }, signal);
-      working = structuredClone(restoreCheckpointProject(proposed, accepted ?? proposed, wire.unchangedKeys, wire.unchangedTilesetIds));
+      working = cloneProjectSharingSharedDictionaries(restoreCheckpointProject(proposed, accepted ?? proposed, wire.unchangedKeys, wire.unchangedTilesetIds));
       return working;
     });
     publication = next;
@@ -294,7 +300,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
       memberId: member.id, label: member.label, ...(fixOf ? { fixOf } : {}),
     });
     mailbox.register(agentId, member.label, mapId);
-    const snapshot = structuredClone(working) as Project;
+    const snapshot = cloneProjectSharingSharedDictionaries(working);
     const promise = (async (): Promise<AgentOutcome> => {
       try {
         const done = await runAgent(
@@ -348,7 +354,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
     progress.set(agentId, { turns: 0, toolCalls: 0, toolErrors: 0, lastLine: "" });
     mailbox.register(agentId, member.label, null);
     emit({ type: "agent_spawn", agentId, role, mapId: null, mapName: null, task, memberId: member.id, label: member.label });
-    const snapshot = structuredClone(working) as Project;
+    const snapshot = cloneProjectSharingSharedDictionaries(working);
     let report: string | undefined;
     const reportTool: PiToolShape = {
       name: "report_task", label: "report_task",
@@ -381,7 +387,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
         const changes = changedProjectKeys(snapshot, done.project);
         // Enforce read-only at the merge boundary too, even if an injected runner returns mutations.
         if (mode === "read" && changes.length) throw new Error("읽기 작업이 프로젝트 변경을 반환했습니다. 변경을 적용하지 않았습니다.");
-        if (mode === "project") { assertModernProposal(working, done.project); working = structuredClone(done.project) as Project; }
+        if (mode === "project") { assertModernProposal(working, done.project); working = cloneProjectSharingSharedDictionaries(done.project); }
         for (const id of done.villageCompletion?.mapIds ?? []) villageMapIds.add(id);
         trackInterior(done, snapshot);
         const complete = !done.villageCompletion?.issues.length && !done.interiorCompletion?.length;
@@ -442,7 +448,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
         return text({ ok: true, recorded: true });
       },
     };
-    const snapshot = structuredClone(working) as Project;
+    const snapshot = cloneProjectSharingSharedDictionaries(working);
     mailbox.register(agentId, member.label, mapId);
     let done: PiAgentDoneEvent;
     try {
