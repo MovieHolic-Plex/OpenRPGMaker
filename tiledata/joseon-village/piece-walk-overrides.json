@@ -514,6 +514,43 @@
     "XXX",
     "XFX"
    ]
+  },
+  "fld_flowers_a": {
+   "all": "F"
+  },
+  "fld_flowers_b": {
+   "all": "F"
+  },
+  "fld_flowers_c": {
+   "all": "F"
+  },
+  "fld_fern": {
+   "all": "F"
+  },
+  "fld_bones_a": {
+   "all": "F"
+  },
+  "fld_bones_b": {
+   "all": "F"
+  },
+  "fld_burrow": {
+   "all": "F"
+  },
+  "fld_dead_a": {
+   "grid": [
+    "CCC",
+    "CCC",
+    ".C.",
+    "FXF"
+   ]
+  },
+  "fld_dead_b": {
+   "grid": [
+    "CCC",
+    "CCC",
+    ".C.",
+    "FXF"
+   ]
   }
  },
  "terrain": {
@@ -671,7 +708,8 @@
     "water47g",
     "water_deep",
     "rice16",
-    "field"
+    "field",
+    "fld_trail32"
    ],
    "edgeConnects": true
   },
@@ -690,7 +728,8 @@
     "water47g",
     "water_deep",
     "rice16",
-    "field"
+    "field",
+    "fld_trail32"
    ],
    "edgeConnects": false
   },
