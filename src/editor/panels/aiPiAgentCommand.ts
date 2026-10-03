@@ -64,6 +64,7 @@ import { loadTeamSpec } from "@/ai/piAgent/teamSpecStore";
 import { judgePlayableSegment, playableSegmentGateApplies } from "@/project/playableSegment";
 import { applyProjectWithHistory } from "@/editor/mapEditHistory";
 import { isGenrePresetBriefRequest } from "@/ai/genrePresetBrief";
+import { claimProjectInterviewExecution } from "@/editor/projectInterviewExecutionClaim";
 
 /**
  * 이번 실행이 만들거나 고친 맵 가운데 시작 맵에서 문으로 닿지 않는 것 — 만든 것이 플레이에 안 나온다.
@@ -250,13 +251,18 @@ export async function runPiCommand(
     surface.appendBubble("system", "사용법: /pi <지시> · /pi 맵id,맵id <지시> · /team <지시>");
     return false;
   }
+  let interviewClaim: Awaited<ReturnType<typeof claimProjectInterviewExecution>> = null;
+  let interviewWorkerStarted = false;
   if (isGenrePresetBriefRequest(command.task)) {
     const identity = JSON.stringify(store.getProjectIdentity());
     await prepareProjectInterviewBootAssets();
     surface.signal?.throwIfAborted();
     if (identity !== JSON.stringify(store.getProjectIdentity())) return false;
     // Welcome posters bypass the pending-folder startup, so fence their save here.
-    if ((await store.flush()).kind !== "saved") {
+    interviewClaim = !options.readOnly && !options.planOnly
+      ? await claimProjectInterviewExecution()
+      : (await store.flush()).kind === "saved" ? { restore: async () => {} } : null;
+    if (!interviewClaim) {
       surface.appendBubble("system", "게임 기획 저장을 확인하지 못해 제작을 시작하지 않았어요.");
       return false;
     }
@@ -473,6 +479,7 @@ export async function runPiCommand(
     surface.setStatus(event.type === "tool_start" ? WEB_SEARCH_STATUS : idleStatus);
   };
   const wrap = (mapIds: readonly string[], index: number) => (raw: PiAgentEvent): void => {
+    if (raw.type === "start" || raw.type === "team_start") interviewWorkerStarted = true;
     // heartbeat 는 연결 생존 신호다 — 클라이언트 워치독이 이미 소뱄했고, 보드에는 그릴 것이 없다.
     if (raw.type === "heartbeat") {
       if (boardState.trace) boardState = { ...boardState, trace: recordActivityEvent(boardState.trace, raw) };
@@ -583,6 +590,7 @@ export async function runPiCommand(
     spendStats.push(...results.map((done) => done.stats));
     reportSpend();
   } catch (error) {
+    if (!interviewWorkerStarted) await interviewClaim?.restore().catch(() => undefined);
     reportSpend();
     if (surface.signal?.aborted) {
       // fetch 는 abort 에서 AbortError 를 던진다 — 실패가 아니라 중단이므로 중단 경로로 돌린다(실측 2026-09-11).

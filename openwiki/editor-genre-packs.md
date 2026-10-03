@@ -39,7 +39,7 @@ The live welcome DOM keeps AI creation and manual system setup separate. Choosin
 
 Controls (including keyboard input) are blocked during the interview and saving. Cancelling the interview is a no-op. `finishEditorBoot` applies the selected engine settings before handoff; `applyWelcomeGenrePresetToOpenProject` skips the fixed world-canon seed whenever a confirmed game brief exists, so a horror collection game does not regain the default hopeful/fairytale tone.
 
-**AI handoff ordering:** the menu's new-project seed carries `gameDesignBrief.generationPending: true` into `createProjectFolderWithSeed`. The bridge creates the folder and the page reloads. Only the new project's boot consumes this marker in `src/editor/projectInterviewStartup.ts`: clear and save the claim, check the same project/brief is still open, then queue the prompt. Saving must succeed first; disconnected AI gets a draft instead of auto-send. A normal subsequent reload cannot auto-send again. A crash between claiming and publishing can leave the brief unsent; `프로젝트 → 게임 기획...` can reopen and hand it back to the composer. The panel's registered boot target still awaits `whenAiChatPanelSettled()` before applying an intent, so history adoption cannot erase a premature send. Do not send to the old store before the folder reload.
+**AI handoff ordering:** the menu's new-project seed carries `gameDesignBrief.generationPending: true` into `createProjectFolderWithSeed`. The bridge creates the folder and the page reloads. The new project's boot saves its preparation while keeping this marker, waits for authentication status, then queues the full prompt. Disconnected AI gets a short visible draft with hidden full instructions; connection recovery automatically resumes the same confirmed brief. The execution route claims and saves the marker before capturing its proposal base. A transport failure before worker startup restores and saves the marker; an accepted build is not automatically repeated on reload. The panel awaits `whenAiChatPanelSettled()` and an idle turn slot before classification. Scope checks stop an old handoff after project switching. Do not send to the old store before the folder reload.
 
 ## Preset AI connection gate and first team build (2026-09-27)
 
@@ -99,6 +99,16 @@ The user confirms only the editable game direction. Detailed TODOs, tool contrac
 Tasks carry dependencies, answer-slot provenance, actions, outputs and acceptance criteria. The model expands them for the actual maps/events/branches/assets within the confirmed scope and reconciles edited summary versus earlier answers before building. Later read-only requests and role-limited Writer/reviewer work must not trigger a full build. No persisted execution ledger, new automatic-send trigger or runtime evidence verifier is introduced here: these are model instructions, not enforced completion receipts. Existing save-first/endpoint-readiness handoff and apply/persistence boundaries remain the execution owners.
 
 Regression cases: `test/gameDesignExecution.test.ts` passed in the explicitly authorized 2026-10-03 QA. The startup/boot preparation cases also exercise failed save, project switching before claim and during save, disconnected prefill and duplicate startup. The standalone cinematic preview now keeps the execution pack behind its confirmation action and shows no task list or instruction-copy/export controls; it still does not create a live project.
+
+### Confirmed brief automatic execution (2026-10-03)
+
+Startup joins the actual shared auth probe: a cold `checking` cache no longer permanently reduces a confirmed build to a draft. A connection-change listener resumes only the queued project identity and unchanged brief. A per-boot queue key prevents duplicate startup calls; this is not a lock shared across browser tabs.
+
+`projectInterviewExecutionClaim.ts` saves the execution claim before Pi's proposal capture. An HTTP/transport failure before worker `start`/`team_start` restores and saves the retry marker. Read-only/planning turns do not claim a build. Once the worker starts, later errors do not automatically repeat the request. Completion and publishing remain separate contracts.
+
+The boot target claims its turn slot before classification and checks project identity after awaits. Confirmed genre production bypasses the generic house/village graphic-choice gate. The human composer shows the creative summary; the production request receives the complete execution prompt.
+
+`scripts/capture-confirmed-brief-autostart.mjs` produces browser evidence in `verify-shots/confirmed-brief-autostart/`: actual panel/startup modules with intercepted authentication/worker responses and stubbed fixture persistence. Its cases cover complete prompt delivery, connection recovery, pre-worker failure restoration, worker acceptance, project switching and save refusal. This does not prove live model output, canonical game persistence or runtime playability. Focused unit cases were authored; this session did not run Vitest or gates.
 
 ## Vocabulary and readiness
 
