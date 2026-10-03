@@ -99,6 +99,7 @@ affects mp 면 MP). 둘 다 0/생략이면 키가 없다 — 옛 프로젝트는
 
 - **엔트리**: 루트 `start-screen.html` → `src/start/startScreen.ts` + `startScreen.css`(tokens.css 만 싣는 자기완결 시트).
 - **첫 문장 입구(2026-10-03)**: 숨기지 않은 최근 프로젝트가 없으면 홈에 `src/start/firstWorldArrival.ts`의 장르 참고 장면 3개를 표시한다. 새 게임의 AI 경로도 같은 컴포넌트다. 장르 선택은 그림 전환과 입력창 열기만 하고, ‘이 이야기로 시작’을 눌러야 폴더 생성·인계를 시작한다. 이름·저장 위치·해상도는 ‘게임 이름과 저장 위치’를 펼쳐 바꾼다. 예제·빈 프로젝트도 접근할 수 있다. 폴더 생성 실패는 선택과 문장을 유지한다. 예제·빈 프로젝트로 갔다가 새 게임으로 돌아와도 문장은 유지한다. 원문·선택·제목은 기존 `startIntent.ts` 계약으로 전달하며, 무장르 문장은 인터뷰를 열기 위해 `story-cutscene`으로 시작한다(인터뷰에서 변경 가능).
+  `startScreen.ts`는 실제 입구가 마운트된 동안만 `.start-app.is-first-world`를 켠다. `startLobby.css`가 전체 창의 스택·어두운 헤더·보조 설정을 소유하고, 공유 장면의 고정 배경이 네 모서리까지 채운다. 참고 장면 자체에는 카드 테두리/폭 제한이 없다. 입력은 780px, 내용은 1120px까지 제한한다. 예제·팀 참여·기존 최근 작업 화면으로 이동하면 이 표시를 제거한다. 전체 화면 증거: `verify-shots/first-world-fullscreen/`.
 - **모양(2026-10-03)**: 상단 헤더에 홈·새 게임·폴더 열기·팀 참여·언어를 두고, 홈 전체 폭에 시네마틱 장면을 보여 준다.
   `src/start/startLobby.ts` / `startLobby.css`가 로비만 소유한다(`start-lobby` layer는 기존 생성 폼 시트 뒤).
   첫 문장 입구는 기존 `project-interview`의 세계 지도 영상/포스터와 장르별 그림을 쓰고, 일반 로비의 공용 장면은 `river-fortress.png` / `lake-village.png` / `outdoor-opening-overlook.png`다.

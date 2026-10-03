@@ -408,10 +408,7 @@ export function presentEditorWelcome(
       ],
     });
 
-    root.append(
-      el("div", { class: "editor-welcome-scrim", attrs: { "aria-hidden": "true" } }),
-      stage,
-    );
+    root.append(stage);
 
     document.body.classList.add("director-briefing-open");
     host.append(root);

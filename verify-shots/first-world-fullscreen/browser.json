@@ -1,0 +1,106 @@
+{
+  "kind": "actual-production-components-in-isolation",
+  "results": [
+    {
+      "launcher": "preview-only until explicit submit",
+      "creationFailureRetainsDraft": true
+    },
+    {
+      "launcherHandoff": {
+        "choiceId": "monster-collect",
+        "title": "내 첫 하늘섬",
+        "originalSentence": "하늘섬에서 작은 몬스터와 친구가 되어 함께 떠나는 모험"
+      },
+      "bridge": "isolated callback, no SQLite folder written"
+    },
+    {
+      "editor": "connection and interview cancellation retain the exact draft",
+      "selectionGateCalls": 0
+    },
+    {
+      "confirmedGenreHandoff": "adventure-jrpg",
+      "originalConcept": "하늘섬에서 작은 몬스터와 친구가 되어 함께 떠나는 모험"
+    },
+    {
+      "manualStart": "cancel does not apply; confirmed save blocks Escape until completion",
+      "aiGateCalls": 0
+    },
+    {
+      "mobile": {
+        "width": 320,
+        "scrollWidth": 320,
+        "controlsOutside": []
+      },
+      "reducedMotion": true,
+      "focusVisible": true
+    },
+    {
+      "returningAuthor": "recent project remains the primary continue action"
+    },
+    {
+      "locale": "en",
+      "translatedChromeAndExample": true
+    },
+    {
+      "locale": "ja",
+      "translatedChromeAndExample": true
+    },
+    {
+      "locale": "zh",
+      "translatedChromeAndExample": true
+    },
+    {
+      "fullWindowScene": {
+        "launcher": {
+          "left": 0,
+          "top": 0,
+          "right": 1440,
+          "bottom": 900,
+          "width": 1440,
+          "height": 900
+        },
+        "editor": {
+          "left": 0,
+          "top": 0,
+          "right": 1440,
+          "bottom": 900,
+          "width": 1440,
+          "height": 900
+        },
+        "mobile": {
+          "left": 0,
+          "top": 0,
+          "right": 320,
+          "bottom": 780,
+          "width": 320,
+          "height": 780
+        },
+        "wide": {
+          "left": 0,
+          "top": 0,
+          "right": 1920,
+          "bottom": 1080,
+          "width": 1920,
+          "height": 1080
+        },
+        "compact": {
+          "left": 0,
+          "top": 0,
+          "right": 1280,
+          "bottom": 720,
+          "width": 1280,
+          "height": 720
+        }
+      },
+      "widePrimaryInViewport": true,
+      "compactPrimaryInViewport": true
+    }
+  ],
+  "errors": [],
+  "missing": [],
+  "limitations": [
+    "No live AI calls",
+    "Launcher bridge and preset-save callbacks are isolated; no canonical SQLite content writes",
+    "No local vitest, gates, or full typecheck run"
+  ]
+}
