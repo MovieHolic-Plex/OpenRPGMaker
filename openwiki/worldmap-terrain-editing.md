@@ -69,6 +69,10 @@ style: `blobs`(대륙 몇 개) · `shards`(조각 count 개, 1~40) · `ring`(가
     3막 = 바다 건너 일본·제주, 4막 사구 = 요동 벌판(`hint_dune`, `hint_dune_rim` 으로 모래벌 테두리 좁힘), 기후 t0 .25 ~ t1 .76 + 습도 .12(북한이 눈밭이 되지 않게).
     세토 내해는 한 칸이라 시코쿠가 떨어지면 길이 막혀 아와지 목을 넣었다. 시드 1~8 미리보기 8/8 통과.
   - 우주는 `galaxy` 그대로. 「조선인데 섬나라로」처럼 테마와 다른 땅을 원하면 다른 style 을 주면 된다 — 테마는 기본값일 뿐이다.
+- **칩셋 계열 검사 예외**(2026-10-03): 세계 지도(`worldmapSource` + 칩셋 `worldmap_<mapId>`)는 지도 그림을 자른 전용 타일셋이라
+  `toolRunner.rejectTilesetFamilyChange` 가 대상에서도, 「보는 맵」 기준에서도 뺀다. 전에는 버들항 빈 맵을 보던 조수의
+  `edit_world_terrain` 저장이 「그림체 변경」으로 거부돼 세계 지도를 못 만들었다(조수 시험 `scripts/qa-game/briefs/joseon-worldmap.json`).
+- `edit_world_terrain.characterScale`(0.25~1): 빌드한 세계 지도의 `map.characterScale` 을 같이 정한다 — 「월드맵에서 캐릭터 작게」.
 - 시험: `scripts/qa-game/worldmap-generate-offline.mts`(모델 없이 생성 → 저장 → 읽기 → 덧붙이기).
 - 키트 쪽 상세: `tiledata/worldmap-kit/docs/README.md` ⑦.
 
