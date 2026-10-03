@@ -52,6 +52,7 @@ import { normalizePiThinkingLevel } from "../../src/ai/piAgent/thinkingLevel.ts"
 import { antigravityToolEnumPayload } from "./ohMyPiToolEnums.ts";
 import { searchWebWithCodex } from "./codexWebSearchRuntime.ts";
 import { WEB_SEARCH_TOOL } from "../../src/editor/tools/webSearchTool.ts";
+import { mergeConstructionLogs } from "../../src/editor/tools/constructionLog.ts";
 import { CODEX_PROVIDER_ID } from "../../src/ai/oauth/credentials.ts";
 import { setWorldmapBuilder } from "../../src/editor/worldmap/worldmapBuild.ts";
 import { buildWorldmap } from "./worldmapBuild.mjs";
@@ -275,7 +276,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   // 방금 쓰기 도구가 남긴 시공 단계 — 바로 다음 체크포인트에 실어 보낸다(편집기가 그 순서대로 다시 튼다).
   let pendingConstructionLogs: PiToolCallRecord["constructionLogs"];
   const recordCall = (record: PiToolCallRecord): void => {
-    pendingConstructionLogs = record.constructionLogs;
+    // 체크포인트 사이에 쓰기가 여러 번이면(단계 적용·비배타 도구) 같은 맵 기록을 순서대로 잇는다.
+    if (record.constructionLogs?.length) pendingConstructionLogs = mergeConstructionLogs([...(pendingConstructionLogs ?? []), ...record.constructionLogs]);
     interiorCompletion.record(ctx.project, record);
     try { options.onToolCall?.(record); } catch { /* recording must never change the run */ }
     if (record.toolCallId) pendingSummaries.set(record.toolCallId, { ok: record.result.ok, summary: trimText(record.result.summary, 400), result: activityPayload(record.result), visuals: record.visuals });

@@ -81,6 +81,8 @@ export function planConstructionReveal(
   const log = entry.log;
   if (Date.now() - entry.at > PENDING_TTL_MS || log.width !== after.width || log.height !== after.height) return null;
 
+  // 도구 하나의 실제 변경(synthetic)은 칸 수에 맞춘 속도로 — 한 칸 고치기에 0.5초를 쓰지 않고, 큰 칠하기도 1.4초 안에.
+  if (log.synthetic) return synthesizedPlan(after, log);
   const stampTotal = log.steps.reduce((sum, step) => sum + (step.kind === "stamp" ? stepDuration(step) : 0), 0);
   const stampScale = stampTotal > STAMP_SPAN_MAX_MS ? STAMP_SPAN_MAX_MS / stampTotal : 1;
   const frames: ConstructionRevealFrame[] = [];
@@ -109,6 +111,29 @@ export function planConstructionReveal(
     log,
     frames,
     holdUntilMs,
+    durationMs: holdUntilMs + CONSTRUCTION_FADE_OUT_MS,
+    bounds: { x: minX, y: minY, width: maxX - minX + 1, height: maxY - minY + 1 },
+  };
+}
+
+function synthesizedPlan(after: GameMap, log: ConstructionLog): ConstructionRevealPlan | null {
+  const frames: ConstructionRevealFrame[] = [];
+  let t = 0;
+  let minX = after.width, minY = after.height, maxX = -1, maxY = -1;
+  for (const step of log.steps) {
+    const duration = Math.round(Math.min(1400, Math.max(step.kind === "stamp" ? 220 : 260, 140 + step.cells.length * 6)));
+    frames.push({ step, at: t, duration });
+    t += duration + 80;
+    for (const c of step.cells) {
+      const x = c % log.width, y = (c - x) / log.width;
+      if (x < minX) minX = x; if (x > maxX) maxX = x;
+      if (y < minY) minY = y; if (y > maxY) maxY = y;
+    }
+  }
+  if (!frames.length || maxX < 0) return null;
+  const holdUntilMs = t + 120;
+  return {
+    mapId: after.id, width: log.width, height: log.height, tilesetId: after.tilesetId, log, frames, holdUntilMs,
     durationMs: holdUntilMs + CONSTRUCTION_FADE_OUT_MS,
     bounds: { x: minX, y: minY, width: maxX - minX + 1, height: maxY - minY + 1 },
   };
