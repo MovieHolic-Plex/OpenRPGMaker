@@ -2246,5 +2246,61 @@
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-03"
+ },
+ "gnf_palace_hall_wide_14": {
+  "hash": "72f963dcbeac",
+  "status": "pass",
+  "line": "palace_hall_wide(8) 와 같은 문법(아래 큰 팔작+위 낮은 지붕+3단 월대)을 폭 18칸으로 키움. 뒷사면 밝고 앞사면 어두움, 윗면 보임, 기준 gwanah_7·giwa_house_6 과 같은 처마·기와 결",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-03"
+ },
+ "bamboo_b": {
+  "hash": "8ef98d8a7a0e",
+  "status": "pass",
+  "line": "대나무 씨앗 변형(기존 bamboo 와 같은 문법: 가는 마디 줄기+위쪽 댓잎 덩이, 정면 소품이 아니라 나무 계열). 눈으로 확인: 기존과 줄기 수·잎 덩이 윤곽만 다르다.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-03"
+ },
+ "bamboo_c": {
+  "hash": "13ff631828b5",
+  "status": "pass",
+  "line": "대나무 씨앗 변형(기존 bamboo 와 같은 문법: 가는 마디 줄기+위쪽 댓잎 덩이, 정면 소품이 아니라 나무 계열). 눈으로 확인: 기존과 줄기 수·잎 덩이 윤곽만 다르다.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-03"
+ },
+ "bamboo_d": {
+  "hash": "6b3b53a0495c",
+  "status": "pass",
+  "line": "대나무 씨앗 변형(기존 bamboo 와 같은 문법: 가는 마디 줄기+위쪽 댓잎 덩이, 정면 소품이 아니라 나무 계열). 눈으로 확인: 기존과 줄기 수·잎 덩이 윤곽만 다르다.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-03"
+ },
+ "bamboo_grove_b": {
+  "hash": "9c9f03bd8c25",
+  "status": "pass",
+  "line": "대나무 씨앗 변형(기존 bamboo 와 같은 문법: 가는 마디 줄기+위쪽 댓잎 덩이, 정면 소품이 아니라 나무 계열). 눈으로 확인: 기존과 줄기 수·잎 덩이 윤곽만 다르다.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-03"
+ },
+ "bamboo_grove_c": {
+  "hash": "ce3b0e048fd5",
+  "status": "pass",
+  "line": "대나무 씨앗 변형(기존 bamboo 와 같은 문법: 가는 마디 줄기+위쪽 댓잎 덩이, 정면 소품이 아니라 나무 계열). 눈으로 확인: 기존과 줄기 수·잎 덩이 윤곽만 다르다.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-03"
+ },
+ "bamboo_grove_d": {
+  "hash": "655313caa913",
+  "status": "pass",
+  "line": "대나무 씨앗 변형(기존 bamboo 와 같은 문법: 가는 마디 줄기+위쪽 댓잎 덩이, 정면 소품이 아니라 나무 계열). 눈으로 확인: 기존과 줄기 수·잎 덩이 윤곽만 다르다.",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-03"
  }
 }
