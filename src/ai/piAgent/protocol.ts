@@ -3,6 +3,7 @@ import type { PiVillageCompletion } from "./villageCompletion";
 import type { PiApplyMode } from "./applyMode";
 import type { SpecialistModels } from "../modelRoles";
 import type { SpatialToolProof } from "@/editor/tools/spatialToolState";
+import type { ConstructionLog } from "@/editor/tools/constructionLog";
 // Pi 에이전트 경로의 공용 규약. 브라우저(클라이언트)·동반 서비스(Node)·Bun 워커(런타임)가 같은
 // 요청/이벤트 모양을 쓴다. 전송은 NDJSON 한 줄 = 이벤트 하나.
 //
@@ -157,6 +158,11 @@ export interface PiProjectCheckpoint {
    * 지나며 101MB 체크포인트가 되어 브라우저 워치독(30초)이 연결을 끊었다.
    */
   readonly unchangedTilesetIds?: readonly string[];
+  /**
+   * 이 체크포인트를 낳은 도구가 실제로 밟은 시공 단계(constructionLog). 저장하지 않는다 — 편집기가 맵 위에서
+   * 그 순서대로 다시 틀 때만 쓴다(마을 짓기처럼 도구 한 번이 맵 전체를 짓는 경우).
+   */
+  readonly constructionLogs?: readonly ConstructionLog[];
 }
 export type PiAgentEvent = PiAgentEventPayload & { readonly at?: number };
 type PiAgentEventPayload =

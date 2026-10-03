@@ -38,6 +38,8 @@ import { StampOrderRenderer } from "@/editor/stampOrderRenderer";
 import { isAgentGhostPreviewHidden, subscribeAgentGhostPreview } from "@/editor/agentGhostPreview";
 import { AI_LIVE_CANVAS_EVENT } from "@/editor/aiLiveCanvas";
 import { AgentFocusRenderer, AgentGhostPreviewRenderer } from "@/editor/agentPreviewRenderers";
+import { AgentConstructionRevealRenderer } from "@/editor/agentConstructionRevealRenderer";
+import { subscribeAgentConstructionReveal } from "@/editor/agentConstructionReveal";
 import { subscribeInlineProposalActions } from "@/editor/proposalInlineApproval";
 import { CameraScrollbars } from "@/editor/CameraScrollbars";
 import { CameraPanController, pointerScreenPosition } from "@/editor/CameraPanController";
@@ -279,6 +281,7 @@ export class EditScene extends PhaserRuntime.Scene {
   /** 미리보기 중인 레이어 스펙(배율 재계산용). */
   private mapBackgroundPreviewSpecs: readonly { readonly fit: "native" | "cover" }[] = [];
   private unsubAgentFocus: (() => void) | null = null;
+  private unsubConstructionReveal: (() => void) | null = null;
   private unsubCameraFocus: (() => void) | null = null;
   private unsubInlineApproval: (() => void) | null = null;
   private unsubAgentBlueprint: (() => void) | null = null;
@@ -289,6 +292,7 @@ export class EditScene extends PhaserRuntime.Scene {
   private agentBlueprintRenderer: AgentBlueprintRenderer | null = null;
   private agentGhostPreviewRenderer: AgentGhostPreviewRenderer | null = null;
   private agentFocusRenderer: AgentFocusRenderer | null = null;
+  private constructionRevealRenderer: AgentConstructionRevealRenderer | null = null;
   private isPainting = false;
   private lastPaintKey = "";
   private lastEventLayerClick: EventLayerClick | null = null;
@@ -540,6 +544,10 @@ export class EditScene extends PhaserRuntime.Scene {
     this.agentGhostPreviewLayer.setDepth(10.5);
     this.agentFocusHighlightLayer = this.add.container(0, 0);
     this.agentFocusHighlightLayer.setDepth(11);
+    // 조수 시공 연출(청사진 덮개가 걷히며 지어지는 모습). 실제 칸 위·고스트 아래.
+    const constructionRevealLayer = this.add.container(0, 0);
+    constructionRevealLayer.setDepth(10.45);
+    this.constructionRevealRenderer = new AgentConstructionRevealRenderer(this, constructionRevealLayer, () => this.mapId());
     this.agentBlueprintRenderer = new AgentBlueprintRenderer(this, this.agentBlueprintLayer, () => this.mapId());
     this.stampOrderRenderer = new StampOrderRenderer(this, this.stampOrderLayer, () => this.mapId());
     this.agentGhostPreviewRenderer = new AgentGhostPreviewRenderer(this, this.agentGhostPreviewLayer, () => this.mapId());
@@ -586,6 +594,11 @@ export class EditScene extends PhaserRuntime.Scene {
       this.redrawWhenViewStateChanges();
     });
     this.unsubAgentFocus = subscribeAgentFocusHighlight((target) => this.showAgentFocusHighlight(target));
+    this.unsubConstructionReveal = subscribeAgentConstructionReveal((plan) => {
+      const played = this.constructionRevealRenderer?.play(plan) ?? false;
+      if (played) this.clearAgentFocusHighlight();
+      return played;
+    });
     this.unsubCameraFocus = subscribeEditorCameraFocus((target) => this.panCameraToTile(target));
     this.unsubAgentGhost = subscribeAgentGhostPreview(() => {
       this.renderAgentGhostPreview();
@@ -712,6 +725,9 @@ export class EditScene extends PhaserRuntime.Scene {
     this.unsubEditor?.();
     this.unsubAgentGhost?.();
     this.unsubAgentFocus?.();
+    this.unsubConstructionReveal?.();
+    this.unsubConstructionReveal = null;
+    this.constructionRevealRenderer?.clear();
     this.unsubCameraFocus?.();
     this.unsubMapBackgroundPreview?.();
     this.unsubAgentBlueprint?.();

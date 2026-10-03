@@ -2,6 +2,9 @@ import { isSameMapMove, withAssistantViewTransition } from "@/editor/assistantVi
 import { requestEditorCameraFocus } from "@/editor/editorCameraFocus";
 import { editorState } from "@/editor/editorState";
 import { selectEditorMap } from "@/editor/mapSelection";
+import { isAiLiveCanvasEnabled } from "@/editor/aiLiveCanvas";
+import { planConstructionReveal, requestAgentConstructionReveal } from "@/editor/agentConstructionReveal";
+import { prefersReducedMotion } from "@/util/reducedMotion";
 import type { GameEvent, GameMap, MapId, Project } from "@/project/types";
 
 export type AgentFocusLayer = "lower" | "upper" | "event";
@@ -56,9 +59,15 @@ export function focusAcceptedAgentChanges(before: Project, after: Project): Agen
   // 그 하드컷을 크로스페이드로 덮는다. 맵 선택·강조·카메라를 **한 묶음**으로 넣어야
   // 덮인 동안 전부 끝나고, 베일이 걷힐 때 이미 완성된 화면이 나온다.
   const sameMap = isSameMapMove(target.mapId);
+  // 도구가 시공 기록을 남긴 큰 시공(새 마을 맵 등)은 「✓ 반영됨」 강조 대신 그 기록을 실제 순서대로 다시 튼다(2026-10-03).
+  // 계획은 베일 밖에서 미리 세운다 — 베일이 걷힐 때 이미 덮개가 깔려 있어야 완성본이 먼저 비치지 않는다.
+  const afterMap = after.maps[target.mapId];
+  const reveal = afterMap && isAiLiveCanvasEnabled() && !prefersReducedMotion()
+    ? planConstructionReveal(before.maps[target.mapId], afterMap, after.tilesets[afterMap.tilesetId])
+    : null;
   withAssistantViewTransition(target.mapId, () => {
     selectEditorMap(target.mapId, { clearEventSelection: currentMapId !== target.mapId });
-    requestAgentFocusHighlight(target);
+    if (!reveal || !requestAgentConstructionReveal(reveal)) requestAgentFocusHighlight(target);
     // 하이라이트만 켜고 카메라를 두면 변경 영역이 화면 밖일 때 "아무 일도 안 일어난 것"으로
     // 보인다 — bbox 는 이미 손에 있으니 화면 밖일 때만 데려간다. 판정은 씬이 실제 카메라로
     // 한다(planCameraFocus). 사용자가 지금 칠하거나 화면을 끌고 있으면 씬이 요청을 무시한다.
@@ -69,7 +78,9 @@ export function focusAcceptedAgentChanges(before: Project, after: Project): Agen
         tileX: target.bounds.x + target.bounds.width / 2,
         tileY: target.bounds.y + target.bounds.height / 2,
         bounds: target.bounds,
-        onlyIfOffscreen: true,
+        // 다른 맵으로 옮겨 가며 시공 연출을 트는 경우(새 마을 맵)는 어차피 화면이 바뀐다 — 지어지는 전체가 보이게 줌을 맞춘다.
+        // 같은 맵에서 보던 자리는 빼앗지 않는다(onlyIfOffscreen).
+        onlyIfOffscreen: !(reveal && !sameMap),
         ...(sameMap ? {} : { immediate: true }),
       });
     }

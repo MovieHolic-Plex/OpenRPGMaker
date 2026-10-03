@@ -1,0 +1,211 @@
+{
+  "transport": "scripted model; native author_beodeul_town + checkpoint apply",
+  "errors": [],
+  "checks": [
+    {
+      "name": "선택 창이 뜨지 않는다",
+      "passed": true
+    },
+    {
+      "name": "의도 선언 콜은 한 번(감사 콜 없음)",
+      "passed": true,
+      "detail": [
+        "You classify ONE user request addressed to an RPG map/event editor assistant. Output JSON only — no prose, no fences.\n\nFields:\n- \"mode\": \"create\" (새로 만든다) | \"mo",
+        "You are Ultrabrain, the map art-direction reviewer. Judge the WHOLE map's visual harmony: coherent style and palette, building/terrain proportions, density and ",
+        "You are Ultrabrain, the map art-direction reviewer. Judge the WHOLE map's visual harmony: coherent style and palette, building/terrain proportions, density and "
+      ]
+    },
+    {
+      "name": "새 마을 맵으로 화면이 옮겨졌다",
+      "passed": true,
+      "detail": {
+        "current": "map_beodeul_river_7",
+        "newMapId": "map_beodeul_river_7"
+      }
+    },
+    {
+      "name": "시공 연출이 재생됐다",
+      "passed": true,
+      "detail": 43587.39999997616
+    },
+    {
+      "name": "도구가 남긴 실제 시공 단계를 순서대로 재생했다(계획 → 칠하기 → 찍기)",
+      "passed": true,
+      "detail": {
+        "logSteps": 569,
+        "toolElapsedMs": 2422,
+        "shownSteps": 58,
+        "first": [
+          "계획 · 물 자리",
+          "계획 · 큰길",
+          "계획 · 뒷길 고리",
+          "계획 · 광장",
+          "계획 · 큰 건물 자리",
+          "계획 · 일터",
+          "계획 · 집 자리",
+          "계획 · 살림 소품",
+          "계획 · 밭·숲·덤불",
+          "칠하기 · 길 깔기",
+          "칠하기 · 광장 판석",
+          "칠하기 · 물 넣기",
+          "찍기 · 큰 건물 1/2",
+          "찍기 · 소품 5/21"
+        ],
+        "last": [
+          "찍기 · 풀꽃·밭 391/418",
+          "찍기 · 풀꽃·밭 404/418",
+          "찍기 · 풀꽃·밭 416/418",
+          "찍기 · 다리"
+        ]
+      }
+    },
+    {
+      "name": "조수 말이 간단히 보기에 보인다",
+      "passed": true,
+      "detail": 18693.100000023842
+    },
+    {
+      "name": "체크포인트 직후 「맵에 반영 중」 행",
+      "passed": true,
+      "detail": 27733.100000023842
+    },
+    {
+      "name": "페이지 오류 없음",
+      "passed": true,
+      "detail": []
+    }
+  ],
+  "timeline": [
+    {
+      "name": "model-call-1",
+      "ms": 140
+    },
+    {
+      "name": "intent-reply",
+      "ms": 5954
+    },
+    {
+      "name": "run-request-sent",
+      "ms": 14682
+    },
+    {
+      "name": "run-request-decoded(대본 비용)",
+      "ms": 16926
+    },
+    {
+      "name": "assistant-1",
+      "ms": 18690
+    },
+    {
+      "name": "chat-assistant-say-1",
+      "ms": 18693
+    },
+    {
+      "name": "tool-start",
+      "ms": 19196
+    },
+    {
+      "name": "chat-building-row",
+      "ms": 21623
+    },
+    {
+      "name": "checkpoint-sent",
+      "ms": 25296
+    },
+    {
+      "name": "chat-applying-row",
+      "ms": 27733
+    },
+    {
+      "name": "chat-built-row",
+      "ms": 27733
+    },
+    {
+      "name": "chat-applied-row",
+      "ms": 42491
+    },
+    {
+      "name": "reveal-playing",
+      "ms": 43587
+    },
+    {
+      "name": "reveal-ended",
+      "ms": 60683
+    },
+    {
+      "name": "ack-1",
+      "ms": 67226
+    },
+    {
+      "name": "assistant-2",
+      "ms": 71522
+    },
+    {
+      "name": "done",
+      "ms": 75816
+    },
+    {
+      "name": "model-call-2",
+      "ms": 83055
+    },
+    {
+      "name": "model-call-3",
+      "ms": 85505
+    }
+  ],
+  "videoAt": {
+    "model-call-1": 38.6,
+    "intent-reply": 44.5,
+    "run-request-sent": 53.2,
+    "run-request-decoded(대본 비용)": 55.4,
+    "assistant-1": 57.2,
+    "chat-assistant-say-1": 57.2,
+    "tool-start": 57.7,
+    "chat-building-row": 60.1,
+    "checkpoint-sent": 63.8,
+    "chat-applying-row": 66.2,
+    "chat-built-row": 66.2,
+    "chat-applied-row": 81,
+    "reveal-playing": 82.1,
+    "reveal-ended": 99.2,
+    "ack-1": 105.7,
+    "assistant-2": 110,
+    "done": 114.3,
+    "model-call-2": 121.6,
+    "model-call-3": 124
+  },
+  "replay": {
+    "logSteps": 569,
+    "toolElapsedMs": 2422,
+    "shownSteps": 58,
+    "first": [
+      "계획 · 물 자리",
+      "계획 · 큰길",
+      "계획 · 뒷길 고리",
+      "계획 · 광장",
+      "계획 · 큰 건물 자리",
+      "계획 · 일터",
+      "계획 · 집 자리",
+      "계획 · 살림 소품",
+      "계획 · 밭·숲·덤불",
+      "칠하기 · 길 깔기",
+      "칠하기 · 광장 판석",
+      "칠하기 · 물 넣기",
+      "찍기 · 큰 건물 1/2",
+      "찍기 · 소품 5/21"
+    ],
+    "last": [
+      "찍기 · 풀꽃·밭 391/418",
+      "찍기 · 풀꽃·밭 404/418",
+      "찍기 · 풀꽃·밭 416/418",
+      "찍기 · 다리"
+    ]
+  },
+  "intentCalls": 3,
+  "modelCalls": [
+    "You classify ONE user request addressed to an RPG map/event editor assistant. Output JSON only — no prose, no fences.\n\nFields:\n- \"mode\": \"create\" (새로 만든다) | \"mo",
+    "You are Ultrabrain, the map art-direction reviewer. Judge the WHOLE map's visual harmony: coherent style and palette, building/terrain proportions, density and ",
+    "You are Ultrabrain, the map art-direction reviewer. Judge the WHOLE map's visual harmony: coherent style and palette, building/terrain proportions, density and "
+  ],
+  "newMapId": "map_beodeul_river_7"
+}

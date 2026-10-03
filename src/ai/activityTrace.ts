@@ -32,6 +32,10 @@ export interface ActivityTrace {
   readonly serial: number;
 }
 export const ACTIVITY_ENTRY_LIMIT = 2000;
+/** 도구가 일을 끝내고 결과를 맵에 적용하는 중인 행의 요약. 화면은 이 문구로 「반영 중」을 알아본다. */
+export const ACTIVITY_APPLYING_SUMMARY = "작업 끝 · 맵에 반영 중";
+/** 브라우저가 적용을 끝낸 행. 워커의 tool_end(ACK 왕복 뒤)가 오면 그 결과로 덮인다. */
+export const ACTIVITY_APPLIED_SUMMARY = "맵에 반영됨";
 export const ACTIVITY_BYTE_LIMIT = 2_000_000;
 const PAYLOAD_LIMIT = 24_000;
 const SECRET_KEY = /(?:authorization|cookie|password|secret|api[_-]?key|access[_-]?token|refresh[_-]?token|credential|^token$)/i;
@@ -113,7 +117,7 @@ export function recordActivityEvent(trace: ActivityTrace, event: PiAgentEvent, a
   const base = { id: `${trace.id}:${trace.serial}`, at, actor, kind: event.type, name: event.type, status: "info" as ActivityEntry["status"], summary: "" };
   if (event.type === "tool_start") return put(trace, { ...base, id: `${actor}:${event.id}:${trace.serial}`, kind: "tool", name: event.name, status: "running", summary: "실행 중", input: activityPayload({ callId: event.id, args: event.args }) });
   if (event.type === "tool_end") {
-    const index = lastIndex(trace.entries, e => e.actor === actor && e.kind === "tool" && e.status === "running" && (e.input as { callId?: string })?.callId === event.id);
+    const index = lastIndex(trace.entries, e => e.actor === actor && e.kind === "tool" && (e.status === "running" || e.summary === ACTIVITY_APPLIED_SUMMARY) && (e.input as { callId?: string })?.callId === event.id);
     const opened = trace.entries[index];
     return put(trace, { ...(opened ?? base), kind: "tool", name: event.name, status: event.ok ? "ok" : "error", summary: activityText(event.summary), endedAt: at, durationMs: event.durationMs ?? (opened ? Math.max(0, at - opened.at) : undefined), visuals: event.visuals?.length ? retainActivityVisuals(`${trace.id}:${actor}:${event.id}:${trace.serial}`, event.visuals) : opened?.visuals, output: activityPayload(event.result ?? { ok: event.ok, summary: event.summary, detail: "이 실행 경로에서는 결과 요약만 제공됨" }) }, index);
   }
@@ -122,6 +126,11 @@ export function recordActivityEvent(trace: ActivityTrace, event: PiAgentEvent, a
     const name = event.type === "heartbeat" ? "connection.heartbeat" : "model.stream";
     const index = lastIndex(trace.entries, e => e.actor === actor && e.name === name);
     return put(trace, { ...base, id: trace.entries[index]?.id ?? base.id, name, summary: event.type === "heartbeat" ? "연결 확인" : "모델 응답 생성 중", output: { lastAt: at, count: Number((trace.entries[index]?.output as { count?: number })?.count ?? 0) + 1 } }, index);
+  }
+  if (event.type === "execution_status" && event.name === "checkpoint.apply" && event.ok !== false) {
+    // 적용이 끝났다 — ACK 를 보내고 워커의 tool_end 가 돌아오기까지 「반영 중」으로 남기지 않는다.
+    const index = lastIndex(trace.entries, e => e.actor === actor && e.kind === "tool" && e.status === "running" && e.summary === ACTIVITY_APPLYING_SUMMARY);
+    if (index >= 0) trace = put(trace, { ...trace.entries[index]!, status: "ok", summary: ACTIVITY_APPLIED_SUMMARY }, index);
   }
   switch (event.type) {
     case "execution_status": return put(trace, { ...base, name: event.name, kind: "status", summary: activityText(event.summary), status: event.ok === false ? "error" : "info", output: activityPayload(event.data) });
@@ -133,7 +142,13 @@ export function recordActivityEvent(trace: ActivityTrace, event: PiAgentEvent, a
     case "assistant": case "team_report": return put(trace, { ...base, summary: event.type === "assistant" ? "중간 응답" : "팀 보고", output: activityPayload({ text: event.text }) });
     case "error": return put(trace, { ...base, status: "error", summary: activityText(event.message), output: activityPayload(event) });
     case "done": return put(trace, { ...base, summary: "모델 실행 종료 · 적용 여부는 별도 확인", output: activityPayload({ stats: event.stats, changedKeys: event.changedKeys }) });
-    case "checkpoint": return put(trace, { ...base, summary: activityText(event.label), output: activityPayload({ checkpointId: event.checkpointId, toolName: event.toolName }) });
+    case "checkpoint": {
+      // 체크포인트는 도구가 워커에서 일을 끝낸 순간에 온다. tool_end 는 브라우저가 적용하고 응답(ACK)한 뒤에야 오므로
+      // 그 사이(적용 1.8~2.7초 + 왕복) 행이 「실행 중」으로 멈춰 보였다 — 여는 행을 「맵에 반영 중」으로 바꿔 둔다.
+      const index = lastIndex(trace.entries, e => e.actor === actor && e.kind === "tool" && e.status === "running" && e.name === event.toolName);
+      if (index >= 0) trace = put(trace, { ...trace.entries[index]!, summary: ACTIVITY_APPLYING_SUMMARY }, index);
+      return put(trace, { ...base, id: `${trace.id}:${trace.serial}`, summary: activityText(event.label), output: activityPayload({ checkpointId: event.checkpointId, toolName: event.toolName }) });
+    }
     case "render_request": return put(trace, { ...base, summary: `맵 그림 · ${event.toolName}`, output: activityPayload({ renderId: event.renderId, toolName: event.toolName }) });
     case "map_delta": return put(trace, { ...base, summary: `맵 ${event.maps.length}개 변경 신호`, output: activityPayload(event.maps) });
     case "team_start": return put(trace, { ...base, summary: "팀 작업 시작", output: activityPayload(event) });
