@@ -78,10 +78,6 @@
       "status": 200
     },
     {
-      "path": "/assets/easyrpg/charset/Actor4.png",
-      "status": 200
-    },
-    {
       "path": "/assets/easyrpg/charset/Actor3.png",
       "status": 200
     },
@@ -91,6 +87,10 @@
     },
     {
       "path": "/assets/easyrpg/charset/Monster1.png",
+      "status": 200
+    },
+    {
+      "path": "/assets/easyrpg/charset/Actor4.png",
       "status": 200
     },
     {
@@ -122,11 +122,11 @@
       "status": 200
     },
     {
-      "path": "/assets/easyrpg/charset/People5.png",
+      "path": "/assets/easyrpg/charset/People4.png",
       "status": 200
     },
     {
-      "path": "/assets/easyrpg/charset/People4.png",
+      "path": "/assets/easyrpg/charset/People5.png",
       "status": 200
     },
     {
@@ -166,5 +166,7 @@
     "playerBundleFileCount": 407,
     "zipEntryCount": 3809
   },
-  "tilesetCount": 353
+  "tilesetCount": 353,
+  "playerJsSha256": "4541866e4992d5624342732745f9eaaced9274dc9b137cd38c08515108d206c8",
+  "exactCurrentCompiledPlayer": true
 }
