@@ -12,8 +12,10 @@ from PIL import Image
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, '..', '..', '..'))
 sys.path.insert(0, os.path.join(ROOT, 'scripts/content/hand-interior-pick'))
+from check_candidate import LINE_THICK_MAX, LINE_NONE_MAX  # noqa: E402
 from common import CAND, TOP_MIN_SHALLOW, blockout_image, geom, objects_by_id, slug, top_min, top_rule_text  # noqa: E402
 import picks_db  # noqa: E402
+import outline_select  # noqa: E402
 import store  # noqa: E402
 
 # 방향 — 한 판 5장의 작업자마다 하나. 같은 기물을 다른 해석으로 찍게 해서 사용자가 고를 폭을 만든다.
@@ -82,6 +84,8 @@ def ensure_folder(item):
 
 def cand_png(item, choice):
     d = os.path.join(CAND, slug(item))
+    b, sel = outline_select.split(choice or '')
+    if sel: return outline_select.ensure_png(d, b, objects_by_id()[item])
     p = os.path.join(d, ('v5' if choice in (None, 'v5') else choice) + '.png')
     if not os.path.exists(p) and choice not in (None, 'v5'):
         sys.path.insert(0, os.path.join(ROOT, 'scripts/content/pixel-harness/pxgrid')); import pxgrid
@@ -192,6 +196,12 @@ def make(rid, item, note='', base=''):
         for f in sorted(glob.glob(os.path.join(HERE, 'examples', '*.png'))) + (sorted(glob.glob(os.path.join(HERE, 'examples-deep', '*.png'))) if deep else []):
             _bg(Image.open(f), 8).save(os.path.join(out, 'view34', os.path.basename(f)[:-4] + '-x8.png'))
     if o.get('blockout'): blockout_image(o).save(os.path.join(out, 'blockout-x8.png'))
+    if not flat:
+        os.makedirs(os.path.join(out, 'lines'), exist_ok=True)
+        for f in sorted(glob.glob(os.path.join(HERE, 'examples-lines', '*.png'))):
+            n = os.path.basename(f)
+            if n.startswith('good-'): _bg(Image.open(f), 8).save(os.path.join(out, 'lines', n[:-4] + '-x8.png'))
+            else: shutil.copy(f, os.path.join(out, 'lines', n))
     rej = [f for f in store.feedback(item) if f['verdict'] == 'reject' and f['cand']]
     lines_rej = []
     if rej:
@@ -264,6 +274,14 @@ def make(rid, item, note='', base=''):
                        f'- **남쪽 면 띠 y={f0}~{f1}** (어두운 회색) = 남쪽을 보는 세운 면(창·옆판·바퀴·다리). 50% 이상 덮는다.',
                        f'- y<{t0} (빗금) = 굴뚝·돔·조각·날개처럼 위로 솟는 것만. 몸통을 여기로 올리지 않는다.',
                        f'- 메모의 `꼭대기 윗면 N행(y=a~b)` 는 이 윗면 띠와 겹쳐야 한다. 띠가 비거나(옆모습) 다른 데를 적으면 검사가 떨어뜨린다.', '']
+    if not flat:
+        md += ['## 선 — 재서 지킨다 (2026-10-02: 대형 기물의 외곽이 두껍거나 없다고 사용자가 지적)', '',
+               '**먼저 `lines/` 그림을 연다.** `good-*` 은 사용자가 고른 기물(선이 깨끗한 것), `bad-*-marked` 는 왼쪽 원본 · 오른쪽 검사가 칠한 문제 칸이다.', '',
+               '- **바깥 테(실루엣 둘레)는 1칸.** 그 바로 안쪽 칸은 테보다 한 단 이상 밝다. 테가 2~3칸 겹쳐 굵어지면 떨어진다(빨강 칸).',
+               '- **테는 반드시 있다.** 둘레 칸이 안쪽보다 어둡지 않으면(밝은 테·테 없음) 떨어진다(하늘색 칸). 위·왼쪽 테도 어둡게 두르고, 빛은 그 안쪽 칸에 준다.',
+               '- 테 색은 그 재료의 가장 어두운 단이다. 검은 몸통(쇠·옻칠)은 테를 몸통보다 한 단 더 어둡게 하고, 몸통 안쪽 면에 밝은 단을 넣어 테와 몸통을 가른다(`bad-grand-piano` 처럼 묻히지 않게).',
+               '- 안쪽 선(판자 이음·문틀·서랍 테)도 1칸이 기본이다. 금테·무늬 띠처럼 일부러 넓은 띠는 괜찮다.',
+               f'- 검사 `check_candidate.py` 가 기준(두꺼운 테 ≤{int(LINE_THICK_MAX * 100)}% · 테 없음 ≤{int(LINE_NONE_MAX * 100)}%)을 재고 `<후보>-lines-x6.png` 에 문제 칸을 칠한다. **끝내기 전에 그 그림을 열어 칠해진 칸을 고친다.**', '']
     open(os.path.join(out, 'brief.md'), 'w', encoding='utf-8').write('\n'.join(md))
     store.set_brief(rid, out)
     return out

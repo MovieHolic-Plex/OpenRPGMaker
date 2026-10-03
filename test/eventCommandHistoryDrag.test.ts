@@ -21,6 +21,12 @@ function baseActions(overrides: Partial<CommandListActions> = {}): CommandListAc
   };
 }
 
+function startDrag(item: FakeElement | undefined): void {
+  if (!item) throw new Error("drag source missing");
+  item.querySelector('[data-testid="event-command-drag-handle"]')?.dispatchEvent(new Event("pointerdown"));
+  item.dispatchEvent(new Event("dragstart"));
+}
+
 function dropEvent(sourcePath: readonly number[]): Event {
   const payload = JSON.stringify(sourcePath);
   const event = new Event("drop", { bubbles: true, cancelable: true });
@@ -112,6 +118,7 @@ describe("nested event command drag/drop DOM", () => {
     });
     const rows = host.querySelectorAll('[data-testid="event-command-text"]') as unknown as FakeElement[];
     expect(rows).toHaveLength(2);
+    startDrag(rows[0]);
     rows[1]?.dispatchEvent(dropEvent([0, FORK_THEN_BRANCH_INDEX, 0]));
     expect(moveCommandTo).toHaveBeenCalledWith([0, FORK_THEN_BRANCH_INDEX, 0], 1);
   });
@@ -136,6 +143,7 @@ describe("nested event command drag/drop DOM", () => {
     ) as unknown as FakeElement | null;
 
     expect(empty?.dataset.containerPath).toBe(JSON.stringify([0, FORK_THEN_BRANCH_INDEX]));
+    startDrag(host.querySelector('[data-testid="event-command-text"]') as unknown as FakeElement);
     empty?.dispatchEvent(dropEvent([1]));
     expect(moveCommandAcross).toHaveBeenCalledWith(
       [1],
@@ -164,6 +172,7 @@ describe("nested event command drag/drop DOM", () => {
       zone.dataset.containerPath === JSON.stringify([0, FORK_THEN_BRANCH_INDEX])
     );
     expect(thenZone).toBeTruthy();
+    startDrag(host.querySelector('[data-testid="event-command-text"]') as unknown as FakeElement);
     thenZone?.dispatchEvent(dropEvent([1]));
     expect(moveCommandAcross).toHaveBeenCalledWith(
       [1],

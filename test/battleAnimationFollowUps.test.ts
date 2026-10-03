@@ -20,7 +20,7 @@ function record(id: string, frameCount: number, extra: Partial<BattleAnimationRe
   return normalizeBattleAnimationRecord({
     id,
     name: id,
-    resourceId: "easyrpg-battle-blow",
+    resourceId: "scarloxy-battle-anim-scratch",
     sheet: { frameWidth: 96, frameHeight: 96, columns: frameCount },
     frames: Array.from({ length: frameCount }, (_u, pattern) => ({ cells: [{ pattern, x: 0, y: 0, zoom: 100, opacity: 255, visible: true }] })),
     ...extra,

@@ -195,7 +195,6 @@ describe("DB write tools", () => {
       menuLabels: { quit: "닫기" },
       sounds: { confirmSeResourceId: "easyrpg-sound-decision1" },
       titleGraphic: { mode: "both", resourceId: "easyrpg-title-title1", x: 40, y: 20 },
-      showInputHint: false,
     }, { dryRun: false });
     expect(created.ok, JSON.stringify(created.issues)).toBe(true);
     expect(ctx.project.system.titleScreen?.title).toBe("신규 타이틀");
@@ -208,7 +207,6 @@ describe("DB write tools", () => {
       x: 40,
       y: 20,
     });
-    expect(ctx.project.system.titleScreen?.showInputHint).toBe(false);
 
     const merged = runTool(ctx, "set_title_screen", {
       title: "신규 타이틀",

@@ -53,7 +53,7 @@ describe("database image matching", () => {
     expect(bySpecies.species_stone_golem).toBe("generated-enemy-golem-01");
     expect(bySpecies.species_ember_drake).toBe("generated-enemy-dragon-01");
     expect(bySpecies.species_leafling).toBe("generated-enemy-leafling-01");
-    expect(bySpecies.species_forest_hornet).toBe("easyrpg-monster-hornet");
+    expect(bySpecies.species_forest_hornet).toBe("generated-enemy-sylph-hornet");
     expect(bySpecies.species_sparkit).toBe("generated-enemy-sparkit-fire");
     expect(bySpecies.species_aqualing).toBe("generated-enemy-aqualing-01");
     expect(bySpecies.species_mine_skeleton).toBe("generated-enemy-skeleton-01");

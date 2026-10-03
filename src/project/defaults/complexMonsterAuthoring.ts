@@ -166,7 +166,7 @@ export function buildComplexTroop(seed: ComplexTroopSeed): TroopRecord {
     enemyIds: members.map((m) => m.enemyId),
     autoAlign: false,
     uncapturable: seed.uncapturable,
-    previewBackgroundResourceId: seed.previewBackgroundResourceId ?? "generated-battle-reference-forest",
+    previewBackgroundResourceId: seed.previewBackgroundResourceId ?? "battle-scenery-forest",
     battleEventPages,
   });
 }
@@ -315,7 +315,7 @@ export function seedHomeDungeonComplexTroops(project: Project): {
         { enemyId: "enemy_lava_ash_bat" },
         { enemyId: "enemy_lava_ember_slime" },
       ],
-      previewBackgroundResourceId: "easyrpg-backdrop-sunset1",
+      previewBackgroundResourceId: "battle-scenery-desert",
       introMessage: "용암이 끓으며 불꽃 슬라임과 재 박쥐가 덤벼든다!",
     },
     {
@@ -326,7 +326,7 @@ export function seedHomeDungeonComplexTroops(project: Project): {
         { enemyId: "enemy_lava_ash_bat" },
         { enemyId: "enemy_lava_ash_bat" },
       ],
-      previewBackgroundResourceId: "easyrpg-backdrop-sunset2",
+      previewBackgroundResourceId: "battle-scenery-cave",
     },
     {
       id: "troop_stone_ruin_guard",
@@ -336,7 +336,7 @@ export function seedHomeDungeonComplexTroops(project: Project): {
         { enemyId: "enemy_stone_ruin_golem" },
         { enemyId: "enemy_stone_bone_guard" },
       ],
-      previewBackgroundResourceId: "generated-battle-reference-forest",
+      previewBackgroundResourceId: "battle-scenery-forest",
       uncapturable: true,
       introMessage: "석상이 깨어나고 해골 병사들이 창을 든다!",
     },
@@ -347,7 +347,7 @@ export function seedHomeDungeonComplexTroops(project: Project): {
         { enemyId: "enemy_stone_bone_guard" },
         { enemyId: "enemy_stone_bone_guard" },
       ],
-      previewBackgroundResourceId: "easyrpg-backdrop-dawn1",
+      previewBackgroundResourceId: "battle-scenery-cave",
     },
     {
       id: "troop_ice_wraith_pack",
@@ -357,14 +357,14 @@ export function seedHomeDungeonComplexTroops(project: Project): {
         { enemyId: "enemy_lava_ash_bat", hidden: false },
         { enemyId: "enemy_ice_frost_wraith" },
       ],
-      previewBackgroundResourceId: "easyrpg-backdrop-sky1",
+      previewBackgroundResourceId: "battle-scenery-snow",
       introMessage: "차가운 안개 속에서 유령들이 나타난다…",
     },
     {
       id: "troop_ice_azure_drake",
       name: "얼음 비룡",
       members: [{ enemyId: "enemy_ice_azure_drake" }],
-      previewBackgroundResourceId: "easyrpg-backdrop-cosmos1",
+      previewBackgroundResourceId: "battle-scenery-snow",
       uncapturable: true,
       introMessage: "동굴 깊숙이 푸른 비룡이 낮게 으르렁거린다!",
     },

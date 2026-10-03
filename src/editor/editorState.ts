@@ -4,8 +4,11 @@
 // 상세 설계: docs/specs/2026-06-18-oprn-overhaul-design.md 3.1.
 
 import type { ReliefBrushMode } from "@/project/relief/edit";
+import type { ReliefRoughSize } from "@/project/relief/roughBrush";
 import type { MapId } from "@/project/types";
 import type { PaletteStamp } from "@/editor/tilePaletteStamp";
+import type { TerrainPoint, TerrainSymmetry } from "./terrainDesignGeometry";
+export type TerrainDesignTool = "contour" | "road" | "ridge" | "valley" | "lake" | "mix" | "mixedCluster" | "stamp" | "lock" | "route";
 
 export type Tool = "paint" | "fill" | "collision" | "event" | "erase" | "select" | "eyedropper" | "pan" | "relief";
 export type PaintShape = "pen" | "rect" | "round";
@@ -72,8 +75,45 @@ export interface EditorState {
   brushSize: EditorBrushSize;
   /** 「높이」 붓 방식 — 올리기/내리기/단 지정/평탄. map.relief 를 고친다. */
   reliefMode: ReliefBrushMode;
-  /** 「단 지정」 붓이 맞출 단(0~14). */
+  /** 높이 붓의 「상한」 단(0~14) — 러프 올리기·산은 이 단까지, 단 지정은 이 단으로 맞춘다. */
   reliefLevel: number;
+  /** 러프 높이 붓 크기(S·M·L·XL = 반지름 2·4·6·9). Shift 정밀 붓은 brushSize 를 쓴다. */
+  reliefRoughSize: ReliefRoughSize;
+  /** 올린 칸의 1층을 칩셋의 기본 풀로 덮는가(0단으로 내리면 원래 타일로 되돌린다). */
+  reliefTopGrass: boolean;
+  /** 지형지물 팝업에서 고른 것 — 고른 동안 캔버스 클릭은 붓이 아니라 그것을 놓는다. */
+  reliefDoodad: string | null;
+  /** 지형지물 팝업이 열려 있는가. */
+  reliefDoodadOpen: boolean;
+  terrainBrush: "height" | "surface" | "river" | "group" | TerrainDesignTool;
+  terrainDesignOpen: boolean;
+  terrainSymmetry: TerrainSymmetry;
+  terrainPoints: { mapId: string; points: TerrainPoint[] } | null;
+  terrainDelta: number;
+  terrainAreaShape: "polygon" | "rect" | "line";
+  terrainStampName: string;
+  terrainSeed: number;
+  terrainMixWeights: [number, number, number];
+  terrainLakeLevel: number;
+  terrainLakeDepth: number;
+  terrainShallowWidth: number;
+  terrainRoadFlatten: boolean;
+  terrainUnlock: boolean;
+  terrainStampId: string | null;
+  terrainStampRotation: 0 | 1 | 2 | 3;
+  terrainStampMirror: boolean;
+  terrainStampCapture: boolean;
+  terrainRoute: { mapId: string; start: TerrainPoint; end: TerrainPoint } | null;
+  terrainRouteWidth: number;
+  terrainMaterial: "grass" | "dirt" | "stone";
+  terrainWidth: number;
+  reliefRampWidth: 2 | 4 | 6;
+  reliefBridgeStart: { mapId: string; x: number; y: number } | null;
+  reliefClusterDensity: number;
+  reliefClusterEnabled: boolean;
+  terrainSelectedGroup: { mapId: string; id: string; x: number; y: number } | null;
+  terrainMoveGroup: boolean;
+  terrainReachability: boolean;
   selectedEventPageId: string | null;
   selection: TileSelection | null;
   pendingEventCoordinate: PendingEventCoordinate | null;
@@ -106,7 +146,40 @@ class EditorStateStore {
     activePaletteStamp: null,
     brushSize: 1,
     reliefMode: "raise",
-    reliefLevel: 2,
+    reliefLevel: 4,
+    reliefRoughSize: "M",
+    reliefTopGrass: true,
+    reliefDoodad: null,
+    reliefDoodadOpen: false,
+    terrainBrush: "height",
+    terrainDesignOpen: false,
+    terrainSymmetry: "none",
+    terrainPoints: null,
+    terrainDelta: 2,
+    terrainAreaShape: "polygon",
+    terrainStampName: "지형 도장",
+    terrainSeed: 1,
+    terrainMixWeights: [70, 25, 5],
+    terrainLakeLevel: 0,
+    terrainLakeDepth: 3,
+    terrainShallowWidth: 2,
+    terrainRoadFlatten: false,
+    terrainUnlock: false,
+    terrainStampId: null,
+    terrainStampRotation: 0,
+    terrainStampMirror: false,
+    terrainStampCapture: true,
+    terrainRoute: null,
+    terrainRouteWidth: 3,
+    terrainMaterial: "dirt",
+    terrainWidth: 3,
+    reliefRampWidth: 4,
+    reliefBridgeStart: null,
+    reliefClusterDensity: 35,
+    reliefClusterEnabled: true,
+    terrainSelectedGroup: null,
+    terrainMoveGroup: false,
+    terrainReachability: false,
     selectedEventId: null,
     selectedEventPageId: null,
     selection: null,
@@ -153,6 +226,7 @@ export const editorState = new EditorStateStore();
  * 우클릭 영역 드래그·Ctrl+V 고스트 추적은 pointermove 마다 여기만 흔든다.
  */
 const CANVAS_OVERLAY_EDITOR_KEYS = new Set<keyof EditorState>([
+  "terrainPoints", "terrainRoute",
   "selection",
   "pastePreview",
   "clipboard",
@@ -190,8 +264,7 @@ const PALETTE_REFRESH_KEYS = [
   "clusterAssistMode",
   "activePaletteStamp",
   "brushSize",
-  "reliefMode",
-  "reliefLevel",
+  "reliefTopGrass",
   "selectedEventId",
   "selectedEventPageId",
   "pendingEventCoordinate",
@@ -250,6 +323,17 @@ const EVENT_EDITOR_IGNORED_KEYS: ReadonlySet<keyof EditorState> = new Set<keyof 
   "clusterAssistMode",
   "selectedAnimationFrameIndex",
   "selectedAnimationCellIndex",
+  "reliefMode",
+  "reliefLevel",
+  "reliefRoughSize",
+  "reliefTopGrass",
+  "reliefDoodad",
+  "reliefDoodadOpen",
+  "terrainBrush", "terrainMaterial", "terrainWidth", "reliefRampWidth", "reliefBridgeStart",
+  "terrainDesignOpen", "terrainSymmetry", "terrainDelta", "terrainAreaShape", "terrainStampName", "terrainSeed", "terrainMixWeights",
+  "terrainLakeLevel", "terrainLakeDepth", "terrainShallowWidth", "terrainRoadFlatten", "terrainUnlock",
+  "terrainStampId", "terrainStampRotation", "terrainStampMirror", "terrainStampCapture", "terrainRouteWidth",
+  "reliefClusterDensity", "reliefClusterEnabled", "terrainSelectedGroup", "terrainMoveGroup", "terrainReachability",
 ]);
 
 export function editorStateNeedsEventEditorRefresh(previous: EditorState, next: EditorState): boolean {

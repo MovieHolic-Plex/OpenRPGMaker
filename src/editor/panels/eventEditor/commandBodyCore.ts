@@ -193,6 +193,19 @@ function textBody(context: CommandEditContext, cmd: Extract<Command, { kind: "te
     testid: "event-command-text-container",
     ariaLabel: "대화창 그릇",
   });
+  // 대화창 위치: 이 줄만 위·가운데·아래로 고정하거나, 화면 속 주인공을 가리지 않게 자동으로 맡긴다.
+  const linePosition = segmentedSelect({
+    options: [
+      { value: "", key: "inherit", label: "설정 따름" },
+      { value: "auto", key: "auto", label: "자동(안 가림)" },
+      { value: "top", key: "top", label: "위" },
+      { value: "center", key: "center", label: "가운데" },
+      { value: "bottom", key: "bottom", label: "아래" },
+    ],
+    value: cmd.position ?? "",
+    testid: "event-command-text-position",
+    ariaLabel: "대화창 위치",
+  });
   const lineStyle = el("select", {
     dataset: { testid: "event-command-text-style" },
     attrs: { "aria-label": "이 줄의 대화창" },
@@ -228,6 +241,7 @@ function textBody(context: CommandEditContext, cmd: Extract<Command, { kind: "te
       ...(nextContext && nextContext !== "speech" ? { context: nextContext } : {}),
       ...(lineStyle.value ? { style: lineStyle.value } : {}),
       ...(lineContainer.select.value ? { container: lineContainer.select.value } : {}),
+      ...(linePosition.select.value ? { position: linePosition.select.value as "auto" | "top" | "center" | "bottom" } : {}),
       ...(voiceResourceId ? { voiceResourceId } : {}),
     };
   };
@@ -272,6 +286,7 @@ function textBody(context: CommandEditContext, cmd: Extract<Command, { kind: "te
   lineContext.select.addEventListener("change", apply);
   lineStyle.addEventListener("change", apply);
   lineContainer.select.addEventListener("change", apply);
+  linePosition.select.addEventListener("change", apply);
 
   refreshLimitHint();
   // 「말투·연출」은 고급 옵션이 아니다. 이 값이 창 등장 곡선·글자 속도·화면 연출을 고르므로
@@ -304,6 +319,14 @@ function textBody(context: CommandEditContext, cmd: Extract<Command, { kind: "te
         ],
       }),
       lineContainer.root,
+      el("div", {
+        class: "event-command-text-presentation-heading",
+        children: [
+          el("span", { class: "event-command-text-body-label", text: "대화창 위치" }),
+          el("span", { text: "주인공이 대화창에 가려지면 위로 올리거나 «자동»을 고르세요. 「설정 따름」은 문장 표시 설정을 씁니다." }),
+        ],
+      }),
+      linePosition.root,
     ],
   });
   const advanced = el("details", {

@@ -71,13 +71,8 @@ const STALE_STATUS_MANIFEST = {
 } satisfies GeneratedAssetManifest;
 
 describe("generatedAssetResourceResolver", () => {
-  it("resolves promoted generated resource ids to browser-usable public asset URLs", () => {
-    // Given: a promoted manifest entry with a public/ runtime path.
-    // When: the generated resource id is resolved.
-    const url = resolveGeneratedAssetResourceUrl("generated-actor-hero-01-face", PROMOTED_MANIFEST);
-
-    // Then: the URL is rooted for the browser and does not include the public/ filesystem prefix.
-    expect(url).toBe("/assets/generated/starter/hero-01-face.png");
+  it("refuses retired starter art even when an old manifest says it was promoted", () => {
+    expect(resolveGeneratedAssetResourceUrl("generated-actor-hero-01-face", PROMOTED_MANIFEST)).toBeNull();
   });
 
   it("resolves the generated dragon monster registered in the runtime manifest", () => {
@@ -189,7 +184,8 @@ describe("generatedAssetResourceResolver", () => {
 
   it("rejects promoted generated paths with traversal segments", () => {
     // Given/When/Then: generated runtime URLs stay inside public/assets/generated.
-    expect(generatedAssetPromotedPathToUrl("public/assets/generated/starter/title.png")).toBe("/assets/generated/starter/title.png");
+    expect(generatedAssetPromotedPathToUrl("public/assets/generated/starter/title.png")).toBeNull();
+    expect(generatedAssetPromotedPathToUrl("public/assets/generated/title/title.png")).toBe("/assets/generated/title/title.png");
     expect(generatedAssetPromotedPathToUrl("public/assets/generated/../../x.png")).toBeNull();
     expect(generatedAssetPromotedPathToUrl("public/assets/generated/%2e%2e/x.png")).toBeNull();
   });

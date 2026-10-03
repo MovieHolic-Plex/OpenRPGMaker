@@ -86,6 +86,7 @@ import {
   roadRepairWarnings,
   withWidthCells,
 } from "./roadObstacles";
+import { BATTLE_BACKDROP_ID_HINT } from "@/assets/battleSceneryCatalog";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 import { isSeason, isTimePhase, SEASONS, TIME_PHASES } from "@/project/gameTime";
 import { COORD_SCHEMA, RECT_SCHEMA } from "./schemaShapes";
@@ -1936,7 +1937,7 @@ const setMapProperties: ToolDefinition = {
       background: backgroundSchema,
       clearBackground: { type: "boolean" },
       clearForBackground: clearForBackgroundSchema,
-      battleBackground: { type: "string" },
+      battleBackground: { type: "string", description: BATTLE_BACKDROP_ID_HINT },
       clearBattleBackground: { type: "boolean" },
       mapRole: {
         type: "string",

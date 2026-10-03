@@ -1,0 +1,13 @@
+{
+  "projectId": "8c47087e-8685-4405-bdce-94ee28270266",
+  "store": "/home/main/.t3/worktrees/rpg-zzu/t3code-77478098/.vite-cache/terrain-design-store",
+  "revision": 3,
+  "stamps": 1,
+  "locks": 9,
+  "shallowCells": 44,
+  "deepCells": 24,
+  "rampCells": 12,
+  "groups": 1,
+  "canonicalReload": true,
+  "isolatedQAFixture": true
+}

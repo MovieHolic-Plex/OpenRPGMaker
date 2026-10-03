@@ -1,0 +1,24 @@
+{
+  "result": [
+    {
+      "outcome": "hit",
+      "events": 6,
+      "impact": 1,
+      "detail": "가로 이동을 이어 가며 솟았다가 가속해 착지하고, 뒤로 짧게 뛰어 복귀한다."
+    },
+    {
+      "outcome": "miss",
+      "events": 4,
+      "impact": 0,
+      "detail": "공격은 시도 · 대상 피격과 명중 이펙트 없음"
+    },
+    {
+      "outcome": "cancel",
+      "events": 0,
+      "impact": 0,
+      "detail": "발동 조건 불충족 · 이동과 공격을 시작하지 않음"
+    }
+  ],
+  "playTime": "0.12 / 1.30초",
+  "errors": []
+}

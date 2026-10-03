@@ -151,7 +151,7 @@ describe("아군 배틀러 스프라이트 선택", () => {
   it("명시적 측면 구도는 저작된 아군 전투 시트를 표시한다", () => {
     const field = renderField({
       skin: "retro2003",
-      battleCharacterResourceId: "generated-actor-hero-02-battle",
+      battleCharacterResourceId: "charset-battler-actor2-0",
     });
     const group = field.querySelector<HTMLElement>(".battle-actor-group");
     expect(group?.dataset.partyFacing).toBe("front");
@@ -161,7 +161,7 @@ describe("아군 배틀러 스프라이트 선택", () => {
     const first = nodes[0]!;
     expect(first.dataset.partyFacing).toBe("front");
     expect(first.dataset.authoredBattler).toBe("true");
-    expect(first.dataset.battleCharsetResourceId).toBe("generated-actor-hero-02-battle");
+    expect(first.dataset.battleCharsetResourceId).toBe("charset-battler-actor2-0");
     expect(first.querySelector(".battle-actor-sprite")).not.toBeNull();
   });
 });

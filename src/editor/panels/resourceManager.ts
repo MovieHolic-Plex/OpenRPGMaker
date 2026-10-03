@@ -401,6 +401,8 @@ function deleteUploadedAsset(asset: UploadedAsset): void {
   store.update((project) => {
     delete project.assets.uploaded[asset.id];
     project.resourceProfiles = project.resourceProfiles.filter((profile) => profile.assetId !== asset.id);
+    // System2 칸은 삭제를 막지 않으므로 여기서 비운다 — 남기면 참조 검증이 프로젝트를 못 연다.
+    if (project.system.battleSystemResourceId === asset.id) delete project.system.battleSystemResourceId;
   });
   toast(`업로드 리소스 삭제됨: ${asset.name}`, "ok");
 }

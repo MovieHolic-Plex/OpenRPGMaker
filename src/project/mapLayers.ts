@@ -1,4 +1,6 @@
 import type { GameMap } from "@/project/types";
+import { remapDoodadGroups } from "./doodadGroups";
+import { cloneTerrainDesign, remapTerrainDesign } from "./terrainDesign";
 
 /**
  * 맵 칸의 층(MZ식 4층 + 그림자). 설계: docs/superpowers/specs/2026-09-24-mz-four-layer-design.md
@@ -23,7 +25,7 @@ export type TileLayerGroup = "lower" | "upper";
 export const EXTRA_LAYER_KEYS = ["lowerOverlayTiles", "upperOverlayTiles", "shadowBits"] as const;
 type ExtraLayerKey = (typeof EXTRA_LAYER_KEYS)[number];
 /** 선택 층만 가진 맵 모양. 옮기기 도우미는 이 셋과 높이 지형(relief)만 읽고 쓴다. */
-export type ExtraLayerFields = Pick<GameMap, ExtraLayerKey | "relief">;
+export type ExtraLayerFields = Pick<GameMap, ExtraLayerKey | "relief" | "doodadGroups" | "terrainDesign">;
 
 export function layerGroup(layer: TileLayerNo): TileLayerGroup {
   return layer <= 2 ? "lower" : "upper";
@@ -101,6 +103,8 @@ export function malformedExtraLayerKeys(map: Readonly<Record<string, unknown>>, 
 /** 선택 칸의 깊은 복사. 없는 칸은 결과에도 없다(스프레드로 붙이면 옛 맵 모양이 그대로다). */
 export function cloneExtraLayers(map: GameMap): ExtraLayerFields {
   const out: ExtraLayerFields = {};
+  if (map.terrainDesign) out.terrainDesign = cloneTerrainDesign(map.terrainDesign);
+  if (map.doodadGroups) out.doodadGroups = map.doodadGroups.map(g=>({...g,cells:g.cells.map(c=>({...c}))}));
   for (const key of EXTRA_LAYER_KEYS) {
     const values = map[key];
     if (values) out[key] = values.slice();
@@ -114,6 +118,14 @@ export function cloneExtraLayers(map: GameMap): ExtraLayerFields {
  * sourceIndex 가 -1 이면 빈칸. 결과가 모두 비면 칸을 지운다. map.width/height 는 호출자가 바꾼다.
  */
 export function remapExtraLayers(map: ExtraLayerFields, width: number, height: number, sourceIndex: (targetIndex: number) => number): void {
+  if (map.terrainDesign) {
+    const design = remapTerrainDesign(map.terrainDesign, width * height, sourceIndex);
+    if (design) map.terrainDesign = design; else delete map.terrainDesign;
+  }
+  if (map.doodadGroups) {
+    const groups=remapDoodadGroups(map.doodadGroups,width*height,sourceIndex);
+    if(groups.length)map.doodadGroups=groups;else delete map.doodadGroups;
+  }
   for (const key of EXTRA_LAYER_KEYS) {
     const source = map[key];
     if (!source) continue;
@@ -142,7 +154,7 @@ export function remapExtraLayers(map: ExtraLayerFields, width: number, height: n
       for (let target = 0; target < levels.length; target += 1) { const from = sourceIndex(target); if (from >= 0) at.set(from, target); }
       wallDecor = relief.wallDecor.flatMap((d) => { const t = at.get(d.y * relief.width + d.x); return t === undefined ? [] : [{ ...d, x: t % width, y: Math.floor(t / width) }]; });
     }
-    if (levels.some((v) => v > 0)) map.relief = { width, height, levels, ...(ramps?.some((v) => v > 0) ? { ramps } : {}), ...(wallDecor?.length ? { wallDecor } : {}), ...(relief.style ? { style: relief.style } : {}) };
+    if (levels.some((v) => v > 0) || ramps?.some(v=>v===9)) map.relief = { width, height, levels, ...(ramps?.some((v) => v > 0) ? { ramps } : {}), ...(wallDecor?.length ? { wallDecor } : {}), ...(relief.style ? { style: relief.style } : {}) };
     else delete map.relief;
   }
 }

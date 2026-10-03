@@ -1,3 +1,9 @@
+import { characterCasting, characterMotionRecipe } from "@/battle/characterMotion";
+import { battleContactBounds } from "@/battle/battleContactGeometry";
+import { resolveCharacterMotion } from "@/assets/characterMotionCatalog";
+import { CHARACTER_MOTION_LABELS, defaultCharacterProgram } from "@/battle/characterMotion";
+import { buildBattleMotionPreview } from "@/battle/battleMotionPreview";
+import { motionPositionAt, type MotionContext, type MotionAnchors } from "@/battle/battleMotionProgram";
 // 스킬 탭 「연출」 카드의 **도트 전투 미리보기 스테이지**(retro2003).
 //
 // 작은 전투 무대(논리 240×136 px, 화면 2배 nearest) 위에서 스킬 하나의 연출을 재생한다.
@@ -160,6 +166,7 @@ type StageSource = {
   readonly name: string;
   readonly timeline: RetroSkillTimeline;
   readonly actorId: string | undefined;
+  readonly character?: ReturnType<typeof resolveCharacterMotion>;
   /** 레이어 번호 → 시트. */
   readonly sheets: readonly { readonly key: string; readonly url: string; readonly frame: number; readonly frames: number; readonly anchor: RetroFxAnchor }[];
   readonly contract: RetroClassSkill | undefined;
@@ -170,25 +177,40 @@ function fxUrl(key: string): string {
   return withInlineAsset("/assets/generated/pixel-fx/" + key + ".png");
 }
 
-function stageSource(record: SkillRecord, project: Project): StageSource | undefined {
+function stageSource(record: SkillRecord, project: Project, context:MotionContext={}, selectedActorId?:string, weaponId?:string): StageSource | undefined {
   const side: RetroTimelineSide | undefined = retroSideForScope(record.scope);
   const resolved = resolveSkillChoreography(record, project.database.skillChoreographies);
   const auto = !resolved && !RETRO_SKILL_RECIPES[record.id] ? recommendRetroChoreography(record) : undefined;
   const contract = resolved && resolved.kind === "class" ? (resolved.skill as RetroClassSkill) : auto?.skill;
   if (contract) {
+    const actorId=selectedActorId??contract.actorId??learnerActorId(record,project);
+    const actor=project.database.actors.find(a=>a.id===actorId);
+    const character=actor?resolveCharacterMotion(actor,project.database.equipment.find(e=>e.id===(weaponId??actor.initialEquipment.weapon))):undefined;
+    const choreography=character?{...resolved?.record,movement:resolved?.record?.movement??defaultCharacterProgram(contract.motion,character.style)}:resolved?.record;
     // 계약 연출은 계약의 편을 쓴다(레코드 scope 가 계약과 어긋나도 그림은 계약대로 — 어긋남은 스킬 설정의 문제다).
     // 프로젝트 연출 레코드의 손잡이(speed·tint·screen)는 런타임과 같은 함수로 얹는다 — 손잡이가 없으면 같은 객체.
-    const timeline = applyChoreographyHandles(retroClassSkillTimeline(contract, { hits: record.hitSequence?.length }), resolved?.record);
+    const timeline = choreography?.movement
+      ? buildBattleMotionPreview(choreography,hits=>retroClassSkillTimeline(contract,{hits,side}),{
+          character,casting:characterCasting(contract.motion,character?.style),hits:record.hitSequence?.length, outcome:context.actionBlocked?"cancel":context.hit===false?"miss":"hit",
+          followOnHit:record.battleGimmick?.followOnHit, preparing:record.effect.kind==="support",
+        })
+      : applyChoreographyHandles(retroClassSkillTimeline(contract,{hits:record.hitSequence?.length}),resolved?.record,context);
     return {
-      name: record.name || contract.name, timeline, actorId: contract.actorId || learnerActorId(record, project), contract, recipe: undefined,
+      name: record.name || contract.name, timeline, actorId, character, contract, recipe: undefined,
       sheets: contract.layers.map((layer) => ({ key: layer.key, url: fxUrl(layer.key), frame: layer.frame, frames: layer.frames, anchor: layer.anchor })),
     };
   }
   const recipe = retroSkillRecipe(record);
   if (!recipe) return undefined;
-  const timeline = retroRecipeTimeline(recipe, { side: record.effect.kind === "healing" ? "allies" : side });
+  const actorId=selectedActorId??learnerActorId(record,project);
+  const actor=project.database.actors.find(a=>a.id===actorId);
+  const character=actor?resolveCharacterMotion(actor,project.database.equipment.find(e=>e.id===(weaponId??actor.initialEquipment.weapon))):undefined;
+  const scaledRecipe = characterMotionRecipe(recipe, character);
+  const timeline = buildBattleMotionPreview(undefined,
+    () => retroRecipeTimeline(scaledRecipe, { side: record.effect.kind === "healing" ? "allies" : side }),
+    { outcome: context.actionBlocked ? "cancel" : context.hit === false ? "miss" : "hit" });
   return {
-    name: record.name || record.id, timeline, actorId: learnerActorId(record, project), contract: undefined, recipe,
+    name: record.name || record.id, timeline, actorId, character, contract: undefined, recipe,
     sheets: [{ key: recipe.fx, url: fxUrl(recipe.fx), frame: 64, frames: 8, anchor: "target" }],
   };
 }
@@ -415,13 +437,14 @@ let sessionRepeat = true;
 export type SkillRetroStage = { readonly element: HTMLElement; readonly stop: () => void };
 
 /** 이 스킬의 도트 전투 미리보기. 연출이 없으면 null. */
-export function renderSkillRetroStage(record: SkillRecord, project: Project): SkillRetroStage | null {
+function renderSkillRetroStageForActor(record: SkillRecord, project: Project, selectedActorId?:string, weaponId?:string): SkillRetroStage | null {
   // 몬스터 스킬은 무대 방향이 반대다(몬스터 왼쪽 시전 → 아군 오른쪽 대상). 레코드가 없어도 계약만으로 돈다.
   const resolved = resolveSkillChoreography(record, project.database.skillChoreographies);
-  if (resolved?.kind === "monster") return renderMonsterSkillStage(resolved.skill as RetroMonsterSkill, record.name);
-  const source = stageSource(record, project);
+  if (resolved?.kind === "monster") return renderMonsterSkillStage(resolved.skill as RetroMonsterSkill, record.name,resolved.record,record.hitSequence?.length);
+  const source = stageSource(record, project,{},selectedActorId,weaponId);
   if (!source) return null;
-  const { timeline } = source;
+  let timeline = source.timeline;
+  let previewHit=true, previewTriggered=true;
   const side = timeline.side;
 
   const world = el("div", { class: "db-skill-retro-world", attrs: { "aria-hidden": "true" } });
@@ -545,7 +568,11 @@ export function renderSkillRetroStage(record: SkillRecord, project: Project): Sk
   const placePoint = (place: RetroStagePlace): Point => {
     const front = side === "enemies" ? enemies[FRONT_ENEMY]!.home : singleTarget();
     // 큰 적 앞에 설 때는 그 몸 폭만큼 더 떨어져 선다(48px 적 = +38).
-    const reach = side === "enemies" ? enemies[FRONT_ENEMY]!.cell / 2 + 14 : 38;
+    const actorBounds=timeline.movement?.tracks?.length?undefined:battleContactBounds(caster.sheet,source.character?.style==="lancer"||source.recipe?.release==="attack"?"attack":"strike"),enemy=enemies[FRONT_ENEMY]!;
+    const targetBounds=battleContactBounds(enemy.node.style.backgroundImage,"idle");
+    const casterWidth=caster.pixel?(caster.pixel.box===caster.pixel.cell?caster.pixel.cell/2:caster.pixel.cell):CELL;
+    const measured=actorBounds&&targetBounds?enemy.cell*(targetBounds[2]-0.5)+casterWidth*(0.5-actorBounds[0])-1:undefined;
+    const reach = measured??(side === "enemies" ? enemy.cell / 2 + 14 : 38);
     switch (place) {
       case "home": return caster.home;
       case "front": return side === "enemies" ? { x: front.x + reach, y: front.y } : { x: front.x - 26, y: front.y };
@@ -585,7 +612,8 @@ export function renderSkillRetroStage(record: SkillRecord, project: Project): Sk
   };
 
   function draw(): void {
-    const state = retroTimelineStateAt(timeline, now);
+    let state = retroTimelineStateAt(timeline, now);
+    if(!previewHit||!previewTriggered)state={...state,hitTarget:0,hitAll:0};
     const shakeX = state.shake.x, shakeY = state.shake.y;
     world.style.setProperty("--retro-shake-x", shakeX + "px");
     world.style.setProperty("--retro-shake-y", shakeY + "px");
@@ -595,6 +623,7 @@ export function renderSkillRetroStage(record: SkillRecord, project: Project): Sk
     drawCutin(state);
     drawCaster(state);
     drawOthers(state);
+    drawProgramExtras();
     const used = new Set<number>();
     const targets = targetsOf();
     for (const fx of state.fx) {
@@ -604,7 +633,7 @@ export function renderSkillRetroStage(record: SkillRecord, project: Project): Sk
       const footPad = size >= 128 ? (fx.anchor === "target" ? 24 : 10) : 6;
       if (fx.anchor === "screen") drawFx(fx.event * 10, fx.layer, fx.cell, { x: STAGE_W / 2, y: STAGE_H / 2 }, false, used, SCREEN_FX_SCALE, fx.filter);
       else if (fx.anchor === "user") drawFx(fx.event * 10, fx.layer, fx.cell, feet(casterPoint(state), footPad), true, used, 1, fx.filter);
-      else if (fx.anchor === "target") drawFx(fx.event * 10, fx.layer, fx.cell, feet(singleTarget(), footPad), true, used, 1, fx.filter);
+      else if (fx.anchor === "target") drawFx(fx.event * 10, fx.layer, fx.cell, feet(motionSample("target")??singleTarget(), footPad), true, used, 1, fx.filter);
       else {
         const group = fx.anchor === "allAllies" ? party.map((entry) => entry.home) : targets;
         group.forEach((point, index) => drawFx(fx.event * 10 + index + 1, fx.layer, fx.cell, feet(point, footPad), true, used, 1, fx.filter));
@@ -618,6 +647,7 @@ export function renderSkillRetroStage(record: SkillRecord, project: Project): Sk
       if (shot.path === "trail") point = { x: casterPoint(state).x, y: casterPoint(state).y - 24 };
       else if (shot.path === "fall") point = { x: lerp(to.x + 46, to.x, shot.progress), y: lerp(-20, to.y, shot.progress) };
       else point = { x: lerp(from!.x, to.x, shot.progress), y: lerp(from!.y, to.y, shot.progress) - 14 * 4 * shot.progress * (1 - shot.progress) };
+      if(shot.trajectory)point=motionPositionAt(shot.trajectory,shot.at??now,motionAnchors(),timeline.movement?.acceleration);
       drawFx(shot.event * 10 + 9, shot.layer, shot.cell, point, false, used, 1, shot.filter);
     }
     for (const [id, node] of fxNodes) node.hidden = !used.has(id);
@@ -629,7 +659,23 @@ export function renderSkillRetroStage(record: SkillRecord, project: Project): Sk
 
   const feet = (point: Point, pad: number): Point => ({ x: point.x, y: point.y + pad });
   const centroid = (points: readonly Point[]): Point => ({ x: points.reduce((sum, p) => sum + p.x, 0) / Math.max(1, points.length), y: points.reduce((sum, p) => sum + p.y, 0) / Math.max(1, points.length) });
+  const motionAnchors=():MotionAnchors=>({target2:enemies[0]!.home,target3:enemies[2]!.home,home:caster.home,front:{...placePoint("front"),x:placePoint("front").x+Math.sign(caster.home.x-singleTarget().x)*(timeline.movement?.tracks?.length?0:battleContactBounds(caster.sheet)?source.character?.contactOffset??0:source.character?.reach??0)},target:singleTarget(),ally:party[0]!.home,left:{x:-96,y:caster.home.y},right:{x:STAGE_W+96,y:caster.home.y},top:{x:singleTarget().x,y:-160}});
+  const motionSample=(role:string)=>{const track=timeline.actors?.find(a=>a.role===role);return track?motionPositionAt(track,now,motionAnchors(),timeline.movement?.acceleration):undefined;};
+  const extraNodes=new Map<string,HTMLElement>();
+  function drawProgramExtras():void {
+    const used=new Set<string>();
+    for(const track of timeline.actors??[]){if(!["cloneA","cloneB","summon"].includes(track.role))continue;
+      used.add(track.role);let node=extraNodes.get(track.role);if(!node){node=caster.node.cloneNode(false) as HTMLElement;node.dataset.role=track.role;world.append(node);extraNodes.set(track.role,node);}
+      node.hidden=false;const p=motionPositionAt(track,now,motionAnchors(),timeline.movement?.acceleration);node.style.opacity=String(p.alpha);node.classList.toggle("is-flipped",p.flip);
+      const sheet=track.role==="summon"?partyPixelSheet(record.battleGimmick?.resourceId??"party-pixel-animal-7"):undefined;
+      if(sheet){node.style.backgroundImage=`url("${partyPixelSheetUrl(sheet)}")`;node.style.backgroundSize=`${sheet.cell*3}px ${sheet.cell*sheet.rows}px`;node.style.width=`${sheet.cell}px`;node.style.height=`${sheet.cell}px`;placeCell(node,partyPixelFrame(sheet,retroPartyPixelCellForPose(p.pose??"idle")??"idle_a"),sheet.cell);placeSprite(node,p,sheet.cell,sheet.cell-4);}
+      else {placeCell(node,EXTENDED_POSE_FRAME[p.pose??"idle"],CELL);placeSprite(node,p,CELL,45);}
+      node.style.zIndex="42";
+    }
+    for(const [role,node]of extraNodes)node.hidden=!used.has(role);
+  }
   const casterPoint = (state: RetroStageState): Point => {
+    const programmed=motionSample("user");if(programmed)return programmed;
     const from = placePoint(state.move.from), to = placePoint(state.move.to), p = state.move.progress;
     return { x: lerp(from.x, to.x, p), y: lerp(from.y, to.y, p) + state.move.arc * 4 * p * (1 - p) };
   };
@@ -637,6 +683,8 @@ export function renderSkillRetroStage(record: SkillRecord, project: Project): Sk
 
   function drawCaster(state: RetroStageState): void {
     const point = casterPoint(state);
+    const programmed=motionSample("user");
+    if(programmed){state={...state,pose:programmed.pose??state.pose,flip:programmed.flip,hidden:programmed.alpha===0};}
     const node = caster.node;
     const step = castStep(state.pose);
     if (caster.pixel) {
@@ -677,10 +725,11 @@ export function renderSkillRetroStage(record: SkillRecord, project: Project): Sk
       const struck = side === "enemies" ? Math.max(state.hitAll, index === FRONT_ENEMY ? state.hitTarget : 0) : 0;
       // 종마다 시트 계약의 대기 한 칸 길이로 돈다(박쥐 110ms · 골렘 300ms …).
       const idle = idleCells[Math.floor(clock / enemy.idleMs) % 4]!;
-      placeCell(enemy.node, PIXEL_ENEMY_FRAME[struck > 0.3 ? "hit" : idle], enemy.cell);
+      const movement=index===FRONT_ENEMY?motionSample("target"):undefined;
+      placeCell(enemy.node, PIXEL_ENEMY_FRAME[movement?.pose==="hit"||struck>0.3?"hit":idle], enemy.cell);
       const knock = struck > 0 ? Math.round(-5 * struck) + (Math.floor(clock / 40) % 2 === 0 ? 1 : -1) : 0;
       // 시트 계약: 바닥 기준선 y = cell − 4.
-      placeSprite(enemy.node, { x: enemy.home.x + knock, y: enemy.home.y }, enemy.cell, enemy.cell - 4);
+      placeSprite(enemy.node, movement??{ x: enemy.home.x + knock, y: enemy.home.y }, enemy.cell, enemy.cell - 4);
       enemy.node.style.setProperty("--retro-hit", String(Math.round(struck * 100) / 100));
       enemy.node.style.setProperty("--retro-dim", String(Math.round(state.dim * 100) / 100));
     });
@@ -688,7 +737,7 @@ export function renderSkillRetroStage(record: SkillRecord, project: Project): Sk
       if (member === caster) return;
       const blessed = side === "allies" ? Math.max(state.hitAll, index === FRONT_ALLY ? state.hitTarget : 0) : 0;
       placeCell(member.node, EXTENDED_POSE_FRAME[blessed > 0.2 ? "skill" : "idle"], CELL);
-      placeSprite(member.node, member.home, CELL, 45);
+      placeSprite(member.node, index===0?motionSample("ally")??member.home:member.home, CELL, 45);
       member.node.style.setProperty("--retro-glow", String(Math.round(blessed * 100) / 100));
       member.node.style.setProperty("--retro-dim", String(Math.round(state.dim * 100) / 100));
     });
@@ -707,7 +756,7 @@ export function renderSkillRetroStage(record: SkillRecord, project: Project): Sk
       let node = pops[index];
       if (!node) { node = el("span", { class: "db-skill-retro-pop" + (healing ? " is-heal" : "") }); popLayer.append(node); pops[index] = node; }
       const strength = Math.max(state.hitAll, index === single ? state.hitTarget : 0);
-      node.hidden = !showPops || strength <= 0.02;
+      node.hidden = !previewHit || !previewTriggered || !showPops || strength <= 0.02;
       if (node.hidden) return;
       node.textContent = popValue(index);
       const rise = Math.round((1 - strength) * 14);
@@ -763,7 +812,10 @@ export function renderSkillRetroStage(record: SkillRecord, project: Project): Sk
     el("span", { class: "db-skill-animation-chip", dataset: { testid: "db-skill-retro-motion" }, text: motionLabel }),
     ...(source.contract ? [el("span", { class: "db-skill-animation-chip", text: "Lv " + source.contract.level })] : []),
   ] });
-  const controls = el("div", { class: "db-skill-retro-controls", children: [playButton, repeatButton, speedGroup, counter] });
+  const outcome=el("select",{attrs:{"aria-label":"명중 결과"},children:[el("option",{attrs:{value:"hit"},text:"명중"}),el("option",{attrs:{value:"miss"},text:"빗나감"}),el("option",{attrs:{value:"cancel"},text:"발동불가"})]}) as HTMLSelectElement;
+  if(record.effect.kind==="support"){outcome.options[0]!.text="발동";outcome.options[1]!.disabled=true;}
+  outcome.addEventListener("change",()=>{stop();previewHit=outcome.value!=="miss";previewTriggered=outcome.value!=="cancel";if(timeline.movement){timeline=stageSource(record,project,{hit:previewHit,actionBlocked:outcome.value==="cancel"},selectedActorId,weaponId)!.timeline;}now=timeline.representativeMs;draw();});
+  const controls = el("div", { class: "db-skill-retro-controls", children: [playButton, repeatButton, speedGroup, counter,...(timeline.movement?[outcome]:[])] });
   const wrap = el("div", { class: "db-skill-retro-preview", dataset: { testid: "db-skill-retro-preview" }, children: [caption, stage, controls, chips] });
   // 무대 폭에 맞춰 배율을 정한다. 기본 2배(480px), 카드가 좁으면 줄인다 — 도트는 nearest 라 흐려지지 않는다.
   if (typeof ResizeObserver === "function") {
@@ -921,10 +973,33 @@ export function retroStageSignature(record: SkillRecord, records?: RetroChoreogr
   const resolved = resolveSkillChoreography(record, records);
   // 프로젝트 연출 레코드는 층·동작이 편집으로 바뀌므로 레코드 내용 전체가 서명에 든다.
   const body = resolved?.record ? JSON.stringify(resolved.record) : "";
-  if (resolved?.kind === "monster") return ["mon", record.id, record.retroChoreographyId ?? "", record.name, body].join("|");
+  if (resolved?.kind === "monster") return ["mon", record.id, record.retroChoreographyId ?? "", record.name, JSON.stringify(record.hitSequence),body].join("|");
   const auto = !resolved && !RETRO_SKILL_RECIPES[record.id] ? recommendRetroChoreography(record) : undefined;
   const recipe = resolved ? resolved.id : auto ? `auto:${auto.baseId}:${auto.tint ?? ""}:${auto.each ? 1 : 0}:${record.hitSequence?.length ?? 0}` : retroSkillRecipe(record);
   const key = typeof recipe === "string" ? recipe : recipe ? recipe.fx + ":" + recipe.approach : "";
-  return [key, record.scope, record.name, record.effect.kind, body].join("|");
+  return [key, record.scope, record.name, record.effect.kind,JSON.stringify(record.hitSequence), body].join("|");
 }
 
+
+/** Select the real project actor, including beasts/vehicles, instead of the contract illustration. */
+export function renderSkillRetroStage(record:SkillRecord,project:Project):SkillRetroStage|null {
+ const resolved=resolveSkillChoreography(record,project.database.skillChoreographies);
+ if(resolved?.kind==="monster")return renderSkillRetroStageForActor(record,project);
+ let actorId=resolved?.kind==="class"?(resolved.skill as RetroClassSkill).actorId:undefined;
+ if(!project.database.actors.some(a=>a.id===actorId))actorId=learnerActorId(record,project);
+ let weaponId:string|undefined;
+ let current=renderSkillRetroStageForActor(record,project,actorId,weaponId);
+ if(!current)return null;
+ const select=el("select",{attrs:{"aria-label":"시전자"},dataset:{testid:"db-skill-preview-actor"}}) as HTMLSelectElement;
+ for(const actor of project.database.actors)select.append(el("option",{attrs:{value:actor.id},text:actor.name}));
+ select.value=actorId??"";
+ const weapon=el("select",{attrs:{"aria-label":"미리보기 무기"},dataset:{testid:"db-skill-preview-weapon"},children:[el("option",{attrs:{value:"initial"},text:"캐릭터 초기 장비"}),el("option",{attrs:{value:""},text:"무기 없음"}),...project.database.equipment.filter(e=>e.slot==="weapon").map(e=>el("option",{attrs:{value:e.id},text:e.name}))]}) as HTMLSelectElement;
+ const style=el("span",{class:"db-skill-animation-chip"});
+ const holder=el("div",{children:[current.element]});
+ const refresh=()=>{current?.stop();const actor=project.database.actors.find(a=>a.id===select.value);actorId=actor?.id;weaponId=weapon.value==="initial"?undefined:weapon.value;current=renderSkillRetroStageForActor(record,project,actorId,weaponId);holder.replaceChildren(...(current?[current.element]:[]));if(actor){const profile=resolveCharacterMotion(actor,project.database.equipment.find(e=>e.id===(weaponId??actor.initialEquipment.weapon)));style.textContent=CHARACTER_MOTION_LABELS[profile.style];holder.dataset.motionStyle=profile.style;}};
+ select.addEventListener("change",refresh);weapon.addEventListener("change",refresh);
+ const controls=el("div",{class:"db-skill-retro-controls",children:[el("label",{text:"시전자",children:[select]}),el("label",{text:"무기",children:[weapon]}),style]});
+ const element=el("div",{children:[controls,holder]});
+ refresh();
+ return {element,stop:()=>current?.stop()};
+}

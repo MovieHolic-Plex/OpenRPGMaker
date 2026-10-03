@@ -1,0 +1,12 @@
+@layer map {
+  .terrain-design-panel { position: absolute; left: 12px; top: 64px; width: min(320px, calc(100% - 24px)); max-height: calc(100% - 190px); display: flex; flex-direction: column; pointer-events: auto; background: var(--bg-raised); color: var(--text-1); border: 1px solid var(--border-default); border-radius: 12px; box-shadow: var(--shadow-pop); }
+  .terrain-design-panel[hidden] { display: none; }
+  .terrain-design-head { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; cursor: move; touch-action: none; border-bottom: 1px solid var(--border-default); }
+  .terrain-design-body { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 9px; padding: 12px; overflow-y: auto; }
+  .terrain-design-field { display: flex; flex-direction: column; gap: 4px; min-width: 0; font-size: 12px; }
+  .terrain-design-field select, .terrain-design-field input { width: 100%; min-width: 0; box-sizing: border-box; color: var(--text-1); background: var(--bg-base); border: 1px solid var(--border-default); border-radius: 6px; padding: 5px 6px; font: inherit; }
+  .terrain-design-field:first-child { grid-column: 1 / -1; }
+  .terrain-design-info { padding: 0 12px 10px; font-size: 12px; }
+  .terrain-design-footer { display: flex; gap: 6px; justify-content: flex-end; padding: 0 12px 12px; }
+  @media (max-width: 500px) { .terrain-design-panel { top: 48px; } .terrain-design-body { grid-template-columns: minmax(0, 1fr); } }
+}

@@ -6,6 +6,7 @@ import { z } from "zod";
 import { withTsModule } from "./ontology-ts-loader.mjs";
 
 const STORE_ENTRY = fileURLToPath(new URL("../electron/local-store/store.ts", import.meta.url));
+const RECOVERY_ENTRY = fileURLToPath(new URL("../electron/local-store/recovery.ts", import.meta.url));
 const HEADLESS_ENTRY = fileURLToPath(new URL("../src/headless/index.ts", import.meta.url));
 
 const USAGE = [
@@ -16,10 +17,11 @@ const USAGE = [
   "  node scripts/oprn-store.mjs import-package <projectDir> --package <file.oprn|file.rpgzzu>",
   "  node scripts/oprn-store.mjs export-json <projectDir> --out <file.json>",
   "  node scripts/oprn-store.mjs backup <projectDir>",
+  "  node scripts/oprn-store.mjs restore <backupFolder> --out <newProjectFolder>",
 ].join("\n");
 
 
-const COMMANDS = ["init", "info", "import-json", "import-package", "export-json", "backup"];
+const COMMANDS = ["init", "info", "import-json", "import-package", "export-json", "backup", "restore"];
 
 const parsedArgsSchema = z.object({
   command: z.enum(COMMANDS),
@@ -57,6 +59,13 @@ function printJson(payload) {
 
 async function main() {
   const args = parseArgs(process.argv.slice(2));
+  if (args.command === "restore") {
+    const outPath = requirePath(args.outPath, "--out");
+    await withTsModule(RECOVERY_ENTRY, "oprn-recovery.mjs", async (recovery) => {
+      printJson(await recovery.restoreLocalProjectBackup(args.projectDir, outPath));
+    });
+    return;
+  }
   await withTsModule(STORE_ENTRY, "oprn-local-store.mjs", async (storeModule) => {
     if (args.command === "init") {
       const store = await storeModule.initLocalProjectStore({ projectDir: args.projectDir });

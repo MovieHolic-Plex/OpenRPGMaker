@@ -1,0 +1,2680 @@
+{
+  "scope": "Fresh monster redraw asset/reference/serialization inspection; no SQLite project or test suite executed",
+  "requestedSpecies": 140,
+  "freshRedraws": 135,
+  "totalNativeSheets": 140,
+  "preservedOldResourceIds": 141,
+  "defaultEnemies": 106,
+  "serializedCommonIdsUnchanged": true,
+  "missingEnemyExports": [],
+  "maximumColors": 22,
+  "native": [
+    {
+      "resourceId": "generated-enemy-slime-01",
+      "path": "assets/generated/pixel-enemies/slime.png",
+      "cell": 64,
+      "motion": "hop",
+      "idleFrameMs": 220,
+      "colors": 10,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "f8e9c411e0d6d61d470ea6464b98767c4c886a7f26eadf02f7ab31f2c071634d",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/slime.png",
+      "portraitSha256": "460b6b64479c5480ead1ca85d25f288d89bca8bd9e9b1a8353c731296e79a0ae"
+    },
+    {
+      "resourceId": "generated-enemy-bat-01",
+      "path": "assets/generated/pixel-enemies/bat.png",
+      "cell": 64,
+      "motion": "swoop",
+      "idleFrameMs": 110,
+      "colors": 16,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "1ce3ea015f1b9d88cb332ded6a2cf5da1e96ed890ffb5c01ea3f1d1a5f560bff",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/bat.png",
+      "portraitSha256": "63e51e8cfa95af2539bda42218e9c6b6afc305d1652a99ef8bb671c3e8d6399c"
+    },
+    {
+      "resourceId": "generated-enemy-golem-01",
+      "path": "assets/generated/pixel-enemies/golem.png",
+      "cell": 64,
+      "motion": "stomp",
+      "idleFrameMs": 300,
+      "colors": 13,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "fa70800ad929686803ac5308364697080898be38233b85b03c8a1797a1f90294",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/golem.png",
+      "portraitSha256": "b75f21b2e185f235e31ebdee7727013ddf7f89543da8a970c1b3cb601b864af3"
+    },
+    {
+      "resourceId": "generated-enemy-dragon-01",
+      "path": "assets/generated/pixel-enemies/dragon.png",
+      "cell": 96,
+      "motion": "breath",
+      "idleFrameMs": 260,
+      "colors": 16,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "1b47a954050f8345a0d26b038f9b4dd3a267bfa76f7cede7d1029202dde58e9e",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/dragon.png",
+      "portraitSha256": "9f32ba80115f6961024fa56d4099d37f5e3fecceeed1713207d92dd043983d91"
+    },
+    {
+      "resourceId": "generated-enemy-skeleton-archer",
+      "path": "assets/generated/pixel-enemies/skeleton-archer.png",
+      "cell": 64,
+      "motion": "shoot",
+      "idleFrameMs": 240,
+      "colors": 13,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "6d037975ccbab8e600425a4b9ac4a6136c5c3445873bb46e92818008121073f2",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/skeleton-archer.png",
+      "portraitSha256": "7a3dfa7c6ab91ad90411284936cf440b57592d818b81b6865f1549cb4f85657b"
+    },
+    {
+      "resourceId": "generated-enemy-wolf-grey",
+      "path": "assets/generated/pixel-enemies/wolf-grey.png",
+      "cell": 64,
+      "motion": "dash",
+      "idleFrameMs": 180,
+      "colors": 15,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "69bcde6644b5911cb74ae5f44c604929f04c3e81bcf5b22ebf5885e0be7a96c8",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/wolf-grey.png",
+      "portraitSha256": "99d715527bd8006f7d6bca39f0b890d52e1acc35234baa6822a4168ec5507a15"
+    },
+    {
+      "resourceId": "generated-enemy-spider-cave",
+      "path": "assets/generated/pixel-enemies/spider-cave.png",
+      "cell": 64,
+      "motion": "dash",
+      "idleFrameMs": 160,
+      "colors": 9,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "1c36c7dc4c894d2576de786d435924406fd06ae8c020f36800841b406e5e2f35",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/spider-cave.png",
+      "portraitSha256": "4c13c409d06fc62964c28ff3092b73fa31a441e459d095a465c3bbf8c8eb514c"
+    },
+    {
+      "resourceId": "generated-enemy-wisp-blue",
+      "path": "assets/generated/pixel-enemies/wisp-blue.png",
+      "cell": 64,
+      "motion": "float",
+      "idleFrameMs": 200,
+      "colors": 8,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "88f5e4d3d1e8bcbcd919089aee9e71e8059769ba68dbd2d4b7ed4e784420261d",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/wisp-blue.png",
+      "portraitSha256": "af229a0080ac48f933bf5999da7a2238027df151120b2c5ce33bfd026d7bd5f6"
+    },
+    {
+      "resourceId": "generated-enemy-slime-red",
+      "path": "assets/generated/pixel-enemies/slime-red.png",
+      "cell": 64,
+      "motion": "hop",
+      "idleFrameMs": 180,
+      "colors": 11,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "470f17b824d55e38a892e546b67d18a96439705a4b52912df87bafd38dde6240",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/slime-red.png",
+      "portraitSha256": "e0dd599458b08d84bfa870391a59b9afc96c2ece446f2fab571753cfc4e89e3f"
+    },
+    {
+      "resourceId": "generated-enemy-zombie-rot",
+      "path": "assets/generated/pixel-enemies/zombie-rot.png",
+      "cell": 64,
+      "motion": "stomp",
+      "idleFrameMs": 340,
+      "colors": 17,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "8752090a8b628989e13df02122cccb4e46923f5c00a10ac89833e72628281040",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/zombie-rot.png",
+      "portraitSha256": "24dc54e33f236775d46a04cdb14b7bc474f073201bc5256ee80e551b7ed49802"
+    },
+    {
+      "resourceId": "generated-enemy-bat-vampire",
+      "path": "assets/generated/pixel-enemies/bat-vampire.png",
+      "cell": 64,
+      "motion": "swoop",
+      "idleFrameMs": 120,
+      "colors": 16,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "2d50b42ee8fa482111e4de164000a594d23e9318268d4629447c7a799a763fce",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/bat-vampire.png",
+      "portraitSha256": "0ec0b262aa3d3c62880048ac36866e337fd23e7ca04fd46779cfcec8da45858b"
+    },
+    {
+      "resourceId": "generated-enemy-bee-giant",
+      "path": "assets/generated/pixel-enemies/bee-giant.png",
+      "cell": 64,
+      "motion": "swoop",
+      "idleFrameMs": 120,
+      "colors": 14,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "77ad96ab3eb5d6e363748d6b314a07b99ef7cb49515eab753efb7806c06642b8",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/bee-giant.png",
+      "portraitSha256": "90474325c7c72a61392eb98e9702a796d4e4f0e584a158930d19abcb06e46669"
+    },
+    {
+      "resourceId": "generated-enemy-scorpion-sand",
+      "path": "assets/generated/pixel-enemies/scorpion-sand.png",
+      "cell": 64,
+      "motion": "dash",
+      "idleFrameMs": 170,
+      "colors": 9,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "8f8678fec9541f521d5e1b784599796af5202dac376e764d14cfaea59e004243",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/scorpion-sand.png",
+      "portraitSha256": "d20e8b3c32d6a865ed082653e80b6c47988c0c4d8cf8f6f79c3f68d0bfb743b2"
+    },
+    {
+      "resourceId": "generated-enemy-mantis-blade",
+      "path": "assets/generated/pixel-enemies/mantis-blade.png",
+      "cell": 64,
+      "motion": "dash",
+      "idleFrameMs": 170,
+      "colors": 15,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "eead4d089b467869a4a1b1ca76e02448e75eff445bc95ba06e4e1e0c25cd1f25",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/mantis-blade.png",
+      "portraitSha256": "7c16f4c76256040a3ced74e68d688d74a15dbd735dfd8598cbb94911dfa4ca56"
+    },
+    {
+      "resourceId": "generated-enemy-boar-tusk",
+      "path": "assets/generated/pixel-enemies/boar-tusk.png",
+      "cell": 64,
+      "motion": "dash",
+      "idleFrameMs": 170,
+      "colors": 11,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "bd7c8dd087c5b25ec8a1bfbf7312af1bad610a928f1f4f1880227021219e0180",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/boar-tusk.png",
+      "portraitSha256": "622f1d311a14b066db38017d1928080f87d0cf8e1a25c22b916abd29edd6ec5a"
+    },
+    {
+      "resourceId": "generated-enemy-bear-brown",
+      "path": "assets/generated/pixel-enemies/bear-brown.png",
+      "cell": 64,
+      "motion": "stomp",
+      "idleFrameMs": 320,
+      "colors": 15,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "b35ebd1051d9be1616d5ca122a7e70ed21cb00a4f87b70c8f53365fc8ca1ab63",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/bear-brown.png",
+      "portraitSha256": "df433ca026606987f43cb9dbb44f5879a9da1fba50d009178a2c249da8c0ebb5"
+    },
+    {
+      "resourceId": "generated-enemy-snake-viper",
+      "path": "assets/generated/pixel-enemies/snake-viper.png",
+      "cell": 64,
+      "motion": "dash",
+      "idleFrameMs": 170,
+      "colors": 12,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "86885f6b32bd9be3fdb753f2a0d30693036ca140bdb29ae22a85d4e7c2ad12ba",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/snake-viper.png",
+      "portraitSha256": "413f56e82ff1195fbdcae139a06bb939eb66f259f97fd7503d87a4d445ad995f"
+    },
+    {
+      "resourceId": "generated-enemy-crab-rock",
+      "path": "assets/generated/pixel-enemies/crab-rock.png",
+      "cell": 64,
+      "motion": "dash",
+      "idleFrameMs": 170,
+      "colors": 10,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "81c44fef31c56fea0ba52e013eaa65905a07d998c9af22713304cd2a6553fe07",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/crab-rock.png",
+      "portraitSha256": "5a46392874fe458c50b91238aeb93b6583601b3c96703952bcb9f55a73776665"
+    },
+    {
+      "resourceId": "generated-enemy-hound-hell",
+      "path": "assets/generated/pixel-enemies/hound-hell.png",
+      "cell": 64,
+      "motion": "dash",
+      "idleFrameMs": 170,
+      "colors": 15,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "81fe8fb3403b8cfc3c069e1e20535aa6f3680907d941c8f9dd8e472b50c494f2",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/hound-hell.png",
+      "portraitSha256": "2e5b054347d037cf83b6d176228e268955d67114ca1c96bef2e5499c491a767b"
+    },
+    {
+      "resourceId": "generated-enemy-plant-carnivore",
+      "path": "assets/generated/pixel-enemies/plant-carnivore.png",
+      "cell": 64,
+      "motion": "stomp",
+      "idleFrameMs": 320,
+      "colors": 18,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "2283f646bf9dbd882cc959e34a67cd70e2d3bea1e74d6a5cc122743b3bd30e35",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/plant-carnivore.png",
+      "portraitSha256": "0e422becba781ec7a3f905e1d1e3f62f8c459242be8b535ee0b15dd7350151e5"
+    },
+    {
+      "resourceId": "generated-enemy-skeleton-knight",
+      "path": "assets/generated/pixel-enemies/skeleton-knight.png",
+      "cell": 64,
+      "motion": "stomp",
+      "idleFrameMs": 320,
+      "colors": 16,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "210a890709cef2dabad3a20643adbfe8d57e74536afa467ee6c8e6458054e576",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/skeleton-knight.png",
+      "portraitSha256": "727cce477be229cfe30dea78c2bea3c4641cbe9d648877f62bec8f4979e259a8"
+    },
+    {
+      "resourceId": "generated-enemy-ghost-pale",
+      "path": "assets/generated/pixel-enemies/ghost-pale.png",
+      "cell": 64,
+      "motion": "float",
+      "idleFrameMs": 200,
+      "colors": 8,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "5fb2a4e965a065b61be79947e0988d2ddf7abe480831ea16f08d81885a8d2c28",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/ghost-pale.png",
+      "portraitSha256": "4df6bf6bcbd61cd562babc3313be06d91e86205fcedad387be8f2c337bba9e5e"
+    },
+    {
+      "resourceId": "generated-enemy-lich-frost",
+      "path": "assets/generated/pixel-enemies/lich-frost.png",
+      "cell": 64,
+      "motion": "shoot",
+      "idleFrameMs": 280,
+      "colors": 18,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "00c9826d8bb0af57bb55d775dde54b7f87dfa987cd785f0aead18f967b6586a5",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/lich-frost.png",
+      "portraitSha256": "30e5e5672d7cdd587ff09f5145047fe38b343f1aa43259a08049f45c334e1cd8"
+    },
+    {
+      "resourceId": "generated-enemy-mummy-bandage",
+      "path": "assets/generated/pixel-enemies/mummy-bandage.png",
+      "cell": 64,
+      "motion": "stomp",
+      "idleFrameMs": 340,
+      "colors": 12,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "adec5c52f43a321fbac5d35c6302adc2ea718ec36745fb12b92ef95f193eb250",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/mummy-bandage.png",
+      "portraitSha256": "43f3fbcd11199a42a7defee4804fc0f4ed5c71ced60c549398122fcb1c2cdbd0"
+    },
+    {
+      "resourceId": "generated-enemy-spirit-fire",
+      "path": "assets/generated/pixel-enemies/spirit-fire.png",
+      "cell": 64,
+      "motion": "float",
+      "idleFrameMs": 160,
+      "colors": 8,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "3ca7a2a5eff4975a21d20c199297784dfff47d4ee714c7740f32e001e4384eef",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/spirit-fire.png",
+      "portraitSha256": "a39ad0317b0a97a4a7816aa070cc92640330f3fca708c117ca23c00f935be471"
+    },
+    {
+      "resourceId": "generated-enemy-spirit-water",
+      "path": "assets/generated/pixel-enemies/spirit-water.png",
+      "cell": 64,
+      "motion": "float",
+      "idleFrameMs": 220,
+      "colors": 8,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "e2c56d7d6272ecc167d72b43fe51ccdd69c7956d8266f59038b55f7a21e93925",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/spirit-water.png",
+      "portraitSha256": "c09ce6e55de7ed2130cc42cbc8076030062d7bbb41bb66e442abe7a2bd6fbca4"
+    },
+    {
+      "resourceId": "generated-enemy-golem-iron",
+      "path": "assets/generated/pixel-enemies/golem-iron.png",
+      "cell": 64,
+      "motion": "stomp",
+      "idleFrameMs": 320,
+      "colors": 14,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "5e63948bf9b12d477d26223687026fdc381ff731dd9f71bc700969e0bcc5a420",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/golem-iron.png",
+      "portraitSha256": "497d3d1c04e183ee2c9c6bb6eb7d3a3b49b6f9e738ddd23f78de7461ba9bb7c5"
+    },
+    {
+      "resourceId": "generated-enemy-armor-living",
+      "path": "assets/generated/pixel-enemies/armor-living.png",
+      "cell": 64,
+      "motion": "stomp",
+      "idleFrameMs": 300,
+      "colors": 12,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "d4511233b2d46ad13cc1afa6c52685e90c97f7404df1d5a1dd2316e91b0ad812",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/armor-living.png",
+      "portraitSha256": "394070b822203ec0cde0188d22636fe9766fce5bdfe5a982facede9e0f179ef7"
+    },
+    {
+      "resourceId": "generated-enemy-mimic-chest",
+      "path": "assets/generated/pixel-enemies/mimic-chest.png",
+      "cell": 64,
+      "motion": "hop",
+      "idleFrameMs": 200,
+      "colors": 18,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "a06124603d009f87d8562ebb0fb58fa39db2db2eda0837ced3b66325a651597d",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/mimic-chest.png",
+      "portraitSha256": "a9aded3ba62a7a0e632619d903695620d6358192dfe586c10df75f2eba538fb2"
+    },
+    {
+      "resourceId": "generated-enemy-eye-floating",
+      "path": "assets/generated/pixel-enemies/eye-floating.png",
+      "cell": 64,
+      "motion": "shoot",
+      "idleFrameMs": 200,
+      "colors": 12,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "7aad4707a4949615a27bbd2ecd3e21767fa6181c82ce981af7112a05c0cdacfb",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/eye-floating.png",
+      "portraitSha256": "1869eff51a9f2ebb27a8f1942fc88ac8a778af356ad9f71865d4df5b214adeb9"
+    },
+    {
+      "resourceId": "generated-enemy-goblin-scout",
+      "path": "assets/generated/pixel-enemies/goblin-scout.png",
+      "cell": 64,
+      "motion": "dash",
+      "idleFrameMs": 160,
+      "colors": 18,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "8551d1e1d357ee705b0effffff7ba00353c58e690102f0c5e6c312e368c05c0a",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/goblin-scout.png",
+      "portraitSha256": "befd2c3d3c49cd78e2bd80493e45fe092b83573b9d84070e8d1328d4f4727033"
+    },
+    {
+      "resourceId": "generated-enemy-orc-warrior",
+      "path": "assets/generated/pixel-enemies/orc-warrior.png",
+      "cell": 64,
+      "motion": "stomp",
+      "idleFrameMs": 300,
+      "colors": 19,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "c526a869ecf254e45033eec9dceb0b00eeac5f2748305aca4cbe7771712e107c",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/orc-warrior.png",
+      "portraitSha256": "a0e8ac1d96adb3c9bb0be87227693eb7a8c628df2d65474d2b8b1fb524df569a"
+    },
+    {
+      "resourceId": "generated-enemy-orc-shaman",
+      "path": "assets/generated/pixel-enemies/orc-shaman.png",
+      "cell": 64,
+      "motion": "shoot",
+      "idleFrameMs": 240,
+      "colors": 18,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "fd8b3d82927b0a8975e3e934dbdf75324eeaa260311958caa539f6608198e5bb",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/orc-shaman.png",
+      "portraitSha256": "2a6a63875b968eb98e17275fb56112a86c97687459da14acb139fcd1e5745186"
+    },
+    {
+      "resourceId": "generated-enemy-bandit-mask",
+      "path": "assets/generated/pixel-enemies/bandit-mask.png",
+      "cell": 64,
+      "motion": "dash",
+      "idleFrameMs": 170,
+      "colors": 16,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "23f439c1276342cffeec00f821bb2fd86e6701c6691dfe82abfb63b1db83aeca",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/bandit-mask.png",
+      "portraitSha256": "7aab7ced33432ea54a407e50e69550c4b4fef00596355090ba59699e99648d83"
+    },
+    {
+      "resourceId": "generated-enemy-lizardman-spear",
+      "path": "assets/generated/pixel-enemies/lizardman-spear.png",
+      "cell": 64,
+      "motion": "dash",
+      "idleFrameMs": 190,
+      "colors": 19,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "152cd60c21c388960efd4d6d74d57e20b92cac7492e88a287142fe6f14d30080",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/lizardman-spear.png",
+      "portraitSha256": "762cb476a4b19cccb5516611f4c317d8120a5c3378426513f06af6a4967d56c3"
+    },
+    {
+      "resourceId": "generated-enemy-harpy-cliff",
+      "path": "assets/generated/pixel-enemies/harpy-cliff.png",
+      "cell": 64,
+      "motion": "swoop",
+      "idleFrameMs": 120,
+      "colors": 17,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "05af1c9234a049b258ca9f4858705df691b7c61c42f6ce581b85adb59d20dd28",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/harpy-cliff.png",
+      "portraitSha256": "efbb7827af74a4c8de1317c766c964de4ca1f0e7a02c5644bd30bb521dea1c9a"
+    },
+    {
+      "resourceId": "generated-enemy-minotaur-maze",
+      "path": "assets/generated/pixel-enemies/minotaur-maze.png",
+      "cell": 96,
+      "motion": "stomp",
+      "idleFrameMs": 320,
+      "colors": 18,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "2b6df55d99dca5017b09bb1228c0d160e6695dfb9798848a5919db16e06c1351",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/minotaur-maze.png",
+      "portraitSha256": "c92cd7c809d4ca33287b8d7095b4851c818551e66960d688fcc054abebcdd750"
+    },
+    {
+      "resourceId": "generated-enemy-troll-cave",
+      "path": "assets/generated/pixel-enemies/troll-cave.png",
+      "cell": 96,
+      "motion": "stomp",
+      "idleFrameMs": 340,
+      "colors": 15,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "152f618659c2c35a254bd59ec08157c2a7229a2785ba225d7d95a8d963505bd0",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/troll-cave.png",
+      "portraitSha256": "7743fc2d183061cb8932128b934b52fba32b4cafad307b4104bc33df6cce2147"
+    },
+    {
+      "resourceId": "generated-enemy-gargoyle-stone",
+      "path": "assets/generated/pixel-enemies/gargoyle-stone.png",
+      "cell": 64,
+      "motion": "swoop",
+      "idleFrameMs": 260,
+      "colors": 15,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "00542d4f70efc95153288e3d8b21eb07becde8ae07303051ab18f869d0e10e0a",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/gargoyle-stone.png",
+      "portraitSha256": "162ce32bba3732e171d5ec0f0ff4eb96e3ae19e03ccfdb5b44d5a0dca0d0cf0c"
+    },
+    {
+      "resourceId": "generated-enemy-demon-lord",
+      "path": "assets/generated/pixel-enemies/demon-lord.png",
+      "cell": 96,
+      "motion": "breath",
+      "idleFrameMs": 280,
+      "colors": 19,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "01a27ddec1a7da25971cd84eaedcede653becf192b54cfc36fff7eb0428ab3a7",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/demon-lord.png",
+      "portraitSha256": "b3882c7287c1f5aaa8ea61b6b5d1fb9f368ea8a3b543d813a844a976e9a08fdf"
+    },
+    {
+      "resourceId": "generated-enemy-crab-01",
+      "path": "assets/generated/pixel-enemies/crab-01.png",
+      "cell": 64,
+      "motion": "dash",
+      "idleFrameMs": 180,
+      "colors": 9,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "164b3dc5a2a4320973dcc7299bf05516b3404af16856960b6a636a6c19f7fd18",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/crab-01.png",
+      "portraitSha256": "5e12a69ec6425a4a47638e396d5b2cd09ed085efa4f36687645ebb03bbf087e8"
+    },
+    {
+      "resourceId": "generated-enemy-spider-01",
+      "path": "assets/generated/pixel-enemies/spider-01.png",
+      "cell": 64,
+      "motion": "dash",
+      "idleFrameMs": 180,
+      "colors": 9,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "fc0c097942e664e96281840f89380f3d7f6f48418ad6d11bf4733e0a15fbe5eb",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/spider-01.png",
+      "portraitSha256": "9762c5c68e80bc655cc9ac14ed9ea71c2900365b13bd3127e0f76eb23b53a626"
+    },
+    {
+      "resourceId": "generated-enemy-snake-01",
+      "path": "assets/generated/pixel-enemies/snake-01.png",
+      "cell": 64,
+      "motion": "dash",
+      "idleFrameMs": 180,
+      "colors": 11,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "8d5d6778fca51944af13ff0c3ad83a7e05512419bc9ab341c26f2b2ce053f79c",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/snake-01.png",
+      "portraitSha256": "2711660068a5514cd042b70b530bc08b01000c754a720ef0d9e3c9807a66f3db"
+    },
+    {
+      "resourceId": "generated-enemy-scorpion-01",
+      "path": "assets/generated/pixel-enemies/scorpion-01.png",
+      "cell": 64,
+      "motion": "dash",
+      "idleFrameMs": 180,
+      "colors": 9,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "a1662d54f4c457ea51a5ae614af07d15cd121c6a4bedf6da25dd149b2bb64518",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/scorpion-01.png",
+      "portraitSha256": "e0d338da2a796249209b4e00c2fe63ccd41c0b2241e56874c9f3eeb41999a872"
+    },
+    {
+      "resourceId": "generated-enemy-wolf-01",
+      "path": "assets/generated/pixel-enemies/wolf-01.png",
+      "cell": 64,
+      "motion": "dash",
+      "idleFrameMs": 180,
+      "colors": 12,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "c6dd3d9779d8e5bbe51661bb41b7f8e8db647d74db981979f843d926fd8a0225",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/wolf-01.png",
+      "portraitSha256": "c64b3b6dfc69045d17a6871716304d93e280a19812652e3c942a4568b68bc768"
+    },
+    {
+      "resourceId": "generated-enemy-centipede-01",
+      "path": "assets/generated/pixel-enemies/centipede-01.png",
+      "cell": 64,
+      "motion": "dash",
+      "idleFrameMs": 180,
+      "colors": 9,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "3b1da83e363934ad88ed8579dda756111256a2ef8805adf778d0c070d236a91d",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/centipede-01.png",
+      "portraitSha256": "b44544b3531b04699ebdbc6c1460a0046c2e4ce58068f0836f3375c2253e3d51"
+    },
+    {
+      "resourceId": "generated-enemy-horse-01",
+      "path": "assets/generated/pixel-enemies/horse-01.png",
+      "cell": 64,
+      "motion": "dash",
+      "idleFrameMs": 180,
+      "colors": 11,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "42a8e195489fd7b30bbc505ca80152a1be99b25d2f707408f25ef6e0d6980478",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/horse-01.png",
+      "portraitSha256": "289d8e21307b23f7e4b495543cdf186c9369bdcad0cb0ac9035a67933b797f0a"
+    },
+    {
+      "resourceId": "generated-enemy-unicorn-01",
+      "path": "assets/generated/pixel-enemies/unicorn-01.png",
+      "cell": 64,
+      "motion": "dash",
+      "idleFrameMs": 180,
+      "colors": 13,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "d6f3226cac4e7a6cb151e9c5467379e5727d21949e66e8ec764b15151cf73d38",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/unicorn-01.png",
+      "portraitSha256": "6c1bb3c727eab7148de530c42d6dcf3b01dab979443ba23f048de5c3ee16fbe4"
+    },
+    {
+      "resourceId": "generated-enemy-cat-01",
+      "path": "assets/generated/pixel-enemies/cat-01.png",
+      "cell": 64,
+      "motion": "dash",
+      "idleFrameMs": 180,
+      "colors": 15,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "96267c4d775adafbcc383e1aea53e98680c5d665c5dc48ff1c53bb679b67e08d",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/cat-01.png",
+      "portraitSha256": "d63bfefd569ffc5dc49a92aabd0ca5ec3f5de2f008e168e5d21a0d7d767eed6a"
+    },
+    {
+      "resourceId": "generated-enemy-cockatrice-01",
+      "path": "assets/generated/pixel-enemies/cockatrice-01.png",
+      "cell": 64,
+      "motion": "dash",
+      "idleFrameMs": 180,
+      "colors": 15,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "2ac4f20001f3ddee2c4c6cac950ada318480d3fc6a520f063f1961bbbf2b5354",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/cockatrice-01.png",
+      "portraitSha256": "69f6e67a1319ac5b8e227a67b3cafa6b4653a4f65e1ec3d1b924778d625af200"
+    },
+    {
+      "resourceId": "generated-enemy-parasite-01",
+      "path": "assets/generated/pixel-enemies/parasite-01.png",
+      "cell": 64,
+      "motion": "dash",
+      "idleFrameMs": 180,
+      "colors": 10,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "746e360d45779f3c87a7d9e7db5e684a498ca12e60786678cbb58fadb2a4eaa0",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/parasite-01.png",
+      "portraitSha256": "52c62170c8ef84c477528f3c7e05781f90742c50b21277354b5b50aba93ef0df"
+    },
+    {
+      "resourceId": "generated-enemy-mantis-01",
+      "path": "assets/generated/pixel-enemies/mantis-01.png",
+      "cell": 64,
+      "motion": "dash",
+      "idleFrameMs": 180,
+      "colors": 14,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "75c65a4396ac7aebeac8a27c4c0781a289e6548490b99f4959ef467aa64d7b6d",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/mantis-01.png",
+      "portraitSha256": "be65df761e03fab8314cfd6443492ccf963e7ce823dbc708dcf0fb85547ebef6"
+    },
+    {
+      "resourceId": "generated-enemy-fish-01",
+      "path": "assets/generated/pixel-enemies/fish-01.png",
+      "cell": 64,
+      "motion": "float",
+      "idleFrameMs": 180,
+      "colors": 14,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "a447cf00b6fc223db4f21d0800691a47bbe68797b606f16b2ecc01084fab45b9",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/fish-01.png",
+      "portraitSha256": "b332b8af5b5118956e2f2cd421c848cf576a67d3a577f99b10059733e19542fe"
+    },
+    {
+      "resourceId": "generated-enemy-bat-cave",
+      "path": "assets/generated/pixel-enemies/bat-cave.png",
+      "cell": 64,
+      "motion": "swoop",
+      "idleFrameMs": 180,
+      "colors": 17,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "df90d855c2061a8d7352e31a235fc60574907adc156d58e551e6c1fb4021cf26",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/bat-cave.png",
+      "portraitSha256": "8e8a7261cdd7d3cb4197980c8331b70dd6dbdcf209bfec11cf7820729ace80fd"
+    },
+    {
+      "resourceId": "generated-enemy-spider-widow",
+      "path": "assets/generated/pixel-enemies/spider-widow.png",
+      "cell": 64,
+      "motion": "dash",
+      "idleFrameMs": 180,
+      "colors": 10,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "58083bd76790e813d6ba36126886b7c0595dc6246fcc38ac8ef6ff55d9ffba2a",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/spider-widow.png",
+      "portraitSha256": "3369df7b3673c85800334d3ae0ffeedacce024fa654608a071d7cc345d36748f"
+    },
+    {
+      "resourceId": "generated-enemy-beetle-horn",
+      "path": "assets/generated/pixel-enemies/beetle-horn.png",
+      "cell": 64,
+      "motion": "dash",
+      "idleFrameMs": 180,
+      "colors": 9,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "c515cd5788e0ab95c17b5746efc2f470d3aff3d2f9747e3662380afd636e2217",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/beetle-horn.png",
+      "portraitSha256": "d6ab3c596b29f3346a48bc543758efc35069d2a02bbf6b606741b39f9c1cb1fa"
+    },
+    {
+      "resourceId": "generated-enemy-centipede-fire",
+      "path": "assets/generated/pixel-enemies/centipede-fire.png",
+      "cell": 64,
+      "motion": "dash",
+      "idleFrameMs": 180,
+      "colors": 10,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "0d5b277b83accae46d6b7a35176d09b0732e2dd7a7c1c0f204cde4f7888cfb27",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/centipede-fire.png",
+      "portraitSha256": "aaa25ab8a8d5c03275f3538ebc5cf138ed7378e7d18bb85adf5911439585d1ff"
+    },
+    {
+      "resourceId": "generated-enemy-moth-dust",
+      "path": "assets/generated/pixel-enemies/moth-dust.png",
+      "cell": 64,
+      "motion": "swoop",
+      "idleFrameMs": 180,
+      "colors": 12,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "f8d2a1ab5c2ce2e965847ab9e90816e0d91891df5757bf7f4c9bfdefcdbff3d1",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/moth-dust.png",
+      "portraitSha256": "afb4a56d4bdb469564b4ea4366c990428c3d30ef8cd2fd1a59d04bd2c5767b2a"
+    },
+    {
+      "resourceId": "generated-enemy-worm-sand",
+      "path": "assets/generated/pixel-enemies/worm-sand.png",
+      "cell": 64,
+      "motion": "dash",
+      "idleFrameMs": 180,
+      "colors": 10,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "be065402743bd4d4697dc0cb78c35c0e20975f39adc7ebb1de8a3161a7942b5b",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/worm-sand.png",
+      "portraitSha256": "9defc388786250f643cd97aaf8c6142c630e44ec956e320fcf79164e1b883f80"
+    },
+    {
+      "resourceId": "generated-enemy-ant-soldier",
+      "path": "assets/generated/pixel-enemies/ant-soldier.png",
+      "cell": 64,
+      "motion": "dash",
+      "idleFrameMs": 180,
+      "colors": 9,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "fa69cd248e57958f9d273488cb85f171ed022f7ffc6de3197629e7f82de546ce",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/ant-soldier.png",
+      "portraitSha256": "bbf469e7bbe79c48753afb32b66c2b4b042e80df0e4f0d21eb05d04d2801a284"
+    },
+    {
+      "resourceId": "generated-enemy-wolf-dire",
+      "path": "assets/generated/pixel-enemies/wolf-dire.png",
+      "cell": 64,
+      "motion": "dash",
+      "idleFrameMs": 180,
+      "colors": 12,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "39851231a62b9482d3732cc114d96d150f5901b1e1c18c7ef3365b139cce5b6c",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/wolf-dire.png",
+      "portraitSha256": "e58fa365bc2d8a58586d3c03fdf092b20d755b94c73bf1e6708e3754650d4b4c"
+    },
+    {
+      "resourceId": "generated-enemy-tiger-saber",
+      "path": "assets/generated/pixel-enemies/tiger-saber.png",
+      "cell": 64,
+      "motion": "dash",
+      "idleFrameMs": 180,
+      "colors": 15,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "f5ed621b6d1cb6ee9cd96f619298be311360af1b1603b90d6c9e41e94ff42b02",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/tiger-saber.png",
+      "portraitSha256": "c15fe5aa937421ba5f46c89f15edb3d753f355c88401e6e0d90b78c822280bd6"
+    },
+    {
+      "resourceId": "generated-enemy-rat-giant",
+      "path": "assets/generated/pixel-enemies/rat-giant.png",
+      "cell": 64,
+      "motion": "dash",
+      "idleFrameMs": 180,
+      "colors": 15,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "085813d8cc5ef469e59405158eb7c70f66a6f04037a4fba92603e1035bbb0313",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/rat-giant.png",
+      "portraitSha256": "47ec5c0ee000a37ba9d383d4a2f331042cbec87b1c5061a1cc62a2d55257e019"
+    },
+    {
+      "resourceId": "generated-enemy-bird-hawk",
+      "path": "assets/generated/pixel-enemies/bird-hawk.png",
+      "cell": 64,
+      "motion": "swoop",
+      "idleFrameMs": 180,
+      "colors": 13,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "1c164e7dd4d7004a492e40b0fa433c7635ac8dbd5dc2c63720c24b3b5bca52a2",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/bird-hawk.png",
+      "portraitSha256": "1c20a1e5b396af7ed40f1ab23fba7b1a1b789c23a9296a2b32c51e16ff8deb41"
+    },
+    {
+      "resourceId": "generated-enemy-cat-shadow",
+      "path": "assets/generated/pixel-enemies/cat-shadow.png",
+      "cell": 64,
+      "motion": "dash",
+      "idleFrameMs": 180,
+      "colors": 15,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "7509288bdb7a05307a6148315f8a2e24b7ab4eb6ce9b90e9db987edf26d65599",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/cat-shadow.png",
+      "portraitSha256": "0467ed012e3f40845ff702879055b72f92eb3b29900cca9f49cd3da018f9b83a"
+    },
+    {
+      "resourceId": "generated-enemy-goat-mountain",
+      "path": "assets/generated/pixel-enemies/goat-mountain.png",
+      "cell": 64,
+      "motion": "dash",
+      "idleFrameMs": 180,
+      "colors": 12,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "4a65e3b89d83576294d2a716d8b7f91a2d92680ca8b5f5c35e2c350593518442",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/goat-mountain.png",
+      "portraitSha256": "f71187416ee92d3f6822ed5207a811fd1454d3c1a0774a862b1003e06e8cc46e"
+    },
+    {
+      "resourceId": "generated-enemy-ape-stone",
+      "path": "assets/generated/pixel-enemies/ape-stone.png",
+      "cell": 64,
+      "motion": "stomp",
+      "idleFrameMs": 180,
+      "colors": 12,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "19874e495f15f23cc4de22f0651297893f3ec04712cff3609409b6c4fe964c8b",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/ape-stone.png",
+      "portraitSha256": "dbfc91d80c5102771f881ff7830d34c625bb4da0c2a99c3bbc403a6f07f2060d"
+    },
+    {
+      "resourceId": "generated-enemy-deer-forest",
+      "path": "assets/generated/pixel-enemies/deer-forest.png",
+      "cell": 64,
+      "motion": "dash",
+      "idleFrameMs": 180,
+      "colors": 11,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "56f1f1bcf418c3db82077f293f9537401c94cfe521faa4fa17fc3e1ea281781c",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/deer-forest.png",
+      "portraitSha256": "47a2a4c508c2d0310851e71135f08ead385a7256287157dfae3cdd25f662d6e1"
+    },
+    {
+      "resourceId": "generated-enemy-fish-piranha",
+      "path": "assets/generated/pixel-enemies/fish-piranha.png",
+      "cell": 64,
+      "motion": "float",
+      "idleFrameMs": 180,
+      "colors": 15,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "2106d2f3f8d758e5c1664a035570096a8bf2582e08d4bb318d2fa36f59389c7a",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/fish-piranha.png",
+      "portraitSha256": "393e6bf784395cd32013a80a6b2127dab226c0eb3aef980db421348038bad9dd"
+    },
+    {
+      "resourceId": "generated-enemy-squid-deep",
+      "path": "assets/generated/pixel-enemies/squid-deep.png",
+      "cell": 64,
+      "motion": "float",
+      "idleFrameMs": 180,
+      "colors": 13,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "baa0f10d96a26dd267fe1096eb9c04729c673490b1f0d270c3c7c207f11b6814",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/squid-deep.png",
+      "portraitSha256": "e46c104666fb88fb8b226224af0e975c906478fb13ef611218fe39957849f7a4"
+    },
+    {
+      "resourceId": "generated-enemy-shark-land",
+      "path": "assets/generated/pixel-enemies/shark-land.png",
+      "cell": 64,
+      "motion": "dash",
+      "idleFrameMs": 180,
+      "colors": 14,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "f8f7e867d182d7ebcdb1c06f01219a0ac0b70590637cab4d878196845ec59ba8",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/shark-land.png",
+      "portraitSha256": "9184c8b70deed4c210dc0266a003c7a014ce0923a441a34f976d01c0692ec470"
+    },
+    {
+      "resourceId": "generated-enemy-eel-electric",
+      "path": "assets/generated/pixel-enemies/eel-electric.png",
+      "cell": 64,
+      "motion": "float",
+      "idleFrameMs": 180,
+      "colors": 12,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "731923a5ca96d048391486b28bb9b6d3942b78621ea1c5ce1653f3dc81acfeb4",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/eel-electric.png",
+      "portraitSha256": "cc845019ab74ecf6cae7bcb3abc74d8df8287a63dc2c93d5d4d46f3e675afbc9"
+    },
+    {
+      "resourceId": "generated-enemy-leaf-fox",
+      "path": "assets/generated/pixel-enemies/leaf-fox.png",
+      "cell": 64,
+      "motion": "dash",
+      "idleFrameMs": 180,
+      "colors": 15,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "473de9724d4c855c09e9f7952f498dd8635ea414d75cc47f0bffa697d525a491",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/leaf-fox.png",
+      "portraitSha256": "f359518dfb4d822f7126f8279118c48ed51bf3d03e3c665ace8351ec6b5bd2ea"
+    },
+    {
+      "resourceId": "generated-enemy-fire-pup",
+      "path": "assets/generated/pixel-enemies/fire-pup.png",
+      "cell": 64,
+      "motion": "dash",
+      "idleFrameMs": 180,
+      "colors": 15,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "d17b2f754e0a6ba9866f47cb0af3c5a226e45d046004575ce9a31bfd1f700731",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/fire-pup.png",
+      "portraitSha256": "ab50603e1ab07a2a20c41b57eb7a9cf911dac140baa049f402096af9864bb3ad"
+    },
+    {
+      "resourceId": "generated-enemy-ontology-8da61312",
+      "path": "assets/generated/pixel-enemies/ontology-8da61312.png",
+      "cell": 64,
+      "motion": "float",
+      "idleFrameMs": 180,
+      "colors": 12,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "e7cb1880c07c589c8b4a3d1ad1e09afc0bb91406a62b2cd31de108821bdbcaa4",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/ontology-8da61312.png",
+      "portraitSha256": "11b4a977d723cb0d829c38748ed304a0f5bf445a298fe0b3f0149f3af6abd958"
+    },
+    {
+      "resourceId": "generated-enemy-sylph-hornet",
+      "path": "assets/generated/pixel-enemies/sylph-hornet-transparent.png",
+      "cell": 64,
+      "motion": "swoop",
+      "idleFrameMs": 180,
+      "colors": 16,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "5efcbe8fb604ef6042bfc647af5d1974ee9b7be36f5443041df60046014b226d",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/sylph-hornet-transparent.png",
+      "portraitSha256": "b47a796bcf5f15e0c49a0c7955820600e401f5650a847fdd62168c688de18b9b"
+    },
+    {
+      "resourceId": "generated-enemy-skeleton-01",
+      "path": "assets/generated/pixel-enemies/skeleton-01.png",
+      "cell": 64,
+      "motion": "stomp",
+      "idleFrameMs": 180,
+      "colors": 12,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "2a1fdcf803f4c63879c0ce2ba2d7eb521393db83a28c146338403d7b7fd0a22b",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/skeleton-01.png",
+      "portraitSha256": "eb34e87626e97821470f4974681b0fc9c4fdee80fe0ae08dba57d860ff5a2fdc"
+    },
+    {
+      "resourceId": "generated-enemy-ghost-01",
+      "path": "assets/generated/pixel-enemies/ghost-01.png",
+      "cell": 64,
+      "motion": "float",
+      "idleFrameMs": 180,
+      "colors": 8,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "f5ebf2acdfd049a86f0042fe0004f1a5a019b2a11d464d00cf242e0a08ef0759",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/ghost-01.png",
+      "portraitSha256": "a47ba28c3c4816bde0b70db1d1fc51919ddbd66fd5402b506b2b7e4ed7b1660a"
+    },
+    {
+      "resourceId": "generated-enemy-plant-01",
+      "path": "assets/generated/pixel-enemies/plant-01.png",
+      "cell": 64,
+      "motion": "stomp",
+      "idleFrameMs": 180,
+      "colors": 17,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "663a5134fd2fe1e009fe6419c33446a5c754ca673246785b08858e070f1d8e9a",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/plant-01.png",
+      "portraitSha256": "7e6356f460bd3f3bfd03055b7430390f00c6dc7afaa1f8078af147b38b811492"
+    },
+    {
+      "resourceId": "generated-enemy-carbuncle-01",
+      "path": "assets/generated/pixel-enemies/carbuncle-01.png",
+      "cell": 64,
+      "motion": "dash",
+      "idleFrameMs": 180,
+      "colors": 13,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "d09e17a7366972b2d19673a9b4b118643da7ceb74b1491328440c2298f72551c",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/carbuncle-01.png",
+      "portraitSha256": "f69acac98d7085ec1a4ffa0b83dff8cabeef286b84fc78ef2e57e502cee63001"
+    },
+    {
+      "resourceId": "generated-enemy-jackolantern-01",
+      "path": "assets/generated/pixel-enemies/jackolantern-01.png",
+      "cell": 64,
+      "motion": "stomp",
+      "idleFrameMs": 180,
+      "colors": 13,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "378d3b3aff6abdef01d3f3b74468a45b1c5dd1f4dad92a3ea0dbcaf96d540f8f",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/jackolantern-01.png",
+      "portraitSha256": "aab44925281c94292c8ee0714a8a91b111f8873adb2262caf12dbacfd239f35b"
+    },
+    {
+      "resourceId": "generated-enemy-spirit-01",
+      "path": "assets/generated/pixel-enemies/spirit-01.png",
+      "cell": 64,
+      "motion": "float",
+      "idleFrameMs": 180,
+      "colors": 13,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "44017cfa8272e796e75189b6bcc7a68f99f22d9fa53b9d907a583fd28b91b44d",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/spirit-01.png",
+      "portraitSha256": "ead1e2f58213a0746fd66c5a0483d4f2d3d7fdaae61973d986d4413ed3295957"
+    },
+    {
+      "resourceId": "generated-enemy-ghoul-01",
+      "path": "assets/generated/pixel-enemies/ghoul-01.png",
+      "cell": 64,
+      "motion": "stomp",
+      "idleFrameMs": 180,
+      "colors": 15,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "819b7597acd559521757acb5949d7c15cdfcb9d75fcc9daa44579c394a22f6ab",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/ghoul-01.png",
+      "portraitSha256": "2f0d4353d1f366d8de5251b7a4bc48a54a9e75fc884df9d2a93e19b9202f1fd1"
+    },
+    {
+      "resourceId": "generated-enemy-specter-01",
+      "path": "assets/generated/pixel-enemies/specter-01.png",
+      "cell": 64,
+      "motion": "float",
+      "idleFrameMs": 180,
+      "colors": 14,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "b570e29f103e042b3ee253b8bad562059f335ec09c2d6b11d270ac06d5465638",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/specter-01.png",
+      "portraitSha256": "6bf50ca412167c037652bbcb542568e7bf144110aaae1a918efb40c805869d3c"
+    },
+    {
+      "resourceId": "generated-enemy-lemora-01",
+      "path": "assets/generated/pixel-enemies/lemora-01.png",
+      "cell": 64,
+      "motion": "breath",
+      "idleFrameMs": 180,
+      "colors": 14,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "afc250e07da44e79666e00abc18f8791b41017f55e520cbe603af5ff03b801b1",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/lemora-01.png",
+      "portraitSha256": "c1390662252fdec07fc0c46e1368e6fe78f540b4434eaeb42a7de5acad82a937"
+    },
+    {
+      "resourceId": "generated-enemy-sylph-01",
+      "path": "assets/generated/pixel-enemies/sylph-01.png",
+      "cell": 64,
+      "motion": "float",
+      "idleFrameMs": 180,
+      "colors": 17,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "adefbbcaad247dc1ecf47f341c131eb74fb496095c1e23a96eb6bc39385fdc3c",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/sylph-01.png",
+      "portraitSha256": "026745bb9dbc979b5d69296b4b2ea66af04b56873c1c53d063b2a7942f8bd11e"
+    },
+    {
+      "resourceId": "generated-enemy-king-slime-01",
+      "path": "assets/generated/pixel-enemies/king-slime-01.png",
+      "cell": 64,
+      "motion": "hop",
+      "idleFrameMs": 180,
+      "colors": 14,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "a25ddf566121093ad54201aaeca768f24df2997e4653f15e331a0f73e001c095",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/king-slime-01.png",
+      "portraitSha256": "ab6aff2309b68180660dda312ab9abf1401d0a40941f786f0cbe3ab99f137b04"
+    },
+    {
+      "resourceId": "generated-enemy-slime-blue",
+      "path": "assets/generated/pixel-enemies/slime-blue.png",
+      "cell": 64,
+      "motion": "hop",
+      "idleFrameMs": 180,
+      "colors": 10,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "7f3a11464a81574f3a93a58e4b906d14f04e806528f3125e436b4e088c401d25",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/slime-blue.png",
+      "portraitSha256": "16883154f9fb1da2b727a4cf034b7c52ff56210a1fb167cd0f106c36df8820e1"
+    },
+    {
+      "resourceId": "generated-enemy-slime-green",
+      "path": "assets/generated/pixel-enemies/slime-green.png",
+      "cell": 64,
+      "motion": "hop",
+      "idleFrameMs": 180,
+      "colors": 13,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "232f290db92047c9e12c2e4650f59bc085053335f715fddefe969ecdf37c8ba9",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/slime-green.png",
+      "portraitSha256": "ffcfa38d40e1a4e037edf53f4967d6f2ee56bcaa0382efa483d06631cc7ef7b5"
+    },
+    {
+      "resourceId": "generated-enemy-slime-metal",
+      "path": "assets/generated/pixel-enemies/slime-metal.png",
+      "cell": 64,
+      "motion": "hop",
+      "idleFrameMs": 180,
+      "colors": 10,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "8fdc8127c0fa9d6c2cf75daf82b24570f91bb85b357694a41ddc0f6a7e71e4b6",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/slime-metal.png",
+      "portraitSha256": "3311f4923a0d435937260c576cc78a7210e2b70a613c8c0a4975e06a51de9e82"
+    },
+    {
+      "resourceId": "generated-enemy-slime-king",
+      "path": "assets/generated/pixel-enemies/slime-king.png",
+      "cell": 64,
+      "motion": "hop",
+      "idleFrameMs": 180,
+      "colors": 13,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "9bca7224f04bd750ff7b66b65af45c0d8c23876e97e132ce5f61200e80fe27d8",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/slime-king.png",
+      "portraitSha256": "ae5dd47402036f7b98de48e0d671dbd78433eb5464c95479eb5731ec8f8ce334"
+    },
+    {
+      "resourceId": "generated-enemy-slime-cube",
+      "path": "assets/generated/pixel-enemies/slime-cube.png",
+      "cell": 64,
+      "motion": "hop",
+      "idleFrameMs": 180,
+      "colors": 11,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "4e99f90917a7b9632958be0363e908438e23b0fe63894b92edd8c4b38e1948bb",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/slime-cube.png",
+      "portraitSha256": "a1d15e8b470b54d5482c5290e8009a7b397872972c79f40dbd545b1776015b7b"
+    },
+    {
+      "resourceId": "generated-enemy-ooze-black",
+      "path": "assets/generated/pixel-enemies/ooze-black.png",
+      "cell": 64,
+      "motion": "hop",
+      "idleFrameMs": 180,
+      "colors": 10,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "c044ae15059c263f65cc286812b82abaa1d776e89b1ea46f4574def07930e9dc",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/ooze-black.png",
+      "portraitSha256": "afc4423df9d099293d2b47839cefb203162aeacdafc1419a40933c3e188ad939"
+    },
+    {
+      "resourceId": "generated-enemy-ooze-acid",
+      "path": "assets/generated/pixel-enemies/ooze-acid.png",
+      "cell": 64,
+      "motion": "hop",
+      "idleFrameMs": 180,
+      "colors": 10,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "be3768a5a2e19a3e3e06e076a9418d6ce0bcbc0dbda31d709994be3ab9f76fb5",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/ooze-acid.png",
+      "portraitSha256": "5e973014ba272160c0b2efd70142c2835ea91c75d83b9cb08af51f64bf3990fb"
+    },
+    {
+      "resourceId": "generated-enemy-skeleton-bone",
+      "path": "assets/generated/pixel-enemies/skeleton-bone.png",
+      "cell": 64,
+      "motion": "float",
+      "idleFrameMs": 180,
+      "colors": 11,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "10428b75c32826ecd091222b13a38e2d1eac59277f9ad0125991557987814e3d",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/skeleton-bone.png",
+      "portraitSha256": "81bb1ed1196c82979d33e2d336880fc64698a1b0a3c0843c37c5a2bd24c2c584"
+    },
+    {
+      "resourceId": "generated-enemy-ghoul-grave",
+      "path": "assets/generated/pixel-enemies/ghoul-grave.png",
+      "cell": 64,
+      "motion": "stomp",
+      "idleFrameMs": 180,
+      "colors": 15,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "5d4ff7acbab58f84c90c9f51d90eb31a5c4bf159f606df79665882323163f0fa",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/ghoul-grave.png",
+      "portraitSha256": "ea76fd0ceabf26fedd98ad9ee5bccba4583e0708fcf72d3bef15e0afb91fccac"
+    },
+    {
+      "resourceId": "generated-enemy-wraith-dark",
+      "path": "assets/generated/pixel-enemies/wraith-dark.png",
+      "cell": 64,
+      "motion": "float",
+      "idleFrameMs": 180,
+      "colors": 11,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "0b4095e83ee4e432cf7c4cfd2575318617b654989aedf8ec58d6d1695866fcdb",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/wraith-dark.png",
+      "portraitSha256": "456e88e39c4150aeeb7c28cd1fe75633124b2815da4f4713e97524e3d220e773"
+    },
+    {
+      "resourceId": "generated-enemy-banshee-wail",
+      "path": "assets/generated/pixel-enemies/banshee-wail.png",
+      "cell": 64,
+      "motion": "float",
+      "idleFrameMs": 180,
+      "colors": 14,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "84d5eda58d158bd6ba6b50b9193c9d5d2da652b4abe5341b36969c307c3dca90",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/banshee-wail.png",
+      "portraitSha256": "07ce5574599e17f991838ecf322c2a0a4138ea425c616eb55bd9024d8bc6ec2d"
+    },
+    {
+      "resourceId": "generated-enemy-revenant-vengeful",
+      "path": "assets/generated/pixel-enemies/revenant-vengeful.png",
+      "cell": 64,
+      "motion": "stomp",
+      "idleFrameMs": 180,
+      "colors": 15,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "b42fd1a8538871b2e92f0da3858d7278a41607dde72680eff650cf408163f1f3",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/revenant-vengeful.png",
+      "portraitSha256": "ffa97bcc8f359d2c6bc1d6fb29a89b9ce452c4a520c567862083c707c8fb397f"
+    },
+    {
+      "resourceId": "generated-enemy-bonepile-crawler",
+      "path": "assets/generated/pixel-enemies/bonepile-crawler.png",
+      "cell": 64,
+      "motion": "dash",
+      "idleFrameMs": 180,
+      "colors": 9,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "f93816d6ced18ba31e440ce24b103ef2c7fece3317c012fa1b8892e3f551aee2",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/bonepile-crawler.png",
+      "portraitSha256": "d42a5a0d3fbdc685bf6dca81777720b4bdf99a59918eb4017656c6f5c6e75862"
+    },
+    {
+      "resourceId": "generated-enemy-spirit-wind",
+      "path": "assets/generated/pixel-enemies/spirit-wind.png",
+      "cell": 64,
+      "motion": "float",
+      "idleFrameMs": 180,
+      "colors": 8,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "4eb252432c12ae460f6d5f206643a8236e7a3eaa96ea344a12d3068f73fcfbb2",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/spirit-wind.png",
+      "portraitSha256": "cb67d988e8284d9ff660827aa1e083cea8a1e8d116f422d5835046d756439a9e"
+    },
+    {
+      "resourceId": "generated-enemy-spirit-light",
+      "path": "assets/generated/pixel-enemies/spirit-light.png",
+      "cell": 64,
+      "motion": "float",
+      "idleFrameMs": 180,
+      "colors": 10,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "05a27ace0d0bfefcd86c4b427fe7c4aba541edbe26ec856987549ec72d0015a6",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/spirit-light.png",
+      "portraitSha256": "e66a09e914660ba054247ff5e69c35bb12bdc1dd8700deb1a0863cae17f8058c"
+    },
+    {
+      "resourceId": "generated-enemy-spirit-dark",
+      "path": "assets/generated/pixel-enemies/spirit-dark.png",
+      "cell": 64,
+      "motion": "float",
+      "idleFrameMs": 180,
+      "colors": 8,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "4a6d434baf923c723ba62c9603df74cfd0296de3c8337aa00af851303e9ff6d9",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/spirit-dark.png",
+      "portraitSha256": "1b97e06cb99d8f1cc06d85b41554cbae7e39779e685606c7993ff74ff7b2a188"
+    },
+    {
+      "resourceId": "generated-enemy-sylph-air",
+      "path": "assets/generated/pixel-enemies/sylph-air.png",
+      "cell": 64,
+      "motion": "float",
+      "idleFrameMs": 180,
+      "colors": 15,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "c9fdcaea339283dd9fdd81509fd93d198648ad7cb5d9c295432a1791b84d89c5",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/sylph-air.png",
+      "portraitSha256": "0143bdb20c1301a4dd323ebf3f75cbda6cad78c291c17431a2af735cb6e679c7"
+    },
+    {
+      "resourceId": "generated-enemy-undine-sea",
+      "path": "assets/generated/pixel-enemies/undine-sea.png",
+      "cell": 64,
+      "motion": "float",
+      "idleFrameMs": 180,
+      "colors": 14,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "44a99289f48e0a5d338f390588ba65c51fd26dba2ffd4979273db6e6fe3da81b",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/undine-sea.png",
+      "portraitSha256": "dc1971b241d236c799ecba763890b6d3cb01cd0501e5567cbee7314cb60fb3c4"
+    },
+    {
+      "resourceId": "generated-enemy-golem-stone",
+      "path": "assets/generated/pixel-enemies/golem-stone.png",
+      "cell": 64,
+      "motion": "stomp",
+      "idleFrameMs": 180,
+      "colors": 10,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "1eddf661a3754480c28b407d78d56b6a899819fb3722bdb09a14c912c5e17ec2",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/golem-stone.png",
+      "portraitSha256": "5f16d6507530e3715080fc290f139f02344f07d33c5a0bad701b37f9a1ab9d39"
+    },
+    {
+      "resourceId": "generated-enemy-golem-clay",
+      "path": "assets/generated/pixel-enemies/golem-clay.png",
+      "cell": 64,
+      "motion": "stomp",
+      "idleFrameMs": 180,
+      "colors": 10,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "701fb6a3349417a93da7708734d83564d22e7b392d39a9a29913dfe84b284667",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/golem-clay.png",
+      "portraitSha256": "35490f57d1508df1f5a1c0623f61d91481888462b22b3a7efb6b42bff4b3c587"
+    },
+    {
+      "resourceId": "generated-enemy-golem-crystal",
+      "path": "assets/generated/pixel-enemies/golem-crystal.png",
+      "cell": 64,
+      "motion": "stomp",
+      "idleFrameMs": 180,
+      "colors": 8,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "d1d68d3361784555c9f984d162dac4ace10258bf02d098c3f314691ad7bc0403",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/golem-crystal.png",
+      "portraitSha256": "3fc0ab016646731efda09d7495e9c9b3ba62703b8c8f669ba8363c5c1ee7b96b"
+    },
+    {
+      "resourceId": "generated-enemy-sword-flying",
+      "path": "assets/generated/pixel-enemies/sword-flying.png",
+      "cell": 64,
+      "motion": "float",
+      "idleFrameMs": 180,
+      "colors": 15,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "9f2b529936ed791dbe030c849eb39f9e28c064eca69c803d3800cb24490798ef",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/sword-flying.png",
+      "portraitSha256": "c82008c226e9d8da6f3465b75f6dd8f8a5ec38471576777ff6070c102df404c8"
+    },
+    {
+      "resourceId": "generated-enemy-scarecrow-field",
+      "path": "assets/generated/pixel-enemies/scarecrow-field.png",
+      "cell": 64,
+      "motion": "stomp",
+      "idleFrameMs": 180,
+      "colors": 12,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "e7a07807d99aa3e131c8e74beb7c3e3f4a8be672ff8269521b5afcd336d9082e",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/scarecrow-field.png",
+      "portraitSha256": "bbf8e7c0d3674e4363d448d9685d0c5876cd6155afa9f4ff478eb41a2bdb6279"
+    },
+    {
+      "resourceId": "generated-enemy-puppet-string",
+      "path": "assets/generated/pixel-enemies/puppet-string.png",
+      "cell": 64,
+      "motion": "float",
+      "idleFrameMs": 180,
+      "colors": 16,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "74742043e7be64605ad9ad5111d7a04cb540281a10d55d711b3e828482531766",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/puppet-string.png",
+      "portraitSha256": "38d9c7c2b777ca780d5990168eaefe11fa4ca30b062fe50edae9676ce505006d"
+    },
+    {
+      "resourceId": "generated-enemy-totem-cursed",
+      "path": "assets/generated/pixel-enemies/totem-cursed.png",
+      "cell": 64,
+      "motion": "stomp",
+      "idleFrameMs": 180,
+      "colors": 13,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "328d5521984ea8781ea61a495b52f83952e716f5a641ca0bf00d2cbe66054cee",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/totem-cursed.png",
+      "portraitSha256": "568093f7c10d8267fa11e9462e9d8f3c75974c46bfd0792f41953633965dc173"
+    },
+    {
+      "resourceId": "generated-enemy-spirit-earth",
+      "path": "assets/generated/pixel-enemies/spirit-earth.png",
+      "cell": 64,
+      "motion": "float",
+      "idleFrameMs": 180,
+      "colors": 13,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "c3be1319360a0f3e32528189f05c1a1cff4a5fc04ad5f8e60f7fe25e5710928e",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/spirit-earth.png",
+      "portraitSha256": "948bb8d03a95313b109a0bba3dc3687641b69130be4de0873026d25faa3d6958"
+    },
+    {
+      "resourceId": "generated-enemy-zombie-01",
+      "path": "assets/generated/pixel-enemies/zombie-01.png",
+      "cell": 64,
+      "motion": "stomp",
+      "idleFrameMs": 200,
+      "colors": 18,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "22bf5f27a049a959edcd6e695eeb3d0e251a36e67eea0199d32f8bbd927343a5",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/zombie-01.png",
+      "portraitSha256": "514ed69cf77c640cef0b32b0bd5d61df942b16a669d493f06915bccec3d62b96"
+    },
+    {
+      "resourceId": "generated-enemy-orc-01",
+      "path": "assets/generated/pixel-enemies/orc-01.png",
+      "cell": 64,
+      "motion": "stomp",
+      "idleFrameMs": 200,
+      "colors": 22,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "c7702001b0e19a224b8241fb8ebde05255d343030b964a87f7c4c3e3f0c428da",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/orc-01.png",
+      "portraitSha256": "299a207ac5d39b822104728271031f37d7f75e73cadac90f01c1a704bf023d63"
+    },
+    {
+      "resourceId": "generated-enemy-harpy-01",
+      "path": "assets/generated/pixel-enemies/harpy-01.png",
+      "cell": 64,
+      "motion": "swoop",
+      "idleFrameMs": 200,
+      "colors": 17,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "4c02d946dd654b1c22addd315d230184ee233108759085e123e71d93291e65e7",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/harpy-01.png",
+      "portraitSha256": "50c895017660dc3c7c058c7a1d043faf7a6a09c206ca45f2e8ab2d9e8dab90ca"
+    },
+    {
+      "resourceId": "generated-enemy-salamander-01",
+      "path": "assets/generated/pixel-enemies/salamander-01.png",
+      "cell": 64,
+      "motion": "dash",
+      "idleFrameMs": 200,
+      "colors": 15,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "2c4c7b47c76c49dad6a7b15efdfdbb3557b604f75e62980bb0d94637b7baa771",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/salamander-01.png",
+      "portraitSha256": "7e3e22dad5e2820019b08b277b7d817bef14995707927a8b5a86f2d138ad9019"
+    },
+    {
+      "resourceId": "generated-enemy-kappa-01",
+      "path": "assets/generated/pixel-enemies/kappa-01.png",
+      "cell": 64,
+      "motion": "stomp",
+      "idleFrameMs": 200,
+      "colors": 22,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "0bed420d7ccf2e13e99412e54a40d332192766e5f828392cc984f6ab18cf5897",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/kappa-01.png",
+      "portraitSha256": "063a97c7049d372f253d2bd040c0d121f18439a6867105e75dcd4bd5bcbcd35a"
+    },
+    {
+      "resourceId": "generated-enemy-leafling-01",
+      "path": "assets/generated/pixel-enemies/leafling-01.png",
+      "cell": 64,
+      "motion": "float",
+      "idleFrameMs": 200,
+      "colors": 15,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "7c7fc9763e49a45cd0b2f9f218bbe7a970c4d9e6adc993e08c5dd3733462405a",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/leafling-01.png",
+      "portraitSha256": "380b87d093a476acd3298ea279e7347a0456b777ac11744550998fa9bbeff337"
+    },
+    {
+      "resourceId": "generated-enemy-sparkit-01",
+      "path": "assets/generated/pixel-enemies/sparkit-01.png",
+      "cell": 64,
+      "motion": "float",
+      "idleFrameMs": 200,
+      "colors": 13,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "e5194977ceca9b1881b54056d57533e92ecfbfd5f08a9ac27f7e252f0772b1ed",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/sparkit-01.png",
+      "portraitSha256": "f9e513410460658a536edb09aed2e8dfbbe48e7c69807b1d7e301ba44265fe2f"
+    },
+    {
+      "resourceId": "generated-enemy-aqualing-01",
+      "path": "assets/generated/pixel-enemies/aqualing-01.png",
+      "cell": 64,
+      "motion": "float",
+      "idleFrameMs": 200,
+      "colors": 10,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "ab45c28c2e4dfcd3e4631b8f8d369423260a4a8b7ab801734c9f2a512a0dd825",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/aqualing-01.png",
+      "portraitSha256": "476f3954f1b038b038a9bab20667deb1d9c744fb7b007568a5bcd604e35d00cf"
+    },
+    {
+      "resourceId": "generated-enemy-salamander-flame",
+      "path": "assets/generated/pixel-enemies/salamander-flame.png",
+      "cell": 64,
+      "motion": "dash",
+      "idleFrameMs": 200,
+      "colors": 15,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "2738f549e4028f06b0a2f89edd42bd80195d9b84e5bcbd65f1a1c184af886b92",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/salamander-flame.png",
+      "portraitSha256": "02b209fb72da9d8b1e1eebcb2a84493e96ee869c86c4338970c3d562e3c7ff56"
+    },
+    {
+      "resourceId": "generated-enemy-goblin-brute",
+      "path": "assets/generated/pixel-enemies/goblin-brute.png",
+      "cell": 64,
+      "motion": "stomp",
+      "idleFrameMs": 200,
+      "colors": 22,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "fd3a4e5b286b1c2654d141072bf7cef7564d84047667db5d12059851a9204747",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/goblin-brute.png",
+      "portraitSha256": "3bfa1ab73b9c4e43232417cfe991f3a9126571b3024755a02947eb45613d9c3c"
+    },
+    {
+      "resourceId": "generated-enemy-kobold-digger",
+      "path": "assets/generated/pixel-enemies/kobold-digger.png",
+      "cell": 64,
+      "motion": "dash",
+      "idleFrameMs": 200,
+      "colors": 17,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "a17dcaf6bb3f2a6c4ed52e83f087e9892dad72425cd5e036c4ba37d4c41b674d",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/kobold-digger.png",
+      "portraitSha256": "51fe9d26a1957e6b287be5074046d5677032a53977aabb802c3073d2726c4fc5"
+    },
+    {
+      "resourceId": "generated-enemy-mage-rogue",
+      "path": "assets/generated/pixel-enemies/mage-rogue.png",
+      "cell": 64,
+      "motion": "shoot",
+      "idleFrameMs": 200,
+      "colors": 16,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "29b5f8698bb0c0a5f280de3197e673b667765533bd4084e6d4c914eb5800336f",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/mage-rogue.png",
+      "portraitSha256": "7acd6b65a09646b012ac6bcd7dfb04618993d802da4bd10c3965c8643a61ec32"
+    },
+    {
+      "resourceId": "generated-enemy-knight-fallen",
+      "path": "assets/generated/pixel-enemies/knight-fallen.png",
+      "cell": 64,
+      "motion": "stomp",
+      "idleFrameMs": 200,
+      "colors": 15,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "2363ae89abfa96e745070b14a772e3159b43d01280461f2785cd61fb0951bde9",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/knight-fallen.png",
+      "portraitSha256": "8e0b97514640982d70aab7f58fec07fd4e74981ccf93e964be46c076dc19ee06"
+    },
+    {
+      "resourceId": "generated-enemy-centaur-plains",
+      "path": "assets/generated/pixel-enemies/centaur-plains.png",
+      "cell": 96,
+      "motion": "dash",
+      "idleFrameMs": 200,
+      "colors": 14,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "8625e3fc82dfac0c0d7d11ffcbe9c9b47eed30f04ddabc9c943138671355961a",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/centaur-plains.png",
+      "portraitSha256": "0e79a5ec8489d37025b8fd861beb30b9d6a35c332c20b0357e6fdcdef9425018"
+    },
+    {
+      "resourceId": "generated-enemy-ogre-club",
+      "path": "assets/generated/pixel-enemies/ogre-club.png",
+      "cell": 96,
+      "motion": "stomp",
+      "idleFrameMs": 200,
+      "colors": 18,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "89214990177495ac71b1ffe9246486d483c3fd0ff2a18244e50d225476ec7d38",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/ogre-club.png",
+      "portraitSha256": "de6522712a77e049a1909053c4c5d8f3fa4309547a6d80cb88b5c5a2ab0f425a"
+    },
+    {
+      "resourceId": "generated-enemy-imp-mischief",
+      "path": "assets/generated/pixel-enemies/imp-mischief.png",
+      "cell": 64,
+      "motion": "swoop",
+      "idleFrameMs": 200,
+      "colors": 16,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "ae1e1e9549780cd96086f71981a2015a1cc59f43569b14fc725d4be4469ab0fc",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/imp-mischief.png",
+      "portraitSha256": "8b8f0a46085c9bb06ad7879ce28ac0138d527f5e80d7b3fe242a2bb7a026f11f"
+    },
+    {
+      "resourceId": "generated-enemy-griffin-sky",
+      "path": "assets/generated/pixel-enemies/griffin-sky.png",
+      "cell": 96,
+      "motion": "stomp",
+      "idleFrameMs": 200,
+      "colors": 19,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "effd12b4b624bca579f653af0732a1b2c8c68b42c05c0fd8119e1a15dd5bfd42",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/griffin-sky.png",
+      "portraitSha256": "0c8f730217fc081745e31b575596dfb57ad411bb4d26db348953cd013a3fab01"
+    },
+    {
+      "resourceId": "generated-enemy-wyvern-cliff",
+      "path": "assets/generated/pixel-enemies/wyvern-cliff.png",
+      "cell": 96,
+      "motion": "swoop",
+      "idleFrameMs": 200,
+      "colors": 16,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "11527ed9460c9f49780205b0006aa3f0be49633a58e9c3976d709cedab38c8ef",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/wyvern-cliff.png",
+      "portraitSha256": "18ed96e66a0491802b1acd4a160d6e4a30a57a3c4b05a2d1c27645b4ce666828"
+    },
+    {
+      "resourceId": "generated-enemy-roc-giant",
+      "path": "assets/generated/pixel-enemies/roc-giant.png",
+      "cell": 64,
+      "motion": "swoop",
+      "idleFrameMs": 200,
+      "colors": 12,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "88c6722c08c86fc538d29b544ea192c636a7ef87849990850ea45c5d62728414",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/roc-giant.png",
+      "portraitSha256": "fe2c097e2aa78bd09f32373ccdba2af67fc954837b603e1c98975cf820c0a9a7"
+    },
+    {
+      "resourceId": "generated-enemy-phoenix-rebirth",
+      "path": "assets/generated/pixel-enemies/phoenix-rebirth.png",
+      "cell": 96,
+      "motion": "swoop",
+      "idleFrameMs": 200,
+      "colors": 16,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "0f2ade33be26b3ecd01a14e74a8baaa16fb6e24f70c65c041e35e6ddbf3e57f7",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/phoenix-rebirth.png",
+      "portraitSha256": "4d489d2a57d5e52354fdec9b700976029456120d949bdeff07f0543f32b38ee0"
+    },
+    {
+      "resourceId": "generated-enemy-dragon-whelp",
+      "path": "assets/generated/pixel-enemies/dragon-whelp.png",
+      "cell": 64,
+      "motion": "breath",
+      "idleFrameMs": 200,
+      "colors": 18,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "3127966fb2d2699e9c9a217df0ff6db5d99fa5a01c7f8508b03b8767091f6fc6",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/dragon-whelp.png",
+      "portraitSha256": "d8133d4ada96b01c8cf0b1ab5944b58adaf1d56b58a9c2b6edf21187e4c64223"
+    },
+    {
+      "resourceId": "generated-enemy-dragon-red",
+      "path": "assets/generated/pixel-enemies/dragon-red.png",
+      "cell": 96,
+      "motion": "breath",
+      "idleFrameMs": 200,
+      "colors": 16,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "c38a16f2175ea8b4b37eb0a59085110fc5b250c5858c69807ae16aecb38dec9b",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/dragon-red.png",
+      "portraitSha256": "f295c4143fd581aa5fb19f1ee069c77689115a1ada82b84e4b003d9159cf8216"
+    },
+    {
+      "resourceId": "generated-enemy-dragon-blue",
+      "path": "assets/generated/pixel-enemies/dragon-blue.png",
+      "cell": 96,
+      "motion": "breath",
+      "idleFrameMs": 200,
+      "colors": 16,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "537e894ec6359878587598a5504da83b8fba73e87f7d958197b65a6dcee6735b",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/dragon-blue.png",
+      "portraitSha256": "57729e3e16348a44192940a79b34a2c91378979f740086924777526ec4b10250"
+    },
+    {
+      "resourceId": "generated-enemy-dragon-bone",
+      "path": "assets/generated/pixel-enemies/dragon-bone.png",
+      "cell": 96,
+      "motion": "breath",
+      "idleFrameMs": 200,
+      "colors": 11,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "a68ad592ecec5003860f5f8733fb96b967026cd6b4478d23faa46cfa64687579",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/dragon-bone.png",
+      "portraitSha256": "b5c6fede18797018ac7e7a9d635b92f8db4922b431deda7574dbe4ee9d9f620a"
+    },
+    {
+      "resourceId": "generated-enemy-hydra-three",
+      "path": "assets/generated/pixel-enemies/hydra-three.png",
+      "cell": 96,
+      "motion": "breath",
+      "idleFrameMs": 200,
+      "colors": 22,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "384530bcba93787c05af080c170e533fc5bd7616685d4df2a8887794b45676b2",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/hydra-three.png",
+      "portraitSha256": "fdff43ef297ed4bc6136e55d3b4c924a15fc244d66523838dc76ce26c3527b0c"
+    },
+    {
+      "resourceId": "generated-enemy-behemoth-horn",
+      "path": "assets/generated/pixel-enemies/behemoth-horn.png",
+      "cell": 96,
+      "motion": "stomp",
+      "idleFrameMs": 200,
+      "colors": 14,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "e4f06ff08a9e9581f4de1a9c5abfdf4bac91b6689e0675d9ceb097b6fbba1c9a",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/behemoth-horn.png",
+      "portraitSha256": "f9944162d238e6cc7ca3df38523ad550da2456d75da45d0844bfc6ff08fb6a35"
+    },
+    {
+      "resourceId": "generated-enemy-angel-fallen",
+      "path": "assets/generated/pixel-enemies/angel-fallen.png",
+      "cell": 64,
+      "motion": "swoop",
+      "idleFrameMs": 200,
+      "colors": 18,
+      "alpha": [
+        0,
+        255
+      ],
+      "sheetSha256": "ff12de7bb68371eb5fe643aa6d92e5690e4411d10a0157b6efabeacb5aef9739",
+      "portraitPath": "assets/generated/pixel-enemy-portraits/angel-fallen.png",
+      "portraitSha256": "5175c19baa4c6b99bc90e69377842f6a61ce0a2bc76f16fc2ae84f5deb09f958"
+    }
+  ],
+  "oldIds": [
+    {
+      "resourceId": "generated-enemy-bat-01",
+      "url": "/assets/generated/pixel-enemy-portraits/bat.png"
+    },
+    {
+      "resourceId": "generated-enemy-dragon-01",
+      "url": "/assets/generated/pixel-enemy-portraits/dragon.png"
+    },
+    {
+      "resourceId": "generated-enemy-golem-01",
+      "url": "/assets/generated/pixel-enemy-portraits/golem.png"
+    },
+    {
+      "resourceId": "generated-enemy-ontology-8da61312",
+      "url": "/assets/generated/pixel-enemy-portraits/ontology-8da61312.png"
+    },
+    {
+      "resourceId": "generated-enemy-slime-01",
+      "url": "/assets/generated/pixel-enemy-portraits/slime.png"
+    },
+    {
+      "resourceId": "generated-enemy-sylph-hornet",
+      "url": "/assets/generated/pixel-enemy-portraits/sylph-hornet-transparent.png"
+    },
+    {
+      "resourceId": "generated-enemy-zombie-01",
+      "url": "/assets/generated/pixel-enemy-portraits/zombie-01.png"
+    },
+    {
+      "resourceId": "generated-enemy-skeleton-01",
+      "url": "/assets/generated/pixel-enemy-portraits/skeleton-01.png"
+    },
+    {
+      "resourceId": "generated-enemy-orc-01",
+      "url": "/assets/generated/pixel-enemy-portraits/orc-01.png"
+    },
+    {
+      "resourceId": "generated-enemy-ghost-01",
+      "url": "/assets/generated/pixel-enemy-portraits/ghost-01.png"
+    },
+    {
+      "resourceId": "generated-enemy-crab-01",
+      "url": "/assets/generated/pixel-enemy-portraits/crab-01.png"
+    },
+    {
+      "resourceId": "generated-enemy-spider-01",
+      "url": "/assets/generated/pixel-enemy-portraits/spider-01.png"
+    },
+    {
+      "resourceId": "generated-enemy-snake-01",
+      "url": "/assets/generated/pixel-enemy-portraits/snake-01.png"
+    },
+    {
+      "resourceId": "generated-enemy-scorpion-01",
+      "url": "/assets/generated/pixel-enemy-portraits/scorpion-01.png"
+    },
+    {
+      "resourceId": "generated-enemy-wolf-01",
+      "url": "/assets/generated/pixel-enemy-portraits/wolf-01.png"
+    },
+    {
+      "resourceId": "generated-enemy-harpy-01",
+      "url": "/assets/generated/pixel-enemy-portraits/harpy-01.png"
+    },
+    {
+      "resourceId": "generated-enemy-centipede-01",
+      "url": "/assets/generated/pixel-enemy-portraits/centipede-01.png"
+    },
+    {
+      "resourceId": "generated-enemy-plant-01",
+      "url": "/assets/generated/pixel-enemy-portraits/plant-01.png"
+    },
+    {
+      "resourceId": "generated-enemy-horse-01",
+      "url": "/assets/generated/pixel-enemy-portraits/horse-01.png"
+    },
+    {
+      "resourceId": "generated-enemy-unicorn-01",
+      "url": "/assets/generated/pixel-enemy-portraits/unicorn-01.png"
+    },
+    {
+      "resourceId": "generated-enemy-salamander-01",
+      "url": "/assets/generated/pixel-enemy-portraits/salamander-01.png"
+    },
+    {
+      "resourceId": "generated-enemy-carbuncle-01",
+      "url": "/assets/generated/pixel-enemy-portraits/carbuncle-01.png"
+    },
+    {
+      "resourceId": "generated-enemy-cat-01",
+      "url": "/assets/generated/pixel-enemy-portraits/cat-01.png"
+    },
+    {
+      "resourceId": "generated-enemy-kappa-01",
+      "url": "/assets/generated/pixel-enemy-portraits/kappa-01.png"
+    },
+    {
+      "resourceId": "generated-enemy-cockatrice-01",
+      "url": "/assets/generated/pixel-enemy-portraits/cockatrice-01.png"
+    },
+    {
+      "resourceId": "generated-enemy-parasite-01",
+      "url": "/assets/generated/pixel-enemy-portraits/parasite-01.png"
+    },
+    {
+      "resourceId": "generated-enemy-mantis-01",
+      "url": "/assets/generated/pixel-enemy-portraits/mantis-01.png"
+    },
+    {
+      "resourceId": "generated-enemy-jackolantern-01",
+      "url": "/assets/generated/pixel-enemy-portraits/jackolantern-01.png"
+    },
+    {
+      "resourceId": "generated-enemy-fish-01",
+      "url": "/assets/generated/pixel-enemy-portraits/fish-01.png"
+    },
+    {
+      "resourceId": "generated-enemy-spirit-01",
+      "url": "/assets/generated/pixel-enemy-portraits/spirit-01.png"
+    },
+    {
+      "resourceId": "generated-enemy-ghoul-01",
+      "url": "/assets/generated/pixel-enemy-portraits/ghoul-01.png"
+    },
+    {
+      "resourceId": "generated-enemy-specter-01",
+      "url": "/assets/generated/pixel-enemy-portraits/specter-01.png"
+    },
+    {
+      "resourceId": "generated-enemy-lemora-01",
+      "url": "/assets/generated/pixel-enemy-portraits/lemora-01.png"
+    },
+    {
+      "resourceId": "generated-enemy-sylph-01",
+      "url": "/assets/generated/pixel-enemy-portraits/sylph-01.png"
+    },
+    {
+      "resourceId": "generated-enemy-leaf-fox",
+      "url": "/assets/generated/pixel-enemy-portraits/leaf-fox.png"
+    },
+    {
+      "resourceId": "generated-enemy-fire-pup",
+      "url": "/assets/generated/pixel-enemy-portraits/fire-pup.png"
+    },
+    {
+      "resourceId": "generated-enemy-sparkit-fire",
+      "url": "/assets/harnesses/monster-collect-species/sparkit/front.png"
+    },
+    {
+      "resourceId": "generated-enemy-leafling-01",
+      "url": "/assets/generated/pixel-enemy-portraits/leafling-01.png"
+    },
+    {
+      "resourceId": "generated-enemy-sparkit-01",
+      "url": "/assets/generated/pixel-enemy-portraits/sparkit-01.png"
+    },
+    {
+      "resourceId": "generated-enemy-aqualing-01",
+      "url": "/assets/generated/pixel-enemy-portraits/aqualing-01.png"
+    },
+    {
+      "resourceId": "generated-enemy-king-slime-01",
+      "url": "/assets/generated/pixel-enemy-portraits/king-slime-01.png"
+    },
+    {
+      "resourceId": "generated-enemy-slime-blue",
+      "url": "/assets/generated/pixel-enemy-portraits/slime-blue.png"
+    },
+    {
+      "resourceId": "generated-enemy-slime-red",
+      "url": "/assets/generated/pixel-enemy-portraits/slime-red.png"
+    },
+    {
+      "resourceId": "generated-enemy-slime-green",
+      "url": "/assets/generated/pixel-enemy-portraits/slime-green.png"
+    },
+    {
+      "resourceId": "generated-enemy-slime-metal",
+      "url": "/assets/generated/pixel-enemy-portraits/slime-metal.png"
+    },
+    {
+      "resourceId": "generated-enemy-slime-king",
+      "url": "/assets/generated/pixel-enemy-portraits/slime-king.png"
+    },
+    {
+      "resourceId": "generated-enemy-slime-cube",
+      "url": "/assets/generated/pixel-enemy-portraits/slime-cube.png"
+    },
+    {
+      "resourceId": "generated-enemy-ooze-black",
+      "url": "/assets/generated/pixel-enemy-portraits/ooze-black.png"
+    },
+    {
+      "resourceId": "generated-enemy-ooze-acid",
+      "url": "/assets/generated/pixel-enemy-portraits/ooze-acid.png"
+    },
+    {
+      "resourceId": "generated-enemy-bat-cave",
+      "url": "/assets/generated/pixel-enemy-portraits/bat-cave.png"
+    },
+    {
+      "resourceId": "generated-enemy-bat-vampire",
+      "url": "/assets/generated/pixel-enemy-portraits/bat-vampire.png"
+    },
+    {
+      "resourceId": "generated-enemy-bee-giant",
+      "url": "/assets/generated/pixel-enemy-portraits/bee-giant.png"
+    },
+    {
+      "resourceId": "generated-enemy-spider-cave",
+      "url": "/assets/generated/pixel-enemy-portraits/spider-cave.png"
+    },
+    {
+      "resourceId": "generated-enemy-spider-widow",
+      "url": "/assets/generated/pixel-enemy-portraits/spider-widow.png"
+    },
+    {
+      "resourceId": "generated-enemy-scorpion-sand",
+      "url": "/assets/generated/pixel-enemy-portraits/scorpion-sand.png"
+    },
+    {
+      "resourceId": "generated-enemy-beetle-horn",
+      "url": "/assets/generated/pixel-enemy-portraits/beetle-horn.png"
+    },
+    {
+      "resourceId": "generated-enemy-mantis-blade",
+      "url": "/assets/generated/pixel-enemy-portraits/mantis-blade.png"
+    },
+    {
+      "resourceId": "generated-enemy-centipede-fire",
+      "url": "/assets/generated/pixel-enemy-portraits/centipede-fire.png"
+    },
+    {
+      "resourceId": "generated-enemy-moth-dust",
+      "url": "/assets/generated/pixel-enemy-portraits/moth-dust.png"
+    },
+    {
+      "resourceId": "generated-enemy-worm-sand",
+      "url": "/assets/generated/pixel-enemy-portraits/worm-sand.png"
+    },
+    {
+      "resourceId": "generated-enemy-ant-soldier",
+      "url": "/assets/generated/pixel-enemy-portraits/ant-soldier.png"
+    },
+    {
+      "resourceId": "generated-enemy-wolf-grey",
+      "url": "/assets/generated/pixel-enemy-portraits/wolf-grey.png"
+    },
+    {
+      "resourceId": "generated-enemy-wolf-dire",
+      "url": "/assets/generated/pixel-enemy-portraits/wolf-dire.png"
+    },
+    {
+      "resourceId": "generated-enemy-boar-tusk",
+      "url": "/assets/generated/pixel-enemy-portraits/boar-tusk.png"
+    },
+    {
+      "resourceId": "generated-enemy-bear-brown",
+      "url": "/assets/generated/pixel-enemy-portraits/bear-brown.png"
+    },
+    {
+      "resourceId": "generated-enemy-tiger-saber",
+      "url": "/assets/generated/pixel-enemy-portraits/tiger-saber.png"
+    },
+    {
+      "resourceId": "generated-enemy-rat-giant",
+      "url": "/assets/generated/pixel-enemy-portraits/rat-giant.png"
+    },
+    {
+      "resourceId": "generated-enemy-bird-hawk",
+      "url": "/assets/generated/pixel-enemy-portraits/bird-hawk.png"
+    },
+    {
+      "resourceId": "generated-enemy-snake-viper",
+      "url": "/assets/generated/pixel-enemy-portraits/snake-viper.png"
+    },
+    {
+      "resourceId": "generated-enemy-cat-shadow",
+      "url": "/assets/generated/pixel-enemy-portraits/cat-shadow.png"
+    },
+    {
+      "resourceId": "generated-enemy-goat-mountain",
+      "url": "/assets/generated/pixel-enemy-portraits/goat-mountain.png"
+    },
+    {
+      "resourceId": "generated-enemy-crab-rock",
+      "url": "/assets/generated/pixel-enemy-portraits/crab-rock.png"
+    },
+    {
+      "resourceId": "generated-enemy-hound-hell",
+      "url": "/assets/generated/pixel-enemy-portraits/hound-hell.png"
+    },
+    {
+      "resourceId": "generated-enemy-ape-stone",
+      "url": "/assets/generated/pixel-enemy-portraits/ape-stone.png"
+    },
+    {
+      "resourceId": "generated-enemy-deer-forest",
+      "url": "/assets/generated/pixel-enemy-portraits/deer-forest.png"
+    },
+    {
+      "resourceId": "generated-enemy-skeleton-bone",
+      "url": "/assets/generated/pixel-enemy-portraits/skeleton-bone.png"
+    },
+    {
+      "resourceId": "generated-enemy-skeleton-archer",
+      "url": "/assets/generated/pixel-enemy-portraits/skeleton-archer.png"
+    },
+    {
+      "resourceId": "generated-enemy-skeleton-knight",
+      "url": "/assets/generated/pixel-enemy-portraits/skeleton-knight.png"
+    },
+    {
+      "resourceId": "generated-enemy-zombie-rot",
+      "url": "/assets/generated/pixel-enemy-portraits/zombie-rot.png"
+    },
+    {
+      "resourceId": "generated-enemy-ghoul-grave",
+      "url": "/assets/generated/pixel-enemy-portraits/ghoul-grave.png"
+    },
+    {
+      "resourceId": "generated-enemy-ghost-pale",
+      "url": "/assets/generated/pixel-enemy-portraits/ghost-pale.png"
+    },
+    {
+      "resourceId": "generated-enemy-wraith-dark",
+      "url": "/assets/generated/pixel-enemy-portraits/wraith-dark.png"
+    },
+    {
+      "resourceId": "generated-enemy-lich-frost",
+      "url": "/assets/generated/pixel-enemy-portraits/lich-frost.png"
+    },
+    {
+      "resourceId": "generated-enemy-mummy-bandage",
+      "url": "/assets/generated/pixel-enemy-portraits/mummy-bandage.png"
+    },
+    {
+      "resourceId": "generated-enemy-banshee-wail",
+      "url": "/assets/generated/pixel-enemy-portraits/banshee-wail.png"
+    },
+    {
+      "resourceId": "generated-enemy-revenant-vengeful",
+      "url": "/assets/generated/pixel-enemy-portraits/revenant-vengeful.png"
+    },
+    {
+      "resourceId": "generated-enemy-bonepile-crawler",
+      "url": "/assets/generated/pixel-enemy-portraits/bonepile-crawler.png"
+    },
+    {
+      "resourceId": "generated-enemy-spirit-fire",
+      "url": "/assets/generated/pixel-enemy-portraits/spirit-fire.png"
+    },
+    {
+      "resourceId": "generated-enemy-spirit-water",
+      "url": "/assets/generated/pixel-enemy-portraits/spirit-water.png"
+    },
+    {
+      "resourceId": "generated-enemy-spirit-earth",
+      "url": "/assets/generated/pixel-enemy-portraits/spirit-earth.png"
+    },
+    {
+      "resourceId": "generated-enemy-spirit-wind",
+      "url": "/assets/generated/pixel-enemy-portraits/spirit-wind.png"
+    },
+    {
+      "resourceId": "generated-enemy-spirit-light",
+      "url": "/assets/generated/pixel-enemy-portraits/spirit-light.png"
+    },
+    {
+      "resourceId": "generated-enemy-spirit-dark",
+      "url": "/assets/generated/pixel-enemy-portraits/spirit-dark.png"
+    },
+    {
+      "resourceId": "generated-enemy-wisp-blue",
+      "url": "/assets/generated/pixel-enemy-portraits/wisp-blue.png"
+    },
+    {
+      "resourceId": "generated-enemy-sylph-air",
+      "url": "/assets/generated/pixel-enemy-portraits/sylph-air.png"
+    },
+    {
+      "resourceId": "generated-enemy-undine-sea",
+      "url": "/assets/generated/pixel-enemy-portraits/undine-sea.png"
+    },
+    {
+      "resourceId": "generated-enemy-salamander-flame",
+      "url": "/assets/generated/pixel-enemy-portraits/salamander-flame.png"
+    },
+    {
+      "resourceId": "generated-enemy-golem-stone",
+      "url": "/assets/generated/pixel-enemy-portraits/golem-stone.png"
+    },
+    {
+      "resourceId": "generated-enemy-golem-iron",
+      "url": "/assets/generated/pixel-enemy-portraits/golem-iron.png"
+    },
+    {
+      "resourceId": "generated-enemy-golem-clay",
+      "url": "/assets/generated/pixel-enemy-portraits/golem-clay.png"
+    },
+    {
+      "resourceId": "generated-enemy-golem-crystal",
+      "url": "/assets/generated/pixel-enemy-portraits/golem-crystal.png"
+    },
+    {
+      "resourceId": "generated-enemy-armor-living",
+      "url": "/assets/generated/pixel-enemy-portraits/armor-living.png"
+    },
+    {
+      "resourceId": "generated-enemy-sword-flying",
+      "url": "/assets/generated/pixel-enemy-portraits/sword-flying.png"
+    },
+    {
+      "resourceId": "generated-enemy-mimic-chest",
+      "url": "/assets/generated/pixel-enemy-portraits/mimic-chest.png"
+    },
+    {
+      "resourceId": "generated-enemy-scarecrow-field",
+      "url": "/assets/generated/pixel-enemy-portraits/scarecrow-field.png"
+    },
+    {
+      "resourceId": "generated-enemy-puppet-string",
+      "url": "/assets/generated/pixel-enemy-portraits/puppet-string.png"
+    },
+    {
+      "resourceId": "generated-enemy-totem-cursed",
+      "url": "/assets/generated/pixel-enemy-portraits/totem-cursed.png"
+    },
+    {
+      "resourceId": "generated-enemy-goblin-scout",
+      "url": "/assets/generated/pixel-enemy-portraits/goblin-scout.png"
+    },
+    {
+      "resourceId": "generated-enemy-goblin-brute",
+      "url": "/assets/generated/pixel-enemy-portraits/goblin-brute.png"
+    },
+    {
+      "resourceId": "generated-enemy-orc-warrior",
+      "url": "/assets/generated/pixel-enemy-portraits/orc-warrior.png"
+    },
+    {
+      "resourceId": "generated-enemy-orc-shaman",
+      "url": "/assets/generated/pixel-enemy-portraits/orc-shaman.png"
+    },
+    {
+      "resourceId": "generated-enemy-kobold-digger",
+      "url": "/assets/generated/pixel-enemy-portraits/kobold-digger.png"
+    },
+    {
+      "resourceId": "generated-enemy-bandit-mask",
+      "url": "/assets/generated/pixel-enemy-portraits/bandit-mask.png"
+    },
+    {
+      "resourceId": "generated-enemy-mage-rogue",
+      "url": "/assets/generated/pixel-enemy-portraits/mage-rogue.png"
+    },
+    {
+      "resourceId": "generated-enemy-knight-fallen",
+      "url": "/assets/generated/pixel-enemy-portraits/knight-fallen.png"
+    },
+    {
+      "resourceId": "generated-enemy-lizardman-spear",
+      "url": "/assets/generated/pixel-enemy-portraits/lizardman-spear.png"
+    },
+    {
+      "resourceId": "generated-enemy-harpy-cliff",
+      "url": "/assets/generated/pixel-enemy-portraits/harpy-cliff.png"
+    },
+    {
+      "resourceId": "generated-enemy-minotaur-maze",
+      "url": "/assets/generated/pixel-enemy-portraits/minotaur-maze.png"
+    },
+    {
+      "resourceId": "generated-enemy-centaur-plains",
+      "url": "/assets/generated/pixel-enemy-portraits/centaur-plains.png"
+    },
+    {
+      "resourceId": "generated-enemy-troll-cave",
+      "url": "/assets/generated/pixel-enemy-portraits/troll-cave.png"
+    },
+    {
+      "resourceId": "generated-enemy-ogre-club",
+      "url": "/assets/generated/pixel-enemy-portraits/ogre-club.png"
+    },
+    {
+      "resourceId": "generated-enemy-imp-mischief",
+      "url": "/assets/generated/pixel-enemy-portraits/imp-mischief.png"
+    },
+    {
+      "resourceId": "generated-enemy-fish-piranha",
+      "url": "/assets/generated/pixel-enemy-portraits/fish-piranha.png"
+    },
+    {
+      "resourceId": "generated-enemy-squid-deep",
+      "url": "/assets/generated/pixel-enemy-portraits/squid-deep.png"
+    },
+    {
+      "resourceId": "generated-enemy-shark-land",
+      "url": "/assets/generated/pixel-enemy-portraits/shark-land.png"
+    },
+    {
+      "resourceId": "generated-enemy-eel-electric",
+      "url": "/assets/generated/pixel-enemy-portraits/eel-electric.png"
+    },
+    {
+      "resourceId": "generated-enemy-griffin-sky",
+      "url": "/assets/generated/pixel-enemy-portraits/griffin-sky.png"
+    },
+    {
+      "resourceId": "generated-enemy-wyvern-cliff",
+      "url": "/assets/generated/pixel-enemy-portraits/wyvern-cliff.png"
+    },
+    {
+      "resourceId": "generated-enemy-roc-giant",
+      "url": "/assets/generated/pixel-enemy-portraits/roc-giant.png"
+    },
+    {
+      "resourceId": "generated-enemy-gargoyle-stone",
+      "url": "/assets/generated/pixel-enemy-portraits/gargoyle-stone.png"
+    },
+    {
+      "resourceId": "generated-enemy-phoenix-rebirth",
+      "url": "/assets/generated/pixel-enemy-portraits/phoenix-rebirth.png"
+    },
+    {
+      "resourceId": "generated-enemy-dragon-whelp",
+      "url": "/assets/generated/pixel-enemy-portraits/dragon-whelp.png"
+    },
+    {
+      "resourceId": "generated-enemy-dragon-red",
+      "url": "/assets/generated/pixel-enemy-portraits/dragon-red.png"
+    },
+    {
+      "resourceId": "generated-enemy-dragon-blue",
+      "url": "/assets/generated/pixel-enemy-portraits/dragon-blue.png"
+    },
+    {
+      "resourceId": "generated-enemy-dragon-bone",
+      "url": "/assets/generated/pixel-enemy-portraits/dragon-bone.png"
+    },
+    {
+      "resourceId": "generated-enemy-hydra-three",
+      "url": "/assets/generated/pixel-enemy-portraits/hydra-three.png"
+    },
+    {
+      "resourceId": "generated-enemy-behemoth-horn",
+      "url": "/assets/generated/pixel-enemy-portraits/behemoth-horn.png"
+    },
+    {
+      "resourceId": "generated-enemy-demon-lord",
+      "url": "/assets/generated/pixel-enemy-portraits/demon-lord.png"
+    },
+    {
+      "resourceId": "generated-enemy-angel-fallen",
+      "url": "/assets/generated/pixel-enemy-portraits/angel-fallen.png"
+    },
+    {
+      "resourceId": "generated-enemy-eye-floating",
+      "url": "/assets/generated/pixel-enemy-portraits/eye-floating.png"
+    },
+    {
+      "resourceId": "generated-enemy-plant-carnivore",
+      "url": "/assets/generated/pixel-enemy-portraits/plant-carnivore.png"
+    }
+  ],
+  "errors": []
+}

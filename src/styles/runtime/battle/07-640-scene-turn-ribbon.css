@@ -64,7 +64,6 @@
 .battle-backdrop {
   background:
     linear-gradient(180deg, rgba(5, 16, 38, 0.08), rgba(2, 5, 12, 0.28)),
-    url("/generated/battle-reference-forest.png"),
     radial-gradient(ellipse at 50% 70%, #274f3c 0%, #081834 75%);
   background-position: center;
   background-size: cover;

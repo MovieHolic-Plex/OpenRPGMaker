@@ -313,6 +313,8 @@ async function finishEditorBoot(startedAt: number): Promise<void> {
     if (result.dismiss) setEditorWelcomeDismissed(true);
     if (result.systemPresetPlan) {
       clearWelcomeIntentBootFlags();
+      const { toast } = await import("@/util/toast");
+      toast("빈 맵과 장르 기본 설정을 저장했어요. 왼쪽 ‘그리기’에서 타일을 고르고, 위의 ‘테스트’로 확인하세요.", "ok");
     } else if (result.prompt) {
       // 장르 칩의 결정적 부분(system.* 토글)은 AI 보다 먼저 적용한다 — 모델이 토글 툴을 부르지
       // 않아도 장르 엔진은 켜져 있어야 한다(2026-08-30 실측: 포스터 클릭 경로에서

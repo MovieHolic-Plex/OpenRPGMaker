@@ -12,6 +12,7 @@
  * 편집기는 원래 경로를 유지한다. 내보내기 플레이어만 게임 디렉터리를 등록해
  * 루트 경로로 저작된 public 에셋도 게임이 배포된 위치에서 찾는다.
  */
+let inlineSources = new Map<string,string>();
 let table: Readonly<Record<string, string>> | null = null;
 let exportAssetBase: URL | null = null;
 
@@ -22,6 +23,7 @@ export function registerExportAssetBase(base: URL | null): void {
 /** null 을 주면 표를 걷어낸다 — 일반 빌드와 같은 상태로 되돌린다. */
 export function registerInlineAssets(map: Readonly<Record<string, string>> | null): void {
   table = map;
+  inlineSources = new Map(Object.entries(map??{}).map(([path,url])=>[url,normalizeAssetKey(path)]));
 }
 
 export function hasInlineAssets(): boolean {
@@ -49,3 +51,6 @@ export function withInlineAsset(pathOrUrl: string): string {
 export function normalizeAssetKey(pathOrUrl: string): string {
   return pathOrUrl.replace(/^\.?\//, "");
 }
+
+/** Original source key for geometry metadata when a standalone export uses blob/data URLs. */
+export function inlineAssetSource(url:string):string|undefined {return inlineSources.get(url);}

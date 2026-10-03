@@ -1,3 +1,5 @@
+import { CHARACTER_MOTION_STYLES } from "@/battle/characterMotion";
+import { normalizeBattleGimmick } from "@/battle/battleGimmickRules";
 import { normalizeGallerySettings } from "./gallery";
 import { normalizeBattleAura } from "@/assets/battleStateAuras";
 import { normalizeSkillChoreographyRecords } from "./skillChoreographyRecords";
@@ -689,6 +691,7 @@ export function normalizeSkillRecord(record: Partial<SkillRecord> & Pick<SkillRe
     ...(typeof record.retroChoreographyId === "string" && record.retroChoreographyId.trim() ? { retroChoreographyId: record.retroChoreographyId.trim().slice(0, 96) } : {}),
     ...(isPokemonMoveMotion(record.moveMotion) ? { moveMotion: record.moveMotion } : {}),
     ...(Array.isArray(record.hitSequence) && record.hitSequence.length ? { hitSequence: record.hitSequence.slice(0, 16).map(value => Number.isFinite(value) ? Math.max(0, Math.min(10, value)) : 1) } : {}),
+    ...(normalizeBattleGimmick(record.battleGimmick) ? {battleGimmick:normalizeBattleGimmick(record.battleGimmick)} : {}),
     effect: normalizeSkillEffect(record.effect),
     elementId: typeof record.elementId === "string" ? record.elementId : undefined,
     stateEffects: normalizeStateEffects(record.stateEffects),
@@ -770,6 +773,7 @@ export function normalizeItemRecord(record: Partial<ItemRecord> & Pick<ItemRecor
 
 export function normalizeEquipmentRecord(record: Partial<EquipmentRecord> & Pick<EquipmentRecord, "id" | "name">): EquipmentRecord {
   return {
+    ...(record.battleMotionStyle && CHARACTER_MOTION_STYLES.includes(record.battleMotionStyle) ? {battleMotionStyle:record.battleMotionStyle} : {}),
     id: record.id,
     name: record.name,
     imageResourceId: cleanOptionalId(record.imageResourceId),
@@ -857,11 +861,12 @@ function normalizeBattleCommands(commands: readonly Partial<ClassBattleCommand>[
     kind: normalizeBattleCommandKind(command.kind),
     skillSubsetName: cleanOptionalId(command.skillSubsetName),
     skillId: cleanOptionalId(command.skillId),
+    ...(cleanOptionalId(command.commonEventId) ? { commonEventId: cleanOptionalId(command.commonEventId) } : {}),
   }));
 }
 
 function normalizeBattleCommandKind(kind: ClassBattleCommand["kind"] | undefined): ClassBattleCommand["kind"] {
-  return kind === "skill" || kind === "skillSubset" || kind === "defend" || kind === "guard" || kind === "item" || kind === "capture" || kind === "escape" || kind === "switch" || kind === "event"
+  return kind === "skill" || kind === "skillSubset" || kind === "defend" || kind === "guard" || kind === "item" || kind === "capture" || kind === "escape" || kind === "switch" || kind === "event" || kind === "commonEvent"
     ? kind
     : "attack";
 }

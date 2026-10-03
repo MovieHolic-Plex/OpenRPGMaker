@@ -1702,7 +1702,7 @@ function systemPreviewWell(label: string, resourceId: string | undefined): HTMLE
     children: [
       el("span", { class: "db-system-preview-label", text: label }),
       el("div", { class: "db-system-preview-frame", children: [preview] }),
-      el("code", { text: resourceId ? systemResourceName(label === "시스템" ? "system" : label === "전투" ? "system2" : "title", resourceId) : "선택 없음" }),
+      el("code", { text: resourceId ? systemResourceName(label === "시스템" ? "system" : "title", resourceId) : "선택 없음" }),
     ],
   });
   if (url) preview.addEventListener("error", () => markDatabaseImageFailed(preview.parentElement!, label), { once: true });

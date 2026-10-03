@@ -1,0 +1,95 @@
+import { el } from "@/util/dom";
+import { editorState, type EditorState, type TerrainDesignTool } from "../editorState";
+import { store } from "@/project/store";
+import { TERRAIN_DESIGN_TOOLS, commitTerrainDesign, isTerrainDesignTool, selectTerrainDesignTool } from "../terrainDesignActions";
+import { shouldIgnoreEditorShortcut } from "../hotkeys";
+import { terrainRouteResult } from "../terrainDesignOverlay";
+import { RELIEF_MAX_LEVEL } from "@/project/relief/types";
+import "@/styles/editor/terrain-design.css";
+
+export function mountTerrainDesignPanel(host: HTMLElement): () => void {
+  const panel = el("section", { class: "terrain-design-panel", attrs: { "aria-label": "지형 설계" }, dataset: { testid: "terrain-design-panel" } });
+  const close = el("button", { class: "relief-pop-close", text: "×", attrs: { type: "button", "aria-label": "지형 설계 닫기" }, dataset: { testid: "terrain-design-close" }, on: { click: () => editorState.set({ terrainDesignOpen: false }) } });
+  const head = el("div", { class: "terrain-design-head", children: [el("strong", { text: "지형 설계" }), close] });
+  const body = el("div", { class: "terrain-design-body" }); panel.append(head, body); host.append(panel);
+  const fields = new Map<string, HTMLElement>(), controls = new Map<string, HTMLInputElement | HTMLSelectElement>();
+  const select = (key: string, label: string, options: readonly (readonly [string, string])[], set: (value: string) => void) => {
+    const input = el("select", { class: "relief-bar-style", attrs: { "aria-label": label }, dataset: { testid: `terrain-design-${key}` }, on: { change: event => set((event.target as HTMLSelectElement).value) } }) as HTMLSelectElement;
+    for (const [value, text] of options) input.append(el("option", { value, text }));
+    const field = el("label", { class: "terrain-design-field", children: [el("span", { text: label }), input] }); body.append(field); fields.set(key, field); controls.set(key, input); return input;
+  };
+  const number = (key: string, label: string, min: number, max: number, set: (value: number) => void) => {
+    const input = el("input", { attrs: { type: "number", min: String(min), max: String(max), step: "1", "aria-label": label }, dataset: { testid: `terrain-design-${key}` }, on: { change: event => { const value = Number((event.target as HTMLInputElement).value); set(Number.isFinite(value) ? Math.max(min, Math.min(max, Math.round(value))) : min); } } }) as HTMLInputElement;
+    const field = el("label", { class: "terrain-design-field", children: [el("span", { text: label }), input] }); body.append(field); fields.set(key, field); controls.set(key, input); return input;
+  };
+  select("tool", "도구", [["", "도구 선택"], ...TERRAIN_DESIGN_TOOLS], value => { if (value) selectTerrainDesignTool(value as TerrainDesignTool); });
+  select("symmetry", "대칭", [["none", "없음"], ["mirrorX", "좌우"], ["mirrorY", "상하"], ["both", "좌우·상하"], ["rotate2", "180° 회전"], ["rotate4", "90° 회전"]], value => editorState.set({ terrainSymmetry: value as EditorState["terrainSymmetry"] }));
+  select("shape", "외곽", [["polygon", "다각형"], ["rect", "사각형"], ["line", "선"]], value => editorState.set({ terrainAreaShape: value as EditorState["terrainAreaShape"], terrainPoints: null }));
+  number("delta", "높이 변화", -RELIEF_MAX_LEVEL, RELIEF_MAX_LEVEL, value => editorState.set({ terrainDelta: value }));
+  select("width", "폭 / 군집 크기", [1, 3, 5, 7, 11, 15].map(n => [String(n), `${n}칸`] as const), value => editorState.set({ terrainWidth: Number(value) }));
+  select("road-height", "길 높이", [["follow", "지형 따라가기 · 경사 연결"], ["flat", "첫 점 높이로 평탄화"]], value => editorState.set({ terrainRoadFlatten: value === "flat" }));
+  number("water-level", "수위", 0, RELIEF_MAX_LEVEL, value => editorState.set({ terrainLakeLevel: value }));
+  number("water-depth", "최대 깊이", 1, RELIEF_MAX_LEVEL, value => editorState.set({ terrainLakeDepth: value }));
+  number("shallows", "걸을 수 있는 물가 폭", 0, 8, value => editorState.set({ terrainShallowWidth: value }));
+  number("seed", "배치 시드", 0, 999999, value => editorState.set({ terrainSeed: value }));
+  for (let n = 0; n < 3; n++) number(`weight-${n}`, ["풀 / 나무 비중", "흙 / 바위 비중", "돌 / 덤불 비중"][n]!, 0, 100, value => { const weights = [...editorState.get().terrainMixWeights] as [number, number, number]; weights[n] = value; editorState.set({ terrainMixWeights: weights }); });
+  number("density", "군집 밀도 (%)", 1, 100, value => editorState.set({ reliefClusterDensity: value }));
+  select("lock-mode", "영역 보호", [["lock", "잠그기"], ["unlock", "잠금 해제"]], value => editorState.set({ terrainUnlock: value === "unlock" }));
+  const stampName = el("input", { attrs: { type: "text", maxlength: "100", "aria-label": "도장 이름" }, dataset: { testid: "terrain-design-stamp-name" }, on: { change: e => editorState.set({ terrainStampName: (e.target as HTMLInputElement).value }) } }) as HTMLInputElement;
+  const nameField = el("label", { class: "terrain-design-field", children: [el("span", { text: "도장 이름" }), stampName] }); body.append(nameField); fields.set("stamp-name", nameField);
+  select("stamp-mode", "도장 사용", [["capture", "새 도장 저장 · 두 모서리"], ["place", "저장한 도장 놓기"]], value => editorState.set({ terrainStampCapture: value === "capture", terrainPoints: null }));
+  const library = select("stamp-library", "저장한 도장", [], value => editorState.set({ terrainStampId: value || null, terrainStampCapture: false, terrainPoints: null }));
+  select("rotation", "도장 회전", [["0", "0°"], ["1", "90°"], ["2", "180°"], ["3", "270°"]], value => editorState.set({ terrainStampRotation: Number(value) as 0 | 1 | 2 | 3 }));
+  select("mirror", "도장 반전", [["no", "없음"], ["yes", "좌우 반전"]], value => editorState.set({ terrainStampMirror: value === "yes" }));
+  number("route-width", "검사할 통로 폭", 1, 9, value => editorState.set({ terrainRouteWidth: value }));
+  const removeStamp = el("button", { class: "relief-bar-size", text: "선택한 도장 삭제", attrs: { type: "button" }, dataset: { testid: "terrain-design-stamp-delete" }, on: { click: () => { const id = editorState.get().terrainStampId; if (!id) return; store.update(p => { p.terrainStamps = p.terrainStamps?.filter(s => s.id !== id); if (!p.terrainStamps?.length) delete p.terrainStamps; }, { scope: "project", label: "지형 도장 삭제" }); editorState.set({ terrainStampId: null, terrainStampCapture: true }); } } });
+  body.append(removeStamp);
+  const info = el("div", { class: "terrain-design-info", attrs: { role: "status", "aria-live": "polite" }, dataset: { testid: "terrain-design-info" } });
+  const apply = el("button", { class: "relief-bar-doodad", text: "적용 ↵", attrs: { type: "button" }, dataset: { testid: "terrain-design-apply" }, on: { click: commitTerrainDesign } }) as HTMLButtonElement;
+  const cancel = el("button", { class: "relief-bar-size", text: "점 지우기", attrs: { type: "button" }, dataset: { testid: "terrain-design-cancel" }, on: { click: () => editorState.set({ terrainPoints: null, terrainRoute: null }) } });
+  panel.append(info, el("div", { class: "terrain-design-footer", children: [cancel, apply] }));
+  let libraryIdentity = store.getCurrent().terrainStamps;
+  let selectedMap = "";
+  const sync = () => {
+    const s = editorState.get(), p = store.getCurrent(), map = s.currentMapId ? p.maps[s.currentMapId] : undefined;
+    panel.hidden = !s.terrainDesignOpen || s.tool !== "relief" || s.layer === "event";
+    if (panel.hidden) return;
+    const tool = s.terrainBrush;
+    for (const [key, field] of fields) field.hidden = !["tool", "symmetry"].includes(key);
+    const show = (...keys: string[]) => { for (const key of keys) fields.get(key)!.hidden = false; };
+    if (["contour", "lake", "lock"].includes(tool)) show("shape");
+    if (["contour", "ridge", "valley"].includes(tool)) show("delta");
+    if (["contour", "road", "ridge", "valley", "mix", "mixedCluster"].includes(tool)) show("width");
+    if (tool === "road") show("road-height");
+    if (tool === "lake") show("water-level", "water-depth", "shallows");
+    if (tool === "mix" || tool === "mixedCluster") show("seed", "weight-0", "weight-1", "weight-2");
+    if (tool === "mixedCluster") show("density");
+    if (tool === "lock") show("lock-mode");
+    if (tool === "stamp") { show("stamp-mode"); if (s.terrainStampCapture) show("stamp-name"); else show("stamp-library", "rotation", "mirror"); }
+    if (tool === "route") show("route-width");
+    (controls.get("shape") as HTMLSelectElement).querySelector<HTMLOptionElement>('option[value="line"]')!.disabled = tool !== "contour";
+    (controls.get("symmetry") as HTMLSelectElement).querySelector<HTMLOptionElement>('option[value="rotate4"]')!.disabled = map?.width !== map?.height;
+    if (libraryIdentity !== p.terrainStamps || selectedMap !== (map?.tilesetId ?? "") || !library.options.length) {
+      libraryIdentity = p.terrainStamps; selectedMap = map?.tilesetId ?? ""; library.replaceChildren(el("option", { value: "", text: "도장 선택" }));
+      for (const stamp of p.terrainStamps ?? []) if (stamp.tilesetId === map?.tilesetId) library.append(el("option", { value: stamp.id, text: `${stamp.name} · ${stamp.width}×${stamp.height}` }));
+    }
+    const values: Record<string, string> = { tool: isTerrainDesignTool(tool) ? tool : "", symmetry: s.terrainSymmetry, shape: s.terrainAreaShape, delta: String(s.terrainDelta), width: String(s.terrainWidth), "road-height": s.terrainRoadFlatten ? "flat" : "follow", "water-level": String(s.terrainLakeLevel), "water-depth": String(s.terrainLakeDepth), shallows: String(s.terrainShallowWidth), seed: String(s.terrainSeed), density: String(s.reliefClusterDensity), "lock-mode": s.terrainUnlock ? "unlock" : "lock", "stamp-mode": s.terrainStampCapture ? "capture" : "place", "stamp-library": s.terrainStampId ?? "", rotation: String(s.terrainStampRotation), mirror: s.terrainStampMirror ? "yes" : "no", "route-width": String(s.terrainRouteWidth) };
+    s.terrainMixWeights.forEach((value, n) => { values[`weight-${n}`] = String(value); });
+    for (const [key, input] of controls) if (document.activeElement !== input) input.value = values[key]!;
+    if (document.activeElement !== stampName) stampName.value = s.terrainStampName;
+    removeStamp.hidden = tool !== "stamp" || s.terrainStampCapture;
+    (removeStamp as HTMLButtonElement).disabled = !s.terrainStampId;
+    const count = s.terrainPoints?.mapId === map?.id ? s.terrainPoints!.points.length : 0;
+    apply.disabled = !count || ["stamp", "route", "mix", "mixedCluster"].includes(tool);
+    if (tool === "route" && map && s.terrainRoute?.mapId === map.id) info.textContent = terrainRouteResult(p, map, s.terrainRoute, s.terrainRouteWidth).reason;
+    else info.textContent = tool === "route" ? "출발점 → 목적지를 찍으세요. 동적 이벤트는 게임에서 확인하세요." : tool === "stamp" ? s.terrainStampCapture ? `사각형의 두 모서리를 찍으세요 · ${count}/2` : "놓을 왼쪽 위 칸을 찍으세요. 소품 그림은 똑바로 유지됩니다." : tool === "mix" || tool === "mixedCluster" ? "캔버스를 눌러 배치하세요. 시드가 같으면 같은 배치가 됩니다." : `${count}개 점 · ${["contour", "lake", "lock"].includes(tool) && s.terrainAreaShape === "rect" ? "두 모서리" : "외곽 또는 경유점"}을 찍고 적용하세요. Esc: 취소`;
+  };
+  const offState = editorState.subscribe(sync), offStore = store.subscribe(sync); sync();
+  const keydown = (event: KeyboardEvent) => { if (panel.hidden || event.defaultPrevented || shouldIgnoreEditorShortcut(event)) return; if (event.key === "Enter" && !apply.disabled) { event.preventDefault(); event.stopPropagation(); commitTerrainDesign(); } else if (event.key === "Escape") { event.preventDefault(); event.stopPropagation(); if (editorState.get().terrainPoints) editorState.set({ terrainPoints: null }); else editorState.set({ terrainDesignOpen: false }); } };
+  document.addEventListener("keydown", keydown, true);
+  let drag: { x: number; y: number; left: number; top: number } | null = null;
+  head.addEventListener("pointerdown", e => { if ((e.target as HTMLElement).closest("button")) return; drag = { x: e.clientX, y: e.clientY, left: panel.offsetLeft, top: panel.offsetTop }; head.setPointerCapture(e.pointerId); e.preventDefault(); });
+  head.addEventListener("pointermove", e => { if (!drag) return; panel.style.left = `${Math.min(Math.max(0, host.clientWidth - panel.offsetWidth), Math.max(0, drag.left + e.clientX - drag.x))}px`; panel.style.top = `${Math.min(Math.max(0, host.clientHeight - panel.offsetHeight), Math.max(0, drag.top + e.clientY - drag.y))}px`; });
+  head.addEventListener("pointerup", () => { drag = null; }); head.addEventListener("pointercancel", () => { drag = null; });
+  return () => { offState(); offStore(); document.removeEventListener("keydown", keydown, true); panel.remove(); };
+}

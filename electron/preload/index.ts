@@ -34,6 +34,8 @@ const bridge = {
     separateMedia: invoke(OPRN_CHANNELS.projectSeparateMedia),
     backup: invoke(OPRN_CHANNELS.projectBackup),
     saveCover: invoke(OPRN_CHANNELS.projectSaveCover),
+    listBackups: invoke(OPRN_CHANNELS.projectListBackups),
+    restoreBackup: invoke(OPRN_CHANNELS.projectRestoreBackup),
   },
   commits: {
     record: invoke(OPRN_CHANNELS.commitsRecord),

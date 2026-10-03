@@ -48,7 +48,7 @@ beforeEach(() => {
   vi.spyOn(window, "matchMedia").mockReturnValue(preference);
   const project = createBlankProject();
   project.database.battleAnimations = [{
-    id: "cache-preview", name: "Cache preview", resourceId: "easyrpg-battle-blow",
+    id: "cache-preview", name: "Cache preview", resourceId: "scarloxy-battle-anim-scratch",
     sheet: { frameWidth: 96, frameHeight: 96, columns: 5 },
     frames: [0, 1, 2].map((pattern) => ({
       cells: [{ pattern, x: 0, y: 0, zoom: 100, opacity: 255, visible: true }],

@@ -1,0 +1,45 @@
+{
+  "records": {
+    "aiRecordsPresent": true
+  },
+  "grassRestore": {
+    "covered": true,
+    "restored": true,
+    "restoredAfterUndo": true
+  },
+  "roughHold": {
+    "cells": 274,
+    "peak": 4
+  },
+  "undo": {
+    "raised": 0
+  },
+  "redo": {
+    "exact": true
+  },
+  "shift": {
+    "cells": 5,
+    "peak": 1
+  },
+  "stairs": {
+    "cells": 8
+  },
+  "bridge": {
+    "cells": 12
+  },
+  "trees": {
+    "count": 24
+  },
+  "escape": {
+    "tool": "relief",
+    "picked": null,
+    "open": false
+  },
+  "tooltip": "내리기",
+  "layout1024": {
+    "canvasWidth": 474,
+    "barWidth": 398,
+    "inside": true
+  },
+  "errors": []
+}

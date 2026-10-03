@@ -1,0 +1,2563 @@
+{
+  "set": "motion",
+  "reduced": false,
+  "feel": "impact",
+  "speed": "1",
+  "impactAudit": true,
+  "variant": "miss",
+  "clips": [
+    {
+      "skill": "skill_motion_jump",
+      "start": 12.24,
+      "duration": 2.76,
+      "group": 0,
+      "file": "/home/main/.codex/worktrees/7fd5/rpg-zzu/verify-shots/battle-motion/outcomes/player-miss/skill-skill_motion_jump.gif",
+      "bytes": 933330
+    },
+    {
+      "skill": "skill_motion_air-chase",
+      "start": 16.92,
+      "duration": 2.32,
+      "group": 0,
+      "file": "/home/main/.codex/worktrees/7fd5/rpg-zzu/verify-shots/battle-motion/outcomes/player-miss/skill-skill_motion_air-chase.gif",
+      "bytes": 845119
+    }
+  ],
+  "errors": [],
+  "evidence": [
+    {
+      "skill": "skill_motion_jump",
+      "group": 0,
+      "completed": true,
+      "effects": [],
+      "summons": [],
+      "poses": [
+        {
+          "at": 13296,
+          "actor": "actor_hero",
+          "pose": "idle",
+          "flip": false
+        },
+        {
+          "at": 13376,
+          "actor": "actor_hero",
+          "pose": "defend",
+          "flip": false
+        },
+        {
+          "at": 13516,
+          "actor": "actor_hero",
+          "pose": "evade",
+          "flip": false
+        },
+        {
+          "at": 13726,
+          "actor": "actor_hero",
+          "pose": "attack_windup",
+          "flip": false
+        },
+        {
+          "at": 13939,
+          "actor": "actor_hero",
+          "pose": "attack_strike",
+          "flip": false
+        },
+        {
+          "at": 13991,
+          "actor": "actor_hero",
+          "pose": "evade",
+          "flip": false
+        },
+        {
+          "at": 14391,
+          "actor": "actor_hero",
+          "pose": "defend",
+          "flip": false
+        },
+        {
+          "at": 14444,
+          "actor": "actor_hero",
+          "pose": "idle",
+          "flip": false
+        }
+      ],
+      "cells": [],
+      "legacyLayers": 0,
+      "impactFrames": [
+        {
+          "at": 13258.600000023842,
+          "held": false,
+          "skill": "chor_builtin_jump",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            null
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 8.900000035762787,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 13271.400000035763,
+          "held": false,
+          "skill": "chor_builtin_jump",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            null
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 17.5,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 13296.699999988079,
+          "held": false,
+          "skill": "chor_builtin_jump",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 49.5,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 13313.900000035763,
+          "held": false,
+          "skill": "chor_builtin_jump",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 52.700000047683716,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 13335.5,
+          "held": false,
+          "skill": "chor_builtin_jump",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 69.70000004768372,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 13357.600000023842,
+          "held": false,
+          "skill": "chor_builtin_jump",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 91.40000003576279,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 13381.800000011921,
+          "held": false,
+          "skill": "chor_builtin_jump",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "defend"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 129.20000004768372,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-defend"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 13403.900000035763,
+          "held": false,
+          "skill": "chor_builtin_jump",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "defend"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 155.30000001192093,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-defend"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 13427,
+          "held": false,
+          "skill": "chor_builtin_jump",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "defend"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 160.20000004768372,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-defend"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 13451.400000035763,
+          "held": false,
+          "skill": "chor_builtin_jump",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "defend"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 183.20000004768372,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-defend"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 13476.5,
+          "held": false,
+          "skill": "chor_builtin_jump",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "defend"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 208,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-defend"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 13527,
+          "held": false,
+          "skill": "chor_builtin_jump",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "evade"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 269.30000001192093,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 13553.600000023842,
+          "held": false,
+          "skill": "chor_builtin_jump",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "evade"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 283.9000000357628,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 13577.900000035763,
+          "held": false,
+          "skill": "chor_builtin_jump",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "evade"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 309.5,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 13606.100000023842,
+          "held": false,
+          "skill": "chor_builtin_jump",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "evade"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 334.2000000476837,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 13630.600000023842,
+          "held": false,
+          "skill": "chor_builtin_jump",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "evade"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 362.5,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 13655.300000011921,
+          "held": false,
+          "skill": "chor_builtin_jump",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "evade"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 386.60000002384186,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 13683.900000035763,
+          "held": false,
+          "skill": "chor_builtin_jump",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "evade"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 411.30000001192093,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 13709.900000035763,
+          "held": false,
+          "skill": "chor_builtin_jump",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "evade"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 439.9000000357628,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 13735.100000023842,
+          "held": false,
+          "skill": "chor_builtin_jump",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "attack_windup"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 479.2000000476837,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 13759.199999988079,
+          "held": false,
+          "skill": "chor_builtin_jump",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "attack_windup"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 507.3000000119209,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 13783,
+          "held": false,
+          "skill": "chor_builtin_jump",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "attack_windup"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 515.2000000476837,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 13810,
+          "held": false,
+          "skill": "chor_builtin_jump",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "attack_windup"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 539.3000000119209,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 13834.100000023842,
+          "held": false,
+          "skill": "chor_builtin_jump",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "attack_windup"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 566,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 13858.5,
+          "held": false,
+          "skill": "chor_builtin_jump",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "attack_windup"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 590.2000000476837,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 13881.300000011921,
+          "held": false,
+          "skill": "chor_builtin_jump",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "attack_windup"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 614.7000000476837,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 13906.600000023842,
+          "held": false,
+          "skill": "chor_builtin_jump",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "attack_windup"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 637.3000000119209,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 13931.400000035763,
+          "held": false,
+          "skill": "chor_builtin_jump",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "attack_windup"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 662.6000000238419,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 13956.400000035763,
+          "held": false,
+          "skill": "chor_builtin_jump",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "attack_strike"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 693.3000000119209,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 14020.300000011921,
+          "held": false,
+          "skill": "chor_builtin_jump",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "evade"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 744.3000000119209,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 14053.300000011921,
+          "held": false,
+          "skill": "chor_builtin_jump",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "evade"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 789.3000000119209,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 14078.100000023842,
+          "held": false,
+          "skill": "chor_builtin_jump",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "evade"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 810,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 14103.5,
+          "held": false,
+          "skill": "chor_builtin_jump",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "evade"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 834.4000000357628,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 14130,
+          "held": false,
+          "skill": "chor_builtin_jump",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "evade"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 859.7000000476837,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 14155.800000011921,
+          "held": false,
+          "skill": "chor_builtin_jump",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "evade"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 886.6000000238419,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 14180.100000023842,
+          "held": false,
+          "skill": "chor_builtin_jump",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "evade"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 911.6000000238419,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 14205.199999988079,
+          "held": false,
+          "skill": "chor_builtin_jump",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "evade"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 936,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 14228.5,
+          "held": false,
+          "skill": "chor_builtin_jump",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "evade"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 967.2000000476837,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 14254.199999988079,
+          "held": false,
+          "skill": "chor_builtin_jump",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "evade"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 984.6000000238419,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 14278.5,
+          "held": false,
+          "skill": "chor_builtin_jump",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "evade"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1010.4000000357627,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 14304.5,
+          "held": false,
+          "skill": "chor_builtin_jump",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "evade"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1034.5,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 14329.400000035763,
+          "held": false,
+          "skill": "chor_builtin_jump",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "evade"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1060.6000000238419,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 14353.699999988079,
+          "held": false,
+          "skill": "chor_builtin_jump",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "evade"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1085.300000011921,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 14377.400000035763,
+          "held": false,
+          "skill": "chor_builtin_jump",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "evade"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1109.7000000476837,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 14409,
+          "held": false,
+          "skill": "chor_builtin_jump",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "defend"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1144.2000000476837,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-defend"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 14435,
+          "held": false,
+          "skill": "chor_builtin_jump",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "defend"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1165.6000000238419,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-defend"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 14463.800000011921,
+          "held": false,
+          "skill": "chor_builtin_jump",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1197.300000011921,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 14489.600000023842,
+          "held": false,
+          "skill": "chor_builtin_jump",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1220.4000000357628,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 14514.600000023842,
+          "held": false,
+          "skill": "chor_builtin_jump",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1245.7000000476837,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 14539.199999988079,
+          "held": false,
+          "skill": "chor_builtin_jump",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1270.9000000357628,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        }
+      ],
+      "audioStarts": [
+        {
+          "at": 12238.300000011921,
+          "duration": 0.18188208616780047,
+          "rate": 1
+        },
+        {
+          "at": 12342.800000011921,
+          "duration": 0.18188208616780047,
+          "rate": 1
+        },
+        {
+          "at": 12412.100000023842,
+          "duration": 0.18188208616780047,
+          "rate": 1
+        },
+        {
+          "at": 12474.400000035763,
+          "duration": 0.18188208616780047,
+          "rate": 1
+        },
+        {
+          "at": 12532.199999988079,
+          "duration": 0.18188208616780047,
+          "rate": 1
+        },
+        {
+          "at": 12590.800000011921,
+          "duration": 0.18188208616780047,
+          "rate": 1
+        },
+        {
+          "at": 12683.199999988079,
+          "duration": 0.18188208616780047,
+          "rate": 1
+        },
+        {
+          "at": 12763.800000011921,
+          "duration": 0.18188208616780047,
+          "rate": 1
+        },
+        {
+          "at": 12839.5,
+          "duration": 0.18188208616780047,
+          "rate": 1
+        },
+        {
+          "at": 12953.100000023842,
+          "duration": 0.18188208616780047,
+          "rate": 1
+        },
+        {
+          "at": 13017.100000023842,
+          "duration": 0.18188208616780047,
+          "rate": 1
+        },
+        {
+          "at": 13119,
+          "duration": 0.18188208616780047,
+          "rate": 1
+        },
+        {
+          "at": 13204.199999988079,
+          "duration": 1.3314285714285714,
+          "rate": 1
+        },
+        {
+          "at": 13402,
+          "duration": 0.7308390022675737,
+          "rate": 1
+        },
+        {
+          "at": 13753.699999988079,
+          "duration": 1.250204081632653,
+          "rate": 1
+        },
+        {
+          "at": 13939.5,
+          "duration": 0.2578458049886621,
+          "rate": 1
+        },
+        {
+          "at": 13940.300000011921,
+          "duration": 0.5507936507936508,
+          "rate": 1
+        }
+      ],
+      "popups": [
+        {
+          "at": 13947,
+          "target": "enemy-1",
+          "text": "MISS",
+          "heal": false
+        }
+      ],
+      "hitStops": [],
+      "lines": [
+        ">주인공은 무엇을 할까?",
+        ">슬라임 1을 노린다 (← → 대상 변경)",
+        ">주인공이 높이 도약을 사용했다!",
+        ">주인공이 높이 도약을 사용했다!공격이 빗나갔다!",
+        ">수호자는 무엇을 할까?"
+      ],
+      "statuses": [],
+      "sounds": 3,
+      "remainingFx": 0,
+      "layerKeys": [],
+      "problems": []
+    },
+    {
+      "skill": "skill_motion_air-chase",
+      "group": 0,
+      "completed": true,
+      "effects": [],
+      "summons": [],
+      "poses": [
+        {
+          "at": 17645,
+          "actor": "actor_hero",
+          "pose": "idle",
+          "flip": false
+        },
+        {
+          "at": 17730,
+          "actor": "actor_hero",
+          "pose": "attack_windup",
+          "flip": false
+        },
+        {
+          "at": 17871,
+          "actor": "actor_hero",
+          "pose": "walk_b",
+          "flip": false
+        },
+        {
+          "at": 18150,
+          "actor": "actor_hero",
+          "pose": "attack_windup",
+          "flip": false
+        },
+        {
+          "at": 18191,
+          "actor": "actor_hero",
+          "pose": "attack_strike",
+          "flip": false
+        },
+        {
+          "at": 18245,
+          "actor": "actor_hero",
+          "pose": "evade",
+          "flip": false
+        },
+        {
+          "at": 18645,
+          "actor": "actor_hero",
+          "pose": "defend",
+          "flip": false
+        },
+        {
+          "at": 18690,
+          "actor": "actor_hero",
+          "pose": "idle",
+          "flip": false
+        }
+      ],
+      "cells": [],
+      "legacyLayers": 0,
+      "impactFrames": [
+        {
+          "at": 17613,
+          "held": false,
+          "skill": "chor_builtin_air-chase",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            null
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 6.600000023841858,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 17635,
+          "held": false,
+          "skill": "chor_builtin_air-chase",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            null
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 15.100000023841858,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 17660.900000035763,
+          "held": false,
+          "skill": "chor_builtin_air-chase",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 40.80000001192093,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 17685,
+          "held": false,
+          "skill": "chor_builtin_air-chase",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 59.80000001192093,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 17708.900000035763,
+          "held": false,
+          "skill": "chor_builtin_air-chase",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 84.5,
+              "type": "Animation",
+              "target": "battle-actor battle-pose-idle battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 17731.5,
+          "held": false,
+          "skill": "chor_builtin_air-chase",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "attack_windup"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 126.9000000357628,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 17753.69999998808,
+          "held": false,
+          "skill": "chor_builtin_air-chase",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "attack_windup"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 135.60000002384186,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 17774.30000001192,
+          "held": false,
+          "skill": "chor_builtin_air-chase",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "attack_windup"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 153,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 17795.80000001192,
+          "held": false,
+          "skill": "chor_builtin_air-chase",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "attack_windup"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 173.10000002384186,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 17817.900000035763,
+          "held": false,
+          "skill": "chor_builtin_air-chase",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "attack_windup"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 194.60000002384186,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 17840.100000023842,
+          "held": false,
+          "skill": "chor_builtin_air-chase",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "attack_windup"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 216.80000001192093,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 17862.5,
+          "held": false,
+          "skill": "chor_builtin_air-chase",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "attack_windup"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 239.4000000357628,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 17891.69999998808,
+          "held": false,
+          "skill": "chor_builtin_air-chase",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "walk_b"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 267.30000001192093,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 17914.69999998808,
+          "held": false,
+          "skill": "chor_builtin_air-chase",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "walk_b"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 290.9000000357628,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 17937.30000001192,
+          "held": false,
+          "skill": "chor_builtin_air-chase",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "walk_b"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 313.7000000476837,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 17959.400000035763,
+          "held": false,
+          "skill": "chor_builtin_air-chase",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "walk_b"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 336.60000002384186,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 17979.400000035763,
+          "held": false,
+          "skill": "chor_builtin_air-chase",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "walk_b"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 358.10000002384186,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 18001.69999998808,
+          "held": false,
+          "skill": "chor_builtin_air-chase",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "walk_b"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 378.2000000476837,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 18022.5,
+          "held": false,
+          "skill": "chor_builtin_air-chase",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "walk_b"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 400.5,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 18043.80000001192,
+          "held": false,
+          "skill": "chor_builtin_air-chase",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "walk_b"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 431.9000000357628,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 18064.69999998808,
+          "held": false,
+          "skill": "chor_builtin_air-chase",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "walk_b"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 442.7000000476837,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 18111.30000001192,
+          "held": false,
+          "skill": "chor_builtin_air-chase",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "walk_b"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 463.5,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 18140.400000035763,
+          "held": false,
+          "skill": "chor_builtin_air-chase",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "walk_b"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 511,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 18167.69999998808,
+          "held": false,
+          "skill": "chor_builtin_air-chase",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "attack_windup"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 545.9000000357628,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 18200,
+          "held": false,
+          "skill": "chor_builtin_air-chase",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "attack_strike"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 587.6000000238419,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 18223.600000023842,
+          "held": false,
+          "skill": "chor_builtin_air-chase",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "attack_strike"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 601.5,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 18245.80000001192,
+          "held": false,
+          "skill": "chor_builtin_air-chase",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "evade"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 641.8000000119209,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 18268.19999998808,
+          "held": false,
+          "skill": "chor_builtin_air-chase",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "evade"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 644.8000000119209,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 18293.19999998808,
+          "held": false,
+          "skill": "chor_builtin_air-chase",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "evade"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 686.9000000357628,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 18319.69999998808,
+          "held": false,
+          "skill": "chor_builtin_air-chase",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "evade"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 691.8000000119209,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 18341.69999998808,
+          "held": false,
+          "skill": "chor_builtin_air-chase",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "evade"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 718.4000000357628,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 18366,
+          "held": false,
+          "skill": "chor_builtin_air-chase",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "evade"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 740.7000000476837,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 18388.400000035763,
+          "held": false,
+          "skill": "chor_builtin_air-chase",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "evade"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 765.2000000476837,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 18410.600000023842,
+          "held": false,
+          "skill": "chor_builtin_air-chase",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "evade"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 787.2000000476837,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 18431.80000001192,
+          "held": false,
+          "skill": "chor_builtin_air-chase",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "evade"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 809.5,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 18454.900000035763,
+          "held": false,
+          "skill": "chor_builtin_air-chase",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "evade"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 830.5,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 18475.80000001192,
+          "held": false,
+          "skill": "chor_builtin_air-chase",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "evade"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 864.8000000119209,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 18500.400000035763,
+          "held": false,
+          "skill": "chor_builtin_air-chase",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "evade"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 874.7000000476837,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 18526.80000001192,
+          "held": false,
+          "skill": "chor_builtin_air-chase",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "evade"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 901,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 18549.5,
+          "held": false,
+          "skill": "chor_builtin_air-chase",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "evade"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 925.8000000119209,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 18573.30000001192,
+          "held": false,
+          "skill": "chor_builtin_air-chase",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "evade"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 948.2000000476837,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 18599,
+          "held": false,
+          "skill": "chor_builtin_air-chase",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "evade"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 972.5,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 18624.69999998808,
+          "held": false,
+          "skill": "chor_builtin_air-chase",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "evade"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 997.8000000119209,
+              "type": "Animation",
+              "target": "battle-actor battle-acting"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 18647.19999998808,
+          "held": false,
+          "skill": "chor_builtin_air-chase",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "defend"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1041.9000000357628,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-defend"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 18670.100000023842,
+          "held": false,
+          "skill": "chor_builtin_air-chase",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "defend"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1046.800000011921,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-defend"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 18693.69999998808,
+          "held": false,
+          "skill": "chor_builtin_air-chase",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1086.9000000357628,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 18717.100000023842,
+          "held": false,
+          "skill": "chor_builtin_air-chase",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1092.6000000238419,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 18745.5,
+          "held": false,
+          "skill": "chor_builtin_air-chase",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1116.2000000476837,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 18773.100000023842,
+          "held": false,
+          "skill": "chor_builtin_air-chase",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1145,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        },
+        {
+          "at": 18801,
+          "held": false,
+          "skill": "chor_builtin_air-chase",
+          "burst": 0,
+          "fx": [],
+          "poses": [
+            "idle"
+          ],
+          "css": [
+            "running"
+          ],
+          "moves": [
+            {
+              "state": "paused",
+              "time": 1172.5,
+              "type": "Animation",
+              "target": "battle-actor battle-acting battle-pose-idle"
+            }
+          ],
+          "reactions": []
+        }
+      ],
+      "audioStarts": [
+        {
+          "at": 16919.19999998808,
+          "duration": 0.18188208616780047,
+          "rate": 1
+        },
+        {
+          "at": 16986.30000001192,
+          "duration": 0.18188208616780047,
+          "rate": 1
+        },
+        {
+          "at": 17050.5,
+          "duration": 0.18188208616780047,
+          "rate": 1
+        },
+        {
+          "at": 17104.400000035763,
+          "duration": 0.18188208616780047,
+          "rate": 1
+        },
+        {
+          "at": 17157.19999998808,
+          "duration": 0.18188208616780047,
+          "rate": 1
+        },
+        {
+          "at": 17211.19999998808,
+          "duration": 0.18188208616780047,
+          "rate": 1
+        },
+        {
+          "at": 17267,
+          "duration": 0.18188208616780047,
+          "rate": 1
+        },
+        {
+          "at": 17332.30000001192,
+          "duration": 0.18188208616780047,
+          "rate": 1
+        },
+        {
+          "at": 17385.600000023842,
+          "duration": 0.18188208616780047,
+          "rate": 1
+        },
+        {
+          "at": 17439.30000001192,
+          "duration": 0.18188208616780047,
+          "rate": 1
+        },
+        {
+          "at": 17497.19999998808,
+          "duration": 0.18188208616780047,
+          "rate": 1
+        },
+        {
+          "at": 17570.19999998808,
+          "duration": 1.3314285714285714,
+          "rate": 1
+        },
+        {
+          "at": 17739,
+          "duration": 0.7308390022675737,
+          "rate": 1
+        },
+        {
+          "at": 18035.19999998808,
+          "duration": 1.250204081632653,
+          "rate": 1
+        },
+        {
+          "at": 18190.900000035763,
+          "duration": 0.2578458049886621,
+          "rate": 1
+        },
+        {
+          "at": 18193,
+          "duration": 0.5507936507936508,
+          "rate": 1
+        }
+      ],
+      "popups": [
+        {
+          "at": 18200,
+          "target": "enemy-1",
+          "text": "MISS",
+          "heal": false
+        }
+      ],
+      "hitStops": [],
+      "lines": [
+        ">주인공은 무엇을 할까?",
+        ">슬라임 1을 노린다 (← → 대상 변경)",
+        ">주인공이 공중 추격을 사용했다!",
+        ">주인공이 공중 추격을 사용했다!공격이 빗나갔다!",
+        ">수호자는 무엇을 할까?"
+      ],
+      "statuses": [],
+      "sounds": 3,
+      "remainingFx": 0,
+      "layerKeys": [],
+      "problems": []
+    }
+  ],
+  "passed": true
+}

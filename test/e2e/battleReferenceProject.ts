@@ -201,10 +201,10 @@ function ensureAnchorAnimationSkill(project: BattleProject): void {
   const anchorAnimation: BattleAnimationRecord = {
     id: ANCHOR_ANIMATION_ID,
     name: "앵커 탐침",
-    // easyrpg-battle-blow 는 EASYRPG_RTP_ASSETS 에 등록돼 resolveAssetResourceUrl 이 URL 을
+    // scarloxy-battle-anim-scratch 는 Scarloxy 팩에 등록돼 resolveAssetResourceUrl 이 URL 을
     // 돌려준다. URL 이 없으면 battleAnimationDom 가 셀 캔버스를 아예 만들지 않으므로,
     // 실제 존재하는 자산 id 를 써야 셀이 생성된다.
-    resourceId: "easyrpg-battle-blow",
+    resourceId: "scarloxy-battle-anim-scratch",
     sheet: { frameWidth: 96, frameHeight: 96, columns: 5 },
     scope: "singleTarget",
     position: "center",

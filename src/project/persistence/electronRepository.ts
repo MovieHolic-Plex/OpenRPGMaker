@@ -10,6 +10,7 @@ import { setUploadedAssetResolver } from "./assetAccessors";
 import type { ProjectWriteAuthority } from "../spatial/saveRouting";
 import type { DbPersistenceDisabledReason } from "./types";
 import type { Project, UploadedAssetRef } from "../types";
+import type { ProjectBackupEntry, RestoredProject } from "./backupTypes";
 import type { LocalProjectTarget, ProjectTarget } from "./target";
 import type {
   AiActivityInput, AiAnalysisRunInput, CommitInput, CommitListItem, ConversationInput, ConversationListOptions,
@@ -51,6 +52,8 @@ export type OprnBridgeProject = {
   backup(payload: { readonly projectDir: string }): Promise<string>;
   /** 시작 화면 카드 그림(cover.jpg). 데스크톱 앱만 있다 — 팀 호스트 브라우저 브리지에는 없다. */
   saveCover?(payload: { readonly projectDir: string; readonly dataUrl: string }): Promise<boolean>;
+  listBackups(payload: { readonly projectDir: string }): Promise<readonly ProjectBackupEntry[]>;
+  restoreBackup(payload: { readonly projectDir: string; readonly backupId: string }): Promise<RestoredProject>;
 };
 export type OprnBridgeCommits = {
   record(payload: unknown): Promise<SaveResult>;
@@ -194,6 +197,17 @@ export function createElectronRepository(): ElectronRepository {
     if (!resolved) throw new Error("열린 프로젝트 폴더가 없습니다");
     return resolved;
   };
+  const savePreparedProject = async (persisted: Project, target: ProjectTarget): Promise<SaveResult> => {
+    const resolved = requireOpened(target);
+    const serialized = serialize(persisted);
+    const result = await electronBridge().project.save({ projectDir: resolved.projectDir, serialized, expectedSha: loadedSha });
+    if (result.kind === "saved") loadedSha = result.sha256 ?? null;
+    if (result.kind !== "saved") return result;
+    const revision = result.revision === undefined ? {} : { revision: result.revision };
+    return result.serialized
+      ? { kind: "saved", project: deserialize(result.serialized), sha256: result.sha256, ...revision }
+      : { kind: "saved", project: persisted, submitted: persisted, sha256: result.sha256, ...revision };
+  };
 
   const snapshotOf = (serialized: string | null | undefined, sha256: string | null | undefined, target: LocalProjectTarget): ProjectSnapshot | null => {
     if (!serialized) return null;
@@ -313,6 +327,12 @@ export function createElectronRepository(): ElectronRepository {
     async backup(target?: ProjectTarget | null): Promise<string> {
       return await electronBridge().project.backup({ projectDir: requireOpened(target).projectDir });
     },
+    async listBackups(target?: ProjectTarget | null): Promise<readonly ProjectBackupEntry[]> {
+      return await electronBridge().project.listBackups({ projectDir: requireOpened(target).projectDir });
+    },
+    async restoreBackup(backupId: string, target?: ProjectTarget | null): Promise<RestoredProject> {
+      return await electronBridge().project.restoreBackup({ projectDir: requireOpened(target).projectDir, backupId });
+    },
     status(disabledReason: DbPersistenceDisabledReason | null): PersistenceStatus {
       if (disabledReason) return { kind: "disabled", reason: disabledReason };
       return opened ? { kind: "ready", projectId: opened.projectId, source: "custom", url: opened.projectDir } : { kind: "not-configured", missing: ["url", "anonKey"], projectId: "", source: "legacy" };
@@ -331,17 +351,7 @@ export function createElectronRepository(): ElectronRepository {
       return await loadSnapshotFromHost(requireOpened(target));
     },
     async save(project, target, _authority?: ProjectWriteAuthority) {
-      const resolved = requireOpened(target);
-      const persisted = projectWithoutEventDrafts(project);
-      const serialized = serialize(persisted);
-      const result = await electronBridge().project.save({ projectDir: resolved.projectDir, serialized, expectedSha: loadedSha });
-      if (result.kind === "saved") loadedSha = result.sha256 ?? null;
-      if (result.kind !== "saved") return result;
-      const revision = result.revision === undefined ? {} : { revision: result.revision };
-      // 호스트가 문서를 돌려보내지 않았으면 제출한 사적 사본(persisted)이 곧 저장된 내용이다.
-      return result.serialized
-        ? { kind: "saved", project: deserialize(result.serialized), sha256: result.sha256, ...revision }
-        : { kind: "saved", project: persisted, submitted: persisted, sha256: result.sha256, ...revision };
+      return savePreparedProject(projectWithoutEventDrafts(project), target);
     },
     async saveMapPatch(input: MapPatchInput, target) {
       const resolved = requireOpened(target);

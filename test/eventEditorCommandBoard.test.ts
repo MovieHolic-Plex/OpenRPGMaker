@@ -248,6 +248,10 @@ describe("event editor command board", () => {
       },
     });
 
+    const source = host.querySelector<HTMLElement>('[data-testid="event-command-text"]')!;
+    source.querySelector<HTMLElement>('[data-testid="event-command-drag-handle"]')!
+      .dispatchEvent(new Event("pointerdown"));
+    source.dispatchEvent(new Event("dragstart"));
     branchEmpty.dispatchEvent(drop);
 
     const commands = store.getCurrent().maps[mapId]!.events[0]!.pages![0]!.commands;
