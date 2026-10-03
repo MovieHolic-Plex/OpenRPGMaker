@@ -97,7 +97,7 @@ export interface ReliefRender {
    * 벽이 안 보이는 쪽(북·동·서로 내려가는 가장자리)은 이 선이 없으면 같은 잔디끼리 붙어 단 차이가 사라진다.
    */
   edge: Uint8Array;
-  /** 타일 위(over) 띠로 보낼 경사로 윗면 화소 1 (rampArt 일 때만). 경사로 칸 타일이 비탈을 덮지 않게. */
+  /** 타일 위(over) 띠로 보낼 매끈한 경사로 윗면 화소 1. 주변 칸 타일도 비탈을 덮지 않게. */
   overSlope?: Uint8Array;
 }
 
@@ -349,18 +349,14 @@ export function renderRelief(h: HeightGrid, opt: ReliefRenderOptions = {}): Reli
   const stoneOffset = baseRamps.length * 6;
   const ramps = stoneStairs ? [...baseRamps, STONE_STAIR_RAMP] : baseRamps;
   const art = !!opt.rampArt;
-  // 경사로 도트 맵: 경사로와 그 둘레 한 칸은 네모 절벽 — 대각선으로 깎이면 경사로 입구가 비스듬히 잘려 비탈이 땅에 붙지 않는다
-  const nearRamp = opt.rampArt && opt.slopes?.length
+  // 경사로와 그 둘레 한 칸은 네모 절벽 — 대각선으로 깎이면 경사로 입구가 비스듬히 잘려 비탈이 땅에 붙지 않는다
+  const nearRamp = opt.slopes?.length
     ? (x: number, y: number) => opt.slopes!.some((s) => x >= s.x - 1 && x <= s.x + s.w && y >= s.y - 1 && y <= s.y + s.h)
-    : undefined;
-  // 계단과 둘레는 네모로 맞춘다. 접합부를 대각선으로 깎으면 벽과 계단 사이가 벌어진다.
-  const nearCut = opt.slopes?.some((s) => s.steps)
-    ? (x: number, y: number) => opt.slopes!.some((s) => !!s.steps && x >= s.x - 1 && x <= s.x + s.w && y >= s.y - 1 && y <= s.y + s.h)
     : undefined;
   const BW = h[0]?.length ?? 0, bridge = opt.bridges && Array.prototype.some.call(opt.bridges, (v: number) => v > 0) ? opt.bridges : undefined;
   const isBridge = (x: number, y: number) => !!bridge && x >= 0 && y >= 0 && x < BW && y < h.length && bridge[y * BW + x]! > 0;
   const nearBridge = bridge ? (x: number, y: number) => { for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) if (isBridge(x + dx, y + dy)) return true; return false; } : undefined;
-  const square = nearRamp || nearCut || nearBridge ? (x: number, y: number) => !!(nearRamp?.(x, y) || nearCut?.(x, y) || nearBridge?.(x, y)) : undefined;
+  const square = nearRamp || nearBridge ? (x: number, y: number) => !!(nearRamp?.(x, y) || nearBridge?.(x, y)) : undefined;
   const { hp, PW, PH } = buildPixelHeights(h, opt.diag !== false, square);
   const { hf, sid, st } = slopeHeights(hp, PW, PH, slopes);
   let mx = 0; for (let i = 0; i < hp.length; i++) if (hf[i] > mx) mx = hf[i];
@@ -416,7 +412,7 @@ export function renderRelief(h: HeightGrid, opt: ReliefRenderOptions = {}): Reli
       // 매끈한 경사로: 벌어진 틈을 같은 윗면 화소로 늘여 채운다
       for (let d = 0; d < n; d++) {
         const w = (sy + 1 + d) * PW + px;
-        kind[w] = 0; out[w] = out[i]; lev[w] = lc; src[w] = cell; fl[w] = c; mpy[w] = py; ssl[w] = ssl[i] || s2; sst[w] = sst[i];
+        kind[w] = 0; out[w] = out[i]; lev[w] = lc; src[w] = cell; fl[w] = c; mpy[w] = py; ssl[w] = ssl[i] || s2; sst[w] = ssl[i] ? sst[i] : st[m + PW];
       }
       continue;
     }
@@ -642,13 +638,12 @@ export function renderRelief(h: HeightGrid, opt: ReliefRenderOptions = {}): Reli
   const rgba = new Uint8ClampedArray(N * 4), xray = new Uint8ClampedArray(N * 4);
   // 경사로 도트 맵은 층마다 밝기를 곱하지 않는다 — 곱한 색은 칩셋에 없는 색이 되어 타일 사이에서 튄다
   const tone = opt.tone !== false && !art ? (c: number) => Math.max(0.9, Math.min(1.22, 0.94 + 0.026 * c)) : () => 1;
-  // 매끈한 경사로: 방향 밝기 + 아래쪽이 약간 어둡고, 6px 마다 옅은 결(오르막 방향을 읽게)
-  const slopeShade = (i: number, sx: number) => {
+  // 매끈한 경사로는 연속된 밝기만 쓴다. 일정 간격의 가로 줄은 계단처럼 읽힌다.
+  const slopeShade = (i: number) => {
     const s = slopes[ssl[i] - 1];
     let f = SLOPE_LIGHT[s.dir];
     if (s.steps) return f;
-    const along = s.dir === "n" || s.dir === "s" ? mpy[i] : sx;
-    return f * (0.93 + 0.1 * sst[i]) * (!art && along % 6 === 0 ? 0.9 : 1);
+    return f * (0.93 + 0.1 * sst[i]);
   };
   // carved stone flights (r3 QA: the geometric treads are 2-3 px under 16 px risers — pale rungs on a dark face, a ladder): repaint
   // each flight's screen span as even steps — a lit nosing, a tread about half the step, a shadow line, the riser in the face's own
@@ -700,11 +695,11 @@ export function renderRelief(h: HeightGrid, opt: ReliefRenderOptions = {}): Reli
   for (let sy = 0; sy < SH; sy++) for (let sx = 0; sx < PW; sx++) {
     const i = sy * PW + sx; let p = out[i];
     if (p < 0) p = GROUND[(sy % T) * T + sx % T];
-    const col = ramps[(p / 6) | 0][p % 6], o = i * 4, f = kind[i] === 0 && !(bridge && underDeck[i]) ? (art && ssl[i] ? 1 : tone(fl[i])) * (ssl[i] ? slopeShade(i, sx) : 1) : 1;   // (the floor under a deck is ground-lit: tone() darkened it into a slab)
+    const col = ramps[(p / 6) | 0][p % 6], o = i * 4, f = kind[i] === 0 && !(bridge && underDeck[i]) ? (art && ssl[i] ? 1 : tone(fl[i])) * (ssl[i] ? slopeShade(i) : 1) : 1;   // (the floor under a deck is ground-lit: tone() darkened it into a slab)
     if (opt.transparentGround && kind[i] < 0) continue;
     // 투명 땅은 제자리(높이 0)만. 경사로 아랫도리는 반올림 단이 0 이어도 위로 밀려 그려져 그 자리에 타일이 없다 — 불투명으로 칠한다.
     // 윗단 칸의 모서리 깎임(diag)도 화소는 높이 0 이지만 그 칸 타일은 위로 들려 그려진다 — 원천 칸이 높이 0 일 때만 비운다.
-    if (opt.transparentGround && kind[i] === 0 && lev[i] === 0 && fl[i] < 1e-6 && !(S && ssl[i]) && !stairOwner(i) && !h[(src[i] / W) | 0]?.[src[i] % W]) {
+    if (opt.transparentGround && kind[i] === 0 && lev[i] === 0 && fl[i] < 1e-6 && !ssl[i] && !stairOwner(i) && !h[(src[i] / W) | 0]?.[src[i] % W]) {
       const shade = GROUND[(sy % T) * T + sx % T] - p;
       rgba[o + 3] = shade > 0 ? Math.min(150, 55 * shade) : 0;
       // 경사로 도트 맵: 반투명으로 섞으면 칩셋에 없는 색이 나온다 — 윗면 램프의 풀색(1단 그늘 = 2번, 짙은 그늘 = 1번)으로 불투명하게
@@ -726,14 +721,40 @@ export function renderRelief(h: HeightGrid, opt: ReliefRenderOptions = {}): Reli
   }
   const hidden: [number, number][] = [];
   for (let k = 0; k < NC; k++) if (hidCell[k]) hidden.push([k % W, (k / W) | 0]);
-  // 경사로 도트 맵: 매끈한 경사로 면은 타일 위(over)로 — 칸마다 계단처럼 들린 타일이 비탈을 덮지 않고 비탈이 한 면으로 보인다
+  // 매끈한 경사로는 항상 한 면으로 그린다. 바이옴 그림이 없으면 현재 흙·풀 팔레트로 그린다.
   let overSlope: Uint8Array | undefined;
-  if (opt.rampArt && slopes.length) {
+  if (slopes.some(s => !s.steps)) {
     overSlope = new Uint8Array(N);
     for (let k = 0; k < N; k++) if (ssl[k] && kind[k] === 0 && !slopes[ssl[k] - 1]?.steps) overSlope[k] = 1;
-    paintRamps(opt.rampArt, slopes, { rgba, kind, ssl, sst, mpy, PW, SH });
+    const surface = { rgba, kind, ssl, sst, mpy, PW, SH };
+    if (opt.rampArt) paintRamps(opt.rampArt, slopes, surface);
+    else paintNaturalRamps(baseRamps, slopes, surface);
   }
   return { rgba, xray, PW, SH, pad, src, kind, lev, hidden, slope: ssl, slopeT: sst, mpy, height: fl, edge, ...(overSlope ? { overSlope } : {}) };
+}
+
+/** 주변 땅의 팔레트로 칠하는 연속 비탈. 가운데는 닳은 흙, 양옆과 양끝은 풀로 부드럽게 잇는다. */
+function paintNaturalRamps(
+  ramps: number[][][], slopes: ReliefSlope[],
+  r: { rgba: Uint8ClampedArray; kind: Int8Array; ssl: Int16Array; sst: Float32Array; mpy: Int32Array; PW: number; SH: number },
+) {
+  const { rgba, kind, ssl, sst, mpy, PW, SH } = r;
+  for (let i = 0; i < PW * SH; i++) {
+    const owner = ssl[i];
+    if (!owner || kind[i] !== 0 || slopes[owner - 1].steps) continue;
+    const s = slopes[owner - 1], px = i % PW, py = mpy[i];
+    const [across, width] = stairAcross(s, px, py), t = sst[i];
+    const along = s.dir === "n" || s.dir === "s" ? py : px;
+    const len = (s.dir === "n" || s.dir === "s" ? s.h : s.w) * T;
+    const noise = hsh3(px, py, 73), border = 2 + hsh3(fdiv(along, 4), owner, 79) % 3;
+    const side = Math.max(0, Math.min(1, (Math.min(across, width - 1 - across) - border) / 3));
+    const ends = Math.max(0, Math.min(1, Math.min(t, 1 - t) * len / 4));
+    const dirt = side * ends;
+    const grass = ramps[0][noise % 17 === 0 ? 4 : 3], earth = ramps[1][noise % 19 === 0 ? 3 : noise % 7 === 0 ? 4 : 5];
+    const light = SLOPE_LIGHT[s.dir] * (0.96 + 0.08 * t), o = i * 4;
+    for (let channel = 0; channel < 3; channel++) rgba[o + channel] = (grass[channel] * (1 - dirt) + earth[channel] * dirt) * light;
+    rgba[o + 3] = 255;
+  }
 }
 
 /** 경사로 도트 입히기. 윗면 화소는 맵 좌표(mpy, 화면 x)로 16×16 면 도트를 반복한다. */

@@ -1,0 +1,62 @@
+[
+  {
+    "height": 1,
+    "slopes": [
+      {
+        "x": 3,
+        "y": 8,
+        "w": 4,
+        "h": 2,
+        "dir": "n",
+        "lo": 0,
+        "hi": 1
+      }
+    ],
+    "rendererOwnsSlope": true
+  },
+  {
+    "height": 2,
+    "slopes": [
+      {
+        "x": 3,
+        "y": 8,
+        "w": 4,
+        "h": 3,
+        "dir": "n",
+        "lo": 0,
+        "hi": 2
+      }
+    ],
+    "rendererOwnsSlope": true
+  },
+  {
+    "height": 3,
+    "slopes": [
+      {
+        "x": 3,
+        "y": 8,
+        "w": 4,
+        "h": 4,
+        "dir": "n",
+        "lo": 0,
+        "hi": 3
+      }
+    ],
+    "rendererOwnsSlope": true
+  },
+  {
+    "height": 4,
+    "slopes": [
+      {
+        "x": 3,
+        "y": 8,
+        "w": 4,
+        "h": 5,
+        "dir": "n",
+        "lo": 0,
+        "hi": 4
+      }
+    ],
+    "rendererOwnsSlope": true
+  }
+]

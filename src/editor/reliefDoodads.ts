@@ -8,7 +8,7 @@ import { paintTilesBulk } from "@/editor/tileActions";
 import { setLayerTileAt } from "@/project/mapLayers";
 import { store } from "@/project/store";
 import { reliefLiftField, cellLift } from "@/project/relief/screen";
-import { rampCode, RELIEF_BRIDGE } from "@/project/relief/walk";
+import { rampCode, RELIEF_BRIDGE, reliefSlopes } from "@/project/relief/walk";
 import type { ReliefData, ReliefWallTile } from "@/project/relief/types";
 import type { GameMap, MapId, SectionStructureKitDef, TilesetDef } from "@/project/types";
 
@@ -34,8 +34,8 @@ export type ReliefDoodad =
 
 /** 탭마다 보여 줄 키트 상한 — 버들항은 나무 키트만 수십 개다. */
 const PER_TAB_LIMIT = 24;
-/** 경사로·계단 폭(칸). 한 칸 폭 경사로는 렌더 규칙이 깎아 잘 안 보인다. */
-const RAMP_WIDTH = 2;
+/** 자연 비탈은 넓은 면, 계단은 좁은 통로로 읽히도록 구분한다. */
+const RAMP_WIDTH = 4, STAIR_WIDTH = 2;
 
 const RAMPS: readonly ReliefDoodad[] = [
   { id: "ramp:slope", tab: "ramp", kind: "ramp", label: "경사로", stairs: false },
@@ -206,11 +206,15 @@ export function planReliefDoodad(
     if (stamp.some((cell) => level(relief, cell.x, cell.y) !== base)) return { ok: false, reason: "높이가 다른 칸에 걸친다 — 같은 단 위에만 놓인다", rects: [rect] };
     return { ok: true, reason: base > 0 ? `${base}단 언덕 위에 놓인다` : "땅 위에 놓인다", rects: [rect], stamp };
   }
-  const wall = snapToWall(relief, pick.x, pick.y, pick.face);
+  const slopes = doodad.kind === "ramp" && relief ? reliefSlopes(relief) : [];
+  const hitSlope = slopes.find(s => s.dir === "n" && pick.x >= s.x && pick.x < s.x + s.w && pick.y >= s.y && pick.y < s.y + s.h);
+  const wall = hitSlope
+    ? { x: hitSlope.x + Math.floor((hitSlope.w - 1) / 2), y: hitSlope.y - 1 }
+    : snapToWall(relief, pick.x, pick.y, pick.face);
   if (!relief || !wall) return { ok: false, reason: "남쪽 절벽이 없다 — 언덕 가장자리에 대 보라", rects: [{ x: pick.x, y: drawY(pick.x, pick.y), w: 1, h: 1 }] };
   const hi = level(relief, wall.x, wall.y), lo = level(relief, wall.x, wall.y + 1), height = hi - lo;
-  const width = doodad.kind === "ramp" ? RAMP_WIDTH : doodad.kit.width;
-  const x0 = wall.x - (doodad.kind === "ramp" ? 0 : Math.floor((width - 1) / 2));
+  const width = doodad.kind === "ramp" ? (doodad.stairs ? STAIR_WIDTH : RAMP_WIDTH) : doodad.kit.width;
+  const x0 = wall.x - Math.floor((width - 1) / 2);
   const faceRect = { x: x0, y: wall.y + 1 - hi, w: width, h: height };
   for (let dx = 0; dx < width; dx++) {
     const X = x0 + dx;
@@ -239,16 +243,22 @@ export function planReliefDoodad(
   // 경사로·계단: 벽 남쪽 낮은 땅에 (단 차 + 1)칸 길이로 북쪽 오르막을 깐다(relief-style-sheet 의 계단과 같은 비례).
   const length = height + 1;
   const rampRect = { x: x0, y: wall.y + 1 - hi, w: width, h: height + length };
+  // 같은 절벽의 북쪽 통로만 바꾼다. 폭·길이 밖으로 옛 통로를 남기지 않는다.
+  const replaceable = slopes.filter(s => s.dir === "n" && s.lo === lo && s.hi === hi
+    && s.y === wall.y + 1 && s.h === length && s.x >= x0 && s.x + s.w <= x0 + width);
   for (let dy = 1; dy <= length; dy++) for (let dx = 0; dx < width; dx++) {
     const X = x0 + dx, Y = wall.y + dy;
     if (Y >= relief.height) return { ok: false, reason: "맵 아래로 나간다", rects: [rampRect] };
     if (level(relief, X, Y) !== lo) return { ok: false, reason: `아래 ${length}칸이 평평해야 한다`, rects: [rampRect] };
-    if ((relief.ramps?.[Y * relief.width + X] ?? 0) > 0) return { ok: false, reason: "이미 경사로가 있다", rects: [rampRect] };
+    const oldCode = relief.ramps?.[Y * relief.width + X] ?? 0;
+    if (oldCode > 0 && !((oldCode === 1 || oldCode === 5) && replaceable.some(s => X >= s.x && X < s.x + s.w))) {
+      return { ok: false, reason: "다른 통로에 걸친다", rects: [rampRect] };
+    }
   }
   const code = rampCode("n", doodad.stairs);
   return {
     ok: true,
-    reason: `${height}단을 ${length}칸 ${doodad.stairs ? "계단으로" : "경사로로"} 잇는다`,
+    reason: `${height}단을 폭 ${width}칸·길이 ${length}칸 ${doodad.stairs ? "계단으로" : "경사로로"} 잇는다`,
     rects: [rampRect],
     apply: (draft) => {
       if (!draft.relief) return;

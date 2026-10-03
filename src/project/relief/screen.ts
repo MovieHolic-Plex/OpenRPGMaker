@@ -6,7 +6,7 @@
 import { effectiveHeights, prune, type ReliefRender, type ReliefRenderOptions } from "./render";
 import { gridFromRelief, RELIEF_TILE, type ReliefData } from "./types";
 import { hasRelief, reliefBridgeMask, reliefSlopes } from "./walk";
-import { reliefRampArt, reliefSmoothStairs } from "./styles";
+import { reliefRampArt } from "./styles";
 
 export interface ReliefLiftField {
   readonly width: number;
@@ -42,15 +42,14 @@ export function reliefLiftField(relief: ReliefData): ReliefLiftField {
 }
 
 /**
- * 그 칸 바닥을 relief 그림이 직접 칠하는가. 경사로 도트가 있는 바이옴의 매끈한 경사로 칸은 경사로 도트가 비탈 한 면을 칠하므로
+ * 그 칸 바닥을 relief 그림이 직접 칠하는가. 매끈한 경사로는 렌더러가 비탈 한 면을 칠하므로
  * 하층 바닥 타일(잔디 240 등)을 그리지 않는다 — 칸마다 계단처럼 들린 타일이 비탈을 조각내지 않게. 통행은 타일 그대로.
  */
 export function reliefPaintsCell(relief: ReliefData | undefined, x: number, y: number): boolean {
   if (!relief?.ramps) return false;
   const v = relief.ramps[y * relief.width + x] ?? 0;
-  // 계단의 디딤판·챌면은 렌더러가 소유한다. 기본 양식에서도 잔디 타일로 덮지 않는다.
-  if (v >= 5 && v <= 8) return !reliefSmoothStairs(relief.style) || !!reliefRampArt(relief.style);
-  return v >= 1 && v <= 4 && !!reliefRampArt(relief.style);
+  // 기본 경사로도 칸마다 들린 잔디 타일로 덮으면 계단처럼 쪼개진다. 비탈과 계단 모두 직접 그린다.
+  return v >= 1 && v <= 8;
 }
 
 /** relief → renderRelief 옵션(편집기·플레이어·오프라인 렌더가 같은 값을 쓴다): 경사로·양식·경사로 도트·다리 판. */
