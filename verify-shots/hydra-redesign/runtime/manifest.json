@@ -1,0 +1,163 @@
+{
+  "scenarioId": "hydra-rm2003",
+  "projectPath": ".vite-cache/hydra-recording/project.json",
+  "seed": 1,
+  "viewport": {
+    "width": 960,
+    "height": 720
+  },
+  "errors": [],
+  "beats": [
+    {
+      "index": 0,
+      "id": "command",
+      "note": "실제 RM2003 도트 측면 전투: 히드라와 걷기 칩 파티 시트.",
+      "shot": "01-command.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_moonwell_forest",
+        "x": 14,
+        "y": 3,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {},
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "map_moonwell_forest",
+          "handled": true,
+          "farmAttempts": [],
+          "sequence": 1
+        }
+      },
+      "actions": [
+        {
+          "kind": "key",
+          "key": "Enter"
+        },
+        {
+          "kind": "waitForRuntime"
+        },
+        {
+          "kind": "seed",
+          "seed": 1
+        },
+        {
+          "kind": "teleport",
+          "mapId": "map_moonwell_forest",
+          "x": 14,
+          "y": 3
+        },
+        {
+          "kind": "face",
+          "dir": "up"
+        },
+        {
+          "kind": "action"
+        },
+        {
+          "kind": "pressUntil",
+          "key": "z",
+          "testid": "actor-command-attack",
+          "state": "present",
+          "maxPresses": 40
+        }
+      ],
+      "battlers": {
+        "skin": "retro2003",
+        "directorStep": "intro",
+        "field": {
+          "top": 0,
+          "bottom": 492,
+          "left": 0,
+          "right": 960,
+          "width": 960,
+          "height": 492
+        },
+        "enemyGroup": {
+          "top": 84,
+          "bottom": 492,
+          "left": 0,
+          "right": 960,
+          "width": 960,
+          "height": 408
+        },
+        "enemies": [
+          {
+            "id": "enemy-1",
+            "node": {
+              "top": 105,
+              "bottom": 393,
+              "left": 128,
+              "right": 416,
+              "width": 288,
+              "height": 288
+            },
+            "image": {
+              "top": 105,
+              "bottom": 393,
+              "left": 128,
+              "right": 416,
+              "width": 288,
+              "height": 288
+            },
+            "name": {
+              "top": 0,
+              "bottom": 0,
+              "left": 0,
+              "right": 0,
+              "width": 0,
+              "height": 0
+            }
+          }
+        ],
+        "allies": [
+          {
+            "id": "battle-actor-actor_hero",
+            "node": {
+              "top": 149,
+              "bottom": 293,
+              "left": 594,
+              "right": 738,
+              "width": 144,
+              "height": 144
+            }
+          },
+          {
+            "id": "battle-actor-actor_guardian",
+            "node": {
+              "top": 195,
+              "bottom": 339,
+              "left": 666,
+              "right": 810,
+              "width": 144,
+              "height": 144
+            }
+          },
+          {
+            "id": "battle-actor-actor_mage",
+            "node": {
+              "top": 241,
+              "bottom": 385,
+              "left": 738,
+              "right": 882,
+              "width": 144,
+              "height": 144
+            }
+          },
+          {
+            "id": "battle-actor-actor_scout",
+            "node": {
+              "top": 287,
+              "bottom": 431,
+              "left": 810,
+              "right": 954,
+              "width": 144,
+              "height": 144
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

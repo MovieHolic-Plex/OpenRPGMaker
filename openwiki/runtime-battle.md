@@ -1,5 +1,73 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 전체 몬스터 후속 재저작 · 140종 9포즈 (2026-10-03)
+
+후속 소리 포함 전투 녹화는 `scripts/qa/runtime/monster-battle-av.mjs`다.
+임시 fixture의 실제 키보드 전투를 독립 Xvfb + PipeWire/Pulse 모니터에서 같은 ffmpeg로 캡처한다.
+게임 BGM·HTML 오디오·WebAudio 타격음을 실제 출력에서 녹음하고 H.264/AAC MP4로 저장한다.
+`verify-shots/monster-battle-av/SUMMARY.md`를 먼저 읽고 표시된 프레임만 연다.
+소스와 정본 프로젝트를 바꾸지 않는 녹화 경로다.
+
+「다른 몬스터들도 전부」 요청에 따라 반려된 일괄 초안의 나머지 **135종**을 다시 저작했다.
+긍정 평가를 받은 청록 히드라·갓파·회색 늑대·동굴 박쥐·해골 전사의 5종 PNG는 바이트까지 유지한다.
+새 원본은 `scripts/asset-gen/pixel-enemy/redraw/{organic,arcane,humanoid,bosses}.py`와 세부 모듈이다.
+현재 140종은 native64 126종·native96 14종, 총1,260칸이다. 새 그림은 이미지 생성 도구 없이
+최종 격자의 좌표·명암 군집을 직접 저작하고 관절 좌표로 포즈를 그린다. 쓰러짐은 별도 그림이다.
+유기체는 좌표별 클램프 없이 부위 전체를 부착점 기준으로 맞추고 선 두께까지 경계를 확인한다.
+
+ID·공용 PNG 경로·이동 유형·대기 속도는 유지하고, 셀 크기를 시트 등록·자료집·접촉 경계에 함께 반영한다.
+시트는3×3, 초상은 첫 칸과 동일하다. `scripts/asset-gen/pixel-enemy/refresh/registry.py`가 모든 옛 생성 진입점을 최신 원본으로 연결하며,
+반려된 본체 소스는 `refresh/rejected-archive/`에만 보관한다. PWA 이미지 캐시는 v9다.
+재생성은 `redraw/export.py <group>` 후 `redraw/integrate.py <group>`; 전체/종별 기존 명령도 같은 원본을 쓴다.
+원본 재현·PNG·메타데이터 확인은 `scripts/asset-gen/pixel-enemy/redraw/inspect-native.py`, 공용 참조 확인은
+`scripts/content/audit-monster-redraw-all.mts`다. 실제 전투는 `scripts/qa/runtime/monster-redraw-all.mjs`의
+7개 이동 계열 fixture로 `player.html` + export shim을 통과한다. 140종 모두의 실제 행동 반복을 검증했다는 뜻은 아니다.
+자세 강제 표시와 키보드 입력의 실제 프레임 관찰을 구별하며, 쓰러짐의 매 rAF 표시를 보장하지 않는다.
+최신 근거는 `verify-shots/monster-redraw-all/SUMMARY.md`, `runtime/SUMMARY.md`; 저작 계약은
+`tiledata/monster-redraw-all/README.md`다. 새135종의 사용자 그림 검토는 별도이며 정본 SQLite·외부 저장소를 수정하지 않는다.
+
+## 갓파·늑대·박쥐·해골 전투 9포즈 (2026-10-03)
+
+갓파 재저작 기본 그림에 대한 긍정 평가와 후속 전투 에셋 요청에 따라 이 네 종을 새 원본으로 배선했다.
+모두 native64, 192×192 시트·9포즈·64px 초상이다. 늑대와 해골은 기존 48px 셀을 64px로 바꿨고,
+ID·경로·공격 이동 유형·대기 속도는 유지한다. 기본 자세는 직전 네 그림의 픽셀과 완전히 같다.
+팔·다리·머리·턱·날개·검·방패의 원본 좌표를 관절별로 바꿔 그린다. 쓰러짐은 네 종 각각 별도 그림이다.
+`kappa-redraw-draft.py`, `monster-redraw-studies.py`, `study_motion.py`가 원본이고,
+`python3 scripts/asset-gen/pixel-enemy/build-study-battles.py`가 네 종 재생성 진입점이다.
+공용/개별/retirement 생성 경로도 registry가 이 원본을 부른다. 초상·접촉 경계·자료집·PWA 캐시 v8 갱신.
+출처와 파일 계약은 `tiledata/monster-battle-four/README.md`, 저작/실제 전투 확인은
+`verify-shots/monster-battle-four/SUMMARY.md` 및 `runtime/SUMMARY.md`를 본다.
+공용 파일의 로컬 변경이며 사용자 정본 프로젝트를 저장했다는 뜻은 아니다. 아래 일괄 초안 반려는 별도 기록이다.
+
+## 첫 일괄 손 도트 리프레시 · 반려 기록 (2026-10-03)
+
+**그림 검토 상태: 사용자 반려.** 아래 139종 리프레시는 미승인 로컬 초안이다.
+형식·런타임 확인이 그림 승인을 대신하지 않는다. 별도 갓파 재저작 초안은 사용자 긍정 평가를 받았고,
+후속 늑대·박쥐·해골 기본 그림은 `verify-shots/monster-redraw-studies/README.md`의 검토 초안이다.
+
+승인된 청록 히드라를 기준으로 공용 전투 몬스터 **140종·1,260칸**을 정리한다.
+히드라의 승인 그림은 유지하고 나머지 139종의 원본 그림과 관절별 9포즈를 다시 저작했다.
+`scripts/asset-gen/pixel-enemy/refresh/manifest.json`이 범위이며, `run.py`가 전체/종별 재생성 진입점이다.
+기존 48·64·96px 셀, 공용 ID·경로·이동 유형·대기 속도는 그대로 쓴다. 원본은 최종 격자의
+정수 픽셀·알파 0/255이고, 포즈를 합친 팔레트 상한은 32색이다(히드라 승인판은 22색).
+초상은 시트 첫 칸과 완전히 같은 픽셀이다. 기존 개별/retirement 생성 명령도 새 원본으로 연결한다.
+공용 자료집 설명과 그림 해시, 접촉 경계, PWA 자산 캐시(v7)를 함께 갱신한다.
+사람이 선택한 별도 수집용 `generated-enemy-sparkit-fire`와 사용자 업로드 우선권은 기존 계약을 따른다.
+실제 런타임 증거는 `verify-shots/monster-refresh/runtime/SUMMARY.md`, 저작 설명과 전후 비교는
+`tiledata/monster-refresh/README.md`, `verify-shots/monster-refresh/SUMMARY.md`를 본다.
+공용 파일 작업이며 사용자 프로젝트 행/SQLite를 수정하지 않는다. 임시 플레이어 fixture 저장은 정본 저장 근거가 아니다.
+
+## 히드라 새 디자인 9포즈 (2026-10-03)
+
+`generated-enemy-hydra-three`는 청록 비늘·산호 지느러미·큰 왼쪽 꼬리의 새 손도트로 교체했다.
+기존 96px 셀 3×3, `breath`, 대기 200ms 계약과 리소스 ID는 같다. 대기 3칸, 준비·이동·공격·복귀·
+피격·쓰러짐 9칸을 `scripts/asset-gen/pixel-enemy/hydra-three.py`의 관절 좌표로 저작한다.
+머리와 목은 독립적으로 움직이고, 쓰러진 몸·목·사지·꼬리는 별도 그림이다. 모든 칸은 접지 y=92다.
+같은 PNG 주소의 이전 디자인이 남지 않도록 `public/sw.js`의 PWA 자산 캐시를 v6로 바꾼다.
+같은 원본을 humanoid 일괄 생성도 불러오므로 재생성해도 이전 그림으로 되돌아가지 않는다.
+출처·재현은 `tiledata/pixel-enemies/hydra-three/README.md`, PNG 재로드·동작 확인·실제 전투 증거는
+`verify-shots/hydra-redesign/SUMMARY.md`를 본다.
+
 ## Starter 그림 제거 (2026-10-03)
 
 사용자 지시로 `public/assets/generated/starter/` 전체를 삭제했다. 이전 체크아웃 221파일 중 최신 main에
@@ -23,7 +91,9 @@
 기존 프로젝트가 이 ID를 갖고 있어도 삭제한 그림은 나오지 않는다. 프로젝트의 저작 데이터나
 SQLite 저장소를 자동 변경하는 이관은 수행하지 않는다.
 
-## 히드라 직접 도트 재저작 (2026-10-03)
+## 히드라 첫 도트 재저작 기록 (2026-10-03)
+
+아래는 16색 첫 판의 기록이다. 현재 배포 PNG는 위의 청록 디자인 22색·9포즈다.
 
 - `generated-enemy-hydra-three`를 96px / 16색 / 알파 0·255의 직접 저작 도트로 교체했다.
   셋으로 갈라진 목·뿔·배판·발톱·꼬리와 대기/공격/피격/쓰러짐 아홉 칸이 있다.

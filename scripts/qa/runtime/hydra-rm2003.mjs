@@ -5,7 +5,7 @@ import { chromium } from '@playwright/test';
 import { recordingFixture } from './retro2003-gif-fixture.mjs';
 import { startPlayerQaServer, runRuntimeQa } from '../../lib/runtimeQaRun.mjs';
 
-const out = resolve('verify-shots/hydra-rm2003');
+const out = resolve(process.argv[2] ?? 'verify-shots/hydra-rm2003');
 const temporary = resolve('.vite-cache/hydra-recording/project.json');
 await mkdir(out, { recursive: true });
 await mkdir(resolve('.vite-cache/hydra-recording'), { recursive: true });
@@ -64,7 +64,10 @@ try {
   if (requested.some(path => path.includes('/generated/starter/'))) throw Error('Retired starter art was requested');
   if (report.errors.length || report.beats.some(beat => beat.failures.length)) throw Error(JSON.stringify(report));
   await page.locator('[data-testid="battle-scene"]').screenshot({ path: join(out, 'battle.png'), animations: 'disabled' });
-  await writeFile(join(out, 'renderer.json'), JSON.stringify({ fixtureOnly: true, route: 'player.html + exportProjectStoreShim', ...evidence, requested: [...new Set(requested)].sort(), errors: report.errors }, null, 2) + '\n');
+  await writeFile(join(out, 'renderer.json'), JSON.stringify({ fixtureOnly: true, route: 'player.html + exportProjectStoreShim', ...evidence,
+    distinctAssetRequestCount: new Set(requested).size,
+    requestedBattleSheets: [...new Set(requested)].filter(path => /^\/assets\/generated\/(charset-battlers|pixel-enemies|pixel-enemy-portraits)\//.test(path)).sort(),
+    starterRequests: requested.filter(path => path.includes('/generated/starter/')), errors: report.errors }, null, 2) + '\n');
   console.log(JSON.stringify(evidence));
 } finally {
   await browser?.close();

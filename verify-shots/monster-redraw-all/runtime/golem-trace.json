@@ -1,0 +1,583 @@
+{
+  "slug": "golem",
+  "skin": "retro2003",
+  "nativeCell": 64,
+  "motion": "stomp",
+  "errors": [],
+  "forcedFrameDisplays": [
+    {
+      "pose": "idle_a",
+      "cell": "idle_a",
+      "backgroundPosition": "0% 0%",
+      "backgroundSize": "300% 300%",
+      "backgroundImage": "url(\"http://127.0.0.1:43827/assets/generated/pixel-enemies/golem.png\")"
+    },
+    {
+      "pose": "idle_b",
+      "cell": "idle_b",
+      "backgroundPosition": "50% 0%",
+      "backgroundSize": "300% 300%",
+      "backgroundImage": "url(\"http://127.0.0.1:43827/assets/generated/pixel-enemies/golem.png\")"
+    },
+    {
+      "pose": "idle_c",
+      "cell": "idle_c",
+      "backgroundPosition": "100% 0%",
+      "backgroundSize": "300% 300%",
+      "backgroundImage": "url(\"http://127.0.0.1:43827/assets/generated/pixel-enemies/golem.png\")"
+    },
+    {
+      "pose": "windup",
+      "cell": "windup",
+      "backgroundPosition": "0% 50%",
+      "backgroundSize": "300% 300%",
+      "backgroundImage": "url(\"http://127.0.0.1:43827/assets/generated/pixel-enemies/golem.png\")"
+    },
+    {
+      "pose": "move",
+      "cell": "move",
+      "backgroundPosition": "50% 50%",
+      "backgroundSize": "300% 300%",
+      "backgroundImage": "url(\"http://127.0.0.1:43827/assets/generated/pixel-enemies/golem.png\")"
+    },
+    {
+      "pose": "attack",
+      "cell": "attack",
+      "backgroundPosition": "100% 50%",
+      "backgroundSize": "300% 300%",
+      "backgroundImage": "url(\"http://127.0.0.1:43827/assets/generated/pixel-enemies/golem.png\")"
+    },
+    {
+      "pose": "recover",
+      "cell": "recover",
+      "backgroundPosition": "0% 100%",
+      "backgroundSize": "300% 300%",
+      "backgroundImage": "url(\"http://127.0.0.1:43827/assets/generated/pixel-enemies/golem.png\")"
+    },
+    {
+      "pose": "hit",
+      "cell": "hit",
+      "backgroundPosition": "50% 100%",
+      "backgroundSize": "300% 300%",
+      "backgroundImage": "url(\"http://127.0.0.1:43827/assets/generated/pixel-enemies/golem.png\")"
+    },
+    {
+      "pose": "dead",
+      "cell": "dead",
+      "backgroundPosition": "100% 100%",
+      "backgroundSize": "300% 300%",
+      "backgroundImage": "url(\"http://127.0.0.1:43827/assets/generated/pixel-enemies/golem.png\")"
+    }
+  ],
+  "actualInputTrace": [
+    {
+      "cell": "idle",
+      "at": 11446.5,
+      "phase": "actorCommand"
+    },
+    {
+      "cell": "idle_c",
+      "at": 12156.899999976158,
+      "phase": "actorCommand"
+    },
+    {
+      "cell": "move",
+      "at": 12411.100000023842,
+      "phase": "actorCommand"
+    },
+    {
+      "cell": "idle_b",
+      "at": 12658,
+      "phase": "actorCommand"
+    },
+    {
+      "cell": "move",
+      "at": 12718.100000023842,
+      "phase": "actorCommand"
+    },
+    {
+      "cell": "windup",
+      "at": 12906.299999952316,
+      "phase": "actorCommand"
+    },
+    {
+      "cell": "attack",
+      "at": 13028.799999952316,
+      "phase": "actorCommand"
+    },
+    {
+      "cell": "recover",
+      "at": 13171.200000047684,
+      "phase": "actorCommand"
+    },
+    {
+      "cell": "move",
+      "at": 13309.799999952316,
+      "phase": "actorCommand"
+    },
+    {
+      "cell": "idle_b",
+      "at": 13500.200000047684,
+      "phase": "actorCommand"
+    },
+    {
+      "cell": "move",
+      "at": 13612.100000023842,
+      "phase": "actorCommand"
+    },
+    {
+      "cell": "idle_a",
+      "at": 13811.899999976158,
+      "phase": "actorCommand"
+    },
+    {
+      "cell": "idle",
+      "at": 13853.799999952316,
+      "phase": "actorCommand"
+    },
+    {
+      "cell": "hit",
+      "at": 14645.700000047684,
+      "phase": "resolved"
+    },
+    {
+      "cell": "dead",
+      "at": 14827.899999976158,
+      "phase": "resolved"
+    }
+  ],
+  "actualSelectionTrace": [
+    {
+      "cell": "idle",
+      "source": "attribute-previous",
+      "at": 11514.299999952316
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-current",
+      "at": 11514.299999952316
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-current",
+      "at": 11514.299999952316
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-previous",
+      "at": 11548.799999952316
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-current",
+      "at": 11548.799999952316
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-current",
+      "at": 11548.799999952316
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-previous",
+      "at": 11846
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-current",
+      "at": 11846
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-current",
+      "at": 11846
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-previous",
+      "at": 11846
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-current",
+      "at": 11846
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-current",
+      "at": 11846
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-previous",
+      "at": 12140.600000023842
+    },
+    {
+      "cell": "idle_c",
+      "source": "attribute-current",
+      "at": 12140.600000023842
+    },
+    {
+      "cell": "idle_c",
+      "source": "attribute-current",
+      "at": 12140.600000023842
+    },
+    {
+      "cell": "idle_c",
+      "source": "attribute-previous",
+      "at": 12140.600000023842
+    },
+    {
+      "cell": "idle_c",
+      "source": "attribute-current",
+      "at": 12140.600000023842
+    },
+    {
+      "cell": "idle_c",
+      "source": "attribute-current",
+      "at": 12140.600000023842
+    },
+    {
+      "cell": "idle_c",
+      "source": "attribute-previous",
+      "at": 12406.399999976158
+    },
+    {
+      "cell": "move",
+      "source": "attribute-current",
+      "at": 12406.399999976158
+    },
+    {
+      "cell": "move",
+      "source": "attribute-current",
+      "at": 12406.399999976158
+    },
+    {
+      "cell": "move",
+      "source": "attribute-previous",
+      "at": 12651.799999952316
+    },
+    {
+      "cell": "idle_b",
+      "source": "attribute-current",
+      "at": 12651.899999976158
+    },
+    {
+      "cell": "idle_b",
+      "source": "attribute-current",
+      "at": 12651.899999976158
+    },
+    {
+      "cell": "idle_b",
+      "source": "attribute-previous",
+      "at": 12713
+    },
+    {
+      "cell": "move",
+      "source": "attribute-current",
+      "at": 12713
+    },
+    {
+      "cell": "move",
+      "source": "attribute-current",
+      "at": 12713
+    },
+    {
+      "cell": "move",
+      "source": "attribute-previous",
+      "at": 12893.700000047684
+    },
+    {
+      "cell": "windup",
+      "source": "attribute-current",
+      "at": 12893.700000047684
+    },
+    {
+      "cell": "windup",
+      "source": "attribute-current",
+      "at": 12893.700000047684
+    },
+    {
+      "cell": "windup",
+      "source": "attribute-previous",
+      "at": 13027.200000047684
+    },
+    {
+      "cell": "attack",
+      "source": "attribute-current",
+      "at": 13027.200000047684
+    },
+    {
+      "cell": "attack",
+      "source": "attribute-current",
+      "at": 13027.200000047684
+    },
+    {
+      "cell": "attack",
+      "source": "attribute-previous",
+      "at": 13027.200000047684
+    },
+    {
+      "cell": "attack",
+      "source": "attribute-current",
+      "at": 13027.200000047684
+    },
+    {
+      "cell": "attack",
+      "source": "attribute-current",
+      "at": 13027.200000047684
+    },
+    {
+      "cell": "attack",
+      "source": "attribute-previous",
+      "at": 13143.100000023842
+    },
+    {
+      "cell": "recover",
+      "source": "attribute-current",
+      "at": 13143.100000023842
+    },
+    {
+      "cell": "recover",
+      "source": "attribute-current",
+      "at": 13143.100000023842
+    },
+    {
+      "cell": "recover",
+      "source": "attribute-previous",
+      "at": 13143.100000023842
+    },
+    {
+      "cell": "recover",
+      "source": "attribute-current",
+      "at": 13143.100000023842
+    },
+    {
+      "cell": "recover",
+      "source": "attribute-current",
+      "at": 13143.100000023842
+    },
+    {
+      "cell": "recover",
+      "source": "attribute-previous",
+      "at": 13284.600000023842
+    },
+    {
+      "cell": "move",
+      "source": "attribute-current",
+      "at": 13284.600000023842
+    },
+    {
+      "cell": "move",
+      "source": "attribute-current",
+      "at": 13284.600000023842
+    },
+    {
+      "cell": "move",
+      "source": "attribute-previous",
+      "at": 13492.799999952316
+    },
+    {
+      "cell": "idle_b",
+      "source": "attribute-current",
+      "at": 13492.799999952316
+    },
+    {
+      "cell": "idle_b",
+      "source": "attribute-current",
+      "at": 13492.799999952316
+    },
+    {
+      "cell": "idle_b",
+      "source": "attribute-previous",
+      "at": 13596.5
+    },
+    {
+      "cell": "move",
+      "source": "attribute-current",
+      "at": 13596.5
+    },
+    {
+      "cell": "move",
+      "source": "attribute-current",
+      "at": 13596.5
+    },
+    {
+      "cell": "move",
+      "source": "attribute-previous",
+      "at": 13806.600000023842
+    },
+    {
+      "cell": "idle_a",
+      "source": "attribute-current",
+      "at": 13806.600000023842
+    },
+    {
+      "cell": "idle_a",
+      "source": "attribute-current",
+      "at": 13806.600000023842
+    },
+    {
+      "cell": "idle_a",
+      "source": "attribute-previous",
+      "at": 13844.700000047684
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-current",
+      "at": 13844.700000047684
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-current",
+      "at": 13844.700000047684
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-previous",
+      "at": 13844.700000047684
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-current",
+      "at": 13844.700000047684
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-current",
+      "at": 13844.700000047684
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-previous",
+      "at": 13916.799999952316
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-current",
+      "at": 13916.799999952316
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-current",
+      "at": 13916.799999952316
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-previous",
+      "at": 14023.700000047684
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-current",
+      "at": 14023.700000047684
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-current",
+      "at": 14023.700000047684
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-previous",
+      "at": 14142.5
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-current",
+      "at": 14142.5
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-current",
+      "at": 14142.5
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-previous",
+      "at": 14643.799999952316
+    },
+    {
+      "cell": "hit",
+      "source": "attribute-current",
+      "at": 14643.799999952316
+    },
+    {
+      "cell": "hit",
+      "source": "attribute-current",
+      "at": 14643.799999952316
+    },
+    {
+      "cell": "hit",
+      "source": "attribute-previous",
+      "at": 14643.799999952316
+    },
+    {
+      "cell": "hit",
+      "source": "attribute-current",
+      "at": 14643.799999952316
+    },
+    {
+      "cell": "hit",
+      "source": "attribute-current",
+      "at": 14643.799999952316
+    },
+    {
+      "cell": "hit",
+      "source": "attribute-previous",
+      "at": 14826.100000023842
+    },
+    {
+      "cell": "dead",
+      "source": "attribute-current",
+      "at": 14826.100000023842
+    },
+    {
+      "cell": "dead",
+      "source": "attribute-current",
+      "at": 14826.100000023842
+    },
+    {
+      "cell": "dead",
+      "source": "attribute-previous",
+      "at": 14957.100000023842
+    },
+    {
+      "cell": "dead",
+      "source": "attribute-current",
+      "at": 14957.100000023842
+    },
+    {
+      "cell": "dead",
+      "source": "attribute-current",
+      "at": 14957.100000023842
+    }
+  ],
+  "actualFrames": [
+    "idle",
+    "idle_c",
+    "move",
+    "idle_b",
+    "windup",
+    "attack",
+    "recover",
+    "idle_a",
+    "hit",
+    "dead"
+  ],
+  "renderSampledFrames": [
+    "idle",
+    "idle_c",
+    "move",
+    "idle_b",
+    "windup",
+    "attack",
+    "recover",
+    "idle_a",
+    "hit",
+    "dead"
+  ],
+  "defended": true,
+  "playerAttackConfirmed": true,
+  "starterRequests": []
+}

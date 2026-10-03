@@ -1,0 +1,530 @@
+{
+  "slug": "bee-giant",
+  "skin": "retro2003",
+  "nativeCell": 64,
+  "motion": "swoop",
+  "errors": [],
+  "consoleErrors": [],
+  "failedRequests": [],
+  "forcedFrameDisplays": [
+    {
+      "pose": "idle_a",
+      "cell": "idle_a",
+      "backgroundPosition": "0% 0%",
+      "backgroundSize": "300% 300%",
+      "backgroundImage": "url(\"http://127.0.0.1:40137/assets/generated/pixel-enemies/bee-giant.png\")"
+    },
+    {
+      "pose": "idle_b",
+      "cell": "idle_b",
+      "backgroundPosition": "50% 0%",
+      "backgroundSize": "300% 300%",
+      "backgroundImage": "url(\"http://127.0.0.1:40137/assets/generated/pixel-enemies/bee-giant.png\")"
+    },
+    {
+      "pose": "idle_c",
+      "cell": "idle_c",
+      "backgroundPosition": "100% 0%",
+      "backgroundSize": "300% 300%",
+      "backgroundImage": "url(\"http://127.0.0.1:40137/assets/generated/pixel-enemies/bee-giant.png\")"
+    },
+    {
+      "pose": "windup",
+      "cell": "windup",
+      "backgroundPosition": "0% 50%",
+      "backgroundSize": "300% 300%",
+      "backgroundImage": "url(\"http://127.0.0.1:40137/assets/generated/pixel-enemies/bee-giant.png\")"
+    },
+    {
+      "pose": "move",
+      "cell": "move",
+      "backgroundPosition": "50% 50%",
+      "backgroundSize": "300% 300%",
+      "backgroundImage": "url(\"http://127.0.0.1:40137/assets/generated/pixel-enemies/bee-giant.png\")"
+    },
+    {
+      "pose": "attack",
+      "cell": "attack",
+      "backgroundPosition": "100% 50%",
+      "backgroundSize": "300% 300%",
+      "backgroundImage": "url(\"http://127.0.0.1:40137/assets/generated/pixel-enemies/bee-giant.png\")"
+    },
+    {
+      "pose": "recover",
+      "cell": "recover",
+      "backgroundPosition": "0% 100%",
+      "backgroundSize": "300% 300%",
+      "backgroundImage": "url(\"http://127.0.0.1:40137/assets/generated/pixel-enemies/bee-giant.png\")"
+    },
+    {
+      "pose": "hit",
+      "cell": "hit",
+      "backgroundPosition": "50% 100%",
+      "backgroundSize": "300% 300%",
+      "backgroundImage": "url(\"http://127.0.0.1:40137/assets/generated/pixel-enemies/bee-giant.png\")"
+    },
+    {
+      "pose": "dead",
+      "cell": "dead",
+      "backgroundPosition": "100% 100%",
+      "backgroundSize": "300% 300%",
+      "backgroundImage": "url(\"http://127.0.0.1:40137/assets/generated/pixel-enemies/bee-giant.png\")"
+    }
+  ],
+  "actualInputTrace": [
+    {
+      "cell": "idle",
+      "at": 14747.5,
+      "phase": "actorCommand"
+    },
+    {
+      "cell": "windup",
+      "at": 15496.600000023842,
+      "phase": "actorCommand"
+    },
+    {
+      "cell": "move",
+      "at": 15776.699999928474,
+      "phase": "actorCommand"
+    },
+    {
+      "cell": "attack",
+      "at": 16290.5,
+      "phase": "actorCommand"
+    },
+    {
+      "cell": "recover",
+      "at": 16394.399999976158,
+      "phase": "actorCommand"
+    },
+    {
+      "cell": "idle_a",
+      "at": 16626.699999928474,
+      "phase": "actorCommand"
+    },
+    {
+      "cell": "idle_c",
+      "at": 16696.199999928474,
+      "phase": "actorCommand"
+    },
+    {
+      "cell": "idle_a",
+      "at": 16797.5,
+      "phase": "actorCommand"
+    },
+    {
+      "cell": "idle_c",
+      "at": 16883,
+      "phase": "actorCommand"
+    },
+    {
+      "cell": "idle_b",
+      "at": 16973.799999952316,
+      "phase": "actorCommand"
+    },
+    {
+      "cell": "idle",
+      "at": 17054.199999928474,
+      "phase": "actorCommand"
+    },
+    {
+      "cell": "hit",
+      "at": 17684.100000023842,
+      "phase": "resolved"
+    },
+    {
+      "cell": "dead",
+      "at": 17896.5,
+      "phase": "resolved"
+    }
+  ],
+  "actualSelectionTrace": [
+    {
+      "cell": "idle",
+      "source": "attribute-previous",
+      "at": 14744.5
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-current",
+      "at": 14744.600000023842
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-current",
+      "at": 14744.600000023842
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-previous",
+      "at": 14900.399999976158
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-current",
+      "at": 14900.399999976158
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-current",
+      "at": 14900.399999976158
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-previous",
+      "at": 15190.899999976158
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-current",
+      "at": 15190.899999976158
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-current",
+      "at": 15190.899999976158
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-previous",
+      "at": 15190.899999976158
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-current",
+      "at": 15190.899999976158
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-current",
+      "at": 15191
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-previous",
+      "at": 15488.899999976158
+    },
+    {
+      "cell": "windup",
+      "source": "attribute-current",
+      "at": 15488.899999976158
+    },
+    {
+      "cell": "windup",
+      "source": "attribute-current",
+      "at": 15488.899999976158
+    },
+    {
+      "cell": "windup",
+      "source": "attribute-previous",
+      "at": 15488.899999976158
+    },
+    {
+      "cell": "windup",
+      "source": "attribute-current",
+      "at": 15488.899999976158
+    },
+    {
+      "cell": "windup",
+      "source": "attribute-current",
+      "at": 15488.899999976158
+    },
+    {
+      "cell": "windup",
+      "source": "attribute-previous",
+      "at": 15767.299999952316
+    },
+    {
+      "cell": "move",
+      "source": "attribute-current",
+      "at": 15767.299999952316
+    },
+    {
+      "cell": "move",
+      "source": "attribute-current",
+      "at": 15767.299999952316
+    },
+    {
+      "cell": "move",
+      "source": "attribute-previous",
+      "at": 16275.199999928474
+    },
+    {
+      "cell": "attack",
+      "source": "attribute-current",
+      "at": 16275.199999928474
+    },
+    {
+      "cell": "attack",
+      "source": "attribute-current",
+      "at": 16275.199999928474
+    },
+    {
+      "cell": "attack",
+      "source": "attribute-previous",
+      "at": 16275.199999928474
+    },
+    {
+      "cell": "attack",
+      "source": "attribute-current",
+      "at": 16275.199999928474
+    },
+    {
+      "cell": "attack",
+      "source": "attribute-current",
+      "at": 16275.199999928474
+    },
+    {
+      "cell": "attack",
+      "source": "attribute-previous",
+      "at": 16392.100000023842
+    },
+    {
+      "cell": "recover",
+      "source": "attribute-current",
+      "at": 16392.199999928474
+    },
+    {
+      "cell": "recover",
+      "source": "attribute-current",
+      "at": 16392.199999928474
+    },
+    {
+      "cell": "recover",
+      "source": "attribute-previous",
+      "at": 16392.199999928474
+    },
+    {
+      "cell": "recover",
+      "source": "attribute-current",
+      "at": 16392.199999928474
+    },
+    {
+      "cell": "recover",
+      "source": "attribute-current",
+      "at": 16392.199999928474
+    },
+    {
+      "cell": "recover",
+      "source": "attribute-previous",
+      "at": 16595.899999976158
+    },
+    {
+      "cell": "idle_a",
+      "source": "attribute-current",
+      "at": 16595.899999976158
+    },
+    {
+      "cell": "idle_a",
+      "source": "attribute-current",
+      "at": 16595.899999976158
+    },
+    {
+      "cell": "idle_a",
+      "source": "attribute-previous",
+      "at": 16687.5
+    },
+    {
+      "cell": "idle_c",
+      "source": "attribute-current",
+      "at": 16687.5
+    },
+    {
+      "cell": "idle_c",
+      "source": "attribute-current",
+      "at": 16687.5
+    },
+    {
+      "cell": "idle_c",
+      "source": "attribute-previous",
+      "at": 16780.899999976158
+    },
+    {
+      "cell": "idle_a",
+      "source": "attribute-current",
+      "at": 16780.899999976158
+    },
+    {
+      "cell": "idle_a",
+      "source": "attribute-current",
+      "at": 16780.899999976158
+    },
+    {
+      "cell": "idle_a",
+      "source": "attribute-previous",
+      "at": 16870.199999928474
+    },
+    {
+      "cell": "idle_c",
+      "source": "attribute-current",
+      "at": 16870.199999928474
+    },
+    {
+      "cell": "idle_c",
+      "source": "attribute-current",
+      "at": 16870.199999928474
+    },
+    {
+      "cell": "idle_c",
+      "source": "attribute-previous",
+      "at": 16964.399999976158
+    },
+    {
+      "cell": "idle_b",
+      "source": "attribute-current",
+      "at": 16964.399999976158
+    },
+    {
+      "cell": "idle_b",
+      "source": "attribute-current",
+      "at": 16964.399999976158
+    },
+    {
+      "cell": "idle_b",
+      "source": "attribute-previous",
+      "at": 17038.199999928474
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-current",
+      "at": 17038.199999928474
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-current",
+      "at": 17038.199999928474
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-previous",
+      "at": 17038.199999928474
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-current",
+      "at": 17038.199999928474
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-current",
+      "at": 17038.199999928474
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-previous",
+      "at": 17133.199999928474
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-current",
+      "at": 17133.199999928474
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-current",
+      "at": 17133.199999928474
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-previous",
+      "at": 17249.100000023842
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-current",
+      "at": 17249.100000023842
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-current",
+      "at": 17249.100000023842
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-previous",
+      "at": 17682.199999928474
+    },
+    {
+      "cell": "hit",
+      "source": "attribute-current",
+      "at": 17682.199999928474
+    },
+    {
+      "cell": "hit",
+      "source": "attribute-current",
+      "at": 17682.199999928474
+    },
+    {
+      "cell": "hit",
+      "source": "attribute-previous",
+      "at": 17682.199999928474
+    },
+    {
+      "cell": "hit",
+      "source": "attribute-current",
+      "at": 17682.199999928474
+    },
+    {
+      "cell": "hit",
+      "source": "attribute-current",
+      "at": 17682.199999928474
+    },
+    {
+      "cell": "hit",
+      "source": "attribute-previous",
+      "at": 17872.899999976158
+    },
+    {
+      "cell": "dead",
+      "source": "attribute-current",
+      "at": 17872.899999976158
+    },
+    {
+      "cell": "dead",
+      "source": "attribute-current",
+      "at": 17872.899999976158
+    },
+    {
+      "cell": "dead",
+      "source": "attribute-previous",
+      "at": 17894
+    },
+    {
+      "cell": "dead",
+      "source": "attribute-current",
+      "at": 17894
+    },
+    {
+      "cell": "dead",
+      "source": "attribute-current",
+      "at": 17894
+    }
+  ],
+  "actualFrames": [
+    "idle",
+    "windup",
+    "move",
+    "attack",
+    "recover",
+    "idle_a",
+    "idle_c",
+    "idle_b",
+    "hit",
+    "dead"
+  ],
+  "renderSampledFrames": [
+    "idle",
+    "windup",
+    "move",
+    "attack",
+    "recover",
+    "idle_a",
+    "idle_c",
+    "idle_b",
+    "hit",
+    "dead"
+  ],
+  "defended": true,
+  "playerAttackConfirmed": true,
+  "starterRequests": []
+}
