@@ -8,6 +8,7 @@
 | `monster-collect-species` | 몬스터 수집 종 스프라이트 | 장르 `monster-collect` 전용 | `harness-data/monster-collect-species/seed.json` | `openwiki/harnesses/monster-collect-species.md` |
 | `modern-chipset` | 현대 칩셋 도트 (modern4) | 장르 무관 | `harness-data/modern-chipset/seed.json` | `openwiki/harnesses/modern-chipset.md` |
 | `interior-props` | 손 도트 실내 기물 (16px) | 장르 무관 | `src/assets/handInteriorSpec.json` | `openwiki/harnesses/interior-props.md` |
+| `jp-city` | 일본 도시 칩셋 도트 (jp_city · modern3) | 장르 무관 | `harness-data/jp-city/seed.json` | `openwiki/harnesses/jp-city.md` |
 
 ## monster-collect-species — 몬스터 수집 종 스프라이트
 
@@ -33,15 +34,15 @@
 
 ## modern-chipset — 현대 칩셋 도트 (modern4)
 
-modern3 팔레트 현대 거리 칩셋의 기물·건물·타일을 3/4 시점으로 찍는다. 현재 지원 종류는 탈것(vehicle)이고 소품·건물·바닥 타일로 넓힌다. 프로젝트 안에서 받아들여진 그림을 기준으로, 작업자 5명이 다른 방향으로 pxgrid 에 한 픽셀씩 놓고 기계 검사와 독립 검수를 거친 뒤 사람이 고른다. 다른 타일셋(조선·포켓몬풍 야외 등)은 별도 하네스다.
+modern4 팔레트 현대 거리 칩셋의 기물·건물·타일을 3/4 시점으로 찍는다. 현재 지원 종류는 탈것(vehicle)이고 소품·건물·바닥 타일로 넓힌다. 프로젝트 안에서 받아들여진 그림을 기준으로, 작업자 5명이 다른 방향으로 pxgrid 에 한 픽셀씩 놓고 기계 검사와 독립 검수를 거친 뒤 사람이 고른다. 다른 타일셋(조선·포켓몬풍 야외 등)은 별도 하네스다.
 
 **이럴 때 쓴다:**
-- modern3 팔레트 현대 거리/도시 칩셋에 자동차·버스·트럭·열차 같은 탈것(그리고 앞으로 소품·건물·바닥 타일)이 필요할 때
+- modern4 팔레트 현대 거리/도시 칩셋에 자동차·버스·트럭·열차 같은 탈것(그리고 앞으로 소품·건물·바닥 타일)이 필요할 때
 - 기존 탈것 도트가 순수 옆모습이라 3/4(윗면이 면으로 보임)이 안 지켜진다는 지적이 있을 때
-- modern3 가 아닌 다른 타일셋(조선·포켓몬풍·버들항 판타지)에는 쓰지 않는다 — 타일셋마다 별도 하네스
+- modern4 가 아닌 다른 타일셋(조선·포켓몬풍·버들항 판타지)에는 쓰지 않는다 — 타일셋마다 별도 하네스
 
 **단계** (`npm run harness -- modern-chipset <단계>`):
-- `palette` — 팔레트: modern3 램프에서 탈것 전용 pxgrid 팔레트(vehicles.pal)를 다시 쓴다.
+- `palette` — 팔레트: modern4 램프에서 탈것 전용 pxgrid 팔레트(palette.pal)를 다시 쓴다.
 - `draw` — 후보 그리기: 탈것·시점 하나에 후보 5장을 백그라운드로 그린다(작업자 → 기계 검사 → 독립 검수 → 최대 3번 다시 그림).
 - `status` — 현황: 판과 후보의 상태·검수 결과를 보여 준다.
 - `sheet` — 고르기 시트: 기준 경찰차·지금 것·후보를 나란히 놓은 자체완결 HTML 을 ~/claude-viz 에 쓴다.
@@ -66,3 +67,25 @@ modern3 팔레트 현대 거리 칩셋의 기물·건물·타일을 3/4 시점�
 - `pick` — 고르기: 사람이 고르거나 이유를 붙여 버린다. 버린 이유는 다음 판의 「하지 말 것」이 된다.
 
 **들어오는 길:** CLI 아직 없음 · 에디터 화면 있음 · 조수 도구 아직 없음
+
+## jp-city — 일본 도시 칩셋 도트 (jp_city · modern3)
+
+번들 타일셋 jp_city 에 넣을 주택가·역·공원·신사 그림(건물 부품·소품·바닥 타일·여러 칸 키트) 후보를 3/4 시점으로 찍는다. 항목마다 작업자 5명이 다른 방향으로 pxgrid 램프 격자에 한 글자씩 놓고, 기계 검사와 독립 검수를 거친 뒤 사람이 고른다. 고른 결과는 harness-data/jp-city/picked/ 까지만 남기고, 시트에 굽는 일은 scripts/content/jp-city/bake_jp.py 가 한다. 다른 타일셋은 별도 하네스다.
+
+**이럴 때 쓴다:**
+- jp_city 번들 타일셋의 주택가·역·공원·신사 그림(단독주택·아파트·담·승강장·개찰구·도리이·고마이누·배전·벚나무 등)을 새로 그리거나 다시 그릴 후보가 필요할 때
+- jp_city 에 들어갈 건물 부품·소품·바닥 타일·키트를 사람이 후보 중에서 고르게 하고 싶을 때
+- modern3 가 아닌 타일셋(조선·포켓몬풍·버들항 판타지·modern4 현대 거리)에는 쓰지 않는다 — 타일셋마다 별도 하네스
+
+**단계** (`npm run harness -- jp-city <단계>`):
+- `palette` — 팔레트: modern3 램프(28개·154색)에서 pxgrid 팔레트(palette.pal)와 재료 글자표(mats.txt)를 다시 쓴다.
+- `validate` — 시드 점검: 시드 항목의 크기·슬롯·칸·조립 예·참고 그림 해석을 점검한다.
+- `list` — 항목 목록: 묶음(houses·station·park·shrine)별 시드 항목과 고른 것을 보여 준다.
+- `draw` — 후보 그리기: 항목 하나에 후보 5장을 백그라운드로 그린다(작업자 → 기계 검사 → 독립 검수 → 최대 3번 다시 그림).
+- `status` — 현황: 판과 후보의 상태·검수 결과를 보여 준다.
+- `sheet` — 고르기 시트: 참고 그림·후보·맥락(조립 예·반복)을 한 장에 놓은 자체완결 HTML 을 ~/claude-viz 에 쓴다.
+- `review` — 다시 검수: 이미 그린 판을 참고 그림 옆에서 다시 독립 검수한다.
+- `pick` — 고르기: 사용자가 고른 후보를 기록하고 picked/<항목>.pxg|png 로 복사한다(굽기와 다음 판의 이웃 기준이 된다).
+- `reject` — 버리기: 사용자가 버린 후보와 이유를 기록한다(다음 판의 '하지 말 것').
+
+**들어오는 길:** CLI 있음 · 에디터 화면 아직 없음 · 조수 도구 아직 없음
