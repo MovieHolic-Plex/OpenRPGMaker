@@ -11,6 +11,7 @@ Map/event search, audio test, help modal, themed dungeons, resource manager, vil
 ### 첫 사용자 시작과 저장 안내 (2026-10-03)
 
 - 첫 방문은 `editorWelcome.ts`의 전체 창 장면에서 시작한다. `src/start/firstWorldArrival.ts`를 데스크톱 시작 화면과 공유한다. 장르 선택은 로컬 참고 장면을 전환하고 첫 문장 입력창만 연다. 선택만으로 연결·인터뷰·저장·AI 호출을 하지 않는다.
+- 전체 화면은 배경이 viewport에 고정되고 소유자(`editor-welcome-first-world` / launcher `is-first-world`)가 격리된 스택을 제공하는 구조다. 폭 제한은 내용에만 적용한다. 편집기의 1060px 창·흰 여백·별도 scrim은 제거했고, 브랜드/장르/어두운 입력창/보조 경로를 같은 장면에 배치한다. 낮은 데스크톱 창에서는 간격을 줄이고 좁은 화면은 세로 스크롤을 허용한다. `verify-shots/first-world-fullscreen/`은 화면 크기별 실제 viewport 캡처다.
 - ‘이 이야기로 시작’을 누르면 AI 연결 관문 → 기획 인터뷰로 이어지고, 원문은 인터뷰의 `initialAnswer`로 전달된다. 연결을 미루거나 인터뷰를 취소하면 선택과 문장을 유지한다. 연결 관문이 없는 호출에서 `canGenerate()`가 false면 연결 안내와 설정 버튼을 표시한다. 장르를 고르지 않은 자유 입력도 제출 시 연결을 확인하고 기존 조수 경로로 넘긴다.
 - 장면은 기존 `public/assets/project-interview/` 그림·영상이다. 움직임 끄기는 로비와 같은 설정을 쓰며 OS 모션 감소·문서 가림을 반영한다. 페이지 종료 때 영상과 리스너를 정리한다. 참고 그림의 등장인물은 저자의 주인공 설정이 아니다.
 - 각 장르 포스터 아래 `AI 없이 직접 만들기`는 작은 ⚙를 대체한다. 확인 창에서 빈 맵과 장르 기본 설정을 저장함을 설명하고, 실제 `store.flush()` 성공 후에만 환영 창을 닫는다. `mode.ts`의 성공 안내는 그리기 → 테스트 순서를 제시한다.
