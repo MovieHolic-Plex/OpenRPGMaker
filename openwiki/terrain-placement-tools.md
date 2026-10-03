@@ -54,3 +54,8 @@ SQLite/내보내기 직렬화는 맵의 선택 필드로 저장한다. 수동 �
 `scripts/capture/capture-terrain-placement.mjs`는 실제 편집기 메모리 fixture에서 배치·표면·강·군집·undo/redo와 화면을 기록한다.
 이 fixture는 사용자의 정본 맵을 저작하지 않는다. 기록: `verify-shots/terrain-placement/SUMMARY.md`.
 회귀 계약은 `test/terrainPlacement.test.ts`; AGENTS 실행 제한에 따라 로컬 vitest·전체 타입 검사·게이트는 돌리지 않는다.
+
+실제 연속 동작 GIF는 `scripts/capture/capture-terrain-gif.mjs`로 만든다(Playwright Chromium + ffmpeg).
+고지만 준비한 독립 메모리 fixture에서 경사로·표면·강 드래그·다리·군집·이동·삭제·Ctrl+Z·통행을
+실제 포인터/키보드로 조작하고 CDP 화면 프레임을 기록한다. 출력과 관측값은
+`verify-shots/terrain-operation-gif/`에 있다. 사용자 호스트 맵에는 쓰지 않는다.
