@@ -44,23 +44,23 @@ def _floor_ondol(v):
     for y in range(T):
         for x in range(T):
             q = rnd(x + 16 * v, y, 11)
-            c.put(x, y, E_[6] if q > 0.955 else (E_[4] if q < 0.13 else E_[5]))
+            c.put(x, y, E_[5] if q > 0.955 else (E_[3] if q < 0.13 else E_[4]))
     if v == 0:
-        c.vl(0, 0, T, E_[4])
+        c.vl(0, 0, T, E_[3])
     return c
 
 
 def _floor_maru(v):
-    """마루: 가로로 놓인 널 4px — 같은 톤 널에 줄눈 1줄, 널 끝 이음은 줄마다 어긋남. 잔 얼룩은 드물게(바닥은 조용해야 한다)."""
+    """마루: 가로로 놓인 널 4px — 어두운 널(톤 3~4)에 줄눈 1줄. 바닥은 조용하고 가구(톤 5~6 윗면)가 위로 떠야 한다."""
     c = Cv(T, T)
     for y in range(T):
         for x in range(T):
             q = rnd(x // 4 + 3 * (y // 4) + 7 * v, y // 4, 21)
-            c.put(x, y, W_[6] if q > 0.9 else W_[5])
+            c.put(x, y, W_[4] if q > 0.82 else W_[3])
     for b in range(4):
-        c.hl(0, T, b * 4 + 3, W_[4])
+        c.hl(0, T, b * 4 + 3, W_[2])
         jx = (5 + 7 * b + 9 * v) % 16
-        c.vl(jx, b * 4, b * 4 + 3, W_[4])
+        c.vl(jx, b * 4, b * 4 + 3, W_[2])
     return c
 
 
