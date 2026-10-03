@@ -2406,5 +2406,1093 @@
   "reviewer": "claude",
   "user": "pending",
   "date": "2026-10-03"
+ },
+ "in_wall_hoe_m": {
+  "hash": "d8783eeb3725",
+  "status": "pass",
+  "line": "회벽 정면 1x2: 윗줄 창방 띠(밝은 목재) 아래 회벽, 끝 변형은 기둥 쪽이 어둡다. 왼쪽 위 빛, v5 벽 면과 같은 정면 문법",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_wall_hoe_l": {
+  "hash": "0afb893ed09f",
+  "status": "pass",
+  "line": "회벽 정면 1x2: 윗줄 창방 띠(밝은 목재) 아래 회벽, 끝 변형은 기둥 쪽이 어둡다. 왼쪽 위 빛, v5 벽 면과 같은 정면 문법",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_wall_hoe_r": {
+  "hash": "1d6eb952eea6",
+  "status": "pass",
+  "line": "회벽 정면 1x2: 윗줄 창방 띠(밝은 목재) 아래 회벽, 끝 변형은 기둥 쪽이 어둡다. 왼쪽 위 빛, v5 벽 면과 같은 정면 문법",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_wall_hoe_lr": {
+  "hash": "fdc7379f128a",
+  "status": "pass",
+  "line": "회벽 정면 1x2: 윗줄 창방 띠(밝은 목재) 아래 회벽, 끝 변형은 기둥 쪽이 어둡다. 왼쪽 위 빛, v5 벽 면과 같은 정면 문법",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_wall_hoe_win": {
+  "hash": "239901210368",
+  "status": "pass",
+  "line": "벽면 위 창·미닫이 변형: 창틀 아래 턱이 보이고 살이 격자로 읽힌다. 벽 기준 높이와 같다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_wall_hoe_door": {
+  "hash": "661398abc13e",
+  "status": "pass",
+  "line": "벽면 위 창·미닫이 변형: 창틀 아래 턱이 보이고 살이 격자로 읽힌다. 벽 기준 높이와 같다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_wall_mok_win": {
+  "hash": "29567964c626",
+  "status": "pass",
+  "line": "벽면 위 창·미닫이 변형: 창틀 아래 턱이 보이고 살이 격자로 읽힌다. 벽 기준 높이와 같다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_wall_mok_door": {
+  "hash": "ad561253cb02",
+  "status": "pass",
+  "line": "벽면 위 창·미닫이 변형: 창틀 아래 턱이 보이고 살이 격자로 읽힌다. 벽 기준 높이와 같다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_wall_heuk_win": {
+  "hash": "1cac31cd2168",
+  "status": "pass",
+  "line": "벽면 위 창·미닫이 변형: 창틀 아래 턱이 보이고 살이 격자로 읽힌다. 벽 기준 높이와 같다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_wall_chang_door": {
+  "hash": "c011a256d47d",
+  "status": "pass",
+  "line": "벽면 위 창·미닫이 변형: 창틀 아래 턱이 보이고 살이 격자로 읽힌다. 벽 기준 높이와 같다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_wall_mok_m": {
+  "hash": "312663cbc864",
+  "status": "pass",
+  "line": "정면 벽면 1x2: 위 줄 처마띠 + 아래 줄 판자·황토·돌·창호 결, 좌우 끝 기둥 변형 포함. 재료 결이 읽히고 명암 방향 일관",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_wall_mok_l": {
+  "hash": "28226721291a",
+  "status": "pass",
+  "line": "정면 벽면 1x2: 위 줄 처마띠 + 아래 줄 판자·황토·돌·창호 결, 좌우 끝 기둥 변형 포함. 재료 결이 읽히고 명암 방향 일관",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_wall_mok_r": {
+  "hash": "0ff4995419a9",
+  "status": "pass",
+  "line": "정면 벽면 1x2: 위 줄 처마띠 + 아래 줄 판자·황토·돌·창호 결, 좌우 끝 기둥 변형 포함. 재료 결이 읽히고 명암 방향 일관",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_wall_mok_lr": {
+  "hash": "5dd54941410c",
+  "status": "pass",
+  "line": "정면 벽면 1x2: 위 줄 처마띠 + 아래 줄 판자·황토·돌·창호 결, 좌우 끝 기둥 변형 포함. 재료 결이 읽히고 명암 방향 일관",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_wall_heuk_m": {
+  "hash": "bc128dd59b8f",
+  "status": "pass",
+  "line": "정면 벽면 1x2: 위 줄 처마띠 + 아래 줄 판자·황토·돌·창호 결, 좌우 끝 기둥 변형 포함. 재료 결이 읽히고 명암 방향 일관",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_wall_heuk_l": {
+  "hash": "4dc08d4ecbc8",
+  "status": "pass",
+  "line": "정면 벽면 1x2: 위 줄 처마띠 + 아래 줄 판자·황토·돌·창호 결, 좌우 끝 기둥 변형 포함. 재료 결이 읽히고 명암 방향 일관",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_wall_heuk_r": {
+  "hash": "734b98d1d806",
+  "status": "pass",
+  "line": "정면 벽면 1x2: 위 줄 처마띠 + 아래 줄 판자·황토·돌·창호 결, 좌우 끝 기둥 변형 포함. 재료 결이 읽히고 명암 방향 일관",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_wall_heuk_lr": {
+  "hash": "487411b8ed8e",
+  "status": "pass",
+  "line": "정면 벽면 1x2: 위 줄 처마띠 + 아래 줄 판자·황토·돌·창호 결, 좌우 끝 기둥 변형 포함. 재료 결이 읽히고 명암 방향 일관",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_wall_dol_m": {
+  "hash": "5f7fdd77b340",
+  "status": "pass",
+  "line": "정면 벽면 1x2: 위 줄 처마띠 + 아래 줄 판자·황토·돌·창호 결, 좌우 끝 기둥 변형 포함. 재료 결이 읽히고 명암 방향 일관",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_wall_dol_l": {
+  "hash": "0bffac5e35b4",
+  "status": "pass",
+  "line": "정면 벽면 1x2: 위 줄 처마띠 + 아래 줄 판자·황토·돌·창호 결, 좌우 끝 기둥 변형 포함. 재료 결이 읽히고 명암 방향 일관",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_wall_dol_r": {
+  "hash": "887b012f9e44",
+  "status": "pass",
+  "line": "정면 벽면 1x2: 위 줄 처마띠 + 아래 줄 판자·황토·돌·창호 결, 좌우 끝 기둥 변형 포함. 재료 결이 읽히고 명암 방향 일관",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_wall_dol_lr": {
+  "hash": "e1d1f4decfef",
+  "status": "pass",
+  "line": "정면 벽면 1x2: 위 줄 처마띠 + 아래 줄 판자·황토·돌·창호 결, 좌우 끝 기둥 변형 포함. 재료 결이 읽히고 명암 방향 일관",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_wall_chang_m": {
+  "hash": "86da9a9484ae",
+  "status": "pass",
+  "line": "정면 벽면 1x2: 위 줄 처마띠 + 아래 줄 판자·황토·돌·창호 결, 좌우 끝 기둥 변형 포함. 재료 결이 읽히고 명암 방향 일관",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_wall_chang_l": {
+  "hash": "439bfb4cbda0",
+  "status": "pass",
+  "line": "정면 벽면 1x2: 위 줄 처마띠 + 아래 줄 판자·황토·돌·창호 결, 좌우 끝 기둥 변형 포함. 재료 결이 읽히고 명암 방향 일관",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_wall_chang_r": {
+  "hash": "58f501db33ed",
+  "status": "pass",
+  "line": "정면 벽면 1x2: 위 줄 처마띠 + 아래 줄 판자·황토·돌·창호 결, 좌우 끝 기둥 변형 포함. 재료 결이 읽히고 명암 방향 일관",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_wall_chang_lr": {
+  "hash": "9516296c4fe6",
+  "status": "pass",
+  "line": "정면 벽면 1x2: 위 줄 처마띠 + 아래 줄 판자·황토·돌·창호 결, 좌우 끝 기둥 변형 포함. 재료 결이 읽히고 명암 방향 일관",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_pillar": {
+  "hash": "f61c548dba5b",
+  "status": "pass",
+  "line": "기둥: 위 주두(윗면 보임)·몸통 왼쪽 밝음·돌 주초. 3칸형은 몸통만 길다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_pillar_3": {
+  "hash": "c45b546503e9",
+  "status": "pass",
+  "line": "기둥: 위 주두(윗면 보임)·몸통 왼쪽 밝음·돌 주초. 3칸형은 몸통만 길다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_ceil_beam_l": {
+  "hash": "8c1ed536ffb0",
+  "status": "note",
+  "line": "천장 들보 한 칸 띠: 윗면보다 앞면 위주로 얇다(1줄 두께). 천장 블롭 밑 띠로만 쓰므로 통과하나 방 맵에서는 아직 안 쓴다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_ceil_beam_m": {
+  "hash": "7012426bbdb5",
+  "status": "note",
+  "line": "천장 들보 한 칸 띠: 윗면보다 앞면 위주로 얇다(1줄 두께). 천장 블롭 밑 띠로만 쓰므로 통과하나 방 맵에서는 아직 안 쓴다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_ceil_beam_r": {
+  "hash": "7d9ad9a8fc16",
+  "status": "note",
+  "line": "천장 들보 한 칸 띠: 윗면보다 앞면 위주로 얇다(1줄 두께). 천장 블롭 밑 띠로만 쓰므로 통과하나 방 맵에서는 아직 안 쓴다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_door_sill": {
+  "hash": "fa4f64243812",
+  "status": "note",
+  "line": "문턱·출구 깔개: 바닥에 붙은 납작한 판(윗면 시점). 걷는 칸 표식이라 3/4 높이 없음 — 출구 칸을 알아보게는 한다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_exit_door": {
+  "hash": "81674a0cd296",
+  "status": "note",
+  "line": "문턱·출구 깔개: 바닥에 붙은 납작한 판(윗면 시점). 걷는 칸 표식이라 3/4 높이 없음 — 출구 칸을 알아보게는 한다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_exit_door2": {
+  "hash": "b7b20d06c248",
+  "status": "note",
+  "line": "문턱·출구 깔개: 바닥에 붙은 납작한 판(윗면 시점). 걷는 칸 표식이라 3/4 높이 없음 — 출구 칸을 알아보게는 한다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_stairs_wood_2": {
+  "hash": "8af2c270b2a3",
+  "status": "note",
+  "line": "계단: 위로 오르는 디딤판 줄이 앞에서 보이고 양옆 난간이 있다. 돌 계단은 v5 나무 계단보다 밝은 회색이 튄다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_stairs_wood_3": {
+  "hash": "304282e17a06",
+  "status": "note",
+  "line": "계단: 위로 오르는 디딤판 줄이 앞에서 보이고 양옆 난간이 있다. 돌 계단은 v5 나무 계단보다 밝은 회색이 튄다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_stairs_stone_3": {
+  "hash": "958c081d54c5",
+  "status": "note",
+  "line": "계단: 위로 오르는 디딤판 줄이 앞에서 보이고 양옆 난간이 있다. 돌 계단은 v5 나무 계단보다 밝은 회색이 튄다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_stairs_down": {
+  "hash": "6d0a2f1f6329",
+  "status": "note",
+  "line": "계단: 위로 오르는 디딤판 줄이 앞에서 보이고 양옆 난간이 있다. 돌 계단은 v5 나무 계단보다 밝은 회색이 튄다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_dais_front_l": {
+  "hash": "0ddde7a406bc",
+  "status": "note",
+  "line": "단(壇) 앞면: 윗면 가장자리 띠 + 앞면 판자. 단순하지만 모서리 l/r 연결이 읽힌다. 계단 칸은 한 단 아래 판으로만 보여 높이감이 약하다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_dais_front_m": {
+  "hash": "f4cbc41cdc51",
+  "status": "note",
+  "line": "단(壇) 앞면: 윗면 가장자리 띠 + 앞면 판자. 단순하지만 모서리 l/r 연결이 읽힌다. 계단 칸은 한 단 아래 판으로만 보여 높이감이 약하다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_dais_front_r": {
+  "hash": "ceaa91e71469",
+  "status": "note",
+  "line": "단(壇) 앞면: 윗면 가장자리 띠 + 앞면 판자. 단순하지만 모서리 l/r 연결이 읽힌다. 계단 칸은 한 단 아래 판으로만 보여 높이감이 약하다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_dais_steps": {
+  "hash": "245e2dc06095",
+  "status": "note",
+  "line": "단(壇) 앞면: 윗면 가장자리 띠 + 앞면 판자. 단순하지만 모서리 l/r 연결이 읽힌다. 계단 칸은 한 단 아래 판으로만 보여 높이감이 약하다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_byeongpung_a": {
+  "hash": "f86247aba4a6",
+  "status": "pass",
+  "line": "병풍: 네 폭 접힘이 지그재그 하단 받침으로 읽히고 윗변 처마, 그림 면이 밝다. v5 벽 장식과 같은 정면 시점",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_byeongpung_b": {
+  "hash": "675691d054d6",
+  "status": "pass",
+  "line": "병풍: 네 폭 접힘이 지그재그 하단 받침으로 읽히고 윗변 처마, 그림 면이 밝다. v5 벽 장식과 같은 정면 시점",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_byeongpung_c": {
+  "hash": "8a29b79cdd68",
+  "status": "pass",
+  "line": "병풍: 네 폭 접힘이 지그재그 하단 받침으로 읽히고 윗변 처마, 그림 면이 밝다. v5 벽 장식과 같은 정면 시점",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_byeongpung_s": {
+  "hash": "3e84cfe1e5e2",
+  "status": "pass",
+  "line": "병풍: 네 폭 접힘이 지그재그 하단 받침으로 읽히고 윗변 처마, 그림 면이 밝다. v5 벽 장식과 같은 정면 시점",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_byeongpung_royal": {
+  "hash": "ed91598c46b2",
+  "status": "pass",
+  "line": "일월오봉도 병풍: 해·달·산 다섯 봉우리 + 붉은 테 틀, 3칸 폭. 정면",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_ibuljang": {
+  "hash": "87e5516b8671",
+  "status": "pass",
+  "line": "장롱·반닫이류: 윗면 한 줄 + 앞면 서랍/문, 장석 점, 왼쪽 밝음. v5 서랍장과 같은 높이·명암",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_nong": {
+  "hash": "16bec773e633",
+  "status": "pass",
+  "line": "장롱·반닫이류: 윗면 한 줄 + 앞면 서랍/문, 장석 점, 왼쪽 밝음. v5 서랍장과 같은 높이·명암",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_mungap": {
+  "hash": "caa8a33f4170",
+  "status": "pass",
+  "line": "장롱·반닫이류: 윗면 한 줄 + 앞면 서랍/문, 장석 점, 왼쪽 밝음. v5 서랍장과 같은 높이·명암",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_bandaji": {
+  "hash": "71182fcd9003",
+  "status": "pass",
+  "line": "장롱·반닫이류: 윗면 한 줄 + 앞면 서랍/문, 장석 점, 왼쪽 밝음. v5 서랍장과 같은 높이·명암",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_ibul_b": {
+  "hash": "4cc0bf6cb31d",
+  "status": "pass",
+  "line": "이부자리·개킨 이불: 윗면이 크게 보이는 요 + 베개, 접힌 이불 더미는 층이 읽힌다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_ibul_r": {
+  "hash": "1a34fe8aef0e",
+  "status": "pass",
+  "line": "이부자리·개킨 이불: 윗면이 크게 보이는 요 + 베개, 접힌 이불 더미는 층이 읽힌다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_ibul_folded": {
+  "hash": "99139bf502ba",
+  "status": "pass",
+  "line": "이부자리·개킨 이불: 윗면이 크게 보이는 요 + 베개, 접힌 이불 더미는 층이 읽힌다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_soban_a": {
+  "hash": "7f56cb98d262",
+  "status": "pass",
+  "line": "소반: 둥근 상판(윗면 타원) + 기둥 받침, 위 음식 점. v5 원탁과 같은 문법",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_soban_b": {
+  "hash": "4f2cba44d9fa",
+  "status": "pass",
+  "line": "소반: 둥근 상판(윗면 타원) + 기둥 받침, 위 음식 점. v5 원탁과 같은 문법",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_soban_c": {
+  "hash": "cf24dfd25c0d",
+  "status": "pass",
+  "line": "소반: 둥근 상판(윗면 타원) + 기둥 받침, 위 음식 점. v5 원탁과 같은 문법",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_bangseok_r": {
+  "hash": "30bc9998aa46",
+  "status": "note",
+  "line": "방석: 윗면 납작한 사각 쿠션(1칸) — 걷는 바닥 장식, 높이감이 약하지만 색 구분이 읽힌다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_bangseok_g": {
+  "hash": "b75665d58862",
+  "status": "note",
+  "line": "방석: 윗면 납작한 사각 쿠션(1칸) — 걷는 바닥 장식, 높이감이 약하지만 색 구분이 읽힌다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_bangseok_b": {
+  "hash": "2a4d3aeb0bf7",
+  "status": "note",
+  "line": "방석: 윗면 납작한 사각 쿠션(1칸) — 걷는 바닥 장식, 높이감이 약하지만 색 구분이 읽힌다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_sang_2": {
+  "hash": "8e4a737d1ae5",
+  "status": "pass",
+  "line": "상·책상류: 윗면 + 앞면 + 다리 짧게, 위 소품(서책·벼루·붓통·약병) 점. 윗면이 충분히 보이고 v5 책상과 같은 3/4",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_sang_jumak": {
+  "hash": "59d3d14cf307",
+  "status": "pass",
+  "line": "주막 카운터: 윗면 길게 + 앞면 서랍, 위 술병·주전자·잔 점",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_chaeksang": {
+  "hash": "d381f768e30b",
+  "status": "pass",
+  "line": "상·책상류: 윗면 + 앞면 + 다리 짧게, 위 소품(서책·벼루·붓통·약병) 점. 윗면이 충분히 보이고 v5 책상과 같은 3/4",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_gwan_desk": {
+  "hash": "a69f5869ab77",
+  "status": "pass",
+  "line": "상·책상류: 윗면 + 앞면 + 다리 짧게, 위 소품(서책·벼루·붓통·약병) 점. 윗면이 충분히 보이고 v5 책상과 같은 3/4",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_hunjang_sang": {
+  "hash": "329c877e0002",
+  "status": "pass",
+  "line": "상·책상류: 윗면 + 앞면 + 다리 짧게, 위 소품(서책·벼루·붓통·약병) 점. 윗면이 충분히 보이고 v5 책상과 같은 3/4",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_hakdong_sang": {
+  "hash": "5116cfc30944",
+  "status": "pass",
+  "line": "상·책상류: 윗면 + 앞면 + 다리 짧게, 위 소품(서책·벼루·붓통·약병) 점. 윗면이 충분히 보이고 v5 책상과 같은 3/4",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_seoan": {
+  "hash": "750854aa8fd9",
+  "status": "pass",
+  "line": "상·책상류: 윗면 + 앞면 + 다리 짧게, 위 소품(서책·벼루·붓통·약병) 점. 윗면이 충분히 보이고 v5 책상과 같은 3/4",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_seoan_2": {
+  "hash": "cb1c3055d459",
+  "status": "pass",
+  "line": "상·책상류: 윗면 + 앞면 + 다리 짧게, 위 소품(서책·벼루·붓통·약병) 점. 윗면이 충분히 보이고 v5 책상과 같은 3/4",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_yak_table": {
+  "hash": "a941c28e28ac",
+  "status": "pass",
+  "line": "상·책상류: 윗면 + 앞면 + 다리 짧게, 위 소품(서책·벼루·붓통·약병) 점. 윗면이 충분히 보이고 v5 책상과 같은 3/4",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_workbench": {
+  "hash": "d32726f1f573",
+  "status": "pass",
+  "line": "상·책상류: 윗면 + 앞면 + 다리 짧게, 위 소품(서책·벼루·붓통·약병) 점. 윗면이 충분히 보이고 v5 책상과 같은 3/4",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_geolsang": {
+  "hash": "808d16ead1d0",
+  "status": "pass",
+  "line": "걸상·안석: 윗면 판 + 앞면 + 짧은 다리, 작은 1칸. 가는 줄 없이 다리 두께 3px",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_ansuk": {
+  "hash": "ad0adbaf0c6b",
+  "status": "pass",
+  "line": "걸상·안석: 윗면 판 + 앞면 + 짧은 다리, 작은 1칸. 가는 줄 없이 다리 두께 3px",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_pyeongsang_3": {
+  "hash": "bcb4c1196271",
+  "status": "note",
+  "line": "평상 3x2: 윗면 판자결이 크게 보이고 앞면은 짧다. 다리가 안 보여 큰 판처럼 읽힘 — v5 3x2 식탁과 같은 정도",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_gwan_chair": {
+  "hash": "daaababb7b9b",
+  "status": "pass",
+  "line": "관아 의자(교의): 붉은 등받이 + 팔걸이 + 다리, 정면. 윗면 시트 일부 보임",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_hwadeok": {
+  "hash": "ee2430b774e8",
+  "status": "pass",
+  "line": "대장간 기물: 화덕은 벽돌 몸체 + 불구멍 + 굴뚝, 풀무는 상자+손잡이, 모루·담금 통·숯·쇳덩이 윗면과 앞면이 읽힌다. 밝은 불 점이 기준 forge 와 같은 역할",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_pulmu": {
+  "hash": "9971ece97c1a",
+  "status": "pass",
+  "line": "대장간 기물: 화덕은 벽돌 몸체 + 불구멍 + 굴뚝, 풀무는 상자+손잡이, 모루·담금 통·숯·쇳덩이 윗면과 앞면이 읽힌다. 밝은 불 점이 기준 forge 와 같은 역할",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_morus": {
+  "hash": "dc6482996b95",
+  "status": "pass",
+  "line": "대장간 기물: 화덕은 벽돌 몸체 + 불구멍 + 굴뚝, 풀무는 상자+손잡이, 모루·담금 통·숯·쇳덩이 윗면과 앞면이 읽힌다. 밝은 불 점이 기준 forge 와 같은 역할",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_tub": {
+  "hash": "01a9a01ec082",
+  "status": "pass",
+  "line": "대장간 기물: 화덕은 벽돌 몸체 + 불구멍 + 굴뚝, 풀무는 상자+손잡이, 모루·담금 통·숯·쇳덩이 윗면과 앞면이 읽힌다. 밝은 불 점이 기준 forge 와 같은 역할",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_charcoal": {
+  "hash": "536cc8a4636d",
+  "status": "pass",
+  "line": "대장간 기물: 화덕은 벽돌 몸체 + 불구멍 + 굴뚝, 풀무는 상자+손잡이, 모루·담금 통·숯·쇳덩이 윗면과 앞면이 읽힌다. 밝은 불 점이 기준 forge 와 같은 역할",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_ingots": {
+  "hash": "01138a032fb2",
+  "status": "pass",
+  "line": "대장간 기물: 화덕은 벽돌 몸체 + 불구멍 + 굴뚝, 풀무는 상자+손잡이, 모루·담금 통·숯·쇳덩이 윗면과 앞면이 읽힌다. 밝은 불 점이 기준 forge 와 같은 역할",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_bumak_2": {
+  "hash": "92e610a7678d",
+  "status": "pass",
+  "line": "부뚜막·쌀가마: 흙 몸체 윗면 + 솥 둘/셋 + 아궁이 불, 가마니는 볼록한 자루. 윗면이 읽힌다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_bumak_3": {
+  "hash": "31e5d1024075",
+  "status": "pass",
+  "line": "부뚜막·쌀가마: 흙 몸체 윗면 + 솥 둘/셋 + 아궁이 불, 가마니는 볼록한 자루. 윗면이 읽힌다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_ssal_gama": {
+  "hash": "265174aae3fa",
+  "status": "pass",
+  "line": "부뚜막·쌀가마: 흙 몸체 윗면 + 솥 둘/셋 + 아궁이 불, 가마니는 볼록한 자루. 윗면이 읽힌다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_hangari_a": {
+  "hash": "feab77584462",
+  "status": "pass",
+  "line": "항아리·독·술독·물동이: 윗 입구 타원 + 불룩한 몸통 + 왼쪽 밝음, 뚜껑·끈 변형. v5 항아리와 같은 문법",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_hangari_b": {
+  "hash": "17bbfdd8c4bf",
+  "status": "pass",
+  "line": "항아리·독·술독·물동이: 윗 입구 타원 + 불룩한 몸통 + 왼쪽 밝음, 뚜껑·끈 변형. v5 항아리와 같은 문법",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_hangari_tall": {
+  "hash": "e79847113968",
+  "status": "pass",
+  "line": "항아리·독·술독·물동이: 윗 입구 타원 + 불룩한 몸통 + 왼쪽 밝음, 뚜껑·끈 변형. v5 항아리와 같은 문법",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_dok_row": {
+  "hash": "f975ab3f1bb7",
+  "status": "pass",
+  "line": "항아리·독·술독·물동이: 윗 입구 타원 + 불룩한 몸통 + 왼쪽 밝음, 뚜껑·끈 변형. v5 항아리와 같은 문법",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_suldok": {
+  "hash": "f803cdb80e7f",
+  "status": "pass",
+  "line": "항아리·독·술독·물동이: 윗 입구 타원 + 불룩한 몸통 + 왼쪽 밝음, 뚜껑·끈 변형. v5 항아리와 같은 문법",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_dameum": {
+  "hash": "bae18c8c6d88",
+  "status": "pass",
+  "line": "항아리·독·술독·물동이: 윗 입구 타원 + 불룩한 몸통 + 왼쪽 밝음, 뚜껑·끈 변형. v5 항아리와 같은 문법",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_mul_dongi": {
+  "hash": "cb75e81f439d",
+  "status": "pass",
+  "line": "항아리·독·술독·물동이: 윗 입구 타원 + 불룩한 몸통 + 왼쪽 밝음, 뚜껑·끈 변형. v5 항아리와 같은 문법",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_jangjak": {
+  "hash": "9029f6783fc4",
+  "status": "pass",
+  "line": "장작더미: 쌓인 통나무 단면이 원형 점으로 읽히고 윗층이 윗면",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_seonban": {
+  "hash": "f094e9785787",
+  "status": "pass",
+  "line": "벽 걸이·선반·등잔: 벽면에 붙는 정면 조각(선반 칸 판, 족자 축, 연장 걸이). 정면 벽 장식은 v5 벽 소품과 같은 시점",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_seonban_bottles": {
+  "hash": "505c483d2da6",
+  "status": "pass",
+  "line": "벽 걸이·선반·등잔: 벽면에 붙는 정면 조각(선반 칸 판, 족자 축, 연장 걸이). 정면 벽 장식은 v5 벽 소품과 같은 시점",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_tool_rack": {
+  "hash": "60df068d6511",
+  "status": "pass",
+  "line": "벽 걸이·선반·등잔: 벽면에 붙는 정면 조각(선반 칸 판, 족자 축, 연장 걸이). 정면 벽 장식은 v5 벽 소품과 같은 시점",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_herb_hang": {
+  "hash": "4dc55b5b83bb",
+  "status": "pass",
+  "line": "벽 걸이·선반·등잔: 벽면에 붙는 정면 조각(선반 칸 판, 족자 축, 연장 걸이). 정면 벽 장식은 v5 벽 소품과 같은 시점",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_jokja_a": {
+  "hash": "e53d01073658",
+  "status": "pass",
+  "line": "벽 걸이·선반·등잔: 벽면에 붙는 정면 조각(선반 칸 판, 족자 축, 연장 걸이). 정면 벽 장식은 v5 벽 소품과 같은 시점",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_jokja_b": {
+  "hash": "f2fc601c9436",
+  "status": "pass",
+  "line": "벽 걸이·선반·등잔: 벽면에 붙는 정면 조각(선반 칸 판, 족자 축, 연장 걸이). 정면 벽 장식은 v5 벽 소품과 같은 시점",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_deungjan": {
+  "hash": "8c29f5ff13e7",
+  "status": "pass",
+  "line": "벽 걸이·선반·등잔: 벽면에 붙는 정면 조각(선반 칸 판, 족자 축, 연장 걸이). 정면 벽 장식은 v5 벽 소품과 같은 시점",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_chotdae": {
+  "hash": "d7d64211fb24",
+  "status": "pass",
+  "line": "촛대: 윗접시 + 초 + 불꽃 점, 가는 다리 3px",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_hwaro": {
+  "hash": "5ae7d4731158",
+  "status": "pass",
+  "line": "화로: 둥근 윗면 숯불 + 아래 몸통 + 받침, 불 점이 윗면에 보인다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_betl": {
+  "hash": "7f0543ba886c",
+  "status": "note",
+  "line": "베틀·물레: 가는 날실·바퀴살이 본질이라 thin_ok. 3/4 윗면은 작고 정면 위주로 읽힌다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_mulle": {
+  "hash": "864fbcfb80eb",
+  "status": "note",
+  "line": "베틀·물레: 가는 날실·바퀴살이 본질이라 thin_ok. 3/4 윗면은 작고 정면 위주로 읽힌다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_buk": {
+  "hash": "90e182755b57",
+  "status": "pass",
+  "line": "북·뒤주: 북은 둥근 가죽면 + 받침 다리, 뒤주는 몸통 + 뚜껑 윗면. 정면",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_dwiju": {
+  "hash": "345df03df44b",
+  "status": "pass",
+  "line": "북·뒤주: 북은 둥근 가죽면 + 받침 다리, 뒤주는 몸통 + 뚜껑 윗면. 정면",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_hyeongtul": {
+  "hash": "106bd14bdda7",
+  "status": "note",
+  "line": "관아 형틀·곤장 틀·회초리 통: 정면 위주 목재 틀, 윗면은 가로대 한 줄로만 보인다. 읽히지만 v5 무기대보다 윗면 정보가 적다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_gonjang_rack": {
+  "hash": "7504774932f4",
+  "status": "note",
+  "line": "관아 형틀·곤장 틀·회초리 통: 정면 위주 목재 틀, 윗면은 가로대 한 줄로만 보인다. 읽히지만 v5 무기대보다 윗면 정보가 적다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_hoechori": {
+  "hash": "b69ddb00e41a",
+  "status": "note",
+  "line": "관아 형틀·곤장 틀·회초리 통: 정면 위주 목재 틀, 윗면은 가로대 한 줄로만 보인다. 읽히지만 v5 무기대보다 윗면 정보가 적다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_jumak_counter": {
+  "hash": "e2a5df400fa1",
+  "status": "pass",
+  "line": "주막 카운터: 윗면 길게 + 앞면 서랍, 위 술병·주전자·잔 점",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_yakjang": {
+  "hash": "84a8752ccb43",
+  "status": "pass",
+  "line": "약장·약탕 화로: 서랍 격자 점 + 윗 처마, 약탕관은 몸통+증기 점",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_yakjang_1": {
+  "hash": "66047d73c5c7",
+  "status": "pass",
+  "line": "약장·약탕 화로: 서랍 격자 점 + 윗 처마, 약탕관은 몸통+증기 점",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_yakhwa": {
+  "hash": "f674e5d7f571",
+  "status": "pass",
+  "line": "약장·약탕 화로: 서랍 격자 점 + 윗 처마, 약탕관은 몸통+증기 점",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_yakyeon": {
+  "hash": "97cd0a882430",
+  "status": "note",
+  "line": "약연: 작은 절구 몸체가 투구처럼 읽히는 약점. 3/4 윗면은 있으나 형태가 약하다 — 다음 판에 약연 굴대(맷돌바퀴)를 더 키울 것",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_runner_m": {
+  "hash": "c5be1b873970",
+  "status": "pass",
+  "line": "붉은 깔개 세로 이음: 체크 문양 + 금테, 위 끝 변형(n)이 있어 이어 붙인다. 걷는 바닥 장식",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_runner_n": {
+  "hash": "6ce2b6899c76",
+  "status": "pass",
+  "line": "붉은 깔개 세로 이음: 체크 문양 + 금테, 위 끝 변형(n)이 있어 이어 붙인다. 걷는 바닥 장식",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_jipjari_1": {
+  "hash": "9c246993bb47",
+  "status": "note",
+  "line": "짚자리·돗자리: 바닥 위 납작한 장식(윗면 시점). 결이 읽힌다, 높이 정보 없음",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_jipjari_2": {
+  "hash": "1623f365846c",
+  "status": "note",
+  "line": "짚자리·돗자리: 바닥 위 납작한 장식(윗면 시점). 결이 읽힌다, 높이 정보 없음",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_mat_dot_2x2": {
+  "hash": "dbc0c1ff7c8f",
+  "status": "note",
+  "line": "짚자리·돗자리: 바닥 위 납작한 장식(윗면 시점). 결이 읽힌다, 높이 정보 없음",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_mat_hopi": {
+  "hash": "1f36fc45b50d",
+  "status": "note",
+  "line": "호피: 몸통 + 네 다리 + 머리(귀·눈·코) + 꼬리, 등 줄무늬. 윗면 평면 가죽이라 높이 없음. 가죽 윤곽이 v5 모피와 같은 방식",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_seoga": {
+  "hash": "7a04f92582d7",
+  "status": "pass",
+  "line": "서가: 윗 처마 + 책 칸 줄, 책등 흰 점. v5 책장과 같은 높이·시점",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_chaekdemi": {
+  "hash": "5880c0e2e4e1",
+  "status": "pass",
+  "line": "책더미: 실로 맨 책 네 권 층, 윗면 읽힘",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_sokuri_fruit": {
+  "hash": "9caf1dfaba86",
+  "status": "pass",
+  "line": "소쿠리: 둥근 엮음 테 + 윗면 가득한 과일·곡식·채소 점",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_sokuri_grain": {
+  "hash": "fcf9ad8ca986",
+  "status": "pass",
+  "line": "소쿠리: 둥근 엮음 테 + 윗면 가득한 과일·곡식·채소 점",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_sokuri_veg": {
+  "hash": "4fe29870874a",
+  "status": "pass",
+  "line": "소쿠리: 둥근 엮음 테 + 윗면 가득한 과일·곡식·채소 점",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_sewing": {
+  "hash": "f344083ba0e5",
+  "status": "note",
+  "line": "반짇고리: 작은 상자 + 실패·바늘 점. 1칸 안에서 정보가 적다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_hang_sirae": {
+  "hash": "b889326c39f4",
+  "status": "pass",
+  "line": "벽 걸이 정면: 시래기·고추·메주·바가지가 처마 줄에 매달려 읽힌다. 벽면 윗줄 전용",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_hang_gochu": {
+  "hash": "1f6f5c7c36d8",
+  "status": "pass",
+  "line": "벽 걸이 정면: 시래기·고추·메주·바가지가 처마 줄에 매달려 읽힌다. 벽면 윗줄 전용",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_hang_meju": {
+  "hash": "2eea63a7d625",
+  "status": "pass",
+  "line": "벽 걸이 정면: 시래기·고추·메주·바가지가 처마 줄에 매달려 읽힌다. 벽면 윗줄 전용",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_hang_bagaji": {
+  "hash": "da539dd1acfd",
+  "status": "pass",
+  "line": "벽 걸이 정면: 시래기·고추·메주·바가지가 처마 줄에 매달려 읽힌다. 벽면 윗줄 전용",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_ladder_loft": {
+  "hash": "e4adeb037f1b",
+  "status": "note",
+  "line": "다락 사다리: 세로로 긴 정면 사다리 + 위 검은 구멍. 윗면 정보 없음(정면)",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_boryo_2": {
+  "hash": "f6a63e7df755",
+  "status": "note",
+  "line": "보료 2x1: 붉은 바탕 + 문양 띠 + 금테, 걷는 바닥 장식(윗면 시점). 높이 정보 없고 문양이 단순하다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_floor_ondol": {
+  "hash": "da7d1441c590",
+  "status": "pass",
+  "line": "온돌 장판: 연한 황토 바닥에 얇은 장판 결, 그늘·이음 변형이 벽 밑에서 이어진다. 방 맵에서 이음 없이 깔림",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_floor_maru": {
+  "hash": "a5cd8605becc",
+  "status": "pass",
+  "line": "마루: 가로 판재 결과 판 사이 어두운 선, 앞 턱 변형. 방 맵에서 이음 없이 깔림",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_floor_dirt": {
+  "hash": "9a25d164dbaf",
+  "status": "pass",
+  "line": "흙바닥: 점점이 박힌 다짐 흙 + 벽 밑 그늘 변형. 부엌·대장간에서 이음 없이 깔림",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_floor_stone": {
+  "hash": "0dec3f16a0d2",
+  "status": "pass",
+  "line": "돌바닥: 밝은 석판 줄눈 격자, 벽 밑 그늘. 방 맵에서 이음 없이 깔림(현재 방에는 안 쓰임)",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_floor_jeondol": {
+  "hash": "8dd1853ae937",
+  "status": "pass",
+  "line": "전돌: 어두운 청회색 벽돌 줄눈, 관아 마당 바닥으로 이음 없이 깔림",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
+ },
+ "in_ceil47": {
+  "hash": "6d12d50fb54a",
+  "status": "pass",
+  "line": "천장 블롭 47: 어두운 천장 + 창방 띠 테두리, 모서리·T·끝 47변형이 방 맵에서 자연스럽게 이어진다",
+  "reviewer": "claude",
+  "user": "pending",
+  "date": "2026-10-04"
  }
 }

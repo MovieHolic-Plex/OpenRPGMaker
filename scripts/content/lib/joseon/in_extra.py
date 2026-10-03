@@ -133,8 +133,8 @@ def ansuk():
     _top(cv, 2, 5, 12, 4)
     cv.hl(2, 14, 8, WD[6])
     _front(cv, 2, 9, 12, 3)
-    for x in (3, 11):
-        cv.rect(x, 12, x + 2, 15, WD[2]); cv.put(x, 12, WD[4])
+    for x in (3, 10):
+        cv.rect(x, 12, x + 3, 15, WD[2]); cv.rect(x, 12, x + 1, 13, WD[4])
     cv.hl(3, 13, 15, WD[1])
     B.outline(cv)
     return cv
@@ -144,10 +144,9 @@ def seoan():
     """서안 1×1: 낮은 책상 위에 펼친 책·벼루·붓통."""
     cv = Cv(16, 16)
     _top(cv, 1, 5, 14, 4)
-    cv.hl(1, 15, 8, WD[4])
-    cv.hl(1, 15, 9, WD[3]); cv.hl(1, 15, 10, WD[2])
-    for x in (2, 12):
-        cv.rect(x, 11, x + 2, 15, WD[2]); cv.put(x, 11, WD[4])
+    _front(cv, 1, 8, 14, 3)
+    for x in (2, 11):
+        cv.rect(x, 11, x + 3, 15, WD[2]); cv.rect(x, 11, x + 1, 12, WD[4])
     cv.hl(2, 14, 15, WD[1])
     cv.rect(3, 3, 9, 7, PL[6]); cv.hl(3, 9, 3, PL[5]); cv.vl(6, 3, 7, PL[3]); cv.hl(3, 9, 7, WD[3])      # 펼친 책
     cv.rect(11, 5, 14, 7, IR[2]); cv.hl(11, 14, 5, IR[4])                                              # 벼루
@@ -166,22 +165,33 @@ def seoan_2():
 
 
 def hopi():
-    """호피 깔개 2×2(호랑이 가죽): 주황 바탕 + 검은 줄무늬. 걷는 바닥 장식."""
+    """호피 깔개 2×2(호랑이 가죽 펼침): 몸통 + 네 다리 + 머리(귀·눈·코) + 꼬리, 등에서 옆구리로 뻗는 검은 줄무늬. 걷는 바닥 장식."""
     cv = Cv(32, 32)
-    for y in range(32):
-        for x in range(32):
-            cx, cy = 16, 16
-            d = ((x + 0.5 - cx) / 15.0) ** 2 + ((y + 0.5 - cy) / 13.5) ** 2
-            if d > 1.0: continue
-            cv.put(x, y, PS[4] if d < 0.7 else PS[3])
-    for k in range(7):
-        x = 5 + k * 3
-        for y in range(7, 25):
-            if ((x - 16) / 15.0) ** 2 + ((y - 16) / 13.5) ** 2 < 0.85 and (y + k * 2) % 9 < 4:
-                cv.put(x, y, GI[1]); cv.put(x + 1, y + 1, GI[2])
-    for (x, y) in ((6, 12), (7, 20), (24, 12), (25, 20)):                          # 다리 끝
-        cv.rect(x - 2, y - 2, x + 2, y + 2, PS[3])
-    cv.rect(13, 3, 19, 8, PS[5]); cv.put(14, 5, GI[0]); cv.put(17, 5, GI[0])      # 머리
+    def blob(x0, y0, x1, y1, r, col):
+        for y in range(y0, y1):
+            for x in range(x0, x1):
+                dx = max(x0 + r - x, 0, x - (x1 - 1 - r)); dy = max(y0 + r - y, 0, y - (y1 - 1 - r))
+                if dx * dx + dy * dy <= r * r + 1:
+                    cv.put(x, y, col)
+    blob(7, 8, 25, 25, 4, PS[3])                       # 몸통(가장자리 어두운 주황)
+    blob(9, 10, 23, 23, 3, PS[4])                      # 몸통 안쪽
+    for (x, y) in ((3, 8), (24, 8), (3, 21), (24, 21)):    # 네 다리(벌린 발)
+        blob(x, y, x + 5, y + 5, 2, PS[3])
+    blob(11, 2, 21, 10, 3, PS[4])                      # 머리
+    cv.rect(10, 1, 13, 4, PS[3]); cv.rect(19, 1, 22, 4, PS[3])      # 귀
+    cv.put(11, 2, GI[2]); cv.put(20, 2, GI[2])
+    cv.put(13, 5, GI[0]); cv.put(14, 5, GI[0]); cv.put(17, 5, GI[0]); cv.put(18, 5, GI[0])     # 눈
+    cv.rect(15, 7, 17, 9, PS[5]); cv.put(15, 7, GI[1]); cv.put(16, 7, GI[1])                  # 코
+    cv.rect(14, 25, 18, 30, PS[3]); cv.hl(14, 18, 28, GI[1])                                    # 꼬리
+    for k, y in enumerate((12, 15, 18, 21)):          # 줄무늬: 등줄기에서 양옆으로
+        for sgn in (-1, 1):
+            for j in range(5):
+                x = 16 + sgn * (3 + j) - (1 if sgn < 0 else 0)
+                cv.put(x, y + (j // 3), GI[1])
+                if j < 3:
+                    cv.put(x, y + (j // 3) + 1, GI[2])
+    for (x, y) in ((4, 10), (4, 23), (26, 10), (26, 23)):   # 발 줄무늬
+        cv.hl(x, x + 3, y, GI[1])
     B.outline(cv)
     return cv
 
@@ -281,10 +291,10 @@ def hang(kind='sirae'):
                 cv.put(x, y, DG[3] if y % 3 else DG[4]); cv.put(x + 1, y, DG[2])
             cv.put(x, 12 + (k % 2) * 2, SW[3])
     elif kind == 'gochu':
-        cv.hl(3, 13, 1, WD[3])
-        for x in (5, 8, 11):
-            for y in range(2, 13):
-                cv.put(x, y, SW[3] if y % 3 == 0 else RD[4]); cv.put(x + 1, y, RD[3] if y % 3 else RD[5])
+        cv.hl(2, 14, 1, WD[3]); cv.hl(2, 14, 2, WD[2])
+        for x in (3, 7, 11):
+            for y in range(3, 13):
+                cv.put(x, y, SW[3] if y % 3 == 0 else RD[4]); cv.put(x + 1, y, RD[3] if y % 3 else RD[5]); cv.put(x + 2, y, RD[2])
     elif kind == 'yakcho':
         cv.hl(4, 12, 1, WD[3])
         for x0, col in ((4, LF[3]), (8, SW[4]), (12, DG[3])):
@@ -294,10 +304,10 @@ def hang(kind='sirae'):
                     cv.put(x, y, col if (x + y) % 3 else col)
             cv.hl(x0 - 1, x0 + 2, 2, WD[2])
     elif kind == 'meju':
-        cv.hl(2, 14, 2, SW[2]);
+        cv.hl(2, 14, 2, SW[2]); cv.hl(2, 14, 3, SW[1])
         for x0 in (3, 9):
-            for y in range(3, 12):
-                cv.put(x0 + 1, y, SW[3])
+            for y in range(4, 12):
+                cv.put(x0 + 1, y, SW[3]); cv.put(x0 + 2, y, SW[2])
             cv.rect(x0 - 1, 7, x0 + 4, 14, SW[5]); cv.hl(x0 - 1, x0 + 4, 7, SW[6]); cv.hl(x0 - 1, x0 + 4, 13, SW[2])
             cv.put(x0 + 1, 10, SW[3]); cv.put(x0 + 2, 9, SW[3])
     else:                                              # 바가지
