@@ -33,6 +33,7 @@ PICKS = os.path.join(PICK, 'picks.json')
 CACHE = os.path.join(PICK, '.cache', 'ctx')
 OUT = os.path.join(PICK, 'out')
 LOCK = threading.Lock(); CTX_LOCK = threading.Lock()
+CTX_MARGIN = 2   # 방 안 그림의 둘레 칸 수 — 3(7×7)은 너무 넓다(2026-10-03 사용자 「이미지가 너무 큼, 절반으로」)
 _OBJ = {}
 def objects_by_slug():
     """common.objects_by_slug 는 부를 때마다 메타 두 파일을 다시 읽는다(약 27ms). 그림 요청마다 두 번 불러 10장을 한꺼번에 받으면
@@ -160,11 +161,11 @@ def ctx_png(s, cand):
                 sys.path.insert(0, PXGRID); import pxgrid
                 pxgrid.render(base + '.pxg', png)
         src = png; v = str(int(os.path.getmtime(png)))
-    cp = os.path.join(CACHE, s, f'{cand}-{v}.png')
+    cp = os.path.join(CACHE, s, f'{cand}-{v}-m{CTX_MARGIN}.png')
     if not os.path.exists(cp):
         with CTX_LOCK:   # v5 방 조립은 모듈 전역(room2.CEIL)을 쓴다 → 한 번에 하나
             slot = Image.open(src).convert('RGBA') if src else None
-            im, _ = context.context_image(o, slot)
+            im, _ = context.context_image(o, slot, (CTX_MARGIN, CTX_MARGIN))
         os.makedirs(os.path.dirname(cp), exist_ok=True)
         for old in glob.glob(os.path.join(CACHE, s, f'{cand}-*.png')):
             try: os.remove(old)

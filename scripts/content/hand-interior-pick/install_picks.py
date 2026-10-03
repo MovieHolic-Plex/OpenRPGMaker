@@ -42,7 +42,7 @@ def _png(s, choice):
 def _plan():
     global _PLAN
     if _PLAN is not None: return _PLAN
-    path = os.path.join(PICK, 'picks.json')
+    path = os.environ.get('HAND_INTERIOR_PICKS_JSON') or os.path.join(PICK, 'picks.json')   # 다른 시점의 고르기로 굽기(예: 커밋된 사본)
     picks = json.load(open(path, encoding='utf-8')) if os.path.exists(path) else {}
     by = objects_by_id()
     same, resized, variants = {}, {}, []

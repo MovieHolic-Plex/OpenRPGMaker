@@ -13,7 +13,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, '..', '..', '..'))
 sys.path.insert(0, os.path.join(ROOT, 'scripts/content/hand-interior-pick'))
 from check_candidate import LINE_THICK_MAX, LINE_NONE_MAX  # noqa: E402
-from common import CAND, TOP_MIN_SHALLOW, blockout_image, geom, objects_by_id, slug, top_min, top_rule_text  # noqa: E402
+from common import CAND, SHARED_PAL, TOP_MIN_SHALLOW, blockout_image, geom, objects_by_id, slug, top_min, top_rule_text  # noqa: E402
 import picks_db  # noqa: E402
 import outline_select  # noqa: E402
 import store  # noqa: E402
@@ -76,7 +76,9 @@ def current_choice(item):
 
 def ensure_folder(item):
     d = os.path.join(CAND, slug(item))
-    if not os.path.exists(os.path.join(d, 'info.json')):
+    pal = os.path.join(d, 'palette.pal')
+    # 공통 팔레트가 바뀌면(v5 → v6) 폴더의 palette.pal 도 새로 만든다 — 다시 그리는 작업자가 새 색을 쓰게
+    if not os.path.exists(os.path.join(d, 'info.json')) or not os.path.exists(pal) or os.path.getmtime(pal) < os.path.getmtime(SHARED_PAL):
         subprocess.run([sys.executable, os.path.join(ROOT, 'scripts/content/hand-interior-pick/make_jobs.py'), '--prep', item],
                        cwd=ROOT, check=True, capture_output=True)
     return d

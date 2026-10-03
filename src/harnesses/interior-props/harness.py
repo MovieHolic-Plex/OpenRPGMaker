@@ -27,7 +27,7 @@ MAX_PAR = int(os.environ.get('PROP_HARNESS_PAR', '32'))   # codex 32 명(2026-10
 TIMEOUT_S = int(os.environ.get('PROP_HARNESS_TIMEOUT', str(40 * 60)))
 REVIEW_EFFORT = os.environ.get('PROP_HARNESS_REVIEW_EFFORT', 'medium' if ENGINE == 'codex' else 'high')
 MAX_ATTEMPTS = int(os.environ.get('PROP_HARNESS_ATTEMPTS', '3'))   # 한 장 = 그리기 최대 3번(처음 + 다시 그리기 2번)
-N_DEFAULT = 5
+N_DEFAULT = 2   # 후보 둘(설명 충실·같은 방 화풍, 또는 최소 수정 둘). 셋째 자리는 고르는 화면의 「다시 뽑기」(2026-10-03 사용자)
 CANDS = 'tiledata/hand-interior/pick/candidates'
 POOL_LOCK = os.path.join(store.DATA, 'pool.lock')
 LOGS = os.path.join(store.DATA, 'logs')
@@ -395,6 +395,10 @@ class _Adopted:
 
 
 def pool():
+    # 일꾼(그림·검수 32명)은 낮은 우선순위(nice 10)로 — 띄운 셸이 nice -10 이면 그대로 물려받아 고르는 화면 서버(nice 0)가
+    # 굶었다(실측 2026-10-03: 상태 요청 0.7초 → 9초). 자식 프로세스는 이 값을 물려받는다.
+    try: os.nice(max(0, 10 - os.nice(0)))
+    except OSError: pass
     os.makedirs(store.DATA, exist_ok=True)
     fd = os.open(POOL_LOCK, os.O_RDWR | os.O_CREAT)
     try:
@@ -424,7 +428,8 @@ def pool():
                 try: _finish(r, code)
                 except (Exception, SystemExit) as e: store.update_run(r['id'], status='failed', ended=store.now(), ok=0, error=repr(e)[:500])
                 print(store.now(), f"h{r['round']}-{r['letter']} 끝({code})", flush=True)
-        queued = store.runs(status=('queued',))
+        # 작업지시서가 아직 없는 판(draw 가 new_round 뒤 brief.make 를 쓰는 중)은 건너뛴다 — 집어 가면 brief=None 으로 실패했다(2026-10-03 8차 16장)
+        queued = [r for r in store.runs(status=('queued',)) if r.get('brief')]
         while queued and len(live) < MAX_PAR:
             r = queued.pop(0)
             try:
