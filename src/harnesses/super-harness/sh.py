@@ -338,9 +338,9 @@ def start_reviews(c):
 
 
 def probe_text(cid, c):
-    card = read_json(cdir(cid, 'card.json'), {}) or {}
-    text = str(card.get('probeText') or '').strip()
-    return text or f'{c["title"]}{object_particle(c["title"])} 만들어줘'
+    """조수 시험 문장은 늘 맨 요청(「미궁을 만들어줘」) — 사용자가 실제로 치는 말이다. 작업자가 카드에 힌트 섞인 문장을
+    적어도 쓰지 않는다(힌트가 기준 판까지 도와 카드 효과를 가린다)."""
+    return f'{c["title"]}{object_particle(c["title"])} 만들어줘'
 
 
 def step_probe(c):

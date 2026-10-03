@@ -32,7 +32,7 @@
   excludeContexts?: string[]; // 이 구절이 있으면 이 개념이 아니다. 예: 미궁 → ["미궁에 빠", "사건이 미궁"]
   summary: string;         // 이 공간이 무엇이고 무엇으로 이루어지는지 2~3문장
   skipLayoutQuality?: boolean; // 빈 바닥이 많아야 정상인 공간(통로)이면 true — 조수의 「빈칸 채우기」 수리 턴을 끈다
-  probeText: string;       // 조수 시험에 보낼 자연스러운 요청 한 줄. 예: "미궁을 만들어줘"
+  probeText: string;       // 「<제목>을 만들어줘」 그대로. 조수 시험은 늘 이 맨 요청으로 한다 — 힌트를 섞지 마라.
   variants: [{
     id: string; title: string;
     worldview: string;     // 중세 지하 · 현대 · 호러 …

@@ -49,8 +49,8 @@ export function eventKind(event: GameMap["events"][number]): EventKind {
   if (kinds.has("transfer")) return "door";
   if (kinds.has("battleProcessing")) return "battle";
   if (/상자|chest/i.test(name) || ((kinds.has("changeItems") || kinds.has("changeGold")) && kinds.has("setSelfSwitch"))) return "chest";
-  if (/함정|trap/i.test(name) || kinds.has("changeHp")) return "trap";
-  if (/세이브|save/i.test(name) || kinds.has("openSaveMenu") || kinds.has("save")) return "save";
+  if (/함정|trap/i.test(name) || kinds.has("changeHp") || kinds.has("killPlayer") || kinds.has("gameOver")) return "trap";
+  if (/세이브|save/i.test(name) || kinds.has("openSaveMenu") || kinds.has("save") || kinds.has("checkpointSave")) return "save";
   if (kinds.has("setSwitch") || kinds.has("setSelfSwitch")) return "switch";
   if (kinds.has("showText") || kinds.has("text")) return "talk";
   return "other";
