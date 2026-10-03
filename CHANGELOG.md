@@ -5,6 +5,16 @@
 
 <!-- releases -->
 
+## 0.99.1 — 2026-10-03
+
+### 수정
+
+- stabilize cinematic interview AI handoff and mobile controls (`c00e40c`)
+
+### 테스트
+
+- record interview QA against current main (`69532e8`)
+
 ## 0.99.0 — 2026-10-03
 
 ### 기능
