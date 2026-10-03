@@ -435,7 +435,7 @@ async function redraw(fromCard) {
   it.status = 'drawing';
   nextItem(); renderNav(); renderPick(); $('#main').scrollTop = 0;
   toast(`${it.name}: 다시 뽑는 중 — 2장`);
-  try { await api('/api/harness/draw', body); load(true); }
+  try { const res = await api('/api/harness/draw', body); if (res.resized) toast(`${it.name}: 크기를 ${res.resized.w}×${res.resized.h}칸(${res.resized.canvas.join('×')}px)으로 바꿔 다시 뽑는 중`); load(true); }
   catch (e) { delete S.pending[it.id]; it.status = 'ready'; renderNav(); toast(`다시 뽑기 실패 — ${it.name}: ${e.message}`, 1); load(true); }
 }
 

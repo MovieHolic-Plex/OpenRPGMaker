@@ -38,7 +38,7 @@ _OBJ = {}
 def objects_by_slug():
     """common.objects_by_slug 는 부를 때마다 메타 두 파일을 다시 읽는다(약 27ms). 그림 요청마다 두 번 불러 10장을 한꺼번에 받으면
     1초 넘게 줄을 섰다(실측) → 두 파일 시각이 그대로면 지난 결과를 쓴다."""
-    k = tuple(os.path.getmtime(f) if os.path.exists(f) else 0 for f in (os.path.join(V5, 'interior-meta.json'), NEW_ITEMS))
+    k = tuple(os.path.getmtime(f) if os.path.exists(f) else 0 for f in (os.path.join(V5, 'interior-meta.json'), NEW_ITEMS, RESIZE_STAMP))
     if _OBJ.get('k') != k: _OBJ.update(k=k, v=common_objects_by_slug())
     return _OBJ['v']
 SAFE = re.compile(r'^[A-Za-z0-9_]+$'); SAFE_FILE = re.compile(r'^[A-Za-z0-9_.\-]+$')

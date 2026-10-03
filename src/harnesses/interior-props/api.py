@@ -16,7 +16,7 @@ sys.path.insert(0, HERE)
 sys.path.insert(0, os.path.join(ROOT, 'scripts/content/hand-interior-pick'))
 import store  # noqa: E402
 import harness  # noqa: E402
-from common import CAND, NEW_ITEMS, V5, WORKER_RE, geom, objects_by_id, slug, objects_by_slug  # noqa: E402
+from common import CAND, NEW_ITEMS, RESIZE_STAMP, V5, WORKER_RE, geom, objects_by_id, slug, objects_by_slug, size_from_note, write_resize  # noqa: E402
 import picks_db  # noqa: E402
 import outline_select  # noqa: E402
 
@@ -174,7 +174,7 @@ def _sel_diff(png):
 
 def _fingerprint():
     """상태를 바꾸는 것들의 파일 시각 — 같으면 들고 있던 상태를 그대로 준다."""
-    fs = [store.DB, store.DB + '-wal', picks_db.DB, picks_db.DB + '-wal', NEW_ITEMS, os.path.join(V5, 'interior-meta.json')]
+    fs = [store.DB, store.DB + '-wal', picks_db.DB, picks_db.DB + '-wal', NEW_ITEMS, os.path.join(V5, 'interior-meta.json'), RESIZE_STAMP]
     out = []
     for f in fs:
         try: st = os.stat(f); out.append(f'{st.st_mtime_ns}:{st.st_size}')
@@ -257,6 +257,14 @@ def draw(body):
     if not ids: raise ValueError('기물이 없다')
     n = max(1, min(5, int(body.get('n') or harness.N_DEFAULT))); note = str(body.get('note') or '')[:2000]; base = str(body.get('base') or '')
     if base and (len(ids) != 1 or not _exists(ids[0], base)): raise ValueError('출발 후보가 없다')
+    resized = None
+    if len(ids) == 1:   # 메모의 「2x2」 같은 크기 요청은 글로만 넘기지 않고 캔버스·칸 수·검사까지 바꾼다(resize.json)
+        sz = size_from_note(note); o = objects_by_id()[ids[0]]; fp = geom(o)['footprint']
+        cur = (int(fp.get('w') or 1), int(fp.get('h') or 0) if int(fp.get('h') or 0) else geom(o)['canvas'][1] // 16)
+        if sz and sz != cur:
+            spec = write_resize(o, sz[0], sz[1], f'사용자 메모: {note[:200]}')
+            resized = dict(w=sz[0], h=sz[1], canvas=spec['canvas'])
+            if base and not base.startswith('v5'): base = ''   # 옛 크기 후보에서 출발하면 캔버스가 안 맞는다
     if body.get('round') and len(ids) == 1:
         _record_rejects(ids[0], body['round'], body.get('rejects'))
         store.add_feedback(ids[0], 'redraw', body['round'], base, [], note)
@@ -266,7 +274,7 @@ def draw(body):
             try: harness.draw(ids, n, note, base)
             except Exception as e: print('하네스 draw 실패:', repr(e), flush=True)
     threading.Thread(target=work, daemon=True).start()
-    return dict(ok=True, ids=ids)
+    return dict(ok=True, ids=ids, resized=resized)
 
 
 def handle(h, method, parts, body=None):
