@@ -163,7 +163,7 @@ main { flex:1; overflow:auto; padding:14px 20px 140px; }
 <script>
 const ENG = {codex:'Codex', claude:'Sonnet'};
 const ENG_FULL = {codex:'Codex gpt-6.1-sol', claude:'Claude Sonnet 5.5'};
-const S = { showDone:false, eng:'all', view:'pick', data:null, cur:null, round:null, sel:null, rej:{}, mode:'ctx', bg:'wood', zoom:'fit', sigNav:'', sigPick:'', waitNext:false, flip:false,
+const S = { pending:{}, showDone:false, eng:'all', view:'pick', data:null, cur:null, round:null, sel:null, rej:{}, mode:'ctx', bg:'wood', zoom:'fit', sigNav:'', sigPick:'', waitNext:false, flip:false,
             objs:null, objSel:new Set(), cat:'전체', q:'', memo:'', fromSel:false };
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -192,7 +192,18 @@ function sized(img, z) {
 }
 
 async function load(keep) {
-  try { S.data = await api('/api/harness/state'); } catch (e) { toast('상태를 못 읽었다: ' + e.message, 1); return; }
+  // 상태 요청이 겹치면(3초 폴링 + 확정 직후) 늦게 도착한 옛 답이 새 답을 덮어 방금 고른 기물이 「고를 차례」로 되살아났다.
+  // 마지막에 보낸 요청의 답만 쓰고, 서버가 아직 못 따라온 확정(S.pending)은 화면 쪽 값을 덮어 둔다.
+  const gen = S.gen = (S.gen || 0) + 1; let d;
+  try { d = await api('/api/harness/state'); } catch (e) { if (gen === S.gen) toast('상태를 못 읽었다: ' + e.message, 1); return; }
+  if (gen !== S.gen) return;
+  for (const i of d.items) {
+    const p = S.pending[i.id]; if (!p) continue;
+    const lr = i.rounds.at(-1);
+    if (lr.decided || lr.id !== p.round) { delete S.pending[i.id]; continue; }   // 서버가 따라왔다
+    i.status = 'done'; if (p.choice !== 'keep') i.current = p.choice;
+  }
+  S.data = d;
   const its = S.data.items;
   $('#cReady').textContent = its.filter(i => i.status === 'ready').length;
   $('#cDraw').textContent = its.filter(i => i.status === 'drawing').length;
@@ -390,12 +401,14 @@ const NOSEL = new Set(['바닥 무늬(밟을 수 있음)']);   // 깔개는 테�
 const pickName = c => (c.split('-')[1] || c).replace(/\.sel$/, ' (테두리 필요한 곳만)');
 async function decide(choice) {
   const it = item(), r = rnd(); if (!it) return;
-  try {
-    await api('/api/harness/decide', {id:it.id, round:r.id, choice, rejects:S.rej, note:S.memo});
-    toast(choice === 'keep' ? `${it.name}: 지금 그대로` : `${it.name}: ${pickName(choice)} 로 확정`);
-    // 다음 기물은 상태를 다시 받기 전에 바로 연다(상태 1.8MB 를 기다리면 한 박자 늦다). 상태는 뒤에서 받아 맞춘다.
-    it.status = 'done'; nextItem(); renderNav(); renderPick(); load(true);
-  } catch (e) { toast('저장 실패: ' + e.message, 1); }
+  const body = {id:it.id, round:r.id, choice, rejects:S.rej, note:S.memo};
+  // 저장을 기다리지 않고 바로 다음 기물로 — 저장은 뒤에서, 실패하면 그 기물을 되돌리고 알린다.
+  S.pending[it.id] = {round:r.id, choice};
+  it.status = 'done'; if (choice !== 'keep') it.current = choice;
+  nextItem(); renderNav(); renderPick();
+  toast(choice === 'keep' ? `${it.name}: 지금 그대로` : `${it.name}: ${pickName(choice)} 로 확정`);
+  try { await api('/api/harness/decide', body); load(true); }
+  catch (e) { delete S.pending[it.id]; it.status = 'ready'; renderNav(); toast(`저장 실패 — ${it.name} 다시 고르세요: ${e.message}`, 1); load(true); }
 }
 async function redraw() {
   const it = item(), r = rnd(); if (!it) return;
