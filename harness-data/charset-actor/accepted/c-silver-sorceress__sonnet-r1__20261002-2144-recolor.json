@@ -1,0 +1,43 @@
+{
+ "id": "20261002-2144-recolor/c-silver-sorceress__sonnet-r1",
+ "brief": "c-silver-sorceress",
+ "name": "은발의 마도사",
+ "base": "Actor4:3",
+ "base_label": "Actor4 4번",
+ "strength": "normal",
+ "files": {
+  "chr": "c-silver-sorceress__sonnet-r1__20261002-2144-recolor.chr.txt",
+  "sheet": "c-silver-sorceress__sonnet-r1__20261002-2144-recolor.png"
+ },
+ "description": {
+  "label": "은발 긴 머리 보라 로브 마도사",
+  "gender": "불명",
+  "attributes": {
+   "kind": "사람",
+   "age": "청년",
+   "hair": "은발 (은백색 긴 머리)"
+  },
+  "role": "마법사·마도사",
+  "appearance": "허리께까지 내려오는 은백색 긴 머리를 풀어 내린 청년으로, 얼굴 양옆으로 머리카락이 흘러내린다. 짙은 보라색 긴 옷에 자주색 안감과 흰 옷깃, 금색 허리띠·소맷부리·장화 장식이 달려 있고 윤곽선은 짙은 갈색이다.",
+  "colors": [
+   "은백색 긴 머리",
+   "짙은 보라 로브",
+   "자주색 소매 안감",
+   "흰 옷깃",
+   "금색 허리띠와 장화 장식"
+  ],
+  "tags": [
+   "마법사",
+   "마도사",
+   "은발",
+   "판타지",
+   "중세",
+   "마법탑",
+   "학자",
+   "신비로운"
+  ],
+  "fits": "마법탑·도서관·왕궁 같은 곳에서 주인공에게 마법을 가르치거나 비밀을 아는 신비로운 마도사 NPC 로 두기 좋다.",
+  "by": "Claude Sonnet 5.5 · medium",
+  "at": "2026-10-02T22:41:10+00:00"
+ }
+}
