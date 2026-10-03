@@ -51,10 +51,23 @@ export function requestAgentFocusHighlight(target: AgentFocusTarget): void {
   for (const listener of listeners) listener(target);
 }
 
-export function focusAcceptedAgentChanges(before: Project, after: Project): AgentFocusTarget | null {
+/**
+ * @param options.follow false 면 사용자가 보고 있는 맵의 변경만 강조·재생하고, 맵을 바꾸거나 카메라를 옮기지 않는다 —
+ *   다른 맵에서 도는 백그라운드 실행이 적용될 때마다 화면을 끌고 가지 않게(2026-10-03 맵별 실행).
+ */
+export function focusAcceptedAgentChanges(before: Project, after: Project, options: { readonly follow?: boolean } = {}): AgentFocusTarget | null {
   const target = summarizeAcceptedAgentChanges(before, after);
   if (!target) return null;
   const currentMapId = editorState.get().currentMapId ?? before.startMapId ?? null;
+  if (options.follow === false) {
+    if (target.mapId !== currentMapId) return target;
+    const map = after.maps[target.mapId];
+    const plan = map && isAiLiveCanvasEnabled() && !prefersReducedMotion()
+      ? planConstructionReveal(before.maps[target.mapId], map, after.tilesets[map.tilesetId])
+      : null;
+    if (!plan || !requestAgentConstructionReveal(plan)) requestAgentFocusHighlight(target);
+    return target;
+  }
   // 맵이 바뀌면 캔버스가 한 프레임에 통째로 갈리고 카메라는 새 맵 한가운데로 붙는다 —
   // 그 하드컷을 크로스페이드로 덮는다. 맵 선택·강조·카메라를 **한 묶음**으로 넣어야
   // 덮인 동안 전부 끝나고, 베일이 걷힐 때 이미 완성된 화면이 나온다.
