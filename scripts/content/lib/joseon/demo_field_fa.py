@@ -346,9 +346,18 @@ put('fld_stump_b', 84, 37, ok=('yard',), vis=False)
 put('fld_log_b', 82, 42, ok=('yard', 'forest'), vis=False)
 
 # --- 폐허·무덤
-put('fld_ruin_pagoda', 16, 66, ok=OKG, vis=False); pw(20, 70)
+def keep_visible(name, x, y, up=3, side=1):
+    """놓은 조각의 몸체와 그 위·옆 여백을 VIS 에 넣는다: 나중에 자라는 나무 수관이 폐허·무덤을 가리지 않게."""
+    for (X, Y, ch) in kit.cells_for(name, x, y):
+        for dy in range(-up, 1):
+            for dx in range(-side, side + 1):
+                VIS.add((X + dx, Y + dy))
+
+
+if put('fld_ruin_pagoda', 16, 66, ok=OKG, vis=False): keep_visible('fld_ruin_pagoda', 16, 66, up=4, side=2)
+pw(20, 70)
 for (nm, x, y) in (('fld_grave_a', 8, 73), ('fld_grave_b', 13, 73), ('fld_grave_a', 9, 79), ('fld_grave_b', 14, 80), ('fld_tombstone', 19, 76), ('fld_cairn', 24, 71)):
-    put(nm, x, y, ok=OKG, vis=False)
+    if put(nm, x, y, ok=OKG, vis=False): keep_visible(nm, x, y, up=3, side=1)
 pw(10, 77)
 put('fld_dead_a', 5, 68, ok=OKG); put('fld_dead_b', 27, 66, ok=OKG); put('fld_dead_a', 21, 84, ok=OKG)
 # --- 늪 끝 표지
