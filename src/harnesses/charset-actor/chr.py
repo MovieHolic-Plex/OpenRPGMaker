@@ -714,6 +714,12 @@ def correspondence(b1, bf, R=3):
             c = bf[y][x]
             if c == TRANSPARENT:
                 continue
+            # 몸통의 같은 픽셀은 출렁임만 따라야 한다. 주변 무늬 점수를 먼저
+            # 비교하면 원본의 주름 때문에 새 옷의 깃/띠를 옆 칸에서 가져온다.
+            # 실제로 원본 색이 바뀐 자리만 움직임 대응을 찾는다.
+            if at(b1, x, y - bob) == c:
+                corr[(x, y)] = (x, y - bob)
+                continue
             best = None
             for dy in range(-R, R + 1):
                 for dx in range(-R, R + 1):

@@ -66,6 +66,17 @@ def verify():
     alias_gate = C.gate(aliases, idle, (p, f), check_changed=False)
     check('RGB-alias-cannot-fake-motion', all(alias_gate['metrics'][f'walk_motion_{d}'] == 0 for d in C.DIRS))
 
+    # People1:1의 원본 치마 무늬가 새 조끼의 깃을 몸통 옆에서 가져오던 실제 사례.
+    # standing (9,22)의 옷 색이 down 0 (9,23)에서도 그대로 이어져야 한다.
+    pp, pf = H.base_of('People1:1')
+    vest = copy.deepcopy(pf)
+    row = list(vest['down', 1][22]); row[9] = '~'; vest['down', 1][22] = ''.join(row)
+    vp = dict(pp); vp['~'] = (52, 76, 107)
+    walked = C.propagate(pf, vest, pp, vp)
+    check('walking-vest-keeps-stable-torso-color', walked['down', 0][23][9] == '~')
+    check('walking-preserves-standing-drawings', all(walked[d, 1] == vest[d, 1] for d in C.DIRS))
+    check('walking-preserves-original-RTP', C.propagate(pf, pf, pp, pp) == pf)
+
     # 사용자 데이터·결정·공용 자산을 건드리지 않는 별도 저장 대상.
     with tempfile.TemporaryDirectory(prefix='charset-verify-') as temp, isolated_store(Path(temp)):
         root = H.run_dir('fixture')
