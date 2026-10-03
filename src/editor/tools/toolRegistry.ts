@@ -1,3 +1,4 @@
+import { OPENING_ANIMATIC_TOOLS } from "./openingAnimaticTools";
 import { TILE_ASSEMBLY_GUIDE_TOOLS } from "./tileAssemblyGuideTools";
 import { INTERIOR_PLACEMENT_TOOLS } from "./interiorPlacementTools";
 import { PUBLIC_TILE_RECIPE_TOOLS } from "./publicTileRecipeTools";
@@ -285,6 +286,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(TIME_TOOLS, "system"),
   ...withDomain(MONSTER_SYSTEM_TOOLS, "system"),
   ...withDomain(CINEMATIC_TOOLS, "system"),
+  ...withDomain(OPENING_ANIMATIC_TOOLS, "system"),
   ...withDomain(IMAGE_ASSET_TOOLS, "system"),
   ...withDomain(TITLE_ART_TOOLS, "system"),
   ...withDomain(TITLE_IMPROVE_TOOLS, "system"),

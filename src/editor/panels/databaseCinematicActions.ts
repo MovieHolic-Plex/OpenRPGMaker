@@ -1,3 +1,4 @@
+import { retimeOpeningAnimatic } from "@/project/openingAnimatic";
 import { recordCoalescedSnapshot, recordProjectSnapshot } from "@/editor/mapEditHistory";
 import {
   emptySequence,
@@ -196,7 +197,8 @@ export function createDatabaseCinematicActions(options: {
     setDuration(id: string, milliseconds: number): boolean {
       if (!Number.isFinite(milliseconds)) return false;
       const durationMs = Math.min(CINEMATIC_DURATION_MAX_MS, Math.max(0, Math.round(milliseconds)));
-      return replaceScene(id, "장면 시간", scene => ({ ...scene, durationMs }), `${id}:duration`);
+      try { return replaceScene(id, "장면 시간", scene => scene.kind === "animatic" ? { ...scene, durationMs, composition: retimeOpeningAnimatic(scene.composition, scene.durationMs, durationMs) } : { ...scene, durationMs }, `${id}:duration`); }
+      catch { return false; }
     },
 
     setMotion(id: string, motion: CinematicMotion): boolean {

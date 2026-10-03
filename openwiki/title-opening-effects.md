@@ -174,3 +174,7 @@ readPixels 완료까지 중앙값은 **90.8→73.7 / 98.4→76.5 / 88.2→77.9ms
 공유 머신 loadavg 121.58/77.35/45.29, 실제 GPU/60fps 달성을 뜻하지 않는다.
 블록 단위 교대 측정에는 한 회 역전(89.3→95.3ms)도 있어 성능 수치를 일반화하지 않는다.
 브라우저 전용 테스트는 `--config vitest.browser.config.ts`로 파일 하나만 실행한다.
+
+## Independent opening timelines
+
+See [opening-animatic-authoring.md](opening-animatic-authoring.md) for the actual assistant tools, shared renderer, sprite poses, timed audio, preview evidence, and title/idle/New Game entry contracts; [opening-reference-study.md](opening-reference-study.md) holds source-qualified game research.

@@ -1,5 +1,6 @@
 import type { Project } from '../../project/types';
 import { resolveAssetResourceUrl } from '../../assets/generatedAssetResourceResolver';
+import { animaticResourceIds } from '../../project/openingAnimatic';
 
 /** Image transport only, never a saveable proposal. Avoid resending every draft PNG per preview. */
 export function openingImageProject(project: Project, resourceIds: readonly string[]): Project {
@@ -20,6 +21,7 @@ export class PiOpeningProduction {
   private plannedShotCount = 0;
   private reviewed = '';
   private readonly viewed = new Map<string, string>();
+  private readonly animatics = new Map<string, { fingerprint: string; times: number[] }>();
   constructor(readonly requested: boolean, private readonly task = '') {}
   record(name: string, ok: boolean, project: Project, args?: unknown): void {
     if (!ok) return;
@@ -29,6 +31,14 @@ export class PiOpeningProduction {
   saw(project: Project, resourceId: string): void {
     this.viewed.set(resourceId, this.media(project, resourceId));
   }
+  private animaticFingerprint(project: Project, id: string): string {
+    const s = project.system.opening?.scenes.find(s => s.id === id);
+    return JSON.stringify([s, s?.kind === 'animatic' ? animaticResourceIds(s.composition).map(id => this.media(project, id)) : []]);
+  }
+  sawAnimatic(project: Project, shotId: string, times: number[]): void {
+    const fingerprint = this.animaticFingerprint(project, shotId), previous = this.animatics.get(shotId);
+    this.animatics.set(shotId, { fingerprint, times: [...new Set([...(previous?.fingerprint === fingerprint ? previous.times : []), ...times])] });
+  }
   private media(project: Project, id: string): string { return JSON.stringify(project.assets.uploaded[id] ?? resolveAssetResourceUrl(id, { project }) ?? null); }
   fingerprint(project: Project): string { return JSON.stringify(project.system.opening ?? null); }
   inspect(project: Project, base: Project): string[] {
@@ -37,11 +47,17 @@ export class PiOpeningProduction {
     if (this.fingerprint(project) === this.fingerprint(base)) issues.push('오프닝 설정이 요청 전과 같습니다. 실제 변경 또는 변경하지 못한 이유를 보고하세요.');
     if (!this.plan) issues.push('plan_opening으로 사건·구도·연속성·플레이 진입을 설계하세요.');
     const opening = project.system.opening;
-    if (!opening?.enabled || !opening.scenes?.length) issues.push('새 게임에서 재생할 오프닝이 활성화되지 않았습니다.');
+    if (!opening?.enabled || !opening.scenes?.length) issues.push('지정한 위치에서 재생할 오프닝이 활성화되지 않았습니다.');
     if (this.plannedShotCount && opening?.scenes.length !== this.plannedShotCount && !opening?.scenes.some(s => s.kind === 'video')) issues.push(`제출한 계획 ${this.plannedShotCount}샷과 연결된 ${opening?.scenes.length ?? 0}장면이 다릅니다. 계획을 실제 장면으로 연결하거나 변경 이유를 반영해 계획을 수정하세요.`);
     if (/설명.{0,12}(?:길|대신)|그림.{0,8}중심/iu.test(this.task) && opening?.scenes.some(s => (s.narration?.length ?? 0) > 80)) issues.push('요청은 그림으로 사건을 보여주는 도입입니다. 80자를 넘는 설명을 장면 위에 붙이지 말고 사건/동작을 실제 그림으로 옮기세요.');
     for (const id of new Set((opening?.scenes ?? []).filter(s => s.kind === 'image').map(s => s.resourceId ?? ''))) {
       if (!id || this.viewed.get(id) !== this.media(project, id)) issues.push(`show_opening_image로 현재 그림 ${id || '(미지정)'}의 실제 이미지를 확인하세요. 이름 조회는 시각 검수가 아닙니다.`);
+    }
+    if (/애니메틱|animatic|독립.*레이어|캐릭터.{0,12}움직/iu.test(this.task) && !opening?.scenes.some(s => s.kind === 'animatic')) issues.push('요청한 애니메틱을 실제 합성 샷으로 저작하세요. 정지 그림의 pan/zoom만으로 애니메틱 제작을 완료하지 마세요.');
+    for (const scene of opening?.scenes ?? []) if (scene.kind === 'animatic') {
+      const preview = this.animatics.get(scene.id);
+      if (preview?.fingerprint !== this.animaticFingerprint(project, scene.id) || preview.times.length < 2 || Math.max(...preview.times) - Math.min(...preview.times) < scene.durationMs * 0.25) issues.push(`${scene.id}: 마지막 변경 뒤 preview_opening_animatic으로 충분히 떨어진2개 이상의 실제 시간 표본을 보세요.`);
+      if (!scene.composition.layers.length) issues.push(`${scene.id}: 애니메틱 무대가 비어 있습니다.`);
     }
     if (this.reviewed !== this.fingerprint(project)) issues.push('마지막 변경 뒤 review_opening으로 연결·시간·읽기 속도를 검토하세요.');
     return issues;
@@ -56,5 +72,8 @@ get_opening.generatedStills에는 앞선 제작에서 만든 그림과 미연결
 샷 사이의 시간대·광원·사건 결과를 유지한다. 꺼진 등대가 이유 없이 다시 켜지거나 같은 밤이 갑자기 노을로 바뀌면 생성 그림을 수정한다. 참고 그림의 분위기보다 현재 이야기의 사건 상태를 우선한다.
 캐릭터와 장소가 나오면 show_opening_image로 실제 참고 외형을 보고 generate_opening_image의 referenceResourceIds로 전달한다. 새 그림은 실제 생성·등록된 resourceId만 사용한다. 생성 실패를 이름만 있는 리소스로 덮지 않는다.
 generate_opening_image의 성공 응답에는 생성된 그림이 들어온다. 외형·사건·구도를 보고 필요하면 다시 생성한다. 기존 그림도 show_opening_image로 보고 연결한다. set_opening/edit_opening 후 review_opening으로 구성 검토한다.
-현재 지원 연출은 정지 그림의 fade/pan/zoom, 글, 등록된 영상, 장면 음성, 전체 음악이다. 배우 애니메이션이나 영상 합성을 했다고 주장하지 않는다. 타이틀의 WebGL 효과는 오프닝 장면에 자동 적용되지 않는다.
+get_opening_references에서 관련 게임의 실제 도입/타이틀 소개/홍보 영상과 확인 범위를 구별한다. 기법을 참고해 독자적인 사건과 화면을 저작하며 원작 소재를 게임 리소스로 복사하지 않는다.
+애니메틱 요청이면 get_animatic_capabilities를 읽고 create_opening_animatic_shot으로 시간축 무대를 만든다. upsert_opening_layer로 배경/배우/전경/글/효과를 나누고 animate_opening_layer/animate_opening_camera, 스프라이트 sheet/pose 키, set_opening_transition, upsert_opening_audio_cue로 실제 연출한다. 하나의 완성 그림에 zoom만 적용하는 것으로 독립 배우 동작을 대신하지 않는다. 움직임은 사건의 원인과 결과를 읽히게 하며 모든 배우를 이유 없이 흔들지 않는다.
+배경 그림 속 배우는 독립 레이어가 아니다. 배경에 이미 그려진 배우 위에 같은 배우를 겹쳐 놓지 않는다. 필요하면 generate_opening_layer(role:background)로 배우 없는 장소, role:actor/prop/foreground로 실제 알파 분리 소재를 만든다. 실패한 단색 배경 제거를 투명 소재 성공이라고 하지 않는다. 기존 투명 그림과 정확한 crop/sheet도 재사용할 수 있다. 포즈를 만들지 않았다면 평면 이동을 골격 애니메이션이라고 부르지 않는다.
+inspect_opening_timeline은 구조만 검사한다. preview_opening_animatic으로 각 샷의 시작/중간/후반 실제 합성 프레임을 보고 마지막 수정 후 다시 보라. 피사체가 화면 밖으로 나갔는지, 배경/배우 외형과 조명/접지/전경 가림이 맞는지, 글이 가리지 않는지 검토하고 구체적으로 수정한다. 2D 레이어/카메라/스프라이트 애니메틱과 등록된 영상 재생을 지원한다. 3D 리깅·골격 애니메이션·자동 영상/음성 생성을 했다고 주장하지 않는다. 타이틀 WebGL 효과는 오프닝에 자동 적용되지 않는다.
 시각 전달 증거와 구성 검토는 실행기가 확인한다. 실제 출하 플레이어의 재생·음악·Skip 검증은 별도이며 이 도구만으로 완료했다고 주장하지 않는다. 막힌 단계와 미검증 범위를 정확히 보고한다.`;

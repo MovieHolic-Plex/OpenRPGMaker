@@ -15,13 +15,14 @@ export function reviewOpeningAuthoring(project: Project) {
     }
     return {
       index, id: scene.id, kind: scene.kind,
-      resourceId: scene.kind === "text" ? null : scene.resourceId,
+      resourceId: scene.kind === "image" || scene.kind === "video" ? scene.resourceId : null,
       narrationPreview: [...scene.narration].slice(0, 80).join(""), narrationCharacters, estimatedReadingMs,
       durationMs: scene.durationMs,
       advance: scene.kind === "video" ? (scene.durationMs > 0 ? "timer-or-video-end" : "video-end")
         : scene.durationMs > 0 ? "timer-or-confirm" : "confirm",
       ...(scene.kind === "video" ? { confirmAvailableWhilePlaying: false, confirmWhenMediaBlocked: true } : {}),
       motion: scene.kind === "image" ? scene.motion : null,
+      ...(scene.kind === "animatic" ? { layers: scene.composition.layers.map(l => ({ id: l.id, kind: l.kind, role: l.role, resourceId: l.resourceId, tracks: Object.keys(l.keys ?? {}), spriteLoop: !!l.sheet?.fps })), camera: scene.composition.camera, audioCueCount: scene.composition.audioCues?.length ?? 0 } : {}),
       narrationAudioResourceId: scene.narrationAudioResourceId ?? null,
     };
   });

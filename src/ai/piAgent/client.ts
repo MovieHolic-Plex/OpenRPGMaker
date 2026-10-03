@@ -128,7 +128,11 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
           still = await generateOpeningStill(event.data as Record<string, unknown>, { project: draft, signal: options.signal });
           if (!still.ok) { issue = still.summary; still = undefined; }
         } else {
-          const url = event.toolName === 'show_opening_image'
+          const url = event.toolName === 'preview_opening_reference'
+            ? await (await import('../../editor/openingAnimaticPreview')).renderOpeningReferencePreview(event.data, options.signal)
+            : event.toolName === 'preview_opening_animatic'
+            ? await (await import('../../editor/openingAnimaticPreview')).renderOpeningAnimaticPreview(draft, event.data, options.signal)
+            : event.toolName === 'show_opening_image'
             ? await (await import('../../editor/openingImageGeneration')).renderOpeningImage(draft, event.data, options.signal)
             : await (await import('../toolImageRenderer')).renderPiMapImage(draft, event.data);
           png = url.replace(/^data:image\/png;base64,/, '');

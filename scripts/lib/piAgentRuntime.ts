@@ -54,7 +54,7 @@ import { CODEX_PROVIDER_ID } from "../../src/ai/oauth/credentials.ts";
 import type { GameMap, Project } from "../../src/project/types.ts";
 import type { ToolContext } from "../../src/editor/tools/types.ts";
 import { runTool } from '../../src/editor/tools/index.ts';
-import { prepareOpeningImageRequest } from '../../src/editor/tools/cinematicTools.ts';
+import { prepareOpeningImageRequest, prepareOpeningLayerRequest } from '../../src/editor/tools/cinematicTools.ts';
 import type { CinematicStillResult } from '../../src/editor/openingImageGeneration.ts';
 import { PiOpeningProduction, OPENING_PRODUCTION_PROMPT, requestsOpeningProduction, openingImageProject } from '../../src/ai/piAgent/openingProduction.ts';
 
@@ -355,7 +355,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       throw error;
     }
   };
-  const wrapTool = (tool: PiToolShape): PiToolShape => !incremental && !contract && !["show_map_region", "inspect_interior_layout", "show_opening_image", "generate_opening_image"].includes(tool.name) ? tool : ({ ...tool,
+  const wrapTool = (tool: PiToolShape): PiToolShape => !incremental && !contract && !["show_map_region", "inspect_interior_layout", "show_opening_image", "generate_opening_image", "generate_opening_layer", "preview_opening_animatic", "preview_opening_reference"].includes(tool.name) ? tool : ({ ...tool,
     async execute(id, params, signal) {
       // The core owns ordering: consecutive reads overlap; writes hold an exclusive
       // barrier through publication. A second queue here would serialize reads too.
@@ -368,9 +368,9 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       const heldContract = !!contract;
       let result: Awaited<ReturnType<PiToolShape["execute"]>>;
       try {
-        if (tool.name === 'generate_opening_image') {
+        if (tool.name === 'generate_opening_image' || tool.name === 'generate_opening_layer') {
           const args = params as Record<string, unknown>;
-          const brief = prepareOpeningImageRequest(args, ctx.project);
+          const brief = (tool.name === 'generate_opening_layer' ? prepareOpeningLayerRequest : prepareOpeningImageRequest)(args, ctx.project);
           if (scopeGuard.scopeMapIds?.length && !scopeGuard.scopeAllowsSystem) throw new Error('맵 한정 실행에서 오프닝 리소스를 수정할 수 없습니다. 프로젝트 범위로 실행하세요.');
           if (!options.generateOpeningImage) throw new Error('오프닝 그림 생성 경로가 없습니다. 생성 미완료입니다.');
           const still = await options.generateOpeningImage(openingImageProject(ctx.project, brief.referenceResourceIds), args, signal ?? options.signal);
@@ -394,7 +394,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         }
         throw error;
       }
-      if (tool.name === 'show_opening_image' || tool.name === 'generate_opening_image') {
+      if (tool.name === 'show_opening_image' || tool.name === 'generate_opening_image' || tool.name === 'generate_opening_layer') {
         if (!options.renderToolImage) throw new Error('오프닝 그림 시각 전달 경로가 없습니다. 시각 검토 미완료입니다.');
         const data = (result.details as { data?: { resourceId?: string } } | undefined)?.data;
         const png = await options.renderToolImage(openingImageProject(ctx.project, data?.resourceId ? [data.resourceId] : []), 'show_opening_image', data, signal ?? options.signal);
@@ -402,6 +402,23 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         result.content.push({ type: 'image', mimeType: 'image/png', data: png });
         if (data?.resourceId) openingProduction.saw(ctx.project, data.resourceId);
         emit({ type: 'execution_status', name: 'opening.image.delivered', ok: true, summary: '실제 오프닝 그림을 모델에게 전달했습니다.', data: { resourceId: data?.resourceId, toolCallId: id } });
+      }
+      if (tool.name === 'preview_opening_reference') {
+        if (!options.renderToolImage) throw new Error('참고 프레임 전달 경로 없음.');
+        const data = (result.details as { data?: unknown } | undefined)?.data;
+        const png = await options.renderToolImage(openingImageProject(ctx.project, []), tool.name, data, signal ?? options.signal);
+        if (!png) throw new Error('참고 프레임을 모델에게 전달하지 못했습니다.');
+        result.content.push({ type: 'image', mimeType: 'image/png', data: png });
+      }
+      if (tool.name === 'preview_opening_animatic') {
+        if (!options.renderToolImage) throw new Error('애니메틱 프레임 전달 경로가 없습니다.');
+        const data = (result.details as { data?: { shotId: string; atMs: number[]; resourceIds: string[] } } | undefined)?.data;
+        if (!data) throw new Error('애니메틱 프레임 요청 없음.');
+        const png = await options.renderToolImage(openingImageProject(ctx.project, data.resourceIds), tool.name, data, signal ?? options.signal);
+        if (!png) throw new Error('애니메틱 프레임을 모델에게 전달하지 못했습니다.');
+        result.content.push({ type: 'image', mimeType: 'image/png', data: png });
+        openingProduction.sawAnimatic(ctx.project, data.shotId, data.atMs);
+        emit({ type: 'execution_status', name: 'opening.animatic.delivered', ok: true, summary: '실제 합성 시간 표본을 모델에게 전달했습니다.', data: { shotId: data.shotId, atMs: data.atMs, toolCallId: id } });
       }
       if (tool.name === "show_map_region" || (tool.name === "inspect_interior_layout" && options.renderToolImage)) {
         if (!options.renderToolImage) throw new Error("맵 이미지 전달 경로가 없습니다. 배열만으로 시각 검토를 완료할 수 없습니다.");
@@ -434,7 +451,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     ...(options.extraTools ?? []),
   );
   for (const tool of tools) exposed.add(tool.name);
-  if (openingProduction.requested) for (const name of ['plan_opening', 'show_opening_image', 'get_opening', 'review_opening', 'list_opening_media', 'generate_opening_image', 'set_opening', 'edit_opening']) {
+  if (openingProduction.requested) for (const name of ['plan_opening', 'show_opening_image', 'get_opening', 'review_opening', 'list_opening_media', 'generate_opening_image', 'set_opening', 'edit_opening', 'get_animatic_capabilities', 'get_opening_references', 'preview_opening_reference', 'configure_opening_entry', 'create_opening_animatic_shot', 'upsert_opening_layer', 'remove_opening_layer', 'animate_opening_layer', 'apply_opening_motion', 'animate_opening_camera', 'set_opening_transition', 'upsert_opening_audio_cue', 'remove_opening_audio_cue', 'retime_opening_shot', 'inspect_opening_timeline', 'preview_opening_animatic', 'generate_opening_layer']) {
     const shape = shapeFor(name); if (shape) declare(shape);
   }
   if (allowedDefinitions.some(tool => tool.name === WEB_SEARCH_TOOL)) {

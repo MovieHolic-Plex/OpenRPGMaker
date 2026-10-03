@@ -221,6 +221,18 @@ function renderCinematicDetail(host: HTMLElement, target: CinematicTarget, isAct
     }
     const ownRevision = revision;
     const usable = (): boolean => actions.isActive() && ownRevision === revision;
+    const entryControls: HTMLElement[] = [];
+    if (target === "opening" && sequence) {
+      const selector = el("select", { dataset: { testid: "db-opening-entry" }, attrs: { "aria-label": "오프닝 재생 위치" }, children: [el("option", { value: "new-game", text: "새 게임 → 첫 플레이" }), el("option", { value: "before-title", text: "최초 타이틀 전에 재생" }), el("option", { value: "attract", text: "타이틀에서 기다리면 데모" })] });
+      selector.value = sequence.entry?.mode ?? "new-game";
+      selector.addEventListener("change", () => { if (!usable()) return; const current = actions.read(); if (current) actions.applySequence({ ...current, entry: { ...current.entry, mode: selector.value as "new-game" | "before-title" | "attract" } }, "오프닝 재생 위치"); redraw(); });
+      entryControls.push(el("label", { text: "재생 위치", children: [selector] }));
+      if (sequence.entry?.mode === "attract") for (const [name, text] of [["idleMs", "첫 유휴 대기(ms)"], ["repeatDelayMs", "반복 대기(ms)"]] as const) {
+        const input = el("input", { value: sequence.entry[name] ?? 15000, attrs: { type: "number", min: "1000", max: "300000", step: "1000" } });
+        input.addEventListener("change", () => { if (!usable()) return; const value = Number(input.value), current = actions.read(); if (!Number.isSafeInteger(value) || value < 1000 || value > 300000 || !current) return; actions.applySequence({ ...current, entry: { ...current.entry, mode: "attract", [name]: value } }, "타이틀 데모 대기"); });
+        entryControls.push(el("label", { text, children: [input] }));
+      }
+    }
     const flags = sectionCard({
       title: "시퀀스 설정",
       children: [
@@ -230,6 +242,7 @@ function renderCinematicDetail(host: HTMLElement, target: CinematicTarget, isAct
         toggleSwitch("건너뛰기 허용", "db-cinematic-skippable", sequence?.skippable ?? true, value => {
           if (usable()) actions.setFlag("skippable", value);
         }),
+        ...entryControls,
         media.field("music", "배경음악", { kind: "music" }, sequence?.musicResourceId),
         note("사용을 꺼도 장면과 미디어 설정은 유지됩니다. 배경음악은 시퀀스 전체에 반복 재생됩니다."),
         startPreview,

@@ -778,3 +778,7 @@ Do not use matching map IDs or a canvas-export PNG alone as evidence for Phaser 
 픽셀 대조는 `scripts/qa/runtime-tile-window.mjs`, 크기별 전후 실측은
 `scripts/qa/map-size-benchmark.mjs`와 `verify-shots/map-size-optimized-20261001/` 참조.
 공식 1024 확장 뒤 같은 조건의 512/1024 비교는 `verify-shots/map-size-1024-20261001/`다.
+
+## Independent opening timelines
+
+See [opening-animatic-authoring.md](opening-animatic-authoring.md) for assistant tools, shared renderer, poses, audio, preview evidence, and entry timing; [opening-reference-study.md](opening-reference-study.md) holds source-qualified research.

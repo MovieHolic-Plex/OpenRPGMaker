@@ -1,3 +1,4 @@
+import { playOpeningAnimatic } from "./openingAnimaticRenderer";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { isCinematicAdvanceKey, normalizeKey } from "@/player/keyBindings";
 import { installPlayPointerBlocker } from "@/player/playInputBlocker";
@@ -16,6 +17,7 @@ export function playCinematicSequence(options: {
   readonly project: Project;
   readonly sequence: CinematicSequence | undefined;
   readonly signal: AbortSignal;
+  readonly dismissOnAnyInput?: boolean;
 }): CinematicPlayback {
   const { host, project, sequence, signal } = options;
   if (signal.aborted || !sequence?.enabled || sequence.scenes.length === 0) {
@@ -77,6 +79,7 @@ export function playCinematicSequence(options: {
     event.preventDefault();
     event.stopImmediatePropagation();
     if (event.isComposing) return;
+    if (options.dismissOnAnyInput && !event.repeat) { finish("skipped"); return; }
     const key = normalizeKey(event.key);
     if (scrollNarration(key) || event.repeat) return;
     if (key === "escape" && sequence.skippable) finish("skipped");
@@ -185,6 +188,16 @@ export function playCinematicSequence(options: {
         root.append(image);
         break;
       }
+      case "animatic": {
+        const canvas = el("canvas", { class: "cinematic-animatic", dataset: { testid: "opening-animatic-stage" } });
+        canvas.setAttribute('aria-label', '레이어와 카메라로 구성한 오프닝');
+        canvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000';
+        root.append(canvas); beginLoading();
+        playOpeningAnimatic({ project, canvas, composition: scene.composition, durationMs: scene.durationMs, signal: lifetime.signal, reducedMotion,
+          onReady: () => { if (!alive || !mediaActive) return; clearTimeout(loadTimer); root.dataset.mediaState = 'ready'; status.textContent = ''; },
+          onError: message => { if (!alive || !mediaActive) return; fail('error'); status.textContent = message; }, onDone: () => { if (alive) next(); } });
+        break;
+      }
       case "video": {
         const video = el("video", { class: "cinematic-video" });
         video.playsInline = true;
@@ -218,7 +231,7 @@ export function playCinematicSequence(options: {
       root.append(audio);
       addMedia(audio, scene.narrationAudioResourceId);
     }
-    if (scene.durationMs > 0) advanceTimer = setTimeout(next, scene.durationMs);
+    if (scene.kind !== "animatic" && scene.durationMs > 0) advanceTimer = setTimeout(next, scene.durationMs);
   };
   if (sequence.musicResourceId) {
     root.dataset.music = sequence.musicResourceId;

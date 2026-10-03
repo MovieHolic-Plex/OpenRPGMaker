@@ -970,3 +970,7 @@ friendshipAtLeast/battleResult/run)을 틀리게 확신했고, 특히 거의 모
 `eventDraftValidator.checkCallDepth`는 공통 이벤트의 실제 `commands`를 읽는다. 공통 이벤트에 없는 `pages`를 캐스트해 순회하던 경로는 순환·깊이 경고를 전혀 만들지 못했다. 현재 편집 페이지가 호출하는 그래프만 검사하고, 순환 또는 8단계 초과 경고를 호출 명령의 `pageId`/`commandPath`에 붙인다. 다른 이벤트의 무관한 순환은 이 초안의 경고로 표시하지 않는다.
 
 중첩 명령은 기존 `eventCommandBranches` 기반 순회를 쓰며, 호출 인접 목록의 중복 제거와 루트별 `(depth, id)` 완료 캐시로 반복 호출 경로의 지수적 확장을 막는다. 경고는 커밋을 금지하지 않는다. `test/eventDraftValidator.test.ts`에 간접·중첩 순환, 깊이 경계, 무관한 순환, 반복 호출 사례를 추가했으며 이번 세션에서는 실행하지 않았다.
+
+## Independent opening timelines
+
+See [opening-animatic-authoring.md](opening-animatic-authoring.md) for assistant tools, shared renderer, poses, audio, preview evidence, and entry timing; [opening-reference-study.md](opening-reference-study.md) holds source-qualified research.

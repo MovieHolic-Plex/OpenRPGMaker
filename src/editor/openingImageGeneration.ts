@@ -2,7 +2,7 @@
 // 오프닝(시네마틱) 스틸의 AI 생성 핸드오프. 이미지 바이트는 세션 전사에 남기지 않고,
 // 등록은 호출자가 upsert_resource 로 수행해 쓰기 회계(diff·제안)를 그대로 탄다.
 import { generateAiImage, ImageGenerationError, type GenerateAiImageRequest, type GeneratedImageAsset } from "@/ai/imageGenerationClient";
-import { prepareGameOverImageRequest, prepareOpeningImageRequest, type OpeningImageBrief } from "@/editor/tools/cinematicTools";
+import { prepareGameOverImageRequest, prepareOpeningImageRequest, prepareOpeningLayerRequest, type OpeningImageBrief } from "@/editor/tools/cinematicTools";
 import { ToolError } from "@/editor/tools/types";
 import { genId } from "@/util/id";
 import type { Project } from "@/project/types";
@@ -28,6 +28,14 @@ export type OpeningStillResult = CinematicStillResult;
 
 /** 저작 의도를 전체화면 연출용 지시로 감싼다 — 아이콘·글자·UI 가 섞이면 오프닝에서 못 쓴다. */
 export function buildCinematicStillPrompt(prompt: string, purpose: "opening" | "gameOver", brief?: OpeningImageBrief): string {
+  if (brief?.layerRole) return [
+    `Make one ${brief.aspectRatio} ${brief.artStyle} independent ${brief.layerRole} layer for a 2D game animatic.`,
+    `Brief: ${prompt}`,
+    ...(brief.referenceResourceIds.length ? ['Match supplied references: exact character silhouette, colors and costume. Reference sheets are not the output layout.'] : []),
+    brief.layerRole === 'background' ? 'Paint the environment without any characters, typography or interface. Compose depth planes with room for independently animated actors.'
+      : 'Draw the complete isolated subject in one readable pose, centered with 12 percent clear margin. No environment, floor, horizon, cast shadow or other subjects. The entire empty background MUST be exactly solid vivid magenta #FF00FF, no gradient or texture, for removal. Do not use magenta within the subject. Preserve limbs; do not crop the subject.',
+    'No labels, logos, text, watermark, frames or sprite-sheet grid. One layer, not a complete opening shot.'
+  ].join('\n\n');
   const screen = purpose === "gameOver" ? "game-over screen" : "opening sequence";
   const clearArea = purpose === "gameOver"
     ? "Keep the center and lower area calm enough for the game-over title, message and retry/title buttons."
@@ -63,7 +71,7 @@ export async function generateCinematicStill(
   let brief: OpeningImageBrief | undefined;
   try {
     if (purpose === "gameOver") ({ prompt, name } = prepareGameOverImageRequest(args));
-    else { brief = prepareOpeningImageRequest(args, options.project); ({ prompt, name } = brief); }
+    else { brief = args.role === undefined ? prepareOpeningImageRequest(args, options.project) : prepareOpeningLayerRequest(args, options.project); ({ prompt, name } = brief); }
   } catch (error) {
     if (error instanceof ToolError) return { ok: false, summary: error.message, code: error.code ?? "invalid-args" };
     throw error;
@@ -89,7 +97,8 @@ export async function generateCinematicStill(
     if (!IMAGE_DATA_URL.test(image.dataUrl)) {
       return { ok: false, summary: "생성된 그림 데이터가 올바르지 않습니다. 다시 시도하세요.", code: "image-invalid" };
     }
-    return { ok: true, resourceId: genId(purpose === "gameOver" ? "gameover_still" : "opening_still"), name, prompt, dataUrl: image.dataUrl };
+    const dataUrl = brief?.layerRole && brief.layerRole !== 'background' ? await removeOpeningChroma(image.dataUrl, options.signal) : image.dataUrl;
+    return { ok: true, resourceId: genId(purpose === "gameOver" ? "gameover_still" : brief?.layerRole ? "opening_layer" : "opening_still"), name, prompt, dataUrl };
   } catch (error) {
     if (error instanceof ImageGenerationError) {
       return { ok: false, summary: `${purpose === "gameOver" ? "게임오버" : "오프닝"} 그림 생성에 실패했습니다: ${error.message}`, code: "image-generation-failed" };
@@ -101,6 +110,22 @@ export async function generateCinematicStill(
       code: "image-generation-failed",
     };
   }
+}
+
+/** Edge-connected chroma only. Never label an opaque failed cutout as a transparent actor. */
+export async function removeOpeningChroma(dataUrl: string, signal?: AbortSignal): Promise<string> {
+  const image = new Image(); image.src = dataUrl; await image.decode(); signal?.throwIfAborted();
+  const width = image.naturalWidth, height = image.naturalHeight, count = width * height;
+  if (!count || count > 8000000) throw new ImageGenerationError('분리할 그림 크기 초과.');
+  const canvas = document.createElement('canvas'); canvas.width = width; canvas.height = height;
+  const ctx = canvas.getContext('2d')!; ctx.drawImage(image, 0, 0); const pixels = ctx.getImageData(0, 0, width, height), data = pixels.data;
+  const queue = new Int32Array(count), seen = new Uint8Array(count); let head = 0, tail = 0;
+  const add = (index: number) => { if (seen[index]) return; const k = index * 4; if (data[k + 3] !== 0 && !(data[k] > 120 && data[k + 2] > 120 && data[k + 1] < Math.min(data[k], data[k + 2]) * 0.65)) return; seen[index] = 1; queue[tail++] = index; };
+  for (let x = 0; x < width; x++) { add(x); add((height - 1) * width + x); }
+  for (let y = 0; y < height; y++) { add(y * width); add(y * width + width - 1); }
+  while (head < tail) { const i = queue[head++]; data[i * 4 + 3] = 0; const x = i % width; if (x) add(i - 1); if (x < width - 1) add(i + 1); if (i >= width) add(i - width); if (i < count - width) add(i + width); }
+  if (tail / count < 0.05 || tail / count > 0.99) throw new ImageGenerationError('독립 레이어의 단색 배경을 분리하지 못했습니다. 배경 없는 대상과 단색 magenta로 다시 생성하세요.');
+  signal?.throwIfAborted(); ctx.putImageData(pixels, 0, 0); return canvas.toDataURL('image/png');
 }
 
 export function generateOpeningStill(args: Record<string, unknown>, options: OpeningStillRequest = {}): Promise<OpeningStillResult> {

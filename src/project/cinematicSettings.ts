@@ -1,3 +1,4 @@
+import type { OpeningAnimatic } from "./openingAnimatic";
 export const CINEMATIC_SCENE_LIMIT = 100;
 export const CINEMATIC_DURATION_MAX_MS = 120_000;
 /** Also included by the web exporter when no project-specific game-over art is authored. */
@@ -9,6 +10,7 @@ export type CinematicMotion = "none" | "fade" | "pan" | "zoom";
 export type CinematicScene =
   | { id: string; kind: "text"; narration: string; narrationAudioResourceId?: string; durationMs: number }
   | { id: string; kind: "image"; resourceId: string; narration: string; narrationAudioResourceId?: string; durationMs: number; motion: CinematicMotion }
+  | { id: string; kind: "animatic"; composition: OpeningAnimatic; narration: string; narrationAudioResourceId?: string; durationMs: number }
   | { id: string; kind: "video"; resourceId: string; narration: string; narrationAudioResourceId?: string; durationMs: number };
 
 /** musicResourceId: 시퀀스 전체에 깔리는 배경음악(장면별 내레이션 음성과 별개). */
@@ -17,6 +19,8 @@ export type CinematicSequence = {
   skippable: boolean;
   musicResourceId?: string;
   scenes: CinematicScene[];
+  /** Opening only. Absent preserves the historic New Game entry. */
+  entry?: { mode: "new-game" | "before-title" | "attract"; idleMs?: number; repeatDelayMs?: number };
 };
 
 export type DefeatPresentation = "classic" | "horror" | "blackout";
@@ -63,6 +67,7 @@ export type GameOverSettings = {
 export function normalizeCinematicSequence(sequence: CinematicSequence): CinematicSequence {
   const musicResourceId = sequence.musicResourceId?.trim();
   return {
+    ...(sequence.entry ? { entry: { ...sequence.entry } } : {}),
     enabled: sequence.enabled,
     skippable: sequence.skippable,
     ...(musicResourceId ? { musicResourceId } : {}),
@@ -74,7 +79,7 @@ export function normalizeCinematicSequence(sequence: CinematicSequence): Cinemat
         id: scene.id.trim(),
         ...(audioId ? { narrationAudioResourceId: audioId } : {}),
       };
-      return normalized.kind === "text" ? normalized : { ...normalized, resourceId: normalized.resourceId.trim() };
+      return normalized.kind === "text" || normalized.kind === "animatic" ? normalized : { ...normalized, resourceId: normalized.resourceId.trim() };
     }),
   };
 }

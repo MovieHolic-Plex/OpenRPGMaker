@@ -2585,3 +2585,7 @@ retired된 플래그도 설명은 고칠 수 있으나 다시 활성화하지 �
 원본 이미지 바이트는 이름 목록에 싣지 않는다. 계획 샷 수와 연결한 장면 수가 다르면 계획을
 수정하거나 장면을 연결해야 한다. “그림으로 보여줘” 요청에 장문을 붙였으면 수리 대상으로
 보고한다. 이 검사는 미적 품질 점수나 모델의 이해를 판정하지 않는다.
+
+## Independent opening timelines
+
+See [opening-animatic-authoring.md](opening-animatic-authoring.md) for the actual assistant tools, shared renderer, sprite poses, timed audio, preview evidence, and title/idle/New Game entry contracts; [opening-reference-study.md](opening-reference-study.md) holds source-qualified game research.

@@ -163,6 +163,8 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   clearChildren(main);
   const audioEngine = getAudioEngine({ qaInstrumentation: options.qaInstrumentation === true });
 
+  let attractTimer: ReturnType<typeof setTimeout> | undefined;
+  let detachAttractInput: (() => void) | undefined;
   let openingController: AbortController | null = null;
   let titleConfirmTimer: ReturnType<typeof setTimeout> | undefined;
   let game: Phaser.Game | null = null;
@@ -201,6 +203,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   main.append(layout);
 
   const stopGame = (): void => {
+    clearTimeout(attractTimer); attractTimer = undefined; detachAttractInput?.(); detachAttractInput = undefined;
     openingController?.abort();
     openingController = null;
     clearTimeout(titleConfirmTimer);
@@ -270,7 +273,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     const opening = store.getCurrent().system.opening;
     const bypass = request.session || options.startOverride || options.initialEventTestId || request.eventTestId
       || options.shouldPlayOpening?.() === false;
-    if (!bypass && opening?.enabled && opening.scenes.length > 0) {
+    if (!bypass && opening?.enabled && (!opening.entry || opening.entry.mode === "new-game") && opening.scenes.length > 0) {
       stopTitleBgm();
       clearChildren(layout);
       const surface = createPlaySurface(resolvePlayResolution(store.getCurrent().system), surfaceScaleMode, store.getCurrent().system.displayFilter);
@@ -858,6 +861,46 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     surface.sync();
     startTitleBgm(titleProject);
     if (firstEnter) emitTitleJuice("title-enter");
+    armTitleAttract(title, surface.stage, titleProject);
+  };
+
+  const armTitleAttract = (title: HTMLElement, stage: HTMLElement, project: ReturnType<typeof store.getCurrent>, repeated = false): void => {
+    const opening = project.system.opening;
+    if (!opening?.enabled || opening.entry?.mode !== "attract" || !opening.scenes.length) return;
+    clearTimeout(attractTimer); detachAttractInput?.();
+    const reset = (): void => { clearTimeout(attractTimer); attractTimer = setTimeout(begin, repeated ? opening.entry?.repeatDelayMs ?? 15000 : opening.entry?.idleMs ?? 15000); };
+    const input = (): void => { if (!openingController && title.isConnected && !layout.querySelector('[data-testid="main-menu"]') && !titleConfirming) reset(); };
+    document.addEventListener('keydown', input, true);
+    document.addEventListener('pointerdown', input, true);
+    detachAttractInput = () => { document.removeEventListener('keydown', input, true); document.removeEventListener('pointerdown', input, true); };
+    const begin = (): void => {
+      if (!shellActive || !title.isConnected || titleConfirming || document.hidden || layout.querySelector('[data-testid="main-menu"]')) { reset(); return; }
+      detachAttractInput?.(); detachAttractInput = undefined;
+      const controller = new AbortController(); openingController = controller;
+      // Retain the existing title track when the authored sequence requests that same track.
+      const sharedMusic = !opening.musicResourceId || opening.musicResourceId === project.system.titleScreen?.musicResourceId;
+      if (!sharedMusic) stopTitleBgm();
+      const playback = playCinematicSequence({ host: stage, project, sequence: sharedMusic ? { ...opening, musicResourceId: undefined } : opening, signal: controller.signal, dismissOnAnyInput: true });
+      void playback.done.then(result => {
+        if (result === 'aborted' || !shellActive || openingController !== controller || !title.isConnected) return;
+        openingController = null;
+        if (!sharedMusic) startTitleBgm(project);
+        focusSelectedTitleOption(title);
+        armTitleAttract(title, stage, project, true);
+      });
+    };
+    reset();
+  };
+
+  const playBeforeTitle = (): void => {
+    const project = store.getCurrent(), sequence = project.system.opening;
+    if (!sequence?.enabled || sequence.entry?.mode !== 'before-title' || !sequence.scenes.length) { renderTitle(); return; }
+    stopGame(); stopAllAudio();
+    const surface = createPlaySurface(resolvePlayResolution(project.system), surfaceScaleMode);
+    playStage = surface.stage; cleanupPlaySurface = surface.cleanup; layout.append(surface.viewport); surface.sync();
+    const controller = new AbortController(); openingController = controller;
+    const playback = playCinematicSequence({ host: surface.stage, project, sequence, signal: controller.signal, dismissOnAnyInput: true });
+    void playback.done.then(result => { if (result !== 'aborted' && shellActive && openingController === controller) { openingController = null; renderTitle(); } });
   };
 
   const openTitleCredits = (): void => {
@@ -1042,7 +1085,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   } else if (options.startOverride || options.autoStartRun) {
     startGame({ safeMode: options.safeMode === true });
   } else if (!tryResumeOnLaunch()) {
-    renderTitle();
+    playBeforeTitle();
   }
   options.onRunControlsReady?.({ restartRun, returnToTitle });
 }

@@ -5,6 +5,7 @@ import { isUntouchedDefaultOpening } from "./defaults/defaultOpeningSequence";
 export function openingAuthoringStatus(project: Project) {
   const opening = project.system.opening;
   return {
+    entryMode: opening?.entry?.mode ?? "new-game",
     exists: opening !== undefined,
     enabled: opening?.enabled === true,
     sceneCount: opening?.scenes.length ?? 0,
