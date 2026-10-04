@@ -66,3 +66,9 @@ native title/load/party keys. The compiled candidate retains map/position, gold,
 inventory, party/box, species/level/HP and known moves/current PP, skips the new-game
 intro, uses authored2× zoom on480×320 and loads the actual32×32 party icon. This is
 predecessor compatibility evidence, not a new save or canonical-store receipt.
+
+The campaign exporter runs the current `ensureBundledBattleAnimations` on its
+detached shipping copy before resolving public files. This is the existing
+replacement policy for retired EasyRPG Blow/Sword1/Arrow sheets; it keeps the
+canonical document intact and avoids reintroducing retired files. Hydrated host
+assets must match their exact SHA, including the currently authored opening BGM.

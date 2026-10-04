@@ -39,6 +39,11 @@ await cp(resolve(contentDir,'world-manifest.json'),resolve(out,'world-manifest.j
 // Derive runtime files from the actual shipping document. A stale demonstration
 // manifest cannot describe newly adopted native tile variants or authored assets.
 const shipping = JSON.parse(await readFile(resolve(out,'project.json'),'utf8'));
+// Apply the editor's existing bundled-effect migration to the export copy.
+// Older canonical documents may still name retired EasyRPG sheets; the current
+// player ships their authored replacement effects, not those retired files.
+await withTsModule(resolve('src/project/defaults/defaultDatabase.ts'),'campaign-bundled-effects.mjs',m=>m.ensureBundledBattleAnimations(shipping));
+await writeFile(resolve(out,'project.json'),JSON.stringify(shipping));
 const assets=await withTsModule(resolve('src/project/webExport.ts'),'campaign-public-assets.mjs',m=>
  m.prepareWebExport(shipping).assets.filter(asset=>asset.kind==='public'));
 for(const asset of assets) {
