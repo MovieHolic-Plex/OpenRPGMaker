@@ -1,10 +1,24 @@
 [
   {
+    "resourceId": "jf-enemy-field-rat",
+    "path": "assets/joseon-folklore/monsters/field-rat.png",
+    "cell": 64,
+    "motion": "dash",
+    "idleFrameMs": 150
+  },
+  {
     "resourceId": "jf-enemy-wild-boar",
     "path": "assets/joseon-folklore/monsters/wild-boar.png",
     "cell": 64,
     "motion": "dash",
     "idleFrameMs": 190
+  },
+  {
+    "resourceId": "jf-enemy-cave-bat",
+    "path": "assets/joseon-folklore/monsters/cave-bat.png",
+    "cell": 64,
+    "motion": "swoop",
+    "idleFrameMs": 160
   },
   {
     "resourceId": "jf-enemy-straw-dokkaebi",
@@ -14,6 +28,13 @@
     "idleFrameMs": 260
   },
   {
+    "resourceId": "jf-enemy-lantern-wisp",
+    "path": "assets/joseon-folklore/monsters/lantern-wisp.png",
+    "cell": 64,
+    "motion": "float",
+    "idleFrameMs": 180
+  },
+  {
     "resourceId": "jf-enemy-maiden-ghost",
     "path": "assets/joseon-folklore/monsters/maiden-ghost.png",
     "cell": 64,
@@ -21,10 +42,66 @@
     "idleFrameMs": 240
   },
   {
+    "resourceId": "jf-enemy-drowned-ghost",
+    "path": "assets/joseon-folklore/monsters/drowned-ghost.png",
+    "cell": 64,
+    "motion": "float",
+    "idleFrameMs": 280
+  },
+  {
+    "resourceId": "jf-enemy-grave-ghoul",
+    "path": "assets/joseon-folklore/monsters/grave-ghoul.png",
+    "cell": 64,
+    "motion": "stomp",
+    "idleFrameMs": 310
+  },
+  {
+    "resourceId": "jf-enemy-fox-spirit",
+    "path": "assets/joseon-folklore/monsters/fox-spirit.png",
+    "cell": 64,
+    "motion": "dash",
+    "idleFrameMs": 200
+  },
+  {
+    "resourceId": "jf-enemy-stone-dokkaebi",
+    "path": "assets/joseon-folklore/monsters/stone-dokkaebi.png",
+    "cell": 64,
+    "motion": "stomp",
+    "idleFrameMs": 340
+  },
+  {
+    "resourceId": "jf-enemy-bamboo-specter",
+    "path": "assets/joseon-folklore/monsters/bamboo-specter.png",
+    "cell": 64,
+    "motion": "shoot",
+    "idleFrameMs": 220
+  },
+  {
+    "resourceId": "jf-enemy-masked-bandit",
+    "path": "assets/joseon-folklore/monsters/masked-bandit.png",
+    "cell": 64,
+    "motion": "dash",
+    "idleFrameMs": 180
+  },
+  {
     "resourceId": "jf-enemy-bronze-dokkaebi",
     "path": "assets/joseon-folklore/monsters/bronze-dokkaebi.png",
     "cell": 96,
     "motion": "stomp",
     "idleFrameMs": 330
+  },
+  {
+    "resourceId": "jf-enemy-bride-wraith",
+    "path": "assets/joseon-folklore/monsters/bride-wraith.png",
+    "cell": 96,
+    "motion": "float",
+    "idleFrameMs": 280
+  },
+  {
+    "resourceId": "jf-enemy-mountain-tiger",
+    "path": "assets/joseon-folklore/monsters/mountain-tiger.png",
+    "cell": 96,
+    "motion": "dash",
+    "idleFrameMs": 250
   }
 ]

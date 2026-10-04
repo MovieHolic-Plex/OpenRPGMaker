@@ -21,6 +21,7 @@ try {
   });
   await runner.executeId('/@vite/env');
   await runner.executeFile(fileURLToPath(new URL('normalize-smoke.mts', import.meta.url)));
+  await runner.executeFile(fileURLToPath(new URL('balance-probe.mts', import.meta.url)));
 } finally {
   await server.close();
 }

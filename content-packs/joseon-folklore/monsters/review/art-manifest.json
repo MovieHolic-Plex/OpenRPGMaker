@@ -1,7 +1,14 @@
 {
   "author": "GPT 6.1 sol high monsters worker",
   "method": "Original coordinate-authored Python/Pillow; no imported bitmap artwork",
-  "sourceSha256": "8ca4159495c37af3905a515e627a4954fba0ffacf06a2087f01c69d126b3837c",
+  "sourceSha256": "7f87643b9eaa8722327429ccf4d36ce60b46f6efb7b118b88e7273edf628a4c1",
+  "sourceFiles": {
+    "source/draw.py": "7f87643b9eaa8722327429ccf4d36ce60b46f6efb7b118b88e7273edf628a4c1",
+    "source/pixels.py": "b14284111c8e465392ce1d13c6f57a14eae6c90a7c07508fd778f4b7df53ac1c",
+    "source/organic.py": "f9c6adad6d0da089af8ea93cc5d6e2abc8a305dc7d2a306ba536fd236060be4d",
+    "source/spirits.py": "73f76ad1aba5b6bdc0520cf567da67b1b4701dbc6c500d0b80b9305167c34153",
+    "source/figures.py": "6695b65bf8d9c6726313a0a4d5f62c889a9f93e3078a4df23e8843c55514d52f"
+  },
   "poseOrder": [
     "idle_a",
     "idle_b",
@@ -14,6 +21,113 @@
     "dead"
   ],
   "sheets": [
+    {
+      "slug": "field-rat",
+      "source": "source/organic.py",
+      "sheet": "assets/field-rat.png",
+      "sha256": "7513d6e6f13a03385fce633919214938e3e0e375ee30f337d86000e11d10972b",
+      "size": [
+        192,
+        192
+      ],
+      "colors": 10,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "frames": [
+        {
+          "pose": "idle_a",
+          "bbox": [
+            4,
+            28,
+            56,
+            61
+          ],
+          "sha256": "b1451e6e91873efd893b24874c71880a0e2ed63012b94ae03b841585c01a6fc0"
+        },
+        {
+          "pose": "idle_b",
+          "bbox": [
+            4,
+            27,
+            56,
+            61
+          ],
+          "sha256": "d2f723f777f3f6458d71b387d426334b45a56b715da9a5aa347fc557efd09d94"
+        },
+        {
+          "pose": "idle_c",
+          "bbox": [
+            4,
+            29,
+            56,
+            61
+          ],
+          "sha256": "de5a167bad0d11367735b439ef6b804a4dfae18e00fd3fff32bf983abfb8fce3"
+        },
+        {
+          "pose": "windup",
+          "bbox": [
+            3,
+            32,
+            53,
+            61
+          ],
+          "sha256": "f52b436507d0572770391f166165e314a496a9d57f02ec3dd597d0135ddb41b9"
+        },
+        {
+          "pose": "move",
+          "bbox": [
+            4,
+            26,
+            56,
+            60
+          ],
+          "sha256": "ca763f930fceb42bdc2f04ab08f134c071054c64b720e0dc32edeb9457287dd9"
+        },
+        {
+          "pose": "attack",
+          "bbox": [
+            5,
+            29,
+            60,
+            61
+          ],
+          "sha256": "3f159a78b90658775cb1babcbc1f9921dd3a6c36e60a1b7b154c57326ffb2e11"
+        },
+        {
+          "pose": "recover",
+          "bbox": [
+            4,
+            30,
+            56,
+            61
+          ],
+          "sha256": "76f2c29dfb145ce0f84587bc77f85b4191b9be3edece124ea1ec238a524a6567"
+        },
+        {
+          "pose": "hit",
+          "bbox": [
+            2,
+            25,
+            52,
+            61
+          ],
+          "sha256": "034bfc7698c8f4673e460d9172735060629a78fe4dbccd6a411accd953703a21"
+        },
+        {
+          "pose": "dead",
+          "bbox": [
+            3,
+            43,
+            54,
+            61
+          ],
+          "sha256": "a52d8603e7fcf3b7b037ea10b5529631a02b86f6a34a4729b150566988c9a06a"
+        }
+      ]
+    },
     {
       "slug": "wild-boar",
       "source": "source/draw.py",
@@ -122,10 +236,117 @@
       ]
     },
     {
+      "slug": "cave-bat",
+      "source": "source/organic.py",
+      "sheet": "assets/cave-bat.png",
+      "sha256": "7ec6535fd8a23820d0f961daea1cf9238c69c76d3dac239a07150b1a8fe4c238",
+      "size": [
+        192,
+        192
+      ],
+      "colors": 10,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "frames": [
+        {
+          "pose": "idle_a",
+          "bbox": [
+            5,
+            22,
+            58,
+            59
+          ],
+          "sha256": "ac51940beda7780fccdd75f1f556141d17781079d1a5ca7aabcb6a2a23eff8f5"
+        },
+        {
+          "pose": "idle_b",
+          "bbox": [
+            5,
+            18,
+            58,
+            58
+          ],
+          "sha256": "fd8f7878b802456504ba318efbe370cb8505fb4f6821b4534aa40e2dfa474f0a"
+        },
+        {
+          "pose": "idle_c",
+          "bbox": [
+            5,
+            23,
+            58,
+            60
+          ],
+          "sha256": "dfb39b6f34b10df8d4cddf22c91286a60c1d9167c3d0f4491e005f987834de12"
+        },
+        {
+          "pose": "windup",
+          "bbox": [
+            4,
+            16,
+            57,
+            61
+          ],
+          "sha256": "ccf2eb6e1e81d82227b29be7d8857c033bc215ffb064c609f6e6dbf4210e0fcf"
+        },
+        {
+          "pose": "move",
+          "bbox": [
+            5,
+            15,
+            58,
+            57
+          ],
+          "sha256": "fc8469a5ae755edad8f6bf32ee1ae4cd8c2fcce24893cca686ecabd5f66f3363"
+        },
+        {
+          "pose": "attack",
+          "bbox": [
+            6,
+            23,
+            59,
+            55
+          ],
+          "sha256": "cd1b2308a377eec86c7aa9f56b8b3c7df10caa750ceb36edcb0b5e2ae3777dec"
+        },
+        {
+          "pose": "recover",
+          "bbox": [
+            5,
+            24,
+            58,
+            61
+          ],
+          "sha256": "ac44d247aeb1390d06f52466ed77606d91d2762342e1d85a81b8f597604ab19b"
+        },
+        {
+          "pose": "hit",
+          "bbox": [
+            3,
+            21,
+            56,
+            58
+          ],
+          "sha256": "9b5abd73065bd74c609243d8676052202b3a7a3851a7a9e49faea05473a28646"
+        },
+        {
+          "pose": "dead",
+          "bbox": [
+            9,
+            43,
+            55,
+            61
+          ],
+          "sha256": "5db4e83acc342fea7c915a55e9ed682514ea1f0bfd29d18c090ad79b8ac2e153"
+        }
+      ]
+    },
+    {
       "slug": "straw-dokkaebi",
       "source": "source/draw.py",
       "sheet": "assets/straw-dokkaebi.png",
-      "sha256": "ce31c2e4f578e423d3f98b72f3e8f3900f112e5db17c04931d63aa44dca11d52",
+      "sha256": "1bf68df723711efc571c59b8f6768ad29a1a6dff7781201d4644ab723ac36884",
       "size": [
         192,
         192
@@ -144,7 +365,7 @@
             52,
             60
           ],
-          "sha256": "ef7374a74cb00565117328c8d3d7c6e56e47340fc06a755c4ec732bacbbb7cd7"
+          "sha256": "fa8a9b826ef8199ddd03ba5fd56a017ed019ad8e1940bf832ea285ba24b633f0"
         },
         {
           "pose": "idle_b",
@@ -154,7 +375,7 @@
             51,
             60
           ],
-          "sha256": "6bfd45189aa088cabd7823eee84c157bf6c830d0a797e94913392b47f4805cfb"
+          "sha256": "537935bac02796aed85dfa6ba95ea64c83ea4fd92c4b509a3a9c954a37f7fe1b"
         },
         {
           "pose": "idle_c",
@@ -164,7 +385,7 @@
             53,
             60
           ],
-          "sha256": "be990a91b49d4d8790951af1331819ff791d1a2f9d5757ecacfa68d585d26535"
+          "sha256": "b91275b85d980953a24a84ae735f8b63dbdc5043709a67fdf08e6c9bfff25f92"
         },
         {
           "pose": "windup",
@@ -174,7 +395,7 @@
             49,
             60
           ],
-          "sha256": "319fcad521af0723f4bbe53982dd81e3034a5b1a41afb1387a67b998cbaa6daa"
+          "sha256": "be26f5d202662c59525b38c75deb08fe62b914b82b4dad96f39b33c0f6c7ab3e"
         },
         {
           "pose": "move",
@@ -184,7 +405,7 @@
             53,
             60
           ],
-          "sha256": "5133cd59dc94360296020747af884ef8d78b2c58d3cb3fe6a7d38dbedbfe087c"
+          "sha256": "6ec272624a0e0b827cee46edfabf2e7fe5e6b1f7c5360d97d283cced5c46dce5"
         },
         {
           "pose": "attack",
@@ -194,7 +415,7 @@
             59,
             61
           ],
-          "sha256": "e1371ad2611cc5c14809ed80a6a2c59f6d0e5a9797d22ee21669b967bdabe465"
+          "sha256": "dc2e460b88f531116fe3c9cd25b9f06a2ed9dc34cab97a9cca78320e9b5b204b"
         },
         {
           "pose": "recover",
@@ -204,7 +425,7 @@
             51,
             60
           ],
-          "sha256": "38cf553927b467facedbe211dc8f83c64aca35a94b1f87d332e2f1d032df878d"
+          "sha256": "4503e6bbd5d63c8ce95101cb657a4c480823bdda168155588996a61eeb6d2033"
         },
         {
           "pose": "hit",
@@ -214,7 +435,7 @@
             51,
             60
           ],
-          "sha256": "0769df3c177f0711a03d0e892983923b37f511724f6b67d39163586e4d08dc70"
+          "sha256": "92a19206f06678f19ddc21d8e09fb1bd0b5097e762d94310b9f414606e16ca4e"
         },
         {
           "pose": "dead",
@@ -225,6 +446,113 @@
             61
           ],
           "sha256": "828b3ee5585cd4e5915533619c12dfebe137121f00cb40d100fe0b4f3273ea30"
+        }
+      ]
+    },
+    {
+      "slug": "lantern-wisp",
+      "source": "source/spirits.py",
+      "sheet": "assets/lantern-wisp.png",
+      "sha256": "331dfb49b11f0bfb969a2e6b7ee4076d3fdce6a72680c18affc22b51c8ab80a7",
+      "size": [
+        192,
+        192
+      ],
+      "colors": 10,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "frames": [
+        {
+          "pose": "idle_a",
+          "bbox": [
+            13,
+            10,
+            48,
+            60
+          ],
+          "sha256": "ab5d203c0c6160a2eb6eaecde1fc245c944f509f7314227a07292eb3358614bf"
+        },
+        {
+          "pose": "idle_b",
+          "bbox": [
+            13,
+            9,
+            48,
+            60
+          ],
+          "sha256": "365498066d676b9edf90da34f9ab0c5c949d5655493c70b52d92b597ed44d2c0"
+        },
+        {
+          "pose": "idle_c",
+          "bbox": [
+            13,
+            11,
+            48,
+            60
+          ],
+          "sha256": "2d1269374c95f32963f52af6389fa4b8ff5be31730fbd085e9dfff5554780e2c"
+        },
+        {
+          "pose": "windup",
+          "bbox": [
+            12,
+            12,
+            47,
+            60
+          ],
+          "sha256": "e13d68a695908ebd5415f0c54244f3921756b010a4898fa818ff2534efd1adbe"
+        },
+        {
+          "pose": "move",
+          "bbox": [
+            13,
+            8,
+            48,
+            60
+          ],
+          "sha256": "96c9e3f4debb92826e3dddc5c2a635c78393a07ea9fd02e1c1b79785a08f84fb"
+        },
+        {
+          "pose": "attack",
+          "bbox": [
+            14,
+            11,
+            60,
+            60
+          ],
+          "sha256": "d5236e7e78bf05156c977d1ab237cff184af0d5c89fe987b3332fc8effb0d4e2"
+        },
+        {
+          "pose": "recover",
+          "bbox": [
+            13,
+            12,
+            48,
+            60
+          ],
+          "sha256": "17af21f2e31ecef35c7096af57a704b4e3c648ff7b8fb527c2c6b0594661710b"
+        },
+        {
+          "pose": "hit",
+          "bbox": [
+            8,
+            9,
+            46,
+            60
+          ],
+          "sha256": "1df577a031535d16ef0cb7fe3000e51972d95d4a184b82428c0f94b434bfec6a"
+        },
+        {
+          "pose": "dead",
+          "bbox": [
+            18,
+            45,
+            46,
+            61
+          ],
+          "sha256": "27707267b113ba4fd78077f76e3cc21bb89edd8e6186aba9672db3e4c39be06a"
         }
       ]
     },
@@ -336,10 +664,652 @@
       ]
     },
     {
+      "slug": "drowned-ghost",
+      "source": "source/spirits.py",
+      "sheet": "assets/drowned-ghost.png",
+      "sha256": "f5b5dc034355a1c74523ae30b4ab52f3f2974412df6a7478d4f115cb9e86c8e7",
+      "size": [
+        192,
+        192
+      ],
+      "colors": 13,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "frames": [
+        {
+          "pose": "idle_a",
+          "bbox": [
+            14,
+            5,
+            51,
+            60
+          ],
+          "sha256": "9f4fe85af50108485444a378e980129de5ef310c3740f0bc5c6b5ca4a9450e33"
+        },
+        {
+          "pose": "idle_b",
+          "bbox": [
+            14,
+            4,
+            51,
+            60
+          ],
+          "sha256": "e23675dff44b3c2c2a1ef6687e6731d2f52b5040e958856661929a8f2f85a5c7"
+        },
+        {
+          "pose": "idle_c",
+          "bbox": [
+            14,
+            6,
+            51,
+            60
+          ],
+          "sha256": "8b975cfb2205bfab782c301be4852c6d73735beb5a0ced6ea999d938a30d83d9"
+        },
+        {
+          "pose": "windup",
+          "bbox": [
+            14,
+            7,
+            47,
+            60
+          ],
+          "sha256": "65ed86435f9a6939c8dedd9168fab8ba6e16128e7f04ea2141e01b5e1178149c"
+        },
+        {
+          "pose": "move",
+          "bbox": [
+            11,
+            3,
+            48,
+            60
+          ],
+          "sha256": "54f2a666630a25ee0c78b8c1452881768e897f2cbba3553fc3284dd01b233da4"
+        },
+        {
+          "pose": "attack",
+          "bbox": [
+            12,
+            6,
+            60,
+            60
+          ],
+          "sha256": "0d5f9a0396026dcad41c2e1f30b8110a5c25fb578466c05834cc75a07f592339"
+        },
+        {
+          "pose": "recover",
+          "bbox": [
+            14,
+            7,
+            47,
+            60
+          ],
+          "sha256": "f7946595ac491d81c965469d231fddef0d79fc22d26be071e1e958eb7b76b1c4"
+        },
+        {
+          "pose": "hit",
+          "bbox": [
+            13,
+            4,
+            45,
+            60
+          ],
+          "sha256": "c530302a1b5db70d881cfa7053fa51233183ca73d98cc54ec3b3cff66099bd61"
+        },
+        {
+          "pose": "dead",
+          "bbox": [
+            8,
+            43,
+            53,
+            61
+          ],
+          "sha256": "8609327ac576e677bca43649219c204b75f499ba83164fb8532ca1f062b10c34"
+        }
+      ]
+    },
+    {
+      "slug": "grave-ghoul",
+      "source": "source/spirits.py",
+      "sheet": "assets/grave-ghoul.png",
+      "sha256": "cfa33681bce3ee80e54b1e734ab5b935ebbd7296fdbb6940d1ae73428d2f158a",
+      "size": [
+        192,
+        192
+      ],
+      "colors": 13,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "frames": [
+        {
+          "pose": "idle_a",
+          "bbox": [
+            12,
+            15,
+            51,
+            61
+          ],
+          "sha256": "2c8696bbf8fbc1ad8848f485010eb46c58f7972e78faa18872dc0bf8631dd965"
+        },
+        {
+          "pose": "idle_b",
+          "bbox": [
+            12,
+            14,
+            51,
+            61
+          ],
+          "sha256": "c6ae99852df2d84665d0fc7c9003ad581eaccc8ff7d7b251302abca6f3e98add"
+        },
+        {
+          "pose": "idle_c",
+          "bbox": [
+            12,
+            16,
+            51,
+            61
+          ],
+          "sha256": "158fa372375acb15b14bb7cf3b41aa220d5b88ba3d1be339dd0be61c7ae45418"
+        },
+        {
+          "pose": "windup",
+          "bbox": [
+            11,
+            15,
+            48,
+            61
+          ],
+          "sha256": "2184fa7b9c1ef2d1748a3c7647c53ddf0061e7d8446a7565b0449daac993fbf9"
+        },
+        {
+          "pose": "move",
+          "bbox": [
+            12,
+            13,
+            52,
+            61
+          ],
+          "sha256": "6675ab5fb1757f54e4b67a452599cfd5bfaa41cf2c15150a8e78b5f5c062bc1f"
+        },
+        {
+          "pose": "attack",
+          "bbox": [
+            13,
+            16,
+            59,
+            61
+          ],
+          "sha256": "033e228e68f64fa0d7c9b0d12ba3dd3ee0b696d62beecfe9647ee90afd74156b"
+        },
+        {
+          "pose": "recover",
+          "bbox": [
+            12,
+            17,
+            49,
+            61
+          ],
+          "sha256": "3840dd2e5621d3f422ad3541b8a77a68e60c0497db837b52b793ce5086b482f4"
+        },
+        {
+          "pose": "hit",
+          "bbox": [
+            10,
+            11,
+            44,
+            61
+          ],
+          "sha256": "480dae2f8975e2d5e1f6417cc380e234f8a4202f2b40c1ffc1a050098f2b85ab"
+        },
+        {
+          "pose": "dead",
+          "bbox": [
+            11,
+            45,
+            52,
+            61
+          ],
+          "sha256": "b83ffeb7245d6b1d5949e3279a23c39c6c1db9f8b6784de528cfc152f5d1323a"
+        }
+      ]
+    },
+    {
+      "slug": "fox-spirit",
+      "source": "source/organic.py",
+      "sheet": "assets/fox-spirit.png",
+      "sha256": "74ba1c9d048cabd5601367d7f281056f3361ffc01a368cd00f55cb25df7960f7",
+      "size": [
+        192,
+        192
+      ],
+      "colors": 11,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "frames": [
+        {
+          "pose": "idle_a",
+          "bbox": [
+            4,
+            19,
+            57,
+            61
+          ],
+          "sha256": "a2a611f826f8bf3ccce022e21362e731b7cbe2024b200fae7c84fab22974592e"
+        },
+        {
+          "pose": "idle_b",
+          "bbox": [
+            4,
+            17,
+            57,
+            60
+          ],
+          "sha256": "b0863a856dca5933da67c1a2bee703b63f4e75b2e112983ddff983057e913dcb"
+        },
+        {
+          "pose": "idle_c",
+          "bbox": [
+            4,
+            21,
+            57,
+            61
+          ],
+          "sha256": "40d7e53f25d11eadc0db7761a16265d9c2c929985bd75de6a60e2c421a7206cf"
+        },
+        {
+          "pose": "windup",
+          "bbox": [
+            3,
+            19,
+            54,
+            61
+          ],
+          "sha256": "269ab54d7b82561619e90efaf9b54a6d518c1778889a4c7b889e1b502681eb62"
+        },
+        {
+          "pose": "move",
+          "bbox": [
+            4,
+            14,
+            57,
+            60
+          ],
+          "sha256": "f3d4ffa1a81de30f514c5b077dab0fcea21d3843befb20e7fc71fbd7aa2abe43"
+        },
+        {
+          "pose": "attack",
+          "bbox": [
+            5,
+            18,
+            61,
+            61
+          ],
+          "sha256": "589c8a39bd6690045b2ed0e65576e167633f1288fcd089712fdc97617f4d7f84"
+        },
+        {
+          "pose": "recover",
+          "bbox": [
+            4,
+            21,
+            57,
+            61
+          ],
+          "sha256": "e0176bc88aee0b5f82962ff5d677259a8793b70ac57851f51b71ae638ab38b2b"
+        },
+        {
+          "pose": "hit",
+          "bbox": [
+            2,
+            19,
+            52,
+            60
+          ],
+          "sha256": "cdd637bd93f32480b61c07d873ceb30bf17c1bea1bb280ef84233c3908c50811"
+        },
+        {
+          "pose": "dead",
+          "bbox": [
+            6,
+            45,
+            56,
+            61
+          ],
+          "sha256": "0ca38cdfedcf5e2c2dd3c3297083f505d022670ffa500bfc434e80664d8733d5"
+        }
+      ]
+    },
+    {
+      "slug": "stone-dokkaebi",
+      "source": "source/figures.py",
+      "sheet": "assets/stone-dokkaebi.png",
+      "sha256": "7cc9ce54abe79a1af8917bc6d4ad640da8974e9639572e1d261652a3c2ac3884",
+      "size": [
+        192,
+        192
+      ],
+      "colors": 10,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "frames": [
+        {
+          "pose": "idle_a",
+          "bbox": [
+            9,
+            6,
+            56,
+            60
+          ],
+          "sha256": "12c3aa252f260ac29ad30cf737950f739711a53c7ec95dd486e2e2658602f806"
+        },
+        {
+          "pose": "idle_b",
+          "bbox": [
+            9,
+            5,
+            56,
+            60
+          ],
+          "sha256": "384cd27d0987e35a6e5acfc08e1adba7ccf40c7e9793db402554a8d8cd3cb8c6"
+        },
+        {
+          "pose": "idle_c",
+          "bbox": [
+            9,
+            7,
+            56,
+            60
+          ],
+          "sha256": "4d4397bf5c5c6908cf4c2127ed27e4e3e088aca308030e48f6c2dd3c0c3f616d"
+        },
+        {
+          "pose": "windup",
+          "bbox": [
+            8,
+            8,
+            52,
+            60
+          ],
+          "sha256": "1e544965af7974417d6e77c415a86b4eb8c43a2bc21b9c7a2fb49b98b10dcf74"
+        },
+        {
+          "pose": "move",
+          "bbox": [
+            9,
+            4,
+            57,
+            60
+          ],
+          "sha256": "cea5c79f6852fac0c7cbca661e640d52a494cfe1ea227e454d7ed455096526d8"
+        },
+        {
+          "pose": "attack",
+          "bbox": [
+            10,
+            7,
+            59,
+            60
+          ],
+          "sha256": "62d8254aa1b56a40953b494b8559ca445e0d4a87f259373af2078ad4d3eaf29b"
+        },
+        {
+          "pose": "recover",
+          "bbox": [
+            9,
+            8,
+            55,
+            60
+          ],
+          "sha256": "9c12076bb82b9deeb1f76eb76295fd35bd748012d64351bcb4aa023190ad0961"
+        },
+        {
+          "pose": "hit",
+          "bbox": [
+            7,
+            5,
+            53,
+            60
+          ],
+          "sha256": "72699e2f416ff7b5f0a89bb447690e2c61732ab0055d531613b93b0c51489e04"
+        },
+        {
+          "pose": "dead",
+          "bbox": [
+            5,
+            43,
+            58,
+            61
+          ],
+          "sha256": "ac4e1229566d4b4a6157e7bc405d2ea07f66809a10553871cee952eb8b4e2181"
+        }
+      ]
+    },
+    {
+      "slug": "bamboo-specter",
+      "source": "source/spirits.py",
+      "sheet": "assets/bamboo-specter.png",
+      "sha256": "9665dc0553a213d389dbfe026dc811ed06a1ce507b20c148ee6e994bd003d068",
+      "size": [
+        192,
+        192
+      ],
+      "colors": 9,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "frames": [
+        {
+          "pose": "idle_a",
+          "bbox": [
+            3,
+            4,
+            53,
+            60
+          ],
+          "sha256": "7f1ff636d03749de9cee5af8f481214d39b87ceb37ce2757af26c141d5dbf5d5"
+        },
+        {
+          "pose": "idle_b",
+          "bbox": [
+            3,
+            3,
+            53,
+            60
+          ],
+          "sha256": "ced194ec856639ca5a1bca87ffdf7dcd4b5541c2dcc122ae628ad81944b5f0a9"
+        },
+        {
+          "pose": "idle_c",
+          "bbox": [
+            3,
+            4,
+            53,
+            61
+          ],
+          "sha256": "a2d2bcbe3d6e1d36d9d6b5fdce3a63c975b6cff2c6387ec2fc0f7f83f521be6e"
+        },
+        {
+          "pose": "windup",
+          "bbox": [
+            2,
+            5,
+            45,
+            61
+          ],
+          "sha256": "909cb030db28d90cfcdbbd8f6bd8b5abafcbe8c8f59e5e4bc2f297bb23d7597d"
+        },
+        {
+          "pose": "move",
+          "bbox": [
+            3,
+            2,
+            54,
+            60
+          ],
+          "sha256": "a7b380339b0455ade739909a44014e3a0656226b3464716ac94943281b7ee864"
+        },
+        {
+          "pose": "attack",
+          "bbox": [
+            4,
+            3,
+            62,
+            61
+          ],
+          "sha256": "b442bd58aeaaa604a309b05bac285b2665d80d0e2f1e3ed81f98b8dc018f9687"
+        },
+        {
+          "pose": "recover",
+          "bbox": [
+            3,
+            6,
+            50,
+            61
+          ],
+          "sha256": "f56cb5735bcd04723aeb484138aadab27581855f507bbb7b8336f9035a20f86b"
+        },
+        {
+          "pose": "hit",
+          "bbox": [
+            1,
+            1,
+            46,
+            60
+          ],
+          "sha256": "33cf0dc2530aa9ef9deb968187a6fdec2704b5d3e881f46db0e7946ff03aeb07"
+        },
+        {
+          "pose": "dead",
+          "bbox": [
+            8,
+            42,
+            63,
+            61
+          ],
+          "sha256": "2395e2ff4325f9e994e94bad6257ecc6c2c221fa4002727439e71087e722af1f"
+        }
+      ]
+    },
+    {
+      "slug": "masked-bandit",
+      "source": "source/figures.py",
+      "sheet": "assets/masked-bandit.png",
+      "sha256": "9ad068263472062e8ca50d6915a210be6b1710e9d00bfad370f79b33a20a9e73",
+      "size": [
+        192,
+        192
+      ],
+      "colors": 16,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "frames": [
+        {
+          "pose": "idle_a",
+          "bbox": [
+            15,
+            5,
+            55,
+            60
+          ],
+          "sha256": "695de9ad01d274d485710f7353fff469d36ac4e37805c194e56fde3f1d42d577"
+        },
+        {
+          "pose": "idle_b",
+          "bbox": [
+            15,
+            4,
+            53,
+            60
+          ],
+          "sha256": "3f8190430595be0c19b89cadbac90453ad543ecd7d7313c8d7843d97405d31b2"
+        },
+        {
+          "pose": "idle_c",
+          "bbox": [
+            15,
+            6,
+            55,
+            60
+          ],
+          "sha256": "c770c1796fac35e208ed29d0f235db1af69461a9af457a16568808c36620c356"
+        },
+        {
+          "pose": "windup",
+          "bbox": [
+            15,
+            7,
+            45,
+            60
+          ],
+          "sha256": "530944ebff0cb1dc120522069f02eb6c31a66867d85105c4fb5215c44bbf8f14"
+        },
+        {
+          "pose": "move",
+          "bbox": [
+            11,
+            3,
+            52,
+            59
+          ],
+          "sha256": "a29b5fd6fd6529310650acb863ba29e8ec9f640138853c5cd7eccd51d777ec19"
+        },
+        {
+          "pose": "attack",
+          "bbox": [
+            12,
+            6,
+            61,
+            60
+          ],
+          "sha256": "cdf2f127d22d176096f2088a47b29390c95331ec52ffe157b5f4f7ac3bf9f6a3"
+        },
+        {
+          "pose": "recover",
+          "bbox": [
+            15,
+            7,
+            54,
+            60
+          ],
+          "sha256": "e70ba0745c70a168948204789c26c57392b1997260d1a17edcdded6f24f0a7a9"
+        },
+        {
+          "pose": "hit",
+          "bbox": [
+            15,
+            4,
+            48,
+            60
+          ],
+          "sha256": "f483a8e58c89e8e167ad89c8125adc41ea8df81c3e38cf60de16288c208c1612"
+        },
+        {
+          "pose": "dead",
+          "bbox": [
+            8,
+            40,
+            59,
+            61
+          ],
+          "sha256": "034d27fdc8d5b5521b75fa54ee54e232ff29cb0173df7e3df03edbab5df2ed80"
+        }
+      ]
+    },
+    {
       "slug": "bronze-dokkaebi",
       "source": "source/draw.py",
       "sheet": "assets/bronze-dokkaebi.png",
-      "sha256": "1de18fd38ec573cef4df9e2c362212137a5b9e9c91e6afb8ae328cd45f8ac5d1",
+      "sha256": "34eb5697d716100fa7e72c4d03a30b5d1a8272b68b8aabbc587e33c0cb1be230",
       "size": [
         288,
         288
@@ -358,7 +1328,7 @@
             86,
             92
           ],
-          "sha256": "cbf429dad1eda5c1b90b208a6da3c5f3098956f4bb8d60839bd9ebdd2036ab44"
+          "sha256": "e05e4944f3ef041cd8b26b9e23dbf9220dba53b4a242e7422bbd36a3e8552963"
         },
         {
           "pose": "idle_b",
@@ -368,7 +1338,7 @@
             85,
             92
           ],
-          "sha256": "6f0d433356ae67096fa57c89738d5cc34fc9b76f8f59066d1ff4298c84e95aa3"
+          "sha256": "c6956896136b7776e9ee15d2f3ed9c648b14f9b7fa27f04ba83db5c882a38c03"
         },
         {
           "pose": "idle_c",
@@ -378,7 +1348,7 @@
             87,
             92
           ],
-          "sha256": "9d057eb74d6540cf5494b37b74ee57b0e11040fc75256b5a872f9974f31c6bae"
+          "sha256": "b951d9c130ea1ed46650d82306da910c348853a1b52c9b91112d182d1924c2b6"
         },
         {
           "pose": "windup",
@@ -388,7 +1358,7 @@
             78,
             92
           ],
-          "sha256": "71736cc8899657ef99527891e234a5970fd4f51286879da4e6dfe48cc37f35fd"
+          "sha256": "609570c532a21cf8d14f957f9bbdb51e8e1e5a411c18a6e92cc2fb645fce64b8"
         },
         {
           "pose": "move",
@@ -398,7 +1368,7 @@
             85,
             92
           ],
-          "sha256": "24dff0c30f62294955bb04492add2b465eb5a86dd4ceb862404e454b49826120"
+          "sha256": "1280642c7dd5d729a6250f5e44e30296547f887b0daa992b8d5c576ae1b5d99b"
         },
         {
           "pose": "attack",
@@ -408,7 +1378,7 @@
             88,
             92
           ],
-          "sha256": "e8f870d88daec5d84d432820679b7c9cba56c5e0eb5aedc234a3e57331736bf2"
+          "sha256": "fd304787428c52736c3fc74da9517dfef0d0ed1a269f3c9c767272fc97ec2387"
         },
         {
           "pose": "recover",
@@ -418,7 +1388,7 @@
             85,
             92
           ],
-          "sha256": "fc0fa5c0a66443f4ed41feaa1fa623401205b3a9db7f9c6a32bd4032daf08713"
+          "sha256": "a09ef3e69dc64d8e153306e12110f60cd6d65006f1c1674526d10c404e70bb78"
         },
         {
           "pose": "hit",
@@ -428,7 +1398,7 @@
             81,
             92
           ],
-          "sha256": "0cd773f63deb322a2cfb8eb21bb5073327d7e24038c73385fa7c08cb2dd21332"
+          "sha256": "890bb880284addd609161c33bf9a4b7b511b9e546849e1e2d9cb63bc039aa7af"
         },
         {
           "pose": "dead",
@@ -439,6 +1409,220 @@
             93
           ],
           "sha256": "bbdc05ab1bf46319357ec2a15cfa931599bb1713ee7cc12205845d76a73a2b19"
+        }
+      ]
+    },
+    {
+      "slug": "bride-wraith",
+      "source": "source/figures.py",
+      "sheet": "assets/bride-wraith.png",
+      "sha256": "b2c9f70262e42d30516998c3f0c2169f1ec9a7d6b33c70809345e88430b20fcd",
+      "size": [
+        288,
+        288
+      ],
+      "colors": 16,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "frames": [
+        {
+          "pose": "idle_a",
+          "bbox": [
+            22,
+            5,
+            81,
+            93
+          ],
+          "sha256": "b6178b6fc66bd188d84f4be783f49940ccc567c617341a8fbb131c78fc57ee10"
+        },
+        {
+          "pose": "idle_b",
+          "bbox": [
+            20,
+            4,
+            80,
+            93
+          ],
+          "sha256": "53b3583ebe9035511a20ee95699ba0743425104aedcce1dde7c665ea9ef91a02"
+        },
+        {
+          "pose": "idle_c",
+          "bbox": [
+            24,
+            6,
+            81,
+            93
+          ],
+          "sha256": "c7eb72f1635fe69ceed541bb9fece7cd4d28b0fef0280e2e13e690f3ac5bb63e"
+        },
+        {
+          "pose": "windup",
+          "bbox": [
+            18,
+            7,
+            76,
+            93
+          ],
+          "sha256": "dfbc928823189e43b67315e6664a17c1f4eb04e320a14f82f73a214c257c49cf"
+        },
+        {
+          "pose": "move",
+          "bbox": [
+            17,
+            3,
+            76,
+            93
+          ],
+          "sha256": "94b62073ba6db37a031dd93c3f0579123233cfb31980644776abd0c4f0a2522c"
+        },
+        {
+          "pose": "attack",
+          "bbox": [
+            19,
+            6,
+            94,
+            93
+          ],
+          "sha256": "fef75a5466bd1f4ba17f3ebee4218d90de292f699c3aa35237792ce83a4aed20"
+        },
+        {
+          "pose": "recover",
+          "bbox": [
+            22,
+            7,
+            77,
+            93
+          ],
+          "sha256": "4c79ba5a4e8507b59b0f11544932dec1367466594d1bb12d9ad458097e20774a"
+        },
+        {
+          "pose": "hit",
+          "bbox": [
+            23,
+            4,
+            76,
+            93
+          ],
+          "sha256": "83ac95bb76e5f24ddc2c56bec79d1efdd04e90f27a8b777e79b4b977b187eea6"
+        },
+        {
+          "pose": "dead",
+          "bbox": [
+            15,
+            57,
+            81,
+            93
+          ],
+          "sha256": "3c0e820b994ec8b9310419ccebc1e154d88bfd5ce7210490a99c22db846ee177"
+        }
+      ]
+    },
+    {
+      "slug": "mountain-tiger",
+      "source": "source/organic.py",
+      "sheet": "assets/mountain-tiger.png",
+      "sha256": "0ef3829f95619bbbc3f2cba6a91789c94a62439b784601864b1d0cd28ee51a93",
+      "size": [
+        288,
+        288
+      ],
+      "colors": 13,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "frames": [
+        {
+          "pose": "idle_a",
+          "bbox": [
+            5,
+            13,
+            91,
+            92
+          ],
+          "sha256": "23a3cdf9b8babba7942d21d522f5956744d90a55903101c2c028c104f0c97d55"
+        },
+        {
+          "pose": "idle_b",
+          "bbox": [
+            5,
+            10,
+            91,
+            92
+          ],
+          "sha256": "27ff78e85ad2e35d9e9636316279a0f163ec6edbc758b522915b520ef0df8d47"
+        },
+        {
+          "pose": "idle_c",
+          "bbox": [
+            5,
+            16,
+            91,
+            92
+          ],
+          "sha256": "47edcdea57520b2c05594aa146450fd68e31e1728a9240805dfa233a19195be9"
+        },
+        {
+          "pose": "windup",
+          "bbox": [
+            4,
+            15,
+            87,
+            92
+          ],
+          "sha256": "fa1579db91a7aa75a519eb2bcdfd12bfc5baec2c93a5257c1512af8896929cb3"
+        },
+        {
+          "pose": "move",
+          "bbox": [
+            5,
+            11,
+            91,
+            91
+          ],
+          "sha256": "3e9e78b537513b796e83a2745eae1852bb5ef526a698609124460732a0af4454"
+        },
+        {
+          "pose": "attack",
+          "bbox": [
+            6,
+            14,
+            95,
+            92
+          ],
+          "sha256": "b076b82a6e00f1b558a7fa87cb4965a3c79d44dae1c2ca5026ef796c5a9cac68"
+        },
+        {
+          "pose": "recover",
+          "bbox": [
+            5,
+            15,
+            90,
+            92
+          ],
+          "sha256": "94fed3016db7a638350d0116847a638c5f2cf0de60923c90fd1271d48e0eb647"
+        },
+        {
+          "pose": "hit",
+          "bbox": [
+            3,
+            12,
+            85,
+            92
+          ],
+          "sha256": "bc892cf7b81cdbe4163200678af1771705583491f4bd2cc7b96720ff382e0a25"
+        },
+        {
+          "pose": "dead",
+          "bbox": [
+            4,
+            64,
+            93,
+            93
+          ],
+          "sha256": "978cf1c6e45dbdcb976c6c3745b849d129faebf9fc1694ba91c3b380abc74331"
         }
       ]
     }

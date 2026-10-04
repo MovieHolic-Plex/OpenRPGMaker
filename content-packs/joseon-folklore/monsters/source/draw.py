@@ -8,7 +8,12 @@ from pathlib import Path
 from math import hypot
 import hashlib
 import json
+import sys
 from PIL import Image, ImageDraw
+sys.dont_write_bytecode = True
+from organic import rat,bat,fox,tiger
+from spirits import wisp,drowned,ghoul,bamboo
+from figures import stone,bandit,bride
 
 ROOT = Path(__file__).resolve().parents[1]
 POSES = ['idle_a', 'idle_b', 'idle_c', 'windup', 'move', 'attack', 'recover', 'hit', 'dead']
@@ -176,12 +181,14 @@ def straw(pose):
     s.poly([(20,14),(26,12),(32,15),(34,19),(33,25),(29,28),(22,26),(18,21),(18,17)],'base')
     s.poly([(20,16),(24,15),(29,15),(32,18),(30,20),(23,19),(20,20)],'light',None)
     s.poly([(20,20),(24,19),(26,21),(30,20),(33,21),(31,25),(26,27),(21,24)],'face',None)
-    s.line([(21,19),(24,18)],'dark',2);s.line([(28,18),(31,19)],'dark',2)
-    if pose!='hit':s.line([(22,20),(24,20)],'eye');s.line([(29,20),(31,20)],'eye')
-    else:s.line([(22,20),(24,22)],'ember');s.line([(29,21),(31,20)],'ember')
-    s.line([(26,20),(27,22)],'tip');s.dot(28,22,'shade')
-    s.line([(24,24),(29,24),(31,23)],'o')
-    s.poly([(24,24),(25,24),(25,26)],'tip',None)
+    # Dominant near eye and a protruding right-facing guardian-mask nose.
+    s.line([(25,19),(28,17),(31,18)],'dark',2)
+    if pose!='hit':s.line([(28,19),(31,19)],'eye')
+    else:s.line([(28,19),(31,21)],'ember')
+    s.poly([(31,19),(33,19),(35,21),(37,22),(35,24),(31,23)],'light')
+    s.dot(35,22,'dark')
+    s.line([(27,25),(33,25),(35,24)],'o')
+    s.poly([(29,25),(30,23),(31,25),(31,27)],'tip',None)
     for x in [21,24,27,30]:s.line([(x,26),(x-1,29)],'light')
     s.line([(18,29),(22,31),(27,30)],'indigo',3)
     s.line([(19,29),(23,30)],'blue')
@@ -364,13 +371,11 @@ def bronze(pose):
     s.poly([(25,22),(27,17),(31,15),(34,17),(38,15),(41,18),(46,17),(51,22),(53,30),(51,36),(46,42),(36,43),(28,38),(23,31)],'base')
     s.poly([(27,24),(31,20),(37,20),(42,21),(48,23),(48,27),(41,28),(35,26),(29,29)],'light',None)
     # Huge brow, broad snout, cheek spirals: a bell-mask face, not elf ears.
-    s.poly([(27,27),(31,24),(37,25),(38,28),(34,29),(29,29)],'shadow')
-    s.poly([(43,26),(48,25),(50,27),(48,29),(44,29)],'shadow')
-    if pose!='hit':s.line([(32,28),(36,28)],'eye');s.line([(46,28),(48,27)],'eye')
-    else:s.line([(32,29),(36,28)],'black');s.line([(45,27),(48,29)],'black')
-    # Offset snout and narrower far eye turn the mask toward the party on right.
-    s.poly([(40,27),(43,27),(47,31),(49,32),(47,35),(41,35),(39,32)],'gold')
-    s.dot(42,33,'deep');s.dot(46,33,'deep')
+    s.poly([(32,27),(36,24),(43,25),(45,28),(41,30),(34,29)],'shadow')
+    if pose!='hit':s.line([(37,28),(42,28)],'eye')
+    else:s.line([(37,28),(41,30)],'black')
+    s.poly([(43,27),(46,27),(49,30),(54,32),(52,35),(46,35),(42,32)],'gold')
+    s.dot(50,33,'deep')
     s.line([(30,34),(33,32),(35,34),(34,37),(31,36)],'shadow')
     s.line([(46,32),(49,34),(47,37),(45,35)],'shadow')
     s.poly([(34,37),(40,36),(47,36),(49,38),(46,41),(40,42),(35,40)],'deep')
@@ -412,8 +417,14 @@ def fallen_bronze():
     return s.image
 
 
-SPECIES = [('wild-boar',64,'dash',190,boar),('straw-dokkaebi',64,'stomp',260,straw),
-           ('maiden-ghost',64,'float',240,ghost),('bronze-dokkaebi',96,'stomp',330,bronze)]
+SPECIES = [('field-rat',64,'dash',150,rat),('wild-boar',64,'dash',190,boar),
+           ('cave-bat',64,'swoop',160,bat),('straw-dokkaebi',64,'stomp',260,straw),
+           ('lantern-wisp',64,'float',180,wisp),('maiden-ghost',64,'float',240,ghost),
+           ('drowned-ghost',64,'float',280,drowned),('grave-ghoul',64,'stomp',310,ghoul),
+           ('fox-spirit',64,'dash',200,fox),('stone-dokkaebi',64,'stomp',340,stone),
+           ('bamboo-specter',64,'shoot',220,bamboo),('masked-bandit',64,'dash',180,bandit),
+           ('bronze-dokkaebi',96,'stomp',330,bronze),('bride-wraith',96,'float',280,bride),
+           ('mountain-tiger',96,'dash',250,tiger)]
 
 
 def main():
@@ -440,7 +451,8 @@ def main():
         review.save(ROOT/'review'/f'{slug}-poses.png')
         pixels=list(sheet.get_flattened_data()) if hasattr(sheet,'get_flattened_data') else list(sheet.getdata())
         colors={px for px in pixels if px[3]}
-        art.append(dict(slug=slug,source='source/draw.py',sheet=f'assets/{slug}.png',
+        source='draw' if draw.__module__=='__main__' or draw in [boar,straw,ghost,bronze] else draw.__module__
+        art.append(dict(slug=slug,source=f'source/{source}.py',sheet=f'assets/{slug}.png',
                         sha256=hashlib.sha256(path.read_bytes()).hexdigest(),size=list(sheet.size),
                         colors=len(colors),alphaValues=sorted({p[3] for p in pixels}),
                         frames=[dict(pose=p,bbox=list(f.getbbox()),sha256=hashlib.sha256(f.tobytes()).hexdigest()) for p,f in zip(POSES,frames)]))
@@ -448,7 +460,18 @@ def main():
     (ROOT/'sheets.json').write_text(json.dumps(sheets,ensure_ascii=False,indent=2)+'\n')
     (ROOT/'review/art-manifest.json').write_text(json.dumps(dict(author='GPT 6.1 sol high monsters worker',
         method='Original coordinate-authored Python/Pillow; no imported bitmap artwork',
-        sourceSha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),poseOrder=POSES,sheets=art),ensure_ascii=False,indent=2)+'\n')
+        sourceSha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+        sourceFiles={f'source/{p}':hashlib.sha256((ROOT/'source'/p).read_bytes()).hexdigest()
+                     for p in ['draw.py','pixels.py','organic.py','spirits.py','figures.py']},
+        poseOrder=POSES,sheets=art),ensure_ascii=False,indent=2)+'\n')
+    # Full roster overview; native pixels, padded cells, no sprite resampling.
+    contact=Image.new('RGB',(960,666),'#26313f');cd=ImageDraw.Draw(contact)
+    for i,(slug,cell,_,_,draw) in enumerate(SPECIES):
+        x=(i%5)*192;y=(i//5)*222
+        f=draw('idle_a').resize((cell*2,cell*2),Image.Resampling.NEAREST)
+        contact.paste(f,(x+(192-cell*2)//2,y+192-cell*2),f)
+        cd.text((x+8,y+199),slug,fill='#e0dbc4')
+    contact.save(ROOT/'review/roster.png')
     print(json.dumps(dict(sheets=len(sheets),poses=sum(len(s['frames']) for s in art),assets=[s['sheet'] for s in art]),ensure_ascii=False))
 
 

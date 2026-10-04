@@ -1,54 +1,77 @@
-# 조선 설화 monsters — 첫 샘플
+# 조선 설화 monsters — full 15종
 
-파일럿 4종, 일반 적 3종 + 초반 보스 1종. 최종 목표인 일반 12종 + 보스 3종 중 나머지 11종은 설계만 있으며 PNG/DB 레코드는 만들지 않았다.
+일반12 + 보스3. 전종 원본 3×3 9포즈·idle_a 초상, 적15개·고유 단독 트룹15개. 원본 픽셀 코드 저작이며 새 적을 Actor1 칩으로 만들지 않았다.
 
-| slug | 적 ID | 셀 / 시트 | 이동 | 레벨 / HP | 드롭 |
-|---|---|---|---|---|---|
-| wild-boar | enemy_jf_wild_boar | 64 / 192×192 | dash | 2 / 110 | boar-tusk 35% |
-| straw-dokkaebi | enemy_jf_straw_dokkaebi | 64 / 192×192 | stomp | 3 / 140 | straw-knot 45% |
-| maiden-ghost | enemy_jf_maiden_ghost | 64 / 192×192 | float | 5 / 145 | ghost-ash 40% |
-| bronze-dokkaebi | enemy_jf_bronze_dokkaebi | 96 / 288×288 | stomp | 6 / 680 | bronze-shard 100% |
+| slug | 이름 | 레벨 / HP | 셀 / 이동 | 출현 구분 | 경험치 / 금 |
+|---|---|---|---|---|---|---|
+| field-rat | 들쥐 | 1 / 65 | 64 / dash | common | 10 / 5 |
+| wild-boar | 산멧돼지 | 2 / 110 | 64 / dash | common | 22 / 9 |
+| cave-bat | 굴박쥐 | 2 / 85 | 64 / swoop | common | 18 / 8 |
+| straw-dokkaebi | 볏짚 도깨비 | 3 / 140 | 64 / stomp | common | 35 / 13 |
+| lantern-wisp | 도깨비불 | 4 / 125 | 64 / float | common | 32 / 12 |
+| maiden-ghost | 처녀귀신 | 5 / 145 | 64 / float | common | 42 / 17 |
+| drowned-ghost | 물귀신 | 8 / 220 | 64 / float | common | 75 / 25 |
+| grave-ghoul | 묘지귀물 | 10 / 280 | 64 / stomp | common | 95 / 32 |
+| fox-spirit | 여우요괴 · 희귀 | 12 / 360 | 64 / dash | rare-elite | 150 / 55 |
+| stone-dokkaebi | 돌 도깨비 · 강적 | 13 / 480 | 64 / stomp | rare-elite | 185 / 65 |
+| bamboo-specter | 대숲귀물 | 15 / 420 | 64 / shoot | common | 165 / 50 |
+| masked-bandit | 복면산적 | 17 / 510 | 64 / dash | common | 210 / 75 |
+| bronze-dokkaebi | 청동 도깨비 | 6 / 680 | 96 / stomp | unique-boss | 210 / 120 |
+| bride-wraith | 신부 원귀 | 12 / 1400 | 96 / float | unique-boss | 650 / 350 |
+| mountain-tiger | 산군 호랑이 | 19 / 2600 | 96 / dash | unique-boss | 1400 / 800 |
 
-모든 드롭은 `ids.json`의 재료 ID, 승리 후 1개 드롭이다. 재료 정의/가격은 consumables 담당 소유다. 적 행동은 전원 `skill_attack` 하나, always/priority 50. 전용 스킬·상태·예고 공격은 아직 연결하지 않았다. behavior 담당이 actions를 교체한다.
+## 데이터·그림 계약
 
-## 파일과 감독자 인계
+- `assets/<slug>.png`: 일반 native64, 보스 native96, 투명 RGBA 3×3 시트. idle_a/b/c → windup/move/attack → recover/hit/dead. 오른쪽을 향하며 기준선 y=cell−4를 넘지 않는다. 박쥐는 발이 기준선 근처에서 떠 있는 공중 자세다.
+- `assets/portraits/<slug>.png`: idle_a 픽셀을 그대로 잘라낸 초상15장. 일반 이미지에 시트 전체를 넣지 않는다.
+- `sheets.json`: 엔진의 resourceId/path/cell/motion/idleFrameMs 배열. 경로는 향후 public 상대경로이며 실제 원본은 이 폴더의 assets 안에 있다.
+- `data.json`: enemies15/troops15. 행동은 전종 skill_attack always/priority50 fallback, 치명타 비활성. behavior 담당이 최종 행동을 교체한다.
+- `design.json`: 전종 지역·권장 파티레벨·드롭·희귀 강적·디자인·후속 역할 계약. 여우와 돌 도깨비는 희귀 강적, 보스3은 고유 단독 보스로 명시했다. 드롭은 ids.json 예약 재료12종을 모두 사용한다. full 소비품 담당이 재료 레코드를 정의한다.
+- 단독 트룹 ID는 `troop_jf_<slug의 하이픈을 밑줄로 바꾼 값>`, enemyIds/members 한 명씩, autoAlign=true/uncapturable=true. 배경은 실제 기존 `battle-scenery-forest`/`battle-scenery-cave`만 사용한다.
 
-- `assets/<slug>.png`: 실제 투명 native PNG, 3×3 9포즈.
-- `assets/portraits/<slug>.png`: idle_a의 픽셀을 그대로 잘라낸 일반 초상. 시트 전체를 초상으로 표시하지 않는다.
-- `sheets.json`: 엔진의 PixelEnemySheet 필드 `resourceId,path,cell,motion,idleFrameMs` 배열.
-- `data.json`: ProjectDatabaseInput의 `enemies` / `troops` 배열. 단독 트룹 4개, 자동 배치, 포획 불가.
-- `design.json`: 지역·레벨·드롭·원본 디자인과 일반12/보스3의 설계 윤곽. `planned-only`는 미제작이다.
-- `review/*-poses.png`: 격자/체커를 붙인 nearest neighbor 3배 검토본. 게임 자산으로 사용하지 않는다.
-- `review/art-manifest.json`: 원본 코드 해시, 실제 PNG SHA-256, 각 포즈 픽셀 해시·색 수·알파·bounds.
-- `review/asset-smoke.json`, `review/normalize-smoke.json`: 개별 스크립트 확인 근거.
-- `review/VISUAL-REVIEW.md`: 작업자 직접 이미지 관찰과 한계.
-- `status.json`: 모든 파일 저장 후 마지막으로 쓴 로컬 인계 상태. ready는 사용자 승인/게임 통합 완료를 뜻하지 않는다.
+감독자가 시트를 public/assets/joseon-folklore/monsters/로 복사하고 초상은 별도 portraits/로 배선한다. 등록기·runtime/editor core·고정계약·실제 SQLite/Supabase는 이 작업에서 수정하지 않았다. 현재 엔진 등록/내보내기/정본 저장 완료를 주장하지 않는다. actual canonical은 root 담당이다.
 
-`sheets.json`의 path는 **향후 public 기준 경로**다. 현재 실제 PNG는 이 폴더의 `assets/`에 있다. 감독자가 원본 시트를 `public/assets/joseon-folklore/monsters/<slug>.png`에 복사하고, 초상은 별도 `portraits/`에 복사해 시트/초상 등록·내보내기를 배선해야 한다. 이 작업자는 public·레지스트리·편집기·런타임·실제 프로젝트 DB를 수정하지 않았다. 등록 전 현재 엔진이 `jf-enemy-*`를 공용 시트로 해석한다고 주장하지 않는다.
+## 독립 디자인과 출처
 
-`ids.json`에는 트룹 ID 예약이 없어 `troop_jf_<slug의 하이픈을 밑줄로 바꾼 값>`을 사용했다. 기존 `troop_jb_*`는 수정하지 않는다. `battle-scenery-forest`는 실제 기존 배경 ID다.
+이 역할에서 직접 작성한 Python/Pillow 정수 좌표 코드다. 공용 helper만 공유하고 종별 몸 구조·시점·무기·행동·쓰러짐을 별도로 그렸다. 기존 고블린 그림/코드·상용 그림·이미지 생성 API·Actor1 픽셀은 사용하지 않았다.
 
-## 원본·출처·재생성
+- `source/draw.py`: 기존 멧돼지/볏짚/처녀/청동과 전종 패킹. 볏짚·청동 얼굴의 눈/코를 오른쪽으로 돌렸다. 이전 파일럿의 멧돼지·처녀 원본은 유지했다.
+- `source/organic.py`: 들쥐·박쥐·세 꼬리 여우·산군 호랑이의 각각 다른 해부 구조.
+- `source/spirits.py`: 도깨비불·상투와 젖은 포의 물귀신·굽은 묘지귀물·마디/뿌리/잎의 대숲귀물.
+- `source/figures.py`: 깨진 외뿔/바위 가면과 돌 방망이의 도깨비·복면/바지저고리/환도의 산적·족두리/원삼/옥 비녀의 신부 원귀.
+- `source/pixels.py`: 이 역할에서 직접 만든 기본 좌표 래스터 helper.
+- 조선풍 복식/설화는 독자 판타지 디자인이며 정밀한 역사 복원은 아니다. 사용자 그림 승인과 작업자 자체 검토를 구분한다.
 
-저작: GPT 6.1 sol high monsters 작업자. 이 작업에서 직접 작성한 `source/draw.py`의 종별 좌표·면·선으로 그렸다. 최종 64/96 격자에 바로 저작했으며, 기존 고블린/몬스터 코드·그림·상용 게임 픽셀·외부 글꼴·이미지 생성 API를 사용하지 않았다. Pillow는 PNG 저장과 정수 좌표 래스터 그리기, 검토본 확대에 사용했다. 초상만 idle_a에서 정확히 잘랐다. 조선 옷/설화는 창작 모티프이며 역사 복원 도판은 아니다.
+## 재생성·자체 검수
 
-저장소 루트에서 실행:
+저장소 루트, Python3/Pillow와 기존 node_modules:
 
 ```bash
 python content-packs/joseon-folklore/monsters/source/draw.py
 python content-packs/joseon-folklore/monsters/source/data.py
 python content-packs/joseon-folklore/monsters/source/asset-smoke.py
 node content-packs/joseon-folklore/monsters/source/run-smoke.mjs
+python content-packs/joseon-folklore/monsters/source/preview.py
 ```
 
-필요한 환경: Python 3 + Pillow, 저장소의 기존 node_modules. 첫 두 명령은 이 monsters 폴더 안 파일만 덮어쓴다. 마지막 두 명령은 자기 데이터/그림만 검사하며 실제 프로젝트 저장이나 사용자 승인 처리를 하지 않는다. `run-smoke.mjs`는 리스너 없이 ViteNode로 실제 normalize 함수를 실행하고, main Vite config/env를 로드하지 않으며 캐시는 `/tmp`에 둔다. CLI의 `--script`가 `--config`를 지워 읽기 전용 node_modules에 캐시를 쓰려던 첫 시도는 실패했고 이 격리 실행기로 해결했다.
+`source/balance-inputs.json`은 읽기 전용으로 취득한 현재 클래스4종×1–20 성장곡선/장비4급/기존 skill_attack의 스냅샷이다. 원본 경로와 SHA-256이 들어 있으며 위 재현에는 다른 작업트리 접근이 필요 없다. 새 클래스·장비 입력으로 갱신할 때만 `source/capture-balance.py --classes <data.json> --equipment <data.json> --prototype <prototype-database.json>`를 실행한다. 이 명령도 이 역할의 스냅샷만 쓴다.
 
-재저작 후 이전 `status.ready`와 시각 검토 기록을 그대로 신뢰하지 않는다. 새 PNG를 직접 열고 해시에 대응하는 검토/스모크 근거를 갱신한 후 마지막에 status를 봉인해야 한다.
+- `review/art-manifest.json`: 모든 그림 소스 해시·실제 시트 해시·135포즈 해시/bounds/색/알파. 색은10~17색(대숲9색), alpha0/255.
+- `review/asset-smoke.json`: PNG 재로드, 135포즈 원본 코드 재현, 종마다9개 다른 픽셀, idle15개 다른 실루엣, 바닥/셀경계, 초상 픽셀, 예약 ID/드롭 확인.
+- `review/normalize-smoke.json`: 실제 normalizeEnemyRecord/normalizeTroopRecord와 JSON 왕복. 15개 stats/rewards/actions/members 보존.
+- `review/balance-probe.json`: 실제 applySkillLike로15종×4직업 기본 공격 점검. 최대 양의 분산/치명타0 기준, 해당 레벨 무장 없는 직업 HP 대비 한 방35% 미만. 실제 게임의 승패 검증은 아니다.
+- `review/VISUAL-REVIEW.md`: 최종 native 시트15장과 초상15장을 각각 view_image로 직접 확인한 작업자 관찰.
+- `review/roster.png`, `review/*-poses.png`: 각각2배 전체도감·3배 포즈보드. nearest neighbor 정수 확대, 검토용 그림만 체커/라벨 포함.
+- `review/index.html`: 실제 원본 PNG를 내장한 이동 가능한 포즈 재생 화면. 브라우저로 파일을 열면15종 idle/행동/9칸/피격/쓰러짐을 재생한다. 정지·단일 칸·배경 변경. 실제 게임 런타임 화면이 아니다. JS 구문 확인은 통과했고 브라우저 동작 자동 검사는 하지 않았다.
 
-## 확인 범위와 남은 일
+## 보스와 확인 한계
 
-최종 native 시트 4장을 작업자가 각각 `view_image`로 직접 열었고 확대본도 확인했다. PNG 재로드/소스 재현 36포즈, 색 14/15/16/17색, 알파 0/255, 시트/초상 픽셀, 기본 공격·드롭·stats 정상화와 JSON 왕복을 확인했다. 전체 테스트/게이트 통과 주장이나 사용자 그림 승인으로 대체하지 않는다.
+청동 Lv6 HP680 → 신부 Lv12 HP1400 → 산군 Lv19 HP2600. 보상은 경험치210/650/1400, 금120/350/800으로 증가한다. 각 재료는100% 하나 드롭이다. 적정급 무기를 낀4인이 기본 공격만 하면 각각7/12/18라운드의 벤치마크이며 기술·회복·ATB·행동 패턴이 들어간 실제 시간은 아니다. 보스 최대 기본 공격은 무장 없는 직업 HP의16.6%/18.6%/17.5%였다.
 
-실제 RM2003 플레이 화면, 등록/내보내기, 최종 직업 성장과 장비를 넣은 난도 검증은 감독자 통합 후 남는다. 청동 보스 권장 파티 5–7레벨 → 신부 11–14레벨 → 호랑이 18–20레벨이다. 신부/호랑이의 능력치·PNG는 이번 샘플에 없다. 도깨비 얼굴에는 정면 성격이 남아 있어 최종 측면성/그림 품질은 사람 검토가 필요하다.
+특수 스킬·약점·상태·반격은 아직 행동 데이터에 넣지 않았다. 전용 연출/behavior가 합류한 실제 RM2003 화면, 내보내기, 정본 저장/재로드, 전투 난도는 root 통합 후 확인한다. 첫4종을 사용자가 보았다는 지시는 기록했으나 full15종의 사용자 승인으로 확대하지 않았다.
 
-현재 체크아웃에는 `project.sqlite`/`.mcp.json`이 없고 브라우저 IndexedDB에 연결된 도구도 없다. 이 작업의 사용자 원문/범위는 전달된 요청·고정 계약·매 작업 단위에 다시 읽은 steering 파일을 따랐다. 실제 SQLite/Supabase/다른 프로젝트는 연결하거나 쓰지 않았고, 읽기 전용 prototype-database.json의 기본 공격/적·트룹 구조를 참고했다.
+`status.json`은 모든 파일 저장·직접 시각 검토·개별 확인 후 마지막에 쓴 full 로컬 인계 상태다. ready=true가 사용자 그림 승인·공용 등록·정본 저장을 뜻하지 않는다. 재저작하면 해당 status/시각 검토는 무효이며 새 해시 기준으로 다시 검토해야 한다. 보고서는 `FULL-REPORT.md`다.
+
+## Git 전달
+
+공유 index의 쓰기 거절로 현재 브랜치 HEAD를 갱신할 수 없어 임시 Git 저장소의 feat 커밋/bundle로 인계한다. bundle은 `/tmp/jf-monsters-full-xcmewnny/monsters-full.bundle`다. 상세 제약과 root의 가져오기 명령은 FULL-REPORT.md를 따른다.

@@ -13,10 +13,12 @@ const normalized = {
   enemies: input.enemies.map(normalizeEnemyRecord),
   troops: input.troops.map(normalizeTroopRecord),
 };
-assert.equal(normalized.enemies.length, 4);
-assert.equal(normalized.troops.length, 4);
+assert.equal(normalized.enemies.length, 15);
+assert.equal(normalized.troops.length, 15);
 assert.deepEqual(normalized.enemies.map(e => e.id), input.enemies.map(e => e.id));
-assert.equal(new Set(normalized.enemies.map(e => e.id)).size, 4);
+assert.equal(new Set(normalized.enemies.map(e => e.id)).size, 15);
+assert.equal(new Set(normalized.troops.map(e => e.id)).size, 15);
+assert.deepEqual(new Set(normalized.enemies.map(e => e.id)), new Set(Object.values(ids.enemies)));
 const materialIds = new Set(Object.values(ids.materials));
 for (const enemy of normalized.enemies) {
   const before = input.enemies.find(e => e.id === enemy.id);
@@ -36,6 +38,9 @@ for (const troop of normalized.troops) {
   assert.deepEqual(troop.members, before.members);
   assert.deepEqual(troop.enemyIds, before.enemyIds);
   assert.equal(troop.uncapturable, true);
+  assert.ok(['battle-scenery-forest','battle-scenery-cave'].includes(troop.previewBackgroundResourceId));
+  assert.equal(troop.members.length, 1);
+  assert.ok(normalized.enemies.some(e => e.id === troop.members[0].enemyId));
 }
 // JSON save/load cycle of local inputs only. No canonical SQLite or registry claim.
 const reloaded = JSON.parse(JSON.stringify(normalized));
@@ -46,7 +51,7 @@ assert.deepEqual({
 const report = {
   passed: true,
   scope: 'actual normalizeEnemyRecord/normalizeTroopRecord + local JSON roundtrip only',
-  counts: { enemies: 4, troops: 4, fallbackActions: 4, reservedMaterialDrops: 4 },
+  counts: { enemies: 15, troops: 15, fallbackActions: 15, reservedMaterialDrops: 15 },
   inputSha256: createHash('sha256').update(raw).digest('hex'),
   normalizedSha256: createHash('sha256').update(JSON.stringify(normalized)).digest('hex'),
   normalizerSource: 'src/project/databaseEnemyTroopRecordModel.ts',

@@ -1,0 +1,894 @@
+{
+  "passed": true,
+  "scope": "actual applySkillLike rm2k3 basic attack; captured four class curves + tier gear",
+  "counts": {
+    "enemies": 15,
+    "targetClasses": 4,
+    "levelRange": [
+      1,
+      20
+    ],
+    "probedAssignedLevels": 15
+  },
+  "inputsSha256": "f8033298ed8869900dcdd4c9b45ac204710d8b72eb1e28dfb289a5b1f3d50be7",
+  "sources": {
+    "classes": {
+      "path": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content-jf-classes/content-packs/joseon-folklore/classes/data.json",
+      "sha256": "d7af7c9bab826d6361547029e131c05fd997ae0035f23967dbc6c967cac140c3"
+    },
+    "equipment": {
+      "path": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content-jf-equipment/content-packs/joseon-folklore/equipment/data.json",
+      "sha256": "367cfec6395961d7de036c8f4797babf56f5c97e295d02105846c849b1ce9948"
+    },
+    "prototype": {
+      "path": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/output/jf-workers/prototype-database.json",
+      "sha256": "a8d06a510f40ae239ed670a7aeba9a25c384ee98a0b623c7634d3c085c946965"
+    }
+  },
+  "assumptions": [
+    "front row, full HP, no buffs/states, no crit, skill_attack power from current prototype",
+    "worst means maximum positive variance; party-round estimate uses median variance",
+    "four living actors each basic-attack once per round; no healing, skills, ATB or enemy interruption modeled"
+  ],
+  "levels": [
+    {
+      "enemyId": "enemy_jf_field_rat",
+      "level": 1,
+      "boss": false,
+      "hp": 65,
+      "exp": 10,
+      "gold": 5,
+      "tier": 1,
+      "targets": [
+        {
+          "classId": "class_jf_warrior",
+          "hp": 148,
+          "defense": 24,
+          "equippedDefense": 30,
+          "worstNakedDamage": 7,
+          "worstEquippedDamage": 4,
+          "worstNakedHpPercent": 4.7,
+          "actorBasicDamage": 24,
+          "equippedActorBasicDamage": 28
+        },
+        {
+          "classId": "class_jf_rogue",
+          "hp": 116,
+          "defense": 17,
+          "equippedDefense": 20,
+          "worstNakedDamage": 11,
+          "worstEquippedDamage": 9,
+          "worstNakedHpPercent": 9.5,
+          "actorBasicDamage": 22,
+          "equippedActorBasicDamage": 24
+        },
+        {
+          "classId": "class_jf_shaman",
+          "hp": 104,
+          "defense": 14,
+          "equippedDefense": 16,
+          "worstNakedDamage": 12,
+          "worstEquippedDamage": 11,
+          "worstNakedHpPercent": 11.5,
+          "actorBasicDamage": 16,
+          "equippedActorBasicDamage": 17
+        },
+        {
+          "classId": "class_jf_taoist",
+          "hp": 124,
+          "defense": 20,
+          "equippedDefense": 23,
+          "worstNakedDamage": 9,
+          "worstEquippedDamage": 8,
+          "worstNakedHpPercent": 7.3,
+          "actorBasicDamage": 17,
+          "equippedActorBasicDamage": 18
+        }
+      ],
+      "nakedBasicOnlyFourActorRounds": 1,
+      "equippedBasicOnlyFourActorRounds": 1
+    },
+    {
+      "enemyId": "enemy_jf_wild_boar",
+      "level": 2,
+      "boss": false,
+      "hp": 110,
+      "exp": 22,
+      "gold": 9,
+      "tier": 1,
+      "targets": [
+        {
+          "classId": "class_jf_warrior",
+          "hp": 166,
+          "defense": 27,
+          "equippedDefense": 33,
+          "worstNakedDamage": 7,
+          "worstEquippedDamage": 4,
+          "worstNakedHpPercent": 4.2,
+          "actorBasicDamage": 24,
+          "equippedActorBasicDamage": 28
+        },
+        {
+          "classId": "class_jf_rogue",
+          "hp": 131,
+          "defense": 19,
+          "equippedDefense": 22,
+          "worstNakedDamage": 11,
+          "worstEquippedDamage": 9,
+          "worstNakedHpPercent": 8.4,
+          "actorBasicDamage": 22,
+          "equippedActorBasicDamage": 24
+        },
+        {
+          "classId": "class_jf_shaman",
+          "hp": 117,
+          "defense": 16,
+          "equippedDefense": 18,
+          "worstNakedDamage": 12,
+          "worstEquippedDamage": 11,
+          "worstNakedHpPercent": 10.3,
+          "actorBasicDamage": 15,
+          "equippedActorBasicDamage": 16
+        },
+        {
+          "classId": "class_jf_taoist",
+          "hp": 140,
+          "defense": 23,
+          "equippedDefense": 26,
+          "worstNakedDamage": 9,
+          "worstEquippedDamage": 7,
+          "worstNakedHpPercent": 6.4,
+          "actorBasicDamage": 16,
+          "equippedActorBasicDamage": 17
+        }
+      ],
+      "nakedBasicOnlyFourActorRounds": 2,
+      "equippedBasicOnlyFourActorRounds": 2
+    },
+    {
+      "enemyId": "enemy_jf_cave_bat",
+      "level": 2,
+      "boss": false,
+      "hp": 85,
+      "exp": 18,
+      "gold": 8,
+      "tier": 1,
+      "targets": [
+        {
+          "classId": "class_jf_warrior",
+          "hp": 166,
+          "defense": 27,
+          "equippedDefense": 33,
+          "worstNakedDamage": 7,
+          "worstEquippedDamage": 4,
+          "worstNakedHpPercent": 4.2,
+          "actorBasicDamage": 26,
+          "equippedActorBasicDamage": 30
+        },
+        {
+          "classId": "class_jf_rogue",
+          "hp": 131,
+          "defense": 19,
+          "equippedDefense": 22,
+          "worstNakedDamage": 11,
+          "worstEquippedDamage": 9,
+          "worstNakedHpPercent": 8.4,
+          "actorBasicDamage": 24,
+          "equippedActorBasicDamage": 26
+        },
+        {
+          "classId": "class_jf_shaman",
+          "hp": 117,
+          "defense": 16,
+          "equippedDefense": 18,
+          "worstNakedDamage": 12,
+          "worstEquippedDamage": 11,
+          "worstNakedHpPercent": 10.3,
+          "actorBasicDamage": 17,
+          "equippedActorBasicDamage": 18
+        },
+        {
+          "classId": "class_jf_taoist",
+          "hp": 140,
+          "defense": 23,
+          "equippedDefense": 26,
+          "worstNakedDamage": 9,
+          "worstEquippedDamage": 7,
+          "worstNakedHpPercent": 6.4,
+          "actorBasicDamage": 18,
+          "equippedActorBasicDamage": 19
+        }
+      ],
+      "nakedBasicOnlyFourActorRounds": 1,
+      "equippedBasicOnlyFourActorRounds": 1
+    },
+    {
+      "enemyId": "enemy_jf_straw_dokkaebi",
+      "level": 3,
+      "boss": false,
+      "hp": 140,
+      "exp": 35,
+      "gold": 13,
+      "tier": 1,
+      "targets": [
+        {
+          "classId": "class_jf_warrior",
+          "hp": 184,
+          "defense": 30,
+          "equippedDefense": 36,
+          "worstNakedDamage": 8,
+          "worstEquippedDamage": 5,
+          "worstNakedHpPercent": 4.3,
+          "actorBasicDamage": 25,
+          "equippedActorBasicDamage": 29
+        },
+        {
+          "classId": "class_jf_rogue",
+          "hp": 146,
+          "defense": 21,
+          "equippedDefense": 24,
+          "worstNakedDamage": 13,
+          "worstEquippedDamage": 11,
+          "worstNakedHpPercent": 8.9,
+          "actorBasicDamage": 23,
+          "equippedActorBasicDamage": 25
+        },
+        {
+          "classId": "class_jf_shaman",
+          "hp": 130,
+          "defense": 18,
+          "equippedDefense": 20,
+          "worstNakedDamage": 14,
+          "worstEquippedDamage": 13,
+          "worstNakedHpPercent": 10.8,
+          "actorBasicDamage": 15,
+          "equippedActorBasicDamage": 16
+        },
+        {
+          "classId": "class_jf_taoist",
+          "hp": 156,
+          "defense": 26,
+          "equippedDefense": 29,
+          "worstNakedDamage": 10,
+          "worstEquippedDamage": 9,
+          "worstNakedHpPercent": 6.4,
+          "actorBasicDamage": 16,
+          "equippedActorBasicDamage": 17
+        }
+      ],
+      "nakedBasicOnlyFourActorRounds": 2,
+      "equippedBasicOnlyFourActorRounds": 2
+    },
+    {
+      "enemyId": "enemy_jf_lantern_wisp",
+      "level": 4,
+      "boss": false,
+      "hp": 125,
+      "exp": 32,
+      "gold": 12,
+      "tier": 1,
+      "targets": [
+        {
+          "classId": "class_jf_warrior",
+          "hp": 202,
+          "defense": 33,
+          "equippedDefense": 39,
+          "worstNakedDamage": 8,
+          "worstEquippedDamage": 5,
+          "worstNakedHpPercent": 4,
+          "actorBasicDamage": 29,
+          "equippedActorBasicDamage": 33
+        },
+        {
+          "classId": "class_jf_rogue",
+          "hp": 161,
+          "defense": 23,
+          "equippedDefense": 26,
+          "worstNakedDamage": 13,
+          "worstEquippedDamage": 11,
+          "worstNakedHpPercent": 8.1,
+          "actorBasicDamage": 27,
+          "equippedActorBasicDamage": 29
+        },
+        {
+          "classId": "class_jf_shaman",
+          "hp": 143,
+          "defense": 20,
+          "equippedDefense": 22,
+          "worstNakedDamage": 14,
+          "worstEquippedDamage": 13,
+          "worstNakedHpPercent": 9.8,
+          "actorBasicDamage": 18,
+          "equippedActorBasicDamage": 19
+        },
+        {
+          "classId": "class_jf_taoist",
+          "hp": 172,
+          "defense": 29,
+          "equippedDefense": 32,
+          "worstNakedDamage": 10,
+          "worstEquippedDamage": 8,
+          "worstNakedHpPercent": 5.8,
+          "actorBasicDamage": 19,
+          "equippedActorBasicDamage": 20
+        }
+      ],
+      "nakedBasicOnlyFourActorRounds": 2,
+      "equippedBasicOnlyFourActorRounds": 2
+    },
+    {
+      "enemyId": "enemy_jf_maiden_ghost",
+      "level": 5,
+      "boss": false,
+      "hp": 145,
+      "exp": 42,
+      "gold": 17,
+      "tier": 2,
+      "targets": [
+        {
+          "classId": "class_jf_warrior",
+          "hp": 220,
+          "defense": 36,
+          "equippedDefense": 46,
+          "worstNakedDamage": 4,
+          "worstEquippedDamage": 2,
+          "worstNakedHpPercent": 1.8,
+          "actorBasicDamage": 31,
+          "equippedActorBasicDamage": 38
+        },
+        {
+          "classId": "class_jf_rogue",
+          "hp": 176,
+          "defense": 25,
+          "equippedDefense": 31,
+          "worstNakedDamage": 10,
+          "worstEquippedDamage": 7,
+          "worstNakedHpPercent": 5.7,
+          "actorBasicDamage": 29,
+          "equippedActorBasicDamage": 34
+        },
+        {
+          "classId": "class_jf_shaman",
+          "hp": 156,
+          "defense": 22,
+          "equippedDefense": 27,
+          "worstNakedDamage": 11,
+          "worstEquippedDamage": 9,
+          "worstNakedHpPercent": 7.1,
+          "actorBasicDamage": 19,
+          "equippedActorBasicDamage": 20
+        },
+        {
+          "classId": "class_jf_taoist",
+          "hp": 188,
+          "defense": 32,
+          "equippedDefense": 38,
+          "worstNakedDamage": 6,
+          "worstEquippedDamage": 3,
+          "worstNakedHpPercent": 3.2,
+          "actorBasicDamage": 20,
+          "equippedActorBasicDamage": 21
+        }
+      ],
+      "nakedBasicOnlyFourActorRounds": 2,
+      "equippedBasicOnlyFourActorRounds": 2
+    },
+    {
+      "enemyId": "enemy_jf_drowned_ghost",
+      "level": 8,
+      "boss": false,
+      "hp": 220,
+      "exp": 75,
+      "gold": 25,
+      "tier": 2,
+      "targets": [
+        {
+          "classId": "class_jf_warrior",
+          "hp": 274,
+          "defense": 45,
+          "equippedDefense": 55,
+          "worstNakedDamage": 10,
+          "worstEquippedDamage": 5,
+          "worstNakedHpPercent": 3.6,
+          "actorBasicDamage": 33,
+          "equippedActorBasicDamage": 40
+        },
+        {
+          "classId": "class_jf_rogue",
+          "hp": 221,
+          "defense": 31,
+          "equippedDefense": 37,
+          "worstNakedDamage": 17,
+          "worstEquippedDamage": 14,
+          "worstNakedHpPercent": 7.7,
+          "actorBasicDamage": 31,
+          "equippedActorBasicDamage": 36
+        },
+        {
+          "classId": "class_jf_shaman",
+          "hp": 195,
+          "defense": 28,
+          "equippedDefense": 33,
+          "worstNakedDamage": 18,
+          "worstEquippedDamage": 16,
+          "worstNakedHpPercent": 9.2,
+          "actorBasicDamage": 18,
+          "equippedActorBasicDamage": 19
+        },
+        {
+          "classId": "class_jf_taoist",
+          "hp": 236,
+          "defense": 41,
+          "equippedDefense": 47,
+          "worstNakedDamage": 12,
+          "worstEquippedDamage": 9,
+          "worstNakedHpPercent": 5.1,
+          "actorBasicDamage": 19,
+          "equippedActorBasicDamage": 20
+        }
+      ],
+      "nakedBasicOnlyFourActorRounds": 3,
+      "equippedBasicOnlyFourActorRounds": 2
+    },
+    {
+      "enemyId": "enemy_jf_grave_ghoul",
+      "level": 10,
+      "boss": false,
+      "hp": 280,
+      "exp": 95,
+      "gold": 32,
+      "tier": 3,
+      "targets": [
+        {
+          "classId": "class_jf_warrior",
+          "hp": 310,
+          "defense": 51,
+          "equippedDefense": 66,
+          "worstNakedDamage": 11,
+          "worstEquippedDamage": 4,
+          "worstNakedHpPercent": 3.5,
+          "actorBasicDamage": 33,
+          "equippedActorBasicDamage": 43
+        },
+        {
+          "classId": "class_jf_rogue",
+          "hp": 251,
+          "defense": 35,
+          "equippedDefense": 45,
+          "worstNakedDamage": 19,
+          "worstEquippedDamage": 14,
+          "worstNakedHpPercent": 7.6,
+          "actorBasicDamage": 31,
+          "equippedActorBasicDamage": 39
+        },
+        {
+          "classId": "class_jf_shaman",
+          "hp": 221,
+          "defense": 32,
+          "equippedDefense": 40,
+          "worstNakedDamage": 20,
+          "worstEquippedDamage": 16,
+          "worstNakedHpPercent": 9,
+          "actorBasicDamage": 16,
+          "equippedActorBasicDamage": 18
+        },
+        {
+          "classId": "class_jf_taoist",
+          "hp": 268,
+          "defense": 47,
+          "equippedDefense": 57,
+          "worstNakedDamage": 13,
+          "worstEquippedDamage": 8,
+          "worstNakedHpPercent": 4.9,
+          "actorBasicDamage": 17,
+          "equippedActorBasicDamage": 19
+        }
+      ],
+      "nakedBasicOnlyFourActorRounds": 3,
+      "equippedBasicOnlyFourActorRounds": 3
+    },
+    {
+      "enemyId": "enemy_jf_fox_spirit",
+      "level": 12,
+      "boss": false,
+      "hp": 360,
+      "exp": 150,
+      "gold": 55,
+      "tier": 3,
+      "targets": [
+        {
+          "classId": "class_jf_warrior",
+          "hp": 346,
+          "defense": 57,
+          "equippedDefense": 72,
+          "worstNakedDamage": 10,
+          "worstEquippedDamage": 4,
+          "worstNakedHpPercent": 2.9,
+          "actorBasicDamage": 38,
+          "equippedActorBasicDamage": 48
+        },
+        {
+          "classId": "class_jf_rogue",
+          "hp": 281,
+          "defense": 39,
+          "equippedDefense": 49,
+          "worstNakedDamage": 19,
+          "worstEquippedDamage": 14,
+          "worstNakedHpPercent": 6.8,
+          "actorBasicDamage": 36,
+          "equippedActorBasicDamage": 44
+        },
+        {
+          "classId": "class_jf_shaman",
+          "hp": 247,
+          "defense": 36,
+          "equippedDefense": 44,
+          "worstNakedDamage": 20,
+          "worstEquippedDamage": 16,
+          "worstNakedHpPercent": 8.1,
+          "actorBasicDamage": 19,
+          "equippedActorBasicDamage": 21
+        },
+        {
+          "classId": "class_jf_taoist",
+          "hp": 300,
+          "defense": 53,
+          "equippedDefense": 63,
+          "worstNakedDamage": 12,
+          "worstEquippedDamage": 7,
+          "worstNakedHpPercent": 4,
+          "actorBasicDamage": 20,
+          "equippedActorBasicDamage": 22
+        }
+      ],
+      "nakedBasicOnlyFourActorRounds": 4,
+      "equippedBasicOnlyFourActorRounds": 3
+    },
+    {
+      "enemyId": "enemy_jf_stone_dokkaebi",
+      "level": 13,
+      "boss": false,
+      "hp": 480,
+      "exp": 185,
+      "gold": 65,
+      "tier": 3,
+      "targets": [
+        {
+          "classId": "class_jf_warrior",
+          "hp": 364,
+          "defense": 60,
+          "equippedDefense": 75,
+          "worstNakedDamage": 14,
+          "worstEquippedDamage": 7,
+          "worstNakedHpPercent": 3.8,
+          "actorBasicDamage": 33,
+          "equippedActorBasicDamage": 43
+        },
+        {
+          "classId": "class_jf_rogue",
+          "hp": 296,
+          "defense": 41,
+          "equippedDefense": 51,
+          "worstNakedDamage": 24,
+          "worstEquippedDamage": 19,
+          "worstNakedHpPercent": 8.1,
+          "actorBasicDamage": 31,
+          "equippedActorBasicDamage": 39
+        },
+        {
+          "classId": "class_jf_shaman",
+          "hp": 260,
+          "defense": 38,
+          "equippedDefense": 46,
+          "worstNakedDamage": 25,
+          "worstEquippedDamage": 21,
+          "worstNakedHpPercent": 9.6,
+          "actorBasicDamage": 13,
+          "equippedActorBasicDamage": 15
+        },
+        {
+          "classId": "class_jf_taoist",
+          "hp": 316,
+          "defense": 56,
+          "equippedDefense": 66,
+          "worstNakedDamage": 16,
+          "worstEquippedDamage": 11,
+          "worstNakedHpPercent": 5.1,
+          "actorBasicDamage": 14,
+          "equippedActorBasicDamage": 16
+        }
+      ],
+      "nakedBasicOnlyFourActorRounds": 6,
+      "equippedBasicOnlyFourActorRounds": 5
+    },
+    {
+      "enemyId": "enemy_jf_bamboo_specter",
+      "level": 15,
+      "boss": false,
+      "hp": 420,
+      "exp": 165,
+      "gold": 50,
+      "tier": 4,
+      "targets": [
+        {
+          "classId": "class_jf_warrior",
+          "hp": 400,
+          "defense": 66,
+          "equippedDefense": 87,
+          "worstNakedDamage": 9,
+          "worstEquippedDamage": 5,
+          "worstNakedHpPercent": 2.3,
+          "actorBasicDamage": 41,
+          "equippedActorBasicDamage": 55
+        },
+        {
+          "classId": "class_jf_rogue",
+          "hp": 326,
+          "defense": 45,
+          "equippedDefense": 59,
+          "worstNakedDamage": 20,
+          "worstEquippedDamage": 13,
+          "worstNakedHpPercent": 6.1,
+          "actorBasicDamage": 39,
+          "equippedActorBasicDamage": 50
+        },
+        {
+          "classId": "class_jf_shaman",
+          "hp": 286,
+          "defense": 42,
+          "equippedDefense": 54,
+          "worstNakedDamage": 21,
+          "worstEquippedDamage": 15,
+          "worstNakedHpPercent": 7.3,
+          "actorBasicDamage": 19,
+          "equippedActorBasicDamage": 21
+        },
+        {
+          "classId": "class_jf_taoist",
+          "hp": 348,
+          "defense": 62,
+          "equippedDefense": 76,
+          "worstNakedDamage": 11,
+          "worstEquippedDamage": 5,
+          "worstNakedHpPercent": 3.2,
+          "actorBasicDamage": 20,
+          "equippedActorBasicDamage": 22
+        }
+      ],
+      "nakedBasicOnlyFourActorRounds": 4,
+      "equippedBasicOnlyFourActorRounds": 3
+    },
+    {
+      "enemyId": "enemy_jf_masked_bandit",
+      "level": 17,
+      "boss": false,
+      "hp": 510,
+      "exp": 210,
+      "gold": 75,
+      "tier": 4,
+      "targets": [
+        {
+          "classId": "class_jf_warrior",
+          "hp": 436,
+          "defense": 72,
+          "equippedDefense": 93,
+          "worstNakedDamage": 13,
+          "worstEquippedDamage": 6,
+          "worstNakedHpPercent": 3,
+          "actorBasicDamage": 43,
+          "equippedActorBasicDamage": 57
+        },
+        {
+          "classId": "class_jf_rogue",
+          "hp": 356,
+          "defense": 49,
+          "equippedDefense": 63,
+          "worstNakedDamage": 25,
+          "worstEquippedDamage": 18,
+          "worstNakedHpPercent": 7,
+          "actorBasicDamage": 41,
+          "equippedActorBasicDamage": 52
+        },
+        {
+          "classId": "class_jf_shaman",
+          "hp": 312,
+          "defense": 46,
+          "equippedDefense": 58,
+          "worstNakedDamage": 26,
+          "worstEquippedDamage": 20,
+          "worstNakedHpPercent": 8.3,
+          "actorBasicDamage": 19,
+          "equippedActorBasicDamage": 21
+        },
+        {
+          "classId": "class_jf_taoist",
+          "hp": 380,
+          "defense": 68,
+          "equippedDefense": 82,
+          "worstNakedDamage": 15,
+          "worstEquippedDamage": 8,
+          "worstNakedHpPercent": 3.9,
+          "actorBasicDamage": 20,
+          "equippedActorBasicDamage": 22
+        }
+      ],
+      "nakedBasicOnlyFourActorRounds": 5,
+      "equippedBasicOnlyFourActorRounds": 4
+    },
+    {
+      "enemyId": "enemy_jf_bronze_dokkaebi",
+      "level": 6,
+      "boss": true,
+      "hp": 680,
+      "exp": 210,
+      "gold": 120,
+      "tier": 2,
+      "targets": [
+        {
+          "classId": "class_jf_warrior",
+          "hp": 238,
+          "defense": 39,
+          "equippedDefense": 49,
+          "worstNakedDamage": 21,
+          "worstEquippedDamage": 16,
+          "worstNakedHpPercent": 8.8,
+          "actorBasicDamage": 28,
+          "equippedActorBasicDamage": 35
+        },
+        {
+          "classId": "class_jf_rogue",
+          "hp": 191,
+          "defense": 27,
+          "equippedDefense": 33,
+          "worstNakedDamage": 27,
+          "worstEquippedDamage": 24,
+          "worstNakedHpPercent": 14.1,
+          "actorBasicDamage": 26,
+          "equippedActorBasicDamage": 31
+        },
+        {
+          "classId": "class_jf_shaman",
+          "hp": 169,
+          "defense": 24,
+          "equippedDefense": 29,
+          "worstNakedDamage": 28,
+          "worstEquippedDamage": 26,
+          "worstNakedHpPercent": 16.6,
+          "actorBasicDamage": 15,
+          "equippedActorBasicDamage": 16
+        },
+        {
+          "classId": "class_jf_taoist",
+          "hp": 204,
+          "defense": 35,
+          "equippedDefense": 41,
+          "worstNakedDamage": 23,
+          "worstEquippedDamage": 20,
+          "worstNakedHpPercent": 11.3,
+          "actorBasicDamage": 16,
+          "equippedActorBasicDamage": 17
+        }
+      ],
+      "nakedBasicOnlyFourActorRounds": 8,
+      "equippedBasicOnlyFourActorRounds": 7
+    },
+    {
+      "enemyId": "enemy_jf_bride_wraith",
+      "level": 12,
+      "boss": true,
+      "hp": 1400,
+      "exp": 650,
+      "gold": 350,
+      "tier": 3,
+      "targets": [
+        {
+          "classId": "class_jf_warrior",
+          "hp": 346,
+          "defense": 57,
+          "equippedDefense": 72,
+          "worstNakedDamage": 36,
+          "worstEquippedDamage": 28,
+          "worstNakedHpPercent": 10.4,
+          "actorBasicDamage": 36,
+          "equippedActorBasicDamage": 46
+        },
+        {
+          "classId": "class_jf_rogue",
+          "hp": 281,
+          "defense": 39,
+          "equippedDefense": 49,
+          "worstNakedDamage": 45,
+          "worstEquippedDamage": 40,
+          "worstNakedHpPercent": 16,
+          "actorBasicDamage": 34,
+          "equippedActorBasicDamage": 42
+        },
+        {
+          "classId": "class_jf_shaman",
+          "hp": 247,
+          "defense": 36,
+          "equippedDefense": 44,
+          "worstNakedDamage": 46,
+          "worstEquippedDamage": 42,
+          "worstNakedHpPercent": 18.6,
+          "actorBasicDamage": 17,
+          "equippedActorBasicDamage": 19
+        },
+        {
+          "classId": "class_jf_taoist",
+          "hp": 300,
+          "defense": 53,
+          "equippedDefense": 63,
+          "worstNakedDamage": 38,
+          "worstEquippedDamage": 33,
+          "worstNakedHpPercent": 12.7,
+          "actorBasicDamage": 18,
+          "equippedActorBasicDamage": 20
+        }
+      ],
+      "nakedBasicOnlyFourActorRounds": 14,
+      "equippedBasicOnlyFourActorRounds": 12
+    },
+    {
+      "enemyId": "enemy_jf_mountain_tiger",
+      "level": 19,
+      "boss": true,
+      "hp": 2600,
+      "exp": 1400,
+      "gold": 800,
+      "tier": 4,
+      "targets": [
+        {
+          "classId": "class_jf_warrior",
+          "hp": 472,
+          "defense": 78,
+          "equippedDefense": 99,
+          "worstNakedDamage": 45,
+          "worstEquippedDamage": 35,
+          "worstNakedHpPercent": 9.5,
+          "actorBasicDamage": 43,
+          "equippedActorBasicDamage": 57
+        },
+        {
+          "classId": "class_jf_rogue",
+          "hp": 386,
+          "defense": 53,
+          "equippedDefense": 67,
+          "worstNakedDamage": 58,
+          "worstEquippedDamage": 51,
+          "worstNakedHpPercent": 15,
+          "actorBasicDamage": 41,
+          "equippedActorBasicDamage": 52
+        },
+        {
+          "classId": "class_jf_shaman",
+          "hp": 338,
+          "defense": 50,
+          "equippedDefense": 62,
+          "worstNakedDamage": 59,
+          "worstEquippedDamage": 53,
+          "worstNakedHpPercent": 17.5,
+          "actorBasicDamage": 17,
+          "equippedActorBasicDamage": 19
+        },
+        {
+          "classId": "class_jf_taoist",
+          "hp": 412,
+          "defense": 74,
+          "equippedDefense": 88,
+          "worstNakedDamage": 47,
+          "worstEquippedDamage": 40,
+          "worstNakedHpPercent": 11.4,
+          "actorBasicDamage": 18,
+          "equippedActorBasicDamage": 20
+        }
+      ],
+      "nakedBasicOnlyFourActorRounds": 22,
+      "equippedBasicOnlyFourActorRounds": 18
+    }
+  ],
+  "limitations": [
+    "actual integrated behavior/skills, ATB and resource consumption still require supervisor balance QA",
+    "basic-only round estimate is a benchmark, not a measured win time; boss skills shorten it"
+  ]
+}
