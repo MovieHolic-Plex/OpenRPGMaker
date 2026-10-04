@@ -1,0 +1,208 @@
+{
+  "url": "http://127.0.0.1:18577/player.html",
+  "projectSha256": "22b942f26b808705abbd11b0f133ef3663b976d6996549ccffb1b99a701b8c8b",
+  "scope": "Unmodified shipping player, private browser context, native keys. QA BOOT observation only; no session injection.",
+  "errors": [],
+  "pages": [
+    {
+      "id": "emerald_intro_welcome",
+      "style": "emerald",
+      "narration": "안녕! 만나서 반갑구나.\n나는 몬스터를 연구하는 천문박사란다.",
+      "images": [
+        {
+          "class": "cinematic-image",
+          "complete": true,
+          "width": 1122,
+          "height": 1402
+        }
+      ],
+      "bounds": {
+        "width": 480,
+        "height": 320
+      },
+      "music": {
+        "sameElement": true,
+        "connected": true,
+        "time": 3.351747,
+        "paused": false
+      },
+      "professor": {
+        "sameElement": true,
+        "connected": true
+      }
+    },
+    {
+      "id": "emerald_intro_world",
+      "style": "emerald",
+      "narration": "이 세계에는 몬스터라는 친구들이 살고 있지.\n사람과 함께 살아가기도, 풀숲에서 뛰놀기도 한단다.",
+      "images": [
+        {
+          "class": "cinematic-image",
+          "complete": true,
+          "width": 1122,
+          "height": 1402
+        },
+        {
+          "class": "cinematic-creature",
+          "complete": true,
+          "width": 64,
+          "height": 64
+        }
+      ],
+      "bounds": {
+        "width": 480,
+        "height": 320
+      },
+      "music": {
+        "sameElement": true,
+        "connected": true,
+        "time": 3.765051,
+        "paused": false
+      },
+      "professor": {
+        "sameElement": true,
+        "connected": true
+      }
+    },
+    {
+      "id": "emerald_intro_companions",
+      "style": "emerald",
+      "narration": "어떤 친구는 뜨거운 불을 품고,\n어떤 친구는 바다를 자유롭게 헤엄치지.",
+      "images": [
+        {
+          "class": "cinematic-image",
+          "complete": true,
+          "width": 1122,
+          "height": 1402
+        },
+        {
+          "class": "cinematic-creature",
+          "complete": true,
+          "width": 64,
+          "height": 64
+        }
+      ],
+      "bounds": {
+        "width": 480,
+        "height": 320
+      },
+      "music": {
+        "sameElement": true,
+        "connected": true,
+        "time": 4.778375,
+        "paused": false
+      },
+      "professor": {
+        "sameElement": true,
+        "connected": true
+      }
+    },
+    {
+      "id": "emerald_intro_journey",
+      "style": "emerald",
+      "narration": "너와 함께 여행할 친구를 만나 보렴.\n친구마다 잘하는 기술도, 좋아하는 장소도 다르단다.",
+      "images": [
+        {
+          "class": "cinematic-image",
+          "complete": true,
+          "width": 1122,
+          "height": 1402
+        },
+        {
+          "class": "cinematic-creature",
+          "complete": true,
+          "width": 64,
+          "height": 64
+        }
+      ],
+      "bounds": {
+        "width": 480,
+        "height": 320
+      },
+      "music": {
+        "sameElement": true,
+        "connected": true,
+        "time": 5.190354,
+        "paused": false
+      },
+      "professor": {
+        "sameElement": true,
+        "connected": true
+      }
+    },
+    {
+      "id": "emerald_intro_choice",
+      "style": "emerald",
+      "narration": "첫 동료는 네가 직접 고르면 돼.\n풀밭을 걷고, 친구를 만나고, 함께 강해지는 거야.",
+      "images": [
+        {
+          "class": "cinematic-image",
+          "complete": true,
+          "width": 1122,
+          "height": 1402
+        }
+      ],
+      "bounds": {
+        "width": 480,
+        "height": 320
+      },
+      "music": {
+        "sameElement": true,
+        "connected": true,
+        "time": 5.608518,
+        "paused": false
+      },
+      "professor": {
+        "sameElement": true,
+        "connected": true
+      }
+    },
+    {
+      "id": "emerald_intro_departure",
+      "style": "emerald",
+      "narration": "별싹 마을에서 너의 모험이 시작된단다.\n먼저 연구소에 들러 보렴. 기다리고 있겠다!",
+      "images": [
+        {
+          "class": "cinematic-image",
+          "complete": true,
+          "width": 1122,
+          "height": 1402
+        }
+      ],
+      "bounds": {
+        "width": 480,
+        "height": 320
+      },
+      "music": {
+        "sameElement": true,
+        "connected": true,
+        "time": 6.028223,
+        "paused": false
+      },
+      "professor": {
+        "sameElement": true,
+        "connected": true
+      }
+    }
+  ],
+  "title": {
+    "reference": "emerald",
+    "menu": [
+      "모험 시작",
+      "불러오기",
+      "크레딧",
+      "그만두기"
+    ],
+    "bounds": {
+      "width": 480,
+      "height": 320
+    }
+  },
+  "field": {
+    "map": "mx_map_home",
+    "x": 10,
+    "y": 10,
+    "text": "별싹 마을\nmx_map_home_to_mx_map_home_center_page\nmx_map_home_to_mx_map_home_center_page\nmx_map_home_to_mx_map_home_mart_page\nmx_map_home_to_mx_map_home_mart_page\nmx_map_home_to_mx_map_home_house_page\nmx_map_home_to_mx_map_home_house_page\nmx_map_home_to_mx_map_lab_page\nmx_map_home_to_mx_map_lab_page\nmx_map_home_guide_page\nmx_map_home_guide_page\nmx_map_home_local_page\nmx_map_home_local_page\nmx_map_home_visit\nmx_map_home_to_mx_map_meadow_page\nmx_map_home_to_mx_map_meadow_page\nmx_map_home_sign_mx_map_meadow_page\nmx_map_home_sign_mx_map_meadow_page\nmx_map_home_to_mx_map_school_page\nmx_map_home_to_mx_map_school_page\nmx_map_home_sign_mx_map_school_page\nmx_map_home_sign_mx_map_school_page\nmx_map_home_opening\nmx_map_home_ambient_resident_1_page\nmx_map_home_ambient_resident_1_page\nmx_map_home_ambient_resident_2_page\nmx_map_home_ambient_resident_2_page"
+  },
+  "completed": true
+}

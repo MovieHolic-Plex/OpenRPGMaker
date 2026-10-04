@@ -81,3 +81,24 @@ repair preserves existing art by default. Explicit `replaceCreatureArt:true`
 refreshes that known pack's front/back/icon bytes without modifying any species,
 stats, moves, evolution, encounters or saved monster instances. Unrelated custom
 resource IDs never match. Fresh campaigns already register the same shared pack.
+
+## 2026-10-04 canonical adoption and publication
+
+`verify-shots/emerald-monster-2026-10-04/REPORT.md` and its selected screenshots /
+sanitized receipts record the supervisor's actual model execution, recorded
+client replay, native player evidence and official host persistence. Existing
+Starlight project `fca4b134-ed34-4365-9021-450c7ee24894` / host project
+`649482df-81ca-4af9-806b-2613f7d7bebb` was backed up and saved as revision26,
+then reopened through a fresh bridge connection. All184new-media bytes match.
+Actual AI output is independently saved as project
+`9b959aab-eb4b-41ea-8bc3-abe9efd5fd83` / host project
+`91847c9d-1703-433e-bbde-40ad84c76685`, revision2;621media byte reads match.
+
+The public18301 monster-expedition player is exported from the existing canonical
+reload, with the stable `starlight-islands-v1` save namespace. Its semantic JSON
+matches the native-tested pre-save candidate. Live18364 uses the updated editor
+app and assistant worker; only that owned preview service was restarted. Shared
+9888 storage was not restarted. Prior app/game folders are retained separately.
+Do not substitute the old private V2 presentation shots for final-bundle proof.
+Natural capture, controlled evolution and gym event evidence have their scopes
+marked individually;72-map structural validity is not a full traversal claim.

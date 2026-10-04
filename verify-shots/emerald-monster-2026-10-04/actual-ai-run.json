@@ -1,0 +1,54 @@
+{
+  "task": "포켓몬 같은 게임 만들어. 에메랄드 느낌으로 오프닝, 필드와 상점, 전투와 몬스터를 일관되게 만들고 제목은 별빛섬 몬스터 원정으로 해줘.",
+  "routingAudit": "intent:emerald-monster-game → 전체72맵/60종 제작",
+  "monsterGameProduction": {
+    "issues": [],
+    "playbackVerified": false
+  },
+  "actualGame": {
+    "reference": {
+      "version": 1,
+      "reference": "emerald"
+    },
+    "resolution": {
+      "width": 480,
+      "height": 320
+    },
+    "cameraZoom": 2,
+    "campaignId": "starlight-islands",
+    "maps": 72,
+    "species": 60,
+    "badges": 8,
+    "objectives": 12,
+    "transfers": 279,
+    "trainerBattles": 94,
+    "shops": 9,
+    "missingSpecies": [],
+    "start": {
+      "mapId": "mx_map_home",
+      "x": 10,
+      "y": 10
+    },
+    "issues": [],
+    "verificationScope": "authored structure/resources only",
+    "playbackVerified": false
+  },
+  "stats": {
+    "ms": 147099,
+    "turns": 15,
+    "toolCalls": 44,
+    "toolErrors": 4,
+    "usage": {
+      "input": 569455,
+      "output": 1902,
+      "cacheRead": 51712,
+      "cacheWrite": 0,
+      "totalTokens": 623069,
+      "calls": 15
+    }
+  },
+  "gameSystemProduction": {
+    "issues": [],
+    "playbackVerified": false
+  }
+}
