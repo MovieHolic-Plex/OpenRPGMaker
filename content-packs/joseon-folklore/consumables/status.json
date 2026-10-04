@@ -1,0 +1,104 @@
+{
+  "phase": "pilot",
+  "ready": true,
+  "readyScope": "first sample files saved for supervisor review; not installed or user-approved",
+  "counts": {
+    "items": 6,
+    "consumables": 4,
+    "materials": 2,
+    "skills": 0,
+    "icons": 6
+  },
+  "fullTarget": {
+    "consumables": 20,
+    "materials": 12
+  },
+  "reviewFiles": [
+    "review/pilot-sheet.png",
+    "review/visual-review.json",
+    "review/smoke.json",
+    "art-manifest.json",
+    "design.json"
+  ],
+  "userApproval": null,
+  "publicRegistered": false,
+  "liveProjectWritten": false,
+  "verification": {
+    "script": "node content-packs/joseon-folklore/consumables/run-smoke.mjs",
+    "exitCode": 0,
+    "checkCount": 24,
+    "gatesExecuted": false
+  },
+  "limitations": [
+    "환생부는 현 엔진 제한에 맞춘 필드 메뉴 부활만 지원",
+    "상점·획득·드롭은 미설치 디자인 제안",
+    "public 리소스 등록·실제게임 통합·화면 QA·정본 저장은 감독자 담당",
+    "전체 20+12 확대는 후속 지시 대기"
+  ],
+  "savedFiles": [
+    {
+      "file": "README.md",
+      "sha256": "375ce9dcb6e5c30f84c45766c64a0a2cfdf0b2eeb53bf75969f5ce2af4531319"
+    },
+    {
+      "file": "data.json",
+      "sha256": "cb6871166d7c61d3984aa18bf77c2867c7f45ee387c2a6da7708ec27ba832485"
+    },
+    {
+      "file": "design.json",
+      "sha256": "cca0ff61ceee73c1c958f3dac44a4500714d00ce435e148567240b273a078f63"
+    },
+    {
+      "file": "draw_icons.py",
+      "sha256": "887a3e99f1a4c09548d92cfceffda4e4d0f074d9a163c648d1583e48df07f88b"
+    },
+    {
+      "file": "run-smoke.mjs",
+      "sha256": "83265c69f0be94fa4fd00ab3bb04d1092cf34c1776ad16bee034720e531798e5"
+    },
+    {
+      "file": "smoke.mts",
+      "sha256": "3dcbd081abe1166db0d1eb6ceba12c4baaeac9ee30aa9e5e8738e058ae2ef837"
+    },
+    {
+      "file": "art-manifest.json",
+      "sha256": "4adadd41aa4784e41cbacd4904d6d026cfa6bbe660aff5deb998a079df535db8"
+    },
+    {
+      "file": "review/pilot-sheet.png",
+      "sha256": "7f6877f923625042d33c8451fb203ef2fc0f7b3e35c2e3e1ed9d14900195cbe5"
+    },
+    {
+      "file": "review/visual-review.json",
+      "sha256": "f446ed6b7f7edc5ce9b3447ecca57ed856647db31193c9657aa427c01e310018"
+    },
+    {
+      "file": "review/smoke.json",
+      "sha256": "491bbec8d7ce203b2ef9e6cfbad817524e0e82ca68b2c5bfbc68857b33d5b636"
+    },
+    {
+      "file": "assets/mugwort-pill.png",
+      "sha256": "d5ac438685003e1e1ff6d109bb33d62c8f299251c7e4267e611c9c4a4710da33"
+    },
+    {
+      "file": "assets/ginseng-tea.png",
+      "sha256": "a97ab62d7c8e9a06dca0e157caf6a600d4843a033d5266d7e766e342626d01ad"
+    },
+    {
+      "file": "assets/purification-charm.png",
+      "sha256": "3105c4a60a47c0029291cbc68d563951536d21f3b4f5d261b0d962049b62ebbd"
+    },
+    {
+      "file": "assets/revival-charm.png",
+      "sha256": "fca32ba5ebd64cb094f16000d3fbaeb284543f203e0d2e67f9766dae96a52f66"
+    },
+    {
+      "file": "assets/boar-tusk.png",
+      "sha256": "f96d20f31e7184e7ae7e50325c1cf882e108ee270a5ce637f6571b32b50328d8"
+    },
+    {
+      "file": "assets/straw-knot.png",
+      "sha256": "9486d91ddedb14720606661b9036a31ed200996ec748d8abae9167e033cbddcf"
+    }
+  ]
+}

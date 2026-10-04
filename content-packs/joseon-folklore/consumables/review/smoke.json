@@ -1,0 +1,649 @@
+{
+  "scope": "local content pack only; no canonical SQLite save or public registration",
+  "prototypePath": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/output/jf-workers/prototype-database.json",
+  "prototypeSha256": "a8d06a510f40ae239ed670a7aeba9a25c384ee98a0b623c7634d3c085c946965",
+  "dataSha256": "cb6871166d7c61d3984aa18bf77c2867c7f45ee387c2a6da7708ec27ba832485",
+  "engineFiles": [
+    {
+      "path": "src/project/databaseRecordModel.ts",
+      "sha256": "c2369a73dbe6678a7e6482f2eae99a60c3685b993b290856579bb8dbc5c10853"
+    },
+    {
+      "path": "src/project/itemUsage.ts",
+      "sha256": "51b2de977044df3c2d38e03f8e53269a62c5a82fa7be8b21b226c4bbbd7e2104"
+    },
+    {
+      "path": "src/player/playerItemUse.ts",
+      "sha256": "911b7f64b9925a4d0fc16d7c4ec31a78913ce1f80e4430e1b88aa6577296844d"
+    },
+    {
+      "path": "src/battle/runtime.ts",
+      "sha256": "54b886fe49bf3a8ca0c1444eb0d7991acdf679839696e408bd87f74f5d9335a2"
+    }
+  ],
+  "passed": true,
+  "checkCount": 24,
+  "checks": [
+    {
+      "kind": "normalize-and-reload",
+      "id": "item_jf_mugwort_pill",
+      "iconSha256": "d5ac438685003e1e1ff6d109bb33d62c8f299251c7e4267e611c9c4a4710da33",
+      "type": "medicine",
+      "hpRecovery": {
+        "flat": 50,
+        "percentMax": 0
+      },
+      "mpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "healStateIds": [],
+      "menu": true,
+      "battle": true
+    },
+    {
+      "kind": "normalize-and-reload",
+      "id": "item_jf_ginseng_tea",
+      "iconSha256": "a97ab62d7c8e9a06dca0e157caf6a600d4843a033d5266d7e766e342626d01ad",
+      "type": "medicine",
+      "hpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "mpRecovery": {
+        "flat": 16,
+        "percentMax": 0
+      },
+      "healStateIds": [],
+      "menu": true,
+      "battle": true
+    },
+    {
+      "kind": "normalize-and-reload",
+      "id": "item_jf_purification_charm",
+      "iconSha256": "3105c4a60a47c0029291cbc68d563951536d21f3b4f5d261b0d962049b62ebbd",
+      "type": "medicine",
+      "hpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "mpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "healStateIds": [
+        "state_poison"
+      ],
+      "menu": true,
+      "battle": true
+    },
+    {
+      "kind": "normalize-and-reload",
+      "id": "item_jf_revival_charm",
+      "iconSha256": "fca32ba5ebd64cb094f16000d3fbaeb284543f203e0d2e67f9766dae96a52f66",
+      "type": "medicine",
+      "hpRecovery": {
+        "flat": 1,
+        "percentMax": 25
+      },
+      "mpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "healStateIds": [],
+      "menu": true,
+      "battle": false
+    },
+    {
+      "kind": "normalize-and-reload",
+      "id": "item_jf_mat_boar_tusk",
+      "iconSha256": "f96d20f31e7184e7ae7e50325c1cf882e108ee270a5ce637f6571b32b50328d8",
+      "type": "normalGoods",
+      "hpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "mpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "healStateIds": [],
+      "menu": false,
+      "battle": false
+    },
+    {
+      "kind": "normalize-and-reload",
+      "id": "item_jf_mat_straw_knot",
+      "iconSha256": "9486d91ddedb14720606661b9036a31ed200996ec748d8abae9167e033cbddcf",
+      "type": "normalGoods",
+      "hpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "mpRecovery": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "healStateIds": [],
+      "menu": false,
+      "battle": false
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "mugwort-pill",
+      "before": {
+        "hp": 10,
+        "mp": 0,
+        "stateIds": [],
+        "maxHp": 120
+      },
+      "after": {
+        "hp": 60,
+        "mp": 0,
+        "maxHp": 120,
+        "maxMp": 36,
+        "stateIds": []
+      },
+      "preview": {
+        "hp": 10,
+        "maxHp": 120,
+        "mp": 0,
+        "maxMp": 36,
+        "hpAfter": 60,
+        "mpAfter": 0,
+        "stateIds": [],
+        "curedStateIds": []
+      },
+      "result": "used",
+      "remaining": 1
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "mugwort-pill",
+      "before": {
+        "hp": 110,
+        "mp": 0,
+        "stateIds": [],
+        "maxHp": 120
+      },
+      "after": {
+        "hp": 120,
+        "mp": 0,
+        "maxHp": 120,
+        "maxMp": 36,
+        "stateIds": []
+      },
+      "preview": {
+        "hp": 110,
+        "maxHp": 120,
+        "mp": 0,
+        "maxMp": 36,
+        "hpAfter": 120,
+        "mpAfter": 0,
+        "stateIds": [],
+        "curedStateIds": []
+      },
+      "result": "used",
+      "remaining": 1
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "mugwort-pill",
+      "before": {
+        "hp": 0,
+        "mp": 0,
+        "stateIds": [],
+        "maxHp": 120
+      },
+      "after": {
+        "hp": 0,
+        "mp": 0,
+        "maxHp": 120,
+        "maxMp": 36,
+        "stateIds": []
+      },
+      "preview": {
+        "reason": "전투불능 상태입니다",
+        "hp": 0,
+        "maxHp": 120,
+        "mp": 0,
+        "maxMp": 36,
+        "hpAfter": 0,
+        "mpAfter": 0,
+        "stateIds": [],
+        "curedStateIds": []
+      },
+      "result": "unusable",
+      "remaining": 2
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "mugwort-pill",
+      "before": {
+        "hp": 120,
+        "mp": 36,
+        "stateIds": [],
+        "maxHp": 120
+      },
+      "after": {
+        "hp": 120,
+        "mp": 36,
+        "maxHp": 120,
+        "maxMp": 36,
+        "stateIds": []
+      },
+      "preview": {
+        "reason": "적용할 효과가 없습니다",
+        "hp": 120,
+        "maxHp": 120,
+        "mp": 36,
+        "maxMp": 36,
+        "hpAfter": 120,
+        "mpAfter": 36,
+        "stateIds": [],
+        "curedStateIds": []
+      },
+      "result": "unusable",
+      "remaining": 2
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "ginseng-tea",
+      "before": {
+        "hp": 120,
+        "mp": 0,
+        "stateIds": [],
+        "maxHp": 120
+      },
+      "after": {
+        "hp": 120,
+        "mp": 16,
+        "maxHp": 120,
+        "maxMp": 36,
+        "stateIds": []
+      },
+      "preview": {
+        "hp": 120,
+        "maxHp": 120,
+        "mp": 0,
+        "maxMp": 36,
+        "hpAfter": 120,
+        "mpAfter": 16,
+        "stateIds": [],
+        "curedStateIds": []
+      },
+      "result": "used",
+      "remaining": 1
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "ginseng-tea",
+      "before": {
+        "hp": 120,
+        "mp": 30,
+        "stateIds": [],
+        "maxHp": 120
+      },
+      "after": {
+        "hp": 120,
+        "mp": 36,
+        "maxHp": 120,
+        "maxMp": 36,
+        "stateIds": []
+      },
+      "preview": {
+        "hp": 120,
+        "maxHp": 120,
+        "mp": 30,
+        "maxMp": 36,
+        "hpAfter": 120,
+        "mpAfter": 36,
+        "stateIds": [],
+        "curedStateIds": []
+      },
+      "result": "used",
+      "remaining": 1
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "purification-charm",
+      "before": {
+        "hp": 120,
+        "mp": 0,
+        "stateIds": [
+          "state_poison",
+          "state_sleep",
+          "state_deep_poison"
+        ],
+        "maxHp": 120
+      },
+      "after": {
+        "hp": 120,
+        "mp": 0,
+        "maxHp": 120,
+        "maxMp": 36,
+        "stateIds": [
+          "state_sleep",
+          "state_deep_poison"
+        ]
+      },
+      "preview": {
+        "hp": 120,
+        "maxHp": 120,
+        "mp": 0,
+        "maxMp": 36,
+        "hpAfter": 120,
+        "mpAfter": 0,
+        "stateIds": [
+          "state_poison",
+          "state_sleep",
+          "state_deep_poison"
+        ],
+        "curedStateIds": [
+          "state_poison"
+        ]
+      },
+      "result": "used",
+      "remaining": 1
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "purification-charm",
+      "before": {
+        "hp": 120,
+        "mp": 0,
+        "stateIds": [
+          "state_deep_poison"
+        ],
+        "maxHp": 120
+      },
+      "after": {
+        "hp": 120,
+        "mp": 0,
+        "maxHp": 120,
+        "maxMp": 36,
+        "stateIds": [
+          "state_deep_poison"
+        ]
+      },
+      "preview": {
+        "reason": "적용할 효과가 없습니다",
+        "hp": 120,
+        "maxHp": 120,
+        "mp": 0,
+        "maxMp": 36,
+        "hpAfter": 120,
+        "mpAfter": 0,
+        "stateIds": [
+          "state_deep_poison"
+        ],
+        "curedStateIds": []
+      },
+      "result": "unusable",
+      "remaining": 2
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "revival-charm",
+      "before": {
+        "hp": 0,
+        "mp": 7,
+        "stateIds": [
+          "state_poison"
+        ],
+        "maxHp": 120
+      },
+      "after": {
+        "hp": 31,
+        "mp": 7,
+        "maxHp": 120,
+        "maxMp": 36,
+        "stateIds": [
+          "state_poison"
+        ]
+      },
+      "preview": {
+        "hp": 0,
+        "maxHp": 120,
+        "mp": 7,
+        "maxMp": 36,
+        "hpAfter": 31,
+        "mpAfter": 7,
+        "stateIds": [
+          "state_poison"
+        ],
+        "curedStateIds": []
+      },
+      "result": "used",
+      "remaining": 1
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "revival-charm",
+      "before": {
+        "hp": 0,
+        "mp": 0,
+        "stateIds": [],
+        "maxHp": 127
+      },
+      "after": {
+        "hp": 32,
+        "mp": 0,
+        "maxHp": 127,
+        "maxMp": 36,
+        "stateIds": []
+      },
+      "preview": {
+        "hp": 0,
+        "maxHp": 127,
+        "mp": 0,
+        "maxMp": 36,
+        "hpAfter": 32,
+        "mpAfter": 0,
+        "stateIds": [],
+        "curedStateIds": []
+      },
+      "result": "used",
+      "remaining": 1
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "revival-charm",
+      "before": {
+        "hp": 0,
+        "mp": 0,
+        "stateIds": [],
+        "maxHp": 1
+      },
+      "after": {
+        "hp": 1,
+        "mp": 0,
+        "maxHp": 1,
+        "maxMp": 36,
+        "stateIds": []
+      },
+      "preview": {
+        "hp": 0,
+        "maxHp": 1,
+        "mp": 0,
+        "maxMp": 36,
+        "hpAfter": 1,
+        "mpAfter": 0,
+        "stateIds": [],
+        "curedStateIds": []
+      },
+      "result": "used",
+      "remaining": 1
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "revival-charm",
+      "before": {
+        "hp": 10,
+        "mp": 7,
+        "stateIds": [],
+        "maxHp": 120
+      },
+      "after": {
+        "hp": 10,
+        "mp": 7,
+        "maxHp": 120,
+        "maxMp": 36,
+        "stateIds": []
+      },
+      "preview": {
+        "reason": "전투불능 대상에게만 사용할 수 있습니다",
+        "hp": 10,
+        "maxHp": 120,
+        "mp": 7,
+        "maxMp": 36,
+        "hpAfter": 10,
+        "mpAfter": 7,
+        "stateIds": [],
+        "curedStateIds": []
+      },
+      "result": "unusable",
+      "remaining": 2
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "boar-tusk",
+      "before": {
+        "hp": 10,
+        "mp": 0,
+        "stateIds": [
+          "state_poison"
+        ],
+        "maxHp": 120
+      },
+      "after": {
+        "hp": 10,
+        "mp": 0,
+        "maxHp": 120,
+        "maxMp": 36,
+        "stateIds": [
+          "state_poison"
+        ]
+      },
+      "preview": {
+        "reason": "필드에서 사용할 수 없는 아이템입니다",
+        "hp": 10,
+        "maxHp": 120,
+        "mp": 0,
+        "maxMp": 36,
+        "hpAfter": 10,
+        "mpAfter": 0,
+        "stateIds": [
+          "state_poison"
+        ],
+        "curedStateIds": []
+      },
+      "result": "unusable",
+      "remaining": 2
+    },
+    {
+      "kind": "real-menu-use",
+      "slug": "straw-knot",
+      "before": {
+        "hp": 10,
+        "mp": 0,
+        "stateIds": [
+          "state_poison"
+        ],
+        "maxHp": 120
+      },
+      "after": {
+        "hp": 10,
+        "mp": 0,
+        "maxHp": 120,
+        "maxMp": 36,
+        "stateIds": [
+          "state_poison"
+        ]
+      },
+      "preview": {
+        "reason": "필드에서 사용할 수 없는 아이템입니다",
+        "hp": 10,
+        "maxHp": 120,
+        "mp": 0,
+        "maxMp": 36,
+        "hpAfter": 10,
+        "mpAfter": 0,
+        "stateIds": [
+          "state_poison"
+        ],
+        "curedStateIds": []
+      },
+      "result": "unusable",
+      "remaining": 2
+    },
+    {
+      "kind": "real-battle-use",
+      "slug": "mugwort-pill",
+      "before": {
+        "hp": 1,
+        "mp": 0,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison"
+        ]
+      },
+      "after": {
+        "hp": 51,
+        "mp": 0,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison"
+        ]
+      },
+      "remaining": 1
+    },
+    {
+      "kind": "real-battle-use",
+      "slug": "ginseng-tea",
+      "before": {
+        "hp": 1,
+        "mp": 0,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison"
+        ]
+      },
+      "after": {
+        "hp": 1,
+        "mp": 16,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison"
+        ]
+      },
+      "remaining": 1
+    },
+    {
+      "kind": "real-battle-use",
+      "slug": "purification-charm",
+      "before": {
+        "hp": 1,
+        "mp": 0,
+        "stateIds": [
+          "state_poison",
+          "state_deep_poison"
+        ]
+      },
+      "after": {
+        "hp": 1,
+        "mp": 0,
+        "stateIds": [
+          "state_deep_poison"
+        ]
+      },
+      "remaining": 1
+    },
+    {
+      "kind": "engine-limitation",
+      "slug": "revival-charm",
+      "battleAllowed": false,
+      "reason": "itemAllowsBattle rejects medicine.onlyEffectiveOnDeadActors; SkillRecord has no dead-ally scope. Field revival is implemented."
+    }
+  ]
+}

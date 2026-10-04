@@ -1,0 +1,151 @@
+{
+  "schemaVersion": 1,
+  "author": "GPT 6.1 sol high / consumables worker, original integer-coordinate pixel art, 2026-10-04",
+  "sourceSha256": "887a3e99f1a4c09548d92cfceffda4e4d0f074d9a163c648d1583e48df07f88b",
+  "icons": [
+    {
+      "slug": "mugwort-pill",
+      "resourceId": "jf-icon-mugwort-pill",
+      "sourceFile": "assets/mugwort-pill.png",
+      "path": "assets/joseon-folklore/consumables/mugwort-pill.png",
+      "sha256": "d5ac438685003e1e1ff6d109bb33d62c8f299251c7e4267e611c9c4a4710da33",
+      "width": 32,
+      "height": 32,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaqueColours": 9,
+      "visibleBoundsExclusive": [
+        4,
+        3,
+        29,
+        29
+      ],
+      "author": "GPT 6.1 sol high / consumables worker, original integer-coordinate pixel art, 2026-10-04",
+      "source": "draw_icons.py",
+      "method": "original code pixel art; no sampled raster",
+      "publication": "pending supervisor integration"
+    },
+    {
+      "slug": "ginseng-tea",
+      "resourceId": "jf-icon-ginseng-tea",
+      "sourceFile": "assets/ginseng-tea.png",
+      "path": "assets/joseon-folklore/consumables/ginseng-tea.png",
+      "sha256": "a97ab62d7c8e9a06dca0e157caf6a600d4843a033d5266d7e766e342626d01ad",
+      "width": 32,
+      "height": 32,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaqueColours": 12,
+      "visibleBoundsExclusive": [
+        4,
+        3,
+        29,
+        28
+      ],
+      "author": "GPT 6.1 sol high / consumables worker, original integer-coordinate pixel art, 2026-10-04",
+      "source": "draw_icons.py",
+      "method": "original code pixel art; no sampled raster",
+      "publication": "pending supervisor integration"
+    },
+    {
+      "slug": "purification-charm",
+      "resourceId": "jf-icon-purification-charm",
+      "sourceFile": "assets/purification-charm.png",
+      "path": "assets/joseon-folklore/consumables/purification-charm.png",
+      "sha256": "3105c4a60a47c0029291cbc68d563951536d21f3b4f5d261b0d962049b62ebbd",
+      "width": 32,
+      "height": 32,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaqueColours": 8,
+      "visibleBoundsExclusive": [
+        7,
+        3,
+        26,
+        30
+      ],
+      "author": "GPT 6.1 sol high / consumables worker, original integer-coordinate pixel art, 2026-10-04",
+      "source": "draw_icons.py",
+      "method": "original code pixel art; no sampled raster",
+      "publication": "pending supervisor integration"
+    },
+    {
+      "slug": "revival-charm",
+      "resourceId": "jf-icon-revival-charm",
+      "sourceFile": "assets/revival-charm.png",
+      "path": "assets/joseon-folklore/consumables/revival-charm.png",
+      "sha256": "fca32ba5ebd64cb094f16000d3fbaeb284543f203e0d2e67f9766dae96a52f66",
+      "width": 32,
+      "height": 32,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaqueColours": 9,
+      "visibleBoundsExclusive": [
+        4,
+        3,
+        28,
+        29
+      ],
+      "author": "GPT 6.1 sol high / consumables worker, original integer-coordinate pixel art, 2026-10-04",
+      "source": "draw_icons.py",
+      "method": "original code pixel art; no sampled raster",
+      "publication": "pending supervisor integration"
+    },
+    {
+      "slug": "boar-tusk",
+      "resourceId": "jf-icon-boar-tusk",
+      "sourceFile": "assets/boar-tusk.png",
+      "path": "assets/joseon-folklore/consumables/boar-tusk.png",
+      "sha256": "f96d20f31e7184e7ae7e50325c1cf882e108ee270a5ce637f6571b32b50328d8",
+      "width": 32,
+      "height": 32,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaqueColours": 7,
+      "visibleBoundsExclusive": [
+        5,
+        3,
+        27,
+        29
+      ],
+      "author": "GPT 6.1 sol high / consumables worker, original integer-coordinate pixel art, 2026-10-04",
+      "source": "draw_icons.py",
+      "method": "original code pixel art; no sampled raster",
+      "publication": "pending supervisor integration"
+    },
+    {
+      "slug": "straw-knot",
+      "resourceId": "jf-icon-straw-knot",
+      "sourceFile": "assets/straw-knot.png",
+      "path": "assets/joseon-folklore/consumables/straw-knot.png",
+      "sha256": "9486d91ddedb14720606661b9036a31ed200996ec748d8abae9167e033cbddcf",
+      "width": 32,
+      "height": 32,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "opaqueColours": 5,
+      "visibleBoundsExclusive": [
+        4,
+        4,
+        28,
+        29
+      ],
+      "author": "GPT 6.1 sol high / consumables worker, original integer-coordinate pixel art, 2026-10-04",
+      "source": "draw_icons.py",
+      "method": "original code pixel art; no sampled raster",
+      "publication": "pending supervisor integration"
+    }
+  ]
+}

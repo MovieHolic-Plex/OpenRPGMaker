@@ -1,0 +1,66 @@
+{
+  "reviewer": "consumables author / GPT 6.1 sol high",
+  "method": "view_image로 저장한 원본 32x32 PNG 6장 각각과 review/pilot-sheet.png(native+6x nearest, cream/dark 배경)를 직접 열어 확인",
+  "reviewScope": "저자 시각 검토; 실제 게임 UI·설치·사용자 승인은 별도",
+  "userApproval": null,
+  "sheet": {
+    "file": "review/pilot-sheet.png",
+    "sha256": "7f6877f923625042d33c8451fb203ef2fc0f7b3e35c2e3e1ed9d14900195cbe5"
+  },
+  "icons": [
+    {
+      "slug": "mugwort-pill",
+      "file": "assets/mugwort-pill.png",
+      "sha256": "d5ac438685003e1e1ff6d109bb33d62c8f299251c7e4267e611c9c4a4710da33",
+      "observed": true,
+      "authorAssessment": "검토 가능한 첫 샘플",
+      "notes": "원본 32px에서 약환 두 알·쑥잎·포장지가 보인다. 확대에서 좌상단 하이라이트와 약환 그림자 군집을 확인했다.",
+      "userApproval": null
+    },
+    {
+      "slug": "ginseng-tea",
+      "file": "assets/ginseng-tea.png",
+      "sha256": "a97ab62d7c8e9a06dca0e157caf6a600d4843a033d5266d7e766e342626d01ad",
+      "observed": true,
+      "authorAssessment": "검토 가능한 첫 샘플",
+      "notes": "청자 사발과 호박색 수면, 갈라진 뿌리, 김을 확인했다. 약환과 넓은 사발 실루엣이 구별된다.",
+      "userApproval": null
+    },
+    {
+      "slug": "purification-charm",
+      "file": "assets/purification-charm.png",
+      "sha256": "3105c4a60a47c0029291cbc68d563951536d21f3b4f5d261b0d962049b62ebbd",
+      "observed": true,
+      "authorAssessment": "검토 가능한 첫 샘플",
+      "notes": "세로 종이 실루엣, 접힌 모서리, 붉은 추상 문양을 확인했다. 환생부와 색만 바꾼 복제품이 아니다.",
+      "userApproval": null
+    },
+    {
+      "slug": "revival-charm",
+      "file": "assets/revival-charm.png",
+      "sha256": "fca32ba5ebd64cb094f16000d3fbaeb284543f203e0d2e67f9766dae96a52f66",
+      "observed": true,
+      "authorAssessment": "검토 가능한 첫 샘플",
+      "notes": "접힌 넓은 종이와 붉은 묶음끈, 위로 솟은 금빛 혼불을 확인했다. 원본에서 정화부와 외곽 형태가 다르다.",
+      "userApproval": null
+    },
+    {
+      "slug": "boar-tusk",
+      "file": "assets/boar-tusk.png",
+      "sha256": "f96d20f31e7184e7ae7e50325c1cf882e108ee270a5ce637f6571b32b50328d8",
+      "observed": true,
+      "authorAssessment": "검토 가능한 첫 샘플",
+      "notes": "휘어진 끝과 갈색 뿌리, 상아색 명암을 확인했다. 끝이 캔버스 경계에서 잘리지 않는다.",
+      "userApproval": null
+    },
+    {
+      "slug": "straw-knot",
+      "file": "assets/straw-knot.png",
+      "sha256": "9486d91ddedb14720606661b9036a31ed200996ec748d8abae9167e033cbddcf",
+      "observed": true,
+      "authorAssessment": "검토 가능한 첫 샘플",
+      "notes": "두 고리의 투명 구멍과 꼬임, 풀린 섬유를 확인했다. 좁은 섬유는 원본에서 단순화되어 보이나 고리 형태는 남는다.",
+      "userApproval": null
+    }
+  ]
+}

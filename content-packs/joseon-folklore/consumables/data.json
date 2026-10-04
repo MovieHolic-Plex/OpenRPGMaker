@@ -1,0 +1,83 @@
+{
+  "items": [
+    {
+      "id": "item_jf_mugwort_pill",
+      "name": "쑥단",
+      "description": "말린 쑥을 꿀에 개어 빚은 초록 약환. 살아 있는 아군 한 명의 HP를 50 회복한다.",
+      "type": "medicine", "scope": "ally", "price": 16,
+      "iconResourceId": "jf-icon-mugwort-pill", "imageResourceId": "jf-icon-mugwort-pill",
+      "occasion": "always", "occasionField": true, "occasionBattle": true,
+      "consumable": true, "consumptionLimit": "noLimit", "onlyUsableInMenu": false,
+      "onlyEffectiveOnDeadActors": false, "animationId": "anim_heal",
+      "hpRecovery": { "flat": 50, "percentMax": 0 },
+      "mpRecovery": { "flat": 0, "percentMax": 0 },
+      "healStateIds": [], "stateEffects": [], "usableActorIds": [], "usableClassIds": []
+    },
+    {
+      "id": "item_jf_ginseng_tea",
+      "name": "산삼탕",
+      "description": "작은 사발에 담은 산삼 달임물. 살아 있는 아군 한 명의 기력(MP)을 16 회복한다.",
+      "type": "medicine", "scope": "ally", "price": 32,
+      "iconResourceId": "jf-icon-ginseng-tea", "imageResourceId": "jf-icon-ginseng-tea",
+      "occasion": "always", "occasionField": true, "occasionBattle": true,
+      "consumable": true, "consumptionLimit": "noLimit", "onlyUsableInMenu": false,
+      "onlyEffectiveOnDeadActors": false, "animationId": "anim_gen_psychic_wave",
+      "hpRecovery": { "flat": 0, "percentMax": 0 },
+      "mpRecovery": { "flat": 16, "percentMax": 0 },
+      "healStateIds": [], "stateEffects": [], "usableActorIds": [], "usableClassIds": []
+    },
+    {
+      "id": "item_jf_purification_charm",
+      "name": "정화부",
+      "description": "물결 모양 주사가 찍힌 황지 부적. 살아 있는 아군 한 명의 독을 해제한다. 맹독과 다른 상태는 해제하지 않는다.",
+      "type": "medicine", "scope": "ally", "price": 18,
+      "iconResourceId": "jf-icon-purification-charm", "imageResourceId": "jf-icon-purification-charm",
+      "occasion": "always", "occasionField": true, "occasionBattle": true,
+      "consumable": true, "consumptionLimit": "noLimit", "onlyUsableInMenu": false,
+      "onlyEffectiveOnDeadActors": false, "animationId": "anim_heal",
+      "hpRecovery": { "flat": 0, "percentMax": 0 },
+      "mpRecovery": { "flat": 0, "percentMax": 0 },
+      "healStateIds": ["state_poison"],
+      "stateEffects": [{ "stateId": "state_poison", "operation": "remove", "chance": 100 }],
+      "usableActorIds": [], "usableClassIds": []
+    },
+    {
+      "id": "item_jf_revival_charm",
+      "name": "환생부",
+      "description": "붉은 끈과 금빛 혼불을 품은 접힌 부적. 필드 메뉴에서 전투불능 아군 한 명을 HP 최대치의 25%(내림)+1로 되살린다. 전투 중에는 사용할 수 없다.",
+      "type": "medicine", "scope": "ally", "price": 96,
+      "iconResourceId": "jf-icon-revival-charm", "imageResourceId": "jf-icon-revival-charm",
+      "occasion": "field", "occasionField": true, "occasionBattle": false,
+      "consumable": true, "consumptionLimit": "noLimit", "onlyUsableInMenu": true,
+      "onlyEffectiveOnDeadActors": true, "animationId": "anim_heal",
+      "hpRecovery": { "flat": 1, "percentMax": 25 },
+      "mpRecovery": { "flat": 0, "percentMax": 0 },
+      "healStateIds": [], "stateEffects": [], "usableActorIds": [], "usableClassIds": []
+    },
+    {
+      "id": "item_jf_mat_boar_tusk",
+      "name": "멧돼지 어금니",
+      "description": "휘어진 끝과 거친 뿌리가 남은 어금니. 판매용 재료이며 직접 사용할 수 없다.",
+      "type": "normalGoods", "scope": "none", "price": 12,
+      "iconResourceId": "jf-icon-boar-tusk", "imageResourceId": "jf-icon-boar-tusk",
+      "occasion": "never", "occasionField": false, "occasionBattle": false,
+      "consumable": false, "consumptionLimit": "noLimit", "onlyUsableInMenu": false,
+      "onlyEffectiveOnDeadActors": false,
+      "hpRecovery": { "flat": 0, "percentMax": 0 }, "mpRecovery": { "flat": 0, "percentMax": 0 },
+      "healStateIds": [], "stateEffects": [], "usableActorIds": [], "usableClassIds": []
+    },
+    {
+      "id": "item_jf_mat_straw_knot",
+      "name": "짚 매듭",
+      "description": "짚도깨비에서 풀려 나온 볏짚 고리. 판매용 재료이며 직접 사용할 수 없다.",
+      "type": "normalGoods", "scope": "none", "price": 6,
+      "iconResourceId": "jf-icon-straw-knot", "imageResourceId": "jf-icon-straw-knot",
+      "occasion": "never", "occasionField": false, "occasionBattle": false,
+      "consumable": false, "consumptionLimit": "noLimit", "onlyUsableInMenu": false,
+      "onlyEffectiveOnDeadActors": false,
+      "hpRecovery": { "flat": 0, "percentMax": 0 }, "mpRecovery": { "flat": 0, "percentMax": 0 },
+      "healStateIds": [], "stateEffects": [], "usableActorIds": [], "usableClassIds": []
+    }
+  ],
+  "skills": []
+}
