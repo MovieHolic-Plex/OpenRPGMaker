@@ -286,3 +286,6 @@ PASS 분기는 컨트롤러 확인용 합성 fixture이며 실제 그림의 합�
   조사하는 비용을 줄이고, 새 queued 판과 변경된 명세 해시를 다시 독립 검수한다.
 - 운영 근거 `verify-shots/super-harness-layout-gates/`: 기존 그림은 새 기준에서 style/spaceUse/composition/specification
   FAIL, 첫 축소 도면은 중복 여백으로 spaceUse FAIL. 도면 반려 시 native 작업이 시작되지 않은 것을 확인했다.
+- 사용자가 게이트 수정 후 재제작을 요청하여 주차장의 누적 그림 수정 상한을2로 올렸다. 320×256 실패 표본을
+  재검수한 뒤, 256×208 도면은 spaceUse FAIL로 그림 실행 전에 차단되었다. 수정한 240×192 도면은5축 PASS 후
+  native 제작에 진입했다. 이는 완성 그림의 합격을 뜻하지 않으며 최종8축 이미지 검수와 사람 선택은 별도다.
