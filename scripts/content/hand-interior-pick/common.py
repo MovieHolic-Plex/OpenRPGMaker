@@ -225,6 +225,7 @@ SPEC_TOP_RE = re.compile(r'꼭대기\s*윗면\s*(\d+)(?:\s*~\s*(\d+))?\s*행')
 def top_min(o):
     """꼭대기 면(가장 높은 수평 면 — 지붕·상판·뚜껑·받침) 윗면 최소 행 수. 바닥 기물·벽 앞 기물만, 나머지(걸이·바닥 무늬)는 None."""
     if o.get('kind') not in ('floor', 'wall'): return None
+    if o.get('set'): return None   # 파생 묶음: 칸마다 원본 칸과 같은 윗면이 기준이다(검수 지시문이 말한다) — 2026-10-04 의자 등받이 머리 1행이 「3행 미만」으로 떨어졌다
     fh = int((o.get('footprint') or {}).get('h') or 1)
     return TOP_MIN_SHALLOW if fh <= 1 else TOP_PER_DEPTH * (fh - 1)
 

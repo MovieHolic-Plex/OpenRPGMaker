@@ -215,7 +215,8 @@ def _review_prompt(r):
            '{CAND}': f"{_folder(r, absolute=True)}/{_out(r)}.pxg", '{ATTEMPT}': str(r.get('attempt') or 1), '{MAX}': str(MAX_ATTEMPTS),
            '{LETTER}': r['letter'], '{DIRECTION}': r['direction'], '{PACK}': pack, '{PREV}': prev,
            '{FAMILY}': ', '.join(f'`{p}`' for p in fam) or '(없음)', '{ANCHORS}': ', '.join(f'`{p}`' for p in anc) or '(없음)',
-           '{NEWMODE}': (__import__('derive').review_text(o) or NEW_REVIEW) if brief.is_new(r['item']) else '', '{TOPRULE}': top_rule_text(o) or '해당 없음(벽면 걸이·바닥 무늬).'}
+           '{NEWMODE}': (__import__('derive').review_text(o) or NEW_REVIEW) if brief.is_new(r['item']) else '', '{TOPRULE}': ('파생 묶음 — 칸마다 **원본 칸과 같은 시점·같은 윗면 두께**가 기준이다(원본 칸보다 윗면이 눈에 띄게 얇거나 옆모습이면 `FRONT`). 원본 칸 자체의 행 수는 따지지 않는다.'
+                           if o.get('set') else top_rule_text(o) or '해당 없음(벽면 걸이·바닥 무늬).')}
     for k, v in rep.items(): t = t.replace(k, v)
     return t, pack
 
