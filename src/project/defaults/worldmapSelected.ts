@@ -36,7 +36,7 @@ export function createWorldmapSelectedTileset(world: TilesetDef): TilesetDef {
       placementRules: "아래 지형 보존. 밑줄 중앙=출입구, 나머지 밑줄=막힘, 윗줄=★. 출입 이벤트는 별도.", source: "bundled-default", confidence: "high" });
     kits.push({ id, kind: "section", name: icon.name, tileSize: 16, width: icon.width, height: icon.height,
       rows: icon.rows.map((row) => ({ tiles: row.map(() => -1), upperTiles: [...row] })), learnedFrom: "db-authored",
-      ai: { description, role: "prop", repeatability: "fixed", layerHome: "upper", tags: ["worldmap-icon", icon.theme, icon.role], confidence: "high" } });
+      ai: { description, placementRules: "아래 지형 보존. 밑줄 중앙=출입구, 나머지 밑줄=막힘, 윗줄=★. 출입 이벤트는 별도.", role: "prop", repeatability: "fixed", layerHome: "upper", tags: ["worldmap-icon", icon.theme, icon.role], confidence: "high" } });
     for (let dy = 0; dy < icon.height; dy++) for (let dx = 0; dx < icon.width; dx++) {
       const tile = icon.rows[dy]![dx]!;
       const bottom = dy === icon.height - 1;
