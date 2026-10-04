@@ -20,7 +20,7 @@ function isMagentaBackground(r: number, g: number, b: number): boolean {
   return r > 170 && b > 170 && g < 120 && Math.abs(r - b) < 70;
 }
 
-/** 배경 마스크: 마젠타 + (모서리가 마젠타가 아니면) 모서리 색과 가깝고 가장자리와 이어진 픽셀 */
+/** Explicit alpha/magenta background; infer corner RGB only without alpha background. */
 function backgroundMask(image: RgbaImage): Uint8Array {
   const { width, height } = image;
   const mask = new Uint8Array(width * height);
@@ -28,20 +28,28 @@ function backgroundMask(image: RgbaImage): Uint8Array {
     const d = image.data;
     // Generated PNGs keep arbitrary RGB behind transparent / faint alpha.
     // Sampling that RGB as ink created colored halos and oversized bounding boxes.
-    if (d[i * 4 + 3]! < 128 || isMagentaBackground(d[i * 4]!, d[i * 4 + 1]!, d[i * 4 + 2]!)) mask[i] = 1;
+    if (d[i * 4 + 3]! < 128) {
+      mask[i] = 1;
+    } else if (isMagentaBackground(d[i * 4]!, d[i * 4 + 1]!, d[i * 4 + 2]!)) mask[i] = 1;
   }
   const corner: number[][] = [];
   let magentaCorners = 0;
+  let alphaCorners = 0;
   const size = Math.min(12, width, height);
   for (const [cx, cy] of [[0, 0], [width - size, 0], [0, height - size], [width - size, height - size]] as const) {
     for (let y = cy; y < cy + size; y += 1) {
       for (let x = cx; x < cx + size; x += 1) {
         const p = pixelAt(image, x, y);
         corner.push([p[0], p[1], p[2]]);
+        if (p[3] < 128) alphaCorners += 1;
         if (isMagentaBackground(p[0], p[1], p[2])) magentaCorners += 1;
       }
     }
   }
+  // A majority of transparent corner samples establishes alpha as the background.
+  // Its hidden RGB is arbitrary; flooding it can erase same-colored foreground.
+  // An isolated transparent hole in a solid-background image must not disable cleanup.
+  if (alphaCorners * 2 > corner.length) return mask;
   if (magentaCorners * 2 > corner.length) return mask;
   const median = [0, 1, 2].map((c) => {
     const values = corner.map((p) => p[c]!).sort((a, b) => a - b);
