@@ -1,0 +1,127 @@
+{
+  "packId": "joseon-folklore",
+  "schemaVersion": 1,
+  "classes": {
+    "novice": "class_jf_novice",
+    "warrior": "class_jf_warrior",
+    "rogue": "class_jf_rogue",
+    "shaman": "class_jf_shaman",
+    "taoist": "class_jf_taoist"
+  },
+  "classSkills": {
+    "warrior": [
+      "skill_jf_cleaving_strike",
+      "skill_jf_iron_breath",
+      "skill_jf_whirlwind_cut",
+      "skill_jf_earth_split",
+      "skill_jf_blood_oath",
+      "skill_jf_mountain_guard"
+    ],
+    "rogue": [
+      "skill_jf_double_stab",
+      "skill_jf_venom_edge",
+      "skill_jf_shadow_step",
+      "skill_jf_heart_pierce",
+      "skill_jf_smoke_screen",
+      "skill_jf_moon_slash"
+    ],
+    "shaman": [
+      "skill_jf_ember_charm",
+      "skill_jf_frost_charm",
+      "skill_jf_thunder_charm",
+      "skill_jf_spirit_drain",
+      "skill_jf_ghost_seal",
+      "skill_jf_heaven_fire"
+    ],
+    "taoist": [
+      "skill_jf_life_water",
+      "skill_jf_purify",
+      "skill_jf_protective_talisman",
+      "skill_jf_revive",
+      "skill_jf_spring_rain",
+      "skill_jf_heaven_blessing"
+    ]
+  },
+  "enemies": {
+    "field-rat": "enemy_jf_field_rat",
+    "wild-boar": "enemy_jf_wild_boar",
+    "cave-bat": "enemy_jf_cave_bat",
+    "straw-dokkaebi": "enemy_jf_straw_dokkaebi",
+    "lantern-wisp": "enemy_jf_lantern_wisp",
+    "maiden-ghost": "enemy_jf_maiden_ghost",
+    "drowned-ghost": "enemy_jf_drowned_ghost",
+    "grave-ghoul": "enemy_jf_grave_ghoul",
+    "fox-spirit": "enemy_jf_fox_spirit",
+    "stone-dokkaebi": "enemy_jf_stone_dokkaebi",
+    "bamboo-specter": "enemy_jf_bamboo_specter",
+    "masked-bandit": "enemy_jf_masked_bandit",
+    "bronze-dokkaebi": "enemy_jf_bronze_dokkaebi",
+    "bride-wraith": "enemy_jf_bride_wraith",
+    "mountain-tiger": "enemy_jf_mountain_tiger"
+  },
+  "enemySkills": {
+    "tusk-charge": "skill_jf_enemy_tusk_charge",
+    "straw-club": "skill_jf_enemy_straw_club",
+    "sorrow-cry": "skill_jf_enemy_sorrow_cry",
+    "bronze-smash": "skill_jf_enemy_bronze_smash",
+    "poison-bite": "skill_jf_enemy_poison_bite",
+    "wing-flurry": "skill_jf_enemy_wing_flurry",
+    "ghost-fire": "skill_jf_enemy_ghost_fire",
+    "drowning-hand": "skill_jf_enemy_drowning_hand",
+    "grave-grasp": "skill_jf_enemy_grave_grasp",
+    "fox-charm": "skill_jf_enemy_fox_charm",
+    "stone-crush": "skill_jf_enemy_stone_crush",
+    "bamboo-whip": "skill_jf_enemy_bamboo_whip"
+  },
+  "items": {
+    "mugwort-pill": "item_jf_mugwort_pill",
+    "ginseng-tea": "item_jf_ginseng_tea",
+    "purification-charm": "item_jf_purification_charm",
+    "revival-charm": "item_jf_revival_charm",
+    "rice-ball": "item_jf_rice_ball",
+    "rice-cake": "item_jf_rice_cake",
+    "honey-cake": "item_jf_honey_cake",
+    "herbal-decoction": "item_jf_herbal_decoction",
+    "red-ginseng": "item_jf_red_ginseng",
+    "spring-water": "item_jf_spring_water",
+    "jade-water": "item_jf_jade_water",
+    "antidote": "item_jf_antidote",
+    "clear-mind-pill": "item_jf_clear_mind_pill",
+    "warming-tea": "item_jf_warming_tea",
+    "cooling-tea": "item_jf_cooling_tea",
+    "smoke-powder": "item_jf_smoke_powder",
+    "fire-charm": "item_jf_fire_charm",
+    "ice-charm": "item_jf_ice_charm",
+    "thunder-charm": "item_jf_thunder_charm",
+    "vitality-tonic": "item_jf_vitality_tonic"
+  },
+  "materials": {
+    "rat-tail": "item_jf_mat_rat_tail",
+    "boar-tusk": "item_jf_mat_boar_tusk",
+    "bat-wing": "item_jf_mat_bat_wing",
+    "straw-knot": "item_jf_mat_straw_knot",
+    "ghost-ash": "item_jf_mat_ghost_ash",
+    "broken-jade": "item_jf_mat_broken_jade",
+    "fox-fur": "item_jf_mat_fox_fur",
+    "stone-core": "item_jf_mat_stone_core",
+    "bamboo-heart": "item_jf_mat_bamboo_heart",
+    "rusted-token": "item_jf_mat_rusted_token",
+    "bronze-shard": "item_jf_mat_bronze_shard",
+    "tiger-claw": "item_jf_mat_tiger_claw"
+  },
+  "states": {
+    "iron-breath": "state_jf_iron_breath",
+    "shadow-step": "state_jf_shadow_step",
+    "protective-talisman": "state_jf_protective_talisman",
+    "ghost-seal": "state_jf_ghost_seal",
+    "fox-charm": "state_jf_fox_charm",
+    "heaven-blessing": "state_jf_heaven_blessing"
+  },
+  "elements": {
+    "physical": "element_jf_physical",
+    "fire": "element_jf_fire",
+    "ice": "element_jf_ice",
+    "lightning": "element_jf_lightning",
+    "spirit": "element_jf_spirit"
+  }
+}
