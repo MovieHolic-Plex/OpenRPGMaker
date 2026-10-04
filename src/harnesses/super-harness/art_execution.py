@@ -120,8 +120,16 @@ def main():
     signal.signal(signal.SIGTERM, stop); signal.signal(signal.SIGINT, stop)
     request = json.loads(request_file.read_text())
     import art_layout
-    art_layout.require_approval(root, request)
+    approved = art_layout.require_approval(root, request)
     command, env = prepare(root, request)
+    # Prepared briefs necessarily predate independent review. Pass the current
+    # validated approval separately instead of mutating hash-bound instructions.
+    if request['harness'] == 'modern-chipset':
+        env['VEH_LAYOUT_APPROVAL'] = json.dumps({
+            'fingerprint': approved['fingerprint'],
+            'layout': request['layout'],
+            'report': json.loads(Path(request['layoutApproval']).read_text()),
+        }, ensure_ascii=False)
     code = subprocess.call(command, cwd=root, env=env)
     result_file.write_text(json.dumps({'harness': request['harness'], 'exitCode': code}, ensure_ascii=False))
     try:

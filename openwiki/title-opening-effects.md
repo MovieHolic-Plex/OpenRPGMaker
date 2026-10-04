@@ -174,6 +174,20 @@ readPixels 완료까지 중앙값은 **90.8→73.7 / 98.4→76.5 / 88.2→77.9ms
 공유 머신 loadavg 121.58/77.35/45.29, 실제 GPU/60fps 달성을 뜻하지 않는다.
 블록 단위 교대 측정에는 한 회 역전(89.3→95.3ms)도 있어 성능 수치를 일반화하지 않는다.
 브라우저 전용 테스트는 `--config vitest.browser.config.ts`로 파일 하나만 실행한다.
+## 타이틀 키보드 이동·크레딧 닫기 (2026-10-04)
+
+`player.ts`의 위/아래·W/S 선택 이동은 `updateTitleSelection`으로 기존 메뉴의 선택 클래스,
+ARIA, tab stop, 디버그 선택값과 포커스만 바꾼다. `renderTitle`을 다시 부르면 무대·배경
+애니메이션·등장 시퀀스·음악까지 다시 만들어 화면이 움직이므로 커서 이동에서 호출하지 않는다.
+좌/우·A/D도 타이틀 입력으로 소비하여 브라우저의 기본 스크롤로 새지 않게 한다.
+
+`titleLicenseNotice.ts`는 닫기 버튼에 preventScroll 포커스를 주고 공통 확인/취소 키
+(Enter/Z/Space/E, Esc/X)로 닫는다. 반복 입력은 닫지 않는다. native dialog가 열린 동안
+window capture에서 키 전파를 막아 편집기 document capture의 Escape 처리보다 먼저 소유한다.
+닫을 때 리스너를 제거하고 기존 콜백으로 타이틀 선택 항목에 포커스를 돌린다.
+회귀 계약은 `test/titleScreen.test.ts`, `test/titleLicenseNotice.test.ts`.
+이번 변경에서는 세션 테스트 실행 제한에 따라 테스트·브라우저 QA를 실행하지 않았다.
+
 # 첫 제작의 필수 타이틀·오프닝 (2026-10-04)
 
 첫 플레이 제작(`firstPlay` 계약)은 핵심 행동 → 장소 → 첫 조작 안내 → 작품 타이틀/오프닝 → 이미지 검수 순서다.

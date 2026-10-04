@@ -1,7 +1,6 @@
-import { findCharsetAsset as findBundledCharsetAsset, projectCharsetAssets, type CharsetPickerAsset } from "@/assets/charsetCatalog";
+import type { CharsetPickerAsset } from "@/assets/charsetCatalog";
 import { applyCharsetFrameCrop, charsetFrameCropPosition } from "@/assets/charsetFrameCrop";
 import {
-  charsetFrameIndex,
   decodeCharsetFrameIndex,
   type CharsetFrameSelection,
 } from "@/assets/easyrpgRtp";
@@ -12,6 +11,7 @@ import { projectReferenceTileSize } from "@/project/mapViewScale";
 import type { AutonomousMovement, CharacterFootprint, EventPageGraphic } from "@/project/types";
 import { resolveEventAppearanceGraphic } from "@/project/characterAppearances";
 import { store } from "@/project/store";
+import { eventGraphicPreviewResource } from "./eventGraphicPreviewResource";
 
 const PREVIEW_SCALE = 2;
 /** Compact icons for event list / world cards (~16.5×22). */
@@ -22,11 +22,6 @@ const ICON_PREVIEW_SCALE = 0.6875;
  * graphic panel without CSS max-size squashing the crop.
  */
 export const PAGE_TAB_ICON_PREVIEW_SCALE = 1.5;
-const DEFAULT_FRONT_FRAME = {
-  characterIndex: 0,
-  direction: "down",
-  pattern: 1,
-} as const satisfies CharsetFrameSelection;
 
 export function renderEventGraphicPreview(graphic: EventPageGraphic, movementType: AutonomousMovement = "fixed"): HTMLElement {
   return renderEventGraphicElement(graphic, "event-graphic-preview", PREVIEW_SCALE, movementType, "event-page-graphic-preview");
@@ -50,7 +45,8 @@ function renderEventGraphicElement(
   className: string,
   scale: number,
   movementType: AutonomousMovement,
-  testId: string
+  testId: string,
+  fitSpriteToCell = true,
 ): HTMLElement {
   graphic = resolveEventAppearanceGraphic(store.getCurrent(), graphic);
   const preview = document.createElement("div");
@@ -64,19 +60,35 @@ function renderEventGraphicElement(
   }
 
   preview.dataset.spriteId = spriteId;
-  const asset = findCharsetAsset(spriteId);
-  if (!asset) {
+  const resource = eventGraphicPreviewResource(store.getCurrent(), graphic);
+  if (!resource) {
     preview.dataset.unsupported = "true";
     preview.title = spriteId;
     return preview;
   }
 
+  if (resource.kind === "sprite") {
+    const { frame, sheet } = resource;
+    const previewScale = fitSpriteToCell ? scale * Math.min(CELL_PX / frame.width, CELL_PY / frame.height) : scale;
+    preview.dataset.graphicKind = "sprite";
+    preview.dataset.pattern = String(resource.frameIndex);
+    preview.style.boxSizing = "content-box";
+    preview.style.backgroundClip = "padding-box";
+    preview.style.backgroundRepeat = "no-repeat";
+    preview.style.width = `${frame.width * previewScale}px`;
+    preview.style.height = `${frame.height * previewScale}px`;
+    preview.style.backgroundImage = `url("${resource.path}")`;
+    preview.style.backgroundSize = `${sheet.width * previewScale}px ${sheet.height * previewScale}px`;
+    preview.style.backgroundPosition = `-${frame.x * previewScale}px -${frame.y * previewScale}px`;
+    return preview;
+  }
+
   const animate = isMovingMovement(movementType);
   if (animate) markMovingPreview(preview, movementType);
-  const frameIndex = graphic.pattern ?? charsetFrameIndex(DEFAULT_FRONT_FRAME);
+  const frameIndex = resource.frameIndex;
   applyCharsetPreviewStyle({
     target: preview,
-    asset,
+    asset: resource.asset,
     selection: decodeCharsetFrameIndex(frameIndex),
     frameIndex,
     scale,
@@ -122,14 +134,16 @@ export function footprintPreviewLayout(input: {
   readonly footprint: CharacterFootprint;
   readonly scale?: number;
   readonly tileSize?: number;
+  readonly spriteWidth?: number;
+  readonly spriteHeight?: number;
 }): FootprintPreviewLayout {
   const scale = normalizeCharacterScale(input.scale);
   const tileSize = input.tileSize ?? TILE_PX;
   const { width, height } = input.footprint;
   const bodyW = width * tileSize;
   const bodyH = height * tileSize;
-  const spriteW = CELL_PX * scale;
-  const spriteH = CELL_PY * scale;
+  const spriteW = (input.spriteWidth ?? CELL_PX) * scale;
+  const spriteH = (input.spriteHeight ?? CELL_PY) * scale;
   // 발밑 규약: 앵커 칸은 몸 사각 하단 행이고, 짝수 폭에서는 중앙 왼쪽이다.
   const anchorColumn = Math.floor((width - 1) / 2);
   // 스프라이트 원점은 (0.5, 1) — 앵커 칸의 가로 중앙, 몸 사각 밑변에 발이 닿는다.
@@ -172,7 +186,10 @@ export function renderFootprintPreview(input: {
   readonly tileSize?: number;
 }): HTMLElement {
   const scale = eventGraphicRenderScale(input.graphic, input.tileSize ?? TILE_PX);
-  const layout = footprintPreviewLayout({ footprint: input.footprint, scale, tileSize: input.tileSize });
+  const resource = eventGraphicPreviewResource(store.getCurrent(), input.graphic);
+  const layout = footprintPreviewLayout({ footprint: input.footprint, scale, tileSize: input.tileSize,
+    ...(resource?.kind === "sprite" ? { spriteWidth: resource.frame.width, spriteHeight: resource.frame.height } : {}),
+  });
   const { zoom } = layout;
   const host = document.createElement("div");
   host.className = "event-footprint-preview";
@@ -206,7 +223,8 @@ export function renderFootprintPreview(input: {
     "event-footprint-preview-sprite",
     zoom * scale,
     "fixed",
-    "event-page-footprint-preview-sprite"
+    "event-page-footprint-preview-sprite",
+    false,
   );
   sprite.style.left = `${round(layout.sprite.x * zoom)}px`;
   sprite.style.top = `${round(layout.sprite.y * zoom)}px`;
@@ -217,9 +235,11 @@ export function renderFootprintPreview(input: {
 
 export function eventGraphicRenderScale(graphic: EventPageGraphic, tileSize: number): number {
   const resolved = resolveEventAppearanceGraphic(store.getCurrent(), graphic);
-  return resolved.sprite && findCharsetAsset(resolved.sprite.id)
-    ? characterRenderScale(CELL_PX, tileSize, resolved, projectReferenceTileSize(store.getCurrent()))
-    : normalizeCharacterScale(resolved.scale);
+  const resource = eventGraphicPreviewResource(store.getCurrent(), resolved);
+  const scale = normalizeCharacterScale(resolved.scale);
+  if (resource?.kind === "charset") return characterRenderScale(CELL_PX, tileSize, resolved, projectReferenceTileSize(store.getCurrent()));
+  if (resource?.kind === "sprite" && resource.fitSize) return scale * resource.fitSize / Math.max(resource.frame.width, resource.frame.height);
+  return scale;
 }
 
 function clampRows(rows: number, height: number): number {
@@ -289,9 +309,4 @@ function movementTitle(movementType: AutonomousMovement): string {
       return "";
   }
   return "";
-}
-
-function findCharsetAsset(textureKey: string): CharsetPickerAsset | undefined {
-  return projectCharsetAssets(store.getCurrent()).find((asset) => asset.textureKey === textureKey)
-    ?? findBundledCharsetAsset(textureKey);
 }
