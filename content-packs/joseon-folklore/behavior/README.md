@@ -1,61 +1,66 @@
-# 조선 설화 행동 AI · 첫 샘플
+# 조선 설화 · 행동 AI full
 
-파일럿 4종만 실제 행동표를 저작했다. 일반 12종/보스 3종 전체 수량은 `design.json`의 설계 윤곽이다. 다른 역할의 레코드, 엔진, 등록기, 계약, live SQLite/Supabase는 수정하지 않았다.
+일반12/보스3 **15종, 행동37개**를 기존 EnemyActionPattern으로 저작했다. `data.json`의 `enemyActions`를 root가 적 레코드에 병합한다. 기본 공격은 모든 행에서 `skillId:"" / always / priority1`이다. 기술은 ids.json의 예약12개만 쓰며 기술 레코드를 새로 등록하지 않는다.
 
-## 행동표
+## 일반 적 조건과 실제 대응
 
-| 적 | 기본 공격 | 기술 조건 / 우선순위 | 예고와 실제 효과 | 플레이어 대응 |
-|---|---|---|---|---|
-| 산멧돼지 | 항상 / 1 | `tusk-charge`, 차례 2+3n / 80 | 샘플 `chargeTurns=1`, 다음 자기 차례 단일 물리 HP 피해 | 준비 중 회복·방어 또는 집중 처치. 예고 문장은 단일 표적을 알려 주지 않는다. |
-| 짚도깨비 | 항상 / 1 | `straw-club`, 차례 2+2n / 70 | 샘플 모으기 없음, 단일 물리 HP 피해 | 짝수 주기 전에 방어·회복. 넘어짐/불 약점을 가정하지 않는다. |
-| 처녀귀신 | 항상 / 1 | `sorrow-cry`, 차례 2+3n / 80 | 샘플 `chargeTurns=1`, 다음 자기 차례 단일 mind HP 피해 | 준비 중 회복·방어. 공포·성불 조건은 없다. |
-| 청동도깨비 | 항상 / 1 | `bronze-smash`, 차례 2+4n / 80; HP 0~40% / 95 | 샘플 `allEnemies`, `chargeTurns=1`; 낮은 HP에서는 주기 밖에도 준비/발동 반복 | 전체 예고 시 파티 방어/회복. HP 40% 진입 전에 HP 정비. |
+| 적 | 특수 행동 조건 | 실제 기술 / 우선순위 | 대응 |
+|---|---|---|---|
+| 들쥐 | 차례3+4n | 독이빨 /72 | 명중 후 독45%; 해독·정화 또는 먼저 처치 |
+| 멧돼지 | HP0~65% | 엄니돌진 /80 | 실제 모으기1 예고 후 방어·단일 회복 |
+| 박쥐 | 다른 살아 있는 동료1~99 | 날개쌍격 /75 | 전체 각2타; 먼저 박쥐를 잡거나 동료 조건을 없애기 |
+| 짚도깨비 | 차례2+2n | 짚방망이 /70 | 주기 전 방어·회복; 기절 없음 |
+| 등불귀 | MP45~100% | 혼불 /76 | 전체 불 마법 HP피해; 기력45% 아래에서는 기본 공격 |
+| 처녀귀신 | 차례2+4n | 한의울음 /85 | 모으기1 후 전체 귀봉50%; HP피해 없음. 기본 공격·아이템 허용 |
+| 물귀신 | HP0~50% | 물귀손 /83 | 단일 영성 HP피해 + 귀봉35%; 회복·정화 |
+| 무덤귀 | 자신에게 독 있음 | 무덤저주 /78 | 단일 공격력0.75배 홀림55%. 독을 걸 때 저주 반응을 고려 |
+| 여우령 | MP70~100% | 여우홀림 /88 | 전체 공격력0.75배 홀림45%; 강제 동료 공격이 아님 |
+| 돌도깨비 | 다른 살아 있는 동료0 | 돌내리치기 /82 | 모으기1 후 단일 물리피해. 마지막 적이 되기 전에 먼저 처치 |
+| 대숲귀 | 자신에게 독 없음 | 대채찍 /77 | 도적 독칼의 실제 독을 부여하면 기술 조건이 꺼짐; 기본 공격은 유지 |
+| 탈쓴 산적 | 차례1+3n; HP0~30% | 짚방망이 /78; 독이빨 /92 | 낮은 HP에서 독이빨 선택. 실제 기존 기술명과 효과를 재사용 |
 
-- `condition`은 현재 `EnemyActionPattern` 단일 조건 그대로다. 복합 `and`, 가짜 phase 필드, 새 스위치/상태/기술 ID가 없다.
-- 우선순위는 `priority*10 + 효용`의 점수다. 확률/절대 우선권이 아니다. 저HP 마무리 효용 때문에 기본 공격이 이길 수 있다.
-- `turn` 조건은 **전투 차례**를 센다(strict 라운드, gauge 사이클). `chargeTurns`는 **자기 차례**를 센다. 속도와 행동불가에 따라 대응 순서는 달라진다.
-- 기본 공격 `skillId:""`는 현재 엔진의 정상 표기다. `skillIds`는 normalizeEnemyRecord의 기존 투영을 따른다. 청동 기술 ID가 두 번 있는 것은 주기/HP 두 행동을 투영한 결과다.
-- HP 조건은 양끝 포함이다. 40.01% 밖 / 40% 안. 이미 준비한 기술은 발동 시 행동 조건을 다시 평가하지 않는다.
-- 청동의 HP 변화는 공격 선택 빈도 변화다. 새로운 능력치/변신/면역 효과를 약속하지 않는다.
-- 예고 기술을 `reactions`에 넣지 않았다. 차례 밖 반격은 `chargeTurns`를 우회한다.
+각 조건은 하나의 기존 kind다. 복합and/가짜phase/새스위치/새상태/임의기술ID 없음. HP/MP 범위는 양끝 포함. 우선순위는 `priority*10+효용`의 점수이며 확률/절대 우선권이 아니다. 저HP 표적 마무리 효용이 기본 공격을 이기게 할 수 있다.
 
-## 산출물과 검사
+## 보스의 실제 HP 변화
 
-- `data.json`: 감독자가 기존 적 레코드에 병합할 `enemyActions` 4행, 행동 9개.
-- `design.json`: 파일럿 조건·대응법, 일반 12/보스 3의 윤곽, 기술 의존 계약과 한계.
-- `smoke-results.json`: **실제 src/battle/runtime.ts**의 메모리 실행 기록. strict/gauge 각각 4종, 실제 플레이어 공격으로 보스 HP 40% 진입, 기술 누락 fallback = 12개.
-- `provenance.json`: 원본 이미지·입력·결과 SHA-256, 코드 저작 진입점, 재생성 명령.
-- `status.json`: 마지막에 저장한 파일럿 준비 상태. `ready`는 산출물 준비이며 사용자 승인/통합/정본 게임 저장을 뜻하지 않는다.
-- `public/assets/joseon-folklore/behavior/pilot-review.png`: 실제 행동 기록을 배치한 검토판. **출하 게임 화면이 아니다.**
-- `source-poses-nearest.png`: 원본 native 9포즈를 nearest neighbor 2배로 검토하는 그림.
+| 보스 | 상단 HP 구간 | 아래 구간 | 대응 |
+|---|---|---|---|
+| 청동 /Lv6 | 청동강타 2+4n /80 | HP≤40% 청동강타 /95가 주기 밖에도 선택 | 전체 예고 중 회복·파티 방어. 경계 전에 HP 정비 |
+| 혼례 /Lv12 | 한의울음1+4n /70 + 청동강타4+6n /85 | HP≤55% 청동강타 /98 | 귀봉은 아이템/기본 공격을 막지 않음. 피해 예고와 상태 예고를 구분 |
+| 산군 /Lv18 | 돌내리치기2+3n /80 + 청동강타5+5n /85 | HP≤70% 독이빨 /60; HP≤35% 청동강타 /98 | 독 제거 수단 준비, 경계 전 회복, 실제 전체 예고 중 방어 |
 
-집중 스모크는 원본 읽기 전용 `prototype-database.json`을 메모리에 정상화한다. 긴 기록을 위해 배우 HP2000/MP100/공격20/민첩60, 장비 비움, 적 HP120/100/100/640 등의 명시적 fixture를 사용했다. HP 경계 시나리오는 첫 배우 공격140이다. 피해 비교는 원본 배우의 레벨1 HP120을 기준으로 계산한다. 기력 비용은 샘플 0, 명중100, 분산0이다. 무방어→방어의 샘플 첫 배우 피해는 멧돼지24→12, 짚17→8, 처녀21→10, 청동32→16이다. 이는 최종 기술·성장·장비 밸런스의 합격 판정이 아니다.
+청동강타는 실제 source의 `allEnemies / damage32 / flat MP0 / chargeTurns1`을 3보스에 재사용한다. 이름·연출도 그대로 사용하며 새 포효/변신/면역/능력치 효과로 꾸미지 않는다. `reactions`는 생략했다(차례 밖 반격은 모으기를 우회함).
 
-정상화 후 JSON 재로드에서 행동/skillIds 보존, HP 경계, 예고→발동, 청동 전체 대상 4명, 낮은 HP 주기 밖 준비, 누락 기술 기본 공격, 방어 피해 감소를 검사했다. gates/vitest/npm test/전체 typecheck는 실행하지 않았다.
+## 실제 실행 근거와 차이
 
-## 감독자 통합 의존
+`smoke-results.json`: **실제 src/battle/runtime.ts**, 정상화+JSON 재로드15종, 집중 시나리오124개. strict/gauge 각각 12일반의 조건켜짐/꺼짐/기력0, 3보스의 높은HP/낮은HP/귀봉, 원본15몬스터 능력치, 산군 중간HP와 산적 낮은HP를 실행했다. HP 경계40/55/35%±0.01, 실제 예고→발동, support 상태부여, 전체 피해4대상, 완료 행동의 기력비용 일치를 검사했다. 전체suite/gates/vitest/typecheck는 실행하지 않았다.
 
-실제 skills 역할의 파일은 이 체크아웃에 없다. 스모크는 `design.skillRequirements`의 **샘플 기술 fixture**를 사용하며 기술 레코드를 팩에 중복 등록하지 않는다. 기술 담당과 다음을 대조한다.
+실제 기술은 `skills-source.json`의 원본 레코드 사본을 정상화해 사용했다. 가짜 AI 기술 fixture는 없다. 적 능력치는 실제 monsters source를 사용하며 MP0 네 종의 양성 검사에만 MP12/12/16/12를 보충했다. 원본 MP0 실행도 별도로 기록했다. 플레이어는 읽기 전용 prototype 배우를 메모리에 구성하고 장비 비움/HP4000/MP250/공격20/민첩60으로 긴 기록을 유지했다. 이는 최종 직업·장비·게임 밸런스 합격 판정이 아니다.
 
-| 계약 ID | 샘플 scope | 필요한 예고 |
-|---|---|---|
-| `skill_jf_enemy_tusk_charge` | enemy | chargeTurns=1 |
-| `skill_jf_enemy_straw_club` | enemy | 없음 |
-| `skill_jf_enemy_sorrow_cry` | enemy | chargeTurns=1 |
-| `skill_jf_enemy_bronze_smash` | allEnemies | chargeTurns=1 필수 |
+strict는 라운드 시작에 행동을 미리 정한다. 이후 HP/상태가 변해도 이미 정한 행동은 유지할 수 있다. gauge는 개별 슬롯과 전투 사이클이 다르다. 실제 기록에서 멧돼지/박쥐/물귀신/무덤귀/여우령의 시간 배열이 달랐으며, 느린 동료가 있는 박쥐는 같은 전투 차례에 자기 행동이 여러 번 들어갔다. chargeTurns는 전투 차례가 아니라 이후 **자기 차례**를 센다. 이미 준비한 기술은 발동 때 원래 행동 조건을 다시 평가하지 않는다. 귀봉은 실제 두 번째 자기 차례에 풀리므로 영구 봉인으로 설명하지 않는다.
 
-위력/기력/범위가 실제 레코드와 다르면 데이터와 설명을 실제 효과에 맞춰 조정하고 재실행해야 한다. 특히 bronze-smash가 allEnemies/chargeTurns=1이 아니면 이 샘플의 전체 예고 계약을 충족하지 못한다. 새 몬스터 그림은 monsters 역할 담당이며, 여기의 원본 참고 그림을 이름만 바꿔 등록하지 않는다. public 등록·게임 저장·게임 화면 QA·사용자 선택은 감독자가 한다.
+## root에게 남는 통합 사항
 
-## 저작 출처와 재생성
+**들쥐·멧돼지·박쥐·짚도깨비의 실제 maxMp=0**, 실제 기술 비용3/3/4/3. 행동표를 병합해도 이 네 종은 기본 공격만 한다. root/monsters/skills 담당이 최종 MP 또는 비용을 정합시켜야 한다. `shared-queries.md`, `full-report.md`, `smoke-results.compatibility` 참조. behavior는 타 역할을 수정하지 않았다.
 
-새 행동/설계/검사/검토판은 이 세션 behavior 작업자의 코드 저작이다. 이미지 생성 API를 쓰지 않았다. 기존 도트 `boar-tusk`, `goblin-scout`, `ghost-pale`, `goblin-brute`를 원본 그대로 직접 열어 보고 검토판에 표시했다. 원본은 `public/assets/generated/pixel-enemies/`, 코드 진입점은 `scripts/asset-gen/pixel-enemy/redraw/{organic,humanoid,arcane}.py`다. 새 그림의 저작권이나 외부 재배포 권한을 주장하지 않는다. 정확한 입력과 이미지 해시는 `provenance.json`이다.
+`ready:true`는 full 행동 데이터·실행 근거·검토판 준비다. 사용자 승인/정본게임 저장/배포/이 기력 문제 해소를 뜻하지 않는다. `integrationReady:false`. root가 public등록, enemy병합, 최종게임 밸런스, SQLite 저장·재로드, 출하플레이어 QA를 담당한다. 이 작업은 DB를 읽거나 쓰지 않았다.
 
-저장소 루트에서 실행한다(Pillow, Node, 저장소 esbuild 필요):
+## 파일과 재생성
+
+- data/design/status: 전체 행동표·설계·마지막 준비 상태.
+- skills-source/monsters-source: 읽기 전용 실제 입력 사본. 등록 데이터로 사용하지 않는다.
+- smoke-results/provenance: 실제 실행 기록·차이·SHA-256·원본15도트 출처.
+- public/assets/joseon-folklore/behavior/full-normals-{1,2}.png, full-bosses.png: 직접 검토한 행동판. **게임 화면/새 몬스터 그림 아님**.
+- 기존 파일럿 fixture 재생성기/검토판은 폐기했다. 과거 작업은 첫 커밋83d096dc25에 보존된다.
+
+저장소 루트에서:
 
 ```bash
-python3 scripts/content/joseon-folklore/behavior/author-pilot.py
+python3 scripts/content/joseon-folklore/behavior/author-full.py
 node scripts/content/joseon-folklore/behavior/run-smoke.mjs
 python3 scripts/content/joseon-folklore/behavior/render-review.py
 ```
 
-원본 DB 경로가 다르면 `run-smoke.mjs --prototype=/absolute/path/prototype-database.json`을 쓴다. 스모크는 번들 하나를 `/tmp`에 만들고 지우므로 공유 node_modules의 Vite 캐시를 쓰지 않는다. 재생성 후 PNG를 직접 검토하고 `status.json`을 마지막에 갱신한다. 기존 ready 파일을 새 검토 승인으로 해석하지 않는다.
+source 경로는 author-full.py의 `--skills/--monsters`, prototype 경로는 run-smoke의 `--prototype=/absolute/path`로 바꿀 수 있다. 실행기는 /tmp의 단일 esbuild 번들만 만들고 지우며 공유Vite캐시를 사용하지 않는다. 모든 파일 생성 후 PNG를 직접 검토하고 status를 마지막에 저장한다. 기존 ready를 재생성 결과의 시각 승인으로 간주하지 않는다.
+
+새 AI 데이터·프로브·검토판 조립 코드는 이 behavior 세션 저작. 그림 생성 API/새 몬스터 도트 저작 없음. monsters 담당의 실제 원본15시트를 직접 열어 보고 native cell을 잘라 nearest로 표시했다. 이미지/코드/입력 해시는 provenance와 status에 묶었다. 원본 그림의 새 소유권/외부 재배포 권한을 주장하지 않는다.

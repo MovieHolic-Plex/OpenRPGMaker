@@ -1,11 +1,124 @@
 {
-  "author": "GPT 6.1 sol high behavior worker (session-assigned role)",
-  "newWork": "4 EnemyActionPattern tables; 15-species outline; focused runtime smoke; trace visualization",
-  "artGeneration": "No image API or new monster drawing. Existing source art shown explicitly as review-only reference.",
-  "regenerations": [
-    "python3 scripts/content/joseon-folklore/behavior/author-pilot.py",
+  "phase": "full",
+  "author": "behavior worker; source-bound AI data, probe and visualization code",
+  "regenerate": [
+    "python3 scripts/content/joseon-folklore/behavior/author-full.py",
     "node scripts/content/joseon-folklore/behavior/run-smoke.mjs",
     "python3 scripts/content/joseon-folklore/behavior/render-review.py"
+  ],
+  "skillsSource": {
+    "path": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content-jf-skills/content-packs/joseon-folklore/skills/data.json",
+    "sha256": "cac9ce83c28ba6300c3933ff75d5327a08567c38586ad436b40800e8c8c6c70f",
+    "missingIds": []
+  },
+  "skillsAreInvented": false,
+  "art": "No new monster drawing/image API. Existing monsters role original sheets read only; native crop + nearest scaling for behavior board.",
+  "images": [
+    {
+      "path": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content-jf-monsters/content-packs/joseon-folklore/monsters/assets/field-rat.png",
+      "sha256": "7513d6e6f13a03385fce633919214938e3e0e375ee30f337d86000e11d10972b",
+      "role": "actual monsters source; review-only idle crop",
+      "nativeCell": 64,
+      "reviewScale": 2
+    },
+    {
+      "path": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content-jf-monsters/content-packs/joseon-folklore/monsters/assets/wild-boar.png",
+      "sha256": "3c8d5ccecfb04391c94ee4942a0aa0398b763610ac1519c383b749a67ac51db9",
+      "role": "actual monsters source; review-only idle crop",
+      "nativeCell": 64,
+      "reviewScale": 2
+    },
+    {
+      "path": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content-jf-monsters/content-packs/joseon-folklore/monsters/assets/cave-bat.png",
+      "sha256": "7ec6535fd8a23820d0f961daea1cf9238c69c76d3dac239a07150b1a8fe4c238",
+      "role": "actual monsters source; review-only idle crop",
+      "nativeCell": 64,
+      "reviewScale": 2
+    },
+    {
+      "path": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content-jf-monsters/content-packs/joseon-folklore/monsters/assets/straw-dokkaebi.png",
+      "sha256": "1bf68df723711efc571c59b8f6768ad29a1a6dff7781201d4644ab723ac36884",
+      "role": "actual monsters source; review-only idle crop",
+      "nativeCell": 64,
+      "reviewScale": 2
+    },
+    {
+      "path": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content-jf-monsters/content-packs/joseon-folklore/monsters/assets/lantern-wisp.png",
+      "sha256": "331dfb49b11f0bfb969a2e6b7ee4076d3fdce6a72680c18affc22b51c8ab80a7",
+      "role": "actual monsters source; review-only idle crop",
+      "nativeCell": 64,
+      "reviewScale": 2
+    },
+    {
+      "path": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content-jf-monsters/content-packs/joseon-folklore/monsters/assets/maiden-ghost.png",
+      "sha256": "3060cd8188ad41908a7515504c6df5887aeb7757211e39880cdbfed6888b90e0",
+      "role": "actual monsters source; review-only idle crop",
+      "nativeCell": 64,
+      "reviewScale": 2
+    },
+    {
+      "path": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content-jf-monsters/content-packs/joseon-folklore/monsters/assets/drowned-ghost.png",
+      "sha256": "f5b5dc034355a1c74523ae30b4ab52f3f2974412df6a7478d4f115cb9e86c8e7",
+      "role": "actual monsters source; review-only idle crop",
+      "nativeCell": 64,
+      "reviewScale": 2
+    },
+    {
+      "path": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content-jf-monsters/content-packs/joseon-folklore/monsters/assets/grave-ghoul.png",
+      "sha256": "cfa33681bce3ee80e54b1e734ab5b935ebbd7296fdbb6940d1ae73428d2f158a",
+      "role": "actual monsters source; review-only idle crop",
+      "nativeCell": 64,
+      "reviewScale": 2
+    },
+    {
+      "path": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content-jf-monsters/content-packs/joseon-folklore/monsters/assets/fox-spirit.png",
+      "sha256": "74ba1c9d048cabd5601367d7f281056f3361ffc01a368cd00f55cb25df7960f7",
+      "role": "actual monsters source; review-only idle crop",
+      "nativeCell": 64,
+      "reviewScale": 2
+    },
+    {
+      "path": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content-jf-monsters/content-packs/joseon-folklore/monsters/assets/stone-dokkaebi.png",
+      "sha256": "7cc9ce54abe79a1af8917bc6d4ad640da8974e9639572e1d261652a3c2ac3884",
+      "role": "actual monsters source; review-only idle crop",
+      "nativeCell": 64,
+      "reviewScale": 2
+    },
+    {
+      "path": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content-jf-monsters/content-packs/joseon-folklore/monsters/assets/bamboo-specter.png",
+      "sha256": "9665dc0553a213d389dbfe026dc811ed06a1ce507b20c148ee6e994bd003d068",
+      "role": "actual monsters source; review-only idle crop",
+      "nativeCell": 64,
+      "reviewScale": 2
+    },
+    {
+      "path": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content-jf-monsters/content-packs/joseon-folklore/monsters/assets/masked-bandit.png",
+      "sha256": "9ad068263472062e8ca50d6915a210be6b1710e9d00bfad370f79b33a20a9e73",
+      "role": "actual monsters source; review-only idle crop",
+      "nativeCell": 64,
+      "reviewScale": 2
+    },
+    {
+      "path": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content-jf-monsters/content-packs/joseon-folklore/monsters/assets/bronze-dokkaebi.png",
+      "sha256": "34eb5697d716100fa7e72c4d03a30b5d1a8272b68b8aabbc587e33c0cb1be230",
+      "role": "actual monsters source; review-only idle crop",
+      "nativeCell": 96,
+      "reviewScale": 1
+    },
+    {
+      "path": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content-jf-monsters/content-packs/joseon-folklore/monsters/assets/bride-wraith.png",
+      "sha256": "b2c9f70262e42d30516998c3f0c2169f1ec9a7d6b33c70809345e88430b20fcd",
+      "role": "actual monsters source; review-only idle crop",
+      "nativeCell": 96,
+      "reviewScale": 1
+    },
+    {
+      "path": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content-jf-monsters/content-packs/joseon-folklore/monsters/assets/mountain-tiger.png",
+      "sha256": "0ef3829f95619bbbc3f2cba6a91789c94a62439b784601864b1d0cd28ee51a93",
+      "role": "actual monsters source; review-only idle crop",
+      "nativeCell": 96,
+      "reviewScale": 1
+    }
   ],
   "inputs": [
     {
@@ -15,10 +128,6 @@
     {
       "path": "content-packs/joseon-folklore/ids.json",
       "sha256": "efc3c4593777a4bc6b4f594f89a6d3b2a451064525b83dca346349ddf2c520a9"
-    },
-    {
-      "path": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/output/jf-workers/prototype-database.json",
-      "sha256": "a8d06a510f40ae239ed670a7aeba9a25c384ee98a0b623c7634d3c085c946965"
     },
     {
       "path": "src/battle/runtime.ts",
@@ -33,84 +142,38 @@
       "sha256": "2ba7a39e65db67d20914cf8beab6e2875955fee427f049b609509f56a4af08e5"
     }
   ],
-  "sources": [
-    {
-      "pilotEnemyId": "enemy_jf_wild_boar",
-      "purpose": "review only; not installed as joseon monster",
-      "originalPath": "public/assets/generated/pixel-enemies/boar-tusk.png",
-      "sha256": "bd7c8dd087c5b25ec8a1bfbf7312af1bad610a928f1f4f1880227021219e0180",
-      "dimensions": [
-        192,
-        192
-      ],
-      "cell": 64,
-      "transform": "none; original 192x192 pasted at native size; separate nearest review x2",
-      "repositoryAuthoringEntry": "scripts/asset-gen/pixel-enemy/redraw/organic.py",
-      "licenseNote": "existing repository art; no new ownership claim or redistribution outside this repository"
-    },
-    {
-      "pilotEnemyId": "enemy_jf_straw_dokkaebi",
-      "purpose": "review only; not installed as joseon monster",
-      "originalPath": "public/assets/generated/pixel-enemies/goblin-scout.png",
-      "sha256": "8551d1e1d357ee705b0effffff7ba00353c58e690102f0c5e6c312e368c05c0a",
-      "dimensions": [
-        192,
-        192
-      ],
-      "cell": 64,
-      "transform": "none; original 192x192 pasted at native size; separate nearest review x2",
-      "repositoryAuthoringEntry": "scripts/asset-gen/pixel-enemy/redraw/humanoid.py",
-      "licenseNote": "existing repository art; no new ownership claim or redistribution outside this repository"
-    },
-    {
-      "pilotEnemyId": "enemy_jf_maiden_ghost",
-      "purpose": "review only; not installed as joseon monster",
-      "originalPath": "public/assets/generated/pixel-enemies/ghost-pale.png",
-      "sha256": "5fb2a4e965a065b61be79947e0988d2ddf7abe480831ea16f08d81885a8d2c28",
-      "dimensions": [
-        192,
-        192
-      ],
-      "cell": 64,
-      "transform": "none; original 192x192 pasted at native size; separate nearest review x2",
-      "repositoryAuthoringEntry": "scripts/asset-gen/pixel-enemy/redraw/arcane.py",
-      "licenseNote": "existing repository art; no new ownership claim or redistribution outside this repository"
-    },
-    {
-      "pilotEnemyId": "enemy_jf_bronze_dokkaebi",
-      "purpose": "review only; not installed as joseon monster",
-      "originalPath": "public/assets/generated/pixel-enemies/goblin-brute.png",
-      "sha256": "fd3a4e5b286b1c2654d141072bf7cef7564d84047667db5d12059851a9204747",
-      "dimensions": [
-        192,
-        192
-      ],
-      "cell": 64,
-      "transform": "none; original 192x192 pasted at native size; separate nearest review x2",
-      "repositoryAuthoringEntry": "scripts/asset-gen/pixel-enemy/redraw/humanoid.py",
-      "licenseNote": "existing repository art; no new ownership claim or redistribution outside this repository"
-    }
-  ],
   "artifacts": [
     {
       "path": "content-packs/joseon-folklore/behavior/data.json",
-      "sha256": "dbe197b61b4350c22f5b25743142016eb32595c297c255d7237a9b597dda37da"
+      "sha256": "cb1096213fe80a3b96bba6bb8ca93c3848ee06ff0e210de7f080578aeacbef0f"
     },
     {
       "path": "content-packs/joseon-folklore/behavior/design.json",
-      "sha256": "d4b7040eb1f9b83ce1bc6ec0740fafee5e8d85f57fdcb85794f50f4ead04636f"
+      "sha256": "f6d25b9c9f3a81dfb9a6665368916476db592514fc22cded6116172e1c81be00"
+    },
+    {
+      "path": "content-packs/joseon-folklore/behavior/skills-source.json",
+      "sha256": "c8a59d882f0fe534358a0bf0099879db990f51b7d8b4507035a6232821df1938"
+    },
+    {
+      "path": "content-packs/joseon-folklore/behavior/monsters-source.json",
+      "sha256": "38bc4723ad3ef0bf6990fcae0d60b2ae3b50183d93a430c80861b5c69fb9c5e0"
     },
     {
       "path": "content-packs/joseon-folklore/behavior/smoke-results.json",
-      "sha256": "96ea41c84ee349739186395650a7a83fe983516c3f764ed82ad82d3ad4298006"
+      "sha256": "ccdcf7d3d3d9c6f8f4803e5cccb05f0ac8a2a6bb0edd2d992213f04a6af5eb05"
     },
     {
-      "path": "public/assets/joseon-folklore/behavior/pilot-review.png",
-      "sha256": "261609795c0baff9d036a7f91aa9d2539fc5e1a8efa90c45a3f805a928f50e58"
+      "path": "public/assets/joseon-folklore/behavior/full-normals-1.png",
+      "sha256": "1b2f8f4b99a17755f3454c6e849aac45c2dd851b665f6d44b951b683056fc1f6"
     },
     {
-      "path": "public/assets/joseon-folklore/behavior/source-poses-nearest.png",
-      "sha256": "38b5f75ef8ab9b5b2c5e282dd8ca2c3e68d53e229d6a07434d70db47cb5b671a"
+      "path": "public/assets/joseon-folklore/behavior/full-normals-2.png",
+      "sha256": "625ab9f2b9966c15744a699daeabc731f6e3fe9f87c6bdbd5794dc115891577f"
+    },
+    {
+      "path": "public/assets/joseon-folklore/behavior/full-bosses.png",
+      "sha256": "4f632835f18806a240c9ccd3a10dec2196f2b998fc7b63a6a6ad64092a03f485"
     }
   ]
 }

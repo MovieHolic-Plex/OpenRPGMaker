@@ -1,31 +1,180 @@
 {
   "packId": "joseon-folklore",
-  "phase": "pilot",
+  "phase": "full",
   "battleModel": "rm2k3",
   "battleUiStyle": "retro2003",
-  "coverage": {
-    "authored": 4,
-    "plannedNormals": 12,
-    "plannedBosses": 3
+  "counts": {
+    "normals": 12,
+    "bosses": 3,
+    "enemyActions": 15,
+    "actionPatterns": 37
   },
-  "engineContract": {
-    "conditions": "always/turn/hp/mp/status/allies/switch 중 행동당 하나. 복합 and 없음.",
-    "priority": "1~100. 선택 점수는 priority*10+효용. 확률이나 절대 우선권 아님. HP 낮은 표적 마무리 효용 +1000 때문에 주기 기술이 밀릴 수 있음.",
-    "basicAttack": "skillId 빈 문자열은 현재 엔진의 실제 기본 공격; skillIds에서 제외.",
-    "turns": "strict는 전투 라운드, gauge는 전투 사이클. 개별 적 행동 횟수가 아니며 충전/민첩/행동불가로 실제 발동 간격은 달라진다.",
-    "ranges": "HP 조건은 실수 백분율의 양끝 포함. 40.01%는 낮은 HP 조건 밖; 40%는 안.",
-    "warning": "실제 SkillRecord.chargeTurns와 charging 스냅숏/charge 타임라인. 행동표 자체에 예고 필드나 가짜 단계명이 없음.",
-    "targeting": "기본 공격과 단일 기술은 피해 효용으로 살아 있는 표적 선택. 예고 문장은 표적 id를 보여주지 않으므로 특정 한 명만 방어하라고 약속하지 않음.",
-    "response": "방어는 피해를 절반으로 줄임. 예고가 파티 전원의 조작 차례를 보장하지 않음(gauge 민첩 순서). 치명적 상태로 행동불가면 발동 차례가 밀릴 수 있으나 자동 취소로 설명하지 않음.",
-    "fallback": "기술 누락/기력 부족/봉인/쿨다운이면 기본 공격 후보. 이미 준비한 기술의 발동도 실제 엔진 사용가능 검사에 따른다.",
-    "hpPhase": "청동은 새 능력치/면역/변신 없음. HP 조건으로 전체 기술을 더 자주 선택하는 실제 행동 변화만."
-  },
-  "pilot": [
+  "roster": [
     {
+      "slug": "field-rat",
+      "enemyId": "enemy_jf_field_rat",
+      "name": "들쥐",
+      "role": "normal",
+      "recommendedLevel": 1,
+      "playerResponse": "독 물기의 실제 상태 효과에 맞춰 해독/정화. 기술 미저장 시 효과를 가정하지 않는다.",
+      "hpThreshold": null,
+      "primaryCondition": {
+        "kind": "turn",
+        "start": 3,
+        "interval": 4
+      },
+      "scenarioStats": {
+        "maxHp": 65,
+        "maxMp": 12,
+        "attack": 12,
+        "defense": 6,
+        "mind": 6,
+        "agility": 14
+      },
+      "actions": [
+        {
+          "skillId": "",
+          "priority": 1,
+          "condition": {
+            "kind": "always"
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        },
+        {
+          "skillId": "skill_jf_enemy_poison_bite",
+          "priority": 72,
+          "condition": {
+            "kind": "turn",
+            "start": 3,
+            "interval": 4
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        }
+      ],
+      "skillContracts": [
+        {
+          "skillId": "skill_jf_enemy_poison_bite",
+          "sourcePresent": true,
+          "name": "독이빨",
+          "scope": "enemy",
+          "effect": {
+            "kind": "damage",
+            "statistic": "attack",
+            "affects": "hp"
+          },
+          "power": 12,
+          "mpCost": {
+            "flat": 3,
+            "percentMax": 0
+          },
+          "chargeTurns": 0,
+          "stateEffects": [
+            {
+              "stateId": "state_poison",
+              "chance": 45,
+              "operation": "add"
+            }
+          ],
+          "description": "기력 3. 상대1 물리12·1타/명중95%. 명중 후 독45%: 차례당 최대HP6%, HP1하한. (부여확률은 저항 적용)",
+          "hitSequence": null,
+          "elementId": "element_jf_physical",
+          "cooldownTurns": 0
+        }
+      ],
+      "currentMonsterRecord": {
+        "id": "enemy_jf_field_rat",
+        "name": "들쥐",
+        "level": 1,
+        "monsterResourceId": "jf-enemy-field-rat",
+        "graphicHue": 0,
+        "transparent": false,
+        "flying": false,
+        "criticalHit": {
+          "enabled": false,
+          "oneIn": 30
+        },
+        "attackOptions": {
+          "normalAttacksMiss": false
+        },
+        "skillIds": [
+          "skill_attack"
+        ],
+        "stats": {
+          "maxHp": 65,
+          "maxMp": 0,
+          "attack": 12,
+          "defense": 6,
+          "mind": 6,
+          "agility": 14
+        },
+        "rewards": {
+          "exp": 10,
+          "gold": 5,
+          "dropItemId": "item_jf_mat_rat_tail",
+          "dropRatePercent": 35
+        },
+        "actions": [
+          {
+            "skillId": "skill_attack",
+            "priority": 50,
+            "condition": {
+              "kind": "always"
+            },
+            "switchOnAfterAction": {
+              "enabled": false
+            },
+            "switchOffAfterAction": {
+              "enabled": false
+            }
+          }
+        ],
+        "stateRates": {
+          "state_death": "C"
+        },
+        "elementRates": {}
+      },
+      "scenarioStatOverrides": {
+        "maxMp": 12
+      },
+      "integrationRequirements": {
+        "basicAttackAlwaysCandidate": true,
+        "requiredMaximumMpForOneUse": 3,
+        "stats": "Actual monster stats; declared MP-only override in 0-MP cases for positive AI probes. sourceStats probes keep original MP. No other-role record is patched.",
+        "pendingSkillIds": []
+      }
+    },
+    {
+      "slug": "wild-boar",
       "enemyId": "enemy_jf_wild_boar",
       "name": "산멧돼지",
-      "skillId": "skill_jf_enemy_tusk_charge",
-      "conditions": [
+      "role": "normal",
+      "recommendedLevel": 3,
+      "playerResponse": "HP65% 아래에서 돌진 준비를 더 자주 선택. 실제 chargeTurns=1 예고 후 방어/단일 회복. 준비 다음 자기 차례에 단일 HP 피해.",
+      "hpThreshold": null,
+      "primaryCondition": {
+        "kind": "hp",
+        "minPercent": 0,
+        "maxPercent": 65
+      },
+      "scenarioStats": {
+        "maxHp": 110,
+        "maxMp": 12,
+        "attack": 14,
+        "defense": 10,
+        "mind": 8,
+        "agility": 12
+      },
+      "actions": [
         {
           "skillId": "",
           "priority": 1,
@@ -43,9 +192,9 @@
           "skillId": "skill_jf_enemy_tusk_charge",
           "priority": 80,
           "condition": {
-            "kind": "turn",
-            "start": 2,
-            "interval": 3
+            "kind": "hp",
+            "minPercent": 0,
+            "maxPercent": 65
           },
           "switchOnAfterAction": {
             "enabled": false
@@ -55,21 +204,254 @@
           }
         }
       ],
-      "cycle": {
-        "basis": "combatConditionMet에 전달되는 전투 차례 turn+1",
-        "start": 2,
-        "interval": 3,
-        "release": "chargeTurns=1이면 준비 다음 자기 차례에 발동; 발동 시 행동 조건을 재평가하지 않음"
+      "skillContracts": [
+        {
+          "skillId": "skill_jf_enemy_tusk_charge",
+          "sourcePresent": true,
+          "name": "엄니돌진",
+          "scope": "enemy",
+          "effect": {
+            "kind": "damage",
+            "statistic": "attack",
+            "affects": "hp"
+          },
+          "power": 20,
+          "mpCost": {
+            "flat": 3,
+            "percentMax": 0
+          },
+          "chargeTurns": 1,
+          "stateEffects": [],
+          "description": "기력 3. 예고 후 다음 자기 차례 상대1 물리 위력20·1타. 명중90%.",
+          "hitSequence": null,
+          "elementId": "element_jf_physical",
+          "cooldownTurns": 0
+        }
+      ],
+      "currentMonsterRecord": {
+        "id": "enemy_jf_wild_boar",
+        "name": "산멧돼지",
+        "level": 2,
+        "monsterResourceId": "jf-enemy-wild-boar",
+        "graphicHue": 0,
+        "transparent": false,
+        "flying": false,
+        "criticalHit": {
+          "enabled": false,
+          "oneIn": 30
+        },
+        "attackOptions": {
+          "normalAttacksMiss": false
+        },
+        "skillIds": [
+          "skill_attack"
+        ],
+        "stats": {
+          "maxHp": 110,
+          "maxMp": 0,
+          "attack": 14,
+          "defense": 10,
+          "mind": 8,
+          "agility": 12
+        },
+        "rewards": {
+          "exp": 22,
+          "gold": 9,
+          "dropItemId": "item_jf_mat_boar_tusk",
+          "dropRatePercent": 35
+        },
+        "actions": [
+          {
+            "skillId": "skill_attack",
+            "priority": 50,
+            "condition": {
+              "kind": "always"
+            },
+            "switchOnAfterAction": {
+              "enabled": false
+            },
+            "switchOffAfterAction": {
+              "enabled": false
+            }
+          }
+        ],
+        "stateRates": {
+          "state_death": "C"
+        },
+        "elementRates": {}
       },
-      "hpChange": [],
-      "playerResponse": "예고를 본 뒤 HP가 낮은 동료를 회복하거나 방어. 도적은 다음 발동 전 처치에 집중.",
-      "reactionPolicy": "없음. reactions의 차례 밖 반격은 chargeTurns를 우회하므로 예고 기술을 연결하지 않는다."
+      "scenarioStatOverrides": {
+        "maxMp": 12
+      },
+      "integrationRequirements": {
+        "basicAttackAlwaysCandidate": true,
+        "requiredMaximumMpForOneUse": 3,
+        "stats": "Actual monster stats; declared MP-only override in 0-MP cases for positive AI probes. sourceStats probes keep original MP. No other-role record is patched.",
+        "pendingSkillIds": []
+      }
     },
     {
+      "slug": "cave-bat",
+      "enemyId": "enemy_jf_cave_bat",
+      "name": "굴박쥐",
+      "role": "normal",
+      "recommendedLevel": 3,
+      "playerResponse": "동료가 있는 동안 기술 선택. 박쥐를 먼저 처치하거나 동료를 처치하면 기본 공격만 남는다.",
+      "hpThreshold": null,
+      "primaryCondition": {
+        "kind": "allies",
+        "min": 1,
+        "max": 99
+      },
+      "scenarioStats": {
+        "maxHp": 85,
+        "maxMp": 16,
+        "attack": 14,
+        "defense": 7,
+        "mind": 10,
+        "agility": 20
+      },
+      "actions": [
+        {
+          "skillId": "",
+          "priority": 1,
+          "condition": {
+            "kind": "always"
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        },
+        {
+          "skillId": "skill_jf_enemy_wing_flurry",
+          "priority": 75,
+          "condition": {
+            "kind": "allies",
+            "min": 1,
+            "max": 99
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        }
+      ],
+      "skillContracts": [
+        {
+          "skillId": "skill_jf_enemy_wing_flurry",
+          "sourcePresent": true,
+          "name": "날개쌍격",
+          "scope": "allEnemies",
+          "effect": {
+            "kind": "damage",
+            "statistic": "attack",
+            "affects": "hp"
+          },
+          "power": 14,
+          "mpCost": {
+            "flat": 4,
+            "percentMax": 0
+          },
+          "chargeTurns": 0,
+          "stateEffects": [],
+          "description": "기력 4. 상대전체 물리14 계산의60%씩각2타. 타마다 명중95%.",
+          "hitSequence": [
+            0.6,
+            0.6
+          ],
+          "elementId": "element_jf_physical",
+          "cooldownTurns": 0
+        }
+      ],
+      "currentMonsterRecord": {
+        "id": "enemy_jf_cave_bat",
+        "name": "굴박쥐",
+        "level": 2,
+        "monsterResourceId": "jf-enemy-cave-bat",
+        "graphicHue": 0,
+        "transparent": false,
+        "flying": true,
+        "criticalHit": {
+          "enabled": false,
+          "oneIn": 30
+        },
+        "attackOptions": {
+          "normalAttacksMiss": false
+        },
+        "skillIds": [
+          "skill_attack"
+        ],
+        "stats": {
+          "maxHp": 85,
+          "maxMp": 0,
+          "attack": 14,
+          "defense": 7,
+          "mind": 10,
+          "agility": 20
+        },
+        "rewards": {
+          "exp": 18,
+          "gold": 8,
+          "dropItemId": "item_jf_mat_bat_wing",
+          "dropRatePercent": 35
+        },
+        "actions": [
+          {
+            "skillId": "skill_attack",
+            "priority": 50,
+            "condition": {
+              "kind": "always"
+            },
+            "switchOnAfterAction": {
+              "enabled": false
+            },
+            "switchOffAfterAction": {
+              "enabled": false
+            }
+          }
+        ],
+        "stateRates": {
+          "state_death": "C"
+        },
+        "elementRates": {}
+      },
+      "scenarioStatOverrides": {
+        "maxMp": 16
+      },
+      "integrationRequirements": {
+        "basicAttackAlwaysCandidate": true,
+        "requiredMaximumMpForOneUse": 4,
+        "stats": "Actual monster stats; declared MP-only override in 0-MP cases for positive AI probes. sourceStats probes keep original MP. No other-role record is patched.",
+        "pendingSkillIds": []
+      }
+    },
+    {
+      "slug": "straw-dokkaebi",
       "enemyId": "enemy_jf_straw_dokkaebi",
       "name": "짚도깨비",
-      "skillId": "skill_jf_enemy_straw_club",
-      "conditions": [
+      "role": "normal",
+      "recommendedLevel": 4,
+      "playerResponse": "짝수 전투 차례 직전 방어/회복. 기절/모으기 효과 없음.",
+      "hpThreshold": null,
+      "primaryCondition": {
+        "kind": "turn",
+        "start": 2,
+        "interval": 2
+      },
+      "scenarioStats": {
+        "maxHp": 140,
+        "maxMp": 12,
+        "attack": 18,
+        "defense": 12,
+        "mind": 10,
+        "agility": 10
+      },
+      "actions": [
         {
           "skillId": "",
           "priority": 1,
@@ -99,21 +481,249 @@
           }
         }
       ],
-      "cycle": {
-        "basis": "combatConditionMet에 전달되는 전투 차례 turn+1",
-        "start": 2,
-        "interval": 2,
-        "release": "chargeTurns=1이면 준비 다음 자기 차례에 발동; 발동 시 행동 조건을 재평가하지 않음"
+      "skillContracts": [
+        {
+          "skillId": "skill_jf_enemy_straw_club",
+          "sourcePresent": true,
+          "name": "짚방망이",
+          "scope": "enemy",
+          "effect": {
+            "kind": "damage",
+            "statistic": "attack",
+            "affects": "hp"
+          },
+          "power": 18,
+          "mpCost": {
+            "flat": 3,
+            "percentMax": 0
+          },
+          "chargeTurns": 0,
+          "stateEffects": [],
+          "description": "기력 3. 상대1 물리 위력18·1타. 명중95%.",
+          "hitSequence": null,
+          "elementId": "element_jf_physical",
+          "cooldownTurns": 0
+        }
+      ],
+      "currentMonsterRecord": {
+        "id": "enemy_jf_straw_dokkaebi",
+        "name": "볏짚 도깨비",
+        "level": 3,
+        "monsterResourceId": "jf-enemy-straw-dokkaebi",
+        "graphicHue": 0,
+        "transparent": false,
+        "flying": false,
+        "criticalHit": {
+          "enabled": false,
+          "oneIn": 30
+        },
+        "attackOptions": {
+          "normalAttacksMiss": false
+        },
+        "skillIds": [
+          "skill_attack"
+        ],
+        "stats": {
+          "maxHp": 140,
+          "maxMp": 0,
+          "attack": 18,
+          "defense": 12,
+          "mind": 10,
+          "agility": 10
+        },
+        "rewards": {
+          "exp": 35,
+          "gold": 13,
+          "dropItemId": "item_jf_mat_straw_knot",
+          "dropRatePercent": 45
+        },
+        "actions": [
+          {
+            "skillId": "skill_attack",
+            "priority": 50,
+            "condition": {
+              "kind": "always"
+            },
+            "switchOnAfterAction": {
+              "enabled": false
+            },
+            "switchOffAfterAction": {
+              "enabled": false
+            }
+          }
+        ],
+        "stateRates": {
+          "state_death": "C"
+        },
+        "elementRates": {}
       },
-      "hpChange": [],
-      "playerResponse": "주기 공격 직전 방어/회복. 이번 샘플에는 불 약점이나 넘어뜨림을 구현하지 않는다.",
-      "reactionPolicy": "없음. reactions의 차례 밖 반격은 chargeTurns를 우회하므로 예고 기술을 연결하지 않는다."
+      "scenarioStatOverrides": {
+        "maxMp": 12
+      },
+      "integrationRequirements": {
+        "basicAttackAlwaysCandidate": true,
+        "requiredMaximumMpForOneUse": 3,
+        "stats": "Actual monster stats; declared MP-only override in 0-MP cases for positive AI probes. sourceStats probes keep original MP. No other-role record is patched.",
+        "pendingSkillIds": []
+      }
     },
     {
+      "slug": "lantern-wisp",
+      "enemyId": "enemy_jf_lantern_wisp",
+      "name": "등불귀",
+      "role": "normal",
+      "recommendedLevel": 5,
+      "playerResponse": "기력45% 이상에서만 도깨비불. 실제 비용 소모로 범위 아래가 되면 기본 공격으로 전환.",
+      "hpThreshold": null,
+      "primaryCondition": {
+        "kind": "mp",
+        "minPercent": 45,
+        "maxPercent": 100
+      },
+      "scenarioStats": {
+        "maxHp": 125,
+        "maxMp": 20,
+        "attack": 20,
+        "defense": 8,
+        "mind": 24,
+        "agility": 15
+      },
+      "actions": [
+        {
+          "skillId": "",
+          "priority": 1,
+          "condition": {
+            "kind": "always"
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        },
+        {
+          "skillId": "skill_jf_enemy_ghost_fire",
+          "priority": 76,
+          "condition": {
+            "kind": "mp",
+            "minPercent": 45,
+            "maxPercent": 100
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        }
+      ],
+      "skillContracts": [
+        {
+          "skillId": "skill_jf_enemy_ghost_fire",
+          "sourcePresent": true,
+          "name": "혼불",
+          "scope": "allEnemies",
+          "effect": {
+            "kind": "damage",
+            "statistic": "mind",
+            "affects": "hp"
+          },
+          "power": 22,
+          "mpCost": {
+            "flat": 5,
+            "percentMax": 0
+          },
+          "chargeTurns": 0,
+          "stateEffects": [],
+          "description": "기력 5. 상대전체 불 속성 정신력 위력22·각1타. 명중100%.",
+          "hitSequence": null,
+          "elementId": "element_jf_fire",
+          "cooldownTurns": 0
+        }
+      ],
+      "currentMonsterRecord": {
+        "id": "enemy_jf_lantern_wisp",
+        "name": "도깨비불",
+        "level": 4,
+        "monsterResourceId": "jf-enemy-lantern-wisp",
+        "graphicHue": 0,
+        "transparent": false,
+        "flying": true,
+        "criticalHit": {
+          "enabled": false,
+          "oneIn": 30
+        },
+        "attackOptions": {
+          "normalAttacksMiss": false
+        },
+        "skillIds": [
+          "skill_attack"
+        ],
+        "stats": {
+          "maxHp": 125,
+          "maxMp": 20,
+          "attack": 20,
+          "defense": 8,
+          "mind": 24,
+          "agility": 15
+        },
+        "rewards": {
+          "exp": 32,
+          "gold": 12,
+          "dropItemId": "item_jf_mat_ghost_ash",
+          "dropRatePercent": 40
+        },
+        "actions": [
+          {
+            "skillId": "skill_attack",
+            "priority": 50,
+            "condition": {
+              "kind": "always"
+            },
+            "switchOnAfterAction": {
+              "enabled": false
+            },
+            "switchOffAfterAction": {
+              "enabled": false
+            }
+          }
+        ],
+        "stateRates": {
+          "state_death": "C"
+        },
+        "elementRates": {}
+      },
+      "scenarioStatOverrides": {},
+      "integrationRequirements": {
+        "basicAttackAlwaysCandidate": true,
+        "requiredMaximumMpForOneUse": 5,
+        "stats": "Actual monster stats; declared MP-only override in 0-MP cases for positive AI probes. sourceStats probes keep original MP. No other-role record is patched.",
+        "pendingSkillIds": []
+      }
+    },
+    {
+      "slug": "maiden-ghost",
       "enemyId": "enemy_jf_maiden_ghost",
       "name": "처녀귀신",
-      "skillId": "skill_jf_enemy_sorrow_cry",
-      "conditions": [
+      "role": "normal",
+      "recommendedLevel": 5,
+      "playerResponse": "모으기1 예고 후 전체 귀봉50%: 기본 공격·아이템 허용, HP 피해 없음. 준비 중 회복하고 봉인 후 정화/정화부로 기술 사용을 회복.",
+      "hpThreshold": null,
+      "primaryCondition": {
+        "kind": "turn",
+        "start": 2,
+        "interval": 4
+      },
+      "scenarioStats": {
+        "maxHp": 145,
+        "maxMp": 20,
+        "attack": 17,
+        "defense": 8,
+        "mind": 23,
+        "agility": 16
+      },
+      "actions": [
         {
           "skillId": "",
           "priority": 1,
@@ -129,11 +739,11 @@
         },
         {
           "skillId": "skill_jf_enemy_sorrow_cry",
-          "priority": 80,
+          "priority": 85,
           "condition": {
             "kind": "turn",
             "start": 2,
-            "interval": 3
+            "interval": 4
           },
           "switchOnAfterAction": {
             "enabled": false
@@ -143,21 +753,983 @@
           }
         }
       ],
-      "cycle": {
-        "basis": "combatConditionMet에 전달되는 전투 차례 turn+1",
-        "start": 2,
-        "interval": 3,
-        "release": "chargeTurns=1이면 준비 다음 자기 차례에 발동; 발동 시 행동 조건을 재평가하지 않음"
+      "skillContracts": [
+        {
+          "skillId": "skill_jf_enemy_sorrow_cry",
+          "sourcePresent": true,
+          "name": "한의울음",
+          "scope": "allEnemies",
+          "effect": {
+            "kind": "support"
+          },
+          "power": 0,
+          "mpCost": {
+            "flat": 5,
+            "percentMax": 0
+          },
+          "chargeTurns": 1,
+          "stateEffects": [
+            {
+              "stateId": "state_jf_ghost_seal",
+              "chance": 50,
+              "operation": "add"
+            }
+          ],
+          "description": "기력 5. 예고 후 다음 자기 차례 상대전체 각각 귀봉50%. 기술 봉쇄, 2번째 자기 차례 시작 해제. (부여확률은 저항 적용)",
+          "hitSequence": null,
+          "elementId": null,
+          "cooldownTurns": 0
+        }
+      ],
+      "currentMonsterRecord": {
+        "id": "enemy_jf_maiden_ghost",
+        "name": "처녀귀신",
+        "level": 5,
+        "monsterResourceId": "jf-enemy-maiden-ghost",
+        "graphicHue": 0,
+        "transparent": false,
+        "flying": true,
+        "criticalHit": {
+          "enabled": false,
+          "oneIn": 30
+        },
+        "attackOptions": {
+          "normalAttacksMiss": false
+        },
+        "skillIds": [
+          "skill_attack"
+        ],
+        "stats": {
+          "maxHp": 145,
+          "maxMp": 20,
+          "attack": 17,
+          "defense": 8,
+          "mind": 23,
+          "agility": 16
+        },
+        "rewards": {
+          "exp": 42,
+          "gold": 17,
+          "dropItemId": "item_jf_mat_ghost_ash",
+          "dropRatePercent": 40
+        },
+        "actions": [
+          {
+            "skillId": "skill_attack",
+            "priority": 50,
+            "condition": {
+              "kind": "always"
+            },
+            "switchOnAfterAction": {
+              "enabled": false
+            },
+            "switchOffAfterAction": {
+              "enabled": false
+            }
+          }
+        ],
+        "stateRates": {
+          "state_death": "C"
+        },
+        "elementRates": {}
       },
-      "hpChange": [],
-      "playerResponse": "예고 중 회복/방어. 주술사는 피해, 도사는 HP 관리. 대화/성불로 전투를 끝내는 조건은 없음.",
-      "reactionPolicy": "없음. reactions의 차례 밖 반격은 chargeTurns를 우회하므로 예고 기술을 연결하지 않는다."
+      "scenarioStatOverrides": {},
+      "integrationRequirements": {
+        "basicAttackAlwaysCandidate": true,
+        "requiredMaximumMpForOneUse": 5,
+        "stats": "Actual monster stats; declared MP-only override in 0-MP cases for positive AI probes. sourceStats probes keep original MP. No other-role record is patched.",
+        "pendingSkillIds": []
+      }
     },
     {
+      "slug": "drowned-ghost",
+      "enemyId": "enemy_jf_drowned_ghost",
+      "name": "물귀신",
+      "role": "normal",
+      "recommendedLevel": 7,
+      "playerResponse": "HP50% 아래의 손아귀에 대비하여 피해 대상을 회복. 실제 기술 효과 외 이동구속을 발명하지 않음.",
+      "hpThreshold": null,
+      "primaryCondition": {
+        "kind": "hp",
+        "minPercent": 0,
+        "maxPercent": 50
+      },
+      "scenarioStats": {
+        "maxHp": 220,
+        "maxMp": 28,
+        "attack": 34,
+        "defense": 16,
+        "mind": 32,
+        "agility": 17
+      },
+      "actions": [
+        {
+          "skillId": "",
+          "priority": 1,
+          "condition": {
+            "kind": "always"
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        },
+        {
+          "skillId": "skill_jf_enemy_drowning_hand",
+          "priority": 83,
+          "condition": {
+            "kind": "hp",
+            "minPercent": 0,
+            "maxPercent": 50
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        }
+      ],
+      "skillContracts": [
+        {
+          "skillId": "skill_jf_enemy_drowning_hand",
+          "sourcePresent": true,
+          "name": "물귀손",
+          "scope": "enemy",
+          "effect": {
+            "kind": "damage",
+            "statistic": "mind",
+            "affects": "hp"
+          },
+          "power": 26,
+          "mpCost": {
+            "flat": 4,
+            "percentMax": 0
+          },
+          "chargeTurns": 0,
+          "stateEffects": [
+            {
+              "stateId": "state_jf_ghost_seal",
+              "chance": 35,
+              "operation": "add"
+            }
+          ],
+          "description": "기력 4. 상대1 영성 정신력 위력26·1타/명중100%. 명중 후 귀봉35%, 2번째 자기 차례 시작 해제. (부여확률은 저항 적용)",
+          "hitSequence": null,
+          "elementId": "element_jf_spirit",
+          "cooldownTurns": 0
+        }
+      ],
+      "currentMonsterRecord": {
+        "id": "enemy_jf_drowned_ghost",
+        "name": "물귀신",
+        "level": 8,
+        "monsterResourceId": "jf-enemy-drowned-ghost",
+        "graphicHue": 0,
+        "transparent": false,
+        "flying": true,
+        "criticalHit": {
+          "enabled": false,
+          "oneIn": 30
+        },
+        "attackOptions": {
+          "normalAttacksMiss": false
+        },
+        "skillIds": [
+          "skill_attack"
+        ],
+        "stats": {
+          "maxHp": 220,
+          "maxMp": 28,
+          "attack": 34,
+          "defense": 16,
+          "mind": 32,
+          "agility": 17
+        },
+        "rewards": {
+          "exp": 75,
+          "gold": 25,
+          "dropItemId": "item_jf_mat_broken_jade",
+          "dropRatePercent": 40
+        },
+        "actions": [
+          {
+            "skillId": "skill_attack",
+            "priority": 50,
+            "condition": {
+              "kind": "always"
+            },
+            "switchOnAfterAction": {
+              "enabled": false
+            },
+            "switchOffAfterAction": {
+              "enabled": false
+            }
+          }
+        ],
+        "stateRates": {
+          "state_death": "C"
+        },
+        "elementRates": {}
+      },
+      "scenarioStatOverrides": {},
+      "integrationRequirements": {
+        "basicAttackAlwaysCandidate": true,
+        "requiredMaximumMpForOneUse": 4,
+        "stats": "Actual monster stats; declared MP-only override in 0-MP cases for positive AI probes. sourceStats probes keep original MP. No other-role record is patched.",
+        "pendingSkillIds": []
+      }
+    },
+    {
+      "slug": "grave-ghoul",
+      "enemyId": "enemy_jf_grave_ghoul",
+      "name": "무덤귀",
+      "role": "normal",
+      "recommendedLevel": 8,
+      "playerResponse": "자신이 독에 걸리면 무덤저주 선택. 실제 효과는 단일 여우홀림55%(공격0.75배). 독 부여 시 이 반응을 고려하고 집중 처치.",
+      "hpThreshold": null,
+      "primaryCondition": {
+        "kind": "status",
+        "stateId": "state_poison",
+        "present": true
+      },
+      "scenarioStats": {
+        "maxHp": 280,
+        "maxMp": 12,
+        "attack": 40,
+        "defense": 24,
+        "mind": 16,
+        "agility": 12
+      },
+      "actions": [
+        {
+          "skillId": "",
+          "priority": 1,
+          "condition": {
+            "kind": "always"
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        },
+        {
+          "skillId": "skill_jf_enemy_grave_grasp",
+          "priority": 78,
+          "condition": {
+            "kind": "status",
+            "stateId": "state_poison",
+            "present": true
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        }
+      ],
+      "skillContracts": [
+        {
+          "skillId": "skill_jf_enemy_grave_grasp",
+          "sourcePresent": true,
+          "name": "무덤저주",
+          "scope": "enemy",
+          "effect": {
+            "kind": "support"
+          },
+          "power": 0,
+          "mpCost": {
+            "flat": 4,
+            "percentMax": 0
+          },
+          "chargeTurns": 0,
+          "stateEffects": [
+            {
+              "stateId": "state_jf_fox_charm",
+              "chance": 55,
+              "operation": "add"
+            }
+          ],
+          "description": "기력 4. 상대1 여우홀림55%: 공격 계산0.75배. 조종 없음. 3번째 자기 차례 시작 해제. (부여확률은 저항 적용)",
+          "hitSequence": null,
+          "elementId": null,
+          "cooldownTurns": 0
+        }
+      ],
+      "currentMonsterRecord": {
+        "id": "enemy_jf_grave_ghoul",
+        "name": "묘지귀물",
+        "level": 10,
+        "monsterResourceId": "jf-enemy-grave-ghoul",
+        "graphicHue": 0,
+        "transparent": false,
+        "flying": false,
+        "criticalHit": {
+          "enabled": false,
+          "oneIn": 30
+        },
+        "attackOptions": {
+          "normalAttacksMiss": false
+        },
+        "skillIds": [
+          "skill_attack"
+        ],
+        "stats": {
+          "maxHp": 280,
+          "maxMp": 12,
+          "attack": 40,
+          "defense": 24,
+          "mind": 16,
+          "agility": 12
+        },
+        "rewards": {
+          "exp": 95,
+          "gold": 32,
+          "dropItemId": "item_jf_mat_ghost_ash",
+          "dropRatePercent": 40
+        },
+        "actions": [
+          {
+            "skillId": "skill_attack",
+            "priority": 50,
+            "condition": {
+              "kind": "always"
+            },
+            "switchOnAfterAction": {
+              "enabled": false
+            },
+            "switchOffAfterAction": {
+              "enabled": false
+            }
+          }
+        ],
+        "stateRates": {
+          "state_death": "C"
+        },
+        "elementRates": {}
+      },
+      "scenarioStatOverrides": {},
+      "integrationRequirements": {
+        "basicAttackAlwaysCandidate": true,
+        "requiredMaximumMpForOneUse": 4,
+        "stats": "Actual monster stats; declared MP-only override in 0-MP cases for positive AI probes. sourceStats probes keep original MP. No other-role record is patched.",
+        "pendingSkillIds": []
+      }
+    },
+    {
+      "slug": "fox-spirit",
+      "enemyId": "enemy_jf_fox_spirit",
+      "name": "여우령",
+      "role": "normal",
+      "recommendedLevel": 10,
+      "playerResponse": "기력70% 이상에서 홀림. 실제 여우홀림은 공격력0.75배이며 동료 공격/명령 강제 아님.",
+      "hpThreshold": null,
+      "primaryCondition": {
+        "kind": "mp",
+        "minPercent": 70,
+        "maxPercent": 100
+      },
+      "scenarioStats": {
+        "maxHp": 360,
+        "maxMp": 42,
+        "attack": 45,
+        "defense": 22,
+        "mind": 40,
+        "agility": 32
+      },
+      "actions": [
+        {
+          "skillId": "",
+          "priority": 1,
+          "condition": {
+            "kind": "always"
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        },
+        {
+          "skillId": "skill_jf_enemy_fox_charm",
+          "priority": 88,
+          "condition": {
+            "kind": "mp",
+            "minPercent": 70,
+            "maxPercent": 100
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        }
+      ],
+      "skillContracts": [
+        {
+          "skillId": "skill_jf_enemy_fox_charm",
+          "sourcePresent": true,
+          "name": "여우홀림",
+          "scope": "allEnemies",
+          "effect": {
+            "kind": "support"
+          },
+          "power": 0,
+          "mpCost": {
+            "flat": 6,
+            "percentMax": 0
+          },
+          "chargeTurns": 0,
+          "stateEffects": [
+            {
+              "stateId": "state_jf_fox_charm",
+              "chance": 45,
+              "operation": "add"
+            }
+          ],
+          "description": "기력 6. 상대전체 각각 여우홀림45%: 공격 계산0.75배. 조종 없음. 3번째 자기 차례 시작 해제. (부여확률은 저항 적용)",
+          "hitSequence": null,
+          "elementId": null,
+          "cooldownTurns": 0
+        }
+      ],
+      "currentMonsterRecord": {
+        "id": "enemy_jf_fox_spirit",
+        "name": "여우요괴 · 희귀",
+        "level": 12,
+        "monsterResourceId": "jf-enemy-fox-spirit",
+        "graphicHue": 0,
+        "transparent": false,
+        "flying": false,
+        "criticalHit": {
+          "enabled": false,
+          "oneIn": 30
+        },
+        "attackOptions": {
+          "normalAttacksMiss": false
+        },
+        "skillIds": [
+          "skill_attack"
+        ],
+        "stats": {
+          "maxHp": 360,
+          "maxMp": 42,
+          "attack": 45,
+          "defense": 22,
+          "mind": 40,
+          "agility": 32
+        },
+        "rewards": {
+          "exp": 150,
+          "gold": 55,
+          "dropItemId": "item_jf_mat_fox_fur",
+          "dropRatePercent": 55
+        },
+        "actions": [
+          {
+            "skillId": "skill_attack",
+            "priority": 50,
+            "condition": {
+              "kind": "always"
+            },
+            "switchOnAfterAction": {
+              "enabled": false
+            },
+            "switchOffAfterAction": {
+              "enabled": false
+            }
+          }
+        ],
+        "stateRates": {
+          "state_death": "C"
+        },
+        "elementRates": {}
+      },
+      "scenarioStatOverrides": {},
+      "integrationRequirements": {
+        "basicAttackAlwaysCandidate": true,
+        "requiredMaximumMpForOneUse": 6,
+        "stats": "Actual monster stats; declared MP-only override in 0-MP cases for positive AI probes. sourceStats probes keep original MP. No other-role record is patched.",
+        "pendingSkillIds": []
+      }
+    },
+    {
+      "slug": "stone-dokkaebi",
+      "enemyId": "enemy_jf_stone_dokkaebi",
+      "name": "돌도깨비",
+      "role": "normal",
+      "recommendedLevel": 12,
+      "playerResponse": "마지막 살아 있는 동료가 되면 내리찍기 선택. 먼저 돌도깨비를 처치해 마지막 조건을 피한다.",
+      "hpThreshold": null,
+      "primaryCondition": {
+        "kind": "allies",
+        "min": 0,
+        "max": 0
+      },
+      "scenarioStats": {
+        "maxHp": 480,
+        "maxMp": 20,
+        "attack": 54,
+        "defense": 36,
+        "mind": 18,
+        "agility": 16
+      },
+      "actions": [
+        {
+          "skillId": "",
+          "priority": 1,
+          "condition": {
+            "kind": "always"
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        },
+        {
+          "skillId": "skill_jf_enemy_stone_crush",
+          "priority": 82,
+          "condition": {
+            "kind": "allies",
+            "min": 0,
+            "max": 0
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        }
+      ],
+      "skillContracts": [
+        {
+          "skillId": "skill_jf_enemy_stone_crush",
+          "sourcePresent": true,
+          "name": "돌내리치기",
+          "scope": "enemy",
+          "effect": {
+            "kind": "damage",
+            "statistic": "attack",
+            "affects": "hp"
+          },
+          "power": 36,
+          "mpCost": {
+            "flat": 5,
+            "percentMax": 0
+          },
+          "chargeTurns": 1,
+          "stateEffects": [],
+          "description": "기력 5. 예고 후 다음 자기 차례 상대1 물리 위력36·1타. 명중90%.",
+          "hitSequence": null,
+          "elementId": "element_jf_physical",
+          "cooldownTurns": 0
+        }
+      ],
+      "currentMonsterRecord": {
+        "id": "enemy_jf_stone_dokkaebi",
+        "name": "돌 도깨비 · 강적",
+        "level": 13,
+        "monsterResourceId": "jf-enemy-stone-dokkaebi",
+        "graphicHue": 0,
+        "transparent": false,
+        "flying": false,
+        "criticalHit": {
+          "enabled": false,
+          "oneIn": 30
+        },
+        "attackOptions": {
+          "normalAttacksMiss": false
+        },
+        "skillIds": [
+          "skill_attack"
+        ],
+        "stats": {
+          "maxHp": 480,
+          "maxMp": 20,
+          "attack": 54,
+          "defense": 36,
+          "mind": 18,
+          "agility": 16
+        },
+        "rewards": {
+          "exp": 185,
+          "gold": 65,
+          "dropItemId": "item_jf_mat_stone_core",
+          "dropRatePercent": 60
+        },
+        "actions": [
+          {
+            "skillId": "skill_attack",
+            "priority": 50,
+            "condition": {
+              "kind": "always"
+            },
+            "switchOnAfterAction": {
+              "enabled": false
+            },
+            "switchOffAfterAction": {
+              "enabled": false
+            }
+          }
+        ],
+        "stateRates": {
+          "state_death": "C"
+        },
+        "elementRates": {}
+      },
+      "scenarioStatOverrides": {},
+      "integrationRequirements": {
+        "basicAttackAlwaysCandidate": true,
+        "requiredMaximumMpForOneUse": 5,
+        "stats": "Actual monster stats; declared MP-only override in 0-MP cases for positive AI probes. sourceStats probes keep original MP. No other-role record is patched.",
+        "pendingSkillIds": []
+      }
+    },
+    {
+      "slug": "bamboo-specter",
+      "enemyId": "enemy_jf_bamboo_specter",
+      "name": "대숲귀",
+      "role": "normal",
+      "recommendedLevel": 14,
+      "playerResponse": "자신이 독에 걸리지 않았을 때 채찍 선택. 도적의 실제 독칼로 독을 부여하면 기술 조건이 꺼지고 기본 공격은 유지. 무덤귀는 반대로 독에 걸리면 저주를 사용.",
+      "hpThreshold": null,
+      "primaryCondition": {
+        "kind": "status",
+        "stateId": "state_poison",
+        "present": false
+      },
+      "scenarioStats": {
+        "maxHp": 420,
+        "maxMp": 38,
+        "attack": 50,
+        "defense": 28,
+        "mind": 42,
+        "agility": 24
+      },
+      "actions": [
+        {
+          "skillId": "",
+          "priority": 1,
+          "condition": {
+            "kind": "always"
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        },
+        {
+          "skillId": "skill_jf_enemy_bamboo_whip",
+          "priority": 77,
+          "condition": {
+            "kind": "status",
+            "stateId": "state_poison",
+            "present": false
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        }
+      ],
+      "skillContracts": [
+        {
+          "skillId": "skill_jf_enemy_bamboo_whip",
+          "sourcePresent": true,
+          "name": "대채찍",
+          "scope": "enemy",
+          "effect": {
+            "kind": "damage",
+            "statistic": "attack",
+            "affects": "hp"
+          },
+          "power": 20,
+          "mpCost": {
+            "flat": 4,
+            "percentMax": 0
+          },
+          "chargeTurns": 0,
+          "stateEffects": [],
+          "description": "기력 4. 상대1 물리 위력20·1타. 명중95%.",
+          "hitSequence": null,
+          "elementId": "element_jf_physical",
+          "cooldownTurns": 0
+        }
+      ],
+      "currentMonsterRecord": {
+        "id": "enemy_jf_bamboo_specter",
+        "name": "대숲귀물",
+        "level": 15,
+        "monsterResourceId": "jf-enemy-bamboo-specter",
+        "graphicHue": 0,
+        "transparent": false,
+        "flying": false,
+        "criticalHit": {
+          "enabled": false,
+          "oneIn": 30
+        },
+        "attackOptions": {
+          "normalAttacksMiss": false
+        },
+        "skillIds": [
+          "skill_attack"
+        ],
+        "stats": {
+          "maxHp": 420,
+          "maxMp": 38,
+          "attack": 50,
+          "defense": 28,
+          "mind": 42,
+          "agility": 24
+        },
+        "rewards": {
+          "exp": 165,
+          "gold": 50,
+          "dropItemId": "item_jf_mat_bamboo_heart",
+          "dropRatePercent": 50
+        },
+        "actions": [
+          {
+            "skillId": "skill_attack",
+            "priority": 50,
+            "condition": {
+              "kind": "always"
+            },
+            "switchOnAfterAction": {
+              "enabled": false
+            },
+            "switchOffAfterAction": {
+              "enabled": false
+            }
+          }
+        ],
+        "stateRates": {
+          "state_death": "C"
+        },
+        "elementRates": {}
+      },
+      "scenarioStatOverrides": {},
+      "integrationRequirements": {
+        "basicAttackAlwaysCandidate": true,
+        "requiredMaximumMpForOneUse": 4,
+        "stats": "Actual monster stats; declared MP-only override in 0-MP cases for positive AI probes. sourceStats probes keep original MP. No other-role record is patched.",
+        "pendingSkillIds": []
+      }
+    },
+    {
+      "slug": "masked-bandit",
+      "enemyId": "enemy_jf_masked_bandit",
+      "name": "탈쓴 산적",
+      "role": "normal",
+      "recommendedLevel": 16,
+      "playerResponse": "1+3n에 짚방망이를 사용. HP30% 아래에서는 독 물기 재사용; 실제 이름/효과를 그대로 표시.",
+      "hpThreshold": null,
+      "primaryCondition": {
+        "kind": "turn",
+        "start": 1,
+        "interval": 3
+      },
+      "scenarioStats": {
+        "maxHp": 510,
+        "maxMp": 24,
+        "attack": 62,
+        "defense": 32,
+        "mind": 26,
+        "agility": 36
+      },
+      "actions": [
+        {
+          "skillId": "",
+          "priority": 1,
+          "condition": {
+            "kind": "always"
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        },
+        {
+          "skillId": "skill_jf_enemy_straw_club",
+          "priority": 78,
+          "condition": {
+            "kind": "turn",
+            "start": 1,
+            "interval": 3
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        },
+        {
+          "skillId": "skill_jf_enemy_poison_bite",
+          "priority": 92,
+          "condition": {
+            "kind": "hp",
+            "minPercent": 0,
+            "maxPercent": 30
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        }
+      ],
+      "skillContracts": [
+        {
+          "skillId": "skill_jf_enemy_straw_club",
+          "sourcePresent": true,
+          "name": "짚방망이",
+          "scope": "enemy",
+          "effect": {
+            "kind": "damage",
+            "statistic": "attack",
+            "affects": "hp"
+          },
+          "power": 18,
+          "mpCost": {
+            "flat": 3,
+            "percentMax": 0
+          },
+          "chargeTurns": 0,
+          "stateEffects": [],
+          "description": "기력 3. 상대1 물리 위력18·1타. 명중95%.",
+          "hitSequence": null,
+          "elementId": "element_jf_physical",
+          "cooldownTurns": 0
+        },
+        {
+          "skillId": "skill_jf_enemy_poison_bite",
+          "sourcePresent": true,
+          "name": "독이빨",
+          "scope": "enemy",
+          "effect": {
+            "kind": "damage",
+            "statistic": "attack",
+            "affects": "hp"
+          },
+          "power": 12,
+          "mpCost": {
+            "flat": 3,
+            "percentMax": 0
+          },
+          "chargeTurns": 0,
+          "stateEffects": [
+            {
+              "stateId": "state_poison",
+              "chance": 45,
+              "operation": "add"
+            }
+          ],
+          "description": "기력 3. 상대1 물리12·1타/명중95%. 명중 후 독45%: 차례당 최대HP6%, HP1하한. (부여확률은 저항 적용)",
+          "hitSequence": null,
+          "elementId": "element_jf_physical",
+          "cooldownTurns": 0
+        }
+      ],
+      "currentMonsterRecord": {
+        "id": "enemy_jf_masked_bandit",
+        "name": "복면산적",
+        "level": 17,
+        "monsterResourceId": "jf-enemy-masked-bandit",
+        "graphicHue": 0,
+        "transparent": false,
+        "flying": false,
+        "criticalHit": {
+          "enabled": false,
+          "oneIn": 30
+        },
+        "attackOptions": {
+          "normalAttacksMiss": false
+        },
+        "skillIds": [
+          "skill_attack"
+        ],
+        "stats": {
+          "maxHp": 510,
+          "maxMp": 24,
+          "attack": 62,
+          "defense": 32,
+          "mind": 26,
+          "agility": 36
+        },
+        "rewards": {
+          "exp": 210,
+          "gold": 75,
+          "dropItemId": "item_jf_mat_rusted_token",
+          "dropRatePercent": 45
+        },
+        "actions": [
+          {
+            "skillId": "skill_attack",
+            "priority": 50,
+            "condition": {
+              "kind": "always"
+            },
+            "switchOnAfterAction": {
+              "enabled": false
+            },
+            "switchOffAfterAction": {
+              "enabled": false
+            }
+          }
+        ],
+        "stateRates": {
+          "state_death": "C"
+        },
+        "elementRates": {}
+      },
+      "scenarioStatOverrides": {},
+      "integrationRequirements": {
+        "basicAttackAlwaysCandidate": true,
+        "requiredMaximumMpForOneUse": 3,
+        "stats": "Actual monster stats; declared MP-only override in 0-MP cases for positive AI probes. sourceStats probes keep original MP. No other-role record is patched.",
+        "pendingSkillIds": []
+      }
+    },
+    {
+      "slug": "bronze-dokkaebi",
       "enemyId": "enemy_jf_bronze_dokkaebi",
       "name": "청동도깨비",
-      "skillId": "skill_jf_enemy_bronze_smash",
-      "conditions": [
+      "role": "boss",
+      "recommendedLevel": 6,
+      "playerResponse": "초반: 2+4n 전체 공격 준비. HP40% 이하에서 주기 밖에도 준비/발동 반복. 예고를 보면 전사 방어, 도사 회복, 도적·주술사는 처치 가능한 때 피해. 진입 전에 파티 HP 정비.",
+      "hpThreshold": 40,
+      "primaryCondition": {
+        "kind": "turn",
+        "start": 2,
+        "interval": 4
+      },
+      "scenarioStats": {
+        "maxHp": 680,
+        "maxMp": 24,
+        "attack": 46,
+        "defense": 18,
+        "mind": 14,
+        "agility": 14
+      },
+      "actions": [
         {
           "skillId": "",
           "priority": 1,
@@ -202,431 +1774,531 @@
           }
         }
       ],
-      "cycle": {
-        "basis": "combatConditionMet에 전달되는 전투 차례 turn+1",
-        "start": 2,
-        "interval": 4,
-        "release": "chargeTurns=1이면 준비 다음 자기 차례에 발동; 발동 시 행동 조건을 재평가하지 않음"
-      },
-      "hpChange": [
+      "skillContracts": [
         {
-          "hp": "40% 초과",
-          "effect": "2+4n에서 전체 내려치기 준비; 그 외 기본 공격."
-        },
-        {
-          "hp": "0~40%",
-          "effect": "HP 조건 행동이 주기 외에도 내려치기를 선택하므로 준비/발동 반복. 모으기 1은 유지."
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "sourcePresent": true,
+          "name": "청동강타",
+          "scope": "allEnemies",
+          "effect": {
+            "kind": "damage",
+            "statistic": "attack",
+            "affects": "hp"
+          },
+          "power": 32,
+          "mpCost": {
+            "flat": 0,
+            "percentMax": 0
+          },
+          "chargeTurns": 1,
+          "stateEffects": [],
+          "description": "기력 0. 예고 후 다음 자기 차례 상대전체 물리 위력32·각1타. 명중95%.",
+          "hitSequence": null,
+          "elementId": "element_jf_physical",
+          "cooldownTurns": 0
         }
       ],
-      "playerResponse": "전체 예고를 보면 모두 방어하거나 부상자를 먼저 회복. HP 40%를 넘기기 전 회복을 마친다. 주술사/도적은 예고 중 마무리 피해.",
-      "reactionPolicy": "없음. reactions의 차례 밖 반격은 chargeTurns를 우회하므로 예고 기술을 연결하지 않는다."
-    }
-  ],
-  "rosterOutline": [
-    {
-      "slug": "field-rat",
-      "enemyId": "enemy_jf_field_rat",
-      "name": "들쥐",
-      "role": "normal",
-      "recommendedLevel": [
-        1,
-        2
-      ],
-      "authoredInPilot": false,
-      "skillIds": [
-        "skill_jf_enemy_poison_bite"
-      ],
-      "plannedCondition": {
-        "kind": "turn",
-        "start": 3,
-        "interval": 3
-      },
-      "priority": 80,
-      "behaviour": "독 물기는 3+3n; 기본 공격은 나머지 차례.",
-      "playerResponse": "독에 걸리면 해독약/도사의 정화. 독 부여는 해당 기술의 실제 state_poison 효과를 확인한 뒤 사용."
-    },
-    {
-      "slug": "wild-boar",
-      "enemyId": "enemy_jf_wild_boar",
-      "name": "산멧돼지",
-      "role": "normal",
-      "recommendedLevel": [
-        2,
-        4
-      ],
-      "authoredInPilot": true,
-      "skillIds": [
-        "skill_jf_enemy_tusk_charge"
-      ],
-      "plannedCondition": {
-        "kind": "turn",
-        "start": 2,
-        "interval": 3
-      },
-      "priority": 80,
-      "behaviour": "2+3n에서 돌진을 준비하고 다음 자기 차례에 단일 물리 피해.",
-      "playerResponse": "예고를 본 뒤 HP가 낮은 동료를 회복하거나 방어. 도적은 다음 발동 전 처치에 집중."
-    },
-    {
-      "slug": "cave-bat",
-      "enemyId": "enemy_jf_cave_bat",
-      "name": "굴박쥐",
-      "role": "normal",
-      "recommendedLevel": [
-        2,
-        4
-      ],
-      "authoredInPilot": false,
-      "skillIds": [
-        "skill_jf_enemy_wing_flurry"
-      ],
-      "plannedCondition": {
-        "kind": "turn",
-        "start": 2,
-        "interval": 3
-      },
-      "priority": 80,
-      "behaviour": "날개 연타 2+3n; 실제 hitSequence를 skills 담당이 제공할 때만 다타격으로 설명.",
-      "playerResponse": "한 대상에 몰리는 피해를 회복하고 우선 처치. 장면 이동으로 회피할 수 있다고 약속하지 않는다."
-    },
-    {
-      "slug": "straw-dokkaebi",
-      "enemyId": "enemy_jf_straw_dokkaebi",
-      "name": "짚도깨비",
-      "role": "normal",
-      "recommendedLevel": [
-        3,
-        5
-      ],
-      "authoredInPilot": true,
-      "skillIds": [
-        "skill_jf_enemy_straw_club"
-      ],
-      "plannedCondition": {
-        "kind": "turn",
-        "start": 2,
-        "interval": 2
-      },
-      "priority": 70,
-      "behaviour": "짝수 전투 차례의 곤봉, 홀수의 기본 공격. 모으기 없음.",
-      "playerResponse": "주기 공격 직전 방어/회복. 이번 샘플에는 불 약점이나 넘어뜨림을 구현하지 않는다."
-    },
-    {
-      "slug": "lantern-wisp",
-      "enemyId": "enemy_jf_lantern_wisp",
-      "name": "등불귀",
-      "role": "normal",
-      "recommendedLevel": [
-        4,
-        6
-      ],
-      "authoredInPilot": false,
-      "skillIds": [
-        "skill_jf_enemy_ghost_fire"
-      ],
-      "plannedCondition": {
-        "kind": "turn",
-        "start": 2,
-        "interval": 3
-      },
-      "priority": 80,
-      "behaviour": "도깨비불 2+3n. 불 속성은 기술과 적 속성 레코드가 제공할 때만 활성.",
-      "playerResponse": "정의된 불 저항 장비를 확인하고 집중 공격. 실체 없는 횃불 끄기 기믹은 없음."
-    },
-    {
-      "slug": "maiden-ghost",
-      "enemyId": "enemy_jf_maiden_ghost",
-      "name": "처녀귀신",
-      "role": "normal",
-      "recommendedLevel": [
-        4,
-        6
-      ],
-      "authoredInPilot": true,
-      "skillIds": [
-        "skill_jf_enemy_sorrow_cry"
-      ],
-      "plannedCondition": {
-        "kind": "turn",
-        "start": 2,
-        "interval": 3
-      },
-      "priority": 80,
-      "behaviour": "2+3n 곡성 준비, 다음 자기 차례 단일 mind 기반 마법 HP 피해.",
-      "playerResponse": "예고 중 회복/방어. 주술사는 피해, 도사는 HP 관리. 대화/성불로 전투를 끝내는 조건은 없음."
-    },
-    {
-      "slug": "drowned-ghost",
-      "enemyId": "enemy_jf_drowned_ghost",
-      "name": "물귀신",
-      "role": "normal",
-      "recommendedLevel": [
-        6,
-        8
-      ],
-      "authoredInPilot": false,
-      "skillIds": [
-        "skill_jf_enemy_drowning_hand"
-      ],
-      "plannedCondition": {
-        "kind": "turn",
-        "start": 2,
-        "interval": 3
-      },
-      "priority": 80,
-      "behaviour": "끌어당기는 손 2+3n; 기술의 실제 효과만 설명.",
-      "playerResponse": "피해 대상 회복/방어. 젖음·이동 제한은 예약 상태에 없으므로 만들지 않는다."
-    },
-    {
-      "slug": "grave-ghoul",
-      "enemyId": "enemy_jf_grave_ghoul",
-      "name": "무덤귀",
-      "role": "normal",
-      "recommendedLevel": [
-        7,
-        9
-      ],
-      "authoredInPilot": false,
-      "skillIds": [
-        "skill_jf_enemy_grave_grasp"
-      ],
-      "plannedCondition": {
-        "kind": "turn",
-        "start": 2,
-        "interval": 2
-      },
-      "priority": 80,
-      "behaviour": "무덤 손아귀 짝수 차례, 기본 공격 나머지.",
-      "playerResponse": "연속 피해를 줄이도록 먼저 처치. 부활 방해·즉사는 없음."
-    },
-    {
-      "slug": "fox-spirit",
-      "enemyId": "enemy_jf_fox_spirit",
-      "name": "여우령",
-      "role": "normal",
-      "recommendedLevel": [
-        8,
-        11
-      ],
-      "authoredInPilot": false,
-      "skillIds": [
-        "skill_jf_enemy_fox_charm"
-      ],
-      "plannedCondition": {
-        "kind": "turn",
-        "start": 2,
-        "interval": 4
-      },
-      "priority": 80,
-      "behaviour": "여우 홀림 2+4n. state_jf_fox_charm만 참조 가능; 실제 restriction 검토 전 동료 공격을 약속하지 않음.",
-      "playerResponse": "정화 기술이 이 상태를 실제 remove하는지 확인하고 사용. 무조건 해제 설명은 금지."
-    },
-    {
-      "slug": "stone-dokkaebi",
-      "enemyId": "enemy_jf_stone_dokkaebi",
-      "name": "돌도깨비",
-      "role": "normal",
-      "recommendedLevel": [
-        10,
-        13
-      ],
-      "authoredInPilot": false,
-      "skillIds": [
-        "skill_jf_enemy_stone_crush"
-      ],
-      "plannedCondition": {
-        "kind": "turn",
-        "start": 2,
-        "interval": 3
-      },
-      "priority": 80,
-      "behaviour": "돌 내리찍기 2+3n, 기본 공격 나머지.",
-      "playerResponse": "발동 예고는 chargeTurns가 실제 있는 경우만. 전사는 방어, 주술사는 기력 피해로 공략."
-    },
-    {
-      "slug": "bamboo-specter",
-      "enemyId": "enemy_jf_bamboo_specter",
-      "name": "대숲귀",
-      "role": "normal",
-      "recommendedLevel": [
-        12,
-        15
-      ],
-      "authoredInPilot": false,
-      "skillIds": [
-        "skill_jf_enemy_bamboo_whip"
-      ],
-      "plannedCondition": {
-        "kind": "turn",
-        "start": 2,
-        "interval": 2
-      },
-      "priority": 80,
-      "behaviour": "대나무 채찍 짝수 차례; allEnemies 또는 area는 실제 기술을 확인해야 함.",
-      "playerResponse": "대상 범위를 확인해 단일/파티 회복 선택. 지형 이동이나 줄 끊기는 현재 규칙에 없음."
-    },
-    {
-      "slug": "masked-bandit",
-      "enemyId": "enemy_jf_masked_bandit",
-      "name": "탈쓴 산적",
-      "role": "normal",
-      "recommendedLevel": [
-        14,
-        17
-      ],
-      "authoredInPilot": false,
-      "skillIds": [],
-      "plannedCondition": {
-        "kind": "always"
-      },
-      "priority": 1,
-      "behaviour": "기본 공격만. 별도 산적 기술 슬롯이 없으므로 가짜 훔치기/연막 기술을 추가하지 않는다.",
-      "playerResponse": "공격받는 동료를 회복하고 집중 공격. 기본 공격의 낮은 HP 표적 선택을 고려."
-    },
-    {
-      "slug": "bronze-dokkaebi",
-      "name": "청동도깨비",
-      "recommendedLevel": [
-        5,
-        8
-      ],
-      "authoredInPilot": true,
-      "skillIds": [
-        "skill_jf_enemy_bronze_smash"
-      ],
-      "hpThreshold": 40,
-      "phases": [
-        {
-          "hp": "40% 초과",
-          "effect": "2+4n에서 전체 내려치기 준비; 그 외 기본 공격."
+      "currentMonsterRecord": {
+        "id": "enemy_jf_bronze_dokkaebi",
+        "name": "청동 도깨비",
+        "level": 6,
+        "monsterResourceId": "jf-enemy-bronze-dokkaebi",
+        "graphicHue": 0,
+        "transparent": false,
+        "flying": false,
+        "criticalHit": {
+          "enabled": false,
+          "oneIn": 30
         },
-        {
-          "hp": "0~40%",
-          "effect": "HP 조건 행동이 주기 외에도 내려치기를 선택하므로 준비/발동 반복. 모으기 1은 유지."
-        }
-      ],
-      "playerResponse": "전체 예고를 보면 모두 방어하거나 부상자를 먼저 회복. HP 40%를 넘기기 전 회복을 마친다. 주술사/도적은 예고 중 마무리 피해.",
-      "enemyId": "enemy_jf_bronze_dokkaebi",
-      "role": "boss"
+        "attackOptions": {
+          "normalAttacksMiss": false
+        },
+        "skillIds": [
+          "skill_attack"
+        ],
+        "stats": {
+          "maxHp": 680,
+          "maxMp": 24,
+          "attack": 46,
+          "defense": 18,
+          "mind": 14,
+          "agility": 14
+        },
+        "rewards": {
+          "exp": 210,
+          "gold": 120,
+          "dropItemId": "item_jf_mat_bronze_shard",
+          "dropRatePercent": 100
+        },
+        "actions": [
+          {
+            "skillId": "skill_attack",
+            "priority": 50,
+            "condition": {
+              "kind": "always"
+            },
+            "switchOnAfterAction": {
+              "enabled": false
+            },
+            "switchOffAfterAction": {
+              "enabled": false
+            }
+          }
+        ],
+        "stateRates": {
+          "state_death": "C"
+        },
+        "elementRates": {}
+      },
+      "scenarioStatOverrides": {},
+      "integrationRequirements": {
+        "basicAttackAlwaysCandidate": true,
+        "requiredMaximumMpForOneUse": 0,
+        "stats": "Actual monster stats; declared MP-only override in 0-MP cases for positive AI probes. sourceStats probes keep original MP. No other-role record is patched.",
+        "pendingSkillIds": []
+      }
     },
     {
       "slug": "bride-wraith",
+      "enemyId": "enemy_jf_bride_wraith",
       "name": "혼례 원귀",
-      "recommendedLevel": [
-        11,
-        14
-      ],
-      "authoredInPilot": false,
-      "skillIds": [
-        "skill_jf_enemy_sorrow_cry",
-        "skill_jf_enemy_drowning_hand"
-      ],
-      "hpThreshold": 50,
-      "phases": [
+      "role": "boss",
+      "recommendedLevel": 12,
+      "playerResponse": "중반: 귀봉 예고와 긴 주기 전체 강타. HP55% 이하에서 전체 강타 준비 빈도 증가. 귀봉은 기술만 막으므로 정화부/기본 공격 사용 가능. 전체 피해 예고 중 도사 회복/파티 방어. 실제 청동강타 이름·효과·연출을 재사용.",
+      "hpThreshold": 55,
+      "primaryCondition": {
+        "kind": "turn",
+        "start": 1,
+        "interval": 4
+      },
+      "scenarioStats": {
+        "maxHp": 1400,
+        "maxMp": 80,
+        "attack": 86,
+        "defense": 26,
+        "mind": 42,
+        "agility": 24
+      },
+      "actions": [
         {
-          "hp": "50% 초과",
-          "effect": "곡성 2+4n; 기본 공격은 항상 후보."
+          "skillId": "",
+          "priority": 1,
+          "condition": {
+            "kind": "always"
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
         },
         {
-          "hp": "0~50%",
-          "effect": "HP 단독 조건의 drowning-hand 우선순위 95를 추가하여 다른 기술을 더 자주 선택. charge/scope는 실제 기술 계약 후 고정."
+          "skillId": "skill_jf_enemy_sorrow_cry",
+          "priority": 70,
+          "condition": {
+            "kind": "turn",
+            "start": 1,
+            "interval": 4
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        },
+        {
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "priority": 85,
+          "condition": {
+            "kind": "turn",
+            "start": 4,
+            "interval": 6
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        },
+        {
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "priority": 98,
+          "condition": {
+            "kind": "hp",
+            "minPercent": 0,
+            "maxPercent": 55
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
         }
       ],
-      "playerResponse": "곡성 피해와 손아귀 피해 대상을 먼저 치료. 예고 없이 광역 공격한다고 쓰지 않는다.",
-      "enemyId": "enemy_jf_bride_wraith",
-      "role": "boss"
+      "skillContracts": [
+        {
+          "skillId": "skill_jf_enemy_sorrow_cry",
+          "sourcePresent": true,
+          "name": "한의울음",
+          "scope": "allEnemies",
+          "effect": {
+            "kind": "support"
+          },
+          "power": 0,
+          "mpCost": {
+            "flat": 5,
+            "percentMax": 0
+          },
+          "chargeTurns": 1,
+          "stateEffects": [
+            {
+              "stateId": "state_jf_ghost_seal",
+              "chance": 50,
+              "operation": "add"
+            }
+          ],
+          "description": "기력 5. 예고 후 다음 자기 차례 상대전체 각각 귀봉50%. 기술 봉쇄, 2번째 자기 차례 시작 해제. (부여확률은 저항 적용)",
+          "hitSequence": null,
+          "elementId": null,
+          "cooldownTurns": 0
+        },
+        {
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "sourcePresent": true,
+          "name": "청동강타",
+          "scope": "allEnemies",
+          "effect": {
+            "kind": "damage",
+            "statistic": "attack",
+            "affects": "hp"
+          },
+          "power": 32,
+          "mpCost": {
+            "flat": 0,
+            "percentMax": 0
+          },
+          "chargeTurns": 1,
+          "stateEffects": [],
+          "description": "기력 0. 예고 후 다음 자기 차례 상대전체 물리 위력32·각1타. 명중95%.",
+          "hitSequence": null,
+          "elementId": "element_jf_physical",
+          "cooldownTurns": 0
+        }
+      ],
+      "currentMonsterRecord": {
+        "id": "enemy_jf_bride_wraith",
+        "name": "신부 원귀",
+        "level": 12,
+        "monsterResourceId": "jf-enemy-bride-wraith",
+        "graphicHue": 0,
+        "transparent": false,
+        "flying": true,
+        "criticalHit": {
+          "enabled": false,
+          "oneIn": 30
+        },
+        "attackOptions": {
+          "normalAttacksMiss": false
+        },
+        "skillIds": [
+          "skill_attack"
+        ],
+        "stats": {
+          "maxHp": 1400,
+          "maxMp": 80,
+          "attack": 86,
+          "defense": 26,
+          "mind": 42,
+          "agility": 24
+        },
+        "rewards": {
+          "exp": 650,
+          "gold": 350,
+          "dropItemId": "item_jf_mat_broken_jade",
+          "dropRatePercent": 100
+        },
+        "actions": [
+          {
+            "skillId": "skill_attack",
+            "priority": 50,
+            "condition": {
+              "kind": "always"
+            },
+            "switchOnAfterAction": {
+              "enabled": false
+            },
+            "switchOffAfterAction": {
+              "enabled": false
+            }
+          }
+        ],
+        "stateRates": {
+          "state_death": "C"
+        },
+        "elementRates": {}
+      },
+      "scenarioStatOverrides": {},
+      "integrationRequirements": {
+        "basicAttackAlwaysCandidate": true,
+        "requiredMaximumMpForOneUse": 5,
+        "stats": "Actual monster stats; declared MP-only override in 0-MP cases for positive AI probes. sourceStats probes keep original MP. No other-role record is patched.",
+        "pendingSkillIds": []
+      }
     },
     {
       "slug": "mountain-tiger",
+      "enemyId": "enemy_jf_mountain_tiger",
       "name": "산군",
-      "recommendedLevel": [
-        17,
-        20
-      ],
-      "authoredInPilot": false,
-      "skillIds": [
-        "skill_jf_enemy_poison_bite"
-      ],
+      "role": "boss",
+      "recommendedLevel": 18,
+      "playerResponse": "후반: 주기 돌내리찍기, HP70% 아래 독 물기로 기본 차례를 대체, HP35% 아래 전체 강타 준비 빈도 증가. 실제 독 제거 수단을 준비하고 전체 예고 중 방어/회복. 기존 기술명을 그대로 표시하며 새 포효/발톱/즉사를 발명하지 않는다.",
       "hpThreshold": 35,
-      "phases": [
+      "primaryCondition": {
+        "kind": "turn",
+        "start": 2,
+        "interval": 3
+      },
+      "scenarioStats": {
+        "maxHp": 2600,
+        "maxMp": 48,
+        "attack": 120,
+        "defense": 40,
+        "mind": 36,
+        "agility": 38
+      },
+      "actions": [
         {
-          "hp": "35% 초과",
-          "effect": "기본 공격만."
+          "skillId": "",
+          "priority": 1,
+          "condition": {
+            "kind": "always"
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
         },
         {
-          "hp": "0~35%",
-          "effect": "HP 단독 조건의 poison-bite 우선순위 95를 추가. 영물의 독 송곳니라는 창작 설정; 기술은 들쥐와 공유."
+          "skillId": "skill_jf_enemy_stone_crush",
+          "priority": 80,
+          "condition": {
+            "kind": "turn",
+            "start": 2,
+            "interval": 3
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        },
+        {
+          "skillId": "skill_jf_enemy_poison_bite",
+          "priority": 60,
+          "condition": {
+            "kind": "hp",
+            "minPercent": 0,
+            "maxPercent": 70
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        },
+        {
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "priority": 85,
+          "condition": {
+            "kind": "turn",
+            "start": 5,
+            "interval": 5
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        },
+        {
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "priority": 98,
+          "condition": {
+            "kind": "hp",
+            "minPercent": 0,
+            "maxPercent": 35
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
         }
       ],
-      "playerResponse": "상태 부여가 실제 있으면 정화와 해독약을 준비. 독 제거 여부가 검증되기 전 설명은 피해 기술로 한정.",
-      "limitation": "고정 ID에 산군 전용 포효/발톱이 없다. 기존 기술 슬롯 공유는 감독자 검토 대상이며 새 ID를 발명하지 않는다.",
-      "enemyId": "enemy_jf_mountain_tiger",
-      "role": "boss"
+      "skillContracts": [
+        {
+          "skillId": "skill_jf_enemy_stone_crush",
+          "sourcePresent": true,
+          "name": "돌내리치기",
+          "scope": "enemy",
+          "effect": {
+            "kind": "damage",
+            "statistic": "attack",
+            "affects": "hp"
+          },
+          "power": 36,
+          "mpCost": {
+            "flat": 5,
+            "percentMax": 0
+          },
+          "chargeTurns": 1,
+          "stateEffects": [],
+          "description": "기력 5. 예고 후 다음 자기 차례 상대1 물리 위력36·1타. 명중90%.",
+          "hitSequence": null,
+          "elementId": "element_jf_physical",
+          "cooldownTurns": 0
+        },
+        {
+          "skillId": "skill_jf_enemy_poison_bite",
+          "sourcePresent": true,
+          "name": "독이빨",
+          "scope": "enemy",
+          "effect": {
+            "kind": "damage",
+            "statistic": "attack",
+            "affects": "hp"
+          },
+          "power": 12,
+          "mpCost": {
+            "flat": 3,
+            "percentMax": 0
+          },
+          "chargeTurns": 0,
+          "stateEffects": [
+            {
+              "stateId": "state_poison",
+              "chance": 45,
+              "operation": "add"
+            }
+          ],
+          "description": "기력 3. 상대1 물리12·1타/명중95%. 명중 후 독45%: 차례당 최대HP6%, HP1하한. (부여확률은 저항 적용)",
+          "hitSequence": null,
+          "elementId": "element_jf_physical",
+          "cooldownTurns": 0
+        },
+        {
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "sourcePresent": true,
+          "name": "청동강타",
+          "scope": "allEnemies",
+          "effect": {
+            "kind": "damage",
+            "statistic": "attack",
+            "affects": "hp"
+          },
+          "power": 32,
+          "mpCost": {
+            "flat": 0,
+            "percentMax": 0
+          },
+          "chargeTurns": 1,
+          "stateEffects": [],
+          "description": "기력 0. 예고 후 다음 자기 차례 상대전체 물리 위력32·각1타. 명중95%.",
+          "hitSequence": null,
+          "elementId": "element_jf_physical",
+          "cooldownTurns": 0
+        }
+      ],
+      "currentMonsterRecord": {
+        "id": "enemy_jf_mountain_tiger",
+        "name": "산군 호랑이",
+        "level": 19,
+        "monsterResourceId": "jf-enemy-mountain-tiger",
+        "graphicHue": 0,
+        "transparent": false,
+        "flying": false,
+        "criticalHit": {
+          "enabled": false,
+          "oneIn": 30
+        },
+        "attackOptions": {
+          "normalAttacksMiss": false
+        },
+        "skillIds": [
+          "skill_attack"
+        ],
+        "stats": {
+          "maxHp": 2600,
+          "maxMp": 48,
+          "attack": 120,
+          "defense": 40,
+          "mind": 36,
+          "agility": 38
+        },
+        "rewards": {
+          "exp": 1400,
+          "gold": 800,
+          "dropItemId": "item_jf_mat_tiger_claw",
+          "dropRatePercent": 100
+        },
+        "actions": [
+          {
+            "skillId": "skill_attack",
+            "priority": 50,
+            "condition": {
+              "kind": "always"
+            },
+            "switchOnAfterAction": {
+              "enabled": false
+            },
+            "switchOffAfterAction": {
+              "enabled": false
+            }
+          }
+        ],
+        "stateRates": {
+          "state_death": "C"
+        },
+        "elementRates": {}
+      },
+      "scenarioStatOverrides": {},
+      "integrationRequirements": {
+        "basicAttackAlwaysCandidate": true,
+        "requiredMaximumMpForOneUse": 5,
+        "stats": "Actual monster stats; declared MP-only override in 0-MP cases for positive AI probes. sourceStats probes keep original MP. No other-role record is patched.",
+        "pendingSkillIds": []
+      }
     }
   ],
-  "skillRequirements": [
-    {
-      "skillId": "skill_jf_enemy_tusk_charge",
-      "fixtureName": "엄니 돌진",
-      "scope": "enemy",
-      "chargeTurns": 1,
-      "fixturePower": 24,
-      "fixtureStatistic": "attack",
-      "fixtureMpCost": 0,
-      "requiredEffect": {
-        "kind": "damage",
-        "affects": "hp"
-      },
-      "note": "skills 담당 정본과 대조 필요. 위력/기력은 샘플 실행용 제안이며 behavior가 기술을 등록하지 않는다."
-    },
-    {
-      "skillId": "skill_jf_enemy_straw_club",
-      "fixtureName": "짚 방망이",
-      "scope": "enemy",
-      "chargeTurns": 0,
-      "fixturePower": 18,
-      "fixtureStatistic": "attack",
-      "fixtureMpCost": 0,
-      "requiredEffect": {
-        "kind": "damage",
-        "affects": "hp"
-      },
-      "note": "skills 담당 정본과 대조 필요. 위력/기력은 샘플 실행용 제안이며 behavior가 기술을 등록하지 않는다."
-    },
-    {
-      "skillId": "skill_jf_enemy_sorrow_cry",
-      "fixtureName": "서러운 곡성",
-      "scope": "enemy",
-      "chargeTurns": 1,
-      "fixturePower": 20,
-      "fixtureStatistic": "mind",
-      "fixtureMpCost": 0,
-      "requiredEffect": {
-        "kind": "damage",
-        "affects": "hp"
-      },
-      "note": "skills 담당 정본과 대조 필요. 위력/기력은 샘플 실행용 제안이며 behavior가 기술을 등록하지 않는다."
-    },
-    {
-      "skillId": "skill_jf_enemy_bronze_smash",
-      "fixtureName": "청동 내려치기",
-      "scope": "allEnemies",
-      "chargeTurns": 1,
-      "fixturePower": 28,
-      "fixtureStatistic": "attack",
-      "fixtureMpCost": 0,
-      "requiredEffect": {
-        "kind": "damage",
-        "affects": "hp"
-      },
-      "note": "skills 담당 정본과 대조 필요. 위력/기력은 샘플 실행용 제안이며 behavior가 기술을 등록하지 않는다."
-    }
-  ],
-  "limitations": [
-    "skills 담당의 실제 4기술은 이 체크아웃에 없음. 스모크의 기술은 위 requirements로 만든 메모리 fixture이며 실제 통합 검증이 아님.",
-    "몬스터 stats/최종 포즈/직업/아이템/기술 밸런스는 다른 담당 소유. 통합 후 감독자가 실제 레코드로 재검증해야 함.",
-    "예고 준비/발동 기록과 방어 감소는 실제 엔진으로 검사; PNG는 행동 검토판이며 출하 게임 화면이 아님.",
-    "일반 9종과 보스 2종은 설계 윤곽만. 파일럿 네 종 이후 작업은 후속 지시를 기다림.",
-    "live SQLite, Supabase, public registry에는 쓰지 않았음. ready는 파일럿 산출물 준비이며 사용자 승인/정본 게임 저장/배포 완료가 아님."
+  "skillSource": {
+    "path": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content-jf-skills/content-packs/joseon-folklore/skills/data.json",
+    "sha256": "cac9ce83c28ba6300c3933ff75d5327a08567c38586ad436b40800e8c8c6c70f",
+    "missingIds": []
+  },
+  "engineContract": {
+    "conditions": "one existing condition per action, no and/phase/new switch or state",
+    "priority": "priority*10+utility; not probability or absolute priority. Finishing target damage may add1000.",
+    "basic": "skillId empty string always priority1; runtime basic fallback remains legal after MP depletion or sealing",
+    "turn": "strict round versus gauge cycle; chargeTurns counts subsequent OWN turns. Different agility can change wall time/party opportunities.",
+    "hp": "inclusive real percent, comparisons after authored HP/MP changes; pending charged action keeps old choice",
+    "warning": "Only real source chargeTurns. All bosses reuse actual bronze-smash name/scope/cost/effect. No fake AI fixture skills.",
+    "responses": "defend halves HP damage; support state does not cause HP damage and guarding does not remove a seal. Do not claim dialogue/terrain avoids attacks.",
+    "reactions": "none; out-of-turn reactions bypass charge, so do not reuse charged attacks there."
+  },
+  "limits": [
+    "All skills sourced from skills/data.json; missing IDs are blockers, not manufactured records.",
+    "Full AI runtime can use declared enemy/party scenario stats; actual monster-source compatibility checked separately and reported.",
+    "source PNGs are references; own board is a behavior visualization, not shipped-player evidence.",
+    "root performs enemy merge, public registration, final gameplay balance and canonical save/reload. No DB writes here."
   ]
 }

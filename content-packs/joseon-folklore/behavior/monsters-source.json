@@ -1,0 +1,1076 @@
+{
+  "sourcePath": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content-jf-monsters/content-packs/joseon-folklore/monsters/data.json",
+  "sha256": "a4e13a9e9baa90b3fe44a014caee1c1c95ce35552e9f16918e2d83a0f0ac74ed",
+  "purpose": "read-only source snapshot; no cross-role mutations",
+  "records": {
+    "enemies": [
+      {
+        "id": "enemy_jf_field_rat",
+        "name": "들쥐",
+        "level": 1,
+        "monsterResourceId": "jf-enemy-field-rat",
+        "graphicHue": 0,
+        "transparent": false,
+        "flying": false,
+        "criticalHit": {
+          "enabled": false,
+          "oneIn": 30
+        },
+        "attackOptions": {
+          "normalAttacksMiss": false
+        },
+        "skillIds": [
+          "skill_attack"
+        ],
+        "stats": {
+          "maxHp": 65,
+          "maxMp": 0,
+          "attack": 12,
+          "defense": 6,
+          "mind": 6,
+          "agility": 14
+        },
+        "rewards": {
+          "exp": 10,
+          "gold": 5,
+          "dropItemId": "item_jf_mat_rat_tail",
+          "dropRatePercent": 35
+        },
+        "actions": [
+          {
+            "skillId": "skill_attack",
+            "priority": 50,
+            "condition": {
+              "kind": "always"
+            },
+            "switchOnAfterAction": {
+              "enabled": false
+            },
+            "switchOffAfterAction": {
+              "enabled": false
+            }
+          }
+        ],
+        "stateRates": {
+          "state_death": "C"
+        },
+        "elementRates": {}
+      },
+      {
+        "id": "enemy_jf_wild_boar",
+        "name": "산멧돼지",
+        "level": 2,
+        "monsterResourceId": "jf-enemy-wild-boar",
+        "graphicHue": 0,
+        "transparent": false,
+        "flying": false,
+        "criticalHit": {
+          "enabled": false,
+          "oneIn": 30
+        },
+        "attackOptions": {
+          "normalAttacksMiss": false
+        },
+        "skillIds": [
+          "skill_attack"
+        ],
+        "stats": {
+          "maxHp": 110,
+          "maxMp": 0,
+          "attack": 14,
+          "defense": 10,
+          "mind": 8,
+          "agility": 12
+        },
+        "rewards": {
+          "exp": 22,
+          "gold": 9,
+          "dropItemId": "item_jf_mat_boar_tusk",
+          "dropRatePercent": 35
+        },
+        "actions": [
+          {
+            "skillId": "skill_attack",
+            "priority": 50,
+            "condition": {
+              "kind": "always"
+            },
+            "switchOnAfterAction": {
+              "enabled": false
+            },
+            "switchOffAfterAction": {
+              "enabled": false
+            }
+          }
+        ],
+        "stateRates": {
+          "state_death": "C"
+        },
+        "elementRates": {}
+      },
+      {
+        "id": "enemy_jf_cave_bat",
+        "name": "굴박쥐",
+        "level": 2,
+        "monsterResourceId": "jf-enemy-cave-bat",
+        "graphicHue": 0,
+        "transparent": false,
+        "flying": true,
+        "criticalHit": {
+          "enabled": false,
+          "oneIn": 30
+        },
+        "attackOptions": {
+          "normalAttacksMiss": false
+        },
+        "skillIds": [
+          "skill_attack"
+        ],
+        "stats": {
+          "maxHp": 85,
+          "maxMp": 0,
+          "attack": 14,
+          "defense": 7,
+          "mind": 10,
+          "agility": 20
+        },
+        "rewards": {
+          "exp": 18,
+          "gold": 8,
+          "dropItemId": "item_jf_mat_bat_wing",
+          "dropRatePercent": 35
+        },
+        "actions": [
+          {
+            "skillId": "skill_attack",
+            "priority": 50,
+            "condition": {
+              "kind": "always"
+            },
+            "switchOnAfterAction": {
+              "enabled": false
+            },
+            "switchOffAfterAction": {
+              "enabled": false
+            }
+          }
+        ],
+        "stateRates": {
+          "state_death": "C"
+        },
+        "elementRates": {}
+      },
+      {
+        "id": "enemy_jf_straw_dokkaebi",
+        "name": "볏짚 도깨비",
+        "level": 3,
+        "monsterResourceId": "jf-enemy-straw-dokkaebi",
+        "graphicHue": 0,
+        "transparent": false,
+        "flying": false,
+        "criticalHit": {
+          "enabled": false,
+          "oneIn": 30
+        },
+        "attackOptions": {
+          "normalAttacksMiss": false
+        },
+        "skillIds": [
+          "skill_attack"
+        ],
+        "stats": {
+          "maxHp": 140,
+          "maxMp": 0,
+          "attack": 18,
+          "defense": 12,
+          "mind": 10,
+          "agility": 10
+        },
+        "rewards": {
+          "exp": 35,
+          "gold": 13,
+          "dropItemId": "item_jf_mat_straw_knot",
+          "dropRatePercent": 45
+        },
+        "actions": [
+          {
+            "skillId": "skill_attack",
+            "priority": 50,
+            "condition": {
+              "kind": "always"
+            },
+            "switchOnAfterAction": {
+              "enabled": false
+            },
+            "switchOffAfterAction": {
+              "enabled": false
+            }
+          }
+        ],
+        "stateRates": {
+          "state_death": "C"
+        },
+        "elementRates": {}
+      },
+      {
+        "id": "enemy_jf_lantern_wisp",
+        "name": "도깨비불",
+        "level": 4,
+        "monsterResourceId": "jf-enemy-lantern-wisp",
+        "graphicHue": 0,
+        "transparent": false,
+        "flying": true,
+        "criticalHit": {
+          "enabled": false,
+          "oneIn": 30
+        },
+        "attackOptions": {
+          "normalAttacksMiss": false
+        },
+        "skillIds": [
+          "skill_attack"
+        ],
+        "stats": {
+          "maxHp": 125,
+          "maxMp": 20,
+          "attack": 20,
+          "defense": 8,
+          "mind": 24,
+          "agility": 15
+        },
+        "rewards": {
+          "exp": 32,
+          "gold": 12,
+          "dropItemId": "item_jf_mat_ghost_ash",
+          "dropRatePercent": 40
+        },
+        "actions": [
+          {
+            "skillId": "skill_attack",
+            "priority": 50,
+            "condition": {
+              "kind": "always"
+            },
+            "switchOnAfterAction": {
+              "enabled": false
+            },
+            "switchOffAfterAction": {
+              "enabled": false
+            }
+          }
+        ],
+        "stateRates": {
+          "state_death": "C"
+        },
+        "elementRates": {}
+      },
+      {
+        "id": "enemy_jf_maiden_ghost",
+        "name": "처녀귀신",
+        "level": 5,
+        "monsterResourceId": "jf-enemy-maiden-ghost",
+        "graphicHue": 0,
+        "transparent": false,
+        "flying": true,
+        "criticalHit": {
+          "enabled": false,
+          "oneIn": 30
+        },
+        "attackOptions": {
+          "normalAttacksMiss": false
+        },
+        "skillIds": [
+          "skill_attack"
+        ],
+        "stats": {
+          "maxHp": 145,
+          "maxMp": 20,
+          "attack": 17,
+          "defense": 8,
+          "mind": 23,
+          "agility": 16
+        },
+        "rewards": {
+          "exp": 42,
+          "gold": 17,
+          "dropItemId": "item_jf_mat_ghost_ash",
+          "dropRatePercent": 40
+        },
+        "actions": [
+          {
+            "skillId": "skill_attack",
+            "priority": 50,
+            "condition": {
+              "kind": "always"
+            },
+            "switchOnAfterAction": {
+              "enabled": false
+            },
+            "switchOffAfterAction": {
+              "enabled": false
+            }
+          }
+        ],
+        "stateRates": {
+          "state_death": "C"
+        },
+        "elementRates": {}
+      },
+      {
+        "id": "enemy_jf_drowned_ghost",
+        "name": "물귀신",
+        "level": 8,
+        "monsterResourceId": "jf-enemy-drowned-ghost",
+        "graphicHue": 0,
+        "transparent": false,
+        "flying": true,
+        "criticalHit": {
+          "enabled": false,
+          "oneIn": 30
+        },
+        "attackOptions": {
+          "normalAttacksMiss": false
+        },
+        "skillIds": [
+          "skill_attack"
+        ],
+        "stats": {
+          "maxHp": 220,
+          "maxMp": 28,
+          "attack": 34,
+          "defense": 16,
+          "mind": 32,
+          "agility": 17
+        },
+        "rewards": {
+          "exp": 75,
+          "gold": 25,
+          "dropItemId": "item_jf_mat_broken_jade",
+          "dropRatePercent": 40
+        },
+        "actions": [
+          {
+            "skillId": "skill_attack",
+            "priority": 50,
+            "condition": {
+              "kind": "always"
+            },
+            "switchOnAfterAction": {
+              "enabled": false
+            },
+            "switchOffAfterAction": {
+              "enabled": false
+            }
+          }
+        ],
+        "stateRates": {
+          "state_death": "C"
+        },
+        "elementRates": {}
+      },
+      {
+        "id": "enemy_jf_grave_ghoul",
+        "name": "묘지귀물",
+        "level": 10,
+        "monsterResourceId": "jf-enemy-grave-ghoul",
+        "graphicHue": 0,
+        "transparent": false,
+        "flying": false,
+        "criticalHit": {
+          "enabled": false,
+          "oneIn": 30
+        },
+        "attackOptions": {
+          "normalAttacksMiss": false
+        },
+        "skillIds": [
+          "skill_attack"
+        ],
+        "stats": {
+          "maxHp": 280,
+          "maxMp": 12,
+          "attack": 40,
+          "defense": 24,
+          "mind": 16,
+          "agility": 12
+        },
+        "rewards": {
+          "exp": 95,
+          "gold": 32,
+          "dropItemId": "item_jf_mat_ghost_ash",
+          "dropRatePercent": 40
+        },
+        "actions": [
+          {
+            "skillId": "skill_attack",
+            "priority": 50,
+            "condition": {
+              "kind": "always"
+            },
+            "switchOnAfterAction": {
+              "enabled": false
+            },
+            "switchOffAfterAction": {
+              "enabled": false
+            }
+          }
+        ],
+        "stateRates": {
+          "state_death": "C"
+        },
+        "elementRates": {}
+      },
+      {
+        "id": "enemy_jf_fox_spirit",
+        "name": "여우요괴 · 희귀",
+        "level": 12,
+        "monsterResourceId": "jf-enemy-fox-spirit",
+        "graphicHue": 0,
+        "transparent": false,
+        "flying": false,
+        "criticalHit": {
+          "enabled": false,
+          "oneIn": 30
+        },
+        "attackOptions": {
+          "normalAttacksMiss": false
+        },
+        "skillIds": [
+          "skill_attack"
+        ],
+        "stats": {
+          "maxHp": 360,
+          "maxMp": 42,
+          "attack": 45,
+          "defense": 22,
+          "mind": 40,
+          "agility": 32
+        },
+        "rewards": {
+          "exp": 150,
+          "gold": 55,
+          "dropItemId": "item_jf_mat_fox_fur",
+          "dropRatePercent": 55
+        },
+        "actions": [
+          {
+            "skillId": "skill_attack",
+            "priority": 50,
+            "condition": {
+              "kind": "always"
+            },
+            "switchOnAfterAction": {
+              "enabled": false
+            },
+            "switchOffAfterAction": {
+              "enabled": false
+            }
+          }
+        ],
+        "stateRates": {
+          "state_death": "C"
+        },
+        "elementRates": {}
+      },
+      {
+        "id": "enemy_jf_stone_dokkaebi",
+        "name": "돌 도깨비 · 강적",
+        "level": 13,
+        "monsterResourceId": "jf-enemy-stone-dokkaebi",
+        "graphicHue": 0,
+        "transparent": false,
+        "flying": false,
+        "criticalHit": {
+          "enabled": false,
+          "oneIn": 30
+        },
+        "attackOptions": {
+          "normalAttacksMiss": false
+        },
+        "skillIds": [
+          "skill_attack"
+        ],
+        "stats": {
+          "maxHp": 480,
+          "maxMp": 20,
+          "attack": 54,
+          "defense": 36,
+          "mind": 18,
+          "agility": 16
+        },
+        "rewards": {
+          "exp": 185,
+          "gold": 65,
+          "dropItemId": "item_jf_mat_stone_core",
+          "dropRatePercent": 60
+        },
+        "actions": [
+          {
+            "skillId": "skill_attack",
+            "priority": 50,
+            "condition": {
+              "kind": "always"
+            },
+            "switchOnAfterAction": {
+              "enabled": false
+            },
+            "switchOffAfterAction": {
+              "enabled": false
+            }
+          }
+        ],
+        "stateRates": {
+          "state_death": "C"
+        },
+        "elementRates": {}
+      },
+      {
+        "id": "enemy_jf_bamboo_specter",
+        "name": "대숲귀물",
+        "level": 15,
+        "monsterResourceId": "jf-enemy-bamboo-specter",
+        "graphicHue": 0,
+        "transparent": false,
+        "flying": false,
+        "criticalHit": {
+          "enabled": false,
+          "oneIn": 30
+        },
+        "attackOptions": {
+          "normalAttacksMiss": false
+        },
+        "skillIds": [
+          "skill_attack"
+        ],
+        "stats": {
+          "maxHp": 420,
+          "maxMp": 38,
+          "attack": 50,
+          "defense": 28,
+          "mind": 42,
+          "agility": 24
+        },
+        "rewards": {
+          "exp": 165,
+          "gold": 50,
+          "dropItemId": "item_jf_mat_bamboo_heart",
+          "dropRatePercent": 50
+        },
+        "actions": [
+          {
+            "skillId": "skill_attack",
+            "priority": 50,
+            "condition": {
+              "kind": "always"
+            },
+            "switchOnAfterAction": {
+              "enabled": false
+            },
+            "switchOffAfterAction": {
+              "enabled": false
+            }
+          }
+        ],
+        "stateRates": {
+          "state_death": "C"
+        },
+        "elementRates": {}
+      },
+      {
+        "id": "enemy_jf_masked_bandit",
+        "name": "복면산적",
+        "level": 17,
+        "monsterResourceId": "jf-enemy-masked-bandit",
+        "graphicHue": 0,
+        "transparent": false,
+        "flying": false,
+        "criticalHit": {
+          "enabled": false,
+          "oneIn": 30
+        },
+        "attackOptions": {
+          "normalAttacksMiss": false
+        },
+        "skillIds": [
+          "skill_attack"
+        ],
+        "stats": {
+          "maxHp": 510,
+          "maxMp": 24,
+          "attack": 62,
+          "defense": 32,
+          "mind": 26,
+          "agility": 36
+        },
+        "rewards": {
+          "exp": 210,
+          "gold": 75,
+          "dropItemId": "item_jf_mat_rusted_token",
+          "dropRatePercent": 45
+        },
+        "actions": [
+          {
+            "skillId": "skill_attack",
+            "priority": 50,
+            "condition": {
+              "kind": "always"
+            },
+            "switchOnAfterAction": {
+              "enabled": false
+            },
+            "switchOffAfterAction": {
+              "enabled": false
+            }
+          }
+        ],
+        "stateRates": {
+          "state_death": "C"
+        },
+        "elementRates": {}
+      },
+      {
+        "id": "enemy_jf_bronze_dokkaebi",
+        "name": "청동 도깨비",
+        "level": 6,
+        "monsterResourceId": "jf-enemy-bronze-dokkaebi",
+        "graphicHue": 0,
+        "transparent": false,
+        "flying": false,
+        "criticalHit": {
+          "enabled": false,
+          "oneIn": 30
+        },
+        "attackOptions": {
+          "normalAttacksMiss": false
+        },
+        "skillIds": [
+          "skill_attack"
+        ],
+        "stats": {
+          "maxHp": 680,
+          "maxMp": 24,
+          "attack": 46,
+          "defense": 18,
+          "mind": 14,
+          "agility": 14
+        },
+        "rewards": {
+          "exp": 210,
+          "gold": 120,
+          "dropItemId": "item_jf_mat_bronze_shard",
+          "dropRatePercent": 100
+        },
+        "actions": [
+          {
+            "skillId": "skill_attack",
+            "priority": 50,
+            "condition": {
+              "kind": "always"
+            },
+            "switchOnAfterAction": {
+              "enabled": false
+            },
+            "switchOffAfterAction": {
+              "enabled": false
+            }
+          }
+        ],
+        "stateRates": {
+          "state_death": "C"
+        },
+        "elementRates": {}
+      },
+      {
+        "id": "enemy_jf_bride_wraith",
+        "name": "신부 원귀",
+        "level": 12,
+        "monsterResourceId": "jf-enemy-bride-wraith",
+        "graphicHue": 0,
+        "transparent": false,
+        "flying": true,
+        "criticalHit": {
+          "enabled": false,
+          "oneIn": 30
+        },
+        "attackOptions": {
+          "normalAttacksMiss": false
+        },
+        "skillIds": [
+          "skill_attack"
+        ],
+        "stats": {
+          "maxHp": 1400,
+          "maxMp": 80,
+          "attack": 86,
+          "defense": 26,
+          "mind": 42,
+          "agility": 24
+        },
+        "rewards": {
+          "exp": 650,
+          "gold": 350,
+          "dropItemId": "item_jf_mat_broken_jade",
+          "dropRatePercent": 100
+        },
+        "actions": [
+          {
+            "skillId": "skill_attack",
+            "priority": 50,
+            "condition": {
+              "kind": "always"
+            },
+            "switchOnAfterAction": {
+              "enabled": false
+            },
+            "switchOffAfterAction": {
+              "enabled": false
+            }
+          }
+        ],
+        "stateRates": {
+          "state_death": "C"
+        },
+        "elementRates": {}
+      },
+      {
+        "id": "enemy_jf_mountain_tiger",
+        "name": "산군 호랑이",
+        "level": 19,
+        "monsterResourceId": "jf-enemy-mountain-tiger",
+        "graphicHue": 0,
+        "transparent": false,
+        "flying": false,
+        "criticalHit": {
+          "enabled": false,
+          "oneIn": 30
+        },
+        "attackOptions": {
+          "normalAttacksMiss": false
+        },
+        "skillIds": [
+          "skill_attack"
+        ],
+        "stats": {
+          "maxHp": 2600,
+          "maxMp": 48,
+          "attack": 120,
+          "defense": 40,
+          "mind": 36,
+          "agility": 38
+        },
+        "rewards": {
+          "exp": 1400,
+          "gold": 800,
+          "dropItemId": "item_jf_mat_tiger_claw",
+          "dropRatePercent": 100
+        },
+        "actions": [
+          {
+            "skillId": "skill_attack",
+            "priority": 50,
+            "condition": {
+              "kind": "always"
+            },
+            "switchOnAfterAction": {
+              "enabled": false
+            },
+            "switchOffAfterAction": {
+              "enabled": false
+            }
+          }
+        ],
+        "stateRates": {
+          "state_death": "C"
+        },
+        "elementRates": {}
+      }
+    ],
+    "troops": [
+      {
+        "id": "troop_jf_field_rat",
+        "name": "들쥐 · 단독",
+        "enemyIds": [
+          "enemy_jf_field_rat"
+        ],
+        "members": [
+          {
+            "enemyId": "enemy_jf_field_rat",
+            "x": 88,
+            "y": 140,
+            "hidden": false
+          }
+        ],
+        "autoAlign": true,
+        "uncapturable": true,
+        "previewBackgroundResourceId": "battle-scenery-forest",
+        "battleEventPages": []
+      },
+      {
+        "id": "troop_jf_wild_boar",
+        "name": "산멧돼지 · 단독",
+        "enemyIds": [
+          "enemy_jf_wild_boar"
+        ],
+        "members": [
+          {
+            "enemyId": "enemy_jf_wild_boar",
+            "x": 88,
+            "y": 140,
+            "hidden": false
+          }
+        ],
+        "autoAlign": true,
+        "uncapturable": true,
+        "previewBackgroundResourceId": "battle-scenery-forest",
+        "battleEventPages": []
+      },
+      {
+        "id": "troop_jf_cave_bat",
+        "name": "굴박쥐 · 단독",
+        "enemyIds": [
+          "enemy_jf_cave_bat"
+        ],
+        "members": [
+          {
+            "enemyId": "enemy_jf_cave_bat",
+            "x": 88,
+            "y": 140,
+            "hidden": false
+          }
+        ],
+        "autoAlign": true,
+        "uncapturable": true,
+        "previewBackgroundResourceId": "battle-scenery-cave",
+        "battleEventPages": []
+      },
+      {
+        "id": "troop_jf_straw_dokkaebi",
+        "name": "볏짚 도깨비 · 단독",
+        "enemyIds": [
+          "enemy_jf_straw_dokkaebi"
+        ],
+        "members": [
+          {
+            "enemyId": "enemy_jf_straw_dokkaebi",
+            "x": 88,
+            "y": 140,
+            "hidden": false
+          }
+        ],
+        "autoAlign": true,
+        "uncapturable": true,
+        "previewBackgroundResourceId": "battle-scenery-forest",
+        "battleEventPages": []
+      },
+      {
+        "id": "troop_jf_lantern_wisp",
+        "name": "도깨비불 · 단독",
+        "enemyIds": [
+          "enemy_jf_lantern_wisp"
+        ],
+        "members": [
+          {
+            "enemyId": "enemy_jf_lantern_wisp",
+            "x": 88,
+            "y": 140,
+            "hidden": false
+          }
+        ],
+        "autoAlign": true,
+        "uncapturable": true,
+        "previewBackgroundResourceId": "battle-scenery-forest",
+        "battleEventPages": []
+      },
+      {
+        "id": "troop_jf_maiden_ghost",
+        "name": "처녀귀신 · 단독",
+        "enemyIds": [
+          "enemy_jf_maiden_ghost"
+        ],
+        "members": [
+          {
+            "enemyId": "enemy_jf_maiden_ghost",
+            "x": 88,
+            "y": 140,
+            "hidden": false
+          }
+        ],
+        "autoAlign": true,
+        "uncapturable": true,
+        "previewBackgroundResourceId": "battle-scenery-forest",
+        "battleEventPages": []
+      },
+      {
+        "id": "troop_jf_drowned_ghost",
+        "name": "물귀신 · 단독",
+        "enemyIds": [
+          "enemy_jf_drowned_ghost"
+        ],
+        "members": [
+          {
+            "enemyId": "enemy_jf_drowned_ghost",
+            "x": 88,
+            "y": 140,
+            "hidden": false
+          }
+        ],
+        "autoAlign": true,
+        "uncapturable": true,
+        "previewBackgroundResourceId": "battle-scenery-forest",
+        "battleEventPages": []
+      },
+      {
+        "id": "troop_jf_grave_ghoul",
+        "name": "묘지귀물 · 단독",
+        "enemyIds": [
+          "enemy_jf_grave_ghoul"
+        ],
+        "members": [
+          {
+            "enemyId": "enemy_jf_grave_ghoul",
+            "x": 88,
+            "y": 140,
+            "hidden": false
+          }
+        ],
+        "autoAlign": true,
+        "uncapturable": true,
+        "previewBackgroundResourceId": "battle-scenery-cave",
+        "battleEventPages": []
+      },
+      {
+        "id": "troop_jf_fox_spirit",
+        "name": "여우요괴 · 희귀 · 단독",
+        "enemyIds": [
+          "enemy_jf_fox_spirit"
+        ],
+        "members": [
+          {
+            "enemyId": "enemy_jf_fox_spirit",
+            "x": 88,
+            "y": 140,
+            "hidden": false
+          }
+        ],
+        "autoAlign": true,
+        "uncapturable": true,
+        "previewBackgroundResourceId": "battle-scenery-forest",
+        "battleEventPages": []
+      },
+      {
+        "id": "troop_jf_stone_dokkaebi",
+        "name": "돌 도깨비 · 강적 · 단독",
+        "enemyIds": [
+          "enemy_jf_stone_dokkaebi"
+        ],
+        "members": [
+          {
+            "enemyId": "enemy_jf_stone_dokkaebi",
+            "x": 88,
+            "y": 140,
+            "hidden": false
+          }
+        ],
+        "autoAlign": true,
+        "uncapturable": true,
+        "previewBackgroundResourceId": "battle-scenery-cave",
+        "battleEventPages": []
+      },
+      {
+        "id": "troop_jf_bamboo_specter",
+        "name": "대숲귀물 · 단독",
+        "enemyIds": [
+          "enemy_jf_bamboo_specter"
+        ],
+        "members": [
+          {
+            "enemyId": "enemy_jf_bamboo_specter",
+            "x": 88,
+            "y": 140,
+            "hidden": false
+          }
+        ],
+        "autoAlign": true,
+        "uncapturable": true,
+        "previewBackgroundResourceId": "battle-scenery-forest",
+        "battleEventPages": []
+      },
+      {
+        "id": "troop_jf_masked_bandit",
+        "name": "복면산적 · 단독",
+        "enemyIds": [
+          "enemy_jf_masked_bandit"
+        ],
+        "members": [
+          {
+            "enemyId": "enemy_jf_masked_bandit",
+            "x": 88,
+            "y": 140,
+            "hidden": false
+          }
+        ],
+        "autoAlign": true,
+        "uncapturable": true,
+        "previewBackgroundResourceId": "battle-scenery-forest",
+        "battleEventPages": []
+      },
+      {
+        "id": "troop_jf_bronze_dokkaebi",
+        "name": "청동 도깨비 · 단독",
+        "enemyIds": [
+          "enemy_jf_bronze_dokkaebi"
+        ],
+        "members": [
+          {
+            "enemyId": "enemy_jf_bronze_dokkaebi",
+            "x": 88,
+            "y": 140,
+            "hidden": false
+          }
+        ],
+        "autoAlign": true,
+        "uncapturable": true,
+        "previewBackgroundResourceId": "battle-scenery-cave",
+        "battleEventPages": []
+      },
+      {
+        "id": "troop_jf_bride_wraith",
+        "name": "신부 원귀 · 단독",
+        "enemyIds": [
+          "enemy_jf_bride_wraith"
+        ],
+        "members": [
+          {
+            "enemyId": "enemy_jf_bride_wraith",
+            "x": 88,
+            "y": 140,
+            "hidden": false
+          }
+        ],
+        "autoAlign": true,
+        "uncapturable": true,
+        "previewBackgroundResourceId": "battle-scenery-forest",
+        "battleEventPages": []
+      },
+      {
+        "id": "troop_jf_mountain_tiger",
+        "name": "산군 호랑이 · 단독",
+        "enemyIds": [
+          "enemy_jf_mountain_tiger"
+        ],
+        "members": [
+          {
+            "enemyId": "enemy_jf_mountain_tiger",
+            "x": 88,
+            "y": 140,
+            "hidden": false
+          }
+        ],
+        "autoAlign": true,
+        "uncapturable": true,
+        "previewBackgroundResourceId": "battle-scenery-forest",
+        "battleEventPages": []
+      }
+    ]
+  }
+}

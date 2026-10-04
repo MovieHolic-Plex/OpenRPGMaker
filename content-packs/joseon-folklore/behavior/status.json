@@ -1,93 +1,129 @@
 {
-  "phase": "pilot",
+  "phase": "full",
   "ready": true,
-  "readyMeaning": "all first-sample artifacts saved and worker-reviewed; not game integration or user approval",
+  "readyMeaning": "15 authored enemyActions, actual skills runtime evidence and direct review boards saved; not canonical game integration or user approval",
   "counts": {
-    "enemyActions": 4,
-    "actionPatterns": 9,
-    "authoredNormals": 3,
-    "authoredBosses": 1,
-    "plannedNormals": 12,
-    "plannedBosses": 3,
-    "runtimeScenarios": 12,
-    "reviewPngs": 2
+    "enemyActions": 15,
+    "actionPatterns": 37,
+    "normals": 12,
+    "bosses": 3,
+    "reservedEnemySkillsUsed": 12,
+    "runtimeScenarios": 124,
+    "sourceMonsterCompatibilityScenarios": 30,
+    "normalizationReadbacks": 15,
+    "reviewPngs": 3
   },
   "reviewFiles": [
-    "public/assets/joseon-folklore/behavior/pilot-review.png",
-    "public/assets/joseon-folklore/behavior/source-poses-nearest.png",
+    "public/assets/joseon-folklore/behavior/full-normals-1.png",
+    "public/assets/joseon-folklore/behavior/full-normals-2.png",
+    "public/assets/joseon-folklore/behavior/full-bosses.png",
     "content-packs/joseon-folklore/behavior/smoke-results.json"
   ],
   "visualReview": {
     "performed": true,
     "reviewer": "behavior worker; subjective self-review",
     "userApproved": false,
+    "originalMonsterSheetsViewed": 15,
     "findings": [
-      "original 9pose sheets inspected directly; native and nearest review boards opened",
-      "timeline text visible without cropping; gold prepare rows precede blue release rows",
-      "low HP boss prepares on off-cycle T4 and damages all 4 actors on release"
+      "full 15 species boards opened directly; labels and timelines visible",
+      "source-native cells with nearest scaling; state/support and HP damage distinguished",
+      "strict/gauge timing differences and real charge markers visible",
+      "four actual MP0 source deficits explicitly disclosed"
     ],
     "imageHashes": {
-      "public/assets/joseon-folklore/behavior/pilot-review.png": "261609795c0baff9d036a7f91aa9d2539fc5e1a8efa90c45a3f805a928f50e58",
-      "public/assets/joseon-folklore/behavior/source-poses-nearest.png": "38b5f75ef8ab9b5b2c5e282dd8ca2c3e68d53e229d6a07434d70db47cb5b671a"
+      "public/assets/joseon-folklore/behavior/full-normals-1.png": "1b2f8f4b99a17755f3454c6e849aac45c2dd851b665f6d44b951b683056fc1f6",
+      "public/assets/joseon-folklore/behavior/full-normals-2.png": "625ab9f2b9966c15744a699daeabc731f6e3fe9f87c6bdbd5794dc115891577f",
+      "public/assets/joseon-folklore/behavior/full-bosses.png": "4f632835f18806a240c9ccd3a10dec2196f2b998fc7b63a6a6ad64092a03f485"
     }
   },
   "validation": {
     "focusedSmoke": true,
+    "skillRecordsInvented": false,
+    "skillSourceHash": "cac9ce83c28ba6300c3933ff75d5327a08567c38586ad436b40800e8c8c6c70f",
+    "monsterSourceHash": "a4e13a9e9baa90b3fe44a014caee1c1c95ce35552e9f16918e2d83a0f0ac74ed",
     "normalizationReadback": true,
+    "mpCostsObserved": true,
+    "strictGaugeDifferences": [
+      "enemy_jf_wild_boar",
+      "enemy_jf_cave_bat",
+      "enemy_jf_drowned_ghost",
+      "enemy_jf_grave_ghoul",
+      "enemy_jf_fox_spirit"
+    ],
     "fullGatesRun": false,
     "liveStoreWritten": false
   },
   "integrationReady": false,
   "pending": [
-    "skills owner real 4 skills (especially bronze scope allEnemies/chargeTurns=1)",
-    "monsters owner new source art/stats and supervisor balance review",
-    "supervisor public registration, project save/reload and shipped-player QA"
+    "actual field-rat/wild-boar/cave-bat/straw-dokkaebi MP0 cannot pay source costs3/3/4/3; root/owners must reconcile",
+    "root merges enemyActions, registers public content and performs canonical save/reload/player QA"
   ],
-  "stopReason": "first sample complete; await supervisor follow-up; no full expansion",
+  "handoffReport": "content-packs/joseon-folklore/behavior/full-report.md",
+  "sharedQueries": "content-packs/joseon-folklore/behavior/shared-queries.md",
   "files": [
     {
       "path": "content-packs/joseon-folklore/behavior/README.md",
-      "sha256": "7cdea5fb56aba4dbe4982873b0730d20a9fbe29e6ba642e90c907234d79303e0"
+      "sha256": "e8ad1fd6b7d9d267a4d64c34d0070d26b0d0a6eb785b136226cfa9a0e08771e6"
     },
     {
       "path": "content-packs/joseon-folklore/behavior/data.json",
-      "sha256": "dbe197b61b4350c22f5b25743142016eb32595c297c255d7237a9b597dda37da"
+      "sha256": "cb1096213fe80a3b96bba6bb8ca93c3848ee06ff0e210de7f080578aeacbef0f"
     },
     {
       "path": "content-packs/joseon-folklore/behavior/design.json",
-      "sha256": "d4b7040eb1f9b83ce1bc6ec0740fafee5e8d85f57fdcb85794f50f4ead04636f"
+      "sha256": "f6d25b9c9f3a81dfb9a6665368916476db592514fc22cded6116172e1c81be00"
+    },
+    {
+      "path": "content-packs/joseon-folklore/behavior/full-report.md",
+      "sha256": "8949e9ab46b8fda0bc9309192ff4743d4f8c8ded8b048486049ab8f9c9bca413"
+    },
+    {
+      "path": "content-packs/joseon-folklore/behavior/monsters-source.json",
+      "sha256": "38bc4723ad3ef0bf6990fcae0d60b2ae3b50183d93a430c80861b5c69fb9c5e0"
     },
     {
       "path": "content-packs/joseon-folklore/behavior/provenance.json",
-      "sha256": "03ada1018886eb0f495da32cf201d82446ebf23048b0a6b09d35a454bb13f498"
+      "sha256": "79bc4784f69804541c5def9692530af4a8d8c2bc61360cc9aef1f886874796ff"
+    },
+    {
+      "path": "content-packs/joseon-folklore/behavior/shared-queries.md",
+      "sha256": "3ee1054b5101265f5b9b55abbcd37ad3249f69872f8043bdbeaed32a9eb92ab6"
+    },
+    {
+      "path": "content-packs/joseon-folklore/behavior/skills-source.json",
+      "sha256": "c8a59d882f0fe534358a0bf0099879db990f51b7d8b4507035a6232821df1938"
     },
     {
       "path": "content-packs/joseon-folklore/behavior/smoke-results.json",
-      "sha256": "96ea41c84ee349739186395650a7a83fe983516c3f764ed82ad82d3ad4298006"
+      "sha256": "ccdcf7d3d3d9c6f8f4803e5cccb05f0ac8a2a6bb0edd2d992213f04a6af5eb05"
     },
     {
       "path": "public/assets/joseon-folklore/behavior/README.md",
-      "sha256": "f757a8af62383fe380ebba627c0cc93e3bc8f8b07f53eeb2c1e3d3043cdddb86"
+      "sha256": "bb414f6c965aba3e9ee37e6be2369e5ab38ae88462a46845b44f0f3451fc788a"
     },
     {
-      "path": "public/assets/joseon-folklore/behavior/pilot-review.png",
-      "sha256": "261609795c0baff9d036a7f91aa9d2539fc5e1a8efa90c45a3f805a928f50e58"
+      "path": "public/assets/joseon-folklore/behavior/full-bosses.png",
+      "sha256": "4f632835f18806a240c9ccd3a10dec2196f2b998fc7b63a6a6ad64092a03f485"
     },
     {
-      "path": "public/assets/joseon-folklore/behavior/source-poses-nearest.png",
-      "sha256": "38b5f75ef8ab9b5b2c5e282dd8ca2c3e68d53e229d6a07434d70db47cb5b671a"
+      "path": "public/assets/joseon-folklore/behavior/full-normals-1.png",
+      "sha256": "1b2f8f4b99a17755f3454c6e849aac45c2dd851b665f6d44b951b683056fc1f6"
+    },
+    {
+      "path": "public/assets/joseon-folklore/behavior/full-normals-2.png",
+      "sha256": "625ab9f2b9966c15744a699daeabc731f6e3fe9f87c6bdbd5794dc115891577f"
     },
     {
       "path": "scripts/content/joseon-folklore/behavior/README.md",
-      "sha256": "a2bd4001b36ae2bb7ced4e909fd561c9f3cf376c5bbb901c2a4188140cd89af2"
+      "sha256": "008c7b13f91863f7bbe5c5ff77671a84c3e1a8c665df4de0c90e85480519326d"
     },
     {
-      "path": "scripts/content/joseon-folklore/behavior/author-pilot.py",
-      "sha256": "19c296853a04755f4ca8e8a849372588d6916d1b35d6ef91eeaa582d7ac3357c"
+      "path": "scripts/content/joseon-folklore/behavior/author-full.py",
+      "sha256": "d994e266d4a1d45def70f0506e551a17dd741c31722feea70d67f023ef28fb1e"
     },
     {
       "path": "scripts/content/joseon-folklore/behavior/render-review.py",
-      "sha256": "af982ce9d5c9a6865c4ff325a491572eb99432bfcde8cdea97066bb2b94410f2"
+      "sha256": "f186b211913f99ef0f7269eba1c924d1c4399243ad1d4e832c94f685283779fe"
     },
     {
       "path": "scripts/content/joseon-folklore/behavior/run-smoke.mjs",
@@ -95,7 +131,14 @@
     },
     {
       "path": "scripts/content/joseon-folklore/behavior/smoke.mts",
-      "sha256": "aede8e8fe86c8ee038cf95c401b9241efa95e5fef40b105d8692a29c9bc12c4e"
+      "sha256": "6b3396d96c27be6ff9ef099a322e68956565fc6b05f92358071ee10ecca421eb"
     }
-  ]
+  ],
+  "delivery": {
+    "mode": "portable real feat commit bundle",
+    "sharedGitMetadataWritable": false,
+    "bundle": "content-packs/joseon-folklore/behavior/full-handoff.bundle",
+    "manifest": "content-packs/joseon-folklore/behavior/handoff.json",
+    "requiresRootFetchAndCherryPick": true
+  }
 }

@@ -1,14 +1,11 @@
-# 행동 AI 검토 PNG
+# Full 행동 검토판
 
-두 파일 모두 행동 검토 자료이며 배포할 몬스터 그림/게임 화면이 아니다.
+full-normals-1.png, full-normals-2.png, full-bosses.png는 **실제 기술 레코드와 실제 전투엔진 실행 기록**을 배치한 검토판이다. 게임 화면/새 몬스터 그림이 아니다.
 
-- `pilot-review.png`: 실제 엔진의 strict/gauge 행동 기록과 청동 HP 40% 진입 후 행동 변화.
-- `source-poses-nearest.png`: 기존 도트의 native 3×3 포즈를 nearest neighbor 2배로 표시.
-
-원본 출처는 `public/assets/generated/pixel-enemies/{boar-tusk,goblin-scout,ghost-pale,goblin-brute}.png`. 신규 조선 몬스터의 이름으로 설치하지 않는다. 코드 저작 진입점과 SHA-256은 `content-packs/joseon-folklore/behavior/provenance.json`에 있다. 재생성:
+몬스터 그림은 다른 담당의 원본15시트(native64/보스96)를 직접 읽어 idle cell과 nearest 배율로 표시한다. 직접 원본·검토판을 열었다. 원본/결과 해시는 content-packs/joseon-folklore/behavior/provenance.json과 status.json 참조. MP0 네 종의 양성 검사 보충과 원본 능력치 검사 결과를 구분한다.
 
 ```bash
 python3 scripts/content/joseon-folklore/behavior/render-review.py
 ```
 
-검토판 조립 코드는 이번 behavior 세션 저작. 기존 그림에 새로운 소유권/외부 재배포 권한을 주장하지 않는다. 직접 이미지 검토 기록은 status.json의 해시에 묶였으며 사용자 승인과 구분한다.
+새 코드 조립은 behavior 세션 저작. 원본 그림의 새로운 소유권/외부 재배포 권한을 주장하지 않는다. 사용자 승인 여부는 별도다.

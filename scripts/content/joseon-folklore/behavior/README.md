@@ -1,15 +1,13 @@
-# Behavior 전용 저작과 집중 검사
+# Full behavior 재생성
 
-이 폴더의 세션 저작 코드로 4종 행동 데이터와 실제 엔진 행동 검토판을 재생성한다. 명령과 의미는 `content-packs/joseon-folklore/behavior/README.md` 참조.
-
-- `author-pilot.py`: 고정 ids.json을 읽고 data/design을 behavior 폴더에만 쓴다.
-- `run-smoke.mjs` + `smoke.mts`: esbuild를 이용해 단일 메모리 프로브를 `/tmp`에 번들·실행·삭제한다. prototype은 읽기만 하고 스토어/호스트/DB 클라이언트를 호출하지 않는다.
-- `render-review.py`: 저장된 실제 실행 기록과 기존 원본 PNG를 조합한다. 원본 픽셀 변경이나 새 몬스터 그림 저작은 없다. SHA-256을 provenance에 저장한다.
+author-full.py는 고정ID와 **타 역할 실제 source**를 읽어 15종 행동표/설계/읽기 전용 입력 사본을 behavior에 쓴다. skills 효과를 생성하지 않는다. source가 없으면 missingIds를 기록하고 스모크는 ready 합격을 거부한다.
 
 ```bash
-python3 scripts/content/joseon-folklore/behavior/author-pilot.py
+python3 scripts/content/joseon-folklore/behavior/author-full.py
 node scripts/content/joseon-folklore/behavior/run-smoke.mjs
 python3 scripts/content/joseon-folklore/behavior/render-review.py
 ```
 
-첫 Vite-node 시도는 공유 node_modules의 읽기 전용 `.vite-temp`에서 실패했으므로 이 실행기는 공유 캐시에 접근하지 않는다. full gates/vitest/전체 typecheck는 실행하지 않는다. ready 상태는 파일 생성과 직접 이미지 검토 뒤 마지막으로 저장한다.
+run-smoke.mjs는 실제 엔진을 esbuild로 /tmp에 단일 번들·실행·삭제한다. 공유 node_modules 캐시에 쓰지 않는다. smoke.mts는 입력 사본의 source 해시를 대조하고 strict/gauge 조건 선택/기력비용/대상/예고/HP구간과 원본 능력치 호환을 검사한다. live DB/스토어/호스트 API는 호출하지 않는다. 실제 적MP0 네 종은 양성 검사 MP와 원본MP 실행을 구분한다. 완성 후 검토 PNG를 열고 status를 마지막에 기록한다.
+
+코드/그림 출처·한계·인계 계약은 content-packs/joseon-folklore/behavior/README.md. full gates/vitest/전체typecheck 금지.

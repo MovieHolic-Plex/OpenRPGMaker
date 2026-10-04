@@ -1,6 +1,42 @@
 {
   "enemyActions": [
     {
+      "enemyId": "enemy_jf_field_rat",
+      "actions": [
+        {
+          "skillId": "",
+          "priority": 1,
+          "condition": {
+            "kind": "always"
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        },
+        {
+          "skillId": "skill_jf_enemy_poison_bite",
+          "priority": 72,
+          "condition": {
+            "kind": "turn",
+            "start": 3,
+            "interval": 4
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        }
+      ],
+      "skillIds": [
+        "skill_jf_enemy_poison_bite"
+      ]
+    },
+    {
       "enemyId": "enemy_jf_wild_boar",
       "actions": [
         {
@@ -20,9 +56,9 @@
           "skillId": "skill_jf_enemy_tusk_charge",
           "priority": 80,
           "condition": {
-            "kind": "turn",
-            "start": 2,
-            "interval": 3
+            "kind": "hp",
+            "minPercent": 0,
+            "maxPercent": 65
           },
           "switchOnAfterAction": {
             "enabled": false
@@ -34,6 +70,42 @@
       ],
       "skillIds": [
         "skill_jf_enemy_tusk_charge"
+      ]
+    },
+    {
+      "enemyId": "enemy_jf_cave_bat",
+      "actions": [
+        {
+          "skillId": "",
+          "priority": 1,
+          "condition": {
+            "kind": "always"
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        },
+        {
+          "skillId": "skill_jf_enemy_wing_flurry",
+          "priority": 75,
+          "condition": {
+            "kind": "allies",
+            "min": 1,
+            "max": 99
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        }
+      ],
+      "skillIds": [
+        "skill_jf_enemy_wing_flurry"
       ]
     },
     {
@@ -73,6 +145,42 @@
       ]
     },
     {
+      "enemyId": "enemy_jf_lantern_wisp",
+      "actions": [
+        {
+          "skillId": "",
+          "priority": 1,
+          "condition": {
+            "kind": "always"
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        },
+        {
+          "skillId": "skill_jf_enemy_ghost_fire",
+          "priority": 76,
+          "condition": {
+            "kind": "mp",
+            "minPercent": 45,
+            "maxPercent": 100
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        }
+      ],
+      "skillIds": [
+        "skill_jf_enemy_ghost_fire"
+      ]
+    },
+    {
       "enemyId": "enemy_jf_maiden_ghost",
       "actions": [
         {
@@ -90,11 +198,11 @@
         },
         {
           "skillId": "skill_jf_enemy_sorrow_cry",
-          "priority": 80,
+          "priority": 85,
           "condition": {
             "kind": "turn",
             "start": 2,
-            "interval": 3
+            "interval": 4
           },
           "switchOnAfterAction": {
             "enabled": false
@@ -106,6 +214,238 @@
       ],
       "skillIds": [
         "skill_jf_enemy_sorrow_cry"
+      ]
+    },
+    {
+      "enemyId": "enemy_jf_drowned_ghost",
+      "actions": [
+        {
+          "skillId": "",
+          "priority": 1,
+          "condition": {
+            "kind": "always"
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        },
+        {
+          "skillId": "skill_jf_enemy_drowning_hand",
+          "priority": 83,
+          "condition": {
+            "kind": "hp",
+            "minPercent": 0,
+            "maxPercent": 50
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        }
+      ],
+      "skillIds": [
+        "skill_jf_enemy_drowning_hand"
+      ]
+    },
+    {
+      "enemyId": "enemy_jf_grave_ghoul",
+      "actions": [
+        {
+          "skillId": "",
+          "priority": 1,
+          "condition": {
+            "kind": "always"
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        },
+        {
+          "skillId": "skill_jf_enemy_grave_grasp",
+          "priority": 78,
+          "condition": {
+            "kind": "status",
+            "stateId": "state_poison",
+            "present": true
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        }
+      ],
+      "skillIds": [
+        "skill_jf_enemy_grave_grasp"
+      ]
+    },
+    {
+      "enemyId": "enemy_jf_fox_spirit",
+      "actions": [
+        {
+          "skillId": "",
+          "priority": 1,
+          "condition": {
+            "kind": "always"
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        },
+        {
+          "skillId": "skill_jf_enemy_fox_charm",
+          "priority": 88,
+          "condition": {
+            "kind": "mp",
+            "minPercent": 70,
+            "maxPercent": 100
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        }
+      ],
+      "skillIds": [
+        "skill_jf_enemy_fox_charm"
+      ]
+    },
+    {
+      "enemyId": "enemy_jf_stone_dokkaebi",
+      "actions": [
+        {
+          "skillId": "",
+          "priority": 1,
+          "condition": {
+            "kind": "always"
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        },
+        {
+          "skillId": "skill_jf_enemy_stone_crush",
+          "priority": 82,
+          "condition": {
+            "kind": "allies",
+            "min": 0,
+            "max": 0
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        }
+      ],
+      "skillIds": [
+        "skill_jf_enemy_stone_crush"
+      ]
+    },
+    {
+      "enemyId": "enemy_jf_bamboo_specter",
+      "actions": [
+        {
+          "skillId": "",
+          "priority": 1,
+          "condition": {
+            "kind": "always"
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        },
+        {
+          "skillId": "skill_jf_enemy_bamboo_whip",
+          "priority": 77,
+          "condition": {
+            "kind": "status",
+            "stateId": "state_poison",
+            "present": false
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        }
+      ],
+      "skillIds": [
+        "skill_jf_enemy_bamboo_whip"
+      ]
+    },
+    {
+      "enemyId": "enemy_jf_masked_bandit",
+      "actions": [
+        {
+          "skillId": "",
+          "priority": 1,
+          "condition": {
+            "kind": "always"
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        },
+        {
+          "skillId": "skill_jf_enemy_straw_club",
+          "priority": 78,
+          "condition": {
+            "kind": "turn",
+            "start": 1,
+            "interval": 3
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        },
+        {
+          "skillId": "skill_jf_enemy_poison_bite",
+          "priority": 92,
+          "condition": {
+            "kind": "hp",
+            "minPercent": 0,
+            "maxPercent": 30
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        }
+      ],
+      "skillIds": [
+        "skill_jf_enemy_straw_club",
+        "skill_jf_enemy_poison_bite"
       ]
     },
     {
@@ -156,6 +496,158 @@
         }
       ],
       "skillIds": [
+        "skill_jf_enemy_bronze_smash",
+        "skill_jf_enemy_bronze_smash"
+      ]
+    },
+    {
+      "enemyId": "enemy_jf_bride_wraith",
+      "actions": [
+        {
+          "skillId": "",
+          "priority": 1,
+          "condition": {
+            "kind": "always"
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        },
+        {
+          "skillId": "skill_jf_enemy_sorrow_cry",
+          "priority": 70,
+          "condition": {
+            "kind": "turn",
+            "start": 1,
+            "interval": 4
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        },
+        {
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "priority": 85,
+          "condition": {
+            "kind": "turn",
+            "start": 4,
+            "interval": 6
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        },
+        {
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "priority": 98,
+          "condition": {
+            "kind": "hp",
+            "minPercent": 0,
+            "maxPercent": 55
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        }
+      ],
+      "skillIds": [
+        "skill_jf_enemy_sorrow_cry",
+        "skill_jf_enemy_bronze_smash",
+        "skill_jf_enemy_bronze_smash"
+      ]
+    },
+    {
+      "enemyId": "enemy_jf_mountain_tiger",
+      "actions": [
+        {
+          "skillId": "",
+          "priority": 1,
+          "condition": {
+            "kind": "always"
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        },
+        {
+          "skillId": "skill_jf_enemy_stone_crush",
+          "priority": 80,
+          "condition": {
+            "kind": "turn",
+            "start": 2,
+            "interval": 3
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        },
+        {
+          "skillId": "skill_jf_enemy_poison_bite",
+          "priority": 60,
+          "condition": {
+            "kind": "hp",
+            "minPercent": 0,
+            "maxPercent": 70
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        },
+        {
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "priority": 85,
+          "condition": {
+            "kind": "turn",
+            "start": 5,
+            "interval": 5
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        },
+        {
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "priority": 98,
+          "condition": {
+            "kind": "hp",
+            "minPercent": 0,
+            "maxPercent": 35
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        }
+      ],
+      "skillIds": [
+        "skill_jf_enemy_stone_crush",
+        "skill_jf_enemy_poison_bite",
         "skill_jf_enemy_bronze_smash",
         "skill_jf_enemy_bronze_smash"
       ]
