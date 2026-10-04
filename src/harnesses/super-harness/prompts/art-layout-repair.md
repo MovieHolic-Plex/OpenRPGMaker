@@ -21,6 +21,7 @@ execution.layout의 도면 JSON 스키마는 기존 art-layout-input.json.layout
 - canvas/cellSize와 정확히 일치하는 grid; 모든 칸에 legend(role/purpose).
 - proportions/negativeSpace/identityCues를 새 도면에 맞게 갱신한다. 빈 바닥을 이름만 바꿔 정당화하지 않는다.
 - sources는 새 seed/치수/주문서/queued state/판 brief/그림 및 검수 프롬프트/native 코드의 현재 해시를 포함한다.
+- parking-contract.json을 쓰는 판은 등록 메타데이터 registration-source.json도 준비하고 sources에 해시를 넣는다. 실제 설치/선택은 하지 않는다.
 - 현재 {{CDIR}}/art-feedback.json SHA256을 execution.feedbackSha256에 넣는다.
 - art_layout.build_input을 사용한 기계적인 입력 일치 확인은 허용한다. 도면의 PASS 선언은 하지 않는다.
 

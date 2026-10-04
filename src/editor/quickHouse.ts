@@ -12,10 +12,11 @@ import { BEODEUL_HOUSE_STYLES, beodeulHouseStyles, beodeulHouseMinWidth, isBeode
 import type { TerrainPoint } from "./terrainDesignGeometry";
 
 export type QuickHouseStyle = HouseKitId | BeodeulHouseStyle;
-export interface QuickHouseOptions { style: QuickHouseStyle; width: number; stories: 1 | 2; kitId?: string | null; roofBodyRows?: number; height?: number; resize?: "house" | "roof"; roofWidth?: number }
-export function quickHouseOptions(s: Pick<import("./editorState").EditorState, "terrainHouseStyle" | "terrainHouseWidth" | "terrainHouseStories" | "terrainHouseKitId" | "terrainHouseResize" | "terrainHouseRoofWidth">): QuickHouseOptions {
+export interface QuickHouseOptions { style: QuickHouseStyle; width: number; stories: 1 | 2; kitId?: string | null; roofBodyRows?: number; height?: number; resize?: "house" | "roof"; roofWidth?: number; roofForm?: import("./beodeulQuickHouse").BeodeulRoofForm }
+export function quickHouseOptions(s: Pick<import("./editorState").EditorState, "terrainHouseStyle" | "terrainHouseWidth" | "terrainHouseStories" | "terrainHouseKitId" | "terrainHouseResize" | "terrainHouseRoofWidth" | "terrainHouseRoofForm">): QuickHouseOptions {
   return { style: s.terrainHouseStyle, width: s.terrainHouseWidth, stories: s.terrainHouseStories, kitId: s.terrainHouseKitId, resize: s.terrainHouseResize,
-    ...(s.terrainHouseResize === "roof" ? { roofWidth: s.terrainHouseRoofWidth } : {}) };
+    ...(s.terrainHouseResize === "roof" ? { roofWidth: s.terrainHouseRoofWidth } : {}),
+    ...(s.terrainHouseRoofForm !== "auto" ? { roofForm: s.terrainHouseRoofForm } : {}) };
 }
 export interface QuickHouseDrag { mapId: string; start: TerrainPoint; end: TerrainPoint }
 export function quickHouseCatalog(tileset: TilesetDef): SectionStructureKitDef[] {
@@ -77,9 +78,12 @@ export function planQuickHouseDrag(map: GameMap, tileset: TilesetDef, drag: Quic
         rejected.reason = "다른 구조물이 겹친 집은 지붕을 바꿀 수 없습니다"; return rejected;
       }
       const style = parsed[1] as BeodeulHouseStyle, wallWidth = oldWalls?.w ?? Number(parsed[2]);
+      if (options.roofForm === "gable" && !style.startsWith("beodeul-manor-")) { rejected.reason = "박공 변경은 버들항 반목조 조립식 집에서 지원합니다"; return rejected; }
       const wallHeight = oldWalls?.h ?? existing.h - roofHeight, wallX = existing.x + (oldWalls?.dx ?? 0), wallY = existing.y + roofHeight;
-      const newRoofRows = roofHeight;
-      const resized = { ...options, kitId: null, style, width: wallWidth, roofWidth: width, roofRows: newRoofRows, height: newRoofRows + wallHeight };
+      const oldForm = existing.kitId.endsWith("_gable") ? "gable" : "hip";
+      const roofForm = options.roofForm ?? oldForm;
+      const newRoofRows = roofForm !== oldForm ? Math.max(3, Math.min(12, roofHeight + (roofForm === "gable" ? 1 : -1))) : roofHeight;
+      const resized = { ...options, kitId: null, style, width: wallWidth, roofWidth: width, roofForm, roofRows: newRoofRows, height: newRoofRows + wallHeight };
       const oldDoor = original.parts?.find(p => p.kind === "entrance"); if (!oldDoor) return rejected;
       const anchor = { x: existing.x + oldDoor.dx, y: existing.y + oldDoor.dy + oldDoor.h - 1 };
       const restored: GameMap = { ...map, lowerTiles: [...map.lowerTiles], upperTiles: [...map.upperTiles], structurePlacements: [...structurePlacementsOf(map)],
@@ -91,7 +95,7 @@ export function planQuickHouseDrag(map: GameMap, tileset: TilesetDef, drag: Quic
       for (let y = existing.y; y < existing.y + existing.h; y++) for (let x = existing.x; x < existing.x + existing.w; x++) plan.indices.push(y * map.width + x);
       plan.indices = [...new Set(plan.indices)];
       if (plan.ok && apply) {
-        plan.reason = "지붕 크기 변경 · 벽·창·문 위치 유지";
+        plan.reason = "지붕 변경 · 벽·창·문 위치 유지";
         plan.apply = draft => { const position = structurePlacementsOf(draft).findIndex(p => p.id === existing.id); restoreStructurePlacementTiles(draft, existing); removeStructurePlacement(draft, existing.id); apply(draft); const replacement = draft.structurePlacements!.pop()!; replacement.id = existing.id; draft.structurePlacements!.splice(position, 0, replacement); };
       }
       return plan;

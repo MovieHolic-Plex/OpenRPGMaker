@@ -71,6 +71,7 @@ def read_json(path, default=None):
 
 
 def write_json(path, data):
+    path = os.fspath(path)
     os.makedirs(os.path.dirname(path), exist_ok=True)
     tmp = path + '.tmp'
     with open(tmp, 'w', encoding='utf-8') as f:
@@ -154,10 +155,12 @@ def reap():
         try:
             if not meta.get('superseded'):
                 HANDLERS[meta['kind']](meta, code, result)
-        except Exception:
+        except Exception as error:
             store.log(meta['concept'], f'처리 오류 — {meta["kind"]}: {traceback.format_exc()[-600:]}')
             if meta['concept']:
-                store.update_concept(meta['concept'], stage='blocked', status='idle', note=f'{meta["kind"]} 결과 처리 오류 — 로그 확인 필요')
+                store.update_concept(meta['concept'], stage='blocked', status='idle',
+                                     note=f'{meta["kind"]} 결과 처리 오류 — 로그 확인 필요',
+                                     reasons=[f'{type(error).__name__}: {error}'])
 
 
 def recover():

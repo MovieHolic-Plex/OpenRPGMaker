@@ -24,7 +24,7 @@ const emptyMap:GameMap={id:"empty-sun",name:"empty sun",width:1024,height:1024,t
 assert.equal(sunlightField(emptyMap),null);assert.equal(sunlightField(emptyMap),null);
 checks.push("1024-square flat maps without a tileset allocate no shadow field, including cache reuse");
 assert.deepEqual(normalizeSunlight({enabled:true,azimuth:-90,altitude:Infinity,opacity:NaN,softness:90,heightScale:-4}),
- {enabled:true,azimuth:270,altitude:40,opacity:.32,softness:4,heightScale:.25});checks.push("invalid loaded settings are bounded and normalized");
+ {enabled:true,azimuth:270,altitude:65,opacity:.32,softness:4,heightScale:.25});checks.push("invalid loaded settings are bounded and normalized");
 const preserved=patchSunlight({enabled:true,azimuth:45,altitude:24,opacity:.4,softness:2,heightScale:1.5},{enabled:false});
 assert.equal(preserved.azimuth,45);assert.equal(preserved.altitude,24);assert.equal(preserved.opacity,.4);
 checks.push("off/on preserves all authored sun parameters");

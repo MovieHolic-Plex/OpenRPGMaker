@@ -284,6 +284,9 @@ def record_model_frames(w):
     receipt = dict(version=1, animationMode=FRAME_AUTHOR_MODE, sourceSha256=hashlib.sha256(raw).hexdigest(),
                    baseSha256=hashlib.sha256(C.dump(bp, {}, bf).encode()).hexdigest(), frames=authored,
                    model={k:meta[k] for k in ('engine', 'model', 'effort')})
+    if meta.get('authoringMode') == 'pixel-patches-v1':
+        import pixel_ops
+        receipt['pixelEdits'] = pixel_ops.replay(w / 'out.chr.txt', w / 'base.chr.txt')
     write_json_atomic(w / 'model-frames.json', receipt)
     return receipt
 
@@ -292,11 +295,17 @@ def model_frames_fresh(w, gate):
     try:
         receipt = json.loads((w / 'model-frames.json').read_text())
         meta = json.loads((w / 'meta.json').read_text())
-        return (receipt['version'] == 1 and receipt['animationMode'] == FRAME_AUTHOR_MODE
+        fresh = (receipt['version'] == 1 and receipt['animationMode'] == FRAME_AUTHOR_MODE
                 and receipt['sourceSha256'] == gate['sourceSha256'] and receipt['baseSha256'] == gate['baseSha256']
                 and set(receipt['frames']) == {f'{d} {f}' for d in C.DIRS for f in range(3)}
                 and all(r['changedPixels'] > 0 for r in receipt['frames'].values())
                 and receipt['model'] == {k:meta[k] for k in ('engine', 'model', 'effort')})
+        if meta.get('authoringMode') == 'pixel-patches-v1':
+            edits = receipt['pixelEdits']
+            fresh = (fresh and edits['sourceSha256'] == gate['sourceSha256']
+                     and edits['journalSha256'] == hashlib.sha256((w / 'pixel-edits.json').read_bytes()).hexdigest()
+                     and set(edits['frames']) == set(receipt['frames']))
+        return fresh
     except (OSError, ValueError, KeyError, TypeError):
         return False
 
@@ -547,6 +556,10 @@ def effective_decision(w, record, gate=None):
 def human_ready(w, gate):
     try:
         meta = json.loads((w / 'meta.json').read_text())
+        if meta.get('recipe'):
+            import delivery
+            if not delivery.fresh(w, gate):
+                return False
         return (not _alive(meta.get('pid'))
                 and (meta.get('animationMode') != FRAME_AUTHOR_MODE or model_frames_fresh(w, gate))
                 and json.loads((w / 'published.json').read_text()) == binding(gate) and views_fresh(w, gate))

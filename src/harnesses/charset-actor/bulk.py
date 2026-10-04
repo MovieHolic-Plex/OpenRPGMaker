@@ -13,7 +13,9 @@ import threading
 import tempfile
 import subprocess
 import sys
-from concurrent.futures import ThreadPoolExecutor, as_completed
+import time
+import shutil
+from concurrent.futures import ThreadPoolExecutor, as_completed, wait, FIRST_COMPLETED
 from pathlib import Path
 
 import harness as H
@@ -55,10 +57,20 @@ def prepare_batch(run, rows, index):
             raise ValueError(f'다른 묶음을 가리키는 후보: {alias}')
         if not alias.exists():
             alias.symlink_to(w.relative_to(root), target_is_directory=True)
+        recipe_run = (root / 'recipe').is_dir()
+        source = None
+        if recipe_run:
+            import recipes
+            source = recipes.source_for(root, row)
         pal, frames = H.base_of(row['base'])
         base = w / 'base.chr.txt'
+        if source and base.exists() and base.read_bytes() != (source / 'out.chr.txt').read_bytes():
+            raise ValueError('후보의 남긴 원본 격자가 변경되었습니다')
         if not base.exists():
-            base.write_text(C.dump(pal, {}, frames, header='저작 원본 — 수정하지 않는다'), encoding='utf-8')
+            if source:
+                shutil.copyfile(source / 'out.chr.txt', base)
+            else:
+                base.write_text(C.dump(pal, {}, frames, header='저작 원본 — 수정하지 않는다'), encoding='utf-8')
             H.make_views(base, w / 'base-views', row['base'], row['strength'])
         assignments.append(dict(row, folder=str(w.relative_to(batch))))
     write_json(batch / 'assignments.json', assignments)
@@ -146,6 +158,8 @@ def visual_inputs(run, batch, pending):
 
 
 def produce_batch(run, rows, index):
+    if (H.run_dir(run) / 'recipe').is_dir():
+        return produce_recipe_batch(run, rows, index)
     if (H.run_dir(run) / 'pause-request.json').exists():
         return  # 진행 중인 작업은 마치고 다음 묶음부터 멈춘다.
     batch, assignments = prepare_batch(run, rows, index)
@@ -157,8 +171,14 @@ def produce_batch(run, rows, index):
     if pending:
         write_json(batch / 'pending.json', pending)
         human = all(r.get('reviewMode') == 'human' for r in pending)
-        prompt = (H.HERE / ('free-worker.md' if human else 'bulk-worker.md')).read_text(encoding='utf-8')
+        modes = {r.get('authoringMode', 'grid') for r in pending}
+        if len(modes) != 1:
+            raise ValueError('좌표 저작 비교 실행은 --batch-size 1로 방법을 분리합니다')
+        mode = next(iter(modes))
+        worker = 'pixel-worker.md' if mode == 'pixel-patches-v1' else ('free-worker.md' if human else 'bulk-worker.md')
+        prompt = (H.HERE / worker).read_text(encoding='utf-8')
         prompt = prompt.replace('{TOOL}', f'python3 {H.HERE / "harness.py"}')
+        prompt = prompt.replace('{PIXEL_TOOL}', f'python3 {H.HERE / "pixel_ops.py"}')
         prompt = prompt.replace('{STRENGTH_RULES}', '\n\n'.join(H.STRENGTH_RULES.get(s, '') for s in sorted({r['strength'] for r in pending})))
         prompt = prompt.replace('{ASSIGNMENTS}', json.dumps(pending, ensure_ascii=False, indent=2))
         visuals = visual_inputs(run, batch, pending)
@@ -171,7 +191,7 @@ def produce_batch(run, rows, index):
             write_json(w / 'meta.json', dict(run=run, brief=row['key'], engine='gpt', **H.ENGINES['gpt'],
                                             pid=process.pid, started=H.now(), dir=str(w), base=row['base'],
                                             strength=row['strength'], reviewMode=row.get('reviewMode', 'legacy'), batch=index, src=None,
-                                            animationMode=H.FRAME_AUTHOR_MODE, visualInputs=visuals))
+                                            animationMode=H.FRAME_AUTHOR_MODE, visualInputs=visuals, authoringMode=mode))
         log(f'batch {index}: GPT high 12프레임 직접 저작 시작 ({len(pending)}명), pid={process.pid}')
         process.wait()
         log(f'batch {index}: 작업자 종료={process.returncode}')
@@ -213,6 +233,138 @@ def produce_batch(run, rows, index):
     log(f'batch {index}: 완료 {len(ready)}/{len(rows)}')
 
 
+def produce_recipe_batch(run, rows, index):
+    import recipes as R
+    import delivery
+    root = H.run_dir(run)
+    if (root / 'pause-request.json').exists():
+        return
+    manifest = json.loads((root / 'manifest.json').read_text())
+    R.verify_run(root, manifest, check_tools=True)
+    batch, assignments = prepare_batch(run, rows, index)
+    if not assignments:
+        return
+    if len(assignments) != 1:
+        raise ValueError('남긴 원본 변주는 한 묶음에 한 명만 저작합니다')
+    row = assignments[0]
+    w = batch / row['folder']
+    meta_file = w / 'meta.json'
+    if meta_file.exists():
+        meta = json.loads(meta_file.read_text())
+        if H._alive(meta.get('pid')):
+            raise RuntimeError('기존 작업자가 아직 실행 중입니다')
+        if (w / 'out.chr.txt').exists() and H.human_ready(w, H.current_gate(w)):
+            return  # 남김/폐기와 이미 공개한 픽셀을 재개가 덮지 않는다.
+    source = R.source_for(root, row)
+    pending = [row]
+    write_json(batch / 'pending.json', pending)
+    write_json(batch / 'visual-inputs.json', [])
+    template = (source / 'worker.md').read_text(encoding='utf-8')
+    template = template.replace('{TOOL}', f'python3 {H.HERE / "harness.py"}')
+    template = template.replace('{PIXEL_TOOL}', f'python3 {H.HERE / "pixel_ops.py"}')
+    template = template.replace('{ASSIGNMENTS}', json.dumps(pending, ensure_ascii=False, indent=2))
+    error = None
+    for attempt in range(manifest['productionPolicy']['repairRounds'] + 1):
+        archive = batch / 'attempts' / (H.now().replace(':', '-') + '-' + str(attempt))
+        archive.mkdir(parents=True)
+        prompt = template
+        if error:
+            prompt += ('\n\n## 이번 기술 오류 수정\n기존 out.chr.txt와 pixel-edits.json에서 이어 고친다. '
+                       '원본/코드/납품 증거/선택 파일을 수정하지 않는다. 불일치 격자는 원본과 현재 기록을 읽고 해결한다. '
+                       '미감 심사가 아니며 아래 기술 오류만 고친다.\n' + str(error)[:6000])
+        (archive / 'prompt.md').write_text(prompt, encoding='utf-8')
+        (batch / 'prompt.md').write_text(prompt, encoding='utf-8')
+        for name in ('out.chr.txt', 'pixel-edits.json', 'desc.json', 'model-frames.json', 'failure.json'):
+            if (w / name).is_file():
+                shutil.copyfile(w / name, archive / ('before-' + name))
+        (w / 'published.json').unlink(missing_ok=True)
+        (w / 'delivery.json').unlink(missing_ok=True)
+        process = H._spawn('gpt', batch, archive / 'prompt.md', archive / 'worker.log')
+        write_json(meta_file, dict(run=run, brief=row['key'], engine='gpt', **H.ENGINES['gpt'],
+                                  pid=process.pid, started=H.now(), dir=str(w), base=row['base'],
+                                  strength='free', reviewMode='human', batch=index, src=None,
+                                  animationMode=H.FRAME_AUTHOR_MODE, visualInputs=[], authoringMode=row['authoringMode'],
+                                  recipe=manifest['recipe'], seed=row['seed'], attempt=attempt, attemptPath=str(archive)))
+        log(f'{row["key"]}: GPT high 직접 저작, 기술 수정 {attempt}, pid={process.pid}')
+        process.wait()
+        try:
+            if process.returncode:
+                raise ValueError(f'모델 저작이 종료되지 않았습니다 (exit={process.returncode})')
+            if (w / 'base.chr.txt').read_bytes() != (source / 'out.chr.txt').read_bytes():
+                raise ValueError('모델이 보존해야 할 원본을 변경했습니다')
+            R.verify_run(root, manifest, check_tools=True)
+            receipt = H.record_model_frames(w)
+            gate = H.make_views(w / 'out.chr.txt', w / 'views', row['base'], 'free')
+            if receipt['sourceSha256'] != gate['sourceSha256']:
+                raise ValueError('렌더 중 모델 저작 픽셀이 변경되었습니다')
+            delivery.publish(w, gate)
+            (w / 'failure.json').unlink(missing_ok=True)
+            write_json(archive / 'result.json', dict(ok=True, sourceSha256=gate['sourceSha256'], at=H.now()))
+            write_json(batch / 'complete.json', dict(at=H.now(), ready=[row['key']]))
+            log(f'{row["key"]}: 12프레임/PNG/네 배경 GIF 납품 완료')
+            return
+        except (OSError, ValueError, KeyError, TypeError, StopIteration, EOFError) as failure:
+            error = str(failure)
+            # 결손 좌표도 남겨 모델이 해당 프레임만 직접 수정할 수 있게 한다.
+            gate_file = w / 'views' / 'gate.json'
+            if gate_file.is_file():
+                error += '\n' + json.dumps(json.loads(gate_file.read_text()).get('fatal', []), ensure_ascii=False)
+            record = dict(at=H.now(), attempt=attempt, error=error, exhausted=attempt == manifest['productionPolicy']['repairRounds'])
+            write_json(w / 'failure.json', record)
+            write_json(archive / 'result.json', dict(record, ok=False))
+            log(f'{row["key"]}: 기술 납품 실패 {error[:300]}')
+    raise RuntimeError(f'{row["key"]}: 제한 횟수 내 기술 납품 미완료: {error}')
+
+
+def awaiting(root):
+    decisions = H._decisions()
+    count = 0
+    for w in root.glob('*__gpt-r1'):
+        if not (w / 'published.json').is_file():
+            continue
+        gate = H.current_gate(w)
+        if H.human_ready(w, gate) and not H.effective_decision(w, decisions.get(f'{root.name}/{w.name}'), gate):
+            count += 1
+    return count
+
+
+def produce_with_buffer(root, rows, par):
+    """검토 대기와 실행 중 예약의 합을 제한한다. 선택이 저장되면 다음 한 명을 시작한다."""
+    policy = json.loads((root / 'manifest.json').read_text())['productionPolicy']
+    pending = []
+    for index, row in enumerate(rows, 1):
+        w = root / f'{row["key"]}__gpt-r1'
+        if (w / 'published.json').is_file() and H.human_ready(w, H.current_gate(w)):
+            continue
+        pending.append((index, row))
+    errors = []
+    active = {}
+    with ThreadPoolExecutor(max_workers=par) as pool:
+        while pending or active:
+            paused = (root / 'pause-request.json').exists()
+            capacity = policy['maxReviewPending'] - awaiting(root) - len(active)
+            while pending and not paused and len(active) < par and capacity > 0:
+                index, row = pending.pop(0)
+                active[pool.submit(produce_batch, root.name, [row], index)] = row['key']
+                capacity -= 1
+            phase = 'pausing' if paused else ('waiting-review' if pending and not active and capacity <= 0 else 'running')
+            write_json(root / 'production-state.json', dict(phase=phase, at=H.now(), remaining=len(pending), active=len(active)))
+            if paused and not active:
+                break
+            if not active:
+                time.sleep(2)
+                continue
+            completed, _ = wait(active, timeout=2, return_when=FIRST_COMPLETED)
+            for task in completed:
+                key = active.pop(task)
+                try:
+                    task.result()
+                except Exception as error:
+                    errors.append(f'{key}: {error!r}')
+                    log(errors[-1])
+    return errors
+
+
 def main(args):
     manifest = json.loads(args.manifest.read_text(encoding='utf-8'))
     run, rows = manifest['run'], manifest['characters']
@@ -225,11 +377,23 @@ def main(args):
             raise ValueError('잘못된 key/강도')
         if row['strength'] == 'free' and row.get('reviewMode') != 'human':
             raise ValueError('자유 저작은 사람 검토를 사용해야 함')
+        if row.get('authoringMode', 'grid') not in ('grid', 'pixel-patches-v1'):
+            raise ValueError('지원하지 않는 픽셀 저작 방식입니다')
+        if row.get('authoringMode') == 'pixel-patches-v1' and row.get('reviewMode') != 'human':
+            raise ValueError('좌표 저작 실험은 사람 검토로 진행합니다')
         H.norm_base(row['base'])
     root = H.run_dir(run)
     root.mkdir(parents=True, exist_ok=True)
     layout = root / 'production.json'
     config = dict(batchSize=args.batch_size)
+    if manifest.get('recipe'):
+        import recipes
+        recipes.verify_run(root, manifest, check_tools=True)
+        policy = manifest['productionPolicy']
+        if (args.batch_size != 1 or not args.par <= policy['maxReviewPending'] <= 40
+                or not 0 <= policy['repairRounds'] <= 2):
+            raise ValueError('변주는 1명씩 저작하며 검토 대기 동시작업~40명, 기술 수정 0~2회입니다')
+        config.update(par=args.par)
     if layout.exists() and json.loads(layout.read_text()) != config:
         raise ValueError('기존 실행의 묶음 크기를 변경할 수 없음')
     if not layout.exists():
@@ -249,15 +413,18 @@ def main(args):
             local[row['key']] = row
         write_json(H.LOCAL_BRIEFS, local)
     errors = []
-    with ThreadPoolExecutor(max_workers=args.par) as pool:
-        tasks = [pool.submit(produce_batch, run, rows[i:i + args.batch_size], i // args.batch_size + 1)
-                 for i in range(0, len(rows), args.batch_size)]
-        for task in as_completed(tasks):
-            try:
-                task.result()
-            except Exception as error:
-                log(f'묶음 오류: {error!r}')
-                errors.append(repr(error))
+    if manifest.get('recipe'):
+        errors = produce_with_buffer(root, rows, args.par)
+    else:
+        with ThreadPoolExecutor(max_workers=args.par) as pool:
+            tasks = [pool.submit(produce_batch, run, rows[i:i + args.batch_size], i // args.batch_size + 1)
+                     for i in range(0, len(rows), args.batch_size)]
+            for task in as_completed(tasks):
+                try:
+                    task.result()
+                except Exception as error:
+                    log(f'묶음 오류: {error!r}')
+                    errors.append(repr(error))
     if errors:
         write_json(root / 'production-errors.json', dict(at=H.now(), errors=errors))
         raise RuntimeError(f'완료되지 않은 묶음 {len(errors)}개: {errors}')

@@ -9,6 +9,8 @@
 //    워커를 멈춘다. 아무도 이어 받지 않으면 RESUME_GRACE_MS 뒤에 멈춘다.
 
 import { createHash, randomUUID } from "node:crypto";
+import { piTimer } from "./piRunTiming.mjs";
+import { createMapRunLocks, mapRunScope } from "../../src/ai/piAgent/mapRunLocks.mjs";
 
 /** 무거운 키 — 요청 프로젝트에서 해시로 바꿔 보낼 수 있는 최상위 키. */
 export const PI_HEAVY_PROJECT_KEYS = ["tilesets", "database", "assets"];
@@ -40,11 +42,13 @@ function remember(hash, json) {
 }
 
 /**
- * 요청 몸통의 무거운 키를 되살린다.
+ * 요청 몸통의 무거운 키를 해시째 확인한다(되살리지 않는다).
  * body.heavy = { [key]: hash } — 프로젝트의 그 키는 비어 있다. body.heavyBlobs = { [hash]: json } — 이번에 새로 보낸 내용.
  * 캐시에 없는 해시가 있으면 { missing } 을 돌려준다(호출자가 409 로 되돌려 브라우저가 그 내용만 다시 보낸다).
+ * 있으면 { body(heavy·heavyBlobs 를 뺀 몸통), heavy: { refs, blobs } } — blobs 는 이 순간 캐시의 JSON 글을 붙잡아 둔다
+ * (뒤에 다른 요청이 캐시를 밀어내도 이 실행은 글을 잃지 않는다. 글은 참조라 복사되지 않는다).
  */
-export function resolveHeavyProject(body) {
+export function resolveHeavyRefs(body) {
   const heavy = body?.heavy;
   if (!heavy || typeof heavy !== "object" || !body.project || typeof body.project !== "object") return { body };
   const blobs = body.heavyBlobs && typeof body.heavyBlobs === "object" ? body.heavyBlobs : {};
@@ -55,22 +59,34 @@ export function resolveHeavyProject(body) {
     remember(hash, json);
   }
   const missing = [];
-  const project = { ...body.project };
+  const refs = {};
+  const held = {};
   for (const key of PI_HEAVY_PROJECT_KEYS) {
     const hash = heavy[key];
     if (typeof hash !== "string") continue;
     const entry = cache.get(hash);
     if (!entry) { missing.push(hash); continue; }
-    project[key] = JSON.parse(entry.json);
+    refs[key] = hash;
+    held[hash] = entry.json;
   }
   if (missing.length) return { missing };
   const { heavy: _heavy, heavyBlobs: _blobs, ...rest } = body;
-  return { body: { ...rest, project } };
+  return { body: rest, heavy: { refs, blobs: held } };
+}
+
+/** 요청 몸통의 무거운 키를 되살린다 — 해시째 받지 못하는 어댑터용. */
+export function resolveHeavyProject(body) {
+  const resolved = resolveHeavyRefs(body);
+  if (resolved.missing || !resolved.heavy) return resolved;
+  const project = { ...resolved.body.project };
+  for (const [key, hash] of Object.entries(resolved.heavy.refs)) project[key] = JSON.parse(resolved.heavy.blobs[hash]);
+  return { body: { ...resolved.body, project } };
 }
 
 // ── 실행 기록 ──────────────────────────────────────────────────────────────
 
 const runs = new Map(); // runId -> Run
+const mapRuns = createMapRunLocks();
 
 function createRun(runId, controller) {
   const run = {
@@ -93,6 +109,7 @@ function pushLine(run, line) {
 
 function finish(run) {
   run.finished = true;
+  run.mapClaim?.release();
   clearTimeout(run.graceTimer);
   for (const listener of run.listeners) listener();
   run.cleanupTimer = setTimeout(() => runs.delete(run.runId), FINISHED_TTL_MS);
@@ -192,21 +209,35 @@ function withSeq(line, seq) {
 
 /**
  * POST /v1/agent/run — 새 실행을 시작하고 기록 스트림을 돌려준다.
- * startAgent(body, signal) 는 워커 NDJSON 을 돌려주는 기존 어댑터 호출이다. signal 은 실행 자체의 중단 신호다
+ * startAgent(body, signal, heavy?) 는 워커 NDJSON 을 돌려주는 기존 어댑터 호출이다. signal 은 실행 자체의 중단 신호다
  * (브라우저 연결이 아니라 — 그건 이어 받기로 흡수한다).
  */
-export async function startRelayedRun(body, startAgent) {
-  const resolved = resolveHeavyProject(body);
+export async function startRelayedRun(body, startAgent, options = {}) {
+  const timer = piTimer("relay start");
+  // heavyRefs: 어댑터가 무거운 키를 해시째 받아 워커까지 넘긴다(워커가 파싱해 둔 것을 쓴다). 아니면 여기서 되살린다.
+  const resolved = options.heavyRefs ? resolveHeavyRefs(body) : resolveHeavyProject(body);
+  timer.mark("resolveHeavy", resolved.missing ? `missing=${resolved.missing.length}` : "");
   if (resolved.missing) return { status: 409, body: { error: "heavy-missing", missing: resolved.missing } };
   const runId = typeof body.runId === "string" && /^[A-Za-z0-9-]{8,64}$/.test(body.runId) ? body.runId : randomUUID();
   if (runs.has(runId)) return { status: 409, body: { error: "run-exists", runId } };
+  const projectKey = typeof resolved.body.projectKey === "string" && resolved.body.projectKey.trim() ? resolved.body.projectKey : null;
+  mapRuns.refreshBundles(projectKey, resolved.body.project);
+  const claim = mapRuns.acquire(projectKey, mapRunScope(resolved.body), runId);
+  if (!claim.ok) return { status: 409, body: {
+    error: `맵 ${claim.mapIds?.map(id => `'${id}'`).join(", ") || "전체"} 작업이 이미 실행 중입니다. 같은 맵은 한 번에 한 조수만 실행합니다. 앞선 작업 완료 후 다시 요청하세요.`,
+    code: "map-busy", mapIds: claim.mapIds,
+  } };
   const controller = new AbortController();
   const { runId: _runId, ...request } = resolved.body;
   const run = createRun(runId, controller);
+  run.mapClaim = claim;
   let result;
   try {
-    result = await startAgent(request, controller.signal);
+    result = await startAgent(request, controller.signal, resolved.heavy);
+    timer.mark("startAgent");
+    timer.done();
   } catch (error) {
+    claim.release();
     runs.delete(runId);
     throw error;
   }
@@ -232,7 +263,7 @@ export function cancelRelayedRun(runId) {
 
 /** 테스트 전용: 기록·캐시 비우기. */
 export function resetRelayForTests() {
-  for (const run of runs.values()) { clearTimeout(run.graceTimer); clearTimeout(run.cleanupTimer); run.controller.abort(); }
+  for (const run of runs.values()) { clearTimeout(run.graceTimer); clearTimeout(run.cleanupTimer); run.controller.abort(); run.mapClaim?.release(); }
   runs.clear();
   cache.clear();
   cacheSize = 0;
