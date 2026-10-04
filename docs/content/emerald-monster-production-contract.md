@@ -43,5 +43,13 @@ through the monster species harness for production fronts/backs. New NPC artwork
 must include consistent walking directions and trainer battle views; route signs
 must remain objects. See `openwiki/emerald-monster-art-v2.md`.
 
+Monster review must show final harness output at native pixel scale, with paired
+body size and compatible palettes. Find actual atlas gutters before cropping;
+do not assume a generated sprite respects the sheet midpoint. Share family grid
+and pair fitting; inspect outlines, eyes, limbs and detached fragments after the
+last import cleanup. Preserve raw generation/edit prompts and sprite-byte hashes.
+Automatic warnings and resource completeness are evidence, not human approval.
+A request to revise candidates explicitly keeps production picks pending.
+
 No gates/Vitest/full typecheck/stash unless the user explicitly requests them.
 Use builds, focused executable probes and actual shipping-player evidence.

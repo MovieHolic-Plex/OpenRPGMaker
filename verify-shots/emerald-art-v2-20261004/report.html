@@ -3,9 +3,15 @@
 <style>body{margin:0;background:#e9efe4;color:#253b35;font:17px/1.65 system-ui,sans-serif}main{max-width:1100px;margin:auto;padding:28px 20px}h1,h2{line-height:1.3}a{color:#175a73}nav{display:flex;flex-wrap:wrap;gap:14px}section{margin:32px 0}figure{margin:18px 0}img{display:block;max-width:100%;height:auto;image-rendering:pixelated}figcaption{margin-top:8px;font-size:15px}.pair{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,400px),1fr));gap:20px}.pending{background:#fff1ce;padding:18px;border-left:5px solid #93620a}code{overflow-wrap:anywhere}details{background:#f7f9f1;padding:15px}li{margin:8px 0}small{font-size:15px}</style></head>
 <body><main>
 <h1>비취섬 · 그림과 오프닝 개선</h1>
-<nav><a href="/monster-expedition/player.html?build=art-v2-20261004">업데이트된 게임</a><a href="http://100.73.251.77:8811/2026/10/02/01a0feb7-7622-7fc2-909a-56cb6370f071/emerald-monster-art-choices.view.html">몬스터 60종 비교·선택</a></nav>
+<nav><a href="/monster-expedition/player.html?build=art-v2-20261004">업데이트된 게임</a><a href="http://100.73.251.77:8811/2026/10/02/01a0feb7-7622-7fc2-909a-56cb6370f071/emerald-monster-art-revision.view.html">몬스터 수정4 · 전후 비교</a></nav>
 <p>첫 마을에 쓰던 인물과 몬스터는 이전 작업에서 코드로 좌표를 찍어 만든 그림이었다. 걷기·리소스 연결만 확인하고 그림 품질을 승인한 것처럼 취급한 것이 문제였다. 이번 인물 그림은 실제 imagegen 생성 원본에서 추출했다.</p>
-<div class="pending"><strong>몬스터는 아직 새 그림을 게임에 적용하지 않았다.</strong> 60종 × 앞·뒤 = 120장 후보를 제작했다. 프로젝트 AGENTS.md의 몬스터 하네스 규칙이 사람의 후보 선택을 요구한다. 비교 화면에서 선택한 내용을 채팅으로 전달하면 해당 그림을 정본과 공용 팩에 적용한다. “60종 전부 새 그림으로 적용”으로 한 번에 선택할 수도 있다.</div>
+<div class="pending"><strong>“후보 그림부터 더 수정” 요청에 따라 후보를 다시 고쳤다.</strong> 21종을 다시 그리고 60종 전체의 앞·뒤 120장을 재추출했다. 몬스터는 아직 게임에 적용하지 않았다. 프로젝트 AGENTS.md의 몬스터 하네스 규칙이 사람의 후보 선택을 요구한다. 새 비교 화면의 왼쪽은 수정 전 후보, 오른쪽은 수정4 후보다.</div>
+<section><h2>몬스터 · 수정4 후보</h2>
+<p>설원 고양이·왜가리·사마귀·산호 게·전기 도마뱀·새·전설종 일부를 다시 그렸다. 앞·뒤의 윤곽, 눈과 팔다리, 같은 개체의 무늬와 몸집을 우선 정리했다. 원본과 생성·수정 지시문도 함께 보존했다.</p>
+<p>앞·뒤에 서로 다른 픽셀 격자가 추정되던 문제를 고쳤다. 이제 같은 계열은 같은 격자, 한 쌍은 같은 축소 비율로 추출한다. 최종 몸체는 최대64픽셀·16색이다. 전기 도마뱀 뒤모습에 섞였던 선은 원본 꼬리가 시트 가운데선을 넘어서 생긴 문제여서, 실제 빈 틈을 찾아 자르도록 도구를 고쳤다.</p>
+<p>비교 화면은 최종 하네스 변환 결과를 표시한다. 120장에 구조 오류는 없지만 자동 경고140개가 남아 있고, 경고는 종을 선택하면 확인할 수 있다. 크기·색상 검사만으로 그림이 만족스럽다고 승인하지 않았다. 모바일 비교·선택 동작과 이미지 표시 오류0을 확인했다.</p>
+<details><summary>최종 후보 60종 모아보기</summary><figure><img src="/emerald-art-v2-evidence/candidate-contact-0.png" alt="최종 후보 첫20종 앞뒤"><figcaption>최종 후보 1–20종. 실제 게임 화면이 아닌 그림 검토용 모음이다.</figcaption></figure><figure><img src="/emerald-art-v2-evidence/candidate-contact-20.png" alt="최종 후보 다음20종 앞뒤"></figure><figure><img src="/emerald-art-v2-evidence/candidate-contact-40.png" alt="최종 후보 마지막20종 앞뒤"></figure></details>
+</section>
 <section><h2>인물 · 필드와 전투</h2>
 <p>주인공·라이벌·박사·상점 주인·간호사 등 16역할을 다시 생성했다. 네 방향 × 세 걷기 자세로 192프레임, 전투 인물 그림 17장을 공용 팩에 등록했다. 표지판을 사람 그림으로 표시하던 연결도 고쳤다.</p>
 <div class="pair"><figure><img src="/emerald-art-v2-evidence/first-town.png" alt="새 인물 그림이 적용된 첫 마을"><figcaption>실제 새 게임의 첫 마을. 배치·이동 경로·충돌 설정은 기존 저작 데이터를 유지했다.</figcaption></figure><figure><img src="/emerald-art-v2-evidence/trainer.png" alt="새 라이벌과 주인공 뒤모습의 전투 도입"><figcaption>실제 라이벌 전투 첫 문장에 새 인물 그림을 표시한다. 몬스터 출전 문장부터 본래 몬스터 화면으로 돌아간다.</figcaption></figure></div>

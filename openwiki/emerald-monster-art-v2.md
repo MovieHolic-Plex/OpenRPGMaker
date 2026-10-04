@@ -38,6 +38,50 @@ Do not call `pick` or silently install candidates as approved production sprites
 After the user chooses, adopt the selected fronts/backs and derived icons into the
 shared campaign pack and canonical project, then reload and inspect gameplay.
 
+### Candidate revision requested by the user
+
+The user rejected immediate adoption and answered `후보 그림부터 더 수정`.
+Revision2 is the rejected comparison baseline; revision3 is intermediate; current
+revision4 remains `pending-human`. No species-harness pick/build or production
+monster write has occurred. See `assets/emerald-monster-v2/CANDIDATES.md`.
+
+Seven families (lynx, heron, rare-a, mantis, crab, gecko, bird),21 species, were
+regenerated/refined with built-in imagegen. Exact generation/edit prompts and
+workspace source paths are in `monster-revision3-generation.json` and
+`monster-revision4-generation.json`; raw prior variants are retained.
+All60 front/back pairs were re-extracted, including the39 unchanged designs.
+
+`emerald-art-v3-pairs.mjs` uses the existing harness pixel functions. It locates
+transparent row and per-row column gutters before extraction, uses one reviewed
+grid scale for all six family cells, fits front/back with one shared factor,
+and caps native ink at40/52/64 according to stage and palette at16 colors.
+It draws no artwork. A fixed sheet midpoint clipped the Stormskink front tail
+and imported its fragment into the back. The final original row gutter is at533
+of1024 after imagegen cleanup; the back now has one connected ink component.
+No clear inter-sprite gutter is an error, rather than silently clipping.
+
+`emerald-art-v3-import.mjs` bundles and invokes the actual integration CLI `run`
+handler with `import --block 8` in a fresh sandbox. The CLI's second palette/orphan
+cleanup is authoritative:65 final candidates differ from the pre-import drafts.
+Review images must be those final candidate PNGs. CLI candidate `sha256` hashes
+the raw input, whereas candidate-pack index `sha256` hashes the final sprite;
+`rawSha256` records the former separately.
+
+Current sandbox: `/home/main/z-project/emerald-art-v4-final-review-20261004`.
+`candidates-v4/index.json` and `pair-provenance.json` record final bytes, bounds,
+palette, source/crop/grid and warnings.120 images, no structural errors,140
+automatic warnings; body-area square-root back/front ratio0.889..1.044. Warnings
+are visible per selected species in the review; passing dimensions/color counts
+does not establish visual quality. Human review is still required.
+
+The newer integration's shared `grid.ts` ignores hidden corner RGB only when
+corner samples establish a transparent background; opaque background flood
+cleanup remains active. `import --block` validates2..40 and records the value.
+Integration commit121f147770 contains this fix and a focused executable verifier.
+The connected-white fixture previously lost1216 foreground pixels; the actual
+Glaciermane source lost0. Do not attribute its previous grid damage to that
+separate fixture bug. See the alpha-grid evidence summary.
+
 ## Opening and victory
 
 Title effects use the actual shared key-art coordinates. Intro atmosphere/professor

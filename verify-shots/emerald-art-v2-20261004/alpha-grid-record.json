@@ -1,0 +1,100 @@
+{
+  "fixtures": {
+    "opaqueWhitePreserved": true,
+    "hiddenRgbInvariant": true,
+    "threshold128Unchanged": true,
+    "opaqueFlatCleanup": true,
+    "internalHoleKeepsFlatCleanup": true,
+    "magentaCleanup": true,
+    "opaqueWhiteCleanup": true
+  },
+  "cli": {
+    "invalidRejected": 7,
+    "boundary2and40Accepted": true,
+    "provenance": [
+      {
+        "side": "front",
+        "fixedBlock": 8,
+        "candidateBlock": 8,
+        "sha256": "77e4757cff7142c1782b179bd3df11b01f0c36eac1575deca2faff41ef1fca89"
+      },
+      {
+        "side": "back",
+        "fixedBlock": 2,
+        "candidateBlock": 2,
+        "sha256": "77e4757cff7142c1782b179bd3df11b01f0c36eac1575deca2faff41ef1fca89"
+      },
+      {
+        "side": "front",
+        "fixedBlock": 40,
+        "candidateBlock": 40,
+        "sha256": "f6fd4db3e371ab152e72ffb6aed7400ae21cc310a42c32f82ca1c7a3a1830f64"
+      }
+    ]
+  },
+  "defaultImport": {
+    "fixedBlockOmitted": true,
+    "inferredBlock": 8
+  },
+  "fixtureBaselineErasedForegroundPixels": 1216,
+  "sample": {
+    "path": "/tmp/oprn-emerald-art-v2-20261004/monster-candidates/glaciermane-front-raw.png",
+    "sourceWidth": 512,
+    "sourceHeight": 580,
+    "block": 8,
+    "fixedForegroundPixels": 131475,
+    "originalAlphaWhiteAndOpaqueMagentaEqual": true,
+    "preparation": "Only RGB of alpha<128 was whitened for alpha-white variant; visible source pixels are unchanged. Opaque-magenta variant replaces only those background pixels.",
+    "actualCorners": [
+      [
+        24,
+        29,
+        37,
+        0
+      ],
+      [
+        25,
+        26,
+        27,
+        0
+      ],
+      [
+        33,
+        34,
+        37,
+        0
+      ],
+      [
+        24,
+        25,
+        27,
+        0
+      ]
+    ],
+    "actualHiddenRgbMostCommon": [
+      [
+        "60,62,66",
+        569
+      ],
+      [
+        "59,61,65",
+        542
+      ],
+      [
+        "47,49,52",
+        515
+      ],
+      [
+        "61,63,67",
+        480
+      ],
+      [
+        "48,50,53",
+        469
+      ]
+    ],
+    "alphaWhiteVariantBaselineErasedForegroundPixels": 0,
+    "actualBaselineErasedForegroundPixels": 0
+  },
+  "completed": true
+}
