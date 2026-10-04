@@ -656,7 +656,9 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
         toolNames: ['get_event', 'get_map_region', 'get_database_records', 'check_reachability', 'run_lint'], extraTools: [reportTool] });
       toolCalls += done.stats.toolCalls; toolErrors += done.stats.toolErrors; subTurns += done.stats.turns; subUsage = addPiAgentUsage(subUsage, done.stats.usage);
       if (changedProjectKeys(snapshot, done.project).length) throw new Error('읽기 전용 핵심 검사가 변경을 반환했습니다.');
-      if (!verdict?.ok || verdict.blockers.length) throw new Error('핵심 플레이 요구 누락: ' + (verdict?.blockers.join(' / ') || '검사 보고가 없습니다.'));
+      // The report arrives through an asynchronous tool callback.
+      const reportedVerdict = verdict as { ok: boolean; blockers: string[] } | undefined;
+      if (!reportedVerdict?.ok || reportedVerdict.blockers.length) throw new Error('핵심 플레이 요구 누락: ' + (reportedVerdict?.blockers.join(' / ') || '검사 보고가 없습니다.'));
       reviewedFirstPlay = firstPlaySignature(working, receipt);
       emit({ type: 'execution_status', at: Date.now(), name: 'first_play.review_passed', ok: true, summary: '확정 기획과 실제 핵심 이벤트를 대조했습니다. 장면 마무리 작업을 이어갑니다.' });
       emit({ type: 'agent_done', agentId, ok: true, summary: '핵심 플레이 요구 확인', stats: done.stats, changedKeys: [], spills: [], conflicts: [] });
@@ -699,14 +701,15 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
         { ...child(agentId, request.roleModels?.deep?.provider ?? request.provider), toolNames: FIRST_PLAY_TOOLS,
           onCheckpoint: checkpointFor(null, snapshot), extraTools: [reportTool] });
         toolCalls += done.stats.toolCalls; toolErrors += done.stats.toolErrors; subTurns += done.stats.turns; subUsage = addPiAgentUsage(subUsage, done.stats.usage);
-        if (!firstPlay) throw new Error('핵심 플레이 제작 보고가 없어 장식 단계로 넘어가지 않습니다.');
+        const reportedPlay = firstPlay as FirstPlayReceipt | undefined;
+        if (!reportedPlay) throw new Error('핵심 플레이 제작 보고가 없어 장식 단계로 넘어가지 않습니다.');
         assertModernProposal(working, done.project);
-        const issues = inspectFirstPlay(base, done.project, firstPlay);
+        const issues = inspectFirstPlay(base, done.project, reportedPlay);
         const play = judgePlayableSegment(done.project);
         if (issues.length || !play.ok) throw new Error('핵심 플레이 미완료: ' + [...issues, ...play.blockers].join(' / '));
         working = cloneProjectSharingSharedDictionaries(done.project);
-        emit({ type: 'execution_status', at: Date.now(), name: 'first_play.core_ready', ok: true, summary: firstPlay.report, data: { events: firstPlay.events } });
-        emit({ type: 'agent_done', agentId, ok: true, summary: firstPlay.report, stats: done.stats, changedKeys: done.changedKeys, spills: [], conflicts: [] });
+        emit({ type: 'execution_status', at: Date.now(), name: 'first_play.core_ready', ok: true, summary: reportedPlay.report, data: { events: reportedPlay.events } });
+        emit({ type: 'agent_done', agentId, ok: true, summary: reportedPlay.report, stats: done.stats, changedKeys: done.changedKeys, spills: [], conflicts: [] });
       } finally { mailbox.close(agentId); }
       try { await reviewFirstPlay(); break; }
       catch (error) {
