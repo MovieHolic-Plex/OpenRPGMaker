@@ -1,0 +1,103 @@
+{
+  "scenarioId": "worldmap-selected",
+  "projectPath": "qa-runs/worldmap-selected-runtime/graft.json",
+  "seed": 1,
+  "viewport": {
+    "width": 1024,
+    "height": 768
+  },
+  "errors": [],
+  "beats": [
+    {
+      "index": 0,
+      "id": "title",
+      "note": "SQLite에서 재로드한 선택 아이콘 도감",
+      "shot": null,
+      "failures": [],
+      "state": null,
+      "actions": []
+    },
+    {
+      "index": 1,
+      "id": "grafted-icons",
+      "note": "기존 EasyRPG 지형 위에 이식한 선택 수도 2종·75% 캐릭터",
+      "shot": "02-grafted-icons.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "wmi_graft",
+        "x": 7,
+        "y": 10,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "key",
+          "key": "Enter"
+        },
+        {
+          "kind": "waitForRuntime"
+        },
+        {
+          "kind": "waitForAttr",
+          "testid": "runtime-state-json",
+          "attr": "data-live-flags",
+          "value": "wmi_graft|7|10|true|false"
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "id": "walk-entrance",
+      "note": "아이콘 밑줄 중앙 입구를 걸어서 통과",
+      "shot": "03-walk-entrance.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "wmi_graft",
+        "x": 7,
+        "y": 9,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "key",
+          "key": "ArrowUp"
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "wmi_graft",
+          "x": 7,
+          "y": 9
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "id": "blocked-wall",
+      "note": "입구 옆 건물 밑줄은 막힘",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "wmi_graft",
+        "x": 7,
+        "y": 9,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "hold",
+          "dir": "left",
+          "ms": 500
+        }
+      ]
+    }
+  ]
+}

@@ -28,6 +28,15 @@
 
 ## 계약
 
+- HTTP 빌더의 LLM 클라이언트는 호출 시 불러온다. 레지스트리 → 지형 도구 → 빌더 → LLM 클라이언트 → 레지스트리 순환 초기화를 피하며, 주입한 헤드리스 빌더는 이 경로를 읽지 않는다.
+- 선택 아이콘 그림은 내보내기 자산 수집에 이식 소스 키로 포함되고 출처 MD도 함께 싣는다. AI 참고문서 JSON은 플레이어 빌드에서 빈 배열로 바꾼다.
+
+- **따로 저작한 위층·이식은 보존한다**(2026-10-04). 같은 크기로 지형을 다시 그리면 위층·2/4층·그림자·이식 슬롯의 소스·통행을 남긴다.
+  별도 배치가 있는 지도 크기를 바꾸는 재생성은 `authored-worldmap-resize`로 거부한다. 새 mapId로 만든 뒤 옮긴다.
+- **사람 선택 아이콘 공용 스탬프:** `worldmap_selected`(79개·1,620칸)와 `list_worldmap_icons → stamp_worldmap_icon → inspect_worldmap_icon`.
+  16px 생성 지도에 타일 이식으로 덧붙여 바닥 번호·지도 id를 보존한다. 참고문서는 소스 `worldmap_selected`에서 읽는다.
+  후보 검수·사람 선택·재굽기 계약은 `openwiki/harnesses/worldmap-icons.md`. 이동 이벤트는 따로 연결한다.
+
 - **작업은 쌓인다.** 맵의 `worldmapSource.ops` 뒤에 새 ops 를 잇는다. `replace:true` 면 갈아 끼운다.
   테마 자체 지형(`themes/<id>.json` 의 `terrain`)은 그 아래 깔리고 저장 ops 에는 들어가지 않는다.
 - **미리보기**(`preview:true`)는 픽셀 렌더 없이 칸 배열·도식 PNG·여정 검사만(1~3초). 저장하지 않는다.
