@@ -119,6 +119,8 @@ def main():
         raise SystemExit(128 + signum)
     signal.signal(signal.SIGTERM, stop); signal.signal(signal.SIGINT, stop)
     request = json.loads(request_file.read_text())
+    import art_layout
+    art_layout.require_approval(root, request)
     command, env = prepare(root, request)
     code = subprocess.call(command, cwd=root, env=env)
     result_file.write_text(json.dumps({'harness': request['harness'], 'exitCode': code}, ensure_ascii=False))
