@@ -4,12 +4,13 @@ import { addDatabaseRecord, duplicateDatabaseRecord } from "@/editor/databaseAct
 import { matchesNameOrId } from "@/editor/panels/databaseControls";
 import { emptyState, listPane, listRow, listToolbar, workspaceShell } from "@/editor/panels/databaseWorkspace";
 import { aiGenerateButton, deleteButton, recordCategoryLabel, recordForm } from "@/editor/panels/databaseRecordViews";
+import { createVirtualList } from "@/editor/panels/databaseListVirtualizer";
 import { recordListThumbnail } from "@/editor/panels/databaseRecordThumbnails";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import {
   inventoryCatalogSession, listScrollTopForCollection, searchQueryForCollection,
   selectedRecordIdForSession, setListScrollTopForCollection, setSearchQueryForCollection,
-  setSelectedRecordId, setViewModeForCollection, viewModeForCollection,
+  setSelectedRecordId, setViewModeForCollection, takeRecordRevealForSession, viewModeForCollection,
 } from "@/editor/panels/databaseRecordViewSession";
 import type { ItemRecord, EquipmentRecord } from "@/project/types";
 
@@ -23,6 +24,9 @@ function entries(): CatalogEntry[] {
     ...database.items.map((record): CatalogEntry => ({ collection: "items", record })),
     ...database.equipment.map((record): CatalogEntry => ({ collection: "equipment", record })),
   ];
+}
+function entryKey(entry: CatalogEntry): string {
+  return `${entry.collection}:${entry.record.id}`;
 }
 function subtype(entry: CatalogEntry): string {
   return `${entry.collection}:${entry.collection === "items" ? entry.record.type : entry.record.slot}`;
@@ -50,15 +54,31 @@ function sameProjection(a: CatalogProjection, b: CatalogProjection): boolean {
 /** One view over two collections. Search/filter updates never replace the input or inspector. */
 export function renderInventoryCatalog(host: HTMLElement, rerender: () => void): void {
   const session = inventoryCatalogSession();
+  const revealId = takeRecordRevealForSession(session.collection);
+  if (revealId) {
+    session.filter = "all"; session.subtype = "all";
+    setSearchQueryForCollection("items", "");
+  }
+  const restoredScrollTop = listScrollTopForCollection("items");
   const initial = entries();
   const selected = initial.find(isSelected) ?? initial.find((entry) => entry.collection === session.collection) ?? initial[0];
   if (selected) setSelectedRecordId(selected.collection, selected.record.id);
   const detail = el("div", { class: "db-detail-pane oprn-record-detail-pane db-catalog-detail" });
-  const rows = el("div", { class: "db-list db-ws-list db-catalog-rows", dataset: { testid: "db-catalog-rows" } });
-  // Retain only visible rows, scoped to this mounted catalog (no historical cache).
-  let rowCache = new Map<string, { row: HTMLElement; projection: CatalogProjection; gallery: boolean }>();
-  rows.scrollTop = listScrollTopForCollection("items");
-  rows.addEventListener("scroll", () => setListScrollTopForCollection("items", rows.scrollTop));
+  const rows = el("div", { class: "db-list db-ws-list db-catalog-rows", dataset: { testid: "db-catalog-rows" },
+    attrs: { tabindex: "0", "aria-label": "아이템·장비 목록" } });
+  // Only mounted DOM owns a projection; discarded windows have no strong cache references.
+  const rowCache = new WeakMap<HTMLElement, { projection: CatalogProjection; gallery: boolean }>();
+  let visibleEntries: CatalogEntry[] = [];
+  let windowKeys: string[] = [];
+  let windowGallery = viewModeForCollection("items") === "gallery";
+  const mountedRows = (): HTMLElement[] => Array.from(rows.querySelectorAll<HTMLElement>(".db-list-row"));
+  const mountedRow = (entry: CatalogEntry): HTMLElement | undefined => mountedRows().find((row) =>
+    row.dataset.collection === entry.collection && row.dataset.recordId === entry.record.id);
+  const scrollToSelected = (): void => {
+    const index = visibleEntries.findIndex(isSelected);
+    if (index >= 0) virtualList.scrollToIndex(index);
+    setListScrollTopForCollection("items", rows.scrollTop);
+  };
   const count = el("span", { class: "db-ws-count", dataset: { testid: "db-catalog-count" }, attrs: { role: "status" } });
   const search = el("input", {
     attrs: { type: "search", placeholder: "아이템·장비 이름 또는 ID 검색", "aria-label": "아이템·장비 검색" },
@@ -88,12 +108,14 @@ export function renderInventoryCatalog(host: HTMLElement, rerender: () => void):
     session.filter = "all"; session.subtype = "all";
     setSearchQueryForCollection("items", ""); search.value = "";
     updateSubtypes(); renderRows();
-    rows.querySelector<HTMLElement>('[aria-pressed="true"]')?.scrollIntoView?.({ block: "nearest" });
+    scrollToSelected();
+    search.focus({ preventScroll: true });
   };
   const refreshAfterMutation = (): void => {
     // New/duplicated/generated records must not disappear behind the old filter.
     session.filter = "all"; session.subtype = "all";
     setSearchQueryForCollection("items", "");
+    setSelectedRecordId(session.collection, selectedRecordIdForSession(session.collection), { reveal: true });
     rerender();
   };
   const renderActions = (): void => {
@@ -185,75 +207,85 @@ export function renderInventoryCatalog(host: HTMLElement, rerender: () => void):
       const active = button instanceof HTMLElement && button.dataset.testid === `db-view-toggle-${gallery ? "gallery" : "list"}`;
       button.classList.toggle("active", active); button.setAttribute("aria-pressed", String(active));
     }
-    const scrollTop = rows.scrollTop;
-    const nextCache: typeof rowCache = new Map();
-    const nextRows = visible.map((entry) => {
-      const key = `${entry.collection}:${entry.record.id}`;
-      const next = projection(entry);
-      const cached = rowCache.get(key);
-      if (cached) {
-        const active = isSelected(entry);
-        if (cached.row.getAttribute("aria-pressed") !== String(active)) {
-          cached.row.classList.toggle("active", active);
-          cached.row.setAttribute("aria-pressed", String(active));
-        }
-        const previous = cached.projection;
-        if (!sameProjection(previous, next) || cached.gallery !== gallery) {
-          const name = cached.row.querySelector(".db-list-name");
-          if (name) name.textContent = next[0] || "(이름 없음)";
-          const sub = cached.row.querySelector<HTMLElement>(".db-list-sub");
-          if (sub) sub.textContent = sub.title = `${LABELS[entry.collection]} · ${next[2]}`;
-          cached.row.title = `${next[0]} (${entry.record.id})`;
-          if (previous[0] !== next[0] || previous[3] !== next[3] || previous[4] !== next[4] || cached.gallery !== gallery) {
-            const thumb = recordListThumbnail(entry.collection, entry.record, store.getCurrent(), gallery ? 48 : 24);
-            cached.row.querySelector(".db-list-thumb")?.remove();
-            if (thumb) cached.row.prepend(thumb);
-          }
-          cached.row.classList.toggle("db-gallery-card", gallery);
-          cached.row.dataset.testid = `db-record-${gallery ? "card" : "row"}-${entry.record.id}`;
-        }
-        nextCache.set(key, { row: cached.row, projection: next, gallery });
-        return cached.row;
-      }
-      const thumb = recordListThumbnail(entry.collection, entry.record, store.getCurrent(), gallery ? 48 : 24);
-      const row = listRow({ name: entry.record.name, sub: `${LABELS[entry.collection]} · ${category(entry)}`,
-        ...(thumb ? { thumb } : {}), active: isSelected(entry), title: `${entry.record.name} (${entry.record.id})`,
-        testid: `db-record-${gallery ? "card" : "row"}-${entry.record.id}`,
-        dataset: { recordId: entry.record.id, collection: entry.collection },
-        onSelect: () => {
-          setSelectedRecordId(entry.collection, entry.record.id);
-          // Keep row nodes and keyboard focus; only change selected styling and the inspector.
-          for (const candidate of Array.from(rows.children)) {
-            const active = candidate instanceof HTMLElement && candidate.dataset.collection === entry.collection && candidate.dataset.recordId === entry.record.id;
-            candidate.classList.toggle("active", active); candidate.setAttribute("aria-pressed", String(active));
-          }
-          renderDetail(); renderActions(); updateSelectionNotice();
-        },
-      });
-      if (gallery) row.classList.add("db-gallery-card");
-      nextCache.set(key, { row, projection: next, gallery });
-      return row;
-    });
-    rowCache = nextCache;
-    if (visible.length) {
-      const retained = new Set(nextRows);
-      for (const child of Array.from(rows.children)) {
-        if (!retained.has(child as HTMLElement)) child.remove();
-      }
-      nextRows.forEach((row, index) => {
-        if (rows.children[index] !== row) rows.insertBefore(row, rows.children[index] ?? null);
-      });
-    } else rows.replaceChildren(emptyState({ title: all.length ? "검색 결과가 없습니다" : "아직 항목이 없습니다",
-      compact: true, testid: "db-record-list-empty", action: { label: "필터 지우기", onClick: revealSelected, testid: "db-record-list-empty-clear" } }));
-    rows.scrollTop = scrollTop;
+    const keys = visible.map(entryKey);
+    const changed = gallery !== windowGallery || keys.length !== windowKeys.length
+      || keys.some((key, index) => key !== windowKeys[index]);
+    visibleEntries = visible;
+    const indexByKey = new Map(keys.map((key, index) => [key, index]));
+    const focused = document.activeElement;
+    // Refresh just the mounted window before measuring it (including a mode change).
+    for (const row of mountedRows()) {
+      const index = indexByKey.get(`${row.dataset.collection}:${row.dataset.recordId}`);
+      if (index !== undefined) renderRow(visible[index], index, row);
+    }
+    emptyHint.remove();
+    if (changed) virtualList.setItems(keys);
+    // Measure the first newly mounted row, then correct the initial fallback pitch.
+    virtualList.render();
+    windowKeys = keys; windowGallery = gallery;
+    if (!visible.length) rows.append(emptyHint);
+    if (focused instanceof HTMLElement && focused !== rows && document.activeElement !== focused) {
+      if (rows.contains(focused)) focused.focus({ preventScroll: true });
+      else if (focused.classList.contains("db-list-row")) rows.focus({ preventScroll: true });
+    }
+    setListScrollTopForCollection("items", rows.scrollTop);
     updateSelectionNotice();
+  };
+  const renderRow = (entry: CatalogEntry, index: number, existing = mountedRow(entry)): HTMLElement => {
+    const gallery = viewModeForCollection("items") === "gallery";
+    const next = projection(entry);
+    const cached = existing && rowCache.get(existing);
+    if (existing && existing.dataset.recordIndex !== String(index)) existing.dataset.recordIndex = String(index);
+    if (existing && cached) {
+      const row = existing;
+      const active = isSelected(entry);
+      if (row.getAttribute("aria-pressed") !== String(active)) {
+        row.classList.toggle("active", active);
+        row.setAttribute("aria-pressed", String(active));
+      }
+      const previous = cached.projection;
+      if (!sameProjection(previous, next) || cached.gallery !== gallery) {
+        const name = row.querySelector(".db-list-name");
+        if (name) name.textContent = next[0] || "(이름 없음)";
+        const sub = row.querySelector<HTMLElement>(".db-list-sub");
+        if (sub) sub.textContent = sub.title = `${LABELS[entry.collection]} · ${next[2]}`;
+        row.title = `${next[0]} (${entry.record.id})`;
+        if (previous[0] !== next[0] || previous[3] !== next[3] || previous[4] !== next[4] || cached.gallery !== gallery) {
+          const thumb = recordListThumbnail(entry.collection, entry.record, store.getCurrent(), gallery ? 48 : 24);
+          row.querySelector(".db-list-thumb")?.remove();
+          if (thumb) row.prepend(thumb);
+        }
+        row.classList.toggle("db-gallery-card", gallery);
+        row.dataset.testid = `db-record-${gallery ? "card" : "row"}-${entry.record.id}`;
+      }
+      rowCache.set(row, { projection: next, gallery });
+      return row;
+    }
+    const thumb = recordListThumbnail(entry.collection, entry.record, store.getCurrent(), gallery ? 48 : 24);
+    const row = listRow({ name: entry.record.name, sub: `${LABELS[entry.collection]} · ${category(entry)}`,
+      ...(thumb ? { thumb } : {}), active: isSelected(entry), title: `${entry.record.name} (${entry.record.id})`,
+      testid: `db-record-${gallery ? "card" : "row"}-${entry.record.id}`,
+      dataset: { recordId: entry.record.id, collection: entry.collection, recordIndex: String(index) },
+      onSelect: () => {
+        setSelectedRecordId(entry.collection, entry.record.id);
+        // Keep row nodes and keyboard focus; only change selected styling and the inspector.
+        for (const candidate of mountedRows()) {
+          const active = candidate instanceof HTMLElement && candidate.dataset.collection === entry.collection && candidate.dataset.recordId === entry.record.id;
+          candidate.classList.toggle("active", active); candidate.setAttribute("aria-pressed", String(active));
+        }
+        renderDetail(); renderActions(); updateSelectionNotice();
+      },
+    });
+    if (gallery) row.classList.add("db-gallery-card");
+    rowCache.set(row, { projection: next, gallery });
+    return row;
   };
   const updateSelectionNotice = (): void => {
     const current = entries().find(isSelected);
-    const row = Array.from(rows.children).find((node) => node instanceof HTMLElement
-      && node.dataset.collection === current?.collection && node.dataset.recordId === current?.record.id);
-    selectionNotice.hidden = !current || Boolean(row);
-    selectionNotice.replaceChildren(...(current && !row ? [el("button", {
+    // Filtering and windowing are separate: an offscreen selection stays selected.
+    const included = current && visibleEntries.some((entry) => entryKey(entry) === entryKey(current));
+    selectionNotice.hidden = !current || Boolean(included);
+    selectionNotice.replaceChildren(...(current && !included ? [el("button", {
       class: "db-ws-btn db-ws-btn-ghost", text: `선택 중: ${current.record.name} · 목록에서 보기`, attrs: { type: "button" },
       dataset: { testid: "db-catalog-reveal-selection" }, on: { click: revealSelected },
     })] : []));
@@ -268,5 +300,68 @@ export function renderInventoryCatalog(host: HTMLElement, rerender: () => void):
   pane.querySelector(".db-list")?.replaceWith(rows);
   const workspace = workspaceShell({ list: pane, detail, legacyClass: "oprn-record-workspace db-inventory-catalog", testid: "db-inventory-catalog" });
   host.append(workspace);
+  const emptyHint = emptyState({ title: initial.length ? "검색 결과가 없습니다" : "아직 항목이 없습니다",
+    compact: true, testid: "db-record-list-empty", action: { label: "필터 지우기", onClick: revealSelected, testid: "db-record-list-empty-clear" } });
+  const virtualList = createVirtualList<string>({
+    items: [], container: rows, measureRows: true,
+    rowHeight: windowGallery ? 140 : 36, columns: () => viewModeForCollection("items") === "gallery" ? 2 : 1,
+    onScroll: (scrollTop) => {
+      if (!rows.isConnected) return;
+      setListScrollTopForCollection("items", scrollTop);
+      // Native Tab can scroll a mounted button into view. Window replacement
+      // reparents retained buttons, so restore their focus after that render.
+      const focused = document.activeElement;
+      if (focused instanceof HTMLElement && rows.contains(focused)) queueMicrotask(() => {
+        if (rows.isConnected && rows.contains(focused) && document.activeElement === document.body) {
+          focused.focus({ preventScroll: true });
+        }
+      });
+    },
+    renderRow: (_key, index) => renderRow(visibleEntries[index], index),
+  });
+  // Buttons retain native Enter/Space activation. Navigation crosses window boundaries
+  // explicitly so Tab and End can reach records that do not yet exist in the DOM.
+  rows.addEventListener("keydown", (event) => {
+    if (event.altKey || event.ctrlKey || event.metaKey || !visibleEntries.length) return;
+    const row = event.target instanceof HTMLElement ? event.target.closest<HTMLElement>(".db-list-row") : null;
+    const viewportTop = rows.getBoundingClientRect().top;
+    const anchor = row ?? mountedRows().find((candidate) => candidate.getBoundingClientRect().bottom > viewportTop);
+    const current = anchor ? Number(anchor.dataset.recordIndex) : Math.max(0, visibleEntries.findIndex(isSelected));
+    const columns = viewModeForCollection("items") === "gallery" ? 2 : 1;
+    const gap = anchor ? Number.parseFloat(getComputedStyle(anchor.parentElement ?? rows).rowGap) || 0 : 0;
+    const pitch = anchor ? anchor.getBoundingClientRect().height + gap : (columns === 2 ? 148 : 37);
+    const page = Math.max(1, Math.floor(rows.clientHeight / pitch)) * columns;
+    let index: number;
+    switch (event.key) {
+      case "Home": index = 0; break;
+      case "End": index = visibleEntries.length - 1; break;
+      case "ArrowDown": index = row ? current + columns : current; break;
+      case "ArrowUp": index = row ? current - columns : current; break;
+      case "ArrowRight": if (columns === 1) return; index = current + 1; break;
+      case "ArrowLeft": if (columns === 1) return; index = current - 1; break;
+      case "PageDown": index = current + page; break;
+      case "PageUp": index = current - page; break;
+      case "Tab":
+        if (!row) return;
+        index = current + (event.shiftKey ? -1 : 1);
+        if (index < 0 || index >= visibleEntries.length || mountedRow(visibleEntries[index])) return;
+        break;
+      default: return;
+    }
+    event.preventDefault();
+    index = Math.max(0, Math.min(visibleEntries.length - 1, index));
+    virtualList.scrollToIndex(index);
+    mountedRow(visibleEntries[index])?.focus({ preventScroll: true });
+    setListScrollTopForCollection("items", rows.scrollTop);
+  });
   updateSubtypes(); renderDetail(); renderActions(); renderRows();
+  const restoreScroll = (): void => {
+    if (!rows.isConnected) return;
+    if (revealId) scrollToSelected();
+    else { rows.scrollTop = restoredScrollTop; virtualList.render(); }
+    setListScrollTopForCollection("items", rows.scrollTop);
+  };
+  restoreScroll();
+  // The caller may attach its host after this render; restore again after layout.
+  if (typeof requestAnimationFrame === "function") requestAnimationFrame(restoreScroll);
 }
