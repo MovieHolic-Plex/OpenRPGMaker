@@ -2,6 +2,7 @@ import { drawMapTileLayer } from "@/editor/mapTileDraw";
 import { tileBackingTile } from "@/editor/tileLayerPolicy";
 import { cropExtraLayers } from "@/project/mapLayers";
 import { reliefMapView } from "@/editor/reliefMapView";
+import { reliefGroundFromImage } from "@/editor/reliefGroundSurface";
 import { cellLift, reliefLiftField } from "@/project/relief/screen";
 import type { GameMap, Project, TilesetDef } from "@/project/types";
 import { mapVisualEvidenceUnavailable } from "./mapVisualEvidence";
@@ -151,7 +152,7 @@ async function renderTileGridPayload(payload: TileGridPayload, label: string, dr
   // image rather than drawn huge and shrunk. Small regions keep the native scale.
   const drawSize = tileDrawSize(payload.w, payload.h, payload.tileset.tileSize);
   const region = payload.map ? cropMapRegion(payload.map, payload.x, payload.y, payload.w, payload.h) : undefined;
-  const relief = region ? reliefMapView(region, drawSize) : null;
+  const relief = region ? reliefMapView(region, drawSize, reliefGroundFromImage(region, payload.tileset, image)) : null;
   const canvasPair = createCanvas(payload.w * drawSize, relief?.height ?? payload.h * drawSize);
   if (!canvasPair) return [];
   const { canvas, context } = canvasPair;

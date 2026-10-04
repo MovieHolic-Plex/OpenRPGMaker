@@ -3,7 +3,7 @@
 // 들림(lift) 단위는 「단」이다. 화면 px = 단 × 맵 칸 크기 (1단 = 벽 1칸, relief/types.ts).
 // 칸 들림은 renderRelief 가 **실제로 그리는** 높이(effectiveHeights → prune)다 — 칠한 높이가 아니다.
 // 그래야 타일이 그림의 윗면에 정확히 앉는다. 경사로 칸은 칸 중심의 오르막 위치로 보간하고, 계단은 디딤판 단으로 끊는다.
-import type { ReliefRender, ReliefRenderOptions } from "./render";
+import { renderRelief, type ReliefRender, type ReliefRenderOptions, type ReliefSlope } from "./render";
 import { RELIEF_TILE, type ReliefData } from "./types";
 import { reliefGrids } from "./window";
 import { hasRelief, reliefBridgeMask, reliefSlopes } from "./walk";
@@ -14,19 +14,25 @@ export interface ReliefLiftField {
   readonly height: number;
   /** 칸 들림(단), elevation[y * width + x] */
   readonly elevation: Float32Array;
+  readonly slopes: readonly ReliefSlope[];
+  readonly slopeOwners: Int32Array;
+  readonly maxLift: number;
 }
 
-const fields = new WeakMap<ReliefData, ReliefLiftField>();
+const fields = new WeakMap<ReliefData, { levels: number[]; field: ReliefLiftField }>();
 
 /** relief → 칸 들림 표. 같은 relief 객체면 다시 계산하지 않는다(런타임은 매 프레임 부른다). */
 export function reliefLiftField(relief: ReliefData): ReliefLiftField {
   const cached = fields.get(relief);
-  if (cached) return cached;
+  const slopes = reliefSlopes(relief);
+  if (cached && cached.levels === relief.levels && cached.field.slopes === slopes) return cached.field;
   const { width, height } = relief;
   const drawn = reliefGrids(relief).pruned;
   const elevation = new Float32Array(width * height);
   for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) elevation[y * width + x] = drawn[y]?.[x] ?? 0;
-  for (const s of reliefSlopes(relief)) {
+  const slopeOwners = new Int32Array(width * height).fill(-1);
+  let maxLift = 0;
+  for (const [id, s] of slopes.entries()) {
     const len = s.dir === "n" || s.dir === "s" ? s.h : s.w;
     for (let y = s.y; y < s.y + s.h; y++) for (let x = s.x; x < s.x + s.w; x++) {
       // 낮은 끝에서 칸 중심까지 거리 / 경사로 길이 (render.ts slopeHeights 와 같은 축)
@@ -35,10 +41,13 @@ export function reliefLiftField(relief: ReliefData): ReliefLiftField {
       // 계단은 칸 중심이 딛는 디딤판 단. 칸 중심이 디딤판 경계에 딱 걸리므로 부동소수 오차로 한 단 아래로 떨어지지 않게 한다.
       if (s.steps) t = Math.floor(t * s.steps + 1e-6) / s.steps;
       elevation[y * width + x] = s.lo + t * (s.hi - s.lo);
+      slopeOwners[y * width + x] = id;
     }
   }
-  const field = { width, height, elevation };
-  fields.set(relief, field);
+  for (const h of elevation) maxLift = Math.max(maxLift, h);
+  for (const s of slopes) maxLift = Math.max(maxLift, s.hi);
+  const field = { width, height, elevation, slopes, slopeOwners, maxLift };
+  fields.set(relief, { levels: relief.levels, field });
   return field;
 }
 
@@ -54,9 +63,9 @@ export function reliefPaintsCell(relief: ReliefData | undefined, x: number, y: n
 }
 
 /** relief → renderRelief 옵션(편집기·플레이어·오프라인 렌더가 같은 값을 쓴다): 경사로·양식·경사로 도트·다리 판. */
-export function reliefRenderOptions(relief: ReliefData): ReliefRenderOptions {
+export function reliefRenderOptions(relief: ReliefData, ground?: ReliefRenderOptions["ground"]): ReliefRenderOptions {
   const bridges = reliefBridgeMask(relief);
-  return { transparentGround: true, slopes: reliefSlopes(relief), style: relief.style, rampArt: reliefRampArt(relief.style), ...(bridges ? { bridges } : {}) };
+  return { transparentGround: !ground, ground, slopes: reliefSlopes(relief), style: relief.style, rampArt: reliefRampArt(relief.style), ...(bridges ? { bridges } : {}) };
 }
 
 /**
@@ -80,6 +89,36 @@ export function reliefTileSlotChangedCells(before: ReliefData | undefined, after
 export function cellLift(field: ReliefLiftField, x: number, y: number): number {
   if (x < 0 || y < 0 || x >= field.width || y >= field.height) return 0;
   return field.elevation[y * field.width + x] ?? 0;
+}
+
+/** Height under a character's physical foot, not under its logical cell centre. */
+export function footLift(field: ReliefLiftField, x: number, y: number): number {
+  const cx = Math.max(0, Math.min(field.width - 1, Math.floor(x))), cy = Math.max(0, Math.min(field.height - 1, Math.floor(y - 1e-7)));
+  const s = field.slopes[field.slopeOwners[cy * field.width + cx]!];
+  if (!s) return cellLift(field, cx, cy);
+  const length = s.dir === "n" || s.dir === "s" ? s.h : s.w;
+  const along = s.dir === "n" ? s.y + s.h - y : s.dir === "s" ? y - s.y : s.dir === "w" ? s.x + s.w - x : x - s.x;
+  let t = Math.max(0, Math.min(1, along / length));
+  if (s.steps) t = Math.floor(t * s.steps + 1e-6) / s.steps;
+  return s.lo + t * (s.hi - s.lo);
+}
+
+/** Pick the visible surface pixel. A small padded column uses the same diagonal/ramp geometry as rendering. */
+export function reliefPickPoint(relief: ReliefData, worldX: number, worldY: number, tileSize: number): { x: number; y: number; face: "top" | "wall" } | undefined {
+  const x = worldX / tileSize, y = worldY / tileSize;
+  if (x < 0 || x >= relief.width) return undefined;
+  const field = reliefLiftField(relief), grids = reliefGrids(relief), pad = Math.ceil(field.maxLift) * RELIEF_TILE;
+  const cx = Math.max(0, Math.floor(x) - 3), right = Math.min(relief.width, Math.floor(x) + 4);
+  const cy = Math.max(0, Math.floor(y) - 3), bottom = Math.min(relief.height, Math.floor(y + field.maxLift) + 4);
+  if (bottom <= cy) return undefined;
+  const crop = (g: number[][]) => g.slice(cy, bottom).map(row => row.slice(cx, right));
+  const render = renderRelief(crop(grids.eff), { ...reliefRenderOptions(relief), window: {
+    cx, cy, pad, PW: relief.width * RELIEF_TILE, SH: relief.height * RELIEF_TILE + pad, pruned: crop(grids.pruned),
+  } });
+  const px = Math.floor((x - cx) * RELIEF_TILE), py = Math.floor((y - cy) * RELIEF_TILE + pad);
+  if (px < 0 || py < 0 || px >= render.PW || py >= render.SH) return undefined;
+  const i = py * render.PW + px, source = render.src[i]!;
+  return source < 0 ? undefined : { x: cx + source % (right - cx), y: cy + Math.floor(source / (right - cx)), face: render.kind[i] === 0 ? "top" : "wall" };
 }
 
 /**
@@ -112,7 +151,7 @@ export function reliefSignature(relief: ReliefData | undefined): number {
 /** 윗면(단 > 0, 불투명)은 그 줄 타일 **밑**, 벽·0단 발치 그늘·윗단 가장자리 선은 그 줄 타일 **위**에 그린다. */
 export type ReliefStripPart = "under" | "over";
 
-const partOf = (render: ReliefRender, i: number): ReliefStripPart => (render.kind[i] === 0 && render.lev[i] > 0 && !render.overSlope?.[i] && !render.edge[i] ? "under" : "over");
+const partOf = (render: ReliefRender, i: number): ReliefStripPart => (render.kind[i] === 0 && (render.nativeGround || render.lev[i] > 0 && !render.overSlope?.[i] && !render.edge[i]) ? "under" : "over");
 
 /**
  * 맵 한 줄(row)이 그린 절벽 화소 중 part 에 속하는 것만 잘라 낸 띠. 좌표는 renderRelief 16px 그림 좌표 — 월드 y 는 y - pad.

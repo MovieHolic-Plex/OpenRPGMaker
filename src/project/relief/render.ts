@@ -19,6 +19,8 @@ const OUT_G = 0, OUT_B = 6, DRIP = 6, CW = 14, CH = 8;
 const shift = (p: number, s: number) => { const r = (p / 6) | 0, i = p % 6; return r * 6 + Math.max(1, Math.min(5, i + s)); };
 
 export interface ReliefRenderOptions {
+  /** Actual composed lower-layer pixels in absolute map coordinates (16px relief grid). */
+  ground?: ReliefGroundSurface;
   /** 단마다 윗면을 조금씩 밝게 (기본 켬) */
   tone?: boolean;
   /** 마칭 스퀘어 대각선 절벽 (기본 켬). 끄면 칸 단위 네모 절벽. */
@@ -52,6 +54,12 @@ export interface ReliefRenderOptions {
    * 전체 렌더와 화소 하나 다르지 않다. 반환 그림의 좌표·src 는 창 기준이다.
    */
   window?: ReliefRenderWindow;
+}
+
+export interface ReliefGroundSurface {
+  readonly cells: Int32Array;
+  readonly signature: number;
+  sample(px: number, py: number, out: Uint8ClampedArray, offset: number): boolean;
 }
 
 /** {@link ReliefRenderOptions.window}. 원점·크기는 맵 칸 단위, pad·PW·SH 는 전체 그림의 값. */
@@ -88,6 +96,7 @@ export interface ReliefSlope {
 }
 
 export interface ReliefRender {
+  readonly nativeGround?: boolean;
   /** 절벽 그림 RGBA, 크기 PW × SH */
   rgba: Uint8ClampedArray;
   /** 가려진 윗면 투시 층 RGBA (알파 0 = 없음) */
@@ -858,7 +867,18 @@ export function renderRelief(h: HeightGrid, opt: ReliefRenderOptions = {}): Reli
     if (opt.rampArt) paintRamps(opt.rampArt, gslopes, surface);
     else paintNaturalRamps(baseRamps, gslopes, surface);
   }
-  return { rgba, xray, PW, SH, pad, src, kind, lev, hidden, slope: ssl, slopeT: sst, mpy, height: fl, edge, ...(overSlope ? { overSlope } : {}) };
+  // Geometry owns the entire lower plane when native pixels are available. Square tile stamps
+  // cannot mask diagonal cuts, or preserve a continuous road texture on a ramp.
+  if (opt.ground) for (let i = 0; i < N; i++) {
+    const cap = kind[i] === 1 && out[i] >= 0 && out[i] < 6;
+    if (kind[i] !== 0 && !cap || mpy[i] < 0 || stairOwner(i) || bridge && underDeck[i]) continue;
+    const o = i * 4;
+    if (opt.ground.sample(i % PW + ox, mpy[i] + oy, rgba, o)) {
+      const shade = cap ? .7 + .05 * out[i] : shadeA?.[i] ? 1 - .3 * shadeA[i] / 255 : 1;
+      rgba[o] *= shade; rgba[o + 1] *= shade; rgba[o + 2] *= shade;
+    }
+  }
+  return { rgba, xray, PW, SH, pad, src, kind, lev, hidden, slope: ssl, slopeT: sst, mpy, height: fl, edge, ...(opt.ground ? { nativeGround: true } : {}), ...(overSlope ? { overSlope } : {}) };
 }
 
 /** 주변 땅의 팔레트로 칠하는 연속 비탈. 가운데는 닳은 흙, 양옆과 양끝은 풀로 부드럽게 잇는다. */

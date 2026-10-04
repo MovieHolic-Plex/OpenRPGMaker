@@ -74,7 +74,7 @@ export interface ReliefImage {
 /** 화소 하나가 어느 띠로 가는가 — screen.ts reliefRowStrips 와 같은 규칙. */
 function partAt(render: ReliefRender, i: number): number {
   if (render.src[i]! < 0 || render.rgba[i * 4 + 3]! === 0) return 0;
-  return render.kind[i] === 0 && render.lev[i]! > 0 && !render.overSlope?.[i] && !render.edge[i] ? 1 : 2;
+  return render.kind[i] === 0 && (render.nativeGround || render.lev[i]! > 0 && !render.overSlope?.[i] && !render.edge[i]) ? 1 : 2;
 }
 
 export function reliefImageFromRender(render: ReliefRender, W: number, H: number): ReliefImage {
@@ -136,6 +136,7 @@ export function planReliefPatch(prev: ReliefScene | null, next: ReliefScene, ima
   const { W, H, PW } = image;
   if (next.grids.eff.length !== H || (next.grids.eff[0]?.length ?? 0) !== W) return null;
   if (prev && (prev.grids.eff.length !== H || (prev.opts.style ?? "") !== (next.opts.style ?? ""))) return null;
+  if (!!prev?.opts.ground !== !!next.opts.ground) return null;
   // 평지에서 시작하면 양식은 빈 그림에 영향이 없다. 경사로 도트(rampArt)는 양식을 따른다.
   // 바뀐 칸 상자 [x0, y0, x1, y1](끝 포함). x1 < 0 이면 없음.
   const box: Box = [W, H, -1, -1];
@@ -147,6 +148,7 @@ export function planReliefPatch(prev: ReliefScene | null, next: ReliefScene, ima
     const ne = next.grids.eff[y]!, np = next.grids.pruned[y]!, pe = prev?.grids.eff[y], pp = prev?.grids.pruned[y];
     for (let x = 0; x < W; x++) if ((pe?.[x] ?? 0) !== ne[x] || (pp?.[x] ?? 0) !== np[x]) grow(x, y, x, y);
   }
+  if (next.opts.ground && prev?.opts.ground) for (let i = 0; i < W * H; i++) if (next.opts.ground.cells[i] !== prev.opts.ground.cells[i]) grow(i % W - 1, Math.floor(i / W) - 1, i % W + 1, Math.floor(i / W) + 1);
   const prevSlopes = prev?.opts.slopes ?? [], slopes = next.opts.slopes ?? [];
   for (let k = 0; k < Math.max(prevSlopes.length, slopes.length); k++) {
     const a = prevSlopes[k], b = slopes[k];

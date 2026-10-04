@@ -11,6 +11,7 @@ import path from "node:path";
 import { PNG } from "pngjs";
 import { drawMapTileLayer } from "../../src/editor/mapTileDraw.ts";
 import { reliefMapView } from "../../src/editor/reliefMapView.ts";
+import { createReliefGroundSurface } from "../../src/editor/reliefGroundSurface.ts";
 import { cropExtraLayers } from "../../src/project/mapLayers.ts";
 import { tilesetBaseImageUrl } from "../../src/editor/tilesetImage.ts";
 import { uploadedAssetUrl } from "../../src/project/persistence/assetAccessors.ts";
@@ -183,7 +184,8 @@ function outline(target: Raster, x: number, y: number, size: number, rgb: readon
 export function renderMapPng(project: Project, map: GameMap, scale = 1): { png: Buffer; note?: string } {
   const tileset = project.tilesets[map.tilesetId];
   const size = (tileset?.tileSize ?? 16) * scale;
-  const relief = reliefMapView(map, size);
+  const image = tileset ? loadTilesetRaster(project, tileset) : null;
+  const relief = reliefMapView(map, size, image && tileset ? createReliefGroundSurface(map, tileset, image) : undefined);
   const height = Math.ceil(relief?.height ?? map.height * size);
   const target: Raster = { width: map.width * size, height, data: new Uint8Array(map.width * size * height * 4) };
   // 바둑판 바탕 — 비어 있는 칸이 보이게.
@@ -193,7 +195,6 @@ export function renderMapPng(project: Project, map: GameMap, scale = 1): { png: 
     target.data[i] = dark ? 42 : 51; target.data[i + 1] = dark ? 42 : 51; target.data[i + 2] = dark ? 46 : 58; target.data[i + 3] = 255;
   }
   let note: string | undefined;
-  const image = tileset ? loadTilesetRaster(project, tileset) : null;
   if (!tileset || !image) note = `타일셋 이미지를 읽지 못했습니다(${map.tilesetId})`;
   else {
     const context = new PngContext(target) as unknown as CanvasRenderingContext2D;
