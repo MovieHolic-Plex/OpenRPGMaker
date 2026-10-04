@@ -5,6 +5,14 @@
 
 <!-- releases -->
 
+## 0.120.1 — 2026-10-04
+
+### 수정
+
+- attach charset pixel references to GPT artist input (`05f3584`)
+- pass approved drawing model to harness preparation (#2081) (`0a68516`)
+- give the ci-full vitest worker a 12GB heap (`a9e8aa6`)
+
 ## 0.120.0 — 2026-10-04
 
 ### 기능
