@@ -4,6 +4,9 @@ import {
   eventDraftVaultStorageKey,
   persistEventDraftVaultNow,
   rememberEventDraftVaultEntry,
+  listEventDraftVaultEntries,
+  forgetEventDraftVaultEntry,
+  restoreEventDraftVaultEntries,
 } from "@/project/eventDraftVault";
 import type { GameEvent } from "@/project/types";
 
@@ -71,5 +74,23 @@ describe("event draft vault persist debounce", () => {
     await wait(PAST_VAULT_DEBOUNCE_MS);
 
     expect(counting.writes().filter((entry) => entry === key).length).toBeGreaterThanOrEqual(1);
+  });
+
+  it("public copies cannot change a cached save and deletion/restore invalidate it", () => {
+    const key = eventDraftVaultStorageKey();
+    rememberEventDraftVaultEntry("map_blank_start", DRAFT);
+    persistEventDraftVaultNow();
+    const saved = listEventDraftVaultEntries();
+    saved[0]!.event.x = 42;
+    persistEventDraftVaultNow();
+    const read = () => JSON.parse((counting.storage.getItem as (key: string) => string)(key));
+    expect(read().entries[0].event.x).toBe(1);
+    forgetEventDraftVaultEntry("map_blank_start", DRAFT.id);
+    persistEventDraftVaultNow();
+    expect((counting.storage.getItem as (key: string) => string | null)(key)).toBeNull();
+    restoreEventDraftVaultEntries(saved);
+    saved[0]!.event.x = 99;
+    persistEventDraftVaultNow();
+    expect(read().entries[0].event.x).toBe(42);
   });
 });

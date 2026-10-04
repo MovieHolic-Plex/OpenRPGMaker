@@ -29,6 +29,23 @@ export type EventDraftVaultEntry = {
 };
 
 const vault = new Map<string, EventDraftVaultEntry>();
+const vaultEntrySources = new WeakMap<EventDraftVaultEntry, GameEvent>();
+const serializedEntries = new WeakMap<EventDraftVaultEntry, string>();
+let vaultRevision = 0;
+let serializedRevision = -1;
+let serializedVaultEntries = "";
+
+function setVaultEntry(key: string, entry: EventDraftVaultEntry): void {
+  vault.set(key, entry);
+  vaultRevision++;
+}
+
+function clearVaultEntries(): void {
+  vault.clear();
+  vaultRevision++;
+  serializedVaultEntries = "";
+  serializedRevision = -1;
+}
 /** History must use full reconciliation when a draft could restore event data. */
 export function hasEventDraftVaultEntries(): boolean { return vault.size > 0; }
 let persistTimer: ReturnType<typeof setTimeout> | null = null;
@@ -40,12 +57,13 @@ export function eventDraftVaultKey(mapId: MapId, eventId: string): string {
 }
 
 export function clearEventDraftVault(): void {
-  vault.clear();
+  clearVaultEntries();
   scheduleEventDraftVaultPersist();
 }
 
 export function forgetEventDraftVaultEntry(mapId: MapId, eventId: string): void {
   if (!vault.delete(eventDraftVaultKey(mapId, eventId))) return;
+  vaultRevision++;
   scheduleEventDraftVaultPersist();
 }
 
@@ -54,11 +72,16 @@ export function rememberEventDraftVaultEntry(mapId: MapId, event: GameEvent): vo
     forgetEventDraftVaultEntry(mapId, event.id);
     return;
   }
-  vault.set(eventDraftVaultKey(mapId, event.id), {
+  const key = eventDraftVaultKey(mapId, event.id);
+  const existing = vault.get(key);
+  if (existing && vaultEntrySources.get(existing) === event) return;
+  const entry: EventDraftVaultEntry = {
     mapId,
     event: structuredClone(event),
     updatedAt: Date.now(),
-  });
+  };
+  vaultEntrySources.set(entry, event);
+  setVaultEntry(key, entry);
   scheduleEventDraftVaultPersist();
 }
 
@@ -68,15 +91,13 @@ export function rememberEventDraftVaultEntry(mapId: MapId, event: GameEvent): vo
  * 항목 객체를 열쇠로 삼아, 다른 경로(rememberEventDraftVaultEntry 등)가 항목을 새로 쓰면 자동으로 무효가 된다.
  * 실측(2026-09-30, 큰 프로젝트): update 한 번에 초안 이벤트 복제가 약 20ms.
  */
-const vaultEntrySources = new WeakMap<EventDraftVaultEntry, GameEvent>();
 
 export function syncEventDraftVaultFromProject(project: Project): void {
-  const liveKeys = new Set<string>();
+  let changed = false;
   for (const [mapId, map] of Object.entries(project.maps)) {
     for (const event of map.events) {
       if (!event.draft) continue;
       const key = eventDraftVaultKey(mapId, event.id);
-      liveKeys.add(key);
       const existing = vault.get(key);
       if (existing && existing.mapId === mapId && vaultEntrySources.get(existing) === event) continue;
       const entry: EventDraftVaultEntry = {
@@ -85,12 +106,13 @@ export function syncEventDraftVaultFromProject(project: Project): void {
         updatedAt: Date.now(),
       };
       vaultEntrySources.set(entry, event);
-      vault.set(key, entry);
+      setVaultEntry(key, entry);
+      changed = true;
     }
   }
   // Do not drop vault entries that are only temporarily missing from project —
   // reapply path restores them. Explicit forget/clear handles intentional discard.
-  if (liveKeys.size > 0) scheduleEventDraftVaultPersist();
+  if (changed) scheduleEventDraftVaultPersist();
 }
 
 export function listEventDraftVaultEntries(): readonly EventDraftVaultEntry[] {
@@ -108,9 +130,9 @@ export function restoreEventDraftVaultEntries(entries: readonly EventDraftVaultE
     persistTimer = null;
     persistTimerProjectId = null;
   }
-  vault.clear();
+  clearVaultEntries();
   for (const entry of entries) {
-    vault.set(eventDraftVaultKey(entry.mapId, entry.event.id), {
+    setVaultEntry(eventDraftVaultKey(entry.mapId, entry.event.id), {
       mapId: entry.mapId,
       event: structuredClone(entry.event),
       updatedAt: entry.updatedAt,
@@ -184,11 +206,7 @@ export function preserveEventDraftsOnProject(incoming: Project, live: Project): 
   for (const [mapId, map] of Object.entries(live.maps)) {
     for (const event of map.events) {
       if (!event.draft) continue;
-      vault.set(eventDraftVaultKey(mapId, event.id), {
-        mapId,
-        event: structuredClone(event),
-        updatedAt: Date.now(),
-      });
+      rememberEventDraftVaultEntry(mapId, event);
     }
   }
   const withLiveDrafts = projectWithLiveDrafts(incoming, live);
@@ -256,15 +274,22 @@ export function persistEventDraftVaultNow(projectId = resolveVaultProjectId()): 
   const key = eventDraftVaultStorageKey(projectId);
   try {
     if (vault.size === 0) {
+      serializedVaultEntries = "";
+      serializedRevision = vaultRevision;
       localStorage.removeItem(key);
       return;
     }
-    const payload = {
-      version: 1 as const,
-      savedAt: Date.now(),
-      entries: listEventDraftVaultEntries(),
-    };
-    localStorage.setItem(key, JSON.stringify(payload));
+    if (serializedRevision !== vaultRevision) {
+      serializedVaultEntries = [...vault.values()].map(entry => {
+        let text = serializedEntries.get(entry);
+        if (text === undefined) { text = JSON.stringify(entry); serializedEntries.set(entry, text); }
+        return text;
+      }).join(",");
+      serializedRevision = vaultRevision;
+    }
+    // Entries are privately owned immutable copies. Public reads still clone;
+    // persistence can reuse their JSON without cloning all command trees again.
+    localStorage.setItem(key, `{"version":1,"savedAt":${Date.now()},"entries":[${serializedVaultEntries}]}`);
   } catch (error) {
     console.warn("[eventDraftVault] localStorage persist failed:", error);
   }
@@ -284,7 +309,7 @@ export function loadEventDraftVaultFromLocalStorage(projectId = resolveVaultProj
     let loaded = 0;
     for (const item of parsed.entries) {
       if (!item?.mapId || !item.event?.id || !item.event.draft) continue;
-      vault.set(eventDraftVaultKey(item.mapId, item.event.id), {
+      setVaultEntry(eventDraftVaultKey(item.mapId, item.event.id), {
         mapId: item.mapId,
         event: structuredClone(item.event),
         updatedAt: typeof item.updatedAt === "number" ? item.updatedAt : Date.now(),
@@ -327,7 +352,7 @@ function browserLocalStorage(): Storage | null {
 
 /** @internal */
 export function _resetEventDraftVaultForTest(): void {
-  vault.clear();
+  clearVaultEntries();
   if (persistTimer) {
     clearTimeout(persistTimer);
     persistTimer = null;

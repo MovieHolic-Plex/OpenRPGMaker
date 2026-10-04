@@ -290,6 +290,15 @@ Electron IPC와 브라우저 HTTP가 같은 서비스로 SQLite·에셋을 사�
 
 ## 로컬 SQLite 정본과 저장소 포트 (2026-09-16)
 
+렌더러 맵 패치 준비 보강(2026-10-04): `projectPatch`는 일반 JSON 가지를 참조/구조로
+비교하며 첫 차이에서 멈춘다. `diffProjectDocumentsSliced`와 `withWirePatchValuesSliced`는
+맵 내부의 긴 배열도 256항목마다 양보 시간을 확인한다. Electron 저장소는 두 단계를 모두
+사용한다. 타일셋 요약·기준 SHA·호스트 CAS 계약은 유지한다. 와이어 값은 소유된 JSON 사본이며
+제출 중 새 store 편집은 쓰기 시 복제로 분리된다. 비표준 값의 비교와 custom `toJSON`은
+기존 직렬화 경로로 처리한다. 크기가 큰 custom serializer 자체는 동기 실행이라는 한계가 있다.
+브라우저 증거는 `verify-shots/editor-ux-fixes-round2-20261004/storage/README.md`이며,
+이 수치는 호스트 저장·SQLite 재로드 지연이 아니라 렌더러 패치 준비 비용이다.
+
 정본이 "원격 Postgres 프로젝트 행"에서 "사용자가 고른 폴더의 `project.sqlite`"로 옮겨가는 중이다.
 설계는 `docs/superpowers/specs/2026-09-15-oprn-local-sqlite-store-design.md`, P1(포트 추출)은
 PR #845, P2(로컬 어댑터·Electron 셸)는 브랜치 `local-store/p2`가 main에 병합된 상태다.
