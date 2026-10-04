@@ -1,0 +1,19 @@
+{
+  "preservedFileCount": 112,
+  "changedProtectedFiles": [],
+  "sheets": [
+    {
+      "slug": "wild-boar",
+      "sha256": "9ac54f5368aee1bdf9d96f50878efc4d0bf1615e0970c77f5c0ab56d730e2a4b"
+    },
+    {
+      "slug": "straw-dokkaebi",
+      "sha256": "03e043b03cd0777dae1e41737b0b745b7bce4cf49f536aa3559030f506531a12"
+    },
+    {
+      "slug": "maiden-ghost",
+      "sha256": "1c00cd5f7f56fe8ed5bd57cb715b2ecc224c517c3084c5856e6e6083eb504fb7"
+    }
+  ],
+  "scope": "forest assets, starter maps/data, all IDs/stats/actions and other12 enemies preserved; three revised sheets match their archived sources"
+}

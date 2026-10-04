@@ -1,0 +1,241 @@
+[
+  {
+    "variant": "refined-context",
+    "missing": [],
+    "loaded": [
+      "http://127.0.0.1:18345/assets/joseon-folklore/monsters/wild-boar.png",
+      "http://127.0.0.1:18345/assets/joseon-folklore/monsters/straw-dokkaebi.png",
+      "http://127.0.0.1:18345/assets/joseon-folklore/monsters/maiden-ghost.png",
+      "http://127.0.0.1:18345/assets/joseon-folklore/monsters/wild-boar.png",
+      "http://127.0.0.1:18345/assets/joseon-folklore/monsters/straw-dokkaebi.png",
+      "http://127.0.0.1:18345/assets/joseon-folklore/monsters/maiden-ghost.png"
+    ],
+    "errors": [],
+    "beats": [
+      {
+        "id": "title",
+        "failures": []
+      },
+      {
+        "id": "village",
+        "failures": []
+      },
+      {
+        "id": "new-monsters",
+        "failures": []
+      }
+    ],
+    "battlers": [
+      {
+        "sheet": "jf-enemy-wild-boar",
+        "cell": "idle",
+        "url": "url(\"http://127.0.0.1:18345/assets/joseon-folklore/monsters/wild-boar.png\")"
+      },
+      {
+        "sheet": "jf-enemy-straw-dokkaebi",
+        "cell": "idle",
+        "url": "url(\"http://127.0.0.1:18345/assets/joseon-folklore/monsters/straw-dokkaebi.png\")"
+      },
+      {
+        "sheet": "jf-enemy-maiden-ghost",
+        "cell": "idle",
+        "url": "url(\"http://127.0.0.1:18345/assets/joseon-folklore/monsters/maiden-ghost.png\")"
+      }
+    ],
+    "defendCommands": 10,
+    "observedPoses": [
+      {
+        "sheet": "jf-enemy-wild-boar",
+        "cell": "idle",
+        "atMs": 11503
+      },
+      {
+        "sheet": "jf-enemy-straw-dokkaebi",
+        "cell": "idle",
+        "atMs": 11503
+      },
+      {
+        "sheet": "jf-enemy-maiden-ghost",
+        "cell": "idle",
+        "atMs": 11503
+      },
+      {
+        "sheet": "jf-enemy-maiden-ghost",
+        "cell": "windup",
+        "atMs": 15910
+      },
+      {
+        "sheet": "jf-enemy-maiden-ghost",
+        "cell": "move",
+        "atMs": 16169
+      },
+      {
+        "sheet": "jf-enemy-maiden-ghost",
+        "cell": "idle_c",
+        "atMs": 16444
+      },
+      {
+        "sheet": "jf-enemy-maiden-ghost",
+        "cell": "attack",
+        "atMs": 16775
+      },
+      {
+        "sheet": "jf-enemy-maiden-ghost",
+        "cell": "recover",
+        "atMs": 16889
+      },
+      {
+        "sheet": "jf-enemy-maiden-ghost",
+        "cell": "idle_b",
+        "atMs": 17100
+      },
+      {
+        "sheet": "jf-enemy-maiden-ghost",
+        "cell": "idle_a",
+        "atMs": 17525
+      },
+      {
+        "sheet": "jf-enemy-wild-boar",
+        "cell": "windup",
+        "atMs": 19479
+      },
+      {
+        "sheet": "jf-enemy-wild-boar",
+        "cell": "move",
+        "atMs": 19738
+      },
+      {
+        "sheet": "jf-enemy-wild-boar",
+        "cell": "idle_c",
+        "atMs": 19985
+      },
+      {
+        "sheet": "jf-enemy-wild-boar",
+        "cell": "attack",
+        "atMs": 20317
+      },
+      {
+        "sheet": "jf-enemy-wild-boar",
+        "cell": "recover",
+        "atMs": 20431
+      },
+      {
+        "sheet": "jf-enemy-wild-boar",
+        "cell": "idle_a",
+        "atMs": 20999
+      },
+      {
+        "sheet": "jf-enemy-straw-dokkaebi",
+        "cell": "idle_c",
+        "atMs": 23799
+      },
+      {
+        "sheet": "jf-enemy-straw-dokkaebi",
+        "cell": "move",
+        "atMs": 24057
+      },
+      {
+        "sheet": "jf-enemy-straw-dokkaebi",
+        "cell": "idle_b",
+        "atMs": 24435
+      },
+      {
+        "sheet": "jf-enemy-straw-dokkaebi",
+        "cell": "windup",
+        "atMs": 24795
+      },
+      {
+        "sheet": "jf-enemy-straw-dokkaebi",
+        "cell": "attack",
+        "atMs": 24978
+      },
+      {
+        "sheet": "jf-enemy-straw-dokkaebi",
+        "cell": "recover",
+        "atMs": 25091
+      },
+      {
+        "sheet": "jf-enemy-straw-dokkaebi",
+        "cell": "idle_a",
+        "atMs": 25945
+      },
+      {
+        "sheet": "jf-enemy-maiden-ghost",
+        "cell": "hit",
+        "atMs": 26350
+      },
+      {
+        "sheet": "jf-enemy-maiden-ghost",
+        "cell": "dead",
+        "atMs": 29733
+      },
+      {
+        "sheet": "jf-enemy-wild-boar",
+        "cell": "hit",
+        "atMs": 30897
+      },
+      {
+        "sheet": "jf-enemy-wild-boar",
+        "cell": "dead",
+        "atMs": 34421
+      },
+      {
+        "sheet": "jf-enemy-straw-dokkaebi",
+        "cell": "hit",
+        "atMs": 35560
+      },
+      {
+        "sheet": "jf-enemy-straw-dokkaebi",
+        "cell": "dead",
+        "atMs": 38335
+      }
+    ]
+  },
+  {
+    "variant": "shipped-starter",
+    "missing": [],
+    "loaded": [
+      "http://127.0.0.1:18345/assets/joseon-folklore/monsters/straw-dokkaebi.png",
+      "http://127.0.0.1:18345/assets/joseon-folklore/monsters/wild-boar.png"
+    ],
+    "errors": [],
+    "beats": [
+      {
+        "id": "title",
+        "failures": []
+      },
+      {
+        "id": "village",
+        "failures": []
+      },
+      {
+        "id": "new-monsters",
+        "failures": []
+      }
+    ],
+    "battlers": [
+      {
+        "sheet": "jf-enemy-straw-dokkaebi",
+        "cell": "idle",
+        "url": "url(\"http://127.0.0.1:18345/assets/joseon-folklore/monsters/straw-dokkaebi.png\")"
+      },
+      {
+        "sheet": "jf-enemy-wild-boar",
+        "cell": "idle",
+        "url": "url(\"http://127.0.0.1:18345/assets/joseon-folklore/monsters/wild-boar.png\")"
+      }
+    ]
+  },
+  {
+    "slug": "wild-boar",
+    "servedSha256": "9ac54f5368aee1bdf9d96f50878efc4d0bf1615e0970c77f5c0ab56d730e2a4b"
+  },
+  {
+    "slug": "straw-dokkaebi",
+    "servedSha256": "03e043b03cd0777dae1e41737b0b745b7bce4cf49f536aa3559030f506531a12"
+  },
+  {
+    "slug": "maiden-ghost",
+    "servedSha256": "1c00cd5f7f56fe8ed5bd57cb715b2ecc224c517c3084c5856e6e6083eb504fb7"
+  }
+]

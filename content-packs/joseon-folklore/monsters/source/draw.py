@@ -14,6 +14,7 @@ sys.dont_write_bytecode = True
 from organic import rat,bat,fox,tiger
 from spirits import wisp,drowned,ghoul,bamboo
 from figures import stone,bandit,bride
+from refined import boar as refined_boar, straw as refined_straw, ghost as refined_ghost
 
 ROOT = Path(__file__).resolve().parents[1]
 POSES = ['idle_a', 'idle_b', 'idle_c', 'windup', 'move', 'attack', 'recover', 'hit', 'dead']
@@ -417,9 +418,9 @@ def fallen_bronze():
     return s.image
 
 
-SPECIES = [('field-rat',64,'dash',150,rat),('wild-boar',64,'dash',190,boar),
-           ('cave-bat',64,'swoop',160,bat),('straw-dokkaebi',64,'stomp',260,straw),
-           ('lantern-wisp',64,'float',180,wisp),('maiden-ghost',64,'float',240,ghost),
+SPECIES = [('field-rat',64,'dash',150,rat),('wild-boar',64,'dash',190,refined_boar),
+           ('cave-bat',64,'swoop',160,bat),('straw-dokkaebi',64,'stomp',260,refined_straw),
+           ('lantern-wisp',64,'float',180,wisp),('maiden-ghost',64,'float',240,refined_ghost),
            ('drowned-ghost',64,'float',280,drowned),('grave-ghoul',64,'stomp',310,ghoul),
            ('fox-spirit',64,'dash',200,fox),('stone-dokkaebi',64,'stomp',340,stone),
            ('bamboo-specter',64,'shoot',220,bamboo),('masked-bandit',64,'dash',180,bandit),
@@ -459,10 +460,12 @@ def main():
         sheets.append(dict(resourceId=f'jf-enemy-{slug}',path=f'assets/joseon-folklore/monsters/{slug}.png',cell=cell,motion=motion,idleFrameMs=ms))
     (ROOT/'sheets.json').write_text(json.dumps(sheets,ensure_ascii=False,indent=2)+'\n')
     (ROOT/'review/art-manifest.json').write_text(json.dumps(dict(author='GPT 6.1 sol high monsters worker',
-        method='Original coordinate-authored Python/Pillow; no imported bitmap artwork',
+        method='Original native pixel art: literal ASCII grids for revised3, coordinate-authored Python/Pillow for remaining12; no imported bitmap artwork',
         sourceSha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
-        sourceFiles={f'source/{p}':hashlib.sha256((ROOT/'source'/p).read_bytes()).hexdigest()
-                     for p in ['draw.py','pixels.py','organic.py','spirits.py','figures.py']},
+        sourceFiles={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest()
+                     for p in sorted((ROOT/'source').rglob('*'))
+                     if p.is_file() and (p.name in ['draw.py','pixels.py','organic.py','spirits.py','figures.py','refined.py']
+                                        or 'refined-grids' in p.parts and p.suffix in ['.pxgrid','.json'])},
         poseOrder=POSES,sheets=art),ensure_ascii=False,indent=2)+'\n')
     # Full roster overview; native pixels, padded cells, no sprite resampling.
     contact=Image.new('RGB',(960,666),'#26313f');cd=ImageDraw.Draw(contact)

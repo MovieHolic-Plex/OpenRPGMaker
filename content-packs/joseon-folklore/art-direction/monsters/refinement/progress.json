@@ -1,0 +1,23 @@
+{
+  "phase": "complete-user-steering",
+  "status": "refined-candidate-awaiting-user-steering",
+  "portraits": {
+    "wild-boar": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/content-packs/joseon-folklore/art-direction/monsters/refinement/portraits/wild-boar.png",
+    "straw-dokkaebi": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/content-packs/joseon-folklore/art-direction/monsters/refinement/portraits/straw-dokkaebi.png",
+    "maiden-ghost": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/content-packs/joseon-folklore/art-direction/monsters/refinement/portraits/maiden-ghost.png"
+  },
+  "idle_comparison": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/content-packs/joseon-folklore/art-direction/monsters/refinement/review/idle-comparison.png",
+  "sprites": {
+    "wild-boar": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/content-packs/joseon-folklore/art-direction/monsters/refinement/sprites/wild-boar.png",
+    "straw-dokkaebi": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/content-packs/joseon-folklore/art-direction/monsters/refinement/sprites/straw-dokkaebi.png",
+    "maiden-ghost": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/content-packs/joseon-folklore/art-direction/monsters/refinement/sprites/maiden-ghost.png"
+  },
+  "result": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/content-packs/joseon-folklore/art-direction/monsters/refinement/result.json",
+  "pose_reviews": {
+    "wild-boar": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/content-packs/joseon-folklore/art-direction/monsters/refinement/review/wild-boar-poses.png",
+    "straw-dokkaebi": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/content-packs/joseon-folklore/art-direction/monsters/refinement/review/straw-dokkaebi-poses.png",
+    "maiden-ghost": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/content-packs/joseon-folklore/art-direction/monsters/refinement/review/maiden-ghost-poses.png"
+  },
+  "review_document": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/content-packs/joseon-folklore/art-direction/monsters/refinement/REVIEW.md",
+  "complete": true
+}

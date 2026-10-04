@@ -5,14 +5,22 @@
 
 ## 그래픽 교정 상태 (2026-10-05)
 
-사용자가 기본 프리셋의 나무·풀·몬스터 그림을 거부했다. 이전 플레이 비트 통과를 그림 합격으로
-확대하지 않는다. 앞서 수정한 Joseon pilot 나무·기와집은 별도 후보에 남아 있고 실제 프리셋은
-옛 공용 그림을 사용했다. 저작 원본과 선택/배포 상태를 함께 추적한다.
+사용자가 비교 뒤 **숲은 현재 그림 유지, 적은 새 후보 방향으로 추가 교정**을 선택했다.
+이전 플레이 비트 통과를 그림 합격으로 확대하지 않는다. 앞서 수정한 Joseon pilot 나무·기와집은
+별도 후보에 남아 있고 실제 프리셋은 공용 그림을 사용한다. 저작 원본과 선택/배포 상태를 함께 추적한다.
 
 `content-packs/joseon-folklore/art-direction/README.md`에 새 조용한 풀 칸, 보존한 수정 나무,
-새 몬스터3종과 남은 작업이 있다. 모두 시각 교정 후보이며 현재 시트·기본 프리셋·정본을
-교체하지 않았다. 후보 비교는 하네스 조립 그림이다. 몬스터는 정지 자세만 만들었다.
+새 몬스터3종과 남은 작업이 있다. 풀·나무 후보는 선택되지 않았고 현재 숲을 교체하지 않는다.
+적은 후보3종의 비례·도트 방향을 유지하며 세부 표현과9개 전투 자세를 교정했고 공용 팩에 배포했다.
+숲 후보 비교는 하네스 조립 그림이다. 다른12종·전체 그래픽의 최종 승인으로 확대하지 않는다.
 동일 배치 비교와 브라우저 근거는 `verify-shots/joseon-art-correction/`.
+
+추가 교정 원본은 `art-direction/monsters/refinement/`, 배포용 격자는
+`monsters/source/refined-grids/`, 로더는 `refined.py`다. `draw.py` 재생성 경로에도 배선해
+교정3종이 옛 도형 함수로 돌아가지 않게 했다. 기존 ID·수치·행동·나머지12종·숲 파일112개가 같다.
+SQLite 정본은 revision6으로 저장/재로드했고 문서 SHA는 revision5와 같다. builtin 그림 경로가
+공용 PNG를 소유한다. 내보낸 player.html의 실제 조우와 비교용3종 편성은
+`verify-shots/joseon-enemy-refinement/`에서 구분해 확인한다.
 
 ## 소유권과 등록
 
@@ -65,6 +73,6 @@
 
 검토 명령: `node scripts/content/inspect-joseon-folklore.mjs <프로젝트 폴더>`, `node scripts/content/probe-joseon-folklore-battles.mjs`. 후자는 저장 후 읽은 게임의 실제6/12/19레벨·2/3/4등급 장비로 보스3종의 예고/발동과 승리·확정 재료 보상을 strict/gauge 양쪽에서 검사한다. 전리품 확률이나 장시간 진행 전체의 밸런스 판정은 아니다.
 
-`npm run build:player` 후 `node scripts/content/export-joseon-folklore-game.mjs`로 재로드된 게임을 내보낸다. 런타임 시나리오는 `scripts/qa/runtime/joseon-folklore.scenario.mjs`이고 출하 player.html에 직접 연결한다. 전투 승리 화면 비트는 F 디버그 종료를 쓰며, 실제 피해/승리/보상 근거는 별도 전투 프로브다. `waitForFieldReady`가 보상·대사 종료 전에 다음 맵으로 이동하는 오류를 막는다.
+`npm run build:player` 후 `node scripts/content/export-joseon-folklore-game.mjs`로 재로드된 게임을 내보낸다. 런타임 시나리오는 `scripts/qa/runtime/joseon-folklore.scenario.mjs`이고 출하 player.html에 직접 연결한다. 전투 승리 화면 비트는 F 자동 전투를 쓰며, 실제 피해/승리/보상 근거는 별도 전투 프로브다. `waitForFieldReady`가 보상·대사 종료 전에 다음 맵으로 이동하는 오류를 막는다.
 
 환생부는 필드 전용이다. 전투 중 부활은8레벨 도사 기술 되살림을 쓴다. 저작 코드는 역할별 폴더에서 재생성할 수 있다. worker status의 ready는 파일 인계 준비를 뜻하며 사용자 시각 승인이나 정본 저장을 뜻하지 않는다. 전체 게이트/테스트 실행은 AGENTS의 세션 제한을 따른다.

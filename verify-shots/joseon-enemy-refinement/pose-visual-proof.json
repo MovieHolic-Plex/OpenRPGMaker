@@ -1,0 +1,83 @@
+{
+  "errors": [],
+  "poses": [
+    {
+      "index": 0,
+      "opaquePixels": [
+        865,
+        749,
+        855
+      ]
+    },
+    {
+      "index": 1,
+      "opaquePixels": [
+        881,
+        762,
+        859
+      ]
+    },
+    {
+      "index": 2,
+      "opaquePixels": [
+        861,
+        749,
+        856
+      ]
+    },
+    {
+      "index": 3,
+      "opaquePixels": [
+        818,
+        697,
+        770
+      ]
+    },
+    {
+      "index": 4,
+      "opaquePixels": [
+        919,
+        795,
+        809
+      ]
+    },
+    {
+      "index": 5,
+      "opaquePixels": [
+        912,
+        684,
+        827
+      ]
+    },
+    {
+      "index": 6,
+      "opaquePixels": [
+        836,
+        708,
+        825
+      ]
+    },
+    {
+      "index": 7,
+      "opaquePixels": [
+        803,
+        699,
+        819
+      ]
+    },
+    {
+      "index": 8,
+      "opaquePixels": [
+        481,
+        453,
+        367
+      ]
+    }
+  ],
+  "distinctFrames": [
+    9,
+    9,
+    9
+  ],
+  "attackPreviewPlayed": true
+}

@@ -1,13 +1,44 @@
 {
   "author": "GPT 6.1 sol high monsters worker",
-  "method": "Original coordinate-authored Python/Pillow; no imported bitmap artwork",
-  "sourceSha256": "7f87643b9eaa8722327429ccf4d36ce60b46f6efb7b118b88e7273edf628a4c1",
+  "method": "Original native pixel art: literal ASCII grids for revised3, coordinate-authored Python/Pillow for remaining12; no imported bitmap artwork",
+  "sourceSha256": "b1776915116fa7de078c1c18ac349892fae23587cd4eb5e18673ff957c776c01",
   "sourceFiles": {
-    "source/draw.py": "7f87643b9eaa8722327429ccf4d36ce60b46f6efb7b118b88e7273edf628a4c1",
-    "source/pixels.py": "b14284111c8e465392ce1d13c6f57a14eae6c90a7c07508fd778f4b7df53ac1c",
+    "source/draw.py": "b1776915116fa7de078c1c18ac349892fae23587cd4eb5e18673ff957c776c01",
+    "source/figures.py": "6695b65bf8d9c6726313a0a4d5f62c889a9f93e3078a4df23e8843c55514d52f",
     "source/organic.py": "f9c6adad6d0da089af8ea93cc5d6e2abc8a305dc7d2a306ba536fd236060be4d",
-    "source/spirits.py": "73f76ad1aba5b6bdc0520cf567da67b1b4701dbc6c500d0b80b9305167c34153",
-    "source/figures.py": "6695b65bf8d9c6726313a0a4d5f62c889a9f93e3078a4df23e8843c55514d52f"
+    "source/pixels.py": "b14284111c8e465392ce1d13c6f57a14eae6c90a7c07508fd778f4b7df53ac1c",
+    "source/refined-grids/maiden-ghost/attack.pxgrid": "d92a4bc8d1aabe01bc75f9fd416b29e6e90c73f0d96bf06f92e33abca5606cff",
+    "source/refined-grids/maiden-ghost/dead.pxgrid": "a9c3bbf7cdb8fabec6b15381bdfe6bccced3a4c071dbc3a1ab4db4099c43b00a",
+    "source/refined-grids/maiden-ghost/hit.pxgrid": "9a00436705767848884022667eeeb2979ae7ecd0b1a9b0c1b82581b3e579abd0",
+    "source/refined-grids/maiden-ghost/idle_a.pxgrid": "dbdc7030ae313f681c54944fe76ae9dcc4e80ccc219a018cbad0c7b371378fef",
+    "source/refined-grids/maiden-ghost/idle_b.pxgrid": "6fbe93015c3e73c536ceef97fd3587ae1370de15abee0d8cb822f04f23132d20",
+    "source/refined-grids/maiden-ghost/idle_c.pxgrid": "df9111ce4f58c071a71860e552b24765abd365bbbdce99783e4f90d171926360",
+    "source/refined-grids/maiden-ghost/move.pxgrid": "07f3cfccd830acb2e8080aa45cadd884367e41241dde9d3f50142b4408780db8",
+    "source/refined-grids/maiden-ghost/recover.pxgrid": "4ca691d72efd64f54c2fac27e463cac236ae18fc9d6aeeaa95e59a4286f821c6",
+    "source/refined-grids/maiden-ghost/windup.pxgrid": "507ae553190d1618fdac2dada928cb9f463af9fe1b9b0e1e25a5d1e5a432c4b9",
+    "source/refined-grids/maiden-ghost.palette.json": "ebed2c6db2db0c701a56eaa7023ad519dcf62f5f50b3c226db5db5dfbc0cd814",
+    "source/refined-grids/straw-dokkaebi/attack.pxgrid": "59a2d8949929ee0e5c6b51cf062cb9e48daad14e9315e2d055bef1367dd7c21b",
+    "source/refined-grids/straw-dokkaebi/dead.pxgrid": "c51d98493a735466a694e8128145323cd4797df21b8604d734a7fa12c07d03c8",
+    "source/refined-grids/straw-dokkaebi/hit.pxgrid": "6880fe9baaab569849256e812f6d6c25c367a8c73dff6af2c0807d530f26492d",
+    "source/refined-grids/straw-dokkaebi/idle_a.pxgrid": "5687bd98fd8e29738dbb8961efa002c322407e93a16dab5a92e86e072e9b59bc",
+    "source/refined-grids/straw-dokkaebi/idle_b.pxgrid": "03383116734d1abfc1aaeb64e74a4e65196fd46b592c16e26d6be58b13f466f4",
+    "source/refined-grids/straw-dokkaebi/idle_c.pxgrid": "a21ffe905fdba04832f01b7cdd2b17630693210ed7b76910f2e2ac64ad835d46",
+    "source/refined-grids/straw-dokkaebi/move.pxgrid": "abcd2ef5f0b3d8ac0a58037721606d29c0167b3effc5297a0e6efb99f1903b3c",
+    "source/refined-grids/straw-dokkaebi/recover.pxgrid": "720a091c007924832849efa14e1607e8d1d9fe3b2595eab3ba699e62509bbe00",
+    "source/refined-grids/straw-dokkaebi/windup.pxgrid": "e7b06284509cc28fa6e5b38e5e098f5c4259d7192ee15bb8acdae64b8360eedd",
+    "source/refined-grids/straw-dokkaebi.palette.json": "d451b292f219efe3c66180e92a6b3f8b96d41f0748d5a5e64274b6318f5f056d",
+    "source/refined-grids/wild-boar/attack.pxgrid": "33b0a27bf32fb814f6c5c169bc4b082181c3ee2fa6cc30d5b7cb945665320139",
+    "source/refined-grids/wild-boar/dead.pxgrid": "bf43330693075bd875986bb0f328256bc50f2c089c168be544e081a485a1fab0",
+    "source/refined-grids/wild-boar/hit.pxgrid": "ecf3c8b84f6e033f4544354bc0fe7a820800f7e585d4215561689bef2a0b73d9",
+    "source/refined-grids/wild-boar/idle_a.pxgrid": "83e1731f07181c182b7224d624aaf279b36700aa267a84a5488986e4794ea049",
+    "source/refined-grids/wild-boar/idle_b.pxgrid": "e49066fb3411d14d6d14415625b3d740ba450bfe29369aca8c1721f52bcc33d0",
+    "source/refined-grids/wild-boar/idle_c.pxgrid": "25bf604e60f3433a73fc5a34ffdad3d875ca0a32e5adb0bb7b8a62d0ea436d06",
+    "source/refined-grids/wild-boar/move.pxgrid": "227ee4a75d9603156665e653259207d4869de32f857d9c69d340fe728f08f23f",
+    "source/refined-grids/wild-boar/recover.pxgrid": "9ff8f2e9d52e6a8800daa164807a051066ab56f6231b06c7f9c06ccadae9b07b",
+    "source/refined-grids/wild-boar/windup.pxgrid": "b36286b1a4cd1f69f4d582a36fd5f7b142ec17e3baabe5a0c8f19ffaece485b3",
+    "source/refined-grids/wild-boar.palette.json": "af22898a859c3cbbd6bbb64f78ea7543204dc132f2afffb48341a7df87f191b4",
+    "source/refined.py": "73beb2dd0e73e55ccd40745d10d176c21a9a33da4f4ff089c4526a08bf6a0489",
+    "source/spirits.py": "73f76ad1aba5b6bdc0520cf567da67b1b4701dbc6c500d0b80b9305167c34153"
   },
   "poseOrder": [
     "idle_a",
@@ -130,9 +161,9 @@
     },
     {
       "slug": "wild-boar",
-      "source": "source/draw.py",
+      "source": "source/refined.py",
       "sheet": "assets/wild-boar.png",
-      "sha256": "3c8d5ccecfb04391c94ee4942a0aa0398b763610ac1519c383b749a67ac51db9",
+      "sha256": "9ac54f5368aee1bdf9d96f50878efc4d0bf1615e0970c77f5c0ab56d730e2a4b",
       "size": [
         192,
         192
@@ -146,92 +177,92 @@
         {
           "pose": "idle_a",
           "bbox": [
-            4,
-            17,
-            58,
-            60
+            8,
+            22,
+            50,
+            54
           ],
-          "sha256": "82bfd2c9f330177d0bf32b70c0987b14e0aeacf155c575461cda41d61bd780f7"
+          "sha256": "1d163ee54dbdd05d722355b27e68b4870df8d35caff444e1e0c631114562e870"
         },
         {
           "pose": "idle_b",
           "bbox": [
-            4,
-            16,
-            58,
-            60
+            8,
+            21,
+            50,
+            54
           ],
-          "sha256": "5eb531f4fab27ee846ec8eb4fd66a1a461fe39a2bf35a096228a8af8df0e2f32"
+          "sha256": "2b697b2dd9ebdb643406962df2737567069817b609acec6a2141eed68c88bd50"
         },
         {
           "pose": "idle_c",
           "bbox": [
-            4,
-            18,
-            58,
-            60
+            8,
+            22,
+            50,
+            54
           ],
-          "sha256": "747a4484c5b83aba81f739aa3758a4a2aee384fd3245f17f7199780108b06295"
+          "sha256": "4c14a69174f92d1252055b4468645c3e6062d50aa341d737335d822f82ea23ab"
         },
         {
           "pose": "windup",
           "bbox": [
-            2,
-            19,
-            55,
-            60
+            9,
+            26,
+            50,
+            56
           ],
-          "sha256": "9fc2aaf85918425ab1fd157c786b594766e44c8f94835bd2af2f35b9edf21dc5"
+          "sha256": "331e1d136c760ff67469d35e02ac0f18c3c4dd76a66151e7780b8d72c3edff58"
         },
         {
           "pose": "move",
           "bbox": [
-            4,
-            15,
-            58,
-            60
+            8,
+            22,
+            51,
+            56
           ],
-          "sha256": "9d8d833179c7798d3420fc6b0ccd6ff3226ba990f6cef978784759cebd27c5a2"
+          "sha256": "2765c6735ab92e3400aa31a965862bcafd5a7c61d417742a76cb10adbaf2dd95"
         },
         {
           "pose": "attack",
           "bbox": [
-            6,
-            20,
-            61,
-            60
+            9,
+            25,
+            53,
+            57
           ],
-          "sha256": "c77933d2a7908e096a5ec8ee9b37d99c2f272bb4500e072d52cf315917ef8054"
+          "sha256": "1c446772b804a2595745cda54339a3f23ba7a2d105a85965743e4139b6feb170"
         },
         {
           "pose": "recover",
           "bbox": [
-            5,
-            19,
-            58,
-            61
+            8,
+            24,
+            50,
+            55
           ],
-          "sha256": "dbd0f27e2005a9875f81efa9bff9e86a55f3b38ab66bcb962aa2d0a9b8311285"
+          "sha256": "d5ba6ec3a55e82456565dc31f18e18eefe6dbcfdcb35337ef0fc1765177be931"
         },
         {
           "pose": "hit",
           "bbox": [
-            2,
-            16,
-            54,
-            60
+            9,
+            24,
+            48,
+            57
           ],
-          "sha256": "dbc7a03411a8e11088224ae0c18a8df6b2b28fe39c35c2b873cf5a08f5631034"
+          "sha256": "97bade88d63ae7e9d779ed66ad31a684b966bfc48d09958739a39422a1091956"
         },
         {
           "pose": "dead",
           "bbox": [
-            4,
-            24,
-            58,
-            60
+            10,
+            43,
+            53,
+            58
           ],
-          "sha256": "172863d89c0e71c27d2ea11b453d2c014c2dd8c2678e690ef2416c7a42324f77"
+          "sha256": "a4688f30013827c75c9bdd4e730da35b09ec0304c7aa4ae5c168c8730e9e3746"
         }
       ]
     },
@@ -344,14 +375,14 @@
     },
     {
       "slug": "straw-dokkaebi",
-      "source": "source/draw.py",
+      "source": "source/refined.py",
       "sheet": "assets/straw-dokkaebi.png",
-      "sha256": "1bf68df723711efc571c59b8f6768ad29a1a6dff7781201d4644ab723ac36884",
+      "sha256": "03e043b03cd0777dae1e41737b0b745b7bce4cf49f536aa3559030f506531a12",
       "size": [
         192,
         192
       ],
-      "colors": 15,
+      "colors": 17,
       "alphaValues": [
         0,
         255
@@ -360,92 +391,92 @@
         {
           "pose": "idle_a",
           "bbox": [
-            8,
-            5,
-            52,
-            60
+            12,
+            14,
+            53,
+            55
           ],
-          "sha256": "fa8a9b826ef8199ddd03ba5fd56a017ed019ad8e1940bf832ea285ba24b633f0"
+          "sha256": "3e7c1329b181a64cc6da2e732dffea4926f249ebdee120e0f8b8c8b58d1cc939"
         },
         {
           "pose": "idle_b",
           "bbox": [
-            8,
-            4,
-            51,
-            60
+            12,
+            13,
+            53,
+            55
           ],
-          "sha256": "537935bac02796aed85dfa6ba95ea64c83ea4fd92c4b509a3a9c954a37f7fe1b"
+          "sha256": "4f6d9e664b9bde1cf2b456763a28c8663d5a03b686a3cf30d14fd5b1388edbdd"
         },
         {
           "pose": "idle_c",
           "bbox": [
-            8,
-            6,
-            53,
-            60
+            12,
+            14,
+            52,
+            55
           ],
-          "sha256": "b91275b85d980953a24a84ae735f8b63dbdc5043709a67fdf08e6c9bfff25f92"
+          "sha256": "b29009c415ca2f0aab8b69e3fd06d92d2fbaf734834d7c36a26fc3b712954bb4"
         },
         {
           "pose": "windup",
           "bbox": [
-            8,
-            6,
-            49,
-            60
+            12,
+            4,
+            42,
+            55
           ],
-          "sha256": "be26f5d202662c59525b38c75deb08fe62b914b82b4dad96f39b33c0f6c7ab3e"
+          "sha256": "d30944ae83b947001a72c21949bdc07983ee45652fb354580f8af6007afc8857"
         },
         {
           "pose": "move",
           "bbox": [
-            5,
-            3,
-            53,
-            60
+            13,
+            13,
+            54,
+            58
           ],
-          "sha256": "6ec272624a0e0b827cee46edfabf2e7fe5e6b1f7c5360d97d283cced5c46dce5"
+          "sha256": "e7b636fb644319d1bf70f11a82792a77c35bf0fccb061005304f35790e7ac5b6"
         },
         {
           "pose": "attack",
           "bbox": [
-            8,
-            7,
-            59,
-            61
+            15,
+            15,
+            57,
+            56
           ],
-          "sha256": "dc2e460b88f531116fe3c9cd25b9f06a2ed9dc34cab97a9cca78320e9b5b204b"
+          "sha256": "2bb811a3b228de8b2f969d3fafc6be5d41dc6b8e3a89364d1781b49aa53272d3"
         },
         {
           "pose": "recover",
           "bbox": [
-            14,
-            7,
-            51,
-            60
+            12,
+            16,
+            49,
+            57
           ],
-          "sha256": "4503e6bbd5d63c8ce95101cb657a4c480823bdda168155588996a61eeb6d2033"
+          "sha256": "b56a8e303529a5d6cabcea606ea26b9aa7aca0a783abd2a7d66221526acc5b6a"
         },
         {
           "pose": "hit",
           "bbox": [
-            8,
-            4,
+            10,
+            15,
             51,
-            60
+            56
           ],
-          "sha256": "92a19206f06678f19ddc21d8e09fb1bd0b5097e762d94310b9f414606e16ca4e"
+          "sha256": "06ff99c6598b8ae2a1b1292a94a2eba5ba8083ffa40d5365ffee4392af2bea7a"
         },
         {
           "pose": "dead",
           "bbox": [
-            6,
-            36,
-            59,
-            61
+            14,
+            32,
+            57,
+            60
           ],
-          "sha256": "828b3ee5585cd4e5915533619c12dfebe137121f00cb40d100fe0b4f3273ea30"
+          "sha256": "61992fe04885d7119168b50c0ec5d342ad007da9cd625055dc77a7c43436a536"
         }
       ]
     },
@@ -558,14 +589,14 @@
     },
     {
       "slug": "maiden-ghost",
-      "source": "source/draw.py",
+      "source": "source/refined.py",
       "sheet": "assets/maiden-ghost.png",
-      "sha256": "3060cd8188ad41908a7515504c6df5887aeb7757211e39880cdbfed6888b90e0",
+      "sha256": "1c00cd5f7f56fe8ed5bd57cb715b2ecc224c517c3084c5856e6e6083eb504fb7",
       "size": [
         192,
         192
       ],
-      "colors": 16,
+      "colors": 14,
       "alphaValues": [
         0,
         255
@@ -574,92 +605,92 @@
         {
           "pose": "idle_a",
           "bbox": [
-            16,
-            7,
-            49,
-            60
+            17,
+            12,
+            47,
+            57
           ],
-          "sha256": "ce05cc4ba6d8e249cd8ddd196db595245868e95250ac5da80161f85917b5462f"
+          "sha256": "d9ce4b83f529e38ccc1c237c7358524f7e4a3e8baebff54636f84ccc4a0c6510"
         },
         {
           "pose": "idle_b",
           "bbox": [
             16,
-            6,
-            49,
-            60
+            12,
+            48,
+            57
           ],
-          "sha256": "d42006e08e99705179f183b6e8e0cd6e27b917c558da7f91d271c72fc5d78183"
+          "sha256": "d029c34175e193dde8ff33be8a6ec3484144ae9c2a29e6d9dddea8606acb450e"
         },
         {
           "pose": "idle_c",
           "bbox": [
-            16,
-            8,
-            47,
-            60
+            17,
+            12,
+            48,
+            57
           ],
-          "sha256": "8984fe53e3e72b59bf5ce1562abe7862b9ad434e0ecd535a64b5df384789c1bb"
+          "sha256": "081a100061b48735af7111f6365b23bb0e41ac42dd4de9cf2cbf57429f3cb5f4"
         },
         {
           "pose": "windup",
           "bbox": [
-            14,
-            5,
-            44,
-            60
+            19,
+            13,
+            49,
+            57
           ],
-          "sha256": "e19cbf0a960b01f84a2dc49f95da47291074c9958b193d5284b492dcf217f649"
+          "sha256": "99eb64d6a1a848324feca7922fd71734247a6cd8c52ab0dbdd59fb053af2a8d0"
         },
         {
           "pose": "move",
           "bbox": [
-            8,
-            5,
-            45,
-            60
+            13,
+            11,
+            50,
+            55
           ],
-          "sha256": "0c2aad07ee83060b3c568195504d773dc5d09df6ae8045566e624c99f71c8ee4"
+          "sha256": "ee796363c4fb79e3190c97474e7c846b257019d5cfcd7005311e1231b449d869"
         },
         {
           "pose": "attack",
           "bbox": [
-            11,
-            7,
-            60,
-            60
+            19,
+            12,
+            55,
+            57
           ],
-          "sha256": "2a29ad14aaea4bad4156c27d9ffb620e7c7aa17c819d0c4369a4b373cb2d86db"
+          "sha256": "c5cd251fa481a3dc924d4a43ebe89a717153bf7967e705343b591f7da1096a20"
         },
         {
           "pose": "recover",
           "bbox": [
-            17,
-            8,
-            47,
-            60
+            19,
+            13,
+            49,
+            58
           ],
-          "sha256": "6c3a9f233c751d9aab6898c31b475378ecb4e07baa3d2215feed5e842f08fd92"
+          "sha256": "a8aec3eb4e232e8dfc0c4672d79d1d64830098afe8cea83512bfb4f19cff6ce1"
         },
         {
           "pose": "hit",
           "bbox": [
-            16,
-            9,
+            15,
+            14,
             47,
-            60
+            58
           ],
-          "sha256": "0266aad042e7a36be9c0cd52a31cd770e27432bd5085c6518ec35a144b600b77"
+          "sha256": "845a54913a86b760c6185329bbb985ca911e729683b562ae1ee510d4e070a837"
         },
         {
           "pose": "dead",
           "bbox": [
-            9,
-            40,
-            52,
-            60
+            22,
+            33,
+            44,
+            57
           ],
-          "sha256": "cc8a8301069b3984da92cad6aaa021460260b0e48d930d2ca7e2c4fbf50c626d"
+          "sha256": "21316df154437fcd3ed96156d6be5b9d9ff5c5eb58aae7fb7edea14dbd185bf1"
         }
       ]
     },

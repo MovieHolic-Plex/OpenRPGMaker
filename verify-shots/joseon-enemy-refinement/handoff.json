@@ -1,0 +1,17 @@
+{
+  "artistModel": "gpt-6.1-sol",
+  "reasoningEffort": "high",
+  "changedEnemies": [
+    "wild-boar",
+    "straw-dokkaebi",
+    "maiden-ghost"
+  ],
+  "userSelection": "Keep current forest; refine candidate enemies",
+  "sourceArchive": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/content-packs/joseon-folklore/art-direction/monsters/refinement",
+  "frameCount": 27,
+  "sheets": {
+    "wild-boar": "9ac54f5368aee1bdf9d96f50878efc4d0bf1615e0970c77f5c0ab56d730e2a4b",
+    "straw-dokkaebi": "03e043b03cd0777dae1e41737b0b745b7bce4cf49f536aa3559030f506531a12",
+    "maiden-ghost": "1c00cd5f7f56fe8ed5bd57cb715b2ecc224c517c3084c5856e6e6083eb504fb7"
+  }
+}

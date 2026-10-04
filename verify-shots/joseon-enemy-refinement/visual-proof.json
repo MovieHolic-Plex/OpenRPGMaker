@@ -1,0 +1,91 @@
+{
+  "errors": [],
+  "widths": [
+    {
+      "width": 736,
+      "states": [
+        {
+          "tab": "교정 전투",
+          "images": [
+            {
+              "loaded": true,
+              "width": 1100
+            }
+          ],
+          "overflow": false
+        },
+        {
+          "tab": "수정 전",
+          "images": [
+            {
+              "loaded": true,
+              "width": 1100
+            }
+          ],
+          "overflow": false
+        },
+        {
+          "tab": "자세",
+          "images": [
+            {
+              "loaded": true,
+              "width": 192
+            },
+            {
+              "loaded": true,
+              "width": 192
+            },
+            {
+              "loaded": true,
+              "width": 192
+            }
+          ],
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "width": 320,
+      "states": [
+        {
+          "tab": "교정 전투",
+          "images": [
+            {
+              "loaded": true,
+              "width": 1100
+            }
+          ],
+          "overflow": false
+        },
+        {
+          "tab": "수정 전",
+          "images": [
+            {
+              "loaded": true,
+              "width": 1100
+            }
+          ],
+          "overflow": false
+        },
+        {
+          "tab": "자세",
+          "images": [
+            {
+              "loaded": true,
+              "width": 192
+            },
+            {
+              "loaded": true,
+              "width": 192
+            },
+            {
+              "loaded": true,
+              "width": 192
+            }
+          ],
+          "overflow": false
+        }
+      ]
+    }
+  ]
+}
