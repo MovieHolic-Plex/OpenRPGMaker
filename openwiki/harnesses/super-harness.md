@@ -184,6 +184,8 @@ ports는 side/offset/width/kind/level/connectsTo를 갖는다. 양쪽 포트의 
 `{backend, model, effort}`를 기록한다. 감독이 이 설정만 실행 요청에 넣으며, 준비 작업자의 modelOverride는 무시한다.
 2026-10-04 주차장 파일럿은 Sonnet 공급자의 4계정 한도 소진으로 사용자가 Codex(gpt-6.1-sol medium) 전환을 승인했다.
 이 변경은 해당 개념에만 적용하며 현대 하네스의 기본 Sonnet 설정을 바꾸지 않는다.
+준비 프롬프트에도 이 승인값을 전달한다. 준비 코드가 기본 Sonnet만 허용하여 감독의 승인된 Codex 실행을
+거부하지 않도록 한다. 실행 요청의 모델 값은 계속 감독의 저장된 설정만 사용한다.
 
 ### 칩 선택 화면과 조립 예시 (2026-10-04)
 
