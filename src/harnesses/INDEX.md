@@ -7,7 +7,7 @@
 |---|---|---|---|---|
 | `monster-collect-species` | 몬스터 수집 종 스프라이트 | 장르 `monster-collect` 전용 | `harness-data/monster-collect-species/seed.json` | `openwiki/harnesses/monster-collect-species.md` |
 | `modern-chipset` | 현대 칩셋 도트 (modern4) | 장르 무관 | `harness-data/modern-chipset/seed.json` | `openwiki/harnesses/modern-chipset.md` |
-| `interior-props` | 손 도트 실내 기물 (16px) | 장르 무관 | `src/assets/handInteriorSpec.json` | `openwiki/harnesses/interior-props.md` |
+| `interior-props` | 슈퍼하네싱 · 실내 기물 (16px) | 장르 무관 | `src/assets/handInteriorSpec.json` | `openwiki/harnesses/interior-props.md` |
 | `jp-city` | 일본 도시 칩셋 도트 (jp_city · modern3) | 장르 무관 | `harness-data/jp-city/seed.json` | `openwiki/harnesses/jp-city.md` |
 | `joseon-baram` | 조선 칩셋 도트 (joseon_baram · 바람의나라풍) | 장르 무관 | `harness-data/joseon-baram/seed.json` | `openwiki/harnesses/joseon-baram.md` |
 | `super-harness` | 슈퍼하네스 (개념 카드 자동 공급) | 장르 무관 | `harness-data/super-harness/seed.json` | `openwiki/harnesses/super-harness.md` |
@@ -57,7 +57,7 @@ modern4 팔레트 현대 거리 칩셋의 기물·건물·타일을 3/4 시점�
 
 **들어오는 길:** CLI 있음 · 에디터 화면 아직 없음 · 조수 도구 아직 없음
 
-## interior-props — 손 도트 실내 기물 (16px)
+## interior-props — 슈퍼하네싱 · 실내 기물 (16px)
 
 실내 칩셋(interior-chipset, 48칸 폭)의 가구·소품을 3/4 시점(꼭대기 윗면 3행 이상 + 남쪽 면)으로 다시 찍거나 새로 정의한다. 후보 5장을 다른 방향으로 그리고 기계 검사 → 자기 점검 → 독립 검수(꼭대기 면 규칙) → 최대 3번 다시 그린 뒤 사람이 고른다.
 
@@ -155,18 +155,19 @@ modern4 팔레트 현대 거리 칩셋의 기물·건물·타일을 3/4 시점�
 
 ## charset-actor — RM2000 캐릭터 GIF 공방
 
-GPT 6.1 sol high가 자유롭게 도트를 만들고 사람이 걷는 GIF를 보며 남기기/폐기한다. 결손만 자동 차단하며 남긴 캐릭터만 다운로드한다.
+GPT 6.1 sol high가 정지·걷기 12프레임을 전부 직접 저작하고 사람이 GIF를 보며 남기기/폐기한다. 결손만 자동 차단하며 남긴 캐릭터만 다운로드한다.
 
 **이럴 때 쓴다:**
 - 에디터용 24×32 캐릭터를 변형·대량 저작하거나 머리 잘림·투명 결손을 검사하고 CharSet 팩을 만들 때
 
 **단계** (`npm run harness -- charset-actor <단계>`):
 - `ingest` — 원본 입력: 원본 칩을 저장하고 실제 캐릭터 칸과 수정 강도를 정한다.
-- `produce` — 자유 대량 저작: --count 100 [--reference 원본.png] [--prompt 방향]으로 자유 저작을 시작한다. 작업은 터미널과 독립적으로 계속된다.
+- `produce` — 자유 대량 저작: --count 100 [--reference 원본.png] [--prompt 방향]으로 GPT가 12프레임을 전부 직접 저작한다. 작업은 터미널과 독립적으로 계속된다.
 - `bulk` — 묶음 저작: manifest를 읽어 GPT high 원샷 저작과 독립 검수를 실행한다. --detach로 드라이버를 유지한다.
 - `check` — 픽셀 검사: 12프레임 구조·색 키·투명 구멍·머리 결손·걸음 동작을 검사한다.
 - `views` — 그림 굽기: 현재 격자 해시에 결부한 PNG·GIF·필름 띠를 만든다.
 - `audit` — 투명 결손 QA: --run RUN으로 모든 12프레임을 체커·흰색·검정 배경에서 펼치고 결손 좌표·출하 PNG 재읽기를 기록한다. --refresh-previews로 동일 픽셀의 진단 GIF를 추가한다.
+- `walk-qa` — 이전 걷기 전파 전후 QA: --run RUN --out 저장소밖경로로 이전 전파 실행의 격자를 보존하고 걷기 출처·PNG/GIF 전후를 재읽는다. 모델 12프레임 저작은 audit을 쓴다.
 - `verify` — 계약 확인: 임시 저장 대상에서 결손·GIF·사람의 선택 해시·패킹과 이전 검수 계약을 확인한다.
 - `export` — 선택 팩: 자유 저작은 사람이 남긴 캐릭터만 ZIP으로 묶는다. 기존 검수 실행은 이전 계약을 유지한다.
 - `status` — 현황: 저작 진행과 검수 판정을 표시한다.

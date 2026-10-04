@@ -21,6 +21,8 @@ import { mergeMapBundles } from "../../src/ai/piAgent/mapBundle.ts";
 import type { PiProjectCheckpoint } from "../../src/ai/piAgent/protocol.ts";
 import { createWriterTool } from "./piWriterTool.ts";
 import { completeProvider } from "./ohMyPiPiAiRuntime.ts";
+import { createPiPresentationTool, PI_PRESENTATION_GENERATORS } from './piPresentationTools';
+import { presentationArtIds, presentationArtImages } from '../../src/editor/tools/presentationTools';
 // Bun 전용 Pi 에이전트 런타임. `@oh-my-pi/pi-agent-core` 루프에 레지스트리 툴을 붙여 프로젝트
 // 사본 위에서 작업을 끝까지 돈다. 결과 프로젝트는 `done` 이벤트로 돌려주고, 적용(커밋 게이트·
 // undo·저장)은 호출자(브라우저 패널 또는 CLI)가 맡는다.
@@ -251,6 +253,18 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     readOnly: request.readOnly || options.readOnlyTools, toolNames: options.toolNames,
   });
   const shapeFor = (name: string): PiToolShape | undefined => {
+    if (PI_PRESENTATION_GENERATORS.some(generator => generator === name)) {
+      if (request.readOnly || options.readOnlyTools) return undefined;
+      const definition = allowedDefinitions.find(tool => tool.name === name);
+      if (!definition) return undefined;
+      return wrapTool(createPiPresentationTool(definition, ctx, request, { ...options, onCall: recordCall,
+        apply: async (toolName, args, signal) => {
+          const write = resolvePiToolShape(ctx, toolName, { toolNames: [toolName], referenceGate, modernTilesetPolicy, ...scopeGuard });
+          if (!write) throw new Error(`그림 등록/연결 도구가 없습니다: ${toolName}`);
+          return write.execute(`${name}:apply`, args, signal);
+        },
+      }));
+    }
     // 웹 검색은 레지스트리 셰이프가 순수 핸드오프라 네트워크가 없다 — 발견 경로도 실제 실행으로 보낸다.
     if (name === WEB_SEARCH_TOOL) {
       return allowedDefinitions.some(tool => tool.name === WEB_SEARCH_TOOL)
@@ -359,7 +373,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       throw error;
     }
   };
-  const wrapTool = (tool: PiToolShape): PiToolShape => !incremental && !contract && tool.name !== "show_map_region" && tool.name !== "inspect_interior_layout" ? tool : ({ ...tool,
+  const wrapTool = (tool: PiToolShape): PiToolShape => !incremental && !contract && tool.name !== "show_map_region" && tool.name !== "inspect_interior_layout" && tool.name !== 'show_title_opening' ? tool : ({ ...tool,
     async execute(id, params, signal) {
       // The core owns ordering: consecutive reads overlap; writes hold an exclusive
       // barrier through publication. A second queue here would serialize reads too.
@@ -370,6 +384,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         else if (tool.name !== "author_npc_cast" || !receipt) throw new Error("마을 계약: author_village로 시공하고 주민 대사만 보충하세요. 다른 쓰기는 별도 요청으로 진행합니다.");
       }
       const heldContract = !!contract;
+      if (contract && PI_PRESENTATION_GENERATORS.some(name => name === tool.name)) throw new Error('마을 계약 실행에서 타이틀/오프닝을 변경할 수 없습니다.');
       let result: Awaited<ReturnType<PiToolShape["execute"]>>;
       try {
         result = await tool.execute(id, params, signal);
@@ -392,6 +407,19 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         options.onEvent?.({ type: "execution_status", name: "map.image.delivered", ok: true, summary: "현재 초안 이미지를 모델 도구 응답에 포함했습니다.", data: { toolCallId: id, base64Length: png.length,
           ...Object.fromEntries(['mapId', 'x', 'y', 'w', 'h'].map(key => [key, region[key]])) } });
       }
+      if (tool.name === 'show_title_opening') {
+        const ids = presentationArtImages(ctx.project).map(image => image.resourceId);
+        // Count the image parts actually returned, not metadata or an authored success claim.
+        if (ids.length !== result.content.filter(part => part.type === 'image').length) throw new Error('타이틀/오프닝 그림 전달이 일치하지 않습니다.');
+        for (const resourceId of presentationArtIds(ctx.project).filter(resourceId => !ids.includes(resourceId))) {
+          if (!options.renderToolImage) throw new Error('타이틀/오프닝 그림을 실제 자산 저장소에서 읽을 경로가 없습니다.');
+          const png = await options.renderToolImage(cloneProjectSharingSharedDictionaries(ctx.project), tool.name, { resourceId }, signal ?? options.signal);
+          result.content.push({ type: 'text', text: resourceId }, { type: 'image', mimeType: 'image/png', data: png });
+          ids.push(resourceId);
+        }
+        emit({ type: 'execution_status', name: 'presentation.image.delivered', ok: true,
+          summary: '연결된 타이틀·오프닝 원화를 모델 도구 응답에 포함했습니다.', data: { toolCallId: id, resourceIds: ids } });
+      }
       if (tool.concurrency === "exclusive" && request.applyMode !== "step") await checkpoint(tool.name, tool.name, signal);
       return result;
     },
@@ -410,9 +438,14 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   // 레지스트리 쪽 web_search 는 순수 핸드오프라 네트워크가 없다 — 아래 실제 실행 셰이프가 대신한다.
   // 둘을 함께 선언하면 같은 이름이 두 번 나가고 어느 쪽이 도는지가 순서에 달린다.
   tools.push(
-    ...registryTools.filter(tool => tool.name !== WEB_SEARCH_TOOL).map(wrapTool),
+    ...registryTools.filter(tool => tool.name !== WEB_SEARCH_TOOL && !PI_PRESENTATION_GENERATORS.some(name => name === tool.name)).map(wrapTool),
     ...(options.extraTools ?? []),
   );
+  for (const name of PI_PRESENTATION_GENERATORS) {
+    if (!registryTools.some(tool => tool.name === name)) continue;
+    const shape = shapeFor(name);
+    if (shape) declare(shape);
+  }
   if (allowedDefinitions.some(tool => tool.name === WEB_SEARCH_TOOL)) {
     // Codex 자격이 없어도 선언한다 — 툴이 실패 이유를 말하는 편이 "없는 툴" 보다 정직하다.
     declare(wrapTool(createWebSearchTool({ codexApiKey: options.codexApiKey, onCall: recordCall })));

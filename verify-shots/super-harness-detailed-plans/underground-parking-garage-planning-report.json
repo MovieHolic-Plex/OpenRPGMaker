@@ -1,0 +1,120 @@
+{
+  "ok": true,
+  "fingerprint": "74a76db1c2d56eedcd812fd5d1cde0998d68112b8b552077133167cad4886d6a",
+  "problems": [],
+  "variants": [
+    {
+      "id": "modern-b1-parking",
+      "overview": {
+        "width": 16,
+        "height": 19,
+        "cellScale": 4
+      },
+      "details": [
+        {
+          "id": "north",
+          "origin": [
+            0,
+            0
+          ],
+          "width": 64,
+          "height": 36,
+          "ports": [
+            {
+              "id": "entry-ramp-to-outside",
+              "side": "north",
+              "offset": 28,
+              "width": 4,
+              "kind": "vehicle",
+              "level": -1,
+              "connectsTo": "outside"
+            },
+            {
+              "id": "exit-ramp-to-outside",
+              "side": "north",
+              "offset": 36,
+              "width": 4,
+              "kind": "vehicle",
+              "level": -1,
+              "connectsTo": "outside"
+            },
+            {
+              "id": "vehicle-to-parking",
+              "side": "south",
+              "offset": 28,
+              "width": 8,
+              "kind": "vehicle",
+              "level": -1,
+              "connectsTo": "south/vehicle-from-north"
+            },
+            {
+              "id": "walk-west",
+              "side": "south",
+              "offset": 16,
+              "width": 4,
+              "kind": "walk",
+              "level": -1,
+              "connectsTo": "south/walk-west"
+            },
+            {
+              "id": "walk-east",
+              "side": "south",
+              "offset": 44,
+              "width": 4,
+              "kind": "walk",
+              "level": -1,
+              "connectsTo": "south/walk-east"
+            }
+          ]
+        },
+        {
+          "id": "south",
+          "origin": [
+            0,
+            36
+          ],
+          "width": 64,
+          "height": 40,
+          "ports": [
+            {
+              "id": "vehicle-from-north",
+              "side": "north",
+              "offset": 28,
+              "width": 8,
+              "kind": "vehicle",
+              "level": -1,
+              "connectsTo": "north/vehicle-to-parking"
+            },
+            {
+              "id": "walk-west",
+              "side": "north",
+              "offset": 16,
+              "width": 4,
+              "kind": "walk",
+              "level": -1,
+              "connectsTo": "north/walk-west"
+            },
+            {
+              "id": "walk-east",
+              "side": "north",
+              "offset": 44,
+              "width": 4,
+              "kind": "walk",
+              "level": -1,
+              "connectsTo": "north/walk-east"
+            },
+            {
+              "id": "stair-to-outside",
+              "side": "west",
+              "offset": 4,
+              "width": 4,
+              "kind": "walk",
+              "level": -1,
+              "connectsTo": "outside"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

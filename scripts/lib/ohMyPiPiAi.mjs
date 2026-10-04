@@ -210,6 +210,13 @@ export async function createOhMyPiAdapters() {
           providerApiKeys[selected.provider] = await resolveRequestApiKey(selected.provider);
         }
       }
+      // Resolve the image slot independently. Missing credentials must fail the image tool,
+      // not prevent unrelated read/authoring turns from starting.
+      const imageProvider = body.imageProvider || 'google-antigravity';
+      if (!(imageProvider in providerApiKeys)) {
+        try { providerApiKeys[imageProvider] = await resolveRequestApiKey(imageProvider); }
+        catch { providerApiKeys[imageProvider] = undefined; }
+      }
       // 웹 검색은 조수 제공자와 무관하게 Codex 백엔드가 한다 — Antigravity 로 턴을 돌려도 검색은 ChatGPT 자격으로 나간다.
       // 자격이 없으면 undefined 로 두고 툴이 이유를 말하게 한다(여기서 던지면 미로그인 사용자의 모든 턴이 검색 때문에 죽는다).
       let codexApiKey;

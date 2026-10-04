@@ -65,6 +65,8 @@ def verify_walk(run, out):
             report['originals'].append(f'{sheet}:{slot}')
     for w in candidates:
         meta = json.loads((w / 'meta.json').read_text())
+        if meta.get('animationMode') == H.FRAME_AUTHOR_MODE:
+            raise ValueError('모델이 직접 저작한 12프레임은 audit으로 검사하세요. 이전 전파 비교를 적용하지 않습니다.')
         if H._alive(meta.get('pid')) or not (w / 'out.chr.txt').is_file():
             raise ValueError(f'저작 중인 후보를 QA로 확정하지 않습니다: {w.name}')
         raw = (w / 'out.chr.txt').read_bytes()

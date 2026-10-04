@@ -1,0 +1,60 @@
+{
+  "base": "http://127.0.0.1:18435",
+  "root": "/home/main/.codex/worktrees/0a57/rpg-zzu/output/qa/first-presentation/project",
+  "started": "2026-10-04T05:04:02.602Z",
+  "requests": [],
+  "errors": [],
+  "questions": [
+    {
+      "question": "무엇이 이상하다는 걸 알게 되나요?",
+      "options": [
+        "사라진 사람과 남겨진 물건",
+        "기록과 현실의 모순",
+        "열려서는 안 되는 장소"
+      ]
+    },
+    {
+      "question": "진실은 어떻게 알아가나요?",
+      "options": [
+        "장소와 물건을 자세히 조사",
+        "사람의 말을 듣고 비교",
+        "증거를 맞춰 가설을 확인"
+      ]
+    },
+    {
+      "question": "어떤 긴장감을 원하나요?",
+      "options": [
+        "기묘하지만 아름답게",
+        "조용하고 팽팽하게",
+        "위협이 있는 긴장으로"
+      ]
+    },
+    {
+      "question": "사건은 어떻게 풀어가나요?",
+      "options": [
+        "한 사건을 끝까지 해결",
+        "여러 장소를 오가며 조사",
+        "누구를 믿을지 선택"
+      ]
+    },
+    {
+      "question": "첫 번째 추리는 어디까지 해볼까요?",
+      "options": [
+        "첫 이상 현상과 단서 하나",
+        "단서 둘과 첫 추론",
+        "짧은 사건과 결말 하나"
+      ]
+    }
+  ],
+  "stage": "automatic-generation",
+  "initialConversations": 0,
+  "initialBrowserRecordDatabases": [
+    "oprn-ai-records",
+    "oprn-shared-content",
+    "oprn-terrain-library"
+  ],
+  "initialBrowserConversations": [],
+  "confirmedAt": "2026-10-04T05:05:33.146Z",
+  "failure": "page.waitForURL: Navigation failed because page crashed!\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n============================================================",
+  "generationPrerequisitePassed": false
+}

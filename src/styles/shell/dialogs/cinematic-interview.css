@@ -1,4 +1,11 @@
 @layer shell {
+  .cinematic-interview-backdrop.is-embedded { position: relative; inset: auto; z-index: auto; display: block; background: transparent; }
+  .is-embedded .cinematic-interview { height: calc(100dvh - 100px); min-height: 590px; border: 0; box-shadow: none; }
+  .ci-extras { margin: 16px 0; }
+  .ci-extras > summary { color: var(--cinema-paper); cursor: pointer; min-height: 44px; padding-block: 12px; font-size: 12px; }
+  .ci-backdrop::after { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .07; background: linear-gradient(120deg, transparent 28%, var(--cinema-accent) 29%, transparent 33%, transparent 52%, var(--cinema-paper) 53%, transparent 57%); animation: ci-ambient-light 14s ease-in-out infinite alternate; }
+  .cinematic-interview.is-still .ci-backdrop::after { animation: none; opacity: 0; }
+  @keyframes ci-ambient-light { from { opacity: .03; } to { opacity: .11; } }
   .cinematic-interview-backdrop { position: fixed; inset: 0; z-index: calc(var(--z-app-modal, 2600) + 2); padding: 0; background: color-mix(in srgb, var(--cinema-night) 92.2%, transparent); display: grid; place-items: center; }
   .cinematic-interview { position: relative; isolation: isolate; width: 100%; height: 100dvh; overflow: hidden; border: 1px solid color-mix(in srgb, var(--cinema-paper) 18.8%, transparent); border-radius: 0; color: var(--cinema-paper); background: var(--cinema-night); box-shadow: 0 25px 100px color-mix(in srgb, var(--cinema-night) 60.0%, transparent); font-family: inherit; word-break: keep-all; }
   .ci-backdrop, .ci-backdrop > img, .ci-backdrop > video, .ci-vignette { position: absolute; inset: 0; width: 100%; height: 100%; }
@@ -73,5 +80,6 @@
   }
   @media (prefers-reduced-motion: reduce) {
     .ci-backdrop > img { transition: none; transform: none; }
+    .ci-backdrop::after { animation: none; opacity: 0; }
   }
 }

@@ -32,6 +32,7 @@ This is not the in-app user manual. It is the pre-edit context layer for agents.
    - Editor validation: `openwiki/editor-validation.md`
    - Editor genre-pack authoring contract: `openwiki/editor-genre-packs.md`
    - Interior room harness: `openwiki/editor-interior-room-harness.md`
+   - 슈퍼하네싱 기물 파생(방향·상태·모션·크기, 사람 선택, 공용 자동 게시): `openwiki/harnesses/interior-prop-derivations.md` → `openwiki/harnesses/interior-prop-derivations-operations.md`. 기존 공간 실행기와의 연결 범위: `openwiki/harnesses/super-harness-integration.md`.
    - 캐릭터 GIF 공방(GPT 자유 저작·결손 검사·사람의 남김/폐기·선택 팩): `openwiki/charset-actor-harness.md`
    - Editor index: `openwiki/editor-workflows.md` (slim TOC linking to the above)
    - 연결 던전 생성 (방 그래프·복합 절벽·맥락 소품): `openwiki/connected-dungeon-generation.md`

@@ -1,5 +1,8 @@
 /* Cinematic home owns its presentation; project creation and team forms retain their existing layout. */
 @layer start-lobby {
+  .start-app.is-first-world.is-interview-start .start-main { padding: 0; gap: 0; justify-content: flex-start; }
+  .start-interview-host { position: relative; width: 100%; min-height: calc(100dvh - 100px); background: var(--cinema-night); }
+  .start-interview-loading { margin: 0; padding: 32px; color: var(--cinema-paper); font-size: 28px; }
   .start-app { display: flex; flex-direction: column; }
   .start-rail {
     position: relative;

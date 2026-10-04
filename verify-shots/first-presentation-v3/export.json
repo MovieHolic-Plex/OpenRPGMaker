@@ -1,0 +1,14 @@
+{
+  "projectId": "f25d1f04-88f9-475b-92ee-95a891286d33",
+  "revision": 26,
+  "generationMode": "automatic first build",
+  "projectUrl": "http://127.0.0.1:18435/index.html?hostProject=ed85bb3b-e221-4955-8fd6-e0afdc2ce590",
+  "started": "2026-10-04T06:05:51.696Z",
+  "errors": [],
+  "networkFailures": [],
+  "exportStarted": "2026-10-04T06:06:18.354Z",
+  "path": "/home/main/.codex/worktrees/0a57/rpg-zzu/output/qa/first-presentation-v3-merged-caption/game-web.zip",
+  "downloadFailure": null,
+  "seconds": 50.842,
+  "passed": true
+}

@@ -38,19 +38,21 @@ def claude_bin():
     return shutil.which('claude') or os.path.expanduser('~/.local/bin/claude')
 
 
-def draw(items, n=N_DEFAULT, note='', base='', start_pool=True):
+def draw(items, n=N_DEFAULT, note='', base='', start_pool=True, slot=''):
     import brief
     from common import objects_by_id
     from common import spec_top_lint
     by = objects_by_id(); out = []
     for item in items:
         if item not in by: raise SystemExit(f'모르는 기물: {item!r}')
-    errs = [e for item in items for e in spec_top_lint(by[item])]   # 명세가 옆모습을 허락하면 판을 열지 않는다(2026-10-02 기관차)
+    errs = [e for item in items if not by[item].get('set') for e in spec_top_lint(by[item])]   # 명세가 옆모습을 허락하면 판을 열지 않는다(2026-10-02 기관차). 파생 묶음은 칸마다 원본 명세를 따른다
     if errs: raise SystemExit('명세 검사 불합격 — 설명을 고친 뒤 다시:\n' + '\n'.join(errs))
     for item in items:
-        dirs = brief.directions(item, base)
+        dirs = brief.directions(item, base, slot)
         rid = store.new_round(item, n, dirs, note=note, base=base, model=MODEL, effort=EFFORT, root=ROOT)
-        brief.make(rid, item, note=note, base=base)
+        bd = brief.make(rid, item, note=note, base=base, slot=slot)
+        if slot:   # 묶음에서 칸 하나만 다시 — 다른 칸은 출발 후보 그대로여야 한다(derive.lock_check)
+            open(os.path.join(bd, 'lock.json'), 'w', encoding='utf-8').write(json.dumps({'base': base, 'slot': slot}, ensure_ascii=False))
         out.append(rid)
         print(f'h{rid}: {item} — 후보 {n}장 대기열에', flush=True)
     if start_pool: ensure_pool()
@@ -73,7 +75,14 @@ def pool_alive():
 def ensure_pool():
     if pool_alive(): return
     os.makedirs(LOGS, exist_ok=True)
-    subprocess.Popen([sys.executable, os.path.abspath(__file__), 'pool'], cwd=ROOT, start_new_session=True,
+    cmd = [sys.executable, os.path.abspath(__file__), 'pool']
+    # 고르는 서버(systemd 서비스) 안에서 띄우면 서버를 다시 켤 때 일꾼까지 같이 죽는다(2026-10-03) → 되면 따로 된 user 서비스로
+    if shutil.which('systemd-run') and os.environ.get('XDG_RUNTIME_DIR'):
+        r = subprocess.run(['systemd-run', '--user', '--collect', '--quiet', f'--unit=prop-harness-pool-{int(time.time())}',
+                            f'--working-directory={ROOT}', '-p', f'StandardOutput=append:{os.path.join(LOGS, "pool.log")}',
+                            '-p', f'StandardError=append:{os.path.join(LOGS, "pool.log")}'] + cmd, capture_output=True)
+        if r.returncode == 0: return
+    subprocess.Popen(cmd, cwd=ROOT, start_new_session=True,
                      stdout=open(os.path.join(LOGS, 'pool.log'), 'a'), stderr=subprocess.STDOUT, stdin=subprocess.DEVNULL)
 
 
@@ -206,7 +215,8 @@ def _review_prompt(r):
            '{CAND}': f"{_folder(r, absolute=True)}/{_out(r)}.pxg", '{ATTEMPT}': str(r.get('attempt') or 1), '{MAX}': str(MAX_ATTEMPTS),
            '{LETTER}': r['letter'], '{DIRECTION}': r['direction'], '{PACK}': pack, '{PREV}': prev,
            '{FAMILY}': ', '.join(f'`{p}`' for p in fam) or '(없음)', '{ANCHORS}': ', '.join(f'`{p}`' for p in anc) or '(없음)',
-           '{NEWMODE}': NEW_REVIEW if brief.is_new(r['item']) else '', '{TOPRULE}': top_rule_text(o) or '해당 없음(벽면 걸이·바닥 무늬).'}
+           '{NEWMODE}': (__import__('derive').review_text(o) or NEW_REVIEW) if brief.is_new(r['item']) else '', '{TOPRULE}': ('파생 묶음 — 칸마다 **원본 칸과 같은 시점·같은 윗면 두께**가 기준이다(원본 칸보다 윗면이 눈에 띄게 얇거나 옆모습이면 `FRONT`). 원본 칸 자체의 행 수는 따지지 않는다.'
+                           if o.get('set') else top_rule_text(o) or '해당 없음(벽면 걸이·바닥 무늬).')}
     for k, v in rep.items(): t = t.replace(k, v)
     return t, pack
 
@@ -358,6 +368,11 @@ def _finish(r, code):
         hard = j.get('hard', []); ok = 0 if hard or not j.get('ok') else 1
     except (OSError, ValueError):
         hard, ok = [(ck.stdout + ck.stderr)[-400:]], 0
+    if ok and os.path.exists(base + '.png'):   # 파생 묶음: 원본 칸·고치지 않는 칸은 화소 그대로(derive.lock_check)
+        import derive
+        from common import objects_by_id
+        lk = derive.lock_check(objects_by_id().get(r['item']) or {}, base + '.png', r.get('brief'))
+        if lk: hard, ok = hard + lk, 0
     store.update_run(r['id'], ok=ok, error='; '.join(hard)[:500], review='')
     if not ok:
         if _again(r, dict(stage='hard', attempt=att, hard=hard)): return

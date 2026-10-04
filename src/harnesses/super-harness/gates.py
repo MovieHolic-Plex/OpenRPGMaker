@@ -66,9 +66,9 @@ PLAN_VERSION = 1
 PLAN_CHECKS = ('identity', 'use', 'routes', 'boundaries', 'scale', 'requirements')
 
 
-def _planning_report(folder, approved=True):
+def _planning_report(folder, approved=True, document=None, detail=False):
     folder = Path(folder)
-    plan = read(folder / 'planning.json', {})
+    plan = document if document is not None else read(folder / 'planning.json', {})
     issues = []
     variants = plan.get('variants') or []
     if plan.get('version') != PLAN_VERSION or plan.get('concept') != folder.name or not variants:
@@ -136,6 +136,10 @@ def _planning_report(folder, approved=True):
         if not routes or any(not r.get('name') or not r.get('purpose') or len(r.get('via', [])) < 2 or
                              not set(r['via']) <= symbols | (set(''.join(rows)) & set('EX')) for r in routes):
             issues.append(f'{vid}: 범례와 연결된 사용 동선이 없음')
+    if not detail:
+        import planning_details
+        for v in variants:
+            issues += [f'{v.get("id")}: {error}' for error in planning_details.validate(folder, v)]
     fp = fingerprint({'version': PLAN_VERSION, 'plan': plan})
     if approved and not issues:
         for label in ('A', 'B'):
@@ -151,13 +155,26 @@ def _planning_report(folder, approved=True):
                     check = checks.get(key, {})
                     if check.get('verdict') != 'PASS' or not isinstance(check.get('evidence'), str) or not check['evidence'].strip():
                         issues.append(f'기획 {label}/{vid}: {key} 검수 근거 없음 또는 실패')
+                source = next(v for v in variants if v['id'] == vid)
+                if source.get('details'):
+                    detail_reviews = {d['id']: d for d in checked.get(vid, {}).get('details', [])}
+                    if set(detail_reviews) != {d['id'] for d in source['details']}:
+                        issues.append(f'기획 {label}/{vid}: 상세 도면 검수 누락')
+                    for did, dr in detail_reviews.items():
+                        for key in PLAN_CHECKS:
+                            item = dr.get('checks', {}).get(key, {})
+                            if item.get('verdict') != 'PASS' or not item.get('evidence'):
+                                issues.append(f'기획 {label}/{vid}/{did}: {key} 상세 검수 부족')
+                    connection = checks.get('connections', {})
+                    if connection.get('verdict') != 'PASS' or not connection.get('evidence'):
+                        issues.append(f'기획 {label}/{vid}: 구역 연결 검수 부족')
     return {'ok': not issues, 'problems': issues, 'fingerprint': fp, 'variants': variants}
 
 
 def planning_report(folder, approved=True):
     try:
         return _planning_report(folder, approved)
-    except (OSError, ValueError, TypeError, AttributeError, KeyError) as error:
+    except (OSError, ValueError, TypeError, AttributeError, KeyError, IndexError) as error:
         return {'ok': False, 'problems': [f'기획 근거 형식 오류: {error}'], 'fingerprint': '', 'variants': []}
 
 
@@ -174,6 +191,11 @@ def _planning_markdown(folder):
         lines += [f'- **{z["symbol"]} — {z.get("name", "")}**: {z.get("purpose", "")}' for z in v.get('zones', [])] + ['']
         lines += [f'- **{r.get("name", "")}**: {" → ".join(r.get("via", []))} — {r.get("purpose", "")}' for r in v.get('routes', [])] + ['']
         lines += ['**필수 재료**', ''] + [f'- {r.get("what", "")}' for r in v.get('requirements', [])] + ['']
+    for v in plan.get('variants', []):
+        for d in v.get('details', []):
+            lines += [f'### 세부 도면 — {d.get("title") or d["id"]}', '', f'**위치** 전체 지도 타일 좌표 {d.get("origin")} · 한 칸 = 1타일', '', '```text', *d['diagram'], '```', '']
+            lines += [f'- **{z["symbol"]} — {z.get("name", "")}**: {z.get("purpose", "")}' for z in d.get('zones', [])] + ['']
+            lines += [f'- 연결 **{p["id"]}**: {p["side"]} · 폭 {p["width"]}타일 · 높이 {p["level"]} → {p["connectsTo"]}' for p in d.get('ports', [])] + ['']
     for label in ('A', 'B'):
         r = read(Path(folder) / 'planning-reviews' / f'{label}.json', {})
         current = r.get('fingerprint') == report['fingerprint']
@@ -276,7 +298,7 @@ def _material_report(folder, approved=True):
 def material_report(folder, approved=True):
     try:
         return _material_report(folder, approved)
-    except (OSError, ValueError, TypeError, AttributeError, KeyError) as error:
+    except (OSError, ValueError, TypeError, AttributeError, KeyError, IndexError) as error:
         return {'ok': False, 'problems': [f'재료 근거 형식 오류: {error}'],
                 'missing': [], 'fingerprint': '', 'requirements': [], 'images': [], 'variants': []}
 
@@ -371,7 +393,7 @@ def _visual_report(folder, reviews):
 def visual_report(folder, reviews):
     try:
         return _visual_report(folder, reviews)
-    except (OSError, ValueError, TypeError, AttributeError, KeyError) as error:
+    except (OSError, ValueError, TypeError, AttributeError, KeyError, IndexError) as error:
         return {'ok': False, 'problems': [f'시각 검수 근거 형식 오류: {error}']}
 
 

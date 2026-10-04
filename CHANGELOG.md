@@ -5,6 +5,48 @@
 
 <!-- releases -->
 
+## 0.118.0 — 2026-10-04
+
+### 기능
+
+- 큰 공간 상세도 검수와 기획·칩 후보 이미지 표시 (#2057) (`be3cac9`)
+- unify prop and space harness entry as super harnessing (`922f645`)
+- **harness** — surface automatic derivation proposals before ordering (`58d2a68`)
+- **harness** — automatically publish confirmed props to shared SQLite (`ea97bf3`)
+- **harness** — bake selected prop motions with preserved timing and derivation metadata (`0f3dd8c`)
+- **harness** — 소품 파생 — 방향 4·상태·움직임 묶음과 큰 판 (`524cd42`)
+- **interior-surfaces** — SF 벽 다시 설계(갈비 기둥·짧은 빛 홈) + 엄격 검수 3판 — 4종 더 탈락, 7종 손질 (`4f3acc5`)
+- **interior-surfaces** — 적대 검수 두 판 — 9종 탈락(CUT), 디더 전면 제거, 나머지 손질 (`903f144`)
+- **interior-surfaces** — 바닥·벽 후보 다시 그림 — 모서리 명암·나뭇결·몰딩·부드러운 얼룩, 고르기 방에 가구 (`31e2e52`)
+- **interior-surfaces** — 현대·동양·SF 바닥 10종·벽 7종 후보(A/B) + 고르기 화면 (`d58b5b1`)
+
+### 수정
+
+- start new-game interview directly in launcher (`db31c00`)
+- make first creation author its title and illustrated opening (#2046) (`775832d`)
+- let GPT author all twelve character frames (`80eebcc`)
+- keep new-game planning in launcher until confirmation (`89a710d`)
+- show current spatial plan summary in harness gallery (`f0b8beb`)
+- avoid repeated UI work during right-button region drag (`d3f9c36`)
+- keep planning reviewers owned by super harness scheduler (`ee9fad2`)
+- **harness** — 파생 묶음 화면 — 움직임 미리보기 크기, 나란히 보기 숨김 (`6b24b4b`)
+- **harness** — 파생 묶음 검수는 원본 칸 기준 — 절대 윗면 행 수 대신 (`245944b`)
+- **harness** — 고르기 화면 버그·편의 — 되돌리기, 실패 복구, 기물별 메모, 폴링 재시도 (`52a25ad`)
+- **harness** — 그림 로딩 — 왼쪽 목록 썸네일 300장이 후보 그림 앞에 줄을 섰다 (`f7c731c`)
+- **harness** — 메모의 「2x2」 크기 요청이 실제 캔버스·칸 수·검사까지 바꾼다 (`6aad69b`)
+- **harness** — 상태 25초 → 3ms(지문·gzip 스냅숏·derived.sqlite) · 다시 뽑기는 바로 고를 차례에서 빠진다 (`7a76dfb`)
+
+### 문서
+
+- document prop derivation contracts operations recovery and agent handoff (`ffcdb8b`)
+- record model-authored walking frame evidence (`c7ad291`)
+- verify installed terrain rendering with real body pixels (`a7198dd`)
+- clarify terrain fixture storage and refresh wiki index (`a119a4d`)
+
+### 기타
+
+- **harness** — 첫 파생 주문 — 의자 S 방향, 왕실 상자 열림, 용암 화로 움직임, 안락의자 2×2 (`ac962e3`)
+
 ## 0.117.0 — 2026-10-04
 
 ### 기능

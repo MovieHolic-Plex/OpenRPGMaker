@@ -117,6 +117,11 @@ export function registerAiBootIntentTarget(next: AiBootIntentTarget | null): voi
   target = next;
 }
 
+/** null means the composer is not mounted; never replace a human draft during preparation. */
+export function peekAiAssistantDraft(): string | null {
+  return target?.getDraft?.() ?? null;
+}
+
 export function wasWelcomeIntentAppliedThisBoot(): boolean {
   return welcomeIntentAppliedThisBoot;
 }
