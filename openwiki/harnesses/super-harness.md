@@ -289,3 +289,27 @@ PASS 분기는 컨트롤러 확인용 합성 fixture이며 실제 그림의 합�
 - 사용자가 게이트 수정 후 재제작을 요청하여 주차장의 누적 그림 수정 상한을2로 올렸다. 320×256 실패 표본을
   재검수한 뒤, 256×208 도면은 spaceUse FAIL로 그림 실행 전에 차단되었다. 수정한 240×192 도면은5축 PASS 후
   native 제작에 진입했다. 이는 완성 그림의 합격을 뜻하지 않으며 최종8축 이미지 검수와 사람 선택은 별도다.
+
+### 반복 실패 재설계·시점 표본·전후 비교 v3 (2026-10-04)
+
+사용자 승인으로 자동 수정의 기본값과 운영 주차장 상한은 **누적 5회**다. 기존 2회는 초기화하지 않는다.
+`max_art_revisions` 설정과 개념 brief의 `maxRevisions` 중 작은 값이 적용된다. 기본값 변경은 기존 저장값을
+덮지 않으므로 운영 설정도 별도로 갱신한다. 상한을 높인 뒤 `queue_repair`는 limit-reached 상태의 같은
+실패를 한 번만 재개할 수 있다. 이미 queued인 같은 실패를 다시 소비하지 않는다.
+
+- `art_repair.py`: 연속 세대에서 같은 검수 축이 실패하면 spec으로 되돌린다. 같은 축이라는 것은 같은 물리적
+  결함의 증명이 아니라 명세 재검토가 필요하다는 보수적인 신호다. native/context의 keep 지시도 재검토 대상이다.
+- 도면 v3에는 phase(calibration/scene), repairPlan(route/changes/supersededConstraints), camera가 필요하다.
+  camera는 실제 기준 PNG 해시, 바닥 투영/높이/광원, 물체별 footprint/topFace/verticalFace/contact/occlusion을 담는다.
+  alpha bbox 높이를 바닥 폭으로 대체하지 않는다. 도면 6축·최종 9축에 projection을 독립 추가했다.
+- 반복 style/projection 실패 또는 명시한 requireCalibration은 최대 4종의 작은 시점 표본부터 만든다.
+  주차장에서는 기준차+낮은 멈춤턱+벽 모서리다. 기존 5×26 턱 상자/방향은 고정 제약에서 해제한다.
+  native 제작과 독립 검수까지 통과한 표본을 해시로 보존하고 같은 시점으로 공간을 다시 조립한다.
+  표본은 선택 불가다. 재조립도 누적 수정 한도 안에서 실행하며 상한에 닿으면 표본 승인만 보존하고 중단한다.
+- 최종 검수는 archivedEvidence의 실제 이전 그림도 열고 모든 실패 항목을 comparisons로 대조한다.
+  resolved/unresolved/invalid-prior-claim과 전후 좌표·근거가 필요하다. unresolved가 있으면 PASS를 거부한다.
+  calibration만 공간 범위 밖 문제를 deferred로 남길 수 있고 projection/style/scale은 보류하지 않는다.
+  보류한 결함은 다음 재조립에도 유지하며 scene에는 deferred를 허용하지 않는다.
+- 도색선은 장애물이 아니며, 통행 판단에는 실제 바닥/장애물 범위를 사용한다. 단색 비율만 낮추려 노이즈를 추가하지 않는다.
+- 형식·해시 검사는 모델의 시각 판단이 정확하다는 보증이 아니다. 기준 시점·실패 전후 이미지 비교와 사람 선택은 별도다.
+- 전역 paused=1을 유지하고 주차장 하나만 감독 실행한다. 모델은 기존 사용자 승인 Codex gpt-6.1-sol medium이다.

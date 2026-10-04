@@ -4,9 +4,9 @@ from pathlib import Path
 import hashlib
 import json
 
-LAYOUT_CHECKS = ('proportions', 'spaceUse', 'circulation', 'identity', 'composition')
-SCENE_CHECKS = ('identity', 'scale', 'attachments', 'circulation', 'style', 'spaceUse', 'composition', 'specification')
-VERSION = 2
+LAYOUT_CHECKS = ('proportions', 'spaceUse', 'circulation', 'identity', 'composition', 'projection')
+SCENE_CHECKS = ('identity', 'scale', 'attachments', 'circulation', 'style', 'spaceUse', 'composition', 'specification', 'projection')
+VERSION = 3
 
 
 def digest(path):
@@ -36,6 +36,28 @@ def build_input(root, request):
             raise ValueError('모든 도면 칸에 실제 용도와 근거가 필요합니다: ' + repr(symbol))
     sources = layout['sources']
     paths = {str(verified(root, r).relative_to(Path(root).resolve())) for r in sources}
+    if layout.get('phase') not in ('calibration', 'scene'):
+        raise ValueError('시점 표본(calibration) 또는 공간(scene) 단계 필요')
+    camera = layout.get('camera', {})
+    for key in ('groundPlane', 'heightAxis', 'lighting'):
+        if len(str(camera.get(key, '')).strip()) < 20:
+            raise ValueError('바닥·높이·광원 투영 계약 누락: ' + key)
+    references = camera.get('references', [])
+    if not references: raise ValueError('실제 시점 기준 이미지 필요')
+    for ref in references:
+        path = verified(root, ref)
+        if str(path.relative_to(Path(root).resolve())) not in paths:
+            raise ValueError('시점 기준 그림을 도면 sources에도 묶어야 합니다.')
+        from PIL import Image
+        with Image.open(path) as image: image.verify()
+    objects = camera.get('objects', [])
+    if len(objects) < 2: raise ValueError('기준 기물과 접합 기물의 투영 명세 필요')
+    for obj in objects:
+        for key in ('id', 'footprint', 'topFace', 'verticalFace', 'contact', 'occlusion'):
+            if not isinstance(obj.get(key), str) or len(obj[key].strip()) < (1 if key == 'id' else 12):
+                raise ValueError('물체의 바닥 면적·윗면·수직면·접지·가림 명세 누락: ' + key)
+    if layout['phase'] == 'calibration' and len(objects) > 4:
+        raise ValueError('시점 표본은 기준 기물·저상 기물·벽 모서리 등 최대 4종만 사용합니다.')
     data = Path(request['data'])
     required = {str(data/name) for name in ('seed.json', 'harness.sqlite', 'harness.sqlite-wal') if (Path(root)/data/name).is_file()}
     if not required: raise ValueError('준비된 시드 또는 native 후보 저장소가 필요합니다.')
@@ -46,7 +68,7 @@ def build_input(root, request):
         required.add(str(round_dir/'state.json'))
         for name in ('brief.md', 'parking-brief.md', 'parking-contract.json'):
             if (Path(root)/round_dir/'brief'/name).is_file(): required.add(str(round_dir/'brief'/name))
-        for name in ('harness.py', 'check.py', 'parking_small.py', 'prompt-parking-small.md'):
+        for name in ('harness.py', 'check.py', 'parking_small.py', 'prompt-parking-small.md', 'review-parking-small.md'):
             p = Path('src/harnesses/modern-chipset')/name
             if (Path(root)/p).is_file(): required.add(str(p))
     if not required <= paths:

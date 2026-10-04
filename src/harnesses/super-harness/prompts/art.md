@@ -84,3 +84,19 @@ execution.layout은 아래 JSON 파일의 {path,sha256}이다. 실제로 준비�
 }
 legend.role 허용: structure, parking, circulation, clearance, equipment, outside. purpose는 8자 이상 구체 근거.
 감독은 이 입력으로 독립 도면 검수를 먼저 실행한다. PASS 전 native 생성은 금지. 반려되면 같은 그림 차수에서 도면만 수정한다.
+
+## 반복 실패 재설계·3/4 시점 표본 관문 v3
+현재 art-feedback.json의 policy.route/phase를 반드시 따른다. 이전 fixes의 keep는 재검토 가능한 모델 제안이다.
+route=spec이면 잘못된 고정 치수·방향·알파 bbox 가정을 폐기하고 새 형태/접지/투영 명세로 교체한다.
+route=assembly이면 배치부터, asset이면 해당 그림부터 고친다. route=integration이면 art-calibration.json의 합격 시점 표본을 작은 공간에 재조립한다.
+layout에 아래 필드를 추가한다:
+- phase: policy.phase와 동일한 calibration 또는 scene (피드백 없으면 scene).
+- repairPlan: {route: policy.route, changes: 구체 변경 30자 이상, supersededConstraints: 교체한 기존 고정 조건과 근거 30자 이상}. spec 경로에는 반드시 교체 근거가 있어야 한다.
+- camera: {references:[{path,sha256}], groundPlane: 바닥 두 축과 깊이 근거 20자 이상, heightAxis: 높이와 바닥 폭을 분리한 근거 20자 이상, lighting: 광원·면 밝기 근거 20자 이상, objects:[{id,footprint,topFace,verticalFace,contact,occlusion}]}.
+  objects는 최소 2종이며 id 이외 설명은 각각 12자 이상이다. footprint는 지상 점유 면적/근거와 불확실성, verticalFace는 높이를 표현하는 면이다. 자동차 전체 alpha bbox를 지상 폭으로 쓰지 않는다.
+  references는 실제 공용 기준 PNG의 상대 경로/해시다. 차량 외에도 환경 구조의 기준 이미지를 확인한다. sources에도 같은 refs를 넣는다.
+- phase=calibration은 자동차 1대+낮은 멈춤턱 1개+벽 모서리 등 최대 4종으로 최소 시점 표본만 만든다. 전체 주차장/2면/큰 차로 요구는 이 단계에서 보류한다. 해당 native 명세·검사·검수 프롬프트에도 범위를 반영한다.
+  기존 5×26 턱 상자/세로 길이/전경 한줄 규칙을 고정하지 않는다. 윗면·낮은 전면·바닥 접지와 바퀴 가림을 기준으로 재설계한다. 새 모델/직접 그림 금지, 기존 native 하네스로 제작한다.
+- phase=scene에 art-calibration.json이 있으면 camera의 references/groundPlane/heightAxis/lighting를 승인값 그대로 유지하고, 승인 sources를 도면 sources에 포함한다. 물체 위치는 조립 위치에 맞게 바꾼다.
+- scene 재조립은 간결한 주차장 범위로 하고 멈춤턱·벽/등 부착·마감의 이전 실패를 전부 교정한다. 그림의 큰 단색 비율을 줄이려고 임의 노이즈/소품을 넣지 않는다.
+독립 검수는 이전 실패 그림과 1배/3배 결과를 비교한다. 표본이 합격해도 사람 선택은 공간 재조립 검수 후다.

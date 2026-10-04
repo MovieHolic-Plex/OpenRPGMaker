@@ -148,6 +148,10 @@ def view(data, cid):
     context_path = Path(data) / 'concepts' / cid / 'art-context-review.json'
     context_reviews = read(context_path).get('groups', {}) if context_path.is_file() else {}
     saved = selections(cid)
+    feedback_file = Path(data) / 'concepts' / cid / 'art-feedback.json'
+    feedback = read(feedback_file) if feedback_file.is_file() else {}
+    layout_file = Path(data) / 'concepts' / cid / 'art-layout-input.json'
+    calibration = layout_file.is_file() and read(layout_file).get('layout', {}).get('phase') == 'calibration'
     count = 0
     output = []
     for group in groups:
@@ -176,8 +180,10 @@ def view(data, cid):
                 for r in candidate['sources'] + candidate['images'] + [candidate['sheet']]: verified(root, r)
             except (ValueError, OSError, KeyError): valid = False
             item['ready'] = valid and candidate['passed'] and context_ok
-            item.update(fingerprint=token, eligible=valid and candidate['passed'] and context_ok and c['stage'] == 'art-review', stale=not valid)
-            item['selected'] = valid and candidate['passed'] and context_ok and saved.get(group['id'], {}).get('fingerprint') == token
+            item.update(fingerprint=token, eligible=not calibration and valid and candidate['passed'] and context_ok and c['stage'] == 'art-review', stale=not valid)
+            item['selected'] = not calibration and valid and candidate['passed'] and context_ok and saved.get(group['id'], {}).get('fingerprint') == token
+            if calibration:
+                item['caution'] = '시점 확인용 표본입니다. 표본 합격 뒤 공간을 재조립하여 검수해야 선택할 수 있습니다.'
             if item['selected']: count += 1
             def image(r):
                 return {'path': str((root / r['path']).relative_to(data)), 'v': r['sha256'], 'label': r.get('label', '')}
@@ -187,6 +193,8 @@ def view(data, cid):
         g['staleSelection'] = group['id'] in saved and not any(i['selected'] for i in g['candidates'])
         output.append(g)
     return {'id': cid, 'title': c['title'], 'stage': c['stage'], 'paused': store.setting('paused') == '1',
+            'maxRevisions': feedback.get('limits', {}).get('maxRevisions', int(store.setting('max_art_revisions'))),
+            'repairPolicy': feedback.get('policy', {}),
             'revision': c.get('art_revision', 0), 'status': c['status'], 'note': c.get('note', ''),
             'blocked': any(not any(i['ready'] or i['selected'] for i in g['candidates']) for g in output),
             'groups': output, 'selectedCount': count, 'total': len(groups), 'complete': bool(groups) and count == len(groups)}

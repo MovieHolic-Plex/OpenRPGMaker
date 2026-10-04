@@ -17,4 +17,10 @@
 손상된 부분을 조금 고치는 것으로 완료 선언하지 않는다. 이전 후보가 더 큰 구조 문제를 보이면 그 문제도 기록한다.
 한 축 FAIL이면 전체 FAIL. 수정은 asset/assembly/spec로 구분하고 구체 target/problem/change/keep을 기록한다.
 출력:
-{"gateVersion":2,"fingerprint":"입력 fingerprint","verdict":"PASS 또는 FAIL","checks":{"proportions":{"verdict":"PASS 또는 FAIL","evidence":"관찰"},"spaceUse":{"verdict":"PASS 또는 FAIL","evidence":"관찰"},"circulation":{"verdict":"PASS 또는 FAIL","evidence":"관찰"},"identity":{"verdict":"PASS 또는 FAIL","evidence":"관찰"},"composition":{"verdict":"PASS 또는 FAIL","evidence":"관찰"}},"reasons":[],"fixes":[]}
+{"gateVersion":3,"fingerprint":"입력 fingerprint","verdict":"PASS 또는 FAIL","checks":{"projection":{"verdict":"PASS 또는 FAIL","evidence":"바닥과 높이·접지·가림 검토"},"proportions":{"verdict":"PASS 또는 FAIL","evidence":"관찰"},"spaceUse":{"verdict":"PASS 또는 FAIL","evidence":"관찰"},"circulation":{"verdict":"PASS 또는 FAIL","evidence":"관찰"},"identity":{"verdict":"PASS 또는 FAIL","evidence":"관찰"},"composition":{"verdict":"PASS 또는 FAIL","evidence":"관찰"}},"reasons":[],"fixes":[]}
+
+- projection: layout.camera.references의 실제 이미지를 열어 groundPlane/heightAxis/lighting와 물체별 footprint/topFace/verticalFace/contact/occlusion을 대조한다. 윗면이 띠가 아닌 면인가? 세로 화면 길이를 물체 높이로 읽게 만드는 모순이 있는가? 차의 알파 bbox 높이를 지상 폭으로 취급했으면 FAIL.
+layout.repairPlan이 피드백 policy의 단계로 되돌아갔는지 본다. 반복 실패에 기존 치수/방향을 그대로 유지한 채 명암만 바꾸면 FAIL.
+phase=calibration이면 최대 4종(기준차+낮은 멈춤턱+벽 모서리)의 작은 시점 표본이다. 전체 주차장/두 주차면/완성 출입 동선은 요구하지 않는다.
+표본 범위의 접지·면 구분·기준 대비 관계를 먼저 확정하고 scene은 그 뒤 별도로 검수한다.
+통행은 도색선이 아닌 실제 장애물/걷는 바닥으로 판단한다. 도색선 경계 하나만 보고 좁다고 반려하지 않는다.
