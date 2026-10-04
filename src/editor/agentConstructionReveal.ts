@@ -52,6 +52,12 @@ const PENDING_TTL_MS = 120_000;
 
 const pending = new Map<string, { readonly log: ConstructionLog; readonly at: number }>();
 
+/** Background work must not leave replay material for a later foreground checkpoint. */
+export function discardConstructionLogs(mapId?: MapId): void {
+  if (mapId) pending.delete(mapId);
+  else pending.clear();
+}
+
 /** 체크포인트에 실려 온 시공 기록을 맡긴다 — 곧 이어지는 적용(focusAcceptedAgentChanges)이 꺼내 쓴다. */
 export function offerConstructionLogs(logs: readonly ConstructionLog[] | undefined): void {
   const now = Date.now();

@@ -4,6 +4,7 @@
 import { listAudioResources } from "@/assets/audioResourceCatalog";
 import type { AudioDescriptionSource, AudioResourceProject } from "@/assets/audioResourceCatalog";
 import { applyCharsetLabelOverrides, CHARSET_SEMANTICS } from "@/assets/charsetSemantics";
+import { sharedCharacterSemantics } from '@/project/sharedCharacters';
 import { charsetFrameIndex, EASYRPG_BACKDROP_ASSETS } from "@/assets/easyrpgRtp";
 import { listMonsterResources, type MonsterResourceProject } from "@/assets/monsterResourceCatalog";
 import { SCARLOXY_BACKDROP_ASSETS } from "@/assets/scarloxyPack";
@@ -226,13 +227,13 @@ function candidatesForKind(kind: ResourceSearchKind, options: ResourceSearchOpti
     case "tile":
       return tileCandidates(options.tileset);
     case "charset":
-      return applyCharsetLabelOverrides(CHARSET_SEMANTICS, options.charsetLabels).map((entry): ResourceCandidate => ({
+      return applyCharsetLabelOverrides([...CHARSET_SEMANTICS, ...sharedCharacterSemantics()], options.charsetLabels).map((entry): ResourceCandidate => ({
         id: `charset:${entry.textureKey}:${entry.characterIndex}`,
         label: entry.label,
         tags: [...entry.tags, ...charsetDerivedTags(entry.textureKey)],
         ...(entry.appearance ? { description: entry.appearance } : {}),
         nativeGraphic: {
-          sprite: { type: "bundled", id: entry.textureKey },
+          sprite: { type: entry.spriteType ?? "bundled", id: entry.textureKey },
           direction: "down",
           pattern: charsetFrameIndex({ characterIndex: entry.characterIndex, direction: "down", pattern: 1 }),
         },

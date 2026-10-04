@@ -2063,6 +2063,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
    */
   /** 실행 계획(자율성 다이얼·의도 선언) → runPiCommand 옵션. 앞에서 도는 턴과 맵별 대기열 실행이 같은 변환을 쓴다. */
   const piRunOptionsFor = (plan: PiRunPlan | null, opts?: { readonly timing?: TurnTimingRecorder; readonly initialToolNames?: readonly string[]; readonly intentNote?: string | null }): PiRunOptions => plan ? {
+    viewNavigation: plan.viewNavigation === true,
     readOnly: plan.readOnly,
     routineEdit: plan.routineEdit,
     villageContract: plan.villageContract,

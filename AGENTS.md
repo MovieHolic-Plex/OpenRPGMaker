@@ -45,6 +45,11 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
   → `super-harness` · 시드 `harness-data/super-harness/seed.json` · 문서 `openwiki/harnesses/super-harness.md`
   → 자동으로 도는 데몬이다(화면 http://mdc-server:18315/). 카드를 손으로 쓰지 말고 화면에서 교정 지시·폐기.
 
+- **월드맵 아이콘을 검수·교정·선택 시트로 굽거나 공용 스탬프에 넣을 때**
+  → `worldmap-icons` · 시드 `harness-data/worldmap-icons/seed.json` · 문서 `openwiki/harnesses/worldmap-icons.md`
+  → `npm run harness -- worldmap-icons <단계>` (intake·review·draw·serve·status·export·build·check·preview).
+  → 사람이 선택한 현재 해시만 굽는다. 선택 정본은 `WMI_HARNESS_DATA/harness.sqlite`, 칸 번호는 덧붙이기 전용이다.
+
 - **단일 관계·연애 / 대화 중심 / 한 관계 / 첫 만남 한 장면을 제작할 때**
   → `romance-scene` · 시드 `harness-data/romance-scene/seed.json` · 문서 `openwiki/harnesses/romance-scene.md`
   → `author_romance_scene`으로 원자적으로 저작하고 `inspect_romance_scene`으로 양쪽 선택·재대화·취소·종료를 검사한다.

@@ -7,6 +7,7 @@ import { ensureElfTreetopReferences } from "./sharedElfTreetopReferences";
 import { CLIMATE_VILLAGE_TEXTURES, createClimateVillageTileset, ensureClimateBareTrees, ensureClimateVillageReferences } from "./climateVillages";
 import { ATLAS_BIOME_TEXTURES, createAtlasBiomeTileset, ensureAtlasBiomeReferences } from "./atlasBiomes";
 import { ATLAS_BIOME_WORLD_TEXTURE, createAtlasBiomeWorldTileset } from "./atlasBiomeWorld";
+import { WORLDMAP_SELECTED_TEXTURE, createWorldmapSelectedTileset, ensureWorldmapSelectedTileset } from "./worldmapSelected";
 import { createSharedVillageObjectsTileset, ensureSharedVillageObjectReferences, SHARED_VILLAGE_OBJECT_ID, SHARED_VILLAGE_OBJECT_TEXTURE } from "./sharedVillageObjects";
 import { createCastleTileset } from "./castleTileset";
 import { BEODEUL_CITY_TEXTURE, createBeodeulCityTileset, ensureBeodeulCityReferences, ensureBeodeulCityTileset } from "./beodeulCity";
@@ -164,6 +165,7 @@ export function ensureBundledTilesets(project: { tilesets: Record<string, Tilese
       continue;
     }
     if (project.tilesets[id]) {
+      if (asset.textureKey === WORLDMAP_SELECTED_TEXTURE) changed = ensureWorldmapSelectedTileset(project.tilesets[id]) || changed;
       if (asset.textureKey === FOREST_GRASS_JOINS_TEXTURE) changed = extendForestGrassJoinsTileset(project.tilesets[id]) || changed;
       if (id === FOREST_HARMONY_ID) changed = ensureForestHarmonyReferences(project.tilesets[id]) || changed;
       // Older saves stop at 2550/2610: append the shared tail slots (only past the end or into blank slots).
@@ -398,6 +400,13 @@ function bundledEasyRpgTilesetBase(asset: (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS
     const world = BUNDLED_EASYRPG_CHIPSET_ASSETS.find((a) => a.textureKey === "tex_easyrpg_chipset_world");
     if (!world) throw new Error("번들 칩셋 목록에 tex_easyrpg_chipset_world 가 없습니다.");
     return createAtlasBiomeWorldTileset(bundledStandardChipsetTileset(world));
+  }
+  if (asset.textureKey === WORLDMAP_SELECTED_TEXTURE) {
+    const world = BUNDLED_EASYRPG_CHIPSET_ASSETS.find((a) => a.textureKey === "tex_easyrpg_chipset_world");
+    if (!world) throw new Error("번들 월드 지형이 없습니다.");
+    const base = bundledStandardChipsetTileset(world);
+    ensureTilesetHarnesses({ tilesets: { [base.id]: base } });
+    return createWorldmapSelectedTileset(base);
   }
   return bundledStandardChipsetTileset(asset);
 }

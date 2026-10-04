@@ -5,6 +5,46 @@
 
 <!-- releases -->
 
+## 0.116.0 — 2026-10-04
+
+### 기능
+
+- review one character at a time with instant advance and visible walking previews (`ec98035`)
+- **worldmap** — ship human-selected icons and verify saved map journeys (`3e1fc51`)
+
+### 수정
+
+- **worldmap** — 선택 아이콘 키트에 배치 문장을 넣는다 (`0553f7f`)
+- **worldmap** — detect covered icon cells and record completed candidate review (`13614fd`)
+- **worldmap** — pass correction notes to candidate reviewers (`01e1db2`)
+- allow click-only launcher entry and record native flow failure (`eca3bbc`)
+
+### 문서
+
+- **worldmap** — record follow-up gallery verification (`8e7ecc7`)
+
+## 0.115.0 — 2026-10-04
+
+### 기능
+
+- publish human-kept sprites and descriptions to the shared character catalog (`746a347`)
+
+### 수정
+
+- preserve assistant view and continue work in background (`585d7c7`)
+- **ci** — run the full-lane typecheck with a 10GB heap (`e71aaaf`)
+
+## 0.114.0 — 2026-10-04
+
+### 기능
+
+- connect AI terrain tools and verify cliff house access (`16d017f`)
+
+### 수정
+
+- keep elevated houses visible in large editor maps (`54ffb9c`)
+- verify terrain tools through the real editor assistant (`42ce965`)
+
 ## 0.113.0 — 2026-10-04
 
 ### 기능

@@ -10,6 +10,7 @@ npm run harness -- charset-actor produce --count 100
 npm run harness -- charset-actor produce --count 100 --reference /absolute/reference.png --prompt '여러 장르의 개성 있는 인물'
 npm run harness -- charset-actor serve --port 18314
 npm run harness -- charset-actor export RUN
+python3 src/harnesses/charset-actor/harness.py publish-shared
 ```
 
 - `produce`는 manifest/작업 폴더를 만들고 터미널과 독립적으로 저작을 시작한다. `--par 4 --batch-size 2`가 기본이다.
@@ -17,7 +18,9 @@ npm run harness -- charset-actor export RUN
 - 모자·소품·장르·역할을 제한하는 미감 점수나 별도 Sonnet 심사는 없다. `free-worker.md`로 네 방향을 직접 그린다.
 - 구조·빈 프레임·키 색 ±8·머리/몸체 투명 결손·위/옆 잘림 위험은 자동 차단한다. 머리 판정은 원본 머리 내부 면을 유지하는 사람형 검사이며 모든 해부학 오류를 알아내지는 못한다.
 - 산출물은 `reviewMode: human`, `strength: free`. 작업자 종료 후 렌더와 `published.json` 해시가 일치하면 GIF 대기열에 올린다.
-- GIF 카드의 남기기/폐기는 한 번으로 저장된다. 하나씩 보기에서 A/R과 방향키를 쓸 수 있다. 이유와 메모 입력은 필수가 아니다.
+- 모든 탭에서 한 화면에 한 캐릭터만 표시한다. 위·오른쪽·아래·왼쪽 걷기와 칸 위 이동 GIF를 항상 함께 보여준다. 다음 후보의 GIF도 미리 불러온다.
+- 남기기/폐기를 누르면 즉시 해당 카드가 사라지고 다음 캐릭터로 넘어간다. A/R과 방향키·이전/다음 버튼을 쓸 수 있다. 이유와 메모 입력은 필수가 아니다.
+- `직전 선택 되돌리기`는 저장 응답을 기다리지 않고 해당 캐릭터를 검토 대기로 되돌린다. 보관한 캐릭터의 개별 되돌리기도 남김/폐기 탭에서 할 수 있다.
 - 선택은 클릭 즉시 카드와 집계에 반영된다. 서버 저장은 뒤에서 순서대로 처리하며 `저장 중 N건`으로 표시한다. 실패하면 브라우저에 보관한 선택을 자동/수동 재시도한다.
 - 새로고침과 두 탭의 연속 선택도 고유 선택 ID와 공유 전송 잠금으로 보존한다. 저장이 끝나기 전에는 다운로드를 기다린다. 그림 변경 등으로 서버가 선택을 거절하면 되돌려 다시 검토한다.
 - 남김/폐기 탭에서 선택을 되돌릴 수 있다. 원본과 선택 journal은 보존한다. 결정은 본 격자·원본·강도·검사 버전에 묶이며 그림이 바뀌면 다시 선택한다.
@@ -26,7 +29,22 @@ npm run harness -- charset-actor export RUN
 - ZIP: 8명씩 288×256 CharSet PNG·RGBA·걷기 GIF·격자·선택 해시·출처/라이선스. PNG 색 키 ±8 처리를 다시 읽어 확인한다.
 - 작업자 설명은 독립 관찰 심사가 아니다. 참고 시트 원본은 출처 문구까지 보존한다.
 - 데이터는 `CHR_HARNESS_DATA`(기본 `~/.local/share/oprn/charset-actor-harness/`) 아래다. 새로운 사람의 선택과 accepted 사본은 저장소 밖에 둔다.
-- 프로젝트 DB와 공용 캐릭터 라이브러리에 자동 설치하지 않는다. 과거에 격리한 불량 후보를 자동 복구하지 않는다.
+- 사람이 남긴 캐릭터는 PNG와 설명을 사용자 공용 SQLite에 자동 등록한다. 과거에 격리한 불량 후보를 자동 복구하지 않는다.
+
+### 에디터 공용 라이브러리
+
+현재 남김은 `~/.local/share/oprn/shared-content.sqlite`의 `charset-actor-kept`에 저장하고 같은 행을 재읽는다.
+API 시작과 선택 저장 뒤 자동 등록하며 위 `publish-shared` 명령으로도 복구할 수 있다.
+저장 실패는 화면의 재시도 상태에 남는다. 선택 journal은 보존되므로 같은 선택의 재전송으로 복구한다.
+
+에디터를 새로고침하면 새 프로젝트와 기존 프로젝트, 시스템 → 캐릭터·얼굴, NPC 그림 선택, AI의
+`list_npc_graphics`/`list_resources(kind:"charset")`에서 이름·직업·의상을 검색한다.
+캐릭터별 고정 ID와 RM2000 0번 칸을 사용하여 선택 변경이 이미 배치한 NPC의 그림을 바꾸지 않는다.
+폐기/되돌리면 공용 검색에서 빠지고 이미 프로젝트에 복사한 그림·이벤트는 보존한다.
+
+설명 원문·원본 참고 PNG·칸·선택 해시·라이선스도 같은 라이브러리에 보존한다. 업로드 그림과 생성 픽셀을 Git/public에 넣지 않는다.
+새 작업자는 나이 설정·머리·의상을 `desc.json.attributes`로 저작한다. 설정하지 않은 나이는 불명이며 옛 결과에서 추정하지 않는다.
+격리 확인용 서버는 `CHR_HARNESS_DATA` **및** `OPRN_SHARED_CONTENT_SQLITE`를 임시 경로로 지정해야 한다.
 
 `studio.py`는 생성/재개를 저장 대상 잠금으로 직렬화하며 `driver.json`, `production-state.json`, `production.log`에 진행과 실패를 남긴다.
 `bulk.py`의 외부 manifest도 각 행에 `reviewMode: "human"`, `strength: "free"`를 넣으면 같은 자유 저작 계약을 사용한다.

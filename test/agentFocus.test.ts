@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { editorState } from "@/editor/editorState";
 import { paintTile } from "@/editor/actions";
 import { subscribeAgentFocusHighlight, type AgentFocusTarget } from "@/editor/agentFocus";
@@ -12,6 +12,7 @@ let unsubscribeHighlight: (() => void) | null = null;
 let highlights: AgentFocusTarget[] = [];
 
 beforeEach(() => {
+  vi.spyOn(document, "hasFocus").mockReturnValue(true);
   store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false, disabledReason: null });
   highlights = [];
   unsubscribeHighlight = subscribeAgentFocusHighlight((target) => highlights.push(target));
@@ -28,25 +29,23 @@ beforeEach(() => {
 afterEach(() => {
   unsubscribeHighlight?.();
   unsubscribeHighlight = null;
+  vi.restoreAllMocks();
 });
 
-describe("accepted agent changes focus the editor canvas", () => {
-  it("selects and highlights a newly created map", () => {
-    const project = createEmptyToolProject();
+describe("accepted agent changes preserve the editor view", () => {
+  it("creates a map without leaving the map the user is editing", () => {
+    const project = projectWithMap(blankMap("start_map", 8, 8));
     store.replace(project);
+    editorState.set({ currentMapId: "start_map" });
 
     const results = applyToolSequenceToStore([
       { name: "create_map", args: { id: "ai_new_map", name: "AI New Map", width: 8, height: 6 } },
     ], { source: "agent", agentName: "unit-test-agent" });
 
     expect(results.every((result) => result.ok)).toBe(true);
-    expect(editorState.get().currentMapId).toBe("ai_new_map");
-    expect(highlights).toHaveLength(1);
-    expect(highlights[0]).toMatchObject({
-      mapId: "ai_new_map",
-      bounds: { x: 0, y: 0, width: 8, height: 6 },
-    });
-    expect(highlights[0]?.cells).toEqual([{ x: 4, y: 3, layer: "event" }]);
+    expect(store.getCurrent().maps.ai_new_map).toBeDefined();
+    expect(editorState.get().currentMapId).toBe("start_map");
+    expect(highlights).toEqual([]);
   });
 
   it("keeps the current map selected and highlights changed paint cells", () => {
@@ -77,7 +76,7 @@ describe("accepted agent changes focus the editor canvas", () => {
     ]);
   });
 
-  it("moves to another map and highlights a placed event cell", () => {
+  it("places an NPC on another map without switching the view", () => {
     const base = blankMap("start_map", 8, 8);
     const target = blankMap("target_map", 8, 8);
     const project = projectWithMap(base);
@@ -101,13 +100,9 @@ describe("accepted agent changes focus the editor canvas", () => {
     ], { source: "agent", agentName: "unit-test-agent" });
 
     expect(results.every((result) => result.ok)).toBe(true);
-    expect(editorState.get().currentMapId).toBe(target.id);
-    expect(highlights).toHaveLength(1);
-    expect(highlights[0]).toMatchObject({
-      mapId: target.id,
-      bounds: { x: 2, y: 2, width: 1, height: 1 },
-    });
-    expect(highlights[0]?.cells).toEqual([{ x: 2, y: 2, layer: "event" }]);
+    expect(store.getCurrent().maps[target.id].events.some(event => event.id === "npc_lina")).toBe(true);
+    expect(editorState.get().currentMapId).toBe(base.id);
+    expect(highlights).toEqual([]);
   });
 
   it("does not emit agent highlights for direct manual paint actions", () => {

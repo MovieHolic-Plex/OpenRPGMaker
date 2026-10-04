@@ -39,7 +39,7 @@ import {
 import { getPendingRegionApply } from "@/editor/regionTask/pendingRegionApply";
 import { regionPreviewProject } from "@/editor/regionTask/regionPreviewSelection";
 import { appliedBlueprintRegions } from "@/editor/agentBlueprintRegions";
-import { focusEditorRegion, type EditorFocusRegion } from "@/editor/editorReferenceNavigation";
+import { createAssistantViewNavigation } from "@/editor/assistantViewNavigation";
 import { shouldClearAiHighlightSelection } from "@/editor/transientEditorChrome";
 import {
   clearAgentGhostPreview,
@@ -201,6 +201,7 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
       });
     }
     const abortController = new AbortController();
+    const navigateView = createAssistantViewNavigation(() => session.allowsViewNavigation(), { signal: abortController.signal });
     const operation = new RunOperation(abortController.signal);
     let sessionOperation: RunOperation | undefined;
     let lastOwnedAudit = [...session.getAuditEntries()];
@@ -414,19 +415,13 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
           deps.surface.log.scrollTop = deps.surface.log.scrollHeight;
           deps.surface.setStatus(`밑그림 확정 — 에셋 ${spec.assets.length}개`);
         }
-        // 인터뷰 하이라이트: 강조 툴콜을 에디터 selection으로 반영해 맵 위에 사각형을 그린다.
-        // 맵 전환·카메라까지 함께 옮긴다 — 선택만 세우면 강조 대상이 **다른 맵**이거나 화면 밖일 때
-        // 사용자에게는 아무 일도 일어나지 않는다(툴은 성공했는데 "어디를 묻는지" 가 안 보였다).
         if (event.name === "highlight_map_region" && event.result.ok) {
-          const region = event.result.data as EditorFocusRegion;
           highlightedRegionThisTurn = true;
-          // 선택 사각형까지 focusEditorRegion 이 세운다 — 여기서 먼저 세우면 맵을 건너뛸 때
-          // 크로스페이드 밖에서 **옛 맵** 위에 목적지 좌표의 상자가 잠깐 그려진다.
-          focusEditorRegion(region, { onlyIfOffscreen: true, selectRegion: true });
+          navigateView(event.name, event.result.data);
         }
         // 조수의 화면 이동 요청: 맵을 열고 카메라를 보내고 잠깐 강조한다(선택 상태는 건드리지 않는다).
         if (event.name === "focus_editor_view" && event.result.ok) {
-          focusEditorRegion(event.result.data as EditorFocusRegion, { highlight: true });
+          navigateView(event.name, event.result.data);
         }
         // 타일 이미지 표시 요청: 채팅 버블에 썸네일로 렌더.
         if (event.name === "show_tiles" && event.result.ok) {

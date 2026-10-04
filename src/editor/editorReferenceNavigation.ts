@@ -23,6 +23,8 @@ export interface EditorFocusRegion {
 }
 
 export interface FocusEditorRegionOptions {
+  /** False permits a highlight on the current map without selecting or moving the view. */
+  readonly moveView?: boolean;
   /** 잠깐 반짝이는 강조 사각형을 함께 띄운다(선택 상태는 건드리지 않는다). */
   readonly highlight?: boolean;
   /**
@@ -54,15 +56,20 @@ export function focusEditorRegion(region: EditorFocusRegion, options: FocusEdito
   const map = store.getCurrent().maps[region.mapId];
   if (!map || map.width <= 0 || map.height <= 0
     || ![map.width, map.height, region.x, region.y, region.w, region.h].every(Number.isFinite)) return false;
-  // 전환을 깔기 전에 «열 수 있는 맵인가» 를 먼저 묻는다. 열 수 없으면 `selectEditorMap` 이
-  // 이유를 토스트로 말하고 여기서 끝난다 — 아무 일도 없을 화면을 미리 덮지 않는다.
-  if (!canOpenEditorMap(region.mapId)) return selectEditorMap(region.mapId, { clearEventSelection: false });
-
   const width = Math.max(1, Math.trunc(region.w));
   const height = Math.max(1, Math.trunc(region.h));
   const x = Math.max(0, Math.min(map.width - 1, Math.trunc(region.x)));
   const y = Math.max(0, Math.min(map.height - 1, Math.trunc(region.y)));
   const bounds = { x, y, width: Math.min(width, map.width - x), height: Math.min(height, map.height - y) };
+
+  if (options.moveView === false) {
+    if (!isSameMapMove(region.mapId)) return false;
+    if (options.highlight) requestAgentFocusHighlight({ mapId: region.mapId, cells: [], bounds, score: 1 });
+    return true;
+  }
+
+  // Check before installing a transition; highlights alone must not select a map.
+  if (!canOpenEditorMap(region.mapId)) return selectEditorMap(region.mapId, { clearEventSelection: false });
 
   // 맵이 바뀌면 크로스페이드가 하드컷을 덮고, 카메라는 덮인 동안 목적지에 도착해 있는다.
   // 같은 맵이면 기존 팬이 그대로 「어디서 어디로」를 보여 준다.

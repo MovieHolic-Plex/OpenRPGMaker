@@ -1,6 +1,7 @@
 import type { PiAgentEvent } from "@/ai/piAgent/protocol";
 import { narrateAiActivity } from "./aiActivityNarration";
 import { isAiLiveCanvasEnabled, subscribeAiLiveCanvas } from "./aiLiveCanvas";
+import { defaultYieldToUi } from "@/ai/yieldToUi";
 
 export interface AiCanvasProgress {
   status(text: string): void;
@@ -57,7 +58,7 @@ export function startAiCanvasProgress(instruction: string): AiCanvasProgress {
         return;
       }
       if (event.type === "execution_status" && event.name === "checkpoint.apply") {
-        stage.textContent = event.ok === false ? "맵에 반영하지 못했어요" : "맵에 반영했어요 — 지어지는 모습을 보세요";
+        stage.textContent = event.ok === false ? "맵에 반영하지 못했어요" : "맵에 반영했어요";
         return;
       }
       if (event.type === "assistant") {
@@ -73,10 +74,7 @@ export function startAiCanvasProgress(instruction: string): AiCanvasProgress {
     async paint() {
       // Paint the acknowledgement before intent classification / large base capture.
       // Hidden tabs must still be able to continue the request.
-      await new Promise<void>(resolve => {
-        const timer = setTimeout(resolve, 50);
-        requestAnimationFrame(() => requestAnimationFrame(() => { clearTimeout(timer); resolve(); }));
-      });
+      await defaultYieldToUi();
     },
     finish,
   };

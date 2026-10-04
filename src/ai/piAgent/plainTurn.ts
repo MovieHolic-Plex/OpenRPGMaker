@@ -53,7 +53,7 @@ export interface PlainPiTurnInput {
   readonly selection: IntentSelectionFact | null;
   readonly hasActivePlan: boolean;
   readonly autonomy: AutonomyResolution;
-  /** 쓰기 턴에서만 부른다(읽기 전용 다이얼은 선언을 건너뛴다). */
+  /** 계획 전용 턴 이외에 요청 의도와 위치 안내 권한을 읽는다. */
   readonly declarer: () => IntentDeclarer;
   readonly piTeam: boolean;
   /** 선언 호출 직전 — 패널은 「의도 읽는 중…」 을 띄운다. */
@@ -86,13 +86,13 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
   // 의도 선언은 모델을 두 번 불러 10~24초를 쓰고, 30초 창을 넘기면 첫 생성이 시작조차 못 한다(2026-09-27 실측).
   // 마을 계약도 이미 이 머리글을 보고 빠진다(villageContract.ts) — 선언이 바꿀 수 있는 판정이 남지 않았다.
   // 도구는 좁히지 않는다(initialToolNames 없음 = 전체) — 게임 전체 저작은 DB·시스템·맵 도구를 모두 쓴다.
-  if (!plan.readOnly && isGenrePresetBriefRequest(input.text)) {
-    const team = input.piTeam;
+  if (isGenrePresetBriefRequest(input.text)) {
+    const team = input.piTeam && !plan.readOnly;
     return { mode: team ? "team" : "single", plan: { ...plan, routineEdit: false, routingAudit: GENRE_PRESET_ROUTING }, questionPromoted: false, intentNote: null,
       routingAudit: GENRE_PRESET_ROUTING };
   }
-  let routingAudit = plan.readOnly ? "intent:skipped(read-only dial)" : "intent:none";
-  if (!plan.readOnly) {
+  let routingAudit = plan.planOnly ? "intent:skipped(plan-only dial)" : "intent:none";
+  if (!plan.planOnly) {
     input.onDeclaring?.();
     const { project, text, currentMapId, selection } = input;
     const declared = await declareIntentCached(input.declarer(), buildIntentFacts({
@@ -102,7 +102,8 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
       selection,
       hasActivePlan: input.hasActivePlan,
     }));
-    if (declared.intent.source === "fallback") throw new Error(declared.error ?? "요청 범위를 확정하지 못했습니다. 다시 시도해 주세요.");
+    if (declared.intent.source === "fallback" && !plan.readOnly) throw new Error(declared.error ?? "요청 범위를 확정하지 못했습니다. 다시 시도해 주세요.");
+    plan = { ...plan, viewNavigation: declared.intent.source === "llm" && declared.intent.viewNavigation === true };
     // 선언이 확정한 것을 본문도 읽게 한다 — 세션 경로의 pushOrchestrationMessage(intentNote) 와 같은 자리.
     // Pi 이관(2026-09-11)에서 빠져 author_village·권장 크기·선택 사각형 지시가 모델에 닿지 않았다(2026-09-17 실측).
     const noteTargetMapId = declared.intent.targetMapId ?? currentMapId;
