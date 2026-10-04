@@ -1,0 +1,135 @@
+{
+  "realEditor": true,
+  "before": {
+    "project_id": "9f70cb93-c831-4ab9-a6fe-d46a3634beff",
+    "revision": 9,
+    "sha": {
+      "terrain_ai": "445174904343e53075c0904d879f9a55b807374b70845d86eda57430c6fea252",
+      "ramps_four": "db428026f426f551820c5fad62d80b90523fb6dd8b1ae3937e1d6ada68028f81",
+      "houses_native": "df8d6dd9f880814fbca63450807728f45e6f318e66b7acf90215d1d94c02aaaa"
+    }
+  },
+  "modelRun": "../assistant/summary.json",
+  "families": {
+    "house": 70,
+    "manor": 4,
+    "timber": 4
+  },
+  "pagination": {
+    "first": "bd-house-h101_0",
+    "second": "bd-house-h109_1"
+  },
+  "assemblyStyles": 6,
+  "surfaceBefore": {
+    "full": 3,
+    "window": 0,
+    "same": 0,
+    "clear": 0
+  },
+  "surfaceAfter": {
+    "full": 3,
+    "window": 1,
+    "same": 0,
+    "clear": 0
+  },
+  "surfacePartialMatchesFull": true,
+  "road": {
+    "width": 2,
+    "addedRampCells": [
+      {
+        "x": 12,
+        "y": 11,
+        "code": 1
+      },
+      {
+        "x": 13,
+        "y": 11,
+        "code": 1
+      },
+      {
+        "x": 12,
+        "y": 12,
+        "code": 1
+      },
+      {
+        "x": 13,
+        "y": 12,
+        "code": 1
+      },
+      {
+        "x": 12,
+        "y": 13,
+        "code": 1
+      },
+      {
+        "x": 13,
+        "y": 13,
+        "code": 1
+      },
+      {
+        "x": 12,
+        "y": 14,
+        "code": 1
+      },
+      {
+        "x": 13,
+        "y": 14,
+        "code": 1
+      }
+    ],
+    "savedRevision": 13
+  },
+  "film": {
+    "frames": 237,
+    "skippedCaptureFrames": 6,
+    "crop": {
+      "x": 0,
+      "y": 0,
+      "width": 1440,
+      "height": 960
+    },
+    "phases": [
+      {
+        "seconds": 0.032,
+        "text": "실제 AI 결과 · 원본 탑 저택 / 박공 통나무집 / 옆날개 판자집"
+      },
+      {
+        "seconds": 3.571,
+        "text": "버들항 원본 주택 선택"
+      },
+      {
+        "seconds": 4.856,
+        "text": "버들항 원본 저택 선택"
+      },
+      {
+        "seconds": 6.712,
+        "text": "버들항 원본 목조집 선택"
+      },
+      {
+        "seconds": 8.284,
+        "text": "크기 조절은 별도 선택 · 지붕만 넓히는 기능 유지"
+      },
+      {
+        "seconds": 20.629,
+        "text": "절벽 위 바닥 변경 · 즉시 갱신과 전체 재생성 화면 일치"
+      },
+      {
+        "seconds": 31.224,
+        "text": "폭 2칸 도로 · 드래그로 두 줄 경사로 자동 연결"
+      }
+    ],
+    "gif": "terrain-seams-editor-2x.mp4"
+  },
+  "after": {
+    "project_id": "9f70cb93-c831-4ab9-a6fe-d46a3634beff",
+    "revision": 14,
+    "sha": {
+      "terrain_ai": "445174904343e53075c0904d879f9a55b807374b70845d86eda57430c6fea252",
+      "ramps_four": "db428026f426f551820c5fad62d80b90523fb6dd8b1ae3937e1d6ada68028f81",
+      "houses_native": "df8d6dd9f880814fbca63450807728f45e6f318e66b7acf90215d1d94c02aaaa"
+    }
+  },
+  "mapUnchanged": true,
+  "errors": [],
+  "passed": true
+}

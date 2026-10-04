@@ -47,7 +47,7 @@ try {
   const welcome = page.getByTestId('editor-welcome-skip'); if (await welcome.isVisible().catch(() => false)) await welcome.click();
   await selectMap('houses_native');
   await page.getByTestId('layer-upper').click();
-  await page.getByTestId('editor-zoom-stepper').click(); await page.getByTestId('editor-zoom-0.25').click(); await page.waitForTimeout(1300);
+  await page.getByTestId('editor-zoom-stepper').click(); await page.getByTestId('editor-zoom-0.5').click(); await page.waitForTimeout(1300);
   await shot('01-original-houses');
   film = await startEditorScreencast(page, out, 'terrain-seams-editor-2x.mp4', { selector: 'body', cropTop: 0, speed: 2 });
   await film.caption('실제 AI 결과 · 원본 탑 저택 / 박공 통나무집 / 옆날개 판자집'); await page.waitForTimeout(1800);
