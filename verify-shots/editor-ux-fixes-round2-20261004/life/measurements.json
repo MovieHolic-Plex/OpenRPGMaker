@@ -1,0 +1,182 @@
+{
+  "commit": "1a1f4059ba6d91d3f278f531148a5a773d965fad",
+  "conditions": "Native editor, 1440x900, reduced motion, synthetic fixtures, no host saves/model calls; wallMs includes automation and a fixed 250ms settling period; longTasks are browser tasks >=50ms. Shared host load is uncontrolled.",
+  "errors": [],
+  "rows": [
+    {
+      "name": "life:10:100:open",
+      "wallMs": 456,
+      "longTasks": [
+        149
+      ],
+      "addedNodes": 18,
+      "removedNodes": 21,
+      "treeReplacements": 0,
+      "totalNodes": 2167,
+      "lifeOptions": 100,
+      "hiddenFishPanels": 0,
+      "focused": "db-tab-life-collections",
+      "currentMapId": "map_page"
+    },
+    {
+      "name": "life:10:100:zero-match:0",
+      "wallMs": 279,
+      "longTasks": [],
+      "addedNodes": 2,
+      "removedNodes": 2,
+      "treeReplacements": 0,
+      "totalNodes": 2108,
+      "lifeOptions": 100,
+      "hiddenFishPanels": 0,
+      "focused": "db-life-collections-search",
+      "currentMapId": "map_page"
+    },
+    {
+      "name": "life:10:100:zero-match:1",
+      "wallMs": 277,
+      "longTasks": [],
+      "addedNodes": 2,
+      "removedNodes": 2,
+      "treeReplacements": 0,
+      "totalNodes": 2108,
+      "lifeOptions": 100,
+      "hiddenFishPanels": 0,
+      "focused": "db-life-collections-search",
+      "currentMapId": "map_page"
+    },
+    {
+      "name": "life:10:100:zero-match:2",
+      "wallMs": 285,
+      "longTasks": [],
+      "addedNodes": 2,
+      "removedNodes": 2,
+      "treeReplacements": 0,
+      "totalNodes": 2108,
+      "lifeOptions": 100,
+      "hiddenFishPanels": 0,
+      "focused": "db-life-collections-search",
+      "currentMapId": "map_page"
+    },
+    {
+      "name": "life:50:500:open",
+      "wallMs": 415,
+      "longTasks": [
+        51,
+        115
+      ],
+      "addedNodes": 18,
+      "removedNodes": 18,
+      "treeReplacements": 0,
+      "totalNodes": 2797,
+      "lifeOptions": 500,
+      "hiddenFishPanels": 0,
+      "focused": "db-tab-life-collections",
+      "currentMapId": "map_page"
+    },
+    {
+      "name": "life:50:500:zero-match:0",
+      "wallMs": 275,
+      "longTasks": [],
+      "addedNodes": 2,
+      "removedNodes": 2,
+      "treeReplacements": 0,
+      "totalNodes": 2498,
+      "lifeOptions": 500,
+      "hiddenFishPanels": 0,
+      "focused": "db-life-collections-search",
+      "currentMapId": "map_page"
+    },
+    {
+      "name": "life:50:500:zero-match:1",
+      "wallMs": 269,
+      "longTasks": [],
+      "addedNodes": 2,
+      "removedNodes": 2,
+      "treeReplacements": 0,
+      "totalNodes": 2498,
+      "lifeOptions": 500,
+      "hiddenFishPanels": 0,
+      "focused": "db-life-collections-search",
+      "currentMapId": "map_page"
+    },
+    {
+      "name": "life:50:500:zero-match:2",
+      "wallMs": 274,
+      "longTasks": [],
+      "addedNodes": 2,
+      "removedNodes": 2,
+      "treeReplacements": 0,
+      "totalNodes": 2498,
+      "lifeOptions": 500,
+      "hiddenFishPanels": 0,
+      "focused": "db-life-collections-search",
+      "currentMapId": "map_page"
+    },
+    {
+      "name": "life:100:1000:open",
+      "wallMs": 458,
+      "longTasks": [
+        142
+      ],
+      "addedNodes": 18,
+      "removedNodes": 18,
+      "treeReplacements": 0,
+      "totalNodes": 3597,
+      "lifeOptions": 1000,
+      "hiddenFishPanels": 0,
+      "focused": "db-tab-life-collections",
+      "currentMapId": "map_page"
+    },
+    {
+      "name": "life:100:1000:zero-match:0",
+      "wallMs": 289,
+      "longTasks": [],
+      "addedNodes": 2,
+      "removedNodes": 2,
+      "treeReplacements": 0,
+      "totalNodes": 2998,
+      "lifeOptions": 1000,
+      "hiddenFishPanels": 0,
+      "focused": "db-life-collections-search",
+      "currentMapId": "map_page"
+    },
+    {
+      "name": "life:100:1000:zero-match:1",
+      "wallMs": 279,
+      "longTasks": [],
+      "addedNodes": 2,
+      "removedNodes": 2,
+      "treeReplacements": 0,
+      "totalNodes": 2998,
+      "lifeOptions": 1000,
+      "hiddenFishPanels": 0,
+      "focused": "db-life-collections-search",
+      "currentMapId": "map_page"
+    },
+    {
+      "name": "life:100:1000:zero-match:2",
+      "wallMs": 272,
+      "longTasks": [
+        54
+      ],
+      "addedNodes": 2,
+      "removedNodes": 2,
+      "treeReplacements": 0,
+      "totalNodes": 2998,
+      "lifeOptions": 1000,
+      "hiddenFishPanels": 0,
+      "focused": "db-life-collections-search",
+      "currentMapId": "map_page"
+    }
+  ],
+  "productionSources": {
+    "src/editor/panels/databaseLifeCollectionsView.ts": "79c9a901037bf6dd3032decc6f9ea3445b0fc16f3f1b0d5df9f56ffabc0540d7",
+    "src/editor/panels/database.ts": "56e0e8d2ee6b1e4e101be9894ef214d6469bd72c0bbf0e774b86c27ca4e059f1",
+    "src/editor/panels/mapList.ts": "5fb81c27c7f5e8b571b6e55c2f223b840191933c4a585e73ba9262ab00765064",
+    "src/editor/panels/mapSidebarSection.ts": "07500c4fed1d5e7b92c825d8522a5edaaa04334d7c19f1e02129a0862e9257f1",
+    "src/editor/panels/resourceManagerViews.ts": "e13de916c790f2b610c8fbdd7a127ee9064c5e09a8b1309da86559d4c62b00a8",
+    "src/editor/panels/leftProgressPane.ts": "e4c0d7ed1092e421b50ecf7e48cdd82d1759db27387dda80d766520a6b5b7762",
+    "src/editor/panels/aiSidebarWorkspace.ts": "f3542428ff0ad6ff871c28eb28a21e1120cb1a47b93f0e1dfe0d12a66e25fd7d",
+    "src/editor/panels/eventEditor/modal.ts": "0b0a6199466001c6c5d04f0c5e97133b749bc318586a31ec075c02f43f336b8d"
+  }
+}

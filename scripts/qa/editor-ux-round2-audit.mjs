@@ -1,18 +1,19 @@
 // Native editor UI fixture; no model requests or canonical content writes.
-// OUT=<evidence directory> BASE=http://127.0.0.1:9911 node scripts/qa/editor-ux-forms-audit.mjs
+// OUT=<evidence directory> BASE=http://127.0.0.1:9911 node scripts/qa/editor-ux-round2-audit.mjs
 import { chromium } from 'playwright';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
+const assertAfter = process.env.ASSERT_AFTER === '1';
 const label = process.env.LABEL ?? 'audit';
 const out = process.env.OUT ?? 'verify-shots/editor-ux-audit-round2-20261004';
 mkdirSync(out, { recursive: true });
 const browser = await chromium.launch({ args: ['--disable-background-networking'] });
-const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce' });
+const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion: process.env.MOTION ?? 'reduce' });
 const watchdog = setTimeout(() => { console.error('QA wall timeout'); void browser.close(); },480000);
 const errors = [];
 let consoleErrors=0;page.on('console',m=>{if(m.type()==='error' && consoleErrors++<6) console.log('browser: '+m.text().slice(0,240));});
-page.on('pageerror', e => errors.push(e.message));
+page.on('pageerror', e => {errors.push(e.message);console.log('pageerror: '+e.message);});
 await page.addInitScript(fixture => {
   window.__OPRN_E2E_PROJECT__ = fixture;
   localStorage.setItem('oprn:editor-ui-mode', 'expert');
@@ -67,9 +68,11 @@ try {
     await page.getByTestId('db-group-strip-life').click();
     await measure(`life:${fishCount}:${itemCount}:open`,()=>page.getByTestId('db-tab-life-collections').click());
     await page.getByTestId('db-life-collections-search').waitFor({state:'visible'});
+    if(assertAfter) await page.evaluate(()=>{qa.lifeSearch=document.querySelector('[data-testid=db-life-collections-search]');qa.lifeInspector=document.querySelector('.db-life-panels')?.firstElementChild;});
     for(let i=0;i<3;i++){
       await measure(`life:${fishCount}:${itemCount}:zero-match:${i}`,()=>page.getByTestId('db-life-collections-search').fill('zz_missing_'+i));
       if(await page.getByTestId('db-life-collections-search').inputValue()!=='zz_missing_'+i)throw Error('Search state lost');
+      if(assertAfter){const r=report.rows.at(-1);if(r.lifeOptions>itemCount||r.hiddenFishPanels!==0)throw Error('Unselected Life inspectors built');if(!await page.evaluate(()=>qa.lifeSearch===document.querySelector('[data-testid=db-life-collections-search]')&&qa.lifeInspector===document.querySelector('.db-life-panels')?.firstElementChild))throw Error('Search rebuilt the input/inspector');}
     }
     await page.screenshot({path:out+`/life-${fishCount}-${itemCount}.png`});
     await page.getByTestId('db-life-collections-search').fill('');await page.waitForTimeout(300);
@@ -84,6 +87,7 @@ try {
         const id=i%2===0?'ux_map_1':'map_page';
         await measure(`maps:${count}:switch:${i}`,()=>page.getByTestId('map-tree-node-'+id).click({position:{x:110,y:15}}));
         if(report.rows.at(-1).currentMapId!==id)throw Error('Native map switch failed');
+        if(assertAfter&&report.rows.at(-1).treeReplacements>2)throw Error('Map navigation rebuilt the tree twice');
       }
       await page.screenshot({path:out+`/maps-${count}.png`});
     }
@@ -94,12 +98,14 @@ try {
     await page.evaluate(()=>{qa.canvasDraws={visible:0,offscreen:0,other:0};const original=CanvasRenderingContext2D.prototype.drawImage;CanvasRenderingContext2D.prototype.drawImage=function(...args){const card=this.canvas.closest('[data-testid=resource-profile-charset]');if(card){const r=this.canvas.getBoundingClientRect(),parent=document.querySelector('[data-testid=resource-entry-list]')?.getBoundingClientRect();const visible=r.width>0&&r.height>0&&r.bottom>Math.max(0,parent?.top??0)&&r.top<Math.min(innerHeight,parent?.bottom??innerHeight);qa.canvasDraws[visible?'visible':'offscreen']++;}else qa.canvasDraws.other++;return original.apply(this,args);};});
     await page.waitForTimeout(2000);
     const draws=await page.evaluate(()=>({...qa.canvasDraws,cards:document.querySelectorAll('[data-testid=resource-profile-charset]').length}));report.rows.push({name:'charset:idle:2000ms',...draws});console.log(JSON.stringify(report.rows.at(-1)));await page.screenshot({path:out+'/charset-idle.png'});
+    if(assertAfter&&draws.offscreen!==0)throw Error('Offscreen charset cards are still drawing');
     await page.getByTestId('resource-modal-close').click();await page.waitForTimeout(1200);await page.evaluate(()=>qa.canvasDraws={visible:0,offscreen:0,other:0});await page.waitForTimeout(1200);const closed=await page.evaluate(()=>qa.canvasDraws);report.rows.push({name:'charset:closed:1200ms',...closed});console.log(JSON.stringify(report.rows.at(-1)));
     // Slow native typing reveals whether the debounced rebuild retains the search input.
     await page.evaluate(()=>{const t=qa.template;const fishSpecies=Array.from({length:10},(_,i)=>({id:'ux_fish_'+i,name:'Fish '+i,itemId:t.database.items[0].id}));qa.store.replace({...t,database:{...t.database,fishSpecies}},{change:{origin:'system',label:'search focus UI fixture'}});});
     await page.getByTestId('toolbar-database').click();await page.getByTestId('db-group-strip-life').click();await page.getByTestId('db-tab-life-collections').click();
     const search=page.getByTestId('db-life-collections-search');await search.fill('');await page.waitForTimeout(250);await search.click();await page.keyboard.type('abc',{delay:180});await page.waitForTimeout(250);
     const focus=await page.evaluate(()=>({value:document.querySelector('[data-testid=db-life-collections-search]').value,focused:document.activeElement?.getAttribute('data-testid'),activeTag:document.activeElement?.tagName}));report.rows.push({name:'life:slow-native-typing',...focus});console.log(JSON.stringify(report.rows.at(-1)));await page.screenshot({path:out+'/life-search-focus.png'});
+    if(assertAfter&&(focus.value!=='abc'||focus.focused!=='db-life-collections-search'))throw Error('Slow Life typing still loses input/focus');
     await page.getByTestId('database-modal-close').click();
   }
   if(process.env.MODE==='progress-events'){
@@ -112,13 +118,14 @@ try {
         const point=await page.evaluate(([x,y])=>window.__oprnEditWorldToClient(x*16+8,y*16+8),[4+i,state==='visible'?4:state==='collapsed'?5:6]);
         await measure(`progress:${state}:paint:${i}`,()=>page.mouse.click(point.x,point.y));
         const detail=await page.evaluate(()=>({eventClones:qa.eventClones,progressMutations:qa.progressMutations,rootHidden:document.querySelector('[data-testid=left-progress-pane]').hidden,ancestorHidden:document.querySelector('.ai-chat-sidebar-content').hidden}));Object.assign(report.rows.at(-1),detail);console.log(JSON.stringify(detail));
+        if(assertAfter&&state==='collapsed'&&(detail.eventClones!==0||detail.progressMutations!==0||!detail.rootHidden))throw Error('Collapsed Progress still does work');
       }
       await page.screenshot({path:out+'/progress-'+state+'.png'});
     }
     await page.evaluate(()=>qa.store.replace(qa.template,{change:{origin:'system',label:'restore UI fixture'}}));
     for(const count of [100,1000]){
       await page.evaluate(count=>{const t=qa.template,m=t.maps[qa.mapId],original=window.__OPRN_E2E_PROJECT__.maps[qa.mapId].events[0],commands=Array.from({length:count},(_,i)=>({kind:'text',body:'Command '+i}));qa.store.replace({...t,maps:{[qa.mapId]:{...m,events:[{...original,commands,pages:[{...original.pages[0],commands}]}]}}},{change:{origin:'system',label:'event Tab UI fixture'}});qa.editorState.set({tool:'event',layer:'event',selectedEventId:original.id});localStorage.setItem('oprn:storyboard-mode','list');},count);
-      await page.evaluate(async()=>{const {openEventEditorModal}=await import('/src/editor/panels/eventEditor/modal.ts');openEventEditorModal(qa.mapId,qa.store.getCurrent().maps[qa.mapId].events[0].id);});await page.getByTestId('event-editor-modal').waitFor({state:'visible'});await page.waitForTimeout(500);
+      await page.evaluate(async()=>{const {openEventEditorModal}=await import('/src/editor/panels/eventEditor/modal.ts');openEventEditorModal(qa.mapId,qa.store.getCurrent().maps[qa.mapId].events[0].id);});await page.getByTestId('event-editor-modal').waitFor({state:'visible'});await page.waitForTimeout(500);if(process.env.EVENT_WARM==='1')await page.waitForFunction(()=>!document.querySelector('.cmd-list[aria-busy]'),null,{timeout:90000});
       const candidates=await page.getByTestId('event-editor-modal').evaluate(root=>root.querySelectorAll("button:not(:disabled), [href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex='-1'])").length);
       for(let i=0;i<3;i++){await measure(`event:${count}:Tab:${i}`,()=>page.keyboard.press('Tab'));report.rows.at(-1).focusCandidates=candidates;}
       await page.screenshot({path:out+'/event-Tab-'+count+'.png'});await page.keyboard.press('Escape');await page.waitForTimeout(200);
@@ -127,7 +134,7 @@ try {
   if(process.env.MODE==='selection'){
     for(const count of [100,1000]){
       await page.evaluate(count=>{const t=qa.template,m=t.maps[qa.mapId],original=window.__OPRN_E2E_PROJECT__.maps[qa.mapId].events[0],commands=Array.from({length:count},(_,i)=>({kind:'text',body:'Command '+i}));qa.store.replace({...t,maps:{[qa.mapId]:{...m,events:[{...original,commands,pages:[{...original.pages[0],commands}]}]}}},{change:{origin:'system',label:'event selection UI fixture'}});qa.editorState.set({tool:'event',layer:'event',selectedEventId:original.id});localStorage.setItem('oprn:storyboard-mode','list');},count);
-      await page.evaluate(async()=>{const {openEventEditorModal}=await import('/src/editor/panels/eventEditor/modal.ts');openEventEditorModal(qa.mapId,qa.store.getCurrent().maps[qa.mapId].events[0].id);});await page.getByTestId('event-editor-modal').waitFor({state:'visible'});await page.waitForTimeout(500);
+      await page.evaluate(async()=>{const {openEventEditorModal}=await import('/src/editor/panels/eventEditor/modal.ts');openEventEditorModal(qa.mapId,qa.store.getCurrent().maps[qa.mapId].events[0].id);});await page.getByTestId('event-editor-modal').waitFor({state:'visible'});await page.waitForTimeout(500);if(process.env.EVENT_WARM==='1')await page.waitForFunction(()=>!document.querySelector('.cmd-list[aria-busy]'),null,{timeout:90000});
       const first=page.locator('.cmd-list .cmd-item[data-cmd-path="[0]"] .cmd-head');
       for(let i=0;i<3;i++){
         await first.click();await page.waitForTimeout(120);
@@ -137,6 +144,6 @@ try {
       await page.screenshot({path:out+'/event-selection-'+count+'.png'});await page.keyboard.press('Escape');await page.waitForTimeout(200);
     }
   }
-  report.productionSources=Object.fromEntries(['src/editor/panels/databaseLifeCollectionsView.ts','src/editor/panels/database.ts','src/editor/panels/mapList.ts','src/editor/panels/mapSidebarSection.ts','src/editor/panels/resourceManagerViews.ts','src/editor/panels/leftProgressPane.ts','src/editor/panels/aiSidebarWorkspace.ts','src/editor/panels/eventEditor/modal.ts'].map(file=>[file,createHash('sha256').update(readFileSync(file)).digest('hex')]));
+  report.productionSources=Object.fromEntries(['src/editor/panels/databaseLifeCollectionsView.ts','src/editor/panels/database.ts','src/editor/panels/mapList.ts','src/editor/panels/mapSidebarSection.ts','src/editor/panels/resourceManagerViews.ts','src/editor/panels/leftProgressPane.ts','src/editor/panels/aiSidebarWorkspace.ts','src/editor/panels/eventEditor/modal.ts','src/editor/panels/eventEditor/commandInspector.ts','src/editor/panels/eventEditor/commandList.ts','src/editor/panels/eventEditor/content.ts'].map(file=>[file,createHash('sha256').update(readFileSync(file)).digest('hex')]));
   writeFileSync(out+'/measurements.json',JSON.stringify(report,null,2));
 }catch(e){await page.screenshot({path:out+'/failure.png'}).catch(()=>{});console.error((await page.locator('body').innerText()).slice(-3500));throw e;}finally{clearTimeout(watchdog);await browser.close();}
