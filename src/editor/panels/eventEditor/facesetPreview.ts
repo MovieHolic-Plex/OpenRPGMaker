@@ -3,6 +3,7 @@
 import { LEGACY_FACESET_SHEET_ASSETS } from "@/assets/easyrpgRtp";
 import { FACESET_FACE_ASSETS } from "@/assets/facesetFaceAssets";
 import { FACE_IMAGE_SIZE } from "@/assets/resourceSlicing";
+import { facePresentationForResource } from "@/project/facePresentation";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import {
   listDatabaseResourceOptions,
@@ -116,20 +117,8 @@ export function renderFacesetCrop(options: {
 export type FaceDisplayMode = "chip" | "bust" | "full";
 
 export function faceDisplayModeOf(resourceId: string): FaceDisplayMode {
-  const id = resourceId.trim().toLowerCase();
-  if (!id) return "chip";
-  if (id.includes("-full") || id.includes("fullbody") || id.includes("-body") || id.endsWith("/full")) {
-    return "full";
-  }
-  if (
-    id.includes("-bust")
-    || id.includes("-portrait")
-    || id.startsWith("generated-face-")
-    || id.endsWith("/bust")
-  ) {
-    return "bust";
-  }
-  return "chip";
+  const mode = facePresentationForResource(resourceId);
+  return mode === "face" ? "chip" : mode;
 }
 
 /** @deprecated use faceDisplayModeOf */
