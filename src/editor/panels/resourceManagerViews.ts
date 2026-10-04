@@ -1,12 +1,17 @@
 import { FACE_EXPRESSION_SETS, isFaceExpressionResource } from "@/assets/faceExpressionSets";
 import { renderExpressionSection } from "./resourceExpressionSection";
-import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
-import { getMonsterResource, listMonsterResources, type MonsterResource } from "@/assets/monsterResourceCatalog";
+import { builtinGeneratedResourceIds, resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+import { listMonsterResources, type MonsterResource } from "@/assets/monsterResourceCatalog";
+import { EASYRPG_MONSTER_ASSETS } from "@/assets/easyrpgRtp";
+import { SCARLOXY_MONSTER_ASSETS } from "@/assets/scarloxyPack";
+import { GENERATED_ASSET_PLAN } from "@/assets/oprnGeneratedAssetPlan";
+import { hasOpenModalLayer, isTopModal } from "@/editor/ui/modalStack";
 import { store } from "@/project/store";
 import { getResourceProfileSpec } from "@/project/resourceProfiles";
 import { uploadedAssetUrl } from "@/project/persistence/assetAccessors";
 import type { Project, ResourceProfile, UploadedAsset } from "@/project/types";
 import { el } from "@/util/dom";
+import { jsonEqual } from "@/util/structuralJson";
 import { makeSvgIcon, type SvgIconName } from "@/editor/panels/tileToolbarIcons";
 import { deckIcon } from "./aiDeckIcons";
 import { monsterResourceStatus } from "./monsterResourcePresentation";
@@ -56,11 +61,81 @@ type FilterTab = "all" | "uploaded" | "builtin";
 let currentViewMode: ViewMode = "grid";
 let currentFilterTab: FilterTab = "all";
 
+// Raw registration projection mirrors listMonsterResources (including upload masking).
+// It deliberately never resolves names/tags/descriptions. The equivalence contract is
+// exercised in resourceManagerPerformance.test.ts when the catalog authority changes.
+const retiredGeneratedMonsters = new Set([
+  "generated-enemy-reference-cocoon", "generated-enemy-reference-seed-back",
+  "generated-troop-preview-slime", "easyrpg-monster-hornet",
+]);
+let bundledMonsterIds: ReadonlySet<string> | undefined;
+function monsterIds(): ReadonlySet<string> {
+  return bundledMonsterIds ??= new Set([
+    ...GENERATED_ASSET_PLAN.assets.filter(a => a.status === "promoted" && a.resourceKind === "monster"
+      && !retiredGeneratedMonsters.has(a.resourceId)).map(a => a.resourceId),
+    ...builtinGeneratedResourceIds().filter(id => id.startsWith("generated-enemy-") && !retiredGeneratedMonsters.has(id)),
+    ...EASYRPG_MONSTER_ASSETS.map(a => a.id), ...SCARLOXY_MONSTER_ASSETS.map(a => a.id),
+  ].filter(Boolean));
+}
+let uploadDependency: Project["assets"]["uploaded"] | undefined;
+/** store.update shallow-copies this dictionary even for unrelated description edits. */
+export function resourceManagerUploadDependency(project: Project): Project["assets"]["uploaded"] {
+  const next = project.assets.uploaded;
+  if (uploadDependency === next) return next;
+  const keys = Object.keys(next);
+  if (uploadDependency && keys.length === Object.keys(uploadDependency).length
+    && keys.every(id => Object.hasOwn(uploadDependency!, id) && next[id] === uploadDependency![id])) return uploadDependency;
+  uploadDependency = next;
+  return next;
+}
+let countCache: { profiles: Project["resourceProfiles"]; uploads: Project["assets"]["uploaded"]; count: number } | undefined;
+export function resourceManagerMonsterCount(project: Project): number {
+  const uploads = resourceManagerUploadDependency(project);
+  if (countCache?.profiles === project.resourceProfiles && countCache.uploads === uploads) return countCache.count;
+  const ids = new Set([...monsterIds()].filter(id => !Object.hasOwn(project.assets.uploaded, id)));
+  for (const profile of project.resourceProfiles) {
+    if (profile.kind === "monster" && profile.assetId && !Object.hasOwn(project.assets.uploaded, profile.assetId)) ids.add(profile.assetId);
+  }
+  for (const [id, asset] of Object.entries(project.assets.uploaded)) if (id && asset.kind === "monster") ids.add(id);
+  countCache = { profiles: project.resourceProfiles, uploads, count: ids.size };
+  return ids.size;
+}
+let catalogCache: { profiles: Project["resourceProfiles"]; uploads: Project["assets"]["uploaded"];
+  metadata: Project["monsterMetadata"]; resources: readonly MonsterResource[]; byId: ReadonlyMap<string, MonsterResource> } | undefined;
+function monsterCatalog(project: Project) {
+  const uploads = resourceManagerUploadDependency(project);
+  if (!catalogCache || catalogCache.profiles !== project.resourceProfiles || catalogCache.uploads !== uploads
+    || !jsonEqual(catalogCache.metadata, project.monsterMetadata)) {
+    const resources = listMonsterResources(project);
+    catalogCache = { profiles: project.resourceProfiles, uploads, metadata: project.monsterMetadata,
+      resources, byId: new Map(resources.map(r => [r.resourceId, r])) };
+  }
+  // Small override maps are deep-cloned by unrelated store.update calls too.
+  // Remember the new equal dependency without rebuilding full catalog semantics.
+  catalogCache.metadata = project.monsterMetadata;
+  return catalogCache;
+}
+const workbenches = new WeakMap<HTMLElement, ResourceWorkbenchOptions>();
+const galleryCleanups = new WeakMap<HTMLElement, () => void>();
+const charsetCleanups = new WeakMap<HTMLElement, () => void>();
+export function disposeResourceWorkbench(container: HTMLElement): void {
+  for (const gallery of container.querySelectorAll<HTMLElement>(".rm-modern-gallery-container")) galleryCleanups.get(gallery)?.();
+  workbenches.delete(container);
+}
+export function refreshResourceWorkbenchCategories(container: HTMLElement): void {
+  const previous = workbenches.get(container);
+  if (!previous) return;
+  const project = store.getCurrent();
+  const options = { ...previous, profiles: project.resourceProfiles, uploaded: Object.values(project.assets.uploaded) };
+  container.querySelector(".rm-category-list")?.replaceWith(resourceCategoryList(options, resourceManagerMonsterCount(project)));
+  workbenches.set(container, options);
+}
+
 export function renderResourceWorkbench(container: HTMLElement, options: ResourceWorkbenchOptions): void {
   const project = store.getCurrent();
-  // 몬스터 탭의 정본은 프로필 표가 아니라 소재 카탈로그다 — 번들 RTP 에는 몬스터 그림이
-  // 1장뿐이라, 프로필만 보여주면 생성 아트·Scarloxy 팩 160여 종이 전부 숨는다.
-  const monsterResources = listMonsterResources(project);
+  // The monster catalog includes registrations absent from the project profile table.
+  const monsterResources = options.selectedKind === "monster" ? monsterCatalog(project).resources : [];
+  workbenches.set(container, options);
   let selectedProfiles = dedupeListedProfiles(options.profiles, options.uploaded)
     .filter((profile) => profile.kind === options.selectedKind)
     .filter((profile) => options.selectedKind !== "faceset" || !isFaceExpressionResource(profile.assetId));
@@ -73,7 +148,7 @@ export function renderResourceWorkbench(container: HTMLElement, options: Resourc
   
   let selectedItem: ResourceItem | null = null;
   if (selectedUploaded.length > 0) {
-    selectedItem = { type: "uploaded", asset: selectedUploaded[0]! };
+    selectedItem = { type: "uploaded", asset: selectedUploaded.find(a => a.id === options.recentAssetId) ?? selectedUploaded[0]! };
   } else if (selectedProfiles.length > 0) {
     selectedItem = { type: "profile", profile: selectedProfiles[0]! };
   }
@@ -117,7 +192,7 @@ export function renderResourceWorkbench(container: HTMLElement, options: Resourc
   };
 
   shell.append(
-    resourceCategoryList(options, monsterResources.length),
+    resourceCategoryList(options, resourceManagerMonsterCount(project)),
     options.expressionView && options.selectedKind === "faceset" ? renderExpressionSection(profile => handleSelect({ type: "profile", profile })) : options.audioPanes?.entries ?? resourceEntryList(selectedProfiles, selectedUploaded, options.actions, handleSelect, () => selectedItem, options.onImport, options.selectedKind, options.recentAssetId),
     options.audioPanes?.commands ?? resourceCommandPanel(options, previewWell, () => selectedItem)
   );
@@ -191,7 +266,7 @@ function resourceProfileRow(
   const previewUrl = resolveAssetResourceUrl(profile.assetId, { project });
   const isAudio = profile.kind === "music" || profile.kind === "sound";
   if (previewUrl && profile.kind !== "chipset" && !isAudio) {
-    const thumb = el("img", { attrs: { alt: `${profile.name} 미리보기`, src: previewUrl } }) as HTMLImageElement;
+    const thumb = el("img", { attrs: { alt: `${profile.name} 미리보기`, src: previewUrl, loading: "lazy", decoding: "async" } }) as HTMLImageElement;
     thumb.className = "rm-profile-thumb";
     row.prepend(thumb);
   }
@@ -214,6 +289,7 @@ function monsterResourceEntries(
 ): { profiles: ResourceProfile[]; uploaded: UploadedAsset[] } {
   const profiles: ResourceProfile[] = [];
   const uploaded: UploadedAsset[] = [];
+  const profileIndex = new Map(project.resourceProfiles.filter(p => p.kind === "monster").map(p => [p.assetId, p]));
   for (const resource of resources) {
     if (resource.origin === "uploaded") {
       const asset = project.assets.uploaded[resource.resourceId];
@@ -221,7 +297,7 @@ function monsterResourceEntries(
       continue;
     }
     const existing = resource.origin === "profile"
-      ? project.resourceProfiles.find((p) => p.kind === "monster" && p.assetId === resource.resourceId)
+      ? profileIndex.get(resource.resourceId)
       : undefined;
     profiles.push(
       existing !== undefined
@@ -302,193 +378,106 @@ function resourceCategoryList(options: ResourceWorkbenchOptions, monsterTotal: n
   return list;
 }
 
+/** Bounded pages work for both variable-height grid cards and compact rows. */
+export const RESOURCE_GALLERY_PAGE_SIZE = 80;
 function resourceEntryList(
-  profiles: readonly ResourceProfile[],
-  uploaded: readonly UploadedAsset[],
-  actions: UploadedAssetActions,
-  onSelect: (item: ResourceItem) => void,
-  getSelectedItem: () => ResourceItem | null,
-  onImport: () => void,
-  selectedKind: ResourceProfile["kind"],
-  recentAssetId?: string
+  profiles: readonly ResourceProfile[], uploaded: readonly UploadedAsset[], actions: UploadedAssetActions,
+  onSelect: (item: ResourceItem) => void, getSelectedItem: () => ResourceItem | null,
+  onImport: () => void, selectedKind: ResourceProfile["kind"], recentAssetId?: string,
 ): HTMLElement {
   const container = el("div", { class: "rm-entry-container rm-modern-gallery-container" });
-  
-  // Header Toolbar: Filter Pills + Search + View Switcher
   const toolbar = el("div", { class: "rm-modern-toolbar" });
-  
-  const searchWrapper = el("div", { class: "rm-modern-search-wrapper" });
-  const searchInput = el("input", {
-    class: "rm-search-input rm-modern-search",
-    attrs: { type: "search", placeholder: "리소스 검색 (이름, ID)", "aria-label": "리소스 검색" },
-  }) as HTMLInputElement;
-  searchWrapper.append(searchInput);
-
-  const filterTabs = el("div", { class: "rm-filter-pills" });
-  const makePill = (tab: FilterTab, label: string, count: number) => {
-    const pill = el("button", {
-      class: currentFilterTab === tab ? "rm-filter-pill active" : "rm-filter-pill",
-      children: [
-        el("span", { text: label }),
-        el("span", { class: "rm-pill-count", text: String(count) })
-      ],
-      attrs: { type: "button" },
-      on: {
-        click: () => {
-          currentFilterTab = tab;
-          for (const p of filterTabs.querySelectorAll(".rm-filter-pill")) p.classList.remove("active");
-          pill.classList.add("active");
-          renderList(searchInput.value);
-        }
-      }
-    });
-    return pill;
-  };
-
-  const viewToggle = el("div", { class: "rm-view-toggle" });
-  const gridBtn = el("button", {
-    class: currentViewMode === "grid" ? "rm-view-btn active" : "rm-view-btn",
-    attrs: { type: "button", title: "카드 그리드 뷰", "aria-label": "그리드 뷰" },
-    text: "⊞",
-    on: {
-      click: () => {
-        currentViewMode = "grid";
-        gridBtn.classList.add("active");
-        listBtn.classList.remove("active");
-        renderList(searchInput.value);
-      }
-    }
-  });
-  const listBtn = el("button", {
-    class: currentViewMode === "list" ? "rm-view-btn active" : "rm-view-btn",
-    attrs: { type: "button", title: "컴팩트 리스트 뷰", "aria-label": "리스트 뷰" },
-    text: "≡",
-    on: {
-      click: () => {
-        currentViewMode = "list";
-        listBtn.classList.add("active");
-        gridBtn.classList.remove("active");
-        renderList(searchInput.value);
-      }
-    }
-  });
-  viewToggle.append(gridBtn, listBtn);
-
-  toolbar.append(filterTabs, searchWrapper, viewToggle);
-
+  const search = el("input", { class: "rm-search-input rm-modern-search",
+    attrs: { type: "search", placeholder: "리소스 검색 (이름, ID)", "aria-label": "리소스 검색" } });
+  const pills = el("div", { class: "rm-filter-pills" });
   const list = el("div", { class: "rm-entry-list rm-modern-entry-list", dataset: { testid: "resource-entry-list" } });
-  const recentId = recentAssetId;
-  
-  const renderList = (filterQuery = "") => {
-    list.innerHTML = "";
-    filterTabs.innerHTML = "";
-    
-    const query = filterQuery.trim().toLowerCase();
-    
-    let filteredProfiles = profiles.filter(p => {
-      if (!query) return true;
-      return p.name.toLowerCase().includes(query) || (p.assetId && p.assetId.toLowerCase().includes(query));
-    });
-
-    let filteredUploaded = uploaded.filter(u => {
-      if (!query) return true;
-      return u.name.toLowerCase().includes(query) || u.id.toLowerCase().includes(query);
-    });
-
-    filterTabs.append(
-      makePill("all", "전체", profiles.length + uploaded.length),
-      makePill("uploaded", "내 업로드", uploaded.length),
-      makePill("builtin", "내장", profiles.length)
-    );
-
-    if (currentFilterTab === "uploaded") {
-      filteredProfiles = [];
-    } else if (currentFilterTab === "builtin") {
-      filteredUploaded = [];
-    }
-
-    if (filteredProfiles.length === 0 && filteredUploaded.length === 0) {
-      list.append(
-        el("div", {
-          class: "rm-gallery-empty",
-          children: [
-            el("div", { class: "rm-empty-illustration", attrs: { "aria-hidden": "true" }, children: [makeSvgIcon("image")] }),
-            el("div", { class: "rm-empty-title", text: query ? "검색 결과가 없습니다" : "등록된 리소스가 없습니다" }),
-            el("div", { class: "rm-empty-desc", text: "파일을 창에 드래그하거나 [가져오기] 버튼으로 추가하세요." }),
-            el("button", {
-              class: "btn primary rm-empty-cta",
-              text: "새 파일 가져오기",
-              attrs: { type: "button" },
-              on: { click: onImport }
-            })
-          ]
-        })
-      );
-      return;
-    }
-
-    const currentSelected = getSelectedItem();
-
-    if (currentViewMode === "grid") {
-      const isCharsetCategory = selectedKind === "charset" || selectedKind === "battleCharset";
-      const grid = el("div", { class: isCharsetCategory ? "rm-card-grid rm-charset-row-grid" : "rm-card-grid" });
-      
-      for (const profile of filteredProfiles) {
-        const isSelected = currentSelected?.type === "profile" && currentSelected.profile.assetId === profile.assetId;
-        if (isCharsetCategory) {
-          grid.append(renderCharsetRowCard(profile, isSelected, () => {
-            onSelect({ type: "profile", profile });
-            renderList(searchInput.value);
-          }));
-        } else {
-          grid.append(renderProfileCard(profile, isSelected, () => {
-            onSelect({ type: "profile", profile });
-            renderList(searchInput.value);
-          }));
-        }
-      }
-
-      for (const asset of filteredUploaded) {
-        const isSelected = currentSelected?.type === "uploaded" && currentSelected.asset.id === asset.id;
-        grid.append(renderUploadedCard(asset, isSelected, () => {
-          onSelect({ type: "uploaded", asset });
-          renderList(searchInput.value);
-        }, asset.id === recentId));
-      }
-
-      list.append(grid);
-    } else {
-      for (const profile of filteredProfiles) {
-        const isSelected = currentSelected?.type === "profile" && currentSelected.profile.assetId === profile.assetId;
-        list.append(resourceProfileRow(profile, isSelected, () => {
-          onSelect({ type: "profile", profile });
-          renderList(searchInput.value);
-        }));
-      }
-
-      if (filteredUploaded.length > 0) {
-        const uploadHeader = el("div", { class: "rm-section-title", text: `업로드 리소스 (${filteredUploaded.length})` });
-        list.append(uploadHeader);
-        const uploadList = el("div", { class: "rm-upload-list", dataset: { testid: "resource-upload-list" } });
-        for (const asset of filteredUploaded) {
-          const isSelected = currentSelected?.type === "uploaded" && currentSelected.asset.id === asset.id;
-          uploadList.append(uploadedAssetRow(asset, actions, isSelected, () => {
-            onSelect({ type: "uploaded", asset });
-            renderList(searchInput.value);
-          }, asset.id === recentId));
-        }
-        list.append(uploadList);
-      }
-    }
+  const pager = el("div", { attrs: { "aria-label": "리소스 페이지" } });
+  Object.assign(pager.style, { display: "flex", gap: "8px", alignItems: "center", flexShrink: "0" });
+  const label = el("span", { attrs: { role: "status" } });
+  let page = 0;
+  let initial = true;
+  let activeNode: HTMLElement | undefined;
+  let cleanups: Array<() => void> = [];
+  const cleanup = () => { for (const dispose of cleanups) dispose(); cleanups = []; };
+  galleryCleanups.set(container, cleanup);
+  const sameItem = (a: ResourceItem | null, b: ResourceItem) => a?.type === b.type &&
+    (a.type === "uploaded" && b.type === "uploaded" ? a.asset.id === b.asset.id
+      : a.type === "profile" && b.type === "profile" && (a.profile === b.profile ||
+        (!!a.profile.assetId && a.profile.assetId === b.profile.assetId)));
+  const choose = (item: ResourceItem, node: HTMLElement) => {
+    if (sameItem(getSelectedItem(), item)) return;
+    activeNode?.classList.remove("active"); activeNode?.setAttribute("aria-selected", "false");
+    node.classList.add("active"); node.setAttribute("aria-selected", "true"); activeNode = node;
+    onSelect(item);
   };
-
-  searchInput.addEventListener("input", () => {
-    renderList(searchInput.value);
-  });
-
-  renderList();
-  container.append(toolbar, list);
-  return container;
+  const previous = el("button", { text: "이전", attrs: { type: "button", "aria-label": "이전 리소스 페이지" },
+    dataset: { testid: "resource-page-prev" }, on: { click: () => { page--; renderList(); } } });
+  const next = el("button", { text: "다음", attrs: { type: "button", "aria-label": "다음 리소스 페이지" },
+    dataset: { testid: "resource-page-next" }, on: { click: () => { page++; renderList(); } } });
+  pager.append(previous, label, next);
+  if (recentAssetId) currentFilterTab = "all";
+  for (const [tab, text, count] of [["all", "전체", profiles.length + uploaded.length],
+    ["uploaded", "내 업로드", uploaded.length], ["builtin", "내장", profiles.length]] as const) {
+    const pill = el("button", { class: `rm-filter-pill${currentFilterTab === tab ? " active" : ""}`,
+      attrs: { type: "button" }, children: [el("span", { text }), el("span", { class: "rm-pill-count", text: String(count) })],
+      on: { click: () => { currentFilterTab = tab; page = 0;
+        for (const button of pills.children) button.classList.toggle("active", button === pill); renderList(); } } });
+    pills.append(pill);
+  }
+  const toggle = el("div", { class: "rm-view-toggle" });
+  for (const [mode, text, name] of [["grid", "⊞", "그리드 뷰"], ["list", "≡", "리스트 뷰"]] as const) {
+    const button = el("button", { class: `rm-view-btn${currentViewMode === mode ? " active" : ""}`, text,
+      attrs: { type: "button", "aria-label": name }, on: { click: () => {
+        currentViewMode = mode; for (const b of toggle.children) b.classList.toggle("active", b === button); renderList();
+      } } });
+    toggle.append(button);
+  }
+  toolbar.append(pills, el("div", { class: "rm-modern-search-wrapper", children: [search] }), toggle);
+  const all: ResourceItem[] = [...profiles.map(profile => ({ type: "profile" as const, profile })),
+    ...uploaded.map(asset => ({ type: "uploaded" as const, asset }))];
+  const renderList = () => {
+    cleanup(); activeNode = undefined; list.replaceChildren(); list.scrollTop = 0;
+    const query = search.value.trim().toLowerCase();
+    const filtered = all.filter(item => {
+      if (currentFilterTab === "uploaded" && item.type !== "uploaded" || currentFilterTab === "builtin" && item.type !== "profile") return false;
+      const name = item.type === "uploaded" ? item.asset.name : item.profile.name;
+      const id = item.type === "uploaded" ? item.asset.id : item.profile.assetId;
+      return !query || name.toLowerCase().includes(query) || !!id?.toLowerCase().includes(query);
+    });
+    if (initial && recentAssetId) {
+      const index = filtered.findIndex(item => item.type === "uploaded" && item.asset.id === recentAssetId);
+      if (index >= 0) page = Math.floor(index / RESOURCE_GALLERY_PAGE_SIZE);
+    }
+    initial = false; page = Math.max(0, Math.min(page, Math.ceil(filtered.length / RESOURCE_GALLERY_PAGE_SIZE) - 1));
+    previous.disabled = page === 0; next.disabled = (page + 1) * RESOURCE_GALLERY_PAGE_SIZE >= filtered.length;
+    label.textContent = filtered.length ? `${page * RESOURCE_GALLERY_PAGE_SIZE + 1}–${Math.min((page + 1) * RESOURCE_GALLERY_PAGE_SIZE, filtered.length)} / ${filtered.length}` : "0 / 0";
+    if (!filtered.length) {
+      list.append(el("div", { class: "rm-gallery-empty", children: [
+        el("div", { class: "rm-empty-title", text: query ? "검색 결과가 없습니다" : "등록된 리소스가 없습니다" }),
+        el("button", { class: "btn primary rm-empty-cta", text: "새 파일 가져오기", attrs: { type: "button" }, on: { click: onImport } }),
+      ] })); return;
+    }
+    const charset = selectedKind === "charset" || selectedKind === "battleCharset";
+    const host = currentViewMode === "grid" ? el("div", { class: charset ? "rm-card-grid rm-charset-row-grid" : "rm-card-grid" }) : list;
+    for (const item of filtered.slice(page * RESOURCE_GALLERY_PAGE_SIZE, (page + 1) * RESOURCE_GALLERY_PAGE_SIZE)) {
+      const selected = sameItem(getSelectedItem(), item);
+      let node: HTMLElement;
+      const select = () => choose(item, node);
+      if (item.type === "uploaded") node = currentViewMode === "grid"
+        ? renderUploadedCard(item.asset, selected, select, item.asset.id === recentAssetId)
+        : uploadedAssetRow(item.asset, actions, selected, select, item.asset.id === recentAssetId);
+      else node = currentViewMode === "grid" ? (charset
+        ? renderCharsetRowCard(item.profile, selected, select, list)
+        : renderProfileCard(item.profile, selected, select)) : resourceProfileRow(item.profile, selected, select);
+      node.setAttribute("aria-selected", String(selected));
+      if (selected) activeNode = node;
+      const dispose = charsetCleanups.get(node); if (dispose) cleanups.push(dispose);
+      host.append(node);
+    }
+    if (host !== list) list.append(host);
+  };
+  search.addEventListener("input", () => { page = 0; renderList(); });
+  renderList(); container.append(toolbar, list, pager); return container;
 }
 
 /**
@@ -499,26 +488,30 @@ function resourceEntryList(
  * 인터벌 336개가 영구히 남아 3~4.5Hz 로 캔버스를 그렸다(카드 105장 · 닫은 뒤에도 그대로). 목록은 프로젝트/자산
  * 변경마다 다시 그려지므로 렌더마다 누적됐다.
  */
-function startCharsetRowTicker(card: HTMLElement, advance: readonly (() => void)[]): void {
-  if (advance.length === 0) return;
-  if (typeof window === "undefined" || typeof window.setInterval !== "function") return;
-  let mounted = false;
-  // 붙기를 기다리는 동안은 상한을 둔다. 붙지 못한 카드(목록이 그 사이 다시 그려져 버려진 경우)를
-  // 밑업 없이 기다리면 그 시계가 영원히 돈다 — 실측(2026-09-25): 모달을 닫아 카드가 0장인데도 21개가 돌았다.
-  let waitedTicks = 0;
+function startCharsetRowTicker(card: HTMLElement, scroller: HTMLElement, draw: (animate: boolean) => void): () => void {
+  let mounted = false, waitedTicks = 0, intersecting = false, disposed = false;
+  const motion = typeof window.matchMedia === "function" ? window.matchMedia("(prefers-reduced-motion: reduce)") : undefined;
+  const observer = typeof IntersectionObserver === "function" ? new IntersectionObserver(entries => {
+    for (const entry of entries) if (entry.target === card) intersecting = entry.isIntersecting;
+  }, { root: scroller }) : undefined;
+  observer?.observe(card);
+  const dispose = () => { if (disposed) return; disposed = true; window.clearInterval(timer); observer?.disconnect(); charsetCleanups.delete(card); };
   const timer = window.setInterval(() => {
     if (!card.isConnected) {
-      // 아직 붙지 않은 프레임은 기다린다(el() 로 만든 카드는 다음 렌더에서 append 된다).
-      if (!mounted && waitedTicks < CHARSET_ROW_ATTACH_TICKS) {
-        waitedTicks += 1;
-        return;
-      }
-      window.clearInterval(timer);
-      return;
+      if (!mounted && waitedTicks++ < CHARSET_ROW_ATTACH_TICKS) return;
+      dispose(); return;
     }
     mounted = true;
-    for (const step of advance) step();
+    if (document.hidden || card.closest("[hidden],[aria-hidden='true'],.is-parked")) return;
+    const modal = card.closest('[data-testid="resource-modal"]');
+    if (modal && hasOpenModalLayer() && !isTopModal(modal)) return;
+    if (!observer) {
+      const a = card.getBoundingClientRect(), b = scroller.getBoundingClientRect();
+      intersecting = a.bottom > b.top && a.top < b.bottom && a.right > b.left && a.left < b.right;
+    }
+    if (intersecting) draw(!motion?.matches);
   }, CHARSET_ROW_TICK_MS);
+  charsetCleanups.set(card, dispose); return dispose;
 }
 
 /** 붙기를 기다리는 최대 톱 수. 이 안에 붙지 않으면 버려진 카드로 보고 시계를 거둔다. */
@@ -527,7 +520,7 @@ const CHARSET_ROW_ATTACH_TICKS = 4;
 /** 8칸을 한 시계로 돌린다. 예전의 칸별 220~325ms 대신 한 박자로 맞춘다. */
 const CHARSET_ROW_TICK_MS = 260;
 
-function renderCharsetRowCard(profile: ResourceProfile, isSelected: boolean, onSelect: () => void): HTMLElement {
+function renderCharsetRowCard(profile: ResourceProfile, isSelected: boolean, onSelect: () => void, scroller: HTMLElement): HTMLElement {
   const project = store.getCurrent();
   const previewUrl = resolveAssetResourceUrl(profile.assetId, { project });
   const dims = profile.imageWidth && profile.imageHeight ? `${profile.imageWidth}×${profile.imageHeight}` : "";
@@ -551,11 +544,13 @@ function renderCharsetRowCard(profile: ResourceProfile, isSelected: boolean, onS
 
   const charactersStrip = el("div", { class: "rm-charset-characters-strip" });
   const advanceFns: Array<() => void> = [];
+  const drawFns: Array<() => void> = [];
   
   if (previewUrl) {
     const sheetImg = new Image();
     sheetImg.crossOrigin = "anonymous";
-    sheetImg.src = previewUrl;
+    let loading = false;
+    let drawn = false;
 
     // 8 characters in RM2K3 sheet (4 across, 2 down)
     const DIRECTIONS = ["down", "left", "up", "right"] as const;
@@ -575,7 +570,7 @@ function renderCharsetRowCard(profile: ResourceProfile, isSelected: boolean, onS
 
       const drawFrame = () => {
         const ctx = canvas.getContext("2d");
-        if (!ctx || !sheetImg.complete) return;
+        if (!ctx || !sheetImg.complete || !sheetImg.naturalWidth) return;
         ctx.imageSmoothingEnabled = false;
         ctx.clearRect(0, 0, 24, 32);
 
@@ -592,11 +587,7 @@ function renderCharsetRowCard(profile: ResourceProfile, isSelected: boolean, onS
         ctx.drawImage(sheetImg, srcX, srcY, 24, 32, 0, 0, 24, 32);
       };
 
-      if (sheetImg.complete) {
-        drawFrame();
-      } else {
-        sheetImg.onload = drawFrame;
-      }
+      drawFns.push(drawFrame);
 
       // Continuous 4-direction walk rotation loop
       advanceFns.push(() => {
@@ -608,7 +599,12 @@ function renderCharsetRowCard(profile: ResourceProfile, isSelected: boolean, onS
       });
       charactersStrip.append(charBox);
     }
-    startCharsetRowTicker(card, advanceFns);
+    startCharsetRowTicker(card, scroller, animate => {
+      if (!loading) { loading = true; sheetImg.src = previewUrl; }
+      if (!sheetImg.complete || !sheetImg.naturalWidth) return;
+      if (!drawn) { for (const draw of drawFns) draw(); drawn = true; }
+      else if (animate) for (const advance of advanceFns) advance();
+    });
   }
 
   card.append(header, charactersStrip);
@@ -631,7 +627,7 @@ function renderProfileCard(profile: ResourceProfile, isSelected: boolean, onSele
   if (previewUrl && !isAudio) {
     const img = el("img", {
       class: "rm-card-img",
-      attrs: { src: previewUrl, alt: profile.name },
+      attrs: { src: previewUrl, alt: profile.name, loading: "lazy", decoding: "async" },
     }) as HTMLImageElement;
     previewBox.append(img);
   } else if (isAudio) {
@@ -664,7 +660,7 @@ function renderUploadedCard(
   const dims = asset.meta.width && asset.meta.height ? `${asset.meta.width}×${asset.meta.height}` : "";
 
   const card = el("div", {
-    class: recent ? "rm-asset-card uploaded is-recent" : isSelected ? "rm-asset-card uploaded active" : "rm-asset-card uploaded",
+    class: `rm-asset-card uploaded${recent ? " is-recent" : ""}${isSelected ? " active" : ""}`,
     dataset: recent ? { testid: `resource-upload-${asset.id}`, recent: "true" } : { testid: `resource-upload-${asset.id}` },
     on: { click: onSelect },
   });
@@ -676,7 +672,7 @@ function renderUploadedCard(
   if (previewUrl) {
     const img = el("img", {
       class: "rm-card-img",
-      attrs: { src: previewUrl, alt: asset.name },
+      attrs: { src: previewUrl, alt: asset.name, loading: "lazy", decoding: "async" },
     });
     previewBox.append(img);
   }
@@ -832,11 +828,11 @@ function uploadedAssetRow(
   recent = false
 ): HTMLElement {
   const row = el("div", {
-    class: recent ? "rm-asset-row is-recent" : isSelected ? "rm-asset-row active" : "rm-asset-row",
+    class: `rm-asset-row${recent ? " is-recent" : ""}${isSelected ? " active" : ""}`,
     dataset: recent ? { testid: `resource-upload-${asset.id}`, recent: "true" } : { testid: `resource-upload-${asset.id}` },
     on: { click: onSelect },
   });
-  const preview = el("img", { attrs: { src: uploadedAssetUrl(asset), alt: `${asset.name} 미리보기` } }) as HTMLImageElement;
+  const preview = el("img", { attrs: { src: uploadedAssetUrl(asset), alt: `${asset.name} 미리보기`, loading: "lazy", decoding: "async" } }) as HTMLImageElement;
   preview.className = "rm-preview";
   const dims = asset.meta.width && asset.meta.height ? `${asset.meta.width}x${asset.meta.height}px` : "크기 미확인";
   row.append(preview, uploadedAssetInfo(asset, dims));
@@ -926,7 +922,7 @@ function renderInspector(
   const spec = getResourceProfileSpec(kind);
   const resourceId = isUploaded ? item.asset.id : item.profile.assetId;
   const monsterResource = kind === "monster" && resourceId !== undefined
-    ? getMonsterResource(project, resourceId)
+    ? monsterCatalog(project).byId.get(resourceId)
     : undefined;
 
   let previewUrl = "";

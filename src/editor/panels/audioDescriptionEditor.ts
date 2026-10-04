@@ -9,6 +9,7 @@ import type { AudioResourceKind, ResourceKind, UploadedAsset } from "@/project/t
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
 import { createAudioDescriptionDetail, type AudioDescriptionDetail } from "./audioDescriptionDetail";
+import { createVirtualList, type VirtualList } from "./databaseListVirtualizer";
 import { openAudioDescriptionDirtyDialog } from "./audioDescriptionDirtyDialog";
 
 /** Ephemeral manager-owned draft. Authored data remains exclusively in Project. */
@@ -34,14 +35,30 @@ export class AudioDescriptionEditor {
     class: "rm-entry-list", dataset: { testid: "resource-entry-list" },
   });
 
+  private readonly virtualRows: VirtualList<AudioResource>;
+  private visibleRows: readonly AudioResource[] = [];
+  private appliedRows: readonly AudioResource[] | undefined;
+  private rowUpdate = 0;
+  private readonly empty = el("div", { class: "rm-entry-empty", text: "해당 음원이 없습니다." });
+  private readonly resize: ResizeObserver | undefined;
+
   constructor(private readonly refresh: () => void) {
     this.entries.append(
       this.search,
       el("label", { class: "rm-audio-filter", children: [this.missing, "설명 없음만"] }),
       this.notice, this.rows,
     );
-    this.missing.addEventListener("change", refresh);
-    this.search.addEventListener("input", refresh);
+    Object.assign(this.entries.style, { display: "flex", flexDirection: "column", minHeight: "0", overflow: "hidden" });
+    Object.assign(this.rows.style, { display: "block", overflowY: "auto", flex: "1 1 auto", minHeight: "0" });
+    this.virtualRows = createVirtualList({ container: this.rows, items: [] as AudioResource[], rowHeight: 32, overscan: 6,
+      renderRow: item => this.renderRow(item) });
+    // A zero-height/detached initial host must not trigger the virtualizer's
+    // full-list fallback. Feed a bounded slice until the real viewport exists.
+    this.resize = typeof ResizeObserver === "function" ? new ResizeObserver(() => this.applyRows()) : undefined;
+    this.resize?.observe(this.rows);
+    const filter = () => { this.rows.scrollTop = 0; refresh(); };
+    this.missing.addEventListener("change", filter);
+    this.search.addEventListener("input", filter);
   }
 
   private dirty(): boolean {
@@ -143,29 +160,50 @@ export class AudioDescriptionEditor {
     this.notice.textContent = current && !visible.some(item => item.id === current.id)
       ? "선택한 음원은 필터 결과 밖에 있습니다."
       : `${visible.length}개`;
-    this.rows.replaceChildren(...visible.map(item => el("button", {
-      class: `rm-profile-row rm-audio-row${item.id === current?.id ? " active" : ""}`,
-      text: item.name,
-      attrs: { type: "button", "aria-pressed": String(item.id === current?.id), title: item.name },
-      dataset: {
-        testid: "audio-resource-row", resourceId: item.id, resourceKind: item.kind,
-        descriptionSource: item.descriptionSource,
-      },
-      on: { click: () => {
-        if (item.id === this.selectedId) return;
-        this.request(() => {
-          this.releaseDetail();
-          this.selectedId = item.id;
-          this.refresh();
-          this.detail?.input.focus();
-        });
-      } },
-    })));
-    if (visible.length === 0) this.rows.append(el("div", { class: "rm-entry-empty", text: "해당 음원이 없습니다." }));
+    this.visibleRows = visible;
+    const update = ++this.rowUpdate;
+    this.applyRows();
+    if (!this.rows.isConnected) queueMicrotask(() => { if (!this.disposed && update === this.rowUpdate) this.applyRows(); });
+    this.patchSelection();
     return {
       entries: this.entries,
       commands: this.detail?.element ?? el("aside", { class: "rm-command-panel", text: "음원을 선택하세요." }),
     };
+  }
+
+  private renderRow(item: AudioResource): HTMLElement {
+    const row = el("button", {
+      class: `rm-profile-row rm-audio-row${item.id === this.selectedId ? " active" : ""}`, text: item.name,
+      attrs: { type: "button", "aria-pressed": String(item.id === this.selectedId), title: item.name },
+      dataset: { testid: "audio-resource-row", resourceId: item.id, resourceKind: item.kind, descriptionSource: item.descriptionSource },
+      on: { click: () => {
+        if (item.id === this.selectedId) return;
+        this.request(() => { this.releaseDetail(); this.selectedId = item.id; this.refresh(); this.detail?.input.focus(); });
+      } },
+    });
+    Object.assign(row.style, { height: "32px", minHeight: "32px", boxSizing: "border-box", width: "100%", margin: "0" });
+    return row;
+  }
+
+  private applyRows(): void {
+    if (this.disposed) return;
+    const next = this.rows.clientHeight > 0 ? this.visibleRows : this.visibleRows.slice(0, 80);
+    const old = this.appliedRows;
+    if (!old || old.length !== next.length || next.some((item, i) => item.id !== old[i]?.id
+      || item.kind !== old[i]?.kind || item.name !== old[i]?.name || item.descriptionSource !== old[i]?.descriptionSource)) {
+      this.virtualRows.setItems(next);
+      this.appliedRows = next;
+    } else this.virtualRows.render();
+    if (!this.visibleRows.length) this.rows.append(this.empty);
+    else this.empty.remove();
+    this.patchSelection();
+  }
+
+  private patchSelection(): void {
+    for (const row of this.rows.querySelectorAll<HTMLElement>('[data-testid="audio-resource-row"]')) {
+      const active = row.dataset.resourceId === this.selectedId;
+      row.classList.toggle("active", active); row.setAttribute("aria-pressed", String(active));
+    }
   }
 
   private commit(reset: boolean): boolean {
@@ -213,6 +251,9 @@ export class AudioDescriptionEditor {
 
   dispose(): void {
     this.disposed = true;
+    ++this.rowUpdate;
+    this.resize?.disconnect();
+    this.virtualRows.setItems([]);
     this.closePrompt?.();
     this.closePrompt = undefined;
     this.releaseDetail();

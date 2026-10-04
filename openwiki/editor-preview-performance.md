@@ -72,3 +72,72 @@ For 1/16/64-cell animation fixtures, count stage child additions/removals over t
 after the pool reaches its largest frame, equal-size playback has zero child replacements.
 Stream assistant DOM while an animation is paused/cached: zero preview MutationObserver
 callbacks; the assistant must continue its existing background work.
+
+## Resource galleries and audio manager (O1/O2/O3/N3)
+
+`resourceManagerViews.ts` caps either image layout at 80 entries per page. Search/filter
+changes reset paging; next/previous reach every result. A recent import selects and
+reveals its containing page even when the former filter was built-in only. Gallery
+selection patches only the old/new active classes and ARIA selection, then updates the
+inspector; it preserves gallery nodes, scroll and image elements. Grid and list images
+use native `loading="lazy"`/`decoding="async"`; the selected inspector stays eager.
+
+Charset cards observe intersection against their actual gallery scroller. Their existing
+260ms interval is now a bounded ownership/visibility check: it loads/draws only an
+intersecting card in a visible document/surface, yields to a registered modal above the
+resource manager, and draws one static frame under reduced motion. All eight initial
+cells are drawn together when the image becomes ready. Offscreen cards do not decode a
+sheet by assigning its URL until first eligible visibility. Without IntersectionObserver,
+geometry intersection is the fallback. Gallery replacement, category change and manager
+close dispose tickers/observers explicitly; the former four-tick abandoned-attachment
+limit and first-tick detached cleanup remain. No body observer is introduced.
+
+`audioDescriptionEditor.ts` uses the existing `createVirtualList` with 32px uniform rows
+and six-row overscan in a block scroller. The zero-height/detached fallback receives at
+most 80 items until a measured viewport exists. A resize then feeds the complete results;
+scrolling reaches the full catalog. Selection updates mounted row classes without
+replacing them. Filtering resets scroll but retains search input, draft/caret and the
+selected-outside-results notice. `resourceManager.ts` retains the SE/BGM shell, category
+sidebar and file input while searching/selecting/editing descriptions. It swaps only a
+changed detail/player and refreshes categories only when resource dependencies change.
+Dirty save/discard/cancel and player release/close ownership remain in the existing editor.
+The modal's repeated initialKind argument is an opening hint, preserving later tab choice.
+
+Non-monster rendering never calls `listMonsterResources`. A raw registration count is
+cached by profile references and uploaded-entry identity; full names/tags/descriptions are cached
+only on monster-pane demand by those dependencies plus effective `monsterMetadata`. The inspector
+uses the same ID index, without re-enumeration. Audio-description changes invalidate
+neither cache. `store.update` preserves untouched profiles but shallow-copies the upload
+dictionary and deep-clones override maps; the manager coalesces identical uploaded-entry
+dictionaries and compares the small override map only on monster demand. No upload
+bytes or full catalog metadata are serialized for this comparison. The catalog currently
+exports no raw-ID projection, so the manager mirrors its registration rules locally:
+generated retirement filters, raw ID dedupe, non-monster upload masking, dictionary-key
+identity and profile registrations. `resourceManagerPerformance.test.ts` compares this
+projection with the authority including shadow/retirement/orphan cases so future catalog
+registration changes require synchronizing this narrow projection.
+
+Focused contracts (not executed): `resourceManagerPerformance.test.ts` covers catalog
+call counts/invalidation, count equivalence, both gallery page limits, recent import
+reachability, zero gallery child replacements on selection, lazy image attributes,
+SE/BGM shell/row retention, measured virtualization, dirty draft navigation and charset
+visibility/reduced-motion/obscuration/cleanup. `resourceManagerMonsterCatalog.test.ts`
+now checks full catalog reachability by paging/search rather than all cards in one DOM.
+
+Browser QA: use a real project with >160 picture/face entries and a large SE/BGM catalog.
+Select three cards at a nonzero scroll offset: gallery childList additions/removals must
+be zero, with only two active-state patches. Type/delete a query, switch both layouts,
+page to the last result and import another item: no page exceeds 80 and the import is
+selected/revealed. Compare requests/decodes with cold and warm caches separately.
+For charset grid, count canvas drawImage calls by card during five seconds at top/bottom,
+under reduced motion, hidden document, an overlay and after close. Only visible eligible
+cards advance; reduced motion draws static cells; closing removes all owned timers.
+For SE/BGM, use a viewport with a measured 320px row area: expect roughly ten visible
+rows plus at most twelve overscan rows, and stable shell/search nodes through query and
+selection. Test empty/full filters, selected-outside-filter, draft save/discard/cancel,
+caret retention, uploaded deletion and a single preview player. Instrument catalog calls:
+SE/BGM search/select must make zero monster metadata calls; enter monsters once, select
+three entries, then edit an audio description: one initial catalog computation, no extra
+inspector calls. Upload masking/monster metadata edits must produce the correct counts
+and effective inspector metadata. These are source guarantees/recipes, not measured
+latency or CPU improvements.
