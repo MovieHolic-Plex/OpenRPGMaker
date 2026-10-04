@@ -145,6 +145,9 @@ def view(data, cid):
     groups = document.get('groups', [])
     result_file = Path(data) / 'concepts' / cid / 'art-result.json'
     current = result_file.is_file() and digest(result_file) == document.get('artResultSha256')
+    previous_file = result_file.with_name('art-result.previous.json')
+    previous_visible = (not current and c['stage'] in ('art', 'art-layout-review', 'art-context-review')
+                        and previous_file.is_file() and digest(previous_file) == document.get('artResultSha256'))
     context_path = Path(data) / 'concepts' / cid / 'art-context-review.json'
     context_reviews = read(context_path).get('groups', {}) if context_path.is_file() else {}
     saved = selections(cid)
@@ -175,13 +178,15 @@ def view(data, cid):
                     item['reasons'] = list(item['reasons']) + (explanation or ['조립한 공간의 정체성·축척·접합·동선·화풍 검수가 필요합니다.'])
                     item['summary'] = '부품 검수 통과 · 조립 예시 수정 필요' if candidate['passed'] else item['summary']
             token = fingerprint({'candidate': candidate, 'contextReview': context}) if needs_context else candidate_token
-            valid = current
+            valid = current or previous_visible
             try:
                 for r in candidate['sources'] + candidate['images'] + [candidate['sheet']]: verified(root, r)
             except (ValueError, OSError, KeyError): valid = False
-            item['ready'] = valid and candidate['passed'] and context_ok
-            item.update(fingerprint=token, eligible=not calibration and valid and candidate['passed'] and context_ok and c['stage'] == 'art-review', stale=not valid)
-            item['selected'] = not calibration and valid and candidate['passed'] and context_ok and saved.get(group['id'], {}).get('fingerprint') == token
+            item['ready'] = current and valid and candidate['passed'] and context_ok
+            item.update(fingerprint=token, eligible=current and not calibration and valid and candidate['passed'] and context_ok and c['stage'] == 'art-review', stale=not valid)
+            item['selected'] = current and not calibration and valid and candidate['passed'] and context_ok and saved.get(group['id'], {}).get('fingerprint') == token
+            if previous_visible:
+                item['summary'] = '이전 후보 · 새 표본 제작 중 (선택 불가)'
             if calibration:
                 item['caution'] = '시점 확인용 표본입니다. 표본 합격 뒤 공간을 재조립하여 검수해야 선택할 수 있습니다.'
             if item['selected']: count += 1

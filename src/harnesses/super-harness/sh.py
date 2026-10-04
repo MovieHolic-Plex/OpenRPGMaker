@@ -618,7 +618,7 @@ def start_art(c):
                   ART_FEEDBACK=feedback, ART_LIMITS=art_feedback.limits(DATA, cid),
                   ART_MODEL_OVERRIDE=json.loads(store.setting('art_model_overrides') or '{}').get(cid))
     start_codex(cid, 'art', 'prepare', prompt, cdir(cid, 'art-result.json'), write_root=wt)
-    store.update_concept(cid, status='running', note='전용 하네스로 칩 후보 제작 중')
+    store.update_concept(cid, status='running', note='형태·시점 명세와 제작 주문서 준비 중')
 
 
 def on_art(meta, code, result):
