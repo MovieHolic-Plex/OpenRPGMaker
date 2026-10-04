@@ -36,6 +36,16 @@ def prepare(root, request):
             raise ValueError('준비된 그림 판 state.json 없음')
     else:
         raise ValueError(f'감독 실행 경로가 아직 없는 하네스: {harness}')
+    override = request.get('modelOverride')
+    if override:
+        if not isinstance(override, dict) or harness != 'modern-chipset' or override.get('backend') not in ('codex', 'claude') or not isinstance(override.get('model'), str) or not override['model'].strip() or override.get('effort') not in ('low', 'medium', 'high'):
+            raise ValueError('승인된 그림 모델 설정 형식 오류')
+        env['VEH_HARNESS_BACKEND'] = override['backend']
+        if override['backend'] == 'codex':
+            env.update(VEH_CODEX_MODEL=override['model'], VEH_CODEX_EFFORT=override['effort'],
+                       VEH_CODEX_BIN=os.environ.get('SUPER_HARNESS_CODEX_BIN', 'codex'))
+        else:
+            env.update(VEH_HARNESS_MODEL=override['model'], VEH_HARNESS_EFFORT=override['effort'])
     return [sys.executable, *command], env
 
 
