@@ -212,3 +212,42 @@ When extending packs, add capability requirements that the shared runtime alread
 ### Executable first romance scene (2026-10-03)
 
 The bounded romance/talk/single/scene route now prepares a provisional one-map conversation and internal registered contract before the saved AI handoff. `author_romance_scene` builds native commands atomically; the final acceptance gate freezes identities, choice labels and source, executes both branches/revisit/cancel/ending and player-save resumption, and requires a current image-backed `review_map` verdict in the team runner. Draft names or a model completion statement are insufficient. Other genres retain their existing route. Scope, extraction limits, ownership and reproduction: [romance-scene](harnesses/romance-scene.md).
+
+### Click-first interview and fresh art (2026-10-04)
+
+The production `projectInterviewDialog.ts` no longer maps answers to bundled branch
+illustrations. Genre/answer controls are text buttons, with a full-viewport motion
+background while generation is pending. `interviewSceneGeneration.ts` sends the
+actual concept, choices, blend, protagonist and notes to the selected account's
+image provider. It asks for a fresh composition with locked 16-bit pixel direction;
+unset identities must remain absent. These images are ephemeral interview art,
+not playable maps, sprites or facts added to the saved brief.
+
+A 750ms debounce, request identity, abort controller and disposed-dialog check keep
+old responses from replacing the current selection. On a changed choice, old art
+is immediately removed. Repeated unchanged renders do not spend another request;
+`다시 그리기` explicitly requests a fresh variant. Each result must decode, pass
+size/aspect checks, and be delivered to the configured vision model. All six
+checks (pixel grid, limited palette, composition, selected facts, identity, no text)
+must be true with no findings. Rejection triggers a fresh generation containing
+its findings, up to three attempts. Malformed/unacknowledged reviews fail closed.
+An unavailable provider or exhausted gate never disables navigation and never
+falls back to the old branch image bank. Model judgment is not a mathematical
+certification of historical hardware bit depth.
+
+The header and navigation are outside the scrolling content, including the final
+confirmation. The shared first-world arrival permits selecting a genre and
+starting with no typing; optional prose and example text remain available. There
+are no shortcut hints in these early surfaces. New-project name and screen-size
+controls remain visible with a separate scrolling content area and fixed actions.
+The full detailed authoring brief still passes internally to the AI assistant;
+the interface does not show the execution checklist.
+
+Desktop image calls now use `companionRequestBaseUrl()` like chat calls. A relative
+`/v1` request from `app://oprn` previously targeted the asset protocol instead of
+the Electron companion. Browser calls still use their own origin.
+
+New cinematic interviews seed `pixel-cinematic` dialogue when no style is authored.
+Legacy briefs keep the preset-specific recommendation and existing style overrides
+are untouched. The automatically generated garden QA exposed the prior default
+`story-cutscene → gold`; an art prompt alone did not correct that product default.

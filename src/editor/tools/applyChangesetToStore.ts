@@ -66,6 +66,7 @@ const MAP_ONLY_WRITE_TOOLS = new Set([
   "stamp_layer_block",
   "paint_shadow",
   "sculpt_relief",
+  "design_terrain", "lay_terrain_road", "place_terrain_ramp",
   "paint_road",
   "stamp_structure",
   "build_house",

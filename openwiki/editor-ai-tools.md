@@ -117,6 +117,33 @@
 - 타일을 고르지 않으므로 `tilesetReferenceTools` 의 WRITERS/TILE_CHOOSERS, 패널 `MAP_TILE_TOOLS` 에는 넣지 않았다.
 - `docs/tool-catalog.md` 는 손으로 세 줄을 넣었다(생성 스크립트가 vitest 를 돌려 실행하지 않음) — 다음 재생성 때 확인.
 
+## 지형 설계·고지 집·실제 통행 조수 연결 (2026-10-04)
+
+`src/editor/tools/terrainTools.ts`는 에디터 아이콘 도크의 기존 계획기를 조수 레지스트리에 연결한다.
+새 타일 번호나 별도 집 조립 규칙을 만들지 않는다. `find_tools`로 발견할 수 있다.
+
+| 도구 | 같은 편집기 계획기 | 완료 근거 |
+|---|---|---|
+| `design_terrain` | `planTerrainFeature` / `planTerrainDesign` | 윤곽·능선·계곡·호수·혼합·군집·잠금. 높이 delta와 점을 사용하며 고지 1·2·3 프리셋 없음 |
+| `place_terrain_house` | `planQuickHouse` | 현재 타일셋의 집 부품. 벽 폭/층수/지붕 폭을 분리하고 전체 집터+문 앞의 동일 높이·빈 땅을 검사. 생성 kit도 등록하여 저장 후 부위/지붕 편집 가능 |
+| `lay_terrain_road` | `planTerrainFeature(..., "road")` | 절벽 접합에 매끈한 경사로 자동 생성. 쓰기 성공과 실제 도달을 구분하여 reachable/warnings 반환 |
+| `place_terrain_ramp` | `planReliefRamp` | 네 방향 자동 판정, 폭 2·4·6칸, stairs=false |
+| `inspect_terrain` | 실제 relief / 구조 배치 읽기 | 집별 전체 footprint 높이·문 앞·스타일 목록, 경사로/계단 수, 시야 규칙 |
+| `check_terrain_access` | `inspectTerrainRoute` | 실제 canMove/canMoveFootprint로 목적지 **칸 자체** 도달. 몸 크기·이벤트·물·높이·경사 옆벽 반영 |
+
+쓰기 네 도구는 참고문서 게이트의 WRITERS와 패널 MAP_TILE_TOOLS에 등록한다. 고정 조립기가 실제 타일을 고르므로
+TILE_CHOOSERS는 아니다. `design_terrain`/도로/경사로는 맵 체크포인트, 집은 tileset.structureKits도 바꾸므로 프로젝트 체크포인트다.
+버들항 지도에 기존 `author_house`의 다른 칩셋 번호를 쓰는 경로는 거부하고 새 집 도구를 안내한다.
+`read_tileset_reference` 이미지의 offset=0은 첫 페이지로 허용한다(엄격한 공급자 스키마가 기본 숫자 0을 채우는 경우).
+0이 아닌 이미지 offset은 여전히 거부한다.
+
+조수 그림은 `src/editor/reliefMapView.ts`의 엔진 renderRelief/줄 띠/들림을 browser `toolImageRenderer`와 headless
+`scripts/qa-game/render.mts`가 함께 쓴다. 높이만 바뀌어도 mapVisualContent가 변경을 잡는다.
+65,536칸을 넘는 relief 그림은 작은 영역 요청을 명시적으로 요구한다. 배경/스크롤 미지원 거부는 유지한다.
+실제 모델 생성 전후·SQLite 재로드·출하 플레이어의 세 집 문 앞 실제 이동 근거는
+`verify-shots/terrain-assistant-live/SUMMARY.md`와 `scripts/qa/terrain-assistant-live.mts`를 본다.
+CLI는 UI 의도 분류 요청을 대신하지 않는다. 에디터 채팅과 출하 플레이어 확인은 별도 capture 스크립트에 있다.
+
 ## 조수 쓰기 도구의 네 층 — 1~4층·그림자 (MZ식 4층, 2026-09-25)
 
 조수가 2층(바닥 장식)·4층(물체 위 물체)·그림자를 쓴다. 층 번호와 맵 칸 이름의 대응은 `src/project/mapLayers.ts` 가 정본이고,
@@ -188,12 +215,18 @@ paint_tiles·stamp_layer_block 으로 직접 깔라고, 정말 바꾸려면 tile
   「후보로 다시 / 없으면 ask_tileset_change 로 묻고 턴 끝」. `allowsTilesetChange` 도구는 건너뛴다, 읽기 도구는 검사 없음, dryRun 도 검사.
 - `ToolDefinition.defaultTilesetId(project)`(create_map 만): tilesetId 없이 불리고 이 기본값이 지금 보는 맵과 다른 계열이면 실행기가 인자에
   지금 보는 맵의 tilesetId 를 넣는다. 같은 계열이면 도구 기본값(숲마을) 그대로.
+- 기준 맵은 `familyBaselineMap`(2026-10-04): 보는 맵이 세계 지도(`worldmapSource` + `worldmap_<mapId>` 칩셋)거나 **손대지 않은 빈 기본 시작 맵**
+  (`DEFAULT_TILESET_ID` 한 가지 타일·이벤트 없음·2/3/4층·그림자·높이·기물 없음)이면 그 칩셋은 사용자가 고른 그림체가 아니다 — 프로젝트에서 칠한 맵 중 가장 많은 계열의 맵이 기준,
+  그런 맵이 없으면 검사 안 함. 검사와 create_map 기본 칩셋 채우기 둘 다 이 기준을 쓴다. 세계 지도를 만들거나 다시 빌드하는 변경 자체도 검사하지 않는다.
+  실측(2026-10-03 조선 시험): 빈 버들항 시작 맵 때문에 한양 고을을 로마풍 버들항으로 깔았다. 업로드 칩셋을 고른 빈 맵은 선택이므로 기준으로 남는다.
+  그림체를 알려 주는 쪽은 `edit_world_terrain` 결과 `data.townArt`(테마 → 같은 문화권 야외 칩셋·완성 마을, `THEME_TOWN_TILESETS`)와 장소별 「입구 x,y」.
+  실내는 테마별 야외 칩셋을 쓰지 않고 `build_hand_interior_room` + `atlas_biome_interior`(손 도트 v5), 배·던전은 `atlas_biome_dungeon` 안내를 함께 준다.
 - `ToolDefinition.fillsCurrentMapId`(ask_tileset_change 만): 비어 있는 `mapId` 인자를 `ctx.currentMapId` 로 채운다.
 - `ask_tileset_change{toTilesetId, reason, purpose?, mapId?}` — 읽기·core. 오류 `tileset-not-found`·`tileset-same-family`·`map-not-found`.
   data `{kind:"tileset-change-question", mapId, fromTilesetId, toTilesetId, fromFamily, toFamily, fromLabel, toLabel, reason, purpose}` — 패널
   `aiTilesetChangeCard.ts` 가 턴 끝에 견본 두 장 카드로 띄운다. 전체 흐름은 [teaching-assistant-tilesets.md](teaching-assistant-tilesets.md) 「칩셋 계열 규칙」.
 - 회귀: `test/tilesetFamilyGuard.test.ts`(업로드 계열 맵 + 던전 파이프라인 거부 / 같은 계열 통과 / 승인 통과 / currentMapId 없음 / reset·revert /
-  create_map 기본 칩셋 두 경우 / easyrpg 통과 / dryRun / ask_tileset_change), `test/tilesetFamily.test.ts`, `test/aiTilesetChangeCard.test.ts`.
+  create_map 기본 칩셋 두 경우 / easyrpg 통과 / dryRun / ask_tileset_change / 빈 시작 맵 기준 아님·칠한 맵 기준(h, h')), `test/tilesetFamily.test.ts`, `test/aiTilesetChangeCard.test.ts`.
 
 ### 남은 일 (네 층)
 

@@ -64,6 +64,8 @@ function createWindow(): BrowserWindow {
     width: 1280,
     height: 800,
     show: false,
+    fullscreen: true,
+    autoHideMenuBar: true,
     // 리눅스·윈도우 창 제목줄과 작업표시줄 아이콘. 맥은 앱 번들 icns 를 쓰므로 주지 않는다.
     ...(windowIcon ? { icon: windowIcon } : {}),
     webPreferences: {
@@ -312,6 +314,13 @@ app.whenReady().then(async () => {
     const window = BrowserWindow.fromWebContents(event.sender);
     if (window) destroyWindow(window);
     return true;
+  });
+  ipcMain.handle(OPRN_CHANNELS.windowControl, (event, action: unknown) => {
+    const window = BrowserWindow.fromWebContents(event.sender);
+    if (!window || !event.senderFrame?.url.startsWith(`${OPRN_APP_SCHEME}://`)) return false;
+    if (action === "toggle-fullscreen") { window.setFullScreen(!window.isFullScreen()); return true; }
+    if (action === "close") { window.close(); return true; }
+    return false;
   });
   ipcMain.handle(OPRN_CHANNELS.startRecentProjects, () => describeRecentProjects());
   ipcMain.handle(OPRN_CHANNELS.startCoverSource, (_event: IpcMainInvokeEvent, payload: unknown) =>

@@ -905,9 +905,10 @@ export class EditScene extends PhaserRuntime.Scene {
       if (chunkKey !== this.lastChunkVisibilityKey) {
         this.lastChunkVisibilityKey = chunkKey;
         for (const [key, chunk] of this.tileChunks) {
-          const comma = key.indexOf(",");
-          const cx = Number(key.slice(0, comma));
-          const cy = Number(key.slice(comma + 1));
+          const coordinates = key.slice(key.indexOf(":") + 1);
+          const comma = coordinates.indexOf(",");
+          const cx = Number(coordinates.slice(0, comma));
+          const cy = Number(coordinates.slice(comma + 1));
           const visible = cx >= firstCx && cx <= lastCx && cy >= firstCy && cy <= lastCy;
           if (chunk.visible !== visible) chunk.setVisible(visible);
         }

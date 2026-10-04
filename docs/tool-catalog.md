@@ -1,7 +1,7 @@
 # 툴 카탈로그 (자동 생성)
 
 > 이 문서는 `src/editor/tools/` 레지스트리에서 자동 파생됩니다. 직접 편집하지 마세요.
-> 총 292개 툴 — 쓰기 199, 읽기 93.
+> 총 343개 툴 — 쓰기 228, 읽기 115.
 
 생성: `generateToolCatalogMarkdown()` (editor/tools/toolCatalog.ts). OpenAI function calling 스키마는 `toOpenAiTools()`로 파생됩니다.
 
@@ -72,7 +72,11 @@
 | `remove_map` | `mapId: string` | 맵을 삭제한다(파괴적 — 꼭 필요할 때만, 이유를 먼저 설명). 시작 맵은 삭제 불가. 맵 트리/연결/이동(transfer) 참조는 함께 정리되며, 무결성 검증에 실패하면 거부된다. |
 | `stamp_layer_block` | `mapId: string`, `x: integer`, `y: integer`, `layers: object`, `reshape?: boolean`, `referencePurpose?: string` | 여러 층 배열을 (x,y) 부터 한 번에 찍는다 — 여러 칸 물체(나무 2×3·집)나 참고문서의 완성 예제 배열을 그대로 옮길 때. 층: 1층 바닥(물·흙·벽 자동타일), 2층 바닥 장식(1층 위에 겹치는 풀·흙 자동타일, 캐릭터 아래), 3층 물체(나무·바위·건물, ★ 은 캐릭터 위), 4층 물체 위 물체(3층 위에 겹쳐 쌓기), 그림자(벽 아래 사분면). lower=1층, upper=3층. 1층을 칠하면 그 칸 2층이 지워진다(paint_tiles 1층은 기존처럼 3·4층·그림자까지 비운다). layers 의 키는 "1"\|"2"\|"3"\|"4"\|"shadow", 값은 행 배열(위→아래). 칸 값 -1=건드리지 않음, -2=그 칸을 그 층에서 비움, 그 밖은 타일 번호(그림자는 0~15 사분면 비트: 1=좌상 2=우상 4=좌하 8=우하). 1층 칸을 찍으면 그 칸의 2층은 비워진다(같은 블록에 2층 값이 있으면 그 값). 3·4층·그림자는 준 칸만 바뀐다. 범위 밖 번호나 맵 밖 칸이 하나라도 있으면 아무것도 쓰지 않고 실패한다. 1·2층 자동타일 멤버는 찍은 뒤 그 층 이웃에 맞춰 재성형된다 — 참고문서 예제를 번호 그대로 옮기려면 reshape:false(재성형 안 함). 타일셋 참고문서가 있으면 해당 용도를 먼저 조회한다. |
 | `paint_shadow` | `mapId: string`, `cells: array`, `mode?: set\|add\|clear`, `referencePurpose?: string` | 그림자 사분면을 칠한다 — 벽·절벽 아래 바닥 칸에 드리우는 반투명 검정(칸을 넷으로 나눈 조각). 층: 1 바닥·2 바닥 장식·3 물체·4 물체 위 물체·그림자(벽 아래 사분면). lower=1층, upper=3층. cells[{x,y,quarters?:["tl"\|"tr"\|"bl"\|"br"], bits?:0~15}] — quarters 또는 bits(1=좌상 2=우상 4=좌하 8=우하, 합). mode: set(기본, 그 칸 그림자를 이것으로)\|add(더하기)\|clear(빼기 — quarters/bits 가 없으면 그 칸 그림자 전부 지움). 맵 밖 칸이 하나라도 있으면 아무것도 쓰지 않는다. 타일셋 참고문서가 있으면 해당 용도를 먼저 조회한다. |
-| `sculpt_relief` | `mapId: string`, `ops: array`, `seed?: integer`, `reset?: boolean` | 맵의 절벽 높이(map.relief)를 ops DSL 로 빚는다 — 지금 높이 위에 차례로 덧칠(reset:true 면 0단에서). 벽면·45° 대각선·가림은 렌더러가 자동으로 그린다. 타일·통행은 바꾸지 않는다. 결과로 check_relief 검사 글을 돌려준다. ops 문법은 `RELIEF_OPS_SPEC`(src/project/relief/ops.ts). |
+| `sculpt_relief` | `mapId: string`, `ops: array`, `seed?: integer`, `reset?: boolean` | 맵의 실제 절벽 높이를 ops DSL 로 빚는다. 타일 층은 유지하며 높이 변경은 들림과 실제 통행에 반영된다. check_relief 검사 글을 반환한다. ops 문법은 RELIEF_OPS_SPEC. |
+| `design_terrain` | `mapId: string`, `tool: contour\|ridge\|valley\|lake\|mix\|mixedCluster\|lock`, `points: array`, `delta?: integer`, `width?: integer`, `areaShape?: polygon\|rect\|line`, `seed?: integer`, `symmetry?: string`, `waterLevel?: integer`, `maxDepth?: integer`, `shallowWidth?: integer`, `density?: integer`, `weights?: array`, `unlock?: boolean`, `editId?: string` | 에디터 지형 설계 계획기로 윤곽·능선·계곡·호수·재질 혼합·군집·잠금을 저작한다. 높이 delta를 사용하며 고지 프리셋 없음. |
+| `place_terrain_house` | `mapId: string`, `anchor: object`, `style: string`, `width: integer`, `stories: 1\|2`, `roofWidth?: integer`, `kitId?: string` | 현재 칩셋의 빠른 집 계획기. 벽 폭과 지붕 폭 분리. 집 전체+문 앞이 동일 높이의 빈 땅이어야 한다. 버들항 원본 부품으로 외관을 조립하고 집 정의/배치를 등록한다. 실내/워프 자동 생성 없음. |
+| `lay_terrain_road` | `mapId: string`, `points: array`, `width?: integer`, `flattenRoad?: boolean`, `editId?: string` | 에디터 도로 계획기로 길과 절벽 접합의 매끈한 경사로를 만든다. reachable/warnings로 쓰기 성공과 실제 통행을 구분한다. |
+| `place_terrain_ramp` | `mapId: string`, `at: object`, `width?: 2\|4\|6` | 에디터 경사로 계획기로 네 방향을 자동 판정하고 계단 아닌 매끈한 경사로를 놓는다. |
 | `create_map_location` | `mapId: string`, `name: string`, `x: integer`, `y: integer`, `w: integer`, `h: integer`, `note?: string`, `tags?: array` | 맵에 이름 붙은 로케이션을 새로 만든다. 이후 이벤트 조건분기(구역 안/밖)와 랜덤 인카운터가 사각형을 복사하지 않고 이 ID 를 가리킬 수 있다. 겹침은 허용된다(상점가 안의 좌판처럼 포함 관계가 정상 저작이다). |
 | `update_map_location` | `mapId: string`, `locationId: string`, `name?: string`, `x?: integer`, `y?: integer`, `w?: integer`, `h?: integer` | 로케이션의 이름 또는 사각형을 바꾼다. **이름을 바꿔도 ID 는 그대로**라 이벤트 조건·인카운터 참조가 끊기지 않는다. 사각형을 바꾸면 그 로케이션을 가리키는 모든 조건과 인카운터가 함께 따라간다. |
 | `delete_map_location` | `mapId: string`, `locationId: string`, `brokenReferences?: remap\|detach\|freezeRect`, `replacementLocationId?: string` | 로케이션을 지운다. 그 로케이션을 가리키는 조건·인카운터가 있으면 **같은 호출에서 복구 방식을 밝혀야** 한다 (brokenReferences: remap\|detach\|freezeRect). 밝히지 않으면 거부한다 — 참조를 끊는 것은 사용자에게 물어야 하는 결정이다. 사람은 편집기 로케이션 레이어에서 그냥 지우고 나중에 고칠 수 있다(드러나는 진단 + 복구 UI). 조수는 한 번에 원상복구해서 끝낸다. |
@@ -240,6 +244,8 @@
 | `tile_query` | `ask: tile_info\|unclassified\|palette\|usage\|similar\|unapproved\|vocab\|labels`, `tilesetId?: string`, `tileIds?: array`, `tileId?: integer`, `mapId?: string`, `role?: string`, `category?: string`, `presetId?: string`, `limit?: integer`, `query?: string` | 타일 지식 통합 조회. ask: tile_info(tileIds 상세), unclassified(미분류 목록), palette(role/category/프리셋 필터로 타일 찾기), usage(맵 사용 현황: mapId), similar(비슷한 타일: tileId), unapproved(미승인 요약), vocab(재료 그룹 목록 — 참고용), labels(타일 라벨/설명 목록 — 시공 material 인자용, query 로 필터). similar/unclassified/labels/vocab/unapproved는 tilesetId 생략 시 mapId 또는 startMap 타일셋을 쓴다(place_props와 동일 타일셋). ask:"labels" 는 mapId 를 넣어 대상 맵 타일셋 라벨만 조회하라 — 기본값은 야외 타일셋이라 실내 맵에서 가로 탁자 등 다른 타일셋 라벨을 오조회한다. |
 | `preview_house` | `mapId: string`, `origin: object`, `width: integer`, `height: integer`, `material: plaster\|wood\|stone` | 요청한 크기의 집을 실제 맵에 짓지 않고 미리보기한다. build_house와 같은 스탬프 로직으로 throwaway 복제 맵에 찍은 뒤, 이미지 렌더링용 lower/upper 타일 그리드를 반환한다. |
 | `read_relief` | `mapId: string` | 맵의 절벽 높이를 36진수 행렬(한 줄=한 행, 글자=단)과 검사 글로 읽는다. 높이가 없는 맵은 전부 0단. |
+| `inspect_terrain` | `mapId: string` | 실제 높이·경사로/계단 수·시야 설정·집 전체/문 앞 평탄성·현재 칩셋의 집 스타일을 조회한다. |
+| `check_terrain_access` | `mapId: string`, `from: object`, `targets: array`, `width?: integer`, `bodyWidth?: integer`, `bodyHeight?: integer`, `events?: boolean` | 실제 canMove/canMoveFootprint로 출발점에서 목적지 칸 자체까지 도달을 검사한다. 높이·경사 옆벽·물·충돌·몸 크기·이벤트 반영. |
 | `check_relief` | `mapId: string` | 절벽 높이 검사 — 렌더 규칙에 깎인 칸, 남쪽 땅에 가려 안 보이는 구역, 12칸 이상 일직선 벽을 글로 돌려준다. |
 | `list_map_locations` | `mapId: string` | 맵의 명명 로케이션(사람이 이름 붙인 구역) 전량을 반환한다. 사용자가 '광장', '북쪽 숲' 처럼 장소 이름을 말하면 좌표를 되묻지 말고 이 툴로 먼저 사각형을 얻어라. 마을 빌더의 설계 기록(layoutPlan.regions)은 find_layout_regions 가 본다 — 서로 다른 층이다. |
 | `resolve_map_location` | `mapId: string`, `query?: string`, `x?: integer`, `y?: integer` | 이름 또는 ID 로 로케이션 하나를 해석해 사각형(x,y,w,h)과 안정 ID 를 돌려준다. 이름은 부분일치도 허용한다. point(x,y) 를 주면 그 칸을 덮는 가장 구체적인(면적이 작은) 로케이션을 돌려준다. |

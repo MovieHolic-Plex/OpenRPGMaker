@@ -1,0 +1,101 @@
+{
+  "synthetic": true,
+  "cases": [
+    {
+      "name": "repair-pass",
+      "reviews": 2,
+      "writes": 1,
+      "finalAudits": 0,
+      "finished": true,
+      "rejected": false,
+      "fixes": [
+        {
+          "agentId": "builder-1",
+          "fixOf": "reviewer-1"
+        }
+      ]
+    },
+    {
+      "name": "budget-exhausted",
+      "reviews": 3,
+      "writes": 2,
+      "finalAudits": 0,
+      "finished": false,
+      "rejected": true,
+      "fixes": [
+        {
+          "agentId": "builder-1",
+          "fixOf": "reviewer-1"
+        },
+        {
+          "agentId": "builder-2",
+          "fixOf": "reviewer-2"
+        }
+      ]
+    },
+    {
+      "name": "read-only",
+      "reviews": 1,
+      "writes": 0,
+      "finalAudits": 0,
+      "finished": false,
+      "rejected": true,
+      "fixes": []
+    },
+    {
+      "name": "follow-up",
+      "reviews": 1,
+      "writes": 0,
+      "finalAudits": 0,
+      "finished": false,
+      "rejected": true,
+      "fixes": []
+    },
+    {
+      "name": "yolo",
+      "reviews": 1,
+      "writes": 0,
+      "finalAudits": 0,
+      "finished": true,
+      "rejected": false,
+      "fixes": []
+    },
+    {
+      "name": "cancel",
+      "reviews": 1,
+      "writes": 0,
+      "finalAudits": 0,
+      "finished": false,
+      "rejected": true,
+      "fixes": []
+    },
+    {
+      "name": "invalid-repair",
+      "reviews": 1,
+      "writes": 1,
+      "finalAudits": 0,
+      "finished": false,
+      "rejected": true,
+      "fixes": [
+        {
+          "agentId": "builder-1",
+          "fixOf": "reviewer-1"
+        }
+      ]
+    },
+    {
+      "name": "locked-review",
+      "reviews": 2,
+      "writes": 1,
+      "finalAudits": 0,
+      "finished": true,
+      "rejected": false,
+      "fixes": [
+        {
+          "agentId": "builder-1",
+          "fixOf": "reviewer-1"
+        }
+      ]
+    }
+  ]
+}

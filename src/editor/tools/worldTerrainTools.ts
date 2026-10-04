@@ -11,9 +11,10 @@
 import { mapCharacterSizeFactor } from "@/project/characterScale";
 import type { GameMap, MapId, MapNamedLocation, PassFlag, Project, TilesetDef, TilesetId } from "@/project/types";
 import {
-  buildWorldmap, WORLDMAP_BASES, WORLDMAP_GROUNDS, WORLDMAP_OPS, WORLDMAP_STYLES,
+  buildWorldmap, WORLDMAP_BASES, WORLDMAP_GROUNDS, WORLDMAP_OPS, WORLDMAP_REGIONS, WORLDMAP_STYLES,
   type WorldmapBase, type WorldmapBuildRequest, type WorldmapBuildResult,
 } from "@/editor/worldmap/worldmapBuild";
+import { PLACE_REFERENCES } from "@/project/regionReferences";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 
 export const WORLDMAP_THEMES = [
@@ -48,9 +49,14 @@ const opSchema: JsonSchema = {
     what: { type: "string", enum: ["forest", "mount", "all"], description: "clear: 걷을 물체" },
     level: { type: "integer", enum: [1, 2], description: "plateau 높이" },
     id: { type: "string", description: "move_place: 장소 id(read_world_terrain 의 places)" },
-    style: { type: "string", enum: [...WORLDMAP_STYLES], description: "continents: 대륙 구조 — blobs 덩이 대륙 · shards 조각난 대륙 · ring 고리 대륙 · pangaea 초대륙+섬 · archipelago 군도 · galaxy 우주(성계·공허) · peninsula 반도(조선: 북쪽 대륙+반도, 동쪽 척추 산줄기, 서쪽으로 흐르는 강, 동쪽 섬나라) · river-continent 강 문명 대륙(중국·무협: 서쪽 설산 고원, 북쪽 사막, 서→동 큰 강 둘) · arc-islands 열도(일본·전국: 휜 본섬+북·남 섬, 건너편 대륙 끝) · korea 실제 한반도 윤곽(위·경도로 옮긴 한반도·요동·만주·일본 열도·제주 — 시드는 해안 굽이만 바꾼다)" },
-    count: { type: "integer", description: "continents: 땅 덩이 수 1~40(shards 면 조각 수, galaxy 면 성단 수, peninsula·river-continent·arc-islands 면 앞바다 작은 섬 수, korea 는 0)" },
+    style: { type: "string", enum: [...WORLDMAP_STYLES], description: "continents: 대륙 구조 — blobs 덩이 대륙 · shards 조각난 대륙 · ring 고리 대륙 · pangaea 초대륙+섬 · archipelago 군도 · galaxy 우주(성계·공허) · peninsula 반도(조선: 북쪽 대륙+반도, 동쪽 척추 산줄기, 서쪽으로 흐르는 강, 동쪽 섬나라) · river-continent 강 문명 대륙(중국·무협: 서쪽 설산 고원, 북쪽 사막, 서→동 큰 강 둘) · arc-islands 열도(일본·전국: 휜 본섬+북·남 섬, 건너편 대륙 끝) · korea 조선 테마용 한반도 윤곽(손으로 다듬은 판) · real 실제 지리(실제 해안선·높이·산맥·사막·강·호수 자료 — region 이나 box 로 지구 어디든)" },
+    count: { type: "integer", description: "continents: 땅 덩이 수 1~40(shards 면 조각 수, galaxy 면 성단 수, peninsula·river-continent·arc-islands 면 앞바다 작은 섬 수, korea·real 은 0 — 실제 땅이라 안 쓴다)" },
     land: { type: "number", description: "continents: 땅 비율 0.2~0.7" },
+    region: { type: "string", enum: [...WORLDMAP_REGIONS], description: "continents style real: 실제 지역 이름 — korea 한반도와 둘레(요동·만주 남부·일본 서부) · east-asia 동아시아(중국 동부·한반도·일본) · china 중국 전체(티베트·고비·황하·장강) · japan 일본 열도(규슈~홋카이도) · southeast-asia 동남아시아(인도차이나·말레이·인도네시아·필리핀) · india 인도 아대륙(히말라야·데칸·타르 사막) · middle-east 중동(아라비아·메소포타미아·페르시아) · mediterranean 지중해 세계(이베리아~레반트·북아프리카) · europe 유럽 · britain 브리튼·아일랜드 · scandinavia 스칸디나비아·발트 · greece 그리스·에게해 · italy 이탈리아 반도 · egypt 이집트·나일강·시나이 · africa 아프리카 대륙 · north-america 북아메리카 · caribbean 카리브해·서인도 제도 · south-america 남아메리카 · australia 오스트레일리아·뉴질랜드 서부 · iceland 아이슬란드. 목록에 없으면 box" },
+    box: { type: "array", items: { type: "number" }, description: "continents style real: 실제 지도 범위 [서경, 남위, 동경, 북위](경도 -180~180, 위도 -85~85, 네 지식으로 정한다 — 그 나라·지역이 둘레 바다와 함께 넉넉히 들어오게. 가로 3° 이상, 4:3 으로 자동으로 넓힌다)" },
+    home: { type: "array", items: { type: "number" }, description: "continents style real: 여정을 시작할 땅 [경도, 위도](예: 일본이면 혼슈 [137.5, 36]). 없으면 지역 기본값 또는 가장 큰 땅" },
+    beyond: { type: "array", items: { type: "number" }, description: "continents style real: 관문 너머(2막) 쪽으로 바라는 [경도, 위도]. 희망일 뿐 — 첫 화면 규칙(시작·관문·항구·탑이 한 화면)이 먼저다" },
+    sands: { type: "array", items: { type: "number" }, description: "continents style real: 모래 바다(4막)로 바라는 [경도, 위도]. 희망일 뿐 — 좁은 땅에서는 끝자락으로 밀린다" },
     seed: { type: "integer", description: "continents·climate: 같은 구조의 다른 모양(정수)" },
     wet: { type: "number", description: "climate: -1(건조)~1(습윤)" },
     cold: { type: "number", description: "climate: -1(더움)~1(추움)" },
@@ -66,7 +72,8 @@ const OP_HELP =
   + "river{line,widen?} 강(바다로 끝낼 것) · forest{poly,kind?,density?} · clear{poly,what?} 숲·산 걷기 · "
   + "plateau{poly,level?,ground?} 고원(절벽이 생긴다) · volcano{x,y,lava?} 화산(분화구+고리, 반지름 4칸 땅 필요) · move_place{id,x,y} 장소 옮기기. "
   + "새 대륙 구조(base=\"generate\", 기존 대륙을 버리고 빈 판에서): 첫 작업 continents{style?,count?,land?,seed?} — 「20조각 대륙」 = continents{style:shards,count:20}, "
-  + "고리 대륙 = ring, 초대륙 = pangaea, 섬나라 = archipelago, 우주 = galaxy, 조선·한반도 = korea(실제 한반도 모양, 가상 반도를 원하면 peninsula), 중국·무협 = river-continent, 일본·전국 = arc-islands (이 셋은 땅 모양·척추 산줄기·큰 강·사막 자리·2막 방향까지 그 지리를 닮게 정해진다 — korea 만 실제 지도 윤곽이고 나머지는 닮은꼴 생성). climate{seed?,wet?,cold?} 기후. 여정 장소 31곳·장벽 4개(산벽+관문, 바다, 사구 바다, 천공섬)는 키트가 자동으로 맞춘다. 「월드맵에서 캐릭터를 작게」는 characterScale(0.5~0.75) 를 같이 준다 — "
+  + "고리 대륙 = ring, 초대륙 = pangaea, 섬나라 = archipelago, 우주 = galaxy, **실제 나라·지역 모양**(조선·중국·일본·유럽·지중해·이집트·브리튼… 지구 어디든) = continents{style:\"real\", region} 또는 {style:\"real\", box:[서경,남위,동경,북위], home?:[경도,위도]} — 범위는 네 지식으로 정한다(예: 중국 [73,17,136,54], 일본 [127.5,29.5,147,46], 노르만 잉글랜드 [-11,49.5,3,59.5]). 실제 해안선·높이·산맥·사막·강·호수 자료로 그리고 기후는 실제 위도·높이로 정해진다. 가장 큰 사막이 4막 사구 바다가 된다(없으면 내륙). 조선 테마의 한반도는 korea(손으로 다듬은 판). peninsula·river-continent·arc-islands 는 실제가 아닌 닮은꼴 가상 세계. climate{seed?,wet?,cold?} 기후. 여정 장소 31곳·장벽 4개(산벽+관문, 바다, 사구 바다, 천공섬)는 키트가 자동으로 맞춘다. 「월드맵에서 캐릭터를 작게」는 characterScale(0.5~0.75) 를 같이 준다 — "
+  + "places 줄의 「입구 x,y」는 장소 아이콘의 성문 칸이다 — 고을·던전 맵은 반드시 그 칸에 출입구(create_transfer_pair)를 두고, 시작 위치는 그 바로 아래 칸이 자연스럽다. "
   + "결과의 layout.regions(a 1막 · b 2막 · w 산벽 · d 사구 바다 · s 배로 가는 땅)를 보고 그 위에 다른 작업을 얹어라. 손으로 정하려면 wall{line,gate?}(산벽) · dune_sea{poly} · sky_island{x,y} · move_place(고정). "
   + "generate 에서 land·sea·island 는 맞춤 전에 구조에 접힌다. "
   + `바닥 이름→글자: grass . farm f crop p savanna v sand s dune d dirt D badlands b ash a basalt B swamp w marsh m tundra t snow n glacier g jungle j. `
@@ -170,9 +177,55 @@ function resultFor(request: WorldmapBuildRequest): Extract<WorldmapBuildResult, 
   return entry;
 }
 
+/**
+ * 장소의 입구 칸 — 아이콘 성문이 그려지는 아래 가운데 칸(걸을 수 있으면), 아니면 그 칸에서 가장 가까운 걸을 수 있는 장소 칸.
+ * 고을·던전 맵은 여기에 출입구를 둔다. 실측(2026-10-03 조선 시험): 입구를 모르는 조수가 시작 칸 바로 위 빈 풀칸에 문을 뒀다.
+ */
+export function placeEntrance(p: { x: number; y: number; w: number; h: number }, walk: readonly string[]): { x: number; y: number } {
+  const gx = p.x + Math.floor(p.w / 2);
+  const gy = p.y + p.h - 1;
+  const open = (x: number, y: number) => (walk[y] ?? "")[x] === "1";
+  if (open(gx, gy)) return { x: gx, y: gy };
+  let best = { x: gx, y: gy };
+  let bd = Infinity;
+  for (let y = p.y; y < p.y + p.h; y += 1) {
+    for (let x = p.x; x < p.x + p.w; x += 1) {
+      const d = (x - gx) ** 2 + (y - gy) ** 2 * 2;
+      if (open(x, y) && d < bd) { bd = d; best = { x, y }; }
+    }
+  }
+  return best;
+}
+
 function placesSummary(result: Extract<WorldmapBuildResult, { ok: true }>): string[] {
   const rules = result.world.placeRules ?? {};
-  return result.world.places.map(p => `${p.id}${p.label ? `「${p.label}」` : ""}(${p.role}) ${p.x},${p.y} ${p.w}×${p.h}${rules[p.id] ? ` — ${rules[p.id]}` : ""}`);
+  return result.world.places.map(p => {
+    const e = placeEntrance(p, result.world.walk);
+    return `${p.id}${p.label ? `「${p.label}」` : ""}(${p.role}) ${p.x},${p.y} ${p.w}×${p.h} 입구 ${e.x},${e.y}${rules[p.id] ? ` — ${rules[p.id]}` : ""}`;
+  });
+}
+
+/**
+ * 세계 지도 테마와 같은 문화권의 마을 칩셋. 세계 지도는 지도 그림을 자른 전용 칩셋이라 마을·실내 그림체를 정해 주지 않는다 —
+ * 실측(2026-10-03 조선 시험): 조수가 조선 칩셋이 있는 줄 모르고 한양 고을을 로마풍 버들항 마을 도구로 깔았다.
+ * 없는 테마는 기본 마을 도구를 쓰되 이름·NPC 로 문화권을 살린다.
+ */
+const THEME_TOWN_TILESETS: Readonly<Record<string, readonly string[]>> = {
+  joseon: ["joseon_baram"],
+  "modern-town": ["jp_city", "modern_city"],
+  "modern-sf": ["modern_city"],
+  "snow-north": ["forest_harmony_snow"],
+  "desert-east": ["forest_harmony_desert"],
+};
+
+function townArtHint(theme: string): string {
+  const tilesets = THEME_TOWN_TILESETS[theme] ?? [];
+  const places = PLACE_REFERENCES.filter(p => "placeKind" in p && p.placeKind === "settlement" && tilesets.includes(String(p.tilesetId)));
+  const interior = "실내는 build_hand_interior_room(손 도트 v5 atlas_biome_interior), 배·던전은 atlas_biome_dungeon 을 쓴다.";
+  if (!tilesets.length) return `테마 ${theme} 전용 마을 칩셋은 없다 — 마을은 기본 마을 도구로 깔고 이름·NPC·대사로 문화권을 살려라. ${interior}`;
+  return `야외 마을은 이 테마와 같은 문화권 칩셋 ${tilesets.join("·")} 으로 깔아라(버들항 등 다른 계열 도구로 깔지 말 것). `
+    + (places.length ? `완성 마을: ${places.map(p => `${p.id}「${p.name}」`).join(", ")} — import_region_reference({id}) 한 번으로 가져와 이름만 바꿔도 된다. ` : "")
+    + `새로 지으려면 create_map(tilesetId=${tilesets[0]}) 뒤 그 타일셋 참고문서(list_tileset_references)를 읽고 깐다. 세계 지도 장소와는 places 의 「입구 x,y」에 create_transfer_pair 로 잇는다. ${interior}`;
 }
 
 function slug(text: string, i: number): string {
@@ -216,7 +269,7 @@ function applyWorldmap(
   const lowerTiles = Array.from({ length: size }, (_, i) => i);
   const locations: MapNamedLocation[] = world.places.map((p, i) => ({
     id: slug(p.id, i), name: p.label ?? p.id, x: p.x, y: p.y, w: p.w, h: p.h, tags: [p.role, `act${p.act}`],
-    note: `월드맵 장소(${p.role}, ${p.act + 1}막${p.label ? `, 키트 id ${p.id}` : ""})`,
+    note: `월드맵 장소(${p.role}, ${p.act + 1}막${p.label ? `, 키트 id ${p.id}` : ""}) — 입구(성문) ${placeEntrance(p, world.walk).x},${placeEntrance(p, world.walk).y}: 고을·던전 맵은 이 칸에 출입구를 둔다`,
   }));
   const strandedEvents: string[] = [];
   const events = existing?.events ?? [];
@@ -291,7 +344,7 @@ const editWorldTerrain: ToolDefinition = {
     "세계 지도의 지형 자체를 바꾼다 — 대륙을 바다로 갈라 섬나라로, 섬을 더하고, 산줄기·고개·강·숲·고원을 놓고, 지역의 바닥(사막·설원·늪…)을 바꾸고, 장소를 옮긴다. "
     + "base=generate 면 대륙 구조를 아예 새로 만든다(20조각 대륙·고리 대륙·초대륙·군도·은하) — 여정 장소는 키트가 자동으로 다시 놓는다. "
     + "월드맵 키트(테마 17종: 판타지·우주·현대·스팀펑크·조선…)가 같은 화풍으로 다시 그리고 여정 도달성(걸어서·배·사막선·비공정)을 검사한다. "
-    + "mapId 가 기존 월드맵 키트 지도면 거기 쌓인 작업 뒤에 ops 를 잇는다(replace=true 면 ops 로 갈아 끼운다). mapId 가 없으면 새 세계 지도 맵을 만든다. "
+    + "mapId 가 기존 월드맵 키트 지도면 거기 쌓인 작업 뒤에 ops 를 잇는다(replace=true 면 ops 로 갈아 끼운다). mapId 가 없으면 새 세계 지도 맵을 만든다. 결과 data.townArt 가 이 테마의 야외 마을 칩셋·완성 마을과 공용 실내 칩셋을 알려 준다 — 마을을 깔기 전에 따르라. "
     + "좌표는 먼저 read_world_terrain 의 글자 지도로 고른다. 장소 발자국이 물이 되거나 길이 막히면 실패하고 이유를 돌려준다 — 그 문장대로 작업을 고쳐 다시 부른다. "
     + "preview=true 는 저장하지 않고 몇 초 만에 도식 그림만 본다(도식은 바닥 종류 색이라 테마 팔레트와 다르다 — themeNote 를 보라). 실제 빌드는 처음 2분 남짓, 같은 지형은 캐시. "
     + OP_HELP,
@@ -359,7 +412,7 @@ const editWorldTerrain: ToolDefinition = {
     ];
     return {
       summary: `${created ? "새 세계 지도" : "세계 지도"} ${mapId} — 테마 ${request.theme}, 지형 작업 ${base.ops.length}개, 장소 ${result.world.places.length}곳${sizeNote}, 여정 검사 통과(${result.seconds}초)`,
-      data: { mapId, created, tilesetId: `worldmap_${mapId}`, ...base },
+      data: { mapId, created, tilesetId: `worldmap_${mapId}`, townArt: townArtHint(request.theme), ...base },
       ...(warnings.length ? { warnings } : {}),
     };
   },
