@@ -1,0 +1,2102 @@
+[
+  {
+    "id": "mx_species_spriglet",
+    "family": "hare",
+    "stage": 1,
+    "palette": [
+      "#75b36a",
+      "#b9d98b",
+      "#427851",
+      "#f1d480"
+    ],
+    "front": {
+      "resourceId": "mx_art_spriglet_front",
+      "file": "spriglet-front.png",
+      "sha256": "eab7ac83d5d4459dc499354716cebf967fcb212404454481f5fb5bf7cb223cd3",
+      "bytes": 817,
+      "bbox": [
+        26,
+        24,
+        60,
+        74
+      ]
+    },
+    "back": {
+      "resourceId": "mx_art_spriglet_back",
+      "file": "spriglet-back.png",
+      "sha256": "9bfbb2766e48830ed551c1a1519a97fcb11057b01ac08ad62544fb317da84f08",
+      "bytes": 849,
+      "bbox": [
+        26,
+        24,
+        60,
+        74
+      ]
+    }
+  },
+  {
+    "id": "mx_species_frondhare",
+    "family": "hare",
+    "stage": 2,
+    "palette": [
+      "#75b36a",
+      "#b9d98b",
+      "#427851",
+      "#f1d480"
+    ],
+    "front": {
+      "resourceId": "mx_art_frondhare_front",
+      "file": "frondhare-front.png",
+      "sha256": "58a5656dd9195b0b384a69bf2b90376a982220ccfb4e1311f55c01ec137caedc",
+      "bytes": 1035,
+      "bbox": [
+        20,
+        12,
+        63,
+        73
+      ]
+    },
+    "back": {
+      "resourceId": "mx_art_frondhare_back",
+      "file": "frondhare-back.png",
+      "sha256": "139d4fe82779201801fdbf39376b699ec69f136ea7767f17914196e2913d3d12",
+      "bytes": 1062,
+      "bbox": [
+        20,
+        12,
+        63,
+        73
+      ]
+    }
+  },
+  {
+    "id": "mx_species_grovewarden",
+    "family": "hare",
+    "stage": 3,
+    "palette": [
+      "#75b36a",
+      "#b9d98b",
+      "#427851",
+      "#f1d480"
+    ],
+    "front": {
+      "resourceId": "mx_art_grovewarden_front",
+      "file": "grovewarden-front.png",
+      "sha256": "8142bf5da7be33c8d975e7bf53bf816ce8fd3c5677ca56fa696c29ae4688d842",
+      "bytes": 1488,
+      "bbox": [
+        13,
+        4,
+        67,
+        74
+      ]
+    },
+    "back": {
+      "resourceId": "mx_art_grovewarden_back",
+      "file": "grovewarden-back.png",
+      "sha256": "7b5b6fb3a16e50f93045ea02b0d61ea964702856797458a46708e269e9c4ea76",
+      "bytes": 1472,
+      "bbox": [
+        13,
+        4,
+        67,
+        74
+      ]
+    }
+  },
+  {
+    "id": "mx_species_coalbit",
+    "family": "pangolin",
+    "stage": 1,
+    "palette": [
+      "#b9684d",
+      "#f3a85a",
+      "#784453",
+      "#ffe69b"
+    ],
+    "front": {
+      "resourceId": "mx_art_coalbit_front",
+      "file": "coalbit-front.png",
+      "sha256": "f2a8c127301ac50721a64cf8c58228dccc98865f04885c4f8ead25fec2d22e81",
+      "bytes": 908,
+      "bbox": [
+        20,
+        37,
+        63,
+        74
+      ]
+    },
+    "back": {
+      "resourceId": "mx_art_coalbit_back",
+      "file": "coalbit-back.png",
+      "sha256": "43aa438b2d242cef404235cc61667f36137a6b0be1f6c6b28425ea48cc8e0e65",
+      "bytes": 990,
+      "bbox": [
+        20,
+        37,
+        63,
+        74
+      ]
+    }
+  },
+  {
+    "id": "mx_species_kilnclaw",
+    "family": "pangolin",
+    "stage": 2,
+    "palette": [
+      "#b9684d",
+      "#f3a85a",
+      "#784453",
+      "#ffe69b"
+    ],
+    "front": {
+      "resourceId": "mx_art_kilnclaw_front",
+      "file": "kilnclaw-front.png",
+      "sha256": "55e1226729bcc096ac660cbb7e7c4dd405c4af64da036c82f1999dc8c69fa722",
+      "bytes": 1065,
+      "bbox": [
+        15,
+        19,
+        71,
+        73
+      ]
+    },
+    "back": {
+      "resourceId": "mx_art_kilnclaw_back",
+      "file": "kilnclaw-back.png",
+      "sha256": "a6d220aa60c7f540ca91c81f6871d602c7388178e9fcad7dda73136581eec36e",
+      "bytes": 1262,
+      "bbox": [
+        15,
+        19,
+        71,
+        73
+      ]
+    }
+  },
+  {
+    "id": "mx_species_furnscale",
+    "family": "pangolin",
+    "stage": 3,
+    "palette": [
+      "#b9684d",
+      "#f3a85a",
+      "#784453",
+      "#ffe69b"
+    ],
+    "front": {
+      "resourceId": "mx_art_furnscale_front",
+      "file": "furnscale-front.png",
+      "sha256": "8a791fc344ed281aaa0ab12e238d631232cbeb12c49e2c19bb72a2666eff096a",
+      "bytes": 1343,
+      "bbox": [
+        12,
+        12,
+        76,
+        74
+      ]
+    },
+    "back": {
+      "resourceId": "mx_art_furnscale_back",
+      "file": "furnscale-back.png",
+      "sha256": "9afe4f05b45d3d497a8a82b6b2daa24324e3f67ef9e5bbdfc4e43a2e8c0bf608",
+      "bytes": 1481,
+      "bbox": [
+        12,
+        12,
+        76,
+        74
+      ]
+    }
+  },
+  {
+    "id": "mx_species_rivulet",
+    "family": "otter",
+    "stage": 1,
+    "palette": [
+      "#589eb4",
+      "#a0d8cd",
+      "#3f6e8b",
+      "#f3dfab"
+    ],
+    "front": {
+      "resourceId": "mx_art_rivulet_front",
+      "file": "rivulet-front.png",
+      "sha256": "09bd891675a6bdbb41c16a291c9572a88b1bf84031c4162b7464ce04a9fd9628",
+      "bytes": 814,
+      "bbox": [
+        19,
+        37,
+        65,
+        74
+      ]
+    },
+    "back": {
+      "resourceId": "mx_art_rivulet_back",
+      "file": "rivulet-back.png",
+      "sha256": "51700be9b9c99bc14a0f1fe4eb9ce786135acc2719e6da7415b89264897cc713",
+      "bytes": 763,
+      "bbox": [
+        24,
+        37,
+        65,
+        77
+      ]
+    }
+  },
+  {
+    "id": "mx_species_brookraft",
+    "family": "otter",
+    "stage": 2,
+    "palette": [
+      "#589eb4",
+      "#a0d8cd",
+      "#3f6e8b",
+      "#f3dfab"
+    ],
+    "front": {
+      "resourceId": "mx_art_brookraft_front",
+      "file": "brookraft-front.png",
+      "sha256": "cd9534d6cb74b654535e22206be1b5c60f578b85c7a1b18201ecf343d21a4773",
+      "bytes": 963,
+      "bbox": [
+        14,
+        29,
+        69,
+        73
+      ]
+    },
+    "back": {
+      "resourceId": "mx_art_brookraft_back",
+      "file": "brookraft-back.png",
+      "sha256": "1bb1324ca846df6721960333b747172ad847b5cd5b114e387632f1537eba41ba",
+      "bytes": 928,
+      "bbox": [
+        19,
+        29,
+        69,
+        76
+      ]
+    }
+  },
+  {
+    "id": "mx_species_tidekeeper",
+    "family": "otter",
+    "stage": 3,
+    "palette": [
+      "#589eb4",
+      "#a0d8cd",
+      "#3f6e8b",
+      "#f3dfab"
+    ],
+    "front": {
+      "resourceId": "mx_art_tidekeeper_front",
+      "file": "tidekeeper-front.png",
+      "sha256": "0e9ff6955bd86497879c6b8e7538d1979b38f2bc672af7cd3458cbfa49c94cc4",
+      "bytes": 1227,
+      "bbox": [
+        11,
+        10,
+        74,
+        74
+      ]
+    },
+    "back": {
+      "resourceId": "mx_art_tidekeeper_back",
+      "file": "tidekeeper-back.png",
+      "sha256": "dc609918faa1034b238c6b600fce62a9f19cbd6760030d777eca89911f3e5198",
+      "bytes": 1182,
+      "bbox": [
+        16,
+        10,
+        74,
+        78
+      ]
+    }
+  },
+  {
+    "id": "mx_species_pipbug",
+    "family": "beetle",
+    "stage": 1,
+    "palette": [
+      "#8fae4e",
+      "#d2db83",
+      "#526e45",
+      "#df9c71"
+    ],
+    "front": {
+      "resourceId": "mx_art_pipbug_front",
+      "file": "pipbug-front.png",
+      "sha256": "9549c963be3614866b11361a6f24e0266523b84879e6c20b550322829de0509a",
+      "bytes": 772,
+      "bbox": [
+        18,
+        29,
+        62,
+        74
+      ]
+    },
+    "back": {
+      "resourceId": "mx_art_pipbug_back",
+      "file": "pipbug-back.png",
+      "sha256": "12caa3c7145c14a984bf43a27aef2851d0cae1e60cc09efbea77dc6302a2f839",
+      "bytes": 761,
+      "bbox": [
+        18,
+        29,
+        62,
+        74
+      ]
+    }
+  },
+  {
+    "id": "mx_species_podback",
+    "family": "beetle",
+    "stage": 2,
+    "palette": [
+      "#8fae4e",
+      "#d2db83",
+      "#526e45",
+      "#df9c71"
+    ],
+    "front": {
+      "resourceId": "mx_art_podback_front",
+      "file": "podback-front.png",
+      "sha256": "180549757fa9fea801ff00f87efa42060133c2026f14532ece6c8119188fab07",
+      "bytes": 1109,
+      "bbox": [
+        14,
+        20,
+        66,
+        73
+      ]
+    },
+    "back": {
+      "resourceId": "mx_art_podback_back",
+      "file": "podback-back.png",
+      "sha256": "bae5bc2acab73c87c862c53bc4b46d12a9e37fa4453c041436bd643ae544ec55",
+      "bytes": 1091,
+      "bbox": [
+        14,
+        20,
+        66,
+        73
+      ]
+    }
+  },
+  {
+    "id": "mx_species_orchardant",
+    "family": "beetle",
+    "stage": 3,
+    "palette": [
+      "#8fae4e",
+      "#d2db83",
+      "#526e45",
+      "#df9c71"
+    ],
+    "front": {
+      "resourceId": "mx_art_orchardant_front",
+      "file": "orchardant-front.png",
+      "sha256": "2aba6b5dc5e75f5a89e9a169734fdcbb71865b9c76c57c015f26bdd3709701ea",
+      "bytes": 1377,
+      "bbox": [
+        10,
+        5,
+        71,
+        74
+      ]
+    },
+    "back": {
+      "resourceId": "mx_art_orchardant_back",
+      "file": "orchardant-back.png",
+      "sha256": "81838efa45294c4017627a76c803e609ca3f41b424ab460d9adcff977acb62a0",
+      "bytes": 1340,
+      "bbox": [
+        10,
+        5,
+        71,
+        74
+      ]
+    }
+  },
+  {
+    "id": "mx_species_gustchick",
+    "family": "bird",
+    "stage": 1,
+    "palette": [
+      "#899cbb",
+      "#d6c5ae",
+      "#4c648e",
+      "#eab87a"
+    ],
+    "front": {
+      "resourceId": "mx_art_gustchick_front",
+      "file": "gustchick-front.png",
+      "sha256": "d9d31531887091033100bef75d6893ccec8d1564a8e588fc2f30fff22b547629",
+      "bytes": 802,
+      "bbox": [
+        18,
+        29,
+        63,
+        75
+      ]
+    },
+    "back": {
+      "resourceId": "mx_art_gustchick_back",
+      "file": "gustchick-back.png",
+      "sha256": "5e3f0ebd62bfd65811d26217f76a2390d216e0bb47b7c51352ef9efaa070881d",
+      "bytes": 803,
+      "bbox": [
+        25,
+        29,
+        63,
+        75
+      ]
+    }
+  },
+  {
+    "id": "mx_species_ribbonwing",
+    "family": "bird",
+    "stage": 2,
+    "palette": [
+      "#899cbb",
+      "#d6c5ae",
+      "#4c648e",
+      "#eab87a"
+    ],
+    "front": {
+      "resourceId": "mx_art_ribbonwing_front",
+      "file": "ribbonwing-front.png",
+      "sha256": "48b9e211cdd757c1f989070d6dd95f7160d89dc50bc3bb53b246e4528a69324b",
+      "bytes": 1168,
+      "bbox": [
+        11,
+        19,
+        68,
+        75
+      ]
+    },
+    "back": {
+      "resourceId": "mx_art_ribbonwing_back",
+      "file": "ribbonwing-back.png",
+      "sha256": "a9b1c530bf3d9517326e1674f21077c453a2a3f388451dd3951264d83858e9ab",
+      "bytes": 1196,
+      "bbox": [
+        11,
+        19,
+        68,
+        75
+      ]
+    }
+  },
+  {
+    "id": "mx_species_galecrest",
+    "family": "bird",
+    "stage": 3,
+    "palette": [
+      "#899cbb",
+      "#d6c5ae",
+      "#4c648e",
+      "#eab87a"
+    ],
+    "front": {
+      "resourceId": "mx_art_galecrest_front",
+      "file": "galecrest-front.png",
+      "sha256": "1923a3a8a47bdb07a30cefee4eca0c9cb66a47d781cdf26955bd3c210ea476cf",
+      "bytes": 1429,
+      "bbox": [
+        7,
+        4,
+        73,
+        77
+      ]
+    },
+    "back": {
+      "resourceId": "mx_art_galecrest_back",
+      "file": "galecrest-back.png",
+      "sha256": "2b9b998b545e96d988d844b8a473603d04ce6bbb0e7bb65b8ee1dbe6ee59db51",
+      "bytes": 1426,
+      "bbox": [
+        7,
+        4,
+        73,
+        77
+      ]
+    }
+  },
+  {
+    "id": "mx_species_zaptoe",
+    "family": "gecko",
+    "stage": 1,
+    "palette": [
+      "#e4bd57",
+      "#fae49b",
+      "#9d7843",
+      "#5bbdc0"
+    ],
+    "front": {
+      "resourceId": "mx_art_zaptoe_front",
+      "file": "zaptoe-front.png",
+      "sha256": "8f7291ee1654fcb3561ac93d7da4903ac39daf11862b1a7354ecc0505328b5f1",
+      "bytes": 802,
+      "bbox": [
+        19,
+        35,
+        62,
+        73
+      ]
+    },
+    "back": {
+      "resourceId": "mx_art_zaptoe_back",
+      "file": "zaptoe-back.png",
+      "sha256": "3ee9773412b4f7d70ef97e2315bd41ee8846b4b841c072f62cb82dcb90c4d90c",
+      "bytes": 805,
+      "bbox": [
+        19,
+        35,
+        62,
+        75
+      ]
+    }
+  },
+  {
+    "id": "mx_species_coilcrest",
+    "family": "gecko",
+    "stage": 2,
+    "palette": [
+      "#e4bd57",
+      "#fae49b",
+      "#9d7843",
+      "#5bbdc0"
+    ],
+    "front": {
+      "resourceId": "mx_art_coilcrest_front",
+      "file": "coilcrest-front.png",
+      "sha256": "c17c5068329829b04541ac6502e00aa1e408b5fafe6874187a983754d7a93d70",
+      "bytes": 993,
+      "bbox": [
+        14,
+        16,
+        67,
+        72
+      ]
+    },
+    "back": {
+      "resourceId": "mx_art_coilcrest_back",
+      "file": "coilcrest-back.png",
+      "sha256": "f1b99e2bc899c74382c72606fdcb9ac0cb0960e98c4860b46ed82cf54ca8b7dc",
+      "bytes": 1055,
+      "bbox": [
+        14,
+        16,
+        67,
+        75
+      ]
+    }
+  },
+  {
+    "id": "mx_species_stormskink",
+    "family": "gecko",
+    "stage": 3,
+    "palette": [
+      "#e4bd57",
+      "#fae49b",
+      "#9d7843",
+      "#5bbdc0"
+    ],
+    "front": {
+      "resourceId": "mx_art_stormskink_front",
+      "file": "stormskink-front.png",
+      "sha256": "f84c797b02485fe75d03ce18e1b131e16c86231d1c17f4905b670f66777dc18b",
+      "bytes": 1338,
+      "bbox": [
+        11,
+        8,
+        72,
+        73
+      ]
+    },
+    "back": {
+      "resourceId": "mx_art_stormskink_back",
+      "file": "stormskink-back.png",
+      "sha256": "142bcd7275334586eb811f3733def972b24132d51f9573fe44d0947606a81b2c",
+      "bytes": 1392,
+      "bbox": [
+        11,
+        8,
+        72,
+        76
+      ]
+    }
+  },
+  {
+    "id": "mx_species_pebblekid",
+    "family": "ram",
+    "stage": 1,
+    "palette": [
+      "#928d83",
+      "#c9b99a",
+      "#615c68",
+      "#89aaa3"
+    ],
+    "front": {
+      "resourceId": "mx_art_pebblekid_front",
+      "file": "pebblekid-front.png",
+      "sha256": "551c93635e251a21caf185c9e1ea8926194d7396ae82bb484b7851ccd8e042bc",
+      "bytes": 863,
+      "bbox": [
+        18,
+        26,
+        62,
+        74
+      ]
+    },
+    "back": {
+      "resourceId": "mx_art_pebblekid_back",
+      "file": "pebblekid-back.png",
+      "sha256": "2c1d167ce438b4776cfe4ba5170ac28affa519a8a6bffc501db3362fd3d22fba",
+      "bytes": 919,
+      "bbox": [
+        18,
+        26,
+        62,
+        74
+      ]
+    }
+  },
+  {
+    "id": "mx_species_craghoof",
+    "family": "ram",
+    "stage": 2,
+    "palette": [
+      "#928d83",
+      "#c9b99a",
+      "#615c68",
+      "#89aaa3"
+    ],
+    "front": {
+      "resourceId": "mx_art_craghoof_front",
+      "file": "craghoof-front.png",
+      "sha256": "ea50f8c20aa668fdc4c6ebd9213cab95738b0ecee2f3990a5edca1dfac8547f5",
+      "bytes": 1008,
+      "bbox": [
+        13,
+        16,
+        66,
+        73
+      ]
+    },
+    "back": {
+      "resourceId": "mx_art_craghoof_back",
+      "file": "craghoof-back.png",
+      "sha256": "dbba1a010f4b0de06b5f094f2619f2c5da86ccdc2848c2a9cbd39f82cb114004",
+      "bytes": 1048,
+      "bbox": [
+        13,
+        16,
+        66,
+        73
+      ]
+    }
+  },
+  {
+    "id": "mx_species_ridgehorn",
+    "family": "ram",
+    "stage": 3,
+    "palette": [
+      "#928d83",
+      "#c9b99a",
+      "#615c68",
+      "#89aaa3"
+    ],
+    "front": {
+      "resourceId": "mx_art_ridgehorn_front",
+      "file": "ridgehorn-front.png",
+      "sha256": "bebc2534263b39eae88e3b06030cf89c7d9269b7f7d6195f0f73064761907010",
+      "bytes": 1203,
+      "bbox": [
+        7,
+        4,
+        71,
+        74
+      ]
+    },
+    "back": {
+      "resourceId": "mx_art_ridgehorn_back",
+      "file": "ridgehorn-back.png",
+      "sha256": "ad6d9ca6fb94dde8cf466abde61fb6a863de8c91cbf30d94fbd65ead51f95ab7",
+      "bytes": 1276,
+      "bbox": [
+        7,
+        4,
+        71,
+        74
+      ]
+    }
+  },
+  {
+    "id": "mx_species_sandnip",
+    "family": "scorpion",
+    "stage": 1,
+    "palette": [
+      "#c69865",
+      "#edc98b",
+      "#82576b",
+      "#e09ea4"
+    ],
+    "front": {
+      "resourceId": "mx_art_sandnip_front",
+      "file": "sandnip-front.png",
+      "sha256": "8cdaecf882fef03c603dc6d76bc06d059eb555fa50703b8b41dad680d73ecabe",
+      "bytes": 876,
+      "bbox": [
+        15,
+        24,
+        65,
+        73
+      ]
+    },
+    "back": {
+      "resourceId": "mx_art_sandnip_back",
+      "file": "sandnip-back.png",
+      "sha256": "6ef335e1184acc19be3e346f87bdaac34c412dc5d45c61ac16a183f57f66dd77",
+      "bytes": 855,
+      "bbox": [
+        15,
+        24,
+        65,
+        73
+      ]
+    }
+  },
+  {
+    "id": "mx_species_dunestalk",
+    "family": "scorpion",
+    "stage": 2,
+    "palette": [
+      "#c69865",
+      "#edc98b",
+      "#82576b",
+      "#e09ea4"
+    ],
+    "front": {
+      "resourceId": "mx_art_dunestalk_front",
+      "file": "dunestalk-front.png",
+      "sha256": "6590d042ebb7a0b3b4377d66c6a663169427ebf592a7c0cea7aeb8292f0cd1ac",
+      "bytes": 1075,
+      "bbox": [
+        10,
+        13,
+        69,
+        72
+      ]
+    },
+    "back": {
+      "resourceId": "mx_art_dunestalk_back",
+      "file": "dunestalk-back.png",
+      "sha256": "040ec3f5b8be7f36308215e989da8b31bfecc8e295b4e8ede562fd8792560a27",
+      "bytes": 1071,
+      "bbox": [
+        10,
+        13,
+        69,
+        72
+      ]
+    }
+  },
+  {
+    "id": "mx_species_miragespike",
+    "family": "scorpion",
+    "stage": 3,
+    "palette": [
+      "#c69865",
+      "#edc98b",
+      "#82576b",
+      "#e09ea4"
+    ],
+    "front": {
+      "resourceId": "mx_art_miragespike_front",
+      "file": "miragespike-front.png",
+      "sha256": "8ee605cd04bacaa71abf9b63d6fb9b0a3f742999b95005407918af1925c8a829",
+      "bytes": 1253,
+      "bbox": [
+        6,
+        5,
+        74,
+        73
+      ]
+    },
+    "back": {
+      "resourceId": "mx_art_miragespike_back",
+      "file": "miragespike-back.png",
+      "sha256": "957ea6dcc66e0ed011cc5c4c106a7db9c7301e6e94a9c19e3926bf04ff74f9d1",
+      "bytes": 1241,
+      "bbox": [
+        6,
+        5,
+        74,
+        73
+      ]
+    }
+  },
+  {
+    "id": "mx_species_flurrykit",
+    "family": "lynx",
+    "stage": 1,
+    "palette": [
+      "#8dafcc",
+      "#d5e7e5",
+      "#596f9e",
+      "#b59ccc"
+    ],
+    "front": {
+      "resourceId": "mx_art_flurrykit_front",
+      "file": "flurrykit-front.png",
+      "sha256": "7e87ec27be7927ae2cc529504caf73a806fca88edb6c88a72698055c080dfa17",
+      "bytes": 839,
+      "bbox": [
+        20,
+        24,
+        63,
+        74
+      ]
+    },
+    "back": {
+      "resourceId": "mx_art_flurrykit_back",
+      "file": "flurrykit-back.png",
+      "sha256": "ee6d080edf75ae81e1afbb44e0b4ccfa0155744180901cc92a67bbbd2969252f",
+      "bytes": 884,
+      "bbox": [
+        24,
+        24,
+        63,
+        75
+      ]
+    }
+  },
+  {
+    "id": "mx_species_rimepelt",
+    "family": "lynx",
+    "stage": 2,
+    "palette": [
+      "#8dafcc",
+      "#d5e7e5",
+      "#596f9e",
+      "#b59ccc"
+    ],
+    "front": {
+      "resourceId": "mx_art_rimepelt_front",
+      "file": "rimepelt-front.png",
+      "sha256": "2cb64efc613b025191a39ec86e8c4b86cb401c56ae25dfbb8249af7700964139",
+      "bytes": 944,
+      "bbox": [
+        15,
+        13,
+        67,
+        74
+      ]
+    },
+    "back": {
+      "resourceId": "mx_art_rimepelt_back",
+      "file": "rimepelt-back.png",
+      "sha256": "b4186a16563f455841d84a3e12ecb342f08e051b7325aadecccf4a498f1b6dd8",
+      "bytes": 1074,
+      "bbox": [
+        21,
+        13,
+        67,
+        75
+      ]
+    }
+  },
+  {
+    "id": "mx_species_glaciermane",
+    "family": "lynx",
+    "stage": 3,
+    "palette": [
+      "#8dafcc",
+      "#d5e7e5",
+      "#596f9e",
+      "#b59ccc"
+    ],
+    "front": {
+      "resourceId": "mx_art_glaciermane_front",
+      "file": "glaciermane-front.png",
+      "sha256": "97eb19063cf79830eed385d83ba521956a06562c5d1161a8feb5b2267d3f60d9",
+      "bytes": 1156,
+      "bbox": [
+        12,
+        5,
+        72,
+        75
+      ]
+    },
+    "back": {
+      "resourceId": "mx_art_glaciermane_back",
+      "file": "glaciermane-back.png",
+      "sha256": "5dce4c250082c2c1ce34c8cd4093571503122c85e99c76ad11fcdd4f1914a638",
+      "bytes": 1208,
+      "bbox": [
+        18,
+        5,
+        72,
+        76
+      ]
+    }
+  },
+  {
+    "id": "mx_species_wickworm",
+    "family": "moth",
+    "stage": 1,
+    "palette": [
+      "#a780b6",
+      "#e4bfaa",
+      "#624d89",
+      "#ffe292"
+    ],
+    "front": {
+      "resourceId": "mx_art_wickworm_front",
+      "file": "wickworm-front.png",
+      "sha256": "46371fb4590342c0dc246a5f0943016d73accda63af4857d3b8f27d2f9468533",
+      "bytes": 631,
+      "bbox": [
+        21,
+        27,
+        55,
+        71
+      ]
+    },
+    "back": {
+      "resourceId": "mx_art_wickworm_back",
+      "file": "wickworm-back.png",
+      "sha256": "f75682ba6993ac980fb832ac97c67dd5c6b867c0c7a134d73c347cc9525c76b0",
+      "bytes": 608,
+      "bbox": [
+        21,
+        27,
+        55,
+        71
+      ]
+    }
+  },
+  {
+    "id": "mx_species_lanternwing",
+    "family": "moth",
+    "stage": 2,
+    "palette": [
+      "#a780b6",
+      "#e4bfaa",
+      "#624d89",
+      "#ffe292"
+    ],
+    "front": {
+      "resourceId": "mx_art_lanternwing_front",
+      "file": "lanternwing-front.png",
+      "sha256": "1bb55ecd3de47faaa2742206df3016c9b084976130f783ce178c35e74e87b669",
+      "bytes": 1210,
+      "bbox": [
+        8,
+        18,
+        71,
+        69
+      ]
+    },
+    "back": {
+      "resourceId": "mx_art_lanternwing_back",
+      "file": "lanternwing-back.png",
+      "sha256": "782c7c0a7e1a962ce18a21e7ac7f9899cdb71d1e7b536d3de4bccc48d76c5f90",
+      "bytes": 1398,
+      "bbox": [
+        8,
+        18,
+        71,
+        69
+      ]
+    }
+  },
+  {
+    "id": "mx_species_beaconmoth",
+    "family": "moth",
+    "stage": 3,
+    "palette": [
+      "#a780b6",
+      "#e4bfaa",
+      "#624d89",
+      "#ffe292"
+    ],
+    "front": {
+      "resourceId": "mx_art_beaconmoth_front",
+      "file": "beaconmoth-front.png",
+      "sha256": "26e6363566b15139fb21241ea26de5ad7b97dfd93f6da4dccb4bb336fa2451a5",
+      "bytes": 1389,
+      "bbox": [
+        4,
+        5,
+        77,
+        69
+      ]
+    },
+    "back": {
+      "resourceId": "mx_art_beaconmoth_back",
+      "file": "beaconmoth-back.png",
+      "sha256": "cef0556bbc9b3a3c9f56771c5999413cc8571815dab99b3acc2a6d3614eb141f",
+      "bytes": 1592,
+      "bbox": [
+        4,
+        5,
+        77,
+        69
+      ]
+    }
+  },
+  {
+    "id": "mx_species_miretail",
+    "family": "newt",
+    "stage": 1,
+    "palette": [
+      "#8c8aa1",
+      "#c2b4cd",
+      "#535d79",
+      "#e9948e"
+    ],
+    "front": {
+      "resourceId": "mx_art_miretail_front",
+      "file": "miretail-front.png",
+      "sha256": "cd555a48e36f00ed53ef1cfd49a5abb4dabbeefc5a30a87deb04ce84d9271324",
+      "bytes": 784,
+      "bbox": [
+        18,
+        36,
+        64,
+        73
+      ]
+    },
+    "back": {
+      "resourceId": "mx_art_miretail_back",
+      "file": "miretail-back.png",
+      "sha256": "80314919966e5c9d52997480373318fbb9d02387f0e4d140cd470f1c80373ddd",
+      "bytes": 819,
+      "bbox": [
+        18,
+        36,
+        64,
+        75
+      ]
+    }
+  },
+  {
+    "id": "mx_species_venomfrill",
+    "family": "newt",
+    "stage": 2,
+    "palette": [
+      "#8c8aa1",
+      "#c2b4cd",
+      "#535d79",
+      "#e9948e"
+    ],
+    "front": {
+      "resourceId": "mx_art_venomfrill_front",
+      "file": "venomfrill-front.png",
+      "sha256": "5238f2830912870861b1927fd119b9caa2b606c193fc770e617aa48a3a4edc47",
+      "bytes": 1008,
+      "bbox": [
+        14,
+        25,
+        68,
+        72
+      ]
+    },
+    "back": {
+      "resourceId": "mx_art_venomfrill_back",
+      "file": "venomfrill-back.png",
+      "sha256": "a7aa71f0657b426a165295dd79a577ffe3923955087e799d9fe619c5160608f1",
+      "bytes": 1091,
+      "bbox": [
+        14,
+        25,
+        68,
+        75
+      ]
+    }
+  },
+  {
+    "id": "mx_species_marshcrown",
+    "family": "newt",
+    "stage": 3,
+    "palette": [
+      "#8c8aa1",
+      "#c2b4cd",
+      "#535d79",
+      "#e9948e"
+    ],
+    "front": {
+      "resourceId": "mx_art_marshcrown_front",
+      "file": "marshcrown-front.png",
+      "sha256": "60f0f45dc9e44bc6fbf93829cd8fb7f37d1dce3b313a7df7fc1844a9a65a3764",
+      "bytes": 1247,
+      "bbox": [
+        10,
+        8,
+        73,
+        73
+      ]
+    },
+    "back": {
+      "resourceId": "mx_art_marshcrown_back",
+      "file": "marshcrown-back.png",
+      "sha256": "6d9ca0e67e348ee0c2f3f5df46d05cd58cca9306858ec6216cc1d5be7680c7e3",
+      "bytes": 1329,
+      "bbox": [
+        10,
+        8,
+        73,
+        76
+      ]
+    }
+  },
+  {
+    "id": "mx_species_rootpig",
+    "family": "boar",
+    "stage": 1,
+    "palette": [
+      "#9c7855",
+      "#d3b27a",
+      "#5e674e",
+      "#9fbd78"
+    ],
+    "front": {
+      "resourceId": "mx_art_rootpig_front",
+      "file": "rootpig-front.png",
+      "sha256": "addc89a00d3e99d1768501253f74b2c26d20f97bcdcd9bd6d4360ba7c8ec02fb",
+      "bytes": 832,
+      "bbox": [
+        18,
+        35,
+        65,
+        74
+      ]
+    },
+    "back": {
+      "resourceId": "mx_art_rootpig_back",
+      "file": "rootpig-back.png",
+      "sha256": "cbfcd2a215ff48b2ba9a29bb2fb916481b451d85df79a86526d9f97442e553f8",
+      "bytes": 882,
+      "bbox": [
+        18,
+        35,
+        65,
+        74
+      ]
+    }
+  },
+  {
+    "id": "mx_species_brambleboar",
+    "family": "boar",
+    "stage": 2,
+    "palette": [
+      "#9c7855",
+      "#d3b27a",
+      "#5e674e",
+      "#9fbd78"
+    ],
+    "front": {
+      "resourceId": "mx_art_brambleboar_front",
+      "file": "brambleboar-front.png",
+      "sha256": "ffa6d73905dba446295a2692cd2baf1f71d6055576e333793b07eb3f6b70cb9a",
+      "bytes": 1175,
+      "bbox": [
+        12,
+        25,
+        69,
+        73
+      ]
+    },
+    "back": {
+      "resourceId": "mx_art_brambleboar_back",
+      "file": "brambleboar-back.png",
+      "sha256": "32188a32f03428e5e6f4e9c9d7d92c98e6fa2eb0ae52adf0a96c119e92620f2f",
+      "bytes": 1153,
+      "bbox": [
+        12,
+        25,
+        69,
+        73
+      ]
+    }
+  },
+  {
+    "id": "mx_species_briartusk",
+    "family": "boar",
+    "stage": 3,
+    "palette": [
+      "#9c7855",
+      "#d3b27a",
+      "#5e674e",
+      "#9fbd78"
+    ],
+    "front": {
+      "resourceId": "mx_art_briartusk_front",
+      "file": "briartusk-front.png",
+      "sha256": "7f34759bcb1e976917afc45420da2457ee96d261ff494e4f37f1e9dbafcd44a9",
+      "bytes": 1307,
+      "bbox": [
+        3,
+        19,
+        74,
+        74
+      ]
+    },
+    "back": {
+      "resourceId": "mx_art_briartusk_back",
+      "file": "briartusk-back.png",
+      "sha256": "f07ab4bfc82fc1c4527f75ede99c333b03053e2feb2faa4b64c858b3d33d2526",
+      "bytes": 1384,
+      "bbox": [
+        3,
+        19,
+        74,
+        74
+      ]
+    }
+  },
+  {
+    "id": "mx_species_dozemite",
+    "family": "mantis",
+    "stage": 1,
+    "palette": [
+      "#b29abc",
+      "#e7c3d7",
+      "#735d94",
+      "#7ecab6"
+    ],
+    "front": {
+      "resourceId": "mx_art_dozemite_front",
+      "file": "dozemite-front.png",
+      "sha256": "bb923485457d2ed7036a11febc752db8d53da9ee6a290a93d215068aac6a7eaa",
+      "bytes": 789,
+      "bbox": [
+        18,
+        24,
+        59,
+        74
+      ]
+    },
+    "back": {
+      "resourceId": "mx_art_dozemite_back",
+      "file": "dozemite-back.png",
+      "sha256": "9e521c11f15836f1f72bff9e5dddd3245df355f9857348ea9756e874e03a1e74",
+      "bytes": 799,
+      "bbox": [
+        18,
+        24,
+        59,
+        74
+      ]
+    }
+  },
+  {
+    "id": "mx_species_trancescythe",
+    "family": "mantis",
+    "stage": 2,
+    "palette": [
+      "#b29abc",
+      "#e7c3d7",
+      "#735d94",
+      "#7ecab6"
+    ],
+    "front": {
+      "resourceId": "mx_art_trancescythe_front",
+      "file": "trancescythe-front.png",
+      "sha256": "09025fabe0643e3c774e75542fac077f73ed8cfcfde53a863d0749a682cfb139",
+      "bytes": 1026,
+      "bbox": [
+        14,
+        14,
+        62,
+        75
+      ]
+    },
+    "back": {
+      "resourceId": "mx_art_trancescythe_back",
+      "file": "trancescythe-back.png",
+      "sha256": "d5e2d7f82382ce793c4213f2b97fcc30019ee22976ec96ab488f8cae9cdb2f75",
+      "bytes": 1066,
+      "bbox": [
+        14,
+        14,
+        62,
+        75
+      ]
+    }
+  },
+  {
+    "id": "mx_species_oraclemantis",
+    "family": "mantis",
+    "stage": 3,
+    "palette": [
+      "#b29abc",
+      "#e7c3d7",
+      "#735d94",
+      "#7ecab6"
+    ],
+    "front": {
+      "resourceId": "mx_art_oraclemantis_front",
+      "file": "oraclemantis-front.png",
+      "sha256": "d0a6917509267e8faca6c76e6394587423a2713afe6dd07d89a460ffeeb0e6d1",
+      "bytes": 1320,
+      "bbox": [
+        5,
+        6,
+        74,
+        76
+      ]
+    },
+    "back": {
+      "resourceId": "mx_art_oraclemantis_back",
+      "file": "oraclemantis-back.png",
+      "sha256": "340ded71f9c1a9a3938efb6aa8a39eb8881a913a02d313260fc63aa2dc673505",
+      "bytes": 1383,
+      "bbox": [
+        5,
+        6,
+        74,
+        76
+      ]
+    }
+  },
+  {
+    "id": "mx_species_gritnose",
+    "family": "mole",
+    "stage": 1,
+    "palette": [
+      "#847575",
+      "#bb9b85",
+      "#4d505e",
+      "#ddbd79"
+    ],
+    "front": {
+      "resourceId": "mx_art_gritnose_front",
+      "file": "gritnose-front.png",
+      "sha256": "11e20fcf88ec17cc0217190903b112bb0060542d40f961e657523a88ef17f69a",
+      "bytes": 831,
+      "bbox": [
+        15,
+        35,
+        62,
+        74
+      ]
+    },
+    "back": {
+      "resourceId": "mx_art_gritnose_back",
+      "file": "gritnose-back.png",
+      "sha256": "65e673d54f0878f8b88d19b79585854d6b2846e744f6f6faaf488229e81085cf",
+      "bytes": 772,
+      "bbox": [
+        15,
+        35,
+        62,
+        74
+      ]
+    }
+  },
+  {
+    "id": "mx_species_tunnelpaw",
+    "family": "mole",
+    "stage": 2,
+    "palette": [
+      "#847575",
+      "#bb9b85",
+      "#4d505e",
+      "#ddbd79"
+    ],
+    "front": {
+      "resourceId": "mx_art_tunnelpaw_front",
+      "file": "tunnelpaw-front.png",
+      "sha256": "40327564e0c15d311eff520481d2b7ab952c5ac077781c43f73d23f7b729f4c8",
+      "bytes": 1020,
+      "bbox": [
+        10,
+        18,
+        66,
+        73
+      ]
+    },
+    "back": {
+      "resourceId": "mx_art_tunnelpaw_back",
+      "file": "tunnelpaw-back.png",
+      "sha256": "a17c698bd75e4fbf260d6e02a3aa562703dd6ed72f9c4bd1038f12bc4a3e67d8",
+      "bytes": 949,
+      "bbox": [
+        10,
+        18,
+        66,
+        73
+      ]
+    }
+  },
+  {
+    "id": "mx_species_faultdigger",
+    "family": "mole",
+    "stage": 3,
+    "palette": [
+      "#847575",
+      "#bb9b85",
+      "#4d505e",
+      "#ddbd79"
+    ],
+    "front": {
+      "resourceId": "mx_art_faultdigger_front",
+      "file": "faultdigger-front.png",
+      "sha256": "c17b5f81c7aaea8ea01c60f931086b6055e4899810714f5ee26a7e3ae54d6c45",
+      "bytes": 1240,
+      "bbox": [
+        6,
+        11,
+        71,
+        74
+      ]
+    },
+    "back": {
+      "resourceId": "mx_art_faultdigger_back",
+      "file": "faultdigger-back.png",
+      "sha256": "4e76a6ece6974a999493d85913099acf53623aaa1bee390f0c4f7e6826033490",
+      "bytes": 1174,
+      "bbox": [
+        6,
+        11,
+        71,
+        74
+      ]
+    }
+  },
+  {
+    "id": "mx_species_threadimp",
+    "family": "puppet",
+    "stage": 1,
+    "palette": [
+      "#839eae",
+      "#cad2cd",
+      "#4d667f",
+      "#d1a07b"
+    ],
+    "front": {
+      "resourceId": "mx_art_threadimp_front",
+      "file": "threadimp-front.png",
+      "sha256": "c0086334ce3b63469712af65b78797590c9eb433b2e6798bd2789b08191707c8",
+      "bytes": 900,
+      "bbox": [
+        19,
+        24,
+        59,
+        76
+      ]
+    },
+    "back": {
+      "resourceId": "mx_art_threadimp_back",
+      "file": "threadimp-back.png",
+      "sha256": "6284c59e32383f9a1764577e315319e82d1a04b75224672d8e70e31c08e35729",
+      "bytes": 995,
+      "bbox": [
+        19,
+        24,
+        59,
+        76
+      ]
+    }
+  },
+  {
+    "id": "mx_species_hushdoll",
+    "family": "puppet",
+    "stage": 2,
+    "palette": [
+      "#839eae",
+      "#cad2cd",
+      "#4d667f",
+      "#d1a07b"
+    ],
+    "front": {
+      "resourceId": "mx_art_hushdoll_front",
+      "file": "hushdoll-front.png",
+      "sha256": "a1b00134fe7296a1bc0d3f61afe7f28e5af00ccd5e309f2ed9b55e84e380cfb7",
+      "bytes": 998,
+      "bbox": [
+        14,
+        14,
+        62,
+        75
+      ]
+    },
+    "back": {
+      "resourceId": "mx_art_hushdoll_back",
+      "file": "hushdoll-back.png",
+      "sha256": "484d4267add68b626ffdffc36cfcafc8a105538928069fdf6e1b2c820ab2c91a",
+      "bytes": 1103,
+      "bbox": [
+        14,
+        14,
+        62,
+        75
+      ]
+    }
+  },
+  {
+    "id": "mx_species_veilmaster",
+    "family": "puppet",
+    "stage": 3,
+    "palette": [
+      "#839eae",
+      "#cad2cd",
+      "#4d667f",
+      "#d1a07b"
+    ],
+    "front": {
+      "resourceId": "mx_art_veilmaster_front",
+      "file": "veilmaster-front.png",
+      "sha256": "39266a743b4826c709f6d0764736a20d45448329dbc5651630c0a3ed7aff67b9",
+      "bytes": 1264,
+      "bbox": [
+        9,
+        6,
+        70,
+        77
+      ]
+    },
+    "back": {
+      "resourceId": "mx_art_veilmaster_back",
+      "file": "veilmaster-back.png",
+      "sha256": "13784a6421344b0d402ed9557489874c59d2cfded093f46565176b5803583fde",
+      "bytes": 1408,
+      "bbox": [
+        9,
+        6,
+        70,
+        77
+      ]
+    }
+  },
+  {
+    "id": "mx_species_reedpeep",
+    "family": "heron",
+    "stage": 1,
+    "palette": [
+      "#69a398",
+      "#b6d5c0",
+      "#3e6876",
+      "#e1c58a"
+    ],
+    "front": {
+      "resourceId": "mx_art_reedpeep_front",
+      "file": "reedpeep-front.png",
+      "sha256": "c8dcfca62ebd8dfa20fe55f36bf42f9e1f98844056955239e8df1c1a67260ca2",
+      "bytes": 748,
+      "bbox": [
+        15,
+        27,
+        64,
+        75
+      ]
+    },
+    "back": {
+      "resourceId": "mx_art_reedpeep_back",
+      "file": "reedpeep-back.png",
+      "sha256": "8fb36b2d95ad9b859357dd2ff8e3664a8f0b050d827d119838d589f28c586288",
+      "bytes": 791,
+      "bbox": [
+        25,
+        27,
+        64,
+        75
+      ]
+    }
+  },
+  {
+    "id": "mx_species_fenstrider",
+    "family": "heron",
+    "stage": 2,
+    "palette": [
+      "#69a398",
+      "#b6d5c0",
+      "#3e6876",
+      "#e1c58a"
+    ],
+    "front": {
+      "resourceId": "mx_art_fenstrider_front",
+      "file": "fenstrider-front.png",
+      "sha256": "f283731df3d21c95f25e92ded3b6093069c99c35a06a7ae334b11fd37d7fccb4",
+      "bytes": 878,
+      "bbox": [
+        9,
+        17,
+        68,
+        75
+      ]
+    },
+    "back": {
+      "resourceId": "mx_art_fenstrider_back",
+      "file": "fenstrider-back.png",
+      "sha256": "77518d89554a28ccdf100c0a4489a50c7fb41833720822e21e735b73a87a9c39",
+      "bytes": 954,
+      "bbox": [
+        20,
+        17,
+        68,
+        75
+      ]
+    }
+  },
+  {
+    "id": "mx_species_mistralheron",
+    "family": "heron",
+    "stage": 3,
+    "palette": [
+      "#69a398",
+      "#b6d5c0",
+      "#3e6876",
+      "#e1c58a"
+    ],
+    "front": {
+      "resourceId": "mx_art_mistralheron_front",
+      "file": "mistralheron-front.png",
+      "sha256": "7f2531a6bb8a45d6f864cda17afecb178e63ce5b5beb81f37600278f09308754",
+      "bytes": 1180,
+      "bbox": [
+        5,
+        5,
+        73,
+        76
+      ]
+    },
+    "back": {
+      "resourceId": "mx_art_mistralheron_back",
+      "file": "mistralheron-back.png",
+      "sha256": "5c69c84e6c86162cfb9418e72a18f6f66033ec3caf7a23eb879a504d4b50d93a",
+      "bytes": 1195,
+      "bbox": [
+        17,
+        5,
+        73,
+        76
+      ]
+    }
+  },
+  {
+    "id": "mx_species_coralpin",
+    "family": "crab",
+    "stage": 1,
+    "palette": [
+      "#d68879",
+      "#f4bd9a",
+      "#985868",
+      "#74b6b5"
+    ],
+    "front": {
+      "resourceId": "mx_art_coralpin_front",
+      "file": "coralpin-front.png",
+      "sha256": "04c44da6111b221a060bd649b72ada43ce6fe1d900629a154a5bf236974525bf",
+      "bytes": 810,
+      "bbox": [
+        16,
+        35,
+        67,
+        71
+      ]
+    },
+    "back": {
+      "resourceId": "mx_art_coralpin_back",
+      "file": "coralpin-back.png",
+      "sha256": "ca474569f299e6779ab739d079d5b0577e253bf4d620b6d0a6ff7a74a40b0c1a",
+      "bytes": 783,
+      "bbox": [
+        16,
+        35,
+        67,
+        71
+      ]
+    }
+  },
+  {
+    "id": "mx_species_reefguard",
+    "family": "crab",
+    "stage": 2,
+    "palette": [
+      "#d68879",
+      "#f4bd9a",
+      "#985868",
+      "#74b6b5"
+    ],
+    "front": {
+      "resourceId": "mx_art_reefguard_front",
+      "file": "reefguard-front.png",
+      "sha256": "036387cee843df4e082ff6a4ad7b95f81939f83fb314a501d807a0aeaa118994",
+      "bytes": 959,
+      "bbox": [
+        12,
+        25,
+        71,
+        69
+      ]
+    },
+    "back": {
+      "resourceId": "mx_art_reefguard_back",
+      "file": "reefguard-back.png",
+      "sha256": "ca1fa381385835746ecdd5cac613701c555a3d780a67b130bf718a7e84c62c55",
+      "bytes": 891,
+      "bbox": [
+        12,
+        25,
+        71,
+        69
+      ]
+    }
+  },
+  {
+    "id": "mx_species_atollclamp",
+    "family": "crab",
+    "stage": 3,
+    "palette": [
+      "#d68879",
+      "#f4bd9a",
+      "#985868",
+      "#74b6b5"
+    ],
+    "front": {
+      "resourceId": "mx_art_atollclamp_front",
+      "file": "atollclamp-front.png",
+      "sha256": "7de45bee9341a29be8160d8e4c6cfa2b5403c459769da4b474858067c3907a36",
+      "bytes": 1270,
+      "bbox": [
+        7,
+        17,
+        77,
+        70
+      ]
+    },
+    "back": {
+      "resourceId": "mx_art_atollclamp_back",
+      "file": "atollclamp-back.png",
+      "sha256": "8772bd1929cf6cace8e51d381c5c3670f85c4e50ffb3e71bebb92211199889a9",
+      "bytes": 1170,
+      "bbox": [
+        7,
+        17,
+        77,
+        70
+      ]
+    }
+  },
+  {
+    "id": "mx_species_curlfin",
+    "family": "seahorse",
+    "stage": 1,
+    "palette": [
+      "#6392b2",
+      "#a7d8d0",
+      "#465d91",
+      "#ddae7d"
+    ],
+    "front": {
+      "resourceId": "mx_art_curlfin_front",
+      "file": "curlfin-front.png",
+      "sha256": "3ee42a4cce2e953cbf9059aa381b48201c5be6ce4582adb9530d2444ba281a43",
+      "bytes": 793,
+      "bbox": [
+        22,
+        24,
+        60,
+        75
+      ]
+    },
+    "back": {
+      "resourceId": "mx_art_curlfin_back",
+      "file": "curlfin-back.png",
+      "sha256": "8f7dce29c5338cb16ce11c0382a80ab220ec0bb72ea0a9cd1cbfaf28b470e7c9",
+      "bytes": 834,
+      "bbox": [
+        25,
+        24,
+        60,
+        75
+      ]
+    }
+  },
+  {
+    "id": "mx_species_brinewyrm",
+    "family": "seahorse",
+    "stage": 2,
+    "palette": [
+      "#6392b2",
+      "#a7d8d0",
+      "#465d91",
+      "#ddae7d"
+    ],
+    "front": {
+      "resourceId": "mx_art_brinewyrm_front",
+      "file": "brinewyrm-front.png",
+      "sha256": "d6b72aa3ab2eb5a7948c0b9f6e7100a176e74a59911771058e052c98ea10647d",
+      "bytes": 950,
+      "bbox": [
+        18,
+        13,
+        63,
+        75
+      ]
+    },
+    "back": {
+      "resourceId": "mx_art_brinewyrm_back",
+      "file": "brinewyrm-back.png",
+      "sha256": "9309ad1090bff7ef89305df9775ef07f41348ebec58d228c17527503217d2705",
+      "bytes": 943,
+      "bbox": [
+        21,
+        13,
+        63,
+        75
+      ]
+    }
+  },
+  {
+    "id": "mx_species_abyssail",
+    "family": "seahorse",
+    "stage": 3,
+    "palette": [
+      "#6392b2",
+      "#a7d8d0",
+      "#465d91",
+      "#ddae7d"
+    ],
+    "front": {
+      "resourceId": "mx_art_abyssail_front",
+      "file": "abyssail-front.png",
+      "sha256": "152da992bbed753bde874b54f7b63d1945cbb99ed98e0fe4f795909025040b2a",
+      "bytes": 1173,
+      "bbox": [
+        15,
+        5,
+        72,
+        76
+      ]
+    },
+    "back": {
+      "resourceId": "mx_art_abyssail_back",
+      "file": "abyssail-back.png",
+      "sha256": "a2e63688a76d8d689ee629ddf369a8eb798b56f625164a5a7971c8bea081f592",
+      "bytes": 1160,
+      "bbox": [
+        19,
+        5,
+        72,
+        76
+      ]
+    }
+  },
+  {
+    "id": "mx_species_thundercairn",
+    "family": "ibex",
+    "stage": 0,
+    "palette": [
+      "#9b956a",
+      "#e1d17e",
+      "#595977",
+      "#91d3d7"
+    ],
+    "front": {
+      "resourceId": "mx_art_thundercairn_front",
+      "file": "thundercairn-front.png",
+      "sha256": "591f19ac3c0abfb1d50370f165d3f8c494ab3ffa0fddc6041e990e13cfcc5904",
+      "bytes": 1394,
+      "bbox": [
+        7,
+        3,
+        71,
+        74
+      ]
+    },
+    "back": {
+      "resourceId": "mx_art_thundercairn_back",
+      "file": "thundercairn-back.png",
+      "sha256": "2adfb61090865e08f07fae40551cf9fbb0b3351651412fa7103f1d9dd193e79c",
+      "bytes": 1450,
+      "bbox": [
+        7,
+        3,
+        71,
+        74
+      ]
+    }
+  },
+  {
+    "id": "mx_species_winterquill",
+    "family": "crane",
+    "stage": 0,
+    "palette": [
+      "#abc8d8",
+      "#f0ebdd",
+      "#68849d",
+      "#c3a6ca"
+    ],
+    "front": {
+      "resourceId": "mx_art_winterquill_front",
+      "file": "winterquill-front.png",
+      "sha256": "e38d0a932752695b326216f1041930a0d6979609cd7a34673d257c24b44fa63a",
+      "bytes": 1329,
+      "bbox": [
+        5,
+        5,
+        74,
+        76
+      ]
+    },
+    "back": {
+      "resourceId": "mx_art_winterquill_back",
+      "file": "winterquill-back.png",
+      "sha256": "5331ba8d9492994a617e9d149a9b1618030745b5c8d98bd8084d2e4562662574",
+      "bytes": 1423,
+      "bbox": [
+        5,
+        5,
+        74,
+        76
+      ]
+    }
+  },
+  {
+    "id": "mx_species_solmane",
+    "family": "lion",
+    "stage": 0,
+    "palette": [
+      "#c18c4b",
+      "#f5cf7e",
+      "#865258",
+      "#f6e4ad"
+    ],
+    "front": {
+      "resourceId": "mx_art_solmane_front",
+      "file": "solmane-front.png",
+      "sha256": "929e79b1dfcdcd363bb6aeb6a18ab80e7a793b6afd075f224b49dbc85f0aea91",
+      "bytes": 1203,
+      "bbox": [
+        10,
+        8,
+        78,
+        75
+      ]
+    },
+    "back": {
+      "resourceId": "mx_art_solmane_back",
+      "file": "solmane-back.png",
+      "sha256": "b99e42a00e286a1b70e52aae3e90c7c201a677de4801892fff2387ff05758a4f",
+      "bytes": 1310,
+      "bbox": [
+        10,
+        8,
+        78,
+        76
+      ]
+    }
+  },
+  {
+    "id": "mx_species_lunavane",
+    "family": "ray",
+    "stage": 0,
+    "palette": [
+      "#8b88b2",
+      "#c8cfe5",
+      "#555d8a",
+      "#a9dfce"
+    ],
+    "front": {
+      "resourceId": "mx_art_lunavane_front",
+      "file": "lunavane-front.png",
+      "sha256": "f07f07aa078457b30b86463ac6929f0eeeaf22b72ff3051e04ef018e1997fb2c",
+      "bytes": 1200,
+      "bbox": [
+        4,
+        11,
+        77,
+        79
+      ]
+    },
+    "back": {
+      "resourceId": "mx_art_lunavane_back",
+      "file": "lunavane-back.png",
+      "sha256": "44abd988053df16f428572e95cf7f0408304f3acf6884cf6cd26adc2369f07ce",
+      "bytes": 1220,
+      "bbox": [
+        4,
+        11,
+        77,
+        79
+      ]
+    }
+  },
+  {
+    "id": "mx_species_relicarab",
+    "family": "scarab",
+    "stage": 0,
+    "palette": [
+      "#a69465",
+      "#dfca89",
+      "#646179",
+      "#8ec1b6"
+    ],
+    "front": {
+      "resourceId": "mx_art_relicarab_front",
+      "file": "relicarab-front.png",
+      "sha256": "4938bfa41c990bb6f777e19a0abf5713e15913f2b7c257654af6da154cd87b6f",
+      "bytes": 1542,
+      "bbox": [
+        6,
+        2,
+        77,
+        74
+      ]
+    },
+    "back": {
+      "resourceId": "mx_art_relicarab_back",
+      "file": "relicarab-back.png",
+      "sha256": "2e80e9555e852ff560e4cf5bdcfb9161ee3ba22d0d93436e71699d6d94618b39",
+      "bytes": 1553,
+      "bbox": [
+        6,
+        2,
+        77,
+        74
+      ]
+    }
+  },
+  {
+    "id": "mx_species_astralhart",
+    "family": "stag",
+    "stage": 0,
+    "palette": [
+      "#8db2aa",
+      "#d4e1b8",
+      "#516d88",
+      "#debcdb"
+    ],
+    "front": {
+      "resourceId": "mx_art_astralhart_front",
+      "file": "astralhart-front.png",
+      "sha256": "1e3829e39b9e6314bd35ba9b8e5e13cd3f52d43a10d26f39eeea9bd32b3aab42",
+      "bytes": 1313,
+      "bbox": [
+        2,
+        4,
+        68,
+        76
+      ]
+    },
+    "back": {
+      "resourceId": "mx_art_astralhart_back",
+      "file": "astralhart-back.png",
+      "sha256": "b6303f88b22d0d68b4f659bbbc6bcddcda56aaedeeb83db58d7d4d03bef64dfa",
+      "bytes": 1321,
+      "bbox": [
+        2,
+        4,
+        70,
+        76
+      ]
+    }
+  }
+]

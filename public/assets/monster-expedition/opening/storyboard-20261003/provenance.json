@@ -1,0 +1,62 @@
+{
+  "generatedAt": "2026-10-03",
+  "tool": "image_gen.imagegen",
+  "mode": "built-in referenced generation; one targeted continuity edit",
+  "referencesViewedBeforeGeneration": true,
+  "references": [
+    {
+      "path": "/home/main/z-project/rpg-zzu-tileset-harness-dogfood-ai-1003/public/assets/monster-expedition/opening/starlight-prologue.png",
+      "sha256": "807a13f6cbe5318fb39866bccb0827393db3cd254afed46c38fa9c0befaeace1"
+    },
+    {
+      "path": "/home/main/z-project/rpg-zzu-tileset-harness/public/assets/monster-expedition/creatures/spriglet-front.png",
+      "sha256": "eab7ac83d5d4459dc499354716cebf967fcb212404454481f5fb5bf7cb223cd3"
+    },
+    {
+      "path": "/home/main/z-project/rpg-zzu-tileset-harness/public/assets/monster-expedition/creatures/coalbit-front.png",
+      "sha256": "f2a8c127301ac50721a64cf8c58228dccc98865f04885c4f8ead25fec2d22e81"
+    },
+    {
+      "path": "/home/main/z-project/rpg-zzu-tileset-harness/public/assets/monster-expedition/creatures/rivulet-front.png",
+      "sha256": "09bd891675a6bdbb41c16a291c9572a88b1bf84031c4162b7464ce04a9fd9628"
+    }
+  ],
+  "finalOutputs": [
+    {
+      "file": "lighthouse-dimming.png",
+      "width": 1448,
+      "height": 1086,
+      "bytes": 2019159,
+      "sha256": "9fa18b1258109f21c79f905b07c0fb9ea15c33977fa2bf737aee04a03671c13f",
+      "generatedOriginal": "/home/main/.codex/generated_images/01a0ff7d-fb94-7de0-9969-fafd7721b0d7/exec-e856916d-4721-41bc-9698-0bda0de16a77.png",
+      "prompt": "Use case: stylized-concept. Asset type: ONE original separate full-screen cinematic still for Starlight Island Monster Expedition. Image 1 is a continuity and pixel-art style reference. Create a NEW 4:3 landscape view, not a collage and not a redraw of the whole island view. Subject: close view of the SAME lighthouse in Image 1: a slender cream masonry tower, dark narrow slit windows, warm copper-brown peaked roof, glass lantern room with its circular gallery, coastal rocky-island setting. Keep one coherent tower and ONE lantern room; no double tower, no duplicate lens, no fantasy machinery. Camera stands outside at gallery height and looks at the dimming lantern, with the northern sea and distant islands visible beyond. The lantern's once-strong amber light has diminished to a tiny tired ember behind the glass lens: no sweeping bright beacon. A faint northern star in the distance is almost lost against a subtle darkening indigo cloud bank. Mood is a gentle moment of concern in a warm adventurous monster game, not horror or apocalypse. Use precisely the polished restrained crisp pixel clusters, twilight navy/teal palette and amber accents of Image 1. Compose the glass lantern and dying ember in the upper-center/right two-thirds with readable coastal sky beyond; the lower 18 percent must remain quiet low-detail dark stone/sea for Korean narration overlay, with no crucial lens, star or bright detail there. Full landscape 4:3 PNG composition, preferably 1448 by 1086. Constraints: no text, no letters, no logos, no watermark, no UI; no people or creatures; no panels/contact sheet/tile atlas. This is one static still, not an animation frame montage.",
+      "visualReview": "Saved PNG opened with view_image. One cream masonry tower, one coherent glass lens room/gallery/copper roof, tiny amber ember and no sweeping beam. Main subject above lower18percent narration zone."
+    },
+    {
+      "file": "starter-waiting-lab-v2.png",
+      "width": 1448,
+      "height": 1086,
+      "bytes": 1930923,
+      "sha256": "7d14e3ba54d07c94b7c9612f0b5f6114df67d4dc799ed880014edd3ad0773226",
+      "generatedOriginal": "/home/main/.codex/generated_images/01a0ff7d-fb94-7de0-9969-fafd7721b0d7/exec-47d3d37d-d32f-4d6b-8a98-dea4d24152e0.png",
+      "generationPrompt": "Use case: stylized-concept. Asset type: ONE original separate full-screen warm research-lab cinematic still for Starlight Island Monster Expedition. Image 1 is ONLY the world palette and finely polished crisp pixel-art style reference, not an object to insert indoors. Image 2 is exact creature identity reference for Spriglet, the small light-green leafy rabbit with two tall leaf-tipped ears and its original leaf/facial/body silhouette. Image 3 is exact identity for Coalbit, the small orange/yellow armored pangolin with angular snout/head, layered violet-charcoal scale plates and dark feet; do not turn it into a fox, lizard, bird or generic orange pet. Image 4 is exact identity for Rivulet, the small pale-blue otter with cream muzzle/belly, rounded ears, dark little nose/eyes and original blue tail/body silhouette. KEEP these original creatures recognizably faithful to the sprites: colors, markings, leaf ears, layered armor, otter facial structure and proportions. Exactly THREE creatures, each of those three once, no duplicates, no evolution, no famous Pokemon. Scene: a cozy coastal astronomer/monster-research lab at twilight, with an amber desk lamp, modest wooden worktable, unobtrusive telescope/star-study instruments and a lit open lab doorway in the rear. No readable writing on charts/books. The THREE unowned first-partner candidates wait comfortably together on a low broad research table/soft resting area, arranged left-to-right: green Spriglet resting by a little soil tray, sleepy Coalbit beside a warm smooth stone with the tiniest ember at its scale edge, blue Rivulet beside a shallow water basin cradling a smooth pebble. Their faces and complete distinctive silhouettes must all be clearly visible in a medium-wide camera composition. They are in neutral waiting/resting poses, not walking, jumping or being handed to a person. No trainer or human present; no ownership cues, collars, capture gadgets or UI choice boxes. Warm appealing sense of 'which small companion will I meet?' Show charming specific creature detail, not theatrical danger. Richly composed restrained retro pixel art, deliberate crisp clusters and stepped contours, coherent twilight teal/violet with amber light, matching Image 1 quality. Full landscape 4:3 composition, preferably 1448 by 1086. Characters and table live in the upper/middle 82 percent; bottom 18 percent stays dark quiet low-detail wooden floor suitable for narration overlay. Constraints: no text/letters/logos/watermarks/UI, no collage/panels/sprite sheet/tile atlas. One static still only.",
+      "initialGeneratedSource": "/home/main/.codex/generated_images/01a0ff7d-fb94-7de0-9969-fafd7721b0d7/exec-6c2faf49-3d9f-4c7b-91c1-beff22c82d20.png",
+      "initialGeneratedSha256": "5727cb70ba9b4870f32ff36f1d171adcd86494c4ab6c5000a28f0833b38b7516",
+      "continuityEditPrompt": "Edit the attached research-lab cinematic still with ONE tiny continuity correction only. Preserve the complete composition, pixel-art style, 4:3 dimensions, all indoor lighting, doorway, desk/telescope/star instruments, the quiet bottom18percent and ALL THREE starter creatures exactly as they are: leafy green rabbit, orange/violet armored pangolin, blue/cream otter and their faces, positions and details. Change ONLY the distant lighthouse seen outside through the large right-hand window: remove its broad bright golden sweeping beam and reduce its lantern from strong glow to a barely visible tiny tired amber ember. Keep the same lighthouse tower, island, surrounding sea and sunset/northern sky unchanged. This follows a shot of that same lighthouse dimming, so it must no longer shine a strong beam in the background. All interior lanterns/star jars remain warm and bright, unchanged. No new creatures, people, text, UI, logos, watermark, panels, animation or other changes.",
+      "visualReview": "Saved final PNG opened with view_image. Exactly3original starter candidates: green rabbit with leaf ears/collar, orange-headed pangolin with violet layered scale armor, blue otter with cream muzzle/belly and pebble. No humans/ownership cues; no letters/UI. Bottom18percent dark quiet floor. Initial outside lighthouse beam was too bright, corrected to a dark tower/tiny ember in built-in edit."
+    }
+  ],
+  "postprocessing": "None. Selected generated PNG bytes copied unchanged. Discarded lab draft remains in built-in generated_images source, not final workspace folder.",
+  "limits": [
+    "These are static stills, not walking/choosing/character animation.",
+    "Creature identities are qualitatively faithful painted pixel-art interpretations, not pixel-identical sprite copies.",
+    "Camera/transition/duration/music implementation and rendered narration readability must be checked after integration.",
+    "No canonical/source edits, builds or tests were performed."
+  ],
+  "plannedSequenceSeconds": [
+    4,
+    5,
+    9
+  ],
+  "folderScope": "Only final2PNG assets and this prompt/provenance JSON created here."
+}
