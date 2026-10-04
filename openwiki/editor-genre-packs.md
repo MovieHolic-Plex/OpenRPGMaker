@@ -256,6 +256,15 @@ are untouched. The automatically generated garden QA exposed the prior default
 
 ### Launcher planning before project creation (2026-10-04)
 
+The cinematic interview controls use the custom pixel-corner frame and metallic
+accent treatment in `styles/shell/dialogs/cinematic-interview.css`. Text remains
+native/selectable; decorative layers ignore pointer events. Input fields use an
+inset writing surface with a strong focus border, and the existing focus outline
+remains visible. Reduced motion and the interview motion toggle stop the metal
+sweep and control transitions. The motion button retains its absolute position.
+Presentation evidence: `verify-shots/interview-ornate-controls/`. The component
+capture accepts `LAUNCHER_INTERVIEW_CAPTURE_DIR` to preserve earlier receipts.
+
 `start/startInterview.ts` loads only the existing draft interview. The launcher
 does not navigate to `index.html`, create a project folder, boot Phaser, or load
 the store while answers are being chosen. Its account gate runs after final
