@@ -60,6 +60,25 @@
 실패한 남김 재시도의 accepted 사본 재생성 차단)와 브라우저 29개를 확인했다. 1.6초 늦은 저장 중에도 후보 제거는 7~18ms였다.
 근거는 저장소 밖 `evidence/20261004-adversarial-alpha/`에 있다. 프로젝트 DB와 실제 사용자 선택은 QA용으로 변경하지 않는다.
 
+### 걷기 전파 v2: 새 면의 픽셀 전달 (2026-10-04)
+
+위 12종 중 10종은 정지 저작이 정상인데 하네스가 걷기에서 구멍을 만들었다. 기존 `propagate`는 원본 걸음의
+빈 자리를 재사용하여 새 머리·소매 안에 원본 배경을 가뒀다. 옛 구현으로 실제 100종의 저장된 격자가 모두 재현됐다.
+
+- `chr.WALK_VERSION=2`, `_transfer_surface`: 전파 후 새로 닫힌 투명 영역 전체가 출렁임에 맞춘 정지 그림의 실제 불투명 픽셀에 대응할 때만 그 글자/색을 전달한다. 일부만 대응하면 영역 전체를 그대로 두고 검사에서 차단한다. 원본부터 닫힌 배경, 정지 저작의 구멍, 프레임 밖 출처는 전달 대상이 아니다. 이 단계는 이웃 색으로 추정하지 않는다.
+- `harness.propagate_file`은 최초 작업자 입력을 보존하고 `walk-transfer.json`에 걷기 버전·정지 네 방향 RGBA/원본/최종 격자 SHA256과 프레임별 출발/도착 좌표·글자를 기록한다. 새 저작과 배치 완료가 같은 전파 함수를 쓴다. 검사 정책과 사람 선택 binding 버전은 그대로다.
+- `npm run harness -- charset-actor walk-qa --run RUN --out /absolute/저장소밖경로`는 실제 격자의 사본에 파일 전파를 실행하고 다시 읽는다. 정지 네 방향·팔레트 보존, 변경 픽셀의 정확한 저작 출처, 같은 게이트의 전후 판정, PNG ±8/세 배경 GIF 재읽기를 확인한다. `walk-qa.json`, `SUMMARY.md`, 후보별 전후 12프레임 PNG와 네 방향 걷기 비교 GIF를 남긴다. 실제 후보·사람 선택·공용 DB는 바꾸지 않는다.
+
+실측: 100종/1,200프레임에서 차단 12→2종, 걷기 10종의 18px만 변경. RTP 72명과 첨부 원본 8명의
+걷기 프레임은 완전 일치, 전후 PNG/GIF 재읽기 불일치 0. 정지부터 결손인 049·097은 그대로 차단한다.
+전용 계약 229개를 확인했다(실제 저장 경로에 QA 출력을 거절하고 manifest 후보 누락도 거절한다).
+근거는 저장소 밖 `evidence/20261004-walk-transport/final/`이다.
+원본과 선택 journal을 보존하고, 이미 사람이 폐기한 019·027을 제외한 수정 8종을
+`runs/20261004-135706-walk-v2-d58378/`에 새 사람 검토 후보로 공개했다. 옛 남기기 선택은 복사하지 않는다.
+같은 저장 대상 API 재로드와 브라우저에서 8종의 단일 카드·네 방향 실제 GIF 진행·세 배경 서빙 바이트를
+확인했다. 오류/POST 0, 사용자 journal과 공용 남김 21종은 그대로다. 18px 확대 전후는 `pixel-proof.png`,
+화면과 재로드 근거는 `live-review.png`, `browser-proof.json`, `live-reload.json`이다.
+
 ### 남김 → 공용 캐릭터와 설명 (2026-10-04)
 
 - `harness.py prepare_shared_library`가 현재 기계 검사·공개 렌더·사람 선택의 전체 binding이 일치하는 자유 후보만 만든다. `publish-shared.mjs`는 기존 `publishSharedContent` API로 `~/.local/share/oprn/shared-content.sqlite`의 `charset-actor-kept` 한 행을 CAS 게시하고 같은 행을 재읽어 SHA-256을 확인한다. `OPRN_SHARED_CONTENT_SQLITE`로 저장 대상을 바꿀 수 있다. 실행 중 프로젝트 DB를 직접 수정하지 않는다.
