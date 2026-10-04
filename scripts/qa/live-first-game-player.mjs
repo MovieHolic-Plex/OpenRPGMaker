@@ -155,10 +155,12 @@ try {
           const facts = await page.getByTestId('cinematic-sequence').evaluate(node => {
             const image = node.querySelector('.cinematic-image');
             return { kind:'opening', sceneId:node.dataset.sceneId, width:image.naturalWidth,height:image.naturalHeight,
-              motion:image.dataset.motion,objectFit:getComputedStyle(image).objectFit,narration:node.querySelector('.cinematic-narration')?.textContent,mediaState:node.dataset.mediaState };
+              motion:image.dataset.motion,objectFit:getComputedStyle(image).objectFit,narration:node.querySelector('.cinematic-narration')?.textContent,
+              narrationWordBreak:getComputedStyle(node.querySelector('.cinematic-narration')).wordBreak,mediaState:node.dataset.mediaState };
           });
           result.presentationEvidence.push({ branch:name, ...facts });
           assert.equal(facts.objectFit,'cover','Opening artwork must fill the stage');
+          assert.equal(facts.narrationWordBreak,'keep-all','Opening narration must preserve Korean words when wrapping');
         }
       }
       const bytes = await screenshot(options);
