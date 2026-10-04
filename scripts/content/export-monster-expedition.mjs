@@ -46,6 +46,7 @@ for(const asset of assets) {
 // campaign manifest. Export those exact local files alongside the player.
 const shipping = JSON.parse(await readFile(resolve(out,'project.json'),'utf8'));
 const needed = new Set();
+for (const animation of shipping.database.battleAnimations ?? []) if (animation.resourceId) needed.add(animation.resourceId);
 for (const scene of shipping.system.opening?.scenes ?? []) {
  if(scene.kind === 'animatic') { for(const l of scene.composition.layers) if(l.resourceId) needed.add(l.resourceId); for(const c of scene.composition.audioCues ?? []) needed.add(c.resourceId); }
  else if(scene.resourceId) needed.add(scene.resourceId);

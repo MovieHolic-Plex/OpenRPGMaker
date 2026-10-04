@@ -56,3 +56,12 @@ custom character resources, authored pages, commands, routes, collision, raster,
 event IDs and live session overrides remain intact. Professor, rival, nurse,
 merchant, company staff, captain and trainers use explicit role slots. These
 assets are game characters, not chipset tiles or borrowed reference images.
+## Existing authored animation compatibility
+
+Existing published v25 retains `anim_px_*` animation records using seventeen
+`pixel-fx-*` IDs. Their original 512×64 bytes are present in public assets; an
+older source checkout lacked their resolver registration and rejected the entire
+game at load. `legacyPixelEffectAssets.ts` preserves those IDs in the normal
+builtin resource catalog, without replacing animation records or disabling
+validation. The campaign exporter also collects actual battle animation resource
+IDs and copies each resolved local file, rather than relying on a stale manifest.
