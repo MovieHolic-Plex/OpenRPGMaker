@@ -14,6 +14,7 @@
 | `romance-scene` | 연애 첫 대화 장면 | 장르 `story-cutscene` 전용 | `harness-data/romance-scene/seed.json` | `openwiki/harnesses/romance-scene.md` |
 | `charset-actor` | RM2000 캐릭터 GIF 공방 | 장르 무관 | `harness-data/charset-actor/briefs.json` | `openwiki/harnesses/charset-actor.md` |
 | `worldmap-icons` | 월드맵 아이콘 | 장르 무관 | `harness-data/worldmap-icons/seed.json` | `openwiki/harnesses/worldmap-icons.md` |
+| `interview-scene-bank` | 인터뷰 선택 배경 | 장르 무관 | `harness-data/interview-scene-bank/seed.json` | `openwiki/harnesses/interview-scene-bank.md` |
 
 ## monster-collect-species — 몬스터 수집 종 스프라이트
 
@@ -195,5 +196,23 @@ GPT 6.1 sol high가 정지·걷기 12프레임을 전부 직접 저작하고 사
 - `check` — 굽기 확인: 선택 기록·원본 해시·칸 좌표·번들 PNG·참고문서를 대조한다.
 - `publish-shared` — 공용 DB 등록: 선택 시트와 정본 지형 사례를 호스트 공용 SQLite에 등록하고 같은 판본을 다시 읽는다.
 - `preview` — 후보 미리보기: 후보의 크기·색표와 실제 지도 자리를 확인한다.
+
+**들어오는 길:** CLI 있음 · 에디터 화면 아직 없음 · 조수 도구 아직 없음
+
+## interview-scene-bank — 인터뷰 선택 배경
+
+1,457개 누적 선택의 장면·프롬프트를 고정하고 원본 도트 규격과 해시에 묶인 시각 검수를 모두 통과한 그림만 배포한다.
+
+**이럴 때 쓴다:**
+- 새 게임 인터뷰의 누적 선택 배경을 대량 생성·검수·배포할 때
+
+**단계** (`npm run harness -- interview-scene-bank <단계>`):
+- `plan` — 장면 계획: 실제 질문에서 1,457개 고유 장면과 누적 프롬프트를 만든다.
+- `batch` — 다음 열 장: 합격작을 건너뛰고 미제작·탈락 장면 열 개의 생성 작업을 내보낸다.
+- `import` — 후보 등록: --key <장면> --image <원본>으로 생성 원본과 해시를 보관한다.
+- `gate` — 도트 규격 관문: 크기·격자·팔레트·재탕 중복을 검사하며 실패를 숨기지 않는다.
+- `review` — 실제 그림 검수: --key <장면> --verdict <JSON>으로 원본 해시에 묶인 판정을 등록한다.
+- `build` — 합격작 배포: 규격과 시각 판정이 모두 유효한 그림만 앱 매니페스트에 넣는다.
+- `status` — 제작 현황: 미제작·규격 탈락·검수 대기·합격 수를 보고한다.
 
 **들어오는 길:** CLI 있음 · 에디터 화면 아직 없음 · 조수 도구 아직 없음

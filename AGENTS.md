@@ -62,6 +62,10 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
   → `author_romance_scene`으로 원자적으로 저작하고 `inspect_romance_scene`으로 양쪽 선택·재대화·취소·종료를 검사한다.
   → 임시 초안·조수의 완료 선언은 합격이 아니다. 실제 이미지 검수와 정본 저장·재로드를 따로 확인한다.
 
+- **새 게임 인터뷰의 누적 선택 배경을 대량 생성·검수·배포할 때**
+  → `interview-scene-bank` · 시드 `harness-data/interview-scene-bank/seed.json` · 문서 `openwiki/harnesses/interview-scene-bank.md`
+  → 1,457개 선택 조합을 계획하고, 원본 도트 규격과 해시에 묶인 실제 그림 검수를 모두 통과한 배경만 배포한다.
+
 새 하네스를 만들면 `src/harnesses/<id>/` 폴더 하나에 두고, `src/harnesses/_core/registry.ts` 에 등록하고,
 `npm run harness -- list` 로 INDEX 를 다시 쓰고, 이 목록에 한 줄을 더한다.
 

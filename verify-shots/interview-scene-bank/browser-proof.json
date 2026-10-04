@@ -1,0 +1,31 @@
+{
+  "productionComponents": true,
+  "syntheticCatalog": true,
+  "imagesRejectedByNativeGate": true,
+  "artApproval": false,
+  "checks": [
+    "All 1,457 stable keys are unique; all parents/children exist; every prefix has all accumulated facts",
+    "Warm genre and choice switch inside the click event, without generation request or debounce timer",
+    "Editing a prior answer preserves later choices; custom text, notes, mixed genres and incomplete prefixes cannot resolve to misleading stock art",
+    "Missing bank scene uses the existing custom-art path and retains last displayed scene on provider failure",
+    "Closing dialog releases the cache and does not schedule more scene work"
+  ],
+  "requests": [
+    "opening",
+    "romance",
+    "monster",
+    "adventure",
+    "mystery",
+    "romance",
+    "romance--campus",
+    "romance--palace",
+    "romance--town",
+    "romance--campus"
+  ],
+  "errors": [],
+  "warmClick": {
+    "key": "romance--campus",
+    "elapsed": 8.200000047683716
+  },
+  "passed": true
+}

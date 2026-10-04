@@ -1,0 +1,476 @@
+{
+  "version": 1,
+  "entries": {
+    "opening": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/opening-1-dac7b8d51d96.png",
+        "sha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+        "promptSha256": "ebcdaab788bb89cc901754cc9714592fd7d002d88bf466a7933b5e837bdc049f",
+        "generationPromptSha256": "ebcdaab788bb89cc901754cc9714592fd7d002d88bf466a7933b5e837bdc049f",
+        "attempt": 1,
+        "gate": {
+          "ok": false,
+          "width": 1672,
+          "height": 941,
+          "colors": 519661,
+          "findings": [
+            "원본이 320×180 또는 정확한 정수 확대가 아니다.",
+            "팔레트 519661색: 상한 64색을 넘는다."
+          ]
+        },
+        "review": {
+          "sourceSha256": "dac7b8d51d96357efc89c403792a5a7f6b481e196195a9d556d81749e96e2c6f",
+          "promptSha256": "ebcdaab788bb89cc901754cc9714592fd7d002d88bf466a7933b5e837bdc049f",
+          "reviewer": "Codex: 실제 원본 13개를 view_image로 직접 열고 배치/수정본을 비교",
+          "checks": {
+            "pixelArt": false,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "원본이 320×180 격자/64색 제한 팔레트를 통과하지 못했다."
+          ]
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/opening-2-1861225361e9.png",
+        "sha256": "1861225361e92505652fcdb735cb299bef4cfd934dbe473cbe40ce10b2b988f7",
+        "promptSha256": "ebcdaab788bb89cc901754cc9714592fd7d002d88bf466a7933b5e837bdc049f",
+        "generationPromptSha256": "279d7558e9166afd3264c67b80ee18c7f67042ff16780db6995e54ea942c8494",
+        "attempt": 2,
+        "gate": {
+          "ok": false,
+          "width": 1672,
+          "height": 941,
+          "colors": 538980,
+          "findings": [
+            "원본이 320×180 또는 정확한 정수 확대가 아니다.",
+            "팔레트 538980색: 상한 64색을 넘는다."
+          ]
+        },
+        "review": {
+          "sourceSha256": "1861225361e92505652fcdb735cb299bef4cfd934dbe473cbe40ce10b2b988f7",
+          "promptSha256": "ebcdaab788bb89cc901754cc9714592fd7d002d88bf466a7933b5e837bdc049f",
+          "reviewer": "Codex: 실제 원본 13개를 view_image로 직접 열고 배치/수정본을 비교",
+          "checks": {
+            "pixelArt": false,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "원본이 320×180 격자/64색 제한 팔레트를 통과하지 못했다."
+          ]
+        }
+      }
+    ],
+    "romance": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance-1-e786f37ef0d2.png",
+        "sha256": "e786f37ef0d289cfc970acfc97442b08e956339d9da3b2279d8a605fa2b8f41d",
+        "promptSha256": "1a69bbdfbf1d39dde1944ef9515e770aea631cf69e9bfd4b33100d5707e2f3cb",
+        "generationPromptSha256": "1a69bbdfbf1d39dde1944ef9515e770aea631cf69e9bfd4b33100d5707e2f3cb",
+        "attempt": 1,
+        "gate": {
+          "ok": false,
+          "width": 1672,
+          "height": 941,
+          "colors": 405173,
+          "findings": [
+            "원본이 320×180 또는 정확한 정수 확대가 아니다.",
+            "팔레트 405173색: 상한 64색을 넘는다."
+          ]
+        },
+        "review": {
+          "sourceSha256": "e786f37ef0d289cfc970acfc97442b08e956339d9da3b2279d8a605fa2b8f41d",
+          "promptSha256": "1a69bbdfbf1d39dde1944ef9515e770aea631cf69e9bfd4b33100d5707e2f3cb",
+          "reviewer": "Codex: 실제 원본 13개를 view_image로 직접 열고 배치/수정본을 비교",
+          "checks": {
+            "pixelArt": false,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "원본이 320×180 격자/64색 제한 팔레트를 통과하지 못했다."
+          ]
+        }
+      }
+    ],
+    "monster": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster-1-4d9eea561ddd.png",
+        "sha256": "4d9eea561ddd485caccf10799d27685c459b19dd56f53da8718bb93879cde66f",
+        "promptSha256": "c0e4da6737ddcfebca4c6048f0f40102e6a0b3f4d4934caa7cea73e35ef9216a",
+        "generationPromptSha256": "c0e4da6737ddcfebca4c6048f0f40102e6a0b3f4d4934caa7cea73e35ef9216a",
+        "attempt": 1,
+        "gate": {
+          "ok": false,
+          "width": 1672,
+          "height": 941,
+          "colors": 478902,
+          "findings": [
+            "원본이 320×180 또는 정확한 정수 확대가 아니다.",
+            "팔레트 478902색: 상한 64색을 넘는다."
+          ]
+        },
+        "review": {
+          "sourceSha256": "4d9eea561ddd485caccf10799d27685c459b19dd56f53da8718bb93879cde66f",
+          "promptSha256": "c0e4da6737ddcfebca4c6048f0f40102e6a0b3f4d4934caa7cea73e35ef9216a",
+          "reviewer": "Codex: 실제 원본 13개를 view_image로 직접 열고 배치/수정본을 비교",
+          "checks": {
+            "pixelArt": false,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": false
+          },
+          "findings": [
+            "원본이 320×180 격자/64색 제한 팔레트를 통과하지 못했다.",
+            "절벽·폭포·멀리 성이 있는 같은 장면 공식을 반복한다. 구도와 초점 장소를 다시 정해야 한다."
+          ]
+        }
+      }
+    ],
+    "adventure": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure-1-4d610a70b2a7.png",
+        "sha256": "4d610a70b2a742f75b8c65fce55551141438b4f4632f68d7aa21d04fe1ceaefb",
+        "promptSha256": "a40bffd93b15a63d4430984e856f79db727ed53cb78ee9fc1527984761aee716",
+        "generationPromptSha256": "a40bffd93b15a63d4430984e856f79db727ed53cb78ee9fc1527984761aee716",
+        "attempt": 1,
+        "gate": {
+          "ok": false,
+          "width": 1672,
+          "height": 941,
+          "colors": 525582,
+          "findings": [
+            "원본이 320×180 또는 정확한 정수 확대가 아니다.",
+            "팔레트 525582색: 상한 64색을 넘는다."
+          ]
+        },
+        "review": {
+          "sourceSha256": "4d610a70b2a742f75b8c65fce55551141438b4f4632f68d7aa21d04fe1ceaefb",
+          "promptSha256": "a40bffd93b15a63d4430984e856f79db727ed53cb78ee9fc1527984761aee716",
+          "reviewer": "Codex: 실제 원본 13개를 view_image로 직접 열고 배치/수정본을 비교",
+          "checks": {
+            "pixelArt": false,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": false
+          },
+          "findings": [
+            "원본이 320×180 격자/64색 제한 팔레트를 통과하지 못했다.",
+            "절벽·폭포·멀리 성이 있는 같은 장면 공식을 반복한다. 구도와 초점 장소를 다시 정해야 한다."
+          ]
+        }
+      }
+    ],
+    "mystery": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/mystery-1-6e6152e3854c.png",
+        "sha256": "6e6152e3854cff0af5210b432f15d868a80cc299b9109dc6cb5bb2c9b837e5c2",
+        "promptSha256": "c7361059c7bd9ce1f8f6394c1dde35c3a0dfdee1f9b7e0b46d18d5c7d20bd56a",
+        "generationPromptSha256": "c7361059c7bd9ce1f8f6394c1dde35c3a0dfdee1f9b7e0b46d18d5c7d20bd56a",
+        "attempt": 1,
+        "gate": {
+          "ok": false,
+          "width": 1672,
+          "height": 941,
+          "colors": 207548,
+          "findings": [
+            "원본이 320×180 또는 정확한 정수 확대가 아니다.",
+            "팔레트 207548색: 상한 64색을 넘는다."
+          ]
+        },
+        "review": {
+          "sourceSha256": "6e6152e3854cff0af5210b432f15d868a80cc299b9109dc6cb5bb2c9b837e5c2",
+          "promptSha256": "c7361059c7bd9ce1f8f6394c1dde35c3a0dfdee1f9b7e0b46d18d5c7d20bd56a",
+          "reviewer": "Codex: 실제 원본 13개를 view_image로 직접 열고 배치/수정본을 비교",
+          "checks": {
+            "pixelArt": false,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": false,
+            "noText": false,
+            "distinctShot": true
+          },
+          "findings": [
+            "원본이 320×180 격자/64색 제한 팔레트를 통과하지 못했다.",
+            "무도회 창 안의 인물 실루엣 또는 벽의 인물 초상을 임의로 넣었다.",
+            "여러 문서에 글자 유사 흔적을 넣었다."
+          ]
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/mystery-2-0a73d6ec5d9e.png",
+        "sha256": "0a73d6ec5d9ec9bbaf51efd9322b9c662d316db8d1726a26d7ffc3807a3011ac",
+        "promptSha256": "c7361059c7bd9ce1f8f6394c1dde35c3a0dfdee1f9b7e0b46d18d5c7d20bd56a",
+        "generationPromptSha256": "a7f629404ac1a8bff0a98cfb8b29cc217d38e9ba007c05578212f2d411c84c33",
+        "attempt": 2,
+        "gate": {
+          "ok": false,
+          "width": 1672,
+          "height": 941,
+          "colors": 233743,
+          "findings": [
+            "원본이 320×180 또는 정확한 정수 확대가 아니다.",
+            "팔레트 233743색: 상한 64색을 넘는다."
+          ]
+        },
+        "review": {
+          "sourceSha256": "0a73d6ec5d9ec9bbaf51efd9322b9c662d316db8d1726a26d7ffc3807a3011ac",
+          "promptSha256": "c7361059c7bd9ce1f8f6394c1dde35c3a0dfdee1f9b7e0b46d18d5c7d20bd56a",
+          "reviewer": "Codex: 실제 원본 13개를 view_image로 직접 열고 배치/수정본을 비교",
+          "checks": {
+            "pixelArt": false,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "원본이 320×180 격자/64색 제한 팔레트를 통과하지 못했다."
+          ]
+        }
+      }
+    ],
+    "romance--campus": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus-1-be3e44c5ec43.png",
+        "sha256": "be3e44c5ec43fc99c899482fb53b1170dd966ff8205b8f3c5531c59c2819eed0",
+        "promptSha256": "edeff1e8236d18996051ed2e79d5074b716542f79d2232efcebc93d51bd731b2",
+        "generationPromptSha256": "edeff1e8236d18996051ed2e79d5074b716542f79d2232efcebc93d51bd731b2",
+        "attempt": 1,
+        "gate": {
+          "ok": false,
+          "width": 1672,
+          "height": 941,
+          "colors": 429611,
+          "findings": [
+            "원본이 320×180 또는 정확한 정수 확대가 아니다.",
+            "팔레트 429611색: 상한 64색을 넘는다."
+          ]
+        },
+        "review": {
+          "sourceSha256": "be3e44c5ec43fc99c899482fb53b1170dd966ff8205b8f3c5531c59c2819eed0",
+          "promptSha256": "edeff1e8236d18996051ed2e79d5074b716542f79d2232efcebc93d51bd731b2",
+          "reviewer": "Codex: 실제 원본 13개를 view_image로 직접 열고 배치/수정본을 비교",
+          "checks": {
+            "pixelArt": false,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "원본이 320×180 격자/64색 제한 팔레트를 통과하지 못했다."
+          ]
+        }
+      }
+    ],
+    "romance--palace": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace-1-b861d1ca6485.png",
+        "sha256": "b861d1ca6485c9c722138d1c46da6711afa1a4330a4155dcb0273e755753dc66",
+        "promptSha256": "52d0225c0c19d50f2d3c9f7af3ea991bd6f7fa841626aff22cef65c8b713c5c3",
+        "generationPromptSha256": "52d0225c0c19d50f2d3c9f7af3ea991bd6f7fa841626aff22cef65c8b713c5c3",
+        "attempt": 1,
+        "gate": {
+          "ok": false,
+          "width": 1672,
+          "height": 941,
+          "colors": 322093,
+          "findings": [
+            "원본이 320×180 또는 정확한 정수 확대가 아니다.",
+            "팔레트 322093색: 상한 64색을 넘는다."
+          ]
+        },
+        "review": {
+          "sourceSha256": "b861d1ca6485c9c722138d1c46da6711afa1a4330a4155dcb0273e755753dc66",
+          "promptSha256": "52d0225c0c19d50f2d3c9f7af3ea991bd6f7fa841626aff22cef65c8b713c5c3",
+          "reviewer": "Codex: 실제 원본 13개를 view_image로 직접 열고 배치/수정본을 비교",
+          "checks": {
+            "pixelArt": false,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": false,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "원본이 320×180 격자/64색 제한 팔레트를 통과하지 못했다.",
+            "무도회 창 안의 인물 실루엣 또는 벽의 인물 초상을 임의로 넣었다."
+          ]
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace-2-04f076c164c2.png",
+        "sha256": "04f076c164c24ae2b620c9ac657c973211b2208f30452a3abeb873080c8cc879",
+        "promptSha256": "52d0225c0c19d50f2d3c9f7af3ea991bd6f7fa841626aff22cef65c8b713c5c3",
+        "generationPromptSha256": "f8441980b8fc56e603ed560a4010b373c43be0a4c0f789fb95c2bfefdd710219",
+        "attempt": 2,
+        "gate": {
+          "ok": false,
+          "width": 1672,
+          "height": 941,
+          "colors": 400269,
+          "findings": [
+            "원본이 320×180 또는 정확한 정수 확대가 아니다.",
+            "팔레트 400269색: 상한 64색을 넘는다."
+          ]
+        },
+        "review": {
+          "sourceSha256": "04f076c164c24ae2b620c9ac657c973211b2208f30452a3abeb873080c8cc879",
+          "promptSha256": "52d0225c0c19d50f2d3c9f7af3ea991bd6f7fa841626aff22cef65c8b713c5c3",
+          "reviewer": "Codex: 실제 원본 13개를 view_image로 직접 열고 배치/수정본을 비교",
+          "checks": {
+            "pixelArt": false,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "원본이 320×180 격자/64색 제한 팔레트를 통과하지 못했다."
+          ]
+        }
+      }
+    ],
+    "romance--town": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town-1-95e75dd51e1a.png",
+        "sha256": "95e75dd51e1a39defa0459e366ac39895e7c7071749f5df6ed7f0f1a4c85793c",
+        "promptSha256": "af62e48d9c698711f0275fdbfc790b138aadd6be3e9e94b919f8fd21ea5545b3",
+        "generationPromptSha256": "af62e48d9c698711f0275fdbfc790b138aadd6be3e9e94b919f8fd21ea5545b3",
+        "attempt": 1,
+        "gate": {
+          "ok": false,
+          "width": 1672,
+          "height": 941,
+          "colors": 539164,
+          "findings": [
+            "원본이 320×180 또는 정확한 정수 확대가 아니다.",
+            "팔레트 539164색: 상한 64색을 넘는다."
+          ]
+        },
+        "review": {
+          "sourceSha256": "95e75dd51e1a39defa0459e366ac39895e7c7071749f5df6ed7f0f1a4c85793c",
+          "promptSha256": "af62e48d9c698711f0275fdbfc790b138aadd6be3e9e94b919f8fd21ea5545b3",
+          "reviewer": "Codex: 실제 원본 13개를 view_image로 직접 열고 배치/수정본을 비교",
+          "checks": {
+            "pixelArt": false,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "원본이 320×180 격자/64색 제한 팔레트를 통과하지 못했다."
+          ]
+        }
+      }
+    ],
+    "monster--wild": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--wild-1-278e5ce6ac41.png",
+        "sha256": "278e5ce6ac41aef1ffd74bdc6a62a4778eccfbea91a17be858cdb6e6232dbb15",
+        "promptSha256": "574883ede5394558ca783bd137f635ef43fe222410c8f7922e52ed9195711c41",
+        "generationPromptSha256": "574883ede5394558ca783bd137f635ef43fe222410c8f7922e52ed9195711c41",
+        "attempt": 1,
+        "gate": {
+          "ok": false,
+          "width": 1672,
+          "height": 941,
+          "colors": 466684,
+          "findings": [
+            "원본이 320×180 또는 정확한 정수 확대가 아니다.",
+            "팔레트 466684색: 상한 64색을 넘는다."
+          ]
+        },
+        "review": {
+          "sourceSha256": "278e5ce6ac41aef1ffd74bdc6a62a4778eccfbea91a17be858cdb6e6232dbb15",
+          "promptSha256": "574883ede5394558ca783bd137f635ef43fe222410c8f7922e52ed9195711c41",
+          "reviewer": "Codex: 실제 원본 13개를 view_image로 직접 열고 배치/수정본을 비교",
+          "checks": {
+            "pixelArt": false,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": false,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": false
+          },
+          "findings": [
+            "원본이 320×180 격자/64색 제한 팔레트를 통과하지 못했다.",
+            "절벽·폭포·멀리 성이 있는 같은 장면 공식을 반복한다. 구도와 초점 장소를 다시 정해야 한다.",
+            "자연 서식지는 보이나 포획 또는 도움을 통한 신뢰라는 최신 선택이 충분히 드러나지 않는다."
+          ]
+        }
+      }
+    ],
+    "monster--bond": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond-1-91a8867d7204.png",
+        "sha256": "91a8867d7204e0620728864f5d76dd61998830e41452221674b4dbacd34fc09b",
+        "promptSha256": "7775e7f8e229010c98edcaa5524c9c233896d0f3d128afae9e74685458753b07",
+        "generationPromptSha256": "7775e7f8e229010c98edcaa5524c9c233896d0f3d128afae9e74685458753b07",
+        "attempt": 1,
+        "gate": {
+          "ok": false,
+          "width": 1672,
+          "height": 941,
+          "colors": 368533,
+          "findings": [
+            "원본이 320×180 또는 정확한 정수 확대가 아니다.",
+            "팔레트 368533색: 상한 64색을 넘는다."
+          ]
+        },
+        "review": {
+          "sourceSha256": "91a8867d7204e0620728864f5d76dd61998830e41452221674b4dbacd34fc09b",
+          "promptSha256": "7775e7f8e229010c98edcaa5524c9c233896d0f3d128afae9e74685458753b07",
+          "reviewer": "Codex: 실제 원본 13개를 view_image로 직접 열고 배치/수정본을 비교",
+          "checks": {
+            "pixelArt": false,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": false,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": false
+          },
+          "findings": [
+            "원본이 320×180 격자/64색 제한 팔레트를 통과하지 못했다.",
+            "절벽·폭포·멀리 성이 있는 같은 장면 공식을 반복한다. 구도와 초점 장소를 다시 정해야 한다.",
+            "자연 서식지는 보이나 포획 또는 도움을 통한 신뢰라는 최신 선택이 충분히 드러나지 않는다."
+          ]
+        }
+      }
+    ]
+  }
+}
