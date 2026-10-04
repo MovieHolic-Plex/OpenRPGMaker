@@ -610,7 +610,9 @@ def start_art(c):
     if os.path.isfile(previous):
         os.replace(previous, cdir(cid, 'art-result.previous.json'))
     feedback = read_json(cdir(cid, 'art-feedback.json'), {}) or {}
-    prompt = fill(prompt_template('art.md'), ROOT=wt, CDIR=cdir(cid), CONCEPT=concept_context(c),
+    prior_layout = read_json(cdir(cid, 'art-layout-review.json'), {}) or {}
+    template = 'art-layout-repair.md' if prior_layout.get('verdict') == 'FAIL' else 'art.md'
+    prompt = fill(prompt_template(template), ROOT=wt, CDIR=cdir(cid), CONCEPT=concept_context(c),
                   ART_FEEDBACK=feedback, ART_LIMITS=art_feedback.limits(DATA, cid),
                   ART_MODEL_OVERRIDE=json.loads(store.setting('art_model_overrides') or '{}').get(cid))
     start_codex(cid, 'art', 'prepare', prompt, cdir(cid, 'art-result.json'), write_root=wt)
@@ -644,6 +646,13 @@ def on_art(meta, code, result):
         except (OSError, ValueError, TypeError, KeyError) as error:
             store.update_concept(cid, stage='blocked', status='idle', note='그림 실행 준비 오류', reasons=[str(error)])
         return
+    if code == 0 and result.get('candidates'):
+        try:
+            if meta.get('tag') != 'collect': raise ValueError('native 실행 없이 후보를 직접 반환할 수 없습니다.')
+            art_layout.require_completed(wt, read_json(cdir(cid, 'art-execution.json')), read_json(cdir(cid, 'art-layout-input.json')))
+        except (OSError, ValueError, KeyError, TypeError) as error:
+            store.update_concept(cid, stage='blocked', status='idle', note='후보 수집의 도면 승인 근거 불일치', reasons=[str(error)])
+            return
     candidates = result.get('candidates') or []
     valid = code == 0 and isinstance(candidates, list) and bool(candidates)
     if not isinstance(candidates, list):

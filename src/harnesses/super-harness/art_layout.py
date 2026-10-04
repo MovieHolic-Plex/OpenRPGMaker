@@ -85,3 +85,16 @@ def require_approval(root, request):
     validate_verdict(report, current['fingerprint'], LAYOUT_CHECKS)
     if report['verdict'] != 'PASS': raise ValueError('배치 도면이 반려되어 그림을 시작할 수 없습니다.')
     return current
+
+
+def require_completed(root, request, snapshot):
+    """Queue state may advance; the approved drawing instructions must stay identical."""
+    verified(root, request['layout'])
+    if request['layout'] != snapshot.get('layoutRef'):
+        raise ValueError('수집된 그림의 도면 승인 입력이 다릅니다.')
+    report = json.loads(Path(request['layoutApproval']).read_text())
+    validate_verdict(report, snapshot['fingerprint'], LAYOUT_CHECKS)
+    if report['verdict'] != 'PASS': raise ValueError('도면 승인 없이 그림을 수집할 수 없습니다.')
+    mutable = {'harness.sqlite', 'harness.sqlite-wal', 'state.json'}
+    for ref in snapshot['layout']['sources']:
+        if Path(ref['path']).name not in mutable: verified(root, ref)

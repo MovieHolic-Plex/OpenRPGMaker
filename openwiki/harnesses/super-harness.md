@@ -276,8 +276,13 @@ PASS 분기는 컨트롤러 확인용 합성 fixture이며 실제 그림의 합�
   시드(native SQLite는 DB/WAL)·치수·주문서·queued 판·실행 코드/프롬프트의 해시를 제공한다. 기존 전체 기획의 승인은 재사용하지 않는다.
 - 독립 도면 검수는 proportions/spaceUse/circulation/identity/composition을 본다. 명세 자체를 반려할 수 있다.
   FAIL은 그림을 시작하지 않고 명세 준비로 돌아간다. 같은 art_revision에서 3회 반려 시 중단한다.
-  실행 직전에 승인 fingerprint와 파일 해시를 다시 확인한다. 파일이 바뀌면 승인이 무효다.
+  실행 직전에 승인 fingerprint와 파일 해시를 다시 확인한다. 수집 때도 native 실행 경로와 도면 승인을 확인하고,
+  실행 중 진행되는 후보 state/DB를 제외한 주문서·코드·참조 해시를 다시 확인한다. 파일이 바뀌면 승인이 무효다.
 - 최종 조립 검수는 기존5축에 spaceUse/composition/specification을 더한8축이다. 부품 FAIL에도 수행하여
   작은 부품 하나에 가려진 큰 공간 문제를 다음 수정에 함께 전달한다. native/context 수정 지시를 합친다.
 - gateVersion=2와8축 근거가 없으면 기존 PASS로 선택을 해제할 수 없다. 낮은 밀도에 임의 공통 수치 상한을
   강요하지 않으며 필요한 차로/여백을 독립 검수한다. 이름만 여유 공간으로 붙인 낭비는 반려한다.
+- 도면 반려 후 준비는 `art-layout-repair.md`로 해당 명세만 교정한다. 이미 고정된 전체 참고 자료를 매번 다시
+  조사하는 비용을 줄이고, 새 queued 판과 변경된 명세 해시를 다시 독립 검수한다.
+- 운영 근거 `verify-shots/super-harness-layout-gates/`: 기존 그림은 새 기준에서 style/spaceUse/composition/specification
+  FAIL, 첫 축소 도면은 중복 여백으로 spaceUse FAIL. 도면 반려 시 native 작업이 시작되지 않은 것을 확인했다.
