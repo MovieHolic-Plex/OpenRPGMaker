@@ -1,4 +1,9 @@
 /* 테스트 플레이 / 플레이 부트 로딩 오버레이 */
+.play-loading-backdrop { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.65; }
+.has-cinematic-backdrop .play-loading-card { position: relative; align-self: flex-end; margin-bottom: 8%; }
+.has-cinematic-backdrop:not(.is-error) .play-loading-stage,
+.has-cinematic-backdrop:not(.is-error) .play-loading-hint,
+.has-cinematic-backdrop:not(.is-error) .play-loading-bar { display: none; }
 .play-loading-overlay {
   align-items: center;
   background:

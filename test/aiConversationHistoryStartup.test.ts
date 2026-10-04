@@ -45,14 +45,14 @@ function open(isCurrent = () => true) {
 }
 function holdCatalog() {
   const entered = deferred<void>(), release = deferred<void>();
-  const native = conversations.queryConversationArchive;
-  const query = vi.spyOn(conversations, "queryConversationArchive").mockImplementationOnce(async options => {
-    const result = await native(options); // Real archive read and IndexedDB transaction finish first.
+  const native = conversations.listConversationArchiveMapIds;
+  vi.spyOn(conversations, "listConversationArchiveMapIds").mockImplementationOnce(async scopeKey => {
+    const result = await native(scopeKey); // Real catalog key cursor finishes before suspension.
     entered.resolve();
     await release.promise;
     return result;
   });
-  return { entered, release, query };
+  return { entered, release, query: vi.spyOn(conversations, "queryConversationArchive") };
 }
 
 beforeEach(() => {
@@ -70,6 +70,7 @@ beforeEach(() => {
 afterEach(async () => {
   closeAiConversationHistoryModal();
   await bounded(settled());
+  vi.useRealTimers();
   resetAiRecordDbForTest(); restoreDom(); vi.restoreAllMocks(); vi.unstubAllGlobals(); vi.unstubAllEnvs();
 });
 
@@ -80,14 +81,14 @@ describe("history startup ownership", () => {
     const query = vi.spyOn(conversations, "queryConversationArchive");
     const { root, onOpen, startup } = open();
     await bounded(startup);
-    expect(query).toHaveBeenCalledTimes(2);
-    expect(query.mock.calls[1]![0]).toMatchObject({ projectContextKey: scope, mapId: "start" });
+    expect(query).toHaveBeenCalledTimes(1);
+    expect(query.mock.calls[0]![0]).toMatchObject({ projectContextKey: scope, mapId: "start" });
     expect(root.querySelectorAll("[data-testid=ai-history-row]")).toHaveLength(1);
     expect(findByTestId(root, "ai-history-recover-status")?.dataset.state).toBe("idle");
     expect(onOpen).not.toHaveBeenCalled(); expect(fetch).not.toHaveBeenCalled();
   });
 
-  it.each(["close", "owner"])("does not start a list query after startup loses %s ownership", async action => {
+  it.each(["close", "owner"])("does not repeat the concurrent list query after its pending catalog loses %s ownership", async action => {
     const catalog = holdCatalog(); let current = true;
     const { startup, onOpen } = open(() => current);
     try {
@@ -98,4 +99,32 @@ describe("history startup ownership", () => {
       expect(onOpen).not.toHaveBeenCalled(); expect(fetch).not.toHaveBeenCalled();
     } finally { catalog.release.resolve(); await bounded(settled()); }
   });
+
+  it("coalesces rapid search inputs and settles cancelled debounce work when the modal closes", async () => {
+    const query = vi.spyOn(conversations, "queryConversationArchive");
+    const catalog = vi.spyOn(conversations, "listConversationArchiveMapIds");
+    const { root, startup } = open();
+    await bounded(startup);
+    expect(query).toHaveBeenCalledTimes(1); expect(catalog).toHaveBeenCalledTimes(1);
+    const search = findByTestId(root, "ai-history-search")!;
+    vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
+    for (const value of ["s", "se", "sea", "search"]) {
+      search.value = value; search.dispatchEvent(new Event("input"));
+    }
+    expect(query.mock.calls[0]![0].signal!.aborted).toBe(true);
+    await vi.advanceTimersByTimeAsync(179);
+    expect(query).toHaveBeenCalledTimes(1);
+    await vi.advanceTimersByTimeAsync(1);
+    await settled();
+    expect(query).toHaveBeenCalledTimes(2);
+    expect(query.mock.calls[1]![0]).toMatchObject({ query: "search", mapId: "start", projectContextKey: scope });
+    expect(catalog).toHaveBeenCalledTimes(1);
+    search.value = "discarded"; search.dispatchEvent(new Event("input"));
+    closeAiConversationHistoryModal();
+    await settled();
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(query).toHaveBeenCalledTimes(2);
+    vi.useRealTimers();
+  });
+
 });

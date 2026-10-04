@@ -5,7 +5,7 @@ import { ensureUploadedTilesetTextures } from "@/assets/uploadedTilesets";
 // 데이터는 직접 쓰지 않고 store.subscribe 로 갱신을 받아 재렌더.
 
 import type Phaser from "phaser";
-import { reliefGroundFromImage, reliefTilesetImage } from "./reliefGroundSurface";
+import { prepareReliefRead, reliefGroundFromImage, reliefTilesetImage } from "./reliefGroundSurface";
 import { hasRelief } from "@/project/relief/walk";
 import { getLoadedPhaser } from "@/app/phaserRuntime";
 import {
@@ -94,6 +94,8 @@ import {
   applyCameraView,
   shouldLazilyRenderEditMap,
   chunkCoord,
+  residentReliefTileCells,
+  isMapOnlyCaptureMode,
   EDIT_RELIEF_ROW_DEPTH,
   RELIEF_STRIP_NAME,
   type EditSceneRenderStats,
@@ -103,7 +105,7 @@ import {
 import { applyEditTileLayerPresentation, repaintEditGrid } from "@/editor/editSceneViewChrome";
 import { markEditRenderActive, requestEditRenderFrame } from "@/editor/editRenderGate";
 import { createChipsetTileObject } from "@/editor/chipsetTileRender";
-import { resetCullableTiles, syncTileCulling } from "@/player/playSceneTileCulling";
+import { resetCullableTiles, syncTileCulling, tileCullingStats } from "@/player/playSceneTileCulling";
 import {
   cancelPastePreview,
   clearSelection,
@@ -163,10 +165,11 @@ import type { GameMap, MapId } from "@/project/types";
 import { clearMapDissolveVeil } from "@/editor/mapDissolveVeil";
 import { prefersReducedMotion } from "@/util/reducedMotion";
 import { toast } from "@/util/toast";
-import { reliefIsFlat } from "@/project/relief/edit";
-import { reliefSignature, reliefTileSlotChangedCells } from "@/project/relief/screen";
+import { bindReliefRevision } from "@/project/relief/revision";
+import { copyRelief, reliefIsFlat } from "@/project/relief/edit";
+import { reliefReadSignature as reliefSignature, reliefTileSlotChangedCells } from "@/project/relief/screen";
 import type { ReliefData } from "@/project/relief/types";
-import { reliefCellLiftPx } from "@/player/reliefStrips";
+import { reliefCellLiftPx } from "@/project/relief/screen";
 import { ReliefLiveStrips } from "@/editor/reliefLiveStrips";
 import { SunlightLayer } from "@/player/sunlightLayer";
 import { tilesetTextureKey } from "@/editor/tilesetImage";
@@ -524,6 +527,7 @@ export class EditScene extends PhaserRuntime.Scene {
       scene: this,
       layer: this.reliefLayer,
       name: RELIEF_STRIP_NAME,
+      viewport: () => isMapOnlyCaptureMode() ? undefined : this.cameras.main.worldView,
       depthOf: (row, part) => row * EDIT_RELIEF_ROW_DEPTH + (part === 1 ? 0 : 7),
     });
     this.upperTileLayer = this.add.container(0, 0);
@@ -656,7 +660,7 @@ export class EditScene extends PhaserRuntime.Scene {
       editWindow.__oprnEditMapViewport = () => getEditorMapViewport();
       editWindow.__oprnEditVisibleArea = () => this.cameraVisibleArea();
       // 높이 붓 굽기 방식별 횟수 — 붓질이 전체 굽기로 떨어지지 않는지 e2e 가 본다(reliefLiveStrips.ts).
-      editWindow.__oprnEditReliefStats = () => ({ ...this.reliefStrips?.counts });
+      editWindow.__oprnEditReliefStats = () => ({ ...this.reliefStrips?.counts, backing: this.reliefStrips?.backingStats, culling: tileCullingStats(this), residentTileCells: this.tileIndex.size, residentTileObjects: [...this.tileIndex.values()].reduce((n, objects) => n + objects.length, 0), chunks: this.tileChunks.size, emptyChunks: [...this.tileChunks.values()].filter(c => !c.list.length).length });
       editWindow.__oprnEditSunlightStats = () => this.sunlightLayer?.diagnostics();
       // 띠를 버리고 전체를 다시 굽는다 — e2e 가 창 굽기 결과와 전체 굽기 결과의 화면이 같은지 비교한다.
       editWindow.__oprnEditReliefRebuild = () => {
@@ -721,6 +725,7 @@ export class EditScene extends PhaserRuntime.Scene {
     // 씬을 다시 만들면 relief 도 다시 그려야 한다 — 키를 비워 둔다.
     this.reliefRenderKey = "";
     this.reliefTileRelief = undefined;
+    this.reliefTileSignature = 0;
     this.reliefStrips?.forget();
     this.reliefStrips = null;
     this.reliefDecorImages = [];
@@ -913,7 +918,7 @@ export class EditScene extends PhaserRuntime.Scene {
       const lastCx = chunkCoord(Math.floor((view.x + view.width) / tileSize) + 2);
       const firstCy = chunkCoord(Math.floor(view.y / tileSize) - 2);
       const lastCy = chunkCoord(Math.floor((view.y + view.height) / tileSize) + 2);
-      // 청크는 clear() 로만 사라지고(redraw 가 키를 비운다) 새 청크는 수를 바꾼다 — 창과 수가 같으면 결과도 같다.
+      // 빈 청크는 eviction 때 사라지고 새 청크는 materialize 때 생긴다.
       const chunkKey = `${firstCx},${lastCx},${firstCy},${lastCy},${this.tileChunks.size}`;
       if (chunkKey !== this.lastChunkVisibilityKey) {
         this.lastChunkVisibilityKey = chunkKey;
@@ -927,6 +932,9 @@ export class EditScene extends PhaserRuntime.Scene {
         }
       }
     }
+    // Relief paging also follows small/non-lazy maps. Its page-window key
+    // avoids work while the camera remains inside the same resident page range.
+    this.reliefStrips?.syncView();
     syncTileCulling(this, view, this.activeTileSize());
   }
 
@@ -2318,7 +2326,7 @@ export class EditScene extends PhaserRuntime.Scene {
     // 배경 미리보기는 타일 렌더와 별개다 — 토글·맵·그림이 바뀔 때만 스프라이트를 다시 만든다.
     this.renderMapBackgroundPreview();
     this.renderReliefLayer();
-    this.reliefTileRelief = renderedMap?.relief;
+    this.rememberReliefTiles(renderedMap?.relief);
     this.renderAgentGhostPreview();
     // 청사진도 고스트와 같이 다시 그린다 — 청사진 스토어 구독만으로는 부족하다. 맵 전환은
     // editorState/store 만 흔들므로, 다시 그리지 않으면 A 맵의 "2/7 집" 사각형이 B 맵의 같은
@@ -2456,6 +2464,7 @@ export class EditScene extends PhaserRuntime.Scene {
     const mapId = this.mapId();
     const map = mapId ? store.getCurrent().maps[mapId] : undefined;
     const relief = map?.relief;
+    if (map) prepareReliefRead(map);
     const tileSize = this.activeTileSize();
     const tileset = map ? store.getCurrent().tilesets[map.tilesetId] : undefined;
     const textureKey = tileset ? tilesetTextureKey(tileset) : null;
@@ -2464,8 +2473,8 @@ export class EditScene extends PhaserRuntime.Scene {
     strips.setGroundAppearance(ground ? active === "upper" ? .58 : active === "event" ? .62 : 1 : 1, ground && active === "upper" ? 0xc8d9bf : null);
     const key = relief ? `${mapId}|${tileSize}|${map?.tilesetId}|${reliefSignature(relief)}|${ground?.signature ?? "none"}` : "";
     if (!forceFull && key === this.reliefRenderKey) return;
-    this.reliefRenderKey = key;
     strips.sync(map && relief && !reliefIsFlat(relief) ? relief : undefined, tileSize, forceFull, ground);
+    this.reliefRenderKey = key;
     const decor = relief && !reliefIsFlat(relief) && textureKey && this.textures.exists(textureKey) ? relief.wallDecor ?? [] : [];
     // 장식 자리는 그 칸 들림을 따른다 — 장식 목록·들림이 그대로면(붓질 대부분) 다시 만들지 않는다
     const decorKey = decor.length
@@ -2492,25 +2501,37 @@ export class EditScene extends PhaserRuntime.Scene {
    * 높이 붓 드래그의 비용이 붓 크기에 비례하게 남는다(scheduleReliefRender 의 굽기 간격 조절과 같은 틀 안에서 돈다).
    */
   private reliefTileRelief: ReliefData | undefined;
+  private reliefTileSignature = 0;
+  private rememberReliefTiles(relief: ReliefData | undefined): void {
+    this.reliefTileSignature = reliefSignature(relief);
+    // Keep the last rendered state, even if a shallow writer mutates the live arrays.
+    this.reliefTileRelief = relief ? copyRelief(relief) : undefined;
+    if (this.reliefTileRelief) bindReliefRevision(this.reliefTileRelief, () => "rendered-tile-snapshot");
+  }
   private syncReliefLiftedTiles(): void {
     const mapId = this.mapId();
     const map = mapId ? store.getCurrent().maps[mapId] : undefined;
     if (!mapId || !map) return;
+    prepareReliefRead(map);
     const before = this.reliefTileRelief, after = map.relief;
-    if (before === after) return;
+    if (this.reliefTileSignature === reliefSignature(after)) return;
+    // Build candidates from the resident/source window before doing any
+    // coordinate allocation, neighbour expansion or sorting.
+    const candidates = residentReliefTileCells(this, map, this.tileIndex);
     const changed = hasRelief(before) !== hasRelief(after)
-      ? Array.from({ length: map.width * map.height }, (_, i) => ({ x: i % map.width, y: Math.floor(i / map.width) }))
-      : reliefTileSlotChangedCells(before, after, map.width, map.height);
-    this.reliefTileRelief = after;
-    if (changed.length === 0) return;
+      ? candidates
+      : reliefTileSlotChangedCells(before, after, map.width, map.height, candidates);
+    this.rememberReliefTiles(after);
+    const eventLayer = editorState.get().layer === "event";
+    if (changed.length === 0 && !eventLayer) return;
     if (!this.canIncrementallyRenderCells(mapId)) {
       this.redraw();
       return;
     }
-    // lower 한 칸을 다시 그리면 같은 칸 upper 와 8방 이웃도 같이 다시 그려진다(editSceneRender §uniqueRenderableTileCells).
     const cells: ProjectChangeCell[] = changed.map(({ x, y }) => ({ x, y, layer: "lower" as const }));
-    // 이벤트 레이어에서는 이벤트 그림도 칸 들림만큼 올라 있다 — 덧그림을 다시 만든다.
-    if (editorState.get().layer === "event") cells.push({ x: changed[0]!.x, y: changed[0]!.y, layer: "event" as const });
+    // Markers include offscreen events; their lift must update even when the
+    // edited hill lies outside the resident tile window.
+    if (eventLayer) cells.push({ x: 0, y: 0, layer: "event" });
     this.redrawCells(cells);
   }
 

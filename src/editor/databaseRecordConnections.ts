@@ -1,7 +1,8 @@
-import { commandsReferenceLocations, type DatabaseReferenceLocation } from "./databaseCommandReferences";
+import { commandsReferenceLocations, createCommandReferenceLocationsReader, type DatabaseReferenceLocation } from "./databaseCommandReferences";
 import { projectDatabaseReferenceMessage } from "./databaseRecordReferences";
 import type { DatabaseCollection } from "./databaseActions";
 import type { Project } from "@/project/types";
+import { jsonEqual } from "@/util/structuralJson";
 
 /**
  * 자료집 오른쪽 「연결」 칸의 순수 계산 — 선택한 레코드를 **어디서 쓰는지**와 **무엇을 확인할지**.
@@ -164,3 +165,98 @@ export function recordConnections(project: Project, collection: DatabaseCollecti
   }
   return { uses: uses.slice(0, USE_LIMIT), checks: recordChecks(project, collection, id, uses) };
 }
+
+
+/**
+ * Single-selection cache owned by one panel, for immutable store snapshots.
+ * Mutable tool drafts keep using the uncached recordConnections entry point.
+ */
+export function createRecordConnectionsReader(): typeof recordConnections {
+  let lastProject: Project | undefined;
+  let lastCollection: DatabaseCollection | undefined;
+  let lastId: string | undefined;
+  let lastInputs: readonly unknown[] | undefined;
+  let lastFallbackInputs: readonly unknown[] | undefined;
+  let fallback: string | null = null;
+  let uses: readonly RecordUse[] = [];
+  const readLocations = createCommandReferenceLocationsReader();
+  const recordsWithName = new WeakMap<object, object>();
+  const recordsWithoutName = new WeakMap<object, object>();
+  const maps = new WeakMap<object, readonly unknown[]>();
+  const recordInput = (record: { readonly id: string }, omitName: boolean): object => {
+    const cache = omitName ? recordsWithoutName : recordsWithName;
+    const cached = cache.get(record);
+    if (cached) return cached;
+    // Keep every other field: reference-bearing additions invalidate safely.
+    const input = Object.fromEntries(Object.entries(record).filter(([key]) =>
+      key !== "description" && (!omitName || key !== "name")));
+    cache.set(record, input);
+    return input;
+  };
+  return (project, collection, id) => {
+    if (!CONNECTION_COLLECTIONS.has(collection)) return { uses: [], checks: [] };
+    if (lastProject === project && lastCollection === collection && lastId === id) {
+      return { uses, checks: recordChecks(project, collection, id, uses) };
+    }
+    let mapInputs = maps.get(project.maps);
+    if (!mapInputs) {
+      // Tile grids, relief, thumbnails and embedded asset documentation are not
+      // reference sources for these readers and must not be traversed here.
+      mapInputs = Object.values(project.maps).map((map) => [
+        map.id, map.name, map.events, map.troopIds, map.encounterTable, map.fieldSpawns,
+      ]);
+      maps.set(project.maps, mapInputs);
+    }
+    const dbInputs = REFERENCE_DATABASE_COLLECTIONS.map((source) =>
+      (project.database[source] ?? []).map((record) => recordInput(record,
+        source === collection && record.id === id && collection !== "troops")));
+    const system = project.system;
+    const otherInputs = [
+      mapInputs, project.commonEvents, project.growth,
+      project.session.partyActorIds, project.session.inventory, project.session.placeables,
+      project.characters, project.testPresets,
+      system.startActorIds, system.initialTroopId, system.craftRecipes, system.itemUpgrades,
+      system.sellPrices, system.toolActions, system.shipping?.allowedItemIds, system.bundles, system.makers,
+      system.seasonalForage?.areas, system.collections?.trackedItemIds, system.museum, system.fieldHud,
+    ];
+    const inputs = [dbInputs, otherInputs];
+    const sameSelection = collection === lastCollection && id === lastId;
+    if (!sameSelection || !jsonEqual(inputs, lastInputs)) {
+      const incoming = [
+        ...databaseUses(project, collection, id),
+        ...readLocations(project, collection, id).map(locationUse),
+      ];
+      if (incoming.length === 0) {
+        // With no matching command location, troop names cannot appear in the
+        // fallback message. Retain its result through troop label edits so the
+        // deletion helper does not perform a second full command scan.
+        const fallbackDbInputs = REFERENCE_DATABASE_COLLECTIONS.map((source, index) =>
+          source === "troops" ? project.database.troops.map((record) => recordInput(record, true))
+            : dbInputs[index]);
+        const fallbackInputs = [fallbackDbInputs, otherInputs];
+        if (!sameSelection || !jsonEqual(fallbackInputs, lastFallbackInputs)) {
+          fallback = projectDatabaseReferenceMessage(project, collection, id);
+          lastFallbackInputs = fallbackInputs;
+        }
+        if (fallback) incoming.push({ kind: "다른 곳", name: fallback });
+      } else if (!sameSelection) {
+        lastFallbackInputs = undefined;
+      }
+      uses = incoming.slice(0, USE_LIMIT);
+      lastCollection = collection;
+      lastId = id;
+      lastInputs = inputs;
+    }
+    lastProject = project;
+    // Description/graphics/validity checks are always current, independently
+    // of whether any incoming uses needed recomputing.
+    return { uses, checks: recordChecks(project, collection, id, uses) };
+  };
+}
+
+// Union of databaseUses, projectDatabaseReferenceMessage and the item-reference
+// collector's database sources. Extend this list when those readers gain sources.
+const REFERENCE_DATABASE_COLLECTIONS = [
+  "actors", "classes", "skills", "items", "equipment", "enemies", "troops", "monsterSpecies",
+  "crops", "farmBuildingTypes", "homeDecorationTypes", "farmAnimalSpecies", "fishSpecies",
+] as const satisfies readonly (keyof Project["database"])[];

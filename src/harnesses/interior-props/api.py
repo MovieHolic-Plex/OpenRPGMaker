@@ -12,20 +12,24 @@
 """
 import gzip, io, json, os, sqlite3, sys, threading, time
 
+if not __package__:
+    sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
+    __package__ = 'src.harnesses.interior-props'
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, '..', '..', '..'))
 sys.path.insert(0, HERE)
 sys.path.insert(0, os.path.join(ROOT, 'scripts/content/hand-interior-pick'))
-import store  # noqa: E402
-import harness  # noqa: E402
-from common import CAND, NEW_ITEMS, RESIZE_STAMP, SETS, V5, WORKER_RE, geom, objects_by_id, slug, objects_by_slug, size_from_note, write_resize  # noqa: E402
+from . import brief, store  # noqa: E402
+from . import harness  # noqa: E402
+from common import CONTENT_ROOT, CAND, NEW_ITEMS, RESIZE_STAMP, SETS, V5, WORKER_RE, geom, objects_by_id, slug, objects_by_slug, size_from_note, write_resize  # noqa: E402
 import picks_db  # noqa: E402
-import shared_publish  # noqa: E402
-import super_bridge  # noqa: E402
+from . import shared_publish  # noqa: E402
+from . import super_bridge  # noqa: E402
 import outline_select  # noqa: E402
 
-SPEC = os.path.join(ROOT, 'src/assets/handInteriorSpec.json')
-SHEET = os.path.join(ROOT, 'public/assets/atlas-interior/interior-chipset.png')
+SPEC = os.path.join(CONTENT_ROOT, 'src/assets/handInteriorSpec.json')
+SHEET = os.path.join(CONTENT_ROOT, 'public/assets/atlas-interior/interior-chipset.png')
 _thumb = {'mtime': None, 'cache': {}}
 DRAW_LOCK = threading.Lock()
 # 뒤에서 도는 draw 가 실패하면 화면이 영영 「그리는 중」으로 기다렸다 — 실패를 번호를 붙여 상태에 실어 보낸다.
@@ -95,7 +99,7 @@ def state():
     order = {'ready': 0, 'drawing': 1, 'done': 2}
     out.sort(key=lambda t: (order[t['status']], t['last']))
     allruns = store.runs()
-    return dict(items=out, reasons=__import__('brief').REASONS,
+    return dict(items=out, reasons=brief.REASONS,
                 pool=dict(alive=harness.pool_alive(), queued=sum(1 for r in allruns if r['status'] == 'queued'),
                           running=sum(1 for r in allruns if r['status'] == 'running'), par=harness.MAX_PAR, attempts=harness.MAX_ATTEMPTS, reviewEffort=harness.REVIEW_EFFORT,
                           model=harness.MODEL, effort=harness.EFFORT),
@@ -288,7 +292,7 @@ def decide(body):
     else:
         children = None
         if objects_by_id()[i].get('set'):
-            import derive
+            from . import derive
             children = [dict(id=c, name=n) for c, n in derive.slice_pick(i, choice, rnd)]
         picks_db.apply(i, {'choice': choice}, 'web')
         try: picks_db.export()
@@ -333,7 +337,7 @@ def draw(body):
 
 def derive_order(body):
     """파생 창의 주문: {id, facing, state:'열림'|'', loop, size:[w,h]|null, note}. 묶음·큰 판을 만들고 바로 뽑는다."""
-    import derive
+    from . import derive
     i = body['id']; by = objects_by_id()
     if i not in by: raise ValueError('모르는 기물')
     if by[i].get('set'): raise ValueError('파생 묶음에서 또 파생하지 않는다 — 원본 기물에서')
@@ -344,7 +348,7 @@ def derive_order(body):
     if body.get('size'):
         w, h = [int(v) for v in body['size']]
         if not (1 <= w <= 8 and 1 <= h <= 8): raise ValueError('크기는 1~8칸')
-        cur = __import__('brief').current_choice(i)
+        cur = brief.current_choice(i)
         jobs.append((derive.make_size(i, w, h, note=note), f'{cur}@{i}'))
     if not jobs: raise ValueError('고른 파생이 없다')
     made = [dict(id=j, name=objects_by_id()[j]['name_ko']) for j, _ in jobs]
@@ -382,12 +386,12 @@ def handle(h, method, parts, body=None):
                 h.send(200, gzip.decompress(gz))
             return True
         if len(parts) == 4 and parts[:3] == ['api', 'harness', 'derive']:
-            import derive
+            from . import derive
             try: h.send(200, json.dumps(derive.suggest(parts[3]), ensure_ascii=False))
             except KeyError: h.send(404, json.dumps({'error': '모르는 기물'}, ensure_ascii=False))
             return True
         if parts == ['api', 'harness', 'suggestions']:
-            import derive
+            from . import derive
             h.send(200, json.dumps(derive.suggestions(), ensure_ascii=False)); return True
         if parts == ['api', 'harness', 'objects']:
             h.send(200, json.dumps(objects(), ensure_ascii=False)); return True

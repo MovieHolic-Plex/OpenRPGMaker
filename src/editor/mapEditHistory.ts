@@ -166,6 +166,29 @@ function applySnapshotToProject(base: Project, snapshot: HistorySnapshot): Proje
   return next;
 }
 
+/** A history jump submits once; intermediate snapshots need no project copies. */
+function applyHistorySnapshots(base: Project, snapshots: readonly HistorySnapshot[]): Project {
+  let source = base;
+  const maps = new Map<MapId, MapSnapshot>();
+  let tilesets: Project["tilesets"] | undefined;
+  for (const snapshot of snapshots) {
+    if (snapshot.kind === "project") {
+      source = snapshot.before;
+      maps.clear();
+      tilesets = undefined;
+    } else {
+      maps.set(snapshot.mapId, snapshot);
+      if (snapshot.beforeTilesets) tilesets = snapshot.beforeTilesets;
+    }
+  }
+  // Own all mutable branches, as ordinary restoration does. Shared assets keep
+  // the established COW contract; no snapshot/current map is mutated in place.
+  const next = cloneProjectSharingSharedDictionaries(source);
+  for (const [mapId, snapshot] of maps) next.maps[mapId] = structuredClone(snapshot.before);
+  if (tilesets) next.tilesets = structuredClone(tilesets);
+  return next;
+}
+
 /** Only dense base-layer edits qualify. Every other map shape uses full restoration. */
 function restoredTileCells(current: GameMap | undefined, restored: GameMap): ProjectChangeCell[] | undefined {
   if (!current || current.width !== restored.width || current.height !== restored.height) return undefined;
@@ -508,11 +531,8 @@ export function revertToHistoryMarker(marker: number): boolean {
 export function revertToHistoryIndex(index: number): boolean {
   if (!Number.isInteger(index) || index < 0 || index >= undoStack.length) return false;
   const target = undoStack[index];
-  let project = structuredClone(store.getCurrent());
-  for (let cursor = undoStack.length - 1; cursor >= index; cursor -= 1) {
-    project = applySnapshotToProject(project, undoStack[cursor].snapshot);
-  }
-  redoStack.push(makeEntry({ kind: "project", before: projectWithoutEventDrafts(store.getCurrent()) }, target.label, target.mapId));
+  const project = applyHistorySnapshots(store.getCurrent(), undoStack.slice(index).reverse().map(entry => entry.snapshot));
+  redoStack.push(makeEntry({ kind: "project", before: projectSnapshotSharingTilesets(store.getCurrent()) }, target.label, target.mapId));
   undoStack = undoStack.slice(0, index);
   lastCoalesceKey = null;
   store.replace(project);
@@ -536,13 +556,10 @@ export function revertToHistoryIndex(index: number): boolean {
 export function redoToHistoryIndex(index: number): boolean {
   if (!Number.isInteger(index) || index < 0 || index >= redoStack.length) return false;
   const target = redoStack[index];
-  let project = structuredClone(store.getCurrent());
-  for (let cursor = redoStack.length - 1; cursor >= index; cursor -= 1) {
-    project = applySnapshotToProject(project, redoStack[cursor].snapshot);
-  }
+  const project = applyHistorySnapshots(store.getCurrent(), redoStack.slice(index).reverse().map(entry => entry.snapshot));
   // dedup 을 지나면 되돌릴 대상이 사라지므로 redo 경로 전용 push 를 쓴다(redoMapEdit 과 같다).
   pushSnapshotForRedo(makeEntry(
-    { kind: "project", before: projectWithoutEventDrafts(store.getCurrent()) },
+    { kind: "project", before: projectSnapshotSharingTilesets(store.getCurrent()) },
     target.label,
     target.mapId,
   ));

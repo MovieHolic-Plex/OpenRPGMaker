@@ -34,7 +34,7 @@
 ## 쓰는 법
 
 ### 화면 (사용자)
-- 현재 서버: `http://mdc-server:18312/harness` (고르기 서버에 붙어 있다).
+- 현재 서버: `http://mdc-server:18315/harness` (`super-harness/unified.py` 한 서비스; 18312는 이동 전용).
 - 통합 화면의 **기물·파생 / 공간·개념 / 재료 주문서 / 공용 재료**로 오간다.
   기물 화면만 직접 열려면 `/harness/props`. 기존 공간 하네스의 실행과 검수는 그대로 연결한다.
   워크트리 간 연결과 공용 재료 전달 계약은 [슈퍼하네싱 통합](../../../openwiki/harnesses/super-harness-integration.md).

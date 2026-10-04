@@ -61,11 +61,14 @@ export function registerAppProtocol(rendererDir: string, activityLogBaseDir: () 
       return fetch(new URL(`${url.pathname}${url.search}`, origin), { method: request.method, headers, body });
     }
     if (url.pathname === SHARED_CONTENT_ENDPOINT) {
-      const r = sharedContentResponse(request.method, url);
+      const r = sharedContentResponse(request.method, url, request.headers.get("if-none-match") ?? undefined);
       // app:// 는 프로세스 안 전달이라 압축 이득이 없고, 사용자 프로토콜 응답의 content-encoding 해제는 확인되지 않았다.
+      const headers = { 'cache-control': 'no-store', ...(r.etag ? { etag: r.etag } : {}) };
+      // 304 cannot have a body. Check before inflation, byte copying or JSON serialization.
+      if (r.status === 304) return new Response(null, { status: 304, headers });
       return r.gzip
-        ? new Response(new Uint8Array(gunzipSync(r.gzip)), { headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } })
-        : Response.json(r.body, { status: r.status, headers: { 'cache-control': 'no-store' } });
+        ? new Response(new Uint8Array(gunzipSync(r.gzip)), { status: r.status, headers: { ...headers, 'content-type': 'application/json; charset=utf-8' } })
+        : Response.json(r.body, { status: r.status, headers });
     }
     if (url.pathname === SHARED_CONTENT_PREVIEW_ENDPOINT || url.pathname.startsWith(SHARED_REFERENCE_IMAGE_PREFIX)) {
       const r = url.pathname === SHARED_CONTENT_PREVIEW_ENDPOINT ? sharedContentPreviewResponse(request.method, url) : sharedReferenceImageResponse(request.method, url);

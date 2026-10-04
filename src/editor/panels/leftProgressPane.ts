@@ -24,13 +24,18 @@ const MANUAL: ReadonlySet<string> = new Set<ManualJourneyStageId>(["map", "event
 export function createLeftProgressPane(scope: () => string): { root: HTMLElement; show(): void; dispose(): void } {
   const root = el("section", { class: "left-progress-pane", attrs: { "aria-label": "작성 진행" }, dataset: { testid: "left-progress-pane" } });
   let issues: readonly string[] | null = null;
+  let renderedKey: string | null = null;
 
   const render = (): void => {
     if (root.hidden) return;
     const project = store.getCurrent();
     issues ??= collectEditorProjectReferenceIssues(project);
-    const progress = loadAuthoringJourneyProgress(scope());
+    const currentScope = scope();
+    const progress = loadAuthoringJourneyProgress(currentScope);
     const stages = evaluateAuthoringJourney(project, progress, issues);
+    const nextKey = JSON.stringify([currentScope, stages]);
+    if (renderedKey === nextKey) return;
+    renderedKey = nextKey;
     const done = (stage: AuthoringJourneyStage) => stage.completion !== null || stage.acknowledgement !== null;
     const next = stages.find((stage) => !done(stage));
     const complete = stages.filter(done).length;
@@ -91,7 +96,7 @@ export function createLeftProgressPane(scope: () => string): { root: HTMLElement
   let queued = false;
   let disposed = false;
   const schedule = (): void => {
-    if (queued) return;
+    if (queued || disposed || root.hidden) return;
     queued = true;
     const run = (): void => { queued = false; if (!disposed) render(); };
     if (typeof requestAnimationFrame === "function") requestAnimationFrame(run);

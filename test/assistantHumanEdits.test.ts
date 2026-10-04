@@ -37,6 +37,16 @@ describe("human cell intent lasts for one AI request", () => {
     expect(nextRequest.protect(proposal, state.project).project).toBe(proposal);
     nextRequest.dispose(); expect(state.listeners.size).toBe(0);
   });
+  it("protects relief cells independently of mixed tile intent", () => {
+    const guard = createAssistantHumanEdits();
+    edit(map => { map.lowerTiles[0] = 2; map.relief = { width: map.width, height: map.height, levels: Array(map.width * map.height).fill(0) }; map.relief.levels[1] = 3; },
+      { scope: "map", mapId, cells: [{ x: 0, y: 0, layer: "lower" }], relief: true, reliefCells: [{ x: 1, y: 0 }] });
+    const proposal = structuredClone(state.project);
+    proposal.maps[mapId].relief!.levels[1] = 1;
+    expect(guard.protect(proposal, state.project).project.maps[mapId].relief!.levels[1]).toBe(3);
+    guard.dispose();
+  });
+
   it("same-value strokes retain intent; undo without cell descriptors is tracked", () => {
     const guard = createAssistantHumanEdits();
     publish(state.project, { scope: "map", mapId, cells: [{ x: 0, y: 0, layer: "lower" }] });

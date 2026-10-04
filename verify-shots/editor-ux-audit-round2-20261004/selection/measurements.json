@@ -1,0 +1,131 @@
+{
+  "commit": "2cd0368b939bc5430ab8daa0e5ea52a38c5c5d00",
+  "conditions": "Native editor, 1440x900, reduced motion, synthetic fixtures, no host saves/model calls; wallMs includes automation and a fixed 250ms settling period; longTasks are browser tasks >=50ms. Shared host load is uncontrolled.",
+  "errors": [],
+  "rows": [
+    {
+      "name": "event:100:CtrlA:0",
+      "wallMs": 450,
+      "longTasks": [
+        113
+      ],
+      "addedNodes": 2,
+      "removedNodes": 2,
+      "treeReplacements": 0,
+      "totalNodes": 8953,
+      "lifeOptions": 0,
+      "hiddenFishPanels": 0,
+      "focused": null,
+      "currentMapId": "map_page",
+      "selected": 100,
+      "selectedRows": 100
+    },
+    {
+      "name": "event:100:CtrlA:1",
+      "wallMs": 422,
+      "longTasks": [
+        61
+      ],
+      "addedNodes": 2,
+      "removedNodes": 2,
+      "treeReplacements": 0,
+      "totalNodes": 8953,
+      "lifeOptions": 0,
+      "hiddenFishPanels": 0,
+      "focused": null,
+      "currentMapId": "map_page",
+      "selected": 100,
+      "selectedRows": 100
+    },
+    {
+      "name": "event:100:CtrlA:2",
+      "wallMs": 416,
+      "longTasks": [
+        52,
+        59
+      ],
+      "addedNodes": 2,
+      "removedNodes": 2,
+      "treeReplacements": 0,
+      "totalNodes": 8953,
+      "lifeOptions": 0,
+      "hiddenFishPanels": 0,
+      "focused": null,
+      "currentMapId": "map_page",
+      "selected": 100,
+      "selectedRows": 100
+    },
+    {
+      "name": "event:1000:CtrlA:0",
+      "wallMs": 1263,
+      "longTasks": [
+        187,
+        646,
+        54,
+        58,
+        120
+      ],
+      "addedNodes": 2,
+      "removedNodes": 2,
+      "treeReplacements": 0,
+      "totalNodes": 35953,
+      "lifeOptions": 0,
+      "hiddenFishPanels": 0,
+      "focused": null,
+      "currentMapId": "map_page",
+      "selected": 1000,
+      "selectedRows": 1000
+    },
+    {
+      "name": "event:1000:CtrlA:1",
+      "wallMs": 1006,
+      "longTasks": [
+        70,
+        119,
+        500,
+        61,
+        87
+      ],
+      "addedNodes": 2,
+      "removedNodes": 2,
+      "treeReplacements": 0,
+      "totalNodes": 35953,
+      "lifeOptions": 0,
+      "hiddenFishPanels": 0,
+      "focused": null,
+      "currentMapId": "map_page",
+      "selected": 1000,
+      "selectedRows": 1000
+    },
+    {
+      "name": "event:1000:CtrlA:2",
+      "wallMs": 1095,
+      "longTasks": [
+        71,
+        128,
+        542,
+        110
+      ],
+      "addedNodes": 2,
+      "removedNodes": 2,
+      "treeReplacements": 0,
+      "totalNodes": 35953,
+      "lifeOptions": 0,
+      "hiddenFishPanels": 0,
+      "focused": null,
+      "currentMapId": "map_page",
+      "selected": 1000,
+      "selectedRows": 1000
+    }
+  ],
+  "productionSources": {
+    "src/editor/panels/databaseLifeCollectionsView.ts": "e6b501453e0fba1ea0b9f20d82f40bed910773e2eaba4544d4168d7f0ef380cf",
+    "src/editor/panels/database.ts": "42d0249af91b9f4a2b4d87dcb03849c9a35dda5d6fe8d8363650fcff362f68b2",
+    "src/editor/panels/mapList.ts": "3c8efae0f09499d5c6c8f51ecc0af27a2177a43587eaa0dd5caf656298cce4f0",
+    "src/editor/panels/mapSidebarSection.ts": "07500c4fed1d5e7b92c825d8522a5edaaa04334d7c19f1e02129a0862e9257f1",
+    "src/editor/panels/resourceManagerViews.ts": "e13de916c790f2b610c8fbdd7a127ee9064c5e09a8b1309da86559d4c62b00a8",
+    "src/editor/panels/leftProgressPane.ts": "ffb5c68346a1d803f8c5100cf38d666e974e3bcd38e28bd7173a641764e1d44f",
+    "src/editor/panels/aiSidebarWorkspace.ts": "f6186c420429b0edc0812feaaeb5a68fb7d7c19245183abb0360a928b9aeedad",
+    "src/editor/panels/eventEditor/modal.ts": "0b0a6199466001c6c5d04f0c5e97133b749bc318586a31ec075c02f43f336b8d"
+  }
+}

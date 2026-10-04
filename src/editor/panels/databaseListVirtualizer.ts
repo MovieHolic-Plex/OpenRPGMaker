@@ -59,8 +59,11 @@ export type VirtualList<T = unknown> = {
   render(): void;
   // Reveal uses the same measured pitch and bounds as windowing/spacers.
   scrollToIndex(index: number): void;
+  // Reveal and focus a row without moving focus back to a removed window.
+  focusRow(index: number): boolean;
   // 같은 스크롤 컨테이너를 유지한 채 항목을 바꾼다(검색·선택 갱신). 스크롤 위치는 보존한다.
   setItems(items: readonly T[]): void;
+  dispose(): void;
 };
 
 export type VirtualListOptions<T> = {
@@ -79,6 +82,9 @@ export type VirtualListOptions<T> = {
   // row heights, gaps only inside rowsHost (not between the spacers).
   readonly measureRows?: boolean;
   readonly onScroll?: (scrollTop: number) => void;
+  // Opt in to retaining overlapping DOM rows and recovering their focus.
+  // Keys must be unique. setItems still rebuilds rows so their content stays fresh.
+  readonly getRowKey?: (item: T, index: number) => string;
 };
 
 // 스크롤 컨테이너 + 상/하단 스페이서 + 보이는 행 호스트를 구성한다.
@@ -106,8 +112,12 @@ export function createVirtualList<T>(options: VirtualListOptions<T>): VirtualLis
   let insetTop = 0;
   let insetBottom = 0;
   let maxScrollTop = 0;
+  let disposed = false;
+  let refreshRows = false;
+  let retainedRows = new Map<string, { element: HTMLElement; index: number }>();
 
   const render = (): void => {
+    if (disposed) return;
     const columns = normalizeColumns(resolveColumns(container));
     // Apply responsive columns BEFORE measuring: card height can depend on width.
     container.style.setProperty("--db-gallery-columns", String(columns));
@@ -152,37 +162,96 @@ export function createVirtualList<T>(options: VirtualListOptions<T>): VirtualLis
     if (next.start === current.start && next.end === current.end && columns === currentColumns) return;
     current = next;
     currentColumns = columns;
+    const active = container.ownerDocument.activeElement;
+    const focused = options.getRowKey
+      ? [...retainedRows].find(([, row]) => row.element.contains(active)) : undefined;
     const rendered: HTMLElement[] = [];
+    const nextRows = new Map<string, { element: HTMLElement; index: number }>();
     for (let index = next.start; index < next.end; index += 1) {
-      rendered.push(options.renderRow(items[index], index));
+      const key = options.getRowKey?.(items[index], index);
+      const retained = key === undefined || refreshRows ? undefined : retainedRows.get(key);
+      const element = retained?.element ?? options.renderRow(items[index], index);
+      rendered.push(element);
+      if (key !== undefined) nextRows.set(key, { element, index });
     }
-    rowsHost.replaceChildren(...rendered);
+    if (options.getRowKey) {
+      // Do not detach overlapping rows: native focus survives ordinary scrolling.
+      const keep = new Set(rendered);
+      for (const child of Array.from(rowsHost.children)) if (!keep.has(child as HTMLElement)) child.remove();
+      let cursor = rowsHost.firstElementChild;
+      for (const row of rendered) {
+        if (row === cursor) cursor = cursor.nextElementSibling;
+        else rowsHost.insertBefore(row, cursor);
+      }
+      if (focused) {
+        const retained = nextRows.get(focused[0]);
+        // Rebuilds/reordering can detach the focused node. If it left the window,
+        // continue from the nearest mounted row without undoing the user's scroll.
+        const target = retained?.element
+          ?? rendered[Math.max(0, Math.min(rendered.length - 1, focused[1].index - next.start))];
+        if (target && !target.contains(container.ownerDocument.activeElement)) {
+          if (target === focused[1].element && active instanceof HTMLElement) active.focus({ preventScroll: true });
+          else target.focus({ preventScroll: true });
+        }
+      }
+    } else rowsHost.replaceChildren(...rendered);
+    retainedRows = nextRows;
+    refreshRows = false;
   };
 
-  container.addEventListener("scroll", () => {
+  const onScroll = (): void => {
+    if (disposed) return;
     options.onScroll?.(readNumber(container, "scrollTop"));
     render();
-  });
+  };
+  container.addEventListener("scroll", onScroll);
   // 렌더 폭 변화(모달 리사이즈 등)에 따라 열 수를 다시 계산한다. 브라우저 전용 —
   // fake DOM(테스트)에는 ResizeObserver 가 없어 무시되고, 테스트는 clientWidth 를
   // 주입한 뒤 scroll 이벤트로 render() 를 트리거해 결정적으로 검증한다.
-  if (typeof ResizeObserver === "function") {
-    const observer = new ResizeObserver(() => render());
-    observer.observe(container);
-  }
+  const observer = typeof ResizeObserver === "function" ? new ResizeObserver(() => render()) : undefined;
+  observer?.observe(container);
   render();
   return {
     element: container,
     render,
     scrollToIndex(index) {
+      if (disposed) return;
       render();
       container.scrollTop = Math.min(maxScrollTop, Math.max(0, insetTop + Math.floor(index / currentColumns) * pitch));
       render();
     },
+    focusRow(index) {
+      if (disposed || !Number.isInteger(index) || index < 0 || index >= items.length) return false;
+      render();
+      const top = insetTop + Math.floor(index / currentColumns) * pitch;
+      const bottom = top + pitch - gap;
+      const viewport = readNumber(container, "clientHeight");
+      const scroll = readNumber(container, "scrollTop");
+      if (viewport > 0) {
+        const offset = top < scroll ? top : bottom > scroll + viewport ? bottom - viewport : scroll;
+        container.scrollTop = Math.min(maxScrollTop, Math.max(0, offset));
+        render();
+      }
+      const row = rowsHost.children[index - current.start] as HTMLElement | undefined;
+      if (!row) return false;
+      row.focus({ preventScroll: true });
+      return true;
+    },
     setItems(next) {
+      if (disposed) return;
       items = next;
+      refreshRows = true;
       current = { start: -1, end: -1 };
       render();
+    },
+    dispose() {
+      if (disposed) return;
+      disposed = true;
+      observer?.disconnect();
+      container.removeEventListener("scroll", onScroll);
+      items = [];
+      retainedRows.clear();
+      rowsHost.replaceChildren();
     },
   };
 }

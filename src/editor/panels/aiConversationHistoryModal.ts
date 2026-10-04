@@ -11,6 +11,7 @@ import {
   hydrateConversationArchive,
   loadConversationForScope,
   queryConversationArchive,
+  listConversationArchiveMapIds,
   type ConversationArchiveSummary,
   type ConversationRecord,
   type ConversationSummary,
@@ -152,6 +153,9 @@ export function openAiConversationHistoryModal(options: {
   let listError: string | null = null;
   let renderGeneration = 0;
   let selectionGeneration = 0;
+  let pageAbort: AbortController | undefined;
+  let cancelSearch: (() => void) | undefined;
+  let catalogGeneration = 0;
   let inspectGeneration = 0;
   let expandedId: string | null = null;
   let expandedRecord: ConversationRecord | null = null;
@@ -535,6 +539,9 @@ export function openAiConversationHistoryModal(options: {
   };
 
   const fetchPage = async (append: boolean): Promise<void> => {
+    cancelSearch?.(); cancelSearch = undefined;
+    pageAbort?.abort();
+    const controller = pageAbort = new AbortController();
     const generation = ++renderGeneration;
     if (recoverStatus.dataset.state === "loading") setRecover("idle", "");
     listError = null;
@@ -553,6 +560,7 @@ export function openAiConversationHistoryModal(options: {
         query: search.value,
         offset,
         limit: AI_HISTORY_ARCHIVE_PAGE_SIZE,
+        signal: controller.signal,
         ...(filter === "unknown" ? { unknownOnly: true } : {}),
         ...(filter === "current" && options.currentMapId ? { mapId: options.currentMapId } : {}),
         ...(filter === "map" && selectedMapId ? { mapId: selectedMapId } : {}),
@@ -572,21 +580,13 @@ export function openAiConversationHistoryModal(options: {
   };
 
   const refreshArchiveMapIds = async (): Promise<void> => {
-    const generation = renderGeneration;
+    const generation = ++catalogGeneration;
     try {
-      const catalog = await queryConversationArchive({
-        projectContextKey: capturedScope,
-        // Map choices cover the whole scoped archive, not just its newest rows.
-        limit: Number.MAX_SAFE_INTEGER,
-      });
-      if (!isCurrentModal() || generation !== renderGeneration) return;
-      const ids = new Set<string>();
-      for (const row of catalog.records) {
-        for (const id of row.mapIds) ids.add(id);
-      }
-      archiveMapIds = [...ids];
+      const ids = await listConversationArchiveMapIds(capturedScope);
+      if (!isCurrentModal() || generation !== catalogGeneration) return;
+      archiveMapIds = ids;
     } catch (error) {
-      if (!isCurrentModal() || generation !== renderGeneration) return;
+      if (!isCurrentModal() || generation !== catalogGeneration) return;
       setRecover("error", errorMessage(error, "대화 맵 목록을 읽지 못했습니다."));
     }
     renderMapSelect();
@@ -628,7 +628,20 @@ export function openAiConversationHistoryModal(options: {
     }
   };
 
-  search.addEventListener("input", () => void modalPendingWork.track(fetchPage(false)));
+  search.addEventListener("input", () => {
+    cancelSearch?.();
+    // Invalidate old results immediately, during the debounce window as well.
+    ++renderGeneration;
+    pageAbort?.abort();
+    const pending = new Promise<void>(resolve => {
+      const timer = setTimeout(() => {
+        cancelSearch = undefined;
+        void fetchPage(false).then(resolve, resolve);
+      }, 180);
+      cancelSearch = () => { clearTimeout(timer); resolve(); };
+    });
+    void modalPendingWork.track(pending);
+  });
 
   const closeButton = el("button", {
     class: "database-modal-close",
@@ -673,6 +686,9 @@ export function openAiConversationHistoryModal(options: {
   const restoreFocus = installAiModalFocus(backdrop);
   const close = registerModal(backdrop, () => {
     hydrateAbort.abort();
+    pageAbort?.abort();
+    cancelSearch?.(); cancelSearch = undefined;
+    ++catalogGeneration;
     renderGeneration += 1;
     inspectGeneration += 1;
     backdrop.remove();
@@ -688,12 +704,9 @@ export function openAiConversationHistoryModal(options: {
 
   document.body.append(backdrop);
   openBackdrop = backdrop;
-  void modalPendingWork.track((async () => {
-    const generation = renderGeneration;
-    await refreshArchiveMapIds();
-    if (generation !== renderGeneration || !isCurrentModal()) return;
-    await fetchPage(false);
-  })());
+  // Catalog keys and the first scoped page share one coalesced migration. Opening
+  // with a current map never performs two sequential full-archive queries.
+  void modalPendingWork.track(Promise.all([refreshArchiveMapIds(), fetchPage(false)]));
   search.focus?.();
   return backdrop;
 }

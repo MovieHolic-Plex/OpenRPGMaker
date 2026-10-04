@@ -298,3 +298,5 @@ DB → 게임 오버에서 클래식/공포/회복 귀환을 고른다. 귀환 �
 `ending` 명령 폼은 분위기(warm/dark)와 크레딧을 편집하고 기존 배경/음악 참조를 유지한다.
 엔딩 레지스트리의 `define_ending`은 `presentation`으로 엔딩별 분위기·배경·음악·크레딧을 받는다.
 연출 순서와 진행 유지 계약은 `runtime-sessions.md`의 장르별 패배와 엔딩 흐름 절을 따른다.
+
+2026-10-04 native QA: 명령 툴바 `details`의 overflow를 숨기면 절대 위치 편집 팝오버가 잘려, 이동 단추 자리에 옆 undo/redo가 hit-test 된다. 메뉴 자체는 overflow visible 및 flex-shrink 0을 유지한다. 긴 버튼 라벨은 기존 버튼 계층에서 축약한다.

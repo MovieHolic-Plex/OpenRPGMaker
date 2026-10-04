@@ -1,3 +1,4 @@
+import { registerDatabasePreview, disposeDatabasePreviewsIn, type DatabasePreviewLifecycle } from "./databasePreviewLifecycle";
 import { batchApplyCells, interpolateCells, type AnimationCellBatchPatch } from "@/editor/databaseAnimationCellOps";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { applyAutoChromaKeyToBackground } from "@/editor/panels/chromaKey";
@@ -12,13 +13,11 @@ const PATTERN_PREVIEW_COUNT = 8;
 const ANIMATION_PLAYBACK_FRAME_MS = Math.round(1000 / 15);
 
 let copiedAnimationCells: BattleAnimationCell[] | null = null;
-const previewDisposers = new WeakMap<HTMLElement, () => void>();
+
 
 /** The tab cache owner must dispose previews before evicting their workspace. */
 export function disposeAnimationPreviewsIn(scope: ParentNode): void {
-  for (const panel of scope.querySelectorAll<HTMLElement>(".db-animation-stage-panel")) {
-    previewDisposers.get(panel)?.();
-  }
+  disposeDatabasePreviewsIn(scope, ".db-animation-stage-panel");
 }
 
 // Mutable, form-owned playback intent survives internal field/frame rerenders only.
@@ -242,6 +241,7 @@ function bindPlayback(
   let frameIndex = 0;
   let ready = false;
   let disposed = false;
+  let lifecycle: DatabasePreviewLifecycle;
   const status = el("div", {
     class: "empty-hint",
     attrs: { role: "status" },
@@ -263,14 +263,15 @@ function bindPlayback(
   };
 
   const start = (): void => {
-    if (disposed || !ready || timer !== null || isDisconnected(panel)) return;
+    if (disposed || !ready || timer !== null || !lifecycle?.isActive()) return;
     frameIndex = 0;
     renderStageCells(cellLayer, context, context.frames[frameIndex] ?? context.selectedFrame, url);
     button.textContent = "정지";
     button.setAttribute("aria-pressed", "true");
     status.textContent = "반복 재생 중";
     timer = window.setInterval(() => {
-      if (isDisconnected(panel)) {
+      if (!lifecycle.isActive()) {
+        if (isDisconnected(panel)) lifecycle.dispose();
         stop(false);
         return;
       }
@@ -279,31 +280,16 @@ function bindPlayback(
     }, ANIMATION_PLAYBACK_FRAME_MS);
   };
 
-  // Database tabs cache detached DOM. Pause that cache, resume on attachment,
-  // and release the observer on record replacement or modal close. Cache eviction
-  // is explicit: detached ancestry alone cannot distinguish retained and evicted tabs.
-  let workspace: HTMLElement | null = null;
-  let modal: HTMLElement | null = null;
-  const observer = typeof MutationObserver === "undefined" ? undefined : new MutationObserver(() => {
-    if (panel.isConnected) {
-      workspace = panel.closest(".oprn-record-battleAnimations");
-      modal = panel.closest(".database-modal-backdrop");
+  lifecycle = registerDatabasePreview(panel, {
+    suspend: () => stop(false),
+    resume: () => {
+      // A keying completion while detached may have skipped its DOM write.
+      if (url) for (const sprite of cellLayer.children) applyAutoChromaKeyToBackground(sprite as HTMLElement, url);
       if (playback.playing) start();
-    } else if (workspace?.contains(panel) && modal?.isConnected) {
-      stop(false);
-    } else {
-      dispose();
-    }
+    },
+    dispose: () => { disposed = true; },
   });
-  const dispose = (): void => {
-    disposed = true;
-    stop(false);
-    observer?.disconnect();
-    previewDisposers.delete(panel);
-  };
-  previewDisposers.set(panel, dispose);
-  playback.dispose = dispose;
-  observer?.observe(document.body, { childList: true, subtree: true });
+  playback.dispose = () => lifecycle.dispose();
 
   button.addEventListener("click", () => {
     if (!ready || disposed) return;
@@ -352,26 +338,37 @@ function bindPlayback(
 
 function renderStageCells(layer: HTMLElement, context: AnimationPreviewContext, frame: BattleAnimationFrame, url: string | undefined): void {
   const cells = url ? frame.cells : [];
-  layer.replaceChildren(...cells.map((cell, index) => stageCellSprite(context, cell, url, index)));
-}
-
-function stageCellSprite(context: AnimationPreviewContext, cell: BattleAnimationCell, url: string | undefined, index: number): HTMLElement {
-  const sprite = el("div", {
-    class: `db-animation-stage-cell db-animation-stage-cell-sprite${cell.visible ? "" : " muted"}`,
-  });
-  if (index === 0) sprite.dataset.testid = "db-animation-stage-target";
-  if (url) {
+  // Keep a high-water pool by cell index. Equal-size frames allocate no DOM.
+  while (layer.children.length < cells.length) {
+    const index = layer.children.length;
+    const sprite = el("div", { class: "db-animation-stage-cell db-animation-stage-cell-sprite" });
+    if (index === 0) sprite.dataset.testid = "db-animation-stage-target";
     sprite.setAttribute("aria-label", `애니메이션 셀 ${index + 1}`);
-    applySpriteBackground(sprite, context.sheet, cell.pattern, url);
-    if (!cell.visible) sprite.style.backgroundImage = "";
+    if (url) applySpriteBackground(sprite, context.sheet, 0, url);
+    layer.append(sprite);
   }
-  sprite.style.setProperty("--animation-cell-x", `${cell.x}px`);
-  sprite.style.setProperty("--animation-cell-y", `${cell.y}px`);
-  sprite.style.setProperty("--animation-cell-scale", String(cell.zoom / 100));
-  const zoom = cell.zoom / 100;
-  sprite.style.transform = `translate(${cell.x}px, ${cell.y}px) rotate(${cell.rotation ?? 0}deg) scale(${cell.mirror ? -zoom : zoom}, ${zoom})`;
-  sprite.style.opacity = String(cell.visible ? cell.opacity / 255 : Math.min(cell.opacity / 255, 0.38));
-  return sprite;
+  Array.from(layer.children).forEach((node, index) => {
+    const sprite = node as HTMLElement;
+    const cell = cells[index];
+    sprite.hidden = !cell;
+    patchStyle(sprite, "display", cell ? "" : "none");
+    if (!cell) return;
+    sprite.classList.toggle("muted", !cell.visible);
+    patchStyle(sprite, "visibility", cell.visible ? "" : "hidden");
+    const scale = battleAnimationSheetRmScale(context.sheet);
+    const columns = Math.max(1, context.sheet.columns);
+    // The async chroma-key result owns background-image; frame patches never overwrite it.
+    patchStyle(sprite, "background-position", `-${cell.pattern % columns * context.sheet.frameWidth * scale}px -${Math.floor(cell.pattern / columns) * context.sheet.frameHeight * scale}px`);
+    patchStyle(sprite, "--animation-cell-x", `${cell.x}px`);
+    patchStyle(sprite, "--animation-cell-y", `${cell.y}px`);
+    patchStyle(sprite, "--animation-cell-scale", String(cell.zoom / 100));
+    const zoom = cell.zoom / 100;
+    patchStyle(sprite, "transform", `translate(${cell.x}px, ${cell.y}px) rotate(${cell.rotation ?? 0}deg) scale(${cell.mirror ? -zoom : zoom}, ${zoom})`);
+    patchStyle(sprite, "opacity", String(cell.visible ? cell.opacity / 255 : Math.min(cell.opacity / 255, 0.38)));
+  });
+}
+function patchStyle(node: HTMLElement, property: string, value: string): void {
+  if (node.style.getPropertyValue(property) !== value) node.style.setProperty(property, value);
 }
 
 function stageCrosshair(): HTMLElement {

@@ -7,6 +7,10 @@ import fcntl, hashlib, json, os, shutil, sqlite3, subprocess, sys, tempfile, tim
 from pathlib import Path
 from contextlib import contextmanager
 
+if not __package__:
+    sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
+    __package__ = 'src.harnesses.interior-props'
+
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[2]
 DATA = Path(os.environ.get('PROP_HARNESS_DATA', str(Path.home() / '.local/share/oprn/prop-harness')))
@@ -65,7 +69,9 @@ def snapshot(root, selected):
     """출력은 임시 폴더에만 쓴다. 현재 시트와 후보를 굽는 도중에 바꾸지 않는다."""
     stage = Path(tempfile.mkdtemp(prefix='oprn-prop-publish-'))
     def copy(rel):
-        src, dst = root / rel, stage / rel
+        content = Path(os.environ.get('PROP_HARNESS_CONTENT_ROOT', str(root)))
+        source = content if rel.startswith(('tiledata/hand-interior/', 'public/assets/atlas-interior', 'public/assets/hand-interior-references')) else root
+        src, dst = source / rel, stage / rel
         if not src.exists(): return
         dst.parent.mkdir(parents=True, exist_ok=True)
         if src.is_dir(): shutil.copytree(src, dst, ignore=shutil.ignore_patterns('__pycache__', '.cache'))
@@ -95,7 +101,7 @@ def snapshot(root, selected):
                     if p.is_file(): shutil.copy2(p, stage / p.relative_to(baseline))
         import common
         for item, v in selected.items():
-            src = root / 'tiledata/hand-interior/pick/candidates' / common.slug(item)
+            src = Path(common.CAND) / common.slug(item)
             dst = stage / 'tiledata/hand-interior/pick/candidates' / common.slug(item)
             dst.mkdir(parents=True, exist_ok=True)
             names = [str(v['choice']).split('.')[0]] + [str(x).split('.')[0] for x in v.get('variants') or []]
@@ -114,6 +120,8 @@ def publish(root, selected):
     stage = snapshot(root, selected)
     try:
         env = dict(os.environ, HAND_INTERIOR_PICKS_JSON=str(stage / 'tiledata/hand-interior/pick/picks.json'))
+        env.pop('PROP_HARNESS_CONTENT_ROOT', None)
+        env.pop('HIP_PICK', None)
         for cmd in ([sys.executable, 'scripts/content/hand-interior/build_tileset.py'],
                     ['bun', 'scripts/content/hand-interior/prepare-references.mts']):
             print('RUN', cmd, flush=True)

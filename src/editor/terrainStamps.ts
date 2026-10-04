@@ -85,8 +85,9 @@ export function planTerrainStamp(map: GameMap, tileset: TilesetDef, source: Terr
   for (const i of indices) for(let dy=-2;dy<=2;dy++)for(let dx=-2;dx<=2;dx++){const x=i%map.width+dx,y=Math.floor(i/map.width)+dy;if(x>=0&&y>=0&&x<map.width&&y<map.height)dirty.add(y*map.width+x);}
   return { ok: true, reason: `${stamp.name} · ${stamp.width}×${stamp.height}칸`, indices: [...dirty], apply: draft => {
     draft.relief = draft.relief ? copyRelief(draft.relief) : emptyRelief(draft.width, draft.height); draft.relief.ramps ??= new Array<number>(draft.width * draft.height).fill(0);
-    draft.terrainDesign ??= {}; draft.terrainDesign.waterDepth ??= new Array<number>(draft.width * draft.height).fill(0);
-    for (let n = 0; n < indices.length; n++) { const i = indices[n]!, c = stamp.cells[n]!; for (const layer of [1, 2, 3, 4] as const) setLayerTileAt(draft, layer, i, c.layers[layer - 1]!); setShadowAt(draft, i, c.shadow); draft.relief.levels[i] = c.level; draft.relief.ramps[i] = c.ramp; draft.terrainDesign.waterDepth[i] = c.depth; }
+    const waterDepth = draft.terrainDesign?.waterDepth?.slice() ?? new Array<number>(draft.width * draft.height).fill(0);
+    draft.terrainDesign = { ...draft.terrainDesign, waterDepth };
+    for (let n = 0; n < indices.length; n++) { const i = indices[n]!, c = stamp.cells[n]!; for (const layer of [1, 2, 3, 4] as const) setLayerTileAt(draft, layer, i, c.layers[layer - 1]!); setShadowAt(draft, i, c.shadow); draft.relief.levels[i] = c.level; draft.relief.ramps[i] = c.ramp; waterDepth[i] = c.depth; }
     if (stamp.style && !map.relief?.style) draft.relief.style = stamp.style;
     const overwritten = new Set(indices);
     draft.relief.wallDecor = [...(draft.relief.wallDecor ?? []).filter(d => !overwritten.has(d.y * draft.width + d.x)), ...(stamp.wallDecor ?? []).map(d => ({ ...d, x: d.x + anchor.x, y: d.y + anchor.y }))];

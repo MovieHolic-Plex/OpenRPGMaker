@@ -1,0 +1,251 @@
+{
+  "baseline": "2cd0368b939bc5430ab8daa0e5ea52a38c5c5d00",
+  "captureScriptSha256": "0dfe66f199846e36669e67532a5aed404fa80312c63c569b42fc2120a01eb95e",
+  "pageErrors": 0,
+  "timedWindows": 42,
+  "observations": 45,
+  "cases": {
+    "extras": {
+      "maps:10:switch": {
+        "samples": 3,
+        "medianWallMs": 395,
+        "longTasksMs": [
+          [
+            54
+          ],
+          [],
+          []
+        ]
+      },
+      "maps:100:switch": {
+        "samples": 3,
+        "medianWallMs": 555,
+        "longTasksMs": [
+          [
+            143,
+            105,
+            60
+          ],
+          [
+            132,
+            97
+          ],
+          [
+            127,
+            137,
+            105
+          ]
+        ]
+      },
+      "maps:300:switch": {
+        "samples": 3,
+        "medianWallMs": 2540,
+        "longTasksMs": [
+          [
+            305,
+            143,
+            85,
+            130,
+            82
+          ],
+          [
+            296,
+            186,
+            87,
+            81,
+            66
+          ],
+          [
+            331,
+            229,
+            127,
+            82,
+            90
+          ]
+        ]
+      }
+    },
+    "life": {
+      "life:10:100:open": {
+        "samples": 1,
+        "medianWallMs": 440,
+        "longTasksMs": [
+          [
+            133
+          ]
+        ]
+      },
+      "life:10:100:zero-match": {
+        "samples": 3,
+        "medianWallMs": 286,
+        "longTasksMs": [
+          [],
+          [],
+          []
+        ]
+      },
+      "life:50:500:open": {
+        "samples": 1,
+        "medianWallMs": 654,
+        "longTasksMs": [
+          [
+            284
+          ]
+        ]
+      },
+      "life:50:500:zero-match": {
+        "samples": 3,
+        "medianWallMs": 615,
+        "longTasksMs": [
+          [
+            318,
+            137
+          ],
+          [
+            340,
+            159
+          ],
+          [
+            302,
+            156
+          ]
+        ]
+      },
+      "life:100:1000:open": {
+        "samples": 1,
+        "medianWallMs": 1455,
+        "longTasksMs": [
+          [
+            988,
+            56
+          ]
+        ]
+      },
+      "life:100:1000:zero-match": {
+        "samples": 3,
+        "medianWallMs": 2233,
+        "longTasksMs": [
+          [
+            60,
+            1353,
+            451,
+            59
+          ],
+          [
+            1415,
+            463,
+            64
+          ],
+          [
+            1513,
+            1824,
+            57
+          ]
+        ]
+      }
+    },
+    "progress-events": {
+      "progress:visible:paint": {
+        "samples": 3,
+        "medianWallMs": 282,
+        "longTasksMs": [
+          [
+            117
+          ],
+          [
+            86
+          ],
+          [
+            70
+          ]
+        ]
+      },
+      "progress:collapsed:paint": {
+        "samples": 3,
+        "medianWallMs": 290,
+        "longTasksMs": [
+          [
+            82
+          ],
+          [
+            64
+          ],
+          [
+            57
+          ]
+        ]
+      },
+      "progress:tools:paint": {
+        "samples": 3,
+        "medianWallMs": 327,
+        "longTasksMs": [
+          [],
+          [],
+          []
+        ]
+      },
+      "event:100:Tab": {
+        "samples": 3,
+        "medianWallMs": 294,
+        "longTasksMs": [
+          [],
+          [],
+          []
+        ]
+      },
+      "event:1000:Tab": {
+        "samples": 3,
+        "medianWallMs": 318,
+        "longTasksMs": [
+          [],
+          [],
+          []
+        ]
+      }
+    },
+    "selection": {
+      "event:100:CtrlA": {
+        "samples": 3,
+        "medianWallMs": 422,
+        "longTasksMs": [
+          [
+            113
+          ],
+          [
+            61
+          ],
+          [
+            52,
+            59
+          ]
+        ]
+      },
+      "event:1000:CtrlA": {
+        "samples": 3,
+        "medianWallMs": 1095,
+        "longTasksMs": [
+          [
+            187,
+            646,
+            54,
+            58,
+            120
+          ],
+          [
+            70,
+            119,
+            500,
+            61,
+            87
+          ],
+          [
+            71,
+            128,
+            542,
+            110
+          ]
+        ]
+      }
+    }
+  }
+}

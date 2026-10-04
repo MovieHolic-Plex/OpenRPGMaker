@@ -54,55 +54,75 @@ export function makePaletteStampStatus(stamp: PaletteStamp | null, rerender: () 
   return row;
 }
 
-export function makeTileBrushAssistPanel(model: TileBrushAssistModel): HTMLElement {
+export function makeTileBrushAssistPanel(model: TileBrushAssistModel, includeControls = true): HTMLElement {
   const project = store.getCurrent();
   const map = project.maps[model.mapId];
   const favorites = favoriteTilesSnapshot().filter((tile) => tile >= 0 && tile < model.tileset.count);
   const similar = similarTilesForTile({ tileset: model.tileset, tile: model.selectedTile, limit: 8 });
   const used = map ? usedLocationsForTile({ map, tile: model.selectedTile, limit: 6 }) : [];
   const panel = el("div", { class: "tile-brush-assist", dataset: { testid: "tile-brush-assist" } });
-  const autoOn = model.autoConnectMode;
-  const candidate = isAutoConnectCandidate(model.selectedTile, model.tileset);
-  panel.append(
-    el("div", {
-      class: "tile-brush-row tile-brush-mode-row",
-      children: [
-        el("span", { class: "tile-brush-label", text: "이웃 연결" }),
-        el("button", {
-          class: "btn tile-brush-chip" + (autoOn ? " active" : ""),
-          text: autoOn ? "자동" : "수동",
-          attrs: {
-            type: "button",
-            title: autoOn
-              ? "자동 연결 켜짐 — 이웃 지형까지 다시 검사해 이어 붙입니다. 누르면 수동으로."
-              : "수동 배치 켜짐 — 일반 타일은 그대로 둡니다. 단 오토타일 브러시(흙길·모래·실내 366 등)는 항상 성형됩니다."
-                + " 이것은 지형 연결만 끕니다 — 나무·벤치 같은 구조물의 짝 배치는 아래 「구조 보조」가 따로 정합니다.",
-            "aria-pressed": String(autoOn),
-            "aria-label": autoOn ? "자동 연결 끄기" : "자동 연결 켜기",
-          },
-          dataset: { testid: "auto-connect-mode-toggle" },
-          on: {
-            click: () => {
-              editorState.set({ autoConnectMode: !editorState.get().autoConnectMode });
-              model.rerender();
-            },
-          },
-        }),
-        el("span", {
-          class: "tile-brush-hint",
-          text: candidate ? (autoOn ? "이웃 성형" : "오토타일 브러시(항상 성형)") : "이 타일 단독",
-          dataset: { testid: "auto-connect-mode-hint" },
-        }),
-      ],
-    })
-  );
-  panel.append(makeClusterAssistRow(model));
+  if (includeControls) {
+    const controls = makeTileBrushAssistControls(model);
+    panel.append(controls.modeRow, controls.clusterRow);
+  }
   // 2글자 라벨(즐겨/유사/사용/주변)은 뜻이 전달되지 않았다 — 풀어 쓴다.
   panel.append(makeTileStrip("즐겨찾기", favorites, "favorite-tile-grid", "favorite-tile", model));
   panel.append(makeTileStrip("닮은 타일", similar, "similar-tile-grid", "similar-tile", model));
   panel.append(makeUsedLocations(model.mapId, used, model.rerender));
   panel.append(makeCurrentNeighborhoodSummary());
   return panel;
+}
+
+/** Always-visible brush controls; no similarity scoring or map usage scan. */
+export function makeTileBrushAssistControls(model: TileBrushAssistModel): { modeRow: HTMLElement; clusterRow: HTMLElement } {
+  const autoOn = model.autoConnectMode;
+  const candidate = isAutoConnectCandidate(model.selectedTile, model.tileset);
+  const modeRow = el("div", {
+    class: "tile-brush-row tile-brush-mode-row",
+    children: [
+      el("span", { class: "tile-brush-label", text: "이웃 연결" }),
+      el("button", {
+        class: "btn tile-brush-chip" + (autoOn ? " active" : ""),
+        text: autoOn ? "자동" : "수동",
+        attrs: {
+          type: "button",
+          title: autoOn
+            ? "자동 연결 켜짐 — 이웃 지형까지 다시 검사해 이어 붙입니다. 누르면 수동으로."
+            : "수동 배치 켜짐 — 일반 타일은 그대로 둡니다. 단 오토타일 브러시(흙길·모래·실내 366 등)는 항상 성형됩니다."
+              + " 이것은 지형 연결만 끕니다 — 나무·벤치 같은 구조물의 짝 배치는 아래 「구조 보조」가 따로 정합니다.",
+          "aria-pressed": String(autoOn),
+          "aria-label": autoOn ? "자동 연결 끄기" : "자동 연결 켜기",
+        },
+        dataset: { testid: "auto-connect-mode-toggle" },
+        on: {
+          click: () => {
+            editorState.set({ autoConnectMode: !editorState.get().autoConnectMode });
+            model.rerender();
+          },
+        },
+      }),
+      el("span", {
+        class: "tile-brush-hint",
+        text: autoConnectHint(autoOn, candidate),
+        dataset: { testid: "auto-connect-mode-hint" },
+      }),
+    ],
+  });
+  return { modeRow, clusterRow: makeClusterAssistRow(model) };
+}
+
+function autoConnectHint(autoOn: boolean, candidate: boolean): string {
+  return candidate ? (autoOn ? "이웃 성형" : "오토타일 브러시(항상 성형)") : "이 타일 단독";
+}
+
+/** Selecting a tile changes the inline hint even when the popup stays closed. */
+export function syncTileBrushAssistSelection(root: HTMLElement, selectedTile: number, tileset: TilesetDef): void {
+  const hint = root.querySelector<HTMLElement>('[data-testid="auto-connect-mode-hint"]');
+  if (!hint) return;
+  const text = autoConnectHint(editorState.get().autoConnectMode, isAutoConnectCandidate(selectedTile, tileset));
+  if (hint.textContent === text) return;
+  if (hint.firstChild instanceof Text && hint.childNodes.length === 1) hint.firstChild.data = text;
+  else hint.textContent = text;
 }
 
 /**

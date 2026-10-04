@@ -7,6 +7,7 @@
 import { gridFromRelief, type ReliefData } from "./types";
 import type { ReliefSlope } from "./render";
 import { reliefCarvedStairs, reliefSmoothStairs } from "./styles";
+import { invalidateReliefRevision, reliefState } from "./revision";
 
 export type RampDir = "n" | "s" | "e" | "w";
 const DIRS: RampDir[] = ["n", "s", "e", "w"];
@@ -21,17 +22,18 @@ export function rampAt(r: ReliefData, x: number, y: number): { dir: RampDir; sta
 export const reliefLevel = (r: ReliefData, x: number, y: number): number =>
   x < 0 || y < 0 || x >= r.width || y >= r.height ? 0 : (r.levels[y * r.width + x] ?? 0);
 
-const slopeCache = new WeakMap<ReliefData, { levels: number[]; ramps: number[] | undefined; style: string | undefined; slopes: ReliefSlope[]; owners: Int32Array }>();
+const slopeCache = new WeakMap<ReliefData, { signature: number; levels: number[]; ramps: number[] | undefined; style: string | undefined; slopes: ReliefSlope[]; owners: Int32Array }>();
 /** In-place authoring must invalidate geometry before querying movement again. */
-export function invalidateReliefSlopes(r: ReliefData): void { slopeCache.delete(r); }
+export function invalidateReliefSlopes(r: ReliefData): void { slopeCache.delete(r); invalidateReliefRevision(r); }
 
 /** Scan actual axial lanes, merging only identical complete flights. Never fill holes in a bounding box. */
 export function reliefSlopes(r: ReliefData): ReliefSlope[] {
+  const signature = reliefState(r).signature;
   const cached = slopeCache.get(r);
-  if (cached && cached.levels === r.levels && cached.ramps === r.ramps && cached.style === r.style) return cached.slopes;
+  if (cached?.signature === signature) return cached.slopes;
   if (!r.ramps?.some((v) => v >= 1 && v <= 8)) {
     const slopes: ReliefSlope[] = [];
-    slopeCache.set(r, { levels: r.levels, ramps: r.ramps, style: r.style, slopes, owners: new Int32Array(0) });
+    slopeCache.set(r, { signature, levels: r.levels, ramps: r.ramps, style: r.style, slopes, owners: new Int32Array(0) });
     return slopes;
   }
   // r3: smoothStairs styles draw their stair ramps as slopes (no steps); carvedStairs styles cut one step per level climbed (log flights one more)
@@ -66,7 +68,7 @@ export function reliefSlopes(r: ReliefData): ReliefSlope[] {
   const owners = new Int32Array(r.width * r.height).fill(-1);
   if (carved) for (const s of out) if (s.steps) { const across = s.dir === "n" || s.dir === "s" ? s.w : s.h; s.steps = Math.max(2, s.hi - s.lo + (carved.log && across >= 4 ? 1 : 0)); }
   out.forEach((p, id) => { for (let y = p.y; y < p.y + p.h; y++) for (let x = p.x; x < p.x + p.w; x++) owners[y * r.width + x] = id; });
-  slopeCache.set(r, { levels: r.levels, ramps: r.ramps, style: r.style, slopes: out, owners });
+  slopeCache.set(r, { signature, levels: r.levels, ramps: r.ramps, style: r.style, slopes: out, owners });
   return out;
 }
 
@@ -115,5 +117,5 @@ export function reliefBridgeMask(r: ReliefData): Uint8Array | undefined {
 }
 
 /** 높이 규칙이 있는 맵인지(평지·없음이면 false). */
-export const hasRelief = (r: ReliefData | undefined): r is ReliefData => !!r && r.levels.some((v) => v > 0);
+export const hasRelief = (r: ReliefData | undefined): r is ReliefData => !!r && reliefState(r).elevated;
 export { gridFromRelief };

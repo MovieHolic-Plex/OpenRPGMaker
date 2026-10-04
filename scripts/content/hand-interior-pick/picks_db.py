@@ -23,7 +23,7 @@ import datetime, glob, hashlib, json, os, shutil, sqlite3, sys, threading
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, '..', '..', '..'))
-PICK = os.environ.get('HIP_PICK', os.path.join(ROOT, 'tiledata', 'hand-interior', 'pick'))   # 시험용으로만 바꾼다
+PICK = os.environ.get('HIP_PICK', os.path.join(os.environ.get('PROP_HARNESS_CONTENT_ROOT', ROOT), 'tiledata', 'hand-interior', 'pick'))   # 시험용으로만 바꾼다
 PICKS_JSON = os.path.join(PICK, 'picks.json')
 ADDRESSED_JSON = os.path.join(PICK, 'addressed.json')
 DATA = os.path.expanduser(os.environ.get('HIP_DATA', '~/.local/share/oprn/hand-interior-pick'))

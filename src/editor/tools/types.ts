@@ -14,6 +14,8 @@ export interface JsonSchema {
   readonly properties?: Record<string, JsonSchema>;
   readonly required?: readonly string[];
   readonly items?: JsonSchema;
+  readonly minItems?: number;
+  readonly maxItems?: number;
   readonly enum?: readonly (string | number)[];
   readonly minLength?: number;
   readonly maxLength?: number;
