@@ -1,5 +1,9 @@
 # interior-props — 손 도트 실내 기물 (16px)
 
+서버 통합 화면의 이름은 **슈퍼하네싱**. `/harness`는 기물·파생과 기존 공간·개념/재료 주문서,
+공용 재료를 연결한다. 기물 단독 화면은 `/harness/props`.
+범위·다른 워크트리와의 재료 전달 계약은 [통합 문서](super-harness-integration.md).
+
 - 매니페스트: `src/harnesses/interior-props/harness.ts`. 들어오는 길: 에디터 「공방」(왼쪽 막대). CLI·조수 도구 없음.
 - 이 서버의 작업자용 파이썬 하네스는 같은 폴더의 `harness.py`·`web/`(README.md). 에디터 실행기는 `editor/`.
 - 흐름: 후보 5장(방향 A~E) → 깨짐 검사(크기·투명 배경·위 패딩·접지선) → 고치기 ≤2 → 자기 점검 1 → 독립 검수(vision) → 꼭대기 면 판정(가구 윗면 3행 미만 = FRONT) → 다시 그리기(시도 ≤3) → 사람이 고른다.

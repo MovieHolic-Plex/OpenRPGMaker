@@ -20,6 +20,7 @@ import harness  # noqa: E402
 from common import CAND, NEW_ITEMS, RESIZE_STAMP, SETS, V5, WORKER_RE, geom, objects_by_id, slug, objects_by_slug, size_from_note, write_resize  # noqa: E402
 import picks_db  # noqa: E402
 import shared_publish  # noqa: E402
+import super_bridge  # noqa: E402
 import outline_select  # noqa: E402
 
 SPEC = os.path.join(ROOT, 'src/assets/handInteriorSpec.json')
@@ -362,8 +363,12 @@ def derive_order(body):
 
 def handle(h, method, parts, body=None):
     """처리했으면 True. h = BaseHTTPRequestHandler(send·file 메서드가 있는 pick_server.H)."""
+    if super_bridge.handle(h, method, parts):
+        return True
     if method == 'GET':
         if parts == ['harness']:
+            h.file(os.path.join(HERE, 'web', 'super.html'), 'text/html; charset=utf-8'); return True
+        if parts == ['harness', 'props']:
             h.file(os.path.join(HERE, 'web', 'index.html'), 'text/html; charset=utf-8'); return True
         if parts == ['api', 'harness', 'state']:
             # 서버가 막 켜져 아직 새로 못 만들었으면 지난 스냅숏이라도 바로 준다(1초 안에 새 것으로 바뀐다)
