@@ -909,7 +909,7 @@ async function createProjectFromDialog(): Promise<void> {
   const title = selection.title.trim() || "새 프로젝트";
   const choiceId = selection.choiceId;
   let seed: Project;
-  try { seed = await createProjectStartSeed(choiceId, title, selection.startMode, selection.screenSize); }
+  try { seed = await createProjectStartSeed(choiceId, title, selection.startMode, selection.screenSize, selection.starterPresetId); }
   catch (error) { toast(`시작 프로젝트를 준비하지 못했습니다: ${error instanceof Error ? error.message : String(error)}`, "error"); return; }
   // 게임 화면 크기는 논리 뷰포트다. 타이틀 그림·파티클·음악은
   // 질문하지 않는다: AI 가 장르에 맞게 넣고 저작자는 DB 에서 고친다(2026-09-22 합의).

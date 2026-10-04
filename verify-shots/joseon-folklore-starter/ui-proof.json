@@ -1,0 +1,48 @@
+{
+  "scope": "Production launcher/menu UI, fixture folder bridge; real seed factory. Canonical storage is separate storage-proof.json.",
+  "handoff": {
+    "version": 1,
+    "createdAt": 1791122468463,
+    "projectDir": "/fixture/달빛 버들마을",
+    "title": "달빛 버들마을",
+    "choiceId": "adventure-jrpg",
+    "intent": "",
+    "startMode": "example",
+    "screenSize": "wide",
+    "starterPresetId": "joseon-folklore"
+  },
+  "selection": {
+    "title": "버들마을",
+    "choiceId": "adventure-jrpg",
+    "screenSize": "wide",
+    "startMode": "example",
+    "starterPresetId": "joseon-folklore"
+  },
+  "seed": {
+    "maps": [
+      "joseon_v20",
+      "joseon_field",
+      "joseon_cave",
+      "joseon_in_inn_b",
+      "joseon_in_school_b",
+      "joseon_in_pharmacy_b"
+    ],
+    "classes": [
+      "초보",
+      "전사",
+      "도적",
+      "주술사",
+      "도사"
+    ],
+    "equipment": 36,
+    "enemies": 15,
+    "font": "galmuri9",
+    "dialogueStyle": "joseon",
+    "resolution": {
+      "width": 640,
+      "height": 360
+    },
+    "world": "조선 설화 판타지"
+  },
+  "errors": []
+}

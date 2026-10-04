@@ -2,14 +2,24 @@ import { createNewProjectSeed } from "./genrePacks";
 import { newProjectChoiceById, type NewProjectChoiceId } from "./newProjectChoices";
 import { START_EXAMPLE_DETAILS, projectStartMode, type ProjectStartMode, type ProjectStartScreenSize } from "@/start/projectStart";
 import type { Project } from "@/project/types";
+import { isProjectStarterId, type ProjectStarterId } from "@/project/contentPacks/starterIds";
 
 /** Existing authored village and playable-segment tools own all tile placement. */
-export async function createProjectStartSeed(choiceId: NewProjectChoiceId | null, title: string, mode?: ProjectStartMode, size: ProjectStartScreenSize = "classic"): Promise<Project> {
+export async function createProjectStartSeed(choiceId: NewProjectChoiceId | null, title: string, mode?: ProjectStartMode, size: ProjectStartScreenSize = "classic", starterPresetId?: ProjectStarterId): Promise<Project> {
   const choice = choiceId ? newProjectChoiceById(choiceId) : undefined;
   if (choiceId && !choice) throw new Error("선택한 시작 장르를 찾을 수 없습니다.");
   const startMode = projectStartMode(choiceId, mode);
-  let project = createNewProjectSeed(choice?.packId ?? null, title);
-  if (startMode === "example") {
+  if (starterPresetId !== undefined && (!isProjectStarterId(starterPresetId) || startMode !== "example" || choiceId !== "adventure-jrpg")) {
+    throw new Error("선택한 세계 프리셋과 시작 방식이 다릅니다.");
+  }
+  let project: Project;
+  if (starterPresetId === "joseon-folklore") {
+    const { createJoseonFolkloreStarter } = await import("@/project/contentPacks/joseonFolkloreStarter");
+    project = createJoseonFolkloreStarter(title);
+  } else {
+    project = createNewProjectSeed(choice?.packId ?? null, title);
+  }
+  if (startMode === "example" && !starterPresetId) {
     if (!choiceId || !START_EXAMPLE_DETAILS[choiceId]) throw new Error("이 장르에는 시작 예제가 없습니다.");
     const { createStarterMap, singleNodeTree } = await import("@/project/defaults/defaultMaps");
     const { createBeodeulStarterMap } = await import("@/editor/content/beodeulStarterMap");

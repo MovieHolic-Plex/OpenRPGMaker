@@ -1,0 +1,1267 @@
+{
+  "scenarioId": "joseon-folklore-starter",
+  "projectPath": "output/joseon-folklore/starter/game.oprn.json",
+  "seed": 1,
+  "viewport": {
+    "width": 1100,
+    "height": 760
+  },
+  "errors": [],
+  "beats": [
+    {
+      "index": 0,
+      "id": "title",
+      "shot": "01-title.png",
+      "failures": [],
+      "state": null,
+      "actions": []
+    },
+    {
+      "index": 1,
+      "id": "village",
+      "shot": "02-village.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "joseon_v20",
+        "x": 17,
+        "y": 28,
+        "gold": 80,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {},
+        "inventory": {
+          "item_jf_mugwort_pill": 5
+        },
+        "inventoryCounts": {
+          "item_jf_mugwort_pill": 5
+        }
+      },
+      "actions": [
+        {
+          "kind": "key",
+          "key": "Enter",
+          "times": 1
+        },
+        {
+          "kind": "waitForRuntime"
+        },
+        {
+          "kind": "seed",
+          "seed": 17
+        },
+        {
+          "kind": "waitForFieldReady"
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "id": "jobs",
+      "shot": "03-jobs.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "joseon_v20",
+        "x": 17,
+        "y": 27,
+        "gold": 80,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {},
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "joseon_v20",
+          "handled": true,
+          "farmAttempts": [],
+          "sequence": 1
+        },
+        "inventory": {
+          "item_jf_mugwort_pill": 5
+        },
+        "inventoryCounts": {
+          "item_jf_mugwort_pill": 5
+        }
+      },
+      "actions": [
+        {
+          "kind": "waitForFieldReady"
+        },
+        {
+          "kind": "teleport",
+          "mapId": "joseon_v20",
+          "x": 17,
+          "y": 27
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "joseon_v20",
+          "x": 17,
+          "y": 27
+        },
+        {
+          "kind": "waitForFieldReady"
+        },
+        {
+          "kind": "face",
+          "dir": "up"
+        },
+        {
+          "kind": "action"
+        },
+        {
+          "kind": "waitFor",
+          "testid": "dialogue-box",
+          "state": "present",
+          "timeoutMs": 30000
+        },
+        {
+          "kind": "pressUntil",
+          "key": "z",
+          "testid": "runtime-choices",
+          "state": "present",
+          "maxPresses": 24,
+          "timeoutMs": 700
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "id": "promote-warrior",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "joseon_v20",
+        "x": 17,
+        "y": 27,
+        "gold": 80,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {},
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "joseon_v20",
+          "handled": true,
+          "farmAttempts": [],
+          "sequence": 1
+        },
+        "inventory": {
+          "item_jf_mugwort_pill": 5
+        },
+        "switches": {
+          "sw_class": true
+        },
+        "inventoryCounts": {
+          "item_jf_mugwort_pill": 5
+        }
+      },
+      "actions": [
+        {
+          "kind": "key",
+          "key": "Enter",
+          "times": 1
+        },
+        {
+          "kind": "waitFor",
+          "testid": "dialogue-box",
+          "state": "present",
+          "timeoutMs": 30000
+        },
+        {
+          "kind": "pressUntil",
+          "key": "z",
+          "testid": "dialogue-box",
+          "state": "absent",
+          "maxPresses": 24,
+          "timeoutMs": 700
+        },
+        {
+          "kind": "waitForFieldReady"
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "id": "new-monsters",
+      "shot": "05-new-monsters.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "joseon_field",
+        "x": 48,
+        "y": 24,
+        "gold": 80,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {},
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "joseon_field",
+          "handled": true,
+          "farmAttempts": [],
+          "sequence": 2
+        },
+        "inventory": {
+          "item_jf_mugwort_pill": 5
+        },
+        "inventoryCounts": {
+          "item_jf_mugwort_pill": 5
+        }
+      },
+      "actions": [
+        {
+          "kind": "waitForFieldReady"
+        },
+        {
+          "kind": "teleport",
+          "mapId": "joseon_field",
+          "x": 48,
+          "y": 24
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "joseon_field",
+          "x": 48,
+          "y": 24
+        },
+        {
+          "kind": "waitForFieldReady"
+        },
+        {
+          "kind": "face",
+          "dir": "up"
+        },
+        {
+          "kind": "action"
+        },
+        {
+          "kind": "waitFor",
+          "testid": "dialogue-box",
+          "state": "present",
+          "timeoutMs": 30000
+        },
+        {
+          "kind": "pressUntil",
+          "key": "z",
+          "testid": "battle-scene",
+          "state": "present",
+          "maxPresses": 24,
+          "timeoutMs": 700
+        },
+        {
+          "kind": "waitFor",
+          "testid": "actor-command-attack",
+          "state": "present",
+          "timeoutMs": 30000
+        },
+        {
+          "kind": "waitForAttr",
+          "testid": "battle-scene",
+          "attr": "data-battle-sequence-busy",
+          "value": "false"
+        },
+        {
+          "kind": "waitForAttr",
+          "testid": "battle-scenery",
+          "attr": "data-layers",
+          "value": "ready"
+        }
+      ],
+      "battlers": {
+        "skin": "retro2003",
+        "directorStep": "command",
+        "field": {
+          "top": 0,
+          "bottom": 519,
+          "left": 43,
+          "right": 1057,
+          "width": 1013,
+          "height": 519
+        },
+        "enemyGroup": {
+          "top": 89,
+          "bottom": 519,
+          "left": 43,
+          "right": 1057,
+          "width": 1013,
+          "height": 431
+        },
+        "enemies": [
+          {
+            "id": "enemy-1",
+            "node": {
+              "top": 152,
+              "bottom": 355,
+              "left": 145,
+              "right": 347,
+              "width": 203,
+              "height": 203
+            },
+            "image": {
+              "top": 152,
+              "bottom": 355,
+              "left": 145,
+              "right": 347,
+              "width": 203,
+              "height": 203
+            },
+            "name": {
+              "top": 350,
+              "bottom": 373,
+              "left": 186,
+              "right": 306,
+              "width": 121,
+              "height": 22
+            }
+          },
+          {
+            "id": "enemy-2",
+            "node": {
+              "top": 244,
+              "bottom": 447,
+              "left": 303,
+              "right": 506,
+              "width": 203,
+              "height": 203
+            },
+            "image": {
+              "top": 244,
+              "bottom": 447,
+              "left": 303,
+              "right": 506,
+              "width": 203,
+              "height": 203
+            },
+            "name": {
+              "top": 442,
+              "bottom": 464,
+              "left": 360,
+              "right": 449,
+              "width": 89,
+              "height": 22
+            }
+          }
+        ],
+        "allies": [
+          {
+            "id": "battle-actor-actor_hero",
+            "node": {
+              "top": 157,
+              "bottom": 309,
+              "left": 670,
+              "right": 822,
+              "width": 152,
+              "height": 152
+            }
+          },
+          {
+            "id": "battle-actor-actor_scout",
+            "node": {
+              "top": 206,
+              "bottom": 358,
+              "left": 746,
+              "right": 898,
+              "width": 152,
+              "height": 152
+            }
+          },
+          {
+            "id": "battle-actor-actor_mage",
+            "node": {
+              "top": 254,
+              "bottom": 406,
+              "left": 822,
+              "right": 974,
+              "width": 152,
+              "height": 152
+            }
+          },
+          {
+            "id": "battle-actor-actor_cleric",
+            "node": {
+              "top": 303,
+              "bottom": 455,
+              "left": 898,
+              "right": 1050,
+              "width": 152,
+              "height": 152
+            }
+          }
+        ]
+      }
+    },
+    {
+      "index": 5,
+      "id": "job-skill",
+      "shot": "06-job-skill.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "joseon_field",
+        "x": 48,
+        "y": 24,
+        "gold": 80,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {},
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "joseon_field",
+          "handled": true,
+          "farmAttempts": [],
+          "sequence": 2
+        },
+        "inventory": {
+          "item_jf_mugwort_pill": 5
+        },
+        "inventoryCounts": {
+          "item_jf_mugwort_pill": 5
+        }
+      },
+      "actions": [
+        {
+          "kind": "key",
+          "key": "ArrowRight",
+          "times": 1
+        },
+        {
+          "kind": "key",
+          "key": "Enter",
+          "times": 1
+        },
+        {
+          "kind": "waitFor",
+          "testid": "actor-skill-skill_attack",
+          "state": "present",
+          "timeoutMs": 30000
+        }
+      ],
+      "battlers": {
+        "skin": "retro2003",
+        "directorStep": "command",
+        "field": {
+          "top": 0,
+          "bottom": 519,
+          "left": 43,
+          "right": 1057,
+          "width": 1013,
+          "height": 519
+        },
+        "enemyGroup": {
+          "top": 89,
+          "bottom": 519,
+          "left": 43,
+          "right": 1057,
+          "width": 1013,
+          "height": 431
+        },
+        "enemies": [
+          {
+            "id": "enemy-1",
+            "node": {
+              "top": 152,
+              "bottom": 355,
+              "left": 145,
+              "right": 347,
+              "width": 203,
+              "height": 203
+            },
+            "image": {
+              "top": 152,
+              "bottom": 355,
+              "left": 145,
+              "right": 347,
+              "width": 203,
+              "height": 203
+            },
+            "name": {
+              "top": 350,
+              "bottom": 373,
+              "left": 186,
+              "right": 306,
+              "width": 121,
+              "height": 22
+            }
+          },
+          {
+            "id": "enemy-2",
+            "node": {
+              "top": 244,
+              "bottom": 447,
+              "left": 303,
+              "right": 506,
+              "width": 203,
+              "height": 203
+            },
+            "image": {
+              "top": 244,
+              "bottom": 447,
+              "left": 303,
+              "right": 506,
+              "width": 203,
+              "height": 203
+            },
+            "name": {
+              "top": 442,
+              "bottom": 464,
+              "left": 360,
+              "right": 449,
+              "width": 89,
+              "height": 22
+            }
+          }
+        ],
+        "allies": [
+          {
+            "id": "battle-actor-actor_hero",
+            "node": {
+              "top": 157,
+              "bottom": 309,
+              "left": 670,
+              "right": 822,
+              "width": 152,
+              "height": 152
+            }
+          },
+          {
+            "id": "battle-actor-actor_scout",
+            "node": {
+              "top": 206,
+              "bottom": 358,
+              "left": 721,
+              "right": 873,
+              "width": 152,
+              "height": 152
+            }
+          },
+          {
+            "id": "battle-actor-actor_mage",
+            "node": {
+              "top": 254,
+              "bottom": 406,
+              "left": 822,
+              "right": 974,
+              "width": 152,
+              "height": 152
+            }
+          },
+          {
+            "id": "battle-actor-actor_cleric",
+            "node": {
+              "top": 303,
+              "bottom": 455,
+              "left": 898,
+              "right": 1050,
+              "width": 152,
+              "height": 152
+            }
+          }
+        ]
+      }
+    },
+    {
+      "index": 6,
+      "id": "use-skill",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "joseon_field",
+        "x": 48,
+        "y": 24,
+        "gold": 80,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {},
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "joseon_field",
+          "handled": true,
+          "farmAttempts": [],
+          "sequence": 2
+        },
+        "inventory": {
+          "item_jf_mugwort_pill": 5
+        },
+        "inventoryCounts": {
+          "item_jf_mugwort_pill": 5
+        }
+      },
+      "actions": [
+        {
+          "kind": "key",
+          "key": "ArrowDown",
+          "times": 1
+        },
+        {
+          "kind": "key",
+          "key": "Enter",
+          "times": 1
+        },
+        {
+          "kind": "waitFor",
+          "testid": "battle-target-prompt",
+          "state": "present",
+          "timeoutMs": 30000
+        },
+        {
+          "kind": "key",
+          "key": "Enter",
+          "times": 1
+        }
+      ],
+      "battlers": {
+        "skin": "retro2003",
+        "directorStep": "acting",
+        "field": {
+          "top": 0,
+          "bottom": 519,
+          "left": 43,
+          "right": 1057,
+          "width": 1013,
+          "height": 519
+        },
+        "enemyGroup": {
+          "top": 89,
+          "bottom": 519,
+          "left": 43,
+          "right": 1057,
+          "width": 1013,
+          "height": 431
+        },
+        "enemies": [
+          {
+            "id": "enemy-1",
+            "node": {
+              "top": 152,
+              "bottom": 355,
+              "left": 145,
+              "right": 347,
+              "width": 203,
+              "height": 203
+            },
+            "image": {
+              "top": 152,
+              "bottom": 355,
+              "left": 145,
+              "right": 347,
+              "width": 203,
+              "height": 203
+            },
+            "name": {
+              "top": 350,
+              "bottom": 373,
+              "left": 186,
+              "right": 306,
+              "width": 121,
+              "height": 22
+            }
+          },
+          {
+            "id": "enemy-2",
+            "node": {
+              "top": 244,
+              "bottom": 447,
+              "left": 303,
+              "right": 506,
+              "width": 203,
+              "height": 203
+            },
+            "image": {
+              "top": 244,
+              "bottom": 447,
+              "left": 303,
+              "right": 506,
+              "width": 203,
+              "height": 203
+            },
+            "name": {
+              "top": 442,
+              "bottom": 464,
+              "left": 360,
+              "right": 449,
+              "width": 89,
+              "height": 22
+            }
+          }
+        ],
+        "allies": [
+          {
+            "id": "battle-actor-actor_hero",
+            "node": {
+              "top": 157,
+              "bottom": 309,
+              "left": 670,
+              "right": 822,
+              "width": 152,
+              "height": 152
+            }
+          },
+          {
+            "id": "battle-actor-actor_scout",
+            "node": {
+              "top": 206,
+              "bottom": 358,
+              "left": 746,
+              "right": 898,
+              "width": 152,
+              "height": 152
+            }
+          },
+          {
+            "id": "battle-actor-actor_mage",
+            "node": {
+              "top": 254,
+              "bottom": 406,
+              "left": 822,
+              "right": 974,
+              "width": 152,
+              "height": 152
+            }
+          },
+          {
+            "id": "battle-actor-actor_cleric",
+            "node": {
+              "top": 303,
+              "bottom": 455,
+              "left": 898,
+              "right": 1050,
+              "width": 152,
+              "height": 152
+            }
+          }
+        ]
+      }
+    },
+    {
+      "index": 7,
+      "id": "win",
+      "shot": "08-win.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "joseon_field",
+        "x": 48,
+        "y": 24,
+        "gold": 80,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {},
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "joseon_field",
+          "handled": true,
+          "farmAttempts": [],
+          "sequence": 2
+        },
+        "inventory": {
+          "item_jf_mugwort_pill": 5
+        },
+        "inventoryCounts": {
+          "item_jf_mugwort_pill": 5
+        }
+      },
+      "actions": [
+        {
+          "kind": "waitFor",
+          "testid": "actor-command-attack",
+          "state": "present",
+          "timeoutMs": 30000
+        },
+        {
+          "kind": "waitForAttr",
+          "testid": "battle-scene",
+          "attr": "data-battle-sequence-busy",
+          "value": "false"
+        },
+        {
+          "kind": "key",
+          "key": "f",
+          "times": 1
+        },
+        {
+          "kind": "waitFor",
+          "testid": "battle-result-panel",
+          "state": "present",
+          "timeoutMs": 120000
+        }
+      ],
+      "battlers": {
+        "skin": "retro2003",
+        "directorStep": "result",
+        "field": {
+          "top": -16,
+          "bottom": 770,
+          "left": 36,
+          "right": 1085,
+          "width": 1048,
+          "height": 786
+        },
+        "enemyGroup": {
+          "top": 76,
+          "bottom": 770,
+          "left": 36,
+          "right": 1085,
+          "width": 1048,
+          "height": 694
+        },
+        "enemies": [
+          {
+            "id": "enemy-1",
+            "node": {
+              "top": 296,
+              "bottom": 505,
+              "left": 141,
+              "right": 351,
+              "width": 210,
+              "height": 210
+            },
+            "image": {
+              "top": 296,
+              "bottom": 505,
+              "left": 141,
+              "right": 351,
+              "width": 210,
+              "height": 210
+            },
+            "name": {
+              "top": 0,
+              "bottom": 0,
+              "left": 0,
+              "right": 0,
+              "width": 0,
+              "height": 0
+            }
+          },
+          {
+            "id": "enemy-2",
+            "node": {
+              "top": 443,
+              "bottom": 653,
+              "left": 305,
+              "right": 515,
+              "width": 210,
+              "height": 210
+            },
+            "image": {
+              "top": 443,
+              "bottom": 653,
+              "left": 305,
+              "right": 515,
+              "width": 210,
+              "height": 210
+            },
+            "name": {
+              "top": 0,
+              "bottom": 0,
+              "left": 0,
+              "right": 0,
+              "width": 0,
+              "height": 0
+            }
+          }
+        ],
+        "allies": [
+          {
+            "id": "battle-actor-actor_hero",
+            "node": {
+              "top": 274,
+              "bottom": 431,
+              "left": 685,
+              "right": 842,
+              "width": 157,
+              "height": 157
+            }
+          },
+          {
+            "id": "battle-actor-actor_scout",
+            "node": {
+              "top": 352,
+              "bottom": 510,
+              "left": 764,
+              "right": 921,
+              "width": 157,
+              "height": 157
+            }
+          },
+          {
+            "id": "battle-actor-actor_mage",
+            "node": {
+              "top": 430,
+              "bottom": 588,
+              "left": 842,
+              "right": 999,
+              "width": 157,
+              "height": 157
+            }
+          },
+          {
+            "id": "battle-actor-actor_cleric",
+            "node": {
+              "top": 509,
+              "bottom": 666,
+              "left": 921,
+              "right": 1078,
+              "width": 157,
+              "height": 157
+            }
+          }
+        ]
+      }
+    },
+    {
+      "index": 8,
+      "id": "new-shop",
+      "shot": "09-new-shop.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "joseon_v20",
+        "x": 37,
+        "y": 25,
+        "gold": 102,
+        "battleResult": "victory",
+        "farmPlots": {},
+        "makerInstances": {},
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "joseon_v20",
+          "handled": true,
+          "farmAttempts": [],
+          "sequence": 3
+        },
+        "inventory": {
+          "item_jf_mugwort_pill": 5
+        },
+        "inventoryCounts": {
+          "item_jf_mugwort_pill": 5
+        }
+      },
+      "actions": [
+        {
+          "kind": "pressUntil",
+          "key": "z",
+          "testid": "battle-scene",
+          "state": "absent",
+          "maxPresses": 24,
+          "timeoutMs": 700
+        },
+        {
+          "kind": "waitForFieldReady"
+        },
+        {
+          "kind": "waitForFieldReady"
+        },
+        {
+          "kind": "teleport",
+          "mapId": "joseon_v20",
+          "x": 37,
+          "y": 25
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "joseon_v20",
+          "x": 37,
+          "y": 25
+        },
+        {
+          "kind": "waitForFieldReady"
+        },
+        {
+          "kind": "face",
+          "dir": "left"
+        },
+        {
+          "kind": "action"
+        },
+        {
+          "kind": "waitFor",
+          "testid": "dialogue-box",
+          "state": "present",
+          "timeoutMs": 30000
+        },
+        {
+          "kind": "pressUntil",
+          "key": "z",
+          "testid": "shop-scene",
+          "state": "present",
+          "maxPresses": 24,
+          "timeoutMs": 700
+        },
+        {
+          "kind": "key",
+          "key": "Enter",
+          "times": 1
+        },
+        {
+          "kind": "waitFor",
+          "testid": "shop-buy-item_jf_mugwort_pill",
+          "state": "present",
+          "timeoutMs": 30000
+        }
+      ]
+    },
+    {
+      "index": 9,
+      "id": "buy-medicine",
+      "shot": "10-buy-medicine.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "joseon_v20",
+        "x": 37,
+        "y": 25,
+        "gold": 86,
+        "battleResult": "victory",
+        "farmPlots": {},
+        "makerInstances": {},
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "joseon_v20",
+          "handled": true,
+          "farmAttempts": [],
+          "sequence": 3
+        },
+        "inventory": {
+          "item_jf_mugwort_pill": 6
+        },
+        "inventoryCounts": {
+          "item_jf_mugwort_pill": 6
+        }
+      },
+      "actions": [
+        {
+          "kind": "pointerClick",
+          "testid": "shop-buy-item_jf_mugwort_pill"
+        },
+        {
+          "kind": "key",
+          "key": "Enter",
+          "times": 1
+        }
+      ]
+    },
+    {
+      "index": 10,
+      "id": "late-boss-choice",
+      "shot": "11-late-boss-choice.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "joseon_field",
+        "x": 78,
+        "y": 42,
+        "gold": 86,
+        "battleResult": "victory",
+        "farmPlots": {},
+        "makerInstances": {},
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "joseon_field",
+          "handled": true,
+          "farmAttempts": [],
+          "sequence": 4
+        },
+        "inventory": {
+          "item_jf_mugwort_pill": 6
+        },
+        "inventoryCounts": {
+          "item_jf_mugwort_pill": 6
+        }
+      },
+      "actions": [
+        {
+          "kind": "key",
+          "key": "Escape",
+          "times": 1
+        },
+        {
+          "kind": "key",
+          "key": "Escape",
+          "times": 1
+        },
+        {
+          "kind": "waitForFieldReady"
+        },
+        {
+          "kind": "waitForFieldReady"
+        },
+        {
+          "kind": "teleport",
+          "mapId": "joseon_field",
+          "x": 78,
+          "y": 42
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "joseon_field",
+          "x": 78,
+          "y": 42
+        },
+        {
+          "kind": "waitForFieldReady"
+        },
+        {
+          "kind": "face",
+          "dir": "up"
+        },
+        {
+          "kind": "action"
+        },
+        {
+          "kind": "waitFor",
+          "testid": "dialogue-box",
+          "state": "present",
+          "timeoutMs": 30000
+        },
+        {
+          "kind": "pressUntil",
+          "key": "z",
+          "testid": "runtime-choices",
+          "state": "present",
+          "maxPresses": 24,
+          "timeoutMs": 700
+        }
+      ]
+    },
+    {
+      "index": 11,
+      "id": "bride-wraith",
+      "shot": "12-bride-wraith.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "joseon_field",
+        "x": 78,
+        "y": 42,
+        "gold": 86,
+        "battleResult": "victory",
+        "farmPlots": {},
+        "makerInstances": {},
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "joseon_field",
+          "handled": true,
+          "farmAttempts": [],
+          "sequence": 4
+        },
+        "inventory": {
+          "item_jf_mugwort_pill": 6
+        },
+        "inventoryCounts": {
+          "item_jf_mugwort_pill": 6
+        }
+      },
+      "actions": [
+        {
+          "kind": "key",
+          "key": "Enter",
+          "times": 1
+        },
+        {
+          "kind": "waitFor",
+          "testid": "battle-scene",
+          "state": "present",
+          "timeoutMs": 30000
+        },
+        {
+          "kind": "waitFor",
+          "testid": "actor-command-attack",
+          "state": "present",
+          "timeoutMs": 30000
+        },
+        {
+          "kind": "waitForAttr",
+          "testid": "battle-scene",
+          "attr": "data-battle-sequence-busy",
+          "value": "false"
+        }
+      ],
+      "battlers": {
+        "skin": "retro2003",
+        "directorStep": "command",
+        "field": {
+          "top": 0,
+          "bottom": 519,
+          "left": 43,
+          "right": 1057,
+          "width": 1013,
+          "height": 519
+        },
+        "enemyGroup": {
+          "top": 89,
+          "bottom": 519,
+          "left": 43,
+          "right": 1057,
+          "width": 1013,
+          "height": 431
+        },
+        "enemies": [
+          {
+            "id": "enemy-1",
+            "node": {
+              "top": 110,
+              "bottom": 414,
+              "left": 170,
+              "right": 474,
+              "width": 304,
+              "height": 304
+            },
+            "image": {
+              "top": 110,
+              "bottom": 414,
+              "left": 170,
+              "right": 474,
+              "width": 304,
+              "height": 304
+            },
+            "name": {
+              "top": 410,
+              "bottom": 432,
+              "left": 273,
+              "right": 371,
+              "width": 98,
+              "height": 22
+            }
+          }
+        ],
+        "allies": [
+          {
+            "id": "battle-actor-actor_hero",
+            "node": {
+              "top": 157,
+              "bottom": 309,
+              "left": 670,
+              "right": 822,
+              "width": 152,
+              "height": 152
+            }
+          },
+          {
+            "id": "battle-actor-actor_scout",
+            "node": {
+              "top": 206,
+              "bottom": 358,
+              "left": 746,
+              "right": 898,
+              "width": 152,
+              "height": 152
+            }
+          },
+          {
+            "id": "battle-actor-actor_mage",
+            "node": {
+              "top": 254,
+              "bottom": 406,
+              "left": 822,
+              "right": 974,
+              "width": 152,
+              "height": 152
+            }
+          },
+          {
+            "id": "battle-actor-actor_cleric",
+            "node": {
+              "top": 303,
+              "bottom": 455,
+              "left": 898,
+              "right": 1050,
+              "width": 152,
+              "height": 152
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

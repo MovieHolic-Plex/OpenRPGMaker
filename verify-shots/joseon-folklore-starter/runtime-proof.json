@@ -1,0 +1,60 @@
+{
+  "boot": {
+    "normalBoot": true,
+    "face": true,
+    "font": true
+  },
+  "normalErrors": [],
+  "errors": [],
+  "missing": [],
+  "beats": [
+    {
+      "id": "title",
+      "failures": []
+    },
+    {
+      "id": "village",
+      "failures": []
+    },
+    {
+      "id": "jobs",
+      "failures": []
+    },
+    {
+      "id": "promote-warrior",
+      "failures": []
+    },
+    {
+      "id": "new-monsters",
+      "failures": []
+    },
+    {
+      "id": "job-skill",
+      "failures": []
+    },
+    {
+      "id": "use-skill",
+      "failures": []
+    },
+    {
+      "id": "win",
+      "failures": []
+    },
+    {
+      "id": "new-shop",
+      "failures": []
+    },
+    {
+      "id": "buy-medicine",
+      "failures": []
+    },
+    {
+      "id": "late-boss-choice",
+      "failures": []
+    },
+    {
+      "id": "bride-wraith",
+      "failures": []
+    }
+  ]
+}

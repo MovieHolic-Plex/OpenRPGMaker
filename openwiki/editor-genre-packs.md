@@ -15,6 +15,25 @@ Genre packs are editor-side authoring guidance over the single canonical `Projec
 
 ## Safe blank-project system-preset flow
 
+### 조선 설화 시작 세계 (2026-10-04)
+
+`src/start/projectStart.ts`의 `START_EXAMPLES`는 세 장르 예제와 조선 설화 세계 예제를 제공한다.
+런처 「장면에서 시작」과 편집기 새 게임 「시작 방식 다시 고르기」에서 고른다.
+기존 `choiceId: adventure-jrpg`에 생성 인계용 `starterPresetId: joseon-folklore`를 붙인다.
+새 장르 ID나 별도 엔진/Project 스키마를 추가하지 않는다. AI 인터뷰 장르는 그대로다.
+
+`createProjectStartSeed`는 세계 프리셋을 동적 import로 `createJoseonFolkloreStarter`에 전달한다.
+현재 공용 하네스 6맵에 저장 후 읽은 전직·의뢰·상점·시련 이벤트, 초기 파티/세션, 공용 팩을 합친다.
+조선 대화창·Galmuri9·게임 용어·종이색 전투창·`worldCanon`을 함께 설정한다.
+`applyBattleMethod(side)`를 쓴다. RM2003 기본값이 저장에서 생략되는 것은 정상 계약이다.
+자체 이벤트가 있으므로 일반 슬라임 첫 구간 뼈대로 교체하지 않는다. 다른 시작 경로는 기존 생성기를 따른다.
+
+런처 인계는 프리셋 ID/장르/example 모드의 조합을 검사하고 메뉴와 같은 생성기를 사용한다.
+새 폴더 저장 확인 후에 시작한다. 프리셋 ID는 인계 값이며 기존 게임에 적용할 시스템 필드가 아니다.
+원본·저장·화면 근거는 [joseon-folklore-content.md](joseon-folklore-content.md)의 「새 게임 기본 프리셋」.
+
+### 장르 시스템 설정
+
 `action-rpg` selects `action-system`, enabling only `system.actionCombat`.
 It never enables every map. The author opts in each intended arena via map
 properties or `set_action_combat({enabled:true,mapId})`; other maps retain their

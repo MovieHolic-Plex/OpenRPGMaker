@@ -3,7 +3,8 @@
 
 import { el } from "@/util/dom";
 import { registerModal, unregisterModal } from "./modalStack";
-import { START_EXAMPLE_DETAILS, type ProjectStartMode } from "@/start/projectStart";
+import { START_EXAMPLE_DETAILS, START_EXAMPLES, startExampleBySelection, type ProjectStartMode } from "@/start/projectStart";
+import type { ProjectStarterId } from "@/project/contentPacks/starterIds";
 import "@/styles/shell/dialogs/project-start.css";
 import { showProjectInterview } from "./projectInterviewDialog";
 import type { GameDesignBrief } from "@/project/gameDesignBrief";
@@ -26,6 +27,7 @@ export type NewProjectDialogResult = {
   readonly screenSize: NewProjectScreenSize;
   readonly gameDesignBrief?: GameDesignBrief;
   readonly startMode?: ProjectStartMode;
+  readonly starterPresetId?: ProjectStarterId;
 };
 
 export type NewProjectDialogOptions = {
@@ -121,6 +123,7 @@ export function showNewProjectDialog(opts: NewProjectDialogOptions = {}): Promis
     let choosing = opts.defaultChoiceId === null;
     let title = fallbackTitle;
     let screenSize: NewProjectScreenSize = "classic";
+    let starterPresetId: ProjectStarterId | undefined;
     let idea = "";
     let busy = false;
     let settled = false;
@@ -132,15 +135,16 @@ export function showNewProjectDialog(opts: NewProjectDialogOptions = {}): Promis
     const button = (text: string, testid: string, action: () => void, primary = false) => el("button", {
       class: `app-modal-button${primary ? " is-confirm" : ""}`, text, attrs: { type: "button" }, dataset: { testid }, on: { click: action },
     });
-    const choose = (id: NewProjectChoiceId | null, mode: ProjectStartMode) => {
+    const choose = (id: NewProjectChoiceId | null, mode: ProjectStartMode, starter?: ProjectStarterId) => {
       choiceId = id; startMode = mode; choosing = false;
-      title = mode === "example" && id ? START_EXAMPLE_DETAILS[id]?.title ?? fallbackTitle : fallbackTitle;
+      starterPresetId = starter;
+      title = mode === "example" ? startExampleBySelection(id, starter)?.title ?? fallbackTitle : fallbackTitle;
       render();
     };
     const confirm = async () => {
       if (busy || settled) return;
       busy = true;
-      const selection = { title: title.trim() || fallbackTitle, choiceId, screenSize, startMode };
+      const selection = { title: title.trim() || fallbackTitle, choiceId, screenSize, startMode, ...(starterPresetId ? { starterPresetId } : {}) };
       const confirmControl = card.querySelector<HTMLButtonElement>(`[data-testid="${NEW_PROJECT_DIALOG_TESTIDS.confirm}"]`);
       if (confirmControl) confirmControl.disabled = true;
       try {
@@ -158,18 +162,18 @@ export function showNewProjectDialog(opts: NewProjectDialogOptions = {}): Promis
         button(opts.cancelLabel ?? "취소", NEW_PROJECT_DIALOG_TESTIDS.cancel, () => done(null)),
       ] }));
       if (choosing) {
-        card.append(el("p", { class: "project-start-hint", text: "플레이 가능한 예제로 시작하고, 하나씩 바꿔 보세요. 이미지는 장르 참고용입니다. 실제 예제는 작은 마을과 길에서 시작해요." }));
-        card.append(el("div", { class: "project-start-examples", children: orderedChoices().map(choice => el("button", {
-          class: "project-start-example", attrs: { type: "button" }, dataset: { testid: newProjectGenreOptionTestId(choice.id) }, on: { click: () => choose(choice.id, "example") }, children: [
-            el("img", { attrs: { src: choice.thumb, alt: choice.label + " 참고 이미지", decoding: "async" } }),
-            el("span", { class: "project-start-example-copy", children: [el("strong", { text: choice.label }), el("span", { text: START_EXAMPLE_DETAILS[choice.id]?.description ?? choice.blurb }), el("span", { class: "project-start-example-action", text: "예제로 시작하기 →" })] }),
+        card.append(el("p", { class: "project-start-hint", text: "플레이 가능한 예제로 시작하고, 하나씩 바꿔 보세요." }));
+        card.append(el("div", { class: "project-start-examples", children: START_EXAMPLES.map(example => el("button", {
+          class: "project-start-example", attrs: { type: "button" }, dataset: { testid: NEW_PROJECT_DIALOG_TESTIDS.genreOption + "-" + example.id }, on: { click: () => choose(example.choiceId, "example", example.starterPresetId) }, children: [
+            el("img", { attrs: { src: example.thumb, alt: example.label + (example.starterPresetId ? " 실제 게임 화면" : " 참고 이미지"), decoding: "async" } }),
+            el("span", { class: "project-start-example-copy", children: [el("strong", { text: example.label }), el("span", { text: example.description }), el("span", { class: "project-start-example-action", text: "예제로 시작하기 →" })] }),
           ],
         })) }));
         card.append(el("div", { class: "project-start-other", children: [el("span", { text: "직접 만들고 싶다면" }), button("빈 프로젝트", newProjectGenreOptionTestId(null), () => choose(null, "blank"))] }),
           el("div", { class: "project-start-other", children: [el("span", { text: "아이디어를 AI와 구체화하기" }), button("기획 시작하기", "new-project-ai", () => choose(orderedChoices()[0]?.id ?? null, "ai"))] }));
       } else {
-        const choice = choiceId ? newProjectChoiceById(choiceId) : undefined;
-        const details = choiceId ? START_EXAMPLE_DETAILS[choiceId] : undefined;
+        const choice = startMode === "example" ? startExampleBySelection(choiceId, starterPresetId) : choiceId ? newProjectChoiceById(choiceId) : undefined;
+        const details = startMode === "example" ? startExampleBySelection(choiceId, starterPresetId) : undefined;
         const nameInput = el("input", { class: "app-modal-input", value: title, attrs: { type: "text", id: "project-start-name", maxlength: "80" }, dataset: { testid: NEW_PROJECT_DIALOG_TESTIDS.nameInput } }) as HTMLInputElement;
         nameInput.addEventListener("input", () => { title = nameInput.value; });
         const fields = el("div", { class: "project-start-fields", children: [

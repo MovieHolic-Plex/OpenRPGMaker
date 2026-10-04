@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **142쪽 / 4839KB / 약 1,405,420 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **142쪽 / 4843KB / 약 1,406,583 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -137,7 +137,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 ## 페이지별 절 좌표
 
-### `openwiki/PROJECT_WIKI.md` — 16KB · 182줄 · ~4,240 토큰
+### `openwiki/PROJECT_WIKI.md` — 16KB · 182줄 · ~4,264 토큰
 
 - `L5` Purpose
 - `L16` Required pre-edit read order
@@ -884,23 +884,25 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L290` Recovered native emote command (2026-09-05)
 - `L294` 패배·엔딩 저작 (2026-09-22)
 
-### `openwiki/editor-genre-packs.md` — 41KB · 308줄 · ~10,496 토큰
+### `openwiki/editor-genre-packs.md` — 42KB · 327줄 · ~10,955 토큰
 
 - `L5` Ownership
 - `L16` Safe blank-project system-preset flow
-- `L44` Preset AI connection gate and first team build (2026-09-27)
-- `L52` Playable first segment — code builds it, code judges it (2026-09-28)
-- `L70` Cinematic interview in the actual app (2026-10-03)
-  - `L87` Internal execution handoff (2026-10-03)
-  - `L103` Confirmed brief automatic execution (2026-10-03)
-  - `L111` Detailed authoring manuals (2026-10-03)
-- `L125` Vocabulary and readiness
-- `L136` Dialog layering and receipt fixtures (2026-09-08)
-- `L149` Validation
-- `L151` Two new-project surfaces, one choice model (2026-09-11)
-  - `L212` Executable first romance scene (2026-10-03)
-  - `L216` Click-first interview and fresh art (2026-10-04)
-  - `L257` Launcher planning before project creation (2026-10-04)
+  - `L18` 조선 설화 시작 세계 (2026-10-04)
+  - `L35` 장르 시스템 설정
+- `L63` Preset AI connection gate and first team build (2026-09-27)
+- `L71` Playable first segment — code builds it, code judges it (2026-09-28)
+- `L89` Cinematic interview in the actual app (2026-10-03)
+  - `L106` Internal execution handoff (2026-10-03)
+  - `L122` Confirmed brief automatic execution (2026-10-03)
+  - `L130` Detailed authoring manuals (2026-10-03)
+- `L144` Vocabulary and readiness
+- `L155` Dialog layering and receipt fixtures (2026-09-08)
+- `L168` Validation
+- `L170` Two new-project surfaces, one choice model (2026-09-11)
+  - `L231` Executable first romance scene (2026-10-03)
+  - `L235` Click-first interview and fresh art (2026-10-04)
+  - `L276` Launcher planning before project creation (2026-10-04)
 
 ### `openwiki/editor-interior-room-harness.md` — 98KB · 469줄 · ~28,406 토큰 · 통째읽기 잘림
 
@@ -1303,11 +1305,12 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L149` 새 장소 12장 (2026-10-04, 사냥터·동굴·실내 방 6·궁 내부 4)
 - `L176` 한계
 
-### `openwiki/joseon-folklore-content.md` — 5KB · 34줄 · ~1,546 토큰
+### `openwiki/joseon-folklore-content.md` — 7KB · 60줄 · ~2,226 토큰
 
 - `L6` 소유권과 등록
-- `L15` 게임 적용
-- `L21` 검토
+- `L15` 새 게임 기본 프리셋
+- `L41` 기존 버들마을 게임 적용
+- `L47` 검토
 
 ### `openwiki/jp-city.md` — 26KB · 206줄 · ~7,732 토큰
 

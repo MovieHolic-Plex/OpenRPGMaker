@@ -178,4 +178,4 @@ If source behavior disagrees with the wiki, the source wins for the immediate fi
 
 ## 조선 설화 콘텐츠 팩
 
-선택형 아이템·장비·몬스터·행동·직업·기술 묶음: [joseon-folklore-content.md](joseon-folklore-content.md). 기존 RM2003 데이터와 런타임을 쓴다.
+선택형 아이템·장비·몬스터·행동·직업·기술 묶음과 새 게임의 **조선 설화 기본 프리셋**: [joseon-folklore-content.md](joseon-folklore-content.md). 기존 RM2003 데이터와 런타임, 공용 하네스6맵을 쓴다.

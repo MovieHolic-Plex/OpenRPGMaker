@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { withTsModule } from '../ontology-ts-loader.mjs';
-const out=path.resolve(process.argv.includes('--pilot')?'output/joseon-folklore/pilot':'output/joseon-folklore');
+const out=path.resolve(process.argv.includes('--starter')?'output/joseon-folklore/starter':process.argv.includes('--pilot')?'output/joseon-folklore/pilot':'output/joseon-folklore');
 const project=JSON.parse(fs.readFileSync(path.join(out,'game.oprn.json'),'utf8'));
 const fallback=process.env.JOSEON_EXISTING_ASSET_ROOT;
 const fromFallback=[];

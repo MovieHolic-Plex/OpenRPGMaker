@@ -1,0 +1,279 @@
+{
+  "scenarioId": "joseon-folklore-rooms",
+  "projectPath": "output/joseon-folklore/starter/game.oprn.json",
+  "seed": 1,
+  "viewport": {
+    "width": 1100,
+    "height": 760
+  },
+  "errors": [],
+  "beats": [
+    {
+      "index": 0,
+      "id": "start",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "joseon_v20",
+        "x": 17,
+        "y": 28,
+        "gold": 80,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "key",
+          "key": "Enter"
+        },
+        {
+          "kind": "waitForRuntime"
+        },
+        {
+          "kind": "waitForFieldReady"
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "id": "enter-inn",
+      "shot": "02-enter-inn.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "joseon_in_inn_b",
+        "x": 10,
+        "y": 12,
+        "gold": 80,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "waitForFieldReady"
+        },
+        {
+          "kind": "teleport",
+          "mapId": "joseon_v20",
+          "x": 51,
+          "y": 38
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "joseon_v20",
+          "x": 51,
+          "y": 38
+        },
+        {
+          "kind": "waitForFieldReady"
+        },
+        {
+          "kind": "hold",
+          "dir": "up",
+          "ms": 160
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "joseon_in_inn_b",
+          "x": 10,
+          "y": 12
+        },
+        {
+          "kind": "waitForFieldReady"
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "id": "leave-inn",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "joseon_v20",
+        "x": 51,
+        "y": 38,
+        "gold": 80,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "hold",
+          "dir": "down",
+          "ms": 160
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "joseon_v20",
+          "x": 51,
+          "y": 38
+        },
+        {
+          "kind": "waitForFieldReady"
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "id": "enter-school",
+      "shot": "04-enter-school.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "joseon_in_school_b",
+        "x": 8,
+        "y": 10,
+        "gold": 80,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "waitForFieldReady"
+        },
+        {
+          "kind": "teleport",
+          "mapId": "joseon_v20",
+          "x": 52,
+          "y": 29
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "joseon_v20",
+          "x": 52,
+          "y": 29
+        },
+        {
+          "kind": "waitForFieldReady"
+        },
+        {
+          "kind": "hold",
+          "dir": "up",
+          "ms": 160
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "joseon_in_school_b",
+          "x": 8,
+          "y": 10
+        },
+        {
+          "kind": "waitForFieldReady"
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "id": "leave-school",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "joseon_v20",
+        "x": 53,
+        "y": 29,
+        "gold": 80,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "hold",
+          "dir": "down",
+          "ms": 160
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "joseon_v20",
+          "x": 53,
+          "y": 29
+        },
+        {
+          "kind": "waitForFieldReady"
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "id": "enter-pharmacy",
+      "shot": "06-enter-pharmacy.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "joseon_in_pharmacy_b",
+        "x": 6,
+        "y": 6,
+        "gold": 80,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "waitForFieldReady"
+        },
+        {
+          "kind": "teleport",
+          "mapId": "joseon_v20",
+          "x": 35,
+          "y": 17
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "joseon_v20",
+          "x": 35,
+          "y": 17
+        },
+        {
+          "kind": "waitForFieldReady"
+        },
+        {
+          "kind": "hold",
+          "dir": "up",
+          "ms": 160
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "joseon_in_pharmacy_b",
+          "x": 6,
+          "y": 6
+        },
+        {
+          "kind": "waitForFieldReady"
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "id": "leave-pharmacy",
+      "shot": null,
+      "failures": [],
+      "state": {
+        "currentMapId": "joseon_v20",
+        "x": 35,
+        "y": 17,
+        "gold": 80,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "hold",
+          "dir": "down",
+          "ms": 160
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "joseon_v20",
+          "x": 35,
+          "y": 17
+        },
+        {
+          "kind": "waitForFieldReady"
+        }
+      ]
+    }
+  ]
+}

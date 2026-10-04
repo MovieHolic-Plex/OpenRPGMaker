@@ -9,6 +9,7 @@
 import type { NewProjectChoiceId } from "@/editor/newProjectChoices";
 import type { ProjectStartMode, ProjectStartScreenSize } from "./projectStart";
 import type { GameDesignBrief } from "@/project/gameDesignBrief";
+import { isProjectStarterId, type ProjectStarterId } from "@/project/contentPacks/starterIds";
 
 export const START_SCREEN_INTENT_KEY = "oprn:start-screen-intent";
 /** 만들기 → 편집기 부팅은 수 초다. 10분이 지난 값은 다른 작업의 찌꺼기로 본다. */
@@ -26,6 +27,7 @@ export type StartScreenIntent = {
   readonly createdAt: number;
   readonly startMode?: ProjectStartMode;
   readonly screenSize?: ProjectStartScreenSize;
+  readonly starterPresetId?: ProjectStarterId;
   /** Full confirmed interview; the editor validates it before seeding and saving. */
   readonly gameDesignBrief?: GameDesignBrief;
 };
@@ -51,6 +53,7 @@ export function takeStartScreenIntent(storage: StorageLike, openedProjectDir: st
   if (value.choiceId !== null && typeof value.choiceId !== "string") return null;
   if (value.startMode !== undefined && !["example", "ai", "blank"].includes(value.startMode)) return null;
   if (value.screenSize !== undefined && !["classic", "wide"].includes(value.screenSize)) return null;
+  if (value.starterPresetId !== undefined && (!isProjectStarterId(value.starterPresetId) || value.startMode !== "example" || value.choiceId !== "adventure-jrpg")) return null;
   if (now - value.createdAt > MAX_AGE_MS || value.createdAt > now + 60_000) return null;
   if (value.projectDir !== openedProjectDir) return null;
   return value as StartScreenIntent;

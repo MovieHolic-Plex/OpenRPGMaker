@@ -627,3 +627,9 @@ no image generation API was used. Repository code/asset policy applies.
 Monster portraits are exact idle-cell crops of the same nine-pose originals.
 Behavior review images use only these pack originals. Runtime effects reuse the
 existing registered retro choreography assets and their recorded provenance.
+
+`joseon-folklore/starter/village.png` is a reduced screenshot of the authored
+Joseon starter game. It combines the existing Joseon chipset and Actor1 assets;
+their attribution entries above continue to apply. Starter maps/events are
+distributed in `content-packs/joseon-folklore/starter/data.json`, with the source
+store revision and the public harness terrain hash in `provenance.json`.

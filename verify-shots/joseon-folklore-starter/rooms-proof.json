@@ -1,0 +1,34 @@
+{
+  "errors": [],
+  "missing": [],
+  "beats": [
+    {
+      "id": "start",
+      "failures": []
+    },
+    {
+      "id": "enter-inn",
+      "failures": []
+    },
+    {
+      "id": "leave-inn",
+      "failures": []
+    },
+    {
+      "id": "enter-school",
+      "failures": []
+    },
+    {
+      "id": "leave-school",
+      "failures": []
+    },
+    {
+      "id": "enter-pharmacy",
+      "failures": []
+    },
+    {
+      "id": "leave-pharmacy",
+      "failures": []
+    }
+  ]
+}

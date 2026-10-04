@@ -63,7 +63,7 @@ await withTsModule('scripts/content/lib-joseon-folklore.ts','jf-content.mjs',asy
    for(const v of Object.values(c)) {
     if(Array.isArray(v)) for(const row of v) { if(row?.branch)walk(row.branch); }
    }
-   for(const key of ['successBranch','failureBranch','cancelBranch','thenBranch','elseBranch','victoryBranch','defeatBranch','escapeBranch','commands']) if(Array.isArray(c[key]))walk(c[key]);
+   for(const key of ['successBranch','failureBranch','cancelBranch','then','else','thenBranch','elseBranch','victoryBranch','defeatBranch','escapeBranch','commands']) if(Array.isArray(c[key]))walk(c[key]);
   }
  };
  for(const m of Object.values(p.maps)) for(const e of m.events) {walk(e.commands??[]);for(const page of e.pages??[])walk(page.commands??[]);}

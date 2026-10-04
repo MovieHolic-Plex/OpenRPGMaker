@@ -12,7 +12,33 @@
 - 조수: `list_content_packs`, `apply_content_pack({packId:"joseon-folklore"})`. 상점·이벤트·배우·사냥터 연결은 별도의 콘텐츠 저작이다.
 - 그림: 아이콘은 builtin resource resolver, 적은 `pixelEnemySheets` 9pose와 명시적인 `portraitPath`를 통해 등록한다. 웹 내보내기는 같은 리소스 ID의 portrait 및 전체 sheet를 함께 싣는다.
 
-## 게임 적용
+## 새 게임 기본 프리셋
+
+새 게임 → 시작 방식 다시 고르기 → **조선 설화**. 런처 「장면에서 시작」에도 같은 선택지가 있다.
+버들마을·사냥터·청석굴·주막·서당·약방과 전직/의뢰/상점/시련이 있는 새 프로젝트를 만든다.
+클래스5(초보+4직업), 소비품20/재료12, 장비36, 적15, 기술40을 넣고 옛 장비/직업은 제외한다.
+기존 Actor1과 얼굴, 조선 용어·Galmuri9·대화창·종이색 RM2003 측면 전투·세계관을 함께 설정한다.
+기존 `adventure-jrpg` 위의 선택형 세계 프리셋이다.
+
+배포 원본은 `content-packs/joseon-folklore/starter/{data,provenance}.json`.
+`prepare-joseon-folklore-starter.mjs <정본 폴더>`는 SQLite API로 이벤트·세션을 읽고 현재
+`src/project/regionReferences/joseon-village.json`의 공용 하네스 지도와 결합한다.
+옛 프로젝트의 사냥터 지형 칸13645는 최신 칩셋에서 늪이다. 옛 칸을 최신 정의에 그대로 붙이지 않는다.
+현재 공용 맵의 짐승길13503과 맞춘다. 새 그림/지형을 손으로 저작하지 않는다.
+생성기는 `src/project/contentPacks/joseonFolkloreStarter.ts`, 시작 UI 정본은 `src/start/projectStart.ts`.
+지도/칩셋 count·열 수가 바뀌면 프리셋을 함께 재생성한다.
+실내 NPC/출입문/전송 시작점도 현재 공용 지도 앵커에 맞춘다. 옛 약방 (5,7)은 벽이라 (6,6)으로 진입한다.
+
+`save-joseon-folklore-starter.mjs --project <새 폴더>`는 새 예제를 native SQLite에 저장/재로드한다.
+기존 대상은 거절한다. 조선 예제의 명시적 갱신만 `--refresh-example`로 허용하고 이전 사본을 남긴다.
+`export-joseon-folklore-game.mjs --starter`는 그 재로드본을 내보낸다.
+생성 예제 ID `f84dfa19-5b71-43f1-8523-b10910d23be7`, 폴더
+`/home/main/z-project/rpg-zzu/.oprn-projects/joseon-starter-preset-20261004`.
+저장·실제 화면은 `verify-shots/joseon-folklore-starter/SUMMARY.md`.
+시작 UI 폴더 브리지는 fixture로 관찰했고 정본 저장은 별도 native API로 확인했다.
+분기 `then`/`else`까지 통합 순회해 의뢰 보상은 쑥단이다. 이후 이야기 던전의 완성을 뜻하지 않는다.
+
+## 기존 버들마을 게임 적용
 
 `node scripts/content/apply-joseon-folklore-game.mjs --project <SQLite 프로젝트 폴더>`는 현재 버들마을 RPG 대상의 후보만 만든다. `--save`를 추가할 때 같은 SQLite API로 저장한 뒤 닫고 다시 열어 데이터베이스·세션·시스템·맵을 비교한다. 사용자 프로젝트 ID를 고정 검사해 다른 폴더에 이 통합 레시피를 적용하지 않는다. 실행 중인 호스트 DB를 별도 프로세스로 수정하지 않는다.
 

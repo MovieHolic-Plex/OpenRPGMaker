@@ -1,0 +1,26 @@
+{
+  "sourceProjectId": "0d6dca6b-a6a7-49be-a49f-1edf5eccc602",
+  "sourceRevision": 13,
+  "sourceSha256": "67d6524bfd467dfc4f12f4d26877a74fa89fb0fd30d749bab9520b3cbf210e04",
+  "starterSha256": "95ff779acd69f9c5dc92d90d00de88a559c2d74c811e713a7be1ec09a96bf56f",
+  "mapSha256": {
+    "joseon_v20": "2e55d92048be4c1866dce5b26512c24193d6ac39f40fc0463443156d72226acf",
+    "joseon_field": "3b542a7ccf13e322e59f44d5d4cf5d45f9e55d7c05d8078458bf6e7fa1f94177",
+    "joseon_cave": "cc55cea29c87f8ed924257c267c4501f86325a5cff17ef9c4f3613c1aa3d0437",
+    "joseon_in_inn_b": "c0673eaeb25a6de0eb90842959854d2c76fb8acd244a2e28f838e157116ff161",
+    "joseon_in_school_b": "5337cb9778e056a1884813d2daf324728737aac291d94b62e74f574f641b9b4d",
+    "joseon_in_pharmacy_b": "c4b0fcdda61d3376736f9f9151533ba686079077583b08333e733f807e4f7e35"
+  },
+  "starterMapSha256": {
+    "joseon_v20": "c029286be123f21b594f0e7bf3e1c4da04648229f2e0b472c63921ef7d8c7ed5",
+    "joseon_field": "12cb6b225c9a8c30268090ef9bf562d52fe7a2c1afab0727b84e372972a98caf",
+    "joseon_cave": "7e4e807d81f304a370b23b1813badddc1334c07e16b92c14e26e2d4412661169",
+    "joseon_in_inn_b": "e189d4438bf129d51968992084b427fadb895b0192f5961d1fa01ca0c4f3292b",
+    "joseon_in_school_b": "0f304343c83b45e2c299e1ef59f713da42c28773a2facc76c340afad7430b66f",
+    "joseon_in_pharmacy_b": "23c97a50c78b2b67cf50ab3041c8cbadb707f5b34f8526cc60de5d5f166e0d20"
+  },
+  "terrainSource": "src/project/regionReferences/joseon-village.json (existing joseon-baram harness maps)",
+  "terrainSha256": "c7dd753cb8ff6a1b606280b452d04cda67e50614826a51f4a03d97af0fd8399e",
+  "resources": "Existing bundled Joseon tiles, Actor1, faces and original Joseon folklore pack",
+  "terrainAuthoredHere": false
+}

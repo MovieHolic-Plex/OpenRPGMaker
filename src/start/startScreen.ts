@@ -12,13 +12,14 @@ import "./startScreen.css";
 import { mountWindowControls } from "./windowControls";
 import { createStartLobby, createLobbyWays, createLobbyFeatures } from "./startLobby";
 import { APP_VERSION, PRODUCT_BRAND } from "@/brand";
-import { NEW_PROJECT_CHOICES, type NewProjectChoice, type NewProjectChoiceId } from "@/editor/newProjectChoices";
+import { NEW_PROJECT_CHOICES, type NewProjectChoiceId } from "@/editor/newProjectChoices";
 import type { RecentProjectEntry, RecentTeamEntry } from "../../electron/shared/start";
 import type { OprnBridgeStart } from "@/project/persistence/electronRepository";
 import { el } from "@/util/dom";
 import { getLocale, initI18n, LOCALE_NATIVE_NAMES, setLocale, SUPPORTED_LOCALES, t, type SupportedLocale } from "@/i18n";
 import { writeStartScreenIntent } from "./startIntent";
-import { START_EXAMPLE_DETAILS, type ProjectStartMode, type ProjectStartScreenSize } from "./projectStart";
+import { START_EXAMPLES, startExampleBySelection, type ProjectStartMode, type ProjectStartScreenSize } from "./projectStart";
+import type { ProjectStarterId } from "@/project/contentPacks/starterIds";
 import type { GameDesignBrief } from "@/project/gameDesignBrief";
 
 export const START_SCREEN_TESTIDS = {
@@ -60,6 +61,7 @@ type State = {
   choiceId: NewProjectChoiceId | null;
   startMode: ProjectStartMode;
   screenSize: ProjectStartScreenSize;
+  starterPresetId?: ProjectStarterId;
   intent: string;
   title: string;
   /** 사용자가 고른 상위 위치. null 이면 호스트 기본(문서/OPRN Games). */
@@ -71,9 +73,6 @@ type State = {
   teams: readonly RecentTeamEntry[];
   confirmedBrief?: GameDesignBrief;
 };
-
-/** 첫 화면에 보이는 장르 — 새 프로젝트 다이얼로그·웰컴과 같은 정본(featured)만 쓴다. */
-const GENRES: readonly NewProjectChoice[] = NEW_PROJECT_CHOICES.filter((choice) => choice.featured);
 
 export function formatRelativeTime(iso: string | null | undefined, now = Date.now()): string {
   if (!iso) return "";
@@ -284,7 +283,7 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     if (code) code.textContent = state.projectDir ?? "저장 위치를 정하지 못했습니다";
   };
 
-  const showView = (view: View, choiceId?: NewProjectChoiceId | null, startMode: ProjectStartMode = "example"): void => {
+  const showView = (view: View, choiceId?: NewProjectChoiceId | null, startMode: ProjectStartMode = "example", starterPresetId?: ProjectStarterId): void => {
     if (state.busy) return;
     state.view = view;
     state.confirmedBrief = undefined;
@@ -292,7 +291,8 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     else if (choiceId !== undefined) state.choiceId = choiceId;
     if (view === "new") {
       state.startMode = startMode;
-      state.title = t(startMode === "example" && choiceId ? START_EXAMPLE_DETAILS[choiceId]?.title ?? DEFAULT_TITLE : DEFAULT_TITLE);
+      state.starterPresetId = starterPresetId;
+      state.title = t(startMode === "example" ? startExampleBySelection(choiceId ?? null, starterPresetId)?.title ?? DEFAULT_TITLE : DEFAULT_TITLE);
     }
     setError("");
     render();
@@ -341,6 +341,7 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
       intent: state.intent.trim(),
       startMode: state.startMode,
       screenSize: state.screenSize,
+      ...(state.starterPresetId ? { starterPresetId: state.starterPresetId } : {}),
       ...(state.startMode === "ai" && state.confirmedBrief ? { gameDesignBrief: state.confirmedBrief } : {}),
     };
     if (state.startMode === "ai") writeStartScreenIntent(window.sessionStorage, handoff);
@@ -437,14 +438,14 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     el("header", { class: "start-onboarding-heading", children: [
       el("span", { class: "start-kicker", text: "YOUR FIRST WORLD" }),
       el("h1", { class: "start-title", text: "첫 게임, 작은 장면부터." }),
-      el("p", { class: "start-sub", text: "플레이 가능한 예제로 시작하고, 하나씩 바꿔 보세요. 이미지는 장르 참고용입니다. 실제 예제는 작은 마을과 길에서 시작해요." }),
+      el("p", { class: "start-sub", text: "플레이 가능한 예제로 시작하고, 하나씩 바꿔 보세요." }),
     ] }),
-    el("div", { class: "start-examples", children: GENRES.map(choice => {
-      const detail = START_EXAMPLE_DETAILS[choice.id]!;
+    el("div", { class: "start-examples", children: START_EXAMPLES.map(choice => {
+      const detail = choice;
       return el("button", { class: "start-example-card", attrs: { type: "button", "aria-label": choice.label + " 예제로 시작" },
         dataset: { testid: START_SCREEN_TESTIDS.genreOption + "-" + choice.id },
-        on: { click: () => showView("new", choice.id, "example") }, children: [
-          el("img", { class: "start-example-image", attrs: { src: choice.thumb, alt: choice.label + " 참고 이미지", decoding: "async", draggable: "false" } }),
+        on: { click: () => showView("new", choice.choiceId, "example", choice.starterPresetId) }, children: [
+          el("img", { class: "start-example-image", attrs: { src: choice.thumb, alt: choice.label + (choice.starterPresetId ? " 실제 게임 화면" : " 참고 이미지"), decoding: "async", draggable: "false" } }),
           el("span", { class: "start-example-body", children: [
             el("strong", { text: choice.label }), el("span", { class: "start-sub", text: detail.description }),
             el("span", { class: "start-example-action", children: [icon("arrow"), "예제로 시작하기"] }),
@@ -463,6 +464,7 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
 
   const renderAiArrival = (): HTMLElement[] => {
     state.startMode = "ai";
+    state.starterPresetId = undefined;
     const container = el("div", { class: "start-interview-host", children: [el("h1", { class: "start-interview-loading", text: "어떤 게임을 만들까요?" })] });
     const controller = new AbortController();
     interviewAbort = controller;
@@ -587,8 +589,8 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
   const renderNew = (): HTMLElement[] => {
     if (state.startMode === "ai") return renderAiArrival();
     if (state.startMode === "example" && state.choiceId === null) return renderStartChoices();
-    const detail = state.choiceId ? START_EXAMPLE_DETAILS[state.choiceId] : undefined;
-    const choice = GENRES.find(entry => entry.id === state.choiceId);
+    const detail = startExampleBySelection(state.choiceId, state.starterPresetId);
+    const choice = detail;
     const titleInput = el("input", { class: "start-input", value: state.title,
       attrs: { id: "start-title", type: "text", maxlength: "80", autocomplete: "off" }, dataset: { testid: START_SCREEN_TESTIDS.titleInput },
       on: { input: event => { state.title = (event.currentTarget as HTMLInputElement).value; void refreshLocation(); },

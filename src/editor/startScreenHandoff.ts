@@ -69,7 +69,7 @@ export async function applyStartScreenHandoff(): Promise<StartScreenHandoff | nu
   try {
     const brief = intent.gameDesignBrief === undefined ? undefined : normalizeGameDesignBrief(intent.gameDesignBrief);
     if (brief && (mode !== "ai" || brief.presetId !== intent.choiceId)) throw new Error("게임 기획과 시작 장르가 다릅니다.");
-    const seed = await createProjectStartSeed(intent.choiceId, intent.title, mode, intent.screenSize);
+    const seed = await createProjectStartSeed(intent.choiceId, intent.title, mode, intent.screenSize, intent.starterPresetId);
     if (brief) seed.gameDesignBrief = { ...brief, generationPending: true };
     store.replaceProject(seed, { label: "새 게임 시작", origin: "system" });
     const saved = await store.flush();
