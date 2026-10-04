@@ -21,6 +21,9 @@ export function configureEmeraldMonsterStyle(project: Project): void {
   project.system.menuUiStyle = 'field-list';
   project.system.battleUiStyle = 'pokemon';
   project.system.battleFlow = 'strict';
+  // Existing viewport minimum is 320x240: author the GBA 240x160 view at exact 2x.
+  project.system.playResolution = { width: 480, height: 320 };
+  project.system.cameraZoom = 2;
   project.system.dialogueStyle = 'handheld';
   project.system.fieldHud = {
     ...project.system.fieldHud, theme: 'collector', font: 'pixel', menuStyle: 'project',

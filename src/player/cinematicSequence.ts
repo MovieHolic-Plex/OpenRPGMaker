@@ -4,6 +4,7 @@ import { isCinematicAdvanceKey, normalizeKey } from "@/player/keyBindings";
 import { installPlayPointerBlocker } from "@/player/playInputBlocker";
 import type { CinematicSequence, Project } from "@/project/types";
 import { el } from "@/util/dom";
+import { isEmeraldMonsterStyle } from '@/project/emeraldMonsterStyle';
 
 export type CinematicCompletion = "completed" | "skipped" | "aborted";
 export type CinematicPlayback = {
@@ -34,6 +35,8 @@ export function playCinematicSequence(options: {
   const book = project.meta.oprnOpeningBook;
   const isBook = book?.version===1 && sequence.scenes.every((s,i)=>s.id===book.sceneIds[i] && s.durationMs===0 && (s.kind==='image'||s.kind==='text')) && sequence.scenes.length===book.sceneIds.length;
   if(isBook){root.dataset.presentation='storybook';root.dataset.ink=book!.ink;root.setAttribute('aria-label','이야기 오프닝');}
+  const isEmeraldIntro = isBook && isEmeraldMonsterStyle(project) && Boolean(book?.portraitResourceId);
+  if (isEmeraldIntro) { root.dataset.monsterStyle = 'emerald'; root.setAttribute('aria-label','교수와 몬스터 소개'); }
   let bookImage:HTMLImageElement|undefined;
   let bookImageId:string|undefined;
   let index = 0;
@@ -116,7 +119,8 @@ export function playCinematicSequence(options: {
       clearTimeout(advanceTimer);
     };
     // Keep the same illustration node mounted while its dialogue pages change.
-    const keepImage=isBook&&scene.kind==='image'&&bookImageId===scene.resourceId&&bookImage?.parentElement===root;
+    const imageResourceId = isEmeraldIntro ? book!.portraitResourceId! : scene.kind === 'image' ? scene.resourceId : undefined;
+    const keepImage=isBook&&scene.kind==='image'&&bookImageId===imageResourceId&&bookImage?.parentElement===root;
     if(keepImage){for(const child of Array.from(root.children))if(child!==bookImage)child.remove();}
     else {root.replaceChildren();bookImage=undefined;bookImageId=undefined;}
     root.dataset.page=String(index+1);
@@ -190,12 +194,19 @@ export function playCinematicSequence(options: {
       case "image": {
         const image = keepImage ? bookImage! : el("img", { class: "cinematic-image", attrs: { alt: "", draggable: "false" } });
         image.dataset.motion = reducedMotion ? "none" : scene.motion;
-        const url = resolveAssetResourceUrl(scene.resourceId, { project });
+        const url = resolveAssetResourceUrl(imageResourceId!, { project });
         image.addEventListener("error", () => { image.remove(); fail("error"); }, { signal: lifetime.signal });
         if (url && !keepImage) image.src = url;
         else if(!url) fail("error");
         if(!keepImage)root.append(image);
-        if(isBook){bookImage=image;bookImageId=scene.resourceId;}
+        if(isBook){bookImage=image;bookImageId=imageResourceId;}
+        if(isEmeraldIntro && scene.resourceId !== imageResourceId) {
+          const creature = el('img', { class: 'cinematic-creature', attrs: { alt: '소개하는 몬스터', draggable: 'false' } });
+          const creatureUrl = resolveAssetResourceUrl(scene.resourceId, { project });
+          creature.addEventListener('error', () => { creature.remove(); fail('error'); }, { signal: lifetime.signal });
+          if(creatureUrl)creature.src=creatureUrl;else fail('error');
+          root.dataset.showcase='monster'; root.append(creature);
+        } else {delete root.dataset.showcase;}
         break;
       }
       case "animatic": {

@@ -36,6 +36,7 @@ export function validateMeta(value: unknown): void {
     const ids=requireArray('opening book sceneIds',book.sceneIds);
     assert(ids.length>=1&&ids.length<=64&&new Set(ids).size===ids.length,'Invalid opening book pages');
     for(const id of ids)assert(requireString('opening page id',id).length>0,'Empty page id');
+    if(book.portraitResourceId!==undefined)assert(requireString('opening portrait',book.portraitResourceId).length>0,'Empty opening portrait');
   }
   if (meta.oprnFieldMenu !== undefined) validateFieldMenu(meta.oprnFieldMenu);
   if(meta.oprnMenuSounds!==undefined) {
