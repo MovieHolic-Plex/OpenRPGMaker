@@ -1,0 +1,14 @@
+{
+  "kind": "portrait",
+  "profile": "emerald-trainer-native",
+  "role": "moon_leader",
+  "width": 64,
+  "height": 64,
+  "frameCount": 1,
+  "paletteUnionMax": 15,
+  "alphaThreshold": 128,
+  "sourceSha256": "1706436e7c015538c9e58045b28111629b85246d6b32aae98b001a0886a5ed73",
+  "promptSha256": "f945990d12d35040664f5e0cf5f94f625e6f097c2dd5d276ee8293607e41e22f",
+  "portraitSha256": "95fd8fb40f5806a1ff822c0a1bd3ecdb8e90e1b46f99212f005a637b56908311",
+  "gateSha256": "13b79aa8f160127187e15ca6443b58470a2a73f479a3f37129004540f632f7f1"
+}

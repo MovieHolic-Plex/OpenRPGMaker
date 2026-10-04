@@ -1,0 +1,38 @@
+{
+  "role": "student",
+  "frameWidth": 16,
+  "frameHeight": 32,
+  "rows": [
+    "up",
+    "right",
+    "down",
+    "left"
+  ],
+  "columns": [
+    "stepA",
+    "idle",
+    "stepB"
+  ],
+  "idle": 1,
+  "order": [
+    0,
+    1,
+    2,
+    1
+  ],
+  "frameMs": 140,
+  "sourceSha256": "ca2e90c242dc166ea2e408b10a6f8ffc777494cf5b60bb3b00350d2ee949eb0d",
+  "charsetSha256": "e7d1440b9901418df4df5e90cd8dbe86460c1041e0babf3150fca53b8ab187ce",
+  "nativeSheetWidth": 48,
+  "nativeSheetHeight": 128,
+  "editorAdapter": {
+    "file": "editor-charset.png",
+    "frameWidth": 24,
+    "frameHeight": 32,
+    "paddingX": 4,
+    "resize": false,
+    "sha256": "5c2bf05b95b7e74918e174ce4b52dec2baf9dd265bfe5f0c3dfed5ada3c42c1d"
+  },
+  "gateSha256": "8e5f69ba152f529c6910b75cdaa97834146b6a6b1d9d9c4f862e9b88734d4c80",
+  "clip": null
+}

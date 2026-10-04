@@ -1,0 +1,14 @@
+{
+  "kind": "portrait",
+  "profile": "emerald-trainer-native",
+  "role": "hiker",
+  "width": 64,
+  "height": 64,
+  "frameCount": 1,
+  "paletteUnionMax": 15,
+  "alphaThreshold": 128,
+  "sourceSha256": "6f7acc259fa505302ba71c89473988f21509a62a12f65801c134d87d28bffe00",
+  "promptSha256": "f945990d12d35040664f5e0cf5f94f625e6f097c2dd5d276ee8293607e41e22f",
+  "portraitSha256": "3a49691580f1c381d619b400b35c188885dde697fce513fe6c6a18edad18e57f",
+  "gateSha256": "2b54c80c249bbb7186b6ef4f90c65c7b3bb5b0c33b75664d27fd10e11ebb7bb2"
+}

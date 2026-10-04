@@ -1,0 +1,12 @@
+{
+  "publishedAt": "2026-10-04T11:02:39.688Z",
+  "game": "http://mdc-server:18301/monster-expedition/player.html?build=native-motion-20261004",
+  "report": "http://mdc-server:18301/emerald-native-motion-report.html",
+  "previousExportBackup": "/home/main/claude-viz/monster-expedition-before-native-motion-20261004",
+  "files": {
+    "project.json": "0b2c62d5aab54015faa608e80d51c117178b12119f12d9825a8eeaab1a59faef",
+    "player.html": "11cb569f4641fc3dccd7710fb7601cf838bcf062b15db4c8effa7d5e37b8441c",
+    "dependency-collector.js": "46bb18a0e2bf468f4637b6ba587d6926a5e32f19a119e1171fb04e4029fbdd5a",
+    "player.js": "9b2b7b48c3d4b3269dc0a0cdebcee1334a724a0daeface3b7dec4a8726d52c5b"
+  }
+}

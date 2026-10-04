@@ -1,0 +1,38 @@
+{
+  "role": "ranger",
+  "frameWidth": 16,
+  "frameHeight": 32,
+  "rows": [
+    "up",
+    "right",
+    "down",
+    "left"
+  ],
+  "columns": [
+    "stepA",
+    "idle",
+    "stepB"
+  ],
+  "idle": 1,
+  "order": [
+    0,
+    1,
+    2,
+    1
+  ],
+  "frameMs": 140,
+  "sourceSha256": "506f7e175f7cee446c762105eb84e2c78f50c5e039350551596e5c2b869254d7",
+  "charsetSha256": "6b717c96c6c8cf65069b48a9c1d65096fd1a6f9aa776df6cdc28d8ea4e61b2ef",
+  "nativeSheetWidth": 48,
+  "nativeSheetHeight": 128,
+  "editorAdapter": {
+    "file": "editor-charset.png",
+    "frameWidth": 24,
+    "frameHeight": 32,
+    "paddingX": 4,
+    "resize": false,
+    "sha256": "e5863be23440a5b234444138d3a4d7e411e668a333b59c92aed2db508052e86b"
+  },
+  "gateSha256": "074c3f0f28f4170d88e60bd7c4fbe7232f6a6c3d1980065757ff11377a037cac",
+  "clip": null
+}

@@ -2645,3 +2645,10 @@ runner의 draft/admission/audit 경로를 통과한다. 다른 요청의 preserv
 새 연결 재로드 및 자산 바이트 비교를 통과해야 한다. 이관 준비만으로 저장을 보고하지 않는다.
 공용 기존 몬스터 그림은 ID가 키인 객체이며 `Object.values`로 순회한다. repair의
 `replaceCreatureArt:true`는 명시적 그림 교체 요청에만 쓰며 종족 데이터와 세이브를 유지한다.
+
+
+## Emerald native sprite contract (2026-10-04 correction)
+
+`monsterGameRequest.ts` and the shared style guide distinguish the16×32 source from the24×32 editor cell: x4 transparent padding, no resize,15opaque colors across12field poses. Owned trainer/professor images are64×64; `review_monster_game` rejects stale64×96 metadata. Metadata review does not inspect pixel bytes; source/final dimensions, palette, immutable provenance, animation review and stale/mutation rejection belong to `openwiki/harnesses/pokemon-character-motion.md`. The harness is a Node CLI, not a browser assistant tool. The actual browser tool `configure_opening_portrait_motion` connects reviewed pose strips without replacing Enter narration or music. Shared default introductions use one slow six-pose professor strip; repair preserves authored story pages.
+
+Owned professor introductions without an authored `portraitMotion` are now repaired by the actual `build_monster_game(mode:repair)` tool: refresh the native64×64 owned still and add the reviewed six-pose strip, preserving all story pages and confirmation timings. A different authored portrait or existing custom motion is preserved. `scripts/qa/runtime/emerald-native-dependencies.mjs` exercises the actual tool on detached canonical clones and the real export collector; no canonical writes occur in that gate.

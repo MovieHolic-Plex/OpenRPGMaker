@@ -1,0 +1,38 @@
+{
+  "role": "moon_leader",
+  "frameWidth": 16,
+  "frameHeight": 32,
+  "rows": [
+    "up",
+    "right",
+    "down",
+    "left"
+  ],
+  "columns": [
+    "stepA",
+    "idle",
+    "stepB"
+  ],
+  "idle": 1,
+  "order": [
+    0,
+    1,
+    2,
+    1
+  ],
+  "frameMs": 140,
+  "sourceSha256": "cf5fefe28a0241aa5df2ac2cf07f0df798591fda833f474b95dce6ee6c80b7d0",
+  "charsetSha256": "2d4092a41488b62ef022a7b1b22c40074910b3fd183a0838635c60f58fa88ee6",
+  "nativeSheetWidth": 48,
+  "nativeSheetHeight": 128,
+  "editorAdapter": {
+    "file": "editor-charset.png",
+    "frameWidth": 24,
+    "frameHeight": 32,
+    "paddingX": 4,
+    "resize": false,
+    "sha256": "f888ae312eaaca27d2737b41b60d761c63de84da5369995b1b078030444ef9aa"
+  },
+  "gateSha256": "0348e3077ebe16f89c39259a5ebe6757058cb0bbfd8b26567f16196638c9ffe4",
+  "clip": null
+}

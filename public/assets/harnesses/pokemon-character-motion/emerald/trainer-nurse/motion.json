@@ -1,0 +1,14 @@
+{
+  "kind": "portrait",
+  "profile": "emerald-trainer-native",
+  "role": "nurse",
+  "width": 64,
+  "height": 64,
+  "frameCount": 1,
+  "paletteUnionMax": 15,
+  "alphaThreshold": 128,
+  "sourceSha256": "7164e1f44b2d2e1e0faa154fbc97bf43ceaf945e045b7043a641561d65c3f5fd",
+  "promptSha256": "3a77948ed5d507853bbc1022279aee88c22e70b550154082c16ae91a9510383a",
+  "portraitSha256": "0d59d995cedb564519eec458fa37a0c2adafddd7eb5ec5465b817bf0df91113f",
+  "gateSha256": "6f7260bb2f4b0c593aa0ab575abd67688c47bd13e52a9e91efec7ae1c6a67d4e"
+}

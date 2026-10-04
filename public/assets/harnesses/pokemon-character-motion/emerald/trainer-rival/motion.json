@@ -1,0 +1,14 @@
+{
+  "kind": "portrait",
+  "profile": "emerald-trainer-native",
+  "role": "rival",
+  "width": 64,
+  "height": 64,
+  "frameCount": 1,
+  "paletteUnionMax": 15,
+  "alphaThreshold": 128,
+  "sourceSha256": "a6e4ab1b743ed50f6949a37b05c22eefecee3750370ce3fe81a03056e5b98b1a",
+  "promptSha256": "2d87b77c4e98c80f3a5369894bb99edf7361acd1dc6486f932df58107fc5590b",
+  "portraitSha256": "4ba0ba3ae7cb154afa9979d9736d65bbf4ad3607db070c91f13c1b3132b5a171",
+  "gateSha256": "ba6a7c915e5c6ce9e7bdd3815fc68b8fb5fb284c361c67f712c4b55be7f0a6a1"
+}

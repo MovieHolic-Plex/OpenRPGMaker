@@ -1,0 +1,156 @@
+{
+  "kind": "gate",
+  "provenance": {
+    "version": "pokemon-motion-2",
+    "kind": "portrait",
+    "mode": "extracted-existing-pixels",
+    "createdAt": "2026-10-04T09:58:16.120Z",
+    "role": "captain",
+    "sourceSha256": "cd9ae91918c6e18cbc30dab367f7c5bd1cb6c9685643eff5e2a4a7c938bcde66",
+    "promptSha256": "f945990d12d35040664f5e0cf5f94f625e6f097c2dd5d276ee8293607e41e22f",
+    "finalSha256": "47fb041feefee121f9db0d855319bc79c03b7792b3015f16cefc277f2666ebb8",
+    "sourceDimensions": {
+      "width": 64,
+      "height": 96
+    },
+    "contract": {
+      "width": 64,
+      "height": 64,
+      "maxOpaqueColors": 15,
+      "alphaThreshold": 128,
+      "fitInkMax": 62,
+      "bottomExclusive": 63,
+      "margin": 1
+    },
+    "limits": {
+      "width": 64,
+      "height": 64,
+      "maxOpaqueColors": 15,
+      "alphaThreshold": 128,
+      "fitInkMax": 62,
+      "bottomExclusive": 63,
+      "margin": 1
+    },
+    "sourceInk": {
+      "width": 46,
+      "height": 88
+    },
+    "scale": 0.7045454545454546,
+    "palette": [
+      [
+        7,
+        8,
+        9
+      ],
+      [
+        56,
+        69,
+        105
+      ],
+      [
+        28,
+        33,
+        49
+      ],
+      [
+        211,
+        210,
+        212
+      ],
+      [
+        169,
+        171,
+        176
+      ],
+      [
+        91,
+        58,
+        41
+      ],
+      [
+        110,
+        93,
+        62
+      ],
+      [
+        185,
+        155,
+        74
+      ],
+      [
+        194,
+        117,
+        83
+      ],
+      [
+        231,
+        183,
+        80
+      ],
+      [
+        141,
+        141,
+        145
+      ],
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        31,
+        128,
+        136
+      ],
+      [
+        250,
+        218,
+        78
+      ]
+    ],
+    "alphaThreshold": 128,
+    "sampling": "nearest-existing-pixels",
+    "nativeFrame": {
+      "width": 64,
+      "height": 64,
+      "maxOpaqueColors": 15,
+      "alphaThreshold": 128,
+      "fitInkMax": 62,
+      "bottomExclusive": 63,
+      "margin": 1
+    }
+  },
+  "hashes": {
+    "source.png": "cd9ae91918c6e18cbc30dab367f7c5bd1cb6c9685643eff5e2a4a7c938bcde66",
+    "prompt.txt": "f945990d12d35040664f5e0cf5f94f625e6f097c2dd5d276ee8293607e41e22f",
+    "portrait.png": "47fb041feefee121f9db0d855319bc79c03b7792b3015f16cefc277f2666ebb8"
+  },
+  "implementationSha256": "7bf84ac17234c16b2dad8515b59e09038a21df9c986d5837202f844d632d28e0",
+  "provenanceSha256": "4c8c7fc490a629dac91f70b9d7507315bbd81be67881dea87874b596a710aca7",
+  "version": "pokemon-motion-2",
+  "limits": {
+    "width": 64,
+    "height": 64,
+    "maxOpaqueColors": 15,
+    "alphaThreshold": 128,
+    "fitInkMax": 62,
+    "bottomExclusive": 63,
+    "margin": 1
+  },
+  "pass": true,
+  "errors": [],
+  "warnings": [],
+  "metrics": {
+    "paletteUnion": 14,
+    "nonBinaryAlpha": 0,
+    "bounds": {
+      "x": 16,
+      "y": 1,
+      "width": 32,
+      "height": 62
+    }
+  },
+  "clip": null,
+  "createdAt": "2026-10-04T10:33:21.514Z",
+  "reviewSha256": "8859cd251b2506b158549cf3e008b957309b026b28e198a2a47792ce879e6e7e"
+}

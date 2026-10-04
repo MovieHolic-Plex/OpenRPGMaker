@@ -1,0 +1,40 @@
+{
+  "files": [
+    {
+      "file": "project.json",
+      "http": 200,
+      "sha256": "0b2c62d5aab54015faa608e80d51c117178b12119f12d9825a8eeaab1a59faef"
+    },
+    {
+      "file": "player.html",
+      "http": 200,
+      "sha256": "11cb569f4641fc3dccd7710fb7601cf838bcf062b15db4c8effa7d5e37b8441c"
+    },
+    {
+      "file": "dependency-collector.js",
+      "http": 200,
+      "sha256": "46bb18a0e2bf468f4637b6ba587d6926a5e32f19a119e1171fb04e4029fbdd5a"
+    },
+    {
+      "file": "player.js",
+      "http": 200,
+      "sha256": "9b2b7b48c3d4b3269dc0a0cdebcee1334a724a0daeface3b7dec4a8726d52c5b"
+    }
+  ],
+  "reportErrors": [],
+  "links": [
+    {
+      "text": "수정 게임 플레이",
+      "href": "/monster-expedition/player.html?build=native-motion-20261004"
+    },
+    {
+      "text": "원본 1배·3배 도트 재생",
+      "href": "/emerald-native-motion-evidence/gallery.html"
+    },
+    {
+      "text": "검증 결과·증거",
+      "href": "/emerald-native-motion-evidence/SUMMARY.md"
+    }
+  ],
+  "reportImages": "All decoded"
+}

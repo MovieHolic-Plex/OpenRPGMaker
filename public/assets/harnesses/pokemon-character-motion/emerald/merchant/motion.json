@@ -1,0 +1,38 @@
+{
+  "role": "merchant",
+  "frameWidth": 16,
+  "frameHeight": 32,
+  "rows": [
+    "up",
+    "right",
+    "down",
+    "left"
+  ],
+  "columns": [
+    "stepA",
+    "idle",
+    "stepB"
+  ],
+  "idle": 1,
+  "order": [
+    0,
+    1,
+    2,
+    1
+  ],
+  "frameMs": 140,
+  "sourceSha256": "63a7f5f62688da62c73ba891ba8262e5599b9e821395dfa6a3b5751d80a5183e",
+  "charsetSha256": "db3828618a756ad49c0911ebbfcbed901c0a9cc300c1025587ea228ac25148b5",
+  "nativeSheetWidth": 48,
+  "nativeSheetHeight": 128,
+  "editorAdapter": {
+    "file": "editor-charset.png",
+    "frameWidth": 24,
+    "frameHeight": 32,
+    "paddingX": 4,
+    "resize": false,
+    "sha256": "519eca9d62c497161eb26383ec38725457851bdaacdba4ccf7402439d768366f"
+  },
+  "gateSha256": "6eba501c530894c1e1dde17810c2d7ec8f76cd209a8e20a7c7e9bb16088f6ef7",
+  "clip": null
+}

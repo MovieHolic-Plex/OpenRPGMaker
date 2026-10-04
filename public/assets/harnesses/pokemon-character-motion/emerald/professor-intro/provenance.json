@@ -1,0 +1,421 @@
+{
+  "version": "pokemon-motion-2",
+  "kind": "clip",
+  "mode": "generated",
+  "createdAt": "2026-10-04T10:27:41.117Z",
+  "role": "professor",
+  "clipId": "professor-intro",
+  "sourceSha256": "7658e1fe0583a352123761353b01dd40d609fb8553d6cc766ff3c17a3a231f0b",
+  "promptSha256": "9846158f6c625876a4b13979300fa387f8f078cbc88eedc8642c7a8690f252aa",
+  "finalSha256": "fdba46432044c5b9b82168a19cf61601b84112b410d2980c4a31e94b79adcafa",
+  "metadataSha256": "4a12707dba15f43d39dd29e5470cb4f70d382e79aab55d8ebd013f83d20db1fb",
+  "columns": 6,
+  "rows": 1,
+  "frameWidth": 64,
+  "frameHeight": 64,
+  "frameCount": 6,
+  "commonBlock": null,
+  "inferredBlocks": [],
+  "sourceRects": [
+    {
+      "x": 79,
+      "y": 172,
+      "width": 220,
+      "height": 457
+    },
+    {
+      "x": 441,
+      "y": 172,
+      "width": 219,
+      "height": 457
+    },
+    {
+      "x": 795,
+      "y": 172,
+      "width": 221,
+      "height": 457
+    },
+    {
+      "x": 1119,
+      "y": 172,
+      "width": 266,
+      "height": 457
+    },
+    {
+      "x": 1496,
+      "y": 172,
+      "width": 252,
+      "height": 457
+    },
+    {
+      "x": 1850,
+      "y": 172,
+      "width": 253,
+      "height": 457
+    }
+  ],
+  "commonScale": 0.13129102844638948,
+  "palette": [
+    [
+      0,
+      0,
+      0
+    ],
+    [
+      250,
+      239,
+      222
+    ],
+    [
+      92,
+      54,
+      63
+    ],
+    [
+      11,
+      0,
+      0
+    ],
+    [
+      177,
+      172,
+      184
+    ],
+    [
+      249,
+      191,
+      141
+    ],
+    [
+      32,
+      33,
+      49
+    ],
+    [
+      117,
+      114,
+      132
+    ],
+    [
+      146,
+      143,
+      156
+    ],
+    [
+      90,
+      87,
+      104
+    ],
+    [
+      133,
+      91,
+      59
+    ],
+    [
+      171,
+      118,
+      86
+    ],
+    [
+      202,
+      149,
+      108
+    ],
+    [
+      222,
+      103,
+      24
+    ]
+  ],
+  "alphaThreshold": 128,
+  "headAlignment": "source dominant contiguous skull-row median before sampling",
+  "rects": [
+    {
+      "x": 79,
+      "y": 172,
+      "width": 220,
+      "height": 457
+    },
+    {
+      "x": 441,
+      "y": 172,
+      "width": 219,
+      "height": 457
+    },
+    {
+      "x": 795,
+      "y": 172,
+      "width": 221,
+      "height": 457
+    },
+    {
+      "x": 1119,
+      "y": 172,
+      "width": 266,
+      "height": 457
+    },
+    {
+      "x": 1496,
+      "y": 172,
+      "width": 252,
+      "height": 457
+    },
+    {
+      "x": 1850,
+      "y": 172,
+      "width": 253,
+      "height": 457
+    }
+  ],
+  "block": null,
+  "scale": 0.13129102844638948,
+  "sampling": "common-source-raster",
+  "phase": 0.5,
+  "headBandRows": 6,
+  "commonScaleFit": {
+    "anchorX": 31.5,
+    "anchorY": 2,
+    "halfWidth": 30,
+    "fitInkHeight": 60,
+    "heightScale": 0.13129102844638948,
+    "widthScale": 0.22556390977443608,
+    "scale": 0.13129102844638948,
+    "iterations": [
+      {
+        "scale": 0.13129102844638948,
+        "leftScale": 0.19230769230769232,
+        "rightScale": 0.27149321266968324
+      }
+    ],
+    "frames": [
+      {
+        "skullCenter": 109,
+        "leftExtent": 109.5,
+        "rightExtent": 110.5,
+        "sourceRowOriginY": 172,
+        "sourceHeadTop": 172,
+        "sourceFeetBottom": 629,
+        "sourceInk": {
+          "x": 79,
+          "y": 172,
+          "width": 220,
+          "height": 457
+        }
+      },
+      {
+        "skullCenter": 110,
+        "leftExtent": 110.5,
+        "rightExtent": 108.5,
+        "sourceRowOriginY": 172,
+        "sourceHeadTop": 172,
+        "sourceFeetBottom": 629,
+        "sourceInk": {
+          "x": 441,
+          "y": 172,
+          "width": 219,
+          "height": 457
+        }
+      },
+      {
+        "skullCenter": 110,
+        "leftExtent": 110.5,
+        "rightExtent": 110.5,
+        "sourceRowOriginY": 172,
+        "sourceHeadTop": 172,
+        "sourceFeetBottom": 629,
+        "sourceInk": {
+          "x": 795,
+          "y": 172,
+          "width": 221,
+          "height": 457
+        }
+      },
+      {
+        "skullCenter": 155.5,
+        "leftExtent": 156,
+        "rightExtent": 110,
+        "sourceRowOriginY": 172,
+        "sourceHeadTop": 172,
+        "sourceFeetBottom": 629,
+        "sourceInk": {
+          "x": 1119,
+          "y": 172,
+          "width": 266,
+          "height": 457
+        }
+      },
+      {
+        "skullCenter": 143.5,
+        "leftExtent": 144,
+        "rightExtent": 108,
+        "sourceRowOriginY": 172,
+        "sourceHeadTop": 172,
+        "sourceFeetBottom": 629,
+        "sourceInk": {
+          "x": 1496,
+          "y": 172,
+          "width": 252,
+          "height": 457
+        }
+      },
+      {
+        "skullCenter": 143.5,
+        "leftExtent": 144,
+        "rightExtent": 109,
+        "sourceRowOriginY": 172,
+        "sourceHeadTop": 172,
+        "sourceFeetBottom": 629,
+        "sourceInk": {
+          "x": 1850,
+          "y": 172,
+          "width": 253,
+          "height": 457
+        }
+      }
+    ]
+  },
+  "sourceFrameMetrics": [
+    {
+      "skullCenter": 109,
+      "leftExtent": 109.5,
+      "rightExtent": 110.5,
+      "sourceRowOriginY": 172,
+      "sourceHeadTop": 172,
+      "sourceFeetBottom": 629,
+      "sourceInk": {
+        "x": 79,
+        "y": 172,
+        "width": 220,
+        "height": 457
+      },
+      "sourceHeadCenterX": 188,
+      "outputInk": {
+        "x": 18,
+        "y": 2,
+        "width": 29,
+        "height": 60
+      }
+    },
+    {
+      "skullCenter": 110,
+      "leftExtent": 110.5,
+      "rightExtent": 108.5,
+      "sourceRowOriginY": 172,
+      "sourceHeadTop": 172,
+      "sourceFeetBottom": 629,
+      "sourceInk": {
+        "x": 441,
+        "y": 172,
+        "width": 219,
+        "height": 457
+      },
+      "sourceHeadCenterX": 551,
+      "outputInk": {
+        "x": 18,
+        "y": 2,
+        "width": 28,
+        "height": 60
+      }
+    },
+    {
+      "skullCenter": 110,
+      "leftExtent": 110.5,
+      "rightExtent": 110.5,
+      "sourceRowOriginY": 172,
+      "sourceHeadTop": 172,
+      "sourceFeetBottom": 629,
+      "sourceInk": {
+        "x": 795,
+        "y": 172,
+        "width": 221,
+        "height": 457
+      },
+      "sourceHeadCenterX": 905,
+      "outputInk": {
+        "x": 18,
+        "y": 2,
+        "width": 29,
+        "height": 60
+      }
+    },
+    {
+      "skullCenter": 155.5,
+      "leftExtent": 156,
+      "rightExtent": 110,
+      "sourceRowOriginY": 172,
+      "sourceHeadTop": 172,
+      "sourceFeetBottom": 629,
+      "sourceInk": {
+        "x": 1119,
+        "y": 172,
+        "width": 266,
+        "height": 457
+      },
+      "sourceHeadCenterX": 1274.5,
+      "outputInk": {
+        "x": 12,
+        "y": 2,
+        "width": 35,
+        "height": 60
+      }
+    },
+    {
+      "skullCenter": 143.5,
+      "leftExtent": 144,
+      "rightExtent": 108,
+      "sourceRowOriginY": 172,
+      "sourceHeadTop": 172,
+      "sourceFeetBottom": 629,
+      "sourceInk": {
+        "x": 1496,
+        "y": 172,
+        "width": 252,
+        "height": 457
+      },
+      "sourceHeadCenterX": 1639.5,
+      "outputInk": {
+        "x": 13,
+        "y": 2,
+        "width": 33,
+        "height": 60
+      }
+    },
+    {
+      "skullCenter": 143.5,
+      "leftExtent": 144,
+      "rightExtent": 109,
+      "sourceRowOriginY": 172,
+      "sourceHeadTop": 172,
+      "sourceFeetBottom": 629,
+      "sourceInk": {
+        "x": 1850,
+        "y": 172,
+        "width": 253,
+        "height": 457
+      },
+      "sourceHeadCenterX": 1993.5,
+      "outputInk": {
+        "x": 13,
+        "y": 2,
+        "width": 33,
+        "height": 60
+      }
+    }
+  ],
+  "limits": {
+    "paletteUnionMax": 15,
+    "inkHeightMin": 18,
+    "inkHeightMax": 22,
+    "topMin": 10,
+    "topMax": 13,
+    "feetBottomMin": 30,
+    "feetBottomMax": 32,
+    "fitInkHeight": 21,
+    "headJitterMax": 1,
+    "bodySizeRatioMax": 1.25,
+    "areaRatioMax": 1.3,
+    "seamChangeMax": 0.36,
+    "stepChangeMin": 4,
+    "margin": 0
+  }
+}

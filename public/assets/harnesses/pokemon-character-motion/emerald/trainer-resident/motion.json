@@ -1,0 +1,14 @@
+{
+  "kind": "portrait",
+  "profile": "emerald-trainer-native",
+  "role": "resident",
+  "width": 64,
+  "height": 64,
+  "frameCount": 1,
+  "paletteUnionMax": 15,
+  "alphaThreshold": 128,
+  "sourceSha256": "11934266531d852a885ea328c38521df6f4ad4bab0b43eaa3305cf9aeaa49c04",
+  "promptSha256": "7ed4ed7b5c896fa66efdae6ddd816ea8fd48f4d9b1f6c39573c86ba6b6f8e7ee",
+  "portraitSha256": "274a2f2301ba7afcd22aa31ede27fa8d15a762b073f25bab6f0c9bf550ec2c3b",
+  "gateSha256": "dd9d22c7809d1597d80dd5ed21d4051971288af04c8d3b9e249d359ae3e0b942"
+}

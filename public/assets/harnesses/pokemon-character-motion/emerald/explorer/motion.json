@@ -1,0 +1,38 @@
+{
+  "role": "explorer",
+  "frameWidth": 16,
+  "frameHeight": 32,
+  "rows": [
+    "up",
+    "right",
+    "down",
+    "left"
+  ],
+  "columns": [
+    "stepA",
+    "idle",
+    "stepB"
+  ],
+  "idle": 1,
+  "order": [
+    0,
+    1,
+    2,
+    1
+  ],
+  "frameMs": 140,
+  "sourceSha256": "499fc1704d4c2ef22412d7fbc366bb52154b596600f419efb016dc08ab8b15c2",
+  "charsetSha256": "e9f21d7281537f05f3a3b61bcfd1f44fbcdac73512f5a34050b1df1931502020",
+  "nativeSheetWidth": 48,
+  "nativeSheetHeight": 128,
+  "editorAdapter": {
+    "file": "editor-charset.png",
+    "frameWidth": 24,
+    "frameHeight": 32,
+    "paddingX": 4,
+    "resize": false,
+    "sha256": "fa0c1964762699826c7aa93f2600eb76c9326db0f2c97a94b1aaefc8b39773cd"
+  },
+  "gateSha256": "25c95e51a4db894d78491c61bf6cb5472636062bfa7d9b9846b9e98442e2ac40",
+  "clip": null
+}

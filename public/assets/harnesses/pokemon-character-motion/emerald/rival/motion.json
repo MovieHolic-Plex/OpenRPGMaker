@@ -1,0 +1,38 @@
+{
+  "role": "rival",
+  "frameWidth": 16,
+  "frameHeight": 32,
+  "rows": [
+    "up",
+    "right",
+    "down",
+    "left"
+  ],
+  "columns": [
+    "stepA",
+    "idle",
+    "stepB"
+  ],
+  "idle": 1,
+  "order": [
+    0,
+    1,
+    2,
+    1
+  ],
+  "frameMs": 140,
+  "sourceSha256": "bc312baf85cad936042c9046634b04dc74552514c5a66f391e93325cb7ca89c5",
+  "charsetSha256": "6d78d4a02f25b9b115ca58bf2ef13be27ac1e4b36d6396ffef44817022bd67d2",
+  "nativeSheetWidth": 48,
+  "nativeSheetHeight": 128,
+  "editorAdapter": {
+    "file": "editor-charset.png",
+    "frameWidth": 24,
+    "frameHeight": 32,
+    "paddingX": 4,
+    "resize": false,
+    "sha256": "0e913a99f54bc562c1a896e5d985a4ca3fd37796d8067311b9dc09d6e34af996"
+  },
+  "gateSha256": "f51c871fe63108acabab2f5f4149f46dd35c73dbfd2bb61e0c08f6c809fbad78",
+  "clip": null
+}

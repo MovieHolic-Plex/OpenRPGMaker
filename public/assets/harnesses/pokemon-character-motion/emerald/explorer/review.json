@@ -1,0 +1,434 @@
+{
+  "provenance": {
+    "version": "pokemon-motion-2",
+    "createdAt": "2026-10-04T09:48:33.362Z",
+    "role": "explorer",
+    "sourceSha256": "499fc1704d4c2ef22412d7fbc366bb52154b596600f419efb016dc08ab8b15c2",
+    "promptSha256": "87816f567282dead7fb4d6430d757f32ebfa7bce176e7fd80a0ef795ed64b52a",
+    "finalSha256": "e9f21d7281537f05f3a3b61bcfd1f44fbcdac73512f5a34050b1df1931502020",
+    "contract": {
+      "frameWidth": 16,
+      "frameHeight": 32,
+      "columns": [
+        "stepA",
+        "idle",
+        "stepB"
+      ],
+      "rows": [
+        "up",
+        "right",
+        "down",
+        "left"
+      ],
+      "idle": 1,
+      "runtimeOrder": [
+        0,
+        1,
+        2,
+        1
+      ],
+      "frameMs": 140,
+      "nativeSheetWidth": 48,
+      "nativeSheetHeight": 128,
+      "editorAdapter": {
+        "frameWidth": 24,
+        "paddingX": 4,
+        "sheetWidth": 72,
+        "sheetHeight": 128,
+        "resize": false
+      },
+      "reference": "pret/pokeemerald graphics/object_events/pics/people/*; frame16x32, ink~14x20..21"
+    },
+    "limits": {
+      "paletteUnionMax": 15,
+      "inkHeightMin": 18,
+      "inkHeightMax": 22,
+      "topMin": 10,
+      "topMax": 13,
+      "feetBottomMin": 30,
+      "feetBottomMax": 32,
+      "fitInkHeight": 21,
+      "headJitterMax": 1,
+      "bodySizeRatioMax": 1.25,
+      "areaRatioMax": 1.3,
+      "seamChangeMax": 0.36,
+      "stepChangeMin": 4,
+      "margin": 0
+    },
+    "mode": "generated",
+    "rects": [
+      {
+        "x": 143,
+        "y": 73,
+        "width": 167,
+        "height": 284
+      },
+      {
+        "x": 461,
+        "y": 73,
+        "width": 161,
+        "height": 284
+      },
+      {
+        "x": 776,
+        "y": 73,
+        "width": 167,
+        "height": 284
+      },
+      {
+        "x": 135,
+        "y": 408,
+        "width": 184,
+        "height": 296
+      },
+      {
+        "x": 453,
+        "y": 408,
+        "width": 177,
+        "height": 296
+      },
+      {
+        "x": 778,
+        "y": 408,
+        "width": 178,
+        "height": 296
+      },
+      {
+        "x": 148,
+        "y": 752,
+        "width": 167,
+        "height": 280
+      },
+      {
+        "x": 461,
+        "y": 752,
+        "width": 161,
+        "height": 280
+      },
+      {
+        "x": 775,
+        "y": 752,
+        "width": 168,
+        "height": 280
+      },
+      {
+        "x": 135,
+        "y": 1073,
+        "width": 180,
+        "height": 294
+      },
+      {
+        "x": 452,
+        "y": 1073,
+        "width": 178,
+        "height": 294
+      },
+      {
+        "x": 764,
+        "y": 1073,
+        "width": 179,
+        "height": 294
+      }
+    ],
+    "scale": 0.07094594594594594,
+    "commonScaleFit": {
+      "anchorX": 7.5,
+      "anchorY": 11,
+      "halfWidth": 8,
+      "fitInkHeight": 21,
+      "widthScale": 0.08695652173913043,
+      "heightScale": 0.07094594594594594,
+      "scale": 0.07094594594594594,
+      "iterations": [
+        {
+          "scale": 0.07094594594594594,
+          "leftScale": 0.08163265306122448,
+          "rightScale": 0.08839779005524862
+        }
+      ],
+      "frames": [
+        {
+          "skullCenter": 86.5,
+          "leftExtent": 87,
+          "rightExtent": 80,
+          "topRelativeHeight": 282,
+          "ink": {
+            "x": 0,
+            "y": 0,
+            "width": 167,
+            "height": 282
+          }
+        },
+        {
+          "skullCenter": 80,
+          "leftExtent": 80.5,
+          "rightExtent": 80.5,
+          "topRelativeHeight": 282,
+          "ink": {
+            "x": 0,
+            "y": 1,
+            "width": 161,
+            "height": 281
+          }
+        },
+        {
+          "skullCenter": 78.5,
+          "leftExtent": 79,
+          "rightExtent": 88,
+          "topRelativeHeight": 284,
+          "ink": {
+            "x": 0,
+            "y": 0,
+            "width": 167,
+            "height": 284
+          }
+        },
+        {
+          "skullCenter": 97.5,
+          "leftExtent": 98,
+          "rightExtent": 86,
+          "topRelativeHeight": 296,
+          "ink": {
+            "x": 0,
+            "y": 1,
+            "width": 184,
+            "height": 295
+          }
+        },
+        {
+          "skullCenter": 91,
+          "leftExtent": 91.5,
+          "rightExtent": 85.5,
+          "topRelativeHeight": 292,
+          "ink": {
+            "x": 0,
+            "y": 0,
+            "width": 177,
+            "height": 292
+          }
+        },
+        {
+          "skullCenter": 91,
+          "leftExtent": 91.5,
+          "rightExtent": 86.5,
+          "topRelativeHeight": 296,
+          "ink": {
+            "x": 0,
+            "y": 1,
+            "width": 178,
+            "height": 295
+          }
+        },
+        {
+          "skullCenter": 79.5,
+          "leftExtent": 80,
+          "rightExtent": 87,
+          "topRelativeHeight": 280,
+          "ink": {
+            "x": 0,
+            "y": 0,
+            "width": 167,
+            "height": 280
+          }
+        },
+        {
+          "skullCenter": 80,
+          "leftExtent": 80.5,
+          "rightExtent": 80.5,
+          "topRelativeHeight": 280,
+          "ink": {
+            "x": 0,
+            "y": 0,
+            "width": 161,
+            "height": 280
+          }
+        },
+        {
+          "skullCenter": 79.5,
+          "leftExtent": 80,
+          "rightExtent": 88,
+          "topRelativeHeight": 280,
+          "ink": {
+            "x": 0,
+            "y": 0,
+            "width": 168,
+            "height": 280
+          }
+        },
+        {
+          "skullCenter": 89.5,
+          "leftExtent": 90,
+          "rightExtent": 90,
+          "topRelativeHeight": 294,
+          "ink": {
+            "x": 0,
+            "y": 0,
+            "width": 180,
+            "height": 294
+          }
+        },
+        {
+          "skullCenter": 87,
+          "leftExtent": 87.5,
+          "rightExtent": 90.5,
+          "topRelativeHeight": 294,
+          "ink": {
+            "x": 0,
+            "y": 0,
+            "width": 178,
+            "height": 294
+          }
+        },
+        {
+          "skullCenter": 88.5,
+          "leftExtent": 89,
+          "rightExtent": 90,
+          "topRelativeHeight": 294,
+          "ink": {
+            "x": 0,
+            "y": 0,
+            "width": 179,
+            "height": 294
+          }
+        }
+      ]
+    },
+    "palette": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        191,
+        161,
+        123
+      ],
+      [
+        2,
+        2,
+        1
+      ],
+      [
+        65,
+        41,
+        30
+      ],
+      [
+        86,
+        90,
+        60
+      ],
+      [
+        30,
+        19,
+        13
+      ],
+      [
+        250,
+        186,
+        148
+      ],
+      [
+        162,
+        39,
+        43
+      ],
+      [
+        66,
+        69,
+        42
+      ],
+      [
+        94,
+        16,
+        29
+      ],
+      [
+        113,
+        66,
+        48
+      ],
+      [
+        117,
+        109,
+        81
+      ],
+      [
+        146,
+        131,
+        98
+      ],
+      [
+        194,
+        129,
+        95
+      ],
+      [
+        228,
+        219,
+        212
+      ]
+    ],
+    "sampling": "common-source-raster",
+    "alphaThreshold": 128,
+    "phase": 0.5,
+    "nativeFrameWidth": 16,
+    "nativeFrameHeight": 32,
+    "fitInkHeight": 21,
+    "idleFeetBottomExclusive": 31,
+    "headBandRows": 6,
+    "headAlignment": "source dominant contiguous skull-row median before sampling",
+    "clip": null
+  },
+  "hashes": {
+    "source.png": "499fc1704d4c2ef22412d7fbc366bb52154b596600f419efb016dc08ab8b15c2",
+    "prompt.txt": "87816f567282dead7fb4d6430d757f32ebfa7bce176e7fd80a0ef795ed64b52a",
+    "charset.png": "e9f21d7281537f05f3a3b61bcfd1f44fbcdac73512f5a34050b1df1931502020"
+  },
+  "implementationSha256": "7bf84ac17234c16b2dad8515b59e09038a21df9c986d5837202f844d632d28e0",
+  "provenanceSha256": "6a0c0837f0376983f3664763af803e93a6f63d30da4e062f33def4417182512b",
+  "version": "pokemon-motion-2",
+  "limits": {
+    "paletteUnionMax": 15,
+    "inkHeightMin": 18,
+    "inkHeightMax": 22,
+    "topMin": 10,
+    "topMax": 13,
+    "feetBottomMin": 30,
+    "feetBottomMax": 32,
+    "fitInkHeight": 21,
+    "headJitterMax": 1,
+    "bodySizeRatioMax": 1.25,
+    "areaRatioMax": 1.3,
+    "seamChangeMax": 0.36,
+    "stepChangeMin": 4,
+    "margin": 0
+  },
+  "createdAt": "2026-10-04T10:32:38.979Z",
+  "verdict": "pass",
+  "who": "root-supervisor",
+  "why": "Supervisor inspected native size and3x, browser-captured stepA/idle/stepB in allfour directions, and independent read-only review: correctdirections, groundedfeet, stablehead/outfit/accessories, realleg/arm phases. Hero/student/resident side stride remains subtle; no perfect original-equivalence claimed.",
+  "evidence": [
+    {
+      "file": "review-evidence-0.png",
+      "sha256": "208503412f1ae9ed242c80931b790f49a30920e2c95a1d83dca461187ad8bd1e"
+    },
+    {
+      "file": "review-evidence-1.png",
+      "sha256": "c864679932743ba3a418b72c68d64a3934d4ab638769c40c6ecdfb8fb1254baf"
+    },
+    {
+      "file": "review-evidence-2.png",
+      "sha256": "9ef82d141097a560c8b753562fbe71fa47b24d53e280a5d91ff52b5b9556e1fc"
+    }
+  ],
+  "semanticChecklist": [
+    "correct four directions",
+    "alternating feet read while walking",
+    "head/body identity stable",
+    "loop seam natural",
+    "clip is actual drawn poses if advertised drawn"
+  ],
+  "previewSha256": "15226040cc1bcac785e5b5440462c1caed69227dcdd693b845412a63c29e7cf1"
+}

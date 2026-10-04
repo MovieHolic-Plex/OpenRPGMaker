@@ -1,0 +1,38 @@
+{
+  "role": "hiker",
+  "frameWidth": 16,
+  "frameHeight": 32,
+  "rows": [
+    "up",
+    "right",
+    "down",
+    "left"
+  ],
+  "columns": [
+    "stepA",
+    "idle",
+    "stepB"
+  ],
+  "idle": 1,
+  "order": [
+    0,
+    1,
+    2,
+    1
+  ],
+  "frameMs": 140,
+  "sourceSha256": "da70113fff1f66d092e2a19ec33afb64fb508159468719d5a52c501a67a9dd7a",
+  "charsetSha256": "14f304600467a8dfbc8e0e4ef932ee9d30aa0a537772e774a50e18f63f21c886",
+  "nativeSheetWidth": 48,
+  "nativeSheetHeight": 128,
+  "editorAdapter": {
+    "file": "editor-charset.png",
+    "frameWidth": 24,
+    "frameHeight": 32,
+    "paddingX": 4,
+    "resize": false,
+    "sha256": "3d95cd68351dbf2e83b1adae6b85afdca01579734a5962a96337d69553cbe1d9"
+  },
+  "gateSha256": "16d22d596a38617e2baaaa46b58ad9677667b452b6c521306d41add518dbfb9d",
+  "clip": null
+}

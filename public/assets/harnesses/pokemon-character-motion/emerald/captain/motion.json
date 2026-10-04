@@ -1,0 +1,38 @@
+{
+  "role": "captain",
+  "frameWidth": 16,
+  "frameHeight": 32,
+  "rows": [
+    "up",
+    "right",
+    "down",
+    "left"
+  ],
+  "columns": [
+    "stepA",
+    "idle",
+    "stepB"
+  ],
+  "idle": 1,
+  "order": [
+    0,
+    1,
+    2,
+    1
+  ],
+  "frameMs": 140,
+  "sourceSha256": "f7f3379908f0a39f0a3a35070ee33e67c2f62edbeaf6a16de0429df1de2ef7b8",
+  "charsetSha256": "751e39f47ad177292a4ee7a5a69c76f073764e158f19558ee2852e0ab0862400",
+  "nativeSheetWidth": 48,
+  "nativeSheetHeight": 128,
+  "editorAdapter": {
+    "file": "editor-charset.png",
+    "frameWidth": 24,
+    "frameHeight": 32,
+    "paddingX": 4,
+    "resize": false,
+    "sha256": "94a4073e927f4d5fa5a443e2fd5348014c365b52d7d1fcb261b073807f702789"
+  },
+  "gateSha256": "6a8cb5c0c96ebc11493f3883812ac2a7a17d351337f4d7e7228b1d70bd41b6ec",
+  "clip": null
+}

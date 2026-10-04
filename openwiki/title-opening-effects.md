@@ -218,3 +218,8 @@ to a re-export of `exportAppModeShim.ts` to avoid loading the editor mode graph.
 portable project into a different store than `renderPlayer` reads and the probe
 can accidentally capture the blank editor project. Production `vite.player`
 continues to use its existing alias.
+
+
+### Emerald professor native poses (2026-10-04)
+
+`configureEmeraldMonsterPortraitMotion` adds a reviewed384×64 strip (six64×64drawn poses,15opaque colors) to the shared introduction and existing canonical story without recreating narration pages. Scene orders hold neutral/blink/talk and selected gesture frames on one6fps clock. `openingPortraitMotion.ts` owns canvas/decode/visibility/reduced-motion/cleanup, while the cinematic runner owns Enter and BGM. Emerald portrait boxes use128×128, exact2× of the native64 square. The actual exported-player probe is `scripts/qa/runtime/pokemon-native-motion.mjs`; candidate gallery proof does not establish exported playback or saved persistence.

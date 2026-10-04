@@ -195,7 +195,7 @@ function collectProjectStrings(project: Project): Set<string> {
   if (isEmeraldMonsterStyle(project) && ['oprn_emerald_field_cast_1', 'oprn_emerald_field_cast_2'].some(id => values.has(id))) {
     for (const [id, asset] of Object.entries(project.assets.uploaded)) {
       if (id.startsWith('oprn_emerald_trainer_') && asset.kind === 'picture' &&
-          asset.meta.width === 64 && asset.meta.height === 96) values.add(id);
+          asset.meta.width === 64 && (asset.meta.height === 64 || asset.meta.height === 96)) values.add(id);
     }
   }
   // 소스에 박힌 재생 — 프로젝트 문자열에는 없지만 플레이어가 반드시 읽는다.

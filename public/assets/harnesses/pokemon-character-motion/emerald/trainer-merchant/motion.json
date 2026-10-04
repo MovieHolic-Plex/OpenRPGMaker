@@ -1,0 +1,14 @@
+{
+  "kind": "portrait",
+  "profile": "emerald-trainer-native",
+  "role": "merchant",
+  "width": 64,
+  "height": 64,
+  "frameCount": 1,
+  "paletteUnionMax": 15,
+  "alphaThreshold": 128,
+  "sourceSha256": "906e9e79340d67b55e233023eb334b5813c92b927faab614727f838901e6ec4f",
+  "promptSha256": "2d87b77c4e98c80f3a5369894bb99edf7361acd1dc6486f932df58107fc5590b",
+  "portraitSha256": "734befcc5b7cad680233b18609944742716f5935b94c3d46b9a611bd0d0d64ea",
+  "gateSha256": "a77dd978f89e8ea80b0544cfa70be8d06409baf21dfb7c33e9c275f3c48c8ac5"
+}

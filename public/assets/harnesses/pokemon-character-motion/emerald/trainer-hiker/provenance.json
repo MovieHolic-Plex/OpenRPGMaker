@@ -1,0 +1,115 @@
+{
+  "version": "pokemon-motion-2",
+  "kind": "portrait",
+  "mode": "extracted-existing-pixels",
+  "createdAt": "2026-10-04T09:58:18.409Z",
+  "role": "hiker",
+  "sourceSha256": "6f7acc259fa505302ba71c89473988f21509a62a12f65801c134d87d28bffe00",
+  "promptSha256": "f945990d12d35040664f5e0cf5f94f625e6f097c2dd5d276ee8293607e41e22f",
+  "finalSha256": "3a49691580f1c381d619b400b35c188885dde697fce513fe6c6a18edad18e57f",
+  "sourceDimensions": {
+    "width": 64,
+    "height": 96
+  },
+  "contract": {
+    "width": 64,
+    "height": 64,
+    "maxOpaqueColors": 15,
+    "alphaThreshold": 128,
+    "fitInkMax": 62,
+    "bottomExclusive": 63,
+    "margin": 1
+  },
+  "limits": {
+    "width": 64,
+    "height": 64,
+    "maxOpaqueColors": 15,
+    "alphaThreshold": 128,
+    "fitInkMax": 62,
+    "bottomExclusive": 63,
+    "margin": 1
+  },
+  "sourceInk": {
+    "width": 57,
+    "height": 89
+  },
+  "scale": 0.6966292134831461,
+  "palette": [
+    [
+      9,
+      8,
+      8
+    ],
+    [
+      45,
+      45,
+      52
+    ],
+    [
+      84,
+      91,
+      53
+    ],
+    [
+      196,
+      160,
+      121
+    ],
+    [
+      160,
+      127,
+      91
+    ],
+    [
+      85,
+      55,
+      40
+    ],
+    [
+      56,
+      16,
+      19
+    ],
+    [
+      251,
+      200,
+      163
+    ],
+    [
+      193,
+      63,
+      67
+    ],
+    [
+      154,
+      45,
+      45
+    ],
+    [
+      0,
+      0,
+      0
+    ],
+    [
+      25,
+      148,
+      158
+    ],
+    [
+      244,
+      236,
+      230
+    ]
+  ],
+  "alphaThreshold": 128,
+  "sampling": "nearest-existing-pixels",
+  "nativeFrame": {
+    "width": 64,
+    "height": 64,
+    "maxOpaqueColors": 15,
+    "alphaThreshold": 128,
+    "fitInkMax": 62,
+    "bottomExclusive": 63,
+    "margin": 1
+  }
+}

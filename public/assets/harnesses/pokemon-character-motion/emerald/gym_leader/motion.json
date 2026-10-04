@@ -1,0 +1,38 @@
+{
+  "role": "gym_leader",
+  "frameWidth": 16,
+  "frameHeight": 32,
+  "rows": [
+    "up",
+    "right",
+    "down",
+    "left"
+  ],
+  "columns": [
+    "stepA",
+    "idle",
+    "stepB"
+  ],
+  "idle": 1,
+  "order": [
+    0,
+    1,
+    2,
+    1
+  ],
+  "frameMs": 140,
+  "sourceSha256": "dabfe5d83e236a7d7a174e2eb56bbff0f53deb0db3f3b2126af9aa62c431f472",
+  "charsetSha256": "5f92ad97053167911580aa69131000be11ce150bd96c5349cf902795422b2470",
+  "nativeSheetWidth": 48,
+  "nativeSheetHeight": 128,
+  "editorAdapter": {
+    "file": "editor-charset.png",
+    "frameWidth": 24,
+    "frameHeight": 32,
+    "paddingX": 4,
+    "resize": false,
+    "sha256": "86ccface234aaac690c4ddaf9e53ab61f85bf9633743a09a1afc4242e97998ac"
+  },
+  "gateSha256": "342e75263429802cdaf2692ca9a08f8f2a341183e479c4e4cdd087141503a069",
+  "clip": null
+}

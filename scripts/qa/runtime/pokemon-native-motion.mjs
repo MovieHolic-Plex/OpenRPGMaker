@@ -214,8 +214,10 @@ try {
             if(s.moving&&!poses[phase]){
               const c=document.createElement('canvas');c.width=f.cutWidth;c.height=f.cutHeight;const ctx=c.getContext('2d');ctx.drawImage(s.player.texture.getSourceImage(),f.cutX,f.cutY,f.cutWidth,f.cutHeight,0,0,c.width,c.height);poses[phase]=c.toDataURL();
               const pixels=ctx.getImageData(0,0,c.width,c.height).data;let minX=c.width,minY=c.height,maxX=-1,maxY=-1;
+              const colors=new Set();let nonBinaryAlpha=0,gutterInk=0;
+              for(let y=0;y<c.height;y++)for(let x=0;x<c.width;x++){const i=(y*c.width+x)*4,alpha=pixels[i+3];if(alpha){colors.add([...pixels.slice(i,i+3)].join(','));if(alpha!==255)nonBinaryAlpha++;if(x<4||x>=20)gutterInk++;}}
               for(let y=0;y<c.height;y++)for(let x=0;x<c.width;x++)if(pixels[(y*c.width+x)*4+3]){minX=Math.min(minX,x);minY=Math.min(minY,y);maxX=Math.max(maxX,x);maxY=Math.max(maxY,y)}
-              poseGeometry[phase]={frame:f.name,width:c.width,height:c.height,opaqueBounds:maxX<0?null:{x:minX,y:minY,width:maxX-minX+1,height:maxY-minY+1},displayWidth:s.player.displayWidth,displayHeight:s.player.displayHeight,scaleX:s.player.scaleX,scaleY:s.player.scaleY};
+              poseGeometry[phase]={frame:f.name,width:c.width,height:c.height,opaqueBounds:maxX<0?null:{x:minX,y:minY,width:maxX-minX+1,height:maxY-minY+1},displayWidth:s.player.displayWidth,displayHeight:s.player.displayHeight,scaleX:s.player.scaleX,scaleY:s.player.scaleY,opaqueColors:[...colors],nonBinaryAlpha,gutterInk};
             }
             if(!s.moving&&s.tileX===anchor.x+dx*3&&s.tileY===anchor.y+dy*3)break;
           }
@@ -227,11 +229,13 @@ try {
       const pattern=sequencePhases.join(','),row=directions.findIndex(([d])=>d===direction);
       check('walking '+direction+' uses actual0/1/2/1 gait and idle1',run.tile.x===anchor.x+dx*3&&run.tile.y===anchor.y+dy*3&&pattern.includes('0,1,2,1')&&moving.every(s=>s.row===row)&&Number(run.idle.frame)%3===1&&!run.idle.moving&&run.facing===direction,{phases:sequencePhases,tile:run.tile,idle:run.idle});
       const poseHashes=new Set(Object.values(run.poses).map(sha));check('walking '+direction+' displays three distinct drawn native poses',poseHashes.size===3);
+      check('walking '+direction+' preserves native16x32 inside transparent24x32 adapter',Object.values(run.poseGeometry).every(g=>{const b=g.opaqueBounds;return g.width===24&&g.height===32&&g.scaleX===1&&g.scaleY===1&&g.displayWidth===24&&g.displayHeight===32&&g.gutterInk===0&&g.nonBinaryAlpha===0&&g.opaqueColors.length<=15&&b&&b.x>=4&&b.x+b.width<=20&&b.y>=10&&b.y<=13&&b.height>=18&&b.height<=22&&b.y+b.height>=30&&b.y+b.height<=32}),run.poseGeometry);
       const expectedZoom=project.system.cameraZoom??1;check('walking '+direction+' preserves authored camera zoom',run.camera.zoom===expectedZoom);
       run.poseEvidence=[];for(const [phase,png] of Object.entries(run.poses))run.poseEvidence.push(await savePng(`walking-${direction}-phase-${phase}.png`,png));delete run.poses;
       report.walking.directions.push({direction,anchor,phases:sequencePhases,...run});
       await page.screenshot({path:path.join(output,`walking-${direction}-idle.png`)});
     }
+    const palette=new Set(report.walking.directions.flatMap(d=>Object.values(d.poseGeometry).flatMap(g=>g.opaqueColors)));check('actual twelve hero poses share at most15 opaque colors',palette.size<=15,{paletteUnion:palette.size});
   }else report.walking={skipped:true,reason:'Explicit --opening-only'};
 
   const reducedContext=await browser.newContext({viewport:{width:960,height:720},reducedMotion:'reduce'}),reducedPage=await watch(reducedContext,'reduced');

@@ -1,0 +1,162 @@
+{
+  "provenance": {
+    "version": "pokemon-motion-2",
+    "kind": "portrait",
+    "mode": "extracted-existing-pixels",
+    "createdAt": "2026-10-04T10:07:59.099Z",
+    "role": "resident",
+    "sourceSha256": "11934266531d852a885ea328c38521df6f4ad4bab0b43eaa3305cf9aeaa49c04",
+    "promptSha256": "7ed4ed7b5c896fa66efdae6ddd816ea8fd48f4d9b1f6c39573c86ba6b6f8e7ee",
+    "finalSha256": "274a2f2301ba7afcd22aa31ede27fa8d15a762b073f25bab6f0c9bf550ec2c3b",
+    "sourceDimensions": {
+      "width": 1254,
+      "height": 1254
+    },
+    "contract": {
+      "width": 64,
+      "height": 64,
+      "maxOpaqueColors": 15,
+      "alphaThreshold": 128,
+      "fitInkMax": 62,
+      "bottomExclusive": 63,
+      "margin": 1
+    },
+    "limits": {
+      "width": 64,
+      "height": 64,
+      "maxOpaqueColors": 15,
+      "alphaThreshold": 128,
+      "fitInkMax": 62,
+      "bottomExclusive": 63,
+      "margin": 1
+    },
+    "sourceInk": {
+      "width": 1032,
+      "height": 1179
+    },
+    "scale": 0.05258693808312129,
+    "palette": [
+      [
+        253,
+        125,
+        34
+      ],
+      [
+        253,
+        195,
+        154
+      ],
+      [
+        59,
+        58,
+        64
+      ],
+      [
+        32,
+        19,
+        14
+      ],
+      [
+        207,
+        85,
+        29
+      ],
+      [
+        10,
+        130,
+        119
+      ],
+      [
+        14,
+        166,
+        148
+      ],
+      [
+        65,
+        31,
+        15
+      ],
+      [
+        84,
+        83,
+        92
+      ],
+      [
+        109,
+        59,
+        46
+      ],
+      [
+        128,
+        89,
+        71
+      ],
+      [
+        140,
+        152,
+        151
+      ],
+      [
+        178,
+        126,
+        95
+      ],
+      [
+        213,
+        163,
+        126
+      ],
+      [
+        252,
+        252,
+        251
+      ]
+    ],
+    "alphaThreshold": 128,
+    "sampling": "nearest-existing-pixels",
+    "nativeFrame": {
+      "width": 64,
+      "height": 64,
+      "maxOpaqueColors": 15,
+      "alphaThreshold": 128,
+      "fitInkMax": 62,
+      "bottomExclusive": 63,
+      "margin": 1
+    }
+  },
+  "hashes": {
+    "source.png": "11934266531d852a885ea328c38521df6f4ad4bab0b43eaa3305cf9aeaa49c04",
+    "prompt.txt": "7ed4ed7b5c896fa66efdae6ddd816ea8fd48f4d9b1f6c39573c86ba6b6f8e7ee",
+    "portrait.png": "274a2f2301ba7afcd22aa31ede27fa8d15a762b073f25bab6f0c9bf550ec2c3b"
+  },
+  "implementationSha256": "7bf84ac17234c16b2dad8515b59e09038a21df9c986d5837202f844d632d28e0",
+  "provenanceSha256": "155723857302cc97cc55d3d319267ce8060388074cc0d8cd0b3be5ba1168b2d0",
+  "version": "pokemon-motion-2",
+  "limits": {
+    "width": 64,
+    "height": 64,
+    "maxOpaqueColors": 15,
+    "alphaThreshold": 128,
+    "fitInkMax": 62,
+    "bottomExclusive": 63,
+    "margin": 1
+  },
+  "createdAt": "2026-10-04T10:32:41.220Z",
+  "verdict": "pass",
+  "who": "root-supervisor",
+  "why": "Supervisor inspected native64square and3x; role outfit/hair/cap match field identity and independent reviewer. Fronts show completefigures; hero_back has waist-up composition. New nurse/resident/hero_back generated using builtinimagegen. Existing otherfronts uniformly normalized from genuine generated pixels.",
+  "evidence": [
+    {
+      "file": "review-evidence-0.png",
+      "sha256": "26ab5509e44061b05e3aa194d3f62ffa56e32dbff2e1ffc18a5bb011aa30d2bd"
+    }
+  ],
+  "semanticChecklist": [
+    "native1x silhouette and anatomy readable",
+    "role/outfit matches generated source identity",
+    "palette and edge pixels reviewed at1x2x3x",
+    "uniform nearest fit retains aspect and complete pose",
+    "front/back orientation is correct for declared role"
+  ],
+  "previewSha256": "088a7167aa2b0f17e4e250f931f170a95e340160f49326617a9323561c29fb41"
+}

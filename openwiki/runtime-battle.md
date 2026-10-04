@@ -1831,3 +1831,10 @@ path awards. The gauge animates within the current level interval, reaching
 modify instances or award EXP. The ordinary actor branch still uses its existing
 actor EXP curve and `expForRewardActor` policy. Missing monster snapshots remain
 an empty gauge rather than reading editor start-state or guessing XP from Lv.
+
+
+### Emerald trainer source dimensions correction (2026-10-04)
+
+Owned64×64 trainer fronts and waist-up player back are rendered at exact2× (128×128) using the existing bottom platform anchors. Explicit legacy64×96 custom portraits remain supported as128×192; that transport is not Emerald native. The native image dimensions are validated after decode as well as authored metadata. Original rawtrainer paintings are normalized by the reviewed portrait lifecycle; source art and pixels are not painted by the converter. Standalone game QA verifies actual trainer visibility, handoff, Continue and victory; colored-rectangle dimension fixtures are separate layout checks.
+
+Native trainer assets must also survive `webExportAssets.collectProjectStrings`: implicit owned trainer pictures accept64×64 and explicitly authored legacy64×96, matching the renderer. The former96-only collector silently pruned all17native pictures while leaving a functioning monster-battle fallback. `emerald-native-dependencies.mjs` guards the actual collector against this regression, and `emerald-native-battle.mjs` verifies the actual compiled export with a genuine previous Continue slot, native trainer handoff, victory reward and level-up. Private party/teleport preparation is recorded; it does not claim a natural whole-campaign playthrough.

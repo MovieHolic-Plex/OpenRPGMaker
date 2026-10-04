@@ -25,6 +25,10 @@ export function reviewMonsterGame(p: Project) {
   const known=(id:unknown)=>typeof id==='string'&&!!(p.assets.uploaded[id]?.ref||p.assets.uploaded[id]?.dataUrl||resolveAssetResourceUrl(id,{project:p}));
   if(p.system.playResolution?.width!==480||p.system.playResolution?.height!==320||p.system.cameraZoom!==2)issues.push('에메랄드15×10칸 화면은480×320/카메라2배여야 합니다.');
   if(!isEmeraldMonsterStyle(p))issues.push('에메랄드 참고 프로필이 적용되지 않았습니다.');
+  if(isEmeraldMonsterStyle(p))for(const [id,asset] of Object.entries(p.assets.uploaded)) {
+    if((id.startsWith('oprn_emerald_trainer_')||id==='oprn_emerald_professor')&&(asset.meta?.width!==64||asset.meta?.height!==64))issues.push(`에메랄드 인물 원본은64×64여야 합니다:${id}`);
+    if(id.startsWith('oprn_emerald_field_cast_')&&(asset.meta?.width!==288||asset.meta?.height!==256||asset.meta?.frameWidth!==24||asset.meta?.frameHeight!==32))issues.push(`필드 캐스트는16×32 원본을 x4 여백에 담은288×256 컨테이너여야 합니다:${id}`);
+  }
   if(!campaign)issues.push('실제 몬스터 캠페인 정의가 없습니다.');
   if(maps.length<72)issues.push(`전체 캠페인은 최소72맵이 필요합니다(현재${maps.length}).`);
   if(roster.length<60||new Set(campaign?.speciesIds).size!==roster.length)issues.push(`도감에 고유60종이 필요합니다(현재${roster.length}).`);
