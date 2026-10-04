@@ -1,0 +1,254 @@
+{
+  "passed": true,
+  "cases": [
+    {
+      "label": "yucatan-final",
+      "projectId": "4be8544a-78d6-4f11-aece-51b5fbefe869",
+      "folder": "/home/main/.local/share/oprn/worldmap-shared-ai-yucatan-final-20261004",
+      "revision": 2,
+      "model": "gpt-6-astra",
+      "originalMapsPreserved": true,
+      "imported": [
+        {
+          "referenceId": "shared_worldmap_real_yucatan",
+          "mapId": "map_yucatan_travel",
+          "worldmapSource": {
+            "theme": "fantasy",
+            "ops": [
+              {
+                "style": "real",
+                "box": [
+                  -93,
+                  14,
+                  -86,
+                  22
+                ],
+                "home": [
+                  -89,
+                  20.8
+                ],
+                "op": "continents"
+              },
+              {
+                "style": "real",
+                "box": [
+                  -93,
+                  14,
+                  -86,
+                  22
+                ],
+                "op": "continents",
+                "home": [
+                  -89,
+                  20.8
+                ]
+              },
+              {
+                "kind": "broad",
+                "density": 0.65,
+                "poly": [
+                  [
+                    44,
+                    4
+                  ],
+                  [
+                    54,
+                    4
+                  ],
+                  [
+                    54,
+                    8
+                  ],
+                  [
+                    44,
+                    8
+                  ]
+                ],
+                "op": "forest"
+              },
+              {
+                "kind": "broad",
+                "poly": [
+                  [
+                    58,
+                    11
+                  ],
+                  [
+                    64,
+                    11
+                  ],
+                  [
+                    64,
+                    18
+                  ],
+                  [
+                    58,
+                    18
+                  ]
+                ],
+                "density": 0.6,
+                "op": "forest"
+              },
+              {
+                "ground": "grass",
+                "op": "biome",
+                "poly": [
+                  [
+                    44,
+                    3
+                  ],
+                  [
+                    55,
+                    3
+                  ],
+                  [
+                    55,
+                    9
+                  ],
+                  [
+                    44,
+                    9
+                  ]
+                ]
+              }
+            ],
+            "terrainId": "edit",
+            "palette": "original",
+            "base": "generate",
+            "fitSalt": 0
+          },
+          "characterScale": 0.75,
+          "events": 0,
+          "groundPreserved": true,
+          "geographyPreserved": true,
+          "privateTileset": true,
+          "scaleCorrect": true,
+          "bakedSceneryMisclassifiedAsEmpty": false
+        }
+      ],
+      "placements": [
+        {
+          "args": {
+            "mapId": "map_yucatan_travel",
+            "iconId": "fantasy/city_capital",
+            "at": {
+              "x": 46,
+              "y": 30
+            },
+            "referencePurpose": "wmi-fantasy"
+          },
+          "inspected": {
+            "ok": true,
+            "iconId": "fantasy/city_capital",
+            "sha256": "97e419901f373be76493ea505b176a526c0073ff86264bff483ea1410a71855a",
+            "issues": []
+          },
+          "entranceWalkable": true
+        },
+        {
+          "args": {
+            "mapId": "map_yucatan_travel",
+            "iconId": "fantasy/city_harbor",
+            "at": {
+              "x": 54,
+              "y": 33
+            },
+            "referencePurpose": "wmi-fantasy"
+          },
+          "inspected": {
+            "ok": true,
+            "iconId": "fantasy/city_harbor",
+            "sha256": "286c7f629172f18474fd6b19ece377ca86706541d007931c68c9c42577ee25cb",
+            "issues": []
+          },
+          "entranceWalkable": true
+        }
+      ],
+      "toolErrors": 0,
+      "toolCalls": 36,
+      "savedAndReopened": true,
+      "passed": true,
+      "rawSummaryUsedJsonKeyOrder": true
+    },
+    {
+      "label": "joseon-final",
+      "projectId": "c9849afe-5372-4000-a0d2-276e2e5f6f88",
+      "folder": "/home/main/.local/share/oprn/worldmap-shared-ai-joseon-final-20261004",
+      "revision": 2,
+      "model": "gpt-6-astra",
+      "originalMapsPreserved": true,
+      "imported": [
+        {
+          "referenceId": "shared_worldmap_real_joseon",
+          "mapId": "map_joseon_travel",
+          "worldmapSource": {
+            "theme": "joseon",
+            "ops": [
+              {
+                "style": "real",
+                "region": "korea",
+                "op": "continents",
+                "count": 0
+              }
+            ],
+            "terrainId": "joseon-korea+edit",
+            "palette": "joseon",
+            "base": "generate",
+            "fitSalt": 0
+          },
+          "characterScale": 0.75,
+          "events": 0,
+          "groundPreserved": true,
+          "geographyPreserved": true,
+          "privateTileset": true,
+          "scaleCorrect": true,
+          "bakedSceneryMisclassifiedAsEmpty": false
+        }
+      ],
+      "placements": [
+        {
+          "args": {
+            "mapId": "map_joseon_travel",
+            "iconId": "fantasy/castle_dark_grand",
+            "at": {
+              "x": 6,
+              "y": 14
+            },
+            "referencePurpose": "wmi-fantasy"
+          },
+          "inspected": {
+            "ok": true,
+            "iconId": "fantasy/castle_dark_grand",
+            "sha256": "f144946d5540426542583e759e4d9e596a71405e55c246196b89252ca8d96660",
+            "issues": []
+          },
+          "entranceWalkable": true
+        },
+        {
+          "args": {
+            "mapId": "map_joseon_travel",
+            "iconId": "fantasy/village_wood",
+            "at": {
+              "x": 35,
+              "y": 50
+            },
+            "referencePurpose": "wmi-fantasy"
+          },
+          "inspected": {
+            "ok": true,
+            "iconId": "fantasy/village_wood",
+            "sha256": "5796fede768ba92fed925e1e06e3e4b63bb7387bf9c4289f6151503072f9e594",
+            "issues": []
+          },
+          "entranceWalkable": true
+        }
+      ],
+      "toolErrors": 0,
+      "toolCalls": 38,
+      "savedAndReopened": true,
+      "passed": true,
+      "rawSummaryUsedJsonKeyOrder": true
+    }
+  ],
+  "ordinaryLayoutCounterStillActive": true
+}

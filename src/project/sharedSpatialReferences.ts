@@ -32,7 +32,11 @@ export function sharedRegionSnapshot(id: string) {
   const reference = catalog.regions.find(r => r.id === id);
   const map = reference && catalog.maps[reference.sourceMapId];
   const tileset = map && catalog.tilesets[map.tilesetId];
-  return map && tileset ? { map, tileset } : undefined;
+  if (!map || !tileset) return undefined;
+  const ids = new Set(tileset.image.type === 'uploaded' ? [tileset.image.id] : []);
+  for (const graft of tileset.tileGrafts ?? []) ids.add(graft.sourceChipset);
+  const assets = Object.fromEntries([...ids].filter(key => catalog.assets[key]).map(key => [key, catalog.assets[key]!]));
+  return { map, tileset, assets };
 }
 export function sharedObjectKit(tilesetId: string, kitId: string) {
   return (sharedContentTileset(tilesetId) ?? catalog.tilesets[tilesetId])?.structureKits?.find(k => k.id === kitId);

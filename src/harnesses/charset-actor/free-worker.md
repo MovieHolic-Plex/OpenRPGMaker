@@ -18,6 +18,7 @@
   {TOOL} views characters/KEY__gpt-r1/out.chr.txt characters/KEY__gpt-r1/views --base BASE --strength free
   ```
 - views/alpha_sheet.png(자홍색 체커), views/sheet_rgba.png, views/alpha.png와 views/strip.png를 직접 열어 **12프레임 전부**를 확인한다. 걷기 GIF는 views/walk_checker.gif·walk_white.gif·walk_black.gif로 배경을 바꿔 본다. 잔디 위에서만 확인하고 끝내지 않는다.
+- 전파 v2는 새 윤곽 안의 원본 배경에 대응하는 정지 그림의 실제 픽셀을 영역 전체의 출처가 있을 때만 전달한다. walk-transfer.json에서 출발/도착 좌표·색과 격자 해시를 확인할 수 있다. 정지 그림부터 투명하거나 출처가 없는 부분은 해결하지 않으므로 직접 저작한 행과 검사 결과를 계속 확인한다.
 - 원본 밖에 추가한 옷·모자·장식 안의 1px 투명 점도 불합격이다. 팔·다리 사이 배경을 새 윤곽으로 둘러싸 닫힌 구멍으로 만들지 않는다. 머리 깊은 면을 배경으로 연결하는 좁은 틈도 금지한다. 검사 실패는 **직접 찍은 행**을 고쳐 전파·views를 다시 실행한다. 자동으로 빈 곳을 채우거나 검사 JSON만 바꿔 통과시키지 않는다.
 - 각 폴더에 desc.json을 쓴다: {"label":"인물 이름","gender":"남|여|불명","attributes":{"kind":"사람","age":"어린이|청년|중년|노년|불명","hair":"머리 모양·색","clothing":"의상 종류·색"},"role":"역할","appearance":"실제로 그린 외형","tags":["장르","복식"],"fits":"쓰임","by":"GPT 6.1 sol high · 작업자 설명"}. age는 네가 선택한 캐릭터 설정이며 실제 나이를 그림으로 확정한 관찰값이 아니다. 모르면 불명으로 쓴다. 각 속성 문자열은 80자 이하다.
 - notes.md에 선택한 콘셉트와 아쉬움을 적는다. 모든 지정된 사람의 결과를 남긴다.

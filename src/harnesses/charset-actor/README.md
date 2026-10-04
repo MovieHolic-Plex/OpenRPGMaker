@@ -12,6 +12,7 @@ npm run harness -- charset-actor serve --port 18314
 npm run harness -- charset-actor export RUN
 python3 src/harnesses/charset-actor/harness.py publish-shared
 npm run harness -- charset-actor audit --run RUN --refresh-previews
+npm run harness -- charset-actor walk-qa --run RUN --out /absolute/evidence-outside-repo
 ```
 
 - `produce`는 manifest/작업 폴더를 만들고 터미널과 독립적으로 저작을 시작한다. `--par 4 --batch-size 2`가 기본이다.
@@ -23,6 +24,8 @@ npm run harness -- charset-actor audit --run RUN --refresh-previews
 - 걷기는 자홍색 체커 배경이 기본이다. 흰색·검정·잔디로 즉시 전환하여 투명 점·열린 틈과 배경색으로 위장한 옷을 확인한다. 상세 시트는 실제 RGBA를 보여준다.
 - alpha 정책은 렌더/선택 binding과 따로 버전을 관리한다. 검사 개선 때 옛 PASS를 다시 계산하되 같은 픽셀의 사용자 선택을 지우지 않는다. 새 옷 안의 투명 구멍과 깊은 머리 면의 열린 틈도 차단한다.
 - `audit --run RUN`은 저장소 밖 데이터 폴더에 전체 12프레임 접촉 시트와 세 배경의 원본/후보 비교, 결손 좌표·해시·PNG 키 색 재읽기 `audit.json`/`SUMMARY.md`를 남긴다. `--refresh-previews`는 같은 격자로 고대비 GIF/RGBA 시트만 추가하며 그림·사용자 결정·공용 DB를 바꾸지 않는다. 차단 후보의 원본/선택 이력은 보존하고 정상 후보 목록·새 팩·공용 게시에서 제외한다.
+- 걷기 전파 v2는 새 윤곽 안에 갇힌 원본 배경에 대응하는 정지 그림의 실제 색을 전달한다. 영역 전체의 출처가 있을 때만 옮기며 정지 그림부터 난 구멍은 검사 실패로 남긴다. `walk-transfer.json`은 버전·정지/원본/산출 해시와 전달 좌표·글자를 보존한다.
+- `walk-qa --run RUN --out 저장소밖경로`는 실제 후보를 보존한 사본에서 전파/저장/재읽기와 정지·팔레트 보존을 확인한다. 후보별 12프레임/걷기 전후 그림, 정확한 픽셀 출처와 PNG/GIF 재읽기를 `walk-qa.json`/`SUMMARY.md`에 남긴다. QA 사본의 통과는 사람의 남기기를 대신하지 않는다.
 - 남기기/폐기를 누르면 즉시 해당 카드가 사라지고 다음 캐릭터로 넘어간다. A/R과 방향키·이전/다음 버튼을 쓸 수 있다. 이유와 메모 입력은 필수가 아니다.
 - `직전 선택 되돌리기`는 저장 응답을 기다리지 않고 해당 캐릭터를 검토 대기로 되돌린다. 보관한 캐릭터의 개별 되돌리기도 남김/폐기 탭에서 할 수 있다.
 - 선택은 클릭 즉시 카드와 집계에 반영된다. 서버 저장은 뒤에서 순서대로 처리하며 `저장 중 N건`으로 표시한다. 실패하면 브라우저에 보관한 선택을 자동/수동 재시도한다.

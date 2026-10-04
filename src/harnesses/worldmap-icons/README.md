@@ -68,6 +68,10 @@ systemd-run --user --unit=worldmap-icon-harness -p Restart=on-failure /usr/bin/p
 ```
 고른 후보는 `decisions.json` 의 `picked`(예: `r3/B`)로 남고, 그림은 `~/.local/share/oprn/worldmap-icon-harness/rounds/r3/B/a<시도>/cand.png` 다.
 **시트·번들 굽기:** `npm run harness -- worldmap-icons build` → `check`. 현재 사람이 고른 그림만 굽고 칸 번호는 고정한다.
+
+**호스트 공용 DB:** `npm run harness -- worldmap-icons publish-shared --icons-only`로 선택 시트·참고문서를 등록하고
+같은 SQLite 판본을 재읽는다. `--joseon <정본 폴더> --yucatan <정본 폴더>`를 주면 실제 지형 사례도 함께 등록한다.
+지역 사례는 요청 시 로드하며, 새 맵으로 가져온 사본은 지형 설정·크기·업로드 그림과 전용 타일셋을 가진다.
 원본 사본·전체 칸 배열·참고문서도 함께 만든다. 자세한 계약은 `openwiki/harnesses/worldmap-icons.md`.
 명령으로도 연다: `python3 src/harnesses/worldmap-icons/harness.py draw <세트/이름> --note "…" [--base r3/B] [-n 5]` (일꾼은 알아서 뜨고, 1분 놀면 내려간다).
 엔진을 Claude 로: `WMI_HARNESS_ENGINE=claude` (기본 모델 `claude-sonnet-5-5`).
