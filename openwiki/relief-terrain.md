@@ -1,5 +1,8 @@
 # 높이 지형(relief) — 편집기·런타임 지도 (2026-10-01 통합)
 
+태양 방향·고도에 따른 지형/집 그림자(기본 off)는 [sunlight-shadows.md](sunlight-shadows.md).
+높이/통행 데이터와 별도의 수신 마스크를 editor/player/AI 이미지에 적용한다.
+
 2026-10-04 조수 재편집: 기존 feature의 ID로 부분 설정을 바꾸면 높이·시드·점·수위·평탄화 등 생략한 설정을 유지한다. 높이 ops는 잠금 칸과 집터/문 앞의 평탄성을 보호하며, 일반 지형 계획기도 구조물 전체 사각형을 피한다. 조립 집의 지붕 변경은 동일 roof 계획의 재실행과 네 층 화소 일치로 검증한다. 실제 조수 수정·SQLite 재로드·에디터 근거는 `verify-shots/terrain-ai-edit/SUMMARY.md`.
 
 `map.relief`(단·경사로·벽면 장식·양식)를 **한 렌더러**(`src/project/relief/render.ts`)가 그리고, 편집기(`EditScene`)와 게임(`PlayScene`)이

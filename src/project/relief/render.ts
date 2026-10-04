@@ -290,6 +290,18 @@ function inside(a: boolean, b: boolean, c: boolean, d: boolean, i: number, j: nu
   return a ? (tl || br) : (tr || bl);
 }
 
+/** Native height geometry at one pixel; caller supplies the already-pruned grid. */
+export function samplePixelHeight(h: HeightGrid, px: number, py: number, square?: (x: number, y: number) => boolean): number {
+  const H = h.length, W = h[0]!.length;
+  const gc = (x: number, y: number) => h[Math.max(0, Math.min(H - 1, y))]![Math.max(0, Math.min(W - 1, x))]!;
+  if (square?.(px >> 4, py >> 4)) return gc(px >> 4, py >> 4);
+  const x0 = Math.floor((px - 8) / T), y0 = Math.floor((py - 8) / T), i = px - 8 - x0 * T, j = py - 8 - y0 * T;
+  const A = gc(x0, y0), B = gc(x0 + 1, y0), C = gc(x0, y0 + 1), D = gc(x0 + 1, y0 + 1);
+  const lo = Math.min(A, B, C, D);
+  for (let c = Math.max(A, B, C, D); c > lo; c--) if (inside(A >= c, B >= c, C >= c, D >= c, i, j)) return c;
+  return lo;
+}
+
 /** 화소 단위 높이. 대각선 절벽: 칸 중심을 꼭짓점으로 한 마칭 스퀘어. */
 export function buildPixelHeights(h0: HeightGrid, diag = true, square?: (x: number, y: number) => boolean, pruned?: HeightGrid) {
   const h = pruned ?? prune(h0), H = h.length, W = h[0].length, PW = W * T, PH = H * T;

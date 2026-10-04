@@ -5,8 +5,8 @@ export function renderChoices(host, initial, onUpdate, enlarge) {
   let state = initial, busy = false, message = '';
   const active = {}, frame = {};
   function render() {
-    const working = ['art', 'art-context-review'].includes(state.stage);
-    const workLabel = state.stage === 'art-context-review' ? '조립 예시 독립 검수' : `피드백 반영 재생성 ${state.revision || 1}차`;
+    const working = ['art', 'art-layout-review', 'art-context-review'].includes(state.stage);
+    const workLabel = state.stage === 'art-layout-review' ? '제작 전 배치·비례·여백 검수' : state.stage === 'art-context-review' ? '조립 예시 독립 검수' : `피드백 반영 재생성 ${state.revision || 1}차`;
     host.innerHTML = `<h1>${esc(state.title)}</h1>
       <p class="choice-lead">${working ? `${workLabel} ${state.status === 'running' ? '진행 중' : '대기'}` : state.blocked ? '고를 수 있는 수준까지 후보를 고쳐야 합니다.' : state.complete ? '칩 선택을 저장했습니다.' : '예시를 보고 사용할 칩을 골라 주세요.'}</p>
       <div class="choice-steps" aria-label="제작 진행"><span class="done">1 기획·검수 완료</span><span class="current">2 ${working ? workLabel : state.blocked ? '조립 예시 수정 필요' : state.complete ? '칩 선택 완료' : '내 칩 선택'}</span><span>3 공용 등록·조립 연결</span><span>4 맵 제작·검수</span></div>

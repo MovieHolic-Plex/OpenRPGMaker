@@ -1,3 +1,9 @@
+## 태양 지형 그림자 (2026-10-04)
+
+선택적 `map.sunlight`는 기본 off, 편집기와 내보낸 게임이 `project/sunlight.ts`를 공유한다.
+캐릭터 아래의 줄별 마스크·카메라 창 캐시·타일 제자리 수정 무효화·shutdown 정리는
+[sunlight-shadows.md](sunlight-shadows.md)를 읽는다. 통행/시야 계산과 독립이다.
+
 ## 내보낸 게임은 창에 맞춘다 (2026-10-04)
 
 `exportEntry.ts`는 `renderPlayer(surfaceScaleMode:'fit')`로 부팅한다. 기존 integer 기본에서는

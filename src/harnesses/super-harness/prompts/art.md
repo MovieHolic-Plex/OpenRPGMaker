@@ -63,3 +63,24 @@ execution.feedbackSha256에 현재 art-feedback.json 파일의 SHA-256을 넣는
 
 피드백의 archivedEvidence는 실패 당시 원본/조립 예시/검수의 해시 확인된 보존 사본이다. 수정 전 반드시 실제 그림을 연다.
 재생성으로 현재 파일이 바뀌어도 이 사본은 바꾸지 않는다. 새 후보와 비교할 기준으로 사용한다.
+
+## 제작 전 배치 명세 관문 (필수)
+`{{CDIR}}/art-layout-review.json`의 FAIL 및 art-layout-rejections.json이 있으면 구체 지적부터 고친다.
+기존 planning.json의 승인은 새 표본 도면에 재사용하지 않는다. 작은 표본에서도 비례·모든 여백의 용도·공간의 시각적 완성도가 필요하다.
+기존 작은 표본의 큰 화면+주차면2개를 유지하지 않는다. 자동차의 투영 크기를 기준으로 필요한 면과 차로만 잡고 벽과 화면을 밀착시킨다.
+이름만 clearance로 붙여 남는 바닥을 정당화하지 않는다. 설비를 무작정 채우지도 않는다. 구조/조명/벽 마감으로 지하 공간 단서를 남긴다.
+작은 형상 결함도 기존 좌표 상자가 잘못됐으면 spec으로 고친다. 세로 스토퍼 제한상자/전경 덮기 계약을 무조건 보존하지 않는다.
+이미 준비된 하네스가 있으면 범위와 주문서만 갱신한다. 실행기를 다시 설계하거나 관련 없는 전체 문서를 반복 조사하지 않는다.
+
+execution.layout은 아래 JSON 파일의 {path,sha256}이다. 실제로 준비된 새 판/치수에 맞춘다.
+{
+ "canvas":[가로픽셀,세로픽셀], "cellSize":16,
+ "grid":["ASCII 각 행. 모든 칸에 한 글자 기호. 실제 canvas/cellSize와 가로세로 일치"],
+ "legend":{"W":{"role":"structure","purpose":"북벽 윗면과 전면, 실내 경계"},"P":{"role":"parking","purpose":"실제 차와 하차 여유를 포함하는 주차면"}},
+ "proportions":"기준 기물/차의 실제 크기와 구역 크기의 비율 및 선정 근거",
+ "negativeSpace":"여백 각각의 실제 기능과 필요 크기. 오른쪽/아래 패딩을 어떻게 줄였는지",
+ "identityCues":"라벨 없이 알아보게 하는 구조/조명/마감/명암 계획",
+ "sources":[{"path":"실제 시드/치수 계약/주문서/queued state.json/그림 프롬프트/네이티브 검사 코드/판의 brief 파일","sha256":"현재 SHA256"}]
+}
+legend.role 허용: structure, parking, circulation, clearance, equipment, outside. purpose는 8자 이상 구체 근거.
+감독은 이 입력으로 독립 도면 검수를 먼저 실행한다. PASS 전 native 생성은 금지. 반려되면 같은 그림 차수에서 도면만 수정한다.

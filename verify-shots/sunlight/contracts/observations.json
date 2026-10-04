@@ -1,0 +1,124 @@
+{
+  "checks": [
+    "old maps default to off with no shadow allocation",
+    "1024-square flat maps without a tileset allocate no shadow field, including cache reuse",
+    "invalid loaded settings are bounded and normalized",
+    "off/on preserves all authored sun parameters",
+    "north/south suns cast terrain shadows on opposite sides",
+    "low sun lengthens shadows and high sun shortens them",
+    "high-ground receivers do not shade themselves",
+    "caster terrain matches native diagonal geometry at 16384 pixels",
+    "off also produces a fully transparent standalone raster",
+    "real assistant tool partial edits retain altitude, opacity and softness",
+    "real assistant tool off/on is lossless",
+    "clear restores exactly the original map",
+    "sun requests expose edit, inspect and image tools together",
+    "all four native/assembled houses have casters, including houses on high ground",
+    "assistant inspection reports saved settings and real caster heights",
+    "terrain, ramps, tiles, houses, entrances and unrelated maps are unchanged",
+    "actual Beodeul terrain raster changes with direction and altitude without mutating content",
+    "assistant region image includes casters outside the cropped receiver region",
+    "own canonical SQLite save/reload preserves sun and every terrain tile",
+    "shipping-player export preserves identical sun parameters"
+  ],
+  "projectId": "142f700d-d861-4955-a766-5b0f4edd7bec",
+  "folder": "/home/main/.t3/worktrees/rpg-zzu/t3code-77478098/.vite-cache/sunlight/project",
+  "revision": 9,
+  "mapId": "houses_native",
+  "canonicalReload": true,
+  "sourceMapSha": "12f26823bd65b3747949b7892d42c6553163448c6927907da788cfa4444628e1",
+  "savedMapSha": "38a194f6bfe0a529494e27e5d9a95f737aebce8825d8e3e3c46e24a18eabe2b1",
+  "geometryContacts": 16384,
+  "casters": [
+    {
+      "id": "sp_a2ff01d4-09f0-4e24-a2c7-65a12be34406",
+      "kind": "house",
+      "x": 6,
+      "y": 21,
+      "w": 14,
+      "d": 3,
+      "base": 4,
+      "height": 8,
+      "art": {
+        "x": 6,
+        "y": 13,
+        "w": 14,
+        "h": 11
+      }
+    },
+    {
+      "id": "sp_dbe5965d-2ed8-410c-bf8a-109803471270",
+      "kind": "house",
+      "x": 34,
+      "y": 20.2,
+      "w": 5,
+      "d": 1.7999999999999998,
+      "base": 6,
+      "height": 4.2,
+      "art": {
+        "x": 34,
+        "y": 16,
+        "w": 5,
+        "h": 6
+      }
+    },
+    {
+      "id": "sp_6c3b74ec-e76d-487b-96b8-574751c06182",
+      "kind": "house",
+      "x": 54,
+      "y": 17.2,
+      "w": 8,
+      "d": 1.7999999999999998,
+      "base": 9,
+      "height": 4.2,
+      "art": {
+        "x": 54,
+        "y": 13,
+        "w": 8,
+        "h": 6
+      }
+    },
+    {
+      "id": "sp_4e36815d-5fed-4f58-acc9-253a9b2b5201",
+      "kind": "house",
+      "x": 17,
+      "y": 44.6,
+      "w": 15,
+      "d": 2.4,
+      "base": 0,
+      "height": 5.6,
+      "art": {
+        "x": 17,
+        "y": 39,
+        "w": 15,
+        "h": 8
+      }
+    }
+  ],
+  "exposure": [
+    "find_tools",
+    "read_project_wiki",
+    "tile_query",
+    "create_map",
+    "resize_map",
+    "ask_tileset_change",
+    "get_project_summary",
+    "list_resources",
+    "get_database_records",
+    "focus_editor_view",
+    "web_search",
+    "get_map_region",
+    "find_events",
+    "get_event",
+    "find_layout_regions",
+    "set_map_properties",
+    "inspect_terrain",
+    "show_map_region",
+    "script_cutscene_staged",
+    "repair_fence",
+    "look_at_houses",
+    "build_hand_interior_room",
+    "edit_world_terrain",
+    "rename_switch"
+  ]
+}

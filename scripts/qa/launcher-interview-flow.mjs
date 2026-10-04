@@ -5,7 +5,7 @@ import { resolve } from 'node:path';
 import assert from 'node:assert/strict';
 
 const base=process.env.MAKER_UI_URL??'http://127.0.0.1:9812';
-const out=resolve('verify-shots/launcher-interview-flow');fs.mkdirSync(out,{recursive:true});
+const out=resolve(process.env.LAUNCHER_INTERVIEW_CAPTURE_DIR??'verify-shots/launcher-interview-flow');fs.mkdirSync(out,{recursive:true});
 const browser=await chromium.launch({args:['--no-sandbox']});
 const report={productionComponents:true,syntheticAuthAndArtFailure:true,canonicalWrites:0,errors:[],checks:[]};
 const page=await browser.newPage({viewport:{width:1440,height:900}});

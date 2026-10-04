@@ -11,6 +11,7 @@ import path from "node:path";
 import { PNG } from "pngjs";
 import { drawMapTileLayer } from "../../src/editor/mapTileDraw.ts";
 import { reliefMapView } from "../../src/editor/reliefMapView.ts";
+import { sunlightField } from "../../src/project/sunlight.ts";
 import { createReliefGroundSurface } from "../../src/editor/reliefGroundSurface.ts";
 import { cropExtraLayers } from "../../src/project/mapLayers.ts";
 import { tilesetBaseImageUrl } from "../../src/editor/tilesetImage.ts";
@@ -181,7 +182,7 @@ function outline(target: Raster, x: number, y: number, size: number, rgb: readon
   }
 }
 
-export function renderMapPng(project: Project, map: GameMap, scale = 1): { png: Buffer; note?: string } {
+export function renderMapPng(project: Project, map: GameMap, scale = 1, sunSource?: { map: GameMap; x: number; y: number }): { png: Buffer; note?: string } {
   const tileset = project.tilesets[map.tilesetId];
   const size = (tileset?.tileSize ?? 16) * scale;
   const image = tileset ? loadTilesetRaster(project, tileset) : null;
@@ -198,6 +199,13 @@ export function renderMapPng(project: Project, map: GameMap, scale = 1): { png: 
   if (!tileset || !image) note = `타일셋 이미지를 읽지 못했습니다(${map.tilesetId})`;
   else {
     const context = new PngContext(target) as unknown as CanvasRenderingContext2D;
+    const sun = sunlightField(sunSource?.map ?? map, tileset);
+    const sunRow = (row: number) => {
+      if (!sun) return;
+      const x = sunSource?.x ?? 0, y = sunSource?.y ?? 0, s = sun.row(row + y, x, x + map.width);
+      new PngContext(target).drawImage({ width: s.w, height: s.h, data: new Uint8Array(s.rgba) }, 0, 0, s.w, s.h,
+        0, (s.y * s.scale - y) * size + (relief?.pad ?? 0), s.w * s.scale * size, s.h * s.scale * size);
+    };
     if (relief) {
       const flat = () => ({ width: map.width * size, height: map.height * size, data: new Uint8Array(map.width * size * map.height * size * 4) });
       const lower = flat(), upper = flat(), ctx = new PngContext(target);
@@ -211,10 +219,12 @@ export function renderMapPng(project: Project, map: GameMap, scale = 1): { png: 
         for (const cell of row.cells) if (cell.paintLower) ctx.drawImage(lower, cell.x * size, row.y * size, size, size, cell.x * size, cell.y, size, size);
         strip(row.over);
         for (const cell of row.cells) ctx.drawImage(upper, cell.x * size, row.y * size, size, size, cell.x * size, cell.y, size, size);
+        sunRow(row.y);
       }
     } else {
       drawMapTileLayer(context, image as never, map, tileset, "lower", scale);
       drawMapTileLayer(context, image as never, map, tileset, "upper", scale);
+      for (let row = 0; row < map.height; row++) sunRow(row);
     }
   }
   const surfaceY = (x: number, y: number) => relief?.rows[y]?.cells[x]?.y ?? y * size;
@@ -249,7 +259,7 @@ export function renderToolRegionPngBase64(project: Project, data: unknown, maxSi
     const cropped: GameMap = { ...map, width: w, height: h, lowerTiles: cut(map.lowerTiles), upperTiles: cut(map.upperTiles),
       events: map.events.filter(e => e.x >= x && e.x < x + w && e.y >= y && e.y < y + h).map(e => ({ ...e, x: e.x - x, y: e.y - y })) };
     cropExtraLayers(cropped, map.width, map.height, x, y, w, h);
-    const { png, note } = renderMapPng({ ...project, startPos: { x: project.startPos.x - x, y: project.startPos.y - y } }, cropped);
+    const { png, note } = renderMapPng({ ...project, startPos: { x: project.startPos.x - x, y: project.startPos.y - y } }, cropped, 1, { map, x, y });
     if (note) throw new Error(`map-rendering-unavailable: ${note}`);
     const full = PNG.sync.read(png), step = Math.max(1, Math.ceil(Math.max(full.width, full.height) / maxSide));
     const out = new PNG({ width: Math.max(1, Math.floor(full.width / step)), height: Math.max(1, Math.floor(full.height / step)) });

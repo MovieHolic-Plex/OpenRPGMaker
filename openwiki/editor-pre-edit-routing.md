@@ -2,6 +2,12 @@
 
 # Editor Pre-edit Routing & Cautions
 
+## 태양과 그림자 (2026-10-04)
+
+높이 막대 태양 아이콘 → 맵 설정. 선택적 `map.sunlight`는 기본 off다.
+방향/고도/진하기/부드러움/집·나무 높이 배율, 저장·조수 계약은 [sunlight-shadows.md](sunlight-shadows.md).
+`setMapSunlight`의 map lock/store 계측을 사용하며 타일·통행·시야를 바꾸지 않는다.
+
 ## 공식 맵 상한 1024×1024 (2026-10-01)
 
 `src/project/mapSizeLimits.ts`의 `MAX_TOOL_MAP_DIMENSION = 1024`가 유일한 상한이다.

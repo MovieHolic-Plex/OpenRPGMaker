@@ -1,0 +1,231 @@
+{
+  "version": 2,
+  "layout": {
+    "canvas": [
+      240,
+      192
+    ],
+    "cellSize": 16,
+    "grid": [
+      "WWWWWWWWWWWWWWW",
+      "WWWWWWWWLLLLWWW",
+      "WWWWWWWWWWWWWWW",
+      "OAAAAAADDDDDDRW",
+      "OAAAAAAPCCCCSRW",
+      "OAAAAAAPCCCCSRW",
+      "OAAAAAADDDDDSRW",
+      "OAAAAAAPPPPPPRW",
+      "OAAAAAAPPPPPSRW",
+      "OAAAAAAPPPPPSRW",
+      "OAAAAAAPPPPPSRW",
+      "WAAAAAATTTTTTTW"
+    ],
+    "legend": {
+      "W": {
+        "role": "structure",
+        "purpose": "북벽48px·동벽x224..239·서벽절단·북서/북동모서리의 닫힌 콘크리트 경계"
+      },
+      "L": {
+        "role": "equipment",
+        "purpose": "북벽 x128..191,y25..28 부착등; 바닥 설비 아닌 벽내 장착"
+      },
+      "A": {
+        "role": "circulation",
+        "purpose": "서측96px 폭 접근차로; 원본70px 차체의 두 주차면 서쪽 입구 접근"
+      },
+      "O": {
+        "role": "circulation",
+        "purpose": "서벽y48..175 실제 개구부; 바깥에서96px 차로 및 두 주차면 서측입구로 직선 연결"
+      },
+      "P": {
+        "role": "parking",
+        "purpose": "96×64 두 면; 서21/동5 및 내부북20/남16px 하차여유를 포함하는 도색구획"
+      },
+      "C": {
+        "role": "parking",
+        "purpose": "원본80×48·scale1·원점128,48; 실제 알파x133..202,y68..95인 동향차"
+      },
+      "D": {
+        "role": "clearance",
+        "purpose": "첫면 내부 북20px/남16px 하차 여유; 별도 주차면/패딩 아님"
+      },
+      "S": {
+        "role": "equipment",
+        "purpose": "두 저상턱[192,74,5,26]/[192,138,5,26];16px셀 C/D와 부분중첩; 긴축은 바닥평면"
+      },
+      "R": {
+        "role": "clearance",
+        "purpose": "x208..223,y48..175 한줄 공용 보행로; 두 면의 전방5px구간을 통해 하차부와 연결하고 남측 횡단통로로 이동"
+      },
+      "T": {
+        "role": "clearance",
+        "purpose": "y176..191,x112..223의16px 횡단통로; 동측 보행로를 서측 차로/개구부로 연결"
+      }
+    },
+    "proportions": "원본 PNG80×48, alpha70×28, scale1·동향·원점(128,48), 실제 알파[133,68,70,28]. 면96×64=70+서21+동5 및28+북20+남16. 북벽48, 차로96 유지. 전체240×192=15×12셀. 턱[192,74,5,26]/[192,138,5,26], foreground[192,92,4,1], 바퀴(145,91)/(190,91). C/S/D는16px셀 해상도에서 일부 중첩하며 실제 미세좌표는 계약 정본. 턱 바닥윗면2~3px·측/접지1px·남끝높이1px. 사람 몸통16px 기준의 내부하차/동측16px/남측16px 연결 경로를 유지한다.",
+    "negativeSpace": "북쪽 전용16px 바닥띠 제거, 첫 주차면y48부터. 깊이112→96으로 동측 내부21→5px 축소; 동벽240→224, 남단207→191. 동측16px는 두면 하차부가 차량 앞5px구간에서 합류하는 보행로 단 하나, 남측16px는 그 통로를 서측 차로/개구부로 연결하는 횡단통로다. 하차자는 서측으로 바로 차로 또는 전방구간→동측→남측→서측차로→개구부로 이동. 중복 북띠/동측21px 제거. 차로96은 두 면 직선동향 접근/후진서향 출차, 추가 설비/90도회전 주장 없음. 320×256 대비43.75%, 반려256×208 대비13.46% 면적감소. 추가 패딩 및 소품 채우기 금지.",
+    "identityCues": "천장끝y0..15·윗면y16..23·북벽전면y24..47·접지2px. x96/x208 마감이음, 벽부착등[128,25,64,4]과 제한된 벽광/첫면 북측하차부[128,48,64,16] 바닥광. 별도 광원 바닥행 없음. 줄눈y128/x208은 도색선보다 낮은대비. 벽은 바닥보다 어두운 명도군, 원본차와 동일 왼쪽위광원. 코너·개구부절단·벽과도색면의 깊이/재료 위계로 라벨없이 지하공간 판독. 턱 단면과 차량 접촉은 같은 원본/3배 조립에서 후속 독립검수; PASS는 작성하지 않는다.",
+    "sources": [
+      {
+        "path": "harness-data/parking-small-r2/seed.json",
+        "sha256": "9cf5cd135111e1cf1bd76fad0758e5c047acdbfbeb712a507cc18b5420c6304b"
+      },
+      {
+        "path": "harness-data/parking-small-r2/parking-contract.json",
+        "sha256": "8dc8b307924df87c8cb9392d07e084e5da72b789ce8baedea8a9e6691436bcab"
+      },
+      {
+        "path": "harness-data/parking-small-r2/parking-brief.md",
+        "sha256": "b02cca56c6d92ebe0b1698b6900a105a0c6577c36072069b98e5ff23e5de47a9"
+      },
+      {
+        "path": "harness-data/parking-small-r2/art-feedback.json",
+        "sha256": "361ceb41b3c7ac0c0148f4b528eeed1eb39b91c5230ac91e756d624b6af1ecd3"
+      },
+      {
+        "path": "harness-data/parking-small-r2/parking-repair-brief.json",
+        "sha256": "36958fbf48a8eec1dcd1834240f5bf5abd5b5ecc5c142e445aee7cdf0d10b7d6"
+      },
+      {
+        "path": "harness-data/parking-small-r2/art-layout-review.json",
+        "sha256": "59add08d07b03fe921c4f13aa5b0267d2ab54a47ae7db343c3e992b6601370a7"
+      },
+      {
+        "path": "harness-data/parking-small-r2/art-layout-rejections.json",
+        "sha256": "5eaffda0b3f0361a20f01b232336cc3242bd43ef0dbe812a26ff7e5b42de398c"
+      },
+      {
+        "path": "qa-runs/parking-small-r2/v1004-194330-229671/state.json",
+        "sha256": "7242c7e68d470598374127b856ee981690f00e37cbabe03f339916316d9416c0"
+      },
+      {
+        "path": "qa-runs/parking-small-r2/v1004-194330-229671/brief/brief.md",
+        "sha256": "5f067e282af432f43ff3cd53f26c1ba239ef2c4fd759f2be0c5e417a0e4fb466"
+      },
+      {
+        "path": "qa-runs/parking-small-r2/v1004-194330-229671/brief/parking-brief.md",
+        "sha256": "b02cca56c6d92ebe0b1698b6900a105a0c6577c36072069b98e5ff23e5de47a9"
+      },
+      {
+        "path": "qa-runs/parking-small-r2/v1004-194330-229671/brief/parking-contract.json",
+        "sha256": "8dc8b307924df87c8cb9392d07e084e5da72b789ce8baedea8a9e6691436bcab"
+      },
+      {
+        "path": "src/harnesses/modern-chipset/harness.py",
+        "sha256": "d85ee684ac0b54111474e6bf164c9158a5de789ab08ed3a2b7a7722086cddae6"
+      },
+      {
+        "path": "src/harnesses/modern-chipset/parking_small.py",
+        "sha256": "bc12c3e7208619e251c6014baba3aa854f7c0236091c2d02921a7c9f6ca3d0b9"
+      },
+      {
+        "path": "src/harnesses/modern-chipset/check.py",
+        "sha256": "21da39b011c105d9d6d42ced68d1ebb32227bea1e0c5d01e0526b88d3da6f65d"
+      },
+      {
+        "path": "src/harnesses/modern-chipset/prompt-parking-small.md",
+        "sha256": "cf053b9a5e3fa31631168d706196977ed39de4a88cb740bdae718a868f683cc1"
+      },
+      {
+        "path": "src/harnesses/modern-chipset/review-parking-small.md",
+        "sha256": "ac9f7dbe4d29fe060f027c14753eb5b92e7929bf143be9985ec95475b018d068"
+      },
+      {
+        "path": "harness-data/parking-small-r2/collect-instructions.md",
+        "sha256": "4a52c2b3ddac3e1a7fded537c2ee9ac732af4c9366a8120af7a412e5a2c9a3e5"
+      },
+      {
+        "path": "harness-data/parking-small-r2/registration-source.json",
+        "sha256": "aaec737b5687876661bf20b6e27b860b2c6404bcefb5b5ffd77a58fcbb6228ec"
+      },
+      {
+        "path": "harness-data/parking-small-r2/sources/public-car2-a.png",
+        "sha256": "5ebf4fe55081b424e1a93a0bd10dc31a0452ed6a4514d1c3e0638dac3b499c7c"
+      },
+      {
+        "path": "harness-data/parking-small-r2/preserved-evidence/index.json",
+        "sha256": "78bb524bbf9acc356ed0378668411a5d33e3a97d1903d473a914d1dfd4e40ac5"
+      }
+    ]
+  },
+  "layoutRef": {
+    "path": "harness-data/parking-small-r2/layout.json",
+    "sha256": "43e90b0a957b3b13b1d0a65b1dd3042f2ff73bc07eafee316e9ec346ab1ccd78"
+  },
+  "execution": {
+    "harness": "modern-chipset",
+    "data": "harness-data/parking-small-r2",
+    "runs": "qa-runs/parking-small-r2",
+    "viz": "qa-runs/parking-small-r2-viz",
+    "round": "v1004-194330-229671",
+    "feedbackSha256": "361ceb41b3c7ac0c0148f4b528eeed1eb39b91c5230ac91e756d624b6af1ecd3",
+    "layout": {
+      "path": "harness-data/parking-small-r2/layout.json",
+      "sha256": "43e90b0a957b3b13b1d0a65b1dd3042f2ff73bc07eafee316e9ec346ab1ccd78"
+    },
+    "repairLimits": {
+      "maxRevisions": 2,
+      "candidateCount": 1,
+      "nativeAttempts": 1
+    },
+    "modelOverride": {
+      "backend": "codex",
+      "model": "gpt-6.1-sol",
+      "effort": "medium"
+    }
+  },
+  "areaCells": {
+    "W": {
+      "count": 51,
+      "role": "structure",
+      "purpose": "북벽48px·동벽x224..239·서벽절단·북서/북동모서리의 닫힌 콘크리트 경계"
+    },
+    "L": {
+      "count": 4,
+      "role": "equipment",
+      "purpose": "북벽 x128..191,y25..28 부착등; 바닥 설비 아닌 벽내 장착"
+    },
+    "O": {
+      "count": 8,
+      "role": "circulation",
+      "purpose": "서벽y48..175 실제 개구부; 바깥에서96px 차로 및 두 주차면 서측입구로 직선 연결"
+    },
+    "A": {
+      "count": 54,
+      "role": "circulation",
+      "purpose": "서측96px 폭 접근차로; 원본70px 차체의 두 주차면 서쪽 입구 접근"
+    },
+    "D": {
+      "count": 11,
+      "role": "clearance",
+      "purpose": "첫면 내부 북20px/남16px 하차 여유; 별도 주차면/패딩 아님"
+    },
+    "R": {
+      "count": 8,
+      "role": "clearance",
+      "purpose": "x208..223,y48..175 한줄 공용 보행로; 두 면의 전방5px구간을 통해 하차부와 연결하고 남측 횡단통로로 이동"
+    },
+    "P": {
+      "count": 23,
+      "role": "parking",
+      "purpose": "96×64 두 면; 서21/동5 및 내부북20/남16px 하차여유를 포함하는 도색구획"
+    },
+    "C": {
+      "count": 8,
+      "role": "parking",
+      "purpose": "원본80×48·scale1·원점128,48; 실제 알파x133..202,y68..95인 동향차"
+    },
+    "S": {
+      "count": 6,
+      "role": "equipment",
+      "purpose": "두 저상턱[192,74,5,26]/[192,138,5,26];16px셀 C/D와 부분중첩; 긴축은 바닥평면"
+    },
+    "T": {
+      "count": 7,
+      "role": "clearance",
+      "purpose": "y176..191,x112..223의16px 횡단통로; 동측 보행로를 서측 차로/개구부로 연결"
+    }
+  },
+  "root": "/home/main/.local/share/oprn/super-harness/art-worktrees/underground-parking-garage",
+  "fingerprint": "0cba39d8ef531a3c5e73e9fc22381d853c0c5ad6954025306d17313d57f08586"
+}

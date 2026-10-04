@@ -120,12 +120,15 @@ notes나 작업자 로그는 보지 않는다. 다른 파일에는 쓰지 않는
 
 
 def visual_inputs(run, batch, pending):
-    """파일 경로만 지시하지 않고 원본과 사람의 시각 참고를 모델 입력에 첨부한다."""
+    """기본은 원본 격자 편집. 명시한 참고 실험만 초기 이미지를 첨부한다."""
     root = H.run_dir(run).resolve()
     refs = json.loads((root / 'manifest.json').read_text()).get('visualReferences', [])
     if not isinstance(refs, list) or len(refs) > 4:
         raise ValueError('시각 참고는 실행 폴더 안 이미지 최대 4장입니다')
     entries = []
+    if not refs:
+        write_json(batch / 'visual-inputs.json', entries)
+        return entries
     for row in pending:
         path = (batch / row['folder'] / 'base-views' / 'sheet_x8.png').resolve(strict=True)
         entries.append(dict(path=str(path), kind='base', key=row['key']))
@@ -159,7 +162,8 @@ def produce_batch(run, rows, index):
         prompt = prompt.replace('{STRENGTH_RULES}', '\n\n'.join(H.STRENGTH_RULES.get(s, '') for s in sorted({r['strength'] for r in pending})))
         prompt = prompt.replace('{ASSIGNMENTS}', json.dumps(pending, ensure_ascii=False, indent=2))
         visuals = visual_inputs(run, batch, pending)
-        prompt += '\n\n초기 입력에 다음 이미지가 순서대로 첨부되어 있습니다. 실제 픽셀을 보고 저작합니다.\n' + json.dumps(visuals, ensure_ascii=False, indent=2)
+        if visuals:
+            prompt += '\n\n초기 입력에 다음 이미지가 순서대로 첨부되어 있습니다. 실제 픽셀을 보고 저작합니다.\n' + json.dumps(visuals, ensure_ascii=False, indent=2)
         (batch / 'prompt.md').write_text(prompt, encoding='utf-8')
         process = H._spawn('gpt', batch, batch / 'prompt.md', batch / 'worker.log', images=[v['path'] for v in visuals])
         for row in pending:
