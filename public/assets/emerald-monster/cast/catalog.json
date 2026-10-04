@@ -1,0 +1,70 @@
+[
+  {
+    "id": "oprn_emerald_field_cast_1",
+    "file": "field-cast-1.png",
+    "sha256": "b3a13ad9131dea6c0ea621814aea2acdc3e4b9793f0cf547b4bbad26e8718296",
+    "roles": [
+      "traveler",
+      "rival",
+      "professor",
+      "nurse",
+      "merchant",
+      "mother",
+      "resident",
+      "gym_leader"
+    ],
+    "nativeCell": [
+      24,
+      32
+    ],
+    "silhouetteWidth": 16,
+    "frameOrder": [
+      "up",
+      "right",
+      "down",
+      "left"
+    ],
+    "walkOrder": [
+      "leftStep",
+      "idle",
+      "rightStep"
+    ],
+    "alpha": "RGBA transparent",
+    "baseline": 31,
+    "source": "scripts/content/emerald-field-cast.py"
+  },
+  {
+    "id": "oprn_emerald_field_cast_2",
+    "file": "field-cast-2.png",
+    "sha256": "ccf82a50b2456c207f07a32d0b82a565e53c57085ba30028d0dc202e3828af50",
+    "roles": [
+      "company_agent",
+      "captain",
+      "worker",
+      "explorer",
+      "student",
+      "ranger",
+      "moon_leader",
+      "hiker"
+    ],
+    "nativeCell": [
+      24,
+      32
+    ],
+    "silhouetteWidth": 16,
+    "frameOrder": [
+      "up",
+      "right",
+      "down",
+      "left"
+    ],
+    "walkOrder": [
+      "leftStep",
+      "idle",
+      "rightStep"
+    ],
+    "alpha": "RGBA transparent",
+    "baseline": 31,
+    "source": "scripts/content/emerald-field-cast.py"
+  }
+]

@@ -41,3 +41,18 @@ imagegen prompt. The untouched generated PNG is **1536×1024** (3:2), SHA
 The prompt requested GBA pixel composition; this asset is not falsely described
 as a native 240×160 file. The runtime fits it into the authored 480×320 stage with
 pixelated sampling. `title-provenance.json` records dimensions and generation.
+## Field cast
+
+`scripts/content/emerald-field-cast.py` owns reproducible original coordinate art:
+16 roles, four directions and three independently drawn walking poses. Characters
+have 16px silhouettes in the engine's mandatory 24×32 cells; the two transparent
+288×256 sheets each contain 96 row-major frames. The catalog records native
+bounds, frame order, role order, source and PNG SHA values. All uploaded resources
+have kind `charset`, so the normal charset load/slicing/walking path is used.
+
+`configureEmeraldMonsterCast` registers the shared seed for every campaign builder
+and repair tool. Only known stock RTP/Scarloxy person graphics are replaced;
+custom character resources, authored pages, commands, routes, collision, raster,
+event IDs and live session overrides remain intact. Professor, rival, nurse,
+merchant, company staff, captain and trainers use explicit role slots. These
+assets are game characters, not chipset tiles or borrowed reference images.
