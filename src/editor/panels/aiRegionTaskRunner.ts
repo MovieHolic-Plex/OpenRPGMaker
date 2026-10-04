@@ -1,3 +1,4 @@
+import { followConversationLog } from "./aiConversationScroll";
 // editor/panels/aiRegionTaskRunner.ts
 // 선택 영역 작업(region task) 실행부. 맵에서 사각형을 고른 뒤 지시하면 채팅 턴이 아니라 이
 // 경로가 돈다 — 같은 실행 표면(상태 줄·진행·중단·로그)을 쓰지만 이벤트는 세션이 아니라
@@ -175,7 +176,7 @@ export function createAiRegionTaskRunner(deps: AiRegionTaskRunnerDeps): AiRegion
           trackCurrentStreamNode(reasoningBox.box);
         }
         reasoningBox.body.textContent = (reasoningBox.body.textContent ?? "") + event.delta;
-        deps.surface.log.scrollTop = deps.surface.log.scrollHeight;
+        followConversationLog(deps.surface.log);
         return;
       }
       if (event.type === "assistant_token") {
@@ -187,7 +188,7 @@ export function createAiRegionTaskRunner(deps: AiRegionTaskRunnerDeps): AiRegion
           deps.surface.closeToolActivity();
         }
         assistantBubble.textContent = (assistantBubble.textContent ?? "") + event.delta;
-        deps.surface.log.scrollTop = deps.surface.log.scrollHeight;
+        followConversationLog(deps.surface.log);
         return;
       }
       if (event.type === "assistant_message") {

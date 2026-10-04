@@ -379,3 +379,8 @@ body:has(.database-modal-backdrop:not(.is-parked)) .ai-chat-panel .ai-deck {
    떠 보였고, 그 자리가 스튜디오 채팅 컴포저의 전송 버튼 위였다(2026-09-24 visual QA — 전송 가운데를
    누르면 느낌표가 잡혔다). 스튜디오에선 숨긴다 — 스튜디오 오른쪽 열이 「내 요청」 을 따로 보여 준다. */
 body.ai-studio-open .ai-suggestion-peek { display: none; }
+
+/* A reader opts back into following streamed replies. */
+.ai-new-replies:not([hidden]) { display: block; position: sticky; bottom: 6px; margin: 6px auto; padding: 5px 12px; border: 1px solid var(--border-subtle); border-radius: var(--radius-s); background: var(--bg-raised); color: var(--text-1); cursor: pointer; flex: 0 0 auto; z-index: 1; }
+
+.ai-pending-review.is-danger .ai-pending-review-actions button:first-child { background: var(--danger, #c33); border-color: var(--danger, #c33); }

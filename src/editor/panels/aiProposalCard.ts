@@ -16,7 +16,7 @@ import { commitGateNotice } from "@/ai/aiGateNotice";
 import { reviewOverInsertion } from "@/ai/overInsertionReview";
 import { showAiGateNotice } from "@/editor/ui/aiGateModal";
 import { mapDestructionConfirmRequest, mapLossConfirmRequest } from "@/ai/mapDestructionConfirm";
-import { showConfirm } from "@/editor/ui/modal";
+import { requestAssistantDecision } from "./aiDecisionPrompt";
 import { applyProposedProject } from "@/editor/tools/applyChangesetToStore";
 import {
   formatLayoutValidationSummary,
@@ -258,7 +258,7 @@ export function createProposalHost(options: {
     const mapDestruction = mapDestructionConfirmRequest(calls)
       ?? (resetsProject ? null : mapLossConfirmRequest(store.getCurrent(), session.getProposedProject()));
     if (mapDestruction) {
-      const approved = await showConfirm({
+      const approved = await requestAssistantDecision({ appendCard: root => appendBubble("system", "").append(root), setStatus, signal: operation.signal }, {
         title: mapDestruction.title,
         message: mapDestruction.message,
         confirmLabel: mapDestruction.confirmLabel,

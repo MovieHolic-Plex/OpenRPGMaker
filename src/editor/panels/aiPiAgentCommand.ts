@@ -51,7 +51,8 @@ import { composePiTask } from "@/ai/piAgent/executionRoute";
 import { buildPiRunRequest, buildUltrabrainPlanRequest, needsUltrabrainPlanTurn, prefersCallerThinking, withUltrabrainPlan } from "@/ai/piAgent/plainTurn";
 import { applyProposedProject, captureApplyAuthority } from "@/editor/tools/applyChangesetToStore";
 import { mapLossConfirmRequest } from "@/ai/mapDestructionConfirm";
-import { showConfirm } from "@/editor/ui/modal";
+import { requestAssistantDecision } from "./aiDecisionPrompt";
+import { createAssistantHumanEdits, type AssistantHumanEdits } from "@/editor/assistantHumanEdits";
 import { adoptSpatialToolProof, authorMergedSpatialProposal, exportSpatialToolProof } from "@/editor/tools/spatialToolState";
 import { summarizeChanges } from "@/editor/tools/changeset";
 import { store } from "@/project/store";
@@ -261,6 +262,12 @@ export async function runPiCommand(
   surface: PiCommandSurface,
   options: PiRunOptions = {},
 ): Promise<boolean> {
+  const humanEdits = createAssistantHumanEdits();
+  try { return await runPiCommandProtected(command, surface, options, humanEdits); }
+  finally { humanEdits.dispose(); }
+}
+
+async function runPiCommandProtected(command: ParsedPiCommand, surface: PiCommandSurface, options: PiRunOptions, humanEdits: AssistantHumanEdits): Promise<boolean> {
   if (!command.task) {
     surface.appendBubble("system", "사용법: /pi <지시> · /pi 맵id,맵id <지시> · /team <지시>");
     return false;
@@ -287,6 +294,7 @@ export async function runPiCommand(
   const config = loadAiConfig();
   const applyMode = normalizePiApplyMode(config.piApply);
   const publication = createPiPublication(base, applyMode, surface, {
+    humanEdits,
     beforeApply: (before, next) => ghost.present(before, next, surface.signal),
     afterApply: project => ghost.accept(project),
   });
@@ -908,7 +916,7 @@ ${contractReleased.message}`);
     // 한 줄에 맵 16→4, 이벤트 20→0, 확인 한 번 없이 「적용 완료」).
     const loss = mapLossConfirmRequest(publication.project, merged.project);
     if (loss && applyMode !== "yolo" && applyMode !== "auto") {
-      const approved = await showConfirm({
+      const approved = await requestAssistantDecision(surface, {
         title: loss.title,
         message: loss.message,
         confirmLabel: loss.confirmLabel,
@@ -937,6 +945,7 @@ ${contractReleased.message}`);
     // 스냅숏이 구간이 닫히기 전에 찍혔다 — 그래서 표의 apply 는 구조적으로 항상 0ms 였다(2026-09-26 리뷰 실측).
     // 사람이 삭제 확인 모달을 보는 시간도 이제 들어가지 않는다 — 알아야 하는 값은 적용 자체의 벽시계다.
     const appliedResult = alreadyPublished ? { ok: true as const } : await stage("apply", () => applyProposedProject(merged.project, {
+    humanEdits,
     base: publication.count ? publication.authority : proposalBase,
     baseline: publication.count ? publication.baseline : baseline,
     source: "agent",
@@ -963,6 +972,7 @@ ${contractReleased.message}`);
       surface.appendBubble("system", "변경 내용을 적용하지 못했어요. 현재 맵과 작업 과정을 확인해 주세요.");
       return false;
     }
+    if ("preservedCells" in appliedResult && appliedResult.preservedCells) surface.appendProcess?.(`직접 편집한 ${appliedResult.preservedCells}칸을 보존했어요.`);
     applied = true;
     const mergeNote = "merge" in appliedResult ? appliedResult.merge : undefined;
     if (mergeNote?.conflicts.length) surface.appendProcess?.(`다른 편집과 같은 자리를 바꿔 이미 반영된 쪽을 남겼어요: ${describeMergeConflicts(mergeNote)}`);
