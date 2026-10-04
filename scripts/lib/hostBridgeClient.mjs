@@ -11,8 +11,11 @@ export async function connectHostBridge(host){
  const browser=await chromium.launch();let config,cookie;
  try{
   const context=await browser.newContext(),page=await context.newPage();
-  await page.goto(pageUrl.href,{waitUntil:'domcontentloaded'});
-  await page.waitForFunction(()=>window.__OPRN_BRIDGE__&&window.oprn?.project);
+  await page.goto(pageUrl.href,{waitUntil:'commit'});
+  // The authenticated inline configuration is sufficient for the official
+  // dispatcher. Waiting for the editor to mount makes headless persistence
+  // depend on large catalog downloads and can trigger unrelated boot saves.
+  await page.waitForFunction(()=>typeof window.__OPRN_BRIDGE__?.endpoint==='string'&&typeof window.__OPRN_BRIDGE__?.token==='string');
   config=await page.evaluate(()=>({endpoint:window.__OPRN_BRIDGE__.endpoint,token:window.__OPRN_BRIDGE__.token,requestBodyEncoding:window.__OPRN_BRIDGE__.requestBodyEncoding}));
   cookie=(await context.cookies(pageUrl.href)).map(c=>c.name+'='+c.value).join('; ');
  }finally{await browser.close();}

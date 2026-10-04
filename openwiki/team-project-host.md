@@ -471,3 +471,8 @@ Manual wire check used the actual109MB canonical document plus its asset patch: 
 실측(새 폴더 · oprn-serve · Playwright, 박스 load 22~35): 칠하기 획의 최장 메인 스레드 정지 12~13s → 0.1~0.46s.
 「자동 저장됨」까지는 7~11s 이고 대부분 호스트 쓰기(81MB 직렬화·해시·SQLite)다 — 남은 바닥은 문서 분리다.
 두 경로 모두 웹(HTTP 브리지)과 Electron(IPC)이 같은 `electronRepository`·`store` 코드를 탄다.
+
+### Headless bridge readiness (2026-10-04)
+
+`hostBridgeClient.mjs` waits only for authenticated inline `__OPRN_BRIDGE__` endpoint/token and closes Chromium. It does not wait for editor mount or `window.oprn.project`: those require large catalog downloads and may trigger unrelated normalization saves. The same official dispatcher, cookie, Origin, negotiated compression and CAS checks remain mandatory. A failed save is reloaded before deciding whether to issue a new CAS.
+
