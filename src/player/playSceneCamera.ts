@@ -136,7 +136,9 @@ export function applyStoredCameraState(scene: PlaySceneContext): void {
     followCameraTarget(scene, { kind: "player" });
     return;
   }
-  applyCameraZoom(scene, state.zoom);
+  // Default/new-game camera state intentionally has no zoom. Centering a map
+  // seeds 1, so inherit the authored system zoom instead of retaining that seed.
+  applyCameraZoom(scene, state.zoom ?? resolveCameraZoom(store.getCurrent().system));
   if (state.mode === "follow") {
     followCameraTarget(scene, state.target);
     return;

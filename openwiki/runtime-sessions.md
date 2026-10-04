@@ -745,3 +745,14 @@ No, confirmation cancellation, a held Enter, exact buy/sell arithmetic, last-sta
 deletion, empty owned bag, long-description scroll, insufficient funds, 390px
 bounds and the unchanged collector flow without the profile. It proves neither canonical game
 storage nor old-save Continue; those remain supervisor-owned integration checks.
+## Default camera zoom during new game and Continue (2026-10-04)
+
+`createInitialSession` always includes a follow-player camera without a `zoom`.
+`centerRuntimeCamera` seeds its internal authored zoom to 1 on each map. Therefore
+`applyStoredCameraState` must resolve missing saved zoom from `system.cameraZoom`;
+otherwise the presence of the ordinary follow-player state silently suppresses
+the project default. Explicit saved cinematic zoom still takes precedence.
+The fix preserves session bytes and existing optional-zoom camera commands.
+For Emerald profiles, 480×320 with cameraZoom2 must actually show 15×10 native
+16px tiles; authored metadata alone is insufficient evidence. Verify the player
+camera/world viewport in shipping-browser evidence after new game and transfer.
