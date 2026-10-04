@@ -60,6 +60,13 @@ function stableChange(a:RgbaImage,b:RgbaImage,endY:number){
   options.sort((u,v)=>u.significant-v.significant||u.alpha-v.alpha||(Math.abs(u.compareShiftX)+Math.abs(u.compareShiftY))-(Math.abs(v.compareShiftX)+Math.abs(v.compareShiftY))||Math.abs(u.compareShiftX-requestedShiftX)+Math.abs(u.compareShiftY-requestedShiftY)-Math.abs(v.compareShiftX-requestedShiftX)-Math.abs(v.compareShiftY-requestedShiftY));
   return {...options[0]!,requestedShiftX,requestedShiftY,registrationRejected};
 }
+/** Compare equal torso rows in idle coordinates, after bounded comparison-only registration. */
+function canonicalTorso(trio:RgbaImage[],boxes:Box[]){
+  const reference=trio[1]!,root=head(reference)!,startY=root.y+9,endY=root.y+Math.round(Math.min(...boxes.map(b=>b.height))*.65);
+  const registration=trio.map(frame=>stableChange(reference,frame,endY));
+  const core=trio.map((frame,i)=>{const r=registration[i]!;let area=0;for(let y=startY;y<endY;y++)for(let x=Math.max(0,root.x-3);x<=Math.min(WIDTH-1,root.x+3);x++){const sx=x+r.compareShiftX,sy=y+r.compareShiftY;if(sx>=0&&sx<WIDTH&&sy>=0&&sy<HEIGHT&&pixelAt(frame,sx,sy)[3])area++;}return area;});
+  return {core,band:{referenceFrame:1,startY,endY,rows:endY-startY,centerX:root.x,halfWidth:3},registration:registration.map(r=>({x:r.compareShiftX,y:r.compareShiftY,requestedX:r.requestedShiftX,requestedY:r.requestedShiftY,rejected:r.registrationRejected}))};
+}
 function exactDifference(a:RgbaImage,b:RgbaImage){let n=0;for(let i=0;i<a.data.length;i+=4)if((a.data[i+3]||b.data[i+3])&&a.data.subarray(i,i+4).some((v,j)=>v!==b.data[i+j]))n++;return n/Math.max(pixels(a),pixels(b));}
 const spread=(v:number[])=>Math.max(...v)-Math.min(...v);
 const ratio=(v:number[])=>Math.max(...v)/Math.max(1,Math.min(...v));
@@ -78,7 +85,7 @@ export function checkCharset(image:RgbaImage, limits=LIMITS){
     const jitterX=spread(landmarks.map(h=>h.x)),jitterY=spread(landmarks.map(h=>h.y));
     if(jitterX>limits.headJitterMax||jitterY>limits.headJitterMax)errors.push(`${dir}: head jitter ${jitterX},${jitterY}`);
     if(boxes.some(b=>b.width>WIDTH||b.x<0||b.x+b.width>WIDTH||b.y<limits.topMin||b.y>limits.topMax||b.height<limits.inkHeightMin||b.height>limits.inkHeightMax||b.y+b.height<limits.feetBottomMin||b.y+b.height>limits.feetBottomMax))errors.push(`${dir}: Emerald native ink bounds/height/top/feet contract`);
-    const torsos=trio.map(torso),widthRatio=ratio(torsos.map(t=>t.width)),heightRatio=ratio(boxes.map(b=>b.height)),areaRatio=ratio(torsos.map(t=>t.core)),headWidthRatio=ratio(landmarks.map(h=>h.width)),headAreaRatio=ratio(torsos.map(t=>t.headArea));
+    const canonical=canonicalTorso(trio,boxes),torsos=trio.map((frame,i)=>({...torso(frame),core:canonical.core[i]!})),widthRatio=ratio(torsos.map(t=>t.width)),heightRatio=ratio(boxes.map(b=>b.height)),areaRatio=ratio(torsos.map(t=>t.core)),headWidthRatio=ratio(landmarks.map(h=>h.width)),headAreaRatio=ratio(torsos.map(t=>t.headArea));
     if(heightRatio>limits.bodySizeRatioMax||areaRatio>limits.areaRatioMax||headWidthRatio>limits.bodySizeRatioMax||headAreaRatio>limits.areaRatioMax)errors.push(`${dir}: gross head/torso size drift`);
     const lowerY=Math.min(...boxes.map(b=>b.y))+Math.round(Math.min(...boxes.map(b=>b.height))*0.60);
     const stepChange=diff(trio[0]!,trio[2]!,lowerY);
@@ -88,7 +95,7 @@ export function checkCharset(image:RgbaImage, limits=LIMITS){
     const changes=stable.map(v=>v.significant),alphaChanges=stable.map(v=>v.alpha),wholeExactChanges=ORDER.map((idx,i)=>exactDifference(trio[idx]!,trio[ORDER[(i+1)%ORDER.length]!]!));
     if(Math.max(...wholeExactChanges)>limits.seamChangeMax)warnings.push(`${dir}: whole-frame exact color/pose change ${Math.max(...wholeExactChanges).toFixed(3)}; semantic playback required`);
     if(Math.max(...changes)>limits.seamChangeMax)errors.push(`${dir}: discontinuous cycle/seam ${Math.max(...changes).toFixed(3)}`);
-    metrics[dir]={jitterX,jitterY,widthRatio,heightRatio,areaRatio,headWidthRatio,headAreaRatio,stepChange,changes,alphaChanges,comparisonRegistration:stable.map(v=>({x:v.compareShiftX,y:v.compareShiftY,requestedX:v.requestedShiftX,requestedY:v.requestedShiftY,rejected:v.registrationRejected})),wholeExactChanges,upperEnd,bounds:boxes,head:landmarks,torso:torsos};
+    metrics[dir]={jitterX,jitterY,widthRatio,heightRatio,areaRatio,headWidthRatio,headAreaRatio,stepChange,changes,alphaChanges,comparisonRegistration:stable.map(v=>({x:v.compareShiftX,y:v.compareShiftY,requestedX:v.requestedShiftX,requestedY:v.requestedShiftY,rejected:v.registrationRejected})),wholeExactChanges,upperEnd,bounds:boxes,head:landmarks,torso:torsos,torsoBand:canonical.band,torsoRegistration:canonical.registration};
   });
   return {pass:errors.length===0,errors,warnings,metrics};
 }

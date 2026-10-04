@@ -212,6 +212,37 @@
               "core": 28,
               "headArea": 106
             }
+          ],
+          "torsoBand": {
+            "referenceFrame": 1,
+            "startY": 20,
+            "endY": 24,
+            "rows": 4,
+            "centerX": 8,
+            "halfWidth": 3
+          },
+          "torsoRegistration": [
+            {
+              "x": 0,
+              "y": 1,
+              "requestedX": 0,
+              "requestedY": 1,
+              "rejected": false
+            },
+            {
+              "x": 0,
+              "y": 0,
+              "requestedX": 0,
+              "requestedY": 0,
+              "rejected": false
+            },
+            {
+              "x": 0,
+              "y": 1,
+              "requestedX": 0,
+              "requestedY": 1,
+              "rejected": false
+            }
           ]
         },
         "right": {
@@ -327,6 +358,37 @@
               "width": 8,
               "core": 25,
               "headArea": 96
+            }
+          ],
+          "torsoBand": {
+            "referenceFrame": 1,
+            "startY": 20,
+            "endY": 24,
+            "rows": 4,
+            "centerX": 6,
+            "halfWidth": 3
+          },
+          "torsoRegistration": [
+            {
+              "x": 0,
+              "y": 1,
+              "requestedX": 0,
+              "requestedY": 1,
+              "rejected": false
+            },
+            {
+              "x": 0,
+              "y": 0,
+              "requestedX": 0,
+              "requestedY": 0,
+              "rejected": false
+            },
+            {
+              "x": 0,
+              "y": 1,
+              "requestedX": 0,
+              "requestedY": 1,
+              "rejected": false
             }
           ]
         },
@@ -444,6 +506,37 @@
               "core": 28,
               "headArea": 106
             }
+          ],
+          "torsoBand": {
+            "referenceFrame": 1,
+            "startY": 20,
+            "endY": 24,
+            "rows": 4,
+            "centerX": 8,
+            "halfWidth": 3
+          },
+          "torsoRegistration": [
+            {
+              "x": 0,
+              "y": 1,
+              "requestedX": 0,
+              "requestedY": 1,
+              "rejected": false
+            },
+            {
+              "x": 0,
+              "y": 0,
+              "requestedX": 0,
+              "requestedY": 0,
+              "rejected": false
+            },
+            {
+              "x": 0,
+              "y": 1,
+              "requestedX": 0,
+              "requestedY": 1,
+              "rejected": false
+            }
           ]
         },
         "left": {
@@ -559,6 +652,37 @@
               "width": 8,
               "core": 25,
               "headArea": 96
+            }
+          ],
+          "torsoBand": {
+            "referenceFrame": 1,
+            "startY": 20,
+            "endY": 24,
+            "rows": 4,
+            "centerX": 9,
+            "halfWidth": 3
+          },
+          "torsoRegistration": [
+            {
+              "x": 0,
+              "y": 1,
+              "requestedX": 0,
+              "requestedY": 1,
+              "rejected": false
+            },
+            {
+              "x": 0,
+              "y": 0,
+              "requestedX": 0,
+              "requestedY": 0,
+              "rejected": false
+            },
+            {
+              "x": 0,
+              "y": 1,
+              "requestedX": 0,
+              "requestedY": 1,
+              "rejected": false
             }
           ]
         }
@@ -696,6 +820,37 @@
               "core": 35,
               "headArea": 82
             }
+          ],
+          "torsoBand": {
+            "referenceFrame": 1,
+            "startY": 19,
+            "endY": 24,
+            "rows": 5,
+            "centerX": 7,
+            "halfWidth": 3
+          },
+          "torsoRegistration": [
+            {
+              "x": 0,
+              "y": 1,
+              "requestedX": 0,
+              "requestedY": 1,
+              "rejected": false
+            },
+            {
+              "x": 0,
+              "y": 0,
+              "requestedX": 0,
+              "requestedY": 0,
+              "rejected": false
+            },
+            {
+              "x": 0,
+              "y": 1,
+              "requestedX": 0,
+              "requestedY": 1,
+              "rejected": false
+            }
           ]
         },
         "right": {
@@ -811,6 +966,37 @@
               "width": 8,
               "core": 35,
               "headArea": 86
+            }
+          ],
+          "torsoBand": {
+            "referenceFrame": 1,
+            "startY": 19,
+            "endY": 24,
+            "rows": 5,
+            "centerX": 7,
+            "halfWidth": 3
+          },
+          "torsoRegistration": [
+            {
+              "x": 0,
+              "y": 1,
+              "requestedX": 0,
+              "requestedY": 1,
+              "rejected": false
+            },
+            {
+              "x": 0,
+              "y": 0,
+              "requestedX": 0,
+              "requestedY": 0,
+              "rejected": false
+            },
+            {
+              "x": 0,
+              "y": 1,
+              "requestedX": 0,
+              "requestedY": 1,
+              "rejected": false
             }
           ]
         },
@@ -928,6 +1114,37 @@
               "core": 35,
               "headArea": 80
             }
+          ],
+          "torsoBand": {
+            "referenceFrame": 1,
+            "startY": 19,
+            "endY": 24,
+            "rows": 5,
+            "centerX": 9,
+            "halfWidth": 3
+          },
+          "torsoRegistration": [
+            {
+              "x": 0,
+              "y": 1,
+              "requestedX": 0,
+              "requestedY": 1,
+              "rejected": false
+            },
+            {
+              "x": 0,
+              "y": 0,
+              "requestedX": 0,
+              "requestedY": 0,
+              "rejected": false
+            },
+            {
+              "x": 0,
+              "y": 1,
+              "requestedX": 0,
+              "requestedY": 1,
+              "rejected": false
+            }
           ]
         },
         "left": {
@@ -1043,6 +1260,37 @@
               "width": 8,
               "core": 35,
               "headArea": 86
+            }
+          ],
+          "torsoBand": {
+            "referenceFrame": 1,
+            "startY": 19,
+            "endY": 24,
+            "rows": 5,
+            "centerX": 8,
+            "halfWidth": 3
+          },
+          "torsoRegistration": [
+            {
+              "x": 0,
+              "y": 1,
+              "requestedX": 0,
+              "requestedY": 1,
+              "rejected": false
+            },
+            {
+              "x": 0,
+              "y": 0,
+              "requestedX": 0,
+              "requestedY": 0,
+              "rejected": false
+            },
+            {
+              "x": 0,
+              "y": 1,
+              "requestedX": 0,
+              "requestedY": 1,
+              "rejected": false
             }
           ]
         }
@@ -1180,6 +1428,37 @@
               "core": 28,
               "headArea": 110
             }
+          ],
+          "torsoBand": {
+            "referenceFrame": 1,
+            "startY": 20,
+            "endY": 24,
+            "rows": 4,
+            "centerX": 8,
+            "halfWidth": 3
+          },
+          "torsoRegistration": [
+            {
+              "x": 0,
+              "y": 1,
+              "requestedX": 0,
+              "requestedY": 1,
+              "rejected": false
+            },
+            {
+              "x": 0,
+              "y": 0,
+              "requestedX": 0,
+              "requestedY": 0,
+              "rejected": false
+            },
+            {
+              "x": 0,
+              "y": 1,
+              "requestedX": 0,
+              "requestedY": 1,
+              "rejected": false
+            }
           ]
         },
         "right": {
@@ -1295,6 +1574,37 @@
               "width": 8,
               "core": 28,
               "headArea": 102
+            }
+          ],
+          "torsoBand": {
+            "referenceFrame": 1,
+            "startY": 20,
+            "endY": 24,
+            "rows": 4,
+            "centerX": 7,
+            "halfWidth": 3
+          },
+          "torsoRegistration": [
+            {
+              "x": 0,
+              "y": 1,
+              "requestedX": 0,
+              "requestedY": 1,
+              "rejected": false
+            },
+            {
+              "x": 0,
+              "y": 0,
+              "requestedX": 0,
+              "requestedY": 0,
+              "rejected": false
+            },
+            {
+              "x": 0,
+              "y": 1,
+              "requestedX": 0,
+              "requestedY": 1,
+              "rejected": false
             }
           ]
         },
@@ -1412,6 +1722,37 @@
               "core": 28,
               "headArea": 110
             }
+          ],
+          "torsoBand": {
+            "referenceFrame": 1,
+            "startY": 20,
+            "endY": 24,
+            "rows": 4,
+            "centerX": 8,
+            "halfWidth": 3
+          },
+          "torsoRegistration": [
+            {
+              "x": 0,
+              "y": 1,
+              "requestedX": 0,
+              "requestedY": 1,
+              "rejected": false
+            },
+            {
+              "x": 0,
+              "y": 0,
+              "requestedX": 0,
+              "requestedY": 0,
+              "rejected": false
+            },
+            {
+              "x": 0,
+              "y": 1,
+              "requestedX": 0,
+              "requestedY": 1,
+              "rejected": false
+            }
           ]
         },
         "left": {
@@ -1527,6 +1868,37 @@
               "width": 8,
               "core": 28,
               "headArea": 102
+            }
+          ],
+          "torsoBand": {
+            "referenceFrame": 1,
+            "startY": 20,
+            "endY": 24,
+            "rows": 4,
+            "centerX": 8,
+            "halfWidth": 3
+          },
+          "torsoRegistration": [
+            {
+              "x": 0,
+              "y": 1,
+              "requestedX": 0,
+              "requestedY": 1,
+              "rejected": false
+            },
+            {
+              "x": 0,
+              "y": 0,
+              "requestedX": 0,
+              "requestedY": 0,
+              "rejected": false
+            },
+            {
+              "x": 0,
+              "y": 1,
+              "requestedX": 0,
+              "requestedY": 1,
+              "rejected": false
             }
           ]
         }
@@ -1664,6 +2036,37 @@
               "core": 28,
               "headArea": 108
             }
+          ],
+          "torsoBand": {
+            "referenceFrame": 1,
+            "startY": 20,
+            "endY": 24,
+            "rows": 4,
+            "centerX": 8,
+            "halfWidth": 3
+          },
+          "torsoRegistration": [
+            {
+              "x": 0,
+              "y": 1,
+              "requestedX": 0,
+              "requestedY": 1,
+              "rejected": false
+            },
+            {
+              "x": 0,
+              "y": 0,
+              "requestedX": 0,
+              "requestedY": 0,
+              "rejected": false
+            },
+            {
+              "x": 0,
+              "y": 1,
+              "requestedX": 0,
+              "requestedY": 1,
+              "rejected": false
+            }
           ]
         },
         "right": {
@@ -1779,6 +2182,37 @@
               "width": 6,
               "core": 25,
               "headArea": 102
+            }
+          ],
+          "torsoBand": {
+            "referenceFrame": 1,
+            "startY": 20,
+            "endY": 24,
+            "rows": 4,
+            "centerX": 7,
+            "halfWidth": 3
+          },
+          "torsoRegistration": [
+            {
+              "x": 0,
+              "y": 1,
+              "requestedX": 0,
+              "requestedY": 1,
+              "rejected": false
+            },
+            {
+              "x": 0,
+              "y": 0,
+              "requestedX": 0,
+              "requestedY": 0,
+              "rejected": false
+            },
+            {
+              "x": 0,
+              "y": 1,
+              "requestedX": 0,
+              "requestedY": 1,
+              "rejected": false
             }
           ]
         },
@@ -1896,6 +2330,37 @@
               "core": 28,
               "headArea": 108
             }
+          ],
+          "torsoBand": {
+            "referenceFrame": 1,
+            "startY": 20,
+            "endY": 24,
+            "rows": 4,
+            "centerX": 8,
+            "halfWidth": 3
+          },
+          "torsoRegistration": [
+            {
+              "x": 0,
+              "y": 1,
+              "requestedX": 0,
+              "requestedY": 1,
+              "rejected": false
+            },
+            {
+              "x": 0,
+              "y": 0,
+              "requestedX": 0,
+              "requestedY": 0,
+              "rejected": false
+            },
+            {
+              "x": 0,
+              "y": 1,
+              "requestedX": 0,
+              "requestedY": 1,
+              "rejected": false
+            }
           ]
         },
         "left": {
@@ -2011,6 +2476,37 @@
               "width": 6,
               "core": 25,
               "headArea": 102
+            }
+          ],
+          "torsoBand": {
+            "referenceFrame": 1,
+            "startY": 20,
+            "endY": 24,
+            "rows": 4,
+            "centerX": 8,
+            "halfWidth": 3
+          },
+          "torsoRegistration": [
+            {
+              "x": 0,
+              "y": 1,
+              "requestedX": 0,
+              "requestedY": 1,
+              "rejected": false
+            },
+            {
+              "x": 0,
+              "y": 0,
+              "requestedX": 0,
+              "requestedY": 0,
+              "rejected": false
+            },
+            {
+              "x": 0,
+              "y": 1,
+              "requestedX": 0,
+              "requestedY": 1,
+              "rejected": false
             }
           ]
         }

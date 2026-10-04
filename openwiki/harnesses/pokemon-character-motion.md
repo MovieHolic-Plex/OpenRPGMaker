@@ -59,7 +59,7 @@ grid mode는12원본의 추정값 중앙값/명시 --block2..40을 **공통**으
 
 native16×32/12포즈, 이진 알파, 위의 잉크 top/height/feet/palette, 방향별 상단6행 두개골 중심 root jitter<=1(분리된 머리카락 끝은 제외), 상단9행 최장 연속 폭 중앙값, 안정적인 머리폭/높이비<=1.25·머리/몸통 중심 면적비<=1.30, stepA/B 하체 변경>=4px, 안정적 상체의 인접 변경률<=0.36을 검사한다. 원본처럼 x0/16폭 또는 bottom32에 잉크가 닿는 것은 허용한다.
 
-안정적 상체 변경률은 **허용된1pxroot bob을 비교시에만 등록**한다. root distance>1은 등록 전에 불합격하고 comparisonRegistration.rejected를 기록한다. 허용 범위 안에서 상체의 실제 alpha/Lab 차이가 최소인 ±1 등록을 선택하며 requestedX/Y와 선택 x/y를 모두 기록한다. 중심 반올림값을 그대로 적용해 멀쩡한 상체를 어긋나게 만들지 않는다. alpha symmetric difference와 Lab>=0.12의 색 차이만 변경으로 센다. 실제 source/output 좌표나 walkingphase는 바꾸지 않는다. 머리9행과 중심±3px 몸통만 비교해 정상 팔·다리 동작을 제외한다. 전체 bbox 폭/정확한 전체RGBA 변경은 진단·경고만 남긴다. 이러한 등록 없이 실제May조차0.62~0.74로 잘못 거부됐으며, 올바른 등록 후0~0.052로 통과한다. threshold0.36을 완화한 것이 아니다.
+안정적 상체 변경률은 **허용된1pxroot bob을 비교시에만 등록**한다. root distance>1은 등록 전에 불합격하고 comparisonRegistration.rejected를 기록한다. 허용 범위 안에서 상체의 실제 alpha/Lab 차이가 최소인 ±1 등록을 선택하며 requestedX/Y와 선택 x/y를 모두 기록한다. 중심 반올림값을 그대로 적용해 멀쩡한 상체를 어긋나게 만들지 않는다. alpha symmetric difference와 Lab>=0.12의 색 차이만 변경으로 센다. 실제 source/output 좌표나 walkingphase는 바꾸지 않는다. 머리9행과 중심±3px 몸통만 비교해 정상 팔·다리 동작을 제외한다. 몸통 중심 면적은 idle1 기준의 같은 세로 band로 비교한다. 시작은 idle root+9, 끝은 세 포즈 최소 잉크높이의65%이며 frame별 bbox 반올림으로3행/4행 또는4행/5행을 다르게 세지 않는다. 실제상체를 허용1px만 비교 등록하고 동일 band의 중심±3px 잉크를 센다. torsoBand/torsoRegistration에 행수·좌표·요청/선택을 기록하며 그림은 변형하지 않는다. 전체 bbox 폭/정확한 전체RGBA 변경은 진단·경고만 남긴다. 이러한 등록 없이 실제May조차0.62~0.74로 잘못 거부됐으며, 올바른 등록 후0~0.052로 통과한다. threshold0.36을 완화한 것이 아니다.
 
 픽셀 수치는 방향이나 교대 다리의 **의미**를 증명하지 않는다. 일관되게 up/down을 뒤집거나 팔만 움직인 그림은 수치가 통과할 수 있다. 재생 시각 판정과 who/why/evidence가 필요하다. 옷/정체성/표정/실제 걷기 품질을 자동 pass하지 않는다.
 
