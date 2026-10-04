@@ -176,3 +176,8 @@ ports는 side/offset/width/kind/level/connectsTo를 갖는다. 양쪽 포트의 
 종료 후 별도 결과 수집 작업자가 실제 PNG·검사 JSON을 art-result.json에 기록한다.
 하위 작업의 종료를 관리하며, art와 art-native를 합쳐 동시 칩 제작 개념 상한을 적용한다.
 조선/jp-city의 직접 실행 어댑터는 아직 없으므로 준비 단계에서 명시적으로 막힌다.
+
+사용자가 특정 개념의 모델 변경을 승인하면 settings.art_model_overrides에 개념 id별
+`{backend, model, effort}`를 기록한다. 감독이 이 설정만 실행 요청에 넣으며, 준비 작업자의 modelOverride는 무시한다.
+2026-10-04 주차장 파일럿은 Sonnet 공급자의 4계정 한도 소진으로 사용자가 Codex(gpt-6.1-sol medium) 전환을 승인했다.
+이 변경은 해당 개념에만 적용하며 현대 하네스의 기본 Sonnet 설정을 바꾸지 않는다.
