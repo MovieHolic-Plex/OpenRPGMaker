@@ -617,7 +617,12 @@ def on_art(meta, code, result):
     result = result if isinstance(result, dict) else {}
     if code == 0 and result.get('execution') and meta.get('tag') != 'collect':
         try:
-            request = result['execution']
+            request = dict(result['execution'])
+            # Models are chosen by the user/supervisor, never by a preparation worker.
+            request.pop('modelOverride', None)
+            override = json.loads(store.setting('art_model_overrides') or '{}').get(cid)
+            if override:
+                request['modelOverride'] = override
             art_execution.prepare(wt, request)
             request_path = cdir(cid, 'art-execution.json')
             write_json(request_path, request)
