@@ -27,7 +27,7 @@ export async function saveParkingProject(projectDir: string, evidenceDir: string
   // Prove the existing-project bundle migration also receives the kit/docs.
   const old: ReturnType<typeof createModernCityTileset> = JSON.parse(readFileSync(join(evidenceDir, 'previous-tileset.json'), 'utf8'));
   old.id = tileset.id; old.image = tileset.image;
-  old.referenceDocuments = [{ id: 'authored', name: '보존', documents: [], images: [] }];
+  old.referenceDocuments = [{ id: 'authored', name: '보존', description: '사용자 참고문서 보존 검사', documents: [], images: [] }];
   ensureModernCityTileset(old); ensureModernCityReferences(old);
   if (!old.structureKits!.some(k => k.id === kit.id) || !old.referenceDocuments!.some(c => c.id === 'mc-parking') || !old.referenceDocuments!.some(c => c.id === 'authored')) throw new Error('Existing project migration failed');
   const queue = [[1,4]], reached = new Set(['1,4']);
