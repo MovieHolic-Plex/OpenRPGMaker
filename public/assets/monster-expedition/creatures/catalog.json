@@ -5196,20 +5196,20 @@
     "family": "stag",
     "stage": 0,
     "palette": [
-      "#8db2aa",
-      "#d4e1b8",
-      "#516d88",
-      "#debcdb"
+      "#518f6d",
+      "#d8dfa9",
+      "#2f6052",
+      "#f3e6ab"
     ],
     "front": {
       "resourceId": "mx_art_astralhart_front",
       "file": "astralhart-front.png",
-      "sha256": "979eac837e19094d90d89629eb107a130cadd0943ea0530ce8bf46ec473215ac",
-      "bytes": 1498,
+      "sha256": "fb4f68aa2e0436b59c53e548950d683e22bd513f11f39759dc075d8494c05b65",
+      "bytes": 1465,
       "bbox": [
         3,
-        7,
-        55,
+        1,
+        61,
         62
       ],
       "dimensions": [
@@ -5217,26 +5217,25 @@
         64
       ],
       "opaquePalette": [
-        "#414d65",
-        "#516d88",
-        "#8db2aa",
-        "#9a96b3",
-        "#d4e1b8",
-        "#debcdb",
-        "#eed6d6",
+        "#2f4749",
+        "#2f6052",
+        "#518f6d",
+        "#d8dfa9",
+        "#f3e6ab",
+        "#f9ecbd",
         "#fff2d0"
       ],
-      "opaqueColors": 8
+      "opaqueColors": 7
     },
     "back": {
       "resourceId": "mx_art_astralhart_back",
       "file": "astralhart-back.png",
-      "sha256": "4c5edb986b6761cd50fc18003b3f77b7f0343fd3197377f2a18ef27b0c45b08f",
-      "bytes": 1467,
+      "sha256": "5b7262701ddd366f24a94dcffc7ad42c6a26c1d6def002275a8638297022f166",
+      "bytes": 1429,
       "bbox": [
-        3,
-        7,
-        55,
+        4,
+        1,
+        59,
         62
       ],
       "dimensions": [
@@ -5244,26 +5243,24 @@
         64
       ],
       "opaquePalette": [
-        "#414d65",
-        "#516d88",
-        "#8db2aa",
-        "#9a96b3",
-        "#d4e1b8",
-        "#debcdb",
-        "#eed6d6",
-        "#fff2d0"
+        "#2f4749",
+        "#2f6052",
+        "#518f6d",
+        "#d8dfa9",
+        "#f3e6ab",
+        "#f9ecbd"
       ],
-      "opaqueColors": 8
+      "opaqueColors": 6
     },
     "icon": {
       "resourceId": "mx_art_astralhart_icon",
       "file": "astralhart-icon.png",
-      "sha256": "c8d0d202bcc42b22b6ded7af9fcc947e21f4b5a81570072423f8d7edd437f2ec",
-      "bytes": 741,
+      "sha256": "de5926a1fe1b35f532afe4b657ac9c2e34738242172ca3816c712fc005e9ac56",
+      "bytes": 670,
       "bbox": [
         1,
         0,
-        31,
+        32,
         30
       ],
       "dimensions": [
@@ -5271,12 +5268,12 @@
         32
       ],
       "opaquePalette": [
-        "#414d65",
-        "#516d88",
-        "#8db2aa",
-        "#9a96b3",
-        "#d4e1b8",
-        "#debcdb",
+        "#2f4749",
+        "#2f6052",
+        "#518f6d",
+        "#d8dfa9",
+        "#f3e6ab",
+        "#f9ecbd",
         "#fff2d0"
       ],
       "opaqueColors": 7

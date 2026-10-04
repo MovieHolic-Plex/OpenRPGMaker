@@ -8,6 +8,7 @@ Run from any directory: python3 scripts/content/monster-expedition-art.py
 """
 from pathlib import Path
 from PIL import Image, ImageDraw
+import argparse
 import base64
 import hashlib
 import json
@@ -42,7 +43,7 @@ FAMILIES = [
     ('lion', ['solmane'], ['#c18c4b', '#f5cf7e', '#865258', '#f6e4ad']),
     ('ray', ['lunavane'], ['#8b88b2', '#c8cfe5', '#555d8a', '#a9dfce']),
     ('scarab', ['relicarab'], ['#a69465', '#dfca89', '#646179', '#8ec1b6']),
-    ('stag', ['astralhart'], ['#8db2aa', '#d4e1b8', '#516d88', '#debcdb']),
+    ('stag', ['astralhart'], ['#518f6d', '#d8dfa9', '#2f6052', '#f3e6ab']),
 ]
 
 
@@ -975,36 +976,83 @@ def scarab(a,s):
 
 
 def stag(a,s):
-    a.foot(22,74,9); a.foot(39,74,9); a.foot(55,70,8)
-    a.p([(23,41),(41,36),(60,39),(69,49),(64,59),(57,63),(31,65),(23,58)])
-    a.p([(26,53),(25,36),(18,28),(22,21),(35,20),(43,27),(38,43),(39,58)],a.c)
-    a.face([(20,22),(30,20),(39,27),(37,38),(28,44),(17,36),(14,29)])
-    if not a.rear:
-        a.eye(22,28); a.eye(31,27)
-        a.p([(18,35),(26,34),(28,39),(22,42),(18,40)],a.h,False)
-        a.r((17,35,20,37),INK)
-    else: a.p([(24,24),(34,25),(35,33),(28,40),(21,35)],a.s,False)
-    for x,sg in [(23,-1),(34,1)]:
-        a.l([(x,23),(x+sg*6,13),(x+sg*5,5)],INK,4)
-        a.l([(x,23),(x+sg*6,13),(x+sg*5,5)],a.a,2)
-        a.l([(x+sg*5,13),(x+sg*15,10),(x+sg*17,4)],a.a,2)
-        a.l([(x+sg*6,17),(x+sg*15,18),(x+sg*20,12)],a.a,2)
-    a.p([(37,40),(45,29),(56,31),(51,38),(62,36),(65,43),(50,48)],a.h)
-    a.l([(44,36),(56,36)],a.s)
-    for x,y in [(44,52),(54,49),(58,56)]: a.gem(x,y,a.a)
+    """Astralhart is the title's quadruped forest stag, never an upright mascot.
 
-    # Slender hocks, a white throat and branching antler facets carry grace.
-    a.p([(26,40),(30,42),(33,52),(29,57),(27,51)],a.h,False)
-    a.joint(25,65,2); a.joint(42,66,2); a.joint(58,61,2)
-    a.l([(60,45),(64,48),(62,55)],a.s,2)
-    a.l([(41,40),(46,35),(51,35)],WHITE)
-    a.p([(18,28),(10,23),(9,19),(18,21),(24,26)],a.c)
-    a.p([(34,24),(40,18),(47,19),(43,24),(38,28)],a.c)
-    a.l([(13,10),(9,7)],a.al)
-    a.l([(43,11),(48,10),(49,7)],a.al)
+    Front and rear poses each own four leg contours, a horizontal barrel, leaf
+    ruff and bushy tail. The rear turns toward the right and shows the rump;
+    it is independently drawn, rather than a flip or an overpainted front head.
+    """
+    def star(x,y):
+        a.p([(x,y-3),(x+1,y-1),(x+3,y),(x+1,y+1),(x,y+3),(x-1,y+1),(x-3,y),(x-1,y-1)],a.a)
+        a.r((x,y-1,x,y+1),a.al)
     if not a.rear:
-        a.l([(19,38),(22,40),(25,39)],a.s)
-        a.l([(18,24),(23,22)],a.h)
+        # Far foreleg/hindleg are laid down first; all four have grounded hooves.
+        a.p([(31,48),(37,51),(34,62),(36,72),(32,75),(29,71),(29,60)],a.s)
+        a.p([(54,48),(61,48),(58,60),(63,71),(61,75),(56,73),(51,60)],a.s)
+        a.foot(31,75,7);a.foot(58,75,7)
+        # Raised foliage tail at the rear of a long, level rib cage.
+        a.p([(60,48),(67,44),(69,35),(73,31),(72,42),(77,39),(73,50),(66,55)],a.c)
+        a.p([(64,49),(69,44),(72,40),(70,49),(66,52)],a.h,False)
+        a.l([(68,43),(70,37)],a.c)
+        a.p([(23,45),(37,41),(55,43),(65,49),(63,58),(55,62),(37,59),(25,59),(20,53)])
+        a.p([(32,54),(45,56),(55,55),(59,58),(54,61),(37,58)],a.h,False)
+        # Near legs remain slender; hock bends visibly differ from front knees.
+        a.p([(21,49),(28,49),(29,59),(25,68),(25,74),(21,76),(18,73),(20,63)])
+        a.p([(54,51),(61,54),(59,64),(54,68),(55,74),(51,76),(48,73),(49,64)])
+        a.p([(22,58),(24,59),(23,68),(22,74),(20,73)],a.h,False)
+        a.p([(55,60),(56,63),(52,68),(53,73),(50,72)],a.h,False)
+        a.foot(19,76,8);a.foot(49,76,8)
+        # Upright neck joins the forequarters, not a belly standing on two legs.
+        a.p([(22,32),(32,30),(37,41),(35,52),(28,59),(21,55),(18,47),(19,39)])
+        a.p([(18,35),(23,36),(26,45),(29,54),(26,58),(22,53),(18,43)],a.h,False)
+        for pts in [[(32,34),(40,38),(38,42),(31,40)],[(33,39),(41,43),(39,47),(31,44)],[(33,44),(39,49),(35,54),(29,48)]]:
+            a.p(pts,a.c);a.l([pts[0],pts[2]],a.s)
+        # Muzzle and cream blaze; only the nearer eye is exposed in this3/4 pose.
+        a.face([(16,24),(24,22),(32,26),(32,33),(23,37),(14,34),(8,32),(8,29)])
+        a.p([(15,25),(22,24),(23,28),(15,30),(10,31),(10,33),(19,34),(23,32),(25,35),(20,37),(14,34),(8,32),(8,29)],a.h,False)
+        a.eye(21,27,3);a.l([(20,26),(25,27)],a.ink)
+        a.r((8,30,10,31),a.ink);a.l([(12,33),(17,34)],a.s)
+        a.p([(28,26),(36,19),(41,20),(37,26),(30,29)],a.c)
+        a.p([(30,25),(36,21),(38,21),(35,25)],a.a,False)
+        a.p([(17,25),(12,21),(7,21),(11,25),(16,27)],a.c)
+        # Branching ivory antlers grow upward from the skull with star terminals.
+        for pts in [[(18,24),(15,18),(15,10),(10,5)],[(15,15),(7,13),(5,8)],[(15,18),(22,13),(23,7)],[(25,24),(29,17),(30,8),(35,3)],[(29,16),(37,14),(41,7)],[(30,11),(25,7),(24,3)]]:
+            a.l(pts,a.ink,4);a.l(pts,a.a,2)
+        for x,y in [(10,5),(5,8),(23,7),(35,3),(41,7),(24,3)]:star(x,y)
+        for pts in [[(38,45),(42,44),(44,46),(40,47)],[(48,46),(51,45),(54,47),(50,49)],[(31,48),(34,46),(34,50),(31,52)]]:a.p(pts,a.h,False)
+        a.l([(24,56),(27,59)],a.h)
+    else:
+        # Rear3/4 view faces the opponent at upper right, showing withers/rump.
+        a.p([(47,49),(54,48),(53,62),(56,70),(54,75),(50,73),(47,62)],a.s)
+        a.p([(20,50),(27,49),(28,60),(23,66),(23,73),(19,75),(17,72),(17,64)],a.s)
+        a.foot(19,75,7);a.foot(51,75,7)
+        a.p([(22,48),(13,44),(9,34),(5,31),(8,43),(3,42),(7,51),(17,56)],a.c)
+        a.p([(16,50),(11,43),(8,39),(10,48),(14,53)],a.h,False)
+        a.p([(18,45),(33,41),(48,42),(58,48),(59,55),(52,60),(38,60),(23,61),(15,54)])
+        a.p([(20,49),(26,47),(30,49),(30,56),(26,61),(19,58)],a.s,False)
+        a.p([(23,52),(29,53),(30,63),(35,69),(34,75),(29,76),(27,72),(26,67),(20,59)])
+        a.p([(51,51),(58,50),(59,62),(62,69),(62,75),(57,76),(55,72),(55,64),(51,60)])
+        a.p([(25,60),(28,62),(29,68),(31,73),(29,72),(27,67)],a.h,False)
+        a.p([(56,59),(57,62),(59,69),(59,73),(57,72)],a.h,False)
+        a.foot(29,76,8);a.foot(57,76,8)
+        a.p([(45,34),(54,31),(60,38),(58,47),(56,54),(50,58),(44,52),(42,42)])
+        a.p([(56,38),(59,40),(58,48),(54,54),(53,47)],a.h,False)
+        for pts in [[(46,34),(39,37),(37,41),(45,40)],[(46,39),(37,44),(40,48),(46,45)],[(47,45),(40,50),(44,55),(49,49)]]:
+            a.p(pts,a.c);a.l([pts[0],pts[2]],a.s)
+        a.face([(47,23),(55,22),(63,26),(68,29),(68,32),(60,34),(55,37),(47,34),(44,28)])
+        a.p([(58,26),(63,27),(64,30),(68,30),(68,32),(61,34),(57,33)],a.h,False)
+        a.l([(49,26),(53,25),(57,27)],a.h)
+        a.p([(48,25),(39,19),(35,20),(39,25),(47,29)],a.c)
+        a.p([(46,25),(40,21),(38,21),(41,25)],a.a,False)
+        a.p([(57,24),(63,19),(69,20),(65,24),(59,27)],a.c)
+        for pts in [[(49,24),(45,17),(45,9),(39,4)],[(45,15),(37,13),(34,7)],[(45,18),(52,13),(52,6)],[(57,24),(59,17),(60,9),(65,3)],[(59,15),(68,13),(71,6)],[(60,10),(55,6),(54,3)]]:
+            a.l(pts,a.ink,4);a.l(pts,a.a,2)
+        for x,y in [(39,4),(34,7),(52,6),(65,3),(71,6),(54,3)]:star(x,y)
+        a.l([(34,45),(42,44),(48,46)],a.h)
+        a.p([(31,50),(35,49),(38,51),(34,53)],a.h,False)
+        a.p([(43,49),(47,49),(48,52),(44,53)],a.h,False)
+        a.l([(19,48),(18,54)],a.h)
+
 
 
 PAINTERS = {fn.__name__: fn for fn in [hare,pangolin,otter,beetle,bird,gecko,ram,scorpion,lynx,moth,newt,boar,mantis,mole,puppet,heron,crab,seahorse,ibex,crane,lion,ray,scarab,stag]}
@@ -1087,13 +1135,6 @@ def rear_anatomy(a, family, stage):
         a.p([(32,37),(40,33),(47,38),(44,53),(38,58),(31,50)],a.s)
         a.l([(39,37),(38,51)],a.h)
         a.p([(38,41),(43,45),(39,49),(35,45)],a.a)
-    elif family=='stag':
-        a.p([(37,44),(49,40),(61,46),(61,56),(53,61),(38,59)],a.c)
-        a.l([(41,46),(52,44),(58,48)],a.h)
-        a.p([(58,55),(66,50),(69,53),(65,60),(58,61)],a.h)
-        for x,y in [(44,52),(53,54)]: a.gem(x,y,a.a)
-
-
     # These marks belong only to the rear view: dorsal seams, rump pads, folded
     # appendages and horn bases are independently drawn rather than mirrored.
     if family=='hare':
@@ -1203,12 +1244,6 @@ def rear_anatomy(a, family, stage):
         a.l([(34,39),(37,36),(41,37)],a.c)
         for y in [45,51]: a.l([(35,y),(39,y+1),(43,y-1)],a.a)
         a.p([(38,56),(42,55),(44,62),(41,65)],a.c,False)
-    elif family=='stag':
-        a.p([(21,28),(29,25),(34,28),(34,35),(28,40),(21,35)],a.c,False)
-        a.l([(37,47),(40,52),(38,57)],a.h)
-        a.l([(55,46),(58,50),(55,56)],a.s)
-        a.tuft(57,55,8,a.h)
-        a.l([(48,59),(52,60),(56,58)],a.h)
 
 
 class Icon(Art):
@@ -1431,15 +1466,25 @@ def party_icon(a,family,s):
         for x in [6,26]:a.gem(x,20,a.a)
         a.p([(14,12),(14,5),(17,2),(20,9)],a.a)
     elif family=='stag':
-        a.p([(12,17),(21,14),(29,17),(30,22),(26,27),(13,28),(10,24)])
-        a.p([(10,24),(10,14),(7,10),(10,7),(16,8),(20,12),(16,18),(17,26)])
-        a.face([(7,8),(12,6),(17,10),(16,16),(11,19),(6,15),(4,11)])
-        a.eye(8,10,1);a.eye(14,10,1)
-        a.l([(9,8),(6,4),(6,1)],a.a,2);a.l([(15,8),(19,4),(20,1)],a.a,2)
-        a.l([(6,4),(2,3),(1,1)],a.a);a.l([(19,4),(26,3),(28,1)],a.a)
-        a.foot(12,30,5);a.foot(24,30,5)
-        a.p([(18,17),(23,10),(27,12),(25,17),(29,18),(24,21)],a.h)
-        a.gem(23,24,a.a)
+        # Four narrow grounded legs under a horizontal barrel and high neck.
+        a.p([(10,20),(13,20),(12,28),(13,30),(10,30)],a.s)
+        a.p([(23,20),(26,20),(25,25),(28,29),(26,30),(22,25)],a.s)
+        a.p([(11,18),(19,16),(27,18),(28,22),(23,25),(12,24),(8,21)])
+        a.p([(26,19),(29,14),(30,12),(31,17),(29,23),(26,23)],a.c)
+        a.p([(8,17),(12,16),(13,23),(10,30),(7,30),(8,24)])
+        a.p([(22,21),(26,22),(24,26),(24,30),(21,30),(20,27)])
+        a.p([(8,13),(12,11),(15,17),(14,21),(11,24),(7,21)],a.c)
+        a.p([(8,14),(10,15),(11,21),(9,24),(7,19)],a.h,False)
+        a.p([(12,13),(17,16),(15,19),(12,18)],a.c)
+        a.p([(12,17),(17,20),(14,22),(11,20)],a.c)
+        a.face([(5,9),(10,7),(14,10),(13,14),(8,16),(3,13),(2,11)])
+        a.p([(4,10),(8,9),(8,12),(3,13),(6,15),(9,14)],a.h,False)
+        a.eye(9,10,1);a.r((2,11,3,12),a.ink)
+        a.p([(12,10),(16,7),(18,8),(14,12)],a.c)
+        for pts in [[(6,9),(5,5),(3,2)],[(5,6),(1,4)],[(10,8),(12,4),(15,1)],[(12,5),(18,3)]]:a.l(pts,a.a,2)
+        for x,y in [(3,2),(1,4),(15,1),(18,3)]:a.r((x,y,x,y),a.al)
+        a.r((18,19,20,19),a.h);a.r((24,20,25,20),a.h)
+        a.r((8,29,10,30),a.ink);a.r((21,29,23,30),a.ink)
     else:
         raise ValueError(f'Un-authored party anatomy: {family}')
     a.align()
@@ -1477,9 +1522,12 @@ def review_grid(catalog,indices,path,scale=3,columns=3):
     sheet.save(path,optimize=True)
 
 
-def main():
+def main(selected=None):
     OUT.mkdir(parents=True,exist_ok=True)
     art,catalog={},[]
+    previous={e['id']:e for e in json.loads((OUT/'catalog.json').read_text())} if selected else {}
+    known={slug for family,slugs,palette in FAMILIES for slug in slugs}
+    if selected and not selected.issubset(known):raise ValueError(f'Unknown species: {selected-known}')
     sheet=Image.new('RGB',(1080,1056),'#edf0e4')
     icons=Image.new('RGB',(1080,384),'#edf0e4')
     sd,idd=ImageDraw.Draw(sheet),ImageDraw.Draw(icons)
@@ -1487,18 +1535,32 @@ def main():
         for stage,slug in enumerate(slugs,1):
             index=len(catalog);pair={}
             art_stage=stage if len(slugs)>1 else 3
-            for rear in [False,True]:
-                painter=Art(palette,rear,art_stage)
-                PAINTERS[family](painter,art_stage)
-                if rear:rear_anatomy(painter,family,art_stage)
-                painter.align()
-                side='back' if rear else 'front'
-                pair[side]=sprite_record(painter,slug,side,64,art)
-                sheet.paste(painter.im,((index%10)*108+22,(index//10)*176+(10 if not rear else 84)),painter.im)
-            icon=Icon(palette,art_stage)
-            party_icon(icon,family,art_stage)
-            pair['icon']=sprite_record(icon,slug,'icon',32,art)
-            icons.paste(icon.im,((index%10)*108+38,(index//10)*64+6),icon.im)
+            if selected and slug not in selected:
+                pair={side:previous[f'mx_species_{slug}'][side] for side in ['front','back','icon']}
+                for side in ['front','back','icon']:
+                    record=pair[side];size=32 if side=='icon' else 64
+                    raw=(OUT/record['file']).read_bytes()
+                    assert hashlib.sha256(raw).hexdigest()==record['sha256'],record['resourceId']
+                    resource_id=record['resourceId']
+                    art[resource_id]={'id':resource_id,'name':f'{slug} {side}','kind':'monster',
+                        'dataUrl':'data:image/png;base64,'+base64.b64encode(raw).decode(),
+                        'meta':{'width':size,'height':size}}
+            else:
+                for rear in [False,True]:
+                    painter=Art(palette,rear,art_stage)
+                    PAINTERS[family](painter,art_stage)
+                    if rear:rear_anatomy(painter,family,art_stage)
+                    painter.align()
+                    side='back' if rear else 'front'
+                    pair[side]=sprite_record(painter,slug,side,64,art)
+                icon=Icon(palette,art_stage)
+                party_icon(icon,family,art_stage)
+                pair['icon']=sprite_record(icon,slug,'icon',32,art)
+            for side in ['front','back']:
+                im=Image.open(OUT/pair[side]['file'])
+                sheet.paste(im,((index%10)*108+22,(index//10)*176+(10 if side=='front' else 84)),im)
+            im=Image.open(OUT/pair['icon']['file'])
+            icons.paste(im,((index%10)*108+38,(index//10)*64+6),im)
             idd.text(((index%10)*108+3,(index//10)*64+44),slug,fill=INK)
             sd.text(((index%10)*108+3,(index//10)*176+156),slug,fill=INK)
             catalog.append({'id':f'mx_species_{slug}','family':family,
@@ -1528,6 +1590,7 @@ def main():
         'version':2,'styleReference':'Emerald/GBA native pixel presentation; original species/anatomy',
         'source':'scripts/content/monster-expedition-art.py',
         'sourceSha256':hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+        'visualConsistencyReferences':{'astralhart':{'title':'public/assets/emerald-monster/title-stag.png','anatomy':'quadruped, four grounded legs, horizontal barrel, leaf mane, bushy tail, cream star-tipped antlers'}},
         'sourceImages':[],'authoredFamilies':len(FAMILIES),'species':len(catalog),
         'battleResources':120,'partyResources':60,'nativeBattleDimensions':[64,64],
         'nativeIconDimensions':[32,32],'nativeAlpha':[0,255],
@@ -1548,4 +1611,7 @@ def main():
 
 
 if __name__=='__main__':
-    main()
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--species',action='append',help='Rerender only this slug; keep other verified PNG bytes')
+    args=parser.parse_args()
+    main(set(args.species) if args.species else None)

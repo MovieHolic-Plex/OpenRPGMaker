@@ -62,3 +62,15 @@ an independent all180resource disk/seed/catalog byte audit and unchanged species
 family, evolution-stage and120battle-resource identities. Full stats/learnset/
 evolution source is untouched. These developer sheets are not registered as
 runtime resources. Runtime/canonical-promotion QA belongs to campaign integration.
+
+
+Astralhart title consistency follow-up: its front, rear and32px icon now depict
+four grounded legs under a horizontal torso, a leaf mane, bushy tail and cream
+star-tipped antlers, matching the original title stag's creature identity.
+Its rear pose is independently authored facing upper right. Forest green/ivory
+replace the earlier mint/pink palette for this species only.
+`python3 scripts/content/monster-expedition-art.py --species astralhart` rerenders
+only that species'3PNG resources and rebuilds the complete verified portable
+seed/catalog/review sheets. Other177PNG resources are read and SHA-verified,
+without being rewritten. Omit `--species` for a full regeneration.
+`review-evidence.json` records the title reference SHA and177unchanged-byte audit.

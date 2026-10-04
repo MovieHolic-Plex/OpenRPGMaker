@@ -186,3 +186,12 @@ alpha, baseline, palette bound,180embedded-byte matches and120+60unique hashes.
 Direct before/after inspection and all-resource byte audit are recorded privately
 under `/tmp/oprn-emerald-20261004/creature-qa/`. This is asset QA; runtime/canonical
 promotion and native battle/party screenshots belong to the integration owner.
+
+
+Astralhart is explicitly a quadruped matching `emerald-monster/title-stag.png`:
+four grounded legs, horizontal barrel, cream star-tipped antlers, leaf mane and
+bushy tail. Its front/back/icon are independently drawn in forest green/ivory.
+Focused regeneration: `python3 scripts/content/monster-expedition-art.py --species
+astralhart` changes only its3PNG resources and rebuilds the aggregate catalog/seed
+and reviews, while verifying the other177existing PNGs against their catalog SHA.
+It requires an existing catalog; full generation without the option remains supported.

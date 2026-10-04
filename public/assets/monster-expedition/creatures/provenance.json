@@ -2,7 +2,13 @@
   "version": 2,
   "styleReference": "Emerald/GBA native pixel presentation; original species/anatomy",
   "source": "scripts/content/monster-expedition-art.py",
-  "sourceSha256": "c5ce77828cc84352a28f9c69baa580e4d21d49dfeb088a6c1da27b48e42c9e92",
+  "sourceSha256": "c4d259caa9724189465aadc8d159e8a6c3790f231da9f32e237bd6837fc91249",
+  "visualConsistencyReferences": {
+    "astralhart": {
+      "title": "public/assets/emerald-monster/title-stag.png",
+      "anatomy": "quadruped, four grounded legs, horizontal barrel, leaf mane, bushy tail, cream star-tipped antlers"
+    }
+  },
   "sourceImages": [],
   "authoredFamilies": 24,
   "species": 60,
@@ -32,8 +38,8 @@
     "https://github.com/pret/pokeemerald/blob/master/src/data/graphics/pokemon.h",
     "https://github.com/pret/pokeemerald/blob/master/src/pokemon_icon.c"
   ],
-  "catalogSha256": "fe3929a236c248cae9e5b87fdc3a1de82bf9dded08e7e15f5daef156fde64221",
-  "uploadSeedSha256": "114968930c8623806cc8e9b3e9142317def88fdd86bb1008c8bf6cf42d69e942",
-  "battlePngBytes": 139185,
-  "partyPngBytes": 35570
+  "catalogSha256": "429a6d7f063c1363405d37ee3a73bd555f20adefbb7610b32aaea02174957e3e",
+  "uploadSeedSha256": "9f0c0f5f3155032104b70e66778b6b41d3094990eeb460d0d983576750791979",
+  "battlePngBytes": 139114,
+  "partyPngBytes": 35499
 }
