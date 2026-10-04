@@ -54,7 +54,7 @@ export function renderAiAssistantPanel(): HTMLElement {
         }
         const before = store.getCurrent();
         store.replace(pendingPreview.project);
-        focusAcceptedAgentChanges(before, pendingPreview.project);
+        focusAcceptedAgentChanges(before, pendingPreview.project, { follow: true });
         status.textContent = "승인됨";
         approveButton.setAttribute("disabled", "true");
         renderPreviewLines(previewStatus, [`승인 완료: ${pendingPreview.map.name}`, "원본 프로젝트는 승인 전까지 변경되지 않았고, 승인 후 프리뷰 프로젝트가 현재 프로젝트가 되었습니다."]);

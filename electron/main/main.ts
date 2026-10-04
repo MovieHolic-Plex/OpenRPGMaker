@@ -72,6 +72,8 @@ function createWindow(): BrowserWindow {
       sandbox: true,
       nodeIntegration: false,
       webSecurity: true,
+      // AI checkpoint application and replies must continue while minimized.
+      backgroundThrottling: false,
     },
   });
 

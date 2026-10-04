@@ -16,13 +16,18 @@ export type YieldToUi = () => Promise<void>;
 
 export const YIELD_TO_UI_FALLBACK_MS = 50;
 
+/** Rendering is optional when the user is looking elsewhere; execution is not. */
+export function isUiInBackground(): boolean {
+  return typeof document !== "undefined"
+    && (document.visibilityState === "hidden" || document.hasFocus?.() === false);
+}
+
 export function defaultYieldToUi(): Promise<void> {
   if (typeof requestAnimationFrame !== "function") return Promise.resolve();
 
   return new Promise((resolve) => {
     const doc = typeof document !== "undefined" ? document : undefined;
     const win = doc?.defaultView;
-    const isBackground = (): boolean => doc?.visibilityState === "hidden" || doc?.hasFocus?.() === false;
     let settled = false;
     let frame: number | undefined;
     let timer: ReturnType<typeof setTimeout> | undefined;
@@ -66,10 +71,10 @@ export function defaultYieldToUi(): Promise<void> {
       }
     };
     const onBackgroundChange = (): void => {
-      if (!settled && isBackground()) yieldInBackground();
+      if (!settled && isUiInBackground()) yieldInBackground();
     };
 
-    if (isBackground()) {
+    if (isUiInBackground()) {
       yieldInBackground();
       return;
     }
