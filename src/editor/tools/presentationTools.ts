@@ -14,7 +14,7 @@ export function presentationArtImages(project: Project): { resourceId: string; d
   return presentationArtIds(project).flatMap(resourceId => {
     const asset = project.assets.uploaded[resourceId];
     const dataUrl = asset?.dataUrl;
-    return dataUrl && /^data:image\/(png|jpeg|webp);base64,/u.test(dataUrl)
+    return asset && dataUrl && /^data:image\/(png|jpeg|webp);base64,/u.test(dataUrl)
       ? [{ resourceId, dataUrl, label: asset.name }] : [];
   });
 }

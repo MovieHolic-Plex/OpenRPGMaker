@@ -73,7 +73,7 @@ const result = { projectId: canonical.projectId, title: project.meta.title, cano
   automaticBuildCompleted: Boolean(completion.generationPrerequisitePassed && (completion.automaticGeneration || !completion.passed)),
   projectJsonSha256: createHash('sha256').update(json).digest('hex'),
   projectJsonBytes: (await stat(projectPath)).size, openingSkipped:false, reducedMotion:false, normalKeyboardOnly:true,
-  recordedReadingPauseMs:2500, snapshotReadingPauseMs:1800, recordingTimeline:[], paths, choices: choice.options.map(o => o.text), branches: [] };
+  recordedReadingPauseMs:2500, snapshotReadingPauseMs:1800, recordingTimeline:[], presentationEvidence: [], paths, choices: choice.options.map(o => o.text), branches: [] };
 // Pointer movement is an authored opt-in. Use ordinary arrow keys for the
 // unchanged game, one tile at a time, and verify each committed position.
 const walk = (mapId, path, arrivalOverride) => path.steps.flatMap((step, index) => [
@@ -109,6 +109,32 @@ try {
     // These pauses do not change the game, skip animation, or advance dialogue.
     const screenshot = page.screenshot.bind(page);
     page.screenshot = async options => {
+      if (await page.getByTestId('title-screen').count() && project.system.titleScreen?.effects?.length) {
+        await page.waitForFunction(() => document.querySelector('[data-testid="title-effects"]')?.dataset.titleEffectsRenderer === 'webgl');
+        const facts = await page.getByTestId('title-screen').evaluate(node => {
+          const effects = node.querySelector('[data-testid="title-effects"]');
+          return { kind:'title', sequence:node.dataset.seqState, effects:effects ? {...effects.dataset} : null,
+            text:node.textContent, defaultEditorialCopy:!!node.querySelector('[data-testid="title-kicker"]') };
+        });
+        assert.equal(facts.defaultEditorialCopy,false,'The generic editorial title must be replaced');
+        assert(facts.effects?.titleEffectsAnimated === 'true','Normal title effects must actually animate');
+        result.presentationEvidence.push({ branch:name, ...facts });
+      }
+      if (await page.getByTestId('cinematic-sequence').count()) {
+        const kind = await page.getByTestId('cinematic-sequence').getAttribute('data-scene-kind');
+        if (kind === 'image') {
+          await page.waitForFunction(() => {
+            const image = document.querySelector('[data-testid="cinematic-sequence"] .cinematic-image');
+            return image?.complete && image.naturalWidth > 256 && image.naturalHeight > 192;
+          });
+          const facts = await page.getByTestId('cinematic-sequence').evaluate(node => {
+            const image = node.querySelector('.cinematic-image');
+            return { kind:'opening', sceneId:node.dataset.sceneId, width:image.naturalWidth,height:image.naturalHeight,
+              motion:image.dataset.motion,narration:node.querySelector('.cinematic-narration')?.textContent,mediaState:node.dataset.mediaState };
+          });
+          result.presentationEvidence.push({ branch:name, ...facts });
+        }
+      }
       const bytes = await screenshot(options);
       if (index === 0) result.recordingTimeline.push({shot:basename(String(options.path)),atSec:(Date.now()-recordingStarted)/1000});
       if (index === 0) await page.waitForTimeout(1800);
