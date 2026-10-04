@@ -2392,3 +2392,65 @@ DOM에 없다. 기존 검사에서 숨은 폼을 기대한다면 먼저 해당 �
 물고기 선택지 수는 선택된 폼의 I개이며 검색은 폼/선택지 DOM을 교체하지 않는다. F×I 생성은
 제거했지만 선택된 폼의 전체 선택지와 펼친 시스템 칩은 O(I)다. 실제 브라우저 시간·시각 검증은
 감독자가 아래 연결 칸 절의 네이티브 재검증 절차와 함께 수행한다.
+
+## 연결 칸의 참조 데이터 캐시 (UX round 2, 2026-10-04)
+
+`databaseConnectionsPanel.ts`는 패널 세션마다 `createRecordConnectionsReader()`를 소유한다.
+프로젝트 루트 정체성으로 무효화하지 않고 직접 사용처·삭제 차단 보조 검사·아이템 참조 수집기가
+읽는 데이터 소스로 판단한다. DB 소스 레코드의 설명과 선택한 레코드 이름을 표시용으로 제외한다.
+적 그룹 이름은 자신의 전투 이벤트 위치 라벨일 수 있어 제외하지 않는다. 그 외 필드는 보수적으로
+비교한다. 맵 비교에는 이름·이벤트·인카운터·필드 스폰만 넣고 타일 격자·relief·에셋/참고문서를
+순회하지 않는다. source 목록은 `REFERENCE_DATABASE_COLLECTIONS`; 참조 검사가 읽는 소스를
+늘리면 이 목록과 system/session/growth/characters/testPresets 입력, 회귀 계약도 함께 늘려야 한다.
+
+`createCommandReferenceLocationsReader()`는 명령/조건/giftPrefs/페이지와 정본이 보존하는
+편집 초안 원본에 대한 판단 결과를 재사용한다. 이름만 바뀌면 현재 맵·이벤트·페이지·적 그룹 이름으로
+위치 라벨을 다시 만든다. 명령·복합 조건·원본 소유권 변경 및 출처 추가/삭제는 무효화한다.
+`remote-delete` 원본과 새 초안의 baseline은 기존 `eventReferenceMatches`와 같이 제외한다.
+순수 `recordConnections`/`commandsReferenceLocations`는 캐시 없이 유지하므로 가변 툴 초안과
+삭제 가드의 계약은 그대로다. 판단 입력은 지연 생성하므로 순수 삭제 검사에 캐시용 배열 생성 비용을
+추가하지 않는다. 캐시 reader는 불변 store 스냅샷에만 사용한다.
+
+확인 문구는 매번 현재 레코드로 계산한다(설명 비움·그래픽 누락·직업 존재 등). 직접 사용처가 없을
+때의 「다른 곳」 보조 문구도 소스로 무효화한다. 명령 위치가 없으면 적 그룹 이름은 보조 문구에
+등장하지 않으므로 그 이름만 바뀐 경우 삭제 검사 전체 스캔을 반복하지 않는다. 시스템 시작 파티,
+기본 전투, 성장 트리, 시작 인벤토리, 제작법·생활·기부·도감 참조도 계속 읽는다. 40건 표시 상한과
+종류별 3건 미리보기는 그대로다.
+
+‘더 보기/접기’는 이미 계산한 사용처로 그 묶음 표시만 갱신하고 새 단추에 키보드 포커스를 유지한다.
+내용·확인 문구가 같으면 패널 DOM도 그대로 둔다. 기존 testid와 레코드 이동/reveal 동작은 유지한다.
+레코드 전환은 펼침을 비우며, 프로젝트 lineage 교체는 reader와 펼침 상태를 함께 새로 만든다.
+본문이 바뀌면 기존 패널을 다시 붙인다. 지원하지 않는 탭/빈 레코드는 hidden이며 계산하지 않는다.
+CSS로 접힌 작은 창·도크 상태에서는 참조 변경을 계속 반영하므로 창을 넓히거나 도크를 풀 때 최신
+데이터가 보인다. CSS visibility 스킵/resize observer는 넣지 않았다. 숨은 패널에서 이름·설명을
+입력해도 같은 참조를 다시 검사하지 않지만, 실제 참조 변경은 숨은 상태에서도 계산한다.
+
+회귀 계약: `test/databaseUx2ConnectionsCache.test.ts` (Vitest 실행하지 않음). 명령 배열 순회 횟수,
+8개 컬렉션의 이름/설명 편집, 최신 확인 문구, 출처·라벨·초안·전투 뒤 변경, 보조 참조, More 포커스,
+이동·재부착·숨김·프로젝트 전환을 검사한다. esbuild 구문 변환만 확인했으며 타입/단위/브라우저
+합격이나 CPU 절감률을 주장하지 않는다. 새 참조/선택에는 최초 스캔이 필요하고, 복제된 참조 트리는
+구조 비교한다. 변경한 컬렉션이 아주 크면 그 비교 비용은 남는다.
+
+### 감독자 네이티브 재검증 절차
+
+1. 감독자 통합 체크아웃에서 허용한 집중 검사: `node scripts/run-vitest.mjs run test/databaseUx2LifeCollections.test.ts test/databaseUx2ConnectionsCache.test.ts test/databaseRecordConnections.test.ts test/databaseDraftReferenceGuards.test.ts`.
+   에이전트는 실행하지 않았다. 감독자의 기존 게이트/기준선 절차로 통합 판정한다.
+2. 저장 브리지가 있는 별도 QA 프로젝트에서 정상화된 실제 레코드를 준비한다. 기존 아이템·참조는
+   유지하고 F=10/100, I=100/1,000의 실제 건수를 기록한다. 콘텐츠를 만든다면 정본 저장·재로드
+   규칙을 지킨다. `toolbar-database` → `db-group-strip-life` → `db-tab-life-collections`에서
+   `db-life-collections-search`에 180ms 간격의 네이티브 키 입력과 중간 삽입을 한다. 한 번 클릭한
+   뒤 두 번째 키도 같은 검색에 들어가는지 activeElement·selectionStart/End를 확인한다. 결과 없음,
+   지우기, 분류 칩·요약 카드, 다른 어종 선택을 확인한다. 검색 전후 같은 상세 노드이며
+   `[data-testid^="db-life-collections-fish-item-"] option`은 선택된 폼의 I개이고 숨은 폼은 0개다.
+   기부/추적 카드는 접힘→펼침→접힘→펼침 때만 처음 생성하고 선택/저장 동작이 계속 되는지 본다.
+3. 폭과 computed display로 연결 칸이 보이는 넓은 창을 확인한다. `db-tab-skills`에서 probe 스킬을
+   선택하고, 100/10,000개의 무관 text 명령 끝에 learnSkill 참조를 둔 공용 이벤트 네 개를 사용한다.
+   `db-field-name`에 네이티브 키를 보내며 입력→다음 프레임/긴 작업/명령 순회와 포커스·캐럿을
+   기록한다. 설명을 비우면 확인 문구가 바뀌되 같은 이벤트 목록을 다시 검사하지 않아야 한다.
+   `[data-testid="db-connections-uses"] .db-connections-more` 펼침/접힘에도 참조 순회가 없고
+   포커스가 단추에 남아야 한다. 참조 레코드 이름, 공용 이벤트·맵·페이지·적 그룹 이름을 바꾼 뒤
+   현재 이름을 확인한다. 실제 명령/조건/초안 원본/전투 뒤 참조 변경은 목록에 반영돼야 한다.
+4. 작은 창/도크로 접힌 동안 이름·설명과 실제 참조를 바꾸고 다시 넓혀 최신 목록·확인 문구를 본다.
+   레코드 이동, 탭 전환, 프로젝트 교체/재열기와 이전 펼침 상태 초기화도 검사한다. debounce 시간과
+   DOM/계산 시간, 자동화 wall과 CPU를 구분하고 소스 SHA·하드웨어·viewport·실제 F/I/C를 함께 남긴다.
+   원래 감사/비교 기준은 `verify-shots/editor-ux-audit-round2-20261004/agents/database.md`와 README다.
