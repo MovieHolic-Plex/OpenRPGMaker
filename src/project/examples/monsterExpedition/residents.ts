@@ -40,6 +40,10 @@ export function repairExpeditionResidents(project:Project):void {
  for(const map of Object.values(project.maps))for(const event of map.events){
   let index:number|undefined;
   if(event.id.endsWith('_professor'))index=6;
+  else if(event.id.endsWith('_rival'))index=2;
+  else if(event.id.includes('_company_'))index=2;
+  else if(event.id.endsWith('_boss'))index=4;
+  else if(event.id.endsWith('_leader'))index=({grove:3,harbor:2,ember:4,prism:5,dune:7,frost:6,moon:3,summit:4} as Record<string,number>)[map.id.split('_')[2]!]??4;
   else if(event.id.endsWith('_mom'))index=5;
   else if(event.id.endsWith('_shop'))index=4;
   else if(event.id.includes('_trainer_'))index=event.id.endsWith('_0')?0:event.id.endsWith('_1')?2:4;
