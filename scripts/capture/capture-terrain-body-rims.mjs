@@ -15,7 +15,7 @@ const saved=JSON.parse(readFileSync(resolve(source,'summary.json'),'utf8'));
 if(!saved.canonicalReload&&!saved.reloadMapEqual)throw Error('Missing canonical SQLite reload evidence');
 const cases=JSON.parse(readFileSync('.vite-cache/terrain-seams/cases.json','utf8'));
 let wire;await withTsModule(resolve('src/project/webExport.ts'),'terrain-body-export.mjs',async({prepareWebExport})=>{wire=JSON.parse(prepareWebExport(project).projectJson);});
-const server=await startProductionPlayerPreview(),browser=await chromium.launch({args:['--no-proxy-server','--disable-background-networking']});
+const server=await startProductionPlayerPreview(),browser=await chromium.launch({args:['--no-proxy-server','--disable-background-networking','--js-flags=--max-old-space-size=8192']});
 const page=await browser.newPage({viewport:{width:1440,height:960}});
 const proof={label,exportedPlayer:true,projectId:saved.projectId,revision:saved.revision,errors:[],ramps:[],samples:[]};
 page.on('pageerror',e=>proof.errors.push(e.message));let film;

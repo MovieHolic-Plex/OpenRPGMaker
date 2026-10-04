@@ -3,7 +3,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { PNG } from "pngjs";
-import { openLocalProjectStore } from "../../electron/local-store/store";
+import { initLocalProjectStore, openLocalProjectStore } from "../../electron/local-store/store";
 import { createReliefGroundSurface } from "../../src/editor/reliefGroundSurface";
 import { tilesetBaseImageUrl } from "../../src/editor/tilesetImage";
 import { renderRelief } from "../../src/project/relief/render";
@@ -14,9 +14,20 @@ import { renderMapPng } from "../qa-game/render.mts";
 const out = path.resolve("verify-shots/terrain-body-rims/surfaces");fs.mkdirSync(out,{recursive:true});
 const storage = await openLocalProjectStore({projectDir:path.resolve(".vite-cache/terrain-seams/project")});
 const snapshot = storage.loadSnapshot()!,projectId=storage.info().projectId;storage.close();
+// The editor registers 354 available tilesets. Keep all authored maps and runtime
+// data, but give the dedicated player fixture only its referenced atlas. This is
+// a separate SQLite project; the editor/source project is never rewritten.
+const used=new Set(Object.values(snapshot.project.maps).map(m=>m.tilesetId));
+const fixture={...snapshot.project,tilesets:Object.fromEntries(Object.entries(snapshot.project.tilesets).filter(([id])=>used.has(id)))};
+const fixtureFolder=path.resolve('.vite-cache/terrain-body-rims/runtime-project');
+let runtime=await initLocalProjectStore({projectDir:fixtureFolder});
+const saved=await runtime.saveSerialized(JSON.stringify(fixture));if(saved.kind!=='saved')throw Error(saved.kind);
+const runtimeProjectId=runtime.info().projectId;runtime.close();runtime=await openLocalProjectStore({projectDir:fixtureFolder});
+const reloaded=runtime.loadSnapshot()!;runtime.close();
+if(JSON.stringify(reloaded.project.maps)!==JSON.stringify(snapshot.project.maps))throw Error('Runtime fixture changed canonical scene data');
 const source=path.resolve('.vite-cache/terrain-body-rims/source');fs.mkdirSync(source,{recursive:true});
-fs.writeFileSync(path.join(source,'project.json'),JSON.stringify(snapshot.project));
-fs.writeFileSync(path.join(source,'summary.json'),JSON.stringify({projectId,revision:snapshot.revision,storage:'.vite-cache/terrain-seams/project',canonicalReload:true}));
+fs.writeFileSync(path.join(source,'project.json'),JSON.stringify(reloaded.project));
+fs.writeFileSync(path.join(source,'summary.json'),JSON.stringify({projectId:runtimeProjectId,revision:reloaded.revision,storage:fixtureFolder,canonicalReload:true,sourceProjectId:projectId,sourceRevision:snapshot.revision,sourceMapsEqual:true,tilesetsBefore:Object.keys(snapshot.project.tilesets).length,tilesetsAfter:used.size}));
 const project=snapshot.project,map=project.maps.ramps_four!,tileset=project.tilesets[map.tilesetId]!;
 const url=tilesetBaseImageUrl(tileset,project),raster=PNG.sync.read(fs.readFileSync(path.resolve("public",url.replace(/^\//u,""))));
 const ground=createReliefGroundSurface(map,tileset,raster),results=[];
