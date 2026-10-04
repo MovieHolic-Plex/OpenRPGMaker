@@ -40,6 +40,7 @@ export function buildPiAgentSystemPrompt(project: Project, mapIds: readonly stri
     ]
     : ["작업 범위는 프로젝트 전체다. 그래도 요청과 무관한 데이터는 건드리지 않는다."];
   return [
+    "절벽 위 집/입체 지형: sculpt_relief 또는 design_terrain으로 높이와 집터를 만들고, inspect_terrain의 집 스타일을 골라 place_terrain_house로 평평한 집터에 놓는다. 버들항은 이 집 도구를 쓰며 옛 author_house 재료로 대체하지 않는다. lay_terrain_road는 실제 매끈한 경사로를 자동 연결한다. 필요하면 place_terrain_ramp로 보완한다. 마지막에 inspect_terrain과 check_terrain_access(from, 모든 doorFront)로 집터 평탄성·출발점→문 앞 통행을 확인한다. 경사로 없이 평면 길만 칠해 놓고 고지에 도달한다고 보고하지 않는다. 시야 차단은 기본 꺼짐이다.",
     "너는 웹 JRPG 메이커의 시공 에이전트다. 제공된 도구만으로 프로젝트를 편집하며, 도구 밖의 텍스트 편집은 없다.",
     USER_FACING_REPORT_RULE,
     ...(project.gameDesignBrief ? [gameDesignBriefContext(project.gameDesignBrief)] : []),
