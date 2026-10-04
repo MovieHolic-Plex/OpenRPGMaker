@@ -1,0 +1,33 @@
+{
+  "url": "http://mdc-server:9888/",
+  "before": {
+    "project_id": "c779e278-8cec-4da4-9c2f-df423460b60d",
+    "revision": 338,
+    "maps": 121,
+    "mapSha256": "e0b8826e83503a5de1371f94144af4b49b6cf047f9669d870edc5052e348f05a"
+  },
+  "errors": [],
+  "status": {
+    "ready": true,
+    "turnBusy": false,
+    "configReady": true,
+    "lastStatus": "대기",
+    "bridgeConnected": false,
+    "panelMounted": true
+  },
+  "houseFamilies": [
+    "원본 주택",
+    "원본 저택",
+    "원본 목조집",
+    "다른 원본 외관",
+    "크기·지붕 조절"
+  ],
+  "after": {
+    "project_id": "c779e278-8cec-4da4-9c2f-df423460b60d",
+    "revision": 338,
+    "maps": 121,
+    "mapSha256": "e0b8826e83503a5de1371f94144af4b49b6cf047f9669d870edc5052e348f05a"
+  },
+  "mapsUnchanged": true,
+  "passed": true
+}
