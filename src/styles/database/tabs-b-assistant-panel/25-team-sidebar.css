@@ -1,21 +1,21 @@
 /* Right-side team presence and member detail. Tokens only; no floating deck. */
 .ai-team-sidebar {
-  position: relative; display: flex; flex-direction: column; flex: 0 0 84px; width: 84px;
+  position: relative; display: flex; flex-direction: column; flex: 0 0 300px; width: 300px; container-type: inline-size;
   min-height: 0; padding: 0; border-left: 1px solid var(--border-subtle);
   background: var(--bg-raised); color: var(--text-1); z-index: 42; font-family: var(--font-ui);
 }
-.ai-team-rail-tabs { display: grid; gap: 4px; padding: 10px 8px; border-bottom: 1px solid var(--border-subtle); }
+.ai-team-rail-tabs { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 12px; border-bottom: 1px solid var(--border-subtle); }
 .ai-team-sidebar button { cursor: pointer; font: 500 12px var(--font-ui); }
 .ai-team-rail-tab { padding: 8px 5px; border: 0; border-radius: var(--radius-s); color: var(--text-2); background: transparent; }
 .ai-team-rail-tab[aria-pressed="true"] { background: var(--accent-muted); color: var(--accent); }
-.ai-team-avatar-list { display: flex; flex-direction: column; align-items: center; gap: 22px; padding: 22px 4px; flex: 1; overflow-y: auto; min-height: 0; }
-.ai-team-avatar-list > .ai-team-member { display: flex; flex-direction: column; align-items: center; gap: 7px; width: 74px; flex: 0 0 auto; padding: 6px 2px; background: transparent; border: 0; border-radius: var(--radius-m); color: var(--text-1); }
+.ai-team-avatar-list { display: grid; align-content: start; gap: 10px; padding: 12px; flex: 1; overflow-y: auto; min-height: 0; }
+.ai-team-avatar-list > .ai-team-member { display: grid; grid-template-columns: 28px minmax(0, 1fr) auto; gap: 6px 8px; width: 100%; min-width: 0; padding: 12px; background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-m); color: var(--text-1); text-align: left; }
 .ai-team-avatar-list > .ai-team-member:hover { background: var(--bg-inset); }
 .ai-team-member-avatar { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; position: relative; flex-shrink: 0; border-radius: 50%; background: var(--accent-muted); color: var(--accent); }
 .ai-team-avatar-list > .ai-team-member[data-state="실행 중"] .ai-team-member-avatar { background: var(--success-muted); color: var(--success); }
 .ai-team-avatar-list > .ai-team-member[data-state="실패"] .ai-team-member-avatar { background: var(--danger-muted); color: var(--danger); }
 .ai-team-avatar-list > .ai-team-member[data-state="검토 대기"] .ai-team-member-avatar { background: var(--warning-muted); color: var(--warning); }
-.ai-team-avatar-list > .ai-team-member[aria-pressed="true"] .ai-team-member-avatar { outline: 2px solid var(--accent); outline-offset: 4px; }
+.ai-team-avatar-list > .ai-team-member[aria-pressed="true"] { background: var(--accent-muted); border-color: var(--accent); }
 .ai-team-member-badge { position: absolute; bottom: -2px; right: -2px; display: grid; place-items: center; width: 18px; height: 18px; border: 2px solid var(--bg-raised); border-radius: 50%; background: var(--success); color: var(--on-accent); font-size: 10px; }
 .ai-team-member-badge:empty { width: 12px; height: 12px; }
 .ai-team-avatar-list > .ai-team-member[data-state="대기"] .ai-team-member-badge { background: var(--text-3); }
@@ -28,11 +28,11 @@
 .ai-team-sidebar.is-idle .ai-team-rail-tabs, .ai-team-sidebar.is-idle .ai-team-sidebar-empty, .ai-team-sidebar.is-idle .ai-team-avatar-list { display: none; }
 .ai-team-sidebar.is-idle .ai-team-settings-button { margin-top: auto; padding: 12px 0; border-top: 0; }
 .ai-team-sidebar.is-idle .ai-team-settings-button > span { display: none; }
-.ai-team-settings-button { display: flex; align-items: center; flex-direction: column; gap: 6px; padding: 14px 4px; border: 0; border-top: 1px solid var(--border-subtle); background: transparent; color: var(--text-2); margin-top: auto; }
+.ai-team-settings-button { display: flex; align-items: center; flex-direction: row; justify-content: center; gap: 6px; padding: 12px; border: 0; border-top: 1px solid var(--border-subtle); background: transparent; color: var(--text-2); margin-top: auto; }
 .ai-team-sidebar .ai-team-member-detail {
-  position: absolute; right: 100%; top: 0; bottom: 0; width: min(350px, calc(100vw - 100px));
+  position: static; width: 100%; flex: 1;
   display: flex; flex-direction: column; min-height: 0; background: var(--bg-raised);
-  border-left: 1px solid var(--border-subtle); box-shadow: -12px 0 28px color-mix(in srgb, var(--text-1) 8%, transparent);
+  border-top: 1px solid var(--border-subtle);
 }
 .ai-team-sidebar [hidden] { display: none; }
 .ai-team-member-head { display: flex; align-items: center; gap: 10px; padding: 18px 16px; flex: 0 0 auto; }
@@ -66,10 +66,8 @@
 .ai-team-member-send:disabled { opacity: .4; cursor: default; }
 .ai-team-member-notice { margin: 8px 14px; color: var(--danger); font-size: 12px; }
 .ai-team-member-content .ai-team-panel { border: 0; }
-@media (max-width: 900px) {
-  .ai-team-sidebar { flex-basis: 70px; width: 70px; }
-  .ai-team-avatar-list > .ai-team-member { width: 62px; }
-  .ai-team-sidebar .ai-team-member-detail { width: min(310px, calc(100vw - 90px)); }
+@media (max-width: 1200px) {
+  .ai-team-sidebar { flex-basis: 260px; width: 260px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .ai-team-sidebar * { animation: none; transition: none; }
@@ -85,3 +83,34 @@
 .ai-team-budget .ai-team-btn { flex: 1; white-space: nowrap; }
 .ai-team-budget .ai-team-btn[aria-pressed="true"] { font-weight: 700; outline: 2px solid currentColor; outline-offset: -2px; }
 .ai-team-budget-section small { opacity: .75; }
+
+/* Agent-centered presence: assignment, current operation, receipt and clock stay visible. */
+.ai-team-counts { color: var(--text-2); font-size: 11px; }
+.ai-team-overview { flex: 0 0 auto; padding: 12px; border-bottom: 1px solid var(--border-subtle); }
+.ai-team-overview-label { font-size: 11px; color: var(--text-3); }
+.ai-team-request { margin: 5px 0 10px; font-size: 12px; line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.ai-team-lead { display: flex; gap: 6px; align-items: flex-start; padding: 9px; border-radius: var(--radius-s); background: var(--bg-inset); font-size: 12px; line-height: 1.5; }
+.ai-team-lead svg { flex-shrink: 0; }
+.ai-team-member > .ai-team-member-avatar { width: 28px; height: 28px; grid-column: 1; grid-row: 1; }
+.ai-team-sidebar .ai-team-member > .ai-team-member-name { grid-column: 2; grid-row: 1; align-self: center; font-size: 13px; }
+.ai-team-member > .ai-team-member-state { grid-column: 3; grid-row: 1; align-self: center; font-size: 11px; }
+.ai-team-member > .ai-team-member-scope { grid-column: 1 / -1; color: var(--accent); font-size: 12px; overflow-wrap: anywhere; }
+.ai-team-sidebar .ai-team-member > .ai-team-member-task { display: block; grid-column: 1 / -1; color: var(--text-1); font-size: 13px; line-height: 1.5; white-space: normal; overflow-wrap: anywhere; }
+.ai-team-member > .ai-team-member-assignment { grid-column: 1 / -1; margin: 0; padding: 0; border: 0; font-size: 11px; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.ai-team-member > .ai-team-member-result { grid-column: 1 / -1; color: var(--text-2); font-size: 11px; line-height: 1.5; overflow-wrap: anywhere; }
+.ai-team-member > .ai-team-member-signal { grid-column: 1 / -1; color: var(--text-3); font-size: 11px; font-variant-numeric: tabular-nums; }
+.ai-team-member > .ai-activity-media { grid-column: 1 / -1; }
+.ai-team-sidebar.has-detail > .ai-team-avatar-list { flex: 0 1 auto; max-height: 32%; }
+.ai-team-sidebar.has-detail > .ai-team-overview { display: none; }
+.ai-team-current-action { font-size: 13px; line-height: 1.6; color: var(--accent); margin: 0 0 10px; }
+.ai-team-recent { list-style: none; padding: 0; margin: 0 0 16px; display: grid; gap: 8px; font-size: 12px; }
+.ai-team-recent:empty { display: none; }
+.ai-team-recent li { display: grid; grid-template-columns: 12px minmax(0, 1fr) auto; gap: 5px; line-height: 1.5; }
+.ai-team-recent time { font-size: 11px; color: var(--text-3); font-variant-numeric: tabular-nums; }
+.ai-team-recent .is-failed { color: var(--danger); }
+.ai-team-outcome { flex: 0 0 auto; margin: 0; padding: 10px 12px; border-top: 1px solid var(--border-subtle); font-size: 11px; line-height: 1.5; color: var(--text-2); }
+.ai-team-sidebar.is-idle .ai-team-overview, .ai-team-sidebar.is-idle .ai-team-outcome { display: none; }
+@container (min-width: 620px) {
+  .ai-team-avatar-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .ai-team-sidebar.has-detail > .ai-team-avatar-list { max-height: 40%; }
+}

@@ -16,9 +16,9 @@ import { modelForRole } from "@/ai/modelRoles";
 //
 //   /pi <지시>              현재 맵 범위, 에이전트 하나
 //   /pi map_a,map_b <지시>  맵마다 에이전트 하나씩 병렬
-//   /pi team <지시>         팀장이 맵을 나눠 시공·검수 에이전트를 띄운다. 후보는 프로젝트 전체, 기본 대상은 현재 맵
-//   /pi team map_a,map_b <지시>  팀장이 쓸 후보 맵을 제한
-//   (`/team …` 도 같은 뜻으로 남는다 — Pi 가 유일한 실행 경로가 된 뒤에도 호환용)
+//   team <지시>            팀장이 맵을 나눠 시공·검수 에이전트를 띄운다. 후보는 프로젝트 전체, 기본 대상은 현재 맵
+//   team map_a,map_b <지시> 팀장이 쓸 후보 맵을 제한
+//   (`/team …`·`/pi team …` 도 호환된다. 일반 지시는 Pi로 바로 실행한다.)
 //
 // 이 파일은 패널의 나머지와 최소 접점(말풍선·상태 표시·로그 붙이기)만 공유한다 — 기존 세션 루프는 건드리지 않는다.
 
@@ -123,17 +123,18 @@ export function mergesMapBundles(input: { team: boolean; mapIds: readonly string
   return !input.team && input.mapIds.length > 0 && (input.scopedByUser || input.groupCount > 1);
 }
 
-/** `/pi 지시` → 현재 맵. `/pi a,b 지시` → 맵 a, b. `/pi team …`·`/team …` → 팀 모드. 맵 토큰은 프로젝트에 있는 id 일 때만 인정한다. */
+/** 일반 지시는 기본 Pi 경로. `team …`·`/team …`·`/pi team …` → 팀 모드. 맵 토큰은 실제 id일 때만 인정한다. */
 export function parsePiCommand(text: string, project: Project, currentMapId: string | null): ParsedPiCommand | null {
   const trimmed = text.trim();
   let mode: PiAgentMode = "single";
   let rest: string | null = null;
-  if (trimmed === TEAM_COMMAND_PREFIX || trimmed.startsWith(`${TEAM_COMMAND_PREFIX} `)) {
+  const teamPrefix = /^(?:team|\/team)(?=\s|$)/u.exec(trimmed);
+  if (teamPrefix) {
     mode = "team";
-    rest = trimmed.slice(TEAM_COMMAND_PREFIX.length).trim();
-  } else if (trimmed === PI_COMMAND_PREFIX || trimmed.startsWith(`${PI_COMMAND_PREFIX} `)) {
+    rest = trimmed.slice(teamPrefix[0].length).trim();
+  } else if (/^\/pi(?=\s|$)/u.test(trimmed)) {
     rest = trimmed.slice(PI_COMMAND_PREFIX.length).trim();
-    if (rest === "team" || rest.startsWith("team ")) {
+    if (/^team(?=\s|$)/u.test(rest)) {
       mode = "team";
       rest = rest.slice(4).trim();
     }
@@ -291,7 +292,7 @@ async function runOwnedPiCommand(
 
 async function runPiCommandProtected(command: ParsedPiCommand, surface: PiCommandSurface, options: PiRunOptions, humanEdits: AssistantHumanEdits, projectKey: string): Promise<boolean> {
   if (!command.task) {
-    surface.appendBubble("system", "사용법: /pi <지시> · /pi 맵id,맵id <지시> · /team <지시>");
+    surface.appendBubble("system", "지시를 바로 입력하세요. 팀 작업은 team <지시>로 시작합니다.");
     return false;
   }
   let interviewClaim: Awaited<ReturnType<typeof claimProjectInterviewExecution>> = null;

@@ -1,0 +1,266 @@
+{
+  "checks": [
+    {
+      "name": "Live provider connected",
+      "ok": true,
+      "detail": {
+        "mapA": "map_689e69d4-31ba-4cc1-8d32-f33b08c518e5",
+        "mapB": "team_observe_b",
+        "provider": "google-antigravity",
+        "model": "gemini-3.8-flash"
+      }
+    },
+    {
+      "name": "Pending members expose assignment reason",
+      "ok": true
+    },
+    {
+      "name": "Follow-up is blocked during team execution",
+      "ok": true
+    },
+    {
+      "name": "Live team completed",
+      "ok": true,
+      "detail": {
+        "phase": "완료",
+        "agents": [
+          {
+            "id": "orchestrator-1",
+            "role": "orchestrator",
+            "state": "완료",
+            "summary": "프로젝트에 대한 수정 작업 없이 화면 관찰용 읽기 작업을 완료했습니다. '시장 · 관찰 A' 맵의 구조 조수 보고: 지정된 영역(x:18, y:18, w:24, h:24)을 확인한 결과 상단과 중앙은 상점 및 통로가 배치된 개방형 광장 구조이며 하단은 대형 건물 외벽들이 구획되어 있습니다. 내부에는 상인, 의뢰 게시판, 마을 주민 등 총 7개의 주요 이벤트가 배치되어 상점가 중심 동선을 형성하고 있습니다. '시장 · 관찰 B' 맵의 동선 조수 보고: 중심 구역(18,18~41,41) 관찰 결과 좌측 상단 및 하단의 건물 벽체와 우측 경계벽 사이에 넓은 광장형 통행로가 형성되어 이동 동선이 원활하게 확보되어 있습니다. 광장 중앙부에는 상인과 주민, 의뢰 게시판 등 총 7개의 주요 이벤트가 배치되어 상호작용 지점을 구성하고 있습니다.\n완료 후 검토: [검토 요약]\n- 요청 준수: 프로젝트를 전혀 수정하지 않은 읽기 전용 상태로 검토를 수행했습니다.\n- 시장 · 관찰 A(map_689e69d4-31ba-4cc1-8d32-f33b08c518e5) 구조 확인: 맵 상단과 중앙부에 배치된 건물 벽(#)과 식생(T)이 명확한 구역을 형성하고 있으며, 통행 가능한 바닥(.)이 건물 둘레를 안정적으로 둘러싸고 있습니다. 주요 건물 우측 통로에는 NPC 이벤트(마을 주민 1)가 배치되어 있어 상업 구역의 기본 구조를 충실히 갖추고 있습니다.\n- 시장 · 관찰 B(team_observe_b) 동선 확인: 관찰 A와 대칭 구조의 이동 통로가 확보되어 있으며, 남북 및 동서 방향의 주 보행로가 막힘 없이 연결되어 있습니다. 주민 NPC 앞을 통과하는 동선 폭이 충분하여 플레이어 이동 시 병목이나 충돌 없이 자연스러운 순환이 가능합니다.\n- 무결성 검사: run_lint 결과 에러(error)는 0건이며, 꽃 소품 간격 권장 경고(warning 26건) 외 구조적 결함은 없습니다. 변경 사항 없이 검토를 완료했습니다.",
+            "toolCalls": 5
+          },
+          {
+            "id": "builder-1",
+            "role": "builder",
+            "state": "완료",
+            "summary": "0개 키 변경 · 1툴콜 · 7초",
+            "toolCalls": 1
+          },
+          {
+            "id": "builder-2",
+            "role": "builder",
+            "state": "완료",
+            "summary": "0개 키 변경 · 1툴콜 · 8초",
+            "toolCalls": 1
+          },
+          {
+            "id": "reviewer-1",
+            "role": "reviewer",
+            "state": "완료",
+            "summary": "[검토 요약]\n- 요청 준수: 프로젝트를 전혀 수정하지 않은 읽기 전용 상태로 검토를 수행했습니다.\n- 시장 · 관찰 A(map_689e69d4-31ba-4cc1-8d32-f33b08c518e5) 구조 확인: 맵 상단과 중앙부에 배치된 건물 벽(#)과 식생(T)이 명확한 구역을 형성하고 있으며, 통행 가능한 바닥(.)이 건물 둘레를 안정적으로 둘러싸고 있습니다. 주요 건물 우측 통로에는 NPC 이벤트(마을 주민 1)가 배치되어 있어 상업 구역의 기본 구조를 충실히 갖추고 있습니다.\n- 시장 · 관찰 B(team_observe_b) 동선 확인: 관찰 A와 대칭 구조의 이동 통로가 확보되어 있으며, 남북 및 동서 방향의 주 보행로가 막힘 없이 연결되어 있습니다. 주민 NPC 앞을 통과하는 동선 폭이 충분하여 플레이어 이동 시 병목이나 충돌 없이 자연스러운 순환이 가능합니다.\n- 무결성 검사: run_lint 결과 에러(error)는 0건이며, 꽃 소품 간격 권장 경고(warning 26건) 외 구조적 결함은 없습니다. 변경 사항 없이 검토를 완료했습니다.",
+            "toolCalls": 5
+          }
+        ],
+        "unchanged": true,
+        "receipts": [
+          {
+            "actor": "orchestrator-1",
+            "name": "assign_map_agent",
+            "status": "ok",
+            "summary": ""
+          },
+          {
+            "actor": "orchestrator-1",
+            "name": "assign_map_agent",
+            "status": "ok",
+            "summary": ""
+          },
+          {
+            "actor": "orchestrator-1",
+            "name": "wait_agents",
+            "status": "ok",
+            "summary": ""
+          },
+          {
+            "actor": "builder-1",
+            "name": "get_map_region",
+            "status": "ok",
+            "summary": "시장 · 관찰 A(map_689e69d4-31ba-4cc1-8d32-f33b08c518e5) 영역 (18,18)~(42,42) — 이벤트 7개, 물 0칸"
+          },
+          {
+            "actor": "builder-2",
+            "name": "get_map_region",
+            "status": "ok",
+            "summary": "시장 · 관찰 B(team_observe_b) 영역 (18,18)~(42,42) — 이벤트 7개, 물 0칸"
+          },
+          {
+            "actor": "orchestrator-1",
+            "name": "wait_agents",
+            "status": "ok",
+            "summary": ""
+          },
+          {
+            "actor": "orchestrator-1",
+            "name": "finish",
+            "status": "ok",
+            "summary": ""
+          },
+          {
+            "actor": "reviewer-1",
+            "name": "get_project_summary",
+            "status": "ok",
+            "summary": "프로젝트 '새 프로젝트' — 맵 2개, 아이템 1000, 트룹 7"
+          },
+          {
+            "actor": "reviewer-1",
+            "name": "run_lint",
+            "status": "ok",
+            "summary": "lint: error 0건 / warning 26건 / info 0건 — 구조 무결성만 검사한다. 보상 중복·경제 균형·진행 순서는 범위 밖이고, warning 도 결함이다. 이 결과를 '결함 없이 통과'로 옮겨 적지 말 것."
+          },
+          {
+            "actor": "reviewer-1",
+            "name": "get_map_region",
+            "status": "ok",
+            "summary": "시장 · 관찰 A(map_689e69d4-31ba-4cc1-8d32-f33b08c518e5) 영역 (0,0)~(20,20) — 이벤트 1개, 물 0칸"
+          },
+          {
+            "actor": "reviewer-1",
+            "name": "get_map_region",
+            "status": "ok",
+            "summary": "시장 · 관찰 B(team_observe_b) 영역 (0,0)~(20,20) — 이벤트 1개, 물 0칸"
+          },
+          {
+            "actor": "reviewer-1",
+            "name": "report_task",
+            "status": "ok",
+            "summary": ""
+          }
+        ]
+      }
+    },
+    {
+      "name": "Observation fixture unchanged",
+      "ok": true
+    },
+    {
+      "name": "Real child workers received tool receipts",
+      "ok": true,
+      "detail": [
+        {
+          "id": "orchestrator-1",
+          "role": "orchestrator",
+          "state": "완료",
+          "summary": "프로젝트에 대한 수정 작업 없이 화면 관찰용 읽기 작업을 완료했습니다. '시장 · 관찰 A' 맵의 구조 조수 보고: 지정된 영역(x:18, y:18, w:24, h:24)을 확인한 결과 상단과 중앙은 상점 및 통로가 배치된 개방형 광장 구조이며 하단은 대형 건물 외벽들이 구획되어 있습니다. 내부에는 상인, 의뢰 게시판, 마을 주민 등 총 7개의 주요 이벤트가 배치되어 상점가 중심 동선을 형성하고 있습니다. '시장 · 관찰 B' 맵의 동선 조수 보고: 중심 구역(18,18~41,41) 관찰 결과 좌측 상단 및 하단의 건물 벽체와 우측 경계벽 사이에 넓은 광장형 통행로가 형성되어 이동 동선이 원활하게 확보되어 있습니다. 광장 중앙부에는 상인과 주민, 의뢰 게시판 등 총 7개의 주요 이벤트가 배치되어 상호작용 지점을 구성하고 있습니다.\n완료 후 검토: [검토 요약]\n- 요청 준수: 프로젝트를 전혀 수정하지 않은 읽기 전용 상태로 검토를 수행했습니다.\n- 시장 · 관찰 A(map_689e69d4-31ba-4cc1-8d32-f33b08c518e5) 구조 확인: 맵 상단과 중앙부에 배치된 건물 벽(#)과 식생(T)이 명확한 구역을 형성하고 있으며, 통행 가능한 바닥(.)이 건물 둘레를 안정적으로 둘러싸고 있습니다. 주요 건물 우측 통로에는 NPC 이벤트(마을 주민 1)가 배치되어 있어 상업 구역의 기본 구조를 충실히 갖추고 있습니다.\n- 시장 · 관찰 B(team_observe_b) 동선 확인: 관찰 A와 대칭 구조의 이동 통로가 확보되어 있으며, 남북 및 동서 방향의 주 보행로가 막힘 없이 연결되어 있습니다. 주민 NPC 앞을 통과하는 동선 폭이 충분하여 플레이어 이동 시 병목이나 충돌 없이 자연스러운 순환이 가능합니다.\n- 무결성 검사: run_lint 결과 에러(error)는 0건이며, 꽃 소품 간격 권장 경고(warning 26건) 외 구조적 결함은 없습니다. 변경 사항 없이 검토를 완료했습니다.",
+          "toolCalls": 5
+        },
+        {
+          "id": "builder-1",
+          "role": "builder",
+          "state": "완료",
+          "summary": "0개 키 변경 · 1툴콜 · 7초",
+          "toolCalls": 1
+        },
+        {
+          "id": "builder-2",
+          "role": "builder",
+          "state": "완료",
+          "summary": "0개 키 변경 · 1툴콜 · 8초",
+          "toolCalls": 1
+        },
+        {
+          "id": "reviewer-1",
+          "role": "reviewer",
+          "state": "완료",
+          "summary": "[검토 요약]\n- 요청 준수: 프로젝트를 전혀 수정하지 않은 읽기 전용 상태로 검토를 수행했습니다.\n- 시장 · 관찰 A(map_689e69d4-31ba-4cc1-8d32-f33b08c518e5) 구조 확인: 맵 상단과 중앙부에 배치된 건물 벽(#)과 식생(T)이 명확한 구역을 형성하고 있으며, 통행 가능한 바닥(.)이 건물 둘레를 안정적으로 둘러싸고 있습니다. 주요 건물 우측 통로에는 NPC 이벤트(마을 주민 1)가 배치되어 있어 상업 구역의 기본 구조를 충실히 갖추고 있습니다.\n- 시장 · 관찰 B(team_observe_b) 동선 확인: 관찰 A와 대칭 구조의 이동 통로가 확보되어 있으며, 남북 및 동서 방향의 주 보행로가 막힘 없이 연결되어 있습니다. 주민 NPC 앞을 통과하는 동선 폭이 충분하여 플레이어 이동 시 병목이나 충돌 없이 자연스러운 순환이 가능합니다.\n- 무결성 검사: run_lint 결과 에러(error)는 0건이며, 꽃 소품 간격 권장 경고(warning 26건) 외 구조적 결함은 없습니다. 변경 사항 없이 검토를 완료했습니다.",
+          "toolCalls": 5
+        }
+      ]
+    },
+    {
+      "name": "Cards show action, scope, result and clock",
+      "ok": true
+    },
+    {
+      "name": "Recent receipts stay visible in brief mode",
+      "ok": true
+    },
+    {
+      "name": "Draft survived live updates",
+      "ok": true
+    },
+    {
+      "name": "Draft survives member switching",
+      "ok": true
+    },
+    {
+      "name": "Escape restores card focus",
+      "ok": true
+    },
+    {
+      "name": "Wide view retains agent cards",
+      "ok": true
+    },
+    {
+      "name": "Layout fits 1280px",
+      "ok": true,
+      "detail": {
+        "overflow": false,
+        "sidebar": {
+          "x": 980,
+          "right": 1280,
+          "y": 49,
+          "bottom": 900,
+          "width": 300
+        },
+        "detail": {
+          "x": 981,
+          "right": 1280,
+          "y": 380.3125,
+          "bottom": 819.5,
+          "width": 299
+        },
+        "input": {
+          "x": 1005,
+          "right": 1256,
+          "y": 701.5,
+          "bottom": 753.5,
+          "width": 251
+        }
+      }
+    },
+    {
+      "name": "Layout fits 1024px",
+      "ok": true,
+      "detail": {
+        "overflow": false,
+        "sidebar": {
+          "x": 764,
+          "right": 1024,
+          "y": 49,
+          "bottom": 900,
+          "width": 260
+        },
+        "detail": {
+          "x": 765,
+          "right": 1024,
+          "y": 380.3125,
+          "bottom": 819.5,
+          "width": 259
+        },
+        "input": {
+          "x": 789,
+          "right": 1000,
+          "y": 701.5,
+          "bottom": 753.5,
+          "width": 211
+        }
+      }
+    },
+    {
+      "name": "Studio shows shared agent observation",
+      "ok": true
+    },
+    {
+      "name": "No browser exceptions",
+      "ok": true,
+      "detail": []
+    },
+    {
+      "name": "MP4 encoded",
+      "ok": true
+    }
+  ],
+  "errors": []
+}
