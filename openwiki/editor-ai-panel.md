@@ -3538,6 +3538,9 @@ bun scripts/qa/opening-assistant-run.mts --mode monster-game --fresh-project 1 \
 72맵/60종/4그림 ID가 final done 적용과 checkpoint 발행 두 경로에서 유지되는지 확인한다.
 공용 compact-wire/restore와 assets/database/tilesets 생략 ACK, 실제 브라우저 opening
 PNG 전달, `stale-base` 거절, native final receipt callback을 함께 기록한다.
+전체 생성에서 삭제된 `map_blank_start`가 첫 변경으로 잡히던 영수증 대상은 수정했다.
+`aiPiAgentCommand.ts`는 변경 맵 → 요청/현재/시작 맵 → 나머지 맵 순서에서 적용 후
+실제로 존재하는 ID를 선택한다. 재생 하네스도 영수증의 `after.maps[mapId]` 존재를 확인한다.
 
 ```bash
 node scripts/qa/emerald-monster-client-replay.mjs --browser-url http://127.0.0.1:9853 \

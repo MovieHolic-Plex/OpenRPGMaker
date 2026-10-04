@@ -117,7 +117,7 @@ try {
    appendCard:node=>document.querySelector('#cards').append(node),appendProcess:()=>{},
    setStatus:text=>statuses.push(text),getCurrentMapId:()=>store.getCurrent().startMapId,
    onRunAudit:rows=>clientEvents.push({type:'audit',count:rows.length}),
-   showChangeReceipt:r=>receipts.push({title:r.title,detail:r.detail,mapId:r.mapId,maps:Object.keys(r.after.maps).length,species:r.after.database.monsterSpecies.length}),
+   showChangeReceipt:r=>receipts.push({title:r.title,detail:r.detail,mapId:r.mapId,mapExists:Object.hasOwn(r.after.maps,r.mapId),maps:Object.keys(r.after.maps).length,species:r.after.database.monsterSpecies.length}),
   };}
   async function run(kind){
    replayKind=kind;store.replaceProject(createBlankProject(),{label:'Private recorded-output replay seed',origin:'system'});base=store.getCurrent();oldAuthority=captureApplyAuthority(base);
@@ -138,7 +138,7 @@ try {
   await run('done');await run('checkpoint');
   assert(acks.filter(x=>x.kind==='checkpoint').length===2,'Checkpoint ACKs missing');
   assert(acks.filter(x=>x.kind==='render').length===images.length,'Real-run image IDs were not delivered');
-  assert(receipts.length===2&&receipts.every(r=>r.maps===72&&r.species===60),'Native final receipt callback missing');
+  assert(receipts.length===2&&receipts.every(r=>r.maps===72&&r.species===60&&r.mapExists),'Native final receipt must target a map in the applied campaign');
   const activities=getEditActivityEntries().map(e=>({origin:e.origin,label:e.label,scope:e.scope}));
   const result={scope:'Recorded real-model final output replay through actual browser classifier/plainPiCommand/runPiCommand/client NDJSON/checkpoint publication/apply gate/store. Reconstructed envelopes; no second live model request.',requests,acks,runs,receipts,statuses,activities,repository:{kind:projectRepository().kind,target:projectRepository().currentTarget()},openingImageIds:images,finalFingerprint:monsterGameFingerprint(store.getCurrent()),canonicalSaved:false,originalCheckpointEventsRecorded:false};
   document.querySelector('#receipt').textContent=JSON.stringify({scope:result.scope,runs:runs.map(r=>({kind:r.kind,maps:r.review.maps,species:r.review.species,issues:r.review.issues,staleRejected:r.staleRejected})),receipts,acks,repository:result.repository},null,2);
