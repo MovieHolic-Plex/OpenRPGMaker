@@ -42,3 +42,12 @@ The previous revision25 portable file failed before title because17 authored bat
 `_front` → `_icon` sibling for every Emerald species. The menu derives that ID at
 runtime, so ordinary direct-string scanning otherwise prunes all60icons. Missing
 icons retain the authored front fallback; exports never invent a resource.
+
+## Genuine predecessor Continue evidence (2026-10-04)
+
+`emerald-continue-native.probe.mjs` copies the actual predecessor slot's exact
+bytes into a private browser under `starlight-islands-v1:save-slot:v5:1`, then uses
+native title/load/party keys. The compiled candidate retains map/position, gold,
+inventory, party/box, species/level/HP and known moves/current PP, skips the new-game
+intro, uses authored2× zoom on480×320 and loads the actual32×32 party icon. This is
+predecessor compatibility evidence, not a new save or canonical-store receipt.
