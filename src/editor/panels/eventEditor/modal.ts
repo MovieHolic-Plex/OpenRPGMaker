@@ -398,7 +398,7 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
       closeHandler(true);
       return;
     }
-    if (isTileCellChange(change)) {
+    if (change.scope === "map" && (!!change.cells?.length || change.relief === true)) {
       // Painting emits per pointer sample and never touches events. Other maps cannot
       // affect this body; on this map only the validation bell can, so settle first.
       if (change.mapId !== request.mapId) return;
