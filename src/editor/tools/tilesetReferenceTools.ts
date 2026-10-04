@@ -69,6 +69,12 @@ function unknownIdMessage(label: string, requested: unknown, ids: readonly strin
   return `${label} '${wanted}'를 찾을 수 없습니다. 이 용도의 ${label}: ${shown || "(없음)"}${more}.`;
 }
 
+/**
+ * 한꺼번에 읽기 응답 data 의 JSON 길이 상한. Pi 는 참고문서 읽기 결과를 32,000자까지 싣고(toolAdapter REFERENCE_MAX_DATA_CHARS)
+ * 넘으면 잘리며, 잘린 결과는 읽은 것으로 치지 않는다 — 여유를 둔다.
+ */
+const BUNDLE_DATA_BUDGET = 30_000;
+
 export const TILESET_REFERENCE_TOOLS: readonly ToolDefinition[] = [
   {
     name: "list_tileset_references", mode: "read", domains: ["tile", "map", "database"],
@@ -105,9 +111,10 @@ export const TILESET_REFERENCE_TOOLS: readonly ToolDefinition[] = [
   },
   {
     name: "read_tileset_reference", mode: "read", domains: ["tile", "map", "database"],
-    description: "용도의 MD 한 페이지 또는 이미지 한 장을 읽는다. documentId/imageId 중 하나만 지정 — id 목록은 list_tileset_references({tilesetId, categoryId}) 가 준다(용도 id 는 list_tileset_references({tilesetId})). MD는 nextOffset이 null일 때까지 읽는다(페이지는 문단·코드 블록 경계에서 끊겨 사전 JSON 이 한 페이지에 온전히 온다). 이미지는 실제 이미지 입력으로 전달된다. 같은 응답에 배치를 함께 호출하지 말고 반환 자료를 본 다음 배치한다.",
+    description: "용도 자료를 읽는다. documentId/imageId 를 둘 다 빼면 그 용도의 이미지 전부와 MD 페이지를 한 번에 담을 수 있는 만큼 읽고 남은 페이지(remaining)를 알려 준다 — 처음엔 이렇게 읽고 remaining 이 있으면 같은 호출을 한 번 더 한다. 하나만 지정하면 MD 한 페이지 또는 이미지 한 장(id 목록은 list_tileset_references({tilesetId, categoryId}), 용도 id 는 list_tileset_references({tilesetId})). MD는 nextOffset이 null일 때까지 읽는다(페이지는 문단·코드 블록 경계에서 끊겨 사전 JSON 이 한 페이지에 온전히 온다). 이미지는 실제 이미지 입력으로 전달된다. 같은 응답에 배치를 함께 호출하지 말고 반환 자료를 본 다음 배치한다.",
     parameters: { type: "object", properties: {
       tilesetId: { type: "string" }, categoryId: { type: "string" }, documentId: { type: "string" }, imageId: { type: "string" }, offset: { type: "integer", minimum: 0 },
+      after: { type: "array", items: { type: "string" }, description: "한꺼번에 읽기의 다음 묶음: 앞 응답의 after 를 그대로 넘기면 읽은 쪽(documentId:offset)은 건너뛴다." },
     }, required: ["tilesetId", "categoryId"], additionalProperties: false },
     run(project, args) {
       args = withoutEmptyIds(args);
@@ -117,8 +124,42 @@ export const TILESET_REFERENCE_TOOLS: readonly ToolDefinition[] = [
       const owner = referenceOwner(project, tileset);
       const group = owner.referenceDocuments?.find(g => g.id === args.categoryId);
       if (!group) throw new ToolError(unknownIdMessage("용도 categoryId", args.categoryId, (owner.referenceDocuments ?? []).map(g => g.id)).replace("이 용도의 ", `타일셋 ${tileset.id} 의 `));
-      if ((args.documentId === undefined) === (args.imageId === undefined)) throw new ToolError("documentId/imageId 중 하나만 지정하세요.");
+      if (args.documentId !== undefined && args.imageId !== undefined) throw new ToolError("documentId/imageId 중 하나만 지정하세요(둘 다 빼면 용도를 한꺼번에 읽는다).");
       const base = { tilesetId: tileset.id, ownerId: owner.id, categoryId: group.id, revision: referenceRevision(group) };
+      if (args.documentId === undefined && args.imageId === undefined) {
+        // 한꺼번에 읽기. 왜(2026-10-04 실측, 버들항 길 깔기): 배치 관문이 물 용도 15건(MD 2쪽·이미지 13장)을 요구했고, 한 건씩 읽으면
+        // 턴마다 전체 맥락이 다시 실려 느렸다 — 모델은 두 건 읽고 길을 포기한 채 소품만 찍었다. 도구는 무상태라 이어 읽기는 응답의 after 를 그대로 넘긴다.
+        if (args.offset !== undefined) throw new ToolError("한꺼번에 읽기에는 offset 을 쓰지 않는다 — 남은 쪽은 remaining 의 documentId·offset 으로 읽거나 같은 호출을 다시 한다.");
+        const skip = new Set((Array.isArray(args.after) ? args.after : []).map(String));
+        const documents: { id: string; name: string; markdown: string; offset: number; nextOffset: number | null; page: number; pages: number }[] = [];
+        const remaining: { documentId: string; offset: number }[] = [];
+        // 이미지는 첫 묶음에만 싣는다(이어 읽기는 after 가 있다). 설명은 300자로 줄인다(낱장 읽기는 전문). 그림은 실제 이미지 입력으로 따로 간다.
+        const images = skip.size ? [] : group.images.map(i => ({ id: i.id, name: i.name, caption: i.caption.slice(0, 300) }));
+        const pagesTotal = group.documents.reduce((sum, doc) => sum + referencePageStarts(doc.markdown).length, 0);
+        // 지금까지 담은 응답의 길이(after 한 칸 몫 여유 포함). 쪽이 열 몇 개라 매번 다시 세도 싸다.
+        const size = (): number => JSON.stringify({ ...base, documents, images, remaining,
+          after: [...skip, ...documents.map(d => `${d.id}:${d.offset}`), "x".repeat(40)] }).length;
+        for (const doc of group.documents) {
+          const starts = referencePageStarts(doc.markdown);
+          starts.forEach((offset, index) => {
+            if (skip.has(`${doc.id}:${offset}`)) return;
+            const page = referencePage(doc.markdown, offset);
+            if (!page) return;
+            const entry = { id: doc.id, name: doc.name, markdown: page.text, offset, nextOffset: page.nextOffset, page: index + 1, pages: starts.length };
+            documents.push(entry);
+            // 넘치면 남은 쪽으로 돌린다. 남은 쪽 목록 몫(쪽당 약 60자)도 센다. 단, 이미지 없는 묶음의 첫 쪽은 크더라도 싣는다 —
+            // 안 그러면 큰 쪽 하나가 영영 못 실린다(낱장 읽기와 같은 크기다).
+            if (size() + 60 * (pagesTotal - documents.length - skip.size) > BUNDLE_DATA_BUDGET && (documents.length > 1 || images.length)) {
+              documents.pop();
+              remaining.push({ documentId: doc.id, offset });
+            }
+          });
+        }
+        return {
+          summary: `${group.name} — MD ${documents.length}쪽·이미지 ${images.length}장${remaining.length ? ` (남은 쪽 ${remaining.length}: 같은 호출에 이 응답의 after 를 그대로 넘기면 이어 읽는다)` : " — 이 용도 전부"}`,
+          data: { ...base, documents, images, remaining, after: [...skip, ...documents.map(d => `${d.id}:${d.offset}`)] },
+        };
+      }
       if (args.documentId !== undefined) {
         const doc = group.documents.find(d => d.id === args.documentId);
         if (!doc) throw new ToolError(`MD 문서를 찾을 수 없습니다 — ${unknownIdMessage("documentId", args.documentId, group.documents.map(d => d.id))} 전체 목록은 list_tileset_references({tilesetId,categoryId}).`);

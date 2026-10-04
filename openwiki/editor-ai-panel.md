@@ -3287,9 +3287,15 @@ validateVillageContract → applyProposedProject`로 처리한다. 의도 선언
   - **공용 카탈로그는 판본이 같으면 다시 안 읽는다:** 워커 `runPiAgent` 첫머리가 실행마다 shared-content.sqlite 의 payload(37행 505MB)를
     `readSharedTileReferences`·`readSharedContent` 로 두 번 읽고 파싱했다 — 실행 준비 41s 의 거의 전부. 이제 `ensureWorkerSharedCatalogs` 가 행 판본만 세어
     같으면 건너뛰고, 다시 읽을 때도 `readSharedCatalogsOnce` 로 한 번만 읽는다(따로 읽기 6.6~9.0s → 3.8~4.7s).
-  - 남은 것(반복 실행 기준): 의도 분류와 커버리지 감사가 차례로 두 번 부른다(합 4~6s — 감사는 라우팅 결과와 무관하게 같은 사실만 보므로 동시에 부를 수 있다),
-    워커의 `structuredClone(base)` 2s, 호스트·워커가 막 뜬 첫 실행의 409 왕복 뒤 브라우저 재압축. 「마을」 요청은 `author_village` 가 참고문서 관문에
-    0ms 로 거절된 뒤 모델이 참고문서를 읽느라 30초 넘게 헤맨다(고치기 전 실측도 같다) — 속도로 보이지만 관문 안내 문제다.
+  - **감사는 라우팅과 동시에:** Pi 입력창의 선언자는 `createLlmIntentDeclarer({ parallelAudit: true })` 다. 커버리지 감사는 라우팅 결과가 아니라
+    같은 사실만 보므로 라우팅을 띄운 직후 같이 띄우고, 만들기·고치기가 아니면 끊는다(파싱만 라우팅의 `functionalRefinements` 를 쓴다).
+    의도 단계 6.4~8.5s → 3.9~5.7s. 기본은 꺼짐 — 세션 경로와 호출 순서·횟수를 세는 기존 테스트는 그대로다.
+  - **참고문서 한꺼번에 읽기:** 배치 관문이 요구하는 용도를 `read_tileset_reference({tilesetId, categoryId})` 한 번에 읽는다(`openwiki/tileset-reference-documents.md`).
+    고치기 전엔 모델이 관문에 막힌 뒤 한 건씩 읽다가 길을 포기하고 소품만 찍었다.
+  - 남은 것: 워커의 `structuredClone(base)` 2s(무거운 키를 제자리에서 고치는 곳이 55군데라 공유 불가 — 예비 사본을 미리 만들면 워커 메모리가
+    프로젝트당 수백 MB 늘어 보류), 호스트·워커가 막 뜬 첫 실행(카탈로그 3.8~8.8s + 409 왕복 뒤 브라우저 재압축).
+  - QA 함정: 도커 veth 가 바쁜 날엔 크로미움이 플래그를 붙여도 모듈을 `ERR_NETWORK_CHANGED` 로 끊는다 — 프로브에 `--browser firefox`
+    (`network.notify.changed=false`). 실행 중에 `src/` 를 고치면 HMR 이 프로브 페이지를 다시 읽혀 그 회차가 날아간다.
 - **실행 기록과 이어 받기 (2026-09-27):** 실행은 브라우저 연결이 아니라 호스트의 실행 기록에 묶인다(`piRunRelay.mjs`).
   POST `/v1/agent/run` 은 몸통의 `runId`(없으면 호스트가 만든다)로 기록을 열고, 워커 NDJSON 을 끝까지 읽어 쌓으며, 줄마다 `"seq"` 를 붙여 흘린다.
   응답 헤더 `X-Oprn-Run-Id` 가 이어 받기 가능 표시다 — 두 동반 서비스 진입점(`companion/middleware.mjs`, `chatgpt-oauth-companion.mjs`)은

@@ -81,6 +81,12 @@ export interface CreatePiToolsetOptions {
 }
 
 const DEFAULT_MAX_DATA_CHARS = 12_000;
+/**
+ * 참고문서 읽기는 배치 관문이 **반드시** 읽게 하는 글이라 더 크게 싣는다 — 잘린 결과는 읽은 것으로 치지 않아(tilesetReferenceGate)
+ * 12,000자에 맞추면 한꺼번에 읽기가 쪽 하나씩 나뉘고, 턴마다 전체 맥락이 다시 실린다. 실을 글의 총량은 같다.
+ * 도구의 한꺼번에 읽기 상한(tilesetReferenceTools BUNDLE_DATA_BUDGET)이 이 값보다 작아야 한다.
+ */
+const REFERENCE_MAX_DATA_CHARS = 32_000;
 const DEFAULT_MAX_ISSUES = 8;
 
 export function selectPiToolDefinitions(
@@ -245,7 +251,7 @@ export function createPiToolset(ctx: ToolContext, options: CreatePiToolsetOption
       const after = captureActivityVisuals(ctx.project, tool.name, args, result, !result.ok ? "failed" : tool.mode === "write" ? "draft" : "read");
       options.onCall?.({ toolCallId: _toolCallId, name: tool.name, args, result, visuals: [...before, ...after] });
       if (!result.ok) throw new Error(formatPiToolFailure(result, maxIssues));
-      const content: PiToolExecResult["content"] = [{ type: "text", text: formatPiToolSuccess(result, maxDataChars) }];
+      const content: PiToolExecResult["content"] = [{ type: "text", text: formatPiToolSuccess(result, tool.name === "read_tileset_reference" ? Math.max(maxDataChars, REFERENCE_MAX_DATA_CHARS) : maxDataChars) }];
       if (tool.name === "read_tileset_reference") {
         for (const image of await referenceGate.read(ctx.project, result)) {
           const comma = image.dataUrl.indexOf(",");
