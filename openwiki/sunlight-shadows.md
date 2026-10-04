@@ -48,6 +48,17 @@ editor는 타일 위/편집 오버레이 아래의 별도 container(.5)에 같�
 roundPixels를 끄고 finally에서 복구한다. 다른 타일/캐릭터의 카메라 설정은 유지한다.
 씬 shutdown/off 맵 이동은 텍스처를 지운다. runtime 타일 제자리 변경은 `invalidateSunlight`를 호출한다.
 
+### 높이 붓과 도로의 수신 면 (2026-10-04)
+
+높이 지형의 수신 면은 `renderRelief`의 native `src/kind/mpy/height`에서 읽는다.
+화면 16×16칸 창과 둘레 여백만 굽고 4×4 표본의 주인 줄·월드 y/z를 보관한다(최대 128창).
+가려진 바닥과 앞쪽 고지·절벽을 같은 화면 좌표에 함께 그리지 않는다. 경사로 둘레의
+네모 가장자리도 광선 높이와 native 렌더에 공통 적용한다. 평지 도로 타일은 caster가 아니다.
+높이 붓·조수·제자리 relief 편집은 레이어의 입력 키에 `reliefReadSignature`를 넣어 갱신한다.
+기본 off에서는 높이 서명·수신 창을 계산하지 않는다. 진단에 `maxTerrain`을 함께 표시한다.
+근거: `verify-shots/terrain-shadows/SUMMARY.md`. 두 재현 맵에서 이전 그림자의 보이지 않는
+수신 표본 115개/10개를 확인했고 수정 후 0개다. 이 수치는 전체 맵의 미술 품질 점수가 아니다.
+
 ## 조수와 검수
 
 `inspect_terrain`은 sunlight 설정, caster 수, 최대 24개의 caster 높이를 반환한다.
