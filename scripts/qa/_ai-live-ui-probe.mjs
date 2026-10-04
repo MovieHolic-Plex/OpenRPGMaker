@@ -12,7 +12,7 @@
 // 증거: verify-shots/ai-live-ui/<label>/{timeline.json, shots/*.png}
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
-import { chromium } from "playwright";
+import { chromium, firefox } from "playwright";
 
 const args = {};
 for (let i = 2; i < process.argv.length; i += 1) {
@@ -33,10 +33,15 @@ mkdirSync(join(OUT, "shots"), { recursive: true });
 const log = (line) => process.stdout.write(`${line}\n`);
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-const browser = await chromium.launch({
-  headless: !args.headed,
-  args: ["--disable-background-networking", "--disable-features=NetworkChangeNotifier", "--disable-dev-shm-usage", "--js-flags=--max-old-space-size=" + (args.heap ?? 4096) + "", "--enable-precise-memory-info"],
-});
+// --browser firefox: 도커 veth 가 수십 초마다 바뀌는 날엔 크로미움이 플래그를 붙여도 모듈 수백 개를 ERR_NETWORK_CHANGED 로 끊는다
+// (2026-10-04). 파이어폭스는 network.notify.changed=false 로 알림을 끈다. CPU 프로파일(CDP)은 크로미움 전용.
+const useFirefox = args.browser === "firefox";
+const browser = useFirefox
+  ? await firefox.launch({ headless: !args.headed, firefoxUserPrefs: { "network.notify.changed": false, "network.notify.checkForProxies": false } })
+  : await chromium.launch({
+    headless: !args.headed,
+    args: ["--disable-background-networking", "--disable-features=NetworkChangeNotifier", "--disable-dev-shm-usage", "--js-flags=--max-old-space-size=" + (args.heap ?? 4096) + "", "--enable-precise-memory-info"],
+  });
 const context = await browser.newContext({ viewport: { width: 1600, height: 1000 }, ...(args.video ? { recordVideo: { dir: join(OUT, "video"), size: { width: 1600, height: 1000 } } } : {}) });
 const page = await context.newPage();
 const pageErrors = [];
@@ -65,7 +70,7 @@ await page.addInitScript(() => {
       else if (deltas && typeof deltas === "object") out.maps = Object.keys(deltas).slice(0, 5);
     }
     if (ev.type === "assistant" || ev.type === "text") out.text = String(ev.text ?? "").slice(0, 120);
-    if (ev.type === "tool_end") { out.ok = ev.ok ?? ev.result?.ok ?? null; out.ms = ev.durationMs ?? null; out.visuals = Array.isArray(ev.visuals) ? ev.visuals.length : 0; }
+    if (ev.type === "tool_end") { out.ok = ev.ok ?? ev.result?.ok ?? null; out.ms = ev.durationMs ?? null; out.visuals = Array.isArray(ev.visuals) ? ev.visuals.length : 0; if (out.ok === false) out.summary = String(ev.summary ?? "").slice(0, 600); }
     if (ev.type === "tool_start" && ev.args) { try { out.args = JSON.stringify(ev.args).slice(0, 160); } catch { /* */ } }
     if (ev.type === "checkpoint") out.label = ev.label;
     if (ev.type === "done") out.stats = ev.stats ?? null;
@@ -163,7 +168,7 @@ try {
 
   // --cpu-profile: 보내기부터 첫 /v1/agent/run 요청 헤더까지 메인 스레드 CPU 를 잰다(어디서 준비 시간이 새는가).
   let cdp = null;
-  if (args["cpu-profile"]) {
+  if (args["cpu-profile"] && !useFirefox) {
     cdp = await page.context().newCDPSession(page);
     await cdp.send("Profiler.enable");
     await cdp.send("Profiler.setSamplingInterval", { interval: 1000 });
