@@ -17,8 +17,15 @@ off/on은 수치를 보존한다. 완전 제거는 AI `set_map_properties.clearS
 절벽은 `samplePixelHeight`의 native marching squares이며 다리 근처 네모 가장자리도 유지한다.
 caster가 광선 높이보다 높으면 수신 지점에 그림자가 생긴다.
 
-집은 placement+kit의 입구/집 이름, roof part 폭, 마지막 줄의 받침, 그림 높이로
-footprint/eave/ridge를 추정한다. 지붕만 넓힌 조립 집도 roof 폭을 사용한다.
+집은 placement+kit의 입구/집 이름으로 인식하고 `sunlightArt.ts`가 **현재 남은 upper tile의
+실제 알파 실루엣**을 칸당 4×4 표본으로 읽는다. 열별 윗선/아랫선을 높이 구간으로 만들므로
+탑·박공·굴뚝의 높이가 다르며, 지붕만 넓힌 처마 아래를 벽으로 채우지 않는다.
+떨어진 소품과 본채 아래 얇은 픽셀로 닿은 소품은 별도 받침/깊이를 사용한다(버들항 저택의 석상 두 개).
+덧칠되거나 지워진 kit 칸은 caster에서 제외한다. 스탬프 바깥 네모를 통째로 비우던 처리는 제거했다.
+그림의 보호 영역도 실제 알파 표본과 해당 칸의 화면 들림이다. 빈 처마 옆 잔디를 보호 영역으로 삼지 않는다.
+browser/player는 `sunlightArtCanvas.ts`의 타일별 작은 캔버스 캐시, headless는 같은 `rasterSunlightArt`를 쓴다.
+atlas 전체/맵 전체 픽셀 복사는 하지 않는다. 이미지 없는 scalar inspection은 남은 upper 칸 점유로 근사하며,
+field 캐시 키에 art source를 넣어 실제 이미지가 준비된 뒤의 결과를 근사 field로 대체하지 않는다.
 등록된 나무/숲 군집은 실제 남은 upper tile 칸의 원형 수관을 사용한다.
 고지의 집/나무는 지면 높이에 구조물 높이를 더한다. 원본 타일의 실제 3D 부피를 복원하는 기능은 아니다.
 relief/통행/충돌/visionBlocking/타일 층은 변경하지 않는다.
@@ -47,5 +54,7 @@ roundPixels를 끄고 finally에서 복구한다. 다른 타일/캐릭터의 카
 browser/headless 이미지도 같은 field를 그린다. 영역 밖 caster를 잃지 않도록 원본 맵에서 광선을 계산한다.
 근거: `verify-shots/sunlight/SUMMARY.md`, `scripts/qa/sunlight-audit.mts`,
 `scripts/capture/capture-sunlight-editor.mjs`, `scripts/capture/capture-sunlight-player.mjs`.
+건물 모양 수정 근거: `verify-shots/building-shadow-shapes/SUMMARY.md`, `scripts/qa/building-shadow-audit.mts`.
+capture 스크립트는 `OPRN_SUNLIGHT_QA_OUT`으로 출력 폴더를 나눌 수 있다.
 editor 진단 `__oprnEditSunlightStats`; shipping QA 진단 `__oprnSunlight`(계측 부팅만).
 전체 gates/Vitest/typecheck는 이 세션의 AGENTS 실행 제한에 따라 실행하지 않았다.
