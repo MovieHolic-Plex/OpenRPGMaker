@@ -793,10 +793,18 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   // 여기서 놓치면 이미 끝난 시공 결과가 조용히 사라진다.
   await Promise.all(inflight.map((entry) => entry.promise));
   if (coreFirst && !finishAccepted) throw new Error('첫 제작이 검증된 finish까지 끝나지 않았습니다. 저장된 핵심 플레이는 보존했습니다.');
+  const authoringCompletion = inspectAuthoringHarness(working, base);
+  if (authoringCompletion && (!finishAccepted || !authoringCompletion.ok || !authoringReview?.ok || authoringReview.signature !== authoringSignature(working))) {
+    throw new Error('첫 만남 미완료: ' + (authoringCompletion.blockers.length ? authoringCompletion.blockers.join(' / ') : !finishAccepted ? '검증된 finish 호출이 없습니다.' : '현재 결과의 시각 검수 증거가 없습니다.'));
+  }
+  // The mandatory current-image review + executable contract already cover this
+  // bounded first build. A second narrative audit delayed the terminal done even
+  // after finish, and could time out a fully published, verified scene.
+  const verifiedFirstBuild = isGenrePresetBriefRequest(request.task) && !!authoringCompletion;
   if (skipFinalReview && request.applyMode !== "yolo") {
     finished = `${finished ?? summaryOf(orchDone)}\n완료 후 검토: 켜진 검수 담당이 없어 생략했습니다.`;
     emit({ type: "team_report", text: finished });
-  } else if (team.reviewAfterWork && request.applyMode !== "yolo") {
+  } else if (team.reviewAfterWork && request.applyMode !== "yolo" && !verifiedFirstBuild) {
     const finalReview = startTask(
       `제작이 끝난 최종 결과를 읽기 전용으로 검토하라. 사용자 요청: ${request.task}\n요청 충족 여부, 남은 문제와 확인 근거를 report_task로 보고한다. 직접 수정하지 않는다.`,
       "read", reviewers[0]!,
@@ -811,10 +819,6 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   for (const report of orchDone.interiorCompletion ?? []) interiorReports.set(report.mapId, report);
   const interiorCompletion = [...interiorReports.values()];
   const villageCompletion = villageMapIds.size ? inspectPiVillageCompletion(working, base, villageMapIds) : undefined;
-  const authoringCompletion = inspectAuthoringHarness(working, base);
-  if (authoringCompletion && (!finishAccepted || !authoringCompletion.ok || !authoringReview?.ok || authoringReview.signature !== authoringSignature(working))) {
-    throw new Error('첫 만남 미완료: ' + (authoringCompletion.blockers.length ? authoringCompletion.blockers.join(' / ') : !finishAccepted ? '검증된 finish 호출이 없습니다.' : '현재 결과의 시각 검수 증거가 없습니다.'));
-  }
   emit({ type: "agent_done", agentId: orchestratorId, ok: !villageCompletion?.issues.length && !interiorCompletion.length && authoringCompletion?.ok !== false,
     summary: interiorCompletion.length ? "실내 미완료: " + JSON.stringify(interiorCompletion) : villageCompletion?.issues.length ? `마을 미완료: ${villageCompletion.issues.join("; ")}` : finished ?? summaryOf(orchDone), stats: orchDone.stats, changedKeys: [], spills: [], conflicts: [] });
   if (!finished) emit({ type: "team_report", text: `${summaryOf(orchDone)} · 팀장이 finish를 호출하지 않았습니다. 미확인 협의 ${mailbox.outstanding().length}건.` });

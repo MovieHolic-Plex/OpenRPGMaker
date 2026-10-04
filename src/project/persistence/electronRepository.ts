@@ -110,6 +110,7 @@ export type OprnAssetBrowser = {
 };
 
 export type OprnBridge = {
+  readonly windowControl?: (action: "toggle-fullscreen" | "close") => Promise<boolean>;
   readonly team?: import("../../../electron/shared/team").TeamBridge;
   /** true 면 닫기 절차를 호스트(일렉트론 메인)가 연다. 브라우저 로컬 서버는 false 라서 페이지가 직접 막는다. */
   readonly closeIsHostDriven: boolean;

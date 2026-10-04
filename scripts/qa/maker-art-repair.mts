@@ -11,7 +11,7 @@ const project = JSON.parse(fs.readFileSync(fixture!, 'utf8'));
 const stats = { ms: 1, turns: 1, toolCalls: 0, toolErrors: 0 };
 const cases = [];
 for (const name of ['repair-pass', 'budget-exhausted', 'read-only', 'follow-up', 'yolo', 'cancel', 'invalid-repair', 'locked-review']) {
-  let reviews = 0, writes = 0, finished = false, rejected = false;
+  let reviews = 0, writes = 0, finalAudits = 0, finished = false, rejected = false;
   const snapshots: number[] = [];
   let unblockReview: (() => void) | undefined;
   const controller = new AbortController();
@@ -38,7 +38,7 @@ for (const name of ['repair-pass', 'budget-exhausted', 'read-only', 'follow-up',
         if (name === 'cancel') controller.abort();
         return done;
       }
-      if (options.extraTools?.some(t => t.name === 'report_task')) { await tool('report_task').execute('task', {report:'Synthetic final read-only report'}); return done; }
+      if (options.extraTools?.some(t => t.name === 'report_task')) { finalAudits++; await tool('report_task').execute('task', {report:'Synthetic final read-only report'}); return done; }
       if (!options.extraTools?.some(t => t.name === 'review_map')) {
         writes++;
         assert(r.task.includes('반려 근거:'));
@@ -74,7 +74,8 @@ for (const name of ['repair-pass', 'budget-exhausted', 'read-only', 'follow-up',
   if (['read-only', 'follow-up', 'cancel'].includes(name)) { assert.equal(writes, 0); assert(!finished && rejected); }
   if (name === 'yolo') { assert.equal(reviews, 1); assert.equal(writes, 0); assert(finished); }
   if (name === 'invalid-repair') { assert.equal(writes, 1); assert.equal(reviews, 1); assert(!finished && rejected); }
-  cases.push({ name, reviews, writes, finished, rejected,
+  if (['repair-pass','yolo','locked-review'].includes(name)) assert.equal(finalAudits, 0, 'Verified first build must emit done without another narrative audit');
+  cases.push({ name, reviews, writes, finalAudits, finished, rejected,
     fixes: events.filter(e => e.type === 'agent_spawn' && e.fixOf).map(e => ({ agentId: e.agentId, fixOf: e.fixOf })) });
 }
 fs.writeFileSync(output!, JSON.stringify({ synthetic: true, cases }, null, 2));
