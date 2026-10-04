@@ -25,6 +25,16 @@ function group(payload: unknown): Node {
 }
 
 describe("post-normalization CCA enum preservation", () => {
+  test.each(['claude-opus-4-6', 'gemini-3.7-flash'])('preserves optional integer membership plus null across real SDK normalization on %s', (id: string) => {
+    const nullableTools = [{ name: 'terrain', description: 'terrain', parameters: { type: 'object', properties: { level: { type: ['integer', 'null'], enum: [1, 2, null] } } } }];
+    const before = JSON.stringify(nullableTools);
+    const wire = buildRequest(bundled(id), { ...context(), tools: nullableTools }, 'offline-project', {}, true);
+    const encode = antigravityToolEnumPayload(id, nullableTools);
+    const encoded = encode(wire) as Payload;
+    expect(encoded.request.tools[0].functionDeclarations[0].parameters!.properties!.level).toMatchObject({ type: 'integer', enum: ['1', '2'], nullable: true });
+    expect(encode(encoded)).toEqual(encoded);
+    expect(JSON.stringify(nullableTools)).toBe(before);
+  });
   test.each(["claude-opus-4-6", "gemini-3.7-flash"])("changes only numeric enum arrays and is idempotent on %s", (id: string) => {
     const model = bundled(id);
     const sourceBefore = JSON.stringify(tools);

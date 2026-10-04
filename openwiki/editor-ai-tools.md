@@ -2637,6 +2637,9 @@ Pi의 `generate_title_art`·`generate_opening_image`는 UI 핸드오프를 실�
 그림을 등록한다(타이틀은 연결까지). `get_title_screen`은 설정 조회,
 `show_title_opening`은 연결된 원화와 설정을 함께 전달한다. 기본 타이틀·꺼진 오프닝은 완료를 막으며,
 첫 장면 검수는 전체 맵과 연결된 원화의 실제 이미지 전달을 각각 확인한다.
+`show_title_opening`의 요약과 `data.images`는 inline 바이트 유무와 관계없이 연결된 원화를 센다.
+파일 분리된 `ref` 그림은 Pi 래퍼가 브라우저 자산 브리지에서 읽어 모델에 전달하며,
+실제로 보낸 id 목록은 `presentation.image.delivered`에 남긴다. 연결 수와 전달 성공을 혼동하지 않는다.
 
 
 ## 크로노 트리거식 필드 도구 인자 (2026-09-26)
@@ -2658,3 +2661,11 @@ prepare 단계가 호스트 빌드(미리보기 1~3초, 실제 약 2분)를 기�
 ## Bounded romance authoring tools
 
 `author_romance_scene` and `inspect_romance_scene` are registered through `harnesses/_core/authoringRegistry.ts` in the event domain. The first authors fixed contract choices with model-written prose and validates native interpreter behavior before atomic commit. The second reports executable blockers; a read-tool transport success is not an `ok` scene verdict. Full contract and completion rules: [romance-scene](harnesses/romance-scene.md).
+
+### 선택 정수 enum의 Antigravity 전달 (2026-10-04)
+
+`nullableOptionalParameters`가 선택값에 null을 허용하는 도구(예: edit_world_terrain.level)는
+정본 스키마에서 type:[integer,null], enum:[1,2,null]이다. `ohMyPiToolEnums`는 SDK 정규화 뒤
+legacy Schema.enum에 ['1','2']를, nullable에 true를 전달한다. 숫자와 null을 문자열 enum 배열에
+함께 넣지 않는다. 원본 스키마는 바꾸지 않으며 중복·소수·잘못된 타입/회원 변경은 계속 거부한다.
+이 계약 불일치는 지형 도구를 직접 호출하지 않는 오프닝 제작 턴도 모델 요청 전에 중단시켰다.

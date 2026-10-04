@@ -1,4 +1,5 @@
 import { validateFieldHud } from "./shapeFieldHud";
+import { parseCinematicDirection } from '../cinematicDirection';
 import { isEquipmentSlotId } from "@/project/equipmentSlots";
 import { isGenrePackId } from "@/project/genrePackId";
 import { TOOL_CAPABILITY_AXIS_MAX, TOOL_CAPABILITY_TILE_MAX } from "@/project/upgrades";
@@ -229,7 +230,7 @@ function validateCinematicSequence(label: string, value: unknown): void {
     requireOnlyFields(sceneLabel, scene, [
       "id", "kind", "narration", "narrationAudioResourceId", "durationMs",
       ...(kind !== "text" ? ["resourceId"] : []),
-      ...(kind === "image" ? ["motion"] : []),
+      ...(kind === "image" ? ["motion", "direction"] : []),
     ]);
     requireString(`${sceneLabel}.narration`, scene.narration);
     assertSafeIntegerInRange(`${sceneLabel}.durationMs`, scene.durationMs, 0, CINEMATIC_DURATION_MAX_MS);
@@ -237,6 +238,10 @@ function validateCinematicSequence(label: string, value: unknown): void {
     if (kind !== "text") requireNonBlankString(`${sceneLabel}.resourceId`, scene.resourceId);
     if (kind === "image") {
       assert(scene.motion === "none" || scene.motion === "fade" || scene.motion === "pan" || scene.motion === "zoom", `${sceneLabel}.motion is invalid.`);
+      if (scene.direction !== undefined) {
+      try { parseCinematicDirection(scene.direction); }
+      catch (error) { assert(false, `cinematic direction: ${error instanceof Error ? error.message : String(error)}`); }
+    }
     }
   }
 }

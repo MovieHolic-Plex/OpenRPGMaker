@@ -3,6 +3,8 @@ import { isCinematicAdvanceKey, normalizeKey } from "@/player/keyBindings";
 import { installPlayPointerBlocker } from "@/player/playInputBlocker";
 import type { CinematicSequence, Project } from "@/project/types";
 import { el } from "@/util/dom";
+import { createCinematicAssets, type CinematicAssets } from "@/player/cinematicAssets";
+import { createTitleEffectsCanvas, freezeTitleEffects, stopTitleEffects } from "@/player/titleEffects/renderer";
 
 export type CinematicCompletion = "completed" | "skipped" | "aborted";
 export type CinematicPlayback = {
@@ -16,12 +18,15 @@ export function playCinematicSequence(options: {
   readonly project: Project;
   readonly sequence: CinematicSequence | undefined;
   readonly signal: AbortSignal;
+  readonly assets?: CinematicAssets;
+  readonly onFrame?: (url: string) => void;
 }): CinematicPlayback {
   const { host, project, sequence, signal } = options;
   if (signal.aborted || !sequence?.enabled || sequence.scenes.length === 0) {
     return { done: Promise.resolve(signal.aborted ? "aborted" : "completed"), teardown: () => undefined };
   }
   const root = el("div", { class: "cinematic-sequence", dataset: { testid: "cinematic-sequence" } });
+  const assets = options.assets ?? createCinematicAssets();
   root.tabIndex = -1;
   root.setAttribute("role", "region");
   root.setAttribute("aria-label", "시네마틱");
@@ -50,10 +55,15 @@ export function playCinematicSequence(options: {
   const observer = new MutationObserver(() => {
     if (!root.isConnected || !host.contains(root)) finish("aborted");
   });
+  const disposeShot = (shot: HTMLElement): void => {
+    shot.remove(); // Chromium may paint a white lost-context placeholder if still visible.
+    for (const canvas of shot.querySelectorAll<HTMLCanvasElement>('.cinematic-effects')) stopTitleEffects(canvas);
+  };
   const finish = (result: CinematicCompletion): void => {
     if (settled) return;
     settled = true;
     cleanScene();
+    if (!options.assets) assets.dispose();
     stopMusic();
     observer.disconnect();
     signal.removeEventListener("abort", abort);
@@ -63,6 +73,7 @@ export function playCinematicSequence(options: {
       previousFocus.focus({ preventScroll: true });
     }
     root.remove();
+    for (const canvas of root.querySelectorAll<HTMLCanvasElement>('.cinematic-effects')) stopTitleEffects(canvas);
     resolveDone(result);
   };
   const abort = (): void => finish("aborted");
@@ -89,6 +100,9 @@ export function playCinematicSequence(options: {
     const media: HTMLMediaElement[] = [];
     let loadTimer: ReturnType<typeof setTimeout> | undefined;
     let advanceTimer: ReturnType<typeof setTimeout> | undefined;
+    let narrationTimer: ReturnType<typeof setTimeout> | undefined;
+    const animations: Animation[] = [];
+    let effects: HTMLCanvasElement | undefined;
     let alive = true;
     let mediaActive = true;
     const releaseMedia = (): void => {
@@ -106,12 +120,18 @@ export function playCinematicSequence(options: {
       alive = false;
       releaseMedia();
       clearTimeout(advanceTimer);
+      clearTimeout(narrationTimer);
+      // Freeze the visible composition while another cut is prepared; settle every owned animation.
+      for (const layer of root.querySelectorAll<HTMLElement>('.cinematic-shot > img, .cinematic-shot > canvas')) {
+        layer.style.transform = view.getComputedStyle(layer).transform;
+        layer.style.animation = 'none';
+      }
+      animations.forEach(animation => animation.cancel());
+      root.querySelectorAll<HTMLElement>('[data-previous-shot]').forEach(disposeShot);
+      if (effects) freezeTitleEffects(effects);
     };
-    root.replaceChildren();
-    root.dataset.sceneId = scene.id;
-    root.dataset.sceneKind = scene.kind;
-    root.dataset.mediaState = "ready";
-    root.style.setProperty("--cinematic-motion-ms", `${scene.durationMs || 8000}ms`);
+    // Keep the previous frame visible until the incoming picture is decoded.
+    root.dataset.pendingSceneId = scene.id;
     const narration = el("div", { class: "cinematic-narration", text: scene.narration });
     scrollNarration = key => {
       // Stage-logical pixels; synchronous assignment lets the browser clamp at both ends.
@@ -158,7 +178,9 @@ export function playCinematicSequence(options: {
       }, () => fail("blocked"));
     };
     retryMedia = () => {
-      if (!alive || root.dataset.mediaState !== "blocked") return;
+      if (!alive) return;
+      if (root.dataset.mediaState === "error") { cleanScene(); renderScene(); return; }
+      if (root.dataset.mediaState !== "blocked") return;
       beginLoading();
       for (const item of media) play(item);
     };
@@ -171,16 +193,75 @@ export function playCinematicSequence(options: {
       play(item);
     };
     canContinueVideo = scene.kind === "video";
+    const ready = (visual?: HTMLElement): void => {
+      if (!alive || settled) return;
+      const previous = root.querySelector<HTMLElement>('.cinematic-shot');
+      root.replaceChildren(...(visual ? [visual] : []), narration, status);
+      root.dataset.sceneId = scene.id;
+      root.dataset.sceneKind = scene.kind;
+      delete root.dataset.pendingSceneId;
+      root.dataset.mediaState = scene.kind === 'video' ? 'loading' : 'ready';
+      root.style.setProperty('--cinematic-motion-ms', `${scene.durationMs || 8000}ms`);
+      status.textContent = '';
+      if (scene.kind === 'image' && visual) {
+        const direction = scene.direction;
+        const transition = reducedMotion ? undefined : direction?.transition;
+        if (transition && transition.kind !== 'cut' && transition.durationMs > 0) {
+          if (previous && transition.kind === 'dissolve') {
+            previous.dataset.previousShot = 'true';
+            visual.before(previous);
+            const fade = previous.animate([{ opacity: 1 }, { opacity: 0 }], { duration: transition.durationMs, fill: 'forwards' });
+            animations.push(fade);
+            void fade.finished.then(() => disposeShot(previous), () => disposeShot(previous));
+          }
+          const frames = transition.kind === 'flash'
+            ? [{ filter: 'brightness(2.3)', opacity: 0.6 }, { filter: 'brightness(1)', opacity: 1 }]
+            : [{ opacity: 0 }, { opacity: 1 }];
+          animations.push(visual.animate(frames, { duration: transition.durationMs, fill: 'both' }));
+        }
+        if (previous && !previous.isConnected) disposeShot(previous);
+        if (direction?.camera && !reducedMotion) {
+          const transform = ([x, y, zoom]: [number, number, number]): string => `scale(${zoom}) translate(${(0.5-x)*(zoom-1)/zoom*100}%, ${(0.5-y)*(zoom-1)/zoom*100}%)`;
+          for (const layer of visual.children) if (layer instanceof HTMLElement) {
+            animations.push(layer.animate([{ transform: transform(direction.camera.from) }, { transform: transform(direction.camera.to) }], { duration: scene.durationMs || 8000, easing: 'ease-in-out', fill: 'both' }));
+          }
+        }
+        const delay = direction?.narrationDelayMs ?? 0;
+        if (delay > 0) { narration.hidden = true; narrationTimer = setTimeout(() => { if (alive) narration.hidden = false; }, delay); }
+        if (direction?.soundResourceId) { const audio = el('audio', {}); root.append(audio); addMedia(audio, direction.soundResourceId); }
+      }
+      if (scene.narrationAudioResourceId && mediaActive) {
+        const audio = el('audio', {}); root.append(audio); addMedia(audio, scene.narrationAudioResourceId);
+      }
+      if (scene.durationMs > 0) advanceTimer = setTimeout(next, scene.durationMs);
+      assets.warm(project, sequence, index + 1);
+    };
     switch (scene.kind) {
-      case "text": break;
+      case "text": ready(); break;
       case "image": {
         const image = el("img", { class: "cinematic-image", attrs: { alt: "", draggable: "false" } });
-        image.dataset.motion = reducedMotion ? "none" : scene.motion;
+        image.dataset.motion = reducedMotion || scene.direction?.camera ? "none" : scene.motion;
         const url = resolveAssetResourceUrl(scene.resourceId, { project });
-        image.addEventListener("error", () => { image.remove(); fail("error"); }, { signal: lifetime.signal });
-        if (url) image.src = url;
-        else fail("error");
-        root.append(image);
+        root.querySelector('.cinematic-status')?.remove();
+        root.append(status);
+        root.dataset.mediaState = 'loading';
+        // A short wait stays silent. A prolonged wait has a usable retry/skip boundary.
+        loadTimer = setTimeout(() => { if (alive) status.textContent = '장면을 준비하고 있습니다…'; }, 800);
+        void (url ? assets.prepare(url) : Promise.reject(new Error('Missing image'))).then(async prepared => {
+          image.src = prepared.url;
+          await image.decode();
+          if (!alive || settled) return;
+          clearTimeout(loadTimer);
+          const shot = el('div', { class: 'cinematic-shot', children: [image] });
+          if (scene.direction?.effects?.length) {
+            effects = createTitleEffectsCanvas({ imageUrl: prepared.url, effects: scene.direction.effects, fit: 'cover', rendering: 'smooth' });
+            effects.classList.add('cinematic-effects');
+            effects.dataset.motion = image.dataset.motion;
+            shot.append(effects);
+          }
+          ready(shot);
+          options.onFrame?.(prepared.url);
+        }).catch(() => { if (alive && !settled) { fail('error'); status.textContent = '장면을 읽을 수 없습니다. R 키로 재시도하거나 Enter로 넘어가세요.'; } });
         break;
       }
       case "video": {
@@ -204,19 +285,12 @@ export function playCinematicSequence(options: {
         };
         video.addEventListener("waiting", waiting, { signal: lifetime.signal });
         video.addEventListener("stalled", waiting, { signal: lifetime.signal });
+        ready(video);
         beginLoading();
-        root.append(video);
         addMedia(video, scene.resourceId);
         break;
       }
     }
-    root.append(narration, status);
-    if (scene.narrationAudioResourceId && mediaActive) {
-      const audio = el("audio", {});
-      root.append(audio);
-      addMedia(audio, scene.narrationAudioResourceId);
-    }
-    if (scene.durationMs > 0) advanceTimer = setTimeout(next, scene.durationMs);
   };
   if (sequence.musicResourceId) {
     root.dataset.music = sequence.musicResourceId;
