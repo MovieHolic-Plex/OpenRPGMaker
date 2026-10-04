@@ -141,3 +141,5 @@ three entries, then edit an audio description: one initial catalog computation, 
 inspector calls. Upload masking/monster metadata edits must produce the correct counts
 and effective inspector metadata. These are source guarantees/recipes, not measured
 latency or CPU improvements.
+
+Charset visibility uses the character strip bounds, rather than the card header. A title peeking into the viewport must not start the eight canvases still below its edge. Native normal-motion evidence is in `verify-shots/editor-ux-fixes-round2-20261004/extras-motion/`.

@@ -241,6 +241,7 @@ describe("charset viewport ticker ownership", () => {
     const grid = root.querySelector<HTMLButtonElement>('[aria-label="그리드 뷰"]')!;
     if (!grid.classList.contains("active")) grid.click();
     expect(intersections).toHaveLength(2);
+    expect(intersections[0]!.node?.classList.contains("rm-charset-characters-strip")).toBe(true);
     expect(intersections[0]!.root).toBe(root.querySelector('[data-testid="resource-entry-list"]'));
     const intersect = (index: number, visible: boolean) => intersections[index]!.callback([
       { target: intersections[index]!.node!, isIntersecting: visible } as IntersectionObserverEntry,

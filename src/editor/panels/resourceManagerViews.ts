@@ -488,13 +488,13 @@ function resourceEntryList(
  * 인터벌 336개가 영구히 남아 3~4.5Hz 로 캔버스를 그렸다(카드 105장 · 닫은 뒤에도 그대로). 목록은 프로젝트/자산
  * 변경마다 다시 그려지므로 렌더마다 누적됐다.
  */
-function startCharsetRowTicker(card: HTMLElement, scroller: HTMLElement, draw: (animate: boolean) => void): () => void {
+function startCharsetRowTicker(card: HTMLElement, scroller: HTMLElement, draw: (animate: boolean) => void, drawable: HTMLElement = card): () => void {
   let mounted = false, waitedTicks = 0, intersecting = false, disposed = false;
   const motion = typeof window.matchMedia === "function" ? window.matchMedia("(prefers-reduced-motion: reduce)") : undefined;
   const observer = typeof IntersectionObserver === "function" ? new IntersectionObserver(entries => {
-    for (const entry of entries) if (entry.target === card) intersecting = entry.isIntersecting;
+    for (const entry of entries) if (entry.target === drawable) intersecting = entry.isIntersecting;
   }, { root: scroller }) : undefined;
-  observer?.observe(card);
+  observer?.observe(drawable);
   const dispose = () => { if (disposed) return; disposed = true; window.clearInterval(timer); observer?.disconnect(); charsetCleanups.delete(card); };
   const timer = window.setInterval(() => {
     if (!card.isConnected) {
@@ -506,7 +506,7 @@ function startCharsetRowTicker(card: HTMLElement, scroller: HTMLElement, draw: (
     const modal = card.closest('[data-testid="resource-modal"]');
     if (modal && hasOpenModalLayer() && !isTopModal(modal)) return;
     if (!observer) {
-      const a = card.getBoundingClientRect(), b = scroller.getBoundingClientRect();
+      const a = drawable.getBoundingClientRect(), b = scroller.getBoundingClientRect();
       intersecting = a.bottom > b.top && a.top < b.bottom && a.right > b.left && a.left < b.right;
     }
     if (intersecting) draw(!motion?.matches);
@@ -604,7 +604,7 @@ function renderCharsetRowCard(profile: ResourceProfile, isSelected: boolean, onS
       if (!sheetImg.complete || !sheetImg.naturalWidth) return;
       if (!drawn) { for (const draw of drawFns) draw(); drawn = true; }
       else if (animate) for (const advance of advanceFns) advance();
-    });
+    }, charactersStrip);
   }
 
   card.append(header, charactersStrip);
