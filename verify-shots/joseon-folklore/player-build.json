@@ -1,0 +1,9 @@
+{
+  "command": "npm run build:player",
+  "success": true,
+  "files": 407,
+  "runtimeAssets": 36,
+  "artifact": "61df572b01f40a2b",
+  "source": "e01322567b4a8b84",
+  "schemaVersion": 4
+}
