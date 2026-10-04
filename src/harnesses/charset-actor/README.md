@@ -11,6 +11,7 @@ npm run harness -- charset-actor produce --count 100 --reference /absolute/refer
 npm run harness -- charset-actor serve --port 18314
 npm run harness -- charset-actor export RUN
 python3 src/harnesses/charset-actor/harness.py publish-shared
+npm run harness -- charset-actor audit --run RUN --refresh-previews
 ```
 
 - `produce`는 manifest/작업 폴더를 만들고 터미널과 독립적으로 저작을 시작한다. `--par 4 --batch-size 2`가 기본이다.
@@ -19,6 +20,9 @@ python3 src/harnesses/charset-actor/harness.py publish-shared
 - 구조·빈 프레임·키 색 ±8·머리/몸체 투명 결손·위/옆 잘림 위험은 자동 차단한다. 머리 판정은 원본 머리 내부 면을 유지하는 사람형 검사이며 모든 해부학 오류를 알아내지는 못한다.
 - 산출물은 `reviewMode: human`, `strength: free`. 작업자 종료 후 렌더와 `published.json` 해시가 일치하면 GIF 대기열에 올린다.
 - 모든 탭에서 한 화면에 한 캐릭터만 표시한다. 위·오른쪽·아래·왼쪽 걷기와 칸 위 이동 GIF를 항상 함께 보여준다. 다음 후보의 GIF도 미리 불러온다.
+- 걷기는 자홍색 체커 배경이 기본이다. 흰색·검정·잔디로 즉시 전환하여 투명 점·열린 틈과 배경색으로 위장한 옷을 확인한다. 상세 시트는 실제 RGBA를 보여준다.
+- alpha 정책은 렌더/선택 binding과 따로 버전을 관리한다. 검사 개선 때 옛 PASS를 다시 계산하되 같은 픽셀의 사용자 선택을 지우지 않는다. 새 옷 안의 투명 구멍과 깊은 머리 면의 열린 틈도 차단한다.
+- `audit --run RUN`은 저장소 밖 데이터 폴더에 전체 12프레임 접촉 시트와 세 배경의 원본/후보 비교, 결손 좌표·해시·PNG 키 색 재읽기 `audit.json`/`SUMMARY.md`를 남긴다. `--refresh-previews`는 같은 격자로 고대비 GIF/RGBA 시트만 추가하며 그림·사용자 결정·공용 DB를 바꾸지 않는다. 차단 후보의 원본/선택 이력은 보존하고 정상 후보 목록·새 팩·공용 게시에서 제외한다.
 - 남기기/폐기를 누르면 즉시 해당 카드가 사라지고 다음 캐릭터로 넘어간다. A/R과 방향키·이전/다음 버튼을 쓸 수 있다. 이유와 메모 입력은 필수가 아니다.
 - `직전 선택 되돌리기`는 저장 응답을 기다리지 않고 해당 캐릭터를 검토 대기로 되돌린다. 보관한 캐릭터의 개별 되돌리기도 남김/폐기 탭에서 할 수 있다.
 - 선택은 클릭 즉시 카드와 집계에 반영된다. 서버 저장은 뒤에서 순서대로 처리하며 `저장 중 N건`으로 표시한다. 실패하면 브라우저에 보관한 선택을 자동/수동 재시도한다.

@@ -14,6 +14,7 @@ export const CHARSET_ACTOR_HARNESS = defineHarness({
     { id: "bulk", title: "묶음 저작", summary: "manifest를 읽어 GPT high 원샷 저작과 독립 검수를 실행한다. --detach로 드라이버를 유지한다." },
     { id: "check", title: "픽셀 검사", summary: "12프레임 구조·색 키·투명 구멍·머리 결손·걸음 동작을 검사한다." },
     { id: "views", title: "그림 굽기", summary: "현재 격자 해시에 결부한 PNG·GIF·필름 띠를 만든다." },
+    { id: "audit", title: "투명 결손 QA", summary: "--run RUN으로 모든 12프레임을 체커·흰색·검정 배경에서 펼치고 결손 좌표·출하 PNG 재읽기를 기록한다. --refresh-previews로 동일 픽셀의 진단 GIF를 추가한다." },
     { id: "verify", title: "계약 확인", summary: "임시 저장 대상에서 결손·GIF·사람의 선택 해시·패킹과 이전 검수 계약을 확인한다." },
     { id: "export", title: "선택 팩", summary: "자유 저작은 사람이 남긴 캐릭터만 ZIP으로 묶는다. 기존 검수 실행은 이전 계약을 유지한다." },
     { id: "status", title: "현황", summary: "저작 진행과 검수 판정을 표시한다." },
