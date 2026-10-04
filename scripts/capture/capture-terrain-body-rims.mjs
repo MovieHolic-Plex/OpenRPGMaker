@@ -15,9 +15,11 @@ const saved=JSON.parse(readFileSync(resolve(source,'summary.json'),'utf8'));
 if(!saved.canonicalReload&&!saved.reloadMapEqual)throw Error('Missing canonical SQLite reload evidence');
 const cases=JSON.parse(readFileSync('.vite-cache/terrain-seams/cases.json','utf8'));
 let wire;await withTsModule(resolve('src/project/webExport.ts'),'terrain-body-export.mjs',async({prepareWebExport})=>{wire=JSON.parse(prepareWebExport(project).projectJson);});
-const server=await startProductionPlayerPreview(),browser=await chromium.launch({args:['--no-proxy-server','--disable-background-networking','--js-flags=--max-old-space-size=8192']});
+const buildRoot=resolve(arg('build-root','dist/export-player')),publicRoot=resolve(arg('public-root','public'));
+const server=await startProductionPlayerPreview({buildRoot,publicRoot});
+const browser=await chromium.launch({args:['--no-proxy-server','--disable-background-networking','--js-flags=--max-old-space-size=8192']});
 const page=await browser.newPage({viewport:{width:1440,height:960}});
-const proof={label,exportedPlayer:true,projectId:saved.projectId,revision:saved.revision,canonicalStore:saved.storage,sourceProjectId:saved.sourceProjectId,sourceRevision:saved.sourceRevision,sourceMapsEqual:saved.sourceMapsEqual,errors:[],ramps:[],samples:[]};
+const proof={label,exportedPlayer:true,buildRoot,publicRoot,projectId:saved.projectId,revision:saved.revision,canonicalStore:saved.storage,sourceProjectId:saved.sourceProjectId,sourceRevision:saved.sourceRevision,sourceMapsEqual:saved.sourceMapsEqual,errors:[],ramps:[],samples:[]};
 page.on('pageerror',e=>proof.errors.push(e.message));let film;
 const idle=()=>page.waitForFunction(()=>!window.__oprnHooksScene.moving&&!window.__oprnHooksScene.playerRoute,null,{timeout:15000});
 // Ask the real WebGL renderer for the next frame; compare source opaque pixels to
@@ -67,7 +69,11 @@ async function probeMove(from,to,name){
  await page.waitForFunction(()=>window.__bodyProbe,null,{timeout:6000});
  const sample=await page.evaluate(()=>window.__bodyProbe);await idle();
  const landed=await page.evaluate(()=>({x:window.__oprnHooksScene.tileX,y:window.__oprnHooksScene.tileY}));
- if(landed.x!==to.x||landed.y!==to.y||sample.through||!sample.opaque)throw Error(`Invalid actual walk: ${name}`);
+ if(landed.x!==to.x||landed.y!==to.y||sample.through||!sample.opaque){
+  await page.screenshot({path:resolve(out,'walk-failure.png')});
+  writeFileSync(resolve(out,'walk-failure.json'),JSON.stringify({name,from,to,landed,sample:{...sample,image:undefined}},null,2));
+  throw Error(`Invalid actual walk: ${name}, landed ${JSON.stringify(landed)}, expected ${JSON.stringify(to)}`);
+ }
  writeFileSync(resolve(out,`${name}.png`),Buffer.from(sample.image.split(',')[1],'base64'));delete sample.image;
  const record={name,from,to,...sample};proof.samples.push(record);return record;
 }
