@@ -37,7 +37,8 @@ def build_input(root, request):
     sources = layout['sources']
     paths = {str(verified(root, r).relative_to(Path(root).resolve())) for r in sources}
     data = Path(request['data'])
-    required = {str(data/'seed.json')}
+    required = {str(data/name) for name in ('seed.json', 'harness.sqlite', 'harness.sqlite-wal') if (Path(root)/data/name).is_file()}
+    if not required: raise ValueError('준비된 시드 또는 native 후보 저장소가 필요합니다.')
     if request['harness'] == 'modern-chipset':
         for name in ('parking-contract.json', 'parking-brief.md'):
             if (Path(root)/data/name).is_file(): required.add(str(data/name))

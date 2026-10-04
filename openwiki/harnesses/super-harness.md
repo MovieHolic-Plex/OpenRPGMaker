@@ -273,7 +273,7 @@ PASS 분기는 컨트롤러 확인용 합성 fixture이며 실제 그림의 합�
 실측: 주차장 표본 내부의 약45%에 용도가 없었으나 계약의 치수 준수만으로 비례 PASS가 났다.
 이제 `art 준비 → art-layout-review → art-native → 수집 → art-context-review` 순서다.
 - 준비자는 execution.layout에 실제 픽셀 크기와 일치하는 ASCII, 모든 칸의 용도, 비례/여백/정체성 근거,
-  시드·치수·주문서·queued 판·실행 코드/프롬프트의 해시를 제공한다. 기존 전체 기획의 승인은 재사용하지 않는다.
+  시드(native SQLite는 DB/WAL)·치수·주문서·queued 판·실행 코드/프롬프트의 해시를 제공한다. 기존 전체 기획의 승인은 재사용하지 않는다.
 - 독립 도면 검수는 proportions/spaceUse/circulation/identity/composition을 본다. 명세 자체를 반려할 수 있다.
   FAIL은 그림을 시작하지 않고 명세 준비로 돌아간다. 같은 art_revision에서 3회 반려 시 중단한다.
   실행 직전에 승인 fingerprint와 파일 해시를 다시 확인한다. 파일이 바뀌면 승인이 무효다.
