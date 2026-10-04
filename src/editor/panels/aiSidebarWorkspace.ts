@@ -94,8 +94,8 @@ export function createAiSidebarWorkspace(tools: HTMLElement, _host: HTMLElement 
   function sync(): void {
     root.classList.toggle("is-collapsed", collapsed);
     content.hidden = collapsed;
-    tools.hidden = pane !== "tools";
-    for (const [id, surface] of Object.entries(surfaces)) surface.root.hidden = pane !== id;
+    tools.hidden = collapsed || pane !== "tools";
+    for (const [id, surface] of Object.entries(surfaces)) surface.root.hidden = collapsed || pane !== id;
     root.dataset.pane = pane;
     for (const id of PANES) {
       const open = !collapsed && pane === id;
