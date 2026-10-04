@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **135쪽 / 4527KB / 약 1,308,797 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **136쪽 / 4543KB / 약 1,313,210 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -15,8 +15,8 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
-| `openwiki/editor-ai-panel.md` | 565KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 3475 | ~163,954 |
-| `openwiki/editor-ai-tools.md` | 314KB | 87KB ⚠상한 초과 — 절을 더 쪼개라 | 2617 | ~90,319 |
+| `openwiki/editor-ai-panel.md` | 566KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 3494 | ~164,437 |
+| `openwiki/editor-ai-tools.md` | 316KB | 87KB ⚠상한 초과 — 절을 더 쪼개라 | 2640 | ~90,881 |
 | `openwiki/editor-database.md` | 402KB | 63KB ⚠상한 초과 — 절을 더 쪼개라 | 2358 | ~117,632 |
 | `openwiki/editor-event-authoring.md` | 169KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 1000 | ~49,156 |
 | `openwiki/editor-event-commands.md` | 67KB | 32KB | 301 | ~18,613 |
@@ -27,9 +27,9 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/runtime-battle.md` | 322KB | 32KB | 1759 | ~94,254 |
 | `openwiki/runtime-pre-edit-routing.md` | 109KB | 76KB ⚠상한 초과 — 절을 더 쪼개라 | 791 | ~32,764 |
 | `openwiki/runtime-project-schema.md` | 208KB | 66KB ⚠상한 초과 — 절을 더 쪼개라 | 1483 | ~58,128 |
-| `openwiki/runtime-sessions.md` | 128KB | 50KB | 700 | ~34,606 |
+| `openwiki/runtime-sessions.md` | 132KB | 50KB | 759 | ~35,634 |
 | `openwiki/testing.md` | 213KB | 48KB | 2013 | ~59,223 |
-| `openwiki/tileset-reference-documents.md` | 54KB | 4KB | 558 | ~16,396 |
+| `openwiki/tileset-reference-documents.md` | 54KB | 4KB | 562 | ~16,674 |
 
 ## 한국어 산문이 깨진 페이지
 
@@ -86,7 +86,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/location-layer-affordance-audit.md` | 1 | `src/styles/editor/map-location-layer.css` |
 | `openwiki/modern-city.md` | 2 | `-plan.json`, `.oprn.json` |
 | `openwiki/monster-campaign-menu.md` | 1 | `docs/content/monster-expedition-contract.md` |
-| `openwiki/monster-kit-origin.md` | 50 | `QA-I6-objects.md`, `_demo.py`, `assessment.json`, `candidate.png`, `demo.png`, `harness-data/tileset-authoring/integ-qa/QA-I6.md`, `layouts.json`, `lib/bake.py`, `lib/building.py`, `lib/cave_preview.py`, `lib/pret_ref.py`, `lib/refdocs.py`, `lib/render_map.py`, `lib/section_view.py`, `lib/study.py`, `lib/viz_progress.py`, `lib/viz_regions.py`, `lib/wire.py`, `node/kitlib.mts`, `node/lava_edges.mts`, `node/showcase.mts`, `node/showcase_interior.mts`, `node/wild_round.mts`, `pokemon-baked-town.html`, `pokemon-house-variety.html`, `recipes/cave.py`, `recipes/city.py`, `recipes/coast.py`, `recipes/controls.py`, `recipes/forest.py`, `recipes/gym2.py`, `recipes/interior.py`, `recipes/interior2.py`, `recipes/kit.py`, `recipes/outdoor2.py`, `sheet-3x.png`, `showcase_interior.mts`, `src/harnesses/tileset-authoring/REGIONS.md`, `src/harnesses/tileset-authoring/harness.py`, `src/harnesses/tileset-authoring/harness.ts`, `src/harnesses/tileset-authoring/lib/px.py`, `src/project/defaults/monsterKit.ts`, `src/project/defaults/monsterKitSheets.generated.ts`, `src/project/slideTiles.ts`, `test/encounterTerrainCondition.test.ts`, `tiles.json`, `tiles.png`, `verify-cave.json`, `verify-map.json`, `verify-route.json` |
+| `openwiki/monster-kit-origin.md` | 48 | `QA-I6-objects.md`, `_demo.py`, `assessment.json`, `candidate.png`, `demo.png`, `harness-data/tileset-authoring/integ-qa/QA-I6.md`, `layouts.json`, `lib/bake.py`, `lib/building.py`, `lib/cave_preview.py`, `lib/pret_ref.py`, `lib/refdocs.py`, `lib/render_map.py`, `lib/section_view.py`, `lib/study.py`, `lib/viz_progress.py`, `lib/viz_regions.py`, `lib/wire.py`, `node/kitlib.mts`, `node/lava_edges.mts`, `node/showcase.mts`, `node/showcase_interior.mts`, `node/wild_round.mts`, `pokemon-baked-town.html`, `pokemon-house-variety.html`, `recipes/cave.py`, `recipes/city.py`, `recipes/coast.py`, `recipes/controls.py`, `recipes/forest.py`, `recipes/gym2.py`, `recipes/interior.py`, `recipes/interior2.py`, `recipes/kit.py`, `recipes/outdoor2.py`, `sheet-3x.png`, `showcase_interior.mts`, `src/harnesses/tileset-authoring/REGIONS.md`, `src/harnesses/tileset-authoring/harness.py`, `src/harnesses/tileset-authoring/harness.ts`, `src/harnesses/tileset-authoring/lib/px.py`, `src/project/slideTiles.ts`, `test/encounterTerrainCondition.test.ts`, `tiles.json`, `tiles.png`, `verify-cave.json`, `verify-map.json`, `verify-route.json` |
 | `openwiki/native-enemy-retirement.md` | 2 | `scripts/generate-monster-images.mts`, `verify-shots/monster-refresh/SUMMARY.md` |
 | `openwiki/night-monster.md` | 2 | `build-night-monster.mts`, `verify-shots/runtime-qa/night-monster/SUMMARY.md` |
 | `openwiki/opening-still-pack.md` | 4 | `artifacts/stills-library-plan.json`, `queue-status.json`, `review/index.html`, `run-status.json` |
@@ -400,7 +400,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L58` 설치 지점
 - `L64` 테스트
 
-### `openwiki/editor-ai-panel.md` — 565KB · 3475줄 · ~163,954 토큰 · 통째읽기 잘림 · 깨진 줄 25
+### `openwiki/editor-ai-panel.md` — 566KB · 3494줄 · ~164,437 토큰 · 통째읽기 잘림 · 깨진 줄 25
 
 - `L5` 도구 사용량 (2026-09-25)
 - `L12` 새 프로젝트 게임 기획 전달 (2026-09-22)
@@ -504,8 +504,9 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L3402` AI 패널 렌더 비용 (2026-09-28)
   - `L3424` 검증 권한 정정과 브라우저 재실측 (2026-09-28)
 - `L3434` 실제 Pi 오프닝 제작 경로 복구 (2026-10-03)
+- `L3476` 일반 포켓몬형 요청의 전체 제작 계약 (2026-10-04)
 
-### `openwiki/editor-ai-tools.md` — 314KB · 2617줄 · ~90,319 토큰 · 통째읽기 잘림 · 깨진 줄 6
+### `openwiki/editor-ai-tools.md` — 316KB · 2640줄 · ~90,881 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
 - `L3` 조수 스킬 저작 — 기믹·연출 빌리기 (2026-09-30)
 - `L14` 실내 설계는 검토된 실내 프리셋을 함께 본다 (2026-09-28)
@@ -613,6 +614,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L2593` Monster collector setup and verification (2026-10-03)
 - `L2599` Structured optional read arrays (2026-10-04)
 - `L2609` NPC, shop and readable opening production (2026-10-04)
+- `L2618` 에메랄드 참고 전체 몬스터 제작 (2026-10-04)
 
 ### `openwiki/editor-database.md` — 402KB · 2358줄 · ~117,632 토큰 · 통째읽기 잘림 · 깨진 줄 8
 
@@ -834,7 +836,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L290` Recovered native emote command (2026-09-05)
 - `L294` 패배·엔딩 저작 (2026-09-22)
 
-### `openwiki/editor-genre-packs.md` — 28KB · 187줄 · ~7,372 토큰
+### `openwiki/editor-genre-packs.md` — 29KB · 196줄 · ~7,568 토큰
 
 - `L5` Ownership
 - `L16` Safe blank-project system-preset flow
@@ -846,6 +848,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L112` Dialog layering and receipt fixtures (2026-09-08)
 - `L125` Validation
 - `L127` Two new-project surfaces, one choice model (2026-09-11)
+- `L188` 새 몬스터 프로젝트의 참고 프로필 (2026-10-04)
 
 ### `openwiki/editor-interior-room-harness.md` — 98KB · 469줄 · ~28,406 토큰 · 통째읽기 잘림
 
@@ -1024,6 +1027,12 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L164` 두 번째 16분할 재검토 — 길 연결과 주변 구성
 - `L179` 비취 대계곡 지역 등록 (2026-09-14)
 - `L194` 프로젝트 공통 기본 장소 (2026-09-15 정정)
+
+### `openwiki/emerald-monster-production.md` — 4KB · 68줄 · ~1,090 토큰
+
+- `L29` Original title key art
+- `L44` Field cast
+- `L59` Existing authored animation compatibility
 
 ### `openwiki/feature16-battle-ui.md` — 6KB · 48줄 · ~1,534 토큰
 
@@ -1238,7 +1247,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L53` Browser evidence and limitations
 - `L66` Authored field menu and assistant tools (2026-10-04)
 
-### `openwiki/monster-kit-origin.md` — 34KB · 250줄 · ~10,318 토큰
+### `openwiki/monster-kit-origin.md` — 37KB · 259줄 · ~11,094 토큰
 
 - `L6` 위치
 - `L17` 단계
@@ -1262,6 +1271,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L204` 15차 — 공용 번들 배선·참고문서·풀숲 만남 (2026-10-02)
 - `L224` 16차 — 일곱 시트 전부 배선 + 검수 회차 (2026-10-02)
 - `L237` 통합 I6 이어 작업 (2026-10-03)
+- `L251` Emerald native variants 7종 (2026-10-04)
 
 ### `openwiki/monster-resource-editor.md` — 4KB · 75줄 · ~1,199 토큰
 
@@ -1706,7 +1716,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L1454` 타일셋 참고문서 데이터 (2026-09-21)
 - `L1458` 몬스터 보유 조건 연결 작업 (2026-09-25, 진행 중)
 
-### `openwiki/runtime-sessions.md` — 128KB · 700줄 · ~34,606 토큰 · 통째읽기 잘림
+### `openwiki/runtime-sessions.md` — 132KB · 759줄 · ~35,634 토큰 · 통째읽기 잘림
 
 - `L3` 여러 게임 오버의 실행과 미리보기 (2026-09-23)
 - `L21` 장르별 패배와 엔딩 흐름 (2026-09-22)
@@ -1745,6 +1755,8 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L643` Original monster campaign journal and field menus (2026-10-03)
 - `L652` Monster party common UI dogfood follow-up (2026-10-03)
 - `L681` Collector supply shop (2026-10-04)
+- `L706` Emerald reference shop stages (2026-10-04)
+- `L748` Default camera zoom during new game and Continue (2026-10-04)
 
 ### `openwiki/se-catalog.md` — 15KB · 257줄 · ~3,910 토큰
 
@@ -2280,7 +2292,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L343` 픽셀 크기 기록 계약 (2026-09-22)
 - `L365` AI 하위 페인트의 상위 가구 보존 (2026-09-25)
 
-### `openwiki/tileset-reference-documents.md` — 54KB · 558줄 · ~16,396 토큰 · 통째읽기 잘림
+### `openwiki/tileset-reference-documents.md` — 54KB · 562줄 · ~16,674 토큰 · 통째읽기 잘림
 
 - `L5` 공용 타일셋 참고 이미지는 호스트 주소다 (2026-09-26)
 - `L20` 공용 SQLite 지역 참고문서 조회 (2026-09-24)
@@ -2318,6 +2330,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L509` PAW 천장 아래 벽과 실제 가게2종 (2026-09-25)
   - `L531` 수관 잎 채움 (2026-09-24)
 - `L542` 번들 참고 이미지는 정적 경로다 (2026-09-25)
+  - `L559` Emerald 몬스터 원본 도트 변형 (2026-10-04)
 
 ### `openwiki/title-opening-effects.md` — 19KB · 181줄 · ~5,691 토큰
 

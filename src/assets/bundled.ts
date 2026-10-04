@@ -57,6 +57,7 @@ import { FARMING_CROP_SPRITE_ASSETS } from "@/assets/farmingSprites";
 import { generatedMonsterSpriteUrl, isGeneratedMonsterSprite } from "@/assets/generatedMonsterSprites";
 import { cropGraphicStages } from "@/project/farmModel";
 import { SCARLOXY_CHIPSET_ASSETS } from "@/assets/scarloxyPack";
+import { EMERALD_MONSTER_KIT_CHIPSET_ASSETS, emeraldMonsterKitSheet } from "@/assets/emeraldMonsterKitAssets";
 import { EMOTE_ASSET_PATH, EMOTE_FRAME_SIZE, EMOTE_KINDS, EMOTE_TEXTURE_KEY } from "@/project/emotes";
 import { PLACEABLE_OVERLAY_TEXTURE_KEYS } from "@/player/placeableOverlayGraphics";
 import type { Project } from "@/project/types";
@@ -233,6 +234,7 @@ export const BUNDLED_EASYRPG_CHIPSET_ASSETS = [
   { textureKey: LPC_WOODEN_FURNITURE_16_TEXTURE_KEY, path: "assets/opengameart-lpc-wooden-furniture-16px.png", name: LPC_WOODEN_FURNITURE_16_NAME },
   ...SCARLOXY_CHIPSET_ASSETS,
   ...MONSTER_KIT_CHIPSET_ASSETS,
+  ...EMERALD_MONSTER_KIT_CHIPSET_ASSETS,
 ] as const satisfies readonly BundledImageAsset[];
 
 /** 번들 칩셋의 칸 수. 480칸 규격이 아닌 확장 시트(Tibo 실내 확장·합본 마을+레트로 월드맵)만 여기서 갈라진다. */
@@ -260,6 +262,8 @@ export function bundledChipsetFrameCount(key: string): number {
   if (key === "tex_joseon_baram") return joseonBaramSheet.count;
   if (key === "tex_modern_city") return modernCitySheet.count;
   if (key === "tex_jp_city") return jpCitySheet.count;
+  const monsterKit = monsterKitSheet(key) ?? emeraldMonsterKitSheet(key);
+  if (monsterKit) return monsterKit.count;
   if (key === "tex_tibo_interior_expanded") return tiboRecovered.count;
   if (key === "tex_atlas_biome_interior") return atlasBiomeInterior.count;
   if (key === "tex_atlas_biome_dungeon") return atlasBiomeDungeon.count;

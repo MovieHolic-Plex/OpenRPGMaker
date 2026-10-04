@@ -247,3 +247,12 @@ Claude 중단 시점(I5)의 보고서 네 장을 `harness-data/tileset-authoring
 - 배포 run: 본 `d100` · 해안 `c107` · 기후 `k103` · 던전 `u101` · 실내 `r102` · 체육관 `g103` · 야생 `w197`. 제작 단계 통합 종료 0, 본 시트 통행 확인 337건/실패 0, 공용 배선 7장 확인. 정상 맵 54장과 구조 킷 437개를 재검토한 **I6 자체 시각 검수**에서 맵 모두 8점, 치명·중 0. 독립 검수 결과로 설명하지 않는다. 상세 `harness-data/tileset-authoring/integ-qa/QA-I6.md`와 물체별 읽힘 `QA-I6-objects.md`.
 - `lib/viz_progress.py`는 증거 폴더의 `assessment.json`·`manifest.json`을 읽어 `~/claude-viz/pokemon-tiles-progress.html`을 생성한다. 현재 번들과 두 자료의 run·시트·견본 픽셀 해시가 다르면 생성을 거절한다. 전후 비교와 54맵 필터·확대를 제공하고, 원작 학습 그림은 넣지 않는다. 실제 브라우저 필터·확대 결과와 화면은 `verify-shots/tileset-i6/progress-page*`.
 - 전체 gates·Vitest·typecheck는 사용자 요청 없이 돌리지 않는다. 이번에는 타일 제작 단계의 draw/bake/showcase/wire와 시각 검수만 진행했다.
+
+## Emerald native variants 7종 (2026-10-04)
+
+- 원본 `monster_*`는 유지한다. 새 `emerald_monster_{overworld,wild,coast,climate,rooms,dungeon,gyms}`와 `tex_` 접두 텍스처를 공용 번들에 추가했다. 16px/16열, 칸 수 2192/2048/2528/2560/1136/1920/2144(합계 14528), 원본 번호·통행·priority·terrain·home layer·오토타일·animation slots·킷·턱·미끄럼을 깊은 복제로 유지한다.
+- 소스는 `recipes/emerald_monster.py`와 `harness-data/tileset-authoring/emerald-monster-*/seed.json`. 원본 native recipe를 조합하되 새 팔레트/잔디 덩이/수평 물결/큰 수관 덩이/넓은 지붕 기와를 좌표로 다시 그린다. 모래·눈·재·용암·청회 연구소·리그 테마를 전역 초록 필터로 바꾸지 않는다. 비교용 Scarloxy 색 지표는 새 스타일에 쓰지 않고 원본 native 씨앗을 명시한다.
+- `python3 scripts/content/prepare-emerald-monster.py`는 DB 없이 공용 PNG, 칩셋 index, 참고문서 JSON, 54개 정상 전체 배열의 새 그림과 전후 그림, preservation manifest를 만든다. 배 뱃머리의 물이 프레임마다 같은 그림이 되어도 원본 native enumeration/예약 슬롯을 고정한다. 이름 없는 원본 native 슬롯도 보존한다. 출력은 `public/assets/emerald-monster/{tiles,references}`.
+- `emeraldMonsterKitAssets.ts` → `bundled.ts`/`bundledChipsetGeometry.ts`, `defaults/emeraldMonsterKit.ts` → `defaultAssets.ts` 새/기존 경로에 배선한다. 파생 시트가 참조 포인터를 가지면 새 문서가 가려지므로, 한 홉 `referenceSourceTilesetId` 대신 각 변형이 정본에서 읽은 원본 전체 배열+새 스타일 안내와 표본을 직접 소유한다. 의도적으로 비운 `[]`와 저자 용도는 보충 때 보존한다.
+- 공용 자료 정본은 `tiledata/emerald-monster/`: 현재 정본에서 읽은 75 MD/92 이미지 포인터의 source JSON, 7 MD 안내, prepare source와 README. 배포 JSON은 82 MD/92 이미지 포인터(바이트 내장 없음). 원본색 오류 그림 38장은 동일 구조의 진단 자료이며 새 스타일 그림이라고 주장하지 않는다.
+- 허용된 집중 검증 `npx tsx scripts/qa/emerald-tile-preservation.mts`: 7 PNG 실제 경계·등록 geometry·12개 구조 필드·새/기존 프로젝트·저자/비움·보충 멱등성을 확인한다. 전체 gates/Vitest/typecheck를 돌리지 않았다. 원본 배열 렌더/데이터 비교는 이벤트 실행·미적 동등성·SQLite 저장의 증거가 아니다. root 프로필의 map retarget와 정본 저장/런타임 QA는 별도 통합 소유다.
