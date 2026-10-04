@@ -71,10 +71,10 @@ ul.plain{margin:4px 0;padding-left:18px} .log{font:12px/1.5 ui-monospace,monospa
 <div id="joblog"><div><b id="jobtitle"></b><button onclick="closeLog()">닫기</button></div><pre></pre></div>
 <script>
 const COLS = [
-  ['discovered', '발견 · 대기'], ['survey', '재료 조사'], ['material-review', '재료 독립 검수'], ['art-review', '칩 선택·공용 등록'], ['waiting', '선행 개념 기다림'], ['art', '재료(그림) 기다림'], ['build', '만드는 중'], ['review', '적대 검수'], ['probe', '조수 시험'],
+  ['discovered', '발견 · 대기'], ['plan', '공간 기획·텍스트 도면'], ['plan-review', '기획 적대적 검수'], ['survey', '재료 조사'], ['material-review', '재료 독립 검수'], ['art-review', '칩 선택·공용 등록'], ['waiting', '선행 개념 기다림'], ['art', '재료(그림) 기다림'], ['build', '만드는 중'], ['review', '적대 검수'], ['probe', '조수 시험'],
   ['bake', '굽는 중'], ['done', '구움'], ['blocked', '막힘'], ['discarded', '폐기'],
 ];
-const KIND = { survey: '재료 조사', 'material-review': '재료 검수', art: '칩 후보 제작', discover: '낱말 찾기', build: '만들기', review: '검수', probe: '조수 시험', judge: '판정', bake: '굽기' };
+const KIND = { plan: '기획·도면', 'plan-review': '기획 검수', survey: '재료 조사', 'material-review': '재료 검수', art: '칩 후보 제작', discover: '낱말 찾기', build: '만들기', review: '검수', probe: '조수 시험', judge: '판정', bake: '굽기' };
 let S = null, sel = localStorage.getItem('sh-sel'), lastDetail = '', logJob = null;
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));

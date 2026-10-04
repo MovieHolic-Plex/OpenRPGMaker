@@ -65,6 +65,8 @@ a{color:var(--run)}
 .document blockquote{margin:16px 0;padding:12px 18px;border-left:3px solid var(--wait);background:#25282e}
 .document code{padding:2px 5px;background:#121418;border-radius:4px;font-size:14px}
 .document pre{white-space:pre-wrap;font:14px/1.8 ui-monospace,monospace;background:#121418;padding:16px;border-radius:8px}
+.document pre:has(code){white-space:pre;overflow-wrap:normal;overflow-x:auto}
+.document pre code{padding:0}
 .table-scroll{overflow-x:auto;margin:18px 0}
 .document table{border-collapse:collapse;width:100%;font-size:15px;min-width:620px}
 .document th,.document td{border:1px solid var(--line);padding:10px 12px;text-align:left;vertical-align:top}
@@ -104,7 +106,7 @@ const thumb = (im, w) => `/thumb?p=${encodeURIComponent(im.path)}&w=${w}&v=${im.
 const cards = new Map();
 
 function cardHtml(it) {
-  return `<div class="pic">${it.thumb ? `<img loading="lazy" src="${thumb(it.thumb, 360)}" alt="">` : '맵 제작 전 · 재료 확인 중'}</div>
+  return `<div class="pic">${it.thumb ? `<img loading="lazy" src="${thumb(it.thumb, 360)}" alt="">` : (it.stage === 'plan' || it.stage === 'plan-review' ? '맵 제작 전 · 기획·도면 검토' : '맵 제작 전 · 재료 확인 중')}</div>
     <div class="t"><b>${esc(it.title)}</b><div class="s ${it.group}">${it.running ? '<span class="dot"></span>' : ''}${esc(it.status)}</div><div class="a">${esc(it.about)}</div></div>`;
 }
 
@@ -188,7 +190,7 @@ async function documentView(target, path, { modal = false } = {}) {
     show('read');
     if (modal) {
       const actions = document.createElement('section');
-      actions.innerHTML = '<div class="acts"><button onclick="act(\'recheck-materials\')">공용 등록 후 재료 다시 확인</button></div><h3>교정</h3><textarea id="fix" aria-label="교정 지시" placeholder="마음에 안 드는 점, 이렇게 고쳐라"></textarea><div class="acts"><button class="primary" onclick="act(\'fix\')">교정 지시</button><button class="danger" onclick="act(\'discard\')">폐기</button></div>';
+      actions.innerHTML = '<div class="acts"><button onclick="act(\'recheck-materials\')">공용 등록 후 재료 다시 확인</button></div><h3>기획·도면 교정</h3><textarea id="fix" aria-label="교정 지시" placeholder="마음에 안 드는 점, 이렇게 고쳐라"></textarea><div class="acts"><button class="primary" onclick="act(\'fix\')">기획부터 다시 검수</button><button class="danger" onclick="act(\'discard\')">폐기</button></div>';
       target.append(actions);
     }
   } catch (error) {

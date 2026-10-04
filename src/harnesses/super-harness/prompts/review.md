@@ -27,6 +27,8 @@
 
 ## 판정
 
+- 승인된 planning.json의 텍스트 도면과 완성 맵을 비교한다. 구역 연결·용도·주 동선·축척·필수 기능이 일치해야 한다. 다르면 planning 항목 FAIL이며 임의의 더 좋은 설계라고 면제하지 않는다.
+
 - 중간 이상 문제가 하나라도 있으면 FAIL. 이유는 **작업자가 바로 고칠 수 있게** 구체적으로(어느 변형·어느 예제·어느 좌표·무엇을 어떻게).
 - **필수 재료가 없으면 FAIL.** 주문서에 적었다는 이유로 면제하지 않는다. 임시 구조·투명 문·다른 시대 재료는 완성 예제가 아니다.
 - `visual-input.json`에 지정된 전체 이미지와 네 구역 크롭을 모두 직접 연다. 동서남북 벽과 내부 칸막이를 각각 확인한다.
@@ -56,6 +58,7 @@
    "materials":{"verdict":"PASS 또는 FAIL","evidence":"필수 칩·상태 그림"},
    "scale":{"verdict":"PASS 또는 FAIL","evidence":"차량·인물·문·가구 축척"},
    "access":{"verdict":"PASS 또는 FAIL","evidence":"출입·회전·문 옆 우회 여부"},
+   "planning":{"verdict":"PASS 또는 FAIL","evidence":"기획 도면 좌표/구역과 실제 맵 좌표 대조"},
    "purpose":{"verdict":"PASS 또는 FAIL","evidence":"공간을 알아볼 수 있는 핵심 배치"}
  }}]}
 ```

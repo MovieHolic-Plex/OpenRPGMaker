@@ -7,7 +7,7 @@
   python3 src/harnesses/super-harness/sh.py add <id> <제목> [별칭…]
   python3 src/harnesses/super-harness/sh.py pause|resume
 
-개념 한 장이 지나가는 길: discovered → survey → (art → art-review → survey) → material-review → build(카드+예제, codex) → review(적대 검수 2명) → probe(조수 시험 전/후 2판씩
+개념 한 장이 지나가는 길: discovered → plan → plan-review → survey → (art → art-review → survey) → material-review → build(카드+예제, codex) → review(적대 검수 2명) → probe(조수 시험 전/후 2판씩
 + 판정) → bake(PR·머지) → done. 반려되면 이유를 들고 build 로 돌아가고, 3번 넘게 반려되면 blocked.
 에이전트 기본값: Codex CLI gpt-6.1-sol, reasoning medium (2026-10-03 사용자).
 """
@@ -145,7 +145,8 @@ def reap():
         store.update_job(jid, status='done' if code == 0 else f'exit {code}', ended=store.now(),
                          result=result if result is not None else {'exit': code})
         try:
-            HANDLERS[meta['kind']](meta, code, result)
+            if not meta.get('superseded'):
+                HANDLERS[meta['kind']](meta, code, result)
         except Exception:
             store.log(meta['concept'], f'처리 오류 — {meta["kind"]}: {traceback.format_exc()[-600:]}')
             if meta['concept']:
@@ -374,7 +375,7 @@ def on_bake(meta, code, result):
     pass   # 굽기는 스레드에서 끝까지 처리한다(bake_thread).
 
 
-HANDLERS = {'survey': lambda *a: on_survey(*a), 'material-review': lambda *a: on_material_review(*a), 'art': lambda *a: on_art(*a), 'discover': on_discover, 'build': on_build, 'review': on_review, 'probe': on_probe, 'judge': on_judge, 'bake': on_bake}
+HANDLERS = {'plan': lambda *a: on_plan(*a), 'plan-review': lambda *a: on_plan_review(*a), 'survey': lambda *a: on_survey(*a), 'material-review': lambda *a: on_material_review(*a), 'art': lambda *a: on_art(*a), 'discover': on_discover, 'build': on_build, 'review': on_review, 'probe': on_probe, 'judge': on_judge, 'bake': on_bake}
 
 
 def probe_scores(cid, attempt):
@@ -435,7 +436,94 @@ def inventory(skip=None):
     return out
 
 
+def require_planning(cid):
+    report = gates.planning_report(cdir(cid))
+    if report['ok']:
+        return True
+    store.update_concept(cid, stage='plan', status='queued', note='공간 기획 관문 미통과', reasons=report['problems'])
+    return False
+
+
+def reject_planning(cid, reasons):
+    c = store.concept(cid)
+    attempt = c['plan_attempt'] + 1
+    blocked = attempt > int(store.setting('max_attempts'))
+    store.update_concept(cid, stage='blocked' if blocked else 'plan', status='idle' if blocked else 'queued',
+                         plan_attempt=attempt, reasons=reasons[:16], note='기획 검수 반려 — 수정 필요')
+    store.log(cid, '기획 반려 → ' + ('막힘' if blocked else f'기획 {attempt}차 수정'))
+
+
+def start_plan(c):
+    cid = c['id']
+    os.makedirs(cdir(cid), exist_ok=True)
+    # Preserve earlier planning and judgments for inspection; new reviews cannot reuse them.
+    paths = [cdir(cid, 'planning.json'), cdir(cid, 'planning.md')] + glob.glob(cdir(cid, 'planning-reviews', '*.json'))
+    existing = [p for p in paths if os.path.isfile(p)]
+    if existing:
+        archive = cdir(cid, 'history', f'planning-{time.time_ns()}')
+        os.makedirs(archive, exist_ok=True)
+        for path in existing:
+            shutil.copy2(path, os.path.join(archive, os.path.basename(path)))
+    for path in glob.glob(cdir(cid, 'planning-reviews', '*.json')):
+        os.remove(path)
+    prompt = fill(prompt_template('planning.md'), ROOT=ROOT, CDIR=cdir(cid), CONCEPT=concept_context(c),
+                  FEEDBACK=c['feedback'], REASONS=c['reasons'], WORLDVIEWS=worldviews(), SPACE=prompt_template('space-design.md'))
+    start_codex(cid, 'plan', f'p{c["plan_attempt"]}', prompt, cdir(cid, 'planning.json'))
+    store.update_concept(cid, status='running', note='공간 기획·텍스트 도면 작성 중')
+
+
+def on_plan(meta, code, result):
+    cid = meta['concept']
+    report = gates.planning_report(cdir(cid), approved=False)
+    if code != 0 or not report['ok']:
+        reject_planning(cid, report['problems'] or ['기획 작업 비정상 종료'])
+        return
+    with open(cdir(cid, 'planning.md'), 'w') as f:
+        f.write(gates.planning_markdown(cdir(cid)))
+    store.update_concept(cid, stage='plan-review', status='queued', reasons=[], note='텍스트 도면 기계 확인 완료 — 적대적 기획 검수 대기')
+
+
+def start_plan_reviews(c):
+    cid = c['id']
+    report = gates.planning_report(cdir(cid), approved=False)
+    if not report['ok']:
+        reject_planning(cid, report['problems'])
+        return
+    with open(cdir(cid, 'planning.md'), 'w') as f:
+        f.write(gates.planning_markdown(cdir(cid)))
+    for label, focus in (('A', '공간의 정체성·시대·활동·구역 구성'), ('B', '텍스트 도면의 동선·경계·축척·필수 재료')):
+        result = cdir(cid, 'planning-reviews', label + '.json')
+        os.makedirs(os.path.dirname(result), exist_ok=True)
+        if os.path.exists(result):
+            os.remove(result)
+        prompt = fill(prompt_template('planning-review.md'), CDIR=cdir(cid), CONCEPT=concept_context(c), FEEDBACK=c['feedback'],
+                      LABEL=label, FOCUS=focus, REPORT=report, RESULT=result)
+        start_codex(cid, 'plan-review', label, prompt, result)
+    store.update_concept(cid, status='running', note='기획 적대적 검수 A/B')
+
+
+def on_plan_review(meta, code, result):
+    cid = meta['concept']
+    if code != 0:
+        write_json(cdir(cid, 'planning-reviews', meta['tag'] + '.json'), {'verdict': 'FAIL', 'reasons': ['검수 작업 비정상 종료']})
+    if any(m['concept'] == cid for m in running(['plan-review'])):
+        return
+    report = gates.planning_report(cdir(cid))
+    if not report['ok']:
+        reasons = list(report['problems'])
+        for label in ('A', 'B'):
+            review = read_json(cdir(cid, 'planning-reviews', label + '.json'), {}) or {}
+            if isinstance(review, dict):
+                reasons = [f'[{label}] {r}' for r in review.get('reasons', [])] + reasons
+        reject_planning(cid, reasons)
+        return
+    store.update_concept(cid, stage='survey', status='queued', reasons=[], note='기획·텍스트 도면 A/B 승인 — 필수 재료 조사')
+    store.log(cid, '기획 적대적 검수 2명 통과 → 재료 조사')
+
+
 def require_materials(cid):
+    if not require_planning(cid):
+        return False
     report = gates.material_report(cdir(cid))
     if report['ok']:
         return True
@@ -445,6 +533,8 @@ def require_materials(cid):
 
 def start_survey(c):
     cid = c['id']
+    if not require_planning(cid):
+        return
     os.makedirs(cdir(cid), exist_ok=True)
     prompt = fill(prompt_template('materials.md'), ROOT=ROOT, CDIR=cdir(cid), CONCEPT=concept_context(c), WORLDVIEWS=worldviews())
     start_codex(cid, 'survey', f'a{c["attempt"]}', prompt, cdir(cid, 'materials.json'))
@@ -453,6 +543,8 @@ def start_survey(c):
 
 def on_survey(meta, code, result):
     cid = meta['concept']
+    if not require_planning(cid):
+        return
     if code != 0 or not isinstance(result, dict) or result.get('version') != gates.VERSION or not result.get('variants'):
         store.update_concept(cid, stage='blocked', status='idle', note='재료 조사 실패 — 다시 조사 필요')
         return
@@ -471,6 +563,8 @@ def on_survey(meta, code, result):
 
 
 def start_material_review(c):
+    if not require_planning(c['id']):
+        return
     report = gates.material_report(cdir(c['id']), approved=False)
     if not report['ok']:
         store.update_concept(c['id'], stage='survey', status='queued', reasons=report['problems'])
@@ -485,6 +579,8 @@ def start_material_review(c):
 
 def on_material_review(meta, code, result):
     cid = meta['concept']
+    if not require_planning(cid):
+        return
     report = gates.material_report(cdir(cid))
     if code == 0 and report['ok']:
         store.update_concept(cid, stage='build', status='queued', reasons=[], note='재료 준비·시대·조립 가능성 확인 완료')
@@ -494,6 +590,8 @@ def on_material_review(meta, code, result):
 
 def start_art(c):
     cid = c['id']
+    if not require_planning(cid):
+        return
     # 그림 저작은 다른 작업자의 소스와 섞이지 않도록 전용 워크트리에서만 한다.
     wt = os.path.join(DATA, 'art-worktrees', cid)
     if not os.path.exists(os.path.join(wt, '.git')):
@@ -777,15 +875,15 @@ def tick():
         return
     max_codex = int(store.setting('max_codex'))
     # 하루 상한은 없다(2026-10-04 사용자) — 동시 실행 수만 지킨다.
-    codex_free = lambda need=1: len(running(['discover', 'survey', 'material-review', 'art', 'build', 'review', 'judge'])) + need <= max_codex
+    codex_free = lambda need=1: len(running(['discover', 'plan', 'plan-review', 'survey', 'material-review', 'art', 'build', 'review', 'judge'])) + need <= max_codex
 
     release_waiting()
-    active = store.concepts("stage IN ('survey','material-review','build','review','probe','bake','unbake')")
+    active = store.concepts("stage IN ('plan','plan-review','survey','material-review','build','review','probe','bake','unbake')")
     for c in store.concepts("stage='discovered'"):
         if len([a for a in active if a['stage'] != 'bake']) >= int(store.setting('max_active')):
             break
-        store.update_concept(c['id'], stage='survey', status='queued')
-        store.log(c['id'], '큐에서 꺼냄 → 재료 조사')
+        store.update_concept(c['id'], stage='plan', status='queued')
+        store.log(c['id'], '큐에서 꺼냄 → 공간 기획')
         active.append(store.concept(c['id']))
 
     waiting = len(store.concepts("stage='discovered'"))
@@ -804,9 +902,15 @@ def tick():
     candidates = sorted((c for c in active if c['stage'] not in ('bake', 'unbake')),
                         key=lambda c: (c['status'] != 'running', -(c['priority'] or 0)))
     for c in publishing + candidates[:int(store.setting('max_active'))]:
+        if c['status'] != 'running' and any(m['concept'] == c['id'] for m in running()):
+            continue
         if c['status'] == 'running' and c['stage'] != 'probe':
             continue
-        if c['stage'] == 'survey' and codex_free():
+        if c['stage'] == 'plan' and codex_free():
+            start_plan(c)
+        elif c['stage'] == 'plan-review' and codex_free(2):
+            start_plan_reviews(c)
+        elif c['stage'] == 'survey' and codex_free():
             start_survey(c)
         elif c['stage'] == 'material-review' and codex_free():
             start_material_review(c)
@@ -839,6 +943,8 @@ def daemon():
 def concept_detail(c):
     cid = c['id']
     d = dict(c)
+    d['planning'] = read_json(cdir(cid, 'planning.json'))
+    d['planningReviews'] = {k: read_json(cdir(cid, 'planning-reviews', k + '.json')) for k in ('A', 'B')}
     d['card'] = read_json(cdir(cid, 'card.json'))
     d['gaps'] = read_json(cdir(cid, 'gaps.json'))
     d['verify'] = read_json(cdir(cid, 'verify.json'))
@@ -881,6 +987,8 @@ def action(body):
     if kind == 'recheck-materials':
         if any(m['concept'] == cid for _, _, m in PROCS.values()):
             return {'ok': False, 'error': '진행 중인 작업을 먼저 멈춰 주세요'}
+        if not require_planning(cid):
+            return {'ok': True}
         store.update_concept(cid, stage='survey', status='queued', note='사람 요청: 공용 등록된 재료 다시 확인', reasons=[])
         return {'ok': True}
     if kind == 'fix':
@@ -888,12 +996,14 @@ def action(body):
             return {'ok': False, 'error': '무엇을 고칠지 적어 주세요'}
         for jid, (_, _, m) in list(PROCS.items()):
             if m['concept'] == cid:
+                m['superseded'] = True
                 kill(jid)
-        store.update_concept(cid, stage='survey', status='queued', attempt=1, feedback=c['feedback'] + [{'at': store.now(), 'text': text}], reasons=[])
+        store.update_concept(cid, stage='plan', status='queued', attempt=1, plan_attempt=1, feedback=c['feedback'] + [{'at': store.now(), 'text': text}], reasons=[])
         store.log(cid, f'사람 교정: {text}')
     elif kind == 'discard':
         for jid, (_, _, m) in list(PROCS.items()):
             if m['concept'] == cid:
+                m['superseded'] = True
                 kill(jid)
         baked = c['stage'] == 'done' or bool(c['pr'])
         store.update_concept(cid, stage='unbake' if baked else 'discarded', status='queued' if baked else 'idle',
@@ -902,7 +1012,9 @@ def action(body):
     elif kind == 'priority':
         store.update_concept(cid, priority=(c['priority'] or 0) + float(body.get('delta', 0.2)))
     elif kind == 'retry':
-        store.update_concept(cid, stage='survey', status='queued', attempt=1, reasons=[])
+        if any(m['concept'] == cid for m in running()):
+            return {'ok': False, 'error': '진행 중인 작업이 있어 재시작할 수 없습니다'}
+        store.update_concept(cid, stage='plan', status='queued', attempt=1, plan_attempt=1, reasons=[])
         store.log(cid, '사람: 처음부터 다시')
     else:
         return {'ok': False, 'error': f'모르는 동작 {kind}'}
@@ -911,7 +1023,7 @@ def action(body):
 
 # ── 갤러리(사람용 화면) — 그림 한 장 + 한 줄 상태 + 한 줄 설명. 가볍게. ──
 THUMBS = os.path.join(DATA, 'thumbs')
-GROUP = {'survey': 'work', 'material-review': 'work', 'art-review': 'wait', 'done': 'done', 'discovered': 'wait', 'waiting': 'wait', 'art': 'wait', 'blocked': 'stop', 'discarded': 'stop'}
+GROUP = {'plan': 'work', 'plan-review': 'work', 'survey': 'work', 'material-review': 'work', 'art-review': 'wait', 'done': 'done', 'discovered': 'wait', 'waiting': 'wait', 'art': 'wait', 'blocked': 'stop', 'discarded': 'stop'}
 
 
 def first_sentence(text, limit=90):
@@ -928,6 +1040,10 @@ def plain_status(c):
     if stage == 'waiting':
         names = [(store.concept(r) or {}).get('title', r) for r in c['requires']]
         return f'「{"」「".join(names)}」 먼저 만드는 중'
+    if stage == 'plan':
+        return f'공간 기획·텍스트 도면 작성 ({c["plan_attempt"]}차)'
+    if stage == 'plan-review':
+        return '기획·텍스트 도면 적대적 검수'
     if stage == 'survey':
         return '재료 조사 — 맵 제작 전'
     if stage == 'material-review':
@@ -963,7 +1079,7 @@ def gallery_list():
         items.append({'id': c['id'], 'title': c['title'], 'stage': c['stage'], 'group': GROUP.get(c['stage'], 'work'),
                       'running': c['status'] == 'running', 'status': plain_status(c),
                       'about': first_sentence(card.get('summary') or c['why']), 'updated': c['updated'],
-                      'thumb': imgs[0] if imgs and c['stage'] not in ('survey', 'material-review', 'art', 'art-review') else None, 'pr': c['pr'], 'parent': c.get('parent')})
+                      'thumb': imgs[0] if imgs and c['stage'] not in ('plan', 'plan-review', 'survey', 'material-review', 'art', 'art-review') else None, 'pr': c['pr'], 'parent': c.get('parent')})
     paused = store.setting('paused') == '1'
     return {'paused': paused, 'items': items}
 
@@ -973,7 +1089,7 @@ def gallery_detail(cid):
     if not c:
         return None
     card = read_json(cdir(cid, 'card.json'), {}) or {}
-    imgs = example_images(cid) if c['stage'] not in ('survey', 'material-review', 'art', 'art-review') else []
+    imgs = example_images(cid) if c['stage'] not in ('plan', 'plan-review', 'survey', 'material-review', 'art', 'art-review') else []
     # 조수에게 실제로 시킨 결과(카드 붙여서) — 마지막 시도.
     tried = []
     for run in sorted(glob.glob(cdir(cid, 'probe', f'a{c["attempt"]}-*'))):
@@ -982,7 +1098,7 @@ def gallery_detail(cid):
             path = os.path.join(run, 'score', m['png']) if os.path.exists(os.path.join(run, 'score', m['png'])) else os.path.join(run, m['png'])
             if os.path.exists(path):
                 tried.append({'path': os.path.relpath(path, DATA), 'label': f'조수가 지은 맵 · {m.get("width", "")}×{m.get("height", "")}', 'v': int(os.path.getmtime(path))})
-    if c['stage'] in ('survey', 'material-review', 'art', 'art-review'):
+    if c['stage'] in ('plan', 'plan-review', 'survey', 'material-review', 'art', 'art-review'):
         tried = []
     orders = [g['item'] for g in store.gaps() if g['concept'] == cid and g.get('item')]
     variants = [f'{v.get("title", "")} — {v.get("worldview", "")}{" · " + v["size"] if v.get("size") else ""}' for v in card.get('variants', [])]
@@ -1013,9 +1129,10 @@ def concept_markdown(cid):
     card = read_json(cdir(cid, 'card.json'), {}) or {}
     L = [f'# {d["title"]}', '', f'**상태** {d["status"]}' + (f' · 「{d["parent"]}」의 하위' if d['parent'] else '') + (f' · [PR]({d["pr"]})' if d['pr'] else ''), '']
     L += ['> ' + line for line in str(d['about']).splitlines()] + ['']
+    L += [gates.planning_markdown(cdir(cid)), '']
     plan = read_json(cdir(cid, 'materials.json'), {}) or {}
-    if c['stage'] in ('survey', 'material-review', 'art', 'art-review'):
-        L += ['> 맵 제작 전 관문입니다. 이전 초안은 보존되어 있지만 재료 준비가 확인되기 전에는 예제 맵으로 표시하지 않습니다.', '']
+    if c['stage'] in ('plan', 'plan-review', 'survey', 'material-review', 'art', 'art-review'):
+        L += ['> 맵 제작 전 관문입니다. 이전 초안은 보존되어 있지만 기획·도면과 재료 준비가 승인되기 전에는 예제 맵으로 표시하지 않습니다.', '']
     for variant in plan.get('variants', []):
         L += [f'## 재료 준비 — {variant.get("id", "")}', '', '| 필요한 재료 | 준비 | 역할 |', '|---|---|---|']
         L += [f'| {md_cell(r.get("what"))} | {"재고 근거 있음" if r.get("available") else "제작 필요"} | {md_cell(r.get("role"))} |' for r in variant.get('requirements', [])] + ['']
@@ -1037,7 +1154,7 @@ def concept_markdown(cid):
     if d['tried']:
         L += ['## 조수에게 「만들어줘」라고 시켜 본 결과', ''] + [md_img(im) for im in d['tried']] + ['']
     for v in card.get('variants', []):
-        prefix = '이전 초안 변형' if c['stage'] in ('survey', 'material-review', 'art', 'art-review') else '변형'
+        prefix = '이전 초안 변형' if c['stage'] in ('plan', 'plan-review', 'survey', 'material-review', 'art', 'art-review') else '변형'
         L += [f'## {prefix} — {v.get("title", "")}', '']
         meta = [v.get('worldview'), v.get('size') and f'크기 {v["size"]}', v.get('tilesetId') and f'칩셋 `{v["tilesetId"]}`']
         L += ['· '.join(m for m in meta if m), '']

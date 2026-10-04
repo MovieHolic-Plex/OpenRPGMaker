@@ -23,6 +23,29 @@
 - 예제는 자기 맵만 만든다(`map_blank_start` 등 기존 맵을 가리키면 `node/example.mts` 가 떨어뜨린다).
 - 시험용: `qa:game gen --text "<한 줄>" --concept-card <card.json>` 이 굽기 전 카드를 그 실행에만 얹는다(`overrideConceptCards`).
 
+## 제작 전 공간 기획·텍스트 도면 관문 (2026-10-04)
+
+`plan → plan-review(A/B) → survey` 순서다. 제작자가 기획과 시공을 한 번에 수행하던 경로를 분리했다.
+모델은 현재 운영 설정 그대로 Codex `gpt-6.1-sol medium`; 기획자 1세션과 독립 검수자 2세션을 사용한다.
+다른 모델로 교차 검수하는 구성은 아니다. 검수자들은 서로의 결과를 보지 않도록 지시받는다.
+
+- `planning.json` v1: 변형별 purpose/experience, 세계관/layout/spaceProfile, 필수 재료, 구역 범례,
+  사용 동선, cellScale(도면 한 칸의 실제 타일 축척), scaleReason, ASCII diagram.
+- 도면은 같은 폭의 3~80칸 행. `#` 벽/범위 밖, `.` 통로, `+` 문, `E` 진입 1개, `X` 추가 출구,
+  그 외 대문자는 한국어 범례를 갖는 구역이다. 야외 `#`은 실제 성벽을 시공하라는 뜻이 아니다.
+- 기계 확인은 범례 일치·축척·필수 필드·바깥 경계·입구에서 모든 걷는 칸까지의 BFS 연결을 검사한다.
+  잠긴 문은 열린 상태로 연결 검사하며 잠금 순서/옆길 우회/활동의 타당성은 검수자의 몫이다.
+- `planning-reviews/A.json`, `B.json`: 각 변형 identity/use/routes/boundaries/scale/requirements 6항목의
+  PASS와 도면 좌표/구역 근거가 모두 있어야 한다. PASS 한 단어, 누락, 이전 기획 해시 판정은 승인으로 인정하지 않는다.
+  A는 공간 정체성·활동, B는 동선·경계·축척을 집중 검토하되 양쪽 모두 6항목을 확인한다.
+- 반려는 이유를 들고 기획 수정으로 돌아간다. 별도 plan_attempt로 최대 3차까지 진행하며 계속 실패하면 blocked.
+  사용자 교정/다시 시작은 기획부터 새로 검수한다. 과거 기획·판정은 history에 보존한다.
+- `planning.md`는 같은 JSON에서 자동 작성한다. 개념 상세 Markdown에 도면·범례·동선·재료·A/B 근거가 표시된다.
+- materials.json의 planningFingerprint가 현재 승인 기획과 같아야 하고 기획의 변형·시대·공간 종류·필수 재료를 삭제/변경할 수 없다.
+  card.json에도 같은 planningFingerprint를 요구한다. 최종 시각 검수의 planning 항목에서 도면과 실제 맵의 구역·동선을 대조한다.
+- 기획 v1 최초 적용은 미배포 개념을 plan으로 옮기고 paused=1을 유지한다. 완료된 카드는 소급 삭제하지 않는다.
+- 실제 기획 모델 작성/적대적 검수는 운영 재개 후 실행한다. 중지 중 화면 예시는 운영 기획으로 등록하지 않는다.
+
 ## 제작 전 재료 관문 (2026-10-04)
 
 `gates.py`와 `node/example.mts`가 맵 도구 실행 전에 막는다. 주문서가 있다는 이유로 임시 구조를 짓는 예외는 없다.
@@ -60,7 +83,7 @@
 
 ## 한 바퀴
 
-`discovered → survey → material-review → build → (waiting) → review → probe → bake → done`
+`discovered → plan → plan-review → survey → material-review → build → (waiting) → review → probe → bake → done`
 
 재료가 없으면 `survey → art → art-review → 사람 선택·공용 등록 → survey` (반려되면 이유를 들고 build, 3번 넘으면 blocked)
 
@@ -75,6 +98,8 @@
 | 단계 | 누가 | 무엇 |
 |---|---|---|
 | 발견 | codex | `scan_failures`(qa-runs·시험 폴더의 검색 0건 낱말·빈칸 수리 요청) + 낱말 은행(`harness-data/super-harness/seed.json`) |
+| 공간 기획 | codex | 용도·구역·동선·필수 재료·ASCII 평면도, 기계 연결 검사 |
+| 기획 적대적 검수 | codex ×2 | 독립 A/B의 6항목 현재 해시 승인. 반려하면 기획 수정 |
 | 재료 조사·승인 | codex 각 1 | 실제 재고 근거를 조사한 뒤 독립 승인. 미준비면 맵 제작 금지 |
 | 칩 제작 | codex + 전용 하네스 | 격리 워크트리에서 실제 후보·검사 근거 생성 → 사람 선택·공용 등록 대기 |
 | 만들기 | codex | `card.json`·`gaps.json`. `node/example.mts` 가 새 프로젝트에서 예제 호출을 돌려 통과해야 끝 |
@@ -88,7 +113,7 @@
 
 `/` = 갤러리(`web/gallery.html`): 개념마다 그림 한 장(`/thumb` 가 360px 로 줄여 캐시) + 쉬운 말 상태 한 줄 + 설명 한 줄.
 상단 **그림 주문서** → `/orders`: 세계관·개념별 전체 주문을 표로 읽는다. 재료 조사·칩 제작·사람 선택·공용 등록 순서를 표시한다.
-재료 조사/승인/칩 제작/선택 대기 단계에서는 옛 예제와 조수 시험 이미지를 숨기고 이전 설계를 초안으로 표시한다.
+기획/기획 검수/재료 조사/승인/칩 제작/선택 대기 단계에서는 옛 예제와 조수 시험 이미지를 숨기고 이전 설계를 초안으로 표시한다.
 개념을 누르면 재료 준비 표·칩 후보·예제·조수 시험 그림·고치는 이유·변형별 구조/재료/금지·주문·교정 내역을 Markdown 문서로 읽고 교정/폐기를 실행한다.
 두 문서 모두 **읽기 / Markdown 원문 / 원문 열기**를 제공한다. 원문은 `/md/orders.md`, `/md/<개념 id>.md`이며 `/?concept=<id>`로 개념 상세를 바로 연다.
 문서는 열 때만 가져오고 주문서는 명시적 새로고침으로 갱신한다. `/markdown.js`는 기존 `src/util/markdown.ts`의 DOM 표시기를 Bun으로 데몬당 한 번 변환해 재사용한다(추가 라이브러리·외부 CDN 없음).
