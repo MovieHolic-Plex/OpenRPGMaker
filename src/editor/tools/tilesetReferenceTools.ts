@@ -13,6 +13,7 @@ function withoutEmptyIds(args: Record<string, unknown>): Record<string, unknown>
 
 export const TILESET_REFERENCE_READ_TOOLS = ["list_tileset_references", "read_tileset_reference"] as const;
 export const TILESET_REFERENCE_WRITERS: ReadonlySet<string> = new Set([
+  "design_terrain", "place_terrain_house", "lay_terrain_road", "place_terrain_ramp",
   "stamp_forest_recipe", "stamp_tile_recipe", "stamp_tileset_object", "build_pack_town",
   "create_map", "duplicate_map", "resize_map", "shift_map", "set_map_properties", "copy_map_region", "move_region", "import_region_reference", "stamp_object", "mirror_region", "clear_map", "build_shared_scene",
   "paint_tiles", "paint_road", "build_house", "build_village", "stamp_structure", "clear_region", "author_house", "author_village",
@@ -142,7 +143,8 @@ export const TILESET_REFERENCE_TOOLS: readonly ToolDefinition[] = [
         const pages = referencePageStarts(doc.markdown);
         return { summary: `${group.name} / ${doc.name} (${offset}–${page.end}, ${pages.indexOf(offset) + 1}/${pages.length}쪽)`, data: { ...base, document: { id: doc.id, name: doc.name, markdown: page.text, offset, nextOffset: page.nextOffset, page: pages.indexOf(offset) + 1, pages: pages.length, totalCharacters: doc.markdown.length } } };
       }
-      if (args.offset !== undefined) throw new ToolError("이미지에는 offset을 사용하지 않습니다.");
+      // Strict providers fill optional numeric fields with zero. An image's first page is the whole image.
+      if (args.offset !== undefined && args.offset !== 0) throw new ToolError("이미지 offset은 생략하거나 0이어야 합니다.");
       const img = group.images.find(i => i.id === args.imageId);
       if (!img) throw new ToolError(`첨부 이미지를 찾을 수 없습니다 — ${unknownIdMessage("imageId", args.imageId, group.images.map(i => i.id))}`);
       return { summary: `${group.name} / ${img.name} — 실제 이미지를 확인하세요.`, data: { ...base, image: { id: img.id, name: img.name, caption: img.caption } } };

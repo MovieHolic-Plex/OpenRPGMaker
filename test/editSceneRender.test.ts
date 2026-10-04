@@ -640,6 +640,25 @@ describe("edit scene event rendering", () => {
     expect(chunkTiles().filter((tile) => tile.x === 0)).toHaveLength(originCount);
   });
 
+  it("keeps the upper tiles in their own container when both layers occupy a lazy chunk", () => {
+    const project = createBlankProject(), map = project.maps[project.startMapId];
+    map.width = 64; map.height = 48;
+    map.lowerTiles = new Array<number>(64 * 48).fill(-1);
+    map.upperTiles = new Array<number>(64 * 48).fill(-1);
+    map.lowerTiles[0] = 0;
+    map.upperTiles[0] = 600;
+    store.replace(project);
+    editorState.set({ currentMapId: map.id, layer: "upper", showGrid: false });
+    const lowerChunks: MockObject[] = [], upperChunks: MockObject[] = [];
+    const chunks = new Map<string, Phaser.GameObjects.Container>();
+    renderEditScene({ scene: mockScene(), tileLayer: mockContainer(lowerChunks), upperTileLayer: mockContainer(upperChunks),
+      tileChunks: chunks, overlayLayer: mockContainer(), gridGraphics: mockGridGraphics(), mapId: map.id, tileIndex: new Map() });
+    expect(upperChunks).toHaveLength(1);
+    expect(upperChunks[0]).toBe(chunks.get("upper:0,0"));
+    expect(lowerChunks).not.toContain(upperChunks[0]);
+    expect(chunks.get("lower:0,0")).not.toBe(chunks.get("upper:0,0"));
+  });
+
   it("paints translucent empty checkers when background preview is on", () => {
     const project = createBlankProject();
     const map = project.maps[project.startMapId];

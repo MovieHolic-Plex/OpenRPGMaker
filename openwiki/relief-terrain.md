@@ -109,6 +109,18 @@
 
 ## 검증 도구 (이 브랜치에 들어온 것)
 
+2026-10-04 실제 AI 고지 집 캡처에서 2,048칸을 넘는 지도만 상층 집이 절벽 아래로 사라지는 문제가 드러났다.
+`editSceneRender.ts`의 lazy 청크 사전이 바닥/상층에 같은 x,y 키를 써서 상층을 바닥 부모에 넣고 있었다.
+키를 lower/upper별로 나누고, 청크/타일 컬링은 들린 화면 행을 사용한다. 화면 창의 원본 행도 최대 들림만큼 더 읽는다.
+증분 교체는 이전의 실제 부모에서 타일을 제거한다. `EditScene.ts` 청크 컬링도 층 접두사를 해석한다.
+`test/editSceneRender.test.ts`에 같은 청크의 두 층이 서로 다른 부모를 쓰는 회귀를 추가했으며 로컬 Vitest는 실행하지 않는다.
+
+- 조수의 실제 높이 그림: `src/editor/reliefMapView.ts`가 같은 renderRelief/줄 띠/들림 표를 제공한다.
+  `src/ai/toolImageRenderer.ts`와 `scripts/qa-game/render.mts`가 하층·절벽·들린 상층을 합성하며
+  `mapVisualEvidence.ts`는 relief 변경도 시각 검토 대상으로 잡는다. relief 그림 65,536칸 초과는 작은 영역을 요청한다.
+- 조수 경사로/집 연결: `src/editor/tools/terrainTools.ts`, 계약은 `editor-ai-tools.md` 「지형 설계·고지 집·실제 통행」.
+  실제 모델 결과와 출하 플레이어의 통행 근거: `verify-shots/terrain-assistant-live/SUMMARY.md`.
+
 - 단위: `test/reliefLift.test.ts`(들림 표·줄 띠·서명), `reliefWalk.test.ts`(canMove·도달성), `reliefStyle.test.ts`(양식·정규화), `reliefPersistence.test.ts`(저장·패키지·웹 내보내기).
 - 구조 검사기: `scripts/content/lib/relief-check.mjs`(`checkRelief`) — 얇은 벽·계단 양옆·층계참·다리 판·도달 오류 코드(목록은 runtime-project-schema 의 r3 항목).
 - 양식 견본: `vite-node scripts/content/relief-style-sheet.mts [out.png]`(작은 지형을 모든 양식으로).
