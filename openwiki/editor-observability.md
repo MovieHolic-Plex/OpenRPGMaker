@@ -688,7 +688,6 @@ requestEditRenderFrame으로 한 프레임만 요청하고, 카메라·포인터
 projectSwitch:false로 알리며 undo와 진행 중 AI 의도를 폐기하지 않는다.
 해시 계산 뒤에는 generation/lineage/대상/dirty/in-flight를 재확인한다. 실제 자산·맵·기획
 변경이나 잘못된 해시는 기존 projectSwitch와 충돌 검사를 그대로 통과해야 한다.
-||||||| 751d19c160
 
 
 

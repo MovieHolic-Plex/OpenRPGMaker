@@ -4,7 +4,7 @@ import { installPlayPointerBlocker } from "@/player/playInputBlocker";
 import type { CinematicSequence, Project } from "@/project/types";
 import { el } from "@/util/dom";
 import { createCinematicAssets, type CinematicAssets } from "@/player/cinematicAssets";
-import { createTitleEffectsCanvas, stopTitleEffects } from "@/player/titleEffects/renderer";
+import { createTitleEffectsCanvas, freezeTitleEffects, stopTitleEffects } from "@/player/titleEffects/renderer";
 
 export type CinematicCompletion = "completed" | "skipped" | "aborted";
 export type CinematicPlayback = {
@@ -55,6 +55,10 @@ export function playCinematicSequence(options: {
   const observer = new MutationObserver(() => {
     if (!root.isConnected || !host.contains(root)) finish("aborted");
   });
+  const disposeShot = (shot: HTMLElement): void => {
+    shot.remove(); // Chromium may paint a white lost-context placeholder if still visible.
+    for (const canvas of shot.querySelectorAll<HTMLCanvasElement>('.cinematic-effects')) stopTitleEffects(canvas);
+  };
   const finish = (result: CinematicCompletion): void => {
     if (settled) return;
     settled = true;
@@ -69,6 +73,7 @@ export function playCinematicSequence(options: {
       previousFocus.focus({ preventScroll: true });
     }
     root.remove();
+    for (const canvas of root.querySelectorAll<HTMLCanvasElement>('.cinematic-effects')) stopTitleEffects(canvas);
     resolveDone(result);
   };
   const abort = (): void => finish("aborted");
@@ -122,8 +127,8 @@ export function playCinematicSequence(options: {
         layer.style.animation = 'none';
       }
       animations.forEach(animation => animation.cancel());
-      root.querySelectorAll('[data-previous-shot]').forEach(shot => shot.remove());
-      if (effects) stopTitleEffects(effects);
+      root.querySelectorAll<HTMLElement>('[data-previous-shot]').forEach(disposeShot);
+      if (effects) freezeTitleEffects(effects);
     };
     // Keep the previous frame visible until the incoming picture is decoded.
     root.dataset.pendingSceneId = scene.id;
@@ -207,13 +212,14 @@ export function playCinematicSequence(options: {
             visual.before(previous);
             const fade = previous.animate([{ opacity: 1 }, { opacity: 0 }], { duration: transition.durationMs, fill: 'forwards' });
             animations.push(fade);
-            void fade.finished.then(() => previous.remove(), () => previous.remove());
+            void fade.finished.then(() => disposeShot(previous), () => disposeShot(previous));
           }
           const frames = transition.kind === 'flash'
             ? [{ filter: 'brightness(2.3)', opacity: 0.6 }, { filter: 'brightness(1)', opacity: 1 }]
             : [{ opacity: 0 }, { opacity: 1 }];
           animations.push(visual.animate(frames, { duration: transition.durationMs, fill: 'both' }));
         }
+        if (previous && !previous.isConnected) disposeShot(previous);
         if (direction?.camera && !reducedMotion) {
           const transform = ([x, y, zoom]: [number, number, number]): string => `scale(${zoom}) translate(${(0.5-x)*(zoom-1)/zoom*100}%, ${(0.5-y)*(zoom-1)/zoom*100}%)`;
           for (const layer of visual.children) if (layer instanceof HTMLElement) {

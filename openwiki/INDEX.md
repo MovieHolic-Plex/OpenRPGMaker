@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **139쪽 / 4742KB / 약 1,375,844 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **139쪽 / 4743KB / 약 1,375,995 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -21,7 +21,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-event-authoring.md` | 168KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 986 | ~49,100 |
 | `openwiki/editor-event-commands.md` | 67KB | 32KB | 301 | ~18,613 |
 | `openwiki/editor-interior-room-harness.md` | 98KB | 6KB | 469 | ~28,406 |
-| `openwiki/editor-observability.md` | 62KB | 6KB | 702 | ~18,146 |
+| `openwiki/editor-observability.md` | 62KB | 6KB | 701 | ~18,141 |
 | `openwiki/editor-pre-edit-routing.md` | 184KB | 70KB ⚠상한 초과 — 절을 더 쪼개라 | 1141 | ~54,042 |
 | `openwiki/editor-workflows-misc.md` | 78KB | 33KB | 533 | ~21,749 |
 | `openwiki/runtime-battle.md` | 321KB | 32KB | 1758 | ~94,038 |
@@ -932,7 +932,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L426` Reference-house correction: no shrub pots, cooking supports, inset cabinets (2026-09-14)
   - `L436` All-interior review (2026-09-15)
 
-### `openwiki/editor-observability.md` — 62KB · 702줄 · ~18,146 토큰 · 통째읽기 잘림 · 깨진 줄 1
+### `openwiki/editor-observability.md` — 62KB · 701줄 · ~18,141 토큰 · 통째읽기 잘림 · 깨진 줄 1
 
 - `L5` 작은 타일 편집의 undo/redo 경로 (2026-10-04)
 - `L21` 되돌리기 복원의 공용 자산 복제 (2026-10-03)
@@ -961,7 +961,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L615` 조수 적용·체크리스트 경로의 전체 문서 비용 (2026-09-28)
 - `L655` store.update copy-on-write 와 자동저장 요약 (2026-09-30)
   - `L681` 미디어 분리의 저장용 교체와 AI 턴 (2026-10-04)
-- `L695` 편집기 UX 지연 조사 (2026-10-04)
+- `L694` 편집기 UX 지연 조사 (2026-10-04)
 
 ### `openwiki/editor-pre-edit-routing.md` — 184KB · 1141줄 · ~54,042 토큰 · 통째읽기 잘림 · 깨진 줄 5
 
@@ -2411,7 +2411,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L531` 수관 잎 채움 (2026-09-24)
 - `L542` 번들 참고 이미지는 정적 경로다 (2026-09-25)
 
-### `openwiki/title-opening-effects.md` — 24KB · 227줄 · ~7,332 토큰
+### `openwiki/title-opening-effects.md` — 25KB · 233줄 · ~7,488 토큰
 
 - `L6` 데이터
 - `L18` 프리셋

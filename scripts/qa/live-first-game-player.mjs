@@ -149,11 +149,11 @@ try {
         const kind = await page.getByTestId('cinematic-sequence').getAttribute('data-scene-kind');
         if (kind === 'image') {
           await page.waitForFunction(() => {
-            const image = document.querySelector('[data-testid="cinematic-sequence"] .cinematic-image');
+            const image = document.querySelector('[data-testid="cinematic-sequence"] .cinematic-shot:not([data-previous-shot]) > .cinematic-image');
             return image?.complete && image.naturalWidth > 256 && image.naturalHeight > 192;
           });
           const facts = await page.getByTestId('cinematic-sequence').evaluate(node => {
-            const image = node.querySelector('.cinematic-image');
+            const image = node.querySelector('.cinematic-shot:not([data-previous-shot]) > .cinematic-image');
             return { kind:'opening', sceneId:node.dataset.sceneId, width:image.naturalWidth,height:image.naturalHeight,
               motion:image.dataset.motion,objectFit:getComputedStyle(image).objectFit,narration:node.querySelector('.cinematic-narration')?.textContent,
               narrationWordBreak:getComputedStyle(node.querySelector('.cinematic-narration')).wordBreak,mediaState:node.dataset.mediaState };
@@ -163,7 +163,10 @@ try {
           assert.equal(facts.narrationWordBreak,'keep-all','Opening narration must preserve Korean words when wrapping');
         }
       }
-      const bytes = await screenshot(options);
+      const expectedScene = await page.getByTestId('cinematic-sequence').getAttribute('data-scene-id').catch(() => null);
+      if (expectedScene) await page.locator('.cinematic-narration:not([hidden])').waitFor({timeout:1000});
+      const bytes = await screenshot({...options, animations:'allow'});
+      if (expectedScene) assert.equal(await page.getByTestId('cinematic-sequence').getAttribute('data-scene-id'), expectedScene, 'Screenshot must belong to the observed shot');
       if (index === 0) result.recordingTimeline.push({shot:basename(String(options.path)),atSec:(Date.now()-recordingStarted)/1000});
       if (index === 0) await page.waitForTimeout(1800);
       return bytes;

@@ -224,3 +224,9 @@ RPG 일곱 작품 공식 자료 조사/적용의 범위는 [rpg-opening-research
 기존 번들 워밍은 사용된 업로드 이미지·조사 아이콘도 포함하며 2병렬 low priority다. 오프닝 그림은 별도 캐시로 준비한다.
 마지막 오프닝 프레임은 맵 준비 동안 배경으로 이어진다. Phaser 텍스처 생성/맵 구성까지 백그라운드로 완료하는 것은 아니다.
 새 게임 취소/셸 종료는 타이머·미디어·WebGL·캐시를 정리한다. reduced motion은 카메라 이동/섬광/애니메이션을 비활성화한다.
+
+시각 QA 보강: 다음 컷을 읽는 동안 이전 WebGL은 `freezeTitleEffects`로 rAF만 멈춘다.
+디졸브가 끝나거나 이전 컷이 제거된 뒤 `stopTitleEffects`로 문맥을 해제한다. 화면에 남은
+캔버스에 loseContext를 먼저 호출하면 Chromium이 흰 lost-context 그림을 합성할 수 있다.
+출하 플레이어 촬영은 animations:allow로 실제 카메라·전환을 보존하고 이전 컷 대신
+현재 `.cinematic-shot:not([data-previous-shot])`의 원화를 검사한다.
