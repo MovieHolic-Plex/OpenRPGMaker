@@ -23,13 +23,21 @@ export function pack(frames:RgbaImage[]):RgbaImage{
 /** Engine adapter only: exact native pixels at x+4, never a resize/stretch. */
 export function toEditorCharset(native:RgbaImage):RgbaImage{const frames=framesFromNative(native),out=createImage(EDITOR_WIDTH*3,HEIGHT*4);frames.forEach((f,i)=>{for(let y=0;y<HEIGHT;y++)for(let x=0;x<WIDTH;x++)setPixel(out,(i%3)*EDITOR_WIDTH+EDITOR_PADDING_X+x,Math.floor(i/3)*HEIGHT+y,pixelAt(f,x,y));});return out;}
 function normalizeIdleBaseline(frames:RgbaImage[]){return frames.map((f,i)=>{const row=Math.floor(i/3),idle=opaqueBounds(frames[row*3+1]!);if(!idle)throw Error("idle frame missing");const offset=31-idle.y-idle.height;if(Math.abs(offset)>1)throw Error(`idle baseline alignment exceeds1px (${offset})`);const out=createImage(WIDTH,HEIGHT);for(let y=0;y<f.height;y++)for(let x=0;x<WIDTH;x++){const p=pixelAt(f,x,y);if(!p[3])continue;if(y+offset<0||y+offset>=HEIGHT)throw Error("idle baseline alignment clips source");setPixel(out,x,y+offset,p);}return out;});}
+const median=(values:number[])=>{const ordered=[...values].sort((a,b)=>a-b),middle=Math.floor(ordered.length/2);return ordered.length%2?ordered[middle]!:(ordered[middle-1]!+ordered[middle]!)/2;};
+/** Dominant contiguous ink run excludes detached hair tips; medians resist one-row tufts. */
+function skullRows(width:number,start:number,end:number,isInk:(x:number,y:number)=>boolean){
+  const rows:{center:number;width:number}[]=[];
+  for(let y=start;y<end;y++){let bestStart=-1,bestLength=0,run=-1;for(let x=0;x<=width;x++){if(x<width&&isInk(x,y)){if(run<0)run=x;}else if(run>=0){if(x-run>bestLength){bestStart=run;bestLength=x-run;}run=-1;}}if(bestLength)rows.push({center:bestStart+(bestLength-1)/2,width:bestLength});}
+  return rows;
+}
 function head(image:RgbaImage){
   const b=opaqueBounds(image);if(!b)return null;
-  // Top nine native rows define a stable silhouette landmark. A semantic face detector is deliberately not claimed.
-  const bottom=Math.min(b.y+8,b.y+b.height-1);let minX=image.width,maxX=-1,sumX=0,count=0;
-  for(let y=b.y;y<=bottom;y++)for(let x=0;x<image.width;x++)if(pixelAt(image,x,y)[3]>0){minX=Math.min(x,minX);maxX=Math.max(x,maxX);sumX+=x;count++;}
-  return {x:Math.round(sumX/count),y:b.y,width:maxX-minX+1};
+  const rows=skullRows(image.width,b.y,Math.min(b.y+9,b.y+b.height),(x,y)=>pixelAt(image,x,y)[3]>0);
+  const centers=rows.slice(0,6).map(r=>r.center);
+  return {x:Math.round(median(centers)),y:b.y,width:median(rows.map(r=>r.width)),skullCenter:median(centers)};
 }
+// Generic portraits keep their independent broad silhouette alignment contract.
+function clipHead(image:RgbaImage){const b=opaqueBounds(image);if(!b)return null;let sum=0,count=0;for(let y=b.y;y<Math.min(b.y+9,b.y+b.height);y++)for(let x=0;x<image.width;x++)if(pixelAt(image,x,y)[3]){sum+=x;count++;}return {x:Math.round(sum/count),y:b.y};}
 function pixels(image:RgbaImage){let n=0;for(let i=3;i<image.data.length;i+=4)if(image.data[i])n++;return n;}
 function diff(a:RgbaImage,b:RgbaImage,fromY=0,toY=a.height){let n=0;for(let y=fromY;y<Math.min(toY,a.height);y++)for(let x=0;x<a.width;x++){const pa=pixelAt(a,x,y),pb=pixelAt(b,x,y);if((pa[3]>0)!==(pb[3]>0)){n++;continue;}if(pa[3]&&labDistance(oklabCached(pa[0],pa[1],pa[2]),oklabCached(pb[0],pb[1],pb[2]))>=0.12)n++;}return n;}
 function torso(image:RgbaImage){
@@ -38,9 +46,20 @@ function torso(image:RgbaImage){
   widths.sort((a,b)=>a-b);let headArea=0;for(let y=b.y;y<Math.min(b.y+9,image.height);y++)for(let x=0;x<image.width;x++)if(pixelAt(image,x,y)[3])headArea++;
   return {width:widths[Math.floor(widths.length*.3)]??0,core,headArea};
 }
-function stableChange(a:RgbaImage,b:RgbaImage,headBottom:number,endY:number,center:number){const ha=head(a)!,hb=head(b)!,requestedShiftX=hb.x-ha.x,requestedShiftY=hb.y-ha.y,registrationRejected=Math.abs(requestedShiftX)>1||Math.abs(requestedShiftY)>1,shiftX=registrationRejected?0:requestedShiftX,shiftY=registrationRejected?0:requestedShiftY;headBottom=ha.y+9;center=ha.x;let changed=0,alphaChanged=0,union=0;for(let y=0;y<endY;y++)for(let x=0;x<a.width;x++){
-  if(y>=headBottom&&Math.abs(x-center)>3)continue;const pa=pixelAt(a,x,y),bx=x+shiftX,by=y+shiftY,pb=bx>=0&&bx<b.width&&by>=0&&by<b.height?pixelAt(b,bx,by):[0,0,0,0] as const;if(pa[3]||pb[3])union++;if((pa[3]>0)!==(pb[3]>0)){changed++;alphaChanged++;}else if(pa[3]&&labDistance(oklabCached(pa[0],pa[1],pa[2]),oklabCached(pb[0],pb[1],pb[2]))>=0.12)changed++;
-}return {significant:changed/Math.max(1,union),alpha:alphaChanged/Math.max(1,union),compareShiftX:shiftX,compareShiftY:shiftY,registrationRejected};}
+function stableChange(a:RgbaImage,b:RgbaImage,endY:number){
+  const ha=head(a)!,hb=head(b)!,requestedShiftX=hb.x-ha.x,requestedShiftY=hb.y-ha.y;
+  const registrationRejected=Math.abs(requestedShiftX)>1||Math.abs(requestedShiftY)>1;
+  const compare=(shiftX:number,shiftY:number)=>{let changed=0,alphaChanged=0,union=0;for(let y=0;y<endY;y++)for(let x=0;x<a.width;x++){
+    if(y>=ha.y+9&&Math.abs(x-ha.x)>3)continue;
+    const pa=pixelAt(a,x,y),bx=x+shiftX,by=y+shiftY,pb=bx>=0&&bx<b.width&&by>=0&&by<b.height?pixelAt(b,bx,by):[0,0,0,0] as const;
+    if(pa[3]||pb[3])union++;
+    if((pa[3]>0)!==(pb[3]>0)){changed++;alphaChanged++;}else if(pa[3]&&labDistance(oklabCached(pa[0],pa[1],pa[2]),oklabCached(pb[0],pb[1],pb[2]))>=0.12)changed++;
+  }return {significant:changed/Math.max(1,union),alpha:alphaChanged/Math.max(1,union),compareShiftX:shiftX,compareShiftY:shiftY};};
+  // A rounded landmark is only a bounded request. Register actual stable pixels, never the artwork.
+  const options=registrationRejected?[compare(0,0)]:[-1,0,1].flatMap(y=>[-1,0,1].map(x=>compare(x,y)));
+  options.sort((u,v)=>u.significant-v.significant||u.alpha-v.alpha||(Math.abs(u.compareShiftX)+Math.abs(u.compareShiftY))-(Math.abs(v.compareShiftX)+Math.abs(v.compareShiftY))||Math.abs(u.compareShiftX-requestedShiftX)+Math.abs(u.compareShiftY-requestedShiftY)-Math.abs(v.compareShiftX-requestedShiftX)-Math.abs(v.compareShiftY-requestedShiftY));
+  return {...options[0]!,requestedShiftX,requestedShiftY,registrationRejected};
+}
 function exactDifference(a:RgbaImage,b:RgbaImage){let n=0;for(let i=0;i<a.data.length;i+=4)if((a.data[i+3]||b.data[i+3])&&a.data.subarray(i,i+4).some((v,j)=>v!==b.data[i+j]))n++;return n/Math.max(pixels(a),pixels(b));}
 const spread=(v:number[])=>Math.max(...v)-Math.min(...v);
 const ratio=(v:number[])=>Math.max(...v)/Math.max(1,Math.min(...v));
@@ -65,11 +84,11 @@ export function checkCharset(image:RgbaImage, limits=LIMITS){
     const stepChange=diff(trio[0]!,trio[2]!,lowerY);
     if(stepChange<limits.stepChangeMin)errors.push(`${dir}: duplicate/frozen lower body (${stepChange})`);
     const upperEnd=Math.min(...boxes.map(b=>b.y+Math.round(b.height*.65)));
-    const stable=ORDER.map((idx,i)=>stableChange(trio[idx]!,trio[ORDER[(i+1)%ORDER.length]!]!,Math.min(...boxes.map(b=>b.y))+9,upperEnd,Math.round(landmarks.reduce((n,h)=>n+h.x,0)/3)));
+    const stable=ORDER.map((idx,i)=>stableChange(trio[idx]!,trio[ORDER[(i+1)%ORDER.length]!]!,upperEnd));
     const changes=stable.map(v=>v.significant),alphaChanges=stable.map(v=>v.alpha),wholeExactChanges=ORDER.map((idx,i)=>exactDifference(trio[idx]!,trio[ORDER[(i+1)%ORDER.length]!]!));
     if(Math.max(...wholeExactChanges)>limits.seamChangeMax)warnings.push(`${dir}: whole-frame exact color/pose change ${Math.max(...wholeExactChanges).toFixed(3)}; semantic playback required`);
     if(Math.max(...changes)>limits.seamChangeMax)errors.push(`${dir}: discontinuous cycle/seam ${Math.max(...changes).toFixed(3)}`);
-    metrics[dir]={jitterX,jitterY,widthRatio,heightRatio,areaRatio,headWidthRatio,headAreaRatio,stepChange,changes,alphaChanges,comparisonRegistration:stable.map(v=>({x:v.compareShiftX,y:v.compareShiftY,rejected:v.registrationRejected})),wholeExactChanges,upperEnd,bounds:boxes,head:landmarks,torso:torsos};
+    metrics[dir]={jitterX,jitterY,widthRatio,heightRatio,areaRatio,headWidthRatio,headAreaRatio,stepChange,changes,alphaChanges,comparisonRegistration:stable.map(v=>({x:v.compareShiftX,y:v.compareShiftY,requestedX:v.requestedShiftX,requestedY:v.requestedShiftY,rejected:v.registrationRejected})),wholeExactChanges,upperEnd,bounds:boxes,head:landmarks,torso:torsos};
   });
   return {pass:errors.length===0,errors,warnings,metrics};
 }
@@ -150,7 +169,7 @@ export function importGeneratedClip(source:RgbaImage,options:{columns:number;row
   const block=options.block??Math.round([...inferred].sort((a,b)=>a-b)[Math.floor(inferred.length/2)]!);
   const grids=crops.map(c=>extractGrid(c,{block}).cells),scale=Math.min(1,(frameWidth-4)/Math.max(...grids.map(g=>g.width)),(frameHeight-4)/Math.max(...grids.map(g=>g.height)));
   const frames=grids.map(g=>{const scaled=createImage(Math.max(1,Math.round(g.width*scale)),Math.max(1,Math.round(g.height*scale)));for(let y=0;y<scaled.height;y++)for(let x=0;x<scaled.width;x++)setPixel(scaled,x,y,pixelAt(g,Math.min(g.width-1,Math.floor(x/scale)),Math.min(g.height-1,Math.floor(y/scale))));
-    const landmark=head(scaled)!;const left=Math.round((frameWidth-1)/2-landmark.x),top=2,out=createImage(frameWidth,frameHeight);
+    const landmark=clipHead(scaled)!;const left=Math.round((frameWidth-1)/2-landmark.x),top=2,out=createImage(frameWidth,frameHeight);
     for(let y=0;y<scaled.height;y++)for(let x=0;x<scaled.width;x++){const p=pixelAt(scaled,x,y);if(!p[3])continue;const xx=left+x,yy=top+y;if(xx<1||xx>=frameWidth-1||yy<1||yy>=frameHeight-1)throw Error("generated clip alignment clips: regenerate source or author source crops");setPixel(out,xx,yy,p);}return out;});
   const image=createImage(frameWidth*frames.length,frameHeight);frames.forEach((f,i)=>{for(let y=0;y<f.height;y++)for(let x=0;x<f.width;x++)setPixel(image,i*frameWidth+x,y,pixelAt(f,x,y));});
   const maxColors=options.maxColors??15;if(!Number.isInteger(maxColors)||maxColors<1||maxColors>24)throw Error("clip palette ceiling1..24");const palette=quantizePalette(image,maxColors);
@@ -170,11 +189,11 @@ export function importRasterAtlas(source:RgbaImage){
   const inkBoxes=rects.map(r=>{const visible=createImage(r.width,r.height);for(let y=0;y<r.height;y++)for(let x=0;x<r.width;x++)if(!bg[(r.y+y)*source.width+r.x+x])setPixel(visible,x,y,[0,0,0,255]);const b=opaqueBounds(visible);if(!b)throw Error("empty source head silhouette");return b;});
   const scale=Math.min(1,WIDTH/Math.max(...inkBoxes.map(r=>r.width)),LIMITS.fitInkHeight/Math.max(...inkBoxes.map(r=>r.height)));
   const frames=rects.map(r=>{
-    let sum=0,count=0;
     const isInk=(x:number,y:number)=>!bg[(r.y+y)*source.width+r.x+x];
-    for(let y=0;y<Math.min(r.height,9/scale);y++)for(let x=0;x<r.width;x++)if(isInk(x,y)){sum+=x;count++;}
-    if(!count)throw Error("empty source head silhouette");
-    const cx=sum/count,out=createImage(WIDTH,HEIGHT+2);
+    const ink=inkBoxes[rects.indexOf(r)]!;
+    const rows=skullRows(r.width,ink.y,Math.min(r.height,ink.y+6/scale),isInk);
+    if(!rows.length)throw Error("empty source head silhouette");
+    const cx=median(rows.map(row=>row.center)),out=createImage(WIDTH,HEIGHT+2);
     // Inspect samples outside the output as well: a bad anchor must fail rather than silently crop ink.
     for(let y=11;y<Math.ceil(r.height*scale)+12;y++)for(let x=-WIDTH;x<WIDTH*2;x++){
       const sx=Math.floor(cx+(x-7.5)/scale),sy=Math.floor((y-11+.5)/scale);
@@ -185,5 +204,5 @@ export function importRasterAtlas(source:RgbaImage){
     return out;
   });
   const image=pack(normalizeIdleBaseline(frames)),palette=quantizePalette(image,15);
-  return {image,rects,scale,palette,sampling:"common-source-raster",alphaThreshold:128,phase:0.5,nativeFrameWidth:16,nativeFrameHeight:32,fitInkHeight:21,idleFeetBottomExclusive:31,headAlignment:"source silhouette centroid before quantization"};
+  return {image,rects,scale,palette,sampling:"common-source-raster",alphaThreshold:128,phase:0.5,nativeFrameWidth:16,nativeFrameHeight:32,fitInkHeight:21,idleFeetBottomExclusive:31,headBandRows:6,headAlignment:"source dominant contiguous skull-row median before sampling"};
 }

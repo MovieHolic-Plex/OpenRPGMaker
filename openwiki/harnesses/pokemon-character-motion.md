@@ -51,15 +51,15 @@ build 결과 **charset.png=48×128 native**, **editor-charset.png=72×128 x4padd
 
 실제 alpha와 기존 backgroundMask로 투명/단색 마젠타 배경을 구분하고3×4포즈의 여백을 읽는다. RGBhidden을 투명색으로 오해하지 않는다. 각 방향의 세 포즈가 공유하는 source-row 좌표를 보존한다.
 
-raster mode는 **source-space 상단9native행 실루엣 중심을 샘플링 전에** 맞춘다. head center7.5, y11, 전체12포즈 공통 scale(최대 잉크폭16/높이21), 고정 phase0.5, alpha128, 공통15색이다. idle feet bottom exclusive31에 각 direction trio를 **같이** ±1px만 이동하며 걷기 포즈의1px phase를 보존한다. 그 이동 전에 임시 높이34에서 샘플하고 최종32범위 바깥 잉크는 거부한다. 가로 바깥 샘플도 검사해 비대칭 큰 팔을 조용히 잘라버리지 않는다. 새 픽셀 그림·윤곽 재그리기·포즈별 배율·실패에 맞춘 샘플 위치 탐색은 없다.
+raster mode는 **source-space 상단6native행의 최장 연속 잉크 행 중심 중앙값을 샘플링 전에** 맞춘다. head center7.5, y11, 전체12포즈 공통 scale(최대 잉크폭16/높이21), 고정 phase0.5, alpha128, 공통15색이다. idle feet bottom exclusive31에 각 direction trio를 **같이** ±1px만 이동하며 걷기 포즈의1px phase를 보존한다. 그 이동 전에 임시 높이34에서 샘플하고 최종32범위 바깥 잉크는 거부한다. 가로 바깥 샘플도 검사해 비대칭 큰 팔을 조용히 잘라버리지 않는다. 새 픽셀 그림·윤곽 재그리기·포즈별 배율·실패에 맞춘 샘플 위치 탐색은 없다.
 
 grid mode는12원본의 추정값 중앙값/명시 --block2..40을 **공통**으로 사용한다. 한 배율로만 줄이고15색을 공유한다. 포즈별 inferred 값·공통 블록·배율·crop/provenance를 기록한다. `quantizePalette(image,max)`는 공유되는 원본색/Lab대표색 변환이며 image를 직접 갱신하고 대표RGB배열을 반환한다. 색 위치의 alpha 형상을 추가·삭제하지 않는다.
 
 ## 구조와 시각 관문
 
-native16×32/12포즈, 이진 알파, 위의 잉크 top/height/feet/palette, 방향별 상단9행 실루엣 root jitter<=1, 안정적인 머리폭/높이비<=1.25·머리/몸통 중심 면적비<=1.30, stepA/B 하체 변경>=4px, 안정적 상체의 인접 변경률<=0.36을 검사한다. 원본처럼 x0/16폭 또는 bottom32에 잉크가 닿는 것은 허용한다.
+native16×32/12포즈, 이진 알파, 위의 잉크 top/height/feet/palette, 방향별 상단6행 두개골 중심 root jitter<=1(분리된 머리카락 끝은 제외), 상단9행 최장 연속 폭 중앙값, 안정적인 머리폭/높이비<=1.25·머리/몸통 중심 면적비<=1.30, stepA/B 하체 변경>=4px, 안정적 상체의 인접 변경률<=0.36을 검사한다. 원본처럼 x0/16폭 또는 bottom32에 잉크가 닿는 것은 허용한다.
 
-안정적 상체 변경률은 **허용된1pxroot bob을 비교시에만 등록**한다. root distance>1은 등록 전에 불합격하고 comparisonRegistration.rejected를 기록한다. alpha symmetric difference와 Lab>=0.12의 색 차이만 변경으로 센다. 실제 source/output 좌표나 walkingphase는 바꾸지 않는다. 머리9행과 중심±3px 몸통만 비교해 정상 팔·다리 동작을 제외한다. 전체 bbox 폭/정확한 전체RGBA 변경은 진단·경고만 남긴다. 이러한 등록 없이 실제May조차0.62~0.74로 잘못 거부됐으며, 올바른 등록 후0~0.052로 통과한다. threshold0.36을 완화한 것이 아니다.
+안정적 상체 변경률은 **허용된1pxroot bob을 비교시에만 등록**한다. root distance>1은 등록 전에 불합격하고 comparisonRegistration.rejected를 기록한다. 허용 범위 안에서 상체의 실제 alpha/Lab 차이가 최소인 ±1 등록을 선택하며 requestedX/Y와 선택 x/y를 모두 기록한다. 중심 반올림값을 그대로 적용해 멀쩡한 상체를 어긋나게 만들지 않는다. alpha symmetric difference와 Lab>=0.12의 색 차이만 변경으로 센다. 실제 source/output 좌표나 walkingphase는 바꾸지 않는다. 머리9행과 중심±3px 몸통만 비교해 정상 팔·다리 동작을 제외한다. 전체 bbox 폭/정확한 전체RGBA 변경은 진단·경고만 남긴다. 이러한 등록 없이 실제May조차0.62~0.74로 잘못 거부됐으며, 올바른 등록 후0~0.052로 통과한다. threshold0.36을 완화한 것이 아니다.
 
 픽셀 수치는 방향이나 교대 다리의 **의미**를 증명하지 않는다. 일관되게 up/down을 뒤집거나 팔만 움직인 그림은 수치가 통과할 수 있다. 재생 시각 판정과 who/why/evidence가 필요하다. 옷/정체성/표정/실제 걷기 품질을 자동 pass하지 않는다.
 
