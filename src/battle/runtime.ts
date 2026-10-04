@@ -2015,7 +2015,16 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       strictRound: strictRoundCount,
       strictPendingActorIds: [...strictPendingActorIds],
       strictQueuedActorIds: strictActorCommands.map((entry) => entry.actorId),
-      eventState: battleEvents.snapshot(),
+      eventState: {
+        ...battleEvents.snapshot(),
+        ...(usePartyMonsters && options.partyMonsters?.length ? {
+          monsterCollection: {
+            instances: Object.fromEntries(options.partyMonsters.map(instance => [instance.instanceId, {
+              instanceId: instance.instanceId, speciesId: instance.speciesId, level: instance.level, exp: instance.exp,
+            }])),
+          },
+        } : {}),
+      },
       targetSelection,
       roundLogs,
       eventLogs: battleEvents.logs(),

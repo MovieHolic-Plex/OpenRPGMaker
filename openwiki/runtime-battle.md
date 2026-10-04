@@ -1760,3 +1760,20 @@ Completed runtime timelines persist into bounded session reports accessible from
 ## Emerald authored monster profile
 
 See [Emerald runtime surfaces](emerald-runtime-surfaces.md). `meta.oprnMonsterStyle.reference=emerald` uses its own480×320 surface binder and scoped pale status/message/text-command geometry. Existing640×480 scaling, normal Pokemon fan skin, battler animation ownership and Gen1 mechanics retain their contracts.
+
+## Monster result EXP gauge (2026-10-04)
+
+`BattleSnapshot.eventState.monsterCollection.instances` is an optional read-only
+projection of the battle's original `partyMonsters` EXP/level/species/instance
+IDs. `runtime.snapshot()` publishes only those four fields for the at-most-six
+battle party; it does not copy the box, graphics or nested move data. These are
+pre-reward values for presentation and are never a reward write-back source.
+
+`battleDirectorDom.expGaugeProgress()` uses `monsterInstanceId` to select that
+instance, its authored species EXP curve (or `DEFAULT_MONSTER_EXP_CURVE`), and
+`participatingActorIds` to preview the same collected EXP the monster reward
+path awards. The gauge animates within the current level interval, reaching
+100% when the existing level-up preview crosses the next threshold. It does not
+modify instances or award EXP. The ordinary actor branch still uses its existing
+actor EXP curve and `expForRewardActor` policy. Missing monster snapshots remain
+an empty gauge rather than reading editor start-state or guessing XP from Lv.

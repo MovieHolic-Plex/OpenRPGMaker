@@ -4,6 +4,7 @@ import { withJosa } from "@/util/josa";
 import { activeActor } from "@/battle/battlePredict";
 import { expForRewardActor } from "@/battle/rewardPolicy";
 import { normalizeActorRecord, totalExpForLevel } from "@/project/actorModel";
+import { DEFAULT_MONSTER_EXP_CURVE, monsterSpeciesById } from "@/project/monsterCollection";
 import { store } from "@/project/store";
 import { resolveTerms } from "@/project/terms";
 import { CONTINUE_KEY_PROMPT } from "@/player/keyBindings";
@@ -819,13 +820,33 @@ function captureImpactLine(result: BattleSnapshot["lastCaptureResult"], target: 
 }
 
 /**
- * 결과 화면 EXP 게이지 — 선두 액터의 실제 경험치 진행률(현재 레벨 구간 내 %).
+ * 결과 화면 EXP 게이지 — 선두 액터/몬스터의 실제 경험치 진행률(현재 레벨 구간 내 %).
  * 획득 경험치는 런타임의 레벨업 미리보기와 동일한 보정(expForRewardActor)을 쓴다.
  */
 function expGaugeProgress(snapshot: BattleSnapshot): { fromPct: number; toPct: number; levelUp: boolean } | undefined {
   const lead = snapshot.actors[0];
   if (!lead || snapshot.result !== "victory") return undefined;
   const project = store.getCurrent();
+  if (lead.monsterInstanceId) {
+    const instance = snapshot.eventState.monsterCollection?.instances[lead.monsterInstanceId];
+    const species = instance ? monsterSpeciesById(project, instance.speciesId) : undefined;
+    if (!instance || !species) return undefined;
+    const curve = species.expCurve ?? DEFAULT_MONSTER_EXP_CURVE;
+    const base = totalExpForLevel(curve, instance.level);
+    const next = totalExpForLevel(curve, instance.level + 1);
+    if (!(next > base)) return undefined;
+    const current = Math.max(0, Math.trunc(instance.exp));
+    // Monster reward write-back uses collected EXP directly, for actual participants.
+    const gained = snapshot.participatingActorIds.includes(instance.instanceId)
+      ? Math.max(0, Math.trunc(snapshot.rewards.exp)) : 0;
+    const clampPct = (value: number): number => Math.max(0, Math.min(100, value * 100));
+    const levelUp = current + gained >= next;
+    return {
+      fromPct: clampPct((current - base) / (next - base)),
+      toPct: levelUp ? 100 : clampPct((current + gained - base) / (next - base)),
+      levelUp,
+    };
+  }
   const record = project.database.actors.find((entry) => entry.id === lead.recordId);
   if (!record) return undefined;
   const actor = normalizeActorRecord(record);
