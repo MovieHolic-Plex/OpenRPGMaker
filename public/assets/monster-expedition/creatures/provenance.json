@@ -1,0 +1,39 @@
+{
+  "version": 2,
+  "styleReference": "Emerald/GBA native pixel presentation; original species/anatomy",
+  "source": "scripts/content/monster-expedition-art.py",
+  "sourceSha256": "c5ce77828cc84352a28f9c69baa580e4d21d49dfeb088a6c1da27b48e42c9e92",
+  "sourceImages": [],
+  "authoredFamilies": 24,
+  "species": 60,
+  "battleResources": 120,
+  "partyResources": 60,
+  "nativeBattleDimensions": [
+    64,
+    64
+  ],
+  "nativeIconDimensions": [
+    32,
+    32
+  ],
+  "nativeAlpha": [
+    0,
+    255
+  ],
+  "nativeBaselineExclusive": {
+    "battle": 62,
+    "party": 30
+  },
+  "maxOpaqueColors": 15,
+  "paletteContract": "family body/highlight/shadow/accent plus colored ink, two accent facets, ivory; no gradients",
+  "rasterContract": "integer projected anatomy coordinates, one native pixel outline; no battle/icon PNG resampling",
+  "partyContract": "separately authored static native icons, no animation frames",
+  "referenceSources": [
+    "https://github.com/pret/pokeemerald/blob/master/src/data/graphics/pokemon.h",
+    "https://github.com/pret/pokeemerald/blob/master/src/pokemon_icon.c"
+  ],
+  "catalogSha256": "fe3929a236c248cae9e5b87fdc3a1de82bf9dded08e7e15f5daef156fde64221",
+  "uploadSeedSha256": "114968930c8623806cc8e9b3e9142317def88fdd86bb1008c8bf6cf42d69e942",
+  "battlePngBytes": 139185,
+  "partyPngBytes": 35570
+}

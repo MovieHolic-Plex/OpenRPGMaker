@@ -1,0 +1,26 @@
+{
+  "species": 60,
+  "battleResources": 120,
+  "iconResources": 60,
+  "stableSpeciesAndBattleResourceIds": true,
+  "all120SpritesChanged": true,
+  "all3BodyTonesPresent": true,
+  "sourceSha256": "c5ce77828cc84352a28f9c69baa580e4d21d49dfeb088a6c1da27b48e42c9e92",
+  "baselineGitRevision": "349fa573ed12322bea2f8871cc1c93758603f8e4",
+  "maxActualOpaqueColors": 8,
+  "all180PngByteMatchesSeed": true,
+  "all180PngByteMatchesCatalog": true,
+  "sourceProvenanceShaMatches": true,
+  "beforeReview": [
+    "before-contact-sheet.png",
+    "before-starter-review.png",
+    "before-rare-review.png"
+  ],
+  "afterReview": [
+    "contact-sheet.png",
+    "starter-review.png",
+    "rare-review.png",
+    "icon-contact-sheet.png"
+  ],
+  "validationScope": "generator plus independent PNG/seed/catalog byte audit and view_image review; no native runtime or canonical save QA"
+}

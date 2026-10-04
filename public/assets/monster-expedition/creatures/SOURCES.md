@@ -1,7 +1,7 @@
 # Original monster creature art
 
-All 120 battle sprites in this directory were created specifically for the
-별빛섬 몬스터 원정 game on 2026-10-03. The editable source is
+All 120 battle sprites and 60 native party icons in this directory are authored for the
+별빛섬 몬스터 원정 game (original2026-10-03, anatomy refinement2026-10-04). The editable source is
 `scripts/content/monster-expedition-art.py`: integer pixel polygons, lines,
 rectangles and small ellipses, with 24 individually authored creature anatomies.
 No source images, traced silhouettes, stock monster sprites or generated-image
@@ -21,4 +21,44 @@ python3 scripts/content/monster-expedition-art.py
 nontransparent bounding box. `uploaded-art.json` is the synchronous portable
 upload seed; SQLite persistence externalizes its bytes through the native asset
 service. `contact-sheet.png` and `starter-review.png` are developer review images,
-not battle resources. The roster module registers only the actual 120 sprites.
+not battle resources. The shared roster module registers the actual 120 battle sprites and 60 icons.
+No per-project-only asset patch is required for fresh campaign generation.
+
+## Native pixel contract (2026-10-04)
+
+- Battle: transparent RGBA64×64; last opaque row61; unchanged
+  `mx_art_<slug>_front` / `mx_art_<slug>_back` identities.
+- Party/dex: separately drawn static RGBA32×32; last opaque row29;
+  `mx_art_<slug>_icon`. These are single frames, not Emerald's two-frame icon animation.
+- Integer polygon/line coordinates rasterize directly at native size. Existing
+  80-unit design coordinates are projected before drawing. Stage anatomy changes
+  precede rasterization; emitted battle/icon PNGs are never resized or recolored.
+  Nearest-neighbor enlargement is only used by developer review sheets.
+- Every resource uses family body/highlight/shadow plus accent, two accent facets,
+  an ink derived from that family's shadow and ivory. Actual maximum8opaque colors;
+  generator bound15plus transparency. Alpha values are exclusively0/255.
+- All24families have silhouette, joint, eye/expression and material details.
+  Rear views have authored shoulders, dorsal seams, horn roots, rump/tail roots,
+  membrane ribs or folded wings. Front sprites are not flipped to make backs.
+- `catalog.json` records dimensions, native bounding boxes and actual opaque
+  palette as well as per-file SHA-256. `provenance.json` binds that catalog and
+  the portable upload seed to the exact source SHA and records the format contract.
+
+Format reference only: [Emerald graphics declarations](https://github.com/pret/pokeemerald/blob/master/src/data/graphics/pokemon.h)
+register front/back/palette/icon resources separately, and
+[Emerald icon OAM](https://github.com/pret/pokeemerald/blob/master/src/pokemon_icon.c)
+uses32×32 and4bpp. No original game's graphics, palettes, species designs or
+silhouettes are copied. Our original species palettes remain family-specific.
+
+
+## Review evidence
+
+`before-contact-sheet.png`, `before-starter-review.png`, `before-rare-review.png`
+preserve the original80px baseline from git349fa573ed12322bea2f8871cc1c93758603f8e4.
+The corresponding unprefixed sheets are native64px revised drawings. All9starter
+family species and all6rares are enlarged without interpolation for inspection.
+`icon-contact-sheet.png` includes every32px icon. `review-evidence.json` records
+an independent all180resource disk/seed/catalog byte audit and unchanged species,
+family, evolution-stage and120battle-resource identities. Full stats/learnset/
+evolution source is untouched. These developer sheets are not registered as
+runtime resources. Runtime/canonical-promotion QA belongs to campaign integration.

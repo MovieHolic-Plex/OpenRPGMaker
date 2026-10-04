@@ -12,26 +12,77 @@
     "front": {
       "resourceId": "mx_art_spriglet_front",
       "file": "spriglet-front.png",
-      "sha256": "eab7ac83d5d4459dc499354716cebf967fcb212404454481f5fb5bf7cb223cd3",
-      "bytes": 817,
+      "sha256": "434c744cc10b84723c46ef892ec52873e9512d430d5273419a0787cf407ee0bd",
+      "bytes": 979,
       "bbox": [
-        26,
-        24,
-        60,
-        74
-      ]
+        20,
+        17,
+        50,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#395349",
+        "#427851",
+        "#75b36a",
+        "#b9d98b",
+        "#f1d480",
+        "#f8e2a6",
+        "#fff2d0"
+      ],
+      "opaqueColors": 7
     },
     "back": {
       "resourceId": "mx_art_spriglet_back",
       "file": "spriglet-back.png",
-      "sha256": "9bfbb2766e48830ed551c1a1519a97fcb11057b01ac08ad62544fb317da84f08",
-      "bytes": 849,
+      "sha256": "95a753ed8b32b6995158bc4aa48dd9ae933b473d1bda7fbb6d96cea73dc1d3ce",
+      "bytes": 924,
       "bbox": [
-        26,
-        24,
-        60,
-        74
-      ]
+        20,
+        17,
+        50,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#395349",
+        "#427851",
+        "#75b36a",
+        "#b9d98b",
+        "#f1d480",
+        "#f8e2a6"
+      ],
+      "opaqueColors": 6
+    },
+    "icon": {
+      "resourceId": "mx_art_spriglet_icon",
+      "file": "spriglet-icon.png",
+      "sha256": "38f6fe42e4fd13a1d8a36ef643ac7435d33d9fe7eb6f2876ff28e439ba84bd25",
+      "bytes": 498,
+      "bbox": [
+        8,
+        1,
+        30,
+        30
+      ],
+      "dimensions": [
+        32,
+        32
+      ],
+      "opaquePalette": [
+        "#395349",
+        "#427851",
+        "#75b36a",
+        "#b9d98b",
+        "#fff2d0"
+      ],
+      "opaqueColors": 5
     }
   },
   {
@@ -47,26 +98,81 @@
     "front": {
       "resourceId": "mx_art_frondhare_front",
       "file": "frondhare-front.png",
-      "sha256": "58a5656dd9195b0b384a69bf2b90376a982220ccfb4e1311f55c01ec137caedc",
-      "bytes": 1035,
+      "sha256": "49c7a5d7a5cfae4b1721dd4d6f1278d1b18f27f9dd1296e689173dd06dcde3c9",
+      "bytes": 1237,
       "bbox": [
-        20,
-        12,
-        63,
-        73
-      ]
+        16,
+        11,
+        52,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#395349",
+        "#427851",
+        "#75b36a",
+        "#9da869",
+        "#b9d98b",
+        "#f1d480",
+        "#f8e2a6",
+        "#fff2d0"
+      ],
+      "opaqueColors": 8
     },
     "back": {
       "resourceId": "mx_art_frondhare_back",
       "file": "frondhare-back.png",
-      "sha256": "139d4fe82779201801fdbf39376b699ec69f136ea7767f17914196e2913d3d12",
-      "bytes": 1062,
+      "sha256": "0b4df3289a8f607f8d383a073cb22c297944e025108f591edbcaef0f37ba3817",
+      "bytes": 1214,
       "bbox": [
-        20,
-        12,
-        63,
-        73
-      ]
+        16,
+        11,
+        52,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#395349",
+        "#427851",
+        "#75b36a",
+        "#9da869",
+        "#b9d98b",
+        "#f1d480",
+        "#f8e2a6"
+      ],
+      "opaqueColors": 7
+    },
+    "icon": {
+      "resourceId": "mx_art_frondhare_icon",
+      "file": "frondhare-icon.png",
+      "sha256": "59318204868367e49d07bc75b687e0d43279650d007f8fb8f26deb10bc8ad2d9",
+      "bytes": 533,
+      "bbox": [
+        8,
+        1,
+        30,
+        30
+      ],
+      "dimensions": [
+        32,
+        32
+      ],
+      "opaquePalette": [
+        "#395349",
+        "#427851",
+        "#75b36a",
+        "#9da869",
+        "#b9d98b",
+        "#f8e2a6",
+        "#fff2d0"
+      ],
+      "opaqueColors": 7
     }
   },
   {
@@ -82,26 +188,83 @@
     "front": {
       "resourceId": "mx_art_grovewarden_front",
       "file": "grovewarden-front.png",
-      "sha256": "8142bf5da7be33c8d975e7bf53bf816ce8fd3c5677ca56fa696c29ae4688d842",
-      "bytes": 1488,
+      "sha256": "18a0a3be923dabd068b0742ed8cfa68c74ab3f4e85bdbca7f40791ae52d5b384",
+      "bytes": 1734,
       "bbox": [
-        13,
-        4,
-        67,
-        74
-      ]
+        10,
+        8,
+        53,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#395349",
+        "#427851",
+        "#75b36a",
+        "#9da869",
+        "#b9d98b",
+        "#f1d480",
+        "#f8e2a6",
+        "#fff2d0"
+      ],
+      "opaqueColors": 8
     },
     "back": {
       "resourceId": "mx_art_grovewarden_back",
       "file": "grovewarden-back.png",
-      "sha256": "7b5b6fb3a16e50f93045ea02b0d61ea964702856797458a46708e269e9c4ea76",
-      "bytes": 1472,
+      "sha256": "6f58c154babb0d99f4222cd34c30cdbf0807288eba5d58c929c6ec96fe846bd8",
+      "bytes": 1526,
       "bbox": [
-        13,
-        4,
-        67,
-        74
-      ]
+        11,
+        8,
+        53,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#395349",
+        "#427851",
+        "#75b36a",
+        "#9da869",
+        "#b9d98b",
+        "#f1d480",
+        "#f8e2a6",
+        "#fff2d0"
+      ],
+      "opaqueColors": 8
+    },
+    "icon": {
+      "resourceId": "mx_art_grovewarden_icon",
+      "file": "grovewarden-icon.png",
+      "sha256": "f73c87d0b7a6be5eefba7401157549da716902070b97e34ac74257ec729400ca",
+      "bytes": 679,
+      "bbox": [
+        7,
+        1,
+        30,
+        30
+      ],
+      "dimensions": [
+        32,
+        32
+      ],
+      "opaquePalette": [
+        "#395349",
+        "#427851",
+        "#75b36a",
+        "#9da869",
+        "#b9d98b",
+        "#f1d480",
+        "#f8e2a6",
+        "#fff2d0"
+      ],
+      "opaqueColors": 8
     }
   },
   {
@@ -117,26 +280,79 @@
     "front": {
       "resourceId": "mx_art_coalbit_front",
       "file": "coalbit-front.png",
-      "sha256": "f2a8c127301ac50721a64cf8c58228dccc98865f04885c4f8ead25fec2d22e81",
-      "bytes": 908,
+      "sha256": "1ece7d05e56231c89a6fe768df4b1ce4a174474bb653e6497da5b11cb4f3415f",
+      "bytes": 1042,
       "bbox": [
-        20,
-        37,
-        63,
-        74
-      ]
+        14,
+        30,
+        53,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#55384a",
+        "#784453",
+        "#b9684d",
+        "#be9878",
+        "#f3a85a",
+        "#ffecb4",
+        "#fff2d0"
+      ],
+      "opaqueColors": 7
     },
     "back": {
       "resourceId": "mx_art_coalbit_back",
       "file": "coalbit-back.png",
-      "sha256": "43aa438b2d242cef404235cc61667f36137a6b0be1f6c6b28425ea48cc8e0e65",
-      "bytes": 990,
+      "sha256": "563b48bb1f2f48a76e08fbb754503fb1bd96f9a0394441ca42d6e3d4971d6bfe",
+      "bytes": 1033,
       "bbox": [
-        20,
-        37,
-        63,
-        74
-      ]
+        14,
+        30,
+        53,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#55384a",
+        "#784453",
+        "#b9684d",
+        "#be9878",
+        "#f3a85a",
+        "#ffecb4",
+        "#fff2d0"
+      ],
+      "opaqueColors": 7
+    },
+    "icon": {
+      "resourceId": "mx_art_coalbit_icon",
+      "file": "coalbit-icon.png",
+      "sha256": "e2a2c2900bf9dd22caae04430f854cf1908fa1c6610cf0f5204f1bce683ce992",
+      "bytes": 489,
+      "bbox": [
+        4,
+        10,
+        31,
+        30
+      ],
+      "dimensions": [
+        32,
+        32
+      ],
+      "opaquePalette": [
+        "#55384a",
+        "#784453",
+        "#b9684d",
+        "#f3a85a",
+        "#ffe69b",
+        "#fff2d0"
+      ],
+      "opaqueColors": 6
     }
   },
   {
@@ -152,26 +368,81 @@
     "front": {
       "resourceId": "mx_art_kilnclaw_front",
       "file": "kilnclaw-front.png",
-      "sha256": "55e1226729bcc096ac660cbb7e7c4dd405c4af64da036c82f1999dc8c69fa722",
-      "bytes": 1065,
+      "sha256": "1a455472b065bb7f6cab7724e0239334e441bcd98f3a91098278206750176f3a",
+      "bytes": 1309,
       "bbox": [
-        15,
-        19,
-        71,
-        73
-      ]
+        12,
+        17,
+        58,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#55384a",
+        "#784453",
+        "#b9684d",
+        "#be9878",
+        "#f3a85a",
+        "#ffe69b",
+        "#ffecb4",
+        "#fff2d0"
+      ],
+      "opaqueColors": 8
     },
     "back": {
       "resourceId": "mx_art_kilnclaw_back",
       "file": "kilnclaw-back.png",
-      "sha256": "a6d220aa60c7f540ca91c81f6871d602c7388178e9fcad7dda73136581eec36e",
-      "bytes": 1262,
+      "sha256": "02f8753beaebe03720b608b09d1e62e451a78730dac968aa05d4d341450683bb",
+      "bytes": 1334,
       "bbox": [
-        15,
-        19,
-        71,
-        73
-      ]
+        12,
+        17,
+        58,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#55384a",
+        "#784453",
+        "#b9684d",
+        "#be9878",
+        "#f3a85a",
+        "#ffe69b",
+        "#ffecb4",
+        "#fff2d0"
+      ],
+      "opaqueColors": 8
+    },
+    "icon": {
+      "resourceId": "mx_art_kilnclaw_icon",
+      "file": "kilnclaw-icon.png",
+      "sha256": "839dd786f2b975252ffe476dea24cc3f4f140a782282477b5e941a2075d99b43",
+      "bytes": 533,
+      "bbox": [
+        4,
+        5,
+        31,
+        30
+      ],
+      "dimensions": [
+        32,
+        32
+      ],
+      "opaquePalette": [
+        "#55384a",
+        "#784453",
+        "#b9684d",
+        "#f3a85a",
+        "#ffe69b",
+        "#fff2d0"
+      ],
+      "opaqueColors": 6
     }
   },
   {
@@ -187,26 +458,82 @@
     "front": {
       "resourceId": "mx_art_furnscale_front",
       "file": "furnscale-front.png",
-      "sha256": "8a791fc344ed281aaa0ab12e238d631232cbeb12c49e2c19bb72a2666eff096a",
-      "bytes": 1343,
+      "sha256": "224835302c1ee19de68c2d0e48642f1233d5c06bd4f558f4c5dc12c05a162fa7",
+      "bytes": 1509,
       "bbox": [
-        12,
-        12,
-        76,
-        74
-      ]
+        10,
+        14,
+        60,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#55384a",
+        "#784453",
+        "#b9684d",
+        "#be9878",
+        "#f3a85a",
+        "#ffe69b",
+        "#ffecb4",
+        "#fff2d0"
+      ],
+      "opaqueColors": 8
     },
     "back": {
       "resourceId": "mx_art_furnscale_back",
       "file": "furnscale-back.png",
-      "sha256": "9afe4f05b45d3d497a8a82b6b2daa24324e3f67ef9e5bbdfc4e43a2e8c0bf608",
-      "bytes": 1481,
+      "sha256": "d0b944e3f8ea661a2a5544a81a83f49ef463af35e6c539e80ac43630a20cb6d3",
+      "bytes": 1457,
       "bbox": [
-        12,
-        12,
-        76,
-        74
-      ]
+        10,
+        14,
+        60,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#55384a",
+        "#784453",
+        "#b9684d",
+        "#be9878",
+        "#f3a85a",
+        "#ffe69b",
+        "#ffecb4",
+        "#fff2d0"
+      ],
+      "opaqueColors": 8
+    },
+    "icon": {
+      "resourceId": "mx_art_furnscale_icon",
+      "file": "furnscale-icon.png",
+      "sha256": "cd6e6ec1c15b847933ada5a25ba218336f94042d889e5afafb9577d1a55814c6",
+      "bytes": 549,
+      "bbox": [
+        4,
+        5,
+        31,
+        30
+      ],
+      "dimensions": [
+        32,
+        32
+      ],
+      "opaquePalette": [
+        "#55384a",
+        "#784453",
+        "#b9684d",
+        "#f3a85a",
+        "#ffe69b",
+        "#ffecb4",
+        "#fff2d0"
+      ],
+      "opaqueColors": 7
     }
   },
   {
@@ -222,26 +549,73 @@
     "front": {
       "resourceId": "mx_art_rivulet_front",
       "file": "rivulet-front.png",
-      "sha256": "09bd891675a6bdbb41c16a291c9572a88b1bf84031c4162b7464ce04a9fd9628",
-      "bytes": 814,
+      "sha256": "d80344828861efb7c00fd76295ca5c4faad40d7783a4c2e92442e2aa025a8eb3",
+      "bytes": 876,
       "bbox": [
-        19,
-        37,
-        65,
-        74
-      ]
+        13,
+        29,
+        54,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#384e67",
+        "#3f6e8b",
+        "#589eb4",
+        "#a0d8cd",
+        "#fff2d0"
+      ],
+      "opaqueColors": 5
     },
     "back": {
       "resourceId": "mx_art_rivulet_back",
       "file": "rivulet-back.png",
-      "sha256": "51700be9b9c99bc14a0f1fe4eb9ce786135acc2719e6da7415b89264897cc713",
-      "bytes": 763,
+      "sha256": "becf8e4dcb22221f876d4d5516b3f3b285ae8fe9583a6f16c5c50ddcc96bb94e",
+      "bytes": 786,
       "bbox": [
-        24,
-        37,
-        65,
-        77
-      ]
+        14,
+        26,
+        54,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#384e67",
+        "#3f6e8b",
+        "#589eb4",
+        "#a0d8cd"
+      ],
+      "opaqueColors": 4
+    },
+    "icon": {
+      "resourceId": "mx_art_rivulet_icon",
+      "file": "rivulet-icon.png",
+      "sha256": "1e8be24a210a9c3d057ad35efcf543c19423fda8f2b62f6b0bd206f3042147a8",
+      "bytes": 519,
+      "bbox": [
+        7,
+        8,
+        31,
+        30
+      ],
+      "dimensions": [
+        32,
+        32
+      ],
+      "opaquePalette": [
+        "#384e67",
+        "#3f6e8b",
+        "#589eb4",
+        "#a0d8cd",
+        "#fff2d0"
+      ],
+      "opaqueColors": 5
     }
   },
   {
@@ -257,26 +631,78 @@
     "front": {
       "resourceId": "mx_art_brookraft_front",
       "file": "brookraft-front.png",
-      "sha256": "cd9534d6cb74b654535e22206be1b5c60f578b85c7a1b18201ecf343d21a4773",
-      "bytes": 963,
+      "sha256": "7b18b9f56f2728f5523fd2cd6eb26ca9275c8804f1c427db2c04a72a21110a55",
+      "bytes": 1078,
       "bbox": [
-        14,
-        29,
-        69,
-        73
-      ]
+        11,
+        25,
+        57,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#384e67",
+        "#3f6e8b",
+        "#589eb4",
+        "#9da99c",
+        "#a0d8cd",
+        "#f3dfab",
+        "#fff2d0"
+      ],
+      "opaqueColors": 7
     },
     "back": {
       "resourceId": "mx_art_brookraft_back",
       "file": "brookraft-back.png",
-      "sha256": "1bb1324ca846df6721960333b747172ad847b5cd5b114e387632f1537eba41ba",
-      "bytes": 928,
+      "sha256": "38452241803096817c33b856942fbd6bb07a07420b5acec45ee4de121e7a1814",
+      "bytes": 936,
       "bbox": [
-        19,
-        29,
-        69,
-        76
-      ]
+        12,
+        22,
+        57,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#384e67",
+        "#3f6e8b",
+        "#589eb4",
+        "#a0d8cd",
+        "#f3dfab",
+        "#fff2d0"
+      ],
+      "opaqueColors": 6
+    },
+    "icon": {
+      "resourceId": "mx_art_brookraft_icon",
+      "file": "brookraft-icon.png",
+      "sha256": "7a1eb51dc4209f94e949d3ff0fc0a9d2e11130895313c11184fee4449ee52979",
+      "bytes": 498,
+      "bbox": [
+        7,
+        8,
+        31,
+        30
+      ],
+      "dimensions": [
+        32,
+        32
+      ],
+      "opaquePalette": [
+        "#384e67",
+        "#3f6e8b",
+        "#589eb4",
+        "#a0d8cd",
+        "#f3dfab",
+        "#fff2d0"
+      ],
+      "opaqueColors": 6
     }
   },
   {
@@ -292,26 +718,80 @@
     "front": {
       "resourceId": "mx_art_tidekeeper_front",
       "file": "tidekeeper-front.png",
-      "sha256": "0e9ff6955bd86497879c6b8e7538d1979b38f2bc672af7cd3458cbfa49c94cc4",
-      "bytes": 1227,
+      "sha256": "998386871c94684f1318116e935d1eeb4bef0aec1b9c725ca4466630d7cd18eb",
+      "bytes": 1342,
       "bbox": [
-        11,
         10,
-        74,
-        74
-      ]
+        12,
+        58,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#384e67",
+        "#3f6e8b",
+        "#589eb4",
+        "#9da99c",
+        "#a0d8cd",
+        "#f3dfab",
+        "#f9e8bd",
+        "#fff2d0"
+      ],
+      "opaqueColors": 8
     },
     "back": {
       "resourceId": "mx_art_tidekeeper_back",
       "file": "tidekeeper-back.png",
-      "sha256": "dc609918faa1034b238c6b600fce62a9f19cbd6760030d777eca89911f3e5198",
-      "bytes": 1182,
+      "sha256": "9d70695706d3944689efbdb1e7039abdf2fd1ff20c492178fbd4abad2fcb4181",
+      "bytes": 1240,
       "bbox": [
-        16,
         10,
-        74,
-        78
-      ]
+        9,
+        58,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#384e67",
+        "#3f6e8b",
+        "#589eb4",
+        "#a0d8cd",
+        "#f3dfab",
+        "#f9e8bd",
+        "#fff2d0"
+      ],
+      "opaqueColors": 7
+    },
+    "icon": {
+      "resourceId": "mx_art_tidekeeper_icon",
+      "file": "tidekeeper-icon.png",
+      "sha256": "b44e3e8367f388b1e400cbcc9b6d96d9fad2c640889abf8f9b477c1de46973d0",
+      "bytes": 540,
+      "bbox": [
+        7,
+        2,
+        31,
+        30
+      ],
+      "dimensions": [
+        32,
+        32
+      ],
+      "opaquePalette": [
+        "#384e67",
+        "#3f6e8b",
+        "#589eb4",
+        "#a0d8cd",
+        "#f3dfab",
+        "#fff2d0"
+      ],
+      "opaqueColors": 6
     }
   },
   {
@@ -327,26 +807,76 @@
     "front": {
       "resourceId": "mx_art_pipbug_front",
       "file": "pipbug-front.png",
-      "sha256": "9549c963be3614866b11361a6f24e0266523b84879e6c20b550322829de0509a",
-      "bytes": 772,
+      "sha256": "e61c409775aa9d5bcb59596c305d14986fc882e54796b8697045e423c3e55427",
+      "bytes": 932,
       "bbox": [
-        18,
-        29,
-        62,
-        74
-      ]
+        13,
+        23,
+        53,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#424e43",
+        "#526e45",
+        "#8fae4e",
+        "#d2db83",
+        "#df9c71",
+        "#eec59f",
+        "#fff2d0"
+      ],
+      "opaqueColors": 7
     },
     "back": {
       "resourceId": "mx_art_pipbug_back",
       "file": "pipbug-back.png",
-      "sha256": "12caa3c7145c14a984bf43a27aef2851d0cae1e60cc09efbea77dc6302a2f839",
-      "bytes": 761,
+      "sha256": "690198e0ec72c6eed50a2036f09b4c87dc82eb3fc1911ec1800d7e97d59a7db2",
+      "bytes": 887,
       "bbox": [
-        18,
-        29,
-        62,
-        74
-      ]
+        13,
+        23,
+        53,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#424e43",
+        "#526e45",
+        "#8fae4e",
+        "#d2db83",
+        "#df9c71"
+      ],
+      "opaqueColors": 5
+    },
+    "icon": {
+      "resourceId": "mx_art_pipbug_icon",
+      "file": "pipbug-icon.png",
+      "sha256": "59d1085a7339900c1bc4e598becff628878437b957b31c9edf27efcbf71dba20",
+      "bytes": 502,
+      "bbox": [
+        3,
+        2,
+        31,
+        30
+      ],
+      "dimensions": [
+        32,
+        32
+      ],
+      "opaquePalette": [
+        "#424e43",
+        "#526e45",
+        "#8fae4e",
+        "#d2db83",
+        "#fff2d0"
+      ],
+      "opaqueColors": 5
     }
   },
   {
@@ -362,26 +892,82 @@
     "front": {
       "resourceId": "mx_art_podback_front",
       "file": "podback-front.png",
-      "sha256": "180549757fa9fea801ff00f87efa42060133c2026f14532ece6c8119188fab07",
-      "bytes": 1109,
+      "sha256": "d8faa26ea669a3f1a402d1fcac73bc3147fd4b00865f0cb8d187633fde4a9ca8",
+      "bytes": 1271,
       "bbox": [
-        14,
-        20,
-        66,
-        73
-      ]
+        11,
+        18,
+        55,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#424e43",
+        "#526e45",
+        "#8fae4e",
+        "#9b865c",
+        "#d2db83",
+        "#df9c71",
+        "#eec59f",
+        "#fff2d0"
+      ],
+      "opaqueColors": 8
     },
     "back": {
       "resourceId": "mx_art_podback_back",
       "file": "podback-back.png",
-      "sha256": "bae5bc2acab73c87c862c53bc4b46d12a9e37fa4453c041436bd643ae544ec55",
-      "bytes": 1091,
+      "sha256": "b5a81379ef203b10c1904793df144169b1eb3772fbb94d79add25b6272dc0684",
+      "bytes": 1137,
       "bbox": [
-        14,
-        20,
-        66,
-        73
-      ]
+        11,
+        18,
+        55,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#424e43",
+        "#526e45",
+        "#8fae4e",
+        "#9b865c",
+        "#d2db83",
+        "#df9c71",
+        "#eec59f"
+      ],
+      "opaqueColors": 7
+    },
+    "icon": {
+      "resourceId": "mx_art_podback_icon",
+      "file": "podback-icon.png",
+      "sha256": "22434658b417824701f35a086fc72553573d8c2f11b60572b6f144ef42d1cb88",
+      "bytes": 649,
+      "bbox": [
+        3,
+        2,
+        31,
+        30
+      ],
+      "dimensions": [
+        32,
+        32
+      ],
+      "opaquePalette": [
+        "#424e43",
+        "#526e45",
+        "#8fae4e",
+        "#9b865c",
+        "#d2db83",
+        "#df9c71",
+        "#eec59f",
+        "#fff2d0"
+      ],
+      "opaqueColors": 8
     }
   },
   {
@@ -397,26 +983,82 @@
     "front": {
       "resourceId": "mx_art_orchardant_front",
       "file": "orchardant-front.png",
-      "sha256": "2aba6b5dc5e75f5a89e9a169734fdcbb71865b9c76c57c015f26bdd3709701ea",
-      "bytes": 1377,
+      "sha256": "2ce9bec1aba088e10b8601541f6e7790a507bec6716b279ee0283c92a9eff709",
+      "bytes": 1512,
       "bbox": [
         10,
-        5,
-        71,
-        74
-      ]
+        9,
+        56,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#424e43",
+        "#526e45",
+        "#8fae4e",
+        "#9b865c",
+        "#d2db83",
+        "#df9c71",
+        "#eec59f",
+        "#fff2d0"
+      ],
+      "opaqueColors": 8
     },
     "back": {
       "resourceId": "mx_art_orchardant_back",
       "file": "orchardant-back.png",
-      "sha256": "81838efa45294c4017627a76c803e609ca3f41b424ab460d9adcff977acb62a0",
-      "bytes": 1340,
+      "sha256": "4fbd8acc9b9c992d1aa4aadd29b675777a8dbe49a97fdd162cb5816e26a79317",
+      "bytes": 1338,
       "bbox": [
         10,
-        5,
-        71,
-        74
-      ]
+        9,
+        56,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#424e43",
+        "#526e45",
+        "#8fae4e",
+        "#9b865c",
+        "#d2db83",
+        "#df9c71",
+        "#eec59f"
+      ],
+      "opaqueColors": 7
+    },
+    "icon": {
+      "resourceId": "mx_art_orchardant_icon",
+      "file": "orchardant-icon.png",
+      "sha256": "d72f9e0b979e02f8221499614bf246437ab71ea57cb7c06a80b98f41350a5cb5",
+      "bytes": 683,
+      "bbox": [
+        3,
+        0,
+        31,
+        30
+      ],
+      "dimensions": [
+        32,
+        32
+      ],
+      "opaquePalette": [
+        "#424e43",
+        "#526e45",
+        "#8fae4e",
+        "#9b865c",
+        "#d2db83",
+        "#df9c71",
+        "#eec59f",
+        "#fff2d0"
+      ],
+      "opaqueColors": 8
     }
   },
   {
@@ -432,26 +1074,77 @@
     "front": {
       "resourceId": "mx_art_gustchick_front",
       "file": "gustchick-front.png",
-      "sha256": "d9d31531887091033100bef75d6893ccec8d1564a8e588fc2f30fff22b547629",
-      "bytes": 802,
+      "sha256": "f6bbc072ed1fc43f5e765f29c57e13294710d95d8a8588a7222c69cebb739162",
+      "bytes": 845,
       "bbox": [
-        18,
-        29,
-        63,
-        75
-      ]
+        12,
+        21,
+        53,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#3f4969",
+        "#4c648e",
+        "#899cbb",
+        "#9e9084",
+        "#d6c5ae",
+        "#eab87a",
+        "#fff2d0"
+      ],
+      "opaqueColors": 7
     },
     "back": {
       "resourceId": "mx_art_gustchick_back",
       "file": "gustchick-back.png",
-      "sha256": "5e3f0ebd62bfd65811d26217f76a2390d216e0bb47b7c51352ef9efaa070881d",
-      "bytes": 803,
+      "sha256": "d05f1b843755831c28129a7a18a6d6bb9f233ddd6aa8a62a0900e4094f69e896",
+      "bytes": 788,
       "bbox": [
-        25,
-        29,
-        63,
-        75
-      ]
+        18,
+        21,
+        53,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#3f4969",
+        "#4c648e",
+        "#899cbb",
+        "#d6c5ae",
+        "#eab87a"
+      ],
+      "opaqueColors": 5
+    },
+    "icon": {
+      "resourceId": "mx_art_gustchick_icon",
+      "file": "gustchick-icon.png",
+      "sha256": "4c3f5d5839b9dcdb25fd25d3a45ae34be2351235cd85c0956dba2961bec4dcf6",
+      "bytes": 520,
+      "bbox": [
+        4,
+        2,
+        31,
+        30
+      ],
+      "dimensions": [
+        32,
+        32
+      ],
+      "opaquePalette": [
+        "#3f4969",
+        "#4c648e",
+        "#899cbb",
+        "#d6c5ae",
+        "#eab87a",
+        "#fff2d0"
+      ],
+      "opaqueColors": 6
     }
   },
   {
@@ -467,26 +1160,77 @@
     "front": {
       "resourceId": "mx_art_ribbonwing_front",
       "file": "ribbonwing-front.png",
-      "sha256": "48b9e211cdd757c1f989070d6dd95f7160d89dc50bc3bb53b246e4528a69324b",
-      "bytes": 1168,
+      "sha256": "3a8090d93d72b2ea4be4ed49b7fde7376b51c880258aea0d382dbe1f1db152e9",
+      "bytes": 1131,
       "bbox": [
-        11,
-        19,
-        68,
-        75
-      ]
+        8,
+        16,
+        56,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#3f4969",
+        "#4c648e",
+        "#899cbb",
+        "#9e9084",
+        "#d6c5ae",
+        "#eab87a",
+        "#fff2d0"
+      ],
+      "opaqueColors": 7
     },
     "back": {
       "resourceId": "mx_art_ribbonwing_back",
       "file": "ribbonwing-back.png",
-      "sha256": "a9b1c530bf3d9517326e1674f21077c453a2a3f388451dd3951264d83858e9ab",
-      "bytes": 1196,
+      "sha256": "f6580081784c0392fede19b293d22ec67d97fffd0a48b2e62226ecd49f5f9c02",
+      "bytes": 1099,
       "bbox": [
-        11,
-        19,
-        68,
-        75
-      ]
+        8,
+        16,
+        56,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#3f4969",
+        "#4c648e",
+        "#899cbb",
+        "#d6c5ae",
+        "#eab87a"
+      ],
+      "opaqueColors": 5
+    },
+    "icon": {
+      "resourceId": "mx_art_ribbonwing_icon",
+      "file": "ribbonwing-icon.png",
+      "sha256": "fbfafbeaaae4f3222cee44e21ed03e31e15ce0149eab06621e54636ea9017b21",
+      "bytes": 606,
+      "bbox": [
+        3,
+        2,
+        31,
+        30
+      ],
+      "dimensions": [
+        32,
+        32
+      ],
+      "opaquePalette": [
+        "#3f4969",
+        "#4c648e",
+        "#899cbb",
+        "#d6c5ae",
+        "#eab87a",
+        "#fff2d0"
+      ],
+      "opaqueColors": 6
     }
   },
   {
@@ -502,26 +1246,80 @@
     "front": {
       "resourceId": "mx_art_galecrest_front",
       "file": "galecrest-front.png",
-      "sha256": "1923a3a8a47bdb07a30cefee4eca0c9cb66a47d781cdf26955bd3c210ea476cf",
-      "bytes": 1429,
+      "sha256": "b05e8a39bb671a2b84b6abd5635fdfb5929df2df3cdb374bbe2e624a95d03f93",
+      "bytes": 1385,
       "bbox": [
         7,
-        4,
-        73,
-        77
-      ]
+        7,
+        58,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#3f4969",
+        "#4c648e",
+        "#899cbb",
+        "#9e9084",
+        "#d6c5ae",
+        "#eab87a",
+        "#f4d4a3",
+        "#fff2d0"
+      ],
+      "opaqueColors": 8
     },
     "back": {
       "resourceId": "mx_art_galecrest_back",
       "file": "galecrest-back.png",
-      "sha256": "2b9b998b545e96d988d844b8a473603d04ce6bbb0e7bb65b8ee1dbe6ee59db51",
-      "bytes": 1426,
+      "sha256": "dabb46db59c34ccf801683405b4890e58f6f56bbdeb70a301cea486e53a6796e",
+      "bytes": 1374,
       "bbox": [
         7,
-        4,
-        73,
-        77
-      ]
+        7,
+        58,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#3f4969",
+        "#4c648e",
+        "#899cbb",
+        "#d6c5ae",
+        "#eab87a",
+        "#f4d4a3",
+        "#fff2d0"
+      ],
+      "opaqueColors": 7
+    },
+    "icon": {
+      "resourceId": "mx_art_galecrest_icon",
+      "file": "galecrest-icon.png",
+      "sha256": "8bebe60380a82f31885523f7473a0615881c018e2d2be9c8ea5b912b56ef9166",
+      "bytes": 627,
+      "bbox": [
+        3,
+        2,
+        31,
+        30
+      ],
+      "dimensions": [
+        32,
+        32
+      ],
+      "opaquePalette": [
+        "#3f4969",
+        "#4c648e",
+        "#899cbb",
+        "#d6c5ae",
+        "#eab87a",
+        "#fff2d0"
+      ],
+      "opaqueColors": 6
     }
   },
   {
@@ -537,26 +1335,76 @@
     "front": {
       "resourceId": "mx_art_zaptoe_front",
       "file": "zaptoe-front.png",
-      "sha256": "8f7291ee1654fcb3561ac93d7da4903ac39daf11862b1a7354ecc0505328b5f1",
-      "bytes": 802,
+      "sha256": "8f66ea02eea37c09cb42efdc46da2fcbf10f4c2ba85d6ae1164ba861947a44ae",
+      "bytes": 864,
       "bbox": [
-        19,
-        35,
-        62,
-        73
-      ]
+        13,
+        29,
+        53,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#5bbdc0",
+        "#695342",
+        "#9d7843",
+        "#e4bd57",
+        "#fae49b",
+        "#fff2d0"
+      ],
+      "opaqueColors": 6
     },
     "back": {
       "resourceId": "mx_art_zaptoe_back",
       "file": "zaptoe-back.png",
-      "sha256": "3ee9773412b4f7d70ef97e2315bd41ee8846b4b841c072f62cb82dcb90c4d90c",
-      "bytes": 805,
+      "sha256": "33b3b7f1c30833cd522f84a0ed5f2757f5c966f94c021c3cc08c055d072dab5f",
+      "bytes": 899,
       "bbox": [
-        19,
-        35,
-        62,
-        75
-      ]
+        13,
+        27,
+        53,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#5bbdc0",
+        "#695342",
+        "#9d7843",
+        "#e4bd57",
+        "#fae49b"
+      ],
+      "opaqueColors": 5
+    },
+    "icon": {
+      "resourceId": "mx_art_zaptoe_icon",
+      "file": "zaptoe-icon.png",
+      "sha256": "a6ad47271acc03ca35448ebf472f3accdf410cb0cfcb4a502ec5ab027f759c32",
+      "bytes": 527,
+      "bbox": [
+        4,
+        8,
+        32,
+        30
+      ],
+      "dimensions": [
+        32,
+        32
+      ],
+      "opaquePalette": [
+        "#5bbdc0",
+        "#695342",
+        "#9d7843",
+        "#e4bd57",
+        "#fae49b",
+        "#fff2d0"
+      ],
+      "opaqueColors": 6
     }
   },
   {
@@ -572,26 +1420,76 @@
     "front": {
       "resourceId": "mx_art_coilcrest_front",
       "file": "coilcrest-front.png",
-      "sha256": "c17c5068329829b04541ac6502e00aa1e408b5fafe6874187a983754d7a93d70",
-      "bytes": 993,
+      "sha256": "8cf1dec97dc64ec81ff584114366be7f4f70f0222f8bdc8ea2a34f41a9408d3d",
+      "bytes": 988,
       "bbox": [
-        14,
-        16,
-        67,
-        72
-      ]
+        11,
+        15,
+        55,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#5bbdc0",
+        "#695342",
+        "#9d7843",
+        "#e4bd57",
+        "#fae49b",
+        "#fff2d0"
+      ],
+      "opaqueColors": 6
     },
     "back": {
       "resourceId": "mx_art_coilcrest_back",
       "file": "coilcrest-back.png",
-      "sha256": "f1b99e2bc899c74382c72606fdcb9ac0cb0960e98c4860b46ed82cf54ca8b7dc",
-      "bytes": 1055,
+      "sha256": "089a2a0ad3578e38d81e6a1e0fee36121fd573bb32ef2aedaffb55d5ac2dadaa",
+      "bytes": 1038,
       "bbox": [
-        14,
-        16,
-        67,
-        75
-      ]
+        11,
+        13,
+        55,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#5bbdc0",
+        "#695342",
+        "#9d7843",
+        "#e4bd57",
+        "#fae49b"
+      ],
+      "opaqueColors": 5
+    },
+    "icon": {
+      "resourceId": "mx_art_coilcrest_icon",
+      "file": "coilcrest-icon.png",
+      "sha256": "dd18dd54e0eb3904f15b252cfcc64a5e8b5875cd42227d509afa267c23a0e344",
+      "bytes": 600,
+      "bbox": [
+        4,
+        1,
+        32,
+        30
+      ],
+      "dimensions": [
+        32,
+        32
+      ],
+      "opaquePalette": [
+        "#5bbdc0",
+        "#695342",
+        "#9d7843",
+        "#e4bd57",
+        "#fae49b",
+        "#fff2d0"
+      ],
+      "opaqueColors": 6
     }
   },
   {
@@ -607,26 +1505,81 @@
     "front": {
       "resourceId": "mx_art_stormskink_front",
       "file": "stormskink-front.png",
-      "sha256": "f84c797b02485fe75d03ce18e1b131e16c86231d1c17f4905b670f66777dc18b",
-      "bytes": 1338,
+      "sha256": "d12708e6530053f7210770d8fc880157a8321a0d74ab6ca464d3b6f343eb9323",
+      "bytes": 1290,
       "bbox": [
-        11,
-        8,
-        72,
-        73
-      ]
+        10,
+        12,
+        57,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#5bbdc0",
+        "#695342",
+        "#7b9c84",
+        "#9d7843",
+        "#aad6c8",
+        "#e4bd57",
+        "#fae49b",
+        "#fff2d0"
+      ],
+      "opaqueColors": 8
     },
     "back": {
       "resourceId": "mx_art_stormskink_back",
       "file": "stormskink-back.png",
-      "sha256": "142bcd7275334586eb811f3733def972b24132d51f9573fe44d0947606a81b2c",
-      "bytes": 1392,
+      "sha256": "4ca1f683433c6b51f1cb09cf8b1f3a6bc6178856e6655b874740d5e7343090cc",
+      "bytes": 1332,
       "bbox": [
-        11,
-        8,
-        72,
-        76
-      ]
+        10,
+        10,
+        57,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#5bbdc0",
+        "#695342",
+        "#7b9c84",
+        "#9d7843",
+        "#aad6c8",
+        "#e4bd57",
+        "#fae49b",
+        "#fff2d0"
+      ],
+      "opaqueColors": 8
+    },
+    "icon": {
+      "resourceId": "mx_art_stormskink_icon",
+      "file": "stormskink-icon.png",
+      "sha256": "7fb60f313c295771389efd6fe161b1c173f5d824b375eda386cb9e4559708b36",
+      "bytes": 637,
+      "bbox": [
+        4,
+        1,
+        32,
+        30
+      ],
+      "dimensions": [
+        32,
+        32
+      ],
+      "opaquePalette": [
+        "#5bbdc0",
+        "#695342",
+        "#9d7843",
+        "#e4bd57",
+        "#fae49b",
+        "#fff2d0"
+      ],
+      "opaqueColors": 6
     }
   },
   {
@@ -642,26 +1595,78 @@
     "front": {
       "resourceId": "mx_art_pebblekid_front",
       "file": "pebblekid-front.png",
-      "sha256": "551c93635e251a21caf185c9e1ea8926194d7396ae82bb484b7851ccd8e042bc",
-      "bytes": 863,
+      "sha256": "3e4d62783b619096dda55dbc0fb91dc782e1a9a861401b0d1f7d7aaa7283af75",
+      "bytes": 1031,
       "bbox": [
-        18,
-        26,
-        62,
-        74
-      ]
+        12,
+        20,
+        52,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#494455",
+        "#615c68",
+        "#89aaa3",
+        "#928d83",
+        "#c2cdb9",
+        "#c9b99a",
+        "#fff2d0"
+      ],
+      "opaqueColors": 7
     },
     "back": {
       "resourceId": "mx_art_pebblekid_back",
       "file": "pebblekid-back.png",
-      "sha256": "2c1d167ce438b4776cfe4ba5170ac28affa519a8a6bffc501db3362fd3d22fba",
-      "bytes": 919,
+      "sha256": "a445502bd3fe8694263acee45029e85535c5ebdf1686fcd0e56e1be6efe1a454",
+      "bytes": 972,
       "bbox": [
-        18,
-        26,
-        62,
-        74
-      ]
+        12,
+        20,
+        52,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#494455",
+        "#615c68",
+        "#89aaa3",
+        "#928d83",
+        "#c2cdb9",
+        "#c9b99a"
+      ],
+      "opaqueColors": 6
+    },
+    "icon": {
+      "resourceId": "mx_art_pebblekid_icon",
+      "file": "pebblekid-icon.png",
+      "sha256": "64522818c92d5f07be9c8d24dcab6750e0484669ac7679b57d9bb90df9574153",
+      "bytes": 598,
+      "bbox": [
+        3,
+        0,
+        30,
+        30
+      ],
+      "dimensions": [
+        32,
+        32
+      ],
+      "opaquePalette": [
+        "#494455",
+        "#615c68",
+        "#89aaa3",
+        "#928d83",
+        "#c9b99a",
+        "#fff2d0"
+      ],
+      "opaqueColors": 6
     }
   },
   {
@@ -677,26 +1682,78 @@
     "front": {
       "resourceId": "mx_art_craghoof_front",
       "file": "craghoof-front.png",
-      "sha256": "ea50f8c20aa668fdc4c6ebd9213cab95738b0ecee2f3990a5edca1dfac8547f5",
-      "bytes": 1008,
+      "sha256": "99d1728300637d518790c06999cd9b6e5afd66428bfb8dd4e357ecfe55ae0c1a",
+      "bytes": 1181,
       "bbox": [
-        13,
-        16,
-        66,
-        73
-      ]
+        10,
+        14,
+        54,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#494455",
+        "#615c68",
+        "#89aaa3",
+        "#928d83",
+        "#c2cdb9",
+        "#c9b99a",
+        "#fff2d0"
+      ],
+      "opaqueColors": 7
     },
     "back": {
       "resourceId": "mx_art_craghoof_back",
       "file": "craghoof-back.png",
-      "sha256": "dbba1a010f4b0de06b5f094f2619f2c5da86ccdc2848c2a9cbd39f82cb114004",
-      "bytes": 1048,
+      "sha256": "66ca39698a91e6279df741783c7bb22bcbde86e4b2682a35a152213e04503548",
+      "bytes": 1127,
       "bbox": [
-        13,
-        16,
-        66,
-        73
-      ]
+        10,
+        14,
+        54,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#494455",
+        "#615c68",
+        "#89aaa3",
+        "#928d83",
+        "#c2cdb9",
+        "#c9b99a"
+      ],
+      "opaqueColors": 6
+    },
+    "icon": {
+      "resourceId": "mx_art_craghoof_icon",
+      "file": "craghoof-icon.png",
+      "sha256": "155166fa7520e2b0ab0a946a99410b53bcef49ee244494ba1af43e134a445cd2",
+      "bytes": 636,
+      "bbox": [
+        3,
+        0,
+        30,
+        30
+      ],
+      "dimensions": [
+        32,
+        32
+      ],
+      "opaquePalette": [
+        "#494455",
+        "#615c68",
+        "#89aaa3",
+        "#928d83",
+        "#c9b99a",
+        "#fff2d0"
+      ],
+      "opaqueColors": 6
     }
   },
   {
@@ -712,26 +1769,78 @@
     "front": {
       "resourceId": "mx_art_ridgehorn_front",
       "file": "ridgehorn-front.png",
-      "sha256": "bebc2534263b39eae88e3b06030cf89c7d9269b7f7d6195f0f73064761907010",
-      "bytes": 1203,
+      "sha256": "5d7bad2d9ea2ba1fbf6904baf0de6c3b9b475a1158848bceece4cfe7108ae4b2",
+      "bytes": 1334,
       "bbox": [
         7,
-        4,
-        71,
-        74
-      ]
+        8,
+        56,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#494455",
+        "#615c68",
+        "#89aaa3",
+        "#928d83",
+        "#c2cdb9",
+        "#c9b99a",
+        "#fff2d0"
+      ],
+      "opaqueColors": 7
     },
     "back": {
       "resourceId": "mx_art_ridgehorn_back",
       "file": "ridgehorn-back.png",
-      "sha256": "ad6d9ca6fb94dde8cf466abde61fb6a863de8c91cbf30d94fbd65ead51f95ab7",
-      "bytes": 1276,
+      "sha256": "5d76fe7154f9fc54eb5b914c96b06b4c01bdf392c5523ea64b2d5770b675d3c0",
+      "bytes": 1298,
       "bbox": [
         7,
-        4,
-        71,
-        74
-      ]
+        8,
+        56,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#494455",
+        "#615c68",
+        "#89aaa3",
+        "#928d83",
+        "#c2cdb9",
+        "#c9b99a"
+      ],
+      "opaqueColors": 6
+    },
+    "icon": {
+      "resourceId": "mx_art_ridgehorn_icon",
+      "file": "ridgehorn-icon.png",
+      "sha256": "218177d58bd9e792d2052b9e2915738580f3f8fc674dde6026ae8a443c9ae3f4",
+      "bytes": 675,
+      "bbox": [
+        3,
+        0,
+        30,
+        30
+      ],
+      "dimensions": [
+        32,
+        32
+      ],
+      "opaquePalette": [
+        "#494455",
+        "#615c68",
+        "#89aaa3",
+        "#928d83",
+        "#c9b99a",
+        "#fff2d0"
+      ],
+      "opaqueColors": 6
     }
   },
   {
@@ -747,26 +1856,79 @@
     "front": {
       "resourceId": "mx_art_sandnip_front",
       "file": "sandnip-front.png",
-      "sha256": "8cdaecf882fef03c603dc6d76bc06d059eb555fa50703b8b41dad680d73ecabe",
-      "bytes": 876,
+      "sha256": "e84ecabb9bbd5844dbe6848dad066c09cd2677e31b63734056c88471161ddf79",
+      "bytes": 998,
       "bbox": [
-        15,
-        24,
-        65,
-        73
-      ]
+        10,
+        18,
+        54,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#5b4256",
+        "#82576b",
+        "#b37c89",
+        "#c69865",
+        "#e09ea4",
+        "#edc98b",
+        "#efc6b9",
+        "#fff2d0"
+      ],
+      "opaqueColors": 8
     },
     "back": {
       "resourceId": "mx_art_sandnip_back",
       "file": "sandnip-back.png",
-      "sha256": "6ef335e1184acc19be3e346f87bdaac34c412dc5d45c61ac16a183f57f66dd77",
-      "bytes": 855,
+      "sha256": "4b9973da7ebb95dee0514eb2df5248ad757b69e75dde61f1764c1678802dba85",
+      "bytes": 930,
       "bbox": [
-        15,
-        24,
-        65,
-        73
-      ]
+        10,
+        18,
+        54,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#5b4256",
+        "#82576b",
+        "#b37c89",
+        "#c69865",
+        "#e09ea4",
+        "#edc98b",
+        "#efc6b9"
+      ],
+      "opaqueColors": 7
+    },
+    "icon": {
+      "resourceId": "mx_art_sandnip_icon",
+      "file": "sandnip-icon.png",
+      "sha256": "37c0531b625a6a81277d2da53e821ef2bc82ad58f36a5f6956793ff5d824e9cb",
+      "bytes": 542,
+      "bbox": [
+        1,
+        0,
+        32,
+        30
+      ],
+      "dimensions": [
+        32,
+        32
+      ],
+      "opaquePalette": [
+        "#5b4256",
+        "#82576b",
+        "#c69865",
+        "#edc98b",
+        "#fff2d0"
+      ],
+      "opaqueColors": 5
     }
   },
   {
@@ -782,26 +1944,81 @@
     "front": {
       "resourceId": "mx_art_dunestalk_front",
       "file": "dunestalk-front.png",
-      "sha256": "6590d042ebb7a0b3b4377d66c6a663169427ebf592a7c0cea7aeb8292f0cd1ac",
-      "bytes": 1075,
+      "sha256": "d04383d6171a8a5c0ac95418cdb6e000cea3ac7d1595f52f2941059964f9c2a0",
+      "bytes": 1141,
       "bbox": [
-        10,
+        8,
         13,
-        69,
-        72
-      ]
+        57,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#5b4256",
+        "#82576b",
+        "#b37c89",
+        "#c69865",
+        "#e09ea4",
+        "#edc98b",
+        "#efc6b9",
+        "#fff2d0"
+      ],
+      "opaqueColors": 8
     },
     "back": {
       "resourceId": "mx_art_dunestalk_back",
       "file": "dunestalk-back.png",
-      "sha256": "040ec3f5b8be7f36308215e989da8b31bfecc8e295b4e8ede562fd8792560a27",
-      "bytes": 1071,
+      "sha256": "a797147a2f1128da0140156dc157ff368016e55d80e9af614ee239dc0432030b",
+      "bytes": 1122,
       "bbox": [
-        10,
+        8,
         13,
-        69,
-        72
-      ]
+        57,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#5b4256",
+        "#82576b",
+        "#b37c89",
+        "#c69865",
+        "#e09ea4",
+        "#edc98b",
+        "#efc6b9"
+      ],
+      "opaqueColors": 7
+    },
+    "icon": {
+      "resourceId": "mx_art_dunestalk_icon",
+      "file": "dunestalk-icon.png",
+      "sha256": "80a4877490473a4d41fed5bde229c450037c43270bda68fe7e9f725c7774b629",
+      "bytes": 625,
+      "bbox": [
+        1,
+        0,
+        32,
+        30
+      ],
+      "dimensions": [
+        32,
+        32
+      ],
+      "opaquePalette": [
+        "#5b4256",
+        "#82576b",
+        "#b37c89",
+        "#c69865",
+        "#e09ea4",
+        "#edc98b",
+        "#fff2d0"
+      ],
+      "opaqueColors": 7
     }
   },
   {
@@ -817,26 +2034,80 @@
     "front": {
       "resourceId": "mx_art_miragespike_front",
       "file": "miragespike-front.png",
-      "sha256": "8ee605cd04bacaa71abf9b63d6fb9b0a3f742999b95005407918af1925c8a829",
-      "bytes": 1253,
+      "sha256": "00e3e6f7d6fa57dcae232487099bbb87b925d3078a9c6b4fca3e227b5481ea35",
+      "bytes": 1340,
       "bbox": [
         6,
-        5,
-        74,
-        73
-      ]
+        9,
+        58,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#5b4256",
+        "#82576b",
+        "#b37c89",
+        "#c69865",
+        "#e09ea4",
+        "#edc98b",
+        "#efc6b9",
+        "#fff2d0"
+      ],
+      "opaqueColors": 8
     },
     "back": {
       "resourceId": "mx_art_miragespike_back",
       "file": "miragespike-back.png",
-      "sha256": "957ea6dcc66e0ed011cc5c4c106a7db9c7301e6e94a9c19e3926bf04ff74f9d1",
-      "bytes": 1241,
+      "sha256": "c24027cf02c3f623cade518f697d3fcc65f7062c2b9ed11781365481201c2eec",
+      "bytes": 1266,
       "bbox": [
         6,
-        5,
-        74,
-        73
-      ]
+        9,
+        58,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#5b4256",
+        "#82576b",
+        "#b37c89",
+        "#c69865",
+        "#e09ea4",
+        "#edc98b",
+        "#efc6b9"
+      ],
+      "opaqueColors": 7
+    },
+    "icon": {
+      "resourceId": "mx_art_miragespike_icon",
+      "file": "miragespike-icon.png",
+      "sha256": "0d7b86e39b53f2f8e0eb6e86b8f52becb5b227b10aa26eab6c77d04242bd7704",
+      "bytes": 583,
+      "bbox": [
+        1,
+        0,
+        32,
+        30
+      ],
+      "dimensions": [
+        32,
+        32
+      ],
+      "opaquePalette": [
+        "#5b4256",
+        "#82576b",
+        "#c69865",
+        "#e09ea4",
+        "#edc98b",
+        "#fff2d0"
+      ],
+      "opaqueColors": 6
     }
   },
   {
@@ -852,26 +2123,75 @@
     "front": {
       "resourceId": "mx_art_flurrykit_front",
       "file": "flurrykit-front.png",
-      "sha256": "7e87ec27be7927ae2cc529504caf73a806fca88edb6c88a72698055c080dfa17",
-      "bytes": 839,
+      "sha256": "55511502a51cbe4cba6198fcbfd9c2a0b9ef197f54828f78b772c6f6bc535515",
+      "bytes": 1038,
       "bbox": [
-        20,
-        24,
-        63,
-        74
-      ]
+        14,
+        17,
+        53,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#454e71",
+        "#596f9e",
+        "#8dafcc",
+        "#b59ccc",
+        "#d5e7e5",
+        "#fff2d0"
+      ],
+      "opaqueColors": 6
     },
     "back": {
       "resourceId": "mx_art_flurrykit_back",
       "file": "flurrykit-back.png",
-      "sha256": "ee6d080edf75ae81e1afbb44e0b4ccfa0155744180901cc92a67bbbd2969252f",
-      "bytes": 884,
+      "sha256": "9ec5816d99d21b3419a2ec3f7df28a381481638fec4b4092e1c97af82aacc45c",
+      "bytes": 1018,
       "bbox": [
-        24,
-        24,
-        63,
-        75
-      ]
+        18,
+        17,
+        53,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#454e71",
+        "#596f9e",
+        "#8dafcc",
+        "#b59ccc",
+        "#d5e7e5"
+      ],
+      "opaqueColors": 5
+    },
+    "icon": {
+      "resourceId": "mx_art_flurrykit_icon",
+      "file": "flurrykit-icon.png",
+      "sha256": "047970372759c3a89521dc2028c9c202104c95e3caa9bfbbd0e9509ab17ac028",
+      "bytes": 567,
+      "bbox": [
+        6,
+        3,
+        32,
+        30
+      ],
+      "dimensions": [
+        32,
+        32
+      ],
+      "opaquePalette": [
+        "#454e71",
+        "#596f9e",
+        "#8dafcc",
+        "#d5e7e5",
+        "#fff2d0"
+      ],
+      "opaqueColors": 5
     }
   },
   {
@@ -887,26 +2207,75 @@
     "front": {
       "resourceId": "mx_art_rimepelt_front",
       "file": "rimepelt-front.png",
-      "sha256": "2cb64efc613b025191a39ec86e8c4b86cb401c56ae25dfbb8249af7700964139",
-      "bytes": 944,
+      "sha256": "8c95f3b9b44e19670cf70bf27a7b41fbf6d98510dda00683bb3cae7f30cbfa96",
+      "bytes": 1097,
       "bbox": [
-        15,
-        13,
-        67,
-        74
-      ]
+        12,
+        11,
+        55,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#454e71",
+        "#596f9e",
+        "#8dafcc",
+        "#b59ccc",
+        "#d5e7e5",
+        "#fff2d0"
+      ],
+      "opaqueColors": 6
     },
     "back": {
       "resourceId": "mx_art_rimepelt_back",
       "file": "rimepelt-back.png",
-      "sha256": "b4186a16563f455841d84a3e12ecb342f08e051b7325aadecccf4a498f1b6dd8",
-      "bytes": 1074,
+      "sha256": "54aa3e88356b0c8cc81272a0e24fdc27494609a2c43ce3d03e90573032361d4b",
+      "bytes": 1050,
       "bbox": [
-        21,
-        13,
-        67,
-        75
-      ]
+        16,
+        11,
+        55,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#454e71",
+        "#596f9e",
+        "#8dafcc",
+        "#b59ccc",
+        "#d5e7e5"
+      ],
+      "opaqueColors": 5
+    },
+    "icon": {
+      "resourceId": "mx_art_rimepelt_icon",
+      "file": "rimepelt-icon.png",
+      "sha256": "dcb2faf2463989ca7693dbc2cc477376ef4c28e6295604f1ee854abd671403f1",
+      "bytes": 611,
+      "bbox": [
+        6,
+        3,
+        32,
+        30
+      ],
+      "dimensions": [
+        32,
+        32
+      ],
+      "opaquePalette": [
+        "#454e71",
+        "#596f9e",
+        "#8dafcc",
+        "#d5e7e5",
+        "#fff2d0"
+      ],
+      "opaqueColors": 5
     }
   },
   {
@@ -922,26 +2291,79 @@
     "front": {
       "resourceId": "mx_art_glaciermane_front",
       "file": "glaciermane-front.png",
-      "sha256": "97eb19063cf79830eed385d83ba521956a06562c5d1161a8feb5b2267d3f60d9",
-      "bytes": 1156,
+      "sha256": "3bb70c38497e06986bfd92fb97e308783212208fbc6b83962fd5b63be1776fab",
+      "bytes": 1291,
       "bbox": [
-        12,
-        5,
-        72,
-        75
-      ]
+        10,
+        8,
+        57,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#454e71",
+        "#596f9e",
+        "#8986b6",
+        "#8dafcc",
+        "#b59ccc",
+        "#d5e7e5",
+        "#d9c5ce",
+        "#fff2d0"
+      ],
+      "opaqueColors": 8
     },
     "back": {
       "resourceId": "mx_art_glaciermane_back",
       "file": "glaciermane-back.png",
-      "sha256": "5dce4c250082c2c1ce34c8cd4093571503122c85e99c76ad11fcdd4f1914a638",
-      "bytes": 1208,
+      "sha256": "91dc512c6fe40bbd1a158bc243f829f41478e0b120e6ddc144b1d1c00b790838",
+      "bytes": 1186,
       "bbox": [
-        18,
-        5,
-        72,
-        76
-      ]
+        15,
+        7,
+        57,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#454e71",
+        "#596f9e",
+        "#8dafcc",
+        "#b59ccc",
+        "#d5e7e5",
+        "#d9c5ce"
+      ],
+      "opaqueColors": 6
+    },
+    "icon": {
+      "resourceId": "mx_art_glaciermane_icon",
+      "file": "glaciermane-icon.png",
+      "sha256": "c75b84dbae896536ae679b50cc07780355d758b7c96a0d7c7b489014c4beda04",
+      "bytes": 660,
+      "bbox": [
+        6,
+        2,
+        32,
+        30
+      ],
+      "dimensions": [
+        32,
+        32
+      ],
+      "opaquePalette": [
+        "#454e71",
+        "#596f9e",
+        "#8dafcc",
+        "#b59ccc",
+        "#d5e7e5",
+        "#fff2d0"
+      ],
+      "opaqueColors": 6
     }
   },
   {
@@ -957,26 +2379,78 @@
     "front": {
       "resourceId": "mx_art_wickworm_front",
       "file": "wickworm-front.png",
-      "sha256": "46371fb4590342c0dc246a5f0943016d73accda63af4857d3b8f27d2f9468533",
-      "bytes": 631,
+      "sha256": "83f10b22edd4d361d348fbf1ed617443a227c2e29759d6bdb2e880b6a376f38b",
+      "bytes": 781,
       "bbox": [
-        21,
-        27,
-        55,
-        71
-      ]
+        15,
+        23,
+        46,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#4a3d66",
+        "#624d89",
+        "#a780b6",
+        "#e4bfaa",
+        "#ffe292",
+        "#ffeab0",
+        "#fff2d0"
+      ],
+      "opaqueColors": 7
     },
     "back": {
       "resourceId": "mx_art_wickworm_back",
       "file": "wickworm-back.png",
-      "sha256": "f75682ba6993ac980fb832ac97c67dd5c6b867c0c7a134d73c347cc9525c76b0",
-      "bytes": 608,
+      "sha256": "c6eb71a0829f3eff04d3a301ec08b71df94436612d5f7b69704738ea103c36c0",
+      "bytes": 747,
       "bbox": [
-        21,
-        27,
-        55,
-        71
-      ]
+        15,
+        23,
+        46,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#4a3d66",
+        "#624d89",
+        "#a780b6",
+        "#e4bfaa",
+        "#ffe292",
+        "#ffeab0"
+      ],
+      "opaqueColors": 6
+    },
+    "icon": {
+      "resourceId": "mx_art_wickworm_icon",
+      "file": "wickworm-icon.png",
+      "sha256": "b16b8a7967dc31279e895bff51fe8c1c8e92d136d870e4db9c00514994a74c7c",
+      "bytes": 428,
+      "bbox": [
+        5,
+        1,
+        30,
+        30
+      ],
+      "dimensions": [
+        32,
+        32
+      ],
+      "opaquePalette": [
+        "#4a3d66",
+        "#624d89",
+        "#a780b6",
+        "#e4bfaa",
+        "#ffe292",
+        "#fff2d0"
+      ],
+      "opaqueColors": 6
     }
   },
   {
@@ -992,26 +2466,80 @@
     "front": {
       "resourceId": "mx_art_lanternwing_front",
       "file": "lanternwing-front.png",
-      "sha256": "1bb55ecd3de47faaa2742206df3016c9b084976130f783ce178c35e74e87b669",
-      "bytes": 1210,
+      "sha256": "9acf91a67c631b0f753a15c1e7b6a86229d07707d3737642610933702da94bfe",
+      "bytes": 1259,
       "bbox": [
-        8,
-        18,
-        71,
-        69
-      ]
+        6,
+        20,
+        59,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#4a3d66",
+        "#624d89",
+        "#a780b6",
+        "#b49a8e",
+        "#e4bfaa",
+        "#ffe292",
+        "#ffeab0",
+        "#fff2d0"
+      ],
+      "opaqueColors": 8
     },
     "back": {
       "resourceId": "mx_art_lanternwing_back",
       "file": "lanternwing-back.png",
-      "sha256": "782c7c0a7e1a962ce18a21e7ac7f9899cdb71d1e7b536d3de4bccc48d76c5f90",
-      "bytes": 1398,
+      "sha256": "9accd099d9307642469e696959303950f73e99393e76b7ab1db9a91c0cf3a7e3",
+      "bytes": 1409,
       "bbox": [
-        8,
-        18,
-        71,
-        69
-      ]
+        6,
+        20,
+        59,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#4a3d66",
+        "#624d89",
+        "#a780b6",
+        "#b49a8e",
+        "#e4bfaa",
+        "#ffe292",
+        "#ffeab0",
+        "#fff2d0"
+      ],
+      "opaqueColors": 8
+    },
+    "icon": {
+      "resourceId": "mx_art_lanternwing_icon",
+      "file": "lanternwing-icon.png",
+      "sha256": "39e7c6bd01eda41c2166e45e68eedc305f09b6875266be76c1f3b12bcaf83453",
+      "bytes": 570,
+      "bbox": [
+        1,
+        4,
+        32,
+        30
+      ],
+      "dimensions": [
+        32,
+        32
+      ],
+      "opaquePalette": [
+        "#4a3d66",
+        "#624d89",
+        "#a780b6",
+        "#e4bfaa",
+        "#fff2d0"
+      ],
+      "opaqueColors": 5
     }
   },
   {
@@ -1027,26 +2555,81 @@
     "front": {
       "resourceId": "mx_art_beaconmoth_front",
       "file": "beaconmoth-front.png",
-      "sha256": "26e6363566b15139fb21241ea26de5ad7b97dfd93f6da4dccb4bb336fa2451a5",
-      "bytes": 1389,
+      "sha256": "5fcb8dd4bfb4800ed5355bf3c9c213fcf90024c4dce93c7aad343a9bd836f3c3",
+      "bytes": 1580,
       "bbox": [
         4,
-        5,
-        77,
-        69
-      ]
+        12,
+        61,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#4a3d66",
+        "#624d89",
+        "#a780b6",
+        "#b49a8e",
+        "#e4bfaa",
+        "#ffe292",
+        "#ffeab0",
+        "#fff2d0"
+      ],
+      "opaqueColors": 8
     },
     "back": {
       "resourceId": "mx_art_beaconmoth_back",
       "file": "beaconmoth-back.png",
-      "sha256": "cef0556bbc9b3a3c9f56771c5999413cc8571815dab99b3acc2a6d3614eb141f",
-      "bytes": 1592,
+      "sha256": "3163599dd69c5a2578cc355b54a22c36daa5bcc478e14aa33878f7ee7e5e4825",
+      "bytes": 1745,
       "bbox": [
         4,
-        5,
-        77,
-        69
-      ]
+        12,
+        61,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#4a3d66",
+        "#624d89",
+        "#a780b6",
+        "#b49a8e",
+        "#e4bfaa",
+        "#ffe292",
+        "#ffeab0",
+        "#fff2d0"
+      ],
+      "opaqueColors": 8
+    },
+    "icon": {
+      "resourceId": "mx_art_beaconmoth_icon",
+      "file": "beaconmoth-icon.png",
+      "sha256": "549b9446fab03fe07e75ae6e443b7865faa2bd98e6e8d510a66d8a5e9d865a96",
+      "bytes": 601,
+      "bbox": [
+        1,
+        0,
+        32,
+        30
+      ],
+      "dimensions": [
+        32,
+        32
+      ],
+      "opaquePalette": [
+        "#4a3d66",
+        "#624d89",
+        "#a780b6",
+        "#e4bfaa",
+        "#ffe292",
+        "#fff2d0"
+      ],
+      "opaqueColors": 6
     }
   },
   {
@@ -1062,26 +2645,76 @@
     "front": {
       "resourceId": "mx_art_miretail_front",
       "file": "miretail-front.png",
-      "sha256": "cd555a48e36f00ed53ef1cfd49a5abb4dabbeefc5a30a87deb04ce84d9271324",
-      "bytes": 784,
+      "sha256": "53280e5212624daa121bc87de2ecfe6ca22648d31d837324c1e2099ad49b4fbd",
+      "bytes": 904,
       "bbox": [
-        18,
-        36,
+        13,
+        29,
+        53,
+        62
+      ],
+      "dimensions": [
         64,
-        73
-      ]
+        64
+      ],
+      "opaquePalette": [
+        "#42455e",
+        "#535d79",
+        "#8c8aa1",
+        "#c2b4cd",
+        "#e9948e",
+        "#fff2d0"
+      ],
+      "opaqueColors": 6
     },
     "back": {
       "resourceId": "mx_art_miretail_back",
       "file": "miretail-back.png",
-      "sha256": "80314919966e5c9d52997480373318fbb9d02387f0e4d140cd470f1c80373ddd",
-      "bytes": 819,
+      "sha256": "91eaa39821923fba7a352c610c88993cdb84b763eef968b3a7254dee30ae70f4",
+      "bytes": 904,
       "bbox": [
-        18,
-        36,
+        13,
+        27,
+        53,
+        62
+      ],
+      "dimensions": [
         64,
-        75
-      ]
+        64
+      ],
+      "opaquePalette": [
+        "#42455e",
+        "#535d79",
+        "#8c8aa1",
+        "#c2b4cd",
+        "#e9948e"
+      ],
+      "opaqueColors": 5
+    },
+    "icon": {
+      "resourceId": "mx_art_miretail_icon",
+      "file": "miretail-icon.png",
+      "sha256": "26407d935223e23081f7b5f485978f43eea9a09d2df58747e5a8d72539a5af01",
+      "bytes": 507,
+      "bbox": [
+        4,
+        8,
+        32,
+        30
+      ],
+      "dimensions": [
+        32,
+        32
+      ],
+      "opaquePalette": [
+        "#42455e",
+        "#535d79",
+        "#8c8aa1",
+        "#c2b4cd",
+        "#e9948e",
+        "#fff2d0"
+      ],
+      "opaqueColors": 6
     }
   },
   {
@@ -1097,26 +2730,78 @@
     "front": {
       "resourceId": "mx_art_venomfrill_front",
       "file": "venomfrill-front.png",
-      "sha256": "5238f2830912870861b1927fd119b9caa2b606c193fc770e617aa48a3a4edc47",
-      "bytes": 1008,
+      "sha256": "b6cac630da26600f15839746b41f30d62a09c5f626c89d093a6d8142a675c1d9",
+      "bytes": 1149,
       "bbox": [
-        14,
-        25,
-        68,
-        72
-      ]
+        11,
+        22,
+        56,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#42455e",
+        "#535d79",
+        "#8c8aa1",
+        "#a17a84",
+        "#c2b4cd",
+        "#e9948e",
+        "#fff2d0"
+      ],
+      "opaqueColors": 7
     },
     "back": {
       "resourceId": "mx_art_venomfrill_back",
       "file": "venomfrill-back.png",
-      "sha256": "a7aa71f0657b426a165295dd79a577ffe3923955087e799d9fe619c5160608f1",
-      "bytes": 1091,
+      "sha256": "b8e7557af027e2ad90fbfafac65198d95e2e6d148f3e6c1df643cea0fd229c26",
+      "bytes": 1192,
       "bbox": [
-        14,
-        25,
-        68,
-        75
-      ]
+        11,
+        20,
+        56,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#42455e",
+        "#535d79",
+        "#8c8aa1",
+        "#a17a84",
+        "#c2b4cd",
+        "#e9948e"
+      ],
+      "opaqueColors": 6
+    },
+    "icon": {
+      "resourceId": "mx_art_venomfrill_icon",
+      "file": "venomfrill-icon.png",
+      "sha256": "4c3d543e98bb2f354518d7a724261e194ef8fea6cc9ccdac6f91dcbf239a42fa",
+      "bytes": 575,
+      "bbox": [
+        3,
+        7,
+        32,
+        30
+      ],
+      "dimensions": [
+        32,
+        32
+      ],
+      "opaquePalette": [
+        "#42455e",
+        "#535d79",
+        "#8c8aa1",
+        "#c2b4cd",
+        "#e9948e",
+        "#fff2d0"
+      ],
+      "opaqueColors": 6
     }
   },
   {
@@ -1132,26 +2817,80 @@
     "front": {
       "resourceId": "mx_art_marshcrown_front",
       "file": "marshcrown-front.png",
-      "sha256": "60f0f45dc9e44bc6fbf93829cd8fb7f37d1dce3b313a7df7fc1844a9a65a3764",
-      "bytes": 1247,
+      "sha256": "0a5804a6d0567d825043403337752f21fbf30913282f16a6a0bdec08a700081f",
+      "bytes": 1376,
       "bbox": [
-        10,
-        8,
-        73,
-        73
-      ]
+        9,
+        12,
+        58,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#42455e",
+        "#535d79",
+        "#8c8aa1",
+        "#a17a84",
+        "#c2b4cd",
+        "#e9948e",
+        "#f4c1ae",
+        "#fff2d0"
+      ],
+      "opaqueColors": 8
     },
     "back": {
       "resourceId": "mx_art_marshcrown_back",
       "file": "marshcrown-back.png",
-      "sha256": "6d9ca0e67e348ee0c2f3f5df46d05cd58cca9306858ec6216cc1d5be7680c7e3",
-      "bytes": 1329,
+      "sha256": "e4e850b4e757587f4ba7b2432b0759738d9af6af3be768fcf4b1835bcc63c784",
+      "bytes": 1425,
       "bbox": [
+        9,
         10,
-        8,
-        73,
-        76
-      ]
+        58,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#42455e",
+        "#535d79",
+        "#8c8aa1",
+        "#a17a84",
+        "#c2b4cd",
+        "#e9948e",
+        "#f4c1ae"
+      ],
+      "opaqueColors": 7
+    },
+    "icon": {
+      "resourceId": "mx_art_marshcrown_icon",
+      "file": "marshcrown-icon.png",
+      "sha256": "cf3221556153d19978470752afa74e0b69c2d2927c851598c2def6043140a80e",
+      "bytes": 621,
+      "bbox": [
+        3,
+        1,
+        32,
+        30
+      ],
+      "dimensions": [
+        32,
+        32
+      ],
+      "opaquePalette": [
+        "#42455e",
+        "#535d79",
+        "#8c8aa1",
+        "#c2b4cd",
+        "#e9948e",
+        "#fff2d0"
+      ],
+      "opaqueColors": 6
     }
   },
   {
@@ -1167,26 +2906,80 @@
     "front": {
       "resourceId": "mx_art_rootpig_front",
       "file": "rootpig-front.png",
-      "sha256": "addc89a00d3e99d1768501253f74b2c26d20f97bcdcd9bd6d4360ba7c8ec02fb",
-      "bytes": 832,
+      "sha256": "8619512bc1720c9c4bba6e013a676f37d91d49c8fda2d63d010293c9fe6ee4e7",
+      "bytes": 1007,
       "bbox": [
-        18,
-        35,
-        65,
-        74
-      ]
+        12,
+        28,
+        53,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#484a47",
+        "#5e674e",
+        "#809464",
+        "#9c7855",
+        "#9fbd78",
+        "#cdd6a2",
+        "#d3b27a",
+        "#fff2d0"
+      ],
+      "opaqueColors": 8
     },
     "back": {
       "resourceId": "mx_art_rootpig_back",
       "file": "rootpig-back.png",
-      "sha256": "cbfcd2a215ff48b2ba9a29bb2fb916481b451d85df79a86526d9f97442e553f8",
-      "bytes": 882,
+      "sha256": "0f1bd3ece612a7e913debf860847e3c441aa5b4df7164909672ae2c9355600b7",
+      "bytes": 1008,
       "bbox": [
-        18,
-        35,
-        65,
-        74
-      ]
+        12,
+        28,
+        53,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#484a47",
+        "#5e674e",
+        "#809464",
+        "#9c7855",
+        "#9fbd78",
+        "#cdd6a2",
+        "#d3b27a"
+      ],
+      "opaqueColors": 7
+    },
+    "icon": {
+      "resourceId": "mx_art_rootpig_icon",
+      "file": "rootpig-icon.png",
+      "sha256": "35e67d006aab6322165a9f69736923f3fb8fdaf218c6a7601cba8de9993ac573",
+      "bytes": 573,
+      "bbox": [
+        3,
+        3,
+        30,
+        30
+      ],
+      "dimensions": [
+        32,
+        32
+      ],
+      "opaquePalette": [
+        "#484a47",
+        "#5e674e",
+        "#9c7855",
+        "#9fbd78",
+        "#d3b27a",
+        "#fff2d0"
+      ],
+      "opaqueColors": 6
     }
   },
   {
@@ -1202,26 +2995,81 @@
     "front": {
       "resourceId": "mx_art_brambleboar_front",
       "file": "brambleboar-front.png",
-      "sha256": "ffa6d73905dba446295a2692cd2baf1f71d6055576e333793b07eb3f6b70cb9a",
-      "bytes": 1175,
+      "sha256": "8c257123c75e0c40f973497f035725652253ee10fc6b9633848a4727b7e5cb51",
+      "bytes": 1176,
       "bbox": [
-        12,
-        25,
-        69,
-        73
-      ]
+        9,
+        22,
+        56,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#484a47",
+        "#5e674e",
+        "#809464",
+        "#9c7855",
+        "#9fbd78",
+        "#cdd6a2",
+        "#d3b27a",
+        "#fff2d0"
+      ],
+      "opaqueColors": 8
     },
     "back": {
       "resourceId": "mx_art_brambleboar_back",
       "file": "brambleboar-back.png",
-      "sha256": "32188a32f03428e5e6f4e9c9d7d92c98e6fa2eb0ae52adf0a96c119e92620f2f",
-      "bytes": 1153,
+      "sha256": "781c9bac9935bbe62a4bd47ada13da5f01a7b012d3416165c7c19fb22c8d8dbe",
+      "bytes": 1193,
       "bbox": [
-        12,
-        25,
-        69,
-        73
-      ]
+        9,
+        22,
+        56,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#484a47",
+        "#5e674e",
+        "#809464",
+        "#9c7855",
+        "#9fbd78",
+        "#cdd6a2",
+        "#d3b27a",
+        "#fff2d0"
+      ],
+      "opaqueColors": 8
+    },
+    "icon": {
+      "resourceId": "mx_art_brambleboar_icon",
+      "file": "brambleboar-icon.png",
+      "sha256": "c33a538166f75c425aa7596716a7de16522959445d76fa9cdc618acfae408cec",
+      "bytes": 604,
+      "bbox": [
+        1,
+        3,
+        30,
+        30
+      ],
+      "dimensions": [
+        32,
+        32
+      ],
+      "opaquePalette": [
+        "#484a47",
+        "#5e674e",
+        "#9c7855",
+        "#9fbd78",
+        "#d3b27a",
+        "#fff2d0"
+      ],
+      "opaqueColors": 6
     }
   },
   {
@@ -1237,26 +3085,81 @@
     "front": {
       "resourceId": "mx_art_briartusk_front",
       "file": "briartusk-front.png",
-      "sha256": "7f34759bcb1e976917afc45420da2457ee96d261ff494e4f37f1e9dbafcd44a9",
-      "bytes": 1307,
+      "sha256": "c7551dcd39234042e8b53f2e7b5b5e083de3052da9aaf37550f5f1747f995759",
+      "bytes": 1431,
       "bbox": [
-        3,
+        4,
         19,
-        74,
-        74
-      ]
+        59,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#484a47",
+        "#5e674e",
+        "#809464",
+        "#9c7855",
+        "#9fbd78",
+        "#cdd6a2",
+        "#d3b27a",
+        "#fff2d0"
+      ],
+      "opaqueColors": 8
     },
     "back": {
       "resourceId": "mx_art_briartusk_back",
       "file": "briartusk-back.png",
-      "sha256": "f07ab4bfc82fc1c4527f75ede99c333b03053e2feb2faa4b64c858b3d33d2526",
-      "bytes": 1384,
+      "sha256": "eb7024d37ea267d5b0c34e51fb162245927166557a9ef0e50e4cbae609c28527",
+      "bytes": 1444,
       "bbox": [
-        3,
+        4,
         19,
-        74,
-        74
-      ]
+        59,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#484a47",
+        "#5e674e",
+        "#809464",
+        "#9c7855",
+        "#9fbd78",
+        "#cdd6a2",
+        "#d3b27a",
+        "#fff2d0"
+      ],
+      "opaqueColors": 8
+    },
+    "icon": {
+      "resourceId": "mx_art_briartusk_icon",
+      "file": "briartusk-icon.png",
+      "sha256": "79be432516093c25d87d031644cd60271439f2007cf0f2aaded76871a1037499",
+      "bytes": 586,
+      "bbox": [
+        1,
+        3,
+        30,
+        30
+      ],
+      "dimensions": [
+        32,
+        32
+      ],
+      "opaquePalette": [
+        "#484a47",
+        "#5e674e",
+        "#9c7855",
+        "#9fbd78",
+        "#d3b27a",
+        "#fff2d0"
+      ],
+      "opaqueColors": 6
     }
   },
   {
@@ -1272,26 +3175,78 @@
     "front": {
       "resourceId": "mx_art_dozemite_front",
       "file": "dozemite-front.png",
-      "sha256": "bb923485457d2ed7036a11febc752db8d53da9ee6a290a93d215068aac6a7eaa",
-      "bytes": 789,
+      "sha256": "c30abc26cb4c73a4f5e8fb7ff661de5b56079674e1dd8317fcfcaeb11f96294e",
+      "bytes": 920,
       "bbox": [
-        18,
-        24,
-        59,
-        74
-      ]
+        13,
+        17,
+        49,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#53456c",
+        "#735d94",
+        "#7996a6",
+        "#7ecab6",
+        "#b29abc",
+        "#bcddc2",
+        "#e7c3d7",
+        "#fff2d0"
+      ],
+      "opaqueColors": 8
     },
     "back": {
       "resourceId": "mx_art_dozemite_back",
       "file": "dozemite-back.png",
-      "sha256": "9e521c11f15836f1f72bff9e5dddd3245df355f9857348ea9756e874e03a1e74",
-      "bytes": 799,
+      "sha256": "52930e522af3ff4df64920a3464850045d871ec5c36fff0535f117a7bf3734df",
+      "bytes": 868,
       "bbox": [
-        18,
-        24,
-        59,
-        74
-      ]
+        13,
+        17,
+        49,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#53456c",
+        "#735d94",
+        "#7ecab6",
+        "#b29abc",
+        "#bcddc2",
+        "#e7c3d7"
+      ],
+      "opaqueColors": 6
+    },
+    "icon": {
+      "resourceId": "mx_art_dozemite_icon",
+      "file": "dozemite-icon.png",
+      "sha256": "66929d70043c67b0bacda0b06fed054df29467bbe46ca2cde337e090349b3e98",
+      "bytes": 570,
+      "bbox": [
+        2,
+        0,
+        32,
+        30
+      ],
+      "dimensions": [
+        32,
+        32
+      ],
+      "opaquePalette": [
+        "#53456c",
+        "#735d94",
+        "#b29abc",
+        "#e7c3d7",
+        "#fff2d0"
+      ],
+      "opaqueColors": 5
     }
   },
   {
@@ -1307,26 +3262,80 @@
     "front": {
       "resourceId": "mx_art_trancescythe_front",
       "file": "trancescythe-front.png",
-      "sha256": "09025fabe0643e3c774e75542fac077f73ed8cfcfde53a863d0749a682cfb139",
-      "bytes": 1026,
+      "sha256": "bbf4dd36d3821660b87ab3683d2be44be8cc43ee0c6f5669d11d4c81024b6d30",
+      "bytes": 1043,
       "bbox": [
-        14,
-        14,
-        62,
-        75
-      ]
+        11,
+        12,
+        51,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#53456c",
+        "#735d94",
+        "#7996a6",
+        "#7ecab6",
+        "#b29abc",
+        "#bcddc2",
+        "#e7c3d7",
+        "#fff2d0"
+      ],
+      "opaqueColors": 8
     },
     "back": {
       "resourceId": "mx_art_trancescythe_back",
       "file": "trancescythe-back.png",
-      "sha256": "d5e2d7f82382ce793c4213f2b97fcc30019ee22976ec96ab488f8cae9cdb2f75",
-      "bytes": 1066,
+      "sha256": "9fc7af472810bff52c5d3b4dc9f62df15895392317432f33103a064f18adbb58",
+      "bytes": 1028,
       "bbox": [
-        14,
-        14,
-        62,
-        75
-      ]
+        11,
+        12,
+        51,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#53456c",
+        "#735d94",
+        "#7ecab6",
+        "#b29abc",
+        "#bcddc2",
+        "#e7c3d7",
+        "#fff2d0"
+      ],
+      "opaqueColors": 7
+    },
+    "icon": {
+      "resourceId": "mx_art_trancescythe_icon",
+      "file": "trancescythe-icon.png",
+      "sha256": "3a196633017d2e10adb957ddd4032adad00c1b6cd6dcb43e9f9c32e4312941fd",
+      "bytes": 613,
+      "bbox": [
+        2,
+        0,
+        32,
+        30
+      ],
+      "dimensions": [
+        32,
+        32
+      ],
+      "opaquePalette": [
+        "#53456c",
+        "#735d94",
+        "#7ecab6",
+        "#b29abc",
+        "#e7c3d7",
+        "#fff2d0"
+      ],
+      "opaqueColors": 6
     }
   },
   {
@@ -1342,26 +3351,82 @@
     "front": {
       "resourceId": "mx_art_oraclemantis_front",
       "file": "oraclemantis-front.png",
-      "sha256": "d0a6917509267e8faca6c76e6394587423a2713afe6dd07d89a460ffeeb0e6d1",
-      "bytes": 1320,
+      "sha256": "c5dfa2d867fb1455930cf3ab60e3bfe1309e6df31604021293be8dbc22f6ff7d",
+      "bytes": 1356,
       "bbox": [
         5,
-        6,
-        74,
-        76
-      ]
+        8,
+        58,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#53456c",
+        "#735d94",
+        "#7996a6",
+        "#7ecab6",
+        "#b29abc",
+        "#bcddc2",
+        "#e7c3d7",
+        "#fff2d0"
+      ],
+      "opaqueColors": 8
     },
     "back": {
       "resourceId": "mx_art_oraclemantis_back",
       "file": "oraclemantis-back.png",
-      "sha256": "340ded71f9c1a9a3938efb6aa8a39eb8881a913a02d313260fc63aa2dc673505",
-      "bytes": 1383,
+      "sha256": "108f77e56c684527c0b6d42c9c7fbba2e4f268d5139bfc10050010c2b5e7d7ad",
+      "bytes": 1244,
       "bbox": [
         5,
-        6,
-        74,
-        76
-      ]
+        8,
+        58,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#53456c",
+        "#735d94",
+        "#7996a6",
+        "#7ecab6",
+        "#b29abc",
+        "#bcddc2",
+        "#e7c3d7",
+        "#fff2d0"
+      ],
+      "opaqueColors": 8
+    },
+    "icon": {
+      "resourceId": "mx_art_oraclemantis_icon",
+      "file": "oraclemantis-icon.png",
+      "sha256": "788c4e1bc62c118bc4ce28064440fb74c7c4277f046bd65cfd5cb0e49ab3754f",
+      "bytes": 668,
+      "bbox": [
+        2,
+        0,
+        32,
+        30
+      ],
+      "dimensions": [
+        32,
+        32
+      ],
+      "opaquePalette": [
+        "#53456c",
+        "#735d94",
+        "#7996a6",
+        "#7ecab6",
+        "#b29abc",
+        "#e7c3d7",
+        "#fff2d0"
+      ],
+      "opaqueColors": 7
     }
   },
   {
@@ -1377,26 +3442,76 @@
     "front": {
       "resourceId": "mx_art_gritnose_front",
       "file": "gritnose-front.png",
-      "sha256": "11e20fcf88ec17cc0217190903b112bb0060542d40f961e657523a88ef17f69a",
-      "bytes": 831,
+      "sha256": "d03ca6db8fb4bbc4d59f884c573e90e7bec8eae6a066c9b4aaa03133458bc9e8",
+      "bytes": 869,
       "bbox": [
-        15,
-        35,
-        62,
-        74
-      ]
+        10,
+        28,
+        52,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#3f3e50",
+        "#4d505e",
+        "#847575",
+        "#bb9b85",
+        "#ddbd79",
+        "#edd6a3",
+        "#fff2d0"
+      ],
+      "opaqueColors": 7
     },
     "back": {
       "resourceId": "mx_art_gritnose_back",
       "file": "gritnose-back.png",
-      "sha256": "65e673d54f0878f8b88d19b79585854d6b2846e744f6f6faaf488229e81085cf",
-      "bytes": 772,
+      "sha256": "89b03b2e8a982ee4e6bf53a1938153d1e828e4c2625bf80ffbec5d22fd6e7886",
+      "bytes": 783,
       "bbox": [
-        15,
-        35,
-        62,
-        74
-      ]
+        10,
+        28,
+        52,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#3f3e50",
+        "#4d505e",
+        "#847575",
+        "#bb9b85"
+      ],
+      "opaqueColors": 4
+    },
+    "icon": {
+      "resourceId": "mx_art_gritnose_icon",
+      "file": "gritnose-icon.png",
+      "sha256": "b61dfdd44e8eec80f5558fb5d7076fb405258e95d5618cc8cfdbbb156c1c7ff5",
+      "bytes": 523,
+      "bbox": [
+        1,
+        7,
+        32,
+        30
+      ],
+      "dimensions": [
+        32,
+        32
+      ],
+      "opaquePalette": [
+        "#3f3e50",
+        "#4d505e",
+        "#847575",
+        "#bb9b85",
+        "#ddbd79",
+        "#fff2d0"
+      ],
+      "opaqueColors": 6
     }
   },
   {
@@ -1412,26 +3527,80 @@
     "front": {
       "resourceId": "mx_art_tunnelpaw_front",
       "file": "tunnelpaw-front.png",
-      "sha256": "40327564e0c15d311eff520481d2b7ab952c5ac077781c43f73d23f7b729f4c8",
-      "bytes": 1020,
+      "sha256": "4a45dd23717ec8f4131215c94f4e629e6f41cce611ef2170b268bf1efbcbad28",
+      "bytes": 1123,
       "bbox": [
-        10,
-        18,
-        66,
-        73
-      ]
+        8,
+        16,
+        54,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#3f3e50",
+        "#4d505e",
+        "#847575",
+        "#98896c",
+        "#bb9b85",
+        "#ddbd79",
+        "#edd6a3",
+        "#fff2d0"
+      ],
+      "opaqueColors": 8
     },
     "back": {
       "resourceId": "mx_art_tunnelpaw_back",
       "file": "tunnelpaw-back.png",
-      "sha256": "a17c698bd75e4fbf260d6e02a3aa562703dd6ed72f9c4bd1038f12bc4a3e67d8",
-      "bytes": 949,
+      "sha256": "cb4d44961092ff974ab39060426f459dd77a34a6e696042f89a76497008a1a59",
+      "bytes": 1038,
       "bbox": [
-        10,
-        18,
-        66,
-        73
-      ]
+        8,
+        16,
+        54,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#3f3e50",
+        "#4d505e",
+        "#847575",
+        "#98896c",
+        "#bb9b85",
+        "#ddbd79",
+        "#fff2d0"
+      ],
+      "opaqueColors": 7
+    },
+    "icon": {
+      "resourceId": "mx_art_tunnelpaw_icon",
+      "file": "tunnelpaw-icon.png",
+      "sha256": "170305d96bce4045a76ce4d8d702de0c2ab6ee3a05ff199aa0abda5eb3b8eb34",
+      "bytes": 592,
+      "bbox": [
+        1,
+        1,
+        32,
+        30
+      ],
+      "dimensions": [
+        32,
+        32
+      ],
+      "opaquePalette": [
+        "#3f3e50",
+        "#4d505e",
+        "#847575",
+        "#bb9b85",
+        "#ddbd79",
+        "#fff2d0"
+      ],
+      "opaqueColors": 6
     }
   },
   {
@@ -1447,26 +3616,81 @@
     "front": {
       "resourceId": "mx_art_faultdigger_front",
       "file": "faultdigger-front.png",
-      "sha256": "c17b5f81c7aaea8ea01c60f931086b6055e4899810714f5ee26a7e3ae54d6c45",
-      "bytes": 1240,
+      "sha256": "334a1d46a59a9add70c0c6254947ec1d582f2ea1fdf2d9a333363a922bdf97a7",
+      "bytes": 1272,
       "bbox": [
         6,
-        11,
-        71,
-        74
-      ]
+        13,
+        56,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#3f3e50",
+        "#4d505e",
+        "#847575",
+        "#98896c",
+        "#bb9b85",
+        "#ddbd79",
+        "#edd6a3",
+        "#fff2d0"
+      ],
+      "opaqueColors": 8
     },
     "back": {
       "resourceId": "mx_art_faultdigger_back",
       "file": "faultdigger-back.png",
-      "sha256": "4e76a6ece6974a999493d85913099acf53623aaa1bee390f0c4f7e6826033490",
-      "bytes": 1174,
+      "sha256": "c1569a26ed86e43caf9f5a5778a2ae8ebef270469d33ca1a484f24cb4ce388fe",
+      "bytes": 1131,
       "bbox": [
         6,
-        11,
-        71,
-        74
-      ]
+        13,
+        56,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#3f3e50",
+        "#4d505e",
+        "#847575",
+        "#98896c",
+        "#bb9b85",
+        "#ddbd79",
+        "#edd6a3",
+        "#fff2d0"
+      ],
+      "opaqueColors": 8
+    },
+    "icon": {
+      "resourceId": "mx_art_faultdigger_icon",
+      "file": "faultdigger-icon.png",
+      "sha256": "75c47039c5db171850d949a29a7d7f3397f75d0314700ee5d167d23eff38a2fe",
+      "bytes": 605,
+      "bbox": [
+        1,
+        1,
+        32,
+        30
+      ],
+      "dimensions": [
+        32,
+        32
+      ],
+      "opaquePalette": [
+        "#3f3e50",
+        "#4d505e",
+        "#847575",
+        "#bb9b85",
+        "#ddbd79",
+        "#fff2d0"
+      ],
+      "opaqueColors": 6
     }
   },
   {
@@ -1482,26 +3706,77 @@
     "front": {
       "resourceId": "mx_art_threadimp_front",
       "file": "threadimp-front.png",
-      "sha256": "c0086334ce3b63469712af65b78797590c9eb433b2e6798bd2789b08191707c8",
-      "bytes": 900,
+      "sha256": "5713867ddbeaddf15bd3a7026e93c6817191acfd8a6dbca40cd23cc2284962e8",
+      "bytes": 906,
       "bbox": [
-        19,
-        24,
-        59,
-        76
-      ]
+        13,
+        16,
+        49,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#3f4a61",
+        "#4d667f",
+        "#839eae",
+        "#92847d",
+        "#cad2cd",
+        "#d1a07b",
+        "#fff2d0"
+      ],
+      "opaqueColors": 7
     },
     "back": {
       "resourceId": "mx_art_threadimp_back",
       "file": "threadimp-back.png",
-      "sha256": "6284c59e32383f9a1764577e315319e82d1a04b75224672d8e70e31c08e35729",
-      "bytes": 995,
+      "sha256": "7a9be334fcfa6421ed0232d41de0c8c0287b5d904970886295002ec3171297e6",
+      "bytes": 1052,
       "bbox": [
-        19,
-        24,
-        59,
-        76
-      ]
+        13,
+        16,
+        49,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#3f4a61",
+        "#4d667f",
+        "#839eae",
+        "#92847d",
+        "#cad2cd",
+        "#d1a07b",
+        "#fff2d0"
+      ],
+      "opaqueColors": 7
+    },
+    "icon": {
+      "resourceId": "mx_art_threadimp_icon",
+      "file": "threadimp-icon.png",
+      "sha256": "9ba1dc8f21261479b096ea30221a9a9ad2e08bbce714a2556f02003fcb4fcfb2",
+      "bytes": 532,
+      "bbox": [
+        2,
+        0,
+        31,
+        30
+      ],
+      "dimensions": [
+        32,
+        32
+      ],
+      "opaquePalette": [
+        "#3f4a61",
+        "#4d667f",
+        "#839eae",
+        "#cad2cd"
+      ],
+      "opaqueColors": 4
     }
   },
   {
@@ -1517,26 +3792,78 @@
     "front": {
       "resourceId": "mx_art_hushdoll_front",
       "file": "hushdoll-front.png",
-      "sha256": "a1b00134fe7296a1bc0d3f61afe7f28e5af00ccd5e309f2ed9b55e84e380cfb7",
-      "bytes": 998,
+      "sha256": "84da7819612a10f4ec942e2cdd4e36689ffbe6b52b357728c70abebbb9628937",
+      "bytes": 989,
       "bbox": [
-        14,
-        14,
-        62,
-        75
-      ]
+        11,
+        11,
+        51,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#3f4a61",
+        "#4d667f",
+        "#839eae",
+        "#cad2cd",
+        "#d1a07b",
+        "#fff2d0"
+      ],
+      "opaqueColors": 6
     },
     "back": {
       "resourceId": "mx_art_hushdoll_back",
       "file": "hushdoll-back.png",
-      "sha256": "484d4267add68b626ffdffc36cfcafc8a105538928069fdf6e1b2c820ab2c91a",
-      "bytes": 1103,
+      "sha256": "9a927c61af64f7b9c268d9b476d339269b1735853e82e69b5f97f4ae72e4ebe7",
+      "bytes": 1115,
       "bbox": [
-        14,
-        14,
-        62,
-        75
-      ]
+        11,
+        11,
+        51,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#3f4a61",
+        "#4d667f",
+        "#839eae",
+        "#92847d",
+        "#cad2cd",
+        "#d1a07b"
+      ],
+      "opaqueColors": 6
+    },
+    "icon": {
+      "resourceId": "mx_art_hushdoll_icon",
+      "file": "hushdoll-icon.png",
+      "sha256": "7f202b790c85743c0bf7b9ff2e4672e2090631de456c8956e48b65d024bbd893",
+      "bytes": 591,
+      "bbox": [
+        2,
+        0,
+        31,
+        30
+      ],
+      "dimensions": [
+        32,
+        32
+      ],
+      "opaquePalette": [
+        "#3f4a61",
+        "#4d667f",
+        "#839eae",
+        "#92847d",
+        "#cad2cd",
+        "#d1a07b",
+        "#fff2d0"
+      ],
+      "opaqueColors": 7
     }
   },
   {
@@ -1552,26 +3879,80 @@
     "front": {
       "resourceId": "mx_art_veilmaster_front",
       "file": "veilmaster-front.png",
-      "sha256": "39266a743b4826c709f6d0764736a20d45448329dbc5651630c0a3ed7aff67b9",
-      "bytes": 1264,
+      "sha256": "149b82410a2ed30a4677cfde25f80ddffac3f05a1d1b8617e20301698f544891",
+      "bytes": 1276,
       "bbox": [
-        9,
-        6,
-        70,
-        77
-      ]
+        8,
+        7,
+        55,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#3f4a61",
+        "#4d667f",
+        "#839eae",
+        "#92847d",
+        "#cad2cd",
+        "#d1a07b",
+        "#e7c7a4"
+      ],
+      "opaqueColors": 7
     },
     "back": {
       "resourceId": "mx_art_veilmaster_back",
       "file": "veilmaster-back.png",
-      "sha256": "13784a6421344b0d402ed9557489874c59d2cfded093f46565176b5803583fde",
-      "bytes": 1408,
+      "sha256": "817b774f6fcfb0604e6b0dd7f256e066f251fa18b3c05bd4f86ecfe435575a70",
+      "bytes": 1413,
       "bbox": [
-        9,
-        6,
-        70,
-        77
-      ]
+        8,
+        7,
+        55,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#3f4a61",
+        "#4d667f",
+        "#839eae",
+        "#92847d",
+        "#cad2cd",
+        "#d1a07b",
+        "#e7c7a4"
+      ],
+      "opaqueColors": 7
+    },
+    "icon": {
+      "resourceId": "mx_art_veilmaster_icon",
+      "file": "veilmaster-icon.png",
+      "sha256": "4e3582bdd7cb8102925fea3a04bc830cc76eaee36eb0bf379e4eda568aabc2f1",
+      "bytes": 597,
+      "bbox": [
+        2,
+        0,
+        31,
+        30
+      ],
+      "dimensions": [
+        32,
+        32
+      ],
+      "opaquePalette": [
+        "#3f4a61",
+        "#4d667f",
+        "#839eae",
+        "#92847d",
+        "#cad2cd",
+        "#d1a07b",
+        "#fff2d0"
+      ],
+      "opaqueColors": 7
     }
   },
   {
@@ -1587,26 +3968,77 @@
     "front": {
       "resourceId": "mx_art_reedpeep_front",
       "file": "reedpeep-front.png",
-      "sha256": "c8dcfca62ebd8dfa20fe55f36bf42f9e1f98844056955239e8df1c1a67260ca2",
-      "bytes": 748,
+      "sha256": "6569e63ae02b0ad9e83a85532450d93aaffa6f835adfc87e8385af3444befc83",
+      "bytes": 768,
       "bbox": [
-        15,
-        27,
+        10,
+        19,
+        53,
+        62
+      ],
+      "dimensions": [
         64,
-        75
-      ]
+        64
+      ],
+      "opaquePalette": [
+        "#374b5c",
+        "#3e6876",
+        "#69a398",
+        "#939880",
+        "#b6d5c0",
+        "#e1c58a",
+        "#fff2d0"
+      ],
+      "opaqueColors": 7
     },
     "back": {
       "resourceId": "mx_art_reedpeep_back",
       "file": "reedpeep-back.png",
-      "sha256": "8fb36b2d95ad9b859357dd2ff8e3664a8f0b050d827d119838d589f28c586288",
-      "bytes": 791,
+      "sha256": "7a527be7af2b4aa298566b902f28ac03045e7c99b1b34a9553a2fbf1337f0eaf",
+      "bytes": 759,
       "bbox": [
-        25,
-        27,
+        19,
+        19,
+        53,
+        62
+      ],
+      "dimensions": [
         64,
-        75
-      ]
+        64
+      ],
+      "opaquePalette": [
+        "#374b5c",
+        "#3e6876",
+        "#69a398",
+        "#b6d5c0",
+        "#e1c58a"
+      ],
+      "opaqueColors": 5
+    },
+    "icon": {
+      "resourceId": "mx_art_reedpeep_icon",
+      "file": "reedpeep-icon.png",
+      "sha256": "4212325c857e631a98be03171d879e03d4d5574dee90c6015bc18f4c58563130",
+      "bytes": 495,
+      "bbox": [
+        1,
+        0,
+        31,
+        30
+      ],
+      "dimensions": [
+        32,
+        32
+      ],
+      "opaquePalette": [
+        "#374b5c",
+        "#3e6876",
+        "#69a398",
+        "#b6d5c0",
+        "#e1c58a",
+        "#fff2d0"
+      ],
+      "opaqueColors": 6
     }
   },
   {
@@ -1622,26 +4054,77 @@
     "front": {
       "resourceId": "mx_art_fenstrider_front",
       "file": "fenstrider-front.png",
-      "sha256": "f283731df3d21c95f25e92ded3b6093069c99c35a06a7ae334b11fd37d7fccb4",
-      "bytes": 878,
+      "sha256": "e6749d570b10d93ce245720290b7ab4ee6b72e42b233e1174709482e64e95247",
+      "bytes": 919,
       "bbox": [
-        9,
-        17,
-        68,
-        75
-      ]
+        7,
+        14,
+        56,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#374b5c",
+        "#3e6876",
+        "#69a398",
+        "#939880",
+        "#b6d5c0",
+        "#e1c58a",
+        "#fff2d0"
+      ],
+      "opaqueColors": 7
     },
     "back": {
       "resourceId": "mx_art_fenstrider_back",
       "file": "fenstrider-back.png",
-      "sha256": "77518d89554a28ccdf100c0a4489a50c7fb41833720822e21e735b73a87a9c39",
-      "bytes": 954,
+      "sha256": "ca4f81831d4db4c0df9c00f8ac621148167a2b9adc89264a3c153b097d839226",
+      "bytes": 894,
       "bbox": [
-        20,
-        17,
-        68,
-        75
-      ]
+        16,
+        14,
+        56,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#374b5c",
+        "#3e6876",
+        "#69a398",
+        "#b6d5c0",
+        "#e1c58a"
+      ],
+      "opaqueColors": 5
+    },
+    "icon": {
+      "resourceId": "mx_art_fenstrider_icon",
+      "file": "fenstrider-icon.png",
+      "sha256": "1d1701567b5835631b766ad9c0978931f7f498333938c00286bf121b84a6172b",
+      "bytes": 586,
+      "bbox": [
+        1,
+        0,
+        31,
+        30
+      ],
+      "dimensions": [
+        32,
+        32
+      ],
+      "opaquePalette": [
+        "#374b5c",
+        "#3e6876",
+        "#69a398",
+        "#b6d5c0",
+        "#e1c58a",
+        "#fff2d0"
+      ],
+      "opaqueColors": 6
     }
   },
   {
@@ -1657,26 +4140,79 @@
     "front": {
       "resourceId": "mx_art_mistralheron_front",
       "file": "mistralheron-front.png",
-      "sha256": "7f2531a6bb8a45d6f864cda17afecb178e63ce5b5beb81f37600278f09308754",
-      "bytes": 1180,
+      "sha256": "748e593d971aafc31501a29724478f21a2fececc288f7510289a9769b588d09a",
+      "bytes": 1157,
       "bbox": [
         5,
-        5,
-        73,
-        76
-      ]
+        7,
+        58,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#374b5c",
+        "#3e6876",
+        "#69a398",
+        "#939880",
+        "#b6d5c0",
+        "#e1c58a",
+        "#efdbac",
+        "#fff2d0"
+      ],
+      "opaqueColors": 8
     },
     "back": {
       "resourceId": "mx_art_mistralheron_back",
       "file": "mistralheron-back.png",
-      "sha256": "5c69c84e6c86162cfb9418e72a18f6f66033ec3caf7a23eb879a504d4b50d93a",
-      "bytes": 1195,
+      "sha256": "76f9164e59fe17eb38a2d24f512d116eea40ed29fe045f3f6ae4ddda630c7a49",
+      "bytes": 1125,
       "bbox": [
-        17,
-        5,
-        73,
-        76
-      ]
+        14,
+        7,
+        58,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#374b5c",
+        "#3e6876",
+        "#69a398",
+        "#b6d5c0",
+        "#e1c58a",
+        "#efdbac"
+      ],
+      "opaqueColors": 6
+    },
+    "icon": {
+      "resourceId": "mx_art_mistralheron_icon",
+      "file": "mistralheron-icon.png",
+      "sha256": "b9e7233a72ad36ba654cd59d6c31ea0a7501280f1efdf90a4eeefd2c05e6346f",
+      "bytes": 610,
+      "bbox": [
+        1,
+        0,
+        31,
+        30
+      ],
+      "dimensions": [
+        32,
+        32
+      ],
+      "opaquePalette": [
+        "#374b5c",
+        "#3e6876",
+        "#69a398",
+        "#b6d5c0",
+        "#e1c58a",
+        "#fff2d0"
+      ],
+      "opaqueColors": 6
     }
   },
   {
@@ -1692,26 +4228,75 @@
     "front": {
       "resourceId": "mx_art_coralpin_front",
       "file": "coralpin-front.png",
-      "sha256": "04c44da6111b221a060bd649b72ada43ce6fe1d900629a154a5bf236974525bf",
-      "bytes": 810,
+      "sha256": "c48cb7ac208444d0a32c3a543af733a46b21869e0c55b74529cbe66ec04c6c74",
+      "bytes": 845,
       "bbox": [
-        16,
-        35,
-        67,
-        71
-      ]
+        11,
+        29,
+        56,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#664255",
+        "#985868",
+        "#b7d3c2",
+        "#d68879",
+        "#f4bd9a",
+        "#fff2d0"
+      ],
+      "opaqueColors": 6
     },
     "back": {
       "resourceId": "mx_art_coralpin_back",
       "file": "coralpin-back.png",
-      "sha256": "ca474569f299e6779ab739d079d5b0577e253bf4d620b6d0a6ff7a74a40b0c1a",
-      "bytes": 783,
+      "sha256": "d713212d0ab7de4e109ffc5034e8db076acc2251f83cb67745677c7045367a9b",
+      "bytes": 826,
       "bbox": [
-        16,
-        35,
-        67,
-        71
-      ]
+        11,
+        29,
+        56,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#664255",
+        "#985868",
+        "#b7d3c2",
+        "#d68879",
+        "#f4bd9a"
+      ],
+      "opaqueColors": 5
+    },
+    "icon": {
+      "resourceId": "mx_art_coralpin_icon",
+      "file": "coralpin-icon.png",
+      "sha256": "a6eee1e0abe5722fb2aa42adcd0a468732ce997a5ed27cba324d23607d670a30",
+      "bytes": 585,
+      "bbox": [
+        1,
+        3,
+        32,
+        30
+      ],
+      "dimensions": [
+        32,
+        32
+      ],
+      "opaquePalette": [
+        "#664255",
+        "#985868",
+        "#d68879",
+        "#f4bd9a",
+        "#fff2d0"
+      ],
+      "opaqueColors": 5
     }
   },
   {
@@ -1727,26 +4312,78 @@
     "front": {
       "resourceId": "mx_art_reefguard_front",
       "file": "reefguard-front.png",
-      "sha256": "036387cee843df4e082ff6a4ad7b95f81939f83fb314a501d807a0aeaa118994",
-      "bytes": 959,
+      "sha256": "172292b4508efd99973ac4030877802e9b591b8ee515512e86b3222c847dea6a",
+      "bytes": 1064,
       "bbox": [
-        12,
-        25,
-        71,
-        69
-      ]
+        8,
+        23,
+        59,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#664255",
+        "#74b6b5",
+        "#985868",
+        "#b7d3c2",
+        "#d68879",
+        "#f4bd9a",
+        "#fff2d0"
+      ],
+      "opaqueColors": 7
     },
     "back": {
       "resourceId": "mx_art_reefguard_back",
       "file": "reefguard-back.png",
-      "sha256": "ca1fa381385835746ecdd5cac613701c555a3d780a67b130bf718a7e84c62c55",
-      "bytes": 891,
+      "sha256": "b2187d27e9155752b9778bc5235a2d0d7a6b89f0bf5c201d959aacbd723a8253",
+      "bytes": 1051,
       "bbox": [
-        12,
-        25,
-        71,
-        69
-      ]
+        8,
+        23,
+        59,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#664255",
+        "#74b6b5",
+        "#985868",
+        "#b7d3c2",
+        "#d68879",
+        "#f4bd9a"
+      ],
+      "opaqueColors": 6
+    },
+    "icon": {
+      "resourceId": "mx_art_reefguard_icon",
+      "file": "reefguard-icon.png",
+      "sha256": "06cf7fe9f26893de183e430eff6d1e32e4b3e715b02b5452f7f395a1cc4da05d",
+      "bytes": 624,
+      "bbox": [
+        1,
+        3,
+        32,
+        30
+      ],
+      "dimensions": [
+        32,
+        32
+      ],
+      "opaquePalette": [
+        "#664255",
+        "#74b6b5",
+        "#985868",
+        "#d68879",
+        "#f4bd9a",
+        "#fff2d0"
+      ],
+      "opaqueColors": 6
     }
   },
   {
@@ -1762,26 +4399,81 @@
     "front": {
       "resourceId": "mx_art_atollclamp_front",
       "file": "atollclamp-front.png",
-      "sha256": "7de45bee9341a29be8160d8e4c6cfa2b5403c459769da4b474858067c3907a36",
-      "bytes": 1270,
+      "sha256": "5749b5401c9c7f5852b77c7af167e9d40be167ed2d0778f7522bb1b61625e40e",
+      "bytes": 1148,
       "bbox": [
         7,
-        17,
-        77,
-        70
-      ]
+        21,
+        61,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#664255",
+        "#74b6b5",
+        "#985868",
+        "#b7d3c2",
+        "#d68879",
+        "#f4bd9a",
+        "#fff2d0"
+      ],
+      "opaqueColors": 7
     },
     "back": {
       "resourceId": "mx_art_atollclamp_back",
       "file": "atollclamp-back.png",
-      "sha256": "8772bd1929cf6cace8e51d381c5c3670f85c4e50ffb3e71bebb92211199889a9",
-      "bytes": 1170,
+      "sha256": "2b979356916e59f772d2f26c35f2b3752c44a9d3bdfb9884eb4251769c68d553",
+      "bytes": 1216,
       "bbox": [
         7,
-        17,
-        77,
-        70
-      ]
+        21,
+        61,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#664255",
+        "#74b6b5",
+        "#858990",
+        "#985868",
+        "#b7d3c2",
+        "#d68879",
+        "#f4bd9a",
+        "#fff2d0"
+      ],
+      "opaqueColors": 8
+    },
+    "icon": {
+      "resourceId": "mx_art_atollclamp_icon",
+      "file": "atollclamp-icon.png",
+      "sha256": "471a3009bc91863b085b8914bc92b2b281da13ab44a823432aad246a042b0b73",
+      "bytes": 731,
+      "bbox": [
+        1,
+        3,
+        32,
+        30
+      ],
+      "dimensions": [
+        32,
+        32
+      ],
+      "opaquePalette": [
+        "#664255",
+        "#74b6b5",
+        "#858990",
+        "#985868",
+        "#d68879",
+        "#f4bd9a",
+        "#fff2d0"
+      ],
+      "opaqueColors": 7
     }
   },
   {
@@ -1797,26 +4489,78 @@
     "front": {
       "resourceId": "mx_art_curlfin_front",
       "file": "curlfin-front.png",
-      "sha256": "3ee42a4cce2e953cbf9059aa381b48201c5be6ce4582adb9530d2444ba281a43",
-      "bytes": 793,
+      "sha256": "94c09c2eaaca65fc0e0588049e9c675a5d47bb8a894cc7978b144c0d8e88d6de",
+      "bytes": 867,
       "bbox": [
-        22,
-        24,
-        60,
-        75
-      ]
+        16,
+        17,
+        50,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#3b456a",
+        "#465d91",
+        "#6392b2",
+        "#a7d8d0",
+        "#ddae7d",
+        "#edcfa5",
+        "#fff2d0"
+      ],
+      "opaqueColors": 7
     },
     "back": {
       "resourceId": "mx_art_curlfin_back",
       "file": "curlfin-back.png",
-      "sha256": "8f7dce29c5338cb16ce11c0382a80ab220ec0bb72ea0a9cd1cbfaf28b470e7c9",
-      "bytes": 834,
+      "sha256": "a34c8a523d1c8cd1bbcfee502400a40ed63fec56c7c083cc426eda975dbca61e",
+      "bytes": 861,
       "bbox": [
-        25,
-        24,
-        60,
-        75
-      ]
+        19,
+        17,
+        50,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#3b456a",
+        "#465d91",
+        "#6392b2",
+        "#a7d8d0",
+        "#ddae7d",
+        "#edcfa5"
+      ],
+      "opaqueColors": 6
+    },
+    "icon": {
+      "resourceId": "mx_art_curlfin_icon",
+      "file": "curlfin-icon.png",
+      "sha256": "fc39950db8e26b6a20ac116eeab9c66f2f445b5cf175af24374d4e8bb61cbe47",
+      "bytes": 544,
+      "bbox": [
+        5,
+        0,
+        31,
+        30
+      ],
+      "dimensions": [
+        32,
+        32
+      ],
+      "opaquePalette": [
+        "#3b456a",
+        "#465d91",
+        "#6392b2",
+        "#a7d8d0",
+        "#ddae7d",
+        "#fff2d0"
+      ],
+      "opaqueColors": 6
     }
   },
   {
@@ -1832,26 +4576,78 @@
     "front": {
       "resourceId": "mx_art_brinewyrm_front",
       "file": "brinewyrm-front.png",
-      "sha256": "d6b72aa3ab2eb5a7948c0b9f6e7100a176e74a59911771058e052c98ea10647d",
-      "bytes": 950,
+      "sha256": "b21449cd2ac357610088c198c585755e667a303c8dca2ea52554cc4bccde1b0a",
+      "bytes": 998,
       "bbox": [
-        18,
-        13,
-        63,
-        75
-      ]
+        14,
+        11,
+        52,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#3b456a",
+        "#465d91",
+        "#6392b2",
+        "#a7d8d0",
+        "#ddae7d",
+        "#edcfa5",
+        "#fff2d0"
+      ],
+      "opaqueColors": 7
     },
     "back": {
       "resourceId": "mx_art_brinewyrm_back",
       "file": "brinewyrm-back.png",
-      "sha256": "9309ad1090bff7ef89305df9775ef07f41348ebec58d228c17527503217d2705",
-      "bytes": 943,
+      "sha256": "ac6ced45ad425fdcd33086f462339765c624964ddf970c81223fb07cd347c963",
+      "bytes": 1001,
       "bbox": [
-        21,
-        13,
-        63,
-        75
-      ]
+        17,
+        11,
+        52,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#3b456a",
+        "#465d91",
+        "#6392b2",
+        "#a7d8d0",
+        "#ddae7d",
+        "#edcfa5"
+      ],
+      "opaqueColors": 6
+    },
+    "icon": {
+      "resourceId": "mx_art_brinewyrm_icon",
+      "file": "brinewyrm-icon.png",
+      "sha256": "c8c9a7b110bc7d607075d290666731309d016ac318f42601909280453409a1cf",
+      "bytes": 569,
+      "bbox": [
+        5,
+        0,
+        31,
+        30
+      ],
+      "dimensions": [
+        32,
+        32
+      ],
+      "opaquePalette": [
+        "#3b456a",
+        "#465d91",
+        "#6392b2",
+        "#a7d8d0",
+        "#ddae7d",
+        "#fff2d0"
+      ],
+      "opaqueColors": 6
     }
   },
   {
@@ -1867,26 +4663,80 @@
     "front": {
       "resourceId": "mx_art_abyssail_front",
       "file": "abyssail-front.png",
-      "sha256": "152da992bbed753bde874b54f7b63d1945cbb99ed98e0fe4f795909025040b2a",
-      "bytes": 1173,
+      "sha256": "60aeac559582a0647ec34e514a054adb4de4b88127b055021882dc0a27a052e3",
+      "bytes": 1263,
       "bbox": [
-        15,
-        5,
-        72,
-        76
-      ]
+        13,
+        7,
+        57,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#3b456a",
+        "#465d91",
+        "#6392b2",
+        "#958787",
+        "#a7d8d0",
+        "#ddae7d",
+        "#edcfa5",
+        "#fff2d0"
+      ],
+      "opaqueColors": 8
     },
     "back": {
       "resourceId": "mx_art_abyssail_back",
       "file": "abyssail-back.png",
-      "sha256": "a2e63688a76d8d689ee629ddf369a8eb798b56f625164a5a7971c8bea081f592",
-      "bytes": 1160,
+      "sha256": "46f2350b7b86fc9753d68da2c7dbddfa26eba58299deb520b32c6415fea401f5",
+      "bytes": 1218,
       "bbox": [
-        19,
+        16,
+        7,
+        57,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#3b456a",
+        "#465d91",
+        "#6392b2",
+        "#958787",
+        "#a7d8d0",
+        "#ddae7d",
+        "#edcfa5"
+      ],
+      "opaqueColors": 7
+    },
+    "icon": {
+      "resourceId": "mx_art_abyssail_icon",
+      "file": "abyssail-icon.png",
+      "sha256": "4d9605ded8e0db5ba327a04a874b0575a28fb9b0dc7f1eea6cd635534f39a494",
+      "bytes": 590,
+      "bbox": [
         5,
-        72,
-        76
-      ]
+        0,
+        32,
+        30
+      ],
+      "dimensions": [
+        32,
+        32
+      ],
+      "opaquePalette": [
+        "#3b456a",
+        "#465d91",
+        "#6392b2",
+        "#a7d8d0",
+        "#ddae7d",
+        "#fff2d0"
+      ],
+      "opaqueColors": 6
     }
   },
   {
@@ -1902,26 +4752,81 @@
     "front": {
       "resourceId": "mx_art_thundercairn_front",
       "file": "thundercairn-front.png",
-      "sha256": "591f19ac3c0abfb1d50370f165d3f8c494ab3ffa0fddc6041e990e13cfcc5904",
-      "bytes": 1394,
+      "sha256": "728e10f73223be4728406298e09c246a1ba2fddf5821580172f05952e34a6b1d",
+      "bytes": 1615,
       "bbox": [
         7,
-        3,
-        71,
-        74
-      ]
+        7,
+        59,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#45435d",
+        "#595977",
+        "#7698a9",
+        "#91d3d7",
+        "#9b956a",
+        "#c6e2d4",
+        "#e1d17e",
+        "#fff2d0"
+      ],
+      "opaqueColors": 8
     },
     "back": {
       "resourceId": "mx_art_thundercairn_back",
       "file": "thundercairn-back.png",
-      "sha256": "2adfb61090865e08f07fae40551cf9fbb0b3351651412fa7103f1d9dd193e79c",
-      "bytes": 1450,
+      "sha256": "4dd93a0a824abf48d79139629955c34a518cad6a4cdaef16cf7beb0112f1f312",
+      "bytes": 1516,
       "bbox": [
         7,
-        3,
-        71,
-        74
-      ]
+        7,
+        59,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#45435d",
+        "#595977",
+        "#7698a9",
+        "#91d3d7",
+        "#9b956a",
+        "#c6e2d4",
+        "#e1d17e",
+        "#fff2d0"
+      ],
+      "opaqueColors": 8
+    },
+    "icon": {
+      "resourceId": "mx_art_thundercairn_icon",
+      "file": "thundercairn-icon.png",
+      "sha256": "ec6878bd50e93f1f67c8eac6fc5c4078385b24ab6a0761b5da6e255573501e7c",
+      "bytes": 703,
+      "bbox": [
+        1,
+        0,
+        30,
+        30
+      ],
+      "dimensions": [
+        32,
+        32
+      ],
+      "opaquePalette": [
+        "#45435d",
+        "#595977",
+        "#91d3d7",
+        "#9b956a",
+        "#e1d17e",
+        "#fff2d0"
+      ],
+      "opaqueColors": 6
     }
   },
   {
@@ -1937,26 +4842,81 @@
     "front": {
       "resourceId": "mx_art_winterquill_front",
       "file": "winterquill-front.png",
-      "sha256": "e38d0a932752695b326216f1041930a0d6979609cd7a34673d257c24b44fa63a",
-      "bytes": 1329,
+      "sha256": "7a34cf3006ce3961ceb57cc4ec75b60996044e2cd8fc9c159d0a37dc2dd1cf19",
+      "bytes": 1391,
       "bbox": [
         5,
-        5,
-        74,
-        76
-      ]
+        7,
+        58,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#4d5970",
+        "#68849d",
+        "#9796b4",
+        "#abc8d8",
+        "#c3a6ca",
+        "#e0cacd",
+        "#f0ebdd",
+        "#fff2d0"
+      ],
+      "opaqueColors": 8
     },
     "back": {
       "resourceId": "mx_art_winterquill_back",
       "file": "winterquill-back.png",
-      "sha256": "5331ba8d9492994a617e9d149a9b1618030745b5c8d98bd8084d2e4562662574",
-      "bytes": 1423,
+      "sha256": "08008e93bcc4ce1dbd364c4770be6cb0560ca0e0ae7092a35f54a7ae00ae9907",
+      "bytes": 1413,
       "bbox": [
         5,
-        5,
-        74,
-        76
-      ]
+        7,
+        58,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#4d5970",
+        "#68849d",
+        "#9796b4",
+        "#abc8d8",
+        "#c3a6ca",
+        "#e0cacd",
+        "#f0ebdd",
+        "#fff2d0"
+      ],
+      "opaqueColors": 8
+    },
+    "icon": {
+      "resourceId": "mx_art_winterquill_icon",
+      "file": "winterquill-icon.png",
+      "sha256": "3272eb2691c9bc58939a7747a15455358d8811087adda3edfa095f899c0d1dbb",
+      "bytes": 636,
+      "bbox": [
+        1,
+        0,
+        32,
+        30
+      ],
+      "dimensions": [
+        32,
+        32
+      ],
+      "opaquePalette": [
+        "#4d5970",
+        "#68849d",
+        "#abc8d8",
+        "#c3a6ca",
+        "#f0ebdd",
+        "#fff2d0"
+      ],
+      "opaqueColors": 6
     }
   },
   {
@@ -1972,26 +4932,81 @@
     "front": {
       "resourceId": "mx_art_solmane_front",
       "file": "solmane-front.png",
-      "sha256": "929e79b1dfcdcd363bb6aeb6a18ab80e7a793b6afd075f224b49dbc85f0aea91",
-      "bytes": 1203,
+      "sha256": "2f73434f863e1bba504cbbfcb284069a9c1603d551cadbf3293c3e0d87b5b3ce",
+      "bytes": 1501,
       "bbox": [
-        10,
-        8,
-        78,
-        75
-      ]
+        9,
+        11,
+        61,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#5d3f4c",
+        "#865258",
+        "#c09e84",
+        "#c18c4b",
+        "#f5cf7e",
+        "#f6e4ad",
+        "#faebbe",
+        "#fff2d0"
+      ],
+      "opaqueColors": 8
     },
     "back": {
       "resourceId": "mx_art_solmane_back",
       "file": "solmane-back.png",
-      "sha256": "b99e42a00e286a1b70e52aae3e90c7c201a677de4801892fff2387ff05758a4f",
-      "bytes": 1310,
+      "sha256": "01f4fe7ffe498243f039a7e06da2d93e5b746f34ea7a1ec6fa78dfcc00783c90",
+      "bytes": 1571,
       "bbox": [
+        9,
         10,
-        8,
-        78,
-        76
-      ]
+        61,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#5d3f4c",
+        "#865258",
+        "#c09e84",
+        "#c18c4b",
+        "#f5cf7e",
+        "#f6e4ad",
+        "#faebbe",
+        "#fff2d0"
+      ],
+      "opaqueColors": 8
+    },
+    "icon": {
+      "resourceId": "mx_art_solmane_icon",
+      "file": "solmane-icon.png",
+      "sha256": "d946489083f87a5ffd8e6d1004fcec3825538e4d387ad5080342ee9a0cc2b961",
+      "bytes": 703,
+      "bbox": [
+        3,
+        2,
+        32,
+        30
+      ],
+      "dimensions": [
+        32,
+        32
+      ],
+      "opaquePalette": [
+        "#5d3f4c",
+        "#865258",
+        "#c18c4b",
+        "#f5cf7e",
+        "#f6e4ad",
+        "#fff2d0"
+      ],
+      "opaqueColors": 6
     }
   },
   {
@@ -2007,26 +5022,82 @@
     "front": {
       "resourceId": "mx_art_lunavane_front",
       "file": "lunavane-front.png",
-      "sha256": "f07f07aa078457b30b86463ac6929f0eeeaf22b72ff3051e04ef018e1997fb2c",
-      "bytes": 1200,
+      "sha256": "ae47bd3162edaff1437f23d0362c72dd378d1adf5799938ab02e6293fbf25b4d",
+      "bytes": 1267,
       "bbox": [
         4,
-        11,
-        77,
-        79
-      ]
+        9,
+        61,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#434566",
+        "#555d8a",
+        "#81a1ad",
+        "#8b88b2",
+        "#a9dfce",
+        "#c8cfe5",
+        "#d2e8cf",
+        "#fff2d0"
+      ],
+      "opaqueColors": 8
     },
     "back": {
       "resourceId": "mx_art_lunavane_back",
       "file": "lunavane-back.png",
-      "sha256": "44abd988053df16f428572e95cf7f0408304f3acf6884cf6cd26adc2369f07ce",
-      "bytes": 1220,
+      "sha256": "f0272fdf27642fcc5a7f88ef3226d712cc6e5bad861ccef90544411882742e39",
+      "bytes": 1333,
       "bbox": [
         4,
-        11,
-        77,
-        79
-      ]
+        9,
+        61,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#434566",
+        "#555d8a",
+        "#81a1ad",
+        "#8b88b2",
+        "#a9dfce",
+        "#c8cfe5",
+        "#d2e8cf",
+        "#fff2d0"
+      ],
+      "opaqueColors": 8
+    },
+    "icon": {
+      "resourceId": "mx_art_lunavane_icon",
+      "file": "lunavane-icon.png",
+      "sha256": "3fce0741e8a0a5a069d4cf3d58c2ece6297576014345e046d34cf85696ed9d0e",
+      "bytes": 714,
+      "bbox": [
+        1,
+        0,
+        32,
+        30
+      ],
+      "dimensions": [
+        32,
+        32
+      ],
+      "opaquePalette": [
+        "#434566",
+        "#555d8a",
+        "#81a1ad",
+        "#8b88b2",
+        "#a9dfce",
+        "#c8cfe5",
+        "#fff2d0"
+      ],
+      "opaqueColors": 7
     }
   },
   {
@@ -2042,26 +5113,82 @@
     "front": {
       "resourceId": "mx_art_relicarab_front",
       "file": "relicarab-front.png",
-      "sha256": "4938bfa41c990bb6f777e19a0abf5713e15913f2b7c257654af6da154cd87b6f",
-      "bytes": 1542,
+      "sha256": "fd6c639fc0d88be11b6e49a07452a74c53e09296f36da43693f11dc85ee856e5",
+      "bytes": 1786,
       "bbox": [
         6,
-        2,
-        77,
-        74
-      ]
+        7,
+        61,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#4b475e",
+        "#646179",
+        "#7a9399",
+        "#8ec1b6",
+        "#a69465",
+        "#c4d9c2",
+        "#dfca89",
+        "#fff2d0"
+      ],
+      "opaqueColors": 8
     },
     "back": {
       "resourceId": "mx_art_relicarab_back",
       "file": "relicarab-back.png",
-      "sha256": "2e80e9555e852ff560e4cf5bdcfb9161ee3ba22d0d93436e71699d6d94618b39",
-      "bytes": 1553,
+      "sha256": "b0ad64a80cce13ca8ad8ecb557c6eea204a9e5168f97ac59343b4ab27c0e07ff",
+      "bytes": 1605,
       "bbox": [
         6,
+        7,
+        61,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#4b475e",
+        "#646179",
+        "#7a9399",
+        "#8ec1b6",
+        "#a69465",
+        "#c4d9c2",
+        "#dfca89",
+        "#fff2d0"
+      ],
+      "opaqueColors": 8
+    },
+    "icon": {
+      "resourceId": "mx_art_relicarab_icon",
+      "file": "relicarab-icon.png",
+      "sha256": "516b70292fc45b9b14ff63481c5327724e334c1805da4e9bc6983029d015df72",
+      "bytes": 697,
+      "bbox": [
         2,
-        77,
-        74
-      ]
+        0,
+        31,
+        30
+      ],
+      "dimensions": [
+        32,
+        32
+      ],
+      "opaquePalette": [
+        "#4b475e",
+        "#646179",
+        "#7a9399",
+        "#8ec1b6",
+        "#a69465",
+        "#dfca89",
+        "#fff2d0"
+      ],
+      "opaqueColors": 7
     }
   },
   {
@@ -2077,26 +5204,82 @@
     "front": {
       "resourceId": "mx_art_astralhart_front",
       "file": "astralhart-front.png",
-      "sha256": "1e3829e39b9e6314bd35ba9b8e5e13cd3f52d43a10d26f39eeea9bd32b3aab42",
-      "bytes": 1313,
+      "sha256": "979eac837e19094d90d89629eb107a130cadd0943ea0530ce8bf46ec473215ac",
+      "bytes": 1498,
       "bbox": [
-        2,
-        4,
-        68,
-        76
-      ]
+        3,
+        7,
+        55,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#414d65",
+        "#516d88",
+        "#8db2aa",
+        "#9a96b3",
+        "#d4e1b8",
+        "#debcdb",
+        "#eed6d6",
+        "#fff2d0"
+      ],
+      "opaqueColors": 8
     },
     "back": {
       "resourceId": "mx_art_astralhart_back",
       "file": "astralhart-back.png",
-      "sha256": "b6303f88b22d0d68b4f659bbbc6bcddcda56aaedeeb83db58d7d4d03bef64dfa",
-      "bytes": 1321,
+      "sha256": "4c5edb986b6761cd50fc18003b3f77b7f0343fd3197377f2a18ef27b0c45b08f",
+      "bytes": 1467,
       "bbox": [
-        2,
-        4,
-        70,
-        76
-      ]
+        3,
+        7,
+        55,
+        62
+      ],
+      "dimensions": [
+        64,
+        64
+      ],
+      "opaquePalette": [
+        "#414d65",
+        "#516d88",
+        "#8db2aa",
+        "#9a96b3",
+        "#d4e1b8",
+        "#debcdb",
+        "#eed6d6",
+        "#fff2d0"
+      ],
+      "opaqueColors": 8
+    },
+    "icon": {
+      "resourceId": "mx_art_astralhart_icon",
+      "file": "astralhart-icon.png",
+      "sha256": "c8d0d202bcc42b22b6ded7af9fcc947e21f4b5a81570072423f8d7edd437f2ec",
+      "bytes": 741,
+      "bbox": [
+        1,
+        0,
+        31,
+        30
+      ],
+      "dimensions": [
+        32,
+        32
+      ],
+      "opaquePalette": [
+        "#414d65",
+        "#516d88",
+        "#8db2aa",
+        "#9a96b3",
+        "#d4e1b8",
+        "#debcdb",
+        "#fff2d0"
+      ],
+      "opaqueColors": 7
     }
   }
 ]
