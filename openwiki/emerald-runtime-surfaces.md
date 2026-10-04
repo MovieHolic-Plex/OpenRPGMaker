@@ -54,6 +54,9 @@ Native first-gym QA also exposed a result-window cascade collision: the Emerald
 the title and rewards outside the stage. Emerald clears that transform and fixed
 width/height ceiling, reserves the confirm/prompt rows and scrolls actual rewards
 inside the remaining space. It does not alter victory, XP, badge or item handling.
+Emerald detail pages also disable the generic horizontal entrance tween. Native
+immediate skill-replacement screenshots otherwise catch the title beyond the
+crop before the tween settles; fixed pages retain their16px logical inset.
 
 ## Genuine predecessor Continue evidence (2026-10-04)
 
