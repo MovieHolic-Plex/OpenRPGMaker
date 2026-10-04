@@ -3527,3 +3527,26 @@ bun scripts/qa/opening-assistant-run.mts --mode monster-game --fresh-project 1 \
 유지한다. 실제 모델·이미지 호출 증거는 이 명령을 실행한 출력이며 route-only 출력은
 요청 조립 증거에 한정한다. 클라이언트 NDJSON·store 적용·정본 저장/재로드·출하 플레이는
 이 개인 후보 러너의 검증 범위 밖이다.
+
+### 기록된 실제 모델 결과의 프런트엔드 적용 재생 (2026-10-04)
+
+`scripts/qa/emerald-monster-client-replay.mjs`는 실제 Pi 러너의 `candidate-private.json`,
+`SUMMARY.json`, `setup.json`, `broker.json`을 읽고 별도 모델 호출 없이 private browser에서
+공유 평문 분류 → `plainPiCommand` → `runPiCommand` → 실제 NDJSON client를 실행한다.
+원본 러너는 checkpoint 이벤트를 보관하지 않으므로 전송 봉투는 QA에서 재구성하며,
+새 live 요청이나 원본 checkpoint 타이밍 재현으로 보고하지 않는다. 실제 최종 후보의
+72맵/60종/4그림 ID가 final done 적용과 checkpoint 발행 두 경로에서 유지되는지 확인한다.
+공용 compact-wire/restore와 assets/database/tilesets 생략 ACK, 실제 브라우저 opening
+PNG 전달, `stale-base` 거절, native final receipt callback을 함께 기록한다.
+
+```bash
+node scripts/qa/emerald-monster-client-replay.mjs --browser-url http://127.0.0.1:9853 \
+  --real-run /tmp/oprn-emerald-20261004/monster-runner-real \
+  --out /tmp/oprn-emerald-20261004/monster-client-replay-browser
+```
+
+93MB 결과는 별도 임시 read-only HTTP stream으로 전달하며 마지막에 닫는다. headless
+Chromium의 loopback 권한 차단은 private QA browser에서만 해제한다. 저장 bridge 없는
+빈 페이지의 repository는 memory/target:null이며 관측 disk POST도 private route에서
+막는다. 결과는 실제 적용 메모리/영수증·NDJSON 복원 증거이며 정본 저장/재로드, 실제
+compose 입력·전체 편집기 패널, 이어받기 장애·원격 ACK 서버·출하 플레이 증거가 아니다.
