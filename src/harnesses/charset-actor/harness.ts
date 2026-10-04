@@ -13,7 +13,7 @@ export const CHARSET_ACTOR_HARNESS = defineHarness({
     { id: "bulk", title: "묶음 저작", summary: "manifest를 읽어 GPT high 원샷 저작과 독립 검수를 실행한다. --detach로 드라이버를 유지한다." },
     { id: "check", title: "픽셀 검사", summary: "12프레임 구조·색 키·투명 구멍·머리 결손·걸음 동작을 검사한다." },
     { id: "views", title: "그림 굽기", summary: "현재 격자 해시에 결부한 PNG·GIF·필름 띠를 만든다." },
-    { id: "verify", title: "계약 확인", summary: "별도 임시 저장 대상에서 픽셀·걸음 전파·검수·렌더·잠금·패킹·폐기 계약 93개를 확인한다." },
+    { id: "verify", title: "계약 확인", summary: "별도 임시 저장 대상에서 픽셀·걸음 전파·검수·렌더·잠금·패킹·폐기 계약 94개를 확인한다." },
     { id: "export", title: "검수 팩", summary: "최신 검수 합격만 CharSet과 ZIP으로 패킹한다. --discard-failed는 불량을 후보 밖에 보관한다." },
     { id: "status", title: "현황", summary: "저작 진행과 검수 판정을 표시한다." },
     { id: "serve", title: "후보 화면", summary: "비교·받기/버리기·진행 화면을 별도 서버로 연다." },

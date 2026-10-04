@@ -131,6 +131,8 @@ def verify():
         H.write_json_atomic(root / 'manifest.json', dict(characters=[job], sourceOriginal=str(H.ACTOR1), genres=['한국풍']))
         export.export('fixture')
         check('one-sprite-export', json.loads((root / 'pack' / 'characters.json').read_text())['count'] == 1)
+        check('RTP-authors-and-license-travel-with-pack', all((root / 'pack' / 'licenses' / 'easyrpg' / name).read_bytes() == (H.RTP / name).read_bytes()
+                                                            for name in ('AUTHORS.md', 'COPYING')))
         (w / 'out.chr.txt').write_text(C.dump(q, {}, f, header='another change'))
         H.write_json_atomic(w / 'review' / 'verdict.json', dict(verdict='FAIL', score=3, discard=True,
                                                              fatal=['historical defect'], inspected=H.binding(gate), issues=[]))
