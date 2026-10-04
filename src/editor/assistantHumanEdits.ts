@@ -2,18 +2,66 @@ import { store } from "@/project/store";
 import type { GameMap, Project } from "@/project/types";
 import { cloneExtraLayers, compactMapLayers, layerTileAt, setLayerTileAt, shadowAt, setShadowAt, TILE_LAYER_NOS } from "@/project/mapLayers";
 
-function cellValue(map: GameMap, index: number): string {
-  const x = index % map.width, y = Math.floor(index / map.width);
-  return JSON.stringify([
-    TILE_LAYER_NOS.map(layer => layerTileAt(map, layer, index)), shadowAt(map, index),
-    map.lowerTileStacks?.[index], map.upperTileStacks?.[index],
-    map.relief?.levels[index] ?? 0, map.relief?.ramps?.[index] ?? 0,
-    map.relief?.wallDecor?.filter(d => d.x === x && d.y === y),
-    map.terrainDesign?.waterDepth?.[index] ?? 0,
-    map.terrainDesign?.lockedCells?.includes(index) ?? false,
-    map.doodadGroups?.flatMap(g => g.cells.filter(c => c.index === index).map(c => [g.id, g.label, g.kitId, c])),
-    map.terrainDesign?.features?.flatMap(f => f.patches.filter(p => p.index === index).map(p => [f.id, p])),
-  ]);
+type CellMetadata = Map<number, string>;
+/** Build each sparse membership list once per comparison, preserving member order.
+ * This is deliberately request-local, not a WeakMap that could hide in-place edits.
+ */
+function cellMetadata(map: GameMap): CellMetadata {
+  const rows = new Map<number, { walls: unknown[]; groups: unknown[]; features: unknown[]; locked: boolean }>();
+  const at = (index: number) => {
+    let row = rows.get(index);
+    if (!row) { row = { walls: [], groups: [], features: [], locked: false }; rows.set(index, row); }
+    return row;
+  };
+  for (const d of map.relief?.wallDecor ?? []) at(d.y * map.width + d.x).walls.push(d);
+  for (const i of map.terrainDesign?.lockedCells ?? []) at(i).locked = true;
+  for (const g of map.doodadGroups ?? []) for (const c of g.cells) at(c.index).groups.push([g.id, g.label, g.kitId, c]);
+  for (const f of map.terrainDesign?.features ?? []) for (const p of f.patches) at(p.index).features.push([f.id, p]);
+  return new Map([...rows].map(([i, row]) => [i, JSON.stringify(row)]));
+}
+function sameStack(a: number[] | undefined, b: number[] | undefined): boolean {
+  return a === b || (!!a && !!b && a.length === b.length && a.every((v, i) => v === b[i]));
+}
+function cellComparison(a: GameMap, b: GameMap): (i: number) => boolean {
+  const metadataChanged = a.relief?.wallDecor !== b.relief?.wallDecor || a.terrainDesign?.lockedCells !== b.terrainDesign?.lockedCells
+    || a.doodadGroups !== b.doodadGroups || a.terrainDesign?.features !== b.terrainDesign?.features;
+  const left = metadataChanged ? cellMetadata(a) : undefined;
+  const right = metadataChanged ? cellMetadata(b) : undefined;
+  return i => TILE_LAYER_NOS.some(layer => layerTileAt(a, layer, i) !== layerTileAt(b, layer, i))
+    || shadowAt(a, i) !== shadowAt(b, i)
+    || !sameStack(a.lowerTileStacks?.[i], b.lowerTileStacks?.[i]) || !sameStack(a.upperTileStacks?.[i], b.upperTileStacks?.[i])
+    || (a.relief?.levels[i] ?? 0) !== (b.relief?.levels[i] ?? 0) || (a.relief?.ramps?.[i] ?? 0) !== (b.relief?.ramps?.[i] ?? 0)
+    || (a.terrainDesign?.waterDepth?.[i] ?? 0) !== (b.terrainDesign?.waterDepth?.[i] ?? 0)
+    || left?.get(i) !== right?.get(i);
+}
+
+/** Descriptor-free restoration/relief fallback. Scan only changed dense fields;
+ * compare sparse metadata once by cell, never stringify or filter per grid cell.
+ */
+export function changedAssistantMapCells(a: GameMap, b: GameMap): Set<number> {
+  const changed = new Set<number>(), count = b.width * b.height;
+  const arrays: [readonly number[] | undefined, readonly number[] | undefined, number][] = [
+    [a.lowerTiles, b.lowerTiles, -1], [a.upperTiles, b.upperTiles, -1],
+    [a.lowerOverlayTiles, b.lowerOverlayTiles, -1], [a.upperOverlayTiles, b.upperOverlayTiles, -1], [a.shadowBits, b.shadowBits, 0],
+    [a.relief?.levels, b.relief?.levels, 0], [a.relief?.ramps, b.relief?.ramps, 0], [a.terrainDesign?.waterDepth, b.terrainDesign?.waterDepth, 0],
+  ];
+  for (const [before, after, empty] of arrays) {
+    if (before === after) continue;
+    for (let i = 0; i < count; i++) if ((before?.[i] ?? empty) !== (after?.[i] ?? empty)) changed.add(i);
+  }
+  for (const key of ["lowerTileStacks", "upperTileStacks"] as const) {
+    if (a[key] === b[key]) continue;
+    for (const index of new Set([...Object.keys(a[key] ?? {}), ...Object.keys(b[key] ?? {})])) {
+      const i = Number(index);
+      if (i >= 0 && i < count && !sameStack(a[key]?.[i], b[key]?.[i])) changed.add(i);
+    }
+  }
+  if (a.relief?.wallDecor !== b.relief?.wallDecor || a.terrainDesign?.lockedCells !== b.terrainDesign?.lockedCells
+    || a.doodadGroups !== b.doodadGroups || a.terrainDesign?.features !== b.terrainDesign?.features) {
+    const before = cellMetadata(a), after = cellMetadata(b);
+    for (const i of new Set([...before.keys(), ...after.keys()])) if (i >= 0 && i < count && before.get(i) !== after.get(i)) changed.add(i);
+  }
+  return changed;
 }
 
 export type AssistantHumanEdits = ReturnType<typeof createAssistantHumanEdits>;
@@ -47,9 +95,7 @@ export function createAssistantHumanEdits() {
         if (Number.isInteger(c.x) && Number.isInteger(c.y) && c.x >= 0 && c.y >= 0 && c.x < next.width && c.y < next.height)
           protectedCells.add(c.y * next.width + c.x);
       }
-      else if (old !== next) for (let i = 0; i < next.width * next.height; i++) {
-        if (cellValue(old, i) !== cellValue(next, i)) protectedCells.add(i);
-      }
+      else if (old !== next) for (const i of changedAssistantMapCells(old, next)) protectedCells.add(i);
       if (protectedCells.size) cells.set(id, protectedCells);
     }
   });
@@ -66,7 +112,8 @@ export function createAssistantHumanEdits() {
       for (const [id, indices] of cells) {
         const next = proposed.maps[id], current = live.maps[id];
         if (!next || !current) continue;
-        const changed = [...indices].filter(i => cellValue(next, i) !== cellValue(current, i));
+        const differs = cellComparison(next, current);
+        const changed = [...indices].filter(differs);
         if (!changed.length) continue;
         const map: GameMap = { ...next, lowerTiles: next.lowerTiles.slice(), upperTiles: next.upperTiles.slice(), ...cloneExtraLayers(next),
           lowerTileStacks: { ...next.lowerTileStacks }, upperTileStacks: { ...next.upperTileStacks } };

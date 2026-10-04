@@ -77,59 +77,63 @@ const roundtripPassed = new WeakSet<object>();
 /** 왕복을 통과한 문서의 타일셋·업로드 자산 항목을 기억한다. 검사가 통과한 **뒤에만** 부른다. */
 export function markRoundtripPassed(project: Project): void {
   for (const entry of Object.values(project.tilesets ?? {})) if (isPlainRecord(entry)) roundtripPassed.add(entry);
+  // Owned-reference wire views have their own immutable identity. They passed
+  // the same boundary and must not disable reuse solely because of that wrapper.
+  for (const entry of Object.values(projectWireView(project).tilesets)) if (isPlainRecord(entry)) roundtripPassed.add(entry);
   for (const entry of Object.values(project.assets?.uploaded ?? {})) if (isPlainRecord(entry)) roundtripPassed.add(entry);
 }
 
-/**
- * 통과한 타일셋 항목의 뼈대 — 되읽기 검사가 **이웃을 보는** 자리에서 읽는 필드만 남긴 최소 통과본.
- * 이웃 검사: `referenceOwner`(참고문서 원본 id), 맵의 `tilesetId` 존재, 리소스 id 목록(`image.id`), 공간 저작의
- * 타일셋 `count`·`tileSize`·`structureKits`(kit id 로 찾는다 — 공간 저작이 있으면 원래 글을 쓴다, 아래).
+/** Passed immutable entries omit only independently validated reference documents.
+ * Keep ALL other fields (including kind, structure-kit geometry/interior metadata,
+ * tileGrafts, count, rules and group knowledge): spatial validation and reference
+ * repair read these across entries. A replacement entry takes the full path once.
  */
-function tilesetSkeleton(entry: Record<string, unknown>): string {
-  const count = entry.count as number;
-  const head: Record<string, unknown> = { id: entry.id, name: entry.name, image: entry.image, count, tileSize: entry.tileSize, tilesPerRow: entry.tilesPerRow };
-  if (entry.referenceSourceTilesetId !== undefined) head.referenceSourceTilesetId = entry.referenceSourceTilesetId;
-  const fill = (value: string): string => (count > 0 ? `[${new Array<string>(count).fill(value).join(",")}]` : "[]");
-  return `${JSON.stringify(head).slice(0, -1)},"passability":${fill("{}")},"priority":${fill('"lower"')},"terrain":${fill("0")}}`;
-}
-
-function skeletonable(project: Project): boolean {
-  // 공간 저작은 타일셋 structureKits·tileGrafts 까지 읽는다 — 그 문서는 원래 글로 검사한다.
-  if (project.spatialAuthoring !== undefined) return false;
-  for (const entry of Object.values(project.tilesets ?? {})) {
-    if (!isPlainRecord(entry) || !roundtripPassed.has(entry)) return false;
-    const count = entry.count;
-    if (typeof count !== "number" || !Number.isInteger(count) || count < 0 || count > 1_000_000) return false;
-  }
-  for (const entry of Object.values(project.assets?.uploaded ?? {})) if (!isPlainRecord(entry) || !roundtripPassed.has(entry)) return false;
-  return true;
+const roundtripPieces = new WeakMap<object, string>();
+function roundtripTilesetPiece(entry: unknown): string | undefined {
+  if (!isPlainRecord(entry) || !roundtripPassed.has(entry)) return pieceOf(entry);
+  const hit = roundtripPieces.get(entry);
+  if (hit !== undefined) return hit;
+  const { referenceDocuments: _documents, structureKits, ...rest } = entry;
+  const projection = { ...rest, ...(Array.isArray(structureKits) ? {
+    structureKits: structureKits.map(kit => {
+      if (!isPlainRecord(kit)) return kit;
+      const { referenceDocuments: _kitDocuments, ...fields } = kit;
+      return fields;
+    }),
+  } : structureKits === undefined ? {} : { structureKits }) };
+  const text = JSON.stringify(projection);
+  roundtripPieces.set(entry, text);
+  return text;
 }
 
 /**
- * 저장 왕복 검사(`projectLint.checkRoundtrip`)의 입력 글. 타일셋·업로드 자산 항목이 모두 이미 통과한 객체면 그 자리에 뼈대를 넣는다 —
- * 공유 사전 밖(맵·DB·시스템·세션…)은 글자까지 `serialize` 와 같아 그 부분의 되읽기 검사는 그대로 돈다. 아니면 `serialize` 와 같은 글이다.
+ * 저장 왕복 검사(`projectLint.checkRoundtrip`)의 입력 글. 이미 통과한 타일셋·업로드 자산 항목만 그 자리에 투영본을 넣는다 —
+ * 공유 사전 밖(맵·DB·시스템·세션…)은 글자까지 `serialize` 와 같아 그 부분의 되읽기 검사는 그대로 돈다. 새 항목은 `serialize` 와 같은 글이다. 공간 저작 유무와 무관하게 교차 참조 필드는 보존한다.
  *
  * 왜(2026-09-28 실측, 새 프로젝트 기본 자료 149MB): 글 재사용 뒤에도 되읽기(`JSON.parse` + 검사)가 AI 체크포인트마다 약 0.8s,
  * 버려지는 수십 MB 트리의 GC 가 그만큼 더 들었다. 체크포인트 사이에 바뀌는 타일셋·업로드 자산은 거의 없다.
  */
 export function serializeForRoundtripCheck(project: Project): string {
-  if (!skeletonable(project)) return serializeReusingSharedDictionaries(project);
   const view = projectWireView(project) as Record<string, unknown>;
+  if (hasToJson(view)) return JSON.stringify(view);
   const parts: string[] = [];
   for (const key of Object.keys(view)) {
     const value = view[key];
     let piece: string | undefined;
     if (key === "tilesets" && isPlainRecord(value)) {
-      piece = `{${Object.keys(value).map((id) => `${JSON.stringify(id)}:${tilesetSkeleton(value[id] as Record<string, unknown>)}`).join(",")}}`;
+      piece = `{${Object.keys(value).flatMap((id) => { const text = roundtripTilesetPiece(value[id]); return text === undefined ? [] : [`${JSON.stringify(id)}:${text}`]; }).join(",")}}`;
     } else if (key === "assets" && isPlainRecord(value)) {
       const inner: string[] = [];
       for (const assetKey of Object.keys(value)) {
         const uploaded = value[assetKey];
         // 업로드 자산 항목은 되읽기에서 모양 검사를 받지 않는다. 참조 검사가 보는 필드(id·kind·name·meta)만 남긴다.
         const assetPiece = assetKey === "uploaded" && isPlainRecord(uploaded)
-          ? `{${Object.keys(uploaded).map((id) => {
+          ? `{${Object.keys(uploaded).flatMap((id) => {
             const entry = uploaded[id] as Record<string, unknown>;
-            return `${JSON.stringify(id)}:${JSON.stringify({ id: entry.id, kind: entry.kind, name: entry.name, meta: entry.meta })}`;
+            const text = isPlainRecord(entry) && roundtripPassed.has(entry)
+              ? JSON.stringify({ id: entry.id, kind: entry.kind, name: entry.name, meta: entry.meta, ref: entry.ref })
+              : pieceOf(entry);
+            return text === undefined ? [] : [`${JSON.stringify(id)}:${text}`];
           }).join(",")}}`
           : JSON.stringify(uploaded);
         if (assetPiece !== undefined) inner.push(`${JSON.stringify(assetKey)}:${assetPiece}`);

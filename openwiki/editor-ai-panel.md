@@ -2,6 +2,25 @@
 
 # Editor AI Panel & Tools
 
+## UX 추가 조사 2 — 공간 체크포인트·사람 칸 비교 (2026-10-04)
+
+`sharedDictionaryJson.serializeForRoundtripCheck`는 `spatialAuthoring`이 있어도 항목별로
+왕복을 통과한 불변 타일셋을 재사용한다. 독립 검증을 이미 통과한 참고문서 본문만 빼며,
+`kind`, `count`, `tileSize`, `tilesPerRow`, `structureKits`의 모든 비문서 필드,
+`tileGrafts`, 실제 통행·레이어·지형 규칙 등 나머지 필드는 보존한다. 소유 문서의 wire view도
+통과한 뒤에만 기억한다. 새/교체 항목은 전체 형태로 검사하고, 공간 참조·정규화·린트·적용
+권위 게이트는 매번 기존 경로를 지난다. 자료를 뺀 투영본은 저장/ACK가 아니라 린트 입력 전용이다.
+
+`assistantHumanEdits`의 descriptor 없는 복원·높이 비교는 같은 dense 배열을 건너뛰고,
+바뀐 배열만 숫자로 비교한다. 벽 장식·잠금·군집·feature patch는 비교 한 번당 칸별로 색인한다.
+전 맵의 칸마다 JSON/멤버십 검색을 반복하지 않는다. 실제 바뀐 칸만 보존하며, descriptor가
+있는 같은 값 붓질 의도와 ACK 뒤 실행 수명 동안의 보호, 최신 live 값 검사, 프로젝트 전환
+무효화는 유지한다. relief 액션 자체의 descriptor 변경은 relief 담당 작업 범위다.
+
+추가 회귀 계약: `test/assistantUx2SpatialRoundtrip.test.ts`,
+`test/assistantUx2HumanFallback.test.ts`. 이번 작업은 실행 금지 지시에 따라 Vitest/게이트/
+typecheck/브라우저를 실행하지 않는다. 소스 검토와 esbuild 구문 검사만 사용하며 성능 실측값은 없다.
+
 ## 조수 실행 중 읽기·손편집·승인 보존 (2026-10-04)
 
 - `aiConversationScroll.ts`는 로그별로 따라가기 상태를 소유한다. 맨 아래(24px 이내)에서만 새 출력·이미지 크기 변화를 따라간다. 위로 읽으면 현재 위치를 유지하고 로그 밖의 「새 응답 보기」를 보여 준다. 버튼을 누르거나 맨 아래로 돌아오면 따라가기를 재개한다. 스트리밍·영역 실행·첨부·카드도 이 정책을 공유한다. 위를 읽는 중 사용자 발화가 추가돼도 지난 대화를 자동으로 접지 않는다. 패널 폐기 때 관찰자·프레임·리스너를 정리한다.
