@@ -2,6 +2,8 @@ import type { ToolDefinition, JsonSchema } from './types';
 import { ToolError } from './types';
 import { hasOpeningImage, catalogLookup } from './cinematicTools';
 import { validateOpeningAnimatic } from '@/project/openingAnimatic';
+import { validateOpeningPortraitMotion } from '@/project/openingPortraitMotion';
+import { isEmeraldMonsterStyle } from '@/project/emeraldMonsterStyle';
 import type { CinematicScene } from '@/project/types';
 const str:JsonSchema={type:'string'};
 const schema=(properties:Record<string,JsonSchema>,required:string[]):JsonSchema=>({type:'object',additionalProperties:false,properties,required});
@@ -15,7 +17,21 @@ export const OPENING_STORYBOOK_TOOLS:readonly ToolDefinition[]=[
     reviewQuestions:['What changed in this world?','Why does that matter?','What will the player do next?','Can every line be read before the cut?','Does the motif create anticipation?'],
     reference:'Study Undertale for negative space, illustrated story hierarchy and a memorable motif. Do not copy its lines, art, melody or characters. Quality equivalence is subjective; review actual results, never declare it from a completed flag.',
     note:'A narrated fable may intentionally use text and still panels. Do not force a character montage or reject narration because another request preferred acting.',
+    portraitMotion:{tool:'configure_opening_portrait_motion',presentation:'Emerald confirm-paced professor introduction',source:'Real horizontal pose strip; drawn blink/talk/gesture poses, not translated copies',contract:'resourceId, frameWidth, frameHeight, frameCount(2..32), frames(0-based order), fps(1..12), optional sceneFrames keyed by existing page IDs. Same controller and active-time clock survive Enter; no page timer or music restart.'},
   }})},
+  {name:'configure_opening_portrait_motion',description:'Enter 확인식 에메랄드 교수 오프닝에 실제 포즈 스트립을 연결. 눈깜빡임·말하기·손짓을 기존 페이지 안에서 재생하며 음악·진행 시간을 바꾸지 않는다.',mode:'write',preservesAuthoredRaster:true,parameters:schema({
+    portraitResourceId:str,
+    motion:schema({resourceId:str,frameWidth:{type:'integer'},frameHeight:{type:'integer'},frameCount:{type:'integer'},frames:{type:'array',items:{type:'integer'}},fps:{type:'number'},sceneFrames:{type:'object',additionalProperties:true}},['resourceId','frameWidth','frameHeight','frameCount','frames','fps']),
+  },['portraitResourceId','motion']),run:(p,args)=>{
+    const book=p.meta.oprnOpeningBook;
+    if(!isEmeraldMonsterStyle(p)||!book||!p.system.opening?.scenes.every((s,i)=>s.id===book.sceneIds[i]&&s.durationMs===0&&(s.kind==='image'||s.kind==='text'))||p.system.opening.scenes.length!==book.sceneIds.length)throw new ToolError('현재 에메랄드 확인식 그림책 오프닝이 필요합니다.',{code:'invalid-args'});
+    if(typeof args.portraitResourceId!=='string'||!hasOpeningImage(p,args.portraitResourceId))throw new ToolError('정지 교수 초상 그림이 필요합니다.',{code:'resource-not-found'});
+    try{validateOpeningPortraitMotion(args.motion,book.sceneIds);}catch(error){throw new ToolError(error instanceof Error?error.message:'포즈 스트립 계약 오류.',{code:'invalid-args'});}
+    if(!hasOpeningImage(p,args.motion.resourceId))throw new ToolError('실제 포즈 스트립 그림이 없습니다.',{code:'resource-not-found'});
+    book.portraitResourceId=args.portraitResourceId;
+    book.portraitMotion=structuredClone(args.motion);
+    return {summary:'확인식 교수 포즈를 연결했습니다. 실제 프레임·원본 치수·Enter 진행은 플레이어에서 검증하세요.',data:{portraitResourceId:book.portraitResourceId,motion:book.portraitMotion,nativePlaybackVerified:false}};
+  }},
   {name:'make_opening_storybook',description:'실제 그림과 원문으로 그림책 도입을 조립. 기본 confirm은 Enter를 기다리고 같은 그림에서 문장만 교체. auto는 명시적으로 요청한 타임라인.',mode:'write',preservesAuthoredRaster:true,parameters:schema({
     slides:{type:'array',items:{type:'object',additionalProperties:false,required:['id','role','text'],properties:{id:str,role:{type:'string',enum:['world','rupture','stakes','invitation','handoff']},imageResourceId:str,text:str,durationMs:{type:'integer'}}}},
     ink:{type:'string',enum:['amber','ivory']},musicResourceId:str,progression:{type:'string',enum:['confirm','auto']},

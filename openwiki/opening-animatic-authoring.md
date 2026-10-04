@@ -65,6 +65,58 @@ invalidates old review evidence. Actual assistant dogfood made8 confirm pages fr
 4 inspected existing paintings without changing maps/database/session; playback
 is verified separately in the exported player. Music: music-score-authoring.md.
 
+## Drawn professor poses inside confirm pages (2026-10-04)
+
+The Emerald professor introduction can author
+`meta.oprnOpeningBook.portraitMotion` alongside its `portraitResourceId` still
+fallback. This keeps the existing `durationMs:0` image/text storybook and Enter
+pacing. It does not convert pages into timed animatics.
+
+```
+portraitMotion: {
+  resourceId: "registered-horizontal-pose-strip",
+  frameWidth: 64, frameHeight: 96, frameCount: 6,
+  frames: [0,0,1,0,2,2,0,3,3,0,4,0], fps: 6,
+  sceneFrames: { "existing-page-id": [0,4,4,0,5,5,0] }
+}
+```
+
+This is a **single horizontal strip of actual drawn poses**, zero-based frame
+indices. Width/height are integer1..256, count2..32, fps1..12, each order1..128
+indices within count. Optional scene orders must name existing book pages.
+Frame0 is the neutral reduced-motion pose. `openingPortraitMotion.ts` in project
+owns strict shape validation; malformed authored metadata rejects load. Existing
+project serialization preserves the nested record, including the older-host
+cinematic wire metadata path. No schema/save-slot version change is needed.
+
+`configure_opening_portrait_motion` validates the current Emerald confirm book,
+registered still portrait and strip, then writes the same contract. It does not
+generate artwork or change music, page durations, maps, or session. Updating the
+book invalidates the existing opening review fingerprint. Export explicitly
+retains the motion resource even when no scene directly references it.
+
+`src/player/openingPortraitMotion.ts` decodes the actual image and requires exactly
+`frameWidth*frameCount` by `frameHeight` before showing a native-resolution canvas.
+The stationary canvas and one active-time clock survive Enter pages. Scene frame
+orders change on the existing global phase; pages do not reset the clock or audio.
+Legacy whole-portrait CSS bob is suppressed while drawn poses are active. The
+still remains visible during load and on missing resource, unsafe runtime input,
+decode failure, or dimension mismatch. No implicit fallback image generation.
+
+Hidden document and OS reduced motion cancel the animation frame loop. Returning
+to a visible document resumes without including hidden time. Reduced motion shows
+neutral frame0. Completion, Skip, abort, shell removal and late decode all release
+the canvas, RAF and visibility/media-query listeners. The module owns no keys,
+timers for page advances, BGM or SFX. Continue still bypasses the whole opening.
+
+Focused executable fixture probe:
+`node scripts/qa/runtime/opening-portrait-motion.mjs /tmp/portrait-motion-probe`.
+Read its `SUMMARY.md` first. It tests distinct actual canvas pixels, controller
+and music-element identity across Enter, held keys/WASD, bounds/fallback, pause,
+Skip/completion/abort and disposal. Synthetic colour poses and stubbed audio
+methods verify mechanics only. Actual generated art, native shipping playback,
+canonical save/reload and listening remain separate required evidence.
+
 ## Review includes authored layers
 
 `review_opening` counts real illustration IDs in animatic layers, includes displayed text layers in reading-time hints, and validates their illustration/audio cue references. A six-panel book with four source paintings reports four paintings rather than zero. Native playback and listening remain separate evidence.

@@ -36,6 +36,10 @@
   @keyframes emerald-creature-idle { 0%, 70%, 100% { translate: 0 0; } 35%, 50% { translate: 0 -2px; } }
   @keyframes emerald-intro-light { from { rotate: -1deg; opacity: .55; } to { rotate: 2deg; opacity: .85; } }
   @keyframes emerald-intro-mote { 0%, 100% { translate: 0 0; opacity: .15; } 50% { translate: 5px -11px; opacity: .75; } }
+  .cinematic-sequence[data-presentation="storybook"][data-monster-style="emerald"][data-ink][data-portrait-motion="ready"] .cinematic-image {
+    animation: none; translate: 0 0;
+  }
+  .cinematic-portrait-motion { image-rendering: pixelated; object-fit: contain; }
   .cinematic-emerald-atmosphere[data-reduced-motion="true"]::before,
   .cinematic-emerald-atmosphere[data-reduced-motion="true"] .cinematic-emerald-mote { animation: none; }
   @media (prefers-reduced-motion: reduce) {

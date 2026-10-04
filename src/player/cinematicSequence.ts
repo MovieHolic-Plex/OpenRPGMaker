@@ -6,6 +6,7 @@ import type { CinematicSequence, Project } from "@/project/types";
 import { el } from "@/util/dom";
 import { isEmeraldMonsterStyle } from '@/project/emeraldMonsterStyle';
 import { createEmeraldOpeningAtmosphere } from './emeraldOpeningAtmosphere';
+import { createOpeningPortraitMotion, type PortraitMotionPlayback } from './openingPortraitMotion';
 
 export type CinematicCompletion = "completed" | "skipped" | "aborted";
 export type CinematicPlayback = {
@@ -41,6 +42,7 @@ export function playCinematicSequence(options: {
   const atmosphere = isEmeraldIntro ? createEmeraldOpeningAtmosphere(host, project, reducedMotion) : undefined;
   let bookImage:HTMLImageElement|undefined;
   let bookImageId:string|undefined;
+  let portraitMotion:PortraitMotionPlayback|undefined;
   let index = 0;
   let settled = false;
   let cleanScene = (): void => undefined;
@@ -68,6 +70,7 @@ export function playCinematicSequence(options: {
     cleanScene();
     stopMusic();
     atmosphere?.dispose();
+    portraitMotion?.dispose();
     observer.disconnect();
     signal.removeEventListener("abort", abort);
     view.removeEventListener("keydown", onKeyDown, true);
@@ -125,8 +128,8 @@ export function playCinematicSequence(options: {
     // Keep the same illustration node mounted while its dialogue pages change.
     const imageResourceId = isEmeraldIntro ? book!.portraitResourceId! : scene.kind === 'image' ? scene.resourceId : undefined;
     const keepImage=isBook&&scene.kind==='image'&&bookImageId===imageResourceId&&bookImage?.parentElement===root;
-    if(keepImage){for(const child of Array.from(root.children))if(child!==bookImage && child!==atmosphere?.layer)child.remove();}
-    else {root.replaceChildren();bookImage=undefined;bookImageId=undefined;}
+    if(keepImage){for(const child of Array.from(root.children))if(child!==bookImage && child!==atmosphere?.layer && child!==portraitMotion?.element)child.remove();}
+    else {portraitMotion?.dispose();portraitMotion=undefined;root.replaceChildren();bookImage=undefined;bookImageId=undefined;}
     root.dataset.page=String(index+1);
     root.dataset.sceneId = scene.id;
     root.dataset.sceneKind = scene.kind;
@@ -205,6 +208,10 @@ export function playCinematicSequence(options: {
         else if(!url) fail("error");
         if(!keepImage)root.append(image);
         if(isBook){bookImage=image;bookImageId=imageResourceId;}
+        if(isEmeraldIntro && book?.portraitMotion) {
+          if(!portraitMotion)portraitMotion=createOpeningPortraitMotion({root,image,project,motion:book.portraitMotion,sceneIds:book.sceneIds,sceneId:scene.id,reducedMotion});
+          else portraitMotion.setScene(scene.id);
+        }
         if(isEmeraldIntro && scene.resourceId !== imageResourceId) {
           const creature = el('img', { class: 'cinematic-creature', attrs: { alt: '소개하는 몬스터', draggable: 'false' } });
           const creatureUrl = resolveAssetResourceUrl(scene.resourceId, { project });

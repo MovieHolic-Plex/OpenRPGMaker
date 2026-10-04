@@ -724,7 +724,7 @@ export interface Project {
   version: number;
   meta: {
     oprnMonsterStyle?: import('../emeraldMonsterStyle').EmeraldMonsterStyle;
-    oprnOpeningBook?: {version:1;sceneIds:string[];ink:'amber'|'ivory';portraitResourceId?:string};
+    oprnOpeningBook?: {version:1;sceneIds:string[];ink:'amber'|'ivory';portraitResourceId?:string;portraitMotion?:import('../openingPortraitMotion').OpeningPortraitMotion};
     oprnShopPreset?: import('./events').ShopUiPreset;
     oprnFieldMenu?: import('../fieldMenu').AuthoredFieldMenu;
     oprnMenuSounds?: Partial<Record<'cursor'|'confirm'|'cancel',string>>;

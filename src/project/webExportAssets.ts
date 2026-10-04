@@ -180,6 +180,9 @@ function collectProjectStrings(project: Project): Set<string> {
   const values = new Set<string>();
   if ([project.system.gameOver, ...(project.system.gameOvers ?? []).map(row => row.settings)].some(settings => !settings?.backgroundResourceId)) values.add(DEFAULT_GAME_OVER_BACKGROUND_RESOURCE_ID);
   collectStrings({ ...project, audioDescriptions: undefined, monsterMetadata: undefined }, values);
+  // This resource is read only by the persistent confirm-page portrait controller.
+  // Keep it explicit even if export's general project-string walk changes later.
+  if (project.meta.oprnOpeningBook?.portraitMotion?.resourceId) values.add(project.meta.oprnOpeningBook.portraitMotion.resourceId);
   // Party menus resolve a separately authored sibling icon at runtime. Retain
   // those indirect dependencies when pruning uploaded assets for publication.
   if (isEmeraldMonsterStyle(project)) for (const species of project.database.monsterSpecies ?? []) {

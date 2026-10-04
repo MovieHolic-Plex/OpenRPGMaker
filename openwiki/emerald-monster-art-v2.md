@@ -12,6 +12,12 @@ company_agent/captain/worker/explorer/student/ranger/moon_leader/hiker.
 Direction rows remain up/right/down/left. Every cell is 24×32, foot anchored at31.
 Trainer pictures are64×96; hero_back is separately generated.
 
+Resource dimensions are not walking-motion approval. The original pack crops and
+centres each pose separately and extracts per-frame palettes. A character's12
+frames need shared palette/anchors and an actual0/1/2/1 gait preview; equal bottom
+bounds manufactured by packing cannot prove planted feet. See the dedicated
+character-motion harness when correcting this pack.
+
 `webExportAssets.collectProjectStrings` retains these implicit trainer resources
 when the Emerald project uses the shared charset. Export pruning must not remove
 them just because their IDs are calculated from the event graphic at runtime.
@@ -21,6 +27,12 @@ custom graphics, event coordinates, commands, movement, collision and session.
 Route signs created by the old NPC helper become objects. First-town ambient people
 use village roles. Professor opening art shares the generated professor identity.
 Raw source/prompt records are in `assets/emerald-monster-v2/`.
+
+Confirm-page professor gestures now have an optional authored horizontal strip
+in `oprnOpeningBook.portraitMotion`, with stationary native canvas, per-page frame
+orders and one persistent active-time clock. Contract/tool/fallback/verification
+are in [opening-animatic-authoring.md](opening-animatic-authoring.md). This code
+capability does not mean a new pose strip has been generated or applied.
 
 Packing uses `scripts/content/emerald-art-v2-pack.mjs <harness-repo> <manifest> <out>`.
 It imports the existing monster harness pixel pipeline: a reviewed fixed8px block
