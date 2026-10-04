@@ -1,14 +1,15 @@
 {
   "packId": "joseon-folklore",
   "role": "equipment",
-  "phase": "pilot",
+  "phase": "full",
   "engine": "current RM2003 / retro2003",
   "authorship": "GPT 6.1 sol high; original code pixel art",
-  "sampleCount": 8,
+  "equipmentCount": 36,
+  "preservedPilotCount": 8,
   "fullTargetCount": 36,
   "expansion": {
-    "implemented": false,
-    "remainingCount": 28,
+    "implemented": true,
+    "remainingCount": 0,
     "tiers": [
       1,
       5,
@@ -16,18 +17,24 @@
       15
     ],
     "idPattern": "equip_jf_<warrior|rogue|shaman|taoist>_<weapon|body>_<1|2|3|4>",
+    "sharedIds": [
+      "equip_jf_shared_head_1",
+      "equip_jf_shared_head_2",
+      "equip_jf_shared_accessory_1",
+      "equip_jf_shared_accessory_2"
+    ],
     "sharedHeadAccessoryCount": 4,
-    "requiresSupervisorFollowup": true
+    "requiresSupervisorFollowup": false
   },
   "economy": {
     "initialGold": 80,
     "weaponPriceRange": [
       70,
-      90
+      940
     ],
     "bodyPriceRange": [
       60,
-      70
+      740
     ],
     "starterSetsGrantRecommended": true,
     "note": "80금으로 무기·의복 한 벌을 동시에 살 수 없으므로 감독자가 첫 전직 때 초급 한 벌을 지급하는 구성을 권장. 지급 이벤트·상점 미구현."
@@ -35,9 +42,30 @@
   "permissionIntegration": {
     "authority": "src/project/equipmentRules.ts:canEquip",
     "rule": "장비의 배우/직업 허용과 클래스의 배우/직업/장비 허용은 OR로 결합된다.",
-    "required": "class_jf_*의 equipmentPermissions.actorIds/classIds는 포괄 허용을 비우고 equipmentIds에는 자기 직업 장비만 명시한다. novice는 이 8개를 허용하지 않는다.",
+    "required": "class_jf_*의 equipmentPermissions.actorIds/classIds는 포괄 허용을 비우고 equipmentIds에는 자기 직업 8개와 공유 4개만 명시한다. novice는 이 36개를 허용하지 않는다.",
     "actorIdsHardcoded": false
   },
+  "palette": {
+    "outline": "#242535",
+    "steel": [
+      "#567780",
+      "#97b6be",
+      "#edf6e8"
+    ],
+    "gold": [
+      "#765033",
+      "#c9913c",
+      "#ffe5a2"
+    ],
+    "clothFamilies": {
+      "warrior": "남색·갈색 직물",
+      "rogue": "먹빛·회보라·청색 끈",
+      "shaman": "홍색·오색 띠",
+      "taoist": "백색·옅은 청록·남색 깃"
+    },
+    "tierOnlyRecolour": false
+  },
+  "pilotPreservation": "review/pilot-baseline.json의 초급 8개 레코드와 PNG 해시를 그대로 유지.",
   "sourcePolicy": "아래 자료는 형태 설명 근거만 사용. 제삼자 사진·게임 그림·아이콘 픽셀 복제 없음.",
   "sources": [
     {
@@ -81,6 +109,20 @@
       "title": "무구 — 한국민족문화대백과사전",
       "url": "https://encykorea.aks.ac.kr/Article/E0018941",
       "applied": "방울·부채 등의 제의 도구 문맥. 영적 데미지나 자동 정화 효과는 장비에 구현하지 않음."
+    },
+    {
+      "id": "headwear",
+      "title": "망건·복식 — 한국민족문화대백과사전",
+      "url": "https://encykorea.aks.ac.kr/Article/E0017844",
+      "additionalUrl": "https://encykorea.aks.ac.kr/Article/E0023690",
+      "applied": "말총 머리띠의 그물눈·끈·관자와 여행·농민복의 삿갓 형태. 정확한 신분별 제식 고증 대신 직업 공용 창작 장비로 단순화."
+    },
+    {
+      "id": "accessories",
+      "title": "장신구·노리개 — 한국민족문화대백과사전",
+      "url": "https://encykorea.aks.ac.kr/Article/E0048637",
+      "additionalUrl": "https://encykorea.aks.ac.kr/Article/E0012731",
+      "applied": "향료 주머니와 매듭·옥 몸체·술을 가진 노리개 형태. 노리개의 역사적 여성 장신구 문맥을 인정하고 게임에서는 성별·직업 공용으로 확장; 향의 약효나 주술적 효과는 구현하지 않음."
     }
   ],
   "equipment": [
@@ -89,16 +131,18 @@
       "tier": 1,
       "recommendedLevel": 1,
       "acquisition": {
-        "method": "초반 마을 상점 판매 또는 첫 전직 때 초급 무기·의복 지급",
-        "region": "초반 마을 (감독자 실제 맵·상점 연결 대기)",
+        "method": "첫 전직 초급 한 벌 지급 제안 또는 권장 단계 지역 상점 판매",
+        "region": "초반 마을 (권장 구간; 실제 맵·상점 연결 대기)",
         "implemented": false
       },
-      "classId": "class_jf_warrior",
+      "classIds": [
+        "class_jf_warrior"
+      ],
       "sourceIds": [
         "hwando"
       ],
       "silhouette": "외날 곡선 검과 작은 둥근 코등이; 십자 가드·서양 양날검 없음.",
-      "balanceReason": "초급 기존 검(+8), 단검(+5/민첩+3), 주문 무기(정신력+7), 의복(방어+3~6)의 기준선을 참조. 실전 수치 검토 대기.",
+      "balanceReason": "초급 기준선을 유지하고 등급 상승마다 주 능력 +4~8, 보조 능력 +1~3 정도로 증가. 최대 검 공격+29, 주문 무기 정신+25; 특수 효과 폭증 없음. 실전 밸런스 검토 대기.",
       "engineEffects": {
         "stats": {
           "attack": 8,
@@ -123,16 +167,18 @@
       "tier": 1,
       "recommendedLevel": 1,
       "acquisition": {
-        "method": "초반 마을 상점 판매 또는 첫 전직 때 초급 무기·의복 지급",
-        "region": "초반 마을 (감독자 실제 맵·상점 연결 대기)",
+        "method": "첫 전직 초급 한 벌 지급 제안 또는 권장 단계 지역 상점 판매",
+        "region": "초반 마을 (권장 구간; 실제 맵·상점 연결 대기)",
         "implemented": false
       },
-      "classId": "class_jf_warrior",
+      "classIds": [
+        "class_jf_warrior"
+      ],
       "sourceIds": [
         "cheollik"
       ],
       "silhouette": "남색 솜누비, 교차 깃, 좁은 소매, 허리 이음과 주름 치마; 금속 견갑·흉갑 없음.",
-      "balanceReason": "초급 기존 검(+8), 단검(+5/민첩+3), 주문 무기(정신력+7), 의복(방어+3~6)의 기준선을 참조. 실전 수치 검토 대기.",
+      "balanceReason": "초급 기준선을 유지하고 등급 상승마다 주 능력 +4~8, 보조 능력 +1~3 정도로 증가. 최대 검 공격+29, 주문 무기 정신+25; 특수 효과 폭증 없음. 실전 밸런스 검토 대기.",
       "engineEffects": {
         "stats": {
           "attack": 0,
@@ -155,16 +201,18 @@
       "tier": 1,
       "recommendedLevel": 1,
       "acquisition": {
-        "method": "초반 마을 상점 판매 또는 첫 전직 때 초급 무기·의복 지급",
-        "region": "초반 마을 (감독자 실제 맵·상점 연결 대기)",
+        "method": "첫 전직 초급 한 벌 지급 제안 또는 권장 단계 지역 상점 판매",
+        "region": "초반 마을 (권장 구간; 실제 맵·상점 연결 대기)",
         "implemented": false
       },
-      "classId": "class_jf_rogue",
+      "classIds": [
+        "class_jf_rogue"
+      ],
       "sourceIds": [
         "knife"
       ],
       "silhouette": "짧은 칼날과 감은 자루·작은 칼목; 도적 무기라는 역할은 창작.",
-      "balanceReason": "초급 기존 검(+8), 단검(+5/민첩+3), 주문 무기(정신력+7), 의복(방어+3~6)의 기준선을 참조. 실전 수치 검토 대기.",
+      "balanceReason": "초급 기준선을 유지하고 등급 상승마다 주 능력 +4~8, 보조 능력 +1~3 정도로 증가. 최대 검 공격+29, 주문 무기 정신+25; 특수 효과 폭증 없음. 실전 밸런스 검토 대기.",
       "engineEffects": {
         "stats": {
           "attack": 5,
@@ -189,16 +237,18 @@
       "tier": 1,
       "recommendedLevel": 1,
       "acquisition": {
-        "method": "초반 마을 상점 판매 또는 첫 전직 때 초급 무기·의복 지급",
-        "region": "초반 마을 (감독자 실제 맵·상점 연결 대기)",
+        "method": "첫 전직 초급 한 벌 지급 제안 또는 권장 단계 지역 상점 판매",
+        "region": "초반 마을 (권장 구간; 실제 맵·상점 연결 대기)",
         "implemented": false
       },
-      "classId": "class_jf_rogue",
+      "classIds": [
+        "class_jf_rogue"
+      ],
       "sourceIds": [
         "cheollik"
       ],
       "silhouette": "조선풍 교차 깃·고름을 강조한 짧은 저고리 창작. 철릭과 같은 길이의 포로 오인하지 않도록 짧게 그림; 특정 출토 저고리의 고증 재현은 아님.",
-      "balanceReason": "초급 기존 검(+8), 단검(+5/민첩+3), 주문 무기(정신력+7), 의복(방어+3~6)의 기준선을 참조. 실전 수치 검토 대기.",
+      "balanceReason": "초급 기준선을 유지하고 등급 상승마다 주 능력 +4~8, 보조 능력 +1~3 정도로 증가. 최대 검 공격+29, 주문 무기 정신+25; 특수 효과 폭증 없음. 실전 밸런스 검토 대기.",
       "engineEffects": {
         "stats": {
           "attack": 0,
@@ -221,16 +271,18 @@
       "tier": 1,
       "recommendedLevel": 1,
       "acquisition": {
-        "method": "초반 마을 상점 판매 또는 첫 전직 때 초급 무기·의복 지급",
-        "region": "초반 마을 (감독자 실제 맵·상점 연결 대기)",
+        "method": "첫 전직 초급 한 벌 지급 제안 또는 권장 단계 지역 상점 판매",
+        "region": "초반 마을 (권장 구간; 실제 맵·상점 연결 대기)",
         "implemented": false
       },
-      "classId": "class_jf_shaman",
+      "classIds": [
+        "class_jf_shaman"
+      ],
       "sourceIds": [
         "bells"
       ],
       "silhouette": "둥근 테에 매달린 일곱 방울, 나무 자루와 붉은 끈; 마법 지팡이로 대체하지 않음.",
-      "balanceReason": "초급 기존 검(+8), 단검(+5/민첩+3), 주문 무기(정신력+7), 의복(방어+3~6)의 기준선을 참조. 실전 수치 검토 대기.",
+      "balanceReason": "초급 기준선을 유지하고 등급 상승마다 주 능력 +4~8, 보조 능력 +1~3 정도로 증가. 최대 검 공격+29, 주문 무기 정신+25; 특수 효과 폭증 없음. 실전 밸런스 검토 대기.",
       "engineEffects": {
         "stats": {
           "attack": 2,
@@ -255,16 +307,18 @@
       "tier": 1,
       "recommendedLevel": 1,
       "acquisition": {
-        "method": "초반 마을 상점 판매 또는 첫 전직 때 초급 무기·의복 지급",
-        "region": "초반 마을 (감독자 실제 맵·상점 연결 대기)",
+        "method": "첫 전직 초급 한 벌 지급 제안 또는 권장 단계 지역 상점 판매",
+        "region": "초반 마을 (권장 구간; 실제 맵·상점 연결 대기)",
         "implemented": false
       },
-      "classId": "class_jf_shaman",
+      "classIds": [
+        "class_jf_shaman"
+      ],
       "sourceIds": [
         "cheollik"
       ],
       "silhouette": "붉은 철릭형 무복, 넓은 소매·교차 깃·주름 치마와 세 줄 색띠. 특정 지역 무복의 완전 재현이 아님.",
-      "balanceReason": "초급 기존 검(+8), 단검(+5/민첩+3), 주문 무기(정신력+7), 의복(방어+3~6)의 기준선을 참조. 실전 수치 검토 대기.",
+      "balanceReason": "초급 기준선을 유지하고 등급 상승마다 주 능력 +4~8, 보조 능력 +1~3 정도로 증가. 최대 검 공격+29, 주문 무기 정신+25; 특수 효과 폭증 없음. 실전 밸런스 검토 대기.",
       "engineEffects": {
         "stats": {
           "attack": 0,
@@ -287,16 +341,18 @@
       "tier": 1,
       "recommendedLevel": 1,
       "acquisition": {
-        "method": "초반 마을 상점 판매 또는 첫 전직 때 초급 무기·의복 지급",
-        "region": "초반 마을 (감독자 실제 맵·상점 연결 대기)",
+        "method": "첫 전직 초급 한 벌 지급 제안 또는 권장 단계 지역 상점 판매",
+        "region": "초반 마을 (권장 구간; 실제 맵·상점 연결 대기)",
         "implemented": false
       },
-      "classId": "class_jf_taoist",
+      "classIds": [
+        "class_jf_taoist"
+      ],
       "sourceIds": [
         "fan"
       ],
       "silhouette": "펼친 백지 접부채, 방사형 대나무 살과 사북·장식끈. 제식 도교 법구라는 주장은 없음.",
-      "balanceReason": "초급 기존 검(+8), 단검(+5/민첩+3), 주문 무기(정신력+7), 의복(방어+3~6)의 기준선을 참조. 실전 수치 검토 대기.",
+      "balanceReason": "초급 기준선을 유지하고 등급 상승마다 주 능력 +4~8, 보조 능력 +1~3 정도로 증가. 최대 검 공격+29, 주문 무기 정신+25; 특수 효과 폭증 없음. 실전 밸런스 검토 대기.",
       "engineEffects": {
         "stats": {
           "attack": 2,
@@ -321,16 +377,18 @@
       "tier": 1,
       "recommendedLevel": 1,
       "acquisition": {
-        "method": "초반 마을 상점 판매 또는 첫 전직 때 초급 무기·의복 지급",
-        "region": "초반 마을 (감독자 실제 맵·상점 연결 대기)",
+        "method": "첫 전직 초급 한 벌 지급 제안 또는 권장 단계 지역 상점 판매",
+        "region": "초반 마을 (권장 구간; 실제 맵·상점 연결 대기)",
         "implemented": false
       },
-      "classId": "class_jf_taoist",
+      "classIds": [
+        "class_jf_taoist"
+      ],
       "sourceIds": [
         "dopo"
       ],
       "silhouette": "담백한 백색 긴 도포와 넓은 소매, 가는 청색 띠. 뒤쪽 겹자락은 정면 아이콘에서 보이지 않음.",
-      "balanceReason": "초급 기존 검(+8), 단검(+5/민첩+3), 주문 무기(정신력+7), 의복(방어+3~6)의 기준선을 참조. 실전 수치 검토 대기.",
+      "balanceReason": "초급 기준선을 유지하고 등급 상승마다 주 능력 +4~8, 보조 능력 +1~3 정도로 증가. 최대 검 공격+29, 주문 무기 정신+25; 특수 효과 폭증 없음. 실전 밸런스 검토 대기.",
       "engineEffects": {
         "stats": {
           "attack": 0,
@@ -347,16 +405,1004 @@
         "권장 레벨은 설계 메타데이터이며 엔진 장착 최소 레벨 제한이 아님.",
         "아이콘은 메뉴·자료집 그림이다. Actor1의 전투·이동 그림을 바꾸지 않는다."
       ]
+    },
+    {
+      "id": "equip_jf_warrior_weapon_2",
+      "tier": 2,
+      "recommendedLevel": 5,
+      "acquisition": {
+        "method": "첫 전직 초급 한 벌 지급 제안 또는 권장 단계 지역 상점 판매",
+        "region": "외곽 장터 (권장 구간; 실제 맵·상점 연결 대기)",
+        "implemented": false
+      },
+      "classIds": [
+        "class_jf_warrior"
+      ],
+      "sourceIds": [
+        "hwando"
+      ],
+      "silhouette": "굽은 쇠날과 나무 자루·금빛 작은 코등이.",
+      "balanceReason": "초급 기준선을 유지하고 등급 상승마다 주 능력 +4~8, 보조 능력 +1~3 정도로 증가. 최대 검 공격+29, 주문 무기 정신+25; 특수 효과 폭증 없음. 실전 밸런스 검토 대기.",
+      "engineEffects": {
+        "stats": {
+          "attack": 14,
+          "defense": 0,
+          "mind": 0,
+          "agility": 0
+        },
+        "accuracyPercent": 100,
+        "criticalBonusPercentagePoints": 0,
+        "attackElementIds": [
+          "element_jf_physical"
+        ],
+        "specialFlags": []
+      },
+      "implementationLimits": [
+        "권장 레벨은 설계 메타데이터이며 엔진 장착 최소 레벨 제한이 아님.",
+        "아이콘은 메뉴·자료집 그림이다. Actor1의 전투·이동 그림을 바꾸지 않는다."
+      ]
+    },
+    {
+      "id": "equip_jf_warrior_body_2",
+      "tier": 2,
+      "recommendedLevel": 5,
+      "acquisition": {
+        "method": "첫 전직 초급 한 벌 지급 제안 또는 권장 단계 지역 상점 판매",
+        "region": "외곽 장터 (권장 구간; 실제 맵·상점 연결 대기)",
+        "implemented": false
+      },
+      "classIds": [
+        "class_jf_warrior"
+      ],
+      "sourceIds": [
+        "cheollik"
+      ],
+      "silhouette": "철릭 위에 갈색 직물 덧배자.",
+      "balanceReason": "초급 기준선을 유지하고 등급 상승마다 주 능력 +4~8, 보조 능력 +1~3 정도로 증가. 최대 검 공격+29, 주문 무기 정신+25; 특수 효과 폭증 없음. 실전 밸런스 검토 대기.",
+      "engineEffects": {
+        "stats": {
+          "attack": 0,
+          "defense": 10,
+          "mind": 0,
+          "agility": 0
+        },
+        "accuracyPercent": 100,
+        "criticalBonusPercentagePoints": 0,
+        "attackElementIds": [],
+        "specialFlags": []
+      },
+      "implementationLimits": [
+        "권장 레벨은 설계 메타데이터이며 엔진 장착 최소 레벨 제한이 아님.",
+        "아이콘은 메뉴·자료집 그림이다. Actor1의 전투·이동 그림을 바꾸지 않는다."
+      ]
+    },
+    {
+      "id": "equip_jf_warrior_weapon_3",
+      "tier": 3,
+      "recommendedLevel": 10,
+      "acquisition": {
+        "method": "첫 전직 초급 한 벌 지급 제안 또는 권장 단계 지역 상점 판매",
+        "region": "산길 거점 (권장 구간; 실제 맵·상점 연결 대기)",
+        "implemented": false
+      },
+      "classIds": [
+        "class_jf_warrior"
+      ],
+      "sourceIds": [
+        "hwando"
+      ],
+      "silhouette": "은빛 코등이·청색 자루·붉은 장식끈.",
+      "balanceReason": "초급 기준선을 유지하고 등급 상승마다 주 능력 +4~8, 보조 능력 +1~3 정도로 증가. 최대 검 공격+29, 주문 무기 정신+25; 특수 효과 폭증 없음. 실전 밸런스 검토 대기.",
+      "engineEffects": {
+        "stats": {
+          "attack": 21,
+          "defense": 0,
+          "mind": 0,
+          "agility": 0
+        },
+        "accuracyPercent": 100,
+        "criticalBonusPercentagePoints": 0,
+        "attackElementIds": [
+          "element_jf_physical"
+        ],
+        "specialFlags": []
+      },
+      "implementationLimits": [
+        "권장 레벨은 설계 메타데이터이며 엔진 장착 최소 레벨 제한이 아님.",
+        "아이콘은 메뉴·자료집 그림이다. Actor1의 전투·이동 그림을 바꾸지 않는다."
+      ]
+    },
+    {
+      "id": "equip_jf_warrior_body_3",
+      "tier": 3,
+      "recommendedLevel": 10,
+      "acquisition": {
+        "method": "첫 전직 초급 한 벌 지급 제안 또는 권장 단계 지역 상점 판매",
+        "region": "산길 거점 (권장 구간; 실제 맵·상점 연결 대기)",
+        "implemented": false
+      },
+      "classIds": [
+        "class_jf_warrior"
+      ],
+      "sourceIds": [
+        "cheollik"
+      ],
+      "silhouette": "겹여밈과 여러 줄 누비 주름.",
+      "balanceReason": "초급 기준선을 유지하고 등급 상승마다 주 능력 +4~8, 보조 능력 +1~3 정도로 증가. 최대 검 공격+29, 주문 무기 정신+25; 특수 효과 폭증 없음. 실전 밸런스 검토 대기.",
+      "engineEffects": {
+        "stats": {
+          "attack": 0,
+          "defense": 15,
+          "mind": 0,
+          "agility": 0
+        },
+        "accuracyPercent": 100,
+        "criticalBonusPercentagePoints": 0,
+        "attackElementIds": [],
+        "specialFlags": []
+      },
+      "implementationLimits": [
+        "권장 레벨은 설계 메타데이터이며 엔진 장착 최소 레벨 제한이 아님.",
+        "아이콘은 메뉴·자료집 그림이다. Actor1의 전투·이동 그림을 바꾸지 않는다."
+      ]
+    },
+    {
+      "id": "equip_jf_warrior_weapon_4",
+      "tier": 4,
+      "recommendedLevel": 15,
+      "acquisition": {
+        "method": "첫 전직 초급 한 벌 지급 제안 또는 권장 단계 지역 상점 판매",
+        "region": "후반 읍성 (권장 구간; 실제 맵·상점 연결 대기)",
+        "implemented": false
+      },
+      "classIds": [
+        "class_jf_warrior"
+      ],
+      "sourceIds": [
+        "hwando"
+      ],
+      "silhouette": "청옥 끝장식과 붉은 끈을 갖춘 고급 외날검.",
+      "balanceReason": "초급 기준선을 유지하고 등급 상승마다 주 능력 +4~8, 보조 능력 +1~3 정도로 증가. 최대 검 공격+29, 주문 무기 정신+25; 특수 효과 폭증 없음. 실전 밸런스 검토 대기.",
+      "engineEffects": {
+        "stats": {
+          "attack": 29,
+          "defense": 0,
+          "mind": 0,
+          "agility": 0
+        },
+        "accuracyPercent": 100,
+        "criticalBonusPercentagePoints": 0,
+        "attackElementIds": [
+          "element_jf_physical"
+        ],
+        "specialFlags": []
+      },
+      "implementationLimits": [
+        "권장 레벨은 설계 메타데이터이며 엔진 장착 최소 레벨 제한이 아님.",
+        "아이콘은 메뉴·자료집 그림이다. Actor1의 전투·이동 그림을 바꾸지 않는다."
+      ]
+    },
+    {
+      "id": "equip_jf_warrior_body_4",
+      "tier": 4,
+      "recommendedLevel": 15,
+      "acquisition": {
+        "method": "첫 전직 초급 한 벌 지급 제안 또는 권장 단계 지역 상점 판매",
+        "region": "후반 읍성 (권장 구간; 실제 맵·상점 연결 대기)",
+        "implemented": false
+      },
+      "classIds": [
+        "class_jf_warrior"
+      ],
+      "sourceIds": [
+        "cheollik"
+      ],
+      "silhouette": "청색 가장자리와 트인 사냥 자락·청옥 허리띠.",
+      "balanceReason": "초급 기준선을 유지하고 등급 상승마다 주 능력 +4~8, 보조 능력 +1~3 정도로 증가. 최대 검 공격+29, 주문 무기 정신+25; 특수 효과 폭증 없음. 실전 밸런스 검토 대기.",
+      "engineEffects": {
+        "stats": {
+          "attack": 0,
+          "defense": 21,
+          "mind": 0,
+          "agility": 0
+        },
+        "accuracyPercent": 100,
+        "criticalBonusPercentagePoints": 0,
+        "attackElementIds": [],
+        "specialFlags": []
+      },
+      "implementationLimits": [
+        "권장 레벨은 설계 메타데이터이며 엔진 장착 최소 레벨 제한이 아님.",
+        "아이콘은 메뉴·자료집 그림이다. Actor1의 전투·이동 그림을 바꾸지 않는다."
+      ]
+    },
+    {
+      "id": "equip_jf_rogue_weapon_2",
+      "tier": 2,
+      "recommendedLevel": 5,
+      "acquisition": {
+        "method": "첫 전직 초급 한 벌 지급 제안 또는 권장 단계 지역 상점 판매",
+        "region": "외곽 장터 (권장 구간; 실제 맵·상점 연결 대기)",
+        "implemented": false
+      },
+      "classIds": [
+        "class_jf_rogue"
+      ],
+      "sourceIds": [
+        "knife"
+      ],
+      "silhouette": "짧은 곡선 칼날과 작은 칼목.",
+      "balanceReason": "초급 기준선을 유지하고 등급 상승마다 주 능력 +4~8, 보조 능력 +1~3 정도로 증가. 최대 검 공격+29, 주문 무기 정신+25; 특수 효과 폭증 없음. 실전 밸런스 검토 대기.",
+      "engineEffects": {
+        "stats": {
+          "attack": 10,
+          "defense": 0,
+          "mind": 0,
+          "agility": 4
+        },
+        "accuracyPercent": 100,
+        "criticalBonusPercentagePoints": 3,
+        "attackElementIds": [
+          "element_jf_physical"
+        ],
+        "specialFlags": []
+      },
+      "implementationLimits": [
+        "권장 레벨은 설계 메타데이터이며 엔진 장착 최소 레벨 제한이 아님.",
+        "아이콘은 메뉴·자료집 그림이다. Actor1의 전투·이동 그림을 바꾸지 않는다."
+      ]
+    },
+    {
+      "id": "equip_jf_rogue_body_2",
+      "tier": 2,
+      "recommendedLevel": 5,
+      "acquisition": {
+        "method": "첫 전직 초급 한 벌 지급 제안 또는 권장 단계 지역 상점 판매",
+        "region": "외곽 장터 (권장 구간; 실제 맵·상점 연결 대기)",
+        "implemented": false
+      },
+      "classIds": [
+        "class_jf_rogue"
+      ],
+      "sourceIds": [
+        "cheollik"
+      ],
+      "silhouette": "짧은 저고리 위에 먹빛 배자.",
+      "balanceReason": "초급 기준선을 유지하고 등급 상승마다 주 능력 +4~8, 보조 능력 +1~3 정도로 증가. 최대 검 공격+29, 주문 무기 정신+25; 특수 효과 폭증 없음. 실전 밸런스 검토 대기.",
+      "engineEffects": {
+        "stats": {
+          "attack": 0,
+          "defense": 6,
+          "mind": 0,
+          "agility": 4
+        },
+        "accuracyPercent": 100,
+        "criticalBonusPercentagePoints": 0,
+        "attackElementIds": [],
+        "specialFlags": []
+      },
+      "implementationLimits": [
+        "권장 레벨은 설계 메타데이터이며 엔진 장착 최소 레벨 제한이 아님.",
+        "아이콘은 메뉴·자료집 그림이다. Actor1의 전투·이동 그림을 바꾸지 않는다."
+      ]
+    },
+    {
+      "id": "equip_jf_rogue_weapon_3",
+      "tier": 3,
+      "recommendedLevel": 10,
+      "acquisition": {
+        "method": "첫 전직 초급 한 벌 지급 제안 또는 권장 단계 지역 상점 판매",
+        "region": "산길 거점 (권장 구간; 실제 맵·상점 연결 대기)",
+        "implemented": false
+      },
+      "classIds": [
+        "class_jf_rogue"
+      ],
+      "sourceIds": [
+        "knife"
+      ],
+      "silhouette": "짧은 쇠날·청색 감은 자루·청동장식.",
+      "balanceReason": "초급 기준선을 유지하고 등급 상승마다 주 능력 +4~8, 보조 능력 +1~3 정도로 증가. 최대 검 공격+29, 주문 무기 정신+25; 특수 효과 폭증 없음. 실전 밸런스 검토 대기.",
+      "engineEffects": {
+        "stats": {
+          "attack": 16,
+          "defense": 0,
+          "mind": 0,
+          "agility": 6
+        },
+        "accuracyPercent": 100,
+        "criticalBonusPercentagePoints": 4,
+        "attackElementIds": [
+          "element_jf_physical"
+        ],
+        "specialFlags": []
+      },
+      "implementationLimits": [
+        "권장 레벨은 설계 메타데이터이며 엔진 장착 최소 레벨 제한이 아님.",
+        "아이콘은 메뉴·자료집 그림이다. Actor1의 전투·이동 그림을 바꾸지 않는다."
+      ]
+    },
+    {
+      "id": "equip_jf_rogue_body_3",
+      "tier": 3,
+      "recommendedLevel": 10,
+      "acquisition": {
+        "method": "첫 전직 초급 한 벌 지급 제안 또는 권장 단계 지역 상점 판매",
+        "region": "산길 거점 (권장 구간; 실제 맵·상점 연결 대기)",
+        "implemented": false
+      },
+      "classIds": [
+        "class_jf_rogue"
+      ],
+      "sourceIds": [
+        "cheollik"
+      ],
+      "silhouette": "길어진 좁은 소매 겹포와 세로 자락.",
+      "balanceReason": "초급 기준선을 유지하고 등급 상승마다 주 능력 +4~8, 보조 능력 +1~3 정도로 증가. 최대 검 공격+29, 주문 무기 정신+25; 특수 효과 폭증 없음. 실전 밸런스 검토 대기.",
+      "engineEffects": {
+        "stats": {
+          "attack": 0,
+          "defense": 10,
+          "mind": 0,
+          "agility": 6
+        },
+        "accuracyPercent": 100,
+        "criticalBonusPercentagePoints": 0,
+        "attackElementIds": [],
+        "specialFlags": []
+      },
+      "implementationLimits": [
+        "권장 레벨은 설계 메타데이터이며 엔진 장착 최소 레벨 제한이 아님.",
+        "아이콘은 메뉴·자료집 그림이다. Actor1의 전투·이동 그림을 바꾸지 않는다."
+      ]
+    },
+    {
+      "id": "equip_jf_rogue_weapon_4",
+      "tier": 4,
+      "recommendedLevel": 15,
+      "acquisition": {
+        "method": "첫 전직 초급 한 벌 지급 제안 또는 권장 단계 지역 상점 판매",
+        "region": "후반 읍성 (권장 구간; 실제 맵·상점 연결 대기)",
+        "implemented": false
+      },
+      "classIds": [
+        "class_jf_rogue"
+      ],
+      "sourceIds": [
+        "knife"
+      ],
+      "silhouette": "짧은 호신 칼날과 청옥 끝장식·짧은 붉은 끈.",
+      "balanceReason": "초급 기준선을 유지하고 등급 상승마다 주 능력 +4~8, 보조 능력 +1~3 정도로 증가. 최대 검 공격+29, 주문 무기 정신+25; 특수 효과 폭증 없음. 실전 밸런스 검토 대기.",
+      "engineEffects": {
+        "stats": {
+          "attack": 23,
+          "defense": 0,
+          "mind": 0,
+          "agility": 8
+        },
+        "accuracyPercent": 100,
+        "criticalBonusPercentagePoints": 5,
+        "attackElementIds": [
+          "element_jf_physical"
+        ],
+        "specialFlags": []
+      },
+      "implementationLimits": [
+        "권장 레벨은 설계 메타데이터이며 엔진 장착 최소 레벨 제한이 아님.",
+        "아이콘은 메뉴·자료집 그림이다. Actor1의 전투·이동 그림을 바꾸지 않는다."
+      ]
+    },
+    {
+      "id": "equip_jf_rogue_body_4",
+      "tier": 4,
+      "recommendedLevel": 15,
+      "acquisition": {
+        "method": "첫 전직 초급 한 벌 지급 제안 또는 권장 단계 지역 상점 판매",
+        "region": "후반 읍성 (권장 구간; 실제 맵·상점 연결 대기)",
+        "implemented": false
+      },
+      "classIds": [
+        "class_jf_rogue"
+      ],
+      "sourceIds": [
+        "cheollik"
+      ],
+      "silhouette": "청색 매듭과 갈라진 행려포 자락.",
+      "balanceReason": "초급 기준선을 유지하고 등급 상승마다 주 능력 +4~8, 보조 능력 +1~3 정도로 증가. 최대 검 공격+29, 주문 무기 정신+25; 특수 효과 폭증 없음. 실전 밸런스 검토 대기.",
+      "engineEffects": {
+        "stats": {
+          "attack": 0,
+          "defense": 14,
+          "mind": 0,
+          "agility": 8
+        },
+        "accuracyPercent": 100,
+        "criticalBonusPercentagePoints": 0,
+        "attackElementIds": [],
+        "specialFlags": []
+      },
+      "implementationLimits": [
+        "권장 레벨은 설계 메타데이터이며 엔진 장착 최소 레벨 제한이 아님.",
+        "아이콘은 메뉴·자료집 그림이다. Actor1의 전투·이동 그림을 바꾸지 않는다."
+      ]
+    },
+    {
+      "id": "equip_jf_shaman_weapon_2",
+      "tier": 2,
+      "recommendedLevel": 5,
+      "acquisition": {
+        "method": "첫 전직 초급 한 벌 지급 제안 또는 권장 단계 지역 상점 판매",
+        "region": "외곽 장터 (권장 구간; 실제 맵·상점 연결 대기)",
+        "implemented": false
+      },
+      "classIds": [
+        "class_jf_shaman"
+      ],
+      "sourceIds": [
+        "bells"
+      ],
+      "silhouette": "일곱 방울을 테에 연결하고 여러 색 끈을 단 자루.",
+      "balanceReason": "초급 기준선을 유지하고 등급 상승마다 주 능력 +4~8, 보조 능력 +1~3 정도로 증가. 최대 검 공격+29, 주문 무기 정신+25; 특수 효과 폭증 없음. 실전 밸런스 검토 대기.",
+      "engineEffects": {
+        "stats": {
+          "attack": 3,
+          "defense": 0,
+          "mind": 12,
+          "agility": 0
+        },
+        "accuracyPercent": 100,
+        "criticalBonusPercentagePoints": 0,
+        "attackElementIds": [
+          "element_jf_physical"
+        ],
+        "specialFlags": []
+      },
+      "implementationLimits": [
+        "권장 레벨은 설계 메타데이터이며 엔진 장착 최소 레벨 제한이 아님.",
+        "아이콘은 메뉴·자료집 그림이다. Actor1의 전투·이동 그림을 바꾸지 않는다."
+      ]
+    },
+    {
+      "id": "equip_jf_shaman_body_2",
+      "tier": 2,
+      "recommendedLevel": 5,
+      "acquisition": {
+        "method": "첫 전직 초급 한 벌 지급 제안 또는 권장 단계 지역 상점 판매",
+        "region": "외곽 장터 (권장 구간; 실제 맵·상점 연결 대기)",
+        "implemented": false
+      },
+      "classIds": [
+        "class_jf_shaman"
+      ],
+      "sourceIds": [
+        "cheollik"
+      ],
+      "silhouette": "홍색 주름 자락과 오색 허리띠.",
+      "balanceReason": "초급 기준선을 유지하고 등급 상승마다 주 능력 +4~8, 보조 능력 +1~3 정도로 증가. 최대 검 공격+29, 주문 무기 정신+25; 특수 효과 폭증 없음. 실전 밸런스 검토 대기.",
+      "engineEffects": {
+        "stats": {
+          "attack": 0,
+          "defense": 5,
+          "mind": 5,
+          "agility": 0
+        },
+        "accuracyPercent": 100,
+        "criticalBonusPercentagePoints": 0,
+        "attackElementIds": [],
+        "specialFlags": []
+      },
+      "implementationLimits": [
+        "권장 레벨은 설계 메타데이터이며 엔진 장착 최소 레벨 제한이 아님.",
+        "아이콘은 메뉴·자료집 그림이다. Actor1의 전투·이동 그림을 바꾸지 않는다."
+      ]
+    },
+    {
+      "id": "equip_jf_shaman_weapon_3",
+      "tier": 3,
+      "recommendedLevel": 10,
+      "acquisition": {
+        "method": "첫 전직 초급 한 벌 지급 제안 또는 권장 단계 지역 상점 판매",
+        "region": "산길 거점 (권장 구간; 실제 맵·상점 연결 대기)",
+        "implemented": false
+      },
+      "classIds": [
+        "class_jf_shaman"
+      ],
+      "sourceIds": [
+        "bells"
+      ],
+      "silhouette": "일곱 은빛 방울·청옥 자루장식·삼색 끈.",
+      "balanceReason": "초급 기준선을 유지하고 등급 상승마다 주 능력 +4~8, 보조 능력 +1~3 정도로 증가. 최대 검 공격+29, 주문 무기 정신+25; 특수 효과 폭증 없음. 실전 밸런스 검토 대기.",
+      "engineEffects": {
+        "stats": {
+          "attack": 4,
+          "defense": 0,
+          "mind": 18,
+          "agility": 0
+        },
+        "accuracyPercent": 100,
+        "criticalBonusPercentagePoints": 0,
+        "attackElementIds": [
+          "element_jf_physical"
+        ],
+        "specialFlags": []
+      },
+      "implementationLimits": [
+        "권장 레벨은 설계 메타데이터이며 엔진 장착 최소 레벨 제한이 아님.",
+        "아이콘은 메뉴·자료집 그림이다. Actor1의 전투·이동 그림을 바꾸지 않는다."
+      ]
+    },
+    {
+      "id": "equip_jf_shaman_body_3",
+      "tier": 3,
+      "recommendedLevel": 10,
+      "acquisition": {
+        "method": "첫 전직 초급 한 벌 지급 제안 또는 권장 단계 지역 상점 판매",
+        "region": "산길 거점 (권장 구간; 실제 맵·상점 연결 대기)",
+        "implemented": false
+      },
+      "classIds": [
+        "class_jf_shaman"
+      ],
+      "sourceIds": [
+        "cheollik"
+      ],
+      "silhouette": "흰색 소맷단을 늘린 넓은 소매 홍무복.",
+      "balanceReason": "초급 기준선을 유지하고 등급 상승마다 주 능력 +4~8, 보조 능력 +1~3 정도로 증가. 최대 검 공격+29, 주문 무기 정신+25; 특수 효과 폭증 없음. 실전 밸런스 검토 대기.",
+      "engineEffects": {
+        "stats": {
+          "attack": 0,
+          "defense": 8,
+          "mind": 8,
+          "agility": 0
+        },
+        "accuracyPercent": 100,
+        "criticalBonusPercentagePoints": 0,
+        "attackElementIds": [],
+        "specialFlags": []
+      },
+      "implementationLimits": [
+        "권장 레벨은 설계 메타데이터이며 엔진 장착 최소 레벨 제한이 아님.",
+        "아이콘은 메뉴·자료집 그림이다. Actor1의 전투·이동 그림을 바꾸지 않는다."
+      ]
+    },
+    {
+      "id": "equip_jf_shaman_weapon_4",
+      "tier": 4,
+      "recommendedLevel": 15,
+      "acquisition": {
+        "method": "첫 전직 초급 한 벌 지급 제안 또는 권장 단계 지역 상점 판매",
+        "region": "후반 읍성 (권장 구간; 실제 맵·상점 연결 대기)",
+        "implemented": false
+      },
+      "classIds": [
+        "class_jf_shaman"
+      ],
+      "sourceIds": [
+        "bells"
+      ],
+      "silhouette": "일곱 금빛 방울·넓은 테·청옥 자루와 삼색 끈.",
+      "balanceReason": "초급 기준선을 유지하고 등급 상승마다 주 능력 +4~8, 보조 능력 +1~3 정도로 증가. 최대 검 공격+29, 주문 무기 정신+25; 특수 효과 폭증 없음. 실전 밸런스 검토 대기.",
+      "engineEffects": {
+        "stats": {
+          "attack": 5,
+          "defense": 0,
+          "mind": 25,
+          "agility": 0
+        },
+        "accuracyPercent": 100,
+        "criticalBonusPercentagePoints": 0,
+        "attackElementIds": [
+          "element_jf_physical"
+        ],
+        "specialFlags": []
+      },
+      "implementationLimits": [
+        "권장 레벨은 설계 메타데이터이며 엔진 장착 최소 레벨 제한이 아님.",
+        "아이콘은 메뉴·자료집 그림이다. Actor1의 전투·이동 그림을 바꾸지 않는다."
+      ]
+    },
+    {
+      "id": "equip_jf_shaman_body_4",
+      "tier": 4,
+      "recommendedLevel": 15,
+      "acquisition": {
+        "method": "첫 전직 초급 한 벌 지급 제안 또는 권장 단계 지역 상점 판매",
+        "region": "후반 읍성 (권장 구간; 실제 맵·상점 연결 대기)",
+        "implemented": false
+      },
+      "classIds": [
+        "class_jf_shaman"
+      ],
+      "sourceIds": [
+        "cheollik"
+      ],
+      "silhouette": "교차 금빛 깃 장식과 청옥 허리띠의 홍무복.",
+      "balanceReason": "초급 기준선을 유지하고 등급 상승마다 주 능력 +4~8, 보조 능력 +1~3 정도로 증가. 최대 검 공격+29, 주문 무기 정신+25; 특수 효과 폭증 없음. 실전 밸런스 검토 대기.",
+      "engineEffects": {
+        "stats": {
+          "attack": 0,
+          "defense": 12,
+          "mind": 11,
+          "agility": 0
+        },
+        "accuracyPercent": 100,
+        "criticalBonusPercentagePoints": 0,
+        "attackElementIds": [],
+        "specialFlags": []
+      },
+      "implementationLimits": [
+        "권장 레벨은 설계 메타데이터이며 엔진 장착 최소 레벨 제한이 아님.",
+        "아이콘은 메뉴·자료집 그림이다. Actor1의 전투·이동 그림을 바꾸지 않는다."
+      ]
+    },
+    {
+      "id": "equip_jf_taoist_weapon_2",
+      "tier": 2,
+      "recommendedLevel": 5,
+      "acquisition": {
+        "method": "첫 전직 초급 한 벌 지급 제안 또는 권장 단계 지역 상점 판매",
+        "region": "외곽 장터 (권장 구간; 실제 맵·상점 연결 대기)",
+        "implemented": false
+      },
+      "classIds": [
+        "class_jf_taoist"
+      ],
+      "sourceIds": [
+        "fan"
+      ],
+      "silhouette": "접선 선면에 창작 산 능선 문양.",
+      "balanceReason": "초급 기준선을 유지하고 등급 상승마다 주 능력 +4~8, 보조 능력 +1~3 정도로 증가. 최대 검 공격+29, 주문 무기 정신+25; 특수 효과 폭증 없음. 실전 밸런스 검토 대기.",
+      "engineEffects": {
+        "stats": {
+          "attack": 3,
+          "defense": 0,
+          "mind": 11,
+          "agility": 0
+        },
+        "accuracyPercent": 100,
+        "criticalBonusPercentagePoints": 0,
+        "attackElementIds": [
+          "element_jf_physical"
+        ],
+        "specialFlags": []
+      },
+      "implementationLimits": [
+        "권장 레벨은 설계 메타데이터이며 엔진 장착 최소 레벨 제한이 아님.",
+        "아이콘은 메뉴·자료집 그림이다. Actor1의 전투·이동 그림을 바꾸지 않는다."
+      ]
+    },
+    {
+      "id": "equip_jf_taoist_body_2",
+      "tier": 2,
+      "recommendedLevel": 5,
+      "acquisition": {
+        "method": "첫 전직 초급 한 벌 지급 제안 또는 권장 단계 지역 상점 판매",
+        "region": "외곽 장터 (권장 구간; 실제 맵·상점 연결 대기)",
+        "implemented": false
+      },
+      "classIds": [
+        "class_jf_taoist"
+      ],
+      "sourceIds": [
+        "dopo"
+      ],
+      "silhouette": "겹삼베의 긴 곧은 자락과 가는 청띠.",
+      "balanceReason": "초급 기준선을 유지하고 등급 상승마다 주 능력 +4~8, 보조 능력 +1~3 정도로 증가. 최대 검 공격+29, 주문 무기 정신+25; 특수 효과 폭증 없음. 실전 밸런스 검토 대기.",
+      "engineEffects": {
+        "stats": {
+          "attack": 0,
+          "defense": 6,
+          "mind": 4,
+          "agility": 0
+        },
+        "accuracyPercent": 100,
+        "criticalBonusPercentagePoints": 0,
+        "attackElementIds": [],
+        "specialFlags": []
+      },
+      "implementationLimits": [
+        "권장 레벨은 설계 메타데이터이며 엔진 장착 최소 레벨 제한이 아님.",
+        "아이콘은 메뉴·자료집 그림이다. Actor1의 전투·이동 그림을 바꾸지 않는다."
+      ]
+    },
+    {
+      "id": "equip_jf_taoist_weapon_3",
+      "tier": 3,
+      "recommendedLevel": 10,
+      "acquisition": {
+        "method": "첫 전직 초급 한 벌 지급 제안 또는 권장 단계 지역 상점 판매",
+        "region": "산길 거점 (권장 구간; 실제 맵·상점 연결 대기)",
+        "implemented": false
+      },
+      "classIds": [
+        "class_jf_taoist"
+      ],
+      "sourceIds": [
+        "fan"
+      ],
+      "silhouette": "접선 선면에 창작 구름 문양·붉은 장식끈.",
+      "balanceReason": "초급 기준선을 유지하고 등급 상승마다 주 능력 +4~8, 보조 능력 +1~3 정도로 증가. 최대 검 공격+29, 주문 무기 정신+25; 특수 효과 폭증 없음. 실전 밸런스 검토 대기.",
+      "engineEffects": {
+        "stats": {
+          "attack": 4,
+          "defense": 0,
+          "mind": 17,
+          "agility": 0
+        },
+        "accuracyPercent": 100,
+        "criticalBonusPercentagePoints": 0,
+        "attackElementIds": [
+          "element_jf_physical"
+        ],
+        "specialFlags": []
+      },
+      "implementationLimits": [
+        "권장 레벨은 설계 메타데이터이며 엔진 장착 최소 레벨 제한이 아님.",
+        "아이콘은 메뉴·자료집 그림이다. Actor1의 전투·이동 그림을 바꾸지 않는다."
+      ]
+    },
+    {
+      "id": "equip_jf_taoist_body_3",
+      "tier": 3,
+      "recommendedLevel": 10,
+      "acquisition": {
+        "method": "첫 전직 초급 한 벌 지급 제안 또는 권장 단계 지역 상점 판매",
+        "region": "산길 거점 (권장 구간; 실제 맵·상점 연결 대기)",
+        "implemented": false
+      },
+      "classIds": [
+        "class_jf_taoist"
+      ],
+      "sourceIds": [
+        "dopo"
+      ],
+      "silhouette": "남색 깃 가장자리와 밑단을 댄 흰 도포.",
+      "balanceReason": "초급 기준선을 유지하고 등급 상승마다 주 능력 +4~8, 보조 능력 +1~3 정도로 증가. 최대 검 공격+29, 주문 무기 정신+25; 특수 효과 폭증 없음. 실전 밸런스 검토 대기.",
+      "engineEffects": {
+        "stats": {
+          "attack": 0,
+          "defense": 10,
+          "mind": 6,
+          "agility": 0
+        },
+        "accuracyPercent": 100,
+        "criticalBonusPercentagePoints": 0,
+        "attackElementIds": [],
+        "specialFlags": []
+      },
+      "implementationLimits": [
+        "권장 레벨은 설계 메타데이터이며 엔진 장착 최소 레벨 제한이 아님.",
+        "아이콘은 메뉴·자료집 그림이다. Actor1의 전투·이동 그림을 바꾸지 않는다."
+      ]
+    },
+    {
+      "id": "equip_jf_taoist_weapon_4",
+      "tier": 4,
+      "recommendedLevel": 15,
+      "acquisition": {
+        "method": "첫 전직 초급 한 벌 지급 제안 또는 권장 단계 지역 상점 판매",
+        "region": "후반 읍성 (권장 구간; 실제 맵·상점 연결 대기)",
+        "implemented": false
+      },
+      "classIds": [
+        "class_jf_taoist"
+      ],
+      "sourceIds": [
+        "fan"
+      ],
+      "silhouette": "접선 선면에 창작 청죽 문양·청옥과 붉은 끈.",
+      "balanceReason": "초급 기준선을 유지하고 등급 상승마다 주 능력 +4~8, 보조 능력 +1~3 정도로 증가. 최대 검 공격+29, 주문 무기 정신+25; 특수 효과 폭증 없음. 실전 밸런스 검토 대기.",
+      "engineEffects": {
+        "stats": {
+          "attack": 5,
+          "defense": 0,
+          "mind": 24,
+          "agility": 0
+        },
+        "accuracyPercent": 100,
+        "criticalBonusPercentagePoints": 0,
+        "attackElementIds": [
+          "element_jf_physical"
+        ],
+        "specialFlags": []
+      },
+      "implementationLimits": [
+        "권장 레벨은 설계 메타데이터이며 엔진 장착 최소 레벨 제한이 아님.",
+        "아이콘은 메뉴·자료집 그림이다. Actor1의 전투·이동 그림을 바꾸지 않는다."
+      ]
+    },
+    {
+      "id": "equip_jf_taoist_body_4",
+      "tier": 4,
+      "recommendedLevel": 15,
+      "acquisition": {
+        "method": "첫 전직 초급 한 벌 지급 제안 또는 권장 단계 지역 상점 판매",
+        "region": "후반 읍성 (권장 구간; 실제 맵·상점 연결 대기)",
+        "implemented": false
+      },
+      "classIds": [
+        "class_jf_taoist"
+      ],
+      "sourceIds": [
+        "dopo"
+      ],
+      "silhouette": "소매 청색 장식·청옥 허리띠와 긴 자락.",
+      "balanceReason": "초급 기준선을 유지하고 등급 상승마다 주 능력 +4~8, 보조 능력 +1~3 정도로 증가. 최대 검 공격+29, 주문 무기 정신+25; 특수 효과 폭증 없음. 실전 밸런스 검토 대기.",
+      "engineEffects": {
+        "stats": {
+          "attack": 0,
+          "defense": 14,
+          "mind": 9,
+          "agility": 0
+        },
+        "accuracyPercent": 100,
+        "criticalBonusPercentagePoints": 0,
+        "attackElementIds": [],
+        "specialFlags": []
+      },
+      "implementationLimits": [
+        "권장 레벨은 설계 메타데이터이며 엔진 장착 최소 레벨 제한이 아님.",
+        "아이콘은 메뉴·자료집 그림이다. Actor1의 전투·이동 그림을 바꾸지 않는다."
+      ]
+    },
+    {
+      "id": "equip_jf_shared_head_1",
+      "tier": null,
+      "recommendedLevel": 1,
+      "acquisition": {
+        "method": "첫 전직 초급 한 벌 지급 제안 또는 권장 단계 지역 상점 판매",
+        "region": "초반 마을 (권장 구간; 실제 맵·상점 연결 대기)",
+        "implemented": false
+      },
+      "classIds": [
+        "class_jf_warrior",
+        "class_jf_rogue",
+        "class_jf_shaman",
+        "class_jf_taoist"
+      ],
+      "sourceIds": [
+        "headwear"
+      ],
+      "silhouette": "말총 그물눈 머리띠와 관자·양쪽 당줄.",
+      "balanceReason": "초급 기준선을 유지하고 등급 상승마다 주 능력 +4~8, 보조 능력 +1~3 정도로 증가. 최대 검 공격+29, 주문 무기 정신+25; 특수 효과 폭증 없음. 실전 밸런스 검토 대기.",
+      "engineEffects": {
+        "stats": {
+          "attack": 0,
+          "defense": 1,
+          "mind": 0,
+          "agility": 1
+        },
+        "accuracyPercent": 100,
+        "criticalBonusPercentagePoints": 0,
+        "attackElementIds": [],
+        "specialFlags": []
+      },
+      "implementationLimits": [
+        "권장 레벨은 설계 메타데이터이며 엔진 장착 최소 레벨 제한이 아님.",
+        "아이콘은 메뉴·자료집 그림이다. Actor1의 전투·이동 그림을 바꾸지 않는다."
+      ]
+    },
+    {
+      "id": "equip_jf_shared_head_2",
+      "tier": null,
+      "recommendedLevel": 10,
+      "acquisition": {
+        "method": "첫 전직 초급 한 벌 지급 제안 또는 권장 단계 지역 상점 판매",
+        "region": "산길 거점 (권장 구간; 실제 맵·상점 연결 대기)",
+        "implemented": false
+      },
+      "classIds": [
+        "class_jf_warrior",
+        "class_jf_rogue",
+        "class_jf_shaman",
+        "class_jf_taoist"
+      ],
+      "sourceIds": [
+        "headwear"
+      ],
+      "silhouette": "원추형 대나무 삿갓, 엮은 살·낮은 넓은 챙과 턱끈.",
+      "balanceReason": "초급 기준선을 유지하고 등급 상승마다 주 능력 +4~8, 보조 능력 +1~3 정도로 증가. 최대 검 공격+29, 주문 무기 정신+25; 특수 효과 폭증 없음. 실전 밸런스 검토 대기.",
+      "engineEffects": {
+        "stats": {
+          "attack": 0,
+          "defense": 5,
+          "mind": 1,
+          "agility": 0
+        },
+        "accuracyPercent": 100,
+        "criticalBonusPercentagePoints": 0,
+        "attackElementIds": [],
+        "specialFlags": []
+      },
+      "implementationLimits": [
+        "권장 레벨은 설계 메타데이터이며 엔진 장착 최소 레벨 제한이 아님.",
+        "아이콘은 메뉴·자료집 그림이다. Actor1의 전투·이동 그림을 바꾸지 않는다."
+      ]
+    },
+    {
+      "id": "equip_jf_shared_accessory_1",
+      "tier": null,
+      "recommendedLevel": 5,
+      "acquisition": {
+        "method": "첫 전직 초급 한 벌 지급 제안 또는 권장 단계 지역 상점 판매",
+        "region": "외곽 장터 (권장 구간; 실제 맵·상점 연결 대기)",
+        "implemented": false
+      },
+      "classIds": [
+        "class_jf_warrior",
+        "class_jf_rogue",
+        "class_jf_shaman",
+        "class_jf_taoist"
+      ],
+      "sourceIds": [
+        "accessories"
+      ],
+      "silhouette": "주머니 입구의 매듭 고리와 붉은 향낭·짧은 술.",
+      "balanceReason": "초급 기준선을 유지하고 등급 상승마다 주 능력 +4~8, 보조 능력 +1~3 정도로 증가. 최대 검 공격+29, 주문 무기 정신+25; 특수 효과 폭증 없음. 실전 밸런스 검토 대기.",
+      "engineEffects": {
+        "stats": {
+          "attack": 0,
+          "defense": 1,
+          "mind": 2,
+          "agility": 0
+        },
+        "accuracyPercent": 100,
+        "criticalBonusPercentagePoints": 0,
+        "attackElementIds": [],
+        "specialFlags": []
+      },
+      "implementationLimits": [
+        "권장 레벨은 설계 메타데이터이며 엔진 장착 최소 레벨 제한이 아님.",
+        "아이콘은 메뉴·자료집 그림이다. Actor1의 전투·이동 그림을 바꾸지 않는다."
+      ]
+    },
+    {
+      "id": "equip_jf_shared_accessory_2",
+      "tier": null,
+      "recommendedLevel": 15,
+      "acquisition": {
+        "method": "첫 전직 초급 한 벌 지급 제안 또는 권장 단계 지역 상점 판매",
+        "region": "후반 읍성 (권장 구간; 실제 맵·상점 연결 대기)",
+        "implemented": false
+      },
+      "classIds": [
+        "class_jf_warrior",
+        "class_jf_rogue",
+        "class_jf_shaman",
+        "class_jf_taoist"
+      ],
+      "sourceIds": [
+        "accessories"
+      ],
+      "silhouette": "옥 몸체·고리·매듭·긴 붉은 술을 가진 단작 노리개.",
+      "balanceReason": "초급 기준선을 유지하고 등급 상승마다 주 능력 +4~8, 보조 능력 +1~3 정도로 증가. 최대 검 공격+29, 주문 무기 정신+25; 특수 효과 폭증 없음. 실전 밸런스 검토 대기.",
+      "engineEffects": {
+        "stats": {
+          "attack": 0,
+          "defense": 0,
+          "mind": 5,
+          "agility": 2
+        },
+        "accuracyPercent": 100,
+        "criticalBonusPercentagePoints": 0,
+        "attackElementIds": [],
+        "specialFlags": []
+      },
+      "implementationLimits": [
+        "권장 레벨은 설계 메타데이터이며 엔진 장착 최소 레벨 제한이 아님.",
+        "아이콘은 메뉴·자료집 그림이다. Actor1의 전투·이동 그림을 바꾸지 않는다."
+      ]
     }
   ],
   "approval": {
     "userApproved": false,
-    "subjectiveVisualReview": "작성자 원본 PNG 직접 열람 완료; 사용자 검토 대기"
+    "subjectiveVisualReview": "작성자가 직업별·공유 시트 1배/5배 및 주요 원본PNG를 직접 열람; 사용자 승인 아님"
   },
   "canonicalStore": {
     "written": false,
     "integrationOwner": "supervisor",
-    "reason": "사용자가 live SQLite/Supabase 쓰기를 금지한 첫 샘플 산출물 작업"
+    "reason": "사용자가 DB 쓰기를 금지한 공용 팩 산출물 작업"
   },
   "context": {
     "localProjectSqliteFound": false,

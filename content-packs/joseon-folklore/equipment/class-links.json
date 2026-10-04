@@ -1,0 +1,74 @@
+{
+  "class_jf_warrior": {
+    "actorIds": [],
+    "classIds": [],
+    "equipmentIds": [
+      "equip_jf_warrior_weapon_1",
+      "equip_jf_warrior_body_1",
+      "equip_jf_warrior_weapon_2",
+      "equip_jf_warrior_body_2",
+      "equip_jf_warrior_weapon_3",
+      "equip_jf_warrior_body_3",
+      "equip_jf_warrior_weapon_4",
+      "equip_jf_warrior_body_4",
+      "equip_jf_shared_head_1",
+      "equip_jf_shared_head_2",
+      "equip_jf_shared_accessory_1",
+      "equip_jf_shared_accessory_2"
+    ]
+  },
+  "class_jf_rogue": {
+    "actorIds": [],
+    "classIds": [],
+    "equipmentIds": [
+      "equip_jf_rogue_weapon_1",
+      "equip_jf_rogue_body_1",
+      "equip_jf_rogue_weapon_2",
+      "equip_jf_rogue_body_2",
+      "equip_jf_rogue_weapon_3",
+      "equip_jf_rogue_body_3",
+      "equip_jf_rogue_weapon_4",
+      "equip_jf_rogue_body_4",
+      "equip_jf_shared_head_1",
+      "equip_jf_shared_head_2",
+      "equip_jf_shared_accessory_1",
+      "equip_jf_shared_accessory_2"
+    ]
+  },
+  "class_jf_shaman": {
+    "actorIds": [],
+    "classIds": [],
+    "equipmentIds": [
+      "equip_jf_shaman_weapon_1",
+      "equip_jf_shaman_body_1",
+      "equip_jf_shaman_weapon_2",
+      "equip_jf_shaman_body_2",
+      "equip_jf_shaman_weapon_3",
+      "equip_jf_shaman_body_3",
+      "equip_jf_shaman_weapon_4",
+      "equip_jf_shaman_body_4",
+      "equip_jf_shared_head_1",
+      "equip_jf_shared_head_2",
+      "equip_jf_shared_accessory_1",
+      "equip_jf_shared_accessory_2"
+    ]
+  },
+  "class_jf_taoist": {
+    "actorIds": [],
+    "classIds": [],
+    "equipmentIds": [
+      "equip_jf_taoist_weapon_1",
+      "equip_jf_taoist_body_1",
+      "equip_jf_taoist_weapon_2",
+      "equip_jf_taoist_body_2",
+      "equip_jf_taoist_weapon_3",
+      "equip_jf_taoist_body_3",
+      "equip_jf_taoist_weapon_4",
+      "equip_jf_taoist_body_4",
+      "equip_jf_shared_head_1",
+      "equip_jf_shared_head_2",
+      "equip_jf_shared_accessory_1",
+      "equip_jf_shared_accessory_2"
+    ]
+  }
+}

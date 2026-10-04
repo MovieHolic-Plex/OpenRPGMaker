@@ -335,6 +335,1190 @@
       "stateDefenseIds": [],
       "stateDefenseMode": "resist",
       "stateResistanceChance": 0
+    },
+    {
+      "id": "equip_jf_warrior_weapon_2",
+      "name": "장정 환도",
+      "imageResourceId": "jf-icon-warrior-weapon-2",
+      "iconResourceId": "jf-icon-warrior-weapon-2",
+      "slot": "weapon",
+      "price": 200,
+      "description": "장정 환도. 공격력 +14.",
+      "statBonuses": {
+        "attack": 14,
+        "defense": 0,
+        "mind": 0,
+        "agility": 0
+      },
+      "equippableActorIds": [],
+      "equippableClassIds": [
+        "class_jf_warrior"
+      ],
+      "cursed": false,
+      "twoHanded": false,
+      "accuracy": 100,
+      "criticalRate": 0,
+      "attackElementIds": [
+        "element_jf_physical"
+      ],
+      "stateInflictIds": [],
+      "stateInflictionChance": 100,
+      "effectFlags": {
+        "preemptive": false,
+        "doubleAttack": false,
+        "attackAll": false,
+        "ignoreDodge": false,
+        "preventCriticalHits": false,
+        "increasePhysicalDodge": false,
+        "halfMpCost": false,
+        "negateTerrainDamage": false,
+        "fixedEquipment": false
+      },
+      "elementalDefenseIds": [],
+      "stateDefenseIds": [],
+      "stateDefenseMode": "resist",
+      "stateResistanceChance": 0
+    },
+    {
+      "id": "equip_jf_warrior_body_2",
+      "name": "덧배자 철릭",
+      "imageResourceId": "jf-icon-warrior-body-2",
+      "iconResourceId": "jf-icon-warrior-body-2",
+      "slot": "armor",
+      "price": 170,
+      "description": "덧배자 철릭. 방어력 +10.",
+      "statBonuses": {
+        "attack": 0,
+        "defense": 10,
+        "mind": 0,
+        "agility": 0
+      },
+      "equippableActorIds": [],
+      "equippableClassIds": [
+        "class_jf_warrior"
+      ],
+      "cursed": false,
+      "twoHanded": false,
+      "accuracy": 100,
+      "criticalRate": 0,
+      "attackElementIds": [],
+      "stateInflictIds": [],
+      "stateInflictionChance": 100,
+      "effectFlags": {
+        "preemptive": false,
+        "doubleAttack": false,
+        "attackAll": false,
+        "ignoreDodge": false,
+        "preventCriticalHits": false,
+        "increasePhysicalDodge": false,
+        "halfMpCost": false,
+        "negateTerrainDamage": false,
+        "fixedEquipment": false
+      },
+      "elementalDefenseIds": [],
+      "stateDefenseIds": [],
+      "stateDefenseMode": "resist",
+      "stateResistanceChance": 0
+    },
+    {
+      "id": "equip_jf_warrior_weapon_3",
+      "name": "은장 환도",
+      "imageResourceId": "jf-icon-warrior-weapon-3",
+      "iconResourceId": "jf-icon-warrior-weapon-3",
+      "slot": "weapon",
+      "price": 460,
+      "description": "은장 환도. 공격력 +21.",
+      "statBonuses": {
+        "attack": 21,
+        "defense": 0,
+        "mind": 0,
+        "agility": 0
+      },
+      "equippableActorIds": [],
+      "equippableClassIds": [
+        "class_jf_warrior"
+      ],
+      "cursed": false,
+      "twoHanded": false,
+      "accuracy": 100,
+      "criticalRate": 0,
+      "attackElementIds": [
+        "element_jf_physical"
+      ],
+      "stateInflictIds": [],
+      "stateInflictionChance": 100,
+      "effectFlags": {
+        "preemptive": false,
+        "doubleAttack": false,
+        "attackAll": false,
+        "ignoreDodge": false,
+        "preventCriticalHits": false,
+        "increasePhysicalDodge": false,
+        "halfMpCost": false,
+        "negateTerrainDamage": false,
+        "fixedEquipment": false
+      },
+      "elementalDefenseIds": [],
+      "stateDefenseIds": [],
+      "stateDefenseMode": "resist",
+      "stateResistanceChance": 0
+    },
+    {
+      "id": "equip_jf_warrior_body_3",
+      "name": "겹누비 철릭",
+      "imageResourceId": "jf-icon-warrior-body-3",
+      "iconResourceId": "jf-icon-warrior-body-3",
+      "slot": "armor",
+      "price": 390,
+      "description": "겹누비 철릭. 방어력 +15.",
+      "statBonuses": {
+        "attack": 0,
+        "defense": 15,
+        "mind": 0,
+        "agility": 0
+      },
+      "equippableActorIds": [],
+      "equippableClassIds": [
+        "class_jf_warrior"
+      ],
+      "cursed": false,
+      "twoHanded": false,
+      "accuracy": 100,
+      "criticalRate": 0,
+      "attackElementIds": [],
+      "stateInflictIds": [],
+      "stateInflictionChance": 100,
+      "effectFlags": {
+        "preemptive": false,
+        "doubleAttack": false,
+        "attackAll": false,
+        "ignoreDodge": false,
+        "preventCriticalHits": false,
+        "increasePhysicalDodge": false,
+        "halfMpCost": false,
+        "negateTerrainDamage": false,
+        "fixedEquipment": false
+      },
+      "elementalDefenseIds": [],
+      "stateDefenseIds": [],
+      "stateDefenseMode": "resist",
+      "stateResistanceChance": 0
+    },
+    {
+      "id": "equip_jf_warrior_weapon_4",
+      "name": "청옥 환도",
+      "imageResourceId": "jf-icon-warrior-weapon-4",
+      "iconResourceId": "jf-icon-warrior-weapon-4",
+      "slot": "weapon",
+      "price": 900,
+      "description": "청옥 환도. 공격력 +29.",
+      "statBonuses": {
+        "attack": 29,
+        "defense": 0,
+        "mind": 0,
+        "agility": 0
+      },
+      "equippableActorIds": [],
+      "equippableClassIds": [
+        "class_jf_warrior"
+      ],
+      "cursed": false,
+      "twoHanded": false,
+      "accuracy": 100,
+      "criticalRate": 0,
+      "attackElementIds": [
+        "element_jf_physical"
+      ],
+      "stateInflictIds": [],
+      "stateInflictionChance": 100,
+      "effectFlags": {
+        "preemptive": false,
+        "doubleAttack": false,
+        "attackAll": false,
+        "ignoreDodge": false,
+        "preventCriticalHits": false,
+        "increasePhysicalDodge": false,
+        "halfMpCost": false,
+        "negateTerrainDamage": false,
+        "fixedEquipment": false
+      },
+      "elementalDefenseIds": [],
+      "stateDefenseIds": [],
+      "stateDefenseMode": "resist",
+      "stateResistanceChance": 0
+    },
+    {
+      "id": "equip_jf_warrior_body_4",
+      "name": "청띠 사냥철릭",
+      "imageResourceId": "jf-icon-warrior-body-4",
+      "iconResourceId": "jf-icon-warrior-body-4",
+      "slot": "armor",
+      "price": 740,
+      "description": "청띠 사냥철릭. 방어력 +21.",
+      "statBonuses": {
+        "attack": 0,
+        "defense": 21,
+        "mind": 0,
+        "agility": 0
+      },
+      "equippableActorIds": [],
+      "equippableClassIds": [
+        "class_jf_warrior"
+      ],
+      "cursed": false,
+      "twoHanded": false,
+      "accuracy": 100,
+      "criticalRate": 0,
+      "attackElementIds": [],
+      "stateInflictIds": [],
+      "stateInflictionChance": 100,
+      "effectFlags": {
+        "preemptive": false,
+        "doubleAttack": false,
+        "attackAll": false,
+        "ignoreDodge": false,
+        "preventCriticalHits": false,
+        "increasePhysicalDodge": false,
+        "halfMpCost": false,
+        "negateTerrainDamage": false,
+        "fixedEquipment": false
+      },
+      "elementalDefenseIds": [],
+      "stateDefenseIds": [],
+      "stateDefenseMode": "resist",
+      "stateResistanceChance": 0
+    },
+    {
+      "id": "equip_jf_rogue_weapon_2",
+      "name": "쇠날 단검",
+      "imageResourceId": "jf-icon-rogue-weapon-2",
+      "iconResourceId": "jf-icon-rogue-weapon-2",
+      "slot": "weapon",
+      "price": 180,
+      "description": "쇠날 단검. 공격력 +10, 민첩 +4, 치명타율 +3%p.",
+      "statBonuses": {
+        "attack": 10,
+        "defense": 0,
+        "mind": 0,
+        "agility": 4
+      },
+      "equippableActorIds": [],
+      "equippableClassIds": [
+        "class_jf_rogue"
+      ],
+      "cursed": false,
+      "twoHanded": false,
+      "accuracy": 100,
+      "criticalRate": 3,
+      "attackElementIds": [
+        "element_jf_physical"
+      ],
+      "stateInflictIds": [],
+      "stateInflictionChance": 100,
+      "effectFlags": {
+        "preemptive": false,
+        "doubleAttack": false,
+        "attackAll": false,
+        "ignoreDodge": false,
+        "preventCriticalHits": false,
+        "increasePhysicalDodge": false,
+        "halfMpCost": false,
+        "negateTerrainDamage": false,
+        "fixedEquipment": false
+      },
+      "elementalDefenseIds": [],
+      "stateDefenseIds": [],
+      "stateDefenseMode": "resist",
+      "stateResistanceChance": 0
+    },
+    {
+      "id": "equip_jf_rogue_body_2",
+      "name": "먹빛 배자옷",
+      "imageResourceId": "jf-icon-rogue-body-2",
+      "iconResourceId": "jf-icon-rogue-body-2",
+      "slot": "armor",
+      "price": 160,
+      "description": "먹빛 배자옷. 방어력 +6, 민첩 +4.",
+      "statBonuses": {
+        "attack": 0,
+        "defense": 6,
+        "mind": 0,
+        "agility": 4
+      },
+      "equippableActorIds": [],
+      "equippableClassIds": [
+        "class_jf_rogue"
+      ],
+      "cursed": false,
+      "twoHanded": false,
+      "accuracy": 100,
+      "criticalRate": 0,
+      "attackElementIds": [],
+      "stateInflictIds": [],
+      "stateInflictionChance": 100,
+      "effectFlags": {
+        "preemptive": false,
+        "doubleAttack": false,
+        "attackAll": false,
+        "ignoreDodge": false,
+        "preventCriticalHits": false,
+        "increasePhysicalDodge": false,
+        "halfMpCost": false,
+        "negateTerrainDamage": false,
+        "fixedEquipment": false
+      },
+      "elementalDefenseIds": [],
+      "stateDefenseIds": [],
+      "stateDefenseMode": "resist",
+      "stateResistanceChance": 0
+    },
+    {
+      "id": "equip_jf_rogue_weapon_3",
+      "name": "청동장식 단검",
+      "imageResourceId": "jf-icon-rogue-weapon-3",
+      "iconResourceId": "jf-icon-rogue-weapon-3",
+      "slot": "weapon",
+      "price": 410,
+      "description": "청동장식 단검. 공격력 +16, 민첩 +6, 치명타율 +4%p.",
+      "statBonuses": {
+        "attack": 16,
+        "defense": 0,
+        "mind": 0,
+        "agility": 6
+      },
+      "equippableActorIds": [],
+      "equippableClassIds": [
+        "class_jf_rogue"
+      ],
+      "cursed": false,
+      "twoHanded": false,
+      "accuracy": 100,
+      "criticalRate": 4,
+      "attackElementIds": [
+        "element_jf_physical"
+      ],
+      "stateInflictIds": [],
+      "stateInflictionChance": 100,
+      "effectFlags": {
+        "preemptive": false,
+        "doubleAttack": false,
+        "attackAll": false,
+        "ignoreDodge": false,
+        "preventCriticalHits": false,
+        "increasePhysicalDodge": false,
+        "halfMpCost": false,
+        "negateTerrainDamage": false,
+        "fixedEquipment": false
+      },
+      "elementalDefenseIds": [],
+      "stateDefenseIds": [],
+      "stateDefenseMode": "resist",
+      "stateResistanceChance": 0
+    },
+    {
+      "id": "equip_jf_rogue_body_3",
+      "name": "밤길 겹포",
+      "imageResourceId": "jf-icon-rogue-body-3",
+      "iconResourceId": "jf-icon-rogue-body-3",
+      "slot": "armor",
+      "price": 350,
+      "description": "밤길 겹포. 방어력 +10, 민첩 +6.",
+      "statBonuses": {
+        "attack": 0,
+        "defense": 10,
+        "mind": 0,
+        "agility": 6
+      },
+      "equippableActorIds": [],
+      "equippableClassIds": [
+        "class_jf_rogue"
+      ],
+      "cursed": false,
+      "twoHanded": false,
+      "accuracy": 100,
+      "criticalRate": 0,
+      "attackElementIds": [],
+      "stateInflictIds": [],
+      "stateInflictionChance": 100,
+      "effectFlags": {
+        "preemptive": false,
+        "doubleAttack": false,
+        "attackAll": false,
+        "ignoreDodge": false,
+        "preventCriticalHits": false,
+        "increasePhysicalDodge": false,
+        "halfMpCost": false,
+        "negateTerrainDamage": false,
+        "fixedEquipment": false
+      },
+      "elementalDefenseIds": [],
+      "stateDefenseIds": [],
+      "stateDefenseMode": "resist",
+      "stateResistanceChance": 0
+    },
+    {
+      "id": "equip_jf_rogue_weapon_4",
+      "name": "청옥 호신단검",
+      "imageResourceId": "jf-icon-rogue-weapon-4",
+      "iconResourceId": "jf-icon-rogue-weapon-4",
+      "slot": "weapon",
+      "price": 820,
+      "description": "청옥 호신단검. 공격력 +23, 민첩 +8, 치명타율 +5%p.",
+      "statBonuses": {
+        "attack": 23,
+        "defense": 0,
+        "mind": 0,
+        "agility": 8
+      },
+      "equippableActorIds": [],
+      "equippableClassIds": [
+        "class_jf_rogue"
+      ],
+      "cursed": false,
+      "twoHanded": false,
+      "accuracy": 100,
+      "criticalRate": 5,
+      "attackElementIds": [
+        "element_jf_physical"
+      ],
+      "stateInflictIds": [],
+      "stateInflictionChance": 100,
+      "effectFlags": {
+        "preemptive": false,
+        "doubleAttack": false,
+        "attackAll": false,
+        "ignoreDodge": false,
+        "preventCriticalHits": false,
+        "increasePhysicalDodge": false,
+        "halfMpCost": false,
+        "negateTerrainDamage": false,
+        "fixedEquipment": false
+      },
+      "elementalDefenseIds": [],
+      "stateDefenseIds": [],
+      "stateDefenseMode": "resist",
+      "stateResistanceChance": 0
+    },
+    {
+      "id": "equip_jf_rogue_body_4",
+      "name": "청띠 행려포",
+      "imageResourceId": "jf-icon-rogue-body-4",
+      "iconResourceId": "jf-icon-rogue-body-4",
+      "slot": "armor",
+      "price": 680,
+      "description": "청띠 행려포. 방어력 +14, 민첩 +8.",
+      "statBonuses": {
+        "attack": 0,
+        "defense": 14,
+        "mind": 0,
+        "agility": 8
+      },
+      "equippableActorIds": [],
+      "equippableClassIds": [
+        "class_jf_rogue"
+      ],
+      "cursed": false,
+      "twoHanded": false,
+      "accuracy": 100,
+      "criticalRate": 0,
+      "attackElementIds": [],
+      "stateInflictIds": [],
+      "stateInflictionChance": 100,
+      "effectFlags": {
+        "preemptive": false,
+        "doubleAttack": false,
+        "attackAll": false,
+        "ignoreDodge": false,
+        "preventCriticalHits": false,
+        "increasePhysicalDodge": false,
+        "halfMpCost": false,
+        "negateTerrainDamage": false,
+        "fixedEquipment": false
+      },
+      "elementalDefenseIds": [],
+      "stateDefenseIds": [],
+      "stateDefenseMode": "resist",
+      "stateResistanceChance": 0
+    },
+    {
+      "id": "equip_jf_shaman_weapon_2",
+      "name": "오색끈 칠성방울",
+      "imageResourceId": "jf-icon-shaman-weapon-2",
+      "iconResourceId": "jf-icon-shaman-weapon-2",
+      "slot": "weapon",
+      "price": 220,
+      "description": "오색끈 칠성방울. 공격력 +3, 정신력 +12.",
+      "statBonuses": {
+        "attack": 3,
+        "defense": 0,
+        "mind": 12,
+        "agility": 0
+      },
+      "equippableActorIds": [],
+      "equippableClassIds": [
+        "class_jf_shaman"
+      ],
+      "cursed": false,
+      "twoHanded": false,
+      "accuracy": 100,
+      "criticalRate": 0,
+      "attackElementIds": [
+        "element_jf_physical"
+      ],
+      "stateInflictIds": [],
+      "stateInflictionChance": 100,
+      "effectFlags": {
+        "preemptive": false,
+        "doubleAttack": false,
+        "attackAll": false,
+        "ignoreDodge": false,
+        "preventCriticalHits": false,
+        "increasePhysicalDodge": false,
+        "halfMpCost": false,
+        "negateTerrainDamage": false,
+        "fixedEquipment": false
+      },
+      "elementalDefenseIds": [],
+      "stateDefenseIds": [],
+      "stateDefenseMode": "resist",
+      "stateResistanceChance": 0
+    },
+    {
+      "id": "equip_jf_shaman_body_2",
+      "name": "오색띠 무복",
+      "imageResourceId": "jf-icon-shaman-body-2",
+      "iconResourceId": "jf-icon-shaman-body-2",
+      "slot": "armor",
+      "price": 180,
+      "description": "오색띠 무복. 방어력 +5, 정신력 +5.",
+      "statBonuses": {
+        "attack": 0,
+        "defense": 5,
+        "mind": 5,
+        "agility": 0
+      },
+      "equippableActorIds": [],
+      "equippableClassIds": [
+        "class_jf_shaman"
+      ],
+      "cursed": false,
+      "twoHanded": false,
+      "accuracy": 100,
+      "criticalRate": 0,
+      "attackElementIds": [],
+      "stateInflictIds": [],
+      "stateInflictionChance": 100,
+      "effectFlags": {
+        "preemptive": false,
+        "doubleAttack": false,
+        "attackAll": false,
+        "ignoreDodge": false,
+        "preventCriticalHits": false,
+        "increasePhysicalDodge": false,
+        "halfMpCost": false,
+        "negateTerrainDamage": false,
+        "fixedEquipment": false
+      },
+      "elementalDefenseIds": [],
+      "stateDefenseIds": [],
+      "stateDefenseMode": "resist",
+      "stateResistanceChance": 0
+    },
+    {
+      "id": "equip_jf_shaman_weapon_3",
+      "name": "은빛 칠성방울",
+      "imageResourceId": "jf-icon-shaman-weapon-3",
+      "iconResourceId": "jf-icon-shaman-weapon-3",
+      "slot": "weapon",
+      "price": 480,
+      "description": "은빛 칠성방울. 공격력 +4, 정신력 +18.",
+      "statBonuses": {
+        "attack": 4,
+        "defense": 0,
+        "mind": 18,
+        "agility": 0
+      },
+      "equippableActorIds": [],
+      "equippableClassIds": [
+        "class_jf_shaman"
+      ],
+      "cursed": false,
+      "twoHanded": false,
+      "accuracy": 100,
+      "criticalRate": 0,
+      "attackElementIds": [
+        "element_jf_physical"
+      ],
+      "stateInflictIds": [],
+      "stateInflictionChance": 100,
+      "effectFlags": {
+        "preemptive": false,
+        "doubleAttack": false,
+        "attackAll": false,
+        "ignoreDodge": false,
+        "preventCriticalHits": false,
+        "increasePhysicalDodge": false,
+        "halfMpCost": false,
+        "negateTerrainDamage": false,
+        "fixedEquipment": false
+      },
+      "elementalDefenseIds": [],
+      "stateDefenseIds": [],
+      "stateDefenseMode": "resist",
+      "stateResistanceChance": 0
+    },
+    {
+      "id": "equip_jf_shaman_body_3",
+      "name": "흰소매 홍무복",
+      "imageResourceId": "jf-icon-shaman-body-3",
+      "iconResourceId": "jf-icon-shaman-body-3",
+      "slot": "armor",
+      "price": 380,
+      "description": "흰소매 홍무복. 방어력 +8, 정신력 +8.",
+      "statBonuses": {
+        "attack": 0,
+        "defense": 8,
+        "mind": 8,
+        "agility": 0
+      },
+      "equippableActorIds": [],
+      "equippableClassIds": [
+        "class_jf_shaman"
+      ],
+      "cursed": false,
+      "twoHanded": false,
+      "accuracy": 100,
+      "criticalRate": 0,
+      "attackElementIds": [],
+      "stateInflictIds": [],
+      "stateInflictionChance": 100,
+      "effectFlags": {
+        "preemptive": false,
+        "doubleAttack": false,
+        "attackAll": false,
+        "ignoreDodge": false,
+        "preventCriticalHits": false,
+        "increasePhysicalDodge": false,
+        "halfMpCost": false,
+        "negateTerrainDamage": false,
+        "fixedEquipment": false
+      },
+      "elementalDefenseIds": [],
+      "stateDefenseIds": [],
+      "stateDefenseMode": "resist",
+      "stateResistanceChance": 0
+    },
+    {
+      "id": "equip_jf_shaman_weapon_4",
+      "name": "청옥자루 칠성방울",
+      "imageResourceId": "jf-icon-shaman-weapon-4",
+      "iconResourceId": "jf-icon-shaman-weapon-4",
+      "slot": "weapon",
+      "price": 940,
+      "description": "청옥자루 칠성방울. 공격력 +5, 정신력 +25.",
+      "statBonuses": {
+        "attack": 5,
+        "defense": 0,
+        "mind": 25,
+        "agility": 0
+      },
+      "equippableActorIds": [],
+      "equippableClassIds": [
+        "class_jf_shaman"
+      ],
+      "cursed": false,
+      "twoHanded": false,
+      "accuracy": 100,
+      "criticalRate": 0,
+      "attackElementIds": [
+        "element_jf_physical"
+      ],
+      "stateInflictIds": [],
+      "stateInflictionChance": 100,
+      "effectFlags": {
+        "preemptive": false,
+        "doubleAttack": false,
+        "attackAll": false,
+        "ignoreDodge": false,
+        "preventCriticalHits": false,
+        "increasePhysicalDodge": false,
+        "halfMpCost": false,
+        "negateTerrainDamage": false,
+        "fixedEquipment": false
+      },
+      "elementalDefenseIds": [],
+      "stateDefenseIds": [],
+      "stateDefenseMode": "resist",
+      "stateResistanceChance": 0
+    },
+    {
+      "id": "equip_jf_shaman_body_4",
+      "name": "청옥띠 홍무복",
+      "imageResourceId": "jf-icon-shaman-body-4",
+      "iconResourceId": "jf-icon-shaman-body-4",
+      "slot": "armor",
+      "price": 720,
+      "description": "청옥띠 홍무복. 방어력 +12, 정신력 +11.",
+      "statBonuses": {
+        "attack": 0,
+        "defense": 12,
+        "mind": 11,
+        "agility": 0
+      },
+      "equippableActorIds": [],
+      "equippableClassIds": [
+        "class_jf_shaman"
+      ],
+      "cursed": false,
+      "twoHanded": false,
+      "accuracy": 100,
+      "criticalRate": 0,
+      "attackElementIds": [],
+      "stateInflictIds": [],
+      "stateInflictionChance": 100,
+      "effectFlags": {
+        "preemptive": false,
+        "doubleAttack": false,
+        "attackAll": false,
+        "ignoreDodge": false,
+        "preventCriticalHits": false,
+        "increasePhysicalDodge": false,
+        "halfMpCost": false,
+        "negateTerrainDamage": false,
+        "fixedEquipment": false
+      },
+      "elementalDefenseIds": [],
+      "stateDefenseIds": [],
+      "stateDefenseMode": "resist",
+      "stateResistanceChance": 0
+    },
+    {
+      "id": "equip_jf_taoist_weapon_2",
+      "name": "산수 접부채",
+      "imageResourceId": "jf-icon-taoist-weapon-2",
+      "iconResourceId": "jf-icon-taoist-weapon-2",
+      "slot": "weapon",
+      "price": 200,
+      "description": "산수 접부채. 공격력 +3, 정신력 +11.",
+      "statBonuses": {
+        "attack": 3,
+        "defense": 0,
+        "mind": 11,
+        "agility": 0
+      },
+      "equippableActorIds": [],
+      "equippableClassIds": [
+        "class_jf_taoist"
+      ],
+      "cursed": false,
+      "twoHanded": false,
+      "accuracy": 100,
+      "criticalRate": 0,
+      "attackElementIds": [
+        "element_jf_physical"
+      ],
+      "stateInflictIds": [],
+      "stateInflictionChance": 100,
+      "effectFlags": {
+        "preemptive": false,
+        "doubleAttack": false,
+        "attackAll": false,
+        "ignoreDodge": false,
+        "preventCriticalHits": false,
+        "increasePhysicalDodge": false,
+        "halfMpCost": false,
+        "negateTerrainDamage": false,
+        "fixedEquipment": false
+      },
+      "elementalDefenseIds": [],
+      "stateDefenseIds": [],
+      "stateDefenseMode": "resist",
+      "stateResistanceChance": 0
+    },
+    {
+      "id": "equip_jf_taoist_body_2",
+      "name": "겹삼베 도포",
+      "imageResourceId": "jf-icon-taoist-body-2",
+      "iconResourceId": "jf-icon-taoist-body-2",
+      "slot": "armor",
+      "price": 170,
+      "description": "겹삼베 도포. 방어력 +6, 정신력 +4.",
+      "statBonuses": {
+        "attack": 0,
+        "defense": 6,
+        "mind": 4,
+        "agility": 0
+      },
+      "equippableActorIds": [],
+      "equippableClassIds": [
+        "class_jf_taoist"
+      ],
+      "cursed": false,
+      "twoHanded": false,
+      "accuracy": 100,
+      "criticalRate": 0,
+      "attackElementIds": [],
+      "stateInflictIds": [],
+      "stateInflictionChance": 100,
+      "effectFlags": {
+        "preemptive": false,
+        "doubleAttack": false,
+        "attackAll": false,
+        "ignoreDodge": false,
+        "preventCriticalHits": false,
+        "increasePhysicalDodge": false,
+        "halfMpCost": false,
+        "negateTerrainDamage": false,
+        "fixedEquipment": false
+      },
+      "elementalDefenseIds": [],
+      "stateDefenseIds": [],
+      "stateDefenseMode": "resist",
+      "stateResistanceChance": 0
+    },
+    {
+      "id": "equip_jf_taoist_weapon_3",
+      "name": "구름 접부채",
+      "imageResourceId": "jf-icon-taoist-weapon-3",
+      "iconResourceId": "jf-icon-taoist-weapon-3",
+      "slot": "weapon",
+      "price": 450,
+      "description": "구름 접부채. 공격력 +4, 정신력 +17.",
+      "statBonuses": {
+        "attack": 4,
+        "defense": 0,
+        "mind": 17,
+        "agility": 0
+      },
+      "equippableActorIds": [],
+      "equippableClassIds": [
+        "class_jf_taoist"
+      ],
+      "cursed": false,
+      "twoHanded": false,
+      "accuracy": 100,
+      "criticalRate": 0,
+      "attackElementIds": [
+        "element_jf_physical"
+      ],
+      "stateInflictIds": [],
+      "stateInflictionChance": 100,
+      "effectFlags": {
+        "preemptive": false,
+        "doubleAttack": false,
+        "attackAll": false,
+        "ignoreDodge": false,
+        "preventCriticalHits": false,
+        "increasePhysicalDodge": false,
+        "halfMpCost": false,
+        "negateTerrainDamage": false,
+        "fixedEquipment": false
+      },
+      "elementalDefenseIds": [],
+      "stateDefenseIds": [],
+      "stateDefenseMode": "resist",
+      "stateResistanceChance": 0
+    },
+    {
+      "id": "equip_jf_taoist_body_3",
+      "name": "남선 흰도포",
+      "imageResourceId": "jf-icon-taoist-body-3",
+      "iconResourceId": "jf-icon-taoist-body-3",
+      "slot": "armor",
+      "price": 370,
+      "description": "남선 흰도포. 방어력 +10, 정신력 +6.",
+      "statBonuses": {
+        "attack": 0,
+        "defense": 10,
+        "mind": 6,
+        "agility": 0
+      },
+      "equippableActorIds": [],
+      "equippableClassIds": [
+        "class_jf_taoist"
+      ],
+      "cursed": false,
+      "twoHanded": false,
+      "accuracy": 100,
+      "criticalRate": 0,
+      "attackElementIds": [],
+      "stateInflictIds": [],
+      "stateInflictionChance": 100,
+      "effectFlags": {
+        "preemptive": false,
+        "doubleAttack": false,
+        "attackAll": false,
+        "ignoreDodge": false,
+        "preventCriticalHits": false,
+        "increasePhysicalDodge": false,
+        "halfMpCost": false,
+        "negateTerrainDamage": false,
+        "fixedEquipment": false
+      },
+      "elementalDefenseIds": [],
+      "stateDefenseIds": [],
+      "stateDefenseMode": "resist",
+      "stateResistanceChance": 0
+    },
+    {
+      "id": "equip_jf_taoist_weapon_4",
+      "name": "청죽 접부채",
+      "imageResourceId": "jf-icon-taoist-weapon-4",
+      "iconResourceId": "jf-icon-taoist-weapon-4",
+      "slot": "weapon",
+      "price": 900,
+      "description": "청죽 접부채. 공격력 +5, 정신력 +24.",
+      "statBonuses": {
+        "attack": 5,
+        "defense": 0,
+        "mind": 24,
+        "agility": 0
+      },
+      "equippableActorIds": [],
+      "equippableClassIds": [
+        "class_jf_taoist"
+      ],
+      "cursed": false,
+      "twoHanded": false,
+      "accuracy": 100,
+      "criticalRate": 0,
+      "attackElementIds": [
+        "element_jf_physical"
+      ],
+      "stateInflictIds": [],
+      "stateInflictionChance": 100,
+      "effectFlags": {
+        "preemptive": false,
+        "doubleAttack": false,
+        "attackAll": false,
+        "ignoreDodge": false,
+        "preventCriticalHits": false,
+        "increasePhysicalDodge": false,
+        "halfMpCost": false,
+        "negateTerrainDamage": false,
+        "fixedEquipment": false
+      },
+      "elementalDefenseIds": [],
+      "stateDefenseIds": [],
+      "stateDefenseMode": "resist",
+      "stateResistanceChance": 0
+    },
+    {
+      "id": "equip_jf_taoist_body_4",
+      "name": "청옥띠 수련도포",
+      "imageResourceId": "jf-icon-taoist-body-4",
+      "iconResourceId": "jf-icon-taoist-body-4",
+      "slot": "armor",
+      "price": 700,
+      "description": "청옥띠 수련도포. 방어력 +14, 정신력 +9.",
+      "statBonuses": {
+        "attack": 0,
+        "defense": 14,
+        "mind": 9,
+        "agility": 0
+      },
+      "equippableActorIds": [],
+      "equippableClassIds": [
+        "class_jf_taoist"
+      ],
+      "cursed": false,
+      "twoHanded": false,
+      "accuracy": 100,
+      "criticalRate": 0,
+      "attackElementIds": [],
+      "stateInflictIds": [],
+      "stateInflictionChance": 100,
+      "effectFlags": {
+        "preemptive": false,
+        "doubleAttack": false,
+        "attackAll": false,
+        "ignoreDodge": false,
+        "preventCriticalHits": false,
+        "increasePhysicalDodge": false,
+        "halfMpCost": false,
+        "negateTerrainDamage": false,
+        "fixedEquipment": false
+      },
+      "elementalDefenseIds": [],
+      "stateDefenseIds": [],
+      "stateDefenseMode": "resist",
+      "stateResistanceChance": 0
+    },
+    {
+      "id": "equip_jf_shared_head_1",
+      "name": "말총 망건",
+      "imageResourceId": "jf-icon-shared-head-1",
+      "iconResourceId": "jf-icon-shared-head-1",
+      "slot": "helmet",
+      "price": 50,
+      "description": "네 직업이 함께 쓰는 말총 망건. 방어력 +1, 민첩 +1.",
+      "statBonuses": {
+        "attack": 0,
+        "defense": 1,
+        "mind": 0,
+        "agility": 1
+      },
+      "equippableActorIds": [],
+      "equippableClassIds": [
+        "class_jf_warrior",
+        "class_jf_rogue",
+        "class_jf_shaman",
+        "class_jf_taoist"
+      ],
+      "cursed": false,
+      "twoHanded": false,
+      "accuracy": 100,
+      "criticalRate": 0,
+      "attackElementIds": [],
+      "stateInflictIds": [],
+      "stateInflictionChance": 100,
+      "effectFlags": {
+        "preemptive": false,
+        "doubleAttack": false,
+        "attackAll": false,
+        "ignoreDodge": false,
+        "preventCriticalHits": false,
+        "increasePhysicalDodge": false,
+        "halfMpCost": false,
+        "negateTerrainDamage": false,
+        "fixedEquipment": false
+      },
+      "elementalDefenseIds": [],
+      "stateDefenseIds": [],
+      "stateDefenseMode": "resist",
+      "stateResistanceChance": 0
+    },
+    {
+      "id": "equip_jf_shared_head_2",
+      "name": "대나무 삿갓",
+      "imageResourceId": "jf-icon-shared-head-2",
+      "iconResourceId": "jf-icon-shared-head-2",
+      "slot": "helmet",
+      "price": 300,
+      "description": "네 직업이 함께 쓰는 대나무 삿갓. 방어력 +5, 정신력 +1.",
+      "statBonuses": {
+        "attack": 0,
+        "defense": 5,
+        "mind": 1,
+        "agility": 0
+      },
+      "equippableActorIds": [],
+      "equippableClassIds": [
+        "class_jf_warrior",
+        "class_jf_rogue",
+        "class_jf_shaman",
+        "class_jf_taoist"
+      ],
+      "cursed": false,
+      "twoHanded": false,
+      "accuracy": 100,
+      "criticalRate": 0,
+      "attackElementIds": [],
+      "stateInflictIds": [],
+      "stateInflictionChance": 100,
+      "effectFlags": {
+        "preemptive": false,
+        "doubleAttack": false,
+        "attackAll": false,
+        "ignoreDodge": false,
+        "preventCriticalHits": false,
+        "increasePhysicalDodge": false,
+        "halfMpCost": false,
+        "negateTerrainDamage": false,
+        "fixedEquipment": false
+      },
+      "elementalDefenseIds": [],
+      "stateDefenseIds": [],
+      "stateDefenseMode": "resist",
+      "stateResistanceChance": 0
+    },
+    {
+      "id": "equip_jf_shared_accessory_1",
+      "name": "매듭 향낭",
+      "imageResourceId": "jf-icon-shared-accessory-1",
+      "iconResourceId": "jf-icon-shared-accessory-1",
+      "slot": "accessory",
+      "price": 160,
+      "description": "네 직업이 함께 쓰는 매듭 향낭. 방어력 +1, 정신력 +2.",
+      "statBonuses": {
+        "attack": 0,
+        "defense": 1,
+        "mind": 2,
+        "agility": 0
+      },
+      "equippableActorIds": [],
+      "equippableClassIds": [
+        "class_jf_warrior",
+        "class_jf_rogue",
+        "class_jf_shaman",
+        "class_jf_taoist"
+      ],
+      "cursed": false,
+      "twoHanded": false,
+      "accuracy": 100,
+      "criticalRate": 0,
+      "attackElementIds": [],
+      "stateInflictIds": [],
+      "stateInflictionChance": 100,
+      "effectFlags": {
+        "preemptive": false,
+        "doubleAttack": false,
+        "attackAll": false,
+        "ignoreDodge": false,
+        "preventCriticalHits": false,
+        "increasePhysicalDodge": false,
+        "halfMpCost": false,
+        "negateTerrainDamage": false,
+        "fixedEquipment": false
+      },
+      "elementalDefenseIds": [],
+      "stateDefenseIds": [],
+      "stateDefenseMode": "resist",
+      "stateResistanceChance": 0
+    },
+    {
+      "id": "equip_jf_shared_accessory_2",
+      "name": "청옥 노리개",
+      "imageResourceId": "jf-icon-shared-accessory-2",
+      "iconResourceId": "jf-icon-shared-accessory-2",
+      "slot": "accessory",
+      "price": 620,
+      "description": "네 직업이 함께 쓰는 청옥 노리개. 정신력 +5, 민첩 +2.",
+      "statBonuses": {
+        "attack": 0,
+        "defense": 0,
+        "mind": 5,
+        "agility": 2
+      },
+      "equippableActorIds": [],
+      "equippableClassIds": [
+        "class_jf_warrior",
+        "class_jf_rogue",
+        "class_jf_shaman",
+        "class_jf_taoist"
+      ],
+      "cursed": false,
+      "twoHanded": false,
+      "accuracy": 100,
+      "criticalRate": 0,
+      "attackElementIds": [],
+      "stateInflictIds": [],
+      "stateInflictionChance": 100,
+      "effectFlags": {
+        "preemptive": false,
+        "doubleAttack": false,
+        "attackAll": false,
+        "ignoreDodge": false,
+        "preventCriticalHits": false,
+        "increasePhysicalDodge": false,
+        "halfMpCost": false,
+        "negateTerrainDamage": false,
+        "fixedEquipment": false
+      },
+      "elementalDefenseIds": [],
+      "stateDefenseIds": [],
+      "stateDefenseMode": "resist",
+      "stateResistanceChance": 0
     }
   ]
 }

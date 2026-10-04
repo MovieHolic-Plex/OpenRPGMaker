@@ -1,27 +1,127 @@
 {
-  "command": "python3 content-packs/joseon-folklore/equipment/draw.py",
+  "command": "python3 content-packs/joseon-folklore/equipment/verify-assets.py",
   "python": "3.12.3",
   "pillow": "12.1.1",
   "byteIdenticalAfterRegeneration": true,
+  "preservedPilotIcons": 8,
+  "uniqueRgbaImages": 36,
   "savedFileSha256": {
     "icons/rogue-body-1.png": "47543c9fb1d7c7468cc0bd603118b53a06a6355cf8f893fb26793ab7db2e8f1f",
+    "icons/rogue-body-2.png": "f0e8065d1e6eabcf14579b8b1841bfec17c05921f1bd112c03ca621e4bbdcf6b",
+    "icons/rogue-body-3.png": "1e6728cb89143c3f3ed8b43724c5b0e25e6aaf728359302d78dcf26e69c900f7",
+    "icons/rogue-body-4.png": "2763e79bb5b43a47dbf64d08abc69a201ea6f0df5ceeae32b165aa718e1e58e3",
     "icons/rogue-weapon-1.png": "924e8def9475e03433f770814753c38c057f7f9d841788b5138ec2ac5b5301e2",
+    "icons/rogue-weapon-2.png": "e18e76a598a34b3bf1ddbe2c7fd0407a26203e823febd6c0bfb4a81b16f020ba",
+    "icons/rogue-weapon-3.png": "fa3c984fcc01ed7150ec2482fabb8185bbcd2dc062661eda6c723801023e83bf",
+    "icons/rogue-weapon-4.png": "70f158279190d3f237d61f307deef9a691dff7ab816fb0f980116c927e0465b0",
     "icons/shaman-body-1.png": "01d5f6046df1ed20cfdaf54750223d207529ed57a602d9fe73a8d33e3bd99cb6",
+    "icons/shaman-body-2.png": "0dfb18498f836567475433155360b952c93606f0b6b837e269b3037158cc2ba9",
+    "icons/shaman-body-3.png": "62d09733ea8055fd4c67aed4adca1f9056eb456b9d29c57d0a9ad880f7f56cfe",
+    "icons/shaman-body-4.png": "148ba126e9d150f6160439021210cbcbea9a7118ac464989f9a52d3968d9792b",
     "icons/shaman-weapon-1.png": "e63e6d6be7fd7e1d089e799b0d97d6216f58bafac4dcaf065a82c848e6047183",
+    "icons/shaman-weapon-2.png": "f176cd97fa06c3ae0807aa53160d9c88de18e234963ed763c03406446e44a054",
+    "icons/shaman-weapon-3.png": "687b3d1b7d27878b4e6f4d255ccc0acf8de82371ccbc4889f301297cf2a9e7d6",
+    "icons/shaman-weapon-4.png": "b2ba4614bcb8b033add4ec0e6ce99127ff3d1281d8c7e2623c5584a5ccf20999",
+    "icons/shared-accessory-1.png": "f2ffbedcf753acbc4c455054322589de2c623db2e900e850fd300f0c016ee140",
+    "icons/shared-accessory-2.png": "7f868afebbb6a0a65d0ade845c4eeccb160f378455f7881f100e4e68793bf888",
+    "icons/shared-head-1.png": "556e0cc3acee726353ac9650039a9c917bc6ab75f30d8a36ae4735eac7f71c80",
+    "icons/shared-head-2.png": "d996d08d55301242108ba711dd41edd9a344d9d565ac5813f3d70f96cb189da1",
     "icons/taoist-body-1.png": "25c62c701f320e47545ac8108ea4a9fabfb5a1340053da80970b67554da27135",
+    "icons/taoist-body-2.png": "16407b88d3a3464594e5199123aeaec11d7e36588aacffcc3dbc35089d30322a",
+    "icons/taoist-body-3.png": "53ac433bf9e2305ccedd24deb817c1640710fe9f0084e83aa90c5d1f394b50e6",
+    "icons/taoist-body-4.png": "263976ef7915b1b91835a7d24d02391561a355a85763d82e6f3624fe06ee1918",
     "icons/taoist-weapon-1.png": "13e1481727a75f4e0185f87e17fa8c1dc4a793a59ab037e5fb16846018e5a73c",
+    "icons/taoist-weapon-2.png": "9be09cc7c2c1e5596be77b9fac7078af4b6245db493cf047803927581b65f64a",
+    "icons/taoist-weapon-3.png": "5f4a4a3a60f2241b70ee16eed6a25c5f6774858bc4c504a8306d65e6a5fd6ddd",
+    "icons/taoist-weapon-4.png": "3cfce590b80f3f14fcbe1b8c39829266cba4cc160067e4f3f3d5afca2f6eee45",
     "icons/warrior-body-1.png": "e70153b31dd207b6b3119fac5f125d3fac064e79e5403748155379162499e4be",
+    "icons/warrior-body-2.png": "c94acf6ddb5720d8852fa7a28e9bb75b174e6b3d7aac738a1a40f87da7d2c0bd",
+    "icons/warrior-body-3.png": "0c237b159160e164c0063571673ac6c8730c60b8e8dd6a5a12b51b1a6ca23b77",
+    "icons/warrior-body-4.png": "b6c27e59dbfdc98b03cf1638b94609cd5a6a7a8a17f7e8c3fcaf1c97f4dca2ad",
     "icons/warrior-weapon-1.png": "9dcc82b35a13c6c30edb07140ad0d92af0000c9b4ba3f084a1c015a72d88bc70",
-    "assets.json": "119c570643180e681f5093fdcd5e9c91114abe18af74cbc968df520535f81c8a",
-    "review/pilot-contact.png": "aa95bdf1bdd90fc192a5ed3446ed19afa771f4340c1ce5a5c9abf3fd85d2ca1f"
+    "icons/warrior-weapon-2.png": "98dcf6bcb40ced1a39cad315623e028425c695628cafdd48b4894a72f8d841c6",
+    "icons/warrior-weapon-3.png": "66bccc9de8574aa503b153fecafdee047a899b6e381f6b72624f9db4707775cc",
+    "icons/warrior-weapon-4.png": "c4095a10198f307dea134d4716af26adde70b8b4aed0e09366592992666e7332",
+    "assets.json": "6151efc7502a0a504d90a025554f570494c6ec4c924e1cfb323b6cedae425336",
+    "review/full-contact.png": "0775d151ace91f82b9d973a05c3780ddab8095f6c5cc1ec3812eb5c4bd503d36",
+    "review/pilot-contact.png": "aa95bdf1bdd90fc192a5ed3446ed19afa771f4340c1ce5a5c9abf3fd85d2ca1f",
+    "review/rogue-full.png": "75cac587b18b01bca95d5bf5f261a093f3bbf65bc332a1937014c410ecb688c4",
+    "review/shaman-full.png": "b4c48720408b52bcf73485179d49f83b859cfe00ff20b5f41a0b86d5ca437938",
+    "review/shared-full.png": "3e3d79745b94705017a8cebad8adc76441076ec8ee53c102016a291d13283b7b",
+    "review/taoist-full.png": "88a45b7aa86d79acb2fc7769916414d84da23574ec8d4343caa22b05b6a78840",
+    "review/warrior-full.png": "c6055e41cf8540949241c639007447be78cbf6e0ddcfb05729244211d5489a49"
   },
   "sourceSha256": {
-    "author.py": "0b4c55c89f4941f89b88d95767b634f0e216af82b81c5776a8151378599e9e03",
-    "draw.py": "eed377b05407ebaad3195dfca0ab581a46500e35543066cdc09c3b9b17c2a345",
+    "author.py": "80542b53d6d30835e0707d32e94734758491081a9dbb51db2453639d82ac23b7",
+    "draw.py": "c67f184c642eb3c771050cc395453e3102e14733b70cbf3ce7dfabd033764c47",
+    "verify-assets.py": "d9d7b97ce52606416b5b23061dc0153cf44df8052d2ec4b3a60ba79c566c6018",
     "run-smoke.mjs": "ab7110f637f84b38886e8c15d12eec1a759e225ea2ee1beed89db8cef89edf2a",
-    "smoke.mts": "6dcd46b5e7d12281a42dbe7dec48ce73964f0f07752f781179be20eb8619a9b7"
+    "smoke.mts": "503fb004c4cac400564418335f81ee683a2d3c88082daea72b30354cbea88c4c"
   },
   "imageChecks": [
+    {
+      "file": "icons/warrior-weapon-1.png",
+      "sha256": "9dcc82b35a13c6c30edb07140ad0d92af0000c9b4ba3f084a1c015a72d88bc70",
+      "rgbaSha256": "d65d1640b1dc845818a6b7693b27b67fb4d04ddea5c4c79323267529cc15e46c",
+      "size": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "occupiedBoundsExclusive": [
+        3,
+        2,
+        29,
+        31
+      ],
+      "paletteColourCountIncludingTransparent": 10
+    },
+    {
+      "file": "icons/warrior-body-1.png",
+      "sha256": "e70153b31dd207b6b3119fac5f125d3fac064e79e5403748155379162499e4be",
+      "rgbaSha256": "cda1a7fd89528d94ee368420dd475e2e88667176da62df5991bb650c6a44fa45",
+      "size": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "occupiedBoundsExclusive": [
+        2,
+        3,
+        30,
+        31
+      ],
+      "paletteColourCountIncludingTransparent": 12
+    },
+    {
+      "file": "icons/rogue-weapon-1.png",
+      "sha256": "924e8def9475e03433f770814753c38c057f7f9d841788b5138ec2ac5b5301e2",
+      "rgbaSha256": "45f4d18b9fc985f64c98f4fcdb1be8f02f47c27566ff8e11a2581e59de835e52",
+      "size": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "occupiedBoundsExclusive": [
+        4,
+        5,
+        26,
+        30
+      ],
+      "paletteColourCountIncludingTransparent": 10
+    },
     {
       "file": "icons/rogue-body-1.png",
       "sha256": "47543c9fb1d7c7468cc0bd603118b53a06a6355cf8f893fb26793ab7db2e8f1f",
@@ -44,9 +144,9 @@
       "paletteColourCountIncludingTransparent": 13
     },
     {
-      "file": "icons/rogue-weapon-1.png",
-      "sha256": "924e8def9475e03433f770814753c38c057f7f9d841788b5138ec2ac5b5301e2",
-      "rgbaSha256": "45f4d18b9fc985f64c98f4fcdb1be8f02f47c27566ff8e11a2581e59de835e52",
+      "file": "icons/shaman-weapon-1.png",
+      "sha256": "e63e6d6be7fd7e1d089e799b0d97d6216f58bafac4dcaf065a82c848e6047183",
+      "rgbaSha256": "b426683b280760f549c4384db5d5912539c9353d4fb800723d11859104db80de",
       "size": [
         32,
         32
@@ -57,10 +157,10 @@
         255
       ],
       "occupiedBoundsExclusive": [
-        4,
         5,
-        26,
-        30
+        3,
+        29,
+        31
       ],
       "paletteColourCountIncludingTransparent": 10
     },
@@ -86,9 +186,9 @@
       "paletteColourCountIncludingTransparent": 14
     },
     {
-      "file": "icons/shaman-weapon-1.png",
-      "sha256": "e63e6d6be7fd7e1d089e799b0d97d6216f58bafac4dcaf065a82c848e6047183",
-      "rgbaSha256": "b426683b280760f549c4384db5d5912539c9353d4fb800723d11859104db80de",
+      "file": "icons/taoist-weapon-1.png",
+      "sha256": "13e1481727a75f4e0185f87e17fa8c1dc4a793a59ab037e5fb16846018e5a73c",
+      "rgbaSha256": "3d4f806ef99d412faf768ca9d7b57ea04f2c8d04cd1d5d3b337cb8d908a55d82",
       "size": [
         32,
         32
@@ -99,12 +199,12 @@
         255
       ],
       "occupiedBoundsExclusive": [
-        5,
+        2,
         3,
-        29,
+        31,
         31
       ],
-      "paletteColourCountIncludingTransparent": 10
+      "paletteColourCountIncludingTransparent": 11
     },
     {
       "file": "icons/taoist-body-1.png",
@@ -128,9 +228,387 @@
       "paletteColourCountIncludingTransparent": 12
     },
     {
-      "file": "icons/taoist-weapon-1.png",
-      "sha256": "13e1481727a75f4e0185f87e17fa8c1dc4a793a59ab037e5fb16846018e5a73c",
-      "rgbaSha256": "3d4f806ef99d412faf768ca9d7b57ea04f2c8d04cd1d5d3b337cb8d908a55d82",
+      "file": "icons/warrior-weapon-2.png",
+      "sha256": "98dcf6bcb40ced1a39cad315623e028425c695628cafdd48b4894a72f8d841c6",
+      "rgbaSha256": "e6e3b45e9a4deac67549fc07cbb4d0225d8a015168e76d820df522ce441b97ba",
+      "size": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "occupiedBoundsExclusive": [
+        2,
+        2,
+        29,
+        31
+      ],
+      "paletteColourCountIncludingTransparent": 9
+    },
+    {
+      "file": "icons/warrior-body-2.png",
+      "sha256": "c94acf6ddb5720d8852fa7a28e9bb75b174e6b3d7aac738a1a40f87da7d2c0bd",
+      "rgbaSha256": "b2027544a9dfd58f9b8152c68dc7eb7099005eba5431ce11c9eaa5c0f6603c1f",
+      "size": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "occupiedBoundsExclusive": [
+        2,
+        3,
+        31,
+        30
+      ],
+      "paletteColourCountIncludingTransparent": 8
+    },
+    {
+      "file": "icons/warrior-weapon-3.png",
+      "sha256": "66bccc9de8574aa503b153fecafdee047a899b6e381f6b72624f9db4707775cc",
+      "rgbaSha256": "63f8186b45b64eca37b88bb2ffe33d3d6d521e283a88659c957c105ec97b502e",
+      "size": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "occupiedBoundsExclusive": [
+        2,
+        2,
+        30,
+        31
+      ],
+      "paletteColourCountIncludingTransparent": 12
+    },
+    {
+      "file": "icons/warrior-body-3.png",
+      "sha256": "0c237b159160e164c0063571673ac6c8730c60b8e8dd6a5a12b51b1a6ca23b77",
+      "rgbaSha256": "08dbb4814ab38d207a55f79fda6333c6a1fcafc3cc3d5356fb23e6e9e45dd70e",
+      "size": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "occupiedBoundsExclusive": [
+        2,
+        3,
+        31,
+        30
+      ],
+      "paletteColourCountIncludingTransparent": 9
+    },
+    {
+      "file": "icons/warrior-weapon-4.png",
+      "sha256": "c4095a10198f307dea134d4716af26adde70b8b4aed0e09366592992666e7332",
+      "rgbaSha256": "511d5bd202905f699ea8c1ecaf52edce1c8c0f3b71ec6a8d090e47044ccde98d",
+      "size": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "occupiedBoundsExclusive": [
+        2,
+        2,
+        30,
+        31
+      ],
+      "paletteColourCountIncludingTransparent": 13
+    },
+    {
+      "file": "icons/warrior-body-4.png",
+      "sha256": "b6c27e59dbfdc98b03cf1638b94609cd5a6a7a8a17f7e8c3fcaf1c97f4dca2ad",
+      "rgbaSha256": "ac3974eae3ef6558909b4b9095aea33a975c9d71bceb686a6aed2b1c185ddd81",
+      "size": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "occupiedBoundsExclusive": [
+        2,
+        3,
+        31,
+        30
+      ],
+      "paletteColourCountIncludingTransparent": 8
+    },
+    {
+      "file": "icons/rogue-weapon-2.png",
+      "sha256": "e18e76a598a34b3bf1ddbe2c7fd0407a26203e823febd6c0bfb4a81b16f020ba",
+      "rgbaSha256": "55dd9ed379fd4852c523d5db10ae29107e7be0b611edd4475b8492caf9723a0f",
+      "size": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "occupiedBoundsExclusive": [
+        4,
+        5,
+        23,
+        30
+      ],
+      "paletteColourCountIncludingTransparent": 9
+    },
+    {
+      "file": "icons/rogue-body-2.png",
+      "sha256": "f0e8065d1e6eabcf14579b8b1841bfec17c05921f1bd112c03ca621e4bbdcf6b",
+      "rgbaSha256": "1e3dfe83176d52b1ae80c89e79aa9df3bdd9c312872b8e54af1dc294ecae7767",
+      "size": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "occupiedBoundsExclusive": [
+        2,
+        3,
+        31,
+        28
+      ],
+      "paletteColourCountIncludingTransparent": 7
+    },
+    {
+      "file": "icons/rogue-weapon-3.png",
+      "sha256": "fa3c984fcc01ed7150ec2482fabb8185bbcd2dc062661eda6c723801023e83bf",
+      "rgbaSha256": "3157f59aff8a42ed4284d299bbf1630fe4d47e2a16c15e4b835945b251709540",
+      "size": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "occupiedBoundsExclusive": [
+        4,
+        5,
+        24,
+        31
+      ],
+      "paletteColourCountIncludingTransparent": 11
+    },
+    {
+      "file": "icons/rogue-body-3.png",
+      "sha256": "1e6728cb89143c3f3ed8b43724c5b0e25e6aaf728359302d78dcf26e69c900f7",
+      "rgbaSha256": "28bf2702e943376ca226b20cbcb91dd69a76e393152b2bb6c0b62d493922977d",
+      "size": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "occupiedBoundsExclusive": [
+        2,
+        3,
+        31,
+        30
+      ],
+      "paletteColourCountIncludingTransparent": 8
+    },
+    {
+      "file": "icons/rogue-weapon-4.png",
+      "sha256": "70f158279190d3f237d61f307deef9a691dff7ab816fb0f980116c927e0465b0",
+      "rgbaSha256": "a09933a71e56823591b92c2ef0973565b0fdce6cf43b9c7fd825db8345c2b15d",
+      "size": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "occupiedBoundsExclusive": [
+        4,
+        5,
+        25,
+        31
+      ],
+      "paletteColourCountIncludingTransparent": 12
+    },
+    {
+      "file": "icons/rogue-body-4.png",
+      "sha256": "2763e79bb5b43a47dbf64d08abc69a201ea6f0df5ceeae32b165aa718e1e58e3",
+      "rgbaSha256": "642fd1596473e84540c05f6dc958d935365b9a94979210c6801972a1805f097f",
+      "size": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "occupiedBoundsExclusive": [
+        2,
+        3,
+        31,
+        30
+      ],
+      "paletteColourCountIncludingTransparent": 10
+    },
+    {
+      "file": "icons/shaman-weapon-2.png",
+      "sha256": "f176cd97fa06c3ae0807aa53160d9c88de18e234963ed763c03406446e44a054",
+      "rgbaSha256": "507f222d0eb40d7f41978c9f14d968d36101b72c359a5c13e218008890ac26c9",
+      "size": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "occupiedBoundsExclusive": [
+        3,
+        3,
+        29,
+        31
+      ],
+      "paletteColourCountIncludingTransparent": 11
+    },
+    {
+      "file": "icons/shaman-body-2.png",
+      "sha256": "0dfb18498f836567475433155360b952c93606f0b6b837e269b3037158cc2ba9",
+      "rgbaSha256": "6bbfa641e44bd9e8a33e10176181578ce3b51ea8f2d79aea9bd9a08c5716d4db",
+      "size": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "occupiedBoundsExclusive": [
+        2,
+        3,
+        31,
+        30
+      ],
+      "paletteColourCountIncludingTransparent": 12
+    },
+    {
+      "file": "icons/shaman-weapon-3.png",
+      "sha256": "687b3d1b7d27878b4e6f4d255ccc0acf8de82371ccbc4889f301297cf2a9e7d6",
+      "rgbaSha256": "b433ec20a9396984d791fbb9a0d27768dc3f3df78c20d38e195610262cc3a1e0",
+      "size": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "occupiedBoundsExclusive": [
+        3,
+        3,
+        29,
+        31
+      ],
+      "paletteColourCountIncludingTransparent": 14
+    },
+    {
+      "file": "icons/shaman-body-3.png",
+      "sha256": "62d09733ea8055fd4c67aed4adca1f9056eb456b9d29c57d0a9ad880f7f56cfe",
+      "rgbaSha256": "6484db8a13421c5bde9ec5938729e44835794e9689011c650504d2d28f167300",
+      "size": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "occupiedBoundsExclusive": [
+        2,
+        3,
+        31,
+        30
+      ],
+      "paletteColourCountIncludingTransparent": 13
+    },
+    {
+      "file": "icons/shaman-weapon-4.png",
+      "sha256": "b2ba4614bcb8b033add4ec0e6ce99127ff3d1281d8c7e2623c5584a5ccf20999",
+      "rgbaSha256": "04601aa95460a6ec24be92d6d684d22f4030fa4aa21b0102d56a2f20571ab6a7",
+      "size": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "occupiedBoundsExclusive": [
+        3,
+        2,
+        29,
+        31
+      ],
+      "paletteColourCountIncludingTransparent": 13
+    },
+    {
+      "file": "icons/shaman-body-4.png",
+      "sha256": "148ba126e9d150f6160439021210cbcbea9a7118ac464989f9a52d3968d9792b",
+      "rgbaSha256": "07ca6ef50e91e98f9484aab5b12ca312561cbced27527f569d5f80263a507105",
+      "size": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "occupiedBoundsExclusive": [
+        2,
+        3,
+        31,
+        30
+      ],
+      "paletteColourCountIncludingTransparent": 13
+    },
+    {
+      "file": "icons/taoist-weapon-2.png",
+      "sha256": "9be09cc7c2c1e5596be77b9fac7078af4b6245db493cf047803927581b65f64a",
+      "rgbaSha256": "4098b4670cbd9ab9ab01842a45e61ad8b77e26a864dd3f7d202c35ca5504476a",
       "size": [
         32,
         32
@@ -149,9 +627,9 @@
       "paletteColourCountIncludingTransparent": 11
     },
     {
-      "file": "icons/warrior-body-1.png",
-      "sha256": "e70153b31dd207b6b3119fac5f125d3fac064e79e5403748155379162499e4be",
-      "rgbaSha256": "cda1a7fd89528d94ee368420dd475e2e88667176da62df5991bb650c6a44fa45",
+      "file": "icons/taoist-body-2.png",
+      "sha256": "16407b88d3a3464594e5199123aeaec11d7e36588aacffcc3dbc35089d30322a",
+      "rgbaSha256": "f8561ebaba04925fb9aa70391055f00373868b1d48652bfe1a45a0361c24994b",
       "size": [
         32,
         32
@@ -164,15 +642,15 @@
       "occupiedBoundsExclusive": [
         2,
         3,
-        30,
-        31
+        31,
+        30
       ],
-      "paletteColourCountIncludingTransparent": 12
+      "paletteColourCountIncludingTransparent": 7
     },
     {
-      "file": "icons/warrior-weapon-1.png",
-      "sha256": "9dcc82b35a13c6c30edb07140ad0d92af0000c9b4ba3f084a1c015a72d88bc70",
-      "rgbaSha256": "d65d1640b1dc845818a6b7693b27b67fb4d04ddea5c4c79323267529cc15e46c",
+      "file": "icons/taoist-weapon-3.png",
+      "sha256": "5f4a4a3a60f2241b70ee16eed6a25c5f6774858bc4c504a8306d65e6a5fd6ddd",
+      "rgbaSha256": "ad1a9aaa862d17d028871d66c5e9b1795531a72e5c46b53f6924d169a1bc910b",
       "size": [
         32,
         32
@@ -183,12 +661,160 @@
         255
       ],
       "occupiedBoundsExclusive": [
-        3,
         2,
-        29,
+        2,
+        31,
+        31
+      ],
+      "paletteColourCountIncludingTransparent": 11
+    },
+    {
+      "file": "icons/taoist-body-3.png",
+      "sha256": "53ac433bf9e2305ccedd24deb817c1640710fe9f0084e83aa90c5d1f394b50e6",
+      "rgbaSha256": "1aef3e1f48d8040cfc7e954fec02dcd90acab4af096a5f51b6534fd487636775",
+      "size": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "occupiedBoundsExclusive": [
+        2,
+        3,
+        31,
+        30
+      ],
+      "paletteColourCountIncludingTransparent": 9
+    },
+    {
+      "file": "icons/taoist-weapon-4.png",
+      "sha256": "3cfce590b80f3f14fcbe1b8c39829266cba4cc160067e4f3f3d5afca2f6eee45",
+      "rgbaSha256": "f56cd598a06e9aadb29118e636c2ccef179a59413811780d8d70778d2202e436",
+      "size": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "occupiedBoundsExclusive": [
+        2,
+        2,
+        31,
         31
       ],
       "paletteColourCountIncludingTransparent": 10
+    },
+    {
+      "file": "icons/taoist-body-4.png",
+      "sha256": "263976ef7915b1b91835a7d24d02391561a355a85763d82e6f3624fe06ee1918",
+      "rgbaSha256": "9887dd8a310ad630a431dbde1c60605174bf60c38e09c9ee8b2e3e74ea32f92c",
+      "size": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "occupiedBoundsExclusive": [
+        2,
+        3,
+        31,
+        30
+      ],
+      "paletteColourCountIncludingTransparent": 10
+    },
+    {
+      "file": "icons/shared-head-1.png",
+      "sha256": "556e0cc3acee726353ac9650039a9c917bc6ab75f30d8a36ae4735eac7f71c80",
+      "rgbaSha256": "cfaeb2cbda81cf4bbe9505a258f01eecf193afc34583300362eb60fc8e332e28",
+      "size": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "occupiedBoundsExclusive": [
+        3,
+        7,
+        29,
+        28
+      ],
+      "paletteColourCountIncludingTransparent": 8
+    },
+    {
+      "file": "icons/shared-head-2.png",
+      "sha256": "d996d08d55301242108ba711dd41edd9a344d9d565ac5813f3d70f96cb189da1",
+      "rgbaSha256": "f2d13186eeb2557d26c50892d67745d258f8d0dfd55eda7380dd565080859686",
+      "size": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "occupiedBoundsExclusive": [
+        2,
+        4,
+        31,
+        30
+      ],
+      "paletteColourCountIncludingTransparent": 7
+    },
+    {
+      "file": "icons/shared-accessory-1.png",
+      "sha256": "f2ffbedcf753acbc4c455054322589de2c623db2e900e850fd300f0c016ee140",
+      "rgbaSha256": "98a0cb735b7a9dcf9ddd0d00ba9320e6e7b34f57beee83eb6d75d5910949791c",
+      "size": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "occupiedBoundsExclusive": [
+        7,
+        2,
+        25,
+        30
+      ],
+      "paletteColourCountIncludingTransparent": 8
+    },
+    {
+      "file": "icons/shared-accessory-2.png",
+      "sha256": "7f868afebbb6a0a65d0ade845c4eeccb160f378455f7881f100e4e68793bf888",
+      "rgbaSha256": "3cb6e487dc218c32fdcf5febbf8cfae1829ddb1d5d7564dd499bcde0a1d30070",
+      "size": [
+        32,
+        32
+      ],
+      "mode": "RGBA",
+      "alphaValues": [
+        0,
+        255
+      ],
+      "occupiedBoundsExclusive": [
+        9,
+        2,
+        24,
+        30
+      ],
+      "paletteColourCountIncludingTransparent": 10
     }
-  ]
+  ],
+  "userApproved": false
 }
