@@ -5,6 +5,22 @@
 
 <!-- releases -->
 
+## 0.126.0 — 2026-10-04
+
+### 기능
+
+- **worldmap** — expose theme readiness and respect human icon selections (`5e20f70`)
+
+### 수정
+
+- align sunlight with visible terrain and height edits (`7372ae4`)
+- keep charset motion comparison readable at native scale (`42557d4`)
+- validate torso and leg motion before charset publication (`b3c800f`)
+
+### 문서
+
+- verify native terrain shadows in editor and shipped player (`7b086c9`)
+
 ## 0.125.0 — 2026-10-04
 
 ### 기능
