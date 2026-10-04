@@ -28,6 +28,7 @@ export const DIALOGUE_STYLE_IDS = [
   "mono-heavy",
   "white-card",
   "wood",
+  "joseon",
   "cream",
   "gold",
   "skew",
@@ -124,6 +125,11 @@ export const DIALOGUE_STYLES: Readonly<Record<DialogueStyleId, DialogueStyleDefi
     id: "wood", label: "나무틀 양피지", defaultVoice: "none",
     description: "갈색 나무틀 안의 따뜻한 양피지. 시골 마을과 농장 생활의 창입니다.",
     fit: "농장·생활·마을 공동체, 계절과 선물이 있는 게임.",
+  },
+  joseon: {
+    id: "joseon", label: "한지 · 먹빛 나무틀", defaultVoice: "none",
+    description: "각진 짙은 나무틀, 한지색 바탕, 먹색 픽셀 글씨와 주홍 선택 표시. 이름표와 선택지도 같은 틀을 씁니다.",
+    fit: "조선·동양 사극 배경의 도트 RPG, 마을 수련과 사냥을 오가는 고전 모험.",
   },
   cream: {
     id: "cream", label: "말랑 크림 · 이름 알약", defaultVoice: "chatter",

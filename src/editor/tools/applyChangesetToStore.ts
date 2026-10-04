@@ -329,6 +329,7 @@ function isProposalBaseCurrent(base: ProposalBase, resetProject: boolean): boole
 }
 
 export interface ApplyProposedProjectOptions {
+  readonly humanEdits?: import("@/editor/assistantHumanEdits").AssistantHumanEdits;
   readonly base: ProposalBase;
   readonly operation?: RunOperation;
   /** Actual local application, before synchronous observers or commit/save awaits. */
@@ -348,9 +349,9 @@ export interface ApplyProposedProjectOptions {
   readonly snapshotMapId?: string | null;
   /**
    * 맵 규모 파괴(타일 전체 청소·맵 삭제·이벤트 전멸)를 사용자가 승인했음을 밝히는 플래그.
-   * **모델이 아니라 표면이 채운다** — showConfirm 을 통과한 뒤에만 true 다(aiProposalCard·
+   * **모델이 아니라 표면이 채운다** — 작업 카드의 확인을 통과한 뒤에만 true 다(aiProposalCard·
    * aiPiAgentCommand). 자율 런은 이런 배치를 자동 적용하지 않는다
-   * (AssistantSession.maybeAutoApplyMilestone) — 모달을 띄울 사람이 없기 때문이다.
+   * (AssistantSession.maybeAutoApplyMilestone) — 결정 카드를 기다릴 실행 표면이 없기 때문이다.
    *
    * 2026-09-17 이전에는 이 게이트가 `toolNames` 만 봤고, 주석에 「`/pi` 는 자기 검토 카드가 있으니
    * 스스로 빠진다」고 적혀 있었다. 그 전제가 틀렸다 — 검토 카드의 [적용]은 파괴를 따로 묻지 않고,
@@ -375,7 +376,7 @@ export interface ApplyProposedProjectOptions {
 }
 
 export type ApplyProposedProjectResult =
-  | { readonly ok: true; readonly commit: CommitRow; readonly applied: Project; readonly commitProject?: Project;
+  | { readonly ok: true; readonly commit: CommitRow; readonly applied: Project; readonly commitProject?: Project; readonly preservedCells?: number;
       /** rebase 로 지금 프로젝트 위에 병합했으면 그 결과(충돌 자리 = 스토어 값을 남긴 곳). */
       readonly merge?: { readonly conflicts: readonly ProjectMergeConflict[]; readonly cellConflicts: number } }
   | {
@@ -399,6 +400,7 @@ export type ApplyProposedProjectResult =
  * (기존 fire-and-forget의 console.warn 정책과 동일) — row는 persisted:false 로 반환.
  */
 interface PreparedApply {
+  readonly preservedCells: number;
   readonly merge?: { readonly conflicts: readonly ProjectMergeConflict[]; readonly cellConflicts: number };
   readonly appliedProject: Project;
   readonly diff: ChangeSummary;
@@ -441,6 +443,19 @@ export async function applyProposedProject(
     if (authority === "stale-baseline") {
       const issue = "초안을 만든 뒤 프로젝트가 수정되었습니다. 최신 프로젝트에서 다시 생성하고 독립 검수를 받아주세요.";
       return { ok: false, reason: "stale-baseline", issue, issues: [issue] };
+    }
+    const guarded = options.humanEdits?.protect(proposed, before);
+    if (guarded?.issue) return { ok: false, reason: "commit-rejected", issue: guarded.issue, issues: [guarded.issue] };
+    const preservedCells = guarded?.preservedCells ?? 0;
+    if (guarded && guarded.project !== proposed) {
+      // Protection may remove valid writes, never legitimize an unproven draft.
+      try { assertSpatialToolAcceptance(proposed, before); }
+      catch (error) {
+        if (!(error instanceof ToolError || error instanceof ProjectFormatError || error instanceof SpatialOperationError)) throw error;
+        return { ok: false, reason: "commit-rejected", issue: error.message, issues: [error.message] };
+      }
+      proposed = guarded.project;
+      authorMergedSpatialProposal(proposed, before);
     }
     // 맵 규모 파괴는 사람이 봐야 적용된다. 권위(위)와 불변식(아래) 검사를 통과한 배치라도,
     // "무엇이 사라졌는지 화면에서 봤다"는 전제 없이는 되돌리기가 유일한 복구라는 정책이 성립하지 않는다.
@@ -504,7 +519,7 @@ export async function applyProposedProject(
     finishSpatialToolAcceptance(appliedProject);
     // diff 를 replace **전에** 계산한다 — 행위 로그 라벨이 이 시점에 확정돼야 하고,
     // summarizeChanges 는 before(교체 전 스토어)를 필요로 한다.
-    const diff = options.diff ?? summarizeChanges(before, appliedProject);
+    const diff = preservedCells ? summarizeChanges(before, appliedProject) : options.diff ?? summarizeChanges(before, appliedProject);
     const change = applyAnnotation(
       "ai",
       `${options.source === "agent-milestone" ? "AI 마일스톤" : "AI 제안"} 적용: ${options.summary}`,
@@ -519,15 +534,15 @@ export async function applyProposedProject(
     if (!isProposalBaseCurrent(authorityBase, options.resetProject === true)) {
       return { ok: false, reason: "stale-base", issue: "기준 프로젝트가 변경되었습니다. 최신 편집을 기준으로 다시 요청해주세요." };
     }
-    return { appliedProject, diff, change, ...(merge ? { merge } : {}) };
+    return { appliedProject, diff, change, preservedCells, ...(merge ? { merge } : {}) };
   });
   if ("ok" in prepared) return prepared;
-  const { appliedProject, diff, change, merge } = prepared;
+  const { appliedProject, diff, change, merge, preservedCells } = prepared;
   if (!options.skipSnapshot) recordProjectSnapshot(options.snapshotLabel, options.snapshotMapId);
   // Correlate at the mutation boundary: synchronous subscribers and the awaited
   // commit can both leave a later edit in the live store before this apply returns.
   const onApplied = (project: Project): void => {
-    options.onApplied?.({ ok: true, applied: project, commitProject: project, commit: {
+    options.onApplied?.({ ok: true, applied: project, commitProject: project, preservedCells, commit: {
       commitId: null, persisted: false, reviewStatus: options.reviewStatus ?? "approved",
       summary: options.summary, toolNames: options.toolNames, recordedAt: new Date().toISOString(),
     } });
@@ -561,9 +576,9 @@ export async function applyProposedProject(
       recordedAt: new Date().toISOString(),
     };
   }
-  if (options.operation?.signal.aborted) return { ok: true, commit: commitRow, applied: commitProject, commitProject, ...(merge ? { merge } : {}) };
+  if (options.operation?.signal.aborted) return { ok: true, commit: commitRow, applied: commitProject, commitProject, preservedCells, ...(merge ? { merge } : {}) };
   resetManualProjectCommitBaseline(appliedProject);
   // Applied work already has a commit and mutation audit entry. Do not turn it
   // into another authored document or attribute a later live edit to this apply.
-  return { ok: true, commit: commitRow, applied: commitProject, commitProject, ...(merge ? { merge } : {}) };
+  return { ok: true, commit: commitRow, applied: commitProject, commitProject, preservedCells, ...(merge ? { merge } : {}) };
 }

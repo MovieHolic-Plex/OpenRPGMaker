@@ -1,4 +1,5 @@
 import { PiTilesetReferenceGate } from "./tilesetReferenceGate";
+import { NULLABLE_OPTIONAL_TOOLS, nullableOptionalParameters, omitUnusedOptionalArguments } from './optionalToolArguments';
 import { spatialReferenceImages } from '@/editor/tools/spatialReferenceTools';
 import { interiorPresetImages } from '@/editor/tools/interiorPresetExamples';
 import { villageReferenceImages } from '@/ai/villageReferenceExamples';
@@ -227,10 +228,12 @@ export function createPiToolset(ctx: ToolContext, options: CreatePiToolsetOption
     name: tool.name,
     label: tool.name,
     description: tool.description,
-    parameters: tool.parameters,
+    parameters: NULLABLE_OPTIONAL_TOOLS.has(tool.name) ? nullableOptionalParameters(tool.parameters) : tool.parameters,
     concurrency: tool.mode === "read" ? "shared" as const : "exclusive" as const,
     async execute(_toolCallId, params, signal) {
-      const args = params && typeof params === "object" ? (params as Record<string, unknown>) : {};
+      const raw = params && typeof params === "object" ? params as Record<string, unknown> : {};
+      const args = NULLABLE_OPTIONAL_TOOLS.has(tool.name)
+        ? omitUnusedOptionalArguments(tool.parameters, raw) as Record<string, unknown> : raw;
       const before = tool.mode === "write" ? captureActivityVisuals(ctx.project, tool.name, args, undefined, "before") : [];
       const gate = tool.mode === "write" ? referenceGate.beforeWrite(ctx.project, tool.name, args) : null;
       const beforeProject = ctx.project;

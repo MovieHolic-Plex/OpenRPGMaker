@@ -6,6 +6,33 @@
 
 ## 흐름
 
+### 호스트 공용 DB와 조수 (2026-10-04)
+
+`npm run harness -- worldmap-icons publish-shared`는 선택 아이콘과 정본 실제 지형 사례를 호스트 공용 SQLite에
+등록하고 다시 읽는다. 세부 옵션은 [하네스 문서](harnesses/worldmap-icons.md).
+`worldmap-human-selected`는 기본 자료, `worldmap-real-joseon`/`worldmap-real-yucatan`은 필요할 때 가져오는 지역 사례다.
+등록된 전도는 `list_spatial_designs` 또는 `read_region_reference`로 찾는다.
+목록의 `referenceRead:{kind:'region',id}`를 따라 `read_spatial_reference`로 사례의 문서·그림을 읽고
+`import_region_reference`로 새 맵에 가져온다. 아이콘 자료는 별도로 `worldmap_selected`에서 읽는다.
+
+지역 가져오기는 업로드 그림·worldmapSource·characterScale·locations를 보존하며, 월드맵에는
+`worldmap_<새 mapId>` 전용 타일셋을 만든다. 타일 번호와 원본 픽셀을 바꾸지 않는다.
+현재 유카탄 사례는 실제 지리 + 판타지 화풍이며 마야 건축 고증 또는 완성 게임이 아니다.
+
+Pi의 지형 조회·편집, 맵 속성 변경, 지역 가져오기, 공간 참고문서 도구는 선택값에 null을 쓸 수 있다.
+`optionalToolArguments.ts`가 **선택값의 null만** 실행 직전에 생략한다. 필수값의 null은 유효해지지 않으며
+0/false/빈 배열의 의미는 그대로다. 엄격 제공자가 미사용 속성을 임의의 기본값으로 채워
+잘못된 지형 op·기후 설정·clearForBackground 바닥 지우기를 실행하던 실제 호출에서 발견했다.
+
+실호출: `bun scripts/qa/worldmap-shared-assistant-live.mts --label <새 이름> --task-file <요청 파일> --model <제공자/모델>`.
+편집기와 같은 Pi 실행·도구 발견·참고문서 관문을 쓰며, 실제 공용 DB를 로드하고 별도 SQLite에 저장·재로드한다.
+UI 의도 선언 요청과 클릭 흐름은 이 CLI의 검증 범위에 포함하지 않는다.
+
+월드 키트는 숲·길·기존 건물까지 한 이미지에 굽는다. `layoutQuality.measureLayoutQuality`의
+위층 소품 수로 빈 바닥을 재는 일반 마을 검사는 이 형식에 적용하지 않는다.
+worldmapSource + 업로드 그림 + 16px + 지도 폭과 같은 시트 열 수 + `lowerTiles[i]===i`가 모두 맞을 때만 제외한다.
+일반 월드 타일셋이나 임의 배열은 계속 검사한다. 모델이 바닥 풍경을 덮어 채우게 하던 실호출의 오탐 수정이다.
+
 ```
 조수 ── edit_world_terrain(ops) ─▶ prepare: buildWorldmap(테마, 쌓인 ops + 새 ops)
                                     ├ 편집기: POST /v1/worldmap/build (동반 앱, scripts/lib/ohMyPiHttp.mjs)

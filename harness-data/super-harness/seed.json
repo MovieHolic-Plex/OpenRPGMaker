@@ -86,8 +86,8 @@
       "native": [
         "modern_city"
       ],
-      "artRoute": "interior-props",
-      "note": "현대 실내 칩셋이 없다(modern_city 는 거리·건물 외관·탈것). 병원·학교·편의점 실내 기물은 주문해야 한다."
+      "artRoute": "modern-chipset",
+      "note": "현대 거리·탈것 재고와 실내 재고를 구분해 실제 카탈로그에서 확인한다. 콘크리트·주차선·교실 기물이 없으면 제작부터 한다."
     },
     {
       "id": "japan",
@@ -105,7 +105,7 @@
         "joseon_baram"
       ],
       "artRoute": "joseon-baram",
-      "note": "joseon_baram 은 마을·궁궐 외관만, 실내 없음(주막 안·사랑채 안은 주문)."
+      "note": "조선 하네스에 주막·서당 등 실내 자료가 있다. 실제 카탈로그·현재 해시의 관문·공용 번들·참고문서를 조회해 사용 가능 여부를 판정한다. 없는 기물은 joseon-baram으로 제작한다."
     },
     {
       "id": "murim",
@@ -123,9 +123,7 @@
     }
   ],
   "borrowStructure": {
-    "tilesets": [
-      "atlas_biome_interior"
-    ],
-    "rule": "다른 세계관도 손 도트 실내 v5 의 바닥·벽면·천장(구조)은 빌려 쓸 수 있다. 기물(objects·tables·goods·lines·daises)은 그 세계관 것이 아니면 쓰지 않는다."
+    "tilesets": [],
+    "rule": "시대가 다른 바닥·벽·천장도 빌려서 맵을 먼저 만들지 않는다. 실제 재료 조사와 독립 검수가 먼저다."
   }
 }

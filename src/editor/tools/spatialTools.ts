@@ -126,12 +126,16 @@ export const SPATIAL_TOOLS: readonly ToolDefinition[] = [
       : preloadRegionReferenceScene(args.id).then(() => undefined),
     preservesAuthoredRaster: true,
     run(project, args) {
+      args = { ...args };
+      for (const key of ["mapId", "newMapId", "name"]) {
+        if (typeof args[key] === "string" && !(args[key] as string).trim()) delete args[key];
+      }
       if (String(args.id).startsWith("reviewed:")) return importReviewedPlace(project, args);
       let scene;
       try { scene = regionReferenceScene(String(args.id)); }
       catch (error) { throw new ToolError(error instanceof Error ? error.message : String(error), { code: "invalid-args" }); }
       if (isRetiredInteriorTileset(scene.tileset.id, scene.tileset)) throw new ToolError(retiredInteriorMessage(scene.tileset.id), { code: "retired-interior-tileset" });
-      if (args.mapId !== undefined && (args.newMapId !== undefined || args.name !== undefined || args.includeEvents !== undefined)) {
+      if (args.mapId !== undefined && (args.newMapId !== undefined || args.name !== undefined || args.includeEvents === true)) {
         throw new ToolError("newMapId·name·includeEvents 는 새 맵으로 가져올 때만 쓴다 — mapId 와 함께 줄 수 없다", { code: "invalid-args" });
       }
       let result;

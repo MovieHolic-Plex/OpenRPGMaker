@@ -31,6 +31,7 @@ TRANSPARENT = '.'
 GATE_VERSION = 3
 ALPHA_POLICY_VERSION = 2  # 검사 정책만 갱신한다. 같은 픽셀의 렌더/사용자 선택 binding은 유지한다.
 ALPHA_PREVIEW_VERSION = 1
+WALK_VERSION = 2
 KEY_TOLERANCE = 8  # 편집기의 투명색 판정과 동일하다.
 
 
@@ -798,7 +799,7 @@ def color_map(base_frames, new_frames):
 
 
 
-def propagate(base_frames, new_frames, base_pal=None, new_pal=None):
+def propagate(base_frames, new_frames, base_pal=None, new_pal=None, trace=None):
     """new_frames 의 서 있는 자세(* 1)에서 걸음 0·2 를 다시 만든다 → 새 frames dict.
     팔레트를 주면 색 대응표가 새 팔레트에 없는 글자를 내지 않게 가장 가까운 새 색으로 바꾼다."""
     out = dict(new_frames)
@@ -830,8 +831,39 @@ def propagate(base_frames, new_frames, base_pal=None, new_pal=None):
                             and bf[y][x] == TRANSPARENT:
                         rows[y][x] = n1[sy][x]
             _tidy(rows, bf)
+            # 원본의 열린 팔/머리 틈이 새 실루엣 안에 갇히면 움직임 마스크를
+            # 그대로 재사용할 수 없다. 저작된 정지 그림의 실제 면을 전달한다.
+            transfers = _transfer_surface(rows, bf, n1, bob)
+            if trace is not None:
+                trace.extend(dict(frame=f'{d} {f}', **transfer) for transfer in transfers)
             out[(d, f)] = [''.join(r) for r in rows]
     return out
+
+
+def _transfer_surface(rows, base_walk, standing, bob):
+    """새로 갇힌 빈 영역에 대응하는 저작 면 전체를 전달한다.
+
+    원본부터 닫힌 배경은 유지한다. 영역의 모든 픽셀이 정지 그림의 실제
+    불투명 픽셀과 대응할 때만 옮긴다. 부분 추정·이웃 색 투표는 하지 않는다.
+    저작자가 이미 뚫어 둔 구멍과 프레임 밖 좌표는 복구하지 않는다.
+    """
+    holes = _enclosed(_opaque(rows)) - _enclosed(_opaque(base_walk))
+    transfers = []
+    while holes:
+        pending = [min(holes)]
+        holes.remove(pending[0])
+        for x, y in pending:
+            for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                pt = (x + dx, y + dy)
+                if pt in holes:
+                    holes.remove(pt)
+                    pending.append(pt)
+        if not all(0 <= y - bob < FH and standing[y - bob][x] != TRANSPARENT for x, y in pending):
+            continue
+        for x, y in pending:
+            rows[y][x] = standing[y - bob][x]
+            transfers.append(dict(destination=[x, y], source=[x, y - bob], char=rows[y][x]))
+    return transfers
 
 
 def _tidy(rows, bf):

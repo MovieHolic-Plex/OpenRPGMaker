@@ -1,0 +1,202 @@
+{
+  "realModel": true,
+  "provider": "opencodex",
+  "modelId": "gpt-6-astra",
+  "uiIntentRequestExercised": false,
+  "sharedDatabase": "/home/main/.local/share/oprn/shared-content.sqlite",
+  "libraries": [
+    "worldmap-human-selected",
+    "worldmap-real-joseon",
+    "worldmap-real-yucatan"
+  ],
+  "folder": "/home/main/.local/share/oprn/worldmap-shared-ai-yucatan-final-20261004",
+  "projectId": "4be8544a-78d6-4f11-aece-51b5fbefe869",
+  "revision": 2,
+  "elapsedSeconds": 234.592,
+  "counts": {
+    "get_project_summary": 2,
+    "read_project_wiki": 2,
+    "find_tools": 3,
+    "list_spatial_designs": 1,
+    "list_worldmap_icons": 1,
+    "read_spatial_reference": 3,
+    "list_tileset_references": 1,
+    "read_tileset_reference": 3,
+    "import_region_reference": 1,
+    "show_map_region": 7,
+    "read_world_terrain": 1,
+    "get_map_region": 3,
+    "stamp_worldmap_icon": 2,
+    "set_map_properties": 1,
+    "inspect_worldmap_icon": 2,
+    "check_reachability": 2
+  },
+  "failures": [],
+  "imported": [
+    {
+      "referenceId": "shared_worldmap_real_yucatan",
+      "mapId": "map_yucatan_travel",
+      "worldmapSource": {
+        "theme": "fantasy",
+        "ops": [
+          {
+            "style": "real",
+            "box": [
+              -93,
+              14,
+              -86,
+              22
+            ],
+            "home": [
+              -89,
+              20.8
+            ],
+            "op": "continents"
+          },
+          {
+            "style": "real",
+            "box": [
+              -93,
+              14,
+              -86,
+              22
+            ],
+            "op": "continents",
+            "home": [
+              -89,
+              20.8
+            ]
+          },
+          {
+            "kind": "broad",
+            "density": 0.65,
+            "poly": [
+              [
+                44,
+                4
+              ],
+              [
+                54,
+                4
+              ],
+              [
+                54,
+                8
+              ],
+              [
+                44,
+                8
+              ]
+            ],
+            "op": "forest"
+          },
+          {
+            "kind": "broad",
+            "poly": [
+              [
+                58,
+                11
+              ],
+              [
+                64,
+                11
+              ],
+              [
+                64,
+                18
+              ],
+              [
+                58,
+                18
+              ]
+            ],
+            "density": 0.6,
+            "op": "forest"
+          },
+          {
+            "ground": "grass",
+            "op": "biome",
+            "poly": [
+              [
+                44,
+                3
+              ],
+              [
+                55,
+                3
+              ],
+              [
+                55,
+                9
+              ],
+              [
+                44,
+                9
+              ]
+            ]
+          }
+        ],
+        "terrainId": "edit",
+        "palette": "original",
+        "base": "generate",
+        "fitSalt": 0
+      },
+      "characterScale": 0.75,
+      "events": 0
+    }
+  ],
+  "placements": [
+    {
+      "args": {
+        "mapId": "map_yucatan_travel",
+        "iconId": "fantasy/city_capital",
+        "at": {
+          "x": 46,
+          "y": 30
+        },
+        "referencePurpose": "wmi-fantasy"
+      },
+      "inspected": {
+        "ok": true,
+        "iconId": "fantasy/city_capital",
+        "sha256": "97e419901f373be76493ea505b176a526c0073ff86264bff483ea1410a71855a",
+        "issues": []
+      },
+      "entranceWalkable": true
+    },
+    {
+      "args": {
+        "mapId": "map_yucatan_travel",
+        "iconId": "fantasy/city_harbor",
+        "at": {
+          "x": 54,
+          "y": 33
+        },
+        "referencePurpose": "wmi-fantasy"
+      },
+      "inspected": {
+        "ok": true,
+        "iconId": "fantasy/city_harbor",
+        "sha256": "286c7f629172f18474fd6b19ece377ca86706541d007931c68c9c42577ee25cb",
+        "issues": []
+      },
+      "entranceWalkable": true
+    }
+  ],
+  "stats": {
+    "ms": 219601,
+    "turns": 18,
+    "toolCalls": 36,
+    "toolErrors": 0,
+    "usage": {
+      "input": 892119,
+      "output": 3132,
+      "cacheRead": 183936,
+      "cacheWrite": 0,
+      "totalTokens": 1079187,
+      "calls": 18
+    }
+  },
+  "passed": true,
+  "savedAndReopened": true
+}
