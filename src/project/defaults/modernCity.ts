@@ -79,9 +79,10 @@ function layerSignature(t: Pick<TilesetDef, "priority" | "passability" | "tileMe
   }
   return out;
 }
-/** 표 길이까지 합친 요약. 키트 본문이 같은 개수로 바뀐 경우는 못 잡는다 — 그때는 칸 수나 층 표도 함께 바뀌는 굽기 규약이다. */
+/** 표 길이와 그룹 층 요약. 같은 칸 수에서도 lower→mixed 설명 정정은 기존 프로젝트에 반영한다. */
 function shapeSignature(t: Pick<TilesetDef, "priority" | "passability" | "tileMeta" | "tileGroups" | "autotileGroups" | "animationStrips" | "structureKits">): string {
-  return `${layerSignature(t)}|${t.tileGroups?.length ?? 0}|${t.autotileGroups?.length ?? 0}|${t.animationStrips?.length ?? 0}|${t.structureKits?.length ?? 0}`;
+  const groupLayers = JSON.stringify((t.tileGroups ?? []).map(g => [g.id, g.defaultLayer, g.layerHome]));
+  return `${layerSignature(t)}|${groupLayers}|${t.autotileGroups?.length ?? 0}|${t.animationStrips?.length ?? 0}|${t.structureKits?.length ?? 0}`;
 }
 let bundledShape: string | undefined;
 function bundleShape(): string {
