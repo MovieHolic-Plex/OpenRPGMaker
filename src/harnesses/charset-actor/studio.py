@@ -51,10 +51,14 @@ def runs(items=None):
         ready = [it for it in rows if it['status'] == 'done']
         decisions = H._decisions()
         kept = sum(H.effective_decision(root / it['dir'], decisions.get(it['id']), it['gate']) == 'accept' for it in ready)
-        rejected = sum(decisions.get(it['id'], {}).get('decision') == 'reject' for it in ready)
-        phase = ('pausing' if (root / 'pause-request.json').exists() else 'running') if alive else state.get('phase', 'interrupted')
+        rejected = sum(H.effective_decision(root / it['dir'], decisions.get(it['id']), it['gate']) == 'reject' for it in ready)
+        current_phase = state.get('phase', 'running')
+        phase = ('pausing' if (root / 'pause-request.json').exists() else current_phase if current_phase in ('running', 'waiting-review', 'pausing') else 'running') if alive else state.get('phase', 'interrupted')
+        if not alive and phase in ('running', 'waiting-review', 'pausing'):
+            phase = 'interrupted'
         result.append(dict(run=root.name, planned=len(manifest['characters']), ready=len(ready), kept=kept,
                            rejected=rejected, awaiting=len(ready)-kept-rejected, phase=phase, error=state.get('error'),
+                           recipe=manifest.get('recipe'), maxReviewPending=manifest.get('productionPolicy', {}).get('maxReviewPending'),
                            blocked=sum((p / 'views' / 'gate.json').exists() and not H.current_gate(p)['ok']
                                        for p in root.glob('*__*') if (p / 'out.chr.txt').exists())))
     return result
@@ -71,8 +75,10 @@ def _create(options):
     batch_size = int(options.get('batchSize', 2))
     if not 1 <= count <= 500 or not 1 <= par <= 6 or not 1 <= batch_size <= 8:
         raise ValueError('개수 1~500, 동시 작업 1~6, 묶음 크기 1~8')
-    if any(r['phase'] in ('running', 'pausing') for r in runs()):
+    if any(r['phase'] in ('running', 'pausing', 'waiting-review') for r in runs()):
         raise ValueError('진행 중인 자유 저작이 있습니다. 현재 작업을 마치거나 일시 정지하세요.')
+    if options.get('recipe') or options.get('seedRun'):
+        return _create_variations(options, count, par)
     root = H.run_dir(datetime.now().strftime('%Y%m%d-%H%M%S') + '-free-' + uuid.uuid4().hex[:8])
     root.mkdir(parents=True)
     prompt = str(options.get('prompt') or '한국풍·판타지·현대·SF 등 여러 장르의 다양한 에디터용 인물. 콘셉트와 복식은 자유롭게 정한다.')[:4000]
@@ -103,6 +109,30 @@ def _create(options):
     return dict(launch(root, par, batch_size), count=count)
 
 
+def _create_variations(options, count, par):
+    import recipes
+    limit = int(options.get('maxReviewPending', 12))
+    rounds = int(options.get('repairRounds', 2))
+    if not par <= limit <= 40 or not 0 <= rounds <= 2:
+        raise ValueError('검토 대기는 동시작업~40명, 기술 수정은 0~2회입니다')
+    if options.get('image') or options.get('reference'):
+        raise ValueError('남긴 원본 변주에는 추가 참고 이미지를 섞지 않습니다')
+    rid = options.get('recipe')
+    if not rid:
+        rid = recipes.create(options['seedRun'])['id']
+    root = H.run_dir(datetime.now().strftime('%Y%m%d-%H%M%S') + '-kept-' + uuid.uuid4().hex[:8])
+    root.mkdir(parents=True)
+    try:
+        manifest = recipes.bind(root, rid, count, options.get('prompt', ''))
+        manifest['productionPolicy'] = dict(maxReviewPending=limit, repairRounds=rounds)
+        H.write_json_atomic(root / 'manifest.json', manifest)
+        recipes.verify_run(root, manifest, check_tools=True)
+    except Exception:
+        shutil.rmtree(root)
+        raise
+    return dict(launch(root, par, 1), count=count, recipe=rid, seeds=len(recipes.load(root / 'recipe')['seeds']))
+
+
 def control(run, resume):
     with H.data_lock('studio'):
         return _control(run, resume)
@@ -116,11 +146,11 @@ def _control(run, resume):
     if resume:
         if H._alive(driver.get('pid')):
             raise ValueError('현재 묶음이 끝날 때까지 기다려 주세요')
-        if any(r['run'] != run and r['phase'] in ('running', 'pausing') for r in runs()):
+        if any(r['run'] != run and r['phase'] in ('running', 'pausing', 'waiting-review') for r in runs()):
             raise ValueError('다른 자유 저작이 진행 중입니다')
         (root / 'pause-request.json').unlink(missing_ok=True)
         layout = json.loads((root / 'production.json').read_text())
-        return launch(root, batch_size=layout['batchSize'])
+        return launch(root, par=layout.get('par', 4), batch_size=layout['batchSize'])
     H.write_json_atomic(root / 'pause-request.json', dict(at=H.now()))
     return dict(run=run, phase='pausing')
 
@@ -173,19 +203,41 @@ def export_kept(run='all'):
             restored.putdata([(0,0,0,0) if all(abs(rgb[i]-C.KEY[i]) <= 8 for i in range(3)) else (*rgb,255) for rgb in reopened.getdata()])
             if restored.tobytes() != sheet.tobytes():
                 raise ValueError('에디터 색 키 재읽기 불일치')
-        if any(not it['base'].startswith('input:') for it, *_ in selected):
+        lineage_bases = {it['base'] for it, *_ in selected}
+        recipe_sources = {}
+
+        def preserve_recipe(folder):
+            import recipes
+            recipe = recipes.load(folder)
+            if recipe['id'] in recipe_sources:
+                return
+            recipe_sources[recipe['id']] = folder
+            for seed in recipe['seeds']:
+                lineage_bases.add(seed['sourceBase'])
+                source_meta = json.loads((folder / seed['folder'] / 'source-meta.json').read_text())
+                if source_meta.get('recipe'):
+                    parent = H.DATA / 'recipes' / recipes.safe_name(source_meta['recipe']['id'])
+                    recipes.load(parent, source_meta['recipe']['sha256'])
+                    preserve_recipe(parent)
+
+        for it, w, *_ in selected:
+            if json.loads((w / 'meta.json').read_text()).get('recipe'):
+                preserve_recipe(H.run_dir(it['run']) / 'recipe')
+        if any(not base.startswith('input:') for base in lineage_bases):
             credits = out / 'licenses' / 'easyrpg'; credits.mkdir(parents=True)
             for file in ('AUTHORS.md', 'COPYING'):
                 shutil.copy(H.RTP / file, credits / file)
         sources = out / 'sources'; sources.mkdir()
-        for it, *_ in selected:
-            if it['base'].startswith('input:'):
-                iid = it['base'].split(':')[1]
+        for base in sorted(lineage_bases):
+            if base.startswith('input:'):
+                iid = base.split(':')[1]
                 shutil.copy(H.INPUTS / f'{iid}.png', sources / f'{iid}.png')
                 info = json.loads((H.INPUTS / f'{iid}.json').read_text())
                 original = Path(info['src'])
                 if original.is_file():
                     shutil.copy(original, sources / f'{iid}-original.png')
+        for rid, folder in recipe_sources.items():
+            shutil.copytree(folder, sources / 'recipes' / rid)
         H.write_json_atomic(out / 'characters.json', dict(count=len(catalog), characters=catalog))
         (out / 'README.md').write_text('사람이 GIF를 보고 남긴 캐릭터만 포함합니다.\ncharsets/의 288×256 PNG를 에디터에 올립니다. 한 시트 8명, 각 24×32 × 3걸음 × 4방향.\n투명 색 키 #009392, RGBA는 transparent/, GIF는 gifs/. 원본과 선택 해시는 characters.json에 기록했습니다.\n작업자 설명은 그림을 그린 AI의 설명이며 독립 시각 심사 점수가 아닙니다. 프로젝트에는 자동 설치하지 않습니다.\n', encoding='utf-8')
         temp_zip = downloads / ('.' + name)
@@ -207,6 +259,11 @@ if __name__ == '__main__':
     parser.add_argument('--reference', type=Path)
     parser.add_argument('--par', type=int, default=4)
     parser.add_argument('--batch-size', type=int, default=2)
+    parser.add_argument('--seed-run', help='이 실행에서 현재 남긴 그림만 변주 원본으로 고정한다')
+    parser.add_argument('--recipe', help='보존한 제작 기준 ID로 같은 조건의 새 실행을 만든다')
+    parser.add_argument('--max-review-pending', type=int, default=12)
+    parser.add_argument('--repair-rounds', type=int, default=2)
     args = parser.parse_args()
     print(json.dumps(create(dict(count=args.count, prompt=args.prompt, reference=args.reference,
-                                 par=args.par, batchSize=args.batch_size)), ensure_ascii=False))
+                                 par=args.par, batchSize=args.batch_size, seedRun=args.seed_run, recipe=args.recipe,
+                                 maxReviewPending=args.max_review_pending, repairRounds=args.repair_rounds)), ensure_ascii=False))

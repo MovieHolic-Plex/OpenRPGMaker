@@ -556,6 +556,10 @@ def effective_decision(w, record, gate=None):
 def human_ready(w, gate):
     try:
         meta = json.loads((w / 'meta.json').read_text())
+        if meta.get('recipe'):
+            import delivery
+            if not delivery.fresh(w, gate):
+                return False
         return (not _alive(meta.get('pid'))
                 and (meta.get('animationMode') != FRAME_AUTHOR_MODE or model_frames_fresh(w, gate))
                 and json.loads((w / 'published.json').read_text()) == binding(gate) and views_fresh(w, gate))
