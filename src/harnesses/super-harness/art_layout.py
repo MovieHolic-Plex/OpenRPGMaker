@@ -69,6 +69,10 @@ def build_input(root, request):
                 required.add(str((Path(root) / seed[name]).resolve().relative_to(Path(root).resolve())))
         for name in ('parking-contract.json', 'parking-brief.md'):
             if (Path(root)/data/name).is_file(): required.add(str(data/name))
+        if (Path(root)/data/'parking-contract.json').is_file():
+            # Receipt creation reads this after drawing; fail before spending a
+            # model attempt if preparation forgot its registration metadata.
+            required.add(str(data/'registration-source.json'))
         round_dir = Path(request['runs'])/request['round']
         required.add(str(round_dir/'state.json'))
         for name in ('brief.md', 'parking-brief.md', 'parking-contract.json'):

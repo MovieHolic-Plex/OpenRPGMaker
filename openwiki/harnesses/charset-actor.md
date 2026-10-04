@@ -5,6 +5,8 @@ GPT 6.1 sol high가 정지 4장·걷기 8장, 24×32 캐릭터의 12프레임 �
 
 ```bash
 npm run harness -- charset-actor produce --count 100 --reference /absolute/reference.png
+npm run harness -- charset-actor recipe --source-run RUN
+npm run harness -- charset-actor produce --seed-run RUN --count 100 --par 2 --max-review-pending 12
 npm run harness -- charset-actor serve --port 18314
 npm run harness -- charset-actor export RUN
 python3 src/harnesses/charset-actor/harness.py publish-shared
@@ -13,6 +15,13 @@ npm run harness -- charset-actor walk-qa --run RUN --out /absolute/evidence-outs
 ```
 
 `produce`는 작업을 터미널과 독립적으로 시작한다. 화면에서도 개수·선택적인 전체 방향·참고 그림을 넣어 시작할 수 있다.
+「남긴 그림으로 변주」는 현재 남긴 실제 12프레임을 원본으로 고정하고 각 기준의 `grid`/좌표 저작 방식을 보존한다.
+제작 지시·선택 binding·원본·도구 해시를 `recipes/ID`와 실행의 `recipe/`에 보존한다. 한 작업자는 1명만 저작한다.
+납품 시 12장 저작 기록/좌표 재적용·투명·PNG/RGBA·네 배경 GIF·설명·정확한 중복을 검사해 `delivery.json`에 묶는다.
+기술 오류만 최대 2회 같은 모델이 직접 고친다. 각 프롬프트·실패·수정 전 파일은 `attempts/`에 남기며 미감 선별은 사람에게 맡긴다.
+검토 대기와 진행 중 예약의 합이 한도에 이르면 `waiting-review`, 선택이 저장되면 이어 만든다. 정지/재개는 동시 작업 수와 공개된 픽셀을 보존한다.
+`produce --recipe ID`로 보존한 기준을 재사용한다. 도구가 바뀌면 다른 조건으로 자동 재개하지 않고 새 기준을 요구한다.
+선택 ZIP은 제작 기준과 원본 계보·RTP 라이선스도 보존한다. 새 변주의 품질 향상은 자동 검사로 판정하지 않는다.
 한 화면에 한 캐릭터의 네 방향 걷기와 게임 속 이동 GIF를 상시 보여준다. 남기기/폐기하면 즉시 다음 후보로 넘어가고 뒤에서 저장한다.
 이전/다음·A/R·직전 선택 되돌리기, 일시 정지/재개, 실제 남긴 캐릭터만 ZIP 다운로드한다.
 걷기는 자홍색 체커가 기본이며 흰색·검정·잔디로 바로 전환한다. `audit`는 12프레임과 세 배경의 원본 비교·결손 좌표·출하 PNG/GIF 대조를 저장소 밖에 남긴다.
