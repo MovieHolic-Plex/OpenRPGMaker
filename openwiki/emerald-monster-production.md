@@ -26,3 +26,18 @@ facts: actual original PNG is1122x1402 with alpha0..255. Runtime displays it as 
 small pixel-style portrait without modifying the raster. Original species remain
 editable database/resource records. Exact Emerald combat mechanics are distinct
 from Emerald presentation and must not be inferred from a skin name.
+## Original title key art
+
+`configureEmeraldMonsterOpening` also applies `configureEmeraldMonsterTitle`,
+which installs the shared original star-antlered stag illustration and compact
+keyboard title menu. Existing title music, sounds, labels and saved-game
+availability are retained. Painting-specific WebGL layers/entrance sequences are
+cleared when this introduction is explicitly authored. Other projects keep their
+current title renderer; the runtime skin opts in by the shared profile marker.
+
+`public/assets/emerald-monster/title-prompt.txt` records the exact built-in
+imagegen prompt. The untouched generated PNG is **1536×1024** (3:2), SHA
+`86a627ab7fd3ebce0a7dfe49ff72258210b9263d91642f7d36de69b5e4df9f5d`.
+The prompt requested GBA pixel composition; this asset is not falsely described
+as a native 240×160 file. The runtime fits it into the authored 480×320 stage with
+pixelated sampling. `title-provenance.json` records dimensions and generation.

@@ -1,5 +1,7 @@
 import type { Project, UploadedAsset } from './types';
 import professorArtwork from '../../public/assets/emerald-monster/professor-asset.json';
+import titleArtwork from '../../public/assets/emerald-monster/title-asset.json';
+import { defaultTitleScreenSettings } from './defaults/defaultDatabase';
 
 export type EmeraldOpeningPage = { id: string; text: string; monsterSpeciesId?: string };
 
@@ -35,4 +37,20 @@ export function configureEmeraldMonsterOpening(project: Project, options: {
   const musicResourceId = options.musicResourceId ?? project.system.opening?.musicResourceId;
   project.system.opening = { enabled: true, skippable: true, scenes, ...(musicResourceId ? { musicResourceId } : {}) };
   project.meta.oprnOpeningBook = { version: 1, sceneIds: scenes.map(s => s.id), ink: 'ivory', portraitResourceId: professor.id };
+  configureEmeraldMonsterTitle(project);
+}
+
+/** Shared original pixel key art; menu input and saved-game availability remain native. */
+export function configureEmeraldMonsterTitle(project: Project): void {
+  const artwork = titleArtwork as UploadedAsset;
+  project.assets.uploaded[artwork.id] = { ...artwork, meta: { ...artwork.meta } };
+  const previous = project.system.titleScreen ?? defaultTitleScreenSettings();
+  project.system.titleScreen = {
+    ...previous, title: project.meta.title, backgroundResourceId: artwork.id,
+    backgroundFit: 'cover', backgroundRendering: 'pixelated', logoStyle: 'plain',
+    logoSubtitle: '작은 동료와 여덟 빛의 약속', menuStyle: 'plain',
+    layout: { ...previous.layout, titleX: 24, titleY: 30, menuX: 28, menuY: 132 },
+    effects: [], backgroundLayers: [], particles: undefined, sequence: undefined,
+    intro: undefined, logoShine: 'none', transition: undefined,
+  };
 }

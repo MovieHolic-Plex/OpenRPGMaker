@@ -18,6 +18,7 @@ import type {
   TitleScreenSettings,
 } from "@/project/types";
 import { el } from "@/util/dom";
+import { isEmeraldMonsterStyle } from '@/project/emeraldMonsterStyle';
 
 const TITLE_SCREEN_LOGICAL_WIDTH = 320;
 const TITLE_SCREEN_LOGICAL_HEIGHT = 240;
@@ -149,6 +150,7 @@ export function renderTitleScreen(
     class: "title-screen rm-title-screen rm-title-screen-editorial",
     dataset: { testid: "title-screen" },
   });
+  if (isEmeraldMonsterStyle(project)) title.dataset.monsterStyle = 'emerald';
   applyTitleScreenBackground(title, backgroundResourceId, project, {
     fit: settings.backgroundFit,
     rendering: settings.backgroundRendering,

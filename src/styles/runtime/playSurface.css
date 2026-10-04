@@ -331,3 +331,41 @@
 .cinematic-sequence[data-monster-style="emerald"] .cinematic-book-hint {
   width:auto;right:5%;bottom:6%;font-size:8px;color:#445450;z-index:3;
 }
+.player-layout.system-shell .rm-title-screen[data-monster-style="emerald"] {
+  background-color: #0b5264;
+  image-rendering: pixelated;
+  font-family: Galmuri11, monospace;
+}
+.player-layout.system-shell .rm-title-screen[data-monster-style="emerald"]::before {
+  background: transparent;
+}
+.player-layout.system-shell .rm-title-screen[data-monster-style="emerald"] .rm-title-screen-title[data-logo-style] {
+  left: 6%; top: 12%; width: 57%; max-width: 57%;
+  margin: 0; font: 800 24px/1.3 Galmuri11, monospace;
+  letter-spacing: 0; color: #f5efc5; text-shadow: 2px 2px #153b48;
+  -webkit-text-stroke: 0; overflow-wrap: anywhere;
+}
+.player-layout.system-shell .rm-title-screen[data-monster-style="emerald"] .rm-title-logo-subtitle {
+  left: 6%; top: 34%; width: 58%; color: #e8efce;
+  font: 12px/1.4 Galmuri11, monospace; text-shadow: 1px 1px #153b48;
+  letter-spacing: 0; transform: none;
+}
+.player-layout.system-shell .rm-title-screen[data-monster-style="emerald"] .rm-title-menu[data-menu-style="plain"] {
+  left: 6% !important; top: 48% !important; width: 42%;
+  min-width: 0; max-width: 42%; padding: 4px 6px; gap: 0;
+  background: #f7f5df; border: 2px solid #384946; border-radius: 0;
+  box-shadow: inset 0 0 0 2px #bbcabc, 2px 2px #153b48;
+  transform: none;
+}
+.player-layout.system-shell .rm-title-screen[data-monster-style="emerald"] .rm-title-menu[data-menu-style="plain"] .rm-title-menu-button {
+  color: #334940; font: 14px/20px Galmuri11, monospace;
+  min-height: 0; padding: 2px 4px 2px 16px; margin: 0;
+  background: transparent; border: 0; border-radius: 0;
+  text-align: left; letter-spacing: 0; text-shadow: none;
+}
+.player-layout.system-shell .rm-title-screen[data-monster-style="emerald"] .rm-title-menu[data-menu-style="plain"] .rm-title-menu-button.selected {
+  background: transparent; color: #334940; text-shadow: none;
+}
+.player-layout.system-shell .rm-title-screen[data-monster-style="emerald"] .rm-title-menu[data-menu-style="plain"] .rm-title-menu-button.selected::before {
+  content: '▶'; left: 2px; color: #334940; font-size: 10px;
+}
