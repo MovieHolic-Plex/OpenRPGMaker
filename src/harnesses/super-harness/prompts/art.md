@@ -39,3 +39,8 @@ modern-chipset (기본 5개 후보가 있는 준비된 state.json을 갖는 판)
 감독은 interior-props pool 또는 modern-chipset _run만 실행한다. pick/bake/설치는 실행하지 않는다.
 joseon-baram/jp-city는 아직 감독 직접 실행 어댑터가 없으므로 사유를 적고 막힘으로 반환한다.
 준비하지 못했다면 candidates=[]와 구체적인 reasons를 쓴다. 직접 그렸거나 완료했다고 주장하지 않는다.
+
+개념 폴더에 `parking-repair-brief.json`이 있으면 먼저 읽고 그 범위·후보 수·수정 상한을 따른다.
+기존 기본 풀(A~E 전체/13품목)을 그대로 재실행하지 않는다. 작은 자동차 기준 표본을 만들 수 있도록
+격리 하네스의 시드와 실행 범위를 준비한다. 실행기가 그 범위를 지킬 수 없으면 execution을 반환하지 말고
+정확한 미지원 이유를 기록한다. 조립 예시 검수 실패를 부품별 PASS로 덮어쓰지 않는다.

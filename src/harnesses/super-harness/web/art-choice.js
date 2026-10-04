@@ -6,10 +6,10 @@ export function renderChoices(host, initial, onUpdate, enlarge) {
   const active = {}, frame = {};
   function render() {
     host.innerHTML = `<h1>${esc(state.title)}</h1>
-      <p class="choice-lead">${state.complete ? '칩 선택을 저장했습니다.' : '예시를 보고 사용할 칩을 골라 주세요.'}</p>
-      <div class="choice-steps" aria-label="제작 진행"><span class="done">1 기획·검수 완료</span><span class="current">2 ${state.complete ? '칩 선택 완료' : '내 칩 선택'}</span><span>3 공용 등록·조립 연결</span><span>4 맵 제작·검수</span></div>
-      <div class="choice-notice">${state.complete ? '다음 작업: 선택한 칩의 공용 등록과 조립 연결이 필요합니다. 이 화면에서 자동 등록·맵 제작까지 실행되지는 않습니다.' : '① 후보 이름을 눌러 비교 → ② 예시와 검수 결과 확인 → ③ 이 후보 선택. 선택은 바로 저장되며 다른 후보로 바꿀 수 있습니다.'}
-      <div>${state.paused ? '전체 자동 실행은 멈춰 있습니다. 후보 보기와 선택 저장은 가능합니다.' : '선택한 뒤에도 공용 등록과 재료 승인이 끝나야 맵을 만듭니다.'}</div></div>
+      <p class="choice-lead">${state.blocked ? '고를 수 있는 수준까지 후보를 고쳐야 합니다.' : state.complete ? '칩 선택을 저장했습니다.' : '예시를 보고 사용할 칩을 골라 주세요.'}</p>
+      <div class="choice-steps" aria-label="제작 진행"><span class="done">1 기획·검수 완료</span><span class="current">2 ${state.blocked ? '조립 예시 수정 필요' : state.complete ? '칩 선택 완료' : '내 칩 선택'}</span><span>3 공용 등록·조립 연결</span><span>4 맵 제작·검수</span></div>
+      <div class="choice-notice">${state.blocked ? '현재는 선택할 수 있는 후보가 없는 항목이 있습니다. 부품 검수와 조립 예시 검수를 통과한 뒤 선택할 수 있습니다. 아래 예시와 수정 이유를 확인하세요.' : state.complete ? '다음 작업: 선택한 칩의 공용 등록과 조립 연결이 필요합니다. 이 화면에서 자동 등록·맵 제작까지 실행되지는 않습니다.' : '① 후보 이름을 눌러 비교 → ② 예시와 검수 결과 확인 → ③ 이 후보 선택. 선택은 바로 저장되며 다른 후보로 바꿀 수 있습니다.'}
+      <div>${state.paused ? (state.blocked ? '전체 자동 실행은 멈춰 있습니다. 후보 수정도 아직 실행 중이 아닙니다.' : '전체 자동 실행은 멈춰 있습니다. 후보 보기와 선택 저장은 가능합니다.') : '선택한 뒤에도 공용 등록과 재료 승인이 끝나야 맵을 만듭니다.'}</div></div>
       <p class="choice-progress">${state.selectedCount} / ${state.total}개 선택 완료</p>
       <p role="status" class="choice-message">${esc(message)}</p><div class="choice-groups"></div>`;
     if (!state.groups.length) {
@@ -28,7 +28,7 @@ export function renderChoices(host, initial, onUpdate, enlarge) {
         <div class="choice-states" role="group" aria-label="예시 상태">${candidate.images.map((r,i)=>`<button data-frame="${i}" aria-pressed="${i===idx}">${esc(r.label)}</button>`).join('')}</div></div>
         ${im ? `<button class="scene-open" aria-label="${esc(group.title+' '+candidate.title)} 예시 확대"><img class="choice-scene" src="${imageUrl(im)}" alt="${esc(candidate.title+' '+im.label)}"></button>` : '<p class="choice-error">그림이 바뀌어 예시를 표시할 수 없습니다. 새 후보 준비가 필요합니다.</p>'}
         <p class="choice-caption">${esc(candidate.caution)} 그림을 누르면 확대됩니다.</p>
-        ${candidate.reasons.length ? `<details class="choice-reasons"><summary>선택할 수 없는 이유 · 검수 지적 ${candidate.reasons.length}건</summary><ul>${candidate.reasons.map(r=>`<li>${esc(r)}</li>`).join('')}</ul></details>` : ''}
+        ${candidate.reasons.length ? `<details class="choice-reasons" ${state.blocked ? 'open' : ''}><summary>선택할 수 없는 이유 · 검수 지적 ${candidate.reasons.length}건</summary><ul>${candidate.reasons.map(r=>`<li>${esc(r)}</li>`).join('')}</ul></details>` : ''}
         <div class="choice-actions"><button class="primary choose-candidate" ${busy || !candidate.eligible || candidate.selected ? 'disabled' : ''}>${busy ? '저장 중…' : candidate.selected ? '✓ 선택 저장됨' : `${esc(candidate.title)} 선택`}</button>${candidate.selected ? '<button class="clear-choice">선택 취소</button>' : ''}${candidate.sheet ? '<button class="show-sheet">원본 칩 보기</button>' : ''}<span>${candidate.eligible ? '선택 후에도 변경할 수 있습니다.' : '검수 통과 후 선택할 수 있습니다.'}</span></div>`;
       section.insertBefore(section.querySelector('.choice-actions'), section.querySelector('.scene-open') || section.querySelector('.choice-caption'));
       section.querySelectorAll('[data-candidate]').forEach(b => b.onclick = () => {active[group.id]=b.dataset.candidate;frame[group.id]=0;render();});

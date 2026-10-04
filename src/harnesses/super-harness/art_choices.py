@@ -57,7 +57,7 @@ def prepare(data, cid):
             if digest(contract_path) != receipt['contractSha256']:
                 raise ValueError('주차장 부품 명세가 검수 이후 바뀌었습니다.')
             contract = read(contract_path)
-            group = {'id': 'parking-kit', 'title': '주차장 칩 세트', 'description': '13품목을 함께 고릅니다. 모든 후보를 같은 작은 배치에 놓아 비교합니다.', 'candidates': []}
+            group = {'id': 'parking-kit', 'requiresContextReview': True, 'title': '주차장 칩 세트', 'description': '13품목을 함께 고릅니다. 모든 후보를 같은 작은 배치에 놓아 비교합니다.', 'candidates': []}
             for row in receipt['candidates']:
                 letter = row['candidate']
                 png = safe(root, str((receipt_path.parent / (letter + '.png')).relative_to(root)))
@@ -138,6 +138,8 @@ def view(data, cid):
     groups = document.get('groups', [])
     result_file = Path(data) / 'concepts' / cid / 'art-result.json'
     current = result_file.is_file() and digest(result_file) == document.get('artResultSha256')
+    context_path = Path(data) / 'concepts' / cid / 'art-context-review.json'
+    context_reviews = read(context_path).get('groups', {}) if context_path.is_file() else {}
     saved = selections(cid)
     count = 0
     output = []
@@ -146,13 +148,28 @@ def view(data, cid):
         g['candidates'] = []
         for candidate in group['candidates']:
             item = {k: candidate[k] for k in ('id', 'title', 'summary', 'reasons', 'caution')}
-            token = fingerprint(candidate)
+            candidate_token = fingerprint(candidate)
+            context = context_reviews.get(group['id'], {}).get(candidate['id'], {})
+            needs_context = group.get('requiresContextReview', False)
+            context_ok = not needs_context
+            if needs_context:
+                matches = context.get('fingerprint') == candidate_token
+                checks = context.get('checks', {})
+                context_ok = (matches and context.get('verdict') == 'PASS' and
+                    all(isinstance(checks.get(k), dict) and checks[k].get('verdict') == 'PASS'
+                        and len(str(checks[k].get('evidence', '')).strip()) >= 12
+                        for k in ('identity', 'scale', 'attachments', 'circulation', 'style')))
+                if not context_ok:
+                    explanation = context.get('reasons', []) if matches else []
+                    item['reasons'] = list(item['reasons']) + (explanation or ['조립한 공간의 정체성·축척·접합·동선·화풍 검수가 필요합니다.'])
+                    item['summary'] = '부품 검수 통과 · 조립 예시 수정 필요' if candidate['passed'] else item['summary']
+            token = fingerprint({'candidate': candidate, 'contextReview': context}) if needs_context else candidate_token
             valid = current
             try:
                 for r in candidate['sources'] + candidate['images'] + [candidate['sheet']]: verified(root, r)
             except (ValueError, OSError, KeyError): valid = False
-            item.update(fingerprint=token, eligible=valid and candidate['passed'] and c['stage'] == 'art-review', stale=not valid)
-            item['selected'] = valid and candidate['passed'] and saved.get(group['id'], {}).get('fingerprint') == token
+            item.update(fingerprint=token, eligible=valid and candidate['passed'] and context_ok and c['stage'] == 'art-review', stale=not valid)
+            item['selected'] = valid and candidate['passed'] and context_ok and saved.get(group['id'], {}).get('fingerprint') == token
             if item['selected']: count += 1
             def image(r):
                 return {'path': str((root / r['path']).relative_to(data)), 'v': r['sha256'], 'label': r.get('label', '')}
@@ -162,6 +179,7 @@ def view(data, cid):
         g['staleSelection'] = group['id'] in saved and not any(i['selected'] for i in g['candidates'])
         output.append(g)
     return {'id': cid, 'title': c['title'], 'stage': c['stage'], 'paused': store.setting('paused') == '1',
+            'blocked': any(not any(i['eligible'] or i['selected'] for i in g['candidates']) for g in output),
             'groups': output, 'selectedCount': count, 'total': len(groups), 'complete': bool(groups) and count == len(groups)}
 
 
@@ -183,6 +201,9 @@ def choose(data, cid, body):
         # The native image/receipt references are durable input to public registration.
         raw = read(Path(data) / 'concepts' / cid / 'art-choices.json')
         chosen = next(c for g in raw['groups'] if g['id'] == group['id'] for c in g['candidates'] if c['id'] == candidate['id'])
+        context_path = Path(data) / 'concepts' / cid / 'art-context-review.json'
+        if context_path.is_file():
+            chosen = dict(chosen, contextReview=read(context_path).get('groups', {}).get(group['id'], {}).get(candidate['id']))
         with store.connect() as con:
             con.execute('INSERT OR REPLACE INTO art_selections VALUES(?,?,?,?,?,?)',
                         (cid, group['id'], candidate['id'], candidate['fingerprint'], json.dumps(chosen, ensure_ascii=False), store.now()))
