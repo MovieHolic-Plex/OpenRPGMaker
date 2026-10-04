@@ -18,7 +18,7 @@
 | 그림 | `relief/render.ts` · `styles.ts` · `rampArt.json` | 절벽·경사로·계단·다리 판 그리기, 양식(`RELIEF_STYLES`, 칩셋 id → 양식 `reliefStyleForTileset`), 경사로 도트. `window` 옵션(잘라 낸 격자를 절대 좌표 무늬로 굽기), `reliefPadPx`(굽지 않고 pad 계산) |
 | 부분 굽기 | `relief/window.ts` | `reliefGrids`(다듬은·깎은 높이, relief·단 서명마다 한 번), `planReliefPatch`(바뀐 칸 → 창·덮어쓸 사각형, pad 가 바뀌면 버퍼 밀기 + 맨 위 띠), `applyReliefPatch`. 전체 굽기와 화소 일치를 `scripts/check-relief-window.mts` 가 확인한다 |
 | 띠 텍스처 | `player/reliefStrips.ts` | 그림을 줄마다 윗면(under)·벽(over) 띠로 잘라 페이지 텍스처 몇 장에 쌓는다(런타임). `reliefFieldOf` 는 「높이가 있는가」를 relief 객체마다 한 번만 잰다 |
-| 편집기 띠 | `editor/reliefLiveStrips.ts` | 전체 그림 버퍼를 들고 붓질마다 바뀐 창만 다시 굽고, 띠를 (줄, 윗면/벽, 256px 열 묶음) 텍스처로 나눠 덮어쓴 사각형에 걸린 것만 다시 올린다 |
+| 편집기 띠 | `editor/reliefLiveStrips.ts` · `relief/paged.ts` | 화면 주변 땅 좌표 페이지를 보존하고 붓질/팬에 필요한 페이지만 굽는다. (줄, 윗면/벽, 256px 열 묶음) 텍스처의 바뀐 상자만 올린다 |
 | 런타임 | `player/playSceneRelief.ts` | 띠·벽면 장식 배치, depth 규칙, 캐릭터 들림(`installReliefSpriteLift`), 카메라 위 확장(`reliefTopOverhangPx`) |
 | 런타임 연결 | `playSceneMapRuntime.ts` | `renderTiles` 가 `renderReliefLayer` 를 먼저 부르고, `placeMapTileImage`·`renderShadow` 가 들린 칸 타일을 올린다. 타일 서명(`reliefSignature`)에 relief 가 들어간다 |
 | 편집기 연결 | `EditScene.ts` · `editSceneRender.ts` · `editSceneEventMarkers.ts` | 절벽 컨테이너(`reliefLayer`)에 띠와 들린 하층 타일을 줄 depth 로 섞는다. 이벤트 그림은 이벤트 레이어에서만, 들림만큼 올린다 |
@@ -74,8 +74,12 @@
 기억한다. 따라서 같은 세대의 호버는 배열을 다시 읽지 않고, levels/ramps/style/wallDecor의
 제자리 쓰기·undo·프로젝트 교체는 새 세대에서 다시 읽는다. 게시 전에 기하를 조회하는
 쓰기 도우미는 `invalidateReliefRevision`/`invalidateReliefSlopes`를 호출한다.
-버전 없는 입력은 계속 내용 검사한다. 내보내기 플레이어는 쓰기 API가 없는 정적 프로젝트를
+`prepareReliefRead`는 현재 저장소의 맵 객체에만 세대를 연결한다. 얕은 초안이 이미 연결된 relief를
+공유하면 그 연결을 풀어, 게시 전 제자리 변경도 내용으로 검사한다. 버전 없는 입력은 계속 내용 검사한다. 내보내기 플레이어는 쓰기 API가 없는 정적 프로젝트를
 읽으며, 편집 가능한 store와 별도의 읽기 전용 계약이다. picking의 탐색 상한은 `field.maxLift`다.
+편집기 타일/벽 장식은 `screen.ts`의 revision-aware `reliefCellLiftPx`를 쓴다. 범위 밖 파일인
+`player/reliefStrips.ts`의 `reliefFieldOf`에는 여전히 identity-only presence 캐시가 남아 있다.
+런타임에서 동일 relief 객체의 flat↔hill 변경까지 지원하려면 소유자가 이 캐시를 고쳐야 한다.
 
 지면은 같은 입력이면 기존 surface/fingerprint를 그대로 쓴다. lower 셀 통지는 1층·2층·그림자·
 스택의 해당 지문을 갱신하고 8이웃 합성 캐시를 비운다. relief만/upper만 바뀌면 ground 서명은
@@ -87,6 +91,8 @@
 명시적으로 unregister한다. 버킷과 좌표를 함께 갱신하므로 카메라가 같은 창에 있거나 다른 버킷을
 방문하지 않아도 죽은 GameObject가 보존되지 않는다. 숨김은 active를 변경하지 않고 물 애니메이션을
 pause/resume한다. 마지막 자식을 제거한 청크는 실제 부모 정체성으로 찾아 registry에서 제거하고 파괴한다.
+relief 페이지 팬 갱신은 lazy 타일 생성과 독립적으로 실행한다. 작은 길쭉한 맵도 화면 밖 페이지를
+복원하며, resident 페이지 범위가 같으면 `syncView`는 페이지 순회 전에 반환한다.
 
 조수 구독용 추가 계약은 `relief/changes.ts`의 `ReliefCellChange.reliefCells`다. `commitReliefEdit`은
 잠금 복원을 적용한 최종 relief의 원시 변경 칸을 이 필드로 통지한다. 기존 `cells`는 실제 바닥/상층
@@ -103,7 +109,40 @@ culling(추적 수·버킷 수·죽은 수), resident 타일 객체 수, 청크 
 
 회귀: `test/reliefUx2Pages.test.ts`는 페이지 RGBA·주인 행·under/over와 전체 렌더,
 재질/계단/경사로/다리, pad 증감, 왕복 팬의 보존량, 게시 전 제자리 서명과 warm 읽기 비용을 비교한다.
+`test/reliefUx2Contracts.test.ts`는 lower overlay·shadow와 upper-only ground 재사용, 세대별 한 번 해시,
+얕은 초안 서명과 잠금 적용 후 조수 descriptor를 다룬다. `test/reliefUx2Residents.test.ts`는 destroy/swap
+버킷 좌표, 실제 부모의 빈 청크 제거, nonempty lower/upper 팬, 후보 창과 동일 객체의 첫/마지막 언덕을 다룬다.
 이번 세션은 테스트/게이트/typecheck/브라우저를 실행하지 않는다. native 기하/raster QA는 통합 후 수행한다.
+
+### 통합 후 브라우저 QA 레시피 (실행 담당자용)
+
+1. 하나의 disposable 48×48 fixture와 96×96 fixture를 차례로 쓴다. 높이 ≤4, 작은 native atlas,
+   유효한 nonempty lower/upper 타일, 2층 overlay와 shadow를 넣고 화면은 맵보다 작게 확대한다.
+   upper가 전부 -1이면 native ground가 lower를 소유해 resident 타일 객체가 0일 수 있으므로
+   그 상태에서 culling leak 검사를 합격으로 보지 않는다. 별도로 96×16 작은 길쭉한 맵의 팬도 본다.
+2. atlas/JIT를 한 번 데운 뒤 같은 칸 안에서 100번 이동, 칸 경계 이동, 변경 없는 redraw를 세 차례 기록한다.
+   content hash의 warm 배열 읽기 0, ground surface/cells 재사용과 mode= same을 확인한다.
+   0→2단 첫 언덕과 마지막 2→0단, 최고 높이 2→4→1단을 각각 기록한다. raw relief와 타일 descriptor를
+   따로 확인하고 잠긴 칸은 reliefCells에 들어가지 않는지 본다. style의 reliefCells 부재는 전체 변경이다.
+3. 한 칸의 2층 overlay와 shadow를 lower descriptor로 바꾸면 ground 서명/화소가 바뀌어야 한다.
+   3층/4층만 바꾸면 ground는 같아야 한다. undo/redo와 범위 없는 맵 복원도 본다. 얕은 초안에서
+   levels/ramps/style/wallDecor와 장식 속성을 제자리 수정해 기본 서명이 달라지는지 확인한다.
+4. 평지와 언덕에서 여섯 위치를 지나는 serpentine 팬을 20바퀴 돈다. 중간 layer/zoom/map 변경은 하지 않는다.
+   시작·첫 탐색 후·귀환 후·마지막의 `__oprnEditReliefStats()`를 기록한다. culling.tracked는 실제
+   residentTileObjects와 맞고 0보다 커야 한다. culling.destroyed와 emptyChunks는 0이며,
+   backing.pages/bytes와 chunks는 화면 범위에 따라 오르내려도 반복 탐색 횟수에 따라 늘지 않아야 한다.
+   JS heap과 별도로 ArrayBuffer/canvas/GPU를 본다. heap snapshot은 latency 기록과 분리한다.
+5. 페이지 x/y seam, 북쪽 maxpad 원점, 네 방향 유효 경사로·계단·다리, 벽 장식,
+   들린 upper·overlay·shadow, under/over 주인 행과 picking을 본다. 팬 중 pad를 증감하고 떠났다가
+   돌아와 그림이 같은지 확인한다. retention 측정을 마친 뒤에만 `__oprnEditReliefRebuild()`를 불러
+   96×96 이하 전체 기준과 비교한다(이 호출은 텍스처/카운터를 바꾼다).
+6. runtime 확인은 별도의 `player.html` 내보내기 하네스에서 같은 작은 fixture를 쓴다.
+   destroy 후 동일 카메라 창, 새 offscreen 타일 숨김, 물 애니메이션 pause/resume,
+   맵 재진입과 relief 통행/캐릭터 depth를 본다. 실행 HEAD, fixture/zoom/renderer와 raw trace를 남긴다.
+
+초기 ground 지문/기하 격자는 여전히 O(WH) 셀 저장이며, 기하가 바뀐 때의 patch-plan 비교도 전체 격자를 본다.
+이 수정은 warm 서명·ground 준비와 보존 픽셀·죽은 객체/빈 청크를 줄인다. total 메모리/프레임 지연의
+상한을 입증하지 않으며, 맵 가장자리의 전체 폭 임시 dependency raster도 따로 계측해야 한다.
 
 ## 지형 설치 확장 (2026-10-03)
 

@@ -13,7 +13,7 @@ import { repaintEditGrid } from "@/editor/editSceneViewChrome";
 import { invalidateCullingWindow, resetCullableTiles, trackCullableTile, untrackCullableTile } from "@/player/playSceneTileCulling";
 import { mapTileSize } from "@/project/tileGeometry";
 import type { GameMap, MapId } from "@/project/types";
-import { reliefCellLiftPx } from "@/player/reliefStrips";
+import { reliefCellLiftPx } from "@/project/relief/screen";
 import { RELIEF_MAX_LEVEL } from "@/project/relief/types";
 import { reliefPaintsCell } from "@/project/relief/screen";
 import { prepareReliefRead, reliefGroundAvailable, reliefTilesetImage } from "./reliefGroundSurface";

@@ -169,7 +169,7 @@ import { bindReliefRevision } from "@/project/relief/revision";
 import { copyRelief, reliefIsFlat } from "@/project/relief/edit";
 import { reliefReadSignature as reliefSignature, reliefTileSlotChangedCells } from "@/project/relief/screen";
 import type { ReliefData } from "@/project/relief/types";
-import { reliefCellLiftPx } from "@/player/reliefStrips";
+import { reliefCellLiftPx } from "@/project/relief/screen";
 import { ReliefLiveStrips } from "@/editor/reliefLiveStrips";
 import { tilesetTextureKey } from "@/editor/tilesetImage";
 
@@ -900,7 +900,6 @@ export class EditScene extends PhaserRuntime.Scene {
           backgroundPreview: mapBackgroundPreviewEnabled(),
         });
         this.lastMaterializedTileWindowKey = nextWindowKey;
-        this.reliefStrips?.syncView();
       }
     }
     // 청크 절전 — 화면 밖 청크 컨테이너를 통째로 숨겨 프레임당 자식 순회를 화면 근처로 묶는다.
@@ -910,7 +909,7 @@ export class EditScene extends PhaserRuntime.Scene {
       const lastCx = chunkCoord(Math.floor((view.x + view.width) / tileSize) + 2);
       const firstCy = chunkCoord(Math.floor(view.y / tileSize) - 2);
       const lastCy = chunkCoord(Math.floor((view.y + view.height) / tileSize) + 2);
-      // 청크는 clear() 로만 사라지고(redraw 가 키를 비운다) 새 청크는 수를 바꾼다 — 창과 수가 같으면 결과도 같다.
+      // 빈 청크는 eviction 때 사라지고 새 청크는 materialize 때 생긴다.
       const chunkKey = `${firstCx},${lastCx},${firstCy},${lastCy},${this.tileChunks.size}`;
       if (chunkKey !== this.lastChunkVisibilityKey) {
         this.lastChunkVisibilityKey = chunkKey;
@@ -924,6 +923,9 @@ export class EditScene extends PhaserRuntime.Scene {
         }
       }
     }
+    // Relief paging also follows small/non-lazy maps. Its page-window key
+    // avoids work while the camera remains inside the same resident page range.
+    this.reliefStrips?.syncView();
     syncTileCulling(this, view, this.activeTileSize());
   }
 

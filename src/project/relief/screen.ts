@@ -95,6 +95,12 @@ export function cellLift(field: ReliefLiftField, x: number, y: number): number {
   return field.elevation[y * field.width + x] ?? 0;
 }
 
+/** Editor cell/decor placement uses the revision-aware presence check. Avoid
+ * the runtime wrapper's older identity-only presence memo for mutable inputs. */
+export function reliefCellLiftPx(relief: ReliefData | undefined, x: number, y: number, tileSize: number): number {
+  return hasRelief(relief) ? cellLift(reliefLiftField(relief), x, y) * tileSize : 0;
+}
+
 /** Height under a character's physical foot, not under its logical cell centre. */
 export function footLift(field: ReliefLiftField, x: number, y: number): number {
   const cx = Math.max(0, Math.min(field.width - 1, Math.floor(x))), cy = Math.max(0, Math.min(field.height - 1, Math.floor(y - 1e-7)));

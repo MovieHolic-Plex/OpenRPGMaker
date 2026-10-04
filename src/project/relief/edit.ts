@@ -143,7 +143,11 @@ function writeGrid(r: ReliefData, h: HeightGrid): boolean {
   return changed;
 }
 
-export const reliefIsFlat = (r: ReliefData | undefined) => !r || (!reliefState(r).elevated && !reliefState(r).bridge);
+export const reliefIsFlat = (r: ReliefData | undefined) => {
+  if (!r) return true;
+  const state = reliefState(r);
+  return !state.elevated && !state.bridge;
+};
 
 export const gridMax = (h: HeightGrid) => h.reduce((m, row) => Math.max(m, ...row), 0);
 

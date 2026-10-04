@@ -6,7 +6,7 @@ import { layerTileAt, shadowAt } from "@/project/mapLayers";
 import { tileStackAt } from "@/project/mapOverlayTiles";
 import { drawMapTileCell, type TilesetCanvasImage } from "./mapTileDrawCore";
 import { hasRelief } from "@/project/relief/walk";
-import { bindReliefRevision } from "@/project/relief/revision";
+import { bindReliefRevision, unbindReliefRevision } from "@/project/relief/revision";
 import { store } from "@/project/store";
 
 export interface GroundRaster { readonly width: number; readonly height: number; readonly data: ArrayLike<number> }
@@ -23,7 +23,11 @@ const boundReliefs = new WeakMap<object, string>();
 export function prepareReliefRead(map: GameMap): void {
   observeGroundChanges();
   const relief = map.relief;
-  if (!relief || reliefStore.getCurrent().maps[map.id]?.relief !== relief) return;
+  if (!relief) return;
+  if (reliefStore.getCurrent().maps[map.id] !== map) {
+    if (boundReliefs.delete(relief)) unbindReliefRevision(relief);
+    return;
+  }
   if (boundReliefs.get(relief) === map.id) return;
   boundReliefs.set(relief, map.id);
   const id = map.id, project = reliefStore.getVersionToken ? undefined : reliefStore.getCurrent();

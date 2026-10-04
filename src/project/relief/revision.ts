@@ -13,6 +13,14 @@ export function bindReliefRevision(relief: ReliefData, read: () => string | unde
   readers.set(relief, read);
 }
 
+/** A shallow draft may share a previously committed relief object. Its writes
+ * are not published yet, so stop trusting the committed revision while reading
+ * that input. The next committed read can bind the writer again. */
+export function unbindReliefRevision(relief: ReliefData): void {
+  readers.delete(relief);
+  states.delete(relief);
+}
+
 /** For in-place geometry writers that query the draft before publishing it. */
 export function invalidateReliefRevision(relief: ReliefData): void {
   epochs.set(relief, (epochs.get(relief) ?? 0) + 1);

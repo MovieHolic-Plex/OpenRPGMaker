@@ -12,7 +12,7 @@ import { renderRelief, type ReliefGroundSurface } from "@/project/relief/render"
 import { reliefRenderOptions, reliefReadSignature as reliefSignature } from "@/project/relief/screen";
 import { RELIEF_TILE, type ReliefData } from "@/project/relief/types";
 import { planReliefPatch, reliefGrids, type ReliefScene } from "@/project/relief/window";
-import { ReliefPagedImage, type ReliefPageView } from "@/project/relief/paged";
+import { ReliefPagedImage, RELIEF_PAGE, type ReliefPageView } from "@/project/relief/paged";
 
 /** 띠를 가로로 자르는 폭(px, 16px 그림 기준). 붓 한 번이 건드리는 띠 수와 텍스처 수 사이의 타협. */
 const COLUMN = 256;
@@ -55,6 +55,7 @@ export class ReliefLiveStrips {
   private tileSize = 0;
   private revision = "";
   private groundSignature: number | undefined;
+  private viewKey = "";
   private readonly strips = new Map<number, Strip>();
   private serial = 0;
   private groundAlpha = 1;
@@ -97,9 +98,11 @@ export class ReliefLiveStrips {
     const plan = forceFull || this.groundSignature !== ground?.signature ? null : planReliefPatch(this.scene, scene, this.image);
     // The full raster remains an independent reference for small parity fixtures.
     // Production fallbacks bake every resident page, never a map-wide pixel image.
-    if (forceFull && relief.width * relief.height > 96 * 96) throw new RangeError("Full relief reference is limited to 96×96 QA fixtures");
+    if (forceFull && (relief.width > 96 || relief.height > 96)) throw new RangeError("Full relief reference is limited to 96×96 QA fixtures");
     const reference = forceFull ? renderRelief(scene.grids.eff, scene.opts) : undefined;
-    const patch = this.image.sync(scene, revision, this.viewport(), reference, plan === "same" ? [] : plan?.windows);
+    const view = this.viewport();
+    const patch = this.image.sync(scene, revision, view, reference, plan === "same" ? [] : plan?.windows);
+    this.viewKey = this.pageViewKey(view);
     this.scene = scene; this.revision = revision; this.groundSignature = ground?.signature;
     if (patch.shift) for (const strip of this.strips.values()) { strip.y0 += patch.shift; strip.y1 += patch.shift; }
     const updated = forceFull ? this.rebuildAll() : this.redrawRects(patch.rows, patch.rects);
@@ -109,8 +112,15 @@ export class ReliefLiveStrips {
   /** Camera movement only prepares newly resident pages, using retained inputs. */
   syncView(): void {
     if (!this.image || !this.scene) return;
-    const patch = this.image.sync(this.scene, this.revision, this.viewport());
+    const view = this.viewport(), key = this.pageViewKey(view);
+    if (key === this.viewKey) return;
+    const patch = this.image.sync(this.scene, this.revision, view);
+    this.viewKey = key;
     if (patch.rects.length) this.redrawRects(patch.rows, patch.rects);
+  }
+
+  private pageViewKey(view: ReliefPageView | undefined): string {
+    return view ? `${Math.floor(view.x / RELIEF_PAGE)},${Math.floor(view.y / RELIEF_PAGE)},${Math.ceil((view.x + view.width) / RELIEF_PAGE)},${Math.ceil((view.y + view.height) / RELIEF_PAGE)}` : "all";
   }
 
   get backingStats(): { pages: number; bytes: number; pad: number; originY: number; strips: number } {
@@ -130,7 +140,7 @@ export class ReliefLiveStrips {
     this.strips.clear();
     this.image = null;
     this.scene = null;
-    this.revision = ""; this.groundSignature = undefined;
+    this.revision = ""; this.groundSignature = undefined; this.viewKey = "";
   }
 
   /** 씬이 내려가 이미지가 이미 파괴됐을 때 — 참조만 버리고 텍스처를 지운다. */
@@ -139,7 +149,7 @@ export class ReliefLiveStrips {
     this.strips.clear();
     this.image = null;
     this.scene = null;
-    this.revision = ""; this.groundSignature = undefined;
+    this.revision = ""; this.groundSignature = undefined; this.viewKey = "";
   }
 
   private columns(): number {
