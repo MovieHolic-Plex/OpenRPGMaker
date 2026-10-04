@@ -410,7 +410,7 @@ function renderPick() {
   h += `<div class="card redocard ${rbusy ? 'busy' : ''}" data-redo="1"><div class="top"><span class="key">${r.runs.length + 1}</span><span class="dir">다시 뽑기</span></div>
     <div class="redobig">${rbusy ? '그리는 중…' : '↻<br>다시 뽑기'}<small>메모·버린 후보가 다음 판으로 간다</small></div></div>`;
   h += `</div>`;
-  const pick = S.sel && S.sel !== cur ? S.sel : null;
+  const pick = S.sel && S.sel !== cur && !it.set ? S.sel : null;   // 묶음은 띠 자체가 나란히 보기다
   if (pick) h += `<div class="cmp bg-${S.bg}"><h4>나란히 — 지금 그림 · 고른 후보 (Space 를 누르고 있으면 고른 자리에 지금 그림이 겹쳐 보인다)</h4><div class="row">
       <div class="col"><div class="pic"><img id="cmpA" src="${curSrc(it)}"></div>지금</div>
       <div class="col"><div class="pic"><img id="cmpB" src="/c/${it.slug}/${pick}.png"></div>고른 것 · ${esc(pickName(pick))}</div>
@@ -628,9 +628,9 @@ function startAnims(m, it) {
   clearInterval(S._anim);
   if (!it.set || it.set.derive !== 'loop') return;
   const L = [];
-  m.querySelectorAll('img[data-loop]').forEach(img => {
-    const cv = document.createElement('canvas'); cv.className = 'anim'; img.closest('.pic').after(cv);
-    const go = () => { const z = Math.max(1, Math.round(img.getBoundingClientRect().width / img.naturalWidth)) * 2, f = it.set.slots[0];
+  m.querySelectorAll('.card:not(.cur) img[data-loop]').forEach(img => {   // 출발 그림(원본만 복사한 띠)은 움직임이 없다
+    const cv = document.createElement('canvas'); cv.className = 'anim'; cv.title = '움직임 미리보기'; img.closest('.pic').after(cv);
+    const go = () => { const z = Math.max(1, Math.round(img.getBoundingClientRect().width / img.naturalWidth)), f = it.set.slots[0];
       cv.width = f.w * z; cv.height = f.h * z; L.push({img, cv, z}); };
     img.addEventListener('fitted', go, {once:true}); if (img.complete && img.naturalWidth && img.style.width) go();
   });
