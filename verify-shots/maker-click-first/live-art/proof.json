@@ -1,0 +1,80 @@
+{
+  "realProvider": true,
+  "projectWrites": 0,
+  "requests": [
+    {
+      "kind": "image",
+      "model": "gemini-3.1-flash-image",
+      "characters": 1606
+    },
+    {
+      "kind": "vision",
+      "model": "gemini-3.8-flash",
+      "characters": 1404742
+    },
+    {
+      "kind": "image",
+      "model": "gemini-3.1-flash-image",
+      "characters": 2485
+    },
+    {
+      "kind": "vision",
+      "model": "gemini-3.8-flash",
+      "characters": 1280506
+    },
+    {
+      "kind": "image",
+      "model": "gemini-3.1-flash-image",
+      "characters": 2943
+    },
+    {
+      "kind": "vision",
+      "model": "gemini-3.8-flash",
+      "characters": 1245158
+    }
+  ],
+  "responses": [
+    {
+      "kind": "image",
+      "status": 200
+    },
+    {
+      "kind": "vision",
+      "status": 200
+    },
+    {
+      "kind": "image",
+      "status": 200
+    },
+    {
+      "kind": "vision",
+      "status": 200
+    },
+    {
+      "kind": "image",
+      "status": 200
+    },
+    {
+      "kind": "vision",
+      "status": 200
+    }
+  ],
+  "errors": [],
+  "verdicts": [
+    {
+      "finish": "stop",
+      "text": "```json\n{\n  \"checks\": {\n    \"pixelGrid\": false,\n    \"limitedPalette\": false,\n    \"composition\": true,\n    \"matchesChoices\": true,\n    \"identity\": false,\n    \"noText\": true\n  },\n  \"findings\": [\n    \"Identity violation: Protagonist appearance is explicitly unset ('인물은 아직 정하지 않았다'), but two human characters were invented and placed on the bridge. Redraw the scene completely devoid of human figures, conveying romance through atmospheric and environmental details instead.\",\n    \"Pixel grid failure: Art lacks a uniform 320x180 pixel grid, displaying inconsistent pixel scaling, sub-pixel curves, and dense high-resolution noise on the foliage, moon, and water. Redraw on a strict 320x180 native grid with uniform square pixel clusters and hard stair-step edges.\",\n    \"Limited palette failure: The color count far exceeds the 32-color constraint, using smooth color gradations across the night sky, water, and blossom clusters. Reduce to a disciplined 32-color palette with 2-4 flat shade ramps per material and deliberate dithering.\"\n  ]\n}\n```"
+    },
+    {
+      "finish": "stop",
+      "text": "```json\n{\n  \"checks\": {\n    \"pixelGrid\": false,\n    \"limitedPalette\": false,\n    \"composition\": true,\n    \"matchesChoices\": false,\n    \"identity\": true,\n    \"noText\": true\n  },\n  \"findings\": [\n    \"Pixel grid integrity failed: visible mixels, non-uniform pixel cluster sizes, and non-integer scaling artifacts appear throughout the cobblestone path, bridge railings, and foliage rather than a strict, locked 320x180 raster grid.\",\n    \"Palette discipline failed: material shading contains excessive stray color values and sub-pixel blending instead of strict 2-4 shade ramps per surface mapped to a coherent 32-color master palette.\",\n    \"Latest choice '관계·연애' (Romance / Relationship) is not boldly depicted: the scene merely repeats the baseline moonlit garden concept without specific narrative props or staging establishing a romantic rendezvous (such as paired seats with a shared blanket, a love token, two cups, or an intimate picnic setup without inventing characters).\",\n    \"Redraw instructions: Re-render the scene locked precisely to a true 320x180 canvas scaled with integer nearest-neighbor; enforce strict stair-stepped lines on the bridge and stonework; constrain color ramps to a strict indexed palette under 32 tones; boldly stage the romantic theme in the foreground/midground using intimate narrative props (e.g., paired cushions, an open love letter, two flickering lanterns, or intertwined rose arches) while keeping human figures absent as the protagonist remains unset.\"\n  ]\n}\n```"
+    },
+    {
+      "finish": "stop",
+      "text": "```json\n{\n  \"checks\": {\n    \"pixelGrid\": true,\n    \"limitedPalette\": true,\n    \"composition\": true,\n    \"matchesChoices\": true,\n    \"identity\": true,\n    \"noText\": true\n  },\n  \"findings\": []\n}\n```"
+    }
+  ],
+  "artState": "accepted",
+  "buttonsEnabled": true,
+  "passed": true
+}

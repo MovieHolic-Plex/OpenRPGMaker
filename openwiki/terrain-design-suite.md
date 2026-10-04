@@ -196,3 +196,19 @@ Undo/Redo/Esc와 편집기 시야 ON/OFF를 확인한다.
 물체 뒤 NPC/고지 시야/OFF, 경계의 중간 알파 값과 이동 중 NPC의 점진적 투명도를 기록한다.
 `scripts/capture/save-roof-fog-fixture.mjs`는 별도 SQLite 폴더를 닫아 다시 열고 타일/집 정의/부위/배치/규칙을 비교한다.
 증거는 `verify-shots/roof-fog/`. 2배속 영상은 실제 Chromium 프레임이다. 사용자 실맵을 시연으로 덮어쓰지 않는다.
+
+## AI 조수의 동일 도구 사용 (2026-10-04)
+
+`src/editor/tools/terrainTools.ts`는 윤곽/능선/계곡/호수/혼합/군집/잠금, 빠른 집, 도로, 매끈한 경사로를
+위 편집기 계획기로 저작한다. `inspect_terrain`은 집 전체와 문 앞의 평탄성을 읽고,
+`check_terrain_access`는 `inspectTerrainRoute`로 출발점부터 문 앞 칸 자체까지 실제 통행을 검사한다.
+외관 배치만 하며 실내·문 이벤트를 자동 생성하지 않는다. 시야 차단 기본 OFF와 맵의 기존 설정을 유지한다.
+생성 집 정의도 등록하므로 SQLite 재로드 뒤 기존 집 부위/지붕 편집 경로가 살아 있다.
+조수 지도 그림에는 `reliefMapView.ts`로 같은 절벽 줄 띠·타일 들림·매끈한 비탈을 포함한다.
+
+실제 모델에게 64×48 버들항 지도에 복잡한 절벽과 서로 다른 고지 집 세 채를 요구한 결과,
+연결 전에는 집/경사로가 0이었고 연결 뒤에는 높이 4·6·9의 평평한 집 3채,
+매끈한 경사로 44칸·계단 0칸·문 앞 도달 3/3을 기록했다. 저장 후 같은 SQLite를 다시 읽어 지도가 동일했다.
+`scripts/capture/capture-terrain-assistant-runtime.mjs`는 그 모델 결과를 출하 player.html/shim으로 내보내고
+각 출발점부터 실제 충돌을 사용하는 이동 경로로 세 문 앞까지 걸어간다(목적지 순간 이동/through 없음).
+`verify-shots/terrain-assistant-live/SUMMARY.md`에 결과와 한계를 적는다. 한 사례의 통행 성공이며 지형 미감의 일반 보장은 아니다.

@@ -2,6 +2,21 @@
 
 # Editor AI Panel & Tools
 
+## 사용자가 요청한 위치 안내만 화면을 옮긴다 (2026-10-04)
+
+사용자: 「'찾아달라'는 식의 요청이 아니면 화면이 움직이지 않았으면 좋겠음」,
+「포커스를 두지 않아도 조수가 백그라운드에서 작업하게」.
+
+- 자동 적용(`src/editor/agentFocus.ts`, `src/editor/tools/applyChangesetToStore.ts`)은 기본 `visible-only`다. 현재 맵의 변경만 강조·시공 표시하고 맵·카메라·줌을 따라가지 않는다. Pi 도구 시작의 카메라 따라가기도 제거했다. 직접 누른 미리보기 버튼만 `follow:true`를 쓴다.
+- 기존 의도 선언의 `viewNavigation:true`는 사용자가 특정 장소의 위치를 찾아 보여달라고 요청한 경우에만 생긴다. 생성·수정·검수·목록 조회·화면 이동 금지는 권한이 아니다. 누락·잘못된 타입·되묻기·폴백·계속 요청은 허용하지 않는다. 계획 전용과 장르 프리셋은 권한이 없고, 일반 읽기 전용 요청도 선언을 거쳐 위치 안내를 지원한다.
+- `src/editor/assistantViewNavigation.ts`가 Pi와 옛 세션의 `focus_editor_view`/`highlight_map_region`을 함께 처리한다. 요청당 위치 안내 한 번만 허용하며 자동 적용의 따라가기를 켜지 않는다. 권한이 없으면 현재 맵에 강조만 할 수 있고 사용자 선택 영역은 바꾸지 않는다. 취소·백그라운드 실행·숨김·포커스 상실 중 도착한 요청은 이동하지 않고, 포커스 복귀 때 재생하지 않는다. 다른 실행·다음 요청에 권한을 저장하지 않는다.
+- 결과 카드의 기존 이동 버튼은 「변경된 곳 보기」다. 답변 링크·맵 목록·이벤트 목록처럼 직접 누른 이동은 기존 경로를 쓴다. 위치 계산 도구의 성공 요약은 「위치: …」이며 실제 화면 이동 성공을 주장하지 않는다.
+- Pi 체크포인트와 전송 직후 캔버스 피드백은 `defaultYieldToUi`를 공유한다. 보이는 포커스 문서는 프레임에 양보하고, 숨김·포커스 상실이면 `MessageChannel` 태스크로 넘어간다. 프레임 대기 중 창을 떠난 경우도 즉시 전환하며 프레임·타이머·리스너를 정리한다. 변경 적용·커밋·ACK는 장식 연출 완료를 기다리지 않는다.
+- 재현 중 첫 적용은 끝났는데 ACK가 멈춘 추가 원인은 `src/ai/piAgent/requestBody.ts`의 gzip 입력 조각에서 쓰던 `setTimeout(0)` 양보였다. gzip 입력 조각과 Electron/HTTP 저장의 문서 diff 양보는 공통 `src/util/yieldToTask.ts`의 `MessageChannel`을 쓴다. 타이머를 0/50ms에서 정지시킨 상태로도 큰 체크포인트 응답이 다음 도구로 이어져야 한다.
+- Electron 로컬/팀 편집 창은 `backgroundThrottling:false`로 타이머·응답 처리를 유지한다. 백그라운드에서 받은 시공 로그는 버리고, 재생 중 창을 떠나면 연출을 종료한다. 돌아왔을 때 과거 시공을 늦게 재생하지 않는다.
+- 범위는 실행 중인 앱의 포커스 상실·숨김·최소화다. 브라우저의 문서 freeze/discard·앱 종료·기기 절전에도 계속 실행하는 호스트 저장 작업 큐는 이 변경에 포함되지 않는다. Pi 호스트는 여전히 편집기의 실제 적용 응답과 이미지 응답을 받는다.
+- 회귀 계약: `test/agentFocus*.test.ts`, `test/assistantViewNavigation.test.ts`, `test/intentDeclaration.test.ts`, `test/plainTurnViewNavigation.test.ts`, `test/piAgentBackgroundCheckpoint.test.ts`. 에이전트는 gates/vitest/typecheck를 실행하지 않는다. 브라우저 재현은 `scripts/qa/assistant-view-background.mjs`와 `verify-shots/assistant-view-background/`다. 대본 NDJSON+실제 도구/적용을 사용하며 라이브 모델·SQLite 정본 저장 근거가 아니다.
+
 ## 핵심 플레이를 먼저 작성하는 첫 제작 (2026-10-04)
 
 `piTeamRuntime`의 프리셋 첫 생성 중 기존 첫 구간 뼈대가 있는 세 장르(몬스터 수집·JRPG·스토리)는
@@ -3334,7 +3349,7 @@ validateVillageContract → applyProposedProject`로 처리한다. 의도 선언
 
 ## 실시간 맵 연출 헤드리스 (2026-09-22)
 
-작업 표시 수준(생략/간단히/자세히/매우 자세히)은 실행 기록 문구만 바꾼다. 맵 위의 실시간 시공(고스트 타일, 청사진, 카메라 따라가기, 공개가 끝날 때까지의 대기)은 그와 별개로 끌 수 있다.
+작업 표시 수준(생략/간단히/자세히/매우 자세히)은 실행 기록 문구만 바꾼다. 맵 위의 실시간 시공(고스트 타일·청사진)은 그와 별개로 끌 수 있다. 카메라는 시공을 따라가지 않는다(위 2026-10-04 절).
 
 - 스위치는 작업 표시 안의 「맵에 시공 보이기」다(`data-testid=ai-live-canvas`). 켜짐이 기본이다(2026-10-03). `localStorage["oprn:ai-live-canvas"]`의 명시적 `off`는 존중한다. 미설정·저장 접근 불가 환경에서는 실시간 시공을 그린다.
 - 화면 무게는 AI 설정 「표시」의 `ai-render-weight`다. 기본 `light`는 조수 창·접힘 알약·작업 띠·맵 칩의 `backdrop-filter`를 끈다. `heavy`만 20px 유리 블러를 쓴다. `off`는 블러를 끄고 판을 불투명하게 한다. 저장 키는 `oprn:ai-render-weight`, 적용은 `documentElement.dataset.aiRender`.
@@ -3540,7 +3555,7 @@ run20개의 현재run 저장 getAll1→0, 비활성 스튜디오 DOM365→0.
 
 `aiCanvasProgress.ts`는 사용자 전송 클릭 안에서 실제 문장과 준비 상태를 캔버스에 먼저 붙이고 다음 화면 그리기를 양보한다. 의도 분류·기획 저장·제안 기준선 계산보다 먼저 보인다. 모델이 도구를 실행하면 같은 표시가 실제 `tool_start`/`tool_end`의 사용자용 문구로 바뀐다. 준비 상태는 제작 완료나 저장 증거가 아니다. 가짜 타일·타이머 진행률·주인공 변경을 만들지 않는다. 패널의 대화·프로젝트 전환, 실패, 중단, 정착은 표시를 닫으며 이전 실행의 이벤트가 새 표시를 지우거나 덮지 못한다.
 
-실시간 시공(`aiLiveCanvas`) 기본값을 켰다. 기존 사용자가 명시적으로 저장한 `off`는 존중한다. 성공한 체크포인트에서 맵을 이동·강조하는 기존 `applyProposedProject` → `focusAcceptedAgentChanges` 경로는 유지한다. 체크포인트 이전 `map_delta`를 실제 변경으로 재생하거나 동일 변경을 중복 focus하는 경로를 추가하지 않는다. 최초 제작 내부 계약과 `PRESET_FIRST_BUILD_RULES`는 필수 DB·월드 뼈대만 먼저 준비하고 첫 맵·첫 상호작용의 작은 작업을 타이틀 그림·긴 오프닝보다 먼저 전달하도록 요구한다. project 쓰기와 map 쓰기의 기존 직렬화 경계를 유지한다. 이는 모델 지시이며 실제 첫 결과 시간의 보증이 아니다.
+실시간 시공(`aiLiveCanvas`) 기본값을 켰다. 기존 사용자가 명시적으로 저장한 `off`는 존중한다. 성공한 체크포인트의 `applyProposedProject` → `focusAcceptedAgentChanges`는 현재 맵의 강조·시공만 표시한다(2026-10-04 자동 이동 제거). 체크포인트 이전 `map_delta`를 실제 변경으로 재생하거나 동일 변경을 중복 focus하는 경로를 추가하지 않는다. 최초 제작 내부 계약과 `PRESET_FIRST_BUILD_RULES`는 필수 DB·월드 뼈대만 먼저 준비하고 첫 맵·첫 상호작용의 작은 작업을 타이틀 그림·긴 오프닝보다 먼저 전달하도록 요구한다. project 쓰기와 map 쓰기의 기존 직렬화 경계를 유지한다. 이는 모델 지시이며 실제 첫 결과 시간의 보증이 아니다.
 
 재현: `scripts/qa/visible-ai-creation.mjs`는 실제 편집기, 사용자 전송 버튼, 모델 응답을 보류하는 NDJSON 대본과 native 도구/체크포인트 수용을 사용한다. 소형 UI fixture이며 라이브 모델·SQLite 저장·생성 게임 완성 증거가 아니다. 화면/관측은 `verify-shots/visible-ai-creation/`에 남긴다.
 

@@ -9,6 +9,7 @@
 // 여기서는 폴더만 만들고, 고른 장르·한 문장은 startIntent 로 편집기 부팅에 넘긴다(src/editor/startScreenHandoff.ts).
 
 import "./startScreen.css";
+import { mountWindowControls } from "./windowControls";
 import { createStartLobby, createLobbyWays, createLobbyFeatures } from "./startLobby";
 import { APP_VERSION, PRODUCT_BRAND } from "@/brand";
 import { NEW_PROJECT_CHOICES, type NewProjectChoice, type NewProjectChoiceId } from "@/editor/newProjectChoices";
@@ -309,9 +310,6 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
   };
 
   const create = (): void => void run(async () => {
-    if (state.startMode === "ai" && !state.intent.trim()) {
-      throw new Error("만들고 싶은 게임을 한 문장으로 적어 주세요.");
-    }
     if (!bridge) throw new Error("데스크톱 앱에서만 새 게임을 만들 수 있습니다.");
     const title = state.title.trim() || t(DEFAULT_TITLE);
     // A free concept enters the existing interview, whose author can still choose any genre.
@@ -742,4 +740,4 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
 
 const host = typeof document !== "undefined" ? document.getElementById("start-app") : null;
 // 편집기와 같은 번역 계층을 먼저 켠다 — 한국어면 카탈로그도 옵서버도 없다.
-if (host) void initI18n().finally(() => mountStartScreen(host, window.oprn?.start));
+if (host) { mountWindowControls(); void initI18n().finally(() => mountStartScreen(host, window.oprn?.start)); }

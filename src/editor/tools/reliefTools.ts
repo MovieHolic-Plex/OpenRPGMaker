@@ -4,7 +4,7 @@
 // 왜 따로 있는가: 절벽을 타일 번호로 깔면 벽 윗단·몸통·대각선 모서리를 칸마다 골라야 해서 AI 가 거의 항상 틀렸다.
 // 높이 칸 하나만 정하면 렌더러(@/project/relief/render)가 벽·대각선·가림을 그리므로, AI 는 「어디가 몇 단인가」만 말한다.
 // 빚기는 ops DSL(@/project/relief/ops, RELIEF_OPS_SPEC)을 그대로 받는다 — 산·능선·골짜기·계단식 단을 한 번에 쓴다.
-// 한계: 높이는 그림(절벽 벽면)만 바꾼다. 칩셋과 무관하게 같은 렌더러가 그리고, 윗단 위 타일·이벤트·통행은 그대로다.
+// 높이는 타일 층과 별개다. 편집기·플레이어·조수 미리보기가 같은 높이로 들리고 실제 통행도 높이/경사로를 따른다.
 
 import { checkRelief, reliefMatrixText } from "@/project/relief/check";
 import { carryReliefExtras, emptyRelief, reliefIsFlat } from "@/project/relief/edit";

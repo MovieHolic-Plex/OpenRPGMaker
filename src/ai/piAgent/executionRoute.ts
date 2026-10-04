@@ -38,6 +38,8 @@ export const DEFAULT_PI_TEAM = false;
 export const LEGACY_PI_TEAM_ROUTE = "pi-team";
 /** 다이얼 한 값이 이번 실행에 대해 정하는 것 전부. */
 export interface PiRunPlan {
+  /** Request-local location guidance, declared from the user's instruction. */
+  readonly viewNavigation?: boolean;
   readonly villageContract?: import("./villageContract").VillageContract;
   /** 이 턴을 어떻게 읽었는지 한 줄(classifyPlainPiTurn). 활동 로그의 「의도 판정」 행이 된다. 실행은 이 값을 읽지 않는다. */
   readonly routingAudit?: string;

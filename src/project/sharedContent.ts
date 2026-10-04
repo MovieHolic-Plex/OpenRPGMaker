@@ -4,6 +4,7 @@ import { sha256HexBytes } from '@/util/sha256';
 import { jsonEqual } from '@/util/structuralJson';
 import { SHARED_CONTENT_ENDPOINT, type SharedContentScope, type SharedContentSnapshot } from './sharedContentSchema';
 import { readSharedContentCache, writeSharedContentCache } from './sharedContentCache';
+import { ensureSharedCharacters, installSharedCharacters } from './sharedCharacters';
 const bundledLibraries: Record<string, SharedContentLibrary> = {};
 let snapshot: SharedContentSnapshot = {revision:'bundled',libraries:bundledLibraries};
 let defaultAssetHashes = new Map<string,string>();
@@ -62,6 +63,7 @@ export async function installSharedContent(value: SharedContentSnapshot): Promis
     }
   }
   snapshot=next; defaultAssetHashes=hashes;
+  installSharedCharacters(next);
   defaultAssetHashSources=new Map();
   for(const lib of Object.values(next.libraries)) if(lib.projectDefaults) for(const asset of Object.values(lib.assets)) {
     const sha=hashes.get(asset.id);
@@ -129,7 +131,7 @@ function isMergedKitForm(current: TilesetDef|undefined, lib: TilesetDef): boolea
 }
 /** Reserved shared IDs are projections. User copies use independent IDs and are never replaced. */
 export function ensureSharedContent(project: Project): boolean {
-  let changed=false;
+  let changed=ensureSharedCharacters(project);
   for(const lib of Object.values(snapshot.libraries)) {
     if(!lib.projectDefaults) continue;
     for(const[id,t]of Object.entries(lib.tilesets)) {

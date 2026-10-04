@@ -1,0 +1,355 @@
+{
+  "type": "direct engine checks; not live-model evidence",
+  "calls": [
+    {
+      "name": "sculpt_relief",
+      "args": {
+        "mapId": "terrain_ai",
+        "ops": [
+          {
+            "op": "rect",
+            "rect": [
+              8,
+              4,
+              24,
+              14
+            ],
+            "h": 5
+          }
+        ]
+      },
+      "ok": true,
+      "summary": "AI 절벽 마을 높이 1개 op 적용 — 가려진 칸 68, 규칙에 깎인 칸 0",
+      "data": {
+        "check": "64×48칸, 단별 칸 수 {\"0\":2885,\"5\":187}\n규칙에 깎인 칸 0\n가려져 안 보이는 칸 68 — [8,0,24,3] 68칸 (바닥 0단, 바로 남쪽 5단)\n일직선 벽(12칸 이상) 2개 — y=14 x8~24 17칸, y=3(북향) x8~24 17칸 (자로 그은 듯 보임 → rough 나 휘어진 path 로 깨라)\n제안: 가려진 구역을 보이게 하려면 그 남쪽을 낮추거나(rect mode min), 골짜기 폭을 깊이보다 넓히거나, 방향을 남북으로 돌린다.",
+        "maxLevel": 14
+      }
+    },
+    {
+      "name": "place_terrain_house",
+      "args": {
+        "mapId": "terrain_ai",
+        "anchor": {
+          "x": 16,
+          "y": 10
+        },
+        "style": "beodeul-manor-a",
+        "width": 9,
+        "roofWidth": 13,
+        "stories": 1
+      },
+      "ok": true,
+      "summary": "버들항 반목조 집 · 붉은 꽃 · 벽 9칸 1층 · 지붕 13×3칸 배치",
+      "data": {
+        "kitId": "quick_house_beodeul-manor-a_9_1_roof13x3",
+        "x": 10,
+        "y": 5,
+        "width": 13,
+        "height": 6,
+        "level": 5,
+        "doorFront": {
+          "x": 16,
+          "y": 11
+        },
+        "placementId": "sp_fcd00374-2a1b-4e9f-82cb-bcab78cd093f"
+      }
+    },
+    {
+      "name": "place_terrain_house",
+      "args": {
+        "mapId": "terrain_ai",
+        "anchor": {
+          "x": 28,
+          "y": 15
+        },
+        "style": "beodeul-manor-a",
+        "width": 9,
+        "stories": 1
+      },
+      "ok": false,
+      "summary": "'place_terrain_house' 실행 실패: 집 전체가 같은 높이의 땅에 들어오게 놓으세요"
+    },
+    {
+      "name": "lay_terrain_road",
+      "args": {
+        "mapId": "terrain_ai",
+        "points": [
+          {
+            "x": 16,
+            "y": 30
+          },
+          {
+            "x": 16,
+            "y": 11
+          }
+        ],
+        "width": 3
+      },
+      "ok": true,
+      "summary": "길 61칸 · 경사 접합 1곳 · 19칸 경로 · 폭 3칸 미만 병목 0칸",
+      "data": {
+        "reachable": true,
+        "blocked": [],
+        "featureId": "terrain_29339fd0-aead-4eaa-8431-5c3a8cb53c04",
+        "rampCells": 18
+      }
+    },
+    {
+      "name": "inspect_terrain",
+      "args": {
+        "mapId": "terrain_ai"
+      },
+      "ok": true,
+      "summary": "고지 5단 · 경사로 18칸 · 집 1채(평탄 1) · 시야 차단 끔",
+      "data": {
+        "mapId": "terrain_ai",
+        "tilesetId": "beodeul_city",
+        "maxHeight": 5,
+        "rampCells": 18,
+        "stairCells": 0,
+        "gameplay": {
+          "visionBlocking": false,
+          "highGroundVision": false,
+          "projectileHeight": false,
+          "visionRadius": 8,
+          "visionGain": 1,
+          "eyeHeight": 1
+        },
+        "houses": [
+          {
+            "placementId": "sp_fcd00374-2a1b-4e9f-82cb-bcab78cd093f",
+            "kitId": "quick_house_beodeul-manor-a_9_1_roof13x3",
+            "x": 10,
+            "y": 5,
+            "width": 13,
+            "height": 6,
+            "doorFront": {
+              "x": 16,
+              "y": 11
+            },
+            "level": 5,
+            "flat": true,
+            "heights": [
+              5
+            ]
+          }
+        ],
+        "houseStyles": [
+          {
+            "id": "beodeul-manor-a",
+            "name": "버들항 반목조 집 · 붉은 꽃",
+            "exampleSize": {
+              "width": 9,
+              "height": 6
+            }
+          },
+          {
+            "id": "beodeul-manor-b",
+            "name": "버들항 반목조 집 · 초록 창틀",
+            "exampleSize": {
+              "width": 9,
+              "height": 6
+            }
+          },
+          {
+            "id": "beodeul-manor-lit",
+            "name": "버들항 반목조 집 · 불 켠 창",
+            "exampleSize": {
+              "width": 9,
+              "height": 6
+            }
+          },
+          {
+            "id": "beodeul-log-green",
+            "name": "버들항 통나무 집 · 초록 문",
+            "exampleSize": {
+              "width": 9,
+              "height": 5
+            }
+          },
+          {
+            "id": "beodeul-log-blue",
+            "name": "버들항 통나무 집 · 파랑 문",
+            "exampleSize": {
+              "width": 9,
+              "height": 5
+            }
+          },
+          {
+            "id": "beodeul-log-red",
+            "name": "버들항 통나무 집 · 붉은 문",
+            "exampleSize": {
+              "width": 9,
+              "height": 5
+            }
+          }
+        ],
+        "features": [
+          {
+            "id": "terrain_29339fd0-aead-4eaa-8431-5c3a8cb53c04",
+            "tool": "road",
+            "points": [
+              {
+                "x": 16,
+                "y": 30
+              },
+              {
+                "x": 16,
+                "y": 11
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "check_terrain_access",
+      "args": {
+        "mapId": "terrain_ai",
+        "from": {
+          "x": 16,
+          "y": 30
+        },
+        "targets": [
+          {
+            "x": 16,
+            "y": 11
+          }
+        ]
+      },
+      "ok": true,
+      "summary": "실제 지형 통행: 1/1곳 도달",
+      "data": {
+        "reachable": true,
+        "routes": [
+          {
+            "target": {
+              "x": 16,
+              "y": 11
+            },
+            "reachable": true,
+            "path": [
+              {
+                "x": 16,
+                "y": 30
+              },
+              {
+                "x": 16,
+                "y": 29
+              },
+              {
+                "x": 16,
+                "y": 28
+              },
+              {
+                "x": 16,
+                "y": 27
+              },
+              {
+                "x": 16,
+                "y": 26
+              },
+              {
+                "x": 16,
+                "y": 25
+              },
+              {
+                "x": 16,
+                "y": 24
+              },
+              {
+                "x": 16,
+                "y": 23
+              },
+              {
+                "x": 16,
+                "y": 22
+              },
+              {
+                "x": 16,
+                "y": 21
+              },
+              {
+                "x": 16,
+                "y": 20
+              },
+              {
+                "x": 16,
+                "y": 19
+              },
+              {
+                "x": 16,
+                "y": 18
+              },
+              {
+                "x": 16,
+                "y": 17
+              },
+              {
+                "x": 16,
+                "y": 16
+              },
+              {
+                "x": 16,
+                "y": 15
+              },
+              {
+                "x": 16,
+                "y": 14
+              },
+              {
+                "x": 16,
+                "y": 13
+              },
+              {
+                "x": 16,
+                "y": 12
+              },
+              {
+                "x": 16,
+                "y": 11
+              }
+            ],
+            "blocked": [],
+            "bottlenecks": [],
+            "reason": "19칸 경로 · 폭 1칸 미만 병목 0칸"
+          }
+        ]
+      }
+    },
+    {
+      "name": "read_tileset_reference",
+      "args": {
+        "tilesetId": "beodeul_city",
+        "categoryId": "beodeul-city-pieces",
+        "imageId": "bd-pieces-houses-a",
+        "documentId": "",
+        "offset": 0
+      },
+      "ok": true,
+      "summary": "버들항 · 건물·소품·나무 조각 사전 / pieces-houses-a.png — 실제 이미지를 확인하세요.",
+      "data": {
+        "tilesetId": "beodeul_city",
+        "ownerId": "beodeul_city",
+        "categoryId": "beodeul-city-pieces",
+        "revision": "56483-4268e251-1886ffbf",
+        "image": {
+          "id": "bd-pieces-houses-a",
+          "name": "pieces-houses-a.png",
+          "caption": "살림집·가게집 조각 1/2 — 이름표 = 키트 id 끝(bd-house-…)."
+        }
+      }
+    },
+    {
+      "name": "read_tileset_reference",
+      "args": {
+        "tilesetId": "beodeul_city",
+        "categoryId": "beodeul-city-pieces",
+        "imageId": "bd-pieces-houses-a",
+        "offset": 1
+      },
+      "ok": false,
+      "summary": "'read_tileset_reference' 실행 실패: 이미지 offset은 생략하거나 0이어야 합니다."
+    }
+  ]
+}

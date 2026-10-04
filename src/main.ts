@@ -7,6 +7,7 @@
 import { installGlobalErrorTrap } from "@/app/errorTrap";
 import { installVitePreloadRecovery } from "@/app/moduleLoadRecovery";
 import "./styles/index.css";
+import { mountWindowControls } from "@/start/windowControls";
 // ⚠ 순서 의존: 저장 키 마이그레이션이 import 시점에 localStorage 를 읽는 모듈보다 **먼저**
 // 평가돼야 한다. 자세한 이유는 src/storageBoot.ts 헤더 주석 — 진입점 본문의 함수 호출로는
 // 안 된다(import 호이스팅).
@@ -49,6 +50,7 @@ if (typeof window !== "undefined" && window.location) {
       document.body.classList.add(flag.replace(/([A-Z])/g, "-$1").toLowerCase());
     }
   }
+  mountWindowControls();
   if (window.oprn?.closeIsHostDriven === true) {
     // 닫기는 주 프로세스가 flush-before-close 로 연다 — 브라우저 beforeunload 경고와 겹치지 않게 한다.
     window.oprn.lifecycle.onFlushBeforeClose(() => {

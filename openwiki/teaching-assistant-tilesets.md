@@ -49,6 +49,8 @@ lay_path·place_props·arrange_rows·paint_road·stamp_structure·build_house·s
 참고문서가 **없으면 게이트가 아예 걸리지 않는다**(`src/ai/tilesetReferenceEvidence.ts:74` `if (!groups.length) continue;`).
 즉 참고문서 없는 타일셋에서 조수는 아무 제약 없이 번호를 칠한다. 게이트는 「전달」만 확인하고 이해·품질은 보장하지 않는다.
 
+2026-10-04: `stamp_object`도 `kit:<tileset>/<kit>`의 `ai.role=terrain`이면 재질 선택으로 판정한다. `terrainStampSource`가 원본 칩셋을 해석하고, graft 대상이 다른 칩셋이어도 원본의 선택한 용도 MD 전체·이미지 전달을 요구한다. 일반 완성 소품은 기존 결정론 도구 경로를 유지한다. 실제 자동 인터뷰에서 `fill_region`의 선행 읽기 거절을 피하려고 하수도용 다리 한 칸을 산책길처럼 반복 스탬프한 우회를 막기 위한 것이다. 이 게이트는 장소별 미적 적합성을 자동으로 증명하지 않는다.
+
 ## 타일셋 종류별로 조수가 아는 정도
 
 | | 번들 타일셋(forest_harmony·성·Slates 등) | 사용자 업로드 커스텀 |

@@ -6,11 +6,13 @@
 // appearance 는 아래 방향 정지 프레임을 보고 적은 문장이다 (charsetAppearances.ts).
 
 import { CHARSET_APPEARANCE } from "@/assets/charsetAppearances";
+import { sharedCharacterSemantics } from '@/project/sharedCharacters';
 
 export type CharsetGender = "male" | "female" | "none";
 export type CharsetAge = "child" | "youth" | "middle" | "elder";
 
 export interface CharsetSemanticEntry {
+  readonly spriteType?: 'bundled' | 'uploaded';
   readonly textureKey: string;
   readonly characterIndex: number;
   readonly label: string;
@@ -247,7 +249,7 @@ function withAppearance(entry: CharsetSemanticEntry): CharsetSemanticEntry {
 export const CHARSET_SEMANTICS: readonly CharsetSemanticEntry[] = CHARSET_SEMANTICS_RAW.map(withAppearance);
 
 export function findCharsetSemantic(textureKey: string, characterIndex: number): CharsetSemanticEntry | undefined {
-  return CHARSET_SEMANTICS.find((entry) => entry.textureKey === textureKey && entry.characterIndex === characterIndex);
+  return [...CHARSET_SEMANTICS, ...sharedCharacterSemantics()].find((entry) => entry.textureKey === textureKey && entry.characterIndex === characterIndex);
 }
 
 export function charsetSemanticsForTexture(textureKey: string): readonly CharsetSemanticEntry[] {

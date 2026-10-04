@@ -57,7 +57,7 @@ export async function prepareProjectInterviewStartup(): Promise<void> {
       // 장르에 어울리는 대화창을 코드가 먼저 깐다 — AI 가 기획 톤을 보고 바꿀 수 있지만,
       // 조수가 연결되지 않았거나 잊어도 첫 플레이부터 장르 대화창이 뜬다. 사용자가 이미 고른 값은 그대로 둔다.
       if (project.system.dialogueStyle === undefined) {
-        const dialogueStyle = recommendedDialogueStyleForPreset(brief.presetId);
+        const dialogueStyle = brief.interview ? "pixel-cinematic" : recommendedDialogueStyleForPreset(brief.presetId);
         if (dialogueStyle !== DEFAULT_DIALOGUE_STYLE_ID) project.system.dialogueStyle = dialogueStyle;
       }
     }, { scope: "project", label: "새 프로젝트 기획 전달 준비", origin: "system" });
