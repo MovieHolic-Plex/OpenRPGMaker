@@ -20,6 +20,7 @@ from pathlib import Path
 
 import harness as H
 import chr as C
+import motion as M
 
 LOCK = threading.Lock()
 
@@ -37,7 +38,23 @@ def needs_draw(w):
     if not (w / 'views' / 'gate.json').exists() or not (w / 'out.chr.txt').exists():
         return True
     meta = json.loads((w / 'meta.json').read_text()) if (w / 'meta.json').exists() else {}
-    return meta.get('animationMode') == H.FRAME_AUTHOR_MODE and not H.model_frames_fresh(w, H.current_gate(w))
+    gate = H.current_gate(w)
+    return (meta.get('animationMode') == H.FRAME_AUTHOR_MODE
+            and (not H.model_frames_fresh(w, gate) or (meta.get('motionPolicy') is not None and not M.fresh(w, gate))))
+
+
+def motion_instructions(policy):
+    if policy is None:
+        return ''
+    if policy != M.VERSION:
+        raise ValueError('지원하지 않는 걷기 검사 정책')
+    return ('\n\n## 걷기 납품 검사\n각 지정 후보에 다음 명령을 실행한다:\n'
+            f'python3 {H.HERE / "harness.py"} motion-check characters/KEY__gpt-r1/out.chr.txt --base BASE\n'
+            'KEY/BASE는 assignment 값이다. views/motion.png와 느린 views/motion.gif를 직접 확인한다. '
+            '원본 발끝 기준 몸통 중앙의 정지↔각 걸음 변화와 두 걸음의 다리 교대를 따로 검사한다. '
+            '몸통의 정상 bob은 허용한다. 색만 깜빡이거나 정지 전체를 이동한 복사는 걷기가 아니다. '
+            '실패한 방향/걸음은 직접 픽셀을 고친 뒤 check/views/motion-check를 다시 실행한다. '
+            '진단 파일을 수정하거나 픽셀을 자동 전파하지 않는다.\n')
 
 
 def prepare_batch(run, rows, index):
@@ -181,6 +198,7 @@ def produce_batch(run, rows, index):
         prompt = prompt.replace('{PIXEL_TOOL}', f'python3 {H.HERE / "pixel_ops.py"}')
         prompt = prompt.replace('{STRENGTH_RULES}', '\n\n'.join(H.STRENGTH_RULES.get(s, '') for s in sorted({r['strength'] for r in pending})))
         prompt = prompt.replace('{ASSIGNMENTS}', json.dumps(pending, ensure_ascii=False, indent=2))
+        prompt += motion_instructions(json.loads((H.run_dir(run) / 'manifest.json').read_text()).get('motionPolicy'))
         visuals = visual_inputs(run, batch, pending)
         if visuals:
             prompt += '\n\n초기 입력에 다음 이미지가 순서대로 첨부되어 있습니다. 실제 픽셀을 보고 저작합니다.\n' + json.dumps(visuals, ensure_ascii=False, indent=2)
@@ -191,7 +209,8 @@ def produce_batch(run, rows, index):
             write_json(w / 'meta.json', dict(run=run, brief=row['key'], engine='gpt', **H.ENGINES['gpt'],
                                             pid=process.pid, started=H.now(), dir=str(w), base=row['base'],
                                             strength=row['strength'], reviewMode=row.get('reviewMode', 'legacy'), batch=index, src=None,
-                                            animationMode=H.FRAME_AUTHOR_MODE, visualInputs=visuals, authoringMode=mode))
+                                            animationMode=H.FRAME_AUTHOR_MODE, visualInputs=visuals, authoringMode=mode,
+                                            motionPolicy=row.get('motionPolicy')))
         log(f'batch {index}: GPT high 12프레임 직접 저작 시작 ({len(pending)}명), pid={process.pid}')
         process.wait()
         log(f'batch {index}: 작업자 종료={process.returncode}')
@@ -214,6 +233,7 @@ def produce_batch(run, rows, index):
             if receipt and gate['sourceSha256'] != receipt['sourceSha256']:
                 raise ValueError('모델이 저작한 12프레임이 렌더 중 바뀌었습니다')
             if row.get('reviewMode') == 'human':
+                H.check_motion(w, gate)
                 H.write_json_atomic(w / 'published.json', H.binding(gate))
             if gate['ok']:
                 ready.append(row)
@@ -263,6 +283,7 @@ def produce_recipe_batch(run, rows, index):
     template = template.replace('{TOOL}', f'python3 {H.HERE / "harness.py"}')
     template = template.replace('{PIXEL_TOOL}', f'python3 {H.HERE / "pixel_ops.py"}')
     template = template.replace('{ASSIGNMENTS}', json.dumps(pending, ensure_ascii=False, indent=2))
+    template += motion_instructions(manifest.get('motionPolicy'))
     error = None
     for attempt in range(manifest['productionPolicy']['repairRounds'] + 1):
         archive = batch / 'attempts' / (H.now().replace(':', '-') + '-' + str(attempt))
@@ -284,7 +305,8 @@ def produce_recipe_batch(run, rows, index):
                                   pid=process.pid, started=H.now(), dir=str(w), base=row['base'],
                                   strength='free', reviewMode='human', batch=index, src=None,
                                   animationMode=H.FRAME_AUTHOR_MODE, visualInputs=[], authoringMode=row['authoringMode'],
-                                  recipe=manifest['recipe'], seed=row['seed'], attempt=attempt, attemptPath=str(archive)))
+                                  recipe=manifest['recipe'], seed=row['seed'], motionPolicy=manifest.get('motionPolicy'),
+                                  attempt=attempt, attemptPath=str(archive)))
         log(f'{row["key"]}: GPT high 직접 저작, 기술 수정 {attempt}, pid={process.pid}')
         process.wait()
         try:
