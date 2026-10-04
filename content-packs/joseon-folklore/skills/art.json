@@ -1,0 +1,146 @@
+[
+  {
+    "skillId": "skill_jf_cleaving_strike",
+    "resourceId": "jf-icon-cleaving-strike",
+    "path": "assets/joseon-folklore/skills/cleaving-strike.png",
+    "sourcePath": "content-packs/joseon-folklore/skills/icons/cleaving-strike.png",
+    "size": [
+      32,
+      32
+    ],
+    "usage": "review-and-supervisor-resource-registration",
+    "runtimeSkillIconField": null
+  },
+  {
+    "skillId": "skill_jf_iron_breath",
+    "resourceId": "jf-icon-iron-breath",
+    "path": "assets/joseon-folklore/skills/iron-breath.png",
+    "sourcePath": "content-packs/joseon-folklore/skills/icons/iron-breath.png",
+    "size": [
+      32,
+      32
+    ],
+    "usage": "review-and-supervisor-resource-registration",
+    "runtimeSkillIconField": null
+  },
+  {
+    "skillId": "skill_jf_double_stab",
+    "resourceId": "jf-icon-double-stab",
+    "path": "assets/joseon-folklore/skills/double-stab.png",
+    "sourcePath": "content-packs/joseon-folklore/skills/icons/double-stab.png",
+    "size": [
+      32,
+      32
+    ],
+    "usage": "review-and-supervisor-resource-registration",
+    "runtimeSkillIconField": null
+  },
+  {
+    "skillId": "skill_jf_venom_edge",
+    "resourceId": "jf-icon-venom-edge",
+    "path": "assets/joseon-folklore/skills/venom-edge.png",
+    "sourcePath": "content-packs/joseon-folklore/skills/icons/venom-edge.png",
+    "size": [
+      32,
+      32
+    ],
+    "usage": "review-and-supervisor-resource-registration",
+    "runtimeSkillIconField": null
+  },
+  {
+    "skillId": "skill_jf_ember_charm",
+    "resourceId": "jf-icon-ember-charm",
+    "path": "assets/joseon-folklore/skills/ember-charm.png",
+    "sourcePath": "content-packs/joseon-folklore/skills/icons/ember-charm.png",
+    "size": [
+      32,
+      32
+    ],
+    "usage": "review-and-supervisor-resource-registration",
+    "runtimeSkillIconField": null
+  },
+  {
+    "skillId": "skill_jf_frost_charm",
+    "resourceId": "jf-icon-frost-charm",
+    "path": "assets/joseon-folklore/skills/frost-charm.png",
+    "sourcePath": "content-packs/joseon-folklore/skills/icons/frost-charm.png",
+    "size": [
+      32,
+      32
+    ],
+    "usage": "review-and-supervisor-resource-registration",
+    "runtimeSkillIconField": null
+  },
+  {
+    "skillId": "skill_jf_life_water",
+    "resourceId": "jf-icon-life-water",
+    "path": "assets/joseon-folklore/skills/life-water.png",
+    "sourcePath": "content-packs/joseon-folklore/skills/icons/life-water.png",
+    "size": [
+      32,
+      32
+    ],
+    "usage": "review-and-supervisor-resource-registration",
+    "runtimeSkillIconField": null
+  },
+  {
+    "skillId": "skill_jf_purify",
+    "resourceId": "jf-icon-purify",
+    "path": "assets/joseon-folklore/skills/purify.png",
+    "sourcePath": "content-packs/joseon-folklore/skills/icons/purify.png",
+    "size": [
+      32,
+      32
+    ],
+    "usage": "review-and-supervisor-resource-registration",
+    "runtimeSkillIconField": null
+  },
+  {
+    "skillId": "skill_jf_enemy_tusk_charge",
+    "resourceId": "jf-icon-tusk-charge",
+    "path": "assets/joseon-folklore/skills/tusk-charge.png",
+    "sourcePath": "content-packs/joseon-folklore/skills/icons/tusk-charge.png",
+    "size": [
+      32,
+      32
+    ],
+    "usage": "review-and-supervisor-resource-registration",
+    "runtimeSkillIconField": null
+  },
+  {
+    "skillId": "skill_jf_enemy_straw_club",
+    "resourceId": "jf-icon-straw-club",
+    "path": "assets/joseon-folklore/skills/straw-club.png",
+    "sourcePath": "content-packs/joseon-folklore/skills/icons/straw-club.png",
+    "size": [
+      32,
+      32
+    ],
+    "usage": "review-and-supervisor-resource-registration",
+    "runtimeSkillIconField": null
+  },
+  {
+    "skillId": "skill_jf_enemy_sorrow_cry",
+    "resourceId": "jf-icon-sorrow-cry",
+    "path": "assets/joseon-folklore/skills/sorrow-cry.png",
+    "sourcePath": "content-packs/joseon-folklore/skills/icons/sorrow-cry.png",
+    "size": [
+      32,
+      32
+    ],
+    "usage": "review-and-supervisor-resource-registration",
+    "runtimeSkillIconField": null
+  },
+  {
+    "skillId": "skill_jf_enemy_bronze_smash",
+    "resourceId": "jf-icon-bronze-smash",
+    "path": "assets/joseon-folklore/skills/bronze-smash.png",
+    "sourcePath": "content-packs/joseon-folklore/skills/icons/bronze-smash.png",
+    "size": [
+      32,
+      32
+    ],
+    "usage": "review-and-supervisor-resource-registration",
+    "runtimeSkillIconField": null
+  }
+]

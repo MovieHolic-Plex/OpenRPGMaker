@@ -1,0 +1,3 @@
+.cache/
+.vite-cache/
+__pycache__/

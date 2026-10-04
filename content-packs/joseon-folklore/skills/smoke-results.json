@@ -1,0 +1,335 @@
+{
+  "scope": "pilot-owned-data-and-in-memory-runtime-fixture",
+  "liveProjectWrites": false,
+  "browserPlayback": false,
+  "checks": [
+    {
+      "check": "normalize JSON roundtrip; reserved IDs; existing source FX hashes",
+      "observed": {
+        "skills": 12,
+        "states": 6,
+        "elements": 5
+      },
+      "result": "pass"
+    },
+    {
+      "check": "쇠숨: physical-only defense and self-upkeep expiry",
+      "observed": {
+        "attackDefense": 1.6,
+        "mindDefense": 1,
+        "expiresAtSelfUpkeep": 3
+      },
+      "result": "pass"
+    },
+    {
+      "check": "귀봉: skills blocked, basic action permitted, deterministic expiry",
+      "observed": {
+        "upkeep": 2,
+        "restrictsAction": false
+      },
+      "result": "pass"
+    },
+    {
+      "check": "reserved support definitions: evasion/protect/charm/blessing",
+      "observed": {
+        "physicalEvasion": 30,
+        "defenseSplit": 1.4,
+        "foxAttack": 0.75,
+        "blessingHpTick": 10
+      },
+      "result": "pass"
+    },
+    {
+      "check": "existing poison and actual cleanse list",
+      "observed": {
+        "poisonMaxHpPercent": 6,
+        "poisonHpFloor": 1,
+        "removed": [
+          "state_poison",
+          "state_deep_poison",
+          "state_silence",
+          "state_jf_ghost_seal",
+          "state_jf_fox_charm"
+        ]
+      },
+      "result": "pass"
+    },
+    {
+      "check": "생명수: exact HP recovery with runtime damage formula",
+      "observed": {
+        "amount": 45,
+        "hpAfter": 125
+      },
+      "result": "pass"
+    },
+    {
+      "check": "actor skill skill_jf_cleaving_strike",
+      "observed": {
+        "mpConsumed": 4,
+        "timeline": [
+          {
+            "kind": "damage",
+            "amount": 30,
+            "targetId": "enemy-1"
+          }
+        ]
+      },
+      "result": "pass"
+    },
+    {
+      "check": "actor skill skill_jf_iron_breath",
+      "observed": {
+        "mpConsumed": 5,
+        "timeline": [
+          {
+            "kind": "action",
+            "amount": 0,
+            "targetId": "actor_hero"
+          }
+        ]
+      },
+      "result": "pass"
+    },
+    {
+      "check": "actor skill skill_jf_double_stab",
+      "observed": {
+        "mpConsumed": 4,
+        "timeline": [
+          {
+            "kind": "damage",
+            "amount": 13,
+            "targetId": "enemy-1"
+          },
+          {
+            "kind": "damage",
+            "amount": 13,
+            "targetId": "enemy-1"
+          }
+        ]
+      },
+      "result": "pass"
+    },
+    {
+      "check": "actor skill skill_jf_venom_edge",
+      "observed": {
+        "mpConsumed": 5,
+        "timeline": [
+          {
+            "kind": "damage",
+            "amount": 24,
+            "targetId": "enemy-1"
+          }
+        ]
+      },
+      "result": "pass"
+    },
+    {
+      "check": "actor skill skill_jf_ember_charm",
+      "observed": {
+        "mpConsumed": 6,
+        "timeline": [
+          {
+            "kind": "damage",
+            "amount": 33,
+            "targetId": "enemy-1"
+          }
+        ]
+      },
+      "result": "pass"
+    },
+    {
+      "check": "actor skill skill_jf_frost_charm",
+      "observed": {
+        "mpConsumed": 7,
+        "timeline": [
+          {
+            "kind": "damage",
+            "amount": 35,
+            "targetId": "enemy-1"
+          }
+        ]
+      },
+      "result": "pass"
+    },
+    {
+      "check": "actor skill skill_jf_life_water",
+      "observed": {
+        "mpConsumed": 6,
+        "timeline": [
+          {
+            "kind": "healing",
+            "amount": 45,
+            "targetId": "actor_hero"
+          }
+        ]
+      },
+      "result": "pass"
+    },
+    {
+      "check": "actor skill skill_jf_purify",
+      "observed": {
+        "mpConsumed": 5,
+        "timeline": [
+          {
+            "kind": "action",
+            "amount": 0,
+            "targetId": "actor_hero"
+          }
+        ]
+      },
+      "result": "pass"
+    },
+    {
+      "check": "enemy skill skill_jf_enemy_tusk_charge strict",
+      "observed": {
+        "actions": [
+          {
+            "kind": "damage",
+            "amount": 12,
+            "targetId": "actor_hero"
+          }
+        ],
+        "chargeAnnouncements": [],
+        "chargingViews": [],
+        "enemyMp": 996
+      },
+      "result": "pass"
+    },
+    {
+      "check": "enemy skill skill_jf_enemy_straw_club strict",
+      "observed": {
+        "actions": [
+          {
+            "kind": "damage",
+            "amount": 11,
+            "targetId": "actor_hero"
+          }
+        ],
+        "chargeAnnouncements": [],
+        "chargingViews": [],
+        "enemyMp": 996
+      },
+      "result": "pass"
+    },
+    {
+      "check": "enemy skill skill_jf_enemy_sorrow_cry strict",
+      "observed": {
+        "actions": [
+          {
+            "kind": "action",
+            "amount": 0,
+            "targetId": "actor_hero"
+          },
+          {
+            "kind": "action",
+            "amount": 0,
+            "targetId": "actor_jf_probe_two"
+          }
+        ],
+        "chargeAnnouncements": [],
+        "chargingViews": [],
+        "enemyMp": 994
+      },
+      "result": "pass"
+    },
+    {
+      "check": "enemy skill skill_jf_enemy_bronze_smash strict",
+      "observed": {
+        "actions": [
+          {
+            "kind": "damage",
+            "amount": 18,
+            "targetId": "actor_hero"
+          },
+          {
+            "kind": "damage",
+            "amount": 18,
+            "targetId": "actor_jf_probe_two"
+          }
+        ],
+        "chargeAnnouncements": [
+          {
+            "kind": "special",
+            "side": "enemy",
+            "userRecordId": "enemy_bat_cave",
+            "targetId": "enemy-1",
+            "charge": true,
+            "message": "굴박쥐가 청동내리울림을 준비한다! (1턴 뒤)",
+            "actionId": 3,
+            "sequence": 2
+          }
+        ],
+        "chargingViews": [
+          {
+            "skillId": "skill_jf_enemy_bronze_smash",
+            "skillName": "청동내리울림",
+            "turnsLeft": 1
+          },
+          {
+            "skillId": "skill_jf_enemy_bronze_smash",
+            "skillName": "청동내리울림",
+            "turnsLeft": 1
+          }
+        ],
+        "enemyMp": 999
+      },
+      "result": "pass"
+    },
+    {
+      "check": "enemy skill skill_jf_enemy_bronze_smash gauge",
+      "observed": {
+        "actions": [
+          {
+            "kind": "damage",
+            "amount": 18,
+            "targetId": "actor_hero"
+          },
+          {
+            "kind": "damage",
+            "amount": 18,
+            "targetId": "actor_jf_probe_two"
+          }
+        ],
+        "chargeAnnouncements": [
+          {
+            "kind": "special",
+            "side": "enemy",
+            "userRecordId": "enemy_bat_cave",
+            "targetId": "enemy-1",
+            "charge": true,
+            "message": "굴박쥐가 청동내리울림을 준비한다! (1턴 뒤)",
+            "actionId": 3,
+            "sequence": 2
+          }
+        ],
+        "chargingViews": [
+          {
+            "skillId": "skill_jf_enemy_bronze_smash",
+            "skillName": "청동내리울림",
+            "turnsLeft": 1
+          },
+          {
+            "skillId": "skill_jf_enemy_bronze_smash",
+            "skillName": "청동내리울림",
+            "turnsLeft": 1
+          }
+        ],
+        "enemyMp": 999
+      },
+      "result": "pass"
+    },
+    {
+      "check": "engine revive contract only (not published data)",
+      "observed": {
+        "beforeHp": 0,
+        "afterHp": 40,
+        "authoredReviveInPilot": false
+      },
+      "result": "pass"
+    }
+  ],
+  "result": "pass",
+  "checkCount": 20,
+  "prototypeSha256": "a8d06a510f40ae239ed670a7aeba9a25c384ee98a0b623c7634d3c085c946965",
+  "dataSha256": "fb25568c68f3830e56d0dd021121a224ad24565070a8be486404e093dd1a8146"
+}

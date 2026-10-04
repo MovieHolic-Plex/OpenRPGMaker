@@ -1,0 +1,218 @@
+[
+  {
+    "skillId": "skill_jf_cleaving_strike",
+    "retroChoreographyId": "skill_hero_rising_blade",
+    "motion": "dash-strike",
+    "kind": "class",
+    "layers": [
+      {
+        "key": "hero_rising",
+        "anchor": "target",
+        "frame": 64,
+        "frames": 9,
+        "path": "public/assets/generated/pixel-fx/hero_rising.png",
+        "sha256": "e319c95b7b1db2b9f0fb88eaf924ea75fbb578c71240cd6f390c8f5f293bb2d9"
+      }
+    ]
+  },
+  {
+    "skillId": "skill_jf_iron_breath",
+    "retroChoreographyId": "skill_monk_iron_body",
+    "motion": "buff",
+    "kind": "class",
+    "layers": [
+      {
+        "key": "monk_iron_body",
+        "anchor": "user",
+        "frame": 64,
+        "frames": 10,
+        "path": "public/assets/generated/pixel-fx/monk_iron_body.png",
+        "sha256": "6bcb269d7039806d9decc7998cb1b37fe54090391a2039a46ca21859827a9494"
+      }
+    ]
+  },
+  {
+    "skillId": "skill_jf_double_stab",
+    "retroChoreographyId": "skill_scout_twin_strike",
+    "motion": "flurry",
+    "kind": "class",
+    "layers": [
+      {
+        "key": "scout_flurry",
+        "anchor": "target",
+        "frame": 64,
+        "frames": 10,
+        "path": "public/assets/generated/pixel-fx/scout_flurry.png",
+        "sha256": "3e61f3684cc574ff169dea55afdb5aa6426950cfd350e92596a50b3a941959eb"
+      }
+    ]
+  },
+  {
+    "skillId": "skill_jf_venom_edge",
+    "retroChoreographyId": "skill_scout_venom_blade",
+    "motion": "dash-strike",
+    "kind": "class",
+    "layers": [
+      {
+        "key": "scout_venom",
+        "anchor": "target",
+        "frame": 64,
+        "frames": 8,
+        "path": "public/assets/generated/pixel-fx/scout_venom.png",
+        "sha256": "263e042d01d9a5d1b1dbe8df08e3fd519a8dcb7eecf98426fe16ec11f48781e9"
+      }
+    ]
+  },
+  {
+    "skillId": "skill_jf_ember_charm",
+    "retroChoreographyId": "skill_mage_fireball",
+    "motion": "cast",
+    "kind": "class",
+    "layers": [
+      {
+        "key": "mage_fireball_orb",
+        "anchor": "projectile",
+        "frame": 32,
+        "frames": 4,
+        "path": "public/assets/generated/pixel-fx/mage_fireball_orb.png",
+        "sha256": "f824c9cf18262ec815e92435fb323be5c1dce9105ecd672056ac8f4583633428"
+      },
+      {
+        "key": "mage_fire_burst",
+        "anchor": "target",
+        "frame": 64,
+        "frames": 10,
+        "path": "public/assets/generated/pixel-fx/mage_fire_burst.png",
+        "sha256": "c8efa0185f50ccfa7d0328082b544bb1792af8e96cb3f6c39bbb4a49fb82bfde"
+      }
+    ]
+  },
+  {
+    "skillId": "skill_jf_frost_charm",
+    "retroChoreographyId": "skill_sprite_ice_ice_shard",
+    "motion": "shoot",
+    "kind": "class",
+    "layers": [
+      {
+        "key": "mon_frost_orb",
+        "anchor": "projectile",
+        "frame": 32,
+        "frames": 4,
+        "path": "public/assets/generated/pixel-fx/mon_frost_orb.png",
+        "sha256": "ca08f94cd4b701348ef14e1fabe7cf09e0b6b100797034b9890ab91ece81464a"
+      },
+      {
+        "key": "mon_frost_burst",
+        "anchor": "target",
+        "frame": 64,
+        "frames": 8,
+        "path": "public/assets/generated/pixel-fx/mon_frost_burst.png",
+        "sha256": "aee656bd2d6cf34499a127be3b263a4ce5ce5de56323ce18a58322b87c365099"
+      }
+    ]
+  },
+  {
+    "skillId": "skill_jf_life_water",
+    "retroChoreographyId": "skill_cleric_heal_light",
+    "motion": "cast",
+    "kind": "class",
+    "layers": [
+      {
+        "key": "cleric_heal",
+        "anchor": "target",
+        "frame": 64,
+        "frames": 10,
+        "path": "public/assets/generated/pixel-fx/cleric_heal.png",
+        "sha256": "71bc2e568f046dc4742f71c0afb6674620ebee134951ce54d27e53a5bf5adfdc"
+      }
+    ]
+  },
+  {
+    "skillId": "skill_jf_purify",
+    "retroChoreographyId": "skill_cleric_purify",
+    "motion": "cast",
+    "kind": "class",
+    "layers": [
+      {
+        "key": "cleric_purify",
+        "anchor": "target",
+        "frame": 64,
+        "frames": 10,
+        "path": "public/assets/generated/pixel-fx/cleric_purify.png",
+        "sha256": "3b16db494b17cb164d840ec3f6127b0b65bf299ced0367d35816cb98ed8e22d2"
+      }
+    ]
+  },
+  {
+    "skillId": "skill_jf_enemy_tusk_charge",
+    "retroChoreographyId": "skill_mon_tusk_charge",
+    "motion": "lunge",
+    "kind": "monster",
+    "layers": [
+      {
+        "key": "mon_charge_dust",
+        "anchor": "user",
+        "frame": 64,
+        "frames": 6,
+        "path": "public/assets/generated/pixel-fx/mon_charge_dust.png",
+        "sha256": "d4b3dff0e79129d4e3e0d6c7ea7d0582d291f143fdef18226223004a8d25fdb2"
+      },
+      {
+        "key": "mon_tusk_hit",
+        "anchor": "target",
+        "frame": 64,
+        "frames": 8,
+        "path": "public/assets/generated/pixel-fx/mon_tusk_hit.png",
+        "sha256": "daf126d2157ccb65e79da4899ee4e1747123b0d5f7a4b7e95607fd25cd71c18e"
+      }
+    ]
+  },
+  {
+    "skillId": "skill_jf_enemy_straw_club",
+    "retroChoreographyId": "skill_mon_body_slam",
+    "motion": "lunge",
+    "kind": "monster",
+    "layers": [
+      {
+        "key": "mon_slam_hit",
+        "anchor": "target",
+        "frame": 64,
+        "frames": 8,
+        "path": "public/assets/generated/pixel-fx/mon_slam_hit.png",
+        "sha256": "1e5f626152ef57c06324233de2b771771fe4c600175233fc9244c99ebc18044f"
+      }
+    ]
+  },
+  {
+    "skillId": "skill_jf_enemy_sorrow_cry",
+    "retroChoreographyId": "skill_mon_banshee_wail",
+    "motion": "cast",
+    "kind": "monster",
+    "layers": [
+      {
+        "key": "mon_wail_sky",
+        "anchor": "screen",
+        "frame": 128,
+        "frames": 8,
+        "path": "public/assets/generated/pixel-fx/mon_wail_sky.png",
+        "sha256": "8cde920ef57ee2c327a89414b18c2f1a7cb4b3496048438e168db1b1b0dbc759"
+      }
+    ]
+  },
+  {
+    "skillId": "skill_jf_enemy_bronze_smash",
+    "retroChoreographyId": "skill_mon_quake_stomp",
+    "motion": "stomp",
+    "kind": "monster",
+    "layers": [
+      {
+        "key": "mon_quake_crack",
+        "anchor": "allTargets",
+        "frame": 64,
+        "frames": 10,
+        "path": "public/assets/generated/pixel-fx/mon_quake_crack.png",
+        "sha256": "0a5ce0446386228bfb78c026ba00065fcfcb0d9ee81be4c9df3f01f171fd50f7"
+      }
+    ]
+  }
+]

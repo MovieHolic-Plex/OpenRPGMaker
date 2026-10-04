@@ -1,0 +1,49 @@
+{
+  "reviewer": "GPT 6.1 sol high, skills worker",
+  "reviewType": "agent-direct-image-inspection",
+  "userApproved": false,
+  "approval": "pending-user-review",
+  "inspectedFiles": [
+    {
+      "path": "content-packs/joseon-folklore/skills/review/icons-native.png",
+      "sha256": "96f35cfe5859979a756c47171caadfd1159c6394a563df292a7122671c6920c0"
+    },
+    {
+      "path": "content-packs/joseon-folklore/skills/review/icons-4x.png",
+      "sha256": "a6f0aacb3a3307add2f29745553750e5dfe06c394fd0fdc416c03529ed669417"
+    },
+    {
+      "path": "content-packs/joseon-folklore/skills/review/borrowed-fx-class.png",
+      "sha256": "7cde900efb175cc5208896167c6e9c9cac0baee8a4ffe1f4c3582318c606cea0"
+    },
+    {
+      "path": "content-packs/joseon-folklore/skills/review/borrowed-fx-monster.png",
+      "sha256": "8d2123a177154b4aa5c4cc88a58aa11318399078a4c49bd918ffb91d0f6692a5"
+    },
+    {
+      "path": "public/assets/generated/pixel-fx/mon_slam_hit.png",
+      "sha256": "1e5f626152ef57c06324233de2b771771fe4c600175233fc9244c99ebc18044f"
+    },
+    {
+      "path": "public/assets/generated/pixel-fx/mon_wail_sky.png",
+      "sha256": "8cde920ef57ee2c327a89414b18c2f1a7cb4b3496048438e168db1b1b0dbc759"
+    },
+    {
+      "path": "public/assets/generated/pixel-fx/mage_fire_burst.png",
+      "sha256": "c8efa0185f50ccfa7d0328082b544bb1792af8e96cb3f6c39bbb4a49fb82bfde"
+    }
+  ],
+  "observations": [
+    "12 original 32px icons read as slash, body armor, paired daggers, poison blade, ember/frost talismans, life-water gourd, cleansing talisman, boar, straw club, wailing face, bronze striking head. Native and 4x nearest PNGs opened.",
+    "All borrowed FX layers sampled from actual original assets; source frame layouts checked, no fabricated runtime capture. Full original mon_slam_hit, mon_wail_sky and mage_fire_burst sheets opened directly.",
+    "Straw club initially borrowed axe cleave: sharp red blade arc was visually unsuitable. Replaced with blunt impact mon_slam_hit through skill_mon_body_slam.",
+    "Single-target effects use target or projectile/user anchors; sorrow cry uses screen; bronze smash uses allTargets. New skill record retains its actual hit count.",
+    "Final reference sheet uses native 64/128px cells or integer 2x32px cells. No downscaled 128px layer remains in the final annotated sheet."
+  ],
+  "limits": [
+    "Static source/identity review only. No shipped-player timing, actor-weapon pose or canonical-project save/load evidence.",
+    "Borrowed combat FX are existing repository art, not newly authored talisman animations.",
+    "The armor icon expresses bodily hardening; it is not an equipment record.",
+    "Approval has not been requested or received; this is the agent observation receipt."
+  ]
+}

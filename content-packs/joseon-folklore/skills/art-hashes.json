@@ -1,0 +1,218 @@
+[
+  {
+    "path": "content-packs/joseon-folklore/skills/icons/cleaving-strike.png",
+    "sha256": "6a586721812fe0fff96ee90862b4ad7075d0707808c10dc50a8c602021f20783",
+    "size": [
+      32,
+      32
+    ],
+    "author": "GPT 6.1 sol high, original integer pixel geometry in draw-icons.py",
+    "paletteColors": 8,
+    "checks": {
+      "rgba": true,
+      "transparentAlphaValues": [
+        0,
+        255
+      ],
+      "nonempty": true
+    }
+  },
+  {
+    "path": "content-packs/joseon-folklore/skills/icons/iron-breath.png",
+    "sha256": "a0c91839a2d737f6c5039b6dd8065c0a12ccbff9b746c004ccb8d765a4320f12",
+    "size": [
+      32,
+      32
+    ],
+    "author": "GPT 6.1 sol high, original integer pixel geometry in draw-icons.py",
+    "paletteColors": 7,
+    "checks": {
+      "rgba": true,
+      "transparentAlphaValues": [
+        0,
+        255
+      ],
+      "nonempty": true
+    }
+  },
+  {
+    "path": "content-packs/joseon-folklore/skills/icons/double-stab.png",
+    "sha256": "d46353358e6b1f0723e286468642f1e97b6cf25501ba190e5e7e8863b517c5b9",
+    "size": [
+      32,
+      32
+    ],
+    "author": "GPT 6.1 sol high, original integer pixel geometry in draw-icons.py",
+    "paletteColors": 7,
+    "checks": {
+      "rgba": true,
+      "transparentAlphaValues": [
+        0,
+        255
+      ],
+      "nonempty": true
+    }
+  },
+  {
+    "path": "content-packs/joseon-folklore/skills/icons/venom-edge.png",
+    "sha256": "a7ef91ab41b22e14c0dd391502b30b3d312d15b8f34327d3ba5ce7f817d4871c",
+    "size": [
+      32,
+      32
+    ],
+    "author": "GPT 6.1 sol high, original integer pixel geometry in draw-icons.py",
+    "paletteColors": 8,
+    "checks": {
+      "rgba": true,
+      "transparentAlphaValues": [
+        0,
+        255
+      ],
+      "nonempty": true
+    }
+  },
+  {
+    "path": "content-packs/joseon-folklore/skills/icons/ember-charm.png",
+    "sha256": "76a15d84334eae17c03b6ef26e96f57f81228c9baa785a2ec7928a7b7fbd2314",
+    "size": [
+      32,
+      32
+    ],
+    "author": "GPT 6.1 sol high, original integer pixel geometry in draw-icons.py",
+    "paletteColors": 8,
+    "checks": {
+      "rgba": true,
+      "transparentAlphaValues": [
+        0,
+        255
+      ],
+      "nonempty": true
+    }
+  },
+  {
+    "path": "content-packs/joseon-folklore/skills/icons/frost-charm.png",
+    "sha256": "b72996cbd332c50c23f6a7e2e52572b2e18c8dd0460495f36275d599b0969914",
+    "size": [
+      32,
+      32
+    ],
+    "author": "GPT 6.1 sol high, original integer pixel geometry in draw-icons.py",
+    "paletteColors": 8,
+    "checks": {
+      "rgba": true,
+      "transparentAlphaValues": [
+        0,
+        255
+      ],
+      "nonempty": true
+    }
+  },
+  {
+    "path": "content-packs/joseon-folklore/skills/icons/life-water.png",
+    "sha256": "5e5447c44e2fc8a18fcac72b96a401a9631be15251b69efd0806a2e9aa5a6bf0",
+    "size": [
+      32,
+      32
+    ],
+    "author": "GPT 6.1 sol high, original integer pixel geometry in draw-icons.py",
+    "paletteColors": 8,
+    "checks": {
+      "rgba": true,
+      "transparentAlphaValues": [
+        0,
+        255
+      ],
+      "nonempty": true
+    }
+  },
+  {
+    "path": "content-packs/joseon-folklore/skills/icons/purify.png",
+    "sha256": "f49c9c6bbfa9aa831bda1a596c62b683369ba560e4ff9f4142f423e40336b483",
+    "size": [
+      32,
+      32
+    ],
+    "author": "GPT 6.1 sol high, original integer pixel geometry in draw-icons.py",
+    "paletteColors": 8,
+    "checks": {
+      "rgba": true,
+      "transparentAlphaValues": [
+        0,
+        255
+      ],
+      "nonempty": true
+    }
+  },
+  {
+    "path": "content-packs/joseon-folklore/skills/icons/tusk-charge.png",
+    "sha256": "4a812fd085ca3d733d2f098e9cc22efc63a26f675ae371519c2af0c7c42db0ed",
+    "size": [
+      32,
+      32
+    ],
+    "author": "GPT 6.1 sol high, original integer pixel geometry in draw-icons.py",
+    "paletteColors": 9,
+    "checks": {
+      "rgba": true,
+      "transparentAlphaValues": [
+        0,
+        255
+      ],
+      "nonempty": true
+    }
+  },
+  {
+    "path": "content-packs/joseon-folklore/skills/icons/straw-club.png",
+    "sha256": "84bf09452aaa70747041ab9e584bb7cc616e9f9cefbb96568a92826941d55b3d",
+    "size": [
+      32,
+      32
+    ],
+    "author": "GPT 6.1 sol high, original integer pixel geometry in draw-icons.py",
+    "paletteColors": 9,
+    "checks": {
+      "rgba": true,
+      "transparentAlphaValues": [
+        0,
+        255
+      ],
+      "nonempty": true
+    }
+  },
+  {
+    "path": "content-packs/joseon-folklore/skills/icons/sorrow-cry.png",
+    "sha256": "756859094c152625ec79453ec31874fc79f4ec0032055f6616db734ade4fd51b",
+    "size": [
+      32,
+      32
+    ],
+    "author": "GPT 6.1 sol high, original integer pixel geometry in draw-icons.py",
+    "paletteColors": 6,
+    "checks": {
+      "rgba": true,
+      "transparentAlphaValues": [
+        0,
+        255
+      ],
+      "nonempty": true
+    }
+  },
+  {
+    "path": "content-packs/joseon-folklore/skills/icons/bronze-smash.png",
+    "sha256": "c4914ea3fab603201627ee1700866d66b07937ac966c14150a2f61cd651096d5",
+    "size": [
+      32,
+      32
+    ],
+    "author": "GPT 6.1 sol high, original integer pixel geometry in draw-icons.py",
+    "paletteColors": 9,
+    "checks": {
+      "rgba": true,
+      "transparentAlphaValues": [
+        0,
+        255
+      ],
+      "nonempty": true
+    }
+  }
+]

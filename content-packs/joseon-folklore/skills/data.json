@@ -1,0 +1,555 @@
+{
+  "skills": [
+    {
+      "id": "skill_jf_cleaving_strike",
+      "name": "장작가름",
+      "scope": "enemy",
+      "power": 20,
+      "description": "기력 4. 적 하나를 물리 위력 20으로 한 번 벤다. 기본 명중률 95%.",
+      "type": "normal",
+      "mpCost": {
+        "flat": 4,
+        "percentMax": 0
+      },
+      "successRate": 100,
+      "variance": 0,
+      "hitRate": 95,
+      "criticalRate": 0,
+      "retroChoreographyId": "skill_hero_rising_blade",
+      "effect": {
+        "kind": "damage",
+        "statistic": "attack",
+        "affects": "hp"
+      },
+      "elementId": "element_jf_physical",
+      "stateEffects": []
+    },
+    {
+      "id": "skill_jf_iron_breath",
+      "name": "쇠숨",
+      "scope": "self",
+      "power": 0,
+      "description": "기력 5. 자신의 물리 방어 계산 배율을 1.6배로 만든다. 세 번째 자기 차례 시작에 해제되며 전투가 끝나면 풀린다.",
+      "type": "normal",
+      "mpCost": {
+        "flat": 5,
+        "percentMax": 0
+      },
+      "successRate": 100,
+      "variance": 0,
+      "hitRate": 100,
+      "criticalRate": 0,
+      "retroChoreographyId": "skill_monk_iron_body",
+      "effect": {
+        "kind": "support"
+      },
+      "stateEffects": [
+        {
+          "stateId": "state_jf_iron_breath",
+          "chance": 100,
+          "operation": "add"
+        }
+      ]
+    },
+    {
+      "id": "skill_jf_double_stab",
+      "name": "쌍바늘",
+      "scope": "enemy",
+      "power": 10,
+      "description": "기력 4. 적 하나를 두 번 찌른다. 각 타격은 물리 위력 10 계산값의 65%이며 기본 명중률은 타격마다 95%.",
+      "type": "normal",
+      "mpCost": {
+        "flat": 4,
+        "percentMax": 0
+      },
+      "successRate": 100,
+      "variance": 0,
+      "hitRate": 95,
+      "criticalRate": 0,
+      "retroChoreographyId": "skill_scout_twin_strike",
+      "hitSequence": [
+        0.65,
+        0.65
+      ],
+      "effect": {
+        "kind": "damage",
+        "statistic": "attack",
+        "affects": "hp"
+      },
+      "elementId": "element_jf_physical",
+      "stateEffects": []
+    },
+    {
+      "id": "skill_jf_venom_edge",
+      "name": "독묻힌 날",
+      "scope": "enemy",
+      "power": 14,
+      "description": "기력 5. 적 하나를 물리 위력 14로 찌른다. 명중하면 기본 확률 60%로 독을 건다(상태 저항 적용). 독은 차례 시작마다 최대 HP의 6% 피해를 주며 HP 1 아래로 깎지 않는다.",
+      "type": "normal",
+      "mpCost": {
+        "flat": 5,
+        "percentMax": 0
+      },
+      "successRate": 100,
+      "variance": 0,
+      "hitRate": 95,
+      "criticalRate": 0,
+      "retroChoreographyId": "skill_scout_venom_blade",
+      "effect": {
+        "kind": "damage",
+        "statistic": "attack",
+        "affects": "hp"
+      },
+      "elementId": "element_jf_physical",
+      "stateEffects": [
+        {
+          "stateId": "state_poison",
+          "chance": 60,
+          "operation": "add"
+        }
+      ]
+    },
+    {
+      "id": "skill_jf_ember_charm",
+      "name": "잿불부",
+      "scope": "enemy",
+      "power": 28,
+      "description": "기력 6. 적 하나에게 불 속성 정신력 계열 위력 28의 피해를 준다. 화상 상태를 걸지는 않는다.",
+      "type": "normal",
+      "mpCost": {
+        "flat": 6,
+        "percentMax": 0
+      },
+      "successRate": 100,
+      "variance": 0,
+      "hitRate": 100,
+      "criticalRate": 0,
+      "retroChoreographyId": "skill_mage_fireball",
+      "effect": {
+        "kind": "damage",
+        "statistic": "mind",
+        "affects": "hp"
+      },
+      "elementId": "element_jf_fire",
+      "stateEffects": []
+    },
+    {
+      "id": "skill_jf_frost_charm",
+      "name": "서리부",
+      "scope": "enemy",
+      "power": 30,
+      "description": "기력 7. 적 하나에게 얼음 속성 정신력 계열 위력 30의 피해를 준다. 행동 봉쇄나 민첩 감소 효과는 없다.",
+      "type": "normal",
+      "mpCost": {
+        "flat": 7,
+        "percentMax": 0
+      },
+      "successRate": 100,
+      "variance": 0,
+      "hitRate": 100,
+      "criticalRate": 0,
+      "retroChoreographyId": "skill_sprite_ice_ice_shard",
+      "effect": {
+        "kind": "damage",
+        "statistic": "mind",
+        "affects": "hp"
+      },
+      "elementId": "element_jf_ice",
+      "stateEffects": []
+    },
+    {
+      "id": "skill_jf_life_water",
+      "name": "생명수",
+      "scope": "ally",
+      "power": 45,
+      "description": "기력 6. 살아 있는 아군 하나의 HP를 45 회복한다. 최대 HP를 넘지 않는다.",
+      "type": "normal",
+      "mpCost": {
+        "flat": 6,
+        "percentMax": 0
+      },
+      "successRate": 100,
+      "variance": 0,
+      "hitRate": 100,
+      "damageFormula": "45",
+      "criticalRate": 0,
+      "retroChoreographyId": "skill_cleric_heal_light",
+      "effect": {
+        "kind": "healing",
+        "statistic": "mind",
+        "affects": "hp"
+      },
+      "stateEffects": []
+    },
+    {
+      "id": "skill_jf_purify",
+      "name": "맑힘부",
+      "scope": "ally",
+      "power": 0,
+      "description": "기력 5. 아군 하나의 독·맹독·침묵·귀봉·여우홀림을 해제한다. HP 회복과 부활 효과는 없다.",
+      "type": "normal",
+      "mpCost": {
+        "flat": 5,
+        "percentMax": 0
+      },
+      "successRate": 100,
+      "variance": 0,
+      "hitRate": 100,
+      "criticalRate": 0,
+      "retroChoreographyId": "skill_cleric_purify",
+      "effect": {
+        "kind": "support"
+      },
+      "stateEffects": [
+        {
+          "stateId": "state_poison",
+          "chance": 100,
+          "operation": "remove"
+        },
+        {
+          "stateId": "state_deep_poison",
+          "chance": 100,
+          "operation": "remove"
+        },
+        {
+          "stateId": "state_silence",
+          "chance": 100,
+          "operation": "remove"
+        },
+        {
+          "stateId": "state_jf_ghost_seal",
+          "chance": 100,
+          "operation": "remove"
+        },
+        {
+          "stateId": "state_jf_fox_charm",
+          "chance": 100,
+          "operation": "remove"
+        }
+      ]
+    },
+    {
+      "id": "skill_jf_enemy_tusk_charge",
+      "name": "엄니들이받기",
+      "scope": "enemy",
+      "power": 20,
+      "description": "기력 3. 상대 하나에게 물리 위력 20의 피해를 준다. 기본 명중률 90%.",
+      "type": "normal",
+      "mpCost": {
+        "flat": 3,
+        "percentMax": 0
+      },
+      "successRate": 100,
+      "variance": 0,
+      "hitRate": 90,
+      "criticalRate": 0,
+      "retroChoreographyId": "skill_mon_tusk_charge",
+      "effect": {
+        "kind": "damage",
+        "statistic": "attack",
+        "affects": "hp"
+      },
+      "elementId": "element_jf_physical",
+      "stateEffects": []
+    },
+    {
+      "id": "skill_jf_enemy_straw_club",
+      "name": "짚방망이",
+      "scope": "enemy",
+      "power": 18,
+      "description": "기력 3. 상대 하나를 방망이로 내려친다. 물리 위력 18, 기본 명중률 95%. 기절 효과는 없다.",
+      "type": "normal",
+      "mpCost": {
+        "flat": 3,
+        "percentMax": 0
+      },
+      "successRate": 100,
+      "variance": 0,
+      "hitRate": 95,
+      "criticalRate": 0,
+      "retroChoreographyId": "skill_mon_body_slam",
+      "effect": {
+        "kind": "damage",
+        "statistic": "attack",
+        "affects": "hp"
+      },
+      "elementId": "element_jf_physical",
+      "stateEffects": []
+    },
+    {
+      "id": "skill_jf_enemy_sorrow_cry",
+      "name": "한맺힌 울음",
+      "scope": "allEnemies",
+      "power": 0,
+      "description": "기력 5. 상대 전체에게 각각 기본 확률 50%로 귀봉을 건다(상태 저항 적용). 귀봉은 기술 사용을 막고 기본 공격·아이템은 허용하며 두 번째 자기 차례 시작에 풀린다.",
+      "type": "normal",
+      "mpCost": {
+        "flat": 5,
+        "percentMax": 0
+      },
+      "successRate": 100,
+      "variance": 0,
+      "hitRate": 100,
+      "criticalRate": 0,
+      "retroChoreographyId": "skill_mon_banshee_wail",
+      "effect": {
+        "kind": "support"
+      },
+      "stateEffects": [
+        {
+          "stateId": "state_jf_ghost_seal",
+          "chance": 50,
+          "operation": "add"
+        }
+      ]
+    },
+    {
+      "id": "skill_jf_enemy_bronze_smash",
+      "name": "청동내리울림",
+      "scope": "allEnemies",
+      "power": 32,
+      "description": "기력 소모 없음. 준비를 예고하고 다음 자기 차례에 상대 전체를 내려친다. 물리 위력 32, 기본 명중률 95%. 예고를 보고 방어·회복으로 대비할 수 있다.",
+      "type": "normal",
+      "mpCost": {
+        "flat": 0,
+        "percentMax": 0
+      },
+      "successRate": 100,
+      "variance": 0,
+      "hitRate": 95,
+      "criticalRate": 0,
+      "chargeTurns": 1,
+      "retroChoreographyId": "skill_mon_quake_stomp",
+      "effect": {
+        "kind": "damage",
+        "statistic": "attack",
+        "affects": "hp"
+      },
+      "elementId": "element_jf_physical",
+      "stateEffects": []
+    }
+  ],
+  "states": [
+    {
+      "id": "state_jf_iron_breath",
+      "name": "쇠숨",
+      "removalCondition": "전투 종료 시 해제",
+      "restriction": "없음",
+      "recoverNaturallyFromTurn": 3,
+      "recoverNaturallyChance": 100,
+      "recoverWhenHitChance": 0,
+      "runtimeEffects": {
+        "restrictsAction": false,
+        "blocksSkillUse": false,
+        "hpDamagePercentPerTurn": 0,
+        "hpHealPercentPerTurn": 0,
+        "attackMultiplier": 1,
+        "defenseMultiplier": 1,
+        "agilityMultiplier": 1,
+        "removeOnBattleEnd": true,
+        "physicalDefenseMultiplier": 1.6
+      },
+      "battleAura": "shield-shimmer"
+    },
+    {
+      "id": "state_jf_shadow_step",
+      "name": "그림자걸음",
+      "removalCondition": "전투 종료 시 해제",
+      "restriction": "없음",
+      "recoverNaturallyFromTurn": 3,
+      "recoverNaturallyChance": 100,
+      "recoverWhenHitChance": 0,
+      "runtimeEffects": {
+        "restrictsAction": false,
+        "blocksSkillUse": false,
+        "hpDamagePercentPerTurn": 0,
+        "hpHealPercentPerTurn": 0,
+        "attackMultiplier": 1,
+        "defenseMultiplier": 1,
+        "agilityMultiplier": 1,
+        "removeOnBattleEnd": true,
+        "evasionChance": 30
+      },
+      "battleAura": "none"
+    },
+    {
+      "id": "state_jf_protective_talisman",
+      "name": "호신부",
+      "removalCondition": "전투 종료 시 해제",
+      "restriction": "없음",
+      "recoverNaturallyFromTurn": 3,
+      "recoverNaturallyChance": 100,
+      "recoverWhenHitChance": 0,
+      "runtimeEffects": {
+        "restrictsAction": false,
+        "blocksSkillUse": false,
+        "hpDamagePercentPerTurn": 0,
+        "hpHealPercentPerTurn": 0,
+        "attackMultiplier": 1,
+        "defenseMultiplier": 1,
+        "agilityMultiplier": 1,
+        "removeOnBattleEnd": true,
+        "physicalDefenseMultiplier": 1.4,
+        "magicDefenseMultiplier": 1.4
+      },
+      "battleAura": "shield-shimmer"
+    },
+    {
+      "id": "state_jf_ghost_seal",
+      "name": "귀봉",
+      "removalCondition": "전투 종료 시 해제",
+      "restriction": "스킬 사용 불가",
+      "recoverNaturallyFromTurn": 2,
+      "recoverNaturallyChance": 100,
+      "recoverWhenHitChance": 0,
+      "runtimeEffects": {
+        "restrictsAction": false,
+        "blocksSkillUse": true,
+        "hpDamagePercentPerTurn": 0,
+        "hpHealPercentPerTurn": 0,
+        "attackMultiplier": 1,
+        "defenseMultiplier": 1,
+        "agilityMultiplier": 1,
+        "removeOnBattleEnd": true
+      },
+      "battleAura": "silence-mute"
+    },
+    {
+      "id": "state_jf_fox_charm",
+      "name": "여우홀림",
+      "removalCondition": "전투 종료 시 해제",
+      "restriction": "없음",
+      "recoverNaturallyFromTurn": 3,
+      "recoverNaturallyChance": 100,
+      "recoverWhenHitChance": 0,
+      "runtimeEffects": {
+        "restrictsAction": false,
+        "blocksSkillUse": false,
+        "hpDamagePercentPerTurn": 0,
+        "hpHealPercentPerTurn": 0,
+        "attackMultiplier": 0.75,
+        "defenseMultiplier": 1,
+        "agilityMultiplier": 1,
+        "removeOnBattleEnd": true
+      },
+      "battleAura": "none"
+    },
+    {
+      "id": "state_jf_heaven_blessing",
+      "name": "하늘복",
+      "removalCondition": "전투 종료 시 해제",
+      "restriction": "없음",
+      "recoverNaturallyFromTurn": 3,
+      "recoverNaturallyChance": 100,
+      "recoverWhenHitChance": 0,
+      "runtimeEffects": {
+        "restrictsAction": false,
+        "blocksSkillUse": false,
+        "hpDamagePercentPerTurn": 0,
+        "hpHealPercentPerTurn": 5,
+        "attackMultiplier": 1.2,
+        "defenseMultiplier": 1.2,
+        "agilityMultiplier": 1,
+        "removeOnBattleEnd": true
+      },
+      "battleAura": "regen-sparkle"
+    }
+  ],
+  "elements": [
+    {
+      "id": "element_jf_physical",
+      "name": "물리",
+      "kind": "physical",
+      "rateLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "damageMultipliers": {
+        "A": 200,
+        "B": 150,
+        "C": 100,
+        "D": 50,
+        "E": 0
+      }
+    },
+    {
+      "id": "element_jf_fire",
+      "name": "불",
+      "kind": "magical",
+      "rateLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "damageMultipliers": {
+        "A": 200,
+        "B": 150,
+        "C": 100,
+        "D": 50,
+        "E": 0
+      }
+    },
+    {
+      "id": "element_jf_ice",
+      "name": "얼음",
+      "kind": "magical",
+      "rateLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "damageMultipliers": {
+        "A": 200,
+        "B": 150,
+        "C": 100,
+        "D": 50,
+        "E": 0
+      }
+    },
+    {
+      "id": "element_jf_lightning",
+      "name": "번개",
+      "kind": "magical",
+      "rateLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "damageMultipliers": {
+        "A": 200,
+        "B": 150,
+        "C": 100,
+        "D": 50,
+        "E": 0
+      }
+    },
+    {
+      "id": "element_jf_spirit",
+      "name": "영혼",
+      "kind": "magical",
+      "rateLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "damageMultipliers": {
+        "A": 200,
+        "B": 150,
+        "C": 100,
+        "D": 50,
+        "E": 0
+      }
+    }
+  ]
+}
