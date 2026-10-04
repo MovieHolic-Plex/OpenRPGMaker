@@ -756,3 +756,47 @@ The fix preserves session bytes and existing optional-zoom camera commands.
 For Emerald profiles, 480×320 with cameraZoom2 must actually show 15×10 native
 16px tiles; authored metadata alone is insufficient evidence. Verify the player
 camera/world viewport in shipping-browser evidence after new game and transfer.
+
+## Authored sliding floors restored in the current engine (2026-10-04)
+
+`TilesetDef.slideTiles?: Record<string, SlideRule>` uses the original optional
+`up | down | left | right | ice | stop` contract. `project/slideTiles.ts` reads
+upper overlay → upper stack/base → lower overlay → lower stack/base. Arrows
+redirect and continue across ordinary floor until wall/stop; ice preserves the
+incoming direction only while on ice. An absent table preserves ordinary walking.
+This engine feature applies to any authored project; it has no Emerald profile check.
+
+`playSceneMovement` queues a transient `playerSlide` after an ordinary completed
+step, then uses the existing footprint passage/event blocking and step animation
+on the next logic tick. Each slide tile is a real completed field step, retaining
+follower trail, step states, terrain damage, care, poison, location/touch triggers
+and encounter bookkeeping. Rendering, life simulation, logic timing and tile-window
+performance paths are unchanged. The map/coordinate stamp discards stale queued
+steps after relocation. Dialogue/cutscene pauses at a tile boundary; menu already
+pauses the scene. Forced routes own movement ahead of slides and clear pending
+slide state on replacement. Transfer, placement, map reset and both movement-cancel
+handlers clear slide/kind. Vehicles and side-view maps ignore slide tables.
+Slide state is scene-local and is not added to persistent PlaySession/save bytes.
+
+The exporter and canonical wire view already copy the complete tileset record.
+Restoring type + `io/shapeResourceFields.validateTileset` is sufficient: table keys
+must be integer tile indices in range, and values must be one of the six rules.
+No schema/release version bump and no normalization/default table injection are
+needed. `serialize`, `serializePretty`, `deserialize` and `prepareWebExport` retain
+all authored tables; author reference stripping does not strip gameplay metadata.
+
+Focused reproduction uses `npm run dev:worktree -- --config vite.player-qa.config.ts`
+and `OPRN_QA_URL`, `OPRN_QA_PROJECT`, optional `OPRN_QA_OUT`, followed by
+`node scripts/qa/runtime/slide-tiles-native.probe.mjs`. The probe positions a read-only
+full-campaign copy on existing authored floor, taps a physical direction for35ms,
+releases input and observes native automatic completed steps. It authors no tiles
+or maps. Read SUMMARY before PNGs.
+
+Receipt: `/tmp/oprn-emerald-20261004/slide-browser/SUMMARY.md` and `report.json`.
+72 maps /60species: frost gym ice `(3,6)→(3,15)` nine steps→wall;
+hideout left arrow `(5,6)→(8,8)` nine steps including turns→stop;
+hideout down arrow `(19,6)→(19,6)` four-step loop→wall. Endpoints remained still400ms.
+Compact/pretty/export roundtrip retains authored tables; invalid rule rejected;
+page/HTTP errors0. Route/cancel/vehicle/dialogue boundaries were inspected in source;
+the browser proves released-input movement and wall/stop termination. It does not
+prove an entire puzzle solution, canonical storage or a compiled player build.

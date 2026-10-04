@@ -11,6 +11,7 @@ import { advancePursuitDoors, isPlayerHiding, pushObject, toggleHiding } from ".
 import { refreshRuntimeEntities } from "./playSceneMapRuntime";
 import { conditionWaitScenes } from "@/player/runtimeConditionWait";
 import { canMoveFootprint, inBounds, isPassable, ledgeDirectionAt } from "@/project/collision";
+import { slideAfterStep, slideRuleAt } from "@/project/slideTiles";
 import { loopStepTarget, wrapLoopPosition } from "@/project/mapLoop";
 // 경로 세팅은 잎 모듈에 있다(가벼운 소비자가 이 파일 전체를 끌어오지 않도록) — 기존
 // 임포트 경로를 깨지 않기 위해 여기서 다시 내보낸다.
@@ -195,6 +196,10 @@ function tickPlayerMovement(scene: PlaySceneContext, input: InputState, cutscene
   if (!scene.moving && !scene.playerHop) {
     // 주인공 강제 이동 루트가 있으면 입력보다 우선해 자동으로 걷는다.
     if (scene.playerRoute) advancePlayerRoute(scene);
+    // Sliding owns the next free step; a dialogue/cutscene pauses it at the tile boundary.
+    else if (scene.playerSlide) {
+      if (!scene.running && !cutsceneInputLocked) continuePlayerSlide(scene);
+    }
     else if (isSideViewMap(scene.map) && !boardedVehicleId(scene.session)) tickSideView(scene, cutsceneInputLocked ? { x: 0, y: 0 } : input);
     else if (!cutsceneInputLocked && (input.x !== 0 || input.y !== 0)) tryStartMove(scene, input);
   }
@@ -299,7 +304,8 @@ function advancePlayerStepFrame(scene: PlaySceneContext): void {
     // 부를 이유는 없지만, 접촉 트리거가 running 을 썼으면 드나듦은 기록만 남기고
     // 생략되므로 이 순서를 명시해 둔다(자리가 바뀌면 생략 대상이 바뀐다).
     fireLocationTransitionTriggers(scene);
-    if (flying) return;
+    if (flying) { scene.playerSlide = null; scene.playerSlideKind = null; return; }
+    updatePlayerSlide(scene, project);
     fireTouchTriggers(scene);
     maybeTriggerRandomEncounter(scene);
     return;
@@ -356,6 +362,38 @@ function advancePlayerStationaryHopFrame(scene: PlaySceneContext): void {
   }
   finishHop(scene, PLAYER_SHADOW_KEY, scene.player, groundX, groundY, hopState.hop);
   scene.playerHop = null;
+}
+
+/**
+ * 걸음이 끝난 칸이 미끄러지는 바닥이면 다음에 갈 방향을 정한다(tileset.slideTiles). 강제 이동 루트 중에는
+ * 루트가 이동을 정하므로 미끄러지지 않는다. 화살표 칸은 몸도 그쪽으로 돌린다 — 얼음은 들어온 방향을 본 채로 미끄러진다.
+ */
+function updatePlayerSlide(scene: PlaySceneContext, project: ReturnType<typeof store.getCurrent>): void {
+  const tileset = project.tilesets[scene.map.tilesetId];
+  const sliding = scene.playerSlideKind ?? null;
+  scene.playerSlideKind = null;
+  if (!tileset?.slideTiles || scene.playerRoute || isSideViewMap(scene.map) || boardedVehicleId(scene.session)) { scene.playerSlide = null; return; }
+  const next = slideAfterStep(tileset, scene.map, scene.tileX, scene.tileY, scene.movingTo.x - scene.movingFrom.x, scene.movingTo.y - scene.movingFrom.y, sliding);
+  // 칸·맵을 함께 적어 둔다 — 접촉 이벤트가 주인공을 다른 곳으로 옮기면 그 미끄러짐은 버린다.
+  scene.playerSlide = next ? { ...next, mapId: scene.map.id, x: scene.tileX, y: scene.tileY } : null;
+  const rule = next ? slideRuleAt(tileset, scene.map, scene.tileX, scene.tileY) : null;
+  if (next && rule && rule !== "ice") scene.facing = facingForStep(next.dx, next.dy);
+}
+
+/** 미끄러짐 한 칸. 앞이 막혔거나(지형·솔리드 이벤트) 탈것에 탔으면 그 자리에 멈춘다. */
+function continuePlayerSlide(scene: PlaySceneContext): void {
+  const slide = scene.playerSlide;
+  scene.playerSlide = null;
+  if (!slide || boardedVehicleId(scene.session)) return;
+  if (slide.mapId !== scene.map.id || slide.x !== scene.tileX || slide.y !== scene.tileY) return;
+  const body = resolvePlayerBody(store.getCurrent(), scene.session);
+  const nx = scene.tileX + slide.dx;
+  const ny = scene.tileY + slide.dy;
+  if (!playerCanStep(scene, body, slide.dx, slide.dy) || findBlockingEventForPlayerBody(scene, body, nx, ny)) return;
+  scene.dashing = false;
+  beginPlayerStep(scene, nx, ny);
+  scene.playerSlideKind = slide.kind;
+  scene.lastActionTargetKey = "";
 }
 
 function beginPlayerStep(scene: PlaySceneContext, toX: number, toY: number): void {

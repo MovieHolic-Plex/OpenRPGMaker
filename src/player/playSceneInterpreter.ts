@@ -821,6 +821,8 @@ function stopCommandMovement(scene: PlaySceneContext): void {
   for (const eventId of scene.commandMoveRouteEventIds) scene.autonomousNPCs.delete(eventId);
   scene.commandMoveRouteEventIds.clear();
   scene.playerRoute = null;
+  scene.playerSlide = null;
+  scene.playerSlideKind = null;
   // 체공 중에 이동이 취소되면 원점 리프트가 남아 주인공이 공중에 붙는다.
   if (scene.playerHop) {
     scene.playerHop = null;

@@ -197,6 +197,14 @@ export function validateTileset(id: string, value: unknown): void {
       assert(dir === "up" || dir === "down" || dir === "left" || dir === "right", `tileset ${id}: ledgeDirections[${tile}] 방향 오류`);
     }
   }
+  if (tileset.slideTiles !== undefined) {
+    const slides = requireRecord(`tileset ${id}.slideTiles`, tileset.slideTiles);
+    for (const [tile, rule] of Object.entries(slides)) {
+      const index = Number(tile);
+      assert(Number.isInteger(index) && index >= 0 && index < count, `tileset ${id}: slideTiles 타일 ${tile} 범위 밖`);
+      assert(["up", "down", "left", "right", "ice", "stop"].includes(rule as string), `tileset ${id}: slideTiles[${tile}] 규칙 오류`);
+    }
+  }
   if (tileset.suppressedHarnessGroupIds !== undefined) {
     for (const groupId of requireArray(`tileset ${id}.suppressedHarnessGroupIds`, tileset.suppressedHarnessGroupIds)) {
       requireString(`tileset ${id}.suppressedHarnessGroupIds[]`, groupId);

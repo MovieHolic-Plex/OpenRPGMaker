@@ -1480,3 +1480,12 @@ AI 경로는 기존 연결 관문 → 기획 인터뷰 → 확정 기획 저장 
 
 첫 편집 진행은 기존 `Project.flags`의 boolean 키로만 저장한다. 프로젝트 스키마 버전은 바꾸지 않는다.
 키·동작·오른쪽 도크 소유자는 [장르 프리셋](editor-genre-packs.md)의 2026-10-01 절을 따른다.
+
+## Optional authored slide tables (2026-10-04)
+
+`TilesetDef.slideTiles` and exported `SlideRule` retain the original six-rule
+arrow/ice/stop contract. Load validation checks tile-index bounds and rule values;
+compact/pretty wire serialization and `prepareWebExport` retain the entire table.
+Absent fields remain absent, with no schema version change. Runtime continuation
+is transient scene state; saves do not acquire a new slide field. Native evidence
+and state ownership: [runtime-sessions.md](runtime-sessions.md#authored-sliding-floors-restored-in-the-current-engine-2026-10-04).
