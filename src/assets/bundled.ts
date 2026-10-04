@@ -1,5 +1,6 @@
 import { loadUploadedEventSprites, registerUploadedEventSpriteFrames } from "./uploadedEventSprites";
 import sharedVillageObjects from "./sharedVillageObjects.json";
+import { CC0_ICON_ASSETS, resolveCc0IconAssetUrl } from './cc0IconAssets';
 import { uploadedAssetUrl } from "@/project/persistence/assetAccessors";
 import forestHarmony from "./forestHarmonyTileset.json";
 import forestHarmonyHouseParts from "./forestHarmonyHouseParts.json";
@@ -327,8 +328,9 @@ export function loadBundledAssets(scene: { readonly load: Pick<Phaser.Loader.Loa
   for (const id of usedTextures ?? []) {
     // Project-owned sprites/uploads keep their existing texture ownership.
     if (project?.assets.sprites[id] || project?.assets.uploaded[id]) continue;
-    const url = generatedMonsterSpriteUrl(id);
-    if (url) scene.load.image(id, url);
+    const iconUrl = resolveCc0IconAssetUrl(id);
+    const url = iconUrl ?? generatedMonsterSpriteUrl(id);
+    if (url) scene.load.image(id, iconUrl ? withInlineAsset(url) : url);
   }
   scene.load.image(TEX_DIALOGUE_FRAME, withInlineAsset(ASSET_DIALOGUE_FRAME));
   scene.load.image(EMOTE_TEXTURE_KEY, withInlineAsset(EMOTE_ASSET_PATH));
@@ -594,6 +596,7 @@ export function ensureBundledProjectTextures(
   const chipsets: BundledImageAsset[] = [];
   const charsetKeys = new Set<string>();
   const cropIds = new Set<string>();
+  const objectIds = new Set<string>();
   const queue = (loadKey: string, path: string): void => {
     inFlight.add(loadKey);
     scene.load.image(loadKey, withInlineAsset(path));
@@ -617,7 +620,13 @@ export function ensureBundledProjectTextures(
     queue(asset.id, asset.path);
     cropIds.add(asset.id);
   }
-  if (chipsets.length === 0 && charsetKeys.size === 0 && cropIds.size === 0) return;
+  for (const asset of CC0_ICON_ASSETS) {
+    if (!used.has(asset.id) || project.assets.sprites[asset.id] || project.assets.uploaded[asset.id]
+      || scene.textures.exists(asset.id) || inFlight.has(asset.id)) continue;
+    queue(asset.id, asset.path);
+    objectIds.add(asset.id);
+  }
+  if (chipsets.length === 0 && charsetKeys.size === 0 && cropIds.size === 0 && objectIds.size === 0) return;
   scene.load.once("complete", () => {
     for (const asset of chipsets) {
       inFlight.delete(chipsetLoadTextureKey(asset.textureKey));
@@ -628,6 +637,7 @@ export function ensureBundledProjectTextures(
     if (chipsets.length > 0) registerUploadedTilesets(scene, project);   // 늦게 실린 번들 시트의 저작 스트립
     for (const key of charsetKeys) inFlight.delete(rawCharsetTextureKey(key));
     for (const id of cropIds) inFlight.delete(id);
+    for (const id of objectIds) inFlight.delete(id);
     if (charsetKeys.size > 0) registerEasyRpgCharsetTextures(scene, charsetKeys);
     if (cropIds.size > 0) registerFarmingCropFrames(scene, cropIds);
     onRegistered?.();
@@ -677,6 +687,9 @@ function projectBundledTextureKeys(project: Project): Set<string> {
   }
   for (const asset of EASYRPG_PICTURE_ASSETS) {
     if (spatialGraphicResourceIds(project).has(asset.id)) keys.add(asset.id);
+  }
+  for (const asset of CC0_ICON_ASSETS) {
+    if (strings.has(asset.id)) keys.add(asset.id);
   }
   // Rock/gem charset + tree chipset frames are hardcoded by the placeable overlay renderer,
   // so they are not always present as project strings even when rocks/trees exist in session.

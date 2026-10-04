@@ -143,6 +143,14 @@ describe("toolRegistry", () => {
     expect(schema?.function.parameters.properties?.kind.enum).toContain("picture");
   });
 
+  it('finds an existing pocket watch picture instead of forcing a charset substitute', () => {
+    const result = runTool({project:createEmptyToolProject()}, 'list_resources', {kind:'picture',query:'clock'}, {});
+    expect(result.ok, result.summary).toBe(true);
+    expect(result.data).toMatchObject({matches:expect.arrayContaining([
+      expect.objectContaining({id:'cc0-jetrel-clock',label:'clock'}),
+    ])});
+  });
+
   it("list_resources picture 검색은 업로드 그림을 name/id로 찾는다", () => {
     const project = createEmptyToolProject();
     project.assets.uploaded["picture_potion_red"] = {

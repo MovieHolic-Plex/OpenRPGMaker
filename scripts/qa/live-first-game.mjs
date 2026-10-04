@@ -41,7 +41,7 @@ async function recordWire() {
           if (!line.trim()) continue;
           const e = JSON.parse(line), inner = e.event ?? e;
           events.push({ seq: e.seq, type: e.type, at: e.at, innerType: inner.type,
-            innerAt: inner.at, agent: e.agentId, tool: inner.toolName, bytes: line.length,
+            innerAt: inner.at, agent: inner.agentId ?? e.agentId, tool: inner.toolName, bytes: line.length,
             name: inner.name, ok: inner.ok, summary: inner.summary?.slice(0, 300), message: inner.message });
         }
       }
@@ -62,6 +62,9 @@ async function recordWire() {
   report.coreFirstVerified = core >= 0 && review > core && (decoration < 0 || decoration > review);
   report.coreReadyAt = events[core]?.at;
   report.coreReviewedAt = events[review]?.at;
+  const sceneReview = events.findIndex(event => event.name === 'first_scene.review_passed' && event.ok === true);
+  report.firstSceneReviewed = sceneReview > review && events.some(event => event.name === 'map.image.delivered' && event.ok === true);
+  report.firstSceneReviewedAt = events[sceneReview]?.at;
 }
 function snapshot() {
   const folder = new URL(report.projectUrl).searchParams.get('hostProject');
@@ -203,7 +206,7 @@ try {
   if (report.requests.length) {
     try { await recordWire(); } catch (e) { report.wireFailure = e.message; }
   }
-  report.generationPrerequisitePassed = Boolean(report.generationPrerequisitePassed && report.wireCompleted && report.coreFirstVerified);
+  report.generationPrerequisitePassed = Boolean(report.generationPrerequisitePassed && report.wireCompleted && report.coreFirstVerified && report.firstSceneReviewed);
   if (!report.generationPrerequisitePassed) process.exitCode = 1;
   save(); await browser.close();
 }

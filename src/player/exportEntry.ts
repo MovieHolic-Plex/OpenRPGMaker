@@ -125,6 +125,7 @@ function startPlayer(
     const host = parseHostBridge(boot);
     const probe = boot.qaInstrumentation === true ? boot.actionCombatProbe : undefined;
     renderPlayer(root, {
+      surfaceScaleMode: 'fit',
       saveIsolationScope: resolveCommunitySaveScope(window.location.pathname),
       qaInstrumentation: boot.qaInstrumentation === true,
       hostBridge: host,

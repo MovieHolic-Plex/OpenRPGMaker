@@ -475,7 +475,7 @@ const listNpcGraphics: ToolDefinition = {
 
 const listResources: ToolDefinition = {
   name: "list_resources",
-  description: "리소스를 검색한다. kind: tile/charset/monster/backdrop/bgm/se(시맨틱 검색), picture(업로드·생성 그림 name/id 부분 일치) 또는 faceset(얼굴: 라벨·특징·짝 걷기 그림으로 검색, 예: '금발 여성', 'people2'). NPC 얼굴은 보통 생략한다 — 걷기 그림의 짝이 자동으로 붙고, 짝이 아닌 번들 얼굴은 짝으로 교정된다. kind:\"tile\" 은 mapId(또는 tilesetId)의 타일셋에서 찾는다 — 생략하면 시작 맵의 타일셋.",
+  description: "리소스를 검색한다. kind: tile/charset/monster/backdrop/bgm/se(시맨틱 검색), picture(업로드·생성·공용 사물 그림 name/id 부분 일치, 사물은 영어도 검색: clock/book) 또는 faceset(얼굴: 라벨·특징·짝 걷기 그림으로 검색, 예: '금발 여성', 'people2'). NPC 얼굴은 보통 생략한다 — 걷기 그림의 짝이 자동으로 붙고, 짝이 아닌 번들 얼굴은 짝으로 교정된다. kind:\"tile\" 은 mapId(또는 tilesetId)의 타일셋에서 찾는다 — 생략하면 시작 맵의 타일셋.",
   mode: "read",
   parameters: {
     type: "object",
