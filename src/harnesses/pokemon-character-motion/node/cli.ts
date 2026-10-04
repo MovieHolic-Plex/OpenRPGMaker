@@ -2,7 +2,7 @@ import { mkdirSync, readFileSync, writeFileSync, existsSync, readdirSync, copyFi
 import { resolve, join, dirname } from "node:path";
 import { readPng, writePng } from "../../monster-collect-species/node/png";
 import { createImage, pixelAt, setPixel } from "../../monster-collect-species/pixel/image";
-import { WIDTH,HEIGHT,ROWS,ORDER,LIMITS,VERSION,sha,framesFromNative,pack,importAtlas,checkCharset,checkClip,type ClipMetadata } from "./motion";
+import { WIDTH,HEIGHT,ROWS,ORDER,LIMITS,VERSION,sha,framesFromNative,pack,importAtlas,importRasterAtlas,checkCharset,checkClip,type ClipMetadata } from "./motion";
 const ROOT=resolve(import.meta.dirname,"../../../.."),DEFAULT=resolve(ROOT,"harness-data/pokemon-character-motion");
 const json=(path:string)=>JSON.parse(readFileSync(path,"utf8"));
 const save=(path:string,value:unknown)=>{mkdirSync(dirname(path),{recursive:true});writeFileSync(path,JSON.stringify(value,null,2)+"\n");};
@@ -55,7 +55,8 @@ export async function run(argv:string[]):Promise<number>{
       if(f["clip-metadata"]||f["clip-source"]){if(!f["clip-metadata"]||!f["clip-source"])throw Error("clip requires metadata and source");const metaBytes=readFileSync(resolve(f["clip-metadata"])),meta=JSON.parse(metaBytes.toString()) as ClipMetadata,sourceBytes=readFileSync(resolve(f["clip-source"])),checked=checkClip(readPng(resolve(f["clip-source"])),meta);if(!checked.pass)throw Error(checked.errors.join("; "));preparedClip={metaBytes,sourceBytes,meta,checked};}
       const source=readPng(resolve(f.source));let imported:Record<string,unknown>,image;
       if(bool.has("native")){const slot=f.slot===undefined?undefined:Number(f.slot);image=pack(framesFromNative(source,slot));imported={mode:"native",slot:slot??0,scale:1};}
-      else{const r=importAtlas(source,block);image=r.image;imported={mode:"generated",commonBlock:r.block,inferredBlocks:r.inferredBlocks,sourceRects:r.rects,commonScale:r.scale,palette:r.palette,headAlignment:"top silhouette root, native translations only"};}
+      else if(f.sampling==="raster"){const r=importRasterAtlas(source);image=r.image;imported={mode:"generated",...r,image:undefined};}
+      else{if(f.sampling&&f.sampling!=="grid")throw Error("--sampling grid|raster");const r=importAtlas(source,block);image=r.image;imported={mode:"generated",commonBlock:r.block,inferredBlocks:r.inferredBlocks,sourceRects:r.rects,commonScale:r.scale,palette:r.palette,headAlignment:"top silhouette root, native translations only"};}
       const id=`${f.role}-${Date.now()}-${sha(sourceBytes).slice(0,8)}`,c=join(base,"candidates",id);mkdirSync(c,{recursive:true});writeFileSync(join(c,"source.png"),sourceBytes);writeFileSync(join(c,"prompt.txt"),prompt);writePng(join(c,"charset.png"),image);
       let clip=null;if(preparedClip){const {metaBytes,sourceBytes,meta,checked:r}=preparedClip;writeFileSync(join(c,"clip-source.png"),sourceBytes);writeFileSync(join(c,"clip-metadata.json"),metaBytes);const strip=createImage(meta.frameWidth*r.frames.length,meta.frameHeight);r.frames.forEach((fr,i)=>{for(let y=0;y<fr.height;y++)for(let x=0;x<fr.width;x++)setPixel(strip,i*fr.width+x,y,pixelAt(fr,x,y));});writePng(join(c,"clip.png"),strip);clip={hashes:Object.fromEntries(["clip-source.png","clip-metadata.json","clip.png"].map(file=>[file,hashFile(join(c,file))]))};}
       save(join(c,"provenance.json"),{version:VERSION,createdAt:new Date().toISOString(),role:f.role,sourceSha256:sha(sourceBytes),promptSha256:sha(prompt),finalSha256:hashFile(join(c,"charset.png")),contract:seed.charset,limits:LIMITS,...imported,clip});

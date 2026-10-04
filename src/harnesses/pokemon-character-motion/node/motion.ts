@@ -127,3 +127,33 @@ export function checkClip(source:RgbaImage,meta:ClipMetadata){
   if(frames.length===meta.sourceRects.length){let max=0;for(let i=1;i<frames.length;i++)max=Math.max(max,diff(frames[0]!,frames[i]!));if(max<4)errors.push("clip has fewer than 4 meaningful changed pixels");}
   return {pass:errors.length===0,errors,frames,normalized};
 }
+
+/** Preserve frame coherence: align source silhouettes before shared nearest sampling. */
+export function importRasterAtlas(source:RgbaImage){
+  const bg=edgeProfiles(source).bg,py=new Array(source.height).fill(0);
+  for(let y=0;y<source.height;y++)for(let x=0;x<source.width;x++)if(!bg[y*source.width+x])py[y]++;
+  const rects:Box[]=[];
+  ranges(py,4).forEach(y=>{
+    const profile=new Array(source.width).fill(0);
+    for(let yy=y.start;yy<y.end;yy++)for(let x=0;x<source.width;x++)if(!bg[yy*source.width+x])profile[x]++;
+    ranges(profile,3).forEach(x=>rects.push({x:x.start,y:y.start,width:x.end-x.start,height:y.end-y.start}));
+  });
+  const scale=Math.min(1,(WIDTH-4)/Math.max(...rects.map(r=>r.width)),(HEIGHT-4)/Math.max(...rects.map(r=>r.height)));
+  const frames=rects.map(r=>{
+    let sum=0,count=0;
+    const isInk=(x:number,y:number)=>!bg[(r.y+y)*source.width+r.x+x];
+    for(let y=0;y<Math.min(r.height,9/scale);y++)for(let x=0;x<r.width;x++)if(isInk(x,y)){sum+=x;count++;}
+    if(!count)throw Error("empty source head silhouette");
+    const cx=sum/count,out=createImage(WIDTH,HEIGHT);
+    // Inspect samples outside the output as well: a bad anchor must fail rather than silently crop ink.
+    for(let y=2;y<Math.ceil(r.height*scale)+3;y++)for(let x=-WIDTH;x<WIDTH*2;x++){
+      const sx=Math.floor(cx+(x-11.5)/scale),sy=Math.floor((y-2+.5)/scale);
+      if(sx<0||sx>=r.width||sy<0||sy>=r.height||!isInk(sx,sy))continue;
+      if(x<1||x>=WIDTH-1||y<1||y>=HEIGHT-1)throw Error("aligned source raster clips: regenerate source");
+      const pixel=pixelAt(source,r.x+sx,r.y+sy);setPixel(out,x,y,[pixel[0],pixel[1],pixel[2],255]);
+    }
+    return out;
+  });
+  const image=pack(frames),palette=quantizePalette(image,24);
+  return {image,rects,scale,palette,sampling:"common-source-raster",alphaThreshold:128,phase:0.5,headAlignment:"source silhouette centroid before quantization"};
+}

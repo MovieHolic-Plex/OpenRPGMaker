@@ -20,6 +20,9 @@
 npm run harness -- pokemon-character-motion status --sandbox /path/review
 npm run harness -- pokemon-character-motion import --sandbox /path/review \
   --role hero --source /path/hero.png --prompt-file /path/hero.prompt.txt --block 8
+# --sampling raster: 원본 좌표에서 머리 중심을 맞춘 뒤 공통 배율/샘플 위치로 변환
+npm run harness -- pokemon-character-motion import --sandbox /path/review \
+  --role hero --source /path/hero.png --prompt-file /path/hero.prompt.txt --sampling raster
 # --block 생략 시 12개 포즈의 추정값 중앙값을 COMMON grid로 다시 사용한다.
 # 각 포즈를 서로 다른 블록으로 가져오지 않는다.
 npm run harness -- pokemon-character-motion import --sandbox /path/review \
@@ -41,7 +44,7 @@ node src/harnesses/pokemon-character-motion/node/verify.mjs
 
 ## 가져오기와 관문
 
-생성 아틀라스는 투명/마젠타 배경과 3×4 포즈의 여백을 읽어 행·열을 나눈다. 행별 열 여백을 읽으므로 가로 배치가 조금 달라도 된다. 충분한 여백을 못 찾으면 실패한다. 공통 블록으로 기존 `monster-collect-species/pixel/grid`를 사용하고, **한 배율**로 모든 12포즈를 줄인다. 각 방향 상단 실루엣 중심을 네이티브 좌표에 정렬하는 것은 이동만이며 개별 포즈 크기를 바꾸지 않는다. 알파 형상에 도트를 추가하거나 윤곽을 다시 그리지 않는다. 한 역할 전체의 빈도/Lab 대표색을 <=24개로 합쳐 옷 색 깜빡임을 줄인다. 가공 정보, 12개 원본 crop, 추정 블록, 확정 블록, 공통 배율과 팔레트를 provenance에 남긴다.
+생성 아틀라스는 투명/마젠타 배경과 3×4 포즈의 여백을 읽어 행·열을 나눈다. 행별 열 여백을 읽으므로 가로 배치가 조금 달라도 된다. 충분한 여백을 못 찾으면 실패한다. 공통 블록으로 기존 `monster-collect-species/pixel/grid`를 사용하고, **한 배율**로 모든 12포즈를 줄인다. 각 방향 상단 실루엣 중심을 네이티브 좌표에 정렬하는 것은 이동만이며 개별 포즈 크기를 바꾸지 않는다. 알파 형상에 도트를 추가하거나 윤곽을 다시 그리지 않는다. 한 역할 전체의 빈도/Lab 대표색을 <=24개로 합쳐 옷 색 깜빡임을 줄인다. `--sampling raster`는 프레임별 색 경계 재맞춤으로 같은 머리 모양이 변하는 원본에 쓴다. 원본 상단 실루엣 중심을 먼저 맞추고, 전체 12포즈에 하나의 배율·반 픽셀 샘플 위치·알파128 기준·공통 팔레트를 적용한다. 출력 바깥 샘플도 검사하여 잘림을 숨기지 않는다. 자동으로 관문이 통과하는 샘플 위치를 찾거나 실패를 완화하지 않는다. `--sampling grid`(기본)는 기존 격자 추출이다. 가공 정보, 12개 원본 crop, 추정 블록, 확정 블록, 공통 배율과 팔레트를 provenance에 남긴다.
 
 관문은 정확한 캔버스/12포즈, 이진 알파, 투명 1px 경계(잘림), 전체 12포즈 팔레트 합집합 <=24, 방향별 상단 9행 실루엣 중심과 꼭대기 흔들림 <=1px, 머리 폭·전체 높이 비 <=1.25/머리 및 몸통 중심 면적비 <=1.30, stepA/B 하체 변경 >=4px, [0,1,2,1] 모든 인접 포즈의 상체 영역 변경률 <=0.36을 검사한다. 변경률은 투명/불투명 변화와 Lab 거리 >=0.12인 색 차이를 센다. 사소한 대표색 차이를 모든 픽셀이 바뀐 것으로 세지 않는다. 상체 변경률은 상단 9행 머리와 머리 중심 ±3px의 몸통(높이 65%까지)에서만 측정한다. 정상적인 팔/다리 동작을 제외한다. 전체 프레임의 정확한 RGBA 변경률은 경고/진단에만 남긴다. 몸통 연속폭도 진단에 남기며 정상 팔 움직임만으로 불합격시키지 않는다. 몸통 중심부는 상단 실루엣 중심을 기준으로 어깨 아래~몸 높이 65%에서 측정하며 팔과 다리의 정상 움직임으로 늘어나는 전체 bbox 폭은 크기 관문의 근거로 쓰지 않는다. 생성 importer의 머리 정렬은 수치 문제만 해결한다. 머리 그림 자체가 달라지거나 옷/소품/방향 의미가 달라진 것은 재생 시각 검수가 판단한다. 팔레트가 124~189개이고 머리가 3~7px 흔들리는 옛 캠페인 시트는 관문에서 거부되어야 한다.
 
