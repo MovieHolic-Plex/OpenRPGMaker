@@ -2,7 +2,7 @@
 // Keep canonical JSON Schema numeric; repair only the SDK's normalized payload.
 // Gemini drops numeric enums during normalization, so retain source membership first.
 type RecordNode = Record<string, unknown>;
-type EnumField = { readonly tool: string; readonly path: readonly string[]; readonly members: readonly number[] };
+type EnumField = { readonly tool: string; readonly path: readonly string[]; readonly members: readonly number[]; readonly nullable: boolean };
 
 function record(value: unknown): value is RecordNode {
   return value !== null && typeof value === "object" && !Array.isArray(value);
@@ -30,12 +30,15 @@ export function antigravityToolEnumPayload(
     const numericType = node.type === "integer" || node.type === "number"
       || (Array.isArray(node.type) && node.type.some(type => type === "integer" || type === "number"));
     if (Object.hasOwn(node, "enum") && (numericType || (Array.isArray(node.enum) && node.enum.some(value => typeof value === "number")))) {
-      if (node.type !== "integer" || !Array.isArray(node.enum) || node.enum.length === 0
-        || !node.enum.every(value => typeof value === "number" && Number.isSafeInteger(value))
+      const nullable = Array.isArray(node.type) && node.type.length === 2
+        && node.type.includes("integer") && node.type.includes("null") && Array.isArray(node.enum) && node.enum.includes(null);
+      const members = Array.isArray(node.enum) ? node.enum.filter(value => value !== null) : [];
+      if ((!nullable && node.type !== "integer") || !Array.isArray(node.enum) || members.length === 0
+        || !node.enum.every(value => nullable && value === null || typeof value === "number" && Number.isSafeInteger(value))
         || new Set(node.enum).size !== node.enum.length) {
         throw new ToolSchemaTransportError(model, tool, path, "expected a nonempty integer enum of distinct safe integers");
       }
-      fields.push({ tool, path, members: [...node.enum] });
+      fields.push({ tool, path, members: members as number[], nullable });
     }
     // Walk schema slots, never instance data (enum/default/examples) or property names
     // as keywords. Unsupported structural translations are caught by exact path lookup.
@@ -80,10 +83,15 @@ export function antigravityToolEnumPayload(
         fail("enum-bearing field changed type during normalization");
       }
       const schema = node;
+      if (field.nullable) {
+        if (Object.hasOwn(schema, "nullable") && schema.nullable !== true) fail("optional integer enum changed null omission semantics during normalization");
+        schema.nullable = true;
+      }
       const encoded = field.members.map(String);
       if (Object.hasOwn(schema, "enum")) {
-        const current = schema.enum;
-        if (!Array.isArray(current) || current.length !== encoded.length
+        const raw = schema.enum;
+        const current = field.nullable && Array.isArray(raw) ? raw.filter(value => value !== null) : raw;
+        if (!Array.isArray(raw) || new Set(raw).size !== raw.length || !Array.isArray(current) || current.length !== encoded.length
           || !(current.every(value => typeof value === "number") || current.every(value => typeof value === "string"))
           || new Set<string | number>(current).size !== current.length
           || current.some(value => !encoded.includes(String(value)))) {

@@ -46,6 +46,14 @@ ctx.project=fixtureBeforeEdit;
 const added=run('place_terrain_house',{mapId:m.id,anchor:{x:24,y:46},style:'beodeul-manor-a',width:9,stories:2,roofWidth:11});
 const roofBase=ctx.project;
 const house=run('inspect_terrain',{mapId:m.id}).houses.find((h:any)=>h.placementId===added.placementId);
+// Door fronts can sit outside the structure rectangle. Terrain must protect those too.
+run('design_terrain',{mapId:m.id,tool:'contour',points:[house.doorFront,{x:house.doorFront.x+1,y:house.doorFront.y+2}],areaShape:'rect',delta:2});
+assert.equal(map().relief!.levels[house.doorFront.y*m.width+house.doorFront.x],house.level);
+assert.equal(run('inspect_terrain',{mapId:m.id}).houses.find((h:any)=>h.placementId===added.placementId).flat,true);
+ctx.project=roofBase;checks.push('terrain sculpt preserves the door front outside the house rectangle');
+run('design_terrain',{mapId:m.id,tool:'lake',points:[house.doorFront,{x:house.doorFront.x+2,y:house.doorFront.y+3}],areaShape:'rect',waterLevel:0});
+assert.equal(map().terrainDesign!.waterDepth![house.doorFront.y*m.width+house.doorFront.x],0);
+ctx.project=roofBase;checks.push('lake cannot fill the existing house entrance approach with water');
 const walls=house.parts.find((part:any)=>part.id==='walls');
 const wallPixels=[];
 for(let y=walls.y;y<walls.y+walls.height;y++)for(let x=walls.x;x<walls.x+walls.width;x++)wallPixels.push([x,y,layerTileAt(map(),1,y*m.width+x),layerTileAt(map(),3,y*m.width+x)]);
