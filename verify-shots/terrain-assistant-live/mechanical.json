@@ -51,7 +51,7 @@
           "x": 16,
           "y": 11
         },
-        "placementId": "sp_ba9052d4-038a-453c-ae27-bfefee45ca38"
+        "placementId": "sp_fcd00374-2a1b-4e9f-82cb-bcab78cd093f"
       }
     },
     {
@@ -90,7 +90,7 @@
       "data": {
         "reachable": true,
         "blocked": [],
-        "featureId": "terrain_3b50ccdf-8a71-41fc-9956-1a7ad9ee8d75",
+        "featureId": "terrain_29339fd0-aead-4eaa-8431-5c3a8cb53c04",
         "rampCells": 18
       }
     },
@@ -117,7 +117,7 @@
         },
         "houses": [
           {
-            "placementId": "sp_ba9052d4-038a-453c-ae27-bfefee45ca38",
+            "placementId": "sp_fcd00374-2a1b-4e9f-82cb-bcab78cd093f",
             "kitId": "quick_house_beodeul-manor-a_9_1_roof13x3",
             "x": 10,
             "y": 5,
@@ -186,7 +186,7 @@
         ],
         "features": [
           {
-            "id": "terrain_3b50ccdf-8a71-41fc-9956-1a7ad9ee8d75",
+            "id": "terrain_29339fd0-aead-4eaa-8431-5c3a8cb53c04",
             "tool": "road",
             "points": [
               {

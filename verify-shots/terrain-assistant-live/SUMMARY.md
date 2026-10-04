@@ -59,6 +59,12 @@ lay_terrain_road 3회, place_terrain_ramp 3회, inspect_terrain 3회, check_terr
 첫 준비와 턴 정산은 큰 번들 자료 때문에 오래 걸렸으며 Chromium 검수는 중단하고 기존 실전 하네스와 같은
 Firefox로 완료했다. 이 증거는 준비 지연의 해소를 주장하지 않는다. 린트 경고 1건이 표시됐으며 린트 전체 통과를 주장하지 않는다.
 
+그 캡처에서 모델이 본 높이 그림과 달리 큰 지도 에디터의 집이 가려지는 것도 발견했다.
+바닥/상층이 같은 lazy 청크에 들어가 상층도 절벽 아래에서 그려진 문제였다. 층별 부모와 들린 행 컬링을 고쳤다.
+수정 후 같은 정본 지도를 다시 연 실제 에디터 그림/2배속 녹화는 `editor-visible/`에 있다.
+`01-cliff-houses-visible.png`에서 세 집이 모두 고지 위에 표시되는 것을 직접 확인했다.
+`observations.json`은 브라우저 오류 0과 재로드 전후 지도 SHA-256 동일을 기록한다.
+
 - 생성: `bun scripts/qa/terrain-assistant-live.mts --project <독립 SQLite 폴더> --task <요청.txt> --model <실제 설정 모델> --out <증거 폴더>`.
   개인 모델 설정의 키는 읽기만 하며 출력/증거에 저장하지 않는다.
 - 실제 에디터 채팅: `scripts/capture/capture-terrain-assistant-editor.mjs`, 같은 SQLite 호스트에서 읽기 전용 검수.
