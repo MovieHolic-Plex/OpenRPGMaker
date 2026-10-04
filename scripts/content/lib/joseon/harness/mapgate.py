@@ -34,24 +34,17 @@ if os.environ.get('JS_PROFILE') == 'field':
 if os.environ.get('JS_PROFILE') == 'cave':
     # 동굴(48×48): 나무·잔디가 없다(M1·M2·M4·M7 해당 없음). 바닥·벽면이 땅 그림이라 물체 피복은 낮다 — 방 안 소품(화로·기둥·석순·상자) 밀도로 대신 본다.
     LAWN_MAX, TREE_MIN, OBJ_MIN, DEPTH_MIN = 1.0, 0.0, 0.03, 0
-if os.environ.get('JS_PROFILE') == 'interior_b':
-    # 조선 실내(방 지도): 방은 잔디·나무·건물이 없고 천장 어둠이 가장자리를 둘러싼다 → M1·M2·M4·M6·M7 은 뜻이 없어 건너뛴다.
-    # 남기는 것: M3 물체 피복(벽면+가구+깔개가 지도에서 차지하는 비율 — 가구 없는 텅 빈 방을 잡는 선, 한계 0.30)
-    #           M5 겹침 쌍은 끈다(DEPTH_MIN 0): 방은 가구가 서로 겹치지 않게 놓는 것이 규칙(C8)이라 8칸 이상 큰 물체끼리 겹치는 쌍이 0 이 정상이다.
-    #           (실측 2026-10-04 6방: 물체 피복 0.32~0.39, 겹침 쌍 전부 0)
-    # 방 전용 규칙(문 앞 BFS·막힘·일렬·맨바닥 판 등 C1~C8)은 inb_checks.py 가 변환기 통행 규칙으로 따로 건다.
-    LAWN_MAX, TREE_MIN, OBJ_MIN, DEPTH_MIN = 1.0, 0.0, 0.30, 0
-if os.environ.get('JS_PROFILE') == 'palace_int':
-    # 조선 궁 내부(정전 어좌 홀·회랑·침전): interior_b 와 같은 이유로 M1·M2·M4·M6·M7(잔디·나무·건물)은 뜻이 없어 건너뛰고,
-    # M3 물체 피복 ≥ 0.30(벽면+기둥+가구+깔개가 지도에서 차지하는 비율 — 텅 빈 홀을 잡는 선)만 남긴다. 임계는 interior_b 와 같다(풀지 않았다).
-    # M5 겹침 쌍은 끈다(DEPTH_MIN 0): 궁은 단청 보·기둥 머리·병풍이 일부러 겹치는 구조지만 가구끼리의 겹침 금지는 pal_checks C8 이 따로 건다.
-    LAWN_MAX, TREE_MIN, OBJ_MIN, DEPTH_MIN = 1.0, 0.0, 0.30, 0
-_IN = os.environ.get('JS_PROFILE') in ('interior_b', 'palace_int')
+if os.environ.get('JS_PROFILE') == 'interior':
+    # 조선 실내(민가·상점·관아 방 맵): 맨 잔디·수관·건물 밀도·층 깊이는 실외 지표라 실내에는 잴 대상이 없다 — 0 으로 둔다
+    # (통과시키려고 푸는 것이 아니다). 실내의 합격선은 아래 check_interior 의 I1~I6 이다.
+    LAWN_MAX, TREE_MIN, OBJ_MIN, DEPTH_MIN = 1.0, 0.0, 0.0, 0
 TREE_KINDS = ('zelkova', 'pine', 'persimmon', 'willow', 'bamboo', 'small', 'bush', 'grove')
 BUILDINGS = ('giwa', 'thatch', 'gate', 'pavilion', 'gwanah', 'nugak', 'fort')
 BLD_MIN, HEIGHTS_MIN = 0.0060, 3
 if os.environ.get('JS_PROFILE') == 'cave':
     HEIGHTS_MIN = 0        # 0.0072 → 0.0060: 20채 마을 데모(64×56)는 논·연못·밭이 넓다
+if os.environ.get('JS_PROFILE') == 'interior':
+    BLD_MIN, HEIGHTS_MIN = 0.0, 0         # 실내: 건물 몸체·나무 키는 없다(위 사유)
 _GN = os.environ.get('JS_PROFILE') in ('gungnae', 'gungnae_full', 'field', 'cave')
 if _GN:
     # 국내성형: 새 조각 이름(gn_·palace_·tower_·gungnae_)도 건물로 센다. 담·문·소품은 세지 않는다(정규식은 건물 몸체 조각만).
@@ -118,3 +111,25 @@ def check(placed, direct, objlayer, T=16):
     if depth < DEPTH_MIN:
         fails.append(f"M5 겹침 {depth} < {DEPTH_MIN} — 물체가 평면에 흩어져 있다")
     return fails, rep
+
+
+# ---- 조선 실내 합격선(JS_PROFILE=interior 의 방 맵). interior_checks.analyze() 가 만든 보고(rep)를 판정한다.
+INT_BARE_RUN = 10          # I5 맨바닥(물체가 하나도 안 덮은 걷는 칸)이 가로·세로로 이만큼 이어지면 FAIL — 「공간이 남으면 방이 너무 크다」
+INT_TRIPLE = 3             # I3 같은 기물이 이 개수 이상 한 줄(가로 또는 세로, 칸 간격 ≤1)이면 FAIL
+INT_DOOR_CLEAR = 2         # I2 출입구 위 칸부터 이만큼은 비워 둔다(기물이 입구를 막지 않는다)
+INT_PAIR_GAP = 1           # I6 같은 기물 둘이 가로·세로 간격 이 칸 이내로 붙어 있으면 FAIL(복제 쌍, 적대 검수 R6)
+INT_BARE_RECT = 15         # I6 맨바닥이 이 칸 수 이상의 직사각형으로 비어 있으면 FAIL(빈 바닥, 적대 검수 R6)
+
+
+def check_interior(rep):
+    """rep: interior_checks.analyze 의 결과. 반환 (fails, 요약 보고)."""
+    fails = []
+    for key, label in (('exit_unreached', 'I1 출입구 앞 칸에서 닿지 못하는 걷는 칸'), ('use_unreached', 'I2 접근 칸이 없는/막힌 기물'),
+                       ('door_blocked', 'I2 출입구 앞이 기물에 막힘'), ('triples', f'I3 같은 기물 {INT_TRIPLE}개 일렬'),
+                       ('wall_rule', 'I4 천장 밑 벽·벽 가구 규칙'), ('overlap', 'I4 기물 겹침'), ('bare_runs', f'I5 맨바닥 {INT_BARE_RUN}칸 이상 연속'),
+                       ('pairs', f'I6 같은 기물 간격 {INT_PAIR_GAP}칸 이내 복제 쌍'), ('bare_rect', f'I6 맨바닥 {INT_BARE_RECT}칸 이상 직사각형'),
+                       ('door_no_yard', 'I7 출입구 밖 마당 두 줄 없음'), ('wall_ring', 'I7 외곽 벽 두께(외곽이 #·E 가 아님)'), ('no_shadow', 'I7 접지 그림자 없음(기물마다 SHADOW_MIN 화소)'),
+                       ('bad_people', 'I7 조선에 맞지 않는 Actor1 프레임(0·6 만)'), ('people_dup', 'I7 같은 인물 캐릭터 복제'), ('people_blocking', 'I7 인물이 막힌 칸·문 앞에 섬')):
+        if rep.get(key):
+            fails.append(f"{label}: {rep[key][:6]}" + (f" 외 {len(rep[key]) - 6}" if len(rep[key]) > 6 else ''))
+    return fails, {k: (len(v) if isinstance(v, list) else v) for k, v in rep.items()}

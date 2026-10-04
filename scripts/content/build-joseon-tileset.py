@@ -400,9 +400,9 @@ for t in sorted(OVL):
 count_raw = count_cells + len(tail) - LEN_A
 if args.cols == "auto":
     rows_try = -(-count_raw // COLS0)
-    cols_out = COLS0 if rows_try * T <= MAX_SHEET_H else (64 if -(-count_raw // 64) * T <= MAX_SHEET_H else 128)
-    if FROZEN:
-        assert cols_out == FROZEN.get("tilesPerRow", cols_out) or cols_out > FROZEN.get("tilesPerRow", 0), "열 수가 줄 수는 없다"
+    cols_out = COLS0 if rows_try * T <= MAX_SHEET_H else 64
+    while -(-count_raw // cols_out) * T > MAX_SHEET_H and cols_out < 256:
+        cols_out += 8       # 칸이 늘어 높이 상한을 넘으면 8열씩 넓힌다(칸 번호는 그대로, 열 수만 바뀐다)
 else:
     cols_out = int(args.cols)
 rows_out = -(-count_raw // cols_out)
@@ -720,22 +720,28 @@ for m in maps_out:
                     crossings.append(dict(piece=pl["name"], axis="v", x=pl["x"], y=pl["y"], w=pl["w"], h=pl["h"], lines=[pl["x"] + i for i in lines]))
             if "front" in ovp:
                 fronts.append(dict(piece=pl["name"], cells=[[pl["x"] + c, pl["y"] + pl["h"]] for c in ovp["front"]]))
-    # 시작 칸: 새 판의 지도는 빌더가 정한 들어오는 칸(extra.start·entry, 사냥터 audit.start)을 쓴다. 옛 맵은 지도 가운데에서 가장 가까운 길 칸(없으면 가운데).
+    # 실내 방: 기물마다 둘레 칸(아래·옆·위) 중 걸어 닿는 칸이 하나 있어야 한다(저장 스크립트가 canMove 로 센다). 벽·천장·기둥·출입문 구조 조각은 뺀다.
+    item_fronts = []
+    if ex and ex.get("kind") == "interior":
+        skip = ("in_wall", "pal_wall", "in_ceil", "pal_ceil", "in_exit", "pal_exit", "in_pillar", "pal_pillar", "in_beam", "pal_beam")
+        for pl in ex["placed"]:
+            wk = walk.get(pl["name"])
+            if not wk or wk.get("cls") == "wall" or pl["name"].startswith(skip):
+                continue
+            cs = [[pl["x"] + i, pl["y"] + pl["h"]] for i in range(pl["w"])] + [[pl["x"] - 1, pl["y"] + j] for j in range(pl["h"])] \
+                + [[pl["x"] + pl["w"], pl["y"] + j] for j in range(pl["h"])] + [[pl["x"] + i, pl["y"] - 1] for i in range(pl["w"])]
+            item_fronts.append(dict(piece=pl["name"], x=pl["x"], y=pl["y"], cells=[c for c in cs if 0 <= c[0] < Wd and 0 <= c[1] < Ht]))
+    # 시작 칸: 지도 가운데에서 가장 가까운 길 칸(없으면 첫 문 앞)
     start = None
     if ex:
-        for key in ("start", "entry"):
-            if isinstance(ex.get(key), dict) and exp[ex[key]["y"]][ex[key]["x"]] == "1":
-                start = [ex[key]["x"], ex[key]["y"]]
+        # 맵 빌더가 정한 시작 칸(실내: 출입문 안쪽 칸 extra.start, 사냥터: 북쪽 성문 출구 extra.audit.start)을 걸을 수 있으면 먼저 쓴다.
+        for cand in (ex.get("start"), (ex.get("audit") or {}).get("start")):
+            if isinstance(cand, dict):
+                cand = (cand.get("x"), cand.get("y"))
+            if cand and cand[0] is not None and 0 <= cand[0] < Wd and 0 <= cand[1] < Ht and exp[cand[1]][cand[0]] == "1":
+                start = [int(cand[0]), int(cand[1])]
                 break
-        if start is None and isinstance(ex.get("audit"), dict) and ex["audit"].get("start"):
-            sx, sy = ex["audit"]["start"]
-            start = [sx, sy] if exp[sy][sx] == "1" else None
-        if start is None and ex.get("exits"):      # 동굴: 출구(문) 칸에서 들어온다
-            for d in ex["doors"]:
-                if exp[d["y"]][d["x"]] == "1":
-                    start = [d["x"], d["y"]]
-                    break
-    if start is None and ex:
+    if ex and start is None:
         roads = [(x, y) for y in range(Ht) for x in range(Wd) if ex["groundKind"][y][x] in ("road", "slab", "paving") and exp[y][x] == "1"]
         if roads:
             cx, cy = Wd / 2, Ht / 2
@@ -743,12 +749,7 @@ for m in maps_out:
     if start is None:
         start = [Wd // 2, Ht // 2]
     out = dict(id=m["id"], name=m["name"], width=Wd, height=Ht, tilesetId=args.id, lowerTiles=m["lower"], upperTiles=m["upper"],
-               walk=exp, doors=doors, passages=passages, crossings=crossings, fronts=fronts, people=people, start=start)
-    if ex:     # 새 판(사냥터·동굴·실내·궁)의 선택 필드: 출구·스폰·들어오는 칸·방 표시. 옛 맵은 이 필드가 없다.
-        for key in ("exits", "spawns", "spawnZones", "entry", "interior"):
-            if key in ex:
-                out[key] = ex[key]
-        out["reachAll"] = bool(ex.get("exits") or ex.get("interior"))      # 걸을 수 있는 칸 전부가 들어오는 칸에서 닿아야 하는 지도(저장 스크립트가 센다)
+               walk=exp, doors=doors, passages=passages, crossings=crossings, fronts=fronts, itemFronts=item_fronts, people=people, start=start)
     (OUT / "maps" / f"{m['id']}.json").write_text(json.dumps(out, ensure_ascii=False, separators=(",", ":")))
     stats_maps[m["id"]] = dict(source=m["map_path"], extra=m["extra_path"], size=[Wd, Ht], objectCells=sum(1 for t in m["upper"] if t >= 0),
                                walkable=sum(r.count("1") for r in exp), doors=len(doors), passages=len(passages), crossings=len(crossings), fronts=len(fronts), people=len(people),

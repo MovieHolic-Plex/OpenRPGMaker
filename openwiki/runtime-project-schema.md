@@ -1501,3 +1501,18 @@ cloneExtraLayers는 설계 정보를 깊이 복사한다. remap/crop은 잠금/�
 ## Optional internal authoring contract
 
 `gameDesignBrief.implementation` optionally persists a registered `harnessId` and harness-normalized `contract`; unknown harnesses or malformed contracts are rejected rather than silently discarded. Existing briefs without this field remain valid. Romance first-scene contracts use the same native events, switches, variables, endings and player save slots as normal games. `SceneRunnerOptions.initialSession` is a host-only restored-session input for save-resume QA, not model-authored expected state in scene-test arguments. See [romance-scene](harnesses/romance-scene.md).
+
+### Desktop fullscreen and mouse controls (2026-10-04)
+
+`electron/main/main.ts::createWindow` creates the main app window with
+`fullscreen:true` and `autoHideMenuBar:true`. The start page and editor both mount
+`src/start/windowControls.ts`, with visible `화면 전환` and `앱 닫기` buttons.
+The narrow `oprn:window.control` IPC accepts only toggle-fullscreen/close, affects
+only the caller's local app window, and rejects non-app documents. Closing uses
+the existing flush-before-close lifecycle. The optional bridge method is absent
+from browser/team-host pages; no native IPC is exposed to remote team content.
+Browser pages fill the viewport but cannot force OS fullscreen before a gesture.
+
+Launcher form typography/color reset is scoped to `.start-app`; its former global
+`button` reset overrode native window-control colors and the interview's primary
+button text across the start document's CSS layers.

@@ -1,13 +1,14 @@
 // Real packaged editor -> new folder -> SQLite -> live companion. Own QA host only.
 import { chromium } from 'playwright';
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { mkdirSync, writeFileSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { gunzipSync } from 'node:zlib';
 import { DatabaseSync } from 'node:sqlite';
 const base = process.env.INTERVIEW_QA_HOST ?? 'http://127.0.0.1:9898';
 const root = resolve(process.env.INTERVIEW_QA_PROJECT_ROOT ?? 'output/qa/romance-scene/project');
 const out = resolve(process.env.ROMANCE_QA_OUT ?? 'verify-shots/romance-scene-live'); mkdirSync(out,{recursive:true});
-const report = {base, root, requests:[],responses:[],errors:[], started:new Date().toISOString()};
+const spec = process.env.ROMANCE_QA_SPEC ? JSON.parse(readFileSync(process.env.ROMANCE_QA_SPEC, 'utf8')) : {title:'첫 만남 실행 하네스 QA', protagonist:'지우', concept:'이웃과 첫 만남 한 장면. 맵 하나, 인물 둘, 짧은 대화와 두 가지 선택지만 제작한다.', notes:'검증용 고유 설정: 이웃 이름은 나래, 만나는 장소는 별빛 우체국 앞. 두 선택지는 반갑게 인사한다 / 편지를 물어본다.', summary:'지우가 이웃과 처음 만나는 관계·연애 게임. 첫 만남 한 장면만 만든다. 맵 하나, 인물 둘, 짧은 대화와 두 선택지. 외형은 미정이다. 이웃 나래와 별빛 우체국 앞에서 만나고, 선택지는 반갑게 인사한다 / 편지를 물어본다.'};
+const report = {base, root, spec, manualContentChanges:0, requests:[],responses:[],errors:[], started:new Date().toISOString()};
 const save=()=>writeFileSync(out+'/report.json',JSON.stringify(report,null,2)+'\n');
 const saveWireEvidence = wire => {
  writeFileSync(out+'/provider-events.json',JSON.stringify(wire,null,2));
@@ -15,10 +16,10 @@ const saveWireEvidence = wire => {
  const prompts=wire.filter(e=>{const inner=e.type==='agent_event'?e.event:e;const role=e.agentId??'single';if(inner.type!=='prompt_inspection'||seen.has(role))return false;seen.add(role);return true;});
  writeFileSync(out+'/provider-prompts.json',JSON.stringify(prompts,null,2));
 };
-const b=await chromium.launch({args:['--disable-dev-shm-usage','--use-gl=swiftshader','--disable-gpu','--no-sandbox','--js-flags=--max-old-space-size=16384']});const p=await b.newPage({viewport:{width:1440,height:900},reducedMotion:'reduce'});
+const b=await chromium.launch({args:['--disable-dev-shm-usage','--use-angle=swiftshader','--enable-unsafe-swiftshader','--no-sandbox','--js-flags=--max-old-space-size=16384']});const p=await b.newPage({viewport:{width:1440,height:900},reducedMotion:'reduce'});
 p.setDefaultTimeout(120000);
 p.on('pageerror',e=>{report.errors.push(e.message);save();});
-p.on('request',r=>{if(!r.url().includes('/v1/agent/run')||r.method()!=='POST')return;try{const buffer=r.postDataBuffer();const body=JSON.parse(buffer?.[0]===31?gunzipSync(buffer):buffer);const task=String(body.task??'');writeFileSync(out+'/sent-task.txt',task);writeFileSync(out+'/sent-brief.json',JSON.stringify(body.project?.gameDesignBrief??null,null,2));report.requests.push({mode:body.mode,model:body.model,runId:body.runId,taskCharacters:task.length,internalTasks:task.includes('"id":"P03"'),protagonist:task.includes('지우'),pixelGate:task.includes('16'),scope:task.includes('첫 만남'),time:new Date().toISOString()});save();console.log('AI request',JSON.stringify(report.requests.at(-1)));}catch(e){report.errors.push(e.message);}});
+p.on('request',r=>{if(!r.url().includes('/v1/agent/run')||r.method()!=='POST')return;try{const buffer=r.postDataBuffer();const body=JSON.parse(buffer?.[0]===31?gunzipSync(buffer):buffer);const task=String(body.task??'');writeFileSync(out+'/sent-task.txt',task);writeFileSync(out+'/sent-brief.json',JSON.stringify(body.project?.gameDesignBrief??null,null,2));report.requests.push({mode:body.mode,model:body.model,runId:body.runId,taskCharacters:task.length,internalTasks:task.includes('"id":"P03"'),protagonist:task.includes(spec.protagonist),pixelGate:task.includes('16'),scope:task.includes('첫 만남'),time:new Date().toISOString()});save();console.log('AI request',JSON.stringify(report.requests.at(-1)));}catch(e){report.errors.push(e.message);}});
 p.on('response',r=>{if(r.url().includes('/v1/agent/run')){report.responses.push({status:r.status(),runId:r.headers()['x-oprn-run-id']??null});save();}});
 await p.addInitScript(() => {
  window.__qaWireEvents=[];
@@ -36,13 +37,13 @@ const sqlite=()=>{const folder=new URL(report.newFolderUrl).searchParams.get('ho
 const diagnosticTimer=setInterval(()=>{void p.screenshot({path:out+'/current.png'}).catch(()=>{});void p.locator('body').innerText({timeout:1000}).then(t=>writeFileSync(out+'/current-ui.txt',t)).catch(()=>{});},15000);
 try{
  await p.goto(base+'/index.html?forceWelcome=1',{waitUntil:'domcontentloaded',timeout:120000});console.log('page loaded');await p.getByTestId('editor-welcome').waitFor({timeout:120000});await p.getByTestId('editor-welcome-skip').click({noWaitAfter:true});
- await p.locator('.studio-project-button').click({noWaitAfter:true});await p.getByTestId('menu-project-new').click({noWaitAfter:true});await p.getByTestId('new-project-name-input').fill('첫 만남 실행 하네스 QA');await p.getByTestId('new-project-confirm').click({noWaitAfter:true});
- await p.getByTestId('project-interview').waitFor({timeout:30000});await p.getByTestId('project-interview-genre-romance').click({noWaitAfter:true});await p.getByTestId('project-interview-concept').fill('이웃과 첫 만남 한 장면. 맵 하나, 인물 둘, 짧은 대화와 두 가지 선택지만 제작한다.');await p.getByTestId('project-interview-begin').click({noWaitAfter:true});
+ await p.locator('.studio-project-button').click({noWaitAfter:true});await p.getByTestId('menu-project-new').click({noWaitAfter:true});await p.getByTestId('new-project-name-input').fill(spec.title);await p.getByTestId('new-project-confirm').click({noWaitAfter:true});
+ await p.getByTestId('project-interview').waitFor({timeout:30000});await p.getByTestId('project-interview-genre-romance').click({noWaitAfter:true});await p.getByTestId('project-interview-concept').fill(spec.concept);await p.getByTestId('project-interview-begin').click({noWaitAfter:true});
  for(let i=0;i<5;i++){await p.getByTestId('project-interview-option-'+(i===0?2:0)).click({noWaitAfter:true});await p.getByTestId('project-interview-next').click({noWaitAfter:true});await p.waitForTimeout(250);}
- await p.getByTestId('project-interview-protagonist').fill('지우. 외형은 정하지 않았으며 참고 이미지에서 추론하지 않는다.');await p.getByTestId('project-interview-notes').fill('검증용 고유 설정: 이웃 이름은 나래, 만나는 장소는 별빛 우체국 앞. 두 선택지는 반갑게 인사한다 / 편지를 물어본다.');await p.getByTestId('project-interview-summary').fill('지우가 이웃과 처음 만나는 관계·연애 게임. 첫 만남 한 장면만 만든다. 맵 하나, 인물 둘, 짧은 대화와 두 선택지. 외형은 미정이다. 이웃 나래와 별빛 우체국 앞에서 만나고, 선택지는 반갑게 인사한다 / 편지를 물어본다.');
+ await p.getByTestId('project-interview-protagonist').fill(spec.protagonist + '. 외형은 정하지 않았으며 참고 이미지에서 추론하지 않는다.');await p.getByTestId('project-interview-notes').fill(spec.notes);await p.getByTestId('project-interview-summary').fill(spec.summary);
  await p.screenshot({path:out+'/confirmed-direction.png'});await p.setViewportSize({width:360,height:800});await p.screenshot({path:out+'/confirmed-mobile.png'});await p.setViewportSize({width:1440,height:900});await p.getByTestId('project-interview-confirm').click({noWaitAfter:true});
  await p.waitForURL(url=>url.searchParams.has('hostProject'),{timeout:180000,waitUntil:'domcontentloaded'});report.newFolderUrl=p.url();console.log('new folder',report.newFolderUrl);await p.locator('.topbar').waitFor({timeout:120000});
- const until=Date.now()+14*60*1000;let ticks=0;
+ const until=Date.now()+Number(process.env.ROMANCE_QA_TIMEOUT_MS ?? 14*60*1000);let ticks=0;
  while(Date.now()<until){await p.waitForTimeout(5000);const text=await p.getByTestId('ai-chat-log').innerText().catch(()=>'');report.chatTail=text.slice(-6000);const wire=await p.evaluate(()=>window.__qaWireEvents??[]);saveWireEvidence(wire);report.wireCount=wire.length;if(wire.length&&!report.wireScreenshot){await p.screenshot({path:out+'/live-sending.png'});report.wireScreenshot=true;}report.elapsedSeconds=Math.round((Date.now()-Date.parse(report.started))/1000);try{report.sqlite=sqlite();}catch(e){report.sqliteReadError=e.message;}save();if(++ticks%6===0)console.log(JSON.stringify({seconds:report.elapsedSeconds,runs:report.requests.length,tail:report.chatTail.slice(-700)}));
  const running=await p.evaluate(()=>window.__oprnAiBridge?.status().turnBusy??true);if(report.requests.length&&!running&&text.length>80){report.finished=true;break;}
  }

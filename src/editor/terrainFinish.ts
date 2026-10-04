@@ -1,11 +1,11 @@
 import type { GameMap } from "@/project/types";
 import { cloneExtraLayers } from "@/project/mapLayers";
-import { emptyRelief } from "@/project/relief/edit";
+import { emptyRelief, copyRelief } from "@/project/relief/edit";
 import { terrainEditable, type TerrainDesignPlan } from "./terrainDesignPlans";
 import { polygonCells, lineCells, type TerrainPoint } from "./terrainDesignGeometry";
 export function planTerrainFinish(map: GameMap, points: TerrainPoint[], method: "smooth" | "erode" | "corners", passes: number): TerrainDesignPlan {
   if (points.length < 3) return { ok: false, reason: "다듬을 영역의 외곽을 세 점 이상 찍으세요", indices: [] };
-  const next = { ...map, ...cloneExtraLayers(map) }; next.relief ??= emptyRelief(map.width, map.height);
+  const next = { ...map, ...cloneExtraLayers(map), relief: map.relief && copyRelief(map.relief) }; next.relief ??= emptyRelief(map.width, map.height);
   const region = new Set(polygonCells(points, map.width, map.height).map(p => p.y * map.width + p.x));
   const eligible = (i: number) => region.has(i) && terrainEditable(map, i) && !(map.terrainDesign?.waterDepth?.[i]);
   const changed = new Set<number>();

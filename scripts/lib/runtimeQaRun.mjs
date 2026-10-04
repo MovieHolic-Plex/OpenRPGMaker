@@ -166,8 +166,9 @@ async function waitForTestid(page, op) {
  */
 async function waitForVisibleTestid(page, op) {
   await page.waitForFunction(
-    ([testid, minAlpha]) => {
-      const node = document.querySelector(`[data-testid="${testid}"]`);
+    ([testid, minAlpha, descendant]) => {
+      const root = document.querySelector(`[data-testid="${testid}"]`);
+      const node = descendant ? root?.querySelector(descendant) : root;
       if (!node) return false;
       const rect = node.getBoundingClientRect();
       if (rect.width <= 0 || rect.height <= 0) return false;
@@ -181,7 +182,7 @@ async function waitForVisibleTestid(page, op) {
     },
     // 축의 판정선과 **같은 값**이어야 한다(runtimeQa.mjs: alpha > 0.05). 1.0 에 가깝게 잡으면
     // 상점처럼 조상이 의도적으로 반투명한(0.96) 창은 영원히 조건을 못 넘어 30초 타임아웃이 난다(실측).
-    [op.testid, op.minAlpha ?? 0.06],
+    [op.testid, op.minAlpha ?? 0.06, op.descendant ?? null],
     { timeout: op.timeoutMs ?? 30_000 },
   );
 }
@@ -414,6 +415,15 @@ async function applyOp(page, op, runState) {
       return;
     case "waitForVisible":
       await waitForVisibleTestid(page, op);
+      return;
+    case "waitForText":
+      if (typeof op.text !== 'string' || !op.text.length) throw new Error('waitForText requires nonempty text');
+      await page.waitForFunction(([testid, text]) =>
+        // Pagination inserts real newlines. Compare the same visible whitespace
+        // used by snapshot.visibleText, while still waiting for every character.
+        document.querySelector(`[data-testid="${testid}"]`)?.textContent?.replace(/\s+/g, ' ').trim()
+          .includes(text.replace(/\s+/g, ' ').trim()),
+        [op.testid, op.text], { timeout: op.timeoutMs ?? 30_000 });
       return;
     case "pointerClick": {
       const info = await page.evaluate((testid) => {

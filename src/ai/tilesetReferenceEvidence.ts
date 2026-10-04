@@ -1,7 +1,7 @@
 import { referenceOwner, referencePageStarts, referenceRevision } from "@/project/tilesetReferences";
 import { resolveReferenceImageDataUrl } from "@/project/bundledReferenceImages";
 import type { Project } from "@/project/types";
-import { TILESET_REFERENCE_TILE_CHOOSERS } from "@/editor/tools/tilesetReferenceTools";
+import { TILESET_REFERENCE_TILE_CHOOSERS, terrainStampSource } from "@/editor/tools/tilesetReferenceTools";
 import type { ToolResult } from "@/editor/tools/types";
 import type { ChatMessage } from "./llmClient";
 import type { ImageDelivery } from "./imageDelivery";
@@ -47,7 +47,8 @@ export class TilesetReferenceEvidence {
   }
   /** 타일을 직접 고르는 도구만 막는다(TILESET_REFERENCE_TILE_CHOOSERS). 빈 맵 생성·결정론 파이프라인은 문서를 읽어도 결과가 같다. */
   beforeWrite(project: Project, name: string, args: Record<string, unknown>): ToolResult | null {
-    if (!TILESET_REFERENCE_TILE_CHOOSERS.has(name)) return null;
+    const stampSource = terrainStampSource(project, name, args);
+    if (!TILESET_REFERENCE_TILE_CHOOSERS.has(name) && !stampSource) return null;
     const ids = new Set<string>();
     const visit = (value: unknown): void => {
       if (Array.isArray(value)) { value.forEach(visit); return; }
@@ -59,6 +60,8 @@ export class TilesetReferenceEvidence {
       }
     };
     visit(args);
+    // Grafted kits choose their source artwork, not target-sheet tile numbers.
+    if (stampSource) { ids.clear(); ids.add(stampSource); }
     // Session/design writers may resolve their map internally. Unknown scope must not bypass reading.
     if (!ids.size) for (const tileset of Object.values(project.tilesets)) {
       if (tileset.referenceDocuments?.length || tileset.referenceSourceTilesetId) ids.add(tileset.id);

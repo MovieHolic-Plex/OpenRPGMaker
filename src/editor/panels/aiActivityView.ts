@@ -1,7 +1,7 @@
 import { activityEntryIndex, majorActivityKinds as majorKinds } from "./aiActivityIndex";
 import { createActivityMedia } from "./aiActivityMedia";
 import { el } from "@/util/dom";
-import { activityText, type ActivityEntry, type ActivityTrace } from "@/ai/activityTrace";
+import { ACTIVITY_APPLIED_SUMMARY, ACTIVITY_APPLYING_SUMMARY, activityText, type ActivityEntry, type ActivityTrace } from "@/ai/activityTrace";
 import { activityArchiveFailed, readActivityArchive, retainActivityTrace } from "@/ai/activityTraceArchive";
 import { bindActivityLevel, createActivityLevelControl, getActivityLevel } from "./aiActivityPreference";
 import { toolBriefLabel, toolGroup, toolLabel } from "./aiToolLabels";
@@ -24,7 +24,15 @@ function briefEntryText(entry: ActivityEntry): string {
   switch (entry.kind) {
     case "tool":
       if (entry.status === "error") return "다른 방법을 찾는 중";
+      if (entry.status === "running" && entry.summary === ACTIVITY_APPLYING_SUMMARY) return `${toolBriefLabel(entry.name, false)} · 맵에 반영 중`;
+      if (entry.summary === ACTIVITY_APPLIED_SUMMARY) return `${toolBriefLabel(entry.name, false)} · 맵에 반영됨`;
       return toolBriefLabel(entry.name, entry.status === "running");
+    case "assistant": {
+      // 조수가 작업 사이에 한 말(「강과 다리가 있는 마을을 만들겠습니다」). 예전 간단히 보기는 이 말을 숨겨
+      // 사용자에게 「생각하는 중…」만 보였다. 생각(추론) 내용이 아니라 모델이 사용자에게 한 말이다.
+      const text = (entry.output as { text?: string } | undefined)?.text?.replace(/\s+/gu, " ").trim() ?? "";
+      return text ? `“${activityText(text, 160)}”` : activityText(entry.summary, 140);
+    }
     case "agent_spawn":
       return planner || role === "orchestrator" ? "계획 세우는 중" : role === "reviewer" ? "잘 어울리는지 확인하는 중" : "작업 시작";
     case "agent_done":
@@ -166,7 +174,15 @@ export function createActivityView(options: { archive?: boolean; historical?: bo
       const flush = (): void => {
         if (previous) collect(count > 1 ? { ...previous, summary: `${count}건 확인·처리` } : previous);
       };
+      // 조수가 한 말은 마지막 한 마디만 남긴다 — 말이 쌓이면 작업 줄이 밀려난다.
+      let latestSay: string | undefined;
+      let sayEntry: ActivityEntry | undefined;
+      for (let i = candidates.length - 1; i >= 0; i--) {
+        const entry = candidates[i]!;
+        if (entry.kind === "assistant" && (entry.output as { text?: string } | undefined)?.text?.trim()) { latestSay = entry.id; break; }
+      }
       for (const entry of candidates) {
+        if (entry.kind === "assistant" && entry.id === latestSay) { flush(); previous = undefined; count = 1; sayEntry = entry; continue; }
         if (!majorKinds.has(entry.kind) || (entry.name === "run.phase" && entry.id !== latestPhase)
           || (entry.name.startsWith("save.") && entry.id !== latestSave)
           || (entry.name === "checkpoint.apply" && entry.status !== "error")
@@ -179,6 +195,7 @@ export function createActivityView(options: { archive?: boolean; historical?: bo
       flush();
       rows = illustrated ? [illustrated, ...(plain ? [plain] : []), ...active].sort((a, b) => a.at - b.at)
         : [...completed.slice(-Math.max(1, 4 - activeCount)), ...active];
+      if (sayEntry) rows = [...rows, sayEntry].sort((a, b) => a.at - b.at);
     } else {
       // Collect the visible window plus one row for the "more" button.
       const recent: ActivityEntry[] = [];

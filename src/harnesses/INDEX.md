@@ -12,6 +12,8 @@
 | `joseon-baram` | 조선 칩셋 도트 (joseon_baram · 바람의나라풍) | 장르 무관 | `harness-data/joseon-baram/seed.json` | `openwiki/harnesses/joseon-baram.md` |
 | `super-harness` | 슈퍼하네스 (개념 카드 자동 공급) | 장르 무관 | `harness-data/super-harness/seed.json` | `openwiki/harnesses/super-harness.md` |
 | `romance-scene` | 연애 첫 대화 장면 | 장르 `story-cutscene` 전용 | `harness-data/romance-scene/seed.json` | `openwiki/harnesses/romance-scene.md` |
+| `charset-actor` | RM2000 캐릭터 GIF 공방 | 장르 무관 | `harness-data/charset-actor/briefs.json` | `openwiki/harnesses/charset-actor.md` |
+| `worldmap-icons` | 월드맵 아이콘 | 장르 무관 | `harness-data/worldmap-icons/seed.json` | `openwiki/harnesses/worldmap-icons.md` |
 
 ## monster-collect-species — 몬스터 수집 종 스프라이트
 
@@ -95,11 +97,11 @@ modern4 팔레트 현대 거리 칩셋의 기물·건물·타일을 3/4 시점�
 
 ## joseon-baram — 조선 칩셋 도트 (joseon_baram · 바람의나라풍)
 
-번들 타일셋 joseon_baram 의 조선 조각(기와집·초가·문루·담·나무·소품·다리)과 지도(마을 20호·국내성·국내성 원작 규모)를 만드는 기존 도구를 한 입구로 묶는다. 팔레트 잠금 검사 → 조각 관문(P·E·T·L·S·A·K·TR·V) → 눈으로 본 판정(조각 해시에 묶임) → 지도 관문 → 재굽기 → 16구역 적대 검수 순서로 간다. 그림은 코드 도트(tk.py·blocks.py)로만 그리고 생성 이미지·생성 캐릭터(Actor1 을 쓴다)·바람의나라 스크린샷 커밋은 금지다. 다른 타일셋(버들항·jp_city·modern4)은 별도 하네스다.
+번들 타일셋 joseon_baram 의 조선 조각(기와집·초가·문루·담·나무·소품·다리)과 지도 15장(마을 20호·국내성·국내성 원작 규모·사냥터·동굴·실내 방 6·궁 내부 4)을 만드는 기존 도구를 한 입구로 묶는다. 팔레트 잠금 검사 → 조각 관문(P·E·T·L·S·A·K·TR·V) → 눈으로 본 판정(조각 해시에 묶임) → 지도 관문 → 재굽기 → 16구역 적대 검수 순서로 간다. 그림은 코드 도트(tk.py·blocks.py)로만 그리고 생성 이미지·생성 캐릭터(Actor1 을 쓴다)·바람의나라 스크린샷 커밋은 금지다. 다른 타일셋(버들항·jp_city·modern4)은 별도 하네스다.
 
 **이럴 때 쓴다:**
 - 조선(바람의나라풍) 타일셋 joseon_baram 의 조각(기와집·초가·문루·정자·담·성벽·나무·소품·다리)을 새로 그리거나 고친 뒤 게이트·판정을 돌릴 때
-- 조선 마을 20호·국내성·국내성 원작 규모 지도를 다시 굽거나(지도 관문 M1~M7) 번들 시트·타일셋·참고문서를 재생성(rebuild-joseon.sh)할 때
+- 조선 마을 20호·국내성·국내성 원작 규모·사냥터·동굴·실내 방(민가·주막·대장간·약방·서당·관아)·궁 내부(어좌전·회랑·침전·서고) 지도를 다시 굽거나(지도 관문 M1~M7) 번들 시트·타일셋·참고문서를 재생성(rebuild-joseon.sh)할 때
 - 조선 지도·조각을 독립 리뷰어(조선다움·3/4)에게 16구역 크롭으로 적대 검수시킬 때
 - 버들항·jp_city·modern4·포켓몬풍 등 joseon_baram 이 아닌 타일셋에는 쓰지 않는다 — 타일셋마다 별도 하네스
 
@@ -110,7 +112,7 @@ modern4 팔레트 현대 거리 칩셋의 기물·건물·타일을 3/4 시점�
 - `gate` — 조각 관문: 조각 관문 P·E·T·L·S·A·K·TR·V 를 돌린다(--candidate 는 A 만 건너뜀, --sheets 는 기준 옆 검수 시트, --piece 로 좁힘).
 - `verdict` — 판정 기록: 검수 시트를 눈으로 본 뒤 조각마다 한 줄 판정(pass·note·user·redo)을 현재 해시에 묶어 기록한다(verdict.py).
 - `build` — 재굽기: rebuild-joseon.sh 로 번들 시트·타일셋·참고문서·저장 증명·장소 카드를 다시 만든다(--dry 는 계획과 입력 점검만, 약 70초).
-- `map` — 지도 빌드: 지도 빌더(demo20·demo_gungnae·demo_gungnae_full)를 돌려 지도 관문 M1~M7 을 통과해야 산출한다(--dry 는 계획만).
+- `map` — 지도 빌드: 지도 빌더(demo20·demo_gungnae·demo_gungnae_full·demo_field·demo_cave·demo_interior·demo_palace_in)를 돌려 지도 관문 M1~M7 을 통과해야 산출한다(--dry 는 계획만).
 - `review` — 적대 검수 묶음: 지도를 4x4 = 16구역 원 해상도 크롭으로 자르고(zones) 조각 6배 그림·기준 시트(pieces)를 만들어 렌즈 두 개(조선다움·3/4) 프롬프트와 함께 묶는다. record 로 리뷰어 출력을 해시에 묶어 기록한다.
 - `status` — 현황: 팔레트·판정·적대 리뷰·번들 산출물·기록(ledger) 현황. --fresh 는 게이트를 돌려 현재 해시 기준으로 센다.
 
@@ -144,3 +146,47 @@ modern4 팔레트 현대 거리 칩셋의 기물·건물·타일을 3/4 시점�
 - `inspect` — 장면 검사: 프로젝트 JSON의 계약·두 선택·재대화·종료를 검사한다. --project <path> 필요.
 
 **들어오는 길:** CLI 있음 · 에디터 화면 아직 없음 · 조수 도구 있음
+
+## charset-actor — RM2000 캐릭터 GIF 공방
+
+GPT 6.1 sol high가 자유롭게 도트를 만들고 사람이 걷는 GIF를 보며 남기기/폐기한다. 결손만 자동 차단하며 남긴 캐릭터만 다운로드한다.
+
+**이럴 때 쓴다:**
+- 에디터용 24×32 캐릭터를 변형·대량 저작하거나 머리 잘림·투명 결손을 검사하고 CharSet 팩을 만들 때
+
+**단계** (`npm run harness -- charset-actor <단계>`):
+- `ingest` — 원본 입력: 원본 칩을 저장하고 실제 캐릭터 칸과 수정 강도를 정한다.
+- `produce` — 자유 대량 저작: --count 100 [--reference 원본.png] [--prompt 방향]으로 자유 저작을 시작한다. 작업은 터미널과 독립적으로 계속된다.
+- `bulk` — 묶음 저작: manifest를 읽어 GPT high 원샷 저작과 독립 검수를 실행한다. --detach로 드라이버를 유지한다.
+- `check` — 픽셀 검사: 12프레임 구조·색 키·투명 구멍·머리 결손·걸음 동작을 검사한다.
+- `views` — 그림 굽기: 현재 격자 해시에 결부한 PNG·GIF·필름 띠를 만든다.
+- `audit` — 투명 결손 QA: --run RUN으로 모든 12프레임을 체커·흰색·검정 배경에서 펼치고 결손 좌표·출하 PNG 재읽기를 기록한다. --refresh-previews로 동일 픽셀의 진단 GIF를 추가한다.
+- `verify` — 계약 확인: 임시 저장 대상에서 결손·GIF·사람의 선택 해시·패킹과 이전 검수 계약을 확인한다.
+- `export` — 선택 팩: 자유 저작은 사람이 남긴 캐릭터만 ZIP으로 묶는다. 기존 검수 실행은 이전 계약을 유지한다.
+- `status` — 현황: 저작 진행과 검수 판정을 표시한다.
+- `serve` — GIF 공방: 자동 걷기 GIF 갤러리·남기기/폐기·일시 정지/재개·선택 팩 다운로드 화면을 연다.
+
+**들어오는 길:** CLI 있음 · 에디터 화면 아직 없음 · 조수 도구 아직 없음
+
+## worldmap-icons — 월드맵 아이콘
+
+아이콘 검수·사람 선택·해시 확인·공용 월드맵 시트 굽기
+
+**이럴 때 쓴다:**
+- 월드맵 아이콘
+- 세계 지도 건물
+- 월드맵 아이콘 선택·굽기
+
+**단계** (`npm run harness -- worldmap-icons <단계>`):
+- `intake` — 후보 준비: 세트 원본을 단품·지도 자리 그림으로 준비한다.
+- `review` — 검수: 시점 계약에 따라 독립 검수자를 돌린다. 사람 선택을 대신하지 않는다.
+- `draw` — 다시 그리기: 사용자의 교정 지시로 후보 판을 연다.
+- `serve` — 선택 화면: 받기·버리기·후보 고르기 화면을 연다.
+- `status` — 현황: 세트별 검수·사람 선택 현황을 읽는다.
+- `export` — 선택 사본: 현재 그림에 유효한 선택·검수 기록을 내보낸다.
+- `build` — 공용 시트 굽기: 사람이 받은 원본·후보만 해시를 확인해 굽는다. 칸 번호는 덧붙이기 전용이다.
+- `check` — 굽기 확인: 선택 기록·원본 해시·칸 좌표·번들 PNG·참고문서를 대조한다.
+- `publish-shared` — 공용 DB 등록: 선택 시트와 정본 지형 사례를 호스트 공용 SQLite에 등록하고 같은 판본을 다시 읽는다.
+- `preview` — 후보 미리보기: 후보의 크기·색표와 실제 지도 자리를 확인한다.
+
+**들어오는 길:** CLI 있음 · 에디터 화면 아직 없음 · 조수 도구 아직 없음

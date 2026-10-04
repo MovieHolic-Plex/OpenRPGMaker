@@ -5,12 +5,13 @@ import { editorState, type EditorState, type TerrainDesignTool } from "../editor
 import { store } from "@/project/store";
 import { TERRAIN_DESIGN_TOOLS, commitTerrainDesign, isTerrainDesignTool, selectTerrainDesignTool } from "../terrainDesignActions";
 import { shouldIgnoreEditorShortcut } from "../hotkeys";
+import { hasOpenModalLayer } from "@/editor/ui/modalStack";
 import { terrainRouteResult } from "../terrainDesignOverlay";
 import { RELIEF_MAX_LEVEL } from "@/project/relief/types";
 import "@/styles/editor/terrain-design.css";
 
 export function mountTerrainDesignPanel(host: HTMLElement): () => void {
-  const panel = el("section", { class: "terrain-design-panel", attrs: { "aria-label": "지형 설계" }, dataset: { testid: "terrain-design-panel" } });
+  const panel = el("section", { class: "terrain-design-panel", attrs: { id: "terrain-design-panel", "aria-label": "지형 설계" }, dataset: { testid: "terrain-design-panel" } });
   const close = el("button", { class: "relief-pop-close", text: "×", attrs: { type: "button", "aria-label": "지형 설계 닫기" }, dataset: { testid: "terrain-design-close" }, on: { click: () => editorState.set({ terrainDesignOpen: false }) } });
   const head = el("div", { class: "terrain-design-head", children: [el("strong", { text: "지형 설계" }), close] });
   const body = el("div", { class: "terrain-design-body" }); panel.append(head, body); host.append(panel);
@@ -28,7 +29,7 @@ export function mountTerrainDesignPanel(host: HTMLElement): () => void {
   select("symmetry", "대칭", [["none", "없음"], ["mirrorX", "좌우"], ["mirrorY", "상하"], ["both", "좌우·상하"], ["rotate2", "180° 회전"], ["rotate4", "90° 회전"]], value => editorState.set({ terrainSymmetry: value as EditorState["terrainSymmetry"] }));
   select("shape", "외곽", [["polygon", "다각형"], ["rect", "사각형"], ["line", "선"]], value => editorState.set({ terrainAreaShape: value as EditorState["terrainAreaShape"], terrainPoints: null }));
   number("delta", "높이 변화", -RELIEF_MAX_LEVEL, RELIEF_MAX_LEVEL, value => editorState.set({ terrainDelta: value }));
-  select("width", "폭 / 군집 크기", [1, 3, 5, 7, 11, 15].map(n => [String(n), `${n}칸`] as const), value => editorState.set({ terrainWidth: Number(value) }));
+  select("width", "폭 / 군집 크기", [1, 2, 3, 4, 5, 7, 11, 15].map(n => [String(n), `${n}칸`] as const), value => editorState.set({ terrainWidth: Number(value) }));
   select("road-height", "길 높이", [["follow", "지형 따라가기 · 경사 연결"], ["flat", "첫 점 높이로 평탄화"]], value => editorState.set({ terrainRoadFlatten: value === "flat" }));
   number("water-level", "수위", 0, RELIEF_MAX_LEVEL, value => editorState.set({ terrainLakeLevel: value }));
   number("water-depth", "최대 깊이", 1, RELIEF_MAX_LEVEL, value => editorState.set({ terrainLakeDepth: value }));
@@ -87,13 +88,13 @@ export function mountTerrainDesignPanel(host: HTMLElement): () => void {
     const count = s.terrainPoints?.mapId === map?.id ? s.terrainPoints!.points.length : 0;
     apply.disabled = !count || ["stamp", "route", "house", "mix", "mixedCluster"].includes(tool);
     if (tool === "route" && map && s.terrainRoute?.mapId === map.id) info.textContent = terrainRouteResult(p, map, s.terrainRoute, s.terrainRouteWidth, s).reason;
-    else if (tool === "house") info.textContent = "드래그로 너비·높이 정하기 · 놓으면 한 채 배치 · Esc: 취소";
+    else if (tool === "house") info.textContent = s.terrainHouseKitId ? "원본 크기로 배치 · 문 위치를 누르거나 끌어서 놓으세요 · Esc: 취소" : s.terrainHouseResize === "roof" ? "지붕에서 좌우로 끌어 너비 조절 · Esc: 취소" : "드래그로 너비·높이 정하기 · Esc: 취소";
     else if (tool === "road" && s.terrainRoadDrag && !s.terrainFeatureId) info.textContent = "마우스로 끌어 그리고 놓으면 적용 · Esc: 취소";
     else if(s.terrainFeatureId) info.textContent = "제어점을 드래그하거나 값을 바꾸고 적용하세요 · Esc: 취소";
     else info.textContent = tool === "route" ? "출발점 → 목적지를 찍으세요. 아래에서 몸 크기·문·NPC·스위치를 검사할 수 있습니다." : tool === "stamp" ? s.terrainStampCapture ? `사각형의 두 모서리를 찍으세요 · ${count}/2` : "놓을 왼쪽 위 칸을 찍으세요. 소품 그림은 똑바로 유지됩니다." : tool === "mix" || tool === "mixedCluster" ? "캔버스를 눌러 배치하세요. 시드가 같으면 같은 배치가 됩니다." : `${count}개 점 · ${["contour", "lake", "lock"].includes(tool) && s.terrainAreaShape === "rect" ? "두 모서리" : "외곽 또는 경유점"}을 찍고 적용하세요. Esc: 취소`;
   };
   const offState = editorState.subscribe(sync), offStore = store.subscribe(sync); sync();
-  const keydown = (event: KeyboardEvent) => { if (panel.hidden || event.defaultPrevented || shouldIgnoreEditorShortcut(event)) return; if (event.key === "Enter" && !apply.disabled) { event.preventDefault(); event.stopPropagation(); commitTerrainDesign(); } else if (event.key === "Escape") { event.preventDefault(); event.stopPropagation(); if (editorState.get().terrainHouseDrag) editorState.set({ terrainHouseDrag: null }); else if (editorState.get().terrainPoints) editorState.set({ terrainPoints: null, terrainFeatureId: null }); else editorState.set({ terrainDesignOpen: false }); } };
+  const keydown = (event: KeyboardEvent) => { if (panel.hidden || event.defaultPrevented || hasOpenModalLayer() || shouldIgnoreEditorShortcut(event)) return; if (event.key === "Enter" && !apply.disabled) { event.preventDefault(); event.stopPropagation(); commitTerrainDesign(); } else if (event.key === "Escape") { event.preventDefault(); event.stopPropagation(); if (editorState.get().terrainHouseDrag) editorState.set({ terrainHouseDrag: null }); else if (editorState.get().terrainPoints) editorState.set({ terrainPoints: null, terrainFeatureId: null }); else editorState.set({ terrainDesignOpen: false }); } };
   document.addEventListener("keydown", keydown, true);
   let drag: { x: number; y: number; left: number; top: number } | null = null;
   head.addEventListener("pointerdown", e => { if ((e.target as HTMLElement).closest("button")) return; drag = { x: e.clientX, y: e.clientY, left: panel.offsetLeft, top: panel.offsetTop }; head.setPointerCapture(e.pointerId); e.preventDefault(); });

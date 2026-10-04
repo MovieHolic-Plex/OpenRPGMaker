@@ -81,7 +81,7 @@ const config: AiConfig = { ...defaultAiConfig(), providerId: provider, model: mo
 const autonomy = resolveAutonomy("balanced");
 const classified = await classifyPlainPiTurn({
   project, text, currentMapId, selection: null, hasActivePlan: false, autonomy,
-  declarer: () => createLlmIntentDeclarer({ chat, audit: chat, getConfig: () => config, timeoutMs: 60_000 }),
+  declarer: () => createLlmIntentDeclarer({ chat, audit: chat, getConfig: () => config, timeoutMs: 60_000, coverageAudit: false }),
   piTeam: config.piTeam ?? DEFAULT_PI_TEAM,
 });
 const command = plainPiCommand(text, classified.mode, currentMapId);

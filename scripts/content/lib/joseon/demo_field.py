@@ -140,6 +140,8 @@ for (x, y) in TFACE1: KG[y][x] = 'tface1'
 # --- 어귀 큰길(성문 밑 흙길) + 어귀 마당
 for y in range(9, 17):
     for x in range(46, 50): KG[y][x] = 'road'
+for x in range(MW):                                          # 성벽 밑동 기단: 성벽 밑줄(y9)을 돌 포장 한 줄로 깔아 풀과 직선으로 맞닿지 않게 한다
+    if KG[9][x] is None: KG[9][x] = 'slab'
 YARD = {(x, y) for y in range(17, 23) for x in range(42, 54) if not ((x in (42, 53)) and y in (17, 22))}
 setk(YARD, 'yard')
 
@@ -411,9 +413,24 @@ for (nm, mx) in MOUTHS:
             pw(c[0], c[1])
 kit.EXITS.append({'to': 'gungnae_full', 'side': 'N', 'x0': 47, 'x1': 48, 'y': 0})
 kit.EXITS.append({'to': 'next_field', 'side': 'S', 'x0': 47, 'x1': 48, 'y': 95})
-pw(47, 95); pw(47, 0); pw(48, 0)
+pw(47, 95); pw(47, 0); pw(48, 0); pw(0, 9); pw(95, 9)
 
 # --- 북쪽 성벽 + 남문(fort_gate): 성벽 앞면 5줄(y4..8)을 문 양옆으로 지도 끝까지 잇는다. 문길 x47..48 은 문 조각의 통과 칸.
+# 뒷성벽: 같은 성벽 조각을 4칸 위(y0)에 한 겹 더 세워 앞성벽 뒤로 성가퀴·벽면이 솟아 보이게 한다(윗면이 자갈 한 장으로 이어지지 않는다).
+# 문 조각 양옆 투명 칸 뒤까지 깐다. 뒷성벽은 그림일 뿐이라 칸 점유 기록은 지운다(앞성벽·문이 그 위에 놓인다; 바닥이 걸을 수 없는 도성 포장이라 통행은 이미 막혀 있다).
+REARN = ['gungnae_wall_h', 'gungnae_wall_h1', 'gungnae_wall_h2', 'gungnae_wall_h3', 'gungnae_wall_h4', 'gungnae_wall_h5']
+_prev = None
+for x in range(MW):
+    if x in (47, 48): continue
+    k = hsh(x, 3, 73) % len(REARN)
+    if k == _prev: k = (k + 1) % len(REARN)
+    _prev = k
+    if put(REARN[k], x, 0, ok=('cityback',), vis=False):
+        for yy in range(0, 5):
+            kit.HARD.pop((x, yy), None)
+            kit.DRAWN[(x, yy)] = [e for e in kit.DRAWN.get((x, yy), []) if e[0] != REARN[k]]
+            if not kit.DRAWN[(x, yy)]: del kit.DRAWN[(x, yy)]
+
 put('fort_gate', GATE_X, 0, ok=('cityback', 'slab'), vis=False)
 WALLN = ['fort_wall_h', 'fort_wall_h1', 'fort_wall_h2']
 _prev = None
@@ -504,6 +521,7 @@ PIN = ['pine_' + c for c in 'abcdef'] + ['fld_pine_' + c for c in 'abcd']
 MID = ['persimmon_' + c for c in 'abcdef'] + ['small_z_a', 'small_z_b', 'small_p']
 BUSH = ['bush_a', 'bush_b', 'bush_c', 'bush_d', 'bush_e', 'bush_f', 'bush_l_a', 'bush_l_b', 'bush_l_c', 'bush_l_d', 'bush_s_a', 'bush_s_b', 'bush_s_c', 'bush_s_d']
 TREEPOS = []        # (이름, x, y) 왼쪽 위
+SAME_CAP = 3        # 같은 나무 그림이 24×24 창 안에 설 수 있는 최대 수(3그루 이하)
 
 
 def base_of(nm, x, y):
@@ -514,9 +532,17 @@ def base_of(nm, x, y):
 def tree_name_ok(nm, x, y):
     if nm.startswith(('bush', 'fld_bush')):
         return True
+    others = []
     for (n2, x2, y2) in TREEPOS:
-        if n2 == nm and abs(x2 - x) <= 6 and abs(y2 - y) <= 6:      # 지도 게이트 M4: 같은 나무가 6칸 안에 둘이면 FAIL
+        if n2 != nm: continue
+        if abs(x2 - x) <= 6 and abs(y2 - y) <= 6:      # 지도 게이트 M4: 같은 나무가 6칸 안에 둘이면 FAIL
             return False
+        if abs(x2 - x) <= 23 and abs(y2 - y) <= 23: others.append((x2, y2))
+    if len(others) >= SAME_CAP:                         # 같은 그림이 새 나무를 품은 24×24 창 안에 SAME_CAP 그루를 넘으면 안 된다(복제 한도, 감사에서도 점검)
+        for wx in {x} | {px for (px, _py) in others if px <= x}:
+            for wy in {y} | {py for (_px, py) in others if py <= y}:
+                if sum(1 for (px, py) in others if wx <= px < wx + 24 and wy <= py < wy + 24) >= SAME_CAP and wx <= x < wx + 24 and wy <= y < wy + 24:
+                    return False
     return True
 
 
@@ -611,10 +637,12 @@ def plant(region, seed, dmin=2.4, dvar=1.8, tries=20000, ok=OKG, conn=True, use_
         if density < 1.0 and rg.random() > density: continue
         if clump and rg.random() > 0.10 + 0.90 * min(1.0, max(0.0, (vnoise(cx, cy, 101, 6.0) - 0.22) / 0.40)): continue      # 덩이(밀집)와 빈 틈이 섞여 간격이 균일하지 않다
         if use_glade and glade(cx, cy): continue
-        nm = rg.choice(names) if names else pick_species(rg, cx, cy)
-        cv = kit.objects[nm]
-        w, h = cv.w // T, cv.h // T
-        x, y = cx - w // 2, cy - h + 1
+        for _a in range(5):                                          # 복제 한도에 걸리면 다른 수종 변형을 다시 뽑는다
+            nm = rg.choice(names) if names else pick_species(rg, cx, cy)
+            cv = kit.objects[nm]
+            w, h = cv.w // T, cv.h // T
+            x, y = cx - w // 2, cy - h + 1
+            if tree_name_ok(nm, x, y): break
         if not tree_name_ok(nm, x, y) or near_trunk(nm, x, y, dmin, dvar) or skewer(nm, x, y) or tri_line(nm, x, y) or bog_close(nm, x, y) or rock_close(nm, x, y):
             continue
         if put(nm, x, y, ok=ok, conn=conn):
@@ -716,7 +744,7 @@ SE = {c for c in fre(82, 55, 95, 84) if wood(c[0], c[1], 100, 0.20)}
 LOG['t_nw'] = plant(NW, seed=31, dmin=2.6, dvar=2.0)
 LOG['t_ne'] = plant(NE, seed=32, dmin=3.0, dvar=2.2)
 LOG['t_west'] = plant(WESTE, seed=33, dmin=3.0, dvar=2.2)
-LOG['t_south'] = plant(SOUTH, seed=134, dmin=2.6, dvar=2.0)
+LOG['t_south'] = plant(SOUTH, seed=140, dmin=2.6, dvar=2.0)
 LOG['t_se'] = plant(SE, seed=35, dmin=2.8, dvar=2.0)
 COPSE = [(25, 57, 4.5), (39, 63, 3.5), (62, 63, 4), (66, 46, 3.5), (29, 36, 4), (56, 28, 3.5), (36, 14, 3.5), (68, 18, 3), (12, 57, 4), (24, 61, 3.5), (8, 66, 3), (18, 14, 4.5), (28, 22, 3.5), (41, 12, 3.0), (39, 54, 3.0), (60, 80, 3.5), (30, 82, 3), (66, 62, 3), (88, 87, 4), (90, 66, 3.5), (84, 92, 3)]       # 초원 속 작은 숲덩이(수종 한 줄 심기가 아니라 둥근 군락)
 cop = set()
@@ -900,7 +928,7 @@ print('직사각 풀 덩이 깎기', derect())
 def fix_lines():
     removed = 0
     for _ in range(12):
-        bad = FM.audit_line3([p for p in kit.placed if not p[0].startswith('fort_wall')])
+        bad = FM.audit_line3([p for p in kit.placed if not p[0].startswith(('fort_wall', 'gungnae_wall'))])
         if not bad:
             break
         # (이름, (x, y) 시작점, (dx, dy)) → 가운데 점을 뽑는다
@@ -972,15 +1000,26 @@ def audit_all():
     de = FM.audit_deadends(kit, ('trail', 'road', 'yard', 'slab'), ANCH)
     if de: probs.append('막다른 길 %d: %s' % (len(de), de[:8]))
     # 3) 같은 소품·나무 셋 일렬 금지
-    ln = FM.audit_line3([p for p in kit.placed if not p[0].startswith('fort_wall')])
+    ln = FM.audit_line3([p for p in kit.placed if not p[0].startswith(('fort_wall', 'gungnae_wall'))])
     if ln: probs.append('셋 일렬 %d: %s' % (len(ln), ln[:4]))
     # 4) 10×10 완전 빈 땅 금지
     pl = FM.audit_plain(kit, 10)
     if pl: probs.append('10×10 빈 광장 %d: %s' % (len(pl), pl[:4]))
+    # 4a) 복제 한도: 같은 나무 그림이 24×24 창(4칸 걸음) 안에 SAME_CAP 그루를 넘으면 안 된다
+    tr_by = collections.defaultdict(list)
+    for (n, x, y) in TREEPOS:
+        if not n.startswith(('bush', 'fld_bush')): tr_by[n].append((x, y))
+    dup_bad = []
+    for n, v in tr_by.items():
+        for wy in range(0, MH - 23, 4):
+            for wx in range(0, MW - 23, 4):
+                c_ = sum(1 for (x, y) in v if wx <= x < wx + 24 and wy <= y < wy + 24)
+                if c_ > SAME_CAP: dup_bad.append((n, wx, wy, c_))
+    if dup_bad: probs.append('같은 나무 그림이 24×24 창에 %d그루 초과 %d: %s' % (SAME_CAP, len(dup_bad), dup_bad[:4]))
     # 4b) 같은 종 정렬 금지: 같은 이름 소품·나무가 같은 열(x)·같은 줄(y)에 3개 이상이면(간격이 달라도) 꼬치/줄 — 거리 12칸 안
     by = collections.defaultdict(list)
     for (n, x, y, w, h) in kit.placed:
-        if n.startswith(('fort_', 'fld_cave', 'jangseung')): continue
+        if n.startswith(('fort_', 'fld_cave', 'jangseung', 'gungnae_wall')): continue
         by[n].append((x + w // 2, y + h - 1))
     al = []
     for n, v in by.items():

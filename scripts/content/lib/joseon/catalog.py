@@ -256,41 +256,39 @@ def objects():
     return d
 
 
-# --- 조선 실내 후보 B(inb_kit.py·inb_props*.py, 접두 in_b_): 맨 끝에 덧붙인다. 다른 후보(in_*)와 이름이 겹치지 않는다.
-_objects_before_interior_b = objects
-_terrain_before_interior_b = terrain
+# --- 조선 실내(interior_kit.py 구조 키트 + props_in*.py 기물, 접두 `in_`): 맨 끝에 덧붙인다.
+_objects_before_in, _terrain_before_in = objects, terrain
 
 
 def objects():
-    import inb_kit as _IK, inb_props as _IP, inb_props2 as _IP2, inb_props3 as _IP3, inb_props4 as _IP4, inb_props5 as _IP5
-    d = _objects_before_interior_b()
-    for m in (_IK, _IP, _IP2, _IP3, _IP4, _IP5):
-        d.update(m.objects())
+    import interior_kit as _IK, props_in as _PI
+    d = _objects_before_in()
+    d.update(_IK.objects())
+    d.update(_PI.objects())
     return d
 
 
 def terrain():
-    import inb_kit as _IK
-    d = _terrain_before_interior_b()
+    import interior_kit as _IK
+    d = _terrain_before_in()
     d.update(_IK.terrain())
     return d
 
 
-# --- 조선 궁 내부(pal_kit.py·pal_props*.py, 접두 pal_): 맨 끝에 덧붙인다. 후보 B(in_b_)와 이름이 겹치지 않는다.
-_objects_before_palace_int = objects
-_terrain_before_palace_int = terrain
+
+# --- 조선 궁 내부(palace_kit.py 구조 키트 + props_pal.py 기물, 접두 `pal_`): 맨 끝에 덧붙인다.
+_objects_before_pal, _terrain_before_pal = objects, terrain
 
 
 def objects():
-    import pal_kit as _PK, pal_props as _PP, pal_props2 as _PP2
-    d = _objects_before_palace_int()
-    for m in (_PK, _PP, _PP2):
-        d.update(m.objects())
+    import palace as _PL
+    d = _objects_before_pal()
+    d.update(_PL.objects())
     return d
 
 
 def terrain():
-    import pal_kit as _PK
-    d = _terrain_before_palace_int()
-    d.update(_PK.terrain())
+    import palace as _PL
+    d = _terrain_before_pal()
+    d.update(_PL.terrain())
     return d

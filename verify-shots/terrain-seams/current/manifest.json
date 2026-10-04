@@ -1,0 +1,120 @@
+{
+  "projectId": "9f70cb93-c831-4ab9-a6fe-d46a3634beff",
+  "storage": "/home/main/.t3/worktrees/rpg-zzu/t3code-77478098/.vite-cache/terrain-seams/project",
+  "revision": 2,
+  "sha256": "0c265773303f9851aa0ff4a3b3904880c42cd8c41693ffac49e2ad14b2d2db2a",
+  "reloaded": true,
+  "maps": [
+    {
+      "mapId": "terrain_ai",
+      "tilesetId": "beodeul_city",
+      "contacts": 388,
+      "slopes": [
+        {
+          "x": 41,
+          "y": 17,
+          "w": 2,
+          "h": 10,
+          "dir": "n",
+          "lo": 0,
+          "hi": 9
+        },
+        {
+          "x": 15,
+          "y": 29,
+          "w": 2,
+          "h": 5,
+          "dir": "n",
+          "lo": 0,
+          "hi": 4
+        },
+        {
+          "x": 50,
+          "y": 34,
+          "w": 2,
+          "h": 7,
+          "dir": "n",
+          "lo": 0,
+          "hi": 6
+        }
+      ]
+    },
+    {
+      "mapId": "ramps_four",
+      "tilesetId": "beodeul_city",
+      "contacts": 492,
+      "slopes": [
+        {
+          "x": 25,
+          "y": 6,
+          "w": 2,
+          "h": 4,
+          "dir": "s",
+          "lo": 0,
+          "hi": 3
+        },
+        {
+          "x": 38,
+          "y": 9,
+          "w": 4,
+          "h": 2,
+          "dir": "e",
+          "lo": 0,
+          "hi": 3
+        },
+        {
+          "x": 9,
+          "y": 11,
+          "w": 2,
+          "h": 4,
+          "dir": "n",
+          "lo": 0,
+          "hi": 3
+        },
+        {
+          "x": 64,
+          "y": 12,
+          "w": 4,
+          "h": 2,
+          "dir": "w",
+          "lo": 0,
+          "hi": 3
+        }
+      ]
+    },
+    {
+      "mapId": "houses_native",
+      "tilesetId": "beodeul_city",
+      "contacts": 306,
+      "slopes": [
+        {
+          "x": 36,
+          "y": 30,
+          "w": 1,
+          "h": 7,
+          "dir": "n",
+          "lo": 0,
+          "hi": 6
+        },
+        {
+          "x": 60,
+          "y": 31,
+          "w": 1,
+          "h": 10,
+          "dir": "n",
+          "lo": 0,
+          "hi": 9
+        },
+        {
+          "x": 15,
+          "y": 32,
+          "w": 1,
+          "h": 5,
+          "dir": "n",
+          "lo": 0,
+          "hi": 4
+        }
+      ]
+    }
+  ]
+}

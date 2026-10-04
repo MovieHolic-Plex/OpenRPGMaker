@@ -201,8 +201,8 @@ function stageBuild(io: CliIo, seed: JoseonSeed, args: Args): number {
 
   line(io, "재굽기 계획 (bash scripts/content/rebuild-joseon.sh, 약 70초):");
   if (regen) line(io, "  0) 마을 20호 기준 시트를 지금 카탈로그로 다시 굽는다(demo20.py, 약 40초) — 경고: 기준 시트 칸 번호가 바뀌어 이미 배포된 맵이 어긋난다.");
-  line(io, "  1) build-joseon-tileset.py  시트 14장(지도 14장) 합치기·동결 장부 해시 확인·통행·오토타일·키트·맵 JSON");
-  line(io, "  2) prepare-joseon-baram-references.py  참고문서 9용도(사냥터·동굴 / 실내 / 궁 내부 포함)·그림·오류 변조 검출");
+  line(io, `  1) build-joseon-tileset.py  시트 ${seed.maps.length}장 합치기(기준 시트 번호 불변, 새 조각은 꼬리에)·통행·오토타일·키트·맵 JSON`);
+  line(io, "  2) prepare-joseon-baram-references.py  참고문서 6용도·그림·오류 변조 검출");
   line(io, "  3) save-joseon-baram.mjs  임시 폴더 저장 → 재로드 deepEqual → 엔진 통행·마스크 대조");
   line(io, "  4) prepare-joseon-regions.mjs  장소 카드·스냅숏");
   line(io, "  5) 목록 축소본(catalog-thumbs)");
@@ -263,7 +263,9 @@ function stageMap(io: CliIo, seed: JoseonSeed, args: Args): number {
   }
   const seedNumber = flagValue(args, "seed") ?? String(map.builderSeed);
   const env: NodeJS.ProcessEnv = { ...process.env, JS_PROFILE: map.profile, JS_SEED: seedNumber };
-  const builderArgs = [repoPath(map.builder), ...(map.builderArgs ?? [])];
+  const builderArgs = [repoPath(map.builder)];
+  // 실내 방 빌더(demo_interior.py·demo_palace_in.py)는 방 이름을 인자로 받는다 — 인자 없이 돌리면 같은 스크립트의 방을 모두 굽는다.
+  if (map.profile === "interior") builderArgs.push(map.id);
   let outDir = resolve(REPO_ROOT, map.out);
   if (isV20) {
     if (args.flags.has("candidate")) builderArgs.push("--candidate");

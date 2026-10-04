@@ -1,7 +1,7 @@
 # 조선(바람의나라풍) 칩셋 — 공용 번들 타일셋 joseon_baram
 
-2026-10-02 등록, 2026-10-04 확장. 손 도트 조선 조각(집·궁궐·성문·나무·담·소품·다리·사냥터·동굴·실내·궁 내부) **623종**과 오토타일 **19종**(지형 묶음 55)을 **편집기 공용 번들 타일셋**으로 등록했다(처음 판은 291종·오토타일 10종).
-맵 **14장**이 같은 시트 위에 들어 있다: 마을 20호(`joseon_v20`, 64×56), 국내성(`gungnae`, 96×96, 성벽·해자·왕궁·구획 건물), 국내성 원작 규모(`gungnae_full`, 200×208), **사냥터(`joseon_field`, 96×96)·동굴(`joseon_cave`, 48×48)·실내 6(민가·주막·대장간·약방·서당·관아 동헌)·궁 내부 3(정전 어좌 홀·회랑·침전)**. 새 11장의 설명은 아래 「사냥터·동굴·실내·궁 내부 (2026-10-04)」.
+2026-10-02. 손 도트 조선 조각(집·궁궐·성문·나무·담·소품·다리) 291종과 오토타일 10종을 **편집기 공용 번들 타일셋**으로 등록했다.
+맵 열다섯 장이 같은 시트 위에 들어 있다: 마을 20호(`joseon_v20`, 64×56), 국내성(`gungnae`, 96×96), 국내성 원작 규모(`gungnae_full`, 200×208), **사냥터(`joseon_field`, 96×96)·동굴(`joseon_cave`, 48×48)·실내 방 6(`joseon_in_house|inn|smith|pharmacy|school|office`)·궁 내부 4(`joseon_in_throne|corridor|bedchamber|library`)**. 장소 카드 15장. 새 12장은 시트 뒤에 **꼬리 덧붙이기**로 합쳤다(2026-10-04) — 아래 「새 장소 12장」.
 버들항(`beodeul_city`)의 등록 선례를 따랐다 — `openwiki/beodeul-city.md`.
 작업 순서(관문·판정·지도 관문·재굽기·16구역 적대 검수)는 하네스 한 입구로 묶었다 — `npm run harness -- joseon-baram <단계>`, 문서 `openwiki/harnesses/joseon-baram.md`.
 
@@ -9,7 +9,7 @@
 |---|---|
 | tilesetId / 텍스처 / 접두 | `joseon_baram` / `tex_joseon_baram` / 키트·문서 id 는 `jb-` |
 | 계열 | `oprn-joseon`(「조선 칩셋」, `tilesetFamily.ts`). 버들항(`oprn-atlas`)·숲마을과 섞지 않는다 |
-| 칸 | 16px, 시트 **128열**(칸 높이가 4096px 을 넘으면 열 수를 키운다: 64열이 기본이고 16,768칸은 128열 2048×2096px, `tilesPerRow` 는 `joseonBaramSheet.json` 에서 읽는다 — 열 수는 칸 번호에 영향이 없다), 칸 수는 `build-stats.json` 의 `count`: **16,768칸**(2026-10-04, 맵 14장) = 옛 판 13,632칸(기준 시트 8,496 + 덧붙임 + 통행 복사본 130 + 빈 칸 12, **번호 불변**) + 새 시트 덧붙임 + 통행 복사본 97(총 꼬리 복사 227). 옛 판은 13,632칸(맵 3장), 그 전은 9,792칸 |
+| 칸 | 16px, 시트 **72열**(높이 4096px 상한에 맞춰 8열씩 넓힌다 — 64열이면 16,776칸이 4,192px 이라 72열. 칸 번호는 그대로, `tilesPerRow` 는 JSON 에서 읽는다), 칸 수는 `build-stats.json` 의 `count` (2026-10-04 열다섯 맵 합침: **16,776칸** = 기준 시트 8,496 + 덧붙임 + 통행 복사본 225. 세 맵일 때 13,632, 두 맵일 때 9,792) |
 | 그림 | `public/assets/joseon-baram/joseon-baram-chipset.png` (번들 항목은 `src/assets/bundled.ts`) |
 | 원본 그림 | 커밋하지 않았다. 손 도트이며 팔레트만 참고했다(재배포 금지 원본 없음) |
 
@@ -84,7 +84,7 @@ JOSEON_REPORT_ONLY=1 bash scripts/content/rebuild-joseon.sh              # 실�
 `src/assets/bundled.ts`(시트 import·`BUNDLED_EASYRPG_CHIPSET_ASSETS` 항목·frameCount) · `src/assets/bundledChipsetGeometry.ts`(tilesPerRow) ·
 `src/project/defaults/joseonBaram.ts`(`createJoseonBaramTileset`·`ensureJoseonBaramTileset`·`ensureJoseonBaramReferences`) ·
 `src/project/defaults/defaultAssets.ts`(import·`ensureBundledTilesets` 블록·create 분기) · `src/project/tilesetHarness/combinedTown.ts`(합본 마을 계열 제외) ·
-`src/project/tilesetFamily.ts`(`oprn-joseon`) · `src/project/regionReferences.ts`·`regionReferenceSnapshots.ts`·`joseonPlaceReferences.ts`·`regionReferences/joseon-village.json`(장소 카드 14장; 스냅숏 청크 1.7MB, 동적 import 라 장소를 깔 때만 받는다; 카드 내려받기 JSON 은 가벼운 타일셋(통행·우선순위·지형)만 담고 나머지는 열 때 `ensureBundledTilesets` 가 되살린다) ·
+`src/project/tilesetFamily.ts`(`oprn-joseon`) · `src/project/regionReferences.ts`·`regionReferenceSnapshots.ts`·`joseonPlaceReferences.ts`·`regionReferences/joseon-village.json`(장소 카드 15장: 마을 20호·국내성·국내성 원작 규모·사냥터·동굴·실내 방 6·궁 내부 4; 스냅숏 청크 1.72MB, 동적 import 라 장소를 깔 때만 받는다) ·
 `test/bundledTilesetIdParity.test.ts`(생성자 표 한 줄).
 
 `ensureJoseonBaramTileset` 규칙: 타일셋이 없으면 만들고, 칸 수가 번들과 다르고 더 적으면 표(통행·메타·그룹·오토타일·키트)를 교체한다(**저자가 만든 키트·묶음·오토타일 — 번들 id 가 아닌 것 — 은 교체 뒤에도 남긴다**, 옛 번호가 불변이라 저자 맵이 안 깨진다). 칸 수가 같으면 빠진 키트와 `jb-` 키트·참고문서만 번들 것으로 되돌리고 저자가 쓴 것은 건드리지 않는다. **번들보다 칸이 많으면 건드리지 않는다.**
@@ -146,12 +146,36 @@ BFS 는 `save-joseon-baram.mjs` 가 **엔진 `canMove`** 로 돌린다(`storage-
 - **맵 빌더 쪽 결함(현재 판)**: 국내성 좁은 다리 `gungnae_bridge_narrow_h5`(19,39)는 서쪽 끝이 대장간 벽(18,40), 동쪽 끝이 서낭당(24,39)에 막혀 양끝이 모두 막힌 장식 다리, 주민 (54,49)는 드므(`palace_deumeu` 54,48)에 서 있다, 마을 20호 두 번째 다리 (40,24)는 서쪽 끝이 빨래터(38,25)에 막혀 있다. 마을 20호의 물레방아 홈통 (40,30)(41,30)·방앗간 (39,36)은 물 위 `F` 칸으로 걸어진다(기존). 모두 `expected-mismatch.json` 에 사유가 있다.
   **원작 규모 맵 빌더 쪽 결함: 통합 수정판에서 모두 해소**(남문 문루 밑 집, 연못 안 주민 (80,110), 짚가리에 막힌 사립, 항아리 물 칸 — 예외 등록 0, 걸을 수 있는 물 칸은 다리 갑판뿐). 아래 옛 국내성(96×96)의 결함은 그대로다.
 
+## 새 장소 12장 (2026-10-04, 사냥터·동굴·실내 방 6·궁 내부 4)
+`agent/joseon-fieldfix`(사냥터·동굴, 조각 `fld_`/`cav_`)와 `agent/joseon-interior`(실내 `in_` 방 6 + 궁 내부 `pal_` 4)를 병합해(충돌 7개: JSON 은 `jmerge.py` 3방 병합, `catalog.py`·`gate.py`·`mapgate.py`·`seed.json` 은 양쪽 맨 끝 추가분을 모두 살려 손으로) `rebuild-joseon.sh` 에 시트·맵을 더했다.
+- **번호 불변**: 기준·덧붙임 앞 구간 **0~13,489 은 그림·통행·우선순위·지형 0칸 차이**(4fe6a48503 대비). 옛 통행 복사본(꼬리 130)은 뒤로 밀렸다(번호 13,490~ → 16,551~). 열 수 64→72(번호 불변, 그림 위치만). 기존 세 맵의 BFS·마스크 수치는 그대로다(마을 20호 2,166/2,175 · 국내성 4,984/5,090 · 원작 규모 18,677/20,496, 건너는 곳 19·40, 마스크 0 변화).
+- **새 지형 규칙(`piece-walk-overrides.json` terrain)**: 가장자리를 이어짐으로 센다(`edgeConnects`) — `cav_roof47`·`fld_tall32`·`fld_rock32`; 짐승길 `fld_trail32` 은 지도 아래 출구에서 끊는다(`false`). `fld_rock32` 의 이웃에 `fld_rock_in8`(속 변형)·`slab_edge16`·`road64`(북쪽 성벽 밑·성문 틈)를 더했고, 실내 천장 `in_ceil47`·`pal_ceil47` 은 아랫벽 `in_ceil_front`·`pal_ceil_front` 와 이어진다. `in_ceil_front`·`in_void` 는 막힘(걸을 수 없음)으로 정의했다.
+- **시작 칸**: 맵 빌더가 정한 시작 칸을 걸을 수 있으면 쓴다 — 실내는 출입문 안쪽 칸(`extra.start`), 사냥터는 북쪽 성문 출구 (47,0)(`extra.audit.start`). 아니면 옛 규칙(지도 가운데 가장 가까운 길).
+- **저장 증명 확장(`save-joseon-baram.mjs`)**: ① 지도 가장자리에 붙은 문루(사냥터 북문)의 지도 밖 쪽 끝은 출구라서 조각 안의 가장자리 칸을 끝으로 본다 ② 실내 **기물 앞 도달**: 기물마다 둘레 칸(아래·옆·위) 중 하나는 걸어 닿아야 한다(벽에 걸린 시래기·메주·고추 걸이·족자·약초 횃대·연장대는 제외, 사유 출력) ③ `JOSEON_MASK_DETAIL=1` 은 마스크 불일치 칸에 [x,y,구운 칸,엔진 칸]을 낸다.
+- 실측(임시 폴더 프로젝트 저장→재로드, 맵 15장 deepEqual 참·엔진 통행 불일치 0):
+
+| 지도 | 걸을 수 있는 칸 도달 | 건너는 곳 | 비고 |
+|---|---|---|---|
+| 사냥터 96×96 | 6,890/6,890 (북문 출구 (47,0) 에서 굴 입구 3·야영지·쉼터 포함 전부) | 북문 1/1 | 마스크 전부 0(짐승길·키 큰 풀·숲 바닥·늪·바위산) |
+| 동굴 48×48 | 525/525 (입구 (24,44)에서 모든 방) | – | 천장 0/1434 · 못 0/39 |
+| 민가 | 66/66 | – | 기물 앞 모두 닿음(벽에 걸린 시래기 1 제외) |
+| 주막 | 107/107 | – | 메주·고추 걸이 2 제외 |
+| 대장간 | 26/26 | – | 연장대 2 제외 |
+| 약방 | 30/30 | – | 약초 횃대 1 제외 |
+| 서당 | 88/88 | – | – |
+| 관아 | 98/98 | – | 사또(8,5)는 의자 위 앉은 NPC 라 예외 1 |
+| 어좌전 | 318/318 | – | – |
+| 회랑 | 129/129 | – | – |
+| 침전 | 86/86 | – | – |
+| 서고 | 86/86 | – | 족자 2 제외 |
+
+- 장소 카드 15장(사냥터·동굴 `natural`, 실내 `facility`), 스냅숏 청크 `regionReferences/joseon-village.json` 1.72MB(동적 import — 장소를 깔 때만 받는다). 지역 참고 `.oprn.json` 은 맵마다 8.5MB(타일셋 통째 포함, gzip 약 0.47MB; 사냥터·동굴·방 12장 합 101MB)다.
+- 참고문서는 6용도 그대로이고 소품 용도(`joseon-baram-props`)가 문서 21개·그림 12장으로 늘었다.
+
+
 ## 한계
 
-- 실내·궁 내부·사냥터·동굴 맵은 번들 장소 카드로만 있다 — 방 사이 이동·굴 입구 이동 이벤트와 몬스터·보물 상자는 없다(주민 NPC 만: 마을 20호 20명·국내성 21명·국내성 원작 규모 40명·새 11장 합 34명, 출구·스폰은 좌표 기록). 사가 실내(후보 B)는 이제 `in_b_` 로 합쳐졌다.
-- 새 번호 장부에는 파동 1 만 적혀 있다 — 이 번들이 나간 뒤 `--write-frozen` 으로 파동 2 를 적어야 다음 판이 이번 번호를 못 박는다(위 「동결 장부」).
-- 사냥터 바위산 `fld_rock32` 마스크 110칸 불일치(빌더 규칙 차이, 위 표).
-- 한 시트에 칸이 16,768개라 128열 2048px 시트다 — 편집기 팔레트가 칸이 많아진 만큼 스크롤이 길다(`tilesPerRow` 는 JSON 에서 읽으므로 코드는 그대로).
+- 실내 방 맵(민가·주막·대장간·약방·서당·관아·궁 4장)과 사냥터·동굴은 있지만 **건물 문 ↔ 방 입구를 잇는 이동 이벤트는 없다**(맵 사이 전송은 저작자가 건다). 주민 NPC 만(마을 20호 20명·국내성 21명·국내성 원작 규모 40명·사냥터·방 몇 명), 몬스터는 `extra.json.spawns` 자리 좌표뿐이다. 장소 적대 검수 점수는 3~5/10 대에 머문다(검수 결과 요약은 `tiledata/joseon-field/QA_ROUND1.md`·`tiledata/joseon-interior/QA_ROUND1~2.md`).
 - 공용 DB(`shared-content.sqlite`) 게시와 사용자 프로젝트 반영은 하지 않았다 — 소급 적용은 별도 `register-*`/게시 작업이다.
 - 장소 카드 내려받기 JSON 은 각 약 4.4MB(전부 `database` 3.7MB 와 가벼운 타일셋 표; 타일셋 조각·참고문서는 열 때 번들이 되살린다). 14장 합 약 62MB.
 - 앞 13,632칸은 동결 장부로 불변이다. 옛 3개 시트의 맵 산출이 바뀌어 **새 꼬리 복사본이 필요해지면** 변환기가 `동결 장부 위반` 으로 멈춘다(옛 칸을 못 건드린다). 이미 저장된 사용자 프로젝트 맵이 있으면 칸 수 변경은 `ensureJoseonBaramTileset` 의 표 교체만 하고 맵 칸 번호는 다시 쓰지 않는다 — 번들 맵을 사용자 프로젝트에 올리는 일은 별도 작업이다.

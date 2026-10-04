@@ -10,6 +10,7 @@ import {
 import { updateEventPage } from "@/editor/eventPages";
 import { el } from "@/util/dom";
 import { store } from "@/project/store";
+import { sharedCharacterIndices, HARNESS_CHARACTER_PREFIX } from '@/project/sharedCharacters';
 import type { EventPage, EventPageGraphic, MapId } from "@/project/types";
 import {
   renderDirectionRadioGroup,
@@ -157,7 +158,8 @@ export function renderNpcGraphicPicker(
   return root;
 
   function applySelection(next: NpcGraphicSelection): void {
-    selection = next;
+    const indices = sharedCharacterIndices(next.asset.textureKey);
+    selection = indices && !indices.includes(next.characterIndex) ? {...next, characterIndex:indices[0] ?? 0} : next;
     directSpriteId = next.asset.textureKey;
     clearRecovery();
     refresh();
@@ -192,6 +194,8 @@ export function renderNpcGraphicPicker(
     applyWalkPreviewStyle(walkPreview, selection);
     for (const button of slotButtons) {
       const slot = Number(button.dataset.slot ?? "-1");
+      const indices = sharedCharacterIndices(selection.asset.textureKey);
+      button.hidden = indices !== undefined && !indices.includes(slot);
       setClass(button, "active", slot === selection.characterIndex);
       applyPreviewStyle(button, { ...selection, characterIndex: slot }, SLOT_SCALE);
       const taught = slotTeachState(selection.asset.textureKey, slot);
@@ -242,7 +246,7 @@ function graphicForConfirmedSelection(
   if (!assets.some((a) => a.textureKey === id)) return { status: "no-match" };
   return { status: "matched", graphic: {
     ...graphic,
-    sprite: { type: "bundled", id },
+    sprite: { type: store.getCurrent().assets.uploaded[id] || id.startsWith(HARNESS_CHARACTER_PREFIX) ? "uploaded" : "bundled", id },
     direction: selection.direction,
     pattern: charsetFrameIndex(selection),
   } };

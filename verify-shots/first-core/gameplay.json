@@ -1,0 +1,91 @@
+{
+  "projectId": "6ebe2a00-c94b-4957-b088-bf3b1886c776",
+  "title": "멈춘 시계의 기억",
+  "canonicalContentMatched": true,
+  "automaticBuildCompleted": true,
+  "projectJsonSha256": "a24c5ba574deaa34041f52225c945f9edc4723f31b00b69cbfa5392547497999",
+  "projectJsonBytes": 86548735,
+  "choices": [
+    "기억을 간직한다",
+    "놓아준다"
+  ],
+  "branches": [
+    {
+      "name": "keep",
+      "seconds": 29.295,
+      "passed": true,
+      "errors": [],
+      "beats": [
+        {
+          "id": "title",
+          "failures": []
+        },
+        {
+          "id": "opening",
+          "failures": []
+        },
+        {
+          "id": "field",
+          "failures": []
+        },
+        {
+          "id": "clock",
+          "failures": []
+        },
+        {
+          "id": "response",
+          "failures": []
+        },
+        {
+          "id": "route",
+          "failures": []
+        },
+        {
+          "id": "ending",
+          "failures": []
+        }
+      ],
+      "external": [],
+      "requestsFailed": []
+    },
+    {
+      "name": "release",
+      "seconds": 28.041,
+      "passed": true,
+      "errors": [],
+      "beats": [
+        {
+          "id": "title",
+          "failures": []
+        },
+        {
+          "id": "opening",
+          "failures": []
+        },
+        {
+          "id": "field",
+          "failures": []
+        },
+        {
+          "id": "clock",
+          "failures": []
+        },
+        {
+          "id": "response",
+          "failures": []
+        },
+        {
+          "id": "route",
+          "failures": []
+        },
+        {
+          "id": "ending",
+          "failures": []
+        }
+      ],
+      "external": [],
+      "requestsFailed": []
+    }
+  ],
+  "passed": true
+}

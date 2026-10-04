@@ -17,7 +17,7 @@ import { symmetricPoints, lineCells, polygonCells, symmetryVariants, transformPo
 import { planTerrainStamp } from "./terrainStamps";
 import { terrainLocked } from "@/project/terrainDesign";
 import { planReliefDoodad } from "./reliefDoodads";
-import { planQuickHouse } from "./quickHouse";
+import { planQuickHouseDrag, quickHouseOptions } from "./quickHouse";
 import { drawQuickHousePreview } from "./quickHousePreview";
 
 function announceReliefDoodadHover(detail: ReliefDoodadHoverDetail): void {
@@ -40,7 +40,7 @@ function renderReliefHover(spec: HoverPreviewSpec, map: GameMap, tileSize: numbe
     const draw = (x:number,y:number,color:number) => { g.fillStyle(color,.22);g.lineStyle(1,color,.85);const top=(y-(lift?cellLift(lift,x,y):0))*tileSize;g.fillRect(x*tileSize,top,tileSize,tileSize);g.strokeRect(x*tileSize,top,tileSize,tileSize); };
     if (state.terrainFeatureId || state.terrainVisionPreview) { spec.layer.add(g); return; }
     if (state.terrainBrush === "house") {
-      const plan = planQuickHouse(map, tileset, pick, { style: state.terrainHouseStyle, width: state.terrainHouseWidth, stories: state.terrainHouseStories, kitId: state.terrainHouseKitId });
+      const plan = planQuickHouseDrag(map, tileset, { mapId: map.id, start: pick, end: pick }, quickHouseOptions(state));
       drawQuickHousePreview(spec.scene, spec.layer, map, tileset, plan);
     } else if (state.terrainBrush === "stamp" && !state.terrainStampCapture) {
       const stamp=store.getCurrent().terrainStamps?.find(s=>s.id===state.terrainStampId);
@@ -130,7 +130,7 @@ function hoverPreviewKey(spec: HoverPreviewSpec): string {
     spec.mapId, spec.centerX, spec.centerY, state.tool, state.layer,
     state.selectedTile, state.brushSize, state.paintShape, stampKey,
     state.terrainSymmetry, state.terrainStampId, state.terrainStampRotation, state.terrainStampMirror, state.terrainStampCapture,
-    state.terrainHouseStyle, state.terrainHouseKitId, state.terrainHouseWidth, state.terrainHouseStories, state.terrainRoadDrag,
+    state.terrainHouseStyle, state.terrainHouseKitId, state.terrainHouseWidth, state.terrainHouseStories, state.terrainHouseResize, state.terrainHouseRoofWidth, state.terrainRoadDrag,
     state.terrainAreaShape, state.terrainDelta, state.terrainSeed, JSON.stringify(state.terrainMixWeights), JSON.stringify(state.terrainPoints),
     ...(state.tool === "relief"
       ? [state.reliefDoodad ?? "", state.reliefRoughSize, state.terrainBrush, state.terrainMaterial, state.terrainWidth, state.reliefRampWidth, state.reliefClusterDensity, state.reliefClusterEnabled, JSON.stringify(state.reliefBridgeStart), JSON.stringify(state.terrainSelectedGroup), state.terrainMoveGroup, store.getVersionToken(), reliefSignature(store.getCurrent().maps[spec.mapId]?.relief)]

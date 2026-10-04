@@ -151,11 +151,22 @@ class Fit:
             raise FitError('땅이 하나도 없다 — continents 의 land 를 올려라')
         sz = ndi.sum(self.land, lab, range(1, n + 1))
         self.home = lab == (int(np.argmax(sz)) + 1)
+        hp = self.ov.get('home_pole')                  # 실제 지리: 사용자가 말한 땅(일본이면 혼슈)을 시작 대륙으로 — 가장 큰 덩이가 아니어도
+        if hp is not None:
+            hx, hy = int(hp[0]), int(hp[1])
+            ys, xs = np.nonzero(self.land)
+            i = int(np.argmin((xs - hx) ** 2 + (ys - hy) ** 2))
+            k = int(lab[ys[i], xs[i]])
+            if sz[k - 1] >= 120:
+                self.home = lab == k
+            else:
+                self.notes.append('시작 땅으로 고른 곳이 너무 작아(%d칸) 가장 큰 땅에서 시작한다' % int(sz[k - 1]))
         d = ndi.distance_transform_edt(~self.home)
-        near = self.land & ~self.home & (d <= HOME_GAP)
+        gap = float(self.ov.get('home_gap', HOME_GAP))   # 실제 지리는 좁게 — 4.6칸이면 0.7°/칸 유럽에서 잉글랜드가 거의 다 바다가 됐다
+        near = self.land & ~self.home & (d <= gap)
         if near.any():
             self.land &= ~near
-            self.notes.append('시작 대륙에 바다 %.0f칸보다 가까운 땅 %d칸을 바다로 깎았다(배 장벽)' % (HOME_GAP, int(near.sum())))
+            self.notes.append('시작 대륙에 바다 %.1f칸보다 가까운 땅 %d칸을 바다로 깎았다(배 장벽)' % (gap, int(near.sum())))
         lab, n = comps(self.land)
         for i in range(1, n + 1):
             m = lab == i
@@ -182,9 +193,10 @@ class Fit:
         self.ship_lands = sorted(ids, key=lambda i: -int((self.lab == i).sum()))
         if self.home.sum() < 600:
             raise FitError('시작 대륙이 %d칸뿐이다 — 1·2막 장소·산벽·사구 바다를 놓으려면 600칸 이상이어야 한다. '
-                           'continents 의 land 를 올리거나 count 를 줄여라' % int(self.home.sum()))
+                           'continents 의 land 를 올리거나 count 를 줄여라(실제 지리 real 이면 box 를 좁혀 그 땅을 크게 그려라 — 또는 home 을 더 큰 땅으로)' % int(self.home.sum()))
         if not self.ship_lands:
-            raise FitError('배로 갈 땅(시작 대륙과 바다로 떨어진 다른 땅)이 없다 — continents count 를 2 이상으로 하거나 island 를 더하라')
+            raise FitError('배로 갈 땅(시작 대륙과 바다로 떨어진 다른 땅)이 없다 — continents count 를 2 이상으로 하거나 island 를 더하라'
+                           '(실제 지리 real 이면 바다 건너 땅이 들어오게 box 를 넓히거나, 지협·운하 자리를 sea{poly} 로 끊어라 — 예: 수에즈)')
         self.dco = ndi.distance_transform_edt(self.land)
 
     # ── 산벽 ──
@@ -412,7 +424,8 @@ class Fit:
             gp = geodesic(Ad, [(int(xs[i]), int(ys[i]))])
             tot = int(self.home.sum()) if not self.ov.get('wall') else int(A.sum() * .75)   # 손으로 그은 산벽이면 2막 땅이 아주 클 수 있다 — 1막 땅 기준(사구가 반도 절반을 덮었다)
             Ds = []
-            for frac in (.15, .19, .12, .24):
+            fr = (.15, .19, .12, .24) if not self.ov.get('dune_small') else (.07, .09, .11, .14, .19)   # 실제 지리: 작은 것부터(혼슈 서쪽 절반이 통째로 모래가 됐다)
+            for frac in fr:
                 vals = np.sort(gp[A & np.isfinite(gp)])
                 if len(vals) < 50:
                     break

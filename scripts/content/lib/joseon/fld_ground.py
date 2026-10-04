@@ -467,6 +467,18 @@ def roof47(m8, v=0):
                 if qn > 0.985: col = ST[2]
                 elif qn < 0.012: col = ST[0]
             c.put(x, y, col)
+    if v >= 6:                                                               # 깊은 암반: 큰 바위 덩이 셋(왼쪽 위 밝은 테·오른쪽 아래 그늘, 타일 가장자리를 감아 이어 붙여도 끊기지 않음)
+        for k in range(3):
+            bx, by = hsh(k, v, 301) % T, hsh(k, v, 302) % T
+            rx, ry = 3 + hsh(k, v, 303) % 3, 2 + hsh(k, v, 304) % 2
+            for dy in range(-ry - 1, ry + 2):
+                for dx in range(-rx - 1, rx + 2):
+                    u = (dx / float(rx)) ** 2 + (dy / float(ry)) ** 2
+                    if u > 1.0: continue
+                    if u > 0.5 and (dx + dy < 0 or dx < 0 or dy < 0) and not (dx > 0 and dy > 0): col = ST[2]
+                    elif u > 0.5: col = ST[0]
+                    else: col = ST[1] if rnd(bx + dx, by + dy, 960 + v) > 0.12 else ST[2]
+                    c.put((bx + dx) % T, (by + dy) % T, col)
     if 2 <= v < 6:
         for k in range(3 if v < 4 else 2):
             x, y = 3 + hsh(k, m + 11 * v, 91) % 10, 3 + hsh(m, k + 7 * v, 92) % 10

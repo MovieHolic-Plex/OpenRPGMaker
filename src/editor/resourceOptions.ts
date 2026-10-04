@@ -180,6 +180,11 @@ export function listDatabaseResourceOptions(
       add(id, uploaded.name || id);
     }
   }
+  if (kind === "picture") {
+    // Static map objects use the same whole-image resource as item pictures.
+    // Keep existing browse order, and make actual objects discoverable by name/id.
+    for (const asset of CC0_ICON_ASSETS) add(asset.id, asset.name);
+  }
   if (kind === "still") {
     // 호환 꼬리: 아이콘으로 저작된 기존 오프닝·게임 오버 배경이 "종류 불일치"로 사라지지 않게 한다.
     for (const option of listDatabaseResourceOptions("image", project)) {

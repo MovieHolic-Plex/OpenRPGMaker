@@ -5,6 +5,8 @@ import { ensureUploadedTilesetTextures } from "@/assets/uploadedTilesets";
 // 데이터는 직접 쓰지 않고 store.subscribe 로 갱신을 받아 재렌더.
 
 import type Phaser from "phaser";
+import { reliefGroundFromImage, reliefTilesetImage } from "./reliefGroundSurface";
+import { hasRelief } from "@/project/relief/walk";
 import { getLoadedPhaser } from "@/app/phaserRuntime";
 import {
   ensureBundledProjectTextures,
@@ -38,6 +40,8 @@ import { StampOrderRenderer } from "@/editor/stampOrderRenderer";
 import { isAgentGhostPreviewHidden, subscribeAgentGhostPreview } from "@/editor/agentGhostPreview";
 import { AI_LIVE_CANVAS_EVENT } from "@/editor/aiLiveCanvas";
 import { AgentFocusRenderer, AgentGhostPreviewRenderer } from "@/editor/agentPreviewRenderers";
+import { AgentConstructionRevealRenderer } from "@/editor/agentConstructionRevealRenderer";
+import { subscribeAgentConstructionReveal } from "@/editor/agentConstructionReveal";
 import { subscribeInlineProposalActions } from "@/editor/proposalInlineApproval";
 import { CameraScrollbars } from "@/editor/CameraScrollbars";
 import { CameraPanController, pointerScreenPosition } from "@/editor/CameraPanController";
@@ -279,6 +283,7 @@ export class EditScene extends PhaserRuntime.Scene {
   /** 미리보기 중인 레이어 스펙(배율 재계산용). */
   private mapBackgroundPreviewSpecs: readonly { readonly fit: "native" | "cover" }[] = [];
   private unsubAgentFocus: (() => void) | null = null;
+  private unsubConstructionReveal: (() => void) | null = null;
   private unsubCameraFocus: (() => void) | null = null;
   private unsubInlineApproval: (() => void) | null = null;
   private unsubAgentBlueprint: (() => void) | null = null;
@@ -289,6 +294,7 @@ export class EditScene extends PhaserRuntime.Scene {
   private agentBlueprintRenderer: AgentBlueprintRenderer | null = null;
   private agentGhostPreviewRenderer: AgentGhostPreviewRenderer | null = null;
   private agentFocusRenderer: AgentFocusRenderer | null = null;
+  private constructionRevealRenderer: AgentConstructionRevealRenderer | null = null;
   private isPainting = false;
   private lastPaintKey = "";
   private lastEventLayerClick: EventLayerClick | null = null;
@@ -540,6 +546,10 @@ export class EditScene extends PhaserRuntime.Scene {
     this.agentGhostPreviewLayer.setDepth(10.5);
     this.agentFocusHighlightLayer = this.add.container(0, 0);
     this.agentFocusHighlightLayer.setDepth(11);
+    // 조수 시공 연출(청사진 덮개가 걷히며 지어지는 모습). 실제 칸 위·고스트 아래.
+    const constructionRevealLayer = this.add.container(0, 0);
+    constructionRevealLayer.setDepth(10.45);
+    this.constructionRevealRenderer = new AgentConstructionRevealRenderer(this, constructionRevealLayer, () => this.mapId());
     this.agentBlueprintRenderer = new AgentBlueprintRenderer(this, this.agentBlueprintLayer, () => this.mapId());
     this.stampOrderRenderer = new StampOrderRenderer(this, this.stampOrderLayer, () => this.mapId());
     this.agentGhostPreviewRenderer = new AgentGhostPreviewRenderer(this, this.agentGhostPreviewLayer, () => this.mapId());
@@ -586,6 +596,11 @@ export class EditScene extends PhaserRuntime.Scene {
       this.redrawWhenViewStateChanges();
     });
     this.unsubAgentFocus = subscribeAgentFocusHighlight((target) => this.showAgentFocusHighlight(target));
+    this.unsubConstructionReveal = subscribeAgentConstructionReveal((plan) => {
+      const played = this.constructionRevealRenderer?.play(plan) ?? false;
+      if (played) this.clearAgentFocusHighlight();
+      return played;
+    });
     this.unsubCameraFocus = subscribeEditorCameraFocus((target) => this.panCameraToTile(target));
     this.unsubAgentGhost = subscribeAgentGhostPreview(() => {
       this.renderAgentGhostPreview();
@@ -712,6 +727,9 @@ export class EditScene extends PhaserRuntime.Scene {
     this.unsubEditor?.();
     this.unsubAgentGhost?.();
     this.unsubAgentFocus?.();
+    this.unsubConstructionReveal?.();
+    this.unsubConstructionReveal = null;
+    this.constructionRevealRenderer?.clear();
     this.unsubCameraFocus?.();
     this.unsubMapBackgroundPreview?.();
     this.unsubAgentBlueprint?.();
@@ -889,9 +907,10 @@ export class EditScene extends PhaserRuntime.Scene {
       if (chunkKey !== this.lastChunkVisibilityKey) {
         this.lastChunkVisibilityKey = chunkKey;
         for (const [key, chunk] of this.tileChunks) {
-          const comma = key.indexOf(",");
-          const cx = Number(key.slice(0, comma));
-          const cy = Number(key.slice(comma + 1));
+          const coordinates = key.slice(key.indexOf(":") + 1);
+          const comma = coordinates.indexOf(",");
+          const cx = Number(coordinates.slice(0, comma));
+          const cy = Number(coordinates.slice(comma + 1));
           const visible = cx >= firstCx && cx <= lastCx && cy >= firstCy && cy <= lastCy;
           if (chunk.visible !== visible) chunk.setVisible(visible);
         }
@@ -1047,7 +1066,7 @@ export class EditScene extends PhaserRuntime.Scene {
     if (plan.kind === "cells") {
       this.redrawCells(plan.cells);
       // 높이 붓이 절벽을 타일로 구운 칸 — 옛 덧그림이 남아 있으면 걷어 낸다.
-      if (change.scope === "map" && change.relief) this.scheduleReliefRender();
+      if (change.scope === "map" && (change.relief || plan.cells.some(c => c.layer === "lower") && store.getCurrent().maps[mapId!]?.relief)) this.scheduleReliefRender();
       return;
     }
     this.redraw();
@@ -2403,11 +2422,14 @@ export class EditScene extends PhaserRuntime.Scene {
     const relief = map?.relief;
     const tileSize = this.activeTileSize();
     const tileset = map ? store.getCurrent().tilesets[map.tilesetId] : undefined;
-    const key = relief ? `${mapId}|${tileSize}|${map?.tilesetId}|${reliefSignature(relief)}` : "";
-    if (key === this.reliefRenderKey) return;
-    this.reliefRenderKey = key;
-    strips.sync(map && relief && !reliefIsFlat(relief) ? relief : undefined, tileSize, forceFull);
     const textureKey = tileset ? tilesetTextureKey(tileset) : null;
+    const ground = map && tileset && relief && textureKey ? reliefGroundFromImage(map, tileset, reliefTilesetImage(this.textures, textureKey)) : undefined;
+    const active = editorState.get().layer;
+    strips.setGroundAppearance(ground ? active === "upper" ? .58 : active === "event" ? .62 : 1 : 1, ground && active === "upper" ? 0xc8d9bf : null);
+    const key = relief ? `${mapId}|${tileSize}|${map?.tilesetId}|${reliefSignature(relief)}|${ground?.signature ?? "none"}` : "";
+    if (!forceFull && key === this.reliefRenderKey) return;
+    this.reliefRenderKey = key;
+    strips.sync(map && relief && !reliefIsFlat(relief) ? relief : undefined, tileSize, forceFull, ground);
     const decor = relief && !reliefIsFlat(relief) && textureKey && this.textures.exists(textureKey) ? relief.wallDecor ?? [] : [];
     // 장식 자리는 그 칸 들림을 따른다 — 장식 목록·들림이 그대로면(붓질 대부분) 다시 만들지 않는다
     const decorKey = decor.length
@@ -2440,7 +2462,9 @@ export class EditScene extends PhaserRuntime.Scene {
     if (!mapId || !map) return;
     const before = this.reliefTileRelief, after = map.relief;
     if (before === after) return;
-    const changed = reliefTileSlotChangedCells(before, after, map.width, map.height);
+    const changed = hasRelief(before) !== hasRelief(after)
+      ? Array.from({ length: map.width * map.height }, (_, i) => ({ x: i % map.width, y: Math.floor(i / map.width) }))
+      : reliefTileSlotChangedCells(before, after, map.width, map.height);
     this.reliefTileRelief = after;
     if (changed.length === 0) return;
     if (!this.canIncrementallyRenderCells(mapId)) {
@@ -2595,7 +2619,7 @@ export class EditScene extends PhaserRuntime.Scene {
       state.showGrid ? "grid" : "nogrid",
       state.terrainReachability ? "reach" : "noreach",
       ...(state.terrainVisionPreview ? [Math.floor(this.cameras.main.scrollX / 16), Math.floor(this.cameras.main.scrollY / 16), this.cameras.main.zoom, this.cameras.main.width, this.cameras.main.height] : []),
-      JSON.stringify(state.terrainHouseDrag), state.terrainHouseStyle, state.terrainHouseKitId, state.terrainHouseWidth, state.terrainHouseStories, JSON.stringify(state.terrainPoints), JSON.stringify(state.terrainRoute), state.terrainRouteWidth, JSON.stringify(state.terrainRouteBody), state.terrainRouteEvents, state.terrainRouteDoorId, state.terrainRouteDoors, JSON.stringify(state.terrainRouteSwitches), state.terrainVisionPreview, JSON.stringify(state.terrainVisionOrigin), state.terrainSymmetry, state.terrainBrush,
+      JSON.stringify(state.terrainHouseDrag), state.terrainHouseStyle, state.terrainHouseKitId, state.terrainHouseWidth, state.terrainHouseStories, state.terrainHouseResize, state.terrainHouseRoofWidth, JSON.stringify(state.terrainPoints), JSON.stringify(state.terrainRoute), state.terrainRouteWidth, JSON.stringify(state.terrainRouteBody), state.terrainRouteEvents, state.terrainRouteDoorId, state.terrainRouteDoors, JSON.stringify(state.terrainRouteSwitches), state.terrainVisionPreview, JSON.stringify(state.terrainVisionOrigin), state.terrainSymmetry, state.terrainBrush,
     ].join("|");
   }
 

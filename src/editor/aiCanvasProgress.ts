@@ -1,6 +1,7 @@
 import type { PiAgentEvent } from "@/ai/piAgent/protocol";
 import { narrateAiActivity } from "./aiActivityNarration";
 import { isAiLiveCanvasEnabled, subscribeAiLiveCanvas } from "./aiLiveCanvas";
+import { defaultYieldToUi } from "@/ai/yieldToUi";
 
 export interface AiCanvasProgress {
   status(text: string): void;
@@ -52,6 +53,20 @@ export function startAiCanvasProgress(instruction: string): AiCanvasProgress {
       if (!owns()) return;
       let event = raw;
       while (event.type === "agent_event") event = event.event;
+      if (event.type === "checkpoint") {
+        stage.textContent = `${narrateAiActivity({ toolName: event.toolName, done: true, ok: true }).action} · 맵에 반영하는 중`;
+        return;
+      }
+      if (event.type === "execution_status" && event.name === "checkpoint.apply") {
+        stage.textContent = event.ok === false ? "맵에 반영하지 못했어요" : "맵에 반영했어요";
+        return;
+      }
+      if (event.type === "assistant") {
+        // 조수가 작업 사이에 사용자에게 한 말 — 다음 도구가 시작되면 그 문구로 바뀐다.
+        const said = event.text.replace(/\s+/gu, " ").trim();
+        if (said) stage.textContent = said.length > 90 ? `${said.slice(0, 90)}…` : said;
+        return;
+      }
       if (event.type !== "tool_start" && event.type !== "tool_end") return;
       stage.textContent = narrateAiActivity({ toolName: event.name,
         done: event.type === "tool_end", ok: event.type === "tool_end" ? event.ok : undefined }).action;
@@ -59,10 +74,7 @@ export function startAiCanvasProgress(instruction: string): AiCanvasProgress {
     async paint() {
       // Paint the acknowledgement before intent classification / large base capture.
       // Hidden tabs must still be able to continue the request.
-      await new Promise<void>(resolve => {
-        const timer = setTimeout(resolve, 50);
-        requestAnimationFrame(() => requestAnimationFrame(() => { clearTimeout(timer); resolve(); }));
-      });
+      await defaultYieldToUi();
     },
     finish,
   };

@@ -18,7 +18,7 @@ const focusEditorView: ToolDefinition = {
   name: "focus_editor_view",
   description:
     "사용자 화면을 특정 위치로 옮긴다. 이름만 주면(query) 프로젝트에서 그 맵·NPC·건물을 찾아 그곳으로 데려간다. "
-    + "'어디야?', '어디에 있어?', '보여줘', '거기로 가자' 같은 요청에는 설명하기 전에 먼저 호출하라. "
+    + "사용자가 장소의 위치를 찾아 보여달라고 요청한 경우에만 호출한다. 시공·검수·진행 보고 중에는 호출하지 않는다. "
     + "좌표를 이미 알고 있으면 mapId 와 x·y·w·h 로 직접 지정한다. mapId 가 있으면 query 는 무시한다.",
   mode: "read",
   parameters: {
@@ -49,8 +49,8 @@ const focusEditorView: ToolDefinition = {
       const label = map.name || map.id;
       return {
         summary: hasRect
-          ? `화면을 '${label}' (${x},${y}) ${w}×${h} 로 옮겼습니다.`
-          : `화면을 '${label}' 맵으로 옮겼습니다.`,
+          ? `위치: '${label}' (${x},${y}) ${w}×${h}`
+          : `위치: '${label}' 맵`,
         data: { mapId: map.id, x, y, w, h, label, kind: "map" },
       };
     }
@@ -77,13 +77,13 @@ const focusEditorView: ToolDefinition = {
     if (entry.target.kind === "map") {
       const map = requireMap(project, entry.target.mapId);
       return {
-        summary: `화면을 '${entry.label}' 맵으로 옮겼습니다.`,
+        summary: `위치: '${entry.label}' 맵`,
         data: { mapId: map.id, x: 0, y: 0, w: map.width, h: map.height, label: entry.label, kind: "map" },
       };
     }
     const map = requireMap(project, entry.target.mapId);
     return {
-      summary: `화면을 '${entry.label}'(${map.name || map.id} ${entry.target.x},${entry.target.y}) 로 옮겼습니다.`,
+      summary: `위치: '${entry.label}' (${map.name || map.id} ${entry.target.x},${entry.target.y})`,
       data: {
         mapId: map.id,
         x: entry.target.x,

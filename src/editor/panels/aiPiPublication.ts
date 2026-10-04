@@ -4,6 +4,7 @@ import type { PiProjectCheckpoint } from "@/ai/piAgent/protocol";
 import { changedProjectKeys, restoreCheckpointProject } from "@/ai/piAgent/protocol";
 import { mapLossConfirmRequest } from "@/ai/mapDestructionConfirm";
 import { applyProposedProject, captureApplyAuthority } from "@/editor/tools/applyChangesetToStore";
+import { describeMergeConflicts } from "@/project/projectMerge";
 import { adoptSpatialToolProof } from "@/editor/tools/spatialToolState";
 import type { Project } from "@/project/types";
 import { showConfirm } from "@/editor/ui/modal";
@@ -11,7 +12,11 @@ import { createPendingReviewPrompt } from "./aiPendingReview";
 import { openWideChangeViewer } from "./aiChangePreview";
 import type { PiCommandSurface } from "./aiPiAgentCommand";
 
-/** A single serialized authoring lineage. Never recapture authority from unrelated live edits. */
+/**
+ * A single serialized authoring lineage. Never recapture authority from unrelated live edits.
+ * 단, 같은 프로젝트 안에서 사람이나 다른 맵의 실행이 그 사이 고친 것은 거절하지 않고 3-way 병합으로 살린다
+ * (`rebase` — 겹친 자리는 스토어 값을 남기고 작업 과정에 적는다). 다음 체크포인트의 계보는 병합 결과다.
+ */
 export function createPiPublication(base: Project, mode: PiApplyMode, surface: PiCommandSurface, presentation?: {
   beforeApply(before: Project, next: Project): Promise<void>;
   afterApply(project: Project): void;
@@ -58,6 +63,8 @@ export function createPiPublication(base: Project, mode: PiApplyMode, surface: P
       mapDestructionApproved: !!loss || mode === "yolo" || mode === "auto",
       skipSnapshot: mode !== "step" && count > 0,
       snapshotLabel: `AI ${checkpoint.label}`, snapshotMapId: surface.getCurrentMapId(),
+      rebase: { lineage: project },
+      ...(surface.focus ? { focus: surface.focus } : {}),
       onApplied: applied => {
         project = applied.commitProject ?? applied.applied;
         // Invoked at the actual mutation boundary, before subscribers can edit the store.
@@ -66,6 +73,7 @@ export function createPiPublication(base: Project, mode: PiApplyMode, surface: P
       },
     });
     if (!result.ok) throw new Error(`적용 실패(${result.reason}): ${result.issue ?? "무결성 오류"}`);
+    if (result.merge?.conflicts.length) surface.appendProcess?.(`다른 편집과 같은 자리를 바꿔 이미 반영된 쪽을 남겼어요: ${describeMergeConflicts(result.merge)}`);
     presentation?.afterApply(project);
     surface.setStatus("실제 맵에 반영하며 작업 중…");
     return project;

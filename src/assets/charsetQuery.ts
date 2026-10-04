@@ -6,6 +6,7 @@ import {
   type CharsetSemanticEntry,
 } from "@/assets/charsetSemantics";
 import type { CharsetLabelOverride } from "@/project/types";
+import { sharedCharacterSemantics } from '@/project/sharedCharacters';
 
 type CharsetCategory = "actor" | "animal" | "monster" | "object" | "people" | "vehicle";
 
@@ -105,6 +106,7 @@ function textureShortKey(textureKey: string): string {
 }
 
 function categoryOf(entry: CharsetSemanticEntry): CharsetCategory {
+  if (entry.spriteType === 'uploaded') return entry.tags.includes('몬스터') ? 'monster' : entry.tags.includes('동물') ? 'animal' : 'people';
   const shortKey = textureShortKey(entry.textureKey);
   const base = shortKey.replace(/\d+$/, "");
   if (base === "vehicles") return "vehicle";
@@ -198,7 +200,7 @@ function intentScore(entry: CharsetSemanticEntry, intent: QueryIntent): number {
 }
 
 function catalogFor(overrides?: readonly CharsetLabelOverride[]): readonly CharsetSemanticEntry[] {
-  return applyCharsetLabelOverrides(CHARSET_SEMANTICS, overrides);
+  return applyCharsetLabelOverrides([...CHARSET_SEMANTICS, ...sharedCharacterSemantics()], overrides);
 }
 
 function exactAliasMatches(normalized: string, catalog: readonly CharsetSemanticEntry[]): NpcGraphicMatch[] | null {

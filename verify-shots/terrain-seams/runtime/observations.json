@@ -1,0 +1,222 @@
+{
+  "exportedPlayer": true,
+  "projectId": "9f70cb93-c831-4ab9-a6fe-d46a3634beff",
+  "revision": 2,
+  "scenarioInitializations": [
+    {
+      "mapId": "ramps_four",
+      "position": {
+        "x": 9,
+        "y": 16
+      }
+    },
+    {
+      "mapId": "ramps_four",
+      "position": {
+        "x": 8,
+        "y": 12
+      },
+      "purpose": "blocked side entry"
+    },
+    {
+      "mapId": "ramps_four",
+      "position": {
+        "x": 25,
+        "y": 4
+      }
+    },
+    {
+      "mapId": "ramps_four",
+      "position": {
+        "x": 24,
+        "y": 7
+      },
+      "purpose": "blocked side entry"
+    },
+    {
+      "mapId": "ramps_four",
+      "position": {
+        "x": 36,
+        "y": 9
+      }
+    },
+    {
+      "mapId": "ramps_four",
+      "position": {
+        "x": 39,
+        "y": 8
+      },
+      "purpose": "blocked side entry"
+    },
+    {
+      "mapId": "ramps_four",
+      "position": {
+        "x": 69,
+        "y": 12
+      }
+    },
+    {
+      "mapId": "ramps_four",
+      "position": {
+        "x": 65,
+        "y": 11
+      },
+      "purpose": "blocked side entry"
+    },
+    {
+      "mapId": "houses_native",
+      "position": {
+        "x": 4,
+        "y": 58
+      }
+    },
+    {
+      "mapId": "houses_native",
+      "position": {
+        "x": 4,
+        "y": 58
+      }
+    },
+    {
+      "mapId": "houses_native",
+      "position": {
+        "x": 4,
+        "y": 58
+      }
+    }
+  ],
+  "ramps": [
+    {
+      "dir": "n",
+      "keyboardAscent": true,
+      "keyboardDescent": true,
+      "clickAscent": "walking:9,9",
+      "clickDescent": "walking:9,16",
+      "displayScales": [
+        2,
+        3
+      ],
+      "sideBlocked": true,
+      "frames": 362,
+      "maxFootErrorPx": 0,
+      "maxMovingDeltaPx": 5.600000000000051
+    },
+    {
+      "dir": "s",
+      "keyboardAscent": true,
+      "keyboardDescent": true,
+      "clickAscent": "walking:25,12",
+      "clickDescent": "walking:25,4",
+      "displayScales": [
+        2,
+        3
+      ],
+      "sideBlocked": true,
+      "frames": 406,
+      "maxFootErrorPx": 0,
+      "maxMovingDeltaPx": 3.200000000000017
+    },
+    {
+      "dir": "e",
+      "keyboardAscent": true,
+      "keyboardDescent": true,
+      "clickAscent": "walking:44,9",
+      "clickDescent": "walking:36,9",
+      "displayScales": [
+        2,
+        3
+      ],
+      "sideBlocked": true,
+      "frames": 408,
+      "maxFootErrorPx": 0,
+      "maxMovingDeltaPx": 2.400000000000034
+    },
+    {
+      "dir": "w",
+      "keyboardAscent": true,
+      "keyboardDescent": true,
+      "clickAscent": "walking:61,12",
+      "clickDescent": "walking:69,12",
+      "displayScales": [
+        2,
+        3
+      ],
+      "sideBlocked": true,
+      "frames": 398,
+      "maxFootErrorPx": 0,
+      "maxMovingDeltaPx": 2.400000000000034
+    }
+  ],
+  "houses": [
+    {
+      "kitId": "bd-manor-tower",
+      "level": 4,
+      "doorFront": {
+        "x": 15,
+        "y": 22
+      },
+      "reached": true
+    },
+    {
+      "kitId": "bd-out-cabin",
+      "level": 6,
+      "doorFront": {
+        "x": 36,
+        "y": 22
+      },
+      "reached": true
+    },
+    {
+      "kitId": "bd-out-house-plank",
+      "level": 9,
+      "doorFront": {
+        "x": 60,
+        "y": 19
+      },
+      "reached": true
+    }
+  ],
+  "errors": [],
+  "film": {
+    "frames": 4052,
+    "skippedCaptureFrames": 0,
+    "crop": {
+      "x": 0,
+      "y": 0,
+      "width": 1440,
+      "height": 960
+    },
+    "phases": [
+      {
+        "seconds": 0.527,
+        "text": "N 방향 경사로 · 키보드 왕복 · 클릭 이동"
+      },
+      {
+        "seconds": 8.272,
+        "text": "S 방향 경사로 · 키보드 왕복 · 클릭 이동"
+      },
+      {
+        "seconds": 16.348,
+        "text": "E 방향 경사로 · 키보드 왕복 · 클릭 이동"
+      },
+      {
+        "seconds": 24.424,
+        "text": "W 방향 경사로 · 키보드 왕복 · 클릭 이동"
+      },
+      {
+        "seconds": 33.89,
+        "text": "버들항 원본 bd-manor-tower · 높이 4 · 실제 현관까지 걷기"
+      },
+      {
+        "seconds": 43.476,
+        "text": "버들항 원본 bd-out-cabin · 높이 6 · 실제 현관까지 걷기"
+      },
+      {
+        "seconds": 56.49,
+        "text": "버들항 원본 bd-out-house-plank · 높이 9 · 실제 현관까지 걷기"
+      }
+    ],
+    "gif": "terrain-seams-runtime-2x.mp4"
+  },
+  "passed": true
+}

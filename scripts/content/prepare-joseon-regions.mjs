@@ -38,6 +38,9 @@ const ROOMS = {
 };
 const PALACE = new Set(["joseon_in_throne", "joseon_in_corridor", "joseon_in_bedchamber"]);
 const maps = {}, entries = [];
+const KIND = { joseon_v20: "settlement", gungnae: "settlement", gungnae_full: "settlement", joseon_field: "natural", joseon_cave: "natural" };   // 실내 방(joseon_in_*)은 facility
+const isInterior = (id) => id.startsWith("joseon_in_");
+const SUBJECT = (id) => (isInterior(id) ? "실내 방 참고 사례" : id === "joseon_field" ? "사냥터(몬스터 배회 들판·숲·바위산) 참고 사례" : id === "joseon_cave" ? "동굴 던전 참고 사례" : "마을 참고 사례");
 for (const mapId of Object.keys(stats.maps)) {
   const src = JSON.parse(fs.readFileSync(`${DATA}/maps/${mapId}.json`));
   const map = project.maps[mapId];
@@ -109,7 +112,7 @@ for (const mapId of Object.keys(stats.maps)) {
     id: `${slug}-${map.width}x${map.height}`,
     name: src.name,
     kind: "completed-place",
-    placeKind: kindId,
+    placeKind: isInterior(mapId) ? "facility" : (KIND[mapId] ?? "settlement"),
     revision: 1,
     x: 0, y: 0, width: map.width, height: map.height,
     tilesetId: map.tilesetId,
@@ -119,8 +122,14 @@ for (const mapId of Object.keys(stats.maps)) {
     sourceProjectId: proof.projectId,
     sourceMapId: mapId,
     snapshotProjectId: `oprn-place-${slug}-v1`,
-    rules,
-    limitations,
+    rules: [
+      `조선(바람의나라풍) 손 도트 조각 ${stats.pieces}종과 오토타일 ${stats.autotileGroups}종으로 지은 ${SUBJECT(mapId)}. 칩셋 계열 \`oprn-joseon\`, 칸 ${map.width}×${map.height}.`,
+      `${isInterior(mapId) ? "출입문" : "집 문"} ${src.doors.length}곳(문 앞 접근칸 + 디딤돌), 통로 ${src.passages.length}곳(대문·성문), 주민 ${src.people.length}명${src.itemFronts?.length ? `, 기물 ${src.itemFronts.length}점(둘레 칸 도달 확인)` : ""}. 시작 칸 (${src.start[0]},${src.start[1]}).`,
+      `걸을 수 있는 칸 ${walkable}/${map.width * map.height}. 시작 칸에서 모든 문 앞·디딤돌·통로·주민 칸까지 런타임 이동 규칙(canMove)으로 닿는 것을 확인했다${reach ? ` (${reach.reachable}칸 도달, 놓친 곳 ${reach.missedCount})` : ""}.`,
+      "칸 통행은 조각마다 X(막힘)·C(걸음, 사람 위)·F(걸음, 사람 아래)로 구운 값이다. 타일셋 「참고문서」에 조각 사전·칸 배열·오토타일 표·조립 예제·오류 교훈이 있다.",
+      "새 프로젝트와 기존 프로젝트 모두 불러올 때 이 타일셋(joseon_baram)과 참고문서가 생긴다.",
+    ],
+    limitations: isInterior(mapId) ? "방 하나의 구조·기물 배치 참고 사례. 출입문 이동·이벤트는 포함하지 않는다(주민 NPC만). 원본 그림 없이 팔레트만 참고한 손 도트다. 자동 생성 프리셋이 아니다." : "지형·외관 참고 사례. 문 이동·몬스터 출현·이벤트는 포함하지 않는다(주민 NPC만). 원본 그림 없이 팔레트만 참고한 손 도트다. 자동 생성 프리셋이 아니다.",
   });
 }
 const { id, image, tileSize, tilesPerRow, count, passability, priority, terrain } = tileset;

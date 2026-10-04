@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RPG 검수 통과 캐릭터 __COUNT__종</title>
+<style>
+  * { box-sizing:border-box; }
+  body { margin:0; background:#17161b; color:#e8e6ef; font:14px/1.5 system-ui,sans-serif; }
+  header { padding:24px max(24px,calc((100vw - 1300px)/2)); border-bottom:1px solid #34323d; position:sticky; top:0; z-index:1; background:#17161bf2; }
+  h1 { font-size:24px; margin:0 0 8px; }
+  .muted { color:#aaa6b8; }
+  .controls { display:flex; gap:8px; flex-wrap:wrap; margin-top:16px; }
+  input,button,select { font:inherit; border:1px solid #45414f; border-radius:6px; color:inherit; background:#24222b; padding:7px 12px; }
+  #search { flex:1; min-width:200px; }
+  button { cursor:pointer; }
+  button.active { background:#2b3e5d; border-color:#7aa8ff; }
+  main { max-width:1350px; padding:24px; margin:auto; }
+  #grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(185px,1fr)); gap:12px; }
+  .card { text-align:left; padding:16px 12px; background:#25232c; }
+  .card:hover { border-color:#7aa8ff; }
+  .sprite { width:72px; height:96px; background-repeat:no-repeat; background-size:864px 768px; image-rendering:pixelated; margin:0 auto 12px; }
+  .card strong { display:block; font-size:14px; min-height:42px; }
+  .card small { display:block; color:#aaa6b8; margin-top:5px; }
+  .tag { font-size:11px; color:#b9c9e6; margin:3px 0; }
+  .pass { color:#7ece9a; } .fail { color:#eaaa98; }
+  dialog { color:inherit; background:#25232c; border:1px solid #45414f; border-radius:12px; width:min(660px,95vw); max-height:90vh; overflow:auto; padding:24px; }
+  dialog::backdrop { background:#000a; }
+  dialog h2 { margin:0 0 6px; }
+  #close { float:right; }
+  .directions { display:flex; gap:16px; justify-content:center; margin:24px 0; flex-wrap:wrap; text-align:center; }
+  .directions figure { margin:0; }
+  #location { width:100%; margin:12px 0; }
+  a { color:#9dbfff; }
+  footer { max-width:1350px; margin:16px auto; padding:24px; color:#aaa6b8; }
+</style>
+<header>
+  <h1>RPG 검수 통과 캐릭터 __COUNT__종</h1>
+  <div class="muted">__GENRES__ / 4방향 걷기</div>
+  <div class="controls"><input id="search" type="search" placeholder="이름·외형·역할·검색어" aria-label="캐릭터 검색"><select id="genre" aria-label="장르"><option value="all">모든 장르</option><option>한국풍</option><option>판타지</option><option>현대</option><option>SF</option></select><button id="animate" class="active">걷기 켜짐</button></div>
+</header>
+<main><p id="count" class="muted"></p><div id="grid"></div></main>
+<dialog id="detail"><button id="close">닫기</button><h2 id="title"></h2><div id="subtitle" class="muted"></div><div id="directions" class="directions"></div><p id="appearance"></p><p id="fits" class="muted"></p><p id="quality"></p><input id="location" readonly aria-label="시트와 캐릭터 칸 번호"><div><a id="png" download>에디터용 시트 PNG</a> · <a id="alpha" download>투명 시트 PNG</a></div></dialog>
+<footer>픽셀 변형 GPT 6.1 sol · high / 관찰 설명·시각 검수 Sonnet 5.5 medium. 결손·검수 실패·사용자 버림은 팩에서 제외했습니다. 원본 출처는 <a href="SOURCE.md">SOURCE.md</a>에 보존했습니다.</footer>
+<script>
+const characters = __CHARACTERS__;
+const $ = (id) => document.getElementById(id);
+const dirs = ['up','right','down','left'], dirNames = ['뒤','오른쪽','정면','왼쪽'];
+let animate = true, frame = 1, sprites = [];
+function spriteFor(row, direction) {
+  const div=document.createElement('div');div.className='sprite';div.style.backgroundImage=`url("transparent/${row.file}")`;
+  div.dataset.slot=row.slot;div.dataset.direction=direction;position(div);return div;
+}
+function position(div) {
+  const slot=Number(div.dataset.slot),direction=Number(div.dataset.direction);
+  div.style.backgroundPosition=`-${(slot%4*72+frame*24)*3}px -${(Math.floor(slot/4)*128+direction*32)*3}px`;
+}
+function render() {
+  const q=$('search').value.trim().toLowerCase(),genre=$('genre').value;
+  const rows=characters.filter(r=>(genre==='all'||r.genre===genre)&&[r.name,r.label,r.appearance,r.role,...r.tags].join(' ').toLowerCase().includes(q));
+  $('grid').replaceChildren();$('count').textContent=`${rows.length}명 / 전체 ${characters.length}명 · 캐릭터를 누르면 네 방향과 시트 위치를 봅니다.`;
+  for(const row of rows) {
+    const button=document.createElement('button');button.className='card';button.append(spriteFor(row,2));
+    const title=document.createElement('strong');title.textContent=row.name;button.append(title);
+    const desc=document.createElement('small');desc.textContent=row.label;button.append(desc);
+    const tags=document.createElement('div');tags.className='tag';tags.textContent=row.tags.slice(0,3).join(' · ');button.append(tags);
+    const score=document.createElement('small');score.className=row.verdict==='PASS'?'pass':'fail';score.textContent=`시각 검수 ${row.score}/10 · ${row.verdict}`;button.append(score);
+    button.onclick=()=>detail(row);$('grid').append(button);
+  }
+  sprites=[...document.querySelectorAll('.sprite')];
+}
+function detail(row) {
+  $('title').textContent=row.label;$('subtitle').textContent=row.name;
+  $('appearance').textContent=row.appearance;$('fits').textContent=row.fits;
+  $('quality').textContent=`형식 검사 ${row.mechanical?'통과':'불통과'} · 시각 검수 ${row.score}/10 ${row.verdict}`;
+  $('location').value=`${row.file} · 캐릭터 칸 ${row.slot} (0~7)`;
+  $('png').href=`charsets/${row.file}`;$('alpha').href=`transparent/${row.file}`;
+  $('directions').replaceChildren();
+  dirs.forEach((_,i)=>{const figure=document.createElement('figure');figure.append(spriteFor(row,i));const cap=document.createElement('figcaption');cap.textContent=dirNames[i];figure.append(cap);$('directions').append(figure);});
+  sprites=[...document.querySelectorAll('.sprite')];$('detail').showModal();
+}
+$('close').onclick=()=>$('detail').close();
+$('search').oninput=render;$('genre').onchange=render;
+$('animate').onclick=()=>{animate=!animate;frame=1;$('animate').textContent=animate?'걷기 켜짐':'서 있는 자세';$('animate').classList.toggle('active',animate);sprites.forEach(position);};
+let step=0;setInterval(()=>{if(!animate)return;frame=[0,1,2,1][step++%4];sprites.forEach(position);},170);
+render();
+</script>
+</html>

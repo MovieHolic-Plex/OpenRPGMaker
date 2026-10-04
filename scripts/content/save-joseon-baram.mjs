@@ -75,7 +75,9 @@ function checkReach(api, p, map, src, waterMembers) {
     // 양끝 중 한쪽이 막힌 줄(기둥·벽에 닿은 가장자리 줄)은 세지 않되, 건너는 곳 하나에 건널 수 있는 줄이 하나도 없으면 실패다.
     let okLines = 0, tested = 0, edgeLines = 0;
     for (const ln of c.lines) {
-      const a = c.axis === "h" ? [c.x - 1, ln] : [ln, c.y + c.h], b = c.axis === "h" ? [c.x + c.w, ln] : [ln, c.y - 1];
+      // 지도 가장자리에 붙은 문루(사냥터 북문 등): 지도 밖 한쪽 끝은 출구이므로 조각 안의 가장자리 칸을 끝으로 본다.
+      const inMap = (q) => [Math.min(Math.max(q[0], 0), map.width - 1), Math.min(Math.max(q[1], 0), map.height - 1)];
+      const a = inMap(c.axis === "h" ? [c.x - 1, ln] : [ln, c.y + c.h]), b = inMap(c.axis === "h" ? [c.x + c.w, ln] : [ln, c.y - 1]);
       const box = c.axis === "h" ? { x0: c.x - 1, x1: c.x + c.w, y0: c.y, y1: c.y + c.h - 1 } : { x0: c.x, x1: c.x + c.w - 1, y0: c.y - 1, y1: c.y + c.h };
       if (a[0] < 0 || a[1] < 0 || b[0] < 0 || b[1] < 0 || a[0] >= map.width || a[1] >= map.height || b[0] >= map.width || b[1] >= map.height) { edgeLines += 1; continue; }   // 지도 가장자리의 문루: 건너편이 지도 밖이다(출구 칸 도달은 exits 검사가 센다)
       crossLines += 1;
@@ -101,18 +103,13 @@ function checkReach(api, p, map, src, waterMembers) {
   const okPeople = allowedMismatch[src.id]?._people || [];
   miss.people = miss.people.filter(([px, py]) => { const e = okPeople.find((q) => q.x === px && q.y === py); if (e) info.exemptPeople.push({ x: px, y: py, why: e.why }); return !e; });
   for (const f of src.fronts || []) for (const [fx, fy] of f.cells) if (!at(fx, fy)) miss.front.push([f.piece, fx, fy]);
-  // 새 판(사냥터·동굴·실내·궁)의 지도: 들어오는 칸(start)에서 걸을 수 있는 칸 전부가 엔진 canMove 로 닿아야 한다(설계 의도로 갇힌 칸은 expected-mismatch.json 의 _unreachable 에 사유를 적는다).
-  // 출구(exits)는 칸 하나하나(x,y 또는 side 의 x0..x1 줄)가 걸을 수 있으면 닿아야 한다.
-  miss.unreachable = []; miss.exits = [];
-  const okUnreach = allowedMismatch[src.id]?._unreachable || [];
-  const unreachAll = [];
-  for (let y = 0; y < src.height; y += 1) for (let x = 0; x < src.width; x += 1) if (src.walk[y][x] === "1" && !at(x, y)) unreachAll.push([x, y]);
-  if (src.reachAll) {
-    miss.unreachable = unreachAll.filter(([ux, uy]) => !okUnreach.some((q) => q.x === ux && q.y === uy));
-    for (const e of src.exits || []) {
-      const cells = e.x0 !== undefined ? Array.from({ length: e.x1 - e.x0 + 1 }, (_, i) => [e.x0 + i, e.y]) : [[e.x, e.y]];
-      for (const [cx, cy] of cells) if (src.walk[cy][cx] === "1" && !at(cx, cy)) miss.exits.push([e.to, cx, cy]);
-    }
+  // 실내 기물 앞: 기물마다 둘레 칸 중 하나는 걸어 닿아야 한다. 벽에 걸린 것(시래기·메주·고추 걸이·족자·약초 횃대·연장대)은 닿을 필요가 없다.
+  miss.itemFront = []; info.itemFronts = { total: 0, reached: 0, wallHung: [] };
+  for (const f of src.itemFronts || []) {
+    info.itemFronts.total += 1;
+    if (f.cells.some(([cx, cy]) => at(cx, cy))) { info.itemFronts.reached += 1; continue; }
+    if (/^(in|pal)_(hang_|jokja|herb_hang|tool_rack)/.test(f.piece)) { info.itemFronts.wallHung.push([f.piece, f.x, f.y]); continue; }
+    miss.itemFront.push([f.piece, f.x, f.y]);
   }
   // negative control: a wall cell of every door's building (row above the step) must stay blocked
   const gatePieces = new Set(src.passages.map((g) => g.piece));
@@ -145,7 +142,7 @@ function checkMasks(api, p, map, ts) {
       if (!members.has(t)) continue;
       cells += 1;
       const v = api.autotileVariantForCell(view, g, x, y);
-      if ((eq[v] ?? v) !== (eq[t] ?? t)) { mismatch += 1; if (samples.length < MASK_SAMPLES) samples.push([x, y]); }
+      if ((eq[v] ?? v) !== (eq[t] ?? t)) { mismatch += 1; if (samples.length < MASK_SAMPLES) samples.push(process.env.JOSEON_MASK_DETAIL ? [x, y, t, v] : [x, y]); }
     }
     out.push({ group: g.id, cells, mismatch, edgeConnects: g.edgeConnects === true, samples });
   }

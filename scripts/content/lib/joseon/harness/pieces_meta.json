@@ -3370,1980 +3370,1711 @@
   ],
   "thin_ok": "뼈 마디·흙 알갱이"
  },
- "in_b_wall_hoe_m": {
+ "in_wall_hoe_m": {
   "cls": "wall",
   "refs": [
-   "v5:wall:plaster",
-   "v5:wall:log"
+   "castle.wall_h",
+   "estate.wall"
   ],
   "seam_open": true,
-  "front_only": true
+  "front_only": true,
+  "kit": "interior_kit.walls — 벽면 1×2 (끝 변형 m/l/r/lr), 방 빌더가 평면도에서 놓는다"
  },
- "in_b_wall_hoe_l": {
+ "in_wall_hoe_l": {
   "cls": "wall",
   "refs": [
-   "v5:wall:plaster",
-   "v5:wall:log"
+   "castle.wall_h",
+   "estate.wall"
   ],
   "seam_open": true,
-  "front_only": true
+  "front_only": true,
+  "kit": "interior_kit.walls — 벽면 1×2 (끝 변형 m/l/r/lr), 방 빌더가 평면도에서 놓는다"
  },
- "in_b_wall_hoe_r": {
+ "in_wall_hoe_r": {
   "cls": "wall",
   "refs": [
-   "v5:wall:plaster",
-   "v5:wall:log"
+   "castle.wall_h",
+   "estate.wall"
   ],
   "seam_open": true,
-  "front_only": true
+  "front_only": true,
+  "kit": "interior_kit.walls — 벽면 1×2 (끝 변형 m/l/r/lr), 방 빌더가 평면도에서 놓는다"
  },
- "in_b_wall_hoe_lr": {
+ "in_wall_hoe_lr": {
   "cls": "wall",
   "refs": [
-   "v5:wall:plaster",
-   "v5:wall:log"
+   "castle.wall_h",
+   "estate.wall"
   ],
   "seam_open": true,
-  "front_only": true
+  "front_only": true,
+  "kit": "interior_kit.walls — 벽면 1×2 (끝 변형 m/l/r/lr), 방 빌더가 평면도에서 놓는다"
  },
- "in_b_wall_mok_m": {
+ "in_wall_heuk_m": {
   "cls": "wall",
   "refs": [
-   "v5:wall:log",
-   "v5:wall:livewood"
+   "castle.wall_h",
+   "estate.wall"
   ],
   "seam_open": true,
-  "front_only": true
+  "front_only": true,
+  "kit": "interior_kit.walls — 벽면 1×2 (끝 변형 m/l/r/lr), 방 빌더가 평면도에서 놓는다"
  },
- "in_b_wall_mok_l": {
+ "in_wall_heuk_l": {
   "cls": "wall",
   "refs": [
-   "v5:wall:log",
-   "v5:wall:livewood"
+   "castle.wall_h",
+   "estate.wall"
   ],
   "seam_open": true,
-  "front_only": true
+  "front_only": true,
+  "kit": "interior_kit.walls — 벽면 1×2 (끝 변형 m/l/r/lr), 방 빌더가 평면도에서 놓는다"
  },
- "in_b_wall_mok_r": {
+ "in_wall_heuk_r": {
   "cls": "wall",
   "refs": [
-   "v5:wall:log",
-   "v5:wall:livewood"
+   "castle.wall_h",
+   "estate.wall"
   ],
   "seam_open": true,
-  "front_only": true
+  "front_only": true,
+  "kit": "interior_kit.walls — 벽면 1×2 (끝 변형 m/l/r/lr), 방 빌더가 평면도에서 놓는다"
  },
- "in_b_wall_mok_lr": {
+ "in_wall_heuk_lr": {
   "cls": "wall",
   "refs": [
-   "v5:wall:log",
-   "v5:wall:livewood"
+   "castle.wall_h",
+   "estate.wall"
   ],
   "seam_open": true,
-  "front_only": true
+  "front_only": true,
+  "kit": "interior_kit.walls — 벽면 1×2 (끝 변형 m/l/r/lr), 방 빌더가 평면도에서 놓는다"
  },
- "in_b_wall_heuk_m": {
+ "in_wall_mok_m": {
   "cls": "wall",
   "refs": [
-   "v5:wall:rubble",
-   "v5:wall:plaster"
+   "castle.wall_h",
+   "estate.wall"
   ],
   "seam_open": true,
-  "front_only": true
+  "front_only": true,
+  "kit": "interior_kit.walls — 벽면 1×2 (끝 변형 m/l/r/lr), 방 빌더가 평면도에서 놓는다"
  },
- "in_b_wall_heuk_l": {
+ "in_wall_mok_l": {
   "cls": "wall",
   "refs": [
-   "v5:wall:rubble",
-   "v5:wall:plaster"
+   "castle.wall_h",
+   "estate.wall"
   ],
   "seam_open": true,
-  "front_only": true
+  "front_only": true,
+  "kit": "interior_kit.walls — 벽면 1×2 (끝 변형 m/l/r/lr), 방 빌더가 평면도에서 놓는다"
  },
- "in_b_wall_heuk_r": {
+ "in_wall_mok_r": {
   "cls": "wall",
   "refs": [
-   "v5:wall:rubble",
-   "v5:wall:plaster"
+   "castle.wall_h",
+   "estate.wall"
   ],
   "seam_open": true,
-  "front_only": true
+  "front_only": true,
+  "kit": "interior_kit.walls — 벽면 1×2 (끝 변형 m/l/r/lr), 방 빌더가 평면도에서 놓는다"
  },
- "in_b_wall_heuk_lr": {
+ "in_wall_mok_lr": {
   "cls": "wall",
   "refs": [
-   "v5:wall:rubble",
-   "v5:wall:plaster"
+   "castle.wall_h",
+   "estate.wall"
   ],
   "seam_open": true,
-  "front_only": true
+  "front_only": true,
+  "kit": "interior_kit.walls — 벽면 1×2 (끝 변형 m/l/r/lr), 방 빌더가 평면도에서 놓는다"
  },
- "in_b_wall_dol_m": {
+ "in_wall_dol_m": {
   "cls": "wall",
   "refs": [
-   "v5:wall:stone",
-   "v5:wall:grey"
+   "castle.wall_h",
+   "estate.wall"
   ],
   "seam_open": true,
-  "front_only": true
+  "front_only": true,
+  "kit": "interior_kit.walls — 벽면 1×2 (끝 변형 m/l/r/lr), 방 빌더가 평면도에서 놓는다"
  },
- "in_b_wall_dol_l": {
+ "in_wall_dol_l": {
   "cls": "wall",
   "refs": [
-   "v5:wall:stone",
-   "v5:wall:grey"
+   "castle.wall_h",
+   "estate.wall"
   ],
   "seam_open": true,
-  "front_only": true
+  "front_only": true,
+  "kit": "interior_kit.walls — 벽면 1×2 (끝 변형 m/l/r/lr), 방 빌더가 평면도에서 놓는다"
  },
- "in_b_wall_dol_r": {
+ "in_wall_dol_r": {
   "cls": "wall",
   "refs": [
-   "v5:wall:stone",
-   "v5:wall:grey"
+   "castle.wall_h",
+   "estate.wall"
   ],
   "seam_open": true,
-  "front_only": true
+  "front_only": true,
+  "kit": "interior_kit.walls — 벽면 1×2 (끝 변형 m/l/r/lr), 방 빌더가 평면도에서 놓는다"
  },
- "in_b_wall_dol_lr": {
+ "in_wall_dol_lr": {
   "cls": "wall",
   "refs": [
-   "v5:wall:stone",
-   "v5:wall:grey"
+   "castle.wall_h",
+   "estate.wall"
   ],
   "seam_open": true,
-  "front_only": true
+  "front_only": true,
+  "kit": "interior_kit.walls — 벽면 1×2 (끝 변형 m/l/r/lr), 방 빌더가 평면도에서 놓는다"
  },
- "in_b_wall_changho_m": {
+ "in_wall_chang_m": {
   "cls": "wall",
   "refs": [
-   "v5:wall:plaster",
-   "v5:window"
+   "castle.wall_h",
+   "estate.wall"
   ],
   "seam_open": true,
-  "front_only": true
+  "front_only": true,
+  "kit": "interior_kit.walls — 벽면 1×2 (끝 변형 m/l/r/lr), 방 빌더가 평면도에서 놓는다"
  },
- "in_b_wall_changho_l": {
+ "in_wall_chang_l": {
   "cls": "wall",
   "refs": [
-   "v5:wall:plaster",
-   "v5:window"
+   "castle.wall_h",
+   "estate.wall"
   ],
   "seam_open": true,
-  "front_only": true
+  "front_only": true,
+  "kit": "interior_kit.walls — 벽면 1×2 (끝 변형 m/l/r/lr), 방 빌더가 평면도에서 놓는다"
  },
- "in_b_wall_changho_r": {
+ "in_wall_chang_r": {
   "cls": "wall",
   "refs": [
-   "v5:wall:plaster",
-   "v5:window"
+   "castle.wall_h",
+   "estate.wall"
   ],
   "seam_open": true,
-  "front_only": true
+  "front_only": true,
+  "kit": "interior_kit.walls — 벽면 1×2 (끝 변형 m/l/r/lr), 방 빌더가 평면도에서 놓는다"
  },
- "in_b_wall_changho_lr": {
+ "in_wall_chang_lr": {
   "cls": "wall",
   "refs": [
-   "v5:wall:plaster",
-   "v5:window"
+   "castle.wall_h",
+   "estate.wall"
   ],
   "seam_open": true,
-  "front_only": true
+  "front_only": true,
+  "kit": "interior_kit.walls — 벽면 1×2 (끝 변형 m/l/r/lr), 방 빌더가 평면도에서 놓는다"
  },
- "in_b_win_hoe": {
+ "in_wall_hoe_win": {
   "cls": "wall",
   "refs": [
-   "v5:window",
-   "v5:round window"
+   "castle.wall_h",
+   "estate.wall"
   ],
   "seam_open": true,
-  "front_only": true
+  "front_only": true,
+  "kit": "interior_kit.walls — 벽면 1×2 (끝 변형 m/l/r/lr), 방 빌더가 평면도에서 놓는다"
  },
- "in_b_win_round": {
+ "in_wall_mok_win": {
   "cls": "wall",
   "refs": [
-   "v5:window",
-   "v5:round window"
+   "castle.wall_h",
+   "estate.wall"
   ],
   "seam_open": true,
-  "front_only": true
+  "front_only": true,
+  "kit": "interior_kit.walls — 벽면 1×2 (끝 변형 m/l/r/lr), 방 빌더가 평면도에서 놓는다"
  },
- "in_b_win_mok": {
+ "in_wall_heuk_win": {
   "cls": "wall",
   "refs": [
-   "v5:window",
-   "v5:round window"
+   "castle.wall_h",
+   "estate.wall"
   ],
   "seam_open": true,
-  "front_only": true
+  "front_only": true,
+  "kit": "interior_kit.walls — 벽면 1×2 (끝 변형 m/l/r/lr), 방 빌더가 평면도에서 놓는다"
  },
- "in_b_win_heuk": {
+ "in_wall_hoe_door": {
   "cls": "wall",
   "refs": [
-   "v5:window",
-   "v5:round window"
+   "castle.wall_h",
+   "estate.wall"
   ],
   "seam_open": true,
-  "front_only": true
+  "front_only": true,
+  "kit": "interior_kit.walls — 벽면 1×2 (끝 변형 m/l/r/lr), 방 빌더가 평면도에서 놓는다"
  },
- "in_b_door_slide_l": {
+ "in_wall_chang_door": {
   "cls": "wall",
   "refs": [
-   "v5:round door",
-   "v5:round arch"
+   "castle.wall_h",
+   "estate.wall"
   ],
   "seam_open": true,
-  "front_only": true
+  "front_only": true,
+  "kit": "interior_kit.walls — 벽면 1×2 (끝 변형 m/l/r/lr), 방 빌더가 평면도에서 놓는다"
  },
- "in_b_door_slide_open_l": {
+ "in_wall_mok_door": {
   "cls": "wall",
   "refs": [
-   "v5:round door",
-   "v5:round arch"
+   "castle.wall_h",
+   "estate.wall"
   ],
   "seam_open": true,
-  "front_only": true
+  "front_only": true,
+  "kit": "interior_kit.walls — 벽면 1×2 (끝 변형 m/l/r/lr), 방 빌더가 평면도에서 놓는다"
  },
- "in_b_door_slide_r": {
+ "in_pillar": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_pillar_3": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_ceil_beam_m": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_ceil_beam_l": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_ceil_beam_r": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_door_sill": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_exit_door": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_exit_door2": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_stairs_wood_3": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_stairs_wood_2": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_stairs_stone_3": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_stairs_down": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_dais_front_m": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_dais_front_l": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_dais_front_r": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_dais_steps": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_byeongpung_a": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_byeongpung_b": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_byeongpung_c": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_byeongpung_s": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_nong": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_ibuljang": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_bandaji": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_mungap": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_soban_a": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_soban_b": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_soban_c": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_sang_2": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_sang_jumak": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_chaeksang": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_hwaro": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_betl": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true,
+  "thin_ok": "날실이 폭 1px 실이다(베틀의 본질) — 실 한 가닥을 2px 로 그리면 천이 판자로 읽힌다"
+ },
+ "in_mulle": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true,
+  "thin_ok": "바퀴 살·테가 폭 1px 가늘다(물레의 본질) — 2px 로 굵히면 바퀴가 접시로 읽힌다"
+ },
+ "in_bumak_2": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_bumak_3": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_hangari_a": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_hangari_b": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_hangari_tall": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_dok_row": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_suldok": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_dwiju": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_pyeongsang_3": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_bangseok_r": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_bangseok_b": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_bangseok_g": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_ibul_r": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_ibul_b": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_jipjari_2": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_jipjari_1": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_jokja_a": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_jokja_b": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_deungjan": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_chotdae": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_seonban": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_seonban_bottles": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_yakjang": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_yakjang_1": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_seoga": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_yakyeon": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_yakhwa": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_herb_hang": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_pulmu": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_morus": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_charcoal": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_hwadeok": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_tub": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_tool_rack": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_workbench": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_ingots": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_jumak_counter": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_geolsang": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_hunjang_sang": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_hakdong_sang": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_hoechori": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_gwan_desk": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_gwan_chair": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_hyeongtul": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_gonjang_rack": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_buk": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_ssal_gama": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_jangjak": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_mul_dongi": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_runner_m": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_runner_n": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_byeongpung_royal": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_ibul_folded": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_boryo_2": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_ansuk": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_seoan": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_seoan_2": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_mat_hopi": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_chaekdemi": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_yak_table": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_sokuri_veg": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_sokuri_grain": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_sokuri_fruit": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_sewing": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_dameum": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_hang_sirae": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_hang_gochu": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_hang_meju": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_hang_bagaji": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_mat_dot_2x2": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_ladder_loft": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_doorway": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_dais_side_l": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "in_dais_side_r": {
+  "cls": "prop",
+  "refs": [
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
+  ],
+  "interior": true
+ },
+ "pal_wall_bun_m": {
   "cls": "wall",
   "refs": [
-   "v5:round door",
-   "v5:round arch"
+   "castle.wall_h",
+   "estate.wall"
   ],
   "seam_open": true,
-  "front_only": true
+  "front_only": true,
+  "kit": "palace_kit.walls — 분합문·창호·회벽 1×2 (끝 변형 m/l/r/lr, 문짝 doorl/doorr), 방 빌더가 평면도에서 놓는다"
  },
- "in_b_door_slide_open_r": {
+ "pal_wall_bun_l": {
   "cls": "wall",
   "refs": [
-   "v5:round door",
-   "v5:round arch"
+   "castle.wall_h",
+   "estate.wall"
   ],
   "seam_open": true,
-  "front_only": true
+  "front_only": true,
+  "kit": "palace_kit.walls — 분합문·창호·회벽 1×2 (끝 변형 m/l/r/lr, 문짝 doorl/doorr), 방 빌더가 평면도에서 놓는다"
  },
- "in_b_door_plank": {
+ "pal_wall_bun_r": {
   "cls": "wall",
   "refs": [
-   "v5:round door",
-   "v5:doormat"
+   "castle.wall_h",
+   "estate.wall"
   ],
   "seam_open": true,
-  "front_only": true
+  "front_only": true,
+  "kit": "palace_kit.walls — 분합문·창호·회벽 1×2 (끝 변형 m/l/r/lr, 문짝 doorl/doorr), 방 빌더가 평면도에서 놓는다"
  },
- "in_b_door_open": {
+ "pal_wall_bun_lr": {
   "cls": "wall",
   "refs": [
-   "v5:round door",
-   "v5:doormat"
+   "castle.wall_h",
+   "estate.wall"
   ],
   "seam_open": true,
-  "front_only": true
+  "front_only": true,
+  "kit": "palace_kit.walls — 분합문·창호·회벽 1×2 (끝 변형 m/l/r/lr, 문짝 doorl/doorr), 방 빌더가 평면도에서 놓는다"
  },
- "in_b_pillar_2": {
-  "cls": "prop",
-  "refs": [
-   "v5:column wood",
-   "v5:column stone"
-  ],
-  "front_only": true
- },
- "in_b_pillar_3": {
-  "cls": "prop",
-  "refs": [
-   "v5:column wood",
-   "v5:column stone"
-  ],
-  "front_only": true
- },
- "in_b_beam_m": {
-  "cls": "prop",
-  "refs": [
-   "v5:column wood"
-  ],
-  "front_only": true
- },
- "in_b_beam_l": {
-  "cls": "prop",
-  "refs": [
-   "v5:column wood"
-  ],
-  "front_only": true
- },
- "in_b_beam_r": {
-  "cls": "prop",
-  "refs": [
-   "v5:column wood"
-  ],
-  "front_only": true
- },
- "in_b_pillar_red_2": {
-  "cls": "prop",
-  "refs": [
-   "v5:column wood",
-   "v5:column stone"
-  ],
-  "front_only": true
- },
- "in_b_pillar_red_3": {
-  "cls": "prop",
-  "refs": [
-   "v5:column wood",
-   "v5:column stone"
-  ],
-  "front_only": true
- },
- "in_b_beam_red_m": {
-  "cls": "prop",
-  "refs": [
-   "v5:column wood"
-  ],
-  "front_only": true
- },
- "in_b_beam_red_l": {
-  "cls": "prop",
-  "refs": [
-   "v5:column wood"
-  ],
-  "front_only": true
- },
- "in_b_beam_red_r": {
-  "cls": "prop",
-  "refs": [
-   "v5:column wood"
-  ],
-  "front_only": true
- },
- "in_b_stair_up_3": {
-  "cls": "prop",
-  "refs": [
-   "v5:stairs up wood",
-   "v5:stairs up stone"
-  ],
-  "front_only": true
- },
- "in_b_stair_up_2": {
-  "cls": "prop",
-  "refs": [
-   "v5:stairs up wood",
-   "v5:stairs up stone"
-  ],
-  "front_only": true
- },
- "in_b_ladder_loft": {
-  "cls": "prop",
-  "refs": [
-   "v5:stairs up wood"
-  ],
-  "front_only": true
- },
- "in_b_stair_down": {
-  "cls": "prop",
-  "refs": [
-   "v5:stairs down"
-  ]
- },
- "in_b_stair_dais_3": {
-  "cls": "prop",
-  "refs": [
-   "v5:stairs up stone"
-  ],
-  "front_only": true
- },
- "in_b_stair_dais_2": {
-  "cls": "prop",
-  "refs": [
-   "v5:stairs up stone"
-  ],
-  "front_only": true
- },
- "in_b_dais_wood_m": {
-  "cls": "prop",
-  "refs": [
-   "v5:stairs up stone"
-  ],
-  "front_only": true
- },
- "in_b_dais_stone_m": {
-  "cls": "prop",
-  "refs": [
-   "v5:stairs up stone"
-  ],
-  "front_only": true
- },
- "in_b_dais_wood_l": {
-  "cls": "prop",
-  "refs": [
-   "v5:stairs up stone"
-  ],
-  "front_only": true
- },
- "in_b_dais_stone_l": {
-  "cls": "prop",
-  "refs": [
-   "v5:stairs up stone"
-  ],
-  "front_only": true
- },
- "in_b_dais_wood_r": {
-  "cls": "prop",
-  "refs": [
-   "v5:stairs up stone"
-  ],
-  "front_only": true
- },
- "in_b_dais_stone_r": {
-  "cls": "prop",
-  "refs": [
-   "v5:stairs up stone"
-  ],
-  "front_only": true
- },
- "in_b_dais_wood_lr": {
-  "cls": "prop",
-  "refs": [
-   "v5:stairs up stone"
-  ],
-  "front_only": true
- },
- "in_b_dais_stone_lr": {
-  "cls": "prop",
-  "refs": [
-   "v5:stairs up stone"
-  ],
-  "front_only": true
- },
- "in_b_exit_mat": {
-  "cls": "prop",
-  "refs": [
-   "v5:doormat"
-  ],
-  "front_only": true
- },
- "in_b_byeongpung_a": {
-  "cls": "prop",
-  "refs": [
-   "v5:tapestry",
-   "v5:royal banner"
-  ],
-  "front_only": true
- },
- "in_b_byeongpung_b": {
-  "cls": "prop",
-  "refs": [
-   "v5:tapestry",
-   "v5:royal banner"
-  ],
-  "front_only": true
- },
- "in_b_byeongpung_c": {
-  "cls": "prop",
-  "refs": [
-   "v5:tapestry",
-   "v5:royal banner"
-  ],
-  "front_only": true
- },
- "in_b_byeongpung_2": {
-  "cls": "prop",
-  "refs": [
-   "v5:tapestry",
-   "v5:royal banner"
-  ],
-  "front_only": true
- },
- "in_b_byeongpung_royal": {
-  "cls": "prop",
-  "refs": [
-   "v5:tapestry",
-   "v5:royal banner"
-  ],
-  "front_only": true
- },
- "in_b_ibuljang": {
-  "cls": "prop",
-  "refs": [
-   "v5:wardrobe",
-   "v5:cupboard"
-  ]
- },
- "in_b_nong_1": {
-  "cls": "prop",
-  "refs": [
-   "v5:wardrobe",
-   "v5:cupboard"
-  ]
- },
- "in_b_nong_2": {
-  "cls": "prop",
-  "refs": [
-   "v5:wardrobe",
-   "v5:cupboard"
-  ]
- },
- "in_b_bandaji_2": {
-  "cls": "prop",
-  "refs": [
-   "v5:chest"
-  ]
- },
- "in_b_bandaji_1": {
-  "cls": "prop",
-  "refs": [
-   "v5:chest"
-  ]
- },
- "in_b_munggap": {
-  "cls": "prop",
-  "refs": [
-   "v5:sideboard 2x1",
-   "v5:cupboard"
-  ]
- },
- "in_b_soban_a": {
-  "cls": "prop",
-  "refs": [
-   "v5:roundtable"
-  ]
- },
- "in_b_soban_b": {
-  "cls": "prop",
-  "refs": [
-   "v5:roundtable"
-  ]
- },
- "in_b_soban_c": {
-  "cls": "prop",
-  "refs": [
-   "v5:roundtable"
-  ]
- },
- "in_b_sang_low_2": {
-  "cls": "prop",
-  "refs": [
-   "v5:dining 2x1",
-   "v5:desk 2x1"
-  ]
- },
- "in_b_gyojasang_2": {
-  "cls": "prop",
-  "refs": [
-   "v5:dining 2x1",
-   "v5:tea 2x1"
-  ]
- },
- "in_b_gyojasang_3": {
-  "cls": "prop",
-  "refs": [
-   "v5:dining 2x1",
-   "v5:tea 2x1"
-  ]
- },
- "in_b_hwaro": {
-  "cls": "prop",
-  "refs": [
-   "v5:brazier"
-  ]
- },
- "in_b_deungjan_stand": {
-  "cls": "prop",
-  "refs": [
-   "v5:candle"
-  ]
- },
- "in_b_deungjan": {
-  "cls": "prop",
-  "refs": [
-   "v5:candle"
-  ]
- },
- "in_b_chotdae": {
-  "cls": "prop",
-  "refs": [
-   "v5:candle",
-   "v5:candelabra"
-  ]
- },
- "in_b_banseok_r": {
-  "cls": "prop",
-  "refs": [
-   "v5:stool"
-  ]
- },
- "in_b_banseok_b": {
-  "cls": "prop",
-  "refs": [
-   "v5:stool"
-  ]
- },
- "in_b_banseok_g": {
-  "cls": "prop",
-  "refs": [
-   "v5:stool"
-  ]
- },
- "in_b_banseok_s": {
-  "cls": "prop",
-  "refs": [
-   "v5:stool"
-  ]
- },
- "in_b_mat_jip_2x2": {
-  "cls": "prop",
-  "refs": [
-   "v5:rug red",
-   "v5:fur rug"
-  ],
-  "front_only": true
- },
- "in_b_mat_jip_3x2": {
-  "cls": "prop",
-  "refs": [
-   "v5:rug red",
-   "v5:fur rug"
-  ],
-  "front_only": true
- },
- "in_b_mat_dot_2x2": {
-  "cls": "prop",
-  "refs": [
-   "v5:rug red",
-   "v5:fur rug"
-  ],
-  "front_only": true
- },
- "in_b_ibul_r": {
-  "cls": "prop",
-  "refs": [
-   "v5:bed green",
-   "v5:straw bed"
-  ]
- },
- "in_b_ibul_b": {
-  "cls": "prop",
-  "refs": [
-   "v5:bed green",
-   "v5:straw bed"
-  ]
- },
- "in_b_ibul_folded": {
-  "cls": "prop",
-  "refs": [
-   "v5:bed green",
-   "v5:straw bed"
-  ]
- },
- "in_b_jokja_a": {
-  "cls": "prop",
-  "refs": [
-   "v5:picture",
-   "v5:wall map"
-  ],
-  "front_only": true
- },
- "in_b_jokja_b": {
-  "cls": "prop",
-  "refs": [
-   "v5:picture",
-   "v5:wall map"
-  ],
-  "front_only": true
- },
- "in_b_jokja_c": {
-  "cls": "prop",
-  "refs": [
-   "v5:picture",
-   "v5:wall map"
-  ],
-  "front_only": true
- },
- "in_b_hang_sirae": {
-  "cls": "prop",
-  "refs": [
-   "v5:hang:herb",
-   "v5:hang:onion"
-  ],
-  "front_only": true
- },
- "in_b_hang_gochu": {
-  "cls": "prop",
-  "refs": [
-   "v5:hang:herb",
-   "v5:hang:onion"
-  ],
-  "thin_ok": "고추를 꿴 끈·꼭지가 폭 1px — 굵히면 고추 두름이 막대로 읽힌다",
-  "front_only": true
- },
- "in_b_hang_yakcho": {
-  "cls": "prop",
-  "refs": [
-   "v5:hang:herb",
-   "v5:hang:onion"
-  ],
-  "front_only": true
- },
- "in_b_hang_meju": {
-  "cls": "prop",
-  "refs": [
-   "v5:hang:herb",
-   "v5:hang:onion"
-  ],
-  "thin_ok": "메주를 매단 짚 끈이 폭 1px — 끈을 굵히면 메주가 벽에 붙은 판으로 읽힌다",
-  "front_only": true
- },
- "in_b_hang_bagaji": {
-  "cls": "prop",
-  "refs": [
-   "v5:hang:herb",
-   "v5:hang:onion"
-  ],
-  "thin_ok": "벽 못에 건 끈이 폭 1~2px — 끈을 없애면 바가지가 벽에 붙은 접시로 읽힌다",
-  "front_only": true
- },
- "in_b_pyeongsang_3": {
-  "cls": "prop",
-  "refs": [
-   "v5:bench 3",
-   "v5:bench 2"
-  ]
- },
- "in_b_pyeongsang_2": {
-  "cls": "prop",
-  "refs": [
-   "v5:bench 3",
-   "v5:bench 2"
-  ]
- },
- "in_b_geolsang_2": {
-  "cls": "prop",
-  "refs": [
-   "v5:bench 2"
-  ]
- },
- "in_b_stool": {
-  "cls": "prop",
-  "refs": [
-   "v5:stool"
-  ]
- },
- "in_b_bumak_2": {
-  "cls": "prop",
-  "refs": [
-   "v5:kitchen range",
-   "v5:stove"
-  ]
- },
- "in_b_bumak_3": {
-  "cls": "prop",
-  "refs": [
-   "v5:kitchen range",
-   "v5:stove"
-  ]
- },
- "in_b_hangari_s": {
-  "cls": "prop",
-  "refs": [
-   "v5:pot",
-   "v5:water jar"
-  ]
- },
- "in_b_hangari_m": {
-  "cls": "prop",
-  "refs": [
-   "v5:pot",
-   "v5:water jar"
-  ]
- },
- "in_b_hangari_straw": {
-  "cls": "prop",
-  "refs": [
-   "v5:pot",
-   "v5:water jar"
-  ]
- },
- "in_b_dok_big": {
-  "cls": "prop",
-  "refs": [
-   "v5:pot"
-  ]
- },
- "in_b_ssal_dwiju": {
-  "cls": "prop",
-  "refs": [
-   "v5:chest",
-   "v5:barrel"
-  ]
- },
- "in_b_muldongi": {
-  "cls": "prop",
-  "refs": [
-   "v5:water jar"
-  ]
- },
- "in_b_sokuri_veg": {
-  "cls": "prop",
-  "refs": [
-   "v5:basket:cabbage"
-  ]
- },
- "in_b_sokuri_grain": {
-  "cls": "prop",
-  "refs": [
-   "v5:basket:cabbage"
-  ]
- },
- "in_b_sokuri_fruit": {
-  "cls": "prop",
-  "refs": [
-   "v5:basket:cabbage"
-  ]
- },
- "in_b_jangjak": {
-  "cls": "prop",
-  "refs": [
-   "v5:firewood bundle"
-  ]
- },
- "in_b_seonban_2": {
-  "cls": "prop",
-  "refs": [
-   "v5:bookshelf 2w"
-  ]
- },
- "in_b_betul": {
-  "cls": "prop",
-  "refs": [
-   "v5:loom"
-  ]
- },
- "in_b_mulle": {
-  "cls": "prop",
-  "refs": [
-   "v5:spinning wheel"
-  ],
-  "thin_ok": "물레 바퀴 살·테와 가락이 폭 1px(물레의 본질) — 2px 로 굵히면 바퀴가 접시로 읽힌다"
- },
- "in_b_sewing": {
-  "cls": "prop",
-  "refs": [
-   "v5:chest"
-  ]
- },
- "in_b_pungmu": {
-  "cls": "prop",
-  "refs": [
-   "v5:bread oven"
-  ]
- },
- "in_b_moru": {
-  "cls": "prop",
-  "refs": [
-   "v5:anvil"
-  ]
- },
- "in_b_sutdeomi": {
-  "cls": "prop",
-  "refs": [
-   "v5:coal bin"
-  ]
- },
- "in_b_hwadeok_3": {
-  "cls": "prop",
-  "refs": [
-   "v5:forge"
-  ]
- },
- "in_b_dameum": {
-  "cls": "prop",
-  "refs": [
-   "v5:quench barrel"
-  ]
- },
- "in_b_sutdol": {
-  "cls": "prop",
-  "refs": [
-   "v5:grindstone"
-  ]
- },
- "in_b_cheol": {
-  "cls": "prop",
-  "refs": [
-   "v5:weapon barrel"
-  ]
- },
- "in_b_gongjang": {
-  "cls": "prop",
-  "refs": [
-   "v5:work 2x1"
-  ]
- },
- "in_b_hang_tools": {
-  "cls": "prop",
-  "refs": [
-   "v5:hang:herb",
-   "v5:hang:onion"
-  ],
-  "thin_ok": "벽에 거는 연장의 자루·집게 날이 폭 1px — 굵히면 연장이 아니라 판자로 읽힌다",
-  "front_only": true
- },
- "in_b_yakjang_2": {
-  "cls": "prop",
-  "refs": [
-   "v5:apothecary drawers"
-  ]
- },
- "in_b_yakjang_1": {
-  "cls": "prop",
-  "refs": [
-   "v5:apothecary drawers"
-  ]
- },
- "in_b_yakdang": {
-  "cls": "prop",
-  "refs": [
-   "v5:cauldron"
-  ]
- },
- "in_b_yakyeon": {
-  "cls": "prop",
-  "refs": [
-   "v5:mortar and pestle"
-  ]
- },
- "in_b_jakdu": {
-  "cls": "prop",
-  "refs": [
-   "v5:chopping block"
-  ]
- },
- "in_b_yak_table": {
-  "cls": "prop",
-  "refs": [
-   "v5:work 2x1",
-   "v5:balance scale"
-  ]
- },
- "in_b_yakcho_basket": {
-  "cls": "prop",
-  "refs": [
-   "v5:basket:herb"
-  ]
- },
- "in_b_suldok": {
-  "cls": "prop",
-  "refs": [
-   "v5:barrel"
-  ]
- },
- "in_b_sulsang": {
-  "cls": "prop",
-  "refs": [
-   "v5:tea 2x1"
-  ]
- },
- "in_b_juga_3": {
-  "cls": "prop",
-  "refs": [
-   "v5:counter 3x1",
-   "v5:counter 2x1"
-  ]
- },
- "in_b_juga_2": {
-  "cls": "prop",
-  "refs": [
-   "v5:counter 3x1",
-   "v5:counter 2x1"
-  ]
- },
- "in_b_seoan": {
-  "cls": "prop",
-  "refs": [
-   "v5:desk 1x1"
-  ]
- },
- "in_b_seoan_2": {
-  "cls": "prop",
-  "refs": [
-   "v5:desk 1x1"
-  ]
- },
- "in_b_seoga_2": {
-  "cls": "prop",
-  "refs": [
-   "v5:bookshelf 2w",
-   "v5:bookshelf 1w"
-  ]
- },
- "in_b_seoga_1": {
-  "cls": "prop",
-  "refs": [
-   "v5:bookshelf 2w",
-   "v5:bookshelf 1w"
-  ]
- },
- "in_b_boryo_2": {
-  "cls": "prop",
-  "refs": [
-   "v5:runner"
-  ]
- },
- "in_b_ansuk": {
-  "cls": "prop",
-  "refs": [
-   "v5:stool"
-  ]
- },
- "in_b_hoechori": {
-  "cls": "prop",
-  "refs": [
-   "v5:pot"
-  ],
-  "thin_ok": "회초리 묶음의 낱개가 폭 1px 가지 — 굵히면 다발이 덩어리로 읽힌다"
- },
- "in_b_chaekdemi": {
-  "cls": "prop",
-  "refs": [
-   "v5:table:book+scroll"
-  ]
- },
- "in_b_gwan_desk_3": {
-  "cls": "prop",
-  "refs": [
-   "v5:desk 3x2",
-   "v5:desk 2x2"
-  ]
- },
- "in_b_gwan_desk_2": {
-  "cls": "prop",
-  "refs": [
-   "v5:desk 3x2",
-   "v5:desk 2x2"
-  ]
- },
- "in_b_gyoui": {
-  "cls": "prop",
-  "refs": [
-   "v5:chair S",
-   "v5:throne"
-  ]
- },
- "in_b_gonjang_teul": {
-  "cls": "prop",
-  "refs": [
-   "v5:bench 2"
-  ],
-  "thin_ok": "곤장 틀의 결박 줄·기둥 끝이 폭 1px(경계 0.046 로 한계 0.045 바로 위)"
- },
- "in_b_buk": {
-  "cls": "prop",
-  "refs": [
-   "v5:barrel"
-  ]
- },
- "in_b_mungseo_ham": {
-  "cls": "prop",
-  "refs": [
-   "v5:chest"
-  ]
- },
- "in_b_mat_hopi": {
-  "cls": "prop",
-  "refs": [
-   "v5:rug red",
-   "v5:fur rug"
-  ],
-  "front_only": true
- },
- "in_b_throne": {
-  "cls": "prop",
-  "refs": [
-   "v5:throne",
-   "v5:chair S"
-  ]
- },
- "in_b_mat_carpet_v4": {
-  "cls": "prop",
-  "refs": [
-   "v5:rug red",
-   "v5:fur rug"
-  ],
-  "front_only": true
- },
- "in_b_stair_dais_wood_3": {
-  "cls": "prop",
-  "refs": [
-   "v5:stairs up stone"
-  ],
-  "front_only": true
- },
- "in_b_stair_dais_wood_2": {
-  "cls": "prop",
-  "refs": [
-   "v5:stairs up stone"
-  ],
-  "front_only": true
- },
- "in_b_gonjang_geori": {
-  "cls": "prop",
-  "refs": [
-   "v5:weapon barrel"
-  ],
-  "thin_ok": "곤장 자루·기둥이 폭 1~2px(가는 막대가 본질) — 굵히면 걸이가 아니라 판자로 읽힌다"
- },
- "in_b_pyeongsang_3b": {
-  "cls": "prop",
-  "refs": [
-   "v5:bench 3",
-   "v5:bench 2"
-  ]
- },
- "in_b_pyeongsang_2b": {
-  "cls": "prop",
-  "refs": [
-   "v5:bench 3",
-   "v5:bench 2"
-  ]
- },
- "in_b_pyeongsang_2c": {
-  "cls": "prop",
-  "refs": [
-   "v5:bench 3",
-   "v5:bench 2"
-  ]
- },
- "in_b_pyeongsang_3c": {
-  "cls": "prop",
-  "refs": [
-   "v5:bench 3",
-   "v5:bench 2"
-  ]
- },
- "in_b_mangchi_teul": {
-  "cls": "prop",
-  "refs": [
-   "v5:anvil",
-   "v5:work 2x1"
-  ]
- },
- "in_b_yakseonban_2": {
-  "cls": "prop",
-  "refs": [
-   "v5:apothecary drawers",
-   "v5:bookshelf 2w"
-  ]
- },
- "in_b_byeongpung_2d": {
-  "cls": "prop",
-  "refs": [
-   "v5:tapestry",
-   "v5:royal banner"
-  ],
-  "front_only": true
- },
- "in_b_byeongpung_2e": {
-  "cls": "prop",
-  "refs": [
-   "v5:tapestry",
-   "v5:royal banner"
-  ],
-  "front_only": true
- },
- "in_b_mat_jip_2x2b": {
-  "cls": "prop",
-  "refs": [
-   "v5:rug red",
-   "v5:fur rug"
-  ],
-  "front_only": true
- },
- "in_b_mat_jip_2x2c": {
-  "cls": "prop",
-  "refs": [
-   "v5:rug red",
-   "v5:fur rug"
-  ],
-  "front_only": true
- },
- "in_b_mat_jip_3x2c": {
-  "cls": "prop",
-  "refs": [
-   "v5:rug red",
-   "v5:fur rug"
-  ],
-  "front_only": true
- },
- "in_b_ibul_wide_r": {
-  "cls": "prop",
-  "refs": [
-   "v5:bed green",
-   "v5:straw bed"
-  ]
- },
- "in_b_banseok_round_r": {
-  "cls": "prop",
-  "refs": [
-   "v5:stool"
-  ]
- },
- "in_b_ibul_wide_b": {
-  "cls": "prop",
-  "refs": [
-   "v5:bed green",
-   "v5:straw bed"
-  ]
- },
- "in_b_banseok_round_b": {
-  "cls": "prop",
-  "refs": [
-   "v5:stool"
-  ]
- },
- "in_b_ibul_wide_g": {
-  "cls": "prop",
-  "refs": [
-   "v5:bed green",
-   "v5:straw bed"
-  ]
- },
- "in_b_banseok_round_g": {
-  "cls": "prop",
-  "refs": [
-   "v5:stool"
-  ]
- },
- "in_b_weapon_rack_2": {
-  "cls": "prop",
-  "refs": [
-   "v5:weapon barrel"
-  ],
-  "thin_ok": "창 자루·칼날이 폭 1~2px(가는 무기가 본질) — 굵히면 걸이가 널 더미로 읽힌다"
- },
- "in_b_tool_rack_2": {
-  "cls": "prop",
-  "refs": [
-   "v5:weapon barrel",
-   "v5:work 2x1"
-  ],
-  "thin_ok": "호미·낫·삽의 자루·날이 폭 1~2px(가는 농기구가 본질) — 굵히면 걸이가 아니라 널벽 무늬로 읽힌다"
- },
- "in_b_doorway_hoe": {
+ "pal_wall_chang_m": {
   "cls": "wall",
   "refs": [
-   "v5:window",
-   "v5:round door"
+   "castle.wall_h",
+   "estate.wall"
   ],
   "seam_open": true,
-  "front_only": true
+  "front_only": true,
+  "kit": "palace_kit.walls — 분합문·창호·회벽 1×2 (끝 변형 m/l/r/lr, 문짝 doorl/doorr), 방 빌더가 평면도에서 놓는다"
  },
- "in_b_doorway_mok": {
+ "pal_wall_chang_l": {
   "cls": "wall",
   "refs": [
-   "v5:window",
-   "v5:round door"
+   "castle.wall_h",
+   "estate.wall"
   ],
   "seam_open": true,
-  "front_only": true
+  "front_only": true,
+  "kit": "palace_kit.walls — 분합문·창호·회벽 1×2 (끝 변형 m/l/r/lr, 문짝 doorl/doorr), 방 빌더가 평면도에서 놓는다"
  },
- "in_b_doorway_heuk": {
+ "pal_wall_chang_r": {
   "cls": "wall",
   "refs": [
-   "v5:window",
-   "v5:round door"
+   "castle.wall_h",
+   "estate.wall"
   ],
   "seam_open": true,
-  "front_only": true
+  "front_only": true,
+  "kit": "palace_kit.walls — 분합문·창호·회벽 1×2 (끝 변형 m/l/r/lr, 문짝 doorl/doorr), 방 빌더가 평면도에서 놓는다"
  },
- "in_b_doorway_dol": {
+ "pal_wall_chang_lr": {
   "cls": "wall",
   "refs": [
-   "v5:window",
-   "v5:round door"
+   "castle.wall_h",
+   "estate.wall"
   ],
   "seam_open": true,
-  "front_only": true
+  "front_only": true,
+  "kit": "palace_kit.walls — 분합문·창호·회벽 1×2 (끝 변형 m/l/r/lr, 문짝 doorl/doorr), 방 빌더가 평면도에서 놓는다"
  },
- "pal_wall_gung_m": {
+ "pal_wall_hoe_m": {
   "cls": "wall",
   "refs": [
-   "inb:in_b_wall_hoe_m",
-   "v5:wall:plaster"
+   "castle.wall_h",
+   "estate.wall"
   ],
   "seam_open": true,
-  "front_only": true
+  "front_only": true,
+  "kit": "palace_kit.walls — 분합문·창호·회벽 1×2 (끝 변형 m/l/r/lr, 문짝 doorl/doorr), 방 빌더가 평면도에서 놓는다"
  },
- "pal_wall_gung_l": {
+ "pal_wall_hoe_l": {
   "cls": "wall",
   "refs": [
-   "inb:in_b_wall_hoe_m",
-   "v5:wall:plaster"
+   "castle.wall_h",
+   "estate.wall"
   ],
   "seam_open": true,
-  "front_only": true
+  "front_only": true,
+  "kit": "palace_kit.walls — 분합문·창호·회벽 1×2 (끝 변형 m/l/r/lr, 문짝 doorl/doorr), 방 빌더가 평면도에서 놓는다"
  },
- "pal_wall_gung_r": {
+ "pal_wall_hoe_r": {
   "cls": "wall",
   "refs": [
-   "inb:in_b_wall_hoe_m",
-   "v5:wall:plaster"
+   "castle.wall_h",
+   "estate.wall"
   ],
   "seam_open": true,
-  "front_only": true
+  "front_only": true,
+  "kit": "palace_kit.walls — 분합문·창호·회벽 1×2 (끝 변형 m/l/r/lr, 문짝 doorl/doorr), 방 빌더가 평면도에서 놓는다"
  },
- "pal_wall_gung_lr": {
+ "pal_wall_hoe_lr": {
   "cls": "wall",
   "refs": [
-   "inb:in_b_wall_hoe_m",
-   "v5:wall:plaster"
+   "castle.wall_h",
+   "estate.wall"
   ],
   "seam_open": true,
-  "front_only": true
+  "front_only": true,
+  "kit": "palace_kit.walls — 분합문·창호·회벽 1×2 (끝 변형 m/l/r/lr, 문짝 doorl/doorr), 방 빌더가 평면도에서 놓는다"
  },
- "pal_wall_gungho_m": {
+ "pal_wall_hoe_doorl": {
   "cls": "wall",
   "refs": [
-   "inb:in_b_wall_changho_m",
-   "v5:window"
+   "castle.wall_h",
+   "estate.wall"
   ],
   "seam_open": true,
-  "front_only": true
+  "front_only": true,
+  "kit": "palace_kit.walls — 분합문·창호·회벽 1×2 (끝 변형 m/l/r/lr, 문짝 doorl/doorr), 방 빌더가 평면도에서 놓는다"
  },
- "pal_wall_gungho_l": {
+ "pal_wall_hoe_doorr": {
   "cls": "wall",
   "refs": [
-   "inb:in_b_wall_changho_m",
-   "v5:window"
+   "castle.wall_h",
+   "estate.wall"
   ],
   "seam_open": true,
-  "front_only": true
+  "front_only": true,
+  "kit": "palace_kit.walls — 분합문·창호·회벽 1×2 (끝 변형 m/l/r/lr, 문짝 doorl/doorr), 방 빌더가 평면도에서 놓는다"
  },
- "pal_wall_gungho_r": {
-  "cls": "wall",
-  "refs": [
-   "inb:in_b_wall_changho_m",
-   "v5:window"
-  ],
-  "seam_open": true,
-  "front_only": true
- },
- "pal_wall_gungho_lr": {
-  "cls": "wall",
-  "refs": [
-   "inb:in_b_wall_changho_m",
-   "v5:window"
-  ],
-  "seam_open": true,
-  "front_only": true
- },
- "pal_door_gung_l": {
-  "cls": "wall",
-  "refs": [
-   "inb:in_b_door_slide_l",
-   "v5:round door"
-  ],
-  "seam_open": true,
-  "front_only": true
- },
- "pal_door_gung_open_l": {
-  "cls": "wall",
-  "refs": [
-   "inb:in_b_door_open",
-   "v5:round door"
-  ],
-  "seam_open": true,
-  "front_only": true
- },
- "pal_door_gung_r": {
-  "cls": "wall",
-  "refs": [
-   "inb:in_b_door_slide_l",
-   "v5:round door"
-  ],
-  "seam_open": true,
-  "front_only": true
- },
- "pal_door_gung_open_r": {
-  "cls": "wall",
-  "refs": [
-   "inb:in_b_door_open",
-   "v5:round door"
-  ],
-  "seam_open": true,
-  "front_only": true
- },
- "pal_pillar_dan_2a": {
+ "pal_pillar": {
   "cls": "prop",
   "refs": [
-   "inb:in_b_pillar_red_2",
-   "v5:column wood"
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
   ],
-  "front_only": true
+  "interior": true
  },
- "pal_pillar_dan_3a": {
+ "pal_pillar_2": {
   "cls": "prop",
   "refs": [
-   "inb:in_b_pillar_red_3",
-   "v5:column marble"
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
   ],
-  "front_only": true
+  "interior": true
  },
- "pal_pillar_dan_2b": {
+ "pal_ceil_beam_m": {
   "cls": "prop",
   "refs": [
-   "inb:in_b_pillar_red_2",
-   "v5:column wood"
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
   ],
-  "front_only": true
+  "interior": true
  },
- "pal_pillar_dan_3b": {
+ "pal_ceil_beam_l": {
   "cls": "prop",
   "refs": [
-   "inb:in_b_pillar_red_3",
-   "v5:column marble"
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
   ],
-  "front_only": true
+  "interior": true
  },
- "pal_pillar_dan_2c": {
+ "pal_ceil_beam_r": {
   "cls": "prop",
   "refs": [
-   "inb:in_b_pillar_red_2",
-   "v5:column wood"
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
   ],
-  "front_only": true
+  "interior": true
  },
- "pal_pillar_dan_3c": {
+ "pal_dais_front_m": {
   "cls": "prop",
   "refs": [
-   "inb:in_b_pillar_red_3",
-   "v5:column marble"
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
   ],
-  "front_only": true
+  "interior": true
  },
- "pal_beam_dan_m": {
+ "pal_dais_front_l": {
   "cls": "prop",
   "refs": [
-   "inb:in_b_beam_red_m"
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
   ],
-  "front_only": true
+  "interior": true
  },
- "pal_beam_dan_l": {
+ "pal_dais_front_r": {
   "cls": "prop",
   "refs": [
-   "inb:in_b_beam_red_m"
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
   ],
-  "front_only": true
+  "interior": true
  },
- "pal_beam_dan_r": {
+ "pal_exit_door": {
   "cls": "prop",
   "refs": [
-   "inb:in_b_beam_red_m"
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
   ],
-  "front_only": true
+  "interior": true
  },
- "pal_dais_top_l_m": {
+ "pal_exit_door2": {
   "cls": "prop",
   "refs": [
-   "inb:in_b_dais_wood_m",
-   "v5:floor:plank"
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
   ],
-  "front_only": true
+  "interior": true
  },
- "pal_dais_top_l_b": {
+ "pal_exit_door3": {
   "cls": "prop",
   "refs": [
-   "inb:in_b_dais_wood_m",
-   "v5:floor:plank"
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
   ],
-  "front_only": true
+  "interior": true
  },
- "pal_dais_face_l": {
+ "pal_throne": {
   "cls": "prop",
   "refs": [
-   "inb:in_b_dais_stone_m",
-   "v5:stairs up stone"
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
   ],
-  "front_only": true
+  "interior": true
  },
- "pal_dais_top_m_m": {
+ "pal_byeongpung_ilwol": {
   "cls": "prop",
   "refs": [
-   "inb:in_b_dais_wood_m",
-   "v5:floor:plank"
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
   ],
-  "front_only": true
+  "interior": true
  },
- "pal_dais_top_m_b": {
+ "pal_hyangro": {
   "cls": "prop",
   "refs": [
-   "inb:in_b_dais_wood_m",
-   "v5:floor:plank"
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
   ],
-  "front_only": true
+  "interior": true
  },
- "pal_dais_face_m": {
+ "pal_chotdae_tall": {
   "cls": "prop",
   "refs": [
-   "inb:in_b_dais_stone_m",
-   "v5:stairs up stone"
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
   ],
-  "front_only": true
+  "interior": true
  },
- "pal_dais_top_r_m": {
+ "pal_deungrong": {
   "cls": "prop",
   "refs": [
-   "inb:in_b_dais_wood_m",
-   "v5:floor:plank"
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
   ],
-  "front_only": true
+  "interior": true
  },
- "pal_dais_top_r_b": {
+ "pal_deung_hang": {
   "cls": "prop",
   "refs": [
-   "inb:in_b_dais_wood_m",
-   "v5:floor:plank"
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
   ],
-  "front_only": true
+  "interior": true
  },
- "pal_dais_face_r": {
+ "pal_bangseok_red": {
   "cls": "prop",
   "refs": [
-   "inb:in_b_dais_stone_m",
-   "v5:stairs up stone"
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
   ],
-  "front_only": true
+  "interior": true
  },
- "pal_dais_stair_3": {
+ "pal_bangseok_blue": {
   "cls": "prop",
   "refs": [
-   "inb:in_b_stair_dais_3",
-   "v5:stairs up stone"
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
   ],
-  "front_only": true
+  "interior": true
  },
- "pal_mat_carpet_l_a": {
+ "pal_uija": {
   "cls": "prop",
   "refs": [
-   "v5:aisle runner",
-   "v5:runner"
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
   ],
-  "front_only": true
+  "interior": true
  },
- "pal_mat_carpet_l_b": {
+ "pal_seoan_gwan": {
   "cls": "prop",
   "refs": [
-   "v5:aisle runner",
-   "v5:runner"
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
   ],
-  "front_only": true
+  "interior": true
  },
- "pal_mat_carpet_l_s": {
+ "pal_munseo_ham": {
   "cls": "prop",
   "refs": [
-   "v5:aisle runner",
-   "v5:runner"
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
   ],
-  "front_only": true
- },
- "pal_mat_carpet_m_a": {
-  "cls": "prop",
-  "refs": [
-   "v5:aisle runner",
-   "v5:runner"
-  ],
-  "front_only": true
- },
- "pal_mat_carpet_m_b": {
-  "cls": "prop",
-  "refs": [
-   "v5:aisle runner",
-   "v5:runner"
-  ],
-  "front_only": true
- },
- "pal_mat_carpet_m_s": {
-  "cls": "prop",
-  "refs": [
-   "v5:aisle runner",
-   "v5:runner"
-  ],
-  "front_only": true
- },
- "pal_mat_carpet_r_a": {
-  "cls": "prop",
-  "refs": [
-   "v5:aisle runner",
-   "v5:runner"
-  ],
-  "front_only": true
- },
- "pal_mat_carpet_r_b": {
-  "cls": "prop",
-  "refs": [
-   "v5:aisle runner",
-   "v5:runner"
-  ],
-  "front_only": true
- },
- "pal_mat_carpet_r_s": {
-  "cls": "prop",
-  "refs": [
-   "v5:aisle runner",
-   "v5:runner"
-  ],
-  "front_only": true
- },
- "pal_nangan_m": {
-  "cls": "prop",
-  "refs": [
-   "v5:bench 2",
-   "v5:towel rail"
-  ],
-  "front_only": true
- },
- "pal_mat_run_m": {
-  "cls": "prop",
-  "refs": [
-   "v5:runner",
-   "v5:aisle runner"
-  ],
-  "front_only": true
- },
- "pal_nangan_l": {
-  "cls": "prop",
-  "refs": [
-   "v5:bench 2",
-   "v5:towel rail"
-  ],
-  "front_only": true
- },
- "pal_mat_run_l": {
-  "cls": "prop",
-  "refs": [
-   "v5:runner",
-   "v5:aisle runner"
-  ],
-  "front_only": true
- },
- "pal_nangan_r": {
-  "cls": "prop",
-  "refs": [
-   "v5:bench 2",
-   "v5:towel rail"
-  ],
-  "front_only": true
- },
- "pal_mat_run_r": {
-  "cls": "prop",
-  "refs": [
-   "v5:runner",
-   "v5:aisle runner"
-  ],
-  "front_only": true
- },
- "pal_mat_gung_a": {
-  "cls": "prop",
-  "refs": [
-   "inb:in_b_mat_dot_2x2",
-   "v5:rug red"
-  ],
-  "front_only": true
- },
- "pal_mat_gung_b": {
-  "cls": "prop",
-  "refs": [
-   "inb:in_b_mat_dot_2x2",
-   "v5:rug red"
-  ],
-  "front_only": true
- },
- "pal_ilwol_byeongpung": {
-  "cls": "prop",
-  "refs": [
-   "inb:in_b_byeongpung_royal",
-   "v5:tapestry",
-   "v5:royal banner"
-  ],
-  "front_only": true
- },
- "pal_yongsang": {
-  "cls": "prop",
-  "refs": [
-   "v5:throne",
-   "v5:stone throne"
-  ]
- },
- "pal_hyangro_a": {
-  "cls": "prop",
-  "refs": [
-   "inb:in_b_hwaro",
-   "v5:brazier"
-  ]
- },
- "pal_hyangro_b": {
-  "cls": "prop",
-  "refs": [
-   "inb:in_b_hwaro",
-   "v5:brazier"
-  ]
+  "interior": true
  },
  "pal_buk_big": {
   "cls": "prop",
   "refs": [
-   "inb:in_b_buk",
-   "v5:barrel"
-  ]
- },
- "pal_jong_geori": {
-  "cls": "prop",
-  "refs": [
-   "v5:bell rope",
-   "v5:column wood"
-  ]
- },
- "pal_deungnong_a": {
-  "cls": "prop",
-  "refs": [
-   "inb:in_b_deungjan_stand",
-   "v5:hanging lantern"
-  ]
- },
- "pal_deungnong_b": {
-  "cls": "prop",
-  "refs": [
-   "inb:in_b_deungjan_stand",
-   "v5:hanging lantern"
-  ]
- },
- "pal_hang_deungnong_a": {
-  "cls": "prop",
-  "refs": [
-   "v5:hanging lantern",
-   "v5:wall sconce"
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
   ],
-  "front_only": true
+  "interior": true
  },
- "pal_hang_deungnong_b": {
+ "pal_jong": {
   "cls": "prop",
   "refs": [
-   "v5:hanging lantern",
-   "v5:wall sconce"
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
   ],
-  "front_only": true
+  "interior": true
  },
- "pal_deumeu_a": {
+ "pal_chimsang": {
   "cls": "prop",
   "refs": [
-   "v5:water trough",
-   "v5:washbasin"
-  ]
- },
- "pal_deumeu_b": {
-  "cls": "prop",
-  "refs": [
-   "v5:water trough",
-   "v5:washbasin"
-  ]
- },
- "pal_byeongpung_gung": {
-  "cls": "prop",
-  "refs": [
-   "inb:in_b_byeongpung_b",
-   "v5:tapestry"
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
   ],
-  "front_only": true
+  "interior": true
  },
- "pal_chimgu": {
+ "pal_jangnong": {
   "cls": "prop",
   "refs": [
-   "inb:in_b_ibul_r",
-   "v5:double bed red"
-  ]
- },
- "pal_seoan": {
-  "cls": "prop",
-  "refs": [
-   "inb:in_b_seoan_2",
-   "v5:desk 2x1"
-  ]
- },
- "pal_hwaro": {
-  "cls": "prop",
-  "refs": [
-   "inb:in_b_hwaro",
-   "v5:brazier"
-  ]
- },
- "pal_chotdae_big": {
-  "cls": "prop",
-  "refs": [
-   "inb:in_b_chotdae",
-   "v5:candelabra"
-  ]
- },
- "pal_yong_jang": {
-  "cls": "prop",
-  "refs": [
-   "inb:in_b_ibuljang",
-   "v5:wardrobe"
-  ]
- },
- "pal_bangseok_a": {
-  "cls": "prop",
-  "refs": [
-   "inb:in_b_banseok_r",
-   "v5:stool"
-  ]
- },
- "pal_bangseok_b": {
-  "cls": "prop",
-  "refs": [
-   "inb:in_b_banseok_r",
-   "v5:stool"
-  ]
- },
- "pal_bangseok_c": {
-  "cls": "prop",
-  "refs": [
-   "inb:in_b_banseok_r",
-   "v5:stool"
-  ]
- },
- "pal_mat_sinha_b1": {
-  "cls": "prop",
-  "refs": [
-   "inb:in_b_mat_dot_2x2",
-   "v5:rug red"
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
   ],
-  "front_only": true
+  "interior": true
  },
- "pal_mat_sinha_b2": {
+ "pal_hwajangdae": {
   "cls": "prop",
   "refs": [
-   "inb:in_b_mat_dot_2x2",
-   "v5:rug red"
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
   ],
-  "front_only": true
+  "interior": true
  },
- "pal_mat_sinha_b3": {
+ "pal_gyeongdae": {
   "cls": "prop",
   "refs": [
-   "inb:in_b_mat_dot_2x2",
-   "v5:rug red"
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
   ],
-  "front_only": true
+  "interior": true
  },
- "pal_mat_sinha_r1": {
+ "pal_surasang": {
   "cls": "prop",
   "refs": [
-   "inb:in_b_mat_dot_2x2",
-   "v5:rug red"
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
   ],
-  "front_only": true
+  "interior": true
  },
- "pal_mat_sinha_r2": {
+ "pal_yaktang": {
   "cls": "prop",
   "refs": [
-   "inb:in_b_mat_dot_2x2",
-   "v5:rug red"
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
   ],
-  "front_only": true
+  "interior": true
  },
- "pal_mat_sinha_r3": {
+ "pal_seoga_tall": {
   "cls": "prop",
   "refs": [
-   "inb:in_b_mat_dot_2x2",
-   "v5:rug red"
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
   ],
-  "front_only": true
+  "interior": true
  },
- "pal_hang_jokja_a": {
+ "pal_chaekgap": {
   "cls": "prop",
   "refs": [
-   "inb:in_b_jokja_a",
-   "v5:picture"
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
   ],
-  "front_only": true
+  "interior": true
  },
- "pal_hang_jokja_b": {
+ "pal_gwan_seat": {
   "cls": "prop",
   "refs": [
-   "inb:in_b_jokja_a",
-   "v5:picture"
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
   ],
-  "front_only": true
+  "interior": true
  },
- "pal_mat_gung_c": {
+ "pal_gungnyeo_jari": {
   "cls": "prop",
   "refs": [
-   "inb:in_b_mat_dot_2x2",
-   "v5:rug red"
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
   ],
-  "front_only": true
+  "interior": true
  },
- "pal_mat_runb_m": {
+ "pal_changgeori": {
   "cls": "prop",
   "refs": [
-   "v5:runner",
-   "v5:aisle runner"
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
   ],
-  "front_only": true
+  "interior": true
  },
- "pal_mat_runb_l": {
+ "pal_dais_steps_4": {
   "cls": "prop",
   "refs": [
-   "v5:runner",
-   "v5:aisle runner"
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
   ],
-  "front_only": true
+  "interior": true
  },
- "pal_mat_runb_r": {
+ "pal_dais_steps_6": {
   "cls": "prop",
   "refs": [
-   "v5:runner",
-   "v5:aisle runner"
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
   ],
-  "front_only": true
+  "interior": true
  },
- "pal_step_stone": {
+ "pal_exit_door4": {
   "cls": "prop",
   "refs": [
-   "inb:in_b_stair_dais_2",
-   "v5:doormat"
-  ]
- },
- "pal_byeongpung_gung2": {
-  "cls": "prop",
-  "refs": [
-   "inb:in_b_byeongpung_b",
-   "v5:tapestry"
+   "table_mugs",
+   "fish_barrel",
+   "bench_wood"
   ],
-  "front_only": true
- },
- "pal_bangseok_oa": {
-  "cls": "prop",
-  "refs": [
-   "inb:in_b_banseok_r",
-   "v5:stool"
-  ]
- },
- "pal_bangseok_ob": {
-  "cls": "prop",
-  "refs": [
-   "inb:in_b_banseok_r",
-   "v5:stool"
-  ]
- },
- "pal_bangseok_oc": {
-  "cls": "prop",
-  "refs": [
-   "inb:in_b_banseok_r",
-   "v5:stool"
-  ]
- },
- "pal_seoan_b": {
-  "cls": "prop",
-  "refs": [
-   "inb:in_b_seoan_2",
-   "v5:desk 2x1"
-  ]
+  "interior": true
  }
 }

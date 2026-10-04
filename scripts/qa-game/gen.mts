@@ -149,7 +149,7 @@ export async function genMain(argv: readonly string[] = process.argv.slice(2)): 
   const t0 = Date.now();
   const classified = await classifyPlainPiTurn({
     project: base, text: instruction, currentMapId, selection: null, hasActivePlan: false, autonomy,
-    declarer: () => createLlmIntentDeclarer({ chat, audit: chat, getConfig: () => config, timeoutMs: 30_000 }),
+    declarer: () => createLlmIntentDeclarer({ chat, audit: chat, getConfig: () => config, timeoutMs: 30_000, coverageAudit: false }),
     piTeam: config.piTeam ?? DEFAULT_PI_TEAM,
   });
   mark("intent", t0);

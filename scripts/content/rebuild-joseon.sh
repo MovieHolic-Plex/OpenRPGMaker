@@ -18,32 +18,29 @@ RELOADED="${JOSEON_EXPORT_RELOADED:-/tmp/joseon-reloaded.json}"
 if [ "${REGEN_VILLAGE:-0}" = "1" ]; then
   (cd scripts/content/lib/joseon && JS_PROFILE=village20 JS_SEED=7 python3 demo20.py --candidate | tail -1)
 fi
-# 시트·맵 목록(시트순번 = 목록 순서). 앞 3 장(마을 20호·국내성·국내성 원작 규모)은 동결 장부(frozen-layout.json)가 칸 번호를 지킨다 —
-# 뒤의 새 판(사냥터·동굴·실내 6·궁 3)은 그 뒤에 덧붙고 앞 칸 번호는 한 칸도 안 바뀐다(build-joseon-tileset.py 가 해시로 확인한다).
-SHEETS=("$V/joseon-village20-chipset.png:$V/pieces.json" "$G/joseon-gungnae-chipset.png:$G/pieces.json" "$F/joseon-gungnae-full-chipset.png:$F/pieces.json")
-MAPS=("joseon_v20:$V/map.json:$V/extra.json:조선 마을 20호:0" "gungnae:$G/map.json:$G/extra.json:국내성:1" "gungnae_full:$F/map.json:$F/extra.json:국내성 원작 규모:2")
-add_map() {   # add_map <맵id> <폴더> <파일 머리> <이름>  — 시트순번은 지금까지 쌓인 시트 수
-  SHEETS+=("$2/$3-chipset.png:$2/pieces.json")
-  MAPS+=("$1:$2/map.json:$2/extra.json:$4:$(( ${#SHEETS[@]} - 1 ))")
-}
-add_map joseon_field "${FIELD_DIR:-tiledata/joseon-field}" joseon-field "조선 사냥터"
-add_map joseon_cave "${CAVE_DIR:-tiledata/joseon-cave}" joseon-cave "조선 동굴"
-IB="${INTERIOR_B_DIR:-tiledata/joseon-interior-b}"
-add_map joseon_in_house_b "$IB/joseon_in_house_b" joseon-in-house-b "조선 민가 실내"
-add_map joseon_in_inn_b "$IB/joseon_in_inn_b" joseon-in-inn-b "조선 주막 실내"
-add_map joseon_in_smith_b "$IB/joseon_in_smith_b" joseon-in-smith-b "조선 대장간 실내"
-add_map joseon_in_pharmacy_b "$IB/joseon_in_pharmacy_b" joseon-in-pharmacy-b "조선 약방 실내"
-add_map joseon_in_school_b "$IB/joseon_in_school_b" joseon-in-school-b "조선 서당 실내"
-add_map joseon_in_office_b "$IB/joseon_in_office_b" joseon-in-office-b "조선 관아 동헌 실내"
-PI="${PALACE_INT_DIR:-tiledata/joseon-palace-int}"
-add_map joseon_in_throne "$PI/joseon_in_throne" joseon-in-throne "조선 궁 정전 어좌 홀"
-add_map joseon_in_corridor "$PI/joseon_in_corridor" joseon-in-corridor "조선 궁 회랑"
-add_map joseon_in_bedchamber "$PI/joseon_in_bedchamber" joseon-in-bedchamber "조선 궁 침전"
-ARGS=()
-for s in "${SHEETS[@]}"; do ARGS+=(--sheet "${s%%:*}" --pieces "${s#*:}"); done
-for m in "${MAPS[@]}"; do ARGS+=(--map "$m"); done
-python3 scripts/content/build-joseon-tileset.py "${ARGS[@]}" ${JOSEON_BUILD_ARGS:-}
-if [ "${JOSEON_STOP_AFTER_BUILD:-0}" = "1" ]; then exit 0; fi   # 시트·타일셋·맵 JSON 까지만(참고문서·저장 증명·장소 카드는 건너뜀)
+# 새 장소 12장(사냥터·동굴·실내 방 6·궁 내부 4)은 시트순번 3 이후로 덧붙인다 — 기준 시트 번호·기존 세 맵의 번호는 그대로(꼬리 덧붙이기).
+FLD="${JOSEON_FIELD_DIR:-tiledata/joseon-field}"
+CAV="${JOSEON_CAVE_DIR:-tiledata/joseon-cave}"
+INT="${JOSEON_INTERIOR_DIR:-tiledata/joseon-interior}"
+SHEETS=(--sheet "$V/joseon-village20-chipset.png" --pieces "$V/pieces.json"
+        --sheet "$G/joseon-gungnae-chipset.png" --pieces "$G/pieces.json"
+        --sheet "$F/joseon-gungnae-full-chipset.png" --pieces "$F/pieces.json"
+        --sheet "$FLD/joseon-field-chipset.png" --pieces "$FLD/pieces.json"
+        --sheet "$CAV/joseon-cave-chipset.png" --pieces "$CAV/pieces.json")
+MAPS=(--map "joseon_v20:$V/map.json:$V/extra.json:조선 마을 20호:0"
+      --map "gungnae:$G/map.json:$G/extra.json:국내성:1"
+      --map "gungnae_full:$F/map.json:$F/extra.json:국내성 원작 규모:2"
+      --map "joseon_field:$FLD/map.json:$FLD/extra.json:조선 사냥터:3"
+      --map "joseon_cave:$CAV/map.json:$CAV/extra.json:조선 동굴:4")
+SI=5
+for r in "house:조선 민가 실내" "inn:조선 주막 실내" "smith:조선 대장간 실내" "pharmacy:조선 약방 실내" "school:조선 서당 실내" "office:조선 관아 실내" \
+         "throne:조선 궁 어좌전" "corridor:조선 궁 회랑" "bedchamber:조선 궁 침전" "library:조선 궁 서고"; do
+  id="${r%%:*}"; nm="${r#*:}"; D="$INT/joseon_in_$id"
+  SHEETS+=(--sheet "$D/joseon_in_$id-chipset.png" --pieces "$D/pieces.json")
+  MAPS+=(--map "joseon_in_$id:$D/map.json:$D/extra.json:$nm:$SI")
+  SI=$((SI + 1))
+done
+python3 scripts/content/build-joseon-tileset.py "${SHEETS[@]}" "${MAPS[@]}"
 python3 scripts/content/prepare-joseon-baram-references.py
 rm -rf "${JOSEON_SAVE_DIR:-/tmp/oprn-joseon-baram-proof}"
 JOSEON_EXPORT_RELOADED="$RELOADED" NODE_OPTIONS="${NODE_OPTIONS:---max-old-space-size=7000}" node scripts/content/save-joseon-baram.mjs
@@ -54,11 +51,8 @@ from importlib.machinery import SourceFileLoader
 from pathlib import Path
 from PIL import Image
 m = SourceFileLoader("bct", "scripts/content/build-catalog-thumbs.py").load_module()
-import re
-src = Path("src/project/joseonPlaceReferences.ts").read_text()
-names = re.findall(r'"preview": "/assets/region-references/([^"]+)\.png"', src)
-assert len(names) >= 14, names   # 마을 20호·국내성 둘·사냥터·동굴·실내 6·궁 내부 3
-for n in names:
+import json
+for n in [k.replace("_", "-") for k in json.load(open("tiledata/joseon-village/build-stats.json"))["maps"]]:
     with Image.open(f"public/assets/region-references/{n}.png") as im:
         m.write_long_edge(im, Path(f"public/assets/catalog-thumbs/region-references/{n}.png"))
 dest = Path("public/assets/catalog-thumbs/sheets/joseon-baram/joseon-baram-chipset.png")

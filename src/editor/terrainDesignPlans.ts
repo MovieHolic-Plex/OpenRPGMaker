@@ -1,5 +1,5 @@
 import { cloneExtraLayers, compactMapLayers, layerTileAt, setLayerTileAt } from "@/project/mapLayers";
-import { emptyRelief } from "@/project/relief/edit";
+import { emptyRelief, copyRelief } from "@/project/relief/edit";
 import { RELIEF_MAX_LEVEL } from "@/project/relief/types";
 import { normalizeTerrainDesign, terrainLocked } from "@/project/terrainDesign";
 import type { GameMap, TilesetDef } from "@/project/types";
@@ -19,7 +19,8 @@ export function terrainEditable(map: GameMap, index: number, objects = true, ram
     && (!ramps || !(map.relief?.ramps?.[index] ?? 0))
     && !map.events.some(e => e.x === index % map.width && e.y === Math.floor(index / map.width));
 }
-function copied(map: GameMap): GameMap { return { ...map, lowerTiles: map.lowerTiles.slice(), upperTiles: map.upperTiles.slice(), ...cloneExtraLayers(map) }; }
+export function copiedTerrainMap(map: GameMap): GameMap { return { ...map, lowerTiles: map.lowerTiles.slice(), upperTiles: map.upperTiles.slice(), ...cloneExtraLayers(map), relief: map.relief && copyRelief(map.relief), terrainDesign: map.terrainDesign && { ...map.terrainDesign, waterDepth: map.terrainDesign.waterDepth?.slice() } }; }
+const copied = copiedTerrainMap;
 function clampHeight(v: number): number { return Math.min(RELIEF_MAX_LEVEL, Math.max(0, Math.round(v))); }
 function footprint(map: GameMap, points: readonly TerrainPoint[], width: number, distances?: Map<number, number>): TerrainPoint[] {
   const seen = new Map<number, TerrainPoint>(), r = Math.max(0, (width - 1) / 2);
@@ -30,6 +31,19 @@ function footprint(map: GameMap, points: readonly TerrainPoint[], width: number,
     }
   }
   return [...seen.values()];
+}
+/** Road width is an exact cell count, including even widths. */
+function roadFootprint(map: GameMap, points: readonly TerrainPoint[], width: number): TerrainPoint[] {
+  const cells = new Map<number, TerrainPoint>(), half = Math.floor((width - 1) / 2);
+  points.forEach((p, n) => {
+    const neighbours = [points[n - 1], points[n + 1]].filter((q): q is TerrainPoint => !!q);
+    if (!neighbours.length) neighbours.push({ x: p.x, y: p.y + 1 });
+    for (const q of neighbours) for (let side = -half; side < width - half; side++) {
+      const x = p.x + (q.y !== p.y ? side : 0), y = p.y + (q.x !== p.x ? side : 0);
+      if (x >= 0 && y >= 0 && x < map.width && y < map.height) cells.set(y * map.width + x, { x, y });
+    }
+  });
+  return [...cells.values()];
 }
 function shapeMaterials(map: GameMap, tileset: TilesetDef, edits: { index: number; tile: number }[]): void {
   const previous = edits.map(e => layerTileAt(map, 1, e.index)), points = edits.map(e => ({ x: e.index % map.width, y: Math.floor(e.index / map.width) }));
@@ -64,7 +78,7 @@ export function planTerrainDesign(map: GameMap, tileset: TilesetDef, tool: "cont
   for (const v of variants) {
     const p = points.map(p => transformPoint(p, map.width, map.height, v));
     const line = lineCells(p); centers.push(...line);
-    const area = polygon ? polygonCells(p, map.width, map.height) : footprint(map, line, o.width, tool === "ridge" || tool === "valley" ? distances : undefined);
+    const area = polygon ? polygonCells(p, map.width, map.height) : tool === "road" ? roadFootprint(map, line, o.width) : footprint(map, line, o.width, tool === "ridge" || tool === "valley" ? distances : undefined);
     for (const c of area) all.set(c.y * map.width + c.x, c);
   }
   if (tool === "lock") {

@@ -40,12 +40,19 @@ jobs:
 
       - run: npm ci
 
-      # 2026-10-02 v0.84 타입체크가 old space 6136MB 에서 heap OOM(exit 134)으로 죽었다.
-      # 잡 cgroup MemoryMax 는 8GB 다. 7GB 만 연다. 그 이상이면 cgroup 이 프로세스를 죽인다.
+      - name: 캐릭터 하네스 계약
+        run: |
+          python3 -m venv "$RUNNER_TEMP/charset-harness-venv"
+          "$RUNNER_TEMP/charset-harness-venv/bin/pip" install 'Pillow>=10,<14'
+          "$RUNNER_TEMP/charset-harness-venv/bin/python" src/harnesses/charset-actor/verify.py
+
+      # 2026-10-04 타입체크 상주 집합이 7GB 를 넘어 7168 힙에서 exit 134 로 4–10분을 태웠다.
+      # 잡 cgroup MemoryMax 는 12GB 다. 10GB 만 연다. 그 이상이면 cgroup 이 프로세스를 죽인다.
+      # 빠른 러너 둘이 이 힙을 동시에 열면 16GB 슬라이스를 넘기므로 이 단계만 호스트 락으로 직렬화한다.
       - name: 타입체크 (src 만)
         env:
-          NODE_OPTIONS: --max-old-space-size=7168
-        run: npm run typecheck:app
+          NODE_OPTIONS: --max-old-space-size=10240
+        run: flock -w 1800 /home/dev/ci/typecheck.lock npm run typecheck:app
 
       # typecheck:app 은 src 만 본다. test/ · scripts/ · evals/ 의 import 계약은 아무도 안 보는데
       # (`npx tsc --noEmit` 전체는 이 저장소에서 4GB 힙으로 OOM 이라 게이트로 못 쓴다),

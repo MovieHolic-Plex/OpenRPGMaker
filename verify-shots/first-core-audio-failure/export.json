@@ -1,0 +1,17 @@
+{
+  "projectId": "692c93e5-7b5a-41af-ae9a-56717f7f7cb5",
+  "revision": 10,
+  "generationMode": "automatic first build",
+  "projectUrl": "http://127.0.0.1:18433/index.html?hostProject=0e58e68c-4502-4abe-9908-ade579f9086f",
+  "started": "2026-10-04T00:14:28.910Z",
+  "errors": [],
+  "networkFailures": [
+    {
+      "path": "/assets/cc0/audio/catalog/rtp-emo-002-returning-room-final_63c3cc26.mp3",
+      "status": 404
+    }
+  ],
+  "exportStarted": "2026-10-04T00:15:21.357Z",
+  "failure": "게임 내보내기 실패: A declared player runtime asset is unavailable. Redeploy the runtime assets.",
+  "visibleError": "✦\nOPRN Studio\n멈춘 시계의 기억\n변경 없음\n자료집\n소재\n높이\n바닥\n상위\n이벤트\n▶\n테스트\n스튜디오\n보기\n도움말\n게스트\nAI 설정\nGoogle 연결됨\n그리기\n맵\n즐찾\n진행\n연결\n공방\n검사\n시계가 멈춘 방\n크기\n모양\n이웃 연결\n수동\n구조 보조\n보조\n#\n360 버들항 · 성벽\n버들항 v6 · 로마풍 항구 도시 (손 도트)\n⚙\n붓 보조\n내 구조물\n−\n2x\n+\n⋯\n2\nAI\n시계가 멈춘 방\n작업 표시\n간단히\n실행 기록\n바로 깔기\n작업 설정 · 기본\n내 팀 · 호스트\n팀 관리 ↗\n게임 내보내기 실패: A declared player runtime asset is unavailable. Redeploy the runtime assets."
+}

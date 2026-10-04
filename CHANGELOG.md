@@ -5,6 +5,259 @@
 
 <!-- releases -->
 
+## 0.116.1 — 2026-10-04
+
+### 수정
+
+- **relief** — 경사로 칸 값에 숫자 타입을 붙인다 (`26ec401`)
+- require visible first-game scenes and verify shipping playback (#2040) (`501a450`)
+- remove super harness daily caps and make orders readable (`7e6b3bf`)
+- catch sprite transparency holes with adversarial alpha review (`208a367`)
+- ground ramp movement and expose original Beodeul houses (`401b26d`)
+
+### 문서
+
+- record native house, ramp input and full terrain seam visual QA (`5179dcb`)
+
+## 0.116.0 — 2026-10-04
+
+### 기능
+
+- review one character at a time with instant advance and visible walking previews (`ec98035`)
+- **worldmap** — ship human-selected icons and verify saved map journeys (`3e1fc51`)
+
+### 수정
+
+- **worldmap** — 선택 아이콘 키트에 배치 문장을 넣는다 (`0553f7f`)
+- **worldmap** — detect covered icon cells and record completed candidate review (`13614fd`)
+- **worldmap** — pass correction notes to candidate reviewers (`01e1db2`)
+- allow click-only launcher entry and record native flow failure (`eca3bbc`)
+
+### 문서
+
+- **worldmap** — record follow-up gallery verification (`8e7ecc7`)
+
+## 0.115.0 — 2026-10-04
+
+### 기능
+
+- publish human-kept sprites and descriptions to the shared character catalog (`746a347`)
+
+### 수정
+
+- preserve assistant view and continue work in background (`585d7c7`)
+- **ci** — run the full-lane typecheck with a 10GB heap (`e71aaaf`)
+
+## 0.114.0 — 2026-10-04
+
+### 기능
+
+- connect AI terrain tools and verify cliff house access (`16d017f`)
+
+### 수정
+
+- keep elevated houses visible in large editor maps (`54ffb9c`)
+- verify terrain tools through the real editor assistant (`42ce965`)
+
+## 0.113.0 — 2026-10-04
+
+### 기능
+
+- **worldmap** — 실제 지리 style real — Natural Earth·ETOPO1 로 지구 어디든 세계 지도 (`d158ed9`)
+
+### 수정
+
+- make charset review actions instant and durable (`99f1458`)
+- **ci** — give typecheck a 10GB heap and run it one at a time (`b0ad46e`)
+- make startup fullscreen and interview click-first with fresh reviewed art (`fb9dd1f`)
+- make new game art rejection trigger automatic repairs (`3ad4a55`)
+- **worldmap** — 저작된 맵 보호와 조수 실행물 SQLite 재로드 근거 보완 (`4d9f527`)
+- **worldmap** — 늪 픽셀이 없는 실제 지리 세계에서 swamp_final 통계가 죽던 것 (`38881a5`)
+- **ai** — 빈 기본 시작 맵·세계 지도는 칩셋 계열 기준이 아니다 (`4fee005`)
+
+### 테스트
+
+- record maker validation after main integration (`ac5df99`)
+
+## 0.112.0 — 2026-10-04
+
+### 기능
+
+- 자유 캐릭터 저작과 사람의 GIF 선택 공방 (`6f8cd25`)
+
+### 수정
+
+- 캐릭터 선택 단축키를 현재 GIF에 한정 (`345ceb7`)
+
+### 문서
+
+- GIF 캐릭터 공방 위키 색인 갱신 (`326cd2d`)
+
+## 0.111.1 — 2026-10-04
+
+### 수정
+
+- 첫 자동 제작에서 핵심 플레이를 먼저 완성 (#2015) (`ce89668`)
+
+## 0.111.0 — 2026-10-04
+
+### 기능
+
+- simplify terrain dock and add a modal creation guide (`dfac859`)
+
+### 수정
+
+- **harness** — include upstream character credits in exported packs (`ea39b71`)
+
+## 0.110.0 — 2026-10-04
+
+### 기능
+
+- **ai** — 맵별 조수 실행 대기열 — 같은 맵은 차례대로, 다른 맵은 동시에 (`67e36aa`)
+- add pixel cinematic dialogue and evidence based romance art review (`39ba2d5`)
+- resize Beodeul roofs independently and soften terrain visibility (`49081eb`)
+- **harness** — register charset workflow and enforce sprite contracts in CI (`30d2dae`)
+- **harness** — continue character batches with verified output provenance and discard gates (`400e8ad`)
+- **harness** — 캐릭터 칩 — 그림 넣어 고치기(약함·보통·강함) + 조수용 설명(desc.json) (`71ddfb3`)
+- **harness** — 걸음 전파 — 작업자는 서 있는 자세만, 걸음 0·2 는 뼈대 움직임대로 자동 생성 + 돌출 픽셀 검수 (`1fc905c`)
+- **harness** — 캐릭터 칩은 실루엣을 뼈대 그대로 — 소지품·모자 추가 금지, 실루엣 변화 150px 검수, 색 구성 지시 18명 (`9118b18`)
+- **harness** — 캐릭터 칩 뼈대를 Actor1~4·People1~5 로 넓힘 — 짝 얼굴 정본 매핑, 뼈대 대비 검수, 새 지시 16명 (`cff72fe`)
+- **harness** — 생성 얼굴 자르기를 원본 구도에 맞춤(align_crop) + --reuse 재판정 (`c8ecefb`)
+- **harness** — 생성 얼굴 v3 — 생김새는 자유, 보는 각도만 잠그고 각도 전용 검수자로 판정 (`f6616b7`)
+- **harness** — 생성 얼굴 v2 — 손 도트 얼굴을 참고로 손질만, 각도 점수로 재시도 (`6012036`)
+- **harness** — 캐릭터 칩 얼굴을 이미지 생성으로(gen-faces) — 사용자 결정, 칩은 손 도트 유지 (`f3ff2c7`)
+- **harness** — 캐릭터 칩 짝 얼굴(48×48)과 비포/애프터 화면 (`5ccbf84`)
+- **harness** — 캐릭터 칩 받기/버리기 화면(18314)과 지시 16명, 원샷 묶음 실행(--par) (`491c418`)
+- **harness** — 캐릭터 칩 고치기 루프 — GPT 가 고치고 Sonnet 이 검수, 남·여 지시 추가 (`60408d0`)
+- **harness** — 캐릭터 칩 하네스에 Opus 5.5 high 엔진과 수정 작업(--src·--fix-notes) (`5afa53e`)
+- **harness** — 캐릭터 칩 하네스 — Actor1 뼈대에 작업자가 격자를 직접 찍고 GIF 로 비교 (`7440c00`)
+
+### 수정
+
+- **harness** — report interrupted production batches as failures (`60b956a`)
+- **harness** — preserve stable clothing pixels when propagating walking frames (`3d8c8b4`)
+- explicitly default optional terrain vision to off (`a12b9e2`)
+- **harness** — guide artists to keep clothing readable across walking frames (`ca6b21a`)
+- **harness** — avoid rewriting unchanged user decisions on export (`f58144e`)
+- **harness** — require fresh review after repairing previously discarded sprites (`78cb686`)
+- **harness** — 걸음 전파 뒤 외톨이 점·1px 구멍 정리(뼈대에 없던 결함만, 원본 자기 재현 100% 유지) (`590f952`)
+- **harness** — 생성 얼굴이 참고 그림의 투구·두건을 지우지 않게(칩과 어긋남) (`bda6cbb`)
+- **harness** — 캐릭터 칩 작업자 — 처음부터 다시 그리지 말고 바꿀 부위만 고친다 (`a29d202`)
+- **harness** — 캐릭터 칩 작업자가 작업 폴더 밖(claude-viz)에 쓰지 않게 (`be907ed`)
+- **harness** — 캐릭터 칩 검수에 걸음 동작량 — 1px 내리기+발끝만 바꾼 걸음을 거른다 (`99e581d`)
+
+### 문서
+
+- **agents** — 캐릭터 칩 하네스 한 줄 갱신 (`471960a`)
+- **agents** — 캐릭터 칩 하네스 받기/버리기 주소 (`2aff4a1`)
+
+### 테스트
+
+- **qa** — 마을이 아닌 쓰기 도구(길·타일·물체)도 맵 위에서 재생되는지 보는 시험 (`be7d6bc`)
+
+### 잡무
+
+- **harness** — 캐릭터 칩 루프 기본을 원샷(1판)으로 — 사용자 판단 (`cf711d3`)
+
+## 0.109.0 — 2026-10-04
+
+### 기능
+
+- **super-harness** — replace the heavy kanban with a light picture gallery (`a8a5e39`)
+- **ai** — 실행 중 다른 편집이 들어와도 체크포인트를 3-way 병합으로 적용한다 (`834e4a2`)
+- **ai** — 마을뿐 아니라 모든 쓰기 도구의 실제 변경을 맵 위에서 다시 튼다 (`4c66fa4`)
+- **ai** — 마을 시공은 도구가 실제로 밟은 단계를 기록해 그 순서대로 다시 튼다 (`9c64279`)
+- **ai** — 큰 조수 적용은 예전 밑그림처럼 — 종이·집 자리 테두리·연필이 왼쪽부터 깔고 집을 차례로 놓는다 (`f3b2caa`)
+- **ai** — 큰 조수 적용에 시공 연출, 조수창 즉시 반영, 마을 노트 먼저 보이게 (`094640e`)
+
+### 수정
+
+- **electron** — 앱 시작 즉시 죽던 worldmapBuild 최상위 import.meta.url 을 지연 평가 (`4a762d5`)
+- **ai** — 시공 연출 덮개 지우기(dirty 함정)·프레임 시계·나무 칸은 바닥과 함께, 새 맵은 전체가 보이게 줌 (`a53b6a6`)
+- **ai** — 마을 요청의 그래픽 선택 창과 Pi 경로의 쓰이지 않는 커버리지 감사 콜 제거 (`dfa361c`)
+
+### 테스트
+
+- **qa** — 실행 중 사람 편집 병합 증거 (`f64f91e`)
+- **qa** — 실행 중 사람 편집과 AI 시공이 둘 다 남는지 보는 FOREIGN=1 모드 (`bf57dfa`)
+- **qa** — 밑그림 시공 화면 증거 갱신 (`4d2ac63`)
+- **qa** — 마을 바로 시공 화면 시험 증거(report·단계 띠) (`d90eb77`)
+
+## 0.108.0 — 2026-10-04
+
+### 기능
+
+- **joseon** — 새 장소 12장(사냥터·동굴·실내 방 6·궁 내부 4) 등록 — 시트 꼬리 덧붙이기, 통행·마스크 규칙, 실내 기물 앞 도달 검사 (`4931bc8`)
+- **joseon** — 동굴 2차 검수 반영 - 암반 여백 4칸·깊이 띠 천장(깊은 변형 4종)·비대칭 방·막다른 수정 굴·입구 흙 이행·소품 정리, 사냥터 연못 갈대·바위, 판정 갱신, 재굽기 (`a15b03a`)
+- **joseon** — 사냥터 2차 검수 반영 - 길은 직선+모서리, 목적지 마당(건조장·낚시터·성벽 토막 앞), 비대칭 3단 바위산, 서로 다른 폐허 둘, 무덤터·연못 기슭·숲 윤곽 (`0e34f4f`)
+- **joseon** — 동굴 3단 구조 재작성 - 천장 블롭·벽면·바닥 그림자·유기 윤곽·고리 복도, 소품 조각 15종 (`b8dfcff`)
+- **joseon** — 사냥터 늪 윤곽 유기적으로·물 한 단 밝게·개구리밥 격자 해소, 짐승길 흙을 마당과 같은 램프로, 잔디 흰 점 노이즈 축소 (`18825a5`)
+- **joseon** — 사냥터 빌더 단언 강화 — 같은 종 정렬·직사각 풀 덩이·맨 바위 판·격자 배치·맨 풀 판 금지, 풀 덩이 경계 깨기 (`6e6aa55`)
+- **joseon** — 사냥터 1차 적대 검수 반영 — 북쪽 성벽+남문, 3단 계단 바위산, 곡선 짐승길(목적지 있는 가지), 변동 간격·꼬치 금지 나무 심기 (`3867094`)
+- **joseon** — 사냥터·동굴 조각 58종·지형 12묶음 판정 기록 (눈으로 확인한 줄) (`7d6131c`)
+- **joseon** — 동굴 joseon_cave 48×48 빌더·굽기 (자동 점검 통과, pixelDiff 0) (`d59be9a`)
+- **joseon** — 사냥터 joseon_field 96×96 빌더·굽기 (자동 점검 통과, pixelDiff 0) (`842c4f3`)
+- **joseon** — 사냥터 joseon_field_fa 구역 계획과 맵 빌더 1~4단계(지형·길·앵커·나무·소품) (`c7c079a`)
+- **joseon-interior** — mapgate interior 프로필(I1~I5)과 interior_checks 자동 점검 (`3a12277`)
+- **joseon-interior** — 카탈로그·메타·통행 보정 등록(in_register.py)과 게이트 L/T/E 수정 (`9699d51`)
+- **joseon** — 사냥터·동굴 맵 빌더 공용 틀(fld_map.py), mapgate field·cave 프로필, 통행 보정 (`cf344a3`)
+- **joseon-interior** — 기물 66종(살림집 A·일터 B)과 검수 시트 도구 (`a6a29f7`)
+- **joseon** — 사냥터 지형·바위·식물·야영지·동굴 조각 모듈(fa_*) 초안 (`1d6f3ce`)
+- **joseon** — 굴 입구 3종(석조·갱도·갈라진 틈)과 동굴 안 물체 9종, 바위산 앞면 바위결 개선 (`2d32c54`)
+- **joseon** — 사냥터 물체 조각 46종(바위·들꽃·덤불·통나무·표식·야영지·무덤·폐허 석탑·나무 변형·군락) + 메타 (`ae4082c`)
+- **joseon-interior** — 구조 키트(바닥 5·천장 블롭47·벽면 5종×끝변형·창·문·기둥·계단·단)와 방 빌더 (`73aa430`)
+- **joseon** — 사냥터·동굴 지형 오토타일(짐승길·키 큰 풀·숲 바닥·늪·바위산 윗면/앞면·동굴 바닥/천장/벽/못) (`e5c6fe0`)
+
+### 수정
+
+- **joseon** — 사냥터 북쪽 이중 성벽·밑동 기단, 나무 그림 24x24 복제 한도 단언, 동굴 깊은 암반 바위 질감·막다른 굴 상자 (`7d2f096`)
+- **joseon** — 무덤터 밖에 놓인 울타리 조각 제거, 재굽기 (`02d0fb3`)
+- **joseon** — 동굴 석순 무리 빛 방향·수레 바퀴 굵기 정리 (`64a87df`)
+- **joseon** — 사냥터 참배길 포장·짐승 굴 앞 짐승길 추가 (`8432f3d`)
+- **joseon** — 동굴 사람 둘 배치 후보 보강 (`4308005`)
+- **joseon** — 동굴 검수 반영 — 허공에 뜬 짧은 벽 조각 제거, 바닥 변형 통일, 입구 목(6칸)+화로·불규칙 햇빛 바닥, 둥근 동쪽 못, 상자는 보물방 하나, 복도 가장자리 소품·바위 속 광물 구역 (`be9703f`)
+- **joseon** — 사냥터 검수 반영 — 곧은 짐승길(사다리·ㄷ자·막다른 끝 정리)·무덤터 석비 중심·몬스터 둥지·바위산 톱니 제거·늪 윤곽 다듬기·늪가 나무 비움·숲 간격 (`545ef37`)
+- **joseon** — 사냥터 바위 언덕에 곁바위, 필드 mapgate 프로필을 첫 굽기 실측으로 조임 (`7329ac9`)
+
+### 정리
+
+- **joseon-interior** — 구현 둘을 하나로 — interior_kit/props_in 계열을 정본으로, in_kit·in_room·in_map·in_props* 중복 제거 (`1bef5f2`)
+
+### 문서
+
+- **joseon** — 한계 문단을 새 장소(실내·사냥터) 기준으로 고치고 검수 결과 문서를 가리킨다 (`fa92927`)
+- **joseon** — 새 장소 12장 편집기 화면 증거 50~61 추가 (`4736da4`)
+- **joseon** — 새 장소 12장 하네스 시드·CLI·위키·AGENTS 반영 (`f87b747`)
+- **joseon** — 사냥터·동굴 구역 계획(PLAN.md) (`8bde653`)
+- **joseon-interior** — 방별 계획(PLAN.md) — 민가·주막·대장간·약방·서당·동헌 (`a595bf3`)
+- **joseon** — extra.json 계약과 JSON 3방 병합 도우미를 저장소에 보존 (/tmp 소멸 대비) (`e86f659`)
+
+### 잡무
+
+- **joseon** — 사냥터 빌더 하나로 통합 — 검수 승자(field-fa)를 demo_field.py 로, fa_* 구현·cave-fa 산출·field_fa 프로필 제거 (`2de9651`)
+- **joseon** — 사냥터 구현을 fld_* 하나로 정리(fa_* 삭제), TERRAIN_VERDICT 한 줄로 시드와 일치, 맵 빌더 demo_field.py (`87d50d1`)
+
+### 기타
+
+- 조선 궁 문 앞 마당(pal_floor_yard) 지형 통행 보정 등록 (`23e31d5`)
+- 조선 실내 2차 검수 S4: 월대 계단 카펫·회랑 문 대칭·관아 마루 바닥·마루 변형 4종·복제 줄이기, 방 10장 재굽기 (`8ca67c3`)
+- 조선 실내 2차 검수 S1·S2·S3: 닫힌 문+문턱 단+문 폭 디딤돌, 기물마다 접지 그림자 단언, Actor1 조선풍 프레임만(복제 금지) (`b95a1a2`)
+- 조선 궁 내부: 방 4장(어좌전·회랑·침전·서고) 평면·기물 배치·산출물 + 방별 계획 PLAN.md (`76e0d83`)
+- 조선 궁 내부: 기물 24종(어좌·일월오봉도 병풍·향로·촛대·등·방석·교의·서안·북·종·침상·장롱·화장대·수라상·서가 …) + 메타·통행·판정 52종 (`8b689af`)
+- 조선 궁 내부: 구조 키트(palace_kit) — 전돌·마루·황장판·월대·카펫 16칸·단청 천장·분합문/창호/회벽·붉은 기둥·들보·월대 앞면·큰 계단·출입구 (`dfb1f8b`)
+- 조선 실내: 통로 문틀(in_doorway) 통행 오버라이드 (`e1e9c0b`)
+- 조선 실내: 1차 적대 검수 R1~R7 반영 — 벽 두께·문틀·마당·바닥 재질·단 3/4·접지 그림자·인물 선택, 방 6장 재배치·재굽기 (`bc37034`)
+- 조선 실내: PLAN.md 구현 상태 기록 (`2b16a86`)
+- 조선 실내: 가는 줄 수리·호피 다시 그림, 실내 조각 136종 판정 기록(눈으로 시트 대조), 방 산출물 갱신 (`f5590c2`)
+- 사냥터 동굴 48x48 빌더·굽기: 방 5·복도 ㄴ자 고리·못·보물방, 벽 규칙 점검, 지도 게이트 통과(OBJ_MIN 0.03→0.020 사유 주석) (`0eda059`)
+- 조선 실내: 서당·관아 방 추가, 방 6장 산출물(map/pieces/extra/PNG) 생성, 러너 점검 예외 (`d96cea4`)
+- 조선 실내: 서당 방 평면·기물 (`f2c026f`)
+- 조선 실내: 대장간·약방 방 평면·기물 (`22d2a92`)
+- 사냥터 들판: 폐허 석탑·무덤이 수관에 가려지지 않게 가시 구역 확보, 재굽기 (`119146d`)
+- 조선 실내: 주막(joseon_in_inn) 방 평면·기물 (`004601b`)
+- 사냥터 들판 96x96 빌더 완성·굽기: 자동 점검 통과, 지도 게이트 통과, 맨 잔디 창 완화 (`eb655f3`)
+- 조선 실내: 방 빌더 demo_interior.py 와 민가(joseon_in_house) 평면·기물 배치 (`e999284`)
+
 ## 0.107.0 — 2026-10-04
 
 ### 기능

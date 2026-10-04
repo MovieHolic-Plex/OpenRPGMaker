@@ -8,7 +8,7 @@
 // 줄 depth 계약은 그대로다: 줄 Y 의 윗면 = Y × EDIT_RELIEF_ROW_DEPTH, 벽 = + 7(editSceneRender.ts).
 import type Phaser from "phaser";
 import { reliefIsFlat } from "@/project/relief/edit";
-import { renderRelief } from "@/project/relief/render";
+import { renderRelief, type ReliefGroundSurface } from "@/project/relief/render";
 import { reliefRenderOptions } from "@/project/relief/screen";
 import { RELIEF_TILE, type ReliefData } from "@/project/relief/types";
 import { applyReliefPatch, emptyReliefImage, planReliefPatch, reliefGrids, reliefImageFromRender, type ReliefImage, type ReliefScene } from "@/project/relief/window";
@@ -52,24 +52,37 @@ export class ReliefLiveStrips {
   private tileSize = 0;
   private readonly strips = new Map<number, Strip>();
   private serial = 0;
+  private groundAlpha = 1;
+  private groundTint: number | null = null;
   /** 굽기 방식별 횟수(진단·회귀 e2e 용, EditScene 이 window.__oprnEditReliefStats 로 내보낸다). */
   readonly counts = { full: 0, window: 0, same: 0, clear: 0 };
 
   constructor(private readonly host: ReliefLiveStripsHost) {}
 
+  /** Keep editor inactive-layer cues when relief owns the native lower plane. */
+  setGroundAppearance(alpha: number, tint: number | null): void {
+    if (alpha === this.groundAlpha && tint === this.groundTint) return;
+    this.groundAlpha = alpha; this.groundTint = tint;
+    for (const [key, strip] of this.strips) if (Math.floor(key / this.columns()) % 2 === 0) this.styleGround(strip.image);
+  }
+  private styleGround(image: Phaser.GameObjects.Image): void {
+    image.setAlpha(this.groundAlpha);
+    if (this.groundTint === null) image.clearTint(); else image.setTint(this.groundTint);
+  }
+
   /** relief 를 그린다. 같은 맵 크기·절벽 양식이면 바뀐 창만 다시 굽는다(평지에 처음 칠할 때도). */
-  sync(relief: ReliefData | undefined, tileSize: number, forceFull = false): ReliefLiveStripsStats {
-    const stats = this.syncInner(relief, tileSize, forceFull);
+  sync(relief: ReliefData | undefined, tileSize: number, forceFull = false, ground?: ReliefGroundSurface): ReliefLiveStripsStats {
+    const stats = this.syncInner(relief, tileSize, forceFull, ground);
     this.counts[stats.mode]++;
     return stats;
   }
 
-  private syncInner(relief: ReliefData | undefined, tileSize: number, forceFull: boolean): ReliefLiveStripsStats {
+  private syncInner(relief: ReliefData | undefined, tileSize: number, forceFull: boolean, ground?: ReliefGroundSurface): ReliefLiveStripsStats {
     if (!relief || reliefIsFlat(relief)) {
       this.clear();
       return { mode: "clear", strips: 0 };
     }
-    const scene: ReliefScene = { grids: reliefGrids(relief), opts: reliefRenderOptions(relief) };
+    const scene: ReliefScene = { grids: reliefGrids(relief), opts: reliefRenderOptions(relief, ground) };
     if (tileSize !== this.tileSize) this.clear();
     // 이전 그림이 없으면 평지 그림에서 시작한다 — 빈 맵에 처음 칠한 붓도 창으로 굽는다
     const sameSize = this.image?.W === relief.width && this.image.H === relief.height;
@@ -250,6 +263,7 @@ export class ReliefLiveStrips {
       return false;
     }
     const img = this.host.scene.add.image(x0 * scale, (y0 - pad) * scale, texKey).setOrigin(0, 0).setScale(scale);
+    if (p === 1) this.styleGround(img);
     img.setName(this.host.name).setDepth(this.host.depthOf(row, p as 1 | 2));
     this.host.layer.add(img);
     this.strips.set(k, { key: texKey, canvas, texture, image: img, x0, y0, x1, y1 });

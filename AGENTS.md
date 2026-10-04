@@ -19,6 +19,11 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
 아래 작업은 손으로 하지 말고 해당 하네스를 실행한다. 목록·단계는 `src/harnesses/INDEX.md`(생성 파일),
 구조 규칙은 `openwiki/harnesses/README.md`.
 
+- **에디터용 RM2000 캐릭터를 변형·대량 저작·검사·패킹할 때**
+  → `charset-actor` · 시드 `harness-data/charset-actor/briefs.json`
+  → `npm run harness -- charset-actor <단계>` · 문서 `openwiki/harnesses/charset-actor.md`
+  → GPT 6.1 sol high가 자유롭게 픽셀 저작 → 결손 검사 → GIF. 사람이 남기기/폐기를 결정하며 남긴 칩만 팩으로 만든다. `produce --count 100`으로 시작하고 설치는 별도다.
+
 - **몬스터 수집(포켓몬류) 게임의 종·스타터·진화 계통 전투 스프라이트(앞모습·뒷모습)를 만들 때**
   → `monster-collect-species` · 시드 `harness-data/monster-collect-species/seed.json`
   → `npm run harness -- monster-collect-species <단계>` · 문서 `openwiki/harnesses/monster-collect-species.md`
@@ -32,13 +37,18 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
   → `npm run harness -- jp-city <단계>` · 문서 `openwiki/harnesses/jp-city.md`
   → 후보는 Sonnet 5명이 pxgrid 로 찍고 **사람이 고른다**(시트 `~/claude-viz/jp-<판>.html`). 직접 그리거나 감독이 고르지 말 것. 웨이브 구동 `src/harnesses/jp-city/waves.py`.
 - **조선(바람의나라풍) 칩셋 joseon_baram 의 조각·지도를 만지거나 번들을 재생성할 때** (팔레트 잠금·게이트 P/E/T/L/S/A/K/TR/V·판정·지도 관문·16구역 적대 검수)
-  → `joseon-baram` · 시드 `harness-data/joseon-baram/seed.json`(지도 14장·관문·쓰지 말 것)
+  → `joseon-baram` · 시드 `harness-data/joseon-baram/seed.json`(지도 15장·관문·쓰지 말 것)
   → `npm run harness -- joseon-baram <단계>` (palette·validate·list·gate·verdict·build·map·review·status) · 문서 `openwiki/harnesses/joseon-baram.md`
   → 기존 `scripts/content/lib/joseon/` 도구를 한 입구로 묶은 것이다. 그림은 코드 도트만(생성 이미지·생성 캐릭터 금지, Actor1 사용), 바람의나라 스크린샷 커밋 금지, 판정은 해시에 묶이니 손으로 고치지 말 것.
 
 - **조수가 특정 공간 낱말(미궁·감옥·하수도…)을 잘못 깔 때 / 개념 카드(`src/assets/conceptCards.json`)를 고칠 때**
   → `super-harness` · 시드 `harness-data/super-harness/seed.json` · 문서 `openwiki/harnesses/super-harness.md`
   → 자동으로 도는 데몬이다(화면 http://mdc-server:18315/). 카드를 손으로 쓰지 말고 화면에서 교정 지시·폐기.
+
+- **월드맵 아이콘을 검수·교정·선택 시트로 굽거나 공용 스탬프에 넣을 때**
+  → `worldmap-icons` · 시드 `harness-data/worldmap-icons/seed.json` · 문서 `openwiki/harnesses/worldmap-icons.md`
+  → `npm run harness -- worldmap-icons <단계>` (intake·review·draw·serve·status·export·build·check·preview).
+  → 사람이 선택한 현재 해시만 굽는다. 선택 정본은 `WMI_HARNESS_DATA/harness.sqlite`, 칸 번호는 덧붙이기 전용이다.
 
 - **단일 관계·연애 / 대화 중심 / 한 관계 / 첫 만남 한 장면을 제작할 때**
   → `romance-scene` · 시드 `harness-data/romance-scene/seed.json` · 문서 `openwiki/harnesses/romance-scene.md`
@@ -58,7 +68,7 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
    - Editor database: `openwiki/editor-database.md`
    - 세계 생성 규칙 (AI 마을 생성의 물·숲·길 수치와 낱말 판정을 DB 「세계 → 생성 규칙」 탭으로 저작): `openwiki/world-generation-rules.md`
    - 버들항 v6 · 로마풍 항구 도시 (Python 손 도트 100×100 을 칸으로 자른 공용 타일셋 beodeul_city 23,936칸·animationStrips 1,699·구역/건물/소품 키트 120, 참고문서 4용도·정본 저장·조수 시험, 다음 판 참고 그림): `openwiki/beodeul-city.md`
-   - 조선(바람의나라풍) 칩셋 joseon_baram · 손 도트 조각 623종·오토타일 19종·맵 14장(마을 20호·국내성 둘·사냥터·동굴·실내 6·궁 내부 3)을 공용 번들 타일셋으로 (변환기 `build-joseon-tileset.py`, 시트 14장 합치기·동결 장부로 옛 칸 번호 불변, 칸 통행 X/C/F·꼬리 복사본, 참고문서 9용도, 장소 카드 14장, 재실행 한 줄 `rebuild-joseon.sh`): `openwiki/joseon-baram.md`
+   - 조선(바람의나라풍) 칩셋 joseon_baram · 손 도트 조각 291종+실내·사냥터·동굴 키트·오토타일 19종을 공용 번들 타일셋으로 (변환기 `build-joseon-tileset.py`, 시트 여러 장 합치기, 칸 통행 X/C/F·꼬리 복사본, 참고문서 6용도, 지도 15장 저장·장소 카드, 재실행 한 줄 `rebuild-joseon.sh`): `openwiki/joseon-baram.md`
    - Editor AI panel & tools: `openwiki/editor-ai-panel.md` + `openwiki/editor-ai-tools.md`
    - Editor misc workflows: `openwiki/editor-workflows-misc.md`
    - 에디터 「공방」 (하네스를 에디터 안에서 사용자 계정 모델로 돌리기 — 왼쪽 막대, 실행기·저장·표면): `openwiki/editor-workshop.md`
@@ -72,6 +82,7 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
    - 편집기 다국어 (ko/en/ja/zh 언어 결정 순서·DOM 번역 계층·화면 글자 역참조 금지 계약·카탈로그 추가 절차): `openwiki/i18n.md`
    - Interior room harness: `openwiki/editor-interior-room-harness.md`
    - **월드맵 아이콘은 하네스를 거친다:** `src/harnesses/worldmap-icons/README.md` — 검수자(시점 계약: 윗면+정면 벽, 옆면 금지)가 판정하고 사용자가 http://mdc-server:18313/ 에서 받기/버리기. 결정 `harness-data/worldmap-icons/decisions.json`. 감독이 대신 고르거나 바로 번들·지도에 넣지 않는다.
+   - **캐릭터 칩(RM2000 CharSet)은 하네스로 만든다:** `src/harnesses/charset-actor/README.md` — GPT 6.1 sol high가 원본 격자를 직접 자유 저작 → 결손 검사 → GIF 대기열. 사용자가 http://mdc-server:18314/ 에서 남기기/폐기만 결정한다. `npm run harness -- charset-actor produce --count 100` 또는 화면에서 시작한다. 사람 선택은 현재 그림 해시에 묶으며 실제 남긴 캐릭터만 다운로드한다. 데이터는 저장소 밖 `CHR_HARNESS_DATA`에 보존하고 프로젝트 설치는 별도다.
    - **실내는 손 도트 v5 하나 (hard rule, 2026-09-29):** 공용 실내 `atlas_biome_interior` = 손 도트 실내 v5 전용 시트(옛 Tibo·EasyRPG 실내·LPC 가구 칩셋은 폐기, 조수에게 안 보이고 거부된다), 배·던전은 `atlas_biome_dungeon`. 도구 `build_hand_interior_room`, 스킬 원본 `assistant-skills/interior-room-authoring/SKILL.md`, 편집기 「새 맵 → 실내」 기본도 이 칩셋: `openwiki/atlas-biome-interior.md`
    - `openwiki/editor-workflows.md` is now a slim index linking to the above topic pages.
    - `openwiki/large-village-generation.md` for 100×100 river/market village plan → build → road → QA flow.

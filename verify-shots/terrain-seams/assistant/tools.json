@@ -1,0 +1,7237 @@
+[
+  {
+    "name": "inspect_terrain",
+    "args": {
+      "mapId": "houses_native"
+    },
+    "ok": true,
+    "summary": "고지 0단 · 경사로 0칸 · 집 0채(평탄 0) · 시야 차단 끔",
+    "data": {
+      "mapId": "houses_native",
+      "tilesetId": "beodeul_city",
+      "maxHeight": 0,
+      "rampCells": 0,
+      "stairCells": 0,
+      "gameplay": {
+        "visionBlocking": false,
+        "highGroundVision": false,
+        "projectileHeight": false,
+        "visionRadius": 8,
+        "visionGain": 1,
+        "eyeHeight": 1
+      },
+      "houses": [],
+      "houseKits": [
+        {
+          "id": "bd-house-h101_0",
+          "name": "버들항 살림집 7×6",
+          "width": 7,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h101_1",
+          "name": "버들항 살림집 6×7",
+          "width": 6,
+          "height": 7,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 3,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 3,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h101_2",
+          "name": "버들항 살림집 3×6",
+          "width": 3,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 1,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 1,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h102_0",
+          "name": "버들항 살림집 7×6",
+          "width": 7,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h102_1",
+          "name": "버들항 살림집 5×8",
+          "width": 5,
+          "height": 8,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 7
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 8
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h102_2",
+          "name": "버들항 살림집 4×8",
+          "width": 4,
+          "height": 8,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 7
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 8
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h103_1",
+          "name": "버들항 살림집 5×6",
+          "width": 5,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "항구 아랫마을"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h103_2",
+          "name": "버들항 살림집 5×6",
+          "width": 5,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "항구 아랫마을"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h104_0",
+          "name": "버들항 살림집 7×8",
+          "width": 7,
+          "height": 8,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 7
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 8
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h104_1",
+          "name": "버들항 살림집 8×8",
+          "width": 8,
+          "height": 8,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 4,
+            "y": 7
+          },
+          "doorFrontOffset": {
+            "x": 4,
+            "y": 8
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h106_0",
+          "name": "버들항 살림집 4×8",
+          "width": 4,
+          "height": 8,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 7
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 8
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h107_0",
+          "name": "버들항 살림집 6×6",
+          "width": 6,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 3,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 3,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h109_1",
+          "name": "버들항 살림집 8×8",
+          "width": 8,
+          "height": 8,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "항구 아랫마을"
+          ],
+          "doorOffset": {
+            "x": 1,
+            "y": 7
+          },
+          "doorFrontOffset": {
+            "x": 1,
+            "y": 8
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h110_1",
+          "name": "버들항 살림집 8×8",
+          "width": 8,
+          "height": 8,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "항구 아랫마을"
+          ],
+          "doorOffset": {
+            "x": 5,
+            "y": 7
+          },
+          "doorFrontOffset": {
+            "x": 5,
+            "y": 8
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h112_0",
+          "name": "버들항 살림집 4×6",
+          "width": 4,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h113_0",
+          "name": "버들항 살림집 5×6",
+          "width": 5,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h113_1",
+          "name": "버들항 살림집 5×6",
+          "width": 5,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h117_0",
+          "name": "버들항 살림집 6×7",
+          "width": 6,
+          "height": 7,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 3,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 3,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h117_1",
+          "name": "버들항 살림집 4×8",
+          "width": 4,
+          "height": 8,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 7
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 8
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h120_0",
+          "name": "버들항 살림집 7×6",
+          "width": 7,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h122_0",
+          "name": "버들항 살림집 9×8",
+          "width": 9,
+          "height": 8,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 4,
+            "y": 7
+          },
+          "doorFrontOffset": {
+            "x": 4,
+            "y": 8
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h123_0",
+          "name": "버들항 살림집 3×6",
+          "width": 3,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 1,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 1,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h129_0",
+          "name": "버들항 살림집 4×8",
+          "width": 4,
+          "height": 8,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "항구 아랫마을"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 7
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 8
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h132_0",
+          "name": "버들항 살림집 6×7",
+          "width": 6,
+          "height": 7,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "항구 아랫마을"
+          ],
+          "doorOffset": {
+            "x": 3,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 3,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h135_0",
+          "name": "버들항 살림집 5×6",
+          "width": 5,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h137_0",
+          "name": "버들항 살림집 4×8",
+          "width": 4,
+          "height": 8,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 7
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 8
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h139_0",
+          "name": "버들항 살림집 4×8",
+          "width": 4,
+          "height": 8,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "항구 아랫마을"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 7
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 8
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h141_0",
+          "name": "버들항 살림집 3×6",
+          "width": 3,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 1,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 1,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h144_0",
+          "name": "버들항 살림집 3×6",
+          "width": 3,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "항구 아랫마을"
+          ],
+          "doorOffset": {
+            "x": 1,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 1,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h145_0",
+          "name": "버들항 살림집 3×6",
+          "width": 3,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "항구 아랫마을"
+          ],
+          "doorOffset": {
+            "x": 1,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 1,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-i6",
+          "name": "버들항 살림집 7×6",
+          "width": 7,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "항구 아랫마을"
+          ],
+          "doorOffset": {
+            "x": 3,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 3,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-i7",
+          "name": "버들항 살림집 6×6",
+          "width": 6,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "항구 아랫마을"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-i8",
+          "name": "버들항 살림집 6×6",
+          "width": 6,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "항구 아랫마을"
+          ],
+          "doorOffset": {
+            "x": 3,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 3,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-i9",
+          "name": "버들항 살림집 6×6",
+          "width": 6,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-i10",
+          "name": "버들항 살림집 6×6",
+          "width": 6,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 3,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 3,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-i11",
+          "name": "버들항 살림집 6×6",
+          "width": 6,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-i12",
+          "name": "버들항 살림집 3×6",
+          "width": 3,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 1,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 1,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-i14",
+          "name": "버들항 살림집 3×6",
+          "width": 3,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 1,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 1,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-i15",
+          "name": "버들항 살림집 3×6",
+          "width": 3,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "언덕(저택·성당)"
+          ],
+          "doorOffset": {
+            "x": 1,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 1,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-cstable",
+          "name": "버들항 왕성 마구간 3×5",
+          "width": 3,
+          "height": 5,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "언덕(저택·성당)"
+          ],
+          "doorOffset": {
+            "x": 0,
+            "y": 4
+          },
+          "doorFrontOffset": {
+            "x": 0,
+            "y": 5
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-smithy",
+          "name": "버들항 왕성 대장간 3×6",
+          "width": 3,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "언덕(저택·성당)"
+          ],
+          "doorOffset": {
+            "x": 1,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 1,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-barracks",
+          "name": "버들항 왕성 병영 3×5",
+          "width": 3,
+          "height": 5,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "언덕(저택·성당)"
+          ],
+          "doorOffset": {
+            "x": 1,
+            "y": 4
+          },
+          "doorFrontOffset": {
+            "x": 1,
+            "y": 5
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-manor",
+          "name": "버들항 귀족 저택 본채 13×11",
+          "width": 13,
+          "height": 11,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "언덕(저택·성당)"
+          ],
+          "doorOffset": {
+            "x": 6,
+            "y": 9
+          },
+          "doorFrontOffset": {
+            "x": 6,
+            "y": 10
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-estable",
+          "name": "버들항 저택 마차고 3×5",
+          "width": 3,
+          "height": 5,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "언덕(저택·성당)"
+          ],
+          "doorOffset": {
+            "x": 1,
+            "y": 4
+          },
+          "doorFrontOffset": {
+            "x": 1,
+            "y": 5
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-lodge",
+          "name": "버들항 저택 문지기 집 3×6",
+          "width": 3,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "언덕(저택·성당)"
+          ],
+          "doorOffset": {
+            "x": 1,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 1,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-cafe",
+          "name": "버들항 포룸 카페 6×6",
+          "width": 6,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-mill1",
+          "name": "버들항 탑풍차 몸체(날개는 따로 움직임) 4×8",
+          "width": 4,
+          "height": 8,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 7
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 8
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-cathedral",
+          "name": "버들항 첨탑 성당 12×13",
+          "width": 12,
+          "height": 13,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "언덕(저택·성당)"
+          ],
+          "doorOffset": {
+            "x": 7,
+            "y": 12
+          },
+          "doorFrontOffset": {
+            "x": 7,
+            "y": 13
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-ware0",
+          "name": "버들항 항구 창고 6×7",
+          "width": 6,
+          "height": 7,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "항구 아랫마을"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 7
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-inn",
+          "name": "버들항 광장 여관 8×8",
+          "width": 8,
+          "height": 8,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 5,
+            "y": 7
+          },
+          "doorFrontOffset": {
+            "x": 5,
+            "y": 8
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-smithy_town",
+          "name": "버들항 마을 대장간 6×6",
+          "width": 6,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 3,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 3,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h103_0",
+          "name": "버들항 푸줏간 가게집 6×7",
+          "width": 6,
+          "height": 7,
+          "tags": [
+            "버들항",
+            "house",
+            "butcher",
+            "항구 아랫마을"
+          ],
+          "doorOffset": {
+            "x": 3,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 3,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h106_1",
+          "name": "버들항 빵집 가게집 6×8",
+          "width": 6,
+          "height": 8,
+          "tags": [
+            "버들항",
+            "house",
+            "bakery",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 3,
+            "y": 7
+          },
+          "doorFrontOffset": {
+            "x": 3,
+            "y": 8
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h107_1",
+          "name": "버들항 약방 가게집 7×8",
+          "width": 7,
+          "height": 8,
+          "tags": [
+            "버들항",
+            "house",
+            "pharm",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 4,
+            "y": 7
+          },
+          "doorFrontOffset": {
+            "x": 4,
+            "y": 8
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h109_0",
+          "name": "버들항 여관 가게집 5×6",
+          "width": 5,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "inn",
+            "항구 아랫마을"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h110_0",
+          "name": "버들항 재단사 가게집 5×6",
+          "width": 5,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "tailor",
+            "항구 아랫마을"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h111_0",
+          "name": "버들항 생선 가게 가게집 7×8",
+          "width": 7,
+          "height": 8,
+          "tags": [
+            "버들항",
+            "house",
+            "fish",
+            "항구 아랫마을"
+          ],
+          "doorOffset": {
+            "x": 4,
+            "y": 7
+          },
+          "doorFrontOffset": {
+            "x": 4,
+            "y": 8
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h111_1",
+          "name": "버들항 생선 가게 가게집 5×8",
+          "width": 5,
+          "height": 8,
+          "tags": [
+            "버들항",
+            "house",
+            "fish",
+            "항구 아랫마을"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 7
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 8
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h116_0",
+          "name": "버들항 빵집 가게집 5×8",
+          "width": 5,
+          "height": 8,
+          "tags": [
+            "버들항",
+            "house",
+            "bakery",
+            "항구 아랫마을"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 7
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 8
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h116_1",
+          "name": "버들항 생선 가게 가게집 6×7",
+          "width": 6,
+          "height": 7,
+          "tags": [
+            "버들항",
+            "house",
+            "fish",
+            "항구 아랫마을"
+          ],
+          "doorOffset": {
+            "x": 3,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 3,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h119_0",
+          "name": "버들항 서점 가게집 4×6",
+          "width": 4,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "books",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h123_1",
+          "name": "버들항 재단사 가게집 6×6",
+          "width": 6,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "tailor",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 3,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 3,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h124_0",
+          "name": "버들항 청과상 가게집 9×9",
+          "width": 9,
+          "height": 9,
+          "tags": [
+            "버들항",
+            "house",
+            "grocer",
+            "항구 아랫마을"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 8
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 9
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h127_0",
+          "name": "버들항 푸줏간 가게집 3×6",
+          "width": 3,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "butcher",
+            "항구 아랫마을"
+          ],
+          "doorOffset": {
+            "x": 1,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 1,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h131_0",
+          "name": "버들항 보석상 가게집 6×6",
+          "width": 6,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "jewel",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h134_0",
+          "name": "버들항 청과상 가게집 5×6",
+          "width": 5,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "grocer",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h138_0",
+          "name": "버들항 여관 가게집 4×8",
+          "width": 4,
+          "height": 8,
+          "tags": [
+            "버들항",
+            "house",
+            "inn",
+            "항구 아랫마을"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 7
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 8
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-i0",
+          "name": "버들항 재단사 가게집 7×6",
+          "width": 7,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "tailor",
+            "항구 아랫마을"
+          ],
+          "doorOffset": {
+            "x": 3,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 3,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-i3",
+          "name": "버들항 생선 가게 가게집 7×6",
+          "width": 7,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "fish",
+            "항구 아랫마을"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-i13",
+          "name": "버들항 대장간 가게집 3×6",
+          "width": 3,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "smith",
+            "언덕(저택·성당)"
+          ],
+          "doorOffset": {
+            "x": 1,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 1,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-manor-small",
+          "name": "작은 저택 (반목조 11칸)",
+          "width": 11,
+          "height": 12,
+          "tags": [
+            "버들항",
+            "v7",
+            "귀족저택",
+            "반목조",
+            "대칭",
+            "작은"
+          ],
+          "doorOffset": {
+            "x": 5,
+            "y": 9
+          },
+          "doorFrontOffset": {
+            "x": 5,
+            "y": 10
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-manor-timber",
+          "name": "귀족 저택 (반목조, 가운데 박공)",
+          "width": 17,
+          "height": 12,
+          "tags": [
+            "버들항",
+            "v7",
+            "귀족저택",
+            "반목조",
+            "대칭"
+          ],
+          "doorOffset": {
+            "x": 8,
+            "y": 9
+          },
+          "doorFrontOffset": {
+            "x": 8,
+            "y": 10
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-manor-tower",
+          "name": "귀족 저택 (둥근 탑 딸린 본채)",
+          "width": 14,
+          "height": 11,
+          "tags": [
+            "버들항",
+            "v7",
+            "귀족저택",
+            "탑",
+            "비대칭"
+          ],
+          "doorOffset": {
+            "x": 9,
+            "y": 8
+          },
+          "doorFrontOffset": {
+            "x": 9,
+            "y": 9
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-manor-vine",
+          "name": "귀족 저택 (담쟁이 덮인 반목조)",
+          "width": 17,
+          "height": 12,
+          "tags": [
+            "버들항",
+            "v7",
+            "귀족저택",
+            "반목조",
+            "대칭",
+            "담쟁이"
+          ],
+          "doorOffset": {
+            "x": 8,
+            "y": 9
+          },
+          "doorFrontOffset": {
+            "x": 8,
+            "y": 10
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-out-cabin",
+          "name": "외곽 통나무 오두막(박공 정면)",
+          "width": 5,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "v7",
+            "외곽",
+            "나무집",
+            "오두막",
+            "박공"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-out-cabin-small",
+          "name": "외곽 작은 통나무 오두막",
+          "width": 4,
+          "height": 4,
+          "tags": [
+            "버들항",
+            "v7",
+            "외곽",
+            "나무집",
+            "작은집"
+          ],
+          "doorOffset": {
+            "x": 1,
+            "y": 3
+          },
+          "doorFrontOffset": {
+            "x": 1,
+            "y": 4
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-out-house-plank",
+          "name": "외곽 판자 2층집(간판)",
+          "width": 8,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "v7",
+            "외곽",
+            "나무집",
+            "판자",
+            "2층",
+            "간판"
+          ],
+          "doorOffset": {
+            "x": 6,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 6,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-out-longhouse",
+          "name": "외곽 통나무 긴 집",
+          "width": 10,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "v7",
+            "외곽",
+            "나무집",
+            "긴집"
+          ],
+          "doorOffset": {
+            "x": 4,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 4,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-fishing-port-lighthouse",
+          "name": "버들항 어촌 포구 · 등대 4×9",
+          "width": 4,
+          "height": 9,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "해안",
+            "어촌 포구",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 1,
+            "y": 8
+          },
+          "doorFrontOffset": {
+            "x": 1,
+            "y": 9
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-vineyard-winery",
+          "name": "버들항 포도원 마을 · 포도주 창고 8×6",
+          "width": 8,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "포도원 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 4,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 4,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-desert-oasis-e2",
+          "name": "버들항 사막 오아시스 마을 · 집 e2 6×4",
+          "width": 6,
+          "height": 4,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "사막",
+            "사막 오아시스 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 3
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 4
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-desert-oasis-n1",
+          "name": "버들항 사막 오아시스 마을 · 집 n1 6×4",
+          "width": 6,
+          "height": 4,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "사막",
+            "사막 오아시스 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 3
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 4
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-desert-oasis-n2",
+          "name": "버들항 사막 오아시스 마을 · 흙집+바깥 계단 5×6",
+          "width": 5,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "사막",
+            "사막 오아시스 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-desert-oasis-n4",
+          "name": "버들항 사막 오아시스 마을 · 황토 돔집+야자잎 차양 5×6",
+          "width": 5,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "사막",
+            "사막 오아시스 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 1,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 1,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-desert-oasis-n5",
+          "name": "버들항 사막 오아시스 마을 · 흙 탑집 4×7",
+          "width": 4,
+          "height": 7,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "사막",
+            "사막 오아시스 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 1,
+            "y": 6
+          },
+          "doorFrontOffset": {
+            "x": 1,
+            "y": 7
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-desert-oasis-n6",
+          "name": "버들항 사막 오아시스 마을 · 사암 아케이드집 6×5",
+          "width": 6,
+          "height": 5,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "사막",
+            "사막 오아시스 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 3,
+            "y": 4
+          },
+          "doorFrontOffset": {
+            "x": 3,
+            "y": 5
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-desert-oasis-s1",
+          "name": "버들항 사막 오아시스 마을 · 흙 마당집 6×7",
+          "width": 6,
+          "height": 7,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "사막",
+            "사막 오아시스 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 7
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-desert-oasis-s2",
+          "name": "버들항 사막 오아시스 마을 · 회칠 쪽빛 굽도리집 5×5",
+          "width": 5,
+          "height": 5,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "사막",
+            "사막 오아시스 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 1,
+            "y": 4
+          },
+          "doorFrontOffset": {
+            "x": 1,
+            "y": 5
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-desert-oasis-s3",
+          "name": "버들항 사막 오아시스 마을 · 집 s3 4×4",
+          "width": 4,
+          "height": 4,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "사막",
+            "사막 오아시스 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 1,
+            "y": 3
+          },
+          "doorFrontOffset": {
+            "x": 1,
+            "y": 4
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-desert-oasis-w2",
+          "name": "버들항 사막 오아시스 마을 · 바람탑집 5×7",
+          "width": 5,
+          "height": 7,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "사막",
+            "사막 오아시스 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 1,
+            "y": 6
+          },
+          "doorFrontOffset": {
+            "x": 1,
+            "y": 7
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-mining-valley-boss",
+          "name": "버들항 광산 골짜기 마을 · 감독관 집 5×7",
+          "width": 5,
+          "height": 7,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "광산",
+            "광산 골짜기 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 7
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-mining-valley-d2",
+          "name": "버들항 광산 골짜기 마을 · 판자 광부집+옆 헛간 5×6",
+          "width": 5,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "광산",
+            "광산 골짜기 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 3,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 3,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-mining-valley-e1",
+          "name": "버들항 광산 골짜기 마을 · 집 e1 6×6",
+          "width": 6,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "광산",
+            "광산 골짜기 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-mining-valley-e2",
+          "name": "버들항 광산 골짜기 마을 · 나무집 4×6",
+          "width": 4,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "광산",
+            "광산 골짜기 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-mining-valley-e3",
+          "name": "버들항 광산 골짜기 마을 · 집 e3 5×6",
+          "width": 5,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "광산",
+            "광산 골짜기 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-mining-valley-inn",
+          "name": "버들항 광산 골짜기 마을 · 여관 6×9",
+          "width": 6,
+          "height": 9,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "광산",
+            "광산 골짜기 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 1,
+            "y": 8
+          },
+          "doorFrontOffset": {
+            "x": 1,
+            "y": 9
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-mining-valley-s1",
+          "name": "버들항 광산 골짜기 마을 · 집 s1 6×6",
+          "width": 6,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "광산",
+            "광산 골짜기 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-mining-valley-s2",
+          "name": "버들항 광산 골짜기 마을 · 돌 기초 판자 창고 4×6",
+          "width": 4,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "광산",
+            "광산 골짜기 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-mining-valley-s3",
+          "name": "버들항 광산 골짜기 마을 · 집 s3 5×6",
+          "width": 5,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "광산",
+            "광산 골짜기 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-mining-valley-smith",
+          "name": "버들항 광산 골짜기 마을 · 대장간 6×6",
+          "width": 6,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "광산",
+            "광산 골짜기 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-mining-valley-w1",
+          "name": "버들항 광산 골짜기 마을 · 집 w1 6×6",
+          "width": 6,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "광산",
+            "광산 골짜기 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-mining-valley-w2",
+          "name": "버들항 광산 골짜기 마을 · 집 w2 5×6",
+          "width": 5,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "광산",
+            "광산 골짜기 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-mining-valley-w3",
+          "name": "버들항 광산 골짜기 마을 · 나무집 4×5",
+          "width": 4,
+          "height": 5,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "광산",
+            "광산 골짜기 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 4
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-mining-valley-w4",
+          "name": "버들항 광산 골짜기 마을 · 집 w4 6×6",
+          "width": 6,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "광산",
+            "광산 골짜기 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-snowfield-bath",
+          "name": "버들항 설원 마을 · 목욕집 5×6",
+          "width": 5,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "설원",
+            "설원 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 1,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 1,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-snowfield-e1",
+          "name": "버들항 설원 마을 · 집 e1 6×6",
+          "width": 6,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "설원",
+            "설원 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-snowfield-e2",
+          "name": "버들항 설원 마을 · 집 e2 6×6",
+          "width": 6,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "설원",
+            "설원 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-snowfield-n2",
+          "name": "버들항 설원 마을 · 집 n2 5×6",
+          "width": 5,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "설원",
+            "설원 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-snowfield-s1",
+          "name": "버들항 설원 마을 · 집 s1 6×6",
+          "width": 6,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "설원",
+            "설원 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-snowfield-s2",
+          "name": "버들항 설원 마을 · 집 s2 4×5",
+          "width": 4,
+          "height": 5,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "설원",
+            "설원 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 4
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-snowfield-w1",
+          "name": "버들항 설원 마을 · 집 w1 6×6",
+          "width": 6,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "설원",
+            "설원 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-snowfield-w2",
+          "name": "버들항 설원 마을 · 집 w2 6×6",
+          "width": 6,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "설원",
+            "설원 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-snowfield-w3",
+          "name": "버들항 설원 마을 · 집 w3 4×5",
+          "width": 4,
+          "height": 5,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "설원",
+            "설원 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 4
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-swamp-stilt-e1",
+          "name": "버들항 늪 수상 마을 · 집 e1 6×6",
+          "width": 6,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "늪",
+            "늪 수상 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-swamp-stilt-e2-reed",
+          "name": "버들항 늪 수상 마을 · e2 와 같은 집 5×6",
+          "width": 5,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "늪",
+            "늪 수상 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-swamp-stilt-e2",
+          "name": "버들항 늪 수상 마을 · 집 e2 5×6",
+          "width": 5,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "늪",
+            "늪 수상 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-swamp-stilt-e3",
+          "name": "버들항 늪 수상 마을 · 집 e3 4×5",
+          "width": 4,
+          "height": 5,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "늪",
+            "늪 수상 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 1,
+            "y": 4
+          },
+          "doorFrontOffset": {
+            "x": 1,
+            "y": 5
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-swamp-stilt-loom",
+          "name": "버들항 늪 수상 마을 · 베틀 집 6×6",
+          "width": 6,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "늪",
+            "늪 수상 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-swamp-stilt-n1",
+          "name": "버들항 늪 수상 마을 · 집 n1 6×6",
+          "width": 6,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "늪",
+            "늪 수상 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-swamp-stilt-n2",
+          "name": "버들항 늪 수상 마을 · 집 n2 5×6",
+          "width": 5,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "늪",
+            "늪 수상 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-swamp-stilt-s1",
+          "name": "버들항 늪 수상 마을 · 집 s1 6×6",
+          "width": 6,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "늪",
+            "늪 수상 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-swamp-stilt-s2-shingle",
+          "name": "버들항 늪 수상 마을 · s2 와 같은 집 5×6",
+          "width": 5,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "늪",
+            "늪 수상 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-swamp-stilt-s2",
+          "name": "버들항 늪 수상 마을 · 집 s2 5×6",
+          "width": 5,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "늪",
+            "늪 수상 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-swamp-stilt-w1",
+          "name": "버들항 늪 수상 마을 · 집 w1 6×6",
+          "width": 6,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "늪",
+            "늪 수상 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-swamp-stilt-w2",
+          "name": "버들항 늪 수상 마을 · 집 w2 5×6",
+          "width": 5,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "늪",
+            "늪 수상 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-swamp-stilt-w3",
+          "name": "버들항 늪 수상 마을 · 집 w3 4×5",
+          "width": 4,
+          "height": 5,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "늪",
+            "늪 수상 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 1,
+            "y": 4
+          },
+          "doorFrontOffset": {
+            "x": 1,
+            "y": 5
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-headland-lighthouse-lighthouse",
+          "name": "버들항 곶 등대 · 손 도트 등대 14×19",
+          "width": 14,
+          "height": 19,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "해안",
+            "랜드마크",
+            "곶 등대",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 6,
+            "y": 18
+          },
+          "doorFrontOffset": {
+            "x": 6,
+            "y": 19
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-wizard-tower-greenhouse",
+          "name": "버들항 마법사의 탑 · 유리 온실 5×4",
+          "width": 5,
+          "height": 4,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "던전",
+            "랜드마크",
+            "마법사의 탑",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 1,
+            "y": 3
+          },
+          "doorFrontOffset": {
+            "x": 1,
+            "y": 4
+          },
+          "resize": "original"
+        }
+      ],
+      "houseStyles": [
+        {
+          "id": "beodeul-manor-a",
+          "name": "버들항 반목조 집 · 붉은 꽃",
+          "exampleSize": {
+            "width": 9,
+            "height": 6
+          }
+        },
+        {
+          "id": "beodeul-manor-b",
+          "name": "버들항 반목조 집 · 초록 창틀",
+          "exampleSize": {
+            "width": 9,
+            "height": 6
+          }
+        },
+        {
+          "id": "beodeul-manor-lit",
+          "name": "버들항 반목조 집 · 불 켠 창",
+          "exampleSize": {
+            "width": 9,
+            "height": 6
+          }
+        },
+        {
+          "id": "beodeul-log-green",
+          "name": "버들항 통나무 집 · 초록 문",
+          "exampleSize": {
+            "width": 9,
+            "height": 5
+          }
+        },
+        {
+          "id": "beodeul-log-blue",
+          "name": "버들항 통나무 집 · 파랑 문",
+          "exampleSize": {
+            "width": 9,
+            "height": 5
+          }
+        },
+        {
+          "id": "beodeul-log-red",
+          "name": "버들항 통나무 집 · 붉은 문",
+          "exampleSize": {
+            "width": 9,
+            "height": 5
+          }
+        }
+      ],
+      "features": []
+    }
+  },
+  {
+    "name": "get_map_region",
+    "args": {
+      "mapId": "houses_native",
+      "x": 0,
+      "y": 40,
+      "w": 24,
+      "h": 24
+    },
+    "ok": true,
+    "summary": "houses_native(houses_native) 영역 (0,40)~(24,64) — 이벤트 0개, 물 0칸"
+  },
+  {
+    "name": "read_project_wiki",
+    "args": {
+      "query": "houses_native 제작 규칙 버들항 원본 집",
+      "mapId": "houses_native",
+      "ids": [],
+      "offset": 0,
+      "includeHistory": false
+    },
+    "ok": true,
+    "summary": "프로젝트 위키 0개 문서"
+  },
+  {
+    "name": "list_tileset_references",
+    "args": {
+      "tilesetId": "beodeul_city",
+      "categoryId": "beodeul-city-manor-outskirts",
+      "offset": 0
+    },
+    "ok": true,
+    "summary": "버들항 · 귀족 저택과 성 밖 목조 마을 자료 목록. nextOffset이 있으면 다음 목록도 확인하세요."
+  },
+  {
+    "name": "find_tools",
+    "args": {
+      "query": "place_terrain_house lay_terrain_road place_terrain_ramp",
+      "domain": "map",
+      "limit": 3
+    },
+    "ok": true,
+    "summary": "편집기 툴 3개 발견: place_terrain_house, place_terrain_ramp, lay_terrain_road"
+  },
+  {
+    "name": "read_tileset_reference",
+    "args": {
+      "tilesetId": "beodeul_city",
+      "categoryId": "beodeul-city-manor-outskirts",
+      "documentId": "bd-manor-kits",
+      "imageId": "",
+      "offset": 0
+    },
+    "ok": true,
+    "summary": "버들항 · 귀족 저택과 성 밖 목조 마을 / 귀족 저택·정원 키트와 조립표 (0–5725, 1/3쪽)"
+  },
+  {
+    "name": "read_tileset_reference",
+    "args": {
+      "tilesetId": "beodeul_city",
+      "categoryId": "beodeul-city-manor-outskirts",
+      "documentId": "bd-outskirts-kits",
+      "imageId": "",
+      "offset": 0
+    },
+    "ok": true,
+    "summary": "버들항 · 귀족 저택과 성 밖 목조 마을 / 성 밖 목조집·우물 광장 키트와 조립표 (0–5825, 1/2쪽)"
+  },
+  {
+    "name": "read_tileset_reference",
+    "args": {
+      "tilesetId": "beodeul_city",
+      "categoryId": "beodeul-city-manor-outskirts",
+      "documentId": "",
+      "imageId": "bd-manor-kits",
+      "offset": 0
+    },
+    "ok": true,
+    "summary": "버들항 · 귀족 저택과 성 밖 목조 마을 / manor-kits.png — 실제 이미지를 확인하세요."
+  },
+  {
+    "name": "read_tileset_reference",
+    "args": {
+      "tilesetId": "beodeul_city",
+      "categoryId": "beodeul-city-manor-outskirts",
+      "documentId": "",
+      "imageId": "bd-outskirts-kits",
+      "offset": 0
+    },
+    "ok": true,
+    "summary": "버들항 · 귀족 저택과 성 밖 목조 마을 / outskirts-kits.png — 실제 이미지를 확인하세요."
+  },
+  {
+    "name": "read_tileset_reference",
+    "args": {
+      "tilesetId": "beodeul_city",
+      "categoryId": "beodeul-city-manor-outskirts",
+      "documentId": "",
+      "imageId": "bd-manor-parts",
+      "offset": 0
+    },
+    "ok": true,
+    "summary": "버들항 · 귀족 저택과 성 밖 목조 마을 / manor-parts.png — 실제 이미지를 확인하세요."
+  },
+  {
+    "name": "read_tileset_reference",
+    "args": {
+      "tilesetId": "beodeul_city",
+      "categoryId": "beodeul-city-manor-outskirts",
+      "documentId": "",
+      "imageId": "bd-outskirts-parts",
+      "offset": 0
+    },
+    "ok": true,
+    "summary": "버들항 · 귀족 저택과 성 밖 목조 마을 / outskirts-parts.png — 실제 이미지를 확인하세요."
+  },
+  {
+    "name": "read_tileset_reference",
+    "args": {
+      "tilesetId": "beodeul_city",
+      "categoryId": "beodeul-city-manor-outskirts",
+      "documentId": "bd-manor-kits",
+      "imageId": "",
+      "offset": 5725
+    },
+    "ok": true,
+    "summary": "버들항 · 귀족 저택과 성 밖 목조 마을 / 귀족 저택·정원 키트와 조립표 (5725–11162, 2/3쪽)"
+  },
+  {
+    "name": "read_tileset_reference",
+    "args": {
+      "tilesetId": "beodeul_city",
+      "categoryId": "beodeul-city-manor-outskirts",
+      "documentId": "bd-outskirts-kits",
+      "imageId": "",
+      "offset": 5825
+    },
+    "ok": true,
+    "summary": "버들항 · 귀족 저택과 성 밖 목조 마을 / 성 밖 목조집·우물 광장 키트와 조립표 (5825–9536, 2/2쪽)"
+  },
+  {
+    "name": "read_tileset_reference",
+    "args": {
+      "tilesetId": "beodeul_city",
+      "categoryId": "beodeul-city-manor-outskirts",
+      "documentId": "bd-manor-kits",
+      "imageId": "",
+      "offset": 11162
+    },
+    "ok": true,
+    "summary": "버들항 · 귀족 저택과 성 밖 목조 마을 / 귀족 저택·정원 키트와 조립표 (11162–13324, 3/3쪽)"
+  },
+  {
+    "name": "sculpt_relief",
+    "args": {
+      "mapId": "houses_native",
+      "ops": [
+        {
+          "op": "rect",
+          "rect": [
+            3,
+            10,
+            24,
+            31
+          ],
+          "h": 4,
+          "mode": "set"
+        },
+        {
+          "op": "rect",
+          "rect": [
+            29,
+            12,
+            44,
+            29
+          ],
+          "h": 6,
+          "mode": "set"
+        },
+        {
+          "op": "rect",
+          "rect": [
+            50,
+            8,
+            68,
+            30
+          ],
+          "h": 9,
+          "mode": "set"
+        }
+      ],
+      "seed": 1,
+      "reset": false
+    },
+    "ok": true,
+    "summary": "houses_native 높이 3개 op 적용 — 가려진 칸 336, 규칙에 깎인 칸 0"
+  },
+  {
+    "name": "place_terrain_house",
+    "args": {
+      "mapId": "houses_native",
+      "anchor": {
+        "x": 15,
+        "y": 21
+      },
+      "style": "",
+      "width": 14,
+      "stories": 1,
+      "roofWidth": 14,
+      "kitId": "bd-manor-tower",
+      "referencePurpose": "beodeul-city-manor-outskirts"
+    },
+    "ok": true,
+    "summary": "귀족 저택 (둥근 탑 딸린 본채) 배치",
+    "data": {
+      "kitId": "bd-manor-tower",
+      "x": 6,
+      "y": 13,
+      "width": 14,
+      "height": 11,
+      "level": 4,
+      "doorFront": {
+        "x": 15,
+        "y": 22
+      },
+      "placementId": "sp_a2ff01d4-09f0-4e24-a2c7-65a12be34406"
+    }
+  },
+  {
+    "name": "place_terrain_house",
+    "args": {
+      "mapId": "houses_native",
+      "anchor": {
+        "x": 36,
+        "y": 21
+      },
+      "style": "",
+      "width": 5,
+      "stories": 1,
+      "roofWidth": 5,
+      "kitId": "bd-out-cabin",
+      "referencePurpose": "beodeul-city-manor-outskirts"
+    },
+    "ok": true,
+    "summary": "외곽 통나무 오두막(박공 정면) 배치",
+    "data": {
+      "kitId": "bd-out-cabin",
+      "x": 34,
+      "y": 16,
+      "width": 5,
+      "height": 6,
+      "level": 6,
+      "doorFront": {
+        "x": 36,
+        "y": 22
+      },
+      "placementId": "sp_dbe5965d-2ed8-410c-bf8a-109803471270"
+    }
+  },
+  {
+    "name": "place_terrain_house",
+    "args": {
+      "mapId": "houses_native",
+      "anchor": {
+        "x": 60,
+        "y": 18
+      },
+      "style": "",
+      "width": 8,
+      "stories": 1,
+      "roofWidth": 8,
+      "kitId": "bd-out-house-plank",
+      "referencePurpose": "beodeul-city-manor-outskirts"
+    },
+    "ok": true,
+    "summary": "외곽 판자 2층집(간판) 배치",
+    "data": {
+      "kitId": "bd-out-house-plank",
+      "x": 54,
+      "y": 13,
+      "width": 8,
+      "height": 6,
+      "level": 9,
+      "doorFront": {
+        "x": 60,
+        "y": 19
+      },
+      "placementId": "sp_6c3b74ec-e76d-487b-96b8-574751c06182"
+    }
+  },
+  {
+    "name": "lay_terrain_road",
+    "args": {
+      "mapId": "houses_native",
+      "points": [
+        {
+          "x": 4,
+          "y": 58
+        },
+        {
+          "x": 4,
+          "y": 54
+        },
+        {
+          "x": 60,
+          "y": 54
+        }
+      ],
+      "width": 2,
+      "flattenRoad": false,
+      "editId": "native_common_south",
+      "referencePurpose": "beodeul-city-manor-outskirts"
+    },
+    "ok": false,
+    "summary": "'lay_terrain_road' 실행 실패: 편집할 지형이 없어졌습니다. 목록에서 다시 고르세요",
+    "data": null
+  },
+  {
+    "name": "lay_terrain_road",
+    "args": {
+      "mapId": "houses_native",
+      "points": [
+        {
+          "x": 4,
+          "y": 58
+        },
+        {
+          "x": 4,
+          "y": 54
+        },
+        {
+          "x": 60,
+          "y": 54
+        }
+      ],
+      "width": 2,
+      "flattenRoad": false,
+      "editId": "",
+      "referencePurpose": "beodeul-city-manor-outskirts"
+    },
+    "ok": true,
+    "summary": "길 61칸 · 경사 접합 0곳 · 60칸 경로 · 폭 2칸 미만 병목 0칸",
+    "data": {
+      "reachable": true,
+      "blocked": [],
+      "featureId": "terrain_d2b28f3a-c592-42a5-b81d-11d45cff5ec8",
+      "rampCells": 0
+    }
+  },
+  {
+    "name": "lay_terrain_road",
+    "args": {
+      "mapId": "houses_native",
+      "points": [
+        {
+          "x": 15,
+          "y": 54
+        },
+        {
+          "x": 15,
+          "y": 24
+        }
+      ],
+      "width": 2,
+      "flattenRoad": false,
+      "editId": "",
+      "referencePurpose": "beodeul-city-manor-outskirts"
+    },
+    "ok": true,
+    "summary": "길 30칸 · 경사 접합 1곳 · 30칸 경로 · 폭 2칸 미만 병목 5칸",
+    "data": {
+      "reachable": true,
+      "blocked": [],
+      "featureId": "terrain_aa64d896-b0e1-46f5-86c5-bc179e86697b",
+      "rampCells": 5
+    }
+  },
+  {
+    "name": "lay_terrain_road",
+    "args": {
+      "mapId": "houses_native",
+      "points": [
+        {
+          "x": 36,
+          "y": 54
+        },
+        {
+          "x": 36,
+          "y": 22
+        }
+      ],
+      "width": 2,
+      "flattenRoad": false,
+      "editId": "",
+      "referencePurpose": "beodeul-city-manor-outskirts"
+    },
+    "ok": true,
+    "summary": "길 32칸 · 경사 접합 1곳 · 32칸 경로 · 폭 2칸 미만 병목 7칸",
+    "data": {
+      "reachable": true,
+      "blocked": [],
+      "featureId": "terrain_770fd695-4d7c-4353-9d2c-4153fdbf3f14",
+      "rampCells": 12
+    }
+  },
+  {
+    "name": "lay_terrain_road",
+    "args": {
+      "mapId": "houses_native",
+      "points": [
+        {
+          "x": 60,
+          "y": 54
+        },
+        {
+          "x": 60,
+          "y": 19
+        }
+      ],
+      "width": 2,
+      "flattenRoad": false,
+      "editId": "",
+      "referencePurpose": "beodeul-city-manor-outskirts"
+    },
+    "ok": true,
+    "summary": "길 35칸 · 경사 접합 1곳 · 35칸 경로 · 폭 2칸 미만 병목 10칸",
+    "data": {
+      "reachable": true,
+      "blocked": [],
+      "featureId": "terrain_83fde956-02af-451b-b5de-fa64ec399b89",
+      "rampCells": 22
+    }
+  },
+  {
+    "name": "inspect_terrain",
+    "args": {
+      "mapId": "houses_native"
+    },
+    "ok": true,
+    "summary": "고지 9단 · 경사로 22칸 · 집 3채(평탄 3) · 시야 차단 끔",
+    "data": {
+      "mapId": "houses_native",
+      "tilesetId": "beodeul_city",
+      "maxHeight": 9,
+      "rampCells": 22,
+      "stairCells": 0,
+      "gameplay": {
+        "visionBlocking": false,
+        "highGroundVision": false,
+        "projectileHeight": false,
+        "visionRadius": 8,
+        "visionGain": 1,
+        "eyeHeight": 1
+      },
+      "houses": [
+        {
+          "placementId": "sp_a2ff01d4-09f0-4e24-a2c7-65a12be34406",
+          "kitId": "bd-manor-tower",
+          "x": 6,
+          "y": 13,
+          "width": 14,
+          "height": 11,
+          "doorFront": {
+            "x": 15,
+            "y": 22
+          },
+          "level": 4,
+          "flat": true,
+          "heights": [
+            4
+          ]
+        },
+        {
+          "placementId": "sp_dbe5965d-2ed8-410c-bf8a-109803471270",
+          "kitId": "bd-out-cabin",
+          "x": 34,
+          "y": 16,
+          "width": 5,
+          "height": 6,
+          "doorFront": {
+            "x": 36,
+            "y": 22
+          },
+          "level": 6,
+          "flat": true,
+          "heights": [
+            6
+          ]
+        },
+        {
+          "placementId": "sp_6c3b74ec-e76d-487b-96b8-574751c06182",
+          "kitId": "bd-out-house-plank",
+          "x": 54,
+          "y": 13,
+          "width": 8,
+          "height": 6,
+          "doorFront": {
+            "x": 60,
+            "y": 19
+          },
+          "level": 9,
+          "flat": true,
+          "heights": [
+            9
+          ]
+        }
+      ],
+      "houseKits": [
+        {
+          "id": "bd-house-h101_0",
+          "name": "버들항 살림집 7×6",
+          "width": 7,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h101_1",
+          "name": "버들항 살림집 6×7",
+          "width": 6,
+          "height": 7,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 3,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 3,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h101_2",
+          "name": "버들항 살림집 3×6",
+          "width": 3,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 1,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 1,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h102_0",
+          "name": "버들항 살림집 7×6",
+          "width": 7,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h102_1",
+          "name": "버들항 살림집 5×8",
+          "width": 5,
+          "height": 8,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 7
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 8
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h102_2",
+          "name": "버들항 살림집 4×8",
+          "width": 4,
+          "height": 8,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 7
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 8
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h103_1",
+          "name": "버들항 살림집 5×6",
+          "width": 5,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "항구 아랫마을"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h103_2",
+          "name": "버들항 살림집 5×6",
+          "width": 5,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "항구 아랫마을"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h104_0",
+          "name": "버들항 살림집 7×8",
+          "width": 7,
+          "height": 8,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 7
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 8
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h104_1",
+          "name": "버들항 살림집 8×8",
+          "width": 8,
+          "height": 8,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 4,
+            "y": 7
+          },
+          "doorFrontOffset": {
+            "x": 4,
+            "y": 8
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h106_0",
+          "name": "버들항 살림집 4×8",
+          "width": 4,
+          "height": 8,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 7
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 8
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h107_0",
+          "name": "버들항 살림집 6×6",
+          "width": 6,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 3,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 3,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h109_1",
+          "name": "버들항 살림집 8×8",
+          "width": 8,
+          "height": 8,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "항구 아랫마을"
+          ],
+          "doorOffset": {
+            "x": 1,
+            "y": 7
+          },
+          "doorFrontOffset": {
+            "x": 1,
+            "y": 8
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h110_1",
+          "name": "버들항 살림집 8×8",
+          "width": 8,
+          "height": 8,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "항구 아랫마을"
+          ],
+          "doorOffset": {
+            "x": 5,
+            "y": 7
+          },
+          "doorFrontOffset": {
+            "x": 5,
+            "y": 8
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h112_0",
+          "name": "버들항 살림집 4×6",
+          "width": 4,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h113_0",
+          "name": "버들항 살림집 5×6",
+          "width": 5,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h113_1",
+          "name": "버들항 살림집 5×6",
+          "width": 5,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h117_0",
+          "name": "버들항 살림집 6×7",
+          "width": 6,
+          "height": 7,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 3,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 3,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h117_1",
+          "name": "버들항 살림집 4×8",
+          "width": 4,
+          "height": 8,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 7
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 8
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h120_0",
+          "name": "버들항 살림집 7×6",
+          "width": 7,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h122_0",
+          "name": "버들항 살림집 9×8",
+          "width": 9,
+          "height": 8,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 4,
+            "y": 7
+          },
+          "doorFrontOffset": {
+            "x": 4,
+            "y": 8
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h123_0",
+          "name": "버들항 살림집 3×6",
+          "width": 3,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 1,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 1,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h129_0",
+          "name": "버들항 살림집 4×8",
+          "width": 4,
+          "height": 8,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "항구 아랫마을"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 7
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 8
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h132_0",
+          "name": "버들항 살림집 6×7",
+          "width": 6,
+          "height": 7,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "항구 아랫마을"
+          ],
+          "doorOffset": {
+            "x": 3,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 3,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h135_0",
+          "name": "버들항 살림집 5×6",
+          "width": 5,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h137_0",
+          "name": "버들항 살림집 4×8",
+          "width": 4,
+          "height": 8,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 7
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 8
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h139_0",
+          "name": "버들항 살림집 4×8",
+          "width": 4,
+          "height": 8,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "항구 아랫마을"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 7
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 8
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h141_0",
+          "name": "버들항 살림집 3×6",
+          "width": 3,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 1,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 1,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h144_0",
+          "name": "버들항 살림집 3×6",
+          "width": 3,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "항구 아랫마을"
+          ],
+          "doorOffset": {
+            "x": 1,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 1,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h145_0",
+          "name": "버들항 살림집 3×6",
+          "width": 3,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "항구 아랫마을"
+          ],
+          "doorOffset": {
+            "x": 1,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 1,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-i6",
+          "name": "버들항 살림집 7×6",
+          "width": 7,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "항구 아랫마을"
+          ],
+          "doorOffset": {
+            "x": 3,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 3,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-i7",
+          "name": "버들항 살림집 6×6",
+          "width": 6,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "항구 아랫마을"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-i8",
+          "name": "버들항 살림집 6×6",
+          "width": 6,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "항구 아랫마을"
+          ],
+          "doorOffset": {
+            "x": 3,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 3,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-i9",
+          "name": "버들항 살림집 6×6",
+          "width": 6,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-i10",
+          "name": "버들항 살림집 6×6",
+          "width": 6,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 3,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 3,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-i11",
+          "name": "버들항 살림집 6×6",
+          "width": 6,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-i12",
+          "name": "버들항 살림집 3×6",
+          "width": 3,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 1,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 1,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-i14",
+          "name": "버들항 살림집 3×6",
+          "width": 3,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 1,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 1,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-i15",
+          "name": "버들항 살림집 3×6",
+          "width": 3,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "언덕(저택·성당)"
+          ],
+          "doorOffset": {
+            "x": 1,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 1,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-cstable",
+          "name": "버들항 왕성 마구간 3×5",
+          "width": 3,
+          "height": 5,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "언덕(저택·성당)"
+          ],
+          "doorOffset": {
+            "x": 0,
+            "y": 4
+          },
+          "doorFrontOffset": {
+            "x": 0,
+            "y": 5
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-smithy",
+          "name": "버들항 왕성 대장간 3×6",
+          "width": 3,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "언덕(저택·성당)"
+          ],
+          "doorOffset": {
+            "x": 1,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 1,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-barracks",
+          "name": "버들항 왕성 병영 3×5",
+          "width": 3,
+          "height": 5,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "언덕(저택·성당)"
+          ],
+          "doorOffset": {
+            "x": 1,
+            "y": 4
+          },
+          "doorFrontOffset": {
+            "x": 1,
+            "y": 5
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-manor",
+          "name": "버들항 귀족 저택 본채 13×11",
+          "width": 13,
+          "height": 11,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "언덕(저택·성당)"
+          ],
+          "doorOffset": {
+            "x": 6,
+            "y": 9
+          },
+          "doorFrontOffset": {
+            "x": 6,
+            "y": 10
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-estable",
+          "name": "버들항 저택 마차고 3×5",
+          "width": 3,
+          "height": 5,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "언덕(저택·성당)"
+          ],
+          "doorOffset": {
+            "x": 1,
+            "y": 4
+          },
+          "doorFrontOffset": {
+            "x": 1,
+            "y": 5
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-lodge",
+          "name": "버들항 저택 문지기 집 3×6",
+          "width": 3,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "언덕(저택·성당)"
+          ],
+          "doorOffset": {
+            "x": 1,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 1,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-cafe",
+          "name": "버들항 포룸 카페 6×6",
+          "width": 6,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-mill1",
+          "name": "버들항 탑풍차 몸체(날개는 따로 움직임) 4×8",
+          "width": 4,
+          "height": 8,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 7
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 8
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-cathedral",
+          "name": "버들항 첨탑 성당 12×13",
+          "width": 12,
+          "height": 13,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "언덕(저택·성당)"
+          ],
+          "doorOffset": {
+            "x": 7,
+            "y": 12
+          },
+          "doorFrontOffset": {
+            "x": 7,
+            "y": 13
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-ware0",
+          "name": "버들항 항구 창고 6×7",
+          "width": 6,
+          "height": 7,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "항구 아랫마을"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 7
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-inn",
+          "name": "버들항 광장 여관 8×8",
+          "width": 8,
+          "height": 8,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 5,
+            "y": 7
+          },
+          "doorFrontOffset": {
+            "x": 5,
+            "y": 8
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-smithy_town",
+          "name": "버들항 마을 대장간 6×6",
+          "width": 6,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "home",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 3,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 3,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h103_0",
+          "name": "버들항 푸줏간 가게집 6×7",
+          "width": 6,
+          "height": 7,
+          "tags": [
+            "버들항",
+            "house",
+            "butcher",
+            "항구 아랫마을"
+          ],
+          "doorOffset": {
+            "x": 3,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 3,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h106_1",
+          "name": "버들항 빵집 가게집 6×8",
+          "width": 6,
+          "height": 8,
+          "tags": [
+            "버들항",
+            "house",
+            "bakery",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 3,
+            "y": 7
+          },
+          "doorFrontOffset": {
+            "x": 3,
+            "y": 8
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h107_1",
+          "name": "버들항 약방 가게집 7×8",
+          "width": 7,
+          "height": 8,
+          "tags": [
+            "버들항",
+            "house",
+            "pharm",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 4,
+            "y": 7
+          },
+          "doorFrontOffset": {
+            "x": 4,
+            "y": 8
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h109_0",
+          "name": "버들항 여관 가게집 5×6",
+          "width": 5,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "inn",
+            "항구 아랫마을"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h110_0",
+          "name": "버들항 재단사 가게집 5×6",
+          "width": 5,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "tailor",
+            "항구 아랫마을"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h111_0",
+          "name": "버들항 생선 가게 가게집 7×8",
+          "width": 7,
+          "height": 8,
+          "tags": [
+            "버들항",
+            "house",
+            "fish",
+            "항구 아랫마을"
+          ],
+          "doorOffset": {
+            "x": 4,
+            "y": 7
+          },
+          "doorFrontOffset": {
+            "x": 4,
+            "y": 8
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h111_1",
+          "name": "버들항 생선 가게 가게집 5×8",
+          "width": 5,
+          "height": 8,
+          "tags": [
+            "버들항",
+            "house",
+            "fish",
+            "항구 아랫마을"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 7
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 8
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h116_0",
+          "name": "버들항 빵집 가게집 5×8",
+          "width": 5,
+          "height": 8,
+          "tags": [
+            "버들항",
+            "house",
+            "bakery",
+            "항구 아랫마을"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 7
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 8
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h116_1",
+          "name": "버들항 생선 가게 가게집 6×7",
+          "width": 6,
+          "height": 7,
+          "tags": [
+            "버들항",
+            "house",
+            "fish",
+            "항구 아랫마을"
+          ],
+          "doorOffset": {
+            "x": 3,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 3,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h119_0",
+          "name": "버들항 서점 가게집 4×6",
+          "width": 4,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "books",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h123_1",
+          "name": "버들항 재단사 가게집 6×6",
+          "width": 6,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "tailor",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 3,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 3,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h124_0",
+          "name": "버들항 청과상 가게집 9×9",
+          "width": 9,
+          "height": 9,
+          "tags": [
+            "버들항",
+            "house",
+            "grocer",
+            "항구 아랫마을"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 8
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 9
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h127_0",
+          "name": "버들항 푸줏간 가게집 3×6",
+          "width": 3,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "butcher",
+            "항구 아랫마을"
+          ],
+          "doorOffset": {
+            "x": 1,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 1,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h131_0",
+          "name": "버들항 보석상 가게집 6×6",
+          "width": 6,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "jewel",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h134_0",
+          "name": "버들항 청과상 가게집 5×6",
+          "width": 5,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "grocer",
+            "가운데 마을"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-h138_0",
+          "name": "버들항 여관 가게집 4×8",
+          "width": 4,
+          "height": 8,
+          "tags": [
+            "버들항",
+            "house",
+            "inn",
+            "항구 아랫마을"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 7
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 8
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-i0",
+          "name": "버들항 재단사 가게집 7×6",
+          "width": 7,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "tailor",
+            "항구 아랫마을"
+          ],
+          "doorOffset": {
+            "x": 3,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 3,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-i3",
+          "name": "버들항 생선 가게 가게집 7×6",
+          "width": 7,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "fish",
+            "항구 아랫마을"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-house-i13",
+          "name": "버들항 대장간 가게집 3×6",
+          "width": 3,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "house",
+            "smith",
+            "언덕(저택·성당)"
+          ],
+          "doorOffset": {
+            "x": 1,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 1,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-manor-small",
+          "name": "작은 저택 (반목조 11칸)",
+          "width": 11,
+          "height": 12,
+          "tags": [
+            "버들항",
+            "v7",
+            "귀족저택",
+            "반목조",
+            "대칭",
+            "작은"
+          ],
+          "doorOffset": {
+            "x": 5,
+            "y": 9
+          },
+          "doorFrontOffset": {
+            "x": 5,
+            "y": 10
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-manor-timber",
+          "name": "귀족 저택 (반목조, 가운데 박공)",
+          "width": 17,
+          "height": 12,
+          "tags": [
+            "버들항",
+            "v7",
+            "귀족저택",
+            "반목조",
+            "대칭"
+          ],
+          "doorOffset": {
+            "x": 8,
+            "y": 9
+          },
+          "doorFrontOffset": {
+            "x": 8,
+            "y": 10
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-manor-tower",
+          "name": "귀족 저택 (둥근 탑 딸린 본채)",
+          "width": 14,
+          "height": 11,
+          "tags": [
+            "버들항",
+            "v7",
+            "귀족저택",
+            "탑",
+            "비대칭"
+          ],
+          "doorOffset": {
+            "x": 9,
+            "y": 8
+          },
+          "doorFrontOffset": {
+            "x": 9,
+            "y": 9
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-manor-vine",
+          "name": "귀족 저택 (담쟁이 덮인 반목조)",
+          "width": 17,
+          "height": 12,
+          "tags": [
+            "버들항",
+            "v7",
+            "귀족저택",
+            "반목조",
+            "대칭",
+            "담쟁이"
+          ],
+          "doorOffset": {
+            "x": 8,
+            "y": 9
+          },
+          "doorFrontOffset": {
+            "x": 8,
+            "y": 10
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-out-cabin",
+          "name": "외곽 통나무 오두막(박공 정면)",
+          "width": 5,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "v7",
+            "외곽",
+            "나무집",
+            "오두막",
+            "박공"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-out-cabin-small",
+          "name": "외곽 작은 통나무 오두막",
+          "width": 4,
+          "height": 4,
+          "tags": [
+            "버들항",
+            "v7",
+            "외곽",
+            "나무집",
+            "작은집"
+          ],
+          "doorOffset": {
+            "x": 1,
+            "y": 3
+          },
+          "doorFrontOffset": {
+            "x": 1,
+            "y": 4
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-out-house-plank",
+          "name": "외곽 판자 2층집(간판)",
+          "width": 8,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "v7",
+            "외곽",
+            "나무집",
+            "판자",
+            "2층",
+            "간판"
+          ],
+          "doorOffset": {
+            "x": 6,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 6,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-out-longhouse",
+          "name": "외곽 통나무 긴 집",
+          "width": 10,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "v7",
+            "외곽",
+            "나무집",
+            "긴집"
+          ],
+          "doorOffset": {
+            "x": 4,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 4,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-fishing-port-lighthouse",
+          "name": "버들항 어촌 포구 · 등대 4×9",
+          "width": 4,
+          "height": 9,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "해안",
+            "어촌 포구",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 1,
+            "y": 8
+          },
+          "doorFrontOffset": {
+            "x": 1,
+            "y": 9
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-vineyard-winery",
+          "name": "버들항 포도원 마을 · 포도주 창고 8×6",
+          "width": 8,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "포도원 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 4,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 4,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-desert-oasis-e2",
+          "name": "버들항 사막 오아시스 마을 · 집 e2 6×4",
+          "width": 6,
+          "height": 4,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "사막",
+            "사막 오아시스 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 3
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 4
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-desert-oasis-n1",
+          "name": "버들항 사막 오아시스 마을 · 집 n1 6×4",
+          "width": 6,
+          "height": 4,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "사막",
+            "사막 오아시스 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 3
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 4
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-desert-oasis-n2",
+          "name": "버들항 사막 오아시스 마을 · 흙집+바깥 계단 5×6",
+          "width": 5,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "사막",
+            "사막 오아시스 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-desert-oasis-n4",
+          "name": "버들항 사막 오아시스 마을 · 황토 돔집+야자잎 차양 5×6",
+          "width": 5,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "사막",
+            "사막 오아시스 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 1,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 1,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-desert-oasis-n5",
+          "name": "버들항 사막 오아시스 마을 · 흙 탑집 4×7",
+          "width": 4,
+          "height": 7,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "사막",
+            "사막 오아시스 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 1,
+            "y": 6
+          },
+          "doorFrontOffset": {
+            "x": 1,
+            "y": 7
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-desert-oasis-n6",
+          "name": "버들항 사막 오아시스 마을 · 사암 아케이드집 6×5",
+          "width": 6,
+          "height": 5,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "사막",
+            "사막 오아시스 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 3,
+            "y": 4
+          },
+          "doorFrontOffset": {
+            "x": 3,
+            "y": 5
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-desert-oasis-s1",
+          "name": "버들항 사막 오아시스 마을 · 흙 마당집 6×7",
+          "width": 6,
+          "height": 7,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "사막",
+            "사막 오아시스 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 7
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-desert-oasis-s2",
+          "name": "버들항 사막 오아시스 마을 · 회칠 쪽빛 굽도리집 5×5",
+          "width": 5,
+          "height": 5,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "사막",
+            "사막 오아시스 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 1,
+            "y": 4
+          },
+          "doorFrontOffset": {
+            "x": 1,
+            "y": 5
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-desert-oasis-s3",
+          "name": "버들항 사막 오아시스 마을 · 집 s3 4×4",
+          "width": 4,
+          "height": 4,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "사막",
+            "사막 오아시스 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 1,
+            "y": 3
+          },
+          "doorFrontOffset": {
+            "x": 1,
+            "y": 4
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-desert-oasis-w2",
+          "name": "버들항 사막 오아시스 마을 · 바람탑집 5×7",
+          "width": 5,
+          "height": 7,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "사막",
+            "사막 오아시스 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 1,
+            "y": 6
+          },
+          "doorFrontOffset": {
+            "x": 1,
+            "y": 7
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-mining-valley-boss",
+          "name": "버들항 광산 골짜기 마을 · 감독관 집 5×7",
+          "width": 5,
+          "height": 7,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "광산",
+            "광산 골짜기 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 7
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-mining-valley-d2",
+          "name": "버들항 광산 골짜기 마을 · 판자 광부집+옆 헛간 5×6",
+          "width": 5,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "광산",
+            "광산 골짜기 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 3,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 3,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-mining-valley-e1",
+          "name": "버들항 광산 골짜기 마을 · 집 e1 6×6",
+          "width": 6,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "광산",
+            "광산 골짜기 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-mining-valley-e2",
+          "name": "버들항 광산 골짜기 마을 · 나무집 4×6",
+          "width": 4,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "광산",
+            "광산 골짜기 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-mining-valley-e3",
+          "name": "버들항 광산 골짜기 마을 · 집 e3 5×6",
+          "width": 5,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "광산",
+            "광산 골짜기 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-mining-valley-inn",
+          "name": "버들항 광산 골짜기 마을 · 여관 6×9",
+          "width": 6,
+          "height": 9,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "광산",
+            "광산 골짜기 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 1,
+            "y": 8
+          },
+          "doorFrontOffset": {
+            "x": 1,
+            "y": 9
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-mining-valley-s1",
+          "name": "버들항 광산 골짜기 마을 · 집 s1 6×6",
+          "width": 6,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "광산",
+            "광산 골짜기 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-mining-valley-s2",
+          "name": "버들항 광산 골짜기 마을 · 돌 기초 판자 창고 4×6",
+          "width": 4,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "광산",
+            "광산 골짜기 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-mining-valley-s3",
+          "name": "버들항 광산 골짜기 마을 · 집 s3 5×6",
+          "width": 5,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "광산",
+            "광산 골짜기 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-mining-valley-smith",
+          "name": "버들항 광산 골짜기 마을 · 대장간 6×6",
+          "width": 6,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "광산",
+            "광산 골짜기 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-mining-valley-w1",
+          "name": "버들항 광산 골짜기 마을 · 집 w1 6×6",
+          "width": 6,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "광산",
+            "광산 골짜기 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-mining-valley-w2",
+          "name": "버들항 광산 골짜기 마을 · 집 w2 5×6",
+          "width": 5,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "광산",
+            "광산 골짜기 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-mining-valley-w3",
+          "name": "버들항 광산 골짜기 마을 · 나무집 4×5",
+          "width": 4,
+          "height": 5,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "광산",
+            "광산 골짜기 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 4
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-mining-valley-w4",
+          "name": "버들항 광산 골짜기 마을 · 집 w4 6×6",
+          "width": 6,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "광산",
+            "광산 골짜기 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-snowfield-bath",
+          "name": "버들항 설원 마을 · 목욕집 5×6",
+          "width": 5,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "설원",
+            "설원 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 1,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 1,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-snowfield-e1",
+          "name": "버들항 설원 마을 · 집 e1 6×6",
+          "width": 6,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "설원",
+            "설원 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-snowfield-e2",
+          "name": "버들항 설원 마을 · 집 e2 6×6",
+          "width": 6,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "설원",
+            "설원 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-snowfield-n2",
+          "name": "버들항 설원 마을 · 집 n2 5×6",
+          "width": 5,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "설원",
+            "설원 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-snowfield-s1",
+          "name": "버들항 설원 마을 · 집 s1 6×6",
+          "width": 6,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "설원",
+            "설원 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-snowfield-s2",
+          "name": "버들항 설원 마을 · 집 s2 4×5",
+          "width": 4,
+          "height": 5,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "설원",
+            "설원 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 4
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-snowfield-w1",
+          "name": "버들항 설원 마을 · 집 w1 6×6",
+          "width": 6,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "설원",
+            "설원 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-snowfield-w2",
+          "name": "버들항 설원 마을 · 집 w2 6×6",
+          "width": 6,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "설원",
+            "설원 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-snowfield-w3",
+          "name": "버들항 설원 마을 · 집 w3 4×5",
+          "width": 4,
+          "height": 5,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "설원",
+            "설원 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 4
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-swamp-stilt-e1",
+          "name": "버들항 늪 수상 마을 · 집 e1 6×6",
+          "width": 6,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "늪",
+            "늪 수상 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-swamp-stilt-e2-reed",
+          "name": "버들항 늪 수상 마을 · e2 와 같은 집 5×6",
+          "width": 5,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "늪",
+            "늪 수상 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-swamp-stilt-e2",
+          "name": "버들항 늪 수상 마을 · 집 e2 5×6",
+          "width": 5,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "늪",
+            "늪 수상 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-swamp-stilt-e3",
+          "name": "버들항 늪 수상 마을 · 집 e3 4×5",
+          "width": 4,
+          "height": 5,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "늪",
+            "늪 수상 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 1,
+            "y": 4
+          },
+          "doorFrontOffset": {
+            "x": 1,
+            "y": 5
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-swamp-stilt-loom",
+          "name": "버들항 늪 수상 마을 · 베틀 집 6×6",
+          "width": 6,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "늪",
+            "늪 수상 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-swamp-stilt-n1",
+          "name": "버들항 늪 수상 마을 · 집 n1 6×6",
+          "width": 6,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "늪",
+            "늪 수상 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-swamp-stilt-n2",
+          "name": "버들항 늪 수상 마을 · 집 n2 5×6",
+          "width": 5,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "늪",
+            "늪 수상 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-swamp-stilt-s1",
+          "name": "버들항 늪 수상 마을 · 집 s1 6×6",
+          "width": 6,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "늪",
+            "늪 수상 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-swamp-stilt-s2-shingle",
+          "name": "버들항 늪 수상 마을 · s2 와 같은 집 5×6",
+          "width": 5,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "늪",
+            "늪 수상 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-swamp-stilt-s2",
+          "name": "버들항 늪 수상 마을 · 집 s2 5×6",
+          "width": 5,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "늪",
+            "늪 수상 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-swamp-stilt-w1",
+          "name": "버들항 늪 수상 마을 · 집 w1 6×6",
+          "width": 6,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "늪",
+            "늪 수상 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-swamp-stilt-w2",
+          "name": "버들항 늪 수상 마을 · 집 w2 5×6",
+          "width": 5,
+          "height": 6,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "늪",
+            "늪 수상 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 2,
+            "y": 5
+          },
+          "doorFrontOffset": {
+            "x": 2,
+            "y": 6
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-swamp-stilt-w3",
+          "name": "버들항 늪 수상 마을 · 집 w3 4×5",
+          "width": 4,
+          "height": 5,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "마을",
+            "늪",
+            "늪 수상 마을",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 1,
+            "y": 4
+          },
+          "doorFrontOffset": {
+            "x": 1,
+            "y": 5
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-headland-lighthouse-lighthouse",
+          "name": "버들항 곶 등대 · 손 도트 등대 14×19",
+          "width": 14,
+          "height": 19,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "해안",
+            "랜드마크",
+            "곶 등대",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 6,
+            "y": 18
+          },
+          "doorFrontOffset": {
+            "x": 6,
+            "y": 19
+          },
+          "resize": "original"
+        },
+        {
+          "id": "bd-pick-wizard-tower-greenhouse",
+          "name": "버들항 마법사의 탑 · 유리 온실 5×4",
+          "width": 5,
+          "height": 4,
+          "tags": [
+            "버들항",
+            "버들항 장소",
+            "던전",
+            "랜드마크",
+            "마법사의 탑",
+            "물체"
+          ],
+          "doorOffset": {
+            "x": 1,
+            "y": 3
+          },
+          "doorFrontOffset": {
+            "x": 1,
+            "y": 4
+          },
+          "resize": "original"
+        }
+      ],
+      "houseStyles": [
+        {
+          "id": "beodeul-manor-a",
+          "name": "버들항 반목조 집 · 붉은 꽃",
+          "exampleSize": {
+            "width": 9,
+            "height": 6
+          }
+        },
+        {
+          "id": "beodeul-manor-b",
+          "name": "버들항 반목조 집 · 초록 창틀",
+          "exampleSize": {
+            "width": 9,
+            "height": 6
+          }
+        },
+        {
+          "id": "beodeul-manor-lit",
+          "name": "버들항 반목조 집 · 불 켠 창",
+          "exampleSize": {
+            "width": 9,
+            "height": 6
+          }
+        },
+        {
+          "id": "beodeul-log-green",
+          "name": "버들항 통나무 집 · 초록 문",
+          "exampleSize": {
+            "width": 9,
+            "height": 5
+          }
+        },
+        {
+          "id": "beodeul-log-blue",
+          "name": "버들항 통나무 집 · 파랑 문",
+          "exampleSize": {
+            "width": 9,
+            "height": 5
+          }
+        },
+        {
+          "id": "beodeul-log-red",
+          "name": "버들항 통나무 집 · 붉은 문",
+          "exampleSize": {
+            "width": 9,
+            "height": 5
+          }
+        }
+      ],
+      "features": [
+        {
+          "id": "terrain_d2b28f3a-c592-42a5-b81d-11d45cff5ec8",
+          "tool": "road",
+          "points": [
+            {
+              "x": 4,
+              "y": 58
+            },
+            {
+              "x": 4,
+              "y": 54
+            },
+            {
+              "x": 60,
+              "y": 54
+            }
+          ]
+        },
+        {
+          "id": "terrain_aa64d896-b0e1-46f5-86c5-bc179e86697b",
+          "tool": "road",
+          "points": [
+            {
+              "x": 15,
+              "y": 54
+            },
+            {
+              "x": 15,
+              "y": 24
+            }
+          ]
+        },
+        {
+          "id": "terrain_770fd695-4d7c-4353-9d2c-4153fdbf3f14",
+          "tool": "road",
+          "points": [
+            {
+              "x": 36,
+              "y": 54
+            },
+            {
+              "x": 36,
+              "y": 22
+            }
+          ]
+        },
+        {
+          "id": "terrain_83fde956-02af-451b-b5de-fa64ec399b89",
+          "tool": "road",
+          "points": [
+            {
+              "x": 60,
+              "y": 54
+            },
+            {
+              "x": 60,
+              "y": 19
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "name": "check_terrain_access",
+    "args": {
+      "mapId": "houses_native",
+      "from": {
+        "x": 4,
+        "y": 58
+      },
+      "targets": [
+        {
+          "x": 15,
+          "y": 22
+        },
+        {
+          "x": 36,
+          "y": 22
+        },
+        {
+          "x": 60,
+          "y": 19
+        }
+      ],
+      "width": 1,
+      "bodyWidth": 1,
+      "bodyHeight": 1,
+      "events": true
+    },
+    "ok": true,
+    "summary": "실제 지형 통행: 3/3곳 도달",
+    "data": {
+      "reachable": true,
+      "routes": [
+        {
+          "target": {
+            "x": 15,
+            "y": 22
+          },
+          "reachable": true,
+          "path": [
+            {
+              "x": 4,
+              "y": 58
+            },
+            {
+              "x": 4,
+              "y": 57
+            },
+            {
+              "x": 4,
+              "y": 56
+            },
+            {
+              "x": 4,
+              "y": 55
+            },
+            {
+              "x": 4,
+              "y": 54
+            },
+            {
+              "x": 4,
+              "y": 53
+            },
+            {
+              "x": 4,
+              "y": 52
+            },
+            {
+              "x": 4,
+              "y": 51
+            },
+            {
+              "x": 4,
+              "y": 50
+            },
+            {
+              "x": 4,
+              "y": 49
+            },
+            {
+              "x": 4,
+              "y": 48
+            },
+            {
+              "x": 4,
+              "y": 47
+            },
+            {
+              "x": 4,
+              "y": 46
+            },
+            {
+              "x": 4,
+              "y": 45
+            },
+            {
+              "x": 4,
+              "y": 44
+            },
+            {
+              "x": 4,
+              "y": 43
+            },
+            {
+              "x": 4,
+              "y": 42
+            },
+            {
+              "x": 4,
+              "y": 41
+            },
+            {
+              "x": 4,
+              "y": 40
+            },
+            {
+              "x": 4,
+              "y": 39
+            },
+            {
+              "x": 4,
+              "y": 38
+            },
+            {
+              "x": 4,
+              "y": 37
+            },
+            {
+              "x": 5,
+              "y": 37
+            },
+            {
+              "x": 6,
+              "y": 37
+            },
+            {
+              "x": 7,
+              "y": 37
+            },
+            {
+              "x": 8,
+              "y": 37
+            },
+            {
+              "x": 9,
+              "y": 37
+            },
+            {
+              "x": 10,
+              "y": 37
+            },
+            {
+              "x": 11,
+              "y": 37
+            },
+            {
+              "x": 12,
+              "y": 37
+            },
+            {
+              "x": 13,
+              "y": 37
+            },
+            {
+              "x": 14,
+              "y": 37
+            },
+            {
+              "x": 15,
+              "y": 37
+            },
+            {
+              "x": 15,
+              "y": 36
+            },
+            {
+              "x": 15,
+              "y": 35
+            },
+            {
+              "x": 15,
+              "y": 34
+            },
+            {
+              "x": 15,
+              "y": 33
+            },
+            {
+              "x": 15,
+              "y": 32
+            },
+            {
+              "x": 15,
+              "y": 31
+            },
+            {
+              "x": 15,
+              "y": 30
+            },
+            {
+              "x": 15,
+              "y": 29
+            },
+            {
+              "x": 15,
+              "y": 28
+            },
+            {
+              "x": 15,
+              "y": 27
+            },
+            {
+              "x": 15,
+              "y": 26
+            },
+            {
+              "x": 15,
+              "y": 25
+            },
+            {
+              "x": 15,
+              "y": 24
+            },
+            {
+              "x": 15,
+              "y": 23
+            },
+            {
+              "x": 15,
+              "y": 22
+            }
+          ],
+          "blocked": [],
+          "bottlenecks": [],
+          "reason": "47칸 경로 · 폭 1칸 미만 병목 0칸"
+        },
+        {
+          "target": {
+            "x": 36,
+            "y": 22
+          },
+          "reachable": true,
+          "path": [
+            {
+              "x": 4,
+              "y": 58
+            },
+            {
+              "x": 4,
+              "y": 57
+            },
+            {
+              "x": 4,
+              "y": 56
+            },
+            {
+              "x": 4,
+              "y": 55
+            },
+            {
+              "x": 4,
+              "y": 54
+            },
+            {
+              "x": 4,
+              "y": 53
+            },
+            {
+              "x": 4,
+              "y": 52
+            },
+            {
+              "x": 4,
+              "y": 51
+            },
+            {
+              "x": 4,
+              "y": 50
+            },
+            {
+              "x": 4,
+              "y": 49
+            },
+            {
+              "x": 4,
+              "y": 48
+            },
+            {
+              "x": 4,
+              "y": 47
+            },
+            {
+              "x": 4,
+              "y": 46
+            },
+            {
+              "x": 4,
+              "y": 45
+            },
+            {
+              "x": 4,
+              "y": 44
+            },
+            {
+              "x": 4,
+              "y": 43
+            },
+            {
+              "x": 4,
+              "y": 42
+            },
+            {
+              "x": 4,
+              "y": 41
+            },
+            {
+              "x": 4,
+              "y": 40
+            },
+            {
+              "x": 4,
+              "y": 39
+            },
+            {
+              "x": 4,
+              "y": 38
+            },
+            {
+              "x": 4,
+              "y": 37
+            },
+            {
+              "x": 5,
+              "y": 37
+            },
+            {
+              "x": 6,
+              "y": 37
+            },
+            {
+              "x": 7,
+              "y": 37
+            },
+            {
+              "x": 8,
+              "y": 37
+            },
+            {
+              "x": 9,
+              "y": 37
+            },
+            {
+              "x": 10,
+              "y": 37
+            },
+            {
+              "x": 11,
+              "y": 37
+            },
+            {
+              "x": 12,
+              "y": 37
+            },
+            {
+              "x": 13,
+              "y": 37
+            },
+            {
+              "x": 14,
+              "y": 37
+            },
+            {
+              "x": 15,
+              "y": 37
+            },
+            {
+              "x": 16,
+              "y": 37
+            },
+            {
+              "x": 17,
+              "y": 37
+            },
+            {
+              "x": 18,
+              "y": 37
+            },
+            {
+              "x": 19,
+              "y": 37
+            },
+            {
+              "x": 20,
+              "y": 37
+            },
+            {
+              "x": 21,
+              "y": 37
+            },
+            {
+              "x": 22,
+              "y": 37
+            },
+            {
+              "x": 23,
+              "y": 37
+            },
+            {
+              "x": 24,
+              "y": 37
+            },
+            {
+              "x": 25,
+              "y": 37
+            },
+            {
+              "x": 26,
+              "y": 37
+            },
+            {
+              "x": 27,
+              "y": 37
+            },
+            {
+              "x": 28,
+              "y": 37
+            },
+            {
+              "x": 29,
+              "y": 37
+            },
+            {
+              "x": 30,
+              "y": 37
+            },
+            {
+              "x": 31,
+              "y": 37
+            },
+            {
+              "x": 32,
+              "y": 37
+            },
+            {
+              "x": 33,
+              "y": 37
+            },
+            {
+              "x": 34,
+              "y": 37
+            },
+            {
+              "x": 35,
+              "y": 37
+            },
+            {
+              "x": 36,
+              "y": 37
+            },
+            {
+              "x": 36,
+              "y": 36
+            },
+            {
+              "x": 36,
+              "y": 35
+            },
+            {
+              "x": 36,
+              "y": 34
+            },
+            {
+              "x": 36,
+              "y": 33
+            },
+            {
+              "x": 36,
+              "y": 32
+            },
+            {
+              "x": 36,
+              "y": 31
+            },
+            {
+              "x": 36,
+              "y": 30
+            },
+            {
+              "x": 36,
+              "y": 29
+            },
+            {
+              "x": 36,
+              "y": 28
+            },
+            {
+              "x": 36,
+              "y": 27
+            },
+            {
+              "x": 36,
+              "y": 26
+            },
+            {
+              "x": 36,
+              "y": 25
+            },
+            {
+              "x": 36,
+              "y": 24
+            },
+            {
+              "x": 36,
+              "y": 23
+            },
+            {
+              "x": 36,
+              "y": 22
+            }
+          ],
+          "blocked": [],
+          "bottlenecks": [],
+          "reason": "68칸 경로 · 폭 1칸 미만 병목 0칸"
+        },
+        {
+          "target": {
+            "x": 60,
+            "y": 19
+          },
+          "reachable": true,
+          "path": [
+            {
+              "x": 4,
+              "y": 58
+            },
+            {
+              "x": 4,
+              "y": 57
+            },
+            {
+              "x": 4,
+              "y": 56
+            },
+            {
+              "x": 4,
+              "y": 55
+            },
+            {
+              "x": 4,
+              "y": 54
+            },
+            {
+              "x": 4,
+              "y": 53
+            },
+            {
+              "x": 4,
+              "y": 52
+            },
+            {
+              "x": 4,
+              "y": 51
+            },
+            {
+              "x": 4,
+              "y": 50
+            },
+            {
+              "x": 4,
+              "y": 49
+            },
+            {
+              "x": 4,
+              "y": 48
+            },
+            {
+              "x": 4,
+              "y": 47
+            },
+            {
+              "x": 4,
+              "y": 46
+            },
+            {
+              "x": 4,
+              "y": 45
+            },
+            {
+              "x": 4,
+              "y": 44
+            },
+            {
+              "x": 4,
+              "y": 43
+            },
+            {
+              "x": 4,
+              "y": 42
+            },
+            {
+              "x": 4,
+              "y": 41
+            },
+            {
+              "x": 5,
+              "y": 41
+            },
+            {
+              "x": 6,
+              "y": 41
+            },
+            {
+              "x": 7,
+              "y": 41
+            },
+            {
+              "x": 8,
+              "y": 41
+            },
+            {
+              "x": 9,
+              "y": 41
+            },
+            {
+              "x": 10,
+              "y": 41
+            },
+            {
+              "x": 11,
+              "y": 41
+            },
+            {
+              "x": 12,
+              "y": 41
+            },
+            {
+              "x": 13,
+              "y": 41
+            },
+            {
+              "x": 14,
+              "y": 41
+            },
+            {
+              "x": 15,
+              "y": 41
+            },
+            {
+              "x": 16,
+              "y": 41
+            },
+            {
+              "x": 17,
+              "y": 41
+            },
+            {
+              "x": 18,
+              "y": 41
+            },
+            {
+              "x": 19,
+              "y": 41
+            },
+            {
+              "x": 20,
+              "y": 41
+            },
+            {
+              "x": 21,
+              "y": 41
+            },
+            {
+              "x": 22,
+              "y": 41
+            },
+            {
+              "x": 23,
+              "y": 41
+            },
+            {
+              "x": 24,
+              "y": 41
+            },
+            {
+              "x": 25,
+              "y": 41
+            },
+            {
+              "x": 26,
+              "y": 41
+            },
+            {
+              "x": 27,
+              "y": 41
+            },
+            {
+              "x": 28,
+              "y": 41
+            },
+            {
+              "x": 29,
+              "y": 41
+            },
+            {
+              "x": 30,
+              "y": 41
+            },
+            {
+              "x": 31,
+              "y": 41
+            },
+            {
+              "x": 32,
+              "y": 41
+            },
+            {
+              "x": 33,
+              "y": 41
+            },
+            {
+              "x": 34,
+              "y": 41
+            },
+            {
+              "x": 35,
+              "y": 41
+            },
+            {
+              "x": 36,
+              "y": 41
+            },
+            {
+              "x": 37,
+              "y": 41
+            },
+            {
+              "x": 38,
+              "y": 41
+            },
+            {
+              "x": 39,
+              "y": 41
+            },
+            {
+              "x": 40,
+              "y": 41
+            },
+            {
+              "x": 41,
+              "y": 41
+            },
+            {
+              "x": 42,
+              "y": 41
+            },
+            {
+              "x": 43,
+              "y": 41
+            },
+            {
+              "x": 44,
+              "y": 41
+            },
+            {
+              "x": 45,
+              "y": 41
+            },
+            {
+              "x": 46,
+              "y": 41
+            },
+            {
+              "x": 47,
+              "y": 41
+            },
+            {
+              "x": 48,
+              "y": 41
+            },
+            {
+              "x": 49,
+              "y": 41
+            },
+            {
+              "x": 50,
+              "y": 41
+            },
+            {
+              "x": 51,
+              "y": 41
+            },
+            {
+              "x": 52,
+              "y": 41
+            },
+            {
+              "x": 53,
+              "y": 41
+            },
+            {
+              "x": 54,
+              "y": 41
+            },
+            {
+              "x": 55,
+              "y": 41
+            },
+            {
+              "x": 56,
+              "y": 41
+            },
+            {
+              "x": 57,
+              "y": 41
+            },
+            {
+              "x": 58,
+              "y": 41
+            },
+            {
+              "x": 59,
+              "y": 41
+            },
+            {
+              "x": 60,
+              "y": 41
+            },
+            {
+              "x": 60,
+              "y": 40
+            },
+            {
+              "x": 60,
+              "y": 39
+            },
+            {
+              "x": 60,
+              "y": 38
+            },
+            {
+              "x": 60,
+              "y": 37
+            },
+            {
+              "x": 60,
+              "y": 36
+            },
+            {
+              "x": 60,
+              "y": 35
+            },
+            {
+              "x": 60,
+              "y": 34
+            },
+            {
+              "x": 60,
+              "y": 33
+            },
+            {
+              "x": 60,
+              "y": 32
+            },
+            {
+              "x": 60,
+              "y": 31
+            },
+            {
+              "x": 60,
+              "y": 30
+            },
+            {
+              "x": 60,
+              "y": 29
+            },
+            {
+              "x": 60,
+              "y": 28
+            },
+            {
+              "x": 60,
+              "y": 27
+            },
+            {
+              "x": 60,
+              "y": 26
+            },
+            {
+              "x": 60,
+              "y": 25
+            },
+            {
+              "x": 60,
+              "y": 24
+            },
+            {
+              "x": 60,
+              "y": 23
+            },
+            {
+              "x": 60,
+              "y": 22
+            },
+            {
+              "x": 60,
+              "y": 21
+            },
+            {
+              "x": 60,
+              "y": 20
+            },
+            {
+              "x": 60,
+              "y": 19
+            }
+          ],
+          "blocked": [],
+          "bottlenecks": [],
+          "reason": "95칸 경로 · 폭 1칸 미만 병목 0칸"
+        }
+      ]
+    }
+  },
+  {
+    "name": "show_map_region",
+    "args": {
+      "mapId": "houses_native",
+      "x": 0,
+      "y": 0,
+      "w": 72,
+      "h": 64
+    },
+    "ok": true,
+    "summary": "맵 미리보기: (0,0) 72×64 (houses_native)"
+  }
+]

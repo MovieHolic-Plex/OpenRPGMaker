@@ -1,10 +1,58 @@
-# 나무·소품·담·다리 조각 사전 2/10
+# 나무·소품·담·다리 조각 사전 2/21
 
-tilesetId `joseon_baram` · 그림 `public/assets/joseon-baram/joseon-baram-chipset.png`(텍스처 `tex_joseon_baram`, **16768칸**, 16px 칸, 한 줄 **128칸** — 번호 n 의 칸은 행 n÷128, 열 n%128, 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 칸 13490 이상 곳곳에 같은 그림이 다른 통행으로 쓰이는 복사본 칸(꼬리)이 있다(맵이 알아서 쓴다 — 번호를 직접 고르지 않는다). 칸 번호는 판이 늘어도 바뀌지 않는다(새 조각은 뒤에 덧붙는다).
+tilesetId `joseon_baram` · 그림 `public/assets/joseon-baram/joseon-baram-chipset.png`(텍스처 `tex_joseon_baram`, **16776칸**, 16px 칸, 한 줄 **72칸** — 번호 n 의 칸은 행 n÷72, 열 n%72, 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 칸 16551 이상은 같은 그림이 다른 통행으로 쓰이는 복사본 칸이다(맵이 알아서 쓴다 — 번호를 직접 고르지 않는다).
 
 나무(수관 `C` 위·줄기 `X` 아래), 덤불, 담·성벽(전부 `X`), 소품(`X`), 다리·선착장·돌계단·징검돌·성문 통로(`F`).
 
 `upperTiles` = 윗층 칸 번호(행 위→아래, -1 = 그림 없음), `walk` = 칸 통행(X 막힘 / C 걸음★ / F 걸음 / . 없음). 아래층은 -1(찍는 자리의 땅을 그대로 둔다). `door` = 디딤돌 칸(문 앞 접근칸은 그 바로 아래 칸), `passage` = 통로 열 범위.
+
+### jb-pine_a · 소나무 a 4×5 · 4×5 · 분류 tree
+막힘 1 · 걸음★ 14 · 걸음 3칸. 풀 위. 길·문 앞 2칸에는 두지 않는다. 수관(★)은 사람 위에 그려지고 줄기 폭 칸만 막힌다.
+```json
+{"kit":"kit:joseon_baram/jb-pine_a","w":4,"h":5,"class":"tree","upperTiles":[[812,813,814,-1],[828,829,830,831],[844,845,846,847],[860,861,862,-1],[876,877,878,879]],"walk":["CCC.","CCCC","CCCC","CCC.","FXFF"]}
+```
+
+### jb-pine_b · 소나무 b 4×5 · 4×5 · 분류 tree
+막힘 1 · 걸음★ 14 · 걸음 3칸. 풀 위. 길·문 앞 2칸에는 두지 않는다. 수관(★)은 사람 위에 그려지고 줄기 폭 칸만 막힌다.
+```json
+{"kit":"kit:joseon_baram/jb-pine_b","w":4,"h":5,"class":"tree","upperTiles":[[880,881,882,-1],[896,897,898,899],[912,913,914,915],[928,929,930,-1],[944,945,946,947]],"walk":["CCC.","CCCC","CCCC","CCC.","FXFF"]}
+```
+
+### jb-pine_c · 소나무 c 4×5 · 4×5 · 분류 tree
+막힘 1 · 걸음★ 14 · 걸음 3칸. 풀 위. 길·문 앞 2칸에는 두지 않는다. 수관(★)은 사람 위에 그려지고 줄기 폭 칸만 막힌다.
+```json
+{"kit":"kit:joseon_baram/jb-pine_c","w":4,"h":5,"class":"tree","upperTiles":[[720,721,722,-1],[736,737,738,739],[752,753,754,755],[768,769,770,-1],[784,785,786,787]],"walk":["CCC.","CCCC","CCCC","CCC.","FXFF"]}
+```
+
+### jb-pine_d · 소나무 d 4×5 · 4×5 · 분류 tree
+막힘 1 · 걸음★ 14 · 걸음 3칸. 풀 위. 길·문 앞 2칸에는 두지 않는다. 수관(★)은 사람 위에 그려지고 줄기 폭 칸만 막힌다.
+```json
+{"kit":"kit:joseon_baram/jb-pine_d","w":4,"h":5,"class":"tree","upperTiles":[[724,725,726,-1],[740,741,742,743],[756,757,758,759],[772,773,774,-1],[788,789,790,791]],"walk":["CCC.","CCCC","CCCC","CCC.","FXFF"]}
+```
+
+### jb-pine_e · 소나무 e 4×5 · 4×5 · 분류 tree
+막힘 2 · 걸음★ 14 · 걸음 2칸. 풀 위. 길·문 앞 2칸에는 두지 않는다. 수관(★)은 사람 위에 그려지고 줄기 폭 칸만 막힌다.
+```json
+{"kit":"kit:joseon_baram/jb-pine_e","w":4,"h":5,"class":"tree","upperTiles":[[-1,729,730,731],[744,745,746,747],[760,761,762,763],[-1,777,778,779],[792,793,794,795]],"walk":[".CCC","CCCC","CCCC",".CCC","FXXF"]}
+```
+
+### jb-pine_f · 소나무 f 4×5 · 4×5 · 분류 tree
+막힘 2 · 걸음★ 14 · 걸음 2칸. 풀 위. 길·문 앞 2칸에는 두지 않는다. 수관(★)은 사람 위에 그려지고 줄기 폭 칸만 막힌다.
+```json
+{"kit":"kit:joseon_baram/jb-pine_f","w":4,"h":5,"class":"tree","upperTiles":[[-1,733,734,735],[748,749,750,751],[764,765,766,767],[-1,781,782,783],[796,797,798,799]],"walk":[".CCC","CCCC","CCCC",".CCC","FXXF"]}
+```
+
+### jb-willow · 버드나무 4×5 · 4×5 · 분류 tree
+막힘 2 · 걸음★ 16 · 걸음 2칸. 풀 위. 길·문 앞 2칸에는 두지 않는다. 수관(★)은 사람 위에 그려지고 줄기 폭 칸만 막힌다.
+```json
+{"kit":"kit:joseon_baram/jb-willow","w":4,"h":5,"class":"tree","upperTiles":[[890,891,892,893],[906,907,908,909],[922,923,924,925],[938,939,940,941],[954,955,956,957]],"walk":["CCCC","CCCC","CCCC","CCCC","FXXF"]}
+```
+
+### jb-zelkova_a · 느티나무 a 4×5 · 4×5 · 분류 tree
+막힘 2 · 걸음★ 16 · 걸음 2칸. 풀 위. 길·문 앞 2칸에는 두지 않는다. 수관(★)은 사람 위에 그려지고 줄기 폭 칸만 막힌다.
+```json
+{"kit":"kit:joseon_baram/jb-zelkova_a","w":4,"h":5,"class":"tree","upperTiles":[[471,472,473,474],[487,488,489,490],[503,504,505,506],[519,520,521,522],[535,536,537,538]],"walk":["CCCC","CCCC","CCCC","CCCC","FXXF"]}
+```
 
 ### jb-zelkova_b · 느티나무 b 4×5 · 4×5 · 분류 tree
 막힘 2 · 걸음★ 15 · 걸음 2칸. 풀 위. 길·문 앞 2칸에는 두지 않는다. 수관(★)은 사람 위에 그려지고 줄기 폭 칸만 막힌다.
@@ -88,52 +136,4 @@ tilesetId `joseon_baram` · 그림 `public/assets/joseon-baram/joseon-baram-chip
 막힘 2 · 걸음★ 2 · 걸음 0칸. 풀 위. 아래 줄만 막히고 위 줄(★)은 사람 위에 그려진다.
 ```json
 {"kit":"kit:joseon_baram/jb-bush_e","w":2,"h":2,"class":"bush","upperTiles":[[1030,1031],[1046,1047]],"walk":["CC","XX"]}
-```
-
-### jb-bush_f · 덤불 f 2×2 · 2×2 · 분류 bush
-막힘 2 · 걸음★ 2 · 걸음 0칸. 풀 위. 아래 줄만 막히고 위 줄(★)은 사람 위에 그려진다.
-```json
-{"kit":"kit:joseon_baram/jb-bush_f","w":2,"h":2,"class":"bush","upperTiles":[[1032,1033],[1048,1049]],"walk":["CC","XX"]}
-```
-
-### jb-bush_l_a · 덤불 l_a 3×2 · 3×2 · 분류 bush
-막힘 3 · 걸음★ 3 · 걸음 0칸. 풀 위. 아래 줄만 막히고 위 줄(★)은 사람 위에 그려진다.
-```json
-{"kit":"kit:joseon_baram/jb-bush_l_a","w":3,"h":2,"class":"bush","upperTiles":[[960,961,962],[976,977,978]],"walk":["CCC","XXX"]}
-```
-
-### jb-bush_l_b · 덤불 l_b 3×2 · 3×2 · 분류 bush
-막힘 3 · 걸음★ 3 · 걸음 0칸. 풀 위. 아래 줄만 막히고 위 줄(★)은 사람 위에 그려진다.
-```json
-{"kit":"kit:joseon_baram/jb-bush_l_b","w":3,"h":2,"class":"bush","upperTiles":[[963,964,965],[979,980,981]],"walk":["CCC","XXX"]}
-```
-
-### jb-bush_l_c · 덤불 l_c 3×2 · 3×2 · 분류 bush
-막힘 3 · 걸음★ 3 · 걸음 0칸. 풀 위. 아래 줄만 막히고 위 줄(★)은 사람 위에 그려진다.
-```json
-{"kit":"kit:joseon_baram/jb-bush_l_c","w":3,"h":2,"class":"bush","upperTiles":[[1034,1035,1036],[1050,1051,1052]],"walk":["CCC","XXX"]}
-```
-
-### jb-bush_l_d · 덤불 l_d 3×2 · 3×2 · 분류 bush
-막힘 3 · 걸음★ 3 · 걸음 0칸. 풀 위. 아래 줄만 막히고 위 줄(★)은 사람 위에 그려진다.
-```json
-{"kit":"kit:joseon_baram/jb-bush_l_d","w":3,"h":2,"class":"bush","upperTiles":[[1037,1038,1039],[1053,1054,1055]],"walk":["CCC","XXX"]}
-```
-
-### jb-small_p · 어린 나무 p 2×3 · 2×3 · 분류 sapling
-막힘 2 · 걸음★ 4 · 걸음 0칸. 풀 위. 줄기 칸만 막힌다.
-```json
-{"kit":"kit:joseon_baram/jb-small_p","w":2,"h":3,"class":"sapling","upperTiles":[[2338,2339],[2354,2355],[2370,2371]],"walk":["CC","CC","XX"]}
-```
-
-### jb-small_z_a · 어린 나무 z_a 2×3 · 2×3 · 분류 sapling
-막힘 2 · 걸음★ 4 · 걸음 0칸. 풀 위. 줄기 칸만 막힌다.
-```json
-{"kit":"kit:joseon_baram/jb-small_z_a","w":2,"h":3,"class":"sapling","upperTiles":[[2221,2222],[2237,2238],[2253,2254]],"walk":["CC","CC","XX"]}
-```
-
-### jb-small_z_b · 어린 나무 z_b 2×3 · 2×3 · 분류 sapling
-막힘 2 · 걸음★ 4 · 걸음 0칸. 풀 위. 줄기 칸만 막힌다.
-```json
-{"kit":"kit:joseon_baram/jb-small_z_b","w":2,"h":3,"class":"sapling","upperTiles":[[2336,2337],[2352,2353],[2368,2369]],"walk":["CC","CC","XX"]}
 ```

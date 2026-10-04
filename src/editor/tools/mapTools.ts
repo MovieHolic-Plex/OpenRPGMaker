@@ -43,6 +43,7 @@ import { extendedLowerTiles, groundFeaturePredicate } from "@/project/mapGroundF
 import { stampTownCityPlot, type TownCityPlotStyle } from "@/project/defaults/townHousePatterns";
 import { kitIdForSmallHouseMaterial, type SmallHouseMaterial } from "@/editor/content/dbExtractedHouseTemplate";
 import { recommendMapBgm } from "@/assets/bgmThemeRecommendation";
+import { isCatalogBgmAvailable } from '@/assets/audioResourceCatalog';
 import { genId } from "@/util/id";
 import { resolveWikiCombatMode } from "@/ai/projectWikiContext";
 import {
@@ -153,6 +154,13 @@ function usedBgmResourceIds(draft: Project, excludeMapId: string): string[] {
    return mixed === 0 ? 1 : mixed;
  }
 
+function assertInstalledMapBgm(resourceId: string, mapId: string): void {
+  if (!isCatalogBgmAvailable(resourceId)) throw new ToolError(
+    `미설치 BGM '${resourceId}'는 지정할 수 없습니다. recommend_bgm으로 현재 사용 가능한 곡을 고르거나 bgm.mode를 none으로 설정하세요.`,
+    { code: 'resource-not-found', mapId },
+  );
+}
+
 export function assignCreatedMapBgm(
   map: GameMap,
   args: Record<string, unknown>,
@@ -171,12 +179,14 @@ export function assignCreatedMapBgm(
         throw new ToolError("bgm.mode가 custom이면 resourceId가 필요합니다.", { code: "invalid-args", mapId: map.id });
       }
       bgm.resourceId = resourceId;
+      assertInstalledMapBgm(resourceId, map.id);
     }
     map.bgm = bgm;
     return bgm.mode === "custom" ? (bgm.resourceId ?? bgm.mode) : bgm.mode;
   }
   const explicitId = typeof args.bgmResourceId === "string" ? args.bgmResourceId.trim() : "";
   if (explicitId) {
+    assertInstalledMapBgm(explicitId, map.id);
     map.bgm = { mode: "custom", resourceId: explicitId };
     return explicitId;
   }
@@ -2011,6 +2021,7 @@ const setMapProperties: ToolDefinition = {
     } else if (args.bgm && typeof args.bgm === "object" && !Array.isArray(args.bgm)) {
       const bgm = structuredClone(args.bgm) as GameMap["bgm"];
       if (bgm?.mode === "custom" && !bgm.resourceId) throw new ToolError("bgm.mode가 custom이면 resourceId가 필요합니다.", { code: "invalid-args", mapId: map.id });
+      if (bgm?.mode === 'custom' && bgm.resourceId) assertInstalledMapBgm(bgm.resourceId, map.id);
       map.bgm = bgm;
       changed.push(`BGM=${bgm?.mode}`);
     }

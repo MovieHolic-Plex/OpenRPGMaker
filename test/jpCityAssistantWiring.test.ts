@@ -143,7 +143,10 @@ describe("build_jp_city_building 오류는 다음 행동을 알려 준다", () =
 
 describe("새 맵 길", () => {
   it("다른 계열 맵을 보는 중이면 create_map 이 계열 변경으로 거부하고 ask_tileset_change 를 가리킨다", () => {
-    const ctx: ToolContext = { project: createBlankProject(), currentMapId: START };
+    // 빈 시작 맵은 그림체 선택이 아니다(toolRunner.isBlankCanvasMap) — 한 칸 칠해 사용자가 깐 버들항 맵으로 만든다.
+    const project = createBlankProject();
+    project.maps[START]!.lowerTiles[0] = (project.maps[START]!.lowerTiles[0] ?? 0) + 1;
+    const ctx: ToolContext = { project, currentMapId: START };
     const refused = runTool(ctx, "create_map", { name: "상가", width: 30, height: 20, tilesetId: "jp_city" });
     expect(refused.ok).toBe(false);
     expect(refused.issues?.[0]?.code).toBe("tileset-family-change");

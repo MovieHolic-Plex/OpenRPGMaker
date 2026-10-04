@@ -1,0 +1,43 @@
+{
+ "id": "20261002-2051-rtp/p3-east-emperor__sonnet-r1",
+ "brief": "p3-east-emperor",
+ "name": "동방의 황제",
+ "base": "People3:0",
+ "base_label": "People3 1번",
+ "strength": "normal",
+ "files": {
+  "chr": "p3-east-emperor__sonnet-r1__20261002-2051-rtp.chr.txt",
+  "sheet": "p3-east-emperor__sonnet-r1__20261002-2051-rtp.png"
+ },
+ "description": {
+  "label": "금색 면류관 검은 수염 황제",
+  "gender": "남",
+  "attributes": {
+   "kind": "사람",
+   "age": "중년",
+   "hair": "검은 머리"
+  },
+  "role": "동양풍 황제·군주",
+  "appearance": "금색 면류관에 갈색 구슬발이 이마 앞에 늘어져 있고, 검은 머리와 풍성한 검은 수염을 가졌다. 황금색 용포는 넓게 퍼진 소매와 붉은 테두리, 붉은 허리띠가 있고 아래 자락은 붉은색이다.",
+  "colors": [
+   "금색 면류관",
+   "황금색 용포",
+   "붉은 허리띠·옷단",
+   "검은 수염과 머리",
+   "갈색 구슬발"
+  ],
+  "tags": [
+   "황제",
+   "왕",
+   "군주",
+   "동양",
+   "궁궐",
+   "고대 중국",
+   "임금",
+   "왕족"
+  ],
+  "fits": "궁궐 옥좌 앞이나 정전에 앉혀 두는 군주·황제 NPC로 어울린다.",
+  "by": "Claude Sonnet 5.5 · medium",
+  "at": "2026-10-02T22:40:24+00:00"
+ }
+}
