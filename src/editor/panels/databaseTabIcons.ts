@@ -115,6 +115,12 @@ const TAB_ICONS: Record<DatabaseTab, readonly SvgNodeSpec[]> = {
   // 전투 애니메이션 — 충격 폭발
   animations: ANIMATION_NODES,
   battleAnimations: ANIMATION_NODES,
+  // 도트 연출 — 필름 띠 + 번개
+  retroChoreographies: [
+    { tag: "rect", attrs: { x: "3", y: "4.5", width: "16", height: "13", rx: "1.8" } },
+    { tag: "path", attrs: { d: "M3 8.4h16M3 13.6h16M7.2 4.5v13M14.8 4.5v13" } },
+    { tag: "path", attrs: { d: "M11.6 9.4 9.9 11.8h2.2l-.8 2.2" } },
+  ],
   // 전투 화면 — 모니터
   battleScreen: [
     { tag: "rect", attrs: { x: "2.9", y: "4.4", width: "16.2", height: "11", rx: "1.9" } },

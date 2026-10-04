@@ -1,0 +1,16 @@
+{
+  "project": "/tmp/lag-proj-b",
+  "biggestMap": "map_blank_start",
+  "biggestMapBytes": 47271,
+  "dbCollection": "actors",
+  "updateMapTiles 1셀": 0.15,
+  "updateMapTiles 20셀 드래그(20회 합)": 0.68,
+  "update 1셀 (일반 경로)": 3.58,
+  "update 20셀 (일반 경로, 1회)": 2.99,
+  "update DB 필드 (일반 경로)": 1.95,
+  "updateDatabase DB 필드 (빠른 경로)": 5.04,
+  "update 맵 이름 변경(일반 경로)": 2.73,
+  "update 1셀 후 diffProjectDocuments": 8.84,
+  "updateMapTiles 후 diffProjectDocuments": 7.66,
+  "DB 편집 후 diffProjectDocuments": 7.64
+}

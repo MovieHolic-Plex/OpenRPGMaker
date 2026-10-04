@@ -1,0 +1,65 @@
+{
+ "projectId": "ad468208-0287-4f27-a50e-20d10536a0cd",
+ "projectDir": ".oprn-projects/beodeul-city-20260928",
+ "revision": 1,
+ "sha256": "9dfe7869b686b7900088503b08e57517ee58e4ad2d351d52079a3496ef54d37d",
+ "saved": true,
+ "reopened": true,
+ "deepEqual": {
+  "project": true,
+  "map": true,
+  "tileset": true
+ },
+ "tileset": {
+  "id": "beodeul_city",
+  "count": 22784,
+  "image": {
+   "type": "bundled",
+   "id": "tex_beodeul_city"
+  },
+  "tilesPerRow": 128,
+  "animationStrips": 1699,
+  "structureKits": 120,
+  "tileGroups": 4,
+  "referenceDocuments": [
+   {
+    "id": "beodeul-city",
+    "docs": 1,
+    "images": 3
+   },
+   {
+    "id": "beodeul-city-kits",
+    "docs": 10,
+    "images": 8
+   },
+   {
+    "id": "beodeul-city-pieces",
+    "docs": 5,
+    "images": 5
+   },
+   {
+    "id": "beodeul-city-qa",
+    "docs": 1,
+    "images": 5
+   }
+  ]
+ },
+ "map": {
+  "id": "beodeul_v6",
+  "size": [
+   100,
+   100
+  ],
+  "lower": 10000,
+  "upper": 5325,
+  "animatedCells": 1715,
+  "npcs": 122
+ },
+ "walkability": {
+  "cells": 10000,
+  "same": 10000,
+  "mismatch": 0,
+  "samples": [],
+  "walkable": 2907
+ }
+}

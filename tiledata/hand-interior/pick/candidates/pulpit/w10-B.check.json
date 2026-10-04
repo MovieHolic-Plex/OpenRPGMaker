@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/pulpit/w10-B.pxg",
+ "id": "pulpit",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 8,
+  "atLeast95": 0,
+  "max": 0.073
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 16,
+ "v5_colors": 16,
+ "bbox": [
+  0,
+  10,
+  29,
+  63
+ ],
+ "v5_bbox": [
+  0,
+  10,
+  29,
+  63
+ ],
+ "note": "좌 패널·계단 윗면 밝게, 우 패널·챌판 어둡게 (좌상 빛 강화)",
+ "ok": true
+}

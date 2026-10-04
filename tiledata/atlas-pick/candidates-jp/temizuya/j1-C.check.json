@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/temizuya/j1-C.pxg",
+ "set": "jp",
+ "id": "temizuya",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 9,
+  "atLeast95": 0,
+  "max": 0.145
+ },
+ "refmap": {
+  "cells": 9,
+  "atLeast95": 0,
+  "max": 0.094
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 31,
+ "bbox": [
+  2,
+  2,
+  46,
+  47
+ ],
+ "note": "맞배 기와 지붕(정면 삼각형)에 굵은 기둥·두공, 용 대신 대나무 홈통이 자연석 수반으로 물을 떨구는 모양, 앞에 디딤돌 둘",
+ "ok": true
+}

@@ -1,0 +1,24 @@
+{
+ "id": "dorm_closet",
+ "slug": "dorm_closet",
+ "name": "기숙사 옷장",
+ "scene": "기숙사",
+ "place": "in",
+ "cells": [
+  1,
+  2
+ ],
+ "canvas": [
+  16,
+  32
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "좁은 붙박이 옷장 — 두 짝 문(가운데 틈·손잡이 둘), 위 선반 문, 문 한쪽에 교복 걸이가 비친다면 틈으로 감색 한 줄. 앞면 주인공, 윗판 1px.",
+ "palette_hint": "vpine/cream 문, uniform 교복",
+ "pair": [
+  "bunk_bed",
+  "dorm_desk"
+ ],
+ "worker": "s3"
+}

@@ -1,0 +1,19 @@
+{
+ "id": "sando_path",
+ "slug": "sando_path",
+ "name": "참도 판석·자갈",
+ "scene": "신사 한 켠",
+ "cells": [
+  2,
+  2
+ ],
+ "canvas": [
+  32,
+  32
+ ],
+ "layer": "ground",
+ "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+ "description": "신사 참도: 가운데 큰 네모 판석 두 줄(돌 틈 짙게), 양옆 흰 자갈(작은 회백 점 덩이). 위아래로 이어 붙인다(판석 줄이 끊기지 않게).",
+ "palette_hint": "ishi 판석·자갈, moss 틈",
+ "worker": "j1"
+}

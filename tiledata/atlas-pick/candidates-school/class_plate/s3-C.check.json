@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/class_plate/s3-C.pxg",
+ "set": "school",
+ "id": "class_plate",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.011
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.016
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "dither"
+  ]
+ },
+ "colors": 9,
+ "bbox": [
+  1,
+  1,
+  14,
+  14
+ ],
+ "note": "실루엣 다르게: 위 쇠 막대에서 두 줄 사슬로 늘어뜨린 흰 표찰, 밑변 양끝이 깎인 모양, 검정 「2-1」",
+ "ok": true
+}

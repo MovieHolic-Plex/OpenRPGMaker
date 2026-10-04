@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/cake_display_case/w8-B.pxg",
+ "id": "cake display case",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.068
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 21,
+ "v5_colors": 22,
+ "bbox": [
+  0,
+  10,
+  29,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  10,
+  31,
+  31
+ ],
+ "note": "좌측 유리 하이라이트와 우측 어두운 유리로 명암을 키우고 오른쪽 아래에 반투명 접지 그림자",
+ "ok": true
+}

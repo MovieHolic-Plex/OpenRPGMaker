@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/fox_statue/j2-B.pxg",
+ "set": "jp",
+ "id": "fox_statue",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.094
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.059
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 14,
+ "bbox": [
+  2,
+  1,
+  15,
+  31
+ ],
+ "note": "입체 강화: 돌 명암 폭 넓게(왼쪽 +2/오른쪽 -2), 어두운 윤곽, 받침 윗면 크게 밝게, 그림자 ~ 두 줄 + - 번짐.",
+ "ok": true
+}

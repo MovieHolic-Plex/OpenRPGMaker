@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/window_night/hf3-B.pxg",
+ "set": "horror",
+ "id": "window_night",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.051
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "outline_black"
+  ]
+ },
+ "colors": 10,
+ "bbox": [
+  1,
+  2,
+  14,
+  14
+ ],
+ "note": "밤 창 B — 틀 5·6단으로 밝게, 유리는 murk 0단(거의 검정), 창살 6·5단. 왼위 칸의 큰 달빛 덩이(moon 3~5단)와 반대쪽 옅은 반사 하나. 어두운 방에서 틀선과 달빛만 보인다.",
+ "ok": true
+}

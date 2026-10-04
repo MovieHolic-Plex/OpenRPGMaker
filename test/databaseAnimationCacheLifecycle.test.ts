@@ -48,7 +48,7 @@ beforeEach(() => {
   vi.spyOn(window, "matchMedia").mockReturnValue(preference);
   const project = createBlankProject();
   project.database.battleAnimations = [{
-    id: "cache-preview", name: "Cache preview", resourceId: "easyrpg-battle-blow",
+    id: "cache-preview", name: "Cache preview", resourceId: "scarloxy-battle-anim-scratch",
     sheet: { frameWidth: 96, frameHeight: 96, columns: 5 },
     frames: [0, 1, 2].map((pattern) => ({
       cells: [{ pattern, x: 0, y: 0, zoom: 100, opacity: 255, visible: true }],
@@ -168,7 +168,9 @@ describe("battle animation preview ownership in the real modal tab cache", () =>
     expect(observers.size).toBe(1);
     expect(observers.has(observer)).toBe(true);
     expect(intervals.size).toBe(0);
-    await mutate(node(".db-body"), () => byTestId("db-tab-animations").click());
+    // 전투 애니메이션은 도트 연출의 하위 보기다(2026-10-02) — 레일 버튼이 없어 연출 탭을 거쳐 연다.
+    await mutate(node(".db-body"), () => byTestId("db-tab-retro-choreographies").click());
+    await mutate(node(".db-body"), () => byTestId("db-subview-animations").click());
     expect(node(".oprn-record-battleAnimations")).toBe(workspace);
     expect(PreviewImage.requests).toHaveLength(imageRequests);
     expectCurrentOnly();
@@ -189,7 +191,9 @@ describe("battle animation preview ownership in the real modal tab cache", () =>
     await refreshed;
     expect(observers.size).toBe(0);
     expect(intervals.size).toBe(0);
-    await mutate(node(".db-body"), () => byTestId("db-tab-animations").click());
+    // 전투 애니메이션은 도트 연출의 하위 보기다(2026-10-02) — 레일 버튼이 없어 연출 탭을 거쳐 연다.
+    await mutate(node(".db-body"), () => byTestId("db-tab-retro-choreographies").click());
+    await mutate(node(".db-body"), () => byTestId("db-subview-animations").click());
     loadPreview();
     expectCurrentOnly();
     await close();

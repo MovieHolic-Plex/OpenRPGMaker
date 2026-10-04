@@ -1,0 +1,43 @@
+{
+ "id": "20261002-2144-recolor/c-pink-dancer__sonnet-r1",
+ "brief": "c-pink-dancer",
+ "name": "분홍 머리 무용수",
+ "base": "Actor2:6",
+ "base_label": "Actor2 7번",
+ "strength": "normal",
+ "files": {
+  "chr": "c-pink-dancer__sonnet-r1__20261002-2144-recolor.chr.txt",
+  "sheet": "c-pink-dancer__sonnet-r1__20261002-2144-recolor.png"
+ },
+ "description": {
+  "label": "분홍 머리 보라 옷 무용수",
+  "gender": "여",
+  "attributes": {
+   "kind": "사람",
+   "age": "청년",
+   "hair": "분홍 머리"
+  },
+  "role": "무용수·공연가",
+  "appearance": "풍성하게 부푼 분홍색 긴 머리에 금색 머리 장식을 달고, 머리 위로 금색·보라 리본 같은 장식이 비스듬히 솟아 있다. 보라색과 흰색이 섞인 줄무늬 옷에 금색 띠를 두르고 짙은 보라 신발을 신었다.",
+  "colors": [
+   "분홍 머리",
+   "금색 머리 장식·띠",
+   "보라 옷",
+   "흰색 옷 무늬",
+   "짙은 보라 신발"
+  ],
+  "tags": [
+   "무용수",
+   "공연",
+   "축제",
+   "분홍 머리",
+   "소녀",
+   "보라색",
+   "판타지",
+   "예술가"
+  ],
+  "fits": "축제 무대, 극장, 술집이나 궁정 연회장처럼 공연과 화려한 분위기가 필요한 곳의 무용수 NPC 로 어울린다.",
+  "by": "Claude Sonnet 5.5 · medium",
+  "at": "2026-10-02T22:41:05+00:00"
+ }
+}

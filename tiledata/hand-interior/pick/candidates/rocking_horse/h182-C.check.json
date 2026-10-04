@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/rocking_horse/h182-C.pxg",
+ "id": "rocking horse",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.036
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 9,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  12,
+  15,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "흰 칠 몸통·넓은 갈색 안장·휜 나무 받침을 큰 덩어리로 찍고 눈 외 세부를 줄임; 꼭대기 윗면 3행(y=15~17), 안장 윗면 3행(y=20~22).",
+ "ok": true
+}

@@ -1,0 +1,21 @@
+// w6-A bench 2 — v5 결 그대로, 검정(F)을 wood:1 윤곽으로, 다리 밝은 줄, 외톨이 무늬를 긴 결로
+@size 32 16
+@cell 16
+@palette palette.pal
+@block 0 0
+................................
+................................
+................................
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+ABBBBBBBBBBBBBBBBBBBBBBBBBBBBBBA
+ACCCDDDDCCCCCCCCCCCCCCCCCCCCCCCA
+ACCCCCCCCCCCCCCCCCCDDDDDCCCCCCCA
+ACCCCCCCCCCCCCCCCCCCCCCCCCCCCCCA
+ABBBBBBBBBBBBBBBBBBBBBBBBBBBBBBA
+AEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+.ACGA......................ACGA.
+.ACGA......................ACGA.
+.ACGA......................ACGA.
+.ACGA......................ACGA.
+.AEEA......................AEEA.

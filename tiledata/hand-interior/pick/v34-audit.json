@@ -1,0 +1,1121 @@
+{
+ "about": "3/4 전수조사(2026-10-01) A 등급 44종 재작도. 목록·그림: http://mdc-server:18301/interior-view34-audit.html",
+ "workers": {
+  "w100": [
+   {
+    "n": 56,
+    "id": "column dwarf",
+    "ko": "드워프 네모 기둥(룬 무늬)",
+    "slug": "column_dwarf",
+    "folder": "tiledata/hand-interior/pick/candidates/column_dwarf",
+    "current": "w51-A.pxg",
+    "violation": "기둥: 머리가 정면 띠, 타원 윗면 없음",
+    "canvas": [
+     16,
+     48
+    ],
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "animated": false,
+    "proofs": [
+     "tiledata/atlas-pick/style-demo-view34/interior-new-column.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-column.png"
+    ],
+    "newFile": "w100-A.pxg"
+   },
+   {
+    "n": 58,
+    "id": "column marble",
+    "ko": "대리석 기둥",
+    "slug": "column_marble",
+    "folder": "tiledata/hand-interior/pick/candidates/column_marble",
+    "current": "w51-A.pxg",
+    "violation": "기둥: 머리가 정면 띠, 타원 윗면 없음",
+    "canvas": [
+     16,
+     48
+    ],
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "animated": false,
+    "proofs": [
+     "tiledata/atlas-pick/style-demo-view34/interior-new-column.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-column.png"
+    ],
+    "newFile": "w100-A.pxg"
+   },
+   {
+    "n": 59,
+    "id": "column steel",
+    "ko": "강철 기둥(리벳)",
+    "slug": "column_steel",
+    "folder": "tiledata/hand-interior/pick/candidates/column_steel",
+    "current": "w51-A.pxg",
+    "violation": "기둥: 머리가 정면 띠, 타원 윗면 없음",
+    "canvas": [
+     16,
+     48
+    ],
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "animated": false,
+    "proofs": [
+     "tiledata/atlas-pick/style-demo-view34/interior-new-column.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-column.png"
+    ],
+    "newFile": "w100-A.pxg"
+   },
+   {
+    "n": 60,
+    "id": "column stone",
+    "ko": "돌 기둥",
+    "slug": "column_stone",
+    "folder": "tiledata/hand-interior/pick/candidates/column_stone",
+    "current": "w51-A.pxg",
+    "violation": "기둥: 머리가 정면 띠, 타원 윗면 없음",
+    "canvas": [
+     16,
+     48
+    ],
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "animated": false,
+    "proofs": [
+     "tiledata/atlas-pick/style-demo-view34/interior-new-column.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-column.png"
+    ],
+    "newFile": "w100-A.pxg"
+   },
+   {
+    "n": 61,
+    "id": "column wood",
+    "ko": "나무 기둥(금 띠)",
+    "slug": "column_wood",
+    "folder": "tiledata/hand-interior/pick/candidates/column_wood",
+    "current": "w51-A.pxg",
+    "violation": "기둥: 머리가 정면 띠, 타원 윗면 없음",
+    "canvas": [
+     16,
+     48
+    ],
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "animated": false,
+    "proofs": [
+     "tiledata/atlas-pick/style-demo-view34/interior-new-column.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-column.png"
+    ],
+    "newFile": "w100-A.pxg"
+   },
+   {
+    "n": 184,
+    "id": "rune stone",
+    "ko": "룬석(빛남·움직임)",
+    "slug": "rune_stone",
+    "folder": "tiledata/hand-interior/pick/candidates/rune_stone",
+    "current": "w45-A.pxg",
+    "violation": "룬석: 둥근 머리 정면, 윗면 없음",
+    "canvas": [
+     16,
+     32
+    ],
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "animated": true,
+    "proofs": [
+     "tiledata/atlas-pick/style-demo-view34/interior-new-column.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-column.png"
+    ],
+    "newFile": "w100-A.pxg"
+   }
+  ],
+  "w101": [
+   {
+    "n": 112,
+    "id": "chair E",
+    "ko": "의자 E",
+    "slug": "chair_E",
+    "folder": "tiledata/hand-interior/pick/candidates/chair_E",
+    "current": "v5.pxg",
+    "violation": "의자 E: 옆 실루엣 L자",
+    "canvas": [
+     16,
+     16
+    ],
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "animated": false,
+    "proofs": [
+     "tiledata/atlas-pick/style-demo-view34/interior-new-chair-e.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-chair-e.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-new-chair-w.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-chair-w.png"
+    ],
+    "newFile": "w101-A.pxg"
+   },
+   {
+    "n": 115,
+    "id": "chair W",
+    "ko": "의자 W",
+    "slug": "chair_W",
+    "folder": "tiledata/hand-interior/pick/candidates/chair_W",
+    "current": "v5.pxg",
+    "violation": "의자 W: 옆 실루엣 L자",
+    "canvas": [
+     16,
+     16
+    ],
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "animated": false,
+    "proofs": [
+     "tiledata/atlas-pick/style-demo-view34/interior-new-chair-e.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-chair-e.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-new-chair-w.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-chair-w.png"
+    ],
+    "newFile": "w101-A.pxg"
+   },
+   {
+    "n": 113,
+    "id": "chair N",
+    "ko": "의자 N",
+    "slug": "chair_N",
+    "folder": "tiledata/hand-interior/pick/candidates/chair_N",
+    "current": "v5.pxg",
+    "violation": "의자 N: 뒤 틀만, 좌판 윗면 없음",
+    "canvas": [
+     16,
+     16
+    ],
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "animated": false,
+    "proofs": [
+     "tiledata/atlas-pick/style-demo-view34/interior-new-chair-e.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-chair-e.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-new-chair-w.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-chair-w.png"
+    ],
+    "newFile": "w101-A.pxg"
+   },
+   {
+    "n": 114,
+    "id": "chair S",
+    "ko": "의자 S",
+    "slug": "chair_S",
+    "folder": "tiledata/hand-interior/pick/candidates/chair_S",
+    "current": "v5.pxg",
+    "violation": "의자 S: 좌판 윗면 3px",
+    "canvas": [
+     16,
+     16
+    ],
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "animated": false,
+    "proofs": [
+     "tiledata/atlas-pick/style-demo-view34/interior-new-chair-e.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-chair-e.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-new-chair-w.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-chair-w.png"
+    ],
+    "newFile": "w101-A.pxg"
+   },
+   {
+    "n": 104,
+    "id": "armchair",
+    "ko": "안락의자",
+    "slug": "armchair",
+    "folder": "tiledata/hand-interior/pick/candidates/armchair",
+    "current": "w9-B.pxg",
+    "violation": "안락의자: 정면 상자, 좌판 윗면 없음",
+    "canvas": [
+     16,
+     16
+    ],
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "animated": false,
+    "proofs": [
+     "tiledata/atlas-pick/style-demo-view34/interior-new-chair-e.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-chair-e.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-new-chair-w.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-chair-w.png"
+    ],
+    "newFile": "w101-A.pxg"
+   },
+   {
+    "n": 147,
+    "id": "sofa",
+    "ko": "소파",
+    "slug": "sofa",
+    "folder": "tiledata/hand-interior/pick/candidates/sofa",
+    "current": "v5.pxg",
+    "violation": "소파: 등받이·좌판 시점 섞임, 앞면 2px",
+    "canvas": [
+     32,
+     16
+    ],
+    "footprint": {
+     "w": 2,
+     "h": 1
+    },
+    "animated": false,
+    "proofs": [
+     "tiledata/atlas-pick/style-demo-view34/interior-new-chair-e.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-chair-e.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-new-chair-w.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-chair-w.png"
+    ],
+    "newFile": "w101-A.pxg"
+   },
+   {
+    "n": 193,
+    "id": "theater seat",
+    "ko": "극장 좌석",
+    "slug": "theater_seat",
+    "folder": "tiledata/hand-interior/pick/candidates/theater_seat",
+    "current": "w10-C.pxg",
+    "violation": "극장 좌석: 정면 상자, 윗면 없음",
+    "canvas": [
+     16,
+     16
+    ],
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "animated": false,
+    "proofs": [
+     "tiledata/atlas-pick/style-demo-view34/interior-new-chair-e.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-chair-e.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-new-chair-w.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-chair-w.png"
+    ],
+    "newFile": "w101-A.pxg"
+   },
+   {
+    "n": 185,
+    "id": "stone throne",
+    "ko": "돌 왕좌",
+    "slug": "stone_throne",
+    "folder": "tiledata/hand-interior/pick/candidates/stone_throne",
+    "current": "w52-A.pxg",
+    "violation": "돌 왕좌: 정면 도면, 좌판 윗면 3px",
+    "canvas": [
+     16,
+     32
+    ],
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "animated": false,
+    "proofs": [
+     "tiledata/atlas-pick/style-demo-view34/interior-new-chair-e.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-chair-e.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-new-chair-w.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-chair-w.png"
+    ],
+    "newFile": "w101-A.pxg"
+   }
+  ],
+  "w102": [
+   {
+    "n": 47,
+    "id": "pew",
+    "ko": "교회 긴의자",
+    "slug": "pew",
+    "folder": "tiledata/hand-interior/pick/candidates/pew",
+    "current": "v5.pxg",
+    "violation": "긴의자: 등판 널판 정면뿐, 윗날·방석 띠 없음",
+    "canvas": [
+     32,
+     16
+    ],
+    "footprint": {
+     "w": 2,
+     "h": 1
+    },
+    "animated": false,
+    "proofs": [
+     "tiledata/atlas-pick/style-demo-view34/interior-new-pew-e.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-pew-e.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-new-pew-n.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-pew-n.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-new-lectern.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-lectern.png"
+    ],
+    "newFile": "w102-A.pxg"
+   },
+   {
+    "n": 48,
+    "id": "pew E2",
+    "ko": "동쪽을 보는 회중석(1×2)",
+    "slug": "pew_E2",
+    "folder": "tiledata/hand-interior/pick/candidates/pew_E2",
+    "current": "w45-A.pxg",
+    "violation": "회중석(동): 옆 입면 — 좌판 윗면·남쪽 끝판 앞면 없음",
+    "canvas": [
+     16,
+     48
+    ],
+    "footprint": {
+     "w": 1,
+     "h": 2
+    },
+    "animated": false,
+    "proofs": [
+     "tiledata/atlas-pick/style-demo-view34/interior-new-pew-e.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-pew-e.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-new-pew-n.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-pew-n.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-new-lectern.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-lectern.png"
+    ],
+    "newFile": "w102-A.pxg"
+   },
+   {
+    "n": 49,
+    "id": "pew E3",
+    "ko": "동쪽을 보는 회중석(1×3)",
+    "slug": "pew_E3",
+    "folder": "tiledata/hand-interior/pick/candidates/pew_E3",
+    "current": "w45-A.pxg",
+    "violation": "회중석(동): 옆 입면 — 좌판 윗면·남쪽 끝판 앞면 없음",
+    "canvas": [
+     16,
+     64
+    ],
+    "footprint": {
+     "w": 1,
+     "h": 3
+    },
+    "animated": false,
+    "proofs": [
+     "tiledata/atlas-pick/style-demo-view34/interior-new-pew-e.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-pew-e.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-new-pew-n.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-pew-n.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-new-lectern.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-lectern.png"
+    ],
+    "newFile": "w102-A.pxg"
+   },
+   {
+    "n": 45,
+    "id": "lectern",
+    "ko": "성경대",
+    "slug": "lectern",
+    "folder": "tiledata/hand-interior/pick/candidates/lectern",
+    "current": "w5-C.pxg",
+    "violation": "성경대: 정면 도면, 책 받침 윗면 띠",
+    "canvas": [
+     16,
+     32
+    ],
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "animated": false,
+    "proofs": [
+     "tiledata/atlas-pick/style-demo-view34/interior-new-pew-e.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-pew-e.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-new-pew-n.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-pew-n.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-new-lectern.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-lectern.png"
+    ],
+    "newFile": "w102-A.pxg"
+   },
+   {
+    "n": 50,
+    "id": "pulpit",
+    "ko": "설교단(4×3)",
+    "slug": "pulpit",
+    "folder": "tiledata/hand-interior/pick/candidates/pulpit",
+    "current": "w32-A.pxg",
+    "violation": "설교단: 몸통 정면 + 계단 옆 입면(시점 혼재)",
+    "canvas": [
+     32,
+     64
+    ],
+    "footprint": {
+     "w": 2,
+     "h": 2
+    },
+    "animated": false,
+    "proofs": [
+     "tiledata/atlas-pick/style-demo-view34/interior-new-pew-e.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-pew-e.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-new-pew-n.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-pew-n.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-new-lectern.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-lectern.png"
+    ],
+    "newFile": "w102-A.pxg"
+   },
+   {
+    "n": 41,
+    "id": "altar E",
+    "ko": "독립 제단(2×2, 옆에서 본 것)",
+    "slug": "altar_E",
+    "folder": "tiledata/hand-interior/pick/candidates/altar_E",
+    "current": "w21-G.pxg",
+    "violation": "제단(옆): 옆 입면",
+    "canvas": [
+     32,
+     48
+    ],
+    "footprint": {
+     "w": 2,
+     "h": 2
+    },
+    "animated": false,
+    "proofs": [
+     "tiledata/atlas-pick/style-demo-view34/interior-new-pew-e.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-pew-e.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-new-pew-n.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-pew-n.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-new-lectern.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-lectern.png"
+    ],
+    "newFile": "w102-A.pxg"
+   },
+   {
+    "n": 352,
+    "id": "choir stall",
+    "ko": "성가대석(3칸, 남향)",
+    "slug": "choir_stall",
+    "folder": "tiledata/hand-interior/pick/candidates/choir_stall",
+    "current": "w45-A.pxg",
+    "violation": "성가대석: 좌판 윗면 2px",
+    "canvas": [
+     48,
+     48
+    ],
+    "footprint": {
+     "w": 3,
+     "h": 1
+    },
+    "animated": false,
+    "proofs": [
+     "tiledata/atlas-pick/style-demo-view34/interior-new-pew-e.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-pew-e.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-new-pew-n.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-pew-n.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-new-lectern.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-lectern.png"
+    ],
+    "newFile": "w102-A.pxg"
+   },
+   {
+    "n": 51,
+    "id": "votive stand",
+    "ko": "봉헌 초 받침(움직임)",
+    "slug": "votive_stand",
+    "folder": "tiledata/hand-interior/pick/candidates/votive_stand",
+    "current": "v5.pxg",
+    "violation": "봉헌 초 받침: 선반 윗면 없음",
+    "canvas": [
+     16,
+     32
+    ],
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "animated": true,
+    "proofs": [
+     "tiledata/atlas-pick/style-demo-view34/interior-new-pew-e.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-pew-e.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-new-pew-n.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-pew-n.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-new-lectern.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-lectern.png"
+    ],
+    "newFile": "w102-A.pxg"
+   }
+  ],
+  "w103": [
+   {
+    "n": 53,
+    "id": "sarcophagus",
+    "ko": "석관",
+    "slug": "sarcophagus",
+    "folder": "tiledata/hand-interior/pick/candidates/sarcophagus",
+    "current": "w73-A.pxg",
+    "violation": "석관: 뚜껑이 앞면처럼 읽힘(책상 꼴), 윗면 판 약함",
+    "canvas": [
+     32,
+     32
+    ],
+    "footprint": {
+     "w": 2,
+     "h": 1
+    },
+    "animated": false,
+    "proofs": [
+     "tiledata/atlas-pick/style-demo-view34/interior-new-sarcophagus.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-sarcophagus.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-new-bookshelf.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-bookshelf.png"
+    ],
+    "newFile": "w103-A.pxg"
+   },
+   {
+    "n": 52,
+    "id": "coffin",
+    "ko": "관",
+    "slug": "coffin",
+    "folder": "tiledata/hand-interior/pick/candidates/coffin",
+    "current": "w73-A.pxg",
+    "violation": "관: 위에서만 본 뚜껑, 앞 측판 없음",
+    "canvas": [
+     16,
+     32
+    ],
+    "footprint": {
+     "w": 1,
+     "h": 2
+    },
+    "animated": false,
+    "proofs": [
+     "tiledata/atlas-pick/style-demo-view34/interior-new-sarcophagus.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-sarcophagus.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-new-bookshelf.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-bookshelf.png"
+    ],
+    "newFile": "w103-A.pxg"
+   },
+   {
+    "n": 105,
+    "id": "barrel",
+    "ko": "통",
+    "slug": "barrel",
+    "folder": "tiledata/hand-interior/pick/candidates/barrel",
+    "current": "w2-A.pxg",
+    "violation": "통: 뚜껑 타원 없음(정면 실루엣)",
+    "canvas": [
+     16,
+     16
+    ],
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "animated": false,
+    "proofs": [
+     "tiledata/atlas-pick/style-demo-view34/interior-new-sarcophagus.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-sarcophagus.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-new-bookshelf.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-bookshelf.png"
+    ],
+    "newFile": "w103-A.pxg"
+   },
+   {
+    "n": 183,
+    "id": "powder kegs",
+    "ko": "화약 통",
+    "slug": "powder_kegs",
+    "folder": "tiledata/hand-interior/pick/candidates/powder_kegs",
+    "current": "w9-B.pxg",
+    "violation": "화약 통: 뚜껑 타원 없음",
+    "canvas": [
+     16,
+     16
+    ],
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "animated": false,
+    "proofs": [
+     "tiledata/atlas-pick/style-demo-view34/interior-new-sarcophagus.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-sarcophagus.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-new-bookshelf.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-bookshelf.png"
+    ],
+    "newFile": "w103-A.pxg"
+   },
+   {
+    "n": 217,
+    "id": "safe",
+    "ko": "금고",
+    "slug": "safe",
+    "folder": "tiledata/hand-interior/pick/candidates/safe",
+    "current": "w72-A.pxg",
+    "violation": "금고: 윗면 3px·처마 없음",
+    "canvas": [
+     16,
+     32
+    ],
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "animated": false,
+    "proofs": [
+     "tiledata/atlas-pick/style-demo-view34/interior-new-sarcophagus.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-sarcophagus.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-new-bookshelf.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-bookshelf.png"
+    ],
+    "newFile": "w103-A.pxg"
+   },
+   {
+    "n": 227,
+    "id": "hay bale",
+    "ko": "건초 더미",
+    "slug": "hay_bale",
+    "folder": "tiledata/hand-interior/pick/candidates/hay_bale",
+    "current": "w44-A.pxg",
+    "violation": "건초 더미: 앞면 격자뿐, 윗면 없음",
+    "canvas": [
+     16,
+     16
+    ],
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "animated": false,
+    "proofs": [
+     "tiledata/atlas-pick/style-demo-view34/interior-new-sarcophagus.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-sarcophagus.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-new-bookshelf.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-bookshelf.png"
+    ],
+    "newFile": "w103-A.pxg"
+   },
+   {
+    "n": 31,
+    "id": "chopping block",
+    "ko": "도마 통나무",
+    "slug": "chopping_block",
+    "folder": "tiledata/hand-interior/pick/candidates/chopping_block",
+    "current": "v5.pxg",
+    "violation": "도마 통나무: 절단면 윗면 3px",
+    "canvas": [
+     16,
+     16
+    ],
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "animated": false,
+    "proofs": [
+     "tiledata/atlas-pick/style-demo-view34/interior-new-sarcophagus.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-sarcophagus.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-new-bookshelf.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-bookshelf.png"
+    ],
+    "newFile": "w103-A.pxg"
+   },
+   {
+    "n": 181,
+    "id": "mine cart",
+    "ko": "광차",
+    "slug": "mine_cart",
+    "folder": "tiledata/hand-interior/pick/candidates/mine_cart",
+    "current": "w2-C.pxg",
+    "violation": "광차: 적재함 입구 윗면 3px",
+    "canvas": [
+     16,
+     16
+    ],
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "animated": false,
+    "proofs": [
+     "tiledata/atlas-pick/style-demo-view34/interior-new-sarcophagus.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-sarcophagus.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-new-bookshelf.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-bookshelf.png"
+    ],
+    "newFile": "w103-A.pxg"
+   }
+  ],
+  "w104": [
+   {
+    "n": 350,
+    "id": "slot machine",
+    "ko": "슬롯머신(움직임)",
+    "slug": "slot_machine",
+    "folder": "tiledata/hand-interior/pick/candidates/slot_machine",
+    "current": "w46-A.pxg",
+    "violation": "슬롯머신: 윗면 2px",
+    "canvas": [
+     16,
+     32
+    ],
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "animated": true,
+    "proofs": [
+     "tiledata/atlas-pick/style-demo-view34/interior-new-bookshelf.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-bookshelf.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-new-fireplace.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-fireplace.png"
+    ],
+    "newFile": "w104-A.pxg"
+   },
+   {
+    "n": 179,
+    "id": "magitek engine",
+    "ko": "마도 기관(움직임, 3×2)",
+    "slug": "magitek_engine",
+    "folder": "tiledata/hand-interior/pick/candidates/magitek_engine",
+    "current": "w46-A.pxg",
+    "violation": "마도 기관: 윗면 3px, 배관 캡 없음",
+    "canvas": [
+     48,
+     48
+    ],
+    "footprint": {
+     "w": 3,
+     "h": 2
+    },
+    "animated": true,
+    "proofs": [
+     "tiledata/atlas-pick/style-demo-view34/interior-new-bookshelf.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-bookshelf.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-new-fireplace.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-fireplace.png"
+    ],
+    "newFile": "w104-A.pxg"
+   },
+   {
+    "n": 357,
+    "id": "fish tank",
+    "ko": "수조",
+    "slug": "fish_tank",
+    "folder": "tiledata/hand-interior/pick/candidates/fish_tank",
+    "current": "w44-A.pxg",
+    "violation": "수조: 물 윗면 2px",
+    "canvas": [
+     32,
+     32
+    ],
+    "footprint": {
+     "w": 2,
+     "h": 1
+    },
+    "animated": true,
+    "proofs": [
+     "tiledata/atlas-pick/style-demo-view34/interior-new-bookshelf.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-bookshelf.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-new-fireplace.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-fireplace.png"
+    ],
+    "newFile": "w104-A.pxg"
+   },
+   {
+    "n": 381,
+    "id": "kitchen range",
+    "ko": "조리 화덕(레인지)",
+    "slug": "kitchen_range",
+    "folder": "tiledata/hand-interior/pick/candidates/kitchen_range",
+    "current": "v5.pxg",
+    "violation": "조리 화덕: 화구 윗면이 안 보이는 정면",
+    "canvas": [
+     32,
+     48
+    ],
+    "footprint": {
+     "w": 2,
+     "h": 1
+    },
+    "animated": true,
+    "proofs": [
+     "tiledata/atlas-pick/style-demo-view34/interior-new-bookshelf.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-bookshelf.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-new-fireplace.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-fireplace.png"
+    ],
+    "newFile": "w104-A.pxg"
+   },
+   {
+    "n": 21,
+    "id": "cake display case",
+    "ko": "케이크 진열장",
+    "slug": "cake_display_case",
+    "folder": "tiledata/hand-interior/pick/candidates/cake_display_case",
+    "current": "w8-C.pxg",
+    "violation": "케이크 진열장: 받침 윗면 1px",
+    "canvas": [
+     32,
+     32
+    ],
+    "footprint": {
+     "w": 2,
+     "h": 1
+    },
+    "animated": false,
+    "proofs": [
+     "tiledata/atlas-pick/style-demo-view34/interior-new-bookshelf.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-bookshelf.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-new-fireplace.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-fireplace.png"
+    ],
+    "newFile": "w104-A.pxg"
+   },
+   {
+    "n": 402,
+    "id": "patient bed",
+    "ko": "환자 침대",
+    "slug": "patient_bed",
+    "folder": "tiledata/hand-interior/pick/candidates/patient_bed",
+    "current": "w74-A.pxg",
+    "violation": "환자 침대: 시점 불명",
+    "canvas": [
+     16,
+     48
+    ],
+    "footprint": {
+     "w": 1,
+     "h": 2
+    },
+    "animated": false,
+    "proofs": [
+     "tiledata/atlas-pick/style-demo-view34/interior-new-bookshelf.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-bookshelf.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-new-fireplace.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-fireplace.png"
+    ],
+    "newFile": "w104-A.pxg"
+   },
+   {
+    "n": 223,
+    "id": "spear rack",
+    "ko": "창꽂이",
+    "slug": "spear_rack",
+    "folder": "tiledata/hand-interior/pick/candidates/spear_rack",
+    "current": "w70-A.pxg",
+    "violation": "창꽂이: 받침 윗면 없음",
+    "canvas": [
+     16,
+     48
+    ],
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "animated": false,
+    "proofs": [
+     "tiledata/atlas-pick/style-demo-view34/interior-new-bookshelf.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-bookshelf.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-new-fireplace.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-fireplace.png"
+    ],
+    "newFile": "w104-A.pxg"
+   }
+  ],
+  "w105": [
+   {
+    "n": 169,
+    "id": "firewood bundle",
+    "ko": "장작 묶음",
+    "slug": "firewood_bundle",
+    "folder": "tiledata/hand-interior/pick/candidates/firewood_bundle",
+    "current": "w9-B.pxg",
+    "violation": "장작 묶음: 옆·끝면 혼재",
+    "canvas": [
+     16,
+     16
+    ],
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "animated": false,
+    "proofs": [
+     "tiledata/atlas-pick/style-demo-view34/interior-new-chair-e.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-chair-e.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-new-pew-n.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-pew-n.png"
+    ],
+    "newFile": "w105-A.pxg"
+   },
+   {
+    "n": 118,
+    "id": "cradle",
+    "ko": "요람",
+    "slug": "cradle",
+    "folder": "tiledata/hand-interior/pick/candidates/cradle",
+    "current": "w29-F.pxg",
+    "violation": "요람: 옆 입면",
+    "canvas": [
+     16,
+     16
+    ],
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "animated": false,
+    "proofs": [
+     "tiledata/atlas-pick/style-demo-view34/interior-new-chair-e.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-chair-e.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-new-pew-n.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-pew-n.png"
+    ],
+    "newFile": "w105-A.pxg"
+   },
+   {
+    "n": 206,
+    "id": "hammock",
+    "ko": "해먹",
+    "slug": "hammock",
+    "folder": "tiledata/hand-interior/pick/candidates/hammock",
+    "current": "w72-A.pxg",
+    "violation": "해먹: 정면 실루엣",
+    "canvas": [
+     32,
+     32
+    ],
+    "footprint": {
+     "w": 2,
+     "h": 1
+    },
+    "animated": false,
+    "proofs": [
+     "tiledata/atlas-pick/style-demo-view34/interior-new-chair-e.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-chair-e.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-new-pew-n.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-pew-n.png"
+    ],
+    "newFile": "w105-A.pxg"
+   },
+   {
+    "n": 228,
+    "id": "saddle rack",
+    "ko": "안장걸이",
+    "slug": "saddle_rack",
+    "folder": "tiledata/hand-interior/pick/candidates/saddle_rack",
+    "current": "w26-D.pxg",
+    "violation": "안장걸이: 안장 옆 실루엣",
+    "canvas": [
+     16,
+     32
+    ],
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "animated": false,
+    "proofs": [
+     "tiledata/atlas-pick/style-demo-view34/interior-new-chair-e.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-chair-e.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-new-pew-n.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-pew-n.png"
+    ],
+    "newFile": "w105-A.pxg"
+   },
+   {
+    "n": 233,
+    "id": "loom",
+    "ko": "베틀",
+    "slug": "loom",
+    "folder": "tiledata/hand-interior/pick/candidates/loom",
+    "current": "w43-A.pxg",
+    "violation": "베틀: 틀 정면 도면",
+    "canvas": [
+     32,
+     32
+    ],
+    "footprint": {
+     "w": 2,
+     "h": 1
+    },
+    "animated": false,
+    "proofs": [
+     "tiledata/atlas-pick/style-demo-view34/interior-new-chair-e.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-chair-e.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-new-pew-n.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-pew-n.png"
+    ],
+    "newFile": "w105-A.pxg"
+   },
+   {
+    "n": 231,
+    "id": "school desk",
+    "ko": "학생 책상",
+    "slug": "school_desk",
+    "folder": "tiledata/hand-interior/pick/candidates/school_desk",
+    "current": "w71-A.pxg",
+    "violation": "학생 책상: 의자 등판·책상 시점 혼재",
+    "canvas": [
+     16,
+     32
+    ],
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "animated": false,
+    "proofs": [
+     "tiledata/atlas-pick/style-demo-view34/interior-new-chair-e.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-chair-e.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-new-pew-n.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-pew-n.png"
+    ],
+    "newFile": "w105-A.pxg"
+   },
+   {
+    "n": 240,
+    "id": "spiral stair",
+    "ko": "나선 계단(2×2)",
+    "slug": "spiral_stair",
+    "folder": "tiledata/hand-interior/pick/candidates/spiral_stair",
+    "current": "v5.pxg",
+    "violation": "나선 계단: 옆 입면",
+    "canvas": [
+     32,
+     64
+    ],
+    "footprint": {
+     "w": 2,
+     "h": 2
+    },
+    "animated": false,
+    "proofs": [
+     "tiledata/atlas-pick/style-demo-view34/interior-new-chair-e.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-chair-e.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-new-pew-n.png",
+     "tiledata/atlas-pick/style-demo-view34/interior-old-pew-n.png"
+    ],
+    "newFile": "w105-A.pxg"
+   }
+  ]
+ }
+}

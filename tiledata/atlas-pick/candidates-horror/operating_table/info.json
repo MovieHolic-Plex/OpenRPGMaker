@@ -1,0 +1,25 @@
+{
+ "id": "operating_table",
+ "slug": "operating_table",
+ "name": "수술대·무영등",
+ "scene": "폐병원",
+ "cells": [
+  2,
+  2
+ ],
+ "canvas": [
+  32,
+  32
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "위에서 약간 내려다본 수술대: 가운데 기둥 받침 위 긴 판(윗면이 주인공), 위에 누런 천이 덮인 사람 윤곽(선택) 또는 검붉은 얼룩 판, 머리 쪽 위에 둥근 무영등(가는 팔로 매단 원판, 전구 점 여러 개 — 꺼짐). 수술 도구 수레(instrument_tray)와 한 식구.",
+ "palette_hint": "tin 대·등, sheet 천, blood 얼룩, murk 등 유리",
+ "worker_v1": "h5",
+ "stage": 2,
+ "stage_ko": "2단계 연출(기본이 선 뒤)",
+ "worker": "h5",
+ "set_with": [
+  "instrument_tray"
+ ]
+}

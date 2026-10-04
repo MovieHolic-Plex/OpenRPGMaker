@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/vaulting_box/s5-A.pxg",
+ "set": "school",
+ "id": "vaulting_box",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.125
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.03
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies"
+  ]
+ },
+ "colors": 13,
+ "bbox": [
+  2,
+  3,
+  29,
+  30
+ ],
+ "note": "뜀틀 — 소나무 4단, 단마다 어두운 이음선, 손잡이 구멍 두 개, 위에 흰 가죽 쿠션(윗면이 살짝 보임)",
+ "ok": true
+}

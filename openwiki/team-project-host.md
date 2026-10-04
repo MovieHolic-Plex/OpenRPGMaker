@@ -4,6 +4,10 @@
 
 ## 소유와 실행 위치
 
+`export-player/` 아래 SDK 파일은 HTML도 디스크 바이트 그대로 제공한다(2026-10-03).
+플레이어 매니페스트가 HTML의 SHA-256도 확인하므로 편집기 브리지나 nonce를 주입하면
+실제 ZIP 내보내기가 `bundle-integrity-mismatch`로 실패한다. 편집기 HTML의 브리지 계약은 유지한다.
+
 팀은 소유·권한 단위, 프로젝트는 게임 문서, 호스트는 정본을 쓰는 프로세스다.
 1인도 자동 생성된 팀의 owner다. 호스트는 기본 프로젝트와 그 아래 `.oprn-projects/<uuid>`에 만든 추가 프로젝트를 연다.
 추가 프로젝트는 기본 프로젝트의 팀 권한을 공유한다. 프로젝트 목록 대시보드/계정 서버는 아직 없다.
@@ -13,6 +17,10 @@ SQLite 파일 위치와 브라우저 UI 위치는 독립적이다. 원격 접속
   검증·권한·잠금·저장 처리를 호출한다. 같은 session registry에서는 작업 큐도 공유한다.
 - Electron: renderer → preload IPC → 공통 서비스 → SQLite.
 - 브라우저: renderer → browser bridge HTTP → 공통 서비스 → SQLite.
+- 편집 창이 포커스를 잃거나 최소화되어도 적용·저장은 진행한다(2026-10-04).
+  로컬 창과 팀 참여 창은 `backgroundThrottling:false`를 쓴다. 저장 패치 비교의
+  양보는 `src/util/yieldToTask.ts`의 메시지 태스크이며 프레임·짧은 타이머를 기다리지 않는다.
+  앱 종료·브라우저 freeze/discard·기기 절전 뒤 실행 보장은 별도 작업 큐의 범위다.
 - `electron/local-store/team.ts`: `workspace_team`, `workspace_members` 보조 테이블을 기존
   프로젝트 DB에 추가한다. 프로젝트 JSON/내보내기 게임 스키마와 분리된다.
   기존 폴더는 최초 오픈에 1인 팀이 만들어진다. 토큰은 SHA-256 해시만 저장한다.
@@ -20,6 +28,10 @@ SQLite 파일 위치와 브라우저 UI 위치는 독립적이다. 원격 접속
   클라이언트가 선택하지 않는다. 객체 저장소 구현은 아직 없고 향후 저장소 어댑터의 몫이다.
 
 ## 실행
+
+브라우저 팀 연결 상태는 `teamSession.ts`의 `.oprn-team-session-bar`다.
+높이/지형 도구 막대는 이 배지가 있으면 아래에서 64px 띄운다(2026-10-03).
+배지가 표면 모드의 높이 버튼을 가리던 실제 호스트 겹침을 막으며 팀 관리 링크는 유지한다.
 
 Electron에서 프로젝트를 연 뒤 **파일 → 팀 협업 시작 / 관리**. 앱이 같은 session registry를
 사용하는 HTTP 호스트를 실행한다. 기본은 코드 없이 주소로 바로 접속한다.
@@ -99,14 +111,42 @@ Docker 주소 모두 200, 위조 Host(`evil.example`)·다른 포트 Host 는 40
 - `removeLegacySpriteReferences` 는 얼린 가지(호스트가 저장 행에서 읽은 타일셋)를 건너뛴다.
 - 본문이 없을 때의 폴백이 펼친 전체 글(`project.load`)을 부르지 않는다 — 이 규모에서 호스트 메인 프로세스가 V8 OOM 으로 죽었다.
 
-남은 것(측정만, 미수정):
+### 동료 저장 반영·부팅·첫 참여 전송량 (2026-09-28 2차)
 
-- 동료 저장이 참여 창에 **보이기까지 약 20s**. 전송은 240KB·50ms 다. 참여 창 메인 스레드가 받은 문서 전체를 파싱·검증하고
-  `refreshFromHost` 의 `jsonEqual`·기준본 요약·복제를 문서 전체에 돌린다(프로파일: `refreshFromHost` 8.5s, 요약 SHA 6.8s, GC 6.6s).
-  가지 재사용으로 줄일 수 있지만 편집기가 제자리 수정한 가지를 재사용하면 판정이 틀어진다 — 별도 과제.
-- 첫 참여의 공용 카탈로그 111MB(`shared-content` defaults 55MB·rest 31MB·tile-references 25MB)는 기기마다 한 번 받는다.
-  두 번째부터는 304. 로컬 폴더로 같은 프로젝트를 열어도 편집기 부팅이 약 40s 라(같은 기기 실측) 참여 부팅 25–34s 는 편집기 자체 비용이 대부분이다.
-- 참여 창은 `crypto.subtle` 이 없는 HTTP 출처라 SHA 를 JS 로 계산한다(부팅 CPU 약 5s).
+앞 절에서 남겼던 세 가지를 고쳤다. 측정은 같은 픽스처(`life-full.reloaded`, 타일셋 368칸)로 한다.
+
+| 항목 | 전 | 후 |
+|---|---|---|
+| 동료 저장이 참여 창에 보이기까지 | 약 20s(1차 측정) · 5.9–7.1s(같은 기기 재측정) | 0.9–1.7s |
+| 첫 참여 공용 자료 | 111.7MB | 87.7MB (`shared-tile-references` 24.8MB → 0.8MB) |
+| 두 번째 참여 부팅(같은 기기) | 28.0s | 14.7–17.6s |
+
+고친 것:
+
+- **동료 저장 반영.** `refreshFromHost` 가 매번 문서 전체를 새로 풀고, 그 사본을 또 복제해 기준본으로 두었다.
+  - 참여 창 어댑터(`electronRepository.ts`)가 지난 로드에서 푼 타일셋 객체와 **그 순간의 내용 요약**을 기억한다. 다음 로드에서 본문 sha 가 같고
+    요약이 그대로인 칸은 파싱하지 않고 그 객체를 쓴다. 편집기가 제자리에서 고친 칸은 요약이 달라져 새로 푼다
+    (`test/persistence/electronRepository.test.ts` folded host loads).
+  - `refreshFromHost` 는 방금 받은 스냅숏을 기준본으로 그대로 쓴다(`baselineFrom(…, { owned: true })`) — 전에는 1.5s 복제.
+- **첫 참여 전송량.** `/__oprn/shared-tile-references` 의 82MB 가 전부 공용 카탈로그(`shared-content`)에 같은 글로 있었다.
+  이제 편집기 응답은 카탈로그에 있는 타일셋·그림·참고문서·구조 킷을 `{"$library":<id>}` / 항목의 `library` 로만 보내고, 편집기는
+  설치한 카탈로그 객체로 채운다(`sharedTileReferences.ts` `resolveLibraryRefs`). 가리키는 라이브러리가 아직 없으면 편집기가 뜬 뒤 받는
+  나머지 범위를 기다린다(`whenSharedLibrariesInstalled`). 작업자 경로(`piAgentRuntime`)는 예전처럼 전체 글을 읽는다. 형식이 바뀌어 ETag 에
+  형식 판(`w2`)을 넣었다 — 옛 형식을 캐시한 기기가 304 로 옛 글을 쓰지 않는다. 시험: `test/sharedTileReferenceLibraryRefs.test.ts`.
+- **부팅 CPU.**
+  - 공용 카탈로그 설치(`reviewedPlaceCatalog.installSharedReviewedPlaces`·`installSharedSpatialReferences`)가 받은 타일셋·그림 약 100MB 를
+    통째로 복제했다. 읽기 전용 투영이라 복제하지 않는다 — 프로젝트로 옮기는 쪽이 복제한다.
+  - 기본 자산 바이트 해시(HTTP 참여 창은 JS SHA)를 호스트가 판본마다 한 번 세어 응답에 싣는다(`assetBytesSha256`).
+  - 부팅 뒤 참고문서 보강(`applySharedReferenceRefresh`)은 바뀔 것이 없으면 문서를 복제하지 않는다(dry run).
+  - 기준본 한가할 때 요약은 current 의 요약 기억을 먼저 넘겨 받는다 — 같은 문서를 처음부터 다시 해시했다(4.4s).
+
+남은 것:
+
+- 첫 참여의 공용 카탈로그 87MB(defaults 55.6MB·rest 31.3MB) 중 약 65MB 는 기본 자산 그림 dataUrl 이다. 그림을 주소로 빼면 더 줄지만
+  프로젝트에 복사되는 공용 자산의 계약(`ensureSharedContent`)을 바꾸는 일이라 따로 한다.
+- 부팅 CPU 에서 가장 큰 것은 타일셋 368칸의 첫 내용 요약(약 4s, 통행 칸 28.8만 개)이다. 잎 배열을 글 한 번으로 세는 시도는 첫 요약을
+  5.9 → 4.1s 로 줄였지만 두 번째 요약이 0.5 → 1.0s 로 늘어 편집 중 저장이 느려져 되돌렸다.
+- 참여 창은 `crypto.subtle` 이 없는 HTTP 출처라 남은 SHA 도 JS 로 계산한다.
 **팀 관리 → 접속 설정 → 접속 코드 사용**을 켜면 로그인을 요구한다. **팀 관리**에서 편집자·읽기 전용 초대 링크를 만들거나 접근 권한을 취소할 수 있다.
 초대 비밀은 URL fragment로 전달하고 로그인 화면에서 주소에서 제거한다.
 팀원 목록·권한 선택·팀 이름 변경·백업·초대 복사를 한 관리 화면에서 제공한다.
@@ -193,9 +233,36 @@ UTF-8 JSON 요청이 1MiB를 초과하고 `CompressionStream`이 있으면 gzip�
 
 | 요청 | 전송 바이트 상한 | 압축 해제 후 상한 |
 |---|---:|---:|
-| gzip + `oprn:project.save` 명시 헤더 | 64MiB | 256MiB |
-| 비압축 + `oprn:project.save` 명시 헤더 | 256MiB | 256MiB |
-| 나머지 브리지 RPC (mapPatch 포함) | 64MiB | 64MiB |
+| gzip + 문서 채널(`project.save` · `project.saveMapPatch` · `start.createProject`) 명시 헤더 | 256MiB | 256MiB |
+| 비압축 + 문서 채널 명시 헤더 | 256MiB | 256MiB |
+| 나머지 브리지 RPC | 64MiB | 64MiB |
+
+### 큰 문서 저장 봉투 (2026-09-28)
+
+실측: Firefox 로 빈 새 프로젝트를 열면 첫 자동 저장(`project.save`, 전체 글)이 **조수를 켜기 전부터** 매번 실패했다.
+전체 글이 1억 8,700만 자(타일셋 368개 101MB + 공용 업로드 dataURL 414개 85MB)였고 두 곳에서 막혔다.
+
+1. `electron/browser/requestBody.ts` 가 봉투 `{ channel, payload }` 를 `JSON.stringify` 한 번으로 만들었다. 그 긴 문자열 하나를
+   따옴표 처리하다 Firefox 가 `InternalError: allocation size overflow` 를 던졌다(같은 브라우저에서 1.5억 자 통과, 1.8억 자 실패).
+   이제 `bridgeJsonParts` 가 가지마다 따로 직렬화하고 긴 문자열은 8Mi 자씩 끊어 Blob 조각으로 잇는다. 이은 결과는
+   `JSON.stringify` 와 바이트까지 같다(`test/browserBridgeRequestEncoding.test.ts`). 받는 쪽·CAS·해시는 그대로다.
+2. 고친 뒤 gzip 본문이 69MB 라 문서 채널의 gzip 전송 상한 64MiB 에서 413 이 났다. 해제량은 스트리밍 중 256MiB 로 따로 자르므로
+   문서 채널은 gzip 전송량도 256MiB 까지 받는다(`electron/serve/bridgeRequestBody.ts`, 회귀 `test/bridgeRequestBody.test.ts`).
+
+두 수정 뒤 같은 재현에서 `project.save` 200, SQLite `project` 행 revision 2 가 생겼다. 팀 실행 결과(맵 15개)가 저장되지 않던
+`team-village-live` 실측의 원인도 이것이다 — 맵 패치는 기준본(`persistedBaseline`)이 있어야 쓰는데 첫 전체 저장이 한 번도 성공하지 않아
+매 저장이 전체 글 경로로 떨어졌다.
+
+3. 첫 저장이 성공하자 새 문제가 드러났다. 호스트의 저장 뒤 미디어 분리(`dispatch.ts` `separateMediaAfterSave`)가 방금 받은 문서의
+   공용 그림 414장을 파일로 떼어 **행을 한 번 더 썼다**(revision 1 → 2). 저장 응답은 1 이라 팀 폴링(`teamSession.ts`)이 2 를 남의 변경으로 보고
+   `refreshFromHost` 로 편집기 프로젝트를 통째로 바꿨다(자산 `dataUrl` → `ref`). 그 사이 시작된 조수 실행의 적용 기준(`captureApplyAuthority`)이
+   달라져 시공 적용이 매번 `stale-base` 로 거부됐다 — 시공 7번 모두 실패, 맵 0개. 이제 로드 정규화가 파일 저장이 있는 저장소
+   (`supportsAssetRefs`)면 인라인 업로드 자산을 먼저 `assets.put` 으로 옮기고 문서에는 `ref` 만 둔다
+   (`src/project/persistence/inlineMediaRefs.ts`, 회귀 `test/inlineMediaRefs.test.ts`). 호스트가 다시 쓸 것이 없어 첫 저장이 곧 최종 행이고,
+   첫 저장 본문도 85MB 줄었다. 호스트 쪽 저장 뒤 분리는 옛 클라이언트용 안전망으로 남긴다.
+
+세 수정 뒤 `scripts/qa/team-village-live.mjs`(빈 새 SQLite 호스트 + Firefox + 팀 「마을을 만들어줘」): 첫 저장 revision 1 뒤 다시 받기 없음,
+시공 적용마다 `saveMapPatch` 가 revision 을 올렸다. `SUMMARY.json` 의 `hostTrace` 가 저장·다시 받기·호스트 리비전 순서를 남긴다.
 
 새 프로젝트의 `oprn:start.createProject`도 전체 `seed` 안에 공용 자산·AI 문서를 담으므로
 `project.save`와 같은 상한을 적용한다(2026-09-24). 음식 자료 추가 뒤 실제 신규 생성에서
@@ -230,8 +297,16 @@ PAW의 기존 Chromium 설치는 `Target crashed` 후 저장되지 않았고 이
 ## 백업과 이전
 
 `store.backup()`은 `backups/<시간-uuid>/project.sqlite`와 `assets/`를 함께 만든다.
-DB 스냅샷의 에셋 목록으로 파일을 복사하며 실패 시 불완전 백업 폴더를 제거한다.
-복원은 **호스트를 끈 후** 새 폴더에 이 백업 폴더의 DB·assets를 함께 복사하여 연다.
+DB 스냅샷의 에셋 목록으로 파일을 복사하며 크기·SHA를 검사한다. 실패 시 불완전 백업 폴더를 제거한다.
+소재는 임시 파일에 write+fsync한 뒤 rename으로 게시하고 DB 참조를 등록한다. 같은 SHA 파일도 재사용 전 검사하고 손상되었으면 정상 입력 바이트로 교체한다. 읽기에서도 크기·SHA를 확인한다.
+첫 시작 장르 시드는 renderer의 `prepareProjectMedia`가 소재를 먼저 파일로 저장한 후 ref 문서로 채택한다. 공용 라이브러리가 부팅 뒤 주입한 inline 이미지도 같은 경로를 탄다. 파일 준비 실패는 열린 문서 교체 전에 전파한다. 중단 시 이미 등록한 미사용 파일은 남을 수 있으나 정본 문서를 바꾸지 않는다.
+저장소의 선택적 `saveSnapshot`은 store가 이미 분리한 committed 사본을 바로 직렬화한다. Electron의 일반 `save`는 기존처럼 먼저 복제하며, store의 첫 full-save만 중복 복제를 생략한다. 사본은 요청 완료까지 변경하지 않는 계약이다. CAS와 서버 반환 병합·저장 영수증 처리는 유지한다.
+
+`project.listBackups`/`project.restoreBackup`는 기존 백업과 같은 owner 범위를 쓴다. 프로젝트 메뉴의 **백업에서 복구...**로 사본을 복구해 열 수 있다. 호스트를 끄지 않아도 원본이 아닌 새 폴더에만 쓴다.
+`electron/local-store/recovery.ts`는 백업을 read-only로 열어 DB quick_check, 펼친 문서 SHA, 소재 참조와 모든 등록 파일의 크기·SHA를 검사한다. 형식 2의 접힌 문서는 백업 자체의 `tileset_blobs`를 직접 읽어 각 본문 SHA를 검사하고 펼친다(살아 있는 저장소의 본문 캐시는 쓰지 않는다). 형식 1도 지원한다. DB/소재를 임시 폴더에 복사하고 재검사한 뒤 새 폴더로 게시한다. 이미 존재하는 대상은 거절한다. 활성 WAL이 있는 프로젝트 DB는 백업 원본으로 받지 않는다.
+복구 사본은 **새 storage projectId**를 갖는다(meta와 project/maps/commits/AI 기록의 project_id를 함께 변경). 저장 문서와 SHA는 유지한다. 같은 원본·사본을 열었을 때 Electron asset URL 식별자가 겹치지 않게 한다.
+HTTP dispatch는 요청별 내부 context로 `.oprn-projects` 복구 루트를 전달하고 결과를 폴더 ID로 돌려준다. IPC/HTTP가 공유하는 핸들러 캐시에 루트를 저장하지 않는다. 데스크톱은 원본의 형제 폴더에 복구한다.
+편집기 부팅이 실패한 경우: `node scripts/oprn-store.mjs restore <백업폴더> --out <새폴더>`. 기존 프로젝트/백업을 직접 수정하지 않는다. UI는 현재 작업 저장에 실패하면 사본을 열지 않고 내보내기를 안내한다.
 팀 정보와 멤버 토큰 해시도 DB에 포함된다. 호스트 소유자 코드는 `.oprn-host-access`가 없거나 DB의 코드 해시와 다를 때만 새로 발급된다.
 원격 팀 관리 버튼은 서버 디스크에 백업을 만든다. 브라우저 다운로드는 기존 프로젝트
 내보내기를 사용한다. 팀원이 2명 이상이면 보류 중인 에셋 참조 보호를 위해 서비스의 prune을

@@ -1,0 +1,19 @@
+{
+  "projectId": "9b0e46c6-758f-44f7-afa2-5603d5c44996",
+  "store": "/home/main/.t3/worktrees/rpg-zzu/t3code-77478098/.vite-cache/terrain-evolution-store",
+  "revision": 2,
+  "features": 8,
+  "gameplay": {
+    "visionBlocking": true,
+    "highGroundVision": true,
+    "projectileHeight": true,
+    "visionRadius": 16,
+    "visionGain": 1,
+    "eyeHeight": 1
+  },
+  "waterCells": 98,
+  "rampCells": 32,
+  "stamps": 1,
+  "canonicalReload": true,
+  "isolatedQAFixture": true
+}

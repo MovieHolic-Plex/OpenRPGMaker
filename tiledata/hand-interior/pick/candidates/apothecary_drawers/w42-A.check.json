@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/apothecary_drawers/w42-A.pxg",
+ "id": "apothecary drawers",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.004
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 9,
+ "v5_colors": 12,
+ "bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "note": "약재 서랍장: w90-A(t=5 f=27) 채택",
+ "ok": true
+}

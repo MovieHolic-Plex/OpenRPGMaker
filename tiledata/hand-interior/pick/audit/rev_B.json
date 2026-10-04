@@ -1,0 +1,651 @@
+[
+ {
+  "n": 100,
+  "key": "long hearth 4",
+  "verdict": "FAIL",
+  "code": "TOPDOWN",
+  "why": "위에서 본 화로판, 균일 2px 테두리뿐 앞면·처마 없음",
+  "fix": "윗면 T 4~6px + 앞 하이라이트 + 처마 그림자 2px, 앞면 벽돌 면 추가"
+ },
+ {
+  "n": 101,
+  "key": "long hearth 5",
+  "verdict": "FAIL",
+  "code": "TOPDOWN",
+  "why": "위에서 본 화로판, 균일 2px 테두리뿐 앞면·처마 없음",
+  "fix": "윗면 T 4~6px + 앞 하이라이트 + 처마 그림자 2px, 앞면 벽돌 면 추가"
+ },
+ {
+  "n": 102,
+  "key": "long hearth 6",
+  "verdict": "FAIL",
+  "code": "TOPDOWN",
+  "why": "위에서 본 화로판, 균일 2px 테두리뿐 앞면·처마 없음",
+  "fix": "윗면 T 4~6px + 앞 하이라이트 + 처마 그림자 2px, 앞면 벽돌 면 추가"
+ },
+ {
+  "n": 103,
+  "key": "cheese wheels",
+  "verdict": "PASS",
+  "code": "",
+  "why": "밝은 윗면 타원 + 어두운 옆면"
+ },
+ {
+  "n": 104,
+  "key": "armchair",
+  "verdict": "FAIL",
+  "code": "THIN",
+  "why": "정면 도면, 등받이 우세, 좌판 윗면 2~3px",
+  "fix": "좌판 윗면 4~6px를 등받이 앞에 보이게, 앞 다리 6~8px"
+ },
+ {
+  "n": 105,
+  "key": "barrel",
+  "verdict": "FAIL",
+  "code": "THIN",
+  "why": "뚜껑 2px 하이라이트뿐 타원 입구 없음",
+  "fix": "윗면 타원 4~8px + 몸통 8~16px"
+ },
+ {
+  "n": 106,
+  "key": "bathtub",
+  "verdict": "PASS",
+  "code": "",
+  "why": "물 윗면 약 9px + 앞띠 약 4px"
+ },
+ {
+  "n": 107,
+  "key": "bench 2",
+  "verdict": "FAIL",
+  "code": "THIN",
+  "why": "판 윗면 약 10px, 앞 다리 약 4px, 등받이 없고 앞판 1px",
+  "fix": "앞판/다리 6~8px, 좌판 뒤 등받이(등받이 있는 벤치면)"
+ },
+ {
+  "n": 108,
+  "key": "bench 3",
+  "verdict": "FAIL",
+  "code": "THIN",
+  "why": "판 윗면 약 10px, 앞 다리 약 4px, 등받이 없고 앞판 1px",
+  "fix": "앞판/다리 6~8px, 좌판 뒤 등받이(등받이 있는 벤치면)"
+ },
+ {
+  "n": 109,
+  "key": "birdcage",
+  "verdict": "EXEMPT",
+  "code": "",
+  "why": "새장·가는 막대형"
+ },
+ {
+  "n": 110,
+  "key": "broom and bucket",
+  "verdict": "PASS",
+  "code": "",
+  "why": "양동이 입구 타원 있음"
+ },
+ {
+  "n": 111,
+  "key": "candle",
+  "verdict": "EXEMPT",
+  "code": "",
+  "why": "가는 막대형 촛대"
+ },
+ {
+  "n": 112,
+  "key": "chair E",
+  "verdict": "FAIL",
+  "code": "SIDE",
+  "why": "의자를 옆 실루엣 L자로 그림",
+  "fix": "정면 3/4: 좌판 윗면 4~6px + 뒤 등받이 + 앞다리"
+ },
+ {
+  "n": 113,
+  "key": "chair N",
+  "verdict": "FAIL",
+  "code": "FRONT",
+  "why": "뒷모습 틀, 좌판 윗면 안 보임",
+  "fix": "좌판 윗면 4~6px 노출"
+ },
+ {
+  "n": 114,
+  "key": "chair S",
+  "verdict": "FAIL",
+  "code": "THIN",
+  "why": "정면 사다리 등받이, 좌판 띠 약 3px",
+  "fix": "좌판 윗면 4~6px로 키우기"
+ },
+ {
+  "n": 115,
+  "key": "chair W",
+  "verdict": "FAIL",
+  "code": "SIDE",
+  "why": "의자를 옆 실루엣 L자로 그림",
+  "fix": "정면 3/4: 좌판 윗면 4~6px + 뒤 등받이 + 앞다리"
+ },
+ {
+  "n": 116,
+  "key": "chest",
+  "verdict": "PASS",
+  "code": "",
+  "why": "뚜껑 윗면 약 5px, 앞면 약 9px"
+ },
+ {
+  "n": 117,
+  "key": "coat rack",
+  "verdict": "EXEMPT",
+  "code": "",
+  "why": "가는 기둥 걸이"
+ },
+ {
+  "n": 118,
+  "key": "cradle",
+  "verdict": "FAIL",
+  "code": "SIDE",
+  "why": "옆에서 본 요람, 롤러 곡선만 보임",
+  "fix": "윗면 침상 내부 4~6px + 앞판"
+ },
+ {
+  "n": 119,
+  "key": "crate",
+  "verdict": "PASS",
+  "code": "",
+  "why": "윗면 약 4px, 앞면 X자 약 10px (경계선)"
+ },
+ {
+  "n": 120,
+  "key": "desk 1x1",
+  "verdict": "FAIL",
+  "code": "TOPDOWN",
+  "why": "상판이 16px 중 12~13px(2칸 높이는 32px 중 29px)를 덮고 앞판/다리 약 3px",
+  "fix": "상판 8~10px로 줄이고 앞판+다리 8~14px"
+ },
+ {
+  "n": 121,
+  "key": "desk 2x1",
+  "verdict": "FAIL",
+  "code": "TOPDOWN",
+  "why": "상판이 16px 중 12~13px(2칸 높이는 32px 중 29px)를 덮고 앞판/다리 약 3px",
+  "fix": "상판 8~10px로 줄이고 앞판+다리 8~14px"
+ },
+ {
+  "n": 122,
+  "key": "desk 2x2",
+  "verdict": "FAIL",
+  "code": "TOPDOWN",
+  "why": "상판이 16px 중 12~13px(2칸 높이는 32px 중 29px)를 덮고 앞판/다리 약 3px",
+  "fix": "상판 8~10px로 줄이고 앞판+다리 8~14px"
+ },
+ {
+  "n": 123,
+  "key": "desk 3x1",
+  "verdict": "FAIL",
+  "code": "TOPDOWN",
+  "why": "상판이 16px 중 12~13px(2칸 높이는 32px 중 29px)를 덮고 앞판/다리 약 3px",
+  "fix": "상판 8~10px로 줄이고 앞판+다리 8~14px"
+ },
+ {
+  "n": 124,
+  "key": "desk 3x2",
+  "verdict": "FAIL",
+  "code": "TOPDOWN",
+  "why": "상판이 16px 중 12~13px(2칸 높이는 32px 중 29px)를 덮고 앞판/다리 약 3px",
+  "fix": "상판 8~10px로 줄이고 앞판+다리 8~14px"
+ },
+ {
+  "n": 125,
+  "key": "desk 4x1",
+  "verdict": "FAIL",
+  "code": "TOPDOWN",
+  "why": "상판이 16px 중 12~13px(2칸 높이는 32px 중 29px)를 덮고 앞판/다리 약 3px",
+  "fix": "상판 8~10px로 줄이고 앞판+다리 8~14px"
+ },
+ {
+  "n": 126,
+  "key": "desk 4x2",
+  "verdict": "FAIL",
+  "code": "TOPDOWN",
+  "why": "상판이 16px 중 12~13px(2칸 높이는 32px 중 29px)를 덮고 앞판/다리 약 3px",
+  "fix": "상판 8~10px로 줄이고 앞판+다리 8~14px"
+ },
+ {
+  "n": 127,
+  "key": "dining 1x1",
+  "verdict": "FAIL",
+  "code": "THIN",
+  "why": "상판 약 12px, 앞판+다리 3~4px로 기준 8~14px 미달",
+  "fix": "상판 축소, 다리 8px 이상"
+ },
+ {
+  "n": 128,
+  "key": "dining 2x1",
+  "verdict": "FAIL",
+  "code": "THIN",
+  "why": "상판 약 12px, 앞판+다리 3~4px로 기준 8~14px 미달",
+  "fix": "상판 축소, 다리 8px 이상"
+ },
+ {
+  "n": 129,
+  "key": "dining 2x2",
+  "verdict": "FAIL",
+  "code": "THIN",
+  "why": "상판 약 12px, 앞판+다리 3~4px로 기준 8~14px 미달",
+  "fix": "상판 축소, 다리 8px 이상"
+ },
+ {
+  "n": 130,
+  "key": "dining 3x1",
+  "verdict": "FAIL",
+  "code": "THIN",
+  "why": "상판 약 12px, 앞판+다리 3~4px로 기준 8~14px 미달",
+  "fix": "상판 축소, 다리 8px 이상"
+ },
+ {
+  "n": 131,
+  "key": "dining 3x2",
+  "verdict": "FAIL",
+  "code": "THIN",
+  "why": "상판 약 12px, 앞판+다리 3~4px로 기준 8~14px 미달",
+  "fix": "상판 축소, 다리 8px 이상"
+ },
+ {
+  "n": 132,
+  "key": "dining 4x1",
+  "verdict": "FAIL",
+  "code": "THIN",
+  "why": "상판 약 12px, 앞판+다리 3~4px로 기준 8~14px 미달",
+  "fix": "상판 축소, 다리 8px 이상"
+ },
+ {
+  "n": 133,
+  "key": "dining 4x2",
+  "verdict": "FAIL",
+  "code": "THIN",
+  "why": "상판 약 12px, 앞판+다리 3~4px로 기준 8~14px 미달",
+  "fix": "상판 축소, 다리 8px 이상"
+ },
+ {
+  "n": 134,
+  "key": "display 1x1",
+  "verdict": "FAIL",
+  "code": "THIN",
+  "why": "체크 천 상판 + 술 4~5px뿐, 다리 없고 깊이 단차 없음",
+  "fix": "천 드레이프 8px 이상 + 상판 8~10px"
+ },
+ {
+  "n": 135,
+  "key": "display 2x1",
+  "verdict": "FAIL",
+  "code": "THIN",
+  "why": "체크 천 상판 + 술 4~5px뿐, 다리 없고 깊이 단차 없음",
+  "fix": "천 드레이프 8px 이상 + 상판 8~10px"
+ },
+ {
+  "n": 136,
+  "key": "display 2x2",
+  "verdict": "FAIL",
+  "code": "THIN",
+  "why": "체크 천 상판 + 술 4~5px뿐, 다리 없고 깊이 단차 없음",
+  "fix": "천 드레이프 8px 이상 + 상판 8~10px"
+ },
+ {
+  "n": 137,
+  "key": "display 3x1",
+  "verdict": "FAIL",
+  "code": "THIN",
+  "why": "체크 천 상판 + 술 4~5px뿐, 다리 없고 깊이 단차 없음",
+  "fix": "천 드레이프 8px 이상 + 상판 8~10px"
+ },
+ {
+  "n": 138,
+  "key": "display 3x2",
+  "verdict": "FAIL",
+  "code": "THIN",
+  "why": "체크 천 상판 + 술 4~5px뿐, 다리 없고 깊이 단차 없음",
+  "fix": "천 드레이프 8px 이상 + 상판 8~10px"
+ },
+ {
+  "n": 139,
+  "key": "display 4x1",
+  "verdict": "FAIL",
+  "code": "THIN",
+  "why": "체크 천 상판 + 술 4~5px뿐, 다리 없고 깊이 단차 없음",
+  "fix": "천 드레이프 8px 이상 + 상판 8~10px"
+ },
+ {
+  "n": 140,
+  "key": "display 4x2",
+  "verdict": "FAIL",
+  "code": "THIN",
+  "why": "체크 천 상판 + 술 4~5px뿐, 다리 없고 깊이 단차 없음",
+  "fix": "천 드레이프 8px 이상 + 상판 8~10px"
+ },
+ {
+  "n": 141,
+  "key": "nightstand",
+  "verdict": "PASS",
+  "code": "",
+  "why": "윗면 약 5px, 서랍 앞면+다리 약 8px"
+ },
+ {
+  "n": 142,
+  "key": "plant",
+  "verdict": "PASS",
+  "code": "",
+  "why": "화분 입구 타원, 잎 유기물"
+ },
+ {
+  "n": 143,
+  "key": "pot",
+  "verdict": "FAIL",
+  "code": "THIN",
+  "why": "항아리 입구 어두운 2~3px, 타원 윗면 없음",
+  "fix": "입구 타원 4~8px"
+ },
+ {
+  "n": 144,
+  "key": "roundtable",
+  "verdict": "PASS",
+  "code": "",
+  "why": "타원 상판 약 10px + 기둥 받침"
+ },
+ {
+  "n": 145,
+  "key": "sack",
+  "verdict": "FAIL",
+  "code": "FRONT",
+  "why": "정면 실루엣, 윗면 없는 말랑 덩어리(애매)",
+  "fix": "입구 묶음 윗면을 위에서 보이게"
+ },
+ {
+  "n": 146,
+  "key": "sleeping cat",
+  "verdict": "EXEMPT",
+  "code": "",
+  "why": "생물"
+ },
+ {
+  "n": 147,
+  "key": "sofa",
+  "verdict": "FAIL",
+  "code": "FRONT",
+  "why": "등받이 띠가 우세, 좌판 윗면 약 3px, 팔걸이·앞판 정면 도면",
+  "fix": "좌판 윗면 4~6px"
+ },
+ {
+  "n": 148,
+  "key": "stool",
+  "verdict": "PASS",
+  "code": "",
+  "why": "타원 좌판 약 6px + 다리 3개"
+ },
+ {
+  "n": 149,
+  "key": "straw bed",
+  "verdict": "PASS",
+  "code": "",
+  "why": "짚 윗면 약 23px, 발치 판 6~7px (경계선)"
+ },
+ {
+  "n": 150,
+  "key": "table:bolt+yarn",
+  "verdict": "FAIL",
+  "code": "THIN",
+  "why": "상판 약 5px + 앞 천/판 약 5px, 다리·깊이 없음(기준 앞판 8~14px)",
+  "fix": "앞판 8px 이상으로, 상판 깊이 확보"
+ },
+ {
+  "n": 151,
+  "key": "table:book+scroll",
+  "verdict": "FAIL",
+  "code": "THIN",
+  "why": "상판 약 5px + 앞 천/판 약 5px, 다리·깊이 없음(기준 앞판 8~14px)",
+  "fix": "앞판 8px 이상으로, 상판 깊이 확보"
+ },
+ {
+  "n": 152,
+  "key": "table:gem+coins",
+  "verdict": "FAIL",
+  "code": "THIN",
+  "why": "상판 약 5px + 앞 천/판 약 5px, 다리·깊이 없음(기준 앞판 8~14px)",
+  "fix": "앞판 8px 이상으로, 상판 깊이 확보"
+ },
+ {
+  "n": 153,
+  "key": "table:mug+bottle",
+  "verdict": "FAIL",
+  "code": "THIN",
+  "why": "상판 약 5px + 앞 천/판 약 5px, 다리·깊이 없음(기준 앞판 8~14px)",
+  "fix": "앞판 8px 이상으로, 상판 깊이 확보"
+ },
+ {
+  "n": 154,
+  "key": "table:plate+cup",
+  "verdict": "FAIL",
+  "code": "THIN",
+  "why": "상판 약 5px + 앞 천/판 약 5px, 다리·깊이 없음(기준 앞판 8~14px)",
+  "fix": "앞판 8px 이상으로, 상판 깊이 확보"
+ },
+ {
+  "n": 155,
+  "key": "tea 1x1",
+  "verdict": "FAIL",
+  "code": "THIN",
+  "why": "붉은 천 상판 약 12px, 드레이프 3~4px",
+  "fix": "상판 8~10px로 줄이고 드레이프 8px"
+ },
+ {
+  "n": 156,
+  "key": "tea 2x1",
+  "verdict": "FAIL",
+  "code": "THIN",
+  "why": "붉은 천 상판 약 12px, 드레이프 3~4px",
+  "fix": "상판 8~10px로 줄이고 드레이프 8px"
+ },
+ {
+  "n": 157,
+  "key": "tea 2x2",
+  "verdict": "FAIL",
+  "code": "THIN",
+  "why": "붉은 천 상판 약 12px, 드레이프 3~4px",
+  "fix": "상판 8~10px로 줄이고 드레이프 8px"
+ },
+ {
+  "n": 158,
+  "key": "tea 3x1",
+  "verdict": "FAIL",
+  "code": "THIN",
+  "why": "붉은 천 상판 약 12px, 드레이프 3~4px",
+  "fix": "상판 8~10px로 줄이고 드레이프 8px"
+ },
+ {
+  "n": 159,
+  "key": "tea 3x2",
+  "verdict": "FAIL",
+  "code": "THIN",
+  "why": "붉은 천 상판 약 12px, 드레이프 3~4px",
+  "fix": "상판 8~10px로 줄이고 드레이프 8px"
+ },
+ {
+  "n": 160,
+  "key": "tea 4x1",
+  "verdict": "FAIL",
+  "code": "THIN",
+  "why": "붉은 천 상판 약 12px, 드레이프 3~4px",
+  "fix": "상판 8~10px로 줄이고 드레이프 8px"
+ },
+ {
+  "n": 161,
+  "key": "tea 4x2",
+  "verdict": "FAIL",
+  "code": "THIN",
+  "why": "붉은 천 상판 약 12px, 드레이프 3~4px",
+  "fix": "상판 8~10px로 줄이고 드레이프 8px"
+ },
+ {
+  "n": 162,
+  "key": "work 1x1",
+  "verdict": "FAIL",
+  "code": "TOPDOWN",
+  "why": "나무 상판이 대부분(12px/16px), 앞판 1px, 다리 2px만 보임",
+  "fix": "상판 8~10px + 앞판·다리 8~14px"
+ },
+ {
+  "n": 163,
+  "key": "work 2x1",
+  "verdict": "FAIL",
+  "code": "TOPDOWN",
+  "why": "나무 상판이 대부분(12px/16px), 앞판 1px, 다리 2px만 보임",
+  "fix": "상판 8~10px + 앞판·다리 8~14px"
+ },
+ {
+  "n": 164,
+  "key": "work 2x2",
+  "verdict": "FAIL",
+  "code": "TOPDOWN",
+  "why": "나무 상판이 대부분(12px/16px), 앞판 1px, 다리 2px만 보임",
+  "fix": "상판 8~10px + 앞판·다리 8~14px"
+ },
+ {
+  "n": 165,
+  "key": "work 3x1",
+  "verdict": "FAIL",
+  "code": "TOPDOWN",
+  "why": "나무 상판이 대부분(12px/16px), 앞판 1px, 다리 2px만 보임",
+  "fix": "상판 8~10px + 앞판·다리 8~14px"
+ },
+ {
+  "n": 166,
+  "key": "work 3x2",
+  "verdict": "FAIL",
+  "code": "TOPDOWN",
+  "why": "나무 상판이 대부분(12px/16px), 앞판 1px, 다리 2px만 보임",
+  "fix": "상판 8~10px + 앞판·다리 8~14px"
+ },
+ {
+  "n": 167,
+  "key": "work 4x1",
+  "verdict": "FAIL",
+  "code": "TOPDOWN",
+  "why": "나무 상판이 대부분(12px/16px), 앞판 1px, 다리 2px만 보임",
+  "fix": "상판 8~10px + 앞판·다리 8~14px"
+ },
+ {
+  "n": 168,
+  "key": "work 4x2",
+  "verdict": "FAIL",
+  "code": "TOPDOWN",
+  "why": "나무 상판이 대부분(12px/16px), 앞판 1px, 다리 2px만 보임",
+  "fix": "상판 8~10px + 앞판·다리 8~14px"
+ },
+ {
+  "n": 169,
+  "key": "firewood bundle",
+  "verdict": "FAIL",
+  "code": "SIDE",
+  "why": "통나무 옆 입면 + 왼쪽 단면, 윗면 없음",
+  "fix": "통나무 윗면 곡면을 위에서 보이게"
+ },
+ {
+  "n": 170,
+  "key": "kcounter 1x1",
+  "verdict": "PASS",
+  "code": "",
+  "why": "돌 상판 약 5~6px, 하이라이트, 문 앞면 약 9~15px"
+ },
+ {
+  "n": 171,
+  "key": "kcounter 2x1",
+  "verdict": "PASS",
+  "code": "",
+  "why": "돌 상판 약 5~6px, 하이라이트, 문 앞면 약 9~15px"
+ },
+ {
+  "n": 172,
+  "key": "kcounter 3x1",
+  "verdict": "PASS",
+  "code": "",
+  "why": "돌 상판 약 5~6px, 하이라이트, 문 앞면 약 9~15px"
+ },
+ {
+  "n": 173,
+  "key": "kcounter 4x1",
+  "verdict": "PASS",
+  "code": "",
+  "why": "돌 상판 약 5~6px, 하이라이트, 문 앞면 약 9~15px"
+ },
+ {
+  "n": 174,
+  "key": "water jar",
+  "verdict": "FAIL",
+  "code": "THIN",
+  "why": "물 입구 타원 약 3px(기준 4~8px)",
+  "fix": "입구 타원을 4~6px로"
+ },
+ {
+  "n": 175,
+  "key": "crystal ball",
+  "verdict": "EXEMPT",
+  "code": "",
+  "why": "구체 + 받침, 받침 윗면은 구가 가림"
+ },
+ {
+  "n": 176,
+  "key": "spellbook stand",
+  "verdict": "FAIL",
+  "code": "MIXED",
+  "why": "펼친 책은 정면 도면, 받침 윗면 안 보임, 표지 윗면 2px",
+  "fix": "받침 윗면 4~6px 위에 책을 눕혀 얹기"
+ },
+ {
+  "n": 177,
+  "key": "treasure pile",
+  "verdict": "PASS",
+  "code": "",
+  "why": "금화 윗면 4~5px + 앞면 궤짝 약 9px (경계선)"
+ },
+ {
+  "n": 178,
+  "key": "magitek armor",
+  "verdict": "EXEMPT",
+  "code": "",
+  "why": "사람형 기계"
+ },
+ {
+  "n": 179,
+  "key": "magitek engine",
+  "verdict": "FAIL",
+  "code": "CAP",
+  "why": "배관 윗단면 1~2px 가로선뿐, 타원/판 캡 없음",
+  "fix": "배관 윗면 캡 3~4px"
+ },
+ {
+  "n": 180,
+  "key": "steam vent",
+  "verdict": "EXEMPT",
+  "code": "",
+  "why": "바닥 격자판"
+ },
+ {
+  "n": 181,
+  "key": "mine cart",
+  "verdict": "FAIL",
+  "code": "FRONT",
+  "why": "정면 도면, 광석 윗면 약 3px, 내부 안 보임",
+  "fix": "윗면 입구 4~6px + 광석 더미"
+ },
+ {
+  "n": 182,
+  "key": "ore pile",
+  "verdict": "EXEMPT",
+  "code": "",
+  "why": "광석 덩이·결정"
+ },
+ {
+  "n": 183,
+  "key": "powder kegs",
+  "verdict": "FAIL",
+  "code": "THIN",
+  "why": "통 뚜껑 약 2px 띠, 타원 윗면 없음",
+  "fix": "통 윗면 타원 4px"
+ }
+]

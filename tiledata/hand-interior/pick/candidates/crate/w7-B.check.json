@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/crate/w7-B.pxg",
+ "id": "crate",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.049
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "dither"
+  ],
+  "pass": false
+ },
+ "colors": 9,
+ "v5_colors": 8,
+ "bbox": [
+  2,
+  2,
+  13,
+  14
+ ],
+ "v5_bbox": [
+  2,
+  2,
+  13,
+  14
+ ],
+ "note": "같은 상자에 빛 구조를 세게: 뚜껑 윗면 wood:7, 왼 테 한 단 밝게, 오른·아래 테 wood:1, 오른쪽 아래 접지 그림자",
+ "ok": true
+}

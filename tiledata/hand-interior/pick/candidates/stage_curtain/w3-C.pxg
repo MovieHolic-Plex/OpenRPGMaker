@@ -1,0 +1,51 @@
+// w3-C stage_curtain
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat g gold 6
+@mat G gold 5
+@mat h gold 4
+@mat i gold 3
+@mat j gold 2
+@mat k gold 1
+@mat A red 5
+@mat B red 4
+@mat C red 3
+@mat D red 2
+@mat E red 1
+@mat F red 0
+@mat x red 6
+@layer main
+@mblock 0 0
+................
+................
+GGGGGGGGGGGGGGGG
+hhhhhhhhhhhhhhhh
+iiiiiiiiiiiiiiii
+hBBBBBBhhBBBBBBh
+hCCCCCChhCCCCCCh
+jDDDDDDjjDDDDDDj
+EjEEEEjEEjEEEEjE
+DBABDEFEDBABDEFE
+DBABDEFEDBABDEFE
+DBABDEFEDBABDEFE
+DBABDEFEDBABDEFE
+DBABDEFEDBABDEFE
+DBABDEFEDBABDEFE
+DBABDEFEDBABDEFE
+DBABDEFEDBABDEFE
+DBABDEFEDBABDEFE
+hGhGhGhGhGhGhGhG
+kjkjkjkjkjkjkjkj
+DBABDEFgGBABDEFE
+DBABDEFGhBABDEFE
+DBABDEFgGBABDEFE
+DBABDEFGhBABDEFE
+DBABDEFgGBABDEFE
+DBABDEFijBABDEFE
+DBABDEFEDBABDEFE
+DBABDEFEDBABDEFE
+DBABDEFEDBABDEFE
+DBABDEFEDBABDEFE
+hGhGhGhGhGhGhGhG
+jjjkjjjkjjjkjjjk

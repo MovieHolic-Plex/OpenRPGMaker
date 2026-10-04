@@ -1,0 +1,19 @@
+{
+ "id": "zakkyo_building",
+ "slug": "zakkyo_building",
+ "name": "세로 간판 잡거빌딩",
+ "scene": "역 앞 번화가",
+ "cells": [
+  3,
+  5
+ ],
+ "canvas": [
+  48,
+  80
+ ],
+ "layer": "facade",
+ "layer_ko": "건물 외관 블록(불투명 허용)",
+ "description": "좁고 높은 잡거빌딩 앞면(층마다 다른 가게). 층마다 창 한 줄 + 왼쪽에 층별 세로 간판 판 여러 장(색 다른 네모, 굵은 한자 한 자씩 「酒」「歌」「薬」 같이), 1층은 가게 유리문. 맨 위 평지붕 테두리·물탱크.",
+ "palette_hint": "mconc·mtile 벽, mglass 창, akachin·kblue·taxi·neon 간판, lacq 글자",
+ "worker": "j5"
+}

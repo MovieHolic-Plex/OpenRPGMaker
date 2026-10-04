@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/round_arch/w28-A.pxg",
+ "id": "round arch",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 5,
+  "atLeast95": 0,
+  "max": 0.028
+ },
+ "lint": {
+  "failed": [
+   "light"
+  ],
+  "pass": false
+ },
+ "colors": 5,
+ "v5_colors": 4,
+ "bbox": [
+  11,
+  0,
+  36,
+  29
+ ],
+ "v5_bbox": [
+  12,
+  0,
+  35,
+  29
+ ],
+ "note": "w5-C 모양 그대로, 회벽(linen) 결로 다시 칠함: 벽 색과 같은 크림색 단 + 돌쌓기 이음 줄.",
+ "ok": true
+}

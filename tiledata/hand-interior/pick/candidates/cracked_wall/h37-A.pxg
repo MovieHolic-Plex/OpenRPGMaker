@@ -1,0 +1,39 @@
+// 방향 A: 전형적 금 간 벽 — 돌 조각 한 장에 위에서 아래로 가는 어두운 균열, 균열 오른쪽 가장자리는 밝은 턱, 모서리 부스러짐
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat s stone 3
+@mblock 0 0
+..sssssssssss...
+.sssssssssssss..
+ssssssssssssssss
+ssssssssssssssss
+ssssssssssssssss
+ssssssssssssssss
+ssssssssssssssss
+ssssssssssssssss
+ssssssssssssssss
+ssssssssssssssss
+ssssssssssssssss
+ssssssssssssssss
+ssssssssssssssss
+ssssssssssssssss
+ssssssssssssssss
+..sssssssssss...
+@tblock 0 0
+..44444044444...
+.4433333053333..
+4333330053333332
+4333300533333322
+4333330533233322
+4333300533333222
+4330000053333322
+4333330053332222
+4333333000052222
+4333333330052222
+3333333300533222
+3333333305333222
+3333333005333222
+3333333053332222
+2333333005222221
+..11111101111...

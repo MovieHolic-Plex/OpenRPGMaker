@@ -1,4 +1,5 @@
 import { applySharedTileReferenceEntries, ensureSharedTileReferences, sharedTileReferencesTouch } from "./sharedTileReferences";
+import { bootNormalizationMatches, currentBootNormalizationMarker, stampBootNormalization } from "./bootNormalization";
 import { externalizeBundledReferenceImages } from "./bundledReferenceImages";
 import { canWriteTeamProject } from './teamAccess';
 import { mergeTeamProject } from "./persistence/core/teamMerge";
@@ -11,10 +12,11 @@ import { createBlankProject } from "./defaults";
 import { ensureSwitchVariableSlots } from "./defaults/blankProject";
 import { ensureBundledResourceProfiles, ensureBundledTilesets, removeLegacyRmTileset, removeLegacySpriteReferences } from "./defaults/defaultAssets";
 import { hasPendingFacesetSheetRepair, repairUploadedFacesetSheets } from "@/assets/facesetSheetRepair";
+import { separateInlineUploadedMedia } from "./persistence/inlineMediaRefs";
 import { repairInteriorTransparentPropLayers } from "./defaults/interiorTransparentPropLayerRepair";
 import { ensureScarloxyPokemonInteriors } from "./defaults/scarloxyPokemonInteriors";
 import { ensureDefaultDatabaseIconResources } from "./defaults/defaultDatabaseIconResources";
-import { ensureBundledBattleAnimations } from "./defaults/defaultDatabase";
+import { ensureBundledBattleAnimations, ensureRetroRosterRecords } from "./defaults/defaultDatabase";
 import { repairFaceMatches } from "./faceMatchRepair";
 import { isSaveSkippedLocation, loadDevProjectOverride, saveDevProjectOverride } from "./devProjectPersistence";
 import type { ProjectWriteAuthority } from "./spatial/saveRouting";
@@ -22,8 +24,8 @@ import type { SaveResult } from "./persistence/types";
 import type { RemoteProjectTarget } from "./persistence/target";
 import { isSharedDemoProjectId, SHARED_DEMO_PROJECT_ID } from "./sharedDemoProject";
 import { projectViewWithoutEventDrafts, projectWithoutEventDrafts } from "./eventDrafts";
-import { jsonContentDigest, shareContentDigests } from "./persistence/core/contentDigest";
-import { cloneProjectForMutation, cloneProjectSharingReferenceDocuments, finishProjectMutation } from "./projectClone";
+import { forgetTrustedSharedEntries, jsonContentDigest, shareContentDigests, sharedEntryDigest } from "./persistence/core/contentDigest";
+import { applyCleanedProjection, cloneProjectForUpdate, cloneProjectSharingReferenceDocuments, finishProjectUpdate } from "./projectClone";
 import { assertCanonicalReplacement, ProjectRoutingError } from "./spatial/saveRouting";
 import { SpatialPersistenceError, type MirrorStatus } from "./spatial/persistenceTypes";
 import { applyAudioDescriptionDelta } from "./audioDescriptions";
@@ -46,6 +48,7 @@ import type { ProjectRepository } from "./persistence/types";
 import { recordManualProjectCommitAfterSave, resetManualProjectCommitBaseline } from "./projectCommitLog";
 import { repairMapTreeOrphans } from "@/project/mapTree";
 import { cloneExtraLayers } from "@/project/mapLayers";
+import { restoreLockedTerrainCells } from "./terrainLocks";
 
 import { jsonEqual } from "@/util/structuralJson";
 import { randomUuid } from "@/util/id";
@@ -703,7 +706,10 @@ class ProjectStore {
     // 메우는 만큼 «다르다» 로 달 수 있지만, 그 방향은 논리적으로 같은 스냅샷을 한 번 다시 얹는 것뿐이다.
     if (this.persistedBaseline && jsonEqual(snapshot.project, this.persistedBaseline)) return true;
     this.current = preserveEventDraftsOnProject(snapshot.project, this.current);
-    this.persistedBaseline = this.baselineFrom(snapshot.project);
+    // 방금 받은 스냅숏은 이 스토어만 가진 사본이고 초안이 없다(호스트 행은 초안을 싣지 않는다). current 는 위에서
+    // 따로 복제했으므로 스냅숏을 그대로 기준본으로 둔다. 실측(2026-09-28, 팀 참여 창): 동료 저장 반영마다 기준본
+    // 복제(cloneProjectSharingReferenceDocuments) 1.5s 와 그 쓰레기의 GC 가 메인 스레드를 막았다.
+    this.persistedBaseline = this.baselineFrom(snapshot.project, { owned: true });
     this.writeAuthority = snapshot.authority;
     this.lastPersistenceReceipt = null;
     this.lastSavedHostRevision = null;
@@ -843,18 +849,24 @@ class ProjectStore {
 
   update(mutator: (draft: Project) => void, change: ProjectChangeDescriptor = { scope: "project" }): void {
     if (!canWriteTeamProject()) return;
-    // 타일셋은 변경기가 읽는 것만 복제하고, 안 바뀐 것은 이전 객체를 그대로 둔다(projectClone 머리말).
-    const draft: Project = cloneProjectForMutation(this.current);
+    // 타일셋·맵·DB·spatialAuthoring 은 변경기가 읽는 것만 복제하고, 안 바뀐 것은 이전 객체를 그대로 둔다(projectClone 머리말).
+    // 실측(2026-09-30, 큰 프로젝트): 전체 복제 약 55ms + 전체 순회 정리 25~41ms 가 update 1회 121ms 의 대부분이었다.
+    const draft: Project = cloneProjectForUpdate(this.current);
+    let summary: ReturnType<typeof finishProjectUpdate>;
     try {
       mutator(draft);
     } finally {
-      finishProjectMutation(draft);
+      summary = finishProjectUpdate(draft);
     }
     assertCanonicalReplacement(draft, this.writeAuthority);
+    // 아래 정규화는 확정(finish) 뒤에 돌린다: 늦은 접근자를 건드리지 않아야 안 읽은 맵을 복제하지 않는다.
+    // 정규화는 mapConnections·mapTree·switches·session 만 고친다(맵·DB 는 읽기만 한다).
     ensureProjectMapConnections(draft);
     ensureMapTreeCoversAllMaps(draft);
     ensureSwitchVariableSlots(draft);
-    removeLegacySpriteReferences(draft);
+    // 정리(removeLegacySpriteReferences)는 바뀐 부분에만 돌린다. 안 바뀐 부분은 이전 리비전에서 이미 지났다.
+    removeLegacySpriteReferences(summary.cleanupTarget);
+    applyCleanedProjection(draft, summary.cleanupTarget);
     this.current = draft;
     syncEventDraftVaultFromProject(this.current);
     this.markLocalMutation(change);
@@ -959,6 +971,7 @@ class ProjectStore {
       ...(currentMap.upperTileStacks ? { upperTileStacks: cloneTileStacks(currentMap.upperTileStacks) } : {}),
     };
     mapMutator(draftMap);
+    restoreLockedTerrainCells(currentMap, draftMap);
     this.current = {
       ...this.current,
       maps: {
@@ -970,7 +983,7 @@ class ProjectStore {
     const descriptor: ProjectChangeDescriptor = { scope: "map", mapId, ...change };
     this.markLocalMutation(descriptor);
     this.emit(descriptor);
-    this.scheduleAutoSave();
+    this.scheduleAutoSave(false);
   }
 
   /**
@@ -978,13 +991,23 @@ class ProjectStore {
    * 요약했다(2026-09-26 실측, 81MB 새 프로젝트 첫 칠하기 diff 1.8s 동안 메인 스레드 정지). 한가할 때 원본의
    * 요약을 미리 만들어 기준본에 넘긴다 — 기억은 값 대조로만 쓰이므로 그 사이 무엇이 바뀌어도 결과는 같다.
    */
-  private baselineFrom(source: Project): Project {
-    const baseline = projectWithoutEventDrafts(source);
+  private baselineFrom(source: Project, options: { readonly owned?: boolean } = {}): Project {
+    // owned: 호출자가 source 를 다른 곳에 넘기지 않는 사적 사본이라고 보증한다. 초안이 없으면 복제하지 않는다.
+    const baseline = options.owned && projectViewWithoutEventDrafts(source) === source ? source : projectWithoutEventDrafts(source);
     const lineage = this.contentLineage;
     scheduleIdleWork(() => {
       if (this.contentLineage !== lineage || this.persistedBaseline !== baseline) return;
+      // 로드 직후 정규화가 current 의 요약을 이미 만들었다. 복제본인 기준본은 기억이 비어 있어 같은 문서를 처음부터
+      // 다시 해시했다(2026-09-28 실측, 팀 참여 창 부팅 4.4s). 기억을 먼저 넘기면 바뀐 가지만 다시 센다 — 기억은 값
+      // 대조로만 채택되므로 정규화가 current 를 고친 가지는 그대로 다시 계산된다.
+      if (baseline !== this.current) shareContentDigests(this.current, baseline);
       jsonContentDigest(projectWireView(baseline));
       shareContentDigests(baseline, this.current);
+      // 양쪽 타일셋 항목을 미리 대조해 믿어 둔다 — 저장 diff(projectPatch.sameTilesetValue)가 첫 저장부터 O(1) 로 지나가게.
+      // (2026-09-30 실측, 타일셋 385칸: 첫 1셀 칠하기 자동저장 diff 1.6s → 이 대조를 한가할 때로 옮김)
+      for (const view of [baseline, this.current]) {
+        for (const [id, entry] of Object.entries(projectWireView(view).tilesets ?? {})) sharedEntryDigest(entry, id);
+      }
     });
     return baseline;
   }
@@ -1212,7 +1235,7 @@ class ProjectStore {
     this.emitAutoSave();
   }
 
-  private scheduleAutoSave(): void {
+  private scheduleAutoSave(republishPending = true): void {
     if (!this.loaded) return;
     if (!this.remotePersistenceEnabled) {
       if (this.remotePersistenceDisabledReason === "dev-showcase" && isSaveSkippedLocation()) {
@@ -1233,7 +1256,9 @@ class ProjectStore {
     }, this.autoSaveDelayMs);
     this.autoSaveTimer = timer;
     // Publish after registration: a synchronous subscriber may schedule its own save.
-    this.setAutoSaveState({ kind: "pending" });
+    // 이미 pending 이면 같은 상태를 다시 알려도 구독자가 볼 새 정보가 없다. 붓 드래그는 표본마다 여기로 오고,
+    // 구독자(상단바 저장 표시·자료집 발밑 상태)가 매번 글자를 다시 써 문서 전체 스타일 재계산을 일으킨다.
+    if (republishPending || this.autoSaveState.kind !== "pending") this.setAutoSaveState({ kind: "pending" });
   }
 
   private clearAutoSaveRetry(): void {
@@ -1528,8 +1553,10 @@ class ProjectStore {
       this.current.monsterMetadata,
       savedProject.monsterMetadata,
     );
-    if (reconciledTeamProject || JSON.stringify(audioDescriptions) !== JSON.stringify(this.current.audioDescriptions)
-      || JSON.stringify(monsterMetadata) !== JSON.stringify(this.current.monsterMetadata)) {
+    // 참조가 같으면 글로 만들어 대조할 필요가 없다(값이 크면 저장마다 두 번 직렬화했다).
+    const sameJson = (a: unknown, b: unknown): boolean => a === b || JSON.stringify(a) === JSON.stringify(b);
+    if (reconciledTeamProject || !sameJson(audioDescriptions, this.current.audioDescriptions)
+      || !sameJson(monsterMetadata, this.current.monsterMetadata)) {
       const reconciledProject = { ...this.current };
       if (audioDescriptions === undefined) delete reconciledProject.audioDescriptions;
       else reconciledProject.audioDescriptions = structuredClone(audioDescriptions);
@@ -1607,12 +1634,18 @@ class ProjectStore {
     // 변경 판정은 내용 요약(`jsonContentDigest`)으로 한다 — 키 순서를 무시하고 모든 필드·배열 자리·값을 본다
     // (예전 `normalizationFingerprint` 와 같은 판정, 타일 격자는 손실 없는 SHA 로). 요약은 노드마다 기억되고
     // 로드는 이 직전에 커밋 기준본 요약을 이미 만든다. 실측(2026-09-27, 82MB): 지문 두 번 3.4s → 기억 대조 약 0.6s.
-    const before = jsonContentDigest(this.current);
+    // 정규화기는 타일셋 항목을 제자리에서 고칠 수 있다 — 믿은 공유 항목 기록을 버려 앞뒤 요약이 끝까지 대조하게 한다.
+    // 같은 빌드·같은 공용 판본이 이미 정규화한 문서면 정규화기도, 전후 요약도 건너뛴다(bootNormalization.ts 머리말).
+    // 표식이 없거나 짝이 다르면(옛 파일·미마이그 사본·새 빌드) 예전처럼 전부 돌리고, 끝난 뒤 표식을 새긴다.
+    const bootMarker = currentBootNormalizationMarker();
+    const skipNormalizers = bootNormalizationMatches(this.current, bootMarker);
+    if (!skipNormalizers) forgetTrustedSharedEntries();
+    const before = skipNormalizers ? null : jsonContentDigest(this.current);
     // 어느 정규화기가 실제로 손을 댔는지 이름으로 남긴다.
     // 실측(2026-08-29): 이 13개는 `this.current` 를 in-place 로 고치면서 markLocalMutation 을
     // 부르지 않는다 — 프로젝트가 로드 중에 조용히 바뀌는데 그 사실이 어디에도 안 남아서
     // "내가 안 건드렸는데 값이 달라졌다" 를 추적할 수 없었다.
-    const normalizers: readonly (readonly [string, boolean])[] = [
+    const normalizers: readonly (readonly [string, boolean])[] = skipNormalizers ? [] : [
       ["legacyDialogue", rewriteLegacyAdvancedDialogueInProject(this.current)],
       ["mapConnections", ensureProjectMapConnections(this.current)],
       // 실내 보강은 mapTree 고아 복구보다 먼저 — 새로 넣은 실내 맵이 같은 패스에서 트리에 편입된다.
@@ -1630,17 +1663,23 @@ class ProjectStore {
       // 팩 이전 스냅샷은 anim_gen_* 이 없어 스타터 아이템·스킬 참조가 끊긴다 —
       // 그대로 두면 fail-closed 재생 게이트가 ▶테스트를 조용히 막는다.
       ["bundledBattleAnimations", ensureBundledBattleAnimations(this.current)],
+      // 로스터 직업·예비 배우·스킬·기믹 상태 8종 중 빠진 것만 심는다(저자 레코드·시작 파티는 그대로).
+      ["retroRoster", ensureRetroRosterRecords(this.current)],
       // 걷기 그림과 다른 인물의 얼굴을 짝으로 맞춘다(2026-09-28 전수 조사, faceMatchRepair.ts).
       ["faceMatches", faceMatchesRepaired(repairFaceMatches(this.current))],
     ];
     const appliedNormalizers = normalizers.filter(([, applied]) => applied).map(([name]) => name);
-    const changed = before !== jsonContentDigest(this.current);
-    if (changed) {
+    const changed = !skipNormalizers && before !== jsonContentDigest(this.current);
+    if (!skipNormalizers) forgetTrustedSharedEntries();
+    // 표식은 변경 판정(요약 대조) 뒤에 새긴다 — 표식 때문에 «정규화기가 손댔다»고 오판하지 않는다.
+    const stamped = !skipNormalizers && bootMarker !== null;
+    if (stamped) stampBootNormalization(this.current, bootMarker);
+    if (changed || stamped) {
       this.markLocalMutation({
         scope: "system",
-        label: `프로젝트 정규화 (${appliedNormalizers.length}종)`,
+        label: changed ? `프로젝트 정규화 (${appliedNormalizers.length}종)` : "프로젝트 정규화 표식",
         origin: "system",
-        fields: appliedNormalizers.map((name) => ({ path: name, after: true })),
+        fields: changed ? appliedNormalizers.map((name) => ({ path: name, after: true })) : [{ path: "meta.bootNormalization", after: true }],
       });
     }
     // 업로드 시트의 진짜 절단은 canvas 가 필수라 동기 보정 배열 밖에서 돌린다.
@@ -1657,9 +1696,21 @@ class ProjectStore {
       this.markLocalMutation({ scope: "system", origin: "system", label: "Faceset sheet migration" });
       this.emit();
     }
+    // 파일 저장이 있는 호스트면 인라인 업로드 자산을 지금 파일 참조로 바꾼다(inlineMediaRefs.ts 머리말).
+    // 로드가 끝나기 전이라 조수 실행 기준이 잡히기 전이다 — 나중에 호스트가 문서를 다시 쓰면 실행 기준이 무너진다.
+    const mediaTarget = this.current;
+    const media = this.repository.supportsAssetRefs && this.remotePersistenceEnabled
+      ? await separateInlineUploadedMedia(mediaTarget, this.repository.assets)
+      : null;
+    if (this.current !== mediaTarget || this.contentLineage !== repairLineage) return;
+    if (media) {
+      this.current = media.project;
+      this.markLocalMutation({ scope: "system", origin: "system", label: `업로드 자산 파일 분리 (${media.assetIds.length}건)` });
+      this.emit();
+    }
     // Boot load must not block the editor on a full remote rewrite (~2MB+).
     // Schedule deferred auto-save so the shell can paint first.
-    if ((changed || facesRepaired) && this.remotePersistenceEnabled) {
+    if ((changed || stamped || facesRepaired || media) && this.remotePersistenceEnabled) {
       this.dirtySinceLastPersist = true;
       if (persistIfChanged && this.writeAuthority?.mode !== "canonical") await this.persistCurrent();
       else if (persistIfChanged && !this.persistInFlight) await this.saveCurrentWithAutoSaveState();
@@ -1678,6 +1729,9 @@ class ProjectStore {
     if (!this.loaded || this.currentValue === null || !canWriteTeamProject() || this.readOnlyProjectSnapshot) return false;
     // 보강할 타일셋이 없으면 프로젝트를 복제하지 않는다(대부분의 프로젝트가 이 경우다).
     if (!sharedTileReferencesTouch(this.current)) return false;
+    // 부팅 정규화가 같은 판본을 이미 넣었으면 바뀔 것이 없다 — 복제 전에 본다. 실측(2026-09-28, 팀 참여 창 부팅):
+    // 바뀔 것 없는 갱신이 문서 복제 1.5s 를 먼저 치렀다.
+    if (!applySharedTileReferenceEntries(this.current, undefined, { dryRun: true })) return false;
     const draft = cloneProjectSharingReferenceDocuments(this.current);
     if (!applySharedTileReferenceEntries(draft)) return false;
     this.current = draft;

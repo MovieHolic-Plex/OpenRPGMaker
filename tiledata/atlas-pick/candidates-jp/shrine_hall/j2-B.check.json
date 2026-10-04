@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/shrine_hall/j2-B.pxg",
+ "set": "jp",
+ "id": "shrine_hall",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 18,
+  "atLeast95": 0,
+  "max": 0.211
+ },
+ "refmap": {
+  "cells": 18,
+  "atLeast95": 0,
+  "max": 0.089
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "dither"
+  ]
+ },
+ "colors": 35,
+ "bbox": [
+  3,
+  7,
+  79,
+  63
+ ],
+ "note": "입체 강화: 짙은 기와 지붕·처마 아래 깊은 그늘, 격자문 안쪽이 밝게 보이는 불빛, 기단 그림자 3줄, 왼쪽은 밝고 오른쪽은 어둡게.",
+ "ok": true
+}

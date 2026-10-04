@@ -1,0 +1,43 @@
+// v0.png → modern3 자동 재채색(remap_modern3.py)
+@size 16 16
+@cell 16
+@palette palette.pal
+@layer main
+@mat a garasu 0
+@mat b sumi 0
+@mat c tairu 0
+@mat d tekko 0
+@mblock 0 0
+baaaaaaadaaaaaaa
+baaaaaaadaaaaaaa
+baaaaaaadaaaaaaa
+baaaaaaadaaaaaaa
+baaaaaaadaaaaaaa
+baaaaaaadaaaaaaa
+baaaaaaadaaaaaaa
+baaaaaaadaaaaaaa
+baaaaaaadaaaaaaa
+baaaaaaadaaaaaaa
+baaaaaaadaaaaaaa
+baaaaaaadaaaaaaa
+baaaaaaadaaaaaaa
+badddddddddddddd
+bacccccccccccccc
+bacccccccccccccc
+@tblock 0 0
+0633333666333333
+0633336663333336
+0633366663333363
+0633666363333633
+0636663363336333
+0666633363363333
+0666333363633333
+0663333366333333
+0622222262222222
+0622222662222222
+0622226262222222
+0622262262222222
+0622622262222222
+0666666666666666
+0600000000000000
+0600000000000000

@@ -1,0 +1,43 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/bridge_h/wv2-B.pxg",
+ "set": "worldmap",
+ "id": "bridge_h",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.125
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.125
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 9,
+ "bbox": [
+  0,
+  3,
+  15,
+  15
+ ],
+ "note": "깊이 강조 돌다리. 난간이 상판에 그늘을 떨구고 상판이 난간 쪽에서 안쪽으로 밝아진다. 다리 옆면 한 줄이 어둡고 그 밖에 그림자 두 줄. 이음은 위·아래 절반이 4px 어긋난다",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 1,
+   "atLeast95": 0,
+   "max": 0.027
+  },
+  "refmapWorld": {
+   "cells": 1,
+   "atLeast95": 0,
+   "max": 0.125
+  },
+  "seam": 0.7
+ }
+}

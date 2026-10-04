@@ -1,0 +1,82 @@
+// castle w5-A 
+@size 32 32
+@cell 16
+@palette palette.pal
+@layer main
+@mat a mdglass 0
+@mat b mred 0
+@mat c mwhite 0
+@mat d myellow 0
+@mat e wbark 0
+@mat f wdirt 0
+@mat g wgold 0
+@mat h wgrass 0
+@mat i wroofb 0
+@mat j wroofr 0
+@mat k wstone 0
+@mblock 0 0
+...............kbbbb............
+...............kbbbbb...........
+..............ikbbbb............
+.............iikiii.............
+.............iiiiii.............
+............iiiiiiii............
+...........iiiiiiiiii...........
+....ii.....iiiiiiiiii......ii...
+...iii....iiiiiiiiiiii....iii...
+...iii...iiiiiiiiiiiiii...iii...
+..iiiii...kkkkkkkkkkkk...iiiii..
+..iiiii...kkkkkkkkkkkk...iiiii..
+.iiiiiii..kkkkkkkkkkkk..iiiiiii.
+.iiiiiii..kkkkkkkkkkkk..iiiiiii.
+iiiiiiiii.kkkkkkkkkkkk.iiiiiiiii
+iiiiiiiii.kkkkkkkkkkkk.iiiiiiiii
+.kkkkkkk..kkkkkkkkkkkk..kkkkkkk.
+.kkkkkkk..kkkkkkkkkkkk..kkkkkkk.
+.kkkkkkkk.kkkkkkkkkkkk.kkkkkkkk.
+.kkkkkkkk.kkkkkkkkkkkk.kkkkkkkk.
+.kkkkkkkkkkkkkkkkkkkkkkkkkkkkkk.
+.kkkkkkkkkkkkkkkkkkkkkkkkkkkkkk.
+.kkkkkkkkkkkkkkkkkkkkkkkkkkkkkk.
+.kkkkkkkkkkkkkkkkkkkkkkkkkkkkkk.
+.kkkkkkkkkkkkkkkkkkkkkkkkkkkkkk.
+.kkkkkkkkkkkkkkeekkkkkkkkkkkkkk.
+.kkkkkkkkkkkkkkeekkkkkkkkkkkkkk.
+.kkkkkkkkkkkkkkeekkkkkkkkkkkkkk.
+.kkkkkkkkkkkkkkeekkkkkkkkkkkkkk.
+.kkkkkkkkkkkkkkeekkkkkkkkkkkkkk.
+.kkkkkkkkkkkkkkeekkkkkkkkkkkkkk.
+................................
+@tblock 0 0
+...............03333............
+...............033332...........
+..............102222............
+.............140221.............
+.............143221.............
+............14332221............
+...........1433322221...........
+....14.....1433322221......14...
+...141....143333222221....141...
+...141...11111111111111...141...
+..14221...555555444444...14221..
+..14221...555555444444...14221..
+.1432221..555555444444..1432221.
+.1432221..555550555555..1432221.
+143322221.555550444444.143322221
+111111111.555555444444.111111111
+.5554444..555555444444..5554444.
+.5554444..555555555555..5554444.
+.55544445.555555444444.55554444.
+.55505554.555555444444.45550555.
+.555044455555555444444555550444.
+.555444455333333333333555554444.
+.555444455555555555555555554444.
+.555555555555550055555555555555.
+.555444455555500005555555554444.
+.555444455555502205555555554444.
+.555444455555500005555555554444.
+.555555555555500005555555555555.
+.555444455555500005555555554444.
+.555444455555500005555555554444.
+.333333333333300003333333333333.
+................................

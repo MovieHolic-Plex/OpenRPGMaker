@@ -1,0 +1,299 @@
+{
+  "base": "http://127.0.0.1:18432",
+  "root": "/home/main/.codex/worktrees/0a57/rpg-zzu/output/qa/live-first-game/project",
+  "started": "2026-10-03T13:04:07.686Z",
+  "requests": [
+    {
+      "mode": "team",
+      "model": "gemini-3.8-flash",
+      "runId": "21e95fd8-d7bf-4476-bd1b-fc56c5961a84",
+      "characters": 10861,
+      "planIncluded": true,
+      "premiseIncluded": true,
+      "protagonistIncluded": true,
+      "time": "2026-10-03T13:08:23.226Z"
+    }
+  ],
+  "errors": [],
+  "questions": [
+    {
+      "question": "무엇이 이상하다는 걸 알게 되나요?",
+      "options": [
+        "사라진 사람과 남겨진 물건\n익숙한 사람이 흔적만 남기고 사라졌어요.",
+        "기록과 현실의 모순\n편지나 기록의 내용이 실제와 맞지 않아요.",
+        "열려서는 안 되는 장소\n어떤 계기로 감춰진 공간에 들어가요."
+      ]
+    },
+    {
+      "question": "진실은 어떻게 알아가나요?",
+      "options": [
+        "장소와 물건을 자세히 조사\n숨겨진 흔적을 찾아 연결해요.",
+        "사람의 말을 듣고 비교\n엇갈리는 증언 속에서 모순을 찾아요.",
+        "증거를 맞춰 가설을 확인\n모은 단서를 제시하고 추론의 결과를 봐요."
+      ]
+    },
+    {
+      "question": "어떤 긴장감을 원하나요?",
+      "options": [
+        "기묘하지만 아름답게\n무섭기보다 더 알고 싶은 세계예요.",
+        "조용하고 팽팽하게\n말 한마디와 작은 변화에도 의미가 있어요.",
+        "위협이 있는 긴장으로\n조사 중 위험이 찾아와 판단을 서둘러야 해요."
+      ]
+    },
+    {
+      "question": "사건은 어떻게 풀어가나요?",
+      "options": [
+        "한 사건을 끝까지 해결\n조사 → 증거 비교 → 결론으로 이어져요.",
+        "여러 장소를 오가며 조사\n순서를 선택하며 단서가 연결돼요.",
+        "누구를 믿을지 선택\n증언과 선택에 따라 다음 단서가 달라져요."
+      ]
+    },
+    {
+      "question": "첫 번째 추리는 어디까지 해볼까요?",
+      "options": [
+        "첫 이상 현상과 단서 하나\n사건을 만나고 직접 첫 단서를 찾아요.",
+        "단서 둘과 첫 추론\n두 정보를 비교해 가설을 확인해요.",
+        "짧은 사건과 결말 하나\n조사한 증거로 결론을 내리고 결과를 봐요."
+      ]
+    }
+  ],
+  "initialConversations": 0,
+  "initialBrowserRecordDatabases": [
+    "oprn-ai-records",
+    "oprn-shared-content",
+    "oprn-terrain-library",
+    "oprn-tileset-blobs"
+  ],
+  "confirmedAt": "2026-10-03T13:05:36.825Z",
+  "projectUrl": "http://127.0.0.1:18432/index.html?hostProject=b8777342-b11b-45fe-9ede-a3a05bbe51d3",
+  "chatTail": "2026년 10월 3일 토\n추리·미스터리 · 확정한 게임 기획\n서린의 회상 스토리 「멈춘 시계의 기억」. 첫 구간만 완성한다. 시작 맵에서 회중시계를 조사하면 기억을 간직한다 / 놓아준다 두 선택지가 나온다. 각 선택은 서로 다른 대사를 보여주고 기억의 길로 진행할 수 있게 한다. 마지막에서 첫 구간 엔딩을 본다. 작고 명확한 3분 게임으로 기본 제공 타일·캐릭터를 사용한다. 모든 대화와 이동 및 엔딩을 실제 이벤트로 제작하고 저장한다.\n작업 결과\n실패 · 1:39\n✓\n프로젝트 살펴보기 완료\n팀장\n✓\n프로젝트 살펴보기 완료\n팀장\n✓\n프로젝트 살펴보기 완료\n팀장\n!\n실패\n\n워커에서 30초 동안 신호가 없어 연결을 끊었습니다. 워커가 응답하지 않습니다 — 다시 시도하고, 반복되면 개발 서버 콘솔의 [oh-my-pi-worker] 줄을 봐 주세요.\n\nAI에 연결하지 못했어요. 연결 상태를 확인하고 다시 시도해 주세요. 변경한 내용은 적용하지 않았어요.",
+  "elapsedSeconds": 261,
+  "latest": {
+    "dir": "/home/main/.codex/worktrees/0a57/rpg-zzu/output/qa/live-first-game/project/.oprn-projects/b8777342-b11b-45fe-9ede-a3a05bbe51d3",
+    "projectId": "70aec781-197e-43b0-a100-1efbb162034b",
+    "title": "멈춘 시계의 기억",
+    "revision": 5,
+    "genre": "story-cutscene",
+    "brief": {
+      "version": 1,
+      "presetId": "story-cutscene",
+      "answers": {
+        "experience": {
+          "question": "무엇이 이상하다는 걸 알게 되나요?",
+          "label": "사건의 시작",
+          "text": "사라진 사람과 남겨진 물건 — 익숙한 사람이 흔적만 남기고 사라졌어요.",
+          "source": "user"
+        },
+        "activity": {
+          "question": "진실은 어떻게 알아가나요?",
+          "label": "중심 플레이",
+          "text": "장소와 물건을 자세히 조사 — 숨겨진 흔적을 찾아 연결해요.",
+          "source": "user"
+        },
+        "progression": {
+          "question": "사건은 어떻게 풀어가나요?",
+          "label": "진행 방식",
+          "text": "한 사건을 끝까지 해결 — 조사 → 증거 비교 → 결론으로 이어져요.",
+          "source": "user"
+        },
+        "detail": {
+          "question": "어떤 긴장감을 원하나요?",
+          "label": "분위기",
+          "text": "기묘하지만 아름답게 — 무섭기보다 더 알고 싶은 세계예요.",
+          "source": "user"
+        },
+        "scope": {
+          "question": "첫 번째 추리는 어디까지 해볼까요?",
+          "label": "첫 제작 범위",
+          "text": "첫 이상 현상과 단서 하나 — 사건을 만나고 직접 첫 단서를 찾아요.",
+          "source": "user"
+        }
+      },
+      "summary": "서린의 회상 스토리 「멈춘 시계의 기억」. 첫 구간만 완성한다. 시작 맵에서 회중시계를 조사하면 기억을 간직한다 / 놓아준다 두 선택지가 나온다. 각 선택은 서로 다른 대사를 보여주고 기억의 길로 진행할 수 있게 한다. 마지막에서 첫 구간 엔딩을 본다. 작고 명확한 3분 게임으로 기본 제공 타일·캐릭터를 사용한다. 모든 대화와 이동 및 엔딩을 실제 이벤트로 제작하고 저장한다.",
+      "interview": {
+        "version": 1,
+        "genre": "mystery",
+        "concept": "서린이 멈춘 회중시계를 조사하고 기억을 되찾는 짧은 회상 스토리. 회중시계 조사 → 기억을 간직하거나 놓아주는 두 선택지 → 선택에 따라 다른 대사 → 기억의 길 → 첫 구간 엔딩. 3분 안에 완주할 수 있는 작은 게임으로 실제 제작한다.",
+        "protagonist": "서린. 잃어버린 기억을 회중시계에서 찾는다. 외형은 미정이다.",
+        "notes": "",
+        "choiceIds": {
+          "experience": "missing",
+          "activity": "inspect",
+          "progression": "case",
+          "detail": "wonder",
+          "scope": "scene"
+        }
+      }
+    },
+    "documentHash": "35d8deb54f6bedd0199d7f0e324ac2c4211e64be2c9a963f923f03f34b4b15ce",
+    "mapsHash": "b435d7a41b3ed5791ad712a53bccacc649bd7de233193225240854e930f182d8",
+    "maps": [
+      {
+        "id": "map_blank_start",
+        "name": "빈 맵",
+        "events": 2
+      },
+      {
+        "id": "map_segment_route",
+        "name": "기억의 길",
+        "events": 2
+      }
+    ],
+    "commits": [],
+    "records": []
+  },
+  "modelFinished": true,
+  "beforeReload": {
+    "dir": "/home/main/.codex/worktrees/0a57/rpg-zzu/output/qa/live-first-game/project/.oprn-projects/b8777342-b11b-45fe-9ede-a3a05bbe51d3",
+    "projectId": "70aec781-197e-43b0-a100-1efbb162034b",
+    "title": "멈춘 시계의 기억",
+    "revision": 5,
+    "genre": "story-cutscene",
+    "brief": {
+      "version": 1,
+      "presetId": "story-cutscene",
+      "answers": {
+        "experience": {
+          "question": "무엇이 이상하다는 걸 알게 되나요?",
+          "label": "사건의 시작",
+          "text": "사라진 사람과 남겨진 물건 — 익숙한 사람이 흔적만 남기고 사라졌어요.",
+          "source": "user"
+        },
+        "activity": {
+          "question": "진실은 어떻게 알아가나요?",
+          "label": "중심 플레이",
+          "text": "장소와 물건을 자세히 조사 — 숨겨진 흔적을 찾아 연결해요.",
+          "source": "user"
+        },
+        "progression": {
+          "question": "사건은 어떻게 풀어가나요?",
+          "label": "진행 방식",
+          "text": "한 사건을 끝까지 해결 — 조사 → 증거 비교 → 결론으로 이어져요.",
+          "source": "user"
+        },
+        "detail": {
+          "question": "어떤 긴장감을 원하나요?",
+          "label": "분위기",
+          "text": "기묘하지만 아름답게 — 무섭기보다 더 알고 싶은 세계예요.",
+          "source": "user"
+        },
+        "scope": {
+          "question": "첫 번째 추리는 어디까지 해볼까요?",
+          "label": "첫 제작 범위",
+          "text": "첫 이상 현상과 단서 하나 — 사건을 만나고 직접 첫 단서를 찾아요.",
+          "source": "user"
+        }
+      },
+      "summary": "서린의 회상 스토리 「멈춘 시계의 기억」. 첫 구간만 완성한다. 시작 맵에서 회중시계를 조사하면 기억을 간직한다 / 놓아준다 두 선택지가 나온다. 각 선택은 서로 다른 대사를 보여주고 기억의 길로 진행할 수 있게 한다. 마지막에서 첫 구간 엔딩을 본다. 작고 명확한 3분 게임으로 기본 제공 타일·캐릭터를 사용한다. 모든 대화와 이동 및 엔딩을 실제 이벤트로 제작하고 저장한다.",
+      "interview": {
+        "version": 1,
+        "genre": "mystery",
+        "concept": "서린이 멈춘 회중시계를 조사하고 기억을 되찾는 짧은 회상 스토리. 회중시계 조사 → 기억을 간직하거나 놓아주는 두 선택지 → 선택에 따라 다른 대사 → 기억의 길 → 첫 구간 엔딩. 3분 안에 완주할 수 있는 작은 게임으로 실제 제작한다.",
+        "protagonist": "서린. 잃어버린 기억을 회중시계에서 찾는다. 외형은 미정이다.",
+        "notes": "",
+        "choiceIds": {
+          "experience": "missing",
+          "activity": "inspect",
+          "progression": "case",
+          "detail": "wonder",
+          "scope": "scene"
+        }
+      }
+    },
+    "documentHash": "35d8deb54f6bedd0199d7f0e324ac2c4211e64be2c9a963f923f03f34b4b15ce",
+    "mapsHash": "b435d7a41b3ed5791ad712a53bccacc649bd7de233193225240854e930f182d8",
+    "maps": [
+      {
+        "id": "map_blank_start",
+        "name": "빈 맵",
+        "events": 2
+      },
+      {
+        "id": "map_segment_route",
+        "name": "기억의 길",
+        "events": 2
+      }
+    ],
+    "commits": [],
+    "records": []
+  },
+  "taskLeakedIntoChat": false,
+  "afterReload": {
+    "dir": "/home/main/.codex/worktrees/0a57/rpg-zzu/output/qa/live-first-game/project/.oprn-projects/b8777342-b11b-45fe-9ede-a3a05bbe51d3",
+    "projectId": "70aec781-197e-43b0-a100-1efbb162034b",
+    "title": "멈춘 시계의 기억",
+    "revision": 5,
+    "genre": "story-cutscene",
+    "brief": {
+      "version": 1,
+      "presetId": "story-cutscene",
+      "answers": {
+        "experience": {
+          "question": "무엇이 이상하다는 걸 알게 되나요?",
+          "label": "사건의 시작",
+          "text": "사라진 사람과 남겨진 물건 — 익숙한 사람이 흔적만 남기고 사라졌어요.",
+          "source": "user"
+        },
+        "activity": {
+          "question": "진실은 어떻게 알아가나요?",
+          "label": "중심 플레이",
+          "text": "장소와 물건을 자세히 조사 — 숨겨진 흔적을 찾아 연결해요.",
+          "source": "user"
+        },
+        "progression": {
+          "question": "사건은 어떻게 풀어가나요?",
+          "label": "진행 방식",
+          "text": "한 사건을 끝까지 해결 — 조사 → 증거 비교 → 결론으로 이어져요.",
+          "source": "user"
+        },
+        "detail": {
+          "question": "어떤 긴장감을 원하나요?",
+          "label": "분위기",
+          "text": "기묘하지만 아름답게 — 무섭기보다 더 알고 싶은 세계예요.",
+          "source": "user"
+        },
+        "scope": {
+          "question": "첫 번째 추리는 어디까지 해볼까요?",
+          "label": "첫 제작 범위",
+          "text": "첫 이상 현상과 단서 하나 — 사건을 만나고 직접 첫 단서를 찾아요.",
+          "source": "user"
+        }
+      },
+      "summary": "서린의 회상 스토리 「멈춘 시계의 기억」. 첫 구간만 완성한다. 시작 맵에서 회중시계를 조사하면 기억을 간직한다 / 놓아준다 두 선택지가 나온다. 각 선택은 서로 다른 대사를 보여주고 기억의 길로 진행할 수 있게 한다. 마지막에서 첫 구간 엔딩을 본다. 작고 명확한 3분 게임으로 기본 제공 타일·캐릭터를 사용한다. 모든 대화와 이동 및 엔딩을 실제 이벤트로 제작하고 저장한다.",
+      "interview": {
+        "version": 1,
+        "genre": "mystery",
+        "concept": "서린이 멈춘 회중시계를 조사하고 기억을 되찾는 짧은 회상 스토리. 회중시계 조사 → 기억을 간직하거나 놓아주는 두 선택지 → 선택에 따라 다른 대사 → 기억의 길 → 첫 구간 엔딩. 3분 안에 완주할 수 있는 작은 게임으로 실제 제작한다.",
+        "protagonist": "서린. 잃어버린 기억을 회중시계에서 찾는다. 외형은 미정이다.",
+        "notes": "",
+        "choiceIds": {
+          "experience": "missing",
+          "activity": "inspect",
+          "progression": "case",
+          "detail": "wonder",
+          "scope": "scene"
+        }
+      }
+    },
+    "documentHash": "35d8deb54f6bedd0199d7f0e324ac2c4211e64be2c9a963f923f03f34b4b15ce",
+    "mapsHash": "b435d7a41b3ed5791ad712a53bccacc649bd7de233193225240854e930f182d8",
+    "maps": [
+      {
+        "id": "map_blank_start",
+        "name": "빈 맵",
+        "events": 2
+      },
+      {
+        "id": "map_segment_route",
+        "name": "기억의 길",
+        "events": 2
+      }
+    ],
+    "commits": [],
+    "records": []
+  },
+  "persisted": true,
+  "generationPrerequisitePassed": false,
+  "gameplayVerified": false,
+  "exportPackageVerified": false
+}

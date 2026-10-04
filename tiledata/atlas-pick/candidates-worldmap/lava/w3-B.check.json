@@ -1,0 +1,48 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/lava/w3-B.pxg",
+ "set": "worldmap",
+ "id": "lava",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.013
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.03
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies",
+   "saturation",
+   "outline",
+   "outline_black"
+  ]
+ },
+ "colors": 10,
+ "bbox": [
+  1,
+  0,
+  47,
+  61
+ ],
+ "note": "용암 몸통 — 더 밝은 바탕에 wash 색 굳은 덩이가 떠 있음, 가장자리 울퉁불퉁.",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.075
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.035
+  },
+  "seam": 0.6
+ }
+}

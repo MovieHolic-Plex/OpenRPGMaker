@@ -1,0 +1,144 @@
+// lava wv4-B
+@size 48 64
+@cell 16
+@palette palette.pal
+@layer main
+@mat a wash 2
+@mat b wash 3
+@mat c wlava 0
+@mat d wlava 1
+@mat e wlava 2
+@mat f wlava 3
+@mat g wlava 4
+@mat h wlava 5
+@mblock 0 0
+................fffhhfffffffffff..aceffffffecab.
+.......b........gffffffffffhfffg.baceffffffeca.b
+......baa.b.....deffffffffffffgdaaceefffffgfecaa
+.....aaccaab....effffggffffffgddcceeeffffgddfecc
+....acceeccab...efffgddfffffffeeeeffhfffffeeffee
+...aceeffeecab..fffffeefffgfffffffffffffffffffff
+..baceffffeca...fffffffffgddfffffffffffffffhhfff
+.baceffggffeca..ggddffffffeefffffffhfffggfffffff
+..acefgddefecab.feeeffhfffffffffffffffgddeffffff
+...aceddefecab..fffffffffffffffffffffgddeffffggf
+..baceeeeeeca...ffffffffffffffffffffffeeefffgddf
+...bacceecca....ffffffffffggffffeegffffffffffeee
+....baaccaa.....ffgffffffgddefffccedfffffffffecc
+.....b.aab......fgddffffffeeefffaaceffffggddecaa
+........b.......ffeeffffffffhfffb.aceffffeeecab.
+................ffffffffffffffff.baceffffffeca..
+....................b...............b...........
+.......b.....b.b.b.aab.b.....b.b.b.aab.b........
+......baa.b.aaaaaaaccaaaa.b.aaaaaaaccaaaa.b.....
+.....aaccaaaccccccceeccccaaaccccccceeccccaab....
+....acceeccceeeeeeefheeeeccceeeeeeefheeeeccab...
+...aceeffeeefffffffffffffeeefffffffffffffeecab..
+..bacefffffhhffffffffffffffhhfffffffffffffeca...
+.baceffggffffffffffhfffggffffffffffhfffggffeca..
+..acefgddeffffffffffffgddeffffffffffffgddefecab.
+.bacegddeffffggffffffgddeffffggffffffgddefffecab
+..baceeeefffgddfffffffeeefffgddfffffffeeefffeca.
+...acefffffffeefffgffffffffffeefffgffffffffeca..
+..bacefffffffffffgddfffffffffffffgddfffffffecab.
+.bacefffggddffffffeeffffggddffffffeeffffggdeca..
+..aceffffeeeffhffffffffffeeeffhffffffffffeeecab.
+.baceffffffffffffffffffffffffffffffffffffffeca..
+..aceffffffffffffffffffffffffffffffffffffffecab.
+.bacefffffffffffffggffffffffffffffggfffffffeca..
+baceefffffgffffffgddefffffgffffffgddefffffgecab.
+.aceeffffgddffffffeeeffffgddffffffeeeffffgecab..
+bacehfffffeeffffffffhfffffeeffffffffhfffffeca...
+.baceffffffffffffffffffffffffffffffffffffffeca..
+..aceffffffhhffffffffffffffhhffffffffffffffecab.
+.baceffggffffffffffhfffggffffffffffhfffggffeca..
+..acefgddeffffffffffffgddeffffffffffffgddefecab.
+.bacegddeffffggffffffgddeffffggffffffgddefffecab
+..baceeeefffgddfffffffeeefffgddfffffffeeefffeca.
+...acefffffffeefffgffffffffffeefffgffffffffeca..
+..bacefffffffffffgddfffffffffffffgddfffffffecab.
+.bacefffggddffffffeeffffggddffffffeeffffggdeca..
+..aceffffeeeffhffffffffffeeeffhffffffffffeeecab.
+.baceffffffffffffffffffffffffffffffffffffffeca..
+..aceffffffffffffffffffffffffffffffffffffffecab.
+.bacefffffffffffffggffffffffffffffggfffffffeca..
+baceefffffgffffffgddefffffgffffffgddefffffgecab.
+.aceeffffgddffffffeeeffffgddffffffeeeffffgecab..
+bacehfffffeeffffffffhfffffeeffffffffhfffffeca...
+.baceffffffffffffffffffffffffffffffffffffffeca..
+..aceffffffhhffffffffffffffhhffffffffffffffecab.
+.baceffggffffffffffhfffggffffffffffhfffggffeca..
+..acefgddeffffffffffffgddeffffffffffffgddefecab.
+...aceddeffffggffffffgddeffffggffffffgddefecab..
+..baceeeefffgddfffeeffeeefffgddfffeeffeeeeeca...
+...bacceefffeeeeeecceeeeefffeeeeeecceeeeecca....
+....baacceeeccccccaaccccceeeccccccaacccccaa.....
+.....b.aacccaaaaaa.baaaaacccaaaaaa.baaaaab......
+........baaab.b.b...b.b.baaab.b.b...b.b.b.......
+.........b.b.............b.b....................
+@layer shadow
+@block 0 0
+.....%%%%%%.....................%%.............%
+....%%%.%%%%....................%.............%.
+...%%%...%.%%...................................
+..%%%.......%%..................................
+.%%%.........%%.................................
+%%%...........%%................................
+%%...........%%%................................
+%.............%%................................
+%%.............%................................
+%%%...........%%................................
+%%...........%%%................................
+.%%.........%%%.................................
+..%%.......%%%..................................
+...%%.%...%%%...................................
+....%%%%.%%%.....................%.............%
+.....%%%%%%.....................%.............%%
+.....%%%%%%%%%%%%%%%.%%%%%%%%%%%%%%%.%%%%%%.....
+....%%%.%%%%%.%.%.%...%.%%%%%.%.%.%...%.%%%%....
+...%%%...%.%.............%.%.............%.%%...
+..%%%.......................................%%..
+.%%%.........................................%%.
+%%%...........................................%%
+%%...........................................%%%
+%.............................................%%
+%%.............................................%
+%...............................................
+%%.............................................%
+%%%...........................................%%
+%%.............................................%
+%.............................................%%
+%%.............................................%
+%.............................................%%
+%%.............................................%
+%.............................................%%
+...............................................%
+%.............................................%%
+.............................................%%%
+%.............................................%%
+%%.............................................%
+%.............................................%%
+%%.............................................%
+%...............................................
+%%.............................................%
+%%%...........................................%%
+%%.............................................%
+%.............................................%%
+%%.............................................%
+%.............................................%%
+%%.............................................%
+%.............................................%%
+...............................................%
+%.............................................%%
+.............................................%%%
+%.............................................%%
+%%.............................................%
+%.............................................%%
+%%.............................................%
+%%%...........................................%%
+%%...........................................%%%
+.%%.........................................%%%.
+..%%.......................................%%%..
+...%%.%...........%...............%.......%%%...
+....%%%%.....%.%.%%%.%.%.....%.%.%%%.%.%.%%%....
+.....%%%%.%.%%%%%%%%%%%%%.%.%%%%%%%%%%%%%%%.....

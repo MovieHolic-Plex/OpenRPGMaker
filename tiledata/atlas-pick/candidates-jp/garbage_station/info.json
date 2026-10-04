@@ -1,0 +1,19 @@
+{
+ "id": "garbage_station",
+ "slug": "garbage_station",
+ "name": "쓰레기 집하장",
+ "scene": "주택가 골목",
+ "cells": [
+  2,
+  1
+ ],
+ "canvas": [
+  32,
+  16
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "골목 쓰레기 두는 곳: 초록·파랑 그물(까마귀 막는 그물)을 덮은 쓰레기봉투 더미(반투명 흰 봉투 서너 개), 옆에 접이식 철망 상자.",
+ "palette_hint": "kgreen/kblue 그물, mwhite·washi 봉투, mmetal 철망",
+ "worker": "j3"
+}

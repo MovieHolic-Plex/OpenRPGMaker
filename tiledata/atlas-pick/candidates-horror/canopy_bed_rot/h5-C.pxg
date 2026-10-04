@@ -1,0 +1,111 @@
+// canopy_bed_rot h5-C
+@size 32 48
+@cell 16
+@palette palette.pal
+@layer main
+@mat a bisque 0
+@mat b blood 0
+@mat c dust 0
+@mat d mahog 0
+@mat e sheet 0
+@mat f tarn 0
+@mat g velv 0
+@mat h void 0
+@mblock 0 0
+.ddccccccccccccccccccccccccccdd.
+dddccccccccccccccccccccccccccddd
+dddcacgcagggagggagggagggaggggddd
+dddccgcgagggagggaggga..gaggggddd
+dddccggcagggagggaggga..gaggggddd
+dddcacggcgggagggaggga...aggggddd
+dddcagggagggagggagggagggaggggddd
+dddcagggagggagggagggagggaggggddd
+dddaaaaaaaaaaaaaaaaaaagaagaaaddd
+dddaggaaggaaggaaggaaaggaggaagddd
+ddddddddddddddddddddadgadgaddddd
+ddddddddddddddddddddadgadggddddd
+ddddddddddddddddddddadggdgdddddd
+ddddddddddddddddddddgdgddgdddddd
+ddddddddddddddddddddddgddgdddddd
+ddddddddddddddddddddddgddgdddddd
+ddddddddddddddddddddddgddddddddd
+ddddddddddddddddddddddgddddddddd
+dddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddd
+ddd...eeeeeeeeeeeeeeeeeeee...ddd
+ddd...eeeeeeeeeeeeeeeeeeee...ddd
+ddd...eeeeeeeeeeeeeeeeeeee...ddd
+ddd...eeeeeeeeeeeeeeeeeeee...ddd
+ddd...eeeeeeeeeeeeeeeeeeee...ddd
+ddd...eeeeeeeeeeeeeeeeeeee...ddd
+ddd...eeeeeheheeheheeeeeee...ddd
+ddd.eeeeeeeheheeheheeeeeeeee.ddd
+ddd.eeeeeeeheheeheheeeeeeeee.ddd
+ddd.eeeeeeeeeheeeeheeeeeeeee.ddd
+ddd.eeeeeeeeeeeeeeheeeeaaaee.ddd
+ddd.eeeeeeeeeeeeeeeeeeeaaaee.ddd
+ddd.eeeeeeeeeeeeeeeeeeeaaaee.ddd
+ddd.eeeeeeeeeeeeeeeeeeeaaaee.ddd
+ddd.eeeeeeeeeeeeeeeeeeeaaaee.ddd
+ddd.eeeeeeeeeeeeeeeeeeeaaaee.ddd
+ddd.eeeeeeeeeeeeeeeeeeeeaeee.ddd
+ddd.eeeeeeeeeeeeeeeeeeeaaaee.ddd
+ddd.eeeeeeeeeeeeeeeeeeeeeeee.ddd
+ddd.eeeeeeeeeeeeeeeeeeeeeeee.ddd
+ddd.eeeeeeeeeeeeeeeeeeeeeeee.ddd
+ddd.eeeeeeeeeeeeeeeeeeeeeeee.ddd
+ddd.eeeeeeeeeeeeeeeeeeeeeeee.ddd
+ddd.eeeeeeeeeeeeeeeeeeeeeeee.ddd
+dddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddd
+@tblock 0 0
+.534444444433333333333333333333.
+15345353333333333333333333333331
+15344524422242224222422242222331
+153442524222422242224..242222331
+153452254222422242224..242222331
+153444225222422242224...42222331
+15344222422242224222422242222331
+15344222422242224222422242222331
+15344444444444444444442442444331
+15340044004400440044402402440331
+15344444444444444444442442444331
+15333333333333333333432432033331
+15333111111111111111412012133331
+15333122222222222222022222433331
+15333122222222222222222222433331
+15333122222222222222222220433331
+15333122222222222222222222433331
+15333444444444444444440444433331
+15333333333333333333333333333331
+15311111111111111111111111111331
+153...55555555555555555555...331
+153...54444255555552444444...331
+153...54444244444442444444...331
+153...54444244444442444444...331
+153...54444222222222444444...331
+153...54444222222222444444...331
+153...54444100001000444444...331
+153.555555515055150555555555.331
+153.544445515055150544442244.331
+153.544445444044440244442242.331
+153.544445444444440244434442.331
+153.544445444444444244434542.331
+153.222225444444444222234522.331
+153.222225444444444222234522.331
+153.222225444444444222234522.331
+153.222225444444444222234522.331
+153.222225444444444222223222.331
+153.222225444444444222235322.331
+153.222225444444444222222222.331
+153.222225555545555222222222.331
+153.222225555545555222222222.331
+153.222225555545555222222222.331
+153.222225222242222222222222.331
+153.000000000000000000000000.331
+15344444444444444444444444444331
+15333333333333333333333333333331
+15311111111111111111111111111331
+15300000000000000000000000000331

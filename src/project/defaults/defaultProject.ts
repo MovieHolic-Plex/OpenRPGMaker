@@ -3,8 +3,9 @@ import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import { normalizeItemRecord } from "@/project/databaseRecordModel";
 import { normalizeCropRecord } from "@/project/farmModel";
 import { defaultFeatureCropRecords } from "./defaultFeatureItemRecords";
-import { DEFAULT_ACTOR_ID, DEFAULT_EASYRPG_CHARSET_ID, DEFAULT_ITEM_ID, DEFAULT_TILE_SIZE } from "./constants";
+import { COMBINED_TOWN_TILESET_ID, DEFAULT_ACTOR_ID, DEFAULT_EASYRPG_CHARSET_ID, DEFAULT_ITEM_ID, DEFAULT_TILE_SIZE } from "./constants";
 import { defaultPartyRecords, defaultStarterActorIds } from "./defaultDatabasePartyRecords";
+import { defaultClassRecords } from "./defaultDatabaseClassRecords";
 import { placeableKey, type PlaceableObjectState } from "@/project/placeables";
 import { configureScarloxyDemoProject, createScarloxyDemoMaps } from "./scarloxyDemoGame";
 import { configureScarloxyPokemonDemoProject, createScarloxyPokemonDemoMaps } from "./scarloxyPokemonDemoGame";
@@ -42,6 +43,7 @@ import {
 } from "@/editor/content/townShowcaseMaps";
 import { createMarketTownMap, marketTownStartPos } from "./marketTownMap";
 import { createProjectWithMaps, ensureSwitchVariableSlots } from "./blankProject";
+import { ensureBundledResourceProfiles } from "./defaultAssets";
 // 가벼운 핵심은 blankProject.ts 에 있다. 옛 import 경로를 유지하려고 여기서 다시 내보낸다.
 export { createBlankProject, ensureSwitchVariableSlots } from "./blankProject";
 // 샘플 데모 export. 이 파일의 database.items / database.equipment 는 **파생물**이다 —
@@ -55,9 +57,18 @@ const SHOP_SHOWCASE_GOLD_SWITCH_ID = "switch_shop_showcase_gold";
 /** 예제 데모: 《이슬 마을의 종》 — 에디터 작성 export fixture. 별등 마을 코드 생성기는 제거됨. */
 export function createSampleAdventureProject(): Project {
   const project = structuredClone(dewVillageDemoFixture as unknown as Project);
+  // 새 예제도 공용 아이템 그림과 실제 32px 크기 정보를 모두 갖고 시작한다.
+  ensureBundledResourceProfiles(project);
   // 새 데모도 새 프로젝트의 전투 기본값을 사용한다. 기존 저장 문서는 바꾸지 않는다.
   project.system.battleUiStyle = "retro2003";
   const starterGraphics = defaultPartyRecords().actors;
+  // 픽스처의 직업·배우는 옛 기본 DB 사본이다. 장비(`fixture:sync` 로 코드값을 따른다)가 retro2003 확장 직업·배우를
+  // 착용 목록에 넣으면서 참조가 끊겼다(2026-09-29 CI parity: 「actor does not exist: actor_samurai」). 코드 기본값에만 있는
+  // 직업·배우를 덧붙인다 — 픽스처에 이미 있는 행은 저작본이므로 건드리지 않는다. 시작 파티는 아래에서 따로 정한다.
+  const fixtureClassIds = new Set(project.database.classes.map((record) => record.id));
+  for (const record of defaultClassRecords()) if (!fixtureClassIds.has(record.id)) project.database.classes.push(record);
+  const fixtureActorIds = new Set(project.database.actors.map((record) => record.id));
+  for (const record of starterGraphics) if (!fixtureActorIds.has(record.id)) project.database.actors.push(structuredClone(record));
   for (const actor of project.database.actors) {
     if (!actor.battleCharacterResourceId?.startsWith("generated-actor-hero-")) continue;
     const seed = starterGraphics.find((entry) => entry.id === actor.id);
@@ -247,7 +258,7 @@ function paintFarmableGround(map: GameMap): void {
 }
 
 export function createFarmingDemoProject(): Project {
-  const map = createBlankMap("봄 밭", 20, 20);
+  const map = createBlankMap("봄 밭", 20, 20, COMBINED_TOWN_TILESET_ID);
   map.id = "map_farming_demo";
   map.farmableArea = [{ x: 4, y: 5, w: 6, h: 4 }];
   paintFarmableGround(map);

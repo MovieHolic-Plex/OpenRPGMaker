@@ -1,0 +1,60 @@
+{
+ "id": "cliff_plateau",
+ "slug": "cliff_plateau",
+ "name": "고원 절벽",
+ "scene": "산·화산",
+ "kind": "bundle",
+ "cells": [
+  3,
+  4
+ ],
+ "canvas": [
+  48,
+  64
+ ],
+ "layer": "decal",
+ "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+ "under": "plains",
+ "under_ko": "평원 풀(plains_base 고른 판)",
+ "passage": "block",
+ "description": "산맥 사이·대륙 가운데 솟은 고원(World.png 위층 고원 블록의 형태). 덩이 안 = 고원 윗면(평원보다 한 단 밝은 풀, 조용하게), **남쪽 변 = 절벽 앞면 6~8px(바위 결 세로 골, 위 밝게 아래 어둡게)**, 동서 변 = 절벽 옆면 2~3px, 북쪽 변 = 윗면 테 1px 만(뒤쪽이라 앞면이 안 보인다). 모서리는 둥글게 휜 절벽. 산맥의 관문 틈 둘레, 성이 선 대지.",
+ "palette_hint": "whill·wgrass 윗면, wrock 절벽",
+ "worker": "wv3",
+ "style": "mass",
+ "layout": [
+  [
+   "isolated",
+   "body_alt",
+   "inner"
+  ],
+  [
+   "corner_nw",
+   "edge_n",
+   "corner_ne"
+  ],
+  [
+   "edge_w",
+   "body",
+   "edge_e"
+  ],
+  [
+   "corner_sw",
+   "edge_s",
+   "corner_se"
+  ]
+ ],
+ "roles_ko": {
+  "isolated": "외딴 한 칸(이웃 없이 혼자 선 통그림)",
+  "body_alt": "몸통 변형(몸통과 섞어 까는 두 번째 속)",
+  "inner": "안쪽 모서리(네 귀에 바깥이 파고든 오목 모서리 넷)",
+  "corner_nw": "북서 모서리",
+  "edge_n": "북쪽 변",
+  "corner_ne": "북동 모서리",
+  "edge_w": "서쪽 변",
+  "body": "몸통(사방이 같은 땅)",
+  "edge_e": "동쪽 변",
+  "corner_sw": "남서 모서리",
+  "edge_s": "남쪽 변",
+  "corner_se": "남동 모서리"
+ }
+}

@@ -1,0 +1,45 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/coast_sand/w1-A.pxg",
+ "set": "worldmap",
+ "id": "coast_sand",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.037
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation"
+  ]
+ },
+ "colors": 9,
+ "bbox": [
+  0,
+  0,
+  47,
+  63
+ ],
+ "note": "생성 계열 결: 풀 해안과 같은 바다 몸통, 마른 모래 끝→젖은 모래 두 단 어둡게→거품 한 줄",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.0
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.037
+  },
+  "seam": 0.99
+ }
+}

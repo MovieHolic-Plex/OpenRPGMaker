@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/chopping_block/w103-A.pxg",
+ "id": "chopping block",
+ "hard": [],
+ "warn": [
+  "파일 이름이 <작업자>-<방향>.pxg 꼴이 아니다(w1-A.pxg): w103-A.pxg"
+ ],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.01
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 9,
+ "v5_colors": 10,
+ "bbox": [
+  2,
+  1,
+  13,
+  14
+ ],
+ "v5_bbox": [
+  1,
+  1,
+  14,
+  14
+ ],
+ "note": "도마 통나무: 위 타원 절단면 5줄(나이테)+밝은 앞 테 1줄+몸통(껍질) 5줄, 도끼날이 윗면 가운데에 꽂힘",
+ "ok": true
+}

@@ -1,0 +1,24 @@
+{
+ "id": "plains_scatter",
+ "slug": "plains_scatter",
+ "name": "평원 흩뿌림",
+ "scene": "들·길",
+ "kind": "scatter",
+ "cells": [
+  3,
+  1
+ ],
+ "canvas": [
+  48,
+  16
+ ],
+ "layer": "decal",
+ "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+ "under": "plains",
+ "under_ko": "평원 풀(plains_base 고른 판)",
+ "passage": "walk",
+ "description": "빈 평원에 한 칸씩 흩뿌리는 덧칠 셋: ① 바위 두어 개 ② 꽃무더기(작은 덤불 + 꽃 점 서너 개) ③ 풀 둔덕. 나무는 trees_scatter 몫. 숲 덩이보다 작고 조용하게, 칸 가운데 10px 안.",
+ "palette_hint": "wrock 바위, wmead·mwhite·wgold 꽃",
+ "worker": "wv2",
+ "variants": 3
+}

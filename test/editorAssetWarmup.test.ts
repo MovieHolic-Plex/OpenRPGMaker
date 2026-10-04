@@ -189,6 +189,24 @@ describe("editorAssetWarmup", () => {
     expect(created.length + colorKeyWarms.length).toBeGreaterThan(0);
   });
 
+  // 부팅 배경 워밍은 색키만 한다. 낱장 얼굴·칩셋·CC0 아이콘(1500장 이상)은 프로젝트 배경 작업과
+  // 겹쳐 렉을 만들었으므로 이벤트 편집기 모달의 warmEditorPickerAssets() 가 앞당길 때만 받는다.
+  it("boot background warm only touches charset color keys, not faceset/chipset/icon images", async () => {
+    const idleCallbacks: Array<() => void> = [];
+    (globalThis as { requestIdleCallback?: unknown }).requestIdleCallback = (callback: () => void) => {
+      idleCallbacks.push(callback);
+      return 1;
+    };
+    scheduleEditorAssetWarmup();
+    idleCallbacks[0]?.();
+    for (let guard = 0; guard < 2_000; guard += 1) {
+      settleAll();
+      await Promise.resolve();
+    }
+    expect(new Set(colorKeyWarms)).toEqual(new Set(editorWarmupColorKeyPaths()));
+    expect(created).toHaveLength(0);
+  });
+
   it("skips the background warm under data saver", () => {
     let idleCalls = 0;
     (globalThis as { requestIdleCallback?: unknown }).requestIdleCallback = () => {

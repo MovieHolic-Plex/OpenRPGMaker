@@ -1,0 +1,23 @@
+{
+ "id": "hamlet",
+ "slug": "hamlet",
+ "name": "작은 마을",
+ "scene": "장소",
+ "kind": "icon",
+ "cells": [
+  1,
+  1
+ ],
+ "canvas": [
+  16,
+  16
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "under": "plains",
+ "under_ko": "평원 풀(plains_base 고른 판)",
+ "passage": "walk",
+ "description": "World.png 마을처럼 **한 칸짜리** 작은 마을: 큰 박공지붕 집 하나 + 곁에 작은 집·탑 하나, 지붕이 칸 폭 절반 이상(지붕이 마을을 대표한다). 윤곽 1px. village(2×1) 보다 작다.",
+ "palette_hint": "wroofr 지붕, mwhite·mbrick 벽",
+ "worker": "wv7"
+}

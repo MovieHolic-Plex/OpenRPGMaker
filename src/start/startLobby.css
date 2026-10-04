@@ -1,0 +1,176 @@
+/* Cinematic home owns its presentation; project creation and team forms retain their existing layout. */
+@layer start-lobby {
+  .start-app { display: flex; flex-direction: column; }
+  .start-rail {
+    position: relative;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    height: auto;
+    padding: 16px clamp(20px, 4vw, 64px);
+    border-right: 0;
+    border-bottom: 1px solid var(--st-line);
+    backdrop-filter: none;
+  }
+  .start-brand { margin: 0 auto 0 0; }
+  .start-brand-name { font-size: 18px; }
+  .start-logo { background: var(--st-accent); box-shadow: none; }
+  .start-rail > .start-btn-block { width: auto; }
+  .start-rail > [data-testid="start-new-game"] { order: 1; }
+  .start-nav { display: flex; gap: 4px; padding: 0; margin: 0 8px; border: 0; }
+  .start-nav-item { width: auto; white-space: nowrap; }
+  .start-nav-item.is-active { color: var(--st-accent); }
+  .start-nav-item:hover { background: var(--bg-hover); }
+  .start-rail-foot { flex-direction: row; align-items: center; margin: 0; padding: 0; border: 0; }
+  .start-rail-foot > span { display: none; }
+  .start-locale-select { width: auto; max-width: 140px; }
+  .start-main { min-height: calc(100vh - 80px); margin-inline: auto; }
+  .start-main.is-home { max-width: none; padding: 0 0 36px; gap: 0; }
+  .start-main.is-home > :is(.start-section, .start-grid, .start-hidden-note, .start-error) {
+    margin-inline: clamp(20px, 4vw, 64px);
+  }
+  .start-main.is-home > .start-section { margin-top: 32px; margin-bottom: 16px; }
+  .start-main.is-home > .start-error { margin-top: 18px; }
+
+  .start-cinema {
+    min-height: 510px;
+    min-height: clamp(430px, 64vh, 680px);
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    background: #1c2c25;
+    color: #fff8e5;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+  .start-cinema .start-hero-bg { object-position: center 38%; animation: start-cinema-drift 28s ease-in-out infinite alternate; }
+  .start-cinema::after {
+    background: linear-gradient(90deg, #0b1919e8 0%, #0b19199c 38%, #0b19191a 78%), linear-gradient(0deg, #0b1919c7, transparent 60%);
+  }
+  .start-cinema-light {
+    position: absolute; inset: -20%; z-index: -1; pointer-events: none;
+    background: conic-gradient(from 164deg at 72% 0%, transparent 0deg, #f3dc9a2b 8deg, transparent 14deg, #fff2bd20 20deg, transparent 30deg);
+    animation: start-cinema-light 14s ease-in-out infinite alternate;
+  }
+  .start-cinema-motes {
+    position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(circle at 65% 65%, #ffdd9c99 0 1px, transparent 3px), radial-gradient(circle at 88% 32%, #ffe9aa99 0 1px, transparent 3px), radial-gradient(circle at 45% 75%, #ffe9aa77 0 1px, transparent 2px), radial-gradient(circle at 78% 86%, #ffe9aa88 0 1px, transparent 2px);
+    animation: start-cinema-motes 11s ease-in-out infinite alternate;
+  }
+  .start-cinema-tools { position: relative; z-index: 2; display: flex; justify-content: flex-end; gap: 14px; flex-wrap: wrap; padding: 20px clamp(20px, 4vw, 64px); margin-bottom: auto; }
+  .start-scene-picker { display: flex; gap: 4px; }
+  .start-cinema-control {
+    padding: 8px 13px; border: 1px solid #f4ebca33; border-radius: 6px; background: #10221fe6;
+    color: #fff7df; font-size: 12px; cursor: pointer;
+  }
+  .start-cinema-control:hover { background: #30443c; }
+  .start-cinema-control[aria-pressed="true"] { background: #eddfb5; color: #25362b; border-color: #eddfb5; }
+  .start-cinema-control[hidden] { display: none; }
+  .start-cinema button:focus-visible { outline: 2px solid #fff3bd; outline-offset: 4px; }
+  .start-cinema .start-hero-body { max-width: 820px; min-height: 0; padding: 35px clamp(20px, 4vw, 64px) 45px; gap: 14px; pointer-events: auto; }
+  .start-cinema-eyebrow { margin: 0; color: #e8d69e; font-size: 12px; font-weight: 600; letter-spacing: .1em; }
+  .start-cinema .start-hero-title { margin: 0; font-size: clamp(34px, 4.3vw, 64px); line-height: 1.22; font-weight: 600; letter-spacing: -.045em; white-space: pre-line; }
+  .start-cinema-description { max-width: 420px; color: #e2e7dc; font-size: 15px; line-height: 1.8; margin: 0; }
+  .start-cinema .start-path { color: #bdc9be; }
+  .start-cinema .start-hero-actions { margin-top: 2px; padding-top: 10px; }
+  .start-cinema .start-btn { border-color: #f8f0d44d; background: #172e26e6; color: #fff8e5; }
+  .start-cinema .start-btn:hover { background: #30443c; }
+  .start-cinema .start-btn-primary { background: #efdfb1; color: #21362b; border-color: #efdfb1; }
+  .start-cinema .start-btn-primary:hover { background: #fff0c7; }
+  .start-cinema-credit { display: flex; justify-content: flex-end; gap: 14px; padding: 0 clamp(20px, 4vw, 64px) 20px; font-size: 11px; color: #e3e6d5; }
+  .start-cinema-credit > span:first-child { letter-spacing: .1em; }
+  .start-lobby-ways { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; padding: 26px clamp(20px, 4vw, 64px); background: var(--bg-surface); border-bottom: 1px solid var(--st-line); }
+  .start-lobby-way { position: relative; display: flex; flex-direction: column; gap: 7px; border: 0; border-right: 1px solid var(--st-line); padding: 0 34px 0 0; background: transparent; text-align: left; cursor: pointer; }
+  .start-lobby-way:last-child { border: 0; }
+  .start-lobby-way strong { font-size: 16px; font-weight: 600; }
+  .start-lobby-way > span:not(.start-lobby-way-arrow) { color: var(--st-sub); font-size: 12px; }
+  .start-lobby-way-arrow { position: absolute; top: 0; right: 14px; font-size: 20px; color: var(--st-accent); }
+  .start-lobby-way:hover strong { color: var(--st-accent); }
+  .start-lobby-way:focus-visible, .start-lobby-feature-list summary:focus-visible { outline: var(--focus-outline); outline-offset: 5px; }
+  .start-lobby-features { padding: 25px clamp(20px, 4vw, 64px) 0; }
+  .start-lobby-features h2 { font-size: 13px; color: var(--st-sub); margin: 0 0 12px; font-weight: 500; }
+  .start-lobby-feature-list { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 12px; }
+  .start-lobby-feature-list details { min-width: 0; }
+  .start-lobby-feature-list summary { cursor: pointer; padding-block: 6px; font-size: 14px; }
+  .start-lobby-feature-list details[open] summary { color: var(--st-accent); }
+  .start-lobby-feature-list p { font-size: 12px; color: var(--st-sub); line-height: 1.7; margin: 7px 0; }
+  .start-footer { background: var(--bg-surface); box-shadow: none; clip-path: none; color: var(--st-text); }
+
+  /* The first sentence lives inside one full-window scene, including header and secondary routes. */
+  .start-app.is-first-world {
+    isolation: isolate;
+    min-height: 100vh;
+    min-height: 100svh;
+    background: var(--cinema-night);
+    color: var(--cinema-paper);
+    --st-bg: var(--cinema-night);
+    --st-bg-2: #fff9eb0a;
+    --st-panel-solid: #101a29ed;
+    --st-line: #fff9eb26;
+    --st-line-2: #fff9eb38;
+    --st-text: var(--cinema-paper);
+    --st-sub: #e3ddcf;
+    --st-faint: #d3cebf;
+    --st-accent: var(--cinema-accent);
+    --st-accent-2: var(--cinema-paper);
+    --st-accent-soft: #fff9eb18;
+    --st-danger: #ffb4a9;
+    --focus-outline: 2px solid var(--cinema-accent);
+  }
+  .start-app.is-first-world .start-rail { background: transparent; border-bottom-color: transparent; }
+  .start-app.is-first-world .start-main { flex: 1; justify-content: center; gap: 0; max-width: none; min-height: 0; padding: 8px clamp(20px,4vw,64px) 24px; }
+  .start-app.is-first-world .start-brand-tag { color: var(--st-faint); }
+  .start-app.is-first-world .start-logo { color: var(--cinema-night); }
+  .start-app.is-first-world .start-nav-item.is-active { color: var(--cinema-paper); }
+  .start-app.is-first-world .start-nav-item:hover { background: #fff9eb18; }
+  .start-app.is-first-world .start-btn { background: #101a2966; border-color: var(--st-line-2); color: var(--cinema-paper); }
+  .start-app.is-first-world .start-btn:hover { background: #fff9eb18; }
+  .start-app.is-first-world .start-btn-primary { background: var(--cinema-accent); border-color: var(--cinema-accent); color: var(--cinema-night); }
+  .start-app.is-first-world .start-btn-primary:hover { background: var(--cinema-paper); }
+  .start-app.is-first-world :is(.start-locale-select,.start-arrival-fields .start-input) { background: #101a2999; color: var(--cinema-paper); border-color: var(--st-line-2); }
+  .start-app.is-first-world .start-arrival-settings { width: min(1120px,100%); margin: 0 auto; padding: 12px 0; }
+  .start-app.is-first-world .start-arrival-alternatives { padding-top: 12px; }
+  .start-app.is-first-world .start-main > .start-error { width: min(780px,100%); margin: 12px auto 0; }
+  @media(min-width:581px) and (max-height:950px) {
+    .start-app.is-first-world .start-main { padding-block: 0 16px; }
+    .start-app.is-first-world .start-arrival-settings { padding-block: 8px; }
+    .start-app.is-first-world .start-arrival-alternatives { padding-top: 8px; }
+  }
+  @media(min-width:581px) and (max-height:820px) { .start-app.is-first-world .start-rail { padding-block: 12px; } }
+  @media(max-width:580px) { .start-app.is-first-world .start-main { padding: 0 16px 20px; } }
+
+  @keyframes start-cinema-drift { from { transform: scale(1); } to { transform: scale(1.055); } }
+  @keyframes start-cinema-light { from { opacity: .35; transform: rotate(-4deg); } to { opacity: .85; transform: rotate(3deg); } }
+  @keyframes start-cinema-motes { from { opacity: .3; transform: translateY(0); } to { opacity: .8; transform: translateY(-24px); } }
+  .start-cinema.is-motion-paused :is(.start-hero-bg, .start-cinema-light, .start-cinema-motes) { animation-play-state: paused; }
+  @media (prefers-reduced-motion: reduce) {
+    .start-cinema :is(.start-hero-bg, .start-cinema-light, .start-cinema-motes) { animation: none; }
+    .start-cinema [data-testid="start-motion-toggle"] { display: none; }
+  }
+  @media (max-width: 1100px) {
+    .start-brand-tag, .start-nav-item .start-icon { display: none; }
+    .start-nav { margin: 0; }
+    .start-rail { gap: 7px; }
+    .start-rail > .start-btn { padding-inline: 12px; }
+  }
+  @media (max-width: 760px) {
+    .start-rail { padding: 14px 20px; }
+    .start-brand { flex: 1 0 calc(100% - 170px); }
+    .start-rail-foot { order: -1; }
+    .start-brand { order: -2; }
+    .start-lobby-ways { gap: 16px; }
+    .start-lobby-way { padding-right: 20px; }
+    .start-lobby-way-arrow { right: 4px; }
+    .start-lobby-feature-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+  @media (max-width: 480px) {
+    .start-cinema-tools { justify-content: flex-start; gap: 8px; }
+    .start-lobby-ways { grid-template-columns: 1fr; gap: 20px; }
+    .start-lobby-way { border-right: 0; }
+    .start-cinema .start-hero-body { padding-block: 25px; }
+    .start-cinema .start-btn-lg { padding-inline: 18px; }
+    .start-cinema-credit { flex-wrap: wrap; justify-content: flex-start; }
+  }
+}

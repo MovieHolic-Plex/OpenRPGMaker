@@ -1,0 +1,19 @@
+{
+ "id": "mamachari",
+ "slug": "mamachari",
+ "name": "마마챠리 한 대",
+ "scene": "역 앞 번화가",
+ "cells": [
+  2,
+  1
+ ],
+ "canvas": [
+  32,
+  16
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "옆으로 서 있는 생활 자전거 한 대(앞 바구니·뒷자리 짐받이·흙받이). 두 칸 폭에 바퀴 둘이 또렷하게. 스탠드로 선 모양.",
+ "palette_hint": "lacq 바퀴, mwhite/kblue 몸체, mmetal 바구니",
+ "worker": "j5"
+}

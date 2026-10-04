@@ -1,0 +1,40 @@
+// s5 후보 — s5-A.pxg
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat a vblack
+@mat b vwhite
+@mblock 0 0
+.....aaaaaa.....
+...aabbbbbbaa...
+..aabbbaabbbaa..
+.aabbbbbbbbbbaa.
+.abbabbbbbbabba.
+abbbbaabbaabbbba
+abbbbaabbaabbbba
+ababbbbaabbbbaba
+ababbbbaabbbbaba
+abbbbbbbbbbbbbba
+abbbbbbbbbbbbbba
+.abbbbbbbbbbbba.
+.aabbbbbbbbbbaa.
+..aabbbaabbbaa..
+...aabbbbbbaa...
+.....aaaaaa.....
+@tblock 0 0
+.....222222.....
+...2266666622...
+..226663366622..
+.22666666666622.
+.26616666661662.
+2666611661166662
+2666611661166662
+2636666116666362
+2636666116666362
+2666666666666662
+2666666666666662
+.26666666666662.
+.22666666666622.
+..226663366622..
+...2266666622...
+.....222222.....

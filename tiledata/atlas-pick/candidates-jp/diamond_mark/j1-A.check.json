@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/diamond_mark/j1-A.pxg",
+ "set": "jp",
+ "id": "diamond_mark",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.156
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.176
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 8,
+ "bbox": [
+  0,
+  0,
+  15,
+  15
+ ],
+ "note": "강남식: 아스팔트 3단 점무늬 위 흰 페인트 마름모 2칸 두께, 위·왼쪽 변은 밝고 아래·오른쪽은 한 단 어둡게",
+ "ok": true
+}

@@ -1,0 +1,1076 @@
+{
+  "runs": [
+    {
+      "sourceRun": "joseon-wm3",
+      "startMapId": "world_map",
+      "startPos": {
+        "x": 27,
+        "y": 26
+      },
+      "maps": [
+        {
+          "id": "map_blank_start",
+          "name": "빈 맵",
+          "tilesetId": "beodeul_city",
+          "characterScale": null
+        },
+        {
+          "id": "world_map",
+          "name": "조선 팔도 전도",
+          "tilesetId": "worldmap_world_map",
+          "characterScale": 0.6
+        },
+        {
+          "id": "map_hanyang",
+          "name": "한양 도읍",
+          "tilesetId": "joseon_baram",
+          "characterScale": null
+        }
+      ],
+      "capital": {
+        "id": "wm_place_0",
+        "name": "한양 도성",
+        "x": 24,
+        "y": 20,
+        "w": 6,
+        "h": 6,
+        "tags": [
+          "capital",
+          "act0"
+        ],
+        "note": "월드맵 장소(capital, 1막, 키트 id 대성) — 입구(성문) 27,25: 고을·던전 맵은 이 칸에 출입구를 둔다"
+      },
+      "worldmapEvents": [
+        {
+          "id": "ev_gate_d047152c-0f03-44cf-96d8-c545d31daae8",
+          "x": 27,
+          "y": 25
+        }
+      ],
+      "calls": [
+        {
+          "order": 11,
+          "name": "edit_world_terrain",
+          "args": {
+            "newMapId": "world_map",
+            "ops": [
+              {
+                "style": "real",
+                "region": "korea",
+                "op": "continents",
+                "count": 0
+              }
+            ],
+            "characterScale": 0.6,
+            "base": "generate",
+            "name": "조선 팔도 전도",
+            "theme": "joseon"
+          },
+          "ok": true,
+          "summary": "새 세계 지도 world_map — 테마 joseon, 지형 작업 1개, 장소 31곳, 캐릭터 크기 60%, 여정 검사 통과(78.6초)",
+          "warnings": []
+        },
+        {
+          "order": 12,
+          "name": "import_region_reference",
+          "args": {
+            "id": "joseon-v20-64x56",
+            "newMapId": "map_hanyang",
+            "name": "한양 도읍"
+          },
+          "ok": true,
+          "summary": "「조선 마을 20호」 새 맵 map_hanyang 64×56 · 타일셋 joseon_baram 그대로",
+          "warnings": [
+            "장소 이벤트 20개는 가져오지 않았다 — includeEvents:true 로 새 맵에 복사"
+          ]
+        },
+        {
+          "order": 15,
+          "name": "create_transfer_pair",
+          "args": {
+            "b": {
+              "mapId": "map_hanyang",
+              "y": 54,
+              "x": 30
+            },
+            "a": {
+              "y": 25,
+              "x": 27,
+              "mapId": "world_map"
+            }
+          },
+          "ok": true,
+          "summary": "출입구 쌍 생성: 조선 팔도 전도(27,25) ↔ 한양 도읍(30,55)",
+          "warnings": [
+            "출입구 B 위치 자동 조정: (30,54) → (30,55)"
+          ]
+        },
+        {
+          "order": 32,
+          "name": "run_scene_test",
+          "args": {
+            "start": {
+              "x": 27,
+              "y": 26
+            },
+            "mapId": "world_map",
+            "steps": [
+              {
+                "dir": "up",
+                "kind": "move"
+              },
+              {
+                "eventId": "ev_gate_d047152c-0f03-44cf-96d8-c545d31daae8",
+                "kind": "interact"
+              },
+              {
+                "ticks": 20,
+                "kind": "wait"
+              }
+            ]
+          },
+          "ok": true,
+          "summary": "scene test 실패: 스텝 1 — 조사할 action 이벤트 없음: map_hanyang (31,55) facing=up",
+          "warnings": []
+        },
+        {
+          "order": 33,
+          "name": "run_scene_test",
+          "args": {
+            "start": {
+              "x": 27,
+              "y": 26
+            },
+            "steps": [
+              {
+                "dir": "up",
+                "kind": "move"
+              },
+              {
+                "kind": "wait",
+                "ticks": 20
+              },
+              {
+                "kind": "expect"
+              },
+              {
+                "kind": "snapshotRewards"
+              },
+              {
+                "eventId": "npc_officer_kim",
+                "kind": "interact"
+              },
+              {
+                "kind": "expect",
+                "inventoryDelta": {
+                  "item_mapae_hanyang": 1
+                },
+                "goldDelta": 200
+              },
+              {
+                "kind": "snapshotRewards"
+              },
+              {
+                "eventId": "npc_merchant_peddler",
+                "kind": "interact"
+              },
+              {
+                "kind": "expect"
+              },
+              {
+                "kind": "move",
+                "dir": "down"
+              }
+            ],
+            "mapId": "world_map"
+          },
+          "ok": false,
+          "summary": "'run_scene_test' 실행 실패: Malformed scene test input: steps[2] (expect): 검사할 필드가 하나도 없습니다. 허용: playerAt, switchOn, switchOff, variableEquals, variableAtLeast, eventAt, eventOnMap, eventDistanceToPlayerLessThan, followerCount, …",
+          "warnings": []
+        },
+        {
+          "order": 34,
+          "name": "run_scene_test",
+          "args": {
+            "start": {
+              "y": 26,
+              "x": 27
+            },
+            "mapId": "world_map",
+            "steps": [
+              {
+                "kind": "move",
+                "dir": "up"
+              },
+              {
+                "kind": "wait",
+                "ticks": 20
+              },
+              {
+                "kind": "expect",
+                "mapId": "map_hanyang"
+              },
+              {
+                "kind": "snapshotRewards"
+              },
+              {
+                "eventId": "npc_officer_kim",
+                "kind": "interact"
+              },
+              {
+                "goldDelta": 200,
+                "inventoryDelta": {
+                  "item_mapae_hanyang": 1
+                },
+                "kind": "expect",
+                "interactionComplete": true
+              },
+              {
+                "kind": "snapshotRewards"
+              },
+              {
+                "kind": "interact",
+                "eventId": "npc_merchant_peddler"
+              },
+              {
+                "kind": "expect",
+                "interactionComplete": true
+              }
+            ]
+          },
+          "ok": true,
+          "summary": "scene test 실패: 스텝 4 — 조사할 action 이벤트 없음: map_hanyang (31,55) facing=up",
+          "warnings": []
+        },
+        {
+          "order": 35,
+          "name": "run_scene_test",
+          "args": {
+            "start": {
+              "y": 26,
+              "x": 27
+            },
+            "steps": [
+              {
+                "dir": "up",
+                "kind": "move"
+              },
+              {
+                "ticks": 20,
+                "kind": "wait"
+              },
+              {
+                "kind": "expect",
+                "mapId": "map_hanyang"
+              },
+              {
+                "y": 29,
+                "x": 30,
+                "kind": "set"
+              },
+              {
+                "kind": "snapshotRewards"
+              },
+              {
+                "eventId": "npc_officer_kim",
+                "kind": "interact"
+              },
+              {
+                "interactionComplete": true,
+                "kind": "expect",
+                "inventoryDelta": {
+                  "item_mapae_hanyang": 1
+                },
+                "goldDelta": 200
+              },
+              {
+                "y": 32,
+                "kind": "set",
+                "x": 24
+              },
+              {
+                "kind": "snapshotRewards"
+              },
+              {
+                "eventId": "npc_merchant_peddler",
+                "kind": "interact"
+              },
+              {
+                "interactionComplete": true,
+                "kind": "expect"
+              },
+              {
+                "eventId": "ev_gate_cb0674cf-1197-4bd7-bd36-7608746fd794",
+                "x": 30,
+                "mapId": "map_hanyang",
+                "y": 55,
+                "kind": "set"
+              },
+              {
+                "kind": "wait",
+                "ticks": 20
+              },
+              {
+                "kind": "expect",
+                "mapId": "world_map"
+              }
+            ],
+            "mapId": "world_map"
+          },
+          "ok": false,
+          "summary": "'run_scene_test' 실행 실패: Malformed scene test input: steps[11] (set): unexpected field(s): eventId — 허용 필드: mapId, x, y, facing, switches, variables, inventory, gold, manualHint",
+          "warnings": []
+        },
+        {
+          "order": 36,
+          "name": "run_scene_test",
+          "args": {
+            "steps": [
+              {
+                "kind": "move",
+                "dir": "up"
+              },
+              {
+                "ticks": 20,
+                "kind": "wait"
+              },
+              {
+                "mapId": "map_hanyang",
+                "kind": "expect"
+              },
+              {
+                "kind": "set",
+                "facing": "up",
+                "x": 30,
+                "y": 29
+              },
+              {
+                "kind": "snapshotRewards"
+              },
+              {
+                "eventId": "npc_officer_kim",
+                "kind": "interact"
+              },
+              {
+                "kind": "expect",
+                "interactionComplete": true,
+                "inventoryDelta": {
+                  "item_mapae_hanyang": 1
+                },
+                "goldDelta": 200
+              },
+              {
+                "y": 32,
+                "x": 24,
+                "facing": "up",
+                "kind": "set"
+              },
+              {
+                "kind": "snapshotRewards"
+              },
+              {
+                "eventId": "npc_merchant_peddler",
+                "kind": "interact"
+              },
+              {
+                "interactionComplete": true,
+                "kind": "expect"
+              },
+              {
+                "y": 32,
+                "x": 33,
+                "facing": "up",
+                "kind": "set"
+              },
+              {
+                "kind": "interact",
+                "eventId": "npc_inn_wolmae"
+              },
+              {
+                "kind": "expect",
+                "interactionComplete": true
+              },
+              {
+                "kind": "set",
+                "y": 54,
+                "x": 30,
+                "facing": "down"
+              },
+              {
+                "kind": "move",
+                "dir": "down"
+              },
+              {
+                "kind": "wait",
+                "ticks": 20
+              },
+              {
+                "mapId": "world_map",
+                "kind": "expect"
+              }
+            ],
+            "start": {
+              "y": 26,
+              "x": 27
+            },
+            "mapId": "world_map"
+          },
+          "ok": true,
+          "summary": "scene test 실패: 스텝 15 — 이동 불가: map_hanyang (30,54) -> (30,55)",
+          "warnings": []
+        },
+        {
+          "order": 40,
+          "name": "run_scene_test",
+          "args": {
+            "mapId": "world_map",
+            "start": {
+              "x": 27,
+              "y": 26
+            },
+            "steps": [
+              {
+                "dir": "up",
+                "kind": "move"
+              },
+              {
+                "kind": "wait",
+                "ticks": 20
+              },
+              {
+                "kind": "expect",
+                "mapId": "map_hanyang"
+              },
+              {
+                "x": 30,
+                "facing": "up",
+                "y": 29,
+                "kind": "set"
+              },
+              {
+                "kind": "snapshotRewards"
+              },
+              {
+                "eventId": "npc_officer_kim",
+                "kind": "interact"
+              },
+              {
+                "interactionComplete": true,
+                "goldDelta": 200,
+                "kind": "expect",
+                "inventoryDelta": {
+                  "item_mapae_hanyang": 1
+                }
+              },
+              {
+                "x": 24,
+                "y": 32,
+                "facing": "up",
+                "kind": "set"
+              },
+              {
+                "kind": "snapshotRewards"
+              },
+              {
+                "kind": "interact",
+                "eventId": "npc_merchant_peddler"
+              },
+              {
+                "kind": "expect",
+                "interactionComplete": true
+              },
+              {
+                "y": 32,
+                "x": 33,
+                "kind": "set",
+                "facing": "up"
+              },
+              {
+                "eventId": "npc_inn_wolmae",
+                "kind": "interact"
+              },
+              {
+                "kind": "expect",
+                "interactionComplete": true
+              },
+              {
+                "facing": "down",
+                "x": 29,
+                "y": 54,
+                "kind": "set"
+              },
+              {
+                "dir": "down",
+                "kind": "move"
+              },
+              {
+                "ticks": 20,
+                "kind": "wait"
+              },
+              {
+                "kind": "expect",
+                "mapId": "world_map"
+              }
+            ]
+          },
+          "ok": true,
+          "summary": "scene test 성공 (18/18 스텝)",
+          "warnings": []
+        },
+        {
+          "order": 55,
+          "name": "run_scene_test",
+          "args": {
+            "steps": [
+              {
+                "kind": "move",
+                "dir": "up"
+              },
+              {
+                "ticks": 20,
+                "kind": "wait"
+              },
+              {
+                "mapId": "map_hanyang",
+                "kind": "expect"
+              },
+              {
+                "facing": "up",
+                "x": 30,
+                "kind": "set",
+                "y": 29
+              },
+              {
+                "kind": "snapshotRewards"
+              },
+              {
+                "eventId": "npc_officer_kim",
+                "kind": "interact"
+              },
+              {
+                "inventoryDelta": {
+                  "item_mapae_hanyang": 1
+                },
+                "goldDelta": 200,
+                "interactionComplete": true,
+                "kind": "expect"
+              },
+              {
+                "y": 32,
+                "x": 24,
+                "kind": "set",
+                "facing": "up"
+              },
+              {
+                "kind": "snapshotRewards"
+              },
+              {
+                "eventId": "npc_merchant_peddler",
+                "kind": "interact"
+              },
+              {
+                "kind": "expect",
+                "interactionComplete": true
+              },
+              {
+                "facing": "up",
+                "kind": "set",
+                "x": 33,
+                "y": 32
+              },
+              {
+                "eventId": "npc_inn_wolmae",
+                "kind": "interact"
+              },
+              {
+                "interactionComplete": true,
+                "kind": "expect"
+              },
+              {
+                "y": 54,
+                "facing": "down",
+                "kind": "set",
+                "x": 29
+              },
+              {
+                "dir": "down",
+                "kind": "move"
+              },
+              {
+                "ticks": 20,
+                "kind": "wait"
+              },
+              {
+                "mapId": "world_map",
+                "kind": "expect"
+              }
+            ],
+            "start": {
+              "x": 27,
+              "y": 26
+            },
+            "mapId": "world_map"
+          },
+          "ok": true,
+          "summary": "scene test 성공 (18/18 스텝)",
+          "warnings": []
+        }
+      ]
+    },
+    {
+      "sourceRun": "maya-wm2",
+      "startMapId": "world_map",
+      "startPos": {
+        "x": 47,
+        "y": 11
+      },
+      "maps": [
+        {
+          "id": "map_blank_start",
+          "name": "빈 맵",
+          "tilesetId": "beodeul_city",
+          "characterScale": null
+        },
+        {
+          "id": "world_map",
+          "name": "세계 지도",
+          "tilesetId": "worldmap_world_map",
+          "characterScale": 0.65
+        },
+        {
+          "id": "map_beodeul_river_7",
+          "name": "시작 고을 욱스말",
+          "tilesetId": "beodeul_city",
+          "characterScale": null
+        }
+      ],
+      "capital": {
+        "id": "wm_place_0",
+        "name": "대성",
+        "x": 37,
+        "y": 29,
+        "w": 6,
+        "h": 6,
+        "tags": [
+          "capital",
+          "act0"
+        ],
+        "note": "월드맵 장소(capital, 1막) — 입구(성문) 40,34: 고을·던전 맵은 이 칸에 출입구를 둔다"
+      },
+      "worldmapEvents": [
+        {
+          "id": "ev_gate_c2bcd3c5-cffc-4df8-8a51-916dd9c67fca",
+          "x": 47,
+          "y": 10
+        }
+      ],
+      "calls": [
+        {
+          "order": 15,
+          "name": "edit_world_terrain",
+          "args": {
+            "characterScale": 0.65,
+            "newMapId": "world_map",
+            "base": "generate",
+            "theme": "fantasy",
+            "ops": [
+              {
+                "style": "real",
+                "box": [
+                  -93,
+                  14,
+                  -86,
+                  22
+                ],
+                "home": [
+                  -89,
+                  20.8
+                ],
+                "op": "continents"
+              }
+            ]
+          },
+          "ok": true,
+          "summary": "새 세계 지도 world_map — 테마 fantasy, 지형 작업 1개, 장소 31곳, 캐릭터 크기 65%, 여정 검사 통과(84.3초)",
+          "warnings": []
+        },
+        {
+          "order": 20,
+          "name": "create_transfer_pair",
+          "args": {
+            "a": {
+              "y": 10,
+              "x": 47,
+              "mapId": "world_map"
+            },
+            "b": {
+              "y": 21,
+              "x": 1,
+              "mapId": "map_beodeul_river_7"
+            }
+          },
+          "ok": true,
+          "summary": "출입구 쌍 생성: 세계 지도(47,10) ↔ 시작 고을 욱스말(1,22)",
+          "warnings": [
+            "출입구 B 위치 자동 조정: (1,21) → (1,22)"
+          ]
+        },
+        {
+          "order": 32,
+          "name": "run_scene_test",
+          "args": {
+            "start": {
+              "x": 47,
+              "y": 11
+            },
+            "mapId": "world_map",
+            "steps": [
+              {
+                "kind": "wait",
+                "ticks": 5
+              },
+              {
+                "dir": "up",
+                "kind": "face"
+              },
+              {
+                "kind": "move",
+                "to": {
+                  "x": 47,
+                  "y": 10
+                }
+              },
+              {
+                "mapId": "map_beodeul_river_7",
+                "kind": "expect"
+              }
+            ]
+          },
+          "ok": true,
+          "summary": "scene test 성공 (4/4 스텝)",
+          "warnings": []
+        },
+        {
+          "order": 33,
+          "name": "run_scene_test",
+          "args": {
+            "start": {
+              "x": 1,
+              "y": 21
+            },
+            "steps": [
+              {
+                "kind": "wait",
+                "ticks": 5
+              },
+              {
+                "kind": "move",
+                "to": {
+                  "x": 41,
+                  "y": 26
+                }
+              },
+              {
+                "eventId": "ev_npc_elder",
+                "kind": "interact"
+              },
+              {
+                "kind": "wait",
+                "ticks": 10
+              },
+              {
+                "to": {
+                  "x": 46,
+                  "y": 21
+                },
+                "kind": "move"
+              },
+              {
+                "kind": "interact",
+                "eventId": "ev_examine_1"
+              },
+              {
+                "ticks": 10,
+                "kind": "wait"
+              },
+              {
+                "kind": "expect",
+                "switchOn": "sw_quest_tablet_investigated"
+              },
+              {
+                "to": {
+                  "x": 41,
+                  "y": 26
+                },
+                "kind": "move"
+              },
+              {
+                "kind": "interact",
+                "eventId": "ev_npc_elder"
+              },
+              {
+                "ticks": 10,
+                "kind": "wait"
+              },
+              {
+                "switchOn": "sw_elder_instructed",
+                "kind": "expect",
+                "inventoryDelta": {
+                  "item_maya_compass": 1
+                }
+              },
+              {
+                "to": {
+                  "x": 1,
+                  "y": 22
+                },
+                "kind": "move"
+              },
+              {
+                "mapId": "world_map",
+                "kind": "expect"
+              }
+            ],
+            "mapId": "map_beodeul_river_7"
+          },
+          "ok": true,
+          "summary": "scene test 실패: 스텝 2 — 조사할 action 이벤트 없음: map_beodeul_river_7 (41,26) facing=down",
+          "warnings": []
+        },
+        {
+          "order": 34,
+          "name": "run_scene_test",
+          "args": {
+            "steps": [
+              {
+                "ticks": 5,
+                "kind": "wait"
+              },
+              {
+                "kind": "move",
+                "to": {
+                  "x": 41,
+                  "y": 26
+                }
+              },
+              {
+                "dir": "right",
+                "kind": "face"
+              },
+              {
+                "kind": "interact",
+                "eventId": "ev_npc_elder"
+              },
+              {
+                "ticks": 10,
+                "kind": "wait"
+              },
+              {
+                "kind": "move",
+                "to": {
+                  "y": 21,
+                  "x": 46
+                }
+              },
+              {
+                "kind": "face",
+                "dir": "up"
+              },
+              {
+                "eventId": "ev_examine_1",
+                "kind": "interact"
+              },
+              {
+                "ticks": 10,
+                "kind": "wait"
+              },
+              {
+                "kind": "expect",
+                "switchOn": "sw_quest_tablet_investigated"
+              },
+              {
+                "to": {
+                  "x": 41,
+                  "y": 26
+                },
+                "kind": "move"
+              },
+              {
+                "kind": "face",
+                "dir": "right"
+              },
+              {
+                "kind": "interact",
+                "eventId": "ev_npc_elder"
+              },
+              {
+                "kind": "wait",
+                "ticks": 10
+              },
+              {
+                "inventoryDelta": {
+                  "item_maya_compass": 1
+                },
+                "kind": "expect",
+                "switchOn": "sw_elder_instructed"
+              },
+              {
+                "kind": "move",
+                "to": {
+                  "x": 1,
+                  "y": 22
+                }
+              },
+              {
+                "mapId": "world_map",
+                "kind": "expect"
+              }
+            ],
+            "mapId": "map_beodeul_river_7",
+            "start": {
+              "y": 21,
+              "x": 1
+            }
+          },
+          "ok": true,
+          "summary": "scene test 성공 (17/17 스텝)",
+          "warnings": []
+        },
+        {
+          "order": 37,
+          "name": "edit_world_terrain",
+          "args": {
+            "base": "generate",
+            "theme": "fantasy",
+            "mapId": "world_map",
+            "ops": [
+              {
+                "style": "real",
+                "box": [
+                  -93,
+                  14,
+                  -86,
+                  22
+                ],
+                "op": "continents",
+                "home": [
+                  -89,
+                  20.8
+                ]
+              },
+              {
+                "kind": "broad",
+                "density": 0.65,
+                "poly": [
+                  [
+                    44,
+                    4
+                  ],
+                  [
+                    54,
+                    4
+                  ],
+                  [
+                    54,
+                    8
+                  ],
+                  [
+                    44,
+                    8
+                  ]
+                ],
+                "op": "forest"
+              },
+              {
+                "kind": "broad",
+                "poly": [
+                  [
+                    58,
+                    11
+                  ],
+                  [
+                    64,
+                    11
+                  ],
+                  [
+                    64,
+                    18
+                  ],
+                  [
+                    58,
+                    18
+                  ]
+                ],
+                "density": 0.6,
+                "op": "forest"
+              },
+              {
+                "ground": "grass",
+                "op": "biome",
+                "poly": [
+                  [
+                    44,
+                    3
+                  ],
+                  [
+                    55,
+                    3
+                  ],
+                  [
+                    55,
+                    9
+                  ],
+                  [
+                    44,
+                    9
+                  ]
+                ]
+              }
+            ],
+            "characterScale": 0.65
+          },
+          "ok": true,
+          "summary": "세계 지도 world_map — 테마 fantasy, 지형 작업 5개, 장소 31곳, 캐릭터 크기 65%, 여정 검사 통과(131.2초)",
+          "warnings": [
+            "ops[2](forest): 칸 40 중 13칸만 숲이 됐다 — 안 된 칸: 물 20, 밀도 7. 숲은 물·장소 둘레 1칸·길·산·2단 고원에는 안 놓이고, 사막(sand·dune)에선 지워진다. 「밀도」 칸은 density 를 올리면 채워진다(지금 0.65)"
+          ]
+        },
+        {
+          "order": 38,
+          "name": "run_scene_test",
+          "args": {
+            "start": {
+              "y": 11,
+              "x": 47
+            },
+            "mapId": "world_map",
+            "steps": [
+              {
+                "kind": "wait",
+                "ticks": 5
+              },
+              {
+                "kind": "face",
+                "dir": "up"
+              },
+              {
+                "kind": "move",
+                "to": {
+                  "x": 47,
+                  "y": 10
+                }
+              },
+              {
+                "mapId": "map_beodeul_river_7",
+                "kind": "expect"
+              }
+            ]
+          },
+          "ok": true,
+          "summary": "scene test 성공 (4/4 스텝)",
+          "warnings": []
+        }
+      ]
+    }
+  ]
+}

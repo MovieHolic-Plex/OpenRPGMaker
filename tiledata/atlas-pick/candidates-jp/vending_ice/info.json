@@ -1,0 +1,20 @@
+{
+ "id": "vending_ice",
+ "slug": "vending_ice",
+ "name": "아이스크림 자판기",
+ "scene": "역 앞 번화가",
+ "cells": [
+  2,
+  2
+ ],
+ "canvas": [
+  32,
+  32
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "2×2 아이스크림 자판기: 위 절반 = 밝은 하늘색 판에 아이스크림 그림 칸(작은 색 네모 여섯), 아래 = 서리 낀 투입구·버튼. 차가운 흰빛. 자판기 식구 틀.",
+ "palette_hint": "mwhite·kblue 몸통, sakura·taxi·kgreen 아이스크림 점, lacq 입구",
+ "worker": "r2",
+ "added": "2026-09-30 자판기 여러 종류(사용자 메모)"
+}

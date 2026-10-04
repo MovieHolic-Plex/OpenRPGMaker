@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/feed_trough/w4-A.pxg",
+ "id": "feed trough",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.01
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 11,
+ "v5_colors": 10,
+ "bbox": [
+  0,
+  4,
+  31,
+  14
+ ],
+ "v5_bbox": [
+  0,
+  4,
+  31,
+  14
+ ],
+ "note": "v5 정리: 풀더미 아래 굵은 wood7/6 테두리 보, 널판 이음선 둘, 양끝 기둥 명암 분리, 풀 잎결+노란 점",
+ "ok": true
+}

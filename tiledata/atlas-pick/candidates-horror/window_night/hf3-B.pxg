@@ -1,0 +1,42 @@
+// window_night hf3-B (hf3)
+@size 16 16
+@cell 16
+@palette palette.pal
+@layer main
+@mat a mahog 0
+@mat b moon 0
+@mat c murk 0
+@mblock 0 0
+................
+................
+..aaaaaaaaaaaa..
+..aaaaaaaaaaaa..
+..aabbbaccccaa..
+..aabbbaccccaa..
+..aacbbaccccaa..
+..aaaaaaaaaaaa..
+..aacccaccccaa..
+..aacccaccccaa..
+..aacccaccccaa..
+..aacccaccccaa..
+..aaaaaaaaaaaa..
+.aaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaa.
+................
+@tblock 0 0
+................
+................
+..000000000000..
+..066666666660..
+..064326000030..
+..063546000030..
+..060436000030..
+..065555555530..
+..060006330030..
+..060006300030..
+..060006000030..
+..060006000030..
+..055555555530..
+.66666666666663.
+.33333333333333.
+................

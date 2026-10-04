@@ -1,0 +1,35 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/piano/w4-A.pxg",
+ "id": "piano",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.039
+ },
+ "lint": {
+  "failed": [
+   "banding",
+   "saturation",
+   "outline_black"
+  ],
+  "pass": false
+ },
+ "colors": 13,
+ "v5_colors": 14,
+ "bbox": [
+  0,
+  8,
+  31,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  8,
+  31,
+  31
+ ],
+ "note": "v5 정리: 위판 하이라이트 줄+악보대(악보 음표 점)+건반 2줄(흰/검정 옥타브 배열)+아랫판 2칸 패널+페달 놋쇠, 발은 3px 3단",
+ "ok": true
+}

@@ -1,0 +1,55 @@
+// 금장 액자 셋과 협탁 금장 띠·마름모 장식; 협탁 윗면 5행(y=16~20), 꼭대기 윗면 3행(y=4~6)
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat b wood 2
+@mat c wood 3
+@mat d wood 4
+@mat e wood 5
+@mat f wood 6
+@mat g wood 7
+@mat i gold 2
+@mat j gold 3
+@mat k gold 4
+@mat l gold 5
+@mat n linen 2
+@mat o linen 4
+@mat q pine 4
+@mat r pine 5
+@mat s blue 2
+@mat t blue 4
+@mat u red 2
+@layer furniture
+@mblock 0 0
+................
+................
+................
+................
+......iiiiii....
+......illlki....
+......lkkkkj....
+......lnnnnj....
+......loqqnj....
+.iiiiiloqrnj....
+.illkilnrrnjiii.
+.lkkkjlnttnjlki.
+.lonnjlsttnjkkj.
+.loqnjlsttsjoqj.
+.lqrnjlnnnnjqrj.
+.lssnjikkkijsuj.
+.lssnjcccccsujc.
+.ikkijfggggnnjc.
+.gggggfffggikkj.
+.ggggfffffeeeec.
+.gggggffffeeeec.
+.fkkkkkkkkkkkec.
+.cddddddddddddb.
+..cgfffkffedcb..
+..cgffkkkfedcb..
+..cffffkfeedcb..
+..cddddddddddb..
+..cccccccccccb..
+..cfb......cdb..
+..cfb......cdb..
+..ceb......ccb..
+..cbb......cbb..

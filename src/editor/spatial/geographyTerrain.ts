@@ -3,7 +3,7 @@ import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
 import { isWorldTileset, WORLD_SEA_TILE } from "@/project/defaults/worldCoastMapping";
 import { WORLD_TERRAIN_BLOCKS } from "@/project/defaults/worldTerrainAutotiles";
 import { own } from "@/project/spatial/domain";
-import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults/constants";
 import type { SpatialPoint, SpatialRoute, SpatialTerrain } from "@/project/spatial/types";
 import type { GameMap, Project } from "@/project/types";
 import { MAP_GENERATION_PROFILES } from "../tools/mapGenerationProfiles";
@@ -55,7 +55,7 @@ export function geographyTerrain(project: Project, terrain: SpatialTerrain, iden
 export function settlementTerrain(project: Project, terrain: SpatialTerrain, identity: { readonly id: string; readonly name: string }): GameMap {
   const tileset = own(project.tilesets, terrain.tilesetId);
   assertTerrainTileSize(terrain, tileset.tileSize);
-  if (terrain.tilesetId !== DEFAULT_TILESET_ID) throw new SpatialCompileError("atlas", `${identity.id}:${terrain.tilesetId}`);
+  if (terrain.tilesetId !== COMBINED_TOWN_TILESET_ID) throw new SpatialCompileError("atlas", `${identity.id}:${terrain.tilesetId}`);
   return { ...identity, tilesetId: terrain.tilesetId, tileSize: tileset.tileSize,
     width: terrain.width, height: terrain.height,
     lowerTiles: Array<number>(terrain.width * terrain.height).fill(TILE.GRASS),

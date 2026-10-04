@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/towel_rail/w3-B.pxg",
+ "id": "towel rail",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.05
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 16,
+ "v5_colors": 10,
+ "bbox": [
+  2,
+  3,
+  13,
+  10
+ ],
+ "v5_bbox": [
+  2,
+  3,
+  13,
+  9
+ ],
+ "note": "B: 빛을 세게 - 왼쪽에서 흰 수건은 x(white6)→W→m→u→v 로 크게 어두워지고 파란 수건은 밝은 하늘색 모서리(blue6)에서 진하게, 봉 왼쪽 마개는 눈에 띄는 광택. 수건 사이·오른쪽 벽에 그림자 줄",
+ "ok": true
+}

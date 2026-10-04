@@ -1,0 +1,116 @@
+// E: 금속·은빛·나무 액자 셋을 한 서랍 협탁에 모음; 협탁 윗판 5행, 가장 높은 액자 윗면 3행(y=4~6).
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat w wood 5
+@mat d dwood 3
+@mat b brass 4
+@mat i iron 4
+@mat l linen 4
+@mat u blue 1
+@mat g green 1
+@layer cabinet
+@mblock 0 16
+.wwwwwwwwwwwwww.
+wwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwww
+.wwwwwwwwwwwwww.
+.wwdddddddddwww.
+.wwdddbbddddwww.
+.wwdddddddddwww.
+.wwwwwwwwwwwwww.
+.wwdddddddddwww.
+.wwd.......dww.
+.wwd.......dww.
+.wwd.......dww.
+.www.......www.
+@tblock 0 16
+.67777777666664.
+6766666666666654
+6766655666666654
+6766666665566654
+6777777666666654
+4555555555444432
+.36555555554442.
+.36233333332442.
+.36233543332442.
+.36233333332442.
+.36555555554442.
+.34111111111332.
+.341.......133.
+.351.......133.
+.351.......143.
+.432.......332.
+@layer frames
+// 중앙 금빛 초상: 뒤로 기대 선 액자의 수평 윗테 y4~6.
+@mblock 5 4
+.bbbbb
+bbbbbb
+bbbbbb
+bllllb
+blddlb
+bllllb
+bllllb
+bluuub
+buuuub
+bbbbbb
+.dddd.
+@tblock 5 4
+.55543
+554443
+444333
+544442
+542242
+544442
+543342
+541112
+511112
+433332
+.2111.
+// 왼쪽 은빛 소형 사진, 윗테 y10~12.
+@mblock 0 10
+.iiii
+iiiii
+iiiii
+illli
+ildli
+illli
+iuuui
+iiiii
+.ddd.
+@tblock 0 10
+.5543
+54443
+44332
+54442
+54242
+54342
+51112
+43332
+.211.
+// 오른쪽 나무 풍경 액자, 윗테 y8~10.
+@mblock 11 8
+.wwww
+wwwww
+wwwww
+wlllw
+wlllw
+wlllw
+wgggw
+wgggw
+wwwww
+.ddd.
+@tblock 11 8
+.7664
+76654
+65543
+74443
+74443
+73343
+71113
+71213
+54432
+.211.

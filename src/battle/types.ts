@@ -85,7 +85,9 @@ export type ActorCommandDraft =
   | TargetedActorCommand
   | { readonly kind: "defend" }
   | { readonly kind: "escape" }
-  | { readonly kind: "switch"; readonly targetActorId: ActorId };
+  | { readonly kind: "switch"; readonly targetActorId: ActorId }
+  /** RM2003 「이벤트 연결」 명령 — 고르면 행동 차례에 공통 이벤트를 실행한다(2026-10-02). */
+  | { readonly kind: "commonEvent"; readonly commonEventId: string };
 
 export type ActorCommand =
   | { readonly kind: "attack"; readonly targetEnemyId: string }
@@ -95,7 +97,8 @@ export type ActorCommand =
   | { readonly kind: "capture"; readonly captureItemId: ItemId; readonly targetEnemyId: string }
   | { readonly kind: "defend" }
   | { readonly kind: "escape" }
-  | { readonly kind: "switch"; readonly targetActorId: ActorId };
+  | { readonly kind: "switch"; readonly targetActorId: ActorId }
+  | { readonly kind: "commonEvent"; readonly commonEventId: string };
 
 export interface BattleTargetSelectionSnapshot {
   readonly command: TargetedActorCommand;
@@ -235,6 +238,7 @@ export interface BattlePartyProgress {
 export type { BattleBattlerPose } from "@/battle/battlePose";
 
 export interface BattleBattlerSnapshot {
+  readonly gimmicks?: readonly import("@/battle/battleGimmickRules").GimmickStatusSnapshot[];
   readonly row?: import("@/battle/battleFormation").BattleRow;
   readonly id: string;
   readonly recordId: ActorId | EnemyId;
@@ -283,6 +287,10 @@ export interface BattleBattlerSnapshot {
   readonly resource2?: number;
   /** 라이브라로 탐색된 적 — HP 바를 피해 전에도 드러낸다. */
   readonly scanned?: boolean;
+  /** 힘 모으기(SkillRecord.chargeTurns) 중: 발동할 기술과 남은 자기 차례 수. 표시 계층이 예고 표식을 붙인다. */
+  readonly charging?: { readonly skillId: SkillId; readonly skillName: string; readonly turnsLeft: number };
+  /** 변신(StateRuntimeEffects.transformResourceId) 중인 그림 id. 표시 계층이 원래 그림 대신 쓴다(battleCharacterResourceId 는 원래 그림 그대로). */
+  readonly transformResourceId?: string;
 }
 
 export interface BattleHitFeelSnapshot {
@@ -316,6 +324,9 @@ export interface BattleActionResultSnapshot {
   readonly amount: number;
   readonly critical: boolean;
   readonly skillName?: string;
+  readonly skillId?: SkillId;
+  /** 속성·타입 상성 배율(감정 배율 제외). 1 이면 생략 — 표시 계층이 「효과가 굉장했다」·상성별 타격음을 고른다. */
+  readonly effectiveness?: number;
 }
 
 export type BattleTimelineEntryKind =
@@ -355,6 +366,18 @@ export interface BattleTimelineEntrySnapshot {
   readonly amount?: number;
   readonly critical?: boolean;
   readonly skillName?: string;
+  /** Stable executed identity; skillName is presentation and legacy fallback only. */
+  readonly skillId?: SkillId;
+  /** 속성·타입 상성 배율(감정 배율 제외). 1 이면 생략 — 표시 계층이 「효과가 굉장했다」·상성별 타격음을 고른다. */
+  readonly effectiveness?: number;
+  /** 한 명령(배우 명령 1회·적 행동 1회)의 번호. 같은 행동의 엔트리(대상 여럿 × 타수)를 연출 하나로 묶는 열쇠다. */
+  readonly actionId?: number;
+  /** 시전자 자신에게 붙는 부수 엔트리 — HP 대가(hpCost)·흡수 회복(drain). 연출의 대상·타수로 세지 않는다. */
+  readonly aside?: "hpCost" | "drain";
+  /** Conditional choreography follows the rule outcome, including preparation and follow-up cancellation. */
+  readonly gimmick?: {pattern:import("@/battle/battleMotionProgram").BattleMotionPattern;triggered:boolean;allyId?:string;source?:"periodic"};
+  /** 힘 모으기 예고(SkillRecord.chargeTurns)의 special 줄. 연출 없이 문장만 — 명령 줄(「…을 사용했다!」)도 띄우지 않는다. */
+  readonly charge?: true;
   readonly stateId?: string;
   readonly reason?: "natural" | "hit" | "battleEnd" | "effect" | "strictCap";
   readonly success?: boolean;

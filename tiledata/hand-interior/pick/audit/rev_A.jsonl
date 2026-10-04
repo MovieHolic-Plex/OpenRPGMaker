@@ -1,0 +1,84 @@
+{"n": 16, "name": "바게트 바구니", "verdict": "PASS", "code": "", "why": "둥근 입구 타원 윗면 약5px + 앞 바구니 몸통 8px+, 두 면 확실", "fix": ""}
+{"n": 17, "name": "둥근빵 바구니", "verdict": "PASS", "code": "", "why": "16과 같은 바구니 몸통, 입구 타원 윗면 약5px", "fix": ""}
+{"n": 18, "name": "케이크 바구니", "verdict": "PASS", "code": "", "why": "같은 몸통, 입구 윗면 있음(위 케이크는 얹힌 물건)", "fix": ""}
+{"n": 19, "name": "식빵 바구니", "verdict": "PASS", "code": "", "why": "같은 몸통 기준", "fix": ""}
+{"n": 20, "name": "파이 바구니", "verdict": "PASS", "code": "", "why": "같은 몸통 기준", "fix": ""}
+{"n": 21, "name": "케이크 진열장", "verdict": "FAIL", "code": "FRONT", "why": "유리 돔+받침 모두 정면 입면, 받침 윗면은 1~2px 하이라이트 띠뿐, 처마·윗판 없음", "fix": "받침 상판을 4~6px 윗면으로 그리고 돔을 그 판 위에서 솟게(돔 아랫선을 타원으로)"}
+{"n": 22, "name": "바게트 궤짝", "verdict": "PASS", "code": "", "why": "x8 재확인: 뒤 테두리+내용물+안쪽 면 합쳐 윗면 약8~10px, 앞 슬랫 약9px (처음 THIN 판정 철회)", "fix": ""}
+{"n": 23, "name": "둥근빵 궤짝", "verdict": "PASS", "code": "", "why": "x8 재확인: 뒤 테두리+내용물+안쪽 면 합쳐 윗면 약8~10px, 앞 슬랫 약9px (처음 THIN 판정 철회)", "fix": ""}
+{"n": 24, "name": "케이크 궤짝", "verdict": "PASS", "code": "", "why": "x8 재확인: 뒤 테두리+내용물+안쪽 면 합쳐 윗면 약8~10px, 앞 슬랫 약9px (처음 THIN 판정 철회)", "fix": ""}
+{"n": 25, "name": "식빵 궤짝", "verdict": "PASS", "code": "", "why": "x8 재확인: 뒤 테두리+내용물+안쪽 면 합쳐 윗면 약8~10px, 앞 슬랫 약9px (처음 THIN 판정 철회)", "fix": ""}
+{"n": 26, "name": "파이 궤짝", "verdict": "PASS", "code": "", "why": "x8 재확인: 뒤 테두리+내용물+안쪽 면 합쳐 윗면 약8~10px, 앞 슬랫 약9px (처음 THIN 판정 철회)", "fix": ""}
+{"n": 27, "name": "밀가루 자루", "verdict": "PASS", "code": "", "why": "묶은 입구 윗면 타원 약4px + 불룩한 앞면", "fix": ""}
+{"n": 28, "name": "곡식 자루", "verdict": "PASS", "code": "", "why": "27과 같은 자루 몸통", "fix": ""}
+{"n": 29, "name": "케이크·파이 탁자", "verdict": "PASS", "code": "", "why": "흰 천 상판 약8px + 늘어진 앞단 약5px, 윗면이 읽힘", "fix": ""}
+{"n": 30, "name": "식빵·둥근빵 탁자", "verdict": "FAIL", "code": "THIN", "why": "상판 윗면이 빵에 가려 실질 1~2px 띠, 앞판 약8px 이 대부분 (기준 8~14px)", "fix": "상판을 8px 이상 밝은 윗면으로 먼저 깔고 빵을 그 위에 얹기"}
+{"n": 31, "name": "도마 통나무", "verdict": "FAIL", "code": "THIN", "why": "통나무 몸통은 정면 입면, 윗면(절단면)이 3px 안팎 어두운 띠뿐", "fix": "윗 절단면을 타원 4~6px 로 밝게"}
+{"n": 32, "name": "햄·고기 얼음 진열함", "verdict": "PASS", "code": "", "why": "안쪽 얼음 윗면 약10px + 앞면 약5px 두 면 모두 있음", "fix": ""}
+{"n": 33, "name": "고기·햄·소시지 얼음 진열함", "verdict": "PASS", "code": "", "why": "32와 같은 몸통", "fix": ""}
+{"n": 34, "name": "고기·햄 탁자", "verdict": "PASS", "code": "", "why": "상판(고기 얹힘) 약8px + 앞판 약8px", "fix": ""}
+{"n": 35, "name": "카드 탁자 1x1", "verdict": "PASS", "code": "", "why": "펠트 상판 윗면 큼, 앞 앞치마 3px+다리 6px 가 보임", "fix": ""}
+{"n": 36, "name": "카드 탁자 2x1", "verdict": "PASS", "code": "", "why": "35와 같은 몸통", "fix": ""}
+{"n": 37, "name": "카드 탁자 2x2", "verdict": "PASS", "code": "", "why": "상판 깊이 충분, 앞 앞치마+다리", "fix": ""}
+{"n": 38, "name": "카드 탁자 3x1", "verdict": "PASS", "code": "", "why": "같은 몸통", "fix": ""}
+{"n": 39, "name": "카드 탁자 3x2", "verdict": "PASS", "code": "", "why": "같은 몸통", "fix": ""}
+{"n": 40, "name": "룰렛", "verdict": "PASS", "code": "", "why": "카드 탁자 몸통과 동일, 윗면 큼+앞 앞치마·다리", "fix": ""}
+{"n": 41, "name": "독립 제단", "verdict": "FAIL", "code": "SIDE", "why": "이름부터 옆에서 본 것: 왼쪽 기둥 옆면+천 입면, 제단 윗면 거의 없음, 정면/옆 혼재", "fix": "상판 윗면 6px+앞면으로 다시 그리고 옆 기둥 제거(정면 제단)"}
+{"n": 42, "name": "세례반", "verdict": "PASS", "code": "", "why": "물 담긴 수반 윗면 타원 약8px + 기둥·받침 앞면", "fix": ""}
+{"n": 43, "name": "촛대(큰)", "verdict": "EXEMPT", "code": "", "why": "가는 막대형 촛대", "fix": ""}
+{"n": 44, "name": "성수반", "verdict": "PASS", "code": "", "why": "잔 입구 타원 약3px + 대, 작은 잔형", "fix": ""}
+{"n": 45, "name": "성경대", "verdict": "PASS", "code": "", "why": "경사 독서판 윗면 약5px + 앞면 몸통", "fix": ""}
+{"n": 46, "name": "부활초", "verdict": "EXEMPT", "code": "", "why": "가는 막대형 초", "fix": ""}
+{"n": 47, "name": "교회 긴의자", "verdict": "FAIL", "code": "FRONT", "why": "전면이 가로 널판 줄무늬뿐, 좌판 윗면 4~6px 가 구분 안 됨(밝은 띠 약4px 이 앞면 속)", "fix": "등받이 뒤/좌판 윗면 5px 밝은 판/앞판 순으로 분리해 다시 그림"}
+{"n": 48, "name": "회중석(동쪽을 보는)", "verdict": "FAIL", "code": "SIDE", "why": "옆에서 본 L자 의자 실루엣: 키 큰 등받이 옆판+좌판 옆면, 좌판 윗면 없음", "fix": "정면(남향) 시점으로 좌판 윗면 4~6px+앞판+뒤 등받이로 재작도"}
+{"n": 49, "name": "회중석(동쪽을 보는) 큰것", "verdict": "FAIL", "code": "SIDE", "why": "48과 같은 옆 입면 몸통", "fix": "48 수정에 따름"}
+{"n": 50, "name": "설교단(4x3)", "verdict": "FAIL", "code": "MIXED", "why": "왼쪽 설교대는 정면, 오른쪽 계단은 옆에서 본 난간·단 입면 — 시점 혼재", "fix": "계단을 정면(단 윗면+챌판 교대)으로 다시 그림"}
+{"n": 51, "name": "봉헌 초 받침", "verdict": "FAIL", "code": "THIN", "why": "선반 3단이 각 2px 회색 띠뿐, 선반 윗면(깊이)이 안 보이는 정면 입면", "fix": "각 선반판을 윗면 3~4px+앞면 2px 로 그리기"}
+{"n": 52, "name": "관", "verdict": "FAIL", "code": "TOPDOWN", "why": "세운 육각 뚜껑 하나뿐, 앞면(측판)이 없고 뚜껑만 보임 (관은 뚜껑 윗면+앞 측판 필요)", "fix": "뚜껑 윗면을 비스듬히 줄이고 아래에 앞 측판 8px 추가"}
+{"n": 53, "name": "석관", "verdict": "PASS", "code": "", "why": "뚜껑 윗면 약13px + 앞 몸통 약11px", "fix": ""}
+{"n": 54, "name": "해골 더미", "verdict": "EXEMPT", "code": "", "why": "더미형", "fix": ""}
+{"n": 55, "name": "화로", "verdict": "PASS", "code": "", "why": "접시 입구 타원 윗면 약3px + 다리, 작은 화로", "fix": ""}
+{"n": 56, "name": "드워프 네모 기둥", "verdict": "FAIL", "code": "CAP", "why": "기둥머리 윗면이 2~3px 가로 띠(정면 주두 입면), 각진 윗면 판/타원 캡 없음", "fix": "맨 위에 윗면 판 4px(밝은 마름모/사각) 추가"}
+{"n": 57, "name": "덩굴 나무 기둥", "verdict": "EXEMPT", "code": "", "why": "식물 수관이 윗부분을 덮음, 밑 받침 윗면은 1~2px(받침 있음이 약점)", "fix": ""}
+{"n": 58, "name": "대리석 기둥", "verdict": "FAIL", "code": "CAP", "why": "60과 같은 몸통: 주두 윗면이 약3px 띠뿐, 타원 캡 없음", "fix": "주두 위에 타원 캡 3~4px"}
+{"n": 59, "name": "강철 기둥(리벳)", "verdict": "FAIL", "code": "CAP", "why": "같은 기둥 몸통, 윗면 2~3px", "fix": "56 수정에 따름"}
+{"n": 60, "name": "돌 기둥", "verdict": "FAIL", "code": "CAP", "why": "주두 상단 윗면이 약2px 밝은 띠, 아래 받침도 정면 입면", "fix": "주두 맨 위를 타원 캡 3~4px 로"}
+{"n": 61, "name": "나무 기둥(금 띠)", "verdict": "FAIL", "code": "CAP", "why": "같은 몸통, 위가 둥근 정면 입면뿐", "fix": "60 수정에 따름"}
+{"n": 62, "name": "화분 선인장", "verdict": "PASS", "code": "", "why": "화분 입구 흙 타원 약3px + 앞면 몸통", "fix": ""}
+{"n": 63, "name": "화분 고사리", "verdict": "PASS", "code": "", "why": "62와 같은 화분", "fix": ""}
+{"n": 64, "name": "화분 꽃", "verdict": "PASS", "code": "", "why": "화분 입구 윗면+앞면, 62와 같은 화분", "fix": ""}
+{"n": 65, "name": "화분 묘목", "verdict": "PASS", "code": "", "why": "같은 화분", "fix": ""}
+{"n": 66, "name": "왕실 상자", "verdict": "PASS", "code": "", "why": "뚜껑 윗면 약5px + 앞면 약9px", "fix": ""}
+{"n": 67, "name": "석상", "verdict": "EXEMPT", "code": "", "why": "조각상, 좌대 윗면은 발에 가려 약3px (경계 사례, 좌대 윗면 확대 권고)", "fix": ""}
+{"n": 68, "name": "키큰 꽃병 파랑", "verdict": "FAIL", "code": "THIN", "why": "입구 윗면이 약2px 가로 띠(정면 입면), 항아리 입구 4px 미달", "fix": "입구를 타원 4px 로(안쪽 어둠+림)"}
+{"n": 69, "name": "키큰 꽃병 빨강", "verdict": "FAIL", "code": "THIN", "why": "68과 같은 병 몸통", "fix": "68 수정에 따름"}
+{"n": 70, "name": "키큰 꽃병 청록", "verdict": "FAIL", "code": "THIN", "why": "68과 같은 병 몸통", "fix": "68 수정에 따름"}
+{"n": 71, "name": "키큰 꽃병 노랑", "verdict": "FAIL", "code": "THIN", "why": "68과 같은 병 몸통", "fix": "68 수정에 따름"}
+{"n": 72, "name": "왕좌", "verdict": "PASS", "code": "", "why": "좌판 윗면(분홍) 약4px 이 등받이 앞에 보이고 앞 방석면+받침 있음, 경계 사례", "fix": ""}
+{"n": 73, "name": "오물통", "verdict": "PASS", "code": "", "why": "입구 윗면 약4px + 통 앞면(작은 통)", "fix": ""}
+{"n": 74, "name": "엘프 하프", "verdict": "EXEMPT", "code": "", "why": "악기", "fix": ""}
+{"n": 75, "name": "달빛 못", "verdict": "EXEMPT", "code": "", "why": "바닥 깔판(위에서 본 판 정상)", "fix": ""}
+{"n": 76, "name": "흰 나무(화분)", "verdict": "FAIL", "code": "FRONT", "why": "회색 좌대가 정면 단색 사각 약5px, 윗면 없음(막대 나무 자체는 면제)", "fix": "좌대 윗면 3~4px 밝은 판을 추가"}
+{"n": 77, "name": "게 통", "verdict": "PASS", "code": "", "why": "통 입구 윗면 약5px(내용물) + 앞면 약9px", "fix": ""}
+{"n": 78, "name": "생선 통", "verdict": "PASS", "code": "", "why": "77과 같은 통", "fix": ""}
+{"n": 79, "name": "생선·얼음 통", "verdict": "PASS", "code": "", "why": "77과 같은 통", "fix": ""}
+{"n": 80, "name": "푸른 생선 통", "verdict": "PASS", "code": "", "why": "77 통 몸통과 동일", "fix": ""}
+{"n": 81, "name": "붉은 생선 통", "verdict": "PASS", "code": "", "why": "같은 통", "fix": ""}
+{"n": 82, "name": "조개 통", "verdict": "PASS", "code": "", "why": "같은 통", "fix": ""}
+{"n": 83, "name": "오징어 통", "verdict": "PASS", "code": "", "why": "같은 통", "fix": ""}
+{"n": 84, "name": "생선 바구니", "verdict": "PASS", "code": "", "why": "16 바구니 몸통과 동일, 입구 윗면 있음", "fix": ""}
+{"n": 85, "name": "생선·얼음 바구니", "verdict": "PASS", "code": "", "why": "같은 바구니", "fix": ""}
+{"n": 86, "name": "조개 바구니", "verdict": "PASS", "code": "", "why": "같은 바구니", "fix": ""}
+{"n": 87, "name": "게 궤짝", "verdict": "PASS", "code": "", "why": "x8 재확인: 뒤 테두리+내용물+안쪽 면 합쳐 윗면 약8~10px, 앞 슬랫 약9px (처음 THIN 판정 철회)", "fix": ""}
+{"n":88,"name":"생선 궤짝","verdict":"PASS","code":"","why":"궤짝 윗면(내용물) 약8px + 앞면 약7px","fix":""}
+{"n":89,"name":"생선·얼음 궤짝","verdict":"PASS","code":"","why":"같은 궤짝","fix":""}
+{"n":90,"name":"푸른 생선 궤짝","verdict":"PASS","code":"","why":"같은 궤짝","fix":""}
+{"n":91,"name":"붉은 생선 궤짝","verdict":"PASS","code":"","why":"같은 궤짝","fix":""}
+{"n":92,"name":"조개 궤짝","verdict":"PASS","code":"","why":"같은 궤짝","fix":""}
+{"n":93,"name":"오징어 궤짝","verdict":"PASS","code":"","why":"같은 궤짝","fix":""}
+{"n":94,"name":"얼음 생선함","verdict":"PASS","code":"","why":"32 진열함과 같은 몸통, 윗면 약10px + 앞면 약5px","fix":""}
+{"n":95,"name":"생선·푸른·붉은 얼음함","verdict":"PASS","code":"","why":"같은 진열함","fix":""}
+{"n":96,"name":"생선·붉은 생선 얼음 진열함","verdict":"PASS","code":"","why":"32 진열함 몸통과 동일","fix":""}
+{"n":97,"name":"오징어·게·조개 얼음 진열함","verdict":"PASS","code":"","why":"같은 몸통","fix":""}
+{"n":98,"name":"생선·붉은 생선 탁자","verdict":"PASS","code":"","why":"34 탁자 몸통과 동일, 상판 약8px+앞판 약8px","fix":""}
+{"n":99,"name":"긴 화덕 3칸","verdict":"FAIL","code":"TOPDOWN","why":"불구덩이를 위에서만 본 판+1px 테두리, 앞 측판(F) 없음 (바닥 매립이면 면제될 수 있으나 돌 테두리가 솟은 화덕이라 FAIL)","fix":"아래에 돌 앞면 4~6px 을 두고 불판 윗면을 그 위로"}

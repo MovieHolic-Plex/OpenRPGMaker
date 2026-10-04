@@ -1,0 +1,41 @@
+// s5 후보 — s5-C.pxg
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat a viron
+@mat b vblack
+@mat c vwhite
+@mblock 0 0
+..aaaaaaaaaaaa..
+.aaabbbccbbbaaa.
+aaabccccccccbaaa
+aabccccbbccccbaa
+abccccccccccccba
+abcccbbccbbcccba
+abcccbbccbbcccba
+accbcccbbcccbcca
+accbcccbbcccbcca
+abccccccccccccba
+abccccccccccccba
+abccccccccccccba
+aabccccbbccccbaa
+aaabccccccccbaaa
+.aaabbbccbbbaaa.
+..aaaaaaaaaaaa..
+@tblock 0 0
+..555555555555..
+.62222266222226.
+4222666666662221
+4226666336666221
+4266666666666621
+4266611661166621
+4266611661166621
+4663666116663661
+4663666116663661
+4266666666666621
+4266666666666621
+4266666666666621
+4226666336666221
+4222666666662221
+.62222266222226.
+..000000000000..

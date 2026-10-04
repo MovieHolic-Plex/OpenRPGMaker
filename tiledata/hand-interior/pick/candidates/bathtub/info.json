@@ -1,0 +1,40 @@
+{
+ "id": "bathtub",
+ "slug": "bathtub",
+ "name_ko": "욕조",
+ "category": "가구·살림",
+ "kind": "floor",
+ "kind_ko": "바닥 기물(막힘)",
+ "canvas": [
+  32,
+  16
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 32,
+  "h": 16
+ },
+ "footprint": {
+  "w": 2,
+  "h": 1
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "다리 달린 욕조(2칸). 욕실 바닥.",
+ "where": "욕실 바닥.",
+ "placement": [
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": [
+  1,
+  2,
+  30,
+  15
+ ],
+ "v5_colors": 6,
+ "material": "wood",
+ "related": [
+  "washbasin",
+  "water jar"
+ ]
+}

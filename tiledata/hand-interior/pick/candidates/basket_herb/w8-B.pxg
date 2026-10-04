@@ -1,0 +1,33 @@
+// w8-B x
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat F straw 6
+@mat E straw 5
+@mat D straw 4
+@mat H straw 3
+@mat J straw 2
+@mat u straw 1
+@mat G leaf 1
+@mat g leaf 2
+@mat c leaf 3
+@mat a leaf 4
+@mat b leaf 5
+@mat B leaf 6
+@mblock 0 0
+................
+................
+................
+.......b........
+...B..bab.b.B...
+..bab.cac.aba...
+...cbabcbcac.c..
+..FEFEFEEDEDDH..
+..uGggGcGgGgGu..
+..uFEEDEDDHDHJ~.
+..uEDDHDHDHDHJ~.
+..uDHDHDHDHHJJ~.
+..uDHDHDHDHJJJ~.
+...uDHDHDHHJJu~.
+...uuuuuuuuuuu~.
+....~~~~~~~~~~~.

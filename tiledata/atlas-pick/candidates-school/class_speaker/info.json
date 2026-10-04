@@ -1,0 +1,21 @@
+{
+ "id": "class_speaker",
+ "slug": "class_speaker",
+ "name": "교실 스피커·TV",
+ "scene": "교실",
+ "place": "in",
+ "cells": [
+  2,
+  1
+ ],
+ "canvas": [
+  32,
+  16
+ ],
+ "layer": "wall",
+ "layer_ko": "벽 걸이(위층, 투명 배경·벽면에 붙는다)",
+ "description": "칠판 옆 위 벽에 달린 벽걸이 TV(짙은 화면 + 은색 테) 와 옆 작은 방송 스피커(격자 구멍). 화면에 창 빛 반사 사선 한 줄.",
+ "palette_hint": "mdglass 화면, mmetal 테, cream 스피커",
+ "pair": [],
+ "worker": "s3"
+}

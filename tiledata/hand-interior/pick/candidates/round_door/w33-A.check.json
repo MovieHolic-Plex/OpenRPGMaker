@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/round_door/w33-A.pxg",
+ "id": "round door",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.062
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 23,
+ "v5_colors": 10,
+ "bbox": [
+  2,
+  3,
+  29,
+  30
+ ],
+ "v5_bbox": [
+  2,
+  3,
+  29,
+  30
+ ],
+ "note": "돌 쐐기 문틀 안쪽 그늘, 초록 널판 결·철띠 둘·놋 둥근 손잡이",
+ "ok": true
+}

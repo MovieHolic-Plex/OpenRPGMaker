@@ -1,0 +1,1052 @@
+{
+ "tile": 16,
+ "sheet": "parts.png",
+ "size": [
+  512,
+  132
+ ],
+ "parts": {
+  "cafe.f1.0": {
+   "x": 0,
+   "y": 0,
+   "w": 16,
+   "h": 64,
+   "layer": "up"
+  },
+  "cafe.f1.1": {
+   "x": 16,
+   "y": 0,
+   "w": 16,
+   "h": 64,
+   "layer": "up"
+  },
+  "cafe.f1.2": {
+   "x": 32,
+   "y": 0,
+   "w": 16,
+   "h": 64,
+   "layer": "up"
+  },
+  "cafe.f1.3": {
+   "x": 48,
+   "y": 0,
+   "w": 16,
+   "h": 64,
+   "layer": "up"
+  },
+  "cafe.f1.4": {
+   "x": 64,
+   "y": 0,
+   "w": 16,
+   "h": 64,
+   "layer": "up"
+  },
+  "cafe.f1.5": {
+   "x": 80,
+   "y": 0,
+   "w": 16,
+   "h": 64,
+   "layer": "up"
+  },
+  "cafe.f1.6": {
+   "x": 96,
+   "y": 0,
+   "w": 16,
+   "h": 64,
+   "layer": "up"
+  },
+  "tower.f1.0": {
+   "x": 112,
+   "y": 0,
+   "w": 16,
+   "h": 64,
+   "layer": "up"
+  },
+  "tower.f1.1": {
+   "x": 128,
+   "y": 0,
+   "w": 16,
+   "h": 64,
+   "layer": "up"
+  },
+  "tower.f1.2": {
+   "x": 144,
+   "y": 0,
+   "w": 16,
+   "h": 64,
+   "layer": "up"
+  },
+  "tower.f1.3": {
+   "x": 160,
+   "y": 0,
+   "w": 16,
+   "h": 64,
+   "layer": "up"
+  },
+  "tower.f1.4": {
+   "x": 176,
+   "y": 0,
+   "w": 16,
+   "h": 64,
+   "layer": "up"
+  },
+  "tower.f1.5": {
+   "x": 192,
+   "y": 0,
+   "w": 16,
+   "h": 64,
+   "layer": "up"
+  },
+  "tower.f1.6": {
+   "x": 208,
+   "y": 0,
+   "w": 16,
+   "h": 64,
+   "layer": "up"
+  },
+  "tower.f1.7": {
+   "x": 224,
+   "y": 0,
+   "w": 16,
+   "h": 64,
+   "layer": "up"
+  },
+  "tower.f1.8": {
+   "x": 240,
+   "y": 0,
+   "w": 16,
+   "h": 64,
+   "layer": "up"
+  },
+  "busstop": {
+   "x": 256,
+   "y": 0,
+   "w": 48,
+   "h": 48,
+   "layer": "up"
+  },
+  "conbini.f1.0": {
+   "x": 304,
+   "y": 0,
+   "w": 16,
+   "h": 48,
+   "layer": "up"
+  },
+  "conbini.f1.1": {
+   "x": 320,
+   "y": 0,
+   "w": 16,
+   "h": 48,
+   "layer": "up"
+  },
+  "conbini.f1.2": {
+   "x": 336,
+   "y": 0,
+   "w": 16,
+   "h": 48,
+   "layer": "up"
+  },
+  "conbini.f1.3": {
+   "x": 352,
+   "y": 0,
+   "w": 16,
+   "h": 48,
+   "layer": "up"
+  },
+  "conbini.f1.4": {
+   "x": 368,
+   "y": 0,
+   "w": 16,
+   "h": 48,
+   "layer": "up"
+  },
+  "conbini.f1.5": {
+   "x": 384,
+   "y": 0,
+   "w": 16,
+   "h": 48,
+   "layer": "up"
+  },
+  "conbini.f1.6": {
+   "x": 400,
+   "y": 0,
+   "w": 16,
+   "h": 48,
+   "layer": "up"
+  },
+  "conbini.f1.7": {
+   "x": 416,
+   "y": 0,
+   "w": 16,
+   "h": 48,
+   "layer": "up"
+  },
+  "conbini.f1.8": {
+   "x": 432,
+   "y": 0,
+   "w": 16,
+   "h": 48,
+   "layer": "up"
+  },
+  "conbini.f1.9": {
+   "x": 448,
+   "y": 0,
+   "w": 16,
+   "h": 48,
+   "layer": "up"
+  },
+  "lamp": {
+   "x": 464,
+   "y": 0,
+   "w": 16,
+   "h": 48,
+   "layer": "up"
+  },
+  "tree": {
+   "x": 480,
+   "y": 0,
+   "w": 32,
+   "h": 48,
+   "layer": "up"
+  },
+  "taxi_l": {
+   "x": 0,
+   "y": 64,
+   "w": 64,
+   "h": 36,
+   "layer": "up"
+  },
+  "taxi_r": {
+   "x": 64,
+   "y": 64,
+   "w": 64,
+   "h": 36,
+   "layer": "up"
+  },
+  "cafe.f2.0": {
+   "x": 128,
+   "y": 64,
+   "w": 16,
+   "h": 32,
+   "layer": "up"
+  },
+  "cafe.f2.1": {
+   "x": 144,
+   "y": 64,
+   "w": 16,
+   "h": 32,
+   "layer": "up"
+  },
+  "cafe.f2.2": {
+   "x": 160,
+   "y": 64,
+   "w": 16,
+   "h": 32,
+   "layer": "up"
+  },
+  "cafe.f2.3": {
+   "x": 176,
+   "y": 64,
+   "w": 16,
+   "h": 32,
+   "layer": "up"
+  },
+  "cafe.f2.6": {
+   "x": 192,
+   "y": 64,
+   "w": 16,
+   "h": 32,
+   "layer": "up"
+  },
+  "cafe.roof.1": {
+   "x": 208,
+   "y": 64,
+   "w": 16,
+   "h": 32,
+   "layer": "up"
+  },
+  "cafe.roof.2": {
+   "x": 224,
+   "y": 64,
+   "w": 16,
+   "h": 32,
+   "layer": "up"
+  },
+  "cafe.roof.4": {
+   "x": 240,
+   "y": 64,
+   "w": 16,
+   "h": 32,
+   "layer": "up"
+  },
+  "conbini.roof.0": {
+   "x": 256,
+   "y": 64,
+   "w": 16,
+   "h": 32,
+   "layer": "up"
+  },
+  "conbini.roof.1": {
+   "x": 272,
+   "y": 64,
+   "w": 16,
+   "h": 32,
+   "layer": "up"
+  },
+  "conbini.roof.3": {
+   "x": 288,
+   "y": 64,
+   "w": 16,
+   "h": 32,
+   "layer": "up"
+  },
+  "conbini.roof.6": {
+   "x": 304,
+   "y": 64,
+   "w": 16,
+   "h": 32,
+   "layer": "up"
+  },
+  "conbini.roof.7": {
+   "x": 320,
+   "y": 64,
+   "w": 16,
+   "h": 32,
+   "layer": "up"
+  },
+  "tower.f2.0": {
+   "x": 336,
+   "y": 64,
+   "w": 16,
+   "h": 32,
+   "layer": "up"
+  },
+  "tower.f3.0": {
+   "x": 352,
+   "y": 64,
+   "w": 16,
+   "h": 32,
+   "layer": "up"
+  },
+  "tower.f3.4": {
+   "x": 368,
+   "y": 64,
+   "w": 16,
+   "h": 32,
+   "layer": "up"
+  },
+  "tower.f3.5": {
+   "x": 384,
+   "y": 64,
+   "w": 16,
+   "h": 32,
+   "layer": "up"
+  },
+  "tower.f4.0": {
+   "x": 400,
+   "y": 64,
+   "w": 16,
+   "h": 32,
+   "layer": "up"
+  },
+  "tower.f4.1": {
+   "x": 416,
+   "y": 64,
+   "w": 16,
+   "h": 32,
+   "layer": "up"
+  },
+  "tower.f4.2": {
+   "x": 432,
+   "y": 64,
+   "w": 16,
+   "h": 32,
+   "layer": "up"
+  },
+  "tower.f4.3": {
+   "x": 448,
+   "y": 64,
+   "w": 16,
+   "h": 32,
+   "layer": "up"
+  },
+  "tower.f4.4": {
+   "x": 464,
+   "y": 64,
+   "w": 16,
+   "h": 32,
+   "layer": "up"
+  },
+  "tower.f4.5": {
+   "x": 480,
+   "y": 64,
+   "w": 16,
+   "h": 32,
+   "layer": "up"
+  },
+  "tower.f4.8": {
+   "x": 496,
+   "y": 64,
+   "w": 16,
+   "h": 32,
+   "layer": "up"
+  },
+  "tower.f5.0": {
+   "x": 0,
+   "y": 100,
+   "w": 16,
+   "h": 32,
+   "layer": "up"
+  },
+  "tower.f5.1": {
+   "x": 16,
+   "y": 100,
+   "w": 16,
+   "h": 32,
+   "layer": "up"
+  },
+  "tower.f5.2": {
+   "x": 32,
+   "y": 100,
+   "w": 16,
+   "h": 32,
+   "layer": "up"
+  },
+  "tower.f5.3": {
+   "x": 48,
+   "y": 100,
+   "w": 16,
+   "h": 32,
+   "layer": "up"
+  },
+  "tower.f5.4": {
+   "x": 64,
+   "y": 100,
+   "w": 16,
+   "h": 32,
+   "layer": "up"
+  },
+  "tower.f5.8": {
+   "x": 80,
+   "y": 100,
+   "w": 16,
+   "h": 32,
+   "layer": "up"
+  },
+  "tower.roof.0": {
+   "x": 96,
+   "y": 100,
+   "w": 16,
+   "h": 32,
+   "layer": "up"
+  },
+  "tower.roof.1": {
+   "x": 112,
+   "y": 100,
+   "w": 16,
+   "h": 32,
+   "layer": "up"
+  },
+  "tower.roof.2": {
+   "x": 128,
+   "y": 100,
+   "w": 16,
+   "h": 32,
+   "layer": "up"
+  },
+  "tower.roof.3": {
+   "x": 144,
+   "y": 100,
+   "w": 16,
+   "h": 32,
+   "layer": "up"
+  },
+  "tower.roof.4": {
+   "x": 160,
+   "y": 100,
+   "w": 16,
+   "h": 32,
+   "layer": "up"
+  },
+  "tower.roof.5": {
+   "x": 176,
+   "y": 100,
+   "w": 16,
+   "h": 32,
+   "layer": "up"
+  },
+  "tower.roof.6": {
+   "x": 192,
+   "y": 100,
+   "w": 16,
+   "h": 32,
+   "layer": "up"
+  },
+  "tower.roof.8": {
+   "x": 208,
+   "y": 100,
+   "w": 16,
+   "h": 32,
+   "layer": "up"
+  },
+  "vend_a": {
+   "x": 224,
+   "y": 100,
+   "w": 16,
+   "h": 32,
+   "layer": "up"
+  },
+  "vend_b": {
+   "x": 240,
+   "y": 100,
+   "w": 16,
+   "h": 32,
+   "layer": "up"
+  },
+  "hero_a": {
+   "x": 256,
+   "y": 100,
+   "w": 16,
+   "h": 24,
+   "layer": "up"
+  },
+  "hero_b": {
+   "x": 272,
+   "y": 100,
+   "w": 16,
+   "h": 24,
+   "layer": "up"
+  },
+  "alley": {
+   "x": 288,
+   "y": 100,
+   "w": 16,
+   "h": 16,
+   "layer": "lo"
+  },
+  "alley_dk1": {
+   "x": 304,
+   "y": 100,
+   "w": 16,
+   "h": 16,
+   "layer": "lo"
+  },
+  "alley_dk2": {
+   "x": 320,
+   "y": 100,
+   "w": 16,
+   "h": 16,
+   "layer": "lo"
+  },
+  "bins": {
+   "x": 336,
+   "y": 100,
+   "w": 16,
+   "h": 16,
+   "layer": "up"
+  },
+  "curb": {
+   "x": 352,
+   "y": 100,
+   "w": 16,
+   "h": 16,
+   "layer": "lo"
+  },
+  "curb_far": {
+   "x": 368,
+   "y": 100,
+   "w": 16,
+   "h": 16,
+   "layer": "lo"
+  },
+  "far_wall": {
+   "x": 384,
+   "y": 100,
+   "w": 16,
+   "h": 16,
+   "layer": "lo"
+  },
+  "far_wall_plain": {
+   "x": 400,
+   "y": 100,
+   "w": 16,
+   "h": 16,
+   "layer": "lo"
+  },
+  "pave": {
+   "x": 416,
+   "y": 100,
+   "w": 16,
+   "h": 16,
+   "layer": "lo"
+  },
+  "road": {
+   "x": 432,
+   "y": 100,
+   "w": 16,
+   "h": 16,
+   "layer": "lo"
+  },
+  "road_dash": {
+   "x": 448,
+   "y": 100,
+   "w": 16,
+   "h": 16,
+   "layer": "lo"
+  },
+  "xwalk": {
+   "x": 464,
+   "y": 100,
+   "w": 16,
+   "h": 16,
+   "layer": "lo"
+  }
+ },
+ "kits": {
+  "tower": {
+   "w": 9,
+   "h": 14,
+   "px": [
+    144,
+    224
+   ],
+   "bands": [
+    {
+     "band": "roof",
+     "y": 0,
+     "h": 32,
+     "parts": [
+      "tower.roof.0",
+      "tower.roof.1",
+      "tower.roof.2",
+      "tower.roof.3",
+      "tower.roof.4",
+      "tower.roof.5",
+      "tower.roof.6",
+      "tower.roof.1",
+      "tower.roof.8"
+     ]
+    },
+    {
+     "band": "f5",
+     "y": 32,
+     "h": 32,
+     "parts": [
+      "tower.f5.0",
+      "tower.f5.1",
+      "tower.f5.2",
+      "tower.f5.3",
+      "tower.f5.4",
+      "tower.f5.1",
+      "tower.f5.4",
+      "tower.f5.1",
+      "tower.f5.8"
+     ]
+    },
+    {
+     "band": "f4",
+     "y": 64,
+     "h": 32,
+     "parts": [
+      "tower.f4.0",
+      "tower.f4.1",
+      "tower.f4.2",
+      "tower.f4.3",
+      "tower.f4.4",
+      "tower.f4.5",
+      "tower.f4.2",
+      "tower.f4.3",
+      "tower.f4.8"
+     ]
+    },
+    {
+     "band": "f3",
+     "y": 96,
+     "h": 32,
+     "parts": [
+      "tower.f3.0",
+      "tower.f4.5",
+      "tower.f4.2",
+      "tower.f4.3",
+      "tower.f3.4",
+      "tower.f3.5",
+      "tower.f4.4",
+      "tower.f4.5",
+      "tower.f4.8"
+     ]
+    },
+    {
+     "band": "f2",
+     "y": 128,
+     "h": 32,
+     "parts": [
+      "tower.f2.0",
+      "tower.f4.3",
+      "tower.f3.4",
+      "tower.f3.5",
+      "tower.f4.2",
+      "tower.f4.3",
+      "tower.f4.4",
+      "tower.f4.5",
+      "tower.f4.8"
+     ]
+    },
+    {
+     "band": "f1",
+     "y": 160,
+     "h": 64,
+     "parts": [
+      "tower.f1.0",
+      "tower.f1.1",
+      "tower.f1.2",
+      "tower.f1.3",
+      "tower.f1.4",
+      "tower.f1.5",
+      "tower.f1.6",
+      "tower.f1.7",
+      "tower.f1.8"
+     ]
+    }
+   ],
+   "walk": [
+    "CCCCCCCCC",
+    "CCCCCCCCC",
+    "CCCCCCCCC",
+    "CCCCCCCCC",
+    "CCCCCCCCC",
+    "CCCCCCCCC",
+    "CCCCCCCCC",
+    "CCCCCCCCC",
+    "CCCCCCCCC",
+    "CCCCCCCCC",
+    "CCCCCCCCC",
+    "CCCCCCCCC",
+    "SSSSSSSSS",
+    "SSSSFFSSS"
+   ],
+   "role": "building",
+   "doors": [
+    {
+     "dx": 4,
+     "dy": 13,
+     "note": "문 앞 칸(포장 바닥)"
+    },
+    {
+     "dx": 5,
+     "dy": 13,
+     "note": "문 앞 칸(포장 바닥)"
+    }
+   ],
+   "description": "5층 상가 건물 144×224. 지붕 윗면 D=2(32) + 층 32×4(슬래브 9 · 붙임기둥 · 들어간 창 · 발코니 · 간판판) + 1층 64(차양 · 유리 · 들어간 입구). 통짜 up, y정렬로 가림."
+  },
+  "cafe": {
+   "w": 7,
+   "h": 8,
+   "px": [
+    112,
+    128
+   ],
+   "bands": [
+    {
+     "band": "roof",
+     "y": 0,
+     "h": 32,
+     "parts": [
+      "tower.roof.0",
+      "cafe.roof.1",
+      "cafe.roof.2",
+      "tower.roof.2",
+      "cafe.roof.4",
+      "tower.roof.6",
+      "tower.roof.8"
+     ]
+    },
+    {
+     "band": "f2",
+     "y": 32,
+     "h": 32,
+     "parts": [
+      "cafe.f2.0",
+      "cafe.f2.1",
+      "cafe.f2.2",
+      "cafe.f2.3",
+      "cafe.f2.2",
+      "cafe.f2.3",
+      "cafe.f2.6"
+     ]
+    },
+    {
+     "band": "f1",
+     "y": 64,
+     "h": 64,
+     "parts": [
+      "cafe.f1.0",
+      "cafe.f1.1",
+      "cafe.f1.2",
+      "cafe.f1.3",
+      "cafe.f1.4",
+      "cafe.f1.5",
+      "cafe.f1.6"
+     ]
+    }
+   ],
+   "walk": [
+    "CCCCCCC",
+    "CCCCCCC",
+    "CCCCCCC",
+    "CCCCCCC",
+    "CCCCCCC",
+    "CCCCCCC",
+    "SSSSSSS",
+    "SSSFFSS"
+   ],
+   "role": "building",
+   "doors": [
+    {
+     "dx": 3,
+     "dy": 7,
+     "note": "문 앞 칸(포장 바닥)"
+    },
+    {
+     "dx": 4,
+     "dy": 7,
+     "note": "문 앞 칸(포장 바닥)"
+    }
+   ],
+   "description": "카페 112×128. 벽돌 2층 + 초록 차양 + 큰 유리(안쪽 펜던트·탁자)."
+  },
+  "conbini": {
+   "w": 10,
+   "h": 5,
+   "px": [
+    160,
+    80
+   ],
+   "bands": [
+    {
+     "band": "roof",
+     "y": 0,
+     "h": 32,
+     "parts": [
+      "conbini.roof.0",
+      "conbini.roof.1",
+      "conbini.roof.1",
+      "conbini.roof.3",
+      "tower.roof.2",
+      "tower.roof.2",
+      "conbini.roof.6",
+      "conbini.roof.7",
+      "tower.roof.2",
+      "tower.roof.8"
+     ]
+    },
+    {
+     "band": "f1",
+     "y": 32,
+     "h": 48,
+     "parts": [
+      "conbini.f1.0",
+      "conbini.f1.1",
+      "conbini.f1.2",
+      "conbini.f1.3",
+      "conbini.f1.4",
+      "conbini.f1.5",
+      "conbini.f1.6",
+      "conbini.f1.7",
+      "conbini.f1.8",
+      "conbini.f1.9"
+     ]
+    }
+   ],
+   "walk": [
+    "CCCCCCCCCC",
+    "CCCCCCCCCC",
+    "CCCCCCCCCC",
+    "SSSSSSSSSS",
+    "SSSSFFSSSS"
+   ],
+   "role": "building",
+   "doors": [
+    {
+     "dx": 4,
+     "dy": 4,
+     "note": "문 앞 칸(포장 바닥)"
+    },
+    {
+     "dx": 5,
+     "dy": 4,
+     "note": "문 앞 칸(포장 바닥)"
+    }
+   ],
+   "description": "편의점 160×80. 튀어나온 간판판 + 들어간 유리벽 + 자동문."
+  },
+  "lamp": {
+   "w": 1,
+   "h": 3,
+   "px": [
+    16,
+    48
+   ],
+   "walk": [
+    "C",
+    "C",
+    "S"
+   ],
+   "role": "prop",
+   "description": "가로등 16×48. 발자국 아래 한 칸만 막힘.",
+   "tags": [
+    "street"
+   ]
+  },
+  "tree": {
+   "w": 2,
+   "h": 3,
+   "px": [
+    32,
+    48
+   ],
+   "walk": [
+    "CC",
+    "CC",
+    "SS"
+   ],
+   "role": "prop",
+   "description": "가로수 32×48. 수관은 지나가면 가려짐, 밑동 한 줄 막힘.",
+   "tags": [
+    "street"
+   ]
+  },
+  "vend_a": {
+   "w": 1,
+   "h": 2,
+   "px": [
+    16,
+    32
+   ],
+   "walk": [
+    "C",
+    "S"
+   ],
+   "role": "prop",
+   "description": "자판기 1×2 (파랑).",
+   "tags": [
+    "street"
+   ]
+  },
+  "vend_b": {
+   "w": 1,
+   "h": 2,
+   "px": [
+    16,
+    32
+   ],
+   "walk": [
+    "C",
+    "S"
+   ],
+   "role": "prop",
+   "description": "자판기 1×2 (빨강).",
+   "tags": [
+    "street"
+   ]
+  },
+  "busstop": {
+   "w": 3,
+   "h": 3,
+   "px": [
+    48,
+    48
+   ],
+   "walk": [
+    "CCC",
+    "CCC",
+    "SSS"
+   ],
+   "role": "prop",
+   "description": "버스 정류장 48×48. 지붕판 윗면 10.",
+   "tags": [
+    "street"
+   ]
+  },
+  "taxi_r": {
+   "w": 4,
+   "h": 3,
+   "px": [
+    64,
+    36
+   ],
+   "walk": [
+    "CCCC",
+    "CCCC",
+    "SSSS"
+   ],
+   "role": "vehicle",
+   "description": "택시(오른쪽 보기) 64×36.",
+   "tags": [
+    "vehicle"
+   ]
+  },
+  "taxi_l": {
+   "w": 4,
+   "h": 3,
+   "px": [
+    64,
+    36
+   ],
+   "walk": [
+    "CCCC",
+    "CCCC",
+    "SSSS"
+   ],
+   "role": "vehicle",
+   "description": "택시(왼쪽 보기) 64×36.",
+   "tags": [
+    "vehicle"
+   ]
+  },
+  "bins": {
+   "w": 1,
+   "h": 1,
+   "px": [
+    16,
+    16
+   ],
+   "walk": [
+    "S"
+   ],
+   "role": "prop",
+   "description": "분리수거함 2개 16×16.",
+   "tags": [
+    "alley"
+   ]
+  },
+  "hero_a": {
+   "w": 1,
+   "h": 2,
+   "px": [
+    16,
+    24
+   ],
+   "walk": [
+    "S"
+   ],
+   "role": "character",
+   "description": "주인공 16×24.",
+   "tags": []
+  },
+  "hero_b": {
+   "w": 1,
+   "h": 2,
+   "px": [
+    16,
+    24
+   ],
+   "walk": [
+    "S"
+   ],
+   "role": "character",
+   "description": "행인(빨간 옷) 16×24.",
+   "tags": []
+  }
+ }
+}

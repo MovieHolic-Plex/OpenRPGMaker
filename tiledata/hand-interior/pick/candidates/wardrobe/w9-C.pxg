@@ -1,0 +1,72 @@
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a glass 4
+@mat b glass 6
+@mat c glass 2
+@block 0 0
+.AAAAAAAAAAAAAA.
+ABBBBBBBBBBBBBBA
+ACCCCCCCCCCCCCCA
+ADDDDDDDDDDDDDDA
+.EFGGGGGEFGGGGE.
+.EFCCCCGEF....E.
+.EFCHHDGEF....E.
+.EFCHHDGEF....E.
+.EFCHHDGEF....E.
+.EFCHHDGEF....E.
+.EFCHHDGEF....E.
+.EFCHHDGEF....E.
+.EFCHHDGEF....E.
+.EFCHHDGEF....E.
+.EFCHHDGEF....E.
+.EFCHHIGEF....E.
+.EFCHHJGEF....E.
+.EFCHHDGEF....E.
+.EFCHHDGEF....E.
+.EFCHHDGEF....E.
+.EFCHHDGEF....E.
+.EFCHHDGEF....E.
+.EFCHHDGEF....E.
+.EFCHHDGEF....E.
+.EFCHHDGEF....E.
+.EFCHHDGEF....E.
+.EFDDDDGEF....E.
+.EFGGGGGEFGGGGE.
+.DDDDDDDDDDDDDD.
+.EEEEEEEEEEEEEE.
+..FE........FE..
+..EE........EE..
+@mblock 0 0
+................
+................
+................
+................
+................
+..........bbbb..
+..........aaac..
+..........aaac..
+..........aabc..
+..........abac..
+..........baac..
+..........aaac..
+..........aaac..
+..........aaac..
+..........aaab..
+..........aabc..
+..........abac..
+..........baac..
+..........aaac..
+..........aaac..
+..........aaac..
+..........aaac..
+..........aaac..
+..........aaac..
+..........aaac..
+..........aaac..
+..........cccc..
+................
+................
+................
+................
+................

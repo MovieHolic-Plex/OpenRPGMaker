@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/keg_rack/w43-A.pxg",
+ "id": "keg rack",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.002
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 8,
+ "v5_colors": 11,
+ "bbox": [
+  0,
+  9,
+  31,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  9,
+  31,
+  31
+ ],
+ "note": "3/4: 선반 윗판 윗면·바닥판 윗면+앞가장자리, 처마 그림자 아래 눕힌 술통 두 통(윗면 밝은 곡면, 쇠 테)",
+ "ok": true
+}

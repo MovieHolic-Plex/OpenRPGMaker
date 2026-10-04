@@ -1131,9 +1131,10 @@ function changeBattleCommandsCommandBody(context: CommandEditContext, cmd: M2Com
   }
   operation.value = String(fields.operation ?? "add");
   const commandSel = el("select", { dataset: { testid: "change-battle-commands-command-select" } }) as HTMLSelectElement;
-  const commands = project.database.classes.flatMap((entry) => entry.battleCommands ?? []);
+  // 전역 명령 목록(공통 이벤트 명령 등)도 고를 수 있어야 한다 — 예전엔 직업 명령만 떠서 전역 명령을 못 더했다.
+  const commands = [...(project.database.battleCommands ?? []), ...project.database.classes.flatMap((entry) => entry.battleCommands ?? [])];
   const unique = new Map<string, string>();
-  for (const command of commands) unique.set(command.id, command.name || command.id);
+  for (const command of commands) if (!unique.has(command.id)) unique.set(command.id, command.name || command.id);
   commandSel.append(el("option", { text: "(커맨드 선택)", attrs: { value: "" } }));
   for (const [id, name] of unique) {
     commandSel.append(el("option", { text: name, attrs: { value: id } }));

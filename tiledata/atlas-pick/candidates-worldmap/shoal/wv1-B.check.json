@@ -1,0 +1,135 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/shoal/wv1-B.pxg",
+ "set": "worldmap",
+ "id": "shoal",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.009
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.008
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation"
+  ]
+ },
+ "colors": 10,
+ "bbox": [
+  2,
+  0,
+  47,
+  61
+ ],
+ "note": "명암 강조안. 모래 비침 3단, 바위 머리 큼직. 해협 9·어긋남 1·seam 0.52.",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.004
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.032
+  },
+  "shore": {
+   "profile": {
+    "n": [
+     3,
+     3,
+     3,
+     3,
+     4,
+     4,
+     3,
+     3,
+     3,
+     3,
+     3,
+     3,
+     3,
+     4,
+     4,
+     3
+    ],
+    "s": [
+     3,
+     3,
+     2,
+     2,
+     2,
+     3,
+     3,
+     3,
+     3,
+     3,
+     3,
+     4,
+     4,
+     3,
+     3,
+     3
+    ],
+    "w": [
+     3,
+     3,
+     3,
+     3,
+     3,
+     2,
+     2,
+     2,
+     3,
+     3,
+     3,
+     3,
+     4,
+     4,
+     4,
+     3
+    ],
+    "e": [
+     3,
+     4,
+     4,
+     3,
+     3,
+     3,
+     3,
+     3,
+     3,
+     2,
+     2,
+     3,
+     3,
+     3,
+     3,
+     3
+    ]
+   },
+   "strait": 9,
+   "steps": {
+    "n": 1,
+    "s": 1,
+    "w": 1,
+    "e": 1
+   },
+   "amp": {
+    "n": 1,
+    "s": 2,
+    "w": 2,
+    "e": 2
+   },
+   "joinWorst": 1
+  },
+  "seam": 0.52
+ }
+}

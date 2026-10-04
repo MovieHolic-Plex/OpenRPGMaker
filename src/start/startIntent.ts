@@ -7,6 +7,7 @@
 // 이 파일은 시작 화면 번들에도 들어가므로 가벼운 타입 import 만 둔다.
 
 import type { NewProjectChoiceId } from "@/editor/newProjectChoices";
+import type { ProjectStartMode, ProjectStartScreenSize } from "./projectStart";
 
 export const START_SCREEN_INTENT_KEY = "oprn:start-screen-intent";
 /** 만들기 → 편집기 부팅은 수 초다. 10분이 지난 값은 다른 작업의 찌꺼기로 본다. */
@@ -22,6 +23,8 @@ export type StartScreenIntent = {
   /** 시작 화면의 한 문장. 비어 있을 수 있다. */
   readonly intent: string;
   readonly createdAt: number;
+  readonly startMode?: ProjectStartMode;
+  readonly screenSize?: ProjectStartScreenSize;
 };
 
 type StorageLike = Pick<Storage, "getItem" | "setItem" | "removeItem">;
@@ -43,6 +46,8 @@ export function takeStartScreenIntent(storage: StorageLike, openedProjectDir: st
   if (value.version !== 1 || typeof value.projectDir !== "string" || typeof value.title !== "string") return null;
   if (typeof value.intent !== "string" || typeof value.createdAt !== "number") return null;
   if (value.choiceId !== null && typeof value.choiceId !== "string") return null;
+  if (value.startMode !== undefined && !["example", "ai", "blank"].includes(value.startMode)) return null;
+  if (value.screenSize !== undefined && !["classic", "wide"].includes(value.screenSize)) return null;
   if (now - value.createdAt > MAX_AGE_MS || value.createdAt > now + 60_000) return null;
   if (value.projectDir !== openedProjectDir) return null;
   return value as StartScreenIntent;

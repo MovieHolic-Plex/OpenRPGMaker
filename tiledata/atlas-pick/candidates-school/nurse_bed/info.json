@@ -1,0 +1,23 @@
+{
+ "id": "nurse_bed",
+ "slug": "nurse_bed",
+ "name": "보건실 침대",
+ "scene": "특별실",
+ "place": "in",
+ "cells": [
+  1,
+  2
+ ],
+ "canvas": [
+  16,
+  32
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "보건실 쇠 침대 — 흰 시트, 베개(윗칸), 발치 쇠 난간, 접힌 담요 한 장. 높이 낮은 가구라 윗면(시트)이 높이의 ¾.",
+ "palette_hint": "vwhite/vlinen 시트, locker/mmetal 틀, jersey 담요",
+ "pair": [
+  "privacy_screen"
+ ],
+ "worker": "s3"
+}

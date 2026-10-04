@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/mimic/h132-C.pxg",
+ "id": "mimic",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.063
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 22,
+ "v5_colors": 0,
+ "bbox": [
+  2,
+  1,
+  14,
+  14
+ ],
+ "v5_bbox": null,
+ "note": "열린 상자의 뚜껑·앞판·쇠테를 유지하고 입구 테의 큰 송곳니와 앞판으로 늘어진 긴 혀로 괴물 상태를 또렷하게; 꼭대기 윗면 4행(y=4~7, 입구 테)",
+ "ok": true
+}

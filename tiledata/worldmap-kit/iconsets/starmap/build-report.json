@@ -1,0 +1,272 @@
+{
+ "rows": [
+  {
+   "role": "capital",
+   "name": "모항성 수도",
+   "id": "capital",
+   "cells": [
+    6,
+    6
+   ],
+   "desc": "대양·대륙의 푸른 큰 행성 + 바위 고리 + 기울어진 궤도 도시 고리 + 위성",
+   "fill": "92x85",
+   "side_px": 1129,
+   "col": 0,
+   "row": 0
+  },
+  {
+   "role": "fort_city",
+   "name": "요새 정거장",
+   "id": "fort_city",
+   "cells": [
+    4,
+    4
+   ],
+   "desc": "정면을 보는 바퀴 고리 정거장 + 바퀴살 + 네 방위 포대",
+   "fill": "57x59",
+   "side_px": 277,
+   "col": 16,
+   "row": 0
+  },
+  {
+   "role": "harbor_city",
+   "name": "우주 조선소",
+   "id": "harbor_city",
+   "cells": [
+    5,
+    4
+   ],
+   "desc": "골조 도크 안 건조 중인 함선(뒤 철판·앞 늑골) + 크레인 + 관제동",
+   "fill": "76x60",
+   "side_px": 0,
+   "col": 6,
+   "row": 0
+  },
+  {
+   "role": "castle",
+   "name": "적 기함",
+   "id": "castle",
+   "cells": [
+    3,
+    3
+   ],
+   "desc": "붉은 띠의 검은 쐐기 전함 + 함교탑·포탑 + 추진 불꽃",
+   "fill": "47x37",
+   "side_px": 10,
+   "col": 26,
+   "row": 0
+  },
+  {
+   "role": "castle",
+   "name": "군 요새 위성",
+   "id": "castle_fortmoon",
+   "cells": [
+    3,
+    3
+   ],
+   "desc": "적도 참호·거대 포구 접시·꼭대기 포탑이 있는 회색 위성",
+   "fill": "44x47",
+   "side_px": 478,
+   "col": 29,
+   "row": 0
+  },
+  {
+   "role": "large_town",
+   "name": "개척 행성",
+   "id": "large_town",
+   "cells": [
+    3,
+    3
+   ],
+   "desc": "초록 대륙의 행성 + 작은 위성 + 개척 정거장",
+   "fill": "47x38",
+   "side_px": 351,
+   "col": 0,
+   "row": 6
+  },
+  {
+   "role": "village",
+   "name": "소행성 채굴촌",
+   "id": "village",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "바위 소행성 + 유리·흰 돔 + 채굴 탑",
+   "fill": "29x28",
+   "side_px": 105,
+   "col": 9,
+   "row": 6
+  },
+  {
+   "role": "village",
+   "name": "얼음 위성",
+   "id": "village_ice",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "푸른 금이 간 얼음 구 + 기지 돔·안테나",
+   "fill": "26x28",
+   "side_px": 166,
+   "col": 11,
+   "row": 6
+  },
+  {
+   "role": "camp",
+   "name": "보급선 정박지",
+   "id": "camp",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "연료 탱크 정박탑 + 양쪽에 붙은 작은 보급선 둘",
+   "fill": "32x20",
+   "side_px": 38,
+   "col": 13,
+   "row": 6
+  },
+  {
+   "role": "tower_small",
+   "name": "항법 부표",
+   "id": "tower_small",
+   "cells": [
+    1,
+    2
+   ],
+   "desc": "돛대 + 태양 날개 + 빛나는 비콘",
+   "fill": "16x28",
+   "side_px": 22,
+   "col": 23,
+   "row": 6
+  },
+  {
+   "role": "tower_great",
+   "name": "궤도 엘리베이터",
+   "id": "tower_great",
+   "cells": [
+    2,
+    4
+   ],
+   "desc": "행성 지평선에서 뻗은 줄 + 승강기 + 중간·꼭대기 정거장 + 평형추",
+   "fill": "30x63",
+   "side_px": 92,
+   "col": 20,
+   "row": 0
+  },
+  {
+   "role": "cave",
+   "name": "점프 게이트",
+   "id": "cave",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "빛 마디 금속 고리 문 + 소용돌이 웜홀",
+   "fill": "28x31",
+   "side_px": 64,
+   "col": 15,
+   "row": 6
+  },
+  {
+   "role": "ruin",
+   "name": "함선 잔해",
+   "id": "ruin",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "두 동강 난 선체 + 드러난 늑골 + 파편",
+   "fill": "32x21",
+   "side_px": 27,
+   "col": 17,
+   "row": 6
+  },
+  {
+   "role": "ruin_city",
+   "name": "파괴된 행성",
+   "id": "ruin_city",
+   "cells": [
+    4,
+    3
+   ],
+   "desc": "다섯 조각으로 흩어지는 행성 껍질 + 녹은 속 + 빛나는 핵",
+   "fill": "58x41",
+   "side_px": 655,
+   "col": 22,
+   "row": 0
+  },
+  {
+   "role": "shrine",
+   "name": "고대 외계 유물",
+   "id": "shrine",
+   "cells": [
+    3,
+    3
+   ],
+   "desc": "떠 있는 빛 문자 팔면체 + 금 고리 + 떠 있는 돌기둥",
+   "fill": "42x38",
+   "side_px": 277,
+   "col": 3,
+   "row": 6
+  },
+  {
+   "role": "landmark_nature",
+   "name": "가스 거인",
+   "id": "landmark_nature",
+   "cells": [
+    3,
+    3
+   ],
+   "desc": "줄무늬 큰 행성 + 붉은 대폭풍 + 얼음 위성",
+   "fill": "47x46",
+   "side_px": 478,
+   "col": 6,
+   "row": 6
+  },
+  {
+   "role": "circle",
+   "name": "소행성 고리",
+   "id": "circle",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "작은 얼음 왜행성을 도는 바위 덩이 고리",
+   "fill": "32x19",
+   "side_px": 79,
+   "col": 19,
+   "row": 6
+  },
+  {
+   "role": "volcano",
+   "name": "용암 행성",
+   "id": "volcano",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "용암 균열·호수의 현무암 행성 + 분출",
+   "fill": "28x31",
+   "side_px": 173,
+   "col": 21,
+   "row": 6
+  },
+  {
+   "role": "floating",
+   "name": "다이슨 고리 조각",
+   "id": "floating",
+   "cells": [
+    5,
+    4
+   ],
+   "desc": "별 위를 활처럼 감싼 거대 고리 판 조각(안쪽 태양판·바깥 탑·끊긴 골조) + 홍염 별",
+   "fill": "74x58",
+   "side_px": 457,
+   "col": 11,
+   "row": 0
+  }
+ ],
+ "problems": [],
+ "new_colors": 16
+}

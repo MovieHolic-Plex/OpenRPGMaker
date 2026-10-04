@@ -1,0 +1,42 @@
+{
+ "id": "20261002-2234-vary/v-check-farmer__sonnet-r1",
+ "brief": "v-check-farmer",
+ "name": "체크 셔츠 농부 소년",
+ "base": "People1:0",
+ "base_label": "People1 1번",
+ "strength": "normal",
+ "files": {
+  "chr": "v-check-farmer__sonnet-r1__20261002-2234-vary.chr.txt",
+  "sheet": "v-check-farmer__sonnet-r1__20261002-2234-vary.png"
+ },
+ "description": {
+  "label": "짚색 금발 체크 셔츠 농부 소년",
+  "gender": "남",
+  "attributes": {
+   "kind": "사람",
+   "age": "어린이",
+   "hair": "금발"
+  },
+  "role": "농부 (농가 소년)",
+  "appearance": "삐죽삐죽 덥수룩한 짚색 금발에 갈색 눈의 소년으로, 빨강·검정 체크무늬 셔츠 위에 청색 바지를 입고 가슴께에 노란 단추가 보인다. 발에는 갈색 장화를 신었다.",
+  "colors": [
+   "짚색 금발 머리",
+   "빨강·검정 체크 셔츠",
+   "파란 바지(노란 단추)",
+   "갈색 장화"
+  ],
+  "tags": [
+   "농부",
+   "마을 사람",
+   "소년",
+   "시골",
+   "농장",
+   "체크 셔츠",
+   "금발",
+   "중세 판타지"
+  ],
+  "fits": "농장·밭·시골 마을 어귀나 헛간 주변에 두는 일꾼 소년 NPC로 어울린다.",
+  "by": "Claude Sonnet 5.5 · medium",
+  "at": "2026-10-02T22:41:26+00:00"
+ }
+}

@@ -1,0 +1,26 @@
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat b viron 3
+@mat c viron 5
+@mat d vwhite 5
+@mat e vwhite 6
+@mat f vwhite 3
+@mat g vblack 2
+@mblock 0 0
+................
+................
+................
+...cccccccccc...
+...b........b...
+..eeeeeeeeeeee..
+.eddggdddddggdf.
+.egddgddddgggdf.
+.edddgdddddggdf.
+.eddgddgggdggdf.
+.edgdddgggdggdf.
+.egddddddddggdf.
+.eggggdddddggdf.
+..ffffffffffff..
+................
+................

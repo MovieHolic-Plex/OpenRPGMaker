@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/library_ladder/w74-A.pxg",
+ "id": "library ladder",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.027
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 11,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  1,
+  14,
+  45
+ ],
+ "v5_bbox": null,
+ "note": "서재 사다리: 윗판 없이 두 기둥+가로대 6, 윗끝 황동 갈고리, 아래 쇠 발끝+짧은 바닥 그림자. 관문 X 눈 O",
+ "ok": true
+}

@@ -8,7 +8,7 @@ import {
   type AuthoredHouseFormDef,
 } from "@/project/defaults/authoredHouseFormCatalog";
 import { createBlankMap, createBlankProject } from "@/project/defaults";
-import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { HOUSE_DOOR_BACKGROUND_TILE } from "@/editor/houseInteriors";
 import type { MapId, Project } from "@/project/types";
 
@@ -53,7 +53,7 @@ describe("저작 집 형태 카탈로그 계약", () => {
 
   it("레이어 정책을 지킨다 — 하위는 불투명만, 상위는 상위 홈이거나 의도적 불투명 오버레이", () => {
     const project = createBlankProject();
-    const tileset = project.tilesets[DEFAULT_TILESET_ID]!;
+    const tileset = project.tilesets[COMBINED_TOWN_TILESET_ID]!;
     for (const def of AUTHORED_HOUSE_FORM_DEFS) {
       for (const [y, row] of def.rows.entries()) {
         row.tiles.forEach((tile, x) => {

@@ -1,0 +1,42 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/temple/wv8-C.pxg",
+ "set": "worldmap",
+ "id": "temple",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.329
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.131
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 8,
+ "bbox": [
+  3,
+  1,
+  28,
+  29
+ ],
+ "note": "다른 해석 — 둥근 돔 지붕과 금빛 꼭지의 신전",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 4,
+   "atLeast95": 0,
+   "max": 0.176
+  },
+  "refmapWorld": {
+   "cells": 4,
+   "atLeast95": 0,
+   "max": 0.404
+  }
+ }
+}

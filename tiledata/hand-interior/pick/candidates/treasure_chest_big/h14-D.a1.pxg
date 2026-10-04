@@ -1,0 +1,50 @@
+// D 장식: 붉은 칠 둥근 뚜껑에 금띠 둘·금 테두리 줄·푸른 보석 박은 금 자물쇠판(열쇠구멍) — 새로 그림
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat o wood 1
+@mat a red 1
+@mat b red 2
+@mat c red 3
+@mat d red 4
+@mat e red 5
+@mat k gold 1
+@mat l gold 3
+@mat m gold 4
+@mat n gold 5
+@mat q blue 4
+@mat r blue 5
+@mat s blue 2
+@mblock 0 0
+................................
+................................
+................................
+........oooooooooooooooo........
+......onnnnnnnnnnnnnnnnnno......
+....ooeekmleeeeeeeeeekmlddoo....
+...oeeeekmleeeeeeeeeekmlddddo...
+..ommmmmmmmmmmmmmmmmmmmmmmmmmo..
+..ollllllllllllllllllllllllllo..
+..odcccckmlccnmmmmlcckmlcccbbo..
+..odcccckmlccmmmmmlcckmlcccbbo..
+..odcccckmlccmrrqmlcckmlcccbbo..
+..odcccckmlccmqqsmlcckmlcccbbo..
+..odcccckmlccmmmmmlcckmlcccbbo..
+..odcccckmlccmmkkmlcckmlcccbbo..
+..odcccckmlccmmkkmlcckmlcccbbo..
+..odcccckmlccmmmmllcckmlcccbbo..
+..odcccckmlccllllllcckmlcccbbo..
+..odcccckmlcccccccccckmlcccbbo..
+..odcccckmlcccccccccckmlcccbbo..
+..odcccckmlcccccccccckmlcccbbo..
+..odcccckmlcccccccccckmlcccbbo..
+..odcccckmlcccccccccckmlcccbbo..
+..odcccckmlcccccccccckmlcccbbo..
+..odcccckmlcccccccccckmlcccbbo..
+..odcccckmlcccccccccckmlcccbbo..
+..ocbbbbkmlbbbbbbbbbbkmlbbbaao..
+..ocbbbbkmlbbbbbbbbbbkmlbbbaao..
+..ocbbbbkmlbbbbbbbbbbkmlbbbaao..
+..ocbbbbkmlbbbbbbbbbbkmlbbbaao..
+..oaaaaakkkaaaaaaaaaaaakkkaaao..
+..oooooooooooooooooooooooooooo..

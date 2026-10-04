@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/vanity_mirror/w42-A.pxg",
+ "id": "vanity mirror",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.006
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 16,
+ "v5_colors": 18,
+ "bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  1,
+  15,
+  31
+ ],
+ "note": "화장대: 거울 윗테두리에 금빛 윗면 3줄을 더하고 거울을 아래로 내려 앞면 29→18 로 재배치, 탁상 앞끝 하이라이트+서랍 유지. 관문 시험용",
+ "ok": true
+}

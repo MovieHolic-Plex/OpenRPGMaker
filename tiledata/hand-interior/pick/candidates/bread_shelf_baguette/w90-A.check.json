@@ -1,0 +1,35 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/bread_shelf_baguette/w90-A.pxg",
+ "id": "bread shelf baguette",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.02
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "outline",
+   "outline_black"
+  ],
+  "pass": false
+ },
+ "colors": 16,
+ "v5_colors": 11,
+ "bbox": [
+  0,
+  1,
+  15,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  1,
+  15,
+  31
+ ],
+ "note": "바게트 선반: 윗면 T5+처마 그림자, 바게트 세 칸 앞면.",
+ "ok": true
+}

@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/wall_stone_block/hf7-A.pxg",
+ "set": "horror",
+ "id": "wall_stone_block",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.074
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.086
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 9,
+ "bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "note": "A(v5 식구·깨끗): 회색 석재 3줄(16·8 엇갈림)·덩이마다 윗·왼 한 줄 밝게, 밑돌 한 단 어둡게, 이끼 한 곳. vstone 벽면 4~5·줄눈 1. 벽면이 방에서 가장 밝은 넓은 면",
+ "ok": true
+}

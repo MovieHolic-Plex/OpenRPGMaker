@@ -636,7 +636,6 @@
     "R2|database/light-theme.css|.database-modal-backdrop .database-modal-window .db-equipment-comparison-stat strong.neutral|neutral",
     "R2|database/light-theme.css|.database-modal-backdrop .database-modal-window .oprn-detail-equipment > .db-equipment-inspector-header|oprn-detail-equipment",
     "R2|database/modern-controls.css|.database-modal-backdrop .database-modal-window .db-avatar-chip.dimmed|dimmed",
-    "R2|database/modern/enemies.css|.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-stage-media .flying|flying",
     "R2|database/modern/enemies.css|.database-modal-backdrop .database-modal-window .database-modal-body .oprn-record-enemies .oprn-detail-enemies|oprn-detail-enemies",
     "R2|database/modern/equipment-items.css|.database-modal-backdrop .db-item-ws .db-ws-card.collapsed|collapsed",
     "R2|database/modern/tilesets.css|.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-tilesets .db-ws-tileset-workbench .tileset-db-edit-area.autotile-compose|autotile-compose",

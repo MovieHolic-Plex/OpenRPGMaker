@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/operating_table/h5-A.pxg",
+ "set": "horror",
+ "id": "operating_table",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.032
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.086
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 17,
+ "bbox": [
+  1,
+  0,
+  31,
+  30
+ ],
+ "note": "v5 쇠 기물 결로: 위에서 살짝 본 판·기둥·받침, 누런 천 아래 사람 윤곽과 가슴께 검붉은 얼룩, 왼쪽 위 무영등(전구 꺼짐)",
+ "ok": true
+}

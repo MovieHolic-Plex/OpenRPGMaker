@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/floor_checker/hf2-C.pxg",
+ "set": "horror",
+ "id": "floor_checker",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.211
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.113
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "dither"
+  ]
+ },
+ "colors": 6,
+ "bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "note": "C(대리석 결): 8px 체크 각 칸에 가는 맥(밝은 칸엔 어둡게 dust 2, 짙은 칸엔 밝게 grave 4), 줄눈 한 단, 금 한 곳, 모서리 깨짐 하나",
+ "ok": true
+}

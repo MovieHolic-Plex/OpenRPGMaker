@@ -1,0 +1,52 @@
+// C: 굵은 나무 액자 셋과 큰 사진 색 덩어리, 협탁 윗면 5행(y=16~20); 꼭대기 윗면 3행(y=3~5)
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat A wood 1
+@mat B wood 3
+@mat C wood 4
+@mat D wood 5
+@mat E wood 6
+@mat F wood 7
+@mat P linen 5
+@mat Q linen 3
+@mat R iron 3
+@mat S iron 5
+@mat T blue 4
+@mat U green 2
+@mat V pine 3
+@mat W pine 5
+@layer furniture
+@mblock 0 0
+................
+................
+................
+.....FFFFFF.....
+.....FEEEED.....
+.....EEEEED.....
+.....ECCCCB.....
+.....EPPPPBFFFFF
+FFFFFEPPPPBFEEED
+FEEEDDQVVQBECCCB
+ECCCBDQVVQBEPPPB
+ETTTBDQQQQBEWWPB
+ETTTBDQRRQBEVVVB
+EUUUBDQRRQBEVVVB
+EUUUBDCCCCBECCCB
+ECCCBBAAAABBAAAB
+BFFFFFFFFFFFFFCB
+FEEEEEEEEEEEEEDB
+FEEEDDEEEEEEEEDB
+FEEEEEEEEEEEEEDB
+FEEEEEEEEEEEEEDB
+ECCCCCCCCCCCCCCB
+BCCCCCCCCCCCCBBB
+.EDEEEEEEEEDDBB.
+.EDDDDDDDDDDDBB.
+.EDDDDFFDDDDDBB.
+.EDDDDDDDDDDDBB.
+.ECCCCCCCCCCCBB.
+.BBBBBBBBBBBBBB.
+.ECB........CBB.
+.ECB........CBB.
+.BBB........BBB.

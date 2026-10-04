@@ -3,7 +3,7 @@ import { INTERIOR_OBJECT_CATALOG } from "@/editor/interiorObjectCatalog";
 import { interiorVocabTiles } from "@/editor/interiorRoomPipeline";
 import { createBlankProject } from "@/project/defaults/defaultProject";
 import { deserialize, serialize, serializePretty } from "@/project/io";
-import { INTERIOR_TILESET_ID } from "@/project/mapCreateSpec";
+import { EASYRPG_INTERIOR_TILESET_ID as INTERIOR_TILESET_ID } from "@/project/mapCreateSpec";
 import baseline from "./fixtures/spatial/interiorCatalogBaseline.json";
 import { designBase, emptySpatialDocument, spatialWire } from "./support/spatialSchemaFixture";
 

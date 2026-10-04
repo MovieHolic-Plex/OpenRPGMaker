@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/magic_circle/w8-A.pxg",
+ "id": "magic circle",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 5,
+ "v5_colors": 3,
+ "bbox": [
+  2,
+  2,
+  29,
+  29
+ ],
+ "v5_bbox": [
+  2,
+  2,
+  29,
+  29
+ ],
+ "note": "v5 청록 오망성과 이중 고리를 그대로, 고리를 좌상 밝음 우하 어둠 2단으로 정리하고 룬 점을 규칙 배치",
+ "ok": true
+}

@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/library_shelf/s4-B.pxg",
+ "set": "school",
+ "id": "library_shelf",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.066
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.016
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "colors",
+   "saturation"
+  ]
+ },
+ "colors": 51,
+ "bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "note": "명암 강화 책장: 빛은 왼쪽 위 — 왼쪽 열 두 단 밝게, 오른쪽·아래 칸 한두 단 어둡게, 칸마다 위 그늘 2줄, 바닥 접지 그림자 2줄",
+ "ok": true
+}

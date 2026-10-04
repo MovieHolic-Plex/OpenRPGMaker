@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/keg_rack/w48-A.pxg",
+ "id": "keg rack",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.047
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 14,
+ "v5_colors": 11,
+ "bbox": [
+  0,
+  8,
+  31,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  9,
+  31,
+  31
+ ],
+ "note": "3/4: 선반틀 윗판(윗면 4px+앞가장자리 h+처마그림자 2행) 추가, 술통 위 곡면 밝게. 술통·쇠테·꼭지는 w4-A 그대로(술통 중복 2행 제거해 위 8px 패딩 안에 맞춤)",
+ "ok": true
+}

@@ -36,8 +36,8 @@ function firstValue(row: DriverRow): DriverValue {
 }
 
 /** The only file that imports node:sqlite — swapping drivers replaces this and nothing else. */
-export function openNodeSqliteDriver(path: string): Driver {
-  const db = new DatabaseSync(path);
+export function openNodeSqliteDriver(path: string, options: { readonly readOnly?: boolean } = {}): Driver {
+  const db = new DatabaseSync(path, options);
   return {
     exec(sql: string): void {
       db.exec(sql);

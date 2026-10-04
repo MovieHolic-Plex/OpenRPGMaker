@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/teleport_pad/h33-E.pxg",
+ "id": "teleport pad",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.094
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 10,
+ "v5_colors": 0,
+ "bbox": [
+  0,
+  12,
+  31,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "직사각 화면·하부 몸통을 없애고 가로로 넓은 타원 푸른 판 + 돌 테 + 앞면 두께 3줄의 낮은 바닥 원판으로, 마름모 대신 납작한 4방 별 무늬",
+ "ok": true
+}

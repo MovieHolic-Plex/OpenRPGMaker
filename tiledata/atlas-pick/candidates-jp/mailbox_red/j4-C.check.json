@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/mailbox_red/j4-C.pxg",
+ "set": "jp",
+ "id": "mailbox_red",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.018
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.038
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation",
+   "outline",
+   "outline_black"
+  ]
+ },
+ "colors": 13,
+ "bbox": [
+  1,
+  4,
+  14,
+  29
+ ],
+ "note": "C 방향: 실루엣 재해석. 둥근 기둥 대신 네모 상자형 우체통(평평한 뚜껑, 넓은 몸통, 돌 다리 둘).",
+ "ok": true
+}

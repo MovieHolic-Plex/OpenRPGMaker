@@ -1,0 +1,37 @@
+{
+ "id": "bench 3",
+ "slug": "bench_3",
+ "name_ko": "벤치 3칸",
+ "category": "가구·살림",
+ "kind": "floor",
+ "kind_ko": "바닥 기물(막힘)",
+ "canvas": [
+  48,
+  16
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 48,
+  "h": 16
+ },
+ "footprint": {
+  "w": 3,
+  "h": 1
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "등받이 없는 3칸 나무 벤치. 3칸 이상 긴 식탁 위·아래 줄에 1개씩. 대기실 벽 곁.",
+ "where": "3칸 이상 긴 식탁 위·아래 줄에 1개씩. 대기실 벽 곁.",
+ "placement": [
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": [
+  0,
+  3,
+  47,
+  15
+ ],
+ "v5_colors": 7,
+ "material": "wood",
+ "related": []
+}

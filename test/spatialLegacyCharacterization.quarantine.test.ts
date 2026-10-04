@@ -5,7 +5,7 @@ import { INTERIOR_ROOM_TILESET_ID } from "@/editor/interiorRoomPipeline";
 import { resolveInteriorRoomVocab } from "@/editor/interiorRoomVocab";
 import { runTool } from "@/editor/tools/toolRunner";
 import { CONCEPT_FACILITY_TEMPLATES } from "@/project/defaults/conceptFacilityTemplates";
-import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { deserialize, serialize } from "@/project/io";
 import type { ConceptBundleRecord, SectionStructureKitDef } from "@/project/types";
 import { preparedProject } from "./support/authorHouseFacadeFixture";
@@ -81,18 +81,18 @@ describe("legacy spatial authoring characterization", () => {
   it("keeps duplicate local identities distinct when resolving explicitly qualified tilesets after roundtrip", () => {
     // Given
     const { project, bundle } = authoredProject();
-    const town = project.tilesets[DEFAULT_TILESET_ID];
+    const town = project.tilesets[COMBINED_TOWN_TILESET_ID];
     if (!town) throw new Error("Town fixture missing");
     const other = structuredClone(bundle);
     other.things = [{ id: "archive_clock", label: "Other clock", objectId: "piano", placeIds: ["bedroom"], chips: ["pass", "qa-outdoor"] }];
     town.scratchConceptBundles = [other];
     const loaded = deserialize(serialize(project));
     // When
-    const results = [INTERIOR_ROOM_TILESET_ID, DEFAULT_TILESET_ID].map(tilesetId => resolveConceptFacility(loaded, "QA archive", tilesetId));
+    const results = [INTERIOR_ROOM_TILESET_ID, COMBINED_TOWN_TILESET_ID].map(tilesetId => resolveConceptFacility(loaded, "QA archive", tilesetId));
     // Then
     expect(results.map(result => ({ tilesetId: result?.tilesetId, things: result?.bundle.things }))).toEqual([
       { tilesetId: INTERIOR_ROOM_TILESET_ID, things: bundle.things },
-      { tilesetId: DEFAULT_TILESET_ID, things: other.things },
+      { tilesetId: COMBINED_TOWN_TILESET_ID, things: other.things },
     ]);
   });
 

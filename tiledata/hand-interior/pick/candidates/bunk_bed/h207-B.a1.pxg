@@ -1,0 +1,64 @@
+// B: 여관 목재 테와 드문 나뭇결, 가로 흰 침상 두 단과 오른쪽 사다리; 꼭대기 목재 윗면 3행(y=0~2).
+@size 16 48
+@cell 16
+@palette palette.pal
+@mat A wood 2
+@mat B wood 3
+@mat C wood 4
+@mat D wood 5
+@mat E wood 6
+@mat F wood 7
+@mat L linen 6
+@mat M linen 5
+@mat N linen 4
+@mat O linen 3
+@mat P linen 2
+@mblock 0 0
+.EEEEEEEEEEED...
+AEDDDDDCDDDDA...
+AEDCCDDDDDCCA...
+ADCCCCCCCCBBA...
+ADNMMNMMMMNCA...
+ADLLLNMMMMMCA...
+ADLLLNMMLMNCA...
+ADMMMNMMLMNCA...
+ADNNNNMMMMMCA...
+ADMMMMNMMMNCA...
+ADNMMMNMMNNCA...
+ADOONNNNNNOCE..B
+AEEEEEEEEEECE..B
+ADCCCCDCCCBCEEEB
+ABBBBBBBBBBAEBBB
+AD.........AE..B
+AD.........AE..B
+AC.........AE..B
+AC.........AE..B
+AD.........AE..B
+AD.........AEEEB
+AD.........AEBBB
+AD.........AE..B
+AC.........AE..B
+AC.........AE..B
+AD.........AE..B
+AD.........AEEEB
+AD.........AEBBB
+AD.........AE..B
+AD.........AE..B
+AC.........AE..B
+AC.........AE..B
+AEEEEEEEEEECEEEB
+AEDDDDDCDDDCEBBB
+AEDCCDDDDDCCA..B
+ADCCCCCCCCBCA..B
+ADNMMNMMMMNCA..B
+ADLLLNMMMMMCA..B
+ADLLLNMMLMNCEEEB
+ADMMMNMMLMNCEBBB
+ADNNNNMMMMMCA..B
+ADMMMMNMMMNCA..B
+ADNMMMNMMNNCA..B
+ADOONNNNNNOCA..B
+AEEEEEEEEEECEEEB
+ADCCCCDCCCBCEBBB
+ABBBBBBBBBBAE..B
+AB.........AB..B

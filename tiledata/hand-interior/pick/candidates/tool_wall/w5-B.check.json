@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/tool_wall/w5-B.pxg",
+ "id": "tool wall",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.069
+ },
+ "lint": {
+  "failed": [
+   "jaggies"
+  ],
+  "pass": false
+ },
+ "colors": 11,
+ "v5_colors": 10,
+ "bbox": [
+  0,
+  2,
+  15,
+  14
+ ],
+ "v5_bbox": [
+  0,
+  2,
+  15,
+  14
+ ],
+ "note": "명암 강화: 도구 윗면·왼쪽 밝게, 판자 아래와 각 도구 오른쪽 아래에 반투명 벽 그림자(-)",
+ "ok": true
+}

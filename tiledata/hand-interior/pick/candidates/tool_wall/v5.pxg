@@ -1,0 +1,21 @@
+// v5 현재판 tool wall (16x16, 패딩 위 0px 포함). 방향 A 는 이 파일을 복사해 다듬는다.
+@size 16 16
+@cell 16
+@palette palette.pal
+@block 0 0
+................
+................
+AAAAAAAAAAAAAAAA
+BBBBBBBBBBBBBBBB
+................
+.CCC.....CDEDC..
+.DDDFFFF.D...D..
+.GGG..F..E...E..
+.........G...G..
+................
+..........H...H.
+..I........H.H..
+..EICJJJJ...H...
+..I........H.H..
+..........H...H.
+................

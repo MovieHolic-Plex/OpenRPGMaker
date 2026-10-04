@@ -1,0 +1,42 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/broadcast_desk/v35-A.pxg",
+ "set": "school",
+ "id": "broadcast_desk",
+ "hard": [],
+ "warn": [],
+ "std": {
+  "cells": [
+   2,
+   1
+  ],
+  "canvas": [
+   32,
+   16
+  ]
+ },
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.09
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.184
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "orphans"
+  ]
+ },
+ "colors": 11,
+ "bbox": [
+  0,
+  0,
+  31,
+  15
+ ],
+ "note": "방송실 조정대 3/4 — 회색 윗판 T4(페이더 슬롯)·앞 F12 패널 세 칸·표시등 (폭 32px)",
+ "ok": true
+}

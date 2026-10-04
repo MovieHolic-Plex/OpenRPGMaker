@@ -1,0 +1,160 @@
+// izakaya_front v34-A
+@size 64 48
+@cell 16
+@palette palette.pal
+@layer main
+@mat a ai 0
+@mat b hinoki 0
+@mat c ishi 0
+@mat d kawara 0
+@mat e shu 0
+@mat f sumi 0
+@mat g washi 0
+@mblock 0 0
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+bbbbffffffffffffffffffffffffffffffffffffffffffffffffffffffffbbbb
+bbbbffffffffffffffffffffffffffffffffffffffffffffffffffffffffbbbb
+bbbbffffffffffffffffbbbbbbbbbbbbbbbbbbbbbbbbffffffffffffffffbbbb
+bbbbffffffffffffffffbbbbbbbbbbbbbbbbbbbbbbbbffffffffffffffffbbbb
+bbbbfffeeeeffffffffffaaaaaaaaaaaaaaaaaaaaaafffffffffffeeeeffbbbb
+bbbbffeeeeeefffffffffaaaaaafaaaaaafaaaaaa.affffffffffeeeeeefbbbb
+bbbbffeeeeeefffffffffaaaaaafaaaggafaaaaaa.affffffffffeeeeeefbbbb
+bbbbffeeeeeefffffffffaaaaaafaaggggfaaaaaa.affffffffffeeeeeefbbbb
+bbbbffeeeeeefffffffffaaaaaafaaggggfaaaaaa.affffffffffeeeeeefbbbb
+bbbbfffeeeefffffffffgaaaaaafaaaggafaaaaaa.agbfffffffffeeeeffbbbb
+bbbbffffffffffffffffgaaaaaafaaaaaafaaaaaa.agbfffffffffffffffbbbb
+bbbbfffffeffffffffffbaaaaaafaaaaaafaaaaaa.abbfffffffffffefffbbbb
+bbbbfffffeffffffffffgaaaaaafaaaaaafaaaaaaaagbfffffffffffefffbbbb
+bbbbfffffeffffffffffg......................gbfffffffffffefffbbbb
+bbbbffffffffffffffffgg......................bfffffffffffffffbbbb
+bbbbfffggggggggfffffbbbbbbbbbbbbbbbbbbbbbbbbbfffffffffffffffbbbb
+bbbbfffggggggggfffffggggbggggbgbbgbggggbggggbfffffggbggbggffbbbb
+bbbbfffgeeeeeggfffffggggbggggbgbbgbggggbggggbfffffggbggbggffbbbb
+bbbbfffggggggggfffffggggbggggbgbbgbggggbggggbfffffggbggbggffbbbb
+bbbbfffgeeeeeggfffffbbbbbbbbbbbbbbbbbbbbbbbbbfffffbbbbbbbbffbbbb
+bbbbfffggggggggfffffbbbbbbbbbbbbbbbbbbbbbbbbbfffffggbggbggffbbbb
+bbbbfffgeeeeeggfffffbbbbbbbbbbbbbbbbbbbbbbbbbfffffggbggbggffbbbb
+bbbbfffggggggggfffffbbbbbbbbbbbbbbbbbbbbbbbbbfffffggbggbggffbbbb
+bbbbfffggggggggfffffbbbbbbbbbbbbbbbbbbbbbbbbbffffbbbbbbbbbbfbbbb
+bbbbfffffffffffffffccccccccccccccccccccccccccfffbbbbbbbbbbbbbbbb
+bbbbff..........fccccccccccccccccccccccccccccccfbbbbbbbbbbbbbbbb
+bbbbfff..........ccccccccccccccccccccccccccccccfffffffffffffbbbb
+@tblock 0 0
+1555555555555555555555555555555555555555555555555555555555555551
+3433444433444433444433444433444433444433444433444433444433444443
+3433444433444433444433444433444433444433444433444433444433444443
+3433444433444433444433444433444433444433444433444433444433444443
+3433444433444433444433444433444433444433444433444433444433444443
+3433444433444433444433444433444433444433444433444433444433444443
+3433444433444433444433444433444433444433444433444433444433444443
+3433444433444433444433444433444433444433444433444433444433444443
+3433444433444433444433444433444433444433444433444433444433444443
+3433444433444433444433444433444433444433444433444433444433444443
+3433444433444433444433444433444433444433444433444433444433444443
+3433444433444433444433444433444433444433444433444433444433444443
+3433444433444433444433444433444433444433444433444433444433444443
+3433444433444433444433444433444433444433444433444433444433444443
+3433444433444433444433444433444433444433444433444433444433444443
+5555555555555555555555555555555555555555555555555555555555555555
+3333333333333333333333333333333333333333333333333333333333333333
+5555555555555555555555555555555555555555555555555555555555555555
+3333333333333333333333333333333333333333333333333333333333333333
+3333333333333333333333333333333333333333333333333333333333333333
+1111111111111111111111111111111111111111111111111111111111111111
+3220000012000000000000000000000000000000000000000000000120003220
+3220000012000000000000000000000000000000000000000000000120003220
+3220111112111111111144444444444444444444444411111111111121113220
+3220331111113323332322222222222222222222222233233323311111133220
+3220332543133323332333333333333333333333333333233323335431233220
+32203354333133233000022222202222220222222.2000033323354333133220
+32203354333133233000022222202224420222222.2000033323354333133220
+32203354333133233001022222202244440222222.2000033323354333133220
+32203354333133233001122222202244440222222.2110033323354333133220
+32203325431333233001222222202224420222222.2230033323335431233220
+32203311111133233001222222202222220222222.2230033323311111133220
+32203323122333233001322222202222220222222.2330033323332123233220
+3220332312233323300121111110111111011111111230033323332123233220
+322033233223332330012......................230033323332323233220
+3220330000000000300122......................30033000000000033220
+3220330111111110300133333333333113333333333330033011111111033220
+3220330333333310300122223222232112322223222230033022322322033220
+3220330333333310300122223222232112322223222230033022322322033220
+3220330333333310300122223222232112322223222230033022322322033220
+3220330333333310300144444444444444444444444440033033333333033220
+3220330333333310300122222222222222222222222220033022322322033220
+3220330333333310300122222222222222222222222220033022322322033220
+3220330333333310300122222222222222222222222220033022322322033220
+3220330333333310300122222222222222222222222220033555555555533220
+3220330000000000300555555555555555555555555550034444444444443220
+322033..........344444444444444444444444444444432222222222223220
+3220332..........22222222222222222222222222222233000000000033220
+@layer shadow
+@block 0 0
+................................................................
+................................................................
+................................................................
+................................................................
+................................................................
+................................................................
+................................................................
+................................................................
+................................................................
+................................................................
+................................................................
+................................................................
+................................................................
+................................................................
+................................................................
+................................................................
+................................................................
+................................................................
+................................................................
+................................................................
+................................................................
+................................................................
+................................................................
+................................................................
+................................................................
+................................................................
+.........................................~......................
+.........................................~......................
+.........................................~......................
+.........................................~......................
+.........................................~......................
+.........................................~......................
+.........................................~......................
+................................................................
+.....................~~~~~~~~~~~~~~~~~~~~~~.....................
+......................----------------------....................
+................................................................
+................................................................
+................................................................
+................................................................
+................................................................
+................................................................
+................................................................
+................................................................
+................................................................
+................................................................
+......~~~~~~~~~~................................................
+.......----------...............................................

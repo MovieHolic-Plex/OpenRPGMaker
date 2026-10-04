@@ -1,0 +1,37 @@
+{
+ "id": "shackles",
+ "slug": "shackles",
+ "name_ko": "족쇄",
+ "category": "지하 감옥",
+ "kind": "hang",
+ "kind_ko": "벽면 걸이(벽 두 줄 중 윗줄)",
+ "canvas": [
+  16,
+  16
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 16,
+  "h": 16
+ },
+ "footprint": {
+  "w": 1,
+  "h": 0
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "벽에 박은 쇠사슬 족쇄 한 쌍. 감방마다 벽면 윗줄에 1~2개. 짚 침대 위쪽.",
+ "where": "감방마다 벽면 윗줄에 1~2개. 짚 침대 위쪽.",
+ "placement": [
+  "벽면 두 줄 중 윗줄(y=벽면 첫 줄)에 건다. 바닥 칸은 차지하지 않는다"
+ ],
+ "v5_bbox": [
+  2,
+  1,
+  13,
+  13
+ ],
+ "v5_colors": 4,
+ "material": "wood",
+ "related": []
+}

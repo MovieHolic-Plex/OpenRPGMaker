@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/meal_tray/s3-B.pxg",
+ "set": "school",
+ "id": "meal_tray",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.033
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.022
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 21,
+ "bbox": [
+  1,
+  1,
+  14,
+  14
+ ],
+ "note": "센 명암: 어두운 강철 판에 음식만 환하게, 판 위 왼쪽에 흰 광택 띠, 깊은 아래 그늘",
+ "ok": true
+}

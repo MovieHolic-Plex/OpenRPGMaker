@@ -8,6 +8,7 @@ import { topTileInStack } from "./mapOverlayTiles";
 import { cellLayerTiles } from "./mapLayers";
 import { passageMarkForTile } from "./tilesetPassage";
 import { footprintBounds, passageBounds } from "./footprint";
+import { reliefAllowsStep } from "./relief/walk";
 
 // 주어진 타일 좌표가 맵 경계 안인가?
 export function inBounds(map: GameMap, x: number, y: number): boolean {
@@ -37,6 +38,7 @@ export function tileAt(map: GameMap, x: number, y: number): {
 }
 
 const BLOCKED: PassFlag = { up: false, down: false, left: false, right: false };
+const OPEN_WATER: PassFlag = { up: true, down: true, left: true, right: true };
 
 /**
  * 칸의 통행(MZ 규칙). tiles 는 1층부터 위로. 맨 위부터 내려가며 빈칸과 ★ 를 건너뛰고,
@@ -79,6 +81,14 @@ export function passabilityOf(tileset: TilesetDef, l1: number, l2: number, l3: n
 
 // 칸 i 의 네 층 값을 직접 읽는다. 옛 스택 top 이 있으면 1·3층을 대신한다(tileAt 의 lower/upper 와 같다).
 function cellPassOrNull(tileset: TilesetDef, map: GameMap, i: number): PassFlag | null {
+  const depth = map.terrainDesign?.waterDepth?.[i] ?? 0;
+  if (depth > 0 && map.relief?.ramps?.[i] !== 9) {
+    if (depth > 1) return BLOCKED;
+    // Shallows replace the water floor's X; objects/upper layers still decide normally.
+    return decidingPass(tileset, map.upperOverlayTiles?.[i] ?? -1)
+      ?? decidingPass(tileset, map.upperTiles[i] ?? -1)
+      ?? decidingPass(tileset, map.lowerOverlayTiles?.[i] ?? -1) ?? OPEN_WATER;
+  }
   return passabilityOrNull(
     tileset,
     topTileInStack(map, "lower", i) ?? map.lowerTiles[i] ?? -1,
@@ -144,7 +154,8 @@ export function canMove(
   // from에서 해당 방향으로 나갈 수 있고, to에 해당 방향으로 들어올 수 있어야 함.
   // RM2K3 관례: from의 나가는 방향 + to의 들어오는 방향(반대) 체크.
   // 단순화: from과 to 양쪽의 해당 방향 비트가 열려있으면 통과.
-  return dirPassable(fromPass ?? BLOCKED, dir) && dirPassable(toPass ?? BLOCKED, oppositeDir(dir));
+  return dirPassable(fromPass ?? BLOCKED, dir) && dirPassable(toPass ?? BLOCKED, oppositeDir(dir))
+    && reliefAllowsStep(map.relief, fromX, fromY, toX, toY);
 }
 
 /**

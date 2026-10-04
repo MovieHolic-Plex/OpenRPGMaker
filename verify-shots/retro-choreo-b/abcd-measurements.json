@@ -1,0 +1,55 @@
+{
+ "note": "retro2003-skills-gif.mjs report.json 실측(640px, 15fps 캡처). ms 는 첫 포즈 기준.",
+ "speed": {
+  "0.6": {
+   "approachMs": 216,
+   "firstHitstopStartMs": 720,
+   "totalMs": 1572
+  },
+  "1.0": {
+   "approachMs": 131,
+   "firstHitstopStartMs": 438,
+   "totalMs": 941
+  },
+  "1.6": {
+   "approachMs": 82,
+   "firstHitstopStartMs": 281,
+   "totalMs": 587
+  }
+ },
+ "weightHitstopMs": {
+  "light": null,
+  "normal": 112,
+  "heavy": [
+   211,
+   217,
+   211
+  ]
+ },
+ "tintFilters": {
+  "orig": "none",
+  "ice": "grayscale(1) sepia(1) hue-rotate(148deg) saturate(3.4) brightness(1.12) contrast(1.02)",
+  "thunder": "grayscale(1) sepia(1) hue-rotate(6deg) saturate(4.6) brightness(1.15) contrast(1.05)",
+  "poison": "grayscale(1) sepia(1) hue-rotate(58deg) saturate(3.6) brightness(1) contrast(1.08)"
+ },
+ "screen": {
+  "flash": {
+   "peakLuma": 243,
+   "medianLuma": 127
+  },
+  "dim": {
+   "minLuma": 56
+  },
+  "cutIn": "파란 띠+배우 이름 8~13프레임",
+  "shake": {
+   "dxPx": "7-10",
+   "dyPx": "2-3",
+   "window": "1.13-1.47s"
+  }
+ },
+ "regressionA1": {
+  "sha256": "aa31514df6879924f7375f4d96ccbc0725e2a86f68c06ada280980df9e9ce6f0",
+  "timelines": 4436,
+  "identical": true
+ }
+}

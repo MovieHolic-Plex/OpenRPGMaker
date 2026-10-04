@@ -1,0 +1,53 @@
+{
+ "id": "dining 4x1",
+ "slug": "dining_4x1",
+ "name_ko": "식탁 4×1",
+ "category": "가구·살림",
+ "kind": "floor",
+ "kind_ko": "바닥 기물(막힘)",
+ "canvas": [
+  64,
+  16
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 64,
+  "h": 16
+ },
+ "footprint": {
+  "w": 4,
+  "h": 1
+ },
+ "overhang_px": 0,
+ "surface": {
+  "rect_px": [
+   2,
+   3,
+   61,
+   8
+  ],
+  "capacity": 8,
+  "note": "탁상 물건의 밑변을 윗면 안에 둔다"
+ },
+ "description": "4칸 긴 나무 식탁(자동 타일). 저택 식당 1개, 드워프 홀 2개. 위아래 의자 4개씩 또는 벤치 2개씩.",
+ "where": "저택 식당 1개, 드워프 홀 2개. 위아래 의자 4개씩 또는 벤치 2개씩.",
+ "placement": [
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다",
+  "윗면에 탁상 물건(goods:*)을 올린다. 비워 두지 않는다"
+ ],
+ "v5_bbox": [
+  0,
+  1,
+  63,
+  15
+ ],
+ "v5_colors": 7,
+ "material": "wood",
+ "related": [
+  "chair S",
+  "chair N",
+  "chair E",
+  "chair W",
+  "goods:plates"
+ ]
+}

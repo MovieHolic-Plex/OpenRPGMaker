@@ -1,0 +1,136 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/dead_forest/wv4-B.pxg",
+ "set": "worldmap",
+ "id": "dead_forest",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.14
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.098
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies",
+   "dither"
+  ]
+ },
+ "colors": 12,
+ "bbox": [
+  0,
+  0,
+  47,
+  63
+ ],
+ "note": "B: 어두운 마른 풀 바닥 위에 밝은 가지, 덩이 왼·위 가장자리에 그림자(~,-)로 입체감",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.184
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.035
+  },
+  "shore": {
+   "profile": {
+    "n": [
+     3,
+     3,
+     4,
+     2,
+     3,
+     3,
+     4,
+     3,
+     3,
+     5,
+     4,
+     5,
+     4,
+     4,
+     3,
+     3
+    ],
+    "s": [
+     4,
+     3,
+     5,
+     4,
+     4,
+     4,
+     3,
+     3,
+     3,
+     3,
+     3,
+     3,
+     4,
+     4,
+     3,
+     3
+    ],
+    "w": [
+     4,
+     4,
+     3,
+     3,
+     3,
+     4,
+     3,
+     4,
+     4,
+     4,
+     4,
+     4,
+     5,
+     4,
+     3,
+     3
+    ],
+    "e": [
+     4,
+     4,
+     3,
+     4,
+     5,
+     4,
+     4,
+     4,
+     4,
+     3,
+     2,
+     4,
+     4,
+     3,
+     4,
+     4
+    ]
+   },
+   "strait": 7,
+   "steps": {
+    "n": 2,
+    "s": 2,
+    "w": 1,
+    "e": 2
+   },
+   "amp": {
+    "n": 3,
+    "s": 2,
+    "w": 2,
+    "e": 3
+   },
+   "joinWorst": 1
+  },
+  "seam": 0.42
+ }
+}

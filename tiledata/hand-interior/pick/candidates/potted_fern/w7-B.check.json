@@ -1,0 +1,36 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/potted_fern/w7-B.pxg",
+ "id": "potted fern",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.028
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "pillow",
+   "saturation",
+   "dither"
+  ],
+  "pass": false
+ },
+ "colors": 13,
+ "v5_colors": 9,
+ "bbox": [
+  1,
+  1,
+  13,
+  14
+ ],
+ "v5_bbox": [
+  3,
+  0,
+  12,
+  14
+ ],
+ "note": "왼쪽 위 빛: 잎 왼쪽 leaf:5·6 오른쪽 leaf:2·3, 화분 왼쪽 밝고 오른쪽 어둡게, 발 칸 오른쪽 아래 접지 그림자",
+ "ok": true
+}

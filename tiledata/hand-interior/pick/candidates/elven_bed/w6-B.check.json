@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/elven_bed/w6-B.pxg",
+ "id": "elven bed",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.044
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 30,
+ "v5_colors": 25,
+ "bbox": [
+  0,
+  10,
+  15,
+  47
+ ],
+ "v5_bbox": [
+  0,
+  10,
+  15,
+  47
+ ],
+ "note": "빛 강화: 왼쪽 위 밝은 나무와 이불, 오른쪽 기둥·머리판 깊은 어둠, 이불 세로 주름 명암 띠",
+ "ok": true
+}

@@ -1,0 +1,35 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/confessional/w22-F.pxg",
+ "id": "confessional",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 9,
+  "atLeast95": 0,
+  "max": 0.078
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "outline_black",
+   "dither"
+  ],
+  "pass": false
+ },
+ "colors": 15,
+ "v5_colors": 15,
+ "bbox": [
+  0,
+  8,
+  47,
+  47
+ ],
+ "v5_bbox": [
+  0,
+  8,
+  47,
+  47
+ ],
+ "note": "방향 D: 네 귀 지붕 — 모서리를 깎은 지붕판 윗면(기와 줄)과 오른쪽 옆면, 양옆 칸은 위에 창살 창·아래 보라 커튼, 가운데 사제 문",
+ "ok": true
+}

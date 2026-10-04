@@ -10,6 +10,9 @@ import fs from "node:fs";
 import path from "node:path";
 import { PNG } from "pngjs";
 import { drawMapTileLayer } from "../../src/editor/mapTileDraw.ts";
+import { reliefMapView } from "../../src/editor/reliefMapView.ts";
+import { createReliefGroundSurface } from "../../src/editor/reliefGroundSurface.ts";
+import { cropExtraLayers } from "../../src/project/mapLayers.ts";
 import { tilesetBaseImageUrl } from "../../src/editor/tilesetImage.ts";
 import { uploadedAssetUrl } from "../../src/project/persistence/assetAccessors.ts";
 import { isColorKeyedChipsetTextureKey, resolveTransparentColorKeys } from "../../src/assets/chipsetTransparency.ts";
@@ -181,7 +184,10 @@ function outline(target: Raster, x: number, y: number, size: number, rgb: readon
 export function renderMapPng(project: Project, map: GameMap, scale = 1): { png: Buffer; note?: string } {
   const tileset = project.tilesets[map.tilesetId];
   const size = (tileset?.tileSize ?? 16) * scale;
-  const target: Raster = { width: map.width * size, height: map.height * size, data: new Uint8Array(map.width * size * map.height * size * 4) };
+  const image = tileset ? loadTilesetRaster(project, tileset) : null;
+  const relief = reliefMapView(map, size, image && tileset ? createReliefGroundSurface(map, tileset, image) : undefined);
+  const height = Math.ceil(relief?.height ?? map.height * size);
+  const target: Raster = { width: map.width * size, height, data: new Uint8Array(map.width * size * height * 4) };
   // 바둑판 바탕 — 비어 있는 칸이 보이게.
   for (let y = 0; y < target.height; y += 1) for (let x = 0; x < target.width; x += 1) {
     const dark = ((Math.floor(x / (size / 2)) + Math.floor(y / (size / 2))) % 2) === 0;
@@ -189,17 +195,33 @@ export function renderMapPng(project: Project, map: GameMap, scale = 1): { png: 
     target.data[i] = dark ? 42 : 51; target.data[i + 1] = dark ? 42 : 51; target.data[i + 2] = dark ? 46 : 58; target.data[i + 3] = 255;
   }
   let note: string | undefined;
-  const image = tileset ? loadTilesetRaster(project, tileset) : null;
   if (!tileset || !image) note = `타일셋 이미지를 읽지 못했습니다(${map.tilesetId})`;
   else {
     const context = new PngContext(target) as unknown as CanvasRenderingContext2D;
-    drawMapTileLayer(context, image as never, map, tileset, "lower", scale);
-    drawMapTileLayer(context, image as never, map, tileset, "upper", scale);
+    if (relief) {
+      const flat = () => ({ width: map.width * size, height: map.height * size, data: new Uint8Array(map.width * size * map.height * size * 4) });
+      const lower = flat(), upper = flat(), ctx = new PngContext(target);
+      drawMapTileLayer(new PngContext(lower) as never, image as never, map, tileset, "lower", scale);
+      drawMapTileLayer(new PngContext(upper) as never, image as never, map, tileset, "upper", scale);
+      const strip = (s: (typeof relief.rows)[number]["under"]) => {
+        if (s) ctx.drawImage({ width: s.w, height: s.h, data: new Uint8Array(s.rgba) }, 0, 0, s.w, s.h, s.x * relief.scale, s.y * relief.scale, s.w * relief.scale, s.h * relief.scale);
+      };
+      for (const row of relief.rows) {
+        strip(row.under);
+        for (const cell of row.cells) if (cell.paintLower) ctx.drawImage(lower, cell.x * size, row.y * size, size, size, cell.x * size, cell.y, size, size);
+        strip(row.over);
+        for (const cell of row.cells) ctx.drawImage(upper, cell.x * size, row.y * size, size, size, cell.x * size, cell.y, size, size);
+      }
+    } else {
+      drawMapTileLayer(context, image as never, map, tileset, "lower", scale);
+      drawMapTileLayer(context, image as never, map, tileset, "upper", scale);
+    }
   }
-  for (const event of map.events ?? []) outline(target, event.x * size, event.y * size, size, MARK[eventKind(event)]);
+  const surfaceY = (x: number, y: number) => relief?.rows[y]?.cells[x]?.y ?? y * size;
+  for (const event of map.events ?? []) outline(target, event.x * size, surfaceY(event.x, event.y), size, MARK[eventKind(event)]);
   if (map.id === project.startMapId) {
     const sx = project.startPos.x * size;
-    const sy = project.startPos.y * size;
+    const sy = surfaceY(project.startPos.x, project.startPos.y);
     outline(target, sx - 3, sy - 3, size + 6, MARK.start);
     outline(target, sx, sy, size, MARK.start);
   }
@@ -218,6 +240,23 @@ export function renderToolRegionPngBase64(project: Project, data: unknown, maxSi
   const region = (data && typeof data === "object" ? data : {}) as { mapId?: unknown; x?: unknown; y?: unknown; w?: unknown; h?: unknown };
   const map = typeof region.mapId === "string" ? project.maps[region.mapId] : undefined;
   if (!map) throw new Error(`show_map_region 이미지: 맵을 찾을 수 없습니다(${String(region.mapId)})`);
+  if (map.relief?.levels.some(n => n > 0)) {
+    const int = (value: unknown, fallback: number) => typeof value === "number" && Number.isInteger(value) ? value : fallback;
+    const x = Math.max(0, int(region.x, 0)), y = Math.max(0, int(region.y, 0));
+    const w = Math.min(map.width - x, int(region.w, map.width)), h = Math.min(map.height - y, int(region.h, map.height));
+    if (w <= 0 || h <= 0) throw new Error("map-rendering-unavailable: invalid region");
+    const cut = (tiles: readonly number[]) => Array.from({ length: w * h }, (_, i) => tiles[(y + Math.floor(i / w)) * map.width + x + i % w] ?? -1);
+    const cropped: GameMap = { ...map, width: w, height: h, lowerTiles: cut(map.lowerTiles), upperTiles: cut(map.upperTiles),
+      events: map.events.filter(e => e.x >= x && e.x < x + w && e.y >= y && e.y < y + h).map(e => ({ ...e, x: e.x - x, y: e.y - y })) };
+    cropExtraLayers(cropped, map.width, map.height, x, y, w, h);
+    const { png, note } = renderMapPng({ ...project, startPos: { x: project.startPos.x - x, y: project.startPos.y - y } }, cropped);
+    if (note) throw new Error(`map-rendering-unavailable: ${note}`);
+    const full = PNG.sync.read(png), step = Math.max(1, Math.ceil(Math.max(full.width, full.height) / maxSide));
+    const out = new PNG({ width: Math.max(1, Math.floor(full.width / step)), height: Math.max(1, Math.floor(full.height / step)) });
+    for (let yy = 0; yy < out.height; yy++) for (let xx = 0; xx < out.width; xx++) for (let c = 0; c < 4; c++)
+      out.data[(yy * out.width + xx) * 4 + c] = full.data[((yy * step) * full.width + xx * step) * 4 + c]!;
+    return PNG.sync.write(out).toString("base64");
+  }
   const { png, note } = renderMapPng(project, map);
   // 그림판을 못 읽은 바둑판 그림을 「맵 이미지」로 주면 모델이 빈 맵으로 오해한다 — 도구 실패로 돌려준다.
   if (note) throw new Error(`map-rendering-unavailable: ${note}`);

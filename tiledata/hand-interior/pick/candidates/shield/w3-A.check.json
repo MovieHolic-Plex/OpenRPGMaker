@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/shield/w3-A.pxg",
+ "id": "shield",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.006
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 10,
+ "v5_colors": 6,
+ "bbox": [
+  2,
+  1,
+  13,
+  14
+ ],
+ "v5_bbox": [
+  2,
+  1,
+  13,
+  14
+ ],
+ "note": "v5 다듬기 — 좌상단 테두리를 밝게(iron 4~5), 우측 붉은 면을 한 단 어둡게(red:2), 십자 위쪽에 F 하이라이트만 남김. 실루엣·색 구성은 v5 그대로.",
+ "ok": true
+}

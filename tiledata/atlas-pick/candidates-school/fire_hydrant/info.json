@@ -1,0 +1,21 @@
+{
+ "id": "fire_hydrant",
+ "slug": "fire_hydrant",
+ "name": "소화전함",
+ "scene": "복도·현관",
+ "place": "in",
+ "cells": [
+  1,
+  2
+ ],
+ "canvas": [
+  16,
+  32
+ ],
+ "layer": "wall",
+ "layer_ko": "벽 걸이(위층, 투명 배경·벽면에 붙는다)",
+ "description": "복도 벽에 박힌 빨간 옥내 소화전함 — 윗칸 빨간 표시등(둥근 점) + 아랫칸 빨간 문(손잡이, 가운데 흰 가로 띠). 벽에 붙은 그늘 한 줄.",
+ "palette_hint": "mred/vred 몸통, vwhite 띠, vyellow 표시등 빛",
+ "pair": [],
+ "worker": "s4"
+}

@@ -1,0 +1,98 @@
+@size 32 16
+@cell 16
+@palette palette.pal
+@mat d wood
+@mat g green
+@mat w white
+@mat l linen
+@mblock 0 0
+dddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddd
+ddggggggggggggggggggggggggggggdd
+ddggggggggggggggggggggggggggggdd
+ddgggwwwwwwwwwggwwwwggggggggggdd
+ddggggggggggggggggggggggggggggdd
+ddgggwwwwwggwwwwwwwggwwwwgwgggdd
+ddgggggggggggggggggggggggwgwggdd
+ddgggwwwwwwggwwwggggggggwwwwwgdd
+ddggggggggggggggggglllggggggggdd
+dddddddddddddddddddddddddddddddd
+dddddddddddddddddddddddddddddddd
+.dddddwwddldddddddddddddddddddd.
+.dddddddddddddddddddddddddddddd.
+................................
+................................
+@tblock 0 0
+65666646666666466666664666646613
+65555555555555555555555555555530
+65111111111111111111111111111110
+65122222222222222333333332222410
+55122555455545234555333222222410
+65122222222223333333322222222410
+65122555452345554552255542422410
+55122222233333333222222224242410
+65122555455335552222222244444410
+65142343343342242242222242243410
+61222222222222222222222222222210
+11111111111111111111111111111110
+.666666566466666666666666666644.
+.322222222222222222222222222211.
+................................
+................................
+@px 2 14 ~
+@px 3 14 ~
+@px 4 14 ~
+@px 5 14 ~
+@px 6 14 ~
+@px 7 14 ~
+@px 8 14 ~
+@px 9 14 ~
+@px 10 14 ~
+@px 11 14 ~
+@px 12 14 ~
+@px 13 14 ~
+@px 14 14 ~
+@px 15 14 ~
+@px 16 14 ~
+@px 17 14 ~
+@px 18 14 ~
+@px 19 14 ~
+@px 20 14 ~
+@px 21 14 ~
+@px 22 14 ~
+@px 23 14 ~
+@px 24 14 ~
+@px 25 14 ~
+@px 26 14 ~
+@px 27 14 ~
+@px 28 14 ~
+@px 29 14 ~
+@px 30 14 ~
+@px 3 15 -
+@px 4 15 -
+@px 5 15 -
+@px 6 15 -
+@px 7 15 -
+@px 8 15 -
+@px 9 15 -
+@px 10 15 -
+@px 11 15 -
+@px 12 15 -
+@px 13 15 -
+@px 14 15 -
+@px 15 15 -
+@px 16 15 -
+@px 17 15 -
+@px 18 15 -
+@px 19 15 -
+@px 20 15 -
+@px 21 15 -
+@px 22 15 -
+@px 23 15 -
+@px 24 15 -
+@px 25 15 -
+@px 26 15 -
+@px 27 15 -
+@px 28 15 -
+@px 29 15 -
+@px 30 15 -

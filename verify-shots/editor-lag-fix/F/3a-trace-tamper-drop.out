@@ -1,0 +1,7 @@
+시작 상태: 5|2176640|465aa605fc977f9106b530f66c34619abcbcd30ff47543655f665c93e9db3424 / 393 / 350
+{"round":0,"readyMs":30252,"stateAtReady":"6|2176802|057ef782af30ee5c4c0b1076658ce7a84a63d9214d8e404f4113b6afcdb12f7a / 393 / 350","savedAfterReady":false,"waitedSec":30,"stateAfter":"6|2176802|057ef782af30ee5c4c0b1076658ce7a84a63d9214d8e404f4113b6afcdb12f7a / 393 / 350"}
+{
+ "logs": []
+}
+
+[exited with code 0]

@@ -1,0 +1,13 @@
+// kit_pole 부품 시트 128x64px (8×4칸). 부품 = 칸 자리(x y 는 px, 좌상단).
+// slug  x  y  w  h  층  반복  통행  이름
+pole_top            0    0  16  16  object  -   C     기둥 꼭대기 + 완목
+arm_l              16    0  16  16  over    -   C     완목 왼 끝
+arm_r              32    0  16  16  over    -   C     완목 오른 끝
+pole               48    0  16  16  object  y   C     기둥
+trans              64    0  16  16  object  -   C     기둥 + 변압기
+pole_tag           80    0  16  16  object  -   C     기둥 + 표지판
+pole_lamp          96    0  16  16  object  -   C     기둥 + 가로등
+pole_base         112    0  16  16  object  -   X     기둥 밑동
+stay                0   16  16  48  object  -   C/C/X 버팀줄(3칸)
+wire_m             16   16  16  16  over    x   C     전선
+wire_dip           32   16  16  16  over    x   C     전선(처짐)

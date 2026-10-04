@@ -1,0 +1,1 @@
+dining 2x2: 몸통=dining 2x1 pilot-B(왼쪽 위 빛·앞 테 한 단 낮게·접지 그림자)를 32x32로 늘임/줄임, 16px 마다 결, 다리 양끝 (깊이2: 윗면 짜임 되풀이 work/w62-dining.py in candidates/dining_2x1/work)

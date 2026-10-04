@@ -65,6 +65,8 @@ function createWindow(): BrowserWindow {
     width: 1280,
     height: 800,
     show: false,
+    fullscreen: true,
+    autoHideMenuBar: true,
     // 리눅스·윈도우 창 제목줄과 작업표시줄 아이콘. 맥은 앱 번들 icns 를 쓰므로 주지 않는다.
     ...(windowIcon ? { icon: windowIcon } : {}),
     webPreferences: {
@@ -73,6 +75,8 @@ function createWindow(): BrowserWindow {
       sandbox: true,
       nodeIntegration: false,
       webSecurity: true,
+      // AI checkpoint application and replies must continue while minimized.
+      backgroundThrottling: false,
     },
   });
 
@@ -312,6 +316,13 @@ app.whenReady().then(async () => {
     if (window) destroyWindow(window);
     return true;
   });
+  ipcMain.handle(OPRN_CHANNELS.windowControl, (event, action: unknown) => {
+    const window = BrowserWindow.fromWebContents(event.sender);
+    if (!window || !event.senderFrame?.url.startsWith(`${OPRN_APP_SCHEME}://`)) return false;
+    if (action === "toggle-fullscreen") { window.setFullScreen(!window.isFullScreen()); return true; }
+    if (action === "close") { window.close(); return true; }
+    return false;
+  });
   ipcMain.handle(OPRN_CHANNELS.startRecentProjects, () => describeRecentProjects());
   ipcMain.handle(OPRN_CHANNELS.startCoverSource, (_event: IpcMainInvokeEvent, payload: unknown) =>
     recentProjectCoverSource((payload as { readonly projectDir?: unknown } | null)?.projectDir));
@@ -324,13 +335,20 @@ app.whenReady().then(async () => {
     const title = typeof input?.title === "string" ? input.title : undefined;
     return typeof input?.root === "string" && input.root ? suggestProjectDir(title, input.root) : suggestProjectDir(title);
   });
-  ipcMain.handle(OPRN_CHANNELS.startChooseProjectRoot, async (event: IpcMainInvokeEvent) => {
+  ipcMain.handle(OPRN_CHANNELS.startChooseProjectRoot, async (event: IpcMainInvokeEvent, payload: unknown) => {
     const owner = BrowserWindow.fromWebContents(event.sender);
     const options = { properties: ["openDirectory", "createDirectory"] as Array<"openDirectory" | "createDirectory">, title: "새 게임을 만들 위치 선택" };
     const result = owner ? await dialog.showOpenDialog(owner, options) : await dialog.showOpenDialog(options);
     return result.canceled || result.filePaths.length === 0 ? null : result.filePaths[0];
   });
-  ipcMain.handle(OPRN_CHANNELS.startOpenFolder, async (event: IpcMainInvokeEvent) => {
+  ipcMain.handle(OPRN_CHANNELS.startOpenFolder, async (event: IpcMainInvokeEvent, payload: unknown) => {
+    const requested = (payload as { readonly projectDir?: unknown } | null)?.projectDir;
+    if (typeof requested === "string") {
+      if (!requested || !sessions.directoryExists(requested)) throw new Error("열 프로젝트 폴더를 찾지 못했습니다.");
+      const session = await sessions.open(event.sender.id, requested);
+      rememberRecentProject(session.projectDir, session.store.info().title ?? requested);
+      return { projectDir: session.projectDir, isNew: false, projectId: session.store.projectId };
+    }
     const { dialog } = await import("electron");
     const result = await dialog.showOpenDialog({ properties: ["openDirectory"], title: "프로젝트 폴더 열기" });
     if (result.canceled || result.filePaths.length === 0) return null;

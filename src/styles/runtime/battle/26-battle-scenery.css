@@ -1,11 +1,11 @@
 /* 기본 단일 배경의 4% 드리프트와 겹 배경 카메라가 이중 확대되지 않게 한다. */
-.battle-scene[data-battle-skin="retro2003"] .battle-backdrop:has(.battle-scenery-camera) {
+.battle-scene[data-battle-motion="retro"] .battle-backdrop:has(.battle-scenery-camera) {
   animation: none;
   scale: 1;
 }
 
 /* 겹 배경은 전투 필드 안에서만 움직인다. 다른 스킨의 구도에는 관여하지 않는다. */
-.battle-scene[data-battle-skin="retro2003"] .battle-scenery-camera {
+.battle-scene[data-battle-motion="retro"] .battle-scenery-camera {
   position: absolute;
   inset: 0;
   overflow: hidden;
@@ -14,8 +14,23 @@
   animation: retro-scenery-breathe 10s ease-in-out infinite alternate;
 }
 
-.battle-scene[data-battle-skin="retro2003"] .battle-scenery-layer,
-.battle-scene[data-battle-skin="retro2003"] .battle-scenery-ambient {
+/* 겹 배경 네 장이 오기 전에는 아래 단일 배경(다른 그림)을 가린다 — 전투 도중 배경이 바뀌어 보이던 결함.
+   진입 커버 동안 미리 읽어 두므로(preloadBattleScenery) 보통은 이 상태를 거치지 않는다. */
+.battle-scene[data-battle-motion="retro"] .battle-scenery-camera:is([data-layers="loading"], [data-layers-fade="in"]) {
+  background: #0b0f1a;
+}
+
+/* 늦게 도착한 경우에만 페이드인. 미리 읽어 둔 경우는 첫 프레임부터 그대로 깐다. */
+.battle-scene[data-battle-motion="retro"] .battle-scenery-camera[data-layers-fade="in"] .battle-scenery-layer {
+  animation: retro-scenery-layer-in 180ms ease-out both;
+}
+
+@keyframes retro-scenery-layer-in {
+  from { opacity: 0; }
+}
+
+.battle-scene[data-battle-motion="retro"] .battle-scenery-layer,
+.battle-scene[data-battle-motion="retro"] .battle-scenery-ambient {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -25,65 +40,65 @@
   image-rendering: pixelated;
 }
 
-.battle-scene[data-battle-skin="retro2003"] .battle-scenery-sky {
+.battle-scene[data-battle-motion="retro"] .battle-scenery-sky {
   --scenery-hit: 0px;
   --scenery-enter: 4px;
   background-size: 640px 100%;
   animation: retro-scenery-clouds 120s linear infinite;
 }
 
-.battle-scene[data-battle-skin="retro2003"] .battle-scenery-far {
+.battle-scene[data-battle-motion="retro"] .battle-scenery-far {
   --scenery-hit: calc(2px / 2);
   --scenery-enter: 12px;
   animation: retro-scenery-far 12s ease-in-out infinite alternate;
 }
 
-.battle-scene[data-battle-skin="retro2003"] .battle-scenery-mid {
+.battle-scene[data-battle-motion="retro"] .battle-scenery-mid {
   --scenery-hit: 2px;
   --scenery-enter: 24px;
   animation: retro-scenery-mid 9s ease-in-out infinite alternate;
 }
 
-.battle-scene[data-battle-skin="retro2003"] .battle-scenery-ground {
+.battle-scene[data-battle-motion="retro"] .battle-scenery-ground {
   --scenery-hit: calc(6px / 2);
   --scenery-enter: 40px;
 }
 
-.battle-scene[data-battle-skin="retro2003"] .battle-scenery-ambient { z-index: 2; }
+.battle-scene[data-battle-motion="retro"] .battle-scenery-ambient { z-index: 2; }
 
-.battle-scene[data-battle-skin="retro2003"] .battle-scenery-camera[data-layers="ready"]::after {
+.battle-scene[data-battle-motion="retro"] .battle-scenery-camera[data-layers="ready"]::after {
   content: "";
   position: absolute;
   inset: 0;
   pointer-events: none;
 }
 
-.battle-scene[data-battle-skin="retro2003"] .battle-scenery-camera[data-layers="ready"]:is([data-biome="forest"], [data-biome="plains"])::after {
+.battle-scene[data-battle-motion="retro"] .battle-scenery-camera[data-layers="ready"]:is([data-biome="forest"], [data-biome="plains"])::after {
   background: linear-gradient(116deg, transparent 18%, rgb(255 246 191 / 0.12) 21%, transparent 28%, transparent 42%, rgb(255 246 191 / 0.06) 46%, transparent 52%);
   animation: retro-scenery-light 9s ease-in-out infinite alternate;
 }
 
-.battle-scene[data-battle-skin="retro2003"] .battle-scenery-camera[data-biome="cave"]::after {
+.battle-scene[data-battle-motion="retro"] .battle-scenery-camera[data-biome="cave"]::after {
   background: radial-gradient(ellipse at 50% 56%, transparent 30%, rgb(4 8 16 / 0.62) 100%);
 }
 
-.battle-scene[data-battle-skin="retro2003"][data-battle-director-step="intro"] .battle-scenery-layer {
+.battle-scene[data-battle-motion="retro"][data-battle-director-step="intro"] .battle-scenery-layer {
   animation: retro-scenery-enter 600ms ease-out both;
 }
 
-.battle-scene[data-battle-skin="retro2003"].battle-hit-shake .battle-scenery-layer:where(:not(.battle-scenery-sky)) {
+.battle-scene[data-battle-motion="retro"].battle-hit-shake .battle-scenery-layer:where(:not(.battle-scenery-sky)) {
   animation: retro-scenery-hit 100ms ease-in-out infinite;
 }
 
-.battle-scene[data-battle-skin="retro2003"]:is(.battle-flash-hit, .battle-flash-critical) .battle-scenery-camera {
+.battle-scene[data-battle-motion="retro"]:is(.battle-flash-hit, .battle-flash-critical) .battle-scenery-camera {
   filter: brightness(1.06);
 }
 
-.battle-scene[data-battle-skin="retro2003"].battle-hit-stop .battle-scenery-camera,
-.battle-scene[data-battle-skin="retro2003"].battle-hit-stop .battle-scenery-layer,
-.battle-scene[data-battle-skin="retro2003"] .battle-scenery-camera[data-paused="true"],
-.battle-scene[data-battle-skin="retro2003"] .battle-scenery-camera[data-paused="true"] .battle-scenery-layer,
-.battle-scene[data-battle-skin="retro2003"] .battle-scenery-camera[data-paused="true"]::after {
+.battle-scene[data-battle-motion="retro"].battle-hit-stop .battle-scenery-camera,
+.battle-scene[data-battle-motion="retro"].battle-hit-stop .battle-scenery-layer,
+.battle-scene[data-battle-motion="retro"] .battle-scenery-camera[data-paused="true"],
+.battle-scene[data-battle-motion="retro"] .battle-scenery-camera[data-paused="true"] .battle-scenery-layer,
+.battle-scene[data-battle-motion="retro"] .battle-scenery-camera[data-paused="true"]::after {
   animation-play-state: paused;
 }
 
@@ -96,13 +111,13 @@
 @keyframes retro-scenery-hit { 25% { transform: translateX(calc(-1 * var(--scenery-hit))) scaleX(1.02); } 75% { transform: translateX(var(--scenery-hit)) scaleX(1.02); } }
 
 @media (prefers-reduced-motion: reduce) {
-  .battle-scene[data-battle-skin="retro2003"] .battle-scenery-camera,
-  .battle-scene[data-battle-skin="retro2003"] .battle-scenery-camera .battle-scenery-layer,
-  .battle-scene[data-battle-skin="retro2003"] .battle-scenery-camera::after {
+  .battle-scene[data-battle-motion="retro"] .battle-scenery-camera,
+  .battle-scene[data-battle-motion="retro"] .battle-scenery-camera .battle-scenery-layer,
+  .battle-scene[data-battle-motion="retro"] .battle-scenery-camera::after {
     animation: none;
     transition: none;
     transform: none;
     translate: none;
   }
-  .battle-scene[data-battle-skin="retro2003"] .battle-scenery-ambient { display: none; }
+  .battle-scene[data-battle-motion="retro"] .battle-scenery-ambient { display: none; }
 }

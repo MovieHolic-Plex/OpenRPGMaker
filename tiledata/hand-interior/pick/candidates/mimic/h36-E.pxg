@@ -1,0 +1,34 @@
+// E 자유: 뚜껑을 뒤로 활짝 세운 나무 미믹 — 뚜껑 안쪽 붉은 입천장+윗니, 노란 눈 둘, 아랫니, 혀가 앞면으로 늘어짐, 쇠띠 몸통
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat o wood 1
+@mat a wood 3
+@mat b wood 4
+@mat c wood 5
+@mat e wood 6
+@mat k red 1
+@mat r red 2
+@mat t pink 3
+@mat T pink 2
+@mat h white 5
+@mat y yellow 4
+@mat n iron 3
+@mat m iron 1
+@mblock 0 0
+................
+...oooooooooo...
+..oeeeeeeeeeeo..
+..okkkkkkkkkko..
+..okkkrkkrkkko..
+..ohhkhhkhhkho..
+.oaakkkkkkkkaao.
+.oakkykkkkykkao.
+.oahhkttttkhhao.
+.oeeeetttteeeeo.
+.ocbbbttttbbbco.
+.ocbbbtTTtbbbco.
+.ocnnntTTtnnnco.
+.ocbbbbtTbbbbco.
+.ooaaaaaaaaaaoo.
+.oooooooooooooo.

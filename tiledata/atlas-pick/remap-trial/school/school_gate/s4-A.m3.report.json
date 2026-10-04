@@ -1,0 +1,37 @@
+{
+ "src": "tiledata/atlas-pick/candidates-school/school_gate/s4-A.pxg",
+ "out": "tiledata/atlas-pick/remap-trial/school/school_gate/s4-A.m3.pxg",
+ "size": [
+  64,
+  48
+ ],
+ "stat": {
+  "ramp": 23
+ },
+ "weak": [],
+ "ambiguous": {
+  "#dee0dd": 1,
+  "#b9bbb8": 1,
+  "#4e5053": 1,
+  "#b6b6b0": 1
+ },
+ "unmapped": {},
+ "marker": 0,
+ "translucentDropped": 68,
+ "droppedBy": {
+  "~": 36,
+  "-": 32
+ },
+ "baked": {},
+ "outOfPalette": 0,
+ "translucentPx": 0,
+ "markerLeft": false,
+ "colors": 14,
+ "ramps": [
+  "conc",
+  "hodo",
+  "kii",
+  "shiro",
+  "tekko"
+ ]
+}

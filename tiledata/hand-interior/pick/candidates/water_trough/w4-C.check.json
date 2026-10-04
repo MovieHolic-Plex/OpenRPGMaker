@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/water_trough/w4-C.pxg",
+ "id": "water trough",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.049
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 14,
+ "v5_colors": 9,
+ "bbox": [
+  0,
+  4,
+  31,
+  14
+ ],
+ "v5_bbox": [
+  0,
+  4,
+  31,
+  14
+ ],
+ "note": "실루엣 재설계: 테두리가 살짝 둥근 물통, 쇠 띠 두 줄, 아래가 좁은 몸통+짧은 다리 둘, 다리 사이 그림자",
+ "ok": true
+}

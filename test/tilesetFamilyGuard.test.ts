@@ -5,13 +5,13 @@ import { resetMapEditHistory } from "@/editor/mapEditHistory";
 import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext } from "@/editor/tools/types";
 import { createBlankProject } from "@/project/defaults";
-import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import type { Project } from "@/project/types";
 
 const MAP_ID = "map_blank_start";
 
 function withUploaded(project: Project, id: string, family?: string): Project {
-  const bundled = project.tilesets[DEFAULT_TILESET_ID]!;
+  const bundled = project.tilesets[COMBINED_TOWN_TILESET_ID]!;
   const tileset = { ...structuredClone(bundled), id, name: `올린 ${id}`, image: { type: "uploaded" as const, id: `asset_${id}` } };
   delete tileset.referenceDocuments;
   delete tileset.referenceSourceTilesetId;
@@ -72,6 +72,43 @@ describe("칩셋 계열 검사", () => {
     expect(ctx.project.maps.map_cave).toBeDefined();
   });
 
+  it("(h) 손대지 않은 빈 기본 시작 맵은 그림체 기준이 아니다 → 다른 계열 새 맵 통과", () => {
+    const ctx: ToolContext = { project: createBlankProject(), currentMapId: MAP_ID };
+    const result = runTool(ctx, "create_map", { id: "map_x", name: "성", width: 20, height: 15, tilesetId: "opengameart_castle" }, { dryRun: false });
+    expect(result.ok, result.summary).toBe(true);
+  });
+
+  it("(h') 빈 시작 맵을 보더라도 프로젝트에 칠한 맵이 있으면 그 계열이 기준", () => {
+    const project = uploadedProject();
+    project.maps[MAP_ID]!.tilesetId = createBlankProject().maps[MAP_ID]!.tilesetId;
+    project.maps.map_field = { ...structuredClone(project.maps[MAP_ID]!), id: "map_field", tilesetId: "rasak_field" };
+    project.maps.map_field.lowerTiles[0] = (project.maps.map_field.lowerTiles[0] ?? 0) + 1;
+    const ctx: ToolContext = { project, currentMapId: MAP_ID };
+    const result = runTool(ctx, "create_map", { id: "map_x", name: "성", width: 20, height: 15, tilesetId: "opengameart_castle" }, { dryRun: false });
+    expect(result.ok).toBe(false);
+    expect(result.issues?.[0]?.message).toContain("프로젝트에서 칠한 맵 map_field");
+  });
+
+  it.each(["lowerOverlayTiles", "upperOverlayTiles", "shadowBits"] as const)("(h'') %s 에만 저작한 기본 맵도 그림체 기준으로 남는다", (key) => {
+    const project = createBlankProject();
+    const map = project.maps[MAP_ID]!;
+    map[key] = new Array<number>(map.width * map.height).fill(key === "shadowBits" ? 0 : -1);
+    map[key]![0] = 1;
+    const result = runTool({ project, currentMapId: MAP_ID }, "create_map", { id: "map_x", name: "성", width: 20, height: 15, tilesetId: "opengameart_castle" });
+    expect(result.ok).toBe(false);
+    expect(result.issues?.[0]?.code).toBe("tileset-family-change");
+  });
+
+  it("(h''') 높이만 저작한 기본 맵도 그림체 기준으로 남는다", () => {
+    const project = createBlankProject();
+    const map = project.maps[MAP_ID]!;
+    map.relief = { width: map.width, height: map.height, levels: new Array<number>(map.width * map.height).fill(0) };
+    map.relief.levels[0] = 1;
+    const result = runTool({ project, currentMapId: MAP_ID }, "create_map", { id: "map_x", name: "성", width: 20, height: 15, tilesetId: "opengameart_castle" });
+    expect(result.ok).toBe(false);
+    expect(result.issues?.[0]?.code).toBe("tileset-family-change");
+  });
+
   it("(d) currentMapId 없음 → 옛 동작(검사 없음)", () => {
     const ctx: ToolContext = { project: uploadedProject() };
     const result = dungeon(ctx);
@@ -95,7 +132,7 @@ describe("칩셋 계열 검사", () => {
     const { applyProjectWithHistory } = await import("@/editor/mapEditHistory");
     const { store } = await import("@/project/store");
     const base = uploadedProject();
-    base.maps[MAP_ID]!.tilesetId = DEFAULT_TILESET_ID;
+    base.maps[MAP_ID]!.tilesetId = COMBINED_TOWN_TILESET_ID;
     store.replace(structuredClone(base));
     resetMapEditHistory();
     const next = structuredClone(base);
@@ -105,7 +142,7 @@ describe("칩셋 계열 검사", () => {
     const ctx: ToolContext = { project: store.getCurrent(), currentMapId: MAP_ID };
     const result = runTool(ctx, "revert_last_edit", {}, { dryRun: false });
     expect(result.ok, result.summary).toBe(true);
-    expect(ctx.project.maps[MAP_ID]!.tilesetId).toBe(DEFAULT_TILESET_ID);
+    expect(ctx.project.maps[MAP_ID]!.tilesetId).toBe(COMBINED_TOWN_TILESET_ID);
   });
 
   it("(f) create_map tilesetId 생략 → 지금 보는 맵 칩셋(다른 계열일 때)", () => {

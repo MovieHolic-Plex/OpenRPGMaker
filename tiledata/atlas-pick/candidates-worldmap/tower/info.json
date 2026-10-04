@@ -1,0 +1,23 @@
+{
+ "id": "tower",
+ "slug": "tower",
+ "name": "탑",
+ "scene": "장소",
+ "kind": "icon",
+ "cells": [
+  1,
+  2
+ ],
+ "canvas": [
+  16,
+  32
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "under": "plains",
+ "under_ko": "평원 풀(plains_base 고른 판)",
+ "passage": "walk",
+ "description": "World.png 탑처럼 1×2 를 꽉 채운 원통(왼쪽 밝게·오른쪽 어둡게 세로 명암), 층마다 흉벽 테, 창 한두 점, 발치 문. 마법사 탑이면 꼭대기 뾰족 지붕.",
+ "palette_hint": "wstone 몸통, wroofb·wroofr 지붕",
+ "worker": "wv8"
+}

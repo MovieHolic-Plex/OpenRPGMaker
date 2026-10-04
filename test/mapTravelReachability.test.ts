@@ -5,7 +5,7 @@
 // 둘 다 놓쳤다(실측 6건, 게임이 완주 불가였다). 이 테스트는 실제 통행 판정으로 걸어서 확인한다.
 import { describe, expect, it } from "vitest";
 import { canMove } from "@/project/collision";
-import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { defaultTilesets } from "@/project/defaults/defaultAssets";
 import { createSkyStairProject, SKY_MAP, SKY_SWITCH } from "@/editor/content/skyStairGame";
 import {
@@ -21,7 +21,7 @@ const DUNGEON_TILESET_ID = "easyrpg_chipset_dungeon";
 describe("도달성 도구의 계약", () => {
   /** 두 칸 맵 두 개를 관문 하나로 이은 최소 프로젝트. 관문 칸의 통행성을 바꿔 가며 검사한다. */
   function twoMapProject(gateTile: number): Project {
-    const tileset = defaultTilesets()[DEFAULT_TILESET_ID]!;
+    const tileset = defaultTilesets()[COMBINED_TOWN_TILESET_ID]!;
     const makeMap = (id: string, gateAt: { x: number; y: number } | null, target?: string): GameMap => {
       const width = 4;
       const height = 3;
@@ -30,7 +30,7 @@ describe("도달성 도구의 계약", () => {
         name: id,
         width,
         height,
-        tilesetId: DEFAULT_TILESET_ID,
+        tilesetId: COMBINED_TOWN_TILESET_ID,
         tileSize: 16,
         lowerTiles: new Array<number>(width * height).fill(240), // 잔디 = 통행 가능
         upperTiles: new Array<number>(width * height).fill(-1),
@@ -61,7 +61,7 @@ describe("도달성 도구의 계약", () => {
         map_a: makeMap("map_a", { x: 3, y: 1 }, "map_b"),
         map_b: makeMap("map_b", null),
       },
-      tilesets: { [DEFAULT_TILESET_ID]: tileset },
+      tilesets: { [COMBINED_TOWN_TILESET_ID]: tileset },
     } as unknown as Project;
   }
 
@@ -161,9 +161,9 @@ describe("《천공의 계단》 7층을 실제로 걸어서 통과할 수 있�
 
   it("combined_town 층에서 dungeon 층까지 칩셋 단위로 물어도 닿는다", () => {
     const byTileset = mapIdsByTileset(project);
-    expect(byTileset[DEFAULT_TILESET_ID]?.length, "지상층이 combined_town 이 아니다").toBeGreaterThan(0);
+    expect(byTileset[COMBINED_TOWN_TILESET_ID]?.length, "지상층이 combined_town 이 아니다").toBeGreaterThan(0);
     expect(byTileset[DUNGEON_TILESET_ID]?.length, "지하층이 dungeon 이 아니다").toBeGreaterThan(0);
-    const result = canTravelBetweenTilesets(project, DEFAULT_TILESET_ID, DUNGEON_TILESET_ID, {
+    const result = canTravelBetweenTilesets(project, COMBINED_TOWN_TILESET_ID, DUNGEON_TILESET_ID, {
       openSwitches: allSwitches,
     });
     expect(

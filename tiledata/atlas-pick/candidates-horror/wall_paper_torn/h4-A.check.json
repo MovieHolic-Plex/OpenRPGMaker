@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/wall_paper_torn/h4-A.pxg",
+ "set": "horror",
+ "id": "wall_paper_torn",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.262
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.148
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 18,
+ "bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "note": "v5 벽(종이 22줄 + 벽널 8줄 + 갓돌) 그대로 낡힘: 다마스크 마름모, 종이 이음선, 위 물때 그늘, 오른쪽에 찢긴 한 자락이 말려 내려와 회반죽이 드러남",
+ "ok": true
+}

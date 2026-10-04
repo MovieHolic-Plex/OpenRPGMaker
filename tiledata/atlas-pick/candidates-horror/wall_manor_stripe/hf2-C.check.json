@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/wall_manor_stripe/hf2-C.pxg",
+ "set": "horror",
+ "id": "wall_manor_stripe",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.051
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.047
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "outline_black",
+   "dither"
+  ]
+ },
+ "colors": 15,
+ "bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "note": "C(벨벳 줄+비단 줄): 포도주 벨벳 줄 속에 덩굴 마름모, 크림 줄엔 가는 실 결, 벨벳 줄 가장자리 한 단 밝음/어둠",
+ "ok": true
+}

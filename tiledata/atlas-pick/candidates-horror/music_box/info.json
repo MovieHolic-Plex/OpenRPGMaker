@@ -1,0 +1,22 @@
+{
+ "id": "music_box",
+ "slug": "music_box",
+ "name": "오르골",
+ "scene": "낡은 서양 저택",
+ "cells": [
+  1,
+  1
+ ],
+ "canvas": [
+  16,
+  16
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "작은 나무 상자 오르골: 뚜껑이 열려 안쪽 거울·태엽 손잡이(옆), 뚜껑 위 작은 발레리나 인형(한 점 기둥 + 치마 점). 윗면이 보이는 각. 탁자 위에 올려도 되는 크기로 칸 아래쪽 2/3 안에.",
+ "palette_hint": "mahog 상자, murk 거울, tarn 태엽, bisque 인형",
+ "worker_v1": "h4",
+ "stage": 2,
+ "stage_ko": "2단계 연출(기본이 선 뒤)",
+ "worker": "h4"
+}

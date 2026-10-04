@@ -1,0 +1,23 @@
+{
+ "id": "timber_b",
+ "slug": "timber_b",
+ "name": "목조 2층집 B",
+ "scene": "성·마을",
+ "kind": "icon",
+ "cells": [
+  2,
+  3
+ ],
+ "canvas": [
+  32,
+  48
+ ],
+ "layer": "object",
+ "layer_ko": "위층 단품(그림자 포함)",
+ "under": "plains",
+ "under_ko": "평원 풀(plains_base 고른 판)",
+ "passage": "block",
+ "description": "6판: 2×3 좁고 높은 목조집, 굴뚝.",
+ "palette_hint": "wstone,wplast,wroofb,wroofr,wink",
+ "worker": "v6"
+}

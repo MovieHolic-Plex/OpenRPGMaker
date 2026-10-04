@@ -1,0 +1,23 @@
+{
+ "id": "cafeteria_table",
+ "slug": "cafeteria_table",
+ "name": "급식 식탁",
+ "scene": "급식실·매점",
+ "place": "in",
+ "cells": [
+  3,
+  2
+ ],
+ "canvas": [
+  48,
+  32
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "급식실 긴 식탁 + 양옆 긴 의자(또는 둥근 의자 넷) — 흰 상판(윗면 ¾), 쇠 다리. 식판을 올려놓을 자리를 비워 둔다.",
+ "palette_hint": "vwhite/cream 상판, locker 다리",
+ "pair": [
+  "meal_tray"
+ ],
+ "worker": "s3"
+}

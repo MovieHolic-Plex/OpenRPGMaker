@@ -1,0 +1,1427 @@
+/* 전투 화면 꾸미기(system.battleLook, project/battleLook.ts) — 도트 측면 전투 위의 화면 칸.
+   기본 프리셋 「도트 창」은 _retro2003.css 그대로이고, 이 파일은 칸 값이 다를 때만 덮는다(같은 DOM·격자).
+   루트 속성: data-battle-window(창 꾸밈) · data-battle-window-family(retro|modern) · data-look-party ·
+   data-look-command · data-look-field · data-look-turns · data-look-names · data-look-letterbox (player/battleLookDom.ts).
+   선택자는 _retro2003.css 보다 속성 하나가 더 많아 같은 모양의 규칙을 이긴다. 논리 좌표는 640×480. */
+
+/* ========================================================================
+   1. 창 꾸밈 — 고전 창(도트 창 속 그대로, 겉판만)
+   ======================================================================== */
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window="line"] {
+  --retro-window: rgba(0, 0, 0, 0.9);
+  --retro-frame: 0 0 0 3px #fff, 0 0 0 5px #000;
+  --retro-top: #000;
+  --retro-bottom: #000;
+  --retro-deep: #000;
+  --retro-accent: var(--battle-look-accent, #fff);
+  --retro-select: rgba(255, 255, 255, 0.14);
+  --retro-row: rgba(255, 255, 255, 0.08);
+  --retro-line: #9a9a9a;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window="teal"] {
+  --retro-window: linear-gradient(180deg, rgba(36, 86, 160, 0.92), rgba(10, 28, 70, 0.94));
+  --retro-frame: 0 0 0 2px #cfdcff, inset 0 0 0 2px #0a1a40;
+  --retro-top: #24569f;
+  --retro-bottom: #0a1c46;
+  --retro-deep: #081528;
+  --retro-accent: var(--battle-look-accent, #ffe066);
+  --retro-atb: #ffd84a;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window="pattern"] {
+  --retro-window: repeating-linear-gradient(45deg, #3b2a62 0 6px, #46337a 6px 12px);
+  --retro-frame: 0 0 0 3px #f4e8c8, 0 0 0 5px #120a24, inset 0 0 0 2px #120a24;
+  --retro-top: #3b2a62;
+  --retro-bottom: #2a1c48;
+  --retro-deep: #1a1030;
+  --retro-shade: #120a24;
+  --retro-accent: var(--battle-look-accent, #ffd36b);
+  --retro-select: rgba(255, 211, 107, 0.18);
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window="line"] .battle-command-panel,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window="line"] .battle-party,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window="line"] .battle-party:not(:has(> .battle-actor-status:nth-child(3))),
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window="line"] .battle-message-window,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window="line"] .battle-result-panel,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window="line"] .battle-enemy-list-panel {
+  border-radius: 10px;
+}
+
+/* ========================================================================
+   2. 창 꾸밈 — 현대 창(마름모 커서 · 가는 게이지 · 꾸밈 글꼴)
+   창마다 겉판 변수만 다르고 속은 같다.
+   ======================================================================== */
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window="ink"] {
+  --look-acc: var(--battle-look-accent, #d9b86c);
+  --look-text: #f4eedf;
+  --look-muted: #b8ac95;
+  --look-deep: #07060c;
+  --look-hair: linear-gradient(90deg, transparent, var(--look-acc) 24%, var(--look-acc) 76%, transparent);
+  --look-panel: var(--look-hair) top / 100% 1px no-repeat, var(--look-hair) bottom / 100% 1px no-repeat, linear-gradient(90deg, transparent, rgba(8, 7, 13, 0.82) 14%, rgba(8, 7, 13, 0.82) 86%, transparent);
+  --look-panel-frame: none;
+  --look-radius: 0;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window="gold"] {
+  --look-acc: var(--battle-look-accent, #e2c27a);
+  --look-text: #f6efdf;
+  --look-muted: #b9ab90;
+  --look-deep: #08070d;
+  --look-corner: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 26 26'%3E%3Cpath d='M2 24V8q0-6 6-6h16M6 24V11q0-5 5-5h13M2 2l5 5' fill='none' stroke='%23e2c27a' stroke-width='1.4'/%3E%3C/svg%3E");
+  --look-panel: linear-gradient(180deg, rgba(18, 14, 26, 0.9), rgba(8, 6, 12, 0.93));
+  --look-panel-frame: 0 0 0 1px color-mix(in srgb, var(--look-acc) 45%, transparent), inset 0 0 0 3px rgba(0, 0, 0, 0.45), inset 0 0 0 4px color-mix(in srgb, var(--look-acc) 24%, transparent), 0 6px 18px rgba(0, 0, 0, 0.55);
+  --look-radius: 2px;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window="parch"] {
+  --look-acc: var(--battle-look-accent, #8a3b1c);
+  --look-text: #3b2a14;
+  --look-muted: #7a5a2e;
+  --look-deep: #1d140a;
+  --look-text-shadow: none;
+  --look-panel: linear-gradient(180deg, #f3e6c6, #dcc293);
+  --look-panel-frame: 0 0 0 2px #7a5a2e, inset 0 0 0 3px #f7ecd4, inset 0 0 0 4px #9a7642, 0 6px 16px rgba(0, 0, 0, 0.45);
+  --look-radius: 3px;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window="veil"] {
+  --look-acc: var(--battle-look-accent, #ffffff);
+  --look-text: #ffffff;
+  --look-muted: #c4cad6;
+  --look-deep: #05070c;
+  --look-panel: rgba(4, 6, 12, 0.6);
+  --look-panel-frame: inset 0 1px 0 color-mix(in srgb, var(--look-acc) 60%, transparent);
+  --look-radius: 8px;
+  --look-blur-panel: blur(3px);
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window="soft"] {
+  --look-acc: var(--battle-look-accent, #ffcf5a);
+  --look-text: #eef4ff;
+  --look-muted: #a9b6cf;
+  --look-deep: #070b16;
+  --look-panel: rgba(14, 22, 40, 0.9);
+  --look-panel-frame: 0 0 0 1px rgba(170, 200, 255, 0.35), 0 6px 18px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  --look-radius: 14px;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window="pop"] {
+  --look-acc: var(--battle-look-accent, #e5262b);
+  --look-text: #ffffff;
+  --look-muted: #b5b5b5;
+  --look-deep: #0b0b0b;
+  --look-panel: #111;
+  --look-panel-frame: none;
+  --look-radius: 0;
+  --look-clip: polygon(0 5%, 100% 0, 98% 100%, 1.5% 95%);
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window="bare"] {
+  --look-acc: var(--battle-look-accent, #ffe7b0);
+  --look-text: #ffffff;
+  --look-muted: #cfc6b5;
+  --look-deep: #000;
+  --look-text-shadow: 0 1px 2px #000, 0 0 8px rgba(0, 0, 0, 0.95);
+  --look-panel: none;
+  --look-panel-frame: none;
+  --look-radius: 0;
+}
+
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"] {
+  --retro-accent: var(--look-acc);
+  --retro-mp: #a6d8ea;
+  --retro-atb: var(--look-acc);
+  --retro-deep: rgba(127, 127, 127, 0.25);
+  --retro-shade: rgba(0, 0, 0, 0.9);
+  --retro-pixel: 1px;
+  --retro-select: transparent;
+  --retro-row: transparent;
+  background-color: var(--look-deep);
+  color: var(--look-text);
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window="parch"] {
+  --retro-mp: #2f5f86;
+  --retro-shade: transparent;
+  --retro-pixel: 0px;
+}
+
+/* 아래 띠: 단색 판 대신 무대에서 아래로 짙어지는 그림자. */
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"]::before {
+  background: linear-gradient(180deg, transparent 0, color-mix(in srgb, var(--look-deep) 55%, transparent) 26%, color-mix(in srgb, var(--look-deep) 92%, transparent) 100%);
+  height: calc(var(--battle-hud-height) + 24px);
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"] .battle-field::before {
+  background: linear-gradient(180deg, transparent 62%, color-mix(in srgb, var(--look-deep) 55%, transparent) 86%, color-mix(in srgb, var(--look-deep) 95%, transparent) 100%);
+}
+
+/* 겉판 — 명령 · 파티 · 메시지 · 결과 · 적 이름 창 */
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"] .battle-command-panel,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"] .battle-party,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"] .battle-party:not(:has(> .battle-actor-status:nth-child(3))),
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"] .battle-message-window,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"] .battle-result-panel,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"] .battle-enemy-list-panel {
+  background: var(--look-panel);
+  border-radius: var(--look-radius);
+  box-shadow: var(--look-panel-frame);
+  backdrop-filter: var(--look-blur-panel, none);
+  clip-path: var(--look-clip, none);
+  color: var(--look-text);
+  text-shadow: var(--look-text-shadow, 0 1px 2px #000);
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window="gold"] .battle-command-panel,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window="gold"] .battle-message-window,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window="gold"] .battle-result-panel,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window="gold"] .battle-enemy-list-panel {
+  background:
+    var(--look-corner) left 2px top 2px / 18px 18px no-repeat,
+    var(--look-corner) right 2px top 2px / 18px 18px no-repeat,
+    var(--look-panel);
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window="ink"] .battle-command-panel,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window="ink"] .battle-enemy-list-panel {
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--look-acc) 38%, transparent), var(--look-acc) 26%, transparent) top / 100% 1px no-repeat,
+    linear-gradient(90deg, color-mix(in srgb, var(--look-acc) 38%, transparent), var(--look-acc) 26%, transparent) bottom / 100% 1px no-repeat,
+    linear-gradient(90deg, rgba(8, 7, 13, 0.82), rgba(8, 7, 13, 0.82) 72%, transparent);
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window="ink"][data-look-party="rows"] .battle-party,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window="ink"][data-look-party="rows"] .battle-party:not(:has(> .battle-actor-status:nth-child(3))),
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window="ink"][data-look-party="compact"] .battle-party,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window="ink"][data-look-party="compact"] .battle-party:not(:has(> .battle-actor-status:nth-child(3))) {
+  background:
+    linear-gradient(90deg, transparent, var(--look-acc) 30%, color-mix(in srgb, var(--look-acc) 38%, transparent)) top / 100% 1px no-repeat,
+    linear-gradient(90deg, transparent, var(--look-acc) 30%, color-mix(in srgb, var(--look-acc) 38%, transparent)) bottom / 100% 1px no-repeat,
+    linear-gradient(90deg, transparent 0, rgba(8, 7, 13, 0.82) 16%, rgba(8, 7, 13, 0.82) 100%);
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"] .battle-command,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"] .battle-target-menu .battle-command,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"] .battle-actor-name,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"] .battle-actor-hp,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"] .battle-actor-mp,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"] .battle-message-line,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"] .battle-enemy-name,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"] .battle-enemy-list-name,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"] .battle-actor-hp .battle-vital-max {
+  color: var(--look-text);
+  text-shadow: var(--look-text-shadow, 0 1px 2px #000);
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window="pop"] .battle-command,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window="pop"] .battle-message-line,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window="pop"] .battle-actor-name {
+  font-style: italic;
+  font-weight: 800;
+}
+
+/* 명령 — 장갑 대신 빛나는 마름모, 선택 줄은 가장자리로 흐려지는 띠 */
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"] .battle-command,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"] .battle-target-menu .battle-command {
+  padding: 0 6px 0 30px;
+  letter-spacing: 0.06em;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"] .battle-command-menu.battle-standard-root .battle-command {
+  padding: 0 4px 0 28px;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"] .battle-command-text strong,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"] .battle-command-menu.battle-standard-root .battle-command-text strong {
+  font-size: 19px;
+  font-weight: 500;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"] .battle-command:disabled {
+  color: var(--look-muted);
+  opacity: 0.6;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"] .battle-command:not(:disabled)[data-battle-command-cursor="true"],
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"] .battle-command:not(:disabled):focus-visible,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"] .battle-command:not(:disabled).battle-target-selected {
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--look-acc) 32%, transparent) 10%, transparent 90%);
+  color: var(--look-text);
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window="veil"] .battle-command:not(:disabled)[data-battle-command-cursor="true"],
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window="soft"] .battle-command:not(:disabled)[data-battle-command-cursor="true"] {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window="pop"] .battle-command:not(:disabled)[data-battle-command-cursor="true"],
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window="pop"] .battle-command:not(:disabled).battle-target-selected {
+  background: var(--look-acc);
+  color: #fff;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window="parch"] .battle-command:not(:disabled)[data-battle-command-cursor="true"],
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window="parch"] .battle-command:not(:disabled).battle-target-selected {
+  /* 글씨는 늘 짙은 갈색 — 강조색은 띠·마름모에만. 밝은 강조색(#ffcc44 등)을 글씨에 쓰면 크림 판 위에서 사라졌다(2026-10-02 조수 실측). */
+  background: color-mix(in srgb, var(--look-acc) 26%, transparent);
+  color: var(--look-text);
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"] .battle-command[data-battle-command-cursor="true"]::before,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"] .battle-command.battle-target-selected::before {
+  left: 11px;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  margin-top: -4px;
+  background: var(--look-acc);
+  box-shadow: 0 0 8px var(--look-acc);
+  transform: rotate(45deg);
+  image-rendering: auto;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window="veil"] .battle-command[data-battle-command-cursor="true"]::before,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window="soft"] .battle-command[data-battle-command-cursor="true"]::before {
+  width: 3px;
+  height: 18px;
+  margin-top: -9px;
+  transform: none;
+  box-shadow: none;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window="pop"] .battle-command[data-battle-command-cursor="true"]::before,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window="pop"] .battle-command.battle-target-selected::before,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window="parch"] .battle-command[data-battle-command-cursor="true"]::before {
+  box-shadow: none;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window="pop"] .battle-command[data-battle-command-cursor="true"]::before {
+  background: #fff;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"] .battle-command-menu:has(> .battle-submenu-header) .battle-command-text small,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"] .battle-target-ordinal {
+  background: transparent;
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--look-acc) 50%, transparent);
+  color: var(--look-acc);
+  font-size: 14px;
+  letter-spacing: 0.04em;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"] .battle-submenu-header {
+  color: var(--look-acc);
+  letter-spacing: 0.14em;
+}
+
+/* 파티 줄 목록 — 위 수치 + 아래 가는 게이지 */
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"][data-look-party="rows"] .battle-party .battle-actor-status,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"][data-look-party="rows"] .battle-party:not(:has(> .battle-actor-status:nth-child(3))) .battle-actor-status {
+  grid-template-areas:
+    "name state hpnum mpnum tp"
+    "name state hpbar mpbar tp";
+  grid-template-columns: minmax(0, 1fr) auto 104px 60px 56px;
+  grid-template-rows: 23px 9px;
+  column-gap: 10px;
+  padding: 0 0 0 18px;
+  border-bottom: 1px solid color-mix(in srgb, var(--look-acc) 16%, transparent);
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"][data-look-party="rows"] .battle-party .battle-actor-status:last-child {
+  border-bottom: 0;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"] .battle-party .battle-actor-name {
+  align-self: center;
+  font-size: 18px;
+  letter-spacing: 0.06em;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"] .battle-party .battle-actor-hp,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"] .battle-party .battle-actor-mp {
+  align-self: end;
+  font-size: 21px;
+  line-height: 22px;
+  font-variant-numeric: lining-nums tabular-nums;
+  justify-content: flex-end;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"] .battle-party .battle-actor-mp {
+  font-size: 17px;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"] .battle-party .battle-actor-hp .battle-vital-label,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"] .battle-party .battle-actor-mp .battle-vital-label {
+  display: inline;
+  margin-right: 5px;
+  color: var(--look-acc);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"] .battle-party .battle-actor-hp .battle-vital-max {
+  color: var(--look-muted);
+  font-size: 13px;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"] .battle-party .battle-stat-bar-hp,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"] .battle-party .battle-stat-bar-mp {
+  display: block;
+  align-self: start;
+  height: 3px;
+  margin-top: 2px;
+  border: 0;
+  background: rgba(127, 127, 127, 0.25);
+  box-shadow: none;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"] .battle-party .battle-stat-bar-hp::before {
+  background: linear-gradient(90deg, #b9b19a, #fff5da);
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"] .battle-party .battle-stat-bar-mp::before {
+  background: linear-gradient(90deg, #4c87a6, #b2e6f4);
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window="parch"] .battle-party .battle-stat-bar-hp::before {
+  background: linear-gradient(90deg, #8a3b1c, #c2662f);
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"] .battle-party .battle-stat-bar-hp[data-hp-state="mid"]::before {
+  background: linear-gradient(90deg, #b88a3a, #f3cf78);
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"] .battle-party .battle-stat-bar-hp[data-hp-state="low"]::before {
+  background: linear-gradient(90deg, #8e2f2f, #f07a62);
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"] .battle-party .battle-atb-bar,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"] .battle-party:not(:has(> .battle-actor-status:nth-child(3))) .battle-atb-bar {
+  height: 3px;
+  border: 0;
+  background: rgba(127, 127, 127, 0.25);
+  box-shadow: none;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"] .battle-atb-bar::before {
+  background: linear-gradient(90deg, color-mix(in srgb, var(--look-acc) 40%, transparent), var(--look-acc));
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"] .battle-atb-bar[style*="--battle-atb: 100%"]::before {
+  background: var(--look-acc);
+  box-shadow: 0 0 6px var(--look-acc);
+  animation: none;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"] .battle-actor-status.is-active-actor,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"] .battle-actor-status.battle-acting {
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--look-acc) 26%, transparent) 8%, transparent 78%);
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"] .battle-actor-status.is-active-actor::before {
+  left: 3px;
+  top: 50%;
+  width: 7px;
+  height: 7px;
+  margin-top: -4px;
+  clip-path: none;
+  background: var(--look-acc);
+  box-shadow: 0 0 6px var(--look-acc);
+  transform: rotate(45deg);
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"] .battle-actor-status.is-active-actor .battle-actor-name {
+  color: var(--look-text);
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"] .battle-message-window {
+  left: 14%;
+  right: 14%;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"] .battle-message-line {
+  font-size: 19px;
+  letter-spacing: 0.06em;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"] .battle-target-brackets::before {
+  content: "◆";
+  color: var(--look-acc);
+  font-size: 14px;
+  text-shadow: 0 0 6px rgba(0, 0, 0, 0.9);
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"] :is(.battle-enemy.battle-target-selected) .battle-enemy-chrome {
+  background: var(--look-panel);
+  box-shadow: var(--look-panel-frame);
+  border-radius: var(--look-radius);
+  padding: 2px 14px;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"] .battle-status-icon {
+  border: 1px solid color-mix(in srgb, var(--look-acc) 40%, transparent);
+  border-radius: 2px;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"] .battle-result-reward-card {
+  background: rgba(127, 127, 127, 0.08);
+  box-shadow: inset 0 -1px 0 color-mix(in srgb, var(--look-acc) 20%, transparent);
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"] .battle-result-confirm {
+  background: transparent;
+  color: var(--look-acc);
+  box-shadow: inset 0 0 0 1px var(--look-acc);
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="modern"] .battle-playback-status {
+  background: color-mix(in srgb, var(--look-deep) 85%, transparent);
+  box-shadow: none;
+}
+
+/* ========================================================================
+   3. 파티 상태
+   ======================================================================== */
+/* 상자형 공통 — 파티 판은 투명, 배우 행 하나하나가 창이 된다 */
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="compact"] .battle-party,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="compact"] .battle-party:not(:has(> .battle-actor-status:nth-child(3))),
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="cards"] .battle-party,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="cards"] .battle-party:not(:has(> .battle-actor-status:nth-child(3))),
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="boxesTop"] .battle-party,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="boxesTop"] .battle-party:not(:has(> .battle-actor-status:nth-child(3))),
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="boxesBottom"] .battle-party,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="boxesBottom"] .battle-party:not(:has(> .battle-actor-status:nth-child(3))),
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="mini"] .battle-party,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="mini"] .battle-party:not(:has(> .battle-actor-status:nth-child(3))),
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="tilt"] .battle-party,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="tilt"] .battle-party:not(:has(> .battle-actor-status:nth-child(3))) {
+  position: absolute;
+  grid-area: 1 / 1 / -1 / -1;
+  margin: 0;
+  z-index: 8;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="cards"] .battle-party,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="cards"] .battle-party:not(:has(> .battle-actor-status:nth-child(3))),
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="boxesTop"] .battle-party,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="boxesTop"] .battle-party:not(:has(> .battle-actor-status:nth-child(3))),
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="boxesBottom"] .battle-party,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="boxesBottom"] .battle-party:not(:has(> .battle-actor-status:nth-child(3))),
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="mini"] .battle-party,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="mini"] .battle-party:not(:has(> .battle-actor-status:nth-child(3))),
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="tilt"] .battle-party,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="tilt"] .battle-party:not(:has(> .battle-actor-status:nth-child(3))) {
+  display: flex;
+  gap: 6px;
+  padding: 0;
+  background: none;
+  box-shadow: none;
+  border-radius: 0;
+  clip-path: none;
+  backdrop-filter: none;
+  overflow: visible;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="cards"] .battle-party .battle-actor-status,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="cards"] .battle-party:not(:has(> .battle-actor-status:nth-child(3))) .battle-actor-status,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="boxesTop"] .battle-party .battle-actor-status,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="boxesTop"] .battle-party:not(:has(> .battle-actor-status:nth-child(3))) .battle-actor-status,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="boxesBottom"] .battle-party .battle-actor-status,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="boxesBottom"] .battle-party:not(:has(> .battle-actor-status:nth-child(3))) .battle-actor-status,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="mini"] .battle-party .battle-actor-status,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="mini"] .battle-party:not(:has(> .battle-actor-status:nth-child(3))) .battle-actor-status {
+  flex: 1 1 0;
+  min-width: 0;
+  height: 100%;
+  max-height: none;
+  overflow: hidden;
+  background: var(--look-panel, var(--retro-window));
+  box-shadow: var(--look-panel-frame, var(--retro-frame));
+  border-radius: var(--look-radius, 4px);
+  border-bottom: 0;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="cards"] .battle-actor-level,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="boxesTop"] .battle-actor-level,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="boxesBottom"] .battle-actor-level,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="mini"] .battle-actor-level,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="tilt"] .battle-actor-level,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="cards"] .battle-party .battle-actor-status::before,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="boxesTop"] .battle-party .battle-actor-status::before,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="boxesBottom"] .battle-party .battle-actor-status::before,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="mini"] .battle-party .battle-actor-status::before,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="tilt"] .battle-party .battle-actor-status::before {
+  display: none;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="cards"] .battle-actor-status.is-active-actor,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="boxesTop"] .battle-actor-status.is-active-actor,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="boxesBottom"] .battle-actor-status.is-active-actor,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="mini"] .battle-actor-status.is-active-actor {
+  box-shadow: var(--look-panel-frame, var(--retro-frame)), inset 0 0 0 2px var(--look-acc, var(--retro-accent));
+}
+
+/* 작은 창 — 오른쪽 아래, 이름 · HP · 행동 게이지만 */
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="compact"] .battle-party,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="compact"] .battle-party:not(:has(> .battle-actor-status:nth-child(3))) {
+  left: 347px;
+  right: 11px;
+  top: auto;
+  bottom: 11px;
+  height: auto;
+  padding: 4px;
+  grid-auto-rows: 24px;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="compact"][data-look-command="corner"] .battle-party,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="compact"][data-look-command="corner"] .battle-party:not(:has(> .battle-actor-status:nth-child(3))) {
+  left: 255px;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="compact"] .battle-party .battle-actor-status,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="compact"] .battle-party:not(:has(> .battle-actor-status:nth-child(3))) .battle-actor-status {
+  grid-template-areas: "name state hpnum tp";
+  grid-template-columns: minmax(0, 1fr) auto 72px 64px;
+  grid-template-rows: 24px;
+  height: 24px;
+  max-height: 24px;
+  border-bottom: 0;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="compact"] .battle-party .battle-actor-mp,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="compact"] .battle-party .battle-stat-bar-hp,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="compact"] .battle-party .battle-stat-bar-mp,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="compact"] .battle-party .battle-actor-hp .battle-vital-max,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="compact"] .battle-party .battle-actor-hp .battle-vital-label {
+  display: none;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="compact"] .battle-party .battle-actor-name,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="compact"] .battle-party .battle-actor-hp {
+  font-size: 17px;
+  line-height: 20px;
+  align-self: center;
+}
+
+/* 초상 카드 — 아래 줄, 얼굴 초상 + 이름 · HP · MP */
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="cards"] .battle-party,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="cards"] .battle-party:not(:has(> .battle-actor-status:nth-child(3))) {
+  left: 157px;
+  right: 9px;
+  top: auto;
+  bottom: 9px;
+  height: 67px;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="cards"][data-look-command="corner"] .battle-party,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="cards"][data-look-command="corner"] .battle-party:not(:has(> .battle-actor-status:nth-child(3))) {
+  left: 255px;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="cards"] .battle-party .battle-actor-status,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="cards"] .battle-party:not(:has(> .battle-actor-status:nth-child(3))) .battle-actor-status {
+  position: relative;
+  display: grid;
+  grid-template-areas: ". name" ". hpnum" ". hpbar" ". mpnum" ". mpbar";
+  grid-template-columns: 40px minmax(0, 1fr);
+  grid-template-rows: 17px 19px 3px 15px 3px;
+  column-gap: 0;
+  padding: 5px 10px 0 6px;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window="gold"][data-look-party="cards"] .battle-party .battle-actor-status,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window="ink"][data-look-party="cards"] .battle-party .battle-actor-status,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window="pop"][data-look-party="cards"] .battle-party .battle-actor-status {
+  clip-path: polygon(11px 0, 100% 0, calc(100% - 11px) 100%, 0 100%);
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="cards"] .battle-party .battle-actor-face,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="boxesTop"] .battle-party .battle-actor-face,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="tilt"] .battle-party .battle-actor-face {
+  display: block;
+  position: absolute;
+  left: 4px;
+  top: 0;
+  width: 56px;
+  height: 67px;
+  border-radius: 0;
+  box-shadow: none;
+  background-color: transparent;
+  background-image: var(--battle-face-url);
+  background-size: cover;
+  background-position: 50% 20%;
+  image-rendering: pixelated;
+  -webkit-mask-image: linear-gradient(90deg, #000 55%, transparent);
+  mask-image: linear-gradient(90deg, #000 55%, transparent);
+  z-index: 0;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="cards"] .battle-party .battle-actor-name,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="cards"] .battle-party .battle-actor-hp,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="cards"] .battle-party .battle-actor-mp {
+  position: relative;
+  z-index: 1;
+  justify-self: end;
+  align-self: center;
+  font-size: 15px;
+  line-height: 17px;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="cards"] .battle-party .battle-actor-hp {
+  font-size: 19px;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="cards"] .battle-party .battle-actor-hp .battle-vital-max,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="cards"] .battle-party .battle-actor-mp .battle-vital-max {
+  display: none;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="cards"] .battle-party .battle-actor-hp .battle-vital-label,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="cards"] .battle-party .battle-actor-mp .battle-vital-label {
+  display: inline;
+  margin-right: 4px;
+  font-size: 10px;
+  color: var(--look-acc, var(--retro-accent));
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="cards"] .battle-party .battle-stat-bar-hp,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="cards"] .battle-party .battle-stat-bar-mp {
+  display: block;
+  position: relative;
+  z-index: 1;
+  height: 3px;
+  border: 0;
+  margin: 0;
+  background: rgba(127, 127, 127, 0.3);
+  box-shadow: none;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="cards"] .battle-party .battle-actor-gauge,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="boxesTop"] .battle-party .battle-actor-gauge,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="boxesBottom"] .battle-party .battle-actor-gauge,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="mini"] .battle-party .battle-actor-gauge,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="tilt"] .battle-party .battle-actor-gauge {
+  position: absolute;
+  left: 44px;
+  right: 12px;
+  bottom: 2px;
+  height: 2px;
+  z-index: 1;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="boxesTop"] .battle-party .battle-actor-gauge,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="boxesBottom"] .battle-party .battle-actor-gauge,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="mini"] .battle-party .battle-actor-gauge {
+  left: 8px;
+  right: 8px;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="cards"] .battle-party .battle-actor-gauge .battle-atb-bar,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="boxesTop"] .battle-party .battle-actor-gauge .battle-atb-bar,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="boxesBottom"] .battle-party .battle-actor-gauge .battle-atb-bar,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="mini"] .battle-party .battle-actor-gauge .battle-atb-bar,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="tilt"] .battle-party .battle-actor-gauge .battle-atb-bar {
+  height: 2px;
+  border: 0;
+  box-shadow: none;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="cards"] .battle-party .battle-actor-status > .battle-status-icons,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="boxesTop"] .battle-party .battle-actor-status > .battle-status-icons,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="boxesBottom"] .battle-party .battle-actor-status > .battle-status-icons,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="mini"] .battle-party .battle-actor-status > .battle-status-icons,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="tilt"] .battle-party .battle-actor-status > .battle-status-icons {
+  position: absolute;
+  left: 4px;
+  top: 3px;
+  z-index: 2;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="cards"] .battle-party .battle-actor-status.is-active-actor {
+  transform: translateY(-6px);
+}
+
+/* 위 상자 — 파티를 화면 위 상자 넷에, 메시지는 아래로 */
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="boxesTop"] .battle-party,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="boxesTop"] .battle-party:not(:has(> .battle-actor-status:nth-child(3))) {
+  left: 64px;
+  right: 64px;
+  top: 8px;
+  bottom: auto;
+  height: 67px;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="boxesTop"] .battle-party .battle-actor-status,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="boxesTop"] .battle-party:not(:has(> .battle-actor-status:nth-child(3))) .battle-actor-status {
+  display: grid;
+  grid-template-areas: "name" "hpnum" "mpnum";
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: 22px 20px 20px;
+  padding: 2px 10px 0;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="boxesTop"] .battle-party .battle-actor-face {
+  display: none;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="boxesTop"] .battle-party .battle-actor-name {
+  justify-self: center;
+  font-size: 17px;
+  line-height: 20px;
+  border-bottom: 1px solid color-mix(in srgb, currentColor 35%, transparent);
+  padding: 0 8px;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="boxesTop"] .battle-party .battle-actor-hp,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="boxesTop"] .battle-party .battle-actor-mp {
+  display: flex;
+  justify-content: space-between;
+  font-size: 17px;
+  line-height: 20px;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="boxesTop"] .battle-party .battle-actor-hp .battle-vital-label,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="boxesTop"] .battle-party .battle-actor-mp .battle-vital-label {
+  display: inline;
+  font-size: 13px;
+  color: var(--look-acc, var(--retro-accent));
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="boxesTop"] .battle-party .battle-vital-max,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="boxesTop"] .battle-party .battle-stat-bar-hp,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="boxesTop"] .battle-party .battle-stat-bar-mp {
+  display: none;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="boxesTop"] .battle-message-window {
+  top: auto;
+  bottom: 11px;
+  left: 255px;
+  right: 11px;
+  height: 125px;
+  min-height: 125px;
+  align-content: start;
+  padding: 14px 18px;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="boxesTop"]:not([data-look-command="corner"]) .battle-message-window {
+  left: 11px;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="boxesTop"] .battle-message-line {
+  text-align: left;
+  white-space: normal;
+}
+
+/* 아래 상자 — 개인 상자, HP · MP 를 숫자판으로 */
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="boxesBottom"] .battle-party,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="boxesBottom"] .battle-party:not(:has(> .battle-actor-status:nth-child(3))) {
+  left: 108px;
+  right: auto;
+  top: auto;
+  bottom: 9px;
+  height: 75px;
+  width: 424px;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="boxesBottom"][data-look-command="corner"] .battle-party,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="boxesBottom"][data-look-command="corner"] .battle-party:not(:has(> .battle-actor-status:nth-child(3))) {
+  left: 255px;
+  width: 374px;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="boxesBottom"] .battle-party .battle-actor-status,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="boxesBottom"] .battle-party:not(:has(> .battle-actor-status:nth-child(3))) .battle-actor-status {
+  display: grid;
+  grid-template-areas: "name" "hpnum" "mpnum";
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: 22px 22px 22px;
+  padding: 3px 8px 0;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="boxesBottom"] .battle-party .battle-actor-name {
+  font-size: 16px;
+  line-height: 20px;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="boxesBottom"] .battle-party .battle-actor-hp,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="boxesBottom"] .battle-party .battle-actor-mp {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 15px;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="boxesBottom"] .battle-party .battle-actor-hp .battle-vital-label,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="boxesBottom"] .battle-party .battle-actor-mp .battle-vital-label {
+  display: inline;
+  font-size: 12px;
+  color: var(--look-acc, var(--retro-accent));
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="boxesBottom"] .battle-party .battle-vital-value {
+  min-width: 3.4ch;
+  padding: 0 3px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, #fff, #d8d2c2 45%, #fff 55%, #ece6d6);
+  box-shadow: inset 0 0 0 1px #6f6a60;
+  color: #1e1e1e;
+  text-align: right;
+  text-shadow: none;
+  letter-spacing: 0.14em;
+  font-family: var(--runtime-pixel-font);
+  font-variant-numeric: tabular-nums;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="boxesBottom"] .battle-party .battle-vital-max,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="boxesBottom"] .battle-party .battle-stat-bar-hp,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="boxesBottom"] .battle-party .battle-stat-bar-mp,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="boxesBottom"] .battle-party .battle-actor-face {
+  display: none;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="boxesBottom"] .battle-party .battle-actor-status.is-active-actor {
+  transform: translateY(-8px);
+}
+
+/* 위 작은 상자 — 오른쪽 위 2×2, 이름 · HP · 가는 게이지 */
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="mini"] .battle-party,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="mini"] .battle-party:not(:has(> .battle-actor-status:nth-child(3))) {
+  left: auto;
+  right: 11px;
+  top: 8px;
+  bottom: auto;
+  width: 233px;
+  height: auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="mini"] .battle-party .battle-actor-status,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="mini"] .battle-party:not(:has(> .battle-actor-status:nth-child(3))) .battle-actor-status {
+  display: grid;
+  grid-template-areas: "name hpnum" "hpbar hpbar" "mpbar mpbar";
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: 17px 3px 3px;
+  row-gap: 2px;
+  height: 36px;
+  padding: 4px 8px 0;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="mini"] .battle-party .battle-actor-name,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="mini"] .battle-party .battle-actor-hp {
+  font-size: 14px;
+  line-height: 17px;
+  align-self: center;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="mini"] .battle-party .battle-actor-mp,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="mini"] .battle-party .battle-vital-max,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="mini"] .battle-party .battle-vital-label,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="mini"] .battle-party .battle-actor-face {
+  display: none;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="mini"] .battle-party .battle-stat-bar-hp,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="mini"] .battle-party .battle-stat-bar-mp {
+  display: block;
+  height: 3px;
+  border: 0;
+  margin: 0;
+  background: rgba(127, 127, 127, 0.3);
+  box-shadow: none;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="mini"] .battle-message-window {
+  right: 252px;
+}
+
+/* 기울인 초상 — 오른쪽 아래 사선 초상 넷 */
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="tilt"] .battle-party,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="tilt"] .battle-party:not(:has(> .battle-actor-status:nth-child(3))) {
+  left: auto;
+  right: 13px;
+  top: auto;
+  bottom: 7px;
+  width: 290px;
+  height: 100px;
+  align-items: flex-end;
+  gap: 2px;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="tilt"] .battle-party .battle-actor-status,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="tilt"] .battle-party:not(:has(> .battle-actor-status:nth-child(3))) .battle-actor-status {
+  position: relative;
+  display: block;
+  flex: 1 1 0;
+  height: 92px;
+  max-height: none;
+  padding: 0;
+  overflow: visible;
+  background: #111;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  clip-path: polygon(8% 0, 100% 4%, 92% 100%, 0 96%);
+  transform: rotate(-6deg);
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="tilt"] .battle-party .battle-actor-status.is-active-actor {
+  height: 100px;
+  background: var(--look-acc, var(--retro-accent));
+  z-index: 2;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="tilt"] .battle-party .battle-actor-face {
+  width: 100%;
+  height: 72px;
+  left: 0;
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="tilt"] .battle-party .battle-actor-name {
+  position: absolute;
+  left: 6px;
+  bottom: 12px;
+  font: italic 800 12px/1 var(--battle-look-font, var(--runtime-pixel-font));
+  color: #fff;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="tilt"] .battle-party .battle-actor-hp,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="tilt"] .battle-party .battle-actor-mp {
+  position: absolute;
+  right: 8px;
+  bottom: 22px;
+  font-size: 12px;
+  line-height: 1;
+  color: #fff;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="tilt"] .battle-party .battle-actor-mp,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="tilt"] .battle-party .battle-vital-max,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="tilt"] .battle-party .battle-vital-label {
+  display: none;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="tilt"] .battle-party .battle-stat-bar-hp,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="tilt"] .battle-party .battle-stat-bar-mp {
+  display: block;
+  position: absolute;
+  left: 6px;
+  right: 10px;
+  bottom: 6px;
+  height: 3px;
+  border: 0;
+  margin: 0;
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow: none;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="tilt"] .battle-party .battle-stat-bar-mp {
+  bottom: 2px;
+}
+
+/* ========================================================================
+   4. 명령
+   ======================================================================== */
+/* 왼쪽 아래가 아니면 그 칸을 파티가 쓰고, 연출 중 적 이름 창도 띄우지 않는다(적 이름표 칸으로 대신). */
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"]:not([data-look-command="corner"]) .battle-enemy-list-panel {
+  display: none;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="rows"]:not([data-look-command="corner"]) .battle-party,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="rows"]:not([data-look-command="corner"]) .battle-party:not(:has(> .battle-actor-status:nth-child(3))) {
+  grid-column: 1 / -1;
+  margin: 8px;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"]:not([data-look-command="corner"]) .battle-command-host {
+  position: absolute;
+  grid-area: 1 / 1 / -1 / -1;
+  align-self: start;
+  justify-self: start;
+  height: auto;
+  margin: 0;
+  z-index: 14;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"]:not([data-look-command="corner"]) .battle-command-panel:has(> .battle-standard-root) {
+  grid-template-rows: auto;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"]:not([data-look-command="corner"]) .battle-command-menu.battle-standard-root {
+  grid-template-columns: minmax(0, 1fr);
+  max-height: none;
+  overflow: visible;
+}
+
+/* 캐릭터 옆 창 */
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-command="actor"] .battle-command-host {
+  --battle-command-row-height: 27px;
+  left: 290px;
+  top: 206px;
+  width: 156px;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-command="actor"] .battle-command-text strong,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-command="actor"] .battle-command-menu.battle-standard-root .battle-command-text strong {
+  font-size: 17px;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-command="actor"][data-look-letterbox="on"] .battle-command-host {
+  top: 178px;
+}
+
+/* 위쪽 가로 */
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-command="top"] .battle-command-host {
+  --battle-command-row-height: 26px;
+  left: 8px;
+  top: 8px;
+  width: 330px;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-command="top"] .battle-command-menu.battle-standard-root {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-command="top"] .battle-message-window {
+  left: 346px;
+}
+
+/* 사선 블록 — 루트 명령만. 하위 목록은 같은 자리의 창 */
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-command="fan"] .battle-command-host {
+  left: 288px;
+  top: 140px;
+  width: 210px;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-command="fan"] .battle-command-panel:has(> .battle-standard-root) {
+  background: none;
+  box-shadow: none;
+  clip-path: none;
+  backdrop-filter: none;
+  overflow: visible;
+  padding: 0;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-command="fan"] .battle-command-menu.battle-standard-root {
+  overflow: visible;
+  row-gap: 6px;
+  max-height: none;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-command="fan"] .battle-standard-root .battle-command {
+  justify-self: start;
+  width: auto;
+  height: 34px;
+  padding: 0 18px 0 44px;
+  background: #111;
+  color: #fff;
+  clip-path: polygon(4% 0, 100% 8%, 96% 100%, 0 90%);
+  font: italic 900 22px/1 var(--battle-look-font, var(--runtime-pixel-font));
+  text-shadow: none;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-command="fan"] .battle-standard-root .battle-command .battle-command-text strong {
+  font: inherit;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-command="fan"] .battle-standard-root .battle-command:nth-child(1) { transform: translateX(26px) rotate(-4deg); }
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-command="fan"] .battle-standard-root .battle-command:nth-child(2) { transform: translateX(0) rotate(3deg); }
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-command="fan"] .battle-standard-root .battle-command:nth-child(3) { transform: translateX(36px) rotate(-2deg); }
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-command="fan"] .battle-standard-root .battle-command:nth-child(4) { transform: translateX(10px) rotate(4deg); }
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-command="fan"] .battle-standard-root .battle-command:nth-child(5) { transform: translateX(46px) rotate(-3deg); }
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-command="fan"] .battle-standard-root .battle-command:not(:disabled)[data-battle-command-cursor="true"] {
+  background: var(--look-acc, var(--retro-accent));
+  height: 42px;
+  font-size: 28px;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-command="fan"] .battle-standard-root .battle-command[data-battle-command-cursor="true"]::before,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-command="fan"] .battle-standard-root .battle-command::before {
+  content: "";
+  left: 12px;
+  top: 50%;
+  width: 20px;
+  height: 20px;
+  margin-top: -10px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: none;
+  transform: none;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-command="fan"] .battle-standard-root .battle-command-icon {
+  display: block;
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  width: 16px;
+  height: 16px;
+  margin-top: -8px;
+  z-index: 1;
+  filter: invert(1);
+  opacity: 1;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-command="fan"] .battle-standard-root .battle-command:disabled {
+  opacity: 0.5;
+}
+
+/* 버튼 네 개 — 마름모. 다섯째 이후(도주 등)는 아래 작은 줄 */
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-command="keys"] .battle-command-host {
+  left: 360px;
+  top: auto;
+  bottom: 84px;
+  width: 152px;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-command="keys"] .battle-command-panel:has(> .battle-standard-root) {
+  background: none;
+  box-shadow: none;
+  clip-path: none;
+  backdrop-filter: none;
+  overflow: visible;
+  padding: 0;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-command="keys"] .battle-command-menu.battle-standard-root {
+  position: relative;
+  display: block;
+  height: 182px;
+  overflow: visible;
+  max-height: none;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-command="keys"] .battle-standard-root .battle-command {
+  position: absolute;
+  width: 52px;
+  height: 52px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--look-panel, var(--retro-window));
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--look-acc, #fff) 55%, transparent), 0 4px 10px rgba(0, 0, 0, 0.5);
+  text-align: center;
+  clip-path: none;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-command="keys"] .battle-standard-root .battle-command .battle-command-text strong {
+  font-size: 12px;
+  line-height: 1.1;
+  letter-spacing: 0;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-command="keys"] .battle-standard-root .battle-command:nth-child(1) { left: 50px; top: 0; }
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-command="keys"] .battle-standard-root .battle-command:nth-child(2) { left: 0; top: 50px; }
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-command="keys"] .battle-standard-root .battle-command:nth-child(3) { left: 50px; top: 100px; }
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-command="keys"] .battle-standard-root .battle-command:nth-child(4) { left: 100px; top: 50px; }
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-command="keys"] .battle-standard-root .battle-command:nth-child(n + 5) {
+  position: absolute;
+  left: 22px;
+  top: 158px;
+  width: 108px;
+  height: 22px;
+  border-radius: 11px;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-command="keys"] .battle-standard-root .battle-command::after {
+  position: absolute;
+  top: 6px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font: 700 9px/1 system-ui, sans-serif;
+  color: var(--look-acc, var(--retro-accent));
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-command="keys"] .battle-standard-root .battle-command:nth-child(1)::after { content: "Y"; }
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-command="keys"] .battle-standard-root .battle-command:nth-child(2)::after { content: "X"; }
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-command="keys"] .battle-standard-root .battle-command:nth-child(3)::after { content: "A"; }
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-command="keys"] .battle-standard-root .battle-command:nth-child(4)::after { content: "B"; }
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-command="keys"] .battle-standard-root .battle-command:not(:disabled)[data-battle-command-cursor="true"] {
+  background: var(--look-acc, var(--retro-accent));
+  color: #1a1205;
+  text-shadow: none;
+  transform: scale(1.12);
+  box-shadow: 0 0 0 2px #fff, 0 0 16px color-mix(in srgb, var(--look-acc, #fff) 80%, transparent);
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-command="keys"] .battle-standard-root .battle-command:not(:disabled)[data-battle-command-cursor="true"]::after {
+  color: #1a1205;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-command="keys"] .battle-standard-root .battle-command[data-battle-command-cursor="true"]::before {
+  display: none;
+}
+
+/* 아이콘 줄 — 아래 가운데 둥근 아이콘, 고른 것만 이름 */
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-command="icons"] .battle-command-host {
+  left: 168px;
+  top: auto;
+  bottom: 12px;
+  width: 300px;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-command="icons"] .battle-command-panel:has(> .battle-standard-root) {
+  background: none;
+  box-shadow: none;
+  clip-path: none;
+  backdrop-filter: none;
+  overflow: visible;
+  padding: 0;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-command="icons"] .battle-command-menu.battle-standard-root {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  height: 60px;
+  overflow: visible;
+  max-height: none;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-command="icons"] .battle-standard-root .battle-command {
+  position: relative;
+  flex: none;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #7a6036, #3a2810 70%);
+  box-shadow: 0 0 0 2px #e8c878, 0 4px 10px rgba(0, 0, 0, 0.5);
+  overflow: visible;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-command="icons"] .battle-standard-root .battle-command-icon {
+  display: block;
+  width: 22px;
+  height: 22px;
+  opacity: 1;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-command="icons"] .battle-standard-root .battle-command-text {
+  display: none;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-command="icons"] .battle-standard-root .battle-command:not(:disabled)[data-battle-command-cursor="true"] {
+  width: 52px;
+  height: 52px;
+  background: radial-gradient(circle at 35% 30%, #8a6c3c, #3a2810 70%);
+  box-shadow: 0 0 0 2px #fff, 0 0 14px color-mix(in srgb, var(--look-acc, #ffe066) 80%, transparent);
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-command="icons"] .battle-standard-root .battle-command[data-battle-command-cursor="true"] .battle-command-text {
+  display: block;
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 6px);
+  transform: translateX(-50%);
+  padding: 2px 12px;
+  white-space: nowrap;
+  background: var(--look-panel, var(--retro-window));
+  box-shadow: var(--look-panel-frame, var(--retro-frame));
+  border-radius: var(--look-radius, 4px);
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-command="icons"] .battle-standard-root .battle-command[data-battle-command-cursor="true"]::before {
+  display: none;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-command="icons"] .battle-standard-root .battle-command:disabled {
+  opacity: 0.45;
+}
+
+/* ========================================================================
+   5. 전장 크기 — 화면 끝까지: 무대 그림을 아래로 비춰 잇고, 앞쪽 땅은 흐리고 어둡게
+   배틀러 기하는 그대로다(배경 · 배틀러 무리의 높이를 1행에 고정).
+   ======================================================================== */
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-field="full"] {
+  background-color: #000;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-field="full"]::before {
+  display: none;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-field="full"] .battle-field {
+  grid-row: 1 / -1;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-field="full"] .battle-field > .battle-backdrop {
+  bottom: auto;
+  height: calc(100% - var(--battle-hud-height));
+  -webkit-box-reflect: below 0px;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-field="full"] .battle-field > .battle-enemy-group,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-field="full"] .battle-field > .battle-actor-group {
+  bottom: var(--battle-hud-height);
+  height: auto;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-field="full"] .battle-field::before {
+  inset: auto 0 0 0;
+  height: calc(var(--battle-hud-height) + 40px);
+  background: linear-gradient(180deg, transparent, rgba(5, 4, 9, 0.6) 30%, rgba(5, 4, 9, 0.86));
+  backdrop-filter: blur(calc(2px + var(--look-blur, 0) * 1.5px));
+  -webkit-mask-image: linear-gradient(180deg, transparent, #000 30%);
+  mask-image: linear-gradient(180deg, transparent, #000 30%);
+  z-index: 1;
+}
+
+/* ========================================================================
+   6. 무대 연출 — 빛내림 · 먼지 · 가장자리 어둡게 · 위아래 흐림 · 색보정
+   ======================================================================== */
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-backdrop {
+  filter: saturate(calc(1 + var(--look-grade, 0) * 0.18)) contrast(calc(1 + var(--look-grade, 0) * 0.08)) brightness(calc(1 - var(--look-grade, 0) * 0.07));
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-look-fx {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-look-fx > * {
+  position: absolute;
+  pointer-events: none;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-look-rays {
+  left: -18%;
+  top: -40%;
+  width: 82%;
+  height: 170%;
+  background: conic-gradient(from 150deg at 10% 0%, transparent 0deg, rgba(255, 236, 190, 0.22) 6deg, transparent 12deg, rgba(255, 236, 190, 0.13) 18deg, transparent 26deg, rgba(255, 236, 190, 0.17) 31deg, transparent 40deg);
+  mix-blend-mode: screen;
+  filter: blur(4px);
+  opacity: calc(var(--look-light, 0) * 0.5);
+  animation: battle-look-rays 7s ease-in-out infinite alternate;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-look-dust {
+  inset: 0;
+  opacity: calc(var(--look-dust, 0) * 0.5);
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-look-dust > i {
+  position: absolute;
+  width: var(--mote-size, 3px);
+  height: var(--mote-size, 3px);
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff6d6, rgba(255, 230, 160, 0) 70%);
+  opacity: 0;
+  animation: battle-look-dust linear infinite;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-look-vignette {
+  inset: 0;
+  background: radial-gradient(ellipse at 52% 46%, transparent 42%, rgba(0, 0, 0, 0.55) 78%, rgba(0, 0, 0, 0.85) 100%);
+  opacity: calc(var(--look-vignette, 0) * 0.5);
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-look-blur-top {
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 32%;
+  backdrop-filter: blur(calc(var(--look-blur, 0) * 1px));
+  -webkit-mask-image: linear-gradient(180deg, #000 45%, transparent);
+  mask-image: linear-gradient(180deg, #000 45%, transparent);
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-look-blur-bottom {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 18%;
+  backdrop-filter: blur(calc(var(--look-blur, 0) * 1px));
+  -webkit-mask-image: linear-gradient(180deg, transparent, #000 60%);
+  mask-image: linear-gradient(180deg, transparent, #000 60%);
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-field="full"] .battle-look-blur-bottom {
+  display: none;
+}
+@keyframes battle-look-rays {
+  from { transform: rotate(-2deg); }
+  to { transform: rotate(2deg); }
+}
+@keyframes battle-look-dust {
+  0% { opacity: 0; transform: translate(0, 0); }
+  15% { opacity: 0.9; }
+  100% { opacity: 0; transform: translate(20px, -120px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-look-rays,
+  .battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-look-dust > i {
+    animation: none;
+  }
+}
+
+/* ========================================================================
+   7. 차례 순서 줄 · 적 이름표 · 영화 띠
+   ======================================================================== */
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-turn-order {
+  position: absolute;
+  grid-area: 1 / 1 / -1 / -1;
+  align-self: start;
+  justify-self: start;
+  bottom: auto;
+  right: auto;
+  left: 12px;
+  top: 10px;
+  z-index: 13;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  pointer-events: none;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-turns="on"] .battle-message-window {
+  left: 292px;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="boxesTop"] .battle-turn-order {
+  top: 82px;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-command="top"] .battle-turn-order {
+  top: 80px;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-letterbox="on"] .battle-turn-order {
+  top: 44px;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-turn-chip {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background-color: #2a2233;
+  background-size: cover;
+  background-position: 50% 20%;
+  background-repeat: no-repeat;
+  box-shadow: 0 0 0 2px #1a1622, 0 0 0 3px color-mix(in srgb, var(--look-acc, var(--retro-accent)) 45%, transparent), 0 2px 6px rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font: 700 12px/1 var(--battle-look-font, var(--runtime-pixel-font));
+  image-rendering: pixelated;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-turn-chip.is-enemy {
+  box-shadow: 0 0 0 2px #2a1216, 0 0 0 3px #c0504a, 0 2px 6px rgba(0, 0, 0, 0.6);
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-turn-chip.is-sheet {
+  background-position: 0 0;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-turn-chip.is-current {
+  width: 38px;
+  height: 38px;
+  box-shadow: 0 0 0 2px #1a1622, 0 0 0 4px var(--look-acc, var(--retro-accent)), 0 0 12px color-mix(in srgb, var(--look-acc, var(--retro-accent)) 70%, transparent);
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-battle-window-family="retro"] .battle-turn-chip {
+  border-radius: 4px;
+}
+
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-names="on"] .battle-enemy:not(.defeated) .battle-enemy-chrome {
+  display: flex;
+  background: var(--look-panel, var(--retro-window));
+  box-shadow: var(--look-panel-frame, var(--retro-frame));
+  border-radius: var(--look-radius, 0);
+  backdrop-filter: none;
+  padding: 1px 12px;
+  top: calc(100% - 6px);
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-names="on"] .battle-enemy .battle-enemy-name {
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-look-letterbox {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 36px;
+  background: #000;
+  z-index: 30;
+  pointer-events: none;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-look-letterbox-top {
+  top: 0;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"] .battle-look-letterbox-bottom {
+  bottom: 0;
+  /* 아래 띠는 창 밑에 깔린다 — 위에 두면 줄 목록 파티의 마지막 줄·아래쪽 명령이 가려졌다(2026-10-02 조수 실측). */
+  z-index: 2;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-letterbox="on"] .battle-message-window {
+  top: 44px;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-letterbox="on"] .battle-playback-status {
+  top: 92px;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="boxesTop"] .battle-playback-status {
+  top: 82px;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="mini"] .battle-playback-status {
+  top: 98px;
+}
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="compact"][data-look-letterbox="on"] .battle-party,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="compact"][data-look-letterbox="on"] .battle-party:not(:has(> .battle-actor-status:nth-child(3))),
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="cards"][data-look-letterbox="on"] .battle-party,
+.battle-scene[data-battle-motion="retro"][data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-layout="sideview"][data-look-party="cards"][data-look-letterbox="on"] .battle-party:not(:has(> .battle-actor-status:nth-child(3))) {
+  bottom: 44px;
+}

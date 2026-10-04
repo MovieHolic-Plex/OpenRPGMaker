@@ -36,7 +36,7 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-function mount(percent: number, skin: "rm2000" | "rm2003" | "pokemon" = "rm2003") {
+function mount(percent: number, skin: "retro2003" | "pokemon" = "retro2003") {
   const project = createBlankProject();
   project.system.battleUiStyle = skin;
   project.system.battleModel = skin === "pokemon" ? "gen1" : "rm2k3";
@@ -93,9 +93,8 @@ describe("mounted enemy battlefield containment", () => {
   });
 
   it.each([
-    ["rm2003", 50, 200, 240, 216, 289.8],
-    ["rm2003", 100, 200, 240, 216, 289.8],
-    ["rm2000", 100, 200, 240, 320, 289.8],
+    ["retro2003", 50, 200, 240, 216, 289.8],
+    ["retro2003", 100, 200, 240, 216, 289.8],
     // f115c53bb moved the single enemy feet to logical (239, 92).
     ["pokemon", 100, 148, 148, 478, 227.4],
   ] as const)("preserves the existing %s dimensions and anchor at %s percent", (skin, percent, width, height, x, bottom) => {
@@ -118,7 +117,7 @@ describe("mounted enemy battlefield containment", () => {
     expect(box.bottom).toBeCloseTo(289.8);
   });
 
-  it.each(["rm2000", "rm2003", "pokemon"] as const)("fits 300 percent in %s and remains stable through hit/HUD synchronization", (skin) => {
+  it.each(["retro2003", "pokemon"] as const)("fits 300 percent in %s and remains stable through hit/HUD synchronization", (skin) => {
     const { node, field, runtime } = mount(300, skin);
     const before = geometry(node, skin === "pokemon" ? 148 : 200, skin === "pokemon" ? 148 : 240);
     // When: hit/idle and HP disclosure use the existing mounted render lifecycle.

@@ -1,0 +1,327 @@
+{
+ "side": "before",
+ "run": 1,
+ "load": "7.02 7.02 7.60",
+ "s1_cold": {
+  "readyMs": 39790,
+  "long": {
+   "count": 30,
+   "totalMs": 19651,
+   "top": [
+    {
+     "atMs": 20426,
+     "durMs": 9057
+    },
+    {
+     "atMs": 34499,
+     "durMs": 1980
+    },
+    {
+     "atMs": 29516,
+     "durMs": 1691
+    },
+    {
+     "atMs": 37462,
+     "durMs": 1335
+    },
+    {
+     "atMs": 1399,
+     "durMs": 1123
+    }
+   ]
+  },
+  "parse": {
+   "n": 496,
+   "ms": 1227,
+   "MB": 257.4
+  },
+  "netMB": 296.3,
+  "fetches": 16
+ },
+ "s1_warm": {
+  "readyMs": 18328,
+  "long": {
+   "count": 21,
+   "totalMs": 14496,
+   "top": [
+    {
+     "atMs": 4482,
+     "durMs": 9113
+    },
+    {
+     "atMs": 14122,
+     "durMs": 1919
+    },
+    {
+     "atMs": 2113,
+     "durMs": 612
+    },
+    {
+     "atMs": 3270,
+     "durMs": 506
+    },
+    {
+     "atMs": 16191,
+     "durMs": 471
+    }
+   ]
+  },
+  "parse": {
+   "n": 497,
+   "ms": 651,
+   "MB": 144.2
+  },
+  "netMB": 3.6,
+  "fetches": 12
+ },
+ "s1_warm2": {
+  "readyMs": 18039,
+  "long": {
+   "count": 21,
+   "totalMs": 13852,
+   "top": [
+    {
+     "atMs": 4606,
+     "durMs": 8724
+    },
+    {
+     "atMs": 13750,
+     "durMs": 1923
+    },
+    {
+     "atMs": 2890,
+     "durMs": 555
+    },
+    {
+     "atMs": 3564,
+     "durMs": 457
+    },
+    {
+     "atMs": 15750,
+     "durMs": 436
+    }
+   ]
+  },
+  "parse": {
+   "n": 497,
+   "ms": 544,
+   "MB": 144.2
+  },
+  "netMB": 3.6,
+  "fetches": 12
+ },
+ "canvas": {
+  "x": 346,
+  "y": 49,
+  "w": 676,
+  "h": 851
+ },
+ "tileId": "chipset-tile-126",
+ "s2_paintClickMs": 169,
+ "s2": {
+  "long": {
+   "count": 6,
+   "totalMs": 1655,
+   "top": [
+    {
+     "atMs": 42719,
+     "durMs": 910
+    },
+    {
+     "atMs": 50945,
+     "durMs": 298
+    },
+    {
+     "atMs": 45113,
+     "durMs": 238
+    },
+    {
+     "atMs": 42005,
+     "durMs": 81
+    },
+    {
+     "atMs": 42323,
+     "durMs": 68
+    },
+    {
+     "atMs": 44381,
+     "durMs": 60
+    }
+   ]
+  },
+  "saveFetches": [
+   {
+    "url": "/__oprn/bridge",
+    "method": "POST",
+    "reqKB": 0,
+    "atMs": 1556,
+    "respMs": 26
+   },
+   {
+    "url": "/__oprn/bridge",
+    "method": "POST",
+    "reqKB": 319,
+    "atMs": 3235,
+    "respMs": 5352
+   },
+   {
+    "url": "/__oprn/bridge",
+    "method": "POST",
+    "reqKB": 0,
+    "atMs": 4544,
+    "respMs": 4056
+   },
+   {
+    "url": "/__oprn/bridge",
+    "method": "POST",
+    "reqKB": 0,
+    "atMs": 8586,
+    "respMs": 67
+   },
+   {
+    "url": "/__oprn/bridge",
+    "method": "POST",
+    "reqKB": 0,
+    "atMs": 8652,
+    "respMs": 7
+   },
+   {
+    "url": "/__oprn/bridge",
+    "method": "POST",
+    "reqKB": 1,
+    "atMs": 9017,
+    "respMs": 20
+   }
+  ],
+  "stringify": {
+   "n": 1432052,
+   "MB": 29.4,
+   "ms": 0
+  },
+  "parse": {
+   "n": 4,
+   "ms": 18
+  },
+  "hot": [],
+  "top": [
+   [
+    3950.6,
+    "(program) :0:0"
+   ],
+   [
+    1297.1,
+    "kFt /assets/main-B0N4CzqN.js:106:53716"
+   ],
+   [
+    546.1,
+    "xFt /assets/main-B0N4CzqN.js:106:54423"
+   ],
+   [
+    234.7,
+    "JSON.stringify :33:16"
+   ],
+   [
+    131.8,
+    "(garbage collector) :0:0"
+   ]
+  ],
+  "busyMs": 7067
+ },
+ "s3": {
+  "dragOnlyMs": 3311,
+  "perMoveMedianMs": 141.9,
+  "perMoveMaxMs": 250.6,
+  "moves": 20,
+  "longAfter": {
+   "count": 26,
+   "totalMs": 2072,
+   "top": [
+    {
+     "atMs": 53037,
+     "durMs": 166
+    },
+    {
+     "atMs": 55080,
+     "durMs": 152
+    },
+    {
+     "atMs": 55426,
+     "durMs": 115
+    },
+    {
+     "atMs": 53684,
+     "durMs": 95
+    },
+    {
+     "atMs": 56030,
+     "durMs": 84
+    }
+   ]
+  },
+  "saveFetches": 7
+ },
+ "s4": {
+  "medianMs": 396,
+  "all": [
+   416,
+   468,
+   431,
+   384,
+   346,
+   396,
+   365,
+   377
+  ],
+  "longSumMedian": 478
+ },
+ "s5": {
+  "medianMs": 186,
+  "all": [
+   203,
+   184,
+   205,
+   218,
+   183,
+   224,
+   186,
+   175,
+   166,
+   174
+  ],
+  "longSumMedian": 185
+ },
+ "s6": {
+  "medianMs": 33,
+  "all": [
+   23,
+   33,
+   33,
+   33,
+   33,
+   33,
+   33,
+   33,
+   33,
+   33,
+   33,
+   33
+  ],
+  "longSumMedian": 66
+ },
+ "s7": {
+  "rafMs": 1185,
+  "settleMs": 1348,
+  "longSumMs": 1604,
+  "cards": 5897,
+  "gallery": true
+ },
+ "heap": {
+  "jsHeapUsedMB": 2484,
+  "jsHeapTotalMB": 2561,
+  "nodes": 70368,
+  "taskDurationS": 0,
+  "scriptDurationS": 0,
+  "layoutDurationS": 0,
+  "recalcStyleS": 0
+ }
+}

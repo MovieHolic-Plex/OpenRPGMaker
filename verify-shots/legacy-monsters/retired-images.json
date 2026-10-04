@@ -1,0 +1,1721 @@
+{
+  "removedImages": 343,
+  "removedBytes": 56190101,
+  "files": [
+    {
+      "path": "public/assets/generated/monsters/classic_blue_slime.jpg",
+      "bytes": 332229,
+      "sha256": "d6439c3d4f30a9785c2603666302b71cb418018bc2246c9b1e637fc040eb8dfa"
+    },
+    {
+      "path": "public/assets/generated/monsters/corrected/fire-pup.png",
+      "bytes": 101116,
+      "sha256": "5135188c721b035932a1eb08e7bedae271f998914e351bb9413c60064a2c3ea6"
+    },
+    {
+      "path": "public/assets/generated/monsters/corrected/leaf-fox.png",
+      "bytes": 120540,
+      "sha256": "d974105acb3903202057dd1d878ef509aad8c93bdfdfcf7f8f52a13760667376"
+    },
+    {
+      "path": "public/assets/generated/monsters/corrected/orc-shaman.png",
+      "bytes": 95693,
+      "sha256": "d28397017631b6b7f14e1fc5af42782debded35a05142516cff5b10bc3395ec8"
+    },
+    {
+      "path": "public/assets/generated/monsters/corrected/skeleton-archer.png",
+      "bytes": 47903,
+      "sha256": "51269103b5b6bac393a287f3fb7756bbd66d972b5d09ce5fa1708abcffae9f4a"
+    },
+    {
+      "path": "public/assets/generated/monsters/corrected/sparkit-fire.png",
+      "bytes": 82197,
+      "sha256": "f1062d23b1c6d24439aa55384f6afd57ea31e64111c1552f17a4d9719a363bee"
+    },
+    {
+      "path": "public/assets/generated/monsters/corrected/spirit-earth.png",
+      "bytes": 114083,
+      "sha256": "38d808de93382c5b0e31c371557318af7bcbde8737ee9c04c1d061b4bd3e8872"
+    },
+    {
+      "path": "public/assets/generated/monsters/corrected/spirit-fire.png",
+      "bytes": 70845,
+      "sha256": "a8594526daef4eba373259656e96112b4168eb4f52b566858cc4f314d92c4fc8"
+    },
+    {
+      "path": "public/assets/generated/monsters/corrected/spirit-water.png",
+      "bytes": 128912,
+      "sha256": "2884b1d4a289af9e39e2e14fb172e5f428eb64f795c17dc2b0026b4240c39763"
+    },
+    {
+      "path": "public/assets/generated/monsters/corrected/wisp-blue.png",
+      "bytes": 64375,
+      "sha256": "9cdea5ebd6e17209b07f797fc81f08afa0185f892d6e169c82aa49400c5e6fc7"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-001.png",
+      "bytes": 1690,
+      "sha256": "65b7480a990bf8815aef03aa27660b0465ab5914211fdbdcdc34e09b90030909"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-002.png",
+      "bytes": 1650,
+      "sha256": "550ff3f16fd4c0ca26673b1a2a936edcd8c91de610ebcdc26bffc4fa13dc484c"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-003.png",
+      "bytes": 1656,
+      "sha256": "e87e3f53da70e5cee634b2aebfa6811ba5e3f87862d82c64785903da4121f8ec"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-004.png",
+      "bytes": 1651,
+      "sha256": "d4531918bf291fb9dc04b98a8269011aa5a3d734fffc77ea54d2ffae5227cbb7"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-005.png",
+      "bytes": 1640,
+      "sha256": "b4ad30e0de3ede20d55326d2cd03b9c8c1947227417918204560da1151b7ac00"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-006.png",
+      "bytes": 1635,
+      "sha256": "d56802b29045b1ab7c49eabd42647b0e9d387661978f690d793dcade6c91dc69"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-007.png",
+      "bytes": 1658,
+      "sha256": "9292941e995f26621e6ebbc502aa8c12c9522458582800389d81fc9889be54d4"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-008.png",
+      "bytes": 1629,
+      "sha256": "244acf5cbfdd8da539373dfaf2d1fb6a696a9747fcd23ec92727636f368fd16f"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-009.png",
+      "bytes": 1633,
+      "sha256": "642e784356008a10e6e33d0a2a5bc438c7050bdd4e1beed97d0a8257de7ded72"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-010.png",
+      "bytes": 1634,
+      "sha256": "7799ba330aca3c02d38dfc9cc36b4a04e6ea286407e57b5af9e4fab1c06ffdd7"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-011.png",
+      "bytes": 1636,
+      "sha256": "fe4bc75cf0380c46abff983768f216c95dbb9819d4e71dc51de36b6880272dc1"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-012.png",
+      "bytes": 1620,
+      "sha256": "0271468cca64ea662ea32c5ee2836db12015da989754dbee0343e290d564931a"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-013.png",
+      "bytes": 1565,
+      "sha256": "cb8a870dbb0636d100466934ce5e260d1e388262ea53ff2bb34067bb6cfcff38"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-014.png",
+      "bytes": 1537,
+      "sha256": "85eeaa6df682e79b12f11c6648fc6c7073cababd2bb27bca5c3ef1ac0eff2114"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-015.png",
+      "bytes": 1547,
+      "sha256": "032a1c6ed34a23c351805592e5f2af8eb13a5f015456e466ccf240fe5ab32530"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-016.png",
+      "bytes": 1642,
+      "sha256": "d6ef63acb4de6e5720ea04e7c4fe812b40e0abbb415f8f198921b5b5932a264b"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-017.png",
+      "bytes": 1636,
+      "sha256": "17100d5d07f606bf699c290093d882be1d7e86b22a36a7e531d66775b4906393"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-018.png",
+      "bytes": 1646,
+      "sha256": "22eb56ad727106b85f0b1218e0c65c1a53c63f4ca83d6a8c27878356aa3cef93"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-019.png",
+      "bytes": 1673,
+      "sha256": "9c89204b08fd6f3f3b8d953eb092061733d8eed0bb134876be5d8efadc2bed25"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-020.png",
+      "bytes": 1681,
+      "sha256": "97eb0137c070f671033f8af70988e1b441ab6e0212b0e57b2ce41359a5807fe0"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-021.png",
+      "bytes": 1667,
+      "sha256": "6cfd76072c4ba3a90beddeface4183cffd52aabf33ae0578e371566560d8cdef"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-022.png",
+      "bytes": 1666,
+      "sha256": "2f6ec642d86daa99f318e3d417da5f9f68ef0d438260a5826e5c0b2d30c6a4bc"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-023.png",
+      "bytes": 1653,
+      "sha256": "7496c5e00905cc2df4dfd4f987e8b7341625eb1bbde4024588a40a7b9c07478a"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-024.png",
+      "bytes": 1661,
+      "sha256": "e22e5697d9b481b99205ed2b2c1544f063b86fb6102d53bc77abc9b76544e697"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-025.png",
+      "bytes": 1646,
+      "sha256": "55738616a2472aa8e055f14e8e821d1c6e4bf003732c8d6614de279c6a1009b9"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-026.png",
+      "bytes": 1660,
+      "sha256": "8f4c3dabd378d56a08b417222aa2741cc6d76715ce187d10c42459b078a77306"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-027.png",
+      "bytes": 1684,
+      "sha256": "9e53c5c7e1c212a9292b2e007e390ce32642cdb7e7ac5b37b7ae8b716d3466e9"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-028.png",
+      "bytes": 1687,
+      "sha256": "ef8c7418bc49bfa76b20c0f05886c915a4454fd8715922c6b219050db0f84b97"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-029.png",
+      "bytes": 1678,
+      "sha256": "25eebf98fec07af1aa2825ae4a0e2cf0234b047469991848d53fca482530bf04"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-030.png",
+      "bytes": 1619,
+      "sha256": "d47c257bf9ccab3c702e63c4fa3d900ecc9d269ef8890cb8f87b75d69546d226"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-031.png",
+      "bytes": 1658,
+      "sha256": "5e44a02b0323fdc69dc69f6312eefb5f15d46d335181de377c0ccbccc8a75c82"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-032.png",
+      "bytes": 1671,
+      "sha256": "39886705c19aa00d3103f5cd2fecc52bd223d267915945793a234e5dc25dbaa9"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-033.png",
+      "bytes": 1638,
+      "sha256": "4eca8ffec2964cce180f743635a118b66fd8f635650bb408b2cf4021ae5f759a"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-034.png",
+      "bytes": 1666,
+      "sha256": "16768b7c9233a98d78e13ffda1beff0141fd5dbdfdc93f69c24bb578fcadd52e"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-035.png",
+      "bytes": 1680,
+      "sha256": "5d4487965684c36da9a6cd74b1ec10e3cab6ce9147f0807033e2d7fa3201f782"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-036.png",
+      "bytes": 1698,
+      "sha256": "5fe94d41316bf8e2b5e7d125b0198f962f7afef74a04adf4f8ed77c260c7af26"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-037.png",
+      "bytes": 1697,
+      "sha256": "e89510bb959bb71d3da98acf89f0116156074da3d1b1e00da9da203ef7f4bb5a"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-038.png",
+      "bytes": 1650,
+      "sha256": "b5fb54574e8bd414300bdd9f6a3b550438fa02833693669021c050aac0adfda5"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-039.png",
+      "bytes": 1650,
+      "sha256": "4119c165e65de9848f9d676620f5391954f3314a395f9097cc404f78e07f3458"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-040.png",
+      "bytes": 1565,
+      "sha256": "9a349420d9d5626373ad6723a36c84ded8ab2464da35fcf6da368d382b8393c6"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-041.png",
+      "bytes": 1555,
+      "sha256": "09aebe8f245168e5e8361347aa9a46870bf48864d9a86198094969ef95d35b09"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-042.png",
+      "bytes": 1564,
+      "sha256": "2c04c79e4acda2df24c2ddd0cfac07c6ca022162da6ba638ffa4518f39a9ab8f"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-043.png",
+      "bytes": 1587,
+      "sha256": "e212aa851b1480494cf2fd4cda932895a0f26c952ea98260ebd3eb8349b9bcfe"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-044.png",
+      "bytes": 1629,
+      "sha256": "1edb5608a0cb54fdacdb19aa6e488a44a9dc18c654a20a61472eeef5ff70f447"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-045.png",
+      "bytes": 1645,
+      "sha256": "51546429cc1e8cbbb0ba94d66d19f3e3ab24d93b0d2f065421e32ccdd241480c"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-046.png",
+      "bytes": 1671,
+      "sha256": "74e8abd21237fe7b0f3060b78d3b8ffd6cb044c5e85437d9527517962fb71d91"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-047.png",
+      "bytes": 1699,
+      "sha256": "f57f6882b3a8b8bf8bec3309c7ff397200861dfa67e1cbd1af1731829eb195ac"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-048.png",
+      "bytes": 1689,
+      "sha256": "9aa706d6afee779ba0ea1a72c8f194027b003c18ba4e2194570fa66bdcd73861"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-049.png",
+      "bytes": 1691,
+      "sha256": "aa62491f20bb6800607ad46be93d5b4ee2f943d492734807e9a734243904efe1"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-050.png",
+      "bytes": 1688,
+      "sha256": "173de782dad594404d4485790a8b2acabff0d1c00c1011df08251c7d48a6e839"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-051.png",
+      "bytes": 1688,
+      "sha256": "0e7b0a6754e8d07203171e8ac98fe4aa5cb1bdcf95b89d88594ba262fb8a6b86"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-052.png",
+      "bytes": 1689,
+      "sha256": "f7c341e6720b8f36f455cd3b3bcbf36d661f6acc9b10027a17b85c33fc9224eb"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-053.png",
+      "bytes": 1635,
+      "sha256": "0a6965c6410b9909eb5fd886317d9ed220a90f434739231bbab1142480fdb657"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-054.png",
+      "bytes": 1629,
+      "sha256": "00584c1dd818eff9db6a2534a1cf5805eac322c1d2ea1e617bcbe5928ec27d2f"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-055.png",
+      "bytes": 1535,
+      "sha256": "34ce44c082e4217422d54e39680cdeb4902f3824aa9cec5844939876c463e467"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-056.png",
+      "bytes": 1563,
+      "sha256": "6d7f7cfa91216870d5e2c05da22582707d0116a8415cd3998cd383809d833d0c"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-057.png",
+      "bytes": 1593,
+      "sha256": "7bbef76624577330a1105ac24221b2864019f69170235e97329ae175f23dbc0c"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-058.png",
+      "bytes": 1625,
+      "sha256": "659ee405837f15a8b090fa685f10975c24d9c0729cdb0ed1a43d93975c4b1f3d"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-059.png",
+      "bytes": 1632,
+      "sha256": "487b1ae19976c21610468df63aa7d6021f3f1b76f4b88ea68674e2e4c717767a"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-060.png",
+      "bytes": 1614,
+      "sha256": "ca0e5bd322360d0ddb11d540a6549def63ba3fb88a732328396f64050985931b"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-061.png",
+      "bytes": 1620,
+      "sha256": "8e627ca1a9e3d342272457fdd64dae9874d5527bd43b4dfd52145573e150253e"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-062.png",
+      "bytes": 1616,
+      "sha256": "c692d0dd51751351cadd9b6970c3c163a26622fa3c31d5abce4a6ae336395c77"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-063.png",
+      "bytes": 1680,
+      "sha256": "ea4b521a51d16623958c43212b2506fa99ec2ca3e236a9c2c3dd5b43375a29df"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-064.png",
+      "bytes": 1665,
+      "sha256": "63572739cfa9c2432e75a15b5de1577e130f9bc3afcb9964ffb207b1596f2c88"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-065.png",
+      "bytes": 1651,
+      "sha256": "96feda8a148ec7b5a0fca150f1ad53f7995495de299ed4b53f0202159840568d"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-066.png",
+      "bytes": 1657,
+      "sha256": "6536e6dd19f15a8dd0e0ad26f3f1ae50edba9ba8b2efc83a97f0392abbd78e20"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-067.png",
+      "bytes": 1667,
+      "sha256": "b6f547ef2485c19ea7219f39bd17b63406bd78a509a1d29f421d82d56cd05548"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-068.png",
+      "bytes": 1643,
+      "sha256": "a5e4cd28214c541f3e184a84c0420451b1ca51960b6544bae6ba8463cc52a7de"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-069.png",
+      "bytes": 1662,
+      "sha256": "dd397de97f1f979b1b6e8b9bae84ba0951ffe4f20fb75a226cc85d5592110688"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-070.png",
+      "bytes": 1684,
+      "sha256": "6e17b3d8e531d21ac5a7b1b44c562b68ed19d282eda5421aad1f612394fe5ecc"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-071.png",
+      "bytes": 1640,
+      "sha256": "da47ef8df049549ac78d3ec58e1f10d14c4738d190b50653508cf03e167d613a"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-072.png",
+      "bytes": 1636,
+      "sha256": "82aabd38bf33ba5c8fcac2598e5d71ca325efcff497a92a721cae4c7b0b56a67"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-073.png",
+      "bytes": 1643,
+      "sha256": "5fa7b7020ed8302e6e49dbe4d3c77afdf32b41096d3ecc83d7f05cf58eec555a"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-074.png",
+      "bytes": 1572,
+      "sha256": "ba9a4cd8a27ef5647ed29217e269baca2c6af998c1e642698bbfd89a4c75b967"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-075.png",
+      "bytes": 1547,
+      "sha256": "6482124df3cb6248069bddc08e6079349376f25c88e8cb1696ddcc46bbf1aa6f"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-076.png",
+      "bytes": 1531,
+      "sha256": "31fba83523044d88359e11ece1810e798e2bb88fff195b5204ca770593e9febe"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-077.png",
+      "bytes": 1543,
+      "sha256": "1bcbcd6fd7dab05ced355ff729227a1ba4f923c3e400ef9dd98642b119712f1d"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-078.png",
+      "bytes": 1570,
+      "sha256": "a8733539dd4012d4f09017c9448b36c524f5b0777007087ed0e0510181601368"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-079.png",
+      "bytes": 1634,
+      "sha256": "591962c6b95707142d0622e45d14d01e4f8a7f744b107604e8cbf4df533df752"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-080.png",
+      "bytes": 1657,
+      "sha256": "2f8dd21796a0017bb61dead20837a98b9a4f4d8e02af9b7de4b872781d405f2f"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-081.png",
+      "bytes": 1681,
+      "sha256": "782f85c97b78abac3cc29db0363d66ef03311ce4e5a26cde5d339ef995913a7f"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-082.png",
+      "bytes": 1658,
+      "sha256": "2760829f9422bc8e464acf0a66d2d62433b9a030d12e16583b75273a9b200e53"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-083.png",
+      "bytes": 1631,
+      "sha256": "01f74a83e5c10cc10bd5c2c4552d04e1c64b4162493e3b6278f01fd098d92efb"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-084.png",
+      "bytes": 1625,
+      "sha256": "d159a29f2cef8221e74330ad5a4cc2d53d81fc2df4c6e0dfd697f4219b3d2051"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-085.png",
+      "bytes": 1692,
+      "sha256": "d90976b417537a60e4c9b3a97a3f7140516fcf0c2f5c8c57f3406c5ac0248378"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-086.png",
+      "bytes": 1656,
+      "sha256": "6f627df0960ae6fc736e7ebb2c2d0b3899612da9fff81eb91544138ef3f9c456"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-087.png",
+      "bytes": 1625,
+      "sha256": "aae4a5eb7598154be5a8bbe7c709f51e96bee64ca40677b67d7f59c0aac196fb"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-088.png",
+      "bytes": 1631,
+      "sha256": "b9b5c755df57880c2b492e2ec8fd927e700b247378bc7034d915a9d67b18949e"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-089.png",
+      "bytes": 1651,
+      "sha256": "6854b4c1cba721362ffaea180bdaf64df9b020c9f3e9d666d1b0524d2c4ad5e3"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-090.png",
+      "bytes": 1656,
+      "sha256": "e1402a392a71d472602db70abd512469f3652b382a5467f3176e778aaa1e6d92"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-091.png",
+      "bytes": 1652,
+      "sha256": "de05615f461a72037da7dbcafab0fb886e3a98a1fb85210eae01398f14fac618"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-092.png",
+      "bytes": 1627,
+      "sha256": "a3f12240f24c0e1e074cee7a136d9fa4f420b0db29a5fe3fe10f3855e27b4070"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-093.png",
+      "bytes": 1625,
+      "sha256": "aae4a5eb7598154be5a8bbe7c709f51e96bee64ca40677b67d7f59c0aac196fb"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-094.png",
+      "bytes": 1657,
+      "sha256": "d36b608c50609133477496363581250504d917836e924efeeb30e2655db65919"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-095.png",
+      "bytes": 1691,
+      "sha256": "2d08da172d64c15c7aa24a23f93cbe1d608024c4b901310081d81f6bfa2b320c"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-096.png",
+      "bytes": 1625,
+      "sha256": "d159a29f2cef8221e74330ad5a4cc2d53d81fc2df4c6e0dfd697f4219b3d2051"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-097.png",
+      "bytes": 1633,
+      "sha256": "d48b54ad87015e0d6646baa4b6a2f684704686ba1e7302a7f3e0089ef08a56e7"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-098.png",
+      "bytes": 1657,
+      "sha256": "c2f627e356a1a9627fcb1a8e83482746c598ca2fe2e43dcc063571e27b7b1429"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-099.png",
+      "bytes": 1681,
+      "sha256": "782f85c97b78abac3cc29db0363d66ef03311ce4e5a26cde5d339ef995913a7f"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-100.png",
+      "bytes": 1663,
+      "sha256": "016944cd0147197d27d67716326117abb7cb44b051376e3c4e1390dfcee8c553"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-101.png",
+      "bytes": 1629,
+      "sha256": "b8f02df7305952b92129485cc997c36103fc5bed18a5e89906edef5907c30415"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-102.png",
+      "bytes": 1570,
+      "sha256": "a8733539dd4012d4f09017c9448b36c524f5b0777007087ed0e0510181601368"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-103.png",
+      "bytes": 1548,
+      "sha256": "dfcd355e000f76740be6b2cf55712145e7f130f0eb93bd354798af8f8354eaba"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-104.png",
+      "bytes": 1526,
+      "sha256": "3c2b6c3047e754e840fa30263b87e05f8806221a029a0711912fa29e0d9e2dac"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-105.png",
+      "bytes": 1547,
+      "sha256": "6482124df3cb6248069bddc08e6079349376f25c88e8cb1696ddcc46bbf1aa6f"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-106.png",
+      "bytes": 1573,
+      "sha256": "1aeca4d6a3fd656697188a0b198d079596c878ffced4c188b498d70e490d92c2"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-107.png",
+      "bytes": 1637,
+      "sha256": "f848cfdc09df13c0724df949446b182369ae5497b97db3f14fdc2afb669f1982"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-108.png",
+      "bytes": 1636,
+      "sha256": "82aabd38bf33ba5c8fcac2598e5d71ca325efcff497a92a721cae4c7b0b56a67"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-109.png",
+      "bytes": 1643,
+      "sha256": "2783564665c4c0cf9761ba9060bbda27aaf9de1c24adc3dfd3ea0d43ada34994"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-110.png",
+      "bytes": 1681,
+      "sha256": "6ebb43a04095f55cd5047cef75a7e070960f98689e1124cfb9bfce90828e15f8"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-111.png",
+      "bytes": 1662,
+      "sha256": "dd397de97f1f979b1b6e8b9bae84ba0951ffe4f20fb75a226cc85d5592110688"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-112.png",
+      "bytes": 1645,
+      "sha256": "7f239bb870eec81008126def1410b01a8d5699f15e42360d2245353efe3c3e75"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-113.png",
+      "bytes": 1665,
+      "sha256": "912f71aab089c3672030bdde792d1896c67fbbe8683033cd4ca2b24fb733d5fb"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-114.png",
+      "bytes": 1657,
+      "sha256": "6536e6dd19f15a8dd0e0ad26f3f1ae50edba9ba8b2efc83a97f0392abbd78e20"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-115.png",
+      "bytes": 1655,
+      "sha256": "f37d0df60a3458f9a982a0fd5e0c80a9e15240025e267c4b05bc8a78cb093aef"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-116.png",
+      "bytes": 1662,
+      "sha256": "5ad9d982cfa289a5fa6cd4a7441859cac48f20bb707fec3029382fc36bde7ab1"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-117.png",
+      "bytes": 1680,
+      "sha256": "ea4b521a51d16623958c43212b2506fa99ec2ca3e236a9c2c3dd5b43375a29df"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-118.png",
+      "bytes": 1618,
+      "sha256": "fd778084454d00783ebf8562b21800cc8dfad52c9c535ad7fd0068ac029a00b8"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-119.png",
+      "bytes": 1618,
+      "sha256": "c518f6717e16d00aee9f9b2e00f34086d45d4e04fc53c349f50ea5d624800df2"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy-art-120.png",
+      "bytes": 1614,
+      "sha256": "ca0e5bd322360d0ddb11d540a6549def63ba3fb88a732328396f64050985931b"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy_art_001_1784922963058.jpg",
+      "bytes": 368399,
+      "sha256": "034b53a0da9782f55c74d9cb6e68b1b078056cd3f56b51d5156a3b5ebdab6001"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy_art_002_1784922973355.jpg",
+      "bytes": 452067,
+      "sha256": "2b61d6708cc245d9a601451cfd1c7e884cdf8bf6bc416ec2f7b6dd72249ae1e5"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy_art_003_1784922982245.jpg",
+      "bytes": 323163,
+      "sha256": "2e99d30288dc9b375b8253df3579266d95d6487af21bd4494dd694f2abc10108"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy_art_004_1784922993828.jpg",
+      "bytes": 676283,
+      "sha256": "5225ffb3d04f2271fba9e11300509297240bb62f4c697e23943b2e3459bfbb17"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy_art_005_1784923003101.jpg",
+      "bytes": 588160,
+      "sha256": "fd6209a5959317f22c307b9f5f24fc1e973b5c211a2a7f4498842077ab11711b"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy_art_006_1784923013590.jpg",
+      "bytes": 527680,
+      "sha256": "d401eeba25841052a389b4bccd73fa4c445382fed91a4713e22bd13906bbcfc2"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy_art_007_1784923023731.jpg",
+      "bytes": 549932,
+      "sha256": "ffabf1659cacbde893a73bbe8fe91af2df88c4d2d48ef447491f378cba80115e"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy_art_008_1784923032475.jpg",
+      "bytes": 466310,
+      "sha256": "a7f4ac6e1c56c8429054f48a1d6ff44df113732477cae1698166998b0b9d44d6"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy_art_009_1784923042537.jpg",
+      "bytes": 462525,
+      "sha256": "ea12c55c6c428dab35e55f6fab5a74eb30f9942c5c39b13eafa5f5230129ae5e"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy_art_010_1784923052703.jpg",
+      "bytes": 560802,
+      "sha256": "736703adbf2e67ff1342480e8e2dd9fa15fc0212c70c1fe412dc25a81a9f013d"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy_art_011_1784923061102.jpg",
+      "bytes": 441985,
+      "sha256": "3cf328d166d4f4ebe1cb643e53b6dae470323c62a513537b2264c9cf2b114e14"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy_art_012_1784923073385.jpg",
+      "bytes": 486667,
+      "sha256": "c3612c98f839d154b86f4d7784bcdd43d284bc5f410f16fe8a170249e6089db3"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy_art_013_1784923082084.jpg",
+      "bytes": 454369,
+      "sha256": "30c2443e801bcc73139297c7162588d332d7c4ad667e7bc356c0d6012d9609b8"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy_art_014_1784923090009.jpg",
+      "bytes": 441122,
+      "sha256": "51157d73aab1115ac5bafac515c0455f2e00f1753bb0e9d768665781fe6a98ed"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy_art_015_1784923098298.jpg",
+      "bytes": 451228,
+      "sha256": "3d61f64ab70214c296b9f727d002294bc852deb07527a45c530b2f0e16ba535c"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy_art_016_1784923107899.jpg",
+      "bytes": 409521,
+      "sha256": "2afed8ff7a6db3d60488ff0902720115df38f1d5b81c09fab0f4242b774d1a2f"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy_art_017_1784923117246.jpg",
+      "bytes": 551417,
+      "sha256": "a7c610a3d498cd0417cf409abd7d809cf5e042d035367f91aba6cf0879b67e94"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy_art_018_1784923127296.jpg",
+      "bytes": 588210,
+      "sha256": "6e45dd1bfb13de402157ef0e9c10e8fb5614345cfa027ae4e5a993f9fc04ed02"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy_art_019_1784923136861.jpg",
+      "bytes": 338620,
+      "sha256": "29d8088e07a527bf5303ba5ce5dccc0cf4d93b77f238a72679cd405b9b24b1a2"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy_art_020_1784923146474.jpg",
+      "bytes": 546320,
+      "sha256": "32df31fb702ed0b188eb08adb99bdc5988862951e262c349397866d2e91a5287"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy_art_021_1784923156545.jpg",
+      "bytes": 462488,
+      "sha256": "190629fe0ea53b3eddc3f6359832b069ab8babe1a0192afa58e503fb9a5f774c"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy_art_022_1784923166188.jpg",
+      "bytes": 482059,
+      "sha256": "36c7cc30c5002fc6fd26227c6de762d1850fb54c59a5592f85d87d0a9e8c8c42"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy_art_023_1784923176285.jpg",
+      "bytes": 534668,
+      "sha256": "33841f966cede5fb17ab112e62ea361ed1d5dcb18fe370e39834d5d1e4d15b46"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy_art_024_1784923185714.jpg",
+      "bytes": 436618,
+      "sha256": "b133f576ea4e4005300e88bbe534ba10525b93923021c69c62d3147006e0851a"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy_art_025_1784923196853.jpg",
+      "bytes": 465173,
+      "sha256": "26e04ed10bd9a26f3b22416a610adfb700d5db4a1d0159134e236c49a76364f3"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy_art_026_1784923206727.jpg",
+      "bytes": 536112,
+      "sha256": "9b5f9dd0aa1f043d1796e0333ef0cbafa7aaa238b62521223d5cf4f6c2cdf158"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy_art_027_1784923216252.jpg",
+      "bytes": 508896,
+      "sha256": "ed21c839373e39cb1ec5672415439725f4b17c424e750b245a83dc73bedd7c23"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy_art_028_1784923227072.jpg",
+      "bytes": 524009,
+      "sha256": "83cc370b50ad6032dc33b82a1b04fa417db422e8194f9906e717da394f9a758d"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy_art_029_1784923238914.jpg",
+      "bytes": 509962,
+      "sha256": "69d79c80eedbb76ba7481dbc841b9ff74ed242a61908ec9940766e09d8400f58"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy_art_030_1784923249071.jpg",
+      "bytes": 533703,
+      "sha256": "e9f3ee9a9c8ecaa682cda2337a4030fd6083853df2a0a60fc9bc89d5e0902aba"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy_art_031_1784922993806.jpg",
+      "bytes": 730133,
+      "sha256": "0ae8574eb139ae44d6c2ad67691ddca09dbf942b357d6991a9b8e331d63eb2cf"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy_art_032_1784923003889.jpg",
+      "bytes": 498563,
+      "sha256": "6e1cca73e29cf9f46f4827d59b8ac2f8488649b0bb775cdecc76d3d70921c4c5"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy_art_033_1784923015120.jpg",
+      "bytes": 673589,
+      "sha256": "1fcee2f9faf6efc1c7f937b2fe066cf6deca10076970e74175c921e64ebc85f1"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy_art_034_1784923026216.jpg",
+      "bytes": 796480,
+      "sha256": "8239630795b69cc1270128e60d99257ebb1cef54b9f302a366288b71ca772986"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy_art_035_1784923036302.jpg",
+      "bytes": 620830,
+      "sha256": "457bf37a3e2b6625d226972eb9930ef00744b8e2d18de22ae7891f8cb2679854"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy_art_036_1784923067060.jpg",
+      "bytes": 530838,
+      "sha256": "2f5536531bc16a6467fb24ab271c860e7275aeb6c992d8cb54b2c12c6d769062"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy_art_037_1784923076576.jpg",
+      "bytes": 617497,
+      "sha256": "5b01cbf98eaa3e1c33a26fe5f65de3d8fb9e3d879e5c31c0592098803d4998da"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy_art_038_1784923085357.jpg",
+      "bytes": 561619,
+      "sha256": "135c0ec9ba8c2b7eeb8f13ebb203c1b3d19e3841b5cc5134a6c54243b12c6af6"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy_art_039_1784923093664.jpg",
+      "bytes": 482645,
+      "sha256": "47b4c53622102a6209af059e51275da37d1187415788ca1dd32ccafa460d4ece"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy_art_040_1784923101708.jpg",
+      "bytes": 664125,
+      "sha256": "874bb7ba5cb5bccff3000f941b981e7ea16f6955f92504eb3c95c5081166fb04"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy_art_041_1784923116540.jpg",
+      "bytes": 645455,
+      "sha256": "838aa24f4289bf2b4bef5577a9bdf27dfeb06f60f62c92bd2fb4aa00eebe15ec"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy_art_042_1784923127373.jpg",
+      "bytes": 846728,
+      "sha256": "1902298f25343856f0ba7af788b9b3c4acb3fbcd48eeb575df5b0614399a0b0a"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy_art_043_1784923138920.jpg",
+      "bytes": 736217,
+      "sha256": "9620cf85a09fa68bb56021fc8a278f48bdbd1a249babe4b56e5a5dc454004c87"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy_art_044_1784923147225.jpg",
+      "bytes": 738305,
+      "sha256": "ffcaa00ae055be0d49ba07787064b5b531f969a238db7b43f6b065a4f2ee4018"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy_art_045_1784923157759.jpg",
+      "bytes": 429034,
+      "sha256": "51c110f234eeb9941d4f15841e70885eeddac696eb5102291f1c4e49cd2ed84c"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy_art_046_1784923170459.jpg",
+      "bytes": 699449,
+      "sha256": "29256a80351ab754ff6f763340dda1d4bc727e170cd458b61c3c6fc423029961"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy_art_047_1784923180637.jpg",
+      "bytes": 717801,
+      "sha256": "67667f2fff5dabaaf72c657bc6287b07b8797e0a024b773f71cf89c5e7ee87c3"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy_art_048_1784923191815.jpg",
+      "bytes": 769546,
+      "sha256": "b7d6c5ae3d98e0230e34201e88a5556292fc1e7942184cf007abd0062332ef7b"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy_art_049_1784923203023.jpg",
+      "bytes": 566376,
+      "sha256": "e3b3b65bd98a88c6f549716c0e0cbd19e9aeabaab846f4ba5dbdd26c0e43cdff"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy_art_050_1784923213849.jpg",
+      "bytes": 602063,
+      "sha256": "813acae3e2a173e0cddbc000ca29ef267b337d9621e34e144b059dd842a2e818"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy_art_051_1784923226770.jpg",
+      "bytes": 569728,
+      "sha256": "8082d216e235abb9b9c82b7c5c171269511f3cb14f6ea39734199124bd10f8ec"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy_art_052_1784923239125.jpg",
+      "bytes": 694821,
+      "sha256": "701c738c35a5ac15aa33145218c47ca451eb65269353716aeef6ce6c7a33661e"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy_art_053_1784923247985.jpg",
+      "bytes": 686747,
+      "sha256": "68388f16968c4c44057088c0550eeca4ef3cab3da94bae1e639f8bd8ef304297"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy_art_054_1784923257991.jpg",
+      "bytes": 574310,
+      "sha256": "bb525cdad4a34c0d869416d57a6df180ff6cd6a8155940d0e4862a2e40558dc5"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy_art_055_1784923269300.jpg",
+      "bytes": 643403,
+      "sha256": "7d18bf52c797b56969bae6961d836ce49fa9a9140c65e9989f1d6b2eea8bd5dd"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy_art_056_1784923282735.jpg",
+      "bytes": 500527,
+      "sha256": "7dd2dde2caaf125b3336f3c5c68a2c6422d3fad1ce322d95486249f14437f84e"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy_art_057_1784923293777.jpg",
+      "bytes": 579522,
+      "sha256": "14e27ceb8250de12ecaf0f1c50151c90d8689170dd1d42bfd0fb4a8ec40cde45"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy_art_058_1784923303805.jpg",
+      "bytes": 685139,
+      "sha256": "2925217987a3a36812cb7acd01b75b972714c5c918af53dc49d8f493a3873280"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy_art_059_1784923313570.jpg",
+      "bytes": 683808,
+      "sha256": "e2d9b88a021b53f74d57990cad54117923071a7738c12f1dd3e047b280f578cd"
+    },
+    {
+      "path": "public/assets/generated/monsters/enemy_art_060_1784923323797.jpg",
+      "bytes": 547802,
+      "sha256": "59518b19a89e8136d430a5363d3088b88e3fcd2497aff410aa0cc0051e005cca"
+    },
+    {
+      "path": "public/assets/generated/monsters/generated_enemy_dark_dragon_1784922518510.jpg",
+      "bytes": 663137,
+      "sha256": "6017c2d355f6b8976c7a1ef3b983226315a02378ad223f7672aa1053dc7f7a20"
+    },
+    {
+      "path": "public/assets/generated/monsters/meadow_green_slime.jpg",
+      "bytes": 266155,
+      "sha256": "ba22579bd5dc6864b9e82e8621d188d36ad111092a0a488170ec4c6508d73139"
+    },
+    {
+      "path": "public/assets/generated/monsters/monster_061_1784922956482.jpg",
+      "bytes": 463403,
+      "sha256": "ec0744bd79dbb40751efce7b946f90af57c01fffb9eef8fe7e2341436426fe64"
+    },
+    {
+      "path": "public/assets/generated/monsters/monster_062_1784922966569.jpg",
+      "bytes": 789798,
+      "sha256": "509f67f4983e374ed0c74a0a62f3d2b08bab04a70d897e54d5b2e50fa06ed742"
+    },
+    {
+      "path": "public/assets/generated/monsters/monster_063_1784922977258.jpg",
+      "bytes": 619745,
+      "sha256": "946c5e42e8909a3c555becfff4a0d46bb300ebcf15b6d82a11191b8efb0f44ce"
+    },
+    {
+      "path": "public/assets/generated/monsters/monster_demon_lord_1784922910487.jpg",
+      "bytes": 720717,
+      "sha256": "424a8c9fa438835749840787ee7a6c03c06cd2e431d6a99bc26cff4924c7f679"
+    },
+    {
+      "path": "public/assets/generated/monsters/monster_medusa.jpg",
+      "bytes": 618629,
+      "sha256": "13a908f510bf674513f782bcf0b5103afb0f149b65d7f869e70b04f55ff0c6a4"
+    },
+    {
+      "path": "public/assets/generated/monsters/monster_minotaur.jpg",
+      "bytes": 611267,
+      "sha256": "0aa2a6e58de38e6742a9adb1140ba0a3b68d622e6636983c947c973e3af5e5b1"
+    },
+    {
+      "path": "public/assets/generated/monsters/monster_red_dragon_1784922889518.jpg",
+      "bytes": 519928,
+      "sha256": "e0bd24e773f79d60d310c4d9960a9461d665f59ea1cf21780f7a34c2a718109e"
+    },
+    {
+      "path": "public/assets/generated/monsters/monster_stone_golem_1784922901588.jpg",
+      "bytes": 701668,
+      "sha256": "b28f2696715f2bda83b1dfd7ee1bcb69669f4038df970575d4abf368c7b8f6ba"
+    },
+    {
+      "path": "public/assets/generated/monsters/strict_death_knight.jpg",
+      "bytes": 741362,
+      "sha256": "1b4744e1d4a9f16dd43814c276c72f1855af3eb1486300419cc1de4a2b62d26e"
+    },
+    {
+      "path": "public/assets/generated/starter/idle/monster-bat-01.png",
+      "bytes": 119330,
+      "sha256": "ca8fcbdf8b0f5f409c3fabe9e561b2a052bf6d156e1abbecc2600400631944a4"
+    },
+    {
+      "path": "public/assets/generated/starter/idle/monster-golem-01.png",
+      "bytes": 354457,
+      "sha256": "a940460bfad03e4eae92445802e1b3515051ff556c28303a7a94a277269ef514"
+    },
+    {
+      "path": "public/assets/generated/starter/idle/monster-slime-01.png",
+      "bytes": 119932,
+      "sha256": "f09249279025d4391ca0d3712e2648cfda67dfd1b86bb52a31e073e41a82043f"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-angel-fallen.png",
+      "bytes": 103766,
+      "sha256": "6d9ffd11334d0159c7abb263e7a4f23e8e52c5509c81f991935fb4f320309027"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-ant-soldier.png",
+      "bytes": 55183,
+      "sha256": "60239109bf9ea9be0c7d54614c00b5b119d19ef9c3e658cf4c6cba72534afe38"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-ape-stone.png",
+      "bytes": 147150,
+      "sha256": "ba2fba74750a7e941b5ee9670ee549d2fa9c2457e0cc9eadd6cf7c4f1f03a36f"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-aqualing-01.png",
+      "bytes": 112251,
+      "sha256": "1bd5a5da5e731b87276f0a643272781bd3dd426a4fb7e00f2e5c4fe945455f2e"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-armor-living.png",
+      "bytes": 123673,
+      "sha256": "379f38d551c53f755cb61184eaa6f3cddf111112c7a4722cb45c613b8e7a9c99"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-bandit-mask.png",
+      "bytes": 91612,
+      "sha256": "e7a01318364d33f70567d844423a159cd1f12180250ab82cca6610f32ce23bb0"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-banshee-wail.png",
+      "bytes": 97058,
+      "sha256": "0fa7d1f77019e055e3e8c61e3ccf3873de4c5a2b034366c5463399b30e65dc78"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-bat-01.png",
+      "bytes": 70055,
+      "sha256": "fc38e07fb328d47480b9f27b2cc7b61f71a0f7222290c38c3bd7d9178a44dbe9"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-bat-cave.png",
+      "bytes": 64685,
+      "sha256": "38be67d39197156b2e6d682a18ebe9e4caf29bbb825df178d2102d24bb2cd6cd"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-bat-vampire.png",
+      "bytes": 64358,
+      "sha256": "09ad805a30220ed8e3d09e7670e7a04c042af6451b0b26e28b186637a37e16f0"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-bear-brown.png",
+      "bytes": 97951,
+      "sha256": "cd4d9cedff1031a260ee363a4c1d3199e4ce4bb87c0bebc7a9830e7351f3025d"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-bee-giant.png",
+      "bytes": 94794,
+      "sha256": "0fe40f155d4a7cba75dabd9c877cafe27eed924722a87e6afcad02297324370e"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-beetle-horn.png",
+      "bytes": 87523,
+      "sha256": "4681ee9fef1937bc1dbc8652397b590e76f0a1dac54fa23859bf6b8f90a8cd05"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-behemoth-horn.png",
+      "bytes": 123007,
+      "sha256": "5f128550ae2f54274324345af9d8bd859d87c9fb5e1e5a7e803e875adc57db53"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-bird-hawk.png",
+      "bytes": 116440,
+      "sha256": "49693ccc36172d608fe3f0b5a68ee59a2c917810277ebb48731568754959bf2c"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-boar-tusk.png",
+      "bytes": 119127,
+      "sha256": "56a63d2644d0bc422ed0e35f3d383936f0cab19a4e74e8a1eeb6fd72be2dcdbb"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-bonepile-crawler.png",
+      "bytes": 106971,
+      "sha256": "d67b28263492802c800b194f50d080d577f8e8a41d21f4372e915946b11ba151"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-carbuncle-01.png",
+      "bytes": 96688,
+      "sha256": "7edb01f4d06e1b2aceae0777d4e2f490a6eb384a8ed983030c8e5f6a5c199779"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-cat-01.png",
+      "bytes": 122684,
+      "sha256": "d1e18779d2e9194ef54651c57dc56dad17ea7944b3c83370c9ea7b962c3f65b0"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-cat-shadow.png",
+      "bytes": 100355,
+      "sha256": "b837d416e3d4c68f26b255035a8155d1a42563c0ffcdc475aeb14b7358b2db2f"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-centaur-plains.png",
+      "bytes": 94770,
+      "sha256": "9603231b0bfc47aaee19b6633c4a777de33c4e837dba24a7afd93e6143777d5e"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-centipede-01.png",
+      "bytes": 109678,
+      "sha256": "55d34934540c2fa99924a5a801d889a7830b2a0be47c65c3cc56614d62b3ec19"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-centipede-fire.png",
+      "bytes": 106886,
+      "sha256": "b994d398485435d5555950a11fec5841dee81f5a94de9c60271ae3d0db688c25"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-cockatrice-01.png",
+      "bytes": 110804,
+      "sha256": "a0596b4cf9a0fb1ea74e29fe783d860f77067f5d9f1b5d0d0ce52deedfb0f54c"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-crab-01.png",
+      "bytes": 102425,
+      "sha256": "f5baa7378dea1bf19336f20a17f2ba1b9b120968212617ac23e9283b8a7b4e02"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-crab-rock.png",
+      "bytes": 93152,
+      "sha256": "9e63aaf554dba436a8b558f3bde66b2a10add33c31fa15b50056bd7fd67e081a"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-deer-forest.png",
+      "bytes": 93926,
+      "sha256": "9f0d2b75e36069a230b851646b77fc8c013bd87937d36ecc5c1ece8e7c6a5811"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-demon-lord.png",
+      "bytes": 115175,
+      "sha256": "5c483c5c479167e8c6a44ea4fece8ba9f2a5e323af71e74a0d76604f9c804e4d"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-dragon-01.png",
+      "bytes": 93876,
+      "sha256": "ebbff8d7c05c1ad19fab5b3bfc3d240518428acc5ca674cc067dd9ff44053cee"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-dragon-blue.png",
+      "bytes": 100273,
+      "sha256": "8528bde03f60607840ecc0a762c8f214c5b38d4dcb25e3851b41f0161809825c"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-dragon-bone.png",
+      "bytes": 88921,
+      "sha256": "1c557a14cf769d1ee2bd150dfa95d5f75c052dae3f05f366f4858d61a6a1fc3f"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-dragon-red.png",
+      "bytes": 90890,
+      "sha256": "a2d46b5113ac04e2fc57782de685f9d9ecee81aabd2dc2fbb76613f0292c7a03"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-dragon-whelp.png",
+      "bytes": 94444,
+      "sha256": "037483d3c09f3165b3f4b6f5345fe7e06cce71617545c39768ec814563e30cbf"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-eel-electric.png",
+      "bytes": 127840,
+      "sha256": "f3b400f41763ba6981761cf3075c70af87eb0e09859698f1f60cfb4560a6015e"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-eye-floating.png",
+      "bytes": 109224,
+      "sha256": "df2a4af87d86cbb686dfaf191c2cbe3d74d700d0719ceb63f45c78d22a4c4501"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-fish-01.png",
+      "bytes": 109210,
+      "sha256": "d00278f4c80562c8c2e13eaf00c86ec4c74d06a35b631a6053f650775e1aeab8"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-fish-piranha.png",
+      "bytes": 102957,
+      "sha256": "0f5fb73bcf629c7b7897016b67a7f280f483617c142a36c8ebe5c7a94aa6bda8"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-gargoyle-stone.png",
+      "bytes": 105938,
+      "sha256": "be6f26e80c7e4ba149305a280404871ec9b5fa824b22994f7995b9455a18eefa"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-ghost-01.png",
+      "bytes": 64798,
+      "sha256": "02eda64c530d0cc1a18392640faf41fe9f84026576e40920f6d38fe8696cd6fc"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-ghost-pale.png",
+      "bytes": 60234,
+      "sha256": "2404c172bb67ba16a3b8efeab4d6e22314efa5edcdcf99d0d9f13e32aa19ea2f"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-ghoul-01.png",
+      "bytes": 89792,
+      "sha256": "73921cdf2e318b0ab7782b62ca56327dbe4bc18b8f3d0f4cf2940d16933e65f3"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-ghoul-grave.png",
+      "bytes": 85549,
+      "sha256": "0e1f72cf81cc2c5ea18f6d4630507043728350789d82a89e2c5c6b99ec4efb43"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-goat-mountain.png",
+      "bytes": 100086,
+      "sha256": "3d6b652ec69ffa7395a25996260266bbf69f528205423a6a1c0a734edd84754f"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-goblin-brute.png",
+      "bytes": 118155,
+      "sha256": "4eab5389019ef5c7b6cf0e69518f70465cba5b2b735bbaeed96964dce2dc4354"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-goblin-scout.png",
+      "bytes": 118108,
+      "sha256": "daa3d1f9e4e440846fa1ce711e5db3a98e98e02961c19d2bee0243d99472ae99"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-golem-01.png",
+      "bytes": 149632,
+      "sha256": "eef07b4fcfcb4c02724d019bfdfec27a1d39a972910479a49d861054a062d733"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-golem-clay.png",
+      "bytes": 149263,
+      "sha256": "d7bebc65b8975d6d2f059944f47e041f385e934a0e2ebb2e712f17f99e135320"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-golem-crystal.png",
+      "bytes": 157682,
+      "sha256": "a214a57fa4067fb106f3826e3bf394f08bf69204029ecf82d058affdf7947451"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-golem-iron.png",
+      "bytes": 118997,
+      "sha256": "04f759b35acd59d005b31aa912557814e135e5dc69fbc053d40a49fc8654e5a3"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-golem-stone.png",
+      "bytes": 143623,
+      "sha256": "c43817ec110253203d65c4be9f7d4848f8073286912489db6e3c749ef23277cd"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-griffin-sky.png",
+      "bytes": 112505,
+      "sha256": "f14d449fc666ca4c91a883f6152cb85ad35fd00caafc80b1120db4b106f37e31"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-harpy-01.png",
+      "bytes": 136553,
+      "sha256": "de95836c765da58df94ff48173eb34637132c6d41821b17825b0158371df5ce3"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-harpy-cliff.png",
+      "bytes": 133016,
+      "sha256": "858765c3823c9736d6cc2f7dd3de2881c7b998a1387121c83cf9a71701d9508c"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-horse-01.png",
+      "bytes": 106599,
+      "sha256": "04ddad19b201f28976a3ce64f3d4ab196beb354f39433e8b860d717ea514e77c"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-hound-hell.png",
+      "bytes": 102369,
+      "sha256": "1b7eb38c6e95a936814a39b19216fceab907382001b3831564a17b194df53b17"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-hydra-three.png",
+      "bytes": 116097,
+      "sha256": "87c4c8c629efa56b05632be6abbc856586eb1be39d643be416154e084749e328"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-imp-mischief.png",
+      "bytes": 85342,
+      "sha256": "4f0e8a055e6417014849d85a24c4feaa1a508b82b89d0cc00419bc7bbe095aec"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-jackolantern-01.png",
+      "bytes": 118347,
+      "sha256": "d0b22b4c714df39cf38b75ca2adc0ace1620d19579163bdfe6724ac7cb8f32ec"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-kappa-01.png",
+      "bytes": 113802,
+      "sha256": "b2048f5956ca2cf58e64b022d24a0bc07c750f29778e37da7a808d03a8025354"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-king-slime-01.png",
+      "bytes": 103507,
+      "sha256": "f506286fa16d1319c82eb4cdf33c31959dd3250efb4fc9f5b8f932d7c6cb108e"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-knight-fallen.png",
+      "bytes": 99762,
+      "sha256": "f95687e9f8f8a44e7eb1d89c7191660c502102f5b80521a043d2337ab5cf4c72"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-kobold-digger.png",
+      "bytes": 99149,
+      "sha256": "42329401f016dc4d1a59f38ca753dddd44a3fda52264b8873b8c5693e0129025"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-leafling-01.png",
+      "bytes": 89826,
+      "sha256": "f1ae781b821c4c7bd2ca64913e6d1962dcbdc31a6b8fb562b92e4f66a357691a"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-lemora-01.png",
+      "bytes": 109047,
+      "sha256": "f6c4b46a314ff116d07f2b42f6fadeaf32cf7c78ef39ab2cdc8583100b605a49"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-lich-frost.png",
+      "bytes": 153891,
+      "sha256": "4ed519d841897b24b562248a530850235a6e53b9d045c299800eede094e0a363"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-lizardman-spear.png",
+      "bytes": 99707,
+      "sha256": "f567e4f034da95c48c017d72441f8eb68b29e56c02a41d7d766957dd106603f3"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-mage-rogue.png",
+      "bytes": 89416,
+      "sha256": "ed47ed44de851730bf1a2ab38c93c26778ee54078c1cd56c1971752d4225995d"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-mantis-01.png",
+      "bytes": 90657,
+      "sha256": "f08906fd930cbf6fecf0958355329e63e672afe3ee8ca935952507b850f88e4e"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-mantis-blade.png",
+      "bytes": 88036,
+      "sha256": "dc75536d101f411761205e6aba74dfcee154be986be2f7fa46604cd76d4fd7c5"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-mimic-chest.png",
+      "bytes": 128488,
+      "sha256": "4922ba8fce231515c60addc9a436a2831cdd8af16b3375c98e27222af55fa021"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-minotaur-maze.png",
+      "bytes": 115635,
+      "sha256": "f275e4c11a8606ed7ecf3ebe4fb46d197d1792c45f4294aa5d3afe7b668050ac"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-moth-dust.png",
+      "bytes": 99374,
+      "sha256": "29025f298867abee43d5d28ecb23bce958cdfd7d6c68619c26ab810d9b445276"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-mummy-bandage.png",
+      "bytes": 104895,
+      "sha256": "cbc824d6d9777ac38fcd7e48053f1a9f48d64ad01caad2d8d52017c14c388a21"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-ogre-club.png",
+      "bytes": 132985,
+      "sha256": "cea402396bc17ceeeeeb00bb6874340061d1a5976b67828a4304e5a8d5eb722c"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-ontology-8da61312.png",
+      "bytes": 112347,
+      "sha256": "bf9b207b2ffa15b1e46dbdd190b84f9526a932e4d6569f89b0d74cb3d362ada2"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-ooze-acid.png",
+      "bytes": 65359,
+      "sha256": "930b33d4e50950b487ce88fb79f44bdbf44880a4addd74f313689966ef8a54f7"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-ooze-black.png",
+      "bytes": 57692,
+      "sha256": "a1683cd4234a6a6b7d0aa0b49dbccbe40b098dc85a1fc29391536992cbc9442f"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-orc-01.png",
+      "bytes": 134072,
+      "sha256": "dcdfe7c2867fe90e3db06b56118a747cf36853c2c2212d0d8eb866c453ec9686"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-orc-shaman.png",
+      "bytes": 132263,
+      "sha256": "badfafb59ded3e84093b55eae0de3370057ecbc010579492b7fbbe9b8cd80023"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-orc-warrior.png",
+      "bytes": 133127,
+      "sha256": "edae127646f35d58d7dea816fe027561eb06de9838e80389ae1c7e7097dbe426"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-parasite-01.png",
+      "bytes": 145632,
+      "sha256": "2f55a4d31e7eebe179b64de01d0867c64d33847cd500fdde648b3b5860e8a031"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-phoenix-rebirth.png",
+      "bytes": 111314,
+      "sha256": "57cedab653a43b46bda0ab6cb8d653ed271b21cd2c00849668b64e1e9b890cb9"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-plant-01.png",
+      "bytes": 110784,
+      "sha256": "70c6e8c43cac858804069e1e886c7d57063f21854623e51192cd16718675304a"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-plant-carnivore.png",
+      "bytes": 109015,
+      "sha256": "3b281214c36d051050a6ae7a869715c26420096b6a4db28b7c74419c64cf17e8"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-puppet-string.png",
+      "bytes": 80006,
+      "sha256": "b094c96368641d06b65b070339886527fd53c2ad089cb9095ea377ae2f81f550"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-rat-giant.png",
+      "bytes": 102274,
+      "sha256": "e2658dd7b43114274a2c843b0acc531feaa11813fb4ab76d902e4f84c2729a11"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-revenant-vengeful.png",
+      "bytes": 111280,
+      "sha256": "40b76529d8ffcc593c8b0d9cb1fcf9869b2761e9cea4269e882ac81c1d685276"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-roc-giant.png",
+      "bytes": 113821,
+      "sha256": "b1602fe6ab3bc63d20ce27dc0fed23c5834693a2d38e925f686712852eacefa7"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-salamander-01.png",
+      "bytes": 93896,
+      "sha256": "77392af9d3295ed684318e849844f5add1e3a7889c2ba98e963aae730c295eb0"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-salamander-flame.png",
+      "bytes": 90428,
+      "sha256": "90e2e4dd7f20acf7cd4ef62db61a14ee2c7dfcb3fdac2eadb2395638357273a5"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-scarecrow-field.png",
+      "bytes": 100450,
+      "sha256": "9f7c058516ca88da3892e9a4c9f9be142781fec2966015bd8cc90062d5c8f840"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-scorpion-01.png",
+      "bytes": 90413,
+      "sha256": "17c34d0e725e95a3e87db6eb25c68d87c5ca69536e20fe6dd4183c41704ae549"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-scorpion-sand.png",
+      "bytes": 89742,
+      "sha256": "5517400a05677af88125c2f1774435cafc721960ec26afedece086914333b3fa"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-shark-land.png",
+      "bytes": 97508,
+      "sha256": "a75f0c5db8d33f7c962f5b6af3182093f958ce5ee124865e4e816b6eb3606dbd"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-skeleton-01.png",
+      "bytes": 109849,
+      "sha256": "5d120ed3181f8cfed50ebc84cc3fb652738f7fbd2cdab9c3a4de6c6b94c3c3c1"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-skeleton-archer.png",
+      "bytes": 107994,
+      "sha256": "9b2a8c889927cdbe87f9a4850cad3285d8dc2b2db76dfaa828a1d39be8a7e26b"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-skeleton-bone.png",
+      "bytes": 105813,
+      "sha256": "b9ed653bcd1ccf61d646f77098e8d27958afdd42680f55aab029733dc1ba621d"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-skeleton-knight.png",
+      "bytes": 94332,
+      "sha256": "13e5092396974451c400f4cd0f90bedbf186b3ac5be20b73a9382bf60e23fa07"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-slime-01.png",
+      "bytes": 51896,
+      "sha256": "22d4a49dadaf05ca84298c2ec24c4ddbd8b943594414c01b03f4bb43f9b02143"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-slime-blue.png",
+      "bytes": 74139,
+      "sha256": "113844629a9114851fed5d8f1aaf65f3de8ba26ddb1c185f7f4aab22e1aa78c8"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-slime-cube.png",
+      "bytes": 83872,
+      "sha256": "dc3b92cbd17a9408b2471a6752db383925219878c7cfa0ec3d3d1e240283645e"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-slime-green.png",
+      "bytes": 78176,
+      "sha256": "54a649098f8f9faf65f96858fb01425c2ad90ac94f05bc46746648ea7ef6065c"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-slime-king.png",
+      "bytes": 103507,
+      "sha256": "f506286fa16d1319c82eb4cdf33c31959dd3250efb4fc9f5b8f932d7c6cb108e"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-slime-metal.png",
+      "bytes": 68236,
+      "sha256": "f03c538a440a0fd4380fc16b4f8de501c4b2edd3b24e0e47a6c3c7bb2e96375d"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-slime-red.png",
+      "bytes": 73943,
+      "sha256": "e9b0bd0847f36453d363b89737ecb08517083ae9d91518f47459982160979bf8"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-snake-01.png",
+      "bytes": 138467,
+      "sha256": "9c4fd8a62c9efd81da07c0317ed87f76ba287a726fb61e38f82a56b8aad3589b"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-snake-viper.png",
+      "bytes": 136366,
+      "sha256": "fa7a65a08e6ebcba1922be3686c0b1f2e0ebba1bcd51952da676954eb3296139"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-sparkit-01.png",
+      "bytes": 88405,
+      "sha256": "ee700972f58f5c390b921e8b4cb98a6f33a501769ff35c0fff54e124c1843763"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-specter-01.png",
+      "bytes": 64715,
+      "sha256": "d08db7a6f2e8c9f22903ec7ca7797f1289f7d1eab6e0279926e36fd8ac5494b7"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-spider-01.png",
+      "bytes": 81430,
+      "sha256": "ab4cef4d1afe477c51bf35b0d90ca502a3f72997e4bb6433c5e83be73e4f97fc"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-spider-cave.png",
+      "bytes": 73826,
+      "sha256": "3733e8b1667042705fd1058777ac78bc59b9b56d75f76e74ff59f70e04caf78c"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-spider-widow.png",
+      "bytes": 65058,
+      "sha256": "88357b1dbd547b58019645acaaa0bf3b39ea73d00825917454b930723855a217"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-spirit-01.png",
+      "bytes": 70761,
+      "sha256": "5feaf829081688f9964664351e9e14c02734eb781bac872280e79e6bb2c63d57"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-spirit-dark.png",
+      "bytes": 54826,
+      "sha256": "a4637d388a937586585224154e9b280ccfa9f76f38f0eb4bd51e516769889405"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-spirit-earth.png",
+      "bytes": 65966,
+      "sha256": "39752ed445b66f5614b2dd7924655e4fc84fd555f535179ab8650c4c1085aa82"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-spirit-fire.png",
+      "bytes": 68354,
+      "sha256": "d5a14b25b425da3161073fafaf484e1c704e4e9282a09a78d0aca8bed99c3ede"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-spirit-light.png",
+      "bytes": 55915,
+      "sha256": "68cfa7d361880ac2b46925545f39b84b695395c6e2a705655ec736f0e74becc8"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-spirit-water.png",
+      "bytes": 71152,
+      "sha256": "8284a871774344b5b7bdb2c9c94bfb90ecfc97f823dd99a0edc548bb140cc47c"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-spirit-wind.png",
+      "bytes": 66589,
+      "sha256": "342c06bef8c7fbaf5ac1bc1d206210cc04155d2673038db7701acd19fb579e03"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-squid-deep.png",
+      "bytes": 104442,
+      "sha256": "aad7541414437e480c0ab8b1852e5ca5b6a35d4612918955c7d84b4e9ca29e75"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-sword-flying.png",
+      "bytes": 54522,
+      "sha256": "75877631937027a8f8f4e2a69079990ec3582af06d6c78b38ea4db3413a36aa5"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-sylph-01.png",
+      "bytes": 119155,
+      "sha256": "686abd282039647235b18f7d51603d1f1609eaf4a35290a0aff3b454fe76a76f"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-sylph-air.png",
+      "bytes": 127382,
+      "sha256": "c2fff22669d93e9ca28f8868d36ed92ca8338769112a1930a4d4dee0c10ba1f8"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-tiger-saber.png",
+      "bytes": 105805,
+      "sha256": "35fb12a2be8b4f01f39cc8917dfab603840d8f6be82e02237bdef637eb51d19e"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-totem-cursed.png",
+      "bytes": 97216,
+      "sha256": "6efbd0ebde0edd379987569e7ac14a7b617d1fb86c2cf5217a064599f4da97df"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-troll-cave.png",
+      "bytes": 129006,
+      "sha256": "1b8d21c5340ff20d5dcf218faf52479aab2ec40700285586a7fbbdae2958d000"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-undine-sea.png",
+      "bytes": 137840,
+      "sha256": "6f2002dcccc7ca314f16cfcc2ab69fdfc48edb243736851494abf7f8102d43ce"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-unicorn-01.png",
+      "bytes": 82292,
+      "sha256": "7e4bf2fb641edd1f98016ef55111085508b337f60ffc76caa31370c4693e915f"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-wisp-blue.png",
+      "bytes": 70711,
+      "sha256": "b5b92ff4fb5a3bfe82e9f2d832ddfe531b42bccaae053f2c20450c04ac496765"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-wolf-01.png",
+      "bytes": 96102,
+      "sha256": "c735e29afa9ce64cf01930857daf0dbee8ff817f9865f6ef8a25d2e6b8e3351f"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-wolf-dire.png",
+      "bytes": 86913,
+      "sha256": "4d6bf1f194657fb4753c21a3289c8db0e54763b1ee82fc8ed9d524fc18f65c0b"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-wolf-grey.png",
+      "bytes": 94819,
+      "sha256": "85181a503fec87c0574357b5c905705d6118229ff64f425af01c4f18a97b65a6"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-worm-sand.png",
+      "bytes": 139813,
+      "sha256": "963d96f01a7f036efd289d61b243a9808d9fcb6fce3b9887929ccaac1234b52b"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-wraith-dark.png",
+      "bytes": 52909,
+      "sha256": "b17db0f971cad3264af2f23e322497cb51e4de7ff00c7dc143bdf37e8d40654c"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-wyvern-cliff.png",
+      "bytes": 94322,
+      "sha256": "3c4a8d634412a7dcd5597c54ac7230a91408278b6c0d0f41888aa87d051a7026"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-zombie-01.png",
+      "bytes": 96125,
+      "sha256": "9eba1ea6536f50647b5d5dfdcf42287059b5a5770f222db62b21df5f950275db"
+    },
+    {
+      "path": "public/assets/generated/starter/monster-zombie-rot.png",
+      "bytes": 91858,
+      "sha256": "43af75c7d780be34aff75bb9046110396b1ee8fa4046b58e9a09bfebbf7b9e20"
+    },
+    {
+      "path": "public/assets/generated/starter/sylph-hornet-transparent.png",
+      "bytes": 991,
+      "sha256": "0dede0b45624a89af29500c9b2dd32ae775f4f465c7cb0b7f1be381de1c45e07"
+    },
+    {
+      "path": "public/assets/generated/starter/troop-preview-slime.png",
+      "bytes": 6760,
+      "sha256": "4e9419d86ad01cfb49c2b39a6f7faf55dacf11f26645d671c8f3153b0ecacd33"
+    }
+  ]
+}

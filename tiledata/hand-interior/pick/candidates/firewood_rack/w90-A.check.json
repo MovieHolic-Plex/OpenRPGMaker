@@ -1,0 +1,35 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/firewood_rack/w90-A.pxg",
+ "id": "firewood rack",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.047
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "saturation",
+   "dither"
+  ],
+  "pass": false
+ },
+ "colors": 17,
+ "v5_colors": 17,
+ "bbox": [
+  0,
+  9,
+  15,
+  30
+ ],
+ "v5_bbox": [
+  0,
+  2,
+  15,
+  31
+ ],
+ "note": "장작 받침: 쌓은 통나무 옆면을 뒤 어둡고 앞 밝은 윗면 띠로 다시 찍고 각 단 옆에 윗면을 드러내 위에서 보이는 더미로 읽히게 함",
+ "ok": true
+}

@@ -1,0 +1,137 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/meadow/w2-A.pxg",
+ "set": "worldmap",
+ "id": "meadow",
+ "hard": [],
+ "warn": [
+  "corner-round: 바깥 모서리가 네모다(대각선 깊이 = 이음 깊이) — ne sw"
+ ],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.02
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.078
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies"
+  ]
+ },
+ "colors": 5,
+ "bbox": [
+  1,
+  0,
+  47,
+  62
+ ],
+ "note": "강남 공원 풀 언덕: 낮은 대비, 가장자리 들쭉날쭉한 풀끝(T/t)이 평원 위로 번짐",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.0
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.035
+  },
+  "shore": {
+   "profile": {
+    "n": [
+     2,
+     3,
+     2,
+     3,
+     4,
+     3,
+     2,
+     2,
+     3,
+     4,
+     3,
+     3,
+     2,
+     3,
+     4,
+     3
+    ],
+    "s": [
+     3,
+     2,
+     3,
+     4,
+     3,
+     2,
+     3,
+     2,
+     2,
+     3,
+     4,
+     3,
+     2,
+     3,
+     3,
+     4
+    ],
+    "w": [
+     2,
+     2,
+     3,
+     4,
+     3,
+     3,
+     2,
+     3,
+     4,
+     3,
+     2,
+     2,
+     3,
+     3,
+     4,
+     3
+    ],
+    "e": [
+     3,
+     3,
+     4,
+     3,
+     2,
+     3,
+     4,
+     3,
+     2,
+     3,
+     3,
+     4,
+     3,
+     3,
+     2,
+     2
+    ]
+   },
+   "strait": 9,
+   "steps": {
+    "n": 1,
+    "s": 1,
+    "w": 1,
+    "e": 1
+   },
+   "amp": {
+    "n": 2,
+    "s": 2,
+    "w": 2,
+    "e": 2
+   },
+   "joinWorst": 1
+  },
+  "seam": 0.47
+ }
+}

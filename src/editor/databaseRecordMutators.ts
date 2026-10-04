@@ -62,7 +62,7 @@ export function updateSkillRecord(database: DatabaseRecords, id: string, patch: 
   if ("gen1CriticalRate" in patch) record.gen1CriticalRate = patch.gen1CriticalRate;
   if ("actionSkill" in patch) record.actionSkill = patch.actionSkill;
   if ("movePriority" in patch) record.movePriority = patch.movePriority;
-  for (const key of ["damageFormula", "criticalRate", "criticalMultiplier", "cooldownTurns", "hitSequence", "resource2Cost", "limitSkill", "partyGaugeCost"] as const) {
+  for (const key of ["damageFormula", "criticalRate", "criticalMultiplier", "cooldownTurns", "hitSequence", "resource2Cost", "limitSkill", "partyGaugeCost", "hpCostPercent", "drainPercent", "retroChoreographyId", "area", "comboActorIds", "moveMotion"] as const) {
     if (key in patch) Object.assign(record, { [key]: patch[key] });
   }
   database.skills[index] = normalizeSkillRecord(record);
@@ -124,6 +124,7 @@ export function updateEquipmentRecord(database: DatabaseRecords, id: string, pat
   if ("equippableClassIds" in patch && patch.equippableClassIds !== undefined) record.equippableClassIds = patch.equippableClassIds;
   if ("cursed" in patch && patch.cursed !== undefined) record.cursed = patch.cursed;
   if ("twoHanded" in patch && patch.twoHanded !== undefined) record.twoHanded = patch.twoHanded;
+  if ("battleMotionStyle" in patch) record.battleMotionStyle = patch.battleMotionStyle;
   if ("accuracy" in patch && patch.accuracy !== undefined) record.accuracy = patch.accuracy;
   if ("criticalRate" in patch && patch.criticalRate !== undefined) record.criticalRate = patch.criticalRate;
   if ("usableAsItemSkillId" in patch) record.usableAsItemSkillId = patch.usableAsItemSkillId;
@@ -152,6 +153,7 @@ export function updateEnemyRecord(database: DatabaseRecords, id: string, patch: 
   if ("skillIds" in patch && patch.skillIds !== undefined) record.skillIds = patch.skillIds;
   if ("monsterResourceId" in patch) record.monsterResourceId = patch.monsterResourceId;
   if ("battleScalePercent" in patch) record.battleScalePercent = patch.battleScalePercent;
+  if ("collapseEffect" in patch) record.collapseEffect = patch.collapseEffect;
   if ("graphicHue" in patch && patch.graphicHue !== undefined) record.graphicHue = patch.graphicHue;
   if ("transparent" in patch && patch.transparent !== undefined) record.transparent = patch.transparent;
   if ("flying" in patch && patch.flying !== undefined) record.flying = patch.flying;
@@ -184,6 +186,7 @@ export function updateTroopRecord(database: DatabaseRecords, id: string, patch: 
   if ("trainerBattle" in patch) record.trainerBattle = patch.trainerBattle;
   if ("previewBackgroundResourceId" in patch) record.previewBackgroundResourceId = patch.previewBackgroundResourceId;
   if ("backdropAnimation" in patch) record.backdropAnimation = patch.backdropAnimation;
+  if ("backdropLayers" in patch) record.backdropLayers = patch.backdropLayers;
   if ("battleFlow" in patch) record.battleFlow = patch.battleFlow;
   if ("activeSlots" in patch) record.activeSlots = patch.activeSlots;
   if ("battleEventPages" in patch && patch.battleEventPages !== undefined) record.battleEventPages = patch.battleEventPages;

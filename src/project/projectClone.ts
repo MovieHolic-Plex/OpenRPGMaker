@@ -1,5 +1,6 @@
 import type { Project, TilesetDef } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
+import { shareContentDigests } from "@/project/persistence/core/contentDigest";
 
 /**
  * 편집용 프로젝트 복제. 타일셋 참고문서(타일셋당 수 MB, 합계 약 20MB)는
@@ -118,6 +119,20 @@ export function shareUploadedAssets(source: Project, copy: Project): void {
 }
 
 /**
+ * 읽기 전용 스냅샷용 복제. 타일셋·업로드 자산 항목은 원본 객체를 가리키고(사전만 얕게 복사), 나머지는 깊게 복제한다.
+ * 키 순서는 원본과 같다. 원본의 요약 기억을 넘겨 다음 비교가 처음부터 돌지 않게 한다.
+ * 계약은 위 두 함수와 같다 — 스토어의 타일셋·업로드 자산 항목은 제자리에서 고치지 않는다.
+ * 왜(2026-09-28 실측, 새 프로젝트 기본 자료 149MB): `structuredClone(project)` 한 번이 1.3s, 그중 타일셋·업로드 자산이 거의 전부다.
+ */
+export function cloneProjectSharingSharedDictionaries(project: Project): Project {
+  const next = structuredClone(withoutSharedDictionaries(project)) as Project;
+  next.tilesets = { ...project.tilesets };
+  shareUploadedAssets(project, next);
+  shareContentDigests(project, next);
+  return next;
+}
+
+/**
  * `cloneProjectForMutation` 의 사전을 보통 객체로 확정한다. 읽지 않은 타일셋은 원본 객체를, 읽었지만
  * 내용이 같은 타일셋도 원본 객체를 돌려 놓는다(후자가 있어야 `Object.values` 로 훑기만 한 변경기가
  * 모든 타일셋을 새 객체로 만들지 않는다). 바뀐 타일셋의 id 를 돌려준다. 변경기가 사전을 통째로 갈아
@@ -154,4 +169,258 @@ export function finishProjectMutation(draft: Project): ReadonlySet<string> | nul
   }
   draft.tilesets = settled;
   return changed;
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// store.update 전용 복사-쓰기(COW) 복제. 위 `cloneProjectForMutation` 은 타일셋만 늦게 복제하고 나머지(spatialAuthoring 1.3MB,
+// maps·database 등)는 편집마다 structuredClone 한다. 실측(2026-09-30, 큰 프로젝트 사본): 그 복제 52ms + 뒤이은
+// removeLegacySpriteReferences 전체 순회 25~41ms 가 편집 한 번(update 1셀 121ms)의 거의 전부다.
+// 여기서는 큰 뿌리 키를 접근자로 늦게 복제하고, 끝난 뒤 안 바뀐 부분은 원본 객체로 되돌린다.
+// 계약(타일셋과 같다): 스토어가 들고 있는 객체는 제자리에서 고치지 않는다. 변경은 update 변경기 안의 draft 로만 한다.
+// ---------------------------------------------------------------------------------------------------------------------
+
+/** 늦게 복제할 뿌리 키와 사전 깊이(0 = 값 통째로 복제, n = 사전 n 단계 아래 항목까지 늦게 복제). */
+const LAZY_PROJECT_ROOTS: Readonly<Record<string, number>> = {
+  maps: 1,
+  database: 1,
+  spatialAuthoring: 3,
+  resourceProfiles: 0,
+};
+
+type LazyRecordState = {
+  readonly originals: Record<string, unknown>;
+  readonly clones: Map<string, unknown>;
+};
+
+const lazyRecordStates = new WeakMap<object, LazyRecordState>();
+
+function isPlainRecord(value: unknown): value is Record<string, unknown> {
+  if (value === null || typeof value !== "object" || Array.isArray(value)) return false;
+  const proto = Object.getPrototypeOf(value);
+  return proto === Object.prototype || proto === null;
+}
+
+function isObjectLike(value: unknown): value is object {
+  return value !== null && typeof value === "object";
+}
+
+function defineSettled(target: object, key: string, value: unknown): void {
+  Object.defineProperty(target, key, { value, writable: true, enumerable: true, configurable: true });
+}
+
+function defineLazy(target: object, key: string, make: () => unknown, onSettle: (copy: unknown) => void): void {
+  Object.defineProperty(target, key, {
+    enumerable: true,
+    configurable: true,
+    get(): unknown {
+      const copy = make();
+      onSettle(copy);
+      defineSettled(target, key, copy);
+      return copy;
+    },
+    set(value: unknown) {
+      defineSettled(target, key, value);
+    },
+  });
+}
+
+/** 사전 하나를 늦게 복제한다. 키 순서는 원본과 같고, 객체가 아닌 값은 바로 복사한다. */
+function lazyRecord(originals: Record<string, unknown>, depth: number): Record<string, unknown> {
+  const dictionary: Record<string, unknown> = {};
+  const clones = new Map<string, unknown>();
+  for (const key of Object.keys(originals)) {
+    const original = originals[key];
+    if (!isObjectLike(original)) {
+      defineSettled(dictionary, key, original);
+      continue;
+    }
+    defineLazy(
+      dictionary,
+      key,
+      () => (depth > 0 && isPlainRecord(original) ? lazyRecord(original, depth - 1) : structuredClone(original)),
+      (copy) => clones.set(key, copy),
+    );
+  }
+  lazyRecordStates.set(dictionary, { originals, clones });
+  return dictionary;
+}
+
+type LazyFinish = {
+  /** 안 바뀐 사전이면 원본, 아니면 확정한 새 보통 객체. */
+  readonly value: Record<string, unknown>;
+  readonly unchanged: boolean;
+  /** 바뀐 항목만 담은 투영(하위 늦은 사전은 다시 투영). 정리 검사를 바뀐 곳에만 돌리는 데 쓴다. */
+  readonly projection: Record<string, unknown>;
+};
+
+/** 투영 사전 → 만들 때의 키 목록. 정리 검사가 투영에서 키를 지웠는지 알아내 실제 사전에도 지우는 데 쓴다. */
+const projectionWrappers = new WeakMap<object, readonly string[]>();
+
+function finishLazyRecord(dictionary: Record<string, unknown>): LazyFinish {
+  const state = lazyRecordStates.get(dictionary)!;
+  lazyRecordStates.delete(dictionary);
+  const settled: Record<string, unknown> = {};
+  const projection: Record<string, unknown> = {};
+  let changed = 0;
+  let keptOriginals = 0;
+  const keys = Object.keys(dictionary);
+  for (const key of keys) {
+    const descriptor = Object.getOwnPropertyDescriptor(dictionary, key)!;
+    const hasOriginal = Object.prototype.hasOwnProperty.call(state.originals, key);
+    const original = hasOriginal ? state.originals[key] : undefined;
+    if (hasOriginal) keptOriginals += 1;
+    if (descriptor.get) {
+      defineSettled(settled, key, original);
+      continue;
+    }
+    const value = descriptor.value as unknown;
+    if (hasOriginal && value === original) {
+      defineSettled(settled, key, original);
+      continue;
+    }
+    if (hasOriginal && state.clones.get(key) === value && isObjectLike(value)) {
+      if (isPlainRecord(value) && lazyRecordStates.has(value)) {
+        const nested = finishLazyRecord(value);
+        if (nested.unchanged) {
+          defineSettled(settled, key, original);
+          continue;
+        }
+        defineSettled(settled, key, nested.value);
+        defineSettled(projection, key, nested.projection);
+        changed += 1;
+        continue;
+      }
+      if (jsonEqual(value, original)) {
+        defineSettled(settled, key, original);
+        continue;
+      }
+    }
+    defineSettled(settled, key, value);
+    defineSettled(projection, key, value);
+    changed += 1;
+  }
+  const removed = keptOriginals !== Object.keys(state.originals).length;
+  if (changed === 0 && !removed) return { value: state.originals, unchanged: true, projection };
+  projectionWrappers.set(projection, Object.keys(projection));
+  return { value: settled, unchanged: false, projection };
+}
+
+type UpdateDraftState = { readonly base: Project; readonly clones: Map<string, unknown> };
+const updateDraftStates = new WeakMap<object, UpdateDraftState>();
+
+/**
+ * `store.update` 전용 복제. 타일셋은 `cloneProjectForMutation` 처럼, 큰 뿌리 키(maps·database·spatialAuthoring·
+ * resourceProfiles)는 읽힐 때만(사전은 항목 단위로) 복제한다. 뿌리 키 순서는 원본과 같다(직렬화 바이트 동일).
+ * 변경기가 끝나면 반드시 `finishProjectUpdate` 를 부른다.
+ */
+export function cloneProjectForUpdate(project: Project): Project {
+  const root = project as unknown as Record<string, unknown>;
+  const lazyKeys = Object.keys(LAZY_PROJECT_ROOTS).filter(
+    (key) => Object.prototype.hasOwnProperty.call(root, key) && isObjectLike(root[key]),
+  );
+  const shell = withoutSharedDictionaries(project) as unknown as Record<string, unknown>;
+  for (const key of lazyKeys) shell[key] = {};
+  const draft = structuredClone(shell) as unknown as Project;
+  draft.tilesets = lazyTilesetDictionary(project.tilesets);
+  shareUploadedAssets(project, draft);
+  const clones = new Map<string, unknown>();
+  for (const key of lazyKeys) {
+    const original = root[key] as object;
+    const depth = LAZY_PROJECT_ROOTS[key]!;
+    defineLazy(
+      draft,
+      key,
+      () => (depth > 0 && isPlainRecord(original) ? lazyRecord(original, depth - 1) : structuredClone(original)),
+      (copy) => clones.set(key, copy),
+    );
+  }
+  updateDraftStates.set(draft, { base: project, clones });
+  return draft;
+}
+
+export type ProjectUpdateSummary = {
+  /** 바뀐 타일셋 id. 변경기가 사전을 통째로 갈아 끼웠으면 null. */
+  readonly tilesets: ReadonlySet<string> | null;
+  /** 바뀐 맵 id. `maps` 를 통째로 갈아 끼웠으면 null(어느 맵이 바뀌었는지 모른다). */
+  readonly changedMapIds: ReadonlySet<string> | null;
+  /**
+   * removeLegacySpriteReferences 를 돌릴 대상: 뿌리 키 → 값. 늦게 복제한 뿌리는 바뀐 항목만 담은 투영이고,
+   * 나머지 뿌리(타일셋 포함)는 값 그대로다. 정리 뒤 `applyCleanedProjection` 으로 결과를 돌려 쓴다.
+   */
+  readonly cleanupTarget: Record<string, unknown>;
+};
+
+/**
+ * `cloneProjectForUpdate` 의 늦은 접근자를 보통 속성으로 확정한다. 읽지 않았거나 내용이 같은 부분은 원본 객체를
+ * 되돌려 놓는다(이후 diff·요약 기억이 `===` 로 건너뛴다). 뿌리 키 순서는 그대로다.
+ */
+export function finishProjectUpdate(draft: Project): ProjectUpdateSummary {
+  const tilesets = finishProjectMutation(draft);
+  const state = updateDraftStates.get(draft);
+  const root = draft as unknown as Record<string, unknown>;
+  const cleanupTarget: Record<string, unknown> = {};
+  let changedMapIds: ReadonlySet<string> | null = new Set<string>();
+  if (state) {
+    updateDraftStates.delete(draft);
+    const base = state.base as unknown as Record<string, unknown>;
+    for (const key of Object.keys(LAZY_PROJECT_ROOTS)) {
+      const descriptor = Object.getOwnPropertyDescriptor(root, key);
+      if (!descriptor || !Object.prototype.hasOwnProperty.call(base, key)) continue;
+      if (descriptor.get) {
+        defineSettled(root, key, base[key]);
+        continue;
+      }
+      const value = descriptor.value as unknown;
+      const original = base[key];
+      if (value === original) continue;
+      if (state.clones.get(key) === value && isObjectLike(value)) {
+        if (isPlainRecord(value) && lazyRecordStates.has(value)) {
+          const finished = finishLazyRecord(value);
+          if (finished.unchanged) {
+            defineSettled(root, key, original);
+            continue;
+          }
+          defineSettled(root, key, finished.value);
+          cleanupTarget[key] = finished.projection;
+          if (key === "maps") changedMapIds = new Set(Object.keys(finished.projection));
+          continue;
+        }
+        if (jsonEqual(value, original)) {
+          defineSettled(root, key, original);
+          continue;
+        }
+      }
+      cleanupTarget[key] = value;
+      if (key === "maps") changedMapIds = null;
+    }
+  }
+  // 늦게 복제하지 않는 뿌리(작은 문서·타일셋·자산)는 그대로 검사 대상이다.
+  for (const key of Object.keys(root)) {
+    if (!(key in LAZY_PROJECT_ROOTS)) cleanupTarget[key] = root[key];
+  }
+  return { tilesets, changedMapIds, cleanupTarget };
+}
+
+/** 정리 검사가 투영 위에서 지우거나 바꾼 뿌리 값을 실제 draft 에 돌려 쓴다(투영 안의 실제 객체는 이미 제자리에서 고쳐졌다). */
+export function applyCleanedProjection(draft: Project, target: Record<string, unknown>): void {
+  applyProjection(draft as unknown as Record<string, unknown>, target);
+}
+
+function applyProjection(real: Record<string, unknown>, projected: Record<string, unknown>): void {
+  const wrapperKeys = projectionWrappers.get(projected);
+  if (wrapperKeys) {
+    for (const key of wrapperKeys) {
+      if (!Object.prototype.hasOwnProperty.call(projected, key)) delete real[key];
+    }
+  }
+  for (const key of Object.keys(projected)) {
+    const value = projected[key];
+    const current = real[key];
+    if (value === current) continue;
+    if (isObjectLike(value) && projectionWrappers.has(value) && isPlainRecord(current)) {
+      applyProjection(current, value as Record<string, unknown>);
+      continue;
+    }
+    real[key] = value;
+  }
 }

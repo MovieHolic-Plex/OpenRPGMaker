@@ -1,0 +1,35 @@
+{
+ "id": "accessory case",
+ "slug": "accessory_case",
+ "name_ko": "장신구 진열장",
+ "category": "상점",
+ "kind": "floor",
+ "kind_ko": "바닥 기물(막힘)",
+ "canvas": [
+  16,
+  32
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 16,
+  "h": 32
+ },
+ "footprint": {
+  "w": 1,
+  "h": 1
+ },
+ "overhang_px": 16,
+ "surface": null,
+ "description": "유리 덮개 진열장(16px 솟음) — 유리 윗면 너머로 반지·목걸이·부적이 위에서 보인다(윗면 7~8행), 나무 다리.",
+ "where": "",
+ "placement": [
+  "그림이 발밑 칸 위로 16px 솟는다 → 위 1칸은 플레이어 위에 그리는 겹침층",
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": null,
+ "v5_colors": 0,
+ "material": "wood",
+ "related": [],
+ "new": true,
+ "contextRoom": "pharmacy"
+}

@@ -1,0 +1,72 @@
+{
+  "attackDefense": {
+    "predicted": 75,
+    "actual": 75,
+    "formulaPredicted": 50,
+    "formulaActual": 50,
+    "fixed": true
+  },
+  "mindDefense": {
+    "predicted": 75,
+    "actual": 75,
+    "formulaPredicted": 50,
+    "formulaActual": 50,
+    "fixed": true
+  },
+  "emotion": {
+    "predicted": 300,
+    "amounts": [
+      100,
+      200
+    ],
+    "fixed": true
+  },
+  "permanentStop": {
+    "turn": 200,
+    "result": "escape",
+    "fixed": true
+  },
+  "contractPrecedence": [
+    {
+      "record": {
+        "id": "skill_ranger_snipe",
+        "retroChoreographyId": "skill_mon_acid_spit"
+      },
+      "class": "skill_ranger_snipe"
+    },
+    {
+      "record": {
+        "id": "skill_mon_acid_spit",
+        "retroChoreographyId": "skill_ranger_snipe"
+      },
+      "monster": "skill_mon_acid_spit"
+    },
+    {
+      "record": {
+        "id": "custom_class",
+        "retroChoreographyId": "skill_ranger_snipe"
+      },
+      "class": "skill_ranger_snipe"
+    },
+    {
+      "record": {
+        "id": "custom_mon",
+        "retroChoreographyId": "skill_mon_acid_spit"
+      },
+      "monster": "skill_mon_acid_spit"
+    }
+  ],
+  "castRouting": {
+    "nested": "https://example.test/games/mage/assets/generated/charset-battlers/cast/actor1-5.png",
+    "inline": "data:image/png;base64,AQ==",
+    "fixed": true
+  },
+  "authorPreservation": {
+    "name": "저자의 삼연격",
+    "hits": [
+      0.2,
+      0.3
+    ],
+    "idempotent": true
+  }
+}

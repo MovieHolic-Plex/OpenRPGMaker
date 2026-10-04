@@ -361,7 +361,7 @@ export function charsetFollowerGraphic(textureKey: string, characterIndex: numbe
   const asset = CHARSET_ASSETS.find((entry) => entry.id === textureKey || entry.textureKey === textureKey);
   const resolved = asset?.textureKey ?? textureKey;
   return {
-    sprite: { type: "bundled", id: resolved },
+    sprite: { type: resolved.startsWith('shared_charset_actor_') ? "uploaded" : "bundled", id: resolved },
     direction: "down",
     pattern: charsetFrameIndex({ characterIndex, direction: "down", pattern: 1 }),
   };

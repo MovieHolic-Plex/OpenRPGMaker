@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/table_plate_cup/h12-B.pxg",
+ "id": "table:plate+cup",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.117
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 18,
+ "v5_colors": 12,
+ "bbox": [
+  0,
+  2,
+  31,
+  14
+ ],
+ "v5_bbox": [
+  0,
+  1,
+  31,
+  15
+ ],
+ "note": "상품을 천 윗면 위로 2줄 내려 얹힘(공중 부양 해소), 모양·크기 그대로",
+ "ok": true
+}

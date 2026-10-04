@@ -25,6 +25,15 @@ export interface OhMyPiAuthStatus {
   refreshRetryAt?: number;
   /** `/auth/logout` 이 지울 항이 실제로 있었는가. */
   removed?: boolean;
+  lastLoginError?: string;
+  pendingLogin?: {
+    verificationUrl: string;
+    userCode: string;
+    instructions?: string;
+    startedAt: number;
+    expiresAt: number;
+    pasteCallback?: boolean;
+  };
 }
 
 export interface OhMyPiLoginResult extends OhMyPiAuthStatus {
@@ -52,6 +61,7 @@ export interface OhMyPiAdapters {
   listProviders(): Promise<OhMyPiProviderSummary[]>;
   status(provider: string): Promise<OhMyPiAuthStatus>;
   login(provider: string, body?: { apiKey?: string }): Promise<OhMyPiLoginResult>;
+  cancelLogin(provider: string): Promise<OhMyPiAuthStatus>;
   saveKey(provider: string, apiKey: string): Promise<OhMyPiAuthStatus>;
   refresh(provider: string): Promise<OhMyPiAuthStatus>;
   logout(provider: string): Promise<OhMyPiAuthStatus>;

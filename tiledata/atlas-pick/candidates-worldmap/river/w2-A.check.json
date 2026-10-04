@@ -1,0 +1,43 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/river/w2-A.pxg",
+ "set": "worldmap",
+ "id": "river",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.277
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.026
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 7,
+ "bbox": [
+  3,
+  0,
+  47,
+  60
+ ],
+ "note": "강남 개울: 풀 둑 한 줄, 물 테 밝은 한 줄, 잔잔한 짧은 획",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.0
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.03
+  },
+  "seam": 0.54
+ }
+}

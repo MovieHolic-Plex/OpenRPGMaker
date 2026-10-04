@@ -1,0 +1,46 @@
+// D: 금장 몰딩과 연결된 마름모 문양, 비스듬히 못 박은 판자 세 장. 벽면 걸이의 평평한 시점.
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat F wood 1
+@mat d wood 2
+@mat G gold 3
+@mat H gold 5
+@mat g gold 2
+@mat B glass 0
+@mat b glass 1
+@mat P pine 4
+@mat p pine 3
+@mat s pine 1
+@mat n iron 4
+@mblock 0 0
+...FFFFFFFFFF...
+..FGGGHHHHGGdF..
+..FGgHggggHgdF..
+..FGBBBBBBBgdF..
+..FGbBBBBBBgdF..
+..FGbBBBBBBgdF..
+..FGbBBBBBBgdF..
+..FGbBBBBBBgdF..
+..FGbBBBBBBgdF..
+..FGbBBBBBBgdF..
+..FGbBBBBBBgdF..
+..FGbBBBBBBgdF..
+..FGbBBBBBBgdF..
+..FGgHHggHHgdF..
+..FGGGGGGGGgdF..
+..FFFFFFFFFFFF..
+@layer boards
+@mblock 0 3
+..........PPPP..
+......PPPPpnps..
+..PPPPppps......
+..pnps..........
+..........PPPP..
+......PPPPpnps..
+..PPPPppps......
+..pnps..........
+..........PPPP..
+......PPPPpnps..
+..PPPPppps......
+..pnps..........

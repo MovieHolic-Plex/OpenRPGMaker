@@ -1,0 +1,43 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/hills/w2-C.pxg",
+ "set": "worldmap",
+ "id": "hills",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.125
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.076
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 7,
+ "bbox": [
+  1,
+  0,
+  47,
+  63
+ ],
+ "note": "규모 재해석: 칸 하나에 큰 언덕 한 덩이, 굵은 짙은 윤곽",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.055
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.095
+  },
+  "seam": 0.44
+ }
+}

@@ -1,0 +1,737 @@
+<!doctype html><meta charset=utf-8><title>실내 v5 — 방별 바닥 · 바실리카 예배당 · 깔개 자동 타일 · 새 실내 15곳</title><style>
+body{background:#16161a;color:#ddd;font:14px/1.6 system-ui,sans-serif;margin:24px;max-width:1900px}
+img{image-rendering:pixelated;display:block;max-width:none}h2{margin-top:40px;border-top:1px solid #333;padding-top:16px}h3{margin:18px 0 4px}
+.pair,.row{display:flex;gap:18px;flex-wrap:wrap;align-items:flex-end}figure{margin:6px 0}figcaption{color:#aaa;font-size:12px;max-width:640px}
+table{border-collapse:collapse;font-size:13px}td,th{border:1px solid #333;padding:4px 8px;text-align:left;vertical-align:top}.ok{color:#7f7}.bad{color:#f77}
+pre{background:#22222a;padding:10px;overflow:auto;max-height:460px;font-size:12px}a{color:#9cf}.note{color:#bbb;max-width:1150px}
+nav a{margin-right:12px}.scroll{overflow-x:auto}</style>
+<h1>실내 v5</h1><p class=note>맵 26장 (v4 건물 10곳 11장 + 새 실내 15곳), 통행 검사 <b class=ok>26/26 통과</b>.
+새 칩 77개, 선 자동 타일 11벌 (352조각), 새 바닥·벽·천장 포함 바닥 27 · 벽 19 · 천장 7.
+데이터: <a href="interior-meta.json">interior-meta.json</a> · <a href="interior-atlas.png">interior-atlas.png</a> (v4 판: <a href="interior-v4.html">interior-v4.html</a>, <a href="interior-v4-meta.json">interior-v4-meta.json</a>)</p>
+<nav><a href="#p1">1. 방마다 바닥</a><a href="#p2">2. 예배당</a><a href="#p3">3. 깔개 자동 타일</a><a href="#p4">4. 새 실내 15곳</a><a href="#cat">새 기물 목록</a><a href="#anim">움직임 이음매</a><a href="#pass">통행 표</a><a href="#meta">메타데이터</a><a href="#all">고친 맵 전체</a></nav>
+<h2 id=p1>1. 방 기능마다 바닥이 다르다 — 찬 창고·손질터는 젖은 돌 + 배수 창살, 가게는 널마루·테라코타</h2>
+<h3>생선가게</h3><p class=note>찬 창고·손질터 = 젖은 돌바닥(물기·이끼), 손질터 바닥에 배수 창살 두 개. 가게 = 널마루.</p><div class=pair><figure><img src="iv5/fish_b.png"><figcaption>v4: 세 방 모두 같은 판석</figcaption></figure><figure><img src="iv5/fish_a.webp"><figcaption>v5</figcaption></figure></div>
+<h3>정육점</h3><p class=note>손질방·찬 창고 = 젖은 돌 + 배수 창살(칸막이 문 칸까지 같은 돌), 가게 = 붉은 테라코타 타일.</p><div class=pair><figure><img src="iv5/butcher_b.png"><figcaption>v4</figcaption></figure><figure><img src="iv5/butcher_a.webp"><figcaption>v5</figcaption></figure></div>
+<h3>같은 원칙을 다른 건물에도</h3><div class=row><figure><img src="iv5/f_pharmacy_b.png"><img src="iv5/f_pharmacy_a.png"><figcaption>약국: 조제실 = 돌 판석, 약사 방 = 짙은 마루 (위 v4 / 아래 v5)</figcaption></figure><figure><img src="iv5/f_tailor_b.png"><img src="iv5/f_tailor_a.png"><figcaption>재단사: 작업실 = 골풀 자리, 탈의실 = 짙은 마루 + 보라 깔개</figcaption></figure><figure><img src="iv5/f_smithy_b.png"><img src="iv5/f_smithy_a.png"><figcaption>대장간: 가게 = 널마루 (작업장 흙·그을림은 그대로)</figcaption></figure><figure><img src="iv5/f_scholar_b.png"><img src="iv5/f_scholar_a.png"><figcaption>학자의 집: 침실 파란 깔개, 서고 열람 탁자 밑 초록 깔개</figcaption></figure></div>
+<h2 id=p2>2. 예배당 — 동쪽을 향한 바실리카로 다시 설계</h2>
+<p class=note>남쪽 현관으로 들어오면 서쪽 끝(세례반·고해소·오르간)과 종탑(나선 계단·종 줄)이 왼쪽, 오른쪽으로 긴 신랑. 대리석 기둥 두 줄(아케이드)이 신랑과 남·북 측랑을 나누고, 북쪽 측랑 벽의 스테인드글라스는 기둥 사이 베이마다 하나(기둥 x=6·9·12·15·18·21, 창 x=7·10·13·16·19) — 창빛이 바닥에 떨어진다. 회중석은 모두 동쪽(제단)을 본다. 신랑 동쪽 끝 북쪽 기둥에 붙은 설교단, 남쪽 독서대. 두 계단 위 대리석 성단소에 제단 난간(자동 타일, 가운데 문), 북쪽 성가대석·남쪽 성가대 긴의자, 사방으로 도는 독립 제단, 부활초, 성체등. 동쪽 후진에는 금빛 제단 장식벽. 성단소 남쪽 문으로 제의실(제의 옷장·초 선반·손 씻는 대야·성작 작업대).</p>
+<div class=pair><figure><img src="iv5/chapel_b.png"><figcaption>v4: 남북 한 칸 홀</figcaption></figure><figure><img src="iv5/chapel_a.webp"><figcaption>v5: 동향 바실리카 (움직임)</figcaption></figure></div>
+<h3>부분 이름</h3><table><tr><th>부분</th><th>좌표(대표 칸)</th></tr><tr><td>세례·고해 자리</td><td>(4,12)</td></tr><tr><td>신랑(회중석)</td><td>(12,8)</td></tr><tr><td>북쪽 측랑</td><td>(10,4)</td></tr><tr><td>남쪽 측랑</td><td>(12,13)</td></tr><tr><td>성단소·성가대석</td><td>(26,10)</td></tr><tr><td>후진</td><td>(30,8)</td></tr><tr><td>종탑(종 치는 방)</td><td>(2,5)</td></tr><tr><td>본당: 신랑·양 측랑·세례 자리·성단소·후진</td><td>(12,8)</td></tr><tr><td>남쪽 현관</td><td>(11,17)</td></tr><tr><td>제의실</td><td>(26,18)</td></tr></table>
+<figure><img src="iv5/chapel_ov.png"><figcaption>통행 오버레이: 하늘색 = 비워 둘 문·통로, 초록 = 사용 칸, 노랑 = 출입구, 빨간 테두리 = 막는 가구</figcaption></figure>
+<h3>예배당 새 기물 (4배)</h3><div class=row><figure><img src="iv5/chapel_kit.png"><figcaption>동향 회중석 2·3칸, 성가대석, 독립 제단, 설교단, 고해소, 제단 장식벽, 종 줄, 성가 번호판, 대리석 기둥, 나선 계단</figcaption></figure><figure><img src="iv5/ck_votive_stand.webp"><figcaption>봉헌 초 받침(움직임)</figcaption></figure><figure><img src="iv5/ck_sanctuary_lamp.webp"><figcaption>성체등(움직임)</figcaption></figure><figure><img src="iv5/ck_baptismal_font.webp"><figcaption>세례반(움직임, 2×2)</figcaption></figure><figure><img src="iv5/ck_paschal_candle.webp"><figcaption>부활초(움직임)</figcaption></figure><figure><img src="iv5/chapel_rail.png"><figcaption>제단 난간 자동 타일(남북·동서), 서쪽 두 계단 성단소</figcaption></figure></div>
+<h2 id=p3>3. 깔개·통로 양탄자 = 선 자동 타일 — 끊김 없이 어떤 길이든, 끝·모서리·T·十자</h2>
+<p class=note>v4 는 1×3 양탄자 조각을 3칸마다 놓아 이음매가 보였다. v5 는 칸 목록을 받아 칸마다 이웃 4방(N E S W)과 안쪽 모서리로 조각을 고른다. 저택 현관 홀은 계단 발치 → 정문 한 줄에 뒤 복도가 十자, 응접실·식당 문으로 T자. 2층도 계단통 → 복도 → 안방 거실·서재 문으로 갈라진다.</p>
+<div class=pair><figure><img src="iv5/manor1_b.png"><figcaption>v4 현관 홀: 3칸마다 끊김</figcaption></figure><figure><img src="iv5/manor1_a.png"><figcaption>v5 1층: 十자·T자 통로 깔개 + 식당 깔개</figcaption></figure></div>
+<div class=pair><figure><img src="iv5/manor2_b.png"><figcaption>v4 2층</figcaption></figure><figure><img src="iv5/manor2_a.png"><figcaption>v5 2층: 복도 깔개, 안방 보라 깔개(사각형)</figcaption></figure></div>
+<div class=row><figure><img src="iv5/rug_0.png"><figcaption>한 줄</figcaption></figure><figure><img src="iv5/rug_1.png"><figcaption>ㄱ자</figcaption></figure><figure><img src="iv5/rug_2.png"><figcaption>T자</figcaption></figure><figure><img src="iv5/rug_3.png"><figcaption>十자</figcaption></figure><figure><img src="iv5/rug_4.png"><figcaption>사각형</figcaption></figure><figure><img src="iv5/rug_5.png"><figcaption>ㄷ자·안쪽 모서리</figcaption></figure></div>
+<h3>선 자동 타일 모두 — 조각 표 (3배)</h3>
+<figure><div class=scroll><img src="iv5/lk_rug_red.png"></div><figcaption>rug red — 32조각: 0 E ES ES+Es ESW ESW+Es ESW+Sw EW N NE NE+Ne NES NES+Es NES+Ne NESW NESW+Es NESW+Ne NESW+Sw NESW+Wn NEW NEW+Ne NEW+Wn NS NSW NSW+Sw NSW+Wn NW NW+Wn S SW SW+Sw W</figcaption></figure>
+<figure><div class=scroll><img src="iv5/lk_rug_royal.png"></div><figcaption>rug royal — 32조각: 0 E ES ES+Es ESW ESW+Es ESW+Sw EW N NE NE+Ne NES NES+Es NES+Ne NESW NESW+Es NESW+Ne NESW+Sw NESW+Wn NEW NEW+Ne NEW+Wn NS NSW NSW+Sw NSW+Wn NW NW+Wn S SW SW+Sw W</figcaption></figure>
+<figure><div class=scroll><img src="iv5/lk_rug_blue.png"></div><figcaption>rug blue — 32조각: 0 E ES ES+Es ESW ESW+Es ESW+Sw EW N NE NE+Ne NES NES+Es NES+Ne NESW NESW+Es NESW+Ne NESW+Sw NESW+Wn NEW NEW+Ne NEW+Wn NS NSW NSW+Sw NSW+Wn NW NW+Wn S SW SW+Sw W</figcaption></figure>
+<figure><div class=scroll><img src="iv5/lk_rug_green.png"></div><figcaption>rug green — 32조각: 0 E ES ES+Es ESW ESW+Es ESW+Sw EW N NE NE+Ne NES NES+Es NES+Ne NESW NESW+Es NESW+Ne NESW+Sw NESW+Wn NEW NEW+Ne NEW+Wn NS NSW NSW+Sw NSW+Wn NW NW+Wn S SW SW+Sw W</figcaption></figure>
+<figure><div class=scroll><img src="iv5/lk_rug_purple.png"></div><figcaption>rug purple — 32조각: 0 E ES ES+Es ESW ESW+Es ESW+Sw EW N NE NE+Ne NES NES+Es NES+Ne NESW NESW+Es NESW+Ne NESW+Sw NESW+Wn NEW NEW+Ne NEW+Wn NS NSW NSW+Sw NSW+Wn NW NW+Wn S SW SW+Sw W</figcaption></figure>
+<figure><div class=scroll><img src="iv5/lk_rug_brown.png"></div><figcaption>rug brown — 32조각: 0 E ES ES+Es ESW ESW+Es ESW+Sw EW N NE NE+Ne NES NES+Es NES+Ne NESW NESW+Es NESW+Ne NESW+Sw NESW+Wn NEW NEW+Ne NEW+Wn NS NSW NSW+Sw NSW+Wn NW NW+Wn S SW SW+Sw W</figcaption></figure>
+<figure><div class=scroll><img src="iv5/lk_rail.png"></div><figcaption>rail — 32조각: 0 E ES ES+Es ESW ESW+Es ESW+Sw EW N NE NE+Ne NES NES+Es NES+Ne NESW NESW+Es NESW+Ne NESW+Sw NESW+Wn NEW NEW+Ne NEW+Wn NS NSW NSW+Sw NSW+Wn NW NW+Wn S SW SW+Sw W</figcaption></figure>
+<figure><div class=scroll><img src="iv5/lk_fence.png"></div><figcaption>fence — 32조각: 0 E ES ES+Es ESW ESW+Es ESW+Sw EW N NE NE+Ne NES NES+Es NES+Ne NESW NESW+Es NESW+Ne NESW+Sw NESW+Wn NEW NEW+Ne NEW+Wn NS NSW NSW+Sw NSW+Wn NW NW+Wn S SW SW+Sw W</figcaption></figure>
+<figure><div class=scroll><img src="iv5/lk_bars.png"></div><figcaption>bars — 32조각: 0 E ES ES+Es ESW ESW+Es ESW+Sw EW N NE NE+Ne NES NES+Es NES+Ne NESW NESW+Es NESW+Ne NESW+Sw NESW+Wn NEW NEW+Ne NEW+Wn NS NSW NSW+Sw NSW+Wn NW NW+Wn S SW SW+Sw W</figcaption></figure>
+<figure><div class=scroll><img src="iv5/lk_pipe.png"></div><figcaption>pipe — 32조각: 0 E ES ES+Es ESW ESW+Es ESW+Sw EW N NE NE+Ne NES NES+Es NES+Ne NESW NESW+Es NESW+Ne NESW+Sw NESW+Wn NEW NEW+Ne NEW+Wn NS NSW NSW+Sw NSW+Wn NW NW+Wn S SW SW+Sw W</figcaption></figure>
+<figure><div class=scroll><img src="iv5/lk_altar_rail.png"></div><figcaption>altar rail — 32조각: 0 E ES ES+Es ESW ESW+Es ESW+Sw EW N NE NE+Ne NES NES+Es NES+Ne NESW NESW+Es NESW+Ne NESW+Sw NESW+Wn NEW NEW+Ne NEW+Wn NS NSW NSW+Sw NSW+Wn NW NW+Wn S SW SW+Sw W</figcaption></figure>
+<h2 id=p4>4. 새 실내 15곳 (2배, 움직임)</h2><p class=note>모두 방 둘 이상, 칸막이 규칙·걸이 규칙·벽 재질 규칙·통행 검사 통과. 방 기능마다 바닥이 다르고 천장 색도 장소에 맞췄다.</p>
+<h3>호빗 굴 — 굴 복도·식료품 방·부엌·거실·침실</h3><p class=note>13줄 × 24칸 · 바닥 hobbit + terra · 벽 hobbitw · 통행 <b class=ok>통과</b> · 방 식료품 방, 부엌, 거실, 침실, 굴 복도 · 사용 칸 26/26</p><img src="iv5/map_hobbit.webp">
+<h3>조랑말 여관 — 큰 홀(바·화덕)·부엌·술 창고·작은 응접실·객실 복도와 객실 셋</h3><p class=note>17줄 × 26칸 · 바닥 plank + dplank, flag, ktile · 벽 log · 통행 <b class=ok>통과</b> · 방 부엌, 술 창고, 응접실, 객실 복도, 객실 1, 객실 2, 큰 홀, 객실 3 · 사용 칸 41/41</p><img src="iv5/map_inn.webp">
+<h3>드워프 홀 — 큰 홀(기둥·긴 식탁)·대장간·보물 창고·양조실, 광차 선로</h3><p class=note>19줄 × 22칸 · 바닥 dwarf + flag, soot · 벽 rune · 통행 <b class=ok>통과</b> · 방 대장간, 보물 창고, 양조실, 큰 홀 · 사용 칸 36/36</p><img src="iv5/map_dwarf.webp">
+<h3>엘프 궁정 — 불의 전당(달빛 못·하프)·침소·필사실</h3><p class=note>16줄 × 22칸 · 바닥 elfstone · 벽 livewood · 통행 <b class=ok>통과</b> · 방 침소, 불의 전당, 필사실 · 사용 칸 29/29</p><img src="iv5/map_elf.webp">
+<h3>황금 연회장 — 긴 화덕 홀·왕좌 단·왕의 방·식료 창고·부엌·무기고</h3><p class=note>20줄 × 25칸 · 바닥 rush + dplank, earth, flag, plank · 벽 goldwood · 통행 <b class=ok>통과</b> · 방 왕의 방, 연회장, 부엌, 식료 창고, 무기고 · 사용 칸 51/51</p><img src="iv5/map_mead.webp">
+<h3>왕의 알현실 — 알현실(기둥·단·왕좌)·대기실·근위대 방·왕의 서재</h3><p class=note>22줄 × 23칸 · 바닥 marble + dplank, flag · 벽 marblewall · 통행 <b class=ok>통과</b> · 방 근위대 방, 알현실 + 대기실 (3칸 대문으로 이어짐), 왕의 서재 · 사용 칸 30/30</p><img src="iv5/map_throne.webp">
+<h3>마법사의 둥근 탑 — 서재(나선 계단)·연금술 방·입구 홀</h3><p class=note>18줄 × 18칸 · 바닥 flag + dplank, earth · 벽 stone · 통행 <b class=ok>통과</b> · 방 서재, 연금술 방, 입구 홀 · 사용 칸 22/22</p><img src="iv5/map_tower.webp">
+<h3>성 지하 감옥 — 간수실(성으로 오르는 계단)·복도·감방 셋(쇠창살)</h3><p class=note>11줄 × 22칸 · 바닥 dungeon + flag · 벽 dungeonw · 통행 <b class=ok>통과</b> · 방 간수실, 감방 1, 감방 2, 감방 3 · 사용 칸 14/14</p><img src="iv5/map_dungeon.webp">
+<h3>광산 — 갱도(광차 선로)·채굴 막장·화약고·광부 쉼터</h3><p class=note>14줄 × 22칸 · 바닥 cave + earth · 벽 mine · 통행 <b class=ok>통과</b> · 방 화약고, 갱도·막장, 광부 쉼터 · 사용 칸 19/19</p><img src="iv5/map_mine.webp">
+<h3>마도 기관실 — 기관 홀(증기 기관·톱니벽·계기판)·제어실·마도 갑옷 정비소</h3><p class=note>13줄 × 22칸 · 바닥 grate + dungeon · 벽 riveted · 통행 <b class=ok>통과</b> · 방 기관 홀, 제어실, 정비소 · 사용 칸 12/12</p><img src="iv5/map_magitek.webp">
+<h3>오페라 극장 — 무대·오케스트라 석·객석, 무대 뒤·분장실·소품 창고</h3><p class=note>18줄 × 24칸 · 바닥 dplank + dplank, plank, stage · 벽 velvet · 통행 <b class=ok>통과</b> · 방 무대 뒤, 무대·객석, 분장실, 소품 창고 · 사용 칸 64/64</p><img src="iv5/map_opera.webp">
+<h3>카지노 — 도박장(룰렛·카드·슬롯)·환전 창구·라운지 바</h3><p class=note>15줄 × 22칸 · 바닥 casino + dplank · 벽 velvet · 통행 <b class=ok>통과</b> · 방 도박장 (창살 우리 환전 창구 포함), 라운지 바 · 사용 칸 44/44</p><img src="iv5/map_casino.webp">
+<h3>초코보 마구간 — 칸막이 우리 넷·통로·마구 방·관리인 방</h3><p class=note>13줄 × 20칸 · 바닥 straw + dplank, earth, plank · 벽 stablew · 통행 <b class=ok>통과</b> · 방 마구간, 마구 방, 관리인 방 · 사용 칸 24/24</p><img src="iv5/map_stable.webp">
+<h3>눈 덮인 탄광 마을 집 — 거실(난로)·부엌·침실·눈 털이 현관</h3><p class=note>14줄 × 16칸 · 바닥 narshe + snowmat, terra · 벽 logdark · 통행 <b class=ok>통과</b> · 방 침실, 부엌, 거실, 현관 · 사용 칸 20/20</p><img src="iv5/map_narshe.webp">
+<h3>비 오는 뒷골목 선술집 — 술집(카드판)·도둑 소굴·창고</h3><p class=note>13줄 × 16칸 · 바닥 slum + earth · 벽 slumw · 통행 <b class=ok>통과</b> · 방 술집, 도둑 소굴, 창고 · 사용 칸 23/23</p><img src="iv5/map_zozo.webp">
+<h2 id=cat>새 기물 목록 (v5, 3배 · 움직이는 것은 움직임)</h2>
+<h3>장식 (9)</h3><div class=row><figure><img src="iv5/o_column_marble.png"><figcaption>대리석 기둥<br><small>column marble · 1×1 floor +24px</small></figcaption></figure><figure><img src="iv5/o_column_stone.png"><figcaption>돌 기둥<br><small>column stone · 1×1 floor +24px</small></figcaption></figure><figure><img src="iv5/o_column_dwarf.png"><figcaption>드워프 네모 기둥(룬 무늬)<br><small>column dwarf · 1×1 floor +24px</small></figcaption></figure><figure><img src="iv5/o_column_wood.png"><figcaption>나무 기둥(금 띠)<br><small>column wood · 1×1 floor +24px</small></figcaption></figure><figure><img src="iv5/o_column_live.png"><figcaption>살아 있는 나무 기둥(잎 머리)<br><small>column live · 1×1 floor +24px</small></figcaption></figure><figure><img src="iv5/o_column_steel.png"><figcaption>강철 기둥(리벳)<br><small>column steel · 1×1 floor +24px</small></figcaption></figure><figure><img src="iv5/o_wall_torch.webp"><figcaption>벽 횃불(움직임)<br><small>wall torch · 1×0 hang</small></figcaption></figure><figure><img src="iv5/o_brazier.webp"><figcaption>화로(움직임)<br><small>brazier · 1×1 floor</small></figcaption></figure><figure><img src="iv5/o_hanging_lantern.webp"><figcaption>매단 등(움직임)<br><small>hanging lantern · 1×0 hang</small></figcaption></figure></div>
+<h3>호빗 굴 (5)</h3><div class=row><figure><img src="iv5/o_round_window.png"><figcaption>둥근 창<br><small>round window · 1×0 hang</small></figcaption></figure><figure><img src="iv5/o_round_door.png"><figcaption>둥근 문(2칸)<br><small>round door · 2×0 hang</small></figcaption></figure><figure><img src="iv5/o_round_arch.png"><figcaption>둥근 아치 문틀(3칸)<br><small>round arch · 3×0 hang</small></figcaption></figure><figure><img src="iv5/o_pipe_rack.png"><figcaption>담뱃대 걸이<br><small>pipe rack · 1×0 hang</small></figcaption></figure><figure><img src="iv5/o_cheese_wheels.png"><figcaption>바퀴 치즈<br><small>cheese wheels · 1×1 floor</small></figcaption></figure></div>
+<h3>광산 (8)</h3><div class=row><figure><img src="iv5/o_mine_cart.png"><figcaption>광차<br><small>mine cart · 1×1 floor</small></figcaption></figure><figure><img src="iv5/o_ore_pile.png"><figcaption>광석 더미<br><small>ore pile · 1×1 floor</small></figcaption></figure><figure><img src="iv5/o_rune_stone.webp"><figcaption>룬석(빛남·움직임)<br><small>rune stone · 1×1 floor +16px</small></figcaption></figure><figure><img src="iv5/o_stone_throne.png"><figcaption>돌 왕좌<br><small>stone throne · 1×1 floor +16px</small></figcaption></figure><figure><img src="iv5/o_ore_vein.png"><figcaption>광맥(벽면)<br><small>ore vein · 1×0 hang</small></figcaption></figure><figure><img src="iv5/o_pick_rack.png"><figcaption>곡괭이 걸이<br><small>pick rack · 1×0 hang</small></figcaption></figure><figure><img src="iv5/o_powder_kegs.png"><figcaption>화약 통<br><small>powder kegs · 1×1 floor</small></figcaption></figure><figure><img src="iv5/o_timber_prop.png"><figcaption>갱도 버팀목<br><small>timber prop · 1×1 floor +24px</small></figcaption></figure></div>
+<h3>엘프 궁정 (5)</h3><div class=row><figure><img src="iv5/o_moon_pool.webp"><figcaption>달빛 못(움직임, 3×2)<br><small>moon pool · 3×2 floor</small></figcaption></figure><figure><img src="iv5/o_elven_harp.png"><figcaption>엘프 하프<br><small>elven harp · 1×1 floor +16px</small></figcaption></figure><figure><img src="iv5/o_leaf_lantern.webp"><figcaption>잎 등(움직임)<br><small>leaf lantern · 1×0 hang</small></figcaption></figure><figure><img src="iv5/o_elven_bed.png"><figcaption>엘프 침대<br><small>elven bed · 1×2 wall +6px</small></figcaption></figure><figure><img src="iv5/o_white_tree.png"><figcaption>흰 나무(화분)<br><small>white tree · 1×1 floor +24px</small></figcaption></figure></div>
+<h3>연회장·알현실 (3)</h3><div class=row><figure><img src="iv5/o_long_hearth_5.webp"><figcaption>긴 화덕 5칸(움직임)<br><small>long hearth 5 · 1×5 floor</small></figcaption></figure><figure><img src="iv5/o_tapestry.png"><figcaption>태피스트리(2줄)<br><small>tapestry · 1×0 hang</small></figcaption></figure><figure><img src="iv5/o_royal_banner.png"><figcaption>왕기(2줄)<br><small>royal banner · 1×0 hang</small></figcaption></figure></div>
+<h3>마법사의 탑 (4)</h3><div class=row><figure><img src="iv5/o_spiral_stair.png"><figcaption>나선 계단(2×2)<br><small>spiral stair · 2×2 floor +32px</small></figcaption></figure><figure><img src="iv5/o_owl_perch.webp"><figcaption>부엉이 횃대(움직임)<br><small>owl perch · 1×1 floor +16px</small></figcaption></figure><figure><img src="iv5/o_star_chart.png"><figcaption>별자리표<br><small>star chart · 1×0 hang</small></figcaption></figure><figure><img src="iv5/o_orrery.webp"><figcaption>천체 모형(움직임)<br><small>orrery · 1×1 floor +8px</small></figcaption></figure></div>
+<h3>지하 감옥 (3)</h3><div class=row><figure><img src="iv5/o_shackles.png"><figcaption>족쇄<br><small>shackles · 1×0 hang</small></figcaption></figure><figure><img src="iv5/o_slop_bucket.png"><figcaption>오물통<br><small>slop bucket · 1×1 floor</small></figcaption></figure><figure><img src="iv5/o_drip_puddle.webp"><figcaption>물방울 웅덩이(움직임)<br><small>drip puddle · 1×1 flat</small></figcaption></figure></div>
+<h3>상점 (1)</h3><div class=row><figure><img src="iv5/o_drain_grate.png"><figcaption>배수 창살(바닥)<br><small>drain grate · 1×1 flat</small></figcaption></figure></div>
+<h3>마도 기관 (6)</h3><div class=row><figure><img src="iv5/o_gear_wall.webp"><figcaption>톱니 벽(움직임, 2칸)<br><small>gear wall · 2×0 hang</small></figcaption></figure><figure><img src="iv5/o_gauge_panel.webp"><figcaption>계기판(움직임)<br><small>gauge panel · 1×0 hang</small></figcaption></figure><figure><img src="iv5/o_steam_vent.webp"><figcaption>증기 구멍(움직임)<br><small>steam vent · 1×1 floor +8px</small></figcaption></figure><figure><img src="iv5/o_magitek_engine.webp"><figcaption>마도 기관(움직임, 3×2)<br><small>magitek engine · 3×2 floor +16px</small></figcaption></figure><figure><img src="iv5/o_control_console.webp"><figcaption>제어반(움직임, 2칸)<br><small>control console · 2×1 wall +8px</small></figcaption></figure><figure><img src="iv5/o_magitek_armor.png"><figcaption>마도 갑옷(2×2)<br><small>magitek armor · 2×2 floor +16px</small></figcaption></figure></div>
+<h3>극장 (7)</h3><div class=row><figure><img src="iv5/o_theater_seat.png"><figcaption>극장 좌석<br><small>theater seat · 1×1 floor</small></figcaption></figure><figure><img src="iv5/o_stage_curtain.png"><figcaption>무대 막(2줄)<br><small>stage curtain · 1×0 hang</small></figcaption></figure><figure><img src="iv5/o_curtain_wing.png"><figcaption>무대 날개 막<br><small>curtain wing · 1×1 floor +24px</small></figcaption></figure><figure><img src="iv5/o_footlights.webp"><figcaption>각광(움직임, 바닥)<br><small>footlights · 1×1 flat</small></figcaption></figure><figure><img src="iv5/o_music_stand.png"><figcaption>보면대<br><small>music stand · 1×1 floor +8px</small></figcaption></figure><figure><img src="iv5/o_scenery_flat.png"><figcaption>무대 배경판(3칸)<br><small>scenery flat · 3×1 wall +16px</small></figcaption></figure><figure><img src="iv5/o_conductor_podium.png"><figcaption>지휘대<br><small>conductor podium · 1×1 floor</small></figcaption></figure></div>
+<h3>카지노 (7)</h3><div class=row><figure><img src="iv5/o_felt_1x1.png"><figcaption>카드 탁자(초록 펠트) 1×1<br><small>felt 1x1 · 1×1 floor</small></figcaption></figure><figure><img src="iv5/o_felt_2x1.png"><figcaption>카드 탁자(초록 펠트) 2×1<br><small>felt 2x1 · 2×1 floor</small></figcaption></figure><figure><img src="iv5/o_felt_3x1.png"><figcaption>카드 탁자(초록 펠트) 3×1<br><small>felt 3x1 · 3×1 floor</small></figcaption></figure><figure><img src="iv5/o_felt_2x2.png"><figcaption>카드 탁자(초록 펠트) 2×2<br><small>felt 2x2 · 2×2 floor</small></figcaption></figure><figure><img src="iv5/o_felt_3x2.png"><figcaption>카드 탁자(초록 펠트) 3×2<br><small>felt 3x2 · 3×2 floor</small></figcaption></figure><figure><img src="iv5/o_roulette_table.webp"><figcaption>룰렛(움직임, 2×2)<br><small>roulette table · 2×2 floor</small></figcaption></figure><figure><img src="iv5/o_slot_machine.webp"><figcaption>슬롯머신(움직임)<br><small>slot machine · 1×1 wall +16px</small></figcaption></figure></div>
+<h3>마구간 (6)</h3><div class=row><figure><img src="iv5/o_chocobo.webp"><figcaption>초코보(움직임)<br><small>chocobo · 1×1 floor +16px</small></figcaption></figure><figure><img src="iv5/o_hay_bale.png"><figcaption>건초 더미<br><small>hay bale · 1×1 floor</small></figcaption></figure><figure><img src="iv5/o_feed_trough.png"><figcaption>먹이통(2칸)<br><small>feed trough · 2×1 floor</small></figcaption></figure><figure><img src="iv5/o_water_trough.png"><figcaption>물통(2칸)<br><small>water trough · 2×1 floor</small></figcaption></figure><figure><img src="iv5/o_saddle_rack.png"><figcaption>안장걸이<br><small>saddle rack · 1×1 floor +8px</small></figcaption></figure><figure><img src="iv5/o_pitchfork.png"><figcaption>쇠스랑<br><small>pitchfork · 1×0 hang</small></figcaption></figure></div>
+<h3>예배당 (13)</h3><div class=row><figure><img src="iv5/o_pew_E2.png"><figcaption>동쪽을 보는 회중석(1×2)<br><small>pew E2 · 1×2 floor +8px</small></figcaption></figure><figure><img src="iv5/o_pew_E3.png"><figcaption>동쪽을 보는 회중석(1×3)<br><small>pew E3 · 1×3 floor +8px</small></figcaption></figure><figure><img src="iv5/o_choir_stall.png"><figcaption>성가대석(3칸, 남향)<br><small>choir stall · 3×1 wall +24px</small></figcaption></figure><figure><img src="iv5/o_altar_E.png"><figcaption>독립 제단(2×2, 옆에서 본 것)<br><small>altar E · 2×2 floor +8px</small></figcaption></figure><figure><img src="iv5/o_pulpit.png"><figcaption>설교단(2×2, 계단)<br><small>pulpit · 2×2 floor +24px</small></figcaption></figure><figure><img src="iv5/o_confessional.png"><figcaption>고해소(3칸)<br><small>confessional · 3×1 wall +24px</small></figcaption></figure><figure><img src="iv5/o_reredos.png"><figcaption>제단 장식벽(3칸, 2줄)<br><small>reredos · 3×0 hang</small></figcaption></figure><figure><img src="iv5/o_bell_rope.png"><figcaption>종 줄(2줄)<br><small>bell rope · 1×0 hang</small></figcaption></figure><figure><img src="iv5/o_hymn_board.png"><figcaption>성가 번호판<br><small>hymn board · 1×0 hang</small></figcaption></figure><figure><img src="iv5/o_votive_stand.webp"><figcaption>봉헌 초 받침(움직임)<br><small>votive stand · 1×1 floor +8px</small></figcaption></figure><figure><img src="iv5/o_sanctuary_lamp.webp"><figcaption>성체등(움직임)<br><small>sanctuary lamp · 1×0 hang</small></figcaption></figure><figure><img src="iv5/o_baptismal_font.webp"><figcaption>세례반(움직임, 2×2)<br><small>baptismal font · 2×2 floor +8px</small></figcaption></figure><figure><img src="iv5/o_paschal_candle.webp"><figcaption>부활초(움직임)<br><small>paschal candle · 1×1 floor +32px</small></figcaption></figure></div>
+<h3>새 바닥 · 벽면 (2배)</h3><div class=row><figure><img src="iv5/sw_floor_boards.png"><figcaption>널마루<br><small>floor:boards</small></figcaption></figure><figure><img src="iv5/sw_floor_casino.png"><figcaption>카지노 카펫<br><small>floor:casino</small></figcaption></figure><figure><img src="iv5/sw_floor_cave.png"><figcaption>동굴 바닥<br><small>floor:cave</small></figcaption></figure><figure><img src="iv5/sw_floor_check.png"><figcaption>대리석 체크<br><small>floor:check</small></figcaption></figure><figure><img src="iv5/sw_floor_cobble.png"><figcaption>자갈<br><small>floor:cobble</small></figcaption></figure><figure><img src="iv5/sw_floor_dplank.png"><figcaption>짙은 마루<br><small>floor:dplank</small></figcaption></figure><figure><img src="iv5/sw_floor_dungeon.png"><figcaption>감옥 돌바닥<br><small>floor:dungeon</small></figcaption></figure><figure><img src="iv5/sw_floor_dwarf.png"><figcaption>드워프 판석(금 줄)<br><small>floor:dwarf</small></figcaption></figure><figure><img src="iv5/sw_floor_earth.png"><figcaption>흙바닥<br><small>floor:earth</small></figcaption></figure><figure><img src="iv5/sw_floor_elfstone.png"><figcaption>엘프 옥돌<br><small>floor:elfstone</small></figcaption></figure><figure><img src="iv5/sw_floor_flag.png"><figcaption>돌 판석<br><small>floor:flag</small></figcaption></figure><figure><img src="iv5/sw_floor_grate.png"><figcaption>쇠 격자 바닥<br><small>floor:grate</small></figcaption></figure><figure><img src="iv5/sw_floor_grey.png"><figcaption>회색 판석<br><small>floor:grey</small></figcaption></figure><figure><img src="iv5/sw_floor_hobbit.png"><figcaption>호빗 굴 마루<br><small>floor:hobbit</small></figcaption></figure><figure><img src="iv5/sw_floor_ktile.png"><figcaption>부엌 타일<br><small>floor:ktile</small></figcaption></figure><figure><img src="iv5/sw_floor_marble.png"><figcaption>대리석<br><small>floor:marble</small></figcaption></figure><figure><img src="iv5/sw_floor_narshe.png"><figcaption>탄광 마을 널마루<br><small>floor:narshe</small></figcaption></figure><figure><img src="iv5/sw_floor_ovenf.png"><figcaption>화덕 앞 벽돌<br><small>floor:ovenf</small></figcaption></figure><figure><img src="iv5/sw_floor_plank.png"><figcaption>밝은 널마루<br><small>floor:plank</small></figcaption></figure><figure><img src="iv5/sw_floor_rush.png"><figcaption>골풀 깐 바닥<br><small>floor:rush</small></figcaption></figure><figure><img src="iv5/sw_floor_slum.png"><figcaption>젖은 뒷골목 돌<br><small>floor:slum</small></figcaption></figure><figure><img src="iv5/sw_floor_snowmat.png"><figcaption>눈 털이 매트<br><small>floor:snowmat</small></figcaption></figure><figure><img src="iv5/sw_floor_soot.png"><figcaption>그을린 흙<br><small>floor:soot</small></figcaption></figure><figure><img src="iv5/sw_floor_stage.png"><figcaption>무대 마루<br><small>floor:stage</small></figcaption></figure><figure><img src="iv5/sw_floor_straw.png"><figcaption>짚 깐 바닥<br><small>floor:straw</small></figcaption></figure><figure><img src="iv5/sw_floor_terra.png"><figcaption>붉은 테라코타 타일<br><small>floor:terra</small></figcaption></figure><figure><img src="iv5/sw_floor_wetstone.png"><figcaption>젖은 돌바닥(물기·이끼)<br><small>floor:wetstone</small></figcaption></figure><figure><img src="iv5/sw_wall_dungeonw.png"><figcaption>이끼 낀 감옥 벽<br><small>wall:dungeonw</small></figcaption></figure><figure><img src="iv5/sw_wall_goldwood.png"><figcaption>금 장식 나무 벽<br><small>wall:goldwood</small></figcaption></figure><figure><img src="iv5/sw_wall_grey.png"><figcaption>grey<br><small>wall:grey</small></figcaption></figure><figure><img src="iv5/sw_wall_hobbitw.png"><figcaption>호빗 굴 회벽<br><small>wall:hobbitw</small></figcaption></figure><figure><img src="iv5/sw_wall_ktile.png"><figcaption>부엌 타일 벽<br><small>wall:ktile</small></figcaption></figure><figure><img src="iv5/sw_wall_livewood.png"><figcaption>살아 있는 나무 벽<br><small>wall:livewood</small></figcaption></figure><figure><img src="iv5/sw_wall_log.png"><figcaption>통나무<br><small>wall:log</small></figcaption></figure><figure><img src="iv5/sw_wall_logdark.png"><figcaption>짙은 통나무<br><small>wall:logdark</small></figcaption></figure><figure><img src="iv5/sw_wall_marblewall.png"><figcaption>대리석 벽+붉은 띠<br><small>wall:marblewall</small></figcaption></figure><figure><img src="iv5/sw_wall_mine.png"><figcaption>갱도 벽(버팀 들보)<br><small>wall:mine</small></figcaption></figure><figure><img src="iv5/sw_wall_plaster.png"><figcaption>회벽+판자 징두리<br><small>wall:plaster</small></figcaption></figure><figure><img src="iv5/sw_wall_riveted.png"><figcaption>리벳 강철 벽<br><small>wall:riveted</small></figcaption></figure><figure><img src="iv5/sw_wall_rock.png"><figcaption>바위벽<br><small>wall:rock</small></figcaption></figure><figure><img src="iv5/sw_wall_rubble.png"><figcaption>잡석<br><small>wall:rubble</small></figcaption></figure><figure><img src="iv5/sw_wall_rune.png"><figcaption>룬 새긴 돌벽<br><small>wall:rune</small></figcaption></figure><figure><img src="iv5/sw_wall_slumw.png"><figcaption>무너진 벽돌<br><small>wall:slumw</small></figcaption></figure><figure><img src="iv5/sw_wall_stablew.png"><figcaption>마구간 판자 벽<br><small>wall:stablew</small></figcaption></figure><figure><img src="iv5/sw_wall_stone.png"><figcaption>돌벽<br><small>wall:stone</small></figcaption></figure><figure><img src="iv5/sw_wall_velvet.png"><figcaption>붉은 벨벳 벽<br><small>wall:velvet</small></figcaption></figure></div>
+<h2 id=anim>움직임 이음매 — 새로 움직이는 기물 (12프레임 × 100ms, t=12 가 t=0 과 픽셀 동일해야 통과)</h2><table><tr><th>기물</th><th>첫</th><th>마지막</th><th>움직임</th><th>주기 일치</th><th>이음 변화 / 평균 한 걸음 (px)</th></tr>
+<tr><td>벽 횃불(움직임)</td><td><img src="iv5/a0_wall_torch.png"></td><td><img src="iv5/a1_wall_torch.png"></td><td><img src="iv5/aa_wall_torch.webp"></td><td class=ok>예</td><td>5 / 4.3</td></tr>
+<tr><td>화로(움직임)</td><td><img src="iv5/a0_brazier.png"></td><td><img src="iv5/a1_brazier.png"></td><td><img src="iv5/aa_brazier.webp"></td><td class=ok>예</td><td>10 / 7.1</td></tr>
+<tr><td>매단 등(움직임)</td><td><img src="iv5/a0_hanging_lantern.png"></td><td><img src="iv5/a1_hanging_lantern.png"></td><td><img src="iv5/aa_hanging_lantern.webp"></td><td class=ok>예</td><td>12 / 6.5</td></tr>
+<tr><td>룬석(빛남·움직임)</td><td><img src="iv5/a0_rune_stone.png"></td><td><img src="iv5/a1_rune_stone.png"></td><td><img src="iv5/aa_rune_stone.webp"></td><td class=ok>예</td><td>16 / 4.4</td></tr>
+<tr><td>달빛 못(움직임, 3×2)</td><td><img src="iv5/a0_moon_pool.png"></td><td><img src="iv5/a1_moon_pool.png"></td><td><img src="iv5/aa_moon_pool.webp"></td><td class=ok>예</td><td>159 / 198.4</td></tr>
+<tr><td>잎 등(움직임)</td><td><img src="iv5/a0_leaf_lantern.png"></td><td><img src="iv5/a1_leaf_lantern.png"></td><td><img src="iv5/aa_leaf_lantern.webp"></td><td class=ok>예</td><td>0 / 2.9</td></tr>
+<tr><td>긴 화덕 5칸(움직임)</td><td><img src="iv5/a0_long_hearth_5.png"></td><td><img src="iv5/a1_long_hearth_5.png"></td><td><img src="iv5/aa_long_hearth_5.webp"></td><td class=ok>예</td><td>284 / 299.3</td></tr>
+<tr><td>부엉이 횃대(움직임)</td><td><img src="iv5/a0_owl_perch.png"></td><td><img src="iv5/a1_owl_perch.png"></td><td><img src="iv5/aa_owl_perch.webp"></td><td class=ok>예</td><td>0 / 0.7</td></tr>
+<tr><td>천체 모형(움직임)</td><td><img src="iv5/a0_orrery.png"></td><td><img src="iv5/a1_orrery.png"></td><td><img src="iv5/aa_orrery.webp"></td><td class=ok>예</td><td>8 / 6.9</td></tr>
+<tr><td>물방울 웅덩이(움직임)</td><td><img src="iv5/a0_drip_puddle.png"></td><td><img src="iv5/a1_drip_puddle.png"></td><td><img src="iv5/aa_drip_puddle.webp"></td><td class=ok>예</td><td>7 / 17.9</td></tr>
+<tr><td>톱니 벽(움직임, 2칸)</td><td><img src="iv5/a0_gear_wall.png"></td><td><img src="iv5/a1_gear_wall.png"></td><td><img src="iv5/aa_gear_wall.webp"></td><td class=ok>예</td><td>41 / 38.5</td></tr>
+<tr><td>계기판(움직임)</td><td><img src="iv5/a0_gauge_panel.png"></td><td><img src="iv5/a1_gauge_panel.png"></td><td><img src="iv5/aa_gauge_panel.webp"></td><td class=ok>예</td><td>7 / 5.9</td></tr>
+<tr><td>증기 구멍(움직임)</td><td><img src="iv5/a0_steam_vent.png"></td><td><img src="iv5/a1_steam_vent.png"></td><td><img src="iv5/aa_steam_vent.webp"></td><td class=ok>예</td><td>13 / 12.5</td></tr>
+<tr><td>마도 기관(움직임, 3×2)</td><td><img src="iv5/a0_magitek_engine.png"></td><td><img src="iv5/a1_magitek_engine.png"></td><td><img src="iv5/aa_magitek_engine.webp"></td><td class=ok>예</td><td>112 / 114.7</td></tr>
+<tr><td>제어반(움직임, 2칸)</td><td><img src="iv5/a0_control_console.png"></td><td><img src="iv5/a1_control_console.png"></td><td><img src="iv5/aa_control_console.webp"></td><td class=ok>예</td><td>6 / 5.3</td></tr>
+<tr><td>각광(움직임, 바닥)</td><td><img src="iv5/a0_footlights.png"></td><td><img src="iv5/a1_footlights.png"></td><td><img src="iv5/aa_footlights.webp"></td><td class=ok>예</td><td>0 / 4.4</td></tr>
+<tr><td>룰렛(움직임, 2×2)</td><td><img src="iv5/a0_roulette_table.png"></td><td><img src="iv5/a1_roulette_table.png"></td><td><img src="iv5/aa_roulette_table.webp"></td><td class=ok>예</td><td>8 / 10.9</td></tr>
+<tr><td>슬롯머신(움직임)</td><td><img src="iv5/a0_slot_machine.png"></td><td><img src="iv5/a1_slot_machine.png"></td><td><img src="iv5/aa_slot_machine.webp"></td><td class=ok>예</td><td>28 / 25.8</td></tr>
+<tr><td>초코보(움직임)</td><td><img src="iv5/a0_chocobo.png"></td><td><img src="iv5/a1_chocobo.png"></td><td><img src="iv5/aa_chocobo.webp"></td><td class=ok>예</td><td>144 / 39.4</td></tr>
+<tr><td>봉헌 초 받침(움직임)</td><td><img src="iv5/a0_votive_stand.png"></td><td><img src="iv5/a1_votive_stand.png"></td><td><img src="iv5/aa_votive_stand.webp"></td><td class=ok>예</td><td>9 / 7.9</td></tr>
+<tr><td>성체등(움직임)</td><td><img src="iv5/a0_sanctuary_lamp.png"></td><td><img src="iv5/a1_sanctuary_lamp.png"></td><td><img src="iv5/aa_sanctuary_lamp.webp"></td><td class=ok>예</td><td>1 / 1.2</td></tr>
+<tr><td>세례반(움직임, 2×2)</td><td><img src="iv5/a0_baptismal_font.png"></td><td><img src="iv5/a1_baptismal_font.png"></td><td><img src="iv5/aa_baptismal_font.webp"></td><td class=ok>예</td><td>12 / 12.0</td></tr>
+<tr><td>부활초(움직임)</td><td><img src="iv5/a0_paschal_candle.png"></td><td><img src="iv5/a1_paschal_candle.png"></td><td><img src="iv5/aa_paschal_candle.webp"></td><td class=ok>예</td><td>3 / 3.7</td></tr>
+</table>
+<h2 id=pass>통행 검사 표 (맵 26장)</h2><table><tr><th>맵</th><th>결과</th><th>방(닿음/전체)</th><th>사용 칸</th><th>비워 둘 칸</th><th>닿는 바닥 / 바닥</th><th>방 이름</th></tr>
+<tr><td>빵집</td><td class=ok>통과</td><td>3/3</td><td>24/24</td><td>16</td><td>72/105</td><td>굽는 방, 밀가루 창고, 가게</td></tr>
+<tr><td>약국</td><td class=ok>통과</td><td>3/3</td><td>23/23</td><td>14</td><td>67/96</td><td>조제실, 약사 방, 가게</td></tr>
+<tr><td>생선가게</td><td class=ok>통과</td><td>3/3</td><td>19/19</td><td>16</td><td>60/86</td><td>찬 창고, 손질터, 가게</td></tr>
+<tr><td>정육점</td><td class=ok>통과</td><td>3/3</td><td>14/14</td><td>14</td><td>49/70</td><td>손질방, 찬 창고, 가게</td></tr>
+<tr><td>대장간</td><td class=ok>통과</td><td>3/3</td><td>19/19</td><td>14</td><td>55/80</td><td>작업장, 대장장이 방, 가게</td></tr>
+<tr><td>예배당</td><td class=ok>통과</td><td>4/4</td><td>43/43</td><td>22</td><td>248/332</td><td>종탑(종 치는 방), 본당: 신랑·양 측랑·세례 자리·성단소·후진, 남쪽 현관, 제의실</td></tr>
+<tr><td>학자의 집</td><td class=ok>통과</td><td>4/4</td><td>28/28</td><td>21</td><td>64/103</td><td>부엌, 침실, 서재, 서고</td></tr>
+<tr><td>재단사</td><td class=ok>통과</td><td>3/3</td><td>21/21</td><td>16</td><td>76/105</td><td>작업실, 탈의실, 가게</td></tr>
+<tr><td>선술집</td><td class=ok>통과</td><td>3/3</td><td>40/40</td><td>14</td><td>92/145</td><td>부엌, 술 창고, 바</td></tr>
+<tr><td>저택 1층</td><td class=ok>통과</td><td>7/7</td><td>50/50</td><td>48</td><td>175/241</td><td>하녀 방, 창고, 현관 홀, 부엌, 뒤 복도(서), 응접실, 식당</td></tr>
+<tr><td>저택 2층</td><td class=ok>통과</td><td>9/9</td><td>43/43</td><td>48</td><td>157/219</td><td>손님방 1, 손님방 2, 계단 복도, 욕실, 손님방 3, 복도(서), 안방, 안방 거실, 서재</td></tr>
+<tr><td>호빗 굴 (v5 새)</td><td class=ok>통과</td><td>5/5</td><td>26/26</td><td>26</td><td>85/117</td><td>식료품 방, 부엌, 거실, 침실, 굴 복도</td></tr>
+<tr><td>조랑말 여관 (v5 새)</td><td class=ok>통과</td><td>8/8</td><td>41/41</td><td>49</td><td>144/204</td><td>부엌, 술 창고, 응접실, 객실 복도, 객실 1, 객실 2, 큰 홀, 객실 3</td></tr>
+<tr><td>드워프 홀 (v5 새)</td><td class=ok>통과</td><td>4/4</td><td>36/36</td><td>21</td><td>172/227</td><td>대장간, 보물 창고, 양조실, 큰 홀</td></tr>
+<tr><td>엘프 궁정 (v5 새)</td><td class=ok>통과</td><td>3/3</td><td>29/29</td><td>16</td><td>138/182</td><td>침소, 불의 전당, 필사실</td></tr>
+<tr><td>황금 연회장 (v5 새)</td><td class=ok>통과</td><td>5/5</td><td>51/51</td><td>15</td><td>187/255</td><td>왕의 방, 연회장, 부엌, 식료 창고, 무기고</td></tr>
+<tr><td>왕의 알현실 (v5 새)</td><td class=ok>통과</td><td>3/3</td><td>30/30</td><td>9</td><td>183/219</td><td>근위대 방, 알현실 + 대기실 (3칸 대문으로 이어짐), 왕의 서재</td></tr>
+<tr><td>마법사의 탑 (v5 새)</td><td class=ok>통과</td><td>3/3</td><td>22/22</td><td>10</td><td>86/114</td><td>서재, 연금술 방, 입구 홀</td></tr>
+<tr><td>지하 감옥 (v5 새)</td><td class=ok>통과</td><td>4/4</td><td>14/14</td><td>10</td><td>75/105</td><td>간수실, 감방 1, 감방 2, 감방 3</td></tr>
+<tr><td>광산 (v5 새)</td><td class=ok>통과</td><td>3/3</td><td>19/19</td><td>12</td><td>129/151</td><td>화약고, 갱도·막장, 광부 쉼터</td></tr>
+<tr><td>마도 기관실 (v5 새)</td><td class=ok>통과</td><td>3/3</td><td>12/12</td><td>12</td><td>104/143</td><td>기관 홀, 제어실, 정비소</td></tr>
+<tr><td>오페라 극장 (v5 새)</td><td class=ok>통과</td><td>4/4</td><td>64/64</td><td>15</td><td>169/237</td><td>무대 뒤, 무대·객석, 분장실, 소품 창고</td></tr>
+<tr><td>카지노 (v5 새)</td><td class=ok>통과</td><td>2/2</td><td>44/44</td><td>9</td><td>133/195</td><td>도박장 (창살 우리 환전 창구 포함), 라운지 바</td></tr>
+<tr><td>초코보 마구간 (v5 새)</td><td class=ok>통과</td><td>3/3</td><td>24/24</td><td>12</td><td>83/130</td><td>마구간, 마구 방, 관리인 방</td></tr>
+<tr><td>탄광 마을 집 (v5 새)</td><td class=ok>통과</td><td>4/4</td><td>20/20</td><td>19</td><td>65/89</td><td>침실, 부엌, 거실, 현관</td></tr>
+<tr><td>뒷골목 선술집 (v5 새)</td><td class=ok>통과</td><td>3/3</td><td>23/23</td><td>12</td><td>72/101</td><td>술집, 도둑 소굴, 창고</td></tr>
+</table><p class=note>계단 짝: manor_1f→manor_2f (11,3) 정렬됨, dungeon→castle (1,3) 바깥 연결</p>
+<div class=row><figure><img src="iv5/ov_dungeon.png"><figcaption>dungeon 통행 오버레이</figcaption></figure><figure><img src="iv5/ov_stable.png"><figcaption>stable 통행 오버레이</figcaption></figure><figure><img src="iv5/ov_casino.png"><figcaption>casino 통행 오버레이</figcaption></figure><figure><img src="iv5/ov_tower.png"><figcaption>tower 통행 오버레이</figcaption></figure></div>
+<h2 id=meta>메타데이터 발췌</h2><p class=note>칩 381개(v5 새 77) · 표면 자동 타일 9벌(108조각) · 선 자동 타일 11벌(352조각) · 탁상 물건 119 · 바닥 27 · 벽 19 · 천장 7 · 건물 25곳 / 맵 26장</p><pre>[
+ {
+  "id": "spiral stair",
+  "name_ko": "나선 계단(2×2)",
+  "name_en": "spiral stair",
+  "category": "tower",
+  "category_ko": "마법사의 탑",
+  "tags": [],
+  "description": "나선 계단(2×2, 32px 솟음). 열 계단이 남쪽 바닥에서 시계 방향으로 기둥을 돌아 오른다. 탑·종탑.",
+  "kind": "floor",
+  "kind_ko": "바닥 기물(막힘)",
+  "footprint": {
+   "w": 2,
+   "h": 2
+  },
+  "image": {
+   "w": 32,
+   "h": 64
+  },
+  "overhang_px": 32,
+  "cells": {
+   "floor": [
+    "XX",
+    "XX"
+   ],
+   "overlayRowsAbove": 2
+  },
+  "placement": [
+   "그림이 발밑 칸 위로 32px 솟는다 → 위 2칸은 플레이어 위에 그리는 겹침층",
+   "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+  ],
+  "related": [],
+  "variantGroup": "spiral stair",
+  "atlas": {
+   "x": 416,
+   "y": 784,
+   "w": 32,
+   "h": 64,
+   "frames": 1,
+   "padTop": 0
+  },
+  "since": "v5"
+ },
+ {
+  "id": "roulette table",
+  "name_ko": "룰렛(움직임, 2×2)",
+  "name_en": "roulette table",
+  "category": "casino",
+  "category_ko": "카지노",
+  "tags": [],
+  "description": "룰렛(2×2, 바퀴가 돈다). 윗면에 칩.",
+  "kind": "floor",
+  "kind_ko": "바닥 기물(막힘)",
+  "footprint": {
+   "w": 2,
+   "h": 2
+  },
+  "image": {
+   "w": 32,
+   "h": 32
+  },
+  "overhang_px": 0,
+  "cells": {
+   "floor": [
+    "XX",
+    "XX"
+   ],
+   "overlayRowsAbove": 0
+  },
+  "placement": [
+   "출입문 칸과 문으로 이어지는 통로를 막지 않는다",
+   "윗면에 탁상 물건(goods:*)을 올린다. 비워 두지 않는다"
+  ],
+  "related": [
+   {
+    "id": "goods:chips",
+    "why": "윗면"
+   },
+   {
+    "id": "bar stool",
+    "why": "둘레"
+   }
+  ],
+  "variantGroup": "roulette table",
+  "surface": {
+   "rect_px": [
+    2,
+    20,
+    29,
+    25
+   ],
+   "capacity": 3,
+   "note": "탁상 물건의 밑변을 윗면 안에 둔다"
+  },
+  "animation": {
+   "frames": 12,
+   "ms": 100,
+   "loop": true,
+   "seamless": true,
+   "wrapStepPx": 8,
+   "meanStepPx": 10.9,
+   "note": "모든 움직임이 12프레임 안에 정수 번 도는 주기 함수 → 마지막→첫 프레임이 끊기지 않는다"
+  },
+  "atlas": {
+   "x": 0,
+   "y": 1120,
+   "w": 32,
+   "h": 32,
+   "frames": 12,
+   "padTop": 0
+  },
+  "since": "v5"
+ },
+ {
+  "id": "pulpit",
+  "name_ko": "설교단(2×2, 계단)",
+  "name_en": "pulpit",
+  "category": "church",
+  "category_ko": "예배당",
+  "tags": [
+   "예배당",
+   "신전"
+  ],
+  "description": "설교단(2×2, 24px 솟음, 서쪽 계단). 신랑 동쪽 끝 북쪽 기둥 곁.",
+  "kind": "floor",
+  "kind_ko": "바닥 기물(막힘)",
+  "footprint": {
+   "w": 2,
+   "h": 2
+  },
+  "image": {
+   "w": 32,
+   "h": 56
+  },
+  "overhang_px": 24,
+  "cells": {
+   "floor": [
+    "XX",
+    "XX"
+   ],
+   "overlayRowsAbove": 2
+  },
+  "placement": [
+   "그림이 발밑 칸 위로 24px 솟는다 → 위 2칸은 플레이어 위에 그리는 겹침층",
+   "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+  ],
+  "related": [
+   {
+    "id": "hymn board",
+    "why": "위 벽면"
+   },
+   {
+    "id": "column marble",
+    "why": "기대는 기둥"
+   },
+   {
+    "id": "lectern",
+    "why": "맞은편"
+   }
+  ],
+  "variantGroup": "pulpit",
+  "atlas": {
+   "x": 416,
+   "y": 1152,
+   "w": 32,
+   "h": 64,
+   "frames": 1,
+   "padTop": 8
+  },
+  "since": "v5"
+ }
+]</pre><pre>{
+ "id": "line:rug royal",
+ "name_ko": "깔개·통로 양탄자 (royal)",
+ "kind": "flat",
+ "blocking": false,
+ "up_px": 0,
+ "pieces": [
+  {
+   "piece": "0",
+   "neighbours": {
+    "N": false,
+    "E": false,
+    "S": false,
+    "W": false
+   },
+   "innerCorner": null,
+   "image": {
+    "w": 16,
+    "h": 16
+   },
+   "atlas": {
+    "x": 0,
+    "y": 1424,
+    "w": 16,
+    "h": 16
+   }
+  },
+  {
+   "piece": "E",
+   "neighbours": {
+    "N": false,
+    "E": true,
+    "S": false,
+    "W": false
+   },
+   "innerCorner": null,
+   "image": {
+    "w": 16,
+    "h": 16
+   },
+   "atlas": {
+    "x": 16,
+    "y": 1424,
+    "w": 16,
+    "h": 16
+   }
+  },
+  {
+   "piece": "ES",
+   "neighbours": {
+    "N": false,
+    "E": true,
+    "S": true,
+    "W": false
+   },
+   "innerCorner": null,
+   "image": {
+    "w": 16,
+    "h": 16
+   },
+   "atlas": {
+    "x": 32,
+    "y": 1424,
+    "w": 16,
+    "h": 16
+   }
+  },
+  {
+   "piece": "ES+Es",
+   "neighbours": {
+    "N": false,
+    "E": true,
+    "S": true,
+    "W": false
+   },
+   "innerCorner": "Es",
+   "image": {
+    "w": 16,
+    "h": 16
+   },
+   "atlas": {
+    "x": 48,
+    "y": 1424,
+    "w": 16,
+    "h": 16
+   }
+  },
+  {
+   "piece": "ESW",
+   "neighbours": {
+    "N": false,
+    "E": true,
+    "S": true,
+    "W": true
+   },
+   "innerCorner": null,
+   "image": {
+    "w": 16,
+    "h": 16
+   },
+   "atlas": {
+    "x": 64,
+    "y": 1424,
+    "w": 16,
+    "h": 16
+   }
+  }
+ ],
+ "rule": "칸 목록(선·사각형·T자·十자 아무 모양)을 받아, 칸마다 4방 이웃(N E S W)으로 조각을 고른다. 두 방향이 모두 이어졌는데 그 사이 대각선 칸이 비었으면 안쪽 모서리 조각(예: NE+ne)을 쓴다. 끝·모서리·T·十자가 모두 자동. 길이 제한 없음.",
+ "item": "한 아이템 = 칸 목록 전체(F.cells). 막히는 종류는 칸마다 막힘으로 계산한다."
+}</pre><pre>{
+ "id": "chapel",
+ "name_ko": "예배당",
+ "floor": "flag",
+ "wall": "stone",
+ "zones": [
+  {
+   "x0": 1,
+   "y0": 7,
+   "x1": 5,
+   "y1": 13,
+   "floor": "check",
+   "wall": null
+  },
+  {
+   "x0": 29,
+   "y0": 5,
+   "x1": 31,
+   "y1": 10,
+   "floor": "marble",
+   "wall": null
+  },
+  {
+   "x0": 23,
+   "y0": 15,
+   "x1": 28,
+   "y1": 18,
+   "floor": "dplank",
+   "wall": null
+  },
+  {
+   "x0": 10,
+   "y0": 15,
+   "x1": 13,
+   "y1": 17,
+   "floor": "cobble",
+   "wall": null
+  }
+ ],
+ "parts": [
+  {
+   "name_ko": "세례·고해 자리",
+   "x": 4,
+   "y": 12
+  },
+  {
+   "name_ko": "신랑(회중석)",
+   "x": 12,
+   "y": 8
+  },
+  {
+   "name_ko": "북쪽 측랑",
+   "x": 10,
+   "y": 4
+  },
+  {
+   "name_ko": "남쪽 측랑",
+   "x": 12,
+   "y": 13
+  },
+  {
+   "name_ko": "성단소·성가대석",
+   "x": 26,
+   "y": 10
+  },
+  {
+   "name_ko": "후진",
+   "x": 30,
+   "y": 8
+  }
+ ],
+ "passageCheck": {
+  "ok": true,
+  "rooms": [
+   {
+    "room": "종탑(종 치는 방)",
+    "cells": 12,
+    "reached": true
+   },
+   {
+    "room": "본당: 신랑·양 측랑·세례 자리·성단소·후진",
+    "cells": 290,
+    "reached": true
+   },
+   {
+    "room": "남쪽 현관",
+    "cells": 4,
+    "reached": true
+   },
+   {
+    "room": "제의실",
+    "cells": 12,
+    "reached": true
+   }
+  ],
+  "usesOk": 43,
+  "usesTotal": 43,
+  "issues": [],
+  "reachableCells": 248,
+  "floorCells": 332
+ },
+ "grid": [
+  "#################################",
+  "#====#=======================####",
+  "#============================####",
+  "#XXuX=........uXXu......XXXXu####",
+  "#XXuccc..u..u..uu.u..u..Xuuuu####",
+  "#uu..#XuuXuuXuuXuuXuuXu.X..uX===#",
+  "######uXuuXuuXuuXuuXXX..X...u===#",
+  "#=====uXuuXuuXuuXuuXXX..X.XX.u.u#",
+  "#=====.u..u..u..u..u......XXuXuX#",
+  "#XXXXXuXuuXuuXuuXuuXu...X....u.u#",
+  "#uuuuuuXuuXuuXuuXuuXXu..X.......#",
+  "#uXXuuXuuXuuXuuXuuXuuXu.Xuuuu####",
+  "#uXXu.u..uu.u..uu.u..u..uXXXX####",
+  "#.uu.....uXcc.uXXu.......ucuu####",
+  "###########cc#############c######",
+  "##########=cc=#########===c==####",
+  "##########=cc=#########===c==####",
+  "##########.cc.#########XXXcXX####",
+  "###########cc##########uuu.uX####",
+  "###########DD####################"
+ ],
+ "items": [
+  {
+   "id": "rug red",
+   "x": 6,
+   "y": 8,
+   "kind": "flat",
+   "w": 18,
+   "h": 10,
+   "cells": [
+    [
+     16,
+     0
+    ],
+    [
+     14,
+     0
+    ],
+    [
+     3,
+     0
+    ],
+    [
+     5,
+     0
+    ],
+    [
+     5,
+     6
+    ],
+    [
+     5,
+     3
+    ],
+    [
+     5,
+     9
+    ],
+    [
+     7,
+     0
+    ],
+    [
+     9,
+     0
+    ],
+    [
+     0,
+     0
+    ],
+    [
+     11,
+     0
+    ],
+    [
+     2,
+     0
+    ],
+    [
+     13,
+     0
+    ],
+    [
+     5,
+     2
+    ],
+    [
+     4,
+     0
+    ],
+    [
+     5,
+     8
+    ],
+    [
+     5,
+     5
+    ],
+    [
+     15,
+     0
+    ],
+    [
+     17,
+     0
+    ],
+    [
+     6,
+     0
+    ],
+    [
+     8,
+     0
+    ],
+    [
+     5,
+     1
+    ],
+    [
+     5,
+     4
+    ],
+    [
+     5,
+     7
+    ],
+    [
+     1,
+     0
+    ],
+    [
+     10,
+     0
+    ],
+    [
+     12,
+     0
+    ]
+   ],
+   "line": "rug red"
+  },
+  {
+   "id": "altar rail",
+   "x": 24,
+   "y": 3,
+   "kind": "floor",
+   "w": 1,
+   "h": 9,
+   "cells": [
+    [
+     0,
+     1
+    ],
+    [
+     0,
+     4
+    ],
+    [
+     0,
+     7
+    ],
+    [
+     0,
+     3
+    ],
+    [
+     0,
+     0
+    ],
+    [
+     0,
+     6
+    ],
+    [
+     0,
+     2
+    ],
+    [
+     0,
+     8
+    ]
+   ],
+   "line": "altar rail"
+  },
+  {
+   "id": "wall sconce",
+   "x": 18,
+   "y": 1,
+   "kind": "hang",
+   "w": 1,
+   "h": 0
+  },
+  {
+   "id": "hymn board",
+   "x": 21,
+   "y": 1,
+   "kind": "hang",
+   "w": 1,
+   "h": 0
+  },
+  {
+   "id": "pew E2",
+   "x": 7,
+   "y": 6,
+   "kind": "floor",
+   "w": 1,
+   "h": 2
+  },
+  {
+   "id": "pew E2",
+   "x": 7,
+   "y": 9,
+   "kind": "floor",
+   "w": 1,
+   "h": 2
+  }
+ ]
+}</pre>
+<h2 id=all>고친 v4 맵 전체 (2배, 움직임)</h2>
+<h3>빵집 — 가게·굽는 방(돌)·밀가루 창고 — 빵집</h3><img src="iv5/fix_bakery.webp">
+<h3>약국 — 가게·조제실·약사 방(조제실 안쪽) — 약국</h3><img src="iv5/fix_pharmacy.webp">
+<h3>생선가게 — 가게·손질터·찬 창고 — 생선가게</h3><img src="iv5/fix_fish.webp">
+<h3>정육점 — 가게·고기 손질방·찬 창고(손질방 안쪽) — 정육점</h3><img src="iv5/fix_butcher.webp">
+<h3>대장간 — 작업장(흙바닥·그을린 화덕 자리)·가게·대장장이 방 — 대장간</h3><img src="iv5/fix_smithy.webp">
+<h3>예배당 — 동향 바실리카: 신랑·양 측랑·성단소·후진·제의실·종탑·남쪽 현관 — 예배당</h3><img src="iv5/fix_chapel.webp">
+<h3>학자의 집 — 서고·서재·침실·작은 부엌 — 학자의 집</h3><img src="iv5/fix_scholar.webp">
+<h3>재단사 — 가게·작업실·탈의실 — 재단사</h3><img src="iv5/fix_tailor.webp">
+<h3>선술집 — 홀·바·부엌·술 창고 — 선술집</h3><img src="iv5/fix_tavern.webp">
+<h3>저택 — 1층(현관 홀·응접실·식당·부엌·하녀 방·창고) / 2층(안방·안방 거실·서재·손님방 셋·욕실) — 저택 1층</h3><img src="iv5/fix_manor_1f.webp">
+<h3>저택 — 1층(현관 홀·응접실·식당·부엌·하녀 방·창고) / 2층(안방·안방 거실·서재·손님방 셋·욕실) — 저택 2층</h3><img src="iv5/fix_manor_2f.webp">
+<h2>아틀라스 (2배)</h2><img src="iv5/atlas2.png">

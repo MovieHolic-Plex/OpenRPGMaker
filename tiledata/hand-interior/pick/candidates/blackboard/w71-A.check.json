@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/blackboard/w71-A.pxg",
+ "id": "blackboard",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.055
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 18,
+ "v5_colors": 0,
+ "bbox": [
+  0,
+  0,
+  31,
+  13
+ ],
+ "v5_bbox": null,
+ "note": "나무 틀 초록 칠판+분필 글씨 3줄·삼각형, 아래 윗면 보이는 분필 받침(분필 2개)과 그림자. 관문 X, 눈 O, 이유: 걸이 형식은 윗면 감사 대상 아님",
+ "ok": true
+}

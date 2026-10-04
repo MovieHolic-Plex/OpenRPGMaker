@@ -1,0 +1,75 @@
+// door_locked hf3-C (hf3)
+@size 16 32
+@cell 16
+@palette palette.pal
+@layer main
+@mat a rot 0
+@mat b viron 0
+@mat c tin 0
+@mat d tarn 0
+@mblock 0 0
+................
+................
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaacccacccaccaaa
+aaacacccacccaaaa
+aaaaacacaadaaaaa
+aaaaccccadadaaaa
+aaaaccccaadaaaaa
+aaaaccccaaaaaaaa
+aaaaccccaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+@tblock 0 0
+................
+................
+0000000000000000
+0555555555555540
+0444444444444430
+0541111111111430
+0541423242324430
+0541423242324430
+0541423232324430
+0541222222224430
+0541353333534430
+0541111111114430
+0541423242224430
+0541423242324430
+0545542554355430
+0542424242424430
+0541452242424430
+0541555544324430
+0541540242224430
+0541540242224430
+0541522242224430
+0541400002224430
+0541222222224430
+0541353333534430
+0541111111114430
+0541422242324430
+0541422242324430
+0541423242324430
+0541423242324430
+0541423242324430
+0541423242324430
+0000000000000000

@@ -1,0 +1,29 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/fog_patch/h4-B.pxg",
+ "set": "horror",
+ "id": "fog_patch",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.013
+ },
+ "lint": {
+  "error": "index -1 is out of bounds for axis 0 with size 0"
+ },
+ "colors": 2,
+ "bbox": [
+  4,
+  11,
+  27,
+  23
+ ],
+ "note": "왼쪽이 짙고 무겁게 말려 올라가고 오른쪽으로 갈수록 성기게 흩어지는 안개 띠 — 바닥에 낮게 깔림",
+ "ok": true
+}

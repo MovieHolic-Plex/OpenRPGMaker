@@ -13,7 +13,7 @@ import { paintRoadRect } from "@/project/defaults/roadAutotile";
 import { paintTownPathNetwork } from "@/project/defaults/townPathAutotile";
 import { buildEdgeCornerVariantMap } from "@/project/defaults/autotileEngine";
 import { createBlankProject } from "@/project/defaults";
-import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { EXTRA_LAYER_KEYS, layerTileAt, setLayerTileAt, setShadowAt, shadowAt } from "@/project/mapLayers";
 import type { AutotileGroup, GameMap } from "@/project/types";
 
@@ -29,9 +29,9 @@ function context(withDecoGroup = false): ToolContext {
   const project = createBlankProject();
   // 시험은 합본 마을 칩 번호(TILE.*)를 쓴다 — 빈 프로젝트 시작 맵의 기본 칩셋이 바뀌어도 같은 칩셋 위에서 잰다.
   const start = project.maps[MAP_ID]!;
-  start.tilesetId = DEFAULT_TILESET_ID;
-  start.tileSize = project.tilesets[DEFAULT_TILESET_ID]!.tileSize;
-  if (withDecoGroup) project.tilesets[DEFAULT_TILESET_ID]!.autotileGroups = [DECO_GROUP];
+  start.tilesetId = COMBINED_TOWN_TILESET_ID;
+  start.tileSize = project.tilesets[COMBINED_TOWN_TILESET_ID]!.tileSize;
+  if (withDecoGroup) project.tilesets[COMBINED_TOWN_TILESET_ID]!.autotileGroups = [DECO_GROUP];
   return { project };
 }
 function mapOf(ctx: ToolContext): GameMap {
@@ -95,7 +95,7 @@ describe("paint_tiles — 네 층", () => {
 
   it("2·4층은 홈 레이어 라우팅을 받지 않는다(명시 선택 존중)", () => {
     const ctx = context();
-    const tileset = ctx.project.tilesets[DEFAULT_TILESET_ID]!;
+    const tileset = ctx.project.tilesets[COMBINED_TOWN_TILESET_ID]!;
     // 1/3층 요청에서는 투명 배경 칩이 3층으로 옮겨지는 칩 — 2층을 명시하면 2층에 남는다.
     const upperOnly = [...Array(tileset.count).keys()].find((tile) => tileset.priority[tile] === "upper")!;
     const r = ok(ctx, "paint_tiles", { mapId: MAP_ID, layer: "2", mode: "cells", tile: upperOnly, cells: [{ x: 2, y: 2 }] });
@@ -137,7 +137,7 @@ describe("stamp_layer_block", () => {
   it("범위 밖 번호나 맵 밖 칸이 하나라도 있으면 아무것도 쓰지 않는다", () => {
     const ctx = context();
     const snapshot = structuredClone(mapOf(ctx));
-    const count = ctx.project.tilesets[DEFAULT_TILESET_ID]!.count;
+    const count = ctx.project.tilesets[COMBINED_TOWN_TILESET_ID]!.count;
     const outOfRange = runTool(ctx, "stamp_layer_block", { mapId: MAP_ID, x: 1, y: 1, layers: { "1": [[TILE.GRASS]], "3": [[count]] } });
     expect(outOfRange.ok).toBe(false);
     expect(outOfRange.issues?.[0]?.code).toBe("tile-out-of-range");
@@ -343,7 +343,7 @@ describe("고침 1차(리뷰)", () => {
     expect(map.upperOverlayTiles).toBeUndefined();
     expect(layerTileAt(map, 2, idx(map, 3, 3))).toBe(20);
     // 통행 불가 3층 칩(★ 아님)을 찾아 칠하면 경고가 나온다.
-    const tileset = ctx.project.tilesets[DEFAULT_TILESET_ID]!;
+    const tileset = ctx.project.tilesets[COMBINED_TOWN_TILESET_ID]!;
     const probe = structuredClone(map);
     const blocking = [...Array(tileset.count).keys()].find((t) => {
       if (tileset.priority[t] !== "upper") return false;

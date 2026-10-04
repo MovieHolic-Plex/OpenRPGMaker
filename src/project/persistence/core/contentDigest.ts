@@ -25,6 +25,80 @@ interface NodeMemo {
 
 const memos = new WeakMap<object, NodeMemo>();
 
+/**
+ * 한 동기 구간 안에서 이미 대조를 마친 노드. 구간 안에서는 아무도 값을 고치지 않으므로 같은 노드를 두 번 대조하지 않는다.
+ *
+ * 왜(2026-09-28 실측, 새 프로젝트 기본 자료 149MB · 타일셋 노드 62만 개): 조수 체크포인트 적용 한 번이 같은 타일셋 사전을
+ * 제안 기준·저작 기준선·적용 뒤 권위로 4~5번 요약했다. 기억이 있어도 대조(isFresh)가 노드마다 다시 돌아 한 번에 약 0.3s,
+ * 체크포인트마다 1.2~1.8s 였다. 구간은 호출자가 연다(applyChangesetToStore 의 withIdentityScope) — 구간 밖에서는 예전처럼
+ * 부를 때마다 대조한다(제자리 수정은 구간과 구간 사이에서만 일어날 수 있다).
+ */
+let verifiedInEpoch: WeakSet<object> | null = null;
+
+/** 이 구간 안에서는 같은 노드의 기억을 한 번만 대조한다. 구간 안에서 값을 제자리에서 고치면 안 된다. 중첩 호출은 바깥 구간을 쓴다. */
+export function withContentDigestEpoch<T>(run: () => T): T {
+  if (verifiedInEpoch) return run();
+  verifiedInEpoch = new WeakSet();
+  try { return run(); } finally { verifiedInEpoch = null; }
+}
+
+/**
+ * 제자리에서 고치지 않는다는 계약을 가진 공유 항목(스토어의 타일셋·업로드 자산 항목 — projectClone 머리말). 한 번 요약을 만든 뒤에는
+ * 구간을 넘어서도 대조하지 않는다. 계약이 깨지면(항목을 제자리에서 고치면) 저장 diff 도 이미 그 변경을 놓친다(projectPatch 의
+ * `base === local` 단축) — 같은 전제를 요약도 따른다.
+ *
+ * 왜(2026-09-28 실측, 새 프로젝트 기본 자료 · 타일셋 노드 62만 개): 기억이 있어도 대조가 타일셋 노드를 전부 훑어 요약 한 번에 약 0.3s,
+ * 조수 체크포인트 하나가 구간 여러 개(적용 권위·적용·체크리스트·커밋 기준)에서 이를 되풀이해 1s 이상이었다.
+ */
+let trustedShared = new WeakSet<object>();
+/**
+ * 믿음은 적용 권위 요약(projectIdentityDigest) 안에서만 쓴다. 로드 정규화(store.normalizeCurrentProject)처럼 공유 항목을
+ * 제자리에서 고치고 전후 요약으로 변경을 알아내는 곳은 믿음 없이 끝까지 대조한다.
+ */
+let trustingShared = false;
+
+/** 이 안의 요약은 믿은 공유 항목을 대조하지 않는다. */
+export function withTrustedSharedEntries<T>(run: () => T): T {
+  if (trustingShared) return run();
+  trustingShared = true;
+  try { return run(); } finally { trustingShared = false; }
+}
+
+/** 프로젝트의 타일셋·업로드 자산 항목 중 요약 기억이 있는 것을 공유 항목으로 믿는다. 요약을 만든 직후 부른다. */
+export function trustSharedProjectEntries(project: unknown): void {
+  if (!isObject(project)) return;
+  const record = project as { tilesets?: unknown; assets?: { uploaded?: unknown } };
+  for (const dictionary of [record.tilesets, record.assets?.uploaded]) {
+    if (!isObject(dictionary)) continue;
+    for (const entry of Object.values(dictionary as Record<string, unknown>)) {
+      if (isObject(entry) && memos.has(entry)) trustedShared.add(entry);
+    }
+  }
+}
+
+/**
+ * 저장 diff 용: 공유 항목(타일셋 한 칸) 하나의 요약. 이미 믿은 항목이면 아래 가지를 대조하지 않고 기억된 토큰을 돌려준다.
+ * 아직 안 믿은 항목은 이 호출이 **끝까지 대조**해 요약을 만든 뒤에야 믿는다 — 믿음은 언제나 실제 대조 뒤에만 생긴다.
+ *
+ * 왜(2026-09-30 실측, 타일셋 385칸 · 279MB): 저장 diff 가 매번 양쪽 타일셋 전 노드를 isFresh 로 다시 훑어 1셀 칠하기 자동저장 하나에 약 1.1s
+ * (기억이 있어도 대조가 노드 수에 비례). 기준본·현재 항목은 저장 사이에 그대로 이어지므로(applyProjectDocumentPatch 는 안 바뀐 항목을
+ * 기준본 것 그대로 둔다) 한 번 대조한 뒤에는 O(1). 항목을 제자리에서 고치면 안 된다는 계약은 projectClone 머리말·trustedShared 와 같다.
+ * 제자리 수정이 있을 수 있는 정규화(store.normalizeCurrentProject)는 앞뒤로 `forgetTrustedSharedEntries` 를 부른다.
+ */
+export function sharedEntryDigest(entry: unknown, key = ""): string | undefined {
+  const wasTrusting = trustingShared;
+  trustingShared = true;
+  let digest: string | undefined;
+  try { digest = jsonContentDigest(entry, key); } finally { trustingShared = wasTrusting; }
+  if (isObject(entry) && memos.has(entry)) trustedShared.add(entry);
+  return digest;
+}
+
+/** 믿은 공유 항목 기록을 모두 버린다 — 항목을 제자리에서 고칠 수 있는 구간(로드 정규화 등) 앞뒤에서 부른다. 이후 첫 요약은 끝까지 대조한다. */
+export function forgetTrustedSharedEntries(): void {
+  trustedShared = new WeakSet<object>();
+}
+
 /** JSON 값의 토큰. 원시값·짧은 노드는 글 그대로, 긴 객체·배열은 `#` + 글의 요약. JSON 값이 없으면 undefined. */
 function tokenOf(value: unknown, key: string): string | undefined {
   if (value === null) return "null";
@@ -52,7 +126,11 @@ function nodeToken(node: Record<string, unknown>): string {
   const items = keys ? null : (node as unknown as unknown[]);
   const length = keys ? keys.length : items!.length;
   const memo = memos.get(node);
-  if (memo && memo.values.length === length && isFresh(node, keys, items, length, memo)) return memo.token;
+  if (memo && (verifiedInEpoch?.has(node) || (trustingShared && trustedShared.has(node)))) return memo.token;
+  if (memo && memo.values.length === length && isFresh(node, keys, items, length, memo)) {
+    verifiedInEpoch?.add(node);
+    return memo.token;
+  }
 
   const values = new Array<unknown>(length);
   const tokens = new Array<string | undefined>(length);
@@ -78,6 +156,7 @@ function nodeToken(node: Record<string, unknown>): string {
   }
   const token = text.length <= INLINE_TEXT ? text : `#${sha256HexTextSync(text)}`;
   memos.set(node, { keys, values, tokens, token });
+  verifiedInEpoch?.add(node);
   return token;
 }
 

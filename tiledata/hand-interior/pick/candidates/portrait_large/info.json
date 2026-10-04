@@ -1,0 +1,34 @@
+{
+ "id": "portrait large",
+ "slug": "portrait_large",
+ "name_ko": "큰 초상화",
+ "category": "장식",
+ "kind": "hang",
+ "kind_ko": "벽면 걸이(벽 두 줄 중 윗줄)",
+ "canvas": [
+  32,
+  32
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 32,
+  "h": 32
+ },
+ "footprint": {
+  "w": 2,
+  "h": 0
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "금 액자 큰 초상화(벽면 두 줄을 덮는 tall 걸이). 귀족 저택 홀·알현실.",
+ "where": "귀족 저택 홀·알현실.",
+ "placement": [
+  "벽면 두 줄 중 윗줄(y=벽면 첫 줄)에 건다. 바닥 칸은 차지하지 않는다"
+ ],
+ "v5_bbox": null,
+ "v5_colors": 0,
+ "material": "wood",
+ "related": [],
+ "new": true,
+ "contextRoom": "manor"
+}

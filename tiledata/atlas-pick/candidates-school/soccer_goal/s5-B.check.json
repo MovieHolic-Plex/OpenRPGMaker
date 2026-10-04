@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/soccer_goal/s5-B.pxg",
+ "set": "school",
+ "id": "soccer_goal",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 8,
+  "atLeast95": 0,
+  "max": 0.094
+ },
+ "refmap": {
+  "cells": 8,
+  "atLeast95": 0,
+  "max": 0.045
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 11,
+ "bbox": [
+  2,
+  6,
+  63,
+  31
+ ],
+ "note": "같은 모양에 왼위 밝은 하이라이트·오른쪽 기둥 어둡게, 그물 오른쪽 그늘, 기둥 발치와 가로대 밑 접지 그림자(~ -)",
+ "ok": true
+}

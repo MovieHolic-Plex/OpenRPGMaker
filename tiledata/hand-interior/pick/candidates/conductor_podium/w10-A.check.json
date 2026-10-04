@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/conductor_podium/w10-A.pxg",
+ "id": "conductor podium",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.05
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "outline_black"
+  ],
+  "pass": false
+ },
+ "colors": 10,
+ "v5_colors": 10,
+ "bbox": [
+  2,
+  0,
+  13,
+  14
+ ],
+ "v5_bbox": [
+  2,
+  0,
+  13,
+  14
+ ],
+ "note": "윗면 넓힌 단상 위에 악보 든 보면대와 지휘봉을 올려 알아보기를 높임",
+ "ok": true
+}

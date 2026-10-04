@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults/defaultProject";
 import { deserialize, serialize } from "@/project/io";
-import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { runTool } from "@/editor/tools/toolRunner";
 import { parseAuthorVillageRequest } from "@/editor/construction/parseVillageRequest";
 import { inspectObjectHouseAccess, villageObjectHouseCatalog } from "@/editor/tools/village/objectHouses";
@@ -16,11 +16,11 @@ import { emptySpatialDocument } from "./support/spatialSchemaFixture";
 function fixture(numbers = [8, 14, 26]) {
   const project = createBlankProject();
   const entries = [...buildHouse30BatchA(), ...buildHouse30BatchB(), ...buildHouse30BatchC()].filter(e => numbers.includes(e.number));
-  project.tilesets[DEFAULT_TILESET_ID]!.structureKits = entries.map(e => e.kit);
+  project.tilesets[COMBINED_TOWN_TILESET_ID]!.structureKits = entries.map(e => e.kit);
   const document = emptySpatialDocument();
   document.library.objects = Object.fromEntries(entries.map(e => [`house:${e.number}`, {
     id: `house:${e.number}`, name: e.name, revision: 1, tags: ["건물 외형", `${e.floors}층 외형`], provenance: { origin: "user" },
-    graphic: { tilesetId: DEFAULT_TILESET_ID, kitId: e.kit.id }, chips: [],
+    graphic: { tilesetId: COMBINED_TOWN_TILESET_ID, kitId: e.kit.id }, chips: [],
     anchors: e.doors.map((door, i) => ({ id: `door-${i}`, name: "현관 앞", x: door.x, y: door.y + 1 })),
   }]));
   return deserialize(JSON.stringify({ ...project, spatialAuthoring: document }));
@@ -127,7 +127,7 @@ describe("village from saved exterior objects", () => {
   it("rejects missing doorway anchors, blocked courtyards and mixed per-house identities", () => {
     const project = fixture([8]);
     const object = project.spatialAuthoring!.library.objects["house:8"]!;
-    const kit = project.tilesets[DEFAULT_TILESET_ID]!.structureKits![0]!;
+    const kit = project.tilesets[COMBINED_TOWN_TILESET_ID]!.structureKits![0]!;
     if (kit.kind !== "section") throw new Error("section");
     const port = object.anchors[0]!;
     kit.rows[port.y]!.tiles[port.x] = 45;

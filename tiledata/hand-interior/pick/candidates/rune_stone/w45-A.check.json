@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/rune_stone/w45-A.pxg",
+ "id": "rune stone",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.091
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 5,
+ "v5_colors": 5,
+ "bbox": [
+  2,
+  6,
+  13,
+  31
+ ],
+ "v5_bbox": [
+  2,
+  6,
+  13,
+  31
+ ],
+ "note": "윗면 5줄(밝은 돌)+그림자 띠 아래 앞면. 마스크 화소(11행 x7,8 등) 좌표·색 v5 그대로. 관문 ok t=5 f=20",
+ "ok": true
+}

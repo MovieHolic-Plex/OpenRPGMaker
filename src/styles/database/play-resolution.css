@@ -417,3 +417,8 @@
 .database-modal-backdrop .db-character-expression-table input[type="number"] {
   width: 56px;
 }
+
+.database-modal-backdrop .db-system-dialogue-full-stage {
+  display: flex;
+  justify-content: flex-start;
+}

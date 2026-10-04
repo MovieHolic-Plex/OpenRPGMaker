@@ -1,0 +1,23 @@
+{
+ "id": "class_plate",
+ "slug": "class_plate",
+ "name": "학급 표찰",
+ "scene": "복도·현관",
+ "place": "in",
+ "cells": [
+  1,
+  1
+ ],
+ "canvas": [
+  16,
+  16
+ ],
+ "layer": "wall",
+ "layer_ko": "벽 걸이(위층, 투명 배경·벽면에 붙는다)",
+ "description": "교실 문 위 복도로 튀어나온 반 이름 표찰 — 흰 판 옆모습이 아니라 앞에서 본 가로판에 「2-1」(숫자 2px 획). 받침 쇠 1px.",
+ "palette_hint": "vwhite 판, vblack 글자, mmetal 받침",
+ "pair": [
+  "exit_sign"
+ ],
+ "worker": "s3"
+}

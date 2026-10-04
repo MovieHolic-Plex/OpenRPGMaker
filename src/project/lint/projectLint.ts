@@ -17,7 +17,7 @@ import { lintHorrorAuthoring } from "./horrorAuthoringLint";
 //  - event-selfswitch-gate-unwritten (warning) selfSwitch 로 잠긴 페이지인데 그것을 켜는 커맨드가 없음
 //  - event-footprint-impassable (warning) 다중 타일 이벤트의 통행 사각이 통행 불가 칸을 덮음(걸어서 닿을 수 없는 자리)
 //  - duplicate-event       (warning) 같은 맵 내 이벤트 **몸 사각** 겹침
-//  - map-size              (error)   256×256 초과 맵(생성 계약과 동일한 상한)
+//  - map-size              (error)   공통 지원 상한 초과 맵(생성 계약과 동일한 상한)
 //  - runtime-support:*     (warning) command is not fully supported by the map runtime
 //  - story-flag:*          (warning) 서사 플래그 read/write/미선언 사용 문제
 //  - quest-graph:*         (error|warning) 퀘스트 그래프 조건/도달성 문제
@@ -45,7 +45,8 @@ import { eventBodyRect, eventCoversPoint, eventPassageRect, overlappingEventPair
 import { rectCells } from "../footprint";
 import { createEventPlacementAnalysis, eventIsMovable, eventRequiresPassableTile, type EventRelocation } from "../eventPlacementRecovery";
 import { playerPassageRect, resolvePlayerBody } from "../playerFootprint";
-import { deserialize, serialize } from "../io";
+import { deserialize } from "../io";
+import { markRoundtripPassed, serializeForRoundtripCheck } from "../io/sharedDictionaryJson";
 import { malformedExtraLayerKeys } from "../mapLayers";
 import { collectProjectReferenceIssues } from "../io/references";
 import { isQuestGraphDef } from "../quest/questDef";
@@ -177,6 +178,11 @@ function bundledAudioPath(resourceId: string): string | null {
   return rtp ? rtp.path : null;
 }
 
+/** 한가할 때 왕복 검사만 한 번 돌려 통과한 공유 항목을 기억한다(결과는 버린다). 첫 적용 커밋의 되읽기 비용을 미리 치른다. */
+export function warmRoundtripCheck(project: Project): void {
+  checkRoundtrip(project, []);
+}
+
 // (a) 직렬화 왕복: serialize→deserialize가 throw하면 error로 수집.
 function checkRoundtrip(project: Project, issues: LintIssue[]): void {
   // 선택 층(2층·4층·그림자)은 불러올 때 길이가 틀리면 경고만 하고 버려지므로 왕복이 던지지 않는다.
@@ -191,7 +197,9 @@ function checkRoundtrip(project: Project, issues: LintIssue[]): void {
     }
   }
   try {
-    deserialize(serialize(project));
+    // 이미 왕복을 통과한 타일셋·업로드 자산 항목(같은 객체)은 뼈대로, 나머지는 serialize 와 같은 글로 되읽는다(sharedDictionaryJson).
+    deserialize(serializeForRoundtripCheck(project));
+    markRoundtripPassed(project);
   } catch (cause) {
     issues.push({
       severity: "error",

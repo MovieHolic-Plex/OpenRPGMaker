@@ -24,7 +24,7 @@ function call(name: string, args: Record<string, unknown>): ReturnType<typeof ru
 // gauge + active ATB(최고 속도) + 필드 배경. chrono 스킨은 측면 전투라 적 이동이 좌표로 보인다.
 call("set_project_settings", {
   title: "CT 엔진 QA",
-  battle: { flow: "gauge", uiStyle: "chrono", atbMode: "active", atbSpeed: 1, backdrop: "field" },
+  battle: { flow: "gauge", uiStyle: "retro2003", atbMode: "active", atbSpeed: 1, backdrop: "field" },
 });
 call("upsert_class", { class: { id: "class_hero", name: "용사", learnedSkills: [] } });
 

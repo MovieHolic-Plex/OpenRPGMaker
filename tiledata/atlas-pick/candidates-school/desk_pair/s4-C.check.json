@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/desk_pair/s4-C.pxg",
+ "set": "school",
+ "id": "desk_pair",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.043
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.041
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 11,
+ "bbox": [
+  1,
+  1,
+  30,
+  29
+ ],
+ "note": "desk_set C 확장: 경사 상판 + 서랍 상자, 이음선 1줄, 둥근 등받이 의자 2개",
+ "ok": true
+}

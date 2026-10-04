@@ -69,6 +69,8 @@ export interface IntentDeclaration {
   readonly resetsContext: boolean;
   /** 이 요청에 쓸 가능성이 높은 툴 이름(레지스트리에 있는 것만). */
   readonly tools: readonly string[];
+  /** The user explicitly asked to locate/show a place in the editor this request. */
+  readonly viewNavigation?: boolean;
   /** 사용자가 명시한 조회 선행 계약. 자연어 해석은 선언자가, 성공 근거 검사는 세션이 맡는다. */
   readonly readBeforeWrite?: {
     readonly project: boolean;
@@ -144,7 +146,7 @@ export const INTENT_SYSTEM_PROMPT = `You classify ONE user request addressed to 
 Fields:
 - "mode": "create" (새로 만든다) | "modify" (지금 있는 것을 고친다·지운다·옮긴다·추가로 얹는다) | "question" (질문·설명·조회, 변경 없음) | "other" (인사·진행 지시·판단 불가).
 - "space": 시설·집·방을 세울 때 어디에 — "interior" (외장 없이 새로 짓는 독립 실내 방·시설 실내. 예: 여관 실내만, 빈 방 꾸미기) | "outdoor" (지금 맵 위에 건물 외장) | "both" (야외 외곽+들어가서 걷는 실내 둘 다. 예: 집 지어줘+들어갈 수 있게, 민가·상점·대장간을 짓고 안에도 들어가게) | "none" (공간 시공이 아닌 요청) | "unclear" (집·건물·방을 만들라는데 어느 쪽인지 표지가 없음).
-- "facility": 입력의 개념 꾸러미 시설 라벨 중 하나를 만들라는 요청이면 그 라벨 그대로, 아니면 null. 모든 신규 실내는 get_concept_facility 로 꾸러미를 읽고 place_concept(plan) 로 짓는다. 등록되지 않은 실내도 sources의 장소·물건을 조합한다 — 야외 표지("맵 위에", "외장", "마을에 건물")가 없으면 space="interior".
+- "facility": 입력의 개념 꾸러미 시설 라벨 중 하나를 만들라는 요청이면 그 라벨 그대로, 아니면 null. 모든 신규 실내는 build_hand_interior_room(plan) 로 짓는다(손 도트 v5) — 야외 표지("맵 위에", "외장", "마을에 건물")가 없으면 space="interior".
 - "targetMapId": mode=create/modify 모두 작업할 기존 대상 맵을 알 수 있으면 id. 「여기/이 맵/이 마을/이 방」은 현재 열린 맵. 새 맵 자체를 요청하거나 모르면 null.
 - "useSelection": 선택 영역이 주어졌고 그 안에서 작업해야 하면 true. 새 맵을 만드는 요청이면 false. 선택 영역이 없으면 false.
 - "clarify": 도구가 실제로 갈릴 만큼 모호할 때만(예: 실내/야외 표지 없는 「집 지어줘」) 사용자에게 할 한 문장 질문. 그 외 null. 진행할 수 있으면 되묻지 않는다.
@@ -152,6 +154,7 @@ Fields:
 - "needsPlan": 여러 산출물·여러 맵·마을/도시/RPG/캠페인·퀘스트 체인처럼 한두 번의 툴 호출로 끝나지 않으면 true. NPC 한 명, 소품 몇 개, 시설 하나, 질문은 false. 생성/수정 분류와 작업 규모는 독립이다. 「이 맵에 집을 만들어라」는 현재 맵의 집 한 채 시공이므로 space="outdoor", targetMapId=현재 맵 id, clarify=null, needsPlan=false다. author_house 한 호출이 부속 실내와 출입구까지 만드는 것은 별도 다단계 계획의 근거가 아니다. 마을 전체나 여러 독립 시설을 조성하는 요청은 true.
 - "resetsContext": 사용자가 이전 작업과 무관한 새 작업·처음부터·프로젝트 초기화를 명시하면 true.
 - "tools": 입력 툴 목록에서 이 요청에 쓸 가능성이 높은 이름만, 최대 8개. 모르면 [].
+- "viewNavigation": 사용자가 편집 화면에서 특정 맵·NPC·장소의 위치를 찾아 보여달라고 요청했을 때만 true. 예: '상점 어디야?', '그 NPC 찾아줘', '만든 마을 보여줘'. '마을 만들어줘', '버그 찾아줘', '타일 목록 보여줘', '화면 옮기지 말고 위치만 알려줘'는 false. 작업·검수·진행 보고를 위한 화면 이동을 추론하지 않는다.
 - "readBeforeWrite": 사용자가 '기존 데이터를 먼저 읽고 이어 작업', '조회 후 실제 ID만 참조'를 명시하면 {"project":true,"collections":["items","enemies","troops"],"references":true}. project 는 프로젝트/기존 맵·이벤트 선행 조회, collections 는 작업에 필요한 DB 컬렉션 이름(실제 조회가 모두 성공하기 전 첫 쓰기 금지), references 는 참조 ID 조회 증거를 뜻한다. 필요한 컬렉션만 선택한다. 그런 조건이 없으면 생략한다. 이것은 작성 요청의 절차 계약이며 별도 허락 질문이 아니다.
 - "adventure": 시작 마을·던전 탐험·파티 모험을 구성하라는 전체 모험 저작 요청이면 {"village":true,"dungeon":true,"party":true,"battle":true,"world":true,"characters":true,"appearance":true}. 각 항목은 요청한 것만 true. 단순 NPC 추가/질문/DB 시드만/입구 표지판만 요청은 생략한다. 모험 JRPG 장르 프리셋 또는 "중세 게임 RPG를 만들어줘"처럼 프로젝트 전체를 처음 만드는 요청은 세계관·핵심 인물·주인공 외형/장비를 먼저 저작해야 하므로 world/characters/appearance를 true로 선언한다. 모험 JRPG 장르 프리셋 + 파티·던전 탐험 + 시작 마을·기본 전투 적은 네 항목과 새 세 항목 모두 true다.
 - "actionCombat": 실제 필드 액션 전투(공격 적중·처치·피격·회피·스태미나·원거리 적·보상)의 작동을 요구하면 {"targets":[{"mapId":"기존 실제 ID"} 또는 {"newMapName":"새로 만들 정확한 맵 이름"}]}로 필수 검증 대상을 선언한다. 턴제 전투, 장르 질문, 액션을 제외한 요청은 생략한다. 단어가 아니라 요청한 행동으로 판단한다. 이 선언은 계획 교체나 acceptance 수리로 지울 수 없는 완료 조건이다.
@@ -170,10 +173,11 @@ Rules:
 - 「수집」「편집」「완벽」「적당히」「낮게」처럼 다른 낱말의 일부는 시공·전투·시간 요청이 아니다. 문장 전체의 뜻으로 판단한다.
 - 「추가해줘」「하나 더」는 있는 곳에 얹는 것이라 보통 mode=modify 이고, 마을을 새로 만드는 뜻이 아니다.
 - 질문(뭐야, 몇 개야, 알려줘, 보여줘)은 mode=question, tools 는 조회 툴만.
+- 일본 상가·상점가·골목 거리(번들 칩셋 jp_city)나 jp_city 맵 위의 건물 짓기는 숲마을 author_village 가 아니다 — tools 에 create_map·fill_region·list_jp_city_building_parts·build_jp_city_building 을 적는다.
 - 사용자와 같은 언어로 clarify·summary 를 쓴다.
 
 JSON schema:
-{"mode":"create","space":"interior","facility":"여관","targetMapId":null,"useSelection":false,"clarify":null,"clarifyOptions":[],"needsPlan":false,"resetsContext":false,"tools":["get_concept_facility","place_concept"],"summary":"여관 실내 맵을 설계해 시공"}`;
+{"mode":"create","space":"interior","facility":"여관","targetMapId":null,"useSelection":false,"clarify":null,"clarifyOptions":[],"needsPlan":false,"resetsContext":false,"tools":["list_hand_interior_parts","build_hand_interior_room"],"viewNavigation":false,"summary":"여관 실내 맵을 설계해 시공"}`;
 
 export function buildIntentUserPayload(facts: IntentFacts): string {
   const lines: string[] = [`## 요청\n${facts.userText.trim()}`];
@@ -333,6 +337,7 @@ export function parseIntentDeclaration(raw: string, facts: IntentFacts): IntentP
       needsPlan: parsed.needsPlan === true,
       resetsContext: parsed.resetsContext === true,
       tools,
+      viewNavigation: parsed.viewNavigation === true && clarify === null,
       ...(isRecord(parsed.readBeforeWrite) ? { readBeforeWrite: {
         project: parsed.readBeforeWrite.project === true,
         collections: readStringList(parsed.readBeforeWrite.collections, 24).filter((name) =>
@@ -601,11 +606,11 @@ export function formatIntentNote(
     const target = intent.targetMapId ? `대상 맵은 \`${intent.targetMapId}\` 이다.` : "대상은 지금 열린 맵의 기존 산출물이다.";
     lines.push(
       `[의도] 있는 것을 고치는 요청이다. ${target} get_map_region/find_layout_regions 로 현재 상태를 먼저 보고 그 자리에서 고친다. `
-      + "create_map·duplicate_map·start_interior_room_session·author_village(kind:\"new\") 로 새것을 만들지 말 것. 기존 실내 맵은 furnish_interior_space.",
+      + "create_map·duplicate_map·author_village(kind:\"new\") 로 새것을 만들지 말 것. 기존 실내 맵은 같은 mapId 로 build_hand_interior_room(replace:true).",
     );
   } else if (intent.mode === "create" && !intent.clarify) {
     const facilityHow = intent.facility
-      ? `개념 꾸러미 시설 「${intent.facility}」는 get_concept_facility(query:"${intent.facility}") 로 템플릿과 variants 를 읽고, 수식어가 없어도 규모·layout 을 정한 plan 을 place_concept(query:"${intent.facility}", plan) 로 새 mapId 에 시공한다`
+      ? `시설 「${intent.facility}」는 참고문서 「손 도트 실내 (v5)」의 가까운 예제를 읽고 규모·방 구성을 정한 plan 을 build_hand_interior_room 으로 새 mapId 에 시공한다`
       : null;
     if (intent.space === "both") {
       const how = facilityHow
@@ -614,13 +619,13 @@ export function formatIntentNote(
         `[의도] 야외 외장과 실내 둘 다이다. ${how}. 이미 확인된 의도이므로 야외/실내를 다시 묻지 말고 진행하라.`,
       );
     } else if (intent.space === "interior") {
-      const how = facilityHow ?? "get_concept_facility로 꾸러미의 장소·물건을 읽고 place_concept(plan, 새 mapId)으로 실내를 시공한다. 등록된 시설이 없어도 sources를 조합해 설계한다";
+      const how = facilityHow ?? "참고문서 「손 도트 실내 (v5)」를 읽고 build_hand_interior_room(plan, 새 mapId)으로 실내를 시공한다(벽·천장 자동, 가구는 v5 id)";
       lines.push(
         `[의도] 실내 시공이다(외장 없는 독립 실내). ${how}. 외장과 함께 짓는 들어가서 걷는 집이면 author_house(interior:"linked-interior")가 정답이다. `
         + "이미 확인된 의도이므로 야외/실내를 다시 묻지 말고 진행하라.",
       );
     } else if (intent.space === "outdoor") {
-      lines.push("[의도] 지금 맵 위 야외 시공이다(author_house/author_village/fill_region/place_props). 집은 author_house(interior:\"linked-interior\")가 기본이다 — 실내맵과 양방향 전이가 함께 생긴다. 겉모습만 필요하면 명시적으로 interior:\"exterior-only\". 독립 실내 세션은 만들지 말 것. 이미 확인된 의도이므로 되묻지 말고 진행하라.");
+      lines.push("[의도] 지금 맵 위 야외 시공이다(author_house/author_village/fill_region/place_props; 대상 맵이 버들항 계열이면 마을은 author_beodeul_town). 집은 author_house(interior:\"linked-interior\")가 기본이다 — 실내맵과 양방향 전이가 함께 생긴다. 겉모습만 필요하면 명시적으로 interior:\"exterior-only\". 독립 실내 세션은 만들지 말 것. 이미 확인된 의도이므로 되묻지 말고 진행하라.");
     }
   }
   const constructionNote = formatConstructionNote(intent, options.targetMap ?? null);

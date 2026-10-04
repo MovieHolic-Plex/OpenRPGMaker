@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/wall_cellar_brick/hf7-A.pxg",
+ "set": "horror",
+ "id": "wall_cellar_brick",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.117
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.027
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation"
+  ]
+ },
+ "colors": 6,
+ "bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "note": "A(v5 식구·깨끗): 붉은 갈색 잔벽돌 8×3 반 칸 엇갈림(vclay 2~4, 낮춰 칙칙하게), 징두리 띠 아래 한 단 어두운 벽돌, 물얼룩 세로 한 줄",
+ "ok": true
+}

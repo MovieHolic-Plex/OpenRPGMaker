@@ -1,0 +1,7399 @@
+[
+  {
+    "runId": "2e0cc955-04a1-42fa-a7e0-fe6b385958c1",
+    "events": [
+      {
+        "seq": 0,
+        "type": "team_start",
+        "innerType": "team_start",
+        "bytes": 42657
+      },
+      {
+        "seq": 1,
+        "type": "agent_spawn",
+        "innerType": "agent_spawn",
+        "agent": "builder-1",
+        "bytes": 43101
+      },
+      {
+        "seq": 2,
+        "type": "agent_event",
+        "innerType": "start",
+        "innerAt": 1791081402563,
+        "agent": "builder-1",
+        "bytes": 170
+      },
+      {
+        "seq": 3,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081402614,
+        "agent": "builder-1",
+        "bytes": 105
+      },
+      {
+        "seq": 4,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081403212,
+        "agent": "builder-1",
+        "bytes": 90852
+      },
+      {
+        "seq": 5,
+        "type": "heartbeat",
+        "at": 1791081407221,
+        "innerType": "heartbeat",
+        "innerAt": 1791081407221,
+        "bytes": 47
+      },
+      {
+        "seq": 6,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081407452,
+        "agent": "builder-1",
+        "bytes": 160,
+        "name": "get_project_summary"
+      },
+      {
+        "seq": 7,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081407452,
+        "agent": "builder-1",
+        "bytes": 199,
+        "name": "get_database_records"
+      },
+      {
+        "seq": 8,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081407452,
+        "agent": "builder-1",
+        "bytes": 201,
+        "name": "get_database_records"
+      },
+      {
+        "seq": 9,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081407452,
+        "agent": "builder-1",
+        "bytes": 153,
+        "name": "list_endings"
+      },
+      {
+        "seq": 10,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081407452,
+        "agent": "builder-1",
+        "bytes": 1443,
+        "name": "get_project_summary",
+        "ok": true,
+        "summary": "프로젝트 '멈춘 시계의 기억' — 맵 2개, 아이템 1000, 트룹 7"
+      },
+      {
+        "seq": 11,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081407454,
+        "agent": "builder-1",
+        "bytes": 73740,
+        "name": "get_database_records",
+        "ok": true,
+        "summary": "actors 136건 / 136건"
+      },
+      {
+        "seq": 12,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081407454,
+        "agent": "builder-1",
+        "bytes": 1658,
+        "name": "get_database_records",
+        "ok": true,
+        "summary": "switches 36건 / 36건"
+      },
+      {
+        "seq": 13,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081407454,
+        "agent": "builder-1",
+        "bytes": 429,
+        "name": "list_endings",
+        "ok": true,
+        "summary": "엔딩 1개"
+      },
+      {
+        "seq": 14,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081407476,
+        "agent": "builder-1",
+        "bytes": 106
+      },
+      {
+        "seq": 15,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081407580,
+        "agent": "builder-1",
+        "bytes": 90773
+      },
+      {
+        "seq": 16,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081411647,
+        "agent": "builder-1",
+        "bytes": 178,
+        "name": "find_events"
+      },
+      {
+        "seq": 17,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081411647,
+        "agent": "builder-1",
+        "bytes": 180,
+        "name": "find_events"
+      },
+      {
+        "seq": 18,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081411647,
+        "agent": "builder-1",
+        "bytes": 554,
+        "name": "find_events",
+        "ok": true,
+        "summary": "이벤트 2개 검색됨"
+      },
+      {
+        "seq": 19,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081411648,
+        "agent": "builder-1",
+        "bytes": 549,
+        "name": "find_events",
+        "ok": true,
+        "summary": "이벤트 2개 검색됨"
+      },
+      {
+        "seq": 20,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081411669,
+        "agent": "builder-1",
+        "bytes": 106
+      },
+      {
+        "seq": 21,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081411726,
+        "agent": "builder-1",
+        "bytes": 91012
+      },
+      {
+        "seq": 22,
+        "type": "heartbeat",
+        "at": 1791081412223,
+        "innerType": "heartbeat",
+        "innerAt": 1791081412223,
+        "bytes": 48
+      },
+      {
+        "seq": 23,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081414969,
+        "agent": "builder-1",
+        "bytes": 207,
+        "name": "get_event"
+      },
+      {
+        "seq": 24,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081414969,
+        "agent": "builder-1",
+        "bytes": 205,
+        "name": "get_event"
+      },
+      {
+        "seq": 25,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081414969,
+        "agent": "builder-1",
+        "bytes": 1273,
+        "name": "get_event",
+        "ok": true,
+        "summary": "이벤트 'ev_segment_starter' (12,8) — 페이지 2개"
+      },
+      {
+        "seq": 26,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081414970,
+        "agent": "builder-1",
+        "bytes": 1257,
+        "name": "get_event",
+        "ok": true,
+        "summary": "이벤트 'ev_segment_end' (22,6) — 페이지 2개"
+      },
+      {
+        "seq": 27,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081414996,
+        "agent": "builder-1",
+        "bytes": 106
+      },
+      {
+        "seq": 28,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081415063,
+        "agent": "builder-1",
+        "bytes": 91655
+      },
+      {
+        "seq": 29,
+        "type": "heartbeat",
+        "at": 1791081417227,
+        "innerType": "heartbeat",
+        "innerAt": 1791081417227,
+        "bytes": 48
+      },
+      {
+        "seq": 30,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081420219,
+        "agent": "builder-1",
+        "bytes": 207,
+        "name": "get_map_region"
+      },
+      {
+        "seq": 31,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081420220,
+        "agent": "builder-1",
+        "bytes": 209,
+        "name": "get_map_region"
+      },
+      {
+        "seq": 32,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081420220,
+        "agent": "builder-1",
+        "bytes": 1071,
+        "name": "get_map_region",
+        "ok": true,
+        "summary": "빈 맵(map_blank_start) 영역 (0,0)~(20,15) — 이벤트 2개, 물 0칸"
+      },
+      {
+        "seq": 33,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081420220,
+        "agent": "builder-1",
+        "bytes": 1053,
+        "name": "get_map_region",
+        "ok": true,
+        "summary": "기억의 길(map_segment_route) 영역 (0,0)~(24,12) — 이벤트 2개, 물 0칸"
+      },
+      {
+        "seq": 34,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081420246,
+        "agent": "builder-1",
+        "bytes": 106
+      },
+      {
+        "seq": 35,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081420303,
+        "agent": "builder-1",
+        "bytes": 92177
+      },
+      {
+        "seq": 36,
+        "type": "heartbeat",
+        "at": 1791081422230,
+        "innerType": "heartbeat",
+        "innerAt": 1791081422230,
+        "bytes": 48
+      },
+      {
+        "seq": 37,
+        "type": "checkpoint",
+        "innerType": "checkpoint",
+        "tool": "upsert_actor",
+        "bytes": 3317151
+      },
+      {
+        "seq": 38,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081423423,
+        "agent": "builder-1",
+        "bytes": 193,
+        "name": "upsert_actor"
+      },
+      {
+        "seq": 39,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081425817,
+        "agent": "builder-1",
+        "bytes": 4292,
+        "name": "upsert_actor",
+        "ok": true,
+        "summary": "액터 '서린' 수정"
+      },
+      {
+        "seq": 40,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081425818,
+        "agent": "builder-1",
+        "bytes": 155,
+        "name": "define_ending"
+      },
+      {
+        "seq": 41,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081425818,
+        "agent": "builder-1",
+        "bytes": 724,
+        "name": "define_ending",
+        "ok": false,
+        "summary": "실행 실패(인자 검증 또는 예외): Validation failed for tool \"define_ending\":\n  - id: is required\n  - name: is required\n  - conditions: is required\n\nReceived arguments:\n{}"
+      },
+      {
+        "seq": 42,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081425839,
+        "agent": "builder-1",
+        "bytes": 106
+      },
+      {
+        "seq": 43,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081425916,
+        "agent": "builder-1",
+        "bytes": 92582
+      },
+      {
+        "seq": 44,
+        "type": "heartbeat",
+        "at": 1791081427232,
+        "innerType": "heartbeat",
+        "innerAt": 1791081427232,
+        "bytes": 48
+      },
+      {
+        "seq": 45,
+        "type": "heartbeat",
+        "at": 1791081432234,
+        "innerType": "heartbeat",
+        "innerAt": 1791081432234,
+        "bytes": 48
+      },
+      {
+        "seq": 46,
+        "type": "heartbeat",
+        "at": 1791081437238,
+        "innerType": "heartbeat",
+        "innerAt": 1791081437238,
+        "bytes": 48
+      },
+      {
+        "seq": 47,
+        "type": "checkpoint",
+        "innerType": "checkpoint",
+        "tool": "define_ending",
+        "bytes": 332519
+      },
+      {
+        "seq": 48,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081439798,
+        "agent": "builder-1",
+        "bytes": 420,
+        "name": "define_ending"
+      },
+      {
+        "seq": 49,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081441038,
+        "agent": "builder-1",
+        "bytes": 1179,
+        "name": "define_ending",
+        "ok": true,
+        "summary": "엔딩 '멈춘 시계의 기억 — 첫 구간 끝' 정의 수정 — 조건 0개, priority 10. 이벤트 commands의 triggerEnding 호출이 있어야 실행됩니다."
+      },
+      {
+        "seq": 50,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081441059,
+        "agent": "builder-1",
+        "bytes": 106
+      },
+      {
+        "seq": 51,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081441119,
+        "agent": "builder-1",
+        "bytes": 92777
+      },
+      {
+        "seq": 52,
+        "type": "heartbeat",
+        "at": 1791081442239,
+        "innerType": "heartbeat",
+        "innerAt": 1791081442239,
+        "bytes": 48
+      },
+      {
+        "seq": 53,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081444209,
+        "agent": "builder-1",
+        "bytes": 188,
+        "name": "list_resources"
+      },
+      {
+        "seq": 54,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081444210,
+        "agent": "builder-1",
+        "bytes": 187,
+        "name": "list_resources"
+      },
+      {
+        "seq": 55,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081444210,
+        "agent": "builder-1",
+        "bytes": 339,
+        "name": "list_resources",
+        "ok": true,
+        "summary": "리소스 0개 검색됨(\"clock\", charset)"
+      },
+      {
+        "seq": 56,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081444210,
+        "agent": "builder-1",
+        "bytes": 337,
+        "name": "list_resources",
+        "ok": true,
+        "summary": "리소스 0개 검색됨(\"item\", charset)"
+      },
+      {
+        "seq": 57,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081444231,
+        "agent": "builder-1",
+        "bytes": 106
+      },
+      {
+        "seq": 58,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081444292,
+        "agent": "builder-1",
+        "bytes": 92756
+      },
+      {
+        "seq": 59,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081446914,
+        "agent": "builder-1",
+        "bytes": 200,
+        "name": "list_resources"
+      },
+      {
+        "seq": 60,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081446914,
+        "agent": "builder-1",
+        "bytes": 4687,
+        "name": "list_resources",
+        "ok": true,
+        "summary": "리소스 10개 검색됨(\"object\", charset)"
+      },
+      {
+        "seq": 61,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081446935,
+        "agent": "builder-1",
+        "bytes": 106
+      },
+      {
+        "seq": 62,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081446997,
+        "agent": "builder-1",
+        "bytes": 92975
+      },
+      {
+        "seq": 63,
+        "type": "heartbeat",
+        "at": 1791081447239,
+        "innerType": "heartbeat",
+        "innerAt": 1791081447239,
+        "bytes": 48
+      },
+      {
+        "seq": 64,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081449793,
+        "agent": "builder-1",
+        "bytes": 212,
+        "name": "list_resources"
+      },
+      {
+        "seq": 65,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081449793,
+        "agent": "builder-1",
+        "bytes": 3320,
+        "name": "list_resources",
+        "ok": true,
+        "summary": "리소스 6개 검색됨(\"object\", charset)"
+      },
+      {
+        "seq": 66,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081449815,
+        "agent": "builder-1",
+        "bytes": 107
+      },
+      {
+        "seq": 67,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081449880,
+        "agent": "builder-1",
+        "bytes": 92975
+      },
+      {
+        "seq": 68,
+        "type": "heartbeat",
+        "at": 1791081452242,
+        "innerType": "heartbeat",
+        "innerAt": 1791081452242,
+        "bytes": 48
+      },
+      {
+        "seq": 69,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081452926,
+        "agent": "builder-1",
+        "bytes": 199,
+        "name": "list_resources"
+      },
+      {
+        "seq": 70,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081452927,
+        "agent": "builder-1",
+        "bytes": 5227,
+        "name": "list_resources",
+        "ok": true,
+        "summary": "리소스 10개 검색됨(\"people\", charset)"
+      },
+      {
+        "seq": 71,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081452948,
+        "agent": "builder-1",
+        "bytes": 107
+      },
+      {
+        "seq": 72,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081453007,
+        "agent": "builder-1",
+        "bytes": 92975
+      },
+      {
+        "seq": 73,
+        "type": "heartbeat",
+        "at": 1791081457246,
+        "innerType": "heartbeat",
+        "innerAt": 1791081457246,
+        "bytes": 48
+      },
+      {
+        "seq": 74,
+        "type": "checkpoint",
+        "innerType": "checkpoint",
+        "tool": "upsert_event",
+        "bytes": 333480
+      },
+      {
+        "seq": 75,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081458666,
+        "agent": "builder-1",
+        "bytes": 1950,
+        "name": "upsert_event"
+      },
+      {
+        "seq": 76,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081460595,
+        "agent": "builder-1",
+        "bytes": 1112,
+        "name": "upsert_event",
+        "ok": true,
+        "summary": "빈 맵에 이벤트 'ev_segment_starter' 수정 — 런타임 제한 커맨드 0건"
+      },
+      {
+        "seq": 77,
+        "type": "agent_event",
+        "innerType": "map_delta",
+        "innerAt": 1791081460596,
+        "agent": "builder-1",
+        "bytes": 1938
+      },
+      {
+        "seq": 78,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081460617,
+        "agent": "builder-1",
+        "bytes": 107
+      },
+      {
+        "seq": 79,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081460681,
+        "agent": "builder-1",
+        "bytes": 92975
+      },
+      {
+        "seq": 80,
+        "type": "heartbeat",
+        "at": 1791081462254,
+        "innerType": "heartbeat",
+        "innerAt": 1791081462254,
+        "bytes": 48
+      },
+      {
+        "seq": 81,
+        "type": "checkpoint",
+        "innerType": "checkpoint",
+        "tool": "upsert_event",
+        "bytes": 333898
+      },
+      {
+        "seq": 82,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081465242,
+        "agent": "builder-1",
+        "bytes": 1401,
+        "name": "upsert_event"
+      },
+      {
+        "seq": 83,
+        "type": "heartbeat",
+        "at": 1791081467267,
+        "innerType": "heartbeat",
+        "innerAt": 1791081467267,
+        "bytes": 48
+      },
+      {
+        "seq": 84,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081471511,
+        "agent": "builder-1",
+        "bytes": 1103,
+        "name": "upsert_event",
+        "ok": true,
+        "summary": "기억의 길에 이벤트 'ev_segment_end' 수정 — 런타임 제한 커맨드 0건"
+      },
+      {
+        "seq": 85,
+        "type": "agent_event",
+        "innerType": "map_delta",
+        "innerAt": 1791081471511,
+        "agent": "builder-1",
+        "bytes": 1389
+      },
+      {
+        "seq": 86,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081471533,
+        "agent": "builder-1",
+        "bytes": 107
+      },
+      {
+        "seq": 87,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081471610,
+        "agent": "builder-1",
+        "bytes": 92975
+      },
+      {
+        "seq": 88,
+        "type": "heartbeat",
+        "at": 1791081472262,
+        "innerType": "heartbeat",
+        "innerAt": 1791081472262,
+        "bytes": 48
+      },
+      {
+        "seq": 89,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081475304,
+        "agent": "builder-1",
+        "bytes": 248,
+        "name": "check_reachability"
+      },
+      {
+        "seq": 90,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081475304,
+        "agent": "builder-1",
+        "bytes": 234,
+        "name": "check_reachability"
+      },
+      {
+        "seq": 91,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081475304,
+        "agent": "builder-1",
+        "bytes": 301,
+        "name": "check_reachability",
+        "ok": true,
+        "summary": "도달성: 전부 도달 가능"
+      },
+      {
+        "seq": 92,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081475305,
+        "agent": "builder-1",
+        "bytes": 301,
+        "name": "check_reachability",
+        "ok": true,
+        "summary": "도달성: 전부 도달 가능"
+      },
+      {
+        "seq": 93,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081475331,
+        "agent": "builder-1",
+        "bytes": 107
+      },
+      {
+        "seq": 94,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081475394,
+        "agent": "builder-1",
+        "bytes": 92975
+      },
+      {
+        "seq": 95,
+        "type": "heartbeat",
+        "at": 1791081477268,
+        "innerType": "heartbeat",
+        "innerAt": 1791081477268,
+        "bytes": 48
+      },
+      {
+        "seq": 96,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081480550,
+        "agent": "builder-1",
+        "bytes": 336,
+        "name": "run_lint"
+      },
+      {
+        "seq": 97,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081480550,
+        "agent": "builder-1",
+        "bytes": 539,
+        "name": "run_lint",
+        "ok": true,
+        "summary": "lint: error 0건 / warning 0건 / info 0건 — 구조 무결성만 검사한다. 보상 중복·경제 균형·진행 순서는 범위 밖이고, warning 도 결함이다. 이 결과를 '결함 없이 통과'로 옮겨 적지 말 것."
+      },
+      {
+        "seq": 98,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081480583,
+        "agent": "builder-1",
+        "bytes": 107
+      },
+      {
+        "seq": 99,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081480678,
+        "agent": "builder-1",
+        "bytes": 92975
+      },
+      {
+        "seq": 100,
+        "type": "heartbeat",
+        "at": 1791081482272,
+        "innerType": "heartbeat",
+        "innerAt": 1791081482272,
+        "bytes": 49
+      },
+      {
+        "seq": 101,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081484243,
+        "agent": "builder-1",
+        "bytes": 787,
+        "name": "report_first_play"
+      },
+      {
+        "seq": 102,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081484244,
+        "agent": "builder-1",
+        "bytes": 510,
+        "name": "report_first_play",
+        "ok": true,
+        "summary": ""
+      },
+      {
+        "seq": 103,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081484266,
+        "agent": "builder-1",
+        "bytes": 108
+      },
+      {
+        "seq": 104,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081484344,
+        "agent": "builder-1",
+        "bytes": 92976
+      },
+      {
+        "seq": 105,
+        "type": "heartbeat",
+        "at": 1791081487272,
+        "innerType": "heartbeat",
+        "innerAt": 1791081487272,
+        "bytes": 49
+      },
+      {
+        "seq": 106,
+        "type": "agent_event",
+        "innerType": "delta",
+        "innerAt": 1791081488000,
+        "agent": "builder-1",
+        "bytes": 695
+      },
+      {
+        "seq": 107,
+        "type": "agent_event",
+        "innerType": "delta",
+        "innerAt": 1791081489073,
+        "agent": "builder-1",
+        "bytes": 664
+      },
+      {
+        "seq": 108,
+        "type": "agent_event",
+        "innerType": "delta",
+        "innerAt": 1791081489209,
+        "agent": "builder-1",
+        "bytes": 123
+      },
+      {
+        "seq": 109,
+        "type": "agent_event",
+        "innerType": "assistant",
+        "innerAt": 1791081489209,
+        "agent": "builder-1",
+        "bytes": 1228
+      },
+      {
+        "seq": 110,
+        "type": "agent_event",
+        "innerType": "done",
+        "innerAt": 1791081489215,
+        "agent": "builder-1",
+        "bytes": 3318885
+      },
+      {
+        "seq": 111,
+        "type": "execution_status",
+        "at": 1791081489360,
+        "innerType": "execution_status",
+        "innerAt": 1791081489360,
+        "bytes": 735,
+        "name": "first_play.core_ready",
+        "ok": true,
+        "summary": "서린의 회상 스토리 「멈춘 시계의 기억」 첫 구간 플레이 흐름:\n1. 시작 맵(map_blank_start)에서 주인공 '서린'이 (12, 8)에 위치한 멈춘 회중시계(ev_segment_starter)를 조사합니다.\n2. 12시 5분에 멈춘 시계와 사라진 사람의 흔적을 확인하고 '기억을 간직한다' / '기억을 놓아준다' 두 가지 선택지 중 하나를 고릅니다.\n3. 선택에 따라 서로 다른 대사와 심경이 출력되며, 멈췄던 시계가 반응하여 진행 스위치(sw_segment_key)가 활성화됩니다.\n4. 동쪽 출입구(19, 8)를 통해 기억"
+      },
+      {
+        "seq": 112,
+        "type": "agent_done",
+        "innerType": "agent_done",
+        "agent": "builder-1",
+        "bytes": 805,
+        "ok": true,
+        "summary": "서린의 회상 스토리 「멈춘 시계의 기억」 첫 구간 플레이 흐름:\n1. 시작 맵(map_blank_start)에서 주인공 '서린'이 (12, 8)에 위치한 멈춘 회중시계(ev_segment_starter)를 조사합니다.\n2. 12시 5분에 멈춘 시계와 사라진 사람의 흔적을 확인하고 '기억을 간직한다' / '기억을 놓아준다' 두 가지 선택지 중 하나를 고릅니다.\n3. 선택에 따라 서로 다른 대사와 심경이 출력되며, 멈췄던 시계가 반응하여 진행 스위치(sw_segment_key)가 활성화됩니다.\n4. 동쪽 출입구(19, 8)를 통해 기억"
+      },
+      {
+        "seq": 113,
+        "type": "agent_spawn",
+        "innerType": "agent_spawn",
+        "agent": "reviewer-1",
+        "bytes": 47004
+      },
+      {
+        "seq": 114,
+        "type": "agent_event",
+        "innerType": "start",
+        "innerAt": 1791081489497,
+        "agent": "reviewer-1",
+        "bytes": 172
+      },
+      {
+        "seq": 115,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081489519,
+        "agent": "reviewer-1",
+        "bytes": 108
+      },
+      {
+        "seq": 116,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081489522,
+        "agent": "reviewer-1",
+        "bytes": 64980
+      },
+      {
+        "seq": 117,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081491632,
+        "agent": "reviewer-1",
+        "bytes": 183,
+        "name": "get_database_records"
+      },
+      {
+        "seq": 118,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081491632,
+        "agent": "reviewer-1",
+        "bytes": 410,
+        "name": "get_database_records",
+        "ok": true,
+        "summary": "maps 2건 / 2건"
+      },
+      {
+        "seq": 119,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081491633,
+        "agent": "reviewer-1",
+        "bytes": 108
+      },
+      {
+        "seq": 120,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081491636,
+        "agent": "reviewer-1",
+        "bytes": 65975
+      },
+      {
+        "seq": 121,
+        "type": "heartbeat",
+        "at": 1791081492273,
+        "innerType": "heartbeat",
+        "innerAt": 1791081492273,
+        "bytes": 49
+      },
+      {
+        "seq": 122,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081494079,
+        "agent": "reviewer-1",
+        "bytes": 209,
+        "name": "get_event"
+      },
+      {
+        "seq": 123,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081494079,
+        "agent": "reviewer-1",
+        "bytes": 1702,
+        "name": "get_event",
+        "ok": true,
+        "summary": "이벤트 'ev_segment_starter' (12,8) — 페이지 2개"
+      },
+      {
+        "seq": 124,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081494101,
+        "agent": "reviewer-1",
+        "bytes": 108
+      },
+      {
+        "seq": 125,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081494103,
+        "agent": "reviewer-1",
+        "bytes": 69453
+      },
+      {
+        "seq": 126,
+        "type": "heartbeat",
+        "at": 1791081497277,
+        "innerType": "heartbeat",
+        "innerAt": 1791081497277,
+        "bytes": 49
+      },
+      {
+        "seq": 127,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081497863,
+        "agent": "reviewer-1",
+        "bytes": 207,
+        "name": "get_event"
+      },
+      {
+        "seq": 128,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081497864,
+        "agent": "reviewer-1",
+        "bytes": 1723,
+        "name": "get_event",
+        "ok": true,
+        "summary": "이벤트 'ev_segment_end' (22,6) — 페이지 2개"
+      },
+      {
+        "seq": 129,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081497885,
+        "agent": "reviewer-1",
+        "bytes": 108
+      },
+      {
+        "seq": 130,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081497887,
+        "agent": "reviewer-1",
+        "bytes": 72140
+      },
+      {
+        "seq": 131,
+        "type": "heartbeat",
+        "at": 1791081502850,
+        "innerType": "heartbeat",
+        "innerAt": 1791081502850,
+        "bytes": 49
+      },
+      {
+        "seq": 132,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081503123,
+        "agent": "reviewer-1",
+        "bytes": 152,
+        "name": "run_lint"
+      },
+      {
+        "seq": 133,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081503123,
+        "agent": "reviewer-1",
+        "bytes": 541,
+        "name": "run_lint",
+        "ok": true,
+        "summary": "lint: error 0건 / warning 0건 / info 0건 — 구조 무결성만 검사한다. 보상 중복·경제 균형·진행 순서는 범위 밖이고, warning 도 결함이다. 이 결과를 '결함 없이 통과'로 옮겨 적지 말 것."
+      },
+      {
+        "seq": 134,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081503144,
+        "agent": "reviewer-1",
+        "bytes": 108
+      },
+      {
+        "seq": 135,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081503147,
+        "agent": "reviewer-1",
+        "bytes": 73039
+      },
+      {
+        "seq": 136,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081505298,
+        "agent": "reviewer-1",
+        "bytes": 250,
+        "name": "check_reachability"
+      },
+      {
+        "seq": 137,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081505298,
+        "agent": "reviewer-1",
+        "bytes": 303,
+        "name": "check_reachability",
+        "ok": true,
+        "summary": "도달성: 전부 도달 가능"
+      },
+      {
+        "seq": 138,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081505320,
+        "agent": "reviewer-1",
+        "bytes": 108
+      },
+      {
+        "seq": 139,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081505325,
+        "agent": "reviewer-1",
+        "bytes": 74205
+      },
+      {
+        "seq": 140,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081507511,
+        "agent": "reviewer-1",
+        "bytes": 236,
+        "name": "check_reachability"
+      },
+      {
+        "seq": 141,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081507511,
+        "agent": "reviewer-1",
+        "bytes": 303,
+        "name": "check_reachability",
+        "ok": true,
+        "summary": "도달성: 전부 도달 가능"
+      },
+      {
+        "seq": 142,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081507533,
+        "agent": "reviewer-1",
+        "bytes": 108
+      },
+      {
+        "seq": 143,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081507535,
+        "agent": "reviewer-1",
+        "bytes": 75275
+      },
+      {
+        "seq": 144,
+        "type": "heartbeat",
+        "at": 1791081507850,
+        "innerType": "heartbeat",
+        "innerAt": 1791081507850,
+        "bytes": 49
+      },
+      {
+        "seq": 145,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081510299,
+        "agent": "reviewer-1",
+        "bytes": 529,
+        "name": "report_first_play_review"
+      },
+      {
+        "seq": 146,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081510299,
+        "agent": "reviewer-1",
+        "bytes": 299,
+        "name": "report_first_play_review",
+        "ok": true,
+        "summary": ""
+      },
+      {
+        "seq": 147,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081510300,
+        "agent": "reviewer-1",
+        "bytes": 108
+      },
+      {
+        "seq": 148,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081510303,
+        "agent": "reviewer-1",
+        "bytes": 76488
+      },
+      {
+        "seq": 149,
+        "type": "heartbeat",
+        "at": 1791081512850,
+        "innerType": "heartbeat",
+        "innerAt": 1791081512850,
+        "bytes": 49
+      },
+      {
+        "seq": 150,
+        "type": "agent_event",
+        "innerType": "delta",
+        "innerAt": 1791081513284,
+        "agent": "reviewer-1",
+        "bytes": 836
+      },
+      {
+        "seq": 151,
+        "type": "agent_event",
+        "innerType": "delta",
+        "innerAt": 1791081514053,
+        "agent": "reviewer-1",
+        "bytes": 613
+      },
+      {
+        "seq": 152,
+        "type": "agent_event",
+        "innerType": "assistant",
+        "innerAt": 1791081514053,
+        "agent": "reviewer-1",
+        "bytes": 1316
+      },
+      {
+        "seq": 153,
+        "type": "agent_event",
+        "innerType": "done",
+        "innerAt": 1791081514084,
+        "agent": "reviewer-1",
+        "bytes": 334066
+      },
+      {
+        "seq": 154,
+        "type": "execution_status",
+        "at": 1791081514100,
+        "innerType": "execution_status",
+        "innerAt": 1791081514100,
+        "bytes": 156,
+        "name": "first_play.review_passed",
+        "ok": true,
+        "summary": "확정 기획과 실제 핵심 이벤트를 대조했습니다. 장면 마무리 작업을 이어갑니다."
+      },
+      {
+        "seq": 155,
+        "type": "agent_done",
+        "innerType": "agent_done",
+        "agent": "reviewer-1",
+        "bytes": 295,
+        "ok": true,
+        "summary": "핵심 플레이 요구 확인"
+      },
+      {
+        "seq": 156,
+        "type": "agent_spawn",
+        "innerType": "agent_spawn",
+        "agent": "builder-2",
+        "bytes": 44001
+      },
+      {
+        "seq": 157,
+        "type": "agent_event",
+        "innerType": "start",
+        "innerAt": 1791081514250,
+        "agent": "builder-2",
+        "bytes": 172
+      },
+      {
+        "seq": 158,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081514273,
+        "agent": "builder-2",
+        "bytes": 107
+      },
+      {
+        "seq": 159,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081514301,
+        "agent": "builder-2",
+        "bytes": 90620
+      },
+      {
+        "seq": 160,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081518289,
+        "agent": "builder-2",
+        "bytes": 208,
+        "name": "get_map_region"
+      },
+      {
+        "seq": 161,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081518289,
+        "agent": "builder-2",
+        "bytes": 210,
+        "name": "get_map_region"
+      },
+      {
+        "seq": 162,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081518289,
+        "agent": "builder-2",
+        "bytes": 208,
+        "name": "get_event"
+      },
+      {
+        "seq": 163,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081518289,
+        "agent": "builder-2",
+        "bytes": 206,
+        "name": "get_event"
+      },
+      {
+        "seq": 164,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081518289,
+        "agent": "builder-2",
+        "bytes": 1063,
+        "name": "get_map_region",
+        "ok": true,
+        "summary": "빈 맵(map_blank_start) 영역 (0,0)~(20,15) — 이벤트 2개, 물 0칸"
+      },
+      {
+        "seq": 165,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081518289,
+        "agent": "builder-2",
+        "bytes": 1049,
+        "name": "get_map_region",
+        "ok": true,
+        "summary": "기억의 길(map_segment_route) 영역 (0,0)~(24,12) — 이벤트 2개, 물 0칸"
+      },
+      {
+        "seq": 166,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081518289,
+        "agent": "builder-2",
+        "bytes": 1701,
+        "name": "get_event",
+        "ok": true,
+        "summary": "이벤트 'ev_segment_starter' (12,8) — 페이지 2개"
+      },
+      {
+        "seq": 167,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081518290,
+        "agent": "builder-2",
+        "bytes": 1722,
+        "name": "get_event",
+        "ok": true,
+        "summary": "이벤트 'ev_segment_end' (22,6) — 페이지 2개"
+      },
+      {
+        "seq": 168,
+        "type": "heartbeat",
+        "at": 1791081518290,
+        "innerType": "heartbeat",
+        "innerAt": 1791081518290,
+        "bytes": 49
+      },
+      {
+        "seq": 169,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081518317,
+        "agent": "builder-2",
+        "bytes": 107
+      },
+      {
+        "seq": 170,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081518344,
+        "agent": "builder-2",
+        "bytes": 90902
+      },
+      {
+        "seq": 171,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081520948,
+        "agent": "builder-2",
+        "bytes": 200,
+        "name": "list_tileset_references"
+      },
+      {
+        "seq": 172,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081520948,
+        "agent": "builder-2",
+        "bytes": 185,
+        "name": "list_hand_interior_parts"
+      },
+      {
+        "seq": 173,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081520948,
+        "agent": "builder-2",
+        "bytes": 680,
+        "name": "list_tileset_references",
+        "ok": true,
+        "summary": "타일셋 → 용도 → MD와 이미지. 선택한 용도를 읽은 다음 응답에서 배치하세요."
+      },
+      {
+        "seq": 174,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081520949,
+        "agent": "builder-2",
+        "bytes": 5444,
+        "name": "list_hand_interior_parts",
+        "ok": true,
+        "summary": "가구 99종 — 모든 낱말이 맞는 것이 없어 가장 많이 맞는 것부터 · 앞 40 · 행이 많아 desc 만 — 낱말·category 를 더해 12종 이하로 좁히면 tags·place·pair 까지 준다"
+      },
+      {
+        "seq": 175,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081520970,
+        "agent": "builder-2",
+        "bytes": 107
+      },
+      {
+        "seq": 176,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081521002,
+        "agent": "builder-2",
+        "bytes": 91444
+      },
+      {
+        "seq": 177,
+        "type": "heartbeat",
+        "at": 1791081523290,
+        "innerType": "heartbeat",
+        "innerAt": 1791081523290,
+        "bytes": 49
+      },
+      {
+        "seq": 178,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081524062,
+        "agent": "builder-2",
+        "bytes": 263,
+        "name": "read_tileset_reference"
+      },
+      {
+        "seq": 179,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081524062,
+        "agent": "builder-2",
+        "bytes": 1562,
+        "name": "read_tileset_reference",
+        "ok": false,
+        "summary": "'read_tileset_reference' 실행 실패: MD 문서를 찾을 수 없습니다 — documentId '01-reading-order'를 찾을 수 없습니다. 이 용도의 documentId: hand-interior-v5-order, hand-interior-v5-rules, hand-interior-v5-dictionary, hand-interior-v5-objects-bake, hand-interior…"
+      },
+      {
+        "seq": 180,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081524063,
+        "agent": "builder-2",
+        "bytes": 107
+      },
+      {
+        "seq": 181,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081524096,
+        "agent": "builder-2",
+        "bytes": 91405
+      },
+      {
+        "seq": 182,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081527036,
+        "agent": "builder-2",
+        "bytes": 268,
+        "name": "read_tileset_reference"
+      },
+      {
+        "seq": 183,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081527036,
+        "agent": "builder-2",
+        "bytes": 268,
+        "name": "read_tileset_reference"
+      },
+      {
+        "seq": 184,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081527036,
+        "agent": "builder-2",
+        "bytes": 3494,
+        "name": "read_tileset_reference",
+        "ok": true,
+        "summary": "손 도트 실내 (v5) / 손 도트 실내 · 읽는 순서·짓는 순서 (0–2803, 1/1쪽)"
+      },
+      {
+        "seq": 185,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081527036,
+        "agent": "builder-2",
+        "bytes": 2607,
+        "name": "read_tileset_reference",
+        "ok": true,
+        "summary": "손 도트 실내 (v5) / 손 도트 실내 · 구조 규칙·사용자 판정 (0–1926, 1/1쪽)"
+      },
+      {
+        "seq": 186,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081527057,
+        "agent": "builder-2",
+        "bytes": 107
+      },
+      {
+        "seq": 187,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081527083,
+        "agent": "builder-2",
+        "bytes": 91637
+      },
+      {
+        "seq": 188,
+        "type": "heartbeat",
+        "at": 1791081528292,
+        "innerType": "heartbeat",
+        "innerAt": 1791081528292,
+        "bytes": 49
+      },
+      {
+        "seq": 189,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081530089,
+        "agent": "builder-2",
+        "bytes": 178,
+        "name": "list_hand_interior_parts"
+      },
+      {
+        "seq": 190,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081530089,
+        "agent": "builder-2",
+        "bytes": 4368,
+        "name": "list_hand_interior_parts",
+        "ok": true,
+        "summary": "방 서재: 예제 5맵 5방에서 쓰인 가구 21종(종류별) + 태그가 맞는 11종. 예제 참고문서 documentId: hand-interior-v5-map-scholar, hand-interior-v5-map-manor_2f, hand-interior-v5-map-elf, hand-interior-v5-map-throne …."
+      },
+      {
+        "seq": 191,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081530090,
+        "agent": "builder-2",
+        "bytes": 107
+      },
+      {
+        "seq": 192,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081530118,
+        "agent": "builder-2",
+        "bytes": 93056
+      },
+      {
+        "seq": 193,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081533008,
+        "agent": "builder-2",
+        "bytes": 274,
+        "name": "read_tileset_reference"
+      },
+      {
+        "seq": 194,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081533008,
+        "agent": "builder-2",
+        "bytes": 13805,
+        "name": "read_tileset_reference",
+        "ok": true,
+        "summary": "손 도트 실내 (v5) / 손 도트 실내 · 사전(바닥·벽면·천장·탁자·줄·단·탁상 물건) (0–16493, 1/1쪽)"
+      },
+      {
+        "seq": 195,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081533030,
+        "agent": "builder-2",
+        "bytes": 107
+      },
+      {
+        "seq": 196,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081533060,
+        "agent": "builder-2",
+        "bytes": 94513
+      },
+      {
+        "seq": 197,
+        "type": "heartbeat",
+        "at": 1791081533292,
+        "innerType": "heartbeat",
+        "innerAt": 1791081533292,
+        "bytes": 49
+      },
+      {
+        "seq": 198,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081535371,
+        "agent": "builder-2",
+        "bytes": 275,
+        "name": "read_tileset_reference"
+      },
+      {
+        "seq": 199,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081535371,
+        "agent": "builder-2",
+        "bytes": 7185,
+        "name": "read_tileset_reference",
+        "ok": true,
+        "summary": "손 도트 실내 (v5) / 손 도트 실내 · 예제 · 학자의 집 (0–5974, 1/2쪽)"
+      },
+      {
+        "seq": 200,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081535372,
+        "agent": "builder-2",
+        "bytes": 107
+      },
+      {
+        "seq": 201,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081535402,
+        "agent": "builder-2",
+        "bytes": 94513
+      },
+      {
+        "seq": 202,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081537635,
+        "agent": "builder-2",
+        "bytes": 264,
+        "name": "read_tileset_reference"
+      },
+      {
+        "seq": 203,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081537635,
+        "agent": "builder-2",
+        "bytes": 680,
+        "name": "read_tileset_reference",
+        "ok": true,
+        "summary": "손 도트 실내 (v5) / hand-interior-scholar.png — 실제 이미지를 확인하세요."
+      },
+      {
+        "seq": 204,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081537636,
+        "agent": "builder-2",
+        "bytes": 107
+      },
+      {
+        "seq": 205,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081537666,
+        "agent": "builder-2",
+        "bytes": 94513
+      },
+      {
+        "seq": 206,
+        "type": "heartbeat",
+        "at": 1791081538293,
+        "innerType": "heartbeat",
+        "innerAt": 1791081538293,
+        "bytes": 49
+      },
+      {
+        "seq": 207,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081541034,
+        "agent": "builder-2",
+        "bytes": 165,
+        "name": "list_tileset_references"
+      },
+      {
+        "seq": 208,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081541034,
+        "agent": "builder-2",
+        "bytes": 24078,
+        "name": "list_tileset_references",
+        "ok": true,
+        "summary": "타일셋 → 용도 → MD와 이미지. 선택한 용도를 읽은 다음 응답에서 배치하세요."
+      },
+      {
+        "seq": 209,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081541036,
+        "agent": "builder-2",
+        "bytes": 108
+      },
+      {
+        "seq": 210,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081541066,
+        "agent": "builder-2",
+        "bytes": 94513
+      },
+      {
+        "seq": 211,
+        "type": "heartbeat",
+        "at": 1791081543293,
+        "innerType": "heartbeat",
+        "innerAt": 1791081543293,
+        "bytes": 49
+      },
+      {
+        "seq": 212,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081547577,
+        "agent": "builder-2",
+        "bytes": 268,
+        "name": "read_tileset_reference"
+      },
+      {
+        "seq": 213,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081547577,
+        "agent": "builder-2",
+        "bytes": 1548,
+        "name": "read_tileset_reference",
+        "ok": false,
+        "summary": "'read_tileset_reference' 실행 실패: MD 문서를 찾을 수 없습니다 — documentId 'forest-routes-v7-road'를 찾을 수 없습니다. 이 용도의 documentId: field-forest-crossroads, field-forest-crossroads-rows-0, field-forest-crossroads-rows-16, field-forest-crossroads-ro…"
+      },
+      {
+        "seq": 214,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081547599,
+        "agent": "builder-2",
+        "bytes": 108
+      },
+      {
+        "seq": 215,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081547623,
+        "agent": "builder-2",
+        "bytes": 94513
+      },
+      {
+        "seq": 216,
+        "type": "heartbeat",
+        "at": 1791081548294,
+        "innerType": "heartbeat",
+        "innerAt": 1791081548294,
+        "bytes": 49
+      },
+      {
+        "seq": 217,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081550062,
+        "agent": "builder-2",
+        "bytes": 267,
+        "name": "read_tileset_reference"
+      },
+      {
+        "seq": 218,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081550063,
+        "agent": "builder-2",
+        "bytes": 3624,
+        "name": "read_tileset_reference",
+        "ok": true,
+        "summary": "마을 사이 필드·야외 장소 · 숲 (개정6: 숲 미로·야영지·농장 목장·등대 곶 추가) / 야외 장소 규칙 · 숲(초록) (마을·성소·장면·필드) (0–2848, 1/1쪽)"
+      },
+      {
+        "seq": 219,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081550064,
+        "agent": "builder-2",
+        "bytes": 108
+      },
+      {
+        "seq": 220,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081550097,
+        "agent": "builder-2",
+        "bytes": 94513
+      },
+      {
+        "seq": 221,
+        "type": "heartbeat",
+        "at": 1791081553298,
+        "innerType": "heartbeat",
+        "innerAt": 1791081553298,
+        "bytes": 49
+      },
+      {
+        "seq": 222,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081558052,
+        "agent": "builder-2",
+        "bytes": 1606,
+        "name": "build_hand_interior_room"
+      },
+      {
+        "seq": 223,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081558052,
+        "agent": "builder-2",
+        "bytes": 860,
+        "name": "build_hand_interior_room",
+        "ok": false,
+        "summary": "'build_hand_interior_room' 실행 실패: 실내를 짓지 않았다 — 오류 2건: 책장 2w(bookshelf 2w) @(1,8) 뒤(북쪽)에 벽면이 없다 — 벽 가구는 북쪽 벽면 바로 아래 첫 바닥 줄에 / 탁상 물건 globe_s (15,3) — 윗면이 있는 가구(탁자·카운터·책상·협탁 등) 칸 위에만 둔다"
+      },
+      {
+        "seq": 224,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081558073,
+        "agent": "builder-2",
+        "bytes": 108
+      },
+      {
+        "seq": 225,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081558103,
+        "agent": "builder-2",
+        "bytes": 94513
+      },
+      {
+        "seq": 226,
+        "type": "heartbeat",
+        "at": 1791081558298,
+        "innerType": "heartbeat",
+        "innerAt": 1791081558298,
+        "bytes": 49
+      },
+      {
+        "seq": 227,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081562774,
+        "agent": "builder-2",
+        "bytes": 1581,
+        "name": "build_hand_interior_room"
+      },
+      {
+        "seq": 228,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081562775,
+        "agent": "builder-2",
+        "bytes": 596,
+        "name": "build_hand_interior_room",
+        "ok": false,
+        "summary": "'build_hand_interior_room' 실행 실패: 맵 map_blank_start 는 다른 칩셋(beodeul_city) 맵이다 — 새 mapId 로 짓는다"
+      },
+      {
+        "seq": 229,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081562796,
+        "agent": "builder-2",
+        "bytes": 108
+      },
+      {
+        "seq": 230,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081562820,
+        "agent": "builder-2",
+        "bytes": 94513
+      },
+      {
+        "seq": 231,
+        "type": "heartbeat",
+        "at": 1791081563299,
+        "innerType": "heartbeat",
+        "innerAt": 1791081563299,
+        "bytes": 49
+      },
+      {
+        "seq": 232,
+        "type": "checkpoint",
+        "innerType": "checkpoint",
+        "tool": "set_map_properties",
+        "bytes": 333919
+      },
+      {
+        "seq": 233,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081566047,
+        "agent": "builder-2",
+        "bytes": 221,
+        "name": "set_map_properties"
+      },
+      {
+        "seq": 234,
+        "type": "heartbeat",
+        "at": 1791081568302,
+        "innerType": "heartbeat",
+        "innerAt": 1791081568302,
+        "bytes": 49
+      },
+      {
+        "seq": 235,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081570090,
+        "agent": "builder-2",
+        "bytes": 804,
+        "name": "set_map_properties",
+        "ok": true,
+        "summary": "빈 맵 속성 변경 — 타일셋=atlas_biome_interior"
+      },
+      {
+        "seq": 236,
+        "type": "agent_event",
+        "innerType": "map_delta",
+        "innerAt": 1791081570090,
+        "agent": "builder-2",
+        "bytes": 234
+      },
+      {
+        "seq": 237,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081570118,
+        "agent": "builder-2",
+        "bytes": 108
+      },
+      {
+        "seq": 238,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081570146,
+        "agent": "builder-2",
+        "bytes": 94513
+      },
+      {
+        "seq": 239,
+        "type": "heartbeat",
+        "at": 1791081573305,
+        "innerType": "heartbeat",
+        "innerAt": 1791081573305,
+        "bytes": 49
+      },
+      {
+        "seq": 240,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081575779,
+        "agent": "builder-2",
+        "bytes": 1581,
+        "name": "build_hand_interior_room"
+      },
+      {
+        "seq": 241,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081575780,
+        "agent": "builder-2",
+        "bytes": 1039,
+        "name": "build_hand_interior_room",
+        "ok": false,
+        "summary": "'build_hand_interior_room' 커밋 거부(무결성 오류) — transfer 목적지가 통행 불가 타일입니다: map_blank_start (19, 9)"
+      },
+      {
+        "seq": 242,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081575801,
+        "agent": "builder-2",
+        "bytes": 108
+      },
+      {
+        "seq": 243,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081575836,
+        "agent": "builder-2",
+        "bytes": 94513
+      },
+      {
+        "seq": 244,
+        "type": "heartbeat",
+        "at": 1791081578305,
+        "innerType": "heartbeat",
+        "innerAt": 1791081578305,
+        "bytes": 49
+      },
+      {
+        "seq": 245,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081579347,
+        "agent": "builder-2",
+        "bytes": 236,
+        "name": "get_event"
+      },
+      {
+        "seq": 246,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081579347,
+        "agent": "builder-2",
+        "bytes": 234,
+        "name": "get_event"
+      },
+      {
+        "seq": 247,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081579347,
+        "agent": "builder-2",
+        "bytes": 994,
+        "name": "get_event",
+        "ok": true,
+        "summary": "이벤트 'ev_gate_8d0e1815-e73b-4954-a926-c6b63f65f115' (0,6) — 페이지 1개"
+      },
+      {
+        "seq": 248,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081579347,
+        "agent": "builder-2",
+        "bytes": 995,
+        "name": "get_event",
+        "ok": true,
+        "summary": "이벤트 'ev_gate_2f516e85-d863-483d-a54e-6b5191af87d0' (19,8) — 페이지 1개"
+      },
+      {
+        "seq": 249,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081579368,
+        "agent": "builder-2",
+        "bytes": 108
+      },
+      {
+        "seq": 250,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081579401,
+        "agent": "builder-2",
+        "bytes": 94513
+      },
+      {
+        "seq": 251,
+        "type": "heartbeat",
+        "at": 1791081583308,
+        "innerType": "heartbeat",
+        "innerAt": 1791081583308,
+        "bytes": 49
+      },
+      {
+        "seq": 252,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081585520,
+        "agent": "builder-2",
+        "bytes": 1581,
+        "name": "build_hand_interior_room"
+      },
+      {
+        "seq": 253,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081585521,
+        "agent": "builder-2",
+        "bytes": 1039,
+        "name": "build_hand_interior_room",
+        "ok": false,
+        "summary": "'build_hand_interior_room' 커밋 거부(무결성 오류) — transfer 목적지가 통행 불가 타일입니다: map_blank_start (19, 9)"
+      },
+      {
+        "seq": 254,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081585549,
+        "agent": "builder-2",
+        "bytes": 108
+      },
+      {
+        "seq": 255,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081585573,
+        "agent": "builder-2",
+        "bytes": 94513
+      },
+      {
+        "seq": 256,
+        "type": "heartbeat",
+        "at": 1791081588312,
+        "innerType": "heartbeat",
+        "innerAt": 1791081588312,
+        "bytes": 49
+      },
+      {
+        "seq": 257,
+        "type": "checkpoint",
+        "innerType": "checkpoint",
+        "tool": "upsert_event",
+        "bytes": 333907
+      },
+      {
+        "seq": 258,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081594071,
+        "agent": "builder-2",
+        "bytes": 589,
+        "name": "upsert_event"
+      },
+      {
+        "seq": 259,
+        "type": "heartbeat",
+        "at": 1791081594074,
+        "innerType": "heartbeat",
+        "innerAt": 1791081594074,
+        "bytes": 49
+      },
+      {
+        "seq": 260,
+        "type": "heartbeat",
+        "at": 1791081599074,
+        "innerType": "heartbeat",
+        "innerAt": 1791081599074,
+        "bytes": 49
+      },
+      {
+        "seq": 261,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081599809,
+        "agent": "builder-2",
+        "bytes": 1190,
+        "name": "upsert_event",
+        "ok": true,
+        "summary": "기억의 길에 이벤트 'ev_gate_8d0e1815-e73b-4954-a926-c6b63f65f115' 수정 — 런타임 제한 커맨드 0건"
+      },
+      {
+        "seq": 262,
+        "type": "agent_event",
+        "innerType": "map_delta",
+        "innerAt": 1791081599810,
+        "agent": "builder-2",
+        "bytes": 622
+      },
+      {
+        "seq": 263,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081599831,
+        "agent": "builder-2",
+        "bytes": 108
+      },
+      {
+        "seq": 264,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081599860,
+        "agent": "builder-2",
+        "bytes": 94513
+      },
+      {
+        "seq": 265,
+        "type": "checkpoint",
+        "innerType": "checkpoint",
+        "tool": "build_hand_interior_room",
+        "bytes": 347161
+      },
+      {
+        "seq": 266,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081604474,
+        "agent": "builder-2",
+        "bytes": 1581,
+        "name": "build_hand_interior_room"
+      },
+      {
+        "seq": 267,
+        "type": "heartbeat",
+        "at": 1791081604475,
+        "innerType": "heartbeat",
+        "innerAt": 1791081604475,
+        "bytes": 49
+      },
+      {
+        "seq": 268,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081606533,
+        "agent": "builder-2",
+        "bytes": 2333,
+        "name": "build_hand_interior_room",
+        "ok": true,
+        "summary": "손 도트 실내 '기억의 서재' 20×15 (map_blank_start, atlas_biome_interior) — 출입구에서 닿는 칸 174, 닿지 못한 빈 바닥 0, 경고 0"
+      },
+      {
+        "seq": 269,
+        "type": "agent_event",
+        "innerType": "map_delta",
+        "innerAt": 1791081606534,
+        "agent": "builder-2",
+        "bytes": 2895
+      },
+      {
+        "seq": 270,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081606562,
+        "agent": "builder-2",
+        "bytes": 108
+      },
+      {
+        "seq": 271,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081606598,
+        "agent": "builder-2",
+        "bytes": 94513
+      },
+      {
+        "seq": 272,
+        "type": "heartbeat",
+        "at": 1791081609481,
+        "innerType": "heartbeat",
+        "innerAt": 1791081609481,
+        "bytes": 49
+      },
+      {
+        "seq": 273,
+        "type": "checkpoint",
+        "innerType": "checkpoint",
+        "tool": "move_event",
+        "bytes": 335847
+      },
+      {
+        "seq": 274,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081611648,
+        "agent": "builder-2",
+        "bytes": 271,
+        "name": "move_event"
+      },
+      {
+        "seq": 275,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081613922,
+        "agent": "builder-2",
+        "bytes": 1412,
+        "name": "move_event",
+        "ok": true,
+        "summary": "이벤트 'ev_gate_2f516e85-d863-483d-a54e-6b5191af87d0' → (18, 8)"
+      },
+      {
+        "seq": 276,
+        "type": "agent_event",
+        "innerType": "map_delta",
+        "innerAt": 1791081613922,
+        "agent": "builder-2",
+        "bytes": 622
+      },
+      {
+        "seq": 277,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081613943,
+        "agent": "builder-2",
+        "bytes": 108
+      },
+      {
+        "seq": 278,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081613973,
+        "agent": "builder-2",
+        "bytes": 94513
+      },
+      {
+        "seq": 279,
+        "type": "heartbeat",
+        "at": 1791081614481,
+        "innerType": "heartbeat",
+        "innerAt": 1791081614481,
+        "bytes": 49
+      },
+      {
+        "seq": 280,
+        "type": "checkpoint",
+        "innerType": "checkpoint",
+        "tool": "upsert_event",
+        "bytes": 335851
+      },
+      {
+        "seq": 281,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081619327,
+        "agent": "builder-2",
+        "bytes": 589,
+        "name": "upsert_event"
+      },
+      {
+        "seq": 282,
+        "type": "heartbeat",
+        "at": 1791081619482,
+        "innerType": "heartbeat",
+        "innerAt": 1791081619482,
+        "bytes": 49
+      },
+      {
+        "seq": 283,
+        "type": "heartbeat",
+        "at": 1791081624486,
+        "innerType": "heartbeat",
+        "innerAt": 1791081624486,
+        "bytes": 49
+      },
+      {
+        "seq": 284,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081624847,
+        "agent": "builder-2",
+        "bytes": 1190,
+        "name": "upsert_event",
+        "ok": true,
+        "summary": "기억의 길에 이벤트 'ev_gate_8d0e1815-e73b-4954-a926-c6b63f65f115' 수정 — 런타임 제한 커맨드 0건"
+      },
+      {
+        "seq": 285,
+        "type": "agent_event",
+        "innerType": "map_delta",
+        "innerAt": 1791081624848,
+        "agent": "builder-2",
+        "bytes": 622
+      },
+      {
+        "seq": 286,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081624869,
+        "agent": "builder-2",
+        "bytes": 108
+      },
+      {
+        "seq": 287,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081624896,
+        "agent": "builder-2",
+        "bytes": 94513
+      },
+      {
+        "seq": 288,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081628363,
+        "agent": "builder-2",
+        "bytes": 251,
+        "name": "check_reachability"
+      },
+      {
+        "seq": 289,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081628363,
+        "agent": "builder-2",
+        "bytes": 303,
+        "name": "check_reachability",
+        "ok": true,
+        "summary": "도달성: 전부 도달 가능"
+      },
+      {
+        "seq": 290,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081628390,
+        "agent": "builder-2",
+        "bytes": 108
+      },
+      {
+        "seq": 291,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081628417,
+        "agent": "builder-2",
+        "bytes": 94513
+      },
+      {
+        "seq": 292,
+        "type": "heartbeat",
+        "at": 1791081629491,
+        "innerType": "heartbeat",
+        "innerAt": 1791081629491,
+        "bytes": 49
+      },
+      {
+        "seq": 293,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081632585,
+        "agent": "builder-2",
+        "bytes": 210,
+        "name": "get_map_region"
+      },
+      {
+        "seq": 294,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081632585,
+        "agent": "builder-2",
+        "bytes": 1049,
+        "name": "get_map_region",
+        "ok": true,
+        "summary": "기억의 길(map_segment_route) 영역 (0,0)~(24,12) — 이벤트 2개, 물 0칸"
+      },
+      {
+        "seq": 295,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081632608,
+        "agent": "builder-2",
+        "bytes": 108
+      },
+      {
+        "seq": 296,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081632646,
+        "agent": "builder-2",
+        "bytes": 94513
+      },
+      {
+        "seq": 297,
+        "type": "heartbeat",
+        "at": 1791081634499,
+        "innerType": "heartbeat",
+        "innerAt": 1791081634499,
+        "bytes": 49
+      },
+      {
+        "seq": 298,
+        "type": "checkpoint",
+        "innerType": "checkpoint",
+        "tool": "author_wild_route",
+        "bytes": 339434
+      },
+      {
+        "seq": 299,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081636931,
+        "agent": "builder-2",
+        "bytes": 283,
+        "name": "author_wild_route"
+      },
+      {
+        "seq": 300,
+        "type": "heartbeat",
+        "at": 1791081639499,
+        "innerType": "heartbeat",
+        "innerAt": 1791081639499,
+        "bytes": 49
+      },
+      {
+        "seq": 301,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081640240,
+        "agent": "builder-2",
+        "bytes": 1177,
+        "name": "author_wild_route",
+        "ok": true,
+        "summary": "기억의 길 도로 시공 — 흙길 52칸, 풀숲 1곳(25칸), 숲 49칸, 풀숲은 짙은 잎 풀(버들항엔 키큰 풀이 없다)"
+      },
+      {
+        "seq": 302,
+        "type": "agent_event",
+        "innerType": "map_delta",
+        "innerAt": 1791081640240,
+        "agent": "builder-2",
+        "bytes": 2440
+      },
+      {
+        "seq": 303,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081640262,
+        "agent": "builder-2",
+        "bytes": 108
+      },
+      {
+        "seq": 304,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081640294,
+        "agent": "builder-2",
+        "bytes": 94513
+      },
+      {
+        "seq": 305,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081643138,
+        "agent": "builder-2",
+        "bytes": 236,
+        "name": "check_reachability"
+      },
+      {
+        "seq": 306,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081643138,
+        "agent": "builder-2",
+        "bytes": 303,
+        "name": "check_reachability",
+        "ok": true,
+        "summary": "도달성: 전부 도달 가능"
+      },
+      {
+        "seq": 307,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081643159,
+        "agent": "builder-2",
+        "bytes": 108
+      },
+      {
+        "seq": 308,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081643189,
+        "agent": "builder-2",
+        "bytes": 94513
+      },
+      {
+        "seq": 309,
+        "type": "heartbeat",
+        "at": 1791081644506,
+        "innerType": "heartbeat",
+        "innerAt": 1791081644506,
+        "bytes": 49
+      },
+      {
+        "seq": 310,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081646742,
+        "agent": "builder-2",
+        "bytes": 338,
+        "name": "run_lint"
+      },
+      {
+        "seq": 311,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081646742,
+        "agent": "builder-2",
+        "bytes": 540,
+        "name": "run_lint",
+        "ok": true,
+        "summary": "lint: error 0건 / warning 0건 / info 0건 — 구조 무결성만 검사한다. 보상 중복·경제 균형·진행 순서는 범위 밖이고, warning 도 결함이다. 이 결과를 '결함 없이 통과'로 옮겨 적지 말 것."
+      },
+      {
+        "seq": 312,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081646764,
+        "agent": "builder-2",
+        "bytes": 108
+      },
+      {
+        "seq": 313,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081646793,
+        "agent": "builder-2",
+        "bytes": 94513
+      },
+      {
+        "seq": 314,
+        "type": "heartbeat",
+        "at": 1791081649510,
+        "innerType": "heartbeat",
+        "innerAt": 1791081649510,
+        "bytes": 49
+      },
+      {
+        "seq": 315,
+        "type": "checkpoint",
+        "innerType": "checkpoint",
+        "tool": "set_start_position",
+        "bytes": 336182
+      },
+      {
+        "seq": 316,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081651446,
+        "agent": "builder-2",
+        "bytes": 200,
+        "name": "set_start_position"
+      },
+      {
+        "seq": 317,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081653505,
+        "agent": "builder-2",
+        "bytes": 759,
+        "name": "set_start_position",
+        "ok": true,
+        "summary": "시작 위치 설정: 기억의 서재 (12, 11)"
+      },
+      {
+        "seq": 318,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081653532,
+        "agent": "builder-2",
+        "bytes": 108
+      },
+      {
+        "seq": 319,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081653560,
+        "agent": "builder-2",
+        "bytes": 94513
+      },
+      {
+        "seq": 320,
+        "type": "heartbeat",
+        "at": 1791081654511,
+        "innerType": "heartbeat",
+        "innerAt": 1791081654511,
+        "bytes": 49
+      },
+      {
+        "seq": 321,
+        "type": "render_request",
+        "innerType": "render_request",
+        "tool": "show_map_region",
+        "bytes": 3325067
+      },
+      {
+        "seq": 322,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081656957,
+        "agent": "builder-2",
+        "bytes": 209,
+        "name": "show_map_region"
+      },
+      {
+        "seq": 323,
+        "type": "agent_event",
+        "innerType": "execution_status",
+        "agent": "builder-2",
+        "bytes": 281,
+        "name": "map.image.delivered",
+        "ok": true,
+        "summary": "현재 초안 이미지를 모델 도구 응답에 포함했습니다."
+      },
+      {
+        "seq": 324,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081657457,
+        "agent": "builder-2",
+        "bytes": 4481,
+        "name": "show_map_region",
+        "ok": true,
+        "summary": "맵 미리보기: (0,0) 20×15 (기억의 서재)"
+      },
+      {
+        "seq": 325,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081657479,
+        "agent": "builder-2",
+        "bytes": 108
+      },
+      {
+        "seq": 326,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081657518,
+        "agent": "builder-2",
+        "bytes": 94513
+      },
+      {
+        "seq": 327,
+        "type": "heartbeat",
+        "at": 1791081659511,
+        "innerType": "heartbeat",
+        "innerAt": 1791081659511,
+        "bytes": 49
+      },
+      {
+        "seq": 328,
+        "type": "render_request",
+        "innerType": "render_request",
+        "tool": "show_map_region",
+        "bytes": 3323240
+      },
+      {
+        "seq": 329,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081661464,
+        "agent": "builder-2",
+        "bytes": 211,
+        "name": "show_map_region"
+      },
+      {
+        "seq": 330,
+        "type": "agent_event",
+        "innerType": "execution_status",
+        "agent": "builder-2",
+        "bytes": 283,
+        "name": "map.image.delivered",
+        "ok": true,
+        "summary": "현재 초안 이미지를 모델 도구 응답에 포함했습니다."
+      },
+      {
+        "seq": 331,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081662689,
+        "agent": "builder-2",
+        "bytes": 2653,
+        "name": "show_map_region",
+        "ok": true,
+        "summary": "맵 미리보기: (0,0) 24×12 (기억의 길)"
+      },
+      {
+        "seq": 332,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081662710,
+        "agent": "builder-2",
+        "bytes": 108
+      },
+      {
+        "seq": 333,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081662745,
+        "agent": "builder-2",
+        "bytes": 94513
+      },
+      {
+        "seq": 334,
+        "type": "heartbeat",
+        "at": 1791081664513,
+        "innerType": "heartbeat",
+        "innerAt": 1791081664513,
+        "bytes": 49
+      },
+      {
+        "seq": 335,
+        "type": "heartbeat",
+        "at": 1791081669518,
+        "innerType": "heartbeat",
+        "innerAt": 1791081669518,
+        "bytes": 49
+      },
+      {
+        "seq": 336,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081669964,
+        "agent": "builder-2",
+        "bytes": 1156,
+        "name": "report_first_scene_places"
+      },
+      {
+        "seq": 337,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081669964,
+        "agent": "builder-2",
+        "bytes": 1301,
+        "name": "report_first_scene_places",
+        "ok": true,
+        "summary": ""
+      },
+      {
+        "seq": 338,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081669965,
+        "agent": "builder-2",
+        "bytes": 108
+      },
+      {
+        "seq": 339,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081669994,
+        "agent": "builder-2",
+        "bytes": 94513
+      },
+      {
+        "seq": 340,
+        "type": "agent_event",
+        "innerType": "delta",
+        "innerAt": 1791081673698,
+        "agent": "builder-2",
+        "bytes": 594
+      },
+      {
+        "seq": 341,
+        "type": "agent_event",
+        "innerType": "delta",
+        "innerAt": 1791081674003,
+        "agent": "builder-2",
+        "bytes": 283
+      },
+      {
+        "seq": 342,
+        "type": "agent_event",
+        "innerType": "assistant",
+        "innerAt": 1791081674003,
+        "agent": "builder-2",
+        "bytes": 745
+      },
+      {
+        "seq": 343,
+        "type": "agent_event",
+        "innerType": "execution_status",
+        "innerAt": 1791081674007,
+        "agent": "builder-2",
+        "bytes": 1024,
+        "name": "layout_quality",
+        "ok": false,
+        "summary": "배치 품질 기준 미달 — 한 번 더 고칩니다: map_blank_start 빈 바닥 55% (기준 ≤30%), 소품 없는 빈 정사각형 6×6칸 (왼위 2,5) (기준 ≤5), 좌우 대칭 2.8배 (기준 ≤2.2, 우연이면 1) / map_segment_route 빈 바닥 59% (기준 ≤30%), 소품 없는 빈 정사각형 7×7칸 (왼위 7,2) (기준 ≤5)"
+      },
+      {
+        "seq": 344,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081674008,
+        "agent": "builder-2",
+        "bytes": 108
+      },
+      {
+        "seq": 345,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081674037,
+        "agent": "builder-2",
+        "bytes": 94513
+      },
+      {
+        "seq": 346,
+        "type": "heartbeat",
+        "at": 1791081674518,
+        "innerType": "heartbeat",
+        "innerAt": 1791081674518,
+        "bytes": 49
+      },
+      {
+        "seq": 347,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081677919,
+        "agent": "builder-2",
+        "bytes": 192,
+        "name": "list_hand_interior_parts"
+      },
+      {
+        "seq": 348,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081677919,
+        "agent": "builder-2",
+        "bytes": 5367,
+        "name": "list_hand_interior_parts",
+        "ok": true,
+        "summary": "가구 86종 — 모든 낱말이 맞는 것이 없어 가장 많이 맞는 것부터 · 앞 40 · 행이 많아 desc 만 — 낱말·category 를 더해 12종 이하로 좁히면 tags·place·pair 까지 준다"
+      },
+      {
+        "seq": 349,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081677941,
+        "agent": "builder-2",
+        "bytes": 108
+      },
+      {
+        "seq": 350,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081677976,
+        "agent": "builder-2",
+        "bytes": 94513
+      },
+      {
+        "seq": 351,
+        "type": "heartbeat",
+        "at": 1791081679525,
+        "innerType": "heartbeat",
+        "innerAt": 1791081679525,
+        "bytes": 49
+      },
+      {
+        "seq": 352,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081683236,
+        "agent": "builder-2",
+        "bytes": 2038,
+        "name": "build_hand_interior_room"
+      },
+      {
+        "seq": 353,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081683236,
+        "agent": "builder-2",
+        "bytes": 1119,
+        "name": "build_hand_interior_room",
+        "ok": false,
+        "summary": "'build_hand_interior_room' 실행 실패: 실내를 짓지 않았다 — 오류 5건: 물건 \"tea\" 이 없다 — list_hand_interior_parts 로 id 를 찾는다 / 탁상 물건 openbook (3,3) — 윗면이 있는 가구(탁자·카운터·책상·협탁 등) 칸 위에만 둔다 / 탁상 물건 teapot (3,8) — 윗면이 있는 가구(탁자·카운터·책상·협탁 등) 칸 위에만 둔다 / 탁상 물건 cu…"
+      },
+      {
+        "seq": 354,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081683257,
+        "agent": "builder-2",
+        "bytes": 108
+      },
+      {
+        "seq": 355,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081683294,
+        "agent": "builder-2",
+        "bytes": 94513
+      },
+      {
+        "seq": 356,
+        "type": "heartbeat",
+        "at": 1791081684527,
+        "innerType": "heartbeat",
+        "innerAt": 1791081684527,
+        "bytes": 49
+      },
+      {
+        "seq": 357,
+        "type": "checkpoint",
+        "innerType": "checkpoint",
+        "tool": "build_hand_interior_room",
+        "bytes": 338891
+      },
+      {
+        "seq": 358,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081688982,
+        "agent": "builder-2",
+        "bytes": 2005,
+        "name": "build_hand_interior_room"
+      },
+      {
+        "seq": 359,
+        "type": "heartbeat",
+        "at": 1791081689528,
+        "innerType": "heartbeat",
+        "innerAt": 1791081689528,
+        "bytes": 49
+      },
+      {
+        "seq": 360,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081690190,
+        "agent": "builder-2",
+        "bytes": 1100,
+        "name": "build_hand_interior_room",
+        "ok": true,
+        "summary": "손 도트 실내 '기억의 서재' 20×15 (map_blank_start, atlas_biome_interior) — 출입구에서 닿는 칸 166, 닿지 못한 빈 바닥 0, 경고 0"
+      },
+      {
+        "seq": 361,
+        "type": "agent_event",
+        "innerType": "map_delta",
+        "innerAt": 1791081690190,
+        "agent": "builder-2",
+        "bytes": 1537
+      },
+      {
+        "seq": 362,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081690211,
+        "agent": "builder-2",
+        "bytes": 108
+      },
+      {
+        "seq": 363,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081690254,
+        "agent": "builder-2",
+        "bytes": 94513
+      },
+      {
+        "seq": 364,
+        "type": "heartbeat",
+        "at": 1791081694528,
+        "innerType": "heartbeat",
+        "innerAt": 1791081694528,
+        "bytes": 49
+      },
+      {
+        "seq": 365,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081694914,
+        "agent": "builder-2",
+        "bytes": 251,
+        "name": "check_reachability"
+      },
+      {
+        "seq": 366,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081694914,
+        "agent": "builder-2",
+        "bytes": 303,
+        "name": "check_reachability",
+        "ok": true,
+        "summary": "도달성: 전부 도달 가능"
+      },
+      {
+        "seq": 367,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081694935,
+        "agent": "builder-2",
+        "bytes": 108
+      },
+      {
+        "seq": 368,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081694962,
+        "agent": "builder-2",
+        "bytes": 94513
+      },
+      {
+        "seq": 369,
+        "type": "heartbeat",
+        "at": 1791081699528,
+        "innerType": "heartbeat",
+        "innerAt": 1791081699528,
+        "bytes": 49
+      },
+      {
+        "seq": 370,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081700844,
+        "agent": "builder-2",
+        "bytes": 299,
+        "name": "author_wild_route"
+      },
+      {
+        "seq": 371,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081700844,
+        "agent": "builder-2",
+        "bytes": 757,
+        "name": "author_wild_route",
+        "ok": false,
+        "summary": "'author_wild_route' 실행 실패: exits[1] (10,8)는 맵 가장자리 칸이어야 합니다 — 도로 출구는 다음 맵으로 넘어가는 문 자리다."
+      },
+      {
+        "seq": 372,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081700866,
+        "agent": "builder-2",
+        "bytes": 108
+      },
+      {
+        "seq": 373,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081700899,
+        "agent": "builder-2",
+        "bytes": 94513
+      },
+      {
+        "seq": 374,
+        "type": "heartbeat",
+        "at": 1791081704532,
+        "innerType": "heartbeat",
+        "innerAt": 1791081704532,
+        "bytes": 49
+      },
+      {
+        "seq": 375,
+        "type": "checkpoint",
+        "innerType": "checkpoint",
+        "tool": "author_wild_route",
+        "bytes": 341864
+      },
+      {
+        "seq": 376,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081705352,
+        "agent": "builder-2",
+        "bytes": 284,
+        "name": "author_wild_route"
+      },
+      {
+        "seq": 377,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081708101,
+        "agent": "builder-2",
+        "bytes": 1322,
+        "name": "author_wild_route",
+        "ok": true,
+        "summary": "기억의 길 도로 시공 — 흙길 33칸, 풀숲 3곳(83칸), 숲 65칸, 풀숲은 짙은 잎 풀(버들항엔 키큰 풀이 없다)"
+      },
+      {
+        "seq": 378,
+        "type": "agent_event",
+        "innerType": "map_delta",
+        "innerAt": 1791081708102,
+        "agent": "builder-2",
+        "bytes": 2575
+      },
+      {
+        "seq": 379,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081708123,
+        "agent": "builder-2",
+        "bytes": 108
+      },
+      {
+        "seq": 380,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081708157,
+        "agent": "builder-2",
+        "bytes": 94513
+      },
+      {
+        "seq": 381,
+        "type": "heartbeat",
+        "at": 1791081709538,
+        "innerType": "heartbeat",
+        "innerAt": 1791081709538,
+        "bytes": 49
+      },
+      {
+        "seq": 382,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081711892,
+        "agent": "builder-2",
+        "bytes": 236,
+        "name": "check_reachability"
+      },
+      {
+        "seq": 383,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081711892,
+        "agent": "builder-2",
+        "bytes": 303,
+        "name": "check_reachability",
+        "ok": true,
+        "summary": "도달성: 전부 도달 가능"
+      },
+      {
+        "seq": 384,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081711913,
+        "agent": "builder-2",
+        "bytes": 108
+      },
+      {
+        "seq": 385,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081711950,
+        "agent": "builder-2",
+        "bytes": 94513
+      },
+      {
+        "seq": 386,
+        "type": "heartbeat",
+        "at": 1791081714542,
+        "innerType": "heartbeat",
+        "innerAt": 1791081714542,
+        "bytes": 49
+      },
+      {
+        "seq": 387,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081718639,
+        "agent": "builder-2",
+        "bytes": 338,
+        "name": "run_lint"
+      },
+      {
+        "seq": 388,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081718640,
+        "agent": "builder-2",
+        "bytes": 540,
+        "name": "run_lint",
+        "ok": true,
+        "summary": "lint: error 0건 / warning 0건 / info 0건 — 구조 무결성만 검사한다. 보상 중복·경제 균형·진행 순서는 범위 밖이고, warning 도 결함이다. 이 결과를 '결함 없이 통과'로 옮겨 적지 말 것."
+      },
+      {
+        "seq": 389,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081718661,
+        "agent": "builder-2",
+        "bytes": 108
+      },
+      {
+        "seq": 390,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081718690,
+        "agent": "builder-2",
+        "bytes": 94513
+      },
+      {
+        "seq": 391,
+        "type": "heartbeat",
+        "at": 1791081719550,
+        "innerType": "heartbeat",
+        "innerAt": 1791081719550,
+        "bytes": 49
+      },
+      {
+        "seq": 392,
+        "type": "render_request",
+        "innerType": "render_request",
+        "tool": "show_map_region",
+        "bytes": 3325455
+      },
+      {
+        "seq": 393,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081722079,
+        "agent": "builder-2",
+        "bytes": 209,
+        "name": "show_map_region"
+      },
+      {
+        "seq": 394,
+        "type": "agent_event",
+        "innerType": "execution_status",
+        "agent": "builder-2",
+        "bytes": 281,
+        "name": "map.image.delivered",
+        "ok": true,
+        "summary": "현재 초안 이미지를 모델 도구 응답에 포함했습니다."
+      },
+      {
+        "seq": 395,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081722495,
+        "agent": "builder-2",
+        "bytes": 4521,
+        "name": "show_map_region",
+        "ok": true,
+        "summary": "맵 미리보기: (0,0) 20×15 (기억의 서재)"
+      },
+      {
+        "seq": 396,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081722516,
+        "agent": "builder-2",
+        "bytes": 108
+      },
+      {
+        "seq": 397,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081722558,
+        "agent": "builder-2",
+        "bytes": 94513
+      },
+      {
+        "seq": 398,
+        "type": "heartbeat",
+        "at": 1791081724556,
+        "innerType": "heartbeat",
+        "innerAt": 1791081724556,
+        "bytes": 49
+      },
+      {
+        "seq": 399,
+        "type": "render_request",
+        "innerType": "render_request",
+        "tool": "show_map_region",
+        "bytes": 3323723
+      },
+      {
+        "seq": 400,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081729139,
+        "agent": "builder-2",
+        "bytes": 211,
+        "name": "show_map_region"
+      },
+      {
+        "seq": 401,
+        "type": "heartbeat",
+        "at": 1791081729558,
+        "innerType": "heartbeat",
+        "innerAt": 1791081729558,
+        "bytes": 49
+      },
+      {
+        "seq": 402,
+        "type": "agent_event",
+        "innerType": "execution_status",
+        "agent": "builder-2",
+        "bytes": 283,
+        "name": "map.image.delivered",
+        "ok": true,
+        "summary": "현재 초안 이미지를 모델 도구 응답에 포함했습니다."
+      },
+      {
+        "seq": 403,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081730143,
+        "agent": "builder-2",
+        "bytes": 2788,
+        "name": "show_map_region",
+        "ok": true,
+        "summary": "맵 미리보기: (0,0) 24×12 (기억의 길)"
+      },
+      {
+        "seq": 404,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081730164,
+        "agent": "builder-2",
+        "bytes": 108
+      },
+      {
+        "seq": 405,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081730194,
+        "agent": "builder-2",
+        "bytes": 94513
+      },
+      {
+        "seq": 406,
+        "type": "heartbeat",
+        "at": 1791081734561,
+        "innerType": "heartbeat",
+        "innerAt": 1791081734561,
+        "bytes": 49
+      },
+      {
+        "seq": 407,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081737781,
+        "agent": "builder-2",
+        "bytes": 1081,
+        "name": "report_first_scene_places"
+      },
+      {
+        "seq": 408,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081737781,
+        "agent": "builder-2",
+        "bytes": 1227,
+        "name": "report_first_scene_places",
+        "ok": true,
+        "summary": ""
+      },
+      {
+        "seq": 409,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081737803,
+        "agent": "builder-2",
+        "bytes": 108
+      },
+      {
+        "seq": 410,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081737832,
+        "agent": "builder-2",
+        "bytes": 94513
+      },
+      {
+        "seq": 411,
+        "type": "heartbeat",
+        "at": 1791081739561,
+        "innerType": "heartbeat",
+        "innerAt": 1791081739561,
+        "bytes": 49
+      },
+      {
+        "seq": 412,
+        "type": "agent_event",
+        "innerType": "delta",
+        "innerAt": 1791081742428,
+        "agent": "builder-2",
+        "bytes": 595
+      },
+      {
+        "seq": 413,
+        "type": "agent_event",
+        "innerType": "delta",
+        "innerAt": 1791081742736,
+        "agent": "builder-2",
+        "bytes": 227
+      },
+      {
+        "seq": 414,
+        "type": "agent_event",
+        "innerType": "assistant",
+        "innerAt": 1791081742736,
+        "agent": "builder-2",
+        "bytes": 690
+      },
+      {
+        "seq": 415,
+        "type": "agent_event",
+        "innerType": "execution_status",
+        "innerAt": 1791081742737,
+        "agent": "builder-2",
+        "bytes": 841,
+        "name": "layout_quality",
+        "ok": false,
+        "summary": "배치 품질 수리 뒤에도 기준 미달: map_blank_start 빈 바닥 36% (기준 ≤30%) / map_segment_route 빈 바닥 74% (기준 ≤30%), 소품 없는 빈 정사각형 7×7칸 (왼위 7,5) (기준 ≤5)"
+      },
+      {
+        "seq": 416,
+        "type": "agent_event",
+        "innerType": "done",
+        "innerAt": 1791081742772,
+        "agent": "builder-2",
+        "bytes": 336750
+      },
+      {
+        "seq": 417,
+        "type": "agent_done",
+        "innerType": "agent_done",
+        "agent": "builder-2",
+        "bytes": 358,
+        "ok": true,
+        "summary": "첫 장소 구조 제작"
+      },
+      {
+        "seq": 418,
+        "type": "agent_spawn",
+        "innerType": "agent_spawn",
+        "agent": "builder-3",
+        "bytes": 44448
+      },
+      {
+        "seq": 419,
+        "type": "agent_event",
+        "innerType": "start",
+        "innerAt": 1791081743044,
+        "agent": "builder-3",
+        "bytes": 172
+      },
+      {
+        "seq": 420,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081743066,
+        "agent": "builder-3",
+        "bytes": 107
+      },
+      {
+        "seq": 421,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081743097,
+        "agent": "builder-3",
+        "bytes": 90576
+      },
+      {
+        "seq": 422,
+        "type": "heartbeat",
+        "at": 1791081744565,
+        "innerType": "heartbeat",
+        "innerAt": 1791081744565,
+        "bytes": 49
+      },
+      {
+        "seq": 423,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081745986,
+        "agent": "builder-3",
+        "bytes": 154,
+        "name": "get_opening"
+      },
+      {
+        "seq": 424,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081745986,
+        "agent": "builder-3",
+        "bytes": 208,
+        "name": "get_event"
+      },
+      {
+        "seq": 425,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081745987,
+        "agent": "builder-3",
+        "bytes": 206,
+        "name": "get_event"
+      },
+      {
+        "seq": 426,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081745987,
+        "agent": "builder-3",
+        "bytes": 208,
+        "name": "get_map_region"
+      },
+      {
+        "seq": 427,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081745987,
+        "agent": "builder-3",
+        "bytes": 658,
+        "name": "get_opening",
+        "ok": true,
+        "summary": "오프닝 장면 1개(텍스트 1), 사용 켜짐, 건너뛰기 가능, 배경음악 cc0-bgm-rtp-ttl-001."
+      },
+      {
+        "seq": 428,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081745987,
+        "agent": "builder-3",
+        "bytes": 1704,
+        "name": "get_event",
+        "ok": true,
+        "summary": "이벤트 'ev_segment_starter' (12,8) — 페이지 2개"
+      },
+      {
+        "seq": 429,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081745987,
+        "agent": "builder-3",
+        "bytes": 1722,
+        "name": "get_event",
+        "ok": true,
+        "summary": "이벤트 'ev_segment_end' (22,6) — 페이지 2개"
+      },
+      {
+        "seq": 430,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081745987,
+        "agent": "builder-3",
+        "bytes": 1072,
+        "name": "get_map_region",
+        "ok": true,
+        "summary": "기억의 서재(map_blank_start) 영역 (0,0)~(20,15) — 이벤트 2개, 물 0칸"
+      },
+      {
+        "seq": 431,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081746008,
+        "agent": "builder-3",
+        "bytes": 107
+      },
+      {
+        "seq": 432,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081746032,
+        "agent": "builder-3",
+        "bytes": 90834
+      },
+      {
+        "seq": 433,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081748536,
+        "agent": "builder-3",
+        "bytes": 210,
+        "name": "get_map_region"
+      },
+      {
+        "seq": 434,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081748536,
+        "agent": "builder-3",
+        "bytes": 1049,
+        "name": "get_map_region",
+        "ok": true,
+        "summary": "기억의 길(map_segment_route) 영역 (0,0)~(24,12) — 이벤트 2개, 물 0칸"
+      },
+      {
+        "seq": 435,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081748566,
+        "agent": "builder-3",
+        "bytes": 107
+      },
+      {
+        "seq": 436,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081748591,
+        "agent": "builder-3",
+        "bytes": 90841
+      },
+      {
+        "seq": 437,
+        "type": "heartbeat",
+        "at": 1791081749570,
+        "innerType": "heartbeat",
+        "innerAt": 1791081749570,
+        "bytes": 49
+      },
+      {
+        "seq": 438,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081752437,
+        "agent": "builder-3",
+        "bytes": 250,
+        "name": "check_reachability"
+      },
+      {
+        "seq": 439,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081752437,
+        "agent": "builder-3",
+        "bytes": 303,
+        "name": "check_reachability",
+        "ok": true,
+        "summary": "도달성: 전부 도달 가능"
+      },
+      {
+        "seq": 440,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081752458,
+        "agent": "builder-3",
+        "bytes": 107
+      },
+      {
+        "seq": 441,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081752485,
+        "agent": "builder-3",
+        "bytes": 90726
+      },
+      {
+        "seq": 442,
+        "type": "heartbeat",
+        "at": 1791081754571,
+        "innerType": "heartbeat",
+        "innerAt": 1791081754571,
+        "bytes": 49
+      },
+      {
+        "seq": 443,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081754765,
+        "agent": "builder-3",
+        "bytes": 236,
+        "name": "check_reachability"
+      },
+      {
+        "seq": 444,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081754765,
+        "agent": "builder-3",
+        "bytes": 303,
+        "name": "check_reachability",
+        "ok": true,
+        "summary": "도달성: 전부 도달 가능"
+      },
+      {
+        "seq": 445,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081754786,
+        "agent": "builder-3",
+        "bytes": 107
+      },
+      {
+        "seq": 446,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081754813,
+        "agent": "builder-3",
+        "bytes": 90603
+      },
+      {
+        "seq": 447,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081757410,
+        "agent": "builder-3",
+        "bytes": 204,
+        "name": "get_event"
+      },
+      {
+        "seq": 448,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081757410,
+        "agent": "builder-3",
+        "bytes": 700,
+        "name": "get_event",
+        "ok": false,
+        "summary": "'get_event' 실행 실패: 이벤트를 찾을 수 없습니다: ev_intro_guide (이 맵의 이벤트: ev_gate_2f516e85-d863-483d-a54e-6b5191af87d0, ev_segment_starter)"
+      },
+      {
+        "seq": 449,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081757431,
+        "agent": "builder-3",
+        "bytes": 107
+      },
+      {
+        "seq": 450,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081757460,
+        "agent": "builder-3",
+        "bytes": 90479
+      },
+      {
+        "seq": 451,
+        "type": "checkpoint",
+        "innerType": "checkpoint",
+        "tool": "set_opening",
+        "bytes": 336396
+      },
+      {
+        "seq": 452,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081760095,
+        "agent": "builder-3",
+        "bytes": 181,
+        "name": "set_opening"
+      },
+      {
+        "seq": 453,
+        "type": "heartbeat",
+        "at": 1791081760095,
+        "innerType": "heartbeat",
+        "innerAt": 1791081760095,
+        "bytes": 49
+      },
+      {
+        "seq": 454,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081763535,
+        "agent": "builder-3",
+        "bytes": 877,
+        "name": "set_opening",
+        "ok": true,
+        "summary": "오프닝 장면 0개를 저장했습니다(빈 시퀀스), 사용 꺼짐, 건너뛰기 가능."
+      },
+      {
+        "seq": 455,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081763556,
+        "agent": "builder-3",
+        "bytes": 107
+      },
+      {
+        "seq": 456,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081763583,
+        "agent": "builder-3",
+        "bytes": 90375
+      },
+      {
+        "seq": 457,
+        "type": "heartbeat",
+        "at": 1791081765097,
+        "innerType": "heartbeat",
+        "innerAt": 1791081765097,
+        "bytes": 49
+      },
+      {
+        "seq": 458,
+        "type": "checkpoint",
+        "innerType": "checkpoint",
+        "tool": "upsert_event",
+        "bytes": 337214
+      },
+      {
+        "seq": 459,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081766897,
+        "agent": "builder-3",
+        "bytes": 868,
+        "name": "upsert_event"
+      },
+      {
+        "seq": 460,
+        "type": "heartbeat",
+        "at": 1791081770101,
+        "innerType": "heartbeat",
+        "innerAt": 1791081770101,
+        "bytes": 49
+      },
+      {
+        "seq": 461,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081771301,
+        "agent": "builder-3",
+        "bytes": 1218,
+        "name": "upsert_event",
+        "ok": true,
+        "summary": "기억의 서재에 이벤트 'ev_intro_guide' 추가 — 런타임 제한 커맨드 0건"
+      },
+      {
+        "seq": 462,
+        "type": "agent_event",
+        "innerType": "map_delta",
+        "innerAt": 1791081771302,
+        "agent": "builder-3",
+        "bytes": 978
+      },
+      {
+        "seq": 463,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081771324,
+        "agent": "builder-3",
+        "bytes": 107
+      },
+      {
+        "seq": 464,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081771352,
+        "agent": "builder-3",
+        "bytes": 90021
+      },
+      {
+        "seq": 465,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081773818,
+        "agent": "builder-3",
+        "bytes": 337,
+        "name": "run_lint"
+      },
+      {
+        "seq": 466,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081773818,
+        "agent": "builder-3",
+        "bytes": 540,
+        "name": "run_lint",
+        "ok": true,
+        "summary": "lint: error 0건 / warning 0건 / info 0건 — 구조 무결성만 검사한다. 보상 중복·경제 균형·진행 순서는 범위 밖이고, warning 도 결함이다. 이 결과를 '결함 없이 통과'로 옮겨 적지 말 것."
+      },
+      {
+        "seq": 467,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081773839,
+        "agent": "builder-3",
+        "bytes": 107
+      },
+      {
+        "seq": 468,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081773866,
+        "agent": "builder-3",
+        "bytes": 90127
+      },
+      {
+        "seq": 469,
+        "type": "heartbeat",
+        "at": 1791081775103,
+        "innerType": "heartbeat",
+        "innerAt": 1791081775103,
+        "bytes": 49
+      },
+      {
+        "seq": 470,
+        "type": "render_request",
+        "innerType": "render_request",
+        "tool": "show_map_region",
+        "bytes": 3326151
+      },
+      {
+        "seq": 471,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081777772,
+        "agent": "builder-3",
+        "bytes": 209,
+        "name": "show_map_region"
+      },
+      {
+        "seq": 472,
+        "type": "agent_event",
+        "innerType": "execution_status",
+        "agent": "builder-3",
+        "bytes": 281,
+        "name": "map.image.delivered",
+        "ok": true,
+        "summary": "현재 초안 이미지를 모델 도구 응답에 포함했습니다."
+      },
+      {
+        "seq": 473,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081778070,
+        "agent": "builder-3",
+        "bytes": 4521,
+        "name": "show_map_region",
+        "ok": true,
+        "summary": "맵 미리보기: (0,0) 20×15 (기억의 서재)"
+      },
+      {
+        "seq": 474,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081778092,
+        "agent": "builder-3",
+        "bytes": 108
+      },
+      {
+        "seq": 475,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081778120,
+        "agent": "builder-3",
+        "bytes": 90032
+      },
+      {
+        "seq": 476,
+        "type": "heartbeat",
+        "at": 1791081780103,
+        "innerType": "heartbeat",
+        "innerAt": 1791081780103,
+        "bytes": 49
+      },
+      {
+        "seq": 477,
+        "type": "render_request",
+        "innerType": "render_request",
+        "tool": "show_map_region",
+        "bytes": 3324419
+      },
+      {
+        "seq": 478,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081780842,
+        "agent": "builder-3",
+        "bytes": 210,
+        "name": "show_map_region"
+      },
+      {
+        "seq": 479,
+        "type": "agent_event",
+        "innerType": "execution_status",
+        "agent": "builder-3",
+        "bytes": 282,
+        "name": "map.image.delivered",
+        "ok": true,
+        "summary": "현재 초안 이미지를 모델 도구 응답에 포함했습니다."
+      },
+      {
+        "seq": 480,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081781138,
+        "agent": "builder-3",
+        "bytes": 2786,
+        "name": "show_map_region",
+        "ok": true,
+        "summary": "맵 미리보기: (0,0) 24×12 (기억의 길)"
+      },
+      {
+        "seq": 481,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081781160,
+        "agent": "builder-3",
+        "bytes": 108
+      },
+      {
+        "seq": 482,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081781189,
+        "agent": "builder-3",
+        "bytes": 90115
+      },
+      {
+        "seq": 483,
+        "type": "heartbeat",
+        "at": 1791081785107,
+        "innerType": "heartbeat",
+        "innerAt": 1791081785107,
+        "bytes": 49
+      },
+      {
+        "seq": 484,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081785463,
+        "agent": "builder-3",
+        "bytes": 905,
+        "name": "report_first_scene"
+      },
+      {
+        "seq": 485,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081785463,
+        "agent": "builder-3",
+        "bytes": 1043,
+        "name": "report_first_scene",
+        "ok": true,
+        "summary": ""
+      },
+      {
+        "seq": 486,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081785464,
+        "agent": "builder-3",
+        "bytes": 108
+      },
+      {
+        "seq": 487,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081785489,
+        "agent": "builder-3",
+        "bytes": 90190
+      },
+      {
+        "seq": 488,
+        "type": "agent_event",
+        "innerType": "delta",
+        "innerAt": 1791081789327,
+        "agent": "builder-3",
+        "bytes": 754
+      },
+      {
+        "seq": 489,
+        "type": "agent_event",
+        "innerType": "delta",
+        "innerAt": 1791081789718,
+        "agent": "builder-3",
+        "bytes": 356
+      },
+      {
+        "seq": 490,
+        "type": "agent_event",
+        "innerType": "assistant",
+        "innerAt": 1791081789718,
+        "agent": "builder-3",
+        "bytes": 978
+      },
+      {
+        "seq": 491,
+        "type": "agent_event",
+        "innerType": "done",
+        "innerAt": 1791081789751,
+        "agent": "builder-3",
+        "bytes": 337415
+      },
+      {
+        "seq": 492,
+        "type": "agent_done",
+        "innerType": "agent_done",
+        "agent": "builder-3",
+        "bytes": 328,
+        "ok": true,
+        "summary": "첫 대상과 도입 제작"
+      },
+      {
+        "seq": 493,
+        "type": "agent_spawn",
+        "innerType": "agent_spawn",
+        "agent": "reviewer-2",
+        "bytes": 43918
+      },
+      {
+        "seq": 494,
+        "type": "agent_event",
+        "innerType": "start",
+        "innerAt": 1791081789998,
+        "agent": "reviewer-2",
+        "bytes": 172
+      },
+      {
+        "seq": 495,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081790020,
+        "agent": "reviewer-2",
+        "bytes": 108
+      },
+      {
+        "seq": 496,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081790023,
+        "agent": "reviewer-2",
+        "bytes": 63525
+      },
+      {
+        "seq": 497,
+        "type": "heartbeat",
+        "at": 1791081790107,
+        "innerType": "heartbeat",
+        "innerAt": 1791081790107,
+        "bytes": 49
+      },
+      {
+        "seq": 498,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081791780,
+        "agent": "reviewer-2",
+        "bytes": 182,
+        "name": "get_database_records"
+      },
+      {
+        "seq": 499,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081791780,
+        "agent": "reviewer-2",
+        "bytes": 412,
+        "name": "get_database_records",
+        "ok": true,
+        "summary": "maps 2건 / 2건"
+      },
+      {
+        "seq": 500,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081791781,
+        "agent": "reviewer-2",
+        "bytes": 108
+      },
+      {
+        "seq": 501,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081791784,
+        "agent": "reviewer-2",
+        "bytes": 64523
+      },
+      {
+        "seq": 502,
+        "type": "render_request",
+        "innerType": "render_request",
+        "tool": "show_map_region",
+        "bytes": 3326151
+      },
+      {
+        "seq": 503,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081793923,
+        "agent": "reviewer-2",
+        "bytes": 209,
+        "name": "show_map_region"
+      },
+      {
+        "seq": 504,
+        "type": "agent_event",
+        "innerType": "execution_status",
+        "agent": "reviewer-2",
+        "bytes": 281,
+        "name": "map.image.delivered",
+        "ok": true,
+        "summary": "현재 초안 이미지를 모델 도구 응답에 포함했습니다."
+      },
+      {
+        "seq": 505,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081794549,
+        "agent": "reviewer-2",
+        "bytes": 4521,
+        "name": "show_map_region",
+        "ok": true,
+        "summary": "맵 미리보기: (0,0) 20×15 (기억의 서재)"
+      },
+      {
+        "seq": 506,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081794570,
+        "agent": "reviewer-2",
+        "bytes": 108
+      },
+      {
+        "seq": 507,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081794573,
+        "agent": "reviewer-2",
+        "bytes": 69826
+      },
+      {
+        "seq": 508,
+        "type": "heartbeat",
+        "at": 1791081795110,
+        "innerType": "heartbeat",
+        "innerAt": 1791081795110,
+        "bytes": 49
+      },
+      {
+        "seq": 509,
+        "type": "render_request",
+        "innerType": "render_request",
+        "tool": "show_map_region",
+        "bytes": 3324419
+      },
+      {
+        "seq": 510,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081796864,
+        "agent": "reviewer-2",
+        "bytes": 212,
+        "name": "show_map_region"
+      },
+      {
+        "seq": 511,
+        "type": "agent_event",
+        "innerType": "execution_status",
+        "agent": "reviewer-2",
+        "bytes": 284,
+        "name": "map.image.delivered",
+        "ok": true,
+        "summary": "현재 초안 이미지를 모델 도구 응답에 포함했습니다."
+      },
+      {
+        "seq": 512,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081798078,
+        "agent": "reviewer-2",
+        "bytes": 2789,
+        "name": "show_map_region",
+        "ok": true,
+        "summary": "맵 미리보기: (0,0) 24×12 (기억의 길)"
+      },
+      {
+        "seq": 513,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081798099,
+        "agent": "reviewer-2",
+        "bytes": 108
+      },
+      {
+        "seq": 514,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081798102,
+        "agent": "reviewer-2",
+        "bytes": 73386
+      },
+      {
+        "seq": 515,
+        "type": "heartbeat",
+        "at": 1791081800114,
+        "innerType": "heartbeat",
+        "innerAt": 1791081800114,
+        "bytes": 49
+      },
+      {
+        "seq": 516,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081801258,
+        "agent": "reviewer-2",
+        "bytes": 184,
+        "name": "get_database_records"
+      },
+      {
+        "seq": 517,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081801258,
+        "agent": "reviewer-2",
+        "bytes": 5669,
+        "name": "get_database_records",
+        "ok": true,
+        "summary": "actors 136건 / 136건"
+      },
+      {
+        "seq": 518,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081801259,
+        "agent": "reviewer-2",
+        "bytes": 108
+      },
+      {
+        "seq": 519,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081801262,
+        "agent": "reviewer-2",
+        "bytes": 82547
+      },
+      {
+        "seq": 520,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081803805,
+        "agent": "reviewer-2",
+        "bytes": 209,
+        "name": "get_event"
+      },
+      {
+        "seq": 521,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081803805,
+        "agent": "reviewer-2",
+        "bytes": 1705,
+        "name": "get_event",
+        "ok": true,
+        "summary": "이벤트 'ev_segment_starter' (12,8) — 페이지 2개"
+      },
+      {
+        "seq": 522,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081803827,
+        "agent": "reviewer-2",
+        "bytes": 108
+      },
+      {
+        "seq": 523,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081803831,
+        "agent": "reviewer-2",
+        "bytes": 86025
+      },
+      {
+        "seq": 524,
+        "type": "heartbeat",
+        "at": 1791081805124,
+        "innerType": "heartbeat",
+        "innerAt": 1791081805124,
+        "bytes": 49
+      },
+      {
+        "seq": 525,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081806082,
+        "agent": "reviewer-2",
+        "bytes": 207,
+        "name": "get_event"
+      },
+      {
+        "seq": 526,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081806082,
+        "agent": "reviewer-2",
+        "bytes": 1723,
+        "name": "get_event",
+        "ok": true,
+        "summary": "이벤트 'ev_segment_end' (22,6) — 페이지 2개"
+      },
+      {
+        "seq": 527,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081806103,
+        "agent": "reviewer-2",
+        "bytes": 108
+      },
+      {
+        "seq": 528,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081806107,
+        "agent": "reviewer-2",
+        "bytes": 88712
+      },
+      {
+        "seq": 529,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081808010,
+        "agent": "reviewer-2",
+        "bytes": 155,
+        "name": "get_opening"
+      },
+      {
+        "seq": 530,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081808010,
+        "agent": "reviewer-2",
+        "bytes": 530,
+        "name": "get_opening",
+        "ok": true,
+        "summary": "오프닝 장면 0개(), 사용 꺼짐, 건너뛰기 가능, 배경음악 cc0-bgm-rtp-ttl-001."
+      },
+      {
+        "seq": 531,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081808011,
+        "agent": "reviewer-2",
+        "bytes": 108
+      },
+      {
+        "seq": 532,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081808014,
+        "agent": "reviewer-2",
+        "bytes": 89710
+      },
+      {
+        "seq": 533,
+        "type": "heartbeat",
+        "at": 1791081810130,
+        "innerType": "heartbeat",
+        "innerAt": 1791081810130,
+        "bytes": 49
+      },
+      {
+        "seq": 534,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081811763,
+        "agent": "reviewer-2",
+        "bytes": 209,
+        "name": "get_map_region"
+      },
+      {
+        "seq": 535,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081811763,
+        "agent": "reviewer-2",
+        "bytes": 1176,
+        "name": "get_map_region",
+        "ok": true,
+        "summary": "기억의 서재(map_blank_start) 영역 (0,0)~(20,15) — 이벤트 3개, 물 0칸"
+      },
+      {
+        "seq": 536,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081811785,
+        "agent": "reviewer-2",
+        "bytes": 108
+      },
+      {
+        "seq": 537,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081811788,
+        "agent": "reviewer-2",
+        "bytes": 91705
+      },
+      {
+        "seq": 538,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081813857,
+        "agent": "reviewer-2",
+        "bytes": 205,
+        "name": "get_event"
+      },
+      {
+        "seq": 539,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081813857,
+        "agent": "reviewer-2",
+        "bytes": 1272,
+        "name": "get_event",
+        "ok": true,
+        "summary": "이벤트 'ev_intro_guide' (10,8) — 페이지 2개"
+      },
+      {
+        "seq": 540,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081813878,
+        "agent": "reviewer-2",
+        "bytes": 109
+      },
+      {
+        "seq": 541,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081813882,
+        "agent": "reviewer-2",
+        "bytes": 91882
+      },
+      {
+        "seq": 542,
+        "type": "heartbeat",
+        "at": 1791081815133,
+        "innerType": "heartbeat",
+        "innerAt": 1791081815133,
+        "bytes": 49
+      },
+      {
+        "seq": 543,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081816960,
+        "agent": "reviewer-2",
+        "bytes": 210,
+        "name": "get_map_region"
+      },
+      {
+        "seq": 544,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081816960,
+        "agent": "reviewer-2",
+        "bytes": 1049,
+        "name": "get_map_region",
+        "ok": true,
+        "summary": "기억의 길(map_segment_route) 영역 (0,0)~(24,12) — 이벤트 2개, 물 0칸"
+      },
+      {
+        "seq": 545,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081816991,
+        "agent": "reviewer-2",
+        "bytes": 109
+      },
+      {
+        "seq": 546,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081816995,
+        "agent": "reviewer-2",
+        "bytes": 92044
+      },
+      {
+        "seq": 547,
+        "type": "heartbeat",
+        "at": 1791081820136,
+        "innerType": "heartbeat",
+        "innerAt": 1791081820136,
+        "bytes": 49
+      },
+      {
+        "seq": 548,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081820255,
+        "agent": "reviewer-2",
+        "bytes": 251,
+        "name": "check_reachability"
+      },
+      {
+        "seq": 549,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081820256,
+        "agent": "reviewer-2",
+        "bytes": 304,
+        "name": "check_reachability",
+        "ok": true,
+        "summary": "도달성: 전부 도달 가능"
+      },
+      {
+        "seq": 550,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081820277,
+        "agent": "reviewer-2",
+        "bytes": 109
+      },
+      {
+        "seq": 551,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081820280,
+        "agent": "reviewer-2",
+        "bytes": 92053
+      },
+      {
+        "seq": 552,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081822723,
+        "agent": "reviewer-2",
+        "bytes": 237,
+        "name": "check_reachability"
+      },
+      {
+        "seq": 553,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081822724,
+        "agent": "reviewer-2",
+        "bytes": 304,
+        "name": "check_reachability",
+        "ok": true,
+        "summary": "도달성: 전부 도달 가능"
+      },
+      {
+        "seq": 554,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081822751,
+        "agent": "reviewer-2",
+        "bytes": 109
+      },
+      {
+        "seq": 555,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081822754,
+        "agent": "reviewer-2",
+        "bytes": 92089
+      },
+      {
+        "seq": 556,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081824986,
+        "agent": "reviewer-2",
+        "bytes": 337,
+        "name": "run_lint"
+      },
+      {
+        "seq": 557,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081824986,
+        "agent": "reviewer-2",
+        "bytes": 540,
+        "name": "run_lint",
+        "ok": true,
+        "summary": "lint: error 0건 / warning 0건 / info 0건 — 구조 무결성만 검사한다. 보상 중복·경제 균형·진행 순서는 범위 밖이고, warning 도 결함이다. 이 결과를 '결함 없이 통과'로 옮겨 적지 말 것."
+      },
+      {
+        "seq": 558,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081825016,
+        "agent": "reviewer-2",
+        "bytes": 109
+      },
+      {
+        "seq": 559,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081825020,
+        "agent": "reviewer-2",
+        "bytes": 92111
+      },
+      {
+        "seq": 560,
+        "type": "heartbeat",
+        "at": 1791081825137,
+        "innerType": "heartbeat",
+        "innerAt": 1791081825137,
+        "bytes": 49
+      },
+      {
+        "seq": 561,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081828456,
+        "agent": "reviewer-2",
+        "bytes": 1065,
+        "name": "report_first_scene_review"
+      },
+      {
+        "seq": 562,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081828456,
+        "agent": "reviewer-2",
+        "bytes": 300,
+        "name": "report_first_scene_review",
+        "ok": true,
+        "summary": ""
+      },
+      {
+        "seq": 563,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081828458,
+        "agent": "reviewer-2",
+        "bytes": 109
+      },
+      {
+        "seq": 564,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081828462,
+        "agent": "reviewer-2",
+        "bytes": 92051
+      },
+      {
+        "seq": 565,
+        "type": "heartbeat",
+        "at": 1791081830144,
+        "innerType": "heartbeat",
+        "innerAt": 1791081830144,
+        "bytes": 49
+      },
+      {
+        "seq": 566,
+        "type": "agent_event",
+        "innerType": "delta",
+        "innerAt": 1791081831170,
+        "agent": "reviewer-2",
+        "bytes": 699
+      },
+      {
+        "seq": 567,
+        "type": "agent_event",
+        "innerType": "delta",
+        "innerAt": 1791081832172,
+        "agent": "reviewer-2",
+        "bytes": 788
+      },
+      {
+        "seq": 568,
+        "type": "agent_event",
+        "innerType": "delta",
+        "innerAt": 1791081833236,
+        "agent": "reviewer-2",
+        "bytes": 726
+      },
+      {
+        "seq": 569,
+        "type": "agent_event",
+        "innerType": "delta",
+        "innerAt": 1791081833400,
+        "agent": "reviewer-2",
+        "bytes": 187
+      },
+      {
+        "seq": 570,
+        "type": "agent_event",
+        "innerType": "assistant",
+        "innerAt": 1791081833400,
+        "agent": "reviewer-2",
+        "bytes": 2021
+      },
+      {
+        "seq": 571,
+        "type": "agent_event",
+        "innerType": "done",
+        "innerAt": 1791081833430,
+        "agent": "reviewer-2",
+        "bytes": 337386
+      },
+      {
+        "seq": 572,
+        "type": "execution_status",
+        "innerType": "execution_status",
+        "bytes": 130,
+        "name": "first_scene.review_passed",
+        "ok": true,
+        "summary": "실제 장소 그림·상호작용 대상·동선·오프닝 일치를 확인했습니다."
+      },
+      {
+        "seq": 573,
+        "type": "agent_done",
+        "innerType": "agent_done",
+        "agent": "reviewer-2",
+        "bytes": 299,
+        "ok": true,
+        "summary": "첫 장면 이미지 확인"
+      },
+      {
+        "seq": 574,
+        "type": "agent_spawn",
+        "innerType": "agent_spawn",
+        "agent": "orchestrator-1",
+        "bytes": 42631
+      },
+      {
+        "seq": 575,
+        "type": "agent_event",
+        "innerType": "start",
+        "innerAt": 1791081833552,
+        "agent": "orchestrator-1",
+        "bytes": 177
+      },
+      {
+        "seq": 576,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081833575,
+        "agent": "orchestrator-1",
+        "bytes": 112
+      },
+      {
+        "seq": 577,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081833581,
+        "agent": "orchestrator-1",
+        "bytes": 90723
+      },
+      {
+        "seq": 578,
+        "type": "heartbeat",
+        "at": 1791081835152,
+        "innerType": "heartbeat",
+        "innerAt": 1791081835152,
+        "bytes": 49
+      },
+      {
+        "seq": 579,
+        "type": "agent_event",
+        "innerType": "delta",
+        "innerAt": 1791081837835,
+        "agent": "orchestrator-1",
+        "bytes": 485
+      },
+      {
+        "seq": 580,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081838041,
+        "agent": "orchestrator-1",
+        "bytes": 156,
+        "name": "run_lint"
+      },
+      {
+        "seq": 581,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081838041,
+        "agent": "orchestrator-1",
+        "bytes": 545,
+        "name": "run_lint",
+        "ok": true,
+        "summary": "lint: error 0건 / warning 0건 / info 0건 — 구조 무결성만 검사한다. 보상 중복·경제 균형·진행 순서는 범위 밖이고, warning 도 결함이다. 이 결과를 '결함 없이 통과'로 옮겨 적지 말 것."
+      },
+      {
+        "seq": 582,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081838071,
+        "agent": "orchestrator-1",
+        "bytes": 112
+      },
+      {
+        "seq": 583,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081838077,
+        "agent": "orchestrator-1",
+        "bytes": 90020
+      },
+      {
+        "seq": 584,
+        "type": "heartbeat",
+        "at": 1791081840155,
+        "innerType": "heartbeat",
+        "innerAt": 1791081840155,
+        "bytes": 49
+      },
+      {
+        "seq": 585,
+        "type": "agent_spawn",
+        "innerType": "agent_spawn",
+        "agent": "reviewer-3",
+        "bytes": 219
+      },
+      {
+        "seq": 586,
+        "type": "agent_spawn",
+        "innerType": "agent_spawn",
+        "agent": "reviewer-4",
+        "bytes": 220
+      },
+      {
+        "seq": 587,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081841445,
+        "agent": "orchestrator-1",
+        "bytes": 219,
+        "name": "review_map"
+      },
+      {
+        "seq": 588,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081841445,
+        "agent": "orchestrator-1",
+        "bytes": 219,
+        "name": "review_map"
+      },
+      {
+        "seq": 589,
+        "type": "agent_event",
+        "innerType": "start",
+        "innerAt": 1791081841523,
+        "agent": "reviewer-3",
+        "bytes": 174
+      },
+      {
+        "seq": 590,
+        "type": "agent_event",
+        "innerType": "start",
+        "innerAt": 1791081841586,
+        "agent": "reviewer-4",
+        "bytes": 174
+      },
+      {
+        "seq": 591,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081841610,
+        "agent": "reviewer-3",
+        "bytes": 108
+      },
+      {
+        "seq": 592,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081841626,
+        "agent": "reviewer-3",
+        "bytes": 91005
+      },
+      {
+        "seq": 593,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081841628,
+        "agent": "reviewer-4",
+        "bytes": 108
+      },
+      {
+        "seq": 594,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081841643,
+        "agent": "reviewer-4",
+        "bytes": 91005
+      },
+      {
+        "seq": 595,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081844570,
+        "agent": "reviewer-4",
+        "bytes": 211,
+        "name": "get_map_region"
+      },
+      {
+        "seq": 596,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081844570,
+        "agent": "reviewer-4",
+        "bytes": 182,
+        "name": "find_events"
+      },
+      {
+        "seq": 597,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081844570,
+        "agent": "reviewer-4",
+        "bytes": 275,
+        "name": "run_lint"
+      },
+      {
+        "seq": 598,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081844570,
+        "agent": "reviewer-4",
+        "bytes": 156,
+        "name": "list_endings"
+      },
+      {
+        "seq": 599,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081844570,
+        "agent": "reviewer-4",
+        "bytes": 1050,
+        "name": "get_map_region",
+        "ok": true,
+        "summary": "기억의 길(map_segment_route) 영역 (0,0)~(24,12) — 이벤트 2개, 물 0칸"
+      },
+      {
+        "seq": 600,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081844571,
+        "agent": "reviewer-4",
+        "bytes": 546,
+        "name": "find_events",
+        "ok": true,
+        "summary": "이벤트 2개 검색됨"
+      },
+      {
+        "seq": 601,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081844571,
+        "agent": "reviewer-4",
+        "bytes": 541,
+        "name": "run_lint",
+        "ok": true,
+        "summary": "lint: error 0건 / warning 0건 / info 0건 — 구조 무결성만 검사한다. 보상 중복·경제 균형·진행 순서는 범위 밖이고, warning 도 결함이다. 이 결과를 '결함 없이 통과'로 옮겨 적지 말 것."
+      },
+      {
+        "seq": 602,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081844571,
+        "agent": "reviewer-4",
+        "bytes": 542,
+        "name": "list_endings",
+        "ok": true,
+        "summary": "엔딩 1개"
+      },
+      {
+        "seq": 603,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081844695,
+        "agent": "reviewer-3",
+        "bytes": 163,
+        "name": "get_project_summary"
+      },
+      {
+        "seq": 604,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081844695,
+        "agent": "reviewer-3",
+        "bytes": 180,
+        "name": "find_events"
+      },
+      {
+        "seq": 605,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081844695,
+        "agent": "reviewer-3",
+        "bytes": 209,
+        "name": "get_map_region"
+      },
+      {
+        "seq": 606,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081844695,
+        "agent": "reviewer-3",
+        "bytes": 1449,
+        "name": "get_project_summary",
+        "ok": true,
+        "summary": "프로젝트 '멈춘 시계의 기억' — 맵 2개, 아이템 1000, 트룹 7"
+      },
+      {
+        "seq": 607,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081844696,
+        "agent": "reviewer-3",
+        "bytes": 685,
+        "name": "find_events",
+        "ok": true,
+        "summary": "이벤트 3개 검색됨"
+      },
+      {
+        "seq": 608,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081844696,
+        "agent": "reviewer-3",
+        "bytes": 1176,
+        "name": "get_map_region",
+        "ok": true,
+        "summary": "기억의 서재(map_blank_start) 영역 (0,0)~(20,15) — 이벤트 3개, 물 0칸"
+      },
+      {
+        "seq": 609,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081844696,
+        "agent": "reviewer-4",
+        "bytes": 108
+      },
+      {
+        "seq": 610,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081844715,
+        "agent": "reviewer-4",
+        "bytes": 91297
+      },
+      {
+        "seq": 611,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081844717,
+        "agent": "reviewer-3",
+        "bytes": 108
+      },
+      {
+        "seq": 612,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081844735,
+        "agent": "reviewer-3",
+        "bytes": 91543
+      },
+      {
+        "seq": 613,
+        "type": "heartbeat",
+        "at": 1791081845156,
+        "innerType": "heartbeat",
+        "innerAt": 1791081845156,
+        "bytes": 49
+      },
+      {
+        "seq": 614,
+        "type": "render_request",
+        "innerType": "render_request",
+        "tool": "show_map_region",
+        "bytes": 3324419
+      },
+      {
+        "seq": 615,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081847313,
+        "agent": "reviewer-4",
+        "bytes": 237,
+        "name": "get_event"
+      },
+      {
+        "seq": 616,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081847313,
+        "agent": "reviewer-4",
+        "bytes": 207,
+        "name": "get_event"
+      },
+      {
+        "seq": 617,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081847314,
+        "agent": "reviewer-4",
+        "bytes": 212,
+        "name": "show_map_region"
+      },
+      {
+        "seq": 618,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081847314,
+        "agent": "reviewer-4",
+        "bytes": 995,
+        "name": "get_event",
+        "ok": true,
+        "summary": "이벤트 'ev_gate_8d0e1815-e73b-4954-a926-c6b63f65f115' (0,6) — 페이지 1개"
+      },
+      {
+        "seq": 619,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081847314,
+        "agent": "reviewer-4",
+        "bytes": 1723,
+        "name": "get_event",
+        "ok": true,
+        "summary": "이벤트 'ev_segment_end' (22,6) — 페이지 2개"
+      },
+      {
+        "seq": 620,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081847727,
+        "agent": "reviewer-3",
+        "bytes": 209,
+        "name": "get_event"
+      },
+      {
+        "seq": 621,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081847727,
+        "agent": "reviewer-3",
+        "bytes": 205,
+        "name": "get_event"
+      },
+      {
+        "seq": 622,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081847727,
+        "agent": "reviewer-3",
+        "bytes": 235,
+        "name": "get_event"
+      },
+      {
+        "seq": 623,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081847728,
+        "agent": "reviewer-3",
+        "bytes": 291,
+        "name": "run_lint"
+      },
+      {
+        "seq": 624,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081847728,
+        "agent": "reviewer-3",
+        "bytes": 1705,
+        "name": "get_event",
+        "ok": true,
+        "summary": "이벤트 'ev_segment_starter' (12,8) — 페이지 2개"
+      },
+      {
+        "seq": 625,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081847728,
+        "agent": "reviewer-3",
+        "bytes": 1272,
+        "name": "get_event",
+        "ok": true,
+        "summary": "이벤트 'ev_intro_guide' (10,8) — 페이지 2개"
+      },
+      {
+        "seq": 626,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081847728,
+        "agent": "reviewer-3",
+        "bytes": 999,
+        "name": "get_event",
+        "ok": true,
+        "summary": "이벤트 'ev_gate_2f516e85-d863-483d-a54e-6b5191af87d0' (18,8) — 페이지 1개"
+      },
+      {
+        "seq": 627,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081847728,
+        "agent": "reviewer-3",
+        "bytes": 541,
+        "name": "run_lint",
+        "ok": true,
+        "summary": "lint: error 0건 / warning 0건 / info 0건 — 구조 무결성만 검사한다. 보상 중복·경제 균형·진행 순서는 범위 밖이고, warning 도 결함이다. 이 결과를 '결함 없이 통과'로 옮겨 적지 말 것."
+      },
+      {
+        "seq": 628,
+        "type": "agent_event",
+        "innerType": "execution_status",
+        "agent": "reviewer-4",
+        "bytes": 284,
+        "name": "map.image.delivered",
+        "ok": true,
+        "summary": "현재 초안 이미지를 모델 도구 응답에 포함했습니다."
+      },
+      {
+        "seq": 629,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081847730,
+        "agent": "reviewer-4",
+        "bytes": 2788,
+        "name": "show_map_region",
+        "ok": true,
+        "summary": "맵 미리보기: (0,0) 24×12 (기억의 길)"
+      },
+      {
+        "seq": 630,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081847749,
+        "agent": "reviewer-3",
+        "bytes": 108
+      },
+      {
+        "seq": 631,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081847769,
+        "agent": "reviewer-3",
+        "bytes": 92393
+      },
+      {
+        "seq": 632,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081847771,
+        "agent": "reviewer-4",
+        "bytes": 108
+      },
+      {
+        "seq": 633,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081847788,
+        "agent": "reviewer-4",
+        "bytes": 91631
+      },
+      {
+        "seq": 634,
+        "type": "heartbeat",
+        "at": 1791081850160,
+        "innerType": "heartbeat",
+        "innerAt": 1791081850160,
+        "bytes": 49
+      },
+      {
+        "seq": 635,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081850528,
+        "agent": "reviewer-3",
+        "bytes": 266,
+        "name": "check_reachability"
+      },
+      {
+        "seq": 636,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081850528,
+        "agent": "reviewer-3",
+        "bytes": 477,
+        "name": "run_scene_test"
+      },
+      {
+        "seq": 637,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081850528,
+        "agent": "reviewer-3",
+        "bytes": 303,
+        "name": "check_reachability",
+        "ok": true,
+        "summary": "도달성: 전부 도달 가능"
+      },
+      {
+        "seq": 638,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081850528,
+        "agent": "reviewer-3",
+        "bytes": 789,
+        "name": "run_scene_test",
+        "ok": false,
+        "summary": "'run_scene_test' 실행 실패: Malformed scene test input: steps[2] (interact): unexpected field(s): adjacent (adjacent → 앞 스텝 walk 의 adjacent 로 쓰세요) — 허용 필드: eventId"
+      },
+      {
+        "seq": 639,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081850550,
+        "agent": "reviewer-3",
+        "bytes": 108
+      },
+      {
+        "seq": 640,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081850569,
+        "agent": "reviewer-3",
+        "bytes": 92504
+      },
+      {
+        "seq": 641,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081851179,
+        "agent": "reviewer-4",
+        "bytes": 655,
+        "name": "run_scene_test"
+      },
+      {
+        "seq": 642,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081851179,
+        "agent": "reviewer-4",
+        "bytes": 820,
+        "name": "run_scene_test",
+        "ok": false,
+        "summary": "'run_scene_test' 실행 실패: Malformed scene test input: steps[0] (set): switches: 스위치 id 배열 또는 {스위치id: true/false} 여야 합니다(받은 값 [{\"id\":\"sw_segment_key\",\"value\":false}])"
+      },
+      {
+        "seq": 643,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081851200,
+        "agent": "reviewer-4",
+        "bytes": 108
+      },
+      {
+        "seq": 644,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081851218,
+        "agent": "reviewer-4",
+        "bytes": 91773
+      },
+      {
+        "seq": 645,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081852668,
+        "agent": "reviewer-3",
+        "bytes": 431,
+        "name": "run_scene_test"
+      },
+      {
+        "seq": 646,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081852668,
+        "agent": "reviewer-3",
+        "bytes": 1707,
+        "name": "run_scene_test",
+        "ok": true,
+        "summary": "scene test 실패: 스텝 1 — 이동 대상 도달 불가: map_blank_start (12,11) -> (12,9)"
+      },
+      {
+        "seq": 647,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081852689,
+        "agent": "reviewer-3",
+        "bytes": 108
+      },
+      {
+        "seq": 648,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081852705,
+        "agent": "reviewer-3",
+        "bytes": 92745
+      },
+      {
+        "seq": 649,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081853917,
+        "agent": "reviewer-4",
+        "bytes": 505,
+        "name": "run_scene_test"
+      },
+      {
+        "seq": 650,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081853917,
+        "agent": "reviewer-4",
+        "bytes": 1719,
+        "name": "run_scene_test",
+        "ok": true,
+        "summary": "scene test 실패: 스텝 2 — 조사할 action 이벤트 없음: map_segment_route (21,6) facing=down"
+      },
+      {
+        "seq": 651,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081853939,
+        "agent": "reviewer-4",
+        "bytes": 108
+      },
+      {
+        "seq": 652,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081853953,
+        "agent": "reviewer-4",
+        "bytes": 91991
+      },
+      {
+        "seq": 653,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081854576,
+        "agent": "reviewer-3",
+        "bytes": 207,
+        "name": "get_map_region"
+      },
+      {
+        "seq": 654,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081854576,
+        "agent": "reviewer-3",
+        "bytes": 787,
+        "name": "get_map_region",
+        "ok": true,
+        "summary": "기억의 서재(map_blank_start) 영역 (9,7)~(17,13) — 이벤트 2개, 물 0칸"
+      },
+      {
+        "seq": 655,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081854597,
+        "agent": "reviewer-3",
+        "bytes": 108
+      },
+      {
+        "seq": 656,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081854616,
+        "agent": "reviewer-3",
+        "bytes": 92886
+      },
+      {
+        "seq": 657,
+        "type": "heartbeat",
+        "at": 1791081855161,
+        "innerType": "heartbeat",
+        "innerAt": 1791081855161,
+        "bytes": 49
+      },
+      {
+        "seq": 658,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081856685,
+        "agent": "reviewer-4",
+        "bytes": 564,
+        "name": "run_scene_test"
+      },
+      {
+        "seq": 659,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081856685,
+        "agent": "reviewer-4",
+        "bytes": 1890,
+        "name": "run_scene_test",
+        "ok": true,
+        "summary": "scene test 성공 (8/8 스텝)"
+      },
+      {
+        "seq": 660,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081856748,
+        "agent": "reviewer-3",
+        "bytes": 267,
+        "name": "check_reachability"
+      },
+      {
+        "seq": 661,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081856748,
+        "agent": "reviewer-3",
+        "bytes": 304,
+        "name": "check_reachability",
+        "ok": true,
+        "summary": "도달성: 전부 도달 가능"
+      },
+      {
+        "seq": 662,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081856749,
+        "agent": "reviewer-4",
+        "bytes": 108
+      },
+      {
+        "seq": 663,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081856765,
+        "agent": "reviewer-4",
+        "bytes": 92248
+      },
+      {
+        "seq": 664,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081856766,
+        "agent": "reviewer-3",
+        "bytes": 108
+      },
+      {
+        "seq": 665,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081856780,
+        "agent": "reviewer-3",
+        "bytes": 92908
+      },
+      {
+        "seq": 666,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081859735,
+        "agent": "reviewer-3",
+        "bytes": 433,
+        "name": "run_scene_test"
+      },
+      {
+        "seq": 667,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081859735,
+        "agent": "reviewer-3",
+        "bytes": 1896,
+        "name": "run_scene_test",
+        "ok": true,
+        "summary": "scene test 성공 (6/6 스텝)"
+      },
+      {
+        "seq": 668,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081859757,
+        "agent": "reviewer-3",
+        "bytes": 108
+      },
+      {
+        "seq": 669,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081859784,
+        "agent": "reviewer-3",
+        "bytes": 93157
+      },
+      {
+        "seq": 670,
+        "type": "heartbeat",
+        "at": 1791081860161,
+        "innerType": "heartbeat",
+        "innerAt": 1791081860161,
+        "bytes": 49
+      },
+      {
+        "seq": 671,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081862802,
+        "agent": "reviewer-4",
+        "bytes": 404,
+        "name": "run_scene_test"
+      },
+      {
+        "seq": 672,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081862802,
+        "agent": "reviewer-4",
+        "bytes": 1697,
+        "name": "run_scene_test",
+        "ok": true,
+        "summary": "scene test 성공 (2/2 스텝)"
+      },
+      {
+        "seq": 673,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081862823,
+        "agent": "reviewer-4",
+        "bytes": 108
+      },
+      {
+        "seq": 674,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081862838,
+        "agent": "reviewer-4",
+        "bytes": 92471
+      },
+      {
+        "seq": 675,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081862878,
+        "agent": "reviewer-3",
+        "bytes": 432,
+        "name": "run_scene_test"
+      },
+      {
+        "seq": 676,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081862878,
+        "agent": "reviewer-3",
+        "bytes": 1891,
+        "name": "run_scene_test",
+        "ok": true,
+        "summary": "scene test 성공 (6/6 스텝)"
+      },
+      {
+        "seq": 677,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081862879,
+        "agent": "reviewer-3",
+        "bytes": 108
+      },
+      {
+        "seq": 678,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081862895,
+        "agent": "reviewer-3",
+        "bytes": 93539
+      },
+      {
+        "seq": 679,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081865153,
+        "agent": "reviewer-4",
+        "bytes": 180,
+        "name": "report_review"
+      },
+      {
+        "seq": 680,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081865153,
+        "agent": "reviewer-4",
+        "bytes": 300,
+        "name": "report_review",
+        "ok": true,
+        "summary": ""
+      },
+      {
+        "seq": 681,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081865154,
+        "agent": "reviewer-4",
+        "bytes": 108
+      },
+      {
+        "seq": 682,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081865170,
+        "agent": "reviewer-4",
+        "bytes": 92513
+      },
+      {
+        "seq": 683,
+        "type": "heartbeat",
+        "at": 1791081865172,
+        "innerType": "heartbeat",
+        "innerAt": 1791081865172,
+        "bytes": 49
+      },
+      {
+        "seq": 684,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081865305,
+        "agent": "reviewer-3",
+        "bytes": 504,
+        "name": "run_scene_test"
+      },
+      {
+        "seq": 685,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081865305,
+        "agent": "reviewer-3",
+        "bytes": 2052,
+        "name": "run_scene_test",
+        "ok": true,
+        "summary": "scene test 성공 (8/8 스텝)"
+      },
+      {
+        "seq": 686,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081865326,
+        "agent": "reviewer-3",
+        "bytes": 109
+      },
+      {
+        "seq": 687,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081865344,
+        "agent": "reviewer-3",
+        "bytes": 93964
+      },
+      {
+        "seq": 688,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081868510,
+        "agent": "reviewer-3",
+        "bytes": 180,
+        "name": "report_review"
+      },
+      {
+        "seq": 689,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081868510,
+        "agent": "reviewer-3",
+        "bytes": 300,
+        "name": "report_review",
+        "ok": true,
+        "summary": ""
+      },
+      {
+        "seq": 690,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081868531,
+        "agent": "reviewer-3",
+        "bytes": 109
+      },
+      {
+        "seq": 691,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081868546,
+        "agent": "reviewer-3",
+        "bytes": 94013
+      },
+      {
+        "seq": 692,
+        "type": "agent_event",
+        "innerType": "delta",
+        "innerAt": 1791081868977,
+        "agent": "reviewer-4",
+        "bytes": 690
+      },
+      {
+        "seq": 693,
+        "type": "agent_event",
+        "innerType": "delta",
+        "innerAt": 1791081869300,
+        "agent": "reviewer-4",
+        "bytes": 338
+      },
+      {
+        "seq": 694,
+        "type": "agent_event",
+        "innerType": "assistant",
+        "innerAt": 1791081869300,
+        "agent": "reviewer-4",
+        "bytes": 895
+      },
+      {
+        "seq": 695,
+        "type": "agent_event",
+        "innerType": "done",
+        "innerAt": 1791081869334,
+        "agent": "reviewer-4",
+        "bytes": 337384
+      },
+      {
+        "seq": 696,
+        "type": "review",
+        "innerType": "review",
+        "agent": "reviewer-4",
+        "bytes": 102,
+        "ok": true
+      },
+      {
+        "seq": 697,
+        "type": "agent_done",
+        "innerType": "agent_done",
+        "agent": "reviewer-4",
+        "bytes": 291,
+        "ok": true,
+        "summary": "검수 통과"
+      },
+      {
+        "seq": 698,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081869337,
+        "agent": "orchestrator-1",
+        "bytes": 362,
+        "name": "review_map",
+        "ok": true,
+        "summary": ""
+      },
+      {
+        "seq": 699,
+        "type": "heartbeat",
+        "at": 1791081870174,
+        "innerType": "heartbeat",
+        "innerAt": 1791081870174,
+        "bytes": 49
+      },
+      {
+        "seq": 700,
+        "type": "agent_event",
+        "innerType": "delta",
+        "innerAt": 1791081872822,
+        "agent": "reviewer-3",
+        "bytes": 706
+      },
+      {
+        "seq": 701,
+        "type": "agent_event",
+        "innerType": "delta",
+        "innerAt": 1791081873971,
+        "agent": "reviewer-3",
+        "bytes": 813
+      },
+      {
+        "seq": 702,
+        "type": "agent_event",
+        "innerType": "assistant",
+        "innerAt": 1791081873977,
+        "agent": "reviewer-3",
+        "bytes": 1386
+      },
+      {
+        "seq": 703,
+        "type": "agent_event",
+        "innerType": "done",
+        "innerAt": 1791081874010,
+        "agent": "reviewer-3",
+        "bytes": 337386
+      },
+      {
+        "seq": 704,
+        "type": "review",
+        "innerType": "review",
+        "agent": "reviewer-3",
+        "bytes": 100,
+        "ok": true
+      },
+      {
+        "seq": 705,
+        "type": "agent_done",
+        "innerType": "agent_done",
+        "agent": "reviewer-3",
+        "bytes": 293,
+        "ok": true,
+        "summary": "검수 통과"
+      },
+      {
+        "seq": 706,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081874012,
+        "agent": "orchestrator-1",
+        "bytes": 360,
+        "name": "review_map",
+        "ok": true,
+        "summary": ""
+      },
+      {
+        "seq": 707,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081874013,
+        "agent": "orchestrator-1",
+        "bytes": 112
+      },
+      {
+        "seq": 708,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081874018,
+        "agent": "orchestrator-1",
+        "bytes": 89890
+      },
+      {
+        "seq": 709,
+        "type": "heartbeat",
+        "at": 1791081875175,
+        "innerType": "heartbeat",
+        "innerAt": 1791081875175,
+        "bytes": 49
+      },
+      {
+        "seq": 710,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081876636,
+        "agent": "orchestrator-1",
+        "bytes": 164,
+        "name": "list_team_agents"
+      },
+      {
+        "seq": 711,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081876636,
+        "agent": "orchestrator-1",
+        "bytes": 995,
+        "name": "list_team_agents",
+        "ok": true,
+        "summary": ""
+      },
+      {
+        "seq": 712,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081876637,
+        "agent": "orchestrator-1",
+        "bytes": 112
+      },
+      {
+        "seq": 713,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081876643,
+        "agent": "orchestrator-1",
+        "bytes": 89879
+      },
+      {
+        "seq": 714,
+        "type": "heartbeat",
+        "at": 1791081880175,
+        "innerType": "heartbeat",
+        "innerAt": 1791081880175,
+        "bytes": 49
+      },
+      {
+        "seq": 715,
+        "type": "agent_event",
+        "innerType": "delta",
+        "innerAt": 1791081880528,
+        "agent": "orchestrator-1",
+        "bytes": 483
+      },
+      {
+        "seq": 716,
+        "type": "team_report",
+        "innerType": "team_report",
+        "bytes": 477
+      },
+      {
+        "seq": 717,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081880582,
+        "agent": "orchestrator-1",
+        "bytes": 600,
+        "name": "finish"
+      },
+      {
+        "seq": 718,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081880582,
+        "agent": "orchestrator-1",
+        "bytes": 279,
+        "name": "finish",
+        "ok": true,
+        "summary": ""
+      },
+      {
+        "seq": 719,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081880603,
+        "agent": "orchestrator-1",
+        "bytes": 112
+      },
+      {
+        "seq": 720,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081880608,
+        "agent": "orchestrator-1",
+        "bytes": 89230
+      },
+      {
+        "seq": 721,
+        "type": "agent_event",
+        "innerType": "delta",
+        "innerAt": 1791081885006,
+        "agent": "orchestrator-1",
+        "bytes": 628
+      },
+      {
+        "seq": 722,
+        "type": "heartbeat",
+        "at": 1791081885176,
+        "innerType": "heartbeat",
+        "innerAt": 1791081885176,
+        "bytes": 49
+      },
+      {
+        "seq": 723,
+        "type": "agent_event",
+        "innerType": "delta",
+        "innerAt": 1791081886015,
+        "agent": "orchestrator-1",
+        "bytes": 641
+      },
+      {
+        "seq": 724,
+        "type": "agent_event",
+        "innerType": "delta",
+        "innerAt": 1791081886460,
+        "agent": "orchestrator-1",
+        "bytes": 302
+      },
+      {
+        "seq": 725,
+        "type": "agent_event",
+        "innerType": "assistant",
+        "innerAt": 1791081886460,
+        "agent": "orchestrator-1",
+        "bytes": 1307
+      },
+      {
+        "seq": 726,
+        "type": "agent_event",
+        "innerType": "done",
+        "innerAt": 1791081886488,
+        "agent": "orchestrator-1",
+        "bytes": 337387
+      },
+      {
+        "seq": 727,
+        "type": "agent_spawn",
+        "innerType": "agent_spawn",
+        "agent": "reviewer-5",
+        "bytes": 42754
+      },
+      {
+        "seq": 728,
+        "type": "agent_event",
+        "innerType": "start",
+        "innerAt": 1791081886621,
+        "agent": "reviewer-5",
+        "bytes": 174
+      },
+      {
+        "seq": 729,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081886643,
+        "agent": "reviewer-5",
+        "bytes": 108
+      },
+      {
+        "seq": 730,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081886656,
+        "agent": "reviewer-5",
+        "bytes": 92607
+      },
+      {
+        "seq": 731,
+        "type": "heartbeat",
+        "at": 1791081890179,
+        "innerType": "heartbeat",
+        "innerAt": 1791081890179,
+        "bytes": 49
+      },
+      {
+        "seq": 732,
+        "type": "heartbeat",
+        "at": 1791081895183,
+        "innerType": "heartbeat",
+        "innerAt": 1791081895183,
+        "bytes": 49
+      },
+      {
+        "seq": 733,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081896723,
+        "agent": "reviewer-5",
+        "bytes": 160,
+        "name": "list_team_agents"
+      },
+      {
+        "seq": 734,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081896723,
+        "agent": "reviewer-5",
+        "bytes": 162,
+        "name": "read_team_messages"
+      },
+      {
+        "seq": 735,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081896723,
+        "agent": "reviewer-5",
+        "bytes": 163,
+        "name": "get_project_summary"
+      },
+      {
+        "seq": 736,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081896723,
+        "agent": "reviewer-5",
+        "bytes": 152,
+        "name": "run_lint"
+      },
+      {
+        "seq": 737,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081896723,
+        "agent": "reviewer-5",
+        "bytes": 156,
+        "name": "list_endings"
+      },
+      {
+        "seq": 738,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081896723,
+        "agent": "reviewer-5",
+        "bytes": 1449,
+        "name": "get_project_summary",
+        "ok": true,
+        "summary": "프로젝트 '멈춘 시계의 기억' — 맵 2개, 아이템 1000, 트룹 7"
+      },
+      {
+        "seq": 739,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081896724,
+        "agent": "reviewer-5",
+        "bytes": 541,
+        "name": "run_lint",
+        "ok": true,
+        "summary": "lint: error 0건 / warning 0건 / info 0건 — 구조 무결성만 검사한다. 보상 중복·경제 균형·진행 순서는 범위 밖이고, warning 도 결함이다. 이 결과를 '결함 없이 통과'로 옮겨 적지 말 것."
+      },
+      {
+        "seq": 740,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081896724,
+        "agent": "reviewer-5",
+        "bytes": 542,
+        "name": "list_endings",
+        "ok": true,
+        "summary": "엔딩 1개"
+      },
+      {
+        "seq": 741,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081896724,
+        "agent": "reviewer-5",
+        "bytes": 1068,
+        "name": "list_team_agents",
+        "ok": true,
+        "summary": ""
+      },
+      {
+        "seq": 742,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081896724,
+        "agent": "reviewer-5",
+        "bytes": 322,
+        "name": "read_team_messages",
+        "ok": true,
+        "summary": ""
+      },
+      {
+        "seq": 743,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081896744,
+        "agent": "reviewer-5",
+        "bytes": 108
+      },
+      {
+        "seq": 744,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081896763,
+        "agent": "reviewer-5",
+        "bytes": 92691
+      },
+      {
+        "seq": 745,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081899159,
+        "agent": "reviewer-5",
+        "bytes": 180,
+        "name": "find_events"
+      },
+      {
+        "seq": 746,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081899159,
+        "agent": "reviewer-5",
+        "bytes": 182,
+        "name": "find_events"
+      },
+      {
+        "seq": 747,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081899159,
+        "agent": "reviewer-5",
+        "bytes": 685,
+        "name": "find_events",
+        "ok": true,
+        "summary": "이벤트 3개 검색됨"
+      },
+      {
+        "seq": 748,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081899160,
+        "agent": "reviewer-5",
+        "bytes": 546,
+        "name": "find_events",
+        "ok": true,
+        "summary": "이벤트 2개 검색됨"
+      },
+      {
+        "seq": 749,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081899181,
+        "agent": "reviewer-5",
+        "bytes": 108
+      },
+      {
+        "seq": 750,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081899196,
+        "agent": "reviewer-5",
+        "bytes": 92700
+      },
+      {
+        "seq": 751,
+        "type": "heartbeat",
+        "at": 1791081900190,
+        "innerType": "heartbeat",
+        "innerAt": 1791081900190,
+        "bytes": 49
+      },
+      {
+        "seq": 752,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081901678,
+        "agent": "reviewer-5",
+        "bytes": 208,
+        "name": "get_event"
+      },
+      {
+        "seq": 753,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081901678,
+        "agent": "reviewer-5",
+        "bytes": 204,
+        "name": "get_event"
+      },
+      {
+        "seq": 754,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081901678,
+        "agent": "reviewer-5",
+        "bytes": 206,
+        "name": "get_event"
+      },
+      {
+        "seq": 755,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081901678,
+        "agent": "reviewer-5",
+        "bytes": 1704,
+        "name": "get_event",
+        "ok": true,
+        "summary": "이벤트 'ev_segment_starter' (12,8) — 페이지 2개"
+      },
+      {
+        "seq": 756,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081901678,
+        "agent": "reviewer-5",
+        "bytes": 1271,
+        "name": "get_event",
+        "ok": true,
+        "summary": "이벤트 'ev_intro_guide' (10,8) — 페이지 2개"
+      },
+      {
+        "seq": 757,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081901679,
+        "agent": "reviewer-5",
+        "bytes": 1722,
+        "name": "get_event",
+        "ok": true,
+        "summary": "이벤트 'ev_segment_end' (22,6) — 페이지 2개"
+      },
+      {
+        "seq": 758,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081901705,
+        "agent": "reviewer-5",
+        "bytes": 108
+      },
+      {
+        "seq": 759,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081901722,
+        "agent": "reviewer-5",
+        "bytes": 92908
+      },
+      {
+        "seq": 760,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081904546,
+        "agent": "reviewer-5",
+        "bytes": 235,
+        "name": "get_event"
+      },
+      {
+        "seq": 761,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081904546,
+        "agent": "reviewer-5",
+        "bytes": 237,
+        "name": "get_event"
+      },
+      {
+        "seq": 762,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081904546,
+        "agent": "reviewer-5",
+        "bytes": 999,
+        "name": "get_event",
+        "ok": true,
+        "summary": "이벤트 'ev_gate_2f516e85-d863-483d-a54e-6b5191af87d0' (18,8) — 페이지 1개"
+      },
+      {
+        "seq": 763,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081904547,
+        "agent": "reviewer-5",
+        "bytes": 995,
+        "name": "get_event",
+        "ok": true,
+        "summary": "이벤트 'ev_gate_8d0e1815-e73b-4954-a926-c6b63f65f115' (0,6) — 페이지 1개"
+      },
+      {
+        "seq": 764,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081904567,
+        "agent": "reviewer-5",
+        "bytes": 108
+      },
+      {
+        "seq": 765,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081904584,
+        "agent": "reviewer-5",
+        "bytes": 92758
+      },
+      {
+        "seq": 766,
+        "type": "heartbeat",
+        "at": 1791081905192,
+        "innerType": "heartbeat",
+        "innerAt": 1791081905192,
+        "bytes": 49
+      },
+      {
+        "seq": 767,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081908408,
+        "agent": "reviewer-5",
+        "bytes": 252,
+        "name": "check_reachability"
+      },
+      {
+        "seq": 768,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081908408,
+        "agent": "reviewer-5",
+        "bytes": 251,
+        "name": "check_reachability"
+      },
+      {
+        "seq": 769,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081908408,
+        "agent": "reviewer-5",
+        "bytes": 304,
+        "name": "check_reachability",
+        "ok": true,
+        "summary": "도달성: 전부 도달 가능"
+      },
+      {
+        "seq": 770,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081908409,
+        "agent": "reviewer-5",
+        "bytes": 304,
+        "name": "check_reachability",
+        "ok": true,
+        "summary": "도달성: 전부 도달 가능"
+      },
+      {
+        "seq": 771,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081908430,
+        "agent": "reviewer-5",
+        "bytes": 108
+      },
+      {
+        "seq": 772,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081908447,
+        "agent": "reviewer-5",
+        "bytes": 92634
+      },
+      {
+        "seq": 773,
+        "type": "heartbeat",
+        "at": 1791081910199,
+        "innerType": "heartbeat",
+        "innerAt": 1791081910199,
+        "bytes": 49
+      },
+      {
+        "seq": 774,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081911890,
+        "agent": "reviewer-5",
+        "bytes": 627,
+        "name": "run_scene_test"
+      },
+      {
+        "seq": 775,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081911891,
+        "agent": "reviewer-5",
+        "bytes": 658,
+        "name": "run_scene_test",
+        "ok": false,
+        "summary": "'run_scene_test' 실행 실패: Malformed scene test input: steps[3] (interact): unexpected field(s): text — 허용 필드: eventId"
+      },
+      {
+        "seq": 776,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081911912,
+        "agent": "reviewer-5",
+        "bytes": 108
+      },
+      {
+        "seq": 777,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081911935,
+        "agent": "reviewer-5",
+        "bytes": 92695
+      },
+      {
+        "seq": 778,
+        "type": "heartbeat",
+        "at": 1791081915203,
+        "innerType": "heartbeat",
+        "innerAt": 1791081915203,
+        "bytes": 49
+      },
+      {
+        "seq": 779,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081915519,
+        "agent": "reviewer-5",
+        "bytes": 423,
+        "name": "run_scene_test"
+      },
+      {
+        "seq": 780,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081915519,
+        "agent": "reviewer-5",
+        "bytes": 1698,
+        "name": "run_scene_test",
+        "ok": true,
+        "summary": "scene test 실패: 스텝 1 — 이동 불가: map_blank_start (12,11) -> (12,10)"
+      },
+      {
+        "seq": 781,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081915540,
+        "agent": "reviewer-5",
+        "bytes": 108
+      },
+      {
+        "seq": 782,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081915558,
+        "agent": "reviewer-5",
+        "bytes": 93167
+      },
+      {
+        "seq": 783,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081917837,
+        "agent": "reviewer-5",
+        "bytes": 209,
+        "name": "get_map_region"
+      },
+      {
+        "seq": 784,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081917837,
+        "agent": "reviewer-5",
+        "bytes": 1176,
+        "name": "get_map_region",
+        "ok": true,
+        "summary": "기억의 서재(map_blank_start) 영역 (0,0)~(20,15) — 이벤트 3개, 물 0칸"
+      },
+      {
+        "seq": 785,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081917858,
+        "agent": "reviewer-5",
+        "bytes": 108
+      },
+      {
+        "seq": 786,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081917874,
+        "agent": "reviewer-5",
+        "bytes": 93479
+      },
+      {
+        "seq": 787,
+        "type": "heartbeat",
+        "at": 1791081920203,
+        "innerType": "heartbeat",
+        "innerAt": 1791081920203,
+        "bytes": 49
+      },
+      {
+        "seq": 788,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081920466,
+        "agent": "reviewer-5",
+        "bytes": 482,
+        "name": "run_scene_test"
+      },
+      {
+        "seq": 789,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081920466,
+        "agent": "reviewer-5",
+        "bytes": 1695,
+        "name": "run_scene_test",
+        "ok": true,
+        "summary": "scene test 실패: 스텝 3 — 이동 불가: map_blank_start (11,10) -> (11,9)"
+      },
+      {
+        "seq": 790,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081920487,
+        "agent": "reviewer-5",
+        "bytes": 109
+      },
+      {
+        "seq": 791,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081920505,
+        "agent": "reviewer-5",
+        "bytes": 93971
+      },
+      {
+        "seq": 792,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081922601,
+        "agent": "reviewer-5",
+        "bytes": 404,
+        "name": "run_scene_test"
+      },
+      {
+        "seq": 793,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081922601,
+        "agent": "reviewer-5",
+        "bytes": 1910,
+        "name": "run_scene_test",
+        "ok": true,
+        "summary": "scene test 성공 (5/5 스텝)"
+      },
+      {
+        "seq": 794,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081922623,
+        "agent": "reviewer-5",
+        "bytes": 109
+      },
+      {
+        "seq": 795,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081922646,
+        "agent": "reviewer-5",
+        "bytes": 94459
+      },
+      {
+        "seq": 796,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081924777,
+        "agent": "reviewer-5",
+        "bytes": 405,
+        "name": "run_scene_test"
+      },
+      {
+        "seq": 797,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081924777,
+        "agent": "reviewer-5",
+        "bytes": 1907,
+        "name": "run_scene_test",
+        "ok": true,
+        "summary": "scene test 성공 (5/5 스텝)"
+      },
+      {
+        "seq": 798,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081924798,
+        "agent": "reviewer-5",
+        "bytes": 109
+      },
+      {
+        "seq": 799,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081924817,
+        "agent": "reviewer-5",
+        "bytes": 94889
+      },
+      {
+        "seq": 800,
+        "type": "heartbeat",
+        "at": 1791081925203,
+        "innerType": "heartbeat",
+        "innerAt": 1791081925203,
+        "bytes": 49
+      },
+      {
+        "seq": 801,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081927153,
+        "agent": "reviewer-5",
+        "bytes": 407,
+        "name": "run_scene_test"
+      },
+      {
+        "seq": 802,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081927154,
+        "agent": "reviewer-5",
+        "bytes": 1735,
+        "name": "run_scene_test",
+        "ok": true,
+        "summary": "scene test 실패: 스텝 2 — 조사할 action 이벤트 없음: map_segment_route (21,6) facing=down"
+      },
+      {
+        "seq": 803,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081927175,
+        "agent": "reviewer-5",
+        "bytes": 109
+      },
+      {
+        "seq": 804,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081927191,
+        "agent": "reviewer-5",
+        "bytes": 94968
+      },
+      {
+        "seq": 805,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081929815,
+        "agent": "reviewer-5",
+        "bytes": 437,
+        "name": "run_scene_test"
+      },
+      {
+        "seq": 806,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081929815,
+        "agent": "reviewer-5",
+        "bytes": 1703,
+        "name": "run_scene_test",
+        "ok": true,
+        "summary": "scene test 성공 (5/5 스텝)"
+      },
+      {
+        "seq": 807,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081929844,
+        "agent": "reviewer-5",
+        "bytes": 109
+      },
+      {
+        "seq": 808,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081929865,
+        "agent": "reviewer-5",
+        "bytes": 94968
+      },
+      {
+        "seq": 809,
+        "type": "heartbeat",
+        "at": 1791081930204,
+        "innerType": "heartbeat",
+        "innerAt": 1791081930204,
+        "bytes": 49
+      },
+      {
+        "seq": 810,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081932084,
+        "agent": "reviewer-5",
+        "bytes": 452,
+        "name": "run_scene_test"
+      },
+      {
+        "seq": 811,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081932084,
+        "agent": "reviewer-5",
+        "bytes": 2239,
+        "name": "run_scene_test",
+        "ok": true,
+        "summary": "scene test 실패: 스텝 5 — 엔딩 도달: 기대 ending_first_segment, 실제 (none)"
+      },
+      {
+        "seq": 812,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081932105,
+        "agent": "reviewer-5",
+        "bytes": 109
+      },
+      {
+        "seq": 813,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081932122,
+        "agent": "reviewer-5",
+        "bytes": 94968
+      },
+      {
+        "seq": 814,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081934666,
+        "agent": "reviewer-5",
+        "bytes": 565,
+        "name": "run_scene_test"
+      },
+      {
+        "seq": 815,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081934666,
+        "agent": "reviewer-5",
+        "bytes": 2423,
+        "name": "run_scene_test",
+        "ok": true,
+        "summary": "scene test 성공 (9/9 스텝)"
+      },
+      {
+        "seq": 816,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081934687,
+        "agent": "reviewer-5",
+        "bytes": 109
+      },
+      {
+        "seq": 817,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081934705,
+        "agent": "reviewer-5",
+        "bytes": 94968
+      },
+      {
+        "seq": 818,
+        "type": "heartbeat",
+        "at": 1791081935205,
+        "innerType": "heartbeat",
+        "innerAt": 1791081935205,
+        "bytes": 49
+      },
+      {
+        "seq": 819,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081938653,
+        "agent": "reviewer-5",
+        "bytes": 565,
+        "name": "run_scene_test"
+      },
+      {
+        "seq": 820,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081938653,
+        "agent": "reviewer-5",
+        "bytes": 2419,
+        "name": "run_scene_test",
+        "ok": true,
+        "summary": "scene test 성공 (9/9 스텝)"
+      },
+      {
+        "seq": 821,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081938675,
+        "agent": "reviewer-5",
+        "bytes": 109
+      },
+      {
+        "seq": 822,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081938704,
+        "agent": "reviewer-5",
+        "bytes": 94968
+      },
+      {
+        "seq": 823,
+        "type": "heartbeat",
+        "at": 1791081940206,
+        "innerType": "heartbeat",
+        "innerAt": 1791081940206,
+        "bytes": 49
+      },
+      {
+        "seq": 824,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081941312,
+        "agent": "reviewer-5",
+        "bytes": 165,
+        "name": "evaluate_game_quality"
+      },
+      {
+        "seq": 825,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081941313,
+        "agent": "reviewer-5",
+        "bytes": 3146,
+        "name": "evaluate_game_quality",
+        "ok": true,
+        "summary": "무결성 점검(참조·빈 맵·미호출 엔딩): 이상 없음"
+      },
+      {
+        "seq": 826,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081941334,
+        "agent": "reviewer-5",
+        "bytes": 109
+      },
+      {
+        "seq": 827,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081941357,
+        "agent": "reviewer-5",
+        "bytes": 94968
+      },
+      {
+        "seq": 828,
+        "type": "heartbeat",
+        "at": 1791081945211,
+        "innerType": "heartbeat",
+        "innerAt": 1791081945211,
+        "bytes": 49
+      },
+      {
+        "seq": 829,
+        "type": "agent_event",
+        "innerType": "tool_start",
+        "innerAt": 1791081945367,
+        "agent": "reviewer-5",
+        "bytes": 1433,
+        "name": "report_task"
+      },
+      {
+        "seq": 830,
+        "type": "agent_event",
+        "innerType": "tool_end",
+        "innerAt": 1791081945367,
+        "agent": "reviewer-5",
+        "bytes": 297,
+        "name": "report_task",
+        "ok": true,
+        "summary": ""
+      },
+      {
+        "seq": 831,
+        "type": "agent_event",
+        "innerType": "turn",
+        "innerAt": 1791081945368,
+        "agent": "reviewer-5",
+        "bytes": 109
+      },
+      {
+        "seq": 832,
+        "type": "agent_event",
+        "innerType": "prompt_inspection",
+        "innerAt": 1791081945385,
+        "agent": "reviewer-5",
+        "bytes": 94968
+      },
+      {
+        "seq": 833,
+        "type": "agent_event",
+        "innerType": "delta",
+        "innerAt": 1791081948898,
+        "agent": "reviewer-5",
+        "bytes": 578
+      },
+      {
+        "seq": 834,
+        "type": "agent_event",
+        "innerType": "delta",
+        "innerAt": 1791081949431,
+        "agent": "reviewer-5",
+        "bytes": 467
+      },
+      {
+        "seq": 835,
+        "type": "agent_event",
+        "innerType": "assistant",
+        "innerAt": 1791081949431,
+        "agent": "reviewer-5",
+        "bytes": 912
+      },
+      {
+        "seq": 836,
+        "type": "agent_event",
+        "innerType": "done",
+        "innerAt": 1791081949469,
+        "agent": "reviewer-5",
+        "bytes": 337388
+      },
+      {
+        "seq": 837,
+        "type": "agent_done",
+        "innerType": "agent_done",
+        "agent": "reviewer-5",
+        "bytes": 1558,
+        "ok": true,
+        "summary": "[검토 완료 보고서: reviewer-5]\n\n1. 검토 대상 및 범위\n- 사용자 확정 기획: 서린의 회상 스토리 「멈춘 시계의 기억」 첫 구간 완주형 단편\n- 핵심 흐름: 시작 맵('기억의 서재') 회중시계 조사 -> 두 가지 선택지(\"기억을 간직한다\" / \"기억을 놓아준다\") -> 분기별 고유 대사 및 sw_segment_key 활성화 -> 기억의 길 이동 -> 첫 구간 엔딩('ending_first_segment') 트리거\n\n2. 무결성 및 구조 검사 결과\n- run_lint: error 0건, warning 0건, info 0"
+      },
+      {
+        "seq": 838,
+        "type": "team_report",
+        "innerType": "team_report",
+        "bytes": 1756
+      },
+      {
+        "seq": 839,
+        "type": "agent_done",
+        "innerType": "agent_done",
+        "agent": "orchestrator-1",
+        "bytes": 2003,
+        "ok": true,
+        "summary": "서린의 회상 스토리 「멈춘 시계의 기억」 첫 구간 제작을 완료했습니다. [만든 것] 기억의 서재에서 12시 5분에 멈춘 회중시계를 조사하고 '기억을 간직한다'와 '기억을 놓아준다' 중 선택할 수 있는 상호작용 분기 이벤트와 동쪽 통로를 통해 이어지는 기억의 길, 그리고 길 끝에서 첫 구간 결말(ending_first_segment)을 맞이하는 해금 동선을 구현했습니다. [플레이 순서] 기억의 서재 중앙(12, 8)의 회중시계를 조사해 단서를 확인하고 선택지를 고른 뒤, 개방된 동쪽 출입구(19, 8)로 기억의 길에 진입하여 길 끝("
+      },
+      {
+        "seq": 840,
+        "type": "done",
+        "innerType": "done",
+        "bytes": 3322156
+      }
+    ],
+    "status": 200
+  }
+]

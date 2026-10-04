@@ -1,0 +1,46 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/swamp/w4-C.pxg",
+ "set": "worldmap",
+ "id": "swamp",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.129
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.332
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "orphans",
+   "outline_black"
+  ]
+ },
+ "colors": 8,
+ "bbox": [
+  1,
+  0,
+  47,
+  62
+ ],
+ "note": "스케일 재해석 — 물 75% 넓은 웅덩이에 긴 진흙 턱 하나·작은 둔덕·갈대 무리와 부유 이끼점",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.23
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.453
+  },
+  "seam": 1.04
+ }
+}

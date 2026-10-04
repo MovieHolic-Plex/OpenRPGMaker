@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/kit_gate/k4-A.pxg",
+ "set": "jp",
+ "id": "kit_gate",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 16,
+  "atLeast95": 0,
+  "max": 0.539
+ },
+ "refmap": {
+  "cells": 16,
+  "atLeast95": 0,
+  "max": 0.504
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 40,
+ "bbox": [
+  0,
+  0,
+  112,
+  47
+ ],
+ "note": "강남 결: 밝은 흰 윗면 띠, 회색 금속 몸통 10px, 오른쪽 아래 그림자 2줄, 유리 끝막음",
+ "ok": true
+}

@@ -1,0 +1,75 @@
+// wardrobe_ajar v34-A 3/4 재작도
+@size 16 32
+@cell 16
+@palette palette.pal
+@layer main
+@mat a dust 0
+@mat b mahog 0
+@mat c vbrass 0
+@mat d void 0
+@mblock 0 0
+................
+.bbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbb.
+.bbbaabbbbbabbb.
+.bbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbb.
+.bbbbbbbddbbbbb.
+.bbbbbbbddbbbbb.
+.bbbbbbbddbbbbb.
+.bbbbbbbddbbbbb.
+.bbbbbbbddbbbbb.
+.bbbbbbbddbbbbb.
+.bbbbbbbddbbbbb.
+.bbbbbbbddbbbbb.
+.bbbbbcbddcbbbb.
+.bbbbbcbddcbbbb.
+.bbbbbbbddbbbbb.
+.bbbbbbbddbbbbb.
+.bbbbbbbddbbbbb.
+.bbbbbbbddbbbbb.
+.bbbbbbbddbbbbb.
+.bbbbbbbddbbbbb.
+.bbbbbbbddbbbbb.
+.bbbbbbbddbbbbb.
+.bbbbbbbddbbbbb.
+.bbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbb.
+.bbb........bbb.
+@tblock 0 0
+................
+.11111111111111.
+.14444444444421.
+.15555555555521.
+.15522555552521.
+.16666666666631.
+.14444444444441.
+.11111111111111.
+.12222222222221.
+.14444411144441.
+.14555411145541.
+.14333411143341.
+.14333411143341.
+.14333411143341.
+.14333411143341.
+.14222411142241.
+.14444411144441.
+.14444311134441.
+.14444311134441.
+.14444411144441.
+.14555411145541.
+.14333411143341.
+.14333411143341.
+.14333411143341.
+.14333411143341.
+.14333411143341.
+.14222411142241.
+.14444411144441.
+.15555555555551.
+.14444444444441.
+.14422222222441.
+.111........111.

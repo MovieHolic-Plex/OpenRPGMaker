@@ -1,0 +1,77 @@
+// D: 불룩한 자루 셋에 금색 묶음끈·붉은 천 위 금장 문양, 앞 자루에 금화; 꼭대기 윗면 3행(y=1~3)
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat s pine 3
+@mat g gold 4
+@layer sacks
+@mblock 0 0
+................
+...sss..........
+..sssss.........
+..sssss...sss...
+...ggg...sssss..
+..sssss..sssss..
+.sssssss..ggg...
+.sssssss.ssssss.
+sssssssssssssss.
+ssssssssssssssss
+ssssssssssssssss
+ssssssssssssssss
+ssssssssssssssss
+ssssssssssssssss
+.ssssssssssssss.
+..ssssssssssss..
+@tblock 0 0 pine
+................
+...333..........
+..46243.........
+..55232...333...
+.........45232..
+..45432..55232..
+.4554332........
+.4554332.454332.
+345543323455432.
+3454432234544321
+3444332234443321
+3443332234433321
+3433322234333221
+2333221223332211
+.22221112222211.
+..111111111111..
+@tblock 3 4 gold
+653
+@tblock 10 6 gold
+653
+@layer ornament
+@mat g gold 4
+@mat r red 1
+@mblock 2 8
+rgr
+ggg
+rgr
+@tblock 2 8 gold
+.5.
+454
+.3.
+@layer front-purse
+@mblock 5 9
+...ggg.
+..ggggg
+.sggggg
+sssssss
+sssssss
+sssssss
+.sssss.
+@tblock 5 9 gold
+...454.
+..56342
+..43532
+@tblock 5 9 pine
+.......
+.......
+.2.....
+3454332
+3454332
+2343321
+.22111.

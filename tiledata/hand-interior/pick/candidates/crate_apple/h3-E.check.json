@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/crate_apple/h3-E.pxg",
+ "id": "crate:apple",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.031
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 12,
+ "v5_colors": 13,
+ "bbox": [
+  1,
+  1,
+  14,
+  15
+ ],
+ "v5_bbox": [
+  1,
+  1,
+  14,
+  15
+ ],
+ "note": "사과를 봉긋한 더미로 쌓고(꼭지 잎 하나) 입구 테두리 아래 앞판을 두 단 널로 또렷하게 — v5 색·몸통 유지",
+ "ok": true
+}

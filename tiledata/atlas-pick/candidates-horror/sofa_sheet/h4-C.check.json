@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/sofa_sheet/h4-C.pxg",
+ "set": "horror",
+ "id": "sofa_sheet",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.037
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.047
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies"
+  ]
+ },
+ "colors": 9,
+ "bbox": [
+  0,
+  1,
+  31,
+  15
+ ],
+ "note": "앉은 사람 형상: 가운데 머리 덩이와 좁은 어깨, 천에 뚫린 눈구멍 둘과 늘어진 입 자국, 양옆 주름이 팔처럼 흘러내림 — 소파가 사람을 덮은 듯",
+ "ok": true
+}

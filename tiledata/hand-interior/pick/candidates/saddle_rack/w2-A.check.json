@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/saddle_rack/w2-A.pxg",
+ "id": "saddle rack",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.001
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 7,
+ "v5_colors": 7,
+ "bbox": [
+  2,
+  10,
+  13,
+  31
+ ],
+ "v5_bbox": [
+  2,
+  10,
+  13,
+  31
+ ],
+ "note": "v5 정리: 안장 밑면 한 칸 메워 윤곽 이음, 가로대 양끝을 wood:1 로 마감해 각진 끝 정리",
+ "ok": true
+}

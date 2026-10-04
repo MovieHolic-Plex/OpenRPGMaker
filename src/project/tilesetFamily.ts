@@ -12,6 +12,10 @@ const UNKNOWN_PREFIX = "unknown:";
 
 /** 이름을 알고 있는 저작 계열(`TilesetDef.family`). 모르는 값은 낱말 첫 글자만 키워 보여 준다. */
 const KNOWN_FAMILY_LABELS: Readonly<Record<string, string>> = {
+  "oprn-atlas": "생성 칩셋",
+  "oprn-joseon": "조선 칩셋",
+  "oprn-modern": "현대 도시(도트)",
+  "oprn-jp": "일본 도시(도트)",
   "rasak-fantasy": "Rasak Fantasy",
   "rasak-modern": "Rasak Modern",
 };

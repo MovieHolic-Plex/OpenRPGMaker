@@ -21,6 +21,7 @@ import {
 import { hostExitReturnUrl, parseHostBridge, type HostBridge } from "@/player/hostBridge";
 import { stopAllAudio } from "@/player/audio";
 import { registerExportAssetBase } from "@/assets/inlineAssetStore";
+import { installExportUploadedAssets } from './exportUploadedAssets';
 import { repairFaceMatches } from "@/project/faceMatchRepair";
 import type { ActionCombatRuntimeResult } from "@/testing/actionCombatProof";
 
@@ -103,6 +104,7 @@ function startPlayer(
   source: ExportProjectSource,
 ): void {
   try {
+    installExportUploadedAssets(project);
     // 옛 저장본에서 내보낸 게임도 에디터와 같은 얼굴을 보여 준다(faceMatchRepair.ts — 걷기 그림의 짝으로 교정).
     repairFaceMatches(project);
     setExportedProject(project);
@@ -123,6 +125,7 @@ function startPlayer(
     const host = parseHostBridge(boot);
     const probe = boot.qaInstrumentation === true ? boot.actionCombatProbe : undefined;
     renderPlayer(root, {
+      surfaceScaleMode: 'fit',
       saveIsolationScope: resolveCommunitySaveScope(window.location.pathname),
       qaInstrumentation: boot.qaInstrumentation === true,
       hostBridge: host,

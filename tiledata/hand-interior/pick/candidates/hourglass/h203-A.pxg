@@ -1,0 +1,51 @@
+// A: 전형적인 나무 틀 큰 모래시계, 둥근 유리와 흐르는 금모래, 꼭대기 윗면 4행(y=0~3).
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a dwood 1
+@mat b wood 3
+@mat c wood 5
+@mat d wood 6
+@mat e wood 7
+@mat f iron 3
+@mat g iron 4
+@mat h glass 5
+@mat i glass 6
+@mat j gold 2
+@mat k gold 4
+@mat l gold 5
+@mat m gold 6
+@layer body
+@mblock 0 0
+....bbbbbbbb....
+..bdccccccccba..
+.bdccbbccccccba.
+.beeddddddcccba.
+.bddccccccccbba.
+..bbbbbbbbbbba..
+..db..fggf..ca..
+..db.fhhggf.ca..
+..dbfhiggggfca..
+..dbfigggggfca..
+..dbfhmlkkgfca..
+..cb.fllkjf.ca..
+..cb..hljf..ba..
+..db..fhjf..ca..
+..db...hj...ca..
+..db...hj...ca..
+..db...hk...ca..
+..db...hk...ba..
+..cb..fhkf..ba..
+..cb..hggf..ca..
+..db.fhgggf.ca..
+..dbfhiggggfca..
+..dbfigkgggfca..
+..dbfhmlkggfca..
+..dbfhllkkjfca..
+..db.fkkjjf.ca..
+..db..ffff..ca..
+..bddcccccccba..
+.beddccccccccba.
+.beeddddccccbba.
+.bddccccbbbbbaa.
+..aaaaaaaaaaaa..

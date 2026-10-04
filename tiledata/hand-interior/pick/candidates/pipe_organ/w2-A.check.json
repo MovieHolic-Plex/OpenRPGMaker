@@ -1,0 +1,35 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/pipe_organ/w2-A.pxg",
+ "id": "pipe organ",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.035
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "outline_black",
+   "noise"
+  ],
+  "pass": false
+ },
+ "colors": 13,
+ "v5_colors": 13,
+ "bbox": [
+  0,
+  11,
+  31,
+  47
+ ],
+ "v5_bbox": [
+  0,
+  11,
+  31,
+  47
+ ],
+ "note": "v5 실루엣 유지 — 파이프 좌측 하이라이트·입술 슬릿, 건반(흰/검)+악보대+스톱, 판넬 몸통",
+ "ok": true
+}

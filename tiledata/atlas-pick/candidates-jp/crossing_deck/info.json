@@ -1,0 +1,19 @@
+{
+ "id": "crossing_deck",
+ "slug": "crossing_deck",
+ "name": "건널목 바닥판",
+ "scene": "주택가 골목",
+ "cells": [
+  2,
+  1
+ ],
+ "canvas": [
+  32,
+  16
+ ],
+ "layer": "ground",
+ "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+ "description": "선로가 길과 만나는 건널목 바닥: 레일 사이를 메운 고무·콘크리트 판(짙은 회색 판 줄), 레일 두 줄이 그대로 보이고 양옆은 아스팔트. 선로 조각과 위아래로 맞는다.",
+ "palette_hint": "masph, lacq 고무판, mmetal 레일",
+ "worker": "j5"
+}

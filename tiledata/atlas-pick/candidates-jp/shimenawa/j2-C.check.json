@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/shimenawa/j2-C.pxg",
+ "set": "jp",
+ "id": "shimenawa",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.067
+ },
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.056
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "dither"
+  ]
+ },
+ "colors": 7,
+ "bbox": [
+  0,
+  2,
+  47,
+  15
+ ],
+ "note": "실루엣 재해석: 6px 굵고 덜 처진 밧줄, 가운데 큰 매듭 덩이, 굵은 흰 종이 넷 — 16px 로도 「금줄」로 읽히는 큰 덩이.",
+ "ok": true
+}

@@ -1,0 +1,31 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/column_marble/w90-A.pxg",
+ "id": "column marble",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.188
+ },
+ "lint": {
+  "failed": [],
+  "pass": true
+ },
+ "colors": 8,
+ "v5_colors": 8,
+ "bbox": [
+  2,
+  8,
+  13,
+  47
+ ],
+ "v5_bbox": [
+  2,
+  8,
+  13,
+  47
+ ],
+ "note": "대리석 기둥: 밝은 타원 윗면 4행+앞면 갓돌 2행+축.",
+ "ok": true
+}

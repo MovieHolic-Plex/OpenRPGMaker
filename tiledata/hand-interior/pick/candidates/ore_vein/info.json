@@ -1,0 +1,37 @@
+{
+ "id": "ore vein",
+ "slug": "ore_vein",
+ "name_ko": "광맥(벽면)",
+ "category": "광산",
+ "kind": "hang",
+ "kind_ko": "벽면 걸이(벽 두 줄 중 윗줄)",
+ "canvas": [
+  16,
+  16
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 16,
+  "h": 16
+ },
+ "footprint": {
+  "w": 1,
+  "h": 0
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "광맥이 드러난 벽면(벽면 윗줄). 막장.",
+ "where": "막장.",
+ "placement": [
+  "벽면 두 줄 중 윗줄(y=벽면 첫 줄)에 건다. 바닥 칸은 차지하지 않는다"
+ ],
+ "v5_bbox": [
+  4,
+  2,
+  14,
+  13
+ ],
+ "v5_colors": 6,
+ "material": "wood",
+ "related": []
+}

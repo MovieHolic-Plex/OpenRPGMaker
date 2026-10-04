@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/vending_school/s2-B.pxg",
+ "set": "school",
+ "id": "vending_school",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.145
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.022
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 23,
+ "bbox": [
+  1,
+  1,
+  15,
+  31
+ ],
+ "note": "명암 강조: 몸통 앞면을 한 단 눌러 어둡게 하고 오른쪽 옆을 두 열 어둡게, 진열창은 더 깊은 색으로 눌러 견본이 튀게.",
+ "ok": true
+}

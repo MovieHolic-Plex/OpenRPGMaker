@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/fireplace/w44-A.pxg",
+ "id": "fireplace",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.059
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 21,
+ "v5_colors": 21,
+ "bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "note": "윗면(나무 장식선반 윗판 5px)+앞 가장자리 하이라이트 1행+처마 그림자 2px, 아궁이 이하 v5 그대로(불 마스크 좌표 불변)",
+ "ok": true
+}

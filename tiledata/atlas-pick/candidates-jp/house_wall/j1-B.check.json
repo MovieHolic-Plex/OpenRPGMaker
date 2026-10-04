@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/house_wall/j1-B.pxg",
+ "set": "jp",
+ "id": "house_wall",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.129
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.207
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 31,
+ "bbox": [
+  0,
+  0,
+  63,
+  47
+ ],
+ "note": "빛/그림자 강조: 처마 밑·베란다 밑 ~/- 그림자 띠, 유리 밝게, 문 오른쪽 그림자, 단 윗면 밝게.",
+ "ok": true
+}

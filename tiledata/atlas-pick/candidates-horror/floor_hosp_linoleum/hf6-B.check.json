@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/floor_hosp_linoleum/hf6-B.pxg",
+ "set": "horror",
+ "id": "floor_hosp_linoleum",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.355
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.297
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 3,
+ "bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "note": "어둠에서 읽히게: 바닥 ward2 큰 면 한 장, 띠 이음 grave급 ward1 홑줄 + 바로 밑 ward3 밝은 줄로 방 모양을 남김, 무늬 없음",
+ "ok": true
+}

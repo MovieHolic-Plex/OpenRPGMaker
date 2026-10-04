@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { evaluateChipsetEligibility } from "@/project/aiPreviewContracts";
-import { defaultTileset } from "@/project/defaults/defaultAssets";
+import { combinedTownTileset as defaultTileset } from "@/project/defaults/defaultAssets";
 import { roleCapabilities } from "@/project/tileRoles";
 
 /** 주어진 역할의 그룹에서만 patternGrammar 를 떼고 적격성을 재평가한다. */

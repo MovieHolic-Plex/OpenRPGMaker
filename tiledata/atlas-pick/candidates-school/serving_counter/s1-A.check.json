@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/serving_counter/s1-A.pxg",
+ "set": "school",
+ "id": "serving_counter",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.094
+ },
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.094
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 15,
+ "bbox": [
+  0,
+  2,
+  47,
+  31
+ ],
+ "note": "A: 스테인리스 대에 배식통 셋(흰 밥·붉은 국·초록 반찬)+김 점, 국자, 뒤 유리 가림막 &, 윗면 ¾",
+ "ok": true
+}

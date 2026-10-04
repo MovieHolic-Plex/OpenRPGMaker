@@ -1,0 +1,45 @@
+// 전형적인 갈색 목록함: 아홉 서랍과 놋쇠 이름표, 꼭대기 윗면 3행(y=1~3).
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a wood 1
+@mat b wood 3
+@mat c wood 4
+@mat d wood 5
+@mat e wood 6
+@mat f wood 7
+@mat g brass 3
+@mat h brass 5
+@mblock 0 0
+.bbbbbbbbbbbbbb.
+beeeeeeeeeeeeeeb
+bfdddcdddddcdddb
+bfeeeeeeeeeeeecb
+beeeeeeeeeeeeecb
+baaaaaaaaaaaaaab
+beddbbeddbbeddbb
+beddbbeddbbeddbb
+beddbbeddbbeddbb
+behhbbehhbbehhbb
+beggbbeggbbeggbb
+beddbbeddbbeddbb
+baaaaaaaaaaaaaab
+beeeebeeeebeeecb
+beddbbeddbbeddbb
+beddbbeddbbeddbb
+behhbbehhbbehhbb
+beggbbeggbbeggbb
+beddbbeddbbeddbb
+baaaaaaaaaaaaaab
+beeeebeeeebeeecb
+beddbbeddbbeddbb
+beddbbeddbbeddbb
+behhbbehhbbehhbb
+beggbbeggbbeggbb
+beddbbeddbbeddbb
+baaaaaaaaaaaaaab
+beeeeeeeeeeeedcb
+beddddcdddddddcb
+bcbbbbbbbbbbbbab
+bcbbbaaaaaabbbab
+.baaa......aaab.

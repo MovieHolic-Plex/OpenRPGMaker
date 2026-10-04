@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/chopping_block/w10-A.pxg",
+ "id": "chopping block",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.012
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "dither"
+  ],
+  "pass": false
+ },
+ "colors": 10,
+ "v5_colors": 10,
+ "bbox": [
+  1,
+  1,
+  14,
+  14
+ ],
+ "v5_bbox": [
+  1,
+  1,
+  14,
+  14
+ ],
+ "note": "v5 다듬기: 칼날이 윗면에 꽂히는 지점을 분명히, 윗면 나이테를 이중 타원으로 정리, 옆면은 껍질 결 세로줄",
+ "ok": true
+}

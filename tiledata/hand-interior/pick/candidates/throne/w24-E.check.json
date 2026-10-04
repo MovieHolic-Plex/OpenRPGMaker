@@ -1,0 +1,44 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/throne/w24-E.pxg",
+ "id": "throne",
+ "hard": [],
+ "warn": [],
+ "resized": {
+  "canvas": [
+   48,
+   32
+  ],
+  "footprint": {
+   "w": 3,
+   "h": 2
+  },
+  "why": "사용자 메모: 좀 더 화려하게. 3x2 사이즈로."
+ },
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.019
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 22,
+ "v5_colors": 7,
+ "bbox": [
+  2,
+  0,
+  45,
+  31
+ ],
+ "v5_bbox": [
+  1,
+  0,
+  12,
+  18
+ ],
+ "note": "E: 햇살(부채) 옥좌. 붉은/금 줄기가 퍼지는 반원 등판에 금 테두리, 정수리 구슬·홍옥 중앙, 돌 단 위 붉은 융단, 팔걸이 청옥.",
+ "ok": true
+}

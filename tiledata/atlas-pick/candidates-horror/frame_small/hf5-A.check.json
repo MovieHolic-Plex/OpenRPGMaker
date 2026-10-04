@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/frame_small/hf5-A.pxg",
+ "set": "horror",
+ "id": "frame_small",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.172
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.036
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation"
+  ]
+ },
+ "colors": 9,
+ "bbox": [
+  2,
+  2,
+  13,
+  14
+ ],
+ "note": "A: v5 식구 — 같은 tarn 금테를 얇게(1칸), 안은 짙은 붉은 벽(velv2) 위 화병 하나(sheet5/3)와 줄기 잎 하나.",
+ "ok": true
+}

@@ -1,0 +1,36 @@
+{
+  "before": {
+    "id": "chor_hero_cross_slash",
+    "name": "십자베기 사본",
+    "description": "적에게 파고들어 X자로 두 번 벤다",
+    "motion": "dash-strike",
+    "layers": [
+      {
+        "sheet": "hero_cross",
+        "anchor": "target"
+      }
+    ],
+    "tags": {
+      "family": "base"
+    },
+    "sourceId": "skill_hero_cross_slash"
+  },
+  "afterHeavyIce": {
+    "id": "chor_hero_cross_slash",
+    "name": "십자베기 사본",
+    "description": "적에게 파고들어 X자로 두 번 벤다",
+    "motion": "dash-strike",
+    "layers": [
+      {
+        "sheet": "hero_cross",
+        "anchor": "target"
+      }
+    ],
+    "tags": {
+      "family": "base"
+    },
+    "sourceId": "skill_hero_cross_slash",
+    "weight": "heavy",
+    "tint": "ice"
+  }
+}

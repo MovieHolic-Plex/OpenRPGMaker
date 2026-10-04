@@ -1,0 +1,58 @@
+// 4단계 결: 판 방향(가로)으로 드문 결, 한 단 어둡게. 길이 3~9px 를 섞고, 결 두 개는 1px 아래로 흘러 이어진다.
+// 결 하나는 타일 오른끝에서 왼끝으로 넘어간다(이음매 점검용). 옹이 하나 + 결이 옹이를 비켜 휜다. 이음 옆 못 두 쌍.
+@base 3-light.pxg
+// 판 0 (f)
+@block 2 2
+eeeeeee
+@block 9 3
+eee
+@block 13 4
+eeee
+@block 24 4
+eeeeeee
+@block 23 2
+ggggg
+@px 22 2 d  22 4 d
+// 판 1 (e)
+@block 8 10
+dddddddd
+@block 16 11
+ddd
+@block 20 12
+dddd
+@block 28 11
+dddd
+@block 0 11
+ddd
+@block 22 9
+ffffff
+@block 3 12
+fffff
+// 판 2 (e) + 옹이
+@block 1 18
+ddddd
+@block 12 17
+dddd
+@block 16 17
+ddd..dddd
+@block 18 18
+.dd.
+dccd
+.dd.
+@px 18 18 f
+@block 15 21
+dddd...dddd
+@px 11 18 c  11 20 c
+// 판 3 (f)
+@block 2 26
+eeeee
+@block 16 27
+eeeeeeeee
+@block 17 26
+ggggg
+@block 28 28
+eeee
+@block 0 28
+ee
+@block 8 29
+eeee

@@ -1,0 +1,1580 @@
+{
+ "about": "3/4 시점 재작도(2026-10-01). 사용자가 고른 판(current)을 같은 화풍으로 3/4 계약에 맞게 다시 찍는다. 2판(w51~w53): 「애매」 11종 + 독서대 메모(2x1).",
+ "workers": {
+  "w40": [
+   {
+    "id": "cabinet:loaf",
+    "ko": "식빵 진열장",
+    "slug": "cabinet_loaf",
+    "folder": "tiledata/hand-interior/pick/candidates/cabinet_loaf",
+    "violation": "정면도(윗면 0~2px)",
+    "current": "v5.pxg",
+    "existingV34": [],
+    "kind": "wall",
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "canvas": [
+     16,
+     32
+    ],
+    "padTop": 0,
+    "newFile": "w40-A.pxg",
+    "gate": "--wall-tall"
+   },
+   {
+    "id": "cabinet:bun",
+    "ko": "둥근빵 진열장",
+    "slug": "cabinet_bun",
+    "folder": "tiledata/hand-interior/pick/candidates/cabinet_bun",
+    "violation": "정면도(윗면 0~2px)",
+    "current": "v5.pxg",
+    "existingV34": [],
+    "kind": "wall",
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "canvas": [
+     16,
+     32
+    ],
+    "padTop": 0,
+    "newFile": "w40-A.pxg",
+    "gate": "--wall-tall"
+   },
+   {
+    "id": "cabinet:pie",
+    "ko": "파이 진열장",
+    "slug": "cabinet_pie",
+    "folder": "tiledata/hand-interior/pick/candidates/cabinet_pie",
+    "violation": "정면도(윗면 0~2px)",
+    "current": "v5.pxg",
+    "existingV34": [],
+    "kind": "wall",
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "canvas": [
+     16,
+     32
+    ],
+    "padTop": 0,
+    "newFile": "w40-A.pxg",
+    "gate": "--wall-tall"
+   },
+   {
+    "id": "cabinet:cheese",
+    "ko": "치즈 진열장",
+    "slug": "cabinet_cheese",
+    "folder": "tiledata/hand-interior/pick/candidates/cabinet_cheese",
+    "violation": "정면도(윗면 0~2px)",
+    "current": "v5.pxg",
+    "existingV34": [],
+    "kind": "wall",
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "canvas": [
+     16,
+     32
+    ],
+    "padTop": 0,
+    "newFile": "w40-A.pxg",
+    "gate": "--wall-tall"
+   },
+   {
+    "id": "cabinet:toy",
+    "ko": "인형 진열장",
+    "slug": "cabinet_toy",
+    "folder": "tiledata/hand-interior/pick/candidates/cabinet_toy",
+    "violation": "정면도(윗면 0~2px)",
+    "current": "v5.pxg",
+    "existingV34": [],
+    "kind": "wall",
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "canvas": [
+     16,
+     32
+    ],
+    "padTop": 0,
+    "newFile": "w40-A.pxg",
+    "gate": "--wall-tall"
+   },
+   {
+    "id": "cabinet:candle",
+    "ko": "초 진열장",
+    "slug": "cabinet_candle",
+    "folder": "tiledata/hand-interior/pick/candidates/cabinet_candle",
+    "violation": "정면도(윗면 0~2px)",
+    "current": "w8-C.pxg",
+    "existingV34": [
+     "w90-A.pxg"
+    ],
+    "kind": "wall",
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "canvas": [
+     16,
+     32
+    ],
+    "padTop": 0,
+    "newFile": "w40-A.pxg",
+    "gate": "--wall-tall"
+   },
+   {
+    "id": "cabinet:potion+potionb+potiong",
+    "ko": "물약 진열장",
+    "slug": "cabinet_potion_potionb_potiong",
+    "folder": "tiledata/hand-interior/pick/candidates/cabinet_potion_potionb_potiong",
+    "violation": "정면도(윗면 0~2px)",
+    "current": "v5.pxg",
+    "existingV34": [],
+    "kind": "wall",
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "canvas": [
+     16,
+     32
+    ],
+    "padTop": 0,
+    "newFile": "w40-A.pxg",
+    "gate": "--wall-tall"
+   },
+   {
+    "id": "cabinet:vial+flask",
+    "ko": "약병·플라스크 진열장",
+    "slug": "cabinet_vial_flask",
+    "folder": "tiledata/hand-interior/pick/candidates/cabinet_vial_flask",
+    "violation": "정면도(윗면 0~2px)",
+    "current": "v5.pxg",
+    "existingV34": [],
+    "kind": "wall",
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "canvas": [
+     16,
+     32
+    ],
+    "padTop": 0,
+    "newFile": "w40-A.pxg",
+    "gate": "--wall-tall"
+   },
+   {
+    "id": "cabinet:jar+jarb+jarg",
+    "ko": "단지 진열장",
+    "slug": "cabinet_jar_jarb_jarg",
+    "folder": "tiledata/hand-interior/pick/candidates/cabinet_jar_jarb_jarg",
+    "violation": "정면도(윗면 0~2px)",
+    "current": "v5.pxg",
+    "existingV34": [],
+    "kind": "wall",
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "canvas": [
+     16,
+     32
+    ],
+    "padTop": 0,
+    "newFile": "w40-A.pxg",
+    "gate": "--wall-tall"
+   },
+   {
+    "id": "cabinet:book+bookb+bookg",
+    "ko": "책 진열장",
+    "slug": "cabinet_book_bookb_bookg",
+    "folder": "tiledata/hand-interior/pick/candidates/cabinet_book_bookb_bookg",
+    "violation": "정면도(윗면 0~2px)",
+    "current": "v5.pxg",
+    "existingV34": [],
+    "kind": "wall",
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "canvas": [
+     16,
+     32
+    ],
+    "padTop": 0,
+    "newFile": "w40-A.pxg",
+    "gate": "--wall-tall"
+   },
+   {
+    "id": "cabinet:gem+gemr",
+    "ko": "보석 진열장",
+    "slug": "cabinet_gem_gemr",
+    "folder": "tiledata/hand-interior/pick/candidates/cabinet_gem_gemr",
+    "violation": "정면도(윗면 0~2px)",
+    "current": "v5.pxg",
+    "existingV34": [],
+    "kind": "wall",
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "canvas": [
+     16,
+     32
+    ],
+    "padTop": 0,
+    "newFile": "w40-A.pxg",
+    "gate": "--wall-tall"
+   },
+   {
+    "id": "cabinet:bolt+boltg+boltr",
+    "ko": "옷감 진열장",
+    "slug": "cabinet_bolt_boltg_boltr",
+    "folder": "tiledata/hand-interior/pick/candidates/cabinet_bolt_boltg_boltr",
+    "violation": "정면도(윗면 0~2px)",
+    "current": "v5.pxg",
+    "existingV34": [],
+    "kind": "wall",
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "canvas": [
+     16,
+     32
+    ],
+    "padTop": 0,
+    "newFile": "w40-A.pxg",
+    "gate": "--wall-tall"
+   },
+   {
+    "id": "cabinet:bottle+bottler+bottley",
+    "ko": "술병 진열장",
+    "slug": "cabinet_bottle_bottler_bottley",
+    "folder": "tiledata/hand-interior/pick/candidates/cabinet_bottle_bottler_bottley",
+    "violation": "정면도(윗면 0~2px)",
+    "current": "v5.pxg",
+    "existingV34": [
+     "w90-A.pxg"
+    ],
+    "kind": "wall",
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "canvas": [
+     16,
+     32
+    ],
+    "padTop": 0,
+    "newFile": "w40-A.pxg",
+    "gate": "--wall-tall"
+   },
+   {
+    "id": "bread shelf pie",
+    "ko": "빵 선반(파이·케이크)",
+    "slug": "bread_shelf_pie",
+    "folder": "tiledata/hand-interior/pick/candidates/bread_shelf_pie",
+    "violation": "정면도(윗면 0~2px)",
+    "current": "v5.pxg",
+    "existingV34": [],
+    "kind": "wall",
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "canvas": [
+     16,
+     32
+    ],
+    "padTop": 0,
+    "newFile": "w40-A.pxg",
+    "gate": "--wall-tall"
+   }
+  ],
+  "w41": [
+   {
+    "id": "bookshelf 1w",
+    "ko": "책장 1w",
+    "slug": "bookshelf_1w",
+    "folder": "tiledata/hand-interior/pick/candidates/bookshelf_1w",
+    "violation": "윗면 부족(3~4px 띠)",
+    "current": "w2-C.pxg",
+    "existingV34": [
+     "w90-A.pxg"
+    ],
+    "kind": "wall",
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "canvas": [
+     16,
+     48
+    ],
+    "padTop": 10,
+    "newFile": "w41-A.pxg",
+    "gate": "--wall-tall"
+   },
+   {
+    "id": "bookshelf 2w",
+    "ko": "책장 2w",
+    "slug": "bookshelf_2w",
+    "folder": "tiledata/hand-interior/pick/candidates/bookshelf_2w",
+    "violation": "윗면 부족(3~4px 띠)",
+    "current": "w4-C.pxg",
+    "existingV34": [
+     "w90-A.pxg"
+    ],
+    "kind": "wall",
+    "footprint": {
+     "w": 2,
+     "h": 1
+    },
+    "canvas": [
+     32,
+     48
+    ],
+    "padTop": 10,
+    "newFile": "w41-A.pxg",
+    "gate": "--wall-tall"
+   },
+   {
+    "id": "bookshelf 3w",
+    "ko": "책장 3w",
+    "slug": "bookshelf_3w",
+    "folder": "tiledata/hand-interior/pick/candidates/bookshelf_3w",
+    "violation": "윗면 부족(3~4px 띠)",
+    "current": "v5.pxg",
+    "existingV34": [],
+    "kind": "wall",
+    "footprint": {
+     "w": 3,
+     "h": 1
+    },
+    "canvas": [
+     48,
+     48
+    ],
+    "padTop": 10,
+    "newFile": "w41-A.pxg",
+    "gate": "--wall-tall"
+   },
+   {
+    "id": "scroll rack",
+    "ko": "두루마리 선반",
+    "slug": "scroll_rack",
+    "folder": "tiledata/hand-interior/pick/candidates/scroll_rack",
+    "violation": "윗면 부족(3~4px 띠)",
+    "current": "w2-C.pxg",
+    "existingV34": [
+     "w91-A.pxg"
+    ],
+    "kind": "wall",
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "canvas": [
+     16,
+     32
+    ],
+    "padTop": 0,
+    "newFile": "w41-A.pxg",
+    "gate": "--wall-tall"
+   },
+   {
+    "id": "fabric bolt rack",
+    "ko": "옷감 선반",
+    "slug": "fabric_bolt_rack",
+    "folder": "tiledata/hand-interior/pick/candidates/fabric_bolt_rack",
+    "violation": "정면도(윗면 0~2px)",
+    "current": "w6-C.pxg",
+    "existingV34": [],
+    "kind": "wall",
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "canvas": [
+     16,
+     32
+    ],
+    "padTop": 0,
+    "newFile": "w41-A.pxg",
+    "gate": "--wall-tall"
+   },
+   {
+    "id": "bread shelf",
+    "ko": "빵 선반",
+    "slug": "bread_shelf",
+    "folder": "tiledata/hand-interior/pick/candidates/bread_shelf",
+    "violation": "윗면 부족(3~4px 띠)",
+    "current": "w7-B.pxg",
+    "existingV34": [
+     "w90-A.pxg"
+    ],
+    "kind": "wall",
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "canvas": [
+     16,
+     32
+    ],
+    "padTop": 0,
+    "newFile": "w41-A.pxg",
+    "gate": "--wall-tall"
+   },
+   {
+    "id": "bread shelf baguette",
+    "ko": "빵 선반(바게트)",
+    "slug": "bread_shelf_baguette",
+    "folder": "tiledata/hand-interior/pick/candidates/bread_shelf_baguette",
+    "violation": "윗면 부족(3~4px 띠)",
+    "current": "w8-A.pxg",
+    "existingV34": [
+     "w90-A.pxg"
+    ],
+    "kind": "wall",
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "canvas": [
+     16,
+     32
+    ],
+    "padTop": 0,
+    "newFile": "w41-A.pxg",
+    "gate": "--wall-tall"
+   }
+  ],
+  "w42": [
+   {
+    "id": "wardrobe",
+    "ko": "옷장",
+    "slug": "wardrobe",
+    "folder": "tiledata/hand-interior/pick/candidates/wardrobe",
+    "violation": "정면도(윗면 0~2px)",
+    "current": "w9-A.pxg",
+    "existingV34": [
+     "w91-A.pxg"
+    ],
+    "kind": "wall",
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "canvas": [
+     16,
+     32
+    ],
+    "padTop": 0,
+    "newFile": "w42-A.pxg",
+    "gate": "--wall-tall"
+   },
+   {
+    "id": "apothecary drawers",
+    "ko": "약재 서랍장",
+    "slug": "apothecary_drawers",
+    "folder": "tiledata/hand-interior/pick/candidates/apothecary_drawers",
+    "violation": "정면도(윗면 0~2px)",
+    "current": "w5-C.pxg",
+    "existingV34": [
+     "w90-A.pxg"
+    ],
+    "kind": "wall",
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "canvas": [
+     16,
+     32
+    ],
+    "padTop": 0,
+    "newFile": "w42-A.pxg",
+    "gate": "--wall-tall"
+   },
+   {
+    "id": "vanity mirror",
+    "ko": "화장대",
+    "slug": "vanity_mirror",
+    "folder": "tiledata/hand-interior/pick/candidates/vanity_mirror",
+    "violation": "윗면 부족(3~4px 띠)",
+    "current": "w1-B.pxg",
+    "existingV34": [],
+    "kind": "wall",
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "canvas": [
+     16,
+     32
+    ],
+    "padTop": 0,
+    "newFile": "w42-A.pxg",
+    "gate": "--wall-tall"
+   },
+   {
+    "id": "clock",
+    "ko": "괘종시계",
+    "slug": "clock",
+    "folder": "tiledata/hand-interior/pick/candidates/clock",
+    "violation": "윗면 부족(3~4px 띠)",
+    "current": "w10-B.pxg",
+    "existingV34": [
+     "w90-A.pxg"
+    ],
+    "kind": "wall",
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "canvas": [
+     16,
+     32
+    ],
+    "padTop": 0,
+    "newFile": "w42-A.pxg",
+    "gate": "--wall-tall"
+   },
+   {
+    "id": "piano",
+    "ko": "피아노",
+    "slug": "piano",
+    "folder": "tiledata/hand-interior/pick/candidates/piano",
+    "violation": "윗면 부족(3~4px 띠)",
+    "current": "w4-B.pxg",
+    "existingV34": [],
+    "kind": "wall",
+    "footprint": {
+     "w": 2,
+     "h": 1
+    },
+    "canvas": [
+     32,
+     32
+    ],
+    "padTop": 8,
+    "newFile": "w42-A.pxg",
+    "gate": "--wall-tall"
+   },
+   {
+    "id": "royal chest",
+    "ko": "왕실 상자",
+    "slug": "royal_chest",
+    "folder": "tiledata/hand-interior/pick/candidates/royal_chest",
+    "violation": "윗면 부족(3~4px 띠)",
+    "current": "w6-C.pxg",
+    "existingV34": [],
+    "kind": "floor",
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "canvas": [
+     16,
+     16
+    ],
+    "padTop": 0,
+    "newFile": "w42-A.pxg",
+    "gate": "--object"
+   },
+   {
+    "id": "crate",
+    "ko": "궤짝",
+    "slug": "crate",
+    "folder": "tiledata/hand-interior/pick/candidates/crate",
+    "violation": "윗면 부족(3~4px 띠)",
+    "current": "v5.pxg",
+    "existingV34": [],
+    "kind": "floor",
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "canvas": [
+     16,
+     16
+    ],
+    "padTop": 0,
+    "newFile": "w42-A.pxg",
+    "gate": "--object"
+   }
+  ],
+  "w43": [
+   {
+    "id": "herb drying rack",
+    "ko": "약초 건조대",
+    "slug": "herb_drying_rack",
+    "folder": "tiledata/hand-interior/pick/candidates/herb_drying_rack",
+    "violation": "정면도(윗면 0~2px)",
+    "current": "w7-A.pxg",
+    "existingV34": [
+     "w91-A.pxg"
+    ],
+    "kind": "wall",
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "canvas": [
+     16,
+     32
+    ],
+    "padTop": 0,
+    "newFile": "w43-A.pxg",
+    "gate": "--wall-tall"
+   },
+   {
+    "id": "meat hooks",
+    "ko": "고기 걸이대",
+    "slug": "meat_hooks",
+    "folder": "tiledata/hand-interior/pick/candidates/meat_hooks",
+    "violation": "정면도(윗면 0~2px)",
+    "current": "v5.pxg",
+    "existingV34": [
+     "w91-A.pxg"
+    ],
+    "kind": "wall",
+    "footprint": {
+     "w": 2,
+     "h": 1
+    },
+    "canvas": [
+     32,
+     32
+    ],
+    "padTop": 0,
+    "newFile": "w43-A.pxg",
+    "gate": "--wall-tall"
+   },
+   {
+    "id": "keg rack",
+    "ko": "술통 선반",
+    "slug": "keg_rack",
+    "folder": "tiledata/hand-interior/pick/candidates/keg_rack",
+    "violation": "정면도(윗면 0~2px)",
+    "current": "w4-A.pxg",
+    "existingV34": [
+     "w91-A.pxg"
+    ],
+    "kind": "wall",
+    "footprint": {
+     "w": 2,
+     "h": 1
+    },
+    "canvas": [
+     32,
+     32
+    ],
+    "padTop": 8,
+    "newFile": "w43-A.pxg",
+    "gate": "--wall-tall"
+   },
+   {
+    "id": "firewood rack",
+    "ko": "장작 선반",
+    "slug": "firewood_rack",
+    "folder": "tiledata/hand-interior/pick/candidates/firewood_rack",
+    "violation": "정면도(윗면 0~2px)",
+    "current": "w12-D.pxg",
+    "existingV34": [
+     "w90-A.pxg"
+    ],
+    "kind": "wall",
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "canvas": [
+     16,
+     32
+    ],
+    "padTop": 0,
+    "newFile": "w43-A.pxg",
+    "gate": "--wall-tall"
+   },
+   {
+    "id": "firewood rack 2w",
+    "ko": "장작 선반(2칸)",
+    "slug": "firewood_rack_2w",
+    "folder": "tiledata/hand-interior/pick/candidates/firewood_rack_2w",
+    "violation": "정면도(윗면 0~2px)",
+    "current": "v5.pxg",
+    "existingV34": [],
+    "kind": "wall",
+    "footprint": {
+     "w": 2,
+     "h": 1
+    },
+    "canvas": [
+     32,
+     32
+    ],
+    "padTop": 0,
+    "newFile": "w43-A.pxg",
+    "gate": "--wall-tall"
+   },
+   {
+    "id": "proofing rack",
+    "ko": "발효 선반",
+    "slug": "proofing_rack",
+    "folder": "tiledata/hand-interior/pick/candidates/proofing_rack",
+    "violation": "정면도(윗면 0~2px)",
+    "current": "w1-C.pxg",
+    "existingV34": [
+     "w91-A.pxg"
+    ],
+    "kind": "wall",
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "canvas": [
+     16,
+     32
+    ],
+    "padTop": 0,
+    "newFile": "w43-A.pxg",
+    "gate": "--wall-tall"
+   },
+   {
+    "id": "loom",
+    "ko": "베틀",
+    "slug": "loom",
+    "folder": "tiledata/hand-interior/pick/candidates/loom",
+    "violation": "정면도(윗면 0~2px)",
+    "current": "w4-B.pxg",
+    "existingV34": [
+     "w91-A.pxg"
+    ],
+    "kind": "floor",
+    "footprint": {
+     "w": 2,
+     "h": 1
+    },
+    "canvas": [
+     32,
+     32
+    ],
+    "padTop": 8,
+    "newFile": "w43-A.pxg",
+    "gate": "--object"
+   }
+  ],
+  "w44": [
+   {
+    "id": "fireplace",
+    "ko": "벽난로",
+    "slug": "fireplace",
+    "folder": "tiledata/hand-interior/pick/candidates/fireplace",
+    "violation": "정면도(윗면 0~2px)",
+    "current": "v5.pxg",
+    "existingV34": [],
+    "kind": "wall",
+    "footprint": {
+     "w": 2,
+     "h": 1
+    },
+    "canvas": [
+     32,
+     32
+    ],
+    "padTop": 0,
+    "newFile": "w44-A.pxg",
+    "gate": "--wall-tall",
+    "animated": {
+     "frames": 12,
+     "maskFile": "anim-mask.png",
+     "preview": "anim-region-x6.png",
+     "bbox": [
+      11,
+      10,
+      21,
+      24
+     ]
+    }
+   },
+   {
+    "id": "forge",
+    "ko": "용광로",
+    "slug": "forge",
+    "folder": "tiledata/hand-interior/pick/candidates/forge",
+    "violation": "정면도(윗면 0~2px)",
+    "current": "v5.pxg",
+    "existingV34": [],
+    "kind": "wall",
+    "footprint": {
+     "w": 2,
+     "h": 1
+    },
+    "canvas": [
+     32,
+     32
+    ],
+    "padTop": 0,
+    "newFile": "w44-A.pxg",
+    "gate": "--wall-tall",
+    "animated": {
+     "frames": 12,
+     "maskFile": "anim-mask.png",
+     "preview": "anim-region-x6.png",
+     "bbox": [
+      4,
+      11,
+      27,
+      24
+     ]
+    }
+   },
+   {
+    "id": "stove",
+    "ko": "화덕",
+    "slug": "stove",
+    "folder": "tiledata/hand-interior/pick/candidates/stove",
+    "violation": "윗면 부족(3~4px 띠)",
+    "current": "v5.pxg",
+    "existingV34": [],
+    "kind": "wall",
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "canvas": [
+     16,
+     32
+    ],
+    "padTop": 8,
+    "newFile": "w44-A.pxg",
+    "gate": "--wall-tall",
+    "animated": {
+     "frames": 12,
+     "maskFile": "anim-mask.png",
+     "preview": "anim-region-x6.png",
+     "bbox": [
+      6,
+      15,
+      10,
+      23
+     ]
+    }
+   },
+   {
+    "id": "fish tank",
+    "ko": "수조",
+    "slug": "fish_tank",
+    "folder": "tiledata/hand-interior/pick/candidates/fish_tank",
+    "violation": "정면도(윗면 0~2px)",
+    "current": "v5.pxg",
+    "existingV34": [],
+    "kind": "wall",
+    "footprint": {
+     "w": 2,
+     "h": 1
+    },
+    "canvas": [
+     32,
+     32
+    ],
+    "padTop": 8,
+    "newFile": "w44-A.pxg",
+    "gate": "--wall-tall",
+    "animated": {
+     "frames": 12,
+     "maskFile": "anim-mask.png",
+     "preview": "anim-region-x6.png",
+     "bbox": [
+      2,
+      14,
+      29,
+      25
+     ]
+    }
+   },
+   {
+    "id": "hay bale",
+    "ko": "건초 더미",
+    "slug": "hay_bale",
+    "folder": "tiledata/hand-interior/pick/candidates/hay_bale",
+    "violation": "윗면 부족(3~4px 띠)",
+    "current": "w7-B.pxg",
+    "existingV34": [],
+    "kind": "floor",
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "canvas": [
+     16,
+     16
+    ],
+    "padTop": 0,
+    "newFile": "w44-A.pxg",
+    "gate": "--object"
+   },
+   {
+    "id": "straw bed",
+    "ko": "짚 침대",
+    "slug": "straw_bed",
+    "folder": "tiledata/hand-interior/pick/candidates/straw_bed",
+    "violation": "탑다운(앞면 없음)",
+    "current": "w25-F.pxg",
+    "existingV34": [
+     "w91-A.pxg"
+    ],
+    "kind": "floor",
+    "footprint": {
+     "w": 1,
+     "h": 2
+    },
+    "canvas": [
+     16,
+     32
+    ],
+    "padTop": 0,
+    "newFile": "w44-A.pxg",
+    "gate": "--object"
+   }
+  ],
+  "w45": [
+   {
+    "id": "pipe organ",
+    "ko": "파이프 오르간",
+    "slug": "pipe_organ",
+    "folder": "tiledata/hand-interior/pick/candidates/pipe_organ",
+    "violation": "정면도(윗면 0~2px)",
+    "current": "w2-A.pxg",
+    "existingV34": [
+     "w91-A.pxg"
+    ],
+    "kind": "wall",
+    "footprint": {
+     "w": 2,
+     "h": 1
+    },
+    "canvas": [
+     32,
+     48
+    ],
+    "padTop": 8,
+    "newFile": "w45-A.pxg",
+    "gate": "--wall-tall"
+   },
+   {
+    "id": "choir stall",
+    "ko": "성가대석(3칸, 남향)",
+    "slug": "choir_stall",
+    "folder": "tiledata/hand-interior/pick/candidates/choir_stall",
+    "violation": "정면도(윗면 0~2px)",
+    "current": "w6-B.pxg",
+    "existingV34": [
+     "w90-A.pxg"
+    ],
+    "kind": "wall",
+    "footprint": {
+     "w": 3,
+     "h": 1
+    },
+    "canvas": [
+     48,
+     48
+    ],
+    "padTop": 8,
+    "newFile": "w45-A.pxg",
+    "gate": "--wall-tall"
+   },
+   {
+    "id": "pew E2",
+    "ko": "동쪽을 보는 회중석(1×2)",
+    "slug": "pew_E2",
+    "folder": "tiledata/hand-interior/pick/candidates/pew_E2",
+    "violation": "정면도(윗면 0~2px)",
+    "current": "w13-D.pxg",
+    "existingV34": [
+     "w91-A.pxg"
+    ],
+    "kind": "floor",
+    "footprint": {
+     "w": 1,
+     "h": 2
+    },
+    "canvas": [
+     16,
+     48
+    ],
+    "padTop": 8,
+    "newFile": "w45-A.pxg",
+    "gate": "--object"
+   },
+   {
+    "id": "pew E3",
+    "ko": "동쪽을 보는 회중석(1×3)",
+    "slug": "pew_E3",
+    "folder": "tiledata/hand-interior/pick/candidates/pew_E3",
+    "violation": "정면도(윗면 0~2px)",
+    "current": "w8-B.pxg",
+    "existingV34": [],
+    "kind": "floor",
+    "footprint": {
+     "w": 1,
+     "h": 3
+    },
+    "canvas": [
+     16,
+     64
+    ],
+    "padTop": 8,
+    "newFile": "w45-A.pxg",
+    "gate": "--object"
+   },
+   {
+    "id": "confessional",
+    "ko": "고해소(3칸)",
+    "slug": "confessional",
+    "folder": "tiledata/hand-interior/pick/candidates/confessional",
+    "violation": "윗면 부족(3~4px 띠)",
+    "current": "w22-G.pxg",
+    "existingV34": [
+     "w90-A.pxg"
+    ],
+    "kind": "wall",
+    "footprint": {
+     "w": 3,
+     "h": 1
+    },
+    "canvas": [
+     48,
+     48
+    ],
+    "padTop": 8,
+    "newFile": "w45-A.pxg",
+    "gate": "--wall-tall"
+   },
+   {
+    "id": "rune stone",
+    "ko": "룬석(빛남·움직임)",
+    "slug": "rune_stone",
+    "folder": "tiledata/hand-interior/pick/candidates/rune_stone",
+    "violation": "정면도(윗면 0~2px)",
+    "current": "v5.pxg",
+    "existingV34": [],
+    "kind": "floor",
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "canvas": [
+     16,
+     32
+    ],
+    "padTop": 0,
+    "newFile": "w45-A.pxg",
+    "gate": "--object",
+    "animated": {
+     "frames": 12,
+     "maskFile": "anim-mask.png",
+     "preview": "anim-region-x6.png",
+     "bbox": [
+      6,
+      11,
+      8,
+      25
+     ]
+    }
+   }
+  ],
+  "w46": [
+   {
+    "id": "slot machine",
+    "ko": "슬롯머신(움직임)",
+    "slug": "slot_machine",
+    "folder": "tiledata/hand-interior/pick/candidates/slot_machine",
+    "violation": "정면도(윗면 0~2px)",
+    "current": "v5.pxg",
+    "existingV34": [],
+    "kind": "wall",
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "canvas": [
+     16,
+     32
+    ],
+    "padTop": 0,
+    "newFile": "w46-A.pxg",
+    "gate": "--wall-tall",
+    "animated": {
+     "frames": 12,
+     "maskFile": "anim-mask.png",
+     "preview": "anim-region-x6.png",
+     "bbox": [
+      3,
+      4,
+      13,
+      16
+     ]
+    }
+   },
+   {
+    "id": "magitek engine",
+    "ko": "마도 기관(움직임, 3×2)",
+    "slug": "magitek_engine",
+    "folder": "tiledata/hand-interior/pick/candidates/magitek_engine",
+    "violation": "윗면 부족(3~4px 띠)",
+    "current": "v5.pxg",
+    "existingV34": [],
+    "kind": "floor",
+    "footprint": {
+     "w": 3,
+     "h": 2
+    },
+    "canvas": [
+     48,
+     48
+    ],
+    "padTop": 0,
+    "newFile": "w46-A.pxg",
+    "gate": "--object",
+    "animated": {
+     "frames": 12,
+     "maskFile": "anim-mask.png",
+     "preview": "anim-region-x6.png",
+     "bbox": [
+      3,
+      2,
+      44,
+      37
+     ]
+    }
+   },
+   {
+    "id": "table:bolt+yarn",
+    "ko": "옷감·실타래 탁자",
+    "slug": "table_bolt_yarn",
+    "folder": "tiledata/hand-interior/pick/candidates/table_bolt_yarn",
+    "violation": "윗면 부족(3~4px 띠)",
+    "current": "w7-B.pxg",
+    "existingV34": [],
+    "kind": "floor",
+    "footprint": {
+     "w": 2,
+     "h": 1
+    },
+    "canvas": [
+     32,
+     16
+    ],
+    "padTop": 0,
+    "newFile": "w46-A.pxg",
+    "gate": "--object"
+   }
+  ],
+  "w51": [
+   {
+    "id": "column marble",
+    "ko": "대리석 기둥",
+    "slug": "column_marble",
+    "folder": "tiledata/hand-interior/pick/candidates/column_marble",
+    "round": 2,
+    "violation": "애매(사용자: 이것도 해 봐)",
+    "current": "w1-B.pxg",
+    "existingV34": [
+     "w90-A.pxg"
+    ],
+    "kind": "floor",
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "canvas": [
+     16,
+     48
+    ],
+    "padTop": 8,
+    "newFile": "w51-A.pxg",
+    "gate": "--object",
+    "hint": "기둥: 천장에 닿는 기물이라 「윗면이 안 보인다」 가 아니다 — 이 게임엔 기둥 위 천장을 그리지 않는다. 기둥머리(주두)의 네모 받침판 윗면 3~4px(앞면보다 한 단 밝음) + 앞 모서리 하이라이트 + 그 아래 그림자, 몸통은 원통(왼쪽 밝은 세로줄·오른쪽 어두운 줄, 네모 기둥은 왼면 밝은 면·앞면), 받침(초석)도 윗면 2~3px 이 보이게. 기둥 6종은 재질만 다른 한 형식이다 — 머리·받침의 3/4 형식을 맞춘다."
+   },
+   {
+    "id": "column stone",
+    "ko": "돌 기둥",
+    "slug": "column_stone",
+    "folder": "tiledata/hand-interior/pick/candidates/column_stone",
+    "round": 2,
+    "violation": "애매(사용자: 이것도 해 봐)",
+    "current": "v5.pxg",
+    "existingV34": [
+     "w90-A.pxg"
+    ],
+    "kind": "floor",
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "canvas": [
+     16,
+     48
+    ],
+    "padTop": 8,
+    "newFile": "w51-A.pxg",
+    "gate": "--object",
+    "hint": "기둥: 천장에 닿는 기물이라 「윗면이 안 보인다」 가 아니다 — 이 게임엔 기둥 위 천장을 그리지 않는다. 기둥머리(주두)의 네모 받침판 윗면 3~4px(앞면보다 한 단 밝음) + 앞 모서리 하이라이트 + 그 아래 그림자, 몸통은 원통(왼쪽 밝은 세로줄·오른쪽 어두운 줄, 네모 기둥은 왼면 밝은 면·앞면), 받침(초석)도 윗면 2~3px 이 보이게. 기둥 6종은 재질만 다른 한 형식이다 — 머리·받침의 3/4 형식을 맞춘다."
+   },
+   {
+    "id": "column dwarf",
+    "ko": "드워프 네모 기둥(룬 무늬)",
+    "slug": "column_dwarf",
+    "folder": "tiledata/hand-interior/pick/candidates/column_dwarf",
+    "round": 2,
+    "violation": "애매(사용자: 이것도 해 봐)",
+    "current": "w5-B.pxg",
+    "existingV34": [
+     "w90-A.pxg"
+    ],
+    "kind": "floor",
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "canvas": [
+     16,
+     48
+    ],
+    "padTop": 8,
+    "newFile": "w51-A.pxg",
+    "gate": "--object",
+    "hint": "기둥: 천장에 닿는 기물이라 「윗면이 안 보인다」 가 아니다 — 이 게임엔 기둥 위 천장을 그리지 않는다. 기둥머리(주두)의 네모 받침판 윗면 3~4px(앞면보다 한 단 밝음) + 앞 모서리 하이라이트 + 그 아래 그림자, 몸통은 원통(왼쪽 밝은 세로줄·오른쪽 어두운 줄, 네모 기둥은 왼면 밝은 면·앞면), 받침(초석)도 윗면 2~3px 이 보이게. 기둥 6종은 재질만 다른 한 형식이다 — 머리·받침의 3/4 형식을 맞춘다."
+   },
+   {
+    "id": "column wood",
+    "ko": "나무 기둥(금 띠)",
+    "slug": "column_wood",
+    "folder": "tiledata/hand-interior/pick/candidates/column_wood",
+    "round": 2,
+    "violation": "애매(사용자: 이것도 해 봐)",
+    "current": "w1-B.pxg",
+    "existingV34": [
+     "w90-A.pxg"
+    ],
+    "kind": "floor",
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "canvas": [
+     16,
+     48
+    ],
+    "padTop": 8,
+    "newFile": "w51-A.pxg",
+    "gate": "--object",
+    "hint": "기둥: 천장에 닿는 기물이라 「윗면이 안 보인다」 가 아니다 — 이 게임엔 기둥 위 천장을 그리지 않는다. 기둥머리(주두)의 네모 받침판 윗면 3~4px(앞면보다 한 단 밝음) + 앞 모서리 하이라이트 + 그 아래 그림자, 몸통은 원통(왼쪽 밝은 세로줄·오른쪽 어두운 줄, 네모 기둥은 왼면 밝은 면·앞면), 받침(초석)도 윗면 2~3px 이 보이게. 기둥 6종은 재질만 다른 한 형식이다 — 머리·받침의 3/4 형식을 맞춘다."
+   },
+   {
+    "id": "column live",
+    "ko": "살아 있는 나무 기둥(잎 머리)",
+    "slug": "column_live",
+    "folder": "tiledata/hand-interior/pick/candidates/column_live",
+    "round": 2,
+    "violation": "애매(사용자: 이것도 해 봐)",
+    "current": "v5.pxg",
+    "existingV34": [
+     "w90-A.pxg"
+    ],
+    "kind": "floor",
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "canvas": [
+     16,
+     48
+    ],
+    "padTop": 8,
+    "newFile": "w51-A.pxg",
+    "gate": "--object",
+    "hint": "기둥: 천장에 닿는 기물이라 「윗면이 안 보인다」 가 아니다 — 이 게임엔 기둥 위 천장을 그리지 않는다. 기둥머리(주두)의 네모 받침판 윗면 3~4px(앞면보다 한 단 밝음) + 앞 모서리 하이라이트 + 그 아래 그림자, 몸통은 원통(왼쪽 밝은 세로줄·오른쪽 어두운 줄, 네모 기둥은 왼면 밝은 면·앞면), 받침(초석)도 윗면 2~3px 이 보이게. 기둥 6종은 재질만 다른 한 형식이다 — 머리·받침의 3/4 형식을 맞춘다. 살아 있는 나무 기둥의 잎 머리는 위에서 본 잎 덩이(위가 밝은 둥근 수관)로."
+   },
+   {
+    "id": "column steel",
+    "ko": "강철 기둥(리벳)",
+    "slug": "column_steel",
+    "folder": "tiledata/hand-interior/pick/candidates/column_steel",
+    "round": 2,
+    "violation": "애매(사용자: 이것도 해 봐)",
+    "current": "w5-C.pxg",
+    "existingV34": [
+     "w90-A.pxg"
+    ],
+    "kind": "floor",
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "canvas": [
+     16,
+     48
+    ],
+    "padTop": 8,
+    "newFile": "w51-A.pxg",
+    "gate": "--object",
+    "hint": "기둥: 천장에 닿는 기물이라 「윗면이 안 보인다」 가 아니다 — 이 게임엔 기둥 위 천장을 그리지 않는다. 기둥머리(주두)의 네모 받침판 윗면 3~4px(앞면보다 한 단 밝음) + 앞 모서리 하이라이트 + 그 아래 그림자, 몸통은 원통(왼쪽 밝은 세로줄·오른쪽 어두운 줄, 네모 기둥은 왼면 밝은 면·앞면), 받침(초석)도 윗면 2~3px 이 보이게. 기둥 6종은 재질만 다른 한 형식이다 — 머리·받침의 3/4 형식을 맞춘다."
+   }
+  ],
+  "w52": [
+   {
+    "id": "bread oven",
+    "ko": "빵 화덕",
+    "slug": "bread_oven",
+    "folder": "tiledata/hand-interior/pick/candidates/bread_oven",
+    "round": 2,
+    "violation": "애매(사용자: 이것도 해 봐)",
+    "current": "v5.pxg",
+    "existingV34": [],
+    "kind": "wall",
+    "footprint": {
+     "w": 2,
+     "h": 1
+    },
+    "canvas": [
+     32,
+     32
+    ],
+    "padTop": 0,
+    "newFile": "w52-A.pxg",
+    "gate": "--wall-tall",
+    "hint": "둥근 돔 화덕(빵 화덕). 돔은 정면 반원이 아니라 위에서 약간 내려다본 둥근 지붕 — 꼭대기 쪽 곡면이 가장 밝고 아래로 어두워진다(윗면 역할). 화구 앞 받침단(벽돌 턱) 윗면 4~6px 이 보이게. 불 자리는 anim-mask 그대로(§2).",
+    "animated": {
+     "frames": 12,
+     "maskFile": "anim-mask.png",
+     "preview": "anim-region-x6.png"
+    }
+   },
+   {
+    "id": "throne",
+    "ko": "왕좌",
+    "slug": "throne",
+    "folder": "tiledata/hand-interior/pick/candidates/throne",
+    "round": 2,
+    "violation": "애매(사용자: 이것도 해 봐)",
+    "current": "w30-E.pxg",
+    "existingV34": [
+     "w91-A.pxg"
+    ],
+    "kind": "floor",
+    "footprint": {
+     "w": 3,
+     "h": 2
+    },
+    "canvas": [
+     48,
+     32
+    ],
+    "padTop": 0,
+    "newFile": "w52-A.pxg",
+    "gate": "--object",
+    "hint": "왕좌: 좌판(붉은 방석) 윗면 4~6px 이 위에서 보이게 — 지금은 붉은 판으로만 서 있다. 등받이는 좌판 뒤에서 솟고, 팔걸이 윗면 2~3px, 받침단 윗면. 크기 48x32(resize.json) 그대로."
+   },
+   {
+    "id": "stone throne",
+    "ko": "돌 왕좌",
+    "slug": "stone_throne",
+    "folder": "tiledata/hand-interior/pick/candidates/stone_throne",
+    "round": 2,
+    "violation": "애매(사용자: 이것도 해 봐)",
+    "current": "w6-C.pxg",
+    "existingV34": [
+     "w91-A.pxg"
+    ],
+    "kind": "floor",
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "canvas": [
+     16,
+     32
+    ],
+    "padTop": 0,
+    "newFile": "w52-A.pxg",
+    "gate": "--object",
+    "hint": "돌 왕좌: 좌판 윗면 4~6px(앉는 면이 보이게), 등받이는 뒤에서 솟음, 팔걸이 윗면, 받침단 윗면."
+   },
+   {
+    "id": "armor stand",
+    "ko": "갑옷 거치대",
+    "slug": "armor_stand",
+    "folder": "tiledata/hand-interior/pick/candidates/armor_stand",
+    "round": 2,
+    "violation": "애매(사용자: 이것도 해 봐)",
+    "current": "w3-A.pxg",
+    "existingV34": [
+     "w90-A.pxg"
+    ],
+    "kind": "floor",
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "canvas": [
+     16,
+     32
+    ],
+    "padTop": 0,
+    "newFile": "w52-A.pxg",
+    "gate": "--object",
+    "hint": "갑옷 거치대: 서 있는 갑옷 인형. 받침대(나무 십자 받침 또는 원판) 윗면 3~4px 이 보이게, 어깨(견갑) 윗면 밝게, 투구 윗부분이 위에서 보이는 곡면. 정면 도면처럼 납작하지 않게."
+   }
+  ],
+  "w53": [
+   {
+    "id": "timber prop",
+    "ko": "갱도 버팀목",
+    "slug": "timber_prop",
+    "folder": "tiledata/hand-interior/pick/candidates/timber_prop",
+    "round": 2,
+    "violation": "애매(사용자: 이것도 해 봐)",
+    "current": "w7-B.pxg",
+    "existingV34": [
+     "w91-A.pxg"
+    ],
+    "kind": "floor",
+    "footprint": {
+     "w": 1,
+     "h": 1
+    },
+    "canvas": [
+     16,
+     48
+    ],
+    "padTop": 8,
+    "newFile": "w53-A.pxg",
+    "gate": "--object",
+    "hint": "갱도 버팀목: 양 기둥 + 가로보. 가로보(상인방) 윗면 3~4px(나무 결 밝은 면) + 앞 모서리 하이라이트 + 아래 그림자, 기둥은 각목 — 왼면 밝은 좁은 면과 앞면. 바닥에 닿는 기둥 밑동 그림자."
+   },
+   {
+    "id": "spellbook stand",
+    "ko": "마법서 받침",
+    "slug": "spellbook_stand",
+    "folder": "tiledata/hand-interior/pick/candidates/spellbook_stand",
+    "round": 2,
+    "violation": "사용자 메모 미반영(2x1)",
+    "current": "w2-C.pxg",
+    "existingV34": [],
+    "kind": "floor",
+    "footprint": {
+     "w": 2,
+     "h": 1
+    },
+    "canvas": [
+     32,
+     32
+    ],
+    "padTop": 0,
+    "newFile": "w53-A.pxg",
+    "gate": "--object",
+    "hint": "**사용자 메모: 「2x1 사이즈가 나을듯」.** resize.json 이 32x32(가로 2칸, 위로 16px 솟음)로 바뀌었다. current(w2-C, 16x16)의 디자인(나무 독서대 + 펼친 마법서 + 청록 빛)을 가로 2칸 독서대로 키운다: 넓은 경사 책받침 위에 펼친 책 한 권(양면) 또는 책 두 권, 받침 다리 둘. 3/4: 책받침·책 윗면이 보이고 앞판·다리. 다른 판 w29-D/E/F 는 1x2 세로판이라 이번 크기와 다르다(참고만)."
+   }
+  ],
+  "w54": [
+   {
+    "id": "bread oven",
+    "ko": "빵 화덕",
+    "slug": "bread_oven",
+    "folder": "tiledata/hand-interior/pick/candidates/bread_oven",
+    "round": 2,
+    "violation": "사용자: 「좀 아쉽다」 (w52-A 는 돌 턱만 더한 정도)",
+    "current": "v5.pxg",
+    "existingV34": [],
+    "kind": "wall",
+    "footprint": {
+     "w": 2,
+     "h": 1
+    },
+    "canvas": [
+     32,
+     32
+    ],
+    "padTop": 0,
+    "newFile": "w54-A.pxg",
+    "gate": "--wall-tall",
+    "hint": "w52-A 는 v5 에 회색 돌 턱 하나 더한 정도라 사용자가 「아쉽다」. 이번엔 시점을 제대로 바꾼다. 돔 화덕을 위에서 약간 내려다본 3/4: (1) 벽돌 줄이 수평 직선이 아니라 돔을 따라 휘는 동심 아치 줄(위로 갈수록 짧고 둥근 줄) — 지금은 직선 벽돌 벽에 아치 구멍 뚫은 정면도다. (2) 돔 꼭대기 쪽이 가장 밝은 둥근 윗면(위에서 보이는 곡면, 4~8px), 좌측 위 빛·우측 아래 그늘로 공처럼 둥글게. (3) 꼭대기에 작은 연기 구멍(위에서 본 어두운 타원)이나 짧은 굴뚝. (4) 화구 둘레는 두꺼운 아치 테(앞으로 튀어나온 벽돌 테, 윗면 1~2px 밝음), 화구 밑 돌 받침단 윗면 4~6px + 앞면. (5) 옆에 장작 두세 개(선택). 불 자리는 anim-mask.png 그대로(§2) — 마스크 바깥만 바꾼다. 캔버스 32x32 그대로. A 는 위 지시대로, 자신 있으면 B 로 다른 해석(예: 돔을 더 낮고 넓게)도 낸다.",
+    "animated": {
+     "frames": 12,
+     "maskFile": "anim-mask.png",
+     "preview": "anim-region-x6.png"
+    }
+   }
+  ],
+  "w55": [
+   {
+    "id": "spellbook stand",
+    "ko": "마법서 받침",
+    "slug": "spellbook_stand",
+    "folder": "tiledata/hand-interior/pick/candidates/spellbook_stand",
+    "round": 2,
+    "violation": "사용자: 「왜케 크냐」 (w53-A 32x32 가 너무 큼)",
+    "current": "w2-C.pxg",
+    "existingV34": [],
+    "kind": "floor",
+    "footprint": {
+     "w": 2,
+     "h": 1
+    },
+    "canvas": [
+     32,
+     24
+    ],
+    "padTop": 0,
+    "newFile": "w55-A.pxg",
+    "gate": "--object",
+    "hint": "w53-A(32x32 책상)는 사용자가 「왜케 크냐」로 불합격. 두 판을 낸다. A(필수): resize.json 대로 32x24·가로 2칸. 물건 전체 높이 ≤ 20px, 폭 26~30px. current w2-C 의 화풍·색(어두운 나무, 보라 표지, 청록 빛)을 그대로 쓰고 책은 w2-C 책의 1.3~1.5배까지만 — 펼친 책 한 권이 낮은 경사 받침 위에, 짧은 다리 둘(또는 받침 하나). 책상·탁자처럼 보이면 실패다. 3/4: 경사 받침·책 윗면이 보이고 앞판은 3~5px. B(필수): 크기를 안 바꾼 16x16 판 — w2-C 를 3/4 로만 다듬는다(책 윗면·받침 윗면·앞 모서리). 사용자가 「2x1」을 다시 거둘 경우를 위한 대안이며, 이 판은 check_candidate 가 캔버스 불일치로 hard 를 낼 수 있다 — 그 줄만 무시하고 메모에 적는다."
+   }
+  ],
+  "w56": [
+   {
+    "id": "bread oven",
+    "ko": "빵 화덕",
+    "slug": "bread_oven",
+    "folder": "tiledata/hand-interior/pick/candidates/bread_oven",
+    "round": 2,
+    "violation": "사용자: 「실내인데 화덕 굴뚝 있어야 하는 거 아닌가」",
+    "current": "w54-A.pxg",
+    "existingV34": [],
+    "kind": "wall",
+    "footprint": {
+     "w": 2,
+     "h": 1
+    },
+    "canvas": [
+     32,
+     48
+    ],
+    "padTop": 0,
+    "newFile": "w56-A.pxg",
+    "gate": "--wall-tall",
+    "hint": "3차 w54-A(돔 3/4, 사용자가 본 판)를 출발점으로, 실내 화덕답게 **굴뚝이 벽을 타고 천장까지** 올라가게 한다. resize.json 이 32x48 로 바뀌었다: 아래 32px 는 w54-A 그대로(그 자리·불 마스크 좌표는 w54-A 를 16px 내린 곳 = anim-mask-tall.png), 위 16px + 기존 돔 위 여백이 굴뚝 자리. 이 기물은 북쪽 벽 앞에 서고 벽면은 2줄(32px)이다 → 캔버스 맨 윗줄 = 벽면과 천장이 만나는 선. 굴뚝은 돔 꼭대기에서 곧게 솟아 캔버스 맨 위까지 닿는다(천장 속으로 들어가므로 굴뚝 윗면은 안 보인다). 굴뚝: 벽돌(돔과 같은 색 단) 폭 8~12px, 왼쪽 옆면 1~2px 밝게·오른쪽 어둡게, 돔과 만나는 밑동은 넓어지는 깔때기(또는 돌 갓) 로 자연스럽게, 벽에 지는 그림자 1px. 돔 꼭대기 연기 구멍은 굴뚝 밑동으로 바뀐다. 불 자리(anim-mask-tall.png 흰 화소)는 w54-A 의 프레임 0 색 그대로 둔다. A 는 곧은 벽돌 굴뚝, B 는 원하면 다른 해석(돌·금속 갓 + 좁은 관).",
+    "animated": {
+     "frames": 12,
+     "maskFile": "anim-mask-tall.png",
+     "preview": "anim-region-tall-x6.png"
+    }
+   }
+  ]
+ }
+}

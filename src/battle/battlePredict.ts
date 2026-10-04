@@ -1,4 +1,7 @@
 import { advancePredictedHitStates } from "@/battle/battlePredictStates";
+import { authoredElementMultiplier, battleElementMultiplier } from "@/battle/battleElementModifiers";
+import { emotionDamageMultiplier } from "@/battle/battleEmotion";
+import { restoreSkillDrain, spendSkillHp } from "@/battle/battleSkillVitals";
 import { consumeBattleSkillResource } from "@/battle/battleSkillUse";
 import { DEFAULT_SKILL_ID } from "@/project/defaults/constants";
 import { formationDamage } from "@/battle/battleFormation";
@@ -22,9 +25,9 @@ import {
   usesGen1Damage,
   usesMagicalDefense,
 } from "@/battle/battleDamage";
-import { battlerTypes, gen1TypeModifiersForTypes, typeChartMultiplierForTypes } from "@/battle/typeChart";
+import { battlerTypes, gen1TypeModifiersForTypes } from "@/battle/typeChart";
 import { readGen1MajorStatus } from "@/battle/gen1/status";
-import { attackMultiplierForStates, defenseMultiplierForStates } from "@/battle/battleStates";
+import { attackMultiplierForStates, defenseMultiplierForStates, defenseMultiplierForStatesByKind, stateElementRateOverride } from "@/battle/battleStates";
 import { damageEffectKind } from "@/battle/battleSpecialEffects";
 
 export interface PredictedDamage {
@@ -104,21 +107,7 @@ export function battlerStatsFromMutable(_project: Project, battler: import("@/ba
 // 데미지 속성 배율(퍼센트 → 100으로 나눈 값). runtime.elementMultiplierFor 와 동일 규칙.
 // grade 가 없으면 1(중립). 음수 배율(-100 등)은 흡수로 해석된다.
 export function elementMultiplierFor(project: Project, elementId: string | undefined, targetRecordId: ActorId | EnemyId, target?: BattleBattlerSnapshot): number {
-  if (!elementId) return 1;
-  const element = project.database.elements?.find((entry) => entry.id === elementId);
-  if (!element?.damageMultipliers) return 1;
-  const enemy = project.database.enemies.find((entry) => entry.id === targetRecordId);
-  const actor = project.database.actors.find((entry) => entry.id === targetRecordId);
-  const rates = enemy?.elementRates ?? actor?.elementRates;
-  if (!rates) return 1;
-  const grade = rates[elementId];
-  if (!grade) return 1;
-  const multiplier = element.damageMultipliers[grade];
-  if (typeof multiplier !== "number" || !Number.isFinite(multiplier)) return 1;
-  // SC8 (M2): apply equipment elemental defense halving when the target snapshot
-  // exposes elementalDefenseIds matching the attack element.
-  const equipmentReduction = target?.equipmentEffects?.elementalDefenseIds.includes(elementId) ? 0.5 : 1;
-  return (multiplier / 100) * equipmentReduction;
+  return authoredElementMultiplier(project, elementId, targetRecordId, target);
 }
 
 export function elementNameFor(project: Project, elementId: string | undefined): string | undefined {
@@ -133,11 +122,11 @@ export function isMagicalElement(project: Project, elementId: string | undefined
 }
 
 // 대상의 한 속성 등급을 가져온다(약점/내성 칩 표시용).
-export function elementGradeFor(project: Project, elementId: string, targetRecordId: ActorId | EnemyId): ActorRateGrade | undefined {
+export function elementGradeFor(project: Project, elementId: string, targetRecordId: ActorId | EnemyId, target?: { readonly stateIds: readonly string[] }): ActorRateGrade | undefined {
   const enemy = project.database.enemies.find((entry) => entry.id === targetRecordId);
   const actor = project.database.actors.find((entry) => entry.id === targetRecordId);
   const rates = enemy?.elementRates ?? actor?.elementRates;
-  return rates?.[elementId];
+  return ((target ? stateElementRateOverride(project, target, elementId) : undefined) ?? rates?.[elementId]) as ActorRateGrade | undefined;
 }
 
 // 약점 여부: grade A 또는 B (배율 > 1) 를 약점으로 본다.
@@ -233,13 +222,13 @@ export function predictSkillDamage(
     (spec.statistic === "mind" ? userStats.mind : userStats.attack)
     * attackMultiplierForStates(project, user)
   );
-  const elementMultiplier = elementMultiplierFor(project, spec.elementId, target.recordId, target)
-    * typeChartMultiplierForTypes(project, spec.elementId, battlerTypes(project, user), battlerTypes(project, target));
+  const elementMultiplier = battleElementMultiplier(project, spec.elementId, user, target)
+    * emotionDamageMultiplier(project, user, target);
   const targetStats = battlerStats(project, target);
   // 마법 속성(kind="magical") 은 mind(마법 방어력) 로 감소, 물리는 defense (runtime 과 동일).
   // effectiveDefense 는 배율 곱을 truncate 하지 않는다 — runtime 도 float 상태로 /2 floor 한다.
   const defenseStat = (isMagicalElement(project, spec.elementId) ? targetStats.mind : targetStats.defense)
-    * defenseMultiplierForStates(project, target);
+    * defenseMultiplierForStatesByKind(project, target, spec.statistic);
   let magnitude = Math.round((spec.power + Math.floor(sourceStat / 2)) * elementMultiplier);
   if (elementMultiplier === 0) magnitude = 0;
   if (elementMultiplier > 0) {
@@ -252,7 +241,7 @@ export function predictSkillDamage(
     magnitude = magnitude <= 0 ? 0 : Math.max(1, magnitude);
   }
   if (elementMultiplier < 0) {
-    const absorbGrade = spec.elementId ? elementGradeFor(project, spec.elementId, target.recordId) : undefined;
+    const absorbGrade = spec.elementId ? elementGradeFor(project, spec.elementId, target.recordId, target) : undefined;
     return {
       amount: magnitude,
       healing: false,
@@ -261,7 +250,7 @@ export function predictSkillDamage(
       elementName: spec.elementId ? elementNameFor(project, spec.elementId) : undefined,
     };
   }
-  const grade = spec.elementId ? elementGradeFor(project, spec.elementId, target.recordId) : undefined;
+  const grade = spec.elementId ? elementGradeFor(project, spec.elementId, target.recordId, target) : undefined;
   return {
     amount: formationDamage(magnitude, user.row, target.row, spec.statistic, spec.effect),
     healing: false,
@@ -297,12 +286,16 @@ export function predictSkillDamageFor(project: Project, user: BattleBattlerSnaps
   if (!(usesGen1Damage(project) && project.database.enemies.some(enemy => enemy.id === user.recordId))) {
     consumeBattleSkillResource(project, source, skill.id);
   }
+  spendSkillHp(source, skill);
   let amount = 0;
   for (const multiplier of skill.hitSequence ?? [1]) {
-    if (destination.hp <= 0 && skill.effect.kind === "damage") break;
+    if (source.hp <= 0 || (destination.hp <= 0 && skill.effect.kind === "damage")) break;
+    const targetDefenseMultiplier = usesGen1Damage(project)
+      ? defenseMultiplierForStates(project, destination)
+      : defenseMultiplierForStatesByKind(project, destination, statistic);
     const formula = skill.damageFormula ? evaluateDamageFormula(skill.damageFormula, formulaBattlerContext(
       { ...source, attackPower: Math.round(source.attackPower * attackMultiplierForStates(project, source)), mind: Math.round(source.mind * attackMultiplierForStates(project, source)) },
-      { ...destination, defense: destination.defense * defenseMultiplierForStates(project, destination), mind: destination.mind * defenseMultiplierForStates(project, destination) }, skill.power)) : undefined;
+      { ...destination, defense: destination.defense * targetDefenseMultiplier, mind: destination.mind * targetDefenseMultiplier }, skill.power)) : undefined;
     let hit = predictSkillDamage(project, { ...battlerSnapshot(source), row: undefined },
       { power: skill.power, statistic, effect: damageEffectKind(skill.effect.kind), elementId: skill.elementId },
       { ...battlerSnapshot(destination), row: undefined }).amount;
@@ -317,9 +310,10 @@ export function predictSkillDamageFor(project: Project, user: BattleBattlerSnaps
           variance: 0, criticalRate: 0, hitRate: 100, rng: () => 0.5,
           affects: skill.effect.kind === "damage" || skill.effect.kind === "healing" ? skill.effect.affects : "hp",
           attackerStatMultiplier: attackMultiplierForStates(project, source),
-          targetDefenseMultiplier: defenseMultiplierForStates(project, destination),
-          elementMultiplier: elementMultiplierFor(project, skill.elementId, target.recordId, target)
-            * typeChartMultiplierForTypes(project, skill.elementId, battlerTypes(project, user), battlerTypes(project, target)),
+          targetDefenseMultiplier,
+          elementMultiplier: battleElementMultiplier(project, skill.elementId, source, destination)
+            * emotionDamageMultiplier(project, source, destination),
+          useMagicalDefense: usesMagicalDefense(project, skill.elementId),
         });
         hit = result.amount;
       }
@@ -333,6 +327,9 @@ export function predictSkillDamageFor(project: Project, user: BattleBattlerSnaps
     else if (skill.effect.kind === "healing") {
       if (skill.effect.affects === "mp") destination.mp = Math.min(destination.maxMp, destination.mp + hit);
       else destination.hp = Math.min(destination.maxHp, destination.hp + hit);
+    }
+    if (!usesGen1Damage(project) && skill.effect.kind === "damage") {
+      restoreSkillDrain(source, skill, hit, skill.effect.affects ?? "hp");
     }
     // Ordinary-hit preview follows guaranteed state transitions only. Probabilistic
     // procs are not sampled; this keeps previews stable and never consumes battle RNG.

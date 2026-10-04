@@ -1,0 +1,31 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/elven_bed/w6-A.pxg",
+ "id": "elven bed",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.044
+ },
+ "lint": {
+  "failed": [],
+  "pass": true
+ },
+ "colors": 28,
+ "v5_colors": 25,
+ "bbox": [
+  0,
+  10,
+  15,
+  47
+ ],
+ "v5_bbox": [
+  0,
+  10,
+  15,
+  47
+ ],
+ "note": "v5 다듬기: 머리판에 잎 문양 보석과 잎 덩굴 띠, 기둥 밝은 면/어두운 면, 베개 명암, 이불에 접힌 윗단과 바느질 선 — 알아보기 쉽게",
+ "ok": true
+}

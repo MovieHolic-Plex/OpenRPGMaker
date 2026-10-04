@@ -1,0 +1,80 @@
+// vending_coffee r1-A
+@size 32 32
+@cell 16
+@palette palette.pal
+@layer main
+@mat a akachin 3
+@mat b hinoki 3
+@mat c kblue 3
+@mat d korange 3
+@mat e lacq 3
+@mat f mglass 3
+@mat g mmetal 3
+@mat h neonc 3
+@mat i washi 3
+@mblock 0 0
+...aaaaaaaaaaaaaaaaaaaaaaaaaa...
+..aaaaaaaaaaaaaaaaaaaaaaaaaaaa..
+..aaaaaaaaaaaaaaaaaaaaaaaaaaaa..
+..aaaaaaaaaaaaaaaaaaaaaaaaaaaa..
+..aiiiiiiiiiiiiiiiiiiiiiiiiiia..
+..aiiiaaaaaaaiccciaaaaiiiiiiia..
+..aiiiiiiiiiiiiiiiiiiiiiiiiiia..
+..aaggggggggggggggaaaaaaaaaaaa..
+..aagfccfiifeefbbgaahhhaaaaaaa..
+..aagfccfiifeefbbgaaeehaaaaaaa..
+..aagfccfiifeefbbgaaaaaaaaaaaa..
+..aagfiifeefbbfccgaaccccaaaaaa..
+..aagfiifeefbbfccgaaccccaaaaaa..
+..aagfiifeefbbfccgaaaaaaaaaaaa..
+..aagddddbbdeedddgaaaaaaaaaaaa..
+..aagddddbbdeedddgaaaaaaaaaaaa..
+..aagddddbbdeedddgaaaaaaaaaaaa..
+..aaggggggggggggggaaggggaaaaaa..
+..aaaiaiaiaiaiaiaaaageegaaaaaa..
+..aaaaaaaaaaaaaaaaaaaaaaaaaaaa..
+..aaggggggggggggggaaggggaaaaaa..
+..aageeeeeeeeeeeegaaeeeeaaaaaa..
+..aageeeeeeeeeeeegaaaaaaaaaaaa..
+..aageeeeeeeeeeeegaaggggaaaaaa..
+..aageeeeeeeeeeeegaaeeeeaaaaaa..
+..aageeeeeeeeeeeegaaeeeeaaaaaa..
+..aaaaaaaaaaaaaaaaaaaaaaaaaaaa..
+..agggggggggggggggggggggggggga..
+..agggggggggggggggggggggggggga..
+....~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+......--------------------------
+................................
+@tblock 0 0
+...11111111111111111111111111...
+..1555555555555555555555555540..
+..1444444444444444444444444430..
+..1444444444444444444444444430..
+..1555555555555555555555522220..
+..1444333333343334333344422220..
+..1333333333333333333333311110..
+..1455555555555552312222232210..
+..1433553553443552314442232210..
+..1433443443333442311122232210..
+..1433333333223332312222232210..
+..1433553443553552315454232210..
+..1433443333443442313333232210..
+..1433333223333332312222232210..
+..1431551551441552316565232210..
+..1431441441331442314444232210..
+..1431331331221332312222232210..
+..1422222222222222316666232210..
+..1433232323232323313003232210..
+..1433333333333333312222232210..
+..1455555555555555315555232210..
+..1443333333333331310000232210..
+..1442222222222221312222232210..
+..1440000000000001315555232210..
+..1440000000000001312222232210..
+..1440000000000001310000232210..
+..1222222222222222222222211110..
+..1333333333333333333333322220..
+..0111111111111111111111100000..
+................................
+................................
+................................

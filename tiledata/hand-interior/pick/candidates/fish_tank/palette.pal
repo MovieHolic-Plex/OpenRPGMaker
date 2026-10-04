@@ -1,0 +1,64 @@
+// fish tank — 공통 팔레트(palette/v5.pal) + 이 기물의 v5 색(한 글자씩). 이 파일은 make_jobs.py 가 만든다: 고치지 마라.
+// 새 색이 필요하면 공통 램프(@rampc 재료:단)를 쓴다. 검사는 v5 색 밖을 불합격시킨다.
+// v5 공통 팔레트 — v5/mat.py 재료 램프 그대로(0 = 가장 어두움). 격자에서는 @mat 글자 램프 / @tblock X Y 램프 로 쓴다.
+// 이 파일은 make_palette.py 가 만든다. 손으로 색을 더하지 마라(검사가 v5 밖 색을 불합격시킨다).
+
+@rampc wood    #000000 #411e05 #63310b #6d3b15 #9a5435 #9e684b #b77246 #d59147 #ffebd7
+@rampc dwood   #1a0e06 #2a180b #3a2210 #4a2c16 #5f3d21 #744e2c #8a6038
+@rampc pine    #3a2410 #5c3e22 #7e5935 #a07448 #ba9262 #d5b17d #f0d098
+@rampc iron    #0e1216 #22282e #363e47 #4a5460 #76808a #a3acb5 #d0d8e0
+@rampc brass   #3a2600 #5c4108 #7e5c10 #a07818 #bfa045 #dfc872 #fff0a0
+@rampc stone   #1d2228 #333942 #49505d #606878 #828a95 #a5adb2 #c8d0d0
+@rampc marble  #4a4a58 #696978 #888898 #a8a8b8 #c3c3cf #dfdfe7 #fbfbff
+@rampc clay    #2a1206 #512712 #783c1f #a0522c #bd764d #da9b6e #f8c090
+@rampc linen   #3a3530 #645c54 #8e8378 #b9ab9d #d0c4b6 #e7ded0 #fff8ea
+@rampc red     #3a0508 #67030c #950110 #c30014 #d73a42 #eb7571 #ffb0a0
+@rampc blue    #0a1a3a #113461 #184e88 #1f68b0 #5491ca #8abae4 #c0e4ff
+@rampc green   #0c2a10 #1b4a1a #2a6a25 #3a8a30 #69ac53 #98ce76 #c8f09a
+@rampc purple  #1e0c38 #371a60 #502988 #6a38b0 #9167ca #b898e4 #e0c8ff
+@rampc yellow  #3a2a00 #6c5408 #9e7e10 #d0a818 #dfc24a #efdd7d #fff8b0
+@rampc orange  #3a1400 #713005 #a84d0a #e06a10 #ea8e3f #f4b370 #ffd8a0
+@rampc pink    #3a0a20 #712643 #a84366 #e0608a #ea8aaa #f4b5cb #ffe0ec
+@rampc teal    #062a2a #0c4c49 #136e68 #1a9088 #4eb5aa #83dacd #b8fff0
+@rampc bread   #3a1a04 #643810 #8e561d #b8742a #cf9851 #e7bd78 #ffe2a0
+@rampc meat    #2a0404 #541012 #7e1c21 #a82830 #c55758 #e28880 #ffb8a8
+@rampc fish    #1a2430 #344655 #4f697a #6a8ca0 #96b0bf #c2d4df #eef8ff
+@rampc gold    #3a2400 #66480a #936c15 #c09020 #d5b152 #ead285 #fff4b8
+@rampc glass   #10283a #234a66 #366d93 #4a90c0 #81b5d5 #b8daea #f0ffff
+@rampc ice     #4a6a80 #698ea5 #88b3ca #a8d8f0 #c5e5f5 #e2f2fa #ffffff
+@rampc straw   #3a2a08 #614c1a #886e2d #b09040 #cab065 #e4d08a #fff0b0
+@rampc leaf    #0c240e #174617 #226820 #2e8a2a #5cac46 #8ace63 #b8f080
+@rampc black   #08080a #131317 #1e1e24 #2a2a32 #41414c #585866 #707080
+@rampc white   #5a5a66 #7e7e8a #a3a3af #c8c8d4 #dadae2 #ececf0 #ffffff
+@rampc cheese  #4a3000 #7c5a10 #ae8520 #e0b030 #eac65a #f4dd85 #fff4b0
+@rampc water   #0a1a3a #143664 #1f538e #2a70b8 #5998cf #88c0e7 #b8e8ff
+
+// 반투명 그림자(방향 B 의 접지 그림자용. 발 칸 안에만, 오른쪽 아래로).
+~ #1c1418 110   // 그림자 속
+- #1c1418 58    // 그림자 번짐
+# #e040c0       // 실루엣 단계 표시색(최종본에 남으면 불합격)
+
+// ---- 이 기물의 v5 색 ----
+A #411e05   // = wood:1
+B #b77246   // = wood:6
+C #6d3b15   // = wood:3
+D #000000   // = wood:0
+E #9a5435   // = wood:4
+F #b8daea   // = glass:5
+G #f0ffff   // = glass:6
+H #5998cf   // = water:4
+I #88c0e7   // = water:5
+J #1a2a10
+K #344f25
+L #4f743a
+M #6a9a50
+N #94bb7a
+O #bedda5
+P #e8ffd0
+Q #08080a   // = black:0
+R #ffffff   // = ice:6
+S #2a70b8   // = water:3
+T #69ac53   // = green:4
+U #3a8a30   // = green:3
+V #b09040   // = straw:3
+W #886e2d   // = straw:2

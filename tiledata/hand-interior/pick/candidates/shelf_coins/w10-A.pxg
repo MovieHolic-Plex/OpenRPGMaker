@@ -1,0 +1,31 @@
+// w10 w10-A
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat T wood 7
+@mat U wood 6
+@mat W wood 1
+@mat X wood 4
+@mat Z wood 2
+@mat a gold 6
+@mat b gold 5
+@mat c gold 4
+@mat d gold 3
+@mat e gold 2
+@mblock 0 0
+................
+...eaae.........
+..eabbce..eaae..
+..ebcdce.ebbcce.
+.TeddddeTeddcde.
+.UUUUUUUUUUUUUU.
+.XXXXXXXXXXXXXX.
+.ZZZZZZZZZZZZZZ.
+..W..........W..
+...eaae.........
+..eabbce..eaae..
+..ebcdce.ebbcce.
+.TeddddeTeddcde.
+.UUUUUUUUUUUUUU.
+.XXXXXXXXXXXXXX.
+.ZZZZZZZZZZZZZZ.

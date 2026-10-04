@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/dark_altar/h161-C.pxg",
+ "id": "dark altar",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.152
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 20,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  6,
+  30,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "큰 검은 돌판과 단순한 붉은 인장, 보라 불꽃 촛대 둘·입구가 보이는 해골 잔으로 정리; 높이 26px·접지선 y=31; 꼭대기 윗면 8행(y=14~21)",
+ "ok": true
+}

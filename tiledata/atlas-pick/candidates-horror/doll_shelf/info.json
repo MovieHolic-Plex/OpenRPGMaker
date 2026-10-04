@@ -1,0 +1,49 @@
+{
+ "id": "doll_shelf",
+ "slug": "doll_shelf",
+ "name": "인형 진열장",
+ "scene": "낡은 서양 저택",
+ "cells": [
+  1,
+  2
+ ],
+ "canvas": [
+  16,
+  32
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "v5 인형 진열장의 낡은 판(같은 크기): 유리문 진열장 안 선반 세 단에 작은 인형 머리들(창백한 점 덩이 + 눈 점)이 줄지어 이쪽을 봄, 유리 한 장 깨짐, 틀 먼지.",
+ "palette_hint": "mahog 틀, murk 유리, bisque 인형, dust",
+ "worker_v1": "h1",
+ "stage": 2,
+ "stage_ko": "2단계 연출(기본이 선 뒤)",
+ "worker": "h1",
+ "set_with": [
+  "doll_sitting"
+ ],
+ "v5_ref": [
+  {
+   "id": "cabinet:toy",
+   "name_ko": "인형 진열장",
+   "atlas": {
+    "x": 128,
+    "y": 48,
+    "w": 16,
+    "h": 32,
+    "frames": 1,
+    "padTop": 0
+   },
+   "image": {
+    "w": 16,
+    "h": 32
+   },
+   "kind": "wall",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "file": "ref-v5-1.png"
+  }
+ ]
+}

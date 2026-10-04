@@ -1,6 +1,9 @@
 import { drawMapTileLayer } from "@/editor/mapTileDraw";
 import { tileBackingTile } from "@/editor/tileLayerPolicy";
 import { cropExtraLayers } from "@/project/mapLayers";
+import { reliefMapView } from "@/editor/reliefMapView";
+import { reliefGroundFromImage } from "@/editor/reliefGroundSurface";
+import { cellLift, reliefLiftField } from "@/project/relief/screen";
 import type { GameMap, Project, TilesetDef } from "@/project/types";
 import { mapVisualEvidenceUnavailable } from "./mapVisualEvidence";
 import {
@@ -148,13 +151,45 @@ async function renderTileGridPayload(payload: TileGridPayload, label: string, dr
   // Whole-map coverage renders reach here, so the canvas is sized to the delivered
   // image rather than drawn huge and shrunk. Small regions keep the native scale.
   const drawSize = tileDrawSize(payload.w, payload.h, payload.tileset.tileSize);
-  const canvasPair = createCanvas(payload.w * drawSize, payload.h * drawSize);
+  const region = payload.map ? cropMapRegion(payload.map, payload.x, payload.y, payload.w, payload.h) : undefined;
+  const relief = region ? reliefMapView(region, drawSize, reliefGroundFromImage(region, payload.tileset, image)) : null;
+  const canvasPair = createCanvas(payload.w * drawSize, relief?.height ?? payload.h * drawSize);
   if (!canvasPair) return [];
   const { canvas, context } = canvasPair;
   drawCheckerBackground(context, canvas.width, canvas.height, Math.max(4, Math.floor(drawSize / 2)));
   if (payload.map) {
     const scale = drawSize / payload.tileset.tileSize;
-    const region = cropMapRegion(payload.map, payload.x, payload.y, payload.w, payload.h);
+    if (relief && region) {
+      const lower = createCanvas(payload.w * drawSize, payload.h * drawSize), upper = createCanvas(payload.w * drawSize, payload.h * drawSize);
+      if (!lower || !upper) throw new Error("map-relief-rendering-unavailable: canvas unavailable");
+      drawMapTileLayer(lower.context, image, region, payload.tileset, "lower", scale);
+      drawMapTileLayer(upper.context, image, region, payload.tileset, "upper", scale);
+      const field = reliefLiftField(region.relief!);
+      const events = payload.events.map(event => {
+        const source = payload.map!.events.find(e => e.id === event.eventId);
+        const x = (source?.x ?? payload.x) - payload.x, y = (source?.y ?? payload.y) - payload.y;
+        return { ...event, row: y, destY: event.destY + relief.pad - cellLift(field, x, y) * drawSize };
+      });
+      const strip = (s: (typeof relief.rows)[number]["under"]) => {
+        if (!s) return;
+        const pair = createCanvas(s.w, s.h);
+        if (!pair) throw new Error("map-relief-rendering-unavailable: strip canvas unavailable");
+        pair.context.putImageData(new ImageData(new Uint8ClampedArray(s.rgba), s.w, s.h), 0, 0);
+        context.drawImage(pair.canvas, s.x * relief.scale, s.y * relief.scale, s.w * relief.scale, s.h * relief.scale);
+      };
+      for (const row of relief.rows) {
+        strip(row.under);
+        for (const cell of row.cells) if (cell.paintLower) context.drawImage(lower.canvas, cell.x * drawSize, row.y * drawSize, drawSize, drawSize, cell.x * drawSize, cell.y, drawSize, drawSize);
+        await drawRegionEventSprites(context, events.filter(e => e.row === row.y && e.priority === "below"));
+        strip(row.over);
+        for (const cell of row.cells) context.drawImage(upper.canvas, cell.x * drawSize, row.y * drawSize, drawSize, drawSize, cell.x * drawSize, cell.y, drawSize, drawSize);
+        await drawRegionEventSprites(context, events.filter(e => e.row === row.y && e.priority === "same"));
+      }
+      await drawRegionEventSprites(context, events.filter(e => e.priority === "above"));
+      const dataUrl = canvasDataUrl(canvas);
+      return dataUrl ? [{ dataUrl, label: `${label} · 실제 절벽 높이 포함` }] : [];
+    }
+    if (!region) return [];
     drawMapTileLayer(context, image, region, payload.tileset, "lower", scale);
     const below = payload.events.filter((event) => event.priority === "below");
     const rest = payload.events.filter((event) => event.priority !== "below");

@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/pipe_organ/w50-A.pxg",
+ "id": "pipe organ",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.039
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 13,
+ "v5_colors": 13,
+ "bbox": [
+  0,
+  11,
+  31,
+  47
+ ],
+ "v5_bbox": [
+  0,
+  11,
+  31,
+  47
+ ],
+ "note": "연주대 상판 윗면 4px(I)+앞가장자리 하이라이트(G)+처마 그림자 2px, 건반은 앞면에 앉고 악보대는 상판 위로. 파이프 윤곽·금색 유지, 꼭대기에 입구 타원(밝은 테+어두운 점). 관문 확인 후 갱신",
+ "ok": true
+}

@@ -199,6 +199,7 @@ function heuristicCompletenessWarnings(
 }
 
 const INTERIOR_ROOM_TOOL_NAMES = new Set([
+  "build_hand_interior_room",
   "place_concept",
   "start_interior_room_session",
   "run_interior_room_pipeline",

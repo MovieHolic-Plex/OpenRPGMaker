@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/tall_stained_window/w2-C.pxg",
+ "id": "tall stained window",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.047
+ },
+ "lint": {
+  "failed": [
+   "jaggies"
+  ],
+  "pass": false
+ },
+ "colors": 17,
+ "v5_colors": 18,
+ "bbox": [
+  2,
+  11,
+  29,
+  31
+ ],
+ "v5_bbox": [
+  2,
+  11,
+  29,
+  31
+ ],
+ "note": "재해석: 세로 납선 대신 대각 납선 마름모 격자 유리, 조각마다 5색 순환, 프레임·아치 실루엣은 유지",
+ "ok": true
+}

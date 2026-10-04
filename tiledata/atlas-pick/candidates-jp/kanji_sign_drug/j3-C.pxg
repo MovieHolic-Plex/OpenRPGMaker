@@ -1,0 +1,74 @@
+// kanji_sign_drug j3-C
+@size 16 32
+@cell 16
+@palette palette.pal
+@layer main
+@mat a kgreen 3
+@mat b lacq 3
+@mat c taxi 3
+@mblock 0 0
+................
+.......cc.......
+......cccc......
+.....cccccc.....
+....cccccccc....
+...cccccccccc...
+..cccccccccccc..
+.cccccccccccccc.
+.cccccccccccccc.
+.cccbbccccbbccc.
+..bbbbbbbbbbbb..
+.cccbbbbbbbbccc.
+.ccbbcbbbbcbbc~.
+.cccbcbccbcbcc~.
+.ccbbcbbbbcbbc~.
+.ccbbbbbbbbbbc~.
+.ccbcccbbcccbc~.
+.ccbbbbbbbbbbc~.
+.cccccbbbbcccc~.
+.ccbbbcbbcbbbc~.
+..bbcccbbcccbb~.
+.ccccccccccccc~.
+.ccccccccccccc~.
+.ccccccccccccc~.
+.cccaaaaaaaacc~.
+.cccaaaaaaaacc~.
+.ccccccccccccc~.
+.ccccccccccccc~.
+.ccccccccccccc~.
+.ccccccccccccc~.
+.cccccccccccccc.
+..cc----------..
+@tblock 0 0
+................
+.......00.......
+......0410......
+.....043310.....
+....04333310....
+...0433333310...
+..043333333310..
+.04333333333310.
+.04333333333310.
+.04322333322310.
+..221122221122..
+.04320111100310.
+.0420320003221..
+.0432323323231..
+.0420322203221..
+.0420201102001..
+.0423332033321..
+.0422221122201..
+.0433321103331..
+.0422232032221..
+..203332033322..
+.0433333333331..
+.0433333333331..
+.0433333333331..
+.0433333333331..
+.0432222222231..
+.0433333333331..
+.0433333333331..
+.0433333333331..
+.0433333333331..
+.01111111111110.
+..00............

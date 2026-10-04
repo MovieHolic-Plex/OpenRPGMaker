@@ -1,0 +1,37 @@
+{
+ "id": "round arch",
+ "slug": "round_arch",
+ "name_ko": "둥근 아치 문틀(3칸)",
+ "category": "호빗 굴",
+ "kind": "hang",
+ "kind_ko": "벽면 걸이(벽 두 줄 중 윗줄)",
+ "canvas": [
+  48,
+  32
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 48,
+  "h": 32
+ },
+ "footprint": {
+  "w": 3,
+  "h": 0
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "문 틈(남북 칸막이의 1칸 틈) 둘레에 거는 둥근 나무 아치 문틀. 틈 칸-1 부터 3칸, 벽면 윗줄. 문틀은 틈을 막지 않는다(검사: 옆 칸만 벽면이면 된다).",
+ "where": "틈 칸-1 부터 3칸, 벽면 윗줄. 문틀은 틈을 막지 않는다(검사: 옆 칸만 벽면이면 된다).",
+ "placement": [
+  "벽면 두 줄 중 윗줄(y=벽면 첫 줄)에 건다. 바닥 칸은 차지하지 않는다"
+ ],
+ "v5_bbox": [
+  12,
+  0,
+  35,
+  29
+ ],
+ "v5_colors": 4,
+ "material": "wood",
+ "related": []
+}

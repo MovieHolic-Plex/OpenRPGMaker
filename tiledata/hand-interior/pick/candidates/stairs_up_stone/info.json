@@ -1,0 +1,41 @@
+{
+ "id": "stairs up stone",
+ "slug": "stairs_up_stone",
+ "name_ko": "돌 계단",
+ "category": "가구·살림",
+ "kind": "wall",
+ "kind_ko": "북쪽 벽 앞 기물(막힘, 벽에 붙임)",
+ "canvas": [
+  48,
+  48
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 48,
+  "h": 48
+ },
+ "footprint": {
+  "w": 3,
+  "h": 1
+ },
+ "overhang_px": 32,
+ "surface": null,
+ "description": "돌 계단(3칸 폭, 벽면 두 줄을 덮고 위로 오른다). 간수실·지하 북쪽 벽에 1개 → 위층 이동 이벤트(links). 계단 밑 칸은 비운다.",
+ "where": "간수실·지하 북쪽 벽에 1개 → 위층 이동 이벤트(links). 계단 밑 칸은 비운다.",
+ "placement": [
+  "발밑 줄이 북쪽 벽면 바로 아래 첫 바닥 줄이어야 한다",
+  "그림이 발밑 칸 위로 32px 솟는다 → 위 2칸은 플레이어 위에 그리는 겹침층",
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": [
+  0,
+  0,
+  47,
+  47
+ ],
+ "v5_colors": 12,
+ "material": "wood",
+ "related": [
+  "stairwell down"
+ ]
+}

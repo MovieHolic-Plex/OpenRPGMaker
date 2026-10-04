@@ -1,0 +1,135 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/meadow/w2-B.pxg",
+ "set": "worldmap",
+ "id": "meadow",
+ "hard": [],
+ "warn": [
+  "corner-round: 바깥 모서리가 네모다(대각선 깊이 = 이음 깊이) — nw ne sw"
+ ],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.068
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.082
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 6,
+ "bbox": [
+  2,
+  0,
+  47,
+  61
+ ],
+ "note": "빛 방향 강조: 왼쪽·위 밝은 테두리, 오른쪽·아래 짙은 그늘, 평원보다 한 단 짙은 풀",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.02
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.044
+  },
+  "shore": {
+   "profile": {
+    "n": [
+     4,
+     5,
+     4,
+     2,
+     4,
+     3,
+     4,
+     5,
+     4,
+     5,
+     4,
+     2,
+     4,
+     2,
+     4,
+     3
+    ],
+    "s": [
+     2,
+     2,
+     3,
+     2,
+     2,
+     3,
+     2,
+     3,
+     2,
+     2,
+     3,
+     2,
+     2,
+     3,
+     2,
+     2
+    ],
+    "w": [
+     4,
+     2,
+     4,
+     2,
+     4,
+     3,
+     4,
+     5,
+     4,
+     2,
+     4,
+     2,
+     4,
+     3,
+     4,
+     3
+    ],
+    "e": [
+     2,
+     3,
+     2,
+     2,
+     3,
+     2,
+     3,
+     2,
+     2,
+     3,
+     2,
+     2,
+     2,
+     3,
+     2,
+     3
+    ]
+   },
+   "strait": 8,
+   "steps": {
+    "n": 2,
+    "s": 1,
+    "w": 2,
+    "e": 1
+   },
+   "amp": {
+    "n": 3,
+    "s": 1,
+    "w": 3,
+    "e": 1
+   },
+   "joinWorst": 1
+  },
+  "seam": 0.45
+ }
+}

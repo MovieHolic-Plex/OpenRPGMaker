@@ -1,0 +1,41 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/firewood_rack_2w/w43-A.pxg",
+ "id": "firewood rack 2w",
+ "hard": [],
+ "warn": [],
+ "resized": {
+  "canvas": [
+   48,
+   32
+  ],
+  "footprint": {
+   "w": 3,
+   "h": 1
+  },
+  "why": "사용자 메모: 사이즈를 키워도 좋으니 장작을 대각선으로 눕힌 것처럼 (3x2 로 키움)."
+ },
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.012
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 11,
+ "v5_colors": 17,
+ "bbox": [
+  0,
+  2,
+  47,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  2,
+  31,
+  31
+ ],
+ "note": "3/4(48x32, resize.json): 눕혀 어긋나게 쌓은 통나무 4단, 윗가로대·바닥판 윗면, 처마 그림자, 단마다 윗면 하이라이트",
+ "ok": true
+}

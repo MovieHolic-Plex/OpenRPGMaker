@@ -1,0 +1,37 @@
+{
+ "id": "theater seat",
+ "slug": "theater_seat",
+ "name_ko": "극장 좌석",
+ "category": "극장",
+ "kind": "floor",
+ "kind_ko": "바닥 기물(막힘)",
+ "canvas": [
+  16,
+  16
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 16,
+  "h": 16
+ },
+ "footprint": {
+  "w": 1,
+  "h": 1
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "극장 좌석(뒤에서 본 것). 줄마다 앞뒤 한쪽은 통로에 닿게 두 줄씩 묶는다.",
+ "where": "줄마다 앞뒤 한쪽은 통로에 닿게 두 줄씩 묶는다.",
+ "placement": [
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": [
+  1,
+  2,
+  14,
+  14
+ ],
+ "v5_colors": 9,
+ "material": "wood",
+ "related": []
+}

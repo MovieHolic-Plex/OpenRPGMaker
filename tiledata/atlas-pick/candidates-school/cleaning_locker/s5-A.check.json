@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/cleaning_locker/s5-A.pxg",
+ "set": "school",
+ "id": "cleaning_locker",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.066
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.013
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 14,
+ "bbox": [
+  1,
+  0,
+  14,
+  31
+ ],
+ "note": "청소 도구함 — 좁고 긴 회청색 금속 사물함, 문 한 짝, 환기 틈 4줄, 금속 손잡이, 위로 빗자루 자루 끝이 삐져나옴, 바닥에 짧은 발",
+ "ok": true
+}

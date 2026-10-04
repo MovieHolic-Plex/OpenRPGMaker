@@ -1,0 +1,275 @@
+[
+  {
+    "resourceId": "generated-enemy-ontology-8da61312",
+    "path": "assets/generated/pixel-enemies/ontology-8da61312.png",
+    "cell": 64,
+    "motion": "float",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-sylph-hornet",
+    "path": "assets/generated/pixel-enemies/sylph-hornet-transparent.png",
+    "cell": 48,
+    "motion": "swoop",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-skeleton-01",
+    "path": "assets/generated/pixel-enemies/skeleton-01.png",
+    "cell": 48,
+    "motion": "stomp",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-ghost-01",
+    "path": "assets/generated/pixel-enemies/ghost-01.png",
+    "cell": 48,
+    "motion": "float",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-plant-01",
+    "path": "assets/generated/pixel-enemies/plant-01.png",
+    "cell": 64,
+    "motion": "stomp",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-carbuncle-01",
+    "path": "assets/generated/pixel-enemies/carbuncle-01.png",
+    "cell": 48,
+    "motion": "dash",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-jackolantern-01",
+    "path": "assets/generated/pixel-enemies/jackolantern-01.png",
+    "cell": 48,
+    "motion": "stomp",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-spirit-01",
+    "path": "assets/generated/pixel-enemies/spirit-01.png",
+    "cell": 48,
+    "motion": "float",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-ghoul-01",
+    "path": "assets/generated/pixel-enemies/ghoul-01.png",
+    "cell": 48,
+    "motion": "stomp",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-specter-01",
+    "path": "assets/generated/pixel-enemies/specter-01.png",
+    "cell": 48,
+    "motion": "float",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-lemora-01",
+    "path": "assets/generated/pixel-enemies/lemora-01.png",
+    "cell": 64,
+    "motion": "breath",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-sylph-01",
+    "path": "assets/generated/pixel-enemies/sylph-01.png",
+    "cell": 48,
+    "motion": "float",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-king-slime-01",
+    "path": "assets/generated/pixel-enemies/king-slime-01.png",
+    "cell": 48,
+    "motion": "hop",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-slime-blue",
+    "path": "assets/generated/pixel-enemies/slime-blue.png",
+    "cell": 48,
+    "motion": "hop",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-slime-green",
+    "path": "assets/generated/pixel-enemies/slime-green.png",
+    "cell": 48,
+    "motion": "hop",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-slime-metal",
+    "path": "assets/generated/pixel-enemies/slime-metal.png",
+    "cell": 48,
+    "motion": "hop",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-slime-king",
+    "path": "assets/generated/pixel-enemies/slime-king.png",
+    "cell": 48,
+    "motion": "hop",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-slime-cube",
+    "path": "assets/generated/pixel-enemies/slime-cube.png",
+    "cell": 48,
+    "motion": "hop",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-ooze-black",
+    "path": "assets/generated/pixel-enemies/ooze-black.png",
+    "cell": 48,
+    "motion": "hop",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-ooze-acid",
+    "path": "assets/generated/pixel-enemies/ooze-acid.png",
+    "cell": 48,
+    "motion": "hop",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-skeleton-bone",
+    "path": "assets/generated/pixel-enemies/skeleton-bone.png",
+    "cell": 48,
+    "motion": "float",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-ghoul-grave",
+    "path": "assets/generated/pixel-enemies/ghoul-grave.png",
+    "cell": 48,
+    "motion": "stomp",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-wraith-dark",
+    "path": "assets/generated/pixel-enemies/wraith-dark.png",
+    "cell": 48,
+    "motion": "float",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-banshee-wail",
+    "path": "assets/generated/pixel-enemies/banshee-wail.png",
+    "cell": 48,
+    "motion": "float",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-revenant-vengeful",
+    "path": "assets/generated/pixel-enemies/revenant-vengeful.png",
+    "cell": 64,
+    "motion": "stomp",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-bonepile-crawler",
+    "path": "assets/generated/pixel-enemies/bonepile-crawler.png",
+    "cell": 64,
+    "motion": "dash",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-spirit-wind",
+    "path": "assets/generated/pixel-enemies/spirit-wind.png",
+    "cell": 48,
+    "motion": "float",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-spirit-light",
+    "path": "assets/generated/pixel-enemies/spirit-light.png",
+    "cell": 48,
+    "motion": "float",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-spirit-dark",
+    "path": "assets/generated/pixel-enemies/spirit-dark.png",
+    "cell": 48,
+    "motion": "float",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-sylph-air",
+    "path": "assets/generated/pixel-enemies/sylph-air.png",
+    "cell": 48,
+    "motion": "float",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-undine-sea",
+    "path": "assets/generated/pixel-enemies/undine-sea.png",
+    "cell": 48,
+    "motion": "float",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-golem-stone",
+    "path": "assets/generated/pixel-enemies/golem-stone.png",
+    "cell": 64,
+    "motion": "stomp",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-golem-clay",
+    "path": "assets/generated/pixel-enemies/golem-clay.png",
+    "cell": 64,
+    "motion": "stomp",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-golem-crystal",
+    "path": "assets/generated/pixel-enemies/golem-crystal.png",
+    "cell": 64,
+    "motion": "stomp",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-sword-flying",
+    "path": "assets/generated/pixel-enemies/sword-flying.png",
+    "cell": 48,
+    "motion": "float",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-scarecrow-field",
+    "path": "assets/generated/pixel-enemies/scarecrow-field.png",
+    "cell": 64,
+    "motion": "stomp",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-puppet-string",
+    "path": "assets/generated/pixel-enemies/puppet-string.png",
+    "cell": 64,
+    "motion": "float",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-totem-cursed",
+    "path": "assets/generated/pixel-enemies/totem-cursed.png",
+    "cell": 64,
+    "motion": "stomp",
+    "idleFrameMs": 180
+  },
+  {
+    "resourceId": "generated-enemy-spirit-earth",
+    "path": "assets/generated/pixel-enemies/spirit-earth.png",
+    "cell": 64,
+    "motion": "float",
+    "idleFrameMs": 180
+  }
+]

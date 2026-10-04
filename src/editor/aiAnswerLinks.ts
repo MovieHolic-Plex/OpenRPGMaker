@@ -156,28 +156,64 @@ function boundaryOk(text: string, start: number, end: number): boolean {
   return !after || (!isHangul(after) && !isWordChar(after));
 }
 
+interface ReferenceTrie {
+  children: Map<string, ReferenceTrie>;
+  matches: { entry: EditorReferenceEntry; rank: number }[];
+}
+const matchers = new WeakMap<EditorReferenceIndex, { root: ReferenceTrie; results: Map<string, readonly EditorReferenceSpan[]> }>();
+function referenceMatcher(index: EditorReferenceIndex) {
+  let matcher = matchers.get(index);
+  if (matcher) return matcher;
+  const root: ReferenceTrie = { children: new Map(), matches: [] };
+  index.entries.forEach((entry, rank) => {
+    let node = root;
+    // UTF-16 offsets match DOM text slicing and the existing boundary contract.
+    for (let i = 0; i < entry.label.length; i++) {
+      const char = entry.label.charAt(i);
+      let child = node.children.get(char);
+      if (!child) { child = { children: new Map(), matches: [] }; node.children.set(char, child); }
+      node = child;
+    }
+    node.matches.push({ entry, rank });
+  });
+  matcher = { root, results: new Map() };
+  matchers.set(index, matcher);
+  return matcher;
+}
+
 /** 답변 텍스트에서 색인된 이름의 위치를 찾는다. 겹치지 않고, 긴 이름이 이긴다. */
 export function findEditorReferences(text: string, index: EditorReferenceIndex): EditorReferenceSpan[] {
   if (!text) return [];
-  const claimed: { start: number; end: number }[] = [];
-  const spans: EditorReferenceSpan[] = [];
-
-  for (const entry of index.entries) {
-    let from = 0;
-    for (;;) {
-      const start = text.indexOf(entry.label, from);
-      if (start < 0) break;
-      const end = start + entry.label.length;
-      from = start + 1;
-      if (!boundaryOk(text, start, end)) continue;
-      if (claimed.some((range) => start < range.end && end > range.start)) continue;
-      claimed.push({ start, end });
-      spans.push({ start, end, label: entry.label, target: entry.target });
+  const matcher = referenceMatcher(index);
+  const cached = matcher.results.get(text);
+  if (cached) return cached.slice();
+  const matches: { span: EditorReferenceSpan; rank: number }[] = [];
+  for (let start = 0; start < text.length; start++) {
+    if (start > 0 && isWordChar(text.charAt(start - 1))) continue;
+    let node = matcher.root;
+    for (let cursor = start; cursor < text.length; cursor++) {
+      const child = node.children.get(text.charAt(cursor));
+      if (!child) break;
+      node = child;
+      for (const { entry, rank } of node.matches) {
+        const end = cursor + 1;
+        if (boundaryOk(text, start, end)) matches.push({ rank, span: { start, end, label: entry.label, target: entry.target } });
+      }
     }
   }
-
+  // Global long-name priority must also win for crossing overlaps, not just prefixes.
+  matches.sort((a, b) => a.rank - b.rank || a.span.start - b.span.start);
+  const spans: EditorReferenceSpan[] = [];
+  for (const { span } of matches) {
+    if (!spans.some(range => span.start < range.end && span.end > range.start)) spans.push(span);
+  }
   spans.sort((a, b) => a.start - b.start);
-  return spans;
+  // Bounded per-index cache for repeated paragraphs during history restoration.
+  if (text.length <= 8000) {
+    if (matcher.results.size >= 256) matcher.results.delete(matcher.results.keys().next().value!);
+    matcher.results.set(text, spans);
+  }
+  return spans.slice();
 }
 
 /**

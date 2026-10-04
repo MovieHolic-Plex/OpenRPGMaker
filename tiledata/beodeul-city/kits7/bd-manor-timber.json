@@ -1,0 +1,213 @@
+{
+ "id": "bd-manor-timber",
+ "name": "귀족 저택 (반목조, 가운데 박공)",
+ "w": 17,
+ "h": 12,
+ "walk": [
+  ".....C.....C.....",
+  "CXXXXXXXXXXXXXXXC",
+  "XXXXXXXXXXXXXXXXX",
+  "XXXXXXXXXXXXXXXXX",
+  "XXXXXXXXXXXXXXXXX",
+  "XXXXXXXXXXXXXXXXX",
+  "XXXXXXXXXXXXXXXXX",
+  "XXXXXXXXXXXXXXXXX",
+  "XXXXXXXXXXXXXXXXX",
+  "......XXXXX......",
+  "......XFFFX......",
+  "......XFFFX......"
+ ],
+ "description": "좌우 대칭 17칸x12줄 반목조 저택: 가파른 테라코타 4면 지붕, 가운데 5칸 급경사 박공(창 넷·둥근 창), 양 날개 지붕창·굴뚝, 아치 창과 꽃상자가 달린 벽칸 열과 층 사이 띠, 기둥 둘 박공 현관, 꼭지 장식 돌기둥 계단.",
+ "rules": "문은 (8,9). 문 앞 (8,10)은 계단 맨 윗칸(걸음). 정원 bd-garden-formal 은 같은 x 에서 바로 아래(y=12)에 붙인다.",
+ "tags": [
+  "귀족저택",
+  "반목조",
+  "대칭"
+ ],
+ "role": "building",
+ "doors": [
+  {
+   "dx": 8,
+   "dy": 9,
+   "note": "현관 겹문 (계단 위)"
+  }
+ ],
+ "notes": "",
+ "assembly": [
+  {
+   "kit": "bd-mpart-roof-l",
+   "x": 0,
+   "y": 1
+  },
+  {
+   "kit": "bd-mpart-roof-m",
+   "x": 3,
+   "y": 1
+  },
+  {
+   "kit": "bd-mpart-roof-m",
+   "x": 4,
+   "y": 1
+  },
+  {
+   "kit": "bd-mpart-roof-m",
+   "x": 5,
+   "y": 1
+  },
+  {
+   "kit": "bd-mpart-roof-m",
+   "x": 6,
+   "y": 1
+  },
+  {
+   "kit": "bd-mpart-roof-m",
+   "x": 7,
+   "y": 1
+  },
+  {
+   "kit": "bd-mpart-roof-m",
+   "x": 8,
+   "y": 1
+  },
+  {
+   "kit": "bd-mpart-roof-m",
+   "x": 9,
+   "y": 1
+  },
+  {
+   "kit": "bd-mpart-roof-m",
+   "x": 10,
+   "y": 1
+  },
+  {
+   "kit": "bd-mpart-roof-m",
+   "x": 11,
+   "y": 1
+  },
+  {
+   "kit": "bd-mpart-roof-m",
+   "x": 12,
+   "y": 1
+  },
+  {
+   "kit": "bd-mpart-roof-m",
+   "x": 13,
+   "y": 1
+  },
+  {
+   "kit": "bd-mpart-roof-r",
+   "x": 14,
+   "y": 1
+  },
+  {
+   "kit": "bd-mpart-gable",
+   "x": 6,
+   "y": 1
+  },
+  {
+   "kit": "bd-mpart-dormer",
+   "x": 2,
+   "y": 2
+  },
+  {
+   "kit": "bd-mpart-dormer-lit",
+   "x": 13,
+   "y": 2
+  },
+  {
+   "kit": "bd-mpart-chimney",
+   "x": 5,
+   "y": 0
+  },
+  {
+   "kit": "bd-mpart-chimney",
+   "x": 11,
+   "y": 0
+  },
+  {
+   "kit": "bd-mpart-bay-win-b-l",
+   "x": 0,
+   "y": 4
+  },
+  {
+   "kit": "bd-mpart-bay-plain-l",
+   "x": 1,
+   "y": 4
+  },
+  {
+   "kit": "bd-mpart-bay-win-a-l",
+   "x": 2,
+   "y": 4
+  },
+  {
+   "kit": "bd-mpart-bay-plain-l",
+   "x": 3,
+   "y": 4
+  },
+  {
+   "kit": "bd-mpart-bay-win-lit-l",
+   "x": 4,
+   "y": 4
+  },
+  {
+   "kit": "bd-mpart-bay-plain-l",
+   "x": 5,
+   "y": 4
+  },
+  {
+   "kit": "bd-mpart-bay-plain-r",
+   "x": 11,
+   "y": 4
+  },
+  {
+   "kit": "bd-mpart-bay-win-a-r",
+   "x": 12,
+   "y": 4
+  },
+  {
+   "kit": "bd-mpart-bay-plain-r",
+   "x": 13,
+   "y": 4
+  },
+  {
+   "kit": "bd-mpart-bay-win-b-r",
+   "x": 14,
+   "y": 4
+  },
+  {
+   "kit": "bd-mpart-bay-plain-r",
+   "x": 15,
+   "y": 4
+  },
+  {
+   "kit": "bd-mpart-bay-win-a-r",
+   "x": 16,
+   "y": 4
+  },
+  {
+   "kit": "bd-mpart-bay-win-a-l",
+   "x": 6,
+   "y": 5
+  },
+  {
+   "kit": "bd-mpart-door-bay",
+   "x": 7,
+   "y": 5
+  },
+  {
+   "kit": "bd-mpart-bay-win-b-r",
+   "x": 10,
+   "y": 5
+  },
+  {
+   "kit": "bd-mpart-porch",
+   "x": 7,
+   "y": 7
+  },
+  {
+   "kit": "bd-mpart-stairs",
+   "x": 6,
+   "y": 10
+  }
+ ]
+}

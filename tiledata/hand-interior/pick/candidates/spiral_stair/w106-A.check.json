@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/spiral_stair/w106-A.pxg",
+ "id": "spiral stair",
+ "hard": [],
+ "warn": [
+  "파일 이름이 <작업자>-<방향>.pxg 꼴이 아니다(w1-A.pxg): w106-A.pxg"
+ ],
+ "refmap": {
+  "cells": 8,
+  "atLeast95": 0,
+  "max": 0.075
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 7,
+ "v5_colors": 9,
+ "bbox": [
+  2,
+  9,
+  29,
+  63
+ ],
+ "v5_bbox": [
+  1,
+  9,
+  30,
+  63
+ ],
+ "note": "나선 계단 위에서 본 3/4: 둥근 기둥(타원 머리·고리·밝은 줄 몸통·타원 밑), 부채꼴 디딤판 9장(밝은 윗면+앞 모서리 1행+두께 2행)이 앞 낮은 곳에서 뒤 높은 곳으로 시계 방향 상승, 난간은 1px 한 줄.",
+ "ok": true
+}

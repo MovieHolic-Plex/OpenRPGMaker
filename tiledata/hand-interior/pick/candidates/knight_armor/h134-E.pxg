@@ -1,0 +1,73 @@
+// E 재검수: 몸통·골반 6행과 다리 6행을 줄여 갑옷 32px 솟음, 창 높이 조정; 투구 윗면 4행(y=12~15).
+@size 16 48
+@cell 16
+@palette palette.pal
+@mat i iron 1
+@mat j iron 2
+@mat k iron 3
+@mat l iron 4
+@mat m iron 5
+@mat n iron 6
+@mat a stone 2
+@mat b stone 3
+@mat c stone 4
+@mat d stone 5
+@mat e stone 6
+@mat p brass 2
+@mat q brass 4
+@mat r brass 5
+@mat s red 1
+@mat t red 2
+@mat u red 3
+@mat v wood 3
+@mat w wood 5
+@layer armor
+@mblock 0 0
+................
+................
+................
+................
+................
+................
+................
+................
+................
+................
+................
+................
+......klk.....k.
+.....kmmlk...mlk
+....kmnnmlj..mlj
+....lmmllkj..lkj
+....lmjjjjj...j.
+....mjiijlj...w.
+....klmmllj...w.
+.....klklj....w.
+.....prqpj....w.
+..klkmlklkkl..w.
+.kmnmlmlklmlj.w.
+.lmmllmlllmkj.w.
+.klljmnmlklkj.w.
+..kjlmnmlkjk..w.
+..ljlmnmlkllj.w.
+..lkjprqpjjmlmw.
+..mjjqpppj.kllw.
+..lkjlllki..jjw.
+...klmlklkj...w.
+...lmljklkj...w.
+...kljstsjk...w.
+....jutusj....w.
+....luutlk....w.
+....lmtlkj....w.
+....lmk.lkj...w.
+....lmj.lkj...w.
+....nlk.mlk...w.
+....lmk.lkj...w.
+....mlj.lkj...w.
+...kmml.klkj..w.
+..klmml.klklj.w.
+..jllkj.jkkjj.w.
+.bcddecccccccb..
+bddeedcccccccbba
+bccccbbbbbbbabaa
+.aaaaaaaaaaaaaa.

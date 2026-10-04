@@ -129,7 +129,7 @@ describe("agent UX policy prompt", () => {
     expect(text).toContain('target:{kind:"existing",mapId}');
     expect(text).toContain('target:{kind:"new",mapId,name,width,height}');
     expect(text).toContain('countPolicy:"exact"');
-    expect(text).toContain("start_interior_room_session");
+    expect(text).toContain("build_hand_interior_room");
     expect(text).not.toMatch(/야외 집[^\n]*(build_house_kit|build_house_lots|build_wall|place_door|build_roof)/);
     expect(text).not.toMatch(/마을[^\n]*(build_village|run_village_session|run_village_pipeline)/);
     expect(text).toContain("월드=plan_world/build_world");
@@ -140,7 +140,7 @@ describe("agent UX policy prompt", () => {
   it("routes interior room requests to the independent session and excludes outdoor facades", () => {
     const text = prompt();
     expect(text).toContain("외장 없는 독립 실내·방·인테리어 요청은 야외 집이 아니다");
-    expect(text).toContain("start_interior_room_session");
+    expect(text).toContain("build_hand_interior_room");
     expect(text).toContain('author_house(interior:"linked-interior")');
     expect(text).toContain("create_map만 하고 멈추지 마세요");
   });

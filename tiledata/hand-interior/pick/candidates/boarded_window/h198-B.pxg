@@ -1,0 +1,66 @@
+// B: 방의 따뜻한 나무 테와 절제된 결, 비스듬한 판자 세 장과 철못; 벽면 걸이 평면 시점.
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat a dwood 1
+@mat b wood 3
+@mat c wood 7
+@mat d wood 5
+@mat e wood 6
+@mat f glass 0
+@mat g glass 1
+@mat h glass 2
+@mat p pine 2
+@mat q pine 3
+@mat r pine 4
+@mat s iron 2
+@mat t iron 4
+@layer window
+@mblock 0 0
+................
+...aaaaaaaaaa...
+..abccccccccba..
+..acffffffffba..
+..achhggffffba..
+..achgggffffba..
+..acggggffffba..
+..acggffffffba..
+..acffffffffba..
+..acggffffffba..
+..acggffffffba..
+..acffffffffba..
+..acffffffffba..
+..acddddddddba..
+..abeeeeeeeeba..
+..aaaaaaaaaaaa..
+@layer boards
+@mblock 11 3
+rrrb
+@mblock 6 4
+rrrrrqqqb
+@mblock 1 5
+rrrrqqqqpsqqpb
+@mblock 1 6
+bqqsqqpppb
+@mblock 1 7
+bpppb
+@mblock 1 7
+brrr
+@mblock 1 8
+bqqqrrrrr
+@mblock 1 9
+bpqsqqqqqrrrrb
+@mblock 5 10
+bppqqqqsqb
+@mblock 10 11
+bpppb
+@mblock 11 11
+rrrb
+@mblock 6 12
+rrrrrqqqb
+@mblock 1 13
+brrrqqqqpsqqpb
+@mblock 1 14
+bpqsqqpppb
+@mblock 1 15
+bpppb

@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/bookshelf_3w/w41-A.pxg",
+ "id": "bookshelf 3w",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 9,
+  "atLeast95": 0,
+  "max": 0.32
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 32,
+ "v5_colors": 32,
+ "bbox": [
+  0,
+  10,
+  47,
+  47
+ ],
+ "v5_bbox": [
+  0,
+  10,
+  47,
+  47
+ ],
+ "note": "v5 몸통 유지, 윗면 5px(밝은 앞모서리 행 14)+처마 그림자 2행으로 3/4 시점. 1w·2w 와 같은 윗면·처마 문법",
+ "ok": true
+}

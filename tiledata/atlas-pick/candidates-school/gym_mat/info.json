@@ -1,0 +1,21 @@
+{
+ "id": "gym_mat",
+ "slug": "gym_mat",
+ "name": "체육 매트",
+ "scene": "체육관",
+ "place": "in",
+ "cells": [
+  2,
+  2
+ ],
+ "canvas": [
+  32,
+  32
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "바닥에 깐 두툼한 체육 매트 — 파랑 비닐, 가장자리 두께 2~3px(앞면 어둡게), 윗면에 누빔 선 두세 줄, 손잡이 끈. 겹쳐 쌓은 두 장이어도 좋다.",
+ "palette_hint": "gmat",
+ "pair": [],
+ "worker": "s3"
+}

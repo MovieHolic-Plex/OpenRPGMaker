@@ -43,6 +43,21 @@ const ENTRIES = [
   },
 ];
 
+// CJS 번들에서 import.meta 는 빈 객체다. 모듈 최상위에서 import.meta.url 을 읽으면(fileURLToPath 등)
+// 메인 프로세스가 로드 즉시 죽어 앱이 켜지지 않는다 — 2026-09-22(ohMyPiPiAi·aiAuthRuntime),
+// 2026-10-04(worldmapBuild, v0.108.0) 두 번 출하됐다. 쓰는 곳에서 지연 평가해야 한다.
+function assertNoTopLevelImportMeta(file) {
+  const offenders = readFileSync(file, "utf8")
+    .split("\n")
+    .map((line, index) => ({ line, no: index + 1 }))
+    .filter(({ line }) => /^\S/.test(line) && /\bimport_meta\d*\.url\b/.test(line))
+    // 한 줄짜리 함수 정의(`var f = () => ...`, `function f() {...}`)는 부를 때 평가되므로 괜찮다.
+    .filter(({ line }) => !/^(?:var|let|const) [\w$]+ = (?:async )?(?:\([^)]*\)|[\w$]+) =>/.test(line) && !/^(?:async )?function\b/.test(line));
+  if (offenders.length === 0) return;
+  const list = offenders.map(({ line, no }) => `  ${no}: ${line.slice(0, 200)}`).join("\n");
+  throw new Error(`${file}: 모듈 최상위에서 import.meta.url 을 읽는다 — CJS 번들에서는 비어 있어 앱 시작이 죽는다. 함수 안으로 옮겨 지연 평가하라.\n${list}`);
+}
+
 await mkdir(OUT_DIR, { recursive: true });
 // 자산 브라우저가 받은 RAR 팩(예: Rasak Modern)을 메인 프로세스에서 푼다 — node-unrar-js 는 wasm 을 따로 읽는다.
 // 번들(main.cjs) 옆에 두고 electron/main/rarPack.ts 가 __dirname 에서 읽는다.
@@ -62,6 +77,7 @@ for (const { entry, outfile, format, platform, target, external, define } of ENT
     external,
   });
   process.stdout.write(`built ${outfile.replace(`${REPO_ROOT}/`, "")}\n`);
+  if (format === "cjs") assertNoTopLevelImportMeta(outfile);
 }
 process.stdout.write(UPDATE_URL ? `update feed ${UPDATE_URL}\n` : "update feed 없음 — OPRN_UPDATE_URL 을 주면 앱이 새 버전을 확인한다\n");
 

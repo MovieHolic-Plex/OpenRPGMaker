@@ -1,0 +1,36 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/fishing_net/w8-C.pxg",
+ "id": "fishing net",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.006
+ },
+ "lint": {
+  "failed": [
+   "orphans",
+   "jaggies",
+   "saturation",
+   "dither"
+  ],
+  "pass": false
+ },
+ "colors": 17,
+ "v5_colors": 6,
+ "bbox": [
+  0,
+  1,
+  15,
+  13
+ ],
+ "v5_bbox": [
+  0,
+  1,
+  15,
+  14
+ ],
+ "note": "물고기가 걸린 자루 모양 그물 — 아래로 좁아지는 실루엣, 레일에 부표",
+ "ok": true
+}

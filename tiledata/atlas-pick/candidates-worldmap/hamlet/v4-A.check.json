@@ -1,0 +1,46 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/hamlet/v4-A.pxg",
+ "set": "worldmap",
+ "id": "hamlet",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.085
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.107
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies",
+   "outline",
+   "outline_black"
+  ]
+ },
+ "colors": 11,
+ "bbox": [
+  0,
+  2,
+  15,
+  15
+ ],
+ "note": "4판 1x1 촌락: 두 채(빨강/파랑) 한 장 그림.",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 1,
+   "atLeast95": 0,
+   "max": 0.074
+  },
+  "refmapWorld": {
+   "cells": 1,
+   "atLeast95": 0,
+   "max": 0.042
+  }
+ }
+}

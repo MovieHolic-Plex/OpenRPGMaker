@@ -1,0 +1,24 @@
+{
+ "id": "dorm_desk",
+ "slug": "dorm_desk",
+ "name": "기숙사 책상",
+ "scene": "기숙사",
+ "place": "in",
+ "cells": [
+  2,
+  2
+ ],
+ "canvas": [
+  32,
+  32
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "기숙사 책상 + 위 책꽂이 선반 — 선반에 책 네다섯, 상판에 스탠드(휜 목·불빛 점)·노트, 의자 등받이가 앞에 보인다. 윗면 ¾.",
+ "palette_hint": "vpine 책상, vred vblue 책, vyellow 불빛, % 번짐 금지(탁상)",
+ "pair": [
+  "bunk_bed",
+  "dorm_closet"
+ ],
+ "worker": "s3"
+}

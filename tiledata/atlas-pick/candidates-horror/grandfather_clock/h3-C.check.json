@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/grandfather_clock/h3-C.pxg",
+ "set": "horror",
+ "id": "grandfather_clock",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.098
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.098
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "outline",
+   "outline_black"
+  ]
+ },
+ "colors": 16,
+ "bbox": [
+  2,
+  0,
+  13,
+  31
+ ],
+ "note": "추가 멈춘 것이 아니라 유리 안 어둠에서 흰 눈 한 쌍이 밖을 본다 — 추는 없다",
+ "ok": true
+}

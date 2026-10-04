@@ -1,0 +1,27 @@
+// w8-B x
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat a iron 1
+@mat b iron 2
+@mat c iron 3
+@mat d iron 4
+@mat e iron 5
+@mat f iron 6
+@mblock 0 0
+................
+...ffe....ffe...
+...ecc....ecc...
+....ed.-....ed.-
+....cb.-....cb.-
+...ed...-...ed..
+....cb.-....cb.-
+...ed...-...ed..
+....cb.-....cb.-
+...ed...-...ed..
+..feee.-.feee.-.
+.fe...c~fe...c~.
+.ed...b~ed...b~.
+..cbbb.~.cbbb.~.
+................
+................

@@ -1,0 +1,23 @@
+{
+ "id": "snow_village",
+ "slug": "snow_village",
+ "name": "눈 마을",
+ "scene": "눈",
+ "kind": "icon",
+ "cells": [
+  1,
+  1
+ ],
+ "canvas": [
+  16,
+  16
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "under": "snow",
+ "under_ko": "설원(snow 몸통 고른 판)",
+ "passage": "walk",
+ "description": "hamlet 과 같은 틀에 지붕이 눈으로 덮인 판(World.png 눈 마을). 지붕 윗면 흰 눈, 처마 끝 푸른 그늘, 벽은 나무. 밑바탕 설원.",
+ "palette_hint": "wsnow 눈 지붕, mwood 벽",
+ "worker": "wv7"
+}

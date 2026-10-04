@@ -1,0 +1,47 @@
+// w72-A 쇠 금고: 윗면+앞가장자리 빛, 문 테두리·리벳·황동 다이얼·손잡이
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat o iron 1
+@mat i iron 2
+@mat j iron 3
+@mat k iron 4
+@mat l iron 5
+@mat L iron 6
+@mat a brass 1
+@mat b brass 3
+@mat c brass 5
+@mat d brass 2
+@mblock 0 0
+................
+................
+................
+................
+................
+................
+................
+................
+................
+.oooooooooooooo.
+.olllllllllllko.
+.olllllllllllko.
+.olllllllllllko.
+.oLLLLLLLLLLLlo.
+.olkkkkkkkkkjio.
+.olkkkkkkkkkjio.
+.olooooooooooio.
+.olollllllljoio.
+.ololLkkkkLjoio.
+.ololkbbbkcboio.
+.ololbcccbcboio.
+.ololbcacbcboio.
+.ololbcccbcboio.
+.ololkdddkcboio.
+.ololkkkkkddoio.
+.ololLkkkkLjoio.
+.olojjjjjjjjoio.
+.olooooooooooio.
+.olkkkkkkkkkjio.
+.ojjjjjjjjjjjio.
+.oooooooooooooo.
+..~~~~~~~~~~~~~.

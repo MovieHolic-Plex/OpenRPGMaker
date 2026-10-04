@@ -1,0 +1,44 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/throne/w24-D.pxg",
+ "id": "throne",
+ "hard": [],
+ "warn": [],
+ "resized": {
+  "canvas": [
+   48,
+   32
+  ],
+  "footprint": {
+   "w": 3,
+   "h": 2
+  },
+  "why": "사용자 메모: 좀 더 화려하게. 3x2 사이즈로."
+ },
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.012
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 22,
+ "v5_colors": 7,
+ "bbox": [
+  1,
+  0,
+  46,
+  31
+ ],
+ "v5_bbox": [
+  1,
+  0,
+  12,
+  18
+ ],
+ "note": "D: 고전 아치 옥좌. 금 관(아치)+정수리 청옥, 붉은 벨벳 등판에 금 마름모·홍옥, 붉은 방석·금 파이핑, 팔걸이 청옥, 마름모 금테 받침판(붉은 천 판).",
+ "ok": true
+}

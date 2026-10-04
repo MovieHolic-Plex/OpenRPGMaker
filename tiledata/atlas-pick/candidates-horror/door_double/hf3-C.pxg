@@ -1,0 +1,74 @@
+// door_double hf3-C (hf3)
+@size 32 32
+@cell 16
+@palette palette.pal
+@layer main
+@mat a rot 0
+@mat b viron 0
+@mat c tarn 0
+@mblock 0 0
+................................
+................................
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaabbbbbbbbbbbaabbbbbbbbbbbaaaa
+aaaabbbbbbbbbbbaabbbbbbbbbbbaaaa
+aaaabbbbbbbbbbbaabbbbbbbbbbbaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaacaaaacaaaaaaaaaaaaa
+aaaaaaaaaaaacacaacacaaaaaaaaaaaa
+aaaaaaaaaaaaacaaaacaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaabbbbbbbbbbbaabbbbbbbbbbbaaaa
+aaaabbbbbbbbbbbaabbbbbbbbbbbaaaa
+aaaabbbbbbbbbbbaabbbbbbbbbbbaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+@tblock 0 0
+................................
+................................
+00000000000000000000000000000000
+05555555555555555555555555555540
+04444444444444444444444444444430
+05411111111111111111111111111430
+05414232423242303232423242324430
+05414232423242303232423242324430
+05414232223242303232223242324430
+05412222222222203222222222224430
+05413533335333303333353333534430
+05411111111111103111111111114430
+05414232422222303222423242324430
+05414232423242303222423242324430
+05414222423242303222423242324430
+05414222423242303222423222324430
+05414222423244303242423222324430
+05414222423242203432423242324430
+05414232422242303222423242324430
+05414232422242303232423242324430
+05414232422242303232423242224430
+05414232222242303232423242224430
+05412232223242203232423242224430
+05412222222222203222222222224430
+05413533335333303333353333534430
+05411111111111103111111111114430
+05414222423242303232422242324430
+05414232423242303232423242324430
+05414232423242303232423242324430
+05414232423242303232423242324430
+05414232423242303232423242324430
+00000000000000000000000000000000

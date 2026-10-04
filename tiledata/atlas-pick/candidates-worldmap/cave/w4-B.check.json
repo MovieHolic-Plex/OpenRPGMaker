@@ -1,0 +1,44 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/cave/w4-B.pxg",
+ "set": "worldmap",
+ "id": "cave",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.105
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.113
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "outline_black"
+  ]
+ },
+ "colors": 12,
+ "bbox": [
+  0,
+  1,
+  15,
+  15
+ ],
+ "note": "명암 강화: 위쪽 꼭대기를 가장 밝게, 오른쪽 아래를 깊게 어둡게 하고 구멍 안쪽 테를 한 톤 밝혀 부피를 살림.",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 1,
+   "atLeast95": 0,
+   "max": 0.215
+  },
+  "refmapWorld": {
+   "cells": 1,
+   "atLeast95": 0,
+   "max": 0.145
+  }
+ }
+}

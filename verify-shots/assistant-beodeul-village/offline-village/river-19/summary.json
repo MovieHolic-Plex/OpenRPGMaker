@@ -1,0 +1,32 @@
+{
+ "spec": "river:19:88x56",
+ "ms": 3238,
+ "size": "88x56",
+ "summary": "버들항 강가 마을 88×56 (맵 map_beodeul_river_19, seed 19): 큰길 하나(굽은 폭 2)·8개 갈래길, 광장(32,30), 집 20채(20종), 앵커 inn·h109_0, 일터 「방앗간」, 밭 5, 나무 77, 광장 소품 8. 문 앞 22/22 도달. 다음: check_city_form·check_reachability 로 점검하고, NPC·출입구 이벤트는 문 앞 칸(data.doors)에 얹는다.",
+ "houses": 20,
+ "distinct": 20,
+ "doors": "22/22",
+ "stampFailed": 0,
+ "open": {
+  "share": 0.2768,
+  "worst": 0.355,
+  "over40": 0
+ },
+ "cityForm": {
+  "ok": true,
+  "counts": {
+   "deadEnds": 0,
+   "longStraight": 0,
+   "canalStraight": false,
+   "neighbourRepeats": 0,
+   "overused": 0,
+   "isolatedLines": 0,
+   "nodes": 1,
+   "landmarks": 0,
+   "meanDepth": 2.74,
+   "bentStreetCells": 23,
+   "spacingCv": null
+  },
+  "advice": []
+ }
+}

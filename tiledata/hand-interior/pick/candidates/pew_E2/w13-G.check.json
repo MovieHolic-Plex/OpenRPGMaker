@@ -1,0 +1,35 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/pew_E2/w13-G.pxg",
+ "id": "pew E2",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.039
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "outline",
+   "outline_black"
+  ],
+  "pass": false
+ },
+ "colors": 15,
+ "v5_colors": 9,
+ "bbox": [
+  2,
+  8,
+  14,
+  47
+ ],
+ "v5_bbox": [
+  2,
+  8,
+  14,
+  47
+ ],
+ "note": "따뜻한 주황빛 밝은 나무(wood 5-7)에 마구리 판과 방석 2개. 바닥 회색과 가장 뚜렷이 분리되는 색 방향.",
+ "ok": true
+}

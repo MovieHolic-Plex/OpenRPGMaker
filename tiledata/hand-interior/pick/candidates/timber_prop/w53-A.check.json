@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/timber_prop/w53-A.pxg",
+ "id": "timber prop",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.023
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 9,
+ "v5_colors": 4,
+ "bbox": [
+  0,
+  9,
+  15,
+  47
+ ],
+ "v5_bbox": [
+  0,
+  9,
+  15,
+  47
+ ],
+ "note": "양 기둥+가로보 3/4: 상인방 윗면 4px(밝은 결)→앞 모서리 하이라이트→앞면→처마 그림자 2px, 기둥은 왼쪽 밝은 좁은 면+앞면, 무릎 버팀 둘, 밑동 그림자",
+ "ok": true
+}

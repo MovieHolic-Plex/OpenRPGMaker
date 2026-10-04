@@ -1,0 +1,153 @@
+{
+ "checks": {
+  "edge_grew": true,
+  "edge_new_cells_not_empty": true,
+  "edge_undo_one_step_restores_width": true,
+  "db_modal_open": true,
+  "db_tab_renders": true,
+  "reference_panel_has_document": true,
+  "assistant_toggles": true
+ },
+ "notes": [],
+ "edge": {
+  "before": {
+   "w": 9,
+   "h": 11
+  },
+  "geom": {
+   "x": 828,
+   "y": 475,
+   "tile": 32
+  },
+  "after": {
+   "w": 13,
+   "h": 11
+  },
+  "newCols": [
+   {
+    "col": 9,
+    "distinct": [
+     2006,
+     2022,
+     2014
+    ],
+    "empty": 0
+   },
+   {
+    "col": 10,
+    "distinct": [
+     2006,
+     2022,
+     2014
+    ],
+    "empty": 0
+   },
+   {
+    "col": 11,
+    "distinct": [
+     2006,
+     2022,
+     2014
+    ],
+    "empty": 0
+   },
+   {
+    "col": 12,
+    "distinct": [
+     2006,
+     2022,
+     2014
+    ],
+    "empty": 0
+   }
+  ],
+  "lastOldColDistinct": [
+   2006,
+   2022,
+   2014
+  ],
+  "afterUndo": {
+   "w": 9,
+   "h": 11
+  }
+ },
+ "refs": {
+  "rows": 18,
+  "tried": [
+   {
+    "id": "tileset-db-row-easyrpg_chipset_combined_town",
+    "present": true,
+    "textLen": 12739,
+    "items": 1,
+    "sample": "참고문서+ 용도문서 원본 설정원본 자료를 수정하면 이를 공유하는 타일셋에도 반영됩니다.참고문서 원본이 타일셋에 직접 작성숲마을 · 거리별 잔디EasyRPG 실내 통합본던전 · EasyRPG (CC0)실내 · Easy"
+   }
+  ],
+  "chosen": "tileset-db-row-easyrpg_chipset_combined_town"
+ },
+ "assistant": {
+  "initial": {
+   "pressed": "false",
+   "sidebar": true,
+   "sw": 340,
+   "collapsed": false,
+   "canvas": 1,
+   "tid": [
+    "studio-bar-lead",
+    "studio-run-group",
+    "topbar-ai-studio",
+    "studio-icon-cluster",
+    "topbar-ai-settings",
+    "ai-connection-chip",
+    "ai-connection-label",
+    "editor-ai-sidebar",
+    "event-ai-pin-layer",
+    "canvas-ai-workbench",
+    "canvas-ai-create",
+    "canvas-ai-polish"
+   ]
+  },
+  "open": {
+   "pressed": "true",
+   "sidebar": true,
+   "sw": 340,
+   "collapsed": false,
+   "canvas": 109,
+   "tid": [
+    "studio-bar-lead",
+    "studio-run-group",
+    "topbar-ai-studio",
+    "studio-icon-cluster",
+    "topbar-ai-settings",
+    "ai-connection-chip",
+    "ai-connection-label",
+    "editor-ai-sidebar",
+    "ai-suggestion-peek-root",
+    "ai-suggestion-peek-popover",
+    "ai-suggestion-peek-body",
+    "ai-project-suggestions"
+   ]
+  },
+  "closed": {
+   "pressed": "false",
+   "sidebar": true,
+   "sw": 340,
+   "collapsed": false,
+   "canvas": 1,
+   "tid": [
+    "studio-bar-lead",
+    "studio-run-group",
+    "topbar-ai-studio",
+    "studio-icon-cluster",
+    "topbar-ai-settings",
+    "ai-connection-chip",
+    "ai-connection-label",
+    "editor-ai-sidebar",
+    "event-ai-pin-layer",
+    "canvas-ai-workbench",
+    "canvas-ai-create",
+    "canvas-ai-polish"
+   ]
+  },
+  "ok": true
+ }
+}

@@ -1,0 +1,46 @@
+{
+  "plan": {
+    "readOnly": false,
+    "planOnly": false,
+    "maxTurns": 200,
+    "thinkingLevel": "low",
+    "routineEdit": false,
+    "routingAudit": "intent:llm mode=create space=outdoor target=map_blank_start plan construction=declared tools=author_beodeul_town,read_spatial_reference,evaluate_village_look,check_town_map 65849ms — 선언 오류: 시간 초과(60000ms) → 마을 계약 없음(버들항 마을)"
+  },
+  "initialToolNames": [
+    "find_tools",
+    "read_project_wiki",
+    "tile_query",
+    "create_map",
+    "resize_map",
+    "ask_tileset_change",
+    "get_project_summary",
+    "list_resources",
+    "get_database_records",
+    "focus_editor_view",
+    "web_search",
+    "get_map_region",
+    "find_events",
+    "get_event",
+    "find_layout_regions",
+    "author_beodeul_town",
+    "read_spatial_reference",
+    "evaluate_village_look",
+    "check_town_map",
+    "check_city_form",
+    "check_reachability",
+    "author_village",
+    "build_hand_interior_room",
+    "duplicate_choreography",
+    "preview_choreography",
+    "author_house",
+    "tile_erase"
+  ],
+  "intentNote": "[참조 작품] 사용자가 지목한 작품: \"버들항\". 설계 전에 web_search 로 그 작품의 분위기·장소·직업·사건 구조를 확인하라. 모델 암기로 추정하지 말고 검색으로 사실을 고정한 뒤, 그 분위기를 장르·색·구성에 옮겨 담는다. 고유명사(인물·지명·마법 이름)는 그대로 쓰지 않는다 — 새 이름을 짓고 분위기만 가져온다.\n[의도] 지금 맵 위 야외 시공이다(author_house/author_village/fill_region/place_props; 대상 맵이 버들항 계열이면 마을은 author_beodeul_town). 집은 author_house(interior:\"linked-interior\")가 기본이다 — 실내맵과 양방향 전이가 함께 생긴다. 겉모습만 필요하면 명시적으로 interior:\"exterior-only\". 독립 실내 세션은 만들지 말 것. 이미 확인된 의도이므로 되묻지 말고 진행하라.\n[시공 규모] 선언된 수량: 배치 river · 테마 강가. 코드가 환산한 권장 맵 크기는 88×56(집 12채 기준)이다. 새 맵이면 이 크기를 그대로 써라 — author_village(target:{kind:\"new\", width:88, height:56}) 또는 create_map 에 같은 값을 넣는다.\n[마을 시공 — 버들항] 이 요청의 마을은 버들항 타일셋이다. author_village·author_house 는 숲마을 생성기라 쓰지 않는다. author_beodeul_town 한 호출이 사용자가 고른 버들항 변형 마을의 문법(물 → 굽은 큰길 → 뒷길 고리 → 광장·앵커 건물 → 길을 보는 집 → 일터·밭·숲 덩이)으로 짓는다 — paint_road·fill_region·place_props 로 길과 집을 손으로 깔지 말 것.\n지금 맵 'map_blank_start' 에는 이미 내용이 있다 → mapId 를 주지 말고 author_beodeul_town({name, theme, width?, height?}) 로 새 버들항 맵을 만든다. 기존 맵을 지우지 않는다.\ntheme 은 말에서 고른다: 강·물레방아·시골 마을 = river(기본), 항구·포구·어촌·바닷가 = coast, 사막·오아시스 = desert, 눈·설원·겨울 = snow, 늪·습지 = swamp. 「도시·로마풍·블록」을 말할 때만 city(블록 격자 도시, 기본 60×60, 항구 호수는 harbour:true·가로 83 이상). 마을 크기는 생략하면 56×44 안팎(36×30~96×80). 같은 seed 는 같은 마을이니 다른 배치를 원하면 seed 를 바꾼다.\n시공 뒤 check_city_form 으로 길 위계를 보고, check_reachability({mapId, from, targets}) 로 문 앞 도달을 확인한다(결과 data.doors·data.entrance). NPC·출입구 이벤트가 필요하면 그 뒤에 얹는다.",
+  "before": {
+    "maps": {
+      "map_blank_start": "beodeul_city"
+    },
+    "currentMapId": "map_blank_start"
+  }
+}

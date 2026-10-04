@@ -75,16 +75,19 @@ describe("lossless domain exposure", () => {
     expect(first).toEqual(registryOrder);
   });
 
-  it("tile 모드에서 실내 세션 하네스 도구가 노출된다", () => {
+  it("tile 모드에서 실내는 손 도트 v5 도구만 노출된다(옛 방 세션 하네스는 폐기)", () => {
     const names = toOpenAiTools(undefined, { mode: "tile" }).map((tool) => tool.function.name);
+    expect(names).toContain("build_hand_interior_room");
+    expect(names).toContain("list_hand_interior_parts");
     for (const name of [
       "start_interior_room_session",
       "advance_interior_room_build",
       "evaluate_interior_room",
       "furnish_interior_space",
       "run_interior_room_pipeline",
+      "place_concept",
     ]) {
-      expect(names, name).toContain(name);
+      expect(names, name).not.toContain(name);
     }
   });
 

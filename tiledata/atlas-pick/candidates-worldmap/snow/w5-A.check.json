@@ -1,0 +1,43 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/snow/w5-A.pxg",
+ "set": "worldmap",
+ "id": "snow",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.027
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.017
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 3,
+ "bbox": [
+  1,
+  0,
+  47,
+  61
+ ],
+ "note": "oprn 아틀라스 결 — 낮은 대비 눈밭, 옅은 푸른 그늘 알갱이+바람 획 드문드문, 테는 체크무늬로 풀에 녹아들고 몸통 16px 주기",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.047
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.887
+  },
+  "seam": 1.27
+ }
+}

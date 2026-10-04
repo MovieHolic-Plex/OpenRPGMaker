@@ -1,0 +1,44 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/cave/wv8-C.pxg",
+ "set": "worldmap",
+ "id": "cave",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.036
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.133
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "outline_black"
+  ]
+ },
+ "colors": 5,
+ "bbox": [
+  0,
+  0,
+  15,
+  15
+ ],
+ "note": "다른 해석 — 뾰족 바위 사이 위로 좁아지는 높은 틈 입구",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 1,
+   "atLeast95": 0,
+   "max": 0.359
+  },
+  "refmapWorld": {
+   "cells": 1,
+   "atLeast95": 0,
+   "max": 0.286
+  }
+ }
+}

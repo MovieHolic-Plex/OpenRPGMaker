@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { defaultTileset } from "@/project/defaults/defaultAssets";
+import { combinedTownTileset as defaultTileset } from "@/project/defaults/defaultAssets";
 import {
   summarizeTileUsage,
   summarizeTilesetGenerationReadiness,

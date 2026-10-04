@@ -1,6 +1,6 @@
 import { editorState } from "@/editor/editorState";
 import { tileStackAt } from "@/project/mapOverlayTiles";
-import type { GameMap, MapId, TilesetDef } from "@/project/types";
+import type { GameMap, MapId, TileGroupMetadata, TilesetDef } from "@/project/types";
 import { describeChipsetTile } from "@/project/defaults/chipsetMapping";
 
 export type UsedTileLocation = {
@@ -94,11 +94,35 @@ export function selectUsedLocation(input: SelectUsedLocationInput): void {
   });
 }
 
+// 같은 타일셋 객체·같은 칸이면 답이 같다. 팔레트 보조 패널은 스토어가 바뀔 때마다(조수 체크포인트 적용마다) 다시 그려져
+// 버들항 27,648칸을 매번 다 훑었다(2026-10-03 프로필: 마을 적용 한 번에 tileVocabulary 점수 계산 ~1.5s). 타일셋이 바뀌면 객체가 바뀐다.
+const similarCache = new WeakMap<TilesetDef, Map<string, readonly number[]>>();
+
 export function similarTilesForTile(input: SimilarTilesInput): readonly number[] {
-  const current = tileSimilarityContext(input.tileset, input.tile);
+  let cache = similarCache.get(input.tileset);
+  if (!cache) { cache = new Map(); similarCache.set(input.tileset, cache); }
+  const key = `${input.tile}:${input.limit}`;
+  const hit = cache.get(key);
+  if (hit) return hit;
+  const result = computeSimilarTiles(input);
+  cache.set(key, result);
+  return result;
+}
+
+function computeSimilarTiles(input: SimilarTilesInput): readonly number[] {
+  // 칸마다 tileGroups 를 훑으면(group.tileIds.includes) 버들항 23,936칸에서 제곱이 된다 — 칸→그룹 표를 한 번만 만든다.
+  const groupsByTile = new Map<number, TileGroupMetadata[]>();
+  for (const group of input.tileset.tileGroups ?? []) {
+    for (const id of group.tileIds) {
+      const list = groupsByTile.get(id);
+      if (list) list.push(group);
+      else groupsByTile.set(id, [group]);
+    }
+  }
+  const current = tileSimilarityContext(input.tileset, input.tile, groupsByTile);
   const currentTags = new Set(current.tags);
   const scored = Array.from({ length: input.tileset.count }, (_, tile) => {
-    const candidate = tileSimilarityContext(input.tileset, tile);
+    const candidate = tileSimilarityContext(input.tileset, tile, groupsByTile);
     const sharedTags = candidate.tags.filter((tag) => currentTags.has(tag)).length * 3;
     const sameUsage = candidate.usage === current.usage ? 2 : 0;
     const sameRepeatRole = candidate.repeatRole === current.repeatRole ? 1 : 0;
@@ -119,8 +143,8 @@ type TileSimilarityContext = {
   readonly usage: string;
 };
 
-function tileSimilarityContext(tileset: TilesetDef, tile: number): TileSimilarityContext {
-  const groups = (tileset.tileGroups ?? []).filter((group) => group.tileIds.includes(tile));
+function tileSimilarityContext(tileset: TilesetDef, tile: number, groupsByTile: ReadonlyMap<number, readonly TileGroupMetadata[]>): TileSimilarityContext {
+  const groups = groupsByTile.get(tile) ?? [];
   const meta = tileset.tileMeta?.[tile];
   if (meta || groups.length > 0) {
     const tags = new Set<string>();

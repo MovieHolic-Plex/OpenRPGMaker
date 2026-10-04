@@ -1,0 +1,53 @@
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat a cream 1
+@mat b cream 4
+@mat c cream 5
+@mat d cream 3
+@mat e cream 2
+@mat f vglass 0
+@mat g vred 2
+@mat h vglass 1
+@mat i vgreen 2
+@mat j vblue 2
+@mat k vglass 5
+@mat l vred 4
+@mat m vgreen 4
+@mat n vblue 4
+@mat o vglass 4
+@mat p vyellow 2
+@mat q vyellow 4
+@mblock 0 0
+..aaaaaaaaaaaaaaaaaaaaaaaaaaaa..
+.abbbbbbbbbbbbbbbbbbbbbbbbbbbba.
+.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.
+.cccccccccccccccccccccccccccccc.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+.bdddddddddddddddddddddddddddde.
+.bdffffffffffffddffffffffffffde.
+.bdfghhhihhhjkhddfghhhihhhjkhde.
+.bdfllhhmmhhnohddfllhhmmhhnohde.
+.bdfllhhmmhhnnhddfllhhmmhhnnhde.
+.bdfllhhmmhhnnhddfllhhmmhhnnhde.
+.bdbbbbbbbbbbbbddbbbbbbbbbbbbde.
+.bdeejeepeegeeeddeejeepeegeeede.
+.bdfhnnhqqhllhhddfhnnhqqhllhhde.
+.bdfhnnhqqhllhhddfhnnhqqhllhhde.
+.bdfhnnhqqhllhhddfhnnhqqhllhhde.
+.bdfhhhhhhhhhhhddfhhhhhhhhhhhde.
+.beeeeeeeeeeeeeeeeeeeeeeeeeeeee.
+.bdbeeeeeeeeeeeddbeeeeeeeeeeede.
+.bdbddddddddddeddbddddddddddede.
+.bdbddddddddddeddbddddddddddede.
+.bdbdddddddddaaddaadddddddddede.
+.bdbddddddddddeddbddddddddddede.
+.bdbddddddddddeddbddddddddddede.
+.bdbddddddddddeddbddddddddddede.
+.bdeeeeeeeeeeeeddeeeeeeeeeeeede.
+.bdddddddddddddddddddddddddddde.
+.eeaaeeeeeeeeeeeeeeeeeeeeeaaaee.
+..~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+..------------------------------

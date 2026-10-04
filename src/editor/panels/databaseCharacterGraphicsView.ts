@@ -318,7 +318,7 @@ export function renderCharacterGraphicsTab(container: HTMLElement, _rerender?: (
       catch (error) { announce(error instanceof Error ? error.message : String(error), true); }
     } },
   ])] })] }));
-  detail.unshift(el("p", { text: "공용 기본 리소스 · 이 서버의 모든 프로젝트가 함께 사용하며, 임시 프로젝트에서도 즉시 저장됩니다. 프로젝트에 업로드한 그림은 포함하지 않습니다.", dataset: { testid: "db-cg-shared-scope" } }), listToolbar([
+  detail.unshift(el("p", { text: "공용 캐릭터와 얼굴 · 이 서버의 모든 프로젝트가 함께 사용합니다. GIF 공방에서 남긴 캐릭터도 포함됩니다.", dataset: { testid: "db-cg-shared-scope" } }), listToolbar([
     { label: "공용 자료 다시 불러오기", testid: "db-cg-shared-reload", onClick: load },
     { label: "이 프로젝트의 기존 매핑 가져오기", testid: "db-cg-migrate-project", onClick: () => {
       const legacy = store.getCurrent();

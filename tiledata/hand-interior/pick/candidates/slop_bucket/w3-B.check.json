@@ -1,0 +1,31 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/slop_bucket/w3-B.pxg",
+ "id": "slop bucket",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.023
+ },
+ "lint": {
+  "failed": [],
+  "pass": true
+ },
+ "colors": 12,
+ "v5_colors": 5,
+ "bbox": [
+  4,
+  6,
+  11,
+  13
+ ],
+ "v5_bbox": [
+  4,
+  6,
+  11,
+  13
+ ],
+ "note": "강한 명암 — 왼 통널은 wood:7/6 으로 밝게, 오른 통널은 wood:3 으로 눌러 대비를 키움. 쇠테는 iron:5 하이라이트→iron:2 그늘, 오물면 하이라이트, 바닥 오른쪽 아래로 반투명 접지 그림자.",
+ "ok": true
+}

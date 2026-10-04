@@ -1,0 +1,66 @@
+// w72-A 환자 침대: 침대(bed_green pilot-A) 짜임 + 흰 시트·쇠 틀
+@size 16 48
+@cell 16
+@palette palette.pal
+@mat o iron 1
+@mat i iron 2
+@mat j iron 3
+@mat k iron 4
+@mat l iron 5
+@mat L iron 6
+@mat W white 6
+@mat V white 5
+@mat U white 4
+@mat T white 3
+@mat S white 2
+@mat b blue 4
+@mat B blue 3
+@mblock 0 0
+................
+................
+................
+................
+................
+................
+................
+................
+................
+................
+.jk..........kj.
+olkooooooooookjo
+olkllllllllllkjo
+oLlLLLLLLLLLLlLo
+olkkkkkkkkkkkkjo
+olkjjjjjjjjjjkjo
+olkSSSSSSSSSSkjo
+olkSkSkSkSkSkkjo
+olkSkSkSkSkSkkjo
+olkSkSkSkSkSkkjo
+olkSSSSSSSSSSkjo
+olkllllllllllkjo
+olkkkkkkkkkkkkjo
+olVTTTTTTTTTTSjo
+olUSSSSSSSSSSTjo
+olUSWWWWWWWWSTjo
+olUSWWWWWWWWSTjo
+olUSVVVVVVVVSTjo
+olUSSSSSSSSSSTjo
+olVWWWWWWWWWWTjo
+olVVVVVVVVVVVTjo
+olbbbbbbbbbbbbjo
+olBBBBBBBBBBBBjo
+olVUUUUUUUUUTSjo
+olVUUUUUUUUUTSjo
+olVUTTTTUUUUTSjo
+olVUUUUUUUUUTSjo
+olVUUUUUUUUUTSjo
+olVUUUUUUUUUTSjo
+olVUUTTTTTUUTSjo
+olVUUUUUUUUUTSjo
+olUUUTTTTTTTTSjo
+olTTTTTTTTTTTSjo
+.Ll..........lk.
+olkllllllllllkjo
+olkkkkkkkkkkkkjo
+olkjjjjjjjjjjkjo
+oij~~~~~~~~~~jio

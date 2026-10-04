@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/broken_blackboard/h5-A.pxg",
+ "set": "horror",
+ "id": "broken_blackboard",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.227
+ },
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.102
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 16,
+ "bbox": [
+  0,
+  0,
+  47,
+  15
+ ],
+ "note": "학교 칠판: 나무 테·녹색 판·분필 받침, 분필 낙서가 지워지다 만 흰 번짐, 붉은 「나가」 두 자(2px) 획 끝이 아래로 흐름",
+ "ok": true
+}

@@ -1,0 +1,22 @@
+{
+ "id": "morgue_drawer",
+ "slug": "morgue_drawer",
+ "name": "영안실 냉동 서랍",
+ "scene": "폐병원",
+ "cells": [
+  2,
+  2
+ ],
+ "canvas": [
+  32,
+  32
+ ],
+ "layer": "facade",
+ "layer_ko": "건물 외관 블록(불투명 허용)",
+ "description": "벽에 박힌 쇠 냉동 서랍 2×2 칸(네 문, 문마다 손잡이·이름표 판), 그중 하나가 반쯤 열려 흰 천 덮인 발끝이 삐져나옴. 칸 전부 불투명(벽면 블록). 차가운 쇠 광택 = 윗테 한 줄 밝게.",
+ "palette_hint": "tin 문, grave 벽, sheet 천, bisque 발끝(작게)",
+ "worker_v1": "h4",
+ "stage": 2,
+ "stage_ko": "2단계 연출(기본이 선 뒤)",
+ "worker": "h4"
+}

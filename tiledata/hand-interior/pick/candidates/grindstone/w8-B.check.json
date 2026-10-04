@@ -1,0 +1,31 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/grindstone/w8-B.pxg",
+ "id": "grindstone",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.02
+ },
+ "lint": {
+  "failed": [],
+  "pass": true
+ },
+ "colors": 15,
+ "v5_colors": 12,
+ "bbox": [
+  1,
+  1,
+  14,
+  15
+ ],
+ "v5_bbox": [
+  1,
+  1,
+  14,
+  15
+ ],
+ "note": "돌바퀴 좌상 하이라이트를 강하게, 틀 오른쪽에 반투명 접지 그림자",
+ "ok": true
+}

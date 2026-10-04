@@ -1,0 +1,41 @@
+// cave wv8-C
+@size 16 16
+@cell 16
+@palette palette.pal
+@layer main
+@mat a wrock 0
+@mat b mout 0
+@mblock 0 0
+.......aa.......
+......aaaa......
+.....aaaaaa.....
+....aaaaaaaa....
+...aaabbbbaaa...
+..aaabbbbbbaaa..
+.aaaabbbbbbaaaa.
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaabbbbbbbbbbaaa
+aaabbbbbbbbbbaaa
+aaabbbbbbbbbbaaa
+aaabbbbbbbbbbaaa
+aaabbbbbbbbbbaaa
+aaabbbbbbbbbbaaa
+aaaaaaaaaaaaaaaa
+@tblock 0 0
+.......10.......
+......1220......
+.....142210.....
+....14422110....
+...1440000110...
+..144000000110..
+.14440000001110.
+1444000000001110
+1444000000001110
+1440000000000110
+1440000000000110
+1440000000000110
+1440000000000110
+1440000000000110
+1440000000000110
+0022222222222200

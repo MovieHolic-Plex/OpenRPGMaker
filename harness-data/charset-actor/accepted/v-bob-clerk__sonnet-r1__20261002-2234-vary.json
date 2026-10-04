@@ -1,0 +1,43 @@
+{
+ "id": "20261002-2234-vary/v-bob-clerk__sonnet-r1",
+ "brief": "v-bob-clerk",
+ "name": "단발 서기관",
+ "base": "Actor4:4",
+ "base_label": "Actor4 5번",
+ "strength": "normal",
+ "files": {
+  "chr": "v-bob-clerk__sonnet-r1__20261002-2234-vary.chr.txt",
+  "sheet": "v-bob-clerk__sonnet-r1__20261002-2234-vary.png"
+ },
+ "description": {
+  "label": "검은 단발 남색 재킷 서기관",
+  "gender": "여",
+  "attributes": {
+   "kind": "사람",
+   "age": "청년",
+   "hair": "검은 머리"
+  },
+  "role": "서기관·사무원 (관청 서기)",
+  "appearance": "턱선 길이의 검은 단발에 일자 앞머리, 푸른 눈. 짙은 남색 재킷 가슴에 금색 단추가 두 줄로 달렸고 옷깃과 어깨 끝은 밝은 파랑이며, 아래는 회색 치마에 검은 신발.",
+  "colors": [
+   "검은 단발 머리",
+   "짙은 남색 재킷",
+   "금색 단추",
+   "회색 치마",
+   "검은 신발"
+  ],
+  "tags": [
+   "서기",
+   "사무원",
+   "관청",
+   "학자풍",
+   "단발",
+   "제복",
+   "도서관",
+   "마을 사람"
+  ],
+  "fits": "관청·도서관·학교·길드 접수처처럼 문서를 다루는 곳의 접수원이나 기록 담당 NPC.",
+  "by": "Claude Sonnet 5.5 · medium",
+  "at": "2026-10-02T22:41:10+00:00"
+ }
+}

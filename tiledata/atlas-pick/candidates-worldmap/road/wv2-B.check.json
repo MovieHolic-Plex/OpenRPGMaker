@@ -1,0 +1,136 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/road/wv2-B.pxg",
+ "set": "worldmap",
+ "id": "road",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.027
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.101
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "orphans",
+   "dither"
+  ]
+ },
+ "colors": 7,
+ "bbox": [
+  1,
+  0,
+  47,
+  62
+ ],
+ "note": "깊이 강조: 북·서 가장자리는 풀 그늘 아래 어두운 흙, 남·동은 밝은 흙, 풀 테도 위쪽이 어둡다",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.414
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.021
+  },
+  "shore": {
+   "profile": {
+    "n": [
+     3,
+     3,
+     3,
+     2,
+     2,
+     3,
+     3,
+     3,
+     3,
+     4,
+     4,
+     4,
+     3,
+     3,
+     3,
+     3
+    ],
+    "s": [
+     3,
+     4,
+     4,
+     3,
+     3,
+     3,
+     3,
+     3,
+     3,
+     3,
+     2,
+     2,
+     2,
+     3,
+     3,
+     3
+    ],
+    "w": [
+     3,
+     3,
+     2,
+     2,
+     2,
+     3,
+     3,
+     3,
+     3,
+     3,
+     3,
+     4,
+     4,
+     3,
+     3,
+     3
+    ],
+    "e": [
+     3,
+     3,
+     3,
+     3,
+     4,
+     4,
+     4,
+     3,
+     3,
+     2,
+     2,
+     3,
+     3,
+     3,
+     3,
+     3
+    ]
+   },
+   "strait": 9,
+   "steps": {
+    "n": 1,
+    "s": 1,
+    "w": 1,
+    "e": 1
+   },
+   "amp": {
+    "n": 2,
+    "s": 2,
+    "w": 2,
+    "e": 2
+   },
+   "joinWorst": 0
+  },
+  "seam": 0.65
+ }
+}

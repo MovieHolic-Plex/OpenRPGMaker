@@ -1,0 +1,29 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/fog_patch/h4-C.pxg",
+ "set": "horror",
+ "id": "fog_patch",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.005
+ },
+ "lint": {
+  "error": "index -1 is out of bounds for axis 0 with size 0"
+ },
+ "colors": 2,
+ "bbox": [
+  4,
+  4,
+  27,
+  28
+ ],
+ "note": "바닥 안개에서 손가락·팔처럼 위로 뻗은 안개 줄기 넷(높이 제각각)",
+ "ok": true
+}

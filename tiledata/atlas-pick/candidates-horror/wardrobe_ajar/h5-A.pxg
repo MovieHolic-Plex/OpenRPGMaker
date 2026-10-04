@@ -1,0 +1,76 @@
+// wardrobe_ajar h5-A
+@size 16 32
+@cell 16
+@palette palette.pal
+@layer main
+@mat a bisque 0
+@mat b dust 0
+@mat c mahog 0
+@mat d tarn 0
+@mat e void 0
+@mblock 0 0
+................
+cccbbbbbbccbbccc
+cccccccccccccccc
+cccccccccccccccc
+cccccccccccccccc
+cccccccceeeccccc
+cccccccceeeccccc
+cccccccceeeccccc
+cccccccceeeccccc
+cccccccceeeccccc
+cccccccceeeccccc
+cccccccceeeccccc
+cccccccceeeccccc
+cccccccceeeccccc
+cccccccceeeccccc
+ccccccdceeecdccc
+ccccccdceeecdccc
+cccccccceeeccccc
+cccccccceeeccccc
+cccccccceeeccccc
+cccccccceeeccccc
+cccccccceeeccccc
+cccccccceeeccccc
+cccccccceeeccccc
+cccccccceeeccccc
+cccccccceeeccccc
+cccccccceeeccccc
+cccccccccccccccc
+cccccccccccccccc
+cccccccccccccccc
+................
+................
+@tblock 0 0
+................
+0553355335533550
+0444444444444440
+0333333333333330
+0111111111111110
+0544444221043310
+0544444221043310
+0522222221043310
+0524445221043310
+0524445221043310
+0524445221043310
+0524445221043310
+0521445221043310
+0521445221043310
+0524145221043310
+0524443221041310
+0524445221043310
+0524445221043310
+0524445221043310
+0524445221043310
+0524445221043310
+0524445221043310
+0524445221043310
+0524445221043310
+0525555221043310
+0544444221043310
+0544444221043310
+0333333333333330
+0222222222222220
+0000000000000000
+................
+................

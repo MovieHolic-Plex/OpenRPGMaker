@@ -1,0 +1,45 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/ash/w3-B.pxg",
+ "set": "worldmap",
+ "id": "ash",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.153
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.335
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies"
+  ]
+ },
+ "colors": 13,
+ "bbox": [
+  1,
+  0,
+  47,
+  61
+ ],
+ "note": "화산재 몸통 — 더 크고 밝은 재바위, 금 사이 wlava 불씨 점, 테를 세게.",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.043
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.629
+  },
+  "seam": 0.86
+ }
+}

@@ -17,6 +17,7 @@ import {
   seedOAuthForTests,
   setEnvScanDecision,
   startProviderLogin,
+  cancelProviderLogin,
 } from "./aiAuthRuntime.ts";
 import { applyLegacyEnvAliases } from "./oprnEnv.mjs";
 
@@ -99,10 +100,11 @@ function startWorker() {
           : error.message,
       ));
     });
-    child.on("exit", (code) => {
+    child.on("exit", (code, signal) => {
       // 죽은 포트를 물려주지 않는다 — 다음 요청이 새 워커를 띄운다(READY 뒤에 죽은 경우까지).
       // 단, 갈아 끼운 뒤 옛 워커가 늦게 죽는 경우에는 새 워커의 자리를 지우면 안 된다.
       if (workerChild === child) {
+        console.error(`[oh-my-pi-worker] exited: code=${code ?? "none"}, signal=${signal ?? "none"}`);
         workerChild = null;
         workerPortPromise = null;
       }
@@ -168,6 +170,10 @@ export async function createOhMyPiAdapters() {
     },
     async login(provider, body, options) {
       return startProviderLogin(provider, body ?? {}, options ?? {});
+    },
+    async cancelLogin(provider) {
+      cancelProviderLogin(provider);
+      return publicProviderStatus(provider);
     },
     async saveKey(provider) {
       // 지원 제공자 둘 다 구독 로그인이다. API 키를 받는 생기면 사용자가

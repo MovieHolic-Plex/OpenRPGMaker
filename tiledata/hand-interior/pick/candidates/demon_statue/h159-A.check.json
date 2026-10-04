@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/demon_statue/h159-A.pxg",
+ "id": "demon statue",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.066
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 6,
+ "v5_colors": 0,
+ "bbox": [
+  0,
+  16,
+  15,
+  47
+ ],
+ "v5_bbox": null,
+ "note": "지난 후보의 몸통·다리 세로 16행을 줄여 총 높이 32행(y=16~47), 뿔·붉은 눈·접힌 날개·돌 명암과 접지선 유지, 받침 앞 경계를 정리; 꼭대기 윗면 3행(y=39~41)",
+ "ok": true
+}

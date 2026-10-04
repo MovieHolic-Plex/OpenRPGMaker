@@ -21,7 +21,9 @@ export function sharedRegionReferences(): SharedRegionReference[] {
 }
 let catalog: SharedSpatialReferences = { regions: [], maps: {}, tilesets: {}, assets: {} };
 export function installSharedSpatialReferences(value?: SharedSpatialReferences): void {
-  catalog = value ? structuredClone(value) : { regions: [], maps: {}, tilesets: {}, assets: {} };
+  // 받은 응답은 이 모듈만 가진다(sharedTileReferences.ts 가 파싱하거나 IndexedDB 에서 읽은 사본). 읽기 전용으로 쓰고
+  // 프로젝트로 옮길 때 ensureSharedSpatialReferences 가 복제하므로 설치 때 다시 복제하지 않는다(2026-09-28 실측 0.8s).
+  catalog = value ?? { regions: [], maps: {}, tilesets: {}, assets: {} };
   SHARED_REGION_REFERENCES.splice(0, SHARED_REGION_REFERENCES.length, ...catalog.regions);
 }
 export function sharedRegionSnapshot(id: string) {
@@ -30,7 +32,11 @@ export function sharedRegionSnapshot(id: string) {
   const reference = catalog.regions.find(r => r.id === id);
   const map = reference && catalog.maps[reference.sourceMapId];
   const tileset = map && catalog.tilesets[map.tilesetId];
-  return map && tileset ? { map, tileset } : undefined;
+  if (!map || !tileset) return undefined;
+  const ids = new Set(tileset.image.type === 'uploaded' ? [tileset.image.id] : []);
+  for (const graft of tileset.tileGrafts ?? []) ids.add(graft.sourceChipset);
+  const assets = Object.fromEntries([...ids].filter(key => catalog.assets[key]).map(key => [key, catalog.assets[key]!]));
+  return { map, tileset, assets };
 }
 export function sharedObjectKit(tilesetId: string, kitId: string) {
   return (sharedContentTileset(tilesetId) ?? catalog.tilesets[tilesetId])?.structureKits?.find(k => k.id === kitId);

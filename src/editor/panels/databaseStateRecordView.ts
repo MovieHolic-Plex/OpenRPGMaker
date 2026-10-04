@@ -1,4 +1,6 @@
-import { numberField, selectLiteral } from "@/editor/panels/databaseControls";
+import { BATTLE_AURA_IDS, BATTLE_AURA_LABELS, normalizeBattleAura, resolveStateAura } from "@/assets/battleStateAuras";
+import { partyPixelChoices } from "@/assets/partyPixelSheets";
+import { numberField, selectField, selectLiteral } from "@/editor/panels/databaseControls";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
 import { stateBehavior } from "@/battle/battleStates";
 import { resolvedStateValues, stateOntologyFor } from "@/project/ontology/databaseStateOntology";
@@ -115,6 +117,14 @@ export function renderStateRecordForm(form: HTMLElement, state: StateRecord): HT
             ["", ...equipmentSlots(store.getCurrent()).map((slot) => slot.id)], (slot) => update({ disablesEquipSlot: slot || undefined })),
           el("p", { class: "db-skill-card-note", text: "이 상태인 동안 그 슬롯 장비의 능력치를 잃습니다(팔 부상 → 무기 등)." }),
         ], "db-state-panel-part-loss"),
+        panel("전투 오라", [
+          selectField("걸려 있는 동안 몸에 남는 표시", "db-state-battle-aura", normalizeBattleAura(state.battleAura) ?? "", [
+            { id: "", name: autoAuraLabel(state) },
+            { id: "none", name: "끔" },
+            ...BATTLE_AURA_IDS.map((id) => ({ id, name: BATTLE_AURA_LABELS[id] })),
+          ], (aura) => update({ battleAura: aura || undefined })),
+          el("p", { class: "db-skill-card-note", text: "retro2003 전투에서 이 상태가 걸린 동안 그 배틀러 몸에 계속 남는 색·입자 표시입니다(그림 시트 없음)." }),
+        ], "db-state-panel-battle-aura"),
         el("div", { class: "db-state-summary", dataset: { testid: "db-state-ontology-summary" }, text: ontology.summary }),
       ],
     }),
@@ -176,6 +186,7 @@ function runtimeEffectsPanel(state: StateRecord, update: (patch: Partial<StateRe
     numberField("피해를 MP 로 (0~1)", "db-state-rt-damage-to-mp", state.runtimeEffects?.damageToMpRate ?? 0, (damageToMpRate) =>
       patchEffects({ damageToMpRate: damageToMpRate > 0 ? Math.min(1, damageToMpRate) : undefined }), { min: 0, max: 1, step: 0.05 }
     ),
+    ...retroGimmickControls(state, patchEffects),
     // 감정 계열·단계(battleEmotion). 같은 계열을 다시 걸면 단계가 오른다. 계열 상성은 시스템 → 전투 자원.
     emotionFamilyControl(state, update),
     numberField("감정 단계", "db-state-emotion-tier", state.emotion?.tier ?? 1, (tier) => {
@@ -304,4 +315,75 @@ function referencePanel(skills: readonly string[], items: readonly string[]): HT
 function referenceRows(values: readonly string[], emptyText: string): HTMLElement[] {
   const rows = values.length ? values : [emptyText];
   return rows.map((value) => el("div", { class: values.length ? "db-ref-row" : "empty-hint", text: value }));
+}
+
+/**
+ * 레트로 전투 기믹 — 스톱(게이지 정지)·버서크(무작위 강제 공격)·프로텍트/실드(물리·마법 방어 배율)·
+ * 속성 등급 덮어쓰기(젖음·기름 → 약점). 예전엔 조수 도구(dbTools stateRecordSchema)로만 저작할 수 있었다.
+ * 값은 state.runtimeEffects 에 저장되고 battleStates.stateBehavior 가 그대로 읽는다.
+ */
+function retroGimmickControls(
+  state: StateRecord,
+  patchEffects: (effects: Partial<NonNullable<StateRecord["runtimeEffects"]>>) => void
+): HTMLElement[] {
+  const fx = (): NonNullable<StateRecord["runtimeEffects"]> =>
+    store.getCurrent().database.states.find((entry) => entry.id === state.id)?.runtimeEffects ?? {};
+  const multiplier = (label: string, testid: string, key: "physicalDefenseMultiplier" | "magicDefenseMultiplier"): HTMLElement =>
+    numberField(label, testid, fx()[key] ?? 1, (value) => patchEffects({ [key]: value > 0 && value !== 1 ? value : undefined }), { min: 0, max: 10, step: 0.05 });
+  const elements = store.getCurrent().database.elements ?? [];
+  const elementRows = elements.map((element) => {
+    const options = [{ id: "", name: "덮어쓰지 않음" }, ...RATE_GRADES.map((grade) => ({ id: grade, name: `${grade} · ${RATE_GRADE_LABEL[grade]}` }))];
+    return selectField(`속성 ${element.name}`, `db-state-rt-element-${element.id}`, fx().elementRates?.[element.id] ?? "", options, (grade) => {
+      const next: Record<string, StateRateGrade> = { ...(fx().elementRates ?? {}) };
+      if (grade) next[element.id] = grade as StateRateGrade;
+      else delete next[element.id];
+      patchEffects({ elementRates: Object.keys(next).length ? next : undefined });
+    });
+  });
+  return [
+    checkControl("스톱 — ATB 게이지 정지·행동 불가", "db-state-rt-freezes-gauge", fx().freezesGauge === true, (freezesGauge) =>
+      patchEffects({ freezesGauge: freezesGauge ? true : undefined })
+    ),
+    checkControl("버서크 — 명령 없이 무작위 상대를 통상 공격", "db-state-rt-forced-attack", fx().forcedAction === "attackRandom", (on) =>
+      patchEffects({ forcedAction: on ? "attackRandom" : undefined })
+    ),
+    numberField("반격 % (물리에 맞으면 통상 공격)", "db-state-rt-counter", fx().counterChance ?? 0, (value) =>
+      patchEffects({ counterChance: value > 0 ? Math.min(100, value) : undefined }), { min: 0, max: 100, step: 5 }
+    ),
+    numberField("회피 % (물리 명중 감소, 최대 95)", "db-state-rt-evasion", fx().evasionChance ?? 0, (value) =>
+      patchEffects({ evasionChance: value > 0 ? Math.min(95, value) : undefined }), { min: 0, max: 95, step: 5 }
+    ),
+    checkControl("도발 — 상대가 단일 대상으로 먼저 노린다", "db-state-rt-taunt", fx().taunt === true, (taunt) =>
+      patchEffects({ taunt: taunt ? true : undefined })
+    ),
+    checkControl("감싸기 — 빈사(HP ¼ 이하) 아군 대신 물리 공격을 맞는다", "db-state-rt-cover", fx().cover === true, (cover) =>
+      patchEffects({ cover: cover ? true : undefined })
+    ),
+    checkControl("리플렉 — 단일 마법을 시전자에게 튕긴다", "db-state-rt-reflect", fx().reflect === true, (reflect) =>
+      patchEffects({ reflect: reflect ? true : undefined })
+    ),
+    numberField("리레이즈 — 쓰러지면 HP % 로 한 번 부활 (0 = 끔)", "db-state-rt-reraise", fx().reraisePercent ?? 0, (value) =>
+      patchEffects({ reraisePercent: value > 0 ? Math.min(100, value) : undefined }), { min: 0, max: 100, step: 5 }
+    ),
+    numberField("선고 — 자기 차례 N 번 뒤 전투 불능 (0 = 끔)", "db-state-rt-doom", fx().doomTurns ?? 0, (value) =>
+      patchEffects({ doomTurns: value > 0 ? Math.min(9, Math.round(value)) : undefined }), { min: 0, max: 9, step: 1 }
+    ),
+    transformControl(fx().transformResourceId, (transformResourceId) => patchEffects({ transformResourceId: transformResourceId || undefined })),
+    multiplier("물리 피해 방어 배율 (프로텍트)", "db-state-rt-physical-defense", "physicalDefenseMultiplier"),
+    multiplier("마법 피해 방어 배율 (실드)", "db-state-rt-magic-defense", "magicDefenseMultiplier"),
+    ...(elementRows.length
+      ? [el("p", { class: "db-skill-card-note", text: "이 상태인 동안 대상의 속성 등급을 덮어씁니다(젖음 → 번개 약점 등). A 가 가장 약합니다." }), ...elementRows]
+      : []),
+  ];
+}
+
+/** 변신 그림 고르기: 파티원 9칸 시트(짐승·몬스터 칩) 목록. 조수가 넣은 다른 id(적 몬스터 그림 등)도 그대로 보인다. */
+function transformControl(current: string | undefined, onChange: (resourceId: string) => void): HTMLElement {
+  return selectField("변신 — 이 상태인 동안 전투 그림", "db-state-rt-transform", current ?? "", partyPixelChoices("변신 안 함", current), onChange);
+}
+
+/** 자동 오라 이름 — 저자 지정(battleAura)을 빼고 id·몬스터 주 상태로 고른 것. */
+function autoAuraLabel(state: { readonly id: string; readonly gen1MajorStatus?: string }): string {
+  const aura = resolveStateAura(state.id, { gen1MajorStatus: state.gen1MajorStatus });
+  return aura ? `자동 — ${BATTLE_AURA_LABELS[aura]}` : "자동 (없음)";
 }

@@ -1,0 +1,21 @@
+{
+ "id": "soccer_goal",
+ "slug": "soccer_goal",
+ "name": "축구 골대",
+ "scene": "옥상·운동장·교문",
+ "place": "out",
+ "cells": [
+  4,
+  2
+ ],
+ "canvas": [
+  64,
+  32
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "운동장 축구 골대 — 흰 쇠 기둥·가로대(2px), 뒤로 처진 그물(1px 격자, 사이 투명), 바닥 뒤 받침대. 폭 4칸 전부.",
+ "palette_hint": "vwhite 기둥, vlinen 그물",
+ "pair": [],
+ "worker": "s5"
+}

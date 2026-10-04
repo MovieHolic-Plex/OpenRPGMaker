@@ -199,7 +199,9 @@ describe("SC8 — predictSkillDamage includes equipment elemental defense (M2)",
     const project = scarloxyProject();
     const element = project.database.elements?.[0];
     if (!element) return;
-    const skill = project.database.skills.find((s) => s.elementId === element.id);
+    // 포켓몬 데모 자기 기술만 본다. 2026-09-29 retro2003 로스터가 공용 기본 DB 에 sword 속성 직업 스킬을 넣으면서
+    // 이 검사가 gen1 공식(장비 속성 방어 반감을 아직 적용하지 않는다)으로 처음 돌기 시작했다 — 원래 의도는 rm2k3 예측 경로다.
+    const skill = project.database.skills.find((s) => s.elementId === element.id && s.id.startsWith("skill_scarloxy_"));
     if (!skill) return;
     const userSnapshot: BattleBattlerSnapshot = {
       id: "u1", recordId: project.database.actors[0]?.id ?? "a", name: "Caster",
@@ -416,6 +418,10 @@ describe("포켓몬 단일 대상 자동 확정", () => {
   it("포켓몬 스킨 + gen1 아님 + 적 2마리: 대상 목록이 열린다", () => {
     const project = scarloxyProject();
     project.system.battleModel = undefined;
+    // 데모 야생 트룹은 1:1 로 줄였다(#1062) — 후보가 둘인 상황은 여기서 직접 만든다.
+    const troop = project.database.troops.find((entry) => entry.id === "troop_pkmn_new_pair")!;
+    troop.members = [...(troop.members ?? []), { enemyId: "enemy_pkmn_puddlup", x: 220, y: 132 }];
+    troop.enemyIds = troop.members.map((member) => member.enemyId);
     const rt = start(project, "troop_pkmn_new_pair");
     expect(rt.snapshot().enemies.length).toBe(2);
     const skillId = rt.snapshot().actors[0]?.skillIds[0];
@@ -427,7 +433,7 @@ describe("포켓몬 단일 대상 자동 확정", () => {
 
   it("다른 스킨은 적이 1마리여도 목록이 열린다 — 취소 경로 계약 보존", () => {
     const project = scarloxyProject();
-    project.system.battleUiStyle = "rm2000";
+    project.system.battleUiStyle = "retro2003";
     const rt = start(project, "troop_pkmn_grass_a");
     expect(rt.snapshot().enemies.length).toBe(1);
     const skillId = rt.snapshot().actors[0]?.skillIds[0];

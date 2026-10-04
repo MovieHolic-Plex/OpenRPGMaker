@@ -1,4 +1,4 @@
-import { mapCharacterScale } from "@/project/characterScale";
+import { mapCharacterScale, mapCharacterSizeFactor } from "@/project/characterScale";
 import { projectReferenceTileSize } from "@/project/mapViewScale";
 import { store } from "@/project/store";
 import { mapTileSize } from "@/project/tileGeometry";
@@ -11,7 +11,7 @@ export function playerCharacterScale(scene: {
   readonly map: GameMap;
   readonly player?: { readonly width?: number };
 }): number {
-  return mapCharacterScale(scene.player?.width, mapTileSize(scene.map), projectReferenceTileSize(store.getCurrent()));
+  return mapCharacterScale(scene.player?.width, mapTileSize(scene.map), projectReferenceTileSize(store.getCurrent())) * mapCharacterSizeFactor(scene.map);
 }
 
 /** Update on map/graphic changes, without resetting active swing/jump animation every refresh. */

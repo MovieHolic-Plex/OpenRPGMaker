@@ -1,0 +1,39 @@
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat a orange
+@mblock 0 0
+................
+................
+.....aaaaaa.....
+...aaaaaaaaaaa..
+..aaaaaaaaaaaaa.
+.aaaaaaaaaaaaaaa
+.aaaaaaaaaaaaaaa
+aaa.aaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+.aaaaaaaaaaaaaaa
+..aaaaaaa.aaaaaa
+................
+................
+@tblock 0 0
+................
+................
+.....000000.....
+...00655555400..
+..0655555554430.
+.065555555443320
+.065555554432320
+050.050554432320
+0555555504432320
+0500500504432320
+0566666504432210
+0566166504332210
+.055444503322210
+..0000000.000000
+................
+................
+@px 2 14 - 3 14 ~ 4 14 ~ 5 14 ~ 6 14 ~ 7 14 ~ 8 14 ~ 9 14 ~ 10 14 ~ 11 14 ~ 12 14 ~ 13 14 ~ 14 14 ~ 15 14 -

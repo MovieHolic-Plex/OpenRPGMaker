@@ -25,7 +25,6 @@ import { transparentColorKeyDataUrl } from "@/assets/transparentColorKeyBackgrou
 
 export type EditorWarmupTier = "picker" | "library";
 
-const TIER_ORDER: readonly EditorWarmupTier[] = ["picker", "library"];
 const BACKGROUND_CONCURRENCY = 4;
 const DEMAND_CONCURRENCY = 6;
 const IDLE_FALLBACK_MS = 800;
@@ -46,12 +45,19 @@ export function editorWarmupColorKeyPaths(): readonly string[] {
 }
 
 // 편집기 부팅 직후 호출한다. 유휴 콜백으로 미루므로 첫 페인트와 경쟁하지 않는다.
+//
+// 부팅 배경 워밍은 **캐릭셋 색키 21장만** 한다(2026-09-30 렉 실측, G). 예전에는 picker tier 전체
+// (낱장 얼굴 1216장 7.3MB + 칩셋 13장 ≈11MB) 와 CC0 아이콘 282장을 부팅 뒤 ~45초 동안 걸어,
+// 프로젝트 배경 작업(digest·clone·diff, 부팅 후 ~20초)과 겹쳐 네트워크·GC·재검증(`no-cache`) 을
+// 경쟁시켰다. 얼굴/칩셋/아이콘은 이벤트 편집기 모달이 `warmEditorPickerAssets()` 로 앞당기거나
+// 피커가 열릴 때 필요한 만큼만 받는다. 색키만 부팅에 남기는 이유는 CPU 비용(PNG→캔버스→픽셀 루프)이
+// 다이얼로그 첫 프레임을 막던 진짜 병목이기 때문이다.
 export function scheduleEditorAssetWarmup(): void {
   if (backgroundScheduled) return;
   backgroundScheduled = true;
   if (!imageWarmSupported() || prefersReducedData()) return;
   onIdle(() => {
-    void warmTiersInOrder();
+    void warmColorKeyPaths(editorWarmupColorKeyPaths(), BACKGROUND_CONCURRENCY);
   });
 }
 
@@ -63,12 +69,6 @@ export function warmEditorPickerAssets(): Promise<void> {
 export function resetEditorAssetWarmup(): void {
   tierWarms.clear();
   backgroundScheduled = false;
-}
-
-async function warmTiersInOrder(): Promise<void> {
-  for (const tier of TIER_ORDER) {
-    await warmTier(tier, BACKGROUND_CONCURRENCY);
-  }
 }
 
 function warmTier(tier: EditorWarmupTier, concurrency: number): Promise<void> {

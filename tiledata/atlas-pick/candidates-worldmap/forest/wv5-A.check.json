@@ -1,0 +1,137 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/forest/wv5-A.pxg",
+ "set": "worldmap",
+ "id": "forest",
+ "hard": [],
+ "warn": [
+  "shore-join: 사분면 이음에서 기슭선이 3px 이상 어긋난다(계단·톱니) — inner_nw↔edge_n 5≠1, inner_ne↔edge_n 5≠2, inner_sw↔edge_w 5≠2, inner_se↔edge_s 5≠8, inner_se↔edge_e 5≠1"
+ ],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.109
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.051
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "dither"
+  ]
+ },
+ "colors": 11,
+ "bbox": [
+  0,
+  0,
+  47,
+  62
+ ],
+ "note": "A: World.png 숲 구조(지름 9 수관이 8px 엇갈림, 수관 사이 가장 어두운 초록, 남쪽 줄기 2px)를 우리 팔레트로.",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.18
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.047
+  },
+  "shore": {
+   "profile": {
+    "n": [
+     2,
+     1,
+     0,
+     0,
+     0,
+     0,
+     0,
+     1,
+     2,
+     1,
+     0,
+     0,
+     0,
+     0,
+     0,
+     1
+    ],
+    "s": [
+     8,
+     7,
+     6,
+     6,
+     6,
+     6,
+     6,
+     7,
+     8,
+     7,
+     6,
+     6,
+     6,
+     6,
+     6,
+     7
+    ],
+    "w": [
+     2,
+     1,
+     0,
+     0,
+     0,
+     0,
+     0,
+     1,
+     1,
+     2,
+     4,
+     4,
+     4,
+     4,
+     4,
+     5
+    ],
+    "e": [
+     1,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     1,
+     3,
+     3,
+     3,
+     3,
+     3,
+     4
+    ]
+   },
+   "strait": 6,
+   "steps": {
+    "n": 1,
+    "s": 1,
+    "w": 3,
+    "e": 3
+   },
+   "amp": {
+    "n": 2,
+    "s": 2,
+    "w": 5,
+    "e": 4
+   },
+   "joinWorst": 4
+  },
+  "seam": 0.59
+ }
+}

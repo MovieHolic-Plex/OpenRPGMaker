@@ -1,0 +1,18 @@
+// 3단계 빛: 판 윗모서리 한 줄 밝게(빛이 위에서), 틈 앞 한 줄 어둡게. 이음 오른쪽 판 머리는 밝게, 왼쪽 판 끝은 어둡게.
+@base 2-flat.pxg
+@block 0 0
+ggggggggggggggggggggcggggggggggg
+fffffffffffffffffffecgffffffffff *5
+eeeeeeeeeeeeeeeeeeeeceeeeeeeeeee
+@block 0 8
+ffffffffffffffffffffffffffffffff
+eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee *5
+dddddddddddddddddddddddddddddddd
+@block 0 16
+fffffffffcffffffffffffffffffffff
+eeeeeeeedcfeeeeeeeeeeeeeeeeeeeee *5
+dddddddddcdddddddddddddddddddddd
+@block 0 24
+gggggggggggggggggggggggggggggggg
+ffffffffffffffffffffffffffffffff *5
+eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee

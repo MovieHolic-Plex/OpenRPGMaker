@@ -13,7 +13,7 @@ import { ToolError } from "@/editor/tools/types";
 import { createBlankProject } from "@/project/defaults";
 import { DEFAULT_AUTOTILE_GROUPS } from "@/project/defaults/autotileGroups";
 import { fixedDeclarer } from "./intentFixture";
-import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { approvedVocabulary } from "@/project/tileVocabulary";
 import type { TilesetDef } from "@/project/types";
 
@@ -46,7 +46,7 @@ function contextWithMap(): { ctx: ToolContext; tileset: () => TilesetDef } {
   const ctx: ToolContext = { project: createBlankProject() };
   const created = runTool(ctx, "create_map", { id: "m1", name: "시공 테스트", width: 20, height: 20 });
   expect(created.ok).toBe(true);
-  return { ctx, tileset: () => ctx.project.tilesets[DEFAULT_TILESET_ID] };
+  return { ctx, tileset: () => ctx.project.tilesets[COMBINED_TOWN_TILESET_ID] };
 }
 
 function approveWallGroup(ctx: ToolContext): string {
@@ -137,7 +137,7 @@ describe("T2 — 승인 시 패턴 파츠 자동 생성 불변식", () => {
   });
 
   it("vertical 2개(1×2 문 규약)는 top/bottom, 3의 배수는 top/repeatBody/bottom으로 파생된다", () => {
-    const tileset = createBlankProject().tilesets[DEFAULT_TILESET_ID];
+    const tileset = createBlankProject().tilesets[COMBINED_TOWN_TILESET_ID];
     const door = derivePatternGrammar("vertical_expandable", [116, 146], tileset);
     expect(door!.parts).toEqual([
       { role: "top", tileIds: [116] },

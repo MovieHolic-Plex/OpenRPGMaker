@@ -45,7 +45,7 @@ export function createChatResizeChrome(deps: ChatResizeChromeDeps): ChatResizeCh
       : { width: window.innerWidth, height: window.innerHeight };
   // 패널에 남아 있을 수 있는 인라인 크기를 비운다 — 데크는 CSS 변수로만 커진다.
   const clearPanelSize = (): void => {
-    for (const prop of sizeProps) panel.style[prop] = "";
+    for (const prop of sizeProps) if (panel.style[prop] !== "") panel.style[prop] = "";
   };
   const widthLimits = (): { min: number; max: number } => ({
     min: PANEL_SIZE_LIMITS.minWidth,
@@ -74,7 +74,12 @@ export function createChatResizeChrome(deps: ChatResizeChromeDeps): ChatResizeCh
     dataset: { testid: "ai-resize-handle" },
   });
 
+  // 같은 값을 다시 쓰는 것도 style 속성 변이다 — 맵 전환마다 applySize 가 불려도 값이 그대로면 손대지 않는다
+  // (변이 한 번이 스타일 재계산을 부른다). 마지막으로 바른 값을 기억한다.
+  let appliedWidthVar: string | null = null;
   const applyWidthVar = (widthPx: string | null): void => {
+    if (widthPx === appliedWidthVar) return;
+    appliedWidthVar = widthPx;
     if (!widthPx) {
       panel.style.removeProperty("--ai-float-bar-width");
       deck.style.removeProperty("--ai-float-bar-width");
@@ -83,29 +88,37 @@ export function createChatResizeChrome(deps: ChatResizeChromeDeps): ChatResizeCh
     panel.style.setProperty("--ai-float-bar-width", widthPx);
     deck.style.setProperty("--ai-float-bar-width", widthPx);
   };
+  const setAttrIfChanged = (name: string, value: string): void => {
+    if (handle.getAttribute(name) !== value) handle.setAttribute(name, value);
+  };
 
   const syncAria = (): void => {
     const limits = widthLimits();
     // Effective (clamped) width only — never advertise preferred barSize above valuemax.
     const now = effectiveWidth();
-    handle.setAttribute("aria-valuemin", String(limits.min));
-    handle.setAttribute("aria-valuemax", String(limits.max));
-    handle.setAttribute("aria-valuenow", String(now));
+    setAttrIfChanged("aria-valuemin", String(limits.min));
+    setAttrIfChanged("aria-valuemax", String(limits.max));
+    setAttrIfChanged("aria-valuenow", String(now));
   };
   const sizeObserver = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(syncAria);
   sizeObserver?.observe(deck);
 
   const applySize = (): void => {
     clearPanelSize();
-    applyWidthVar(null);
-    if (!resizable()) return;
-    if (barSize) applyWidthVar(`${clampWidth(barSize.width)}px`);
+    if (!resizable()) {
+      applyWidthVar(null);
+      return;
+    }
+    applyWidthVar(barSize ? `${clampWidth(barSize.width)}px` : null);
     syncAria();
   };
 
   const mountHandle = (): void => {
-    handle.remove();
-    deck.append(handle);
+    // 이미 데크의 마지막 자식이면 떼었다 붙이지 않는다 — remove/append 는 자식 목록 변이 두 번이다.
+    if (handle.parentNode !== deck || deck.lastChild !== handle) {
+      handle.remove();
+      deck.append(handle);
+    }
     syncAria();
   };
 

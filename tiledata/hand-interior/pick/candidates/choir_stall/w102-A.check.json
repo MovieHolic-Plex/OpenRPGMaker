@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/choir_stall/w102-A.pxg",
+ "id": "choir stall",
+ "hard": [],
+ "warn": [
+  "파일 이름이 <작업자>-<방향>.pxg 꼴이 아니다(w1-A.pxg): w102-A.pxg"
+ ],
+ "refmap": {
+  "cells": 9,
+  "atLeast95": 0,
+  "max": 0.067
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 17,
+ "v5_colors": 11,
+ "bbox": [
+  0,
+  8,
+  47,
+  47
+ ],
+ "v5_bbox": [
+  0,
+  8,
+  47,
+  47
+ ],
+ "note": "성가대석 3/4 정면(남향): 좌판 윗면 5행(붉은 방석+나무 테두리) + 앞면 14행(들어간 앞판·금 장식) + 등판(금 문양) + 칸막이 기둥·팔걸이 윗면. 캔버스 48x48 유지.",
+ "ok": true
+}

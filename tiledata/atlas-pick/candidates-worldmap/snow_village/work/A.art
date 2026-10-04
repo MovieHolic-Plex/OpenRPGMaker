@@ -1,0 +1,69 @@
+size 16 16
+map K wroofr 0
+map q wroofr 1
+map r wroofr 2
+map R wroofr 3
+map Q wroofr 4
+map J wice 1
+map i wroofb 1
+map j wroofb 2
+map I wice 3
+map H wroofb 4
+map k mwood 1
+map x mwood 2
+map Y mwood 2
+map W mwood 3
+map V mwood 4
+map g myellow 3
+map D mwood 0
+map d mwood 1
+map e wdirt 2
+map L wleaf 0
+map l wleaf 1
+map m wleaf 2
+map n wleaf 3
+map o wleaf 4
+map t wbark 0
+map T wbark 1
+map z wstone 0
+map s wstone 1
+map S wstone 2
+map U wstone 3
+map X wstone 4
+map Z wstone 5
+map C wstone 6
+map p wsnow 1
+map P wsnow 2
+map N wsnow 3
+map M wsnow 4
+map O wsnow 5
+map F wsnow 6
+map a wbark 2
+map b wbark 3
+map y wgold 3
+map Ｙ wgold 4
+map u wsnow 0
+map v wsnow 2
+map w wsnow 4
+map h wsnow 5
+map f wsnow 6
+map B wsnow 3
+map G wice 2
+autoshadow
+grid
+................
+................
+................
+......uu........
+.....ufhu.......
+....uffhwu......
+...ufffhwwu.....
+..uffffhhwwu....
+.uvvvvvvvvvvuu..
+..kWWWWWWWWufhu.
+..kWggWDDWuvvvvu
+..kWggWDDWWkDDk.
+..kWWWWDDWWkDDk.
+..kkkkkkkkkkDDk.
+...........kkkk.
+................

@@ -17,6 +17,15 @@ export function mapCharacterScale(frameWidth: number | undefined, tileSize: numb
   return automaticCharacterScale(frameWidth, referenceTileSize) * mapWorldScale(tileSize, referenceTileSize);
 }
 
+export const MAP_CHARACTER_SCALE_MIN = 0.25;
+
+/** 맵 단위 캐릭터 크기 배율(GameMap.characterScale). 없거나 잘못된 값이면 1, 0.25~1 로 자른다. */
+export function mapCharacterSizeFactor(map?: { readonly characterScale?: number }): number {
+  const v = map?.characterScale;
+  if (typeof v !== "number" || !Number.isFinite(v)) return 1;
+  return Math.min(1, Math.max(MAP_CHARACTER_SCALE_MIN, v));
+}
+
 export function isAutomaticCharacterScale(graphic?: Pick<EventPageGraphic, "scale" | "scaleMode">): boolean {
   return graphic?.scaleMode === "auto" || (graphic?.scaleMode !== "manual" && graphic?.scale === undefined);
 }

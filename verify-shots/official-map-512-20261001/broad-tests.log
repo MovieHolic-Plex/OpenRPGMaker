@@ -1,0 +1,464 @@
+
+> oprn@0.60.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/mapSizeGuard.test.ts test/mapEdgeGrow.test.ts test/mapCreateSpec.test.ts test/generateMap.test.ts test/toolsMapManagement.test.ts test/spatialSchema.test.ts test/spatialBindingProjection.test.ts test/runtimeTileWindow.test.ts --maxWorkers=2 --minWorkers=1
+
+
+ RUN  v3.2.4 /home/main/.codex/worktrees/320d/rpg-zzu
+
+ ❯ test/toolsMapManagement.test.ts (22 tests | 4 failed) 35739ms
+   ✓ find_events catalog > 페이지 수·조건·이름을 돌려 새 NPC의 템플릿을 고를 수 있다  1494ms
+   ✓ get_event > 이벤트 전체 정의를 돌려주고, 없으면 보유 목록을 안내한다  1521ms
+   ✓ get_event > place_npc가 런타임 지원 제한 페이지 명령 warning을 ToolResult.issues에 담는다  1457ms
+   ✓ get_event > upsert_event가 런타임 지원 제한 페이지 명령 warning과 요약 count를 담는다  1381ms
+   ✓ get_event > upsert_event pages[].commands 단수 객체 입력은 배열로 승격하고 warning을 남긴다  1370ms
+   ✓ get_event > upsert_event 부분 수정은 기존 NPC의 대사·그래픽·위치를 보존한다  1853ms
+   ✓ get_event > upsert_event 후속 수정은 place_chest의 50G 보상 페이지를 보존한다  1839ms
+   ✓ get_event > upsert_event는 event trigger 안에 잘못 넣은 명령을 거부하고 기존 귀환을 보존한다  3017ms
+   ✓ get_event > upsert_event는 page trigger 안에 잘못 넣은 명령을 거부하고 기존 귀환을 보존한다  2990ms
+   × get_event > upsert_event commands kind 오류는 인덱스와 기대 형식을 invalid-args에 담는다 1221ms
+     → expected '커맨드 형식 오류:\n- ev_bad_kind.ev_bad_kind…' to contain 'ev_bad_kind.commands[0].kind'
+   ✓ get_event > upsert_event 인자 누락은 NPC 배치용 place_npc 힌트를 돌려준다  1096ms
+   ✓ set_map_properties > 이름/인카운트율/트룹을 설정하고, 없는 트룹은 거부한다  1364ms
+   × resize_map > 확장부는 잔디로 채우고 기존 타일은 보존한다 1700ms
+     → expected 737 to be 240 // Object.is equality
+   ✓ resize_map > 축소로 이벤트가 밖에 나가면 거부한다  1749ms
+   ✓ resize_map > 지원 상한 초과 확장은 거부하고 분할 맵 대안을 안내한다  1171ms
+   × create_map > 기본 생성은 돌벽 테두리 없이 잔디 평지로 만든다 1106ms
+     → expected false to be true // Object.is equality
+   × create_map > border:'wall'을 지정하면 기존처럼 외곽을 돌벽으로 두른다 1039ms
+     → expected 737 to be 240 // Object.is equality
+   ✓ create_map > 모델 노출 스키마에서 border 를 뺐다 — 조수가 스스로 외곽 벽을 고를 수 없다 3ms
+   ✓ create_map > 지원 상한 초과 생성은 거부한다  661ms
+   ✓ remove_map > 일반 맵은 삭제되고 맵 트리에서도 사라진다  4495ms
+   ✓ remove_map > 시작 맵은 삭제를 거부한다  1248ms
+   ✓ rename_variable > 정의·세션·커맨드·조건의 변수 참조를 일괄 치환한다  1957ms
+ ❯ test/mapSizeGuard.test.ts (26 tests | 2 failed) 35922ms
+   ✓ build_world 맵 크기 상한 > 512×512 노드는 만든다  1330ms
+   ✓ build_world 맵 크기 상한 > 513×513 노드는 셀 할당 전에 거부한다  766ms
+   ✓ build_world 맵 크기 상한 > size:{w,h} 별칭으로 우회할 수 없다  722ms
+   ✓ build_world 맵 크기 상한 > 초대형 노드 하나가 섞이면 같은 요청의 정상 노드도 만들지 않는다  755ms
+   ✓ plan_world 크기 힌트 상한 > build_world 가 그대로 읽는 초대형 힌트는 계획 단계에서 거부한다  722ms
+   ✓ plan_world 크기 힌트 상한 > 512 힌트는 계획으로 등록한다  1043ms
+   ✓ 나머지 조수 생성/크기변경 경로 > official 512×512 maps retain the edge cells through export and reload  3006ms
+   ✓ 나머지 조수 생성/크기변경 경로 > create_map { name: '경계', width: 512, height: 512, id: 'map_edge' } → ok:true  1074ms
+   ✓ 나머지 조수 생성/크기변경 경로 > create_map { name: '초과', width: 513, height: 513, id: 'map_edge' } → ok:false  706ms
+   × 나머지 조수 생성/크기변경 경로 > generate_map { theme: 'forest', width: 512, height: 512, id: 'map_edge' } → ok:true 824ms
+     → 'generate_map' 실행 실패: 타일셋 'beodeul_city' 전용 맵 생성 로직이 아직 없습니다: expected false to be true // Object.is equality
+   × 나머지 조수 생성/크기변경 경로 > generate_map { theme: 'forest', width: 513, height: 513, id: 'map_edge' } → ok:false 791ms
+     → expected '\'generate_map\' 실행 실패: 타일셋 \'beodeul…' to contain '최대 512×512'
+   ✓ 나머지 조수 생성/크기변경 경로 > resize_map 은 지원 상한까지 늘리고 초과는 거부한다  1490ms
+   ✓ 나머지 조수 생성/크기변경 경로 > start_dungeon_room_session 은 초대형 방을 거부한다  802ms
+   ✓ 나머지 조수 생성/크기변경 경로 > start_interior_room_session 은 초대형 실내를 거부한다  792ms
+   ✓ 나머지 조수 생성/크기변경 경로 > author_village 는 초대형 새 맵 대상을 거부한다  644ms
+   ✓ 나머지 조수 생성/크기변경 경로 > build_village/build_castle 은 상한을 넘는 맵을 만들지 않는다  703ms
+   ✓ 사람 생성/크기변경 경로 > addMap 은 초대형 요청으로 맵을 만들지 않는다  1905ms
+   ✓ 사람 생성/크기변경 경로 > addChildMap 도 초대형 요청으로 맵을 만들지 않는다  1065ms
+   ✓ 사람 생성/크기변경 경로 > addMap 은 지원 상한을 그대로 만든다  1330ms
+   ✓ 사람 생성/크기변경 경로 > resizeMap 은 초대형 크기로 바꾸지 않는다  1068ms
+   ✓ 사람 생성/크기변경 경로 > createMapFromSpec 은 상한 밖 스펙으로 초대형 맵을 남기지 않는다  1090ms
+   ✓ lint 계약이 생성 계약과 일치한다 > 513 맵은 error 로 보고한다(warning-only 미지원 상태 금지)  1583ms
+   ✓ lint 계약이 생성 계약과 일치한다 > 512 맵은 보고하지 않는다  1842ms
+   ✓ 이미 들어온 초대형 맵(외부/구 데이터) > 선재 초대형 맵이 무관한 편집을 막지 않는다  1167ms
+   ✓ 이미 들어온 초대형 맵(외부/구 데이터) > 조수 경로에서도 렌더 없이 삭제할 수 있다  4334ms
+   ✓ 이미 들어온 초대형 맵(외부/구 데이터) > 캔버스를 열지 않고도 식별하고 지울 수 있다  4356ms
+ ✓ test/spatialSchema.test.ts (59 tests) 95354ms
+   ✓ spatial authoring IO contract > rejects unsupported rotation when a route point carries transform geometry  1429ms
+   ✓ spatial authoring IO contract > rejects unsupported scale when a route point carries transform geometry  1302ms
+   ✓ spatial authoring IO contract > preserves the complete hierarchy or disjoint owned bindings when serializer roundtrips  2297ms
+   ✓ spatial authoring IO contract > preserves the complete hierarchy or disjoint owned bindings when serializer roundtrips  2017ms
+   ✓ spatial authoring IO contract > rejects binding 'overlap' when loading owned map references  1285ms
+   ✓ spatial authoring IO contract > rejects binding 'missing map' when loading owned map references  1245ms
+   ✓ spatial authoring IO contract > rejects binding 'missing event' when loading owned map references  1392ms
+   ✓ spatial authoring IO contract > rejects binding 'foreign port' when loading owned map references  1307ms
+   ✓ spatial authoring IO contract > rejects binding 'missing connection' when loading owned map references  1289ms
+   ✓ spatial authoring IO contract > rejects binding 'out of bounds' when loading owned map references  1312ms
+   ✓ spatial authoring IO contract > rejects region-kind when a hierarchy reference breaks  1421ms
+   ✓ spatial authoring IO contract > rejects world-kind when a hierarchy reference breaks  1241ms
+   ✓ spatial authoring IO contract > rejects entry-port when a hierarchy reference breaks  1395ms
+   ✓ spatial authoring IO contract > rejects route-port when a hierarchy reference breaks  1267ms
+   ✓ spatial authoring IO contract > rejects fifth-floor when a hierarchy reference breaks  1299ms
+   ✓ spatial authoring IO contract > rejects occurrence cycles when three same-kind parents form a loop  1348ms
+   ✓ spatial authoring IO contract > rejects an unresolved exterior when a frozen place snapshot omits its kit cells  1387ms
+   ✓ spatial authoring IO contract > preserves one parent with two independent room occurrences when loading containment  2278ms
+   ✓ spatial authoring IO contract > rejects 'unsupported version' with its record path when loading wire data  1476ms
+   ✓ spatial authoring IO contract > rejects 'future envelope' with its record path when loading wire data  1374ms
+   ✓ spatial authoring IO contract > rejects 'missing collection' with its record path when loading wire data  1456ms
+   ✓ spatial authoring IO contract > rejects 'duplicate design id' with its record path when loading wire data  2273ms
+   ✓ spatial authoring IO contract > rejects 'key/id mismatch' with its record path when loading wire data  1712ms
+   ✓ spatial authoring IO contract > rejects 'zero revision' with its record path when loading wire data  1478ms
+   ✓ spatial authoring IO contract > rejects 'missing object' with its record path when loading wire data  1656ms
+   ✓ spatial authoring IO contract > rejects 'inherited object name' with its record path when loading wire data  1759ms
+   ✓ spatial authoring IO contract > rejects 'missing kit' with its record path when loading wire data  2293ms
+   ✓ spatial authoring IO contract > rejects 'inherited tileset' with its record path when loading wire data  1697ms
+   ✓ spatial authoring IO contract > rejects 'self cycle' with its record path when loading wire data  1636ms
+   ✓ spatial authoring IO contract > rejects 'three-node cycle' with its record path when loading wire data  1723ms
+   ✓ spatial authoring IO contract > rejects 'illegal kind edge' with its record path when loading wire data  1935ms
+   ✓ spatial authoring IO contract > rejects 'zero size' with its record path when loading wire data  1420ms
+   ✓ spatial authoring IO contract > rejects 'unbounded size' with its record path when loading wire data  1746ms
+   ✓ spatial authoring IO contract > rejects 'fractional slot geometry' with its record path when loading wire data  1516ms
+   ✓ spatial authoring IO contract > rejects 'NaN wire geometry' with its record path when loading wire data  1562ms
+   ✓ spatial authoring IO contract > rejects 'fractional occurrence geometry' with its record path when loading wire data  1447ms
+   ✓ spatial authoring IO contract > rejects 'multiple occurrence parents' with its record path when loading wire data  1722ms
+   ✓ spatial authoring IO contract > rejects 'root also contained' with its record path when loading wire data  1693ms
+   ✓ spatial authoring IO contract > rejects 'missing parent' with its record path when loading wire data  1611ms
+   ✓ spatial authoring IO contract > rejects 'duplicate root' with its record path when loading wire data  1819ms
+   ✓ spatial authoring IO contract > rejects 'omitted root' with its record path when loading wire data  1618ms
+   ✓ spatial authoring IO contract > rejects 'missing occurrence' with its record path when loading wire data  1714ms
+   ✓ spatial authoring IO contract > rejects 'foreign port' with its record path when loading wire data  1577ms
+   ✓ spatial authoring IO contract > rejects 'inherited occurrence' with its record path when loading wire data  1533ms
+   ✓ spatial authoring IO contract > rejects 'unresolved snapshot object' with its record path when loading wire data  1660ms
+   ✓ spatial authoring IO contract > rejects 'malformed backup encoding' with its record path when loading wire data  1613ms
+   ✓ spatial authoring IO contract > rejects 'malformed digest' with its record path when loading wire data  1464ms
+   ✓ spatial authoring IO contract > rejects 'nested active backup' with its record path when loading wire data  1509ms
+   ✓ spatial authoring IO contract > preserves repeated design references and distinct occurrences when the real serializer roundtrips  2191ms
+   ✓ spatial authoring IO contract > accepts navigation cycles when three independent occurrences form a loop  1382ms
+   ✓ spatial authoring IO contract > preserves an empty canonical document and opaque archive bytes when pretty serialization roundtrips  2897ms
+   ✓ spatial authoring IO contract > leaves canonical authoring absent when a legacy project loads  1596ms
+   ✓ spatial authoring IO contract > retains historical snapshots when their live source designs and kits have been deleted  1485ms
+   ✓ spatial authoring IO contract > preserves opaque own ID __proto__ when a dictionary roundtrips  2349ms
+   ✓ spatial authoring IO contract > preserves opaque own ID constructor when a dictionary roundtrips  2477ms
+   ✓ spatial authoring IO contract > preserves opaque own ID toString when a dictionary roundtrips  2542ms
+   ✓ spatial authoring IO contract > rejects nonfinite number NaN before JSON cloning at the actual IO shape boundary  714ms
+   ✓ spatial authoring IO contract > rejects nonfinite number Infinity before JSON cloning at the actual IO shape boundary  742ms
+   ✓ spatial authoring IO contract > rejects nonfinite number -Infinity before JSON cloning at the actual IO shape boundary  757ms
+ ❯ test/generateMap.test.ts (17 tests | 10 failed) 17598ms
+   × generate_map > village (seed 1) — lint 0 error + 모든 POI 도달 가능 1148ms
+     → expected false to be true // Object.is equality
+   × generate_map > village (seed 99) — lint 0 error + 모든 POI 도달 가능 946ms
+     → expected false to be true // Object.is equality
+   × generate_map > forest (seed 1) — lint 0 error + 모든 POI 도달 가능 956ms
+     → expected false to be true // Object.is equality
+   × generate_map > forest (seed 99) — lint 0 error + 모든 POI 도달 가능 1037ms
+     → expected false to be true // Object.is equality
+   ✓ generate_map > cave (seed 1) — lint 0 error + 모든 POI 도달 가능  2288ms
+   ✓ generate_map > cave (seed 99) — lint 0 error + 모든 POI 도달 가능  2022ms
+   ✓ generate_map > 장애물 밀도가 높아도(90) 도달성이 보장된다  810ms
+   × generate_map > 지원 상한 초과 생성은 거부하고 분할 맵 대안을 안내한다 933ms
+     → expected '\'generate_map\' 실행 실패: 타일셋 \'beodeul…' to contain '최대 512×512'
+   × generate_map > 번들 프로필을 디스패치하되 실내는 개념 시공으로 안내한다 1482ms
+     → shared_forest_village_objects: 'generate_map' 실행 실패: 존재하지 않는 타일셋입니다: shared_forest_village_objects: expected false to be true // Object.is equality
+   × generate_map > 외곽 테두리는 옵션이다(기본 none) > village: border 생략 시 외곽에 장애물 벽을 두르지 않는다 934ms
+     → 'generate_map' 실행 실패: 타일셋 'beodeul_city' 전용 맵 생성 로직이 아직 없습니다: expected false to be true // Object.is equality
+   × generate_map > 외곽 테두리는 옵션이다(기본 none) > forest: border 생략 시 외곽에 장애물 벽을 두르지 않는다 943ms
+     → 'generate_map' 실행 실패: 타일셋 'beodeul_city' 전용 맵 생성 로직이 아직 없습니다: expected false to be true // Object.is equality
+   ✓ generate_map > 외곽 테두리는 옵션이다(기본 none) > cave: border 생략 시 외곽에 장애물 벽을 두르지 않는다  845ms
+   × generate_map > 외곽 테두리는 옵션이다(기본 none) > border 생략 시 기본 입구는 맵 가장자리에 붙는다 928ms
+     → 'generate_map' 실행 실패: 타일셋 'beodeul_city' 전용 맵 생성 로직이 아직 없습니다: expected false to be true // Object.is equality
+   ✓ generate_map > 외곽 테두리는 옵션이다(기본 none) > border:"wall" 은 종전처럼 외곽 4변을 봉인한다  775ms
+   × generate_map > 외곽 테두리는 옵션이다(기본 none) > 알 수 없는 border 값은 조용히 무시되지 않고 거부된다 830ms
+     → expected '타일셋 \'beodeul_city\' 전용 맵 생성 로직이 아직 없…' to contain 'border'
+   ✓ generate_map > 외곽 테두리는 옵션이다(기본 none) > 모델 노출 스키마에는 border 가 없다 3ms
+   ✓ generate_map > 등록되지 않은 타일셋은 다른 타일 문법으로 대체하지 않는다  712ms
+ ✓ test/runtimeTileWindow.test.ts (7 tests) 8291ms
+   ✓ runtime viewport tile residency > uses a teleported or zoomed camera immediately, before worldView refreshes  365ms
+   ✓ runtime viewport tile residency > keeps only the camera neighborhood even on a 512 map, reuses overlap, evicts roots and containers  1293ms
+   ✓ runtime viewport tile residency > matches complete-map draw order, quarters, four layers, shadows and root depths at tile size 16  2245ms
+   ✓ runtime viewport tile residency > matches complete-map draw order, quarters, four layers, shadows and root depths at tile size 32  2241ms
+   ✓ runtime viewport tile residency > recreates changed tiles on return and resets resident cells on tile refresh  1059ms
+   ✓ runtime viewport tile residency > new water sprites inherit the retained visible animation frame and fractional time  1064ms
+ ✓ test/mapCreateSpec.test.ts (8 tests) 8208ms
+   ✓ resolveMapCreateDefaults > starts a new project and a new blank map on the generated default (beodeul_city)  776ms
+   ✓ resolveMapCreateDefaults > create_map fills beodeul_city with its plain grass, not the combined-town number  1162ms
+   ✓ resolveMapCreateDefaults > inherits parent size and tileset  681ms
+   ✓ resolveMapCreateDefaults > creates a legacy easyrpg interior map filled with its wood floor  1921ms
+   ✓ resolveMapCreateDefaults > creates a hand-pixel v5 interior as a walled room shell, not a flat fill  1102ms
+   ✓ resolveMapCreateDefaults > uses the hand-pixel v5 interior tileset and a room size for the interior preset  669ms
+   ✓ parent-child transfer pair > adds reciprocal transfer events on free cells  1213ms
+   ✓ map test-play start > chooses a passable event-free interior cell instead of an empty outer wall  680ms
+ ✓ test/spatialBindingProjection.test.ts (38 tests) 85114ms
+   ✓ non-owning compiled projections > retains authored coincident coordinates when full-space ownership and child projection roundtrip  4018ms
+   ✓ non-owning compiled projections > retains authored coincident coordinates when full-space ownership and child projection roundtrip  4142ms
+   ✓ non-owning compiled projections > rejects coincident owned rectangles when the child still claims raster ownership  2977ms
+   ✓ non-owning compiled projections > accepts two logical projections at one cell when neither owns raster  2524ms
+   ✓ non-owning compiled projections > retains a bounded placement extent when the frozen object has no anchors  2378ms
+   ✓ non-owning compiled projections > rejects 'foreign concrete port' when parsing a projection boundary  3356ms
+   ✓ non-owning compiled projections > rejects 'port outside extent' when parsing a projection boundary  3410ms
+   ✓ non-owning compiled projections > rejects 'missing map' when parsing a projection boundary  3026ms
+   ✓ non-owning compiled projections > rejects 'extent outside map' when parsing a projection boundary  3107ms
+   ✓ non-owning compiled projections > rejects 'extent crosses map edge' when parsing a projection boundary  2829ms
+   ✓ non-owning compiled projections > rejects 'negative extent' when parsing a projection boundary  2753ms
+   ✓ non-owning compiled projections > rejects 'zero extent' when parsing a projection boundary  1442ms
+   ✓ non-owning compiled projections > rejects 'oversized extent' when parsing a projection boundary  1754ms
+   ✓ non-owning compiled projections > rejects 'fractional extent' when parsing a projection boundary  1351ms
+   ✓ non-owning compiled projections > rejects 'nonfinite extent' when parsing a projection boundary  1392ms
+   ✓ non-owning compiled projections > rejects 'unknown kind' when parsing a projection boundary  1330ms
+   ✓ non-owning compiled projections > rejects 'null kind' when parsing a projection boundary  1329ms
+   ✓ non-owning compiled projections > rejects 'numeric kind' when parsing a projection boundary  1374ms
+   ✓ non-owning compiled projections > rejects 'present undefined kind' when parsing a projection boundary  1610ms
+   ✓ non-owning compiled projections > rejects 'event authority' when parsing a projection boundary  1756ms
+   ✓ non-owning compiled projections > rejects 'connection authority' when parsing a projection boundary  1467ms
+   ✓ non-owning compiled projections > rejects 'digest authority' when parsing a projection boundary  1389ms
+   ✓ non-owning compiled projections > rejects 'undefined event authority' when parsing a projection boundary  1337ms
+   ✓ non-owning compiled projections > rejects 'unknown field' when parsing a projection boundary  1356ms
+   ✓ non-owning compiled projections > rejects missing kind when a projection is incomplete  2084ms
+   ✓ non-owning compiled projections > rejects missing mapId when a projection is incomplete  2087ms
+   ✓ non-owning compiled projections > rejects missing rect when a projection is incomplete  2132ms
+   ✓ non-owning compiled projections > rejects missing ports when a projection is incomplete  2052ms
+   ✓ non-owning compiled projections > rejects duplicate concrete binding when order is owned-first  2080ms
+   ✓ non-owning compiled projections > rejects duplicate concrete binding when order is projection-first  2298ms
+   ✓ non-owning compiled projections > rejects duplicate concrete binding when order is projection-only  2175ms
+   ✓ non-owning compiled projections > preserves old untagged binding values when legacy IO roundtrips  2029ms
+   ✓ non-owning compiled projections > preserves old untagged binding values when legacy IO roundtrips  2427ms
+   ✓ non-owning compiled projections > separates projection metadata from erasable artifacts when inspecting subtree deletion  1575ms
+   ✓ non-owning compiled projections > prunes only owned link bookkeeping when deleting a projected child without its live source  3161ms
+   ✓ non-owning compiled projections > rejects deletion with external navigation when removal was not authorized  1463ms
+   ✓ non-owning compiled projections > clears both variants when detaching without a live source  3027ms
+   ✓ non-owning compiled projections > clears copied bindings and remaps logical connections when duplicating without a live source  3103ms
+ ✓ test/mapEdgeGrow.test.ts (9 tests) 8ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 16 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/generateMap.test.ts > generate_map > village (seed 1) — lint 0 error + 모든 POI 도달 가능
+ FAIL  test/generateMap.test.ts > generate_map > village (seed 99) — lint 0 error + 모든 POI 도달 가능
+ FAIL  test/generateMap.test.ts > generate_map > forest (seed 1) — lint 0 error + 모든 POI 도달 가능
+ FAIL  test/generateMap.test.ts > generate_map > forest (seed 99) — lint 0 error + 모든 POI 도달 가능
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ test/generateMap.test.ts:38:27
+     36|           { dryRun: false }
+     37|         );
+     38|         expect(result.ok).toBe(true);
+       |                           ^
+     39|
+     40|         // lint 0 error.
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/16]⎯
+
+ FAIL  test/generateMap.test.ts > generate_map > 지원 상한 초과 생성은 거부하고 분할 맵 대안을 안내한다
+AssertionError: expected '\'generate_map\' 실행 실패: 타일셋 \'beodeul…' to contain '최대 512×512'
+
+Expected: "최대 512×512"
+Received: "'generate_map' 실행 실패: 타일셋 'beodeul_city' 전용 맵 생성 로직이 아직 없습니다"
+
+ ❯ test/generateMap.test.ts:73:28
+     71|     const result = runTool(ctx, "generate_map", { theme: "forest", wid…
+     72|     expect(result.ok).toBe(false);
+     73|     expect(result.summary).toContain(`최대 ${MAX_TOOL_MAP_DIMENSION}×${M…
+       |                            ^
+     74|     expect(result.summary).toContain("여러 맵");
+     75|     expect(ctx.project.maps.gen_huge).toBeUndefined();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/16]⎯
+
+ FAIL  test/generateMap.test.ts > generate_map > 번들 프로필을 디스패치하되 실내는 개념 시공으로 안내한다
+AssertionError: shared_forest_village_objects: 'generate_map' 실행 실패: 존재하지 않는 타일셋입니다: shared_forest_village_objects: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ test/generateMap.test.ts:124:60
+    122|         continue;
+    123|       }
+    124|       expect(result.ok, `${tilesetId}: ${result.summary}`).toBe(true);
+       |                                                            ^
+    125|       const data = result.data as { mapId: string; generationProfile: …
+    126|       const map = ctx.project.maps[data.mapId];
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/16]⎯
+
+ FAIL  test/generateMap.test.ts > generate_map > 외곽 테두리는 옵션이다(기본 none) > village: border 생략 시 외곽에 장애물 벽을 두르지 않는다
+ FAIL  test/generateMap.test.ts > generate_map > 외곽 테두리는 옵션이다(기본 none) > forest: border 생략 시 외곽에 장애물 벽을 두르지 않는다
+AssertionError: 'generate_map' 실행 실패: 타일셋 'beodeul_city' 전용 맵 생성 로직이 아직 없습니다: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ test/generateMap.test.ts:166:43
+    164|           { dryRun: false },
+    165|         );
+    166|         expect(result.ok, result.summary).toBe(true);
+       |                                           ^
+    167|         expect((result.data as { border: string }).border).toBe("none"…
+    168|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/16]⎯
+
+ FAIL  test/generateMap.test.ts > generate_map > 외곽 테두리는 옵션이다(기본 none) > border 생략 시 기본 입구는 맵 가장자리에 붙는다
+AssertionError: 'generate_map' 실행 실패: 타일셋 'beodeul_city' 전용 맵 생성 로직이 아직 없습니다: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ test/generateMap.test.ts:190:41
+    188|         { dryRun: false },
+    189|       );
+    190|       expect(result.ok, result.summary).toBe(true);
+       |                                         ^
+    191|       expect((result.data as { entrance: { x: number; y: number } }).e…
+    192|     });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/16]⎯
+
+ FAIL  test/generateMap.test.ts > generate_map > 외곽 테두리는 옵션이다(기본 none) > 알 수 없는 border 값은 조용히 무시되지 않고 거부된다
+AssertionError: expected '타일셋 \'beodeul_city\' 전용 맵 생성 로직이 아직 없…' to contain 'border'
+
+Expected: "border"
+Received: "타일셋 'beodeul_city' 전용 맵 생성 로직이 아직 없습니다"
+
+ ❯ test/generateMap.test.ts:215:70
+    213|       const result = runTool(ctx, "generate_map", { theme: "village", …
+    214|       expect(result.ok).toBe(false);
+    215|       expect(result.issues?.map((issue) => issue.message).join(" ")).t…
+       |                                                                      ^
+    216|       expect(ctx.project.maps.gen_bad).toBeUndefined();
+    217|     });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/16]⎯
+
+ FAIL  test/mapSizeGuard.test.ts > 나머지 조수 생성/크기변경 경로 > generate_map { theme: 'forest', width: 512, height: 512, id: 'map_edge' } → ok:true
+AssertionError: 'generate_map' 실행 실패: 타일셋 'beodeul_city' 전용 맵 생성 로직이 아직 없습니다: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ test/mapSizeGuard.test.ts:134:39
+    133|   ] as const)("%s %o → ok:%s", (tool, args, ok) => {
+    134|     const context = ctx();
+    135|     const result = runTool(context, tool, { ...args,
+       |            ^
+    136|       ...(tool === 'generate_map' ? { tilesetId: 'easyrpg_chipset_comb…
+    137|     expect(result.ok, result.summary).toBe(ok);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/16]⎯
+
+ FAIL  test/mapSizeGuard.test.ts > 나머지 조수 생성/크기변경 경로 > generate_map { theme: 'forest', width: 513, height: 513, id: 'map_edge' } → ok:false
+AssertionError: expected '\'generate_map\' 실행 실패: 타일셋 \'beodeul…' to contain '최대 512×512'
+
+Expected: "최대 512×512"
+Received: "'generate_map' 실행 실패: 타일셋 'beodeul_city' 전용 맵 생성 로직이 아직 없습니다"
+
+ ❯ expectRejection test/mapSizeGuard.test.ts:30:19
+     28| /** 거부 메시지는 상한과 회복 수단(맵 분할 + transfer 연결)을 함께 말해야 한다. */
+     29| function expectRejection(summary: string): void {
+     30|   expect(summary).toContain(`최대 ${MAX_TOOL_MAP_DIMENSION}×${MAX_TOOL_M…
+       |                   ^
+     31|   expect(summary).toContain("여러 맵");
+     32|   expect(summary).toContain("transfer");
+ ❯ test/mapSizeGuard.test.ts:136:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/16]⎯
+
+ FAIL  test/toolsMapManagement.test.ts > get_event > upsert_event commands kind 오류는 인덱스와 기대 형식을 invalid-args에 담는다
+AssertionError: expected '커맨드 형식 오류:\n- ev_bad_kind.ev_bad_kind…' to contain 'ev_bad_kind.commands[0].kind'
+
+- Expected
++ Received
+
+- ev_bad_kind.commands[0].kind
++ 커맨드 형식 오류:
++ - ev_bad_kind.ev_bad_kind_page.commands[0].kind: 기대 형식 string, 실제 타입 object(keys:command)
++ - ev_bad_kind.ev_bad_kind_page.commands[1].kind: 기대 형식 string, 실제 타입 undefined 커맨드 kind는 문자열. 형식이 어려우면 event_command_assist나 고수준 툴을 사용하라. 올바른 1커맨드 예시 JSON: {"commands":[{"kind":"text","body":"안녕하세요"}]}
+
+ ❯ test/toolsMapManagement.test.ts:243:21
+    241|     expect(result.issues?.[0]?.code).toBe("invalid-args");
+    242|     const message = result.issues?.[0]?.message ?? "";
+    243|     expect(message).toContain("ev_bad_kind.commands[0].kind");
+       |                     ^
+    244|     expect(message).toContain("ev_bad_kind.commands[1].kind");
+    245|     expect(message).toContain("기대 형식 string");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/16]⎯
+
+ FAIL  test/toolsMapManagement.test.ts > resize_map > 확장부는 잔디로 채우고 기존 타일은 보존한다
+AssertionError: expected 737 to be 240 // Object.is equality
+
+- Expected
++ Received
+
+- 240
++ 737
+
+ ❯ test/toolsMapManagement.test.ts:286:41
+    284|     expect(map.width).toBe(14);
+    285|     expect(map.lowerTiles[2 * 14 + 2]).toBe(TILE.WATER); // 기존 타일 보존.
+    286|     expect(map.lowerTiles[5 * 14 + 12]).toBe(TILE.GRASS); // 확장부 잔디.
+       |                                         ^
+    287|   });
+    288|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/16]⎯
+
+ FAIL  test/toolsMapManagement.test.ts > create_map > 기본 생성은 돌벽 테두리 없이 잔디 평지로 만든다
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ test/toolsMapManagement.test.ts:312:65
+    310|     expect(result.ok, result.summary).toBe(true);
+    311|     const map = context.project.maps.map_plain;
+    312|     expect(map.lowerTiles.every((tile) => tile === TILE.GRASS)).toBe(t…
+       |                                                                 ^
+    313|   });
+    314|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/16]⎯
+
+ FAIL  test/toolsMapManagement.test.ts > create_map > border:'wall'을 지정하면 기존처럼 외곽을 돌벽으로 두른다
+AssertionError: expected 737 to be 240 // Object.is equality
+
+- Expected
++ Received
+
+- 240
++ 737
+
+ ❯ test/toolsMapManagement.test.ts:328:47
+    326|       expect(map.lowerTiles[y * map.width + map.width - 1]).toBe(TILE.…
+    327|     }
+    328|     expect(map.lowerTiles[1 * map.width + 1]).toBe(TILE.GRASS);
+       |                                               ^
+    329|   });
+    330|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/16]⎯
+
+⎯⎯⎯⎯⎯⎯ Unhandled Errors ⎯⎯⎯⎯⎯⎯
+
+Vitest caught 2 unhandled errors during the test run.
+This might cause false positive tests. Resolve unhandled errors to make sure your tests are not affected.
+
+⎯⎯⎯⎯⎯⎯ Unhandled Error ⎯⎯⎯⎯⎯⎯⎯
+Error: [vitest-worker]: Timeout calling "onTaskUpdate"
+ ❯ Object.onTimeoutError ../../../../z-project/rpg-zzu/node_modules/vitest/dist/chunks/rpc.-pEldfrD.js:53:10
+ ❯ Timeout._onTimeout ../../../../z-project/rpg-zzu/node_modules/vitest/dist/chunks/index.B521nVV-.js:59:62
+ ❯ listOnTimeout node:internal/timers:605:17
+ ❯ processTimers node:internal/timers:541:7
+
+
+⎯⎯⎯⎯⎯⎯ Unhandled Error ⎯⎯⎯⎯⎯⎯⎯
+Error: [vitest-worker]: Timeout calling "onTaskUpdate"
+ ❯ Object.onTimeoutError ../../../../z-project/rpg-zzu/node_modules/vitest/dist/chunks/rpc.-pEldfrD.js:53:10
+ ❯ Timeout._onTimeout ../../../../z-project/rpg-zzu/node_modules/vitest/dist/chunks/index.B521nVV-.js:59:62
+ ❯ listOnTimeout node:internal/timers:605:17
+ ❯ processTimers node:internal/timers:541:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+
+
+ Test Files  3 failed | 5 passed (8)
+      Tests  16 failed | 170 passed (186)
+     Errors  2 errors
+   Start at  20:18:30
+   Duration  190.62s (transform 19.59s, setup 0ms, collect 60.61s, tests 286.23s, environment 2ms, prepare 779ms)

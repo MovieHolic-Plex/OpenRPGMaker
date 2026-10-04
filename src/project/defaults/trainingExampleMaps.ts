@@ -3,7 +3,7 @@
 // 맵은 잔디 바닥만 깔린 상태로 시작하며, 이름이 곧 "여기에 무엇을 채워야 하는가"의 주제다.
 import { genId } from "@/util/id";
 import type { GameMap } from "../types";
-import { DEFAULT_TILE_SIZE, DEFAULT_TILESET_ID, TILE } from "./constants";
+import { DEFAULT_TILE_SIZE, COMBINED_TOWN_TILESET_ID, TILE } from "./constants";
 
 const TOWN_GRASS = 270;
 
@@ -36,7 +36,7 @@ function createTrainingMap(spec: TrainingMapSpec): GameMap {
     name: spec.name,
     width: spec.width,
     height: spec.height,
-    tilesetId: DEFAULT_TILESET_ID,
+    tilesetId: COMBINED_TOWN_TILESET_ID,
     tileSize: DEFAULT_TILE_SIZE,
     lowerTiles: new Array<number>(n).fill(TOWN_GRASS),
     upperTiles: new Array<number>(n).fill(TILE.EMPTY),

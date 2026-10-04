@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/royal_banner/w4-A.pxg",
+ "id": "royal banner",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.007
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 8,
+ "v5_colors": 6,
+ "bbox": [
+  2,
+  2,
+  13,
+  29
+ ],
+ "v5_bbox": [
+  2,
+  2,
+  13,
+  29
+ ],
+ "note": "v5 정리: 금 봉+왕관 문장+마름모 보석을 굵은 덩이로, 붉은 천 왼쪽 밝음/오른쪽 어둠 3단, 제비꼬리 홈 정돈, 금 띠 두 줄",
+ "ok": true
+}

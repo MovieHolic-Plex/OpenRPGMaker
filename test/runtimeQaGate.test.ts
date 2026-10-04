@@ -296,7 +296,7 @@ describe("evaluateBattlerGeometry", () => {
     };
   }
   const battlers = (enemies: readonly RuntimeQaBattler[]) => ({
-    skin: "rm2000",
+    skin: "retro2003",
     directorStep: "command",
     field,
     enemies,

@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/door_boarded/h2-B.pxg",
+ "set": "horror",
+ "id": "door_boarded",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.086
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.086
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "outline_black",
+   "dither"
+  ]
+ },
+ "colors": 16,
+ "bbox": [
+  0,
+  1,
+  15,
+  31
+ ],
+ "note": "B: 판자 아래 어두운 띠로 그림자를 붙이고, 문 아랫부분을 한 단씩 눌러 바닥 쪽이 새까맣게 가라앉는다. 문틀 왼쪽·위 밝은 테는 한 단 올림.",
+ "ok": true
+}

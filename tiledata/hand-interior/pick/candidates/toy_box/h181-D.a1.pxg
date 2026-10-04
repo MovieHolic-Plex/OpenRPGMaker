@@ -1,0 +1,45 @@
+// D: 파란 장난감 상자에 금장 테와 마름모 문양, 공·천 인형·나무칼; 뚜껑 윗면 3행(y=0~2), 입구 6행(y=5~10).
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat b blue 3
+@mat g brass 4
+@mat d dwood 2
+@mat l linen 4
+@mat r red 3
+@mat p pine 4
+@layer toybox
+@mblock 0 0
+...gggggggggg...
+..gbbbbbbbbbbg..
+..gbbbbbbbbbbg..
+..gbbbbbbbbbpg..
+..ggggggllldpg..
+.gddddddlllpdg..
+.gddrrddlllpdg..
+.gdrrrrlbbbpdg..
+.gdrrrrlbblppp..
+.gddrrdlbdbdpg..
+.gggggggggggggg.
+.gbbbbbbbbbbbbg.
+.gbbbbbggbbbbbg.
+.gbbbbgbbgbbbbg.
+.gbbbbbggbbbbbg.
+..dddddddddddd..
+@tblock 0 0
+...5555544444...
+..544444443333..
+..544443333332..
+..433333222242..
+..444443555242..
+.5222222544422..
+.5225522433422..
+.5235435444422..
+.5233224334443..
+.4222224323222..
+.55554444443332.
+.43333333322222.
+.43333344222222.
+.43333422322222.
+.43333333222222.
+..222222111111..

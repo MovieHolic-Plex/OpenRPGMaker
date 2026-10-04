@@ -1,5 +1,6 @@
 // 공용 오브젝트 찍기(stamp_object)와 공용 목록 한 줄 읽기(get_spatial_design 의 공용 id 분기).
 // 목록은 sharedDesignCatalog.ts(공용 오브젝트 카탈로그 + 프로젝트 킷). 장소 안 킷은 그 장소 원본을 prepare 에서 불러 온다.
+import { isRetiredInteriorTileset, retiredInteriorMessage } from "@/project/retiredInteriorTilesets";
 import { regionReferenceScene, preloadRegionReferenceScene, type RegionReferenceScene } from "@/project/regionReferenceImport";
 import { installStampAssets, stampPattern, type StampPattern } from "@/project/objectStamp";
 import type { Project, StructureKitDef, TilesetDef } from "@/project/types";
@@ -100,6 +101,7 @@ export const SHARED_OBJECT_TOOLS: readonly ToolDefinition[] = [
       const objectId = String(args.objectId);
       const map = project.maps[String(args.mapId)] ?? fail(`맵을 찾을 수 없습니다: ${String(args.mapId)}`);
       const resolved = resolveObject(project, objectId);
+      if (isRetiredInteriorTileset(resolved.source.id, resolved.source)) throw new ToolError(retiredInteriorMessage(resolved.source.id), { code: "retired-interior-tileset" });
       const layers = (args.layers as Layers | undefined) ?? resolved.defaultLayers;
       const blank = new Array(resolved.pattern.width * resolved.pattern.height).fill(-1);
       const pattern: StampPattern = { ...resolved.pattern,

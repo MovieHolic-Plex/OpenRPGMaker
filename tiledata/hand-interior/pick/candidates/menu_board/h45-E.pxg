@@ -1,0 +1,34 @@
+// h45-E 자유 해석: 사슬에 매단 나무틀 칠판 + 분필 선반(접지선). 글 두 줄, 잔·빵 그림
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat D wood 2
+@mat L wood 6
+@mat W wood 4
+@mat j black 1
+@mat K black 2
+@mat c linen 6
+@mat C linen 4
+@mat o bread 5
+@mat B bread 3
+@mat b bread 5
+@mat g iron 4
+@mat P pine 4
+@mat Q pine 1
+@mblock 0 0
+...g........g...
+...g........g...
+.DDDDDDDDDDDDDD.
+.DLLLLLLLLLLLWD.
+.DLjjjjjjjjjjWD.
+.DLKcccccKCCKWD.
+.DLKKKKKKKKKKWD.
+.DLKCCCCKKCCKWD.
+.DLKKKKKKKKKKWD.
+.DLKcccKKbbbKWD.
+.DLKoooKKBBBKWD.
+.DLKoooKKBBBKWD.
+.DLWWWWWWWWWWWD.
+.DDDDDDDDDDDDDD.
+.PPPPPPPPPccPPP.
+.QQQQQQQQQQQQQQ.

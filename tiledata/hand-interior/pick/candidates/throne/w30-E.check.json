@@ -1,0 +1,44 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/throne/w30-E.pxg",
+ "id": "throne",
+ "hard": [],
+ "warn": [],
+ "resized": {
+  "canvas": [
+   48,
+   32
+  ],
+  "footprint": {
+   "w": 3,
+   "h": 2
+  },
+  "why": "사용자 메모: 좀 더 화려하게. 3x2 사이즈로."
+ },
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.011
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 16,
+ "v5_colors": 7,
+ "bbox": [
+  2,
+  0,
+  45,
+  31
+ ],
+ "v5_bbox": [
+  1,
+  0,
+  12,
+  18
+ ],
+ "note": "E: 고딕 뾰족아치 첨탑 옥좌. 참고한 문법: 등받이가 키 큰 뾰족 아치(왕 옥좌는 왕비 것보다 높다, 크로노 트리거 문헌) + 금 세로 패널 + 정수리 첨탑·청옥 + 3단 금·붉은 단상.",
+ "ok": true
+}

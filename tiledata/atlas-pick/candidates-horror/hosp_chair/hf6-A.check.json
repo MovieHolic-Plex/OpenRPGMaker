@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/hosp_chair/hf6-A.pxg",
+ "set": "horror",
+ "id": "hosp_chair",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.048
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.026
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 8,
+ "bbox": [
+  2,
+  1,
+  13,
+  15
+ ],
+ "note": "v5 결 기본: 쇠 윗테+기둥(tin3~4) 사이 회녹 판(ward4), 앉는 판 ward4 밝은 왼쪽 위·어두운 오른쪽·앞 두께, 앞다리 2px",
+ "ok": true
+}

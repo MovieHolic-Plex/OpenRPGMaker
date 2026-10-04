@@ -1,0 +1,31 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/magitek_armor/w9-B.pxg",
+ "id": "magitek armor",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.109
+ },
+ "lint": {
+  "failed": [],
+  "pass": true
+ },
+ "colors": 16,
+ "v5_colors": 9,
+ "bbox": [
+  4,
+  4,
+  27,
+  47
+ ],
+ "v5_bbox": [
+  3,
+  4,
+  28,
+  47
+ ],
+ "note": "B 광원: 왼쪽 위 하이라이트, 오른쪽·아래 어둡게, 창 왼쪽 위 밝게 오른쪽 어둡게, 오른쪽 아래 바닥 그림자",
+ "ok": true
+}

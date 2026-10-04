@@ -1,0 +1,47 @@
+{
+ "id": "bookshelf_fallen",
+ "slug": "bookshelf_fallen",
+ "name": "쓰러진 책장·흩어진 책",
+ "scene": "낡은 서양 저택",
+ "cells": [
+  2,
+  2
+ ],
+ "canvas": [
+  32,
+  32
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "v5 책장 2칸이 앞으로 기울어 넘어진 판: 책장 옆면·윗판이 비스듬히 보이고, 바닥에 쏟아진 책 여러 권(색 다른 작은 네모, 펼쳐진 책 하나). 위에서 약간 내려다본 각을 지켜라 — 누운 책장은 윗판이 아니라 등판이 보인다.",
+ "palette_hint": "mahog 책장, vred/vblue/vgreen 책(한 단 어둡게), sheet 펼친 책장",
+ "worker_v1": "h4",
+ "stage": 2,
+ "stage_ko": "2단계 연출(기본이 선 뒤)",
+ "worker": "h4",
+ "v5_ref": [
+  {
+   "id": "bookshelf 2w",
+   "name_ko": "책장 2w",
+   "atlas": {
+    "x": 352,
+    "y": 304,
+    "w": 32,
+    "h": 48,
+    "frames": 1,
+    "padTop": 10
+   },
+   "image": {
+    "w": 32,
+    "h": 38
+   },
+   "kind": "wall",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "pick_dir": "tiledata/hand-interior/pick/candidates/bookshelf_2w",
+   "file": "ref-v5-1.png"
+  }
+ ]
+}

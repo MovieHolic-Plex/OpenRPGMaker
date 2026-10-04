@@ -9,7 +9,7 @@ import type { ToolResult } from "@/editor/tools";
 import { renderAiDocument } from "@/editor/panels/aiDocRenderers";
 import { sanitizeUserFacingToolId } from "@/editor/uiCopy";
 import { tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
-import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { store } from "@/project/store";
 import type { AiDocument } from "@/project/types";
 import { formatRunRecapPlayerLine, parseRunRecapPayload } from "@/ai/runRecap";
@@ -110,8 +110,11 @@ export function markPriorTurns(log: HTMLElement): void {
     body.append(node);
   }
 
+  // 맵별 대기열에서 아직 돌거나 기다리는 실행 카드(aiMapRunCard)는 다음 요청을 보냈다고 접지 않는다 — 진행이 보여야 한다.
+  const liveRun = '.ai-map-run-card[data-state="running"], .ai-map-run-card[data-state="waiting"]';
+  const keepOpen = toWrap.some((node) => node.matches?.(liveRun) || node.querySelector?.(liveRun));
   const group = el("div", {
-    class: "ai-turn-group is-prior-turn is-collapsed",
+    class: keepOpen ? "ai-turn-group is-prior-turn" : "ai-turn-group is-prior-turn is-collapsed",
     dataset: { testid: "ai-turn-group" },
   });
   const toggle = el("button", {
@@ -119,11 +122,11 @@ export function markPriorTurns(log: HTMLElement): void {
     attrs: {
       type: "button",
       title: "이전 턴 펼치기/접기",
-      "aria-expanded": "false",
+      "aria-expanded": String(keepOpen),
       "aria-label": "이전 턴 펼치기/접기",
     },
     dataset: { testid: "ai-turn-group-toggle" },
-    text: `▸ ${preview}`,
+    text: `${keepOpen ? "▾" : "▸"} ${preview}`,
     on: {
       click: () => {
         const collapsed = group.classList.toggle("is-collapsed");
@@ -143,6 +146,7 @@ export function appendConversationBubble(options: {
   readonly removeStartScreen: () => void;
   /** 복원·감사 로그용 시각(날짜 구분선). */
   readonly at?: Date | string | null;
+  readonly scroll?: boolean;
 }): HTMLElement {
   options.removeStartScreen();
   if (options.role === "user") {
@@ -170,7 +174,7 @@ export function appendConversationBubble(options: {
   if (displayText && (options.role === "assistant" || options.role === "system")) body.replaceChildren(renderAssistantAnswer(displayText));
   else if (displayText) body.textContent = displayText;
   options.log.append(row);
-  options.log.scrollTop = options.log.scrollHeight;
+  if (options.scroll !== false) options.log.scrollTop = options.log.scrollHeight;
   return body;
 }
 
@@ -200,6 +204,7 @@ export interface ConversationLogHost {
   /** 변경 카드·보드를 작업 띠로 보낸다. 로그에는 붙지 않는다. */
   appendChangeCard: (card: HTMLElement) => HTMLElement;
   renderConversationEntry: (entry: AuditEntry) => void;
+  renderConversationEntries: (entries: readonly AuditEntry[]) => void;
   clearLastReasoning: () => void;
   isLastReasoningBox: (node: HTMLElement) => boolean;
 }
@@ -230,8 +235,9 @@ export function createConversationLogHost(options: {
 }): ConversationLogHost {
   const { log, removeStartScreen, workSink } = options;
 
+  let replaying = false;
   const appendBubble = (role: AiBubbleRole, text: string, at?: Date | string | null): HTMLElement =>
-    appendConversationBubble({ log, role, text, removeStartScreen, at });
+    appendConversationBubble({ log, role, text, removeStartScreen, at, scroll: !replaying });
 
   // 모델의 추론(reasoning) 스트림을 접이식 상자로 보여준다 — 기본 접힘(💭), 클릭하면 펼침.
   // 병합(추론 N회) 시 각 추론의 원문 전체를 별도 아이템으로 보존한다 — 펼치면 전부 보인다(V3C).
@@ -338,7 +344,7 @@ export function createConversationLogHost(options: {
   // 타일 이미지를 채팅에 렌더한다(show_tiles 툴콜).
   const appendTileThumbs = (tilesetId: string, tiles: readonly number[]): void => {
     removeStartScreen();
-    const tileset = store.getCurrent().tilesets[tilesetId] ?? store.getCurrent().tilesets[DEFAULT_TILESET_ID];
+    const tileset = store.getCurrent().tilesets[tilesetId] ?? store.getCurrent().tilesets[COMBINED_TOWN_TILESET_ID];
     if (!tileset) return;
     const bubble = el("div", {
       class: "ai-command-attachment ai-chat-tiles",
@@ -376,7 +382,7 @@ export function createConversationLogHost(options: {
   // 맵 영역을 하위+상위 합성 그리드로 채팅에 렌더 — 구조물 학습 인터뷰의 시각 자료.
   const appendTileGrid = (data: TileGridData): void => {
     removeStartScreen();
-    const tileset = store.getCurrent().tilesets[data.tilesetId] ?? store.getCurrent().tilesets[DEFAULT_TILESET_ID];
+    const tileset = store.getCurrent().tilesets[data.tilesetId] ?? store.getCurrent().tilesets[COMBINED_TOWN_TILESET_ID];
     if (!tileset) return;
     const rows: HTMLElement[] = [];
     for (let row = 0; row < data.h; row += 1) {
@@ -427,6 +433,15 @@ export function createConversationLogHost(options: {
     appendAiDocument,
     appendChangeCard,
     renderConversationEntry,
+    renderConversationEntries(entries) {
+      const wasReplaying = replaying;
+      replaying = true;
+      try { for (const entry of entries) renderConversationEntry(entry); }
+      finally {
+        replaying = wasReplaying;
+        if (!replaying) log.scrollTop = log.scrollHeight;
+      }
+    },
     clearLastReasoning: () => {
       lastReasoning = null;
     },

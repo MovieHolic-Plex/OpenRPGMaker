@@ -1,0 +1,25 @@
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat m undo 4
+@mat l undo 5
+@mat L undo 6
+@mat d undo 3
+@mat D undo 2
+@mblock 0 0
+mlmmmmmmmmmmLmmm
+mmmmmmmmmmmmdmmm
+mmdmmmmmmmmlmmmm
+mmmmmlmmmmmmmmmm
+mmmmmmmmmlmmmmmm
+mmmmmmddmmmLmmmm
+mmmmmmddmmmmmlmm
+mmmmlmdmmmmmmmmm
+mmmmmmmldmlmmmmm
+dmmmmdmmddmmmmmm
+mdmmmmmmmmmmmmmm
+mmmmmmmmmmDmmmdm
+Lmmmmlmmmmmdmdmm
+mdmdmdmmmmmmmdmm
+lmmLmmDmmmmmmmmm
+mmmmmmmmmmmmmmmm

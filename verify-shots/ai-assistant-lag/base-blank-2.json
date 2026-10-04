@@ -1,0 +1,35 @@
+{
+  "label": "base-blank-2",
+  "base": "http://127.0.0.1:9955",
+  "seed": "",
+  "project": {
+    "mapId": "map_blank_start",
+    "size": "20x15",
+    "maps": 1
+  },
+  "bootMs": 36417,
+  "checkpoints": 6,
+  "runMs": 51501,
+  "longTask": {
+    "count": 64,
+    "totalMs": 41334,
+    "maxMs": 7346
+  },
+  "frameGapMs": {
+    "p50": 16.7,
+    "p95": 450,
+    "max": 7566.4,
+    "over100": 39
+  },
+  "checkpointAckMs": {
+    "median": 4359.6,
+    "max": 5328.1,
+    "ok": true,
+    "n": 6
+  },
+  "manualEditAfterTurnMs": {
+    "median": 4.2,
+    "max": 7.4
+  },
+  "errors": []
+}

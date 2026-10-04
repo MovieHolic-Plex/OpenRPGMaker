@@ -1,0 +1,36 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/saddle_rack/w26-D.pxg",
+ "id": "saddle rack",
+ "hard": [],
+ "warn": [
+  "폭: 불투명 폭이 v5 보다 +4px"
+ ],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.023
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "outline"
+  ],
+  "pass": false
+ },
+ "colors": 20,
+ "v5_colors": 7,
+ "bbox": [
+  0,
+  9,
+  15,
+  31
+ ],
+ "v5_bbox": [
+  2,
+  10,
+  13,
+  31
+ ],
+ "note": "나무 받침대 위 옆모습 안장: 진한 나무 기둥 둘 사이 주황 가죽 안장(안교·안두 솟음, 가운데 오목), 스티치, 오른쪽 철 등자",
+ "ok": true
+}

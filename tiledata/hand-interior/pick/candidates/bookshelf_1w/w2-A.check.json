@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/bookshelf_1w/w2-A.pxg",
+ "id": "bookshelf 1w",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.004
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 23,
+ "v5_colors": 24,
+ "bbox": [
+  0,
+  10,
+  15,
+  47
+ ],
+ "v5_bbox": [
+  0,
+  10,
+  15,
+  47
+ ],
+ "note": "v5 정리: 순검정 뒷판·외곽을 짙은 갈색(wood:1/2)로, 선반 아래 그늘 A 로 분리",
+ "ok": true
+}

@@ -2,6 +2,7 @@ import { BUNDLED_EASYRPG_CHARSET_ASSETS } from "@/assets/bundled";
 import { findCharsetAsset } from "@/assets/charsetCatalog";
 import { CHARSET_ASSETS } from "@/assets/charsetCatalog";
 import { EASYRPG_PICTURE_ASSETS } from "@/assets/easyrpgRtp";
+import { resolveCc0IconAssetUrl } from "@/assets/cc0IconAssets";
 import { isGeneratedMonsterSprite } from "@/assets/generatedMonsterSprites";
 import type { Project } from "@/project/types";
 import type { Dir } from "@/player/input";
@@ -45,6 +46,10 @@ export function resolveEventSpriteTexture(
   }
   if (spriteDef) return { texture: spriteId, frame };
 
+  // Existing item pictures can depict a real investigation object. They are
+  // static images, so a charset frame number must never crop them.
+  if (resolveCc0IconAssetUrl(spriteId)) return { texture: spriteId, frame: '__BASE', fitSize: 16 };
+
   const uploadedKind = project.assets.uploaded[spriteId]?.kind;
   if (uploadedKind === "monster") return { texture: spriteId, frame: "__BASE", fitSize: 32 };
   if (uploadedKind === "charset") return { texture: spriteId, frame, charset: true };
@@ -72,9 +77,11 @@ export function eventSpriteScale(
   tileSize = 16,
   scaleMode?: EventPageGraphic["scaleMode"],
   referenceTileSize = tileSize,
+  /** 맵 캐릭터 크기 배율(mapCharacterSizeFactor) — 캐릭터 칩에만 곱한다. 상자·그림 이벤트는 칸 크기 그대로. */
+  mapCharacterFactor = 1,
 ): number {
   if (isCharsetSpriteTexture(texture)) {
-    return characterRenderScale(sprite.width, tileSize, { scale: authoredScale, scaleMode }, referenceTileSize);
+    return characterRenderScale(sprite.width, tileSize, { scale: authoredScale, scaleMode }, referenceTileSize) * mapCharacterFactor;
   }
   const scale = normalizeCharacterScale(authoredScale);
   if (!texture?.fitSize) return scale;

@@ -1,0 +1,47 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/swamp/w4-A.pxg",
+ "set": "worldmap",
+ "id": "swamp",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.177
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.31
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "outline_black",
+   "light",
+   "dither"
+  ]
+ },
+ "colors": 9,
+ "bbox": [
+  1,
+  0,
+  47,
+  62
+ ],
+ "note": "강남 결 — 어두운 물 60%·이끼 둔덕 40%, 저대비 4톤, 갈대 세 다발, 가장자리는 질척한 어두운 테",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.238
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.367
+  },
+  "seam": 1.17
+ }
+}

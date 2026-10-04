@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>칩셋 조각 고르기</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root { --bg:#1d1b20; --panel:#26232a; --line:#3a3640; --text:#e8e3dc; --dim:#9b958d; --ok:#7fbf6a; --bad:#e0685a; --sel:#f2c14e; --acc:#8fb3e8; }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--bg); color:var(--text); font:14px/1.45 system-ui, "Noto Sans KR", sans-serif; }
+header { display:flex; gap:12px; align-items:center; flex-wrap:wrap; padding:8px 14px; border-bottom:1px solid var(--line); background:var(--panel); position:sticky; top:0; z-index:5; }
+header h1 { font-size:15px; margin:0 8px 0 0; }
+header .prog { color:var(--dim); }
+header select, header button, header label { font:inherit; color:var(--text); background:#302c35; border:1px solid var(--line); border-radius:6px; padding:3px 8px; }
+header button.on { background:#4a4252; border-color:var(--sel); }
+header label { display:inline-flex; gap:4px; align-items:center; }
+.wrap { display:flex; height:calc(100vh - 50px); }
+nav { width:260px; flex:none; overflow:auto; border-right:1px solid var(--line); }
+nav .it { display:flex; gap:8px; align-items:center; padding:5px 10px; cursor:pointer; border-bottom:1px solid #2c2930; }
+nav .it:hover { background:#2d2932; }
+nav .it.cur { background:#3a3442; }
+nav .dot { width:9px; height:9px; border-radius:50%; background:#555; flex:none; }
+nav .dot.done { background:var(--ok); }
+nav .memo { width:9px; height:9px; border-radius:50%; background:#3b82f6; box-shadow:0 0 6px #3b82f6; flex:none; }
+nav .memo.off { visibility:hidden; }
+nav .q { flex:none; width:16px; height:16px; line-height:16px; text-align:center; border-radius:50%; background:#f59e0b; color:#1a1a1a; font-weight:700; font-size:12px; }
+.addressed { background:#3a3320; border:1px solid #f59e0b; border-radius:6px; padding:6px 10px; margin:0 0 10px; }
+nav .it .n { flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+nav .it .c { color:var(--dim); font-size:12px; }
+main { flex:1; overflow:auto; padding:14px 18px 60px; }
+.head h2 { margin:0; font-size:18px; }
+.head .meta { color:var(--dim); margin:2px 0 10px; }
+.cards { display:flex; flex-wrap:wrap; gap:12px; align-items:flex-start; }
+.card { background:var(--panel); border:2px solid var(--line); border-radius:8px; padding:8px; cursor:pointer; position:relative; max-width:560px; }
+.card:hover { border-color:#6a6070; }
+.card.sel { border-color:var(--sel); box-shadow:0 0 0 2px var(--sel) inset; }
+.card.var { border-color:#3b82f6; box-shadow:0 0 0 2px #3b82f6 inset; }
+.card .vb { background:#3b82f6; color:#fff; border-radius:4px; padding:0 6px; font-weight:700; font-size:12px; }
+nav .vc { flex:none; color:#8fb8ff; font-size:12px; font-weight:700; }
+.card .k { position:absolute; top:6px; left:6px; background:#000a; border-radius:4px; padding:0 6px; font-weight:700; }
+.card .lab { margin-left:28px; font-weight:600; }
+.card .lab .d { color:var(--acc); font-weight:400; }
+.imgs { display:flex; gap:10px; align-items:flex-end; margin:6px 0; }
+.imgs img { image-rendering:pixelated; display:block; }
+.x1 { background:#5d4632; padding:4px; box-sizing:content-box; }
+.x4 { background:#2e2833 url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><rect width="8" height="8" fill="%23353039"/><rect x="8" y="8" width="8" height="8" fill="%23353039"/></svg>'); }
+.ctx { outline:1px solid #000; }
+.st { font-size:12px; color:var(--dim); }
+.st .ok { color:var(--ok); } .st .bad { color:var(--bad); }
+.hard { color:var(--bad); font-size:12px; }
+.note { font-size:13px; font-style:italic; color:#d8cfc3; max-width:520px; }
+.memo { margin-top:14px; max-width:900px; }
+.memo textarea { width:100%; min-height:54px; background:#221f25; color:var(--text); border:1px solid var(--line); border-radius:6px; padding:6px; font:inherit; }
+.memo .saved { color:var(--dim); font-size:12px; }
+.keys { color:var(--dim); font-size:12px; margin-top:10px; }
+.row { display:flex; gap:10px; align-items:flex-end; padding:8px 0; border-bottom:1px solid var(--line); flex-wrap:wrap; }
+.row .rn { width:150px; flex:none; }
+.row .card { padding:5px; }
+.sum span { margin-right:14px; }
+.toast { position:fixed; right:16px; bottom:16px; background:#3c3444; border:1px solid var(--sel); padding:8px 12px; border-radius:8px; display:none; }
+.outs img { image-rendering:pixelated; max-width:100%; display:block; margin:6px 0 18px; }
+.empty { color:var(--dim); padding:20px; }
+#setTabs { display:inline-flex; gap:4px; margin-right:8px; }
+#setTabs button.on { background:#5a4a2a; border-color:var(--sel); color:#fff; font-weight:700; }
+#setTabs .n { color:var(--dim); font-size:12px; margin-left:4px; }
+.members { margin:10px 0 4px; } .members img { image-rendering:pixelated; display:block; background:#2e2833; margin-top:4px; }
+.refs { display:flex; gap:14px; flex-wrap:wrap; align-items:flex-end; margin:0 0 10px; padding:6px 8px; border:1px dashed var(--line); border-radius:8px; }
+.refs .ref { display:inline-flex; gap:6px; align-items:flex-end; } .refs img { image-rendering:pixelated; }
+.about { color:var(--dim); font-size:13px; margin:0 0 8px; }
+.memo .saved.ing { color:#e8b04a; } .memo .saved.ok { color:var(--ok); } .memo .saved.bad { color:var(--bad); font-weight:700; }
+#alert { display:none; position:sticky; top:0; z-index:9; background:#7a1f1a; color:#fff; padding:8px 14px; border-bottom:2px solid var(--bad); }
+#alert button, #recover button { font:inherit; margin-left:8px; background:#fff2; color:#fff; border:1px solid #fff6; border-radius:5px; padding:1px 8px; cursor:pointer; }
+#recover { display:none; background:#3a3320; border-bottom:2px solid #f59e0b; padding:8px 14px; }
+#recover .r { margin:3px 0; }
+details.hist { margin-top:14px; max-width:900px; }
+nav .kb { flex:none; font-size:11px; font-weight:700; border-radius:4px; padding:0 5px; background:#2f5d3a; color:#d8f5de; }
+nav .kb.mv { background:#4a3a2a; color:#e8c9a0; }
+nav .it.moved .n { color:var(--dim); text-decoration:line-through; }
+.moved-note { background:#2b2a22; border:1px dashed #b08a4a; border-radius:6px; padding:8px 12px; margin:0 0 10px; }
+.moved-note a, .kitlink { color:#f2c14e; cursor:pointer; text-decoration:underline; }
+.kcard { background:var(--panel); border:2px solid var(--line); border-radius:8px; padding:10px 12px; margin:0 0 16px; position:relative; }
+.kcard.sel { border-color:var(--sel); box-shadow:0 0 0 2px var(--sel) inset; }
+.kcard.var { border-color:#3b82f6; box-shadow:0 0 0 2px #3b82f6 inset; }
+.kcard .khead { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:6px; }
+.kcard .khead .k { position:static; }
+.kcard .khead button { font:inherit; color:var(--text); background:#3b3444; border:1px solid var(--sel); border-radius:6px; padding:2px 10px; cursor:pointer; }
+.kcard .khead button.v { border-color:#3b82f6; }
+.kex { display:flex; flex-wrap:wrap; gap:14px; align-items:flex-end; }
+.kex figure { margin:0; } .kex figcaption { font-size:12px; color:var(--dim); margin-bottom:3px; }
+.kex figcaption.bad { color:var(--bad); }
+.kex img { image-rendering:pixelated; display:block; outline:1px solid #000; }
+.kcard details { margin-top:8px; } .kcard details summary { cursor:pointer; color:var(--acc); font-size:13px; }
+.kcard details img { image-rendering:pixelated; display:block; margin-top:6px; max-width:100%; }
+.kwarn { font-size:12px; color:#d8b36a; max-height:160px; overflow:auto; white-space:pre-wrap; }
+.contract { font-size:12px; color:var(--dim); margin:0 0 10px; padding-left:18px; }
+details.old { margin-top:10px; } details.old summary { cursor:pointer; color:var(--dim); }
+details.hist summary { cursor:pointer; color:var(--acc); }
+.hist table { border-collapse:collapse; margin-top:6px; font-size:13px; width:100%; }
+.hist td, .hist th { border-bottom:1px solid var(--line); padding:3px 6px; text-align:left; vertical-align:top; }
+.hist th { color:var(--dim); font-weight:400; }
+.hist td.nt { white-space:pre-wrap; max-width:420px; }
+.hist tr.now td { background:#2d2a22; }
+.hist button { font:inherit; font-size:12px; color:var(--text); background:#302c35; border:1px solid var(--line); border-radius:5px; padding:1px 7px; cursor:pointer; }
+</style>
+</head>
+<body>
+<header>
+  <h1>칩셋 조각 고르기</h1><span id="setTabs"></span>
+  <span class="prog" id="prog"></span>
+  <button id="vItem" class="on">기물별</button>
+  <span>방향별 <select id="vDir"><option value="">—</option></select></span>
+  <button id="vOut" style="display:none">적용 결과</button>
+  <select id="fWorker"><option value="">작업자 전체</option></select>
+  <select id="fCat"><option value="">장면 전체</option></select>
+  <label><input type="checkbox" id="fTodo"> 안 고른 것만</label>
+  <label><input type="checkbox" id="fDone" checked> 완료 숨기기</label>
+  <label><input type="checkbox" id="fMemo"> 메모만</label>
+  <label><input type="checkbox" id="fReview"> ? 확인할 것만</label>
+  <label title="현재판이 있는 세트(현대)는 현재판도 센다"><input type="checkbox" id="fHas" checked> 볼 것 있는 것만</label>
+  <label title="조립형 킷으로 옮긴 옛 한 장 기물(선택·메모 기록은 그대로 남아 있다)"><input type="checkbox" id="fMoved"> 킷으로 옮긴 옛 기물</label>
+  <label title="조립 예 위에 통행 표시: 빨강 막힘 · 파랑 테 드나드는 칸 · 노랑 점 사람 위로 지나감 · 초록 지나가는 길"><input type="checkbox" id="fWalk"> 통행 표시</label>
+  <button id="reload" title="후보 다시 읽기">다시 읽기</button>
+</header>
+<div id="alert"></div>
+<div id="recover"></div>
+<div class="wrap">
+  <nav id="list"></nav>
+  <main id="main"></main>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const $ = s => document.querySelector(s);
+let S = null, cur = null, view = 'item', dirView = '';
+let DIRS = {A:'결 따르기', B:'명암·그림자', C:'실루엣 재해석'};
+let SET = (location.hash || '').slice(1) || localStorage.getItem('atp-set') || 'modern', SETS = [];
+const BASE = () => S && S.baseline;   // 현재판 이름(현대 = v0). 없는 세트는 null
+async function loadSets() {
+  try { SETS = await (await fetch('/api/sets')).json(); } catch (e) { SETS = []; }
+  if (!SETS.find(x => x.id === SET) && SETS.length) SET = SETS[0].id;
+  $('#setTabs').innerHTML = SETS.map(x => `<button data-s="${esc(x.id)}" class="${x.id===SET?'on':''}" title="${esc(x.about)}">${esc(x.name)}<span class="n">${x.picked}/${x.items}${x.candidates?' · 후보 '+x.candidates:''}</span></button>`).join('');
+  $('#setTabs').querySelectorAll('button').forEach(b => b.onclick = () => switchSet(b.dataset.s));
+}
+async function switchSet(id) {
+  if (id === SET) return;
+  flushNote(); await saveQ;
+  SET = id; location.hash = id; try { localStorage.setItem('atp-set', id); } catch (e) {}
+  cur = null; view = 'item'; dirView = ''; $('#vDir').value = ''; $('#fWorker').value = ''; $('#fCat').value = '';
+  await loadSets(); await load();
+}
+
+async function load() {
+  const r = await fetch('/api/state?set=' + encodeURIComponent(SET)); S = await r.json();
+  if (S.directions) DIRS = S.directions;
+  const fw = $('#fWorker'), fc = $('#fCat'), vd = $('#vDir');
+  const keep = [fw.value, fc.value, vd.value];
+  fw.innerHTML = '<option value="">작업자 전체</option>' + S.workers.map(w => `<option>${w}</option>`).join('');
+  fc.innerHTML = '<option value="">장면 전체</option>' + S.categories.map(c => `<option>${c}</option>`).join('');
+  const dirs = [...new Set(S.items.flatMap(i => i.candidates.map(c => c.dir)))].sort();
+  vd.innerHTML = '<option value="">—</option>' + dirs.map(d => `<option value="${d}">${d} ${DIRS[d]||''}</option>`).join('');
+  [fw.value, fc.value, vd.value] = keep;
+  if (!cur || !S.items.find(i => i.id === cur)) cur = (filtered()[0] || S.items[0] || {}).id;
+  render(); offerRecover();
+}
+// ── 메모 임시 보관(localStorage) — 저장이 서버에서 확인될 때까지 남는다 ──
+const DK = () => 'atp-draft:' + SET + ':';
+function draftSet(id, note) { try { localStorage.setItem(DK() + id, JSON.stringify({note, at: new Date().toISOString()})); } catch (e) {} }
+function draftGet(id) { try { return JSON.parse(localStorage.getItem(DK() + id)); } catch (e) { return null; } }
+function draftDel(id) { try { localStorage.removeItem(DK() + id); } catch (e) {} }
+function serverNote(id) { const it = S && S.items.find(i => i.id === id); return (it && it.pick && it.pick.note) || ''; }
+function offerRecover() {
+  const rows = [];
+  for (let k = 0; k < localStorage.length; k++) { const key = localStorage.key(k); if (!key || !key.startsWith(DK())) continue;
+    const id = key.slice(DK().length), d = draftGet(id);
+    if (!d || !S.items.find(i => i.id === id) || d.note === serverNote(id)) { draftDel(id); k--; continue; }
+    rows.push([id, d]); }
+  const e = $('#recover');
+  if (!rows.length) { e.style.display = 'none'; return; }
+  e.innerHTML = '<b>저장 안 된 메모가 이 브라우저에 남아 있습니다.</b>' + rows.map(([id, d]) => { const it = S.items.find(i => i.id === id);
+    return `<div class="r" data-id="${esc(id)}">${esc(it.name)} (${esc(new Date(d.at).toLocaleString())}): 「${esc(d.note)}」 <span class="st">지금 서버: 「${esc(serverNote(id))}」</span>
+      <button data-a="save">이 메모로 저장</button><button data-a="drop">버리기</button><button data-a="go">보기</button></div>`; }).join('');
+  e.style.display = 'block';
+  e.querySelectorAll('.r').forEach(r => r.querySelectorAll('button').forEach(b => b.onclick = async () => {
+    const id = r.dataset.id, d = draftGet(id);
+    if (b.dataset.a === 'save' && d) { if (await post({id, note: d.note})) { if (id === cur) render(); toast('복구한 메모 저장'); } }
+    else if (b.dataset.a === 'drop') draftDel(id);
+    else { cur = id; view = 'item'; render(); return; }
+    offerRecover(); }));
+}
+function alertFail(msg) {
+  const e = $('#alert'); if (!msg) { e.style.display = 'none'; return; }
+  e.innerHTML = `저장 실패 — ${esc(msg)}. 입력한 메모는 이 브라우저에 임시 보관했습니다. <button id="retry">다시 저장</button><button id="alertClose">닫기</button>`;
+  e.style.display = 'block';
+  $('#retry').onclick = () => { alertFail(null); const p = pendingFor(); if (p) saveNote(p.id, p.note); else if (cur && $('#memo')) saveNote(cur, $('#memo').value); };
+  $('#alertClose').onclick = () => alertFail(null);
+}
+function filtered() {
+  const w = $('#fWorker').value, c = $('#fCat').value, todo = $('#fTodo').checked, has = $('#fHas').checked;
+  return S.items.filter(i => (!w || i.worker === w || i.candidates.some(x => x.worker === w)) && (!c || i.category === c)
+    && (!todo || !(i.pick && i.pick.choice)) && (!has || i.candidates.length || i.hasBaseline)
+    && (!$('#fMemo')?.checked || i.hasNote) && (!$('#fReview')?.checked || i.review)
+    && (!$('#fDone')?.checked || !isDone(i) || i.id === cur)
+    && (!i.movedTo || $('#fMoved')?.checked || i.id === cur));
+}
+// 완료 = 골랐고, 반영 안 된 메모가 없고, 확인할 ?도 없다. (지금 보고 있는 기물은 방금 골라도 사라지지 않게 둔다)
+function isDone(i) { return !!(i.pick && i.pick.choice) && !(i.hasNote && !i.addressed) && !i.review;
+}
+function vars(i) { return (i.pick && i.pick.variants) || []; }
+function esc(s) { return String(s ?? '').replace(/[&<>"]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m])); }
+function render() {
+  flushNote();   // 다른 기물로 넘어가기 전에 미저장 메모를 바로 보낸다
+  renderList();
+  $('#vItem').classList.toggle('on', view === 'item'); $('#vOut').classList.toggle('on', view === 'out');
+  if (view === 'item') renderItem(); else if (view === 'dir') renderDir(); else renderOut();
+  const c = $('#list .cur'); if (c) c.scrollIntoView({block:'nearest'});
+}
+function renderList() {
+  const items = filtered();
+  const nv = S.items.filter(i => vars(i).length), tv = nv.reduce((a, i) => a + vars(i).length, 0);
+  const live = S.items.filter(i => !i.movedTo), nk = live.filter(i => i.kind === 'kit').length, nm = S.items.length - live.length;
+  $('#prog').textContent = `고름 ${live.filter(i => i.pick && i.pick.choice).length} / ${live.length}` + (nk ? ` (킷 ${nk})` : '') + ` · 완료 ${live.filter(isDone).length} · 보이는 ${items.length}` + (tv ? ` · 함께 쓰기 ${nv.length}개 기물 +${tv}` : '') + (nm ? ` · 킷으로 옮김 ${nm}` : '');
+  $('#list').innerHTML = items.map(i => `<div class="it ${i.id===cur?'cur':''} ${i.movedTo?'moved':''}" data-id="${esc(i.id)}">${i.kind==='kit'?'<span class="kb" title="조립형 킷 — 후보 = 부품 한 벌">킷</span>':''}${i.movedTo?`<span class="kb mv" title="${esc(i.movedTo)} 로 옮김">→킷</span>`:''}
+      <span class="dot ${i.pick&&i.pick.choice?'done':''}"></span><span class="memo ${i.hasNote?'':'off'}" title="메모 있음"></span><span class="n">${esc(i.name)}</span>${vars(i).length?`<span class="vc" title="함께 쓰기 ${vars(i).join(', ')}">+${vars(i).length}</span>`:''}${i.review?'<span class="q" title="메모 반영됨 — 확인해 주세요">?</span>':''}
+      <span class="c">${i.candidates.length} · ${esc(i.worker)}</span></div>`).join('') || ('<div class="empty">조건에 맞는 기물 없음' + ($('#fHas').checked ? ' — 아직 후보가 없으면 「볼 것 있는 것만」을 끄면 목록이 보인다' : '') + '</div>');
+  $('#list').querySelectorAll('.it').forEach(e => e.onclick = () => { cur = e.dataset.id; view = 'item'; setView(); render(); });
+}
+// 0번 = 현재판(있는 세트만, 없으면 빈 자리), 1번부터 후보 — 키 0~9 와 같다
+function opts(it) { if (it.kind === 'kit') return [null].concat(it.candidates.map(c => ({...c, label:c.name})));
+  const b = BASE() && it.hasBaseline ? {name:BASE(), label:BASE()+' 현재판 (유지)', v:BASE()} : null; return [b].concat(it.candidates.map(c => ({...c, label:c.name}))); }
+function imgs(it, o, big=4, ctx) {
+  if (ctx === undefined) ctx = (S && S.ctxScale) || 2;
+  const [W, H] = it.canvas;
+  const src = o.name === BASE() ? `/c/${SET}/${it.slug}/${o.name}.png` : `/c/${SET}/${it.slug}/${o.name}.png?v=${o.v}`;
+  const ctxsrc = `/ctx/${SET}/${it.slug}/${o.name}.png?v=${o.v||0}`;
+  if (o.name !== BASE() && !o.v) return '<div class="imgs st">아직 그림을 굽기 전(작업자가 찍는 중 — 검사를 돌리면 보인다)</div>';
+  return `<div class="imgs">
+    <img class="x1" src="${src}" width="${W}" height="${H}" alt="원 크기">
+    <img class="x4" src="${src}" width="${W*big}" height="${H*big}" alt="4배">
+    ${ctx && !(S && S.ctxFirst) ? `<img class="ctx" src="${ctxsrc}" data-ctx="${ctx}" onload="this.width=this.naturalWidth*${ctx}" alt="맥락">` : ''}
+  </div>${ctx && S && S.ctxFirst ? `<div class="st">깔아 본 지도</div><img class="ctx" style="image-rendering:pixelated;display:block" src="${ctxsrc}" onload="this.width=this.naturalWidth*${ctx}" alt="깔아 본 지도">` : ''}`;
+}
+function status(o) {
+  if (o.name === BASE()) return '<div class="st">지금 시트에 든 판 (그대로 두려면 이것)</div>';
+  if (o.stale) return '<div class="st bad">검사 전 — check_candidate.py 를 돌려야 한다</div>';
+  const lint = o.lintPass ? '<span class="ok">pxlint16 합</span>' : `<span class="bad">pxlint16 불</span> ${esc((o.lintFailed||[]).join(', '))}`;
+  return `<div class="st">${o.ok ? '<span class="ok">검사 합격</span>' : '<span class="bad">검사 불합격</span>'} · ${lint} · 색 ${o.colors ?? '?'} · EasyRPG 최대 ${o.easyMax ?? '-'} · REFMAP 최대 ${o.refmapMax ?? '-'}</div>`
+    + (o.hard||[]).map(h => `<div class="hard">✗ ${esc(h)}</div>`).join('');
+}
+function goItem(id) { cur = id; view = 'item'; setView(); render(); $('#main').scrollTop = 0; }
+function movedNote(it) {
+  if (!it.movedTo) return '';
+  const k = S.items.find(i => i.id === it.movedTo);
+  return `<div class="moved-note"><b>킷으로 옮김</b> — 이 한 장 기물은 조립형 <a data-go="${esc(it.movedTo)}">${esc(k ? k.name : it.movedTo)}</a> 로 대체됐다. 이 기물의 선택·메모 기록은 지우지 않고 그대로 둔다(아래 이력). 목록에서는 숨긴다(「킷으로 옮긴 옛 기물」을 켜면 보인다).</div>`;
+}
+function kitImgs(it, c) {
+  const k = c.kit || {}; const walk = $('#fWalk').checked, v = k.v || 0;
+  if (!c.v) return '<div class="st">아직 시트를 굽기 전(작업자가 찍는 중 — jp_kit_compose.py 를 돌리면 보인다)</div>';
+  if (!k.examples || !k.examples.length) return '<div class="st bad">조립 전 — jp_kit_compose.py 를 돌려야 조립 예가 보인다</div>';
+  return `<div class="kex">${k.examples.map(e => { const [w, h] = e.ctxSize || [0, 0]; const sc = Math.max(1, Math.min(3, Math.floor(1100 / Math.max(w, 1))));
+    return `<figure><figcaption class="${e.errs?'bad':''}">${esc(e.name || e.id)} · ${(e.cells||[]).join('×')}칸${e.through?' · 통행 '+(e.errs?'✗':'✓'):''}${e.errs?' · 오류 '+e.errs:''}</figcaption>
+      <img src="/c/${SET}/${it.slug}/${c.name}.${walk?'walk':'ctx'}-${e.id}.png?v=${v}" width="${w*sc}" height="${h*sc}" alt="${esc(e.id)}"></figure>`; }).join('')}</div>`;
+}
+function kitStatus(c) {
+  const k = c.kit || {};
+  const lint = c.lintPass ? '<span class="ok">pxlint16 합</span>' : '<span class="bad">pxlint16 불</span>';
+  let h = `<div class="st">${k.stale ? '<span class="bad">조립이 시트보다 오래됨 — 다시 조립</span> · ' : ''}${k.ok ? '<span class="ok">조립·검사 합격</span>' : '<span class="bad">불합격</span>'} · ${lint} · 색 ${c.colors ?? '?'} · EasyRPG 최대 ${c.easyMax ?? '-'} · REFMAP 최대 ${c.refmapMax ?? '-'}${Object.keys(k.borrowed||{}).length ? ' · 빌린 킷 ' + esc(Object.entries(k.borrowed).map(([a,b]) => a+' '+b).join(', ')) : ''}</div>`;
+  h += (k.hard || []).slice(0, 8).map(x => `<div class="hard">✗ ${esc(x)}</div>`).join('');
+  return h;
+}
+function renderKit(it) {
+  const ch = it.pick && it.pick.choice;
+  const reps = (it.replaces || []).map(r => { const o = S.items.find(i => i.id === r); return `<a class="kitlink" data-go="${esc(r)}">${esc(o ? o.name : r)}</a>`; }).join(', ');
+  $('#main').innerHTML = `<div class="head"><h2>${esc(it.name)} <span class="st">${esc(it.id)}</span></h2>
+    <div class="meta">${esc(S.name)} · ${esc(it.category)} · 조립형 킷 · 부품 ${it.nParts} · 조립 예 ${(it.exampleNames||[]).length} · 부품 시트 ${it.canvas.join('×')} · 담당 ${esc(it.worker)}<br>${esc(it.description)}<br>대체하는 옛 기물: ${reps || '없음'}${it.hint?'<br><span class="st">팔레트: '+esc(it.hint)+'</span>':''}</div></div>
+    ${(it.contract||[]).length ? `<details><summary class="st">이음 규칙(작업자 계약) ${it.contract.length}</summary><ul class="contract">${it.contract.map(x => `<li>${esc(x)}</li>`).join('')}</ul></details>` : ''}
+    ${it.hasNote?`<div class="addressed" style="${it.addressed?'':'background:#1e2a3d;border-color:#3b82f6'}">${it.addressed?'<b>? 메모 반영됨</b>':'<b>메모</b> — 아직 반영 전'}<br>「${esc(it.pick.note)}」</div>`:''}
+    ${!it.candidates.length ? '<div class="empty">아직 후보가 없습니다 — 작업자가 킷 한 벌을 찍는 중. 새로고침하면 보인다.</div>' : ''}
+    <div class="st" style="margin:0 0 8px">후보 하나 = 부품 한 벌. 아래 그림은 그 부품으로 설계도대로 <b>조립한 결과</b>(거리·바닥 위). 「통행 표시」를 켜면 막힘·드나드는 칸·지나가는 길이 보인다. 부품 낱장·이음 검사는 접힌 칸에.</div>
+    ${it.candidates.map((c, k) => `<div class="kcard ${ch===c.name?'sel':''} ${vars(it).includes(c.name)?'var':''}" data-c="${esc(c.name)}">
+      <div class="khead"><span class="k">${k + 1}</span><b>${esc(c.name)}</b> ${c.dir?`<span class="d" style="color:var(--acc)">${c.dir} ${esc(DIRS[c.dir]||'')}</span>`:''}
+        ${c.worker==='pilot'?'<span class="st">(감독자 파일럿 — 조립기 증명용 거친 판)</span>':''}
+        <button data-a="pick">${ch===c.name?'선택됨':'이 벌 고르기'}</button><button class="v" data-a="var" title="주 선택과 함께 쓰기(변형)">${vars(it).includes(c.name)?'함께 쓰기 끄기':'+ 함께 쓰기'}</button></div>
+      ${kitStatus(c)}${c.note?`<div class="note">「${esc(c.note)}」</div>`:''}
+      ${kitImgs(it, c)}
+      <details><summary>부품 낱장 ${it.nParts}개</summary><img src="/c/${SET}/${it.slug}/${c.name}.parts.png?v=${(c.kit||{}).v||0}" onload="this.style.width=Math.min(this.naturalWidth,1100)+'px'"></details>
+      <details><summary>이음 검사(반복 부품 ×3)${(c.kit&&c.kit.repeatBad||[]).length?' — <span class="bad">튀는 이음 '+c.kit.repeatBad.length+'</span>':''}</summary><img src="/c/${SET}/${it.slug}/${c.name}.seams.png?v=${(c.kit||{}).v||0}" onload="this.style.width=this.naturalWidth+'px'"></details>
+      ${(c.kit&&c.kit.warn||[]).length?`<details><summary>경고 ${c.kit.warn.length}</summary><div class="kwarn">${esc(c.kit.warn.join('\n'))}</div></details>`:''}
+    </div>`).join('')}
+    <div class="memo"><div>메모 (치는 동안 자동 저장)</div><textarea id="memo">${esc(it.pick&&it.pick.note||'')}</textarea>
+      <div class="saved" id="saved">${it.pick ? '저장됨 ' + esc(it.pick.at) + (ch ? ' · 선택 ' + esc(ch) : ' · 선택 없음') : '아직 저장 없음'}</div></div>
+    <details class="hist" id="hist" ${histOpen?'open':''}><summary>이력</summary><div id="histBody" class="st">불러오는 중…</div></details>
+    <div class="keys">키: 1~9 = 그 후보(벌) 고르기 · Shift+1~9 = 함께 쓰기 · n / p = 다음·이전 · x = 선택 지우기</div>`;
+  $('#main').querySelectorAll('.kcard').forEach(e => e.querySelectorAll('button').forEach(b => b.onclick = () => b.dataset.a === 'var' ? toggleVar(it.id, e.dataset.c) : pick(it.id, e.dataset.c)));
+  bindCommon(it);
+}
+function bindCommon(it) {
+  $('#main').querySelectorAll('[data-go]').forEach(a => a.onclick = () => goItem(a.dataset.go));
+  const m = $('#memo');
+  const d = draftGet(it.id); if (d && d.note !== (it.pick && it.pick.note || '') && !pend) noteStatus('bad', '이 브라우저에 저장 안 된 메모가 남아 있다 — 위 알림에서 복구');
+  m.oninput = () => { draftSet(it.id, m.value); schedule(it.id, m.value); noteStatus('ing', '입력 중…'); };
+  m.onblur = () => { pend = {id: it.id, note: m.value}; flushNote(); };
+  m.onkeydown = ev => { if (ev.key === 'Enter' && ev.ctrlKey) { ev.preventDefault(); m.blur(); } };
+  const h = $('#hist'); h.ontoggle = () => { histOpen = h.open; if (h.open) loadHist(it.id); };
+  if (histOpen) loadHist(it.id);
+}
+function renderItem() {
+  const it = S.items.find(i => i.id === cur);
+  if (!it) { $('#main').innerHTML = '<div class="empty">기물을 고르세요</div>'; return; }
+  if (it.kind === 'kit') return renderKit(it);
+  const ch = it.pick && it.pick.choice;
+  $('#main').innerHTML = `<div class="head"><h2>${esc(it.name)} <span class="st">${esc(it.id)}</span></h2>
+    <div class="meta">${esc(S.name)} · ${esc(it.category)} · ${esc(it.layer_ko)} · 칸 ${(it.cells||[]).join('×')} · 캔버스 ${it.canvas.join('×')} · 담당 ${esc(it.worker)}<br>${esc(it.description)}${it.hint?'<br><span class="st">팔레트: '+esc(it.hint)+'</span>':''}</div></div>
+    ${movedNote(it)}${it.resized?`<div class="moved-note"><b>크기 바꿈</b> ${esc((it.resized.from||[]).join('×'))} → ${esc((it.cells||[]).join('×'))} — ${esc(it.resized.why||'')}. 옛 크기 후보는 아래 접힌 칸에(기록은 그대로).</div>`:''}${it.added?`<div class="moved-note"><b>새로 넣은 기물</b> — ${esc(it.added)}</div>`:''}
+    ${it.hasNote?`<div class="addressed" style="${it.addressed?'':'background:#1e2a3d;border-color:#3b82f6'}">${it.addressed?'<b>? 메모 반영됨</b> — 새 후보가 들어왔습니다. 확인하고 고르거나 메모를 고쳐 주세요.':'<b>메모</b> — 아직 반영 전'}<br>「${esc(it.pick.note)}」${it.addressedSummary?'<br>반영 내용: '+esc(it.addressedSummary):''}</div>`:''}
+    ${vars(it).length?`<div class="st" style="margin-bottom:6px">주 선택 <b style="color:var(--sel)">${esc(ch||'없음')}</b> + <b style="color:#8fb8ff">함께 쓰기 ${vars(it).length}</b>: ${esc(vars(it).join(', '))}</div>`:''}
+    ${(it.refs||[]).length?`<div class="refs st">참고(고르지 않음) ${it.refs.map(r => `<span class="ref"><b>원본 v5</b> · ${esc(r.name)}<img class="x1" src="/c/${SET}/${it.slug}/${r.file}" onload="this.width=this.naturalWidth"><img class="x4" src="/c/${SET}/${it.slug}/${r.file}" onload="this.width=this.naturalWidth*4"></span>`).join('')}</div>`:''}
+    ${!it.candidates.length && !it.hasBaseline ? '<div class="empty">아직 후보가 없습니다 — 작업자가 찍는 중. 새로고침하면 보인다.</div>' : ''}
+    <div class="cards">${opts(it).map((o, k) => !o || o.old ? '' : `<div class="card ${ch===o.name?'sel':''} ${vars(it).includes(o.name)?'var':''}" data-c="${esc(o.name)}">
+       <span class="k">${k}</span><div class="lab">${vars(it).includes(o.name)?'<span class="vb">+함께</span> ':''}${esc(o.label)} ${o.dir?`<span class="d">${o.dir} ${DIRS[o.dir]||''}</span>`:''} ${ch===o.name?'· <b style="color:var(--sel)">선택됨</b>':''}</div>
+       ${imgs(it, o)}${status(o)}${o.note?`<div class="note">「${esc(o.note)}」</div>`:''}</div>`).join('')}</div>
+    ${it.candidates.some(c => c.old) ? `<details class="old"><summary>옛 크기 후보 ${it.candidates.filter(c => c.old).length}개 (크기를 바꾸기 전 판 — 참고만)</summary><div class="cards">${opts(it).map((o, k) => !o || !o.old ? '' : `<div class="card ${ch===o.name?'sel':''}" data-c="${esc(o.name)}"><span class="k">${k}</span><div class="lab">${esc(o.label)} <span class="d">${o.dir||''}</span></div>${imgs(it, o, 4, 0)}${o.note?`<div class="note">「${esc(o.note)}」</div>`:''}</div>`).join('')}</div></details>` : ''}
+    ${it.hasMembers?`<div class="members st">이 기물의 변형 ${it.members.length}개 (현재판 · 대표는 첫 번째)<img src="/c/${SET}/${it.slug}/members.png" onload="this.width=this.naturalWidth*2"></div>`:''}
+    <div class="memo"><div>메모 (치는 동안 자동 저장 · 칸 밖·Ctrl+Enter·다른 기물·창 닫기에도 바로 저장)</div><textarea id="memo">${esc(it.pick&&it.pick.note||'')}</textarea>
+      <div class="saved" id="saved">${it.pick ? '저장됨 ' + esc(it.pick.at) + (ch ? ' · 선택 ' + esc(ch) : ' · 선택 없음') : '아직 저장 없음'}</div></div>
+    <details class="hist" id="hist" ${histOpen?'open':''}><summary>이력</summary><div id="histBody" class="st">불러오는 중…</div></details>
+    <div class="keys">키: 0 = 현재판 유지(있는 세트) · 1~9 = 후보 · n / p = 다음·이전 · u = 다음 안 고른 것 · x = 선택 지우기</div>
+    <div class="keys">함께 쓰기: Shift+클릭 또는 Shift+1~9 = 그 후보를 주 선택과 <b style="color:#8fb8ff">함께 쓰기</b>로 켜고 끄기 (파란 테 · 변형으로 아틀라스에 추가)</div>`;
+  $('#main').querySelectorAll('.card').forEach(e => e.onclick = ev => ev.shiftKey ? toggleVar(it.id, e.dataset.c) : pick(it.id, e.dataset.c));
+  bindCommon(it);
+}
+// ── 이력 ──
+let histOpen = false;
+const KIND = {pick:'선택', note:'메모', variants:'함께 쓰기', clear:'지움', import:'이전'};
+async function loadHist(id) {
+  const b = $('#histBody'); if (!b) return;
+  let j; try { const r = await fetch('/api/history?set=' + encodeURIComponent(SET) + '&id=' + encodeURIComponent(id)); j = await r.json(); if (!r.ok) throw new Error(j.error || r.status); }
+  catch (e) { b.innerHTML = `<span class="bad">이력을 못 읽었다: ${esc(e.message)}</span>`; return; }
+  if (id !== cur || !$('#histBody')) return;
+  const ev = j.events;
+  $('#histBody').innerHTML = !ev.length ? '이력 없음' : `<table><tr><th>시각</th><th>종류</th><th>선택</th><th>함께 쓰기</th><th>메모</th><th></th></tr>
+    ${ev.map((e, k) => `<tr class="${k===0?'now':''}"><td>${esc(e.at.replace('T',' ').slice(0,19))}</td><td>${esc(KIND[e.kind]||e.kind)}${e.client&&e.client!=='web'?` <span class="st">${esc(e.client)}</span>`:''}</td>
+      <td>${e.kind==='clear'?'—':esc(e.choice||'없음')}</td><td>${esc((e.variants||[]).join(', '))}</td><td class="nt">${e.kind==='clear'?'':esc(e.note||'')}</td>
+      <td>${k===0?'<span class="st">지금</span>':`<button data-e="${e.id}" title="이 시점의 선택·메모·함께 쓰기를 새 저장으로 다시 적용 (이력은 지우지 않는다)">되돌리기</button>`}</td></tr>`).join('')}</table>`;
+  $('#histBody').querySelectorAll('button[data-e]').forEach(bt => bt.onclick = async () => {
+    flushNote(); await saveQ;
+    let r, j2; try { r = await fetch('/api/revert', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({event:+bt.dataset.e})}); j2 = await r.json(); }
+    catch (e) { alertFail('되돌리기 실패: ' + e.message); return; }
+    if (!r.ok) { alertFail('되돌리기 실패: ' + (j2.error || r.status)); return; }
+    const it = S.items.find(i => i.id === j2.id); if (it) { it.pick = j2.pick || null; it.hasNote = !!(it.pick && (it.pick.note||'').trim()); it.review = false; draftDel(it.id); }
+    S.picked = S.items.filter(i => i.pick && i.pick.choice).length; toast('되돌림 저장'); render();
+  });
+}
+// ── 메모 자동 저장: 0.8초 디바운스, 저장은 한 줄로 차례차례 ──
+let pend = null, pendT = 0, saveQ = Promise.resolve();
+function pendingFor() { return pend; }
+function schedule(id, note) { pend = {id, note}; clearTimeout(pendT); pendT = setTimeout(flushNote, 800); }
+function flushNote() { clearTimeout(pendT); const p = pend; pend = null; if (p) saveNote(p.id, p.note); }
+function noteStatus(cls, t) { const s = $('#saved'); if (s) { s.className = 'saved ' + cls; s.textContent = t; } }
+function renderDir() {
+  const d = dirView, items = filtered();
+  const cnt = BASE() ? {[BASE()]:0} : {}; S.items.forEach(i => { const c = i.pick && i.pick.choice; if (!c) return;
+    const k = c === BASE() ? c : c.split('-')[1]; cnt[k] = (cnt[k]||0) + 1; });
+  $('#main').innerHTML = `<div class="head"><h2>방향 ${d} — ${esc(DIRS[d]||'')} 만 모아 보기</h2>
+    <div class="meta sum">지금까지 고른 방향: ${Object.entries(cnt).map(([k,v]) => `<span><b>${k}</b> ${v}</span>`).join('')}</div></div>`
+    + items.map(it => { const ch = it.pick && it.pick.choice; const cs = it.candidates.filter(c => c.dir === d);
+      return `<div class="row" data-id="${esc(it.id)}"><div class="rn"><b>${esc(it.name)}</b><div class="st">${esc(it.id)}${ch?'<br>선택 '+esc(ch):''}</div></div>
+        ${BASE() && it.hasBaseline ? `<div class="card ${ch===BASE()?'sel':''}" data-c="${BASE()}"><div class="st">${BASE()}</div>${imgs(it, {name:BASE()}, 4, 0)}</div>` : ''}
+        ${cs.map(c => `<div class="card ${ch===c.name?'sel':''} ${vars(it).includes(c.name)?'var':''}" data-c="${esc(c.name)}"><div class="st">${esc(c.name)} ${c.ok===false?'<span class="bad">불합격</span>':''}</div>${it.kind==='kit' ? kitFirst(it, c) : imgs(it, c, 4, S.ctxFirst ? 2 : 0)}</div>`).join('') || '<span class="st">이 방향 후보 없음</span>'}</div>`; }).join('');
+  $('#main').querySelectorAll('.row').forEach(r => r.querySelectorAll('.card').forEach(e => e.onclick = ev => ev.shiftKey ? toggleVar(r.dataset.id, e.dataset.c) : pick(r.dataset.id, e.dataset.c)));
+}
+function kitFirst(it, c) { const e = c.kit && c.kit.examples && c.kit.examples[c.kit.examples.length - 1]; if (!e) return '<div class="st">조립 전</div>';
+  return `<img style="image-rendering:pixelated;display:block" src="/c/${SET}/${it.slug}/${c.name}.ctx-${e.id}.png?v=${c.kit.v||0}" width="${e.ctxSize[0]*2}" height="${e.ctxSize[1]*2}">`; }
+function renderOut() { $('#main').innerHTML = '<div class="empty">적용 결과는 아직 없다</div>'; }
+async function post(body) {
+  let r, j;
+  try { r = await fetch('/api/pick', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({set: SET, ...body}), keepalive:true}); j = await r.json(); }
+  catch (e) { if ('note' in body) draftSet(body.id, body.note); alertFail(e.message || '서버 연결 안 됨'); toast('저장 실패'); return null; }
+  if (!r.ok) { if ('note' in body) draftSet(body.id, body.note); alertFail(j.error || r.status); toast('저장 실패: ' + (j.error||r.status)); return null; }
+  alertFail(null);
+  const it = S.items.find(i => i.id === body.id); if (it) it.pick = j.pick || null;
+  if (it) { it.hasNote = !!(it.pick && (it.pick.note||'').trim()); it.review = false; const d = draftGet(it.id); if (d && d.note === ((it.pick && it.pick.note) || '')) draftDel(it.id); }
+  S.picked = S.items.filter(i => i.pick && i.pick.choice).length;
+  if (histOpen && body.id === cur && view === 'item') loadHist(cur);
+  return j;
+}
+async function pick(id, c) {
+  const it = S.items.find(i => i.id === id);
+  const note = (view === 'item' && $('#memo')) ? $('#memo').value : undefined;
+  const body = {id, choice:c}; if (note !== undefined) body.note = note;
+  if (await post(body)) { toast(`${it ? it.name : id} → ${c === BASE() ? '현재판 유지' : c} 저장`); render(); }
+}
+async function toggleVar(id, c) {
+  const it = S.items.find(i => i.id === id); if (!it) return;
+  if (c === BASE()) { toast('현재판은 함께 쓰기로 못 넣는다 (그대로 둔다)'); return; }
+  const ch = it.pick && it.pick.choice;
+  if (!ch || ch === BASE()) { toast('먼저 주 선택(후보)을 고르세요'); return; }
+  if (c === ch) { toast('주 선택은 이미 쓴다 — 다른 후보를 Shift+클릭'); return; }
+  const cur = vars(it), on = !cur.includes(c);
+  const order = opts(it).map(o => o && o.name), next = (on ? cur.concat([c]) : cur.filter(v => v !== c)).sort((a, b) => order.indexOf(a) - order.indexOf(b));
+  if (await post({id, variants: next})) { toast(`${it.name}: ${c} 함께 쓰기 ${on ? '켬' : '끔'} (+${next.length})`); render(); }
+}
+function saveNote(id, note) {
+  saveQ = saveQ.then(async () => {
+    const it = S.items.find(i => i.id === id); if (!it) return;
+    if ((it.pick && it.pick.note || '') === note) { draftDel(id); if (id === cur) noteStatus('ok', '저장됨 ' + (it.pick ? it.pick.at : '')); return; }
+    if (id === cur) noteStatus('ing', '저장 중…');
+    const j = await post({id, note});
+    if (id !== cur) { if (j) renderList(); return; }
+    if (j) { noteStatus(pend && pend.id === id ? 'ing' : 'ok', (pend && pend.id === id ? '입력 중… · ' : '') + '메모 저장됨 ' + it.pick.at); renderList(); }
+    else noteStatus('bad', '저장 실패 — 이 브라우저에 임시 보관함');
+  }).catch(e => { alertFail(e.message); });
+  return saveQ;
+}
+// 창을 닫거나 숨길 때: 미저장 메모를 sendBeacon 으로 (응답은 못 받으니 임시 보관본은 다음 로드 때 서버 값과 대조해 지운다)
+function beacon() {
+  clearTimeout(pendT); const p = pend; if (!p) return; pend = null;
+  draftSet(p.id, p.note);
+  const ok = navigator.sendBeacon && navigator.sendBeacon('/api/pick', new Blob([JSON.stringify({set: SET, id: p.id, note: p.note, client: 'beacon'})], {type: 'application/json'}));
+  if (!ok) saveNote(p.id, p.note);
+}
+window.addEventListener('beforeunload', beacon);
+window.addEventListener('pagehide', beacon);
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') beacon(); });
+function toast(t) { const e = $('#toast'); e.textContent = t; e.style.display = 'block'; clearTimeout(e._t); e._t = setTimeout(() => e.style.display = 'none', 1800); }
+function move(k) { const it = filtered(); let i = it.findIndex(x => x.id === cur); i = Math.max(0, Math.min(it.length - 1, i + k)); if (it[i]) { cur = it[i].id; render(); $('#main').scrollTop = 0; } }
+function setView() { if (view !== 'dir') $('#vDir').value = ''; }
+document.addEventListener('keydown', ev => {
+  if (ev.target.tagName === 'TEXTAREA' || ev.target.tagName === 'SELECT' || ev.ctrlKey || ev.metaKey || ev.altKey) return;
+  if (view !== 'item') return;
+  const it = S && S.items.find(i => i.id === cur); if (!it) return;
+  if (ev.shiftKey && /^Digit[0-9]$/.test(ev.code)) { const o = opts(it)[+ev.code.slice(5)]; if (o) toggleVar(it.id, o.name); }
+  else if (/^[0-9]$/.test(ev.key)) { const o = opts(it)[+ev.key]; if (o) pick(it.id, o.name); }
+  else if (ev.key === 'n') move(1); else if (ev.key === 'p') move(-1);
+  else if (ev.key === 'u') { const f = filtered(); const i = f.findIndex(x => x.id === cur);
+    const nx = f.slice(i + 1).concat(f.slice(0, i)).find(x => !(x.pick && x.pick.choice)); if (nx) { cur = nx.id; render(); } }
+  else if (ev.key === 'x') post({id:it.id, clear:true}).then(render);
+});
+$('#vItem').onclick = () => { view = 'item'; setView(); render(); };
+$('#vOut').onclick = () => { view = 'out'; setView(); render(); };
+$('#vDir').onchange = () => { dirView = $('#vDir').value; view = dirView ? 'dir' : 'item'; render(); };
+['#fWorker', '#fCat', '#fTodo', '#fHas', '#fMemo', '#fReview', '#fDone', '#fMoved', '#fWalk'].forEach(s => $(s).onchange = render);
+$('#reload').onclick = () => loadSets().then(load);
+window.addEventListener('hashchange', () => { const h = location.hash.slice(1); if (h && h !== SET) switchSet(h); });
+loadSets().then(load);
+</script>
+</body>
+</html>

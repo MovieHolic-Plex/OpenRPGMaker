@@ -24,7 +24,8 @@ describe("generatedAssetManifest", () => {
             entry.prompt.length > 0 &&
             (entry.provenance.generator === "agy" ||
               entry.provenance.generator === "imagegen" ||
-              entry.provenance.generator === "grok")
+              entry.provenance.generator === "grok" ||
+              entry.provenance.generator === "native-pixel")
         )
       ).toBe(true);
       expect(result.manifest.assets.some((entry) => entry.provenance.generator === "imagegen")).toBe(true);
@@ -64,18 +65,14 @@ describe("generatedAssetManifest", () => {
     }
   });
 
-  it("keeps promoted battle-generated magenta assets registered in the manifest", () => {
-    const result = validateGeneratedAssetManifest(GENERATED_ASSET_PLAN);
-
-    expect(result.ok).toBe(true);
-    if (!result.ok) return;
-    const magentaAssets = result.manifest.assets.filter((asset) => asset.provenance.promptVersion === "battle-magenta-v2");
-    expect(magentaAssets.map((asset) => asset.id).sort()).toEqual(["monster-slime-01", "troop-preview-slime"]);
-    expect(magentaAssets.every((asset) => asset.promotedPath?.startsWith("public/assets/generated/starter/") === true)).toBe(true);
-    expect(magentaAssets.every((asset) => asset.sha256 !== null && asset.sha256.length === 64)).toBe(true);
+  it("registers the historical enemy IDs with native source and portrait provenance", () => {
+    const enemies = GENERATED_ASSET_PLAN.assets.filter((entry) => entry.target === "enemyMonster" || entry.target === "troopPreview");
+    expect(enemies).toHaveLength(6);
+    expect(enemies.every(entry => entry.provenance.generator === "native-pixel")).toBe(true);
+    expect(enemies.every(entry => entry.rawPath?.includes("pixel-enemies/") && entry.promotedPath?.includes("pixel-enemy-portraits/"))).toBe(true);
   });
 
-  it("keeps promoted battle charsets extracted from bundled actor charsets registered in the manifest", () => {
+  it("retains starter battle charset provenance while rejecting their promotion", () => {
     const result = validateGeneratedAssetManifest(GENERATED_ASSET_PLAN);
 
     expect(result.ok).toBe(true);
@@ -93,7 +90,7 @@ describe("generatedAssetManifest", () => {
       "hero-04-battle",
     ]);
     expect(extractedAssets.every((asset) => asset.provenance.promptVersion.endsWith("+grok-row1-v1"))).toBe(true);
-    expect(extractedAssets.every((asset) => asset.promotedPath?.startsWith("public/assets/generated/starter/") === true)).toBe(true);
-    expect(extractedAssets.every((asset) => asset.sha256 !== null && asset.sha256.length === 64)).toBe(true);
+    expect(extractedAssets.every((asset) => asset.status === "rejected")).toBe(true);
+    expect(extractedAssets.every((asset) => asset.promotedPath === null && asset.sha256 === null)).toBe(true);
   });
 });

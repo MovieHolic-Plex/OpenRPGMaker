@@ -1,0 +1,75 @@
+// road wv2-C
+@size 48 64
+@cell 16
+@palette palette.pal
+@layer main
+@mat a wdirt 3
+@mat b wdirt 4
+@mat c wdirt 5
+@mat d wgrass 4
+@mat e wgrass 5
+@mblock 0 0
+................bccbbbbbbabbbbbb..daabbbbbbbad..
+................bbbbbbbbbbabbbbbdddaabbbbcbaadd.
+.....d.ed.......abbbbbbbbabbbbbbddaabbbbbbcbaaed
+.....ddaaed.....bbbbabbbbcbbbbbbaabbbbbbbbbbbaaa
+....eaaaaaad....bcbbbbbbbbbbbbbbaabbbbbbbcbbbbbb
+...eababaaaad...bcbbbbbbbbbbbbbbbbbbbbbbbbbbabbb
+...eaabbbbbad...bbbbcbbbbbbcbbbbcbbbabbbbbbbbbbb
+..dabbbbbbbbad..bbbbbbbbbbbbbbbbbcbbbbbbabbbbbbb
+..dababbbbbaad..bbbbbbbaabbbbbcbbbbbbcabbbbbabbb
+..deabbbbbaadd..bbbbbbbbbbbbbbbbbbcbabbbbbbbbbbb
+...eabbcbbaae...bbbbbbbbbbbbbbbbabbabbbbbbbbbbbb
+....eaabaaadd...bbcbbbbbbbbbbbbcabbbbbbbbbbbbbba
+....eddaadd.....bbbbbbbbbbbbbbbbaaabbbcbbbabbaaa
+.....dddd.......bbbbbbbbbbbbbbbbedaabbbbbbbbaadd
+.......d........bbbbbbbbbbabbbbb.edabbbbbbbaad..
+................abbbbbbcbbbbbbbb..eabbbbbbbaae..
+..........d.d..............dd...................
+.........dded.d....d...dddede.dd.dde...d........
+.......dddaaaedddded..eeddaaadddddde.deee.e.....
+.....deaaabbaaaaaaaaddaaaaabbaaaaaaadeaaaee.....
+....daaababbbababbabaaabbbbbcbabbabbaabaaaad....
+...dababbbbbbbbbabbbbabbbbbbbbbbbbbbbabbbaaad...
+..ddaabbbbbbbbbcbbbbbbbbbbbbbbbbbbbbabbbbbbad...
+..eaabbbbbbabbcbbbbbcbbbbbbbbbbbbbbbbbacbbbaad..
+..eabbbbbbbbbbbbbbbbbbbbbbbbbbbbbcabbbbbbbbaad..
+..dabbbbbbbbbbbbbbbbbbbbbbabbbcbbbbbbbbbbbbbae..
+...dabcbbbbbbbbbbbbbabbabbbbbbbbbbcbbbbbbbbbadd.
+...eaabbbabbabcbbbbbbabbbbcbbabbbbbbbbbbbbbbbad.
+..ddaabbbbbabbbbbcbacbbbbbbbbbbbbbbbbbbbbbbbaad.
+..daabbcbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbad.
+..eaabcbbbbcbbbbbcbbbbbbcbbbbbbbbbbbbbbabbbaae..
+..daabbbbbbbbbbbbcbbbbbbbbbbbbbbbbbabbbbbbbaad..
+..daabcbbbbbbcbcbbbbbbbbbbbbbbbbbbbbbbbbbbbaad..
+..eaabbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbcaad...
+..dabbbbbbbbbbbbbbbbbbabbbbbbababbbbbbbbbbbae...
+..dabbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbacbbaad..
+.ddaabbabbbbbcbbbbbbbbbbbbbbbbbcbbbcbbbabbbaae..
+.eaabbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbaae..
+.dababbbbbbbacbbbbbbbbbbbbbbbbbbbbabbbbbbbbaad..
+..dabbbbbcbbbbbbbbbbbbbbbbbabbbbcbbbbbbbcbbbad..
+..daabbbbbabbbbbbbbbbacbbbbbbbbbbbbbcbbbbbbaad..
+..eaabbbbbbbbcbbbbbbbbbbbcccbbabbbbcbbbbbbbaad..
+...daabbbbbbbcbbbbbbbbbcabbbbbcbbbcbbbbbbbbbad..
+...dabbbbbbbbbbbbabbbbbbbbaabbabbabbbbbcbbbbbae.
+...eabbbbbbbbbcbabbbbbbbbbbccbbbbbbbbbbbbbbcaad.
+..dababbbbbbbbbbbbbbcbbbbbbbbbbbbbbbbbbbbbbbbae.
+..daabbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbad..
+..dabbbabbbcbbbbbbabbbbbbbcbbbbabbbbbbbbbbbaad..
+..dabbbbbbbbbbbbbbbbbbbbbbacbbbbbbcbbbbbbbbbae..
+..eaabbbbbbbbbbbbbbbbbbbabbbbbbbbbbbbbbbbbaadd..
+..daabbbbbbbbbbbbbbbcbbabbbbbbbbbbcbbbbbbbaadd..
+..daabbbbbbbbbbbbcbbbbbbbbcbbbbbbbbbbbbbbbbbad..
+.ddaabbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbae..
+.daabbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbad..
+.daabbbbbbbbbbbbbbbbbbbcbbbbbbbbbbbbcbbcbabaad..
+.ddaabbbbbbbbbbbbbbbbbbbbbbbbbbbbacbbbbbbbbaad..
+..daabbbbbbcabbbbbbbbbbbbbbbbbbbbbbbbbbaabbaae..
+..ddaababbbbbbcbbbbbbbbbbbbbbbabbbbbbbbbbbaad...
+...dabbbbbbbabbbbbbbbbbbbbbaabbbbbabbbbbbabae...
+...deaaabaaaaabaabbbabaaaaaaaababbbababaaaae....
+.....edaadeddaaaabbaaaaaaddddaaaaabaaaaaaed.....
+.......eed.d.deddaadeeeee..d.ddddaaddededd......
+........d.....dd.dd..d.dd.....eddded..ed........
+.................dd.............................

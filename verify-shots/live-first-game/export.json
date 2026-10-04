@@ -1,0 +1,14 @@
+{
+  "projectId": "1f16af78-0ff9-4c5b-9a63-0795b14288c8",
+  "revision": 73,
+  "generationMode": "explicit completion after unfinished automatic build",
+  "projectUrl": "http://127.0.0.1:18432/index.html?hostProject=8077c3e9-7b0e-41e2-9ca4-5b0f314d54ea",
+  "started": "2026-10-03T14:47:29.168Z",
+  "errors": [],
+  "networkFailures": [],
+  "exportStarted": "2026-10-03T14:48:26.184Z",
+  "path": "/home/main/.codex/worktrees/0a57/rpg-zzu/output/qa/live-first-game/game-web.zip",
+  "downloadFailure": null,
+  "seconds": 137.915,
+  "passed": true
+}

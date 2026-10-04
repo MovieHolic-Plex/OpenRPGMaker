@@ -1,0 +1,31 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/altar_E/w21-D.pxg",
+ "id": "altar E",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.551
+ },
+ "lint": {
+  "failed": [],
+  "pass": true
+ },
+ "colors": 21,
+ "v5_colors": 15,
+ "bbox": [
+  0,
+  10,
+  31,
+  46
+ ],
+ "v5_bbox": [
+  0,
+  8,
+  31,
+  47
+ ],
+ "note": "흰 제단포 윗면(금테)·왼쪽 보라 천 옆면·주름진 어두운 앞천·대리석 받침을 밝기 4단으로 갈랐고 밑에 접지 그림자를 깐 예배당 제단",
+ "ok": true
+}

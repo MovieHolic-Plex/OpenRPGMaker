@@ -1,0 +1,40 @@
+// 압력판 D 장식: 금테 두른 솟은 돌판, 가운데 금빛 마름모 문양과 밝은 중심, 앞면 두 줄, 접지 홈
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat s stone 4
+@mat g gold 4
+@mblock 0 0
+................
+.gggggggggggggg.
+.gssssssssssssg.
+.gsssssggsssssg.
+.gssssgssgssssg.
+.gsssgssssgsssg.
+.gssgssggssgssg.
+.gssgssggssgssg.
+.gsssgssssgsssg.
+.gssssgssgssssg.
+.gsssssggsssssg.
+.gssssssssssssg.
+.gggggggggggggg.
+.ssssssssssssss.
+.ssssssssssssss.
+ssssssssssssssss
+@tblock 0 0
+................
+.55555555555553.
+.55555555555443.
+.55444444444433.
+.55444444444433.
+.55444444444433.
+.55444466444433.
+.55444466444433.
+.55444444444433.
+.55444444444433.
+.55444444444433.
+.53333333333333.
+.33333333333333.
+.43333333333333.
+.22222222222222.
+1111111111111111

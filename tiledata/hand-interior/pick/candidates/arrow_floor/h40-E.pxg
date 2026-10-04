@@ -1,0 +1,40 @@
+// 화살표 바닥 E: 자유 해석 — 돌판 위에 막대 화살 대신 겹쳐 쌓은 V자 두 줄(북쪽), 밝은 파랑 윗결·오른쪽 아래 어두움
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat s stone 4
+@mat b blue 4
+@mblock 0 0
+................
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssbbssssss.
+.sssssbbbbsssss.
+.ssssbbssbbssss.
+.sssbbssssbbsss.
+.ssbbssssssbbss.
+.ssssssbbssssss.
+.sssssbbbbsssss.
+.ssssbbssbbssss.
+.sssbbssssbbsss.
+.ssbbssssssbbss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+@tblock 0 0
+................
+.11111111111111.
+.15555555555541.
+.15444454444431.
+.15444544344431.
+.15445444434431.
+.15454444443431.
+.15544444444331.
+.15444454444431.
+.15444544344431.
+.15445444434431.
+.15454444443431.
+.15544444444331.
+.13333333333331.
+.12222222222221.
+.00000000000000.

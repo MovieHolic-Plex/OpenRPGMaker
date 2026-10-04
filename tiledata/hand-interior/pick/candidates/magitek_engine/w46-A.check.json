@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/magitek_engine/w46-A.pxg",
+ "id": "magitek engine",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 8,
+  "atLeast95": 0,
+  "max": 0.316
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 12,
+ "v5_colors": 12,
+ "bbox": [
+  0,
+  7,
+  47,
+  47
+ ],
+ "v5_bbox": [
+  0,
+  7,
+  47,
+  47
+ ],
+ "note": "3/4: 굴뚝이 윗면(16~21행, 6px)에서 솟고, 앞가장자리 하이라이트(21행)+처마 그림자 2행 아래로 앞면이 들어가 코어 구슬이 앞면에 앉음. 증기·구슬 마스크 불변.",
+ "ok": true
+}

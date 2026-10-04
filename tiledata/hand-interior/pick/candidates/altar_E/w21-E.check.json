@@ -1,0 +1,31 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/altar_E/w21-E.pxg",
+ "id": "altar E",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.102
+ },
+ "lint": {
+  "failed": [],
+  "pass": true
+ },
+ "colors": 11,
+ "v5_colors": 15,
+ "bbox": [
+  0,
+  10,
+  31,
+  46
+ ],
+ "v5_bbox": [
+  0,
+  8,
+  31,
+  47
+ ],
+ "note": "대리석 통돌 제단: 밝은 윗판+턱, 어두운 앞면에 아치 벽감 촛대 셋, 받침 턱과 오른쪽 아래 접지 그림자로 덩어리감 강조",
+ "ok": true
+}

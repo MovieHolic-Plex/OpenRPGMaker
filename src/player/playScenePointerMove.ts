@@ -4,6 +4,8 @@
 // 주인공이 그 칸까지 걷는다. 이벤트를 누르면 그 옆까지 걸어가 조사한다. 이벤트 실행 중·메뉴·컷신에는 무시한다.
 import { store } from "@/project/store";
 import { mapTileSize } from "@/project/tileGeometry";
+import { hasRelief } from "@/project/relief/walk";
+import { reliefPickPoint } from "@/project/relief/screen";
 import { planPathfindMove } from "@/player/playScenePathfinding";
 import { startPlayerRoute } from "@/player/playerRouteState";
 import { isCutsceneInputLocked } from "@/player/cutsceneControl";
@@ -12,6 +14,10 @@ import type { PlaySceneContext } from "@/player/playSceneTypes";
 /** 화면 좌표 → 타일. 맵 밖이면 undefined. */
 export function pointerTile(scene: PlaySceneContext, worldX: number, worldY: number): { x: number; y: number } | undefined {
   const size = mapTileSize(scene.map);
+  if (hasRelief(scene.map.relief)) {
+    const hit = reliefPickPoint(scene.map.relief, worldX, worldY, size);
+    return hit?.face === "top" ? { x: hit.x, y: hit.y } : undefined;
+  }
   const x = Math.floor(worldX / size);
   const y = Math.floor(worldY / size);
   if (x < 0 || y < 0 || x >= scene.map.width || y >= scene.map.height) return undefined;
@@ -37,7 +43,7 @@ export function handlePointerMove(scene: PlaySceneContext, tile: { x: number; y:
   return "walking";
 }
 
-type CameraLike = { readonly scrollX: number; readonly scrollY: number; readonly zoom: number; readonly width: number; readonly height: number };
+type CameraLike = { readonly scrollX: number; readonly scrollY: number; readonly zoom: number; readonly width: number; readonly height: number; readonly worldView?: { readonly x: number; readonly y: number } };
 type PointerInputHost = {
   cameras?: { main?: CameraLike };
   game?: { canvas?: HTMLCanvasElement; registry?: { get?: (key: string) => unknown } };
@@ -56,8 +62,8 @@ export function clientToWorld(
   const localY = clientY - rect.top;
   if (localX < 0 || localY < 0 || localX >= rect.width || localY >= rect.height) return undefined;
   return {
-    x: camera.scrollX + localX / (rect.width / camera.width) / camera.zoom,
-    y: camera.scrollY + localY / (rect.height / camera.height) / camera.zoom,
+    x: (camera.worldView?.x ?? camera.scrollX) + localX / (rect.width / camera.width) / camera.zoom,
+    y: (camera.worldView?.y ?? camera.scrollY) + localY / (rect.height / camera.height) / camera.zoom,
   };
 }
 

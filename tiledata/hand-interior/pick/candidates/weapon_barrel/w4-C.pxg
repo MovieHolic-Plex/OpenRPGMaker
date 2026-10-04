@@ -1,0 +1,38 @@
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat i iron 6
+@mat j iron 5
+@mat k iron 4
+@mat l iron 3
+@mat m iron 2
+@mat g gold 5
+@mat h gold 3
+@mat c gold 4
+@mat d gold 2
+@mat p wood 7
+@mat q wood 6
+@mat r wood 5
+@mat s wood 4
+@mat t wood 3
+@mat u wood 2
+@mat v wood 1
+@mat n black 3
+@mat o black 1
+@mblock 0 0
+...il..il...il..
+...il..jl...il..
+....il.kl..il...
+....il.qs..il...
+.....ilqs.il....
+.....ilqs.il....
+.....ghqsgh.....
+......iqsil.....
+...vqnnnnnnsv...
+..vsoooooootv...
+...mijjjjjklm...
+..vqrsqrsqrstv..
+..vqrsqrsqrstv..
+..vqrsqrsqrstv..
+...mijjjjjklm...
+...vuuuuuuuuv...

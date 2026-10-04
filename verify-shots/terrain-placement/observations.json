@@ -1,0 +1,242 @@
+{
+  "findings": {
+    "contracts": {
+      "tileset": "beodeul_city",
+      "materials": {
+        "grass": 737,
+        "dirt": 23175,
+        "stone": 3221,
+        "water": 23152
+      },
+      "ramps": [
+        {
+          "dir": "n",
+          "width": 2,
+          "ok": true,
+          "reason": "북쪽 오르막 · 폭 2칸 · 길이 3칸",
+          "codes": [
+            1
+          ],
+          "cells": 6,
+          "plateauReachable": true
+        },
+        {
+          "dir": "n",
+          "width": 4,
+          "ok": true,
+          "reason": "북쪽 오르막 · 폭 4칸 · 길이 3칸",
+          "codes": [
+            1
+          ],
+          "cells": 12,
+          "plateauReachable": true
+        },
+        {
+          "dir": "n",
+          "width": 6,
+          "ok": true,
+          "reason": "북쪽 오르막 · 폭 6칸 · 길이 3칸",
+          "codes": [
+            1
+          ],
+          "cells": 18,
+          "plateauReachable": true
+        },
+        {
+          "dir": "s",
+          "width": 2,
+          "ok": true,
+          "reason": "남쪽 오르막 · 폭 2칸 · 길이 3칸",
+          "codes": [
+            2
+          ],
+          "cells": 6,
+          "plateauReachable": true
+        },
+        {
+          "dir": "s",
+          "width": 4,
+          "ok": true,
+          "reason": "남쪽 오르막 · 폭 4칸 · 길이 3칸",
+          "codes": [
+            2
+          ],
+          "cells": 12,
+          "plateauReachable": true
+        },
+        {
+          "dir": "s",
+          "width": 6,
+          "ok": true,
+          "reason": "남쪽 오르막 · 폭 6칸 · 길이 3칸",
+          "codes": [
+            2
+          ],
+          "cells": 18,
+          "plateauReachable": true
+        },
+        {
+          "dir": "e",
+          "width": 2,
+          "ok": true,
+          "reason": "동쪽 오르막 · 폭 2칸 · 길이 3칸",
+          "codes": [
+            3
+          ],
+          "cells": 6,
+          "plateauReachable": true
+        },
+        {
+          "dir": "e",
+          "width": 4,
+          "ok": true,
+          "reason": "동쪽 오르막 · 폭 4칸 · 길이 3칸",
+          "codes": [
+            3
+          ],
+          "cells": 12,
+          "plateauReachable": true
+        },
+        {
+          "dir": "e",
+          "width": 6,
+          "ok": true,
+          "reason": "동쪽 오르막 · 폭 6칸 · 길이 3칸",
+          "codes": [
+            3
+          ],
+          "cells": 18,
+          "plateauReachable": true
+        },
+        {
+          "dir": "w",
+          "width": 2,
+          "ok": true,
+          "reason": "서쪽 오르막 · 폭 2칸 · 길이 3칸",
+          "codes": [
+            4
+          ],
+          "cells": 6,
+          "plateauReachable": true
+        },
+        {
+          "dir": "w",
+          "width": 4,
+          "ok": true,
+          "reason": "서쪽 오르막 · 폭 4칸 · 길이 3칸",
+          "codes": [
+            4
+          ],
+          "cells": 12,
+          "plateauReachable": true
+        },
+        {
+          "dir": "w",
+          "width": 6,
+          "ok": true,
+          "reason": "서쪽 오르막 · 폭 6칸 · 길이 3칸",
+          "codes": [
+            4
+          ],
+          "cells": 18,
+          "plateauReachable": true
+        }
+      ],
+      "clusters": [
+        {
+          "density": 15,
+          "ok": true,
+          "cells": 27,
+          "move": true,
+          "restored": true,
+          "independent": true,
+          "saveShape": true
+        },
+        {
+          "density": 35,
+          "ok": true,
+          "cells": 75,
+          "move": true,
+          "restored": true,
+          "independent": true,
+          "saveShape": true
+        },
+        {
+          "density": 70,
+          "ok": true,
+          "cells": 108,
+          "move": true,
+          "restored": true,
+          "independent": true,
+          "saveShape": true
+        }
+      ],
+      "propId": "tree:bd-tree-eef4bc",
+      "bridgeIds": [
+        "bridge:horizontal",
+        "bridge:vertical"
+      ]
+    },
+    "rampUI": 18,
+    "surfaceHeightUnchanged": true,
+    "moveUI": 948,
+    "deleteUI": true,
+    "history": [
+      {
+        "state": {
+          "canUndo": true,
+          "canRedo": false
+        },
+        "depth": 22,
+        "labels": {
+          "undo": "편집",
+          "redo": null
+        },
+        "groups": 0
+      },
+      {
+        "state": {
+          "canUndo": true,
+          "canRedo": true
+        },
+        "depth": 21,
+        "labels": {
+          "undo": "편집",
+          "redo": "편집"
+        },
+        "groups": 1
+      },
+      {
+        "state": {
+          "canUndo": true,
+          "canRedo": false
+        },
+        "depth": 22,
+        "labels": {
+          "undo": "편집",
+          "redo": null
+        },
+        "groups": 0
+      },
+      {
+        "state": {
+          "canUndo": true,
+          "canRedo": true
+        },
+        "depth": 21,
+        "labels": {
+          "undo": "편집",
+          "redo": "편집"
+        },
+        "groups": 1
+      }
+    ],
+    "undoGroup": true,
+    "redoGroup": true,
+    "finalGroupRestored": true,
+    "oneHistoryStep": true,
+    "bridgeFirstClick": true,
+    "bridgeUI": 10
+  },
+  "errors": []
+}

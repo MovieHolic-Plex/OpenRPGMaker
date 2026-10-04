@@ -7,7 +7,7 @@ import { editorState } from "@/editor/editorState";
 import * as history from "@/editor/mapEditHistory";
 import { resetAiConnectionStatusCache } from "@/editor/panels/aiConnectionStatus";
 import { openClusterAiModal } from "@/editor/panels/clusterAiModal";
-import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { serialize } from "@/project/io";
 import * as commits from "@/project/projectCommitLog";
 import { store } from "@/project/store";
@@ -99,7 +99,7 @@ function statusChanged(): Promise<void> {
 
 async function openProposal(): Promise<AssistantSession> {
   const send = vi.spyOn(AssistantSession.prototype, "sendUserMessage");
-  openClusterAiModal({ kind: "range-classify", tilesetId: DEFAULT_TILESET_ID,
+  openClusterAiModal({ kind: "range-classify", tilesetId: COMBINED_TOWN_TILESET_ID,
     rect: { x: 0, y: 0, w: 1, h: 1 }, tileIds: [322] });
   const result = await send.mock.results[0].value;
   expect(result.proposedCalls, JSON.stringify(result)).toHaveLength(1);
@@ -169,7 +169,7 @@ describe("cluster modal live-house acceptance", () => {
     await settled;
 
     expect(serialize(store.getCurrent())).toBe(proposed);
-    expect(store.getCurrent().tilesets[DEFAULT_TILESET_ID].tileGroups?.some((group) => group.name === "QA metadata")).toBe(true);
+    expect(store.getCurrent().tilesets[COMBINED_TOWN_TILESET_ID].tileGroups?.some((group) => group.name === "QA metadata")).toBe(true);
     for (const spy of Object.values(observed)) expect(spy).toHaveBeenCalledTimes(1);
     expect(observed.rebase).toHaveBeenCalledWith(store.getCurrent());
     expect(history.getMapEditHistoryEntries()).toHaveLength(1);

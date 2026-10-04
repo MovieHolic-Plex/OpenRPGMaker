@@ -1,0 +1,138 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/mountain/wv3-B.pxg",
+ "set": "worldmap",
+ "id": "mountain",
+ "hard": [],
+ "warn": [
+  "shore-join: 사분면 이음에서 기슭선이 3px 이상 어긋난다(계단·톱니) — inner_nw↔edge_n 3≠8, inner_nw↔edge_w 3≠0, inner_ne↔edge_n 3≠8, inner_ne↔edge_e 3≠0, inner_sw↔edge_s 3≠0, inner_sw↔edge_w 3≠0 …"
+ ],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.195
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.199
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "outline_black",
+   "dither"
+  ]
+ },
+ "colors": 9,
+ "bbox": [
+  0,
+  0,
+  47,
+  63
+ ],
+ "note": "짙은 그림자 발치 + 발 그림자 ~ -",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.207
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.211
+  },
+  "shore": {
+   "profile": {
+    "n": [
+     8,
+     8,
+     8,
+     7,
+     5,
+     4,
+     2,
+     0,
+     0,
+     0,
+     2,
+     4,
+     5,
+     7,
+     8,
+     8
+    ],
+    "s": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     2,
+     2,
+     2,
+     2,
+     2,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "w": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     4,
+     3,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "e": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     3,
+     2,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ]
+   },
+   "strait": 8,
+   "steps": {
+    "n": 2,
+    "s": 2,
+    "w": 4,
+    "e": 3
+   },
+   "amp": {
+    "n": 8,
+    "s": 2,
+    "w": 4,
+    "e": 3
+   },
+   "joinWorst": 5
+  },
+  "seam": 0.78
+ }
+}

@@ -1,0 +1,56 @@
+// 방 가구의 목재 틀·회색 쇠 명암을 따른 파란 화면 보관 단말기; 꼭대기 윗면 4행(y=1~4)
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a dwood 1
+@mat b wood 3
+@mat c wood 1
+@mat d wood 4
+@mat e wood 5
+@mat f wood 6
+@mat g wood 7
+@mat i iron 1
+@mat j iron 2
+@mat m iron 3
+@mat n iron 4
+@mat o iron 5
+@mat p blue 1
+@mat q blue 2
+@mat r blue 3
+@mat s blue 4
+@mat t blue 5
+@mat u brass 4
+@layer terminal
+@mblock 0 0
+..aaaaaaaaaaaa..
+..bffffffffffc..
+..bfeeffffeeec..
+..bffffeeffffc..
+..bggggggggggc..
+..bddddddddddc..
+.abnnnnnnnnmca.
+.abmooppppoica.
+.abmosssssmica.
+.abmosstrrmica.
+.abosrrrrrmica.
+.abosrrrrrrica.
+.aborrqqqqqica.
+.abmmjjjjjmica.
+.abmmmmnnmmica.
+.abnnnnnnnnica.
+bgggggggggggggca
+bfonjonnjonnjeca
+bfmnjmnnjmnnjeca
+bfjjjjnnnnjjjeca
+bfennnnnnnnjeeca
+bdddddddddddddca
+.abffffffffcca.
+.abebbbbbbbcaca.
+.abefdddddccaca.
+.abefdedddcuaca.
+.abefdedddccaca.
+.abefddddbccaca.
+.abefdddbbccaca.
+.abeeeeeeeecca.
+.abbbbbbbbbcca.
+.aaa........aaa.

@@ -22,6 +22,19 @@ import { renderClassRecordForm } from "@/editor/panels/databaseClassRecordView";
 import { recordIdentity } from "@/editor/panels/databaseRecordIdentity";
 import { emptyState } from "@/editor/panels/databaseWorkspace";
 import { recordListThumbnail } from "@/editor/panels/databaseRecordThumbnails";
+import {
+  RETRO_GROUP_FILTER_PREFIX,
+  RETRO_MONSTER_FILTER_ID,
+  retroSkillActiveGroup,
+  retroSkillClassFilters,
+  retroSkillClassGroups,
+  retroSkillListBadge,
+  setSkillClassFilter,
+  skillClassFilterFor,
+  skillMatchesRetroClass,
+} from "@/editor/panels/databaseSkillRetroStage";
+import { renderMonsterSkillContractBrowser } from "@/editor/panels/databaseMonsterSkillStage";
+import { enemyPixelListBadge } from "@/editor/panels/databaseEnemyPixelPreview";
 import { renderStateRecordForm } from "@/editor/panels/databaseStateRecordView";
 import { renderEquipmentRecordForm, renderItemRecordForm, renderSkillRecordForm, renderTroopRecordForm } from "@/editor/panels/databaseAdvancedRecordViews";
 import { ITEM_TYPES } from "@/editor/panels/databaseItemRecordView";
@@ -270,7 +283,7 @@ export function aiGenerateButton(collection: "items" | "enemies", rerender: () =
       type: "button",
       title: kind === "item"
         ? "설명을 주면 AI 가 아이템 레코드와 아이콘 그림을 만들어 등록합니다."
-        : "설명을 주면 AI 가 적 레코드와 몬스터 그림을 만들어 등록합니다.",
+        : "설명을 주면 AI 가 적 레코드를 만들고 도트 몬스터 140종 중 맞는 그림을 골라 등록합니다.",
     },
     on: {
       // 정적 import 금지: 이 모듈은 store 청크에서 초기화되는데 생성 모달은
@@ -518,6 +531,10 @@ function recordList(
   // 목록 창이 통째로 붕괴해(적 그룹에서 4px 로 실측) 검색을 지울 방법도 안 보인다.
   if (visible.length === 0) {
     const filtered = searchQuery.length > 0 || categoryFilter !== "all";
+    // 「몬스터」 칩인데 skill_mon_* 레코드가 아직 없다 — 계약(retroMonsterSkills.ts)만으로 미리 보게 한다.
+    if (collection === "skills" && categoryFilter === RETRO_MONSTER_FILTER_ID && searchQuery.length === 0) {
+      return el("div", { class: "db-list db-ws-list db-skill-mon-browser-list", dataset: { testid: "db-list-empty" }, children: [renderMonsterSkillContractBrowser()] });
+    }
     // `db-ws-list` 도 함께 붙인다 — 빈 상태 중앙 정렬 규칙이 `.db-ws-list.db-ws-list-empty`
     // 로 선언돼 있어서 `db-list db-ws-list-empty` 만으로는 정렬이 적용되지 않는다.
     return el("div", {
@@ -543,6 +560,7 @@ function recordList(
               onClick: () => {
                 setSearchQueryForCollection(collection, "");
                 setCategoryFilterForCollection(collection, "all");
+                if (collection === "skills") setSkillClassFilter("all");
                 rerender();
               },
               testid: "db-record-list-empty-clear",
@@ -608,10 +626,14 @@ function recordListRow(
   const isSelected = selectedRecordIdForSession(collection) === record.id;
   const thumb = recordListThumbnail(collection, record, store.getCurrent());
   const sub = recordCategoryLabel(collection, record);
+  // retro2003 도트 연출이 있는 스킬은 이펙트 시트 한 칸을, 손도트 시트가 있는 몬스터는 대기 칸을 썸네일 모서리 배지로 단다(행 그리드 열은 그대로).
+  const badge = collection === "skills" ? retroSkillListBadge(record, 16, store.getCurrent().database.skillChoreographies)
+    : collection === "enemies" ? enemyPixelListBadge((record as { monsterResourceId?: string }).monsterResourceId, 16) : null;
+  if (badge && thumb) { thumb.classList.add("db-list-thumb-has-retro"); thumb.append(badge); }
   return el("button", {
     class: `db-list-row${thumb ? " db-list-row-has-thumb" : ""}${isSelected ? " active" : ""}`,
     attrs: { "aria-pressed": String(isSelected), title: `${record.name} (${record.id})`, type: "button" },
-    dataset: { recordId: record.id, recordIndex: String(visibleIndex), recordName: record.name, recordTotal: String(total), testid: `db-record-row-${record.id}` },
+    dataset: { recordId: record.id, recordIndex: String(visibleIndex), recordName: record.name, recordTotal: String(total), testid: `db-record-row-${record.id}`, ...(badge ? { [collection === "enemies" ? "pixelSheet" : "retroFx"]: "true" } : {}) },
     children: [
       ...(thumb ? [thumb] : []),
       el("span", { class: "db-list-name", text: record.name || "(이름 없음)" }),
@@ -641,6 +663,9 @@ function recordGalleryCard(
   const isSelected = selectedRecordIdForSession(collection) === record.id;
   const thumb = recordListThumbnail(collection, record, store.getCurrent(), GALLERY_THUMB_SIZE);
   const tag = galleryCategoryTag(collection, record);
+  const badge = collection === "skills" ? retroSkillListBadge(record, 24, store.getCurrent().database.skillChoreographies)
+    : collection === "enemies" ? enemyPixelListBadge((record as { monsterResourceId?: string }).monsterResourceId, 24) : null;
+  if (badge && thumb) thumb.classList.add("db-list-thumb-has-retro");
   return el("button", {
     class: `db-gallery-card${isSelected ? " active" : ""}`,
     attrs: { "aria-pressed": String(isSelected), title: `${record.name} (${record.id})`, type: "button" },
@@ -653,7 +678,7 @@ function recordGalleryCard(
     children: [
       el("span", {
         class: "db-gallery-thumb",
-        children: [thumb ?? el("span", { class: "db-list-thumb empty", attrs: { "aria-hidden": "true" } })],
+        children: [thumb ?? el("span", { class: "db-list-thumb empty", attrs: { "aria-hidden": "true" } }), ...(badge ? [badge] : [])],
       }),
       el("span", { class: "db-gallery-name", text: record.name || "(이름 없음)" }),
       ...(tag ? [tag] : []),
@@ -713,6 +738,7 @@ export const ITEM_CHIP_CLUSTERS: readonly { readonly caption: string; readonly t
 // 개수는 **필터 적용 전 전체 컬렉션**에서 센다 — 필터된 배열로 세면 한 번 좁힌 뒤
 // 다른 칩이 모두 0 으로 보인다.
 function categoryFilterChips(collection: DatabaseCollection, rerender: () => void): HTMLElement | null {
+  if (collection === "skills") return skillClassFilterChips(rerender);
   if (collection !== "items" && collection !== "equipment") return null;
   const current = effectiveCategoryFilter(collection);
   const counts = categoryCounts(collection);
@@ -741,6 +767,58 @@ function categoryFilterChips(collection: DatabaseCollection, rerender: () => voi
   for (const cluster of rest) {
     if (cluster.caption === "장비" && !cluster.types.some((type) => (counts.get(type) ?? 0) > 0)) continue;
     row.append(chipCluster(cluster.caption, cluster.types.map((type) => chipFor(type, ITEM_TYPE_CHIP_LABELS[type]))));
+  }
+  return row;
+}
+
+/**
+ * 스킬 직업 필터. 2차 로스터로 직업이 100개를 넘어 **두 단계**로 고른다 —
+ * 1단 계열(전체 · 기본 12 · Actor · People · 동물 · 탈것 · 몬스터 파티 · 몬스터 스킬), 2단 그 계열의 직업.
+ * 직업 레코드도 계약 스킬도 없는 프로젝트는 칩 줄을 그리지 않는다. 개수는 필터 전 전체 스킬에서 센다(아이템 칩과 같은 규칙).
+ */
+function skillClassFilterChips(rerender: () => void): HTMLElement | null {
+  const project = store.getCurrent();
+  const filters = retroSkillClassFilters(project);
+  if (filters.length === 0) return null;
+  const current = skillClassFilterFor(project);
+  const skills = project.database.skills;
+  const pick = (id: string) => () => {
+    if (skillClassFilterFor(project) === id) return;
+    setSkillClassFilter(id);
+    rerender();
+  };
+  const activeGroup = retroSkillActiveGroup(project, current);
+  const groups = retroSkillClassGroups(project);
+  const groupChip = (id: string, label: string): HTMLElement => {
+    const filterId = RETRO_GROUP_FILTER_PREFIX + id;
+    const count = skills.filter((skill) => skillMatchesRetroClass(skill, filterId, project)).length;
+    // 그룹 칩을 다시 누르면 접는다(전체로).
+    const chip = filterChipButton(filterId, label, count, activeGroup === id, () => { setSkillClassFilter(activeGroup === id && current === filterId ? "all" : filterId); rerender(); });
+    chip.dataset.skillClassGroup = id;
+    return chip;
+  };
+  const single = groups.length <= 1;
+  const monsterChip = filters.find((entry) => entry.id === RETRO_MONSTER_FILTER_ID);
+  const row = el("div", { class: "db-filter-chips db-skill-class-chips", attrs: { role: "group", "aria-label": "직업 필터" } });
+  row.append(chipCluster("", [
+    filterChipButton("all", "전체", skills.length, current === "all", pick("all")),
+    // 계열이 하나뿐(기본 12 만 있는 옛 프로젝트)이면 두 단계로 나누지 않고 직업 칩을 그대로 늘어놓는다.
+    ...(single
+      ? filters.filter((entry) => entry.id !== RETRO_MONSTER_FILTER_ID).map(({ id, label }) => filterChipButton(id, label, skills.filter((skill) => skillMatchesRetroClass(skill, id, project)).length, current === id, pick(id)))
+      : groups.map((group) => groupChip(group.id, group.label))),
+    ...(monsterChip ? [filterChipButton(monsterChip.id, "몬스터 스킬", skills.filter((skill) => skillMatchesRetroClass(skill, monsterChip.id, project)).length, current === monsterChip.id, pick(monsterChip.id))] : []),
+  ]));
+  if (!single && activeGroup) {
+    // 2단: 고른 계열의 직업. 같은 `.db-filter-chips`(세로 flex) 안에 줄을 하나 더 쌓는다 — 목록 창 그리드 행은 그대로다.
+    const inGroup = filters.filter((entry) => entry.group === activeGroup);
+    const caption = groups.find((group) => group.id === activeGroup)?.label ?? "";
+    const second = chipCluster(caption, inGroup.map(({ id, label }) => filterChipButton(id, label, skills.filter((skill) => skillMatchesRetroClass(skill, id, project)).length, current === id, pick(id))));
+    second.dataset.testid = "db-skill-class-second-row";
+    second.dataset.group = activeGroup;
+    // 계열 하나에 직업이 40개까지 있다 — 2단은 네 줄 높이에서 스크롤해 스킬 목록 자리를 지킨다.
+    second.style.maxHeight = "116px";
+    second.style.overflowY = "auto";
+    row.append(second);
   }
   return row;
 }
@@ -782,6 +860,8 @@ function filterChipButton(id: string, label: string, count: number, active: bool
 
 // 저장된 필터가 현재 컬렉션의 알려진 칩 id가 아니면 'all'로 취급한다.
 function effectiveCategoryFilter(collection: DatabaseCollection): string {
+  // 스킬 직업 필터는 세션 메모리에만 있다(아이템·장비 localStorage 필터와 따로) — 저장값 검사보다 먼저 본다.
+  if (collection === "skills") return skillClassFilterFor(store.getCurrent());
   const stored = categoryFilterForCollection(collection);
   if (stored === "all") return "all";
   if (collection === "items") return ITEM_TYPES.includes(stored as (typeof ITEM_TYPES)[number]) ? stored : "all";
@@ -796,6 +876,7 @@ function matchesCategoryFilter(
 ): boolean {
   if (collection === "items") return (record as ItemRecord).type === filter;
   if (collection === "equipment") return (record as EquipmentRecord).slot === filter;
+  if (collection === "skills") return skillMatchesRetroClass(record, filter, store.getCurrent());
   return true;
 }
 

@@ -1,0 +1,141 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/road/w2-B.pxg",
+ "set": "worldmap",
+ "id": "road",
+ "hard": [
+  "shore-strait: 1칸 폭 줄 속이 5px — 기슭 깊이를 칸 바깥 2~4px 로(6 이상, 권장 8)"
+ ],
+ "warn": [
+  "shore-join: 이음에서 2px 어긋남(1 이하 권장) — inner_ne↔edge_n 6≠4",
+  "corner-round: 바깥 모서리가 네모다(대각선 깊이 = 이음 깊이) — ne se",
+  "inner-round: 안쪽 모서리 홈이 네모다(대각선 깊이 ≥ 이음 깊이) — nw ne sw se"
+ ],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.073
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.092
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies"
+  ]
+ },
+ "colors": 6,
+ "bbox": [
+  3,
+  0,
+  47,
+  59
+ ],
+ "note": "빛 세게: 위·왼 테 밝게, 아래·오른 테 짙게, 흙 알갱이 밝은 점",
+ "ok": false,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.461
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.012
+  },
+  "shore": {
+   "profile": {
+    "n": [
+     4,
+     6,
+     5,
+     4,
+     6,
+     5,
+     4,
+     4,
+     5,
+     4,
+     4,
+     5,
+     4,
+     4,
+     4,
+     5
+    ],
+    "s": [
+     4,
+     5,
+     4,
+     4,
+     5,
+     4,
+     4,
+     4,
+     5,
+     4,
+     4,
+     5,
+     4,
+     4,
+     4,
+     5
+    ],
+    "w": [
+     4,
+     4,
+     5,
+     4,
+     4,
+     4,
+     5,
+     4,
+     4,
+     5,
+     4,
+     5,
+     4,
+     6,
+     5,
+     4
+    ],
+    "e": [
+     4,
+     4,
+     5,
+     4,
+     4,
+     4,
+     5,
+     4,
+     4,
+     5,
+     4,
+     4,
+     4,
+     5,
+     4,
+     4
+    ]
+   },
+   "strait": 5,
+   "steps": {
+    "n": 2,
+    "s": 1,
+    "w": 2,
+    "e": 1
+   },
+   "amp": {
+    "n": 2,
+    "s": 1,
+    "w": 2,
+    "e": 1
+   },
+   "joinWorst": 2
+  },
+  "seam": 0.6
+ }
+}

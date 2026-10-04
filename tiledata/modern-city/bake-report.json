@@ -1,0 +1,476 @@
+{
+ "tiles": {
+  "count": 9998,
+  "tilesPerRow": 48,
+  "rows": 209,
+  "sheet": [
+   768,
+   3344
+  ],
+  "used": 9998,
+  "legacy": 0,
+  "height_ok": true
+ },
+ "kits": {
+  "total": 575,
+  "by_kind": {
+   "road": 2,
+   "street": 2,
+   "crosswalk": 2,
+   "junction": 2,
+   "building": 259,
+   "prop": 117,
+   "vehicle": 191
+  },
+  "buildings": 259,
+  "props": 117,
+  "vehicles": 191,
+  "road": 8
+ },
+ "autotile": {
+  "possible": true,
+  "groups": [
+   "mc-sidewalk-curb"
+  ],
+  "note": "보도·연석 4방향 오토타일(mc-sidewalk-curb): 보도를 칠하면 도로 쪽 연석 8종·모서리 4종이 자동. 반대편 두 줄이 도로인 얇은 보도·세 방향이 도로인 곶은 일반 보도 칸으로 떨어진다(조각이 없음). 도로 구간·교차로·횡단보도는 키트 7종+교차로 2종."
+ },
+ "cells_by_category": {
+  "blank": 1,
+  "ground": 40,
+  "overlay": 32,
+  "shadow": 20,
+  "building": 3604,
+  "building-variant": 3709,
+  "prop": 372,
+  "vehicle": 822,
+  "vehicle-color": 1398
+ },
+ "dedupe": {
+  "kit_cells_total": 16729,
+  "unique_cells": 9933,
+  "saved": 6796,
+  "note": "칸 해시(내용+통행 종류)가 같은 칸은 한 번만 싣는다(건물 변형끼리·소품 거울/색 변형이 벽·바닥 칸을 나눠 쓴다)"
+ },
+ "tall_props": [
+  "mc-prop-blossom-a",
+  "mc-prop-blossom-b",
+  "mc-prop-busstop-a",
+  "mc-prop-conifer-a",
+  "mc-prop-conifer-b",
+  "mc-prop-ginkgo-a",
+  "mc-prop-ginkgo-b",
+  "mc-prop-lamp-a",
+  "mc-prop-park-lamp-a",
+  "mc-prop-park-lamp-b",
+  "mc-prop-park-lamp-c",
+  "mc-prop-ped-signal-g-a",
+  "mc-prop-ped-signal-g-b",
+  "mc-prop-ped-signal-g-c",
+  "mc-prop-ped-signal-r-a",
+  "mc-prop-ped-signal-r-b",
+  "mc-prop-ped-signal-r-c",
+  "mc-prop-pole-a",
+  "mc-prop-pole-b",
+  "mc-prop-signal-a",
+  "mc-prop-street-tree-a",
+  "mc-prop-street-tree-b",
+  "mc-prop-subway-sign-a",
+  "mc-prop-subway-sign-b",
+  "mc-prop-subway-sign-c",
+  "mc-prop-tree-a"
+ ],
+ "palette": {
+  "building-variant": {
+   "cells_with_off_palette": 3709,
+   "distinct_colors": 60,
+   "pixels": 426996,
+   "cells_total": 3709
+  },
+  "vehicle-color": {
+   "cells_with_off_palette": 1398,
+   "distinct_colors": 42,
+   "pixels": 124512,
+   "cells_total": 1398
+  }
+ },
+ "palette_total": {
+  "cells_with_off_palette": 5107,
+  "distinct_colors": 102,
+  "new_cells": 9998
+ },
+ "palette_note": "팔레트(modern4 = harness-data/modern-chipset/palette.pal) 밖 색의 출처: 땅·녹지 시트(원본 색), 도로 표시 코드(노란 선 YEL·정지선 STOP·화살표), 차 색 변형(CAR_RAMPS 램프), 벽색·지붕색 변형(compose_town WALL_VARIANTS/town_lib ROOF_VARIANTS)",
+ "reassembly": {
+  "kits_checked": 575,
+  "by_kind": {
+   "road": 2,
+   "street": 2,
+   "crosswalk": 2,
+   "junction": 2,
+   "building": 259,
+   "prop": 117,
+   "vehicle": 191
+  },
+  "mismatched_kits": 0,
+  "mismatched_pixels": 0,
+  "mismatched_ids": []
+ },
+ "definition_checks": {
+  "violations": 0,
+  "by_code": {},
+  "examples": {},
+  "tiles_checked": 9998,
+  "kits_checked": 575,
+  "groups_checked": 61
+ },
+ "autotile_check": {
+  "mc-intersection-12x12": {
+   "cells": 36,
+   "mismatched": 0
+  },
+  "mc-street-ew-section": {
+   "cells": 6,
+   "mismatched": 0
+  },
+  "mc-street-ns-section": {
+   "cells": 6,
+   "mismatched": 0
+  }
+ },
+ "pass_classes": {
+  "blank": 1,
+  "floor": 38,
+  "solidfloor": 2,
+  "flat": 52,
+  "solid": 9841,
+  "star": 64
+ },
+ "sheet_hash": "8727877d60f348ad5b2a7c269d13d72bc1d297df",
+ "budget": {
+  "limit": 10000,
+  "mandatory_cells": 4891,
+  "kept_from_previous_bake": {
+   "building_variants": 182,
+   "car_colors": [
+    "black",
+    "navy",
+    "red",
+    "white",
+    "beige",
+    "green"
+   ]
+  },
+  "skipped_candidates": 310,
+  "total_planned_cells": 9998,
+  "car_colors": [
+   "black",
+   "navy",
+   "red",
+   "white",
+   "beige",
+   "green"
+  ]
+ },
+ "variant_rounds": [
+  {
+   "round": 0,
+   "building_variants_added": 0,
+   "cells_after": 9998
+  },
+  {
+   "round": 1,
+   "building_variants_added": 0,
+   "cells_after": 9998
+  },
+  {
+   "round": 2,
+   "building_variants_added": 0,
+   "cells_after": 9998
+  },
+  {
+   "round": 3,
+   "building_variants_added": 0,
+   "cells_after": 9998
+  },
+  {
+   "round": 4,
+   "building_variants_added": 0,
+   "cells_after": 9998
+  },
+  {
+   "round": 5,
+   "building_variants_added": 0,
+   "cells_after": 9998
+  },
+  {
+   "round": 6,
+   "building_variants_added": 0,
+   "cells_after": 9998
+  },
+  {
+   "round": 7,
+   "building_variants_added": 0,
+   "cells_after": 9998
+  },
+  {
+   "round": 8,
+   "building_variants_added": 0,
+   "cells_after": 9998
+  },
+  {
+   "round": 9,
+   "building_variants_added": 0,
+   "cells_after": 9998
+  }
+ ],
+ "baked_variants": {
+  "building_base": 77,
+  "building_roof_color": [
+   "mc-bld-apartment-A-roof-navy",
+   "mc-bld-apartment-A-roof-teal",
+   "mc-bld-apartment-B-roof-brick",
+   "mc-bld-apartment-B-roof-navy",
+   "mc-bld-apartment-C-roof-brick",
+   "mc-bld-apartment-C-roof-sage",
+   "mc-bld-apt-balcony-A-roof-lgray",
+   "mc-bld-apt-balcony-A-roof-teal",
+   "mc-bld-apt-balcony-B-roof-navy",
+   "mc-bld-apt-balcony-B-roof-teal",
+   "mc-bld-bakery-A-roof-lgray",
+   "mc-bld-bakery-A-roof-teal",
+   "mc-bld-bakery-B-roof-navy",
+   "mc-bld-bakery-B-roof-teal",
+   "mc-bld-balcony2-A-roof-teal",
+   "mc-bld-balcony2-B-roof-navy",
+   "mc-bld-bank-A-roof-lgray",
+   "mc-bld-bank-A-roof-navy",
+   "mc-bld-bank-A-roof-teal",
+   "mc-bld-bank-B-roof-brick",
+   "mc-bld-bank-B-roof-navy",
+   "mc-bld-bank-B-roof-teal",
+   "mc-bld-bank-C-roof-brick",
+   "mc-bld-bank-C-roof-navy",
+   "mc-bld-bank-C-roof-sage",
+   "mc-bld-cafe-A-roof-brick",
+   "mc-bld-cafe-A-roof-lgray",
+   "mc-bld-cafe-A-roof-sage",
+   "mc-bld-cafe-B-roof-lgray",
+   "mc-bld-cafe-B-roof-sage",
+   "mc-bld-cafe-B-roof-teal",
+   "mc-bld-conv-A-roof-navy",
+   "mc-bld-conv-A-roof-teal",
+   "mc-bld-conv-B-roof-brick",
+   "mc-bld-conv-B-roof-navy",
+   "mc-bld-conv-C-roof-brick",
+   "mc-bld-conv-C-roof-sage",
+   "mc-bld-dept-A-roof-brick",
+   "mc-bld-dept-A-roof-sage",
+   "mc-bld-fire-A-roof-navy",
+   "mc-bld-fire-escape-A-roof-lgray",
+   "mc-bld-fire-escape-A-roof-teal",
+   "mc-bld-fire-escape-B-roof-navy",
+   "mc-bld-fire-escape-B-roof-teal",
+   "mc-bld-hospital-A-roof-brick",
+   "mc-bld-hospital-A-roof-navy",
+   "mc-bld-hospital-A-roof-sage",
+   "mc-bld-hospital-B-roof-brick",
+   "mc-bld-hospital-B-roof-sage",
+   "mc-bld-hospital-C-roof-lgray",
+   "mc-bld-hospital-C-roof-sage",
+   "mc-bld-hotel-A-roof-lgray",
+   "mc-bld-hotel-A-roof-teal",
+   "mc-bld-hotel-C-roof-navy",
+   "mc-bld-hotel-C-roof-teal",
+   "mc-bld-house-modern-A-roof-navy",
+   "mc-bld-house-modern-A-roof-teal",
+   "mc-bld-house-modern-B-roof-brick",
+   "mc-bld-house-modern-B-roof-navy",
+   "mc-bld-house-modern-C-roof-brick",
+   "mc-bld-house-modern-C-roof-sage",
+   "mc-bld-izakaya-A-roof-navy",
+   "mc-bld-izakaya-B-roof-brick",
+   "mc-bld-izakaya-C-roof-sage",
+   "mc-bld-low3-A-roof-lgray",
+   "mc-bld-low3-A-roof-sage",
+   "mc-bld-low3-B-roof-lgray",
+   "mc-bld-low3-B-roof-teal",
+   "mc-bld-low3-C-roof-navy",
+   "mc-bld-low3-C-roof-teal",
+   "mc-bld-mid4-A-roof-brick",
+   "mc-bld-mid4-A-roof-sage",
+   "mc-bld-mid4-B-roof-lgray",
+   "mc-bld-mid4-B-roof-sage",
+   "mc-bld-mid4-C-roof-lgray",
+   "mc-bld-mid4-C-roof-teal",
+   "mc-bld-mid6-A-roof-lgray",
+   "mc-bld-mid6-A-roof-sage",
+   "mc-bld-mid6-B-roof-lgray",
+   "mc-bld-mid6-B-roof-teal",
+   "mc-bld-mid6-C-roof-navy",
+   "mc-bld-mid6-C-roof-teal",
+   "mc-bld-office-A-roof-lgray",
+   "mc-bld-office-A-roof-teal",
+   "mc-bld-office-B-roof-navy",
+   "mc-bld-office-B-roof-teal",
+   "mc-bld-office-wide-A-roof-brick",
+   "mc-bld-office-wide-A-roof-sage",
+   "mc-bld-office-wide-B-roof-lgray",
+   "mc-bld-office-wide-B-roof-sage",
+   "mc-bld-office-wide-C-roof-lgray",
+   "mc-bld-office-wide-C-roof-teal",
+   "mc-bld-police-A-roof-navy",
+   "mc-bld-police-A-roof-teal",
+   "mc-bld-police-B-roof-brick",
+   "mc-bld-police-B-roof-navy",
+   "mc-bld-post-A-roof-brick",
+   "mc-bld-post-A-roof-sage",
+   "mc-bld-post-B-roof-lgray",
+   "mc-bld-post-B-roof-sage",
+   "mc-bld-post-C-roof-lgray",
+   "mc-bld-post-C-roof-teal",
+   "mc-bld-school-A-roof-brick",
+   "mc-bld-school-A-roof-navy",
+   "mc-bld-school-A-roof-teal",
+   "mc-bld-school-B-roof-brick",
+   "mc-bld-school-B-roof-navy",
+   "mc-bld-school-B-roof-sage",
+   "mc-bld-school-C-roof-brick",
+   "mc-bld-school-C-roof-sage",
+   "mc-bld-shop-A-roof-lgray",
+   "mc-bld-shop-A-roof-sage",
+   "mc-bld-shop-B-roof-lgray",
+   "mc-bld-shop-B-roof-teal",
+   "mc-bld-slim-A-roof-sage",
+   "mc-bld-slim-B-roof-lgray",
+   "mc-bld-slim-B-roof-teal",
+   "mc-bld-tower10-A-roof-navy",
+   "mc-bld-tower10-A-roof-teal",
+   "mc-bld-tower10-B-roof-brick",
+   "mc-bld-tower10-B-roof-navy",
+   "mc-bld-tower10-C-roof-brick",
+   "mc-bld-tower10-C-roof-sage",
+   "mc-bld-tower10b-A-roof-brick",
+   "mc-bld-tower10b-A-roof-navy",
+   "mc-bld-tower10b-B-roof-brick",
+   "mc-bld-tower10b-B-roof-sage",
+   "mc-bld-tower10b-C-roof-lgray",
+   "mc-bld-tower10b-C-roof-sage"
+  ],
+  "building_wall_color": [
+   "mc-bld-apartment-A-ochre",
+   "mc-bld-apartment-B-ochre",
+   "mc-bld-apartment-C-ochre",
+   "mc-bld-balcony2-A-ochre",
+   "mc-bld-balcony2-B-ochre",
+   "mc-bld-conv-A-rose",
+   "mc-bld-conv-B-rose",
+   "mc-bld-conv-C-rose",
+   "mc-bld-conv-C-sage",
+   "mc-bld-fire-A-ochre",
+   "mc-bld-hotel-A-cream",
+   "mc-bld-hotel-C-cream",
+   "mc-bld-house-A-cream",
+   "mc-bld-house-A-gray",
+   "mc-bld-house-A-rose",
+   "mc-bld-house-B-cream",
+   "mc-bld-house-B-gray",
+   "mc-bld-house-B-rose",
+   "mc-bld-house-C-cream",
+   "mc-bld-house-C-gray",
+   "mc-bld-house-C-rose",
+   "mc-bld-izakaya-A-slate",
+   "mc-bld-izakaya-B-slate",
+   "mc-bld-izakaya-C-slate",
+   "mc-bld-low3-A-gray",
+   "mc-bld-low3-B-gray",
+   "mc-bld-low3-C-gray",
+   "mc-bld-mid4-A-sage",
+   "mc-bld-mid4-B-sage",
+   "mc-bld-mid4-C-sage",
+   "mc-bld-mid6-A-rose",
+   "mc-bld-mid6-B-rose",
+   "mc-bld-mid6-C-rose",
+   "mc-bld-office-A-rose",
+   "mc-bld-office-B-rose",
+   "mc-bld-row-A-cream",
+   "mc-bld-row-A-ochre",
+   "mc-bld-row-A-plum",
+   "mc-bld-row-B-cream",
+   "mc-bld-row-B-ochre",
+   "mc-bld-row-B-plum",
+   "mc-bld-row-C-cream",
+   "mc-bld-row-C-ochre",
+   "mc-bld-row-C-plum",
+   "mc-bld-shop-A-tan",
+   "mc-bld-shop-B-tan",
+   "mc-bld-slim-A-plum",
+   "mc-bld-tower10-A-cream",
+   "mc-bld-tower10-B-cream",
+   "mc-bld-tower10-C-cream",
+   "mc-bld-tower10b-A-slate",
+   "mc-bld-tower10b-B-slate",
+   "mc-bld-tower10b-C-slate"
+  ],
+  "car_colors": [
+   "silver(원본)",
+   "black",
+   "navy",
+   "red",
+   "white",
+   "beige",
+   "green"
+  ],
+  "vehicle_flip": "가로 차량은 오른쪽 향함 + 왼쪽 향함(-l)"
+ },
+ "roof_bake": {
+  "method": "compose_town 과 같은 town_lib.decorate_roof(옥상 정리·설비 재배치) + add_facade_sign(상점류 간판)을 고정 시드(bake_seed=1, 건물 이름별 Random)로 한 번 돌린 결과를 굽는다. 지붕색 변형은 같은 시드(같은 배치)에 램프만 바꾼다.",
+  "roof_room_px": 16,
+  "padding": "건물 그림 위쪽에 투명 패딩(밑변 = 발, 폭은 16 배수 그대로). 소품·차량은 알파 bbox 로 잘라 밑변 정렬·좌우 가운데로 16 배수 캔버스에(오프셋은 kit-index 의 pad/image)."
+ },
+ "elapsed_sec": 20.5,
+ "reassembly_from_files": {
+  "kits_checked": 575,
+  "by_kind": {
+   "road": 2,
+   "street": 2,
+   "crosswalk": 2,
+   "junction": 2,
+   "building": 259,
+   "prop": 117,
+   "vehicle": 191
+  },
+  "mismatched_kits": 0,
+  "mismatched_pixels": 0,
+  "mismatched_ids": []
+ },
+ "files": {
+  "png": "public/assets/modern-city/modern-city-chipset.png",
+  "sheet": "src/assets/modernCitySheet.json",
+  "tileset": "src/assets/modernCityTileset.json",
+  "pins": "tiledata/modern-city/pins.json",
+  "report": "tiledata/modern-city/bake-report.json",
+  "kits": "tiledata/modern-city/kit-index.json"
+ },
+ "selftest": {
+  "rebake_identical": {
+   "png": true,
+   "sheet": true,
+   "tileset": true,
+   "pins": true,
+   "kits": true
+  },
+  "rebake_all_identical": true,
+  "add_asset": {
+   "old_count": 9998,
+   "new_count": 10396,
+   "pinned_moved": 0,
+   "kits_changed": 0,
+   "kits_before": 575,
+   "kits_after": 597,
+   "added_cells": 398,
+   "note": "가짜 건물 bld_selftest:Z(+예산 400) 추가",
+   "stable": true,
+   "old_cell_pixels_unchanged": true,
+   "pass": true
+  }
+ }
+}

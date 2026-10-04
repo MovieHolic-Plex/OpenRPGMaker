@@ -48,6 +48,12 @@ export function tileMatchesCategory(
   return usage === "decoration" || layer === "upper";
 }
 
+/** 업로드·번들 타일셋의 tileMeta 는 role 이 비어 있고 tags 만 있다 — 그래서 「지형」 분류가 0칸이 됐다. 땅을 이루는 태그로 usage 를 추정한다. */
+const TERRAIN_TAGS: readonly string[] = ["grass", "road", "plaza", "sand", "walk", "path", "cliff", "terrain", "ground", "dirt"];
+function inferTerrainUsage(tags: readonly string[]): string {
+  return tags.some((tag) => TERRAIN_TAGS.includes(tag)) ? "terrain" : "";
+}
+
 export type TileFilterState = {
   readonly category: TileCategoryId;
   readonly query: string;
@@ -83,7 +89,7 @@ export function filterTileIndexes(tileset: TilesetDef, state: TileFilterState): 
     }
     const meta = tileset.tileMeta?.[index];
     const tags = meta?.tags ?? (meta?.role ? [meta.role] : []);
-    if (!tileMatchesCategory(state.category, tags, meta?.role ?? "", tileset.priority[index] ?? "lower")) return false;
+    if (!tileMatchesCategory(state.category, tags, meta?.role ?? inferTerrainUsage(tags), tileset.priority[index] ?? "lower")) return false;
     if (normalizedQuery.length === 0) return true;
     return [String(index), meta?.label ?? "", meta?.description ?? "", meta?.role ?? "", tags.join(" ")]
       .some((value) => value.toLowerCase().includes(normalizedQuery));

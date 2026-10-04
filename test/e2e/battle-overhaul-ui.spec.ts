@@ -172,7 +172,7 @@ async function mountBattleHarness(page: Page, battleFlow: "gauge" | "strict"): P
     const enemy = project.database.enemies.find((entry) => entry.id === "enemy_slime");
     if (!hero || !ally || !fire || !enemy) throw new Error("battle harness fixture is incomplete");
 
-    project.system.battleUiStyle = "classic";
+    project.system.battleUiStyle = "retro2003";
     project.system.startActorIds = [hero.id, ally.id];
     project.session.partyActorIds = [hero.id, ally.id];
     for (const actor of project.database.actors) actor.learnedSkills = [];

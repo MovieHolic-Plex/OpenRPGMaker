@@ -1,0 +1,17 @@
+// w5-A.pxg 평탄화 격자 16x16
+................
+................
+................
+.....AABBBAA....
+...ABCCCCCCCDA..
+..ABCCCCCCCCCDA.
+..ADFFEEFFFFFDA.
+..HDFFFFFFFFFDH.
+..IHDFFFFFFFDH..
+..JKLNNNLLLOKJ..
+..JHDBBBDDDMHJ..
+..JHDBBBDDDMHJ..
+..JHDBBBDDDMHJ..
+..JKLNNNLLLOKJ..
+..JHDBBBDDDMHJ..
+..JIIIIIIIIIIJ..

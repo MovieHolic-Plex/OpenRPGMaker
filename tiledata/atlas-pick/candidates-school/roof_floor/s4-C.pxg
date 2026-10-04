@@ -1,0 +1,39 @@
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat a fence 3
+@mat b mconc 3
+@mblock 0 0
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaabbaa
+aaaaaaaaaaaabbba
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+@tblock 0 0
+1111111111111111
+1444444415555555
+1433333315444444
+1435333315454444
+1433133315441444
+1433333315444444
+1433333315444444
+1433333315444444
+1111111111111111
+1555555514444444
+1544444414333333
+1545444414353333
+1544144414333433
+1544444414333223
+1544444414333333
+1544444414333333

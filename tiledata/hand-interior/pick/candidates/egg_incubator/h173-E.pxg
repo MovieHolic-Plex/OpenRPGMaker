@@ -1,0 +1,62 @@
+// E: 놋쇠 덮개가 달린 종형 유리 부화기, 녹색 점박이 알과 온도 눈금 받침; 꼭대기 윗면 3행(y=0~2)
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat A brass 0
+@mat B brass 1
+@mat C brass 2
+@mat D brass 3
+@mat E brass 4
+@mat F brass 5
+@mat G brass 6
+@mat h glass 1
+@mat i glass 2
+@mat j fish 3
+@mat k fish 4
+@mat l fish 5
+@mat m fish 6
+@mat v linen 2
+@mat w linen 3
+@mat x linen 4
+@mat y linen 5
+@mat z linen 6
+@mat p green 2
+@mat q green 4
+@mat r iron 1
+@mat s iron 3
+@mat t iron 5
+@mat R red 4
+@layer incubator
+@mblock 0 0
+......EEEE......
+.....FGGFED.....
+.....FEEEDC.....
+......CBBC......
+....hkllkjih....
+...hklmllkjih...
+..hkmmllkkjjih..
+..hklkkkjjjjih..
+.hmlkkjjjjjjjih.
+.hmkkjjxywjjjih.
+.hlkjjxyzywjjih.
+.hlkjjxyzxxjjih.
+.hlkkxyzqxxwkih.
+.hlkkxypqxxwkih.
+.hlkkxyyyxxwkih.
+.hlkkxzyyxpvkih.
+.hlkkxyyxppvkih.
+.hlkkwxyyxwvkih.
+.hkkkwxqxxwvjih.
+.hkkjjwpxwvjjih.
+.hkklkkvvvkjjih.
+.hkkkkjjjjjjjih.
+..hiiiiiihhhih..
+..CFFFFEEEDDCB..
+.BFGGFFFFEEDDCA.
+BFFFFEEEEDDDDCBA
+BEEEDDDDDCCCCCBA
+.BDCCrttsrCCCB..
+.BECCrtRsrrCCB..
+..BCDDDDCCCCB...
+..CDCB....BCDB..
+..BBB......BBB..

@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/scroll_rack/w2-A.pxg",
+ "id": "scroll rack",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.035
+ },
+ "lint": {
+  "failed": [
+   "outline"
+  ],
+  "pass": false
+ },
+ "colors": 10,
+ "v5_colors": 11,
+ "bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "note": "v5 정리: 순검정 외곽선을 짙은 갈색(wood:1)로 교체, 두루마리 띠 배열 유지",
+ "ok": true
+}

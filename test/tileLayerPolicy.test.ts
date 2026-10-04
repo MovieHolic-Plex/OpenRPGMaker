@@ -9,7 +9,7 @@ import {
 } from "@/editor/tileLayerPolicy";
 import { setTileBackingOverride, setTileLayerOverride } from "@/editor/runtimeTileMetadata";
 import { TILE } from "@/project/defaults/constants";
-import { defaultTileset } from "@/project/defaults/defaultAssets";
+import { combinedTownTileset as defaultTileset } from "@/project/defaults/defaultAssets";
 
 const BENCH = 357;
 const CONIFER_TRUNK = 290;

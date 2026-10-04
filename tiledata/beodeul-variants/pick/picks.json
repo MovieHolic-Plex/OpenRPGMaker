@@ -1,0 +1,594 @@
+{
+ "var1/fishing-port/parts/drying_rack_a.png": {
+  "choice": "before",
+  "note": ""
+ },
+ "var1/fishing-port/parts/drying_rack_b.png": {
+  "choice": "before",
+  "note": ""
+ },
+ "var1/fishing-port/parts/jetty_head.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var1/fishing-port/parts/jetty_post.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var1/fishing-port/parts/lighthouse.png": {
+  "choice": "redo",
+  "note": ""
+ },
+ "var1/fishing-port/parts/jetty_stem.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var1/fishing-port/parts/jetty_west.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var1/fishing-port/parts/lobster_pots.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var1/fishing-port/parts/upturned_boat.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var1/fishing-port/render-1x.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var1/riverside-mill/parts/flour_cart.png": {
+  "choice": "redo",
+  "note": ""
+ },
+ "var1/riverside-mill/parts/laundry_line.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var1/riverside-mill/parts/scarecrow.png": {
+  "choice": "before",
+  "note": ""
+ },
+ "var1/riverside-mill/parts/sluice_gate.png": {
+  "choice": "redo",
+  "note": ""
+ },
+ "var1/riverside-mill/parts/waterwheel.png": {
+  "choice": "before",
+  "note": ""
+ },
+ "var1/vineyard/parts/cask_rack.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var1/riverside-mill/render-1x.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var1/vineyard/parts/temple_stone.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var1/vineyard/render-1x.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var1/walled-market/parts/banner_red.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var1/walled-market/parts/banner_teal.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var1/walled-market/parts/forge_yard.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var1/walled-market/parts/sack_pile.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var1/walled-market/parts/trough.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var1/walled-market/render-1x.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var2/mining-valley/parts/adit.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var2/mining-valley/parts/barrel.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var2/mining-valley/parts/bench.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var2/mining-valley/parts/bin.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var2/mining-valley/parts/board.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var2/mining-valley/parts/boss.png": {
+  "choice": "redo",
+  "note": ""
+ },
+ "var2/mining-valley/parts/buffer.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var2/mining-valley/parts/cart.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var2/mining-valley/parts/cart_h.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var2/mining-valley/parts/chimney.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var2/mining-valley/parts/crates.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var2/mining-valley/parts/d1.png": {
+  "choice": "redo",
+  "note": ""
+ },
+ "var2/mining-valley/parts/d2.png": {
+  "choice": "redo",
+  "note": ""
+ },
+ "var2/mining-valley/parts/e1.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var2/mining-valley/parts/e2.png": {
+  "choice": "after",
+  "note": "나무 지붕은 기와보다는 ㅏㄴ무로하는 게 좋아보임"
+ },
+ "var2/mining-valley/parts/e3.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var2/mining-valley/parts/fir.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var2/mining-valley/parts/ground-cliff.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var2/mining-valley/parts/ground-deck.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var2/mining-valley/parts/ground-road.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var2/mining-valley/parts/ground-rock.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var2/mining-valley/parts/ground-slagg.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var2/mining-valley/parts/ground-soil.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var2/mining-valley/parts/ground-tail.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var2/mining-valley/parts/hall.png": {
+  "choice": "redo",
+  "note": "시발 왜 2층에 문이잇냐고"
+ },
+ "var2/mining-valley/parts/ground-yard.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var2/mining-valley/parts/ground-terr.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var2/mining-valley/parts/ground-tcliff.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var2/mining-valley/parts/headframe.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var2/mining-valley/parts/inn.png": {
+  "choice": "redo",
+  "note": ""
+ },
+ "var2/mining-valley/parts/kiln.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var2/mining-valley/parts/lamp.png": {
+  "choice": "redo",
+  "note": ""
+ },
+ "var2/mining-valley/parts/ore.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var2/mining-valley/parts/pile.png": {
+  "choice": "redo",
+  "note": ""
+ },
+ "var2/mining-valley/parts/rack.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var2/mining-valley/parts/s1.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var2/mining-valley/parts/s2.png": {
+  "choice": "redo",
+  "note": ""
+ },
+ "var2/mining-valley/parts/s3.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var2/mining-valley/parts/slagheap.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var2/mining-valley/parts/slagrock.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var2/mining-valley/parts/sluice.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var2/mining-valley/render-1x.png": {
+  "choice": "redo",
+  "note": ""
+ },
+ "var2/swamp-stilt/parts/ducks.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var2/swamp-stilt/parts/crab_trap.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var2/swamp-stilt/parts/fishing_boat.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var2/swamp-stilt/render-1x.png": {
+  "choice": "redo",
+  "note": "노란색 지붕들이 너무많다."
+ },
+ "var3/aqueduct-sewer/parts/altar_cult.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var3/aqueduct-sewer/parts/arch_bars.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var3/aqueduct-sewer/parts/arch_dark.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var3/aqueduct-sewer/parts/arch_water.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var3/aqueduct-sewer/parts/brazier.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var3/aqueduct-sewer/parts/bucket.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var3/aqueduct-sewer/parts/column_sewer_broken.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var3/aqueduct-sewer/parts/column_sewer.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var3/aqueduct-sewer/parts/ceiling.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var3/aqueduct-sewer/parts/candles.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var3/aqueduct-sewer/parts/face_cata_2h.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var3/aqueduct-sewer/parts/floor_bone.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var3/aqueduct-sewer/parts/face_cata_3h.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var3/aqueduct-sewer/parts/floor_cata.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var3/aqueduct-sewer/parts/face_sewer_2h.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var3/aqueduct-sewer/parts/floor_darkcata.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var3/aqueduct-sewer/parts/floor_plank.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var3/aqueduct-sewer/parts/face_sewer_3h.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var3/aqueduct-sewer/parts/rubble.png": {
+  "choice": "before",
+  "note": ""
+ },
+ "var3/aqueduct-sewer/parts/lantern_post.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var3/aqueduct-sewer/parts/skulls.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var3/aqueduct-sewer/parts/straw_bed.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var3/aqueduct-sewer/parts/valve_wheel.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var3/aqueduct-sewer/render-1x.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var3/castle-catacombs/parts/brazier.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var3/castle-catacombs/parts/bucket.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var3/castle-catacombs/parts/cage_hanging.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var3/castle-catacombs/parts/candles.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var3/castle-catacombs/parts/ceiling.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var3/castle-catacombs/render-1x.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var3/sea-cave/render-1x.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var3/temple-ruins/render-1x.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var4/headland-lighthouse/parts/lighthouse.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var4/headland-lighthouse/render-1x.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var4/shipwreck-reef/parts/wreck.png": {
+  "choice": "before",
+  "note": ""
+ },
+ "var4/shipwreck-reef/parts/wreck_rig_pole.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var4/shipwreck-reef/render-1x.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var4/volcano-cave/parts/altar.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var4/volcano-cave/parts/bellows.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var4/volcano-cave/parts/bones.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var4/volcano-cave/parts/bridge.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var4/volcano-cave/parts/coal_pile.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var4/volcano-cave/parts/ember_a.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var4/volcano-cave/parts/ingots.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var4/volcano-cave/render-1x.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var4/wizard-tower/parts/bed_blue.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var4/wizard-tower/parts/bed_flower.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var4/wizard-tower/parts/bed_herb.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var4/wizard-tower/parts/spiral-stair-down.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var4/wizard-tower/parts/sundial.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var4/wizard-tower/parts/starmap.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var4/wizard-tower/parts/spiral-stair-up.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var4/wizard-tower/parts/wizard-tower.png": {
+  "choice": "redo",
+  "note": ""
+ },
+ "var4/wizard-tower/parts/wizard_tower.png": {
+  "choice": "redo",
+  "note": ""
+ },
+ "var4/wizard-tower/render-1x.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var5/coast-cliff-road/parts/driftwood.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var5/coast-cliff-road/parts/haystack.png": {
+  "choice": "redo",
+  "note": ""
+ },
+ "var5/coast-cliff-road/parts/heath_c.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var5/coast-cliff-road/parts/rowboat.png": {
+  "choice": "redo",
+  "note": ""
+ },
+ "var5/coast-cliff-road/parts/shrine.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var5/coast-cliff-road/parts/trough.png": {
+  "choice": "redo",
+  "note": ""
+ },
+ "var5/coast-cliff-road/parts/wayside_cross.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var5/coast-cliff-road/render-1x.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var5/deep-forest-path/parts/cairn.png": {
+  "choice": "before",
+  "note": ""
+ },
+ "var5/deep-forest-path/parts/cairn_s.png": {
+  "choice": "before",
+  "note": ""
+ },
+ "var5/deep-forest-path/parts/chopping_block.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var5/deep-forest-path/parts/fern_a.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var5/deep-forest-path/parts/fern_b.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var5/deep-forest-path/parts/hunter_post.png": {
+  "choice": "after",
+  "note": ""
+ },
+ "var5/deep-forest-path/parts/hide_rack.png": {
+  "choice": "before",
+  "note": ""
+ },
+ "var5/deep-forest-path/parts/heath_c.png": {
+  "choice": "before",
+  "note": ""
+ },
+ "var5/deep-forest-path/parts/fern_c.png": {
+  "choice": "before",
+  "note": ""
+ },
+ "var5/deep-forest-path/parts/log_fallen.png": {
+  "choice": "before",
+  "note": ""
+ },
+ "var5/deep-forest-path/parts/ruin_gate.png": {
+  "choice": "before",
+  "note": ""
+ },
+ "var5/deep-forest-path/parts/stones_a.png": {
+  "choice": "before",
+  "note": ""
+ },
+ "var5/deep-forest-path/parts/stones_b.png": {
+  "choice": "before",
+  "note": ""
+ },
+ "var5/deep-forest-path/parts/toadstools_b.png": {
+  "choice": "before",
+  "note": ""
+ }
+}

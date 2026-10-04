@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/cake_display_case/w8-C.pxg",
+ "id": "cake display case",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.059
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 19,
+ "v5_colors": 22,
+ "bbox": [
+  0,
+  10,
+  31,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  10,
+  31,
+  31
+ ],
+ "note": "재해석: 반원 유리 돔을 씌운 3단 케이크와 낮은 서랍 받침, 양끝 다리",
+ "ok": true
+}

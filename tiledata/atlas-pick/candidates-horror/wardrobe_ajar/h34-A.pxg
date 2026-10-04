@@ -1,0 +1,77 @@
+// wardrobe_ajar h34-A (H 방법: Tibo 3/4 → C → E)
+@size 16 32
+@cell 16
+@palette palette.pal
+@layer main
+@mat a mahog 0
+@mat b sheet 0
+@mat c soil 0
+@mat d vclay 0
+@mat e velv 0
+@mat f vwood 0
+@mblock 0 0
+................
+.ddddaaaaaaaaaa.
+.ddaaaaaaaaaaaa.
+.daaaaaaaaaaaaa.
+.aaaaaaaaaaaaaa.
+.aaaaaaaaaaaacc.
+.cccccccccccccc.
+.caaaaaaffaaaac.
+.caaaaaaffaaaac.
+.caaaacaffaaacc.
+.caaaacaffaaacc.
+.caaaacaffaaacc.
+.caaaacaffaaacc.
+.caaaacaffaaacc.
+.caaaacaffaaacc.
+.caaaacaffaaacc.
+.caaaacaffaaacc.
+.caaaacaffaaacc.
+.caaaadaffadacc.
+.caaaacaffaaacc.
+.caaaacaffaaacc.
+.caaaacaffaaacc.
+.caaaacaffaaacc.
+.caaaacaffaaacc.
+.caaaacaffaaacc.
+.caaaacaffaaacc.
+.caaaacaffaaacc.
+.caaaacaffaaaac.
+.caaaaaacfaaaac.
+.cccccccccccccc.
+.ca..........ac.
+................
+@tblock 0 0
+................
+.55556666666666.
+.55666666666666.
+.56666666666666.
+.66666666666666.
+.66666666666655.
+.11111111111111.
+.14444440044441.
+.13444430034441.
+.13433130034311.
+.13433130034311.
+.13433130034311.
+.13433130034311.
+.13433130034311.
+.13433130034311.
+.13433130034311.
+.13433130034311.
+.13433130034311.
+.13433530035311.
+.13433130034311.
+.13433130034311.
+.13433130034311.
+.13433130034311.
+.13433130034311.
+.13433130034311.
+.13433130034311.
+.13433130034311.
+.13333130033331.
+.13333331033331.
+.11111111111111.
+.13..........31.
+................

@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/theater_seat/w32-A.pxg",
+ "id": "theater seat",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.042
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "outline_black"
+  ],
+  "pass": false
+ },
+ "colors": 8,
+ "v5_colors": 9,
+ "bbox": [
+  0,
+  1,
+  15,
+  14
+ ],
+ "v5_bbox": [
+  1,
+  2,
+  14,
+  14
+ ],
+ "note": "진단: w14-D~G 는 정면 안락의자처럼 읽혔다(붉은 상자+금 점) — 머리받침 실루엣·팔걸이 끝이 약하고 등판이 지배적이지 않아 '무대를 향해 앉은 뒷모습'이 안 났음. 이번엔 뒤태로: 머리받침 볼록 윗선 + 통짜 등판 + 양옆 나무 팔걸이 끝, 좌석 판 안 보임, 3개 이으면 팔걸이가 칸막이가 되는 객석 줄.",
+ "ok": true
+}

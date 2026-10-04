@@ -77,6 +77,8 @@ export function shouldIgnoreEditorShortcut(event: KeyboardEvent): boolean {
     if (document.querySelector("[data-testid='database-modal']:not(.is-docked)")) return true;
     if (document.querySelector("[data-testid='resource-modal']")) return true;
     if (document.querySelector("[data-testid='world-panel-modal']")) return true;
+    // 공방(전면 오버레이)이 떠 있으면 키는 공방의 것이다 — 배경 맵 편집기로 새면 안 된다.
+    if (document.querySelector("[data-testid='workshop-host']")) return true;
     if (document.querySelector("[data-testid='event-command-catalog-modal']")) return true;
     // 이벤트 에디터 모달은 자체 undo/redo 핸들러를 두므로 EditScene 단축키가 새지 않게 가드.
     if (document.querySelector("[data-testid='event-editor-modal']:not([hidden])")) return true;
@@ -165,10 +167,17 @@ export function historyHotkeyOwnedByPanel(): boolean {
  * 히스토리 키(Ctrl+Z/Y)는 스택이 비어 있어도 브라우저 기본 동작을 막는다.
  * @returns 프로젝트 상태가 실제로 복원/재적용되었으면 true(=재렌더 필요).
  */
+// A scene can briefly retain several keyboard listeners during remount. The
+// browser event is one user action even when Phaser delivers it more than once.
+const handledHistoryEvents = new WeakSet<KeyboardEvent>();
+
 export function handleHistoryHotkey(event: KeyboardEvent): boolean {
   if (!(event.ctrlKey || event.metaKey) || event.altKey) return false;
   if (isTextEditingFocus(event)) return false;
   const key = event.key.toLowerCase();
+  if (key !== "z" && key !== "y") return false;
+  if (handledHistoryEvents.has(event)) return false;
+  handledHistoryEvents.add(event);
   if (key === "z") {
     event.preventDefault();
     return event.shiftKey ? runRedoWithFeedback() : runUndoWithFeedback();

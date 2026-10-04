@@ -1,0 +1,10 @@
+{
+  "projectId": "ed8b658e-3e4b-464b-95d4-389d8c0f1175",
+  "revision": 3,
+  "groups": 1,
+  "groupCells": 33,
+  "bridgeCells": 10,
+  "plateauHeight": 2,
+  "store": ".vite-cache/terrain-placement-store",
+  "isolatedQAFixture": true
+}

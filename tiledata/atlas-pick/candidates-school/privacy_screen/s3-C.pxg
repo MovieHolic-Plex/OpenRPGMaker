@@ -1,0 +1,48 @@
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat b viron 6
+@mat c viron 3
+@mat d viron 5
+@mat e viron 1
+@mat f viron 2
+@mat g vwhite 3
+@mat h vwhite 5
+@mat i vwhite 2
+@mat j vwhite 1
+@mat k vwhite 6
+@mat l vglass 4
+@mat m vwhite 4
+@mblock 0 0
+................................
+................................
+.......dbbbbbbbbbbbbbbbbf.......
+.......dccccccccccccccccf.......
+.......dllllllllllllllllf.......
+.......dllllllllllllllllf.......
+.dbbbbfdkhhhmhhhghmhhhhgfdbbbbf.
+.dccccfdkhhhmhhhghmhhhhgfdccccf.
+.dhggifdkhhhmhhhghmhhhhgfdhggjf.
+.dhgiifdkhhhmhhhghmhhhhgfdhgjjf.
+.dhgiifdkhhhmhhhghmhhhhgfdhgjjf.
+.dhgiifdkhhhmhhhghmhhhhgfdhgjjf.
+.dhgiifdkhhhmhhhghmhhhhgfdhgjjf.
+.dhgiifdkhhhmhhhghmhhhhgfdhgjjf.
+.dhgiifdkhhhmhhhghmhhhhgfdhgjjf.
+.dhgiifdkhhhmhhhghmhhhhgfdhgjjf.
+.dhgiifdkhhhmhhhghmhhhhgfdhgjjf.
+.dhgiifdkhhhmhhhghmhhhhgfdhgjjf.
+.dhgiifdkhhhmhhhghmhhhhgfdhgjjf.
+.dhgiifdkhhhmhhhghmhhhhgfdhgjjf.
+.dhgiifdkhhhmhhhghmhhhhgfdhgjjf.
+.dhgiifdkhhhmhhhghmhhhhgfdhgjjf.
+.dhggifdkhhhmhhhghmhhhhgfdhggjf.
+.dddddfdkhhhmhhhghmhhhhgfdddddf.
+.deeeefdkhhhhhhhhhhhhhhgfdeeeef.
+...de..dddddddddddddddddf..de...
+...ce..deeeeeeeeeeeeeeeef..ce...
+...ce..........de..........ce...
+...............ce...............
+...............ce...............
+...~~~~~~~~~~~~~~~~~~~~~~~~~~~..
+...---------------------------..

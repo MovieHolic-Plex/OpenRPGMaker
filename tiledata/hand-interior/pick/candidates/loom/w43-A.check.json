@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/loom/w43-A.pxg",
+ "id": "loom",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.02
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 13,
+ "v5_colors": 12,
+ "bbox": [
+  1,
+  9,
+  30,
+  31
+ ],
+ "v5_bbox": [
+  1,
+  8,
+  30,
+  31
+ ],
+ "note": "3/4: 뒷보 윗면, 날실이 앞뒤로 누운 선(밝/어두 번갈아), 앞쪽에 짜인 붉은·노란 천, 앞보 윗면+앞가장자리, 다리 두 개",
+ "ok": true
+}

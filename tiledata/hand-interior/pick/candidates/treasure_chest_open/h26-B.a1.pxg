@@ -1,0 +1,45 @@
+// B 상태만 바꾸기: 뒤로 젖힌 뚜껑은 안쪽 어두운 면+금 띠가 서고, 입구 속은 어둡고 금화 몇 닢이 비친다. 몸통·자물쇠는 닫힌 상자(h13-D) 그대로
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat o wood 1
+@mat w wood 6
+@mat g gold 4
+@mat d wood 4
+@mat k gold 0
+@mat i wood 1
+@mat c gold 8
+@mblock 0 0
+................
+....ooooooooo...
+...oggdddddggo..
+...oggdddddggo..
+...oggdddddggo..
+...oggdddddggo..
+..ogggggggggggo.
+..oiiiiiiiiiiio.
+..oicciiccciiio.
+..ogggggggggggo.
+..odggdgggdggdo.
+..odggdgkgdggdo.
+..odggdgggdggdo.
+..odggdddddggdo.
+..ooooooooooooo.
+................
+@tblock 0 0
+................
+....111111111...
+...16534333430..
+...15433333320..
+...14323332320..
+...13322222220..
+..1456666666540.
+..1111111111110.
+..1264226542220.
+..1666555443330.
+..1454655433330.
+..1454350433330.
+..1454344333330.
+..1454333333330.
+..0000000000000.
+................

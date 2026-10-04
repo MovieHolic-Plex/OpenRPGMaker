@@ -7,11 +7,12 @@ import { validateArgs } from "./jsonSchema";
 import { getTool } from "./toolRegistry";
 import { normalizeToolArgs, runTool, runToolDefinition, type RunToolOptions } from "./toolRunner";
 import { ToolError, type ToolContext, type ToolResult } from "./types";
+import type { Project } from "@/project/types";
 
 /** Await the tool's lazy data so the synchronous run finds it. A failed load surfaces from run itself. */
-export async function prepareTool(name: string, args: Record<string, unknown>): Promise<void> {
+export async function prepareTool(name: string, args: Record<string, unknown>, project?: Project): Promise<void> {
   const tool = getTool(name);
-  if (tool?.prepare) await tool.prepare(normalizeToolArgs(name, args)).catch(() => undefined);
+  if (tool?.prepare) await tool.prepare(normalizeToolArgs(name, args), project).catch(() => undefined);
 }
 
 /** Generate first, then enter the same synchronous draft/lint/commit boundary as other tools. */
@@ -28,7 +29,7 @@ export async function runToolAsync(
 ): Promise<ToolResult> {
   options.signal?.throwIfAborted();
   if (name !== EVENT_COMMAND_ASSIST_TOOL) {
-    await prepareTool(name, args);
+    await prepareTool(name, args, ctx.project);
     options.signal?.throwIfAborted();
     return runTool(ctx, name, args, options);
   }

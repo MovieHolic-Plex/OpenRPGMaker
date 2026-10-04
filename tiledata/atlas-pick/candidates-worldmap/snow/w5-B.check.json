@@ -1,0 +1,43 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/snow/w5-B.pxg",
+ "set": "worldmap",
+ "id": "snow",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.137
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.046
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 5,
+ "bbox": [
+  0,
+  0,
+  47,
+  60
+ ],
+ "note": "빛·부피 — 왼쪽 위 빛, 눈 둔덕(위 밝고 아래 푸른 그늘) 가로 띠, 테는 밝은 윗줄+푸른 아랫줄의 둑, 몸통 16px 주기",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.09
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.621
+  },
+  "seam": 0.68
+ }
+}

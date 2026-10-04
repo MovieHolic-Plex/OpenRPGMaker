@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/easel/s1-B.pxg",
+ "set": "school",
+ "id": "easel",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.015
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.02
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 16,
+ "bbox": [
+  0,
+  2,
+  15,
+  31
+ ],
+ "note": "B: 명암 강화 — 캔버스 하늘 3단·구석 그늘, 오른쪽 다리 어둡게, 바닥 접지 그림자",
+ "ok": true
+}

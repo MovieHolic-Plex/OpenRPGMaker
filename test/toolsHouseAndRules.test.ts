@@ -7,7 +7,7 @@ import { userTileLayerOverride } from "@/editor/runtimeTileMetadata";
 import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext } from "@/editor/tools/types";
 import { createBlankProject } from "@/project/defaults";
-import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { applyCombinedTownHarness } from "@/project/tilesetHarness";
 
 const SLOPED_ROOF = 385;
@@ -108,7 +108,7 @@ describe("set_tile_rules", () => {
       ],
     });
     expect(result.ok, result.summary).toBe(true);
-    const tileset = context.project.tilesets[DEFAULT_TILESET_ID];
+    const tileset = context.project.tilesets[COMBINED_TOWN_TILESET_ID];
     expect(userTileLayerOverride(tileset, SLOPED_ROOF)).toBe("lower");
     expect(tileset.priority[SLOPED_ROOF]).toBe("lower");
     expect(tileset.passability[TILE.TREE].up).toBe(true);
@@ -124,7 +124,7 @@ describe("set_tile_rules", () => {
   it("set_tile_passability도 user 메타로 기록되어 하네스에 살아남는다", () => {
     const context: ToolContext = { project: createBlankProject() };
     expect(runTool(context, "set_tile_passability", { tile: 342, passable: true }).ok).toBe(true);
-    const tileset = context.project.tilesets[DEFAULT_TILESET_ID];
+    const tileset = context.project.tilesets[COMBINED_TOWN_TILESET_ID];
     expect(tileset.passability[342].up).toBe(true);
     applyCombinedTownHarness(tileset);
     expect(tileset.passability[342].up).toBe(true); // 돌바닥(solid 그룹 계약)보다 사용자 확정이 우선.

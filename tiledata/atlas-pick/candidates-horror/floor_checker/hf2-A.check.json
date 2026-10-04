@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/floor_checker/hf2-A.pxg",
+ "set": "horror",
+ "id": "floor_checker",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.297
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.092
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 7,
+ "bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "note": "A(v5 식구): 회백(dust 3)·짙은 회(grave 3) 8px 체크, 줄눈 1px 한 단 어둡게, 얼룩 한 단, 금 한 줄(대각 5화소)",
+ "ok": true
+}

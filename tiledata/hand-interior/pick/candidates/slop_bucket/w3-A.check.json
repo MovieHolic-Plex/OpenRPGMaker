@@ -1,0 +1,31 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/slop_bucket/w3-A.pxg",
+ "id": "slop bucket",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.029
+ },
+ "lint": {
+  "failed": [],
+  "pass": true
+ },
+ "colors": 9,
+ "v5_colors": 5,
+ "bbox": [
+  4,
+  6,
+  11,
+  13
+ ],
+ "v5_bbox": [
+  4,
+  6,
+  11,
+  13
+ ],
+ "note": "v5 다듬기 — 림을 밝은 나무(wood:6~7)로 세우고 오물 면에 옅은 반사 한 점, 통널 두 색 교대 + 쇠테 두 줄(위가 밝고 아래가 어두움), 오른쪽 통널을 한 단 어둡게.",
+ "ok": true
+}

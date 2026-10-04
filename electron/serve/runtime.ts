@@ -160,6 +160,7 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
   // 그림 dataUrl(실측 414장·85MB)을 문서에 들고 있어, 팀 저장마다 호스트가 그 전체를 다시 해시했다(저장 한 번 4–5s).
   // 팀을 열 때 한 번 파일로 분리한다. 호스트 창의 다음 저장은 기준이 달라 한 번 병합 경로를 탄다.
   await separateInlineMediaOnOpen(sessions.require(SESSION_KEY).store);
+  const projectsRoot = resolve(sessions.require(SESSION_KEY).projectDir, '.oprn-projects');
   const handlers = createStoreHandlers(sessions);
   // 프로젝트 폴더마다 하나. 참여자 여럿이 같은 본문을 받는다.
   const assetBlobIndexes = new Map<string, ReturnType<typeof createAssetBlobIndex>>();
@@ -189,7 +190,6 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
   const activityMirror = createActivityMirrorMiddleware({ baseDir: projectDir });
   const token = randomUUID();
 
-  const projectsRoot = resolve(sessions.require(SESSION_KEY).projectDir, '.oprn-projects');
   const isProjectId = (id: string): boolean => /^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$/.test(id);
   const projectPath = async (id: string): Promise<string> => {
     if (!id) return projectDir;
@@ -281,12 +281,15 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
       return await handler(key, { ...(body.payload as object), bytes });
     }
 
-    const result = await handler(key, body.payload);
+    const result = await handler(key, body.payload, { recoveryRoot: projectsRoot });
     if (channel === OPRN_CHANNELS.projectLoadFolded && (body.payload as { readonly assetBlobs?: unknown } | null)?.assetBlobs === true
       && result && typeof result === 'object' && typeof (result as { folded?: unknown }).folded === 'string') {
       const row = result as { readonly folded: string; readonly sha256: string; readonly revision: number };
       const stripped = assetBlobIndex(sessions.require(key).projectDir).strip(row.folded);
       return { ...row, folded: stripped.folded, assetBlobShas: stripped.assetBlobShas, assetBlobHints: stripped.assetBlobHints };
+    }
+    if (channel === OPRN_CHANNELS.projectRestoreBackup && result && typeof result === 'object') {
+      return { ...result, projectDir: basename(String((result as { projectDir: string }).projectDir)) };
     }
     if (channel === OPRN_CHANNELS.teamStatus) return { ...(result as object), accessCodeRequired: team.accessCodeRequired() };
     if (channel === OPRN_CHANNELS.assetsRead && result instanceof Uint8Array) {
@@ -324,7 +327,9 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
     }
     const extension = extname(target);
     const contentType = MIME_BY_EXTENSION[extension] ?? "application/octet-stream";
-    if (extension !== ".html") {
+    // SDK files are hashed by the exporter, including player.html. Injecting
+    // the editor bridge changes those bytes and rejects every hosted ZIP export.
+    if (extension !== ".html" || relative.startsWith("export-player/")) {
       const fingerprinted = /^assets\/[^/]+-[A-Za-z0-9_-]{8}\.(?:js|css|woff2|png)$/.test(relative);
       await sendHttpBody(response, 200, bytes, {
         "content-type": contentType,

@@ -18,6 +18,7 @@ const updates: OprnUpdatesBridge = {
 const bridge = {
   closeIsHostDriven: true,
   updates,
+  windowControl: invoke(OPRN_CHANNELS.windowControl),
   team: { status: invoke(OPRN_CHANNELS.teamStatus), lock: invoke(OPRN_CHANNELS.teamLock) },
   // 동반 서비스 출처는 실행할 때마다 다른 포트라 프리로드 시점에 한 번 동기로 받는다.
   companionOrigin: (() => {
@@ -47,6 +48,8 @@ const bridge = {
     separateMedia: invoke(OPRN_CHANNELS.projectSeparateMedia),
     backup: invoke(OPRN_CHANNELS.projectBackup),
     saveCover: invoke(OPRN_CHANNELS.projectSaveCover),
+    listBackups: invoke(OPRN_CHANNELS.projectListBackups),
+    restoreBackup: invoke(OPRN_CHANNELS.projectRestoreBackup),
   },
   commits: {
     record: invoke(OPRN_CHANNELS.commitsRecord),

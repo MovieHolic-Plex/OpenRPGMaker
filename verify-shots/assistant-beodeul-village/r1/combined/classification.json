@@ -1,0 +1,45 @@
+{
+  "plan": {
+    "readOnly": false,
+    "planOnly": false,
+    "maxTurns": 200,
+    "thinkingLevel": "low",
+    "routineEdit": false,
+    "routingAudit": "intent:llm mode=create space=outdoor target=old_town plan tools=get_map_region,author_village,evaluate_village_look 64362ms — 선언 오류: 시간 초과(60000ms) → 마을 계약 없음(판정)"
+  },
+  "initialToolNames": [
+    "find_tools",
+    "read_project_wiki",
+    "tile_query",
+    "create_map",
+    "resize_map",
+    "ask_tileset_change",
+    "get_project_summary",
+    "list_resources",
+    "get_database_records",
+    "focus_editor_view",
+    "web_search",
+    "get_map_region",
+    "find_events",
+    "get_event",
+    "find_layout_regions",
+    "author_village",
+    "evaluate_village_look",
+    "author_beodeul_town",
+    "check_city_form",
+    "check_reachability"
+  ],
+  "intentNote": "[의도] 지금 맵 위 야외 시공이다(author_house/author_village/fill_region/place_props; 대상 맵이 버들항 계열이면 마을은 author_beodeul_town). 집은 author_house(interior:\"linked-interior\")가 기본이다 — 실내맵과 양방향 전이가 함께 생긴다. 겉모습만 필요하면 명시적으로 interior:\"exterior-only\". 독립 실내 세션은 만들지 말 것. 이미 확인된 의도이므로 되묻지 말고 진행하라.\n[마을 시공] 선언이 author_village 를 골랐다. 집 한 채가 아니라 마을이므로 author_house 를 채마다 부르지 말고 author_village 한 호출로 짓는다 — 집·길·나무·호수·광장·마당을 설계서 순서(집 → 길 → 나무 → 호수·마당)로 코드가 시공한다. paint_road·fill_region·place_props 로 길과 나무를 손으로 깔지 말 것(마을 이론을 건너뛴 결과가 된다). 지금 맵 'old_town'(90×50)에는 이미 내용이 있다. 되도록 이 맵 안에서 해결한다. 빈 땅이 있으면 그 사각형(16×16 이상)을 target:{kind:\"existing\", mapId:\"old_town\", bounds:{x,y,w,h}} 로 지정해 거기에 짓고, 기존 마을을 손보는 요청이면 손볼 사각형을 bounds 로 준다. fullMap:true 는 기존 내용을 지우므로 사용자가 «전부 다시» 라고 했을 때만. 빈 땅도 없고 그런 지시도 없으면 새 맵(target:{kind:\"new\"})을 만들어 거기에 짓고 무엇을 했는지 보고한다. houseCount:12(수량 선언이 없어 코드 기본값), countPolicy:\"best-effort\", forestDensity 는 반드시 넣는다. 끝나면 evaluate_village_look 한 번으로 확인하고 보고한다.\n[참고 마을] 검토를 거친 완성 마을 사례다. 사용자가 집 수를 말하지 않았으면 첫 사례의 집 수를 쓴다(마을 계약이 있으면 이미 그 값이다). author_village 에 referenceId 로 첫 사례 id 를 넘기면 결과가 그 사례 그림과 크기·집 수 비교를 돌려준다(시공 배치는 바꾸지 않는다). 시공기의 배치(강·언덕·광장)는 사례를 그대로 재현하지 못하니 계약 인자는 바꾸지 말고 그림과 비교해 차이를 보고에 적는다. 배열을 복사하지 않는다. 사용자가 그 마을 이름을 그대로 원하면 import_region_reference({id}) 한 번으로 가져온다.\n- 강변 숲마을(river-forest-village-78x44, 78×44, 집 8채, 칩셋 forest_harmony): 중앙의 굽은 강과 다리 양쪽에 집 8채를 배치하고 집 앞길을 강둑 길에 연결한다.\n- 솔바람 흩어진 산촌(pine-hamlets-61x53, 61×53, 집 7채, 칩셋 forest_harmony): 숲에서 숲까지 이어진 절벽 위 윗단과 아랫마을, 계단 세 곳, 갈라지는 오솔길과 작은 샘.\n- 층바위 절벽마을(terrace-cliff-village-62x60, 62×60, 집 8채, 칩셋 forest_harmony): 세 높이의 대지, 네 계단과 절벽 아래 작업 마당.",
+  "before": {
+    "maps": {
+      "map_blank_start": "beodeul_city",
+      "old_town": "forest_harmony",
+      "map_house_interior_3_old_town_1": "easyrpg_chipset_interior",
+      "map_house_interior_3_old_town_2": "easyrpg_chipset_interior",
+      "map_house_interior_3_old_town_3": "easyrpg_chipset_interior",
+      "map_house_interior_3_old_town_3_f2": "easyrpg_chipset_interior",
+      "map_house_interior_3_old_town_4": "easyrpg_chipset_interior"
+    },
+    "currentMapId": "old_town"
+  }
+}

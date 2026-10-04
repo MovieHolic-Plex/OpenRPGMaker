@@ -39,7 +39,7 @@ function seedAnimation(
     normalizeBattleAnimationRecord({
       id: "anim_test",
       name: "테스트",
-      resourceId: options.resourceId ?? "easyrpg-battle-blow",
+      resourceId: options.resourceId ?? "scarloxy-battle-anim-scratch",
       sheet: { frameWidth: 96, frameHeight: 96, columns: frameCount },
       frames: Array.from({ length: frameCount }, (_unused, pattern) => ({
         cells: [{ pattern, x: 0, y: 0, zoom: 100, opacity: 255, visible: true }],

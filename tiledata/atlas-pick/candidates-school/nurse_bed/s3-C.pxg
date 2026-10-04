@@ -1,0 +1,57 @@
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a vblue 4
+@mat b vblue 6
+@mat c vblue 2
+@mat d vblue 5
+@mat e vwhite 5
+@mat f vwhite 6
+@mat g vwhite 3
+@mat h jersey 3
+@mat i jersey 5
+@mat j jersey 4
+@mat k jersey 1
+@mat l jersey 2
+@mat m viron 3
+@mat n viron 5
+@mat o viron 1
+@mat p viron 4
+@mat q viron 2
+@mat r vglass 5
+@mat s vglass 6
+@mat t vglass 3
+@mat u vglass 2
+@mblock 0 0
+..bbbbbbbbbbnnn.
+.aaaaaaaaaaapss.
+.ccccccccccccrt.
+.dfeeeeeeeegcrt.
+.dffffffffggcrtq
+.dffffffffggc.uq
+.dffffffffggc.pq
+.dffffffffggc.pq
+.dfgggggggggc.pq
+.dfeeeeeeeegc.pq
+.dffffffffffc.pq
+.dggggggggggc.pq
+.dfeeeeeeeegc.pq
+.dfeeeeeeeegc.pq
+.dfeeeeeeeegc.pq
+.dfeeeeeeeegc.pq
+.dfeeeeeeeegc.pq
+.dfeeeeeeeegc.pq
+.dfeeeeeeeegc.pq
+.diiiiiiiiilc.pq
+.djjjjjjjjjlc.pq
+.dhhhhhhhhhlc.pq
+.dhhhhhhhhhlc.pq
+.dhhhhhhhhhlc.pq
+.dhhhhhhhhhlc.pq
+.dkkkkkkkkklc.pq
+.dfeeeeeeeegc.pq
+.bbbbbbbbbbbb.pq
+.cccccccccccnnnn
+.no........nmmmm
+.mo~~~~~~~~mo~~~
+..--------------

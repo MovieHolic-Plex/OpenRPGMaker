@@ -42,7 +42,6 @@ export { listDatabaseResourceOptions } from "@/editor/resourceOptions";
 export type DatabaseResourcePickerResult = {
   readonly resourceId: string;
   readonly characterIndex?: number;
-  readonly graphicHue?: number;
 };
 
 export type OpenDatabaseResourcePickerOptions = {
@@ -50,8 +49,6 @@ export type OpenDatabaseResourcePickerOptions = {
   readonly title: string;
   readonly currentId?: string;
   readonly currentCharacterIndex?: number;
-  readonly currentHue?: number;
-  readonly allowHue?: boolean;
   readonly allowClear?: boolean;
   readonly testidPrefix?: string;
   readonly onConfirm: (result: DatabaseResourcePickerResult) => void;
@@ -71,7 +68,6 @@ export function openDatabaseResourcePickerDialog(options: OpenDatabaseResourcePi
     ? options.currentId
     : catalog[0]?.id ?? options.currentId ?? "";
   let characterIndex = clampIndex(options.currentCharacterIndex ?? 0, CHARSET_CHARACTER_COUNT - 1);
-  let hue = clampHue(options.currentHue ?? 0);
   let confirmButton: HTMLButtonElement | null = null;
   const isUnsupportedAudio = (id: string): boolean =>
     (options.kind === "music" || options.kind === "sound") && audioPlayback(id, store.getCurrent()).midi;
@@ -154,10 +150,7 @@ export function openDatabaseResourcePickerDialog(options: OpenDatabaseResourcePi
       return;
     }
     preview.replaceChildren(
-      resourceVisual(selectedId, options.kind, project, "선택 리소스", "db-resource-picker-preview-visual", {
-        characterIndex,
-        hue: options.allowHue ? hue : undefined,
-      })
+      resourceVisual(selectedId, options.kind, project, "선택 리소스", "db-resource-picker-preview-visual", { characterIndex })
     );
     if (options.kind === "monster" && selectedId) preview.append(monsterResourceSummary(project, selectedId));
   };
@@ -173,24 +166,7 @@ export function openDatabaseResourcePickerDialog(options: OpenDatabaseResourcePi
         })
       );
     }
-    if (options.allowHue) {
-      const hueInput = el("input", {
-        attrs: { type: "range", min: "0", max: "360" },
-        value: String(hue),
-        dataset: { testid: `${prefix}-hue` },
-      }) as HTMLInputElement;
-      // 슬라이더에 수치가 없으면 뒤 패널의 「그래픽 Hue」 스테퍼와 같은 값인지 확인할 방법이 없다.
-      const hueReadout = el("output", { class: "db-resource-picker-hue-value", text: `${hue}°` });
-      hueInput.addEventListener("input", () => {
-        hue = clampHue(Number(hueInput.value));
-        hueReadout.textContent = `${hue}°`;
-        refreshPreview();
-      });
-      indexPanel.append(el("label", {
-        class: "db-resource-picker-hue",
-        children: [el("span", { text: "색조" }), hueInput, hueReadout],
-      }));
-    }
+    // 적 색조 슬라이더는 전투가 색조를 읽지 않아(2026-10-02) 지웠다.
   };
 
   search.addEventListener("input", () => {
@@ -212,7 +188,6 @@ export function openDatabaseResourcePickerDialog(options: OpenDatabaseResourcePi
         options.onConfirm({
           resourceId: selectedId,
           characterIndex: options.kind === "charset" ? characterIndex : undefined,
-          graphicHue: options.allowHue ? hue : undefined,
         });
       },
     },
@@ -226,7 +201,6 @@ export function openDatabaseResourcePickerDialog(options: OpenDatabaseResourcePi
         options.onConfirm({
           resourceId: "",
           characterIndex: options.kind === "charset" ? 0 : undefined,
-          graphicHue: options.allowHue ? 0 : undefined,
         });
       },
     });
@@ -263,10 +237,10 @@ export function openDatabaseResourcePickerDialog(options: OpenDatabaseResourcePi
   }
 }
 
-const AI_GENERATABLE_PICKER_KINDS: Readonly<Record<string, "title" | "backdrop" | "monster">> = {
+const AI_GENERATABLE_PICKER_KINDS: Readonly<Record<string, "title" | "backdrop">> = {
   title: "title",
   backdrop: "backdrop",
-  monster: "monster",
+  // 몬스터 생성은 2026-10-02 뺐다(도트 측면 시트만).
   // 시네마틱 스틸(오프닝·게임 오버 배경)도 전체화면 아트라 배경화 생성기를 그대로 쓴다.
   still: "backdrop",
 };
@@ -301,8 +275,6 @@ export function resourcePickerControl(input: {
   readonly testid: string;
   readonly dialogTitle?: string;
   readonly allowClear?: boolean;
-  readonly allowHue?: boolean;
-  readonly currentHue?: number;
   readonly currentCharacterIndex?: number;
   readonly onChange: (result: DatabaseResourcePickerResult) => void;
   readonly rerender: () => void;
@@ -319,10 +291,7 @@ export function resourcePickerControl(input: {
     project,
     input.label,
     "db-resource-picker-inline-thumb",
-    {
-      characterIndex: input.currentCharacterIndex ?? 0,
-      hue: input.allowHue ? input.currentHue : undefined,
-    }
+    { characterIndex: input.currentCharacterIndex ?? 0 }
   );
   const optionName = listDatabaseResourceOptions(input.kind, project).find((option) => option.id === input.resourceId)?.name;
   const rawName = optionName ?? (input.resourceId ? prettyId(input.resourceId) : "");
@@ -345,7 +314,6 @@ export function resourcePickerControl(input: {
     input.onChange({
       resourceId,
       characterIndex: input.currentCharacterIndex,
-      graphicHue: input.currentHue,
     });
     return true;
   };
@@ -363,8 +331,6 @@ export function resourcePickerControl(input: {
       title: input.dialogTitle ?? `${input.label} 리소스`,
       currentId: input.resourceId,
       currentCharacterIndex: input.currentCharacterIndex,
-      currentHue: input.currentHue,
-      allowHue: input.allowHue,
       allowClear: input.allowClear,
       testidPrefix: `${input.testid}-dialog`,
       onConfirm: (result) => {
@@ -450,7 +416,7 @@ function resourceVisual(
   project: Project,
   label: string,
   className: string,
-  crop: { readonly characterIndex: number; readonly hue?: number }
+  crop: { readonly characterIndex: number }
 ): HTMLElement {
   if (!resourceId) return el("span", { class: `${className} db-resource-picker-empty`, text: "(없음)" });
   // Selection is not playback. The cinematic sequence preview owns the player.
@@ -482,7 +448,6 @@ function resourceVisual(
       sheetWidth: CHARSET_SHEET_COLUMNS * CHARSET_FRAME_WIDTH,
       sheetHeight: CHARSET_SHEET_ROWS * CHARSET_FRAME_HEIGHT,
       scale: 1.5,
-      hue: crop.hue,
       // 캐릭셋 원본은 배경이 단색(RTP 는 청록)이고 알파가 없다 — 키아웃하지 않으면
       // 목록 썸네일마다 스프라이트 뒤에 배경 사각형이 그대로 보인다.
       colorKey: true,
@@ -497,7 +462,6 @@ function resourceVisual(
       sheetWidth: GENERATED_BATTLE_CHARSET_SHEET_WIDTH,
       sheetHeight: GENERATED_BATTLE_CHARSET_SHEET_HEIGHT,
       scale: GENERATED_BATTLE_CHARSET_PREVIEW_SCALE,
-      hue: crop.hue,
     });
   }
 
@@ -513,9 +477,6 @@ function resourceVisual(
   });
   image.style.minWidth = `${dimensions.width}px`;
   image.style.minHeight = `${dimensions.height}px`;
-  if (crop.hue !== undefined && crop.hue !== 0) {
-    image.style.filter = `hue-rotate(${crop.hue}deg)`;
-  }
   image.addEventListener(
     "error",
     () => {
@@ -538,7 +499,6 @@ function cropVisual(
     readonly sheetWidth: number;
     readonly sheetHeight: number;
     readonly scale: number;
-    readonly hue?: number;
     /** 단색 배경 시트(캐릭셋)는 색상 키를 뺀 데이터 URL 로 바꿔 끼운다. */
     readonly colorKey?: boolean;
   }
@@ -552,7 +512,6 @@ function cropVisual(
     `--db-resource-x:-${source.x * source.scale}px`,
     `--db-resource-y:-${source.y * source.scale}px`,
   ];
-  if (source.hue !== undefined && source.hue !== 0) style.push(`filter:hue-rotate(${source.hue}deg)`);
   const visual = el("span", {
     class: `${className} db-resource-picker-crop`,
     attrs: {
@@ -630,11 +589,6 @@ function studioResourceLabel(name: string, id: string): string {
 function clampIndex(value: number, max: number): number {
   if (!Number.isFinite(value)) return 0;
   return Math.min(max, Math.max(0, Math.trunc(value)));
-}
-
-function clampHue(value: number): number {
-  if (!Number.isFinite(value)) return 0;
-  return Math.min(360, Math.max(0, Math.trunc(value)));
 }
 
 /** Exported for unit tests and list thumbnail reuse. */

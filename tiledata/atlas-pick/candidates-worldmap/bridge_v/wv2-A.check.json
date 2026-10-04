@@ -1,0 +1,45 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/bridge_v/wv2-A.pxg",
+ "set": "worldmap",
+ "id": "bridge_v",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.118
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.079
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "light"
+  ]
+ },
+ "colors": 5,
+ "bbox": [
+  3,
+  0,
+  13,
+  15
+ ],
+ "note": "bridge_v 는 같은 돌·같은 난간을 전치한 것. 그림자는 동쪽",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 1,
+   "atLeast95": 0,
+   "max": 0.023
+  },
+  "refmapWorld": {
+   "cells": 1,
+   "atLeast95": 0,
+   "max": 0.079
+  },
+  "seam": 1.27
+ }
+}

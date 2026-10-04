@@ -1,0 +1,53 @@
+// D: 금장 화면틀·보관함 문양·푸른 빛, 닫힌 천판 윗면 4행(y=0~3)
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a dwood 1
+@mat b wood 3
+@mat c wood 4
+@mat d wood 5
+@mat e wood 6
+@mat f wood 7
+@mat g brass 2
+@mat h brass 4
+@mat i brass 5
+@mat j blue 1
+@mat k blue 3
+@mat l blue 4
+@mat m blue 5
+@mat n iron 2
+@mat o iron 4
+@layer body
+@mblock 0 0
+...bbbbbbbbbb...
+..bfeddddddcba..
+..bfdiihhhddba..
+..beeddddddcba..
+...bhhhhhhgba...
+...bhjjjjjgba...
+...bhlmllkjba...
+...bhlmllkjba...
+..bhllllkkjgba..
+..bhllkkkkjgba..
+..bhkkjjkkjgba..
+..bhkkllkkjgba..
+..bhjjjjjjjgba..
+..bghhhhhhggba..
+..bcdddddddcca..
+.bfeddddddddca..
+.bfhoonoonoohca.
+.bfhnnnnnnnngca.
+.bfhhhggggggca..
+.bedddddccccca..
+.bbbbbbbbbbbba..
+.bhccccccccgba..
+.bhcddddbccgba..
+.bhcddhhbccgba..
+.bhcdhiihccgba..
+.bhcdhiihccgba..
+.bhcddhhbccgba..
+.bhcddddbccgba..
+.bhccccccccgba..
+.bggggggggggga..
+.bbbbbbbbbbbba..
+..aaa......aaa..

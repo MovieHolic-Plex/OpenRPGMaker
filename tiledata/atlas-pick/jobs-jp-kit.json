@@ -1,0 +1,35 @@
+{
+ "version": 1,
+ "set": "jp",
+ "note": "일본 세트 2판 배정표(2026-09-30). kN = 조립형 킷 한 벌 담당(절차 WORKER-JP-KIT.md, 정의 kits-jp.json), rN = 크기 바꾼 보통 기물 재작업(절차 WORKER-JP.md, 규격 jobs-jp.json). 후보는 방향 A·B·C 셋(뜻은 directions). 킷 후보 하나 = 부품 전부를 같은 결로 찍은 시트 한 장.",
+ "directions": {"A": "강남 조각 결을 따른 판", "B": "명암·그림자 강화", "C": "실루엣 재해석"},
+ "pilot": {"kit_shopfront": "pilot-A — 감독자가 조립기·화면이 끝까지 도는지 증명하려고 거칠게 찍은 판(고를 거리 아님, k2 는 이것보다 좋아야 한다)"},
+ "workers": {
+  "k1": {"kits": ["kit_bldg"], "why": "잡거빌딩 뼈대 — zakkyo_building 메모 「건물은 조립형으로」. 1층은 k2 의 kit_shopfront 를 빌려 쓴다(같은 방향 글자끼리)."},
+  "k2": {"kits": ["kit_shopfront"], "why": "콘비니·이자카야·라멘 1층 공용 뼈대 — konbini_front 메모 「단독 칩셋 말고 조립형」."},
+  "k3": {"kits": ["kit_station"], "why": "역 입구 — station_entrance 메모 「하나의 단독 칩셋보다 조립형」."},
+  "k4": {"kits": ["kit_gate"], "why": "개찰구 — station_gate 메모 「조립형 + 실제 통행 가능」. 모든 예 THROUGH 합격이 조건."},
+  "k5": {"kits": ["kit_signal"], "why": "신호등 — jp_signal 메모 「조립형으로」. ped_signal 도 같은 기둥이라 함께."},
+  "k6": {"kits": ["kit_house"], "why": "주택 외벽·지붕 — 폭·층수가 바뀌어 쓰인다."},
+  "k7": {"kits": ["kit_shrine"], "why": "배전·작은 사당·데미즈야 — 같은 지붕·기둥 뼈대, 폭이 바뀌어 쓰인다."},
+  "k8": {"kits": ["kit_torii"], "why": "도리이 — 밑으로 지나가는 구조물, 폭·높이 여러 벌."},
+  "k9": {"kits": ["kit_crossing"], "why": "건널목 — 선로·바닥판·경보기·차단기가 길 폭에 따라 이어진다, 통행 걸림."},
+  "k10": {"kits": ["kit_pole"], "why": "전봇대·전선 — 기둥 높이·간격이 바뀌고 전선이 기둥 사이를 잇는다."}
+ },
+ "rework": {
+  "r1": {"items": ["vending_drink", "vending_cig", "vending_coffee"], "why": "자판기 2×2(사용자 메모 「2x2 사이즈로. 자판기를 여러 종류를 할거임.」). r2 와 한 식구: 같은 높이·윗면 두께·그림자."},
+  "r2": {"items": ["vending_ice", "vending_gacha", "ticket_machine"], "why": "자판기 2×2 두 종 + 매표기 3×2(메모 「3x2 및, 공간감을 살려라」)."}
+ },
+ "kept": {
+  "pachinko_sign": "메모 「셋다 괜찮은듯. 셋다 적절히 이용하면 될거같다.」 → 다시 그리지 않는다. 기록 방법은 주 선택 j1-A + 함께 쓰기(variants) j1-B·j1-C (화면에서 한 번 클릭 + Shift+클릭 두 번). 사용자 선택은 감독자가 대신 넣지 않는다.",
+  "curve_mirror": "기둥 하나 + 거울 하나, 크기가 바뀌어 쓰이지 않고 통행도 밑동 한 칸 → 보통 기물 그대로.",
+  "konbini_pole": "사용자가 j3-C 로 골랐다 — 그대로.",
+  "station_nameboard": "사용자가 j5-C 로 골랐다 — 역 입구 킷과 따로 벽에 건다.",
+  "noren / akachochin / neon_karaoke / kanji_sign_drug / laundry / ac_unit": "건물에 거는 낱개 기물 — 그대로 두고 킷 조립 결과 위에 얹는다(킷에도 같은 뜻의 덧칠 부품이 있으면 그건 그 킷 결을 맞추려는 것).",
+  "block_wall / bicycle_parking / rail 외 바닥": "이미 이어 붙이는 한 칸짜리 조각이거나 작다 — 그대로."
+ },
+ "instructions": {
+  "kit": "너는 일본 세트 조립형 킷 작업자 kN 이다. 워크트리 /home/main/.t3/worktrees/rpg-zzu/t3code-8b4b09de-jp-pick 에서 tiledata/atlas-pick/WORKER-JP-KIT.md 를 처음부터 끝까지 읽고 그대로 따르라. 네 킷은 tiledata/atlas-pick/jobs-jp-kit.json 의 workers.kN.kits 다. 킷 한 벌(부품 전부)을 방향 A·B·C 세 장으로 찍어 candidates-jp/<킷>/kN-A.pxg·kN-B.pxg·kN-C.pxg 로 내고, 장마다 jp_kit_compose.py 로 조립해 board.png 를 눈으로 본 뒤 hard 불합격 0 으로 만들어라. 네 킷 폴더 밖은 읽기만. git·stash·npm test·vitest·gates 금지. 끝나면 한국어로 짧게 보고.",
+  "rework": "너는 일본 세트 재작업 작업자 rN 이다. 워크트리 /home/main/.t3/worktrees/rpg-zzu/t3code-8b4b09de-jp-pick 에서 tiledata/atlas-pick/WORKER-JP.md 를 처음부터 끝까지 읽고 그대로 따르되, 네 기물은 tiledata/atlas-pick/jobs-jp-kit.json 의 rework.rN.items 이고 파일 이름은 rN-A.pxg·rN-B.pxg·rN-C.pxg 다. 크기가 바뀌었다 — 각 기물 info.json 의 canvas·resized 를 먼저 읽어라(옛 j3-*·j4-* 후보는 옛 크기라 참고만). WORKER-JP-KIT.md 5절(자판기 식구·매표기 공간감)도 읽어라. 네 기물 폴더 밖은 읽기만. git·stash·npm test·vitest·gates 금지. 끝나면 한국어로 짧게 보고."
+ }
+}

@@ -1,0 +1,42 @@
+// window_barred hf3-A (hf3)
+@size 16 16
+@cell 16
+@palette palette.pal
+@layer main
+@mat a dust 0
+@mat b tin 0
+@mat c murk 0
+@mblock 0 0
+................
+................
+.aaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaa.
+.aabbccbbccbbaa.
+.aabbccbbccbbaa.
+.aabbccbbccbbaa.
+.aabbccbbccbbaa.
+.aabbccbbccbbaa.
+.aabbccbbccbbaa.
+.aabbccbbccbbaa.
+.aabbccbbccbbaa.
+.aaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaa.
+................
+@tblock 0 0
+................
+................
+.11111111111111.
+.15555555555551.
+.15531153115331.
+.15531153115331.
+.15531153115331.
+.15531153115331.
+.15531153115331.
+.15531153115331.
+.15531153115331.
+.15531153115331.
+.15333333333331.
+.55555555555555.
+.33333333333333.
+................

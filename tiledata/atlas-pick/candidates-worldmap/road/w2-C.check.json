@@ -1,0 +1,136 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/road/w2-C.pxg",
+ "set": "worldmap",
+ "id": "road",
+ "hard": [],
+ "warn": [
+  "shore-strait: 1칸 폭 줄 속 6px — 8 이상이면 해협·길이 또렷하다",
+  "corner-round: 바깥 모서리가 네모다(대각선 깊이 = 이음 깊이) — sw se"
+ ],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.024
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.085
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 6,
+ "bbox": [
+  2,
+  0,
+  47,
+  60
+ ],
+ "note": "규모 재해석: 폭 10px 넓고 닳은 길, 풀이 테를 크게 덮음",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.461
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.02
+  },
+  "shore": {
+   "profile": {
+    "n": [
+     4,
+     4,
+     5,
+     4,
+     4,
+     4,
+     5,
+     4,
+     4,
+     5,
+     4,
+     4,
+     4,
+     5,
+     4,
+     4
+    ],
+    "s": [
+     4,
+     4,
+     5,
+     4,
+     4,
+     4,
+     5,
+     4,
+     4,
+     5,
+     4,
+     4,
+     4,
+     5,
+     4,
+     4
+    ],
+    "w": [
+     4,
+     5,
+     4,
+     4,
+     5,
+     4,
+     4,
+     4,
+     5,
+     4,
+     4,
+     5,
+     4,
+     4,
+     4,
+     5
+    ],
+    "e": [
+     4,
+     5,
+     4,
+     4,
+     5,
+     4,
+     4,
+     4,
+     5,
+     4,
+     4,
+     5,
+     4,
+     4,
+     4,
+     5
+    ]
+   },
+   "strait": 6,
+   "steps": {
+    "n": 1,
+    "s": 1,
+    "w": 1,
+    "e": 1
+   },
+   "amp": {
+    "n": 1,
+    "s": 1,
+    "w": 1,
+    "e": 1
+   },
+   "joinWorst": 1
+  },
+  "seam": 0.47
+ }
+}

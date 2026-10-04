@@ -1,0 +1,73 @@
+// 호러 세트 팔레트 — 바탕은 16px 손 도트 실내 v5 재료 램프(v5/mat.py M, 이름 앞에 v), 그 뒤에 호러 램프.
+// 이 파일은 scripts/content/atlas-pick/make_horror_palette.py 가 만든다. 손으로 색을 더하지 마라(검사가 이 밖의 색을 불합격시킨다).
+// 격자: @mat 글자 램프 [기본단] → @mblock / @tblock X Y 램프 / @tadj. 0 = 가장 어두움.
+
+// ── v5 실내 바탕(v5 방·기물과 같은 색) ──
+@rampc vwood    #000000 #411e05 #63310b #6d3b15 #9a5435 #9e684b #b77246 #d59147 #ffebd7
+@rampc vdwood   #1a0e06 #2a180b #3a2210 #4a2c16 #5f3d21 #744e2c #8a6038
+@rampc vpine    #3a2410 #5c3e22 #7e5935 #a07448 #ba9262 #d5b17d #f0d098
+@rampc viron    #0e1216 #22282e #363e47 #4a5460 #76808a #a3acb5 #d0d8e0
+@rampc vbrass   #3a2600 #5c4108 #7e5c10 #a07818 #bfa045 #dfc872 #fff0a0
+@rampc vstone   #1d2228 #333942 #49505d #606878 #828a95 #a5adb2 #c8d0d0
+@rampc vmarble  #4a4a58 #696978 #888898 #a8a8b8 #c3c3cf #dfdfe7 #fbfbff
+@rampc vclay    #2a1206 #512712 #783c1f #a0522c #bd764d #da9b6e #f8c090
+@rampc vlinen   #3a3530 #645c54 #8e8378 #b9ab9d #d0c4b6 #e7ded0 #fff8ea
+@rampc vred     #3a0508 #67030c #950110 #c30014 #d73a42 #eb7571 #ffb0a0
+@rampc vblue    #0a1a3a #113461 #184e88 #1f68b0 #5491ca #8abae4 #c0e4ff
+@rampc vgreen   #0c2a10 #1b4a1a #2a6a25 #3a8a30 #69ac53 #98ce76 #c8f09a
+@rampc vpurple  #1e0c38 #371a60 #502988 #6a38b0 #9167ca #b898e4 #e0c8ff
+@rampc vyellow  #3a2a00 #6c5408 #9e7e10 #d0a818 #dfc24a #efdd7d #fff8b0
+@rampc vorange  #3a1400 #713005 #a84d0a #e06a10 #ea8e3f #f4b370 #ffd8a0
+@rampc vpink    #3a0a20 #712643 #a84366 #e0608a #ea8aaa #f4b5cb #ffe0ec
+@rampc vteal    #062a2a #0c4c49 #136e68 #1a9088 #4eb5aa #83dacd #b8fff0
+@rampc vbread   #3a1a04 #643810 #8e561d #b8742a #cf9851 #e7bd78 #ffe2a0
+@rampc vmeat    #2a0404 #541012 #7e1c21 #a82830 #c55758 #e28880 #ffb8a8
+@rampc vfish    #1a2430 #344655 #4f697a #6a8ca0 #96b0bf #c2d4df #eef8ff
+@rampc vgold    #3a2400 #66480a #936c15 #c09020 #d5b152 #ead285 #fff4b8
+@rampc vglass   #10283a #234a66 #366d93 #4a90c0 #81b5d5 #b8daea #f0ffff
+@rampc vice     #4a6a80 #698ea5 #88b3ca #a8d8f0 #c5e5f5 #e2f2fa #ffffff
+@rampc vstraw   #3a2a08 #614c1a #886e2d #b09040 #cab065 #e4d08a #fff0b0
+@rampc vleaf    #0c240e #174617 #226820 #2e8a2a #5cac46 #8ace63 #b8f080
+@rampc vblack   #08080a #131317 #1e1e24 #2a2a32 #41414c #585866 #707080
+@rampc vwhite   #5a5a66 #7e7e8a #a3a3af #c8c8d4 #dadae2 #ececf0 #ffffff
+@rampc vcheese  #4a3000 #7c5a10 #ae8520 #e0b030 #eac65a #f4dd85 #fff4b0
+@rampc vwater   #0a1a3a #143664 #1f538e #2a70b8 #5998cf #88c0e7 #b8e8ff
+
+// ── 호러 색(채도 낮게, 어두운 끝은 푸른 보라) ──
+@rampc rot      #120e10 #221a18 #33271f #46362a #5c4836 #765d47 #927660
+@rampc mahog    #120810 #22101a #351a20 #4a2626 #60342e #7a463a #96604e
+@rampc paper    #24221e #3a372e #545040 #6e6852 #8a8268 #a69e80 #c2b99a
+@rampc damask   #160e1c #24182c #36243c #4a324c #60445c #785a70
+@rampc dust     #36363c #505056 #6a6a70 #86868a #a2a2a2 #bebcb8 #d8d6d0
+@rampc grave    #14161c #24282e #363b42 #4a5058 #60666e #7a8086 #969aa0
+@rampc hmoss    #121810 #1e2618 #2c3620 #3c482a #505e36
+@rampc night    #060c12 #0c181e #142426 #1e322e #2a4238 #3a5444
+@rampc soil     #120c0e #201618 #302220 #42302a #563f34 #6c5242
+@rampc moon     #44506a #5e6a82 #7a869c #98a2b6 #b8c0d0 #d8dee8
+@rampc blood    #180206 #320610 #520a14 #76101a #9c1a20 #c02a2a
+@rampc rust     #1c0e0a #381a10 #562814 #763a1c #985228 #b46e3c
+@rampc ward     #18201e #283432 #3c4a46 #52625c #6c7e76 #8a9a92 #aab8b0
+@rampc sheet    #4a463e #666052 #827c6c #9e9684 #b8b09c #d0c8b4 #e6e0ce
+@rampc tin      #0e1014 #1c2026 #2c3238 #3e454c #545c64 #6e767e #8c9298
+@rampc tarn     #1c1408 #322610 #483818 #604c24 #7a6434 #967e48
+@rampc bisque   #36242a #5a3e40 #805e5c #a47e78 #c4a096 #dcc2b6 #f0dfd6
+@rampc velv     #12040a #240a12 #38101a #4e1822 #66242e #7e343c
+@rampc flame    #5a2a04 #9a5208 #d08a18 #f0c040 #fae488 #fff8d0
+@rampc wax      #4a4438 #6a6452 #8c866e #aea88c #ccc6aa #e8e4cc
+@rampc murk     #0c1216 #182226 #26343a #384a4e #506664 #6e8882 #a0bab2
+@rampc board    #0a120e #121e16 #1a2a20 #24362a #304636
+@rampc void     #030305 #08080c #0e0e14 #16161e
+
+// 반투명(빛은 왼쪽 위 → 그림자는 오른쪽 아래). 알파는 여기 적힌 값만 합격한다.
+~ #0e0c14 110   // 그림자 속(발치·처마 밑)
+- #0e0c14 58    // 그림자 번짐
+% #ffd890 110   // 촛불 빛 번짐(촛대·벽난로 둘레 바닥·벽)
+? #c8d4ff 60    // 달빛 번짐(창 아래 바닥에 떨어진 빛)
+^ #06060a 50    // 어둠 1단(가장 옅음) — 어둠 그라데이션 덮개
+" #06060a 100   // 어둠 2단
+* #06060a 150   // 어둠 3단
+& #06060a 205   // 어둠 4단(가장 짙음)
++ #aab4c4 50    // 안개 옅음
+! #aab4c4 100   // 안개 짙음
+$ #5a0a10 130   // 번진 피(바닥·벽에 스민 얼룩 가장자리)
+# #e040c0       // 실루엣 단계 표시색(최종본에 남으면 불합격)

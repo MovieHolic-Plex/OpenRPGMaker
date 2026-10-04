@@ -1,0 +1,2179 @@
+{
+  "route": "player.html + exportProjectStoreShim",
+  "fixtureOnly": true,
+  "capture": "Real X11 browser pixels + real Pulse sink monitor in one ffmpeg process.",
+  "cases": [
+    {
+      "slug": "orc-warrior",
+      "name": "오크 전사",
+      "cell": 64,
+      "motion": "stomp",
+      "errors": [],
+      "window": {
+        "innerWidth": 960,
+        "innerHeight": 720,
+        "outerWidth": 960,
+        "outerHeight": 720,
+        "screenX": 0,
+        "screenY": 0
+      },
+      "observed": {
+        "frames": [
+          {
+            "frame": "idle",
+            "at": 36.10000002384186
+          },
+          {
+            "frame": "idle",
+            "at": 36.10000002384186
+          },
+          {
+            "frame": "idle",
+            "at": 36.10000002384186
+          },
+          {
+            "frame": "idle",
+            "at": 251.10000002384186
+          },
+          {
+            "frame": "idle",
+            "at": 251.10000002384186
+          },
+          {
+            "frame": "idle",
+            "at": 251.10000002384186
+          },
+          {
+            "frame": "idle",
+            "at": 436.89999997615814
+          },
+          {
+            "frame": "idle",
+            "at": 436.89999997615814
+          },
+          {
+            "frame": "idle",
+            "at": 436.89999997615814
+          },
+          {
+            "frame": "idle",
+            "at": 640.1000000238419
+          },
+          {
+            "frame": "idle",
+            "at": 640.1000000238419
+          },
+          {
+            "frame": "idle",
+            "at": 640.1000000238419
+          },
+          {
+            "frame": "idle",
+            "at": 848.3999999761581
+          },
+          {
+            "frame": "idle",
+            "at": 848.3999999761581
+          },
+          {
+            "frame": "idle",
+            "at": 848.3999999761581
+          },
+          {
+            "frame": "idle",
+            "at": 1069.3999999761581
+          },
+          {
+            "frame": "idle",
+            "at": 1069.5
+          },
+          {
+            "frame": "idle",
+            "at": 1069.5
+          },
+          {
+            "frame": "idle",
+            "at": 1235.8999999761581
+          },
+          {
+            "frame": "idle",
+            "at": 1235.8999999761581
+          },
+          {
+            "frame": "idle",
+            "at": 1235.8999999761581
+          },
+          {
+            "frame": "idle",
+            "at": 1261.7000000476837
+          },
+          {
+            "frame": "idle",
+            "at": 1261.7000000476837
+          },
+          {
+            "frame": "idle",
+            "at": 1261.7000000476837
+          },
+          {
+            "frame": "idle",
+            "at": 1571.7000000476837
+          },
+          {
+            "frame": "idle",
+            "at": 1571.7000000476837
+          },
+          {
+            "frame": "idle",
+            "at": 1571.7000000476837
+          },
+          {
+            "frame": "idle",
+            "at": 1571.7000000476837
+          },
+          {
+            "frame": "idle",
+            "at": 1571.7000000476837
+          },
+          {
+            "frame": "idle",
+            "at": 1571.7000000476837
+          },
+          {
+            "frame": "idle",
+            "at": 1865.1000000238419
+          },
+          {
+            "frame": "idle_c",
+            "at": 1865.1000000238419
+          },
+          {
+            "frame": "idle_c",
+            "at": 1865.1000000238419
+          },
+          {
+            "frame": "idle_c",
+            "at": 1865.1000000238419
+          },
+          {
+            "frame": "idle_c",
+            "at": 1865.1000000238419
+          },
+          {
+            "frame": "idle_c",
+            "at": 1865.1000000238419
+          },
+          {
+            "frame": "idle_c",
+            "at": 2142.2000000476837
+          },
+          {
+            "frame": "move",
+            "at": 2142.2000000476837
+          },
+          {
+            "frame": "move",
+            "at": 2142.2000000476837
+          },
+          {
+            "frame": "move",
+            "at": 2397.600000023842
+          },
+          {
+            "frame": "idle_b",
+            "at": 2397.600000023842
+          },
+          {
+            "frame": "idle_b",
+            "at": 2397.600000023842
+          },
+          {
+            "frame": "idle_b",
+            "at": 2450.7000000476837
+          },
+          {
+            "frame": "move",
+            "at": 2450.7000000476837
+          },
+          {
+            "frame": "move",
+            "at": 2450.7999999523163
+          },
+          {
+            "frame": "move",
+            "at": 2662.100000023842
+          },
+          {
+            "frame": "windup",
+            "at": 2662.100000023842
+          },
+          {
+            "frame": "windup",
+            "at": 2662.100000023842
+          },
+          {
+            "frame": "windup",
+            "at": 2772.399999976158
+          },
+          {
+            "frame": "attack",
+            "at": 2772.399999976158
+          },
+          {
+            "frame": "attack",
+            "at": 2772.399999976158
+          },
+          {
+            "frame": "attack",
+            "at": 2772.399999976158
+          },
+          {
+            "frame": "attack",
+            "at": 2772.399999976158
+          },
+          {
+            "frame": "attack",
+            "at": 2772.399999976158
+          },
+          {
+            "frame": "attack",
+            "at": 2885.399999976158
+          },
+          {
+            "frame": "recover",
+            "at": 2885.399999976158
+          },
+          {
+            "frame": "recover",
+            "at": 2885.399999976158
+          },
+          {
+            "frame": "recover",
+            "at": 2885.5
+          },
+          {
+            "frame": "recover",
+            "at": 2885.5
+          },
+          {
+            "frame": "recover",
+            "at": 2885.5
+          },
+          {
+            "frame": "recover",
+            "at": 3024.7000000476837
+          },
+          {
+            "frame": "move",
+            "at": 3024.7000000476837
+          },
+          {
+            "frame": "move",
+            "at": 3024.7000000476837
+          },
+          {
+            "frame": "move",
+            "at": 3258.600000023842
+          },
+          {
+            "frame": "idle_b",
+            "at": 3258.600000023842
+          },
+          {
+            "frame": "idle_b",
+            "at": 3258.7000000476837
+          },
+          {
+            "frame": "idle_b",
+            "at": 3345.2999999523163
+          },
+          {
+            "frame": "move",
+            "at": 3345.2999999523163
+          },
+          {
+            "frame": "move",
+            "at": 3345.2999999523163
+          },
+          {
+            "frame": "move",
+            "at": 3548.7000000476837
+          },
+          {
+            "frame": "idle_a",
+            "at": 3548.7000000476837
+          },
+          {
+            "frame": "idle_a",
+            "at": 3548.7000000476837
+          },
+          {
+            "frame": "idle_a",
+            "at": 3587.399999976158
+          },
+          {
+            "frame": "idle",
+            "at": 3587.399999976158
+          },
+          {
+            "frame": "idle",
+            "at": 3587.399999976158
+          },
+          {
+            "frame": "idle",
+            "at": 3587.399999976158
+          },
+          {
+            "frame": "idle",
+            "at": 3587.399999976158
+          },
+          {
+            "frame": "idle",
+            "at": 3587.399999976158
+          },
+          {
+            "frame": "idle",
+            "at": 3642.7999999523163
+          },
+          {
+            "frame": "idle",
+            "at": 3642.7999999523163
+          },
+          {
+            "frame": "idle",
+            "at": 3642.7999999523163
+          },
+          {
+            "frame": "idle",
+            "at": 3891.899999976158
+          },
+          {
+            "frame": "idle",
+            "at": 3892
+          },
+          {
+            "frame": "idle",
+            "at": 3892
+          },
+          {
+            "frame": "idle",
+            "at": 3946.5
+          },
+          {
+            "frame": "idle",
+            "at": 3946.5
+          },
+          {
+            "frame": "idle",
+            "at": 3946.5
+          },
+          {
+            "frame": "idle",
+            "at": 4096.700000047684
+          },
+          {
+            "frame": "idle",
+            "at": 4096.700000047684
+          },
+          {
+            "frame": "idle",
+            "at": 4096.700000047684
+          },
+          {
+            "frame": "idle",
+            "at": 4639.100000023842
+          },
+          {
+            "frame": "hit",
+            "at": 4639.200000047684
+          },
+          {
+            "frame": "hit",
+            "at": 4639.200000047684
+          },
+          {
+            "frame": "hit",
+            "at": 4639.200000047684
+          },
+          {
+            "frame": "hit",
+            "at": 4639.200000047684
+          },
+          {
+            "frame": "hit",
+            "at": 4639.200000047684
+          },
+          {
+            "frame": "hit",
+            "at": 4785.5
+          },
+          {
+            "frame": "dead",
+            "at": 4785.5
+          },
+          {
+            "frame": "dead",
+            "at": 4785.5
+          },
+          {
+            "frame": "dead",
+            "at": 4971.200000047684
+          },
+          {
+            "frame": "dead",
+            "at": 4971.299999952316
+          },
+          {
+            "frame": "dead",
+            "at": 4971.299999952316
+          },
+          {
+            "frame": "dead",
+            "at": 5504
+          },
+          {
+            "frame": "dead",
+            "at": 5504.100000023842
+          },
+          {
+            "frame": "dead",
+            "at": 5504.100000023842
+          },
+          {
+            "frame": "dead",
+            "at": 6698.600000023842
+          },
+          {
+            "frame": "dead",
+            "at": 6698.600000023842
+          },
+          {
+            "frame": "dead",
+            "at": 6698.600000023842
+          },
+          {
+            "frame": "dead",
+            "at": 6698.600000023842
+          },
+          {
+            "frame": "dead",
+            "at": 6698.600000023842
+          },
+          {
+            "frame": "dead",
+            "at": 6698.600000023842
+          },
+          {
+            "frame": "dead",
+            "at": 7151
+          },
+          {
+            "frame": "dead",
+            "at": 7151
+          },
+          {
+            "frame": "dead",
+            "at": 7151
+          }
+        ],
+        "soundStarts": [
+          {
+            "kind": "AudioBufferSourceNode",
+            "at": 15339.299999952316,
+            "duration": 0.181875
+          },
+          {
+            "kind": "AudioBufferSourceNode",
+            "at": 15456.700000047684,
+            "duration": 0.6061041666666667
+          },
+          {
+            "kind": "AudioBufferSourceNode",
+            "at": 15468.299999952316,
+            "duration": 1.3314166666666667
+          },
+          {
+            "kind": "AudioBufferSourceNode",
+            "at": 16194.600000023842,
+            "duration": 0.25783333333333336
+          },
+          {
+            "kind": "AudioBufferSourceNode",
+            "at": 16604.299999952316,
+            "duration": 1.2501875
+          },
+          {
+            "kind": "AudioBufferSourceNode",
+            "at": 16865.799999952316,
+            "duration": 1.2501875
+          },
+          {
+            "kind": "AudioBufferSourceNode",
+            "at": 16957.5,
+            "duration": 0.5552291666666667
+          },
+          {
+            "kind": "OscillatorNode",
+            "at": 16967.399999976158
+          },
+          {
+            "kind": "AudioBufferSourceNode",
+            "at": 17969.700000047684,
+            "duration": 0.181875
+          },
+          {
+            "kind": "AudioBufferSourceNode",
+            "at": 18153.200000047684,
+            "duration": 1.3314166666666667
+          },
+          {
+            "kind": "AudioBufferSourceNode",
+            "at": 18410.700000047684,
+            "duration": 1.3766875
+          },
+          {
+            "kind": "AudioBufferSourceNode",
+            "at": 18425.5,
+            "duration": 0.25783333333333336
+          },
+          {
+            "kind": "AudioBufferSourceNode",
+            "at": 18551.299999952316,
+            "duration": 0.7767291666666667
+          },
+          {
+            "kind": "AudioBufferSourceNode",
+            "at": 18790,
+            "duration": 0.5552291666666667
+          },
+          {
+            "kind": "OscillatorNode",
+            "at": 18810.399999976158
+          },
+          {
+            "kind": "AudioBufferSourceNode",
+            "at": 19173.5,
+            "duration": 1.6072916666666666
+          },
+          {
+            "kind": "OscillatorNode",
+            "at": 19704.200000047684
+          },
+          {
+            "kind": "OscillatorNode",
+            "at": 19704.200000047684
+          },
+          {
+            "kind": "OscillatorNode",
+            "at": 19704.299999952316
+          },
+          {
+            "kind": "OscillatorNode",
+            "at": 19704.299999952316
+          },
+          {
+            "kind": "OscillatorNode",
+            "at": 19704.299999952316
+          },
+          {
+            "kind": "OscillatorNode",
+            "at": 19704.399999976158
+          }
+        ],
+        "audioState": {
+          "volume": {
+            "bgm": 0.7,
+            "se": 0.8
+          },
+          "playbackRate": 1,
+          "pan": 0,
+          "fadeInMs": 600
+        },
+        "resources": [
+          "cc0-bgm-field",
+          "cc0-bgm-field",
+          "cc0-bgm-rtp-btl-001"
+        ]
+      },
+      "defended": true,
+      "playerAttackConfirmed": true,
+      "probe": {
+        "streams": [
+          {
+            "index": 0,
+            "codec_name": "h264",
+            "codec_long_name": "H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10",
+            "profile": "High",
+            "codec_type": "video",
+            "codec_tag_string": "avc1",
+            "codec_tag": "0x31637661",
+            "width": 960,
+            "height": 720,
+            "coded_width": 960,
+            "coded_height": 720,
+            "closed_captions": 0,
+            "film_grain": 0,
+            "has_b_frames": 2,
+            "pix_fmt": "yuv420p",
+            "level": 31,
+            "chroma_location": "left",
+            "field_order": "progressive",
+            "refs": 1,
+            "is_avc": "true",
+            "nal_length_size": "4",
+            "id": "0x1",
+            "r_frame_rate": "30/1",
+            "avg_frame_rate": "30/1",
+            "time_base": "1/15360",
+            "start_pts": 0,
+            "start_time": "0.000000",
+            "duration_ts": 101376,
+            "duration": "6.600000",
+            "bit_rate": "985156",
+            "bits_per_raw_sample": "8",
+            "nb_frames": "198",
+            "extradata_size": 44,
+            "disposition": {
+              "default": 1,
+              "dub": 0,
+              "original": 0,
+              "comment": 0,
+              "lyrics": 0,
+              "karaoke": 0,
+              "forced": 0,
+              "hearing_impaired": 0,
+              "visual_impaired": 0,
+              "clean_effects": 0,
+              "attached_pic": 0,
+              "timed_thumbnails": 0,
+              "non_diegetic": 0,
+              "captions": 0,
+              "descriptions": 0,
+              "metadata": 0,
+              "dependent": 0,
+              "still_image": 0
+            },
+            "tags": {
+              "language": "und",
+              "handler_name": "VideoHandler",
+              "vendor_id": "[0][0][0][0]",
+              "encoder": "Lavc60.31.102 libx264"
+            }
+          },
+          {
+            "index": 1,
+            "codec_name": "aac",
+            "codec_long_name": "AAC (Advanced Audio Coding)",
+            "profile": "LC",
+            "codec_type": "audio",
+            "codec_tag_string": "mp4a",
+            "codec_tag": "0x6134706d",
+            "sample_fmt": "fltp",
+            "sample_rate": "48000",
+            "channels": 2,
+            "channel_layout": "stereo",
+            "bits_per_sample": 0,
+            "initial_padding": 0,
+            "id": "0x2",
+            "r_frame_rate": "0/0",
+            "avg_frame_rate": "0/0",
+            "time_base": "1/48000",
+            "start_pts": 0,
+            "start_time": "0.000000",
+            "duration_ts": 314400,
+            "duration": "6.550000",
+            "bit_rate": "181581",
+            "nb_frames": "309",
+            "extradata_size": 5,
+            "disposition": {
+              "default": 1,
+              "dub": 0,
+              "original": 0,
+              "comment": 0,
+              "lyrics": 0,
+              "karaoke": 0,
+              "forced": 0,
+              "hearing_impaired": 0,
+              "visual_impaired": 0,
+              "clean_effects": 0,
+              "attached_pic": 0,
+              "timed_thumbnails": 0,
+              "non_diegetic": 0,
+              "captions": 0,
+              "descriptions": 0,
+              "metadata": 0,
+              "dependent": 0,
+              "still_image": 0
+            },
+            "tags": {
+              "language": "und",
+              "handler_name": "SoundHandler",
+              "vendor_id": "[0][0][0][0]"
+            }
+          }
+        ],
+        "format": {
+          "filename": "/home/main/.codex/worktrees/78dc/rpg-zzu/verify-shots/monster-battle-av/orc-warrior.mp4",
+          "nb_streams": 2,
+          "nb_programs": 0,
+          "format_name": "mov,mp4,m4a,3gp,3g2,mj2",
+          "format_long_name": "QuickTime / MOV",
+          "start_time": "0.000000",
+          "duration": "6.600000",
+          "size": "970454",
+          "bit_rate": "1176307",
+          "probe_score": 100,
+          "tags": {
+            "major_brand": "isom",
+            "minor_version": "512",
+            "compatible_brands": "isomiso2avc1mp41",
+            "encoder": "Lavf60.16.100"
+          }
+        }
+      },
+      "audio": {
+        "peak": 1.2634623050689697,
+        "rms": 0.204392353742964,
+        "samples": 78848
+      }
+    },
+    {
+      "slug": "hydra-three",
+      "name": "삼두 히드라",
+      "cell": 96,
+      "motion": "breath",
+      "errors": [],
+      "window": {
+        "innerWidth": 960,
+        "innerHeight": 720,
+        "outerWidth": 960,
+        "outerHeight": 720,
+        "screenX": 0,
+        "screenY": 0
+      },
+      "observed": {
+        "frames": [
+          {
+            "frame": "idle",
+            "at": 55.700000047683716
+          },
+          {
+            "frame": "idle",
+            "at": 55.800000071525574
+          },
+          {
+            "frame": "idle",
+            "at": 55.800000071525574
+          },
+          {
+            "frame": "idle",
+            "at": 290.5
+          },
+          {
+            "frame": "idle",
+            "at": 290.5
+          },
+          {
+            "frame": "idle",
+            "at": 290.5
+          },
+          {
+            "frame": "idle",
+            "at": 471
+          },
+          {
+            "frame": "idle",
+            "at": 471.10000002384186
+          },
+          {
+            "frame": "idle",
+            "at": 471.10000002384186
+          },
+          {
+            "frame": "idle",
+            "at": 649.6000000238419
+          },
+          {
+            "frame": "idle",
+            "at": 649.6000000238419
+          },
+          {
+            "frame": "idle",
+            "at": 649.6000000238419
+          },
+          {
+            "frame": "idle",
+            "at": 853
+          },
+          {
+            "frame": "idle",
+            "at": 853
+          },
+          {
+            "frame": "idle",
+            "at": 853
+          },
+          {
+            "frame": "idle",
+            "at": 1120.7000000476837
+          },
+          {
+            "frame": "idle",
+            "at": 1120.7000000476837
+          },
+          {
+            "frame": "idle",
+            "at": 1120.7000000476837
+          },
+          {
+            "frame": "idle",
+            "at": 1432.2000000476837
+          },
+          {
+            "frame": "idle",
+            "at": 1432.2000000476837
+          },
+          {
+            "frame": "idle",
+            "at": 1432.2000000476837
+          },
+          {
+            "frame": "idle",
+            "at": 1470.5
+          },
+          {
+            "frame": "idle",
+            "at": 1470.5
+          },
+          {
+            "frame": "idle",
+            "at": 1470.5
+          },
+          {
+            "frame": "idle",
+            "at": 1780.8999999761581
+          },
+          {
+            "frame": "idle",
+            "at": 1780.8999999761581
+          },
+          {
+            "frame": "idle",
+            "at": 1780.8999999761581
+          },
+          {
+            "frame": "idle",
+            "at": 1780.8999999761581
+          },
+          {
+            "frame": "idle",
+            "at": 1780.8999999761581
+          },
+          {
+            "frame": "idle",
+            "at": 1780.8999999761581
+          },
+          {
+            "frame": "idle",
+            "at": 2072.8000000715256
+          },
+          {
+            "frame": "windup",
+            "at": 2072.8000000715256
+          },
+          {
+            "frame": "windup",
+            "at": 2072.8000000715256
+          },
+          {
+            "frame": "windup",
+            "at": 2072.8000000715256
+          },
+          {
+            "frame": "windup",
+            "at": 2072.8000000715256
+          },
+          {
+            "frame": "windup",
+            "at": 2072.8000000715256
+          },
+          {
+            "frame": "windup",
+            "at": 2282.600000023842
+          },
+          {
+            "frame": "move",
+            "at": 2282.600000023842
+          },
+          {
+            "frame": "move",
+            "at": 2282.600000023842
+          },
+          {
+            "frame": "move",
+            "at": 2439.8000000715256
+          },
+          {
+            "frame": "attack",
+            "at": 2439.8000000715256
+          },
+          {
+            "frame": "attack",
+            "at": 2439.8000000715256
+          },
+          {
+            "frame": "attack",
+            "at": 2439.8000000715256
+          },
+          {
+            "frame": "attack",
+            "at": 2439.8000000715256
+          },
+          {
+            "frame": "attack",
+            "at": 2439.8000000715256
+          },
+          {
+            "frame": "attack",
+            "at": 2561.2000000476837
+          },
+          {
+            "frame": "recover",
+            "at": 2561.2000000476837
+          },
+          {
+            "frame": "recover",
+            "at": 2561.2000000476837
+          },
+          {
+            "frame": "recover",
+            "at": 2561.2000000476837
+          },
+          {
+            "frame": "recover",
+            "at": 2561.2000000476837
+          },
+          {
+            "frame": "recover",
+            "at": 2561.2000000476837
+          },
+          {
+            "frame": "recover",
+            "at": 2884.100000023842
+          },
+          {
+            "frame": "idle_b",
+            "at": 2884.100000023842
+          },
+          {
+            "frame": "idle_b",
+            "at": 2884.100000023842
+          },
+          {
+            "frame": "idle_b",
+            "at": 3002.8000000715256
+          },
+          {
+            "frame": "idle",
+            "at": 3002.8000000715256
+          },
+          {
+            "frame": "idle",
+            "at": 3002.899999976158
+          },
+          {
+            "frame": "idle",
+            "at": 3002.899999976158
+          },
+          {
+            "frame": "idle",
+            "at": 3002.899999976158
+          },
+          {
+            "frame": "idle",
+            "at": 3002.899999976158
+          },
+          {
+            "frame": "idle",
+            "at": 3049
+          },
+          {
+            "frame": "idle",
+            "at": 3049
+          },
+          {
+            "frame": "idle",
+            "at": 3049
+          },
+          {
+            "frame": "idle",
+            "at": 3198
+          },
+          {
+            "frame": "idle",
+            "at": 3198
+          },
+          {
+            "frame": "idle",
+            "at": 3198
+          },
+          {
+            "frame": "idle",
+            "at": 3368.2000000476837
+          },
+          {
+            "frame": "idle",
+            "at": 3368.2000000476837
+          },
+          {
+            "frame": "idle",
+            "at": 3368.2000000476837
+          },
+          {
+            "frame": "idle",
+            "at": 3786.600000023842
+          },
+          {
+            "frame": "hit",
+            "at": 3786.600000023842
+          },
+          {
+            "frame": "hit",
+            "at": 3786.600000023842
+          },
+          {
+            "frame": "hit",
+            "at": 3786.600000023842
+          },
+          {
+            "frame": "hit",
+            "at": 3786.600000023842
+          },
+          {
+            "frame": "hit",
+            "at": 3786.600000023842
+          },
+          {
+            "frame": "hit",
+            "at": 3964.3000000715256
+          },
+          {
+            "frame": "dead",
+            "at": 3964.3000000715256
+          },
+          {
+            "frame": "dead",
+            "at": 3964.3000000715256
+          },
+          {
+            "frame": "dead",
+            "at": 4022
+          },
+          {
+            "frame": "dead",
+            "at": 4022
+          },
+          {
+            "frame": "dead",
+            "at": 4022
+          },
+          {
+            "frame": "dead",
+            "at": 4456.600000023842
+          },
+          {
+            "frame": "dead",
+            "at": 4456.600000023842
+          },
+          {
+            "frame": "dead",
+            "at": 4456.600000023842
+          },
+          {
+            "frame": "dead",
+            "at": 5654
+          },
+          {
+            "frame": "dead",
+            "at": 5654
+          },
+          {
+            "frame": "dead",
+            "at": 5654
+          },
+          {
+            "frame": "dead",
+            "at": 5654.100000023842
+          },
+          {
+            "frame": "dead",
+            "at": 5654.100000023842
+          },
+          {
+            "frame": "dead",
+            "at": 5654.100000023842
+          },
+          {
+            "frame": "dead",
+            "at": 6118.5
+          },
+          {
+            "frame": "dead",
+            "at": 6118.5
+          },
+          {
+            "frame": "dead",
+            "at": 6118.5
+          }
+        ],
+        "soundStarts": [
+          {
+            "kind": "AudioBufferSourceNode",
+            "at": 15255.200000047684,
+            "duration": 0.181875
+          },
+          {
+            "kind": "AudioBufferSourceNode",
+            "at": 15489.399999976158,
+            "duration": 0.6061041666666667
+          },
+          {
+            "kind": "AudioBufferSourceNode",
+            "at": 15498.100000023842,
+            "duration": 1.3314166666666667
+          },
+          {
+            "kind": "AudioBufferSourceNode",
+            "at": 16218.600000023842,
+            "duration": 0.25783333333333336
+          },
+          {
+            "kind": "AudioBufferSourceNode",
+            "at": 16426.200000047684,
+            "duration": 1.5213541666666666
+          },
+          {
+            "kind": "AudioBufferSourceNode",
+            "at": 16448.100000023842,
+            "duration": 0.5552291666666667
+          },
+          {
+            "kind": "OscillatorNode",
+            "at": 16456
+          },
+          {
+            "kind": "AudioBufferSourceNode",
+            "at": 17102.799999952316,
+            "duration": 0.181875
+          },
+          {
+            "kind": "AudioBufferSourceNode",
+            "at": 17225.600000023842,
+            "duration": 1.3314166666666667
+          },
+          {
+            "kind": "AudioBufferSourceNode",
+            "at": 17524.600000023842,
+            "duration": 1.3766875
+          },
+          {
+            "kind": "AudioBufferSourceNode",
+            "at": 17525.200000047684,
+            "duration": 0.25783333333333336
+          },
+          {
+            "kind": "AudioBufferSourceNode",
+            "at": 17629.700000047684,
+            "duration": 0.7767291666666667
+          },
+          {
+            "kind": "AudioBufferSourceNode",
+            "at": 17797.5,
+            "duration": 0.5552291666666667
+          },
+          {
+            "kind": "OscillatorNode",
+            "at": 17803.600000023842
+          },
+          {
+            "kind": "AudioBufferSourceNode",
+            "at": 18058.100000023842,
+            "duration": 1.6072916666666666
+          },
+          {
+            "kind": "OscillatorNode",
+            "at": 18475.700000047684
+          },
+          {
+            "kind": "OscillatorNode",
+            "at": 18475.899999976158
+          },
+          {
+            "kind": "OscillatorNode",
+            "at": 18475.899999976158
+          },
+          {
+            "kind": "OscillatorNode",
+            "at": 18476
+          },
+          {
+            "kind": "OscillatorNode",
+            "at": 18476
+          },
+          {
+            "kind": "OscillatorNode",
+            "at": 18476.100000023842
+          }
+        ],
+        "audioState": {
+          "volume": {
+            "bgm": 0.7,
+            "se": 0.8
+          },
+          "playbackRate": 1,
+          "pan": 0,
+          "fadeInMs": 600
+        },
+        "resources": [
+          "cc0-bgm-field",
+          "cc0-bgm-field",
+          "cc0-bgm-rtp-btl-001"
+        ]
+      },
+      "defended": true,
+      "playerAttackConfirmed": true,
+      "probe": {
+        "streams": [
+          {
+            "index": 0,
+            "codec_name": "h264",
+            "codec_long_name": "H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10",
+            "profile": "High",
+            "codec_type": "video",
+            "codec_tag_string": "avc1",
+            "codec_tag": "0x31637661",
+            "width": 960,
+            "height": 720,
+            "coded_width": 960,
+            "coded_height": 720,
+            "closed_captions": 0,
+            "film_grain": 0,
+            "has_b_frames": 2,
+            "pix_fmt": "yuv420p",
+            "level": 31,
+            "chroma_location": "left",
+            "field_order": "progressive",
+            "refs": 1,
+            "is_avc": "true",
+            "nal_length_size": "4",
+            "id": "0x1",
+            "r_frame_rate": "30/1",
+            "avg_frame_rate": "30/1",
+            "time_base": "1/15360",
+            "start_pts": 0,
+            "start_time": "0.000000",
+            "duration_ts": 94208,
+            "duration": "6.133333",
+            "bit_rate": "1186970",
+            "bits_per_raw_sample": "8",
+            "nb_frames": "184",
+            "extradata_size": 44,
+            "disposition": {
+              "default": 1,
+              "dub": 0,
+              "original": 0,
+              "comment": 0,
+              "lyrics": 0,
+              "karaoke": 0,
+              "forced": 0,
+              "hearing_impaired": 0,
+              "visual_impaired": 0,
+              "clean_effects": 0,
+              "attached_pic": 0,
+              "timed_thumbnails": 0,
+              "non_diegetic": 0,
+              "captions": 0,
+              "descriptions": 0,
+              "metadata": 0,
+              "dependent": 0,
+              "still_image": 0
+            },
+            "tags": {
+              "language": "und",
+              "handler_name": "VideoHandler",
+              "vendor_id": "[0][0][0][0]",
+              "encoder": "Lavc60.31.102 libx264"
+            }
+          },
+          {
+            "index": 1,
+            "codec_name": "aac",
+            "codec_long_name": "AAC (Advanced Audio Coding)",
+            "profile": "LC",
+            "codec_type": "audio",
+            "codec_tag_string": "mp4a",
+            "codec_tag": "0x6134706d",
+            "sample_fmt": "fltp",
+            "sample_rate": "48000",
+            "channels": 2,
+            "channel_layout": "stereo",
+            "bits_per_sample": 0,
+            "initial_padding": 0,
+            "id": "0x2",
+            "r_frame_rate": "0/0",
+            "avg_frame_rate": "0/0",
+            "time_base": "1/48000",
+            "start_pts": 0,
+            "start_time": "0.000000",
+            "duration_ts": 290400,
+            "duration": "6.050000",
+            "bit_rate": "179811",
+            "nb_frames": "285",
+            "extradata_size": 5,
+            "disposition": {
+              "default": 1,
+              "dub": 0,
+              "original": 0,
+              "comment": 0,
+              "lyrics": 0,
+              "karaoke": 0,
+              "forced": 0,
+              "hearing_impaired": 0,
+              "visual_impaired": 0,
+              "clean_effects": 0,
+              "attached_pic": 0,
+              "timed_thumbnails": 0,
+              "non_diegetic": 0,
+              "captions": 0,
+              "descriptions": 0,
+              "metadata": 0,
+              "dependent": 0,
+              "still_image": 0
+            },
+            "tags": {
+              "language": "und",
+              "handler_name": "SoundHandler",
+              "vendor_id": "[0][0][0][0]"
+            }
+          }
+        ],
+        "format": {
+          "filename": "/home/main/.codex/worktrees/78dc/rpg-zzu/verify-shots/monster-battle-av/hydra-three.mp4",
+          "nb_streams": 2,
+          "nb_programs": 0,
+          "format_name": "mov,mp4,m4a,3gp,3g2,mj2",
+          "format_long_name": "QuickTime / MOV",
+          "start_time": "0.000000",
+          "duration": "6.133333",
+          "size": "1054495",
+          "bit_rate": "1375428",
+          "probe_score": 100,
+          "tags": {
+            "major_brand": "isom",
+            "minor_version": "512",
+            "compatible_brands": "isomiso2avc1mp41",
+            "encoder": "Lavf60.16.100"
+          }
+        }
+      },
+      "audio": {
+        "peak": 1.326382040977478,
+        "rms": 0.20120855219375405,
+        "samples": 72704
+      }
+    },
+    {
+      "slug": "dragon-blue",
+      "name": "푸른 용",
+      "cell": 96,
+      "motion": "breath",
+      "errors": [],
+      "window": {
+        "innerWidth": 960,
+        "innerHeight": 720,
+        "outerWidth": 960,
+        "outerHeight": 720,
+        "screenX": 0,
+        "screenY": 0
+      },
+      "observed": {
+        "frames": [
+          {
+            "frame": "idle",
+            "at": 101.60000002384186
+          },
+          {
+            "frame": "idle",
+            "at": 101.60000002384186
+          },
+          {
+            "frame": "idle",
+            "at": 101.60000002384186
+          },
+          {
+            "frame": "idle",
+            "at": 286.10000002384186
+          },
+          {
+            "frame": "idle",
+            "at": 286.10000002384186
+          },
+          {
+            "frame": "idle",
+            "at": 286.10000002384186
+          },
+          {
+            "frame": "idle",
+            "at": 473.7999999523163
+          },
+          {
+            "frame": "idle",
+            "at": 473.7999999523163
+          },
+          {
+            "frame": "idle",
+            "at": 473.7999999523163
+          },
+          {
+            "frame": "idle",
+            "at": 656.1000000238419
+          },
+          {
+            "frame": "idle",
+            "at": 656.1000000238419
+          },
+          {
+            "frame": "idle",
+            "at": 656.1000000238419
+          },
+          {
+            "frame": "idle",
+            "at": 858.7999999523163
+          },
+          {
+            "frame": "idle",
+            "at": 858.7999999523163
+          },
+          {
+            "frame": "idle",
+            "at": 858.7999999523163
+          },
+          {
+            "frame": "idle",
+            "at": 1099.8999999761581
+          },
+          {
+            "frame": "idle",
+            "at": 1099.8999999761581
+          },
+          {
+            "frame": "idle",
+            "at": 1099.8999999761581
+          },
+          {
+            "frame": "idle",
+            "at": 1260.8999999761581
+          },
+          {
+            "frame": "idle",
+            "at": 1260.8999999761581
+          },
+          {
+            "frame": "idle",
+            "at": 1260.8999999761581
+          },
+          {
+            "frame": "idle",
+            "at": 1286.3999999761581
+          },
+          {
+            "frame": "idle",
+            "at": 1286.3999999761581
+          },
+          {
+            "frame": "idle",
+            "at": 1286.3999999761581
+          },
+          {
+            "frame": "idle",
+            "at": 1603
+          },
+          {
+            "frame": "idle",
+            "at": 1603
+          },
+          {
+            "frame": "idle",
+            "at": 1603
+          },
+          {
+            "frame": "idle",
+            "at": 1603
+          },
+          {
+            "frame": "idle",
+            "at": 1603
+          },
+          {
+            "frame": "idle",
+            "at": 1603
+          },
+          {
+            "frame": "idle",
+            "at": 1918.7000000476837
+          },
+          {
+            "frame": "windup",
+            "at": 1918.7000000476837
+          },
+          {
+            "frame": "windup",
+            "at": 1918.7000000476837
+          },
+          {
+            "frame": "windup",
+            "at": 1918.7000000476837
+          },
+          {
+            "frame": "windup",
+            "at": 1918.7000000476837
+          },
+          {
+            "frame": "windup",
+            "at": 1918.7000000476837
+          },
+          {
+            "frame": "windup",
+            "at": 2129.2000000476837
+          },
+          {
+            "frame": "move",
+            "at": 2129.2000000476837
+          },
+          {
+            "frame": "move",
+            "at": 2129.2000000476837
+          },
+          {
+            "frame": "move",
+            "at": 2324.600000023842
+          },
+          {
+            "frame": "attack",
+            "at": 2324.600000023842
+          },
+          {
+            "frame": "attack",
+            "at": 2324.600000023842
+          },
+          {
+            "frame": "attack",
+            "at": 2324.600000023842
+          },
+          {
+            "frame": "attack",
+            "at": 2324.600000023842
+          },
+          {
+            "frame": "attack",
+            "at": 2324.600000023842
+          },
+          {
+            "frame": "attack",
+            "at": 2451.399999976158
+          },
+          {
+            "frame": "recover",
+            "at": 2451.399999976158
+          },
+          {
+            "frame": "recover",
+            "at": 2451.399999976158
+          },
+          {
+            "frame": "recover",
+            "at": 2451.399999976158
+          },
+          {
+            "frame": "recover",
+            "at": 2451.399999976158
+          },
+          {
+            "frame": "recover",
+            "at": 2451.5
+          },
+          {
+            "frame": "recover",
+            "at": 2820.7000000476837
+          },
+          {
+            "frame": "idle_b",
+            "at": 2820.7000000476837
+          },
+          {
+            "frame": "idle_b",
+            "at": 2820.7000000476837
+          },
+          {
+            "frame": "idle_b",
+            "at": 2927.7000000476837
+          },
+          {
+            "frame": "idle",
+            "at": 2927.7000000476837
+          },
+          {
+            "frame": "idle",
+            "at": 2927.7000000476837
+          },
+          {
+            "frame": "idle",
+            "at": 2927.7000000476837
+          },
+          {
+            "frame": "idle",
+            "at": 2927.7000000476837
+          },
+          {
+            "frame": "idle",
+            "at": 2927.7000000476837
+          },
+          {
+            "frame": "idle",
+            "at": 3137.7000000476837
+          },
+          {
+            "frame": "idle",
+            "at": 3137.7000000476837
+          },
+          {
+            "frame": "idle",
+            "at": 3137.7000000476837
+          },
+          {
+            "frame": "idle",
+            "at": 3400.5
+          },
+          {
+            "frame": "idle",
+            "at": 3400.5
+          },
+          {
+            "frame": "idle",
+            "at": 3400.5
+          },
+          {
+            "frame": "idle",
+            "at": 3418.399999976158
+          },
+          {
+            "frame": "idle",
+            "at": 3418.399999976158
+          },
+          {
+            "frame": "idle",
+            "at": 3418.399999976158
+          },
+          {
+            "frame": "idle",
+            "at": 3649.399999976158
+          },
+          {
+            "frame": "idle",
+            "at": 3649.399999976158
+          },
+          {
+            "frame": "idle",
+            "at": 3649.399999976158
+          },
+          {
+            "frame": "idle",
+            "at": 4088.399999976158
+          },
+          {
+            "frame": "hit",
+            "at": 4088.399999976158
+          },
+          {
+            "frame": "hit",
+            "at": 4088.399999976158
+          },
+          {
+            "frame": "hit",
+            "at": 4088.399999976158
+          },
+          {
+            "frame": "hit",
+            "at": 4088.399999976158
+          },
+          {
+            "frame": "hit",
+            "at": 4088.399999976158
+          },
+          {
+            "frame": "hit",
+            "at": 4261.399999976158
+          },
+          {
+            "frame": "dead",
+            "at": 4261.399999976158
+          },
+          {
+            "frame": "dead",
+            "at": 4261.399999976158
+          },
+          {
+            "frame": "dead",
+            "at": 4359.299999952316
+          },
+          {
+            "frame": "dead",
+            "at": 4359.299999952316
+          },
+          {
+            "frame": "dead",
+            "at": 4359.299999952316
+          },
+          {
+            "frame": "dead",
+            "at": 4822.700000047684
+          },
+          {
+            "frame": "dead",
+            "at": 4822.700000047684
+          },
+          {
+            "frame": "dead",
+            "at": 4822.700000047684
+          },
+          {
+            "frame": "dead",
+            "at": 6038.100000023842
+          },
+          {
+            "frame": "dead",
+            "at": 6038.100000023842
+          },
+          {
+            "frame": "dead",
+            "at": 6038.100000023842
+          },
+          {
+            "frame": "dead",
+            "at": 6038.100000023842
+          },
+          {
+            "frame": "dead",
+            "at": 6038.100000023842
+          },
+          {
+            "frame": "dead",
+            "at": 6038.100000023842
+          },
+          {
+            "frame": "dead",
+            "at": 6490.399999976158
+          },
+          {
+            "frame": "dead",
+            "at": 6490.399999976158
+          },
+          {
+            "frame": "dead",
+            "at": 6490.399999976158
+          }
+        ],
+        "soundStarts": [
+          {
+            "kind": "AudioBufferSourceNode",
+            "at": 17431.400000095367,
+            "duration": 0.181875
+          },
+          {
+            "kind": "AudioBufferSourceNode",
+            "at": 17546.800000071526,
+            "duration": 0.6061041666666667
+          },
+          {
+            "kind": "AudioBufferSourceNode",
+            "at": 17556.900000095367,
+            "duration": 1.3314166666666667
+          },
+          {
+            "kind": "AudioBufferSourceNode",
+            "at": 18316.200000047684,
+            "duration": 0.25783333333333336
+          },
+          {
+            "kind": "AudioBufferSourceNode",
+            "at": 18563.5,
+            "duration": 1.5213541666666666
+          },
+          {
+            "kind": "AudioBufferSourceNode",
+            "at": 18573.5,
+            "duration": 0.5552291666666667
+          },
+          {
+            "kind": "OscillatorNode",
+            "at": 18581.900000095367
+          },
+          {
+            "kind": "AudioBufferSourceNode",
+            "at": 19412.5,
+            "duration": 0.181875
+          },
+          {
+            "kind": "AudioBufferSourceNode",
+            "at": 19688.800000071526,
+            "duration": 1.3314166666666667
+          },
+          {
+            "kind": "AudioBufferSourceNode",
+            "at": 20120.300000071526,
+            "duration": 1.3766875
+          },
+          {
+            "kind": "AudioBufferSourceNode",
+            "at": 20120.800000071526,
+            "duration": 0.25783333333333336
+          },
+          {
+            "kind": "AudioBufferSourceNode",
+            "at": 20177.600000023842,
+            "duration": 0.7767291666666667
+          },
+          {
+            "kind": "AudioBufferSourceNode",
+            "at": 20337.600000023842,
+            "duration": 0.5552291666666667
+          },
+          {
+            "kind": "OscillatorNode",
+            "at": 20345.100000023842
+          },
+          {
+            "kind": "AudioBufferSourceNode",
+            "at": 20641.900000095367,
+            "duration": 1.6072916666666666
+          },
+          {
+            "kind": "OscillatorNode",
+            "at": 21085.300000071526
+          },
+          {
+            "kind": "OscillatorNode",
+            "at": 21085.400000095367
+          },
+          {
+            "kind": "OscillatorNode",
+            "at": 21085.400000095367
+          },
+          {
+            "kind": "OscillatorNode",
+            "at": 21085.400000095367
+          },
+          {
+            "kind": "OscillatorNode",
+            "at": 21085.5
+          },
+          {
+            "kind": "OscillatorNode",
+            "at": 21085.5
+          }
+        ],
+        "audioState": {
+          "volume": {
+            "bgm": 0.7,
+            "se": 0.8
+          },
+          "playbackRate": 1,
+          "pan": 0,
+          "fadeInMs": 600
+        },
+        "resources": [
+          "cc0-bgm-field",
+          "cc0-bgm-field",
+          "cc0-bgm-rtp-btl-001"
+        ]
+      },
+      "defended": true,
+      "playerAttackConfirmed": true,
+      "probe": {
+        "streams": [
+          {
+            "index": 0,
+            "codec_name": "h264",
+            "codec_long_name": "H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10",
+            "profile": "High",
+            "codec_type": "video",
+            "codec_tag_string": "avc1",
+            "codec_tag": "0x31637661",
+            "width": 960,
+            "height": 720,
+            "coded_width": 960,
+            "coded_height": 720,
+            "closed_captions": 0,
+            "film_grain": 0,
+            "has_b_frames": 2,
+            "pix_fmt": "yuv420p",
+            "level": 31,
+            "chroma_location": "left",
+            "field_order": "progressive",
+            "refs": 1,
+            "is_avc": "true",
+            "nal_length_size": "4",
+            "id": "0x1",
+            "r_frame_rate": "30/1",
+            "avg_frame_rate": "30/1",
+            "time_base": "1/15360",
+            "start_pts": 0,
+            "start_time": "0.000000",
+            "duration_ts": 98816,
+            "duration": "6.433333",
+            "bit_rate": "1050821",
+            "bits_per_raw_sample": "8",
+            "nb_frames": "193",
+            "extradata_size": 44,
+            "disposition": {
+              "default": 1,
+              "dub": 0,
+              "original": 0,
+              "comment": 0,
+              "lyrics": 0,
+              "karaoke": 0,
+              "forced": 0,
+              "hearing_impaired": 0,
+              "visual_impaired": 0,
+              "clean_effects": 0,
+              "attached_pic": 0,
+              "timed_thumbnails": 0,
+              "non_diegetic": 0,
+              "captions": 0,
+              "descriptions": 0,
+              "metadata": 0,
+              "dependent": 0,
+              "still_image": 0
+            },
+            "tags": {
+              "language": "und",
+              "handler_name": "VideoHandler",
+              "vendor_id": "[0][0][0][0]",
+              "encoder": "Lavc60.31.102 libx264"
+            }
+          },
+          {
+            "index": 1,
+            "codec_name": "aac",
+            "codec_long_name": "AAC (Advanced Audio Coding)",
+            "profile": "LC",
+            "codec_type": "audio",
+            "codec_tag_string": "mp4a",
+            "codec_tag": "0x6134706d",
+            "sample_fmt": "fltp",
+            "sample_rate": "48000",
+            "channels": 2,
+            "channel_layout": "stereo",
+            "bits_per_sample": 0,
+            "initial_padding": 0,
+            "id": "0x2",
+            "r_frame_rate": "0/0",
+            "avg_frame_rate": "0/0",
+            "time_base": "1/48000",
+            "start_pts": 0,
+            "start_time": "0.000000",
+            "duration_ts": 307200,
+            "duration": "6.400000",
+            "bit_rate": "178929",
+            "nb_frames": "301",
+            "extradata_size": 5,
+            "disposition": {
+              "default": 1,
+              "dub": 0,
+              "original": 0,
+              "comment": 0,
+              "lyrics": 0,
+              "karaoke": 0,
+              "forced": 0,
+              "hearing_impaired": 0,
+              "visual_impaired": 0,
+              "clean_effects": 0,
+              "attached_pic": 0,
+              "timed_thumbnails": 0,
+              "non_diegetic": 0,
+              "captions": 0,
+              "descriptions": 0,
+              "metadata": 0,
+              "dependent": 0,
+              "still_image": 0
+            },
+            "tags": {
+              "language": "und",
+              "handler_name": "SoundHandler",
+              "vendor_id": "[0][0][0][0]"
+            }
+          }
+        ],
+        "format": {
+          "filename": "/home/main/.codex/worktrees/78dc/rpg-zzu/verify-shots/monster-battle-av/dragon-blue.mp4",
+          "nb_streams": 2,
+          "nb_programs": 0,
+          "format_name": "mov,mp4,m4a,3gp,3g2,mj2",
+          "format_long_name": "QuickTime / MOV",
+          "start_time": "0.000000",
+          "duration": "6.433333",
+          "size": "997115",
+          "bit_rate": "1239935",
+          "probe_score": 100,
+          "tags": {
+            "major_brand": "isom",
+            "minor_version": "512",
+            "compatible_brands": "isomiso2avc1mp41",
+            "encoder": "Lavf60.16.100"
+          }
+        }
+      },
+      "audio": {
+        "peak": 1.230044960975647,
+        "rms": 0.20194971665789926,
+        "samples": 76800
+      }
+    }
+  ],
+  "errors": [],
+  "combined": {
+    "streams": [
+      {
+        "index": 0,
+        "codec_name": "h264",
+        "codec_long_name": "H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10",
+        "profile": "High",
+        "codec_type": "video",
+        "codec_tag_string": "avc1",
+        "codec_tag": "0x31637661",
+        "width": 960,
+        "height": 720,
+        "coded_width": 960,
+        "coded_height": 720,
+        "closed_captions": 0,
+        "film_grain": 0,
+        "has_b_frames": 2,
+        "pix_fmt": "yuv420p",
+        "level": 31,
+        "chroma_location": "left",
+        "field_order": "progressive",
+        "refs": 1,
+        "is_avc": "true",
+        "nal_length_size": "4",
+        "id": "0x1",
+        "r_frame_rate": "30/1",
+        "avg_frame_rate": "30/1",
+        "time_base": "1/15360",
+        "start_pts": 323,
+        "start_time": "0.021029",
+        "duration_ts": 294400,
+        "duration": "19.166667",
+        "bit_rate": "1071885",
+        "bits_per_raw_sample": "8",
+        "nb_frames": "575",
+        "extradata_size": 44,
+        "disposition": {
+          "default": 1,
+          "dub": 0,
+          "original": 0,
+          "comment": 0,
+          "lyrics": 0,
+          "karaoke": 0,
+          "forced": 0,
+          "hearing_impaired": 0,
+          "visual_impaired": 0,
+          "clean_effects": 0,
+          "attached_pic": 0,
+          "timed_thumbnails": 0,
+          "non_diegetic": 0,
+          "captions": 0,
+          "descriptions": 0,
+          "metadata": 0,
+          "dependent": 0,
+          "still_image": 0
+        },
+        "tags": {
+          "language": "und",
+          "handler_name": "VideoHandler",
+          "vendor_id": "[0][0][0][0]",
+          "encoder": "Lavc60.31.102 libx264"
+        }
+      },
+      {
+        "index": 1,
+        "codec_name": "aac",
+        "codec_long_name": "AAC (Advanced Audio Coding)",
+        "profile": "LC",
+        "codec_type": "audio",
+        "codec_tag_string": "mp4a",
+        "codec_tag": "0x6134706d",
+        "sample_fmt": "fltp",
+        "sample_rate": "48000",
+        "channels": 2,
+        "channel_layout": "stereo",
+        "bits_per_sample": 0,
+        "initial_padding": 0,
+        "id": "0x2",
+        "r_frame_rate": "0/0",
+        "avg_frame_rate": "0/0",
+        "time_base": "1/48000",
+        "start_pts": 0,
+        "start_time": "0.000000",
+        "duration_ts": 919424,
+        "duration": "19.154667",
+        "bit_rate": "179272",
+        "nb_frames": "895",
+        "extradata_size": 5,
+        "disposition": {
+          "default": 1,
+          "dub": 0,
+          "original": 0,
+          "comment": 0,
+          "lyrics": 0,
+          "karaoke": 0,
+          "forced": 0,
+          "hearing_impaired": 0,
+          "visual_impaired": 0,
+          "clean_effects": 0,
+          "attached_pic": 0,
+          "timed_thumbnails": 0,
+          "non_diegetic": 0,
+          "captions": 0,
+          "descriptions": 0,
+          "metadata": 0,
+          "dependent": 0,
+          "still_image": 0
+        },
+        "tags": {
+          "language": "und",
+          "handler_name": "SoundHandler",
+          "vendor_id": "[0][0][0][0]"
+        }
+      }
+    ],
+    "format": {
+      "filename": "/home/main/.codex/worktrees/78dc/rpg-zzu/verify-shots/monster-battle-av/monster-battles-with-audio.mp4",
+      "nb_streams": 2,
+      "nb_programs": 0,
+      "format_name": "mov,mp4,m4a,3gp,3g2,mj2",
+      "format_long_name": "QuickTime / MOV",
+      "start_time": "0.000000",
+      "duration": "19.187696",
+      "size": "3019611",
+      "bit_rate": "1258978",
+      "probe_score": 100,
+      "tags": {
+        "major_brand": "isom",
+        "minor_version": "512",
+        "compatible_brands": "isomiso2avc1mp41",
+        "encoder": "Lavf60.16.100"
+      }
+    }
+  },
+  "passed": true
+}

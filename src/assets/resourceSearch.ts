@@ -4,6 +4,7 @@
 import { listAudioResources } from "@/assets/audioResourceCatalog";
 import type { AudioDescriptionSource, AudioResourceProject } from "@/assets/audioResourceCatalog";
 import { applyCharsetLabelOverrides, CHARSET_SEMANTICS } from "@/assets/charsetSemantics";
+import { sharedCharacterSemantics } from '@/project/sharedCharacters';
 import { charsetFrameIndex, EASYRPG_BACKDROP_ASSETS } from "@/assets/easyrpgRtp";
 import { listMonsterResources, type MonsterResourceProject } from "@/assets/monsterResourceCatalog";
 import { SCARLOXY_BACKDROP_ASSETS } from "@/assets/scarloxyPack";
@@ -20,7 +21,7 @@ import { RETRO_WORLD_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsRetr
 import { SHIP_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsShip";
 import { WORLD_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsWorld";
 import COMBINED_TOWN_SHARED_CELLS from "@/assets/combinedTownSharedCells.json";
-import { COMBINED_TOWN_RETRO_WORLD_TEXTURE_KEY, DEFAULT_TILESET_TEXTURE_KEY as COMBINED_TOWN_TEXTURE_KEY } from "@/project/defaults/constants";
+import { COMBINED_TOWN_RETRO_WORLD_TEXTURE_KEY, COMBINED_TOWN_TILESET_TEXTURE_KEY as COMBINED_TOWN_TEXTURE_KEY } from "@/project/defaults/constants";
 
 /** 파생 시트마다 합본 마을과 픽셀이 같은 칸 번호(2026-09-27 픽셀 동일 비교로 생성). 파생 시트를 다시 구우면 갱신한다. */
 const SHARED_CELLS_BY_TEXTURE: ReadonlyMap<string, ReadonlySet<number>> = new Map(
@@ -226,13 +227,13 @@ function candidatesForKind(kind: ResourceSearchKind, options: ResourceSearchOpti
     case "tile":
       return tileCandidates(options.tileset);
     case "charset":
-      return applyCharsetLabelOverrides(CHARSET_SEMANTICS, options.charsetLabels).map((entry): ResourceCandidate => ({
+      return applyCharsetLabelOverrides([...CHARSET_SEMANTICS, ...sharedCharacterSemantics()], options.charsetLabels).map((entry): ResourceCandidate => ({
         id: `charset:${entry.textureKey}:${entry.characterIndex}`,
         label: entry.label,
         tags: [...entry.tags, ...charsetDerivedTags(entry.textureKey)],
         ...(entry.appearance ? { description: entry.appearance } : {}),
         nativeGraphic: {
-          sprite: { type: "bundled", id: entry.textureKey },
+          sprite: { type: entry.spriteType ?? "bundled", id: entry.textureKey },
           direction: "down",
           pattern: charsetFrameIndex({ characterIndex: entry.characterIndex, direction: "down", pattern: 1 }),
         },

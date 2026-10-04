@@ -1,0 +1,51 @@
+// broken_blackboard h5-A
+@size 48 16
+@cell 16
+@palette palette.pal
+@layer main
+@mat a blood 0
+@mat b board 0
+@mat c dust 0
+@mat d grave 0
+@mat e hmoss 0
+@mat f moon 0
+@mat g murk 0
+@mat h night 0
+@mat i rot 0
+@mat j rust 0
+@mat k tarn 0
+@mat l tin 0
+@mblock 0 0
+..iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii..
+.iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii.
+iibbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbii
+iibbbccbbbbbbbaabbbbaabbbbaaaaaaaabbbbbbbbbbbbii
+iibbbbbbbbbbbbaabbbbaabbbbaaaaabaabbbcccccbbbbii
+iibbcccccbbbbbaabbbbaabbbbbbbaabaabbbbbbbbbbbbii
+iibbbbbbbbbbbbaabbbbaaaabbbbbaabaabbbbbbbbbbbbii
+iibbbbbbbbbbbbaabbbbaaaabbbbbaabaaaabbbbcccbbbii
+iibbbbccccbbbbaabbbbaabbbbbbbaabaaaabbbbbbbbbbii
+iibbbbbbbbbbbbaabbbbaabbbbbbbaabaabbbbccbbbbbbii
+iibbbbbbbbbbbbaaaaaabaabbbbbbaabaabbbbbbbbbbbbii
+iibcccccbbbbbbaaaaaabaaabbbbbaabaabbbbbbbbbbbbii
+iibbbbbbbbbbbbbabbbbbbbabbbabbbbabbbbbbbbbbbbbii
+iiiiiiiiiiiiiiiaiiiiiiiiiiiaiiiiiiiiiiiiiiiiiiii
+.iiiicccciicciiiiiiiiiiiiiiiiiiiiiiiiiciiiiiiii.
+.iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii.
+@tblock 0 0
+..55555555555555555555555555555555555555555555..
+.4444444444444444444444444444444444444444444444.
+531111111111111111111111111111111111111111111121
+531233333332225522224422225544455422333333332321
+531222333333335522224422225544424422211111222321
+531211111222224422224422222224424422223333333321
+531233333322224422224444222224424422222222222321
+531222222222224422224444222224424444222211122321
+531222111122224422224422222224424444233333333321
+531223333333324422224422222224424422223322222321
+531222223333334444442442222224424422222233332321
+531000002222224444442443222224424422222222222321
+533333333333333333333333333333333333333333333321
+111111111111111311111111111311111111111111111111
+.4444444444334444444444444444444444444444444444.
+.0000000000000000000000000000000000000000000000.

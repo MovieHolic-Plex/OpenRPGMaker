@@ -1,0 +1,43 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/river/w2-C.pxg",
+ "set": "worldmap",
+ "id": "river",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.072
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.03
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 8,
+ "bbox": [
+  2,
+  0,
+  47,
+  61
+ ],
+ "note": "규모 재해석: 폭 12px 깊고 잔잔한 큰 개울, 둑 2px 풀",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.012
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.03
+  },
+  "seam": 0.53
+ }
+}

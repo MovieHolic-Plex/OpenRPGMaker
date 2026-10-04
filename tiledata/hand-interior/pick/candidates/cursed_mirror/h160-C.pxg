@@ -1,0 +1,85 @@
+// 거울 면만 줄여 접지선 그대로 총 32px, 상단 테·받침대 윗면을 각각 3행으로 확장; 꼭대기 윗면 3행(y=17~19)
+@size 16 48
+@cell 16
+@palette palette.pal
+@mat b black 2
+@mat i iron 3
+@mat r red 3
+@layer mirror
+@mblock 0 16
+..bbbbbbbbbbbb..
+..bbbbbbbbbbbb..
+..bbbbbbbbbbbb..
+..bbbbbbbbbbbb..
+.bbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbb.
+.bbbibiiiiiibbb.
+.bbbiibiiiiibbb.
+.bbbiiibiiiibbb.
+.bbbiiiibiiibbb.
+.bbbiiiiibiibbb.
+.bbbiiirrriibbb.
+.bbbirrrbrrrbbb.
+.bbbirrrbrrrbbb.
+.bbbiiirrriibbb.
+.bbbiiiiibiibbb.
+.bbbiiiibiiibbb.
+.bbbiiibiiiibbb.
+.bbbiibiiiiibbb.
+.bbbibiiiiiibbb.
+.bbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbb.
+..bbbbbbbbbbbb..
+...bb......bb...
+...bb......bb...
+..bbbbbbbbbbbb..
+.bbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbb.
+@tblock 0 16
+..111111111111..
+..455555444443..
+..455544444443..
+..444444444433..
+.23333333333321.
+.22222211111111.
+.24342455443111.
+.24344255443111.
+.24344424443111.
+.24344442443111.
+.24344444243111.
+.24344234343111.
+.24323402432311.
+.24323302332311.
+.24344222343111.
+.24344444243111.
+.24344442443111.
+.24344424443111.
+.24344244443111.
+.24342444443111.
+.23333333333311.
+.23333322222211.
+..222222111111..
+...32......21...
+...32......21...
+..333333333332..
+.24444433333321.
+.24444333333321.
+.24443333333321.
+.23333333333311.
+.22222222222211.
+.11111111111111.
+// 붉은 눈: 지난 후보의 눈꺼풀·세로 동공을 그대로 유지
+@mblock 5 27
+iirrrii
+rrrbrrr
+rrrbrrr
+iirrrii
+@tblock 5 27
+4444444
+3451453
+2331332
+4422244

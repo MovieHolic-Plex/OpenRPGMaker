@@ -1,0 +1,29 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/moonlight_floor/hf1-C.pxg",
+ "set": "horror",
+ "id": "moonlight_floor",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "lint": {
+  "error": "index -1 is out of bounds for axis 0 with size 0"
+ },
+ "colors": 1,
+ "bbox": [
+  0,
+  1,
+  15,
+  30
+ ],
+ "note": "C(무늬·창살 격자): 폭 3+3 두 판(세로 창살 1px + 가로 창살 2px 를 14·15줄에 비움), 4줄마다 1px 밀림(x=1→8), 위·아래 두 줄은 걸러 옅게. 빛 티끌 몇 점을 판 밖에 흩어 유리 반사 느낌",
+ "ok": true
+}

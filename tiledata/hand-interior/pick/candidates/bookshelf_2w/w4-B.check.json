@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/bookshelf_2w/w4-B.pxg",
+ "id": "bookshelf 2w",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.012
+ },
+ "lint": {
+  "failed": [
+   "colors",
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 59,
+ "v5_colors": 32,
+ "bbox": [
+  0,
+  10,
+  31,
+  47
+ ],
+ "v5_bbox": [
+  0,
+  10,
+  31,
+  47
+ ],
+ "note": "뒷판을 더 어둡게 눌러 책이 앞으로 튀어나오게 하고, 책은 채도 높은 3단에 왼쪽 하이라이트를 한 단 더 벌렸으며 위 칸 널이 아래 책 머리에 드리우는 그림자를 얹었다.",
+ "ok": true
+}

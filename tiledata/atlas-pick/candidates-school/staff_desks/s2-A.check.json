@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/staff_desks/s2-A.pxg",
+ "set": "school",
+ "id": "staff_desks",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.18
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.039
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 26,
+ "bbox": [
+  1,
+  2,
+  31,
+  31
+ ],
+ "note": "교무실 섬 A: 회색 쇠 책상(locker 4단 윗면·빛 5단·앞판 3단·외곽 0단) 두 개가 마주 붙고 사이에 cream 낮은 칸막이. 먼 책상에 모니터 뒷면(mdglass, 초록 전원 점)과 서류, 가까운 책상에 서류 더미와 빨간 머그. 윗면 ¾, 오른쪽 아래 그림자.",
+ "ok": true
+}

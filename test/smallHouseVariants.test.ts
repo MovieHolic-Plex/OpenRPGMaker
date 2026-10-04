@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults";
+import { COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults";
 import { createSmallHouseVariantMaps } from "@/editor/content/townShowcaseMaps";
 import { createSmallHouseVariantProject } from "@/project/defaults/defaultProject";
 import { stampDbExtractedHouse } from "@/editor/content/dbExtractedHouseTemplate";
@@ -62,7 +62,7 @@ function createBlankTemplateApiMap(): GameMap {
     lowerTiles: new Array<number>(width * height).fill(TOWN_GRASS),
     name: "template api test",
     tileSize: 16,
-    tilesetId: DEFAULT_TILESET_ID,
+    tilesetId: COMBINED_TOWN_TILESET_ID,
     upperTiles: new Array<number>(width * height).fill(TILE.EMPTY),
     width,
   };
@@ -101,7 +101,7 @@ describe("small house variants", () => {
     for (const map of maps) {
       expect(map.width).toBeGreaterThanOrEqual(16);
       expect(map.height).toBeGreaterThanOrEqual(15);
-      expect(map.tilesetId).toBe(DEFAULT_TILESET_ID);
+      expect(map.tilesetId).toBe(COMBINED_TOWN_TILESET_ID);
       expect(map.lowerTiles.some((tile) => WALL_TILES.has(tile))).toBe(true);
       expect(map.upperTiles.some((tile) => ROOF_TILES.has(tile))).toBe(true);
       windowCount += map.upperTiles.filter((tile) => WINDOW_TILES.has(tile)).length;

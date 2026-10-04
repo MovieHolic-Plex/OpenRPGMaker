@@ -1,5 +1,63 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 자료집 전투 정리 — 전투 방식 두 가지·전투 화면 탭·안 쓰는 칸 삭제 (2026-10-02)
+
+사용자 결정: 전투는 도트 측면(RM2003식)이 주축, 포켓몬식만 예외. 자료집에서 그에 안 맞는 칸을 걷어냈다. **저장값은 하나도 지우지 않는다** — 화면에서만 뺐다.
+
+- **전투 화면 탭**(`databaseBattleScreenTab.ts`, 옛 `databaseUtilityRecordViews.ts` `renderBattleScreenTab` 대체): 카드 셋.
+  - 「전투 방식」(`db-battle-method-card`): `db-battle-method-side` 도트 측면 / `db-battle-method-monster` 몬스터 대치. 방식 하나가 화면(`system.battleUiStyle`)과 규칙(`system.battleModel`)을 같이 정한다 — `src/project/battleMethod.ts` `applyBattleMethod`(측면 = 두 키 삭제 → retro2003 + RM 규칙, 몬스터 = `pokemon` + `gen1`). 조수 `set_project_settings battle.uiStyle` 도 같은 함수를 탄다(`projectTools.ts`, 허용 값은 `listActiveBattleSkinIds()` = retro2003·pokemon).
+  - 창 색만 다르던 옛 측면 스킨 여섯은 #1895 에서 지웠다(저장값은 retro2003 으로 풀리고 창 색은 `battleLook.window` 로 옮겨짐 — [runtime-battle.md](runtime-battle.md)). 화면·규칙이 어긋난 옛 저장(예: retro2003 + gen1)은 `db-battle-method-rules-mismatch` 안내가 뜬다. 조수 `configure_game_systems battleModel` 도 `applyBattleMethod` 를 타서 규칙만 따로 바꾸지 못한다.
+  - 「타격감」(`db-battle-hit-feel-card`, `db-field-system-battle-hit-feel`)과 「전투 화면 꾸미기」(`db-battle-look-card`, `battleLookFields`)는 시스템 탭에서 옮겨 왔다. CSS 스코프도 `.db-system-form` → `.db-battle-screen-studio`(`system-studio.css`).
+  - 지운 것: 적 그림을 사선으로 늘어놓던 가짜 무대 미리보기·적 그룹 띠·「시스템 › 시작 설정 열기」 링크(`db-battle-screen-*`), 「전투 시스템 리소스」(`db-field-battle-system-resource` — 런타임은 아무도 읽지 않는 CSS 변수 `--runtime-battle-system2` 만 썼다).
+- **시스템 › 시작 설정**: 전투 UI 스타일(`db-field-system-battle-ui-style`)·규칙 모델(`db-field-system-battle-model`) 칸 삭제. 전투 흐름·참전 수는 여기 한 곳에만 남는다(전투 화면 탭에 겹쳐 있던 사본 삭제). 「전투 화면 탭으로」 이동 버튼은 `switchToBattleScreenTab`.
+- **적·종족**: 투명(`db-field-enemy-transparent`)·비행(`-flying`)·색조(`db-monster-species-hue`, 적 그래픽 대화의 색조)·몬스터 리소스 ID 글칸(`db-field-enemy-monster-resource`)·적 미리보기 일시정지(`db-enemy-preview-pause`) 삭제. 런타임은 `transparent`/`flying`/`graphicHue` 를 읽지 않는다(authoringOnly 공시도 같이 지웠다 — 아래 잔여 정리). 그림은 「그래픽 바꾸기」 대화로만 고른다. 종족과의 「그래픽이 종족과 다름」 표시는 그림(`monsterResourceId`)만 비교한다 — 지운 칸 차이로 고칠 데 없는 경고가 뜨지 않게. 조수 `upsert` 스키마(`dbTools.ts`)와 `set_project_settings resources`(`battleSystemResourceId`)에서도 이 칸들을 뺐다(저장·변경 함수는 옛 데이터 호환으로 남김).
+- **아이템**: 옛 장비 프로필·사용 메시지 UI 는 이미 없었고 남은 죽은 코드만 지웠다(`databaseItemRecordView.ts`).
+- **전투 애니메이션**: 레일 칸 `db-tab-animations` 삭제 → 도트 연출(`retroChoreographies`)의 하위 보기 「옛 전투 애니메이션 (대체용)」(`PARTY_SUBVIEW_PARENT.animations`, 하위 내비 `db-subview-retro-choreographies`·`db-subview-animations`). 도트 측면 전투는 스킬에 도트 연출이 있으면 셀 애니메이션을 그리지 않으므로(`battleDom.ts`) 연출 없는 스킬의 대체용·몬스터 대치 전용이다. 탭 검색 「전투 애니메이션」「animations」는 도트 연출에 걸린다(`LEGACY_TAB_SEARCH`). 전투 스튜디오 내비의 애니메이션 칸도 도트 연출로 바뀌었다.
+- **소재 고르기**: 은퇴한 전투 배경은 고르기 목록에서 숨긴다(`resourceOptions.ts`). 이미 고른 값은 그대로 보인다.
+- 남긴 것: 런타임의 `battleSystemResourceId` 처리 코드(옛 저장 호환). 파티 정면 스프라이트 `bskin-party-*` 는 2026-10-03 `deprecated/` 로 옮겼다(폴백은 도트 배틀러 — [runtime-battle.md](runtime-battle.md) 「옛 전투 그림은 deprecated/」).
+- **소재 고르기(2026-10-03)**: 은퇴 스킨 배경 전부(rm2003·pokemon 포함)·옛 숲 레퍼런스·AI 고치·씨앗·슬라임 미리보기·EasyRPG Hornet 을 고르기 목록(`resourceOptions.ts` `RETIRED_PICKER_IDS`)과 몬스터·조수 목록(`monsterResourceCatalog.ts` `RETIRED_MONSTER_IDS`)에서 뺐다. 배경 목록에 슬라임이 끼던 `troop-preview` 판정도 지웠다.
+- 잔여 정리: 「전투 스킨」「전투 UI 스타일」 문구를 「전투 방식」으로(전투 꾸미기·명령 CSS 「기본 모양으로」·조수 도구 설명, en/ja/zh 카탈로그 포함). 조수 활동 카드·리소스 고르기 창의 적 색조(`allowHue` 슬라이더·`hue-rotate`)와 `--enemy-pixel-hue` 필터, `databaseFieldSupport.ts` 의 투명·비행·색조 공시, 적 대기 스트립·재생 단추·`.flying` CSS, 몬스터 AI 생성의 그림 단계(그림은 아이템 아이콘만)를 지웠다. `battleSystemResourceId` 는 더 이상 리소스 삭제를 막지 않고 삭제 때 비운다(`resourceManager.ts` — 남기면 참조 검증이 프로젝트를 못 연다). 장르 프리셋 monster-collect 는 `applyBattleMethod(project, "monster")` 를 탄다. 리소스 관리자 「시스템 2」 분류는 남겼다 — 이벤트 「시스템 그림 바꾸기」가 system2 를 고르므로.
+- 시험(실행 안 함): `test/battleSystemDeprecation.test.ts`·`databaseBattleStudio.test.ts`·`battleLook.test.ts`·`battleSkinRegistry.test.ts`. 화면 증거 `verify-shots/db-battle-cleanup/{before,after}/`(`capture.mjs`).
+
+## 전투 배경은 종류로 고른다 — 도트 측면 (2026-10-03)
+
+사용자 결정 「(가) 배경 종류로」. 도트 측면(retro2003)은 배경 그림을 그대로 깔지 않고 `resolveSceneryBiome`(`src/assets/battleSceneryCatalog.ts`)이 겹 배경 다섯 종류(풀밭·숲·동굴·설원·사막) 중 하나로 풀어 네 장 겹 배경을 깐다. 이스턴 RPG 기본 배경·옛 스킨 배경은 이름 규칙으로 **전부 풀밭**이 되어, 그림 목록에서 무엇을 골라도 풀밭이었다.
+
+- `src/editor/panels/battleSceneryPicker.ts` `battleSceneryField`: 자동 + 종류 다섯 카드(`<testid>-auto`·`-plains`…, role radio). 저장값은 `battle-scenery-<종류>`, 자동은 키 삭제. 옛 그림이면 「…은 「풀밭」으로 보입니다」(`-legacy`, 기본 숲 레퍼런스는 안내 생략), 업로드 그림(종류로 안 풀리는 id)은 그대로 깔린다(`-custom`).
+- 「직접 그림」: 기존 그림 고르기를 그 아래 둔다(업로드·AI 생성용). 종류·옛 그림일 때는 빈 칸으로 보인다(`customPickerResourceId`) — 입력칸 testid(`db-field-troop-backdrop`·`db-field-terrain-backdrop-N`)와 fill 계약은 그대로.
+- 쓰는 곳: 적 그룹 설정 카드(`db-troop-scenery-*`, 「배경 변경」은 종류를 차례로 넘김 `nextBattleScenery`), 지형 효과 「전투 · 표시」(`db-terrain-scenery-N-*`). 몬스터 대치(pokemon)는 그림을 그대로 쓰므로 예전 그림 고르기가 그대로 나온다.
+- 「배경 움직임」(스크롤·물결·색 순환)은 그림 한 장을 움직이는 효과라 몬스터 대치에서만 보인다 — 측면에서는 칸을 숨긴다.
+- 미리보기·목록 썸네일은 `battleBackdropPreviewUrl` 로 실제 전투에 보이는 그림(종류의 `preview.png`)을 쓴다. `battle-scenery-*` id 의 단일 그림도 땅 겹 → 합친 미리보기(`BATTLE_SCENERY_CATALOG[].preview`)로 바꿨고 웹 내보내기에 다섯 장을 싣는다.
+- 조수: 적 그룹·지형·맵 전투 배경 칸 설명이 `BATTLE_BACKDROP_ID_HINT`(종류 id 쓰라)를 공유한다. 천공의 계단 층 배경도 종류 id 로 바꿨다(층 일곱 → 종류 넷).
+- 소재 고르기에서 지운 측면 스킨 다섯(ff·chrono·octopath·bravely·goldensun) 배경도 숨긴다(`RETIRED_PICKER_IDS`, rm2003 은 retro2003 기본 배경이라 남김).
+- 시험(실행 안 함): `test/battleSceneryPicker.test.ts`, `mgL5bvisBackdropMotion.test.ts`, `skyStairGame.test.ts`, e2e `qa-troops`·`sky-stair-multi-enemy-battle`. 증거 `verify-shots/battle-scenery-picker/{before,after}/`.
+
+## 레트로 전투 기믹 편집 칸 (2026-09-30)
+
+retro2003 전투 기믹이 JSON 에만 있던 것을 화면에서 고칠 수 있게 했다. 증거·캡처 목록은 `verify-shots/retro-editable/SHOTS.md`.
+
+- **스킬** (`databaseCombatRuleFields.ts` `skillAreaAndComboFields`, 전투 규칙 카드 안): 범위(`skill-area-shape`: 없음|원|직선) · 반경(`skill-area-radius`, 1~640) · 연계 배우 1~3(`skill-combo-actor-1..3`). 저장은 `updateDatabaseRecord("skills", id, { area, comboActorIds })` (`updateSkillRecord` 화이트리스트). `normalizeSkillRecord` 가 `comboActorIds` 를 **2명 미만이면 지운다** — 한 명만 고르면 저장값이 비고 패널이 재렌더돼 선택이 사라지므로 `pendingComboSlots`(레코드 id 별 임시 슬롯)가 재렌더를 넘어 선택을 들고 있다가 2명이 되면 저장하고 비운다. `databaseSkillRecordView.ts` 는 `area`/`comboActorIds` 만 있는 스킬도 전투 규칙 카드를 연다.
+- **상태** (`databaseStateRecordView.ts` `retroGimmickControls`, `state.runtimeEffects` 부분 병합): 게이지 정지(`db-state-rt-freezes-gauge`) · 버서크(`db-state-rt-forced-attack`, `forcedAction:"attackRandom"`) · 물리/마법 방어 배율(`db-state-rt-physical-defense`·`-magic-defense`) · 속성 등급 덮어쓰기(`db-state-rt-element-<id>`, 「덮어쓰지 않음」·A~E). 2026-10-01 반응·표적 7칸: 반격 %(`db-state-rt-counter`) · 회피 %(`-evasion`, 최대 95) · 도발(`-taunt`) · 감싸기(`-cover`) · 리플렉(`-reflect`) · 리레이즈 HP %(`-reraise`) · 선고 차례(`-doom`, 1~9). 변신 그림(`db-state-rt-transform`, 파티원 9칸 시트 목록 + 조수가 넣은 다른 id). 스킬 「전투 규칙」 카드: 게이지 밀기(`feature16-gauge-shift`, -100~100) · 힘 모으기 턴(`feature16-charge-turns`, 0~3) · 소환 그림(`feature16-summon`, 파티원 시트 목록 — `partyPixelChoices` 를 변신과 같이 쓴다). 0·끔은 칸을 지운다(undefined). 런타임 의미는 [runtime-battle.md](runtime-battle.md) 「반응·표적 상태 7종」.
+- 이미 화면에 있던 것(타격별 배율·피해 공식·상태 변화·우선도·속성·재사용 대기·급소·HP 대가·흡수·입력 커맨드·명중 보정·행동 불가·행동 제한)은 새로 만들지 않았다.
+
+## 도트 연출 탭 · 애니메이션 갤러리 (2026-09-30, A2)
+
+- 탭 `retroChoreographies`(전투 규칙 그룹, 「도트 연출」, `database.ts`). 기본 연출 1130개는 「기본」 배지의 **읽기 전용**이고 「복제해서 고치기」로 `chor_<slug>` 사본을 만든다. 추가·복제·삭제(삭제는 「쓰는 곳」 스킬 수를 경고). 오른쪽 「쓰는 곳」은 그 연출을 부르는 스킬 목록.
+- 편집기 `databaseRetroChoreographyView.ts`: 이름·설명·모션·층 행(시트·앵커·시작 ms·배율·반복·「타마다」)·위/아래/삭제/추가, 시간축 막대(층 시작~끝), 무대 미리보기(`databaseSkillRetroStage.ts` 재사용, 고칠 때마다 다시 재생). 층 행의 숫자칸은 `.db-field` 를 고정폭으로 둬야 한다 — `numberField` 스테퍼가 `width:100%` + `container-type:inline-size` 라 shrink-wrap flex 부모에서 16px 로 접힌다.
+- 갤러리 `databaseRetroGallery.ts` + `styles/database/retro-gallery.css`: 시트 갤러리(910장, CSS `steps()` 로 프레임 순환 썸네일)와 연출 갤러리 둘 다. 한국어 낱말 검색은 `src/assets/retroSearchIndex.ts`(「번개」 = 시트 20·연출 28, 「번개 사슬」 = 시트 5·연출 10), 필터, 48개씩 쪽수. 선택하면 무대에서 미리 재생.
+- 스킬 탭 `db-skill-retro-picker` 는 이 갤러리 위로 다시 쓰였다(testid `-status`·`-clear` 유지, 고르기 버튼 「이 연출을 이 스킬에 쓰기」).
+- 캡처: `node scripts/capture-retro-choreo-a2.mjs`(dev:worktree 9807, `?freshProject=1` 메모리 세션) -> `verify-shots/retro-choreo-a2/`.
+
+## 연출 손잡이 카드 · 상태 「몸에 남는 표시」 (2026-09-30, B)
+
+- 도트 연출 편집기(`databaseRetroChoreographyView.ts`)에 카드 `db-retro-choreo-handles`: 속도 슬라이더(`-speed`, 0.5~2)·무게 칩 3개(`-weight`, `button[data-weight]`)·색조 칩 행(`-tint`, 「원래 색」 포함)·화면 효과(흔들림·번쩍임·어둡게·컷인)·층별 효과음. 값이 기본으로 돌아오면 필드를 지워 A1 과 같은 저장 모양을 지킨다. 필드 조각은 `databaseRetroHandleFields.ts`. 스킬 탭 연출 카드는 「자동 추천」 결과도 보여 준다.
+- 상태 탭에 select `db-state-battle-aura`(「걸려 있는 동안 몸에 남는 표시」, 8종 + 기본): `updateDatabaseRecord("states", id, { battleAura })`, 비우면 필드 삭제.
+- 캡처 증거: `verify-shots/retro-choreo-b/g0-handles-before.png`·`g1-handles-after.png`(`?freshProject=1` 메모리 세션 — 정본 저장 증거 아님).
+
+## 스킬 탭 「도트 연출」 고르기 (2026-09-30)
+
+스킬 탭 「연출」 카드의 `db-skill-retro-picker`(`src/editor/panels/databaseSkillRetroPicker.ts`): 낱말 검색·모션·속성·계열(직업/몬스터 계열 칩)로 계약 약 850개를 거르고 목록에서 고르면 `updateDatabaseRecord("skills", id, { retroChoreographyId })` 로 저장하며 무대(`db-skill-retro-stage`)가 그 연출로 다시 그려진다(「빌려 온 연출: 이름 (id)」 상태 줄, 「연출 지우기」). 색인·필터는 `retroSkillCatalog.ts` 의 `retroChoreographyEntries`/`filterRetroChoreographies` 를 조수 도구와 공유한다. 스킬 id 자체가 계약이면 고르기는 안내만 보인다. 캡처: `scripts/capture-retro-choreo-a2.mjs` -> `verify-shots/retro-choreo-a2/d*.png`(옛 capture-retro-picker.mjs 는 폐기).
+
 ## 적 그룹 「전투 뒤」 구획 (2026-09-28)
 
 - 적 그룹 폼 구획 탭에 「전투 뒤」(`db-troop-section-after`)가 붙었다. `src/editor/panels/databaseTroopAfterBattlePanel.ts` — 결과 탭 셋(`db-troop-after-battle-tab-victory|defeat|escape`) + 명령 목록 하나(`db-troop-after-battle-command-list`, 피커 문맥 "map").
@@ -109,6 +167,19 @@ QA fixture는 메모리 전용이며 정본 프로젝트 저장 증거로 취급
 
 
 종족 그래픽 영역의 `전투 뒷모습` 리소스 선택기는 `graphic.backResourceId`를 편집한다. monster 리소스를 선택하거나 지울 수 있으며 기존 `currentSpecies`/`updateSpecies` 경로를 사용한다. 별도 필드 그래픽이나 정면 그래픽을 덮어쓰지 않는다. QA 선택자는 `db-monster-species-back-resource`. 후면 전투 방향에서만 적용하며 없으면 기존 그래픽을 사용한다.
+
+## 이벤트 초안 원본의 삭제 참조 (2026-10-02)
+
+`databaseEventReferences.eventReferenceMatches`는 이벤트 작업본과 `edit` 초안의 저장 원본을 함께 검사한다. DB 레코드·스위치/변수·리소스·공통 이벤트 삭제 가드에 공통 적용하며, 페이지 조건·명령·그래픽 및 기존 메타데이터 검사 범위를 원본에도 그대로 적용한다. 작업본에서 참조를 지운 것만으로는 삭제할 수 없고 이벤트를 적용한 뒤 삭제한다. 같은 이벤트의 작업본과 원본이 둘 다 참조해도 위치는 한 건이다.
+
+새 초안의 생성 기준본과 `remote-delete` 충돌의 원본은 정본 저장 대상이 아니므로 검사하지 않는다. 현재 작업본의 참조는 두 경우 모두 보호한다. `project/eventDrafts.discardEventDraft`도 `remote-delete` 취소 시 이벤트를 제거하여 오래된 원본을 부활시키지 않는다. 저장 투영·vault·취소가 같은 삭제 계약을 따른다. 회귀 소스는 `databaseDraftReferenceGuards.test.ts`, `eventDraftVault.test.ts`; 테스트 실행은 별도 승인 범위다.
+
+## DB 삭제의 스킬·주인공 권한 참조 (2026-10-02)
+
+- 스킬 삭제는 아이템의 `skillId` 외에 `learnedSkillId`(스킬북), `activateSkillId`(발동 효과), 직업 `battleCommands[].skillId`도 차단한다. 습득 목록에 없는 전투 명령 전용 스킬도 참조다.
+- 주인공 삭제는 시작·현재 파티 외에 직업 `equipmentPermissions.actorIds`, 장비 `equippableActorIds`, 아이템 `usableActorIds`와 레거시 `equipmentProfile.equippableActorIds`를 검사한다.
+- 이 필드들은 `io/references.ts`가 저장본 로드 시 검사하는 외래 키다. 현재 아이템 종류에서 숨겨진 필드도 저작값으로 보존되므로 삭제 가드에서 제외하지 않는다. 참조를 자동 삭제하지 않고 소유 레코드 이름을 안내한다.
+- 공용 검사 `projectDatabaseReferenceMessage`를 UI와 AI 삭제가 함께 사용한다. 회귀 소스: `test/databaseDirectReferenceDeletion.test.ts`(차단 후 데이터·undo 불변, 연결 해제 후 삭제·직렬화 왕복). 이 변경 세션에서는 테스트/게이트를 실행하지 않았다.
 
 ## 감사 후속: 참조를 보존하는 삭제 경로 (2026-09-20)
 
@@ -327,6 +398,8 @@ the pending UI integration boundary: [placed-place-edits.md](placed-place-edits.
 
 ## Monster resource metadata worksheet (2026-09-07)
 
+2026-10-02: 공용 몬스터 미리보기는 140종 native 시트의 idle_a 한 칸이다. 옛 painted starter/monsters 그림과 이름 추정 폴백은 폐기했다. 현재 색/외형 설명·해시·업로드 우선권 및 스킬 비교 근거: [공용 몬스터 폐기](native-enemy-retirement.md).
+
 Database > 전투 몬스터 > 몬스터 소재 uses the full resource catalog independently
 of gameplay enemies. Draft, Apply/reset, project-switch safety and focused QA
 ownership: [monster-resource-editor.md](monster-resource-editor.md).
@@ -398,6 +471,7 @@ until those removals have real ownership evidence.
 
 ## 캐릭터·얼굴 메타데이터 (2026-09-06)
 
+- 2026-10-04: GIF 공방에서 사람이 남긴 캐릭터와 `desc.json`도 같은 공용 화면에 표시한다. `sharedCharacters.ts`가 기존 호스트 공용 SQLite `charset-actor-kept`에서 그림·라벨·의상/역할 속성을 공급한다. 새/기존 프로젝트는 기존 공용 기본 자산 설치 경로를 사용하며 열린 에디터는 새로고침한다. `shared_charset_actor_` 그림은 실제 0번 칸만 표시하고 빈 7칸을 후보로 만들지 않는다. 폐기하면 공용 검색에서 빠지며 기존 프로젝트의 그림과 수동 얼굴 연결은 보존한다. 상세 저장/복구 계약은 `charset-actor-harness.md`의 「남김 → 공용 캐릭터와 설명」.
 - System 그룹의 `characterGraphics` (`db-tab-character-graphics`)는 `databaseCharacterGraphicsView.ts`가 기존 workspace/list/detail 빌더로 렌더한다. 주민 관계(`characters`)와 다른 면이며, 새로운 자산 목록이나 자동 이벤트 변경 경로를 만들지 않는다.
 - `project/characterGraphics.ts`가 기존 `resourceProfiles`의 얼굴 `graphicAttributes`/`graphicNote`, charset `characterSlots`를 읽고 쓴다. 이름은 sprite의 경우 기존 `charsetLabels`, 얼굴은 profile.name이다. 두 그림의 종류·나이·성별·피부·머리·의상·역할은 독립이며 명확한 글자 특징만 기본 표시한다. 모호함은 빈칸이다.
 - 상태는 pending/mapped/no-face, 품질은 unspecified/exact/approximate다. pending 이름 편집은 검토 완료가 아니며, no-face는 명시적인 값이다. 그림으로 얼굴을 지정해도 속성을 복사하지 않고 기존 맵·이벤트 명령을 바꾸지 않는다.
@@ -441,7 +515,7 @@ before Apply is enabled. The shared generation controller owns stale-target and
 project-switch checks. World/lore coupling, expression variants and automatic
 cutscene insertion are not part of v1.
 
-Shared-catalog read line (2026-09-19): charset/face slots show one read-only line from the shared catalog (`sharedCharsetRow`/`sharedFaceRow` in `src/project/sharedCharacterFaceResolver.ts`) — label · status · quality · attributes. Bust has no shared concept and is excluded; uploaded/generated pictures state "no shared classification". No value sync, no writes, no schema change.
+Shared-catalog read line (2026-09-19): charset/face slots show one read-only line from the shared catalog (`sharedCharsetRow`/`sharedFaceRow` in `src/project/sharedCharacterFaceResolver.ts`) — label · status · quality · attributes. Bust has no shared concept and is excluded; uploaded/generated pictures state "no shared classification". Since 2026-10-01 the bust slot offers 「이 얼굴의 공용 흉상 연결」 when the face is a common expression cell — it writes `shared-<stem>-expressions-bust-base`, and dialogue emotions then swap to the matching expression bust (`src/assets/sharedPortraitAssets.ts`). A fourth slot, **full** (`CharacterAppearanceRecord.full`, kind `picture`), was added the same day with the same shared-link button; `resolveAppearancePortrait(…, "full")` falls back full → bust → face and changeFace accepts `presentation: "full"`. AI candidate generation stays face/bust only. No value sync, no writes, no schema change.
 
 Tests: `characterAppearanceEditor`, `characterAppearanceLifecycle`,
 `databaseTabIcons` and `databaseSidebarNav`. The supported viewport matrix is
@@ -919,6 +993,7 @@ Database tabs, record views, battle database records, utility records, reference
 - Troop battle event command editing also uses shared database command-list rendering. Keep battle-event command rows on the same command editor path unless the task names a narrower troop-only control. Battle-event rows pass the troop-specific runtime support table so unsupported commands show partial/editor-only badges instead of inheriting map-runtime support.
 - Troop battle event condition controls include round cadence (`turn`, `onRound`, `everyRound`), switch/variable, enemy HP range, `enemyHpBelow`, actor HP, and actor-command forms. Keep these controls aligned with `src/battle/battleEvents.ts` and battle reference validation when adding condition kinds.
 - Class battle command rows are runtime-facing data, not cosmetic labels. Keep `kind`, optional `skillSubsetName`, and optional `skillId` edits in sync with `src/battle/battleCommands.ts`; the battle UI consumes class commands in order and treats `guard` as the existing defend action.
+- **공통 이벤트 명령·배우별 명령 (2026-10-02):** 직업 명령 행과 전역 전투 명령 카드에 「공통 이벤트 실행」(`commonEvent`) 종류가 있다. 직업 행은 `db-picker-class-command-common-event-*`, 전역 카드는 `db-picker-battle-command-common-event-*` 로 실행할 공통 이벤트를 고른다. 액터 「장비와 스킬」 안의 「전투 명령」 패널(`actor-panel-actor-battle-commands`)은 `ActorRecord.battleCommandIds` 를 편집한다. 끄면 직업 명령을 쓰고, 켜면 직업 명령을 옮겨 와 ↑↓·삭제·추가(7개까지)를 할 수 있다. AI 도구는 `upsert_actor.battleCommandIds` 와 `upsert_database_utility` battleCommands 의 `commonEventId` 를 받는다. 런타임 계약은 `openwiki/runtime-battle.md` 의 같은 날짜 항목에 있다.
 - Monster collection authoring spans System, Items, Enemies, Troops, Classes, Skills, States, and Monster Species database views. `system.monsterCollection` gates capture command exposure; optional `system.typeChart` stores the Pokemon-style type matrix; item `captureProfile.multiplier` remains the compatibility strength while the Items view's `ballClass` selector authors `poke|great|ultra|master`; enemy `speciesId` links battlers to collectable species; the Troops view exposes `uncapturable` and `trainerBattle`; the States view exposes `gen1MajorStatus`; class command kind `"capture"` is only useful when the system gate is enabled. Keep these controls, record mutators, normalization, reference validation, and `dbTools` schemas aligned.
 - **Enemy vs Species responsibilities (G006):** Enemies (`database.enemies`, 몬�뒪??tab) own battle-facing battler data: combat stats, attack patterns/actions, rewards, rates, and optional `speciesId` capture link. Species (`database.monsterSpecies[]`, 醫낆” tab) own collectable identity: baseStats, types (max 2), captureRate, skillsByLevel, evolutions, and species graphic. `enemy.speciesId` links a battler to a collectable species for capture without making the enemy record a player-owned monster. **No dual-write stats:** editing enemy stats must not rewrite species `baseStats` (or the reverse). Optional graphic copy (`db-enemy-species-copy-graphic`) may copy species graphic fields onto the enemy only; never auto-sync stats. Enemy species panel chips: unset warn / missing error / graphic mismatch info (`databaseEnemyRecordView.ts`). Species intro copy states the same split.
 - The System database tab edits `project.system` through `src/editor/panels/databaseSystemView.ts`: start party (up to 4 `startActorIds` slots, synced to `session.partyActorIds`), title/system/battle-system resource ids, initial troop, `battleFlow`, `activeSlots`, `monsterCollection`, `giftSystem`, `rewardPolicy`, optional `timeSystem` (enable + day bounds + onDayEnd common event), `typeChart.types` plus the attacker/defender matrix, and title-screen layout/labels. Structural edits (party slots, type list, time enable) re-render the tab body; blank/removing the type list deletes `system.typeChart` **after `window.confirm`** (cancel restores the previous type list), preserving legacy neutral damage when the author confirms. Never collapse a multi-member start party to a single actor when one slot changes. `commonEventReferenceMessage` blocks deleting a common event that `timeSystem.onDayEnd` points at (copy: 시간 시스템(하루 끝)). Terrain backdrop/footstep use `resourcePickerControl` (testid `db-field-terrain-backdrop-*` / `db-field-terrain-footstep-*` stay on the text field).
@@ -944,7 +1019,7 @@ Database tabs, record views, battle database records, utility records, reference
   - 전투 진형 좌표의 단일 권위자는 `classicEnemyFormation(index)`(`src/battle/battleBattlers.ts`) 다. 적 그룹 뷰의 `DEFAULT_MEMBER`/`positionedMember`/`arrangeMembers`/예시 멤버가 모두 이 함수를 쓴다 — 에디터 좌표가 런타임 재배치(`x>150`)에 걸리지 않게 하는 유일한 방법이다. 미리보기는 `x/320`·`y/240`(모델 클램프와 일치), `x=150` 안내선(`db-troop-preview-recenter-line`), 아군 마커(`db-troop-preview-party-marker-N`, `battleX 252 / battleY 96+36i`)를 그린다.
   - 전투 이벤트 조건은 런타임이 전부 AND 로 평가한다. 조건 편집은 **첫 조건만** 교체하고 나머지를 보존해야 한다(`setFreshCondition`). `kindOfBattleEventCondition` 은 전용 폼이 없는 종류(selfSwitch/gold/timer/item/actorTurn/enemyTurn 등)에 `undefined` 를 반환하고, UI 는 경고 칩 + `조건 교체` 버튼만 보여 값 파괴를 막는다.
   - 숫자 필드 bounds 는 normalize 의 clamp 범위와 숫자까지 일치시킨다(권위: `databaseEnemyTroopRecordModel.ts`, `actionCombat.ts`, `monsterCollection.ts`). `enemy.level`(`db-field-enemy-level`)은 보상 레벨갭·포획 시작 레벨에 쓰이므로 `updateEnemyRecord` 패치 경로도 함께 유지한다.
-  - 적 `transparent`/`flying`/`graphicHue` 는 `databaseFieldSupport.ts` 에 `owner:"enemy"` authoringOnly 로 공시한다(런타임 소비자 없음). 액션 전투 `aggroRange`/`moveIntervalMs`/`knockbackResist` 는 저작 가능하다.
+  - 적 `transparent`/`flying`/`graphicHue` 는 런타임 소비자가 없고 화면 칸도 지웠다(2026-10-02, 공시도 삭제). 액션 전투 `aggroRange`/`moveIntervalMs`/`knockbackResist` 는 저작 가능하다.
   - 공격 패턴 표: 유령 행 없음(0액션 → `db-enemy-actions-empty`), 행 추가/복사/제거 버튼(`db-enemy-action-add|duplicate|delete`), 우선도 내림차순 표시 + 원본 인덱스 편집(`dataset.actionIndex`), 삭제된 스킬은 `삭제된 스킬(id)` + `is-dangling`. **버튼 라벨에 "복제"/"삭제" 를 쓰지 말 것** — 레코드 툴바 버튼과 e2e `hasText` 가 충돌한다(그래서 `행 복사`/`행 제거`).
   - 속성 유효도 행은 `database.elements` 에서 만들고, 목록에 없는 잔여 키는 `is-dangling` 행 + 삭제 버튼으로 정리한다. 상태 행의 `state_death` 는 데이터에 없어도 런타임이 인정하는 **암묵 상태**이므로 항상 렌더한다(`references.ts` `isKnownStateId`, `commandCatalog.ts`).
   - 진화 사이클/자기 진화는 `monsterEvolutionCycleSpeciesIds` + `validateMonsterSpeciesRecords` 의 **하드 에러**다(로드를 막는다). 반면 상성표 미등록 타입과 "수집 OFF + 종족 데이터" 는 출하 기본 프로젝트가 그 상태로 실려 있어 lint 경고로 올리면 전 프로젝트 노이즈가 된다 — 각각 종족 탭 칩(`db-monster-species-type-warn`)과 수집 탭 배너(`db-collection-gate-warn`)가 맥락 안에서 담당한다.
@@ -1412,6 +1487,40 @@ leaf 조건에서 멈추고 `default: return false` 했다:
 - 스타일은 `src/styles/database/skill-item-visuals.css` 안에서만 늘린다. 색은 `.database-modal-backdrop` 아래 `--db-studio-*` 토큰만 쓰고(하드코딩 hex/rgba 금지), **새 CSS 파일을 만들지 않는다**(`scripts/check-css-budget.mjs` 파일 수 래칫).
 - 커버리지: `test/databaseSkillAnimationStage.test.ts`(자동 반복 + 카운터 추적, 1프레임 정지, reduced-motion 정지, 토글 왕복, 표시면 교체 후 분리된 스테이지의 인터벌 정리), `test/databaseSkillItemForms.test.ts`(스테이지·셀·시트 메타·토글 계약), `test/eventEditorShowAnimationPreview.test.ts`(loop 랩어라운드와 `onFrame` 이 기존 1회 재생을 깨지 않음).
 
+### retro2003 도트 전투 미리보기 (2026-09-28)
+
+- `연출` 카드 맨 위에 **도트 전투 무대** `db-skill-retro-stage`(`databaseSkillRetroStage.ts`)가 붙는다. 조건: `retroClassSkill(record.id)`(계약 48종) 또는 `retroSkillRecipe(record)`(런타임 레시피 17종 + 속성·이름·효과 추정). 둘 다 없으면 그리지 않는다.
+- 무대: 논리 240×136, CSS `scale` 로 카드 폭(최대 480px = 2배)에 맞추고 pixelated. 배경 plains 네 장 겹 배경, 오른쪽 파티 셋(가운데 = 계약 `actorId` 의 전투 도트, `resolvePartyBattleCharset` → 시트 3×8 + `cast/<id>.png`), 왼쪽 적 셋(슬라임·박쥐·늑대 48px 3×3). 회복·아군 버프는 레이어가 파티 위에 올라간다.
+- **순서의 정본은 순수 함수** `src/battle/retroSkillTimeline.ts`: `retroClassSkillTimeline(contract)` / `retroRecipeTimeline(RETRO_SKILL_RECIPES 항목)` → `[ms, pose|move|hide|fx|projectile|screen|hit|sound]` 사건 목록, `retroTimelineStateAt(timeline, t)` → 그 시각의 무대 상태. 런타임(`retroSkillChoreography`)은 아직 이 함수를 쓰지 않는다 — 계약 48종의 런타임 연출을 붙일 때 같은 함수를 쓰면 두 화면이 같은 순서가 된다.
+  레이어 규칙: user 는 준비 순간, projectile 은 방출(투사체보다 앞의 target 은 조준), 나머지는 착탄부터 목록 순서로 55% 겹쳐 이어 재생. 칸 폭은 계약 `frame`(32·64·128) 그대로이고 screen 은 1.25배로 무대 가운데. 필살기 = 어둡게 → 컷인(띠 + 초상 + 스킬 이름) → 대형 레이어 + 번쩍임·흔들림.
+- 조작: `▶ 재생`(`db-skill-retro-play`, 처음부터 + 효과음), `반복`(`db-skill-retro-repeat`), 속도 `0.5×/1×`, 경과 시간 칩, 레이어 칩(키·anchor·규격, 404 면 `그림 없음`). 자동 반복은 **무음**이고 소리는 버튼을 누른 회차에만 난다. 피해·회복 숫자는 표시용(위력 기반)이며 지원 스킬에는 없다.
+- 타이머: rAF 루프 하나, 스테이지 루트별 WeakMap 컨트롤러. `stopSkillAnimationStagesIn` / `resumeSkillAnimationStagesIn` 이 `stopRetroSkillStagesIn` / `resumeRetroSkillStagesIn` 을 함께 부르므로 탭 전환·레코드 전환·모달 닫기가 기존 경로 그대로 멈춘다. 떨어진 루트는 2틱 뒤 스스로 멈춘다. reduced-motion·rAF 없음 → 대표 시각 정지 화면. 없는 시트는 그 레이어만 빠진다.
+- 목록: 도트 연출이 있는 스킬 썸네일 모서리에 이펙트 한 칸 배지(`db-skill-retro-badge`, 행 `data-retro-fx`). 스킬 탭에는 직업 필터 칩(전체·전사·수호자·마도사·정찰병·성직자·궁수 — 계약 classId 또는 직업 습득표·skillIds)이 뜬다. 이 필터는 세션 메모리만 쓰고 `oprn:database.categoryFilter` 에 저장하지 않는다(아이템·장비 전용 계약 유지).
+- 시각 확인: 세션 로컬 `.omo/editor-skill-stage/capture.mjs`(가짜 시계로 16ms 씩 전진, 계약 스킬이 없는 새 프로젝트면 메모리 스토어에만 레코드를 넣는다).
+
+#### 확장 6직업·몬스터 도트 (2026-09-28 mx-ed)
+
+- 직업 칩에 사무라이·닌자·무도가·음유시인·드루이드·마녀(`class_samurai` … `class_witch`)를 더했다. 배우 기록이 없으면 `FALLBACK_BATTLERS` 로 그린다: 사무라이 `charset-battler-actor3-0-samurai`(마도사 actor3-0 의 변형), 닌자 actor3-2, 무도가 actor3-5, 음유시인 actor3-6, 드루이드 actor3-4, 마녀 actor4-7. `CHARSET_BATTLERS` 에 아직 없는 변형 id 는 `battlerPaths` 가 `charset-battlers/<id>.png`·`cast/<id>.png` 로 조립하고, 그 그림이 404 면 밑바탕 칩(actor3-0)으로 물러난다. 양옆 두 배우는 계약 순서에서 시전자 다음 둘(같은 세대끼리 선다).
+- 적 편은 `retroStageEnemyLineup`(레이어 키 낱말 → 테마 줄 셋)으로 스킬마다 다르다. 성·저주는 언데드, 불은 불 정령·오크, 얼음·물은 물 정령·리치, 번개는 철 골렘·부유하는 눈, 자연은 벌·식충 식물·독사, 음악은 하피·미믹, 투척은 산적·고블린, 대지·무술은 멧돼지·고블린, 베기는 사마귀·리자드맨. 필살기 과녁은 96px(암흑=마왕, 검·대지·무술=트롤, 그 밖=드래곤), 내려찍기는 골렘. 앞자리만 큰 셀을 쓰고 `enemyHomes` 가 뒤 둘을 밀어 둔다(x ≥ 28). 발은 시트 계약의 바닥 y = cell−4, 대기 칸 길이는 시트의 `idleFrameMs`. 없는 시트는 그 적만 숨는다. 128px target 시트(파산장·용권 멸살 착탄)는 발 아래 24px 기준이다.
+- `pixelEnemySheets.ts` 에 확장 30종을 등록했다(총 40). 대기 칸 길이는 각 README 권장값, 권장값이 없는 짐승 10종은 이동 방식 기본값이다.
+
+### 적 탭 도트 미리보기 카드 (2026-09-28 mx-ed)
+
+- `databaseEnemyPixelPreview.ts`: `pixelEnemySheet(monsterResourceId)` 가 있는 몬스터만 기존 「미리보기」 아래 `db-enemy-pixel-preview` 카드를 둔다(`databaseEnemyStudio` 의 `enemyPixelSlot`, 리소스·색조·투명·이름이 바뀔 때만 다시 그린다). 무대는 논리 240×128(plains 겹 배경, 과녁 아군 actor1-0)이고 CSS scale 로 늘리며 pixelated 다.
+- 버튼은 `대기`·`공격`·`피격`·`쓰러짐`(`db-enemy-pixel-{idle,attack,hit,dead}`)이다. 공격은 windup 360 → move 320 → attack 300 → recover 360ms(`enemyPixelBeats`, 순수 함수)이고 근접형은 move 칸에서 아군 쪽으로 파고든다. shoot·breath·식충 식물(`IN_PLACE`)은 제자리다. 착탄 칸에서 과녁 아군이 hit 칸이 된다. 9칸 표(`db-enemy-pixel-cells`)는 칸 하나를 눌러 정지 보기, 다시 누르면 대기로 돌아간다.
+- 타이머: rAF 하나, 스테이지별 WeakMap 컨트롤러. `stopSkillAnimationStagesIn` / `resumeSkillAnimationStagesIn` 이 `stopEnemyPixelPreviewsIn` / `resumeEnemyPixelPreviewsIn` 을 함께 부르고, 떨어진 루트는 2틱 뒤 멈춘다. 감속 모드에서는 대기 a 에 서 있고 버튼은 대표 칸 하나만 보인다. 시트가 404 면 카드를 조용히 걷는다.
+- 목록: 도트 시트가 있는 몬스터 썸네일 모서리에 대기 칸 배지(`db-enemy-pixel-badge`, 행 `data-pixel-sheet`). CSS 는 `database/modern/enemies.css` 에만 더했다(새 파일 없음).
+- 시각 확인: 세션 로컬 `.omo/editor-mx/capture.mjs [skills|enemies|all]`(새 프로젝트 메모리 스토어, 계약 스킬이 없으면 메모리에만 넣고 저장하지 않는다). 모달을 닫은 뒤 도는 루프 0, pageerror·시트 404 0 이다.
+
+### 몬스터 스킬 미리보기 (2026-09-28 med)
+
+- 계약은 `src/assets/retroMonsterSkills.ts`(스킬 42 · slug → 스킬 목록, 레벨대마다 1~5개). 편집기 쪽 전부가 `databaseMonsterSkillStage.ts` 에 있다: 순수 타임라인 `monsterSkillTimeline`(사건 형식·상태 계산은 `retroSkillTimeline.ts` 것을 그대로 쓴다), 레이어 그리기 `createMonsterFxPainter`, 스킬 탭 반전 무대 `renderMonsterSkillStage`, 레코드가 없을 때의 계약 둘러보기.
+- 몬스터 시트 9칸은 pose 사건에 싣는다: windup=`attack_windup` · move=`walk_b` · attack=`attack` · recover=`attack_follow`(`monsterCellForPose`). lunge 는 직업 파고들기와 같은 박자(질주 130ms · 복귀 190ms · 여운 260ms), 나머지는 여운 520ms.
+- 레이어 크기(논리 px, 무대가 2배로 그린다): 32·64 칸 그대로, 대상·전원 위 128 칸은 절반(화면 1배), screen 128 은 무대 높이 × 1.25. **screen 층은 배우 뒤**(`db-*-screen-layer`)에 둔다 — 앞에 두면 심판의 하늘·눈보라가 시전 몬스터를 통째로 덮었다(1차 캡처). 투사체는 몬스터 몸 앞에서 왼→오로 난다(계약상 첫 칸이 오른쪽을 본다). 404 시트는 그 레이어만 생략한다.
+- 적 탭 카드: slug(`pixelEnemySlug` = 시트 파일 이름)의 스킬마다 `db-enemy-pixel-skill-<id>` 버튼, 머리에 「스킬 N개」(`db-enemy-pixel-skill-count`)와 모션 칩, 아래 설명(`aria-live`). 대기·공격 버튼이나 칸 정지로 바꾸면 스킬 층·어둡게·흔들림을 지운다. 감속 모드에서는 착탄 한가운데 한 장면.
+- 스킬 탭: 직업 칩 뒤 `db-filter-chip-monster`(「몬스터」, `RETRO_MONSTER_FILTER_ID`, 판정 `isMonsterSkillId` = 계약 id 또는 `skill_mon_`). `renderSkillRetroStage` 는 계약 몬스터 스킬이면 반전 무대(`db-skill-mon-stage`, 몬스터 왼쪽 시전 → 아군 셋 오른쪽 대상, 시전 몬스터 = `monsterCasterFor` 의 첫 slug)를 돌려준다. skill_mon_* 레코드가 아직 없으면 몬스터 칩 목록 자리에 계약 42개 선택 상자(`db-skill-mon-browser`)가 뜬다. 타이머는 `stopRetroSkillStagesIn` / `resumeRetroSkillStagesIn` 이 `stop/resumeMonsterSkillStagesIn` 을 함께 부른다.
+- 시각 확인: 세션 로컬 `.omo/editor-mon/capture.mjs <회차>`(기본 프로젝트 `/`, Playwright 가짜 시계로 정확한 시각에 찍는다). 마왕 5개 · 서릿 리치 3개 · 슬라임 1개, 「암흑의 심판」「화염 브레스」 모두 pageerror 0.
+
 ## 데이터베이스 30탭 UI/UX 계약 (2026-08-30 실측)
 
 계측은 `scripts/qa/db-ux-probe.mjs` 로 한다(사용법은 `openwiki/testing.md`). 아래 모든 수치는
@@ -1685,6 +1794,11 @@ n=3 / 484.6 이 나온다 — 리스트로 모아서 세라. 이 표의 `.db-lif
 2. 그림은 `generateAiImage` (아래 이미지 경로) → `flattenGeneratedArtwork` 로 배경을 투명화.
 3. 적용은 **기존 툴만** 쓴다: `upsert_resource` → `upsert_item`/`upsert_enemy` 를
    `applyToolSequenceToStore` 로 한 undo 체크포인트에 묶는다. 새 쓰기 경로를 만들지 마라.
+
+**2026-10-02 개정 — 적은 그림을 만들지 않는다.** 전투가 전부 도트 측면이 되면서 적의 그림 옵션을 뺐다(아이템만 남음).
+enemy allowlist 에 `monsterResourceId` 를 더해 LLM 이 도트 몬스터 140종(`PIXEL_ENEMY_PORTRAIT_URLS`) 중에서 고르고,
+목록 밖이면 `pickPixelMonsterId` 가 이름 조각 → 슬라임으로 맞춘다. 결과 미리보기는 그 도트 몬스터의 정지 그림이다.
+적 그래픽 칸의 「AI로 만들기」와 소재 고르기의 몬스터 생성도 지웠다 — `runtime-battle.md` 「전투는 전부 도트 측면」.
 
 리소스 kind 는 종류마다 다르다 — 적은 `monster`, 아이템은 `picture`. 아이템 아이콘 피커
 (`kind:"icon"`)가 업로드 자산 중 `picture`/`monster`/`system` 만 목록에 올리기 때문이다
@@ -2205,3 +2319,40 @@ HUD 글꼴은 스타일 권장/갈무리9/Neo둥근모/기본 UI 중 선택한�
 - AI 미연결이면 상태줄에 연결 안내가 뜨고 버튼이 되살아난다.
 - 검증: `test/worldCanonInterview.test.ts` 12케이스(본문 초안 파싱·클램프·펜스 내성·합성 규칙·컨텍스트 주입·표면 렌더 포함) + 세계관 계약 11파일 = **73케이스 통과**, `typecheck:app` 0 에러, 브라우저 증거 `verify-shots/world-lore-v6/` 4장.
 
+
+## 공용 아이템 1,000종과 통일 도트 작업 (2026-10-01)
+
+사용자 요청의 대상은 특정 프로젝트 행이 아니라 **모든 새 프로젝트의 기본 데이터**다. 기존 228종을 보존하고 `sharedItemCatalog.json`의 772종을 `defaultItemRecords`에서 정규화해 합친다. 장비 86종은 별도 컬렉션이다. 빈 프로젝트·장르 프로젝트는 `createProjectWithMaps → defaultDatabase` 경로로, 기본 예제는 `fixture:sync`로 동기화한 픽스처로 1,000종을 받는다. 예제 생성 시 `ensureBundledResourceProfiles`로 새 그림 및 실제 크기 정보도 연결한다.
+
+약·음식·상태 치료·전투 소모품·기술서·성장 씨앗·포획·돌봄·재료·열쇠·농사 도구 등은 기존 엔진 필드만 쓴다. 성장 씨앗의 영구 성장 필드는 공격·방어·정신·민첩 네 가지다. HP/MP 영구 성장은 지원하지 않으므로 그 효과를 설명에 쓰지 않는다. 일반 재료·미끼·열쇠 설명은 별도의 제작·낚시·문 열기 이벤트가 자동 실행된다고 주장하지 않는다.
+
+그림 계약은 사용자 승인 시안에 맞춘 32×32, 투명 배경, 이진 알파, 최대 32색, 중앙 정렬·긴 변 최대 26픽셀이다. 기존 `cc0-jetrel-*` ID/경로는 참조 호환용으로 유지하며 새 그림의 출처는 `generated`다. 기존 저장 프로필의 16/128px 오표기는 등록된 실제 크기 32px로 수렴한다. 아이템 행 자체는 로드에서 재주입하지 않으며 저자가 삭제한 항목을 복구하지 않는다.
+
+저작 입력·프롬프트·완료 SHA는 `assets/item-catalog/`에서 관리한다. 등록된 그림 1,054종 모두 생성·저장·시각 검토를 마쳤다. `generation-manifest.json`의 SHA와 실제 PNG가 맞고 시각 검토를 마친 뒤에만 전체 교체 완료로 보고한다. 자세한 절차: `assets/item-catalog/README.md`.
+
+공용 시드 화면 확인: `node scripts/content/capture-shared-item-defaults.mjs`는 격리 dev 서버의 `?blankProject=1`에서 실제 자료집을 열어 전체 1,086행·아이템 필터 1,000행을 읽는다. 신규 「맑은 쑥 회복액」 검색·상세 HP 115·가격 120과 32×32 그림 로드를 확인했고 pageerror 0건이었다. `verify-shots/shared-item-defaults/`에 실제 편집기 화면과 결과 JSON을 남긴다. 이 화면은 공용 생성 경로를 증명하는 저장 없는 QA이며 특정 사용자 프로젝트 정본 저장의 증거로 쓰지 않는다. 전체 그림 생성 완료 여부는 별도로 `assets/item-catalog/generation-manifest.json`·`visual-review.json`·실제 PNG를 대조한다.
+
+`scripts/content/inspect-shared-item-defaults.mts`는 공용 빈 프로젝트를 프로덕션 `serialize`로 파일에 내보낸 뒤 실제 파일을 다시 읽고 `deserialize`로 재로드한다. 확인 결과 아이템 1,000종이 동일했고 삭제한 신규 행도 재로드 후 부활하지 않았다. 이는 공용 기본값의 저장 형식 계약 확인이며 별도의 사용자 SQLite 프로젝트에 쓰지 않는다. 이미지 생성의 완료 판단은 이 데이터 재로드 결과로 대신하지 않는다.
+
+신규 부활 깃털 16종은 `onlyEffectiveOnDeadActors`가 설정된 약이다. 엔진의 `itemAllowsBattle`은 이 조건을 전투 사용에서 제외하므로 저작 `occasion`도 `field`로 맞추고 설명에 필드 사용을 명시했다(2026-10-02). 기존 불사조 깃도 같은 계약이다. `scripts/content/inspect-shared-item-defaults.mts`는 신규 772종의 저작 필드/전투 사용 설정과 실제 사용 허용 함수 사이의 불일치도 보고하며, 빈 프로젝트와 기본 예제 모두 불일치 0개를 확인했다. 픽스처는 부활 16종만 갱신됐고 총 1,000종과 다른 파생 테이블은 유지됐다.
+
+공용 아이콘은 새 `oprn-item-*` ID도 기존 이미지 리소스 해석기를 거쳐 게임 내보내기에 포함된다. `scripts/content/inspect-shared-item-export.mts`는 위에서 저장한 새 프로젝트 파일을 읽어 프로덕션 `collectWebExportAssets`를 호출한다. 2026-10-02 확인에서 등록 아이콘 1,054개의 리소스 ID와 실제 내보내기 경로가 모두 일치했고 누락 0개였다. 생성된 파일 수·바이트와 미생성 그림 수는 별도로 집계한다. 경로가 내보내기에 등록됐다는 사실만으로 미생성 그림까지 완료라고 보고하지 않는다.
+
+이미지 도구가 독립 요청 여러 개를 돌려줘도 정규화와 완료 명세 쓰기는 직렬로 한다. `scripts/content/save-shared-item-art-batch.mjs`는 각 요청의 실제 반환 `source`와 원문 프롬프트를 함께 보관한 뒤 `scripts/content/normalize-shared-item-icon.mjs`를 한 파일씩 호출한다. 완료 명세는 임시 파일에 전체 JSON을 쓰고 원자적으로 교체해 검토 중인 독자가 잘린 문서를 읽지 않게 한다. 생성의 동시 처리와 명세의 동시 쓰기를 혼동하지 말 것. 완료 판단은 여전히 실제 PNG·SHA·시각 검토의 대조이며, 배치 상태 파일만으로 대신하지 않는다.
+
+`scripts/content/inspect-shared-item-art.mjs`는 실제 PNG를 디코드해 SHA·캔버스·이진 알파·색 수·외곽 범위·중앙 정렬을 확인하고 중복 요청 ID/경로와 예상 밖 완료 명세 항목을 거부한다. 시각 검토는 같은 SHA뿐 아니라 `subject`와 `style` 모두 `accepted`여야 완료 수에 포함된다. 이전 수정 사유는 별도 `note`에 남긴다.
+
+위 이미지 검사에서 전체 완료를 확인한 뒤 `scripts/content/capture-shared-item-defaults.mjs`를 실행하면, 새 프로젝트 자료집 화면과 함께 완료 명세의 모든 그림 URL을 32개씩 실제 브라우저에서 로드한다. 현재 SHA를 캐시 키에 넣고 `artworkLoads.checked`·실패 ID·실제 32×32 크기를 보고한다. 이미지가 미완성이면 이 전체 로드 확인은 보류하고 `artworkStillInProgress`를 참으로 남긴다.
+
+최종 완료 근거는 `assets/item-catalog/completion-report.json`에 소스 SHA와 함께 보관했다. 실제 PNG 검사 1,054/1,054·미완료/미검토/문제 0개, 새 프로젝트 자료집 아이템 1,000종·이미지 URL 1,054개 모두 32×32 로드·pageerror 0건, 내보내기 경로 1,054개·누락 0개를 확인했다. 빈 프로젝트와 예제·6장르 모두 1,000종이고 프로덕션 직렬화 재로드에서 전 항목이 같으며 삭제한 행도 복원되지 않았다. 아이템 1,000종과 장비 86종 모두 등록된 완료 그림을 갖고 이름·설명·가격 누락도 없다. 그림 파일 합계는 1,235,714바이트다.
+
+공용 효과·가격 재조정(2026-10-02): [공용 아이템 밸런스](shared-item-balance.md). 효과 조합 404→627, 파티 약 4→50, 아이템 전용 스킬 48종, 직업 한정 비전서 48종. 실제 기본 배우 성장 곡선과 충전 횟수를 가격에 반영한다. 새 프로젝트에서만 적용하고 저장된 저작 데이터는 수렴시키지 않는다.
+
+### 도트 연출의 이동·가속도·배우 경로 (2026-10-02)
+
+기존 「도트 연출」 복제/수정 흐름에 32종 공용 이동 프로그램과 배우별 직접 경로를 붙였다.
+스킬 「전투 규칙」의 실제 기믹과 조수 도구의 movement/battleGimmick 필드는 [battle-motion-programs.md](battle-motion-programs.md)를 따른다.
+
+## 저장 결과를 구분하는 적용 피드백 (2026-10-02)
+
+`databaseModalPersistence.applyDatabaseChanges`는 `saved-local`이라도 `written: false`이면 성공으로 처리하지 않는다. 임시 세션에서 기록하지 않았음을 알리고 `false`를 반환하므로 모달의 `markClean`/저장 후 닫기 경로가 실행되지 않는다. 실제 브라우저 저장은 기존 성공 경로를 유지한다. `saved`는 SQLite 폴더·호스트도 사용하는 결과이므로 「온라인」이라고 단정하지 않는 저장 완료 문구를 쓴다. 회귀 소스는 `test/databaseModalPersistence.test.ts`이며 이번 세션에서 실행하지 않았다.

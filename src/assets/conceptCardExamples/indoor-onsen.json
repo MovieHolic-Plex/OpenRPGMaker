@@ -1,0 +1,332 @@
+{
+  "private-bathhouse/four-private-baths": [
+    {
+      "name": "build_hand_interior_room",
+      "args": {
+        "mapId": "map_indoor_onsen_private",
+        "name": "山の湯 · 개별 온천 욕장",
+        "plan": [
+          "########################",
+          "#.....#.....#.....#....#",
+          "#.....#.....#.....#....#",
+          "#.....#.....#.....#....#",
+          "#.....#.....#.....#....#",
+          "#.....#.....#.....#....#",
+          "#.....#.....#.....#....#",
+          "#.....#.....#.....#....#",
+          "#.....#.....#.....#....#",
+          "#.....#.....#.....#....#",
+          "##...###...###...###...#",
+          "#......................#",
+          "#......................#",
+          "#......................#",
+          "#......................#",
+          "#......................#",
+          "#......................#",
+          "#......................#",
+          "#......................#",
+          "#......................#",
+          "#......................#",
+          "###########...##########"
+        ],
+        "floor": "plank",
+        "wall": "log",
+        "ceiling": "wood",
+        "zones": [
+          {
+            "x0": 1,
+            "y0": 1,
+            "x1": 22,
+            "y1": 9,
+            "floor": "wetstone",
+            "wall": "stone"
+          }
+        ],
+        "objects": [
+          {
+            "id": "washbasin",
+            "x": 1,
+            "y": 3
+          },
+          {
+            "id": "towel rail",
+            "x": 3,
+            "y": 1
+          },
+          {
+            "id": "bathtub",
+            "x": 3,
+            "y": 5
+          },
+          {
+            "id": "washbasin",
+            "x": 7,
+            "y": 3
+          },
+          {
+            "id": "towel rail",
+            "x": 9,
+            "y": 1
+          },
+          {
+            "id": "bathtub",
+            "x": 9,
+            "y": 5
+          },
+          {
+            "id": "washbasin",
+            "x": 13,
+            "y": 3
+          },
+          {
+            "id": "towel rail",
+            "x": 15,
+            "y": 1
+          },
+          {
+            "id": "bathtub",
+            "x": 15,
+            "y": 5
+          },
+          {
+            "id": "washbasin",
+            "x": 19,
+            "y": 3
+          },
+          {
+            "id": "towel rail",
+            "x": 21,
+            "y": 1
+          },
+          {
+            "id": "bathtub",
+            "x": 21,
+            "y": 5
+          },
+          {
+            "id": "wardrobe",
+            "x": 1,
+            "y": 13
+          },
+          {
+            "id": "wardrobe",
+            "x": 7,
+            "y": 13
+          },
+          {
+            "id": "wardrobe",
+            "x": 13,
+            "y": 13
+          },
+          {
+            "id": "wardrobe",
+            "x": 19,
+            "y": 13
+          },
+          {
+            "id": "folding screen",
+            "x": 3,
+            "y": 16
+          },
+          {
+            "id": "folding screen",
+            "x": 19,
+            "y": 16
+          },
+          {
+            "id": "bench 3",
+            "x": 3,
+            "y": 18
+          },
+          {
+            "id": "bench 3",
+            "x": 18,
+            "y": 18
+          }
+        ],
+        "start": [
+          {
+            "x": 12,
+            "y": 21
+          }
+        ]
+      }
+    },
+    {
+      "name": "upsert_event",
+      "args": {
+        "mapId": "map_indoor_onsen_private",
+        "event": {
+          "id": "ev_onsen_bath_1",
+          "name": "온천 입욕 자리 1",
+          "x": 3,
+          "y": 6,
+          "pages": [
+            {
+              "id": "ev_onsen_bath_1_p1",
+              "name": "입욕",
+              "conditions": [],
+              "graphic": {
+                "transparent": true
+              },
+              "trigger": {
+                "kind": "action"
+              },
+              "priority": "below",
+              "movement": {
+                "type": "fixed",
+                "speed": 3,
+                "frequency": 3
+              },
+              "commands": [
+                {
+                  "kind": "text",
+                  "body": "몸을 씻은 뒤 따뜻한 온천수에 몸을 담갔다."
+                },
+                {
+                  "kind": "recoverAll"
+                },
+                {
+                  "kind": "text",
+                  "body": "입욕을 마치니 일행의 기력이 돌아왔다."
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "upsert_event",
+      "args": {
+        "mapId": "map_indoor_onsen_private",
+        "event": {
+          "id": "ev_onsen_bath_2",
+          "name": "온천 입욕 자리 2",
+          "x": 9,
+          "y": 6,
+          "pages": [
+            {
+              "id": "ev_onsen_bath_2_p1",
+              "name": "입욕",
+              "conditions": [],
+              "graphic": {
+                "transparent": true
+              },
+              "trigger": {
+                "kind": "action"
+              },
+              "priority": "below",
+              "movement": {
+                "type": "fixed",
+                "speed": 3,
+                "frequency": 3
+              },
+              "commands": [
+                {
+                  "kind": "text",
+                  "body": "몸을 씻은 뒤 따뜻한 온천수에 몸을 담갔다."
+                },
+                {
+                  "kind": "recoverAll"
+                },
+                {
+                  "kind": "text",
+                  "body": "입욕을 마치니 일행의 기력이 돌아왔다."
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "upsert_event",
+      "args": {
+        "mapId": "map_indoor_onsen_private",
+        "event": {
+          "id": "ev_onsen_bath_3",
+          "name": "온천 입욕 자리 3",
+          "x": 15,
+          "y": 6,
+          "pages": [
+            {
+              "id": "ev_onsen_bath_3_p1",
+              "name": "입욕",
+              "conditions": [],
+              "graphic": {
+                "transparent": true
+              },
+              "trigger": {
+                "kind": "action"
+              },
+              "priority": "below",
+              "movement": {
+                "type": "fixed",
+                "speed": 3,
+                "frequency": 3
+              },
+              "commands": [
+                {
+                  "kind": "text",
+                  "body": "몸을 씻은 뒤 따뜻한 온천수에 몸을 담갔다."
+                },
+                {
+                  "kind": "recoverAll"
+                },
+                {
+                  "kind": "text",
+                  "body": "입욕을 마치니 일행의 기력이 돌아왔다."
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "upsert_event",
+      "args": {
+        "mapId": "map_indoor_onsen_private",
+        "event": {
+          "id": "ev_onsen_bath_4",
+          "name": "온천 입욕 자리 4",
+          "x": 21,
+          "y": 6,
+          "pages": [
+            {
+              "id": "ev_onsen_bath_4_p1",
+              "name": "입욕",
+              "conditions": [],
+              "graphic": {
+                "transparent": true
+              },
+              "trigger": {
+                "kind": "action"
+              },
+              "priority": "below",
+              "movement": {
+                "type": "fixed",
+                "speed": 3,
+                "frequency": 3
+              },
+              "commands": [
+                {
+                  "kind": "text",
+                  "body": "몸을 씻은 뒤 따뜻한 온천수에 몸을 담갔다."
+                },
+                {
+                  "kind": "recoverAll"
+                },
+                {
+                  "kind": "text",
+                  "body": "입욕을 마치니 일행의 기력이 돌아왔다."
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

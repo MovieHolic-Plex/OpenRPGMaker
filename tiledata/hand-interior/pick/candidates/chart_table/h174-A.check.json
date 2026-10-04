@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/chart_table/h174-A.pxg",
+ "id": "chart table",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.034
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 20,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  6,
+  31,
+  29
+ ],
+ "v5_bbox": null,
+ "note": "지도 내부 1행·상판 아래 여백 1행을 압축하고 앞 테두리·앞판·다리를 2행 올려 전체 높이 24px(y=6~29), 컴퍼스 식별 요소·망원경·목재 명암 유지; 꼭대기 윗면 8행(y=6~13).",
+ "ok": true
+}

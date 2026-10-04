@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { createConversationLogHost } from "@/editor/panels/aiConversationLog";
 import { createBlankProject } from "@/project/defaults";
-import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { store } from "@/project/store";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
 
@@ -111,7 +111,7 @@ describe("conversation log command rows", () => {
 
     host.appendBubble("assistant", "격자");
     host.appendTileGrid({
-      tilesetId: DEFAULT_TILESET_ID,
+      tilesetId: COMBINED_TOWN_TILESET_ID,
       x: 0,
       y: 0,
       w: 1,

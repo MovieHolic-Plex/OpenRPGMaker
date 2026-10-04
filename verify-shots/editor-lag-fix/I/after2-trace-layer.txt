@@ -1,0 +1,82 @@
+== invalidations (count total) ==
+    72 StyleRecalc | Control |  | sel= | cls= | node=DIV
+    40 StyleInvalidator | Invalidation set invalidates self |  | sel= | cls= | node=BUTTON class='left-layer-btn is-active'
+    40 StyleRecalc | Related style rule |  | sel= | cls= | node=BUTTON class='left-layer-btn is-active'
+    40 StyleInvalidator | Invalidation set invalidates self |  | sel= | cls= | node=BUTTON class='left-layer-btn'
+    40 StyleRecalc | Related style rule |  | sel= | cls= | node=BUTTON class='left-layer-btn'
+    16 ScheduleStyle |  |  | sel= | cls= | node=BODY class='ai-chat-dock-float ai-command-bar-active'
+    16 Layout | Removed from layout |  | sel= | cls= | node=SLOT id='details-content'
+    16 Layout | Added to layout |  | sel= | cls= | node=SLOT id='details-content'
+     8 ScheduleStyle |  |  | sel= | cls=data-layer | node=SPAN class='sidebar-brush-state'
+     8 StyleInvalidator | Invalidation set invalidates self |  | sel= | cls= | node=SPAN class='sidebar-brush-state'
+     8 StyleRecalc | Related style rule |  | sel= | cls= | node=SPAN class='sidebar-brush-state'
+     8 ScheduleStyle |  |  | sel= | cls=class | node=BUTTON class='left-layer-btn is-active'
+     8 ScheduleStyle |  |  | sel= | cls=is-active | node=BUTTON class='left-layer-btn'
+     8 StyleInvalidator | Invalidation set invalidates subtree |  | sel= | cls= | node=BODY class='ai-chat-dock-float ai-command-bar-active'
+     8 StyleRecalc | Related style rule |  | sel= | cls= | node=BODY class='ai-chat-dock-float ai-command-bar-active'
+     8 ScheduleStyle |  |  | sel= | cls=aria-current | node=BUTTON class='left-layer-btn'
+     8 ScheduleStyle |  |  | sel= | cls=tabindex | node=BUTTON class='left-layer-btn'
+     8 ScheduleStyle |  |  | sel= | cls=class | node=BUTTON class='left-layer-btn'
+     8 ScheduleStyle |  |  | sel= | cls=is-active | node=BUTTON class='left-layer-btn is-active'
+     8 ScheduleStyle |  |  | sel= | cls=aria-current | node=BUTTON class='left-layer-btn is-active'
+     8 ScheduleStyle |  |  | sel= | cls=tabindex | node=BUTTON class='left-layer-btn is-active'
+     8 StyleRecalc | Attribute | hidden | sel= | cls= | node=SECTION class='map-sidebar-section'
+     8 StyleRecalc | Attribute | hidden | sel= | cls= | node=SECTION class='left-favorites-pane'
+     8 StyleRecalc | Attribute | hidden | sel= | cls= | node=SECTION class='left-progress-pane'
+     8 StyleRecalc | Attribute | hidden | sel= | cls= | node=SECTION class='left-links-pane'
+== main-thread self time by bucket ==
+   247.9ms/op task-other
+    94.4ms/op js
+    73.1ms/op gc
+    62.4ms/op style
+    30.5ms/op paint/raster
+     0.7ms/op other:PaintImage
+     0.5ms/op layout
+     0.3ms/op other:Major concurrent marking rescheduled
+     0.2ms/op other:IntersectionObserverController::computeIntersections
+     0.0ms/op other:ClearWeaknessProcessor start
+     0.0ms/op other:ComputeWeaknessProcessor start
+     0.0ms/op other:Parallel scavenge started
+     0.0ms/op other:ClearStringTableJob started
+     0.0ms/op other:PointersUpdatingJob started
+long tasks(>20ms): 50,86,418,24,124,147,218,27,154,78,83,35,83,93,74
+  BODYINV ScheduleStyle  ?@panels/menu.ts?t=1790773036343:117 < set@editor/editorState.ts:46 < selectSidebarLayer@panels/leftLayerSwitcher.ts:21 < selectSwitcherKey@panels/leftLayerSwitcher.ts:32 < click@panels/leftLayerSwitcher.ts:59 < eval@:1
+  BODYINV StyleInvalidator Invalidation set invalidates subtree 
+  BODYINV StyleRecalc Related style rule ?@panels/menu.ts?t=1790773036343:117 < set@editor/editorState.ts:46 < selectSidebarLayer@panels/leftLayerSwitcher.ts:21 < selectSwitcherKey@panels/leftLayerSwitcher.ts:32 < click@panels/leftLayerSwitcher.ts:59 < eval@:1
+  BODYINV ScheduleStyle  ?@panels/menu.ts?t=1790773036343:117 < set@editor/editorState.ts:46 < selectSidebarLayer@panels/leftLayerSwitcher.ts:21 < selectSwitcherKey@panels/leftLayerSwitcher.ts:32 < click@panels/leftLayerSwitcher.ts:59 < eval@:1
+ULE 113ms 3726el parents=RunTask
+   5 StyleInvalidator|Invalidation set invalidates self|BUTTON class='left-layer-btn is-active'||
+   5 StyleRecalc|Related style rule|BUTTON class='left-layer-btn is-active'||
+   5 StyleInvalidator|Invalidation set invalidates self|BUTTON class='left-layer-btn'||
+   5 StyleRecalc|Related style rule|BUTTON class='left-layer-btn'||
+   2 ScheduleStyle||BODY class='ai-chat-dock-float ai-command-bar-active'||
+   1 ScheduleStyle||SPAN class='sidebar-brush-state'|data-layer|
+   1 StyleInvalidator|Invalidation set invalidates self|SPAN class='sidebar-brush-state'||
+   1 StyleRecalc|Related style rule|SPAN class='sidebar-brush-state'||
+  BODYINV ScheduleStyle  ?@panels/menu.ts?t=1790773036343:117 < set@editor/editorState.ts:46 < selectSidebarLayer@panels/leftLayerSwitcher.ts:21 < selectSwitcherKey@panels/leftLayerSwitcher.ts:32 < click@panels/leftLayerSwitcher.ts:59 < eval@:1
+  BODYINV StyleInvalidator Invalidation set invalidates subtree 
+  BODYINV StyleRecalc Related style rule ?@panels/menu.ts?t=1790773036343:117 < set@editor/editorState.ts:46 < selectSidebarLayer@panels/leftLayerSwitcher.ts:21 < selectSwitcherKey@panels/leftLayerSwitcher.ts:32 < click@panels/leftLayerSwitcher.ts:59 < eval@:1
+  BODYINV ScheduleStyle  ?@panels/menu.ts?t=1790773036343:117 < set@editor/editorState.ts:46 < selectSidebarLayer@panels/leftLayerSwitcher.ts:21 < selectSwitcherKey@panels/leftLayerSwitcher.ts:32 < click@panels/leftLayerSwitcher.ts:59 < eval@:1
+ULE 51ms 3726el parents=RunTask
+   5 StyleInvalidator|Invalidation set invalidates self|BUTTON class='left-layer-btn'||
+   5 StyleRecalc|Related style rule|BUTTON class='left-layer-btn'||
+   5 StyleInvalidator|Invalidation set invalidates self|BUTTON class='left-layer-btn is-active'||
+   5 StyleRecalc|Related style rule|BUTTON class='left-layer-btn is-active'||
+   2 ScheduleStyle||BODY class='ai-chat-dock-float ai-command-bar-active'||
+   1 ScheduleStyle||SPAN class='sidebar-brush-state'|data-layer|
+   1 StyleInvalidator|Invalidation set invalidates self|SPAN class='sidebar-brush-state'||
+   1 StyleRecalc|Related style rule|SPAN class='sidebar-brush-state'||
+  BODYINV ScheduleStyle  ?@panels/menu.ts?t=1790773036343:117 < set@editor/editorState.ts:46 < selectSidebarLayer@panels/leftLayerSwitcher.ts:21 < selectSwitcherKey@panels/leftLayerSwitcher.ts:32 < click@panels/leftLayerSwitcher.ts:59 < eval@:1
+  BODYINV StyleInvalidator Invalidation set invalidates subtree 
+  BODYINV StyleRecalc Related style rule ?@panels/menu.ts?t=1790773036343:117 < set@editor/editorState.ts:46 < selectSidebarLayer@panels/leftLayerSwitcher.ts:21 < selectSwitcherKey@panels/leftLayerSwitcher.ts:32 < click@panels/leftLayerSwitcher.ts:59 < eval@:1
+  BODYINV ScheduleStyle  ?@panels/menu.ts?t=1790773036343:117 < set@editor/editorState.ts:46 < selectSidebarLayer@panels/leftLayerSwitcher.ts:21 < selectSwitcherKey@panels/leftLayerSwitcher.ts:32 < click@panels/leftLayerSwitcher.ts:59 < eval@:1
+ULE 55ms 3726el parents=RunTask
+   5 StyleInvalidator|Invalidation set invalidates self|BUTTON class='left-layer-btn is-active'||
+   5 StyleRecalc|Related style rule|BUTTON class='left-layer-btn is-active'||
+   5 StyleInvalidator|Invalidation set invalidates self|BUTTON class='left-layer-btn'||
+   5 StyleRecalc|Related style rule|BUTTON class='left-layer-btn'||
+   2 ScheduleStyle||BODY class='ai-chat-dock-float ai-command-bar-active'||
+   1 ScheduleStyle||SPAN class='sidebar-brush-state'|data-layer|
+   1 StyleInvalidator|Invalidation set invalidates self|SPAN class='sidebar-brush-state'||
+   1 StyleRecalc|Related style rule|SPAN class='sidebar-brush-state'||
+UpdateLayoutTree>3ms: 55ms/3726el 69ms/3726el 113ms/3726el 51ms/3726el 55ms/3726el 57ms/3726el 61ms/3726el 49ms/3726el

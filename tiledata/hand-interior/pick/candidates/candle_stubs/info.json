@@ -1,0 +1,34 @@
+{
+ "id": "candle stubs",
+ "slug": "candle_stubs",
+ "name_ko": "녹은 촛불 무더기",
+ "category": "폐가",
+ "kind": "floor",
+ "kind_ko": "바닥 기물(막힘)",
+ "canvas": [
+  16,
+  16
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 16,
+  "h": 16
+ },
+ "footprint": {
+  "w": 1,
+  "h": 1
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "바닥에 녹아 붙은 초 여러 개와 작은 불꽃 — 촛농 웅덩이 윗면.",
+ "where": "",
+ "placement": [
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": null,
+ "v5_colors": 0,
+ "material": "wood",
+ "related": [],
+ "new": true,
+ "contextRoom": "manor"
+}

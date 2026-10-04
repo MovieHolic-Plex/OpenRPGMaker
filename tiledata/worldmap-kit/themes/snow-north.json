@@ -1,0 +1,9 @@
+{
+ "schema": "worldmap-theme/1",
+ "id": "snow-north",
+ "name": "설원·북방",
+ "iconset": "snow-north",
+ "palette": "north",
+ "overlays": [],
+ "kind": "land"
+}

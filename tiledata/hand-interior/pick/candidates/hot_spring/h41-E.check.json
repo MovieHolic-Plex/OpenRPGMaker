@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/hot_spring/h41-E.pxg",
+ "id": "hot spring",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.07
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 11,
+ "v5_colors": 0,
+ "bbox": [
+  3,
+  3,
+  41,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "뒤 바위 윗면 덩이 3개(y3~7)로 두껍게, 옆벽을 둥근 돌덩이 2개씩으로, 유리 하이라이트→물결 줄, 김→물 위 연한 점 덩어리",
+ "ok": true
+}

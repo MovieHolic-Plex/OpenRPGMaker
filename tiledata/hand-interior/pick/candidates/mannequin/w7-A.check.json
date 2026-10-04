@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/mannequin/w7-A.pxg",
+ "id": "mannequin",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.015
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 13,
+ "v5_colors": 10,
+ "bbox": [
+  3,
+  0,
+  12,
+  31
+ ],
+ "v5_bbox": [
+  3,
+  0,
+  12,
+  31
+ ],
+ "note": "v5 형태 유지, 램프로 다시 칠함: 몸통 왼쪽에 밝은 줄, 머리 오른쪽 그늘, 기둥 왼쪽 밝게",
+ "ok": true
+}

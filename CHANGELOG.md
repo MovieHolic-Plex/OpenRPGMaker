@@ -5,6 +5,1841 @@
 
 <!-- releases -->
 
+## 0.116.1 — 2026-10-04
+
+### 수정
+
+- **relief** — 경사로 칸 값에 숫자 타입을 붙인다 (`26ec401`)
+- require visible first-game scenes and verify shipping playback (#2040) (`501a450`)
+- remove super harness daily caps and make orders readable (`7e6b3bf`)
+- catch sprite transparency holes with adversarial alpha review (`208a367`)
+- ground ramp movement and expose original Beodeul houses (`401b26d`)
+
+### 문서
+
+- record native house, ramp input and full terrain seam visual QA (`5179dcb`)
+
+## 0.116.0 — 2026-10-04
+
+### 기능
+
+- review one character at a time with instant advance and visible walking previews (`ec98035`)
+- **worldmap** — ship human-selected icons and verify saved map journeys (`3e1fc51`)
+
+### 수정
+
+- **worldmap** — 선택 아이콘 키트에 배치 문장을 넣는다 (`0553f7f`)
+- **worldmap** — detect covered icon cells and record completed candidate review (`13614fd`)
+- **worldmap** — pass correction notes to candidate reviewers (`01e1db2`)
+- allow click-only launcher entry and record native flow failure (`eca3bbc`)
+
+### 문서
+
+- **worldmap** — record follow-up gallery verification (`8e7ecc7`)
+
+## 0.115.0 — 2026-10-04
+
+### 기능
+
+- publish human-kept sprites and descriptions to the shared character catalog (`746a347`)
+
+### 수정
+
+- preserve assistant view and continue work in background (`585d7c7`)
+- **ci** — run the full-lane typecheck with a 10GB heap (`e71aaaf`)
+
+## 0.114.0 — 2026-10-04
+
+### 기능
+
+- connect AI terrain tools and verify cliff house access (`16d017f`)
+
+### 수정
+
+- keep elevated houses visible in large editor maps (`54ffb9c`)
+- verify terrain tools through the real editor assistant (`42ce965`)
+
+## 0.113.0 — 2026-10-04
+
+### 기능
+
+- **worldmap** — 실제 지리 style real — Natural Earth·ETOPO1 로 지구 어디든 세계 지도 (`d158ed9`)
+
+### 수정
+
+- make charset review actions instant and durable (`99f1458`)
+- **ci** — give typecheck a 10GB heap and run it one at a time (`b0ad46e`)
+- make startup fullscreen and interview click-first with fresh reviewed art (`fb9dd1f`)
+- make new game art rejection trigger automatic repairs (`3ad4a55`)
+- **worldmap** — 저작된 맵 보호와 조수 실행물 SQLite 재로드 근거 보완 (`4d9f527`)
+- **worldmap** — 늪 픽셀이 없는 실제 지리 세계에서 swamp_final 통계가 죽던 것 (`38881a5`)
+- **ai** — 빈 기본 시작 맵·세계 지도는 칩셋 계열 기준이 아니다 (`4fee005`)
+
+### 테스트
+
+- record maker validation after main integration (`ac5df99`)
+
+## 0.112.0 — 2026-10-04
+
+### 기능
+
+- 자유 캐릭터 저작과 사람의 GIF 선택 공방 (`6f8cd25`)
+
+### 수정
+
+- 캐릭터 선택 단축키를 현재 GIF에 한정 (`345ceb7`)
+
+### 문서
+
+- GIF 캐릭터 공방 위키 색인 갱신 (`326cd2d`)
+
+## 0.111.1 — 2026-10-04
+
+### 수정
+
+- 첫 자동 제작에서 핵심 플레이를 먼저 완성 (#2015) (`ce89668`)
+
+## 0.111.0 — 2026-10-04
+
+### 기능
+
+- simplify terrain dock and add a modal creation guide (`dfac859`)
+
+### 수정
+
+- **harness** — include upstream character credits in exported packs (`ea39b71`)
+
+## 0.110.0 — 2026-10-04
+
+### 기능
+
+- **ai** — 맵별 조수 실행 대기열 — 같은 맵은 차례대로, 다른 맵은 동시에 (`67e36aa`)
+- add pixel cinematic dialogue and evidence based romance art review (`39ba2d5`)
+- resize Beodeul roofs independently and soften terrain visibility (`49081eb`)
+- **harness** — register charset workflow and enforce sprite contracts in CI (`30d2dae`)
+- **harness** — continue character batches with verified output provenance and discard gates (`400e8ad`)
+- **harness** — 캐릭터 칩 — 그림 넣어 고치기(약함·보통·강함) + 조수용 설명(desc.json) (`71ddfb3`)
+- **harness** — 걸음 전파 — 작업자는 서 있는 자세만, 걸음 0·2 는 뼈대 움직임대로 자동 생성 + 돌출 픽셀 검수 (`1fc905c`)
+- **harness** — 캐릭터 칩은 실루엣을 뼈대 그대로 — 소지품·모자 추가 금지, 실루엣 변화 150px 검수, 색 구성 지시 18명 (`9118b18`)
+- **harness** — 캐릭터 칩 뼈대를 Actor1~4·People1~5 로 넓힘 — 짝 얼굴 정본 매핑, 뼈대 대비 검수, 새 지시 16명 (`cff72fe`)
+- **harness** — 생성 얼굴 자르기를 원본 구도에 맞춤(align_crop) + --reuse 재판정 (`c8ecefb`)
+- **harness** — 생성 얼굴 v3 — 생김새는 자유, 보는 각도만 잠그고 각도 전용 검수자로 판정 (`f6616b7`)
+- **harness** — 생성 얼굴 v2 — 손 도트 얼굴을 참고로 손질만, 각도 점수로 재시도 (`6012036`)
+- **harness** — 캐릭터 칩 얼굴을 이미지 생성으로(gen-faces) — 사용자 결정, 칩은 손 도트 유지 (`f3ff2c7`)
+- **harness** — 캐릭터 칩 짝 얼굴(48×48)과 비포/애프터 화면 (`5ccbf84`)
+- **harness** — 캐릭터 칩 받기/버리기 화면(18314)과 지시 16명, 원샷 묶음 실행(--par) (`491c418`)
+- **harness** — 캐릭터 칩 고치기 루프 — GPT 가 고치고 Sonnet 이 검수, 남·여 지시 추가 (`60408d0`)
+- **harness** — 캐릭터 칩 하네스에 Opus 5.5 high 엔진과 수정 작업(--src·--fix-notes) (`5afa53e`)
+- **harness** — 캐릭터 칩 하네스 — Actor1 뼈대에 작업자가 격자를 직접 찍고 GIF 로 비교 (`7440c00`)
+
+### 수정
+
+- **harness** — report interrupted production batches as failures (`60b956a`)
+- **harness** — preserve stable clothing pixels when propagating walking frames (`3d8c8b4`)
+- explicitly default optional terrain vision to off (`a12b9e2`)
+- **harness** — guide artists to keep clothing readable across walking frames (`ca6b21a`)
+- **harness** — avoid rewriting unchanged user decisions on export (`f58144e`)
+- **harness** — require fresh review after repairing previously discarded sprites (`78cb686`)
+- **harness** — 걸음 전파 뒤 외톨이 점·1px 구멍 정리(뼈대에 없던 결함만, 원본 자기 재현 100% 유지) (`590f952`)
+- **harness** — 생성 얼굴이 참고 그림의 투구·두건을 지우지 않게(칩과 어긋남) (`bda6cbb`)
+- **harness** — 캐릭터 칩 작업자 — 처음부터 다시 그리지 말고 바꿀 부위만 고친다 (`a29d202`)
+- **harness** — 캐릭터 칩 작업자가 작업 폴더 밖(claude-viz)에 쓰지 않게 (`be907ed`)
+- **harness** — 캐릭터 칩 검수에 걸음 동작량 — 1px 내리기+발끝만 바꾼 걸음을 거른다 (`99e581d`)
+
+### 문서
+
+- **agents** — 캐릭터 칩 하네스 한 줄 갱신 (`471960a`)
+- **agents** — 캐릭터 칩 하네스 받기/버리기 주소 (`2aff4a1`)
+
+### 테스트
+
+- **qa** — 마을이 아닌 쓰기 도구(길·타일·물체)도 맵 위에서 재생되는지 보는 시험 (`be7d6bc`)
+
+### 잡무
+
+- **harness** — 캐릭터 칩 루프 기본을 원샷(1판)으로 — 사용자 판단 (`cf711d3`)
+
+## 0.109.0 — 2026-10-04
+
+### 기능
+
+- **super-harness** — replace the heavy kanban with a light picture gallery (`a8a5e39`)
+- **ai** — 실행 중 다른 편집이 들어와도 체크포인트를 3-way 병합으로 적용한다 (`834e4a2`)
+- **ai** — 마을뿐 아니라 모든 쓰기 도구의 실제 변경을 맵 위에서 다시 튼다 (`4c66fa4`)
+- **ai** — 마을 시공은 도구가 실제로 밟은 단계를 기록해 그 순서대로 다시 튼다 (`9c64279`)
+- **ai** — 큰 조수 적용은 예전 밑그림처럼 — 종이·집 자리 테두리·연필이 왼쪽부터 깔고 집을 차례로 놓는다 (`f3b2caa`)
+- **ai** — 큰 조수 적용에 시공 연출, 조수창 즉시 반영, 마을 노트 먼저 보이게 (`094640e`)
+
+### 수정
+
+- **electron** — 앱 시작 즉시 죽던 worldmapBuild 최상위 import.meta.url 을 지연 평가 (`4a762d5`)
+- **ai** — 시공 연출 덮개 지우기(dirty 함정)·프레임 시계·나무 칸은 바닥과 함께, 새 맵은 전체가 보이게 줌 (`a53b6a6`)
+- **ai** — 마을 요청의 그래픽 선택 창과 Pi 경로의 쓰이지 않는 커버리지 감사 콜 제거 (`dfa361c`)
+
+### 테스트
+
+- **qa** — 실행 중 사람 편집 병합 증거 (`f64f91e`)
+- **qa** — 실행 중 사람 편집과 AI 시공이 둘 다 남는지 보는 FOREIGN=1 모드 (`bf57dfa`)
+- **qa** — 밑그림 시공 화면 증거 갱신 (`4d2ac63`)
+- **qa** — 마을 바로 시공 화면 시험 증거(report·단계 띠) (`d90eb77`)
+
+## 0.108.0 — 2026-10-04
+
+### 기능
+
+- **joseon** — 새 장소 12장(사냥터·동굴·실내 방 6·궁 내부 4) 등록 — 시트 꼬리 덧붙이기, 통행·마스크 규칙, 실내 기물 앞 도달 검사 (`4931bc8`)
+- **joseon** — 동굴 2차 검수 반영 - 암반 여백 4칸·깊이 띠 천장(깊은 변형 4종)·비대칭 방·막다른 수정 굴·입구 흙 이행·소품 정리, 사냥터 연못 갈대·바위, 판정 갱신, 재굽기 (`a15b03a`)
+- **joseon** — 사냥터 2차 검수 반영 - 길은 직선+모서리, 목적지 마당(건조장·낚시터·성벽 토막 앞), 비대칭 3단 바위산, 서로 다른 폐허 둘, 무덤터·연못 기슭·숲 윤곽 (`0e34f4f`)
+- **joseon** — 동굴 3단 구조 재작성 - 천장 블롭·벽면·바닥 그림자·유기 윤곽·고리 복도, 소품 조각 15종 (`b8dfcff`)
+- **joseon** — 사냥터 늪 윤곽 유기적으로·물 한 단 밝게·개구리밥 격자 해소, 짐승길 흙을 마당과 같은 램프로, 잔디 흰 점 노이즈 축소 (`18825a5`)
+- **joseon** — 사냥터 빌더 단언 강화 — 같은 종 정렬·직사각 풀 덩이·맨 바위 판·격자 배치·맨 풀 판 금지, 풀 덩이 경계 깨기 (`6e6aa55`)
+- **joseon** — 사냥터 1차 적대 검수 반영 — 북쪽 성벽+남문, 3단 계단 바위산, 곡선 짐승길(목적지 있는 가지), 변동 간격·꼬치 금지 나무 심기 (`3867094`)
+- **joseon** — 사냥터·동굴 조각 58종·지형 12묶음 판정 기록 (눈으로 확인한 줄) (`7d6131c`)
+- **joseon** — 동굴 joseon_cave 48×48 빌더·굽기 (자동 점검 통과, pixelDiff 0) (`d59be9a`)
+- **joseon** — 사냥터 joseon_field 96×96 빌더·굽기 (자동 점검 통과, pixelDiff 0) (`842c4f3`)
+- **joseon** — 사냥터 joseon_field_fa 구역 계획과 맵 빌더 1~4단계(지형·길·앵커·나무·소품) (`c7c079a`)
+- **joseon-interior** — mapgate interior 프로필(I1~I5)과 interior_checks 자동 점검 (`3a12277`)
+- **joseon-interior** — 카탈로그·메타·통행 보정 등록(in_register.py)과 게이트 L/T/E 수정 (`9699d51`)
+- **joseon** — 사냥터·동굴 맵 빌더 공용 틀(fld_map.py), mapgate field·cave 프로필, 통행 보정 (`cf344a3`)
+- **joseon-interior** — 기물 66종(살림집 A·일터 B)과 검수 시트 도구 (`a6a29f7`)
+- **joseon** — 사냥터 지형·바위·식물·야영지·동굴 조각 모듈(fa_*) 초안 (`1d6f3ce`)
+- **joseon** — 굴 입구 3종(석조·갱도·갈라진 틈)과 동굴 안 물체 9종, 바위산 앞면 바위결 개선 (`2d32c54`)
+- **joseon** — 사냥터 물체 조각 46종(바위·들꽃·덤불·통나무·표식·야영지·무덤·폐허 석탑·나무 변형·군락) + 메타 (`ae4082c`)
+- **joseon-interior** — 구조 키트(바닥 5·천장 블롭47·벽면 5종×끝변형·창·문·기둥·계단·단)와 방 빌더 (`73aa430`)
+- **joseon** — 사냥터·동굴 지형 오토타일(짐승길·키 큰 풀·숲 바닥·늪·바위산 윗면/앞면·동굴 바닥/천장/벽/못) (`e5c6fe0`)
+
+### 수정
+
+- **joseon** — 사냥터 북쪽 이중 성벽·밑동 기단, 나무 그림 24x24 복제 한도 단언, 동굴 깊은 암반 바위 질감·막다른 굴 상자 (`7d2f096`)
+- **joseon** — 무덤터 밖에 놓인 울타리 조각 제거, 재굽기 (`02d0fb3`)
+- **joseon** — 동굴 석순 무리 빛 방향·수레 바퀴 굵기 정리 (`64a87df`)
+- **joseon** — 사냥터 참배길 포장·짐승 굴 앞 짐승길 추가 (`8432f3d`)
+- **joseon** — 동굴 사람 둘 배치 후보 보강 (`4308005`)
+- **joseon** — 동굴 검수 반영 — 허공에 뜬 짧은 벽 조각 제거, 바닥 변형 통일, 입구 목(6칸)+화로·불규칙 햇빛 바닥, 둥근 동쪽 못, 상자는 보물방 하나, 복도 가장자리 소품·바위 속 광물 구역 (`be9703f`)
+- **joseon** — 사냥터 검수 반영 — 곧은 짐승길(사다리·ㄷ자·막다른 끝 정리)·무덤터 석비 중심·몬스터 둥지·바위산 톱니 제거·늪 윤곽 다듬기·늪가 나무 비움·숲 간격 (`545ef37`)
+- **joseon** — 사냥터 바위 언덕에 곁바위, 필드 mapgate 프로필을 첫 굽기 실측으로 조임 (`7329ac9`)
+
+### 정리
+
+- **joseon-interior** — 구현 둘을 하나로 — interior_kit/props_in 계열을 정본으로, in_kit·in_room·in_map·in_props* 중복 제거 (`1bef5f2`)
+
+### 문서
+
+- **joseon** — 한계 문단을 새 장소(실내·사냥터) 기준으로 고치고 검수 결과 문서를 가리킨다 (`fa92927`)
+- **joseon** — 새 장소 12장 편집기 화면 증거 50~61 추가 (`4736da4`)
+- **joseon** — 새 장소 12장 하네스 시드·CLI·위키·AGENTS 반영 (`f87b747`)
+- **joseon** — 사냥터·동굴 구역 계획(PLAN.md) (`8bde653`)
+- **joseon-interior** — 방별 계획(PLAN.md) — 민가·주막·대장간·약방·서당·동헌 (`a595bf3`)
+- **joseon** — extra.json 계약과 JSON 3방 병합 도우미를 저장소에 보존 (/tmp 소멸 대비) (`e86f659`)
+
+### 잡무
+
+- **joseon** — 사냥터 빌더 하나로 통합 — 검수 승자(field-fa)를 demo_field.py 로, fa_* 구현·cave-fa 산출·field_fa 프로필 제거 (`2de9651`)
+- **joseon** — 사냥터 구현을 fld_* 하나로 정리(fa_* 삭제), TERRAIN_VERDICT 한 줄로 시드와 일치, 맵 빌더 demo_field.py (`87d50d1`)
+
+### 기타
+
+- 조선 궁 문 앞 마당(pal_floor_yard) 지형 통행 보정 등록 (`23e31d5`)
+- 조선 실내 2차 검수 S4: 월대 계단 카펫·회랑 문 대칭·관아 마루 바닥·마루 변형 4종·복제 줄이기, 방 10장 재굽기 (`8ca67c3`)
+- 조선 실내 2차 검수 S1·S2·S3: 닫힌 문+문턱 단+문 폭 디딤돌, 기물마다 접지 그림자 단언, Actor1 조선풍 프레임만(복제 금지) (`b95a1a2`)
+- 조선 궁 내부: 방 4장(어좌전·회랑·침전·서고) 평면·기물 배치·산출물 + 방별 계획 PLAN.md (`76e0d83`)
+- 조선 궁 내부: 기물 24종(어좌·일월오봉도 병풍·향로·촛대·등·방석·교의·서안·북·종·침상·장롱·화장대·수라상·서가 …) + 메타·통행·판정 52종 (`8b689af`)
+- 조선 궁 내부: 구조 키트(palace_kit) — 전돌·마루·황장판·월대·카펫 16칸·단청 천장·분합문/창호/회벽·붉은 기둥·들보·월대 앞면·큰 계단·출입구 (`dfb1f8b`)
+- 조선 실내: 통로 문틀(in_doorway) 통행 오버라이드 (`e1e9c0b`)
+- 조선 실내: 1차 적대 검수 R1~R7 반영 — 벽 두께·문틀·마당·바닥 재질·단 3/4·접지 그림자·인물 선택, 방 6장 재배치·재굽기 (`bc37034`)
+- 조선 실내: PLAN.md 구현 상태 기록 (`2b16a86`)
+- 조선 실내: 가는 줄 수리·호피 다시 그림, 실내 조각 136종 판정 기록(눈으로 시트 대조), 방 산출물 갱신 (`f5590c2`)
+- 사냥터 동굴 48x48 빌더·굽기: 방 5·복도 ㄴ자 고리·못·보물방, 벽 규칙 점검, 지도 게이트 통과(OBJ_MIN 0.03→0.020 사유 주석) (`0eda059`)
+- 조선 실내: 서당·관아 방 추가, 방 6장 산출물(map/pieces/extra/PNG) 생성, 러너 점검 예외 (`d96cea4`)
+- 조선 실내: 서당 방 평면·기물 (`f2c026f`)
+- 조선 실내: 대장간·약방 방 평면·기물 (`22d2a92`)
+- 사냥터 들판: 폐허 석탑·무덤이 수관에 가려지지 않게 가시 구역 확보, 재굽기 (`119146d`)
+- 조선 실내: 주막(joseon_in_inn) 방 평면·기물 (`004601b`)
+- 사냥터 들판 96x96 빌더 완성·굽기: 자동 점검 통과, 지도 게이트 통과, 맨 잔디 창 완화 (`eb655f3`)
+- 조선 실내: 방 빌더 demo_interior.py 와 민가(joseon_in_house) 평면·기물 배치 (`e999284`)
+
+## 0.107.0 — 2026-10-04
+
+### 기능
+
+- enforce executable romance scene contracts and image-backed completion (`d023f37`)
+
+### 수정
+
+- **harness** — 첫 만남 엔딩에 우선순위를 넣고 페이지 해석에 장소 문맥을 넘긴다 (`527553e`)
+- isolate activated scene gates and prove automatic exported gameplay (`97a4004`)
+
+### 테스트
+
+- record gameplay against the final compiled player (`5750ee0`)
+
+## 0.106.0 — 2026-10-04
+
+### 기능
+
+- **jp-city** — 조수가 jp_city 와 건물 조립 도구를 고르게 연결 (`048985d`)
+- **jp-city** — 도로 키트 39종·connect_extra·상가 거리 예제 갱신 (`39bb3d9`)
+
+## 0.105.1 — 2026-10-04
+
+### 수정
+
+- **export** — 공간 배치 사본이 포트 타입을 잃지 않게 한다 (`f05dd73`)
+- 실제 조수 제작과 SQLite 게임 내보내기 결함 수정 (#1988) (`330bef2`)
+
+## 0.105.0 — 2026-10-04
+
+### 기능
+
+- **concept-cards** — 「인형의 방」 개념 카드를 굽는다 (`9eba8da`)
+- **concept-cards** — 「온천탕」 개념 카드를 굽는다 (`0f8d374`)
+- **super-harness** — gate empty space, plain rectangles and borrowed worldview props (`9c44df0`)
+- **super-harness** — seed child concepts, wait on prerequisites, build large concept examples (`5ff5418`)
+- **concept-cards** — 「미궁」 개념 카드를 굽는다 (`28ed4b9`)
+
+### 수정
+
+- **editor** — 버들항 빠른 집에 배치 문장을 넣는다 (`e12efc5`)
+- use native Beodeul parts for quick houses and paved roads (`3996036`)
+
+### 문서
+
+- refresh terrain and Beodeul wiki coordinates (`ef7a930`)
+
+## 0.104.0 — 2026-10-03
+
+### 기능
+
+- **super-harness** — 개념 카드 자동 공급 하네스와 조수 연결 (`dbdb6b2`)
+- **qa-game** — gen --text 로 채팅 한 줄을 그대로 조수에게 보낸다 (`9190fef`)
+
+### 수정
+
+- **concept-cards** — 별칭은 낱말 머리에서만 맞추고, 검수·시험 기준을 바로잡는다 (`687815f`)
+- deliver detailed genre authoring presets to game assistants (`f91c3d3`)
+
+### 성능
+
+- rebake only the brushed window of relief terrain while painting height (`4336549`)
+
+## 0.103.0 — 2026-10-03
+
+### 기능
+
+- size house exteriors by dragging their footprint (`a890528`)
+- fix terrain visibility and add quick house and drag road placement (`2f29157`)
+
+### 수정
+
+- **release** — 데스크톱 바이너리 빌드 스크립트를 되돌린다 (`716d3b5`)
+- hide event badges during terrain visibility preview (`05817c6`)
+- retain usable house choices when switching chipsets (`6eecdb2`)
+
+## 0.102.0 — 2026-10-03
+
+### 기능
+
+- 시야 차단 수정과 집·도로 빠른 배치 (#1971) (`529120c`)
+
+### 수정
+
+- automatically dispatch confirmed game briefs when AI connects (#1969) (`c897c34`)
+
+## 0.101.0 — 2026-10-03
+
+### 기능
+
+- 지형 재편집, 게임 상태 검사, 공용 도장과 선택형 시야 규칙 (#1967) (`c9792bd`)
+- **map** — 맵별 캐릭터 크기 배율 characterScale — 월드맵에서 캐릭터 줄이기 옵션 (`0711ee3`)
+- **worldmap** — 실제 한반도 윤곽 구조 korea — 조선 테마 기본 (`8ae0c81`)
+- **worldmap-kit** — 문화권 지리 구조 — 반도(조선)·강 문명 대륙(무협)·열도(전국) (`a88a0b4`)
+- **worldmap** — 지형 경계 v9 — 쌍 종류별 전이, 매끈한 강·용암·독 물가, 사구 능선·늪·숲 가장자리가 같은 경계를 따른다 (`c159e3e`)
+- **ai** — 조수가 새 대륙 구조를 만든다 — edit/read_world_terrain 에 base generate (`98e4031`)
+- **worldmap** — 우주 전용 구조 — 성계 지도는 생성 은하(galaxy) + 우주 5막 항해 (`c9d7205`)
+- **worldmap** — 새 대륙 구조 생성(base generate) + 5막 여정 자동 맞춤 (`09f65c5`)
+- **worldmap** — 조수 시험에서 막힌 곳 — 여정 규칙을 말로, 막힌 길 좌표, 화산 작업, 덜 먹은 바닥 경고 (`b20f52d`)
+- **ai** — 조수가 세계 지도 지형을 바꾼다 — read_world_terrain · edit_world_terrain (`837c948`)
+- **worldmap** — 호스트 월드맵 빌드 경로 /v1/worldmap/build + 통행 표·글자 지도 출력, 테마 지형 위 편집 합치기 (`bcf0243`)
+- **worldmap** — 지형 편집 층 terrains/<id>.json — ops(땅·바다·섬·바닥·산·고개·강·숲·걷기·고원·장소 옮기기) (`0bfa7d2`)
+- **worldmap** — 우주 지도 다시 — 밀도장 성운·빈 구멍·가스 실·워프 균열·둥근 항로 (`124d0e3`)
+- **worldmap** — 팔레트 7종·스팀펑크 철로·연기·erase_roads 테마 정리 (`200a67d`)
+
+### 수정
+
+- show canvas activity immediately and prioritize the first scene (#1968) (`337b13e`)
+- fill the first AI arrival with a full-window scene (#1966) (`b15bdea`)
+- **ai** — 세계 지도는 칩셋 계열 검사에서 뺀다 + edit_world_terrain characterScale (`d5c34af`)
+- **worldmap** — 화산재·현무암 길가에 흰 점 — 눈길 킷 대신 흙길, 눈가루는 실제 눈 픽셀에만 (`48fa9bc`)
+- **worldmap** — 적대 QA 반영 — 강은 물 칸 안에서만, 조각 대륙은 깨진 판, 기후 어긋남, 천공섬 자리, 은하 나선팔·곡선 항로 (`8e9cd45`)
+- **worldmap** — 조수 2차 시험 — 편집 바닥은 지역 팔레트가 안 덮고, 숲 density 는 비율, 화산 원뿔, 섬 붙음 경고 (`3f92446`)
+- **worldmap** — 군도를 실제 섬나라로 — 굽이치는 2~3칸 해협·땅 목 다리, 섬 윤곽 굽이, 강 어귀 체크무늬 제거 (`817c712`)
+- **worldmap** — 빌드 경로를 정적 import — dev 서버에서 동적 import 가 「module runner closed」 로 죽었다 (`978220f`)
+- **worldmap** — 성운 경계 굽이·외계 길 끝 토막·SF 시가지 성기게 (`83648c3`)
+- **worldmap** — 이온 폭풍 세기 장 — 잔잔한 눈과 거센 띠 (`50b4904`)
+- **worldmap** — 길 띠 안쪽을 길 색으로 다시 칠함(바닥 색과 겹친 길 화소) (`18f345a`)
+- **worldmap** — 공용 지형 길 틈 잇기(mend_roads)·광장 칸·번개 다양화·문서 (`903003e`)
+- **worldmap** — 우주 아이콘 받침을 둥근 어둠으로 (`de93e0b`)
+- **worldmap** — QA 3차 — 선사 길 지우기(같은 바닥 칸 빌려오기), 팔레트 분리(조선·전국·밝음·열대), 고딕 색상 나누기 (`5e9548a`)
+- **worldmap** — QA 2차 — 길·항로 한 칸 틈 메우기·경사로 그물, 다리 밑 물, SF 건물 4종, 우주 경계 섞기·먼지·폭풍 (`65453c8`)
+
+### 문서
+
+- **worldmap** — 새 구조 생성·자동 맞춤·은하·경계 v9 문서 + 생성 세계 런타임 시나리오 (`6e9056e`)
+- 지형 편집 쪽 증거 경로를 저장소 기준으로 (`3681124`)
+- 세계 지도 지형 편집 — openwiki 쪽·키트 README ⑥·worldmapSource 스키마 (`7cbd62b`)
+
+### 테스트
+
+- **qa** — 조수가 만든 세계 지도를 출하 플레이어로 걷는다 — worldmap-terrain 시나리오 (`c905264`)
+
+### 기타
+
+- **worldmap** — 길 덧칠 — 발자국 연결은 옛 길 흔적으로, 지울 화소는 지도 전체에서 한 번에 메움 (`3b1bc19`)
+- **worldmap** — 테마 17종 + 하네스 지도 자리를 테마 지형으로 (`327459e`)
+- **worldmap-kit** — 테마 층 — 포장도로·철길·시가지·그을음·우주 지도, 팔레트 셋 (`40cdcd6`)
+
+## 0.100.0 — 2026-10-03
+
+### 기능
+
+- make the first AI sentence a cinematic world arrival (#1960) (`faec83d`)
+- redraw all common monsters and record battles with audio (`4abe155`)
+- **interior-props** — 새 기물 10차 50종 — 중세 공방·훈련장, 판타지 종족, 무림 생활, 대형 10 (`e442234`)
+- **interior-props** — 새 기물 9차 66종 — 무림 22 · 중세 17 · 판타지 12 · 대형 15 (`1519cd0`)
+- **interior-props** — 새 기물 8차 139종 명세 — 장르 넓히기 (`b19c084`)
+- **harness** — 후보 둘 + 셋째 자리 「다시 뽑기」 카드 (`49cbae1`)
+- **interior-props** — 새 기물 7차 118종 명세(판타지 61 · 현대 57) (`f296913`)
+- **interior** — 실내 시트 굽기 5판 — 공통 팔레트 v6(331색)로 옮기기 (`79f46b9`)
+- **palette** — 실내 합친 팔레트 시안 — v5 203색 + 시트에서 뽑은 128색 = 331색 (`7b7ffc8`)
+
+### 수정
+
+- **harness** — 확정하면 다음 기물 맨 위로 · 방 안 그림 7×7 → 5×5 칸, 한 줄에 4장 (`532f159`)
+- **harness** — 작업지시서가 아직 없는 판은 일꾼이 집어 가지 않는다 (`f6ca644`)
+- **harness** — 확정이 바로 반영되게 — 늦게 온 옛 상태가 고른 기물을 되살리던 것 (`6a74ed8`)
+- **harness** — 확정 알림을 오른쪽 아래로 — 위의 기물 이름을 가리지 않게 (`60862e3`)
+
+### 성능
+
+- **harness** — 일꾼 풀을 nice 10 으로 — 고르는 화면 서버가 굶지 않게 (`bd7a08e`)
+
+## 0.99.1 — 2026-10-03
+
+### 수정
+
+- stabilize cinematic interview AI handoff and mobile controls (`c00e40c`)
+
+### 테스트
+
+- record interview QA against current main (`69532e8`)
+
+## 0.99.0 — 2026-10-03
+
+### 기능
+
+- clarify first start and safely restore project backups (#1956) (`157ce43`)
+
+## 0.98.0 — 2026-10-03
+
+### 기능
+
+- connect cinematic genre interview to actual new game flow (`af305f9`)
+- **editor** — add ten terrain design tools with symmetry, stamps and route inspection (#1953) (`e8f8cb2`)
+
+## 0.97.0 — 2026-10-03
+
+### 기능
+
+- **harness** — joseon-baram CLI 와 기존 조선 도구 다리 (`e6a5f82`)
+- **harness** — joseon-baram 매니페스트·시드·레지스트리 등록 (`b874cd0`)
+
+### 수정
+
+- **jp-city** — 그룹 층을 멤버 칸의 엔진 홈에서 유도 — 정의·엔진 어긋남 177칸(13그룹) 정정 (`da3d266`)
+
+### 문서
+
+- **harness** — joseon-baram 하네스 문서와 AGENTS 하네스 절 한 줄 (`6fdccf0`)
+
+### 테스트
+
+- **harness** — joseon-baram 매니페스트·시드·CLI 단계 시험 (`9c383b9`)
+
+## 0.96.0 — 2026-10-03
+
+### 기능
+
+- **jp-city** — AI 참고문서 6용도 47쪽 124장 — 오토타일·건물 조립·도로 키트·상가 키트·오류 총괄 (`c050977`)
+- **joseon** — 국내성 원작 규모 통합 수정판 병합 — 새 문루·사립문·치·굴 통행 보정, 마스크 규칙 전환 (`80863b6`)
+- **국내성원작규모** — 4칸 사립문·치·굴·망루 배선, 해자 기슭 흔들기·큰길 물 메움·마스크 전환·NPC/소품/나무 규칙, 자동 점검 단언 — 재굽기(pixelDiff 0, 지도 게이트 통과) (`a262211`)
+- **국내성원작규모** — NPC 4조건·소품 규칙·나무 줄 간격·건물/성벽 그림자·슬리버 메움·성벽 변형 무작위 (`a88cd88`)
+- **국내성원작규모** — 문루 변형 3종·4칸 사립문·세로 성벽 치·굴 입구 3종 조각과 배선 (`dcff708`)
+- **joseon** — 국내성 원작 규모(200×208) 세 번째 맵 gungnae_full 등록 (`9cbf08e`)
+- **joseon** — 국내성 원작 규모(200×208) 굽기 — 시트 pixelDiff 0, 지도 게이트 통과, 사람 40 (`0527c37`)
+- **joseon** — 국내성 원작 규모 8단계 — 대나무 변형 6종(M4), 사람 배치·굽기 파이프라인 (`801e63c`)
+- **joseon** — 국내성 원작 규모 7단계 — 전사의 길 정원, 섬 집 나무다리, 술사 담터 북문, 길망 점검 0건 (`1b7b3c2`)
+- **joseon** — 국내성 원작 규모(200×208) 5~6단계 — 숲·가로수·잔디 채움, 밭 이랑길 (`ced3fb3`)
+- **국내성원작규모** — 해자 윤곽 자료·정전 폭 18칸 조각 추가 (`8b7ae53`)
+- **joseon** — 에디터 화면 확인 스크린샷 18장 + 조선 목록 축소본(catalog-thumbs) (`3272e75`)
+- **joseon** — 국내성 최종판(d8ca6924c2) 등록 — 측면 문루 상인방/설주·나무 변형 12종·성벽 윗면 변형 반영 (`837e9ee`)
+- **joseon** — 국내성 16구역판 합치기 — 변형 묶음 지형(road64·yard64·grass8·물 4변형)과 열린 사립문 건너는 곳 (`f7ca9bb`)
+- **joseon** — 마을 20호+국내성 두 맵을 joseon_baram 한 시트에 등록 (산출물·참고문서·장소 카드·위키) (`786c546`)
+- **joseon** — 변환기가 시트 여러 장을 한 시트로 합치고 국내성 통행 보정·건너는 곳 검사를 더함 (`39a6490`)
+- **joseon** — 국내성 8차 검수 2단계 — 열린 측면 문루(길이 지붕 밑 통과)·불규칙 숲띠·건물 간격·잔디 창 보강·감옥 호수 (`7199d9a`)
+- **joseon** — 국내성 8차 검수 1단계 — 세로 성벽 3칸(옆면+윗면+그림자)·측면 문루·궁 정전 단층 대전+3단 월대·회벽 담·청색 물·해자 대칭 (`aad0174`)
+- **joseon** — 국내성형 맵 96x96 굽기 — 성벽·해자·왕궁·구획 건물·사람, 시트 재조립 pixelDiff 0 (`6929c40`)
+- **joseon** — 국내성형 맵 — 소품·사람·지도 게이트 프로필(gungnae)·extra.json 출력 (`6b49e57`)
+- **joseon** — 조선 마을 20호 장소 카드·스냅숏 배선 (공용 DB 게시 없음) (`cf2b25a`)
+- **joseon** — 국내성형 맵 — 숲띠·나무 채움·시트 재조립 출력 (`8d27a7d`)
+- **joseon** — 조선 칩셋 참고문서 6용도 생성기와 번들·저장 검증 (`fb936f8`)
+- **joseon** — 국내성형 맵 — 담 두른 집·밭·전사의 길 정원 (`e7922b2`)
+- **joseon** — 조선 칩셋 일반 변환기·번들 타일셋(joseon_baram)·저장 증명 스크립트 (`9c251c0`)
+- **joseon** — 국내성형 맵 2~4단계 — 해자 고리·다리·왕궁·구획 건물 틀 (`31c026d`)
+- **joseon** — 마을 20호 extra.json 출력 + 조각 통행(X/C/F) 자동 규칙·보정표 (`4fb9781`)
+- **joseon** — 국내성형 맵 1단계 — 성벽 고리·망루·대문루·소문루·석판 대로 틀 (`01c2007`)
+- **joseon** — 국내성식 집 변형 세트 — ㄱ/ㄷ자 몸채·주막 ㅁ자 마당집 키트·상점 4종·다층 기와집·초가 4종·구획 담 (61조각) (`34db019`)
+- **joseon** — 8방향 블롭 물 오토타일 47종 — 굽이치는 강·둥근 연못 (`af9e551`)
+- **joseon** — 국내성식 성벽·성문·망루·돌다리·석판 지형 조각 세트 (`51a4f85`)
+- **joseon** — 국내성 왕궁 구역 조각 세트 — 정전·전각·행각·궁 담·궁 문·마당·어도·연못·소품·탑형 랜드마크 (`fc8a28c`)
+- **joseon** — 마을 20호 7차 — 물레방아 홈통 제거·문 앞 풀 정리·두 번째 건널목·문 앞 소품 금지 구역 (`c57dfe0`)
+- **joseon** — 6차 — 문/창 구분, 폭 2칸 안길, 나무 그림자, 건물 겹침 검사, 담 토막 제거 (`17a4d3b`)
+- **joseon** — 5차 — 강 사행 완화, 큰길·안길 단순화, 집 앞 낮은 담·사립문, 방앗간·물레방아, 도랑·선착장, 한복풍 인물만 (`79492de`)
+- **joseon** — 마을 길 체계 재설계(큰길 구간 어긋남·안길 꺾임·샛길 막다른) + 고증 반영(공동우물 마당·당산나무·장승 양옆·북쪽 고개) (`7678155`)
+- **joseon** — 솟을대문·평대문(열린 통로) + 집 변형 9종 + 생활 소품 16종, 마을 20채 재배치 (`79a3d16`)
+- **joseon** — 소규모 마을 20채(64×56) — 양반 저택·골목·시내·논·상점 + 신규 부품 9종 (`8854d06`)
+- **joseon** — 밝은 팔레트 판, 수문 성벽·성문 밖 길(48×46), 홍살문 5칸 축 맞춤, 가판 3종, Actor1 캐릭터 확인 합성 (`5190ca0`)
+- **joseon** — 팔레트 잠금을 바람의나라 군집 램프 94색으로 교체(옛 잠금은 palette_beodeul.json 보존), 잔디 판정을 램프 색 집합으로 (`6a1fa01`)
+- **joseon** — 초가 지붕 v3 — 바람의나라식 쌓은 방석 3단(긴 짚 털·단 밑 그늘·주황 갈색) (`151f286`)
+- **joseon** — 초가 v2(낮고 넓은 방석·열린 마루칸)와 바람의나라 구조물 확장 — 관아·성문·성벽·누각·홍살문·청사초롱 문·석탑·장터 차일·원두막 (`2b90fa2`)
+- **joseon** — 초가 지붕을 사용자 기준 사진(어두운 갈색 세 단 알약 방석)으로 재설계 (`e3f5999`)
+- **joseon** — 초가집 4종 codex(gpt-6.1-sol medium) 재제작 — 둥근 어깨 지붕·작은 창·널문·낮은 기단 (`0a6fe48`)
+- **joseon** — 바람의나라 연구 반영 — 곡선 처마 기와 지붕·둥근 방석 초가·주황 막돌 담·개방 정자·처마 디더 그림자 (`368bc87`)
+- **joseon** — 공간감 5차 — 물가 갈대·돌 자동 배치, 집 엇갈림·터 울타리, 덤불 크기 변형·대숲·소나무 군락 (`b677109`)
+- **joseon** — 공간감 4차 — 건물 15채·언덕 석축 계단·빨랫줄·화단·자동 빈 잔디 채움, 겹침 게이트를 건물 밀도 게이트로 교체 (`bd0e621`)
+- **joseon** — 공간감 3차 — 곡선 연못·큰 굽이 강·두렁 논·마당 흙 축소·밀도 보강 (`fa65434`)
+- **joseon** — 공간감 2차 — 석축 둑·굽은 강·수변 소품·나무/건물 겹침 게이트 (`3f32c2e`)
+- **joseon** — 버들항 급 나무(잎 덩이 겹침)·공간감 하네스(나무/지도 게이트)·밀도 높인 마을 지도 (`fc3e8ce`)
+- **joseon** — 조선 칩 3라운드 — 소품·담 재도트, 적대 리뷰 기록(culture/view), 후보 구움 (`7a5a2f5`)
+- **content** — 조선 건물을 버들항 블록 조립 문법으로 재작성 — 팔작·초가·대문·정자, 게이트 K(통그림 금지) (`5afc268`)
+- **content** — 조선 칩셋 하네스 — 버들항 팔레트 잠금·화풍 게이트·기준 옆 검수·판정 기록 (`c8ade35`)
+- **content** — 조선 칩셋 데모 초안 — 버들항 규칙으로 기와집·초가·대문·정자·땅 이음을 코드 도트로 (`5a9d4a3`)
+
+### 수정
+
+- **joseon** — 국내성 최종판 합치기 — 변형은 기준 이름의 통행 보정을 이어받고 측면 문루·그림자 칸을 새 그림에 맞춤 (`844a8bb`)
+- **joseon** — 국내성 사람 17명을 새 길 위에 재배치 (`bbde117`)
+- **joseon** — 국내성 사람 자리를 길 위로 옮김 (`8c383eb`)
+- **joseon** — 4차 검수 반영 — 문 있는 오두막, 담 관통 꼬리길 제거, 선착장, 논 사이 밭 타일 제거, 인물 위치 (`dba4a5d`)
+- **joseon** — 인물 위치를 새 배치에 맞춤 (`e8f844e`)
+- **joseon** — 마을 20채 1차 적대 검수 반영 — 양반댁 마당·대문채 통로, 시내 폭·방향, 길 종점, 논·정자 접근, 수관 배치 규칙 (`1753d61`)
+- **joseon** — 3/4 전수 리뷰 반영 — 건물 벽 명암·옆 그림자, 담 돌 밝게, 덤불 그림자 붙임, 어린 소나무 줄기 연결 (`696cbb3`)
+- **joseon** — 담을 사람 키(2칸)로 키움, 울타리·성벽 윗면 직육면체로 재작도 (`fec8d1f`)
+- **joseon** — 3/4 재리뷰 2차 반영 — 세로 담 윗면 세로 띠, 담 돌 배열 변형 3종, 담 끝 돌기둥, 낟가리·평상 보정 (`5955e86`)
+- **joseon** — 3/4 리뷰 반영 — 옹기 바닥 호·그림자, 평상·울타리·멍석 윗면, 담 덮개 윗면/기왓면 분리와 옆면, 다리 상판, 계단·석축 갓돌, 빨랫줄, 장터 차일 윗면, 원두막, 성벽 윗면 (`52cb94c`)
+- **joseon** — 3/4 시점 소품 재작도 — 옹기(입 타원·덮개)·우물·평상·낟가리·울타리·화단·멍석, 담(덮개 윗면+기왓골+돌쌓기)을 윗면+앞면+그림자 문법으로 (`670ae9c`)
+- **joseon** — 리뷰 2차 반영 — 초가 균열선 제거·어깨 둥글게·장지문 마루, 치미 확대, 성문·누각 누상 바닥, 석탑 층급받침, 태극·청사초롱 문·장터·원두막 (`c45c354`)
+- **joseon** — 리뷰 1차 반영 — 초가 한지 살창·용마름·새끼줄, 관아 회흑 기와+치미+현판, 붉은 주칠 누각 기둥, 석탑 이중 기단, 홍살문·청사초롱 문·장터·원두막 고증 수정 (`b7abb06`)
+- **joseon** — 처마 밑 서까래 채움이 벽 윗줄을 지붕으로 오인해 비던 버그 수정, 다리·독·담 3/4 보정 (`7822e29`)
+- **joseon** — 3/4 시점 소품(석등·장승·솟대·빨랫줄·울타리) 재작도, 지붕을 벽에 얹히게(처마 서까래 채움·폭 축소) (`d63b431`)
+
+### 정리
+
+- **joseon** — 3차 QA 반영 — 동서 담 방향, 장대석 성벽(이음 없음)·귀돌, 누각·청사초롱 문 4칸 길 축, 관아 3칸 길, 시장 마당, 고아 길 정리 (`b708cb5`)
+- **joseon** — 2차 QA 반영 — 세로 담을 덮개+돌 옆면으로, 안채·담 간격, 관아→큰길 샛길, 논 위 나무 제거 (`d01cb19`)
+- **joseon** — 양반댁 담 닫고 대문 정렬, 골목·길망·누각 접근로, 성벽을 성문 높이로 이어 붙임 (`c9f6b20`)
+
+### 문서
+
+- **joseon** — 에디터 화면 확인 SUMMARY (`36a1a69`)
+- **joseon** — openwiki/joseon-baram.md — 변환기·통행·참고문서·검증 실측·국내성 합치는 법 (`1039d1e`)
+- **joseon** — 데모 페이지 현재 상태 문구 정정(v4, 리뷰 3/3) (`7b6a864`)
+
+### 기타
+
+- 국내성 통합 수정 — 문루 통로 인자·_why_fit·타워 이동·새 조각 초안 (`2417ac1`)
+- **국내성원작규모** — 수정 라운드 1~3단계 — 석판 보호·큰길 다리 행·궁 담 길 차단·apron·섬 먼저 깎기·fits 강화·구획 좌표 (`c8a827b`)
+- **국내성원작규모** — 1~4단계 — 성벽·문, 원작 윤곽 해자·다리, 왕궁, 길·마당·구획 건물 (`6a74352`)
+- **국내성** — 16구역 재검수 마지막 라운드 — 측면 문루 상인방/설주 분리, 나무 변형 12종 추가, 세로 성벽 윗면 변형 6종, 망루 하단 막돌, 대장간 계단 잇기, 판정 갱신 (`d8ca692`)
+- **국내성** — 16구역 마감 — 사립문 열린 문, 예식장 계단 땅까지, 정전 계단 띠 개방, 궁문 주황 기둥, 성벽 변형 6종, NPC 재배치, 재굽기·판정 갱신 (`f72efcc`)
+- **국내성** — 16구역 5단계 — 세로 성벽 전폭 재작성, 해자 곡선, 다리 상판 한 톤·낮은 교대, 문틀 보, 판정 갱신 (`d9cb21a`)
+- **국내성** — 16구역 3~4단계 — 문 위치 실측·남안 뒤뜰·논 범위·나무 수관 겹침/건물 완충·소품 겹침 검사·NPC 재배치 (`3764c40`)
+- **국내성** — 16구역 2단계 — 흙길 4변형·석판 5종·풀 8종·물 4변형, 성벽 밑 길 마스크, 석판-마당 병합 (`2273698`)
+- **국내성** — 9차 3단계 — 건물 땅 그림자, 궁 담 벽돌 쌓기, 북 다리 좌우 대칭, 판정 갱신 (`bfb9582`)
+- **국내성** — 9차 2단계 — 망루 폭 5 중심 정렬, 세로 성벽 몸체 중앙 정렬, 현판 글자 변형, 성가퀴 틈 석재 채움, 판정 갱신 (`1851643`)
+- **국내성** — 9차 1단계 — 측면 문루 통로 기준 재조립, 다리 남단 착지, 북문 열린 아치, 성벽 그림자, 궁 남변 여유 (`b46625c`)
+
+## 0.95.0 — 2026-10-03
+
+### 기능
+
+- **jp-city** — 예제 맵 ① 상가 거리 48×40 — 건물 8채·간선 교차로·건널목·철도 건널목, 지역 참고본 등록 (`f4c9fc3`)
+
+### 문서
+
+- **editor** — 지형 도구 실제 작동 GIF와 녹화 절차 추가 (#1945) (`59a3dc9`)
+
+## 0.94.0 — 2026-10-03
+
+### 기능
+
+- **harness** — jp-city — 일본 도시 주택가·역·공원·신사 도트 후보 하네스 (항목 40, modern3, pick 까지) (`98dd020`)
+
+### 수정
+
+- **editor** — 팀 상태 배지와 지형 도구 막대 겹침 방지 (#1942) (`dc463d0`)
+
+### 문서
+
+- **agents** — jp-city 하네스 등록 + 웨이브 구동기 (`85bc923`)
+
+## 0.93.0 — 2026-10-03
+
+### 기능
+
+- **editor** — 자동 경사로·다리·지형 붓·군집과 통행 미리보기 (#1937) (`0592bbd`)
+- pass interview execution tasks to the assistant internally (`b60d50a`)
+
+### 수정
+
+- **project** — 기존 작업 로드를 막는 공용 grass 속성 누락 보충 (#1940) (`d494f59`)
+
+## 0.92.1 — 2026-10-03
+
+### 성능
+
+- **jp-city** — build_jp_city_building 스키마 축소 1808→1505 토큰 (`d7f7845`)
+
+### 테스트
+
+- **ai** — 도구 색인 글자 상한을 실측 6,100 으로 (main 5,959 → jp_city 도구 +53) (`6aa8a2a`)
+
+## 0.92.0 — 2026-10-03
+
+### 기능
+
+- **jp-city** — M3 건물 조립 도구(build_jp_city_building) + roads 블록 굽기 병합 (`28f7421`)
+- **jp-city** — M4 일본식 도로 키트 블록 — 키트 29·새 칸 65 (생활도로·간선 4차선·건널목·지하도·표지) (`d488344`)
+
+## 0.91.1 — 2026-10-03
+
+### 수정
+
+- **relief** — 언덕 통로를 단 없는 흙 경사면으로 연결 (#1931) (`c13a619`)
+
+## 0.91.0 — 2026-10-03
+
+### 기능
+
+- **jp-city** — M1 번들 타일셋 jp_city 배선 (새 프로젝트·기존 프로젝트·계열 oprn-jp) (`b39837a`)
+- **jp-city** — M1 굽기 — 시트 48열 3616칸·키트 176·그룹 169·오토타일 17, 자리 키 핀 (`5434559`)
+- **jp-city** — M2-B 선형 오토타일 10세트 (블록담·생울타리·철망·가드레일·선로·차선·횡단보도·점자블록) (`4e5bdbe`)
+- **jp-city** — M2-A 지면 오토타일 7세트 (연석·생활도로·잔디·자갈·광장·연못·수로) (`cbea3ab`)
+- **jp-city** — M0 jpkit 이식 — 저장소 안에서 시트(2880칸)·카탈로그·지구 6장 재현, 행인 제외, 글자 122자 굽기 (`706c6b3`)
+
+### 수정
+
+- **relief** — 기본 계단을 풀과 흙벽 대신 돌 디딤판으로 렌더 (#1928) (`89891d8`)
+
+## 0.90.0 — 2026-10-03
+
+### 기능
+
+- **editor** — 러프 높이 붓과 지형지물 도구 막대 (#1925) (`739f33e`)
+
+## 0.89.0 — 2026-10-03
+
+### 기능
+
+- **modern-city** — 참고문서 49편·예제 도시 맵 60x60·지역 등록·도달성/변조 검증 (`35b74fe`)
+- **modern-city** — 번들 타일셋 modern_city — 굽기(bake_tileset.py)·시트 9998칸·키트 575·번들 배선 (`cc42b8f`)
+
+### 수정
+
+- **assets** — keep retired RTP category lists typed when empty (`7ca33af`)
+
+### 문서
+
+- openwiki INDEX 재생성(modern-city) (`e5e3099`)
+- **modern-city** — 굽기 절·위키 색인 (`b36f889`)
+
+### 잡무
+
+- **modern-chipset** — 합격 후보 사본 tiledata/modern-city/sources + run_town.sh (qa-runs 없이 재현) (`5551d83`)
+- **modern-chipset** — 하네스 브랜치(도시 조립·에셋 JSON·modern4 팔레트)를 origin/main 위로 이식 (`611281f`)
+
+## 0.88.0 — 2026-10-03
+
+### 기능
+
+- **assets** — redraw hydra with native RM2003 pixel poses (`1b297f4`)
+
+### 수정
+
+- **assets** — 비어 있는 EasyRPG 전투·몬스터 목록을 필터 대신 빈 배열로 둔다 (`10fcde9`)
+- **assets** — remove rejected starter artwork and runtime references (`615f97d`)
+- **battle** — 옛 전투 그림을 deprecated/ 로 옮기고 도트·포켓몬 그림만 쓴다 (`a0176dd`)
+
+### 성능
+
+- **harness** — 고르는 화면 그림을 미리 굽고 다음 기물을 미리 받는다 (`33ab5b5`)
+
+## 0.87.0 — 2026-10-03
+
+### 기능
+
+- **palette** — 팔레트 시안 미리보기 둘 — 실내 바닥·벽 타일을 v5.pal 로, 몬스터 140종 공통 팔레트(32·48·64색) (`cbed552`)
+
+## 0.86.0 — 2026-10-03
+
+### 기능
+
+- **interior-props** — 현대 실내 기물 50종 명세(batch6) — 집·사무실·가게·학교·병원 (`7680a24`)
+- **interior-props** — 카드 두 번 누르면 확정, 물건 이름은 가운데 위에 크게 (`e105700`)
+
+### 잡무
+
+- **interior-props** — 동시 작업 16 → 32 (`392acca`)
+
+## 0.85.0 — 2026-10-03
+
+### 기능
+
+- **interior-props** — 고르는 화면 기본을 「방 안」만으로 — 방 그림을 크게, 같은 그림인 둘째 벌은 숨김 (`e3326d5`)
+- **interior-props** — 테두리 두 벌을 따로 카드로 — 한 판 10장(1 · 1′ …)을 한눈에 보고 누른다 (`a515705`)
+- **interior-props** — 고르는 화면에서 후보마다 테두리 두 벌 — 전부 / 꼭 필요한 곳만 (`75f3376`)
+- add cinematic lobby to desktop start screen (`90a6296`)
+
+### CI
+
+- 타입체크 힙을 7GB로 올린다 (`4d6a6aa`)
+
+## 0.84.1 — 2026-10-03
+
+### 수정
+
+- protect committed event draft references during database deletion (`e35b8a3`)
+- preserve event drag ownership and legacy page behavior (`40c193b`)
+- bound repeated common event graph traversal (`6afe31d`)
+- preserve nested event references when deleting database records (`135de86`)
+- protect database skill and actor references on deletion (`1d83e6b`)
+- report actual database saves and common event recursion (`85489fb`)
+
+### 문서
+
+- record database and event editor audit findings (`9a20d46`)
+
+## 0.84.0 — 2026-10-03
+
+### 기능
+
+- **assistant** — 몬스터가 다가와 공격하는 컷신은 차셋 NPC 대신 staged 그림 배우로 유도 (`010a4ab`)
+- **cutscene** — 대화창 위치 옵션(줄별 position·화면 기준 회피) + staged 에 맵 배우·애니메이션·장소 이동, 충격 연출 도구를 staged 로 통합 (`32cdf8f`)
+- **assistant** — 그림 연출 소재 규칙·주인공 자동 맞춤·animation beat·암전 종료 거부 (`441580e`)
+- **cutscene** — 선언형 연출에 turn·animate(게임 전투 애니메이션)·번들 그림 배우 추가 (`5439ab4`)
+- **cutscene** — 선언형 연출에 효과음·화면 전환·ghost 배우·flash 색 추가, 이세계→포켓몬풍 데모 빌더 (`2da787a`)
+- **assistant** — 그림 생성 승격 시 선언형 연출·미리보기를 함께 얹고 도구 설명 키워드 보강 (`a3515b1`)
+- **cutscene** — 선언형 연출 script_cutscene_staged + 그림 style(game|illustration) (`9a4f411`)
+
+### 수정
+
+- **ai** — 창이 좁은 모델의 폴백에 전체 카탈로그를 보내지 않고, find_tools 가 설명 첫 문장 일치를 먼저 준다 (`5d8d300`)
+- **battle** — 이도류는 무기마다 그 무기의 공격력으로 치고, 「전투 명령 변경」은 지금 메뉴 위에서 더하고 뺀다 (`31927ac`)
+- **assistant** — 현대 맵 거부 메시지에 배경 그림+staged 대안 안내 (`774fa78`)
+- **assistant** — action 생략한 그림 beat 도 손 연출 거부 대상 (`9641f9f`)
+- **assistant** — 몬스터 공격 컷신 거부가 eventId·actorId 별칭도 잡도록 (`c50657c`)
+- **assistant** — 몬스터 그림 생성 거부(게임 도트 유도), showAnimation target 경고 제거 (`295370e`)
+- **assistant** — staged 주인공은 Actor1~4 만, 몬스터·소품 그림을 손으로 show 하는 컷신 거부 (`e0d9f01`)
+
+### 테스트
+
+- **ai** — 세션을 통째로 돌리는 툴 노출 테스트에 60초 한도 (`650f839`)
+- main 에서 원래 빨갛던 테스트를 지금 제품에 맞춘다 (`af9f68e`)
+
+## 0.83.0 — 2026-10-03
+
+### 기능
+
+- adapt battle choreography to every bundled character and current equipment (`0bda2ad`)
+- **db** — 도트 측면 전투 배경은 종류로 고른다 + 전투 정리 잔여 (`d313d81`)
+- add 32 shared battle motion programs and native gimmick rules (`1ea47cd`)
+
+### 수정
+
+- preserve casting and legacy combos with character motion evidence (`5efdd00`)
+- branch battle previews and impact effects by action outcome (`6566f07`)
+- synchronize battle contacts and replace sliding motion recovery (`5892e2c`)
+- preserve separate contacts in multi-hit battle motion previews (`8b9a58f`)
+
+## 0.82.0 — 2026-10-02
+
+### 기능
+
+- **interior-props** — 선 게이트 — 바깥 테 1칸·테가 안쪽보다 어둡다(검사·작업지시서·좋은/나쁜 예), 시험 기물 2종(거대 망원경·베틀) (`661fbdd`)
+- **interior-props** — 선 문법 측정·보정 스크립트(외곽 두께·외곽 없음·외곽 색·빛 방향·안쪽 선 굵기) (`a177e68`)
+
+### 잡무
+
+- **interior-props** — 대형 기물 둘째 묶음 고른 결과(picks.json) (`15886ca`)
+
+## 0.81.0 — 2026-10-02
+
+### 기능
+
+- **battle** — RM2003 이도류·공통 이벤트 명령·배우별 전투 명령 (`a6f4d01`)
+
+### 수정
+
+- **db** — 자료집 전투 정리 후속 — 숨긴 칸 경고·조수 스키마·규칙 단독 변경·deprecated 표식 (`99a0bdb`)
+
+## 0.80.0 — 2026-10-02
+
+### 깨지는 변경
+
+- **battle** — 창 색만 다르던 측면 스킨 여섯을 지우고 전투 스킨을 retro2003·pokemon 둘로 줄인다 (`2145473`)
+
+### 정리
+
+- **battle** — 창 색만 다르던 측면 스킨 여섯을 지우고 전투 스킨을 retro2003·pokemon 둘로 줄인다 (`2145473`)
+
+## 0.79.0 — 2026-10-02
+
+### 기능
+
+- **interior-props** — 대형 기물 둘째 묶음 10종 명세(batch4, 3/4 밑그림 포함) — 탄수차·유개 화차·짐마차·그랜드 피아노·거대 가마솥·용 알 둥지·보물 더미·당구대·왕실 침대·거대 수정 (`ff288fa`)
+
+### 정리
+
+- **db** — 자료집 전투 정리 — 전투 방식 두 가지·전투 화면 탭·안 쓰는 칸 삭제 (`1c9dff2`)
+
+## 0.78.0 — 2026-10-02
+
+### 기능
+
+- **interior-props** — 대형 깊은 기물 3/4 밑그림(blockout) — 명세가 윗면·남쪽 면 띠를 정하고 검사가 채움을 잰다 (`274ff70`)
+
+### 수정
+
+- **interior-props** — 밑그림이 있는 기물의 꼭대기 규칙은 주 윗면(밑그림 띠)에 — 솟는 부품은 행 수 규칙 밖 (`3d1abcb`)
+- **interior-props** — 밑그림 절은 깊이와 상관없이 blockout 이 있으면 싣는다 (`e97697b`)
+
+## 0.77.0 — 2026-10-02
+
+### 기능
+
+- **worldmap-kit** — 월드맵 아이콘 세계관 세트 14개 + 하네스 일괄 받기 (#1888) (`38bcb25`)
+
+## 0.76.0 — 2026-10-02
+
+### 기능
+
+- **battle** — 포켓몬 스킨 타격을 3세대 박자로 — 두 박자·깜빡임·HP 상자 떨림·상성 문장 (`3f78ca3`)
+- **battle** — 포켓몬 타격감 3차 — 세기별 타격음·도트 착탄 별·킥 하한·넉백 배율 (`0df31d3`)
+- **battle** — 포켓몬 타격감 2차 — 한 프레임 번쩍임·정지 진동·착탄 별·카메라 킥·HP 잔상 (`a1db5b8`)
+- **battle** — 포켓몬 스킨 기술 움직임 7종 — 발사체·현장 발생·범위·보조 안무 (`a04653d`)
+- **battle** — 포켓몬 스킨 타격 안무 — 닿는 돌진·접촉 정지·맞은 쪽 넉백 (`55834d8`)
+- **battle** — 포켓몬 스킨 동작 템포 1.5배 — 히트스톱·대사는 그대로 (`fe85d0c`)
+- **harness** — 공격 방향 계약과 스킬별 자세(tackle·special·buff·hurt) (`7f19b02`)
+- **harness** — 몬스터 대기·공격 애니메이션 — 대기는 1px 움직임, 큰 동작은 sprite-gen식 한 줄 생성 (`f89f261`)
+
+### 수정
+
+- **battle** — 포켓몬 피해 박자 적대적 리뷰 결함 — 막타 쓰러짐·넘기기 겹침·판정 불일치 (`c7326f1`)
+- **battle** — 효과음 적대적 QA 반영 + 피격 반응 리뷰 반영 (`e520397`)
+- **battle** — 포켓몬 전투 효과음을 착탄에 맞춘다 (`d0ace4c`)
+- **battle** — 포켓몬 스킨 타격감 — 내 몬스터 피격 노드 찾기·그림 흔들림·동작 비트 키 (`add247a`)
+
+## 0.75.0 — 2026-10-02
+
+### 기능
+
+- **interior-props** — 깊은 기물은 다른 회사 모델이 한 번 더 검수(review2) — 둘 다 PASS 여야 통과 (`e9ca9be`)
+- **interior-props** — 깊은 기물 꼭대기 면 강제 — 명세 검사·결정적 메모 검사·눈 먼 검수·교차 확인 (`81d0290`)
+- **interior-props** — 대형 기물 10종 명세(batch3) — 기관차·객차·석탄 화차·귀족 마차·용 뼈 화석·시계탑 톱니·대형 수조·거대 기사 석상·인쇄기·증기 보일러 (`c655b12`)
+
+## 0.74.0 — 2026-10-02
+
+### 기능
+
+- **harness** — 사막·동양풍도 원래 그림(옆면 약간) 허용 — 사용자 결정 (`5fb00b5`)
+- **harness** — 다시 그리기 지시서 v2(출발 그림 화소가 재료·high·2바퀴·STYLE) + 감독 손수정 후보(town_bell) (`51306cb`)
+- **harness** — 월드맵 아이콘 정면 카메라 다시 찍기 후보와 현대·SF 옆면 예외 (`2161580`)
+- **interior** — 소품 하네스에서 고른 113종을 공용 실내 시트에 굽기 4판 + 칸 번호 고정 (`e231100`)
+- **interior-props** — /harness 목록에서 「끝남」 기물을 접어 둔다 — 끝남 칩·머리를 눌러 펼친다 (`8308833`)
+
+### 수정
+
+- **harness** — town_bell 손수정 — 탑 명암 좌우 대칭 (`2bfad48`)
+- **harness** — 정면 렌더 후보는 빛도 정면, 검수 ✗ 여도 고를 수 있게 · 현대 검수에서 엄격 절 제거 (`effcb91`)
+- **interior** — 가구 사전 참고문서 — 작은 분류(8종 미만)는 20종 넘게 묶어 한 문서로(분류 한도 64문서), 두 낱말 분류 이름 잘림 고침 (`e4a252e`)
+
+### 잡무
+
+- **harness** — 월드맵 아이콘 결정 사본 갱신 — 사용자 검수 완료 (`d39bd0c`)
+
+### 기타
+
+- **harness** — 정면 카메라 개선안 실험 — 읍성(빛 원래·KY .62·정면용 배치) (`2cede59`)
+
+## 0.73.0 — 2026-10-02
+
+### 깨지는 변경
+
+- **monsters** — 몬스터 그림 생성(AI로 만들기·generate_image_asset monster) 제거, 스킨 공용 정면 적 그림 삭제 (`d1a722c`)
+- **battle** — 정면 전투 스킨 다섯(rm2000·dragonquest·mother·mv·vxace) 삭제 — 기본은 도트 측면 (`841f2fe`)
+
+### 기능
+
+- **workshop** — 에셋 만들기 권장 모델 안내(GPT-6.1 Sol medium · Claude Sonnet 5.5 이상) (`dedcf78`)
+- **battle** — 정면 스킨에서 전투 화면 꾸미기를 고르면 측면 스킨으로 같이 갈아탄다 (`d4098ee`)
+- **workshop** — 왼쪽 「공방」 판·공방 화면·판 화면·새 기물 폼 (`20eb77f`)
+- **workshop** — 에디터 어댑터(그림·채팅·세션) (`b0c7f35`)
+- **workshop** — 실내 기물 실행기(방향·그리기·자기 점검·검수 지시문) (`b78ebeb`)
+- **workshop** — interior-props 매니페스트·팔레트·기물 사전·깨짐 검사 (`d2ab87f`)
+- **workshop** — AI 표면 workshop-draw·workshop-review (`0e252ea`)
+- **workshop** — 공방 실행기(큐·시도·자기 점검·검수·재개·429) (`a6584a3`)
+- **workshop** — 공방 저장소(IndexedDB + 메모리 폴백) (`bb7d330`)
+- **workshop** — 공방 공용 타입과 팔레트 키 격자 (`2211426`)
+
+### 수정
+
+- **workshop** — F 확대가 눈에 보이게 (정수 배율 + 크게 2배, 비교 8/16) (`a370cca`)
+- **workshop** — prepare 실패 재시도, 실행 상태 알림, 공방 단축키 격리 (`17dd92e`)
+- **workshop** — 공방 CSS 를 실제 토큰으로 교체하고 화면 캡처를 남긴다 (`4c5ad19`)
+- **workshop** — 검색·메모 입력 보존, 오류 표시, 열기 경쟁, 단축키 가드 (`82853f4`)
+- **workshop** — 프로젝트가 바뀌면 다른 프로젝트 공방 세션 정리 (`266afdc`)
+- **workshop** — 검수·그리기 지시문에 생물·조각상·가는 막대 면제 (`6176fed`)
+- **workshop** — 시트 자르기에서 반투명 그림자 색 보존 (`a65c606`)
+- **workshop** — 엔진 다시 그리기 중복·재개 시도 기록·검수 답 예외 (`cf03965`)
+- **interior-props** — 2층 침대를 가로(2×1, 32×48)로 — 머리판 서쪽·사다리 동쪽 (`8e67f12`)
+
+### 정리
+
+- **monsters** — 몬스터 그림 생성(AI로 만들기·generate_image_asset monster) 제거, 스킨 공용 정면 적 그림 삭제 (`d1a722c`)
+- **battle** — 정면 전투 스킨 다섯(rm2000·dragonquest·mother·mv·vxace) 삭제 — 기본은 도트 측면 (`841f2fe`)
+
+### 문서
+
+- **openwiki** — INDEX 재생성 (`19512a5`)
+- **workshop** — 공방 문서와 모델 없는 화면 캡처 스크립트 (`180f1f7`)
+- **workshop** — 공방 1단계 구현 계획 + 저장을 IndexedDB 로 바꾼 설계 갱신 (`ebfc5ca`)
+- **workshop** — 에디터 「공방」 1단계 설계 — 하네스를 사용자 계정으로 에디터 안에서 (`b14dc28`)
+
+### 테스트
+
+- **workshop** — 캡처의 가짜 검수가 B 1회차를 확정적으로 불통과, QA 메모 추가 (`2ceae9b`)
+
+### 잡무
+
+- **interior-props** — 2층 침대 가로 캔버스 폴더·후보 h210 (`c783c66`)
+- **qa** — 조수 전투 화면 선택 A/B 4단계 증거와 블라인드 판정 (`41dccc0`)
+- **scripts** — 지운 정면 스킨을 가리키던 QA 스크립트를 retro2003 으로, battle-frontview 시나리오 삭제 (`26f9717`)
+
+### 기타
+
+- test+docs: 정면 스킨·몬스터 그림 생성 삭제에 맞춘 시험 갱신, sideOnlyBattle 계약 시험, openwiki 절 (`96d1c93`)
+
+## 0.72.1 — 2026-10-02
+
+### 수정
+
+- **ai** — 전투 화면 분위기 글의 「현대」가 판타지 첫 제작을 PAW 전용 현대 맵으로 잠그던 것을 고친다 (`d592a55`)
+
+## 0.72.0 — 2026-10-02
+
+### 기능
+
+- replace arcane legacy enemy art with editable pixel sheets (`c596d06`)
+- replace organic legacy enemies with articulated native pixel sheets (`805c566`)
+- add original humanoid and boss enemy pixel sheets (`20f09e6`)
+
+### 수정
+
+- retire deprecated monster art with 100 native replacements (#1872) (`f9edf69`)
+- retire legacy monster paintings and preserve native enemy catalog (`4428a19`)
+
+## 0.71.0 — 2026-10-02
+
+### 기능
+
+- **harness** — redo — 안 고른 판을 지우고 새 지시서로 다시 뽑기, 화면 편의 (`05b4ccb`)
+- **harness** — 미믹 새 지시서 시험 판 h132 — 열린 보물상자 h26-D 에서 출발 (`2b5903d`)
+- **harness** — 후보마다 그린 쪽(Codex·Sonnet) 표시와 거르기 (`330d520`)
+- **harness** — 소품 하네스 엔진을 Codex CLI(gpt-6.1-sol medium)로 — 그리기·검수 모두 (`8f4d7d4`)
+- **interior** — 새 기물 2차 102종 명세 + 둘째 상태(다른 기물의 고른 그림에서 출발) (`23bf078`)
+- **interior** — 가구 쓰임·방향·상태 짝 + 소품 하네스 새 기물 모드 + JRPG 장치 11종 명세 (`b5bc998`)
+- **content** — 소품 하네스 — 검수 탈락 시 다시 그린다 (`4fe8037`)
+- **content** — 실내 소품 하네스 — Sonnet 다섯 명이 찍고 사용자가 고른다 (`c75c696`)
+
+### 수정
+
+- **harness** — 작업지시서가 정면도를 허락하던 것 — 시점 절 숫자화, 예시 그림, 기준 그림 거르기 (`fe9c9f3`)
+- **harness** — 검수가 윗판 없는 정면도를 통과시키던 것 — 꼭대기 면 규칙 (`06bb217`)
+- **harness** — 새 기물 썸네일 자리 표시 (`f72ba41`)
+
+### 성능
+
+- **harness** — 작업자 세션을 가볍게 — 저장소 밖 작업 폴더·도구 넷·플러그인·MCP 없음 (`e1fed52`)
+- **harness** — 소품 하네스 동시 작업자 5 → 16 (`25f81e4`)
+
+### 문서
+
+- **interior** — 쓰임·상태 짝·새 기물 하네스 모드·칸 번호 밀림 함정 (`e611ad3`)
+
+### 잡무
+
+- **harness** — 새 지시서 다시 뽑기 판 h133~h208 후보와 사용자가 고른 것 (`53c342f`)
+- **harness** — Codex 판 h62~h128 후보 그림(335장, 검수 통과 332) (`64e4ba9`)
+- **harness** — Codex 동시 작업자 16 명 — 12 명은 약 3.3시간 (`8cce5cf`)
+
+## 0.70.1 — 2026-10-02
+
+### 수정
+
+- **editor** — 연출 편집 화면 실측 캡처에서 나온 세 군데 (`fa9e243`)
+
+## 0.70.0 — 2026-10-02
+
+### 기능
+
+- **battle-fx** — 적 쓰러짐 연출·전투 배경 겹·상태 몸 표시 6종·이펙트 회전/뒤집기/겹치기·화면 필터 (`320344c`)
+
+### 수정
+
+- **ai-tools** — upsert_troop 이 members 만 받아도 enemyIds 를 채운다 + 전투 연출 조수 시험 브리프 (`45c3656`)
+- **battle-fx** — 쓰러짐 연출 실측 반영 — 도트 적 맞은 칸 유지·결과 도장 대기·이펙트 층 섞기·오라 몸 상자 (`24cbb61`)
+
+## 0.69.0 — 2026-10-02
+
+### 기능
+
+- **staging** — 레터박스·흔들기 방향·파티클·모습 효과(포즈·색·잔상) + 컷신 비트·연출 지침 (`7111254`)
+- **items** — diversify effects and balance the shared item economy (`4029d2a`)
+- **items** — seed 1000 shared items and regenerate unified pixel icons (`7d70caa`)
+
+### 수정
+
+- **ts** — JSON 선언 파일을 읽도록 allowArbitraryExtensions를 켠다 (`e4a2905`)
+- **items** — bound TypeScript inference for shared item data (`f13b557`)
+- **staging** — 조수 gen 실측 반영 — kind 짐작·화면 효과 full 판정·모자이크는 전환에만 (`35d8f0f`)
+- **staging** — 따라가는 파티클 이미터를 원점에 만든다 + 위키·캡처·연출 기획 브리프 (`eac5b98`)
+
+## 0.68.0 — 2026-10-02
+
+### 기능
+
+- **blend** — 이벤트 그림·그림 표시 겹치기 — 더하기·스크린·곱하기 (`811581e`)
+- **harness** — 월드맵 아이콘 공격적 폐기 — 엄격 검수, 불합격 후보 숨김·대체, 투영 세트 일괄 버림 (`b788e47`)
+- **screen-fx** — 화면 왜곡 — 물결·모자이크·기울기 (카메라 후처리) (`622da77`)
+
+### 수정
+
+- **battle** — 양피지 창 선택 글씨가 밝은 강조색에 묻히고 영화 띠가 파티 마지막 줄을 덮던 것을 고친다 (`cc99052`)
+- **ai** — 실행 턴이 계획 턴의 「읽기 전용」 말을 제 얘기로 읽고 멈추지 않게 한다 (`ab95724`)
+
+### 잡무
+
+- **blend** — 캡처 그림을 화면 아래로 — 스프라이트와 안 겹치게 (`9293f5e`)
+
+## 0.67.0 — 2026-10-02
+
+### 기능
+
+- **harness** — 월드맵 아이콘 다시 그리기 판 — 후보 N장, 검수, 사용자 고르기 (`1d99e45`)
+- **cinematic** — 그림 이동·카메라 팬에 움직임 곡선(easing) (`df0face`)
+- **assistant** — 컷신 그림을 게임 화면 계약(16비트 3/4 탑뷰·16px 도트)에 맞춘다 (`88498e6`)
+- **assistant** — 컷신 그림 생성·충돌 연출·미리보기 도구와 컷신 beat 결함 수정 (`9394f64`)
+
+### 테스트
+
+- **cinematic** — 이징 곡선 단위 테스트 (작성만, 미실행) (`16af46d`)
+
+## 0.66.0 — 2026-10-02
+
+### 기능
+
+- **harness** — 현대 거리 탈것 도트 하네스 modern-vehicles (pxgrid 후보 5명 + 기계 검사 + 독립 검수) (`cbede8f`)
+- **harness** — 하네스 구조와 몬스터 수집 종 스프라이트 하네스 (`4e517b8`)
+
+### 정리
+
+- **harness** — modern-vehicles → modern-chipset (modern3 칩셋 전용, 종류는 안에서 확장) + codex 작업자 선택 (`607527b`)
+
+### 테스트
+
+- **harness** — 몬스터 종 하네스 시험 + 진화 단계 몸집 배율 + 모래상자 (`11008f2`)
+
+## 0.65.0 — 2026-10-02
+
+### 기능
+
+- **ai** — 조수가 기획 톤에 맞춰 전투 화면 프리셋을 고른다 (`543fc0e`)
+- **harness** — 월드맵 아이콘 하네스 — 검수자 판정 + 사용자 받기/버리기 (`8ddbb0b`)
+
+## 0.64.0 — 2026-10-01
+
+### 기능
+
+- **content** — 월드맵 아이콘 세트 「현대·SF」 17역할 22장 (경사 투영 렌더러) (`c21f973`)
+- **content** — 월드맵 아이콘 세트 사막·동양풍 — 투영 렌더러로 22장(17역할), 새 색 0개 (`c33b51d`)
+- **content** — 월드맵 키트 — 지형·팔레트·아이콘 세트·여정 템플릿 4층 분리와 빌더 (`87e510f`)
+- **relief** — 편집기에 들린 타일·절벽 띠 컨테이너·부분 갱신을 붙인다 (`f1ec040`)
+- **relief** — 높이 지형 런타임 — 걷기·들림·화면 변환·줄 띠·양식·경사로 (`a7abcc1`)
+- **battle** — 전투 화면 꾸미기 — 프리셋 12종과 칸별 덮어쓰기 (`9b165f1`)
+
+### 수정
+
+- **relief** — rim 블록의 양식 null 가드 (`fd9f4a9`)
+- **relief** — 쓰지 않는 RELIEF_DEFAULT_RIM import 를 뺀다 (`ff63636`)
+- **relief** — 높이 지형 맵은 창 단위 타일 그리기를 건너뛰고 전체 경로로 그린다 (`25035cb`)
+
+### 문서
+
+- **content** — 월드맵 키트 — 아이콘 세트 둘 검증 결과와 제품 등록 보류 사유 (`818de10`)
+- **openwiki** — 색인 재생성 (`d006f2b`)
+- **relief** — 높이 지형 지도(relief-terrain)와 스키마·편집기·도구 문서를 갱신한다 (`e5e1c01`)
+
+### 테스트
+
+- **relief** — peat 양식 기대값과 벽 띠 측정을 실제 렌더에 맞춘다 (`ac4ba0b`)
+- **relief** — 높이 지형 단위 시험·구조 검사기·QA 시나리오·경사로 도트 원본 (`1b7e968`)
+
+## 0.63.0 — 2026-10-01
+
+### 기능
+
+- add composable quest presets and verified player workflows (`4e97a36`)
+
+### 수정
+
+- **editor** — 퀘스트 선택 아이콘 크기를 DeckIconSize에 맞춘다 (`e7464ca`)
+
+## 0.62.0 — 2026-10-01
+
+### 기능
+
+- support 1024 by 1024 maps and measure performance (`3499fd7`)
+- **dialogue** — 전신 초상 크기를 에디터에서 조절한다 (`f90ae70`)
+
+## 0.61.0 — 2026-10-01
+
+### 기능
+
+- support 512 by 512 maps across editor and tools (`bf02c1f`)
+
+### 수정
+
+- bound runtime map tile rendering to the camera (`1b54977`)
+
+### 테스트
+
+- repair parity consumer reference and record local CI checks (`a836907`)
+
+## 0.60.0 — 2026-10-01
+
+### 기능
+
+- **portraits** — 공용 초상 16표정 전부·외형 전신 칸·조수 자원 검색 (`632ef9c`)
+
+## 0.59.0 — 2026-10-01
+
+### 기능
+
+- **battle** — 측면 스킨 여섯을 도트 측면 전투 뼈대 위의 창 모양으로 (`1c93142`)
+
+## 0.58.1 — 2026-10-01
+
+### 수정
+
+- **interior** — 사용자 판정 — 나빠진 7종 이전 그림으로, 옆 보는 의자 새 후보, 시야각 규칙 바로잡기 (`e8525b6`)
+- **interior** — 3/4 전수조사 — 명백한 위반 44종 다시 그려 굽기 3판 (`52bb08c`)
+
+### 기타
+
+- **interior** — 3/4 전수조사 — 기준 그림 6종·§11-4·작업자 절차 3판·A 등급 44종 배정 (`62c7359`)
+
+## 0.58.0 — 2026-10-01
+
+### 기능
+
+- 공용 표정 세트 76종에 흉상·전신 5표정을 더한다 (`f5b9dfe`)
+
+### 수정
+
+- **battle** — retro2003 아래 칸을 원작 배치로 — 왼쪽 적 이름·명령, 오른쪽 파티 상태 (`b63c491`)
+
+### 문서
+
+- openwiki 색인 갱신 (`7407873`)
+
+## 0.57.0 — 2026-10-01
+
+### 기능
+
+- **battle** — 소환 그림(summonResourceId) — 도트 몬스터가 나타나 달려가 친다 (`699c189`)
+- **battle** — 힘 모으기(적 대기술 예고)·게이지 밀기·변신 + 재생 오라 강화 (`970f741`)
+
+## 0.56.0 — 2026-10-01
+
+### 기능
+
+- **interior** — 손 도트 실내 시트 굽기 2판 — 3/4 재작도·변형 몸통·새 기물 28종 (`b9d4e8d`)
+
+## 0.55.0 — 2026-10-01
+
+### 기능
+
+- **content** — 실내 변형 몸통 71종 + 새 기물 28종 후보 (`5847c84`)
+- 적 스킬 연출 레코드를 녹화 하네스(--custom)로 검증하고 위키를 갱신한다 (`552a40c`)
+
+### 수정
+
+- **release** — 태그가 앞서면 그 버전에서 이어서 제안하고 0.54.0 기록을 되돌린다 (`6261282`)
+- 적이 쓰는 스킬에 연출 레코드를 붙일 때 편집기 안내·조수 노트·접근 판정이 적 기준으로 동작하게 한다 (`8973bc2`)
+- 독 속성 자동 추천 연출이 독칼·맹독 상태·커스텀 독 상태에서도 초록으로 재생되게 한다 (`1ff5438`)
+
+## 0.54.0 — 2026-10-01
+
+### 기능
+
+- **content** — 손 도트 실내 「새 기물 길」 — v5 밖 기물을 후보·고르기·굽기로 (`5ced6fd`)
+
+## 0.53.0 — 2026-10-01
+
+### 기능
+
+- **content** — 고르기 화면에 「✱ 새 후보」 — 마지막으로 본 뒤 들어온 후보 표시 (`8ac7686`)
+
+## 0.52.0 — 2026-10-01
+
+### 기능
+
+- **battle** — 반응·표적 상태 7종 — 반격·도발·감싸기·회피·리플렉·리레이즈·선고 (`3bbb414`)
+- **ai** — 버들항 마을 노트·시스템 프롬프트가 theme 을 고르게 한다 (`e2297e5`)
+- **editor** — author_beodeul_town 마을 문법 — 굽은 큰길·뒷길 고리·광장·길을 보는 집(theme) (`4b0da27`)
+- **content** — 버들항 고른 조각 길·광장 표본에 road/plaza 태그, 통나무 집도 문 칸 (`896a0ba`)
+- **content** — 버들항 고른 조각 건물 키트에 문 칸(parts.entrance)을 붙인다 (`4c07218`)
+
+### 수정
+
+- **editor** — 버들항 마을 길이 큰 맵에서도 45칸 넘게 곧지 않게 — 12~16칸마다 굽이 열쇠점 (`efe4082`)
+- **editor** — 참고문서 읽기 도구가 빈 문자열 id 를 없는 것으로 본다 (`02d4483`)
+
+### 문서
+
+- **openwiki** — 버들항 마을 문법(author_beodeul_town theme)·문 칸·r2 시험 (`6745cc8`)
+- **content** — 버들항 마을 배치 문법 참고문서 — 고른 변형 넷에서 뽑은 순서·수치·theme 별 키트 (`d9fccd6`)
+
+### 테스트
+
+- **ai** — 조수 실모델 시험 r2 — 「버들항 느낌으로 강가 마을 하나 만들어 줘」 (`eac7b19`)
+
+## 0.51.0 — 2026-10-01
+
+### 기능
+
+- **content** — 빵 화덕에 천장까지 닿는 실내 굴뚝 + 위로 키운 애니메이션 기물 굽기 (`f89f100`)
+- **content** — 빵 화덕·마법서 받침 3/4 3차 후보 (`5bd8bc0`)
+- **content** — 실내 3/4 재작도 2판 — 애매 11종 + 독서대 2x1 (`6c536d6`)
+
+## 0.50.0 — 2026-10-01
+
+### 기능
+
+- **tileset** — 버들항 고른 조각 참고문서 5용도와 조수 안내 (`dab2c79`)
+- **tileset** — 기존 버들항 사본에 고른 조각 꼬리를 덧붙이는 ensure 경로 (`6b5df88`)
+- **tileset** — 버들항 시트에 고른 장소 조각 439종 굽기 (칸 23936~27647, 키트 bd-pick-*) (`57b096e`)
+- **content** — 버들항 변형 고른 조각 설치 스크립트와 고른 최종 세트 (`a389926`)
+
+### 문서
+
+- **openwiki** — 버들항 고른 장소 조각 굽기·기존 프로젝트 덧붙이기·화면 증거 (`a4df75a`)
+
+## 0.49.0 — 2026-10-01
+
+### 기능
+
+- **content** — 실내 가구 50종 3/4 시점 재작도 후보 (`56cc942`)
+
+## 0.48.0 — 2026-10-01
+
+### 기능
+
+- **dialogue** — 전신 초상을 대사창 뒤 입상으로 · 한 페이지 3줄 · 기록 버튼 숨김 · ▼ 진행 표시 (`998e3e3`)
+- **content** — 월드맵 설계 데모 6~8단계 — 해안선·3띠 바다·성곽 도시·랜드마크 3/4 재작도·절벽 결·메사·협곡·길 (`e0c5c4a`)
+- **battle** — retro2003 로스터 p5 묶음 스킬에 기믹을 넣는다 (`fad0854`)
+- **battle** — retro2003 로스터 p4 묶음 스킬에 기믹을 넣는다 (`4090887`)
+- **battle** — retro2003 로스터 p3 묶음 스킬에 기믹을 넣는다 (`10a2c00`)
+- **battle** — retro2003 로스터 p2 묶음 스킬에 기믹을 넣는다 (`de82295`)
+- **battle** — retro2003 로스터 p1 묶음 스킬에 기믹을 넣는다 (`ca7c65f`)
+- **battle** — retro2003 로스터 m6 묶음 스킬에 기믹을 넣는다 (`91ae32d`)
+- **battle** — retro2003 로스터 m5 묶음 스킬에 기믹을 넣는다 (`5c6ef16`)
+- **battle** — retro2003 로스터 m4 묶음 스킬에 기믹을 넣는다 (`3ec3962`)
+- **battle** — retro2003 로스터 b5 묶음 스킬에 기믹을 넣는다 (`2baf3e4`)
+- **battle** — retro2003 로스터 b4 묶음 스킬에 기믹을 넣는다 (`5cbeed7`)
+- **battle** — retro2003 로스터 b3 묶음 스킬에 기믹을 넣는다 (`2c43e0b`)
+- **battle** — retro2003 로스터 b2 묶음 스킬에 기믹을 넣는다 (`117e99a`)
+- **battle** — retro2003 로스터 b1 묶음 스킬에 기믹을 넣는다 (`9a35625`)
+- **battle** — retro2003 로스터 a3 묶음 스킬에 기믹을 넣는다 (`2c58a84`)
+- **battle** — retro2003 로스터 a2 묶음 스킬에 기믹을 넣는다 (`f86a0b6`)
+
+### 수정
+
+- **battle** — 즉사의 낫에서 엔진이 무시하는 state_death add 를 빼고 2타 비율 피해로 — 검사기·가이드에 즉사 금지를 적는다 (`4f72602`)
+
+### 문서
+
+- **openwiki** — 로스터 전 묶음 기믹과 검사 스크립트 (`7cce05b`)
+
+### 잡무
+
+- **qa** — retro2003 로스터 스킬 기믹 검사 스크립트 (`c079838`)
+
+## 0.47.0 — 2026-10-01
+
+### 기능
+
+- **interior** — 18302 에서 고른 실내 가구 후보를 atlas_biome_interior 시트에 굽는다 (`2e8182f`)
+
+## 0.46.0 — 2026-10-01
+
+### 기능
+
+- **interior** — 손 도트 실내 v5 를 main 에 이식 — 옛 실내 칩셋 폐기 + 새 실내 맵 기본 (`04a3b52`)
+- **start** — 「예제로 시작」·「작은 마을 추가하기」 시작 마을을 버들항으로 (`46e26f0`)
+
+### 수정
+
+- **assistant** — author_wild_route 가 버들항 맵도 깐다 — 몬스터 수집 첫 구간이 버들항 시작에서 멈추던 것 (`0c011b8`)
+
+## 0.45.1 — 2026-10-01
+
+### 수정
+
+- **defaults** — 버들항 기본의 남은 구멍 — create_map 잔디, 생성 칩셋 계열, 문법 오류 (`7386714`)
+- **battle** — 흡수·버서크·겹 배경·연출 도구의 남은 결함 (`9eb9184`)
+- AI 첫 연결 계정과 작업 모델 정합성 및 OAuth 재개 개선 (#1788) (`057c3db`)
+
+## 0.45.0 — 2026-10-01
+
+### 기능
+
+- **ai** — 버들항 마을 실모델 시험 하네스·증거 + 참고문서 용도 오류에 유효 id 안내 (`6b6e674`)
+- **ai** — 버들항 마을 요청은 author_beodeul_town 경로로 — 노트·도구 노출·마을 계약 우회 (`a6f83a1`)
+- **ai** — author_beodeul_town 을 참고문서 WRITER 로 등록 (`09c135c`)
+- **project** — 새 프로젝트의 야외 기본 타일셋을 버들항으로 (`764bb2b`)
+- **ai** — author_beodeul_town — 버들항 블록 키트로 마을 시공, author_village 는 버들항 대상이면 그쪽으로 위임 (`c381580`)
+- **defaults** — 버들항을 새 프로젝트 기본 타일셋으로 (`181ec0d`)
+- **assistant** — fill_region path+width — 굽은 운하·강·대로를 중심선 점으로 한 번에 칠한다 (`5ebefa1`)
+- **content** — 버들항 예시 「굽이 운하 도시」 — 다섯 요소·굽이 셋 운하·띠 쌓기, 참고문서가 바둑판 대신 이것을 먼저 보인다 (`33f9fcc`)
+- **assistant** — 도시 스킬에 다섯 요소·띠 쌓기·check_city_form 먼저 — 시험에 check_city_form 노출, 라운드 비교 표 (`078ef6e`)
+- **assistant** — check_city_form — 막다른 길·직선 운하·이웃 반복·축선 그래프를 좌표로 알려 주는 도시 형태 검사 (`1ab74cf`)
+- **content** — 버들항 블록 변형 41종·반복 자·항구 예시 — 적대적 QA 반영 (`28cce56`)
+- **content** — 버들항 빈 바닥 자와 블록 조립 예시 배치 layout-blocks (`299050d`)
+- **content** — 버들항 블록 키트 25종 — 도시 한 블록을 통째로 찍는 bd-block-* (`4ae366a`)
+- **content** — 버들항 원본과 다른 예시 배치 둘(언덕 위 성읍·강어귀 항구)과 배치 자 (`ef11a3a`)
+- **content** — 버들항 자동타일(연석 포장길·운하 물·모랫길)과 강·폭포·항구 호수·귀족 저택·외곽 목조집·우물 광장 키트 (`db718e1`)
+- **qa** — 조수 시험 — klb/claude-opus-5.5 가 참고문서만 보고 버들항 비슷한 도시를 새·기존 프로젝트에 깔았다(구역 키트 8/8, 문 앞 도달 전부, 원본 복사 65%·강 윗줄기 빠짐), runPiAgent 에 로컬 모델 객체 주입(options.model) (`36c9ecb`)
+- **content** — 버들항 v6 를 공용 타일셋 beodeul_city 로 — 렌더를 16px 칸으로 자른 시트 22,784칸·animationStrips 1,699·구역/건물/소품/나무 키트 120·참고문서 4용도(MD 17·그림 21, 16구역 QA 오류 그림 5), 정본 저장·재로드(deepEqual, 통행 불일치 0, 주민 없는 원본과 0화소) (`70aa032`)
+- **content** — 버들항 v6 마무리 — 잔교를 길과 잇는 길 한 줄, 포룸 아치 문·분수 발치 비움, 교수대로 읽히던 무기 거치대 뺌, 16구역 QA(중대 25→7)·v6 페이지·메타 (`8fe0554`)
+- **content** — 버들항 v6 — 길과 이어지는 아치 다리, 무늬 없는 물과 자연 물가 (`235fefb`)
+- **content** — 버들항 v6 — 큰 탑풍차, 각 잡은 포룸(신전·주랑·아치 문), 흰 마름돌 왕성 키트, 회벽+기와 저택, 수도교·우산소나무 제거 (`7a756ba`)
+- **content** — 버들항 v6 시작 — v5 사본을 city_v6 로 옮기고 /tmp 경로를 저장소 기준으로 (`03a17e6`)
+- **tiles** — 번들 타일셋의 animationStrips 도 재생 — 손으로 그린 분수·횃불 프레임을 번들 시트에서 움직일 수 있게 (`409b97f`)
+
+### 수정
+
+- **battle** — retro2003 스킬 한 행동을 연출 한 번으로 묶는다 — 대가·흡수 숫자는 대상·타수로 세지 않는다 (`55c3302`)
+- **relief** — 높이 붓의 하위 층 절벽 굽기를 걷어내고 모든 칩셋을 덧그림으로 그린다 (`b347a08`)
+- **assistant** — check_city_form 이 stamp_object 로 찍은 블록·구역 킷을 칸 무늬로 찾는다 (`3afa168`)
+- **content** — 버들항 예시 배치 적대적 시각 QA 반영 — 잘린 구역 가장자리, 떠 있는 폭포, 빈 들판, 길망에서 떨어진 모랫길 (`7d53faf`)
+- **content** — 버들항 그리기가 아직 /tmp/j8city 모듈을 읽던 것 끊기, 밀밭 색·구역 키트 가장자리 정리 (`77cbe6d`)
+- **content** — 버들항 잔디 무늬 조각 6개를 실제로 만들기 — 원본엔 6×6 빈 풀밭이 없어 0개였다 (`fe64c3f`)
+- **content** — 버들항 v6 잔결함 — 반복 나무·빨래줄 줄임, 밀밭 원색 누그러뜨림, 막다른 길·강으로 끝나는 길 정리, 성 북쪽 물띠 줄무늬, 넷째 다리·부두 (`fd557dc`)
+- **content** — 버들항 v6 그리기가 /tmp·홈 폴더를 읽지 않게 — 정글 시트·잔디/물 견본 사본을 lib/city_v6/assets 로, 출력은 CITY6_OUT, 편집기용 땅 렌더·점유 격자·물체별 그림·주민 목록을 함께 쓴다 (`11bf71e`)
+- **content** — 버들항 v6 — 탑 원뿔 처마 밑 소품 금지, 짚단 색(금 상자로 읽힘), 운하 남쪽 끝 이어짐, 새싹 밭 제외 (`c36cc57`)
+
+### 성능
+
+- **palette** — role 없는 타일셋의 지형 분류 보정 + 전후 측정 자료 (`d3876a8`)
+- **palette** — similarTilesForTile 의 타일별 그룹 조회를 한 번만 만든다 (`977bfc4`)
+- **palette** — 커스텀 팔레트 2D 가상화 + 필터 전환은 목록만 교체 (`93b9de2`)
+
+### 문서
+
+- **ai** — author_village tilesetId 설명 — 새 프로젝트 야외 기본은 버들항 (`c688328`)
+- **ai** — 버들항 작업 지시서에 author_beodeul_town 먼저 부르는 단락 추가 (`d3fd89a`)
+- **beodeul** — 타일 까는 이론 조사 — 조수가 쓸 수 있는 여섯 기법과 못 쓰는 것 (`eb5d609`)
+- **openwiki** — 버들항 라운드 3 — 블록 키트·빈 바닥 자·조수 재시험·정본 v8 (`eb3beaa`)
+- **content** — 버들항 블록 조립 참고문서 줄임 — 첫 시험이 읽기로 50분을 다 썼다 (`6901acc`)
+- **content** — 버들항 블록 조립 참고문서와 조수 스킬 city-block-assembly (`4ca2259`)
+- **content** — 버들항 라운드 2 조수 재시험 결과와 위키 — 원본과 같은 칸 65% → 0.4% (`49b9bd6`)
+- **content** — 버들항 참고문서 다시 쓰기 — 「원본 좌표 = 정답」을 「원본은 예시, 배치 규칙」으로 (`d3eaee1`)
+- openwiki/beodeul-city.md — 버들항 저장·공용 타일셋·조수 시험 기록, 다음 판 참고 그림 셋(귀족 저택·외곽 나무집·부품 조립 구조) 보류 방향 (`ddf67e4`)
+
+### 테스트
+
+- **qa** — 라운드 3 조수 결과를 도시 형태 자로 다시 잰 값 — 곧은 길 7~9줄(최장 86~87칸)·운하 곧음 0.99·막다른 길 0/12 (`f67a1ff`)
+- **qa** — 버들항 라운드 3 조수 재시험 결과 — 블록 키트로 빈 바닥 34.7%·29.7% → 15.1%·14.1% (`96b8d4c`)
+
+### 잡무
+
+- **qa** — 버들항 조수 시험·정본 저장을 라운드 3 으로 — 블록 키트 과제, 빈 바닥 측정 (`cfa8017`)
+
+## 0.44.0 — 2026-10-01
+
+### 기능
+
+- **content** — 현대·강남 v2·월드맵 3~5단계·버들항 변형 20곳·고르기 화면 모음 (`2f35432`)
+- simplify project starts and show interview progress (`1831ddd`)
+
+### 수정
+
+- **editor** — 첫 실행 안내 저장에 scope를 붙여 main 빌드를 되살린다 (`e1f09ce`)
+
+### 문서
+
+- **atlas-pick** — 현대·강남·일본 작업 인수인계 문서 (`65eedaf`)
+
+## 0.43.3 — 2026-10-01
+
+### 수정
+
+- **battle** — resolve 14 adversarial review findings (`568a461`)
+
+## 0.43.2 — 2026-10-01
+
+### 수정
+
+- **perf** — 통합 타입 오류 3건 (저니 참조 이슈 null, 팔레트 필터 인자 타입) (`d8cb048`)
+- **editor** — 맵 크기를 늘릴 때 새 칸을 검은 빈칸 대신 가장자리 바탕 타일로 채움 (`10872d7`)
+
+### 성능
+
+- **editor** — 느린 GL 에서 Phaser 루프를 setTimeout 으로 구동해 이동 지연 중앙값 29~37 -> 11~13ms (`9692a3c`)
+- **editor** — 렌더 게이트 - pointermove 는 2프레임 예산, 느린 GL 은 렌더 간격 스로틀 (`0ccfbb2`)
+- **editor** — 칠하기 중 자동저장 pending 상태를 이미 pending 이면 다시 방송하지 않음 (`a66efc0`)
+- **editor** — 커서 상태 표시를 Text.data 로 갱신해 pointermove 당 전체 스타일 재계산 제거 (`414e3b5`)
+- **editor** — 맵·레이어 전환 실측 증거 (렉 수정 I) (`bae22be`)
+- **editor** — 맵·레이어 전환 UI 비용 규칙을 위키에 기록 (`5a0f2a8`)
+- **editor** — 조수 패널 구독자·크기 크롬의 같은 값 재기록 제거 (`96765f7`)
+- **editor** — 숨겨 둔 자료집 창에 content-visibility:hidden — 맵 전환 220->126ms (`f60f236`)
+- **project** — 부팅 정규화 건너뛰기 증거 트레이스와 옛 파일 검증 도구, 위키 기록 (`5bb01dc`)
+- **editor** — 레이어 전환의 스타일 재계산 50ms 제거 — :has(.is-active) 규칙을 정적 클래스로, 탑바 통째 재구성 중단 (`30f6619`)
+- **editor** — 부팅 유휴 워밍을 캐릭셋 색키로 한정 (얼굴·칩셋·CC0 아이콘 ~1500장 제외) (`1ddfcc8`)
+- **project** — 같은 빌드·같은 공용 판본이 이미 정규화한 문서는 부팅 정규화를 건너뛴다 (`30037c4`)
+- **project** — 공용 타일셋 structureKits 순서를 수렴시켜 로드마다 문서가 뒤집혀 저장되던 것을 끝낸다 (`3b0a55a`)
+- **editor** — 맵 전환 시 여정 띠·저장 배너를 입력이 같으면 다시 짓지 않는다 (`69d338b`)
+- **palette** — 선택 칩·붓 컨트롤을 제자리 갱신해 전체 트리 스타일 재계산 제거 (`c07bf8b`)
+- **project** — 부팅 정규화기 비용·마이그 저장 지속성 측정 증거 (`cfa9f57`)
+- **build** — 큰 번들 JSON 을 bundled-data 청크로 분리 (진입 청크 31.0MB -> 8.9MB) (`8c97d42`)
+- **project** — 번들·공용 참고문서를 저장 문서에서 빼고 로드에서 되돌림 (`9169116`)
+- **palette** — 커스텀 팔레트 레이어·필터 전환은 시트를 유지하고 제자리 동기화, 그림 교체는 CSS 변수 하나, 타일셋 이미지 디코드 공유 (`2f634ed`)
+- **store** — update 를 copy-on-write 로 (121ms → 3ms) (`7587fa3`)
+- **persist** — 저장 diff 의 타일셋 비교를 한 번 대조 뒤 O(1) 로 (1.1s → 약 55ms) (`0a5c8fa`)
+- **spatial** — 장소 카드 컴파일 캐시 — 입력 참조가 같으면 재컴파일 생략 (`daf2e66`)
+- **spatial** — 카드 미리보기 컴파일 격리를 타일셋 포인터 공유로 — 카드당 5347→961ms (`650819c`)
+- **editor** — 타일 칠하기 중 도구줄·여정·배너 재조립 생략, 조수·기록 구독자 거르기 (`e596241`)
+- **host** — 살아 있는 타일셋 본문 목록을 행 sha 로 기억해 접힌 행 재파싱을 없앤다 — 저장 중앙값 542→469ms, 지문 동일 (`dceb460`)
+- **host** — 미디어 분리 점검이 접힌 행만 본다 — 열기 5-6.7s→63ms, 저장 1-3번째 4.5s→0.7s (`f39df1e`)
+- **host** — 저장 시 바뀐 맵 거울 행만 다시 쓰고 타일셋 본문 조회를 한 번으로 — 지문 동일 (`593fb58`)
+- **host** — 저장 SHA 를 타일셋 접두 해시 상태 캐시로 계산 — 저장 중앙값 1885→660ms, sha 계약 불변 (`f62f026`)
+
+### 잡무
+
+- **perf** — 통합 전후 실측 증거 (`9df7e3c`)
+
+## 0.43.1 — 2026-09-30
+
+### 수정
+
+- **battle** — 겹 배경을 쓰는 전투는 배경을 하나만 그린다 (`92420c6`)
+- **battle** — retro2003 겹 배경을 진입 커버 동안 미리 읽어 전투 시작 직후 배경이 바뀌지 않게 한다 (`7591f62`)
+
+## 0.43.0 — 2026-09-30
+
+### 기능
+
+- **retro** — upsert_choreography 에 screen 손잡이를 열고 B 단계 문서·증거를 정리한다 (`fde533b`)
+- **retro2003** — 상태 지속 오라(battleAura) — 8종 CSS 표시, 상태 편집 선택기, upsert_state 필드 (`78744dc`)
+- **retro2003** — 연출 자동 추천 — 계약 없는 스킬을 기전·속성·범위로 직업 연출에 배정한다 (`c7d2d9f`)
+- **retro-choreo** — 연출 편집기에 손잡이 칸(속도·무게·색조·화면 효과·층 색/효과음)과 시트 카드 한글 이름 (`0258663`)
+- **retro** — 연출 손잡이 런타임 — speed·weight·tint·screen·층 se (`c9d8dba`)
+- **retro** — 연출 색 프리셋 9종(CSS filter)과 비교 시트 스크립트 (`e7a29b5`)
+- **assistant** — preview_choreography 도구 — 층별 시트 프레임을 한 장으로 이어 붙여 조수에게 보여 준다 (`32ffef3`)
+- 스킬 탭 도트 연출 칸을 애니메이션 썸네일 갤러리로 바꾼다 (`c99586e`)
+- 데이터베이스에 「도트 연출」 탭과 움직이는 썸네일 갤러리, 층 타임라인 편집기를 더한다 (`40398d3`)
+- 도트 연출·이펙트 시트 검색을 한국어로도 되게 한다 (`9eb409d`)
+- 혼합 연출 4개와 기존 계약 스킬 회귀를 출하 플레이어 경로로 녹화·검증한다 (`223caeb`)
+- 조수가 연출을 시트 조합으로 조립·복제·조회하는 도구 (upsert/duplicate_choreography, list_fx_sheets) (`8ab97af`)
+- 스킬 연출 층에 startMs·scale·repeat·onHit 옵션을 붙인다 (`6647572`)
+- 스킬 연출 조회를 한 함수(resolveSkillChoreography)로 모은다 (`8da808a`)
+- 스킬 연출 레코드 타입과 database.skillChoreographies 컬렉션 (`8de851f`)
+- **content** — 16px 칩셋 저작 하네스 — 3/4 시점 계약·칸 규격·후보 세트·EasyRPG 월드맵 개선판 (`b8f76d6`)
+
+### 수정
+
+- 도트 연출 편집기 층 행 숫자칸·시간축 글씨를 읽히게 하고 A2 증거·문서를 남긴다 (`4a6451c`)
+- 연출 무대 미리보기가 존재하지 않는 mechanic 필드 대신 hitSequence 타수를 읽는다 (`32a416a`)
+
+### 정리
+
+- 연출 복제·id 생성을 공용 모듈로 옮긴다 (`70d7b2b`)
+
+### 문서
+
+- 프로젝트 연출 레코드(skillChoreographies)와 조립 도구를 openwiki 에 적는다 (`cf803bd`)
+- 스킬 도트 연출을 자료집 레코드로 올리는 설계 (`313e555`)
+
+### 테스트
+
+- **qa** — 단계 B 증거 f — 상태 8종 오라를 실제 전투 화면으로 확인한다 (`6c53932`)
+- **retro-choreo** — 단계 B 증거 e(계약 없는 스킬의 자동 추천 8종 녹화) (`ac53e2f`)
+- **retro-choreo** — 단계 B 증거 a~d(색조·속도·무게·화면 효과)와 실측 하네스 (`5c31df9`)
+- **retro2003** — 자동 추천 결과 표와 손잡이 편집 화면 증거 (`3fd03dd`)
+
+## 0.42.0 — 2026-09-30
+
+### 기능
+
+- **qa** — 조수 도구로 만든 임의 스킬 8종을 retro2003 전투에서 재생 검증한다 (`543a0d6`)
+- **assistant** — 스킬 설계 지침을 조수가 읽는 read_retro_skill_guide 도구로 제공한다 (`78f5460`)
+- 조수 upsert_skill 에 체력 소모·흡수·연출 빌리기와 연출 조회 도구 추가 (`3280d72`)
+- 스킬 탭에 도트 연출 고르기 (`a85f127`)
+- 스킬 retroChoreographyId 로 계약 도트 연출을 빌려 쓴다 (`506f251`)
+
+### 수정
+
+- 스킬 무대의 쓰지 않는 import 를 걷어 tsc 를 통과시킨다 (`e6d483a`)
+- **editor** — 도트 연출 고르기가 몬스터 스킬 조회를 없는 곳에서 가져와 자료집이 안 열리던 것을 고친다 (`60ae674`)
+
+### 문서
+
+- 스킬 도트 연출 빌리기·조수 스킬 저작 도구를 위키에 적는다 (`844117f`)
+- 스킬 탭 도트 연출 고르기 편집기 증거 촬영을 남긴다 (`9b89ee2`)
+
+## 0.41.0 — 2026-09-30
+
+### 기능
+
+- **project** — 기존 프로젝트에 레트로 로스터 레코드를 빠진 것만 심는다 (`0450c1c`)
+- **editor** — 상태 편집 화면에 스톱·버서크·프로텍트/실드·속성 등급 덮어쓰기 칸을 추가한다 (`3493492`)
+- **editor** — 스킬 편집 화면에 범위(원·직선)와 연계기 배우 칸을 추가한다 (`1023902`)
+
+### 수정
+
+- **db** — 연계 배우를 한 명만 골랐을 때 패널 재렌더로 선택이 사라지지 않게 한다 (`a4e2183`)
+
+### 문서
+
+- **openwiki** — 레트로 전투 기믹 편집 칸과 ensureRetroRosterRecords 를 적는다 (`d162ec6`)
+
+### 테스트
+
+- **editor** — 레트로 전투 기믹 편집 화면 증거 캡처 (`28962a5`)
+
+## 0.40.1 — 2026-09-29
+
+### 수정
+
+- **release** — 플레이어 산출물 텍스트 검사 상한을 64MiB 로 올려 main 빌드를 되살린다 (`2a88663`)
+
+## 0.40.0 — 2026-09-29
+
+### 기능
+
+- retro2003 로스터 m4 전투 도트·스킬 8×8 (`eb239a3`)
+- retro2003 로스터 m5 전투 도트·스킬 8×8 (`12c8fd9`)
+- retro2003 OPRN 몬스터 걷기 칩 Monster5 — 칸 위 여백·몸 높이 30px 이하·부유 높이 보정 (`3cb8541`)
+- retro2003 로스터 m6 전투 도트·스킬 8×8 (`99ea0eb`)
+- retro2003 OPRN 몬스터 걷기 칩 Monster4 (`ef32465`)
+- retro2003 로스터 m6 전투 도트 — 키메라·타락 천사 15칸 (`9e352cc`)
+- retro2003 로스터 m6 전투 도트 — 나방 인간·바실리스크·지니 15칸 (`b5fd7b6`)
+- retro2003 로스터 m6 전투 도트 — 예티·인어 전사·사이클롭스 15칸 (`199d510`)
+- retro2003 로스터 m5 전투 도트 3차(태엽 병정·촛불 임프), 임프 촛농 바닥 정렬 (`39a0124`)
+- retro2003 로스터 m5 전투 도트 2차(저주 인형·마도서·허수아비) (`d398491`)
+- retro2003 로스터 m5 전투 도트 1차(미믹·살아있는 갑옷·초롱 귀신) (`e3346ce`)
+- retro2003 OPRN 몬스터 걷기 칩 Monster6 (`f9f8e77`)
+- retro2003 OPRN 몬스터 걷기 칩 Monster5 (`a483fd4`)
+- retro2003 b5 Monster3 8명 15칸 시트를 칩 × 1(셀 48)로 다시 생성 (`ac12e26`)
+- retro2003 3차 로스터 계약 — OPRN 자체 몬스터 걷기 칩 Monster4~6(24명) 카탈로그·묶음 m4~m6(자리표시 그림) (`740f0b0`)
+- retro2003 파티원 도트 재작업 b3 4명(15칸, 칩 비율 유지) (`344cd3e`)
+- retro2003 파티원 도트 재작업 b1 8명(15칸, 칩 비율 유지) (`a73cca2`)
+- retro2003 파티원 도트 재작업 b1 8명(15칸, 칩 비율 유지) — 나머지 7종 (`63cd91e`)
+- retro2003 파티원 도트 재작업 b4 8명(15칸, 칩 비율 유지) (`bc803d6`)
+- retro2003 파티원 도트 재작업 b1 8명(15칸, 칩 비율 유지) — 빌더·충견 (`17e51c0`)
+- retro2003 비인간형 파티원 15칸 시트(시전 3단·도약·강화·필살기) 지원, 필살기 컷인 전신 대기 칸+이름 (`c348847`)
+- retro2003 로스터 b4 전투 도트·스킬 8×N (`137b588`)
+- retro2003 로스터 p5 전투 도트·스킬 8×N (`9ed9094`)
+- retro2003 로스터 b2 전투 도트·스킬 8×N (`321a6c5`)
+- retro2003 로스터 p1 전투 도트·스킬 8×8 (`573e67e`)
+- retro2003 로스터 a3 전투 도트·스킬 8×8 (`b0f586a`)
+- retro2003 로스터 b5 전투 도트·스킬 8×8 (`fe633f0`)
+- retro2003 로스터 b3 전투 도트·스킬 8×8 (`37fd30b`)
+- retro2003 로스터 p4 전투 도트·스킬 8×8 (`e9127de`)
+- retro2003 로스터 p3 전투 도트·스킬 8×8 (`ffcc82b`)
+- retro2003 로스터 a2 전투 도트·스킬 8×8 (`2026f73`)
+- retro2003 로스터 b1 전투 도트·스킬 8×8 (`65a5c8f`)
+- retro2003 로스터 p2 전투 도트·스킬 8×8 (`ba79028`)
+- retro2003 로스터 a1 전투 도트·스킬 8×7 (`7fe0527`)
+- **battle** — a1 묶음 56개 스킬에 기믹 칸을 채운다 (`1c25d06`)
+- **battle** — retro2003 스킬 계약에 기믹 칸(mechanic)과 어휘·직업 설계 규칙 (`9cef346`)
+- **battle** — 기믹 상태 8종(암흑·스톱·프로텍트·실드·버서크·석화·젖음·기름)과 상태 배지 (`7bc25c1`)
+- **battle** — 스킬 HP 대가(hpCostPercent)·흡수(drainPercent) 선택 필드 (`0c15cd7`)
+- retro2003 2차 로스터 통합(tsc 통과·위키 기록) (`3d27f12`)
+- retro2003 2차 로스터 통합(녹화 --set roster · --set party-pixel) (`0775ab9`)
+- retro2003 2차 로스터 통합(편집기 스킬 탭 계열 2단 선택·2단 칩 줄 높이 제한) (`d69e782`)
+- retro2003 2차 로스터 통합(마도사 칩 이전 마무리) (`8aea72d`)
+- retro2003 2차 확장 로스터 계약(걷기 칩 100직업·묶음 13개) (`fe48e53`)
+- retro2003 몬스터 스킬 42종 연결(레벨대별 행동·전용 연출) (`9225769`)
+- **editor** — retro2003 몬스터 스킬 미리보기 (`49eefa7`)
+- retro2003 몬스터 스킬 도트 이펙트 18~35 (`ded6407`)
+- retro2003 몬스터 스킬 도트 이펙트 36~52 (`58194e7`)
+- retro2003 몬스터 스킬 도트 이펙트 0~17 (`ec82d1f`)
+- retro2003 근접 파고들기 스킬 여운 520→260ms (`e858dfe`)
+- retro2003 도약·대시류 스킬 가속, 몬스터 스킬 계약 42종(레벨대별 스킬 수 증가) (`fdddf75`)
+- retro2003 마왕 도트 재작업(펼친 망토·근육질 거구) (`0cb1ce3`)
+- retro2003 새 주인공 6명·스킬 48개·몬스터 30종 연결 (`f6632a7`)
+- **editor** — retro2003 새 직업 스킬·몬스터 도트 미리보기 (`03204a5`)
+- retro2003 새 주인공 6명 전투 도트(사무라이·닌자·무도가·음유시인·드루이드·마녀) (`1f510fb`)
+- retro2003 몬스터 도트 10종(beasts) (`86b051f`)
+- retro2003 druid·witch 스킬 도트 이펙트 (`661c5d4`)
+- retro2003 몬스터 도트 10종(humanoid-boss) (`f64256b`)
+- retro2003 몬스터 도트 10종(undead-magic) (`8859ef6`)
+- retro2003 samurai·ninja 스킬 도트 이펙트 (`da36094`)
+- retro2003 monk·bard 스킬 도트 이펙트 (`daa6109`)
+- retro2003 확장 계약 — 새 주인공 6명 스킬 48개, 몬스터 30종 목록 (`c9183e5`)
+- retro2003 직업 스킬 48개 기본 DB·연출 엔진 (`3db61b8`)
+- **editor** — 스킬 탭에서 retro2003 도트 스킬 연출 미리보기 (`6f148ef`)
+- retro2003 hero·guardian 스킬 도트 이펙트 (`fd7f055`)
+- retro2003 mage·cleric 스킬 도트 이펙트 (`abf9f81`)
+- retro2003 scout·ranger 스킬 도트 이펙트 (`e269b94`)
+- retro2003 직업별 스킬 8종×6 카탈로그 계약 (`4a0ca2f`)
+- retro2003 몬스터 도트 8종과 몬스터별 공격 모션 (`4ef5e50`)
+- retro2003 스킬별 도트 연출 (`80d07ba`)
+
+### 수정
+
+- 샘플 모험 데모가 코드 기본값에만 있는 직업·배우를 덧붙인다 — 장비 참조 끊김(CI parity) (`a1ae1e4`)
+- retro2003 로스터가 깬 기본 DB 계약 — 새 배우 맨손 연출·몬스터 skillIds 투영, 테스트 전제 갱신 (`fe3acfa`)
+- retro2003 칩 × 2 로 그린 파티원 시트(art 2)는 화면 절반 크기로 — 사람 파티원과 키 맞춤 (`b34778b`)
+- retro2003 People 전투 시트 40개를 준비 목록에 등록 — People 배우(공주 등)가 공용 폴백 도트로 서던 문제 (`be10c81`)
+- retro2003 64px 파티원(범선·비공정 등)이 무대 오른쪽 밖으로 잘리지 않게 반폭만큼 당김 (`ef6c52b`)
+- **battle** — retro2003 적 배지는 두 개씩 줄을 바꿔 위로 쌓는다 (`5c906cc`)
+- **battle** — retro2003 파티 창 배지는 하나면 보통 크기, 둘 이상이면 두 줄 작은 격자 — 이름이 잘리지 않게 (`9c8c18e`)
+- **battle** — 훔치기 결과 줄이 명령 대사에 가려지지 않게 하고 이미 걸린 상태는 「이미 … 상태다」로 읽는다 (`53f6cec`)
+- **battle** — retro2003 적 배지·팝업을 도트 그림 머리 위에 붙이고 파티 창 이름 칸을 넓힌다 (`2546cbb`)
+- **battle** — 상태 배지는 「…에 걸렸다!」 비트에 붙고 retro2003 배지 글자를 키운다 (`e57eea8`)
+- **battle** — retro2003 에 상태 배지·부여 문장·떠오르는 상태 이름을 보이게 한다 (`59e6556`)
+- **battle** — 기믹 칸 회복 효과는 정신력 고정(SkillEffect 타입) (`7b22ca7`)
+- **battle** — 흡수 회복이 「피해를 입었다」로 읽히지 않게 하고 대가·흡수 줄은 기술 이름으로 쓴다 (`f5366be`)
+- **battle** — 프로스트 오브는 기본 DB 에 없는 빙결 대신 둔화를 건다 (`470d6be`)
+- **qa** — retro2003 스킬 녹화가 숫자 팝업·메시지·상태 배지를 스킬마다 남긴다 (`2fc3bbd`)
+- **battle** — 이름이 겹치는 스킬은 시전자가 가진 쪽으로 연출을 고른다 (`bea8daf`)
+- retro2003 몬스터 녹화 — 전투 뒤 새로고침 타이틀 대기 한 번 재시도 (`0611b8b`)
+- retro2003 확장 필살기 화면 층 5장 가장자리를 타원 디더로 흩뜨림 (`3613afe`)
+- retro2003 기존 도트 검수 수선 (`c6d93ef`)
+- 사무라이 전투 시트를 actor3-0-samurai 로 분리, 마도사 시트 복원 (`65b4e44`)
+- repaint_weapons 가 새 주인공 6명(art4 정본)을 덮지 않게 (`dbee832`)
+- 전투 도트 무기를 손으로 다시 찍음(검·지팡이·활·단검) (`0b41769`)
+
+### 정리
+
+- 도트 적 시트 계약에 셀 크기·이동 방식 확장 (`02976a7`)
+
+### 문서
+
+- **wiki** — retro2003 15칸 파티원 시트·크기 규칙·3차 몬스터 기록 (`6bc016c`)
+- retro2003 r2w5 party-pixel·이펙트 생성기 안내 (`eff46db`)
+- **wiki** — a1 기믹 녹화 결과와 retro2003 상태 표시 공백 기록 (`6b725a2`)
+- **wiki** — 스킬 기믹 명시화·HP 대가·흡수 필드 기록 (`77ebbce`)
+- retro2003 다음 확장 설계 (`dc660a1`)
+- art4 README 에 마도사 시트 보호 규칙 (`0fec4df`)
+
+### 잡무
+
+- 출하 데모·아이템 QA 픽스처를 기본 DB(retro2003 로스터 포함)에 다시 맞춤 (`97de79f`)
+
+### 기타
+
+- m4 전투 15칸 시트 8명(칩 × 1, 셀 48) (`c99bd66`)
+- Monster4 걷기 칩 — 트렌트·버섯 요정·갓파·구미호 (`b7b1c46`)
+- Monster4 걷기 칩 — 트렌트(monster4-0) 첫 칸, 나머지 7명 자리표시 (`4ab38af`)
+- retro2003 b5 마장군 대검 손잡이 피벗·개미귀신 모래·화룡 불길 자리 (`97a9bc3`)
+- retro2003 b5 Monster3 8명 15칸 첫 판(칩 2배 밑그림) (`490cc9d`)
+- b3 좀비·사신 15칸(칩 2배 리그, 셀 64) (`cfa2f82`)
+- retro2003 b5 pp15 리그와 세이렌 15칸(칩 2배 밑그림) (`4734d18`)
+- b3 해골병 15칸(칩 2배 리그) (`b58ebbc`)
+- retro2003 파티원 도트 b4 15칸 1차(칩 2배 밑그림 파이프라인) (`bd161f6`)
+- retro2003 b3 슬라임·유령 15칸 시트(칩 2배 밑그림) (`c29d44f`)
+- b3 파티원 15칸 리그(pp15_pp3, 칩 2배 부위 리그) (`eea8b4f`)
+- retro2003 로스터 b4 마족 공작 스킬 이펙트 10장 (`aa17f49`)
+- retro2003 p5 이펙트 은자·노병 (`283fdd4`)
+- retro2003 로스터 b4 오니 무사 스킬 이펙트 10장 (`172c28e`)
+- retro2003 b2 UFO 이펙트 11장 (`c0a2e25`)
+- retro2003 p5 이펙트 사막 전사·메이드 (`1821ba7`)
+- retro2003 b2 비공정 이펙트 10장 (`25270cd`)
+- retro2003 b2 전차 이펙트 11장 (`978c10e`)
+- retro2003 p5 이펙트 무녀 5장 (`019be7b`)
+- retro2003 p1 이펙트 건슬링어·집사·승려 21시트 (`0dbebec`)
+- retro2003 p1 이펙트 촌장·할머니 14시트 (`ce275dd`)
+- retro2003 b5 Monster3 8종 시트와 스킬 64개 계약 (`6872079`)
+- retro2003 p1 이펙트 학자·광부·농부 20시트 (`67498e9`)
+- retro2003 b5 party-pixel 5종(세이렌~개미귀신) (`31b738b`)
+- retro2003 party-pixel 확인판 스크립트 묶음 인자 (`c551317`)
+- retro2003 로스터 p1 스킬표 64종(학자~승려) (`608dd58`)
+- retro2003 b3 스킬 64개 계약(새 시트 12장) (`df8cc86`)
+- retro2003 b3 Monster1 8종 party-pixel 시트 (`92c9c1b`)
+- retro2003 b3 몬스터형 파티 리그와 슬라임·악마 시트 (`c615900`)
+- retro2003 p4 이펙트 수녀 5장 (`511eef0`)
+- retro2003 People 전투 도트 11명(a3 견습 기사·꽃집 아가씨·검객 + p1 8명) (`1bce60a`)
+- retro2003 p4·p5 스킬 레이어 재배치(기존 시트 재사용, 새 시트 스킬당 최대 1장) (`be2388c`)
+- retro2003 a3 Actor 전투 도트 5명 직업 장비(도끼·장총·부채·약병 지팡이·소환 지팡이) (`e953dba`)
+- retro2003 a2 스킬 64개와 새 이펙트 10장(기존 시트 재사용) (`f34f6e7`)
+- retro2003 b1 양~사자 이펙트 시트 10종 (`3a86947`)
+- retro2003 p3 People 8명 전투 시트(art5/p3.py) (`e7e9c14`)
+- retro2003 p5 전투 도트 5명(무녀·사막 전사·메이드·은자·노병, art5/p5.py) (`7fae1e1`)
+- retro2003 b1 양~사자 스킬 표(기존 시트 재사용, 새 시트 10장) (`fc45e71`)
+- retro2003 2차 로스터 r2w8 중단 시점 보존(미커밋 119개) (`9062cce`)
+- retro2003 2차 로스터 r2int 중단 시점 보존(미커밋 3개) (`cbbafbf`)
+- retro2003 2차 로스터 r2w6 중단 시점 보존(미커밋 12개) (`50638d9`)
+- retro2003 2차 로스터 r2w4 중단 시점 보존(미커밋 12개) (`7c2c689`)
+- retro2003 2차 로스터 r2w5 중단 시점 보존(미커밋 31개) (`bf8dfa9`)
+- retro2003 2차 로스터 r2w3 중단 시점 보존(미커밋 14개) (`0e601bc`)
+- retro2003 2차 로스터 r2w1 중단 시점 보존(미커밋 23개) (`03a2789`)
+- retro2003 b2 열기구 이펙트 10장 (`9971e51`)
+- retro2003 p2 국왕 이펙트 10시트 (`bb56416`)
+- retro2003 b1 고양이 이펙트 시트 10종 (`68640b5`)
+- retro2003 p4 이펙트 뱃사람·노승·귀부인 (`6fa4881`)
+- retro2003 a3 이펙트 시트 82종 완성(꽃집 아가씨·검객 포함) (`5071580`)
+- retro2003 b2 철갑선 이펙트 10장 (`8435d9b`)
+- retro2003 p2 천사·요정 이펙트 21시트 (`045d5f9`)
+- retro2003 b1 충견 이펙트 시트 11종 (`de70e36`)
+- retro2003 a1 암흑기사·시공술사 스킬 16개와 새 이펙트 시트 (`65de689`)
+- retro2003 b2 쪽배·범선 이펙트 22장, 파티 스킬 이펙트 공용 모듈 (`026f8ef`)
+- retro2003 a3 이펙트 시트(광전사·총사·무희·연금술사·소환사·견습 기사) (`585bf9c`)
+- retro2003 2차 로스터 통합(스킬 규칙 필드 유도 정밀화) (`f576176`)
+- retro2003 p2 검무사·도박사 이펙트 21시트 (`bc3f087`)
+- retro2003 a1 발키리·성기사·적마도사 스킬 24개와 새 이펙트 시트 (`d666505`)
+- retro2003 2차 로스터 통합(비인간형 파티원 9칸 시트 렌더·이동·스킬 칸 매핑) (`e164edb`)
+- retro2003 p4 전투 도트 8명(People 걷기 칩 기반 art5/rig45) (`44e4730`)
+- retro2003 b1 스킬 64개 계약(이펙트 시트 80종 목록) (`cebafaf`)
+- retro2003 p2 이펙트 공용 모듈·스킬 목록·방랑 점술사 10시트 (`aea0ff7`)
+- retro2003 로스터 b1 Animal 8종 party-pixel 9칸 시트 초안 (`0e6ad52`)
+- retro2003 로스터 b4 전투 도트 8종·스킬 표(64개) (`0de7a06`)
+- retro2003 로스터 b2 탈것 8종 파티 전투 시트 초안 (`7da30eb`)
+- retro2003 2차 로스터 통합(기본 DB 테스트 기대값) (`3e293a8`)
+- retro2003 2차 로스터 통합(직업·배우·스킬 레코드 생성기, 공용 스킬 조회, 접근 방식) (`9a933bf`)
+- retro2003 p2 People 전투 도트 리그(걷기 칩 팔·장비 오버레이)와 1차 시트 (`3ea9d39`)
+- retro2003 로스터 a1·a2 전투 도트 — 직업 장비 15칩 다시 칠함(art5) (`cbec50d`)
+- retro2003 로스터 p4·p5 스킬 계약(104개)과 이펙트 공용 모듈 (`fd42c34`)
+- retro2003 로스터 b1 party-pixel 리그와 충견 전투 도트 (`26bf2ee`)
+- retro2003 로스터 a3 스킬표 64종(광전사~검객) (`48de7d4`)
+- retro2003 로스터 b2 파티 전투 도트 공용 모듈·쪽배 시트 (`5c2527b`)
+- retro2003 로스터 b4 전투 도트 시트 3종(하피·가고일·골렘) (`a361775`)
+- retro2003 2차 로스터 통합(People 전투 시트 등록·자동 대응) (`2ad9c61`)
+- retro2003 2차 로스터 통합(마도사 칩 actor3-0 → actor1-5) (`75b10a7`)
+- retro2003 몬스터 스킬 녹화 스크립트 (`540e6c4`)
+- retro2003 몬스터 스킬 타임라인·적 재생 분기 (`623c140`)
+- retro2003 몬스터 스킬 레코드 42종·도트 적 행동 배선 (`ed3e104`)
+- retro2003 스킬 탭 몬스터 칩·반전 무대·CSS (`b45c68f`)
+- retro2003 몬스터 스킬 타임라인·적 탭 스킬 버튼 (`04bed85`)
+- retro2003 몬스터 스킬 도트 이펙트 18~35 1차 (`68667ae`)
+- retro2003 몬스터 스킬 도트 이펙트 36~52 1차 (`b93ef39`)
+- retro2003 몬스터 스킬 도트 이펙트 0~17 1차 (`7144f42`)
+- 마왕 도트 재작업 1차 초안 (`6a7c735`)
+- 128px 대상 층 1배 표시·식충 식물 제자리 공격 (`40296b2`)
+- 몬스터 녹화 사본에서 없는 참조 걷기 (`f790ee9`)
+- retro2003 잔상 체형·화살비·고리 반경 수선 (`30e4b27`)
+- retro2003 방패벽·돌격 칸 안으로, 쓰러짐 검 손에 붙임 (`dedfe8a`)
+- retro2003 몬스터 녹화 스크립트·스킬 녹화 확장·셀 크기별 몸 비율 (`893ec08`)
+- retro2003 이펙트 칸 경계 잘림 디더 정리 (`223bb4b`)
+- retro2003 확장 6직업 시전 종류·착탄음·투사체 모양 (`0d8634b`)
+- retro2003 사무라이 변형 시트 폴백·적 카드 과녁 아군 (`81c8c28`)
+- retro2003 새 직업 6·배우 6·스킬 씨앗 48·접근 방식·몬스터 30종 등록 (`8beae88`)
+- 새 주인공 6명 전투 도트 1차(직업 장비 격자·art4 화가) (`75c0ca1`)
+- retro2003 몬스터 30종 시트 등록·적 탭 도트 카드 CSS·i18n (`c01ad71`)
+- retro2003 편집기 새 직업 스킬 무대·몬스터 도트 미리보기 (`630d9ef`)
+- retro2003 몬스터 도트 지옥사냥개 (`4ae13a5`)
+- retro2003 몬스터 도트 바위게 (`2113491`)
+- retro2003 몬스터 도트 칼날사마귀·독사 (`d43c77c`)
+- retro2003 몬스터 도트 모래전갈·곰 시트·검사기 (`ef2acd1`)
+- retro2003 druid 스킬 도트 이펙트 10장 (`d5846c2`)
+- retro2003 몬스터 도트 — 동굴 트롤·미노타우로스 (`d1a7786`)
+- retro2003 몬스터 도트 거대벌 (`83e3df1`)
+- retro2003 몬스터 도트 물의 정령·미라·리치·철 골렘 (`f501e1e`)
+- retro2003 몬스터 도트 — 오크 전사·가고일 (`35f372b`)
+- retro2003 몬스터 도트(beasts) 멧돼지·곰·흡혈박쥐 1차 (`f1fdab1`)
+- retro2003 몬스터 도트 — 리자드맨·오크 주술사·하피 (`489d51f`)
+- retro2003 몬스터 도트 해골 기사·유령·불의 정령 (`0907423`)
+- retro2003 samurai 도트 이펙트 초안 (`636c5cc`)
+- retro2003 monk·bard 스킬 도트 이펙트 1차 (`2dd94a4`)
+- retro2003 몬스터 도트 — 공용 관절 리그, 고블린·복면 산적 (`6b49ece`)
+- retro2003 직업 스킬 48종 녹화 스크립트·위키 (`c3f8a94`)
+- retro2003 직업 스킬 타임라인 재생기(계약 레이어·frame×2 칸 이동) (`c617c4d`)
+- retro2003 직업 스킬 48개 기본 DB 레코드·직업 습득 연결 (`4779aeb`)
+
+## 0.39.3 — 2026-09-28
+
+### 수정
+
+- **save** — 새 프로젝트 첫 저장과 팀 실행 적용이 큰 문서에서 실패하지 않게 한다 (`efa0354`)
+
+## 0.39.2 — 2026-09-28
+
+### 수정
+
+- **ai** — 전송 gzip 조각 스트림 타입을 CompressionStream 쓰기 쪽(BufferSource)에 맞춤 (`887b4c3`)
+
+### 성능
+
+- **ai** — 조수 렉 2차 실측 증거 (`df2cbec`)
+- **ai** — 전송 gzip 양보를 조각마다가 아니라 12ms 마다 (`54141f8`)
+- **ai** — 체크포인트를 칸 단위로 다시 그리기·커밋 기준 요약에 공유 항목 믿음·초점 이동의 강제 레이아웃 제거 (`9d9d39e`)
+- **ai** — 조수 체크포인트의 클러스터 전체 스캔 제거·타일 색인·전송 gzip 을 조각으로 흘리기 (`b0e38e5`)
+- **ai** — 조수 렉 실측 하네스·전후 증거·위키 기록 (`e347776`)
+- **ai-ui** — record browser-only measurements and corrected validation scope (`6f0f1a8`)
+- **editor** — record standalone Node measurements after validation halt (`c0db7b7`)
+- **editor** — record texture redraw measurements and regression checks (`8670725`)
+- **editor** — retain pending texture completion across scene restart (`abf81ca`)
+- **editor** — verify texture redraw batching and scene lifetime (`b21c01e`)
+- **editor** — coalesce texture completion redraws per frame (`47de879`)
+- **ai-ui** — finalize rendering measurements and validation results (`b707351`)
+- **editor** — finalize subscriber performance verification (`e2c04b5`)
+- **ai-ui** — record measurements contracts and browser evidence (`9d05f55`)
+- **editor** — record subscriber benchmarks and browser evidence (`0e7592b`)
+- **ai-ui** — verify archive version guards pruning and write failures (`5565d06`)
+- **ai-ui** — cover deferred rendering and DOM identity with a complete window fixture (`f29308d`)
+- **ai-ui** — release activity media from removed subtrees only (`b860a7b`)
+- **ai-ui** — match answer references with a cached prefix trie (`f3ecff5`)
+- **editor** — cover coalesced panel state and mount lifetime (`60da691`)
+- **ai-ui** — stop building permanently hidden legacy board rows (`8e96878`)
+- **editor** — apply direct tool tile changes through incremental rendering (`51a28ea`)
+- **ai-ui** — reuse member buttons and index recent media by actor (`e6a7d86`)
+- **editor** — request a render frame only for visible store changes (`ee45dcb`)
+- **ai-ui** — share actor indices and bound activity projections (`aac1ad7`)
+- **editor** — debounce rule audits after the final edit (`d1d4488`)
+- **editor** — reuse map link graphs and preserve unchanged link panels (`8387b32`)
+- **ai-ui** — persist only pending runs and amortize archive pruning (`dd0d0cf`)
+- **ai-ui** — scroll conversation replay once per batch (`d661838`)
+- **ai-ui** — defer detached studio and hidden transcript updates (`ae61d79`)
+- **editor** — share reference diagnostics and coalesce store panel refreshes (`f229979`)
+- **ai-ui** — retain capped transcript rows by stable ordinal (`f0ac581`)
+
+### 기타
+
+- perf(ai) 조수 패널이 한가할 때 첫 턴·첫 적용 준비 비용을 미리 치르기 (`af17a6b`)
+- perf(pi) 무거운 키 해시를 내용 요약으로 재사용 (`cb5a1b0`)
+- perf(lint) 왕복을 통과한 공유 항목은 뼈대로 되읽기 (`6caec2a`)
+- perf(ai) 적용 권위 요약이 공유 항목 대조를 반복하지 않게 (`b273d4a`)
+- perf(ai) 조수 적용·체크리스트 경로의 전체 문서 직렬화·요약 줄이기 (`333f29c`)
+- preserve AI UI verification report while app typecheck finishes (`6b47505`)
+
+## 0.39.1 — 2026-09-28
+
+### 성능
+
+- **team** — 동료 저장 반영·참여 부팅·첫 참여 전송량을 줄인다 (`8836cf5`)
+
 ## 0.39.0 — 2026-09-28
 
 ### 기능

@@ -38,3 +38,40 @@ describe("changedProjectKeys", () => {
     expect(changedProjectKeys(before, after)).toEqual(["maps.m1"]);
   });
 });
+
+describe("toolMapCellApply", () => {
+  it("recognizes cloned inputs and covers overlays, shadows and stacks", async () => {
+    const { toolMapCellApply } = await import("@/editor/incrementalMapApply");
+    const { setLayerTileAt, setShadowAt } = await import("@/project/mapLayers");
+    const before = project();
+    const after = structuredClone(before);
+    const map = after.maps.m1!;
+    setLayerTileAt(map, 2, 9, 10);
+    setLayerTileAt(map, 4, 10, 11);
+    setShadowAt(map, 11, 3);
+    map.upperTileStacks = { 12: [1, 2] };
+    expect(toolMapCellApply(before, after)).toEqual({ mapId: "m1", cells: [
+      { x: 1, y: 1, layer: "lower" }, { x: 2, y: 1, layer: "upper" },
+      { x: 3, y: 1, layer: "lower" }, { x: 4, y: 1, layer: "upper" },
+    ] });
+    expect(before.maps.m1!.lowerOverlayTiles).toBeUndefined();
+  });
+  it("keeps full notifications for multiple maps, events, metadata and project data", async () => {
+    const { toolMapCellApply } = await import("@/editor/incrementalMapApply");
+    const before = project();
+    before.maps.m2 = { ...before.maps.m1!, id: "m2" };
+    for (const edit of [
+      (p: Project) => { p.maps.m2!.lowerTiles[0] = 8; },
+      (p: Project) => { p.maps.m1!.name = "renamed"; },
+      (p: Project) => { p.maps.m1!.width += 1; },
+      (p: Project) => { p.maps.m1!.events.push({ id: "new", x: 1, y: 1, trigger: { kind: "action" }, commands: [] }); },
+      (p: Project) => { p.database.actors = [{ id: "new" }] as never; },
+      (p: Project) => { delete p.maps.m2; },
+    ]) {
+      const after = structuredClone(before);
+      after.maps.m1!.lowerTiles[0] = 7;
+      edit(after);
+      expect(toolMapCellApply(before, after)).toBeNull();
+    }
+  });
+});

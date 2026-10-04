@@ -1,0 +1,53 @@
+// 금장 머리판의 별과 분홍 이불의 금실 마름모·테두리; 꼭대기 윗면 3행(y=1~3)
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a dwood 1
+@mat b dwood 3
+@mat c pine 2
+@mat d pine 3
+@mat e pine 4
+@mat f pine 5
+@mat g brass 4
+@mat h brass 5
+@mat i brass 3
+@mat j linen 6
+@mat k linen 5
+@mat l linen 4
+@mat m pink 5
+@mat n pink 4
+@mat o pink 2
+@layer bed
+@mblock 0 0
+.aaaaaaaaaaaaaa.
+.bfeeeeeeeeeecb.
+.bfeeeddddeeecb.
+.bfeeeeeeeeeecb.
+.bghhhhhhhhhgib.
+.beddddhdccccbb.
+.bedhhhghhcccbb.
+.bedddhghccccbb.
+.beddhhchhcccbb.
+.bedddddddcccbb.
+.bcccccccccccbb.
+.bcjjjjjjjjjjcb.
+.bcjjjjjjjjjkcb.
+.bcjjkkkkkkklcb.
+.bcllllllllllcb.
+.bcnnnnnnnnnocb.
+bemhhhhhhhhhnocb
+bemhmmmmmmmgnocb
+bemhmmmmmmmgnocb
+bemhmmmhmmmgnocb
+bemhmmhmgmmgnocb
+bemhmhmmmgmgnocb
+bemhmmgmgmmgnocb
+bemhmmmgmmmgnocb
+bemhmmmmmmmgnocb
+bemghhhhhhhgoocb
+beonnnnnnnnooocb
+behgggggggggiicb
+bedddddddddddcbb
+bccccccccccccbbb
+.bdb........bcb.
+.bab........bab.

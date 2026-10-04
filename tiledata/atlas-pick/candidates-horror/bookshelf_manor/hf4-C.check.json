@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/bookshelf_manor/hf4-C.pxg",
+ "set": "horror",
+ "id": "bookshelf_manor",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.09
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.023
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "outline_black",
+   "noise"
+  ]
+ },
+ "colors": 22,
+ "bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "note": "C: 마녀의 집 결 — 계단식 갓돌 + 이빨 장식, 기둥 결과 널 앞면 이음 점, 책등 금테(tarn) 띠, 셋째 단은 누운 책 더미 + 선 책, 뒤판 2단",
+ "ok": true
+}

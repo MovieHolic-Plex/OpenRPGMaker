@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/bread_oven/w54-B.pxg",
+ "id": "bread oven",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.09
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 20,
+ "v5_colors": 20,
+ "bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  4,
+  31,
+  31
+ ],
+ "note": "B: A 와 같은 돔에 짧은 벽돌 굴뚝(4줄) 추가. 불 자리 v5 그대로",
+ "ok": true
+}

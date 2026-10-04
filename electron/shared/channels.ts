@@ -1,6 +1,7 @@
 export const OPRN_CHANNEL_PREFIX = "oprn:" as const;
 
 export const OPRN_CHANNELS = {
+  windowControl: "oprn:window.control",
   teamStatus: "oprn:team.status",
   teamInvite: "oprn:team.invite",
   teamRevoke: "oprn:team.revoke",
@@ -24,6 +25,8 @@ export const OPRN_CHANNELS = {
   projectBackup: "oprn:project.backup",
   /** 시작 화면 카드에 쓰는 대표 그림(cover.jpg). 편집기가 저장 뒤에 보낸다. */
   projectSaveCover: "oprn:project.saveCover",
+  projectListBackups: "oprn:project.listBackups",
+  projectRestoreBackup: "oprn:project.restoreBackup",
   commitsRecord: "oprn:commits.record",
   commitsList: "oprn:commits.list",
   commitsListSync: "oprn:commits.listSync",

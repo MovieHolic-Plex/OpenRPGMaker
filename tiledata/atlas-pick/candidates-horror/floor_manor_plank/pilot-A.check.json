@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/floor_manor_plank/pilot-A.pxg",
+ "set": "horror",
+ "id": "floor_manor_plank",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.195
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.156
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 4,
+ "bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "note": "파일럿 A(v5 짙은 마루 결): 가로 널 4px 여덟, 판 단 3·4 번갈이(고르지 않게), 틈 한 단 어둡게, 이음은 다섯 판에만(이음 오른쪽 2px 밝게), 결 여섯 줄 10~15px 한 단, 옹이 하나. 사방 이어짐",
+ "ok": true
+}

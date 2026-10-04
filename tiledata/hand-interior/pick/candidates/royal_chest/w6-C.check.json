@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/royal_chest/w6-C.pxg",
+ "id": "royal chest",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.006
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 12,
+ "v5_colors": 10,
+ "bbox": [
+  2,
+  3,
+  14,
+  14
+ ],
+ "v5_bbox": [
+  2,
+  3,
+  14,
+  14
+ ],
+ "note": "뚜껑 윗면을 화면 3/4로 크게 잡고 앞면을 낮춰 정면 자물쇠와 철띠 두 줄로 정돈",
+ "ok": true
+}

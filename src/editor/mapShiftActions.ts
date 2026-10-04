@@ -1,4 +1,5 @@
 import { TILE } from "@/project/defaults";
+import { extendedLowerTiles, groundFeaturePredicate } from "@/project/mapGroundFill";
 import { remapExtraLayers } from "@/project/mapLayers";
 import { shiftMapLocations } from "@/project/mapNamedLocations";
 import { store } from "@/project/store";
@@ -23,7 +24,8 @@ export function applyMapShift(project: Project, mapId: MapId, offset: MapShiftOf
   const map = project.maps[mapId];
   if (!map) return false;
   const spec: ShiftSpec = { dx, dy, height: map.height, width: map.width };
-  map.lowerTiles = shiftedTiles(map.lowerTiles, spec, TILE.GRASS);
+  // 밀려서 생긴 왼쪽·위 빈 칸은 잔디 고정이 아니라 가장자리 바탕 타일을 이어 채운다(resizeMap 과 같은 규칙).
+  map.lowerTiles = extendedLowerTiles(map, spec.width, spec.height, groundFeaturePredicate(map, project.tilesets), dx, dy);
   map.upperTiles = shiftedTiles(map.upperTiles, spec, TILE.EMPTY);
   replaceShiftedStacks(map, spec);
   remapExtraLayers(map, spec.width, spec.height, (target) => {

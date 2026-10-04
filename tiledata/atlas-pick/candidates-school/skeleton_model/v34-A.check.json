@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/skeleton_model/v34-A.pxg",
+ "set": "school",
+ "id": "skeleton_model",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.017
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.048
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies"
+  ]
+ },
+ "colors": 16,
+ "bbox": [
+  1,
+  0,
+  14,
+  31
+ ],
+ "note": "해골 표본 3/4 — 뼈색 골격이 회색 받침판 윗면 위에 서 있고, 앞 모서리 밑에 판 앞면",
+ "ok": true
+}

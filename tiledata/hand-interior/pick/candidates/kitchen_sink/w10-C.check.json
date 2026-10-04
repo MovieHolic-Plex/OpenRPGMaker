@@ -1,0 +1,31 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/kitchen_sink/w10-C.pxg",
+ "id": "kitchen sink",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.129
+ },
+ "lint": {
+  "failed": [],
+  "pass": true
+ },
+ "colors": 11,
+ "v5_colors": 11,
+ "bbox": [
+  0,
+  8,
+  15,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  8,
+  15,
+  31
+ ],
+ "note": "재해석: 두툼한 앞 테(윗면 F/H 2줄), 펌프를 왼쪽으로, 아래는 문짝 대신 기둥 둘 사이 어두운 빈 칸(양동이 자리)으로 열어 무게를 덜음",
+ "ok": true
+}

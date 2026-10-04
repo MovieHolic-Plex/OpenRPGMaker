@@ -1,0 +1,21 @@
+{
+ "id": "ball_basket",
+ "slug": "ball_basket",
+ "name": "공 바구니",
+ "scene": "체육관",
+ "place": "in",
+ "cells": [
+  1,
+  1
+ ],
+ "canvas": [
+  16,
+  16
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "쇠 바구니 수레에 담긴 공(농구공 주황 점·배구공 흰 점) — 바구니 격자 1px, 바퀴 점.",
+ "palette_hint": "mmetal 바구니, vred·vyellow·vwhite 공",
+ "pair": [],
+ "worker": "s1"
+}

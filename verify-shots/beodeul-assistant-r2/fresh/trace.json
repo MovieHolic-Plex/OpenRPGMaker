@@ -1,0 +1,1346 @@
+[
+ {
+  "i": 1,
+  "name": "get_project_summary",
+  "ok": true,
+  "summary": "프로젝트 '새 프로젝트' — 맵 2개, 아이템 228, 트룹 7",
+  "args": "{}"
+ },
+ {
+  "i": 2,
+  "name": "read_project_wiki",
+  "ok": true,
+  "summary": "프로젝트 위키 0개 문서",
+  "args": "{\"query\":\"버들항\",\"mapId\":\"beodeul_like\"}"
+ },
+ {
+  "i": 3,
+  "name": "list_spatial_designs",
+  "ok": true,
+  "summary": "장소 저작 비활성(프로젝트 설계 0) · 공용 0건",
+  "args": "{\"kind\":\"place\",\"query\":\"버들항\"}"
+ },
+ {
+  "i": 4,
+  "name": "get_map_region",
+  "ok": true,
+  "summary": "버들항 비슷한 도시 (조수)(beodeul_like) 영역 (0,0)~(24,24) — 이벤트 0개, 물 0칸",
+  "args": "{\"mapId\":\"beodeul_like\",\"x\":0,\"y\":0,\"w\":24,\"h\":24}"
+ },
+ {
+  "i": 5,
+  "name": "get_database_records",
+  "ok": true,
+  "summary": "maps 1건 / 1건",
+  "args": "{\"collection\":\"maps\",\"ids\":[\"beodeul_like\"],\"include\":\"full\"}"
+ },
+ {
+  "i": 6,
+  "name": "show_map_region",
+  "ok": true,
+  "summary": "맵 미리보기: (0,0) 100×100 (버들항 비슷한 도시 (조수))",
+  "args": "{\"mapId\":\"beodeul_like\",\"x\":0,\"y\":0,\"w\":100,\"h\":100}"
+ },
+ {
+  "i": 7,
+  "name": "tile_query",
+  "ok": true,
+  "summary": "맵 '버들항 비슷한 도시 (조수)' 타일 0종 사용 — 설명됨 0/0",
+  "args": "{\"ask\":\"usage\",\"mapId\":\"beodeul_like\"}"
+ },
+ {
+  "i": 8,
+  "name": "list_tileset_references",
+  "ok": true,
+  "summary": "타일셋 → 용도 → MD와 이미지. 선택한 용도를 읽은 다음 응답에서 배치하세요.",
+  "args": "{\"tilesetId\":\"beodeul_city\"}"
+ },
+ {
+  "i": 9,
+  "name": "list_tileset_references",
+  "ok": true,
+  "summary": "버들항 · 도시 한 장 조립(원본은 예시) 자료 목록. nextOffset이 있으면 다음 목록도 확인하세요.",
+  "args": "{\"tilesetId\":\"beodeul_city\",\"categoryId\":\"beodeul-city\"}"
+ },
+ {
+  "i": 10,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 도시 한 장 조립(원본은 예시) / 도시 한 장 조립 · 읽는 순서 (0–4144, 1/1쪽)",
+  "args": "{\"documentId\":\"bd-city-guide\",\"categoryId\":\"beodeul-city\",\"tilesetId\":\"beodeul_city\"}"
+ },
+ {
+  "i": 11,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 도시 한 장 조립(원본은 예시) / 배치 규칙 · 구역 출구 · 거리 · 집 줄 · 다리 (0–3748, 1/1쪽)",
+  "args": "{\"documentId\":\"bd-layout-rules\",\"categoryId\":\"beodeul-city\",\"tilesetId\":\"beodeul_city\"}"
+ },
+ {
+  "i": 12,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 도시 한 장 조립(원본은 예시) / 예시 배치 · 언덕 위 성 아래 마을 (0–5658, 1/2쪽)",
+  "args": "{\"documentId\":\"bd-layout-hilltop\",\"categoryId\":\"beodeul-city\",\"tilesetId\":\"beodeul_city\"}"
+ },
+ {
+  "i": 13,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 도시 한 장 조립(원본은 예시) / 예시 배치 · 강어귀 항구 도시 (0–5706, 1/2쪽)",
+  "args": "{\"documentId\":\"bd-layout-estuary\",\"categoryId\":\"beodeul-city\",\"tilesetId\":\"beodeul_city\"}"
+ },
+ {
+  "i": 14,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 도시 한 장 조립(원본은 예시) / 예시 배치 · 강어귀 항구 도시 (5706–15818, 2/2쪽)",
+  "args": "{\"documentId\":\"bd-layout-estuary\",\"categoryId\":\"beodeul-city\",\"tilesetId\":\"beodeul_city\",\"offset\":5706}"
+ },
+ {
+  "i": 15,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 도시 한 장 조립(원본은 예시) / 예시 배치 · 언덕 위 성 아래 마을 (5658–15770, 2/2쪽)",
+  "args": "{\"documentId\":\"bd-layout-hilltop\",\"categoryId\":\"beodeul-city\",\"tilesetId\":\"beodeul_city\",\"offset\":5658}"
+ },
+ {
+  "i": 16,
+  "name": "list_tileset_references",
+  "ok": true,
+  "summary": "버들항 · 구역 키트(왕성·저택·포룸·성당·풍차·항구·강/다리) 자료 목록. nextOffset이 있으면 다음 목록도 확인하세요.",
+  "args": "{\"categoryId\":\"beodeul-city-kits\",\"tilesetId\":\"beodeul_city\"}"
+ },
+ {
+  "i": 17,
+  "name": "list_tileset_references",
+  "ok": true,
+  "summary": "버들항 · 자동타일과 강·폭포·다리·항구 자료 목록. nextOffset이 있으면 다음 목록도 확인하세요.",
+  "args": "{\"categoryId\":\"beodeul-city-water\",\"tilesetId\":\"beodeul_city\"}"
+ },
+ {
+  "i": 18,
+  "name": "list_tileset_references",
+  "ok": true,
+  "summary": "버들항 · 귀족 저택과 성 밖 목조 마을 자료 목록. nextOffset이 있으면 다음 목록도 확인하세요.",
+  "args": "{\"categoryId\":\"beodeul-city-manor-outskirts\",\"tilesetId\":\"beodeul_city\"}"
+ },
+ {
+  "i": 19,
+  "name": "list_tileset_references",
+  "ok": true,
+  "summary": "버들항 · QA 결함 교훈(오류 그림) 자료 목록. nextOffset이 있으면 다음 목록도 확인하세요.",
+  "args": "{\"categoryId\":\"beodeul-city-qa\",\"tilesetId\":\"beodeul_city\"}"
+ },
+ {
+  "i": 20,
+  "name": "list_tileset_references",
+  "ok": true,
+  "summary": "버들항 · 건물·소품·나무 조각 사전 자료 목록. nextOffset이 있으면 다음 목록도 확인하세요.",
+  "args": "{\"categoryId\":\"beodeul-city-pieces\",\"tilesetId\":\"beodeul_city\"}"
+ },
+ {
+  "i": 21,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 자동타일과 강·폭포·다리·항구 / 강·폭포·다리·호수 항구 키트 (0–6092, 1/1쪽)",
+  "args": "{\"documentId\":\"bd-water-kits\",\"categoryId\":\"beodeul-city-water\",\"tilesetId\":\"beodeul_city\"}"
+ },
+ {
+  "i": 22,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 자동타일과 강·폭포·다리·항구 / 자동타일 · 길·물·모랫길 (0–1190, 1/1쪽)",
+  "args": "{\"documentId\":\"bd-autotiles\",\"categoryId\":\"beodeul-city-water\",\"tilesetId\":\"beodeul_city\"}"
+ },
+ {
+  "i": 23,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · QA 결함 교훈(오류 그림) / 16구역 QA 결함 교훈 · 오류 그림 (0–4872, 1/1쪽)",
+  "args": "{\"documentId\":\"bd-qa-lessons\",\"categoryId\":\"beodeul-city-qa\",\"tilesetId\":\"beodeul_city\"}"
+ },
+ {
+  "i": 24,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 구역 키트(왕성·저택·포룸·성당·풍차·항구·강/다리) / 구역 키트 · 버들항 왕성 (0–1695, 1/1쪽)",
+  "args": "{\"documentId\":\"bd-kit-castle\",\"categoryId\":\"beodeul-city-kits\",\"tilesetId\":\"beodeul_city\"}"
+ },
+ {
+  "i": 25,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 구역 키트(왕성·저택·포룸·성당·풍차·항구·강/다리) / 구역 키트 · 버들항 항구 (0–2993, 1/1쪽)",
+  "args": "{\"documentId\":\"bd-kit-harbour\",\"categoryId\":\"beodeul-city-kits\",\"tilesetId\":\"beodeul_city\"}"
+ },
+ {
+  "i": 26,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 구역 키트(왕성·저택·포룸·성당·풍차·항구·강/다리) / 구역 안 조각 배치(왕성·저택·포룸 정답) (0–2819, 1/1쪽)",
+  "args": "{\"documentId\":\"bd-kit-parts\",\"categoryId\":\"beodeul-city-kits\",\"tilesetId\":\"beodeul_city\"}"
+ },
+ {
+  "i": 27,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 구역 키트(왕성·저택·포룸·성당·풍차·항구·강/다리) / 구역 키트 · 버들항 귀족 저택 (0–1040, 1/1쪽)",
+  "args": "{\"documentId\":\"bd-kit-estate\",\"categoryId\":\"beodeul-city-kits\",\"tilesetId\":\"beodeul_city\"}"
+ },
+ {
+  "i": 28,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 구역 키트(왕성·저택·포룸·성당·풍차·항구·강/다리) / 구역 키트 · 버들항 포룸 (0–985, 1/1쪽)",
+  "args": "{\"documentId\":\"bd-kit-forum\",\"categoryId\":\"beodeul-city-kits\",\"tilesetId\":\"beodeul_city\"}"
+ },
+ {
+  "i": 29,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 구역 키트(왕성·저택·포룸·성당·풍차·항구·강/다리) / 구역 키트 · 버들항 성당 언덕 (0–969, 1/1쪽)",
+  "args": "{\"documentId\":\"bd-kit-cathedral\",\"categoryId\":\"beodeul-city-kits\",\"tilesetId\":\"beodeul_city\"}"
+ },
+ {
+  "i": 30,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 구역 키트(왕성·저택·포룸·성당·풍차·항구·강/다리) / 구역 키트 · 버들항 풍차 들 (0–1001, 1/1쪽)",
+  "args": "{\"documentId\":\"bd-kit-windmill\",\"categoryId\":\"beodeul-city-kits\",\"tilesetId\":\"beodeul_city\"}"
+ },
+ {
+  "i": 31,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 구역 키트(왕성·저택·포룸·성당·풍차·항구·강/다리) / 구역 키트 · 버들항 강·폭포·아치 다리 (0–966, 1/1쪽)",
+  "args": "{\"documentId\":\"bd-kit-river-bridge\",\"categoryId\":\"beodeul-city-kits\",\"tilesetId\":\"beodeul_city\"}"
+ },
+ {
+  "i": 32,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 구역 키트(왕성·저택·포룸·성당·풍차·항구·강/다리) / 구역 키트 · 버들항 서쪽 항구 마을 (0–2006, 1/1쪽)",
+  "args": "{\"documentId\":\"bd-kit-harbour-west\",\"categoryId\":\"beodeul-city-kits\",\"tilesetId\":\"beodeul_city\"}"
+ },
+ {
+  "i": 33,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 구역 키트(왕성·저택·포룸·성당·풍차·항구·강/다리) / 움직이는 칸(물·연기·풍차·배·분수) (0–428, 1/1쪽)",
+  "args": "{\"documentId\":\"bd-kit-anim\",\"categoryId\":\"beodeul-city-kits\",\"tilesetId\":\"beodeul_city\"}"
+ },
+ {
+  "i": 34,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 귀족 저택과 성 밖 목조 마을 / 귀족 저택·정원 키트와 조립표 (0–5700, 1/3쪽)",
+  "args": "{\"documentId\":\"bd-manor-kits\",\"categoryId\":\"beodeul-city-manor-outskirts\",\"tilesetId\":\"beodeul_city\"}"
+ },
+ {
+  "i": 35,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 귀족 저택과 성 밖 목조 마을 / 성 밖 목조집·우물 광장 키트와 조립표 (0–5825, 1/2쪽)",
+  "args": "{\"documentId\":\"bd-outskirts-kits\",\"categoryId\":\"beodeul-city-manor-outskirts\",\"tilesetId\":\"beodeul_city\"}"
+ },
+ {
+  "i": 36,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 귀족 저택과 성 밖 목조 마을 / 성 밖 목조집·우물 광장 키트와 조립표 (5825–9536, 2/2쪽)",
+  "args": "{\"documentId\":\"bd-outskirts-kits\",\"tilesetId\":\"beodeul_city\",\"offset\":5825,\"categoryId\":\"beodeul-city-manor-outskirts\"}"
+ },
+ {
+  "i": 37,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 귀족 저택과 성 밖 목조 마을 / 귀족 저택·정원 키트와 조립표 (5700–11137, 2/3쪽)",
+  "args": "{\"documentId\":\"bd-manor-kits\",\"tilesetId\":\"beodeul_city\",\"offset\":5700,\"categoryId\":\"beodeul-city-manor-outskirts\"}"
+ },
+ {
+  "i": 38,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 건물·소품·나무 조각 사전 / 건물 조각 사전 1 (0–5891, 1/2쪽)",
+  "args": "{\"documentId\":\"bd-pieces-houses-1\",\"categoryId\":\"beodeul-city-pieces\",\"tilesetId\":\"beodeul_city\"}"
+ },
+ {
+  "i": 39,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 건물·소품·나무 조각 사전 / 건물 조각 사전 1 (5891–11002, 2/2쪽)",
+  "args": "{\"documentId\":\"bd-pieces-houses-1\",\"tilesetId\":\"beodeul_city\",\"offset\":5891,\"categoryId\":\"beodeul-city-pieces\"}"
+ },
+ {
+  "i": 40,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 건물·소품·나무 조각 사전 / 건물 조각 사전 2 (0–5918, 1/2쪽)",
+  "args": "{\"documentId\":\"bd-pieces-houses-2\",\"categoryId\":\"beodeul-city-pieces\",\"tilesetId\":\"beodeul_city\"}"
+ },
+ {
+  "i": 41,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 건물·소품·나무 조각 사전 / 건물 조각 사전 3 (0–5699, 1/2쪽)",
+  "args": "{\"documentId\":\"bd-pieces-houses-3\",\"categoryId\":\"beodeul-city-pieces\",\"tilesetId\":\"beodeul_city\"}"
+ },
+ {
+  "i": 42,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 건물·소품·나무 조각 사전 / 건물 조각 사전 4 (0–5934, 1/2쪽)",
+  "args": "{\"documentId\":\"bd-pieces-houses-4\",\"categoryId\":\"beodeul-city-pieces\",\"tilesetId\":\"beodeul_city\"}"
+ },
+ {
+  "i": 43,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 건물·소품·나무 조각 사전 / 소품·나무 조각 사전 (0–5871, 1/3쪽)",
+  "args": "{\"documentId\":\"bd-pieces-props\",\"categoryId\":\"beodeul-city-pieces\",\"tilesetId\":\"beodeul_city\"}"
+ },
+ {
+  "i": 44,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 도시 한 장 조립(원본은 예시) / layout-estuary.png — 실제 이미지를 확인하세요.",
+  "args": "{\"imageId\":\"bd-layout-estuary\",\"categoryId\":\"beodeul-city\",\"tilesetId\":\"beodeul_city\"}"
+ },
+ {
+  "i": 45,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 도시 한 장 조립(원본은 예시) / city-districts.png — 실제 이미지를 확인하세요.",
+  "args": "{\"imageId\":\"bd-city-districts\",\"categoryId\":\"beodeul-city\",\"tilesetId\":\"beodeul_city\"}"
+ },
+ {
+  "i": 46,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 건물·소품·나무 조각 사전 / 소품·나무 조각 사전 (5871–11816, 2/3쪽)",
+  "args": "{\"documentId\":\"bd-pieces-props\",\"tilesetId\":\"beodeul_city\",\"offset\":5871,\"categoryId\":\"beodeul-city-pieces\"}"
+ },
+ {
+  "i": 47,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 귀족 저택과 성 밖 목조 마을 / 귀족 저택·정원 키트와 조립표 (11137–13299, 3/3쪽)",
+  "args": "{\"documentId\":\"bd-manor-kits\",\"tilesetId\":\"beodeul_city\",\"offset\":11137,\"categoryId\":\"beodeul-city-manor-outskirts\"}"
+ },
+ {
+  "i": 48,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 건물·소품·나무 조각 사전 / 건물 조각 사전 2 (5918–10698, 2/2쪽)",
+  "args": "{\"documentId\":\"bd-pieces-houses-2\",\"tilesetId\":\"beodeul_city\",\"offset\":5918,\"categoryId\":\"beodeul-city-pieces\"}"
+ },
+ {
+  "i": 49,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 건물·소품·나무 조각 사전 / 건물 조각 사전 3 (5699–10275, 2/2쪽)",
+  "args": "{\"documentId\":\"bd-pieces-houses-3\",\"tilesetId\":\"beodeul_city\",\"offset\":5699,\"categoryId\":\"beodeul-city-pieces\"}"
+ },
+ {
+  "i": 50,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 건물·소품·나무 조각 사전 / 건물 조각 사전 4 (5934–8193, 2/2쪽)",
+  "args": "{\"documentId\":\"bd-pieces-houses-4\",\"tilesetId\":\"beodeul_city\",\"offset\":5934,\"categoryId\":\"beodeul-city-pieces\"}"
+ },
+ {
+  "i": 51,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 도시 한 장 조립(원본은 예시) / layout-hilltop.png — 실제 이미지를 확인하세요.",
+  "args": "{\"categoryId\":\"beodeul-city\",\"imageId\":\"bd-layout-hilltop\",\"tilesetId\":\"beodeul_city\"}"
+ },
+ {
+  "i": 52,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 도시 한 장 조립(원본은 예시) / city-levels-walk.png — 실제 이미지를 확인하세요.",
+  "args": "{\"categoryId\":\"beodeul-city\",\"imageId\":\"bd-city-levels-walk\",\"tilesetId\":\"beodeul_city\"}"
+ },
+ {
+  "i": 53,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 도시 한 장 조립(원본은 예시) / city-overview.png — 실제 이미지를 확인하세요.",
+  "args": "{\"categoryId\":\"beodeul-city\",\"imageId\":\"bd-city-overview\",\"tilesetId\":\"beodeul_city\"}"
+ },
+ {
+  "i": 54,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 건물·소품·나무 조각 사전 / 소품·나무 조각 사전 (11816–13221, 3/3쪽)",
+  "args": "{\"documentId\":\"bd-pieces-props\",\"tilesetId\":\"beodeul_city\",\"offset\":11816,\"categoryId\":\"beodeul-city-pieces\"}"
+ },
+ {
+  "i": 55,
+  "name": "read_tileset_reference",
+  "ok": true,
+  "summary": "버들항 · 자동타일과 강·폭포·다리·항구 / kit-harbour-lake.png — 실제 이미지를 확인하세요.",
+  "args": "{\"categoryId\":\"beodeul-city-water\",\"imageId\":\"bd-kit-harbour-lake\",\"tilesetId\":\"beodeul_city\"}"
+ },
+ {
+  "i": 56,
+  "name": "list_spatial_designs",
+  "ok": true,
+  "summary": "장소 저작 비활성(프로젝트 설계 0) · 공용 245건",
+  "args": "{\"kind\":\"object\",\"query\":\"bd-\",\"limit\":200}"
+ },
+ {
+  "i": 57,
+  "name": "fill_region",
+  "ok": true,
+  "summary": "버들항 비슷한 도시 (조수) (0,0) 100×100을 '버들항 풀밭'로 채움 — 10000/10000칸, 실제 변경 10000칸, 오토타일 재계산 0칸.",
+  "args": "{\"mapId\":\"beodeul_like\",\"material\":\"버들항 풀밭\",\"rect\":{\"x\":0,\"y\":0,\"w\":100,\"h\":100},\"referencePurpose\":\"beodeul-city\"}"
+ },
+ {
+  "i": 58,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 호수 항구」 → beodeul_like (16,85) 83×15 · 1245칸",
+  "args": "{\"x\":16,\"y\":85,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-harbour-lake\"}"
+ },
+ {
+  "i": 59,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 왕성」 → beodeul_like (64,0) 33×33 · 1089칸",
+  "args": "{\"x\":64,\"y\":0,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-castle\"}"
+ },
+ {
+  "i": 60,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 귀족 저택」 → beodeul_like (2,2) 21×22 · 462칸",
+  "args": "{\"x\":2,\"y\":2,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-estate\"}"
+ },
+ {
+  "i": 61,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 성당 언덕」 → beodeul_like (40,4) 17×22 · 374칸",
+  "args": "{\"x\":40,\"y\":4,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-cathedral\"}"
+ },
+ {
+  "i": 62,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 포룸」 → beodeul_like (22,35) 22×14 · 308칸",
+  "args": "{\"x\":22,\"y\":35,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-forum\"}"
+ },
+ {
+  "i": 63,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 풍차 들」 → beodeul_like (0,57) 12×22 · 264칸",
+  "args": "{\"x\":0,\"y\":57,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-windmill\"}"
+ },
+ {
+  "i": 64,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 항구 광장」 → beodeul_like (78,74) 12×11 · 132칸",
+  "args": "{\"x\":78,\"y\":74,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-harbour-square\"}"
+ },
+ {
+  "i": 65,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「외곽 우물 광장 (모래길 위)」 → beodeul_like (28,66) 9×8 · 62칸",
+  "args": "{\"x\":28,\"y\":66,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-out-well-plaza-sand\"}"
+ },
+ {
+  "i": 66,
+  "name": "tile_erase",
+  "ok": true,
+  "summary": "버들항 비슷한 도시 (조수) (28,66) 9×8 정리(both) — 72/72칸, 하위는 기본 바닥 737 복원.",
+  "args": "{\"rect\":{\"x\":28,\"h\":8,\"y\":66,\"w\":9},\"mapId\":\"beodeul_like\"}"
+ },
+ {
+  "i": 67,
+  "name": "fill_region",
+  "ok": true,
+  "summary": "버들항 비슷한 도시 (조수) (57,0) 4×68을 '버들항 물'로 채움 — 282/272칸 (벽 틈 메움 10칸), 실제 변경 282칸, 오토타일 재계산 138칸, 상위 1칸 비움.",
+  "args": "{\"rect\":{\"x\":57,\"h\":68,\"y\":0,\"w\":4},\"mapId\":\"beodeul_like\",\"material\":\"버들항 물\",\"referencePurpose\":\"beodeul-city\"}"
+ },
+ {
+  "i": 68,
+  "name": "fill_region",
+  "ok": true,
+  "summary": "버들항 비슷한 도시 (조수) (54,64) 3×4을 '버들항 물'로 채움 — 12/12칸, 실제 변경 16칸, 오토타일 재계산 12칸.",
+  "args": "{\"rect\":{\"x\":54,\"h\":4,\"y\":64,\"w\":3},\"mapId\":\"beodeul_like\",\"material\":\"버들항 물\",\"referencePurpose\":\"beodeul-city\"}"
+ },
+ {
+  "i": 69,
+  "name": "fill_region",
+  "ok": true,
+  "summary": "버들항 비슷한 도시 (조수) (54,68) 4×17을 '버들항 물'로 채움 — 68/68칸, 실제 변경 72칸, 오토타일 재계산 38칸.",
+  "args": "{\"rect\":{\"x\":54,\"h\":17,\"y\":68,\"w\":4},\"mapId\":\"beodeul_like\",\"material\":\"버들항 물\",\"referencePurpose\":\"beodeul-city\"}"
+ },
+ {
+  "i": 70,
+  "name": "show_map_region",
+  "ok": true,
+  "summary": "맵 미리보기: (0,0) 100×100 (버들항 비슷한 도시 (조수))",
+  "args": "{\"x\":0,\"h\":100,\"y\":0,\"mapId\":\"beodeul_like\",\"w\":100}"
+ },
+ {
+  "i": 71,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 강 위 아치 다리」 → beodeul_like (57,32) 4×5 · 20칸",
+  "args": "{\"x\":57,\"y\":32,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-bridge-arch\"}"
+ },
+ {
+  "i": 72,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 강 위 아치 다리」 → beodeul_like (57,48) 4×5 · 20칸",
+  "args": "{\"x\":57,\"y\":48,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-bridge-arch\"}"
+ },
+ {
+  "i": 73,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 강 위 아치 다리」 → beodeul_like (57,60) 4×5 · 20칸",
+  "args": "{\"x\":57,\"y\":60,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-bridge-arch\"}"
+ },
+ {
+  "i": 74,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 강 위 아치 다리」 → beodeul_like (54,71) 4×5 · 20칸",
+  "args": "{\"x\":54,\"y\":71,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-bridge-arch\"}"
+ },
+ {
+  "i": 75,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「작은 저택 (반목조 11칸)」 → beodeul_like (26,5) 11×12 · 105칸 · 입구 (31,14) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (31,15) 에서 끝낸다",
+  "args": "{\"x\":26,\"y\":5,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-manor-small\"}"
+ },
+ {
+  "i": 76,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「외곽 우물 광장 (모래길 위)」 → beodeul_like (28,75) 9×8 · 62칸",
+  "args": "{\"x\":28,\"y\":75,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-out-well-plaza-sand\"}"
+ },
+ {
+  "i": 77,
+  "name": "fill_region",
+  "ok": true,
+  "summary": "버들항 비슷한 도시 (조수) (0,33) 57×2을 '버들항 길 포석'로 채움 — 129/114칸 (벽 틈 메움 15칸), 실제 변경 129칸, 오토타일 재계산 113칸.",
+  "args": "{\"rect\":{\"x\":0,\"h\":2,\"y\":33,\"w\":57},\"mapId\":\"beodeul_like\",\"material\":\"버들항 길 포석\",\"referencePurpose\":\"beodeul-city\"}"
+ },
+ {
+  "i": 78,
+  "name": "fill_region",
+  "ok": true,
+  "summary": "버들항 비슷한 도시 (조수) (61,33) 39×2을 '버들항 길 포석'로 채움 — 84/78칸 (벽 틈 메움 6칸), 실제 변경 84칸, 오토타일 재계산 75칸.",
+  "args": "{\"rect\":{\"x\":61,\"h\":2,\"y\":33,\"w\":39},\"mapId\":\"beodeul_like\",\"material\":\"버들항 길 포석\",\"referencePurpose\":\"beodeul-city\"}"
+ },
+ {
+  "i": 79,
+  "name": "fill_region",
+  "ok": true,
+  "summary": "버들항 비슷한 도시 (조수) (10,24) 2×9을 '버들항 길 포석'로 채움 — 18/18칸, 실제 변경 20칸, 오토타일 재계산 20칸.",
+  "args": "{\"rect\":{\"x\":10,\"h\":9,\"y\":24,\"w\":2},\"mapId\":\"beodeul_like\",\"material\":\"버들항 길 포석\",\"referencePurpose\":\"beodeul-city\"}"
+ },
+ {
+  "i": 80,
+  "name": "fill_region",
+  "ok": true,
+  "summary": "버들항 비슷한 도시 (조수) (30,17) 3×16을 '버들항 길 포석'로 채움 — 48/48칸, 실제 변경 51칸, 오토타일 재계산 36칸.",
+  "args": "{\"rect\":{\"x\":30,\"h\":16,\"y\":17,\"w\":3},\"mapId\":\"beodeul_like\",\"material\":\"버들항 길 포석\",\"referencePurpose\":\"beodeul-city\"}"
+ },
+ {
+  "i": 81,
+  "name": "fill_region",
+  "ok": true,
+  "summary": "버들항 비슷한 도시 (조수) (46,26) 2×7을 '버들항 길 포석'로 채움 — 14/14칸, 실제 변경 16칸, 오토타일 재계산 16칸.",
+  "args": "{\"rect\":{\"x\":46,\"h\":7,\"y\":26,\"w\":2},\"mapId\":\"beodeul_like\",\"material\":\"버들항 길 포석\",\"referencePurpose\":\"beodeul-city\"}"
+ },
+ {
+  "i": 82,
+  "name": "fill_region",
+  "ok": true,
+  "summary": "버들항 비슷한 도시 (조수) (20,35) 2×14을 '버들항 길 포석'로 채움 — 31/28칸 (벽 틈 메움 3칸), 실제 변경 33칸, 오토타일 재계산 31칸.",
+  "args": "{\"rect\":{\"x\":20,\"h\":14,\"y\":35,\"w\":2},\"mapId\":\"beodeul_like\",\"material\":\"버들항 길 포석\",\"referencePurpose\":\"beodeul-city\"}"
+ },
+ {
+  "i": 83,
+  "name": "fill_region",
+  "ok": true,
+  "summary": "버들항 비슷한 도시 (조수) (0,49) 57×2을 '버들항 길 포석'로 채움 — 116/114칸 (벽 틈 메움 2칸), 실제 변경 119칸, 오토타일 재계산 111칸.",
+  "args": "{\"rect\":{\"x\":0,\"h\":2,\"y\":49,\"w\":57},\"mapId\":\"beodeul_like\",\"material\":\"버들항 길 포석\",\"referencePurpose\":\"beodeul-city\"}"
+ },
+ {
+  "i": 84,
+  "name": "fill_region",
+  "ok": true,
+  "summary": "버들항 비슷한 도시 (조수) (61,49) 39×2을 '버들항 길 포석'로 채움 — 78/78칸, 실제 변경 78칸, 오토타일 재계산 78칸.",
+  "args": "{\"rect\":{\"x\":61,\"h\":2,\"y\":49,\"w\":39},\"mapId\":\"beodeul_like\",\"material\":\"버들항 길 포석\",\"referencePurpose\":\"beodeul-city\"}"
+ },
+ {
+  "i": 85,
+  "name": "fill_region",
+  "ok": true,
+  "summary": "버들항 비슷한 도시 (조수) (14,61) 43×2을 '버들항 길 포석'로 채움 — 89/86칸 (벽 틈 메움 3칸), 실제 변경 89칸, 오토타일 재계산 86칸.",
+  "args": "{\"rect\":{\"x\":14,\"h\":2,\"y\":61,\"w\":43},\"mapId\":\"beodeul_like\",\"material\":\"버들항 길 포석\",\"referencePurpose\":\"beodeul-city\"}"
+ },
+ {
+  "i": 86,
+  "name": "fill_region",
+  "ok": true,
+  "summary": "버들항 비슷한 도시 (조수) (12,51) 2×12을 '버들항 길 포석'로 채움 — 26/24칸 (벽 틈 메움 2칸), 실제 변경 30칸, 오토타일 재계산 28칸.",
+  "args": "{\"rect\":{\"x\":12,\"h\":12,\"y\":51,\"w\":2},\"mapId\":\"beodeul_like\",\"material\":\"버들항 길 포석\",\"referencePurpose\":\"beodeul-city\"}"
+ },
+ {
+  "i": 87,
+  "name": "fill_region",
+  "ok": true,
+  "summary": "버들항 비슷한 도시 (조수) (61,61) 39×2을 '버들항 길 포석'로 채움 — 78/78칸, 실제 변경 78칸, 오토타일 재계산 78칸.",
+  "args": "{\"rect\":{\"x\":61,\"h\":2,\"y\":61,\"w\":39},\"mapId\":\"beodeul_like\",\"material\":\"버들항 길 포석\",\"referencePurpose\":\"beodeul-city\"}"
+ },
+ {
+  "i": 88,
+  "name": "fill_region",
+  "ok": true,
+  "summary": "버들항 비슷한 도시 (조수) (58,72) 42×2을 '버들항 길 포석'로 채움 — 90/84칸 (벽 틈 메움 6칸), 실제 변경 90칸, 오토타일 재계산 84칸.",
+  "args": "{\"rect\":{\"x\":58,\"h\":2,\"y\":72,\"w\":42},\"mapId\":\"beodeul_like\",\"material\":\"버들항 길 포석\",\"referencePurpose\":\"beodeul-city\"}"
+ },
+ {
+  "i": 89,
+  "name": "fill_region",
+  "ok": true,
+  "summary": "버들항 비슷한 도시 (조수) (90,51) 2×10을 '버들항 길 포석'로 채움 — 20/20칸, 실제 변경 24칸, 오토타일 재계산 24칸.",
+  "args": "{\"rect\":{\"x\":90,\"h\":10,\"y\":51,\"w\":2},\"mapId\":\"beodeul_like\",\"material\":\"버들항 길 포석\",\"referencePurpose\":\"beodeul-city\"}"
+ },
+ {
+  "i": 90,
+  "name": "fill_region",
+  "ok": true,
+  "summary": "버들항 비슷한 도시 (조수) (90,63) 2×9을 '버들항 길 포석'로 채움 — 18/18칸, 실제 변경 22칸, 오토타일 재계산 22칸.",
+  "args": "{\"rect\":{\"x\":90,\"h\":9,\"y\":63,\"w\":2},\"mapId\":\"beodeul_like\",\"material\":\"버들항 길 포석\",\"referencePurpose\":\"beodeul-city\"}"
+ },
+ {
+  "i": 91,
+  "name": "fill_region",
+  "ok": true,
+  "summary": "버들항 비슷한 도시 (조수) (90,74) 2×11을 '버들항 길 포석'로 채움 — 28/22칸 (벽 틈 메움 6칸), 실제 변경 32칸, 오토타일 재계산 22칸.",
+  "args": "{\"rect\":{\"x\":90,\"h\":11,\"y\":74,\"w\":2},\"mapId\":\"beodeul_like\",\"material\":\"버들항 길 포석\",\"referencePurpose\":\"beodeul-city\"}"
+ },
+ {
+  "i": 92,
+  "name": "fill_region",
+  "ok": true,
+  "summary": "버들항 비슷한 도시 (조수) (75,35) 2×14을 '버들항 길 포석'로 채움 — 28/28칸, 실제 변경 32칸, 오토타일 재계산 32칸.",
+  "args": "{\"rect\":{\"x\":75,\"h\":14,\"y\":35,\"w\":2},\"mapId\":\"beodeul_like\",\"material\":\"버들항 길 포석\",\"referencePurpose\":\"beodeul-city\"}"
+ },
+ {
+  "i": 93,
+  "name": "fill_region",
+  "ok": true,
+  "summary": "버들항 비슷한 도시 (조수) (48,35) 2×14을 '버들항 길 포석'로 채움 — 28/28칸, 실제 변경 32칸, 오토타일 재계산 32칸.",
+  "args": "{\"rect\":{\"x\":48,\"h\":14,\"y\":35,\"w\":2},\"mapId\":\"beodeul_like\",\"material\":\"버들항 길 포석\",\"referencePurpose\":\"beodeul-city\"}"
+ },
+ {
+  "i": 94,
+  "name": "fill_region",
+  "ok": true,
+  "summary": "버들항 비슷한 도시 (조수) (76,74) 2×10을 '버들항 길 포석'로 채움 — 21/20칸 (벽 틈 메움 1칸), 실제 변경 23칸, 오토타일 재계산 22칸.",
+  "args": "{\"rect\":{\"x\":76,\"h\":10,\"y\":74,\"w\":2},\"mapId\":\"beodeul_like\",\"material\":\"버들항 길 포석\",\"referencePurpose\":\"beodeul-city\"}"
+ },
+ {
+  "i": 95,
+  "name": "fill_region",
+  "ok": true,
+  "summary": "버들항 비슷한 도시 (조수) (62,84) 16×1을 '버들항 길 포석'로 채움 — 22/16칸 (벽 틈 메움 6칸), 실제 변경 25칸, 오토타일 재계산 25칸.",
+  "args": "{\"rect\":{\"x\":62,\"h\":1,\"y\":84,\"w\":16},\"mapId\":\"beodeul_like\",\"material\":\"버들항 길 포석\",\"referencePurpose\":\"beodeul-city\"}"
+ },
+ {
+  "i": 96,
+  "name": "fill_region",
+  "ok": true,
+  "summary": "버들항 비슷한 도시 (조수) (92,84) 8×1을 '버들항 길 포석'로 채움 — 8/8칸, 실제 변경 9칸, 오토타일 재계산 9칸.",
+  "args": "{\"rect\":{\"x\":92,\"h\":1,\"y\":84,\"w\":8},\"mapId\":\"beodeul_like\",\"material\":\"버들항 길 포석\",\"referencePurpose\":\"beodeul-city\"}"
+ },
+ {
+  "i": 97,
+  "name": "show_map_region",
+  "ok": true,
+  "summary": "맵 미리보기: (0,0) 100×100 (버들항 비슷한 도시 (조수))",
+  "args": "{\"x\":0,\"h\":100,\"y\":0,\"mapId\":\"beodeul_like\",\"w\":100}"
+ },
+ {
+  "i": 98,
+  "name": "fill_region",
+  "ok": true,
+  "summary": "버들항 비슷한 도시 (조수) (12,63) 2×22을 '버들항 길 포석'로 채움 — 56/44칸 (벽 틈 메움 12칸), 실제 변경 59칸, 오토타일 재계산 47칸.",
+  "args": "{\"rect\":{\"x\":12,\"h\":22,\"y\":63,\"w\":2},\"mapId\":\"beodeul_like\",\"material\":\"버들항 길 포석\",\"referencePurpose\":\"beodeul-city\"}"
+ },
+ {
+  "i": 99,
+  "name": "fill_region",
+  "ok": true,
+  "summary": "버들항 비슷한 도시 (조수) (14,84) 7×1을 '버들항 길 포석'로 채움 — 7/7칸, 실제 변경 8칸, 오토타일 재계산 8칸.",
+  "args": "{\"rect\":{\"x\":14,\"h\":1,\"y\":84,\"w\":7},\"mapId\":\"beodeul_like\",\"material\":\"버들항 길 포석\",\"referencePurpose\":\"beodeul-city\"}"
+ },
+ {
+  "i": 100,
+  "name": "fill_region",
+  "ok": true,
+  "summary": "버들항 비슷한 도시 (조수) (59,84) 3×1을 '버들항 길 포석'로 채움 — 5/3칸 (벽 틈 메움 2칸), 실제 변경 7칸, 오토타일 재계산 7칸.",
+  "args": "{\"rect\":{\"x\":59,\"h\":1,\"y\":84,\"w\":3},\"mapId\":\"beodeul_like\",\"material\":\"버들항 길 포석\",\"referencePurpose\":\"beodeul-city\"}"
+ },
+ {
+  "i": 101,
+  "name": "fill_region",
+  "ok": true,
+  "summary": "버들항 비슷한 도시 (조수) (14,72) 40×2을 '버들항 모랫길'로 채움 — 82/80칸 (벽 틈 메움 2칸), 실제 변경 82칸, 오토타일 재계산 80칸.",
+  "args": "{\"rect\":{\"x\":14,\"h\":2,\"y\":72,\"w\":40},\"mapId\":\"beodeul_like\",\"material\":\"버들항 모랫길\",\"referencePurpose\":\"beodeul-city\"}"
+ },
+ {
+  "i": 102,
+  "name": "fill_region",
+  "ok": true,
+  "summary": "버들항 비슷한 도시 (조수) (21,84) 32×1을 '버들항 모랫길'로 채움 — 36/32칸 (벽 틈 메움 4칸), 실제 변경 36칸, 오토타일 재계산 36칸.",
+  "args": "{\"rect\":{\"x\":21,\"h\":1,\"y\":84,\"w\":32},\"mapId\":\"beodeul_like\",\"material\":\"버들항 모랫길\",\"referencePurpose\":\"beodeul-city\"}"
+ },
+ {
+  "i": 103,
+  "name": "fill_region",
+  "ok": true,
+  "summary": "버들항 비슷한 도시 (조수) (29,74) 5×1을 '버들항 모랫길'로 채움 — 5/5칸, 실제 변경 8칸, 오토타일 재계산 8칸.",
+  "args": "{\"rect\":{\"x\":29,\"h\":1,\"y\":74,\"w\":5},\"mapId\":\"beodeul_like\",\"material\":\"버들항 모랫길\",\"referencePurpose\":\"beodeul-city\"}"
+ },
+ {
+  "i": 104,
+  "name": "fill_region",
+  "ok": true,
+  "summary": "버들항 비슷한 도시 (조수) (29,83) 5×1을 '버들항 모랫길'로 채움 — 10/5칸 (벽 틈 메움 5칸), 실제 변경 10칸, 오토타일 재계산 10칸.",
+  "args": "{\"rect\":{\"x\":29,\"h\":1,\"y\":83,\"w\":5},\"mapId\":\"beodeul_like\",\"material\":\"버들항 모랫길\",\"referencePurpose\":\"beodeul-city\"}"
+ },
+ {
+  "i": 105,
+  "name": "fill_region",
+  "ok": true,
+  "summary": "버들항 비슷한 도시 (조수) (38,18) 2×15을 '버들항 길 포석'로 채움 — 31/30칸 (벽 틈 메움 1칸), 실제 변경 33칸, 오토타일 재계산 29칸.",
+  "args": "{\"rect\":{\"x\":38,\"h\":15,\"y\":18,\"w\":2},\"mapId\":\"beodeul_like\",\"material\":\"버들항 길 포석\",\"referencePurpose\":\"beodeul-city\"}"
+ },
+ {
+  "i": 106,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 빵집 가게집 5×8」 → beodeul_like (0,25) 5×8 · 35칸 · 입구 (2,32) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (2,33) 에서 끝낸다",
+  "args": "{\"x\":0,\"y\":25,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-house-h116_0\"}"
+ },
+ {
+  "i": 107,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 살림집 4×8」 → beodeul_like (5,25) 4×8 · 30칸 · 입구 (7,32) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (7,33) 에서 끝낸다",
+  "args": "{\"x\":5,\"y\":25,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-house-h106_0\"}"
+ },
+ {
+  "i": 108,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 재단사 가게집 7×6」 → beodeul_like (12,27) 7×6 · 33칸 · 입구 (15,32) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (15,33) 에서 끝낸다",
+  "args": "{\"x\":12,\"y\":27,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-house-i0\"}"
+ },
+ {
+  "i": 109,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 살림집 8×8」 → beodeul_like (19,25) 8×8 · 54칸 · 입구 (23,32) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (23,33) 에서 끝낸다",
+  "args": "{\"x\":19,\"y\":25,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-house-h104_1\"}"
+ },
+ {
+  "i": 110,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 살림집 3×6」 → beodeul_like (27,27) 3×6 · 16칸 · 입구 (28,32) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (28,33) 에서 끝낸다",
+  "args": "{\"x\":27,\"y\":27,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-house-h141_0\"}"
+ },
+ {
+  "i": 111,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 살림집 5×6」 → beodeul_like (33,27) 5×6 · 28칸 · 입구 (35,32) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (35,33) 에서 끝낸다",
+  "args": "{\"x\":33,\"y\":27,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-house-h103_1\"}"
+ },
+ {
+  "i": 112,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 살림집 4×6」 → beodeul_like (40,27) 4×6 · 22칸 · 입구 (42,32) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (42,33) 에서 끝낸다",
+  "args": "{\"x\":40,\"y\":27,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-house-h112_0\"}"
+ },
+ {
+  "i": 113,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 재단사 가게집 6×6」 → beodeul_like (48,27) 6×6 · 30칸 · 입구 (51,32) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (51,33) 에서 끝낸다",
+  "args": "{\"x\":48,\"y\":27,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-house-h123_1\"}"
+ },
+ {
+  "i": 114,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 살림집 3×6」 → beodeul_like (54,27) 3×6 · 16칸 · 입구 (55,32) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (55,33) 에서 끝낸다",
+  "args": "{\"x\":54,\"y\":27,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-house-h145_0\"}"
+ },
+ {
+  "i": 115,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 대장간 가게집 3×6」 → beodeul_like (61,27) 3×6 · 16칸 · 입구 (62,32) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (62,33) 에서 끝낸다",
+  "args": "{\"x\":61,\"y\":27,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-house-i13\"}"
+ },
+ {
+  "i": 116,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 푸줏간 가게집 3×6」 → beodeul_like (97,27) 3×6 · 16칸 · 입구 (98,32) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (98,33) 에서 끝낸다",
+  "args": "{\"x\":97,\"y\":27,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-house-h127_0\"}"
+ },
+ {
+  "i": 117,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 살림집 7×6」 → beodeul_like (0,43) 7×6 · 32칸 · 입구 (2,48) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (2,49) 에서 끝낸다",
+  "args": "{\"x\":0,\"y\":43,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-house-h101_0\"}"
+ },
+ {
+  "i": 118,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 살림집 4×8」 → beodeul_like (8,41) 4×8 · 30칸 · 입구 (10,48) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (10,49) 에서 끝낸다",
+  "args": "{\"x\":8,\"y\":41,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-house-h117_1\"}"
+ },
+ {
+  "i": 119,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 살림집 3×6」 → beodeul_like (12,43) 3×6 · 16칸 · 입구 (13,48) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (13,49) 에서 끝낸다",
+  "args": "{\"x\":12,\"y\":43,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-house-i12\"}"
+ },
+ {
+  "i": 120,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 살림집 4×8」 → beodeul_like (15,41) 4×8 · 30칸 · 입구 (17,48) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (17,49) 에서 끝낸다",
+  "args": "{\"x\":15,\"y\":41,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-house-h102_2\"}"
+ },
+ {
+  "i": 121,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 보석상 가게집 6×6」 → beodeul_like (50,43) 6×6 · 30칸 · 입구 (52,48) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (52,49) 에서 끝낸다",
+  "args": "{\"x\":50,\"y\":43,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-house-h131_0\"}"
+ },
+ {
+  "i": 122,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 약방 가게집 7×8」 → beodeul_like (61,41) 7×8 · 47칸 · 입구 (65,48) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (65,49) 에서 끝낸다",
+  "args": "{\"x\":61,\"y\":41,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-house-h107_1\"}"
+ },
+ {
+  "i": 123,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 살림집 5×6」 → beodeul_like (69,43) 5×6 · 25칸 · 입구 (71,48) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (71,49) 에서 끝낸다",
+  "args": "{\"x\":69,\"y\":43,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-house-h113_0\"}"
+ },
+ {
+  "i": 124,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 살림집 9×8」 → beodeul_like (77,41) 9×8 · 49칸 · 입구 (81,48) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (81,49) 에서 끝낸다",
+  "args": "{\"x\":77,\"y\":41,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-house-h122_0\"}"
+ },
+ {
+  "i": 125,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 재단사 가게집 5×6」 → beodeul_like (87,43) 5×6 · 28칸 · 입구 (89,48) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (89,49) 에서 끝낸다",
+  "args": "{\"x\":87,\"y\":43,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-house-h110_0\"}"
+ },
+ {
+  "i": 126,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 살림집 5×8」 → beodeul_like (93,41) 5×8 · 35칸 · 입구 (95,48) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (95,49) 에서 끝낸다",
+  "args": "{\"x\":93,\"y\":41,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-house-h102_1\"}"
+ },
+ {
+  "i": 127,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 청과상 가게집 9×9」 → beodeul_like (14,52) 9×9 · 73칸 · 입구 (16,60) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (16,61) 에서 끝낸다",
+  "args": "{\"x\":14,\"y\":52,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-house-h124_0\"}"
+ },
+ {
+  "i": 128,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 생선 가게 가게집 7×8」 → beodeul_like (24,53) 7×8 · 47칸 · 입구 (28,60) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (28,61) 에서 끝낸다",
+  "args": "{\"x\":24,\"y\":53,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-house-h111_0\"}"
+ },
+ {
+  "i": 129,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 살림집 6×6」 → beodeul_like (32,55) 6×6 · 30칸 · 입구 (34,60) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (34,61) 에서 끝낸다",
+  "args": "{\"x\":32,\"y\":55,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-house-i9\"}"
+ },
+ {
+  "i": 130,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 빵집 가게집 6×8」 → beodeul_like (39,53) 6×8 · 42칸 · 입구 (42,60) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (42,61) 에서 끝낸다",
+  "args": "{\"x\":39,\"y\":53,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-house-h106_1\"}"
+ },
+ {
+  "i": 131,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 살림집 5×6」 → beodeul_like (46,55) 5×6 · 25칸 · 입구 (48,60) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (48,61) 에서 끝낸다",
+  "args": "{\"x\":46,\"y\":55,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-house-h103_2\"}"
+ },
+ {
+  "i": 132,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 살림집 3×6」 → beodeul_like (51,55) 3×6 · 16칸 · 입구 (52,60) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (52,61) 에서 끝낸다",
+  "args": "{\"x\":51,\"y\":55,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-house-h101_2\"}"
+ },
+ {
+  "i": 133,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 살림집 7×8」 → beodeul_like (61,53) 7×8 · 49칸 · 입구 (63,60) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (63,61) 에서 끝낸다",
+  "args": "{\"x\":61,\"y\":53,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-house-h104_0\"}"
+ },
+ {
+  "i": 134,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 살림집 6×6」 → beodeul_like (69,55) 6×6 · 30칸 · 입구 (72,60) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (72,61) 에서 끝낸다",
+  "args": "{\"x\":69,\"y\":55,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-house-h107_0\"}"
+ },
+ {
+  "i": 135,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 살림집 5×6」 → beodeul_like (76,55) 5×6 · 25칸 · 입구 (78,60) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (78,61) 에서 끝낸다",
+  "args": "{\"x\":76,\"y\":55,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-house-h135_0\"}"
+ },
+ {
+  "i": 136,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 살림집 8×8」 → beodeul_like (82,53) 8×8 · 45칸 · 입구 (83,60) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (83,61) 에서 끝낸다",
+  "args": "{\"x\":82,\"y\":53,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-house-h109_1\"}"
+ },
+ {
+  "i": 137,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 살림집 6×6」 → beodeul_like (92,55) 6×6 · 30칸 · 입구 (94,60) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (94,61) 에서 끝낸다",
+  "args": "{\"x\":92,\"y\":55,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-house-i11\"}"
+ },
+ {
+  "i": 138,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 살림집 8×8」 → beodeul_like (61,64) 8×8 · 54칸 · 입구 (66,71) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (66,72) 에서 끝낸다",
+  "args": "{\"x\":61,\"y\":64,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-house-h110_1\"}"
+ },
+ {
+  "i": 139,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 살림집 7×6」 → beodeul_like (70,66) 7×6 · 33칸 · 입구 (73,71) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (73,72) 에서 끝낸다",
+  "args": "{\"x\":70,\"y\":66,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-house-i6\"}"
+ },
+ {
+  "i": 140,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 생선 가게 가게집 5×8」 → beodeul_like (78,64) 5×8 · 38칸 · 입구 (80,71) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (80,72) 에서 끝낸다",
+  "args": "{\"x\":78,\"y\":64,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-house-h111_1\"}"
+ },
+ {
+  "i": 141,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 살림집 5×6」 → beodeul_like (84,66) 5×6 · 28칸 · 입구 (86,71) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (86,72) 에서 끝낸다",
+  "args": "{\"x\":84,\"y\":66,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-house-h113_1\"}"
+ },
+ {
+  "i": 142,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 살림집 6×6」 → beodeul_like (92,66) 6×6 · 30칸 · 입구 (95,71) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (95,72) 에서 끝낸다",
+  "args": "{\"x\":92,\"y\":66,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-house-i10\"}"
+ },
+ {
+  "i": 143,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 항구 창고 6×7」 → beodeul_like (62,77) 6×7 · 42칸 · 입구 (64,83) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (64,84) 에서 끝낸다",
+  "args": "{\"x\":62,\"y\":77,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-house-ware0\"}"
+ },
+ {
+  "i": 144,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 여관 가게집 5×6」 → beodeul_like (69,78) 5×6 · 28칸 · 입구 (71,83) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (71,84) 에서 끝낸다",
+  "args": "{\"x\":69,\"y\":78,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-house-h109_0\"}"
+ },
+ {
+  "i": 145,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 살림집 4×8」 → beodeul_like (93,76) 4×8 · 30칸 · 입구 (95,83) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (95,84) 에서 끝낸다",
+  "args": "{\"x\":93,\"y\":76,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-house-h137_0\"}"
+ },
+ {
+  "i": 146,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「외곽 통나무 오두막(박공 정면)」 → beodeul_like (15,66) 5×6 · 28칸 · 입구 (17,71) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (17,72) 에서 끝낸다",
+  "args": "{\"x\":15,\"y\":66,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-out-cabin\"}"
+ },
+ {
+  "i": 147,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「외곽 통나무 긴 집」 → beodeul_like (21,66) 10×6 · 51칸 · 입구 (25,71) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (25,72) 에서 끝낸다",
+  "args": "{\"x\":21,\"y\":66,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-out-longhouse\"}"
+ },
+ {
+  "i": 148,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「외곽 작은 통나무 오두막」 → beodeul_like (32,68) 4×4 · 16칸 · 입구 (33,71) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (33,72) 에서 끝낸다",
+  "args": "{\"x\":32,\"y\":68,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-out-cabin-small\"}"
+ },
+ {
+  "i": 149,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「외곽 판자 2층집(간판)」 → beodeul_like (37,66) 8×6 · 48칸 · 입구 (43,71) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (43,72) 에서 끝낸다",
+  "args": "{\"x\":37,\"y\":66,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-out-house-plank\"}"
+ },
+ {
+  "i": 150,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「외곽 통나무 오두막(박공 정면)」 → beodeul_like (46,66) 5×6 · 28칸 · 입구 (48,71) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (48,72) 에서 끝낸다",
+  "args": "{\"x\":46,\"y\":66,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-out-cabin\"}"
+ },
+ {
+  "i": 151,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「외곽 작은 통나무 오두막」 → beodeul_like (15,80) 4×4 · 16칸 · 입구 (16,83) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (16,84) 에서 끝낸다",
+  "args": "{\"x\":15,\"y\":80,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-out-cabin-small\"}"
+ },
+ {
+  "i": 152,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「외곽 판자 2층집(간판)」 → beodeul_like (20,78) 8×6 · 48칸 · 입구 (26,83) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (26,84) 에서 끝낸다",
+  "args": "{\"x\":20,\"y\":78,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-out-house-plank\"}"
+ },
+ {
+  "i": 153,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「외곽 통나무 긴 집」 → beodeul_like (38,78) 10×6 · 51칸 · 입구 (42,83) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (42,84) 에서 끝낸다",
+  "args": "{\"x\":38,\"y\":78,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-out-longhouse\"}"
+ },
+ {
+  "i": 154,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「외곽 작은 통나무 오두막」 → beodeul_like (48,80) 4×4 · 16칸 · 입구 (49,83) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (49,84) 에서 끝낸다",
+  "args": "{\"x\":48,\"y\":80,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-out-cabin-small\"}"
+ },
+ {
+  "i": 155,
+  "name": "show_map_region",
+  "ok": true,
+  "summary": "맵 미리보기: (0,0) 100×100 (버들항 비슷한 도시 (조수))",
+  "args": "{\"x\":0,\"h\":100,\"y\":0,\"mapId\":\"beodeul_like\",\"w\":100}"
+ },
+ {
+  "i": 156,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 나무 3×3」 → beodeul_like (23,1) 3×3 · 9칸",
+  "args": "{\"x\":23,\"y\":1,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-tree-3e8732\"}"
+ },
+ {
+  "i": 157,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 나무 2×2」 → beodeul_like (37,0) 2×2 · 4칸",
+  "args": "{\"x\":37,\"y\":0,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-tree-47e17a\"}"
+ },
+ {
+  "i": 158,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 나무 3×4」 → beodeul_like (44,0) 3×4 · 12칸",
+  "args": "{\"x\":44,\"y\":0,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-tree-d61d7e\"}"
+ },
+ {
+  "i": 159,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 나무 2×2」 → beodeul_like (51,0) 2×2 · 4칸",
+  "args": "{\"x\":51,\"y\":0,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-tree-f4f319\"}"
+ },
+ {
+  "i": 160,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 나무 1×3」 → beodeul_like (54,1) 1×3 · 3칸",
+  "args": "{\"x\":54,\"y\":1,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-tree-c27062\"}"
+ },
+ {
+  "i": 161,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 나무 1×3」 → beodeul_like (61,2) 1×3 · 3칸",
+  "args": "{\"x\":61,\"y\":2,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-tree-eef4bc\"}"
+ },
+ {
+  "i": 162,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 나무 1×3」 → beodeul_like (62,10) 1×3 · 3칸",
+  "args": "{\"x\":62,\"y\":10,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-tree-28ad5e\"}"
+ },
+ {
+  "i": 163,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 나무 2×2」 → beodeul_like (61,20) 2×2 · 4칸",
+  "args": "{\"x\":61,\"y\":20,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-tree-0f7ed1\"}"
+ },
+ {
+  "i": 164,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 나무 2×2」 → beodeul_like (97,2) 2×2 · 4칸",
+  "args": "{\"x\":97,\"y\":2,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-tree-37f48b\"}"
+ },
+ {
+  "i": 165,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 나무 2×2」 → beodeul_like (97,10) 2×2 · 4칸",
+  "args": "{\"x\":97,\"y\":10,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-tree-d105b2\"}"
+ },
+ {
+  "i": 166,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 나무 2×2」 → beodeul_like (97,18) 2×2 · 4칸",
+  "args": "{\"x\":97,\"y\":18,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-tree-cc0fcb\"}"
+ },
+ {
+  "i": 167,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 나무 2×2」 → beodeul_like (0,0) 2×2 · 4칸",
+  "args": "{\"x\":0,\"y\":0,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-tree-132848\"}"
+ },
+ {
+  "i": 168,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 나무 1×3」 → beodeul_like (0,10) 1×3 · 3칸",
+  "args": "{\"x\":0,\"y\":10,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-tree-28ad5e\"}"
+ },
+ {
+  "i": 169,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 나무 3×3」 → beodeul_like (63,36) 3×3 · 9칸",
+  "args": "{\"x\":63,\"y\":36,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-tree-a80c85\"}"
+ },
+ {
+  "i": 170,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 나무 2×2」 → beodeul_like (69,36) 2×2 · 4칸",
+  "args": "{\"x\":69,\"y\":36,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-tree-e9d9b3\"}"
+ },
+ {
+  "i": 171,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 나무 3×3」 → beodeul_like (80,36) 3×3 · 9칸",
+  "args": "{\"x\":80,\"y\":36,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-tree-7ecdb8\"}"
+ },
+ {
+  "i": 172,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 나무 2×2」 → beodeul_like (86,36) 2×2 · 4칸",
+  "args": "{\"x\":86,\"y\":36,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-tree-47e17a\"}"
+ },
+ {
+  "i": 173,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 나무 3×4」 → beodeul_like (93,36) 3×4 · 12칸",
+  "args": "{\"x\":93,\"y\":36,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-tree-d61d7e\"}"
+ },
+ {
+  "i": 174,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 나무 3×4」 → beodeul_like (45,38) 3×4 · 12칸",
+  "args": "{\"x\":45,\"y\":38,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-tree-1a786c\"}"
+ },
+ {
+  "i": 175,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 나무 4×5」 → beodeul_like (0,80) 4×5 · 20칸",
+  "args": "{\"x\":0,\"y\":80,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-tree-d43edd\"}"
+ },
+ {
+  "i": 176,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 나무 4×5」 → beodeul_like (5,82) 4×5 · 20칸",
+  "args": "{\"x\":5,\"y\":82,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-tree-5844f6\"}"
+ },
+ {
+  "i": 177,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 나무 4×5」 → beodeul_like (1,89) 4×5 · 20칸",
+  "args": "{\"x\":1,\"y\":89,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-tree-b1d104\"}"
+ },
+ {
+  "i": 178,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 나무 3×4」 → beodeul_like (8,90) 3×4 · 12칸",
+  "args": "{\"x\":8,\"y\":90,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-tree-bdd36e\"}"
+ },
+ {
+  "i": 179,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 나무 3×3」 → beodeul_like (2,96) 3×3 · 9칸",
+  "args": "{\"x\":2,\"y\":96,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-tree-3e8732\"}"
+ },
+ {
+  "i": 180,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 나무 2×2」 → beodeul_like (11,96) 2×2 · 4칸",
+  "args": "{\"x\":11,\"y\":96,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-tree-f4f319\"}"
+ },
+ {
+  "i": 181,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 나무 2×2」 → beodeul_like (12,87) 2×2 · 4칸",
+  "args": "{\"x\":12,\"y\":87,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-tree-cc0fcb\"}"
+ },
+ {
+  "i": 182,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 소품 목 굽은 가로등 1×3」 → beodeul_like (44,35) 1×3 · 3칸",
+  "args": "{\"x\":44,\"y\":35,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-prop-lamp_crook\"}"
+ },
+ {
+  "i": 183,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 소품 목 굽은 가로등 1×3」 → beodeul_like (74,51) 1×3 · 3칸",
+  "args": "{\"x\":74,\"y\":51,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-prop-lamp_crook\"}"
+ },
+ {
+  "i": 184,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 소품 목 굽은 가로등 1×3」 → beodeul_like (86,51) 1×3 · 3칸",
+  "args": "{\"x\":86,\"y\":51,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-prop-lamp_crook\"}"
+ },
+ {
+  "i": 185,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 소품 목 굽은 가로등 1×3」 → beodeul_like (5,51) 1×3 · 3칸",
+  "args": "{\"x\":5,\"y\":51,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-prop-lamp_crook\"}"
+ },
+ {
+  "i": 186,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 소품 목 굽은 가로등 1×3」 → beodeul_like (25,51) 1×3 · 3칸",
+  "args": "{\"x\":25,\"y\":51,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-prop-lamp_crook\"}"
+ },
+ {
+  "i": 187,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 소품 목 굽은 가로등 1×3」 → beodeul_like (45,51) 1×3 · 3칸",
+  "args": "{\"x\":45,\"y\":51,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-prop-lamp_crook\"}"
+ },
+ {
+  "i": 188,
+  "name": "stamp_object",
+  "ok": true,
+  "summary": "「버들항 소품 나무 벤치 2×1」 → beodeul_like (38,75) 2×1 · 2칸",
+  "args": "{\"x\":38,\"y\":75,\"mapId\":\"beodeul_like\",\"objectId\":\"kit:beodeul_city/bd-prop-bench_wood\"}"
+ },
+ {
+  "i": 189,
+  "name": "check_reachability",
+  "ok": true,
+  "summary": "도달성: 3개 도달 불가",
+  "args": "{\"targets\":[{\"x\":10,\"y\":23},{\"x\":31,\"y\":15},{\"x\":40,\"y\":19},{\"x\":80,\"y\":32},{\"x\":80,\"y\":12},{\"x\":81,\"y\":9},{\"x\":30,\"y\":42},{\"x\":11,\"y\":60},{\"x\":88,\"y\":80},{\"x\":33,\"y\":78},{\"x\":16,\"y\":84},{\"x\":26,\"y\":84},{\"x\":42,\"y\":84},{\"x\":49,\"y\":84},{\"x\":64,\"y\":84},{\"x\":71,\"y\":84},{\"x\":95,\"y\":84},{\"x\":17,\"y\":72},{\"x\":25,\"y\":72},{\"x\":33,\"y\":72},{\"x\":43,\"y\":72},{\"x\":48,\"y\":72},{\"x\":66,\"y\":72},{\"x\":73,\"y\":72},{\"x\":80,\"y\":72},{\"x\":86,\"y\":72},{\"x\":95,\"y\":72},{\"x\":16,\"y\":61},{\"x\":52,\"y\":61},{\"x\":63,\"y\":61},{\"x\":94,\"y\":61},{\"x\":2,\"y\":49},{\"x\":52,\"y\":49},{\"x\":65,\"y\":49},{\"x\":95,\"y\":49},{\"x\":2,\"y\":33},{\"x\":62,\"y\":33}"
+ },
+ {
+  "i": 190,
+  "name": "check_reachability",
+  "ok": true,
+  "summary": "도달성: 1개 도달 불가",
+  "args": "{\"targets\":[{\"x\":80,\"y\":11},{\"x\":94,\"y\":7},{\"x\":65,\"y\":7},{\"x\":45,\"y\":11}],\"from\":{\"x\":40,\"y\":33},\"mapId\":\"beodeul_like\"}"
+ },
+ {
+  "i": 191,
+  "name": "show_map_region",
+  "ok": true,
+  "summary": "맵 미리보기: (40,62) 24×24 (버들항 비슷한 도시 (조수))",
+  "args": "{\"x\":40,\"h\":24,\"y\":62,\"mapId\":\"beodeul_like\",\"w\":24}"
+ },
+ {
+  "i": 192,
+  "name": "check_reachability",
+  "ok": true,
+  "summary": "도달성: 전부 도달 가능",
+  "args": "{\"targets\":[{\"x\":45,\"y\":90},{\"x\":69,\"y\":90},{\"x\":83,\"y\":90},{\"x\":16,\"y\":92},{\"x\":41,\"y\":19},{\"x\":11,\"y\":70},{\"x\":88,\"y\":82},{\"x\":32,\"y\":80},{\"x\":99,\"y\":50},{\"x\":0,\"y\":34}],\"from\":{\"x\":40,\"y\":33},\"mapId\":\"beodeul_like\"}"
+ }
+]

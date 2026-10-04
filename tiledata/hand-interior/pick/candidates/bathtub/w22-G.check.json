@@ -1,0 +1,31 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/bathtub/w22-G.pxg",
+ "id": "bathtub",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.023
+ },
+ "lint": {
+  "failed": [],
+  "pass": true
+ },
+ "colors": 12,
+ "v5_colors": 6,
+ "bbox": [
+  1,
+  0,
+  30,
+  15
+ ],
+ "v5_bbox": [
+  1,
+  2,
+  30,
+  15
+ ],
+ "note": "방향 A: 거품 목욕 — 물면 위 흰 거품 덩이와 뒤 테에 놋 수도꼭지(위로 삐져나옴), 둥근 도기 몸통은 D 와 같은 시야각",
+ "ok": true
+}

@@ -1,0 +1,49 @@
+@size 48 32
+@cell 16
+@palette palette.pal
+@mat T mconc 5
+@mat S mconc 4
+@mat f mconc 2
+@mat e mconc 1
+@mat k mconc 0
+@mat W mconc 6
+@mat R mmetal 5
+@mat r mmetal 4
+@mat q mmetal 3
+@mat p mmetal 2
+@mat b vblack 2
+@mat B vblack 4
+@mat l vblack 6
+@mblock 0 0
+................................................
+................................................
+................................................
+................................................
+.......................lbb......................
+...RRRRRRRRRRRRRRRRRRRRBbbRRRRRRRRRRRRRRRRRRq...
+...rqqqqqqrqqqqqqrqqqqqBbbqqqqqrqqqqqqrqqqqqq...
+...r......r......r.....bbb.....r......r.....q...
+...r......r......r......r......r......r.....q...
+...rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrq...
+...rpppppprpppppprpppppprpppppprpppppprpppppq...
+..WpWWWWWWpWWWWWWpWWWWWWrWWWWWWpWWWWWWpWWWWWqW..
+..TTTTTTTTTTTTTTTTTTTTTTrTTTTTTTTTTTTTTTTTTTTT..
+..TWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWT..
+..TTTTTTTTTTTTTTTTTTTTTTrTTTTTTTTTTTTTTTTTTTTT..
+..TTTTTTTTTTTTTTTTTTTTTTrTTTTTTTTTTTTTTTTTTTTT..
+..TSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSST..
+..TTTTTTTTTTTTTTTTTTTTppppp~TTTTTTTTTTTTTTTTTT..
+..TTTTTTTTTTTTTTTTTTTTTTTT----TTTTTTTTTTTTTTTT..
+..SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSeee..
+..Sffffffffffffffffffffffffffffffffffffffffeee..
+..Sffffffffffffffffffffffffffffffffffffffffeee..
+..Sffffffffffffffffffffffffffffffffffffffffeee..
+..SfffffffffffTTTTTTTTTTTTTTTTTTTTfffffffffeee..
+..SfffffffffffTTTTTTTTTTTTTTTTTTTTfffffffffeee..
+..SeeeeeeeefffSSSSSSSSSSSSSSSSSSSSfffeeeeeeeee..
+..Seeeeeeeeffffffffffffffffffffffffffeeeeeeeee..
+..SeeeeeeeeTTTTTTTTTTTTTTTTTTTTTTTTTTeeeeeeeee..
+..kkkkkkkkkTTTTTTTTTTTTTTTTTTTTTTTTTTkkkkkkkkk..
+...........WSSSSSSSSSSSSSSSSSSSSSSSSe...........
+...........Weeeeeeeeeeeeeeeeeeeeeeeee...........
+...~~~~~~--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~..

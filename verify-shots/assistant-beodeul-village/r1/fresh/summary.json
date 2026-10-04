@@ -1,0 +1,340 @@
+{
+ "label": "fresh",
+ "round": "r1",
+ "text": "마을 만들어 줘",
+ "model": "opencodex/gpt-6-astra",
+ "projectDir": "/tmp/oprn-village-fresh",
+ "ms": 225948,
+ "before": {
+  "maps": {
+   "map_blank_start": "beodeul_city"
+  },
+  "currentMapId": "map_blank_start"
+ },
+ "afterMaps": {
+  "map_blank_start": "beodeul_city",
+  "map_willow_village": "beodeul_city"
+ },
+ "target": {
+  "id": "map_willow_village",
+  "size": [
+   60,
+   59
+  ],
+  "tilesetId": "beodeul_city"
+ },
+ "blankCellRatioRaw": 0,
+ "exposedTools": 19,
+ "villageContract": false,
+ "toolCalls": 41,
+ "failed": 14,
+ "byTool": {
+  "get_map_region": 2,
+  "read_project_wiki": 1,
+  "list_tileset_references": 14,
+  "author_beodeul_town": 1,
+  "check_city_form": 2,
+  "find_tools": 2,
+  "show_map_region": 3,
+  "check_reachability": 2,
+  "focus_editor_view": 1,
+  "list_spatial_designs": 6,
+  "stamp_object": 7
+ },
+ "stats": {
+  "ms": 218094,
+  "turns": 33,
+  "toolCalls": 43,
+  "toolErrors": 14,
+  "usage": {
+   "input": 814020,
+   "output": 2627,
+   "cacheRead": 84352,
+   "cacheWrite": 0,
+   "totalTokens": 900999,
+   "calls": 33
+  }
+ },
+ "metrics": {
+  "emptiness": {
+   "lawn": {
+    "share": 0.1025,
+    "screens": 12,
+    "over40": 0,
+    "worst": 0.183,
+    "overAt": []
+   },
+   "open": {
+    "share": 0.1042,
+    "screens": 12,
+    "over40": 0,
+    "worst": 0.203,
+    "overAt": []
+   }
+  },
+  "blockRepeats": {
+   "blocks": 0,
+   "distinct": 0,
+   "neighbourRepeats": [],
+   "overused": []
+  },
+  "cityForm": {
+   "deadEnds": [],
+   "lines": {
+    "count": 28,
+    "longStraight": [
+     {
+      "orient": "h",
+      "from": [
+       0,
+       18
+      ],
+      "to": [
+       59,
+       18
+      ],
+      "len": 60
+     },
+     {
+      "orient": "h",
+      "from": [
+       0,
+       33
+      ],
+      "to": [
+       59,
+       33
+      ],
+      "len": 60
+     },
+     {
+      "orient": "h",
+      "from": [
+       0,
+       48
+      ],
+      "to": [
+       59,
+       48
+      ],
+      "len": 60
+     },
+     {
+      "orient": "h",
+      "from": [
+       0,
+       58
+      ],
+      "to": [
+       59,
+       58
+      ],
+      "len": 60
+     },
+     {
+      "orient": "v",
+      "from": [
+       1,
+       0
+      ],
+      "to": [
+       1,
+       58
+      ],
+      "len": 59
+     },
+     {
+      "orient": "v",
+      "from": [
+       23,
+       0
+      ],
+      "to": [
+       23,
+       58
+      ],
+      "len": 59
+     },
+     {
+      "orient": "v",
+      "from": [
+       45,
+       0
+      ],
+      "to": [
+       45,
+       58
+      ],
+      "len": 59
+     }
+    ],
+    "longestLen": 60
+   },
+   "graph": {
+    "meanDepth": 3.39,
+    "maxDepth": 7,
+    "components": 1,
+    "isolated": []
+   },
+   "spacing": {
+    "vGaps": [
+     22,
+     22
+    ],
+    "hGaps": [
+     10,
+     15,
+     15,
+     10
+    ],
+    "cv": 0.314
+   },
+   "bentStreetCells": 39,
+   "canal": {
+    "cells": 0,
+    "orient": null,
+    "bends": 0,
+    "straightShare": null,
+    "straight": false
+   },
+   "nodes": [
+    {
+     "at": [
+      53,
+      13
+     ],
+     "cells": 112
+    },
+    {
+     "at": [
+      12,
+      15
+     ],
+     "cells": 80
+    },
+    {
+     "at": [
+      34,
+      25
+     ],
+     "cells": 260
+    },
+    {
+     "at": [
+      12,
+      53
+     ],
+     "cells": 160
+    },
+    {
+     "at": [
+      34,
+      53
+     ],
+     "cells": 160
+    },
+    {
+     "at": [
+      53,
+      53
+     ],
+     "cells": 112
+    }
+   ],
+   "landmarks": [],
+   "blocks": {
+    "count": 13,
+    "distinct": 13,
+    "neighbourRepeats": [],
+    "overused": []
+   }
+  },
+  "originality": {
+   "sameCells": 4,
+   "ofCells": 3540,
+   "sameShare": 0.0011,
+   "sameShareOfObjectCells": 0
+  },
+  "districts": [
+   {
+    "id": "bd-castle",
+    "stamped": 0,
+    "present": false,
+    "atOriginalOrigin": false,
+    "origins": []
+   },
+   {
+    "id": "bd-estate",
+    "stamped": 0,
+    "present": false,
+    "atOriginalOrigin": false,
+    "origins": []
+   },
+   {
+    "id": "bd-forum",
+    "stamped": 0,
+    "present": false,
+    "atOriginalOrigin": false,
+    "origins": []
+   },
+   {
+    "id": "bd-cathedral",
+    "stamped": 0,
+    "present": false,
+    "atOriginalOrigin": false,
+    "origins": []
+   },
+   {
+    "id": "bd-windmill",
+    "stamped": 0,
+    "present": false,
+    "atOriginalOrigin": false,
+    "origins": []
+   },
+   {
+    "id": "bd-harbour",
+    "stamped": 0,
+    "present": false,
+    "atOriginalOrigin": false,
+    "origins": []
+   },
+   {
+    "id": "bd-harbour-west",
+    "stamped": 0,
+    "present": false,
+    "atOriginalOrigin": false,
+    "origins": []
+   },
+   {
+    "id": "bd-river-bridge",
+    "stamped": 0,
+    "present": false,
+    "atOriginalOrigin": false,
+    "origins": []
+   }
+  ],
+  "districtsPresent": 0,
+  "districtsAtOriginalOrigin": 0,
+  "stampedKits": 0,
+  "doors": 0,
+  "landReach": {
+   "total": 0,
+   "reached": 0,
+   "unreached": []
+  },
+  "streetReach": {
+   "total": 0,
+   "reached": 0,
+   "unreached": []
+  },
+  "defects": {
+   "deadEndPavedCells": [],
+   "deadEndStreets": [],
+   "roadIntoWater": [],
+   "blockedDoorFronts": [],
+   "sameKitRepeats": []
+  },
+  "designedObjectCells": 1822
+ },
+ "finalText": "assistant: 교회 앞 빈 광장에 가로수·벤치·꽃밭을 묶은 쉼터와 우물을 비대칭으로 배치했습니다. 기존 건물과 큰길은 유지했고, 교회 정문과 쉼터까지 이동할 수 있는지 다시 확인했습니다."
+}

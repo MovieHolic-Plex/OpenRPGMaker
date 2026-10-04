@@ -1,0 +1,35 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/display_potion/w90-A.pxg",
+ "id": "display potion",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.044
+ },
+ "lint": {
+  "failed": [
+   "pillow",
+   "saturation",
+   "light"
+  ],
+  "pass": false
+ },
+ "colors": 20,
+ "v5_colors": 19,
+ "bbox": [
+  1,
+  1,
+  14,
+  14
+ ],
+ "v5_bbox": [
+  1,
+  1,
+  14,
+  15
+ ],
+ "note": "물약 진열대: 선반을 밝은 윗면 3행(뒤 가장자리→앞 모서리 하이라이트)+처마 그림자+앞면 3행으로 다시 찍고 병 밑동이 윗면 위에 서게 함",
+ "ok": true
+}

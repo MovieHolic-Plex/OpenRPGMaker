@@ -1,0 +1,47 @@
+{
+ "id": "piano_dusty",
+ "slug": "piano_dusty",
+ "name": "먼지 덮인 피아노",
+ "scene": "낡은 서양 저택",
+ "cells": [
+  2,
+  2
+ ],
+ "canvas": [
+  32,
+  32
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "v5 피아노의 낡은 판(같은 칸 2×2, 위 8px 여백): 업라이트 피아노, 뚜껑 열린 건반(흰 건반 줄 사이 검은 건반, 몇 개 빠짐), 윗면 먼지 층(밝은 회백 한 줄 + 손가락 자국), 악보대에 누런 악보 한 장, 촛대 하나. 몸통 앞면이 주인공.",
+ "palette_hint": "mahog 몸통, sheet/dust 건반·먼지, void 검은 건반, tarn 촛대",
+ "worker_v1": "h1",
+ "stage": 2,
+ "stage_ko": "2단계 연출(기본이 선 뒤)",
+ "worker": "h1",
+ "v5_ref": [
+  {
+   "id": "piano",
+   "name_ko": "피아노",
+   "atlas": {
+    "x": 512,
+    "y": 176,
+    "w": 32,
+    "h": 32,
+    "frames": 1,
+    "padTop": 8
+   },
+   "image": {
+    "w": 32,
+    "h": 24
+   },
+   "kind": "wall",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "pick_dir": "tiledata/hand-interior/pick/candidates/piano",
+   "file": "ref-v5-1.png"
+  }
+ ]
+}

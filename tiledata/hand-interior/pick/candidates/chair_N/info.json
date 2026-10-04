@@ -1,0 +1,37 @@
+{
+ "id": "chair N",
+ "slug": "chair_N",
+ "name_ko": "의자 N",
+ "category": "가구·살림",
+ "kind": "floor",
+ "kind_ko": "바닥 기물(막힘)",
+ "canvas": [
+  16,
+  16
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 16,
+  "h": 16
+ },
+ "footprint": {
+  "w": 1,
+  "h": 1
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "북쪽(화면 위)을 보는 나무 의자 — 뒤에서 본 앉는 판. 식탁 남쪽 줄·책상 바로 남쪽에 1개. 책상 하나에 의자 하나.",
+ "where": "식탁 남쪽 줄·책상 바로 남쪽에 1개. 책상 하나에 의자 하나.",
+ "placement": [
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": [
+  3,
+  2,
+  12,
+  15
+ ],
+ "v5_colors": 7,
+ "material": "wood",
+ "related": []
+}

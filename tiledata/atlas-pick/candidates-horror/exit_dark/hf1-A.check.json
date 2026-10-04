@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/exit_dark/hf1-A.pxg",
+ "set": "horror",
+ "id": "exit_dark",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.199
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.181
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "outline_black"
+  ]
+ },
+ "colors": 4,
+ "bbox": [
+  0,
+  3,
+  31,
+  31
+ ],
+ "note": "A(v5 식구·부드럽게): 위 3줄 투명 → ^ 6줄 → \" 7줄 → * 7줄 → & 9줄(맨 아래 줄 &). 단이 바뀌는 줄(9·15·22째)만 체스판 반반으로 이음매를 풀고, 좌우 3px 는 한 단 짙게(문틀 안쪽 벽이 더 어두워 보이도록). 2칸 폭 틈용",
+ "ok": true
+}

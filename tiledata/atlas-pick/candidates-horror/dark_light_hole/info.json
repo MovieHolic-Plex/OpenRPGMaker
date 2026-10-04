@@ -1,0 +1,28 @@
+{
+ "id": "dark_light_hole",
+ "slug": "dark_light_hole",
+ "name": "촛불 빛 구멍(어둠 덮개)",
+ "scene": "연출",
+ "cells": [
+  3,
+  3
+ ],
+ "canvas": [
+  48,
+  48
+ ],
+ "layer": "over",
+ "layer_ko": "공중 덧칠(맨 위, 전선·가지 등 투명)",
+ "description": "dark_edge 식구의 3×3 덮개: 가운데가 투명한 둥근 빛 구멍(지름 약 2칸), 바깥으로 ^ \" * & 순으로 짙어져 네 모서리는 &. 촛불·손전등을 든 주인공 둘레에 씌운다. 원이 계단져 보이지 않게 단 경계 디더. 바깥 테두리 한 줄은 모두 & — 더 넓은 어둠(& 한 색 칸)과 이어진다.",
+ "palette_hint": "^ \" * & 어둠",
+ "worker_v1": "h4",
+ "stage": 1,
+ "stage_ko": "1단계 기본(1판에서 옮김)",
+ "kit": "frame",
+ "role": "빛 구멍 덮개",
+ "worker": "h4",
+ "set_with": [
+  "dark_edge",
+  "dark_corner"
+ ]
+}

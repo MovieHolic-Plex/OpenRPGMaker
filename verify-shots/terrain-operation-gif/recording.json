@@ -1,0 +1,72 @@
+{
+  "source": "Actual editor CDP screencast; pointer/keyboard operations on isolated memory fixture",
+  "url": "http://127.0.0.1:9833/?blankProject=1&map=map_blank_start",
+  "frames": 601,
+  "crop": {
+    "x": 346,
+    "y": 145,
+    "width": 676,
+    "height": 815
+  },
+  "phases": [
+    {
+      "seconds": 0.924,
+      "text": "① 경사로 · 절벽 방향에 맞춰 연결"
+    },
+    {
+      "seconds": 6.956,
+      "text": "② 표면 · 높이는 유지하고 바닥 재질만"
+    },
+    {
+      "seconds": 10.078,
+      "text": "③ 강 · 드래그로 물길 그리기"
+    },
+    {
+      "seconds": 18.452,
+      "text": "④ 다리 · 양쪽 둑을 차례로 클릭"
+    },
+    {
+      "seconds": 26.169,
+      "text": "⑤ 나무 군집 · 한 번에 배치"
+    },
+    {
+      "seconds": 34.233,
+      "text": "⑥ 군집 이동 · 묶음 전체가 따라 이동"
+    },
+    {
+      "seconds": 38.439,
+      "text": "⑦ 삭제 → Ctrl+Z · 군집과 바닥 복원"
+    },
+    {
+      "seconds": 44.74,
+      "text": "⑧ 통행 미리보기 · 경사로와 다리 연결 확인"
+    }
+  ],
+  "observed": {
+    "rampCells": 18,
+    "bridgeCells": 10,
+    "groupCount": 1,
+    "groupCells": 33,
+    "plateauHeight": 2,
+    "riverTiles": [
+      23152,
+      23152,
+      23152,
+      23152,
+      23152,
+      23152,
+      23152,
+      23152,
+      23152,
+      23152,
+      23152,
+      23152,
+      23152,
+      25246,
+      25248,
+      23152,
+      23152
+    ]
+  },
+  "errors": []
+}

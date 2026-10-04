@@ -1,0 +1,24 @@
+{
+ "id": "desert_scatter",
+ "slug": "desert_scatter",
+ "name": "사막 흩뿌림",
+ "scene": "사막",
+ "kind": "scatter",
+ "cells": [
+  3,
+  1
+ ],
+ "canvas": [
+  48,
+  16
+ ],
+ "layer": "decal",
+ "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+ "under": "sand",
+ "under_ko": "사막 모래(desert 몸통 고른 판)",
+ "passage": "walk",
+ "description": "사막 위 한 칸 덧칠 셋: ① 선인장(팔 둘) ② 바위 무더기 ③ 짐승 뼈·해골. 모래와 대비되게 윤곽 1px, 발치 그림자.",
+ "palette_hint": "wmead·wleaf 선인장, wrock 바위, mwhite·wsand 뼈",
+ "worker": "wv6",
+ "variants": 3
+}

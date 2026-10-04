@@ -1,0 +1,55 @@
+.workshop-host { position: fixed; inset: 0; z-index: 900; display: grid; place-items: center; background: var(--bg-scrim, rgb(15 23 42 / 0.4)); }
+.workshop-loading { color: var(--text-1, #0f172a); font-size: 14px; }
+.workshop { display: grid; grid-template-rows: auto 1fr; width: min(1320px, 96vw); height: min(880px, 94vh); background: var(--bg-raised, #fff); color: var(--text-1, #0f172a); border: 1px solid var(--border-default, rgba(15,23,42,0.127)); border-radius: 10px; overflow: hidden; }
+.workshop-head { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--border-default, rgba(15,23,42,0.127)); }
+.workshop-head h2 { margin: 0; font-size: 15px; }
+.workshop-progress { font-size: 12px; opacity: 0.8; }
+.workshop-blocked { font-size: 12px; color: #b45309; }
+.workshop-concurrency { margin-left: auto; display: flex; gap: 6px; align-items: center; font-size: 12px; }
+.workshop-close { padding: 4px 10px; }
+.workshop-body { display: grid; grid-template-columns: 260px 1fr; min-height: 0; }
+.workshop-side { display: grid; grid-template-rows: auto auto auto 1fr; gap: 8px; padding: 10px; border-right: 1px solid var(--border-default, rgba(15,23,42,0.127)); min-height: 0; }
+.workshop-filters { display: flex; flex-wrap: wrap; gap: 4px; }
+.workshop-filter { font-size: 12px; padding: 3px 8px; border-radius: 999px; }
+.workshop-filter.is-active { background: var(--accent, #4a57d6); color: #fff; }
+.workshop-search { width: 100%; }
+.workshop-items { list-style: none; margin: 0; padding: 0; overflow: auto; min-height: 0; }
+.workshop-item { display: grid; width: 100%; text-align: left; padding: 6px 8px; border-radius: 6px; gap: 2px; }
+.workshop-item.is-selected { background: var(--bg-active, rgba(15,23,42,0.09)); }
+.workshop-item-title { font-size: 13px; }
+.workshop-item-meta { font-size: 11px; opacity: 0.7; }
+.workshop-main { overflow: auto; padding: 14px; min-height: 0; }
+.workshop-empty { opacity: 0.75; }
+.workshop-round-head { display: flex; flex-wrap: wrap; gap: 10px; align-items: baseline; margin-bottom: 10px; }
+.workshop-round-head h3 { margin: 0; font-size: 16px; }
+.workshop-round-desc { font-size: 12px; opacity: 0.8; flex-basis: 100%; }
+.workshop-start { display: grid; gap: 6px; max-width: 560px; margin: 8px 0 16px; }
+.workshop-start textarea { min-height: 52px; }
+.workshop-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; }
+.workshop-card { display: grid; gap: 6px; padding: 8px; border: 1px solid var(--border-default, rgba(15,23,42,0.127)); border-radius: 8px; background: var(--bg-inset, #eef1f4); }
+.workshop-card.is-selected { outline: 2px solid var(--accent, #4a57d6); }
+.workshop-card.is-picked { border-color: #5fbf6a; }
+.workshop-card-art { display: grid; place-items: center; min-height: 150px; background: #967a5a; border-radius: 4px; }
+.workshop-card-art { overflow: auto; }
+.workshop-card-art img { image-rendering: pixelated; }
+.workshop-cards.is-big { grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); }
+.workshop-card-facts { display: flex; flex-wrap: wrap; gap: 4px; font-size: 11px; }
+.workshop-chip { padding: 1px 6px; border-radius: 999px; background: var(--bg-active, rgba(15,23,42,0.09)); }
+.workshop-chip.is-pass { background: #d5f0d9; color: #14391b; }
+.workshop-chip.is-fail { background: #f6d6d6; color: #5a1616; }
+.workshop-card-actions { display: flex; gap: 4px; flex-wrap: wrap; }
+.workshop-card-actions button { font-size: 12px; padding: 3px 8px; }
+.workshop-reasons { display: flex; flex-wrap: wrap; gap: 4px; }
+.workshop-compare { display: flex; gap: 16px; align-items: end; margin-top: 16px; padding: 10px; background: #967a5a; border-radius: 8px; }
+.workshop-compare figure { margin: 0; display: grid; gap: 4px; justify-items: center; color: #1b1d22; font-size: 12px; }
+.workshop-compare img { image-rendering: pixelated; }
+.workshop-form { display: grid; gap: 8px; max-width: 560px; }
+.workshop-form label { display: grid; gap: 3px; font-size: 12px; }
+.workshop-form-row { display: flex; gap: 8px; }
+.workshop-form-actions { display: flex; gap: 8px; }
+.left-workshop-pane { display: grid; gap: 8px; padding: 10px; }
+.left-workshop-title { margin: 0; font-size: 14px; }
+.left-workshop-lead { margin: 0; font-size: 12px; opacity: 0.8; }
+.left-workshop-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.left-workshop-open { display: grid; width: 100%; text-align: left; gap: 2px; padding: 8px; border-radius: 6px; }
+.left-workshop-meta { font-size: 11px; opacity: 0.75; }

@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/armchair_sheet/v34-A.pxg",
+ "set": "horror",
+ "id": "armchair_sheet",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.075
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.075
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 8,
+ "bbox": [
+  0,
+  1,
+  15,
+  15
+ ],
+ "note": "v34-A: 3/4 시점 — 천 씌운 안락의자: 등받이 윗면·등받이 앞면·앉는 면 윗면(밝음)·앞 천·둥근 팔걸이. 같은 dust/rot 램프",
+ "ok": true
+}

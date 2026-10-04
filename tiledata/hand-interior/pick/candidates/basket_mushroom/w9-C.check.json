@@ -1,0 +1,35 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/basket_mushroom/w9-C.pxg",
+ "id": "basket:mushroom",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.024
+ },
+ "lint": {
+  "failed": [
+   "orphans",
+   "jaggies",
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 14,
+ "v5_colors": 7,
+ "bbox": [
+  2,
+  2,
+  14,
+  13
+ ],
+ "v5_bbox": [
+  2,
+  2,
+  13,
+  14
+ ],
+ "note": "다시 그림: 아가리가 넓고 아래로 좁아지는 그릇 바구니에 버섯 세 개를 수북이, 엮음 띠 두 줄",
+ "ok": true
+}

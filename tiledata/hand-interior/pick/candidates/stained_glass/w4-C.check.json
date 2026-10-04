@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/stained_glass/w4-C.pxg",
+ "id": "stained glass",
+ "hard": [],
+ "warn": [
+  "폭: 불투명 폭이 v5 보다 +4px"
+ ],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.034
+ },
+ "lint": {
+  "failed": [],
+  "pass": true
+ },
+ "colors": 17,
+ "v5_colors": 7,
+ "bbox": [
+  1,
+  0,
+  14,
+  15
+ ],
+ "v5_bbox": [
+  3,
+  1,
+  12,
+  14
+ ],
+ "note": "16칸을 다 쓰는 뾰족 고딕 창으로 재해석: 돌 세로살로 갈라진 두 개의 길쭉한 창 + 위에 붉은 장미창. 크기·모양이 한눈에 읽힌다.",
+ "ok": true
+}

@@ -1,0 +1,19 @@
+{
+ "id": "laundry",
+ "slug": "laundry",
+ "name": "베란다 빨래",
+ "scene": "주택가 골목",
+ "cells": [
+  2,
+  1
+ ],
+ "canvas": [
+  32,
+  16
+ ],
+ "layer": "wall",
+ "layer_ko": "벽 걸이(위층, 투명 배경·벽면에 붙는다)",
+ "description": "베란다 난간에 걸린 빨래(흰 셔츠·색 수건·양말, 빨래 장대 한 줄). 주택 외벽 2층 베란다 위에 겹쳐 건다(투명 배경).",
+ "palette_hint": "mwhite·kblue·sakura·taxi 천, mmetal 장대",
+ "worker": "j4"
+}

@@ -1,0 +1,35 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/saddle_rack/w26-F.pxg",
+ "id": "saddle rack",
+ "hard": [],
+ "warn": [
+  "폭: 불투명 폭이 v5 보다 +4px"
+ ],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.023
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 17,
+ "v5_colors": 7,
+ "bbox": [
+  0,
+  9,
+  15,
+  31
+ ],
+ "v5_bbox": [
+  2,
+  10,
+  13,
+  31
+ ],
+ "note": "벽 기둥 팔걸이형: 세로 기둥에서 뻗은 가로 팔에 안장을 걸고, 밑으로 가죽 날개·스티치·등자끈·철 등자가 늘어짐",
+ "ok": true
+}

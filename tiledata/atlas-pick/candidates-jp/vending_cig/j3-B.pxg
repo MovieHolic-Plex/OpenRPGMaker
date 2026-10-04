@@ -1,0 +1,79 @@
+// vending_cig j3-B
+@size 16 32
+@cell 16
+@palette palette.pal
+@layer main
+@mat a akachin 3
+@mat b kblue 3
+@mat c kgreen 3
+@mat d lacq 3
+@mat e mmetal 3
+@mat f sumi 3
+@mat g taxi 3
+@mat h washi 3
+@mblock 0 0
+................
+.ffffffffffffff.
+ffffffffffffffff
+ffffffffffffffff
+ffffffffffffffff
+ffeeeeeeeeeeffff
+ffeaabbcchheffff
+ffeaabbcchheffff
+ffeaabbcchheffff
+ffeeeeeeeeeeffff
+ffehhggaabbeffff
+ffehhggaabbeffff
+ffehhggaabbeffff
+ffeeeeeeeeeeffff
+ffebbcchhggeffff
+ffebbcchhggeffff
+ffebbcchhggeffff
+ffeeeeeeeeeeffff
+ffffffffffffffff
+fffbbfaafdccffff
+fffbbfaafdddffff
+ffffffffffffffff
+fffeeeeefeeeffff
+fffedddefedeffff
+ffffffffffffffff
+fffeeeeeeeeeffff
+fffdddddddddffff
+fffdddddddddffff
+feeeeeeeeeeeeeef
+feeeeeeeeeeeeeef
+..~~~~~~~~~~~~~~
+...~~~~~~~~~~~~.
+@tblock 0 0
+................
+.11111111111111.
+1555555555555550
+1555555555555550
+1333333333333100
+1533333333334100
+1514343435414100
+1513331334214100
+1511111112214100
+1511111111114100
+1515443434314100
+1514233313314100
+1512211111114100
+1511111111114100
+1514343544314100
+1513331443114100
+1511111221114100
+1500000000004100
+1544444444444100
+1545345341444100
+1543343341114100
+1544444444444100
+1546666646664100
+1543000343034100
+1544444444444100
+1544555555554100
+1542222222224100
+1540000000004100
+1111111111111000
+1222222222222220
+................
+................

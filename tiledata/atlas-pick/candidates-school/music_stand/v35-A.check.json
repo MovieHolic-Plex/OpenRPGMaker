@@ -1,0 +1,43 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/music_stand/v35-A.pxg",
+ "set": "school",
+ "id": "music_stand",
+ "hard": [],
+ "warn": [],
+ "std": {
+  "cells": [
+   1,
+   2
+  ],
+  "canvas": [
+   16,
+   32
+  ]
+ },
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.039
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.056
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "orphans",
+   "light"
+  ]
+ },
+ "colors": 9,
+ "bbox": [
+  4,
+  9,
+  12,
+  31
+ ],
+ "note": "보면대 3/4 — 악보 얹은 판 윗면 T4·앞 턱 F, 기둥과 세발 받침 (폭 8px)",
+ "ok": true
+}

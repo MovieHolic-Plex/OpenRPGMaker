@@ -1,0 +1,73 @@
+// 장식: 둥근 머리 밑 금띠, 보랏빛 봉인 원문양 한가운데 금 인장, 아래 마름모 룬, 발치 금띠
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat K black
+@mat P purple
+@mat G gold
+@mblock 0 0
+................
+................
+................
+................
+.....KKKKKK.....
+....KKKKKKKK....
+...KKKKKKKKKK...
+..KKKKKKKKKKKK..
+..GGGGGGGGGGGG..
+..KKKKKKKKKKKK..
+..KKKKKKKKKKKK..
+..KKKKPPPPKKKK..
+..KKKPKKKKPKKK..
+..KKPKKGGKKPKK..
+..KKPKGGGGKPKK..
+..KKPKKGGKKPKK..
+..KKKPKKKKPKKK..
+..KKKKKKKKKKKK..
+..KKKKKPPKKKKK..
+..KKKKKKKKKKKK..
+..KKKKKPPKKKKK..
+..KKKKKKKKKKKK..
+..KKKKKKKKKKKK..
+..KKKKKKKKKKKK..
+..KKKKKKKKKKKK..
+..KKKKKKKKKKKK..
+..GGGGGGGGGGGG..
+..KKKKKKKKKKKK..
+..KKKKKKKKKKKK..
+..KKKKKKKKKKKK..
+..KKKKKKKKKKKK..
+..KKKKKKKKKKKK..
+@tblock 0 0
+................
+................
+................
+................
+.....155551.....
+....15555541....
+...1555555441...
+..144444433321..
+..155554443331..
+..122222221111..
+..143333332221..
+..143344442221..
+..143433334221..
+..144335532421..
+..144355552421..
+..144335532421..
+..143433334221..
+..143333332221..
+..143334432221..
+..143333332221..
+..143334432221..
+..143333332221..
+..143333332221..
+..143333332221..
+..143333332221..
+..143333332221..
+..155444333221..
+..122222221111..
+..143333332221..
+..143333332221..
+..143333332221..
+..111111111111..

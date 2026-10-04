@@ -62,8 +62,6 @@ const SHEETS = [
   sheet("assets/easyrpg/faceset/Monster.png", "easyrpg-faceset-monster", "easyrpg"),
   sheet("assets/easyrpg/faceset/People1.png", "easyrpg-faceset-people1", "easyrpg"),
   sheet("assets/easyrpg/faceset/People2.png", "easyrpg-faceset-people2", "easyrpg"),
-  sheet("assets/generated/starter/hero-01-face.png", "generated-actor-hero-01-face", "generated"),
-  sheet("assets/generated/starter/hero-02-face.png", "generated-actor-hero-02-face", "generated"),
   ...SHARED_SETS.map(set => sheet(`assets/shared/faceset/${set.stem}.png`, `shared-${set.stem}`, "shared")),
   // 2026-09-28: 원본 얼굴 시트에 없는 걷기 그림(People2·4·5·Actor3·Monster3·Scarloxy)의 짝 얼굴. AI 생성 → 48px 4x4 시트.
   // 저작 목록에 올린다(생성 시리즈 hero-XX 와 달리 "missing" 은 공용 대응표의 정식 짝이다). 원본은 assets/generated/faceset/source/.

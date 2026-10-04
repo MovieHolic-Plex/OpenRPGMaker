@@ -1,0 +1,37 @@
+{
+ "id": "potted cactus",
+ "slug": "potted_cactus",
+ "name_ko": "화분 선인장",
+ "category": "장식",
+ "kind": "floor",
+ "kind_ko": "바닥 기물(막힘)",
+ "canvas": [
+  16,
+  16
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 16,
+  "h": 16
+ },
+ "footprint": {
+  "w": 1,
+  "h": 1
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "뾰족한 초록 선인장 화분(예제에는 없음). 사막 마을 집·잡화점 창가 구석에 1개.",
+ "where": "사막 마을 집·잡화점 창가 구석에 1개.",
+ "placement": [
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": [
+  3,
+  0,
+  12,
+  14
+ ],
+ "v5_colors": 8,
+ "material": "ceramic",
+ "related": []
+}

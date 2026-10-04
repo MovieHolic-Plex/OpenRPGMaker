@@ -1,8 +1,8 @@
-import { battlerIdleAnimation, battlerIdleAnimationDurationMs, battlerIdleAnimationUrl } from "@/assets/battlerIdleAnimations";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { switchDatabaseActiveTab } from "@/editor/panels/database";
 import { currentEnemy, enemyGraphicVisual } from "@/editor/panels/databaseEnemyRecordSupport";
-import { recordDetailSection, recordPreviewPaused, setRecordDetailSection, setRecordPreviewPaused, setSelectedRecordId } from "@/editor/panels/databaseRecordViewSession";
+import { renderEnemyPixelPreview, type EnemyPixelPreview } from "@/editor/panels/databaseEnemyPixelPreview";
+import { recordDetailSection, setRecordDetailSection, setSelectedRecordId } from "@/editor/panels/databaseRecordViewSession";
 import { store } from "@/project/store";
 import type { EnemyRecord } from "@/project/types";
 import { el } from "@/util/dom";
@@ -12,6 +12,8 @@ export type EnemyInspectorSection = { id: string; label: string; cards: HTMLElem
 /** Local UI state only. Every field keeps its existing databaseActions mutation path. */
 export function renderEnemyStudio(record: EnemyRecord, sections: EnemyInspectorSection[], actions: HTMLElement): HTMLElement {
   const stage = enemyStage(record);
+  const pixel = enemyPixelSlot(record);
+  stage.refresh(!pixel.element.hidden);
   const tabs = el("div", { class: "db-enemy-inspector-tabs db-ws-section-tabs", attrs: { role: "tablist", "aria-label": "몬스터 속성" } });
   const panels = el("div", { class: "db-enemy-inspector-body" });
   const buttons: HTMLButtonElement[] = [];
@@ -91,13 +93,14 @@ export function renderEnemyStudio(record: EnemyRecord, sections: EnemyInspectorS
   };
   refreshReferences();
   const refresh = (): void => {
-    stage.refresh();
+    pixel.refresh();
+    stage.refresh(!pixel.element.hidden);
     refreshReferences();
   };
   const root = el("div", {
     class: "db-enemy-studio",
     children: [
-      el("div", { class: "db-enemy-stage-column", children: [stage.element, actions, references] }),
+      el("div", { class: "db-enemy-stage-column", children: [pixel.element, stage.element, actions, references] }),
       el("aside", {
         class: "db-enemy-inspector",
         attrs: { "aria-label": "몬스터 속성 편집" },
@@ -111,25 +114,35 @@ export function renderEnemyStudio(record: EnemyRecord, sections: EnemyInspectorS
   return root;
 }
 
-function enemyStage(record: EnemyRecord): { element: HTMLElement; refresh: () => void } {
+/**
+ * retro2003 손도트 시트가 있는 몬스터의 도트 미리보기 카드 자리. 시트가 없으면 빈 자리(hidden)다.
+ * 리소스·이름이 바뀔 때만 카드를 새로 그리고 옛 카드의 루프를 멈춘다.
+ */
+function enemyPixelSlot(record: EnemyRecord): { element: HTMLElement; refresh: () => void } {
+  const slot = el("div", { class: "db-enemy-pixel-slot", dataset: { testid: "db-enemy-pixel-slot" } });
+  let preview: EnemyPixelPreview | null = null;
+  let key = "";
+  const refresh = (): void => {
+    const live = currentEnemy(record);
+    const next = JSON.stringify([live.monsterResourceId, live.name]);
+    if (next === key) return;
+    key = next;
+    preview?.stop();
+    preview = renderEnemyPixelPreview(live);
+    slot.replaceChildren(...(preview ? [preview.element] : []));
+    slot.hidden = !preview;
+  };
+  refresh();
+  return { element: slot, refresh };
+}
+
+/**
+ * 정지 그림 미리보기. 도트 시트가 있는 몬스터는 아래 도트 미리보기 카드가 실제 전투 모습을 보여 주므로
+ * 정지 그림은 숨기고 「시험 전투」 줄만 남긴다(2026-10-02 — 같은 몬스터가 두 번, 그중 하나는 게임과 다른 모습으로 떠 있었다).
+ * 업로드 그림처럼 시트가 없는 몬스터만 정지 그림을 본다. 몬스터 대기 애니메이션 스트립은 #1872 에서 지워져 재생 단추도 뺐다.
+ */
+function enemyStage(record: EnemyRecord): { element: HTMLElement; refresh: (hasPixelSheet: boolean) => void } {
   const media = el("div", { class: "db-enemy-stage-media" });
-  const status = el("span", { class: "db-enemy-stage-status" });
-  let paused = recordPreviewPaused(record.id)
-    ?? (typeof window !== "undefined" && Boolean(window.matchMedia?.("(prefers-reduced-motion: reduce)").matches));
-  media.classList.toggle("is-paused", paused);
-  const pause = el("button", {
-    class: "db-enemy-stage-control",
-    text: "일시 정지",
-    attrs: { type: "button", "aria-pressed": String(paused) },
-    dataset: { testid: "db-enemy-preview-pause" },
-  });
-  pause.addEventListener("click", () => {
-    paused = !paused;
-    setRecordPreviewPaused(record.id, paused);
-    media.classList.toggle("is-paused", paused);
-    pause.textContent = paused ? "재생" : "일시 정지";
-    pause.setAttribute("aria-pressed", String(paused));
-  });
   const test = el("button", {
     class: "db-ws-btn db-ws-btn-primary",
     text: "시험 전투",
@@ -151,47 +164,24 @@ function enemyStage(record: EnemyRecord): { element: HTMLElement; refresh: () =>
     background.addEventListener("error", () => background.remove(), { once: true });
     viewport.prepend(background);
   }
+  const heading = el("div", { class: "db-enemy-stage-heading", children: [el("span", { text: "미리보기" }), el("span", { class: "db-enemy-stage-status", text: "정지 그림 · 도트 시트 없음" })] });
   let graphicKey = "";
-  const refresh = (): void => {
-    // 능력치 숫자는 여기서 다시 보여 주지 않는다 — 편집 가능한 「능력치」 카드와 같은 네 값이
-    // 두 번 떠 있었다(2026-09-23 UX 정리). 미리보기는 그림과 시험 전투만 갖는다.
+  const refresh = (hasPixelSheet: boolean): void => {
+    // [hidden] 은 스튜디오 CSS 의 display 규칙에 진다 — 인라인 display 로 접는다.
+    heading.style.display = hasPixelSheet ? "none" : "";
+    viewport.style.display = hasPixelSheet ? "none" : "";
+    if (hasPixelSheet) return;
     const live = currentEnemy(record);
-    const nextKey = JSON.stringify([live.monsterResourceId, live.graphicHue, live.transparent, live.flying, live.name]);
+    const nextKey = JSON.stringify([live.monsterResourceId, live.name]);
     if (graphicKey === nextKey) return;
     graphicKey = nextKey;
-    const still = enemyGraphicVisual(live);
-    media.replaceChildren(still);
-    const animation = battlerIdleAnimation(live.monsterResourceId);
-    pause.disabled = true;
-    status.textContent = "정적 미리보기";
-    pause.textContent = paused ? "재생" : "일시 정지";
-    if (!animation || animation.tier !== "image-strip") return;
-    const strip = el("img", { class: "db-enemy-idle-strip", attrs: { src: battlerIdleAnimationUrl(animation), alt: `${live.name} 대기 애니메이션` } });
-    const frame = el("div", { class: "db-enemy-idle-frame", children: [strip] });
-    frame.style.aspectRatio = `${animation.cellWidth} / ${animation.cellHeight}`;
-    frame.style.setProperty("--enemy-idle-frames", String(animation.frameCount));
-    frame.style.setProperty("--enemy-idle-duration", `${battlerIdleAnimationDurationMs(animation)}ms`);
-    frame.style.filter = `hue-rotate(${live.graphicHue}deg)`;
-    frame.style.opacity = live.transparent ? "0.58" : "1";
-    frame.classList.toggle("flying", live.flying);
-    strip.addEventListener("load", () => {
-      if (graphicKey !== nextKey) return;
-      media.replaceChildren(frame);
-      pause.disabled = false;
-      status.textContent = "대기 애니메이션";
-    }, { once: true });
-    // Keep the resolved static image when the optional animation cannot load.
+    media.replaceChildren(enemyGraphicVisual(live));
   };
-  refresh();
   return {
     element: el("section", {
       class: "db-enemy-stage",
       attrs: { "aria-label": "몬스터 미리보기" },
-      children: [
-        el("div", { class: "db-enemy-stage-heading", children: [el("span", { text: "미리보기" }), status] }),
-        viewport,
-        el("div", { class: "db-enemy-stage-toolbar", children: [pause, test] }),
-      ],
+      children: [heading, viewport, el("div", { class: "db-enemy-stage-toolbar", children: [test] })],
     }),
     refresh,
   };

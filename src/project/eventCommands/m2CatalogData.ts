@@ -146,6 +146,9 @@ export const MODERN_COMMAND_ROWS: readonly M2PdfCommandRow[] = [
   { index: 221, title: "Quick Time Event", pdfTitle: "[Quick Time Event]", pdfFile: "internal_modern_commands", sourcePages: "modern" },
   { index: 222, title: "High Score", pdfTitle: "[High Score]", pdfFile: "internal_modern_commands", sourcePages: "modern" },
   { index: 223, title: "Teleport Menu", pdfTitle: "[Teleport Menu]", pdfFile: "internal_modern_commands", sourcePages: "modern" },
+  // 필드 연출(2026-10-02) — 한 자리·한 인물에 터지는 파티클, 캐릭터 모습 효과(색·뒤집기·기울기·포즈·잔상).
+  { index: 224, title: "Particle Effect", pdfTitle: "[Particle Effect]", pdfFile: "internal_modern_commands", sourcePages: "modern" },
+  { index: 225, title: "Sprite Look", pdfTitle: "[Sprite Look]", pdfFile: "internal_modern_commands", sourcePages: "modern" },
 ];
 
 export const KOREAN_LABEL_BY_TITLE: Readonly<Record<string, string>> = {
@@ -259,6 +262,8 @@ export const KOREAN_LABEL_BY_TITLE: Readonly<Record<string, string>> = {
   "Shake Screen": "화면 흔들기",
   "Shop Processing": "상점",
   "Screen Effect": "화면 효과",
+  "Particle Effect": "파티클 효과",
+  "Sprite Look": "모습 효과",
   "Show Animation": "애니메이션 표시",
   "Show Choices": "선택지 표시",
   "Show Picture": "그림 표시",

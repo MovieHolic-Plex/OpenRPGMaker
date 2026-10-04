@@ -1,0 +1,42 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/temple/w5-B.pxg",
+ "set": "worldmap",
+ "id": "temple",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.163
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.082
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 7,
+ "bbox": [
+  0,
+  5,
+  31,
+  31
+ ],
+ "note": "빛·부피 — 기둥 왼쪽 밝고 오른쪽 어둡게 원통으로, 박공 금 선, 기단 3단, 발치 반투명 그림자",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 4,
+   "atLeast95": 0,
+   "max": 0.102
+  },
+  "refmapWorld": {
+   "cells": 4,
+   "atLeast95": 0,
+   "max": 0.109
+  }
+ }
+}

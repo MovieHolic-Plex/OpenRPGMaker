@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { runTool } from "@/editor/tools/toolRunner";
-import { createBlankProject, DEFAULT_TILESET_ID } from "@/project/defaults";
+import { createBlankProject, COMBINED_TOWN_TILESET_ID } from "@/project/defaults";
 
 type FindSimilarTilesData = {
   readonly tileId: number;
@@ -21,7 +21,7 @@ function findSimilarTilesData(value: unknown): FindSimilarTilesData {
 
 function projectWithTileSemantics(): ReturnType<typeof createBlankProject> {
   const project = createBlankProject();
-  const tileset = project.tilesets[DEFAULT_TILESET_ID];
+  const tileset = project.tilesets[COMBINED_TOWN_TILESET_ID];
   if (!tileset) throw new Error("default tileset missing");
   tileset.count = 40;
   tileset.tilesPerRow = 10;
@@ -41,11 +41,11 @@ describe("find_similar_tiles", () => {
   it("ranks nearby role and terrain matches first", () => {
     const project = projectWithTileSemantics();
 
-    const result = runTool({ project }, "find_similar_tiles", { limit: 4, tileId: 22, tilesetId: DEFAULT_TILESET_ID });
+    const result = runTool({ project }, "find_similar_tiles", { limit: 4, tileId: 22, tilesetId: COMBINED_TOWN_TILESET_ID });
 
     expect(result.ok, result.summary).toBe(true);
     const data = findSimilarTilesData(result.data);
-    expect(data).toMatchObject({ tileId: 22, tilesetId: DEFAULT_TILESET_ID });
+    expect(data).toMatchObject({ tileId: 22, tilesetId: COMBINED_TOWN_TILESET_ID });
     expect(data.tiles).toHaveLength(4);
     expect(data.tiles).not.toContain(22);
     expect(data.tiles.slice(0, 3)).toEqual([21, 23, 32]);
@@ -54,7 +54,7 @@ describe("find_similar_tiles", () => {
   it("honors limit and excludes the source tile", () => {
     const project = projectWithTileSemantics();
 
-    const result = runTool({ project }, "find_similar_tiles", { limit: 2, tileId: 22, tilesetId: DEFAULT_TILESET_ID });
+    const result = runTool({ project }, "find_similar_tiles", { limit: 2, tileId: 22, tilesetId: COMBINED_TOWN_TILESET_ID });
 
     expect(result.ok, result.summary).toBe(true);
     const data = findSimilarTilesData(result.data);

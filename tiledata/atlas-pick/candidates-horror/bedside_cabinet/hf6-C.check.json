@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/bedside_cabinet/hf6-C.pxg",
+ "set": "horror",
+ "id": "bedside_cabinet",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.034
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 10,
+ "bbox": [
+  2,
+  2,
+  13,
+  15
+ ],
+ "note": "재료 결: 서랍이 조금 열려 속 어둠 한 줄, 벗겨진 흰 칠 아래 드러난 쇠와 녹 점, 앞 턱 밑 녹물 줄",
+ "ok": true
+}

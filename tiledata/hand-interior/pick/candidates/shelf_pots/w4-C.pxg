@@ -1,0 +1,43 @@
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat a brass 4
+@mat b glass 4
+@mat c green 4
+@mat d red 4
+@mat e wood 4
+@mat f clay 4
+@mblock 0 0
+.......a........
+...aa..bb..aa...
+...cc..bb..dd...
+...cc..bb..dd...
+..eeeeeeeeeeee..
+..eeeeeeeeeeee..
+................
+........aa......
+.fffff..bb..fff.
+.fffff..bb..fff.
+.fffff.bbbb.fff.
+.fffff.bbbb.fff.
+eeeeeeeeeeeeeeee
+eeeeeeeeeeeeeeee
+eeeeeeeeeeeeeeee
+...ee.......ee..
+@tblock 0 0
+.......3........
+...44..53..44...
+...43..33..43...
+...32..31..31...
+..777777777772..
+..333333333332..
+................
+........33......
+.55553..43..553.
+.44442..33..442.
+.45442.4331.452.
+.23331.1221.231.
+7777777777777772
+6666656665666662
+2333333333333332
+...32.......32..

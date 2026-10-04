@@ -1,0 +1,45 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/coast_snow/w1-B.pxg",
+ "set": "worldmap",
+ "id": "coast_snow",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.035
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.005
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation"
+  ]
+ },
+ "colors": 10,
+ "bbox": [
+  0,
+  0,
+  47,
+  63
+ ],
+ "note": "명암 강화: 얼음 윗면 최밝음·앞면 두 단, 북·서 얼음 아래 물에 깊은 그늘 두 줄, 남·동은 밝은 얼음+밝은 물",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.105
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.023
+  },
+  "seam": 1.5
+ }
+}

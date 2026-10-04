@@ -26,8 +26,9 @@ describe("insertGeneratedPictureAsset", () => {
     expect(project.resourceProfiles.some((profile) => profile.assetId === faceId && profile.kind === "faceset")).toBe(true);
     const titleId = insertGeneratedPictureAsset(project, { name: "타이틀", dataUrl: PNG, kind: "title" });
     expect(project.assets.uploaded[titleId]?.kind).toBe("title");
-    const monsterId = insertGeneratedPictureAsset(project, { name: "슬라임", dataUrl: PNG, kind: "monster" });
-    expect(project.assets.uploaded[monsterId]?.kind).toBe("monster");
+    const backdropId = insertGeneratedPictureAsset(project, { name: "화산 동굴", dataUrl: PNG, kind: "backdrop" });
+    expect(project.assets.uploaded[backdropId]?.kind).toBe("backdrop");
+    expect(backdropId).toContain("backdrop_img");
   });
 
   it("faceset 생성 id 는 통짜 초상 판정을 받는다", () => {

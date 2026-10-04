@@ -1,0 +1,241 @@
+{
+ "emptiness": {
+  "lawn": {
+   "share": 0.2786,
+   "screens": 35,
+   "over40": 6,
+   "worst": 0.65,
+   "overAt": [
+    [
+     40,
+     0,
+     0.453
+    ],
+    [
+     60,
+     0,
+     0.54
+    ],
+    [
+     0,
+     30,
+     0.497
+    ],
+    [
+     80,
+     30,
+     0.593
+    ],
+    [
+     80,
+     45,
+     0.43
+    ],
+    [
+     80,
+     90,
+     0.65
+    ]
+   ]
+  },
+  "open": {
+   "share": 0.3571,
+   "screens": 35,
+   "over40": 16,
+   "worst": 0.67,
+   "overAt": [
+    [
+     40,
+     0,
+     0.48
+    ],
+    [
+     60,
+     0,
+     0.587
+    ],
+    [
+     80,
+     0,
+     0.507
+    ],
+    [
+     40,
+     15,
+     0.523
+    ],
+    [
+     60,
+     15,
+     0.433
+    ],
+    [
+     80,
+     15,
+     0.517
+    ],
+    [
+     0,
+     30,
+     0.513
+    ],
+    [
+     20,
+     30,
+     0.437
+    ],
+    [
+     60,
+     30,
+     0.403
+    ],
+    [
+     80,
+     30,
+     0.593
+    ],
+    [
+     0,
+     45,
+     0.453
+    ],
+    [
+     80,
+     45,
+     0.43
+    ],
+    [
+     0,
+     75,
+     0.447
+    ],
+    [
+     20,
+     75,
+     0.463
+    ],
+    [
+     80,
+     75,
+     0.487
+    ],
+    [
+     80,
+     90,
+     0.67
+    ]
+   ]
+  }
+ },
+ "originality": {
+  "sameCells": 53,
+  "ofCells": 10000,
+  "sameShare": 0.0053,
+  "sameShareOfObjectCells": 0
+ },
+ "districts": [
+  {
+   "id": "bd-castle",
+   "stamped": 1,
+   "present": true,
+   "atOriginalOrigin": false,
+   "origins": [
+    [
+     2,
+     0
+    ]
+   ]
+  },
+  {
+   "id": "bd-estate",
+   "stamped": 1,
+   "present": true,
+   "atOriginalOrigin": false,
+   "origins": [
+    [
+     48,
+     4
+    ]
+   ]
+  },
+  {
+   "id": "bd-forum",
+   "stamped": 1,
+   "present": true,
+   "atOriginalOrigin": false,
+   "origins": [
+    [
+     44,
+     35
+    ]
+   ]
+  },
+  {
+   "id": "bd-cathedral",
+   "stamped": 1,
+   "present": true,
+   "atOriginalOrigin": false,
+   "origins": [
+    [
+     78,
+     4
+    ]
+   ]
+  },
+  {
+   "id": "bd-windmill",
+   "stamped": 1,
+   "present": true,
+   "atOriginalOrigin": false,
+   "origins": [
+    [
+     86,
+     61
+    ]
+   ]
+  },
+  {
+   "id": "bd-harbour",
+   "stamped": 0,
+   "present": false,
+   "atOriginalOrigin": false,
+   "origins": []
+  },
+  {
+   "id": "bd-harbour-west",
+   "stamped": 0,
+   "present": false,
+   "atOriginalOrigin": false,
+   "origins": []
+  },
+  {
+   "id": "bd-river-bridge",
+   "stamped": 0,
+   "present": false,
+   "atOriginalOrigin": false,
+   "origins": []
+  }
+ ],
+ "districtsPresent": 5,
+ "districtsAtOriginalOrigin": 0,
+ "stampedKits": 165,
+ "doors": 52,
+ "landReach": {
+  "total": 52,
+  "reached": 52,
+  "unreached": []
+ },
+ "streetReach": {
+  "total": 52,
+  "reached": 52,
+  "unreached": []
+ },
+ "defects": {
+  "deadEndPavedCells": [],
+  "deadEndStreets": [],
+  "roadIntoWater": [],
+  "blockedDoorFronts": [],
+  "sameKitRepeats": []
+ },
+ "designedObjectCells": 2243
+}

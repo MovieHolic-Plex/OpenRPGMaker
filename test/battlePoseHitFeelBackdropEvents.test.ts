@@ -127,11 +127,12 @@ describe("battle backdrop resolution", () => {
       troopId: troop.id,
       location: { mapId, x, y },
     });
-    expect(fromTerrain).toBe("easyrpg-backdrop-dawn1");
+    // EasyRPG 하늘 배경은 도트 풀밭 겹 배경 id 로 풀린다(2026-10-03).
+    expect(fromTerrain).toBe("battle-scenery-plains");
 
     troop.previewBackgroundResourceId = "generated-battle-reference-forest";
     expect(resolveBattleBackdrop({ project, troopId: troop.id, location: { mapId, x: project.startPos.x, y: project.startPos.y } })).toBe(
-      "generated-battle-reference-forest"
+      "battle-scenery-forest"
     );
 
     troop.previewBackgroundResourceId = undefined;
@@ -145,9 +146,12 @@ describe("battle backdrop resolution", () => {
     const troop = project.database.troops[0]!;
     delete troop.previewBackgroundResourceId;
     expect(resolveBattleBackdrop({ project, troopId: troop.id })).toBe("battle-skin-pokemon-backdrop");
+    // 옛 숲 그림·도트 겹 배경은 포켓몬에서 줄무늬 바닥 표지로, Scarloxy 그림은 그대로 둔다.
     troop.previewBackgroundResourceId = "generated-battle-reference-forest";
-    expect(resolveBattleBackdrop({ project, troopId: troop.id })).toBe("generated-battle-reference-forest");
-    project.system.battleUiStyle = "rm2000";
+    expect(resolveBattleBackdrop({ project, troopId: troop.id })).toBe("battle-skin-pokemon-backdrop");
+    troop.previewBackgroundResourceId = "scarloxy-backdrop-sand";
+    expect(resolveBattleBackdrop({ project, troopId: troop.id })).toBe("scarloxy-backdrop-sand");
+    project.system.battleUiStyle = "retro2003";
     delete troop.previewBackgroundResourceId;
     expect(resolveBattleBackdrop({ project, troopId: troop.id })).toBe(DEFAULT_BATTLE_FIELD_BACKGROUND_ID);
   });

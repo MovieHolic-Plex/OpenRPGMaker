@@ -1,0 +1,135 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/desert/wv6-B.pxg",
+ "set": "worldmap",
+ "id": "desert",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.024
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.246
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies"
+  ]
+ },
+ "colors": 7,
+ "bbox": [
+  1,
+  0,
+  47,
+  63
+ ],
+ "note": "깊이 강조 — 등성이 세 줄 2px 굵기, 그늘 진하게(wsand 1~2), 남·동 쪽 테 그늘",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.008
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.05
+  },
+  "shore": {
+   "profile": {
+    "n": [
+     3,
+     4,
+     4,
+     3,
+     3,
+     3,
+     3,
+     3,
+     3,
+     3,
+     3,
+     2,
+     2,
+     2,
+     3,
+     3
+    ],
+    "s": [
+     3,
+     3,
+     3,
+     3,
+     3,
+     2,
+     2,
+     3,
+     3,
+     4,
+     4,
+     4,
+     3,
+     3,
+     3,
+     3
+    ],
+    "w": [
+     3,
+     2,
+     2,
+     2,
+     3,
+     3,
+     3,
+     3,
+     3,
+     4,
+     4,
+     3,
+     3,
+     3,
+     3,
+     3
+    ],
+    "e": [
+     3,
+     3,
+     3,
+     3,
+     4,
+     4,
+     3,
+     3,
+     3,
+     3,
+     2,
+     2,
+     2,
+     3,
+     3,
+     3
+    ]
+   },
+   "strait": 9,
+   "steps": {
+    "n": 1,
+    "s": 1,
+    "w": 1,
+    "e": 1
+   },
+   "amp": {
+    "n": 2,
+    "s": 2,
+    "w": 2,
+    "e": 2
+   },
+   "joinWorst": 0
+  },
+  "seam": 1.02
+ }
+}

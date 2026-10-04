@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/mimic/h132-A.pxg",
+ "id": "mimic",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.065
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 22,
+ "v5_colors": 0,
+ "bbox": [
+  2,
+  1,
+  14,
+  14
+ ],
+ "v5_bbox": null,
+ "note": "열린 보물상자의 윤곽·뚜껑·앞판·쇠테를 유지하고 입구 윗면 둘레에 위아래 송곳니, 입속에서 앞판으로 굽어 늘어지는 혀 추가; 꼭대기 윗면 5행(y=4~8)",
+ "ok": true
+}

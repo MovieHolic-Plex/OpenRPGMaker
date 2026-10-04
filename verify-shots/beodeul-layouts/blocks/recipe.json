@@ -1,0 +1,1483 @@
+{
+ "id": "blocks",
+ "name": "블록 조립 도시",
+ "calls": [
+  {
+   "name": "create_map",
+   "args": {
+    "id": "blocks",
+    "name": "블록 조립 도시",
+    "width": 100,
+    "height": 100,
+    "tilesetId": "beodeul_city"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "blocks",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 100,
+     "h": 100
+    },
+    "material": "버들항 풀밭"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "blocks",
+    "rect": {
+     "x": 0,
+     "y": 0,
+     "w": 2,
+     "h": 85
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "blocks",
+    "rect": {
+     "x": 22,
+     "y": 0,
+     "w": 2,
+     "h": 85
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "blocks",
+    "rect": {
+     "x": 44,
+     "y": 0,
+     "w": 4,
+     "h": 85
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "blocks",
+    "rect": {
+     "x": 68,
+     "y": 0,
+     "w": 2,
+     "h": 85
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "blocks",
+    "rect": {
+     "x": 84,
+     "y": 0,
+     "w": 2,
+     "h": 85
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "blocks",
+    "rect": {
+     "x": 0,
+     "y": 17,
+     "w": 100,
+     "h": 2
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "blocks",
+    "rect": {
+     "x": 0,
+     "y": 32,
+     "w": 100,
+     "h": 4
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "blocks",
+    "rect": {
+     "x": 0,
+     "y": 49,
+     "w": 100,
+     "h": 2
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "blocks",
+    "rect": {
+     "x": 0,
+     "y": 59,
+     "w": 100,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "blocks",
+    "rect": {
+     "x": 0,
+     "y": 73,
+     "w": 100,
+     "h": 2
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "blocks",
+    "rect": {
+     "x": 0,
+     "y": 83,
+     "w": 100,
+     "h": 2
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "blocks",
+    "rect": {
+     "x": 22,
+     "y": 8,
+     "w": 78,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-harbour-lake",
+    "mapId": "blocks",
+    "x": 0,
+    "y": 85
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-block-church-20x17",
+    "mapId": "blocks",
+    "x": 2,
+    "y": 0
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-block-res-20x8",
+    "mapId": "blocks",
+    "x": 24,
+    "y": 0
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-block-shop-20x8-b",
+    "mapId": "blocks",
+    "x": 24,
+    "y": 9
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-block-res-20x8-c",
+    "mapId": "blocks",
+    "x": 48,
+    "y": 0
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-block-shop-20x8",
+    "mapId": "blocks",
+    "x": 48,
+    "y": 9
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-block-res-14x8",
+    "mapId": "blocks",
+    "x": 70,
+    "y": 0
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-block-market-14x8",
+    "mapId": "blocks",
+    "x": 70,
+    "y": 9
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-block-res-14x8-b",
+    "mapId": "blocks",
+    "x": 86,
+    "y": 0
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-block-shop-14x8",
+    "mapId": "blocks",
+    "x": 86,
+    "y": 9
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-block-res-20x13",
+    "mapId": "blocks",
+    "x": 2,
+    "y": 19
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-block-market-20x13",
+    "mapId": "blocks",
+    "x": 24,
+    "y": 19
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-block-shop-20x13",
+    "mapId": "blocks",
+    "x": 48,
+    "y": 19
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-block-res-14x13",
+    "mapId": "blocks",
+    "x": 70,
+    "y": 19
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-block-shop-14x13",
+    "mapId": "blocks",
+    "x": 86,
+    "y": 19
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-block-manor-20x13-b",
+    "mapId": "blocks",
+    "x": 2,
+    "y": 36
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-block-res-20x13-b",
+    "mapId": "blocks",
+    "x": 24,
+    "y": 36
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-block-shop-20x13-b",
+    "mapId": "blocks",
+    "x": 48,
+    "y": 36
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-block-market-14x13",
+    "mapId": "blocks",
+    "x": 70,
+    "y": 36
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-block-manor-14x13",
+    "mapId": "blocks",
+    "x": 86,
+    "y": 36
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-block-res-20x8-b",
+    "mapId": "blocks",
+    "x": 2,
+    "y": 51
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-block-shop-20x8",
+    "mapId": "blocks",
+    "x": 24,
+    "y": 51
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-block-res-20x8",
+    "mapId": "blocks",
+    "x": 48,
+    "y": 51
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-block-shop-14x8-b",
+    "mapId": "blocks",
+    "x": 70,
+    "y": 51
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-block-res-14x8-c",
+    "mapId": "blocks",
+    "x": 86,
+    "y": 51
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-block-out-20x13",
+    "mapId": "blocks",
+    "x": 2,
+    "y": 60
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-block-manor-20x13-c",
+    "mapId": "blocks",
+    "x": 24,
+    "y": 60
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-block-res-20x13",
+    "mapId": "blocks",
+    "x": 48,
+    "y": 60
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-block-res-14x13-b",
+    "mapId": "blocks",
+    "x": 70,
+    "y": 60
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-block-out-20x8",
+    "mapId": "blocks",
+    "x": 2,
+    "y": 75
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-block-port-20x8-b",
+    "mapId": "blocks",
+    "x": 24,
+    "y": 75
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-block-port-20x8",
+    "mapId": "blocks",
+    "x": 48,
+    "y": 75
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-block-market-14x8-b",
+    "mapId": "blocks",
+    "x": 70,
+    "y": 75
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-block-out-14x8",
+    "mapId": "blocks",
+    "x": 86,
+    "y": 75
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "blocks",
+    "rect": {
+     "x": 1,
+     "y": 25,
+     "w": 1,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "blocks",
+    "rect": {
+     "x": 22,
+     "y": 25,
+     "w": 1,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "blocks",
+    "rect": {
+     "x": 47,
+     "y": 25,
+     "w": 1,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "blocks",
+    "rect": {
+     "x": 68,
+     "y": 25,
+     "w": 1,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "blocks",
+    "rect": {
+     "x": 69,
+     "y": 25,
+     "w": 1,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "blocks",
+    "rect": {
+     "x": 84,
+     "y": 25,
+     "w": 1,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "blocks",
+    "rect": {
+     "x": 85,
+     "y": 25,
+     "w": 1,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "blocks",
+    "rect": {
+     "x": 23,
+     "y": 42,
+     "w": 1,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "blocks",
+    "rect": {
+     "x": 44,
+     "y": 42,
+     "w": 1,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "blocks",
+    "rect": {
+     "x": 47,
+     "y": 42,
+     "w": 1,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "blocks",
+    "rect": {
+     "x": 68,
+     "y": 42,
+     "w": 1,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "blocks",
+    "rect": {
+     "x": 1,
+     "y": 66,
+     "w": 1,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "blocks",
+    "rect": {
+     "x": 22,
+     "y": 66,
+     "w": 1,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "blocks",
+    "rect": {
+     "x": 47,
+     "y": 66,
+     "w": 1,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "blocks",
+    "rect": {
+     "x": 68,
+     "y": 66,
+     "w": 1,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "blocks",
+    "rect": {
+     "x": 69,
+     "y": 66,
+     "w": 1,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "blocks",
+    "rect": {
+     "x": 84,
+     "y": 66,
+     "w": 1,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "blocks",
+    "rect": {
+     "x": 86,
+     "y": 60,
+     "w": 3,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "blocks",
+    "rect": {
+     "x": 87,
+     "y": 61,
+     "w": 3,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "blocks",
+    "rect": {
+     "x": 88,
+     "y": 62,
+     "w": 3,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "blocks",
+    "rect": {
+     "x": 89,
+     "y": 63,
+     "w": 3,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "blocks",
+    "rect": {
+     "x": 90,
+     "y": 64,
+     "w": 3,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "blocks",
+    "rect": {
+     "x": 91,
+     "y": 65,
+     "w": 3,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "blocks",
+    "rect": {
+     "x": 92,
+     "y": 66,
+     "w": 3,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "blocks",
+    "rect": {
+     "x": 92,
+     "y": 67,
+     "w": 3,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "blocks",
+    "rect": {
+     "x": 93,
+     "y": 68,
+     "w": 3,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "blocks",
+    "rect": {
+     "x": 94,
+     "y": 69,
+     "w": 3,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "blocks",
+    "rect": {
+     "x": 95,
+     "y": 70,
+     "w": 3,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "blocks",
+    "rect": {
+     "x": 96,
+     "y": 71,
+     "w": 3,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "blocks",
+    "rect": {
+     "x": 97,
+     "y": 72,
+     "w": 3,
+     "h": 1
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-cc0fcb",
+    "mapId": "blocks",
+    "x": 86,
+    "y": 71
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-a80c85",
+    "mapId": "blocks",
+    "x": 94,
+    "y": 63
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-03a8f7",
+    "mapId": "blocks",
+    "x": 87,
+    "y": 67
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-47e17a",
+    "mapId": "blocks",
+    "x": 90,
+    "y": 67
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-e9d9b3",
+    "mapId": "blocks",
+    "x": 91,
+    "y": 60
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-47e17a",
+    "mapId": "blocks",
+    "x": 95,
+    "y": 61
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-e9d9b3",
+    "mapId": "blocks",
+    "x": 87,
+    "y": 63
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-cc0fcb",
+    "mapId": "blocks",
+    "x": 97,
+    "y": 62
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-47e17a",
+    "mapId": "blocks",
+    "x": 92,
+    "y": 69
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-03a8f7",
+    "mapId": "blocks",
+    "x": 89,
+    "y": 70
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-e9d9b3",
+    "mapId": "blocks",
+    "x": 94,
+    "y": 71
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-47e17a",
+    "mapId": "blocks",
+    "x": 97,
+    "y": 64
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-prop-bench_wood",
+    "mapId": "blocks",
+    "x": 97,
+    "y": 69
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-prop-bench_wood",
+    "mapId": "blocks",
+    "x": 92,
+    "y": 71
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-eef4bc",
+    "mapId": "blocks",
+    "x": 94,
+    "y": 60
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-prop-planter_round",
+    "mapId": "blocks",
+    "x": 97,
+    "y": 60
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-prop-planter_round",
+    "mapId": "blocks",
+    "x": 95,
+    "y": 67
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-prop-planter_round",
+    "mapId": "blocks",
+    "x": 87,
+    "y": 70
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-prop-planter_round",
+    "mapId": "blocks",
+    "x": 99,
+    "y": 69
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-eef4bc",
+    "mapId": "blocks",
+    "x": 98,
+    "y": 66
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-prop-flowerbed",
+    "mapId": "blocks",
+    "x": 87,
+    "y": 66
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-prop-planter_round",
+    "mapId": "blocks",
+    "x": 92,
+    "y": 63
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-prop-flowerbed",
+    "mapId": "blocks",
+    "x": 92,
+    "y": 62
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-prop-planter_round",
+    "mapId": "blocks",
+    "x": 98,
+    "y": 61
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-eef4bc",
+    "mapId": "blocks",
+    "x": 86,
+    "y": 65
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-prop-planter_round",
+    "mapId": "blocks",
+    "x": 99,
+    "y": 68
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-block-port-14x8",
+    "mapId": "blocks",
+    "x": 86,
+    "y": 85
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "blocks",
+    "rect": {
+     "x": 83,
+     "y": 85,
+     "w": 3,
+     "h": 10
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "fill_region",
+   "args": {
+    "mapId": "blocks",
+    "rect": {
+     "x": 86,
+     "y": 93,
+     "w": 14,
+     "h": 2
+    },
+    "material": "버들항 길 포석"
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-28ad5e",
+    "mapId": "blocks",
+    "x": 84,
+    "y": 97
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-eef4bc",
+    "mapId": "blocks",
+    "x": 85,
+    "y": 95
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-28ad5e",
+    "mapId": "blocks",
+    "x": 83,
+    "y": 96
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-a80c85",
+    "mapId": "blocks",
+    "x": 86,
+    "y": 96
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-cc0fcb",
+    "mapId": "blocks",
+    "x": 94,
+    "y": 98
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-03a8f7",
+    "mapId": "blocks",
+    "x": 93,
+    "y": 95
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-03a8f7",
+    "mapId": "blocks",
+    "x": 90,
+    "y": 96
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-03a8f7",
+    "mapId": "blocks",
+    "x": 96,
+    "y": 96
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-prop-planter_round",
+    "mapId": "blocks",
+    "x": 99,
+    "y": 97
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-prop-flowerbed",
+    "mapId": "blocks",
+    "x": 96,
+    "y": 99
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-prop-planter_round",
+    "mapId": "blocks",
+    "x": 99,
+    "y": 95
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-prop-flowerbed",
+    "mapId": "blocks",
+    "x": 96,
+    "y": 95
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-prop-flowerbed",
+    "mapId": "blocks",
+    "x": 91,
+    "y": 99
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-prop-planter_round",
+    "mapId": "blocks",
+    "x": 91,
+    "y": 95
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-prop-flowerbed",
+    "mapId": "blocks",
+    "x": 86,
+    "y": 95
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-prop-flowerbed",
+    "mapId": "blocks",
+    "x": 86,
+    "y": 99
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-prop-planter_round",
+    "mapId": "blocks",
+    "x": 88,
+    "y": 95
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-prop-lamp_crook",
+    "mapId": "blocks",
+    "x": 4,
+    "y": 33
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-eef4bc",
+    "mapId": "blocks",
+    "x": 9,
+    "y": 33
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-prop-lamp_crook",
+    "mapId": "blocks",
+    "x": 14,
+    "y": 33
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-eef4bc",
+    "mapId": "blocks",
+    "x": 19,
+    "y": 33
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-prop-lamp_crook",
+    "mapId": "blocks",
+    "x": 29,
+    "y": 33
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-eef4bc",
+    "mapId": "blocks",
+    "x": 34,
+    "y": 33
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-prop-lamp_crook",
+    "mapId": "blocks",
+    "x": 39,
+    "y": 33
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-eef4bc",
+    "mapId": "blocks",
+    "x": 49,
+    "y": 33
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-prop-lamp_crook",
+    "mapId": "blocks",
+    "x": 54,
+    "y": 33
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-eef4bc",
+    "mapId": "blocks",
+    "x": 59,
+    "y": 33
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-prop-lamp_crook",
+    "mapId": "blocks",
+    "x": 64,
+    "y": 33
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-eef4bc",
+    "mapId": "blocks",
+    "x": 74,
+    "y": 33
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-prop-lamp_crook",
+    "mapId": "blocks",
+    "x": 79,
+    "y": 33
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-eef4bc",
+    "mapId": "blocks",
+    "x": 89,
+    "y": 33
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-prop-lamp_crook",
+    "mapId": "blocks",
+    "x": 94,
+    "y": 33
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-prop-lamp_crook",
+    "mapId": "blocks",
+    "x": 47,
+    "y": 10
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-28ad5e",
+    "mapId": "blocks",
+    "x": 47,
+    "y": 38
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-prop-lamp_crook",
+    "mapId": "blocks",
+    "x": 47,
+    "y": 54
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-tree-28ad5e",
+    "mapId": "blocks",
+    "x": 47,
+    "y": 62
+   }
+  },
+  {
+   "name": "stamp_object",
+   "args": {
+    "objectId": "kit:beodeul_city/bd-prop-lamp_crook",
+    "mapId": "blocks",
+    "x": 47,
+    "y": 78
+   }
+  }
+ ]
+}

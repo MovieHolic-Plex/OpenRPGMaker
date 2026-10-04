@@ -1,0 +1,35 @@
+{
+ "id": "photo frames",
+ "slug": "photo_frames",
+ "name_ko": "액자 탁자",
+ "category": "추억",
+ "kind": "floor",
+ "kind_ko": "바닥 기물(막힘)",
+ "canvas": [
+  16,
+  32
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 16,
+  "h": 32
+ },
+ "footprint": {
+  "w": 1,
+  "h": 1
+ },
+ "overhang_px": 16,
+ "surface": null,
+ "description": "작은 협탁(16px 솟음) 위 사진·초상 액자 셋 — 협탁 윗면 5행에 액자가 기대 선다.",
+ "where": "",
+ "placement": [
+  "그림이 발밑 칸 위로 16px 솟는다 → 위 1칸은 플레이어 위에 그리는 겹침층",
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": null,
+ "v5_colors": 0,
+ "material": "wood",
+ "related": [],
+ "new": true,
+ "contextRoom": "manor"
+}

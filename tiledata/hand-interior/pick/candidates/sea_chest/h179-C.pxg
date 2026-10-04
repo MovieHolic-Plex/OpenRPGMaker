@@ -1,0 +1,30 @@
+// C: 큰 파란 뚜껑과 단순한 앞면, 쇠 잠금장식·밧줄 손잡이; 꼭대기 윗면 5행(y=4~8)
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat O blue 1
+@mat T blue 4
+@mat t blue 3
+@mat B blue 2
+@mat I iron 2
+@mat M iron 4
+@mat H iron 5
+@mat R pine 4
+@mat r pine 2
+@mblock 0 0
+................
+................
+................
+...OOOOOOOOOO...
+..OTTTTTTTTTTO..
+..OTTTTTTTTTTO..
+..OTTTTTTTTTTO..
+..OTTTTTttTTTO..
+..OttttttttttO..
+..IOOOOMMOOOOI..
+.RIBBBBHHBBBBIR.
+RrIBBBBMMBBBBIrR
+R.IBBBBIIBBBBI.R
+.rIBBBBBBBBBBIr.
+..IBBBBBBBBBBI..
+..IOOOOOOOOOOI..

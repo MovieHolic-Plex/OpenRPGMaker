@@ -1,0 +1,82 @@
+// vending_ice r2-C
+@size 32 32
+@cell 16
+@palette palette.pal
+@layer main
+@mat a akachin 3
+@mat b hinoki 3
+@mat c kblue 3
+@mat d kgreen 3
+@mat e lacq 3
+@mat f mmetal 3
+@mat g mwhite 3
+@mat h neonc 3
+@mat i sakura 3
+@mat j taxi 3
+@mat k washi 3
+@mblock 0 0
+..gggggggggggggggggggggggggggg..
+.gggggggggggggggggggggggggggggf.
+.gggggggggggggggggggggggggggggf.
+.gggggggggggggggggggggggggggggf.
+.gccccccccccccccccccccccccccccf.
+.gccckkkkciicjjckkkkccccccccccf.
+.gccccccccccccccccccccccccccccf.
+.gccccccccccccccccccccccccccccf.
+...gggggggggggggggggggggg.ggg...
+..ggffffffffffffffgcccccgggggf..
+..ggfgccgcccgccgcfgchhhcgggggf..
+..ggfckkcciiccjjcfgceehcgggggf..
+..ggfckkcciiccjjcfgcccccgggggf..
+..ggfcbbccbbccbbcfgciijjgggggf..
+..ggffffffffffffffgciijjgggggf..
+..ggfcaaccddcccccfgcccccgggggf..
+..ggfcaaccddcccccfgcddccgggggf..
+..ggfcbbccbbccbbcfgcddccgggggf..
+..ggfccccccccccccfgcccccgggggf..
+..ggffffffffffffffgcffffgggggf..
+..ggffffffffffffffgcfeefgggggf..
+..ggfeeeeeeeeeeeefgcccccgggggf..
+..ggfeeeeeeeeeeeefgcffffgggggf..
+..ggfeeeeeeeeeeeefgcffffgggggf..
+..ggfeeeeeeeeeeeefgceeeegggggf..
+..ggfeeeeeeeeeeeefgceeeegggggf..
+..gggggggggggggggggggggggggggf..
+..gfffffffffffffffffffffffffff..
+..gfffffffffffffffffffffffffff..
+....~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+......--------------------------
+................................
+@tblock 0 0
+..0000000000000000000000000000..
+.055555555555555555555555555552.
+.055555555555555555555555555542.
+.055555555555555555555555555542.
+.055555555555555555555555522222.
+.044455554444444555544444422222.
+.033333333333333333333333322222.
+.022222222222222222222222211112.
+...1111111111111111111111.000...
+..0455555555555552312222232212..
+..0434554555455452314442232212..
+..0434544454445442311122232212..
+..0434334433443342312222232212..
+..0434424442444242315454232212..
+..0434444444444442313333232212..
+..0434544454445542312222232212..
+..0434334433444442315455232212..
+..0434424442444242313344232212..
+..0434444444444442312222232212..
+..0422222222222222316666232212..
+..0455555555555555313003232212..
+..0443333333333331312222232212..
+..0442222222222221315555232212..
+..0440000000000001315555232212..
+..0440000000000001312222232212..
+..0440000000000001310000232212..
+..0222222222222222222222211112..
+..0333333333333333333333322222..
+..0111111111111111111111100002..
+................................
+................................
+................................

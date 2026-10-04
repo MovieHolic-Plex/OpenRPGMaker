@@ -1,0 +1,45 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/ruins/w4-C.pxg",
+ "set": "worldmap",
+ "id": "ruins",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.017
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.044
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies",
+   "dither"
+  ]
+ },
+ "colors": 11,
+ "bbox": [
+  1,
+  0,
+  31,
+  15
+ ],
+ "note": "재해석: 큰 기둥 하나에 아치 윗돌이 허공으로 뻗다 끊기고, 맞은편은 밑동만, 굴러 온 기둥 토막 둘",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 2,
+   "atLeast95": 0,
+   "max": 0.07
+  },
+  "refmapWorld": {
+   "cells": 2,
+   "atLeast95": 0,
+   "max": 0.093
+  }
+ }
+}

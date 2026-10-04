@@ -1,0 +1,23 @@
+{
+ "id": "blackboard",
+ "slug": "blackboard",
+ "name": "녹색 칠판",
+ "scene": "교실",
+ "place": "in",
+ "cells": [
+  4,
+  2
+ ],
+ "canvas": [
+  64,
+  32
+ ],
+ "layer": "wall",
+ "layer_ko": "벽 걸이(위층, 투명 배경·벽면에 붙는다)",
+ "description": "벽에 붙는 녹색 칠판. 알루미늄 틀(윗줄·양옆 1~2px), 아래에 분필 받침 턱(분필 두세 토막·지우개 하나). 판 면에 분필로 쓴 흐린 줄 두세 개·숫자 「1 2 3」 정도 — 판 명도는 두 단 이내로 잔잔하게, 지운 자국 옅게.",
+ "palette_hint": "kokuban 판, mmetal/tray 틀, vwhite·washi·vyellow 분필",
+ "pair": [
+  "whiteboard"
+ ],
+ "worker": "s2"
+}

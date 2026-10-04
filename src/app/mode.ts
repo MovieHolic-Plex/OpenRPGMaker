@@ -98,6 +98,11 @@ export async function bootApp(root: HTMLElement): Promise<void> {
       // 선택 사각형·붙여넣기 고스트·클립보드는 탑바가 읽지 않는다. 우클릭 드래그가 pointermove 마다
       // 탑바를 통째로 다시 짓고 있었다(2026-09-28 트레이스: 드래그 10걸음에 스타일 무효화 7건).
       if (previous && editorStateChangedOnlyCanvasOverlay(previous, state)) return;
+      // 탑바가 editorState 에서 읽는 것은 레이어 단추의 켜짐뿐이고, 그것은 menu.ts 의 구독이 제자리에서
+      // 바꾼다. 맵 전환·레이어 전환마다 탑바 전체를 새로 지어 BODY 아래 스타일 무효화 ~100ms 를 내던 것을
+      // 걷는다(2026-09-30 트레이스). 탑바를 다시 그릴 다른 이유(모드·신원·워크스페이스·저장 상태)는 각자의
+      // 구독이 따로 맡는다. 편집 모드인데 레이어 단추가 아직 없을 때만 안전망으로 다시 짓는다.
+      if (getMode() !== "edit" || document.querySelector('[data-testid="left-layer-switcher"]')) return;
       if (topbarRefreshQueued) return;
       topbarRefreshQueued = true;
       queueMicrotask(() => {
@@ -308,6 +313,8 @@ async function finishEditorBoot(startedAt: number): Promise<void> {
     if (result.dismiss) setEditorWelcomeDismissed(true);
     if (result.systemPresetPlan) {
       clearWelcomeIntentBootFlags();
+      const { toast } = await import("@/util/toast");
+      toast("빈 맵과 장르 기본 설정을 저장했어요. 왼쪽 ‘그리기’에서 타일을 고르고, 위의 ‘테스트’로 확인하세요.", "ok");
     } else if (result.prompt) {
       // 장르 칩의 결정적 부분(system.* 토글)은 AI 보다 먼저 적용한다 — 모델이 토글 툴을 부르지
       // 않아도 장르 엔진은 켜져 있어야 한다(2026-08-30 실측: 포스터 클릭 경로에서

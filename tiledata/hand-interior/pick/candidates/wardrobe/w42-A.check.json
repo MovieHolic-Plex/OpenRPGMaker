@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/wardrobe/w42-A.pxg",
+ "id": "wardrobe",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.005
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 10,
+ "v5_colors": 10,
+ "bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "note": "옷장: w91-A(증명 interior-new-wardrobe 기준, t=6 f=26)를 그대로 채택",
+ "ok": true
+}

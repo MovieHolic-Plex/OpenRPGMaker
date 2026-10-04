@@ -78,6 +78,21 @@ function hasTag(tag) {
   return Boolean(git(["rev-parse", "-q", "--verify", `refs/tags/${tag}`], { allowFailure: true }));
 }
 
+function versionGreater(left, right) {
+  const a = left.split(".").map(Number);
+  const b = right.split(".").map(Number);
+  for (let i = 0; i < 3; i += 1) if ((a[i] ?? 0) !== (b[i] ?? 0)) return (a[i] ?? 0) > (b[i] ?? 0);
+  return false;
+}
+
+function nextReleaseVersion(packageVersion, tag, kind) {
+  const tagged = (tag ?? "").replace(/^v/, "");
+  const base = tagged && versionGreater(tagged, packageVersion) ? tagged : packageVersion;
+  let next = bumpVersion(base, kind);
+  while (hasTag(`v${next}`)) next = bumpVersion(next, "patch");
+  return next;
+}
+
 /**
  * ① 발행 — main 의 package.json 버전과 마지막 태그가 어긋나면 그 버전이 머지된 것이므로
  * 그 커밋에 주석 태그를 만들고 GitHub Release 를 낸다. 태그 본문은 CHANGELOG 의 그 절이다.
@@ -133,7 +148,9 @@ function propose(args) {
   const kind = args.kind ?? decideReleaseKind(commits);
   if (!kind) return { step: "propose", result: "낼 만한 변경 없음(문서·테스트·잡무만)" };
 
-  const next = bumpVersion(version, kind);
+  // 긴 브랜치 병합이 package.json 버전을 태그보다 뒤로 되돌리면(실측 #1818 → 0.53.0, 태그는 v0.54.0)
+  // 계산된 다음 태그가 이미 있다. 그때 멈추지 않고 태그 버전에서 이어서 올린다.
+  const next = nextReleaseVersion(version, tag, kind);
   const nextTag = `v${next}`;
   if (hasTag(nextTag)) return { step: "propose", result: `${nextTag} 이미 있음` };
 

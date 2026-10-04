@@ -1,0 +1,351 @@
+{
+  "projectId": "dcd14331-1032-4f2f-bd57-fa9a24e034ac",
+  "title": "멈춘 시계의 기억",
+  "canonicalContentMatched": true,
+  "automaticBuildCompleted": true,
+  "projectJsonSha256": "18ef176f29c538d20625240575ad3e7d4457a43fe5f071c80789a6682e6a7a33",
+  "projectJsonBytes": 86549895,
+  "openingSkipped": false,
+  "reducedMotion": false,
+  "normalKeyboardOnly": true,
+  "paths": {
+    "clock": {
+      "steps": [
+        {
+          "x": 13,
+          "y": 11,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 14,
+          "y": 11,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 14,
+          "y": 10,
+          "key": "ArrowUp"
+        },
+        {
+          "x": 14,
+          "y": 9,
+          "key": "ArrowUp"
+        },
+        {
+          "x": 14,
+          "y": 8,
+          "key": "ArrowUp"
+        },
+        {
+          "x": 14,
+          "y": 7,
+          "key": "ArrowUp"
+        },
+        {
+          "x": 13,
+          "y": 7,
+          "key": "ArrowLeft"
+        },
+        {
+          "x": 12,
+          "y": 7,
+          "key": "ArrowLeft"
+        }
+      ],
+      "position": {
+        "x": 12,
+        "y": 7
+      },
+      "face": "ArrowDown",
+      "trigger": "action",
+      "target": {
+        "id": "ev_segment_starter",
+        "x": 12,
+        "y": 8
+      }
+    },
+    "gate": {
+      "steps": [
+        {
+          "x": 13,
+          "y": 7,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 14,
+          "y": 7,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 15,
+          "y": 7,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 16,
+          "y": 7,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 16,
+          "y": 8,
+          "key": "ArrowDown"
+        },
+        {
+          "x": 17,
+          "y": 8,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 18,
+          "y": 8,
+          "key": "ArrowRight"
+        }
+      ],
+      "position": {
+        "x": 18,
+        "y": 8
+      },
+      "trigger": "playerTouch",
+      "target": {
+        "id": "ev_gate_2f516e85-d863-483d-a54e-6b5191af87d0",
+        "x": 18,
+        "y": 8
+      }
+    },
+    "ending": {
+      "steps": [
+        {
+          "x": 1,
+          "y": 7,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 2,
+          "y": 7,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 3,
+          "y": 7,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 4,
+          "y": 7,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 4,
+          "y": 8,
+          "key": "ArrowDown"
+        },
+        {
+          "x": 5,
+          "y": 8,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 6,
+          "y": 8,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 7,
+          "y": 8,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 8,
+          "y": 8,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 9,
+          "y": 8,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 10,
+          "y": 8,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 11,
+          "y": 8,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 12,
+          "y": 8,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 13,
+          "y": 8,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 14,
+          "y": 8,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 15,
+          "y": 8,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 16,
+          "y": 8,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 17,
+          "y": 8,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 18,
+          "y": 8,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 19,
+          "y": 8,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 20,
+          "y": 8,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 21,
+          "y": 8,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 22,
+          "y": 8,
+          "key": "ArrowRight"
+        },
+        {
+          "x": 22,
+          "y": 7,
+          "key": "ArrowUp"
+        }
+      ],
+      "position": {
+        "x": 22,
+        "y": 7
+      },
+      "face": "ArrowUp",
+      "trigger": "action",
+      "target": {
+        "id": "ev_segment_end",
+        "x": 22,
+        "y": 6
+      }
+    },
+    "arrival": {
+      "kind": "transfer",
+      "mapId": "map_segment_route",
+      "x": 0,
+      "y": 7,
+      "fade": "black"
+    }
+  },
+  "choices": [
+    "기억을 간직한다",
+    "기억을 놓아준다"
+  ],
+  "branches": [
+    {
+      "name": "keep",
+      "seconds": 69.003,
+      "passed": false,
+      "errors": [],
+      "beats": [
+        {
+          "id": "title",
+          "failures": []
+        },
+        {
+          "id": "in-map-introduction",
+          "failures": []
+        },
+        {
+          "id": "field",
+          "failures": []
+        },
+        {
+          "id": "clock",
+          "failures": []
+        },
+        {
+          "id": "response",
+          "failures": [
+            "visibleText: dialogue-box 기대 \"서린: \"아무리 아픈 시간이라도... 잊고 싶지 않아. 마주해야 해.\"\" 포함, 실제 \"▼기록\""
+          ]
+        },
+        {
+          "id": "route",
+          "failures": []
+        },
+        {
+          "id": "ending",
+          "failures": []
+        }
+      ],
+      "external": [],
+      "requestsFailed": []
+    },
+    {
+      "name": "release",
+      "seconds": 29.755,
+      "passed": true,
+      "errors": [],
+      "beats": [
+        {
+          "id": "title",
+          "failures": []
+        },
+        {
+          "id": "in-map-introduction",
+          "failures": []
+        },
+        {
+          "id": "field",
+          "failures": []
+        },
+        {
+          "id": "clock",
+          "failures": []
+        },
+        {
+          "id": "response",
+          "failures": []
+        },
+        {
+          "id": "route",
+          "failures": []
+        },
+        {
+          "id": "ending",
+          "failures": []
+        }
+      ],
+      "external": [],
+      "requestsFailed": []
+    }
+  ],
+  "stageBox": {
+    "x": 40,
+    "y": 0,
+    "width": 1200,
+    "height": 900
+  },
+  "videoPath": "/home/main/.codex/worktrees/0a57/rpg-zzu/verify-shots/first-scene-v3/video/page@852c839e929010c7a3fa0d0768ed365c.webm",
+  "passed": false
+}

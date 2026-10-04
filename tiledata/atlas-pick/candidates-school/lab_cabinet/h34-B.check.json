@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/lab_cabinet/h34-B.pxg",
+ "set": "school",
+ "id": "lab_cabinet",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.047
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.025
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 9,
+ "bbox": [
+  4,
+  0,
+  27,
+  31
+ ],
+ "note": "약품장 H 방법 — Tibo 3/4 생성 → C(school 팔레트 10색) → Sonnet 손질 — 실제 비율 표준 크기(§12)",
+ "ok": true
+}

@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/confessional/w90-A.pxg",
+ "id": "confessional",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 9,
+  "atLeast95": 0,
+  "max": 0.094
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "outline_black"
+  ],
+  "pass": false
+ },
+ "colors": 16,
+ "v5_colors": 15,
+ "bbox": [
+  0,
+  8,
+  45,
+  47
+ ],
+ "v5_bbox": [
+  0,
+  8,
+  47,
+  47
+ ],
+ "note": "고해소: 왼쪽 옆면을 없애 앞면 벽기둥으로 바꾸고, 지붕을 5행 윗면 판(금 십자 상감)과 처마 그림자로 다시 찍음",
+ "ok": true
+}

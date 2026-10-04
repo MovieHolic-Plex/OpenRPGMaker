@@ -7,7 +7,7 @@ import { describe, expect, it } from "vitest";
 import { runTool, type ToolContext } from "@/editor/tools";
 import { isPassable } from "@/project/collision";
 import { createBlankProject } from "@/project/defaults";
-import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { COMBINED_TOWN_HARNESS_PREFIX } from "@/project/tilesetHarness/combinedTownGroups";
 
 const MAP_ID = "map_blank_start";
@@ -26,7 +26,7 @@ function upperAt(ctx: ToolContext, x: number, y: number): number {
   return map.upperTiles[y * map.width + x];
 }
 function wallTile(ctx: ToolContext): number {
-  const group = ctx.project.tilesets[DEFAULT_TILESET_ID].tileGroups?.find((entry) => entry.id === WALL_GROUP_ID);
+  const group = ctx.project.tilesets[COMBINED_TOWN_TILESET_ID].tileGroups?.find((entry) => entry.id === WALL_GROUP_ID);
   if (!group) throw new Error("벽 그룹 없음");
   return group.tileIds[Math.floor(group.tileIds.length / 2)];
 }

@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/photo_frames/h204-B.pxg",
+ "id": "photo frames",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.011
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 21,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  4,
+  14,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "액자 셋 윗면에 위쪽 1행씩만 추가하고 기존 윗면·남쪽 테두리 명암 구분 유지; 꼭대기 윗면 3행(y=4~6 중앙, y=8~10 왼쪽, y=7~9 오른쪽), 초상·협탁 높이 16px(y=16~31)·상판 윗면 5행(y=16~20) 유지.",
+ "ok": true
+}

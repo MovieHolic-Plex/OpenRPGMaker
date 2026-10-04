@@ -1,0 +1,641 @@
+{
+ "summary": {
+  "label": "after",
+  "cards": 34,
+  "totalMs": 32660,
+  "meanMs": 961,
+  "medianMs": 941.3,
+  "maxMs": 1306,
+  "failed": 0,
+  "deserializeMs": 1372,
+  "refDocBytes": 25921485
+ },
+ "rows": [
+  {
+   "id": "authored-map_homes_inn_1_20260921",
+   "ms": 1046.6,
+   "ok": true,
+   "maps": [
+    {
+     "id": "spatial:child:47:place-preview:authored-map_homes_inn_1_2026092130:child-map_homes_inn_1_20260921:0",
+     "x": 0,
+     "y": 0,
+     "level": 1,
+     "digest": "00f2814962793f41"
+    }
+   ],
+   "authoring": "4963839d41b69a74",
+   "tree": "98ebc51c1535bffc",
+   "conns": "4f53cda18c2baa0c",
+   "allMaps": "9e44f248e876352a"
+  },
+  {
+   "id": "authored-map_homes_inn_2_20260921",
+   "ms": 1029.3,
+   "ok": true,
+   "maps": [
+    {
+     "id": "spatial:child:47:place-preview:authored-map_homes_inn_2_2026092130:child-map_homes_inn_2_20260921:0",
+     "x": 0,
+     "y": 0,
+     "level": 1,
+     "digest": "7fa428d91ba9cb72"
+    }
+   ],
+   "authoring": "29de39d2fe82eb06",
+   "tree": "0e8381b5d3064c1d",
+   "conns": "4f53cda18c2baa0c",
+   "allMaps": "468cc01b2c3349d9"
+  },
+  {
+   "id": "authored-map_homes_inn_3_20260921",
+   "ms": 1029.8,
+   "ok": true,
+   "maps": [
+    {
+     "id": "spatial:child:47:place-preview:authored-map_homes_inn_3_2026092130:child-map_homes_inn_3_20260921:0",
+     "x": 0,
+     "y": 0,
+     "level": 1,
+     "digest": "040f9110a802c7ca"
+    }
+   ],
+   "authoring": "0395e1ad97b9ec13",
+   "tree": "4b5f22f1405e7c15",
+   "conns": "4f53cda18c2baa0c",
+   "allMaps": "799c5e5d4561da11"
+  },
+  {
+   "id": "authored-map_homes_inn_4_20260921",
+   "ms": 1131.8,
+   "ok": true,
+   "maps": [
+    {
+     "id": "spatial:child:47:place-preview:authored-map_homes_inn_4_2026092130:child-map_homes_inn_4_20260921:0",
+     "x": 0,
+     "y": 0,
+     "level": 1,
+     "digest": "534569d40e667554"
+    },
+    {
+     "id": "spatial:child:47:place-preview:authored-map_homes_inn_4_2026092130:child-map_homes_inn_5_20260921:0",
+     "x": 0,
+     "y": 0,
+     "level": 2,
+     "digest": "dd531562ed97a71b"
+    },
+    {
+     "id": "spatial:child:47:place-preview:authored-map_homes_inn_4_2026092130:child-map_homes_inn_6_20260921:0",
+     "x": 0,
+     "y": 0,
+     "level": 3,
+     "digest": "2d79a4e05faaed10"
+    }
+   ],
+   "authoring": "8db39bd5975bb4c7",
+   "tree": "8c4c7de33c3bd33f",
+   "conns": "9813cf576ee6392c",
+   "allMaps": "69ce6b585a3a646d"
+  },
+  {
+   "id": "authored-map_places_five_1_20260921",
+   "ms": 1149.9,
+   "ok": true,
+   "maps": [
+    {
+     "id": "spatial:child:49:place-preview:authored-map_places_five_1_2026092132:child-map_places_five_1_20260921:0",
+     "x": 0,
+     "y": 0,
+     "level": 1,
+     "digest": "b340f32a8b4fd3d0"
+    }
+   ],
+   "authoring": "aa0d9cc55ab610b5",
+   "tree": "270b47ca0e7628ed",
+   "conns": "4f53cda18c2baa0c",
+   "allMaps": "b10cf03878f3450d"
+  },
+  {
+   "id": "authored-map_places_five_2_20260921",
+   "ms": 955.1,
+   "ok": true,
+   "maps": [
+    {
+     "id": "spatial:child:49:place-preview:authored-map_places_five_2_2026092132:child-map_places_five_2_20260921:0",
+     "x": 0,
+     "y": 0,
+     "level": 1,
+     "digest": "037ee4f06624b272"
+    }
+   ],
+   "authoring": "9b3258f45f2e2393",
+   "tree": "3d2b63a1083993fd",
+   "conns": "4f53cda18c2baa0c",
+   "allMaps": "f5b90a0d98aaa362"
+  },
+  {
+   "id": "authored-map_places_five_3_20260921",
+   "ms": 1010,
+   "ok": true,
+   "maps": [
+    {
+     "id": "spatial:child:49:place-preview:authored-map_places_five_3_2026092132:child-map_places_five_3_20260921:0",
+     "x": 0,
+     "y": 0,
+     "level": 1,
+     "digest": "5807f4efa3c3344b"
+    }
+   ],
+   "authoring": "c387400fd66efb7b",
+   "tree": "43b082dacff7e2f4",
+   "conns": "4f53cda18c2baa0c",
+   "allMaps": "fcf3f527319202ed"
+  },
+  {
+   "id": "authored-map_places_five_4_20260921",
+   "ms": 996.2,
+   "ok": true,
+   "maps": [
+    {
+     "id": "spatial:child:49:place-preview:authored-map_places_five_4_2026092132:child-map_places_five_4_20260921:0",
+     "x": 0,
+     "y": 0,
+     "level": 1,
+     "digest": "17ffa507aae296fa"
+    }
+   ],
+   "authoring": "c45a658f399bb3c0",
+   "tree": "7d1408cd4e47eeb4",
+   "conns": "4f53cda18c2baa0c",
+   "allMaps": "d3afbe9067c9dd2b"
+  },
+  {
+   "id": "authored-map_places_five_5_20260921",
+   "ms": 997.6,
+   "ok": true,
+   "maps": [
+    {
+     "id": "spatial:child:49:place-preview:authored-map_places_five_5_2026092132:child-map_places_five_5_20260921:0",
+     "x": 0,
+     "y": 0,
+     "level": 1,
+     "digest": "850d143573dbde9f"
+    }
+   ],
+   "authoring": "5e914cd2fbb66646",
+   "tree": "b69eb6e514fcf425",
+   "conns": "4f53cda18c2baa0c",
+   "allMaps": "a902101f257c4f91"
+  },
+  {
+   "id": "authored-map_five_more_1_20260921",
+   "ms": 966.6,
+   "ok": true,
+   "maps": [
+    {
+     "id": "spatial:child:47:place-preview:authored-map_five_more_1_2026092130:child-map_five_more_1_20260921:0",
+     "x": 0,
+     "y": 0,
+     "level": 1,
+     "digest": "fbea7284e3996b81"
+    }
+   ],
+   "authoring": "9c01b03ae6d46c75",
+   "tree": "1ceba4c43776aeb1",
+   "conns": "4f53cda18c2baa0c",
+   "allMaps": "e02ce7604423cea4"
+  },
+  {
+   "id": "authored-map_five_more_2_20260921",
+   "ms": 896.3,
+   "ok": true,
+   "maps": [
+    {
+     "id": "spatial:child:47:place-preview:authored-map_five_more_2_2026092130:child-map_five_more_2_20260921:0",
+     "x": 0,
+     "y": 0,
+     "level": 1,
+     "digest": "f54b9f96d411ca2a"
+    }
+   ],
+   "authoring": "17ec5d489341aba0",
+   "tree": "dff3aa6807e0b58d",
+   "conns": "4f53cda18c2baa0c",
+   "allMaps": "1b86e6b4a0ea8930"
+  },
+  {
+   "id": "authored-map_five_more_3_20260921",
+   "ms": 895.1,
+   "ok": true,
+   "maps": [
+    {
+     "id": "spatial:child:47:place-preview:authored-map_five_more_3_2026092130:child-map_five_more_3_20260921:0",
+     "x": 0,
+     "y": 0,
+     "level": 1,
+     "digest": "f0b0697e26097678"
+    }
+   ],
+   "authoring": "3312d64c8d03e40f",
+   "tree": "ae70763015a3bce5",
+   "conns": "4f53cda18c2baa0c",
+   "allMaps": "55ad54e64cad5bee"
+  },
+  {
+   "id": "authored-map_five_more_4_20260921",
+   "ms": 893.3,
+   "ok": true,
+   "maps": [
+    {
+     "id": "spatial:child:47:place-preview:authored-map_five_more_4_2026092130:child-map_five_more_4_20260921:0",
+     "x": 0,
+     "y": 0,
+     "level": 1,
+     "digest": "cbdd736bd4dc758f"
+    }
+   ],
+   "authoring": "f175e65c35336e83",
+   "tree": "2074f2601245e196",
+   "conns": "4f53cda18c2baa0c",
+   "allMaps": "c091103420e63b87"
+  },
+  {
+   "id": "authored-map_five_more_5_20260921",
+   "ms": 937.6,
+   "ok": true,
+   "maps": [
+    {
+     "id": "spatial:child:47:place-preview:authored-map_five_more_5_2026092130:child-map_five_more_5_20260921:0",
+     "x": 0,
+     "y": 0,
+     "level": 1,
+     "digest": "efe99531af7af6ac"
+    }
+   ],
+   "authoring": "74cc33e5dc83f5a0",
+   "tree": "9ea956a80222f49c",
+   "conns": "4f53cda18c2baa0c",
+   "allMaps": "00fe67ac10ad9deb"
+  },
+  {
+   "id": "authored-map_dozen_rooms_1_20260921",
+   "ms": 931.5,
+   "ok": true,
+   "maps": [
+    {
+     "id": "spatial:child:49:place-preview:authored-map_dozen_rooms_1_2026092132:child-map_dozen_rooms_1_20260921:0",
+     "x": 0,
+     "y": 0,
+     "level": 1,
+     "digest": "45c010263ef6790f"
+    }
+   ],
+   "authoring": "64804c136936c09c",
+   "tree": "c34e1c46eca72396",
+   "conns": "4f53cda18c2baa0c",
+   "allMaps": "90079dc6ad3cbe28"
+  },
+  {
+   "id": "authored-map_dozen_rooms_2_20260921",
+   "ms": 1035.6,
+   "ok": true,
+   "maps": [
+    {
+     "id": "spatial:child:49:place-preview:authored-map_dozen_rooms_2_2026092132:child-map_dozen_rooms_2_20260921:0",
+     "x": 0,
+     "y": 0,
+     "level": 1,
+     "digest": "4471ee1e836ca42b"
+    }
+   ],
+   "authoring": "1a82ff29580d7d08",
+   "tree": "7db54bd8b4e39453",
+   "conns": "4f53cda18c2baa0c",
+   "allMaps": "e47690170d897459"
+  },
+  {
+   "id": "authored-map_dozen_rooms_3_20260921",
+   "ms": 943.5,
+   "ok": true,
+   "maps": [
+    {
+     "id": "spatial:child:49:place-preview:authored-map_dozen_rooms_3_2026092132:child-map_dozen_rooms_3_20260921:0",
+     "x": 0,
+     "y": 0,
+     "level": 1,
+     "digest": "a9a7b7fd904114d6"
+    }
+   ],
+   "authoring": "5f0c7daffd012c18",
+   "tree": "fe4ebdeb1f321c19",
+   "conns": "4f53cda18c2baa0c",
+   "allMaps": "d9f54263c3d38042"
+  },
+  {
+   "id": "authored-map_dozen_rooms_4_20260921",
+   "ms": 911.9,
+   "ok": true,
+   "maps": [
+    {
+     "id": "spatial:child:49:place-preview:authored-map_dozen_rooms_4_2026092132:child-map_dozen_rooms_4_20260921:0",
+     "x": 0,
+     "y": 0,
+     "level": 1,
+     "digest": "1975fa5f135cce44"
+    }
+   ],
+   "authoring": "08031aacd0021a6f",
+   "tree": "f4d8e603c1dc3fe6",
+   "conns": "4f53cda18c2baa0c",
+   "allMaps": "d41978279a30a68c"
+  },
+  {
+   "id": "authored-map_dozen_rooms_5_20260921",
+   "ms": 826.4,
+   "ok": true,
+   "maps": [
+    {
+     "id": "spatial:child:49:place-preview:authored-map_dozen_rooms_5_2026092132:child-map_dozen_rooms_5_20260921:0",
+     "x": 0,
+     "y": 0,
+     "level": 1,
+     "digest": "17c77d8b631f0f99"
+    }
+   ],
+   "authoring": "f049c77740eeefd0",
+   "tree": "abbef74dbe505daf",
+   "conns": "4f53cda18c2baa0c",
+   "allMaps": "c5d8d62b21001e7d"
+  },
+  {
+   "id": "authored-map_dozen_rooms_6_20260921",
+   "ms": 929.4,
+   "ok": true,
+   "maps": [
+    {
+     "id": "spatial:child:49:place-preview:authored-map_dozen_rooms_6_2026092132:child-map_dozen_rooms_6_20260921:0",
+     "x": 0,
+     "y": 0,
+     "level": 1,
+     "digest": "8f9ca635ee434346"
+    }
+   ],
+   "authoring": "43194a5994096ace",
+   "tree": "40d6b04785ddd34a",
+   "conns": "4f53cda18c2baa0c",
+   "allMaps": "305204d6f36355d9"
+  },
+  {
+   "id": "authored-map_dozen_rooms_7_20260921",
+   "ms": 941.3,
+   "ok": true,
+   "maps": [
+    {
+     "id": "spatial:child:49:place-preview:authored-map_dozen_rooms_7_2026092132:child-map_dozen_rooms_7_20260921:0",
+     "x": 0,
+     "y": 0,
+     "level": 1,
+     "digest": "5d20af9408b2b351"
+    }
+   ],
+   "authoring": "791dbb961b78bf27",
+   "tree": "d24425eeb3f8113d",
+   "conns": "4f53cda18c2baa0c",
+   "allMaps": "cc27b89008a59494"
+  },
+  {
+   "id": "authored-map_dozen_rooms_8_20260921",
+   "ms": 985.3,
+   "ok": true,
+   "maps": [
+    {
+     "id": "spatial:child:49:place-preview:authored-map_dozen_rooms_8_2026092132:child-map_dozen_rooms_8_20260921:0",
+     "x": 0,
+     "y": 0,
+     "level": 1,
+     "digest": "b26c1907956fd869"
+    }
+   ],
+   "authoring": "44941a30f95e7962",
+   "tree": "38d44a4fe339d5d7",
+   "conns": "4f53cda18c2baa0c",
+   "allMaps": "3832d38f78d0e9d2"
+  },
+  {
+   "id": "authored-map_dozen_rooms_9_20260921",
+   "ms": 1306,
+   "ok": true,
+   "maps": [
+    {
+     "id": "spatial:child:49:place-preview:authored-map_dozen_rooms_9_2026092132:child-map_dozen_rooms_9_20260921:0",
+     "x": 0,
+     "y": 0,
+     "level": 1,
+     "digest": "0e2968185d356b4a"
+    }
+   ],
+   "authoring": "5fbb71d13020554d",
+   "tree": "000aa8f6580c0cc2",
+   "conns": "4f53cda18c2baa0c",
+   "allMaps": "47929ca9c24c657f"
+  },
+  {
+   "id": "authored-map_dozen_rooms_10_20260921",
+   "ms": 968.3,
+   "ok": true,
+   "maps": [
+    {
+     "id": "spatial:child:50:place-preview:authored-map_dozen_rooms_10_2026092133:child-map_dozen_rooms_10_20260921:0",
+     "x": 0,
+     "y": 0,
+     "level": 1,
+     "digest": "979793edf0b401d8"
+    }
+   ],
+   "authoring": "3cf30f6ece09d329",
+   "tree": "50b8df9867fff7e0",
+   "conns": "4f53cda18c2baa0c",
+   "allMaps": "6903c25863900bb4"
+  },
+  {
+   "id": "authored-map_dozen_rooms_11_20260921",
+   "ms": 926.3,
+   "ok": true,
+   "maps": [
+    {
+     "id": "spatial:child:50:place-preview:authored-map_dozen_rooms_11_2026092133:child-map_dozen_rooms_11_20260921:0",
+     "x": 0,
+     "y": 0,
+     "level": 1,
+     "digest": "7eadff7a4e128bbb"
+    }
+   ],
+   "authoring": "e2e497b0571c9239",
+   "tree": "193cd10daf427383",
+   "conns": "4f53cda18c2baa0c",
+   "allMaps": "79fd33c11ffc199c"
+  },
+  {
+   "id": "authored-map_dozen_rooms_12_20260921",
+   "ms": 936.5,
+   "ok": true,
+   "maps": [
+    {
+     "id": "spatial:child:50:place-preview:authored-map_dozen_rooms_12_2026092133:child-map_dozen_rooms_12_20260921:0",
+     "x": 0,
+     "y": 0,
+     "level": 1,
+     "digest": "f1f485bd69a47c42"
+    }
+   ],
+   "authoring": "74a6766abb51b108",
+   "tree": "1040a1b465a18ba7",
+   "conns": "4f53cda18c2baa0c",
+   "allMaps": "1e35e40f926f871f"
+  },
+  {
+   "id": "authored-map_variety_house_1_20260921",
+   "ms": 917,
+   "ok": true,
+   "maps": [
+    {
+     "id": "spatial:child:51:place-preview:authored-map_variety_house_1_2026092134:child-map_variety_house_1_20260921:0",
+     "x": 0,
+     "y": 0,
+     "level": 1,
+     "digest": "c2717f3ba35fb36c"
+    }
+   ],
+   "authoring": "e38e4e4b8217029f",
+   "tree": "ddc7e0fbbc021641",
+   "conns": "4f53cda18c2baa0c",
+   "allMaps": "e7d990cb53c8e071"
+  },
+  {
+   "id": "authored-map_variety_house_2_20260921",
+   "ms": 924,
+   "ok": true,
+   "maps": [
+    {
+     "id": "spatial:child:51:place-preview:authored-map_variety_house_2_2026092134:child-map_variety_house_2_20260921:0",
+     "x": 0,
+     "y": 0,
+     "level": 1,
+     "digest": "1562d91e98ec59ad"
+    }
+   ],
+   "authoring": "c794ff54065295bb",
+   "tree": "a0a2835694bb2bb1",
+   "conns": "4f53cda18c2baa0c",
+   "allMaps": "fd4273f2b27368f5"
+  },
+  {
+   "id": "authored-map_variety_house_3_20260921",
+   "ms": 859.7,
+   "ok": true,
+   "maps": [
+    {
+     "id": "spatial:child:51:place-preview:authored-map_variety_house_3_2026092134:child-map_variety_house_3_20260921:0",
+     "x": 0,
+     "y": 0,
+     "level": 1,
+     "digest": "a42604eb091d2743"
+    }
+   ],
+   "authoring": "259dcbbdd5e285e2",
+   "tree": "9fd0ed65cfd84956",
+   "conns": "4f53cda18c2baa0c",
+   "allMaps": "a7ffa8101d2e798d"
+  },
+  {
+   "id": "authored-map_variety_house_4_20260921",
+   "ms": 835.8,
+   "ok": true,
+   "maps": [
+    {
+     "id": "spatial:child:51:place-preview:authored-map_variety_house_4_2026092134:child-map_variety_house_4_20260921:0",
+     "x": 0,
+     "y": 0,
+     "level": 1,
+     "digest": "a7af1f59b1fe127d"
+    }
+   ],
+   "authoring": "129890bf8006316c",
+   "tree": "fffec6fe12c16701",
+   "conns": "4f53cda18c2baa0c",
+   "allMaps": "a4b256ae0ac36fdd"
+  },
+  {
+   "id": "authored-map_variety_house_5_20260921",
+   "ms": 854.3,
+   "ok": true,
+   "maps": [
+    {
+     "id": "spatial:child:51:place-preview:authored-map_variety_house_5_2026092134:child-map_variety_house_5_20260921:0",
+     "x": 0,
+     "y": 0,
+     "level": 1,
+     "digest": "940f693413554102"
+    }
+   ],
+   "authoring": "fdbacc86f3ab8959",
+   "tree": "96428953f589f2f4",
+   "conns": "4f53cda18c2baa0c",
+   "allMaps": "504e6d3a2ae2ea56"
+  },
+  {
+   "id": "place_oga_cave_narrow_original_20260921",
+   "ms": 895.8,
+   "ok": true,
+   "maps": [
+    {
+     "id": "spatial:place-preview:place_oga_cave_narrow_original_20260921",
+     "x": 0,
+     "y": 0,
+     "level": 0,
+     "digest": "2203fac048b9c8e6"
+    }
+   ],
+   "authoring": "3a4ae25e6c88e1d4",
+   "tree": "64bdcb39529b9f38",
+   "conns": "4f53cda18c2baa0c",
+   "allMaps": "79d79a79eb9a5695"
+  },
+  {
+   "id": "place_oga_cave_connected_20260921",
+   "ms": 837.9,
+   "ok": true,
+   "maps": [
+    {
+     "id": "spatial:place-preview:place_oga_cave_connected_20260921",
+     "x": 0,
+     "y": 0,
+     "level": 0,
+     "digest": "d4266759f46300ce"
+    }
+   ],
+   "authoring": "2eaf850701e60b0a",
+   "tree": "f43cd3070de4d885",
+   "conns": "4f53cda18c2baa0c",
+   "allMaps": "f229a297e9d742d4"
+  },
+  {
+   "id": "place_oga_cave_diagonal_20260921",
+   "ms": 957.9,
+   "ok": true,
+   "maps": [
+    {
+     "id": "spatial:place-preview:place_oga_cave_diagonal_20260921",
+     "x": 0,
+     "y": 0,
+     "level": 0,
+     "digest": "c0979528e806d989"
+    }
+   ],
+   "authoring": "e4efa80b7b3a6c5e",
+   "tree": "003df55be3048ca7",
+   "conns": "4f53cda18c2baa0c",
+   "allMaps": "bfc7fafa22d46331"
+  }
+ ]
+}

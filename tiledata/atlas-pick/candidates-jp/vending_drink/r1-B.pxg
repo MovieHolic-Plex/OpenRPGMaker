@@ -1,0 +1,80 @@
+// vending_drink r1-B
+@size 32 32
+@cell 16
+@palette palette.pal
+@layer main
+@mat a akachin 3
+@mat b kblue 3
+@mat c kgreen 3
+@mat d lacq 3
+@mat e mglass 3
+@mat f mmetal 3
+@mat g mwhite 3
+@mat h neonc 3
+@mat i washi 3
+@mblock 0 0
+...gggggggggggggggggggggggggg...
+..gggggggggggggggggggggggggggf..
+..gggggggggggggggggggggggggggf..
+..gggggggggggggggggggggggggggf..
+..gbbbbbbbbbbbbbbbbbbbbbbbbbbf..
+..gbbbiiiiibbaaabiiiibbbbbbbbf..
+..gbbbbbbbbbbbbbbbbbbbbbbbbbbf..
+..ggffffffffffffffgggggggggggf..
+..ggfebbeaaeiieccfgghhhggggggf..
+..ggfebbeaaeiieccfggddhggggggf..
+..ggfebbeaaeiieccfgggggggggggf..
+..ggfeaaeiieccebbfggbbaagggggf..
+..ggfeaaeiieccebbfggbbaagggggf..
+..ggfeaaeiieccebbfgggggggggggf..
+..ggfeiieccebbeaafggbbaagggggf..
+..ggfeiieccebbeaafggbbaagggggf..
+..ggfeiieccebbeaafgggggggggggf..
+..ggffffffffffffffggffffgggggf..
+..gggigigigigigiggggfddfgggggf..
+..gggggggggggggggggggggggggggf..
+..ggffffffffffffffggffffgggggf..
+..ggfddddddddddddfggddddgggggf..
+..ggfddddddddddddfgggggggggggf..
+..ggfddddddddddddfggffffgggggf..
+..ggfddddddddddddfggddddgggggf..
+..ggfddddddddddddfggddddgggggf..
+..gggggggggggggggggggggggggggf..
+..gfffffffffffffffffffffffffff..
+..gfffffffffffffffffffffffffff..
+....%%%%%%%%%%~~~~~~~~~~~~~~~~~~
+......%%%%%%~~~~~~~~~~~~~~~~~~~~
+..................--------------
+@tblock 0 0
+...00000000000000000000000000...
+..0555555555555555555555555551..
+..0555555555555555555555555541..
+..0555555555555555555555555541..
+..0444444444444444444444411111..
+..0333444443344434444333311111..
+..0222222222222222222222200001..
+..0455555555555552301111210001..
+..0436556556556552304441210001..
+..0436446446446442301121210001..
+..0436336336336332301111210001..
+..0436556556556552305454210001..
+..0436446446446442303333210001..
+..0436336336336332301111210001..
+..0436556556556552305454210001..
+..0436446446446442303333210001..
+..0436336336336332301111210001..
+..0422222222222222306666210001..
+..0433232323232323303003210001..
+..0433333333333333301111210001..
+..0455555555555555305555210001..
+..0443333333333331300000210001..
+..0442222222222221301111210001..
+..0440000000000001305555210001..
+..0440000000000001302222210001..
+..0440000000000001300000210001..
+..0222222222222222222222200001..
+..0333333333333333333333322221..
+..0111111111111111111111100001..
+................................
+................................
+................................

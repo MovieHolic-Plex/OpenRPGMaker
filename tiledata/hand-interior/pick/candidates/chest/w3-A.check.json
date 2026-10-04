@@ -1,0 +1,35 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/chest/w3-A.pxg",
+ "id": "chest",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.072
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "outline",
+   "outline_black"
+  ],
+  "pass": false
+ },
+ "colors": 10,
+ "v5_colors": 10,
+ "bbox": [
+  2,
+  3,
+  14,
+  14
+ ],
+ "v5_bbox": [
+  2,
+  3,
+  14,
+  14
+ ],
+ "note": "v5 그대로 두고 뚜껑의 잔 얼룩(D) 을 없애 면을 조용히, 자물쇠를 3×2 판(밝은 모서리·열쇠구멍)으로 정리",
+ "ok": true
+}

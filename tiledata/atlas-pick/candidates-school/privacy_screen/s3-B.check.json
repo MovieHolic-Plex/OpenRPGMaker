@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/privacy_screen/s3-B.pxg",
+ "set": "school",
+ "id": "privacy_screen",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.065
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.088
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 10,
+ "bbox": [
+  2,
+  3,
+  29,
+  31
+ ],
+ "note": "센 명암: 흰 커튼의 밝은 폭과 어두운 폭이 크게 대비, 철 틀 짙음, 폭마다 뚜렷한 접힘",
+ "ok": true
+}

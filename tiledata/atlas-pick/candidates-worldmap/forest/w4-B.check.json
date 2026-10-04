@@ -1,0 +1,46 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/forest/w4-B.pxg",
+ "set": "worldmap",
+ "id": "forest",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.139
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.048
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies",
+   "dither"
+  ]
+ },
+ "colors": 9,
+ "bbox": [
+  0,
+  0,
+  47,
+  63
+ ],
+ "note": "빛·볼륨 — 왼쪽 위 밝은 잎 점·오른쪽 아래 짙은 수관 밑 6단, 바닥 어둡게 해 덩이가 뜬다",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.062
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.042
+  },
+  "seam": 1.88
+ }
+}

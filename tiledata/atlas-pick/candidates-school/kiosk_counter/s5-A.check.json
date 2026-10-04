@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/kiosk_counter/s5-A.pxg",
+ "set": "school",
+ "id": "kiosk_counter",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.102
+ },
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.04
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 32,
+ "bbox": [
+  0,
+  2,
+  47,
+  30
+ ],
+ "note": "매점 계산대 — 소나무 몸체·크림 상판, 왼쪽 유리 진열장(빵 봉지·삼각 주먹밥), 위에 과자 상자, 오른쪽 작은 계산기",
+ "ok": true
+}

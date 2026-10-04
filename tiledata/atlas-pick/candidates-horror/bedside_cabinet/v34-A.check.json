@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/bedside_cabinet/v34-A.pxg",
+ "set": "horror",
+ "id": "bedside_cabinet",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.012
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.062
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 9,
+ "bbox": [
+  2,
+  2,
+  13,
+  15
+ ],
+ "note": "v34-A: 3/4 시점 — 윗면 6줄(뒤 모서리·밝은 판·앞 모서리 하이라이트) + 처마 그늘 + 서랍 두 칸 앞면 + 다리. 같은 sheet/tin 램프",
+ "ok": true
+}

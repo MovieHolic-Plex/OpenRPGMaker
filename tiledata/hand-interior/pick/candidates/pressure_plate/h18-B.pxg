@@ -1,0 +1,39 @@
+// 압력판 B: 같은 방 화풍 — 배수구 창살처럼 어두운 홈 틀 안에 솟은 돌판, 윗면 안쪽 새긴 네모(눌리는 자리), 앞면 두 단, 이끼 돌 결에 맞춘 중간 명도
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat s stone 3
+@mblock 0 0
+................
+................
+................
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+.ssssssssssssss.
+@tblock 0 0 stone
+................
+................
+................
+.11111111111111.
+.11555555555511.
+.15444444444431.
+.15433333333431.
+.15434444443431.
+.15434444443431.
+.15434444443431.
+.15434444443431.
+.15455555555431.
+.14444444444431.
+.13333333333321.
+.12222222222221.
+.00000000000000.

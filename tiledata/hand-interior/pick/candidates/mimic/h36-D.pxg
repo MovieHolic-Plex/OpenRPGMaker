@@ -1,0 +1,33 @@
+// D 장식: 금 테 두른 뚜껑 안쪽에 보석 한 점, 흰 이빨·분홍 혀, 금 띠 둘과 금 자물쇠판 몸통
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat o wood 1
+@mat w wood 5
+@mat d wood 4
+@mat i dwood 3
+@mat k red 1
+@mat r red 2
+@mat t pink 3
+@mat h white 5
+@mat g gold 3
+@mat G gold 5
+@mat j gold 1
+@mat e red 4
+@mblock 0 0
+................
+..oooooooooooo..
+..ogGgiiiigGgo..
+..ogiiiiiiiigo..
+..ogiiiieiiigo..
+.oghhhhhhhhhhgo.
+.oghkhhkhhkhhgo.
+.okkkkkkkkkkkko.
+.okkrttttttrkko.
+.okrttttttttrko.
+.ohkhhkhhkhhkho.
+.ogGwwwwwwwwGgo.
+.ogGddggGgddGgo.
+.ogGddgjjgddGgo.
+.ogGddddddddGgo.
+.oooooooooooooo.

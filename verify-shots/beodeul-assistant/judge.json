@@ -1,0 +1,108 @@
+{
+ "fresh": {
+  "districts": {
+   "bd-castle": [
+    0,
+    0
+   ],
+   "bd-river-bridge": [
+    26,
+    24
+   ],
+   "bd-estate": [
+    36,
+    2
+   ],
+   "bd-cathedral": [
+    82,
+    3
+   ],
+   "bd-forum": [
+    54,
+    34
+   ],
+   "bd-windmill": [
+    1,
+    34
+   ],
+   "bd-harbour-west": [
+    0,
+    62
+   ],
+   "bd-harbour": [
+    36,
+    62
+   ]
+  },
+  "allAtOriginal": true,
+  "cellsSameAsOriginal": 6510,
+  "ratioSame": 0.651,
+  "walkable": 4186,
+  "reachFromMain": 4063,
+  "pieceDoors": 23,
+  "pieceDoorsUnreached": 0,
+  "unreachedSamples": [],
+  "housePiecesStamped": 23,
+  "houseFootprintOverlaps": 0,
+  "paintTiles": {
+   "545": 3,
+   "17953": 2,
+   "2989": 28,
+   "3408": 2,
+   "1296": 1
+  },
+  "origDoorsInKits": null
+ },
+ "existing": {
+  "districts": {
+   "bd-castle": [
+    0,
+    0
+   ],
+   "bd-river-bridge": [
+    26,
+    24
+   ],
+   "bd-estate": [
+    36,
+    2
+   ],
+   "bd-cathedral": [
+    82,
+    3
+   ],
+   "bd-forum": [
+    54,
+    34
+   ],
+   "bd-windmill": [
+    1,
+    34
+   ],
+   "bd-harbour-west": [
+    0,
+    62
+   ],
+   "bd-harbour": [
+    36,
+    62
+   ]
+  },
+  "allAtOriginal": true,
+  "cellsSameAsOriginal": 6480,
+  "ratioSame": 0.648,
+  "walkable": 4145,
+  "reachFromMain": 4031,
+  "pieceDoors": 27,
+  "pieceDoorsUnreached": 0,
+  "unreachedSamples": [],
+  "housePiecesStamped": 27,
+  "houseFootprintOverlaps": 0,
+  "paintTiles": {
+   "545": 3,
+   "2989": 17,
+   "1296": 3
+  },
+  "origDoorsInKits": null
+ }
+}

@@ -7,7 +7,8 @@ export async function recordingFixture(projectPath) {
   try {
     const input = projectPath ? JSON.parse(await readFile(projectPath, 'utf8')) : base.project;
     const project = structuredClone(input.project ?? input);
-    project.system.battleUiStyle = 'retro2003';
+    // RETRO_QA_SKIN: 같은 도트 측면 뼈대를 쓰는 다른 측면 스킨(ff·chrono…)으로 찍을 때.
+    project.system.battleUiStyle = process.env.RETRO_QA_SKIN || 'retro2003';
     project.system.battleFlow = 'gauge';
     const replacements = [];
     for (const actor of project.database.actors) {

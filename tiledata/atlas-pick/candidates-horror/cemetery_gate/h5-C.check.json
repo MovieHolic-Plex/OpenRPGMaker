@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/cemetery_gate/h5-C.pxg",
+ "set": "horror",
+ "id": "cemetery_gate",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 9,
+  "atLeast95": 0,
+  "max": 0.125
+ },
+ "refmap": {
+  "cells": 9,
+  "atLeast95": 0,
+  "max": 0.11
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 24,
+ "bbox": [
+  0,
+  0,
+  47,
+  47
+ ],
+ "note": "오른 문짝이 뜯겨 나간 자리에 창백한 손이 창살을 잡고 있고 핏자국이 팔 아래로 이어진다. 왼 문짝 살은 안쪽으로 휘고 사슬은 바닥까지 늘어짐",
+ "ok": true
+}

@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/armor_stand/w52-A.pxg",
+ "id": "armor stand",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.095
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 13,
+ "v5_colors": 13,
+ "bbox": [
+  2,
+  1,
+  13,
+  31
+ ],
+ "v5_bbox": [
+  3,
+  2,
+  12,
+  31
+ ],
+ "note": "갑옷 거치대: 같은 서 있는 갑옷+나무 기둥. 받침 원판 윗면 3줄+앞면 2줄, 견갑 윗면 밝게, 투구 위 둥근 면 1줄 추가. 관문 --object rim t=4 f=26 이나 관문 X, 눈 O, 이유: --object 는 접힘선 측정이라 서 있는 인형·원판 윗면 형태를 못 잼.",
+ "ok": true
+}

@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/hosp_bed/h2-B.pxg",
+ "set": "horror",
+ "id": "hosp_bed",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.109
+ },
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.07
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 19,
+ "bbox": [
+  1,
+  10,
+  14,
+  47
+ ],
+ "note": "B: A 와 같은 형태에 시트 오른쪽·아랫단을 두 단 낮춰 접힌 주름 그림자를 깊게, 접힘 위쪽에 최고광, 얼룩을 조금 키우고 blood 가장자리 번짐($)을 둠. 머리판·발판 쇠 색 폭을 넓혀 어두운 방에서도 틀이 읽힘.",
+ "ok": true
+}

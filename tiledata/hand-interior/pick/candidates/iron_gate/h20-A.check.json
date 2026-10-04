@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/iron_gate/h20-A.pxg",
+ "id": "iron gate",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.039
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 6,
+ "v5_colors": 0,
+ "bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "굵은 쇠창살 2줄+양 기둥에 가로 띠 3개(윗면 2줄씩 밝게), 창살 끝 뾰족, 맨 아래 접지선 — 설명 그대로 전형적 감옥 문",
+ "ok": true
+}

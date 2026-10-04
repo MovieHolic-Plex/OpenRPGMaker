@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/note_paper/h4-A.pxg",
+ "set": "horror",
+ "id": "note_paper",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.086
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 8,
+ "bbox": [
+  3,
+  3,
+  13,
+  11
+ ],
+ "note": "9x8 누런 종이 한 장, 위쪽이 살짝 밀려 기울고 오른쪽 아래 모서리가 접힘, 짧은 가로 획 셋, 오른쪽 위 바깥에 반짝임 1px",
+ "ok": true
+}

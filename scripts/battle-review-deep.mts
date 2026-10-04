@@ -317,7 +317,7 @@ async function main() {
     const p = store.getCurrent();
     return {
       currentSkin: p.system.battleUiStyle,
-      availableSkins: ["classic", "ff", "dragonquest", "pokemon", "chrono", "bravely", "goldensun", "octopath", "mother", "rm2000"],
+      availableSkins: ["retro2003", "pokemon"],
     };
   });
   console.log("Skin info:", JSON.stringify(skinInfo));

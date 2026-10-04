@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/cabinet_gem_gemr/w40-A.pxg",
+ "id": "cabinet:gem+gemr",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.062
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 14,
+ "v5_colors": 14,
+ "bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "note": "cabinet_loaf w40-A 와 같은 3/4 몸통(윗면T5+앞가장자리+처마그늘), 물건은 v5 그대로",
+ "ok": true
+}

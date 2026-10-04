@@ -1,0 +1,60 @@
+{
+  "realModel": true,
+  "provider": "opencodex",
+  "modelId": "gpt-6-astra",
+  "uiIntentRequestExercised": false,
+  "folder": "/home/main/.t3/worktrees/rpg-zzu/t3code-77478098/.vite-cache/terrain-seams/project",
+  "projectId": "9f70cb93-c831-4ab9-a6fe-d46a3634beff",
+  "mapId": "houses_native",
+  "elapsedSeconds": 207.431,
+  "reloadMapEqual": true,
+  "revision": 2,
+  "counts": {
+    "inspect_terrain": 2,
+    "get_map_region": 1,
+    "read_project_wiki": 1,
+    "list_tileset_references": 1,
+    "find_tools": 1,
+    "read_tileset_reference": 9,
+    "sculpt_relief": 1,
+    "place_terrain_house": 3,
+    "lay_terrain_road": 5,
+    "check_terrain_access": 1,
+    "show_map_region": 1
+  },
+  "maxHeight": 9,
+  "rampCells": 22,
+  "stairs": 0,
+  "placements": [
+    {
+      "id": "sp_a2ff01d4-09f0-4e24-a2c7-65a12be34406",
+      "kitId": "bd-manor-tower",
+      "x": 6,
+      "y": 13,
+      "w": 14,
+      "h": 11
+    },
+    {
+      "id": "sp_dbe5965d-2ed8-410c-bf8a-109803471270",
+      "kitId": "bd-out-cabin",
+      "x": 34,
+      "y": 16,
+      "w": 5,
+      "h": 6
+    },
+    {
+      "id": "sp_6c3b74ec-e76d-487b-96b8-574751c06182",
+      "kitId": "bd-out-house-plank",
+      "x": 54,
+      "y": 13,
+      "w": 8,
+      "h": 6
+    }
+  ],
+  "stats": {
+    "ms": 193570,
+    "turns": 16,
+    "toolCalls": 27,
+    "toolErrors": 1
+  }
+}

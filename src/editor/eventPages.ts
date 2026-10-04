@@ -197,7 +197,11 @@ export function pasteEventPage(mapId: MapId, eventId: string, anchorPageId?: str
   store.update((project) => {
     const event = project.maps[mapId]?.events.find((item) => item.id === eventId);
     if (!event) return;
-    const pages = [...(event.pages ?? [])];
+    // Preserve legacy event behavior before introducing the first pasted page.
+    // Once pages exist, runtime no longer uses the event's root commands.
+    const pages = event.pages?.length
+      ? [...event.pages]
+      : [createDefaultEventPage(event, 1)];
     const pasted = structuredClone(source);
     pasted.id = genId("page");
     pasted.name = nextAvailableCopyName(source.name, pages);

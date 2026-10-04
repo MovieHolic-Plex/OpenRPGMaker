@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/saisen_box/j2-A.pxg",
+ "set": "jp",
+ "id": "saisen_box",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.098
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.036
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation"
+  ]
+ },
+ "colors": 16,
+ "bbox": [
+  2,
+  0,
+  31,
+  31
+ ],
+ "note": "강남 결: 나무 궤 앞면 3단·윗면 창살 띠·금색 봉납 점, 위에서 늘어진 붉고 흰 줄과 청동 방울, 오른쪽 아래 ~/- 그림자.",
+ "ok": true
+}

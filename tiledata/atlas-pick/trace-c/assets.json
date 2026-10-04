@@ -1,0 +1,879 @@
+[
+ {
+  "name": "roof_top",
+  "kind": "건물 조립",
+  "note": "옥상 윗면",
+  "size": [
+   32,
+   32
+  ],
+  "cells": [
+   1,
+   1
+  ],
+  "cellCount": 1,
+  "walk": [
+   "X"
+  ],
+  "repeat": "xy",
+  "tracedFrom": "L-r1-1",
+  "opaquePx": 1024
+ },
+ {
+  "name": "roof_parapet",
+  "kind": "건물 조립",
+  "note": "난간 띠",
+  "size": [
+   32,
+   32
+  ],
+  "cells": [
+   1,
+   1
+  ],
+  "cellCount": 1,
+  "walk": [
+   "X"
+  ],
+  "repeat": "x",
+  "tracedFrom": "L-r1-1",
+  "opaquePx": 1024
+ },
+ {
+  "name": "roof_parapet_w",
+  "kind": "건물 조립",
+  "note": "난간 띠(베이지)",
+  "size": [
+   32,
+   32
+  ],
+  "cells": [
+   1,
+   1
+  ],
+  "cellCount": 1,
+  "walk": [
+   "X"
+  ],
+  "repeat": "x",
+  "tracedFrom": "R-r1-2",
+  "opaquePx": 1024
+ },
+ {
+  "name": "roof_rail",
+  "kind": "건물 조립",
+  "note": "옥상 철제 난간",
+  "size": [
+   32,
+   32
+  ],
+  "cells": [
+   1,
+   1
+  ],
+  "cellCount": 1,
+  "walk": [
+   "X"
+  ],
+  "repeat": "x",
+  "tracedFrom": "L-r1-1",
+  "opaquePx": 1024
+ },
+ {
+  "name": "wall_tile",
+  "kind": "건물 조립",
+  "note": "타일 벽면",
+  "size": [
+   32,
+   32
+  ],
+  "cells": [
+   1,
+   1
+  ],
+  "cellCount": 1,
+  "walk": [
+   "X"
+  ],
+  "repeat": "xy",
+  "tracedFrom": "L-r1-1",
+  "opaquePx": 1024
+ },
+ {
+  "name": "win_plain",
+  "kind": "건물 조립",
+  "note": "창 칸(낮)",
+  "size": [
+   64,
+   32
+  ],
+  "cells": [
+   2,
+   1
+  ],
+  "cellCount": 2,
+  "walk": [
+   "XX"
+  ],
+  "repeat": "x",
+  "tracedFrom": "L-r1-1",
+  "opaquePx": 2048
+ },
+ {
+  "name": "win_lit",
+  "kind": "건물 조립",
+  "note": "창 칸(불 켜짐)",
+  "size": [
+   64,
+   32
+  ],
+  "cells": [
+   2,
+   1
+  ],
+  "cellCount": 2,
+  "walk": [
+   "XX"
+  ],
+  "repeat": "x",
+  "tracedFrom": "L-r1-1",
+  "opaquePx": 2048
+ },
+ {
+  "name": "side_face",
+  "kind": "건물 조립",
+  "note": "오른쪽 옆면",
+  "size": [
+   32,
+   32
+  ],
+  "cells": [
+   1,
+   1
+  ],
+  "cellCount": 1,
+  "walk": [
+   "X"
+  ],
+  "repeat": "y",
+  "tracedFrom": "L-r1-1",
+  "opaquePx": 1024
+ },
+ {
+  "name": "sf_side",
+  "kind": "상가 앞면",
+  "note": "1층 옆면",
+  "size": [
+   32,
+   32
+  ],
+  "cells": [
+   1,
+   1
+  ],
+  "cellCount": 1,
+  "walk": [
+   "X"
+  ],
+  "repeat": "y",
+  "tracedFrom": "L-r1-1",
+  "opaquePx": 1024
+ },
+ {
+  "name": "sf_band",
+  "kind": "상가 앞면",
+  "note": "노란 간판 띠",
+  "size": [
+   32,
+   32
+  ],
+  "cells": [
+   1,
+   1
+  ],
+  "cellCount": 1,
+  "walk": [
+   "X"
+  ],
+  "repeat": "x",
+  "tracedFrom": "L-r1-1",
+  "opaquePx": 1024
+ },
+ {
+  "name": "sf_glass",
+  "kind": "상가 앞면",
+  "note": "편의점 유리(진열대)",
+  "size": [
+   64,
+   32
+  ],
+  "cells": [
+   2,
+   1
+  ],
+  "cellCount": 2,
+  "walk": [
+   "XX"
+  ],
+  "repeat": "x",
+  "tracedFrom": "L-r1-1",
+  "opaquePx": 2048
+ },
+ {
+  "name": "sf_door_auto",
+  "kind": "상가 앞면",
+  "note": "자동문",
+  "size": [
+   64,
+   32
+  ],
+  "cells": [
+   2,
+   1
+  ],
+  "cellCount": 2,
+  "walk": [
+   "XX"
+  ],
+  "repeat": "-",
+  "tracedFrom": "L-r1-1",
+  "opaquePx": 2048
+ },
+ {
+  "name": "sf_pillar",
+  "kind": "상가 앞면",
+  "note": "기둥",
+  "size": [
+   32,
+   32
+  ],
+  "cells": [
+   1,
+   1
+  ],
+  "cellCount": 1,
+  "walk": [
+   "X"
+  ],
+  "repeat": "-",
+  "tracedFrom": "L-r1-1",
+  "opaquePx": 1024
+ },
+ {
+  "name": "sf_noren",
+  "kind": "상가 앞면",
+  "note": "식당 노렌+나무문",
+  "size": [
+   32,
+   32
+  ],
+  "cells": [
+   1,
+   1
+  ],
+  "cellCount": 1,
+  "walk": [
+   "X"
+  ],
+  "repeat": "-",
+  "tracedFrom": "L-r1-1",
+  "opaquePx": 1024
+ },
+ {
+  "name": "sign_vert",
+  "kind": "상가 앞면",
+  "note": "세로 간판(빈 판)",
+  "size": [
+   32,
+   96
+  ],
+  "cells": [
+   1,
+   3
+  ],
+  "cellCount": 3,
+  "walk": [
+   "X",
+   "X",
+   "X"
+  ],
+  "repeat": "-",
+  "tracedFrom": "L-r1-1",
+  "opaquePx": 1980
+ },
+ {
+  "name": "wall_conc",
+  "kind": "건물 조립",
+  "note": "콘크리트 벽면",
+  "size": [
+   32,
+   32
+  ],
+  "cells": [
+   1,
+   1
+  ],
+  "cellCount": 1,
+  "walk": [
+   "X"
+  ],
+  "repeat": "xy",
+  "tracedFrom": "R-r1-2",
+  "opaquePx": 1024
+ },
+ {
+  "name": "win_conc",
+  "kind": "건물 조립",
+  "note": "창 칸",
+  "size": [
+   64,
+   32
+  ],
+  "cells": [
+   2,
+   1
+  ],
+  "cellCount": 2,
+  "walk": [
+   "XX"
+  ],
+  "repeat": "x",
+  "tracedFrom": "R-r1-2",
+  "opaquePx": 2048
+ },
+ {
+  "name": "win_balcony",
+  "kind": "건물 조립",
+  "note": "발코니 창",
+  "size": [
+   64,
+   32
+  ],
+  "cells": [
+   2,
+   1
+  ],
+  "cellCount": 2,
+  "walk": [
+   "XX"
+  ],
+  "repeat": "x",
+  "tracedFrom": "R-r1-2",
+  "opaquePx": 2048
+ },
+ {
+  "name": "side_conc",
+  "kind": "건물 조립",
+  "note": "어두운 옆면",
+  "size": [
+   32,
+   32
+  ],
+  "cells": [
+   1,
+   1
+  ],
+  "cellCount": 1,
+  "walk": [
+   "X"
+  ],
+  "repeat": "y",
+  "tracedFrom": "R-r1-2",
+  "opaquePx": 1024
+ },
+ {
+  "name": "wall_conc_g",
+  "kind": "상가 앞면",
+  "note": "1층 벽(2칸 높이)",
+  "size": [
+   32,
+   64
+  ],
+  "cells": [
+   1,
+   2
+  ],
+  "cellCount": 2,
+  "walk": [
+   "X",
+   "X"
+  ],
+  "repeat": "x",
+  "tracedFrom": "R-r1-2",
+  "opaquePx": 2048
+ },
+ {
+  "name": "ent_conc",
+  "kind": "상가 앞면",
+  "note": "현관",
+  "size": [
+   64,
+   64
+  ],
+  "cells": [
+   2,
+   2
+  ],
+  "cellCount": 4,
+  "walk": [
+   "XX",
+   "XX"
+  ],
+  "repeat": "-",
+  "tracedFrom": "R-r1-2",
+  "opaquePx": 4096
+ },
+ {
+  "name": "shutter",
+  "kind": "상가 앞면",
+  "note": "셔터",
+  "size": [
+   64,
+   64
+  ],
+  "cells": [
+   2,
+   2
+  ],
+  "cellCount": 4,
+  "walk": [
+   "XX",
+   "XX"
+  ],
+  "repeat": "-",
+  "tracedFrom": "R-r1-2",
+  "opaquePx": 4096
+ },
+ {
+  "name": "rt_tank",
+  "kind": "옥상 소품",
+  "note": "물탱크",
+  "size": [
+   64,
+   64
+  ],
+  "cells": [
+   2,
+   2
+  ],
+  "cellCount": 4,
+  "walk": [
+   "XX",
+   "XX"
+  ],
+  "repeat": "-",
+  "tracedFrom": "P-r2-1/3",
+  "opaquePx": 2342
+ },
+ {
+  "name": "rt_ac",
+  "kind": "옥상 소품",
+  "note": "실외기",
+  "size": [
+   32,
+   32
+  ],
+  "cells": [
+   1,
+   1
+  ],
+  "cellCount": 1,
+  "walk": [
+   "X"
+  ],
+  "repeat": "-",
+  "tracedFrom": "P-r2-1/3",
+  "opaquePx": 748
+ },
+ {
+  "name": "rt_stair",
+  "kind": "옥상 소품",
+  "note": "계단실",
+  "size": [
+   64,
+   32
+  ],
+  "cells": [
+   2,
+   1
+  ],
+  "cellCount": 2,
+  "walk": [
+   "XX"
+  ],
+  "repeat": "-",
+  "tracedFrom": "P-r2-1/3",
+  "opaquePx": 1830
+ },
+ {
+  "name": "tree1",
+  "kind": "가로 소품",
+  "note": "가로수 A(밑 줄기 칸만 막힘)",
+  "size": [
+   64,
+   96
+  ],
+  "cells": [
+   2,
+   3
+  ],
+  "cellCount": 6,
+  "walk": [
+   "..",
+   "..",
+   "XX"
+  ],
+  "repeat": "-",
+  "tracedFrom": "P-r2-1/3",
+  "opaquePx": 2903
+ },
+ {
+  "name": "tree2",
+  "kind": "가로 소품",
+  "note": "가로수 B",
+  "size": [
+   64,
+   96
+  ],
+  "cells": [
+   2,
+   3
+  ],
+  "cellCount": 6,
+  "walk": [
+   "..",
+   "..",
+   "XX"
+  ],
+  "repeat": "-",
+  "tracedFrom": "P-r2-1/3",
+  "opaquePx": 2484
+ },
+ {
+  "name": "vend_red",
+  "kind": "가로 소품",
+  "note": "자판기 빨강",
+  "size": [
+   32,
+   64
+  ],
+  "cells": [
+   1,
+   2
+  ],
+  "cellCount": 2,
+  "walk": [
+   ".",
+   "X"
+  ],
+  "repeat": "-",
+  "tracedFrom": "P-r2-1/3",
+  "opaquePx": 1780
+ },
+ {
+  "name": "vend_blue",
+  "kind": "가로 소품",
+  "note": "자판기 파랑",
+  "size": [
+   32,
+   64
+  ],
+  "cells": [
+   1,
+   2
+  ],
+  "cellCount": 2,
+  "walk": [
+   ".",
+   "X"
+  ],
+  "repeat": "-",
+  "tracedFrom": "P-r2-1/3",
+  "opaquePx": 1780
+ },
+ {
+  "name": "lamp",
+  "kind": "가로 소품",
+  "note": "가로등",
+  "size": [
+   32,
+   96
+  ],
+  "cells": [
+   1,
+   3
+  ],
+  "cellCount": 3,
+  "walk": [
+   ".",
+   ".",
+   "X"
+  ],
+  "repeat": "-",
+  "tracedFrom": "P-r2-1/3",
+  "opaquePx": 798
+ },
+ {
+  "name": "tlight",
+  "kind": "가로 소품",
+  "note": "신호등",
+  "size": [
+   32,
+   96
+  ],
+  "cells": [
+   1,
+   3
+  ],
+  "cellCount": 3,
+  "walk": [
+   ".",
+   ".",
+   "X"
+  ],
+  "repeat": "-",
+  "tracedFrom": "P-r2-1/3",
+  "opaquePx": 1078
+ },
+ {
+  "name": "guardrail",
+  "kind": "가로 소품",
+  "note": "가드레일",
+  "size": [
+   32,
+   32
+  ],
+  "cells": [
+   1,
+   1
+  ],
+  "cellCount": 1,
+  "walk": [
+   "X"
+  ],
+  "repeat": "x",
+  "tracedFrom": "P-r2-1/3",
+  "opaquePx": 524
+ },
+ {
+  "name": "taxi",
+  "kind": "가로 소품",
+  "note": "택시",
+  "size": [
+   128,
+   64
+  ],
+  "cells": [
+   4,
+   2
+  ],
+  "cellCount": 8,
+  "walk": [
+   "vvvv",
+   "vvvv"
+  ],
+  "repeat": "-",
+  "tracedFrom": "P-r2-1/3",
+  "opaquePx": 4112
+ },
+ {
+  "name": "manhole",
+  "kind": "바닥",
+  "note": "맨홀(장식)",
+  "size": [
+   32,
+   32
+  ],
+  "cells": [
+   1,
+   1
+  ],
+  "cellCount": 1,
+  "walk": [
+   "."
+  ],
+  "repeat": "-",
+  "tracedFrom": "P-r2-1/3",
+  "opaquePx": 332
+ },
+ {
+  "name": "shadow_wall",
+  "kind": "바닥",
+  "note": "건물 밑 그림자(장식)",
+  "size": [
+   32,
+   32
+  ],
+  "cells": [
+   1,
+   1
+  ],
+  "cellCount": 1,
+  "walk": [
+   "."
+  ],
+  "repeat": "x",
+  "tracedFrom": "scene.png(C 장면)",
+  "opaquePx": 192
+ },
+ {
+  "name": "shadow_tree",
+  "kind": "바닥",
+  "note": "나무 그림자(장식)",
+  "size": [
+   64,
+   32
+  ],
+  "cells": [
+   2,
+   1
+  ],
+  "cellCount": 2,
+  "walk": [
+   ".."
+  ],
+  "repeat": "-",
+  "tracedFrom": "scene.png(C 장면)",
+  "opaquePx": 488
+ },
+ {
+  "name": "shadow_car",
+  "kind": "바닥",
+  "note": "차 그림자(장식)",
+  "size": [
+   128,
+   32
+  ],
+  "cells": [
+   4,
+   1
+  ],
+  "cellCount": 4,
+  "walk": [
+   "...."
+  ],
+  "repeat": "-",
+  "tracedFrom": "scene.png(C 장면)",
+  "opaquePx": 1284
+ },
+ {
+  "name": "tactile",
+  "kind": "바닥",
+  "note": "점자블록 띠",
+  "size": [
+   32,
+   32
+  ],
+  "cells": [
+   1,
+   1
+  ],
+  "cellCount": 1,
+  "walk": [
+   "."
+  ],
+  "repeat": "x",
+  "tracedFrom": "scene.png(C 장면)",
+  "opaquePx": 256
+ },
+ {
+  "name": "ground_sidewalk",
+  "kind": "바닥",
+  "note": "인도 블록",
+  "size": [
+   32,
+   32
+  ],
+  "cells": [
+   1,
+   1
+  ],
+  "cellCount": 1,
+  "walk": [
+   "."
+  ],
+  "repeat": "xy",
+  "tracedFrom": "scene.png(C 장면)",
+  "opaquePx": 1024
+ },
+ {
+  "name": "ground_curb",
+  "kind": "바닥",
+  "note": "연석(인도→차도)",
+  "size": [
+   32,
+   32
+  ],
+  "cells": [
+   1,
+   1
+  ],
+  "cellCount": 1,
+  "walk": [
+   "X"
+  ],
+  "repeat": "x",
+  "tracedFrom": "scene.png(C 장면)",
+  "opaquePx": 1024
+ },
+ {
+  "name": "ground_road",
+  "kind": "바닥",
+  "note": "차도",
+  "size": [
+   32,
+   32
+  ],
+  "cells": [
+   1,
+   1
+  ],
+  "cellCount": 1,
+  "walk": [
+   "v"
+  ],
+  "repeat": "xy",
+  "tracedFrom": "scene.png(C 장면)",
+  "opaquePx": 1024
+ },
+ {
+  "name": "ground_lane",
+  "kind": "바닥",
+  "note": "차선(파선)",
+  "size": [
+   32,
+   32
+  ],
+  "cells": [
+   1,
+   1
+  ],
+  "cellCount": 1,
+  "walk": [
+   "v"
+  ],
+  "repeat": "x",
+  "tracedFrom": "scene.png(C 장면)",
+  "opaquePx": 1024
+ },
+ {
+  "name": "ground_crosswalk",
+  "kind": "바닥",
+  "note": "횡단보도",
+  "size": [
+   32,
+   32
+  ],
+  "cells": [
+   1,
+   1
+  ],
+  "cellCount": 1,
+  "walk": [
+   "."
+  ],
+  "repeat": "y",
+  "tracedFrom": "scene.png(C 장면)",
+  "opaquePx": 1024
+ }
+]

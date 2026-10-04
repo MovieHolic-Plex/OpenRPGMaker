@@ -1,0 +1,28 @@
+// 같은 방 화풍: drain_grate 와 같은 돌 결·한 칸 여백, 북쪽 안벽이 보이는 부서진 구멍 가장자리
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat a stone 1
+@mat b stone 2
+@mat c stone 3
+@mat d stone 4
+@mat e stone 5
+@mat k black 1
+@mat m black 2
+@mblock 0 0
+................
+....edddddd.....
+..edddddddddc...
+.edcbbbbbbbbbcc.
+.ddbaaaaaaaaabc.
+.dcakkkkkkkkkac.
+.dbakkmkkkkkkab.
+.dbkkkkkkkkkkab.
+.cbkkkkkkmkkkab.
+.cbakkkkkkkkkbb.
+.dcakkkkkkkkkbb.
+..cbakkkkkkkbbc.
+..dcbaakkkkabcc.
+..dddcbbbbbbccb.
+..ddddccccccbbb.
+...cccbbbbbbbb..

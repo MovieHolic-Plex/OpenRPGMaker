@@ -1,0 +1,23 @@
+import { chromium } from "playwright";
+const b = await chromium.launch({ headless: true, args: ["--disable-dev-shm-usage"] });
+const page = await b.newPage({ viewport: { width: 1440, height: 900 } });
+await page.addInitScript(() => { localStorage.setItem("oprn:standard-welcome-seen", "1"); localStorage.setItem("oprn:ai-panel-collapsed", "1"); });
+await page.goto((process.env.QA_BASE_URL ?? "http://127.0.0.1:9850") + "/?freshProject=1", { waitUntil: "domcontentloaded" });
+await page.getByTestId("edit-canvas").waitFor({ timeout: 90000 });
+await page.waitForTimeout(3000);
+console.log(await page.evaluate(() => {
+  const btn = document.querySelector("[data-testid='layer-upper']");
+  const t = (name, el, cls) => { const runs = []; for (let i = 0; i < 3; i++) { document.body.offsetHeight; el.classList.toggle(cls); const t0 = performance.now(); document.body.offsetHeight; runs.push(performance.now() - t0); document.body.offsetHeight; } return `${name} .${cls}: ${Math.min(...runs).toFixed(1)}`; };
+  const res = [];
+  res.push(t("btn", btn, "is-active"));
+  res.push(t("btn", btn, "is-on"));
+  res.push(t("btn", btn, "active"));
+  res.push(t("btn parent", btn.parentElement, "is-active"));
+  res.push(t("canvas", document.querySelector("[data-testid='edit-canvas']"), "is-active"));
+  res.push(t("body", document.body, "is-active"));
+  res.push(t("some tile", document.querySelector("[data-testid='tile-search-input']") ?? document.body, "is-active"));
+  const other = document.querySelector("[data-testid='layer-lower']");
+  res.push(t("layer-lower", other, "is-active"));
+  return res.join("\n") + "\n" + btn.outerHTML.slice(0,200) + "\nancestors: " + (() => { const a=[]; for (let e=btn;e;e=e.parentElement) a.push(e.tagName+"."+[...e.classList].join(".")); return a.join(" < "); })();
+}));
+await b.close();

@@ -1,0 +1,44 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/cave/v3-A.pxg",
+ "set": "worldmap",
+ "id": "cave",
+ "hard": [],
+ "warn": [
+  "메모 없음: <후보>.note 에 한 줄"
+ ],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.012
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.102
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 5,
+ "bbox": [
+  0,
+  2,
+  15,
+  15
+ ],
+ "note": "",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 1,
+   "atLeast95": 0,
+   "max": 0.328
+  },
+  "refmapWorld": {
+   "cells": 1,
+   "atLeast95": 0,
+   "max": 0.255
+  }
+ }
+}

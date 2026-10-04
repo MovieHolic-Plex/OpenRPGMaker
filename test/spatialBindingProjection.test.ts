@@ -7,6 +7,7 @@ import { duplicateSpatialOccurrence } from "@/project/spatial/duplicate";
 import { deleteSpatialOccurrence, detachSpatialOccurrence, inspectSpatialOccurrenceDeletion, occurrenceSubtree } from "@/project/spatial/ownership";
 import { spatialBindingFixture } from "./support/spatialSchemaFixture";
 import { projectionFixture, savedProjectionInput } from "./support/spatialProjectionFixture";
+import { SPATIAL_SIZE_MAX } from "@/project/spatial/types";
 
 describe("non-owning compiled projections", () => {
   it.each([serialize, serializePretty])("retains authored coincident coordinates when full-space ownership and child projection roundtrip", encode => {
@@ -66,7 +67,7 @@ describe("non-owning compiled projections", () => {
     { name: "extent crosses map edge", patch: { rect: { x: 13, y: 11, width: 2, height: 1 } }, path: "rect" },
     { name: "negative extent", patch: { rect: { x: -1, y: 11, width: 1, height: 1 } }, path: "rect" },
     { name: "zero extent", patch: { rect: { x: 7, y: 11, width: 0, height: 1 } }, path: "rect.width" },
-    { name: "oversized extent", patch: { rect: { x: 7, y: 11, width: 257, height: 1 } }, path: "rect.width" },
+    { name: "oversized extent", patch: { rect: { x: 7, y: 11, width: SPATIAL_SIZE_MAX + 1, height: 1 } }, path: "rect.width" },
     { name: "fractional extent", patch: { rect: { x: 7.5, y: 11, width: 1, height: 1 } }, path: "rect.x" },
     { name: "nonfinite extent", patch: { rect: { x: NaN, y: 11, width: 1, height: 1 } }, path: "rect.x" },
     { name: "unknown kind", patch: { kind: "owned" }, path: "kind" },

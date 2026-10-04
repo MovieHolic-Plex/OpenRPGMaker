@@ -1,0 +1,62 @@
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat a vdwood 1
+@mat b vdwood 5
+@mat c vdwood 6
+@mat d vdwood 0
+@mat e vdwood 4
+@mat f vdwood 3
+@mat g vdwood 2
+@mat h vwhite 4
+@mat i vwhite 1
+@mat j vgreen 4
+@mat k vgreen 1
+@mat l vred 4
+@mat m vred 3
+@mat n vred 1
+@mat o vblue 5
+@mat p vblue 4
+@mat q vblue 2
+@mat r vwhite 3
+@mat s vgreen 3
+@mat t vgreen 5
+@mat u vgreen 2
+@mat v vyellow 4
+@mat w vyellow 1
+@mat x vred 5
+@mat y vred 2
+@mat z vyellow 3
+@mblock 0 0
+..aaaaaaaaaaaaaaaaaaaaaaaaaaaa..
+.abbbbbbbbbbbbbbbbbbbbbbbbbbbba.
+.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.
+.cccccccccccccccccccccccccccccc.
+.dddddddddddddddddddddddddddddd.
+.dddddddddddddddddddddddddddddd.
+.effffffffffffffffffffffffffffg.
+.eeaaaaaaaaaaaaahijkaaaaaaaaagg.
+.eelmnlmnaaopqlnhrjstulnvwhiagg.
+.eelmmlmmxyopplmhrjstjlmvzhragg.
+.eelmmlmmxlopplmhrjstjlmvzhragg.
+.eelmmlmmxlopplmhrjstjlmvzhragg.
+.eelmmlmmxlopplmhrjstjlmvzhragg.
+.eeeeeeeeeeeeeeeeeeeeeeeeeeeegg.
+.eegggggggggggggggggggxlytugggg.
+.eevzwoqaaajskaaaaaaxyxlltjaagg.
+.eevzzopxlyjssxlyxlyxlxlltjhigg.
+.eevzzopxlljssxllxllxlxlltjhrgg.
+.eevzzopxlljssxllxllxlxlltjhrgg.
+.eevzzopxlljssxllxllxlxlltjhrgg.
+.eeeeeeeeeeeeeeeeeeeeeeeeeeeegg.
+.eeggxygggggggggggggggggggggggg.
+.eeoqxlaaavwtuhriaaaaaaxyxlyagg.
+.eeopxltjuvztjhrrxlyopqxlxllagg.
+.eeopxltjjvztjhrrxlloppxlxllagg.
+.eeopxltjjvztjhrrxlloppxlxllagg.
+.eeopxltjjvztjhrrxlloppxlxllagg.
+.efeeeeeeeeeeeeeeeeeeeeeeeeeefg.
+.gggggggggggggggggggggggggggggg.
+..~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+..------------------------------

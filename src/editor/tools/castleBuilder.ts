@@ -2,7 +2,7 @@
 // 금본: map_castle_keep + openwiki/castle-map.md
 
 import { evaluateCastle, stampCastle, type Rect } from "@/editor/castleKit";
-import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
 import type { GameMap, Project } from "@/project/types";
 import { EVENT_TOOLS } from "./eventTools";
@@ -207,18 +207,18 @@ function requireMap(draft: Project, mapId: string): GameMap {
 }
 
 function ensureCombinedTown(draft: Project, map: GameMap, warnings: string[], existingMap: boolean): void {
-  if (map.tilesetId !== DEFAULT_TILESET_ID) {
+  if (map.tilesetId !== COMBINED_TOWN_TILESET_ID) {
     // 기존 맵의 타일셋을 바꾸면 성 밖 칸까지 다른 시트의 그림으로 읽힌다(2026-09-27 전수 조사). 방금 만든 맵만 바꾼다.
     if (existingMap) {
       throw new ToolError(
-        `build_castle 은 합본 마을(${DEFAULT_TILESET_ID}) 전용인데 이 맵은 ${map.tilesetId} 로 이미 칠해져 있습니다. ` +
+        `build_castle 은 합본 마을(${COMBINED_TOWN_TILESET_ID}) 전용인데 이 맵은 ${map.tilesetId} 로 이미 칠해져 있습니다. ` +
           "타일셋을 바꾸면 성 밖 칸이 다른 그림으로 바뀌므로 거절합니다 — 새 맵에 성을 지으세요(mapId 생략).",
         { code: "tileset-mismatch", mapId: map.id },
       );
     }
-    if (draft.tilesets[DEFAULT_TILESET_ID]) {
-      map.tilesetId = DEFAULT_TILESET_ID;
-      warnings.push(`타일셋을 ${DEFAULT_TILESET_ID}로 맞췄습니다 (성채 모듈 전용).`);
+    if (draft.tilesets[COMBINED_TOWN_TILESET_ID]) {
+      map.tilesetId = COMBINED_TOWN_TILESET_ID;
+      warnings.push(`타일셋을 ${COMBINED_TOWN_TILESET_ID}로 맞췄습니다 (성채 모듈 전용).`);
     } else {
       warnings.push(`Combined Town 타일셋이 없습니다 — 현재 tilesetId=${map.tilesetId}`);
     }

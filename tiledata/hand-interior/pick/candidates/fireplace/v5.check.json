@@ -1,0 +1,35 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/fireplace/v5.pxg",
+ "id": "fireplace",
+ "hard": [
+  "bg: 배경이 투명하지 않다(귀퉁이 둘 이상이 불투명)"
+ ],
+ "warn": [
+  "파일 이름이 <작업자>-<방향>.pxg 꼴이 아니다(w1-A.pxg): v5.pxg",
+  "메모 없음: <후보>.note 에 한 줄"
+ ],
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.059
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 21,
+ "v5_colors": 21,
+ "bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "note": "",
+ "ok": false
+}

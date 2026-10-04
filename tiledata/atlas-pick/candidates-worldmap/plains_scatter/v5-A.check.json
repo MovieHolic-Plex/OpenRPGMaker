@@ -1,0 +1,44 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/plains_scatter/v5-A.pxg",
+ "set": "worldmap",
+ "id": "plains_scatter",
+ "hard": [],
+ "warn": [
+  "메모 없음: <후보>.note 에 한 줄"
+ ],
+ "easyrpg": {
+  "cells": 0,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "refmap": {
+  "cells": 0,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 3,
+ "bbox": [
+  4,
+  3,
+  38,
+  13
+ ],
+ "note": "",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 0,
+   "atLeast95": 0,
+   "max": 0.0
+  },
+  "refmapWorld": {
+   "cells": 0,
+   "atLeast95": 0,
+   "max": 0.0
+  }
+ }
+}

@@ -1,0 +1,61 @@
+// A: 넓은 외날 전투 도끼와 돌기 철퇴를 나무 걸쇠에 건 전형적인 JRPG 무기 진열.
+@size 32 16
+@cell 16
+@palette palette.pal
+@mat a iron 1
+@mat b iron 2
+@mat c iron 3
+@mat d iron 4
+@mat e iron 5
+@mat f iron 6
+@mat w pine 1
+@mat x pine 2
+@mat y pine 3
+@mat z pine 4
+@mat r dwood 1
+@mat s dwood 2
+@mat t dwood 3
+@layer wooden-rack
+@mblock 2 7
+wyyyyzyyyyyyyxyyyyyyzyyyyyyw
+wxxxyxxxxxyxxxxxxxxxyxxxxxww
+wwwwwwwwwwwwwwwwwwwwwwwwwwww
+@mblock 11 6
+xzw
+@mblock 23 6
+xzw
+@layer weapons
+@mblock 3 0
+..bbbb......
+.cfeecc.....
+cfeeddcbbb..
+ceedddcdeba.
+ceddcccbeba.
+cddccb..xba.
+.cddb...zyw.
+..cb....zyw.
+........zyw.
+........xyw.
+........xyw.
+........xyw.
+........xyw.
+........xyw.
+........xyw.
+........www.
+@mblock 20 0
+....c....
+..bcecb..
+.bcefedb.
+cceeddcba
+.cdddcba.
+bcddccbab
+.bbccbb..
+...cdc...
+...xyw...
+...xyw...
+...xyw...
+...xts...
+...yts...
+...xts...
+...xts...
+...bbb...

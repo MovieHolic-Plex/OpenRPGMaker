@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/canopy_bed/w4-B.pxg",
+ "id": "canopy bed",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.035
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 29,
+ "v5_colors": 26,
+ "bbox": [
+  0,
+  0,
+  29,
+  47
+ ],
+ "v5_bbox": [
+  0,
+  0,
+  31,
+  47
+ ],
+ "note": "강한 빛/그림자: 기둥 wood7 하이라이트, 닫집 purple6 윗면, 이불 U/W 대비, 오른쪽 벽에 ~/- 그림자(몸을 30px로 좁힘)",
+ "ok": true
+}

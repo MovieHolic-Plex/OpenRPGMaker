@@ -1,0 +1,43 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/desert/w5-B.pxg",
+ "set": "worldmap",
+ "id": "desert",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.011
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.387
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 6,
+ "bbox": [
+  0,
+  0,
+  47,
+  60
+ ],
+ "note": "빛·부피 — 왼쪽 위 밝은 등성이(가장 밝은 모래)와 오른쪽 아래 그늘의 도드라진 모래 언덕, 테는 밝은 윗줄+어두운 아랫줄",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.022
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.022
+  },
+  "seam": 0.45
+ }
+}

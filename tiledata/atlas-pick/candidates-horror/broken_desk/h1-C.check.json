@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/broken_desk/h1-C.pxg",
+ "set": "horror",
+ "id": "broken_desk",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.03
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.072
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "dither"
+  ]
+ },
+ "colors": 16,
+ "bbox": [
+  0,
+  3,
+  15,
+  15
+ ],
+ "note": "C: 실루엣 재해석 — 책상이 무릎 꿇은 듯 오른쪽으로 크게 기울고 부러진 다리가 뼈처럼 밖으로 꺾였다. 의자가 그 옆에서 다리를 책상 쪽으로 뻗어 붙잡으려는 모양. 어긋난 곳은 꺾인 다리와 뻗은 의자 다리.",
+ "ok": true
+}

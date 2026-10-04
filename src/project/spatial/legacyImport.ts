@@ -3,7 +3,7 @@ import { CONCEPT_FACILITY_TEMPLATES } from "../defaults/conceptFacilityTemplates
 import { INTERIOR_OBJECT_CATALOG } from "../defaults/interiorObjectCatalog";
 import { deserialize } from "../io";
 import { assert, requireRecord } from "../io/guards";
-import { INTERIOR_TILESET_ID } from "../mapCreateSpec";
+import { EASYRPG_INTERIOR_TILESET_ID as INTERIOR_TILESET_ID } from "../mapCreateSpec";
 import type { ConceptPlaceRecord } from "../types/conceptBundle";
 import type { Project, StructureKitDef } from "../types";
 import { resolveSpatialGraphic } from "./assets";

@@ -18,10 +18,22 @@ export function createForestHarmonyTileset(): TilesetDef {
   return tileset;
 }
 
-/** New outdoor authoring prefers the bundled forest atlas; old stripped projects remain usable. */
-export function defaultOutdoorTilesetId(project: Pick<Project, "tilesets">): string {
+/**
+ * 새 야외 저작의 기본 타일셋.
+ * - 버들항(기본 타일셋)을 가졌고 **모든 맵이 버들항**이면(새 프로젝트, 버들항만 쓰는 프로젝트) 버들항이다 —
+ *   "마을 만들어 줘" 가 숲마을이나 합본 마을로 새어 나가지 않게 한다.
+ * - 이미 숲마을·합본 마을 등 다른 계열 맵이 하나라도 있으면 종전대로 숲마을(없으면 기본 타일셋)을 유지한다.
+ *   기존 프로젝트의 기본값을 바꾸지 않는다.
+ */
+export function defaultOutdoorTilesetId(project: Pick<Project, "tilesets"> & Partial<Pick<Project, "maps">>): string {
+  if (project.tilesets[DEFAULT_TILESET_ID] && onlyDefaultTilesetMaps(project.maps)) return DEFAULT_TILESET_ID;
   return isForestHarmonyTileset(project.tilesets[FOREST_HARMONY_ID])
     ? FOREST_HARMONY_ID : DEFAULT_TILESET_ID;
+}
+
+function onlyDefaultTilesetMaps(maps: Project["maps"] | undefined): boolean {
+  if (!maps) return false;
+  return Object.values(maps).every((m) => m.tilesetId === DEFAULT_TILESET_ID);
 }
 
 /** tilesetId 생략 도구의 대상: 시작 맵 타일셋, 없으면 새 야외 기본(숲마을). 합본 마을로 폴백하지 않는다. */

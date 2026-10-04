@@ -1,0 +1,34 @@
+// w8-B x
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat T wood 7
+@mat L wood 6
+@mat M wood 4
+@mat d wood 2
+@mat e wood 1
+@mat h wood 6
+@mat s wood 3
+@mat t wood 1
+@mat H iron 6
+@mat I iron 5
+@mat G iron 3
+@mat J iron 2
+@mat K iron 1
+@mblock 0 0
+................
+................
+.TTTTTTTTTTTTTd.
+.LLLLLLLLLLLLMd.
+.MMMMMMMMMMMMMd.
+.eeeeeeeeeeeeee.
+...hs~.....hs~..
+..HHHHH..HHHHH..
+.HIIIIGHHIIIIIGH
+KKGGGGGJKGGGGGJK
+...KhsJ~...hsJ~.
+....hs~....hs~..
+....hs~....hs~..
+....hs~....hs~..
+....tt~....tt~..
+................

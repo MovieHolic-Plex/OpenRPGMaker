@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/stove/w44-A.pxg",
+ "id": "stove",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.086
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 10,
+ "v5_colors": 10,
+ "bbox": [
+  1,
+  8,
+  14,
+  31
+ ],
+ "v5_bbox": [
+  1,
+  8,
+  14,
+  31
+ ],
+ "note": "관문 ok t=5 f=19(object t=5 f=18). 윗판 4줄(철판+화구 점 둘)+밝은 앞모서리+처마 그림자로 3/4화, 불구멍(마스크 행 15~23)은 v5 그대로.",
+ "ok": true
+}

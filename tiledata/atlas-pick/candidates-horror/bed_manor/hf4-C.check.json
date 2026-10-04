@@ -1,0 +1,36 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/bed_manor/hf4-C.pxg",
+ "set": "horror",
+ "id": "bed_manor",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.062
+ },
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.051
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies",
+   "outline",
+   "outline_black",
+   "noise",
+   "dither"
+  ]
+ },
+ "colors": 17,
+ "bbox": [
+  0,
+  10,
+  15,
+  47
+ ],
+ "note": "C: 마녀의 집 결 — 머리판 위 꼭지 둘 + 가운데 아치, 안쪽 판에 새긴 마름모, 베개 모서리 금 술, 벨벳 마름모 누빔(어두운 사선 + 금 점), 밑단 톱니와 금 술, 발판 널 이음",
+ "ok": true
+}

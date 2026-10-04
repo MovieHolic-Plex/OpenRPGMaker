@@ -1,0 +1,36 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/spinning_wheel/w91-A.pxg",
+ "id": "spinning wheel",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "saturation",
+   "light",
+   "dither"
+  ],
+  "pass": false
+ },
+ "colors": 11,
+ "v5_colors": 9,
+ "bbox": [
+  1,
+  1,
+  14,
+  15
+ ],
+ "v5_bbox": [
+  1,
+  1,
+  14,
+  15
+ ],
+ "note": "v5 원본 모양·색 유지, 윗면 T 를 가장 밝은 단으로 재조명하고 앞모서리 하이라이트·뒤모서리선·처마 그림자 추가",
+ "ok": true
+}

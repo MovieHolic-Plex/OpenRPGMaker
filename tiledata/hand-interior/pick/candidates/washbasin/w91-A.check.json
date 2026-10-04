@@ -1,0 +1,36 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/washbasin/w91-A.pxg",
+ "id": "washbasin",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.12
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "outline",
+   "outline_black",
+   "light"
+  ],
+  "pass": false
+ },
+ "colors": 14,
+ "v5_colors": 14,
+ "bbox": [
+  1,
+  8,
+  14,
+  31
+ ],
+ "v5_bbox": [
+  1,
+  8,
+  14,
+  31
+ ],
+ "note": "v5 원본 모양·색 유지, 윗면 T 를 가장 밝은 단으로 재조명하고 앞모서리 하이라이트·뒤모서리선·처마 그림자 추가",
+ "ok": true
+}

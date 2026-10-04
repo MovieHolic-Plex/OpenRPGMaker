@@ -3,6 +3,7 @@
 // 2026-08-27 커버리지 감사(.omo/evidence/ai-editor-reach-20260827/coverage-audit.md)에서
 // 에디터 UI 는 쓰는데 어떤 툴도 쓰지 못하던 저작 필드를 담당한다.
 // UI 패리티: editor/panels/databaseSystemView.ts(배틀 모델/선물/보상 체크박스, 옵트인 섹션).
+import { applyBattleMethod } from "@/project/battleMethod";
 import { GENRE_PACK_IDS, isGenrePackId } from "@/project/genrePackId";
 import type { MonsterCareConfig, RewardPolicy, SystemRecords } from "@/project/types";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
@@ -90,10 +91,10 @@ function applySection(system: SystemRecords, key: (typeof SECTIONS)[number], val
   switch (key) {
     case "battleModel": {
       const model = parseBattleModel(value);
-      // rm2k3 은 기본값이므로 저장하지 않는다(normalizeSystemRecords·UI 와 같은 계약).
-      if (model === "gen1") system.battleModel = "gen1";
-      else delete system.battleModel;
-      return `배틀 모델 ${model}`;
+      // 규칙만 따로 바꾸면 화면과 어긋난다 — 자료집 「전투 방식」과 같이 화면까지 맞춘다(2026-10-02, project/battleMethod.ts).
+      // gen1 = 몬스터 대치(pokemon), rm2k3 = 도트 측면(기본값이라 두 키 모두 지운다).
+      applyBattleMethod({ system }, model === "gen1" ? "monster" : "side");
+      return `배틀 모델 ${model} (전투 화면 ${model === "gen1" ? "몬스터 대치" : "도트 측면"})`;
     }
     case "giftSystem": {
       if (typeof value !== "boolean") throw new ToolError("giftSystem은 true/false 여야 합니다.", { code: "invalid-args" });
@@ -138,7 +139,7 @@ const configureGameSystems: ToolDefinition = {
       battleModel: {
         type: "string",
         enum: [...BATTLE_MODELS],
-        description: "전투 규칙 엔진. rm2k3(기본·필드 삭제) 또는 gen1(포켓몬 레드 스타일, 구현 중).",
+        description: "전투 방식. rm2k3 = 도트 측면 RM식 규칙(기본·필드 삭제), gen1 = 몬스터 대치(포켓몬식). 전투 화면(battleUiStyle)도 같이 맞춘다 — set_project_settings battle.uiStyle 과 같은 효과.",
       },
       giftSystem: { type: "boolean", description: "선물 시스템 on/off. false 면 필드를 지운다." },
       rewardPolicy: {

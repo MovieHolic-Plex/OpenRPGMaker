@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/menu_board/h45-E.pxg",
+ "id": "menu board",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.055
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 12,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  0,
+  14,
+  15
+ ],
+ "v5_bbox": null,
+ "note": "사슬 두 가닥에 매단 나무틀 칠판 + 아래 분필 선반; 왼쪽 글 두 줄, 오른쪽 잔·빵 그림(게시판과 같은 틀 굵기)",
+ "ok": true
+}

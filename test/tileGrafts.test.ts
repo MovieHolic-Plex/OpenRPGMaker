@@ -5,7 +5,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { serialize, deserialize } from "@/project/io";
 import { createBlankProject } from "@/project/defaults";
 import { normalizeSystemRecords } from "@/project/databaseRecordModel";
-import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { store } from "@/project/store";
 import { addTileGraft, removeTileGraft } from "@/editor/tilesetActions";
 import { tilesetTextureKey } from "@/editor/tilesetImage";
@@ -20,7 +20,7 @@ import type { Project, TilesetDef } from "@/project/types";
 const RETRO_HOUSE = "tex_easyrpg_chipset_retro_house";
 
 function tileset(): TilesetDef {
-  const found = store.getCurrent().tilesets[DEFAULT_TILESET_ID];
+  const found = store.getCurrent().tilesets[COMBINED_TOWN_TILESET_ID];
   if (!found) throw new Error("blank 프로젝트에 기본 타일셋이 없습니다");
   return found;
 }
@@ -34,10 +34,10 @@ beforeEach(() => {
 
 describe("타일 이식 직렬화 검증", () => {
   it("tileGrafts 가 직렬화 왕복 후 보존된다", () => {
-    const result = addTileGraft(DEFAULT_TILESET_ID, { targetTile: 411, sourceChipset: RETRO_HOUSE, sourceTile: 442 });
+    const result = addTileGraft(COMBINED_TOWN_TILESET_ID, { targetTile: 411, sourceChipset: RETRO_HOUSE, sourceTile: 442 });
     expect(result.ok).toBe(true);
     const restored = deserialize(serialize(store.getCurrent()));
-    expect(restored.tilesets[DEFAULT_TILESET_ID].tileGrafts).toEqual([
+    expect(restored.tilesets[COMBINED_TOWN_TILESET_ID].tileGrafts).toEqual([
       { targetTile: 411, sourceChipset: RETRO_HOUSE, sourceTile: 442 },
     ]);
   });
@@ -46,8 +46,8 @@ describe("타일 이식 직렬화 검증", () => {
     const raw = JSON.parse(serialize(store.getCurrent())) as {
       tilesets: Record<string, { count: number; tileGrafts?: unknown }>;
     };
-    raw.tilesets[DEFAULT_TILESET_ID].tileGrafts = [
-      { targetTile: raw.tilesets[DEFAULT_TILESET_ID].count, sourceChipset: RETRO_HOUSE, sourceTile: 1 },
+    raw.tilesets[COMBINED_TOWN_TILESET_ID].tileGrafts = [
+      { targetTile: raw.tilesets[COMBINED_TOWN_TILESET_ID].count, sourceChipset: RETRO_HOUSE, sourceTile: 1 },
     ];
     expect(() => deserialize(JSON.stringify(raw))).toThrow(/targetTile out of range/);
   });
@@ -58,7 +58,7 @@ describe("타일 이식 직렬화 검증", () => {
     };
     const withGraft = (graft: unknown): string => {
       const clone = structuredClone(base);
-      clone.tilesets[DEFAULT_TILESET_ID].tileGrafts = [graft];
+      clone.tilesets[COMBINED_TOWN_TILESET_ID].tileGrafts = [graft];
       return JSON.stringify(clone);
     };
     expect(() => deserialize(withGraft({ targetTile: 1, sourceChipset: "", sourceTile: 1 }))).toThrow(
@@ -74,7 +74,7 @@ describe("타일 이식 직렬화 검증", () => {
 describe("addTileGraft — 덮어쓰기 모드 (targetTile < count)", () => {
   it("count 와 배열 길이가 변하지 않고 graft 만 추가된다", () => {
     const before = tileset().count;
-    const result = addTileGraft(DEFAULT_TILESET_ID, { targetTile: 411, sourceChipset: RETRO_HOUSE, sourceTile: 442 });
+    const result = addTileGraft(COMBINED_TOWN_TILESET_ID, { targetTile: 411, sourceChipset: RETRO_HOUSE, sourceTile: 442 });
     expect(result.ok).toBe(true);
     const after = tileset();
     expect(after.count).toBe(before);
@@ -85,22 +85,22 @@ describe("addTileGraft — 덮어쓰기 모드 (targetTile < count)", () => {
   });
 
   it("이식 슬롯에 출처 라벨 메타를 남긴다 (source: user)", () => {
-    addTileGraft(DEFAULT_TILESET_ID, { targetTile: 411, sourceChipset: RETRO_HOUSE, sourceTile: 442 });
+    addTileGraft(COMBINED_TOWN_TILESET_ID, { targetTile: 411, sourceChipset: RETRO_HOUSE, sourceTile: 442 });
     const meta = tileset().tileMeta?.[411];
     expect(meta?.label).toBe(`이식: ${RETRO_HOUSE}#442`);
     expect(meta?.source).toBe("user");
   });
 
   it("같은 targetTile 에 다시 이식하면 교체된다 (중복 없음)", () => {
-    addTileGraft(DEFAULT_TILESET_ID, { targetTile: 411, sourceChipset: RETRO_HOUSE, sourceTile: 442 });
-    addTileGraft(DEFAULT_TILESET_ID, { targetTile: 411, sourceChipset: RETRO_HOUSE, sourceTile: 472 });
+    addTileGraft(COMBINED_TOWN_TILESET_ID, { targetTile: 411, sourceChipset: RETRO_HOUSE, sourceTile: 442 });
+    addTileGraft(COMBINED_TOWN_TILESET_ID, { targetTile: 411, sourceChipset: RETRO_HOUSE, sourceTile: 472 });
     expect(tileset().tileGrafts).toEqual([{ targetTile: 411, sourceChipset: RETRO_HOUSE, sourceTile: 472 }]);
   });
 
   it("잘못된 입력은 거부된다", () => {
-    expect(addTileGraft(DEFAULT_TILESET_ID, { targetTile: -1, sourceChipset: RETRO_HOUSE, sourceTile: 1 }).ok).toBe(false);
-    expect(addTileGraft(DEFAULT_TILESET_ID, { targetTile: 1, sourceChipset: "tex_unknown_chipset", sourceTile: 1 }).ok).toBe(false);
-    expect(addTileGraft(DEFAULT_TILESET_ID, { targetTile: 1, sourceChipset: RETRO_HOUSE, sourceTile: 480 }).ok).toBe(false);
+    expect(addTileGraft(COMBINED_TOWN_TILESET_ID, { targetTile: -1, sourceChipset: RETRO_HOUSE, sourceTile: 1 }).ok).toBe(false);
+    expect(addTileGraft(COMBINED_TOWN_TILESET_ID, { targetTile: 1, sourceChipset: "tex_unknown_chipset", sourceTile: 1 }).ok).toBe(false);
+    expect(addTileGraft(COMBINED_TOWN_TILESET_ID, { targetTile: 1, sourceChipset: RETRO_HOUSE, sourceTile: 480 }).ok).toBe(false);
     expect(addTileGraft("no_such_tileset", { targetTile: 1, sourceChipset: RETRO_HOUSE, sourceTile: 1 }).ok).toBe(false);
     expect(tileset().tileGrafts).toBeUndefined();
   });
@@ -112,7 +112,7 @@ describe("addTileGraft — 확장 모드 (targetTile >= count)", () => {
     const baseCount = before.count;
     const perRow = before.tilesPerRow;
     const passability0 = before.passability[0];
-    const result = addTileGraft(DEFAULT_TILESET_ID, { targetTile: baseCount, sourceChipset: RETRO_HOUSE, sourceTile: 472 });
+    const result = addTileGraft(COMBINED_TOWN_TILESET_ID, { targetTile: baseCount, sourceChipset: RETRO_HOUSE, sourceTile: 472 });
     expect(result.ok).toBe(true);
 
     const after = tileset();
@@ -146,11 +146,11 @@ describe("addTileGraft — 확장 모드 (targetTile >= count)", () => {
 describe("텍스처 캐시 키 (graft 해시 suffix)", () => {
   it("graft 유무/구성에 따라 tilesetTextureKey 가 달라진다", () => {
     const bare = tilesetTextureKey(tileset());
-    addTileGraft(DEFAULT_TILESET_ID, { targetTile: 411, sourceChipset: RETRO_HOUSE, sourceTile: 442 });
+    addTileGraft(COMBINED_TOWN_TILESET_ID, { targetTile: 411, sourceChipset: RETRO_HOUSE, sourceTile: 442 });
     const withOne = tilesetTextureKey(tileset());
     expect(withOne).not.toBe(bare);
     expect(withOne.startsWith(bare)).toBe(true); // baseKey 유지 + suffix
-    addTileGraft(DEFAULT_TILESET_ID, { targetTile: 413, sourceChipset: RETRO_HOUSE, sourceTile: 472 });
+    addTileGraft(COMBINED_TOWN_TILESET_ID, { targetTile: 413, sourceChipset: RETRO_HOUSE, sourceTile: 472 });
     const withTwo = tilesetTextureKey(tileset());
     expect(withTwo).not.toBe(withOne);
   });
@@ -178,8 +178,8 @@ describe("텍스처 캐시 키 (graft 해시 suffix)", () => {
 describe("removeTileGraft", () => {
   it("덮어쓰기 graft 제거: 필드 정리 + 라벨 원복, count 불변", () => {
     const baseCount = tileset().count;
-    addTileGraft(DEFAULT_TILESET_ID, { targetTile: 411, sourceChipset: RETRO_HOUSE, sourceTile: 442 });
-    const result = removeTileGraft(DEFAULT_TILESET_ID, 411);
+    addTileGraft(COMBINED_TOWN_TILESET_ID, { targetTile: 411, sourceChipset: RETRO_HOUSE, sourceTile: 442 });
+    const result = removeTileGraft(COMBINED_TOWN_TILESET_ID, 411);
     expect(result.ok).toBe(true);
     const after = tileset();
     expect(after.tileGrafts).toBeUndefined();
@@ -190,9 +190,9 @@ describe("removeTileGraft", () => {
 
   it("확장 graft 제거: 확장분에 남은 graft 가 없으면 count/배열이 원상 복귀된다", () => {
     const baseCount = tileset().count;
-    addTileGraft(DEFAULT_TILESET_ID, { targetTile: baseCount, sourceChipset: RETRO_HOUSE, sourceTile: 472 });
+    addTileGraft(COMBINED_TOWN_TILESET_ID, { targetTile: baseCount, sourceChipset: RETRO_HOUSE, sourceTile: 472 });
     expect(tileset().count).toBeGreaterThan(baseCount);
-    removeTileGraft(DEFAULT_TILESET_ID, baseCount);
+    removeTileGraft(COMBINED_TOWN_TILESET_ID, baseCount);
     const after = tileset();
     expect(after.count).toBe(baseCount);
     expect(after.passability).toHaveLength(baseCount);
@@ -202,14 +202,14 @@ describe("removeTileGraft", () => {
   });
 
   it("없는 이식을 지우면 에러를 반환한다", () => {
-    expect(removeTileGraft(DEFAULT_TILESET_ID, 411).ok).toBe(false);
+    expect(removeTileGraft(COMBINED_TOWN_TILESET_ID, 411).ok).toBe(false);
   });
 });
 
 describe("프로젝트 전체 무결성", () => {
   it("두 모드 graft(411 덮어쓰기 + 480 확장)를 가진 프로젝트가 왕복 무손실이다", () => {
-    addTileGraft(DEFAULT_TILESET_ID, { targetTile: 411, sourceChipset: RETRO_HOUSE, sourceTile: 442 });
-    addTileGraft(DEFAULT_TILESET_ID, { targetTile: 480, sourceChipset: RETRO_HOUSE, sourceTile: 472 });
+    addTileGraft(COMBINED_TOWN_TILESET_ID, { targetTile: 411, sourceChipset: RETRO_HOUSE, sourceTile: 442 });
+    addTileGraft(COMBINED_TOWN_TILESET_ID, { targetTile: 480, sourceChipset: RETRO_HOUSE, sourceTile: 472 });
     const before: Project = store.getCurrent();
     const restored = deserialize(serialize(before));
     expect(serialize(restored)).toBe(serialize(before));

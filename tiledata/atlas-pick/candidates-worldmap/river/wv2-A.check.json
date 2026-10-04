@@ -1,0 +1,136 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/river/wv2-A.pxg",
+ "set": "worldmap",
+ "id": "river",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.133
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.014
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "orphans",
+   "jaggies"
+  ]
+ },
+ "colors": 6,
+ "bbox": [
+  0,
+  0,
+  47,
+  63
+ ],
+ "note": "World.png 물가 그대로: 몸통 가장자리에 어두운 wdirt 둑 1~2px 혹진 선, 물 쪽에 wsea 밝은 테 1px, 속은 wriver 3단에 짧은 밝은 흐름 획 몇 개",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.019
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.023
+  },
+  "shore": {
+   "profile": {
+    "n": [
+     3,
+     3,
+     4,
+     4,
+     4,
+     4,
+     3,
+     3,
+     3,
+     3,
+     3,
+     2,
+     2,
+     3,
+     3,
+     3
+    ],
+    "s": [
+     3,
+     3,
+     3,
+     2,
+     2,
+     3,
+     3,
+     3,
+     3,
+     3,
+     4,
+     4,
+     4,
+     3,
+     3,
+     3
+    ],
+    "w": [
+     3,
+     3,
+     3,
+     4,
+     4,
+     4,
+     3,
+     3,
+     3,
+     2,
+     2,
+     3,
+     3,
+     3,
+     3,
+     3
+    ],
+    "e": [
+     3,
+     3,
+     2,
+     2,
+     3,
+     3,
+     3,
+     3,
+     3,
+     3,
+     3,
+     4,
+     4,
+     4,
+     3,
+     3
+    ]
+   },
+   "strait": 9,
+   "steps": {
+    "n": 1,
+    "s": 1,
+    "w": 1,
+    "e": 1
+   },
+   "amp": {
+    "n": 2,
+    "s": 2,
+    "w": 2,
+    "e": 2
+   },
+   "joinWorst": 0
+  },
+  "seam": 1.02
+ }
+}

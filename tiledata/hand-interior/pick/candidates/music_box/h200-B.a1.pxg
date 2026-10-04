@@ -1,0 +1,35 @@
+// B: 방의 상자와 같은 황갈색 나뭇결·갈색 테, 열린 거울 뚜껑과 상아색 춤 인형; 뚜껑 윗면 3행, 상자 윗면 5행.
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat a wood 3
+@mat b wood 7
+@mat c wood 6
+@mat d wood 5
+@mat e dwood 2
+@mat f iron 5
+@mat g iron 6
+@mat h iron 3
+@mat i linen 6
+@mat j linen 3
+@mat k brass 5
+@mat l brass 3
+@mat m linen 5
+@mat n dwood 3
+@mblock 0 0
+....aaaaaaaa....
+...abbbbbbcaa...
+...abcccbccaa...
+...acggffffda...
+...acgffffhda...
+...acffijhhda...
+...acffmjhhda...
+...aciijdidaa...
+.abbbnimjbbbbda.
+.abnnnimmjnnnda.
+.abnnnnijnnnnda.
+.abnnnnklnnnnda.
+.abbbbbbbcccdda.
+.acaaaaaaaaaaae.
+.adaaaakkaaaaae.
+..eeeeeeeeeeee..

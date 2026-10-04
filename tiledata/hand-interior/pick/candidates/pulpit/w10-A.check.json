@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/pulpit/w10-A.pxg",
+ "id": "pulpit",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 8,
+  "atLeast95": 0,
+  "max": 0.073
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 16,
+ "v5_colors": 16,
+ "bbox": [
+  0,
+  10,
+  29,
+  63
+ ],
+ "v5_bbox": [
+  0,
+  10,
+  29,
+  63
+ ],
+ "note": "v5 다듬기: 계단에 흩어진 잡티 점 제거",
+ "ok": true
+}

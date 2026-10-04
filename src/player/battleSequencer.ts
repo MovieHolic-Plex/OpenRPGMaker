@@ -7,6 +7,7 @@ import {
   planEnemyActionBeats,
   weightForFeedback,
   type BattleActionBeat,
+  type BattleActionWeight,
   recoverMsForAnimation,
 } from "@/player/battleActionBeats";
 import { store } from "@/project/store";
@@ -49,6 +50,8 @@ export const BATTLE_RESOLVE_MS = 260;
 export const BATTLE_LOG_MS = 520;
 export const BATTLE_RESULT_STAGE_MS = 450;
 export const BATTLE_RESULT_HOLD_MS = 900;
+/** 쓰러짐 연출을 기다리는 최대 시간 — 연출이 멈춰도 결과가 영영 안 뜨지 않게. */
+export const BATTLE_COLLAPSE_HOLD_MAX_MS = 2200;
 
 export interface DamageFeedback {
   readonly targetId: string;
@@ -61,7 +64,18 @@ export interface DamageFeedback {
   readonly miss?: boolean;
   /** 명중했지만 피해가 0 인 타격(완전 방어·무효). 화면에 반드시 표시한다. */
   readonly blocked?: boolean;
+  /** 상성 배율(엔트리 effectiveness). 1 이면 생략. */
+  readonly effectiveness?: number;
+  /** 숫자 대신 띄울 글자(상태 부여 「스톱」 등). 있으면 HP 원장·타격 연출·효과음을 건드리지 않는
+   *  **표시 전용** 팝업이다(battleDom.onDamageFeedback 이 일찍 돌아간다). */
+  readonly label?: string;
 }
+
+/** 상태 부여 문장·떠오르는 글자가 머무는 시간. 한 줄 메시지 창(retro2003)에서 읽을 수 있어야 한다. */
+export const BATTLE_STATE_LINE_MS = 800;
+const STATE_ENTRY_KINDS: ReadonlySet<BattleTimelineEntrySnapshot["kind"]> = new Set([
+  "stateAdded", "stateRemoved", "stateUpkeep", "stateRecovery", "incapacitated",
+]);
 
 export type ScheduleFn = (callback: () => void, delayMs: number) => number;
 export type ClearScheduleFn = (timerId: number) => void;
@@ -84,24 +98,46 @@ export interface BattleSequencerHooks {
   readonly onEntryAnimation?: (animation: BattleAnimationSnapshot | undefined) => void;
   /** 포획 시네마틱(구슬 투척·흔들림)을 재생하고 소요 ms를 반환. 미구현이면 0. */
   readonly onCaptureCinematic?: (targetId: string, success: boolean) => number;
-  /** 이 애니메이션의 착탄(효과음·플래시가 걸린 첫 프레임)까지 걸리는 ms. 시퀀서는 이펙트
+  /** 이 애니메이션의 착탄(효과음·플래시가 걸린 첫 프레임)까지 걸리는 ms(템포 적용 전). 시퀀서는 이펙트
    *  마운트를 `approach − 착탄` 만큼 늦춰 착탄 프레임이 임팩트 비트(팝업·히트스톱)와 같은
-   *  순간에 오게 한다. 미구현이면 이펙트는 approach 시작과 함께 뜬다. */
-  readonly animationImpactMs?: (animation: BattleAnimationSnapshot) => number;
+   *  순간에 오게 한다. 미구현이면 이펙트는 approach 시작과 함께 뜬다. `approachMs` = 이 엔트리
+   *  approach 비트 길이(템포 적용 후) — 표시 계층이 앞당길 수 있는 한도로 쓴다. */
+  readonly animationImpactMs?: (animation: BattleAnimationSnapshot, approachMs: number) => number;
+  /** 마운트 뒤 이펙트(후속 포함)가 실제로 도는 ms(템포 적용 전) — 앞 프레임을 건너뛰는 표시 계층만 구현한다.
+   *  있으면 recover 비트를 이 끝 시각에 맞춘다. animationImpactMs 다음에 불린다. */
+  readonly animationRemainingMs?: (animation: BattleAnimationSnapshot) => number | undefined;
+  /** 피해 연출이 impact 비트 시작부터 끝나기까지 필요한 ms(템포 적용 후). recover 비트를 이만큼은 늘린다 —
+   *  포켓몬 스킨은 기술 연출 뒤에 깜빡임·HP 감소가 따로 오므로(3세대 순서) 다음 행동이 그 위로 올라오면 안 된다. */
+  readonly impactPresentationMs?: (entry: BattleTimelineEntrySnapshot, feedback: DamageFeedback | undefined) => number;
   /** 도주 시도의 결과가 화면에 도달하는 순간. 도주음·BGM 정지는 성공이 확정된 뒤에만 울려야 한다. */
   readonly onEscapeOutcome?: (success: boolean) => void;
   /** 결과가 정해진 뒤 결과 패널이 뜨기 전(BATTLE_RESULT_HOLD_MS) 한 번. 이 홀드는 예전엔 빈 필드만
    *  보이는 정적 구간이었다 — 표시 계층이 승리/전멸 도장을 찍는다. */
   readonly onResultPending?: (result: NonNullable<BattleSnapshot["result"]>) => void;
+  /** 결판 막타 뒤 남은 적 쓰러짐 연출 시간(ms, EnemyRecord.collapseEffect). 결과 도장·패널을 그만큼 미뤄 보스 가라앉기가 가려지지 않게 한다. */
+  readonly collapseHoldMs?: () => number;
   /** 아군 행동의 접근(approach) 비트 길이를 표시 계층이 정한다(도트 측면 전투: 적 앞까지 걷는 거리에 비례).
    *  undefined 를 돌려주면 BATTLE_ACTING_MS 그대로 — 이 훅이 없는 스킨의 시간은 바뀌지 않는다. */
-  readonly actorApproachMs?: (entry: BattleTimelineEntrySnapshot) => number | undefined;
+  readonly actorApproachMs?: (entry: BattleTimelineEntrySnapshot, weight?: BattleActionWeight) => number | undefined;
   /** 아군 행동의 회복(recover) 비트 최소 길이(걸어간 거리만큼 뛰어 돌아오는 시간). */
-  readonly actorRecoverMs?: (entry: BattleTimelineEntrySnapshot) => number | undefined;
+  readonly actorRecoverMs?: (entry: BattleTimelineEntrySnapshot, weight?: BattleActionWeight) => number | undefined;
   /** 적 행동의 예고(approach) 비트 길이. 도트 측면 전투에서 적이 아군 앞까지 뛰어/날아가는 시간. undefined 면 BATTLE_ENEMY_WINDUP_MS. */
-  readonly enemyApproachMs?: (entry: BattleTimelineEntrySnapshot) => number | undefined;
+  readonly enemyApproachMs?: (entry: BattleTimelineEntrySnapshot, weight?: BattleActionWeight) => number | undefined;
   /** 적 행동의 회복(recover) 비트 최소 길이(제자리로 돌아가는 시간). */
-  readonly enemyRecoverMs?: (entry: BattleTimelineEntrySnapshot) => number | undefined;
+  readonly enemyRecoverMs?: (entry: BattleTimelineEntrySnapshot, weight?: BattleActionWeight) => number | undefined;
+  /** 표시 계층이 행동의 무게를 바꾼다(도트 연출 레코드의 weight 손잡이). undefined 면 피드백에서 정한 무게 그대로. */
+  readonly actionWeight?: (entry: BattleTimelineEntrySnapshot, base: BattleActionWeight) => BattleActionWeight | undefined;
+  /** 스킨의 동작 템포. 행동 비트(예고·돌진·회복)와 이펙트 착탄 오프셋만 이 배율로 줄인다 — 히트스톱과
+   *  대사 읽기 시간은 그대로다. 배속(speedMultiplier)과 곱해진다. undefined·1 이면 옛 길이 그대로. */
+  readonly motionTempo?: () => number;
+  /** 피해 문장에 상성(「효과가 굉장했다!」·「효과가 별로인 듯하다…」)을 붙인다 — 포켓몬 스킨만. */
+  readonly describeEffectiveness?: boolean;
+}
+
+/** 히트스톱 비트를 뺀 행동 비트를 템포로 줄인다. 히트스톱을 같이 줄이면 타격이 가벼워진다. */
+export function tempoActionBeats(beats: readonly BattleActionBeat[], tempo: number): readonly BattleActionBeat[] {
+  if (!(tempo > 0) || tempo === 1) return beats;
+  return beats.map((beat) => (beat.hitStop || beat.durationMs <= 0 ? beat : { ...beat, durationMs: Math.max(10, Math.round(beat.durationMs / tempo)) }));
 }
 
 export interface BattleSequencer {
@@ -244,6 +280,7 @@ export function createBattleSequencer(
       critical: Boolean(entry.critical),
       healing,
       resource: entry.resource ?? "hp",
+      ...(entry.effectiveness !== undefined && !healing ? { effectiveness: entry.effectiveness } : {}),
     };
   }
 
@@ -256,6 +293,8 @@ export function createBattleSequencer(
       amount: entry.amount ?? 0,
       critical: Boolean(entry.critical),
       skillName: entry.skillName,
+      ...(entry.skillId ? { skillId: entry.skillId } : {}),
+      ...(hooks.describeEffectiveness && entry.effectiveness !== undefined ? { effectiveness: entry.effectiveness } : {}),
     };
   }
 
@@ -414,11 +453,30 @@ export function createBattleSequencer(
     // 뒤집히고, 정작 아군 엔트리는 제네릭 재생으로 떨어진다(코덱스 리뷰 C2: 도주 성공
     // 뒤 "주인공의 공격! 효과가 충분하지 않았다"가 재생되던 결함).
     const resultEntry = resultFromTimeline(entry);
-    const directorBase = (firstDirector && entryOffset === firstDirectorIndex)
+    // 상태 엔트리는 userRecordId·targetId 를 들고 있어 resultEntry 가 만들어진다 — 예전에는 그래서
+    // enemyActionDirectorState 로 떨어져 「발키리의 공격! 효과가 충분하지 않았다.」로 읽혔다(2026-09-29 실측).
+    const rawDirector = (firstDirector && entryOffset === firstDirectorIndex)
       ? firstDirector
       : actionEntryDirectorState(entry, snapshot)
-        ?? (resultEntry ? enemyActionDirectorState(resultEntry, snapshot, { resource: entry.resource ?? "hp", healing: entry.kind === "healing" || (entry.amount ?? 0) < 0 }) : timelineDirectorState(entry, snapshot));
-    const feedback = feedbackFromTimeline(entry);
+        ?? (STATE_ENTRY_KINDS.has(entry.kind) ? timelineDirectorState(entry, snapshot)
+          : resultEntry ? enemyActionDirectorState(resultEntry, snapshot, { resource: entry.resource ?? "hp", healing: entry.kind === "healing" || (entry.amount ?? 0) < 0 }) : timelineDirectorState(entry, snapshot));
+    // 보조 기술(피해 0 인 action): 결과는 뒤따르는 상태 엔트리가 말한다 — 「효과가 충분하지 않았다」를 떼고,
+    // 아무 상태도 안 붙었으면 recover 뒤에 「…에게는 효과가 없었다.」를 한 비트 준다.
+    const support = supportOutcome(entries, entryOffset, snapshot);
+    // 훔치기처럼 action 없이 special 한 줄만 남기는 명령은 명령 대사가 그 엔트리를 차지해 결과(「…을 훔쳤다!」)가
+    // 사라지고 「효과가 충분하지 않았다」가 남았다 — 명령 줄 다음에 special 줄을 따로 읽힌다.
+    // 힘 모으기 예고는 명령 줄(「…을 사용했다!」) 없이 예고 문장만 — 아직 쓰지 않았다.
+    if (entry.kind === "special" && entry.charge && entry.message) {
+      hooks.onDirectorState({ step: "acting", lines: [entry.message], targetId: entry.targetId });
+      hooks.onSyncView();
+      delay(continueNext, BATTLE_LOG_MS);
+      return;
+    }
+    const specialAfterCommand = rawDirector === firstDirector && entry.kind === "special" && entry.message ? entry.message : undefined;
+    const directorBase = support || specialAfterCommand ? { ...rawDirector, lines: rawDirector.lines.slice(0, 1) } : rawDirector;
+    const raw = feedbackFromTimeline(entry);
+    // 선고(doomTurns)로 쓰러지는 upkeep: 남은 HP 숫자(-99999 같은) 대신 상태 이름을 띄운다. amount 는 원장용으로 둔다.
+    const feedback = raw && entry.kind === "stateUpkeep" && entry.message ? { ...raw, label: stateLabel(entry.stateId) } : raw;
     // 적 이동: 대사 없이 스냅샷의 새 좌표로 미끄러지는 동안만 기다린다(CSS 트랜지션이 그린다).
     if (entry.kind === "move") {
       hooks.onSyncView();
@@ -436,6 +494,24 @@ export function createBattleSequencer(
     }
     const visual = entry.kind === "damage" || entry.kind === "healing" || entry.kind === "miss"
       || entry.kind === "action" || entry.kind === "capture" || entry.kind === "stateUpkeep" || entry.kind === "stateRecovery";
+    if (entry.kind === "stateAdded" && entry.targetId) {
+      // 상태 이름이 대상 위에 숫자 팝업처럼 잠깐 떠오른다(표시 전용 label 피드백).
+      hooks.onDirectorState(directorBase);
+      hooks.onDamageFeedback({ targetId: entry.targetId, amount: 0, critical: false, healing: false, label: stateLabel(entry.stateId) });
+      hooks.onSyncView();
+      delay(() => { hooks.onDamageFeedback(undefined); continueNext(); }, BATTLE_STATE_LINE_MS);
+      return;
+    }
+    if (specialAfterCommand) {
+      hooks.onDirectorState(directorBase);
+      hooks.onSyncView();
+      delay(() => {
+        hooks.onDirectorState({ step: "acting", lines: [specialAfterCommand], targetId: entry.targetId });
+        hooks.onSyncView();
+        delay(continueNext, BATTLE_STATE_LINE_MS);
+      }, BATTLE_LOG_MS);
+      return;
+    }
     if (!visual) {
       hooks.onDirectorState(directorBase);
       hooks.onSyncView();
@@ -453,39 +529,56 @@ export function createBattleSequencer(
     // 막타에서도 연출이 끝까지 재생된 뒤에야 다음(결과 공개)으로 넘어간다.
     const killLine = killLineFor(entries, entryOffset, snapshot);
     // 행동의 무게 — 급소·막타는 heavy(길게 눌러 잡고), 빗나감·0 피해·회복은 light.
-    const weight = weightForFeedback(feedback, Boolean(killLine));
-    const beats = entry.side === "enemy"
+    const baseWeight = weightForFeedback(feedback, Boolean(killLine));
+    const weight = hooks.actionWeight?.(entry, baseWeight) ?? baseWeight;
+    const tempo = hooks.motionTempo?.() ?? 1;
+    const planBeats = (animationMs: number | undefined): readonly BattleActionBeat[] => tempoActionBeats(entry.side === "enemy"
       ? planEnemyActionBeats({
           userId: entry.userRecordId ?? entry.userId ?? "enemy",
+          // 피해가 없는 기술(약화·수면)은 feedback 이 없어 대상이 비었다 — 내 쪽과 같이 엔트리 대상을 넘긴다
+          targetId: entry.targetId,
           feedback,
           hitStopMs: BATTLE_HITSTOP_MS,
-          impactMs: Math.max(
-            hooks.enemyRecoverMs?.(entry) ?? 0,
-            recoverMsForAnimation(entry.animation?.durationMs, hooks.enemyApproachMs?.(entry) ?? BATTLE_ENEMY_WINDUP_MS, BATTLE_HITSTOP_MS, BATTLE_IMPACT_MS),
-          ),
+          // 연출 재생기(retro2003)가 시각을 정한 엔트리는 그 값을 그대로 쓴다 — 다단·광역의 타 사이를 최소 비트(400ms)로
+          // 벌리면 연출이 끝난 뒤에야 숫자가 하나씩 떴다(2026-10-01 실측, 플레슈 5타).
+          impactMs: hooks.enemyRecoverMs?.(entry, weight)
+            ?? recoverMsForAnimation(animationMs, hooks.enemyApproachMs?.(entry, weight) ?? BATTLE_ENEMY_WINDUP_MS, BATTLE_HITSTOP_MS, BATTLE_IMPACT_MS),
           weight,
-          windupMs: hooks.enemyApproachMs?.(entry) ?? BATTLE_ENEMY_WINDUP_MS,
+          windupMs: hooks.enemyApproachMs?.(entry, weight) ?? BATTLE_ENEMY_WINDUP_MS,
         })
       : planActionBeats({
           userId: entry.userRecordId ?? entry.userId ?? "actor",
           targetId: entry.targetId,
           feedback,
-          actingMs: Math.max(hooks.actorApproachMs?.(entry) ?? BATTLE_ACTING_MS, cinematicMs),
+          actingMs: Math.max(hooks.actorApproachMs?.(entry, weight) ?? BATTLE_ACTING_MS, cinematicMs),
           hitStopMs: BATTLE_HITSTOP_MS,
           // 후속 애니메이션(연기·잔광)이 비트보다 길면 recover 를 늘려 잘리지 않게 한다.
-          impactMs: Math.max(
-            hooks.actorRecoverMs?.(entry) ?? 0,
-            recoverMsForAnimation(entry.animation?.durationMs, Math.max(hooks.actorApproachMs?.(entry) ?? BATTLE_ACTING_MS, cinematicMs), BATTLE_HITSTOP_MS, BATTLE_IMPACT_MS),
-          ),
+          impactMs: hooks.actorRecoverMs?.(entry, weight)
+            ?? recoverMsForAnimation(animationMs, Math.max(hooks.actorApproachMs?.(entry, weight) ?? BATTLE_ACTING_MS, cinematicMs), BATTLE_HITSTOP_MS, BATTLE_IMPACT_MS),
           weight,
-        });
+        }), tempo);
+    let beats = planBeats(entry.animation?.durationMs);
     // 이펙트 마운트 시점: 착탄 프레임이 임팩트 비트와 같은 순간에 오도록 approach 길이에서
     // 착탄까지의 ms 를 뺀 만큼 늦춘다. 예전엔 approach 시작에 바로 떠서 적이 하얗게 번쩍인
     // 뒤 0.3초 있다가 숫자가 뜨고 밀리는 "절정 두 번"이 됐다(2026-09-14 실측 250~300ms).
     const approachMs = beats.find((beat) => beat.kind === "approach")?.durationMs ?? 0;
-    const impactAtMs = entry.animation && hooks.animationImpactMs ? hooks.animationImpactMs(entry.animation) : 0;
+    // 이펙트 프레임도 같은 템포로 돈다(battleAnimationFrameMs 가 data-battle-motion-tempo 를 곱한다).
+    const impactAtMs = entry.animation && hooks.animationImpactMs ? hooks.animationImpactMs(entry.animation, approachMs) / (tempo > 0 ? tempo : 1) : 0;
     // 착탄 정보가 없으면(타이밍 없는 레코드·훅 미구현) 예전처럼 approach 시작과 함께 뜬다.
     const animationOffsetMs = impactAtMs > 0 ? Math.max(0, approachMs - impactAtMs) : 0;
+    // 표시 계층이 앞 프레임을 건너뛰면(포켓몬 안무) 이펙트는 approach 끝 무렵에 마운트돼 남은 프레임만 돈다.
+    // recoverMsForAnimation 은 「approach 시작에 마운트해 0번부터」를 가정하므로, 실제로 끝나는 시각(템포 전 ms)을 넘겨
+    // recover 를 다시 잰다 — 안 그러면 운석은 끝에 빈 화면이, 번개는 마지막 잔광이 잘렸다(2026-10-02 적대적 리뷰).
+    const remainingMs = entry.animation && hooks.animationRemainingMs ? hooks.animationRemainingMs(entry.animation) : undefined;
+    if (remainingMs !== undefined && hooks.actorRecoverMs === undefined && hooks.enemyRecoverMs === undefined) {
+      beats = planBeats(Math.max(0, animationOffsetMs * (tempo > 0 ? tempo : 1) + remainingMs));
+    }
+    const presentationMs = hooks.impactPresentationMs?.(entry, feedback) ?? 0;
+    if (presentationMs > 0) {
+      const impactBeatMs = beats.find((beat) => beat.kind === "impact")?.durationMs ?? 0;
+      const needed = Math.round(presentationMs - impactBeatMs);
+      beats = beats.map((beat) => (beat.kind === "recover" && beat.durationMs < needed ? { ...beat, durationMs: needed } : beat));
+    }
     if (entry.animation && animationOffsetMs > 0) {
       hooks.onEntryAnimation?.(undefined);
       delay(() => hooks.onEntryAnimation?.(entry.animation), animationOffsetMs);
@@ -505,10 +598,23 @@ export function createBattleSequencer(
         hooks.onActionMotion?.(undefined);
         hooks.onDirectorState({ step: "impact", lines: [killLine], targetId: entry.targetId });
         hooks.onSyncView();
-        if (decisive && snapshot.result) hooks.onResultPending?.(snapshot.result);
-        delay(continueNext, decisive ? BATTLE_DECISIVE_KILL_LINE_MS : BATTLE_KILL_LINE_MS);
+        // 저작한 쓰러짐 연출(보스 가라앉기 1.8초 등)이 아직 돌면 결과 도장이 그 위를 덮는다 — 끝날 때까지 미룬다.
+        const hold = decisive ? Math.min(BATTLE_COLLAPSE_HOLD_MAX_MS, Math.max(0, hooks.collapseHoldMs?.() ?? 0)) : 0;
+        const stampAndContinue = (): void => {
+          if (decisive && snapshot.result) hooks.onResultPending?.(snapshot.result);
+          delay(continueNext, decisive ? BATTLE_DECISIVE_KILL_LINE_MS : BATTLE_KILL_LINE_MS);
+        };
+        if (hold > 0) delay(stampAndContinue, hold);
+        else stampAndContinue();
       }
-      : continueNext;
+      : support?.failLine
+        ? (): void => {
+          hooks.onActionMotion?.(undefined);
+          hooks.onDirectorState({ step: "acting", lines: [support.failLine ?? ""], targetId: entry.targetId });
+          hooks.onSyncView();
+          delay(continueNext, BATTLE_STATE_LINE_MS);
+        }
+        : continueNext;
     playBeats(beats, directorBase, afterBeats);
   }
 
@@ -519,8 +625,12 @@ export function createBattleSequencer(
     snapshot: BattleSnapshot,
   ): BattleDirectorState | undefined {
     if (entry.kind === "counter") {
-      const user = snapshot.enemies.find((enemy) => enemy.id === entry.userId || enemy.recordId === entry.userRecordId);
-      const name = user ? disambiguatedBattlerName(user, snapshot.enemies) : "적";
+      // 상태 반격(state_counter)은 아군도 한다 — 엔트리 side 가 반격하는 쪽이다.
+      const actor = entry.side === "actor"
+        ? snapshot.actors.find((candidate) => candidate.id === entry.userId || candidate.recordId === entry.userRecordId)
+        : undefined;
+      const user = actor ? undefined : snapshot.enemies.find((enemy) => enemy.id === entry.userId || enemy.recordId === entry.userRecordId);
+      const name = actor ? actor.name : user ? disambiguatedBattlerName(user, snapshot.enemies) : "적";
       return { step: "acting", lines: [`${name}의 반격!${entry.skillName ? ` — ${entry.skillName}` : ""}`], targetId: entry.targetId };
     }
     if (entry.kind === "revive") {
@@ -552,6 +662,48 @@ export function createBattleSequencer(
     return undefined;
   }
 
+  /** 피해 0 인 보조 기술 엔트리의 결과. 보조 기술이 아니면 undefined.
+   *  뒤따르는(다음 행동 엔트리 전까지) 같은 대상의 상태 변화·특수 결과가 있으면 failLine 없음,
+   *  없는데 기술에 상태 부여가 적혀 있으면 「…에게는 효과가 없었다.」. */
+  function supportOutcome(
+    entries: readonly BattleTimelineEntrySnapshot[],
+    offset: number,
+    snapshot: BattleSnapshot,
+  ): { readonly failLine?: string } | undefined {
+    const entry = entries[offset];
+    if (entry.kind !== "action" || entry.hit === false || (entry.amount ?? 0) !== 0 || !entry.skillName || !entry.targetId) return undefined;
+    if (entry.commandKind === "defend" || entry.commandKind === "escape" || entry.commandKind === "switch") return undefined;
+    let changed = false;
+    for (const later of entries.slice(offset + 1)) {
+      if (later.kind === "action" || later.kind === "damage" || later.kind === "healing" || later.kind === "miss" || later.kind === "counter") break;
+      if ((later.kind === "stateAdded" || later.kind === "stateRemoved" || later.kind === "special") && later.targetId === entry.targetId) changed = true;
+    }
+    if (changed) return {};
+    const skill = store.getCurrent().database.skills.find((record) => entry.skillId ? record.id === entry.skillId : record.name === entry.skillName);
+    const adds = (skill?.stateEffects ?? []).filter((effect) => effect.operation !== "remove").map((effect) => effect.stateId);
+    if (adds.length === 0) return undefined;
+    const peers = snapshot.enemies.some((enemy) => enemy.id === entry.targetId) ? snapshot.enemies : snapshot.actors;
+    const target = peers.find((battler) => battler.id === entry.targetId);
+    const name = target ? disambiguatedBattlerName(target, peers) : "대상";
+    // 이미 걸려 있어 새로 붙지 않은 것은 실패가 아니다 — 「효과가 없었다」로 읽히면 기술이 헛나간 것 같다.
+    if (target && adds.every((stateId) => target.stateIds.includes(stateId))) {
+      return { failLine: `${withJosa(name, "은/는")} 이미 ${stateLabel(adds[0])} 상태다.` };
+    }
+    return { failLine: `${name}에게는 효과가 없었다.` };
+  }
+
+  /** 상태 부여·해제 문장. 능력 증감(「공격 상승」)은 「…의 공격이 올랐다!」로 읽는다. */
+  function stateChangeLine(kind: "stateAdded" | "stateRemoved", stateId: string | undefined, name: string): string {
+    const label = stateLabel(stateId);
+    if (kind === "stateRemoved") {
+      if (stateId === "state_death") return `${withJosa(name, "이/가")} 되살아났다!`;
+      return `${name}의 ${withJosa(label, "이/가")} 풀렸다.`;
+    }
+    const buff = /^(.+) (상승|하락)$/u.exec(label);
+    if (buff) return `${name}의 ${withJosa(buff[1], "이/가")} ${buff[2] === "상승" ? "올랐다!" : "내려갔다!"}`;
+    return `${withJosa(name, "은/는")} ${label}에 걸렸다!`;
+  }
+
   /** 내부 state id 대신 DB 의 상태 이름을 돌려준다. 플레이어에게 `state_poison_01`
    *  같은 문자열을 읽히면 상태 시스템이 있다는 사실 자체가 전달되지 않는다. */
   function stateLabel(stateId: string | undefined): string {
@@ -573,8 +725,11 @@ export function createBattleSequencer(
       : "행동을 실행했다.";
     const peers = snapshot.enemies.some((enemy) => enemy.id === entry.targetId) ? snapshot.enemies : snapshot.actors;
     const target = peers.find((battler) => battler.id === entry.targetId);
-    const isState = ["stateAdded", "stateRemoved", "stateUpkeep", "stateRecovery", "incapacitated"].includes(entry.kind);
-    const line = isState && target ? `${disambiguatedBattlerName(target, peers)}: ${detail}` : detail;
+    const isState = STATE_ENTRY_KINDS.has(entry.kind);
+    const line = entry.kind === "stateUpkeep" && entry.message ? entry.message
+      : (entry.kind === "stateAdded" || entry.kind === "stateRemoved") && target
+      ? stateChangeLine(entry.kind, entry.stateId, disambiguatedBattlerName(target, peers))
+      : isState && target ? `${disambiguatedBattlerName(target, peers)}: ${detail}` : detail;
     return { step: "acting", lines: [line], targetId: entry.targetId };
   }
 
@@ -644,7 +799,7 @@ export function createBattleSequencer(
       const commandStart = Math.max(consumedTimeline, before.timeline.length);
       const commandEntries = after.timeline.slice(commandStart);
       consumedTimeline = after.timeline.length;
-      const actingState = actorCommandDirectorState(command, before, after);
+      const actingState = actorCommandDirectorState(command, before, after, { describeEffectiveness: hooks.describeEffectiveness });
       // 이 명령을 내린 액터의 첫 엔트리를 찾는다 — strict 라운드에서 민첩이 빠른 적이
       // 먼저 움직이면 commandEntries 앞쪽은 적의 행동이다. 대사는 액터 엔트리에 붙인다.
       const commandActorId = before.activeActorId;

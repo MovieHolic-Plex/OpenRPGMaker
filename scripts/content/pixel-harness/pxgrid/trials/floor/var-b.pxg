@@ -1,0 +1,61 @@
+// 변형 B (3-light 위에 4·5단계를 한 파일로): 이음은 y36 판 x14 에만, 옹이는 y0 판에 하나 — 결이 옹이를 비켜 위아래로 갈라진다.
+@base 3-light.pxg
+@block 13 36
+.c.
+ecg *9
+.c.
+@px 17 39 c  17 43 c
+// 판 0 (f) + 옹이
+@block 18 3
+= 10e
+@block 34 3
+= 11e
+@block 28 4
+.eeee.
+edccde
+edccde
+.eeee.
+@block 20 8
+= 9e
+@block 33 8
+= 8e
+// 판 1 (e)
+@block 5 14
+= 21d
+@block 26 17
+= 19d
+@block 3 19
+= 9f
+// 판 2 (e)
+@block 2 27
+= 15d
+@block 17 30
+= 24d
+@block 30 32
+= 9f
+// 판 3 (f)
+@block 20 38
+= 25e
+@block 2 41
+= 11e
+@block 18 43
+= 13e
+@block 33 40
+= 10g
+// 끊기
+@block 20 0
+= 5f
+@block 30 12
+= 5e
+@block 14 24
+= 5e
+@block 22 36
+= 5f
+@block 6 10
+= 4f
+@block 25 22
+= 4e
+@block 33 34
+= 5e
+@block 8 46
+= 4f

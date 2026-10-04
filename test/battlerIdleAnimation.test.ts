@@ -8,7 +8,6 @@ import {
   battlerIdleAnimation,
   battlerIdleAnimationUrl,
 } from "@/assets/battlerIdleAnimations";
-import { battlerHiresSheet } from "@/assets/battlerHiresSheets";
 import { POSE_FRAME } from "@/battle/battlePose";
 import { createBattleRuntime } from "@/battle/runtime";
 import { applyBattlerPoseForTest, battleField } from "@/player/battleFieldDom";
@@ -124,38 +123,12 @@ describe("배틀러 idle 애니메이션 — 카탈로그", () => {
     }
   });
 
-  it("액터 스트립의 프레임 0 은 원본 시트의 idle 칸과 픽셀 단위로 같다", () => {
-    // 감속 모드와 애니메이션 미지원 환경이 프레임 0 을 정지 화면으로 쓴다. 생성기가 프레임 0 을
-    // 손보는 순간 그 환경의 그림이 조용히 바뀌므로 여기서 못 박는다.
-    const sheetCell = BATTLER_IDLE_ANIMATIONS.filter((entry) => entry.tier === "sheet-cell");
-    expect(sheetCell.length).toBeGreaterThan(0);
-    for (const entry of sheetCell) {
-      const strip = readPng(entry.path);
-      const sourceName = entry.resourceId === "hero" ? "hero-01-battle" : entry.resourceId.replace("generated-actor-", "");
-      // 2026-09-03 부터 스트립과 정적 시트가 둘 다 고해상도 짝(192px 셀)이다 — 비교 대상도 그 시트다.
-      // 등록이 없는 셀 크기(48)면 원본 시트와 비교한다.
-      const hires = battlerHiresSheet(entry.resourceId);
-      const sheet = readPng(hires && hires.cellWidth === entry.cellWidth ? hires.path : `assets/generated/starter/${sourceName}.png`);
-      // 192px 셀은 채널당 expect 를 걸면 스트립 하나에 15만 번(6종 88만 번)이라 전체 스위트 부하에서 타임아웃했다
-      // (실측: 단독 12.9초, gates 안에서 실패). 어긋난 첫 좌표만 모아 한 번 단정한다.
-      const mismatches: string[] = [];
-      for (let y = 0; y < entry.cellHeight && mismatches.length < 5; y += 1) {
-        for (let x = 0; x < entry.cellWidth; x += 1) {
-          const fromStrip = (y * strip.width + x) * 4;
-          const fromSheet = (y * sheet.width + x) * 4;
-          if (
-            strip.data[fromStrip] !== sheet.data[fromSheet] ||
-            strip.data[fromStrip + 1] !== sheet.data[fromSheet + 1] ||
-            strip.data[fromStrip + 2] !== sheet.data[fromSheet + 2] ||
-            strip.data[fromStrip + 3] !== sheet.data[fromSheet + 3]
-          ) {
-            mismatches.push(`(${x},${y})`);
-            if (mismatches.length >= 5) break;
-          }
-        }
-      }
-      expect(mismatches, `${entry.resourceId}: 프레임 0 이 원본 idle 칸과 다르다 ${mismatches.join(" ")}`).toEqual([]);
+  it("폐기된 starter 전투 시트의 idle 스트립을 등록하지 않는다", () => {
+    expect(BATTLER_IDLE_ANIMATIONS.filter(entry => entry.tier === "sheet-cell")).toEqual([]);
+    for (let index = 1; index <= 6; index += 1) {
+      expect(battlerIdleAnimation(`generated-actor-hero-0${index}-battle`)).toBeUndefined();
     }
+    expect(battlerIdleAnimation("hero")).toBeUndefined();
   });
 
   it("영상 티어의 피크 실루엣이 정적 원본과 같은 크기다", () => {
@@ -180,12 +153,12 @@ describe("배틀러 idle 애니메이션 — 카탈로그", () => {
   it("등록되지 않은 리소스 id 는 undefined 를 돌려준다 (정적 폴백)", () => {
     expect(battlerIdleAnimation("generated-enemy-dragon-01")).toBeUndefined();
     expect(battlerIdleAnimation(undefined)).toBeUndefined();
-    expect(battlerIdleAnimation("generated-enemy-slime-01")).toBeDefined();
+    expect(battlerIdleAnimation("generated-enemy-slime-01")).toBeUndefined();
   });
 
   it("URL 은 public 기준 절대 경로다", () => {
-    const entry = battlerIdleAnimation("generated-enemy-slime-01");
-    if (!entry) throw new Error("슬라임 항목이 등록돼 있어야 한다");
+    const entry = battlerIdleAnimation("generated-actor-hero-01-back");
+    if (!entry) throw new Error("후면 액터 항목이 등록돼 있어야 한다");
     expect(battlerIdleAnimationUrl(entry)).toBe(`/${entry.path}`);
   });
 });
@@ -196,7 +169,7 @@ describe("배틀러 idle 애니메이션 — 적 배틀러(<img> 유지)", () =>
     const golem = field.querySelector<HTMLElement>('[data-record-id="enemy_stone_golem"] .battle-enemy-image');
     expect(golem).toBeTruthy();
     expect(golem?.tagName).toBe("IMG");
-    expect((golem as HTMLImageElement).getAttribute("src")).toContain("monster-golem-01.png");
+    expect((golem as HTMLImageElement).getAttribute("src")).toContain("pixel-enemy-portraits/golem.png");
     expect((golem as HTMLImageElement).getAttribute("src")).not.toContain("/idle/");
     expect(golem?.dataset.battlerAnim).toBeUndefined();
     expect(golem?.style.getPropertyValue("--battler-anim-url")).toBe("");
@@ -219,11 +192,11 @@ describe("배틀러 idle 애니메이션 — 액터 전투 시트(48px 셀)", ()
     sprite.dataset.testid = `battle-actor-sprite-${resourceId}`;
     // 런타임의 actorBattleImage 가 심는 것과 같은 집합을 심는다.
     sprite.dataset.battlerResourceId = resourceId;
-    sprite.dataset.battlerSheetUrl = "/assets/generated/starter/hero-01-battle.png";
+    sprite.dataset.battlerSheetUrl = "/assets/custom/hero-01-battle.png";
     sprite.dataset.battlerSheetSize = "288px 768px";
     sprite.style.setProperty("--battle-sprite-frame-width", "96px");
     sprite.style.setProperty("--battle-sprite-frame-height", "96px");
-    sprite.style.backgroundImage = 'url("/assets/generated/starter/hero-01-battle.png")';
+    sprite.style.backgroundImage = 'url("/assets/custom/hero-01-battle.png")';
     sprite.style.backgroundSize = "288px 768px";
     sprite.style.backgroundPosition = "0 0";
     const node = document.createElement("div");
@@ -231,17 +204,15 @@ describe("배틀러 idle 애니메이션 — 액터 전투 시트(48px 셀)", ()
     return node;
   }
 
-  it("idle 이면 idle 스트립으로 바꾸고 세로 오프셋을 0 으로 둔다", () => {
+  it("폐기된 ID를 직접 업로드한 시트는 idle에서 정적 칸을 쓴다", () => {
     const node = actorSprite();
     applyBattlerPoseForTest(node, "idle");
     const sprite = node.querySelector<HTMLElement>(".battle-actor-sprite");
-    expect(sprite?.dataset.battlerAnim).toBe("generated-actor-hero-01-battle");
-    expect(sprite?.style.backgroundImage).toContain("idle/hero-01-battle.png");
-    // 스트립은 1행이므로 세로는 0 이어야 한다. 가로는 CSS 애니메이션이 굴린다.
-    expect(sprite?.style.backgroundPositionY).toBe("0px");
-    expect(sprite?.style.getPropertyValue("--battler-anim-frames")).toBe("4");
-    // 4프레임 × 96px = 384px 폭, 높이는 셀 하나.
-    expect(sprite?.style.backgroundSize).toBe("384px 96px");
+    expect(sprite?.dataset.battlerAnim).toBeUndefined();
+    expect(sprite?.style.backgroundImage).toContain("custom/hero-01-battle.png");
+    expect(sprite?.style.backgroundPosition).toBe("0px 0px");
+    expect(sprite?.style.getPropertyValue("--battler-anim-frames")).toBe("");
+    expect(sprite?.style.backgroundSize).toBe("288px 768px");
   });
 
   it("idle 이 아닌 포즈는 애니메이션을 끄고 정적 시트의 POSE_FRAME 칸으로 돌아간다", () => {
@@ -263,9 +234,9 @@ describe("배틀러 idle 애니메이션 — 액터 전투 시트(48px 셀)", ()
     applyBattlerPoseForTest(node, "idle");
     applyBattlerPoseForTest(node, "attack");
     applyBattlerPoseForTest(node, "idle");
-    expect(sprite?.dataset.battlerAnim).toBe("generated-actor-hero-01-battle");
-    expect(sprite?.style.backgroundImage).toContain("idle/hero-01-battle.png");
-    expect(sprite?.style.backgroundSize).toBe("384px 96px");
+    expect(sprite?.dataset.battlerAnim).toBeUndefined();
+    expect(sprite?.style.backgroundImage).toContain("custom/hero-01-battle.png");
+    expect(sprite?.style.backgroundSize).toBe("288px 768px");
     // dead 는 행 1 을 쓴다 — 애니메이션이 남기고 간 세로 오프셋이 살아 있으면 칸이 어긋난다.
     applyBattlerPoseForTest(node, "dead");
     expect(sprite?.dataset.battlerAnim).toBeUndefined();

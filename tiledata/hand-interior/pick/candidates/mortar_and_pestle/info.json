@@ -1,0 +1,37 @@
+{
+ "id": "mortar and pestle",
+ "slug": "mortar_and_pestle",
+ "name_ko": "절구",
+ "category": "약국",
+ "kind": "floor",
+ "kind_ko": "바닥 기물(막힘)",
+ "canvas": [
+  16,
+  16
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 16,
+  "h": 16
+ },
+ "footprint": {
+  "w": 1,
+  "h": 1
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "공이가 꽂힌 바닥용 큰 돌 절구. 약국 조제실 작업대 옆 바닥에 1개. 탁상용은 goods:mortar.",
+ "where": "약국 조제실 작업대 옆 바닥에 1개. 탁상용은 goods:mortar.",
+ "placement": [
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": [
+  4,
+  6,
+  12,
+  13
+ ],
+ "v5_colors": 6,
+ "material": "wood",
+ "related": []
+}

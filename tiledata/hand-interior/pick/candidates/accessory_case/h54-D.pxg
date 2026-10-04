@@ -1,0 +1,53 @@
+// h54-D 장식: 금장 테·문양(앞 허리 마름모), 윗면 벨벳 위 목걸이·반지·부적, 유리 반사
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat O dwood 1
+@mat W wood 5
+@mat w wood 4
+@mat d wood 3
+@mat D wood 2
+@mat G gold 5
+@mat g gold 4
+@mat h gold 3
+@mat j gold 2
+@mat v red 2
+@mat V red 1
+@mat A red 0
+@mat b blue 4
+@mat t teal 4
+@mat T teal 3
+@mat l glass 5
+@mblock 0 0
+................
+................
+................
+................
+................
+................
+................
+................
+................
+................
+.OOOOOOOOOOOOOO.
+OGggggggggggghhO
+OGVVVVVVVVVllVjO
+OGvgvvvvgvvvlvjO
+OGvvgvvgvvvvvvjO
+OGvvvggvvvgbgvjO
+OGvvvttvvvgvgvjO
+OGvvvTTvvvvhvvjO
+OGggggggggggghhO
+OhjjjjjjjjjjjjjO
+OgVVVlVVVVVVVVjO
+OgVVlVVVVVVVVVjO
+OgVlVVVVVVVVVVjO
+OgAAAAAAAAAAAAjO
+OghhhhhhhhhhhhjO
+OWWWWWWWWWWWWWwO
+OwwwwwwggwwwwwdO
+OwwwwwgGGgwwwwdO
+OwwwwwwggwwwwwdO
+ODDDDDDDDDDDDDDO
+OwwdO......OwwdO
+ODDDO~~~~~~ODDDO

@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/grindstone/h10-E.pxg",
+ "id": "grindstone",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.047
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 12,
+ "v5_colors": 12,
+ "bbox": [
+  1,
+  1,
+  14,
+  15
+ ],
+ "v5_bbox": [
+  1,
+  1,
+  14,
+  15
+ ],
+ "note": "바퀴를 정면 원판(축 F, 왼쪽 위 밝음)으로 다시 디자인하고 오른쪽 손잡이를 짧게; 받침은 윗면/앞면 분리",
+ "ok": true
+}

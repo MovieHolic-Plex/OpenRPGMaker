@@ -1,0 +1,27 @@
+// shield 후보 C (w3)
+@size 16 16
+@cell 16
+@palette palette.pal
+@block 0 0
+................
+.....AAAAAA.....
+...AA......AA...
+..A..BBBBEE..A..
+..A.BBBBBEE..A..
+..A.BCBBBEEC.A..
+..A.BB....E..A..
+..A.BB....E..A..
+..A.BB....E..A..
+..A.BB....E..A..
+..A.BCBBEE.C.A..
+..A.BBBEEE...A..
+...A..EE....A...
+.....A....A.....
+................
+................
+@px 5 2 iron:5 6 2 iron:5 7 2 iron:5 8 2 iron:5 9 2 iron:4 10 2 iron:4 3 3 iron:5 4 3 red:5 11 3 red:2 12 3 iron:2
+@px 3 4 iron:5 11 4 red:2 12 4 iron:2 3 5 iron:5 12 5 iron:2 3 6 iron:5 6 6 iron:6 7 6 iron:6 8 6 iron:5 9 6 iron:3
+@px 11 6 red:2 12 6 iron:2 3 7 iron:5 6 7 iron:6 7 7 iron:5 8 7 iron:3 9 7 iron:3 11 7 red:2 12 7 iron:2 3 8 iron:5
+@px 6 8 iron:5 7 8 iron:3 8 8 iron:3 9 8 iron:2 11 8 red:2 12 8 iron:2 3 9 iron:5 6 9 iron:3 7 9 iron:3 8 9 iron:2
+@px 9 9 iron:2 11 9 red:2 12 9 iron:2 3 10 iron:3 10 10 red:2 12 10 iron:2 3 11 iron:3 10 11 red:2 11 11 red:2 12 11 iron:2
+@px 4 12 iron:3 5 12 iron:3 8 12 red:2 9 12 red:2 10 12 iron:2 11 12 iron:2 6 13 iron:2 7 13 iron:2 8 13 iron:2 9 13 iron:2

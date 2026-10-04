@@ -1,0 +1,46 @@
+{
+ "id": "blk-gb-ks",
+ "slug": "blk_gb_ks",
+ "name": "유리 틈",
+ "scene": "건물 블록",
+ "cells": [
+  1,
+  1
+ ],
+ "canvas": [
+  16,
+  16
+ ],
+ "layer": "ground",
+ "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+ "description": "유리 틈 · gb.ks.d.l 1×1. 강남역 건물 조립: 참고문서 「강남역」의 이름 배열대로.",
+ "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+ "worker": "-",
+ "members": [
+  "gnb-ks-d-l",
+  "gnb-ks-d-r",
+  "gnb-ks-door-l",
+  "gnb-ks-door-r",
+  "gnb-ks-u-l",
+  "gnb-ks-u-r"
+ ],
+ "tiles": [
+  5900,
+  5901,
+  5902,
+  5903,
+  5904,
+  5905
+ ],
+ "ctx": {
+  "at": [
+   48,
+   48
+  ],
+  "map": "modern-gangnam-station",
+  "cell": [
+   6,
+   10
+  ]
+ }
+}

@@ -1,0 +1,21 @@
+{
+ "id": "vaulting_box",
+ "slug": "vaulting_box",
+ "name": "뜀틀",
+ "scene": "체육관",
+ "place": "in",
+ "cells": [
+  2,
+  2
+ ],
+ "canvas": [
+  32,
+  32
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "뜀틀 — 나무 단 네다섯 층(층마다 이음 어두운 줄, 옆 손잡이 구멍), 맨 위 흰 가죽 쿠션. 위에서 약간 내려다본 각으로 윗면 쿠션이 보이게.",
+ "palette_hint": "hinoki/vpine 단, vwhite/vlinen 쿠션",
+ "pair": [],
+ "worker": "s5"
+}

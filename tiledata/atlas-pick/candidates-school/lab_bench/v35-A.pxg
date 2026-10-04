@@ -1,0 +1,32 @@
+// lab_bench v35-A: 실험대 3/4 — 검은 에폭시 상판 T5(싱크·수도꼭지)·앞 F11 크림 수납장 문 둘+서랍 둘 (폭 32px)
+@size 32 16
+@cell 16
+@palette palette.pal
+@mat D vblack 2
+@mat F vblack 3
+@mat G vblack 5
+@mat M viron 2
+@mat N viron 5
+@mat K viron 6
+@mat p cream 1
+@mat r cream 2
+@mat s cream 3
+@mat t cream 4
+@mat H vbrass 5
+@mblock 0 0
+.DDDDDDDDDDDDDDDDDDDDDDDDDDDDDD.
+FFFFFFFFFFFFFFFFFFKKFFFFFFFFFFFF
+FFFFFFFFFFFFFFFFFFKFNNNNNNNNFFFF
+FFFFFFFFFFFFFFFFFFFFMMMMMMMMFFFF
+FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG
+DppppppppppppppppppppppppppppppD
+DtttttttttpttttttttttptttttttttD
+DtsssssssrptsssHHsssrptsssssssrD
+DtsssssHsrprrrrrrrrrrptsHsssssrD
+DtsssssHsrpttttttttttptsHsssssrD
+DtsssssssrptsssHHsssrptsssssssrD
+DrrrrrrrrrprrrrrrrrrrprrrrrrrrrD
+DppppppppppppppppppppppppppppppD
+DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD
+D.~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

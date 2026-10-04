@@ -1,0 +1,226 @@
+[
+ {
+  "i": 1,
+  "name": "read_project_wiki",
+  "ok": true,
+  "summary": "프로젝트 위키 0개 문서",
+  "args": "{\"query\":\"마을 제작 규칙 설계서 강변 숲마을\",\"mapId\":\"old_town\",\"ids\":[],\"offset\":0,\"includeHistory\":false}"
+ },
+ {
+  "i": 2,
+  "name": "get_map_region",
+  "ok": true,
+  "summary": "옛 마을(old_town) 영역 (33,13)~(57,37) — 이벤트 7개, 물 144칸 bounds=(40,13) 9×24",
+  "args": "{\"mapId\":\"old_town\",\"x\":33,\"y\":13,\"w\":24,\"h\":24}"
+ },
+ {
+  "i": 3,
+  "name": "find_tools",
+  "ok": true,
+  "summary": "편집기 툴 3개 발견: list_spatial_designs, look_at_houses, show_map_region",
+  "args": "{\"query\":\"list_spatial_designs show_map_region look_at_houses\",\"domain\":\"map\",\"limit\":3}"
+ },
+ {
+  "i": 4,
+  "name": "show_map_region",
+  "ok": true,
+  "summary": "맵 미리보기: (0,0) 90×50 (옛 마을)",
+  "args": "{\"mapId\":\"old_town\",\"x\":0,\"y\":0,\"w\":90,\"h\":50}"
+ },
+ {
+  "i": 5,
+  "name": "list_spatial_designs",
+  "ok": true,
+  "summary": "장소 저작 비활성(프로젝트 설계 0) · 공용 119건",
+  "args": "{\"kind\":\"place\",\"query\":\"마을\",\"limit\":20,\"offset\":0}"
+ },
+ {
+  "i": 6,
+  "name": "list_tileset_references",
+  "ok": false,
+  "summary": "'list_tileset_references' 실행 실패: 용도 ''를 찾을 수 없습니다. 이 용도의 용도: forest-public-village, forest-executable-v1, public-assembly-v2, tile-assembly-executable, dewbank-village-v1, diverse-villages-fullness-v15, concept-villages-v6, fantasy-e…",
+  "args": "{\"tilesetId\":\"forest_harmony\",\"categoryId\":\"\",\"offset\":0}"
+ },
+ {
+  "i": 7,
+  "name": "list_tileset_references",
+  "ok": true,
+  "summary": "마을 자료 목록. nextOffset이 있으면 다음 목록도 확인하세요.",
+  "args": "{\"tilesetId\":\"forest_harmony\",\"categoryId\":\"forest-public-village\",\"offset\":0}"
+ },
+ {
+  "i": 8,
+  "name": "read_tileset_reference",
+  "ok": false,
+  "summary": "'read_tileset_reference' 실행 실패: documentId/imageId 중 하나만 지정하세요.",
+  "args": "{\"tilesetId\":\"forest_harmony\",\"categoryId\":\"forest-public-village\",\"documentId\":\"public-village-rules\",\"imageId\":\"\",\"offset\":0}"
+ },
+ {
+  "i": 9,
+  "name": "read_tileset_reference",
+  "ok": false,
+  "summary": "'read_tileset_reference' 실행 실패: documentId/imageId 중 하나만 지정하세요.",
+  "args": "{\"tilesetId\":\"forest_harmony\",\"categoryId\":\"forest-public-village\",\"documentId\":\"public-village-gallery\",\"imageId\":\"\",\"offset\":0}"
+ },
+ {
+  "i": 10,
+  "name": "create_map",
+  "ok": true,
+  "summary": "맵 '새 강숲마을' (90x64) 생성 — id new_river_village, BGM parent",
+  "args": "{\"name\":\"새 강숲마을\",\"width\":90,\"height\":64,\"id\":\"new_river_village\",\"seed\":17,\"bgmResourceId\":\"\",\"tilesetId\":\"forest_harmony\",\"bgm\":{\"mode\":\"parent\",\"resourceId\":\"\",\"fadeInMs\":0},\"referencePurpose\":\"forest-public-village\"}"
+ },
+ {
+  "i": 11,
+  "name": "read_tileset_reference",
+  "ok": false,
+  "summary": "'read_tileset_reference' 실행 실패: documentId/imageId 중 하나만 지정하세요.",
+  "args": "{\"tilesetId\":\"forest_harmony\",\"categoryId\":\"forest-public-village\",\"documentId\":\"public-village-rules\",\"imageId\":\"\",\"offset\":0}"
+ },
+ {
+  "i": 12,
+  "name": "read_tileset_reference",
+  "ok": false,
+  "summary": "'read_tileset_reference' 실행 실패: documentId/imageId 중 하나만 지정하세요.",
+  "args": "{\"tilesetId\":\"forest_harmony\",\"categoryId\":\"forest-public-village\",\"documentId\":\"public-village-rules\",\"imageId\":\"\",\"offset\":0}"
+ },
+ {
+  "i": 13,
+  "name": "read_tileset_reference",
+  "ok": false,
+  "summary": "'read_tileset_reference' 실행 실패: documentId/imageId 중 하나만 지정하세요.",
+  "args": "{\"tilesetId\":\"forest_harmony\",\"categoryId\":\"forest-public-village\",\"documentId\":\"public-village-rules\",\"imageId\":\"\",\"offset\":0}"
+ },
+ {
+  "i": 14,
+  "name": "read_tileset_reference",
+  "ok": false,
+  "summary": "'read_tileset_reference' 실행 실패: documentId/imageId 중 하나만 지정하세요.",
+  "args": "{\"tilesetId\":\"forest_harmony\",\"categoryId\":\"forest-public-village\",\"documentId\":\"public-village-gallery\",\"imageId\":\"\",\"offset\":0}"
+ },
+ {
+  "i": 15,
+  "name": "author_village",
+  "ok": false,
+  "summary": "'author_village' 실행 실패: authorVillage.housePlans[0].ownerName must be a non-empty string.",
+  "args": "{\"composition\":\"compact\",\"landmark\":\"lighthouse\",\"target\":{\"kind\":\"existing\",\"mapId\":\"new_river_village\",\"name\":\"새 강숲마을\",\"tilesetId\":\"forest_harmony\",\"width\":90,\"height\":64,\"minSize\":{\"width\":90,\"height\":64},\"bounds\":{\"x\":0,\"y\":0,\"w\":90,\"h\":64},\"plannedMap\":{\"mapId\":\"new_river_village\",\"width\":90,\"height\":64}},\"houseCount\":12,\"houseObjectIds\":[],\"multiStoreyCount\":3,\"houseClustering\":\"balanced\",\"housePlans\":[{\"objectId\":\"\",\"kitId\":\"blue-stone\",\"yard\":[],\"ownerName\":\"\",\"templateId\":\"gable-cottage\",\"fence\":false,\"program\":\"dwelling\"},{\"objectId\":\"\",\"kitId\":\"bright-plaster\",\"yard\":[],\"ownerName\":"
+ },
+ {
+  "i": 16,
+  "name": "author_village",
+  "ok": false,
+  "summary": "'author_village' 실행 실패: authorVillage.housePlans[0].objectId must be a non-empty string.",
+  "args": "{\"composition\":\"compact\",\"landmark\":\"lighthouse\",\"target\":{\"kind\":\"existing\",\"mapId\":\"new_river_village\",\"name\":\"새 강숲마을\",\"tilesetId\":\"forest_harmony\",\"width\":90,\"height\":64,\"minSize\":{\"width\":90,\"height\":64},\"bounds\":{\"x\":0,\"y\":0,\"w\":90,\"h\":64},\"plannedMap\":{\"mapId\":\"new_river_village\",\"width\":90,\"height\":64}},\"houseCount\":12,\"houseObjectIds\":[],\"multiStoreyCount\":3,\"houseClustering\":\"balanced\",\"housePlans\":[{\"objectId\":\"\",\"kitId\":\"blue-stone\",\"yard\":[],\"ownerName\":\"첫째 집\",\"templateId\":\"gable-cottage\",\"fence\":false,\"program\":\"dwelling\"},{\"objectId\":\"\",\"kitId\":\"bright-plaster\",\"yard\":[],\"ownerNa"
+ },
+ {
+  "i": 17,
+  "name": "author_village",
+  "ok": false,
+  "summary": "'author_village' 실행 실패: houseObjectIds requires 1–128 distinct saved object IDs.",
+  "args": "{\"composition\":\"compact\",\"landmark\":\"lighthouse\",\"target\":{\"kind\":\"existing\",\"mapId\":\"new_river_village\",\"name\":\"새 강숲마을\",\"tilesetId\":\"forest_harmony\",\"width\":90,\"height\":64,\"minSize\":{\"width\":90,\"height\":64},\"bounds\":{\"x\":0,\"y\":0,\"w\":90,\"h\":64},\"plannedMap\":{\"mapId\":\"new_river_village\",\"width\":90,\"height\":64}},\"houseCount\":12,\"houseObjectIds\":[],\"multiStoreyCount\":3,\"houseClustering\":\"balanced\",\"housePlans\":[],\"countPolicy\":\"best-effort\",\"groundTheme\":\"grass\",\"settlementLayout\":\"clusters\",\"morphology\":\"river\",\"relief\":\"none\",\"npcCount\":0,\"residents\":[],\"theme\":\"강변 마을\",\"forestDensity\":\"normal\","
+ },
+ {
+  "i": 18,
+  "name": "author_village",
+  "ok": false,
+  "summary": "'author_village' 실행 실패: houseObjectIds requires 1–128 distinct saved object IDs.",
+  "args": "{\"composition\":\"compact\",\"landmark\":\"lighthouse\",\"target\":{\"kind\":\"existing\",\"mapId\":\"new_river_village\",\"name\":\"새 강숲마을\",\"tilesetId\":\"forest_harmony\",\"width\":90,\"height\":64,\"minSize\":{\"width\":90,\"height\":64},\"bounds\":{\"x\":0,\"y\":0,\"w\":90,\"h\":64},\"plannedMap\":{\"mapId\":\"new_river_village\",\"width\":90,\"height\":64}},\"houseCount\":12,\"houseObjectIds\":[],\"multiStoreyCount\":3,\"houseClustering\":\"balanced\",\"housePlans\":[],\"countPolicy\":\"best-effort\",\"groundTheme\":\"grass\",\"settlementLayout\":\"clusters\",\"morphology\":\"river\",\"relief\":\"none\",\"npcCount\":0,\"residents\":[],\"theme\":\"강변 마을\",\"forestDensity\":\"normal\","
+ },
+ {
+  "i": 19,
+  "name": "author_village",
+  "ok": false,
+  "summary": "'author_village' 실행 실패: houseObjectIds requires 1–128 distinct saved object IDs.",
+  "args": "{\"composition\":\"compact\",\"landmark\":\"lighthouse\",\"target\":{\"kind\":\"existing\",\"mapId\":\"new_river_village\",\"name\":\"새 강숲마을\",\"tilesetId\":\"forest_harmony\",\"width\":90,\"height\":64,\"minSize\":{\"width\":90,\"height\":64},\"bounds\":{\"x\":0,\"y\":0,\"w\":90,\"h\":64},\"plannedMap\":{\"mapId\":\"new_river_village\",\"width\":90,\"height\":64}},\"houseCount\":12,\"houseObjectIds\":[],\"multiStoreyCount\":3,\"houseClustering\":\"balanced\",\"housePlans\":[],\"countPolicy\":\"best-effort\",\"groundTheme\":\"grass\",\"settlementLayout\":\"clusters\",\"morphology\":\"river\",\"relief\":\"none\",\"npcCount\":0,\"residents\":[],\"theme\":\"강변 마을\",\"forestDensity\":\"normal\","
+ },
+ {
+  "i": 20,
+  "name": "author_village",
+  "ok": false,
+  "summary": "'author_village' 실행 실패: houseObjectIds requires 1–128 distinct saved object IDs.",
+  "args": "{\"composition\":\"compact\",\"landmark\":\"lighthouse\",\"target\":{\"kind\":\"existing\",\"mapId\":\"new_river_village\",\"name\":\"새 강숲마을\",\"tilesetId\":\"forest_harmony\",\"width\":90,\"height\":64,\"minSize\":{\"width\":90,\"height\":64},\"bounds\":{\"x\":0,\"y\":0,\"w\":90,\"h\":64},\"plannedMap\":{\"mapId\":\"new_river_village\",\"width\":90,\"height\":64}},\"houseCount\":12,\"houseObjectIds\":[],\"multiStoreyCount\":3,\"houseClustering\":\"balanced\",\"housePlans\":[],\"countPolicy\":\"best-effort\",\"groundTheme\":\"grass\",\"settlementLayout\":\"clusters\",\"morphology\":\"river\",\"relief\":\"none\",\"npcCount\":0,\"residents\":[],\"theme\":\"강변 마을\",\"forestDensity\":\"normal\","
+ },
+ {
+  "i": 21,
+  "name": "author_village",
+  "ok": false,
+  "summary": "'author_village' 실행 실패: houseObjectIds requires 1–128 distinct saved object IDs.",
+  "args": "{\"composition\":\"compact\",\"landmark\":\"lighthouse\",\"target\":{\"kind\":\"existing\",\"mapId\":\"new_river_village\",\"name\":\"새 강숲마을\",\"tilesetId\":\"forest_harmony\",\"width\":90,\"height\":64,\"minSize\":{\"width\":90,\"height\":64},\"bounds\":{\"x\":0,\"y\":0,\"w\":90,\"h\":64},\"plannedMap\":{\"mapId\":\"new_river_village\",\"width\":90,\"height\":64}},\"houseCount\":12,\"houseObjectIds\":[],\"multiStoreyCount\":3,\"houseClustering\":\"balanced\",\"housePlans\":[],\"countPolicy\":\"best-effort\",\"groundTheme\":\"grass\",\"settlementLayout\":\"clusters\",\"morphology\":\"river\",\"relief\":\"none\",\"npcCount\":0,\"residents\":[],\"theme\":\"강변 마을\",\"forestDensity\":\"normal\","
+ },
+ {
+  "i": 22,
+  "name": "author_village",
+  "ok": false,
+  "summary": "'author_village' 실행 실패: houseObjectIds requires 1–128 distinct saved object IDs.",
+  "args": "{\"composition\":\"compact\",\"landmark\":\"lighthouse\",\"target\":{\"kind\":\"existing\",\"mapId\":\"new_river_village\",\"name\":\"새 강숲마을\",\"tilesetId\":\"forest_harmony\",\"width\":90,\"height\":64,\"minSize\":{\"width\":90,\"height\":64},\"bounds\":{\"x\":0,\"y\":0,\"w\":90,\"h\":64},\"plannedMap\":{\"mapId\":\"new_river_village\",\"width\":90,\"height\":64}},\"houseCount\":12,\"houseObjectIds\":[],\"multiStoreyCount\":3,\"houseClustering\":\"balanced\",\"housePlans\":[],\"countPolicy\":\"best-effort\",\"groundTheme\":\"grass\",\"settlementLayout\":\"clusters\",\"morphology\":\"river\",\"relief\":\"none\",\"npcCount\":0,\"residents\":[],\"theme\":\"강변 마을\",\"forestDensity\":\"normal\","
+ },
+ {
+  "i": 23,
+  "name": "show_map_region",
+  "ok": true,
+  "summary": "맵 미리보기: (0,0) 24×24 (새 강숲마을)",
+  "args": "{\"mapId\":\"new_river_village\",\"x\":0,\"y\":0,\"w\":24,\"h\":24}"
+ },
+ {
+  "i": 24,
+  "name": "author_village",
+  "ok": false,
+  "summary": "'author_village' 실행 실패: houseObjectIds requires 1–128 distinct saved object IDs.",
+  "args": "{\"composition\":\"compact\",\"landmark\":\"lighthouse\",\"target\":{\"kind\":\"existing\",\"mapId\":\"new_river_village\",\"name\":\"새 강숲마을\",\"tilesetId\":\"forest_harmony\",\"width\":90,\"height\":64,\"minSize\":{\"width\":90,\"height\":64},\"bounds\":{\"x\":0,\"y\":0,\"w\":90,\"h\":64},\"plannedMap\":{\"mapId\":\"new_river_village\",\"width\":90,\"height\":64}},\"houseCount\":12,\"houseObjectIds\":[],\"multiStoreyCount\":3,\"houseClustering\":\"balanced\",\"housePlans\":[],\"countPolicy\":\"best-effort\",\"groundTheme\":\"grass\",\"settlementLayout\":\"clusters\",\"morphology\":\"river\",\"relief\":\"none\",\"npcCount\":0,\"residents\":[],\"theme\":\"강변 마을\",\"forestDensity\":\"normal\","
+ },
+ {
+  "i": 25,
+  "name": "author_village",
+  "ok": false,
+  "summary": "'author_village' 실행 실패: houseObjectIds requires 1–128 distinct saved object IDs.",
+  "args": "{\"composition\":\"compact\",\"landmark\":\"lighthouse\",\"target\":{\"kind\":\"existing\",\"mapId\":\"new_river_village\",\"name\":\"새 강숲마을\",\"tilesetId\":\"forest_harmony\",\"width\":90,\"height\":64,\"minSize\":{\"width\":90,\"height\":64},\"bounds\":{\"x\":0,\"y\":0,\"w\":90,\"h\":64},\"plannedMap\":{\"mapId\":\"new_river_village\",\"width\":90,\"height\":64}},\"houseCount\":12,\"houseObjectIds\":[],\"multiStoreyCount\":3,\"houseClustering\":\"balanced\",\"housePlans\":[],\"countPolicy\":\"best-effort\",\"groundTheme\":\"grass\",\"settlementLayout\":\"clusters\",\"morphology\":\"river\",\"relief\":\"none\",\"npcCount\":0,\"residents\":[],\"theme\":\"강변 마을\",\"forestDensity\":\"normal\","
+ },
+ {
+  "i": 26,
+  "name": "author_village",
+  "ok": false,
+  "summary": "'author_village' 실행 실패: houseObjectIds requires 1–128 distinct saved object IDs.",
+  "args": "{\"composition\":\"compact\",\"landmark\":\"lighthouse\",\"target\":{\"kind\":\"existing\",\"mapId\":\"new_river_village\",\"name\":\"새 강숲마을\",\"tilesetId\":\"forest_harmony\",\"width\":90,\"height\":64,\"minSize\":{\"width\":90,\"height\":64},\"bounds\":{\"x\":0,\"y\":0,\"w\":90,\"h\":64},\"plannedMap\":{\"mapId\":\"new_river_village\",\"width\":90,\"height\":64}},\"houseCount\":12,\"houseObjectIds\":[],\"multiStoreyCount\":3,\"houseClustering\":\"balanced\",\"housePlans\":[],\"countPolicy\":\"best-effort\",\"groundTheme\":\"grass\",\"settlementLayout\":\"clusters\",\"morphology\":\"river\",\"relief\":\"none\",\"npcCount\":0,\"residents\":[],\"theme\":\"강변 마을\",\"forestDensity\":\"normal\","
+ },
+ {
+  "i": 27,
+  "name": "author_village",
+  "ok": false,
+  "summary": "'author_village' 실행 실패: houseObjectIds requires 1–128 distinct saved object IDs.",
+  "args": "{\"composition\":\"compact\",\"landmark\":\"lighthouse\",\"target\":{\"kind\":\"existing\",\"mapId\":\"new_river_village\",\"name\":\"새 강숲마을\",\"tilesetId\":\"forest_harmony\",\"width\":90,\"height\":64,\"minSize\":{\"width\":90,\"height\":64},\"bounds\":{\"x\":0,\"y\":0,\"w\":90,\"h\":64},\"plannedMap\":{\"mapId\":\"new_river_village\",\"width\":90,\"height\":64}},\"houseCount\":12,\"houseObjectIds\":[],\"multiStoreyCount\":3,\"houseClustering\":\"balanced\",\"housePlans\":[],\"countPolicy\":\"best-effort\",\"groundTheme\":\"grass\",\"settlementLayout\":\"clusters\",\"morphology\":\"river\",\"relief\":\"none\",\"npcCount\":0,\"residents\":[],\"theme\":\"강변 마을\",\"forestDensity\":\"normal\","
+ },
+ {
+  "i": 28,
+  "name": "author_village",
+  "ok": false,
+  "summary": "'author_village' 실행 실패: houseObjectIds requires 1–128 distinct saved object IDs.",
+  "args": "{\"composition\":\"compact\",\"landmark\":\"lighthouse\",\"target\":{\"kind\":\"existing\",\"mapId\":\"new_river_village\",\"name\":\"새 강숲마을\",\"tilesetId\":\"forest_harmony\",\"width\":90,\"height\":64,\"minSize\":{\"width\":90,\"height\":64},\"bounds\":{\"x\":0,\"y\":0,\"w\":90,\"h\":64},\"plannedMap\":{\"mapId\":\"new_river_village\",\"width\":90,\"height\":64}},\"houseCount\":12,\"houseObjectIds\":[],\"multiStoreyCount\":3,\"houseClustering\":\"balanced\",\"housePlans\":[],\"countPolicy\":\"best-effort\",\"groundTheme\":\"grass\",\"settlementLayout\":\"clusters\",\"morphology\":\"river\",\"relief\":\"none\",\"npcCount\":0,\"residents\":[],\"theme\":\"강변 마을\",\"forestDensity\":\"normal\","
+ },
+ {
+  "i": 29,
+  "name": "author_village",
+  "ok": false,
+  "summary": "'author_village' 실행 실패: houseObjectIds requires 1–128 distinct saved object IDs.",
+  "args": "{\"composition\":\"compact\",\"landmark\":\"lighthouse\",\"target\":{\"kind\":\"existing\",\"mapId\":\"new_river_village\",\"name\":\"새 강숲마을\",\"tilesetId\":\"forest_harmony\",\"width\":90,\"height\":64,\"minSize\":{\"width\":90,\"height\":64},\"bounds\":{\"x\":0,\"y\":0,\"w\":90,\"h\":64},\"plannedMap\":{\"mapId\":\"new_river_village\",\"width\":90,\"height\":64}},\"houseCount\":12,\"houseObjectIds\":[],\"multiStoreyCount\":3,\"houseClustering\":\"balanced\",\"housePlans\":[],\"countPolicy\":\"best-effort\",\"groundTheme\":\"grass\",\"settlementLayout\":\"clusters\",\"morphology\":\"river\",\"relief\":\"none\",\"npcCount\":0,\"residents\":[],\"theme\":\"강변 마을\",\"forestDensity\":\"normal\","
+ },
+ {
+  "i": 30,
+  "name": "author_village",
+  "ok": false,
+  "summary": "'author_village' 실행 실패: houseObjectIds requires 1–128 distinct saved object IDs.",
+  "args": "{\"composition\":\"compact\",\"landmark\":\"lighthouse\",\"target\":{\"kind\":\"existing\",\"mapId\":\"new_river_village\",\"name\":\"새 강숲마을\",\"tilesetId\":\"forest_harmony\",\"width\":90,\"height\":64,\"minSize\":{\"width\":90,\"height\":64},\"bounds\":{\"x\":0,\"y\":0,\"w\":90,\"h\":64},\"plannedMap\":{\"mapId\":\"new_river_village\",\"width\":90,\"height\":64}},\"houseCount\":12,\"houseObjectIds\":[],\"multiStoreyCount\":3,\"houseClustering\":\"balanced\",\"housePlans\":[],\"countPolicy\":\"best-effort\",\"groundTheme\":\"grass\",\"settlementLayout\":\"clusters\",\"morphology\":\"river\",\"relief\":\"none\",\"npcCount\":0,\"residents\":[],\"theme\":\"강변 마을\",\"forestDensity\":\"normal\","
+ },
+ {
+  "i": 31,
+  "name": "author_village",
+  "ok": false,
+  "summary": "'author_village' 실행 실패: houseObjectIds requires 1–128 distinct saved object IDs.",
+  "args": "{\"composition\":\"compact\",\"landmark\":\"lighthouse\",\"target\":{\"kind\":\"existing\",\"mapId\":\"new_river_village\",\"name\":\"새 강숲마을\",\"tilesetId\":\"forest_harmony\",\"width\":90,\"height\":64,\"minSize\":{\"width\":90,\"height\":64},\"bounds\":{\"x\":0,\"y\":0,\"w\":90,\"h\":64},\"plannedMap\":{\"mapId\":\"new_river_village\",\"width\":90,\"height\":64}},\"houseCount\":12,\"houseObjectIds\":[],\"multiStoreyCount\":3,\"houseClustering\":\"balanced\",\"housePlans\":[],\"countPolicy\":\"best-effort\",\"groundTheme\":\"grass\",\"settlementLayout\":\"clusters\",\"morphology\":\"river\",\"relief\":\"none\",\"npcCount\":0,\"residents\":[],\"theme\":\"강변 마을\",\"forestDensity\":\"normal\","
+ },
+ {
+  "i": 32,
+  "name": "author_village",
+  "ok": false,
+  "summary": "'author_village' 실행 실패: houseObjectIds requires 1–128 distinct saved object IDs.",
+  "args": "{\"composition\":\"compact\",\"landmark\":\"lighthouse\",\"target\":{\"kind\":\"existing\",\"mapId\":\"new_river_village\",\"name\":\"새 강숲마을\",\"tilesetId\":\"forest_harmony\",\"width\":90,\"height\":64,\"minSize\":{\"width\":90,\"height\":64},\"bounds\":{\"x\":0,\"y\":0,\"w\":90,\"h\":64},\"plannedMap\":{\"mapId\":\"new_river_village\",\"width\":90,\"height\":64}},\"houseCount\":12,\"houseObjectIds\":[],\"multiStoreyCount\":3,\"houseClustering\":\"balanced\",\"housePlans\":[],\"countPolicy\":\"best-effort\",\"groundTheme\":\"grass\",\"settlementLayout\":\"clusters\",\"morphology\":\"river\",\"relief\":\"none\",\"npcCount\":0,\"residents\":[],\"theme\":\"강변 마을\",\"forestDensity\":\"normal\","
+ }
+]

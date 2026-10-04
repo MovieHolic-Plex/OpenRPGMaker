@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/lute/w6-A.pxg",
+ "id": "lute",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.014
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "dither"
+  ],
+  "pass": false
+ },
+ "colors": 6,
+ "v5_colors": 6,
+ "bbox": [
+  4,
+  1,
+  10,
+  11
+ ],
+ "v5_bbox": [
+  4,
+  1,
+  10,
+  11
+ ],
+ "note": "목에 양쪽 테두리를 둘러 또렷하게 하고 흩어진 울림구멍 점을 2x2 한 덩이로 모은 v5 정리 (몸통 모양·색 그대로)",
+ "ok": true
+}

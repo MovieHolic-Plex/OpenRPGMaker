@@ -1,0 +1,534 @@
+{
+ "brown-headband-expressions": {
+  "chs": "Actor1",
+  "idx": 0,
+  "sheet": "Actor1",
+  "cell": 0,
+  "name": "갈색 머리 머리띠"
+ },
+ "blue-traveler-expressions": {
+  "chs": "Actor1",
+  "idx": 1,
+  "sheet": "Actor1",
+  "cell": 1,
+  "name": "푸른 머리 여행자"
+ },
+ "helmet-guard-expressions": {
+  "chs": "Actor1",
+  "idx": 2,
+  "sheet": "Actor1",
+  "cell": 2,
+  "name": "투구 병사"
+ },
+ "helmet-blonde-expressions": {
+  "chs": "Actor1",
+  "idx": 3,
+  "sheet": "Actor1",
+  "cell": 3,
+  "name": "금발 투구 기사"
+ },
+ "blue-headband-expressions": {
+  "chs": "Actor1",
+  "idx": 4,
+  "sheet": "Actor1",
+  "cell": 4,
+  "name": "푸른 머리 머리띠"
+ },
+ "purple-mage-expressions": {
+  "chs": "Actor1",
+  "idx": 5,
+  "sheet": "Actor1",
+  "cell": 5,
+  "name": "보라 머리 마법사"
+ },
+ "black-headband-expressions": {
+  "chs": "Actor1",
+  "idx": 6,
+  "sheet": "Actor1",
+  "cell": 6,
+  "name": "검은 머리 머리띠"
+ },
+ "blue-hat-woman-expressions": {
+  "chs": "Actor1",
+  "idx": 7,
+  "sheet": "Actor1",
+  "cell": 7,
+  "name": "푸른 모자 여성"
+ },
+ "black-martial-expressions": {
+  "chs": "Actor2",
+  "idx": 0,
+  "sheet": "Actor1",
+  "cell": 8,
+  "name": "검은 머리 무도가"
+ },
+ "orange-woman-expressions": {
+  "chs": "Actor2",
+  "idx": 1,
+  "sheet": "Actor1",
+  "cell": 9,
+  "name": "주황 머리 여성"
+ },
+ "green-scholar-expressions": {
+  "chs": "Actor2",
+  "idx": 2,
+  "sheet": "Actor1",
+  "cell": 10,
+  "name": "초록 옷 학자"
+ },
+ "green-goggles-expressions": {
+  "chs": "Actor2",
+  "idx": 3,
+  "sheet": "Actor1",
+  "cell": 11,
+  "name": "초록 머리 고글"
+ },
+ "bearded-bandana-expressions": {
+  "chs": "Actor2",
+  "idx": 4,
+  "sheet": "Actor1",
+  "cell": 12,
+  "name": "수염 두건 남성"
+ },
+ "pink-hat-expressions": {
+  "chs": "Actor2",
+  "idx": 5,
+  "sheet": "Actor1",
+  "cell": 13,
+  "name": "분홍 모자 여성"
+ },
+ "green-bandana-expressions": {
+  "chs": "Actor2",
+  "idx": 6,
+  "sheet": "Actor1",
+  "cell": 14,
+  "name": "초록 머리 두건"
+ },
+ "green-cap-blonde-expressions": {
+  "chs": "Actor2",
+  "idx": 7,
+  "sheet": "Actor1",
+  "cell": 15,
+  "name": "초록 모자 금발"
+ },
+ "actor2-red-helmet-expressions": {
+  "chs": "Actor3",
+  "idx": 0,
+  "sheet": "Actor2",
+  "cell": 0,
+  "name": "붉은 투구"
+ },
+ "actor2-mustache-expressions": {
+  "chs": "Actor3",
+  "idx": 1,
+  "sheet": "Actor2",
+  "cell": 1,
+  "name": "수염 전사"
+ },
+ "actor2-masked-expressions": {
+  "chs": "Actor3",
+  "idx": 2,
+  "sheet": "Actor2",
+  "cell": 2,
+  "name": "복면 전사"
+ },
+ "actor2-white-band-expressions": {
+  "chs": "Actor3",
+  "idx": 3,
+  "sheet": "Actor2",
+  "cell": 3,
+  "name": "흰 머리띠 여성"
+ },
+ "actor2-blonde-expressions": {
+  "chs": "Actor3",
+  "idx": 4,
+  "sheet": "Actor2",
+  "cell": 4,
+  "name": "금발 여성"
+ },
+ "actor2-teal-woman-expressions": {
+  "chs": "Actor3",
+  "idx": 5,
+  "sheet": "Actor2",
+  "cell": 5,
+  "name": "청록 머리 여성"
+ },
+ "actor2-brown-youth-expressions": {
+  "chs": "Actor3",
+  "idx": 6,
+  "sheet": "Actor2",
+  "cell": 6,
+  "name": "갈색 머리 청년"
+ },
+ "actor2-brown-woman-expressions": {
+  "chs": "Actor3",
+  "idx": 7,
+  "sheet": "Actor2",
+  "cell": 7,
+  "name": "갈색 머리 여성"
+ },
+ "actor2-blue-man-expressions": {
+  "chs": "Actor4",
+  "idx": 0,
+  "sheet": "Actor2",
+  "cell": 8,
+  "name": "푸른 머리 남성"
+ },
+ "actor2-blonde-man-expressions": {
+  "chs": "Actor4",
+  "idx": 1,
+  "sheet": "Actor2",
+  "cell": 9,
+  "name": "금발 남성"
+ },
+ "actor2-red-band-blonde-expressions": {
+  "chs": "Actor4",
+  "idx": 2,
+  "sheet": "Actor2",
+  "cell": 10,
+  "name": "금발 전사"
+ },
+ "actor2-long-blue-expressions": {
+  "chs": "Actor4",
+  "idx": 3,
+  "sheet": "Actor2",
+  "cell": 11,
+  "name": "긴 푸른 머리"
+ },
+ "actor2-mauve-woman-expressions": {
+  "chs": "Actor4",
+  "idx": 4,
+  "sheet": "Actor2",
+  "cell": 12,
+  "name": "자주 머리 여성"
+ },
+ "actor2-golden-woman-expressions": {
+  "chs": "Actor4",
+  "idx": 5,
+  "sheet": "Actor2",
+  "cell": 13,
+  "name": "황금 머리 여성"
+ },
+ "actor2-purple-woman-expressions": {
+  "chs": "Actor4",
+  "idx": 6,
+  "sheet": "Actor2",
+  "cell": 14,
+  "name": "보라 머리 여성"
+ },
+ "actor2-blue-hat-woman-expressions": {
+  "chs": "Actor4",
+  "idx": 7,
+  "sheet": "Actor2",
+  "cell": 15,
+  "name": "푸른 모자 여성"
+ },
+ "people1-boy-expressions": {
+  "chs": "People1",
+  "idx": 0,
+  "sheet": "People1",
+  "cell": 0,
+  "name": "소년"
+ },
+ "people1-girl-expressions": {
+  "chs": "People1",
+  "idx": 1,
+  "sheet": "People1",
+  "cell": 1,
+  "name": "소녀"
+ },
+ "people1-blue-man-expressions": {
+  "chs": "People1",
+  "idx": 2,
+  "sheet": "People1",
+  "cell": 2,
+  "name": "푸른 머리 남성"
+ },
+ "people1-blonde-woman-expressions": {
+  "chs": "People1",
+  "idx": 3,
+  "sheet": "People1",
+  "cell": 3,
+  "name": "금발 여성"
+ },
+ "people1-mustache-expressions": {
+  "chs": "People1",
+  "idx": 4,
+  "sheet": "People1",
+  "cell": 4,
+  "name": "콧수염 남성"
+ },
+ "people1-village-woman-expressions": {
+  "chs": "People1",
+  "idx": 5,
+  "sheet": "People1",
+  "cell": 5,
+  "name": "마을 여성"
+ },
+ "people1-old-man-expressions": {
+  "chs": "People1",
+  "idx": 6,
+  "sheet": "People1",
+  "cell": 6,
+  "name": "할아버지"
+ },
+ "people1-old-woman-expressions": {
+  "chs": "People1",
+  "idx": 7,
+  "sheet": "People1",
+  "cell": 7,
+  "name": "할머니"
+ },
+ "people1-black-man-expressions": {
+  "chs": null,
+  "idx": null,
+  "sheet": "People1",
+  "cell": 8,
+  "name": "검은 머리 남성"
+ },
+ "people1-nun-expressions": {
+  "chs": null,
+  "idx": null,
+  "sheet": "People1",
+  "cell": 9,
+  "name": "수녀"
+ },
+ "people1-bald-man-expressions": {
+  "chs": null,
+  "idx": null,
+  "sheet": "People1",
+  "cell": 10,
+  "name": "대머리 남성"
+ },
+ "people1-purple-woman-expressions": {
+  "chs": null,
+  "idx": null,
+  "sheet": "People1",
+  "cell": 11,
+  "name": "보라 머리 여성"
+ },
+ "people1-black-wave-expressions": {
+  "chs": null,
+  "idx": null,
+  "sheet": "People1",
+  "cell": 12,
+  "name": "검은 웨이브 머리"
+ },
+ "people1-blonde-wave-expressions": {
+  "chs": null,
+  "idx": null,
+  "sheet": "People1",
+  "cell": 13,
+  "name": "금발 웨이브 머리"
+ },
+ "people1-red-woman-expressions": {
+  "chs": null,
+  "idx": null,
+  "sheet": "People1",
+  "cell": 14,
+  "name": "붉은 머리 여성"
+ },
+ "people1-mint-woman-expressions": {
+  "chs": null,
+  "idx": null,
+  "sheet": "People1",
+  "cell": 15,
+  "name": "민트 머리 여성"
+ },
+ "people2-king-expressions": {
+  "chs": "People3",
+  "idx": 0,
+  "sheet": "People2",
+  "cell": 0,
+  "name": "왕"
+ },
+ "people2-blue-woman-expressions": {
+  "chs": "People3",
+  "idx": 1,
+  "sheet": "People2",
+  "cell": 1,
+  "name": "푸른 머리 여성"
+ },
+ "people2-auburn-man-expressions": {
+  "chs": "People3",
+  "idx": 2,
+  "sheet": "People2",
+  "cell": 2,
+  "name": "적갈색 머리 남성"
+ },
+ "people2-blonde-curls-expressions": {
+  "chs": "People3",
+  "idx": 3,
+  "sheet": "People2",
+  "cell": 3,
+  "name": "금발 곱슬머리"
+ },
+ "people2-white-elder-expressions": {
+  "chs": "People3",
+  "idx": 4,
+  "sheet": "People2",
+  "cell": 4,
+  "name": "백발 장로"
+ },
+ "people2-blue-ribbon-expressions": {
+  "chs": "People3",
+  "idx": 5,
+  "sheet": "People2",
+  "cell": 5,
+  "name": "푸른 머리 리본"
+ },
+ "people2-mustache-expressions": {
+  "chs": "People3",
+  "idx": 6,
+  "sheet": "People2",
+  "cell": 6,
+  "name": "콧수염 남성"
+ },
+ "people2-blue-guard-expressions": {
+  "chs": "People3",
+  "idx": 7,
+  "sheet": "People2",
+  "cell": 7,
+  "name": "푸른 투구 병사"
+ },
+ "people2-dog-expressions": {
+  "chs": null,
+  "idx": null,
+  "sheet": "People2",
+  "cell": 8,
+  "name": "강아지"
+ },
+ "people2-cat-expressions": {
+  "chs": null,
+  "idx": null,
+  "sheet": "People2",
+  "cell": 9,
+  "name": "고양이"
+ },
+ "people2-rooster-expressions": {
+  "chs": null,
+  "idx": null,
+  "sheet": "People2",
+  "cell": 10,
+  "name": "수탉"
+ },
+ "people2-sheep-expressions": {
+  "chs": null,
+  "idx": null,
+  "sheet": "People2",
+  "cell": 11,
+  "name": "양"
+ },
+ "people2-cow-expressions": {
+  "chs": null,
+  "idx": null,
+  "sheet": "People2",
+  "cell": 12,
+  "name": "소"
+ },
+ "people2-horse-expressions": {
+  "chs": null,
+  "idx": null,
+  "sheet": "People2",
+  "cell": 13,
+  "name": "말"
+ },
+ "people2-tiger-expressions": {
+  "chs": null,
+  "idx": null,
+  "sheet": "People2",
+  "cell": 14,
+  "name": "호랑이"
+ },
+ "people2-lion-expressions": {
+  "chs": null,
+  "idx": null,
+  "sheet": "People2",
+  "cell": 15,
+  "name": "사자"
+ },
+ "monster-slime-expressions": {
+  "chs": null,
+  "idx": null,
+  "sheet": "Monster",
+  "cell": 0,
+  "name": "슬라임"
+ },
+ "monster-red-demon-expressions": {
+  "chs": null,
+  "idx": null,
+  "sheet": "Monster",
+  "cell": 1,
+  "name": "붉은 악마"
+ },
+ "monster-pig-expressions": {
+  "chs": null,
+  "idx": null,
+  "sheet": "Monster",
+  "cell": 2,
+  "name": "돼지"
+ },
+ "monster-ghost-expressions": {
+  "chs": null,
+  "idx": null,
+  "sheet": "Monster",
+  "cell": 3,
+  "name": "유령"
+ },
+ "monster-skeleton-expressions": {
+  "chs": null,
+  "idx": null,
+  "sheet": "Monster",
+  "cell": 4,
+  "name": "해골"
+ },
+ "monster-green-scar-expressions": {
+  "chs": null,
+  "idx": null,
+  "sheet": "Monster",
+  "cell": 5,
+  "name": "초록 피부 흉터"
+ },
+ "monster-hood-skeleton-expressions": {
+  "chs": null,
+  "idx": null,
+  "sheet": "Monster",
+  "cell": 6,
+  "name": "후드 해골"
+ },
+ "monster-beast-expressions": {
+  "chs": null,
+  "idx": null,
+  "sheet": "Monster",
+  "cell": 7,
+  "name": "붉은 눈 수인"
+ },
+ "monster-green-hair-expressions": {
+  "chs": null,
+  "idx": null,
+  "sheet": "Monster",
+  "cell": 8,
+  "name": "초록 머리 마족"
+ },
+ "monster-white-dragon-expressions": {
+  "chs": null,
+  "idx": null,
+  "sheet": "Monster",
+  "cell": 9,
+  "name": "흰 용"
+ },
+ "monster-white-hair-expressions": {
+  "chs": null,
+  "idx": null,
+  "sheet": "Monster",
+  "cell": 10,
+  "name": "백발 마족"
+ },
+ "monster-red-helm-expressions": {
+  "chs": null,
+  "idx": null,
+  "sheet": "Monster",
+  "cell": 11,
+  "name": "붉은 투구 기사"
+ }
+}

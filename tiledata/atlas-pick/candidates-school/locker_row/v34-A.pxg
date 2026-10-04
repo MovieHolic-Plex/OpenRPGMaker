@@ -1,0 +1,44 @@
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat a locker 2
+@mat b locker 5
+@mat c locker 6
+@mat d locker 1
+@mat e locker 4
+@mat f locker 3
+@mat g vblue 4
+@mat h vred 4
+@mblock 0 0
+..aaaaaaaaaaaaaaaaaaaaaaaaaaaa..
+.abbbbbbbbbbbbbbbbbbbbbbbbbbbba.
+.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.
+.cccccccccccccccccccccccccccccc.
+.dddddddddddddddddddddddddddddd.
+.dddddddddddddddddddddddddddddd.
+.effffffffffffffffffffffffffffa.
+.eeeeeeedeeeeeedeeeeeedeeeeeefa.
+.eeffffadeffffadeffffadeffffafa.
+.eeddddadeddddadeddddadeddddafa.
+.eeffffadeffffadeffffadgffffafa.
+.eeddddadeddddadeddddadeddddafa.
+.eeffffadeffffadeffffadeffffafa.
+.eeffffadeffffadeffffadeffffafa.
+.eefffcadefffcadefffcadefffcafa.
+.eefffbadefffbadefffbadefffbafa.
+.eeffffadeffffadeffffadeffffafa.
+.edddddddddddddddddddddddddddfa.
+.eeeeeeedeeeeeedeeeeeedeeeeeefa.
+.eeffffadeffffadeffffadeffffafa.
+.eeffffadeffffadeffffadeffffafa.
+.eeffffadhffffadeffffadeffffafa.
+.eefffcadefffcadefffcadefffcafa.
+.eefffbadefffbadefffbadefffbafa.
+.eeffffadeffffadeffffadeffffafa.
+.eeffffadeffffadeffffadeffffafa.
+.eeffffadeffffadeffffadeffffafa.
+.effffffffffffffffffffffffffffa.
+.aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.
+..~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+..------------------------------

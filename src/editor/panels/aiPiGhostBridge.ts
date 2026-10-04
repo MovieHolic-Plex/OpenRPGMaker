@@ -2,8 +2,6 @@ import { clearAgentBlueprint, setAgentBlueprintFromSpec, markAgentBlueprintProgr
 import { blueprintRegionsForToolCall } from "@/editor/agentBlueprintRegions";
 import { SPATIAL_BUILD_TOOLS, TILE_WRITE_TOOLS, type BuildSpec } from "@/ai/buildSpec";
 import { isAiLiveCanvasEnabled, subscribeAiLiveCanvas } from "@/editor/aiLiveCanvas";
-import { resolveCurrentMapId } from "@/editor/mapSelection";
-import { requestEditorCameraFocus } from "@/editor/editorCameraFocus";
 // Pi 실행 이벤트 → 캔버스 시공 표시(고스트). 워커가 툴마다 흘리는 `map_delta` 를 초안 맵으로
 // 복원하고, **기존 고스트 기계를 그대로** 돌린다(base↔초안 diff).
 //
@@ -173,11 +171,6 @@ export function createPiGhostBridge(options: PiGhostBridgeOptions): PiGhostBridg
             })) });
           }
           if (explicitPlan) markAgentBlueprintProgress(event.name, args, { write: true });
-          const region = regions[0];
-          if (isAiLiveCanvasEnabled() && region && region.mapId === resolveCurrentMapId()) requestEditorCameraFocus({
-            mapId: region.mapId, tileX: region.x + region.w / 2, tileY: region.y + region.h / 2,
-            bounds: { x: region.x, y: region.y, width: region.w, height: region.h }, onlyIfOffscreen: true,
-          });
         }
         runningAgentId = agentId;
         setAgentGhostRunningTool(event.name, (event.args ?? undefined) as Record<string, unknown> | undefined);

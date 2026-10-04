@@ -1,0 +1,30 @@
+{
+  "errors": [],
+  "checks": [
+    "Dedicated quest dialog is labeled",
+    "Unrelated authoring tabs are hidden",
+    "Preset has an editable story to start from",
+    "Story updates the live preview",
+    "Reward updates the live preview",
+    "New type has its own initial story",
+    "New type has its own initial reward",
+    "Sample inserts a full editable story",
+    "Quick reward selection updates preview",
+    "Switching back preserves custom story",
+    "Switching back preserves custom reward",
+    "Invalid reward blocks handoff and explains the bounds",
+    "Handoff keeps selected type",
+    "Handoff keeps reward",
+    "Handoff closes dialog and focuses composer",
+    "Controls fit 1024px viewport",
+    "Primary action visible at 1024px",
+    "Escape closes the modal at 1024px",
+    "No browser errors: []"
+  ],
+  "screenshots": [
+    "errand.png",
+    "lost_item.png",
+    "hunt.png",
+    "width-1024.png"
+  ]
+}

@@ -7,6 +7,7 @@ import { RPG_DUNGEON_PLACE_REFERENCES } from "./rpgDungeonPlaceReferences";
 import { CLIMATE_VILLAGE_PLACE_REFERENCES } from "./climateVillagePlaceReferences";
 import { FIELD_ROUTE_PLACE_REFERENCES } from "./fieldRoutePlaceReferences";
 import { ELF_TREETOP_PLACE_REFERENCES } from "./elfTreetopPlaceReferences";
+import { JOSEON_PLACE_REFERENCES } from "./joseonPlaceReferences";
 import type { GameMap, TilesetDef } from "./types";
 import { cropExtraLayers } from "./mapLayers";
 import { LAKE_PLACE_REFERENCES, regionReference } from "./regionReferences";
@@ -14,7 +15,7 @@ import { LAKE_PLACE_REFERENCES, regionReference } from "./regionReferences";
 /** 건물 목록·킷 요약(생성 건물 장소). 조수가 「3층 대저택」처럼 이름으로 고르고 출처(생성형 이미지/손 도트)를 본다. */
 type PlaceBuilding = { id: string; role: string; name: string; kit: string; image: string; x: number; y: number; width: number; height: number; doors: { x: number; y: number }[] };
 type PlaceKitSummary = { kit: string; name: string; image: string; blueprint: string; width: number; height: number; stories?: number | null; usedHere: string[] };
-type PlaceSnapshot = { map: GameMap; tileset: TilesetDef; buildings?: PlaceBuilding[]; kits?: PlaceKitSummary[] };
+type PlaceSnapshot = { map: GameMap; tileset: TilesetDef; assets?: import('./types').Project['assets']['uploaded']; buildings?: PlaceBuilding[]; kits?: PlaceKitSummary[] };
 type SnapshotFile = () => Promise<{ default: unknown }>;
 type MultiMapFile = { maps: Record<string, GameMap>; tilesets: Record<string, TilesetDef> };
 
@@ -23,6 +24,8 @@ type MultiMapFile = { maps: Record<string, GameMap>; tilesets: Record<string, Ti
 // 조수가 그 장소를 읽을 때만 받는다 — 읽기 전에 preloadRegionReference 를 기다린다.
 const SNAPSHOT_FILES: Record<string, SnapshotFile> = {
   "river-fortress-160x144": () => import("./regionReferences/river-fortress.json"),
+  "modern-city-60x60": () => import("./regionReferences/modern-city.json"),
+  "jp-city-shopstreet-48x40": () => import("./regionReferences/jp-city-shopstreet.json"),
   "castle-courtyard": () => import("./regionReferences/castle-courtyard.json"),
   "castle-small-harbor": () => import("./regionReferences/castle-small-harbor.json"),
   "castle-stone-lodge": () => import("./regionReferences/castle-stone-lodge.json"),
@@ -68,6 +71,7 @@ const DUNGEON_FILE: SnapshotFile = () => import("./regionReferences/rpg-dungeons
 const CLIMATE_FILE: SnapshotFile = () => import("./regionReferences/climate-villages.json");
 const FIELD_FILE: SnapshotFile = () => import("./regionReferences/field-routes.json");
 const ELF_FILE: SnapshotFile = () => import("./regionReferences/elf-treetop.json");
+const JOSEON_FILE: SnapshotFile = () => import("./regionReferences/joseon-village.json");
 const SHIPS_FILE: SnapshotFile = () => import("./regionReferences/ships.json");
 const SHIP_MAP_IDS: Record<string, string> = {
   "bluewave-ship": "map_bluewave_ship",
@@ -103,6 +107,8 @@ function snapshotSource(id: string): SnapshotSource | undefined {
   if (field) return fromMaps(FIELD_FILE, field.sourceMapId);
   const elf = ELF_TREETOP_PLACE_REFERENCES.find(entry => entry.id === id);
   if (elf) return fromMaps(ELF_FILE, elf.sourceMapId);
+  const joseon = JOSEON_PLACE_REFERENCES.find(entry => entry.id === id);
+  if (joseon) return fromMaps(JOSEON_FILE, joseon.sourceMapId);
   const shipMapId = SHIP_MAP_IDS[id];
   return shipMapId ? fromMaps(SHIPS_FILE, shipMapId) : undefined;
 }
@@ -135,7 +141,7 @@ export async function preloadRegionReference(id: string): Promise<void> {
 
 /** Every snapshot chunk — for sweeps over all references (tests, capture scripts). */
 export async function preloadAllRegionReferences(): Promise<void> {
-  await Promise.all([...Object.values(SNAPSHOT_FILES), FANTASY_FILE, INTERIOR_FILE, DUNGEON_FILE, CLIMATE_FILE, FIELD_FILE, SHIPS_FILE].map(load));
+  await Promise.all([...Object.values(SNAPSHOT_FILES), FANTASY_FILE, INTERIOR_FILE, DUNGEON_FILE, CLIMATE_FILE, FIELD_FILE, SHIPS_FILE, ELF_FILE, JOSEON_FILE].map(load));
 }
 
 function snapshotFor(id: string): PlaceSnapshot | undefined {

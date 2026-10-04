@@ -24,7 +24,7 @@ test("the actual private QA preparation selects the renderer contract for four s
   const prepare = Function("project", statements.slice(start + 1, end).map((node) => node.getText(source)).join("\n"));
   const project = JSON.parse(await readFile(new URL("fixtures/projects/editor-authored-demo-v3.json", import.meta.url), "utf8"));
   prepare(project);
-  assert.equal(project.system.battleUiStyle, "rm2003");
+  assert.equal(project.system.battleUiStyle, "retro2003");
   const bundle = await build({
     stdin: { contents: 'export { getBattleSkin } from "./src/battle/skins/registry.ts"; export { BATTLER_PLACEMENTS } from "./src/battle/battlerPlacements.ts";', resolveDir: process.cwd() },
     bundle: true, write: false, platform: "node", format: "esm",
@@ -39,7 +39,7 @@ test("the actual private QA preparation selects the renderer contract for four s
 });
 
 for (const delivery of ["embedded", "nested-web"]) {
-  for (const style of ["rm2003", "rm2000", undefined]) {
+  for (const style of ["retro2003", undefined, "pokemon"]) {
     test(`upfront gameplay style check: ${delivery}, ${style ?? "omitted"}`, { timeout: 15000 }, async (t) => {
       const page = await browser.newPage();
       t.after(() => page.close());
@@ -54,8 +54,8 @@ for (const delivery of ["embedded", "nested-web"]) {
           ? `<script id="oprn-standalone-project" type="application/json">${JSON.stringify(project)}</script>` : "<!doctype html>" });
       });
       await page.goto("http://fixture-qa.test/releases/selected/player.html");
-      if (style === "rm2003") assert.equal(await qa.verifyExportBattleStyle(page), style);
-      else await assert.rejects(qa.verifyExportBattleStyle(page), { code: "ERR_ASSERTION", actual: style, expected: "rm2003" });
+      if (style !== "pokemon") assert.equal(await qa.verifyExportBattleStyle(page), style);
+      else await assert.rejects(qa.verifyExportBattleStyle(page), { code: "ERR_ASSERTION", actual: style, expected: "pokemon" });
       assert.equal(projectRequests, delivery === "embedded" ? 0 : 1);
     });
   }

@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/mailbox_red/j4-A.pxg",
+ "set": "jp",
+ "id": "mailbox_red",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.034
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.036
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation",
+   "outline",
+   "outline_black"
+  ]
+ },
+ "colors": 11,
+ "bbox": [
+  1,
+  1,
+  14,
+  29
+ ],
+ "note": "1x2 둥근 기둥 우체통. 강남 결: 왼쪽 밝은 띠, 오른쪽 어두운 면, 가로 구멍 둘, 흰 〒, 아래 받침과 발치 그림자 한 줄.",
+ "ok": true
+}

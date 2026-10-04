@@ -1,0 +1,11 @@
+{
+ "schema": "worldmap-theme/1",
+ "id": "wuxia",
+ "name": "무협 중국",
+ "iconset": "wuxia",
+ "palette": "wuxia",
+ "overlays": [],
+ "kind": "land",
+ "terrain": "wuxia-china",
+ "journey": "wuxia-5act"
+}

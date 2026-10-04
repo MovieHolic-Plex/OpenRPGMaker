@@ -1,0 +1,28 @@
+// A: 앞쪽 두 자루 입구 윗면만 y=4까지 확장, 뒤쪽 자루·몸통·그림 표·조인 목 유지.
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat a straw 1
+@mat b straw 2
+@mat c straw 3
+@mat d straw 4
+@mat e straw 5
+@mat h linen 5
+@mat g leaf 2
+@mblock 0 0
+......cddc......
+.....cdaedb.....
+.....bcddcb.....
+......baab......
+.cdddcddccbdddc.
+.cdedbhghbcdddb.
+.deadbhhgbdeadb.
+..bccbhghabccb..
+..baabccbbbaab..
+.cdddcbbbcdddcb.
+cdeddcb..cdeddcb
+cdhghcb..cdhghcb
+cdhhgcb..cdhhgcb
+cdhghbb..cdhghbb
+bcddcbb..bcddcbb
+.bbaab....bbaab.

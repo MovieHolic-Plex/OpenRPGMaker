@@ -1,0 +1,23 @@
+{
+ "id": "whiteboard",
+ "slug": "whiteboard",
+ "name": "화이트보드",
+ "scene": "교실",
+ "place": "in",
+ "cells": [
+  3,
+  2
+ ],
+ "canvas": [
+  48,
+  32
+ ],
+ "layer": "wall",
+ "layer_ko": "벽 걸이(위층, 투명 배경·벽면에 붙는다)",
+ "description": "벽걸이 화이트보드. 은색 틀, 아래 펜 받침(검정·빨강·파랑 펜 점), 판 면에 마커 선 한두 줄과 붙은 자석 하나. blackboard 와 같은 높이 규칙(틀 두께·받침 위치 같게) — 짝.",
+ "palette_hint": "wboard 판, mmetal 틀, vblack·vred·vblue 펜",
+ "pair": [
+  "blackboard"
+ ],
+ "worker": "s2"
+}

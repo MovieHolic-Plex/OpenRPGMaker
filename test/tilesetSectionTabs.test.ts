@@ -21,8 +21,8 @@ import {
 import { setTileLayerOverride, userTileLayerOverride } from "@/editor/runtimeTileMetadata";
 import { tileLayerHome, tileVisibleOnLayer } from "@/editor/tileLayerClassification";
 import { createBlankProject } from "@/project/defaults";
-import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
-import { defaultTileset } from "@/project/defaults/defaultAssets";
+import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
+import { combinedTownTileset as defaultTileset } from "@/project/defaults/defaultAssets";
 import { applyCombinedTownHarness } from "@/project/tilesetHarness";
 import { passageMarkForTile, setPassageMark } from "@/project/tilesetPassage";
 import { store } from "@/project/store";
@@ -124,7 +124,7 @@ describe("타일셋 섹션 UI", () => {
   });
 
   function renderEditor(): FakeElement {
-    const tileset = store.getCurrent().tilesets[DEFAULT_TILESET_ID];
+    const tileset = store.getCurrent().tilesets[COMBINED_TOWN_TILESET_ID];
     return renderTilesetEditor(tileset, () => {}) as unknown as FakeElement;
   }
 
@@ -148,7 +148,7 @@ describe("타일셋 섹션 UI", () => {
 
   it("칩 우클릭 메뉴에서 의미 편집 대화상자를 연다", () => {
     openTilesetTileContextMenu({
-      tilesetId: DEFAULT_TILESET_ID,
+      tilesetId: COMBINED_TOWN_TILESET_ID,
       tile: 350,
       clientX: 40,
       clientY: 40,
@@ -165,8 +165,8 @@ describe("타일셋 섹션 UI", () => {
     label.value = "우편함";
     label.dispatchEvent(new Event("input"));
     (document.querySelector('[data-testid="tileset-meaning-dialog-apply"]') as HTMLButtonElement)?.click();
-    expect(store.getCurrent().tilesets[DEFAULT_TILESET_ID]?.tileMeta?.[350]?.label).toBe("우편함");
-    expect(store.getCurrent().tilesets[DEFAULT_TILESET_ID]?.tileMeta?.[350]?.source).toBe("user");
+    expect(store.getCurrent().tilesets[COMBINED_TOWN_TILESET_ID]?.tileMeta?.[350]?.label).toBe("우편함");
+    expect(store.getCurrent().tilesets[COMBINED_TOWN_TILESET_ID]?.tileMeta?.[350]?.source).toBe("user");
     closeTilesetMeaningDialog();
     closeTilesetTileContextMenu();
   });
@@ -184,7 +184,7 @@ describe("타일셋 섹션 UI", () => {
     });
 
     openTilesetTileContextMenu({
-      tilesetId: DEFAULT_TILESET_ID,
+      tilesetId: COMBINED_TOWN_TILESET_ID,
       tile: 350,
       clientX: 20,
       clientY: 20,
@@ -234,7 +234,7 @@ describe("타일셋 섹션 UI", () => {
     editor = renderEditor();
     (findByTestId(editor, "tileset-layer-lower") as unknown as HTMLElement).click();
 
-    const tileset = store.getCurrent().tilesets[DEFAULT_TILESET_ID];
+    const tileset = store.getCurrent().tilesets[COMBINED_TOWN_TILESET_ID];
     expect(tileset.priority[SLOPED_ROOF]).toBe("lower");
     expect(userTileLayerOverride(tileset, SLOPED_ROOF)).toBe("lower");
 
@@ -264,7 +264,7 @@ describe("타일셋 섹션 UI", () => {
     expect(blocked).toBeTruthy();
     expect(star).toBeTruthy();
 
-    const tilesetId = DEFAULT_TILESET_ID;
+    const tilesetId = COMBINED_TOWN_TILESET_ID;
     expect(passageMarkForTile(store.getCurrent().tilesets[tilesetId]!, 0)).toBe("x");
     setTilesetPassagePaint("o");
     editor = renderEditor();

@@ -16,7 +16,7 @@ const project = JSON.parse(fs.readFileSync("test/fixtures/projects/battle-v3.jso
 project.system.systemResourceId = "windowskin-rm2003";
 // Prefer classic side-view for readable lunge offsets; pokemon still covered by CSS.
 if (project.system) {
-  project.system.battleUiStyle = project.system.battleUiStyle || "classic";
+  project.system.battleUiStyle = project.system.battleUiStyle || "retro2003";
 }
 for (const troop of project.database.troops || []) {
   troop.previewBackgroundResourceId = "generated-battle-reference-forest";

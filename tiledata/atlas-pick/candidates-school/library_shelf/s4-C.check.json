@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/library_shelf/s4-C.pxg",
+ "set": "school",
+ "id": "library_shelf",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.036
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.007
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 27,
+ "bbox": [
+  0,
+  1,
+  31,
+  31
+ ],
+ "note": "재해석: 두툼한 관 몰딩(3줄) + 윗칸 열린 책 한 단 + 아래 문 두 짝 장(황동 손잡이). 위아래 다른 기물이 한 몸",
+ "ok": true
+}

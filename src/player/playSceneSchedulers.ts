@@ -1,3 +1,4 @@
+import { applySpriteLookStep, playParticleEffect } from "@/player/playSceneFieldStaging";
 import { queueScheduledBattle, resumeScheduledBattle } from "./scheduledBattle";
 import { isRuntimeEventIdle } from "@/player/runtimeConditionWait";
 import { showSceneEmote } from "@/player/playSceneEmotes";
@@ -369,6 +370,12 @@ export function applyNonBlockingStep(scene: PlaySceneContext, step: StepResult, 
       return true;
     case "showAnimation":
       void playMapAnimation(scene, { ...step, wait: false }, currentEventId);
+      return true;
+    case "particleEffect":
+      void playParticleEffect(scene, step, currentEventId);
+      return true;
+    case "spriteLook":
+      applySpriteLookStep(scene, step, currentEventId);
       return true;
     case "showEmote":
       showSceneEmote(

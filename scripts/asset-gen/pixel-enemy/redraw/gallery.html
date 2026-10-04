@@ -1,0 +1,93 @@
+<div id="monster-battle-redraw-gallery">
+  <div class="viz-controls">
+    <label class="form-label">몬스터 <select class="form-select" data-monster aria-label="몬스터 선택"></select></label>
+    <button class="btn" type="button" data-play aria-pressed="false">포즈 재생</button>
+    <span class="text-small" data-count>140종 · 9포즈</span>
+  </div>
+  <div class="sprite-view">
+    <canvas data-sprite role="img" aria-label="선택한 몬스터의 전투 포즈">몬스터 도트</canvas>
+    <div>
+      <h3 data-name></h3>
+      <span data-pose>대기 A</span>
+      <div class="viz-controls" data-poses aria-label="전투 포즈 선택"></div>
+    </div>
+  </div>
+  <div class="pose-grid" data-sheet aria-label="아홉 전투 자세"></div>
+</div>
+<style>
+#monster-battle-redraw-gallery { color:var(--foreground); }
+#monster-battle-redraw-gallery .sprite-view { display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin:16px 0; }
+#monster-battle-redraw-gallery canvas { image-rendering:pixelated;background:var(--muted); }
+#monster-battle-redraw-gallery .pose-grid { display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;max-width:600px; }
+#monster-battle-redraw-gallery .pose-grid figure { margin:0;display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0; }
+#monster-battle-redraw-gallery .pose-grid figcaption { color:var(--muted-foreground); }
+#monster-battle-redraw-gallery .sprite-view > div { flex:1;min-width:220px; }
+@media (max-width:480px) {
+  #monster-battle-redraw-gallery .sprite-view { justify-content:center; }
+  #monster-battle-redraw-gallery .sprite-view > div { min-width:0;width:100%; }
+}
+@media (max-width:360px) {
+  #monster-battle-redraw-gallery .pose-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
+</style>
+<script>
+(() => {
+  const root=document.getElementById('monster-battle-redraw-gallery');
+  const data=__MONSTERS_DATA__;
+  const names=['대기 A','대기 B','대기 C','준비','이동','공격','복귀','피격','쓰러짐'];
+  const picker=root.querySelector('[data-monster]'),canvas=root.querySelector('[data-sprite]');
+  const play=root.querySelector('[data-play]'),buttons=root.querySelector('[data-poses]');
+  const frames=root.querySelector('[data-sheet]');
+  const saved=window.openai?.widgetState?.privateContent;
+  let selected=saved?.batch==='all-battle-redraw-v2'?data.findIndex(v=>v.slug===saved?.slug):-1,pose=0,image=null,timer=null,cursor=0;
+  if(selected<0)selected=data.findIndex(v=>v.slug==='orc-warrior');
+  data.forEach((v,i)=>{const o=document.createElement('option');o.value=i;o.textContent=v.name+' · '+v.slug;picker.append(o);});
+  names.forEach((name,i)=>{
+    const b=document.createElement('button');b.className='btn';b.type='button';b.textContent=name;
+    b.setAttribute('aria-pressed','false');b.addEventListener('click',()=>{stop();pose=i;paint();save();});buttons.append(b);
+    const f=document.createElement('figure'),c=document.createElement('canvas'),caption=document.createElement('figcaption');
+    c.setAttribute('role','img');c.setAttribute('aria-label',name);caption.className='text-small';caption.textContent=name;f.append(c,caption);frames.append(f);
+  });
+  function scaleFor(c,limit) { return Math.max(1,Math.min(limit,Math.floor(root.clientWidth/c))); }
+  function tile(c,i,scale) {
+    const cell=data[selected].cell;c.width=c.height=cell*scale;
+    const ctx=c.getContext('2d');ctx.imageSmoothingEnabled=false;ctx.clearRect(0,0,c.width,c.height);
+    ctx.drawImage(image,i%3*cell,Math.floor(i/3)*cell,cell,cell,0,0,c.width,c.height);
+  }
+  function paint() {
+    if(!image)return;
+    tile(canvas,pose,scaleFor(data[selected].cell,3));
+    canvas.dataset.spriteSlug=data[selected].slug;
+    canvas.setAttribute('aria-label',data[selected].name+' · '+names[pose]);
+    root.querySelector('[data-pose]').textContent=names[pose];
+    [...buttons.children].forEach((b,i)=>b.setAttribute('aria-pressed',String(i===pose)));
+    const grid=getComputedStyle(frames),columns=grid.gridTemplateColumns.split(' ').length;
+    const available=(frames.clientWidth-parseFloat(grid.columnGap)*(columns-1))/columns;
+    [...frames.querySelectorAll('canvas')].forEach((c,i)=>tile(c,i,Math.max(1,Math.min(2,Math.floor(available/data[selected].cell)))));
+  }
+  function stop() { clearTimeout(timer);timer=null;play.textContent='포즈 재생';play.setAttribute('aria-pressed','false'); }
+  const timeline=[0,1,2,1,3,4,5,6,0,7,8];
+  function tick() {pose=timeline[cursor++%timeline.length];paint();timer=setTimeout(tick,pose===8?1000:pose===5?420:220);}
+  play.addEventListener('click',()=>{
+    if(timer)stop();else {cursor=0;play.textContent='정지';play.setAttribute('aria-pressed','true');tick();}
+  });
+  function save() {
+    window.openai?.setWidgetState?.({modelContent:{monster:data[selected].slug,name:data[selected].name,pose:names[pose]},
+      privateContent:{batch:'all-battle-redraw-v2',slug:data[selected].slug,pose}})?.catch?.(()=>{});
+  }
+  function select(persist=false,restore=0) {
+    stop();pose=Number.isInteger(restore)&&restore>=0&&restore<9?restore:0;selected=Number(picker.value);image=null;
+    root.querySelector('[data-name]').textContent=data[selected].name;
+    const index=selected,next=new Image();next.onload=()=>{if(index!==selected)return;image=next;paint();};next.src=data[selected].png;
+    if(persist)save();
+  }
+  picker.value=selected;picker.addEventListener('change',()=>select(true));select(false,saved?.pose);
+  window.addEventListener('openai:set_globals',event=>{
+    const state=event.detail?.globals?.widgetState?.privateContent;
+    if(state?.batch!=='all-battle-redraw-v2')return;
+    const index=data.findIndex(v=>v.slug===state.slug);if(index<0)return;
+    picker.value=index;select(false,state.pose);
+  });
+  new ResizeObserver(()=>paint()).observe(root);
+})();
+</script>

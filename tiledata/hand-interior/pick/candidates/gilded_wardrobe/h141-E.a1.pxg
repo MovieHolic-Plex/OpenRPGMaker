@@ -1,0 +1,68 @@
+// E: 상아빛 곡선 몰딩 두 문과 금장 기둥, 깊이 있는 닫힌 처마 윗판.
+@size 32 48
+@cell 16
+@palette palette.pal
+@mat a gold 1
+@mat b gold 2
+@mat c gold 3
+@mat d gold 4
+@mat e gold 5
+@mat f gold 6
+@mat h linen 1
+@mat i linen 2
+@mat j linen 3
+@mat k linen 4
+@mat l linen 5
+@mat m linen 6
+@layer cabinet
+@mblock 1 0
+.bddddddddddddddddddddddddddb.
+bemmmmmmmmmmmmmmmmmmmmmmmllldb
+bemlllllllllllllllllllllllkldb
+bekllllllllllkkllllllllllkkldb
+bekkkkkkkkkkkkkkkkkkkkkkkkjjdb
+cffffffffeeeeeeeeeeeeeeeeeedcb
+deeeeeeeeeeeeeeeeeeeeeeedddcba
+bkkkkkkkkkkkkkkkkkkkkkkkkjjiba
+.bjjjjjjjjjjjjjjjjjjjjjjjjjih.
+@mblock 3 9
+elmlllllllllhhkkkkkkkkjjca
+elklllllllllhhkkkkkkkkjjca
+edcddddddddbhhbddddddddcjca
+elkllleeellkhhjkdddlkkjjca
+elklledcdelkhhjkdcbdkkjjca
+elkleclllelkhhjkclldkkjjca
+elkldmlllldkhhjkellcdkjjca
+elkldmlllldkhhjkellcdkjjca
+elkldmlllldkhhjkellcdkjjca
+elkldmlllldkhhjkellcdkjjca
+elkldmlllldkhhjkellcdkjjca
+elkldmlllldkhhjkellcdkjjca
+elkldmlllldkhhjkellcdkjjca
+elkldmlllldkhhjkellcdkjjca
+elkldmlllldkhhjkellcdkjjca
+elkldmlllldkhhjkellcdkjjca
+elkldmlllfdkhhjkfelcdkjjca
+elkldmllfedkhhjkeflcdkjjca
+elkldmllldckhhjkcllcdkjjca
+elkldmlllldkhhjkellcdkjjca
+elklecllledkhhjkdllbdkjjca
+elklledddelkhhjkddcdkkjjca
+elklllkkkllkhhjkkkkkkkjjca
+elklddddddbkhhjkddddbkjjca
+elkldmlllldkhhjkellcdkjjca
+elkldmlllldkhhjkellcdkjjca
+elkldmlllldkhhjkellcdkjjca
+elkldmlllldkhhjkellcdkjjca
+elkledddddckhhjkdddcckjjca
+elkllllllllkhhjkkkkkkkjjca
+edcddddddddbhhbddddddddcjca
+elklllllllllhhkkkkkkkkjjca
+bjjjjjjjjjjjhhiiiiiiiiiiha
+@mblock 1 42
+.beeeeeeeeeeeeeeeeeeeeeeedcba.
+bemllllllllllllllllllllkkjjcba
+bekkkkkkkkkkkkkkkkkkkkkjjjicba
+.bcccccccccccccccccccccccccaa.
+..belcb................bdcah..
+..bcchh................bcahh..

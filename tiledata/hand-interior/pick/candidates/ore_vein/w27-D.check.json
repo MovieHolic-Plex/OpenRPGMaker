@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/ore_vein/w27-D.pxg",
+ "id": "ore vein",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.007
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 7,
+ "v5_colors": 6,
+ "bbox": [
+  3,
+  2,
+  13,
+  11
+ ],
+ "v5_bbox": [
+  4,
+  2,
+  14,
+  13
+ ],
+ "note": "변형 1 — 대각 맥: 오른쪽 위에서 왼쪽 아래로 흐르는 청록 결정 띠(밝은 위쪽 결, 어두운 아래쪽 결) 한 줄과 금 덩이 둘.",
+ "ok": true
+}

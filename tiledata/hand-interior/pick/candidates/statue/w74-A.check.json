@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/statue/w74-A.pxg",
+ "id": "statue",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.192
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 8,
+ "v5_colors": 0,
+ "bbox": [
+  0,
+  7,
+  15,
+  46
+ ],
+ "v5_bbox": null,
+ "note": "대리석 인물상: 받침대 윗면·앞면·밑단 + 머리·어깨·가슴 팔·토가 주름",
+ "ok": true
+}

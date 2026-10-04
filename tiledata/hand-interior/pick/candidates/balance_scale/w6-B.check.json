@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/balance_scale/w6-B.pxg",
+ "id": "balance scale",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.049
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 20,
+ "v5_colors": 9,
+ "bbox": [
+  0,
+  1,
+  15,
+  15
+ ],
+ "v5_bbox": [
+  1,
+  1,
+  15,
+  15
+ ],
+ "note": "A 에 위-왼 밝고 아래-오른 짙은 명암, 짙은 밑그림자로 받침과 접시 두께를 키움",
+ "ok": true
+}

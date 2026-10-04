@@ -1,0 +1,29 @@
+{
+ "id": "door_wood",
+ "slug": "door_wood",
+ "name": "나무 문(기본)",
+ "scene": "공통 뼈대",
+ "cells": [
+  1,
+  2
+ ],
+ "canvas": [
+  16,
+  32
+ ],
+ "layer": "wall",
+ "layer_ko": "벽 걸이(위층, 투명 배경·벽면에 붙는다)",
+ "description": "북쪽 벽면 두 줄에 붙는 한 칸 문: 위 2px 는 벽면이 보이게 비우고, 문틀(위·양옆 2px) + 문짝(패널 두 개, 위 패널 작게) + 놋쇠 손잡이 한 점, 맨 아래 줄이 바닥에 닿는다. 벽지 벽·판벽 어디에 붙여도 문틀이 벽과 떨어져 보이게(문틀 밝은 테). 문 아래 틈 1px 는 짙게.",
+ "palette_hint": "mahog 문, rot 틀, tarn 손잡이",
+ "stage": 1,
+ "stage_ko": "1단계 기본(2판 새로)",
+ "kit": "manor",
+ "role": "문(기본)",
+ "worker": "hf3",
+ "set_with": [
+  "door_locked",
+  "door_double",
+  "window_night",
+  "window_curtain"
+ ]
+}

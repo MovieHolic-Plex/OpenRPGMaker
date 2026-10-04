@@ -1,0 +1,3645 @@
+{
+  "species": 34,
+  "frames": 306,
+  "elapsedSeconds": 4.88,
+  "reports": [
+    {
+      "slug": "crab-01",
+      "cell": 64,
+      "colors": 6,
+      "alpha": [
+        0,
+        255
+      ],
+      "baseline": 60,
+      "airborne": false,
+      "hash": "a3f94c88c05379e86700456bbd0bb260f6883a7be91877d5492f343edae7c6c8",
+      "uniqueFrames": 9,
+      "minPairDiff": [
+        436,
+        "idle_a",
+        "idle_b"
+      ],
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            4,
+            27,
+            56,
+            61
+          ],
+          "sha256": "88dd66e9fab457daaff61da8f975dcc1b89f3fc48fc6447c867179af4ad081f5"
+        },
+        "idle_b": {
+          "bbox": [
+            4,
+            28,
+            56,
+            61
+          ],
+          "sha256": "bdcbd437a0ce7874c61398efc9dd63aaa75c2d8c5081b1e2348a428af0b4feb0"
+        },
+        "idle_c": {
+          "bbox": [
+            3,
+            26,
+            54,
+            61
+          ],
+          "sha256": "2c6b3b63c20f174eac7d82171452150a7438daa1a7f32938241373fddbfc6d5b"
+        },
+        "windup": {
+          "bbox": [
+            2,
+            26,
+            52,
+            61
+          ],
+          "sha256": "f7420d3cd331adbdb4d8e86cc0884edfe5706a2c16d96c6741c523c67687d8b1"
+        },
+        "move": {
+          "bbox": [
+            3,
+            27,
+            58,
+            61
+          ],
+          "sha256": "50370106a068dbd9846074f8bd7a42a5eca3e8965b007312f3d924ff884ff655"
+        },
+        "attack": {
+          "bbox": [
+            6,
+            25,
+            60,
+            61
+          ],
+          "sha256": "389e7acde6448d9efa6196edc582771733aa144962b9c887dbdcbf70f9d3c735"
+        },
+        "recover": {
+          "bbox": [
+            5,
+            28,
+            58,
+            61
+          ],
+          "sha256": "bcec6f9f99ed4555b7355f69906b4b5da2f065a08fe207d6bf83a43c549deb8d"
+        },
+        "hit": {
+          "bbox": [
+            2,
+            30,
+            52,
+            61
+          ],
+          "sha256": "66fb567280881e9c3afa69a3cc653f7f975e6283e571869ff7cd359bb2f179e0"
+        },
+        "dead": {
+          "bbox": [
+            6,
+            45,
+            57,
+            61
+          ],
+          "sha256": "d695053e19baca40e2c9a801f2ce4a181e4c86126f7ab785d508133c6e8fe446"
+        }
+      },
+      "errors": [],
+      "cycle": {
+        "milliseconds": 3960,
+        "pixelTimingReload": true,
+        "scale": 2
+      }
+    },
+    {
+      "slug": "spider-01",
+      "cell": 64,
+      "colors": 7,
+      "alpha": [
+        0,
+        255
+      ],
+      "baseline": 60,
+      "airborne": false,
+      "hash": "4d9e7518c85128061f0c29d2cbe1544495d8a9c3c9ef4555fb8843d53a0182aa",
+      "uniqueFrames": 9,
+      "minPairDiff": [
+        447,
+        "idle_a",
+        "idle_b"
+      ],
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            5,
+            19,
+            59,
+            61
+          ],
+          "sha256": "64537617740237458e890a489e9d6e1b03c4c36ec334a8433723957a5e9f838b"
+        },
+        "idle_b": {
+          "bbox": [
+            5,
+            20,
+            59,
+            61
+          ],
+          "sha256": "2a0c1f2edb675a536939b2a08139474c096f8db344568f4bea151a0cb4cc8ed1"
+        },
+        "idle_c": {
+          "bbox": [
+            4,
+            18,
+            58,
+            61
+          ],
+          "sha256": "90312a180a496c0b22dc4d810260790feb624fb0dce085813026ffbf82549bf5"
+        },
+        "windup": {
+          "bbox": [
+            3,
+            21,
+            57,
+            61
+          ],
+          "sha256": "d64269114e8d13ec9cc2a08e039d04facab11c5da9eecc862abdb23802a51aa1"
+        },
+        "move": {
+          "bbox": [
+            9,
+            19,
+            58,
+            61
+          ],
+          "sha256": "c3d3840efcff41b13c33127b5a160ec3463a1f595e1d405549842269f99cffe5"
+        },
+        "attack": {
+          "bbox": [
+            7,
+            17,
+            59,
+            61
+          ],
+          "sha256": "1e0fa65131da73382e6788739a9257a89e2ebbc45b1109d310100ff61be61e0a"
+        },
+        "recover": {
+          "bbox": [
+            6,
+            20,
+            60,
+            61
+          ],
+          "sha256": "c0d53929ebf6bc93c7ab59188d522c4ef32b703bd90c868722dba4a3d95ab032"
+        },
+        "hit": {
+          "bbox": [
+            3,
+            22,
+            57,
+            61
+          ],
+          "sha256": "8d6547414478aab92c6e6dfd34f6ccffbb3ab7626533662cd54aecb464e4bff7"
+        },
+        "dead": {
+          "bbox": [
+            12,
+            43,
+            47,
+            61
+          ],
+          "sha256": "321e6cfe37e6b591a8becf612c868baa27872455d5c2da20da64b6412616d59e"
+        }
+      },
+      "errors": [],
+      "cycle": {
+        "milliseconds": 3960,
+        "pixelTimingReload": true,
+        "scale": 2
+      }
+    },
+    {
+      "slug": "snake-01",
+      "cell": 64,
+      "colors": 8,
+      "alpha": [
+        0,
+        255
+      ],
+      "baseline": 60,
+      "airborne": false,
+      "hash": "7a940b2c20df52ce2a630532d0d70b3e0ab16fb7af93eaf44b1e34d8091b529c",
+      "uniqueFrames": 9,
+      "minPairDiff": [
+        220,
+        "idle_b",
+        "recover"
+      ],
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            5,
+            19,
+            52,
+            61
+          ],
+          "sha256": "518b0f812549a66bfbdc7eba3ccb57e2feb0f72c00e8787f81e78a2b321c8ffc"
+        },
+        "idle_b": {
+          "bbox": [
+            5,
+            20,
+            50,
+            61
+          ],
+          "sha256": "ed2b3d093b8506ee0c9d98b8b27905c61d688c8bdf6ee9f1a12e7d3e072b7087"
+        },
+        "idle_c": {
+          "bbox": [
+            5,
+            18,
+            51,
+            61
+          ],
+          "sha256": "e128942b317e62b0c934ed0a89c3c2b1b5d1322afd137ccc65f6eb796df32e24"
+        },
+        "windup": {
+          "bbox": [
+            5,
+            19,
+            42,
+            61
+          ],
+          "sha256": "8a6f2b7ecb424c25fc2a28d3fc382e83fda8ad7c4192a954398e47197700da9e"
+        },
+        "move": {
+          "bbox": [
+            5,
+            19,
+            52,
+            61
+          ],
+          "sha256": "0898d55c2d15d4609f38884a7f869ed25c9ab154a3fa5657ef5e3758a3b0acf7"
+        },
+        "attack": {
+          "bbox": [
+            5,
+            18,
+            62,
+            61
+          ],
+          "sha256": "8f76793380675bef6db84a3dc7f7fc27655a2c1cb9ff031a6895d06e42929986"
+        },
+        "recover": {
+          "bbox": [
+            5,
+            20,
+            51,
+            61
+          ],
+          "sha256": "38ab634a8ae1f58f96d4d7add10288299e1d6f5350e6dce3e7df0f7ab5a24b78"
+        },
+        "hit": {
+          "bbox": [
+            5,
+            22,
+            46,
+            61
+          ],
+          "sha256": "dabbb8617c84bb4e9557a48d19230ac87b67300bb9dfed784305809f08ff898b"
+        },
+        "dead": {
+          "bbox": [
+            3,
+            50,
+            59,
+            61
+          ],
+          "sha256": "116281670bca1ecf2f95fc20a4345eb5af463862642e0dba13721bb4c56b70a1"
+        }
+      },
+      "errors": [],
+      "cycle": {
+        "milliseconds": 3960,
+        "pixelTimingReload": true,
+        "scale": 2
+      }
+    },
+    {
+      "slug": "scorpion-01",
+      "cell": 64,
+      "colors": 7,
+      "alpha": [
+        0,
+        255
+      ],
+      "baseline": 60,
+      "airborne": false,
+      "hash": "b46ebe29612ff0f6c1225466c400fa587d25de256b3d78bbe2c00a1a6da28151",
+      "uniqueFrames": 9,
+      "minPairDiff": [
+        648,
+        "idle_a",
+        "idle_b"
+      ],
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            3,
+            18,
+            58,
+            61
+          ],
+          "sha256": "866658548e125c5fdd8e689a35041c5650dfa48e526e64de70e1abc72fe0bf2d"
+        },
+        "idle_b": {
+          "bbox": [
+            3,
+            19,
+            58,
+            61
+          ],
+          "sha256": "6677a203ad65c696713db1c2b829dd5aea15dc6700e13c104c95a2e2a2c3f284"
+        },
+        "idle_c": {
+          "bbox": [
+            2,
+            17,
+            57,
+            61
+          ],
+          "sha256": "f6fae7bb982ef877c2f1cbbcd07604025fc6b6f65983ab8e77473e15622296a4"
+        },
+        "windup": {
+          "bbox": [
+            1,
+            20,
+            56,
+            61
+          ],
+          "sha256": "5c983aecbbff9c5378a0277af7dfc1349794644c2a7804a282730ea96012924a"
+        },
+        "move": {
+          "bbox": [
+            4,
+            18,
+            59,
+            61
+          ],
+          "sha256": "e91ee0a1cf244643113fdb13aff5caf3b891a86f499d8241231cf145cd2298b1"
+        },
+        "attack": {
+          "bbox": [
+            5,
+            16,
+            63,
+            61
+          ],
+          "sha256": "fe12af113db2fef155f15078ddb4fefdedf1d56d88e48ee5d3052d9281fb0492"
+        },
+        "recover": {
+          "bbox": [
+            4,
+            19,
+            59,
+            61
+          ],
+          "sha256": "c7c5e9e6283ff580b672620beff9ae32728aed04c77bc87405014fe2e21c6266"
+        },
+        "hit": {
+          "bbox": [
+            1,
+            21,
+            56,
+            61
+          ],
+          "sha256": "fdf11425e11efba591b178baa1a830bb467d4aeb4c67eacc97f4c87026292dd6"
+        },
+        "dead": {
+          "bbox": [
+            6,
+            45,
+            55,
+            61
+          ],
+          "sha256": "0abef9910747b993e1e66b914dfc47a5c606d28bf21f357593a4fe53f79825ee"
+        }
+      },
+      "errors": [],
+      "cycle": {
+        "milliseconds": 3960,
+        "pixelTimingReload": true,
+        "scale": 2
+      }
+    },
+    {
+      "slug": "wolf-01",
+      "cell": 64,
+      "colors": 8,
+      "alpha": [
+        0,
+        255
+      ],
+      "baseline": 60,
+      "airborne": false,
+      "hash": "690b84b4e5ab351ecabf74e3b2fc829b2fe4fe1f9d0f8b59ac8fc39545973f1b",
+      "uniqueFrames": 9,
+      "minPairDiff": [
+        360,
+        "idle_a",
+        "idle_b"
+      ],
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            5,
+            23,
+            53,
+            61
+          ],
+          "sha256": "5adcd8c7818a11b4d53ac21ab16c02a87262e36598e78f434b38aa7e6d53d1cb"
+        },
+        "idle_b": {
+          "bbox": [
+            5,
+            24,
+            53,
+            61
+          ],
+          "sha256": "1d43a71bd148c7b3079abf84a82501925b0412282f03bebc7d4aa95ffa2f84c3"
+        },
+        "idle_c": {
+          "bbox": [
+            4,
+            21,
+            51,
+            61
+          ],
+          "sha256": "339f1827a5b9db12599ff7e9c1015fa017f07869300df26b835c194fd22f55d3"
+        },
+        "windup": {
+          "bbox": [
+            3,
+            29,
+            46,
+            61
+          ],
+          "sha256": "5550a427d43cbbde4edcf1c381a935081c17cbc8477ccee9fefed14d3daf7431"
+        },
+        "move": {
+          "bbox": [
+            6,
+            23,
+            55,
+            61
+          ],
+          "sha256": "fc440144fa192f34c4fc1dd9dc3df9b73787963a238a119f9a6121b4db1a50e6"
+        },
+        "attack": {
+          "bbox": [
+            7,
+            24,
+            58,
+            61
+          ],
+          "sha256": "bca64670e8bc809dd343fb43e77aa61b314dc012e73418db16bd1153f7b91304"
+        },
+        "recover": {
+          "bbox": [
+            6,
+            24,
+            54,
+            61
+          ],
+          "sha256": "3c10235e7f0d76268a9cdf874d1b6674f3e2267bb1fe68bf0c61abde9b795087"
+        },
+        "hit": {
+          "bbox": [
+            3,
+            26,
+            46,
+            61
+          ],
+          "sha256": "fe6c1538464963a59a8ca3022c0e77a208a29e97618b97de64f49b13c14a1048"
+        },
+        "dead": {
+          "bbox": [
+            5,
+            49,
+            52,
+            61
+          ],
+          "sha256": "2d2051f067bb8a20fece8cd48b2008f409f52d5e2e8ed02b1803e5518478ecec"
+        }
+      },
+      "errors": [],
+      "cycle": {
+        "milliseconds": 3960,
+        "pixelTimingReload": true,
+        "scale": 2
+      }
+    },
+    {
+      "slug": "centipede-01",
+      "cell": 64,
+      "colors": 6,
+      "alpha": [
+        0,
+        255
+      ],
+      "baseline": 60,
+      "airborne": false,
+      "hash": "ff2dfbbca60ed598838c4545b9179b7f024b38e736ca87ad1013cff57550f60b",
+      "uniqueFrames": 9,
+      "minPairDiff": [
+        279,
+        "idle_a",
+        "idle_c"
+      ],
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            2,
+            17,
+            58,
+            61
+          ],
+          "sha256": "c8471e5b1f057ed620eb3f2683e79e607cf54a1d48862bc9b212258286d5e7e8"
+        },
+        "idle_b": {
+          "bbox": [
+            2,
+            18,
+            58,
+            61
+          ],
+          "sha256": "799b897dbb7636a5b513b18339e4ab9e5f40353d42a462fcd9fb315c89a581c5"
+        },
+        "idle_c": {
+          "bbox": [
+            2,
+            17,
+            58,
+            61
+          ],
+          "sha256": "1c10dbc44c85a6dc9b1dac187c19b2d393cdb9683e717c169578f647eb01e677"
+        },
+        "windup": {
+          "bbox": [
+            2,
+            19,
+            55,
+            61
+          ],
+          "sha256": "22034f86f90e830b26cb0c4963a96d35bcc1780918870f57e7bc32bb1f4316d4"
+        },
+        "move": {
+          "bbox": [
+            2,
+            16,
+            61,
+            61
+          ],
+          "sha256": "6414a3da3f4f4743d32ec1e1453d68ea6f6351135bcb3e9cacca08058bc4b3e8"
+        },
+        "attack": {
+          "bbox": [
+            3,
+            14,
+            63,
+            61
+          ],
+          "sha256": "8a1b930882e016d099bd1b4e793680580d5399e3d48fa99a3dc0f13e30890e9a"
+        },
+        "recover": {
+          "bbox": [
+            4,
+            15,
+            60,
+            61
+          ],
+          "sha256": "7cdfb9af2488a5c8ff8f98fd44b466be31d8022fedbbb3b90a447cd34d1c955a"
+        },
+        "hit": {
+          "bbox": [
+            2,
+            19,
+            58,
+            61
+          ],
+          "sha256": "665bff426cf96ef8719bbc28ad79b29e0c53c4d298428cbc0a41c92abe6c329e"
+        },
+        "dead": {
+          "bbox": [
+            4,
+            50,
+            58,
+            61
+          ],
+          "sha256": "cc87ed791044a6150040301c300ded0a12409637a7c9fc74d6c94363b7ec25f5"
+        }
+      },
+      "errors": [],
+      "cycle": {
+        "milliseconds": 3960,
+        "pixelTimingReload": true,
+        "scale": 2
+      }
+    },
+    {
+      "slug": "horse-01",
+      "cell": 64,
+      "colors": 12,
+      "alpha": [
+        0,
+        255
+      ],
+      "baseline": 60,
+      "airborne": false,
+      "hash": "03bc74e3202ba153e4b041b68f5513a7008f3f953d50a999052d93bff40a2483",
+      "uniqueFrames": 9,
+      "minPairDiff": [
+        351,
+        "idle_a",
+        "idle_b"
+      ],
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            8,
+            7,
+            53,
+            61
+          ],
+          "sha256": "2fac0b6d4110e26afa4269e4b820fcecabebd1d0cb301eca7ebac7ee2c095ee4"
+        },
+        "idle_b": {
+          "bbox": [
+            8,
+            7,
+            53,
+            61
+          ],
+          "sha256": "01f2a0295b67686ba352b1c7629708f06aca55df9561823ad560711eb044c8bf"
+        },
+        "idle_c": {
+          "bbox": [
+            7,
+            7,
+            52,
+            61
+          ],
+          "sha256": "448d0b7aee6bbf4fca0cdbb916dd80810e8ec6c7c072e408a796059724342571"
+        },
+        "windup": {
+          "bbox": [
+            6,
+            8,
+            44,
+            61
+          ],
+          "sha256": "d3b2c3b6f6ba395589ea81fa753c0c77594496b06eb9f8b4571d090a8c4157a6"
+        },
+        "move": {
+          "bbox": [
+            6,
+            7,
+            53,
+            61
+          ],
+          "sha256": "06dbfe100273f36e361f6e0a9231b250257e2671ac12bb2dba96437598acb760"
+        },
+        "attack": {
+          "bbox": [
+            7,
+            7,
+            59,
+            61
+          ],
+          "sha256": "0ee37d0ec0ba4332f561f67c311a9966b64c84b238feca145fcc04d2529b469b"
+        },
+        "recover": {
+          "bbox": [
+            9,
+            7,
+            54,
+            61
+          ],
+          "sha256": "513fada059ebc0487a0b7bfab2c384186521f14f514cdb695da281e0fa87c6e8"
+        },
+        "hit": {
+          "bbox": [
+            6,
+            7,
+            44,
+            61
+          ],
+          "sha256": "844b5b79725d5a241f4b394b52fb4857b885d39d398684f128607e15d8915339"
+        },
+        "dead": {
+          "bbox": [
+            5,
+            49,
+            54,
+            61
+          ],
+          "sha256": "2ddcc50cd6e118ba22e0357933c87fdbd014f857681628cf1c4b5c475c479957"
+        }
+      },
+      "errors": [],
+      "cycle": {
+        "milliseconds": 3960,
+        "pixelTimingReload": true,
+        "scale": 2
+      }
+    },
+    {
+      "slug": "unicorn-01",
+      "cell": 64,
+      "colors": 10,
+      "alpha": [
+        0,
+        255
+      ],
+      "baseline": 60,
+      "airborne": false,
+      "hash": "49280326292db373a53e2c9d4b382064a27d61ea6c75e2978d5bb481115a832c",
+      "uniqueFrames": 9,
+      "minPairDiff": [
+        294,
+        "idle_a",
+        "idle_b"
+      ],
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            9,
+            4,
+            52,
+            61
+          ],
+          "sha256": "7233b780d0520b6676ac1fe5a16eda533c63ac0c714eebff39152b9a79c543e2"
+        },
+        "idle_b": {
+          "bbox": [
+            9,
+            4,
+            52,
+            61
+          ],
+          "sha256": "17fd2637796505663285f414d91db435793bebeb5ab1c07f9b0bb7a7107f2b63"
+        },
+        "idle_c": {
+          "bbox": [
+            8,
+            4,
+            51,
+            61
+          ],
+          "sha256": "7218392169cbc56a7503cafc6494307bd1559bb571b19993382911a11fe7d2af"
+        },
+        "windup": {
+          "bbox": [
+            7,
+            4,
+            44,
+            61
+          ],
+          "sha256": "536561183e5b9451741eae2264528f181f5198b61b86af97c243b960e6ae3251"
+        },
+        "move": {
+          "bbox": [
+            7,
+            4,
+            53,
+            61
+          ],
+          "sha256": "a93e7a43b51813e967f966e4b82d55ebc29a1becabad464f4d0ae7dd3d7970ab"
+        },
+        "attack": {
+          "bbox": [
+            8,
+            4,
+            58,
+            61
+          ],
+          "sha256": "398b92e8a38d543869bd4ef2598f7d7e6e2c681f2bb725cb9e41ddc3604023c0"
+        },
+        "recover": {
+          "bbox": [
+            10,
+            4,
+            53,
+            61
+          ],
+          "sha256": "0f485ce2e2da76db462dda2cfa350ebb7431632626d55ff8a17ac4b81056cde2"
+        },
+        "hit": {
+          "bbox": [
+            7,
+            4,
+            44,
+            61
+          ],
+          "sha256": "bde59364a868093fcdfbe4135d23f596d655443cda29917b1f4ea5e0e1a844f1"
+        },
+        "dead": {
+          "bbox": [
+            5,
+            49,
+            59,
+            61
+          ],
+          "sha256": "936f2d8607b8e9beab4f3c48dee0858ddfb7a2c5ab2208b4ef63408236d9f1db"
+        }
+      },
+      "errors": [],
+      "cycle": {
+        "milliseconds": 3960,
+        "pixelTimingReload": true,
+        "scale": 2
+      }
+    },
+    {
+      "slug": "cat-01",
+      "cell": 64,
+      "colors": 11,
+      "alpha": [
+        0,
+        255
+      ],
+      "baseline": 60,
+      "airborne": false,
+      "hash": "0c2ffbf6d9f787ee1d8fadb02cc3291fe99f35d5ab67b551a4b2c549dbd9c6e7",
+      "uniqueFrames": 9,
+      "minPairDiff": [
+        363,
+        "idle_a",
+        "idle_b"
+      ],
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            11,
+            19,
+            49,
+            61
+          ],
+          "sha256": "9189a30e8b475d81c8422576d7caf79894278a70ab49b8d35f2743a4d74c4355"
+        },
+        "idle_b": {
+          "bbox": [
+            12,
+            21,
+            49,
+            61
+          ],
+          "sha256": "b991a2786be05f9262a24d3971b9b4cd1220eec6007a985d6b929b2bd042c27e"
+        },
+        "idle_c": {
+          "bbox": [
+            10,
+            17,
+            47,
+            61
+          ],
+          "sha256": "62fbc8c0079ad1ceb5551b0e0a42508f33c5b455c44714fb3dea9af45921eb90"
+        },
+        "windup": {
+          "bbox": [
+            8,
+            23,
+            42,
+            61
+          ],
+          "sha256": "7d6952f6a3c5e82e8c66d80f6c2a22a355117dbb320a769ac320c431ca077ab6"
+        },
+        "move": {
+          "bbox": [
+            9,
+            19,
+            51,
+            61
+          ],
+          "sha256": "2f8bc749edaaf03a730e2d05e18277080ac73d02963b235df24ac3e26f4ac23d"
+        },
+        "attack": {
+          "bbox": [
+            10,
+            15,
+            55,
+            61
+          ],
+          "sha256": "28eaeffec6bda289a2f30033ff534e0b97c8c43dc9f3600fefd6d9cf76de66e9"
+        },
+        "recover": {
+          "bbox": [
+            13,
+            21,
+            50,
+            61
+          ],
+          "sha256": "be7c6df4579d2a21976ba59fd277c31ac2884bf1ac66812c9362a83f5260d69d"
+        },
+        "hit": {
+          "bbox": [
+            8,
+            25,
+            42,
+            61
+          ],
+          "sha256": "af8bdf0b335ab2591d804f4f8af7c0500e595c24af6d972b9624105c53e0c000"
+        },
+        "dead": {
+          "bbox": [
+            5,
+            49,
+            51,
+            61
+          ],
+          "sha256": "7c492e10f613f10e1593d4b27fd37bc3b28535b98ae643964614b01d5d993d09"
+        }
+      },
+      "errors": [],
+      "cycle": {
+        "milliseconds": 3960,
+        "pixelTimingReload": true,
+        "scale": 2
+      }
+    },
+    {
+      "slug": "cockatrice-01",
+      "cell": 64,
+      "colors": 7,
+      "alpha": [
+        0,
+        255
+      ],
+      "baseline": 60,
+      "airborne": false,
+      "hash": "9e7fa20e98f0c0eedc60a0761986ccbde9355a89e6226c1b1845fc08d80556d4",
+      "uniqueFrames": 9,
+      "minPairDiff": [
+        538,
+        "idle_a",
+        "idle_b"
+      ],
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            6,
+            13,
+            58,
+            61
+          ],
+          "sha256": "37b0d9cfc3a03210c3fbeaf02a15e2388fddfb206584d0cb71b56c5ae6e09956"
+        },
+        "idle_b": {
+          "bbox": [
+            6,
+            14,
+            58,
+            61
+          ],
+          "sha256": "39d440237f4a67944c1a718c448fda53165c70e8e9b3b0ab73c84727da6f9227"
+        },
+        "idle_c": {
+          "bbox": [
+            5,
+            12,
+            56,
+            61
+          ],
+          "sha256": "4c59268947292244c124b124b566bb28e47580a51c2f6177a3d1a5d2425981f6"
+        },
+        "windup": {
+          "bbox": [
+            4,
+            15,
+            54,
+            61
+          ],
+          "sha256": "dc48b39e65913a6d6e942f823ea6ca681c3685927608f2e120dda838298a35a5"
+        },
+        "move": {
+          "bbox": [
+            7,
+            13,
+            60,
+            61
+          ],
+          "sha256": "62f1fa045866e5727775e2556965c3c3e77bdb1fb92120371845a78a02fd83c3"
+        },
+        "attack": {
+          "bbox": [
+            8,
+            11,
+            61,
+            61
+          ],
+          "sha256": "10ee1ccfa9a35663efeccb8059bfe96685560ef838044f3db5a7de86fc5b7bcd"
+        },
+        "recover": {
+          "bbox": [
+            7,
+            14,
+            59,
+            61
+          ],
+          "sha256": "5a4333b90bc6fcedc5aba429f58eaadada3e7ce61bd01f69f88a67be4df91844"
+        },
+        "hit": {
+          "bbox": [
+            4,
+            16,
+            55,
+            61
+          ],
+          "sha256": "a0bdff9ad1397787718340e05008330c1b0facff2ba995a9f9a56b53566b5ba6"
+        },
+        "dead": {
+          "bbox": [
+            6,
+            46,
+            59,
+            61
+          ],
+          "sha256": "4fbb8325a56bd1192c8a1f6d2c106f6b7d729c83e780fe315b6267e78c20fc2c"
+        }
+      },
+      "errors": [],
+      "cycle": {
+        "milliseconds": 3960,
+        "pixelTimingReload": true,
+        "scale": 2
+      }
+    },
+    {
+      "slug": "parasite-01",
+      "cell": 64,
+      "colors": 7,
+      "alpha": [
+        0,
+        255
+      ],
+      "baseline": 60,
+      "airborne": false,
+      "hash": "66b36366c7af6bf7008a6e9693041284b66d0c891a822b73fe66ff5882806359",
+      "uniqueFrames": 9,
+      "minPairDiff": [
+        195,
+        "idle_b",
+        "recover"
+      ],
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            5,
+            25,
+            62,
+            61
+          ],
+          "sha256": "547b52e4ad50ffe34acd206337a5a2bdc8fc74c0c0cbd38d6ed674cc9c39bc07"
+        },
+        "idle_b": {
+          "bbox": [
+            5,
+            23,
+            62,
+            61
+          ],
+          "sha256": "329778c4f5f40721d165404986a55f9ddfb97d77062d662c6108b7af97270502"
+        },
+        "idle_c": {
+          "bbox": [
+            4,
+            26,
+            61,
+            61
+          ],
+          "sha256": "043d16572afc388e94bb5edb5ad67c19e22d5bce48e51d34e2add9937a0eb5b0"
+        },
+        "windup": {
+          "bbox": [
+            4,
+            21,
+            59,
+            61
+          ],
+          "sha256": "f8321fa37d8514569d72a12f56cddb89209c9eb00e5459c869d1526656554a18"
+        },
+        "move": {
+          "bbox": [
+            5,
+            25,
+            62,
+            61
+          ],
+          "sha256": "ec2ee840e5d48b7835a5855b0271d05ec179e9df11c57195f0212b24fec1a217"
+        },
+        "attack": {
+          "bbox": [
+            6,
+            28,
+            62,
+            61
+          ],
+          "sha256": "63bc200722d8172d1153327089b35df01cbdfc4ed404f0a1975c529d6fbfee8d"
+        },
+        "recover": {
+          "bbox": [
+            5,
+            23,
+            62,
+            61
+          ],
+          "sha256": "dfb011bb7d6ef530f8f034c443c0b8ed03e625aec61b7bdc3cffb73a460dfe97"
+        },
+        "hit": {
+          "bbox": [
+            4,
+            20,
+            60,
+            61
+          ],
+          "sha256": "bbfacd618346d78eed031083d26908f881a20ae6559bb93b34f84db3d47fb123"
+        },
+        "dead": {
+          "bbox": [
+            5,
+            49,
+            61,
+            61
+          ],
+          "sha256": "7a80b186ab8f5d3930bed24cc9f603ae529322b606ed38470e951b08867d4c78"
+        }
+      },
+      "errors": [],
+      "cycle": {
+        "milliseconds": 3960,
+        "pixelTimingReload": true,
+        "scale": 2
+      }
+    },
+    {
+      "slug": "mantis-01",
+      "cell": 64,
+      "colors": 8,
+      "alpha": [
+        0,
+        255
+      ],
+      "baseline": 60,
+      "airborne": false,
+      "hash": "b2dd4392c7da750a40a4631fa049f6f5d7244242e55f8c8ca608d900bcd8fd27",
+      "uniqueFrames": 9,
+      "minPairDiff": [
+        519,
+        "windup",
+        "hit"
+      ],
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            4,
+            10,
+            49,
+            61
+          ],
+          "sha256": "68c7b724a3fbbf0a2cdc94fd048296804b7717aec5744dc096e2c0b5292c2c79"
+        },
+        "idle_b": {
+          "bbox": [
+            4,
+            11,
+            50,
+            61
+          ],
+          "sha256": "f4639112022fd6a813bd54ce5adeab9f22fdf2a99ebfca2c6a0d2f5b03f6d5e3"
+        },
+        "idle_c": {
+          "bbox": [
+            3,
+            9,
+            48,
+            61
+          ],
+          "sha256": "e0be5a1ed34bb085703fe66a997eb98b528c5a2a9430f6e5b1d40a1f370066eb"
+        },
+        "windup": {
+          "bbox": [
+            2,
+            12,
+            43,
+            61
+          ],
+          "sha256": "d752de149fe45911004ce22d96527f4167bd5e23834a59010f216407a1663193"
+        },
+        "move": {
+          "bbox": [
+            5,
+            10,
+            52,
+            61
+          ],
+          "sha256": "396a876700e6aeafcfa68d921c4d8faf28034a7602db8493b6e6f740cf3db4c2"
+        },
+        "attack": {
+          "bbox": [
+            6,
+            8,
+            61,
+            61
+          ],
+          "sha256": "03966c9755903b54afb15bbe0de2841d2e28e69c9ad04cf444ee81268d8af2fe"
+        },
+        "recover": {
+          "bbox": [
+            5,
+            11,
+            54,
+            61
+          ],
+          "sha256": "8b1c976fe297ef2cfab4881f95562f5f5e60142f392998aa62bdda62c5bfb9fe"
+        },
+        "hit": {
+          "bbox": [
+            2,
+            13,
+            43,
+            61
+          ],
+          "sha256": "808ed6a93d89dbdc779c161c74fa34342dc2214209c1d935de35737cd226792b"
+        },
+        "dead": {
+          "bbox": [
+            8,
+            46,
+            55,
+            61
+          ],
+          "sha256": "db051cbdb211a0b72a474e738ba01fd26c9a887274b4070b839abd990a122a82"
+        }
+      },
+      "errors": [],
+      "cycle": {
+        "milliseconds": 3960,
+        "pixelTimingReload": true,
+        "scale": 2
+      }
+    },
+    {
+      "slug": "fish-01",
+      "cell": 64,
+      "colors": 9,
+      "alpha": [
+        0,
+        255
+      ],
+      "baseline": 60,
+      "airborne": true,
+      "hash": "c7c8494f5c29c71352646c756bc1221a17326ec5f83df19cb8a4a8698cba0a46",
+      "uniqueFrames": 9,
+      "minPairDiff": [
+        382,
+        "idle_b",
+        "move"
+      ],
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            6,
+            19,
+            56,
+            53
+          ],
+          "sha256": "479aa7211546273a55a2ba4fd412a5d2a81f2c412ca12c7821de51cd15c5f0a9"
+        },
+        "idle_b": {
+          "bbox": [
+            6,
+            20,
+            56,
+            54
+          ],
+          "sha256": "da4b3cb1f2b41f1a4399d243361d7295428a69546e7831c9d705e04b98c29eda"
+        },
+        "idle_c": {
+          "bbox": [
+            5,
+            21,
+            55,
+            55
+          ],
+          "sha256": "12409d5084ccde70d957526bb58d877436eaa7d4290bfa26708954fc559a3d98"
+        },
+        "windup": {
+          "bbox": [
+            4,
+            19,
+            54,
+            53
+          ],
+          "sha256": "7f0c0f1cc3bc0ef208abe284cdaa5e84b68072befaedbab5139ba30f8bf68a01"
+        },
+        "move": {
+          "bbox": [
+            7,
+            20,
+            57,
+            54
+          ],
+          "sha256": "dab16e63fde25f790e83e28bd3f5cf96dfe0b0a91914a2c89668596f443f2da6"
+        },
+        "attack": {
+          "bbox": [
+            8,
+            21,
+            58,
+            55
+          ],
+          "sha256": "35f9619d85440711df1fbfaaeb93a1a2a9c6284387405a2581d6e601c679c85f"
+        },
+        "recover": {
+          "bbox": [
+            7,
+            19,
+            57,
+            53
+          ],
+          "sha256": "84f792b1e7df021e2a7d3d6f68de31ab13f82f8ed6a969e10d53279da147f033"
+        },
+        "hit": {
+          "bbox": [
+            4,
+            20,
+            54,
+            54
+          ],
+          "sha256": "3d8641a263f81ca6da8221bb24532da92625d4ad08dc6a1bab26bc84ded3ca59"
+        },
+        "dead": {
+          "bbox": [
+            7,
+            50,
+            55,
+            61
+          ],
+          "sha256": "a719cce8d35f437b8c7a6f6329e8d9657a31cb7597af60b4c73efb1a83346512"
+        }
+      },
+      "errors": [],
+      "cycle": {
+        "milliseconds": 3960,
+        "pixelTimingReload": true,
+        "scale": 2
+      }
+    },
+    {
+      "slug": "bat-cave",
+      "cell": 64,
+      "colors": 9,
+      "alpha": [
+        0,
+        255
+      ],
+      "baseline": 60,
+      "airborne": true,
+      "hash": "1a96a48aedbbf6e9eff73f235a1bef4eac2e534b927235314819742a106e2e5e",
+      "uniqueFrames": 9,
+      "minPairDiff": [
+        445,
+        "idle_a",
+        "idle_b"
+      ],
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            7,
+            17,
+            57,
+            53
+          ],
+          "sha256": "422e28f2164fa2b1114db25d780d0bfdb20c20f3e2e4de1263b4d6bc28300c78"
+        },
+        "idle_b": {
+          "bbox": [
+            7,
+            20,
+            57,
+            54
+          ],
+          "sha256": "5e82f1c10d744ad61207a74788ba15e415229e809c0563fa5b78ccb4e97dd6e3"
+        },
+        "idle_c": {
+          "bbox": [
+            6,
+            14,
+            56,
+            55
+          ],
+          "sha256": "af54865429da2f6a3be391f7d093c56c9d92731bd377ffcf19d61c4ec649d280"
+        },
+        "windup": {
+          "bbox": [
+            5,
+            7,
+            55,
+            53
+          ],
+          "sha256": "a97e1cb76226e408551148feb113886ba6e3f995482f4a13bffd4083b51a8026"
+        },
+        "move": {
+          "bbox": [
+            8,
+            17,
+            58,
+            54
+          ],
+          "sha256": "02db55d3cf1ba0e1bf7fa25cde1642a3ef033ce67eb25c8314dd336a0fc470d5"
+        },
+        "attack": {
+          "bbox": [
+            9,
+            17,
+            59,
+            55
+          ],
+          "sha256": "f90d5c6aa7feb8a9ece1aad32ed5aae19ab93213be0079ff25fd6378b05205f6"
+        },
+        "recover": {
+          "bbox": [
+            8,
+            20,
+            58,
+            53
+          ],
+          "sha256": "94b32883c995ea2a99ac304bab2a83779660e09b6b95dab878274eb272adc083"
+        },
+        "hit": {
+          "bbox": [
+            5,
+            18,
+            55,
+            54
+          ],
+          "sha256": "394112f1194edf5721582040c93924def446ab48cd08c403668d2f7b63157f92"
+        },
+        "dead": {
+          "bbox": [
+            6,
+            51,
+            59,
+            61
+          ],
+          "sha256": "10cb7db123668b74ce2330e950d3fa1b3fb422736c9808caec95dd43de143aaf"
+        }
+      },
+      "errors": [],
+      "cycle": {
+        "milliseconds": 3960,
+        "pixelTimingReload": true,
+        "scale": 2
+      }
+    },
+    {
+      "slug": "spider-widow",
+      "cell": 64,
+      "colors": 7,
+      "alpha": [
+        0,
+        255
+      ],
+      "baseline": 60,
+      "airborne": false,
+      "hash": "44205d776f2d2ccd395a8fbc4f2f83f7e853568e0f5e38edabed42e5bbd0811f",
+      "uniqueFrames": 9,
+      "minPairDiff": [
+        448,
+        "idle_a",
+        "idle_b"
+      ],
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            5,
+            19,
+            59,
+            61
+          ],
+          "sha256": "f7be309f80f84be4d6f33e9d0e7b0784d292c907a06821dea7e88931c046bd9d"
+        },
+        "idle_b": {
+          "bbox": [
+            5,
+            20,
+            59,
+            61
+          ],
+          "sha256": "df062abbc6c3808f0305d16a8441b7553351fcba6d7526df5c3d24bca43d6b01"
+        },
+        "idle_c": {
+          "bbox": [
+            4,
+            18,
+            58,
+            61
+          ],
+          "sha256": "58bcb14857ce050227983c0289064ec855751316227a350a29a6f7196f2b4085"
+        },
+        "windup": {
+          "bbox": [
+            3,
+            21,
+            57,
+            61
+          ],
+          "sha256": "9afe0da37aa6d6c4935117ca0bf4a365164f6da6fcbac7ab98a246d1f1cf9747"
+        },
+        "move": {
+          "bbox": [
+            9,
+            19,
+            58,
+            61
+          ],
+          "sha256": "c3bef4017e09d78c1f46c16d4515cd68f52977f3efc2d95705cfcf078f85820d"
+        },
+        "attack": {
+          "bbox": [
+            7,
+            17,
+            59,
+            61
+          ],
+          "sha256": "97549132e70485f53d80c09921798357061d0afb528d81c7b659d7144fbe03aa"
+        },
+        "recover": {
+          "bbox": [
+            6,
+            20,
+            60,
+            61
+          ],
+          "sha256": "6696d44a68fbae3b1a842a918ee23b0130ebd261696dd25246e5e5f70eca1e9a"
+        },
+        "hit": {
+          "bbox": [
+            3,
+            22,
+            57,
+            61
+          ],
+          "sha256": "fb7776895ac4beda63ede2d496a6eb2df64705a595347ff566f84d9246b3e74b"
+        },
+        "dead": {
+          "bbox": [
+            12,
+            43,
+            47,
+            61
+          ],
+          "sha256": "12f13cb9c7895f38a423058833e9f486f675fd5a86dee2eadde138223e720787"
+        }
+      },
+      "errors": [],
+      "cycle": {
+        "milliseconds": 3960,
+        "pixelTimingReload": true,
+        "scale": 2
+      }
+    },
+    {
+      "slug": "beetle-horn",
+      "cell": 64,
+      "colors": 7,
+      "alpha": [
+        0,
+        255
+      ],
+      "baseline": 60,
+      "airborne": false,
+      "hash": "8f94947e22605a0c5b916137a958f4d2b17222bb5339bba448e7577f718705c0",
+      "uniqueFrames": 9,
+      "minPairDiff": [
+        400,
+        "idle_a",
+        "idle_b"
+      ],
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            7,
+            23,
+            62,
+            61
+          ],
+          "sha256": "ed9f1f066a9fb9badbbd605e3cdd805d30d0d9968dde9bca621a40f15e60cc74"
+        },
+        "idle_b": {
+          "bbox": [
+            7,
+            25,
+            62,
+            61
+          ],
+          "sha256": "459e4ac40b95be0036d39555ae989e8fd3815ea4e6bb7f89918399b811fb4c52"
+        },
+        "idle_c": {
+          "bbox": [
+            7,
+            21,
+            61,
+            61
+          ],
+          "sha256": "cb2be61408e62af876ba0f0c5a7c77b0ba4819548c653501498db9e1e29d6010"
+        },
+        "windup": {
+          "bbox": [
+            7,
+            21,
+            60,
+            61
+          ],
+          "sha256": "6fab5481a4fb36b180bb3a51bc3586a9b988ef37230a090fec2cd50abbbc9931"
+        },
+        "move": {
+          "bbox": [
+            7,
+            25,
+            63,
+            61
+          ],
+          "sha256": "c6d544dffe8d8c6aad655aae5ba8e75a9d8bee787bcdd480d004c0eeaab086ab"
+        },
+        "attack": {
+          "bbox": [
+            7,
+            23,
+            63,
+            61
+          ],
+          "sha256": "1b77bf9ad836c64c9bf80bd563d031bb1ab39198db8b86893548b9a896735831"
+        },
+        "recover": {
+          "bbox": [
+            7,
+            26,
+            63,
+            61
+          ],
+          "sha256": "dfa474c4bb9dad9fec6579f7a0babb5bdfa08a6bbd8e488f68d1317b46cd524d"
+        },
+        "hit": {
+          "bbox": [
+            7,
+            23,
+            60,
+            61
+          ],
+          "sha256": "353a44bd7136ed76c05429f6cbedbb0bbd63b2ad31976d3b7825bf7e81daf21c"
+        },
+        "dead": {
+          "bbox": [
+            9,
+            46,
+            58,
+            61
+          ],
+          "sha256": "1b6399ab3d51b94c99a9e5e6e9714d05e59c52bb2bf7946772e2fae1d175e6f8"
+        }
+      },
+      "errors": [],
+      "cycle": {
+        "milliseconds": 3960,
+        "pixelTimingReload": true,
+        "scale": 2
+      }
+    },
+    {
+      "slug": "centipede-fire",
+      "cell": 64,
+      "colors": 6,
+      "alpha": [
+        0,
+        255
+      ],
+      "baseline": 60,
+      "airborne": false,
+      "hash": "ef6bbaf7bbaeb4fa788d907d20f7b30ff302c8184e6ca092f8c2a79a4786f9a6",
+      "uniqueFrames": 9,
+      "minPairDiff": [
+        302,
+        "idle_a",
+        "idle_c"
+      ],
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            2,
+            23,
+            57,
+            61
+          ],
+          "sha256": "f6047b48d1a5b41c8642c56f49d98c489be4afd3ad5dd2b1df13aa6d70a59bb5"
+        },
+        "idle_b": {
+          "bbox": [
+            2,
+            22,
+            57,
+            61
+          ],
+          "sha256": "d5f18c24d44d4acf4ee6bb4fe60c5a33a7e04610d91caaeba2a078ea70ceaa64"
+        },
+        "idle_c": {
+          "bbox": [
+            2,
+            23,
+            57,
+            61
+          ],
+          "sha256": "6cf0c3737be839b8e2c1bbea7a815687ed5a4f74510388e329ea6f0126849c0b"
+        },
+        "windup": {
+          "bbox": [
+            2,
+            22,
+            54,
+            61
+          ],
+          "sha256": "eca12104f34a11b2d66a951472a123b8cb3b8389bd15e35ed0da9f8a056c1cae"
+        },
+        "move": {
+          "bbox": [
+            3,
+            23,
+            60,
+            61
+          ],
+          "sha256": "3b9bf8be00026e2d6fa12af5c53d7017e5050d9c7a1f737f046256380a087b5c"
+        },
+        "attack": {
+          "bbox": [
+            3,
+            20,
+            62,
+            61
+          ],
+          "sha256": "596e8d5c11ea8d8ea6ec5758fa5da051130e969993c3b087d533ade3c337d2c5"
+        },
+        "recover": {
+          "bbox": [
+            4,
+            20,
+            59,
+            61
+          ],
+          "sha256": "9f5d5315884da3a648c402a81c757e28bcd6ea04f83b3c049bdd7ac091cdc5c7"
+        },
+        "hit": {
+          "bbox": [
+            2,
+            22,
+            57,
+            61
+          ],
+          "sha256": "fa51855cacd5ab134f2703f738d8ab255dadd6248d523aabaeb4e8caa433147f"
+        },
+        "dead": {
+          "bbox": [
+            4,
+            50,
+            58,
+            61
+          ],
+          "sha256": "d3ae97c41d587dfd655ba656675537849bdeda86b82b7bd34d778ed55b200e86"
+        }
+      },
+      "errors": [],
+      "cycle": {
+        "milliseconds": 3960,
+        "pixelTimingReload": true,
+        "scale": 2
+      }
+    },
+    {
+      "slug": "moth-dust",
+      "cell": 64,
+      "colors": 8,
+      "alpha": [
+        0,
+        255
+      ],
+      "baseline": 60,
+      "airborne": true,
+      "hash": "21ce872495876d9bcedcd80e0e7b30bf072fd61a1f1e25b456109f0723ec8b13",
+      "uniqueFrames": 9,
+      "minPairDiff": [
+        770,
+        "move",
+        "hit"
+      ],
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            11,
+            9,
+            59,
+            53
+          ],
+          "sha256": "d2064566bfd2f08bd23dab8f1ac92744ffb09298020ca2989abde4a643cd963b"
+        },
+        "idle_b": {
+          "bbox": [
+            11,
+            13,
+            59,
+            54
+          ],
+          "sha256": "937304a4ad22c25d99a0123be03c4e1926f7c1b6ad6ed2748e3cbec5f9d62a37"
+        },
+        "idle_c": {
+          "bbox": [
+            10,
+            7,
+            58,
+            55
+          ],
+          "sha256": "d2cdad6be7da11673cf467c50037d213ba0a9b6f89a2f72d610a85e50a1dc490"
+        },
+        "windup": {
+          "bbox": [
+            9,
+            1,
+            57,
+            53
+          ],
+          "sha256": "df10b388bbc9822d9ce78170c5e5dbf73764547108e33c7caa0087bcf938c30e"
+        },
+        "move": {
+          "bbox": [
+            12,
+            14,
+            60,
+            54
+          ],
+          "sha256": "a72137ca5924a53719c7abb5f87e91b53d1b69a0aa390b236e2f5e961083deee"
+        },
+        "attack": {
+          "bbox": [
+            13,
+            8,
+            61,
+            55
+          ],
+          "sha256": "82b4016c70a67f598a1d73f6911b50f2bd3e4ed726c3593c54e4ebcfd3ef6ed4"
+        },
+        "recover": {
+          "bbox": [
+            12,
+            11,
+            60,
+            53
+          ],
+          "sha256": "5fcb86282873db90e52b2b4e9e632d160fbc5c683da869a58d52e6a64357aefc"
+        },
+        "hit": {
+          "bbox": [
+            9,
+            16,
+            57,
+            54
+          ],
+          "sha256": "c0bd7e1a2703a38d57eb0a635f31e1d51d1603c2bad9d655f5121c629f9bfaf8"
+        },
+        "dead": {
+          "bbox": [
+            6,
+            51,
+            59,
+            61
+          ],
+          "sha256": "548a69e0574940779001859c2fd28ad0033d185ccca951b6da644e4e258bbf45"
+        }
+      },
+      "errors": [],
+      "cycle": {
+        "milliseconds": 3960,
+        "pixelTimingReload": true,
+        "scale": 2
+      }
+    },
+    {
+      "slug": "worm-sand",
+      "cell": 64,
+      "colors": 7,
+      "alpha": [
+        0,
+        255
+      ],
+      "baseline": 60,
+      "airborne": false,
+      "hash": "fa8c6b76f91fba926476bb22f1630fe1afe68587a738471f9d06f06b2d4c3d18",
+      "uniqueFrames": 9,
+      "minPairDiff": [
+        189,
+        "idle_b",
+        "recover"
+      ],
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            5,
+            27,
+            61,
+            61
+          ],
+          "sha256": "f3e79381ab15303b3c703d230e8ac15b7b87be54d6505cdfb39c804cdf6121da"
+        },
+        "idle_b": {
+          "bbox": [
+            5,
+            25,
+            61,
+            61
+          ],
+          "sha256": "85d95369846bdcc151a4e7da5b4a6321d04c19135ed2f5854e3fab615dfcca0e"
+        },
+        "idle_c": {
+          "bbox": [
+            4,
+            28,
+            61,
+            61
+          ],
+          "sha256": "293474ab3b879a70c86a73a1022ce372dcce84e0b706ebd9a36305e10e212481"
+        },
+        "windup": {
+          "bbox": [
+            4,
+            23,
+            58,
+            61
+          ],
+          "sha256": "cbfd8a469fb5531a67bb76d2b36d8dd0ac7cddd6c3247f15c3d1e3dc6a762ba7"
+        },
+        "move": {
+          "bbox": [
+            5,
+            27,
+            61,
+            61
+          ],
+          "sha256": "e18eb1b77cb831de54ec5ae4da8f15e1f53d0486cf87861fb0a368b4c3ea50c4"
+        },
+        "attack": {
+          "bbox": [
+            6,
+            30,
+            61,
+            61
+          ],
+          "sha256": "69c0cefd843db6047ed2a7ba43fd91c8f42558fe63569ae9774bf36b8f318784"
+        },
+        "recover": {
+          "bbox": [
+            5,
+            25,
+            61,
+            61
+          ],
+          "sha256": "f9922d3acc9a081d61fdcc2beea3c087677b3a4a8d798e073b12c00346c70f43"
+        },
+        "hit": {
+          "bbox": [
+            4,
+            22,
+            59,
+            61
+          ],
+          "sha256": "00574f0fe4193af39eb95f4bfe00210dfdd89df9a354fa323739e6252424e710"
+        },
+        "dead": {
+          "bbox": [
+            5,
+            49,
+            61,
+            61
+          ],
+          "sha256": "7c7a00f115aa626ab95512f8f0b7bd5ff8090dad34914e1d377878b074fc021e"
+        }
+      },
+      "errors": [],
+      "cycle": {
+        "milliseconds": 3960,
+        "pixelTimingReload": true,
+        "scale": 2
+      }
+    },
+    {
+      "slug": "ant-soldier",
+      "cell": 64,
+      "colors": 6,
+      "alpha": [
+        0,
+        255
+      ],
+      "baseline": 60,
+      "airborne": false,
+      "hash": "d93ad753b1613f55c953b63e230e7ee205b872d411bfdad7f3217beb164763c7",
+      "uniqueFrames": 9,
+      "minPairDiff": [
+        354,
+        "windup",
+        "hit"
+      ],
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            10,
+            24,
+            62,
+            61
+          ],
+          "sha256": "b8fe8f02b2f79309a2b5713c29fb1d40906573e3a805014df32e59bf19f58c1f"
+        },
+        "idle_b": {
+          "bbox": [
+            10,
+            25,
+            62,
+            61
+          ],
+          "sha256": "46356d80f58c632e1737537a4c13604db7214046b0124f1a9f9becb4dad35528"
+        },
+        "idle_c": {
+          "bbox": [
+            10,
+            23,
+            61,
+            61
+          ],
+          "sha256": "3d99da65c92b1f9682fb46b7d668ad5caa5d8267e77f134f5b6e7b8c58dabab5"
+        },
+        "windup": {
+          "bbox": [
+            10,
+            26,
+            60,
+            61
+          ],
+          "sha256": "edf3438a377d8af740cb7e08b653978cf6e43d67d486cf11432758e38edcbeb1"
+        },
+        "move": {
+          "bbox": [
+            10,
+            24,
+            63,
+            61
+          ],
+          "sha256": "d78d4517002c6d39e1c76164306f9a2fa5b4a0255c2f2d7db0f5b3f243882f1a"
+        },
+        "attack": {
+          "bbox": [
+            10,
+            22,
+            63,
+            61
+          ],
+          "sha256": "2698a899fd28d641ae676e690bcaa4317f7a90c89052b3f0c9ec0748c6a80220"
+        },
+        "recover": {
+          "bbox": [
+            10,
+            25,
+            63,
+            61
+          ],
+          "sha256": "67fbb9c1aa6e87e1be437cb643acb4f280d544a2617741821a23501bc2ff4a68"
+        },
+        "hit": {
+          "bbox": [
+            10,
+            27,
+            60,
+            61
+          ],
+          "sha256": "0386836595f954a5409f668cccad0dce81a11f82456af2b2d9d83f9c4acfeebd"
+        },
+        "dead": {
+          "bbox": [
+            9,
+            46,
+            54,
+            61
+          ],
+          "sha256": "a802edb5d033e8af3193639219527263ba08e1f2c3d9425b562dd04229f2bd71"
+        }
+      },
+      "errors": [],
+      "cycle": {
+        "milliseconds": 3960,
+        "pixelTimingReload": true,
+        "scale": 2
+      }
+    },
+    {
+      "slug": "wolf-dire",
+      "cell": 64,
+      "colors": 8,
+      "alpha": [
+        0,
+        255
+      ],
+      "baseline": 60,
+      "airborne": false,
+      "hash": "829aa224f3c44a5102eb7bac1eac85fb08302fd367108758924afa59912d2880",
+      "uniqueFrames": 9,
+      "minPairDiff": [
+        378,
+        "idle_a",
+        "idle_b"
+      ],
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            3,
+            23,
+            53,
+            61
+          ],
+          "sha256": "05ac94a6bcc70c35d206e6381e6533975fbdf52938032eec8d1db489bc88c8bf"
+        },
+        "idle_b": {
+          "bbox": [
+            3,
+            24,
+            53,
+            61
+          ],
+          "sha256": "ed292dfdb890102b19ce5e4d895da7a5cb24d8d9a7b1451b3d62403f775979ac"
+        },
+        "idle_c": {
+          "bbox": [
+            2,
+            21,
+            51,
+            61
+          ],
+          "sha256": "d1cbacba43954a577510c4cae8fa2ca3e30547e6aebcacf6fd8166c5cb5a5ec9"
+        },
+        "windup": {
+          "bbox": [
+            1,
+            29,
+            46,
+            61
+          ],
+          "sha256": "d4c33f549b4c240023b225ec044a9cd27d1dc1b352ecad807d40b25a2f94aaa4"
+        },
+        "move": {
+          "bbox": [
+            4,
+            23,
+            55,
+            61
+          ],
+          "sha256": "363d179df695d410810551f7d650f35a8ad6cc72b9b510947f3a9da851556656"
+        },
+        "attack": {
+          "bbox": [
+            5,
+            24,
+            60,
+            61
+          ],
+          "sha256": "4acd4e616b056dc4584436a46ceeede33ae6c584b1746d32615bc5c6f820b903"
+        },
+        "recover": {
+          "bbox": [
+            4,
+            24,
+            54,
+            61
+          ],
+          "sha256": "98eaf8a6cd38837e5435c8459f08a52d81685d3c2e0ca8871d3f487f4fbeb894"
+        },
+        "hit": {
+          "bbox": [
+            1,
+            26,
+            46,
+            61
+          ],
+          "sha256": "ac4777cf8d1e7f33e44afa88668e83c07f214864d2633cd89ce6920af021375c"
+        },
+        "dead": {
+          "bbox": [
+            5,
+            49,
+            53,
+            61
+          ],
+          "sha256": "ce1bae18394ce85f5be353cd8a6ed34b4b7a6b3a60d0475c107c2d857979ebad"
+        }
+      },
+      "errors": [],
+      "cycle": {
+        "milliseconds": 3960,
+        "pixelTimingReload": true,
+        "scale": 2
+      }
+    },
+    {
+      "slug": "tiger-saber",
+      "cell": 64,
+      "colors": 13,
+      "alpha": [
+        0,
+        255
+      ],
+      "baseline": 60,
+      "airborne": false,
+      "hash": "d2e9a7899c5b4f74d3c4a3dd9d2e1237ba3d1ebecb341a654a9b008a3f15cc76",
+      "uniqueFrames": 9,
+      "minPairDiff": [
+        397,
+        "idle_a",
+        "idle_b"
+      ],
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            3,
+            18,
+            54,
+            61
+          ],
+          "sha256": "7e2b8540346f6976c43ecb08cdc9eec70d61152ad4d6e12d74cfc4e3ef0b3a42"
+        },
+        "idle_b": {
+          "bbox": [
+            3,
+            19,
+            54,
+            61
+          ],
+          "sha256": "e228b2ec6b45c17c4cb3641463da69f78d2f3a7ccf9cd3b65889a0a41468165e"
+        },
+        "idle_c": {
+          "bbox": [
+            2,
+            16,
+            52,
+            61
+          ],
+          "sha256": "7cf718e5820945e97a435838f18977d290c937e357e8fa0f0b55a42df7792bda"
+        },
+        "windup": {
+          "bbox": [
+            1,
+            24,
+            47,
+            61
+          ],
+          "sha256": "4d99d8bef2902b4b83deea7b2a0f997e101bc60f17f8445f6e23228ef01d9e59"
+        },
+        "move": {
+          "bbox": [
+            4,
+            18,
+            56,
+            61
+          ],
+          "sha256": "9843bc800136ca3baddb8c4e2dfac63ed0f24af172cef1d014a15fcd41709732"
+        },
+        "attack": {
+          "bbox": [
+            5,
+            19,
+            60,
+            61
+          ],
+          "sha256": "ca041c3056c66d36cca3286afb82567f82ae3beb652be6e8688b078d0d66cd1a"
+        },
+        "recover": {
+          "bbox": [
+            4,
+            19,
+            55,
+            61
+          ],
+          "sha256": "535d3327f559f7dc4f9fa294bc5173dbe2ed594bc3d17f76d1cf1fd7c5ffb268"
+        },
+        "hit": {
+          "bbox": [
+            1,
+            21,
+            47,
+            61
+          ],
+          "sha256": "541e2e2ef0696367d0189d663d8f8e84d67a932dda5bc76aed8ceb2b6896ebf1"
+        },
+        "dead": {
+          "bbox": [
+            5,
+            47,
+            58,
+            61
+          ],
+          "sha256": "4423058fe96db80c22da3ad69af117f8b01b72a1bd2f31e90dae59655df7ed41"
+        }
+      },
+      "errors": [],
+      "cycle": {
+        "milliseconds": 3960,
+        "pixelTimingReload": true,
+        "scale": 2
+      }
+    },
+    {
+      "slug": "rat-giant",
+      "cell": 64,
+      "colors": 8,
+      "alpha": [
+        0,
+        255
+      ],
+      "baseline": 60,
+      "airborne": false,
+      "hash": "afa27302952e0934d32bb7524588b4af7f9e2ca6f7410f58396c2eb7228db4d7",
+      "uniqueFrames": 9,
+      "minPairDiff": [
+        336,
+        "idle_a",
+        "idle_b"
+      ],
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            7,
+            27,
+            49,
+            61
+          ],
+          "sha256": "6477d3c1a5885aa35d0a362e88509c14ecebcd0edcfe40fac8598c6323f30296"
+        },
+        "idle_b": {
+          "bbox": [
+            7,
+            28,
+            49,
+            61
+          ],
+          "sha256": "7b330cba60e97160551ee9887f2a7f3c2d6d01cd14f51b2eb8173841a07afb69"
+        },
+        "idle_c": {
+          "bbox": [
+            6,
+            25,
+            47,
+            61
+          ],
+          "sha256": "811830646b9c4e67ddb2c1e119113c1fb941f648a4ea59e37265d39a8284ea4a"
+        },
+        "windup": {
+          "bbox": [
+            5,
+            33,
+            45,
+            61
+          ],
+          "sha256": "af54c441600101c7c95b0d447d3db6c36cd2c21d6d75ab1f4c3451e27a1da0f5"
+        },
+        "move": {
+          "bbox": [
+            8,
+            27,
+            51,
+            61
+          ],
+          "sha256": "c16c260d0f38f1d61756656314459f12ffde65316851f5f675ddc6fe1ced111d"
+        },
+        "attack": {
+          "bbox": [
+            9,
+            28,
+            56,
+            61
+          ],
+          "sha256": "96c79f0a378ff607a6a26edb51b124ce69f0b74940197f51b94e87d4b5e4eebe"
+        },
+        "recover": {
+          "bbox": [
+            8,
+            28,
+            50,
+            61
+          ],
+          "sha256": "9ab96073555a6ce7ee136bd3fc47672b58b695015fbbdd7026416603e66ff072"
+        },
+        "hit": {
+          "bbox": [
+            5,
+            30,
+            42,
+            61
+          ],
+          "sha256": "3f1a6544cea62285c5d3487ef1fb49f2e705049b501732786d9075f53d9a21ad"
+        },
+        "dead": {
+          "bbox": [
+            5,
+            50,
+            51,
+            61
+          ],
+          "sha256": "916dc16b38d7c4d78a69d845cb2d2aa39aaa7587090b2f32788d2fc34e48b8f8"
+        }
+      },
+      "errors": [],
+      "cycle": {
+        "milliseconds": 3960,
+        "pixelTimingReload": true,
+        "scale": 2
+      }
+    },
+    {
+      "slug": "bird-hawk",
+      "cell": 64,
+      "colors": 7,
+      "alpha": [
+        0,
+        255
+      ],
+      "baseline": 60,
+      "airborne": true,
+      "hash": "0a05065cb32187445dba3ecdd739634fd104f2c3e85e22a25a7f4a71bae9dbde",
+      "uniqueFrames": 9,
+      "minPairDiff": [
+        504,
+        "idle_a",
+        "idle_b"
+      ],
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            7,
+            12,
+            58,
+            53
+          ],
+          "sha256": "99b67dbfec7314f6542a73b81f5b86d4b56fa38df94cb3e7a181a7c0cba229ff"
+        },
+        "idle_b": {
+          "bbox": [
+            7,
+            16,
+            58,
+            54
+          ],
+          "sha256": "f3551392996c7a73025ed47c5f7ce3fbd103e62fd86ce6218b3027655d09694c"
+        },
+        "idle_c": {
+          "bbox": [
+            6,
+            9,
+            57,
+            55
+          ],
+          "sha256": "08a831f62e3e8105afb735501e097a54bb378a7428d56a98b8480be1c2323bc3"
+        },
+        "windup": {
+          "bbox": [
+            5,
+            2,
+            56,
+            53
+          ],
+          "sha256": "4c04aee2bfa4d19608a2bc04cc5c33e81bedff8ad6c7c3f857963a71a78617cb"
+        },
+        "move": {
+          "bbox": [
+            8,
+            13,
+            59,
+            54
+          ],
+          "sha256": "b7d01e98d82627f8b6d67ac2348afd4aacfd3665cd4ef482af1d1895bf28f1ef"
+        },
+        "attack": {
+          "bbox": [
+            9,
+            13,
+            60,
+            55
+          ],
+          "sha256": "a6d96cf639b427563d3976f34aa577f955cb168300cf585fca9e70ad73043a03"
+        },
+        "recover": {
+          "bbox": [
+            8,
+            15,
+            59,
+            53
+          ],
+          "sha256": "5ad7ef7a135cffba99df303479cdcb8db58b69229bd107458e02765b549899ab"
+        },
+        "hit": {
+          "bbox": [
+            5,
+            14,
+            56,
+            54
+          ],
+          "sha256": "7b533c31646a12b9b17aebc89caff7852cabc12a0a01cbbcb660f08fee2a3a11"
+        },
+        "dead": {
+          "bbox": [
+            6,
+            51,
+            59,
+            61
+          ],
+          "sha256": "734aed30c0acae8a9b27658f86580f726b3b5379ffb8c37bbc69eb512ead0eea"
+        }
+      },
+      "errors": [],
+      "cycle": {
+        "milliseconds": 3960,
+        "pixelTimingReload": true,
+        "scale": 2
+      }
+    },
+    {
+      "slug": "cat-shadow",
+      "cell": 64,
+      "colors": 11,
+      "alpha": [
+        0,
+        255
+      ],
+      "baseline": 60,
+      "airborne": false,
+      "hash": "b5420b0ea78f91f2effa54cac7326f249121705479bb7a1b488bcf40fcbd0ce3",
+      "uniqueFrames": 9,
+      "minPairDiff": [
+        384,
+        "idle_a",
+        "idle_b"
+      ],
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            9,
+            18,
+            49,
+            61
+          ],
+          "sha256": "7165a1210224050a8b90fcefb8eea7d15f8f5622cab8556cf907aa1a140eedff"
+        },
+        "idle_b": {
+          "bbox": [
+            10,
+            20,
+            49,
+            61
+          ],
+          "sha256": "ae7755e98cd5cc70b584b8a0d870e47029c96ceff937a81eefeeb44cd0627d4e"
+        },
+        "idle_c": {
+          "bbox": [
+            8,
+            16,
+            47,
+            61
+          ],
+          "sha256": "95bdee69a6ce042c6890678aa71276bf032bed41eff3cea042eb76b9714445f9"
+        },
+        "windup": {
+          "bbox": [
+            6,
+            22,
+            42,
+            61
+          ],
+          "sha256": "923e7729af4e7a5bcc36abd1cba4a905dfd498748fd19fc0251fda064269ace3"
+        },
+        "move": {
+          "bbox": [
+            7,
+            18,
+            51,
+            61
+          ],
+          "sha256": "b357bafd25f607e68cce638c2796a948114dc9d6ebafa50d61a83799c2e072ac"
+        },
+        "attack": {
+          "bbox": [
+            8,
+            14,
+            57,
+            61
+          ],
+          "sha256": "5ee21aacc11b17f0b8bfd53efd4770709af1985dc829944c385902bad67f1c0a"
+        },
+        "recover": {
+          "bbox": [
+            11,
+            20,
+            50,
+            61
+          ],
+          "sha256": "a183ba9966cf1ce58c6628a76cf459e421fc17b76ed3b11fd56a0a535e48e856"
+        },
+        "hit": {
+          "bbox": [
+            6,
+            24,
+            42,
+            61
+          ],
+          "sha256": "a0d70aa37f1baaeb3873b881f4cd986702ac7c08d5336285644e04c6407b8297"
+        },
+        "dead": {
+          "bbox": [
+            5,
+            49,
+            51,
+            61
+          ],
+          "sha256": "3474dc9085ec818bad8d45f05f130ddd42dcb49db011c09a857d53abf6cad3d1"
+        }
+      },
+      "errors": [],
+      "cycle": {
+        "milliseconds": 3960,
+        "pixelTimingReload": true,
+        "scale": 2
+      }
+    },
+    {
+      "slug": "goat-mountain",
+      "cell": 64,
+      "colors": 8,
+      "alpha": [
+        0,
+        255
+      ],
+      "baseline": 60,
+      "airborne": false,
+      "hash": "d9bf3c8f58358eef1a0c3118f9f24d3c22070c0aa695f085427cfcd62f0e4435",
+      "uniqueFrames": 9,
+      "minPairDiff": [
+        482,
+        "idle_a",
+        "idle_b"
+      ],
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            12,
+            6,
+            51,
+            61
+          ],
+          "sha256": "e943c681e70c5bc00a16122f320d1c62e524085cadf42db7d25585e2ccab1fab"
+        },
+        "idle_b": {
+          "bbox": [
+            12,
+            7,
+            51,
+            61
+          ],
+          "sha256": "aeaeb064dde862538402e13881ec66787ea6160608181f24ade286ce4fd7d016"
+        },
+        "idle_c": {
+          "bbox": [
+            11,
+            4,
+            50,
+            61
+          ],
+          "sha256": "fb1069cb466cf4c85adfd253ddbfb8ae9500f38ef41f96ad22f753465d7e7db6"
+        },
+        "windup": {
+          "bbox": [
+            10,
+            12,
+            44,
+            61
+          ],
+          "sha256": "e76b124332a6469c4d94e83bfae24fb5d27c96f5db877c162faa392ac0eee9b9"
+        },
+        "move": {
+          "bbox": [
+            8,
+            6,
+            53,
+            61
+          ],
+          "sha256": "9ed6fad1a7f129e4d8331117778b4cceb968f52ba22b416a349fa554b007fa85"
+        },
+        "attack": {
+          "bbox": [
+            9,
+            7,
+            57,
+            61
+          ],
+          "sha256": "fd817e07baccb0f0e475576276d12c7693a13077191d06469edc98329f1bd2b2"
+        },
+        "recover": {
+          "bbox": [
+            13,
+            7,
+            52,
+            61
+          ],
+          "sha256": "5131405b11f9ac3cc7b4cbe2d8848610f79232d556a24ebb0ddf3d8f430a6d95"
+        },
+        "hit": {
+          "bbox": [
+            10,
+            9,
+            44,
+            61
+          ],
+          "sha256": "3b15e199769b488b68d23f75d6f37418bddd493ca06476c3e7b9755f3a0fcce0"
+        },
+        "dead": {
+          "bbox": [
+            5,
+            46,
+            52,
+            61
+          ],
+          "sha256": "0da53b27f77b8808827b5d8c949d9206a038d8ed0d45bb5dca17e2299baf98ee"
+        }
+      },
+      "errors": [],
+      "cycle": {
+        "milliseconds": 3960,
+        "pixelTimingReload": true,
+        "scale": 2
+      }
+    },
+    {
+      "slug": "ape-stone",
+      "cell": 64,
+      "colors": 8,
+      "alpha": [
+        0,
+        255
+      ],
+      "baseline": 60,
+      "airborne": false,
+      "hash": "e89f0f73b3ba95fa35c5940dde6374240ea2c0ef58e54e1755a27eb26555abee",
+      "uniqueFrames": 9,
+      "minPairDiff": [
+        536,
+        "idle_a",
+        "idle_b"
+      ],
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            10,
+            7,
+            59,
+            61
+          ],
+          "sha256": "db6efc973c4b066e8756e37d27503f8bd10b84e0aa59e3df3e0303bc51cfe95a"
+        },
+        "idle_b": {
+          "bbox": [
+            10,
+            8,
+            59,
+            61
+          ],
+          "sha256": "58889af01a36c0eef98aa3918d8cd053247199b195389b89cb83f559fa0ce8da"
+        },
+        "idle_c": {
+          "bbox": [
+            9,
+            5,
+            58,
+            61
+          ],
+          "sha256": "d6367aba6cdbddf965bd4ccc1987b4469fcd9f21ac9afc31cf981bc603d9e10e"
+        },
+        "windup": {
+          "bbox": [
+            9,
+            7,
+            57,
+            61
+          ],
+          "sha256": "a54fce7e51edd9ade84802a6ab8eb888640f9051987e611658262eaa6b9251d5"
+        },
+        "move": {
+          "bbox": [
+            11,
+            7,
+            60,
+            61
+          ],
+          "sha256": "9c9bef37b8e129e205afaebdfce00c3ce24d902374901ba0b157528fd7f984da"
+        },
+        "attack": {
+          "bbox": [
+            17,
+            4,
+            61,
+            61
+          ],
+          "sha256": "c78e7c86cc5d6d544ef47ce862e16b00833b3635a70580bd2428a90bdb0aeae8"
+        },
+        "recover": {
+          "bbox": [
+            11,
+            8,
+            60,
+            61
+          ],
+          "sha256": "8aaaa6f283905f76266d7c953fa9cfc1b0ea68bf36757066783325d484f8c2e6"
+        },
+        "hit": {
+          "bbox": [
+            3,
+            11,
+            57,
+            61
+          ],
+          "sha256": "ac4c98c928db56c8d561539dc45949c494c33731d79a3eb9c53bcd8171389d45"
+        },
+        "dead": {
+          "bbox": [
+            7,
+            43,
+            59,
+            61
+          ],
+          "sha256": "9b078d555c82d033330754248ecf6cf634dc14fbffb1ab7bdf731f96b41e3de5"
+        }
+      },
+      "errors": [],
+      "cycle": {
+        "milliseconds": 3960,
+        "pixelTimingReload": true,
+        "scale": 2
+      }
+    },
+    {
+      "slug": "deer-forest",
+      "cell": 64,
+      "colors": 9,
+      "alpha": [
+        0,
+        255
+      ],
+      "baseline": 60,
+      "airborne": false,
+      "hash": "4123a8f8b7115b5f0a69a7e517bb2ab96ee85b16a6f8ffb84a331b011dc86e86",
+      "uniqueFrames": 9,
+      "minPairDiff": [
+        266,
+        "idle_a",
+        "idle_b"
+      ],
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            12,
+            1,
+            51,
+            61
+          ],
+          "sha256": "2ac7262cfbd586e1162d492e5bfbe88ec59de2754ac57edee2d722ccf3203bb9"
+        },
+        "idle_b": {
+          "bbox": [
+            12,
+            1,
+            51,
+            61
+          ],
+          "sha256": "ccbc4eb761cdbdc08ff522b9f450b37c406866e68c0048fbbbf1a6e724a8c487"
+        },
+        "idle_c": {
+          "bbox": [
+            11,
+            1,
+            50,
+            61
+          ],
+          "sha256": "5f9d926b4345df1dc75365055402d6e61ff5785058dd053b5a3821e08f04522b"
+        },
+        "windup": {
+          "bbox": [
+            10,
+            1,
+            44,
+            61
+          ],
+          "sha256": "1dfd7a92b8dfb4a34d7d5321a2343b198001e045e37fd89502b5cdb55d62a310"
+        },
+        "move": {
+          "bbox": [
+            8,
+            1,
+            53,
+            61
+          ],
+          "sha256": "84475a3213431608fe5eab4f398c4f1f0528c72212bb5d01a733a6fa2c410b0e"
+        },
+        "attack": {
+          "bbox": [
+            9,
+            1,
+            57,
+            61
+          ],
+          "sha256": "b01a96a78b9a334b18db33068c16f5f5889e949e138b49ae6e8797c7e5f5d0b3"
+        },
+        "recover": {
+          "bbox": [
+            13,
+            1,
+            52,
+            61
+          ],
+          "sha256": "072f4a4f2de9ec604c9bcaf22bd8a20cede932d2912ff5403baa014857f22040"
+        },
+        "hit": {
+          "bbox": [
+            10,
+            1,
+            44,
+            61
+          ],
+          "sha256": "f865c769119cf0393d94bd65266f718f828c76384a11dcf52eb0dc0b30155729"
+        },
+        "dead": {
+          "bbox": [
+            5,
+            43,
+            53,
+            61
+          ],
+          "sha256": "1085bdc70fa651ce699bef43fc738eb58cd60b84ec620ebeb6c2b753c0d799aa"
+        }
+      },
+      "errors": [],
+      "cycle": {
+        "milliseconds": 3960,
+        "pixelTimingReload": true,
+        "scale": 2
+      }
+    },
+    {
+      "slug": "fish-piranha",
+      "cell": 64,
+      "colors": 9,
+      "alpha": [
+        0,
+        255
+      ],
+      "baseline": 60,
+      "airborne": true,
+      "hash": "8708915d265f39d9f2679c2e9c8500d0c0826849ec806786c9cf4a41838535ed",
+      "uniqueFrames": 9,
+      "minPairDiff": [
+        434,
+        "idle_b",
+        "move"
+      ],
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            6,
+            19,
+            56,
+            53
+          ],
+          "sha256": "af7848152ec48a144f7b177c5430082d8b9fab0cf1135afd1cce00a93fb7296d"
+        },
+        "idle_b": {
+          "bbox": [
+            6,
+            20,
+            56,
+            54
+          ],
+          "sha256": "b50b9a391f84c906a1375da6296adbcd1c4384c3a1c4ade9aa6480e5985d7933"
+        },
+        "idle_c": {
+          "bbox": [
+            5,
+            21,
+            55,
+            55
+          ],
+          "sha256": "aadf11d8a10d428d3d240bbb75757ea31d9d72cd5c00913c63a125807b72d6dd"
+        },
+        "windup": {
+          "bbox": [
+            4,
+            19,
+            54,
+            53
+          ],
+          "sha256": "b3cb37ad3611f41253c549abc4ddd1fe2e589a951577127cdd90a52042ec6bec"
+        },
+        "move": {
+          "bbox": [
+            7,
+            20,
+            57,
+            54
+          ],
+          "sha256": "458cfe23f2819ca6bcb6fc04a61d0cbbf22fe399c824a34a2c2634dbe64f9d71"
+        },
+        "attack": {
+          "bbox": [
+            8,
+            21,
+            58,
+            55
+          ],
+          "sha256": "e4de0279f1d131de8181f220170c66b3e0fb3db7778d6ae20f917280bd3077a8"
+        },
+        "recover": {
+          "bbox": [
+            7,
+            19,
+            57,
+            53
+          ],
+          "sha256": "f2767bc7816dca8a58015fc24aed31cbc827f0b9376c624462a51a3385ab7bcb"
+        },
+        "hit": {
+          "bbox": [
+            4,
+            20,
+            54,
+            54
+          ],
+          "sha256": "c027ae4ee608d3f2de55a7acce86caca087509bfe0d87e8755a0ab64ed143b3a"
+        },
+        "dead": {
+          "bbox": [
+            7,
+            50,
+            55,
+            61
+          ],
+          "sha256": "ee0246d5df40fe382acea0bb3851135ae6299da43e7d67d6cda2d4119287f7f0"
+        }
+      },
+      "errors": [],
+      "cycle": {
+        "milliseconds": 3960,
+        "pixelTimingReload": true,
+        "scale": 2
+      }
+    },
+    {
+      "slug": "squid-deep",
+      "cell": 64,
+      "colors": 8,
+      "alpha": [
+        0,
+        255
+      ],
+      "baseline": 60,
+      "airborne": true,
+      "hash": "25e7e7318c0a9175f0da2011ee4de9bf8d63d654a0a45ddecd747e1a880cb3bd",
+      "uniqueFrames": 9,
+      "minPairDiff": [
+        462,
+        "idle_a",
+        "idle_b"
+      ],
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            11,
+            1,
+            58,
+            53
+          ],
+          "sha256": "1af13dcc067ecf5b19176bffe1a2d2f8b3bbff3a80c0e652c5686e935ab937d8"
+        },
+        "idle_b": {
+          "bbox": [
+            10,
+            2,
+            59,
+            54
+          ],
+          "sha256": "8f4660485af2e94375cb946d4f14c992e02754581900a63be5ab5b867688a305"
+        },
+        "idle_c": {
+          "bbox": [
+            11,
+            3,
+            56,
+            55
+          ],
+          "sha256": "773cbec68d0bea73961d41be47d8c0ca91ec4ffca13c90ed63c36ebaed9b47cd"
+        },
+        "windup": {
+          "bbox": [
+            15,
+            1,
+            51,
+            53
+          ],
+          "sha256": "e0e0690bf4a4cdd8e453be3731ddd54be49972a8e12d4a3f16160a7dd0db2acc"
+        },
+        "move": {
+          "bbox": [
+            9,
+            2,
+            61,
+            54
+          ],
+          "sha256": "4d42a0dcc6d8623cef95d33d0ac6732246b0da91bb30d95e5e14da44685c8686"
+        },
+        "attack": {
+          "bbox": [
+            8,
+            3,
+            59,
+            55
+          ],
+          "sha256": "57037b25842c4c47231acb1aeaf6e1cd39ff577dbcb108a5693930f5a2cc5aaa"
+        },
+        "recover": {
+          "bbox": [
+            10,
+            1,
+            61,
+            53
+          ],
+          "sha256": "475bc40bf466049405528754ddf62d59114943536a87b680d3b539217be867df"
+        },
+        "hit": {
+          "bbox": [
+            11,
+            2,
+            54,
+            54
+          ],
+          "sha256": "3603062e54a6cd4b616ccab437ab7a6498334b11d1d83cbc7026f48fd1b88a52"
+        },
+        "dead": {
+          "bbox": [
+            8,
+            50,
+            60,
+            61
+          ],
+          "sha256": "ae3cca96fd9159d7b197408537d06094aea2da701786b8f089e9d4830154ea03"
+        }
+      },
+      "errors": [],
+      "cycle": {
+        "milliseconds": 3960,
+        "pixelTimingReload": true,
+        "scale": 2
+      }
+    },
+    {
+      "slug": "shark-land",
+      "cell": 64,
+      "colors": 9,
+      "alpha": [
+        0,
+        255
+      ],
+      "baseline": 60,
+      "airborne": false,
+      "hash": "a77e402906f1bbaad400e008cbe4c8d13fa627b7afa4d5f631b9a5d089af2618",
+      "uniqueFrames": 9,
+      "minPairDiff": [
+        392,
+        "idle_a",
+        "idle_b"
+      ],
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            6,
+            18,
+            56,
+            61
+          ],
+          "sha256": "7151474a300c16b7bc591cd01f90082cf3a06b42ff03dac6ff7ad53fb6f566e6"
+        },
+        "idle_b": {
+          "bbox": [
+            6,
+            19,
+            56,
+            61
+          ],
+          "sha256": "58e9a4c74f4c49a03df944cb526b27aa65c321e6509ef308ae8116228689a730"
+        },
+        "idle_c": {
+          "bbox": [
+            5,
+            17,
+            55,
+            61
+          ],
+          "sha256": "cadc08e3069d625f7997aef022e3ddfdc90ef9d4f3309530c0210648528521cf"
+        },
+        "windup": {
+          "bbox": [
+            4,
+            20,
+            54,
+            61
+          ],
+          "sha256": "2682ea68b03a5dde00397897d09b30eb8fa2845d8a046344ae1464bed43c611a"
+        },
+        "move": {
+          "bbox": [
+            7,
+            18,
+            57,
+            61
+          ],
+          "sha256": "4a9c23cb2bfcd7b7eccebd71895a3186b6955cc74f6fcc081c0013130bbbdabf"
+        },
+        "attack": {
+          "bbox": [
+            8,
+            16,
+            58,
+            61
+          ],
+          "sha256": "4607ee23f0ee0850104b97b2eef475a8e781ad808c994c08a1caff51fa36dfdd"
+        },
+        "recover": {
+          "bbox": [
+            7,
+            19,
+            57,
+            61
+          ],
+          "sha256": "5ee57e145d45c123a93e11583217bc06d98231d202edcb1018c942bd7fcb1eaf"
+        },
+        "hit": {
+          "bbox": [
+            4,
+            21,
+            54,
+            61
+          ],
+          "sha256": "6c7122dc0af5696cbc982b79c31e80beeb87dadc459c4e64cefcc788cda78a25"
+        },
+        "dead": {
+          "bbox": [
+            7,
+            50,
+            55,
+            61
+          ],
+          "sha256": "52013810541161985994971150957adce72e9787e2dff58151881da2a5265cf5"
+        }
+      },
+      "errors": [],
+      "cycle": {
+        "milliseconds": 3960,
+        "pixelTimingReload": true,
+        "scale": 2
+      }
+    },
+    {
+      "slug": "eel-electric",
+      "cell": 64,
+      "colors": 8,
+      "alpha": [
+        0,
+        255
+      ],
+      "baseline": 60,
+      "airborne": true,
+      "hash": "1746764d507c2413d7c30f37591bff74daf74bc7d49e1a357e26da5a872029d9",
+      "uniqueFrames": 9,
+      "minPairDiff": [
+        300,
+        "idle_b",
+        "move"
+      ],
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            6,
+            15,
+            59,
+            53
+          ],
+          "sha256": "0919d451b9fbd35bb261fb4ea7293a42e5f2230399678ecdfa45fba520cbbd8d"
+        },
+        "idle_b": {
+          "bbox": [
+            7,
+            16,
+            59,
+            54
+          ],
+          "sha256": "571172f501c39bc895eba5c43300cc39b22eeb43083299d1bc11b8e9606a485f"
+        },
+        "idle_c": {
+          "bbox": [
+            7,
+            17,
+            58,
+            55
+          ],
+          "sha256": "7e3e0120db73875d10bd90d36011d763efbdd29de58bc22320051e5e6092b9f3"
+        },
+        "windup": {
+          "bbox": [
+            6,
+            15,
+            57,
+            53
+          ],
+          "sha256": "824b45eae6fc05b274b7423530e354ac31fd95226e9006774fb270201ed0a70d"
+        },
+        "move": {
+          "bbox": [
+            7,
+            16,
+            60,
+            54
+          ],
+          "sha256": "00fd580295b3429f4569f0327a352d23e2ab6d7de845e901a3d306508256fe13"
+        },
+        "attack": {
+          "bbox": [
+            8,
+            17,
+            61,
+            55
+          ],
+          "sha256": "07aa15a76a05f71d0d0c1b75e4d5afbfaa53ee4dca28b5033ecf02c8fe316427"
+        },
+        "recover": {
+          "bbox": [
+            6,
+            15,
+            60,
+            53
+          ],
+          "sha256": "9e714a038f7d1b456c6121dfc59b45eeea42de2833227bab1dd4852aaf75f1b0"
+        },
+        "hit": {
+          "bbox": [
+            7,
+            16,
+            57,
+            54
+          ],
+          "sha256": "d26edff2c765af7d0b50580032a7c7274e9232e00d11008fe8c9e28bf29474f8"
+        },
+        "dead": {
+          "bbox": [
+            3,
+            50,
+            59,
+            61
+          ],
+          "sha256": "34965242791958c0352e56396b739a049984eb7ee524a7ac4eedd5a83e891188"
+        }
+      },
+      "errors": [],
+      "cycle": {
+        "milliseconds": 3960,
+        "pixelTimingReload": true,
+        "scale": 2
+      }
+    },
+    {
+      "slug": "leaf-fox",
+      "cell": 64,
+      "colors": 9,
+      "alpha": [
+        0,
+        255
+      ],
+      "baseline": 60,
+      "airborne": false,
+      "hash": "582b560df97ed6ddd6fa6202d0122870688565b62f7c2bed304f1e7668bc8fc4",
+      "uniqueFrames": 9,
+      "minPairDiff": [
+        542,
+        "idle_a",
+        "idle_b"
+      ],
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            5,
+            14,
+            58,
+            61
+          ],
+          "sha256": "f0cfa3b210e0a7358f9f7740d3838f28e88c19a4d93f436b3ccd6878fdd06804"
+        },
+        "idle_b": {
+          "bbox": [
+            5,
+            16,
+            58,
+            61
+          ],
+          "sha256": "54bfe55a0f487317bf496d7437b74705d1c47a89199cbec6a6bdb7c0fd739816"
+        },
+        "idle_c": {
+          "bbox": [
+            4,
+            11,
+            56,
+            61
+          ],
+          "sha256": "083e91e3adfa8d1300b243d6769c9e13048fec63e1e3c3ae0ef4c9edea014093"
+        },
+        "windup": {
+          "bbox": [
+            3,
+            18,
+            54,
+            61
+          ],
+          "sha256": "8c6e47ea56459efd3fb12241c99d94d5e50aa9578550fae0d699c2878b0ec529"
+        },
+        "move": {
+          "bbox": [
+            6,
+            14,
+            60,
+            61
+          ],
+          "sha256": "fe7c2e69e4f8d89205a9745ff34aeb2ffd27764e779b2cf16955557cc27e3cfb"
+        },
+        "attack": {
+          "bbox": [
+            7,
+            12,
+            63,
+            61
+          ],
+          "sha256": "34359503d197f8b9ed3fbbf0fccc978d5b07eee77f0ca3ce05f8ada629eee57a"
+        },
+        "recover": {
+          "bbox": [
+            6,
+            16,
+            59,
+            61
+          ],
+          "sha256": "b6b5dca13cf333e3c4de982295eb64fdac12608475274fdd58ca02282e798044"
+        },
+        "hit": {
+          "bbox": [
+            3,
+            21,
+            52,
+            61
+          ],
+          "sha256": "9731c5fec05bb4a1bc64d67c9329da732ad24be1df5bee921e056464cf12ee8e"
+        },
+        "dead": {
+          "bbox": [
+            6,
+            46,
+            53,
+            61
+          ],
+          "sha256": "41c66aebafa178b723f1e2a6e920fe34d0deb15607ae57f34b262a594c494697"
+        }
+      },
+      "errors": [],
+      "cycle": {
+        "milliseconds": 3960,
+        "pixelTimingReload": true,
+        "scale": 2
+      }
+    },
+    {
+      "slug": "fire-pup",
+      "cell": 64,
+      "colors": 9,
+      "alpha": [
+        0,
+        255
+      ],
+      "baseline": 60,
+      "airborne": false,
+      "hash": "183abd0db54f370cbc89ea84895599769aa71699a6da1532a2995dd001a4c3da",
+      "uniqueFrames": 9,
+      "minPairDiff": [
+        514,
+        "idle_a",
+        "idle_b"
+      ],
+      "frames": {
+        "idle_a": {
+          "bbox": [
+            5,
+            15,
+            56,
+            61
+          ],
+          "sha256": "c360229f2b89eb96a48e016b2cbb6142ee9cc6a68f3ff3d1c2e52d2b41b80fe5"
+        },
+        "idle_b": {
+          "bbox": [
+            5,
+            17,
+            56,
+            61
+          ],
+          "sha256": "810ed34da39867b02a5b972d8b9554d82284db29835d2c8c9c91d0a6079c1b60"
+        },
+        "idle_c": {
+          "bbox": [
+            4,
+            12,
+            54,
+            61
+          ],
+          "sha256": "d6c366f0bb55cee6f1bd4268b0cd96edf5f4d8900864a25093e5255c70ac2a05"
+        },
+        "windup": {
+          "bbox": [
+            3,
+            15,
+            52,
+            61
+          ],
+          "sha256": "378c365197f72add63a6113a7653e95340aaa01a4bfdb0cf845d847051301a14"
+        },
+        "move": {
+          "bbox": [
+            6,
+            16,
+            58,
+            61
+          ],
+          "sha256": "a4b4e5ea9d3ab94e62249b4e2beccb062e8ce48ace94cd6e5188fba2ee4da511"
+        },
+        "attack": {
+          "bbox": [
+            7,
+            14,
+            61,
+            61
+          ],
+          "sha256": "9c126636ef237bfb873d4f656a650aa3c5a3ca3455f1de6b06ea81016d86ab9e"
+        },
+        "recover": {
+          "bbox": [
+            6,
+            17,
+            57,
+            61
+          ],
+          "sha256": "2b9e1963e642bbd2322ed894d4dfb27ab991316f266c148bb0bb9cdfa2e0dc0a"
+        },
+        "hit": {
+          "bbox": [
+            3,
+            19,
+            50,
+            61
+          ],
+          "sha256": "393b54ba5f11f14421ccce43de6e740a6c6fbe4cbfaed4b26a6ff5d082b07d40"
+        },
+        "dead": {
+          "bbox": [
+            6,
+            42,
+            53,
+            61
+          ],
+          "sha256": "9df1883162e0ebcbdedcb2286bd063ac0584345c2451f918f9eb10cf6d501a6c"
+        }
+      },
+      "errors": [],
+      "cycle": {
+        "milliseconds": 3960,
+        "pixelTimingReload": true,
+        "scale": 2
+      }
+    }
+  ]
+}

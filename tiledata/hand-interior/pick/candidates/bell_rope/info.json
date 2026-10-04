@@ -1,0 +1,37 @@
+{
+ "id": "bell rope",
+ "slug": "bell_rope",
+ "name_ko": "종 줄(2줄)",
+ "category": "예배당",
+ "kind": "hang",
+ "kind_ko": "벽면 걸이(벽 두 줄 중 윗줄)",
+ "canvas": [
+  16,
+  32
+ ],
+ "padTop": 2,
+ "image": {
+  "w": 16,
+  "h": 30
+ },
+ "footprint": {
+  "w": 1,
+  "h": 0
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "붉은·흰 손잡이가 달린 종 줄(벽면 두 줄 걸이). 예배당 종탑 벽면에 1개. 나선 계단 곁.",
+ "where": "예배당 종탑 벽면에 1개. 나선 계단 곁.",
+ "placement": [
+  "벽면 두 줄 중 윗줄(y=벽면 첫 줄)에 건다. 바닥 칸은 차지하지 않는다"
+ ],
+ "v5_bbox": [
+  5,
+  2,
+  10,
+  31
+ ],
+ "v5_colors": 9,
+ "material": "wood",
+ "related": []
+}

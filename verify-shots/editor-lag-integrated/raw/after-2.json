@@ -1,0 +1,298 @@
+{
+ "side": "after",
+ "run": 2,
+ "load": "7.34 7.63 7.76",
+ "s1_cold": {
+  "readyMs": 39881,
+  "long": {
+   "count": 17,
+   "totalMs": 19195,
+   "top": [
+    {
+     "atMs": 19645,
+     "durMs": 8451
+    },
+    {
+     "atMs": 28122,
+     "durMs": 2690
+    },
+    {
+     "atMs": 33026,
+     "durMs": 2329
+    },
+    {
+     "atMs": 35407,
+     "durMs": 2044
+    },
+    {
+     "atMs": 13539,
+     "durMs": 1057
+    }
+   ]
+  },
+  "parse": {
+   "n": 504,
+   "ms": 1161,
+   "MB": 243.2
+  },
+  "netMB": 296.3,
+  "fetches": 17
+ },
+ "s1_warm": {
+  "readyMs": 10678,
+  "long": {
+   "count": 10,
+   "totalMs": 8583,
+   "top": [
+    {
+     "atMs": 3079,
+     "durMs": 5991
+    },
+    {
+     "atMs": 554,
+     "durMs": 930
+    },
+    {
+     "atMs": 1939,
+     "durMs": 435
+    },
+    {
+     "atMs": 9633,
+     "durMs": 228
+    },
+    {
+     "atMs": 2829,
+     "durMs": 222
+    }
+   ]
+  },
+  "parse": {
+   "n": 497,
+   "ms": 755,
+   "MB": 145.4
+  },
+  "netMB": 5.1,
+  "fetches": 10
+ },
+ "s1_warm2": {
+  "readyMs": 13627,
+  "long": {
+   "count": 12,
+   "totalMs": 12184,
+   "top": [
+    {
+     "atMs": 2871,
+     "durMs": 6072
+    },
+    {
+     "atMs": 8951,
+     "durMs": 3276
+    },
+    {
+     "atMs": 228,
+     "durMs": 1353
+    },
+    {
+     "atMs": 1769,
+     "durMs": 447
+    },
+    {
+     "atMs": 2638,
+     "durMs": 232
+    }
+   ]
+  },
+  "parse": {
+   "n": 499,
+   "ms": 1124,
+   "MB": 147.6
+  },
+  "netMB": 5.1,
+  "fetches": 11
+ },
+ "canvas": {
+  "x": 346,
+  "y": 49,
+  "w": 676,
+  "h": 851
+ },
+ "tileId": "chipset-tile-126",
+ "s2_paintClickMs": 77,
+ "s2": {
+  "long": {
+   "count": 1,
+   "totalMs": 80,
+   "top": [
+    {
+     "atMs": 29422,
+     "durMs": 80
+    }
+   ]
+  },
+  "saveFetches": [
+   {
+    "url": "/__oprn/bridge",
+    "method": "POST",
+    "reqKB": 0,
+    "atMs": -13,
+    "respMs": 135
+   },
+   {
+    "url": "/__oprn/bridge",
+    "method": "POST",
+    "reqKB": 0,
+    "atMs": 1093,
+    "respMs": 8
+   },
+   {
+    "url": "/__oprn/edit-activity",
+    "method": "POST",
+    "reqKB": 0,
+    "atMs": 1447,
+    "respMs": 5
+   },
+   {
+    "url": "/__oprn/bridge",
+    "method": "POST",
+    "reqKB": 46,
+    "atMs": 1564,
+    "respMs": 763
+   },
+   {
+    "url": "/__oprn/bridge",
+    "method": "POST",
+    "reqKB": 1,
+    "atMs": 2424,
+    "respMs": 14
+   },
+   {
+    "url": "/__oprn/bridge",
+    "method": "POST",
+    "reqKB": 0,
+    "atMs": 4088,
+    "respMs": 9
+   },
+   {
+    "url": "/__oprn/bridge",
+    "method": "POST",
+    "reqKB": 0,
+    "atMs": 7094,
+    "respMs": 9
+   }
+  ],
+  "stringify": {
+   "n": 27585,
+   "MB": 11.52,
+   "ms": 0
+  },
+  "parse": {
+   "n": 3,
+   "ms": 1
+  },
+  "hot": [],
+  "top": [
+   [
+    2655.1,
+    "(program) :0:0"
+   ],
+   [
+    895.9,
+    "(garbage collector) :0:0"
+   ],
+   [
+    59.4,
+    "JSON.stringify :33:16"
+   ],
+   [
+    38,
+    "focus :0:0"
+   ],
+   [
+    34.3,
+    "_jt /assets/main-CLQ5Th-K.js:106:56053"
+   ]
+  ],
+  "busyMs": 4084
+ },
+ "s3": {
+  "dragOnlyMs": 691,
+  "perMoveMedianMs": 29.6,
+  "perMoveMaxMs": 86.9,
+  "moves": 20,
+  "longAfter": {
+   "count": 1,
+   "totalMs": 53,
+   "top": [
+    {
+     "atMs": 40028,
+     "durMs": 53
+    }
+   ]
+  },
+  "saveFetches": 7
+ },
+ "s4": {
+  "medianMs": 178,
+  "all": [
+   207,
+   205,
+   161,
+   182,
+   139,
+   178,
+   145,
+   170
+  ],
+  "longSumMedian": 142
+ },
+ "s5": {
+  "medianMs": 85,
+  "all": [
+   94,
+   85,
+   100,
+   76,
+   73,
+   80,
+   69,
+   87,
+   71,
+   85
+  ],
+  "longSumMedian": 69
+ },
+ "s6": {
+  "medianMs": 16,
+  "all": [
+   13,
+   8,
+   17,
+   16,
+   25,
+   16,
+   14,
+   16,
+   16,
+   16,
+   11,
+   16
+  ],
+  "longSumMedian": 0
+ },
+ "s7": {
+  "rafMs": 1117,
+  "settleMs": 862,
+  "longSumMs": 1400,
+  "cards": 5897,
+  "gallery": true
+ },
+ "heap": {
+  "jsHeapUsedMB": 1545,
+  "jsHeapTotalMB": 1664,
+  "nodes": 40326,
+  "taskDurationS": 0,
+  "scriptDurationS": 0,
+  "layoutDurationS": 0,
+  "recalcStyleS": 0
+ }
+}

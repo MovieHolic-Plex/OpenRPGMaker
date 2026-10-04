@@ -1,0 +1,46 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/throne/w30-D.pxg",
+ "id": "throne",
+ "hard": [],
+ "warn": [],
+ "resized": {
+  "canvas": [
+   48,
+   32
+  ],
+  "footprint": {
+   "w": 3,
+   "h": 2
+  },
+  "why": "사용자 메모: 좀 더 화려하게. 3x2 사이즈로."
+ },
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.007
+ },
+ "lint": {
+  "failed": [
+   "orphans",
+   "saturation",
+   "dither"
+  ],
+  "pass": false
+ },
+ "colors": 14,
+ "v5_colors": 7,
+ "bbox": [
+  1,
+  1,
+  46,
+  31
+ ],
+ "v5_bbox": [
+  1,
+  0,
+  12,
+  18
+ ],
+ "note": "D: 기둥·금구슬 옥좌. 참고한 문법: 곧은 붉은 누빔 등판 + 양옆 금 기둥 끝 구슬(끝에 밝은 1px) + 금 원형 팔걸이 끝 + 금 앞치마 + 붉은 깔개 2단(Mutterpixel 왕좌 방 식). 정수리 청옥 한 점.",
+ "ok": true
+}

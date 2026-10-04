@@ -1,0 +1,5 @@
+
+> oprn@0.61.0 gates:barrel
+> node scripts/check-barrel-imports.mjs
+
+배럴 수출 계약 통과: 2401파일 검사 / @/project/defaults 수출 55종

@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/meal_tray/v34-A.pxg",
+ "set": "school",
+ "id": "meal_tray",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.052
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.027
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 20,
+ "bbox": [
+  1,
+  1,
+  14,
+  15
+ ],
+ "note": "급식 쟁반 3/4 — 회색 쟁반 윗면에 밥·국·반찬 그릇, 앞 모서리 밑에 낮은 쟁반 옆면",
+ "ok": true
+}

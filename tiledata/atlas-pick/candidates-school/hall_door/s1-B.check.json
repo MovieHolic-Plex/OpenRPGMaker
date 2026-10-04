@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/hall_door/s1-B.pxg",
+ "set": "school",
+ "id": "hall_door",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.219
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.043
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 25,
+ "bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "note": "B: 명암 강화 — 왼쪽 위 밝은 면·오른쪽 아래 어두운 면, 유리 반사 &, 문틀 안쪽 그늘, 문 밑 접지 그림자, 벽은 hall_wall B",
+ "ok": true
+}

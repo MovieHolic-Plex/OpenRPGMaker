@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/curtained_window/w6-C.pxg",
+ "id": "curtained window",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.005
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 16,
+ "v5_colors": 15,
+ "bbox": [
+  1,
+  0,
+  15,
+  12
+ ],
+ "v5_bbox": [
+  0,
+  0,
+  15,
+  13
+ ],
+ "note": "위에 물결 주름 장식 발란스를 얹고 커튼을 안쪽으로 묶어 창을 8칸 폭으로 좁힌 실루엣, 창틀은 세 칸 창",
+ "ok": true
+}

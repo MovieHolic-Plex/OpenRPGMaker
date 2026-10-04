@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/alembic/w7-B.pxg",
+ "id": "alembic",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.048
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 23,
+ "v5_colors": 8,
+ "bbox": [
+  1,
+  1,
+  14,
+  14
+ ],
+ "v5_bbox": [
+  3,
+  1,
+  15,
+  15
+ ],
+ "note": "A 의 구도에 빛 구조를 세게: 화덕 윗면을 가장 밝은 단, 왼쪽 모서리는 밝게·오른쪽은 가장 어둡게, 유리 반짝임 한 점씩, 발 밑에 반투명 접지 그림자 한 줄(오른쪽 아래로 번짐)",
+ "ok": true
+}

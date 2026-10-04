@@ -1,0 +1,46 @@
+{
+ "id": "fireplace_cold",
+ "slug": "fireplace_cold",
+ "name": "꺼진 벽난로",
+ "scene": "낡은 서양 저택",
+ "cells": [
+  2,
+  2
+ ],
+ "canvas": [
+  32,
+  32
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "v5 벽난로의 낡은 판(같은 칸 2×2): 돌 틀·나무 선반, 아궁이 속 새까만 재와 타다 남은 장작, 아궁이 입구 위 그을음 번짐, 선반 위 먼지와 쓰러진 액자 하나. 불이 없다 — 움직임 없음.",
+ "palette_hint": "vstone 틀, rot 선반, void 아궁이, dust 재·먼지",
+ "worker_v1": "h3",
+ "stage": 2,
+ "stage_ko": "2단계 연출(기본이 선 뒤)",
+ "worker": "h3",
+ "v5_ref": [
+  {
+   "id": "fireplace",
+   "name_ko": "벽난로",
+   "atlas": {
+    "x": 192,
+    "y": 352,
+    "w": 32,
+    "h": 32,
+    "frames": 12,
+    "padTop": 0
+   },
+   "image": {
+    "w": 32,
+    "h": 32
+   },
+   "kind": "wall",
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "file": "ref-v5-1.png"
+  }
+ ]
+}

@@ -1,3 +1,4 @@
+import { isNeutralScreenDistortion, nextScreenDistortion } from "@/project/eventCommands/screenDistortion";
 import type { M2CommandFields, Project } from "@/project/types";
 import type { M2RuntimeState, PlaySessionLike } from "@/project/sessionRuntimeTypes"
 import { nextSessionRandom, setAudioState, type AudioChannel, type AudioTrackState } from "@/project/session";
@@ -224,6 +225,18 @@ function applyScreenEffect(session: PlaySessionLike, runtime: M2RuntimeState, fi
     case "weather":
       runtime.screen.weather = plan.weather;
       return true;
+    case "distortion": {
+      const next = nextScreenDistortion(runtime.screen.distortion, plan.effect, plan.value);
+      if (isNeutralScreenDistortion(next)) delete runtime.screen.distortion;
+      else runtime.screen.distortion = { ...next };
+      runtime.screen.distortionDurationMs = plan.durationMs;
+      return true;
+    }
+    case "letterbox":
+      if (plan.percent > 0) runtime.screen.letterbox = plan.percent;
+      else delete runtime.screen.letterbox;
+      runtime.screen.letterboxDurationMs = plan.durationMs;
+      return true;
     case "unsupported":
       return false;
   }
@@ -337,6 +350,9 @@ function recordDataQuery(session: PlaySessionLike, fields: M2CommandFields, cont
       return;
     case "itemCount":
       session.variables[variableId] = session.inventory[fieldString(fields, "target", "")] ?? 0;
+      return;
+    case 'followerPresent':
+      session.variables[variableId] = session.followers?.some(follower => follower.name === fieldString(fields, 'target', '')) ? 1 : 0;
       return;
     default:
       session.variables[variableId] = sessionQueryValue(session, fieldString(fields, "query", ""), fieldString(fields, "target", ""), {

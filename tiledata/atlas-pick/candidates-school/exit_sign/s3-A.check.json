@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/exit_sign/s3-A.pxg",
+ "set": "school",
+ "id": "exit_sign",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.013
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.049
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "dither"
+  ]
+ },
+ "colors": 6,
+ "bbox": [
+  1,
+  4,
+  14,
+  12
+ ],
+ "note": "v5 결: 초록 유도등 판, 밝은 연두 테로 불 켜진 느낌, 흰 달리는 사람과 흰 테 문",
+ "ok": true
+}

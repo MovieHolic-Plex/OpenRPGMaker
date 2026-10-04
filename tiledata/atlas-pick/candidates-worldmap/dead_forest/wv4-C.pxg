@@ -1,0 +1,78 @@
+// dead_forest wv4-C
+@size 48 64
+@cell 16
+@palette palette.pal
+@layer main
+@mat a wbark 0
+@mat b wbark 1
+@mat c wbark 2
+@mat d wdirt 0
+@mat e wgrass 0
+@mat f wswamp 2
+@mat g wswamp 3
+@mat h wswamp 4
+@mblock 0 0
+................ccbggcccbbggagbc.edagggggggaad..
+................ccgggggggggggbgc..dagbgggbggad..
+.......dde......ccbgaggggggaggbcddaagbggbggagadd
+.....ddbbdd.....ccgbgggggghgbggcccggabgbbgbggccc
+....dbacccad....ccgahhbgggbggagccbgggbgcccggcccc
+..edagbcccbad...ccggagbggbgaggccbbggagbcccbggccc
+...dabgcccgade..ccgggbgbbbgbgcccgggggbgcccgggggg
+..daggbcccbgad..cbfaggbcccbfccccgggaggbcccbgaggg
+..dabggcccgbade.bbfgbgbcccgafcccgghgbggcccgbgggg
+...daagcccgade..gggggbgcccgbggggggbggagcccgahhbg
+...dagccccgad...ggggggbcccbggggggbgaggccccggagbg
+...edcccccad....gggaggbcccbgggggbbgbgcccccgggbgb
+.....ddccdd.....gbggagcccgaggbggccbfcccccbfaggbc
+.....e.dd.e.....bggaggccccgagbggddaafcccbbfgbadd
+........e.......bgbggcccccggabgb..dbggggggggadee
+................ccggcccccbgggbgc.edaggggggggad..
+......................ee..............ee........
+..........e.........eddd..e.........eddd........
+.......dddd...ddd.eddbaaddd...ddd.eddbaade......
+.....ddbbabdddcccddaabgbbabdddcccddaabgbbdd.....
+....dbacccgacccccbaggbgcccgacccccbaggbgcccad....
+..edagbcccbggcccbbggagbcccbggcccbbggagbcccbad...
+...dabgcccgggggggggggbgcccgggggggggggbgcccgade..
+..daggbcccbgaggggggaggbcccbgaggggggaggbcccbgad..
+..dabggcccgbgggggghgbggcccgbgggggghgbggcccgbade.
+edbggagcccgahhbgggbggagcccgahhbgggbggagcccgade..
+.daaggccccggagbggbgaggccccggagbggbgaggccccgad...
+.dabgcccccgggbgbbbgbgcccccgggbgbbbgbgcccccggade.
+.edacccccbfaggbcccbfcccccbfaggbcccbfcccccbfaad..
+..dafcccbbfgbgbcccgafcccbbfgbgbcccgafcccbbfgbad.
+..edaggggggggbgcccgbgggggggggbgcccgbgggggggggbde
+.edaggggggggggbcccbgggggggggggbcccbgggggggggad..
+.edagggggggaggbcccbggggggggaggbcccbggggggggaad..
+..dagbgggbggagcccgaggbgggbggagcccgaggbgggbggaad.
+..edabggbggaggccccgagbggbggaggccccgagbggbggagade
+...dabgbbgbggcccccggabgbbgbggcccccggabgbbgbgad..
+...dabgcccggcccccbgggbgcccggcccccbgggbgcccggcd..
+..daagbcccbggcccbbggagbcccbggcccbbggagbcccbgade.
+.edagbgcccgggggggggggbgcccgggggggggggbgcccggad..
+..daggbcccbgaggggggaggbcccbgaggggggaggbcccbgad..
+..dabggcccgbgggggghgbggcccgbgggggghgbggcccgbade.
+edbggagcccgahhbgggbggagcccgahhbgggbggagcccgade..
+.daaggccccggagbggbgaggccccggagbggbgaggccccgad...
+.dabgcccccgggbgbbbgbgcccccgggbgbbbgbgcccccggade.
+.edacccccbfaggbcccbfcccccbfaggbcccbfcccccbfaad..
+..dafcccbbfgbgbcccgafcccbbfgbgbcccgafcccbbfgbad.
+..edaggggggggbgcccgbgggggggggbgcccgbgggggggggbde
+.edaggggggggggbcccbgggggggggggbcccbgggggggggad..
+.edagggggggaggbcccbggggggggaggbcccbggggggggaad..
+..dagbgggbggagcccgaggbgggbggagcccgaggbgggbggaad.
+..edabggbggaggccccgagbggbggaggccccgagbggbggagade
+...dabgbbgbggcccccggabgbbgbggcccccggabgbbgbgad..
+...dabgcccggcccccbgggbgcccggcccccbgggbgcccggcd..
+..daagbcccbggcccbbggagbcccbggcccbbggagbcccbgade.
+.edagbgcccgggggggggggbgcccgggggggggggbgcccggad..
+..daggbcccbgaggggggaggbcccbgaggggggaggbcccbgad..
+..dabggcccgbgggggghgbggcccgbgggggghgbggcccgbade.
+...daagcccgahhbgggbggagcccgahhbgggbggagcccgade..
+...dagccccggagbggbgaggccccggagbggbgaggccccgad...
+...edcccccgggbgbbbgbgcccccgggbgbbbgbgcccccad....
+.....ddccbaagabcccbacdddcbaagabcccbacdddcdd.....
+.....e.ddddabddddcadde..dddabddddcadde..d.e.....
+........ee.dd.ee.dde....ee.dd.ee.dde....e.......
+............e....e..........e....e..............

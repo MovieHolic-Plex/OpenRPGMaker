@@ -1,0 +1,40 @@
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat a wood 4
+@mat b iron 4
+@mat c pine 4
+@mblock 0 0
+................
+.aaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaa.
+.aabbaaabbaabba.
+...cc...aa..bb..
+...cc...aa..bb..
+...cc...aa..bb..
+...cc...aa..bb..
+...cc..aaaa.bb..
+.ccccccaaaa.bb..
+.ccccccaaaabbbb.
+.ccccccaaaabbbb.
+.ccccccaaaabb.b.
+..cccc.aaaab..b.
+................
+................
+@tblock 0 0
+................
+.56666666666661.
+.46656665666561.
+.12532225322531.
+...42...42..42..
+...42...42..42..
+...42...42..42..
+...42...42..42..
+...42..5552.42..
+.3444236552.42..
+.45444364533443.
+.44344365433322.
+.444442655334.1.
+..1111.11111..0.
+................
+................

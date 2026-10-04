@@ -1,0 +1,12 @@
+{
+ "file": "tiledata/atlas-pick/remap-trial/jp/kit_shopfront/k2-A.m3.pxg",
+ "set": null,
+ "id": null,
+ "hard": [
+  "폴더 kit_shopfront 가 세트 None 의 기물 slug 가 아니다"
+ ],
+ "warn": [
+  "파일 이름이 <작업자>-<방향>.pxg 꼴이 아니다(j1-A.pxg): k2-A.m3.pxg"
+ ],
+ "ok": false
+}

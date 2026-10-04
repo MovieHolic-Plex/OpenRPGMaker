@@ -1,0 +1,41 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/throne/w52-A.pxg",
+ "id": "throne",
+ "hard": [],
+ "warn": [],
+ "resized": {
+  "canvas": [
+   48,
+   32
+  ],
+  "footprint": {
+   "w": 3,
+   "h": 2
+  },
+  "why": "사용자 메모: 좀 더 화려하게. 3x2 사이즈로."
+ },
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.011
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 17,
+ "v5_colors": 7,
+ "bbox": [
+  2,
+  0,
+  45,
+  31
+ ],
+ "v5_bbox": [
+  1,
+  0,
+  12,
+  18
+ ],
+ "note": "w30-E 고딕 왕좌 그대로(등받이·금 장식·보석). 앉는 자리 붉은 방석 윗면 4줄 + 앞 가장자리 밝은 줄, 아래 단상 윗면(금 테+붉은 카펫)+앞면. 관문 --object 는 접는 줄 측정이라 t=22 f=10 ok 는 참고, 형태는 눈 O(방석 윗면·단상 윗면 읽힘).",
+ "ok": true
+}

@@ -1,0 +1,23 @@
+{
+ "id": "hall_window",
+ "slug": "hall_window",
+ "name": "복도 창",
+ "scene": "복도·현관",
+ "place": "in",
+ "cells": [
+  2,
+  2
+ ],
+ "canvas": [
+  32,
+  32
+ ],
+ "layer": "wall",
+ "layer_ko": "벽 걸이(위층, 투명 배경·벽면에 붙는다)",
+ "description": "복도 쪽 교실 벽의 가로로 긴 창(허리 위). 미닫이 유리 두 짝, 안쪽 교실이 흐리게 비친다(책상 윗면 줄 흐릿). class_window 보다 창턱이 낮고 커튼 없음.",
+ "palette_hint": "mglass/mdglass, mmetal 틀, & 반사",
+ "pair": [
+  "class_window"
+ ],
+ "worker": "s1"
+}

@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/grindstone/h9-B.pxg",
+ "id": "grindstone",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.046
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 12,
+ "v5_colors": 12,
+ "bbox": [
+  1,
+  1,
+  14,
+  15
+ ],
+ "v5_bbox": [
+  1,
+  1,
+  14,
+  15
+ ],
+ "note": "v5 그대로, 돌바퀴 좌·우·아래 가장자리에 어두운 윤곽 한 줄을 닫아 바퀴가 틀에서 분리되어 단단히 읽히게",
+ "ok": true
+}

@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/taxi_yellow/j2-C.pxg",
+ "set": "jp",
+ "id": "taxi_yellow",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.098
+ },
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.026
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation",
+   "outline"
+  ]
+ },
+ "colors": 27,
+ "bbox": [
+  0,
+  2,
+  31,
+  45
+ ],
+ "note": "실루엣 재해석: 각지고 높은 지붕의 크라운 컴포트형 — 지붕·행등을 키우고 보닛을 짧게, 둥근 헤드라이트와 툭 튀어나온 큰 바퀴(16px 에서도 택시로 읽힘).",
+ "ok": true
+}

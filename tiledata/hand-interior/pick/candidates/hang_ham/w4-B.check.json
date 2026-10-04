@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/hang_ham/w4-B.pxg",
+ "id": "hang:ham",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.019
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 12,
+ "v5_colors": 9,
+ "bbox": [
+  0,
+  1,
+  15,
+  9
+ ],
+ "v5_bbox": [
+  0,
+  1,
+  15,
+  9
+ ],
+ "note": "강한 빛/그림자: 햄 왼쪽 위 meat6 하이라이트+오른쪽 아래 meat2 짙은 그늘, 보 wood7, 벽에 -/~ 그림자",
+ "ok": true
+}

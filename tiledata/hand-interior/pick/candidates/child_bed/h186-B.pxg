@@ -1,0 +1,76 @@
+// 요람과 같은 짙은 나무 테·연분홍 침구, 별 머리판과 3행 윗면
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat d dwood 3
+@mat p pine 3
+@mat l linen 5
+@mat k pink 5
+@mat g gold 4
+@layer bed
+@mblock 0 0
+..pppppppppppp..
+.dppppppppppppd.
+.dppppppppppppd.
+.dddddddddddddd.
+.dpppppgpppppdd.
+.dpppgggggpppdd.
+.dppppgggppppdd.
+.dppppgpgppppdd.
+.dpppppppppppdd.
+.dddddddddddddd.
+.dllllllllllldd.
+.dllllllllllldd.
+.dllllllllllldd.
+.dllllllllllldd.
+.dllllllllllldd.
+.dllllllllllldd.
+.dkkkkkkkkkkkdd.
+.dkkkkkkkkkkkdd.
+.dkkkkkkkkkkkdd.
+.dkkkkkkkkkkkdd.
+.dkkkkkkkkkkkdd.
+.dkkkkkkkkkkkdd.
+.dkkkkkkkkkkkdd.
+.dkkkkkkkkkkkdd.
+.dkkkkkkkkkkkdd.
+.dkkkkkkkkkkkdd.
+.dpppppppppppdd.
+.dpppppppppppdd.
+.dddddddddddddd.
+.dddddddddddddd.
+.ddd........dd..
+.ddd........dd..
+@tblock 0 0
+..444444444444..
+.35554443444442.
+.34444444433332.
+.34444444444422.
+.34333353333322.
+.34335555533322.
+.34333545333322.
+.34333535333322.
+.34333333323322.
+.32222222222222.
+.35555555555522.
+.35666666665522.
+.35666666665522.
+.35655555554522.
+.35544444444522.
+.35555555555422.
+.35666665555422.
+.35555555555422.
+.35555555555422.
+.35555555555422.
+.35555555555422.
+.35555555554422.
+.35555555554422.
+.35555555554422.
+.35444444444422.
+.34444444444322.
+.34444334433322.
+.34333333333322.
+.34444444444422.
+.32222222222222.
+.343........32..
+.332........22..

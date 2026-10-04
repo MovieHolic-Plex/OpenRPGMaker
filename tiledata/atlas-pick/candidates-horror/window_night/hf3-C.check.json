@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/window_night/hf3-C.pxg",
+ "set": "horror",
+ "id": "window_night",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.073
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.08
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "outline_black",
+   "dither"
+  ]
+ },
+ "colors": 9,
+ "bbox": [
+  1,
+  2,
+  14,
+  14
+ ],
+ "note": "밤 창 C — 어두운 동화색(rot) 틀·창살, 유리 murk 2단에 납선 마름모 조각 넷(grave 2단), 왼위 달빛 한 점.",
+ "ok": true
+}

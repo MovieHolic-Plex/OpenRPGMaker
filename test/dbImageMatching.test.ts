@@ -53,7 +53,7 @@ describe("database image matching", () => {
     expect(bySpecies.species_stone_golem).toBe("generated-enemy-golem-01");
     expect(bySpecies.species_ember_drake).toBe("generated-enemy-dragon-01");
     expect(bySpecies.species_leafling).toBe("generated-enemy-leafling-01");
-    expect(bySpecies.species_forest_hornet).toBe("easyrpg-monster-hornet");
+    expect(bySpecies.species_forest_hornet).toBe("generated-enemy-sylph-hornet");
     expect(bySpecies.species_sparkit).toBe("generated-enemy-sparkit-fire");
     expect(bySpecies.species_aqualing).toBe("generated-enemy-aqualing-01");
     expect(bySpecies.species_mine_skeleton).toBe("generated-enemy-skeleton-01");
@@ -103,7 +103,7 @@ describe("database image matching", () => {
     const bone = enemies.find((enemy) => enemy.id === "enemy_stone_bone_guard");
     expect(bone?.monsterResourceId).toBe("generated-enemy-skeleton-01");
     expect(resolveAssetResourceUrl("generated-enemy-skeleton-01")).toBe(
-      "/assets/generated/starter/monster-skeleton-01.png",
+      "/assets/generated/pixel-enemy-portraits/skeleton-01.png",
     );
   });
 });

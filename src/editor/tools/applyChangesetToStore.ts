@@ -4,7 +4,8 @@
 
 import { harnessToolReason, isUsableToolReason, splitToolCallReason } from "@/ai/toolReason";
 import { transferDetachedDraftMemory } from "@/editor/detachedDraftMemory";
-import { assertSpatialToolAcceptance, finishSpatialToolAcceptance } from "./spatialToolState";
+import { assertSpatialToolAcceptance, authorMergedSpatialProposal, finishSpatialToolAcceptance } from "./spatialToolState";
+import { mergeProjectThreeWay, type ProjectMergeConflict } from "@/project/projectMerge";
 import { ProjectFormatError } from "@/project/io/errors";
 import { SpatialOperationError } from "@/project/spatial/domain";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
@@ -14,17 +15,18 @@ import { currentAgentEditorIdentity, currentHumanEditorIdentity } from "@/projec
 import { combineDiffs, recordProjectCommit, recordProjectCommitFireAndForget, resetManualProjectCommitBaseline, summaryForDiff, type CommitLogInput, type CommitRow } from "@/project/projectCommitLog";
 import { store } from "@/project/store";
 import { canWriteTeamProject, TEAM_READ_ONLY_WRITE_MESSAGE } from "@/project/teamAccess";
-import { jsonContentDigest } from "@/project/persistence/core/contentDigest";
+import { jsonContentDigest, withContentDigestEpoch } from "@/project/persistence/core/contentDigest";
 import { AuthoredProjectBaseline, projectIdentityDigest, type ProjectIdentitySource } from "@/project/authoredProjectBaseline";
 import type { ChangeSummary, Project } from "@/project/types";
 import { reconcileReviewedWorldForApply } from "@/project/world";
 import { commitChangeset, summarizeChanges } from "./changeset";
+import { warmRoundtripCheck } from "@/project/lint/projectLint";
 import { runTool } from "./toolRunner";
 import { ToolError, type ToolContext, type ToolResult } from "./types";
 import { assertHouseProtection, captureHouseProtection } from "./houseProtection";
 import type { EditActivityField, EditActivityOrigin } from "@/editor/editActivityLog";
 import type { ProjectChangeAnnotation } from "@/project/store";
-import { mapCellApply } from "@/editor/incrementalMapApply";
+import { mapCellApply, toolMapCellApply } from "@/editor/incrementalMapApply";
 import type { RunOperation } from "@/ai/runOperation";
 import { emptiedEventMapIds, isMapDestruction, removedMapIds, wipedTileMapIds } from "@/ai/approvalPolicy";
 
@@ -64,6 +66,7 @@ const MAP_ONLY_WRITE_TOOLS = new Set([
   "stamp_layer_block",
   "paint_shadow",
   "sculpt_relief",
+  "design_terrain", "lay_terrain_road", "place_terrain_ramp",
   "paint_road",
   "stamp_structure",
   "build_house",
@@ -129,6 +132,7 @@ export function applyToolToStore(name: string, args: Record<string, unknown>): T
     const summary = result.summary || summaryForDiff(result.diff ?? combineDiffs([]));
     // origin 은 "tool" — 사람이 에디터에서 툴을 직접 실행한 경로다(채팅 에이전트가 아니다).
     store.replace(ctx.project, {
+      renderCells: toolMapCellApply(store.getCurrent(), ctx.project) ?? undefined,
       change: applyAnnotation(
         "tool",
         `툴 ${name}: ${summary}`,
@@ -191,6 +195,7 @@ export function applyToolSequenceToStore(
     finishSpatialToolAcceptance(ctx.project);
     recordProjectSnapshot();
     store.replace(ctx.project, {
+      renderCells: toolMapCellApply(store.getCurrent(), ctx.project) ?? undefined,
       change: applyAnnotation(
         byAgent ? "ai" : "tool",
         `${byAgent ? `AI 적용${options.agentName ? ` (${options.agentName})` : ""}` : "툴 묶음"}: ${summary}`,
@@ -255,7 +260,8 @@ let identityScope: WeakMap<Project, IdentityMemo> | null = null;
 function withIdentityScope<T>(run: () => T): T {
   if (identityScope) return run();
   identityScope = new WeakMap();
-  try { return run(); } finally { identityScope = null; }
+  // 같은 구간 안에서는 요약의 노드 대조도 한 번만 한다(contentDigest.withContentDigestEpoch). 구간 안에서는 값을 고치지 않는다.
+  try { return withContentDigestEpoch(run); } finally { identityScope = null; }
 }
 function memoOf(project: Project): IdentityMemo | null {
   if (!identityScope) return null;
@@ -292,6 +298,23 @@ export function captureProposalBase(project: Project): ProposalBase {
 /** 적용 권위(기준 + 초안 기준선)를 한 번에 잡는다. 둘을 따로 잡으면 같은 직렬화를 두 번 한다. */
 export function captureApplyAuthority(project: Project): { base: ProposalBase; baseline: AuthoredProjectBaseline } {
   return withIdentityScope(() => ({ base: captureProposalBase(project), baseline: captureAuthoredBaseline(project) }));
+}
+
+/**
+ * 한가할 때 첫 적용의 준비 비용을 미리 치른다: 타일셋·업로드 자산 항목의 저장 왕복 검사 통과 기록, 적용 권위 요약의 노드 기억.
+ * 판정에는 영향이 없다 — 왕복 기록은 검사가 실제로 통과한 객체에만 남고, 요약 기억은 값 대조로만 쓰인다.
+ * 왜(2026-09-28 실측, 새 프로젝트 기본 자료 149MB): 조수 첫 체크포인트 적용이 이 둘을 처음 하느라 약 2.7s, 이후는 약 0.3s 였다.
+ */
+export function warmApplyCaches(project: Project): void {
+  try {
+    withIdentityScope(() => {
+      proposalContentOf(project);
+      storeIdentities.authored(project);
+    });
+    warmRoundtripCheck(project);
+  } catch {
+    // 준비는 선택이다. 실패하면 첫 적용이 예전처럼 직접 한다.
+  }
 }
 
 function isProposalBaseCurrent(base: ProposalBase, resetProject: boolean): boolean {
@@ -337,10 +360,24 @@ export interface ApplyProposedProjectOptions {
   readonly resetProject?: boolean;
   readonly reviewStatus?: CommitLogInput["reviewStatus"];
   readonly reason?: string;
+  /**
+   * 출발점 이후 스토어가 움직였으면 거절하지 말고 3-way 병합해 지금 프로젝트 위에 얹는다(2026-10-03).
+   * `lineage` = 이 제안이 갈라져 나온 프로젝트(실행의 직전 적용본). 같은 프로젝트(계보·신원)일 때만 — 다른 프로젝트로
+   * 바뀌었으면 여전히 stale-base 다. 둘이 같은 자리를 다르게 바꿨으면 스토어 값을 남기고 결과의 `merge.conflicts` 로 알린다.
+   * 사람이 다른 맵을 고쳤거나 다른 맵의 AI 실행이 먼저 반영돼도 이 실행의 체크포인트가 죽지 않게 한다.
+   */
+  readonly rebase?: { readonly lineage: Project };
+  /**
+   * 적용 뒤 화면을 그 맵으로 데려갈까. 기본 "visible-only". "visible-only" 는 보고 있는 맵일 때만 강조·재생하고
+   * 맵을 바꾸거나 카메라를 옮기지 않는다 — 다른 맵에서 도는 백그라운드 실행이 사용자를 끌고 다니지 않게.
+   */
+  readonly focus?: "follow" | "visible-only";
 }
 
 export type ApplyProposedProjectResult =
-  | { readonly ok: true; readonly commit: CommitRow; readonly applied: Project; readonly commitProject?: Project }
+  | { readonly ok: true; readonly commit: CommitRow; readonly applied: Project; readonly commitProject?: Project;
+      /** rebase 로 지금 프로젝트 위에 병합했으면 그 결과(충돌 자리 = 스토어 값을 남긴 곳). */
+      readonly merge?: { readonly conflicts: readonly ProjectMergeConflict[]; readonly cellConflicts: number } }
   | {
     readonly ok: false;
     readonly reason: "commit-rejected" | "retired-run" | "stale-base" | "stale-baseline" | "map-destruction-unapproved";
@@ -362,6 +399,7 @@ export type ApplyProposedProjectResult =
  * (기존 fire-and-forget의 console.warn 정책과 동일) — row는 persisted:false 로 반환.
  */
 interface PreparedApply {
+  readonly merge?: { readonly conflicts: readonly ProjectMergeConflict[]; readonly cellConflicts: number };
   readonly appliedProject: Project;
   readonly diff: ChangeSummary;
   readonly change: ReturnType<typeof applyAnnotation>;
@@ -382,8 +420,21 @@ export async function applyProposedProject(
   // (before = 스토어의 현재 프로젝트)의 정체성 문자열을 한 번 만들어 두 검사가 나눠 쓴다 — 예전에는 마지막 검사가
   // 구간 밖이라 수 MB 직렬화를 한 번 더 돌렸다(2026-09-23 실측, 체크포인트마다 0.5 s). 구간은 교체 전에 닫힌다.
   const prepared = withIdentityScope((): ApplyProposedProjectResult | PreparedApply => {
-    const authority = withIdentityScope(() => !isProposalBaseCurrent(options.base, options.resetProject === true) ? "stale-base"
-      : !options.baseline.matches(before, options.resetProject === true, storeIdentities) ? "stale-baseline" : null);
+    let authorityBase = options.base;
+    let authorityBaseline = options.baseline;
+    let merge: PreparedApply["merge"];
+    // 같은 프로젝트 안에서 내용만 움직였으면 3-way 병합으로 지금 위에 얹는다. 병합 결과의 권위는 «지금» 이다.
+    if (options.rebase && options.resetProject !== true && !isProposalBaseCurrent(options.base, false)
+      && store.getVersionToken().lineage === options.base.version.lineage
+      && JSON.stringify(store.getProjectIdentity()) === options.base.identity) {
+      const merged = mergeProjectThreeWay(options.rebase.lineage, proposed, before);
+      proposed = merged.project;
+      authorMergedSpatialProposal(proposed, before);
+      ({ base: authorityBase, baseline: authorityBaseline } = captureApplyAuthority(before));
+      merge = { conflicts: merged.conflicts, cellConflicts: merged.cellConflicts };
+    }
+    const authority = withIdentityScope(() => !isProposalBaseCurrent(authorityBase, options.resetProject === true) ? "stale-base"
+      : !authorityBaseline.matches(before, options.resetProject === true, storeIdentities) ? "stale-baseline" : null);
     if (authority === "stale-base") {
       return { ok: false, reason: "stale-base", issue: "기준 프로젝트가 변경되었습니다. 최신 편집을 기준으로 다시 요청해주세요." };
     }
@@ -435,7 +486,10 @@ export async function applyProposedProject(
       const issue = error.mapId ? `[${error.mapId}] ${error.message}` : error.message;
       return { ok: false, reason: "commit-rejected", issue, issues: [issue] };
     }
-    const commit = commitChangeset(appliedProject, before);
+    // 클러스터 규칙 위반은 커밋을 막지 않고(commitChangeset 의 isBlocking), 이 경로는
+    // commit.issues 를 쓰지 않는다 — 전체 맵 클러스터 스캔(체크포인트마다 ~1s)을 건너뛴다.
+    // 규칙 감사는 ruleAuditPanel 이 따로 보여 준다.
+    const commit = commitChangeset(appliedProject, before, { clusterMapIds: [] });
     if (!commit.ok) {
       const blocking = commit.blocking.map((entry) =>
         entry.mapId ? `[${entry.mapId}] ${entry.message}` : entry.message);
@@ -462,13 +516,13 @@ export async function applyProposedProject(
     // callback between the last authority check, undo snapshot, and replacement.
     // All async commit/wiki work below follows the actual local mutation.
     if (options.operation?.signal.aborted) return { ok: false, reason: "retired-run", issue: "Run authority retired" };
-    if (!isProposalBaseCurrent(options.base, options.resetProject === true)) {
+    if (!isProposalBaseCurrent(authorityBase, options.resetProject === true)) {
       return { ok: false, reason: "stale-base", issue: "기준 프로젝트가 변경되었습니다. 최신 편집을 기준으로 다시 요청해주세요." };
     }
-    return { appliedProject, diff, change };
+    return { appliedProject, diff, change, ...(merge ? { merge } : {}) };
   });
   if ("ok" in prepared) return prepared;
-  const { appliedProject, diff, change } = prepared;
+  const { appliedProject, diff, change, merge } = prepared;
   if (!options.skipSnapshot) recordProjectSnapshot(options.snapshotLabel, options.snapshotMapId);
   // Correlate at the mutation boundary: synchronous subscribers and the awaited
   // commit can both leave a later edit in the live store before this apply returns.
@@ -484,7 +538,7 @@ export async function applyProposedProject(
   const commitProject = options.resetProject === true
     ? store.replaceProject(appliedProject, { ...change, projectSwitch: false }, onApplied)
     : store.replace(appliedProject, { change, onApplied, ...(renderCells ? { renderCells } : {}) });
-  if (!options.operation?.signal.aborted) focusAcceptedAgentChanges(before, appliedProject);
+  if (!options.operation?.signal.aborted) focusAcceptedAgentChanges(before, appliedProject, { follow: options.focus === "follow" });
   const commitInput: CommitLogInput = {
     project: appliedProject,
     identity: currentAgentEditorIdentity(options.agentName ?? loadAiConfig().model),
@@ -507,9 +561,9 @@ export async function applyProposedProject(
       recordedAt: new Date().toISOString(),
     };
   }
-  if (options.operation?.signal.aborted) return { ok: true, commit: commitRow, applied: commitProject, commitProject };
+  if (options.operation?.signal.aborted) return { ok: true, commit: commitRow, applied: commitProject, commitProject, ...(merge ? { merge } : {}) };
   resetManualProjectCommitBaseline(appliedProject);
   // Applied work already has a commit and mutation audit entry. Do not turn it
   // into another authored document or attribute a later live edit to this apply.
-  return { ok: true, commit: commitRow, applied: commitProject, commitProject };
+  return { ok: true, commit: commitRow, applied: commitProject, commitProject, ...(merge ? { merge } : {}) };
 }

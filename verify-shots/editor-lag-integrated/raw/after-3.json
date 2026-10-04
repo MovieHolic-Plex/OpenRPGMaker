@@ -1,0 +1,306 @@
+{
+ "side": "after",
+ "run": 3,
+ "load": "3.57 5.96 7.01",
+ "s1_cold": {
+  "readyMs": 40169,
+  "long": {
+   "count": 15,
+   "totalMs": 19343,
+   "top": [
+    {
+     "atMs": 19979,
+     "durMs": 8284
+    },
+    {
+     "atMs": 28294,
+     "durMs": 2865
+    },
+    {
+     "atMs": 35613,
+     "durMs": 2485
+    },
+    {
+     "atMs": 33284,
+     "durMs": 2323
+    },
+    {
+     "atMs": 13587,
+     "durMs": 1111
+    }
+   ]
+  },
+  "parse": {
+   "n": 504,
+   "ms": 1155,
+   "MB": 243.2
+  },
+  "netMB": 296.3,
+  "fetches": 17
+ },
+ "s1_warm": {
+  "readyMs": 12358,
+  "long": {
+   "count": 12,
+   "totalMs": 9977,
+   "top": [
+    {
+     "atMs": 3427,
+     "durMs": 6887
+    },
+    {
+     "atMs": 702,
+     "durMs": 1027
+    },
+    {
+     "atMs": 2203,
+     "durMs": 492
+    },
+    {
+     "atMs": 10687,
+     "durMs": 260
+    },
+    {
+     "atMs": 10364,
+     "durMs": 251
+    }
+   ]
+  },
+  "parse": {
+   "n": 497,
+   "ms": 817,
+   "MB": 145.4
+  },
+  "netMB": 5.1,
+  "fetches": 10
+ },
+ "s1_warm2": {
+  "readyMs": 14570,
+  "long": {
+   "count": 12,
+   "totalMs": 12357,
+   "top": [
+    {
+     "atMs": 3441,
+     "durMs": 6342
+    },
+    {
+     "atMs": 9787,
+     "durMs": 3157
+    },
+    {
+     "atMs": 720,
+     "durMs": 1342
+    },
+    {
+     "atMs": 2251,
+     "durMs": 455
+    },
+    {
+     "atMs": 13532,
+     "durMs": 221
+    }
+   ]
+  },
+  "parse": {
+   "n": 499,
+   "ms": 1139,
+   "MB": 147.6
+  },
+  "netMB": 5.1,
+  "fetches": 10
+ },
+ "canvas": {
+  "x": 346,
+  "y": 49,
+  "w": 676,
+  "h": 851
+ },
+ "tileId": "chipset-tile-126",
+ "s2_paintClickMs": 89,
+ "s2": {
+  "long": {
+   "count": 1,
+   "totalMs": 77,
+   "top": [
+    {
+     "atMs": 32238,
+     "durMs": 77
+    }
+   ]
+  },
+  "saveFetches": [
+   {
+    "url": "/__oprn/bridge",
+    "method": "POST",
+    "reqKB": 0,
+    "atMs": -19,
+    "respMs": 131
+   },
+   {
+    "url": "/__oprn/edit-activity",
+    "method": "POST",
+    "reqKB": 0,
+    "atMs": 1433,
+    "respMs": 5
+   },
+   {
+    "url": "/__oprn/bridge",
+    "method": "POST",
+    "reqKB": 46,
+    "atMs": 1560,
+    "respMs": 734
+   },
+   {
+    "url": "/__oprn/bridge",
+    "method": "POST",
+    "reqKB": 0,
+    "atMs": 2070,
+    "respMs": 246
+   },
+   {
+    "url": "/__oprn/bridge",
+    "method": "POST",
+    "reqKB": 1,
+    "atMs": 2394,
+    "respMs": 21
+   },
+   {
+    "url": "/__oprn/bridge",
+    "method": "POST",
+    "reqKB": 0,
+    "atMs": 5068,
+    "respMs": 8
+   },
+   {
+    "url": "/__oprn/bridge",
+    "method": "POST",
+    "reqKB": 0,
+    "atMs": 8065,
+    "respMs": 8
+   }
+  ],
+  "stringify": {
+   "n": 27584,
+   "MB": 11.51,
+   "ms": 0
+  },
+  "parse": {
+   "n": 3,
+   "ms": 1
+  },
+  "hot": [],
+  "top": [
+   [
+    3875.4,
+    "(program) :0:0"
+   ],
+   [
+    1217,
+    "(garbage collector) :0:0"
+   ],
+   [
+    61.6,
+    "JSON.stringify :33:16"
+   ],
+   [
+    40,
+    "focus :0:0"
+   ],
+   [
+    33.7,
+    "_jt /assets/main-CLQ5Th-K.js:106:56053"
+   ]
+  ],
+  "busyMs": 5660
+ },
+ "s3": {
+  "dragOnlyMs": 793,
+  "perMoveMedianMs": 32.3,
+  "perMoveMaxMs": 110.4,
+  "moves": 20,
+  "longAfter": {
+   "count": 3,
+   "totalMs": 175,
+   "top": [
+    {
+     "atMs": 40639,
+     "durMs": 66
+    },
+    {
+     "atMs": 43107,
+     "durMs": 59
+    },
+    {
+     "atMs": 40189,
+     "durMs": 50
+    }
+   ]
+  },
+  "saveFetches": 6
+ },
+ "s4": {
+  "medianMs": 163,
+  "all": [
+   219,
+   201,
+   162,
+   160,
+   155,
+   159,
+   196,
+   163
+  ],
+  "longSumMedian": 132
+ },
+ "s5": {
+  "medianMs": 77,
+  "all": [
+   94,
+   109,
+   97,
+   78,
+   65,
+   77,
+   68,
+   74,
+   75,
+   73
+  ],
+  "longSumMedian": 64
+ },
+ "s6": {
+  "medianMs": 13,
+  "all": [
+   17,
+   10,
+   14,
+   10,
+   10,
+   15,
+   8,
+   13,
+   8,
+   14,
+   10,
+   16
+  ],
+  "longSumMedian": 0
+ },
+ "s7": {
+  "rafMs": 1788,
+  "settleMs": 964,
+  "longSumMs": 1371,
+  "cards": 5897,
+  "gallery": true
+ },
+ "heap": {
+  "jsHeapUsedMB": 1545,
+  "jsHeapTotalMB": 1664,
+  "nodes": 55650,
+  "taskDurationS": 0.01,
+  "scriptDurationS": 0,
+  "layoutDurationS": 0,
+  "recalcStyleS": 0
+ }
+}

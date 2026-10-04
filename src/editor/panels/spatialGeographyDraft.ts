@@ -1,5 +1,5 @@
 import { assertNever, findOccurrenceChildId, spatialId } from "@/project/spatial/domain";
-import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { villagePresetPlaza } from "@/editor/tools/village/plazaLayout";
 import { genId } from "@/util/id";
 import type {
@@ -221,7 +221,7 @@ export function blankSettlementRegionDesign(project: Project, presetId: string, 
     revision: 1,
     tags: ["settlement"],
     provenance: { origin: "user" },
-    terrain: { tilesetId: DEFAULT_TILESET_ID, width, height, floor: "ground", areas: [] },
+    terrain: { tilesetId: COMBINED_TOWN_TILESET_ID, width, height, floor: "ground", areas: [] },
     places: [],
     ports: [{ id: spatialId(genId("port")), name: plaza ? "마을 광장" : "남쪽 출구", x: plaza?.centerX ?? Math.floor(width / 2), y: plaza?.centerRow ?? height - 1 }],
     routes: [],

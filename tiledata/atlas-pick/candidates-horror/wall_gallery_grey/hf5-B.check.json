@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/wall_gallery_grey/hf5-B.pxg",
+ "set": "horror",
+ "id": "wall_gallery_grey",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.281
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.031
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "outline_black"
+  ]
+ },
+ "colors": 11,
+ "bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "note": "B: 어둠에서 읽히게 — 면 ward5(청록빛 회)로 가장 밝게, 몰딩 윗줄 dust4·걸레받이 윗줄 dust2 의 또렷한 선, 나머지 void 로 폭 최대.",
+ "ok": true
+}

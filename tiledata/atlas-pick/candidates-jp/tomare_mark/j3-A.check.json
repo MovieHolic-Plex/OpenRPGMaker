@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/tomare_mark/j3-A.pxg",
+ "set": "jp",
+ "id": "tomare_mark",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.172
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.138
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 6,
+ "bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "note": "강남 조각 결로 아스팔트 바탕 위에 낡은 흰 페인트 글자를 2px 획으로 놓고 페인트 가장자리만 한 단 어둡게, 군데군데 벗겨짐",
+ "ok": true
+}

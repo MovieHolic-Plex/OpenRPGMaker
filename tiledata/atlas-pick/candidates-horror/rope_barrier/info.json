@@ -1,0 +1,34 @@
+{
+ "id": "rope_barrier",
+ "slug": "rope_barrier",
+ "name": "줄 울타리(이어 붙이기)",
+ "scene": "미술관",
+ "cells": [
+  2,
+  1
+ ],
+ "canvas": [
+  32,
+  16
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "놋쇠 기둥 둘(왼 끝·가운데) + 늘어진 붉은 줄(가운데가 처짐). 가로로 이어 붙이면 기둥 간격이 16px 로 맞게(오른 끝은 다음 토막의 왼 기둥). 작품 앞 1칸.",
+ "palette_hint": "tarn 기둥, vred/velv 줄",
+ "stage": 1,
+ "stage_ko": "1단계 기본(2판 새로)",
+ "kit": "gallery",
+ "role": "줄 울타리",
+ "worker": "hf5",
+ "set_with": [
+  "wall_gallery_white",
+  "wall_gallery_grey",
+  "floor_gallery_wood",
+  "floor_gallery_stone",
+  "frame_landscape",
+  "frame_small",
+  "plaque",
+  "pedestal",
+  "bench_gallery"
+ ]
+}

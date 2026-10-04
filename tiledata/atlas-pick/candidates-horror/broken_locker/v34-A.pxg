@@ -1,0 +1,73 @@
+// broken_locker v34-A
+@size 16 32
+@cell 16
+@palette palette.pal
+@layer main
+@mat a tin 0
+@mat b rust 0
+@mblock 0 0
+..aaaaaaaaaaaa..
+.aaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaa.
+.aaaaaaaaaaabaa.
+.aabaaaaaaaaaaa.
+.aaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaa.
+.aaabaaaaaaaaaa.
+.aaaaaaaaabaaaa.
+.aaaaaaaaabaaaa.
+.aaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaa.
+.aaaabaaaaaaaaa.
+.aaaaabaaaabaaa.
+.aaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaa.
+..aaa......aaa..
+..aaa......aaa..
+@tblock 0 0
+..111111111111..
+.13333333333332.
+.15444444444442.
+.16555555555552.
+.16555555555552.
+.16666666666662.
+.12222222222222.
+.54444444444442.
+.54211111533342.
+.54200000533142.
+.54200000053332.
+.54200000051332.
+.54200000005332.
+.54200000005332.
+.54200000000523.
+.54444444444442.
+.33333333333233.
+.22222222222222.
+.54444444444442.
+.54455555555542.
+.54433333333242.
+.54421111113242.
+.54433333323242.
+.54431111133242.
+.54433333335242.
+.54433333333242.
+.54432333333242.
+.54111311112142.
+.54444444444442.
+.11111111111111.
+..111......111..
+..111......111..

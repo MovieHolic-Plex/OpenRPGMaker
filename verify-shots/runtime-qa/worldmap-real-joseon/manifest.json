@@ -1,0 +1,139 @@
+{
+  "scenarioId": "worldmap-real-journey",
+  "projectPath": "qa-runs/worldmap-selected-runtime/joseon.json",
+  "seed": 1,
+  "viewport": {
+    "width": 1024,
+    "height": 768
+  },
+  "errors": [],
+  "beats": [
+    {
+      "index": 0,
+      "id": "title",
+      "note": "저장한 원본 타이틀",
+      "shot": null,
+      "failures": [],
+      "state": null,
+      "actions": []
+    },
+    {
+      "index": 1,
+      "id": "world-start",
+      "note": "오프닝 뒤 축소 캐릭터로 실제 지리 지도 시작",
+      "shot": "02-world-start.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "world_map",
+        "x": 27,
+        "y": 26,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "cinematic",
+          "action": "key",
+          "key": "Enter",
+          "selector": "[data-testid=\"cinematic-sequence\"][data-scene-id=\"cinematic-scene_c8b1022a-5e5f-4016-a65e-0af20faa27e6\"]"
+        },
+        {
+          "kind": "cinematic",
+          "action": "key",
+          "key": "Enter",
+          "selector": "[data-testid=\"cinematic-sequence\"][data-scene-id=\"cinematic-scene_9befb3bd-a046-4c5b-8ac8-630fa825bb41\"]"
+        },
+        {
+          "kind": "cinematic",
+          "action": "key",
+          "key": "Enter",
+          "selector": "[data-testid=\"cinematic-sequence\"]",
+          "absent": true
+        },
+        {
+          "kind": "waitForRuntime"
+        },
+        {
+          "kind": "waitForAttr",
+          "testid": "runtime-state-json",
+          "attr": "data-live-flags",
+          "value": "world_map|27|26|true|false"
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "id": "enter-town",
+      "note": "실제 키 입력으로 성문에 들어가 시작 고을 도착",
+      "shot": "03-enter-town.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_hanyang",
+        "x": 31,
+        "y": 55,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "key",
+          "key": "ArrowUp"
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_hanyang",
+          "x": 31,
+          "y": 55
+        },
+        {
+          "kind": "waitForAttr",
+          "testid": "runtime-state-json",
+          "attr": "data-live-flags",
+          "value": "map_hanyang|31|55|true|false"
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "id": "return-world",
+      "note": "고을 출입구를 실제로 밟아 세계 지도 복귀",
+      "shot": "04-return-world.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "world_map",
+        "x": 27,
+        "y": 26,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "key",
+          "key": "ArrowLeft"
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_hanyang",
+          "x": 30,
+          "y": 55
+        },
+        {
+          "kind": "key",
+          "key": "ArrowLeft"
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "world_map",
+          "x": 27,
+          "y": 26
+        }
+      ]
+    }
+  ]
+}

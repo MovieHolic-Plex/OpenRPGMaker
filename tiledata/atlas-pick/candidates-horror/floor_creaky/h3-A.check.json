@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/floor_creaky/h3-A.pxg",
+ "set": "horror",
+ "id": "floor_creaky",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.09
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.234
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 10,
+ "bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "note": "낡은 마룻바닥: v5 판자를 몇십 년 묵힌 것 — 판 8장·이음 엇갈림, 옹이 하나, 물얼룩(왼아래), 들린 판 끝 하나, 틈에 먼지",
+ "ok": true
+}
