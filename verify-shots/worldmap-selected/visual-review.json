@@ -1,7 +1,7 @@
 {
   "selectedIconsUnchanged": 79,
   "modernTown": "terrain v9 full render inspected; icons still human-pending",
-  "steampunk": "3 item correction candidates, human must choose; gray crystal limit conflicts with reviewer READ requests restoring purple faces",
+  "steampunk": "3 corrected item candidates PASS after independent review; round correction intent now carried; human must choose",
   "rounds": [
     {
       "round": 61,
@@ -55,12 +55,24 @@
       "round": 65,
       "letter": "A",
       "attempt": 3,
-      "status": "drawing",
+      "status": "discarded",
       "verdict": "FAIL",
       "codes": "[\"READ\"]",
       "item": "steampunk/마석 수정 언덕",
       "note": "r64/A/a2는 검수 PASS지만 색 교정 지시 미달이다. 보라색 면이 넓게 남아 있으므로 사람이 고르기 전에 색 교정 후보를 다시 만든다. 키 큰 3개의 수정 외곽과 위치를 정확히 유지해라. 그 세 수정의 외피 전체를 청회색/회갈색/밝은 은회색 면으로 바꾸고, 각 기둥 안쪽에만 1~3px 보라색 균열을 남긴다. 아래 바위와 합쳐 보이지 않게 밝은 은회색 윗면과 어두운 청회색 정면 면의 명암 대비를 크게 준다. 팔레트 안의 기존 회색을 써라. 수정 형체를 없애거나 낮추지 말고 보라색 외피를 복원하지 마라. 지도 1배에서 뾰족한 광물 기둥 3개와 작은 마력 균열이 읽혀야 한다. 기존 구리 받침과 분홍 키를 보존한다.",
-      "imageSha256": "ad86817cb3c4090e096f4335d7d349c7e286062c1252f24b06168d448547a7b5",
+      "imageSha256": "58067d672056edbf9c7a8f2ef93e2fcb2ff27ab50e8d9ff8858772027802e480",
+      "humanSelected": false
+    },
+    {
+      "round": 65,
+      "letter": "F",
+      "attempt": 2,
+      "status": "done",
+      "verdict": "PASS",
+      "codes": "[]",
+      "item": "steampunk/마석 수정 언덕",
+      "note": "r64/A/a2는 검수 PASS지만 색 교정 지시 미달이다. 보라색 면이 넓게 남아 있으므로 사람이 고르기 전에 색 교정 후보를 다시 만든다. 키 큰 3개의 수정 외곽과 위치를 정확히 유지해라. 그 세 수정의 외피 전체를 청회색/회갈색/밝은 은회색 면으로 바꾸고, 각 기둥 안쪽에만 1~3px 보라색 균열을 남긴다. 아래 바위와 합쳐 보이지 않게 밝은 은회색 윗면과 어두운 청회색 정면 면의 명암 대비를 크게 준다. 팔레트 안의 기존 회색을 써라. 수정 형체를 없애거나 낮추지 말고 보라색 외피를 복원하지 마라. 지도 1배에서 뾰족한 광물 기둥 3개와 작은 마력 균열이 읽혀야 한다. 기존 구리 받침과 분홍 키를 보존한다.",
+      "imageSha256": "74cd6eb9af1a805a6c2349e3eb061b6299f165934da6696b0a2af8eb082d6718",
       "humanSelected": false
     }
   ]

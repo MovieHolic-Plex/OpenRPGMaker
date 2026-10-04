@@ -13,6 +13,14 @@
       "actual": -1
     }
   ],
+  "occupiedOverlay": [
+    {
+      "code": "OCCUPIED_OVERLAY",
+      "x": 38,
+      "y": 3,
+      "actual": 0
+    }
+  ],
   "regeneration": {
     "layersPreserved": true,
     "graftSlots": 36,

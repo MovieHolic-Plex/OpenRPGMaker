@@ -90,7 +90,7 @@ const stamp: ToolDefinition = {
 const inspect: ToolDefinition = {
   name: "inspect_worldmap_icon",
   mode: "read",
-  description: "찍은 월드맵 아이콘을 공용 정답 배열과 대조한다. 누락·다른 칸·범위 밖을 실제 맵 좌표와 코드로 돌려준다. 타일 이식도 소스 번호로 해석한다. 이벤트 실행·미적 품질 판정은 별도다.",
+  description: "찍은 월드맵 아이콘을 공용 정답 배열과 대조한다. 누락·다른 칸·위층 덮개·범위 밖을 실제 맵 좌표와 코드로 돌려준다. 타일 이식도 소스 번호로 해석한다. 이벤트 실행·미적 품질 판정은 별도다.",
   parameters: stamp.parameters,
   run(project, args) {
     const map = requireMap(project, args.mapId as string);
@@ -103,6 +103,8 @@ const inspect: ToolDefinition = {
     for (let dy = 0; dy < icon.height; dy++) for (let dx = 0; dx < icon.width; dx++) {
       const x = at.x + dx, y = at.y + dy, expected = icon.rows[dy]![dx]!;
       if (x < 0 || y < 0 || x >= map.width || y >= map.height) { issues.push({ code:"OUT_OF_BOUNDS",x,y }); continue; }
+      const overlay = map.upperOverlayTiles?.[y * map.width + x] ?? -1;
+      if (overlay >= 0 || topTileInStack(map,"upper",y * map.width + x) != null) issues.push({code:"OCCUPIED_OVERLAY",x,y,actual:overlay});
       const actual = map.upperTiles[y * map.width + x] ?? -1;
       const graft = t.tileGrafts?.find((g) => g.targetTile === actual);
       const resolved = graft ? (graft.sourceChipset === WORLDMAP_SELECTED_TEXTURE ? graft.sourceTile : -1)

@@ -37,7 +37,7 @@ npm run harness -- worldmap-icons check
 선택 그림별 위층 그룹과 사람 팔레트 스탬프가 있으며, 조수는 `list_worldmap_icons → 참고문서 읽기 → stamp_worldmap_icon → inspect_worldmap_icon`을 쓴다.
 생성 지도에는 타일 이식으로 덧붙인다. 맵 id·원래 바닥은 보존한다. 입구와 접근 칸을 돌려주지만 전이 이벤트는 별도다.
 ★ 윗줄은 바닥 통행을 따른다. 밑줄 중앙은 통행, 나머지는 막힘이다. 막힌 육지 받침·접근 칸·위층 겹침·맵 밖은 수정 전에 거부한다.
-`inspect_worldmap_icon`은 정답 전체 배열과 이식 소스 번호를 대조해 MISSING_CELL/WRONG_CELL 및 실제 맵 좌표를 돌려준다.
+`inspect_worldmap_icon`은 정답 전체 배열과 이식 소스 번호를 대조해 MISSING_CELL/WRONG_CELL 및 실제 맵 좌표를 돌려준다. 다른 위층 덮개로 가려진 칸도 OCCUPIED_OVERLAY로 보고한다.
 
 ## 2026-10-04 근거
 

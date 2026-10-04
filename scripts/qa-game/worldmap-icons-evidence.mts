@@ -143,6 +143,10 @@ export async function verifySaved(newDir: string, evidenceDir: string, worldPath
   clone.maps.wmi_fantasy!.upperTiles[missing.y * 64 + missing.x] = -1;
   const errors = (inspect.run(clone, checkArgs).data as {issues:{code:string;x:number;y:number}[]}).issues;
   assert(errors.length === 1 && errors[0]!.code === "MISSING_CELL" && errors[0]!.x === missing.x && errors[0]!.y === missing.y, "missing cell coordinates differ");
+  const covered = structuredClone(snapshot.project);
+  covered.maps.wmi_fantasy!.upperOverlayTiles![at.y*64+at.x] = 0;
+  const overlayErrors = (inspect.run(covered,checkArgs).data as {issues:{code:string;x:number;y:number}[]}).issues;
+  assert(overlayErrors.length===1 && overlayErrors[0]!.code==="OCCUPIED_OVERLAY","covered stamp passed inspection");
 
   const world = JSON.parse(readFileSync(worldPath,"utf8")) as WorldmapWorld;
   const built: Extract<WorldmapBuildResult,{ok:true}> = {ok:true,preview:false,theme:"fantasy",world,
@@ -164,7 +168,7 @@ export async function verifySaved(newDir: string, evidenceDir: string, worldPath
     map.lowerOverlayTiles = Array(map.width*map.height).fill(-1);
     map.upperOverlayTiles = Array(map.width*map.height).fill(-1);
     map.shadowBits = Array(map.width*map.height).fill(0);
-    map.lowerOverlayTiles[0] = 0; map.upperOverlayTiles[1] = 1; map.shadowBits[2] = 1;
+    map.lowerOverlayTiles[0] = 0; map.upperOverlayTiles[map.width*map.height-1] = 1; map.shadowBits[2] = 1;
     const layers = (m: GameMap) => [m.upperTiles,m.lowerOverlayTiles,m.upperOverlayTiles,m.shadowBits];
     const oldLayers = sha(layers(map));
     const oldT = structuredClone(clone.tilesets[map.tilesetId]!);
@@ -183,7 +187,7 @@ export async function verifySaved(newDir: string, evidenceDir: string, worldPath
     try {edit.run(clone,resize);} catch (e) {code=(e as {code?:string}).code;}
     assert(code === "authored-worldmap-resize" && sha(clone) === before,"resize partially mutated authored world");
     const receipt = {projectId,projectDir:newDir,revision:snapshot.revision,characterScale:snapshot.project.maps.wmi_fantasy!.characterScale,
-      intactStamp:true,missingCell:errors,regeneration:{layersPreserved:true,graftSlots:oldT.tileGrafts!.length,passagePreserved:true,resizeRejectedAtomically:true},
+      intactStamp:true,missingCell:errors,occupiedOverlay:overlayErrors,regeneration:{layersPreserved:true,graftSlots:oldT.tileGrafts!.length,passagePreserved:true,resizeRejectedAtomically:true},
       renderer:"recorded actual Python output; injected builder; no re-render",canonicalModified:false};
     writeFileSync(join(evidenceDir,"inspection-regeneration.json"),JSON.stringify(receipt,null,2)+"\n");
     console.log(JSON.stringify(receipt,null,2));
