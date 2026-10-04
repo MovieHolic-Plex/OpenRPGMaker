@@ -50,3 +50,35 @@ planning.json 스키마(version=1):
 
 공간 설계 참고(용도 판단 우선):
 {{SPACE}}
+
+## 큰 공간의 전체 배치 → 세부 구역 → 연결
+
+cellScale>1 또는 도면 한 변>60이면 variants[].details가 필수다. 전체 배치도를 유지하되 상세 구역 2개 이상으로 나눈다.
+각 세부 도면은 **한 글자=실제 1타일**이며 3~80칸이다. overview의 모든 구역 기호를 parentZones로 빠짐없이 상세화한다.
+큰 평면 배열은 Python으로 작성해 행 길이를 확인한다. 계단실/차로/주차면/벽/기둥의 유효폭을 실제 칸으로 그린다.
+
+각 details 항목은 기존 변형과 같은 purpose/experience/scaleReason/diagram/zones/routes 구조를 가지며,
+requirements/worldviewId/layout/spaceProfile은 상위 기획을 상속한다. 추가 필드:
+{
+ "id":"north", "title":"입출차·북쪽 회전 구역", "parentZones":["R","S","T"],
+ "origin":[0,0], "cellScale":1,
+ "purpose":"...", "experience":"...", "scaleReason":"실제 타일 폭으로 설명",
+ "diagram":["..."], "zones":[{"symbol":"A","name":"...","purpose":"...","requirements":[]}],
+ "routes":[{"name":"...","via":["E","A"],"purpose":"..."}],
+ "ports":[{"id":"south-lane","side":"south","offset":10,"width":4,
+           "kind":"vehicle","level":-1,"connectsTo":"south/north-lane"}]
+}
+
+origin은 전체 지도에서 좌상단의 **실제 타일 좌표**다. 상세 도면의 직사각형 범위끼리는 겹치지 않는다.
+전체 지도 크기는 overview diagram의 가로/세로 × cellScale. 상세 도면은 이 안에 들어가야 한다.
+side=north/south/west/east. offset은 그 변의 왼쪽 또는 위에서 센 시작 좌표. width는 실제 연속 출입 칸 수.
+연결부의 모든 칸은 경계 E/X로 그린다. 각 상세도의 E 하나는 그 구역의 로컬 진입점이며 나머지 출입 칸은 X.
+모든 경계 E/X에 ports 선언이 필요하다. 연결부마다 반대 구역의 ports에 상호 id를 연결한다.
+양쪽 연결부 좌표가 서로 한 칸 간격으로 접하고 방향·폭·kind(walk/vehicle/water)·level이 일치해야 한다.
+외부 출구만 connectsTo="outside". 해당 실제 좌표를 overview 축척으로 나눴을 때 전체 도면의 E/X 칸이어야 한다.
+모든 상세 구역이 ports를 통해 연결되어야 한다. 전체 구역을 재배치해야 하면 전체 도면도 함께 수정한다.
+숫자 게이트만 맞추려고 벽/문을 왜곡하지 않는다. 실제 쓸 수 있는 구역과 접속 동선을 설계한다.
+
+기획 파일 저장 후 다음 명령으로 스스로 기계 확인한다. 오류만 수정하고 파일을 저장한 뒤 종료한다:
+`python3 {{ROOT}}/src/harnesses/super-harness/gates.py planning {{CDIR}} --draft`
+상세 도면의 독립 검수는 하네스가 다음 단계로 실행한다. 다른 검수자를 직접 부르지 않는다.

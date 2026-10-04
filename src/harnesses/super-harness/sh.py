@@ -31,6 +31,7 @@ ROOT = os.path.abspath(os.path.join(HERE, '..', '..', '..'))
 sys.path.insert(0, HERE)
 import store  # noqa: E402
 import gates  # noqa: E402
+import planning_details  # noqa: E402
 
 DATA = store.DATA
 WORK = os.path.join(DATA, 'work')
@@ -478,6 +479,7 @@ def on_plan(meta, code, result):
     if code != 0 or not report['ok']:
         reject_planning(cid, report['problems'] or ['기획 작업 비정상 종료'])
         return
+    planning_details.render(cdir(cid))
     with open(cdir(cid, 'planning.md'), 'w') as f:
         f.write(gates.planning_markdown(cdir(cid)))
     store.update_concept(cid, stage='plan-review', status='queued', reasons=[], note='텍스트 도면 기계 확인 완료 — 적대적 기획 검수 대기')
@@ -489,6 +491,7 @@ def start_plan_reviews(c):
     if not report['ok']:
         reject_planning(cid, report['problems'])
         return
+    planning_details.render(cdir(cid))
     with open(cdir(cid, 'planning.md'), 'w') as f:
         f.write(gates.planning_markdown(cdir(cid)))
     for label, focus in (('A', '공간의 정체성·시대·활동·구역 구성'), ('B', '텍스트 도면의 동선·경계·축척·필수 재료')):
@@ -1140,6 +1143,13 @@ def concept_markdown(cid):
     card = read_json(cdir(cid, 'card.json'), {}) or {}
     L = [f'# {d["title"]}', '', f'**상태** {d["status"]}' + (f' · 「{d["parent"]}」의 하위' if d['parent'] else '') + (f' · [PR]({d["pr"]})' if d['pr'] else ''), '']
     L += ['> ' + line for line in str(d['about']).splitlines()] + ['']
+    diagram = read_json(cdir(cid, 'planning-visual.json'), {}) or {}
+    if diagram.get('fingerprint') == gates.planning_report(cdir(cid), approved=False)['fingerprint']:
+        L += ['## 기획 도면 이미지', '', '> 구역·연결을 보여주는 기획도입니다. 실제 칩으로 시공한 맵 그림은 다음 단계에서 별도로 만듭니다.', '']
+        for im in diagram.get('images', []):
+            path = cdir(cid, im['path'])
+            if os.path.isfile(path) and gates.digest(path) == im.get('sha256'):
+                L += [md_img({'path': os.path.relpath(path, DATA), 'label': im['label'], 'v': int(os.path.getmtime(path))}), '']
     L += [gates.planning_markdown(cdir(cid)), '']
     plan = read_json(cdir(cid, 'materials.json'), {}) or {}
     if c['stage'] in ('plan', 'plan-review', 'survey', 'material-review', 'art', 'art-review'):

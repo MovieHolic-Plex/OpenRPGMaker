@@ -39,3 +39,12 @@
  }}]
 }
 모든 변형과 모든 항목을 평가한다. 전체 PASS라도 필수 항목 FAIL/누락이면 다음 단계로 갈 수 없다.
+
+## 큰 공간 추가 검수
+
+details가 있으면 전체 도면과 모든 상세 도면(1칸=1타일)을 대조한다.
+각 상세 도면의 6항목을 따로 검사하고 variants[].details에 [{id,checks:{identity,use,routes,boundaries,scale,requirements}}]를 추가한다.
+상위 variants[].checks에는 connections:{verdict,evidence}를 추가한다.
+전체 구역의 빠짐/중복, 전체 축척을 실제 타일로 펼쳤을 때의 위치, 연결부의 좌표/폭/높이/용도,
+구역들을 이어 걸었을 때의 경로와 이동 수단 간 충돌을 확인한다. 모든 상세 도면이 독립적으로 괜찮아도 합쳐서 끊기면 FAIL.
+큰 공간을 같은 방 반복으로 채우거나, 4배 축척에서 가려진 장애물을 세부 도면에서도 생략하면 FAIL.
