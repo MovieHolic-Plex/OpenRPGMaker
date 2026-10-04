@@ -5,5 +5,5 @@ const option = (flag) => { const index=args.indexOf(flag); if(index<0 || !args[i
 const projectDir=option('--project-dir'), evidenceDir=option('--evidence');
 const repo=resolve(import.meta.dirname,'../../../..');
 await withTsModule(resolve(import.meta.dirname,'parkingProject.ts'),'parking-project.mjs', async mod => {
-  console.log(JSON.stringify(await mod.saveParkingProject(projectDir,evidenceDir,repo),null,2));
+  console.log(JSON.stringify(await mod.saveParkingProject(projectDir,evidenceDir,repo,args.includes('--recipe') ? option('--recipe') : undefined),null,2));
 });
