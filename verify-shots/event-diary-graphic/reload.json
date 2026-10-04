@@ -1,0 +1,117 @@
+{
+  "dir": "/home/main/.codex/worktrees/e35b/rpg-zzu/output/qa/event-diary/project",
+  "base": "http://127.0.0.1:18436",
+  "errors": [],
+  "additionalAiRuns": 0,
+  "before": {
+    "project_id": "76ba2342-fc13-4ab2-b815-cb9ecd3891f1",
+    "revision": 6,
+    "mapId": "map_blank_start",
+    "event": {
+      "pages": [
+        {
+          "priority": "same",
+          "graphic": {
+            "direction": "down",
+            "pattern": 0,
+            "sprite": {
+              "id": "cc0-jetrel-notebook",
+              "type": "bundled"
+            }
+          },
+          "id": "page_1",
+          "animationType": "fixedGraphic",
+          "movement": {
+            "type": "fixed",
+            "speed": 3,
+            "frequency": 3
+          },
+          "commands": [
+            {
+              "body": "\"결국 아무것도 바꾸지 못했다는 걸 알면서도, 나는 오늘 또 너의 계절을 산다.\"",
+              "speaker": "낡은 일기장",
+              "kind": "text"
+            }
+          ],
+          "trigger": {
+            "kind": "action"
+          },
+          "name": "ev_diary",
+          "conditions": []
+        }
+      ],
+      "id": "ev_diary",
+      "name": "일기",
+      "y": 7,
+      "x": 10,
+      "trigger": {
+        "kind": "action"
+      },
+      "commands": []
+    }
+  },
+  "preview": {
+    "testid": "event-page-graphic-preview",
+    "spriteId": "cc0-jetrel-notebook",
+    "graphicKind": "sprite",
+    "pattern": "0",
+    "background": "url(\"http://127.0.0.1:18436/assets/cc0/jetrel/icons/notebook.png\")",
+    "width": 48,
+    "height": 48
+  },
+  "after": {
+    "project_id": "76ba2342-fc13-4ab2-b815-cb9ecd3891f1",
+    "revision": 8,
+    "mapId": "map_blank_start",
+    "event": {
+      "pages": [
+        {
+          "priority": "same",
+          "graphic": {
+            "direction": "down",
+            "pattern": 0,
+            "sprite": {
+              "id": "cc0-jetrel-notebook",
+              "type": "bundled"
+            }
+          },
+          "id": "page_1",
+          "animationType": "fixedGraphic",
+          "movement": {
+            "type": "fixed",
+            "speed": 3,
+            "frequency": 3
+          },
+          "commands": [
+            {
+              "body": "\"결국 아무것도 바꾸지 못했다는 걸 알면서도, 나는 오늘 또 너의 계절을 산다.\"",
+              "speaker": "낡은 일기장",
+              "kind": "text"
+            }
+          ],
+          "trigger": {
+            "kind": "action"
+          },
+          "name": "ev_diary",
+          "conditions": []
+        }
+      ],
+      "id": "ev_diary",
+      "name": "일기",
+      "y": 7,
+      "x": 10,
+      "trigger": {
+        "kind": "action"
+      },
+      "commands": []
+    }
+  },
+  "reloadedPreview": {
+    "testid": "event-page-graphic-preview",
+    "spriteId": "cc0-jetrel-notebook",
+    "graphicKind": "sprite",
+    "pattern": "0",
+    "background": "url(\"http://127.0.0.1:18436/assets/cc0/jetrel/icons/notebook.png\")"
+  },
+  "passed": true
+}
