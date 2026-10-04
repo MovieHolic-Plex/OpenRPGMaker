@@ -72,6 +72,8 @@ systemd-run --user --unit=worldmap-icon-harness -p Restart=on-failure /usr/bin/p
 **호스트 공용 DB:** `npm run harness -- worldmap-icons publish-shared --icons-only`로 선택 시트·참고문서를 등록하고
 같은 SQLite 판본을 재읽는다. `--joseon <정본 폴더> --yucatan <정본 폴더>`를 주면 실제 지형 사례도 함께 등록한다.
 지역 사례는 요청 시 로드하며, 새 맵으로 가져온 사본은 지형 설정·크기·업로드 그림과 전용 타일셋을 가진다.
+호스트의 새 세계 지도 생성도 `--selected-icons selected/selected.json`을 사용한다. 미선택 후보는 붙이지 않고
+논리 위치·`iconSelection.pending`만 돌려준다. 하네스 검수 그림과 일반 키트 CLI의 후보 미리보기는 유지한다.
 원본 사본·전체 칸 배열·참고문서도 함께 만든다. 자세한 계약은 `openwiki/harnesses/worldmap-icons.md`.
 명령으로도 연다: `python3 src/harnesses/worldmap-icons/harness.py draw <세트/이름> --note "…" [--base r3/B] [-n 5]` (일꾼은 알아서 뜨고, 1분 놀면 내려간다).
 엔진을 Claude 로: `WMI_HARNESS_ENGINE=claude` (기본 모델 `claude-sonnet-5-5`).

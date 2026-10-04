@@ -1,0 +1,806 @@
+{
+  "realModel": true,
+  "provider": "opencodex",
+  "modelId": "gpt-6-astra",
+  "uiIntentRequestExercised": false,
+  "sharedDatabase": "/home/main/.local/share/oprn/shared-content.sqlite",
+  "libraries": [
+    "worldmap-human-selected",
+    "worldmap-real-joseon",
+    "worldmap-real-yucatan"
+  ],
+  "folder": "/home/main/.local/share/oprn/worldmap-shared-ai-space-readiness-final-20261004",
+  "projectId": "39f1a0ee-dc73-47f1-8e25-6834147a2a03",
+  "revision": 2,
+  "elapsedSeconds": 122.067,
+  "counts": {
+    "get_project_summary": 2,
+    "read_project_wiki": 1,
+    "find_tools": 3,
+    "list_worldmap_themes": 1,
+    "list_worldmap_icons": 1,
+    "list_spatial_designs": 2,
+    "get_database_records": 1,
+    "get_map_region": 2,
+    "read_world_terrain": 1,
+    "list_tileset_references": 1,
+    "tile_query": 1,
+    "edit_world_terrain": 1,
+    "show_map_region": 1
+  },
+  "failures": [],
+  "imported": [],
+  "generated": [
+    {
+      "mapId": "world_star_voyage",
+      "theme": "starmap",
+      "source": {
+        "theme": "starmap",
+        "ops": [],
+        "terrainId": "galaxy",
+        "palette": "original",
+        "base": "generate",
+        "fitSalt": 0
+      },
+      "characterScale": 0.75,
+      "locations": [
+        {
+          "id": "wm_place_0",
+          "name": "모항성 수도",
+          "x": 68,
+          "y": 31,
+          "w": 6,
+          "h": 6,
+          "tags": [
+            "capital",
+            "act0"
+          ],
+          "note": "월드맵 장소(capital, 1막, 키트 id 대성) — 입구(성문) 71,36: 고을·던전 맵은 이 칸에 출입구를 둔다"
+        },
+        {
+          "id": "wm_place_1",
+          "name": "출발 개척 행성",
+          "x": 60,
+          "y": 29,
+          "w": 3,
+          "h": 3,
+          "tags": [
+            "large_town",
+            "act0"
+          ],
+          "note": "월드맵 장소(large_town, 1막, 키트 id 강가 마을) — 입구(성문) 61,31: 고을·던전 맵은 이 칸에 출입구를 둔다"
+        },
+        {
+          "id": "wm_place_2",
+          "name": "모항 조선소",
+          "x": 61,
+          "y": 23,
+          "w": 5,
+          "h": 4,
+          "tags": [
+            "harbor_city",
+            "act0"
+          ],
+          "note": "월드맵 장소(harbor_city, 1막, 키트 id 내해 항구) — 입구(성문) 63,26: 고을·던전 맵은 이 칸에 출입구를 둔다"
+        },
+        {
+          "id": "wm_place_3",
+          "name": "얼음 행성 교역소",
+          "x": 51,
+          "y": 25,
+          "w": 3,
+          "h": 3,
+          "tags": [
+            "large_town",
+            "act0"
+          ],
+          "note": "월드맵 장소(large_town, 1막, 키트 id 설원 마을) — 입구(성문) 52,27: 고을·던전 맵은 이 칸에 출입구를 둔다"
+        },
+        {
+          "id": "wm_place_4",
+          "name": "얼음 위성 기지",
+          "x": 55,
+          "y": 21,
+          "w": 2,
+          "h": 2,
+          "tags": [
+            "village",
+            "act0"
+          ],
+          "note": "월드맵 장소(village, 1막, 키트 id 눈 촌락) — 입구(성문) 56,22: 고을·던전 맵은 이 칸에 출입구를 둔다"
+        },
+        {
+          "id": "wm_place_5",
+          "name": "고궤도 마을",
+          "x": 46,
+          "y": 25,
+          "w": 2,
+          "h": 2,
+          "tags": [
+            "village",
+            "act0"
+          ],
+          "note": "월드맵 장소(village, 1막, 키트 id 고원 마을) — 입구(성문) 47,26: 고을·던전 맵은 이 칸에 출입구를 둔다"
+        },
+        {
+          "id": "wm_place_6",
+          "name": "옛 점프 게이트",
+          "x": 71,
+          "y": 39,
+          "w": 2,
+          "h": 2,
+          "tags": [
+            "cave",
+            "act0"
+          ],
+          "note": "월드맵 장소(cave, 1막, 키트 id 산기슭 동굴) — 입구(성문) 72,40: 고을·던전 맵은 이 칸에 출입구를 둔다"
+        },
+        {
+          "id": "wm_place_7",
+          "name": "폭풍 경계 정박지",
+          "x": 42,
+          "y": 23,
+          "w": 2,
+          "h": 2,
+          "tags": [
+            "village",
+            "act0"
+          ],
+          "note": "월드맵 장소(village, 1막, 키트 id 사막 촌락) — 입구(성문) 43,24: 고을·던전 맵은 이 칸에 출입구를 둔다"
+        },
+        {
+          "id": "wm_place_8",
+          "name": "폭풍 속 함선 잔해",
+          "x": 35,
+          "y": 28,
+          "w": 2,
+          "h": 2,
+          "tags": [
+            "ruin",
+            "act3"
+          ],
+          "note": "월드맵 장소(ruin, 4막, 키트 id 사막 폐허) — 입구(성문) 36,29: 고을·던전 맵은 이 칸에 출입구를 둔다"
+        },
+        {
+          "id": "wm_place_9",
+          "name": "정글 행성 조선 기지",
+          "x": 57,
+          "y": 46,
+          "w": 2,
+          "h": 2,
+          "tags": [
+            "village",
+            "act1"
+          ],
+          "note": "월드맵 장소(village, 2막, 키트 id 정글 마을) — 입구(성문) 58,47: 고을·던전 맵은 이 칸에 출입구를 둔다"
+        },
+        {
+          "id": "wm_place_10",
+          "name": "소행성대 관문 요새",
+          "x": 63,
+          "y": 36,
+          "w": 3,
+          "h": 3,
+          "tags": [
+            "castle",
+            "act0"
+          ],
+          "note": "월드맵 장소(castle, 1막, 키트 id 고갯길 요새) — 입구(성문) 64,38: 고을·던전 맵은 이 칸에 출입구를 둔다"
+        },
+        {
+          "id": "wm_place_11",
+          "name": "폭풍 속 항법 부표",
+          "x": 37,
+          "y": 32,
+          "w": 1,
+          "h": 2,
+          "tags": [
+            "tower_small",
+            "act3"
+          ],
+          "note": "월드맵 장소(tower_small, 4막, 키트 id 해협 감시탑) — 입구(성문) 37,33: 고을·던전 맵은 이 칸에 출입구를 둔다"
+        },
+        {
+          "id": "wm_place_12",
+          "name": "용암 행성",
+          "x": 82,
+          "y": 12,
+          "w": 2,
+          "h": 2,
+          "tags": [
+            "volcano",
+            "act2"
+          ],
+          "note": "월드맵 장소(volcano, 3막, 키트 id 화산) — 입구(성문) 83,13: 고을·던전 맵은 이 칸에 출입구를 둔다"
+        },
+        {
+          "id": "wm_place_13",
+          "name": "적 기함",
+          "x": 70,
+          "y": 10,
+          "w": 3,
+          "h": 3,
+          "tags": [
+            "castle",
+            "act2"
+          ],
+          "note": "월드맵 장소(castle, 3막, 키트 id 화염 요새) — 입구(성문) 71,12: 고을·던전 맵은 이 칸에 출입구를 둔다"
+        },
+        {
+          "id": "wm_place_14",
+          "name": "변경 요새 정거장",
+          "x": 4,
+          "y": 27,
+          "w": 4,
+          "h": 4,
+          "tags": [
+            "fort_city",
+            "act2"
+          ],
+          "note": "월드맵 장소(fort_city, 3막, 키트 id 사바나 마을) — 입구(성문) 6,30: 고을·던전 맵은 이 칸에 출입구를 둔다"
+        },
+        {
+          "id": "wm_place_15",
+          "name": "보급선 정박지",
+          "x": 23,
+          "y": 42,
+          "w": 2,
+          "h": 2,
+          "tags": [
+            "camp",
+            "act2"
+          ],
+          "note": "월드맵 장소(camp, 3막, 키트 id 오아시스 촌락) — 입구(성문) 24,43: 고을·던전 맵은 이 칸에 출입구를 둔다"
+        },
+        {
+          "id": "wm_place_16",
+          "name": "붉은 성운 잔해",
+          "x": 71,
+          "y": 57,
+          "w": 2,
+          "h": 2,
+          "tags": [
+            "ruin",
+            "act2"
+          ],
+          "note": "월드맵 장소(ruin, 3막, 키트 id 협곡 폐허) — 입구(성문) 72,58: 고을·던전 맵은 이 칸에 출입구를 둔다"
+        },
+        {
+          "id": "wm_place_17",
+          "name": "먼 얼음 위성",
+          "x": 57,
+          "y": 9,
+          "w": 2,
+          "h": 2,
+          "tags": [
+            "village",
+            "act2"
+          ],
+          "note": "월드맵 장소(village, 3막, 키트 id 북동 눈 촌락) — 입구(성문) 58,10: 고을·던전 맵은 이 칸에 출입구를 둔다"
+        },
+        {
+          "id": "wm_place_18",
+          "name": "변경 개척 행성",
+          "x": 9,
+          "y": 36,
+          "w": 3,
+          "h": 3,
+          "tags": [
+            "large_town",
+            "act2"
+          ],
+          "note": "월드맵 장소(large_town, 3막, 키트 id 동쪽 항구) — 입구(성문) 10,38: 고을·던전 맵은 이 칸에 출입구를 둔다"
+        },
+        {
+          "id": "wm_place_19",
+          "name": "독성 성운 부표",
+          "x": 64,
+          "y": 11,
+          "w": 1,
+          "h": 2,
+          "tags": [
+            "tower_small",
+            "act2"
+          ],
+          "note": "월드맵 장소(tower_small, 3막, 키트 id 독늪 탑) — 입구(성문) 64,12: 고을·던전 맵은 이 칸에 출입구를 둔다"
+        },
+        {
+          "id": "wm_place_20",
+          "name": "외딴 점프 게이트",
+          "x": 32,
+          "y": 51,
+          "w": 2,
+          "h": 2,
+          "tags": [
+            "cave",
+            "act2"
+          ],
+          "note": "월드맵 장소(cave, 3막, 키트 id 섬 동굴) — 입구(성문) 33,52: 고을·던전 맵은 이 칸에 출입구를 둔다"
+        },
+        {
+          "id": "wm_place_21",
+          "name": "외딴 항법 부표",
+          "x": 23,
+          "y": 49,
+          "w": 1,
+          "h": 2,
+          "tags": [
+            "tower_small",
+            "act2"
+          ],
+          "note": "월드맵 장소(tower_small, 3막, 키트 id 섬 탑) — 입구(성문) 23,50: 고을·던전 맵은 이 칸에 출입구를 둔다"
+        },
+        {
+          "id": "wm_place_22",
+          "name": "정글 위성 마을",
+          "x": 65,
+          "y": 67,
+          "w": 2,
+          "h": 2,
+          "tags": [
+            "village",
+            "act2"
+          ],
+          "note": "월드맵 장소(village, 3막, 키트 id 남섬 마을) — 입구(성문) 66,68: 고을·던전 맵은 이 칸에 출입구를 둔다"
+        },
+        {
+          "id": "wm_place_23",
+          "name": "잿빛 함선 잔해",
+          "x": 40,
+          "y": 51,
+          "w": 2,
+          "h": 2,
+          "tags": [
+            "ruin",
+            "act2"
+          ],
+          "note": "월드맵 장소(ruin, 3막, 키트 id 섬 폐허) — 입구(성문) 41,52: 고을·던전 맵은 이 칸에 출입구를 둔다"
+        },
+        {
+          "id": "wm_place_24",
+          "name": "북쪽 보급 정박지",
+          "x": 5,
+          "y": 7,
+          "w": 2,
+          "h": 2,
+          "tags": [
+            "camp",
+            "act2"
+          ],
+          "note": "월드맵 장소(camp, 3막, 키트 id 북섬 촌락) — 입구(성문) 6,8: 고을·던전 맵은 이 칸에 출입구를 둔다"
+        },
+        {
+          "id": "wm_place_25",
+          "name": "궤도 엘리베이터",
+          "x": 56,
+          "y": 37,
+          "w": 2,
+          "h": 4,
+          "tags": [
+            "tower_great",
+            "act1"
+          ],
+          "note": "월드맵 장소(tower_great, 2막, 키트 id 거대한 탑) — 입구(성문) 57,40: 고을·던전 맵은 이 칸에 출입구를 둔다"
+        },
+        {
+          "id": "wm_place_26",
+          "name": "파괴된 행성",
+          "x": 4,
+          "y": 16,
+          "w": 4,
+          "h": 3,
+          "tags": [
+            "ruin_city",
+            "act2"
+          ],
+          "note": "월드맵 장소(ruin_city, 3막, 키트 id 폐허 도시) — 입구(성문) 6,18: 고을·던전 맵은 이 칸에 출입구를 둔다"
+        },
+        {
+          "id": "wm_place_27",
+          "name": "가스 거인",
+          "x": 44,
+          "y": 31,
+          "w": 3,
+          "h": 3,
+          "tags": [
+            "landmark_nature",
+            "act0"
+          ],
+          "note": "월드맵 장소(landmark_nature, 1막, 키트 id 거목) — 입구(성문) 45,33: 고을·던전 맵은 이 칸에 출입구를 둔다"
+        },
+        {
+          "id": "wm_place_28",
+          "name": "고대 외계 유물",
+          "x": 36,
+          "y": 38,
+          "w": 3,
+          "h": 3,
+          "tags": [
+            "shrine",
+            "act3"
+          ],
+          "note": "월드맵 장소(shrine, 4막, 키트 id 사막 신전) — 입구(성문) 37,40: 고을·던전 맵은 이 칸에 출입구를 둔다"
+        },
+        {
+          "id": "wm_place_29",
+          "name": "소행성 고리",
+          "x": 46,
+          "y": 44,
+          "w": 2,
+          "h": 2,
+          "tags": [
+            "circle",
+            "act1"
+          ],
+          "note": "월드맵 장소(circle, 2막, 키트 id 고대 돌원) — 입구(성문) 47,45: 고을·던전 맵은 이 칸에 출입구를 둔다"
+        },
+        {
+          "id": "wm_place_30",
+          "name": "다이슨 고리 조각",
+          "x": 46,
+          "y": 60,
+          "w": 5,
+          "h": 4,
+          "tags": [
+            "floating",
+            "act4"
+          ],
+          "note": "월드맵 장소(floating, 5막, 키트 id 천공섬) — 입구(성문) 48,63: 고을·던전 맵은 이 칸에 출입구를 둔다"
+        }
+      ],
+      "events": 0,
+      "privateTileset": true,
+      "journeyCheck": {
+        "ok": true,
+        "bad": []
+      },
+      "layout": {
+        "base": "generate",
+        "style": "galaxy",
+        "seed": 4,
+        "salt": 0,
+        "count": 12,
+        "land": 0.36,
+        "landmasses": 10,
+        "home_cells": 924,
+        "act1_cells": 604,
+        "act2_cells": 249,
+        "dune_cells": 175,
+        "ship_landmasses": 9,
+        "wall_cells": 63,
+        "gate": "고갯길 요새",
+        "harbour": "내해 항구",
+        "start": [
+          61,
+          30
+        ],
+        "roads": 18,
+        "features": {
+          "belts": 4,
+          "clusters": 1,
+          "passes": 0
+        },
+        "notes": [],
+        "min_sea_gap": 4,
+        "real": null,
+        "core": [
+          51.81,
+          34.64
+        ],
+        "spiral": {
+          "n": 3,
+          "b": 0.2272,
+          "th0": 3.9573,
+          "squash": 0.72
+        },
+        "regions_legend": "a 1막(관문 앞) · b 2막(관문 너머) · w 산벽 · d 4막 사구 바다 · s 3막(배로 가는 땅) · ~ 바다",
+        "systems": 27
+      },
+      "iconSelection": {
+        "mode": "human-selected",
+        "rendered": [],
+        "pending": [
+          {
+            "placeId": "대성",
+            "iconId": "starmap/모항성 수도",
+            "x": 68,
+            "y": 31,
+            "width": 6,
+            "height": 6,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "강가 마을",
+            "iconId": "starmap/개척 행성",
+            "x": 60,
+            "y": 29,
+            "width": 3,
+            "height": 3,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "내해 항구",
+            "iconId": "starmap/우주 조선소",
+            "x": 61,
+            "y": 23,
+            "width": 5,
+            "height": 4,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "설원 마을",
+            "iconId": "starmap/개척 행성",
+            "x": 51,
+            "y": 25,
+            "width": 3,
+            "height": 3,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "눈 촌락",
+            "iconId": "starmap/얼음 위성",
+            "x": 55,
+            "y": 21,
+            "width": 2,
+            "height": 2,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "고원 마을",
+            "iconId": "starmap/얼음 위성",
+            "x": 46,
+            "y": 25,
+            "width": 2,
+            "height": 2,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "산기슭 동굴",
+            "iconId": "starmap/점프 게이트",
+            "x": 71,
+            "y": 39,
+            "width": 2,
+            "height": 2,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "사막 촌락",
+            "iconId": "starmap/얼음 위성",
+            "x": 42,
+            "y": 23,
+            "width": 2,
+            "height": 2,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "사막 폐허",
+            "iconId": "starmap/함선 잔해",
+            "x": 35,
+            "y": 28,
+            "width": 2,
+            "height": 2,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "정글 마을",
+            "iconId": "starmap/소행성 채굴촌",
+            "x": 57,
+            "y": 46,
+            "width": 2,
+            "height": 2,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "고갯길 요새",
+            "iconId": "starmap/군 요새 위성",
+            "x": 63,
+            "y": 36,
+            "width": 3,
+            "height": 3,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "해협 감시탑",
+            "iconId": "starmap/항법 부표",
+            "x": 37,
+            "y": 32,
+            "width": 1,
+            "height": 2,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "화산",
+            "iconId": "starmap/용암 행성",
+            "x": 82,
+            "y": 12,
+            "width": 2,
+            "height": 2,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "화염 요새",
+            "iconId": "starmap/적 기함",
+            "x": 70,
+            "y": 10,
+            "width": 3,
+            "height": 3,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "사바나 마을",
+            "iconId": "starmap/요새 정거장",
+            "x": 4,
+            "y": 27,
+            "width": 4,
+            "height": 4,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "오아시스 촌락",
+            "iconId": "starmap/보급선 정박지",
+            "x": 23,
+            "y": 42,
+            "width": 2,
+            "height": 2,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "협곡 폐허",
+            "iconId": "starmap/함선 잔해",
+            "x": 71,
+            "y": 57,
+            "width": 2,
+            "height": 2,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "북동 눈 촌락",
+            "iconId": "starmap/소행성 채굴촌",
+            "x": 57,
+            "y": 9,
+            "width": 2,
+            "height": 2,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "동쪽 항구",
+            "iconId": "starmap/개척 행성",
+            "x": 9,
+            "y": 36,
+            "width": 3,
+            "height": 3,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "독늪 탑",
+            "iconId": "starmap/항법 부표",
+            "x": 64,
+            "y": 11,
+            "width": 1,
+            "height": 2,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "섬 동굴",
+            "iconId": "starmap/점프 게이트",
+            "x": 32,
+            "y": 51,
+            "width": 2,
+            "height": 2,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "섬 탑",
+            "iconId": "starmap/항법 부표",
+            "x": 23,
+            "y": 49,
+            "width": 1,
+            "height": 2,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "남섬 마을",
+            "iconId": "starmap/소행성 채굴촌",
+            "x": 65,
+            "y": 67,
+            "width": 2,
+            "height": 2,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "섬 폐허",
+            "iconId": "starmap/함선 잔해",
+            "x": 40,
+            "y": 51,
+            "width": 2,
+            "height": 2,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "북섬 촌락",
+            "iconId": "starmap/보급선 정박지",
+            "x": 5,
+            "y": 7,
+            "width": 2,
+            "height": 2,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "거대한 탑",
+            "iconId": "starmap/궤도 엘리베이터",
+            "x": 56,
+            "y": 37,
+            "width": 2,
+            "height": 4,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "폐허 도시",
+            "iconId": "starmap/파괴된 행성",
+            "x": 4,
+            "y": 16,
+            "width": 4,
+            "height": 3,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "거목",
+            "iconId": "starmap/가스 거인",
+            "x": 44,
+            "y": 31,
+            "width": 3,
+            "height": 3,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "사막 신전",
+            "iconId": "starmap/고대 외계 유물",
+            "x": 36,
+            "y": 38,
+            "width": 3,
+            "height": 3,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "고대 돌원",
+            "iconId": "starmap/소행성 고리",
+            "x": 46,
+            "y": 44,
+            "width": 2,
+            "height": 2,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "천공섬",
+            "iconId": "starmap/다이슨 고리 조각",
+            "x": 46,
+            "y": 60,
+            "width": 5,
+            "height": 4,
+            "reason": "human-selection-required"
+          }
+        ]
+      },
+      "renderedPng": true
+    }
+  ],
+  "placements": [],
+  "stats": {
+    "ms": 107017,
+    "turns": 9,
+    "toolCalls": 19,
+    "toolErrors": 0,
+    "usage": {
+      "input": 360022,
+      "output": 1342,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 361364,
+      "calls": 9
+    }
+  },
+  "loadedCatalogLibraries": 42,
+  "originalMapsPreserved": true,
+  "passed": true,
+  "savedAndReopened": true
+}

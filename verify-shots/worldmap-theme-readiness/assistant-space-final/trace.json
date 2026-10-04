@@ -1,0 +1,1039 @@
+[
+  {
+    "i": 1,
+    "name": "get_project_summary",
+    "args": {},
+    "ok": true,
+    "summary": "프로젝트 '공용 월드맵 조수 실호출 · space-readiness-final' — 맵 1개, 아이템 1000, 트룹 7"
+  },
+  {
+    "i": 2,
+    "name": "read_project_wiki",
+    "args": {
+      "query": "우주 월드맵 제작 규칙 성계 성단",
+      "mapId": "",
+      "ids": [],
+      "offset": 0,
+      "includeHistory": false
+    },
+    "ok": true,
+    "summary": "프로젝트 위키 0개 문서"
+  },
+  {
+    "i": 3,
+    "name": "find_tools",
+    "args": {
+      "query": "list_worldmap_themes list_worldmap_icons list_spatial_designs",
+      "domain": "world",
+      "limit": 3
+    },
+    "ok": true,
+    "summary": "편집기 툴 3개 발견: list_spatial_designs, list_worldmap_icons, list_worldmap_themes"
+  },
+  {
+    "i": 4,
+    "name": "list_worldmap_themes",
+    "args": {
+      "query": "starmap"
+    },
+    "ok": true,
+    "summary": "월드맵 세계관 1종 — 생성기와 확정 그림의 준비 상태"
+  },
+  {
+    "i": 5,
+    "name": "list_worldmap_icons",
+    "args": {
+      "theme": "starmap",
+      "query": ""
+    },
+    "ok": true,
+    "summary": "사람 선택 월드맵 아이콘 0개"
+  },
+  {
+    "i": 6,
+    "name": "list_spatial_designs",
+    "args": {
+      "kind": "object",
+      "query": "우주",
+      "limit": 100,
+      "offset": 0
+    },
+    "ok": true,
+    "summary": "장소 저작 비활성(프로젝트 설계 0) · 공용 0건"
+  },
+  {
+    "i": 7,
+    "name": "get_database_records",
+    "args": {
+      "collection": "maps",
+      "include": "full",
+      "ids": [
+        "map_blank_start"
+      ],
+      "limit": 1,
+      "offset": 0
+    },
+    "ok": true,
+    "summary": "maps 1건 / 1건"
+  },
+  {
+    "i": 8,
+    "name": "find_tools",
+    "args": {
+      "query": "read_world_terrain show_map_region",
+      "domain": "map",
+      "limit": 2
+    },
+    "ok": true,
+    "summary": "편집기 툴 2개 발견: read_world_terrain, show_map_region"
+  },
+  {
+    "i": 9,
+    "name": "get_map_region",
+    "args": {
+      "mapId": "map_blank_start",
+      "x": 0,
+      "y": 0,
+      "w": 20,
+      "h": 15
+    },
+    "ok": true,
+    "summary": "빈 맵(map_blank_start) 영역 (0,0)~(20,15) — 이벤트 0개, 물 0칸"
+  },
+  {
+    "i": 10,
+    "name": "list_spatial_designs",
+    "args": {
+      "kind": "place",
+      "query": "우주",
+      "limit": 100,
+      "offset": 0
+    },
+    "ok": true,
+    "summary": "장소 저작 비활성(프로젝트 설계 0) · 공용 0건"
+  },
+  {
+    "i": 11,
+    "name": "read_world_terrain",
+    "args": {
+      "theme": "starmap"
+    },
+    "ok": true,
+    "summary": "세계 지형 galaxy(starmap) — 장소 31곳, 여정 검사 통과",
+    "data": {
+      "theme": "starmap",
+      "mapId": null,
+      "ops": [],
+      "themeNote": "성계 지도: 이 테마는 손 대륙 대신 생성 구조 「galaxy」(나선 은하)를 깐다 — 장소 배치는 자동 맞춤(layout). 성계 지도(starmap) 테마의 기본 구조 — 은하 핵을 두른 시작 성단 + 나선팔 성단들. 땅 = 항행 공간, 바다 = 공허(워프), 산 = 소행성대, 사구 = 이온 폭풍. 팔레트 original: 색을 바꾸지 않는다(항등). v9-final3 지형 그림 그대로.",
+      "iconSelection": {
+        "mode": "human-selected",
+        "rendered": [],
+        "pending": [
+          {
+            "placeId": "대성",
+            "iconId": "starmap/모항성 수도",
+            "x": 68,
+            "y": 31,
+            "width": 6,
+            "height": 6,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "강가 마을",
+            "iconId": "starmap/개척 행성",
+            "x": 60,
+            "y": 29,
+            "width": 3,
+            "height": 3,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "내해 항구",
+            "iconId": "starmap/우주 조선소",
+            "x": 61,
+            "y": 23,
+            "width": 5,
+            "height": 4,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "설원 마을",
+            "iconId": "starmap/개척 행성",
+            "x": 51,
+            "y": 25,
+            "width": 3,
+            "height": 3,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "눈 촌락",
+            "iconId": "starmap/얼음 위성",
+            "x": 55,
+            "y": 21,
+            "width": 2,
+            "height": 2,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "고원 마을",
+            "iconId": "starmap/얼음 위성",
+            "x": 46,
+            "y": 25,
+            "width": 2,
+            "height": 2,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "산기슭 동굴",
+            "iconId": "starmap/점프 게이트",
+            "x": 71,
+            "y": 39,
+            "width": 2,
+            "height": 2,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "사막 촌락",
+            "iconId": "starmap/얼음 위성",
+            "x": 42,
+            "y": 23,
+            "width": 2,
+            "height": 2,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "사막 폐허",
+            "iconId": "starmap/함선 잔해",
+            "x": 35,
+            "y": 28,
+            "width": 2,
+            "height": 2,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "정글 마을",
+            "iconId": "starmap/소행성 채굴촌",
+            "x": 57,
+            "y": 46,
+            "width": 2,
+            "height": 2,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "고갯길 요새",
+            "iconId": "starmap/군 요새 위성",
+            "x": 63,
+            "y": 36,
+            "width": 3,
+            "height": 3,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "해협 감시탑",
+            "iconId": "starmap/항법 부표",
+            "x": 37,
+            "y": 32,
+            "width": 1,
+            "height": 2,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "화산",
+            "iconId": "starmap/용암 행성",
+            "x": 82,
+            "y": 12,
+            "width": 2,
+            "height": 2,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "화염 요새",
+            "iconId": "starmap/적 기함",
+            "x": 70,
+            "y": 10,
+            "width": 3,
+            "height": 3,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "사바나 마을",
+            "iconId": "starmap/요새 정거장",
+            "x": 4,
+            "y": 27,
+            "width": 4,
+            "height": 4,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "오아시스 촌락",
+            "iconId": "starmap/보급선 정박지",
+            "x": 23,
+            "y": 42,
+            "width": 2,
+            "height": 2,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "협곡 폐허",
+            "iconId": "starmap/함선 잔해",
+            "x": 71,
+            "y": 57,
+            "width": 2,
+            "height": 2,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "북동 눈 촌락",
+            "iconId": "starmap/소행성 채굴촌",
+            "x": 57,
+            "y": 9,
+            "width": 2,
+            "height": 2,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "동쪽 항구",
+            "iconId": "starmap/개척 행성",
+            "x": 9,
+            "y": 36,
+            "width": 3,
+            "height": 3,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "독늪 탑",
+            "iconId": "starmap/항법 부표",
+            "x": 64,
+            "y": 11,
+            "width": 1,
+            "height": 2,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "섬 동굴",
+            "iconId": "starmap/점프 게이트",
+            "x": 32,
+            "y": 51,
+            "width": 2,
+            "height": 2,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "섬 탑",
+            "iconId": "starmap/항법 부표",
+            "x": 23,
+            "y": 49,
+            "width": 1,
+            "height": 2,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "남섬 마을",
+            "iconId": "starmap/소행성 채굴촌",
+            "x": 65,
+            "y": 67,
+            "width": 2,
+            "height": 2,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "섬 폐허",
+            "iconId": "starmap/함선 잔해",
+            "x": 40,
+            "y": 51,
+            "width": 2,
+            "height": 2,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "북섬 촌락",
+            "iconId": "starmap/보급선 정박지",
+            "x": 5,
+            "y": 7,
+            "width": 2,
+            "height": 2,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "거대한 탑",
+            "iconId": "starmap/궤도 엘리베이터",
+            "x": 56,
+            "y": 37,
+            "width": 2,
+            "height": 4,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "폐허 도시",
+            "iconId": "starmap/파괴된 행성",
+            "x": 4,
+            "y": 16,
+            "width": 4,
+            "height": 3,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "거목",
+            "iconId": "starmap/가스 거인",
+            "x": 44,
+            "y": 31,
+            "width": 3,
+            "height": 3,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "사막 신전",
+            "iconId": "starmap/고대 외계 유물",
+            "x": 36,
+            "y": 38,
+            "width": 3,
+            "height": 3,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "고대 돌원",
+            "iconId": "starmap/소행성 고리",
+            "x": 46,
+            "y": 44,
+            "width": 2,
+            "height": 2,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "천공섬",
+            "iconId": "starmap/다이슨 고리 조각",
+            "x": 46,
+            "y": 60,
+            "width": 5,
+            "height": 4,
+            "reason": "human-selection-required"
+          }
+        ]
+      },
+      "ascii": "범례: ~ 바다 r 강 L 용암 x 독늪 . 초원 f 밭 p 곡식밭 v 사바나 s 사막 d 모래언덕 D 흙 b 협곡토 a 화산재 B 현무암 w 늪 m 습지 c 균열 o 분화구 t 툰드라 n 설원 g 빙하 j 정글 | ^ 산 M 메사 V 화산 * 숲 = 길 / 경사로 @ 장소. 첫 줄은 x 의 10 자리, 줄 머리는 y\n    0         1         2         3         4         5         6         7         8         9     \n00  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n01  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n02  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n03  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n04  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n05  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n06  ~~~~~nnnnn~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~..~~~~~~~a~ss~~~~~~~~~~~\n07  ~~~nn@@nnnn~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~t~~mmmmm~~~~.....~~~~~aasssss~~~~~~~~~\n08  ~~nnn@@nnnnnn~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ttt****~~mmmmnn~~......~~~aaassssss~~~~~~~~\n09  ~~nnn=nnnnnnnn~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~tttt*@@**~~mmmnnn.......aaaaaBVVBssss~~~~~~~\n10  ~~nnn=nnnnnnn~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~bbbb~~~tt^^tt@@*n~~mmmmnn.@@@...aaaaaBooVV^aa~~~~~~~\n11  ~~nnn=nnnnnnn~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~bbbbbb~tt^^^***t**~~m@=====@@@..aaaaaaooooV^aa*~~~~~~\n12  ~~nnn=nnnnnnn~~~~~~~~~~~~~~~~~~~~~~~~~~~~b^bb^^^^bbt^^^**t*t*~~m@m***.@@@..aaaaaoo@@o^LLLL*~~~~~\n13  ~~nnn=nnnnnnn~~~~~~~~~~~~~~~~~~~~~~~~~~~~bbbb^^^^^bt^^^**tttn~~mmmmm~~..==========@@o^Va**~~~~~~\n14  ~~fff=nnnnnn~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~bbbbb^^btt^^^~~~~~~~~mmm~~~~~...aaaaBBooooV^a**~~~~~~\n15  ~ffff=fffn~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*bbb~~~~~t~~~~~~~~~~~~~~~~~~~~~~~~aaVV*oVV^aa~~~~~~~\n16  ~*ff@@@@ff*~~~~~~~~~~~~~~~~~~~~~~~~~fffffff~~bb~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~aa**VVaaaa~~~~~~~~\n17  ~fff@@@@ff*~~~~~~~~~~~~~~~~~~~~~~~~fffffff~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~a*aaaa~~~~~~~~~~\n18  ~fff@@@@ffff~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~nnnn~~~~~~~~~~~~~~~~~~~~aa~~~~~~~~~~~~\n19  ~ffff=ffffff~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~n~~~~~nnnnnn~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n20  ~ffff=fffff~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~nnnnnnnnnnnnn~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n21  ~ffff=ffff~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~D~~~~nnnnnn@@nnnnnn~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n22  ~~fff=fff~~~~~~~~~~~~~~~~~~~~~~~~~~~~d~dddDDDt~~~nnnnn=@@nnnnnnn~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n23  ~~~~f=ff~~~~~~~~~~~~~~~~~~~~~~~~~~~~dddddd@@Dtt~nnnnnn=n=====@@@@@~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n24  ~~~~.=.....~~~~~~~~~~~~~~~~~~~~~~~~ddddddD@@Dtttnnnnnn=nnnnnn@@@@@~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n25  ~~~..=.....~~~~~~~~~~~~~~~~~~~~~~~~ddddddDD===@@nnn@@@=nnnnnn@@@@@~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n26  ~~...=.....~~~~~~~~~~~~~~~~~~~~~~~~dddddDDDDDt@@tnn@@@nnnnnnn@@@@@~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n27  ~...@@@@....~~~~~~~~~~~~~~~~~~~~~~ddddddDDDD*tt====@@@nnnnnnnn=nn~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n28  ~...@@@@....~~~~~~~~~~~~~~~~~~~~~dd@@dddDDDtt**=tnnnnnnnnnnnnn=nt~tDDD~~~~~~~~~~~~~~~~~~~~~~~~~~\n29  ~...@@@@....~~~~~~~~~~~~~~~~~~~~~dd@@ddDDDDtttt=tnnnn***nnnn@@@tttttDDDD~~~~~~bb~~~~~~~~~~~~~~~~\n30  ~~..@@@@=...~~~~~~~~~~~~~~~~~~~~~ddddddDDDttttt=tnnn****nnnn@@@ttttttDDDD~~~~~bbb~~~~~~~~~~~~~~~\n31  ~~......=...~~~~~~~~~~~~~~~~~~~~~~dddddDDDDt@@@=~~~~n****nnn@@@ttttt@@@@@@~~~~bbb~~~~~~~~~~~~~~~\n32  ~~~.....=....~~~~~~~~~~~~~~~~~~~~~~dd@ddDD*t@@@~~~~~~~~~**nnnt===ttt@@@@@@~~~~~bbb~~~~~~~~~~~~~~\n33  ~~~.....=.....~~~~~~~~~~~~~~~~~~ddddd@dd***t@@@~~~~~~~~~~~nntttt=ttt@@@@@@~~~~~bbbb~~~~~~~~~~~~~\n34  ~~~~~...=......~~~~~~~~~~~~~~~~~ddddddddDD*Dtt~~~~~~~~~~~~^^^ttt=ttt@@@@@@t~~~~bbbbb~~~~~~~~~~~~\n35  ~~~~~~..=......~~~~~~~~~~~~~~~~~dddddddddDDDnn~~~~~~~~~~~~^^^^^^=ttt@@@@@@t~~~~bbbbb~~~~~~~~~~~~\n36  ~~~~~~..=@@@...~~~~~~~~~~~~~~~~dddddddddd**D^^^~~~~~~~~~~~^^^^^@@@==@@@@@@t~~~~bbbbb~~~~~~~~~~~~\n37  ~~~~~~...@@@...s**~~~~~~~~~~~~~ddddddddddd^^^^^^w~~~~~~~@@ttt^^@@@^^tt=tttt~~~~bbbw~~~~~~~~~~~~~\n38  ~~~~~~~..@@@.*sss*ss~~~~~~~~~~~ddddd@@@ddd^^^^nww*ww***w@@=====@@@^^^t=ttt~~~~~bwwww~~~~~~~~~~~~\n39  ~~~~~~~~~....ss*sssss~~~~~~~~~~ddddd@@@dd^^^*nnw*****www@@wwtttttt^^^t=@@t~~~~~wwwwwww~~~~~~~~~~\n40  ~~~~~~~~~~~~ssssssss~~~ss~~~~~~ddddd@@@dd^^^*nwwww***www@@wwttttttt^^^t@@t~~~~wwwwwwww*~~~~~~~~~\n41  ~~~~~~~~~~~~sssssss~~ssssss~~~~dddddddddd^^^*nwwwww*wwwww=wwwtttttt^^^ttt~~~~~wwwwwwww*~~~~~~~~~\n42  ~~~~~~~~~~~~ssssss~~sss@@ss~~~~~dddddddd^^^Dnn*wwwwwwwwww=wwwtttttt~~~~~~~~~~~wwwwwwww*w~~~~~~~~\n43  ~~~~~~~~~~~~ssss*~~ssss@@ss~~~~~dddddddd^^^nnwwwwwwww**ww=wwwwt~tt~~~~~~~~~~~wwwwwwww*ww~~~~~~~~\n44  ~~~~~~~~~~~~ssss~~sssss=ssss~~~~~dddddd^^^Dnnw@@wwwww**ww=wwww~~~~~~~~~~~~~~wwwwwwwwwwww~~~~~~~~\n45  ~~~~~~~~~~~~~**s~~sssss=sss~~~~~~~d~~ddd^^~nww@@wwwwww*ww=wwww~~~~~~~~~~~~~~wwwwwwwwwwww~~~~~~~~\n46  ~~~~~~~~~~~~~~*s~~sssss=ss~~s~~~~~~~~~~~~~~~www=wwwwww*ww@@ww~~~~~~~~~~~~~~~wwwwwwwwwww~~~~~~~~~\n47  ~~~~~~~~~~~~~~~~~ssssss=s~~ssv~~~~~~~~~~~~~~*ww==========@@ww~~~~~~~~~~~~~~^ttttwwwwww~~~~~~~~~~\n48  ~~~~~~~~~~~~~~~~~~sssss=s~~svvv~~~~~~~~~~~~~~~~wvvvv****wwww~~~~~~~~~~~~~~tttttttttt~~~~~~~~~~~~\n49  ~~~~~~~~~~~~~~~~~~sssss@s~~svvvv~~~~~~~~~~~~~~~~vvvv*******~~~~~~~~~~~~~~~tt^^t^ttttt~~~~~~~~~~~\n50  ~~~~~~~~~~~~~~~~~~~ssss@s~~***vvvvv~~t*tt~~~~~~~~vvv****w~~~~~~~~~~~~~~~~ttt^^ttt^t^t~~~~~~~~~~~\n51  ~~~~~~~~~~~~~~~~~~~ssssss~~*v**v@@v~~**t@@~~~~~~~vvvv~**~~~~~~~~~~~~~~~~~ttt^^ttttttt~~~~~~~~~~~\n52  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~vvvv@@vv~~*t@@ttt~~~~~~~~~~~~~~~~~~~~~~~~~~~~^t^^^ttt^^tt~~~~~~~~~~~\n53  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~vvvvvv~~~tt~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ttt^^^^^^^tt~~~~~~~~~~~\n54  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~vvv~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Dttt^^^^^ttt~~~~~~~~~~~\n55  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~DDDDDttttttttt~~~~~~~~~~~~\n56  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~DDDDDDDtttttt~~~~~~~~~~~~~\n57  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~DD@@DDDDD~~~~~~~~~~~~~~~~~~\n58  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~DDD@@DDDDD~~~~~~~~~~~~~~~~~~\n59  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~nn~~DDDDDDDDDD~~~~~~~~~~~~~~~~~~\n60  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~@@@@@~~~~~~~~~~~nnnnn~~DDDDDDDDD~~~~~~~~~~~~~~~~~~\n61  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~@@@@@~~~~~~~~~~nnnnnn~~DDDDDDDD~~~~~~~~~~~~~~~~~~~\n62  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~@@@@@~~~~~~~~~~nnnnnnn~~DDDDDD~~~~~~~~~~~~~~~~~~~~\n63  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~@@@@@~~~~~~~~~nnnnnnnnn~~DDDD~~~~~~~~~~~~~~~~~~~~~\n64  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~nnnnnnnnnn~~~~~~~~~~~~~~~~~~~~~~~~~~\n65  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*nnnnnnnnn~~~~~~~~~~~~~~~~~~~~~~~~~~\n66  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**nnnnnnn~~~~~~~~~~~~~~~~~~~~~~~~~~~\n67  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*nnn@@nn~~~~~~~~~~~~~~~~~~~~~~~~~~~\n68  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~n*n@@n~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n69  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~nn~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n70  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n71  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n",
+      "places": [
+        "대성「모항성 수도」(capital) 68,31 6×6 입구 71,36 — 1막에 걷기(으)로 처음 닿는다 · 길: 고갯길 요새, 산기슭 동굴",
+        "강가 마을「출발 개척 행성」(large_town) 60,29 3×3 입구 61,31 — 1막에 걷기(으)로 처음 닿는다 · 길: 고갯길 요새, 내해 항구",
+        "내해 항구「모항 조선소」(harbor_city) 61,23 5×4 입구 63,26 — 1막에 걷기(으)로 처음 닿는다 · 길: 강가 마을, 눈 촌락",
+        "설원 마을「얼음 행성 교역소」(large_town) 51,25 3×3 입구 52,27 — 1막에 걷기(으)로 처음 닿는다 · 길: 고원 마을, 눈 촌락",
+        "눈 촌락「얼음 위성 기지」(village) 55,21 2×2 입구 56,22 — 1막에 걷기(으)로 처음 닿는다 · 길: 내해 항구, 설원 마을",
+        "고원 마을「고궤도 마을」(village) 46,25 2×2 입구 47,26 — 1막에 걷기(으)로 처음 닿는다 · 길: 거목, 사막 촌락, 설원 마을",
+        "산기슭 동굴「옛 점프 게이트」(cave) 71,39 2×2 입구 72,40 — 1막에 걷기(으)로 처음 닿는다 · 항로 허가증 을(를) 주는 열쇠 장소 — 「1막 · 모항 성단」 안쪽에 있어야 한다 · 길: 대성",
+        "사막 촌락「폭풍 경계 정박지」(village) 42,23 2×2 입구 43,24 — 1막에 걷기(으)로 처음 닿는다 · 길: 고원 마을",
+        "사막 폐허「폭풍 속 함선 잔해」(ruin) 35,28 2×2 입구 36,29 — 4막에 폭풍 항법선(으)로 처음 닿는다 · 폭풍 항법선 타고 내리는 자리 · 처음부터 걸어서 닿으면 안 된다(장벽 뒤)",
+        "정글 마을「정글 행성 조선 기지」(village) 57,46 2×2 입구 58,47 — 2막에 항로 허가증(으)로 처음 닿는다 · 워프 드라이브 을(를) 주는 열쇠 장소 — 「2막 · 소행성 관문 너머」 안쪽에 있어야 한다 · 처음부터 걸어서 닿으면 안 된다(장벽 뒤) · 길: 거대한 탑, 고대 돌원",
+        "고갯길 요새「소행성대 관문 요새」(castle) 63,36 3×3 입구 64,38 — 1막에 걷기(으)로 처음 닿는다 · 길: 강가 마을, 거대한 탑, 대성",
+        "해협 감시탑「폭풍 속 항법 부표」(tower_small) 37,32 1×2 입구 37,33 — 4막에 폭풍 항법선(으)로 처음 닿는다 · 폭풍 항법선 타고 내리는 자리 · 처음부터 걸어서 닿으면 안 된다(장벽 뒤)",
+        "화산「용암 행성」(volcano) 82,12 2×2 입구 83,13 — 3막에 워프 드라이브(으)로 처음 닿는다 · 처음부터 걸어서 닿으면 안 된다(장벽 뒤) · 길: 화염 요새",
+        "화염 요새「적 기함」(castle) 70,10 3×3 입구 71,12 — 3막에 워프 드라이브(으)로 처음 닿는다 · 길: 독늪 탑, 화산",
+        "사바나 마을「변경 요새 정거장」(fort_city) 4,27 4×4 입구 6,30 — 3막에 워프 드라이브(으)로 처음 닿는다 · 길: 동쪽 항구, 폐허 도시",
+        "오아시스 촌락「보급선 정박지」(camp) 23,42 2×2 입구 24,43 — 3막에 워프 드라이브(으)로 처음 닿는다 · 폭풍 항법선 을(를) 주는 열쇠 장소 — 「3막 · 공허 너머 성단들」 안쪽에 있어야 한다 · 처음부터 걸어서 닿으면 안 된다(장벽 뒤) · 길: 섬 탑",
+        "협곡 폐허「붉은 성운 잔해」(ruin) 71,57 2×2 입구 72,58 — 3막에 워프 드라이브(으)로 처음 닿는다",
+        "북동 눈 촌락「먼 얼음 위성」(village) 57,9 2×2 입구 58,10 — 3막에 워프 드라이브(으)로 처음 닿는다",
+        "동쪽 항구「변경 개척 행성」(large_town) 9,36 3×3 입구 10,38 — 3막에 워프 드라이브(으)로 처음 닿는다 · 워프 드라이브 타고 내리는 자리 · 길: 사바나 마을",
+        "독늪 탑「독성 성운 부표」(tower_small) 64,11 1×2 입구 64,12 — 3막에 워프 드라이브(으)로 처음 닿는다 · 길: 화염 요새",
+        "섬 동굴「외딴 점프 게이트」(cave) 32,51 2×2 입구 33,52 — 3막에 워프 드라이브(으)로 처음 닿는다",
+        "섬 탑「외딴 항법 부표」(tower_small) 23,49 1×2 입구 23,50 — 3막에 워프 드라이브(으)로 처음 닿는다 · 길: 오아시스 촌락",
+        "남섬 마을「정글 위성 마을」(village) 65,67 2×2 입구 66,68 — 3막에 워프 드라이브(으)로 처음 닿는다 · 워프 드라이브 타고 내리는 자리",
+        "섬 폐허「잿빛 함선 잔해」(ruin) 40,51 2×2 입구 41,52 — 3막에 워프 드라이브(으)로 처음 닿는다 · 워프 드라이브 타고 내리는 자리",
+        "북섬 촌락「북쪽 보급 정박지」(camp) 5,7 2×2 입구 6,8 — 3막에 워프 드라이브(으)로 처음 닿는다 · 워프 드라이브 타고 내리는 자리 · 길: 폐허 도시",
+        "거대한 탑「궤도 엘리베이터」(tower_great) 56,37 2×4 입구 57,40 — 2막에 항로 허가증(으)로 처음 닿는다 · 처음부터 걸어서 닿으면 안 된다(장벽 뒤) · 길: 고갯길 요새, 정글 마을",
+        "폐허 도시「파괴된 행성」(ruin_city) 4,16 4×3 입구 6,18 — 3막에 워프 드라이브(으)로 처음 닿는다 · 길: 북섬 촌락, 사바나 마을",
+        "거목「가스 거인」(landmark_nature) 44,31 3×3 입구 45,33 — 1막에 걷기(으)로 처음 닿는다 · 길: 고원 마을",
+        "사막 신전「고대 외계 유물」(shrine) 36,38 3×3 입구 37,40 — 4막에 폭풍 항법선(으)로 처음 닿는다 · 폭풍 항법선 타고 내리는 자리 · 점프 게이트 열쇠 을(를) 주는 열쇠 장소 — 「4막 · 이온 폭풍 속」 안쪽에 있어야 한다 · 처음부터 걸어서 닿으면 안 된다(장벽 뒤)",
+        "고대 돌원「소행성 고리」(circle) 46,44 2×2 입구 47,45 — 2막에 항로 허가증(으)로 처음 닿는다 · 처음부터 걸어서 닿으면 안 된다(장벽 뒤) · 길: 정글 마을",
+        "천공섬「다이슨 고리 조각」(floating) 46,60 5×4 입구 48,63 — 5막에 점프 게이트 열쇠(으)로 처음 닿는다 · 처음부터 걸어서 닿으면 안 된다(장벽 뒤)"
+      ],
+      "journeyCheck": {
+        "ok": true,
+        "bad": []
+      },
+      "layout": {
+        "base": "generate",
+        "style": "galaxy",
+        "seed": 4,
+        "salt": 0,
+        "count": 12,
+        "land": 0.36,
+        "landmasses": 10,
+        "home_cells": 924,
+        "act1_cells": 604,
+        "act2_cells": 249,
+        "dune_cells": 175,
+        "ship_landmasses": 9,
+        "wall_cells": 63,
+        "gate": "고갯길 요새",
+        "harbour": "내해 항구",
+        "start": [
+          61,
+          30
+        ],
+        "roads": 18,
+        "features": {
+          "belts": 4,
+          "clusters": 1,
+          "passes": 0
+        },
+        "notes": [],
+        "min_sea_gap": 4,
+        "real": null,
+        "core": [
+          51.81,
+          34.64
+        ],
+        "spiral": {
+          "n": 3,
+          "b": 0.2272,
+          "th0": 3.9573,
+          "squash": 0.72
+        },
+        "regions_legend": "a 1막(관문 앞) · b 2막(관문 너머) · w 산벽 · d 4막 사구 바다 · s 3막(배로 가는 땅) · ~ 바다",
+        "systems": 27,
+        "regions": [
+          "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+          "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+          "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+          "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+          "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+          "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+          "~~~~~sssss~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ss~~~~~~~s~ss~~~~~~~~~~~",
+          "~~~ssssssss~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~s~~sssss~~~~sssss~~~~~sssssss~~~~~~~~~",
+          "~~sssssssssss~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~sssssss~~ssssss~~ssssss~~~sssssssss~~~~~~~~",
+          "~~ssssssssssss~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~sssssssss~~ssssssssssssssssssssssssss~~~~~~~",
+          "~~sssssssssss~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ssss~~~ssssssssss~~ssssssssssssssssssssssssss~~~~~~~",
+          "~~sssssssssss~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ssssss~sssssssssss~~sssssssssssssssssssssssssss~~~~~~",
+          "~~sssssssssss~~~~~~~~~~~~~~~~~~~~~~~~~~~~ssssssssssssssssssss~~ssssssssssssssssssssssssssss~~~~~",
+          "~~sssssssssss~~~~~~~~~~~~~~~~~~~~~~~~~~~~ssssssssssssssssssss~~sssss~~ssssssssssssssssssss~~~~~~",
+          "~~ssssssssss~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~sssssssssssss~~~~~~~~sss~~~~~ssssssssssssssssss~~~~~~",
+          "~sssssssss~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ssss~~~~~s~~~~~~~~~~~~~~~~~~~~~~~~sssssssssss~~~~~~~",
+          "~ssssssssss~~~~~~~~~~~~~~~~~~~~~~~~~sssssss~~ss~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ssssssssss~~~~~~~~",
+          "~ssssssssss~~~~~~~~~~~~~~~~~~~~~~~~sssssss~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ssssss~~~~~~~~~~",
+          "~sssssssssss~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~aaaa~~~~~~~~~~~~~~~~~~~~ss~~~~~~~~~~~~",
+          "~sssssssssss~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~a~~~~~aaaaaa~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+          "~ssssssssss~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~aaaaaaaaaaaaa~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+          "~sssssssss~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~a~~~~aaaaaaaaaaaaaa~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+          "~~sssssss~~~~~~~~~~~~~~~~~~~~~~~~~~~~d~dddaaaa~~~aaaaaaaaaaaaaaa~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+          "~~~~ssss~~~~~~~~~~~~~~~~~~~~~~~~~~~~ddddddaaaaa~aaaaaaaaaaaaaaaaaa~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+          "~~~~sssssss~~~~~~~~~~~~~~~~~~~~~~~~ddddddaaaaaaaaaaaaaaaaaaaaaaaaa~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+          "~~~ssssssss~~~~~~~~~~~~~~~~~~~~~~~~ddddddaaaaaaaaaaaaaaaaaaaaaaaaa~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+          "~~sssssssss~~~~~~~~~~~~~~~~~~~~~~~~dddddaaaaaaaaaaaaaaaaaaaaaaaaaa~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+          "~sssssssssss~~~~~~~~~~~~~~~~~~~~~~ddddddaaaaaaaaaaaaaaaaaaaaaaaaa~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+          "~sssssssssss~~~~~~~~~~~~~~~~~~~~~dddddddaaaaaaaaaaaaaaaaaaaaaaaaa~aaaa~~~~~~~~~~~~~~~~~~~~~~~~~~",
+          "~sssssssssss~~~~~~~~~~~~~~~~~~~~~ddddddaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa~~~~~~ss~~~~~~~~~~~~~~~~",
+          "~~ssssssssss~~~~~~~~~~~~~~~~~~~~~ddddddaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa~~~~~sss~~~~~~~~~~~~~~~",
+          "~~ssssssssss~~~~~~~~~~~~~~~~~~~~~~dddddaaaaaaaaa~~~~aaaaaaaaaaaaaaaaaaaaaa~~~~sss~~~~~~~~~~~~~~~",
+          "~~~ssssssssss~~~~~~~~~~~~~~~~~~~~~~dddddaaaaaaa~~~~~~~~~aaaaaaaaaaaaaaaaaa~~~~~sss~~~~~~~~~~~~~~",
+          "~~~sssssssssss~~~~~~~~~~~~~~~~~~ddddddddaaaaaaa~~~~~~~~~~~aaaaaaaaaaaaaaaa~~~~~ssss~~~~~~~~~~~~~",
+          "~~~~~ssssssssss~~~~~~~~~~~~~~~~~ddddddddaaaaaa~~~~~~~~~~~~wwwaaaaaaaaaaaaaa~~~~sssss~~~~~~~~~~~~",
+          "~~~~~~sssssssss~~~~~~~~~~~~~~~~~dddddddddaaaaa~~~~~~~~~~~~wwwwwwaaaaaaaaaaa~~~~sssss~~~~~~~~~~~~",
+          "~~~~~~sssssssss~~~~~~~~~~~~~~~~ddddddddddaaawww~~~~~~~~~~~wwwwwsssaaaaaaaaa~~~~sssss~~~~~~~~~~~~",
+          "~~~~~~ssssssssssss~~~~~~~~~~~~~dddddddddddwwwwwwb~~~~~~~bbbbbwwssswwaaaaaaa~~~~ssss~~~~~~~~~~~~~",
+          "~~~~~~~sssssssssssss~~~~~~~~~~~dddddddddddwwwwbbbbbbbbbbbbbbbbbbsswwwaaaaa~~~~~sssss~~~~~~~~~~~~",
+          "~~~~~~~~~ssssssssssss~~~~~~~~~~ddddddddddwwwbbbbbbbbbbbbbbbbbbbbbbwwwaaaaa~~~~~sssssss~~~~~~~~~~",
+          "~~~~~~~~~~~~ssssssss~~~ss~~~~~~ddddddddddwwwbbbbbbbbbbbbbbbbbbbbbbbwwwaaaa~~~~sssssssss~~~~~~~~~",
+          "~~~~~~~~~~~~sssssss~~ssssss~~~~ddddddddddwwwbbbbbbbbbbbbbbbbbbbbbbbwwwaaa~~~~~sssssssss~~~~~~~~~",
+          "~~~~~~~~~~~~ssssss~~sssssss~~~~~ddddddddwwwbbbbbbbbbbbbbbbbbbbbbbbb~~~~~~~~~~~ssssssssss~~~~~~~~",
+          "~~~~~~~~~~~~sssss~~ssssssss~~~~~ddddddddwwwbbbbbbbbbbbbbbbbbbbb~bb~~~~~~~~~~~sssssssssss~~~~~~~~",
+          "~~~~~~~~~~~~ssss~~ssssssssss~~~~~ddddddwwwbbbbbbbbbbbbbbbbbbbb~~~~~~~~~~~~~~ssssssssssss~~~~~~~~",
+          "~~~~~~~~~~~~~sss~~sssssssss~~~~~~~d~~dddww~bbbbbbbbbbbbbbbbbbb~~~~~~~~~~~~~~ssssssssssss~~~~~~~~",
+          "~~~~~~~~~~~~~~ss~~ssssssss~~s~~~~~~~~~~~~~~~bbbbbbbbbbbbbbbbb~~~~~~~~~~~~~~~sssssssssss~~~~~~~~~",
+          "~~~~~~~~~~~~~~~~~ssssssss~~sss~~~~~~~~~~~~~~bbbbbbbbbbbbbbbbb~~~~~~~~~~~~~~sssssssssss~~~~~~~~~~",
+          "~~~~~~~~~~~~~~~~~~sssssss~~ssss~~~~~~~~~~~~~~~~bbbbbbbbbbbbb~~~~~~~~~~~~~~ssssssssss~~~~~~~~~~~~",
+          "~~~~~~~~~~~~~~~~~~sssssss~~sssss~~~~~~~~~~~~~~~~bbbbbbbbbbb~~~~~~~~~~~~~~~sssssssssss~~~~~~~~~~~",
+          "~~~~~~~~~~~~~~~~~~~ssssss~~ssssssss~~ssss~~~~~~~~bbbbbbbb~~~~~~~~~~~~~~~~ssssssssssss~~~~~~~~~~~",
+          "~~~~~~~~~~~~~~~~~~~ssssss~~ssssssss~~sssss~~~~~~~bbbb~bb~~~~~~~~~~~~~~~~~ssssssssssss~~~~~~~~~~~",
+          "~~~~~~~~~~~~~~~~~~~~~~~~~~~~ssssssss~~sssssss~~~~~~~~~~~~~~~~~~~~~~~~~~~~ssssssssssss~~~~~~~~~~~",
+          "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ssssss~~~ss~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ssssssssssss~~~~~~~~~~~",
+          "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~sss~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ssssssssssss~~~~~~~~~~~",
+          "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ssssssssssssss~~~~~~~~~~~~",
+          "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~sssssssssssss~~~~~~~~~~~~~",
+          "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~sssssssss~~~~~~~~~~~~~~~~~~",
+          "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ssssssssss~~~~~~~~~~~~~~~~~~",
+          "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ss~~ssssssssss~~~~~~~~~~~~~~~~~~",
+          "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~sssss~~sssssssss~~~~~~~~~~~~~~~~~~",
+          "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ssssss~~ssssssss~~~~~~~~~~~~~~~~~~~",
+          "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~sssssss~~ssssss~~~~~~~~~~~~~~~~~~~~",
+          "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~sssssssss~~ssss~~~~~~~~~~~~~~~~~~~~~",
+          "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ssssssssss~~~~~~~~~~~~~~~~~~~~~~~~~~",
+          "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ssssssssss~~~~~~~~~~~~~~~~~~~~~~~~~~",
+          "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~sssssssss~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+          "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ssssssss~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+          "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ssssss~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+          "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ss~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+          "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+          "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+        ]
+      },
+      "warnings": [
+        "테마 starmap: 사람 선택이 없거나 발자국이 다른 장소 31곳은 아이콘을 붙이지 않았다. 장소 좌표와 여정 검사는 논리 위치이며 완성된 거점 그림이나 이동 이벤트가 아니다. 후보 선택은 월드맵 아이콘 하네스에서 사용자가 한다."
+      ],
+      "help": "작업(ops, 칸 좌표 96×72, x 오른쪽·y 아래): land{poly,ground?} 땅 더하기 · sea{poly} 바다로 자르기(대륙 가르기·만 파기·호수) · island{x,y,rx,ry,ground?} · biome{poly,ground} 바닥 바꾸기 · ridge{line,kind?,width?,peak?} 산줄기 · pass{x,y,r?} 고개 뚫기 · river{line,widen?} 강(바다로 끝낼 것) · forest{poly,kind?,density?} · clear{poly,what?} 숲·산 걷기 · plateau{poly,level?,ground?} 고원(절벽이 생긴다) · volcano{x,y,lava?} 화산(분화구+고리, 반지름 4칸 땅 필요) · move_place{id,x,y} 장소 옮기기. 새 대륙 구조(base=\"generate\", 기존 대륙을 버리고 빈 판에서): 첫 작업 continents{style?,count?,land?,seed?} — 「20조각 대륙」 = continents{style:shards,count:20}, 고리 대륙 = ring, 초대륙 = pangaea, 섬나라 = archipelago, 우주 = galaxy, **실제 나라·지역 모양**(조선·중국·일본·유럽·지중해·이집트·브리튼… 지구 어디든) = continents{style:\"real\", region} 또는 {style:\"real\", box:[서경,남위,동경,북위], home?:[경도,위도]} — 범위는 네 지식으로 정한다(예: 중국 [73,17,136,54], 일본 [127.5,29.5,147,46], 노르만 잉글랜드 [-11,49.5,3,59.5]). 실제 해안선·높이·산맥·사막·강·호수 자료로 그리고 기후는 실제 위도·높이로 정해진다. 가장 큰 사막이 4막 사구 바다가 된다(없으면 내륙). 조선 테마의 한반도는 korea(손으로 다듬은 판). peninsula·river-continent·arc-islands 는 실제가 아닌 닮은꼴 가상 세계. climate{seed?,wet?,cold?} 기후. 여정 장소 31곳·장벽 4개(산벽+관문, 바다, 사구 바다, 천공섬)는 키트가 자동으로 맞춘다. 「월드맵에서 캐릭터를 작게」는 characterScale(0.5~0.75) 를 같이 준다 — places 줄의 「입구 x,y」는 장소 아이콘의 성문 칸이다 — 고을·던전 맵은 반드시 그 칸에 출입구(create_transfer_pair)를 두고, 시작 위치는 그 바로 아래 칸이 자연스럽다. 결과의 layout.regions(a 1막 · b 2막 · w 산벽 · d 사구 바다 · s 배로 가는 땅)를 보고 그 위에 다른 작업을 얹어라. 손으로 정하려면 wall{line,gate?}(산벽) · dune_sea{poly} · sky_island{x,y} · move_place(고정). generate 에서 land·sea·island 는 맞춤 전에 구조에 접힌다. 바닥 이름→글자: grass . farm f crop p savanna v sand s dune d dirt D badlands b ash a basalt B swamp w marsh m tundra t snow n glacier g jungle j. 규칙: 길은 바다·빙하를 못 건넌다(다리는 강에만 생긴다) — 해협이 길을 가로지르면 길 자리에 땅 목을 남기고 짧은 river 로 끊어 다리를 놓게 하라. 숲은 물·장소 둘레·길·산 위에 안 놓이고 사막에서 지워진다. 장소마다 여정 규칙(places 줄 끝)이 있다 — 열쇠 장소·장벽 뒤 장소는 그 장벽 밖으로 옮기지 마라. 테마는 대개 화풍만 바꾼다(지형·장소 배치는 공용) — 자기 지형을 먼저 까는 테마(sea-isles 군도, starmap 은하, joseon 반도, wuxia 강 문명 대륙, sengoku 열도)는 themeNote 가 알려 준다. 지형 편집으로 정한 바닥은 지역 팔레트가 덮지 않는다. 섬은 rx·ry 보다 1~2칸 클 수 있다. 실제 빌드는 처음 약 2분, 같은 지형은 캐시."
+    }
+  },
+  {
+    "i": 12,
+    "name": "list_tileset_references",
+    "args": {
+      "tilesetId": "worldmap_selected",
+      "categoryId": "",
+      "offset": 0
+    },
+    "ok": true,
+    "summary": "타일셋 → 용도 → MD와 이미지. 선택한 용도를 읽은 다음 응답에서 배치하세요."
+  },
+  {
+    "i": 13,
+    "name": "find_tools",
+    "args": {
+      "query": "edit_world_terrain",
+      "domain": "world",
+      "limit": 1
+    },
+    "ok": true,
+    "summary": "편집기 툴 1개 발견: edit_world_terrain"
+  },
+  {
+    "i": 14,
+    "name": "tile_query",
+    "args": {
+      "ask": "usage",
+      "tilesetId": "",
+      "tileIds": [],
+      "tileId": 0,
+      "mapId": "map_blank_start",
+      "role": "",
+      "category": "",
+      "presetId": "",
+      "limit": 5,
+      "query": ""
+    },
+    "ok": true,
+    "summary": "맵 '빈 맵' 타일 1종 사용 — 설명됨 1/1"
+  },
+  {
+    "i": 15,
+    "name": "edit_world_terrain",
+    "args": {
+      "newMapId": "world_star_voyage",
+      "name": "성운 항해도",
+      "theme": "starmap",
+      "ops": [],
+      "preview": false,
+      "characterScale": 0.75
+    },
+    "ok": true,
+    "summary": "새 세계 지도 world_star_voyage — 테마 starmap, 지형 작업 0개, 장소 31곳, 캐릭터 크기 75%, 여정 검사 통과(18.5초)",
+    "data": {
+      "mapId": "world_star_voyage",
+      "created": true,
+      "tilesetId": "worldmap_world_star_voyage",
+      "townArt": "테마 starmap 전용 정거장·외계 거점 칩셋과 완성 지역은 현재 없다. 지형 생성과 거점 저작의 준비 상태를 구분해서 보고하라. 기본 로마풍 마을을 우주정거장으로 대신 깔지 마라. 월드맵 후보 아이콘은 사람이 하네스에서 선택한 것만 사용할 수 있다. 실내는 build_hand_interior_room(손 도트 v5 atlas_biome_interior), 배·던전은 atlas_biome_dungeon 을 쓴다.",
+      "theme": "starmap",
+      "themeNote": "성계 지도: 이 테마는 손 대륙 대신 생성 구조 「galaxy」(나선 은하)를 깐다 — 장소 배치는 자동 맞춤(layout). 성계 지도(starmap) 테마의 기본 구조 — 은하 핵을 두른 시작 성단 + 나선팔 성단들. 땅 = 항행 공간, 바다 = 공허(워프), 산 = 소행성대, 사구 = 이온 폭풍. 팔레트 original: 색을 바꾸지 않는다(항등). v9-final3 지형 그림 그대로.",
+      "iconSelection": {
+        "mode": "human-selected",
+        "rendered": [],
+        "pending": [
+          {
+            "placeId": "대성",
+            "iconId": "starmap/모항성 수도",
+            "x": 68,
+            "y": 31,
+            "width": 6,
+            "height": 6,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "강가 마을",
+            "iconId": "starmap/개척 행성",
+            "x": 60,
+            "y": 29,
+            "width": 3,
+            "height": 3,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "내해 항구",
+            "iconId": "starmap/우주 조선소",
+            "x": 61,
+            "y": 23,
+            "width": 5,
+            "height": 4,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "설원 마을",
+            "iconId": "starmap/개척 행성",
+            "x": 51,
+            "y": 25,
+            "width": 3,
+            "height": 3,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "눈 촌락",
+            "iconId": "starmap/얼음 위성",
+            "x": 55,
+            "y": 21,
+            "width": 2,
+            "height": 2,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "고원 마을",
+            "iconId": "starmap/얼음 위성",
+            "x": 46,
+            "y": 25,
+            "width": 2,
+            "height": 2,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "산기슭 동굴",
+            "iconId": "starmap/점프 게이트",
+            "x": 71,
+            "y": 39,
+            "width": 2,
+            "height": 2,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "사막 촌락",
+            "iconId": "starmap/얼음 위성",
+            "x": 42,
+            "y": 23,
+            "width": 2,
+            "height": 2,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "사막 폐허",
+            "iconId": "starmap/함선 잔해",
+            "x": 35,
+            "y": 28,
+            "width": 2,
+            "height": 2,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "정글 마을",
+            "iconId": "starmap/소행성 채굴촌",
+            "x": 57,
+            "y": 46,
+            "width": 2,
+            "height": 2,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "고갯길 요새",
+            "iconId": "starmap/군 요새 위성",
+            "x": 63,
+            "y": 36,
+            "width": 3,
+            "height": 3,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "해협 감시탑",
+            "iconId": "starmap/항법 부표",
+            "x": 37,
+            "y": 32,
+            "width": 1,
+            "height": 2,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "화산",
+            "iconId": "starmap/용암 행성",
+            "x": 82,
+            "y": 12,
+            "width": 2,
+            "height": 2,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "화염 요새",
+            "iconId": "starmap/적 기함",
+            "x": 70,
+            "y": 10,
+            "width": 3,
+            "height": 3,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "사바나 마을",
+            "iconId": "starmap/요새 정거장",
+            "x": 4,
+            "y": 27,
+            "width": 4,
+            "height": 4,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "오아시스 촌락",
+            "iconId": "starmap/보급선 정박지",
+            "x": 23,
+            "y": 42,
+            "width": 2,
+            "height": 2,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "협곡 폐허",
+            "iconId": "starmap/함선 잔해",
+            "x": 71,
+            "y": 57,
+            "width": 2,
+            "height": 2,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "북동 눈 촌락",
+            "iconId": "starmap/소행성 채굴촌",
+            "x": 57,
+            "y": 9,
+            "width": 2,
+            "height": 2,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "동쪽 항구",
+            "iconId": "starmap/개척 행성",
+            "x": 9,
+            "y": 36,
+            "width": 3,
+            "height": 3,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "독늪 탑",
+            "iconId": "starmap/항법 부표",
+            "x": 64,
+            "y": 11,
+            "width": 1,
+            "height": 2,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "섬 동굴",
+            "iconId": "starmap/점프 게이트",
+            "x": 32,
+            "y": 51,
+            "width": 2,
+            "height": 2,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "섬 탑",
+            "iconId": "starmap/항법 부표",
+            "x": 23,
+            "y": 49,
+            "width": 1,
+            "height": 2,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "남섬 마을",
+            "iconId": "starmap/소행성 채굴촌",
+            "x": 65,
+            "y": 67,
+            "width": 2,
+            "height": 2,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "섬 폐허",
+            "iconId": "starmap/함선 잔해",
+            "x": 40,
+            "y": 51,
+            "width": 2,
+            "height": 2,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "북섬 촌락",
+            "iconId": "starmap/보급선 정박지",
+            "x": 5,
+            "y": 7,
+            "width": 2,
+            "height": 2,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "거대한 탑",
+            "iconId": "starmap/궤도 엘리베이터",
+            "x": 56,
+            "y": 37,
+            "width": 2,
+            "height": 4,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "폐허 도시",
+            "iconId": "starmap/파괴된 행성",
+            "x": 4,
+            "y": 16,
+            "width": 4,
+            "height": 3,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "거목",
+            "iconId": "starmap/가스 거인",
+            "x": 44,
+            "y": 31,
+            "width": 3,
+            "height": 3,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "사막 신전",
+            "iconId": "starmap/고대 외계 유물",
+            "x": 36,
+            "y": 38,
+            "width": 3,
+            "height": 3,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "고대 돌원",
+            "iconId": "starmap/소행성 고리",
+            "x": 46,
+            "y": 44,
+            "width": 2,
+            "height": 2,
+            "reason": "human-selection-required"
+          },
+          {
+            "placeId": "천공섬",
+            "iconId": "starmap/다이슨 고리 조각",
+            "x": 46,
+            "y": 60,
+            "width": 5,
+            "height": 4,
+            "reason": "human-selection-required"
+          }
+        ]
+      },
+      "ops": [],
+      "ascii": "범례: ~ 바다 r 강 L 용암 x 독늪 . 초원 f 밭 p 곡식밭 v 사바나 s 사막 d 모래언덕 D 흙 b 협곡토 a 화산재 B 현무암 w 늪 m 습지 c 균열 o 분화구 t 툰드라 n 설원 g 빙하 j 정글 | ^ 산 M 메사 V 화산 * 숲 = 길 / 경사로 @ 장소. 첫 줄은 x 의 10 자리, 줄 머리는 y\n    0         1         2         3         4         5         6         7         8         9     \n00  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n01  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n02  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n03  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n04  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n05  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n06  ~~~~~nnnnn~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~..~~~~~~~a~ss~~~~~~~~~~~\n07  ~~~nn@@nnnn~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~t~~mmmmm~~~~.....~~~~~aasssss~~~~~~~~~\n08  ~~nnn@@nnnnnn~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ttt****~~mmmmnn~~......~~~aaassssss~~~~~~~~\n09  ~~nnn=nnnnnnnn~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~tttt*@@**~~mmmnnn.......aaaaaBVVBssss~~~~~~~\n10  ~~nnn=nnnnnnn~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~bbbb~~~tt^^tt@@*n~~mmmmnn.@@@...aaaaaBooVV^aa~~~~~~~\n11  ~~nnn=nnnnnnn~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~bbbbbb~tt^^^***t**~~m@=====@@@..aaaaaaooooV^aa*~~~~~~\n12  ~~nnn=nnnnnnn~~~~~~~~~~~~~~~~~~~~~~~~~~~~b^bb^^^^bbt^^^**t*t*~~m@m***.@@@..aaaaaoo@@o^LLLL*~~~~~\n13  ~~nnn=nnnnnnn~~~~~~~~~~~~~~~~~~~~~~~~~~~~bbbb^^^^^bt^^^**tttn~~mmmmm~~..==========@@o^Va**~~~~~~\n14  ~~fff=nnnnnn~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~bbbbb^^btt^^^~~~~~~~~mmm~~~~~...aaaaBBooooV^a**~~~~~~\n15  ~ffff=fffn~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*bbb~~~~~t~~~~~~~~~~~~~~~~~~~~~~~~aaVV*oVV^aa~~~~~~~\n16  ~*ff@@@@ff*~~~~~~~~~~~~~~~~~~~~~~~~~fffffff~~bb~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~aa**VVaaaa~~~~~~~~\n17  ~fff@@@@ff*~~~~~~~~~~~~~~~~~~~~~~~~fffffff~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~a*aaaa~~~~~~~~~~\n18  ~fff@@@@ffff~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~nnnn~~~~~~~~~~~~~~~~~~~~aa~~~~~~~~~~~~\n19  ~ffff=ffffff~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~n~~~~~nnnnnn~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n20  ~ffff=fffff~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~nnnnnnnnnnnnn~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n21  ~ffff=ffff~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~D~~~~nnnnnn@@nnnnnn~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n22  ~~fff=fff~~~~~~~~~~~~~~~~~~~~~~~~~~~~d~dddDDDt~~~nnnnn=@@nnnnnnn~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n23  ~~~~f=ff~~~~~~~~~~~~~~~~~~~~~~~~~~~~dddddd@@Dtt~nnnnnn=n=====@@@@@~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n24  ~~~~.=.....~~~~~~~~~~~~~~~~~~~~~~~~ddddddD@@Dtttnnnnnn=nnnnnn@@@@@~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n25  ~~~..=.....~~~~~~~~~~~~~~~~~~~~~~~~ddddddDD===@@nnn@@@=nnnnnn@@@@@~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n26  ~~...=.....~~~~~~~~~~~~~~~~~~~~~~~~dddddDDDDDt@@tnn@@@nnnnnnn@@@@@~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n27  ~...@@@@....~~~~~~~~~~~~~~~~~~~~~~ddddddDDDD*tt====@@@nnnnnnnn=nn~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n28  ~...@@@@....~~~~~~~~~~~~~~~~~~~~~dd@@dddDDDtt**=tnnnnnnnnnnnnn=nt~tDDD~~~~~~~~~~~~~~~~~~~~~~~~~~\n29  ~...@@@@....~~~~~~~~~~~~~~~~~~~~~dd@@ddDDDDtttt=tnnnn***nnnn@@@tttttDDDD~~~~~~bb~~~~~~~~~~~~~~~~\n30  ~~..@@@@=...~~~~~~~~~~~~~~~~~~~~~ddddddDDDttttt=tnnn****nnnn@@@ttttttDDDD~~~~~bbb~~~~~~~~~~~~~~~\n31  ~~......=...~~~~~~~~~~~~~~~~~~~~~~dddddDDDDt@@@=~~~~n****nnn@@@ttttt@@@@@@~~~~bbb~~~~~~~~~~~~~~~\n32  ~~~.....=....~~~~~~~~~~~~~~~~~~~~~~dd@ddDD*t@@@~~~~~~~~~**nnnt===ttt@@@@@@~~~~~bbb~~~~~~~~~~~~~~\n33  ~~~.....=.....~~~~~~~~~~~~~~~~~~ddddd@dd***t@@@~~~~~~~~~~~nntttt=ttt@@@@@@~~~~~bbbb~~~~~~~~~~~~~\n34  ~~~~~...=......~~~~~~~~~~~~~~~~~ddddddddDD*Dtt~~~~~~~~~~~~^^^ttt=ttt@@@@@@t~~~~bbbbb~~~~~~~~~~~~\n35  ~~~~~~..=......~~~~~~~~~~~~~~~~~dddddddddDDDnn~~~~~~~~~~~~^^^^^^=ttt@@@@@@t~~~~bbbbb~~~~~~~~~~~~\n36  ~~~~~~..=@@@...~~~~~~~~~~~~~~~~dddddddddd**D^^^~~~~~~~~~~~^^^^^@@@==@@@@@@t~~~~bbbbb~~~~~~~~~~~~\n37  ~~~~~~...@@@...s**~~~~~~~~~~~~~ddddddddddd^^^^^^w~~~~~~~@@ttt^^@@@^^tt=tttt~~~~bbbw~~~~~~~~~~~~~\n38  ~~~~~~~..@@@.*sss*ss~~~~~~~~~~~ddddd@@@ddd^^^^nww*ww***w@@=====@@@^^^t=ttt~~~~~bwwww~~~~~~~~~~~~\n39  ~~~~~~~~~....ss*sssss~~~~~~~~~~ddddd@@@dd^^^*nnw*****www@@wwtttttt^^^t=@@t~~~~~wwwwwww~~~~~~~~~~\n40  ~~~~~~~~~~~~ssssssss~~~ss~~~~~~ddddd@@@dd^^^*nwwww***www@@wwttttttt^^^t@@t~~~~wwwwwwww*~~~~~~~~~\n41  ~~~~~~~~~~~~sssssss~~ssssss~~~~dddddddddd^^^*nwwwww*wwwww=wwwtttttt^^^ttt~~~~~wwwwwwww*~~~~~~~~~\n42  ~~~~~~~~~~~~ssssss~~sss@@ss~~~~~dddddddd^^^Dnn*wwwwwwwwww=wwwtttttt~~~~~~~~~~~wwwwwwww*w~~~~~~~~\n43  ~~~~~~~~~~~~ssss*~~ssss@@ss~~~~~dddddddd^^^nnwwwwwwww**ww=wwwwt~tt~~~~~~~~~~~wwwwwwww*ww~~~~~~~~\n44  ~~~~~~~~~~~~ssss~~sssss=ssss~~~~~dddddd^^^Dnnw@@wwwww**ww=wwww~~~~~~~~~~~~~~wwwwwwwwwwww~~~~~~~~\n45  ~~~~~~~~~~~~~**s~~sssss=sss~~~~~~~d~~ddd^^~nww@@wwwwww*ww=wwww~~~~~~~~~~~~~~wwwwwwwwwwww~~~~~~~~\n46  ~~~~~~~~~~~~~~*s~~sssss=ss~~s~~~~~~~~~~~~~~~www=wwwwww*ww@@ww~~~~~~~~~~~~~~~wwwwwwwwwww~~~~~~~~~\n47  ~~~~~~~~~~~~~~~~~ssssss=s~~ssv~~~~~~~~~~~~~~*ww==========@@ww~~~~~~~~~~~~~~^ttttwwwwww~~~~~~~~~~\n48  ~~~~~~~~~~~~~~~~~~sssss=s~~svvv~~~~~~~~~~~~~~~~wvvvv****wwww~~~~~~~~~~~~~~tttttttttt~~~~~~~~~~~~\n49  ~~~~~~~~~~~~~~~~~~sssss@s~~svvvv~~~~~~~~~~~~~~~~vvvv*******~~~~~~~~~~~~~~~tt^^t^ttttt~~~~~~~~~~~\n50  ~~~~~~~~~~~~~~~~~~~ssss@s~~***vvvvv~~t*tt~~~~~~~~vvv****w~~~~~~~~~~~~~~~~ttt^^ttt^t^t~~~~~~~~~~~\n51  ~~~~~~~~~~~~~~~~~~~ssssss~~*v**v@@v~~**t@@~~~~~~~vvvv~**~~~~~~~~~~~~~~~~~ttt^^ttttttt~~~~~~~~~~~\n52  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~vvvv@@vv~~*t@@ttt~~~~~~~~~~~~~~~~~~~~~~~~~~~~^t^^^ttt^^tt~~~~~~~~~~~\n53  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~vvvvvv~~~tt~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ttt^^^^^^^tt~~~~~~~~~~~\n54  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~vvv~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Dttt^^^^^ttt~~~~~~~~~~~\n55  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~DDDDDttttttttt~~~~~~~~~~~~\n56  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~DDDDDDDtttttt~~~~~~~~~~~~~\n57  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~DD@@DDDDD~~~~~~~~~~~~~~~~~~\n58  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~DDD@@DDDDD~~~~~~~~~~~~~~~~~~\n59  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~nn~~DDDDDDDDDD~~~~~~~~~~~~~~~~~~\n60  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~@@@@@~~~~~~~~~~~nnnnn~~DDDDDDDDD~~~~~~~~~~~~~~~~~~\n61  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~@@@@@~~~~~~~~~~nnnnnn~~DDDDDDDD~~~~~~~~~~~~~~~~~~~\n62  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~@@@@@~~~~~~~~~~nnnnnnn~~DDDDDD~~~~~~~~~~~~~~~~~~~~\n63  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~@@@@@~~~~~~~~~nnnnnnnnn~~DDDD~~~~~~~~~~~~~~~~~~~~~\n64  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~nnnnnnnnnn~~~~~~~~~~~~~~~~~~~~~~~~~~\n65  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*nnnnnnnnn~~~~~~~~~~~~~~~~~~~~~~~~~~\n66  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~**nnnnnnn~~~~~~~~~~~~~~~~~~~~~~~~~~~\n67  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*nnn@@nn~~~~~~~~~~~~~~~~~~~~~~~~~~~\n68  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~n*n@@n~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n69  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~nn~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n70  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n71  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n",
+      "places": [
+        "대성「모항성 수도」(capital) 68,31 6×6 입구 71,36 — 1막에 걷기(으)로 처음 닿는다 · 길: 고갯길 요새, 산기슭 동굴",
+        "강가 마을「출발 개척 행성」(large_town) 60,29 3×3 입구 61,31 — 1막에 걷기(으)로 처음 닿는다 · 길: 고갯길 요새, 내해 항구",
+        "내해 항구「모항 조선소」(harbor_city) 61,23 5×4 입구 63,26 — 1막에 걷기(으)로 처음 닿는다 · 길: 강가 마을, 눈 촌락",
+        "설원 마을「얼음 행성 교역소」(large_town) 51,25 3×3 입구 52,27 — 1막에 걷기(으)로 처음 닿는다 · 길: 고원 마을, 눈 촌락",
+        "눈 촌락「얼음 위성 기지」(village) 55,21 2×2 입구 56,22 — 1막에 걷기(으)로 처음 닿는다 · 길: 내해 항구, 설원 마을",
+        "고원 마을「고궤도 마을」(village) 46,25 2×2 입구 47,26 — 1막에 걷기(으)로 처음 닿는다 · 길: 거목, 사막 촌락, 설원 마을",
+        "산기슭 동굴「옛 점프 게이트」(cave) 71,39 2×2 입구 72,40 — 1막에 걷기(으)로 처음 닿는다 · 항로 허가증 을(를) 주는 열쇠 장소 — 「1막 · 모항 성단」 안쪽에 있어야 한다 · 길: 대성",
+        "사막 촌락「폭풍 경계 정박지」(village) 42,23 2×2 입구 43,24 — 1막에 걷기(으)로 처음 닿는다 · 길: 고원 마을",
+        "사막 폐허「폭풍 속 함선 잔해」(ruin) 35,28 2×2 입구 36,29 — 4막에 폭풍 항법선(으)로 처음 닿는다 · 폭풍 항법선 타고 내리는 자리 · 처음부터 걸어서 닿으면 안 된다(장벽 뒤)",
+        "정글 마을「정글 행성 조선 기지」(village) 57,46 2×2 입구 58,47 — 2막에 항로 허가증(으)로 처음 닿는다 · 워프 드라이브 을(를) 주는 열쇠 장소 — 「2막 · 소행성 관문 너머」 안쪽에 있어야 한다 · 처음부터 걸어서 닿으면 안 된다(장벽 뒤) · 길: 거대한 탑, 고대 돌원",
+        "고갯길 요새「소행성대 관문 요새」(castle) 63,36 3×3 입구 64,38 — 1막에 걷기(으)로 처음 닿는다 · 길: 강가 마을, 거대한 탑, 대성",
+        "해협 감시탑「폭풍 속 항법 부표」(tower_small) 37,32 1×2 입구 37,33 — 4막에 폭풍 항법선(으)로 처음 닿는다 · 폭풍 항법선 타고 내리는 자리 · 처음부터 걸어서 닿으면 안 된다(장벽 뒤)",
+        "화산「용암 행성」(volcano) 82,12 2×2 입구 83,13 — 3막에 워프 드라이브(으)로 처음 닿는다 · 처음부터 걸어서 닿으면 안 된다(장벽 뒤) · 길: 화염 요새",
+        "화염 요새「적 기함」(castle) 70,10 3×3 입구 71,12 — 3막에 워프 드라이브(으)로 처음 닿는다 · 길: 독늪 탑, 화산",
+        "사바나 마을「변경 요새 정거장」(fort_city) 4,27 4×4 입구 6,30 — 3막에 워프 드라이브(으)로 처음 닿는다 · 길: 동쪽 항구, 폐허 도시",
+        "오아시스 촌락「보급선 정박지」(camp) 23,42 2×2 입구 24,43 — 3막에 워프 드라이브(으)로 처음 닿는다 · 폭풍 항법선 을(를) 주는 열쇠 장소 — 「3막 · 공허 너머 성단들」 안쪽에 있어야 한다 · 처음부터 걸어서 닿으면 안 된다(장벽 뒤) · 길: 섬 탑",
+        "협곡 폐허「붉은 성운 잔해」(ruin) 71,57 2×2 입구 72,58 — 3막에 워프 드라이브(으)로 처음 닿는다",
+        "북동 눈 촌락「먼 얼음 위성」(village) 57,9 2×2 입구 58,10 — 3막에 워프 드라이브(으)로 처음 닿는다",
+        "동쪽 항구「변경 개척 행성」(large_town) 9,36 3×3 입구 10,38 — 3막에 워프 드라이브(으)로 처음 닿는다 · 워프 드라이브 타고 내리는 자리 · 길: 사바나 마을",
+        "독늪 탑「독성 성운 부표」(tower_small) 64,11 1×2 입구 64,12 — 3막에 워프 드라이브(으)로 처음 닿는다 · 길: 화염 요새",
+        "섬 동굴「외딴 점프 게이트」(cave) 32,51 2×2 입구 33,52 — 3막에 워프 드라이브(으)로 처음 닿는다",
+        "섬 탑「외딴 항법 부표」(tower_small) 23,49 1×2 입구 23,50 — 3막에 워프 드라이브(으)로 처음 닿는다 · 길: 오아시스 촌락",
+        "남섬 마을「정글 위성 마을」(village) 65,67 2×2 입구 66,68 — 3막에 워프 드라이브(으)로 처음 닿는다 · 워프 드라이브 타고 내리는 자리",
+        "섬 폐허「잿빛 함선 잔해」(ruin) 40,51 2×2 입구 41,52 — 3막에 워프 드라이브(으)로 처음 닿는다 · 워프 드라이브 타고 내리는 자리",
+        "북섬 촌락「북쪽 보급 정박지」(camp) 5,7 2×2 입구 6,8 — 3막에 워프 드라이브(으)로 처음 닿는다 · 워프 드라이브 타고 내리는 자리 · 길: 폐허 도시",
+        "거대한 탑「궤도 엘리베이터」(tower_great) 56,37 2×4 입구 57,40 — 2막에 항로 허가증(으)로 처음 닿는다 · 처음부터 걸어서 닿으면 안 된다(장벽 뒤) · 길: 고갯길 요새, 정글 마을",
+        "폐허 도시「파괴된 행성」(ruin_city) 4,16 4×3 입구 6,18 — 3막에 워프 드라이브(으)로 처음 닿는다 · 길: 북섬 촌락, 사바나 마을",
+        "거목「가스 거인」(landmark_nature) 44,31 3×3 입구 45,33 — 1막에 걷기(으)로 처음 닿는다 · 길: 고원 마을",
+        "사막 신전「고대 외계 유물」(shrine) 36,38 3×3 입구 37,40 — 4막에 폭풍 항법선(으)로 처음 닿는다 · 폭풍 항법선 타고 내리는 자리 · 점프 게이트 열쇠 을(를) 주는 열쇠 장소 — 「4막 · 이온 폭풍 속」 안쪽에 있어야 한다 · 처음부터 걸어서 닿으면 안 된다(장벽 뒤)",
+        "고대 돌원「소행성 고리」(circle) 46,44 2×2 입구 47,45 — 2막에 항로 허가증(으)로 처음 닿는다 · 처음부터 걸어서 닿으면 안 된다(장벽 뒤) · 길: 정글 마을",
+        "천공섬「다이슨 고리 조각」(floating) 46,60 5×4 입구 48,63 — 5막에 점프 게이트 열쇠(으)로 처음 닿는다 · 처음부터 걸어서 닿으면 안 된다(장벽 뒤)"
+      ],
+      "journeyCheck": {
+        "ok": true,
+        "bad": []
+      },
+      "warnings": [
+        "테마 starmap: 사람 선택이 없거나 발자국이 다른 장소 31곳은 아이콘을 붙이지 않았다. 장소 좌표와 여정 검사는 논리 위치이며 완성된 거점 그림이나 이동 이벤트가 아니다. 후보 선택은 월드맵 아이콘 하네스에서 사용자가 한다."
+      ],
+      "seconds": 18.5,
+      "base": "generate",
+      "layout": {
+        "base": "generate",
+        "style": "galaxy",
+        "seed": 4,
+        "salt": 0,
+        "count": 12,
+        "land": 0.36,
+        "landmasses": 10,
+        "home_cells": 924,
+        "act1_cells": 604,
+        "act2_cells": 249,
+        "dune_cells": 175,
+        "ship_landmasses": 9,
+        "wall_cells": 63,
+        "gate": "고갯길 요새",
+        "harbour": "내해 항구",
+        "start": [
+          61,
+          30
+        ],
+        "roads": 18,
+        "features": {
+          "belts": 4,
+          "clusters": 1,
+          "passes": 0
+        },
+        "notes": [],
+        "min_sea_gap": 4,
+        "real": null,
+        "core": [
+          51.81,
+          34.64
+        ],
+        "spiral": {
+          "n": 3,
+          "b": 0.2272,
+          "th0": 3.9573,
+          "squash": 0.72
+        },
+        "regions_legend": "a 1막(관문 앞) · b 2막(관문 너머) · w 산벽 · d 4막 사구 바다 · s 3막(배로 가는 땅) · ~ 바다",
+        "systems": 27
+      }
+    }
+  },
+  {
+    "i": 16,
+    "name": "show_map_region",
+    "args": {
+      "mapId": "world_star_voyage",
+      "x": 0,
+      "y": 0,
+      "w": 96,
+      "h": 72
+    },
+    "ok": true,
+    "summary": "맵 미리보기: (0,0) 96×72 (성운 항해도)"
+  },
+  {
+    "i": 17,
+    "name": "get_project_summary",
+    "args": {},
+    "ok": true,
+    "summary": "프로젝트 '공용 월드맵 조수 실호출 · space-readiness-final' — 맵 2개, 아이템 1000, 트룹 7"
+  },
+  {
+    "i": 18,
+    "name": "get_map_region",
+    "args": {
+      "mapId": "map_blank_start",
+      "x": 0,
+      "y": 0,
+      "w": 20,
+      "h": 15
+    },
+    "ok": true,
+    "summary": "빈 맵(map_blank_start) 영역 (0,0)~(20,15) — 이벤트 0개, 물 0칸"
+  }
+]
