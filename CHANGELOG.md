@@ -5,6 +5,17 @@
 
 <!-- releases -->
 
+## 0.123.1 — 2026-10-04
+
+### 수정
+
+- 시점 표본 합격 저장 오류와 제작 메타데이터 누락 차단 (#2103) (`1a38e62`)
+- use native gabled roofs and shorten default sunlight (`5bd47dc`)
+
+### 문서
+
+- record native roof and sunlight save reload evidence (`16bcd88`)
+
 ## 0.123.0 — 2026-10-04
 
 ### 기능
