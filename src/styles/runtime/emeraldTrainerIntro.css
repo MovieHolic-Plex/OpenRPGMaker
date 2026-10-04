@@ -1,4 +1,4 @@
-/* 64×96 authored portraits at exact 2×, within the Emerald 480×240 field. */
+/* Native64×64 poses at2×; explicit legacy64×96 portraits retain their own height. */
 .battle-scene[data-monster-style="emerald"] .emerald-trainer-intro {
   position: absolute;
   inset: 0 0 auto;
@@ -24,19 +24,19 @@
 .battle-scene[data-monster-style="emerald"] .emerald-trainer-intro img {
   position: absolute;
   width: 128px;
-  height: 192px;
+  height: var(--trainer-portrait-height, 128px);
   object-fit: contain;
   image-rendering: pixelated;
   z-index: 1;
 }
 .battle-scene[data-monster-style="emerald"] .emerald-trainer-intro-hero {
   left: 48px;
-  top: 48px;
+  bottom: 0;
   animation: emerald-trainer-arrive-left 240ms steps(4, end) both;
 }
 .battle-scene[data-monster-style="emerald"] .emerald-trainer-intro-opponent {
   right: 48px;
-  top: 18px;
+  bottom: 30px;
   animation: emerald-trainer-arrive-right 240ms steps(4, end) both;
 }
 .battle-scene[data-monster-style="emerald"][data-emerald-trainer-intro="true"] :is(.battle-actor-group, .battle-enemy-group, .battle-party, .battle-enemy-list-panel) {

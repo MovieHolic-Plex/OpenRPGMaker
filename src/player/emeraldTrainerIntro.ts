@@ -9,10 +9,11 @@ import '@/styles/runtime/emeraldTrainerIntro.css';
 const SHEETS = ['oprn_emerald_field_cast_1', 'oprn_emerald_field_cast_2'] as const;
 const ROLES = ['hero', 'rival', 'professor', 'nurse', 'merchant', 'mother', 'resident', 'gym_leader',
   'company_agent', 'captain', 'worker', 'explorer', 'student', 'ranger', 'moon_leader', 'hiker'] as const;
+type TrainerPicture = { url: string; width: 64; height: 64 | 96 };
 
 /** The live field page selects the outfit. Never infer a trainer from its name or use substitute art. */
 export function resolveEmeraldTrainerIntro(project: Project, session: PlaySession, snapshot: BattleSnapshot):
-  { role: typeof ROLES[number]; opponent: string; hero: string } | undefined {
+  { role: typeof ROLES[number]; opponent: TrainerPicture; hero: TrainerPicture } | undefined {
   if (!project.database.troops.find(troop => troop.id === snapshot.troopId)?.trainerBattle) return undefined;
   const eventId = snapshot.troopId.startsWith('mx_troop_') ? snapshot.troopId.slice('mx_troop_'.length) : undefined;
   if (!eventId) return undefined;
@@ -32,13 +33,16 @@ export function resolveEmeraldTrainerIntro(project: Project, session: PlaySessio
   if (sheet < 0 || pattern === undefined || !Number.isInteger(pattern) || pattern < 0 || pattern >= 96) return undefined;
   const character = Math.floor(Math.floor(pattern / 12) / 4) * 4 + Math.floor((pattern % 12) / 3);
   const role = ROLES[sheet * 8 + character];
-  const pictureUrl = (id: string): string | null => {
+  const picture = (id: string): TrainerPicture | null => {
     const asset = project.assets.uploaded[id];
-    if (asset?.kind !== 'picture' || asset.meta.width !== 64 || asset.meta.height !== 96) return null;
-    return resolveAssetResourceUrl(id, { project });
+    // Emerald native trainer poses are64×64. Keep explicitly authored older
+    // 64×96 portraits at their own aspect ratio without treating them as native.
+    if (asset?.kind !== 'picture' || asset.meta.width !== 64 || (asset.meta.height !== 64 && asset.meta.height !== 96)) return null;
+    const url = resolveAssetResourceUrl(id, { project });
+    return url ? { url, width: 64, height: asset.meta.height } : null;
   };
-  const opponent = pictureUrl(`oprn_emerald_trainer_${role}`);
-  const hero = pictureUrl('oprn_emerald_trainer_hero_back');
+  const opponent = picture(`oprn_emerald_trainer_${role}`);
+  const hero = picture('oprn_emerald_trainer_hero_back');
   return opponent && hero ? { role, opponent, hero } : undefined;
 }
 
@@ -64,20 +68,23 @@ export function mountEmeraldTrainerIntro(root: HTMLElement, project: Project, se
     if (visible) root.dataset.emeraldTrainerIntro = 'true';
     else delete root.dataset.emeraldTrainerIntro;
   };
-  for (const [side, url] of [['hero', pair.hero], ['opponent', pair.opponent]] as const) {
+  for (const [side, picture] of [['hero', pair.hero], ['opponent', pair.opponent]] as const) {
     const image = document.createElement('img');
     image.className = `emerald-trainer-intro-${side}`;
     image.alt = '';
-    image.width = 128;
-    image.height = 192;
+    image.width = picture.width * 2;
+    image.height = picture.height * 2;
+    image.dataset.portraitProfile = picture.height === 64 ? 'emerald-native' : 'legacy-tall';
+    image.style.setProperty('--trainer-portrait-height', `${image.height}px`);
     image.onload = () => {
-      if (image.naturalWidth !== 64 || image.naturalHeight !== 96) failed = true;
+      if (destroyed) return;
+      if (image.naturalWidth !== picture.width || image.naturalHeight !== picture.height) failed = true;
       ready++;
       update();
     };
     image.onerror = () => { failed = true; update(); };
     layer.append(image);
-    image.src = url;
+    image.src = picture.url;
   }
   root.append(layer);
   return {

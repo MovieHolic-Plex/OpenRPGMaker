@@ -1700,11 +1700,19 @@ finite integer pattern in 0..95, character index is
 professor, nurse, merchant, mother, resident, gym_leader, company_agent, captain,
 worker, explorer, student, ranger, moon_leader, hiker. The pair requires uploaded
 picture IDs `oprn_emerald_trainer_<role>` and `oprn_emerald_trainer_hero_back`,
-both with width64/height96 metadata and resolvable URLs. Actual loaded image
-dimensions must also be64×96; no placeholder art or custom-sheet inference.
+with width64/height64 metadata for native Emerald poses and resolvable URLs.
+Explicit older height96 pictures remain a separate `legacy-tall` compatibility
+profile. Each picture's actual decoded width/height must exactly match its
+accepted metadata; unknown dimensions, metadata/decode mismatch and broken URLs
+retain the native battle fallback. The pair can mix the two supported profiles.
+There is no placeholder art, implicit resizing or custom-sheet inference.
 
-The separate `emeraldTrainerIntro.css` renders both portraits at128×192 with a
-short32px stepped entrance (disabled for reduced motion). Only after both
+The separate `emeraldTrainerIntro.css` renders native64×64 portraits at128×128 and
+legacy64×96 portraits at128×192, exact integer2× in both dimensions with
+`object-fit:contain`. Width/height attributes and CSS height agree with each
+picture's metadata. Bottom anchors remain240px for the hero and210px for the
+opponent in the240px battle field. A short32px stepped entrance is disabled for
+reduced motion. Only after both
 images load does its root marker hide native monster groups and HP cards.
 Missing/corrupt pictures retain the native scene. Send-out immediately removes
 that marker; roster nodes are never replaced. Destruction removes the portrait
@@ -1713,6 +1721,21 @@ Focused native source-player evidence:
 `/tmp/oprn-emerald-20261004/trainer-intro-source/SUMMARY.md` (missing-art and
 custom-sheet fallback, first/sending-out distinction, repeated destroy). Real
 generated portrait appearance requires standalone QA after asset registration.
+
+The original [Emerald trainer front picture](https://github.com/pret/pokeemerald/blob/master/graphics/trainers/front_pics/brendan.png)
+is64×64; the [back picture](https://github.com/pret/pokeemerald/blob/master/graphics/trainers/back_pics/brendan.png)
+is a64×256 vertical strip of four64×64 poses. The current intro supports one
+static pose resource, not that full back strip. Send-out still removes trainer
+portraits and reveals native monster battlers; this dimension correction does
+not add back-pose/send-out animation.
+
+Focused renderer/CSS fixture gate:
+`node scripts/qa/runtime/emerald-trainer-dimensions.mjs /tmp/trainer-dimensions`.
+It verifies native, legacy and mixed profiles at uniform2×, bottom anchors,
+send-out visibility, rejected dimensions/full strips, decoded mismatch, broken
+images and late-load destruction. Read `SUMMARY.md` first. Its synthetic PNGs
+and fixture URL resolver prove geometry/fallback mechanics only; final generated
+art, canonical load and shipping battle playback require separate evidence.
 
 ## 포획 불가 전투의 가방 목록 (2026-09-25)
 
