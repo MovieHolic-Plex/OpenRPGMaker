@@ -44,12 +44,12 @@
   },
   "runtime": {
     "unified": true,
-    "pid": 1649468,
+    "pid": 1695085,
     "port": 18315,
     "propsStore": "/home/main/.local/share/oprn/prop-harness",
     "spaceStore": "/home/main/.local/share/oprn/super-harness",
     "contentRoot": "/home/main/z-project/rpg-zzu-interior-v34b",
-    "spaceCodeRoot": "/home/main/z-project/rpg-zzu-super-harness",
+    "spaceCodeRoot": "/home/main/z-project/rpg-zzu-super-harness-unified",
     "codeRoot": "/home/main/z-project/rpg-zzu-super-harness-unified"
   }
 }

@@ -1,7 +1,7 @@
 # 슈퍼하네싱 실제 서비스 통합 확인 (2026-10-04)
 
 - 실제 주소: http://mdc-server:18315/harness. 이전 18312/harness#spaces에서 307로 이동하고 탭 hash 유지.
-- super-harness.service MainPID=1649468와 /api/super-harness/runtime.pid 일치.
+- super-harness.service MainPID=1695085와 /api/super-harness/runtime.pid 일치.
 - prop-harness-test.service는 inactive. 이전 포트 소켓은 같은 MainPID의 이동 전용.
 - 공간 개념 90개, paused=true, running=0 유지. 기물 목록 573개, 제작 queued/running=0.
 - 선택 current 651행의 전후 전체 SHA-256 일치: 01a4d7ab2ba017d539cc708fb3897b8b854a7387e7358a55aa28d069e91ea3c7.
@@ -26,3 +26,5 @@
 
 공간 survey의 공용 팩 자동 설치·예제 시공을 완료 근거로 삼지는 않았다.
 본 변경은 HTTP/API/실행 소유를 실제 통합하고 기존 재료 gate를 보존한다.
+
+최종 전환: #2073 최신 공간 코드를 병합한 후 CODE_ROOT override 제거. 두 실행기 코드가 모두 통합 체크아웃에서 실행한다.

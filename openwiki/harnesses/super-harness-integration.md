@@ -37,9 +37,9 @@ python3 src/harnesses/super-harness/unified.py serve --port 18315 --legacy-port 
 
 2026-10-04 운영 코드: `/home/main/z-project/rpg-zzu-super-harness-unified`.
 기물 콘텐츠는 `/home/main/z-project/rpg-zzu-interior-v34b`에 유지한다. 미커밋 후보 파일을 옮기거나 버리지 않는다.
-공간 코드의 다른 세션이 진행 중이므로 `SUPER_HARNESS_CODE_ROOT=/home/main/z-project/rpg-zzu-super-harness`로
-최신 실행기·검수·선택 동작을 같은 프로세스에 로드한다. 다른 세션의 소스는 수정하지 않는다.
-그 세션 변경이 main에 들어오고 통합 체크아웃에 반영되면 이 override를 제거할 수 있다.
+전환 초기에 다른 세션의 공간 코드를 `SUPER_HARNESS_CODE_ROOT`로 연결했다.
+그 세션의 최신 수정(#2073)이 main에 들어온 뒤 통합 브랜치에 병합했고, 최종 서비스에서는 override를 제거했다.
+현재 기물·공간 코드 모두 위 통합 체크아웃에서 실행한다. 기존 공간 체크아웃 소스는 수정하지 않았다.
 다른 세션이 서비스를 재시작해도 systemd drop-in의 통합 ExecStart가 유지된다.
 
 공간 DB, 기물 DB, 선택 DB, 공용 DB는 도메인별 기존 파일을 유지한다.
@@ -87,7 +87,9 @@ python3 src/harnesses/super-harness/unified.py serve --port 18315 --legacy-port 
 4. 기존 개념 수/paused, 기물 판/선택 수, 선택 레코드 해시, 실제 공용 revision을 전환 전후 대조.
 5. 후보 그림과 자동 제안이 보이는지 확인한다. 점검 목적으로 draw/derive/decide/resume을 POST하지 않는다.
 
-복구는 통합 서비스를 멈추고 이관 폴더의 원래 서비스 설정을 복원한 뒤 daemon-reload한다.
+복구는 통합 서비스를 멈추고 `~/.config/systemd/user/super-harness.service.d/unified.conf`를
+이관 사본에 옮겨 비활성화한다. 원래 super-harness.service를 복원하고,
+원래 transient prop 유닛 사본은 `~/.config/systemd/user/prop-harness-test.service`로 복원한 뒤 daemon-reload한다.
 18312와 18315의 바인딩 충돌이 없도록 원래 두 서비스만 재시작한다.
 이미 저장된 새 선택이 있으면 DB backup을 덮어쓰지 말고 현재 DB로 계속 운영한다.
 전체 gates/vitest는 이 세션에서 실행하지 않는다. 실제 HTTP·브라우저·정본 읽기 증거는
