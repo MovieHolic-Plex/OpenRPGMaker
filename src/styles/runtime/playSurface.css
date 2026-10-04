@@ -262,6 +262,7 @@
   z-index: -1;
 }
 .cinematic-background { object-fit: cover; opacity: 0.65; }
+.cinematic-image { object-fit: cover; }
 .cinematic-narration {
   max-height: 65%;
   overflow-y: auto;

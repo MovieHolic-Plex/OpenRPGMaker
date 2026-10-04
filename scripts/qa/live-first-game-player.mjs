@@ -133,10 +133,16 @@ try {
         const facts = await page.getByTestId('title-screen').evaluate(node => {
           const effects = node.querySelector('[data-testid="title-effects"]');
           return { kind:'title', sequence:node.dataset.seqState, effects:effects ? {...effects.dataset} : null,
+            imageRendering:effects ? getComputedStyle(effects).imageRendering : null,
+            canvasWidth:effects?.width,canvasHeight:effects?.height,stageWidth:node.getBoundingClientRect().width,
             text:node.textContent, defaultEditorialCopy:!!node.querySelector('[data-testid="title-kicker"]') };
         });
         assert.equal(facts.defaultEditorialCopy,false,'The generic editorial title must be replaced');
         assert(facts.effects?.titleEffectsAnimated === 'true','Normal title effects must actually animate');
+        if (project.system.titleScreen.backgroundRendering === 'smooth') {
+          assert.equal(facts.imageRendering,'auto','Painted artwork must use smooth canvas compositing');
+          assert(facts.canvasWidth >= facts.stageWidth * Number(facts.effects.titleEffectsResolutionScale) * 0.9,'The art canvas must use the displayed stage size');
+        }
         result.presentationEvidence.push({ branch:name, ...facts });
       }
       if (await page.getByTestId('cinematic-sequence').count()) {
@@ -149,9 +155,10 @@ try {
           const facts = await page.getByTestId('cinematic-sequence').evaluate(node => {
             const image = node.querySelector('.cinematic-image');
             return { kind:'opening', sceneId:node.dataset.sceneId, width:image.naturalWidth,height:image.naturalHeight,
-              motion:image.dataset.motion,narration:node.querySelector('.cinematic-narration')?.textContent,mediaState:node.dataset.mediaState };
+              motion:image.dataset.motion,objectFit:getComputedStyle(image).objectFit,narration:node.querySelector('.cinematic-narration')?.textContent,mediaState:node.dataset.mediaState };
           });
           result.presentationEvidence.push({ branch:name, ...facts });
+          assert.equal(facts.objectFit,'cover','Opening artwork must fill the stage');
         }
       }
       const bytes = await screenshot(options);
