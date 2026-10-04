@@ -394,15 +394,24 @@ def start_draw(brief, engine, run, w, src=None, fix_text=None):
     return p, meta
 
 
-def _spawn(engine, cwd, prompt, log):
+def _spawn(engine, cwd, prompt, log, images=()):
     eng = ENGINES[engine]
+    image_paths = [Path(p).resolve(strict=True) for p in images]
+    for path in image_paths:
+        with Image.open(path) as picture:
+            picture.verify()
     if engine in CLAUDE_ENGINES:
+        if image_paths:
+            raise ValueError('초기 이미지 첨부는 GPT 작업자 경로에서 사용합니다')
         cmd = [shutil.which('claude') or 'claude', '-p', '--model', eng['model'], '--effort', eng['effort'],
                '--dangerously-skip-permissions', '--add-dir', str(HERE), '--output-format', 'text']
     else:
         cmd = [shutil.which('codex') or os.path.expanduser('~/.local/bin/codex'), 'exec', '-m', eng['model'],
                '-c', f'model_reasoning_effort="{eng["effort"]}"', '--skip-git-repo-check', '-s', 'workspace-write',
-               '--add-dir', str(HERE), '-C', str(cwd), '-']
+               '--add-dir', str(HERE), '-C', str(cwd)]
+        for path in image_paths:
+            cmd.extend(['--image', str(path)])
+        cmd.append('-')
     return subprocess.Popen(['timeout', str(TIMEOUT_S)] + cmd, cwd=cwd, stdin=open(prompt, 'rb'), stdout=open(log, 'w'),
                             stderr=subprocess.STDOUT, start_new_session=True)
 
