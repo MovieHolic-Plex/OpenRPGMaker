@@ -42,6 +42,7 @@ def verify():
         for slot in range(8):
             p, _, f = C.from_actor(H.RTP / 'charset' / f'{sheet}.png', slot)
             check(f'original:{sheet}:{slot}', C.gate(p, f, (p, f), check_changed=False)['ok'])
+            check(f'walk-identity:{sheet}:{slot}', C.propagate(f, f, p, p) == f)
     p, f = H.base_of('Actor1:0')
     for key in [('down', 1), ('left', 2)]:
         bad = copy.deepcopy(f)
@@ -98,9 +99,61 @@ def verify():
     check('walking-vest-keeps-stable-torso-color', walked['down', 0][23][9] == '~')
     check('walking-preserves-standing-drawings', all(walked[d, 1] == vest[d, 1] for d in C.DIRS))
     check('walking-preserves-original-RTP', C.propagate(pf, pf, pp, pp) == pf)
+    # 원본 팔 가장자리의 열린 1px 틈을 새 소매가 둘러싼 실제 실패 유형.
+    # 옮길 색은 이웃의 다수 색과 다르므로 단순 메우기로는 통과할 수 없다.
+    shape = ['.'*7+'a'*10+'.'*7 if 7<=y<25 else '.'*24 for y in range(32)]
+    skeleton = {k: list(shape) for k in f}
+    for d in C.DIRS:
+        row = list(skeleton[d,0][15]); row[7] = '.'; skeleton[d,0][15] = ''.join(row)
+    authored = copy.deepcopy(skeleton)
+    for d in C.DIRS:
+        for y in (14,15,16):
+            row = list(authored[d,1][y]); row[6] = 'b'; authored[d,1][y] = ''.join(row)
+        row = list(authored[d,1][15]); row[7] = 'c'; authored[d,1][15] = ''.join(row)
+    colors = {'.':None,'a':(16,28,60),'b':(44,91,136),'c':(238,132,53)}
+    trace = []
+    moved = C.propagate(skeleton,authored,colors,colors,trace=trace)
+    check('walk-new-sleeve-transfers-exact-authored-color', all(moved[d,0][15][7]=='c' for d in C.DIRS))
+    check('walk-transfer-preserves-all-standing-frames', all(moved[d,1]==authored[d,1] for d in C.DIRS))
+    check('walk-transfer-records-real-source-coordinates', len(trace)==4 and all(t['source']==[7,15] and t['destination']==[7,15] and t['char']=='c' for t in trace))
+    check('walk-transfer-repeated-generation-deterministic', C.propagate(skeleton,moved,colors,colors)==moved)
+    check('walk-transfer-closes-introduced-gap', all((7,15) not in C._enclosed(C._opaque(moved[d,0])) for d in C.DIRS))
+    # 저작된 투명 공간이나 근거가 없는 영역의 절반만 자동으로 메우지 않는다.
+    mask = [list(row) for row in shape]
+    mask[15][10]=mask[15][11]='.'
+    stand = list(shape);row=list(stand[15]);row[10]='.';stand[15]=''.join(row)
+    untouched = copy.deepcopy(mask)
+    check('walk-transfer-requires-provenance-for-entire-region', not C._transfer_surface(mask,['.'*24]*32,stand,0) and mask==untouched)
+    check('walk-transfer-preserves-original-enclosed-space', not C._transfer_surface(mask,[''.join(r) for r in untouched],shape,0) and mask==untouched)
+    edge = copy.deepcopy(mask)
+    check('walk-transfer-refuses-out-of-frame-source', not C._transfer_surface(edge,['.'*24]*32,shape,20) and edge==untouched)
 
     # 사용자 데이터·결정·공용 자산을 건드리지 않는 별도 저장 대상.
     with tempfile.TemporaryDirectory(prefix='charset-verify-') as temp, isolated_store(Path(temp)):
+        import walk_qa as W
+        qa_root = H.run_dir('walk-qa-fixture')
+        H.write_json_atomic(qa_root / 'manifest.json', dict(characters=[dict(key='not-yet-created')]))
+        for name, output, message in (
+                ('walk-QA-refuses-real-candidate-output', qa_root, '폴더 밖'),
+                ('walk-QA-refuses-missing-manifest-candidate', H.DATA / 'evidence', '모두 있어야')):
+            try:
+                W.verify_walk('walk-qa-fixture', output)
+            except ValueError as error:
+                check(name, message in str(error))
+            else:
+                check(name, False)
+        import hashlib
+        transfer_file = H.DATA / 'transfer-fixture' / 'out.chr.txt'
+        transfer_file.parent.mkdir()
+        original_bytes = C.dump(colors, {}, authored).encode()
+        transfer_file.write_bytes(original_bytes)
+        with patch.object(H, 'base_of', return_value=(colors, skeleton)):
+            H.propagate_file(transfer_file, 'fixture')
+        saved = json.loads(transfer_file.with_name('walk-transfer.json').read_text())
+        check('walk-provenance-sidecar-bound-to-saved-file', saved['outputSha256']==hashlib.sha256(transfer_file.read_bytes()).hexdigest() and saved['version']==C.WALK_VERSION)
+        check('walk-provenance-four-standing-RGBA-binding', saved['standingSha256']==hashlib.sha256(b''.join(C.frame_rgba(colors,authored[d,1]).tobytes() for d in C.DIRS)).hexdigest())
+        check('walk-provenance-backup-preserves-author-input', transfer_file.with_name('out.worker.chr.txt').read_bytes()==original_bytes)
+        check('walk-provenance-persists-exact-surface-transfers', saved['transferred']==trace)
         import bulk as B
         manifest = H.DATA / 'failed-manifest.json'
         H.write_json_atomic(manifest, dict(run='failed-production', characters=[dict(key='fixture', name='fixture', base='Actor1:0', strength='weak')]))

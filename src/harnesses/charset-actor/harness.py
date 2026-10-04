@@ -243,8 +243,14 @@ def propagate_file(file, base_key, keep_worker=True):
         worker = file.with_name(file.name.replace('.chr.txt', '.worker.chr.txt'))
         if not worker.exists():
             shutil.copy(file, worker)
-    new = C.propagate(bf, frames, bp, pal)
-    file.write_text(C.dump(pal, notes, new, header='걸음 0·2 는 하네스가 서 있는 자세에서 전파했다(chr.propagate)'), encoding='utf-8')
+    trace = []
+    new = C.propagate(bf, frames, bp, pal, trace=trace)
+    data = C.dump(pal, notes, new, header='걸음 0·2 는 하네스가 서 있는 자세에서 전파했다(chr.propagate)')
+    file.write_text(data, encoding='utf-8')
+    write_json_atomic(file.with_name('walk-transfer.json'), dict(version=C.WALK_VERSION,
+                      standingSha256=hashlib.sha256(b''.join(C.frame_rgba(pal, frames[d, 1]).tobytes() for d in C.DIRS)).hexdigest(),
+                      baseSha256=hashlib.sha256(C.dump(bp, {}, bf).encode()).hexdigest(),
+                      outputSha256=hashlib.sha256(data.encode()).hexdigest(), transferred=trace))
     return new
 
 
