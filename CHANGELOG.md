@@ -5,6 +5,17 @@
 
 <!-- releases -->
 
+## 0.115.0 — 2026-10-04
+
+### 기능
+
+- publish human-kept sprites and descriptions to the shared character catalog (`746a347`)
+
+### 수정
+
+- preserve assistant view and continue work in background (`585d7c7`)
+- **ci** — run the full-lane typecheck with a 10GB heap (`e71aaaf`)
+
 ## 0.114.0 — 2026-10-04
 
 ### 기능
