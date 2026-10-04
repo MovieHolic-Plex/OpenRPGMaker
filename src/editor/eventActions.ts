@@ -51,36 +51,22 @@ export function addEvent(
   // 전에 굳으므로, 안에서 만들면 "어느 이벤트가 생겼나" 를 로그에 실을 방법이 없다.
   const created = createDefaultGameEvent(x, y, trigger);
   let newId = "";
-  store.update((p) => {
-    const m = p.maps[mapId];
-    if (!m) return;
-    if (x < 0 || y < 0 || x >= m.width || y >= m.height) return;
-    m.events.push(structuredClone(created));
-    newId = created.id;
-  }, { scope: "map", mapId, eventId: created.id, label: `이벤트 추가 (${x},${y})` });
+  const map = store.getCurrent().maps[mapId];
+  if (!map || x < 0 || y < 0 || x >= map.width || y >= map.height) return "";
+  store.replaceEvent(mapId, created.id, created, { scope: "map", mapId, eventId: created.id, label: `이벤트 추가 (${x},${y})` });
+  if (store.getCurrent().maps[mapId]?.events.some(event => event.id === created.id)) newId = created.id;
   return newId;
 }
 
 export function deleteEvent(mapId: MapId, eventId: string): void {
   const removed = eventLogName(mapId, eventId);
-  store.update((p) => {
-    const m = p.maps[mapId];
-    if (!m) return;
-    m.events = m.events.filter((e) => e.id !== eventId);
-  }, { scope: "map", mapId, eventId, label: `이벤트 삭제: ${removed}` });
+  store.replaceEvent(mapId, eventId, null, { scope: "map", mapId, eventId, label: `이벤트 삭제: ${removed}` });
 }
 
 export function moveEvent(mapId: MapId, eventId: string, x: number, y: number): void {
   const moved = eventLogName(mapId, eventId);
-  store.updateMap(mapId, (m) => {
-    const ev = m.events.find((e) => e.id === eventId);
-    if (ev) {
-      ev.x = x;
-      ev.y = y;
-    }
-  // cells 는 일부러 비운다 — 리스너의 증분 재렌더 경로를 바꾸는 필드라서, 관측 목적으로
-  // 채우면 드래그 이동의 렌더 경로가 함께 달라진다.
-  }, { eventId, label: `이벤트 위치 이동: ${moved} → (${x},${y})` });
+  store.updateEvent(mapId, eventId, (event) => { event.x = x; event.y = y; },
+    { scope: "map", mapId, eventId, label: `이벤트 위치 이동: ${moved} → (${x},${y})` });
 }
 
 export function updateEvent(
@@ -88,12 +74,9 @@ export function updateEvent(
   eventId: string,
   patch: Partial<Pick<GameEvent, "name" | "sprite" | "trigger" | "condition" | "schedule" | "characterId" | "giftPrefs" | "giftResponses" | "talkFriendship">>
 ): void {
+  patch = structuredClone(patch);
   const label = `이벤트 속성 변경: ${eventLogName(mapId, eventId)} — ${eventPatchCaption(patch)}`;
-  store.update((p) => {
-    const m = p.maps[mapId];
-    if (!m) return;
-    const ev = m.events.find((e) => e.id === eventId);
-    if (!ev) return;
+  store.updateEvent(mapId, eventId, (ev) => {
     if ("name" in patch) {
       // 이벤트 이름은 페이지 이름과 별개의 필드다(eventDisplayName 참조). 빈 값은 필드를 지운다 —
       // 그러면 표시 이름은 페이지에서 빌린 이름 → ID 순으로 내려간다.
@@ -148,9 +131,7 @@ export function addCommand(
   containerPath: number[],
   command: Command
 ): void {
-  store.update((p) => {
-    const ev = p.maps[mapId]?.events.find((e) => e.id === eventId);
-    if (!ev) return;
+  store.updateEvent(mapId, eventId, (ev) => {
     const list =
       containerPath.length === 0
         ? ev.commands
@@ -170,9 +151,7 @@ export function insertCommand(
   path: number[],
   command: Command
 ): void {
-  store.update((p) => {
-    const ev = p.maps[mapId]?.events.find((e) => e.id === eventId);
-    if (!ev) return;
+  store.updateEvent(mapId, eventId, (ev) => {
     const lastIdx = path[path.length - 1];
     const container = path.slice(0, -1);
     const list =
@@ -195,9 +174,7 @@ export function deleteCommand(
 ): void {
   // 지운 뒤에는 무엇이 사라졌는지 알 수 없다 — 라벨용으로 먼저 읽는다.
   const removed = rootCommandKindCaption(mapId, eventId, path);
-  store.update((p) => {
-    const ev = p.maps[mapId]?.events.find((e) => e.id === eventId);
-    if (!ev) return;
+  store.updateEvent(mapId, eventId, (ev) => {
     const lastIdx = path[path.length - 1];
     const container = path.slice(0, -1);
     const list =
@@ -220,9 +197,7 @@ export function replaceCommand(
   command: Command
 ): void {
   const before = rootCommandKindCaption(mapId, eventId, path);
-  store.update((p) => {
-    const ev = p.maps[mapId]?.events.find((e) => e.id === eventId);
-    if (!ev) return;
+  store.updateEvent(mapId, eventId, (ev) => {
     const lastIdx = path[path.length - 1];
     const container = path.slice(0, -1);
     const list =

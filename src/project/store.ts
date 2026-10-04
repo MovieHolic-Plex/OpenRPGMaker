@@ -1,3 +1,5 @@
+import { isContainerInsideCommand, moveCommandBetweenLists, resolveCommandListAtPath } from "@/editor/eventCommandPaths";
+import { jsonEqual } from "@/util/structuralJson";
 import { applySharedTileReferenceEntries, ensureSharedTileReferences, sharedTileReferencesTouch } from "./sharedTileReferences";
 import { bootNormalizationMatches, currentBootNormalizationMarker, stampBootNormalization } from "./bootNormalization";
 import { externalizeBundledReferenceImages } from "./bundledReferenceImages";
@@ -25,7 +27,7 @@ import type { RemoteProjectTarget } from "./persistence/target";
 import { isSharedDemoProjectId, SHARED_DEMO_PROJECT_ID } from "./sharedDemoProject";
 import { projectViewWithoutEventDrafts, projectWithoutEventDrafts } from "./eventDrafts";
 import { forgetTrustedSharedEntries, jsonContentDigest, shareContentDigests, sharedEntryDigest } from "./persistence/core/contentDigest";
-import { applyCleanedProjection, cloneProjectForUpdate, cloneProjectSharingReferenceDocuments, finishProjectUpdate } from "./projectClone";
+import { applyCleanedProjection, cloneCommandContainersForMove, projectWithEventRevision, cloneProjectForUpdate, cloneProjectSharingReferenceDocuments, finishProjectUpdate } from "./projectClone";
 import { assertCanonicalReplacement, ProjectRoutingError } from "./spatial/saveRouting";
 import { SpatialPersistenceError, type MirrorStatus } from "./spatial/persistenceTypes";
 import { applyAudioDescriptionDelta } from "./audioDescriptions";
@@ -58,7 +60,7 @@ import {
   type EditActivityField,
   type EditActivityOrigin,
 } from "@/editor/editActivityLog";
-import type { GameMap, MapId, Project } from "./types";
+import type { Command, GameEvent, GameMap, MapId, Project } from "./types";
 
 const log = createLogger("store");
 
@@ -95,6 +97,8 @@ export type ProjectChangeDescriptor =
       readonly scope: "map";
       readonly mapId: MapId;
       readonly cells?: readonly ProjectChangeCell[];
+      /** Array-only move; lets the event workbench refresh its List in place. */
+      readonly eventCommandMove?: { readonly pageId: string };
       /** 높이(map.relief)만 바뀐 편집 — 높이 붓이 포인터 표본마다 낸다. 타일·이벤트·속성은 안 바뀐다. */
       readonly relief?: true;
     } & ProjectChangeAnnotation)
@@ -867,6 +871,83 @@ class ProjectStore {
     // 정리(removeLegacySpriteReferences)는 바뀐 부분에만 돌린다. 안 바뀐 부분은 이전 리비전에서 이미 지났다.
     removeLegacySpriteReferences(summary.cleanupTarget);
     applyCleanedProjection(draft, summary.cleanupTarget);
+    this.current = draft;
+    syncEventDraftVaultFromProject(this.current);
+    this.markLocalMutation(change);
+    this.emit(change);
+    this.scheduleAutoSave();
+  }
+
+  /** Deep isolate the selected event, including draft.original and every page.
+   * The callback cannot reach shared grids, other events, or project roots. */
+  updateEvent(mapId: MapId, eventId: string, mutator: (event: GameEvent) => void,
+    change: ProjectChangeDescriptor = { scope: "map", mapId, eventId }): void {
+    if (!canWriteTeamProject()) return;
+    const original = this.current.maps[mapId]?.events.find(event => event.id === eventId);
+    if (!original) return;
+    const event = structuredClone(original);
+    mutator(event);
+    removeLegacySpriteReferences(event);
+    if (jsonEqual(original, event)) return;
+    this.publishEventRevision(mapId, eventId, event, change);
+  }
+
+  /** Add/delete one event without exposing shared map branches to mutation. */
+  replaceEvent(mapId: MapId, eventId: string, event: GameEvent | null,
+    change: ProjectChangeDescriptor = { scope: "map", mapId, eventId }): void {
+    if (!canWriteTeamProject()) return;
+    const copy = event === null ? null : structuredClone(event);
+    if (copy && copy.id !== eventId) throw new Error("Event revision ID mismatch");
+    if (copy) removeLegacySpriteReferences(copy);
+    this.publishEventRevision(mapId, eventId, copy, change);
+  }
+
+  /** Replace a page tree with caller-isolated commands; do not clone the tree
+   * being replaced. Undo/redo and batch insertion retain immutable old revisions. */
+  replaceEventCommands(mapId: MapId, eventId: string, pageId: string, commands: readonly Command[],
+    change: ProjectChangeDescriptor = { scope: "map", mapId, eventId }): void {
+    if (!canWriteTeamProject()) return;
+    const event = this.current.maps[mapId]?.events.find(candidate => candidate.id === eventId);
+    const page = event?.pages?.find(candidate => candidate.id === pageId);
+    if (!event || !page || jsonEqual(page.commands, commands)) return;
+    const nextCommands = structuredClone([...commands]);
+    removeLegacySpriteReferences(nextCommands);
+    const nextEvent = { ...event, pages: event.pages!.map(candidate => candidate === page ? { ...page, commands: nextCommands } : candidate) };
+    this.publishEventRevision(mapId, eventId, nextEvent, change);
+  }
+
+  /** Existing-container moves only: immutable commands/snapshots remain shared.
+   * Resolve both containers before splicing so ancestor/sibling index changes
+   * cannot redirect a cross-container destination. Invalid/no-op moves emit nothing. */
+  reorderEventCommands(mapId: MapId, eventId: string, pageId: string,
+    sourcePath: readonly number[], targetPath: readonly number[], toIndex: number,
+    change: ProjectChangeDescriptor = { scope: "map", mapId, eventId }): void {
+    if (!canWriteTeamProject() || !Number.isInteger(toIndex) || sourcePath.length % 2 !== 1
+      || targetPath.length % 2 !== 0 || !sourcePath.every(Number.isInteger) || !targetPath.every(Number.isInteger)
+      || isContainerInsideCommand(sourcePath, targetPath)) return;
+    const event = this.current.maps[mapId]?.events.find(candidate => candidate.id === eventId);
+    const page = event?.pages?.find(candidate => candidate.id === pageId);
+    if (!event || !page) return;
+    const from = sourcePath.at(-1)!;
+    const sourceContainer = sourcePath.slice(0, -1);
+    const source = resolveCommandListAtPath(page.commands, sourceContainer);
+    const target = resolveCommandListAtPath(page.commands, targetPath);
+    if (!source || !target || from < 0 || from >= source.length) return;
+    if (source === target && Math.max(0, Math.min(source.length - 1, toIndex)) === from) return;
+    const commands = cloneCommandContainersForMove(page.commands, [sourceContainer, targetPath]);
+    const draftSource = resolveCommandListAtPath(commands, sourceContainer)!;
+    const draftTarget = resolveCommandListAtPath(commands, targetPath)!;
+    if (!moveCommandBetweenLists(draftSource, from, draftTarget, toIndex)) return;
+    const nextEvent = { ...event, pages: event.pages!.map(candidate => candidate === page ? { ...page, commands } : candidate) };
+    this.publishEventRevision(mapId, eventId, nextEvent, { ...change, scope: "map", mapId, eventId, eventCommandMove: { pageId } });
+  }
+
+  private publishEventRevision(mapId: MapId, eventId: string, event: GameEvent | null, change: ProjectChangeDescriptor): void {
+    if (event && event.id !== eventId) throw new Error("Event revision ID mismatch");
+    const draft = projectWithEventRevision(this.current, mapId, eventId, event);
+    if (draft === this.current) return;
+    assertCanonicalReplacement(draft, this.writeAuthority);
+    // Event edits cannot create map-tree/connections or database slot shapes.
     this.current = draft;
     syncEventDraftVaultFromProject(this.current);
     this.markLocalMutation(change);
