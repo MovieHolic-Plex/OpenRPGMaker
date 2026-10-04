@@ -19,7 +19,7 @@ import { hasPlayableSegmentSkeleton, playableSegmentContract } from "@/project/p
 export const PRESET_FIRST_BUILD_RULES = [
   "[첫 생성 범위] 이 요청은 새 프로젝트의 첫 생성이다. 확정 기획의 「첫 제작 범위」를 플레이해 볼 수 있는 가장 작은 구간만 만든다.",
   "- 맵은 그 구간에 꼭 필요한 것만(보통 3~5장: 시작 마을 1, 필드 1, 목표 지점 1, 꼭 필요한 실내). 주민 집 실내를 채우려고 맵을 늘리지 않는다.",
-  "- 순서: ① 첫 장면에 필요한 공통 DB·월드 연결 뼈대만 project 작업으로 준비하고 wait_agents ② 사용자가 보는 시작 맵을 먼저 시공 배정하고 나머지 필요한 맵을 배정 ③ 시공이 끝난 뒤 타이틀·오프닝 등 나머지 공통 작업 ④ 검수 한 번 ⑤ finish. 긴 기획·타이틀 이미지 생성·오프닝 연출을 먼저 기다려 시작 맵을 비워 두지 않는다. project 쓰기와 map 쓰기를 동시에 배정하지 않는다.",
+  "- 순서: ① 기존 뼈대에 확정 기획의 핵심 행동·선택별 결과·진행·마무리 이벤트를 실제로 작성 ② 원문 요구와 구현 확인 ③ 첫 화면과 기존 타이틀·오프닝의 짧은 마무리 ④ 검수 한 번 ⑤ finish. 실행기가 먼저 핵심 플레이를 작성한 경우 그 보고를 받고 남은 작업만 배정한다. 지도 장식·이미지 생성 때문에 핵심 이벤트를 뒤로 미루지 않는다. project 쓰기와 map 쓰기를 동시에 배정하지 않는다.",
   "- 시작 맵 담당에게 첫 화면의 실제 바닥·길·첫 상호작용을 작은 도구 작업부터 반영하도록 구체적으로 지시한다. 임의 타일 번호나 원치 않는 주인공으로 화면을 채우지 않는다. 각 성공한 쓰기가 실시간 체크포인트로 전달되는 실행 경로를 사용하고 가짜 완료를 보고하지 않는다.",
   "- 검수 지적 수정은 플레이를 막는 문제(길이 막힘·문 없음·필수 이벤트 누락)만 맡긴다. 장식·밀도 개선은 finish 보고의 「다음에 할 일」로 넘긴다.",
   "- finish 보고에는 만든 것, 바로 플레이해 볼 순서, 다음에 늘릴 것 세 가지를 적는다.",
@@ -69,7 +69,7 @@ export const PI_TEAM_ROLES: Record<PiTeamRoleId, PiTeamRole> = {
         ...(team ? describeTeamMembers(team) : []),
         "팀원은 소개에 맞는 일만 맡긴다(예: 장식 팀원에게 집을 짓게 하지 않는다). member 를 비우면 첫 시공 팀원이 맡는다.",
         ...(team?.orchestratorNotes.trim() ? [`사용자의 팀 운영 지침: ${team.orchestratorNotes.trim()}`] : []),
-        ...teamWorkflowPrompt(),
+        ...(isGenrePresetBriefRequest(task) ? [] : teamWorkflowPrompt()),
         ...(isGenrePresetBriefRequest(task) ? PRESET_FIRST_BUILD_RULES : []),
         ...(hasPlayableSegmentSkeleton(project) ? [playableSegmentContract(project)] : []),
         "절차:",

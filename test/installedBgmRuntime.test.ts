@@ -2,6 +2,9 @@ import { afterEach, expect, it, vi } from "vitest";
 import { isBgmFileInstalled, setInstalledBgmFiles } from "@/assets/installedBgm";
 import { isCatalogBgmAvailable } from "@/assets/audioResourceCatalog";
 import { findBgmRuntimeEntry } from "@/assets/bgmCatalogRuntime";
+import { recommendMapBgm } from '@/assets/bgmThemeRecommendation';
+import { createBlankProject } from '@/project/defaults';
+import { runTool } from '@/editor/tools';
 
 afterEach(() => { setInstalledBgmFiles(null); vi.unstubAllGlobals(); vi.unstubAllEnvs(); });
 
@@ -34,4 +37,24 @@ it("override 를 null 로 되돌리면 시드로 복귀한다", () => {
   expect(isBgmFileInstalled("seed.mp3")).toBe(false);
   setInstalledBgmFiles(null);
   expect(isBgmFileInstalled("seed.mp3")).toBe(true);
+});
+
+it('맵 이름 자동 추천도 설치 목록을 따른다 — 기억의 길이 미설치 emo-002를 선택하지 않는다', () => {
+  vi.stubEnv('VITE_BGM_CDN_BASE', '');
+  const track = findBgmRuntimeEntry('cc0-bgm-rtp-fld-003')!;
+  setInstalledBgmFiles([track.fileName]);
+  expect(recommendMapBgm('기억의 길', 7)).toBe('cc0-bgm-rtp-fld-003');
+  setInstalledBgmFiles([]);
+  expect(recommendMapBgm('기억의 길', 7)).toBe('easyrpg-music-field-1');
+});
+
+it('명시적 맵 BGM 쓰기도 미설치 파일을 거부하고 원래 설정을 보존한다', () => {
+  vi.stubEnv('VITE_BGM_CDN_BASE', '');
+  setInstalledBgmFiles([]);
+  const project = createBlankProject();
+  const before = structuredClone(project.maps[project.startMapId]!.bgm);
+  const result = runTool({ project }, 'set_map_properties', { mapId: project.startMapId, bgm: { mode: 'custom', resourceId: 'cc0-bgm-rtp-emo-002' } });
+  expect(result.ok).toBe(false);
+  expect(result.summary).toContain('미설치 BGM');
+  expect(project.maps[project.startMapId]!.bgm).toEqual(before);
 });

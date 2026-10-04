@@ -13,15 +13,20 @@ const out = resolve(process.env.LIVE_GAME_OUT ?? 'verify-shots/live-first-game')
 mkdirSync(out, { recursive: true });
 const report = { base, root, started: new Date().toISOString(), requests: [], errors: [], questions: [] };
 const save = () => writeFileSync(out + '/generation.json', JSON.stringify(report, null, 2) + '\n');
+const stage = value => { report.stage = value; save(); console.log('stage', value); };
 const hash = value => createHash('sha256').update(value).digest('hex');
+// Local hosts use the bridge token; team hosts use the browser's owner session.
+// Keep both only in memory and never put them in reports.
+let companionToken;
 async function recordWire() {
   const html = await (await fetch(base + '/index.html', { signal: AbortSignal.timeout(5000) })).text();
   const embedded = html.match(/window\.__OPRN_BRIDGE__=(\{[^<]+\})<\/script>/);
-  const token = embedded && JSON.parse(embedded[1]).companionToken;
-  if (!token) throw Error('QA host did not expose its loopback companion token');
+  const token = companionToken ?? (embedded && JSON.parse(embedded[1]).companionToken);
+  const cookies = await page.context().cookies(base);
+  const cookie = cookies.map(row => `${row.name}=${row.value}`).join('; ');
   const receipts = [];
   for (const request of report.requests) {
-    const headers = { 'x-oprn-companion-token': token, origin: base };
+    const headers = { origin: base, ...(token ? { 'x-oprn-companion-token': token } : {}), ...(cookie ? { cookie } : {}) };
     let pending = ''; const events = []; const decoder = new TextDecoder();
     const receipt = { runId: request.runId, events };
     try {
@@ -37,7 +42,7 @@ async function recordWire() {
           const e = JSON.parse(line), inner = e.event ?? e;
           events.push({ seq: e.seq, type: e.type, at: e.at, innerType: inner.type,
             innerAt: inner.at, agent: e.agentId, tool: inner.toolName, bytes: line.length,
-            summary: inner.summary?.slice(0, 300), message: inner.message });
+            name: inner.name, ok: inner.ok, summary: inner.summary?.slice(0, 300), message: inner.message });
         }
       }
     } catch (error) { receipt.failure = error.message; }
@@ -50,6 +55,13 @@ async function recordWire() {
   }
   writeFileSync(out + '/wire.json', JSON.stringify(receipts, null, 2) + '\n');
   report.wireCompleted = receipts.length > 0 && receipts.every(r => r.events.some(e => e.type === 'done'));
+  const events = receipts.flatMap(receipt => receipt.events);
+  const core = events.findIndex(event => event.name === 'first_play.core_ready' && event.ok === true);
+  const review = events.findIndex(event => event.name === 'first_play.review_passed' && event.ok === true);
+  const decoration = events.findIndex(event => ['stamp_object', 'copy_map_region', 'author_village', 'paint_tiles'].includes(event.name ?? event.tool));
+  report.coreFirstVerified = core >= 0 && review > core && (decoration < 0 || decoration > review);
+  report.coreReadyAt = events[core]?.at;
+  report.coreReviewedAt = events[review]?.at;
 }
 function snapshot() {
   const folder = new URL(report.projectUrl).searchParams.get('hostProject');
@@ -61,7 +73,10 @@ function snapshot() {
     const maps = db.prepare('SELECT map_id,map_json FROM maps ORDER BY map_id').all();
     const commits = db.prepare("SELECT author_kind,tool_names_json,summary FROM commits WHERE tool_names_json != '[]' ORDER BY created_at").all();
     const records = db.prepare('SELECT entries_json FROM ai_conversations').all();
-    return { dir, projectId: row.project_id, title: row.title, revision: row.revision,
+    const starter = maps.flatMap(m => JSON.parse(m.map_json).events ?? []).find(e => e.id === 'ev_segment_starter');
+    const choice = (starter?.pages?.flatMap(p => p.commands) ?? starter?.commands ?? []).find(c => c.kind === 'choices');
+    const branches = choice?.options?.map(o => ({ text: o.text, lines: o.branch.filter(c => c.kind === 'text').map(c => c.body) })) ?? [];
+    return { dir, projectId: row.project_id, title: row.title, revision: row.revision, branches,
       genre: document.system.genre, brief: document.gameDesignBrief,
       documentHash: hash(row.current_json), mapsHash: hash(JSON.stringify(maps)),
       maps: maps.map(m => { const v = JSON.parse(m.map_json); return { id: m.map_id, name: v.name, events: v.events?.length ?? 0 }; }),
@@ -77,10 +92,12 @@ const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, red
 page.on('pageerror', e => { report.errors.push(e.message); save(); });
 page.on('request', request => {
   if (!request.url().includes('/v1/agent/run') || request.method() !== 'POST') return;
+  companionToken = request.headers()['x-oprn-companion-token'] ?? companionToken;
   try {
     const bytes = request.postDataBuffer();
     const body = JSON.parse(bytes?.[0] === 31 ? gunzipSync(bytes) : bytes);
     const task = String(body.task ?? '');
+    writeFileSync(out + '/actual-first-task.txt', task + '\n');
     report.requests.push({ mode: body.mode, model: body.model, runId: body.runId,
       characters: task.length, planIncluded: task.includes('"id":"P03"'),
       premiseIncluded: task.includes('회중시계'), protagonistIncluded: task.includes('서린'),
@@ -89,14 +106,17 @@ page.on('request', request => {
   } catch (e) { report.errors.push(e.message); save(); }
 });
 try {
+  stage('initial-records');
   const initial = new DatabaseSync(root + '/project.sqlite', { readOnly: true });
   report.initialConversations = initial.prepare('SELECT COUNT(*) AS count FROM ai_conversations').get().count;
   initial.close();
+  stage('welcome');
   await page.goto(base + '/index.html?forceWelcome=1');
   await page.getByTestId('editor-welcome').waitFor({ timeout: 120000 });
   await page.getByTestId('editor-welcome-skip').click();
+  stage('browser-records');
   report.initialBrowserRecordDatabases = await page.evaluate(async () => (await indexedDB.databases()).map(v => v.name));
-  report.initialBrowserConversations = await page.evaluate(() => new Promise((resolve, reject) => {
+  report.initialBrowserConversations = await page.evaluate(() => Promise.race([new Promise((resolve, reject) => {
     const request = indexedDB.open('oprn-ai-records');
     request.onerror = () => reject(request.error);
     request.onsuccess = () => {
@@ -107,11 +127,13 @@ try {
       rows.onsuccess = () => { db.close(); resolve(rows.result.map(row => ({ id: row.id,
         userEntries: (row.entries ?? []).filter(entry => entry.kind === 'user').length }))); };
     };
-  }));
+  }), new Promise(resolve => setTimeout(() => resolve({ unavailable: 'record read exceeded 5 seconds' }), 5000))]));
+  stage('new-project');
   await page.locator('.studio-project-button').click();
   await page.getByTestId('menu-project-new').click();
   await page.getByTestId('new-project-name-input').fill('멈춘 시계의 기억');
   await page.getByTestId('new-project-confirm').click();
+  stage('interview');
   await page.getByTestId('project-interview').waitFor({ timeout: 30000 });
   await page.getByTestId('project-interview-genre-mystery').click();
   await page.getByTestId('project-interview-concept').fill('서린이 멈춘 회중시계를 조사하고 기억을 되찾는 짧은 회상 스토리. 회중시계 조사 → 기억을 간직하거나 놓아주는 두 선택지 → 선택에 따라 다른 대사 → 기억의 길 → 첫 구간 엔딩. 3분 안에 완주할 수 있는 작은 게임으로 실제 제작한다.');
@@ -127,6 +149,7 @@ try {
   await page.screenshot({ path: out + '/confirmed.png' });
   report.confirmedAt = new Date().toISOString(); save();
   await page.getByTestId('project-interview-confirm').click();
+  stage('automatic-generation');
   await page.waitForURL(url => url.searchParams.has('hostProject'), { timeout: 90000 });
   report.projectUrl = page.url(); save();
   await page.locator('.topbar').waitFor({ timeout: 120000 });
@@ -163,7 +186,11 @@ try {
   report.persisted = report.beforeReload.projectId === report.afterReload.projectId
     && report.beforeReload.mapsHash === report.afterReload.mapsHash
     && JSON.stringify(report.beforeReload.brief) === JSON.stringify(report.afterReload.brief);
-  report.generationPrerequisitePassed = report.modelFinished && report.persisted
+  report.requestedBranchesAuthored = report.afterReload.branches.length === 2
+    && /간직/.test(report.afterReload.branches[0].text) && /놓아/.test(report.afterReload.branches[1].text)
+    && report.afterReload.branches.every(b => b.lines.length)
+    && report.afterReload.branches[0].lines[0] !== report.afterReload.branches[1].lines[0];
+  report.generationPrerequisitePassed = report.modelFinished && report.persisted && report.requestedBranchesAuthored
     && report.beforeReload.commits.length > 0 && !report.taskLeakedIntoChat
     && report.requests.some(r => r.planIncluded && r.premiseIncluded && r.protagonistIncluded);
   report.gameplayVerified = false; report.exportPackageVerified = false;
@@ -176,7 +203,7 @@ try {
   if (report.requests.length) {
     try { await recordWire(); } catch (e) { report.wireFailure = e.message; }
   }
-  report.generationPrerequisitePassed = Boolean(report.generationPrerequisitePassed && report.wireCompleted);
+  report.generationPrerequisitePassed = Boolean(report.generationPrerequisitePassed && report.wireCompleted && report.coreFirstVerified);
   if (!report.generationPrerequisitePassed) process.exitCode = 1;
   save(); await browser.close();
 }

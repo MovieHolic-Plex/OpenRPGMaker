@@ -25,6 +25,8 @@ import { addPiAgentUsage, changedProjectKeys, restoreCheckpointProject, slimDone
 import { createModernTilesetPolicy, modernTilesetViolation, requestsModernMap } from '../../src/ai/modernTilesetPolicy.ts';
 import { PI_TEAM_ROLES, teamRoleSummaries } from "../../src/ai/piAgent/team.ts";
 import { PRESET_FIRST_BUILD_MEMBER_TURNS } from "../../src/ai/piAgent/team.ts";
+import { FIRST_PLAY_TOOLS, firstPlayEvents, firstPlaySignature, inspectFirstPlay, type FirstPlayReceipt } from '../../src/ai/piAgent/firstPlay.ts';
+import { hasPlayableSegmentSkeleton } from '../../src/project/playableSegmentContract.ts';
 import { isGenrePresetBriefRequest } from "../../src/ai/genrePresetBrief.ts";
 import { judgePlayableSegment, playableSegmentGateApplies } from "../../src/project/playableSegment.ts";
 import { authoringHarnessFor, inspectAuthoringHarness } from '../../src/harnesses/_core/authoringRegistry.ts';
@@ -142,6 +144,13 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   // 끝낼 수 있는 첫 구간 판정(src/project/playableSegment.ts). 프리셋 첫 생성이고 시작 프로젝트가 합격한 뼈대일 때만 건다 —
   // 되돌릴 합격본이 없으면 finish 를 막을 근거가 없고, 이후 요청은 사용자가 구간을 넓히거나 바꿀 수 있어야 한다.
   const segmentGate = Boolean(authoringHarnessFor(base)) || isGenrePresetBriefRequest(request.task) && playableSegmentGateApplies(base);
+  // Bespoke authoring harnesses keep their own stronger contracts. The three
+  // seeded genres first author actual play, before the coordinator can decorate.
+  const coreFirst = isGenrePresetBriefRequest(request.task) && hasPlayableSegmentSkeleton(base)
+    && !authoringHarnessFor(base) && !request.readOnly && !options.readOnlyTools;
+  let firstPlay: FirstPlayReceipt | undefined;
+  let reviewedFirstPlay: string | undefined;
+  let firstBuildAssignments = 0;
   let segmentRejections = 0;
   // A review belongs to the inspected snapshot, not merely to a map id.
   let authoringReview: { signature: string; ok: boolean } | undefined;
@@ -292,12 +301,15 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   };
 
   function startAssign(mapId: string, task: string, member: PiTeamMember): AgentOutcome | Record<string, unknown> {
+    if (coreFirst && firstBuildAssignments >= 3) throw new Error('첫 제작의 후속 배정은 3회까지입니다. 핵심 플레이는 이미 작성했습니다. 남은 장식은 다음 할 일로 보고하고 finish 하세요.');
+    if (coreFirst) member = { ...member, maxTurns: Math.min(member.maxTurns, 24) };
     if (request.applyMode === "step" && (runningAssignments(ledger).length || runningTasks().length)) throw new Error("단계별 적용은 앞 작업 승인·완료 후 다음 작업을 배정합니다. wait_agents를 먼저 호출하세요.");
     if (projectWriter()) throw new Error("프로젝트 공통 데이터 제작 중입니다. wait_agents 후 맵 작업을 배정하세요.");
     if (!working.maps[mapId]) throw new Error(`맵 '${mapId}' 이 프로젝트에 없습니다. 후보: ${candidateMaps.join(", ")}`);
     const agentId = `builder-${counters.builder + 1}`;
     const claim = claimAssignment(ledger, { mapId, agentId, memberId: member.id });
     if (!claim.ok) throw new Error(claim.reason);
+    if (coreFirst) firstBuildAssignments += 1;
     counters.builder += 1;
     ledger = claim.ledger;
     const { phase, fixOf } = claim.assignment;
@@ -348,6 +360,8 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
 
   /** Read-only designs can run alongside construction; project writes own the entire working copy. */
   function startTask(task: string, mode: "read" | "project", member: PiTeamMember): Record<string, unknown> {
+    if (coreFirst && mode === 'project' && firstBuildAssignments >= 3) throw new Error('첫 제작의 후속 배정은 3회까지입니다. 추가 작업은 다음 할 일로 보고하고 finish 하세요.');
+    if (coreFirst) member = { ...member, maxTurns: Math.min(member.maxTurns, 24) };
     if (request.applyMode === "step" && (runningAssignments(ledger).length || runningTasks().length)) throw new Error("단계별 적용은 앞 작업 승인·완료 후 이어집니다. wait_agents를 먼저 호출하세요.");
     if (tasks.size >= 64) throw new Error("팀 작업 배정 상한(64)에 도달했습니다. 남은 작업을 보고하세요.");
     if (mode === "project") {
@@ -355,6 +369,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
       if (request.scopeStrict !== false && request.mapIds.length > 0) throw new Error("명시된 맵 범위를 프로젝트 전체 쓰기로 넓힐 수 없습니다. 맵 배정을 사용하세요.");
       if (projectWriter() || runningAssignments(ledger).length) throw new Error("진행 중인 쓰기 작업이 있습니다. wait_agents 후 프로젝트 작업을 배정하세요.");
     }
+    if (coreFirst && mode === 'project') firstBuildAssignments += 1;
     const role = member.kind;
     const agentId = `${role}-${++counters[role]}`;
     tasks.set(agentId, { mode, memberId: member.id, task });
@@ -573,6 +588,11 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
           throw new Error(`아직 ${running.map((assignment) => `${assignment.memberId}(${assignment.agentId}, ${assignment.mapId})`).join(", ")} 가 작업 중입니다. wait_agents 로 결과를 받은 뒤 보고하세요.`);
         }
         if (mailbox.unread("orchestrator-1")) throw new Error("팀장에게 미열람 메시지 또는 반영 확인이 있습니다. read_team_messages로 확인하고 질문에 답한 뒤 finish 하세요.");
+        if (firstPlay) {
+          const issues = inspectFirstPlay(base, working, firstPlay);
+          if (issues.length) throw new Error('핵심 플레이 미완료: ' + issues.join(' / '));
+          if (firstPlaySignature(working, firstPlay) !== reviewedFirstPlay) await reviewFirstPlay();
+        }
         // 맵 사이 연결 계약(worldGraph)을 병합본으로 검사한다. 각 담당은 자기 맵만 보므로 이음새는 여기서만 보인다.
         const seamErrors = inspectWorldSeams(working).issues.filter((issue) => issue.severity === "error");
         const seamSignature = seamErrors.map((issue) => `${issue.code}:${issue.mapId ?? ""}:${issue.x ?? ""},${issue.y ?? ""}`).sort().join("|");
@@ -606,6 +626,97 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
     },
   ];
 
+  async function reviewFirstPlay(): Promise<void> {
+    const receipt = firstPlay!;
+    const snapshot = cloneProjectSharingSharedDictionaries(working);
+    const agentId = `reviewer-${++counters.reviewer}`;
+    const member = reviewers[0] ?? builders[0]!;
+    let verdict: { ok: boolean; blockers: string[] } | undefined;
+    const task = `확정 기획의 핵심 행동·요청한 모든 선택과 각 결과·진행·마무리가 실제 이벤트에 구현되었는지 확인한다. 기본 샘플의 엔딩 도달만으로 통과시키지 않는다. 누락된 요구는 실패로 보고한다. 지도 장식과 미지정 외형은 이 검사 대상이 아니다.\n사용자 원문과 확정 기획:\n${request.task}\n제작 근거:\n${JSON.stringify({ receipt, events: firstPlayEvents(snapshot, receipt) })}`;
+    const reportTool: PiToolShape = {
+      name: 'report_first_play_review', label: 'report_first_play_review',
+      description: '원문 요구와 실제 이벤트의 핵심 플레이 일치 여부를 보고한다. blockers는 누락/실패만, evidence는 확인한 근거다. 통과 시 ok=true, blockers=[].',
+      parameters: { type: 'object', properties: { ok: { type: 'boolean' }, blockers: { type: 'array', items: { type: 'string' } }, evidence: { type: 'array', minItems: 1, items: { type: 'string' } } }, required: ['ok', 'blockers', 'evidence'], additionalProperties: false },
+      async execute(_id, params) {
+        const rec = params as { ok?: unknown; blockers?: unknown; evidence?: unknown };
+        if (!Array.isArray(rec.blockers) || !Array.isArray(rec.evidence) || !rec.evidence.length) throw new Error('blockers(누락/실패)와 evidence(확인 근거)를 따로 보고하세요. 통과 시 blockers는 빈 배열입니다.');
+        verdict = { ok: rec.ok === true, blockers: rec.blockers.map(String).slice(0, 12) };
+        return text({ recorded: true });
+      },
+    };
+    progress.set(agentId, { turns: 0, toolCalls: 0, toolErrors: 0, lastLine: '' });
+    mailbox.register(agentId, member.label, null);
+    emit({ type: 'agent_spawn', agentId, role: 'reviewer', mapId: null, mapName: null, task, memberId: member.id, label: '핵심 플레이 확인' });
+    try {
+      const done = await runAgent({ ...request, ...request.roleModels?.deep, mode: 'single', project: snapshot, mapIds: [],
+        initialToolNames: undefined, toolDomains: undefined, readOnly: true, task, maxTurns: Math.min(member.maxTurns, 12),
+        ...(!request.roleModels?.deep && member.model ? { model: member.model } : {}),
+        systemPrompt: ['읽기 전용 핵심 플레이 검사다. 원문과 실제 실행 명령을 비교하고 반드시 report_first_play_review를 호출한다. 전체 제작 완료·실제 브라우저 통과라고 주장하지 않는다.'] },
+      { ...child(agentId, request.roleModels?.deep?.provider ?? request.provider), readOnlyTools: true,
+        toolNames: ['get_event', 'get_map_region', 'get_database_records', 'check_reachability', 'run_lint'], extraTools: [reportTool] });
+      toolCalls += done.stats.toolCalls; toolErrors += done.stats.toolErrors; subTurns += done.stats.turns; subUsage = addPiAgentUsage(subUsage, done.stats.usage);
+      if (changedProjectKeys(snapshot, done.project).length) throw new Error('읽기 전용 핵심 검사가 변경을 반환했습니다.');
+      if (!verdict?.ok || verdict.blockers.length) throw new Error('핵심 플레이 요구 누락: ' + (verdict?.blockers.join(' / ') || '검사 보고가 없습니다.'));
+      reviewedFirstPlay = firstPlaySignature(working, receipt);
+      emit({ type: 'execution_status', at: Date.now(), name: 'first_play.review_passed', ok: true, summary: '확정 기획과 실제 핵심 이벤트를 대조했습니다. 장면 마무리 작업을 이어갑니다.' });
+      emit({ type: 'agent_done', agentId, ok: true, summary: '핵심 플레이 요구 확인', stats: done.stats, changedKeys: [], spills: [], conflicts: [] });
+    } finally { mailbox.close(agentId); }
+  }
+
+  if (coreFirst) {
+    let repair = '';
+    // A missed requirement gets one bounded automatic repair, still within the
+    // restricted phase. Never hand an incomplete core to a decorating agent.
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      firstPlay = undefined;
+      const member = builders[0]!;
+      const agentId = `builder-${++counters.builder}`;
+      const snapshot = cloneProjectSharingSharedDictionaries(working);
+      const task = `첫 제작 1단계: 확정 기획의 핵심 플레이를 기존 두 맵의 뼈대 위에 지금 작성한다. 첫 조사/대화/전투/수집 행동 → 기획에 요청된 선택과 서로 다른 결과 → 진행 스위치와 기존 문 → 기획에 맞는 구간 마무리를 실제 이벤트로 연결한다. 선택이 요청됐다면 선택 문구와 각 branch의 결과를 모두 작성한다. 기본 샘플의 대사·이름만 남긴 채 완료하지 않는다. 뼈대 ID·좌표·통행·기존 전투/포획/엔딩 연결을 보존한다. 주인공 이름은 기획대로 DB에 반영한다. 지도 장식·새 맵·타이틀/이미지/음악은 다음 단계다. upsert_event로 기존 이벤트의 pages를 바꿀 때 필요한 페이지를 모두 포함한다. 끝나면 report_first_play로 변경한 interaction·resolution 이벤트의 mapId/eventId와 플레이 순서를 보고한다.\n${repair}\n전체 사용자 지시:\n${request.task}`;
+      const reportTool: PiToolShape = {
+        name: 'report_first_play', label: 'report_first_play',
+        description: '실제로 변경한 핵심 행동과 구간 마무리 이벤트를 보고한다. 기본 샘플 그대로거나 빈 선택 결과면 거절된다.',
+        parameters: { type: 'object', properties: { events: { type: 'array', minItems: 2, maxItems: 12, items: { type: 'object', properties: { mapId: { type: 'string' }, eventId: { type: 'string' }, role: { type: 'string', enum: ['interaction', 'progression', 'resolution'] } }, required: ['mapId', 'eventId', 'role'], additionalProperties: false } }, report: { type: 'string', minLength: 1, maxLength: 4000 } }, required: ['events', 'report'], additionalProperties: false },
+        async execute(_id, params) {
+          const rec = params as FirstPlayReceipt;
+          if (!Array.isArray(rec.events) || rec.events.length < 2 || rec.events.length > 12
+            || rec.events.some(ref => !ref || typeof ref.mapId !== 'string' || typeof ref.eventId !== 'string' || !['interaction', 'progression', 'resolution'].includes(ref.role))) throw new Error('실제 핵심 이벤트 근거가 필요합니다.');
+          const receipt = { events: rec.events.map(ref => ({ ...ref })), report: str(rec.report, 'report') };
+          const issues = inspectFirstPlay(base, working, receipt);
+          if (issues.length) throw new Error(issues.join(' / '));
+          firstPlay = receipt;
+          return text({ ok: true, events: receipt.events, next: '원문 요구 대조 후 장면 마무리' });
+        },
+      };
+      progress.set(agentId, { turns: 0, toolCalls: 0, toolErrors: 0, lastLine: '' });
+      mailbox.register(agentId, member.label, null);
+      emit({ type: 'agent_spawn', agentId, role: 'builder', mapId: null, mapName: null, task, memberId: member.id, label: '핵심 플레이 제작' });
+      try {
+        const done = await runAgent({ ...request, ...request.roleModels?.deep, mode: 'single', project: snapshot, mapIds: [], task,
+          initialToolNames: undefined, toolDomains: undefined, maxTurns: Math.min(member.maxTurns, attempt ? 16 : 32),
+          ...(!request.roleModels?.deep && member.model ? { model: member.model } : {}),
+          systemPrompt: [...buildPiAgentSystemPrompt(snapshot, []), '이번 단계에서는 기존 뼈대의 핵심 플레이만 작성한다. 제공된 도구 범위는 고정이다. 장식 도구를 검색하거나 다른 쓰기를 우회하지 않는다. 종료 전에 report_first_play를 호출한다.'] },
+        { ...child(agentId, request.roleModels?.deep?.provider ?? request.provider), toolNames: FIRST_PLAY_TOOLS,
+          onCheckpoint: checkpointFor(null, snapshot), extraTools: [reportTool] });
+        toolCalls += done.stats.toolCalls; toolErrors += done.stats.toolErrors; subTurns += done.stats.turns; subUsage = addPiAgentUsage(subUsage, done.stats.usage);
+        if (!firstPlay) throw new Error('핵심 플레이 제작 보고가 없어 장식 단계로 넘어가지 않습니다.');
+        assertModernProposal(working, done.project);
+        const issues = inspectFirstPlay(base, done.project, firstPlay);
+        const play = judgePlayableSegment(done.project);
+        if (issues.length || !play.ok) throw new Error('핵심 플레이 미완료: ' + [...issues, ...play.blockers].join(' / '));
+        working = cloneProjectSharingSharedDictionaries(done.project);
+        emit({ type: 'execution_status', at: Date.now(), name: 'first_play.core_ready', ok: true, summary: firstPlay.report, data: { events: firstPlay.events } });
+        emit({ type: 'agent_done', agentId, ok: true, summary: firstPlay.report, stats: done.stats, changedKeys: done.changedKeys, spills: [], conflicts: [] });
+      } finally { mailbox.close(agentId); }
+      try { await reviewFirstPlay(); break; }
+      catch (error) {
+        if (attempt || options.signal?.aborted) throw error;
+        repair = `앞 핵심 플레이 검사에서 남은 문제만 수정한다. 이미 구현된 부분은 보존한다. 검사 결과: ${error instanceof Error ? error.message : String(error)}`;
+        emit({ type: 'execution_status', at: Date.now(), name: 'first_play.repair', ok: false, summary: repair });
+      }
+    }
+  }
+
   const orchestratorId = `orchestrator-${++counters.orchestrator}`;
   progress.set(orchestratorId, { turns: 0, toolCalls: 0, toolErrors: 0, lastLine: "" });
   emit({ type: "agent_spawn", agentId: orchestratorId, role: "orchestrator", mapId: null, mapName: null, task: request.task });
@@ -613,13 +724,14 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   let orchDone: PiAgentDoneEvent;
   try {
     orchDone = await runAgent(
-      { ...request, initialToolNames: undefined, mode: "single", mapIds: candidateMaps, project: working, systemPrompt: [...orch.systemPrompt(base, request.mapIds, request.task, team, request.currentMapId), teamCommunicationPrompt(orchestratorId)], maxTurns: team.workBudget ?? orch.maxTurns },
+      { ...request, initialToolNames: undefined, mode: "single", mapIds: candidateMaps, project: working, systemPrompt: [...orch.systemPrompt(working, request.mapIds, request.task, team, request.currentMapId), ...(firstPlay ? [`핵심 플레이 제작과 원문 요구 검사를 이미 마쳤다: ${JSON.stringify(firstPlay)}. 남은 작업만 최대 3회 배정한다. 기존 두 맵을 유지하고 대규모 장식/새 맵을 다음 요청으로 넘긴다. 필요하면 주인공 이름·지도 이름·기존 오프닝 문구 등 장면 마무리 한 project 작업을 하고 finish 한다. 기획의 플레이를 다시 처음부터 만들지 않는다.`] : []), teamCommunicationPrompt(orchestratorId)], maxTurns: coreFirst ? Math.min(team.workBudget ?? orch.maxTurns, 32) : team.workBudget ?? orch.maxTurns },
       { ...child(orchestratorId), toolNames: orch.toolNames, extraTools: orchestratorTools },
     );
   } finally { mailbox.close(orchestratorId); }
   // 팀장이 wait 없이 끝났을 수 있다(턴 상한·조기 finish 실패). 남은 배정을 거두어 병합한다 —
   // 여기서 놓치면 이미 끝난 시공 결과가 조용히 사라진다.
   await Promise.all(inflight.map((entry) => entry.promise));
+  if (coreFirst && !finishAccepted) throw new Error('첫 제작이 검증된 finish까지 끝나지 않았습니다. 저장된 핵심 플레이는 보존했습니다.');
   if (skipFinalReview && request.applyMode !== "yolo") {
     finished = `${finished ?? summaryOf(orchDone)}\n완료 후 검토: 켜진 검수 담당이 없어 생략했습니다.`;
     emit({ type: "team_report", text: finished });

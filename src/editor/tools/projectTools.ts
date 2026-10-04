@@ -1,3 +1,4 @@
+import { isCatalogBgmAvailable } from '@/assets/audioResourceCatalog';
 import { createBlankProject } from "@/project/defaults";
 import { CAMERA_ZOOM_LIMITS, resolveCameraZoom, storeCameraZoom } from "@/project/cameraZoom";
 import { applyGenrePreset, type GenrePresetId } from "@/project/genrePresets";
@@ -387,7 +388,10 @@ const setProjectSettings: ToolDefinition = {
     if (args.resources && typeof args.resources === "object" && !Array.isArray(args.resources)) {
       const resources = args.resources as Record<string, unknown>;
       for (const key of ["titleResourceId", "systemResourceId", "defaultBgmResourceId", "battleBgmResourceId", "battleVictoryMeResourceId", "battleDefeatSeResourceId", "battleEscapeSeResourceId"] as const) {
-        if (typeof resources[key] === "string") draft.system[key] = resources[key];
+        if (typeof resources[key] === "string") {
+          if (!isCatalogBgmAvailable(resources[key])) throw new ToolError(`미설치 BGM '${resources[key]}'는 지정할 수 없습니다. recommend_bgm으로 현재 사용 가능한 곡을 고르세요.`, { code: 'resource-not-found' });
+          draft.system[key] = resources[key];
+        }
       }
       changed.push("리소스");
     }

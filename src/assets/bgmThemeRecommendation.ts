@@ -15,6 +15,7 @@ import { getAudioAiDescription } from "@/assets/audioAiDescriptions";
 import { BGM_CATALOG, type BgmCatalogTrack } from "@/assets/bgmCatalog";
 import { bgmCatalogResourceIds, findBgmRuntimeEntry } from "@/assets/bgmCatalogRuntime";
 import { STARTER_BATTLE_BGM_ID, STARTER_DEFAULT_BGM_ID } from "@/assets/bgmStarterTracks";
+import { isCatalogBgmAvailable } from './audioResourceCatalog';
 import { mulberry32 } from "@/util/rng";
 
 export type MapBgmRecommendOptions = {
@@ -110,7 +111,8 @@ export function recommendMapBgm(
     starterFallback(theme, excluded) ??
     pickId(loopCatalogIds(excluded), seed) ??
     pickId(allCatalogIds(excluded), seed);
-  return picked ?? STARTER_DEFAULT_BGM_ID;
+  // RTP music ships with the core player even when no optional MP3 pack exists.
+  return picked ?? (isCatalogBgmAvailable(STARTER_DEFAULT_BGM_ID) ? STARTER_DEFAULT_BGM_ID : 'easyrpg-music-field-1');
 }
 
 function matchingTracks(themeOrName: string, options: MapBgmRecommendOptions | undefined): readonly IndexedTrack[] {
@@ -228,22 +230,22 @@ function matchesKeyword(text: string, keyword: string): boolean {
 }
 
 function idsOf(entries: readonly IndexedTrack[], excluded: ReadonlySet<string>): string[] {
-  return entries.map((entry) => entry.track.id).filter((id) => !excluded.has(id));
+  return entries.map((entry) => entry.track.id).filter((id) => !excluded.has(id) && isCatalogBgmAvailable(id));
 }
 
 function loopCatalogIds(excluded: ReadonlySet<string>): string[] {
   return BGM_CATALOG.filter((track) => findBgmRuntimeEntry(track.id)?.loop === true)
     .map((track) => track.id)
-    .filter((id) => !excluded.has(id));
+    .filter((id) => !excluded.has(id) && isCatalogBgmAvailable(id));
 }
 
 function allCatalogIds(excluded: ReadonlySet<string>): string[] {
-  return bgmCatalogResourceIds().filter((id) => !excluded.has(id));
+  return bgmCatalogResourceIds().filter((id) => !excluded.has(id) && isCatalogBgmAvailable(id));
 }
 
 function starterFallback(theme: MapBgmTheme, excluded: ReadonlySet<string>): string | undefined {
   const id = theme === "battle" ? STARTER_BATTLE_BGM_ID : STARTER_DEFAULT_BGM_ID;
-  return excluded.has(id) ? undefined : id;
+  return excluded.has(id) || !isCatalogBgmAvailable(id) ? undefined : id;
 }
 
 function pickId(ids: readonly string[], seed: number): string | undefined {

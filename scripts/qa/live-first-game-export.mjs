@@ -36,7 +36,7 @@ try {
   report.exportStarted = new Date().toISOString(); save();
   await page.getByTestId('menu-project-export-web').click();
   const download = await Promise.race([downloadPromise, failurePromise]);
-  const dir = resolve('output/qa/live-first-game'); mkdirSync(dir, { recursive: true });
+  const dir = resolve(process.env.LIVE_GAME_PACKAGE_OUT ?? 'output/qa/live-first-game'); mkdirSync(dir, { recursive: true });
   report.path = resolve(dir, 'game-web.zip');
   await download.saveAs(report.path);
   report.downloadFailure = await download.failure();

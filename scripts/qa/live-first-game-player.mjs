@@ -2,6 +2,7 @@
 import assert from 'node:assert/strict';
 import { createServer } from 'node:http';
 import { readFile, stat, writeFile } from 'node:fs/promises';
+import { existsSync } from 'node:fs';
 import { resolve, extname, sep } from 'node:path';
 import { createHash } from 'node:crypto';
 import { DatabaseSync } from 'node:sqlite';
@@ -9,11 +10,12 @@ import { firefox } from 'playwright';
 import { runRuntimeQa } from '../lib/runtimeQaRun.mjs';
 
 const out = resolve(process.env.LIVE_GAME_OUT ?? 'verify-shots/live-first-game');
-const root = resolve('output/qa/live-first-game/game-web');
+const root = resolve(process.env.LIVE_GAME_PACKAGE_OUT ?? 'output/qa/live-first-game', 'game-web');
 const projectPath = resolve(root, 'project.json');
 const json = await readFile(projectPath, 'utf8'), project = JSON.parse(json);
-const completion = JSON.parse(await readFile(resolve(out, 'completion.json'), 'utf8'));
-assert(completion.passed, 'The live-model completion must be saved and reloaded first');
+const completionPath = resolve(out, 'completion.json');
+const completion = JSON.parse(await readFile(existsSync(completionPath) ? completionPath : resolve(out, 'generation.json'), 'utf8'));
+assert(completion.passed || completion.generationPrerequisitePassed, 'The live-model result must be saved and reloaded first');
 const db = new DatabaseSync(resolve(completion.afterReload.dir, 'project.sqlite'), { readOnly: true });
 let canonical;
 try {
@@ -25,6 +27,9 @@ assert.equal(canonical.projectId, completion.afterReload.projectId);
 assert.equal(project.meta.title, canonical.document.meta.title);
 assert.deepEqual(project.gameDesignBrief, canonical.document.gameDesignBrief);
 assert.deepEqual(project.startPos, canonical.document.startPos);
+assert.deepEqual(project.system, canonical.document.system, 'Opening, title, dialogue settings and game rules must match canonical storage');
+assert.deepEqual(project.database, canonical.document.database, 'The AI-authored protagonist and records must survive export');
+assert.deepEqual(project.endings, canonical.document.endings, 'The actual authored ending must survive export');
 for (const row of canonical.maps) {
   const map = JSON.parse(row.map_json), exported = project.maps[row.map_id];
   assert(exported, 'Every saved map must be exported');
@@ -62,6 +67,7 @@ const server = createServer(async (req, res) => {
 await new Promise(r => server.listen(0, '127.0.0.1', r));
 const url = 'http://127.0.0.1:' + server.address().port;
 const result = { projectId: canonical.projectId, title: project.meta.title, canonicalContentMatched: true,
+  automaticBuildCompleted: Boolean(completion.generationPrerequisitePassed && !completion.passed),
   projectJsonSha256: createHash('sha256').update(json).digest('hex'),
   projectJsonBytes: (await stat(projectPath)).size, choices: choice.options.map(o => o.text), branches: [] };
 // Pointer movement is an authored opt-in. Use ordinary arrow keys for the
