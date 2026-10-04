@@ -3,7 +3,7 @@ import { briefOpeningMotive, briefOpeningSequence, isUntouchedDefaultOpening } f
 import { toast } from "@/util/toast";
 import { DEFAULT_DIALOGUE_STYLE_ID, recommendedDialogueStyleForPreset } from "@/project/dialogueStyles";
 import { welcomeGenrePresetById, buildWelcomeGenrePresetPrompt, welcomeGenrePresetDisplayText } from "./welcomeGenrePresets";
-import { applyPendingAiBootIntent, setPendingAiBootIntent } from "./aiBootIntent";
+import { applyPendingAiBootIntent, peekAiAssistantDraft, setPendingAiBootIntent } from "./aiBootIntent";
 import { isAssistantEndpointReady, resolveSurfaceAiConfig } from "@/ai/assistantEndpoint";
 import { AI_CONNECTION_STATUS_CHANGED_EVENT, getAiConnectionStatus, refreshAiConnectionStatus } from "./panels/aiConnectionStatus";
 import { withVerifiedPlayableSegment } from "@/project/playableSegment";
@@ -45,8 +45,16 @@ export async function prepareProjectInterviewStartup(): Promise<void> {
   preparing = true;
   watchConnection();
   try {
+    // Show the saved request before expensive asset preparation; automatic execution waits
+    // for the immutable base and canonical save below. A human draft is never replaced.
+    if (peekAiAssistantDraft() === "") {
+      setPendingAiBootIntent(buildWelcomeGenrePresetPrompt(preset, brief), {
+        autoSend: false, displayText: welcomeGenrePresetDisplayText(preset, brief), team: true,
+      });
+      applyPendingAiBootIntent();
+    }
     await prepareProjectInterviewBootAssets();
-    if (!stillCurrent()) return;
+    if (!stillCurrent() || !store.getCurrent().gameDesignBrief?.generationPending) return;
     // Keep the durable retry marker until the execution route accepts the request.
     store.update(project => {
       // 씨앗의 기본 오프닝(왕국·호숫가 그림)이 기획과 어긋나지 않게 기획 문장으로 바꿔 둔다.

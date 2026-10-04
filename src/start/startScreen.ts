@@ -19,7 +19,6 @@ import { el } from "@/util/dom";
 import { getLocale, initI18n, LOCALE_NATIVE_NAMES, setLocale, SUPPORTED_LOCALES, t, type SupportedLocale } from "@/i18n";
 import { writeStartScreenIntent } from "./startIntent";
 import { START_EXAMPLE_DETAILS, type ProjectStartMode, type ProjectStartScreenSize } from "./projectStart";
-import { createFirstWorldArrival, type FirstWorldArrival } from "./firstWorldArrival";
 import type { GameDesignBrief } from "@/project/gameDesignBrief";
 
 export const START_SCREEN_TESTIDS = {
@@ -219,7 +218,8 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
   host.dataset.testid = START_SCREEN_TESTIDS.root;
   const errorBox = el("p", { class: "start-error", attrs: { role: "alert" }, dataset: { testid: START_SCREEN_TESTIDS.error } });
   const main = el("section", { class: "start-main", attrs: { "aria-live": "polite" } });
-  let firstArrival: FirstWorldArrival | undefined;
+  let interviewAbort: AbortController | undefined;
+  let interviewDismissed = false;
 
   const setError = (message: string): void => {
     state.error = message;
@@ -239,7 +239,6 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     const controls = Array.from(host.querySelectorAll<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement | HTMLButtonElement>("button, input, textarea, select"));
     const disabledBefore = controls.map(control => control.disabled);
     controls.forEach(control => { control.disabled = true; });
-    firstArrival?.setBusy(true);
     setError("");
     try {
       await work();
@@ -249,7 +248,6 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
       state.busy = false;
       host.classList.remove("is-busy");
       controls.forEach((control, index) => { control.disabled = disabledBefore[index]!; });
-      firstArrival?.setBusy(false);
     }
   };
 
@@ -287,6 +285,7 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
   };
 
   const showView = (view: View, choiceId?: NewProjectChoiceId | null, startMode: ProjectStartMode = "example"): void => {
+    if (state.busy) return;
     state.view = view;
     state.confirmedBrief = undefined;
     if (view === "new") state.choiceId = choiceId ?? null;
@@ -312,20 +311,20 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     }
   };
 
-  const create = (): void => void run(async () => {
+  const createConfirmedProject = async (confirmed?: GameDesignBrief): Promise<boolean> => {
     if (!bridge) throw new Error("데스크톱 앱에서만 새 게임을 만들 수 있습니다.");
     const title = state.title.trim() || t(DEFAULT_TITLE);
     if (state.startMode === "ai") {
       const { interviewBeforeProject } = await import("./startInterview");
-      const brief = state.confirmedBrief ?? await interviewBeforeProject(state.choiceId, state.intent.trim());
+      const brief = confirmed ?? state.confirmedBrief ?? await interviewBeforeProject(state.choiceId, state.intent.trim());
       // Cancelling or declining connection must not create a folder or open the editor.
-      if (!brief) return;
+      if (!brief) return false;
       state.confirmedBrief = brief;
       state.choiceId = brief.presetId;
       // Planning is immediately usable. Account readiness belongs to the final build,
       // and declining it retains the confirmed draft for the next attempt.
       const { ensureAiConnectedForPreset } = await import("@/editor/ui/aiConnectGate");
-      if (!await ensureAiConnectedForPreset({ presetLabel: NEW_PROJECT_CHOICES.find(choice => choice.id === brief.presetId)?.label })) return;
+      if (!await ensureAiConnectedForPreset({ presetLabel: NEW_PROJECT_CHOICES.find(choice => choice.id === brief.presetId)?.label })) return false;
       // Check storage before creating a folder; silently opening a blank project loses the plan.
       const key = "oprn:start-handoff-storage-check";
       window.sessionStorage.setItem(key, JSON.stringify({ gameDesignBrief: brief, intent: state.intent }) + " ".repeat(1024));
@@ -349,7 +348,9 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
       try { writeStartScreenIntent(window.sessionStorage, handoff); } catch { /* Preserve the existing non-AI folder opening fallback. */ }
     }
     goEditor();
-  });
+    return true;
+  };
+  const create = (): void => void run(async () => { await createConfirmedProject(); });
 
   const chooseRoot = (): void => void run(async () => {
     if (!bridge?.chooseProjectRoot) return;
@@ -375,7 +376,7 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     attrs: { type: "button" },
     dataset: { testid: START_SCREEN_TESTIDS.navRecent },
     children: [icon("clock"), "홈"],
-    on: { click: () => showView("home") },
+    on: { click: () => { interviewDismissed = true; showView("home"); } },
   });
   const navNew = el("button", {
     class: "start-nav-item",
@@ -462,14 +463,32 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
 
   const renderAiArrival = (): HTMLElement[] => {
     state.startMode = "ai";
-    firstArrival = createFirstWorldArrival({
-      choiceId: state.choiceId, intent: state.intent,
-      inputTestId: START_SCREEN_TESTIDS.intentInput,
-      submitTestId: START_SCREEN_TESTIDS.create,
-      genreTestId: choice => `${START_SCREEN_TESTIDS.genreOption}-${choice.id}`,
-      onChoice: choiceId => { state.choiceId = choiceId; state.confirmedBrief = undefined; },
-      onIntent: text => { state.intent = text; state.confirmedBrief = undefined; },
-      onSubmit: (choiceId, text) => { state.choiceId = choiceId; state.intent = text; create(); },
+    const container = el("div", { class: "start-interview-host", children: [el("h1", { class: "start-interview-loading", text: "어떤 게임을 만들까요?" })] });
+    const controller = new AbortController();
+    interviewAbort = controller;
+    queueMicrotask(() => {
+      void import("./startInterview").then(({ interviewBeforeProject }) => interviewBeforeProject(state.choiceId, state.intent, {
+        container, signal: controller.signal,
+        onConfirm: async brief => {
+          state.busy = true; host.classList.add("is-busy"); setError("");
+          const controls = [...host.querySelectorAll<HTMLButtonElement | HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>("button, input, select, textarea")];
+          const disabledBefore = controls.map(control => control.disabled);
+          controls.forEach(control => { control.disabled = true; });
+          try { return await createConfirmedProject(brief); }
+          finally {
+            state.busy = false; host.classList.remove("is-busy");
+            controls.forEach((control, index) => { control.disabled = disabledBefore[index]!; });
+          }
+        },
+      })).then(brief => {
+        if (!brief && !controller.signal.aborted && container.isConnected) {
+          interviewDismissed = true; showView("home");
+        }
+      }).catch(error => {
+        if (controller.signal.aborted) return;
+        container.replaceChildren(el("p", { attrs: { role: "alert" }, text: "인터뷰를 열지 못했습니다. 새 게임 만들기를 다시 눌러 주세요." }));
+        setError(error instanceof Error ? error.message : String(error));
+      });
     });
     const titleInput = el("input", { class: "start-input", value: state.title,
       attrs: { id: "start-title", type: "text", maxlength: "80", autocomplete: "off" }, dataset: { testid: START_SCREEN_TESTIDS.titleInput },
@@ -498,7 +517,7 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
       el("button", { class: "start-link", text: "예제 둘러보기", attrs: { type: "button" }, dataset: { testid: START_SCREEN_TESTIDS.back }, on: { click: () => showView("new", null, "example") } }),
       el("button", { class: "start-link", text: "빈 프로젝트", attrs: { type: "button" }, dataset: { testid: "start-blank-project" }, on: { click: () => showView("new", null, "blank") } }),
     ] });
-    return [firstArrival.element, settings, alternatives];
+    return [container, settings, alternatives];
   };
 
   const renderHome = (): HTMLElement[] => {
@@ -509,7 +528,7 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     const first = visible[0];
     const rest = list.filter((entry) => entry !== first);
     const actions = lobbyActions(first);
-    const out: HTMLElement[] = first ? [
+    const out: HTMLElement[] = first || interviewDismissed ? [
       createStartLobby(first, first ? entryMeta(first) : "", actions),
       createLobbyWays(actions),
       createLobbyFeatures(),
@@ -621,7 +640,7 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
           attrs: { type: "button", "aria-label": "최근 작업으로 돌아가기" },
           dataset: { testid: START_SCREEN_TESTIDS.back },
           children: [icon("back")],
-          on: { click: () => showView("home") },
+          on: { click: () => { interviewDismissed = true; showView("home"); } },
         }),
         el("h1", { class: "start-title", text: "팀에 참여" }),
       ] }),
@@ -674,10 +693,11 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     else { navNew.removeAttribute("aria-current"); navRecent.removeAttribute("aria-current"); }
     main.classList.toggle("is-home", home);
     host.dataset.view = state.view;
-    firstArrival?.dispose();
-    firstArrival = undefined;
+    interviewAbort?.abort();
+    interviewAbort = undefined;
     main.replaceChildren(...renderView(), errorBox);
-    host.classList.toggle("is-first-world", Boolean(firstArrival));
+    host.classList.toggle("is-first-world", Boolean(interviewAbort));
+    host.classList.toggle("is-interview-start", Boolean(interviewAbort));
   };
 
   /** 구운 그림을 상태에 넣고, 화면에 있는 그 카드의 그림 칸만 바꾼다(전체를 다시 그리면 포커스가 튄다). */
@@ -730,7 +750,7 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
   };
 
   document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && state.view !== "home" && !state.busy) showView("home");
+    if (event.key === "Escape" && state.view !== "home" && !state.busy) { interviewDismissed = true; showView("home"); }
   });
 
   host.replaceChildren(rail, main);

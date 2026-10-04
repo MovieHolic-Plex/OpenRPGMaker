@@ -69,7 +69,7 @@ AI-only preset first builds could not be finished: of 24 live runs on 2026-09-27
 
 ## Cinematic interview in the actual app (2026-10-03)
 
-- Before the interview, `src/start/firstWorldArrival.ts` supplies the same world-preview stage to first-time launcher Home, launcher New Game, and editor welcome. The three engine choices remain canonical. Choosing one changes the reference background and focuses a local first-sentence draft; only explicit submission starts connection/planning. Welcome passes that draft as `initialAnswer` and preserves it on connection/interview cancellation. Later interview choices may change or mix author genres and determine the confirmed engine. Image characters and scenes remain references, never authored project content.
+- First-time launcher Home and launcher New Game embed the first genre question directly, with a pixel still and optional ambient motion. Genre and answer buttons advance in one click; idea entry, genre mixing, custom answers and extra planning fields stay available in disclosures. `src/start/firstWorldArrival.ts` remains the editor welcome's world-preview stage. Later interview choices determine the confirmed engine. Image characters and scenes remain references, never authored project content.
 - `src/editor/ui/projectInterviewDialog.ts` is the production interview, shared by menu creation, welcome posters, launcher planning, and saved-brief editing. New Game opens AI planning by default; examples and blank projects remain under “시작 방식 다시 고르기”. The launcher lazy-loads the draft-only interview on `start-screen.html` before creating a folder. Only final confirmation and account readiness create/open the SQLite project. Legacy launcher payloads without a confirmed brief retain their old editor-side interview route.
 - Four author-facing genres: relationship/romance, monster collection/growth, adventure, mystery. No life/management option. `projectInterviewScenes.json` owns five questions and three illustrated choices per genre; `cinematicInterviewQuestions.ts` maps them onto existing brief slots. Genre mixing adds an explicit connection question. Custom concept/answers, recommendation provenance, back/edit, cancellation, and editable final summary remain local drafts until confirmation. No automatic AI extraction is performed in this new choice-driven flow; the full original concept is preserved for the assistant.
 - The film runs only for arrival. An explicit genre/answer choice stops and hides it; generation publishes only a freshly reviewed pixel scene. The world-map poster is the first pending still. Later pending requests retain the prior accepted scene with an explicit “이전 장면” status, rather than returning to the video. The bundled branch gallery remains historical evidence and is not the production choice background. Request tokens discard late responses. Motion toggle, reduced-motion default, image failure fallback, modal-stack Escape, focus restoration and tab containment are supported. Image characters never define the protagonist.
@@ -261,7 +261,13 @@ does not navigate to `index.html`, create a project folder, boot Phaser, or load
 the store while answers are being chosen. Its account gate runs after final
 confirmation; declining connection or failing folder creation retains the
 confirmed draft for retry. Menu/welcome connection ordering is unchanged.
-`firstWorldArrival.setBusy` pauses the covered arrival film.
+The launcher mounts it inline with `container`, `signal` and `clickThrough`,
+without a preliminary idea form or modal focus trap. No movie autoplays. The
+`onConfirm` callback disables controls while connecting/creating; declining or
+failing leaves the same confirmation screen, and navigation aborts pending art
+when leaving the interview. Busy navigation is blocked for pointer and keyboard.
+Cancelling returns to recent projects even when that list is empty, rather than
+immediately reopening the first question.
 
 `StartScreenIntent.gameDesignBrief` carries the complete confirmed metadata,
 answers, summary, protagonist and notes, not a shortened visible sentence. Boot
@@ -269,6 +275,13 @@ validates it against the selected engine, saves it with `generationPending`, and
 uses `prepareProjectInterviewStartup` for the normal internal execution handoff.
 It skips a second interview and the launcher sentence-only send. A mismatched,
 expired or differently targeted intent never applies to another folder.
+
+`prepareProjectInterviewStartup` prefills an empty, mounted AI composer before
+asset preparation, preserving the full internal prompt and first-turn team
+option behind the concise visible request. This first apply does not send.
+Canonical save and account readiness still precede the later execution handoff;
+human drafts are not replaced by the early prefill. The pending generation
+marker retains the existing retry semantics.
 
 The lightweight import boundary matters: `llmClient` must read team/apply defaults
 from `piAgent/executionDefaults` and `applyMode`, not `executionRoute`, which pulls

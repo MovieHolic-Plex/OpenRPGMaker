@@ -17,6 +17,12 @@ export interface ProjectInterviewOptions {
   initialAnswer?: string;
   /** Bounded reading time for the answer receipt. Zero is useful for deterministic callers. */
   presentationDelayMs?: number;
+  /** Launcher surface: the interview is its first screen, not a second modal. */
+  container?: HTMLElement;
+  signal?: AbortSignal;
+  clickThrough?: boolean;
+  /** Keep the confirmed draft visible until project creation succeeds. */
+  onConfirm?: (brief: GameDesignBrief) => Promise<boolean>;
 }
 
 function presentationPause(ms: number, signal: AbortSignal): Promise<void> {

@@ -2,8 +2,15 @@
 import type { GameDesignBrief } from "@/project/gameDesignBrief";
 import type { NewProjectChoiceId } from "@/editor/newProjectChoices";
 
-export async function interviewBeforeProject(choiceId: NewProjectChoiceId | null, intent: string): Promise<GameDesignBrief | null> {
+export type LauncherInterviewOptions = {
+  container?: HTMLElement;
+  signal?: AbortSignal;
+  onConfirm?: (brief: GameDesignBrief) => Promise<boolean>;
+};
+
+export async function interviewBeforeProject(choiceId: NewProjectChoiceId | null, intent: string, options: LauncherInterviewOptions = {}): Promise<GameDesignBrief | null> {
   const presetId = choiceId ?? "story-cutscene";
   const { showProjectInterview } = await import("@/editor/ui/projectInterviewDialog");
-  return showProjectInterview(presetId, { initialAnswer: intent, confirmLabel: "이 게임 만들기" });
+  if (options.signal?.aborted || (options.container && !options.container.isConnected)) return null;
+  return showProjectInterview(presetId, { initialAnswer: intent, confirmLabel: "제작 시작", clickThrough: true, ...options });
 }
