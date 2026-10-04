@@ -1,0 +1,164 @@
+{
+  "enemyActions": [
+    {
+      "enemyId": "enemy_jf_wild_boar",
+      "actions": [
+        {
+          "skillId": "",
+          "priority": 1,
+          "condition": {
+            "kind": "always"
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        },
+        {
+          "skillId": "skill_jf_enemy_tusk_charge",
+          "priority": 80,
+          "condition": {
+            "kind": "turn",
+            "start": 2,
+            "interval": 3
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        }
+      ],
+      "skillIds": [
+        "skill_jf_enemy_tusk_charge"
+      ]
+    },
+    {
+      "enemyId": "enemy_jf_straw_dokkaebi",
+      "actions": [
+        {
+          "skillId": "",
+          "priority": 1,
+          "condition": {
+            "kind": "always"
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        },
+        {
+          "skillId": "skill_jf_enemy_straw_club",
+          "priority": 70,
+          "condition": {
+            "kind": "turn",
+            "start": 2,
+            "interval": 2
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        }
+      ],
+      "skillIds": [
+        "skill_jf_enemy_straw_club"
+      ]
+    },
+    {
+      "enemyId": "enemy_jf_maiden_ghost",
+      "actions": [
+        {
+          "skillId": "",
+          "priority": 1,
+          "condition": {
+            "kind": "always"
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        },
+        {
+          "skillId": "skill_jf_enemy_sorrow_cry",
+          "priority": 80,
+          "condition": {
+            "kind": "turn",
+            "start": 2,
+            "interval": 3
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        }
+      ],
+      "skillIds": [
+        "skill_jf_enemy_sorrow_cry"
+      ]
+    },
+    {
+      "enemyId": "enemy_jf_bronze_dokkaebi",
+      "actions": [
+        {
+          "skillId": "",
+          "priority": 1,
+          "condition": {
+            "kind": "always"
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        },
+        {
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "priority": 80,
+          "condition": {
+            "kind": "turn",
+            "start": 2,
+            "interval": 4
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        },
+        {
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "priority": 95,
+          "condition": {
+            "kind": "hp",
+            "minPercent": 0,
+            "maxPercent": 40
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        }
+      ],
+      "skillIds": [
+        "skill_jf_enemy_bronze_smash",
+        "skill_jf_enemy_bronze_smash"
+      ]
+    }
+  ]
+}

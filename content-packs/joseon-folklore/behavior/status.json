@@ -1,0 +1,101 @@
+{
+  "phase": "pilot",
+  "ready": true,
+  "readyMeaning": "all first-sample artifacts saved and worker-reviewed; not game integration or user approval",
+  "counts": {
+    "enemyActions": 4,
+    "actionPatterns": 9,
+    "authoredNormals": 3,
+    "authoredBosses": 1,
+    "plannedNormals": 12,
+    "plannedBosses": 3,
+    "runtimeScenarios": 12,
+    "reviewPngs": 2
+  },
+  "reviewFiles": [
+    "public/assets/joseon-folklore/behavior/pilot-review.png",
+    "public/assets/joseon-folklore/behavior/source-poses-nearest.png",
+    "content-packs/joseon-folklore/behavior/smoke-results.json"
+  ],
+  "visualReview": {
+    "performed": true,
+    "reviewer": "behavior worker; subjective self-review",
+    "userApproved": false,
+    "findings": [
+      "original 9pose sheets inspected directly; native and nearest review boards opened",
+      "timeline text visible without cropping; gold prepare rows precede blue release rows",
+      "low HP boss prepares on off-cycle T4 and damages all 4 actors on release"
+    ],
+    "imageHashes": {
+      "public/assets/joseon-folklore/behavior/pilot-review.png": "261609795c0baff9d036a7f91aa9d2539fc5e1a8efa90c45a3f805a928f50e58",
+      "public/assets/joseon-folklore/behavior/source-poses-nearest.png": "38b5f75ef8ab9b5b2c5e282dd8ca2c3e68d53e229d6a07434d70db47cb5b671a"
+    }
+  },
+  "validation": {
+    "focusedSmoke": true,
+    "normalizationReadback": true,
+    "fullGatesRun": false,
+    "liveStoreWritten": false
+  },
+  "integrationReady": false,
+  "pending": [
+    "skills owner real 4 skills (especially bronze scope allEnemies/chargeTurns=1)",
+    "monsters owner new source art/stats and supervisor balance review",
+    "supervisor public registration, project save/reload and shipped-player QA"
+  ],
+  "stopReason": "first sample complete; await supervisor follow-up; no full expansion",
+  "files": [
+    {
+      "path": "content-packs/joseon-folklore/behavior/README.md",
+      "sha256": "7cdea5fb56aba4dbe4982873b0730d20a9fbe29e6ba642e90c907234d79303e0"
+    },
+    {
+      "path": "content-packs/joseon-folklore/behavior/data.json",
+      "sha256": "dbe197b61b4350c22f5b25743142016eb32595c297c255d7237a9b597dda37da"
+    },
+    {
+      "path": "content-packs/joseon-folklore/behavior/design.json",
+      "sha256": "d4b7040eb1f9b83ce1bc6ec0740fafee5e8d85f57fdcb85794f50f4ead04636f"
+    },
+    {
+      "path": "content-packs/joseon-folklore/behavior/provenance.json",
+      "sha256": "03ada1018886eb0f495da32cf201d82446ebf23048b0a6b09d35a454bb13f498"
+    },
+    {
+      "path": "content-packs/joseon-folklore/behavior/smoke-results.json",
+      "sha256": "96ea41c84ee349739186395650a7a83fe983516c3f764ed82ad82d3ad4298006"
+    },
+    {
+      "path": "public/assets/joseon-folklore/behavior/README.md",
+      "sha256": "f757a8af62383fe380ebba627c0cc93e3bc8f8b07f53eeb2c1e3d3043cdddb86"
+    },
+    {
+      "path": "public/assets/joseon-folklore/behavior/pilot-review.png",
+      "sha256": "261609795c0baff9d036a7f91aa9d2539fc5e1a8efa90c45a3f805a928f50e58"
+    },
+    {
+      "path": "public/assets/joseon-folklore/behavior/source-poses-nearest.png",
+      "sha256": "38b5f75ef8ab9b5b2c5e282dd8ca2c3e68d53e229d6a07434d70db47cb5b671a"
+    },
+    {
+      "path": "scripts/content/joseon-folklore/behavior/README.md",
+      "sha256": "a2bd4001b36ae2bb7ced4e909fd561c9f3cf376c5bbb901c2a4188140cd89af2"
+    },
+    {
+      "path": "scripts/content/joseon-folklore/behavior/author-pilot.py",
+      "sha256": "19c296853a04755f4ca8e8a849372588d6916d1b35d6ef91eeaa582d7ac3357c"
+    },
+    {
+      "path": "scripts/content/joseon-folklore/behavior/render-review.py",
+      "sha256": "af982ce9d5c9a6865c4ff325a491572eb99432bfcde8cdea97066bb2b94410f2"
+    },
+    {
+      "path": "scripts/content/joseon-folklore/behavior/run-smoke.mjs",
+      "sha256": "a464afb5cd411c1b0f7f29cc3a7d978f1ea6b02f13a7c445ab36f2b1c5bf9816"
+    },
+    {
+      "path": "scripts/content/joseon-folklore/behavior/smoke.mts",
+      "sha256": "aede8e8fe86c8ee038cf95c401b9241efa95e5fef40b105d8692a29c9bc12c4e"
+    }
+  ]
+}

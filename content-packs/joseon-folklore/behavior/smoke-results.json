@@ -1,0 +1,4439 @@
+{
+  "ok": true,
+  "scope": "4 authored AIs; actual runtime, synthetic skill dependencies, read-only prototype; no live store",
+  "sourcePath": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/output/jf-workers/prototype-database.json",
+  "normalization": "exact EnemyActionPattern and skillIds preserved; JSON readback",
+  "hpBoundaries": [
+    {
+      "percent": 100,
+      "eligible": false
+    },
+    {
+      "percent": 40.01,
+      "eligible": false
+    },
+    {
+      "percent": 40,
+      "eligible": true
+    },
+    {
+      "percent": 39.99,
+      "eligible": true
+    },
+    {
+      "percent": 0,
+      "eligible": true
+    }
+  ],
+  "conditionSamples": [
+    {
+      "enemyId": "enemy_jf_wild_boar",
+      "turns": [
+        {
+          "turn": 1,
+          "eligible": [
+            true,
+            false
+          ]
+        },
+        {
+          "turn": 2,
+          "eligible": [
+            true,
+            true
+          ]
+        },
+        {
+          "turn": 3,
+          "eligible": [
+            true,
+            false
+          ]
+        },
+        {
+          "turn": 4,
+          "eligible": [
+            true,
+            false
+          ]
+        },
+        {
+          "turn": 5,
+          "eligible": [
+            true,
+            true
+          ]
+        },
+        {
+          "turn": 6,
+          "eligible": [
+            true,
+            false
+          ]
+        },
+        {
+          "turn": 7,
+          "eligible": [
+            true,
+            false
+          ]
+        },
+        {
+          "turn": 8,
+          "eligible": [
+            true,
+            true
+          ]
+        },
+        {
+          "turn": 9,
+          "eligible": [
+            true,
+            false
+          ]
+        },
+        {
+          "turn": 10,
+          "eligible": [
+            true,
+            false
+          ]
+        }
+      ]
+    },
+    {
+      "enemyId": "enemy_jf_straw_dokkaebi",
+      "turns": [
+        {
+          "turn": 1,
+          "eligible": [
+            true,
+            false
+          ]
+        },
+        {
+          "turn": 2,
+          "eligible": [
+            true,
+            true
+          ]
+        },
+        {
+          "turn": 3,
+          "eligible": [
+            true,
+            false
+          ]
+        },
+        {
+          "turn": 4,
+          "eligible": [
+            true,
+            true
+          ]
+        },
+        {
+          "turn": 5,
+          "eligible": [
+            true,
+            false
+          ]
+        },
+        {
+          "turn": 6,
+          "eligible": [
+            true,
+            true
+          ]
+        },
+        {
+          "turn": 7,
+          "eligible": [
+            true,
+            false
+          ]
+        },
+        {
+          "turn": 8,
+          "eligible": [
+            true,
+            true
+          ]
+        },
+        {
+          "turn": 9,
+          "eligible": [
+            true,
+            false
+          ]
+        },
+        {
+          "turn": 10,
+          "eligible": [
+            true,
+            true
+          ]
+        }
+      ]
+    },
+    {
+      "enemyId": "enemy_jf_maiden_ghost",
+      "turns": [
+        {
+          "turn": 1,
+          "eligible": [
+            true,
+            false
+          ]
+        },
+        {
+          "turn": 2,
+          "eligible": [
+            true,
+            true
+          ]
+        },
+        {
+          "turn": 3,
+          "eligible": [
+            true,
+            false
+          ]
+        },
+        {
+          "turn": 4,
+          "eligible": [
+            true,
+            false
+          ]
+        },
+        {
+          "turn": 5,
+          "eligible": [
+            true,
+            true
+          ]
+        },
+        {
+          "turn": 6,
+          "eligible": [
+            true,
+            false
+          ]
+        },
+        {
+          "turn": 7,
+          "eligible": [
+            true,
+            false
+          ]
+        },
+        {
+          "turn": 8,
+          "eligible": [
+            true,
+            true
+          ]
+        },
+        {
+          "turn": 9,
+          "eligible": [
+            true,
+            false
+          ]
+        },
+        {
+          "turn": 10,
+          "eligible": [
+            true,
+            false
+          ]
+        }
+      ]
+    },
+    {
+      "enemyId": "enemy_jf_bronze_dokkaebi",
+      "turns": [
+        {
+          "turn": 1,
+          "eligible": [
+            true,
+            false,
+            false
+          ]
+        },
+        {
+          "turn": 2,
+          "eligible": [
+            true,
+            true,
+            false
+          ]
+        },
+        {
+          "turn": 3,
+          "eligible": [
+            true,
+            false,
+            false
+          ]
+        },
+        {
+          "turn": 4,
+          "eligible": [
+            true,
+            false,
+            false
+          ]
+        },
+        {
+          "turn": 5,
+          "eligible": [
+            true,
+            false,
+            false
+          ]
+        },
+        {
+          "turn": 6,
+          "eligible": [
+            true,
+            true,
+            false
+          ]
+        },
+        {
+          "turn": 7,
+          "eligible": [
+            true,
+            false,
+            false
+          ]
+        },
+        {
+          "turn": 8,
+          "eligible": [
+            true,
+            false,
+            false
+          ]
+        },
+        {
+          "turn": 9,
+          "eligible": [
+            true,
+            false,
+            false
+          ]
+        },
+        {
+          "turn": 10,
+          "eligible": [
+            true,
+            true,
+            false
+          ]
+        }
+      ]
+    }
+  ],
+  "runs": [
+    {
+      "enemyId": "enemy_jf_wild_boar",
+      "flow": "strict",
+      "options": {},
+      "events": [
+        {
+          "turn": 1,
+          "enemyHp": 120,
+          "enemyMaxHp": 120,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 9,
+          "actionId": 5
+        },
+        {
+          "turn": 2,
+          "enemyHp": 120,
+          "enemyMaxHp": 120,
+          "kind": "prepare",
+          "skillId": "skill_jf_enemy_tusk_charge",
+          "targetId": "enemy-1",
+          "message": "산멧돼지가 엄니 돌진을 준비한다! (1턴 뒤)",
+          "actionId": 10,
+          "charging": {
+            "skillId": "skill_jf_enemy_tusk_charge",
+            "skillName": "엄니 돌진",
+            "turnsLeft": 1
+          }
+        },
+        {
+          "turn": 3,
+          "enemyHp": 120,
+          "enemyMaxHp": 120,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_tusk_charge",
+          "targetId": "actor_mage",
+          "amount": 12,
+          "actionId": 15
+        },
+        {
+          "turn": 4,
+          "enemyHp": 120,
+          "enemyMaxHp": 120,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 9,
+          "actionId": 20
+        },
+        {
+          "turn": 5,
+          "enemyHp": 120,
+          "enemyMaxHp": 120,
+          "kind": "prepare",
+          "skillId": "skill_jf_enemy_tusk_charge",
+          "targetId": "enemy-1",
+          "message": "산멧돼지가 엄니 돌진을 준비한다! (1턴 뒤)",
+          "actionId": 25,
+          "charging": {
+            "skillId": "skill_jf_enemy_tusk_charge",
+            "skillName": "엄니 돌진",
+            "turnsLeft": 1
+          }
+        },
+        {
+          "turn": 6,
+          "enemyHp": 120,
+          "enemyMaxHp": 120,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_tusk_charge",
+          "targetId": "actor_mage",
+          "amount": 12,
+          "actionId": 30
+        },
+        {
+          "turn": 7,
+          "enemyHp": 120,
+          "enemyMaxHp": 120,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 9,
+          "actionId": 35
+        },
+        {
+          "turn": 8,
+          "enemyHp": 120,
+          "enemyMaxHp": 120,
+          "kind": "prepare",
+          "skillId": "skill_jf_enemy_tusk_charge",
+          "targetId": "enemy-1",
+          "message": "산멧돼지가 엄니 돌진을 준비한다! (1턴 뒤)",
+          "actionId": 40,
+          "charging": {
+            "skillId": "skill_jf_enemy_tusk_charge",
+            "skillName": "엄니 돌진",
+            "turnsLeft": 1
+          }
+        },
+        {
+          "turn": 9,
+          "enemyHp": 120,
+          "enemyMaxHp": 120,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_tusk_charge",
+          "targetId": "actor_mage",
+          "amount": 12,
+          "actionId": 45
+        },
+        {
+          "turn": 10,
+          "enemyHp": 120,
+          "enemyMaxHp": 120,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 9,
+          "actionId": 50
+        },
+        {
+          "turn": 11,
+          "enemyHp": 120,
+          "enemyMaxHp": 120,
+          "kind": "prepare",
+          "skillId": "skill_jf_enemy_tusk_charge",
+          "targetId": "enemy-1",
+          "message": "산멧돼지가 엄니 돌진을 준비한다! (1턴 뒤)",
+          "actionId": 55,
+          "charging": {
+            "skillId": "skill_jf_enemy_tusk_charge",
+            "skillName": "엄니 돌진",
+            "turnsLeft": 1
+          }
+        },
+        {
+          "turn": 12,
+          "enemyHp": 120,
+          "enemyMaxHp": 120,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_tusk_charge",
+          "targetId": "actor_mage",
+          "amount": 12,
+          "actionId": 60
+        },
+        {
+          "turn": 13,
+          "enemyHp": 120,
+          "enemyMaxHp": 120,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 9,
+          "actionId": 65
+        },
+        {
+          "turn": 14,
+          "enemyHp": 120,
+          "enemyMaxHp": 120,
+          "kind": "prepare",
+          "skillId": "skill_jf_enemy_tusk_charge",
+          "targetId": "enemy-1",
+          "message": "산멧돼지가 엄니 돌진을 준비한다! (1턴 뒤)",
+          "actionId": 70,
+          "charging": {
+            "skillId": "skill_jf_enemy_tusk_charge",
+            "skillName": "엄니 돌진",
+            "turnsLeft": 1
+          }
+        },
+        {
+          "turn": 15,
+          "enemyHp": 120,
+          "enemyMaxHp": 120,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_tusk_charge",
+          "targetId": "actor_mage",
+          "amount": 12,
+          "actionId": 75
+        },
+        {
+          "turn": 16,
+          "enemyHp": 120,
+          "enemyMaxHp": 120,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 9,
+          "actionId": 80
+        },
+        {
+          "turn": 17,
+          "enemyHp": 120,
+          "enemyMaxHp": 120,
+          "kind": "prepare",
+          "skillId": "skill_jf_enemy_tusk_charge",
+          "targetId": "enemy-1",
+          "message": "산멧돼지가 엄니 돌진을 준비한다! (1턴 뒤)",
+          "actionId": 85,
+          "charging": {
+            "skillId": "skill_jf_enemy_tusk_charge",
+            "skillName": "엄니 돌진",
+            "turnsLeft": 1
+          }
+        },
+        {
+          "turn": 18,
+          "enemyHp": 120,
+          "enemyMaxHp": 120,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_tusk_charge",
+          "targetId": "actor_mage",
+          "amount": 12,
+          "actionId": 90
+        },
+        {
+          "turn": 19,
+          "enemyHp": 120,
+          "enemyMaxHp": 120,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 9,
+          "actionId": 95
+        },
+        {
+          "turn": 20,
+          "enemyHp": 120,
+          "enemyMaxHp": 120,
+          "kind": "prepare",
+          "skillId": "skill_jf_enemy_tusk_charge",
+          "targetId": "enemy-1",
+          "message": "산멧돼지가 엄니 돌진을 준비한다! (1턴 뒤)",
+          "actionId": 100,
+          "charging": {
+            "skillId": "skill_jf_enemy_tusk_charge",
+            "skillName": "엄니 돌진",
+            "turnsLeft": 1
+          }
+        },
+        {
+          "turn": 21,
+          "enemyHp": 120,
+          "enemyMaxHp": 120,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_tusk_charge",
+          "targetId": "actor_mage",
+          "amount": 12,
+          "actionId": 105
+        },
+        {
+          "turn": 22,
+          "enemyHp": 120,
+          "enemyMaxHp": 120,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 9,
+          "actionId": 110
+        },
+        {
+          "turn": 23,
+          "enemyHp": 120,
+          "enemyMaxHp": 120,
+          "kind": "prepare",
+          "skillId": "skill_jf_enemy_tusk_charge",
+          "targetId": "enemy-1",
+          "message": "산멧돼지가 엄니 돌진을 준비한다! (1턴 뒤)",
+          "actionId": 115,
+          "charging": {
+            "skillId": "skill_jf_enemy_tusk_charge",
+            "skillName": "엄니 돌진",
+            "turnsLeft": 1
+          }
+        },
+        {
+          "turn": 24,
+          "enemyHp": 120,
+          "enemyMaxHp": 120,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_tusk_charge",
+          "targetId": "actor_mage",
+          "amount": 12,
+          "actionId": 120
+        },
+        {
+          "turn": 25,
+          "enemyHp": 120,
+          "enemyMaxHp": 120,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 9,
+          "actionId": 125
+        },
+        {
+          "turn": 26,
+          "enemyHp": 120,
+          "enemyMaxHp": 120,
+          "kind": "prepare",
+          "skillId": "skill_jf_enemy_tusk_charge",
+          "targetId": "enemy-1",
+          "message": "산멧돼지가 엄니 돌진을 준비한다! (1턴 뒤)",
+          "actionId": 130,
+          "charging": {
+            "skillId": "skill_jf_enemy_tusk_charge",
+            "skillName": "엄니 돌진",
+            "turnsLeft": 1
+          }
+        },
+        {
+          "turn": 27,
+          "enemyHp": 120,
+          "enemyMaxHp": 120,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_tusk_charge",
+          "targetId": "actor_mage",
+          "amount": 12,
+          "actionId": 135
+        },
+        {
+          "turn": 28,
+          "enemyHp": 120,
+          "enemyMaxHp": 120,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 9,
+          "actionId": 140
+        }
+      ],
+      "damageChecks": [
+        {
+          "actorId": "actor_hero",
+          "level1Hp": 120,
+          "open": 24,
+          "guard": 12
+        },
+        {
+          "actorId": "actor_scout",
+          "level1Hp": 120,
+          "open": 24,
+          "guard": 12
+        },
+        {
+          "actorId": "actor_mage",
+          "level1Hp": 120,
+          "open": 24,
+          "guard": 12
+        },
+        {
+          "actorId": "actor_cleric",
+          "level1Hp": 120,
+          "open": 24,
+          "guard": 12
+        }
+      ],
+      "summary": {
+        "prepares": 9,
+        "releaseActions": 9,
+        "damageEntries": 9,
+        "basic": 10,
+        "crossingObserved": false
+      }
+    },
+    {
+      "enemyId": "enemy_jf_straw_dokkaebi",
+      "flow": "strict",
+      "options": {},
+      "events": [
+        {
+          "turn": 1,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 7,
+          "actionId": 5
+        },
+        {
+          "turn": 2,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_straw_club",
+          "targetId": "actor_mage",
+          "amount": 8,
+          "actionId": 10
+        },
+        {
+          "turn": 3,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 7,
+          "actionId": 15
+        },
+        {
+          "turn": 4,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_straw_club",
+          "targetId": "actor_mage",
+          "amount": 8,
+          "actionId": 20
+        },
+        {
+          "turn": 5,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 7,
+          "actionId": 25
+        },
+        {
+          "turn": 6,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_straw_club",
+          "targetId": "actor_mage",
+          "amount": 8,
+          "actionId": 30
+        },
+        {
+          "turn": 7,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 7,
+          "actionId": 35
+        },
+        {
+          "turn": 8,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_straw_club",
+          "targetId": "actor_mage",
+          "amount": 8,
+          "actionId": 40
+        },
+        {
+          "turn": 9,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 7,
+          "actionId": 45
+        },
+        {
+          "turn": 10,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_straw_club",
+          "targetId": "actor_mage",
+          "amount": 8,
+          "actionId": 50
+        },
+        {
+          "turn": 11,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 7,
+          "actionId": 55
+        },
+        {
+          "turn": 12,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_straw_club",
+          "targetId": "actor_mage",
+          "amount": 8,
+          "actionId": 60
+        },
+        {
+          "turn": 13,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 7,
+          "actionId": 65
+        },
+        {
+          "turn": 14,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_straw_club",
+          "targetId": "actor_mage",
+          "amount": 8,
+          "actionId": 70
+        },
+        {
+          "turn": 15,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 7,
+          "actionId": 75
+        },
+        {
+          "turn": 16,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_straw_club",
+          "targetId": "actor_mage",
+          "amount": 8,
+          "actionId": 80
+        },
+        {
+          "turn": 17,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 7,
+          "actionId": 85
+        },
+        {
+          "turn": 18,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_straw_club",
+          "targetId": "actor_mage",
+          "amount": 8,
+          "actionId": 90
+        },
+        {
+          "turn": 19,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 7,
+          "actionId": 95
+        },
+        {
+          "turn": 20,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_straw_club",
+          "targetId": "actor_mage",
+          "amount": 8,
+          "actionId": 100
+        },
+        {
+          "turn": 21,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 7,
+          "actionId": 105
+        },
+        {
+          "turn": 22,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_straw_club",
+          "targetId": "actor_mage",
+          "amount": 8,
+          "actionId": 110
+        },
+        {
+          "turn": 23,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 7,
+          "actionId": 115
+        },
+        {
+          "turn": 24,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_straw_club",
+          "targetId": "actor_mage",
+          "amount": 8,
+          "actionId": 120
+        },
+        {
+          "turn": 25,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 7,
+          "actionId": 125
+        },
+        {
+          "turn": 26,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_straw_club",
+          "targetId": "actor_mage",
+          "amount": 8,
+          "actionId": 130
+        },
+        {
+          "turn": 27,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 7,
+          "actionId": 135
+        },
+        {
+          "turn": 28,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_straw_club",
+          "targetId": "actor_mage",
+          "amount": 8,
+          "actionId": 140
+        }
+      ],
+      "damageChecks": [
+        {
+          "actorId": "actor_hero",
+          "level1Hp": 120,
+          "open": 17,
+          "guard": 8
+        },
+        {
+          "actorId": "actor_scout",
+          "level1Hp": 120,
+          "open": 17,
+          "guard": 8
+        },
+        {
+          "actorId": "actor_mage",
+          "level1Hp": 120,
+          "open": 17,
+          "guard": 8
+        },
+        {
+          "actorId": "actor_cleric",
+          "level1Hp": 120,
+          "open": 17,
+          "guard": 8
+        }
+      ],
+      "summary": {
+        "prepares": 0,
+        "releaseActions": 14,
+        "damageEntries": 14,
+        "basic": 14,
+        "crossingObserved": false
+      }
+    },
+    {
+      "enemyId": "enemy_jf_maiden_ghost",
+      "flow": "strict",
+      "options": {},
+      "events": [
+        {
+          "turn": 1,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 6,
+          "actionId": 5
+        },
+        {
+          "turn": 2,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "prepare",
+          "skillId": "skill_jf_enemy_sorrow_cry",
+          "targetId": "enemy-1",
+          "message": "처녀귀신이 서러운 곡성을 준비한다! (1턴 뒤)",
+          "actionId": 10,
+          "charging": {
+            "skillId": "skill_jf_enemy_sorrow_cry",
+            "skillName": "서러운 곡성",
+            "turnsLeft": 1
+          }
+        },
+        {
+          "turn": 3,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_sorrow_cry",
+          "targetId": "actor_mage",
+          "amount": 10,
+          "actionId": 15
+        },
+        {
+          "turn": 4,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 6,
+          "actionId": 20
+        },
+        {
+          "turn": 5,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "prepare",
+          "skillId": "skill_jf_enemy_sorrow_cry",
+          "targetId": "enemy-1",
+          "message": "처녀귀신이 서러운 곡성을 준비한다! (1턴 뒤)",
+          "actionId": 25,
+          "charging": {
+            "skillId": "skill_jf_enemy_sorrow_cry",
+            "skillName": "서러운 곡성",
+            "turnsLeft": 1
+          }
+        },
+        {
+          "turn": 6,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_sorrow_cry",
+          "targetId": "actor_mage",
+          "amount": 10,
+          "actionId": 30
+        },
+        {
+          "turn": 7,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 6,
+          "actionId": 35
+        },
+        {
+          "turn": 8,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "prepare",
+          "skillId": "skill_jf_enemy_sorrow_cry",
+          "targetId": "enemy-1",
+          "message": "처녀귀신이 서러운 곡성을 준비한다! (1턴 뒤)",
+          "actionId": 40,
+          "charging": {
+            "skillId": "skill_jf_enemy_sorrow_cry",
+            "skillName": "서러운 곡성",
+            "turnsLeft": 1
+          }
+        },
+        {
+          "turn": 9,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_sorrow_cry",
+          "targetId": "actor_mage",
+          "amount": 10,
+          "actionId": 45
+        },
+        {
+          "turn": 10,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 6,
+          "actionId": 50
+        },
+        {
+          "turn": 11,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "prepare",
+          "skillId": "skill_jf_enemy_sorrow_cry",
+          "targetId": "enemy-1",
+          "message": "처녀귀신이 서러운 곡성을 준비한다! (1턴 뒤)",
+          "actionId": 55,
+          "charging": {
+            "skillId": "skill_jf_enemy_sorrow_cry",
+            "skillName": "서러운 곡성",
+            "turnsLeft": 1
+          }
+        },
+        {
+          "turn": 12,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_sorrow_cry",
+          "targetId": "actor_mage",
+          "amount": 10,
+          "actionId": 60
+        },
+        {
+          "turn": 13,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 6,
+          "actionId": 65
+        },
+        {
+          "turn": 14,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "prepare",
+          "skillId": "skill_jf_enemy_sorrow_cry",
+          "targetId": "enemy-1",
+          "message": "처녀귀신이 서러운 곡성을 준비한다! (1턴 뒤)",
+          "actionId": 70,
+          "charging": {
+            "skillId": "skill_jf_enemy_sorrow_cry",
+            "skillName": "서러운 곡성",
+            "turnsLeft": 1
+          }
+        },
+        {
+          "turn": 15,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_sorrow_cry",
+          "targetId": "actor_mage",
+          "amount": 10,
+          "actionId": 75
+        },
+        {
+          "turn": 16,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 6,
+          "actionId": 80
+        },
+        {
+          "turn": 17,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "prepare",
+          "skillId": "skill_jf_enemy_sorrow_cry",
+          "targetId": "enemy-1",
+          "message": "처녀귀신이 서러운 곡성을 준비한다! (1턴 뒤)",
+          "actionId": 85,
+          "charging": {
+            "skillId": "skill_jf_enemy_sorrow_cry",
+            "skillName": "서러운 곡성",
+            "turnsLeft": 1
+          }
+        },
+        {
+          "turn": 18,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_sorrow_cry",
+          "targetId": "actor_mage",
+          "amount": 10,
+          "actionId": 90
+        },
+        {
+          "turn": 19,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 6,
+          "actionId": 95
+        },
+        {
+          "turn": 20,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "prepare",
+          "skillId": "skill_jf_enemy_sorrow_cry",
+          "targetId": "enemy-1",
+          "message": "처녀귀신이 서러운 곡성을 준비한다! (1턴 뒤)",
+          "actionId": 100,
+          "charging": {
+            "skillId": "skill_jf_enemy_sorrow_cry",
+            "skillName": "서러운 곡성",
+            "turnsLeft": 1
+          }
+        },
+        {
+          "turn": 21,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_sorrow_cry",
+          "targetId": "actor_mage",
+          "amount": 10,
+          "actionId": 105
+        },
+        {
+          "turn": 22,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 6,
+          "actionId": 110
+        },
+        {
+          "turn": 23,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "prepare",
+          "skillId": "skill_jf_enemy_sorrow_cry",
+          "targetId": "enemy-1",
+          "message": "처녀귀신이 서러운 곡성을 준비한다! (1턴 뒤)",
+          "actionId": 115,
+          "charging": {
+            "skillId": "skill_jf_enemy_sorrow_cry",
+            "skillName": "서러운 곡성",
+            "turnsLeft": 1
+          }
+        },
+        {
+          "turn": 24,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_sorrow_cry",
+          "targetId": "actor_mage",
+          "amount": 10,
+          "actionId": 120
+        },
+        {
+          "turn": 25,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 6,
+          "actionId": 125
+        },
+        {
+          "turn": 26,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "prepare",
+          "skillId": "skill_jf_enemy_sorrow_cry",
+          "targetId": "enemy-1",
+          "message": "처녀귀신이 서러운 곡성을 준비한다! (1턴 뒤)",
+          "actionId": 130,
+          "charging": {
+            "skillId": "skill_jf_enemy_sorrow_cry",
+            "skillName": "서러운 곡성",
+            "turnsLeft": 1
+          }
+        },
+        {
+          "turn": 27,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_sorrow_cry",
+          "targetId": "actor_mage",
+          "amount": 10,
+          "actionId": 135
+        },
+        {
+          "turn": 28,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 6,
+          "actionId": 140
+        }
+      ],
+      "damageChecks": [
+        {
+          "actorId": "actor_hero",
+          "level1Hp": 120,
+          "open": 21,
+          "guard": 10
+        },
+        {
+          "actorId": "actor_scout",
+          "level1Hp": 120,
+          "open": 21,
+          "guard": 10
+        },
+        {
+          "actorId": "actor_mage",
+          "level1Hp": 120,
+          "open": 21,
+          "guard": 10
+        },
+        {
+          "actorId": "actor_cleric",
+          "level1Hp": 120,
+          "open": 21,
+          "guard": 10
+        }
+      ],
+      "summary": {
+        "prepares": 9,
+        "releaseActions": 9,
+        "damageEntries": 9,
+        "basic": 10,
+        "crossingObserved": false
+      }
+    },
+    {
+      "enemyId": "enemy_jf_bronze_dokkaebi",
+      "flow": "strict",
+      "options": {},
+      "events": [
+        {
+          "turn": 1,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 5
+        },
+        {
+          "turn": 2,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "prepare",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "enemy-1",
+          "message": "청동도깨비가 청동 내려치기를 준비한다! (1턴 뒤)",
+          "actionId": 10,
+          "charging": {
+            "skillId": "skill_jf_enemy_bronze_smash",
+            "skillName": "청동 내려치기",
+            "turnsLeft": 1
+          }
+        },
+        {
+          "turn": 3,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_hero",
+          "amount": 16,
+          "actionId": 15
+        },
+        {
+          "turn": 3,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_scout",
+          "amount": 16,
+          "actionId": 15
+        },
+        {
+          "turn": 3,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_mage",
+          "amount": 16,
+          "actionId": 15
+        },
+        {
+          "turn": 3,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_cleric",
+          "amount": 16,
+          "actionId": 15
+        },
+        {
+          "turn": 4,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 20
+        },
+        {
+          "turn": 5,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 25
+        },
+        {
+          "turn": 6,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "prepare",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "enemy-1",
+          "message": "청동도깨비가 청동 내려치기를 준비한다! (1턴 뒤)",
+          "actionId": 30,
+          "charging": {
+            "skillId": "skill_jf_enemy_bronze_smash",
+            "skillName": "청동 내려치기",
+            "turnsLeft": 1
+          }
+        },
+        {
+          "turn": 7,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_hero",
+          "amount": 16,
+          "actionId": 35
+        },
+        {
+          "turn": 7,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_scout",
+          "amount": 16,
+          "actionId": 35
+        },
+        {
+          "turn": 7,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_mage",
+          "amount": 16,
+          "actionId": 35
+        },
+        {
+          "turn": 7,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_cleric",
+          "amount": 16,
+          "actionId": 35
+        },
+        {
+          "turn": 8,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 40
+        },
+        {
+          "turn": 9,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 45
+        },
+        {
+          "turn": 10,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "prepare",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "enemy-1",
+          "message": "청동도깨비가 청동 내려치기를 준비한다! (1턴 뒤)",
+          "actionId": 50,
+          "charging": {
+            "skillId": "skill_jf_enemy_bronze_smash",
+            "skillName": "청동 내려치기",
+            "turnsLeft": 1
+          }
+        },
+        {
+          "turn": 11,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_hero",
+          "amount": 16,
+          "actionId": 55
+        },
+        {
+          "turn": 11,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_scout",
+          "amount": 16,
+          "actionId": 55
+        },
+        {
+          "turn": 11,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_mage",
+          "amount": 16,
+          "actionId": 55
+        },
+        {
+          "turn": 11,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_cleric",
+          "amount": 16,
+          "actionId": 55
+        },
+        {
+          "turn": 12,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 60
+        },
+        {
+          "turn": 13,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 65
+        },
+        {
+          "turn": 14,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "prepare",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "enemy-1",
+          "message": "청동도깨비가 청동 내려치기를 준비한다! (1턴 뒤)",
+          "actionId": 70,
+          "charging": {
+            "skillId": "skill_jf_enemy_bronze_smash",
+            "skillName": "청동 내려치기",
+            "turnsLeft": 1
+          }
+        },
+        {
+          "turn": 15,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_hero",
+          "amount": 16,
+          "actionId": 75
+        },
+        {
+          "turn": 15,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_scout",
+          "amount": 16,
+          "actionId": 75
+        },
+        {
+          "turn": 15,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_mage",
+          "amount": 16,
+          "actionId": 75
+        },
+        {
+          "turn": 15,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_cleric",
+          "amount": 16,
+          "actionId": 75
+        },
+        {
+          "turn": 16,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 80
+        }
+      ],
+      "damageChecks": [
+        {
+          "actorId": "actor_hero",
+          "level1Hp": 120,
+          "open": 32,
+          "guard": 16
+        },
+        {
+          "actorId": "actor_scout",
+          "level1Hp": 120,
+          "open": 32,
+          "guard": 16
+        },
+        {
+          "actorId": "actor_mage",
+          "level1Hp": 120,
+          "open": 32,
+          "guard": 16
+        },
+        {
+          "actorId": "actor_cleric",
+          "level1Hp": 120,
+          "open": 32,
+          "guard": 16
+        }
+      ],
+      "summary": {
+        "prepares": 4,
+        "releaseActions": 4,
+        "damageEntries": 16,
+        "basic": 8,
+        "crossingObserved": false
+      }
+    },
+    {
+      "enemyId": "enemy_jf_bronze_dokkaebi",
+      "flow": "strict",
+      "options": {
+        "hpCross": true
+      },
+      "events": [
+        {
+          "turn": 1,
+          "enemyHp": 438,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 5
+        },
+        {
+          "turn": 2,
+          "enemyHp": 236,
+          "enemyMaxHp": 640,
+          "kind": "prepare",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "enemy-1",
+          "message": "청동도깨비가 청동 내려치기를 준비한다! (1턴 뒤)",
+          "actionId": 10,
+          "charging": {
+            "skillId": "skill_jf_enemy_bronze_smash",
+            "skillName": "청동 내려치기",
+            "turnsLeft": 1
+          }
+        },
+        {
+          "turn": 3,
+          "enemyHp": 236,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_hero",
+          "amount": 16,
+          "actionId": 15
+        },
+        {
+          "turn": 3,
+          "enemyHp": 236,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_scout",
+          "amount": 16,
+          "actionId": 15
+        },
+        {
+          "turn": 3,
+          "enemyHp": 236,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_mage",
+          "amount": 16,
+          "actionId": 15
+        },
+        {
+          "turn": 3,
+          "enemyHp": 236,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_cleric",
+          "amount": 16,
+          "actionId": 15
+        },
+        {
+          "turn": 4,
+          "enemyHp": 236,
+          "enemyMaxHp": 640,
+          "kind": "prepare",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "enemy-1",
+          "message": "청동도깨비가 청동 내려치기를 준비한다! (1턴 뒤)",
+          "actionId": 20,
+          "charging": {
+            "skillId": "skill_jf_enemy_bronze_smash",
+            "skillName": "청동 내려치기",
+            "turnsLeft": 1
+          }
+        },
+        {
+          "turn": 5,
+          "enemyHp": 236,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_hero",
+          "amount": 16,
+          "actionId": 25
+        },
+        {
+          "turn": 5,
+          "enemyHp": 236,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_scout",
+          "amount": 16,
+          "actionId": 25
+        },
+        {
+          "turn": 5,
+          "enemyHp": 236,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_mage",
+          "amount": 16,
+          "actionId": 25
+        },
+        {
+          "turn": 5,
+          "enemyHp": 236,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_cleric",
+          "amount": 16,
+          "actionId": 25
+        },
+        {
+          "turn": 6,
+          "enemyHp": 236,
+          "enemyMaxHp": 640,
+          "kind": "prepare",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "enemy-1",
+          "message": "청동도깨비가 청동 내려치기를 준비한다! (1턴 뒤)",
+          "actionId": 30,
+          "charging": {
+            "skillId": "skill_jf_enemy_bronze_smash",
+            "skillName": "청동 내려치기",
+            "turnsLeft": 1
+          }
+        },
+        {
+          "turn": 7,
+          "enemyHp": 236,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_hero",
+          "amount": 16,
+          "actionId": 35
+        },
+        {
+          "turn": 7,
+          "enemyHp": 236,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_scout",
+          "amount": 16,
+          "actionId": 35
+        },
+        {
+          "turn": 7,
+          "enemyHp": 236,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_mage",
+          "amount": 16,
+          "actionId": 35
+        },
+        {
+          "turn": 7,
+          "enemyHp": 236,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_cleric",
+          "amount": 16,
+          "actionId": 35
+        },
+        {
+          "turn": 8,
+          "enemyHp": 236,
+          "enemyMaxHp": 640,
+          "kind": "prepare",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "enemy-1",
+          "message": "청동도깨비가 청동 내려치기를 준비한다! (1턴 뒤)",
+          "actionId": 40,
+          "charging": {
+            "skillId": "skill_jf_enemy_bronze_smash",
+            "skillName": "청동 내려치기",
+            "turnsLeft": 1
+          }
+        },
+        {
+          "turn": 9,
+          "enemyHp": 236,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_hero",
+          "amount": 16,
+          "actionId": 45
+        },
+        {
+          "turn": 9,
+          "enemyHp": 236,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_scout",
+          "amount": 16,
+          "actionId": 45
+        },
+        {
+          "turn": 9,
+          "enemyHp": 236,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_mage",
+          "amount": 16,
+          "actionId": 45
+        },
+        {
+          "turn": 9,
+          "enemyHp": 236,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_cleric",
+          "amount": 16,
+          "actionId": 45
+        },
+        {
+          "turn": 10,
+          "enemyHp": 236,
+          "enemyMaxHp": 640,
+          "kind": "prepare",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "enemy-1",
+          "message": "청동도깨비가 청동 내려치기를 준비한다! (1턴 뒤)",
+          "actionId": 50,
+          "charging": {
+            "skillId": "skill_jf_enemy_bronze_smash",
+            "skillName": "청동 내려치기",
+            "turnsLeft": 1
+          }
+        },
+        {
+          "turn": 11,
+          "enemyHp": 236,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_hero",
+          "amount": 16,
+          "actionId": 55
+        },
+        {
+          "turn": 11,
+          "enemyHp": 236,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_scout",
+          "amount": 16,
+          "actionId": 55
+        },
+        {
+          "turn": 11,
+          "enemyHp": 236,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_mage",
+          "amount": 16,
+          "actionId": 55
+        },
+        {
+          "turn": 11,
+          "enemyHp": 236,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_cleric",
+          "amount": 16,
+          "actionId": 55
+        },
+        {
+          "turn": 12,
+          "enemyHp": 236,
+          "enemyMaxHp": 640,
+          "kind": "prepare",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "enemy-1",
+          "message": "청동도깨비가 청동 내려치기를 준비한다! (1턴 뒤)",
+          "actionId": 60,
+          "charging": {
+            "skillId": "skill_jf_enemy_bronze_smash",
+            "skillName": "청동 내려치기",
+            "turnsLeft": 1
+          }
+        },
+        {
+          "turn": 13,
+          "enemyHp": 236,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_hero",
+          "amount": 16,
+          "actionId": 65
+        },
+        {
+          "turn": 13,
+          "enemyHp": 236,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_scout",
+          "amount": 16,
+          "actionId": 65
+        },
+        {
+          "turn": 13,
+          "enemyHp": 236,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_mage",
+          "amount": 16,
+          "actionId": 65
+        },
+        {
+          "turn": 13,
+          "enemyHp": 236,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_cleric",
+          "amount": 16,
+          "actionId": 65
+        }
+      ],
+      "damageChecks": [
+        {
+          "actorId": "actor_hero",
+          "level1Hp": 120,
+          "open": 32,
+          "guard": 16
+        },
+        {
+          "actorId": "actor_scout",
+          "level1Hp": 120,
+          "open": 32,
+          "guard": 16
+        },
+        {
+          "actorId": "actor_mage",
+          "level1Hp": 120,
+          "open": 32,
+          "guard": 16
+        },
+        {
+          "actorId": "actor_cleric",
+          "level1Hp": 120,
+          "open": 32,
+          "guard": 16
+        }
+      ],
+      "summary": {
+        "prepares": 6,
+        "releaseActions": 6,
+        "damageEntries": 24,
+        "basic": 1,
+        "crossingObserved": true
+      }
+    },
+    {
+      "enemyId": "enemy_jf_bronze_dokkaebi",
+      "flow": "strict",
+      "options": {
+        "missingSkill": true
+      },
+      "events": [
+        {
+          "turn": 1,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 5
+        },
+        {
+          "turn": 2,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 10
+        },
+        {
+          "turn": 3,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 15
+        },
+        {
+          "turn": 4,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 20
+        },
+        {
+          "turn": 5,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 25
+        },
+        {
+          "turn": 6,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 30
+        },
+        {
+          "turn": 7,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 35
+        },
+        {
+          "turn": 8,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 40
+        },
+        {
+          "turn": 9,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 45
+        },
+        {
+          "turn": 10,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 50
+        },
+        {
+          "turn": 11,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 55
+        },
+        {
+          "turn": 12,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 60
+        },
+        {
+          "turn": 13,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 65
+        },
+        {
+          "turn": 14,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 70
+        },
+        {
+          "turn": 15,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 75
+        },
+        {
+          "turn": 16,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 80
+        },
+        {
+          "turn": 17,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 85
+        },
+        {
+          "turn": 18,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 90
+        },
+        {
+          "turn": 19,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 95
+        },
+        {
+          "turn": 20,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 100
+        },
+        {
+          "turn": 21,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 105
+        },
+        {
+          "turn": 22,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 110
+        },
+        {
+          "turn": 23,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 115
+        },
+        {
+          "turn": 24,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 120
+        },
+        {
+          "turn": 25,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 125
+        },
+        {
+          "turn": 26,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 130
+        },
+        {
+          "turn": 27,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 135
+        },
+        {
+          "turn": 28,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 140
+        }
+      ],
+      "damageChecks": [
+        {
+          "actorId": "actor_hero",
+          "level1Hp": 120,
+          "open": 32,
+          "guard": 16
+        },
+        {
+          "actorId": "actor_scout",
+          "level1Hp": 120,
+          "open": 32,
+          "guard": 16
+        },
+        {
+          "actorId": "actor_mage",
+          "level1Hp": 120,
+          "open": 32,
+          "guard": 16
+        },
+        {
+          "actorId": "actor_cleric",
+          "level1Hp": 120,
+          "open": 32,
+          "guard": 16
+        }
+      ],
+      "summary": {
+        "prepares": 0,
+        "releaseActions": 0,
+        "damageEntries": 0,
+        "basic": 28,
+        "crossingObserved": false
+      }
+    },
+    {
+      "enemyId": "enemy_jf_wild_boar",
+      "flow": "gauge",
+      "options": {},
+      "events": [
+        {
+          "turn": 1,
+          "enemyHp": 120,
+          "enemyMaxHp": 120,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 9,
+          "actionId": 5
+        },
+        {
+          "turn": 2,
+          "enemyHp": 120,
+          "enemyMaxHp": 120,
+          "kind": "prepare",
+          "skillId": "skill_jf_enemy_tusk_charge",
+          "targetId": "enemy-1",
+          "message": "산멧돼지가 엄니 돌진을 준비한다! (1턴 뒤)",
+          "actionId": 14,
+          "charging": {
+            "skillId": "skill_jf_enemy_tusk_charge",
+            "skillName": "엄니 돌진",
+            "turnsLeft": 1
+          }
+        },
+        {
+          "turn": 3,
+          "enemyHp": 120,
+          "enemyMaxHp": 120,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_tusk_charge",
+          "targetId": "actor_mage",
+          "amount": 12,
+          "actionId": 19
+        },
+        {
+          "turn": 4,
+          "enemyHp": 120,
+          "enemyMaxHp": 120,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 9,
+          "actionId": 28
+        },
+        {
+          "turn": 5,
+          "enemyHp": 120,
+          "enemyMaxHp": 120,
+          "kind": "prepare",
+          "skillId": "skill_jf_enemy_tusk_charge",
+          "targetId": "enemy-1",
+          "message": "산멧돼지가 엄니 돌진을 준비한다! (1턴 뒤)",
+          "actionId": 33,
+          "charging": {
+            "skillId": "skill_jf_enemy_tusk_charge",
+            "skillName": "엄니 돌진",
+            "turnsLeft": 1
+          }
+        },
+        {
+          "turn": 6,
+          "enemyHp": 120,
+          "enemyMaxHp": 120,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_tusk_charge",
+          "targetId": "actor_mage",
+          "amount": 12,
+          "actionId": 42
+        },
+        {
+          "turn": 7,
+          "enemyHp": 120,
+          "enemyMaxHp": 120,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 9,
+          "actionId": 47
+        },
+        {
+          "turn": 8,
+          "enemyHp": 120,
+          "enemyMaxHp": 120,
+          "kind": "prepare",
+          "skillId": "skill_jf_enemy_tusk_charge",
+          "targetId": "enemy-1",
+          "message": "산멧돼지가 엄니 돌진을 준비한다! (1턴 뒤)",
+          "actionId": 56,
+          "charging": {
+            "skillId": "skill_jf_enemy_tusk_charge",
+            "skillName": "엄니 돌진",
+            "turnsLeft": 1
+          }
+        },
+        {
+          "turn": 9,
+          "enemyHp": 120,
+          "enemyMaxHp": 120,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_tusk_charge",
+          "targetId": "actor_mage",
+          "amount": 12,
+          "actionId": 61
+        },
+        {
+          "turn": 10,
+          "enemyHp": 120,
+          "enemyMaxHp": 120,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 9,
+          "actionId": 70
+        },
+        {
+          "turn": 11,
+          "enemyHp": 120,
+          "enemyMaxHp": 120,
+          "kind": "prepare",
+          "skillId": "skill_jf_enemy_tusk_charge",
+          "targetId": "enemy-1",
+          "message": "산멧돼지가 엄니 돌진을 준비한다! (1턴 뒤)",
+          "actionId": 75,
+          "charging": {
+            "skillId": "skill_jf_enemy_tusk_charge",
+            "skillName": "엄니 돌진",
+            "turnsLeft": 1
+          }
+        },
+        {
+          "turn": 12,
+          "enemyHp": 120,
+          "enemyMaxHp": 120,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_tusk_charge",
+          "targetId": "actor_mage",
+          "amount": 12,
+          "actionId": 84
+        },
+        {
+          "turn": 13,
+          "enemyHp": 120,
+          "enemyMaxHp": 120,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 9,
+          "actionId": 89
+        },
+        {
+          "turn": 14,
+          "enemyHp": 120,
+          "enemyMaxHp": 120,
+          "kind": "prepare",
+          "skillId": "skill_jf_enemy_tusk_charge",
+          "targetId": "enemy-1",
+          "message": "산멧돼지가 엄니 돌진을 준비한다! (1턴 뒤)",
+          "actionId": 98,
+          "charging": {
+            "skillId": "skill_jf_enemy_tusk_charge",
+            "skillName": "엄니 돌진",
+            "turnsLeft": 1
+          }
+        },
+        {
+          "turn": 15,
+          "enemyHp": 120,
+          "enemyMaxHp": 120,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_tusk_charge",
+          "targetId": "actor_mage",
+          "amount": 12,
+          "actionId": 103
+        },
+        {
+          "turn": 16,
+          "enemyHp": 120,
+          "enemyMaxHp": 120,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 9,
+          "actionId": 112
+        },
+        {
+          "turn": 17,
+          "enemyHp": 120,
+          "enemyMaxHp": 120,
+          "kind": "prepare",
+          "skillId": "skill_jf_enemy_tusk_charge",
+          "targetId": "enemy-1",
+          "message": "산멧돼지가 엄니 돌진을 준비한다! (1턴 뒤)",
+          "actionId": 117,
+          "charging": {
+            "skillId": "skill_jf_enemy_tusk_charge",
+            "skillName": "엄니 돌진",
+            "turnsLeft": 1
+          }
+        },
+        {
+          "turn": 18,
+          "enemyHp": 120,
+          "enemyMaxHp": 120,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_tusk_charge",
+          "targetId": "actor_mage",
+          "amount": 12,
+          "actionId": 126
+        },
+        {
+          "turn": 19,
+          "enemyHp": 120,
+          "enemyMaxHp": 120,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 9,
+          "actionId": 131
+        },
+        {
+          "turn": 20,
+          "enemyHp": 120,
+          "enemyMaxHp": 120,
+          "kind": "prepare",
+          "skillId": "skill_jf_enemy_tusk_charge",
+          "targetId": "enemy-1",
+          "message": "산멧돼지가 엄니 돌진을 준비한다! (1턴 뒤)",
+          "actionId": 140,
+          "charging": {
+            "skillId": "skill_jf_enemy_tusk_charge",
+            "skillName": "엄니 돌진",
+            "turnsLeft": 1
+          }
+        },
+        {
+          "turn": 21,
+          "enemyHp": 120,
+          "enemyMaxHp": 120,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_tusk_charge",
+          "targetId": "actor_mage",
+          "amount": 12,
+          "actionId": 145
+        },
+        {
+          "turn": 22,
+          "enemyHp": 120,
+          "enemyMaxHp": 120,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 9,
+          "actionId": 154
+        },
+        {
+          "turn": 23,
+          "enemyHp": 120,
+          "enemyMaxHp": 120,
+          "kind": "prepare",
+          "skillId": "skill_jf_enemy_tusk_charge",
+          "targetId": "enemy-1",
+          "message": "산멧돼지가 엄니 돌진을 준비한다! (1턴 뒤)",
+          "actionId": 159,
+          "charging": {
+            "skillId": "skill_jf_enemy_tusk_charge",
+            "skillName": "엄니 돌진",
+            "turnsLeft": 1
+          }
+        },
+        {
+          "turn": 24,
+          "enemyHp": 120,
+          "enemyMaxHp": 120,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_tusk_charge",
+          "targetId": "actor_mage",
+          "amount": 12,
+          "actionId": 168
+        },
+        {
+          "turn": 25,
+          "enemyHp": 120,
+          "enemyMaxHp": 120,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 9,
+          "actionId": 173
+        },
+        {
+          "turn": 26,
+          "enemyHp": 120,
+          "enemyMaxHp": 120,
+          "kind": "prepare",
+          "skillId": "skill_jf_enemy_tusk_charge",
+          "targetId": "enemy-1",
+          "message": "산멧돼지가 엄니 돌진을 준비한다! (1턴 뒤)",
+          "actionId": 182,
+          "charging": {
+            "skillId": "skill_jf_enemy_tusk_charge",
+            "skillName": "엄니 돌진",
+            "turnsLeft": 1
+          }
+        },
+        {
+          "turn": 27,
+          "enemyHp": 120,
+          "enemyMaxHp": 120,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_tusk_charge",
+          "targetId": "actor_mage",
+          "amount": 12,
+          "actionId": 187
+        },
+        {
+          "turn": 28,
+          "enemyHp": 120,
+          "enemyMaxHp": 120,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 9,
+          "actionId": 196
+        }
+      ],
+      "damageChecks": [
+        {
+          "actorId": "actor_hero",
+          "level1Hp": 120,
+          "open": 24,
+          "guard": 12
+        },
+        {
+          "actorId": "actor_scout",
+          "level1Hp": 120,
+          "open": 24,
+          "guard": 12
+        },
+        {
+          "actorId": "actor_mage",
+          "level1Hp": 120,
+          "open": 24,
+          "guard": 12
+        },
+        {
+          "actorId": "actor_cleric",
+          "level1Hp": 120,
+          "open": 24,
+          "guard": 12
+        }
+      ],
+      "summary": {
+        "prepares": 9,
+        "releaseActions": 9,
+        "damageEntries": 9,
+        "basic": 10,
+        "crossingObserved": false
+      }
+    },
+    {
+      "enemyId": "enemy_jf_straw_dokkaebi",
+      "flow": "gauge",
+      "options": {},
+      "events": [
+        {
+          "turn": 1,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 7,
+          "actionId": 5
+        },
+        {
+          "turn": 2,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_straw_club",
+          "targetId": "actor_mage",
+          "amount": 8,
+          "actionId": 14
+        },
+        {
+          "turn": 3,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 7,
+          "actionId": 19
+        },
+        {
+          "turn": 4,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_straw_club",
+          "targetId": "actor_mage",
+          "amount": 8,
+          "actionId": 28
+        },
+        {
+          "turn": 5,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 7,
+          "actionId": 33
+        },
+        {
+          "turn": 6,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_straw_club",
+          "targetId": "actor_mage",
+          "amount": 8,
+          "actionId": 42
+        },
+        {
+          "turn": 7,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 7,
+          "actionId": 47
+        },
+        {
+          "turn": 8,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_straw_club",
+          "targetId": "actor_mage",
+          "amount": 8,
+          "actionId": 56
+        },
+        {
+          "turn": 9,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 7,
+          "actionId": 61
+        },
+        {
+          "turn": 10,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_straw_club",
+          "targetId": "actor_mage",
+          "amount": 8,
+          "actionId": 70
+        },
+        {
+          "turn": 11,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 7,
+          "actionId": 75
+        },
+        {
+          "turn": 12,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_straw_club",
+          "targetId": "actor_mage",
+          "amount": 8,
+          "actionId": 84
+        },
+        {
+          "turn": 13,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 7,
+          "actionId": 89
+        },
+        {
+          "turn": 14,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_straw_club",
+          "targetId": "actor_mage",
+          "amount": 8,
+          "actionId": 98
+        },
+        {
+          "turn": 15,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 7,
+          "actionId": 103
+        },
+        {
+          "turn": 16,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_straw_club",
+          "targetId": "actor_mage",
+          "amount": 8,
+          "actionId": 112
+        },
+        {
+          "turn": 17,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 7,
+          "actionId": 117
+        },
+        {
+          "turn": 18,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_straw_club",
+          "targetId": "actor_mage",
+          "amount": 8,
+          "actionId": 126
+        },
+        {
+          "turn": 19,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 7,
+          "actionId": 131
+        },
+        {
+          "turn": 20,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_straw_club",
+          "targetId": "actor_mage",
+          "amount": 8,
+          "actionId": 140
+        },
+        {
+          "turn": 21,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 7,
+          "actionId": 145
+        },
+        {
+          "turn": 22,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_straw_club",
+          "targetId": "actor_mage",
+          "amount": 8,
+          "actionId": 154
+        },
+        {
+          "turn": 23,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 7,
+          "actionId": 159
+        },
+        {
+          "turn": 24,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_straw_club",
+          "targetId": "actor_mage",
+          "amount": 8,
+          "actionId": 168
+        },
+        {
+          "turn": 25,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 7,
+          "actionId": 173
+        },
+        {
+          "turn": 26,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_straw_club",
+          "targetId": "actor_mage",
+          "amount": 8,
+          "actionId": 182
+        },
+        {
+          "turn": 27,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 7,
+          "actionId": 187
+        },
+        {
+          "turn": 28,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_straw_club",
+          "targetId": "actor_mage",
+          "amount": 8,
+          "actionId": 196
+        }
+      ],
+      "damageChecks": [
+        {
+          "actorId": "actor_hero",
+          "level1Hp": 120,
+          "open": 17,
+          "guard": 8
+        },
+        {
+          "actorId": "actor_scout",
+          "level1Hp": 120,
+          "open": 17,
+          "guard": 8
+        },
+        {
+          "actorId": "actor_mage",
+          "level1Hp": 120,
+          "open": 17,
+          "guard": 8
+        },
+        {
+          "actorId": "actor_cleric",
+          "level1Hp": 120,
+          "open": 17,
+          "guard": 8
+        }
+      ],
+      "summary": {
+        "prepares": 0,
+        "releaseActions": 14,
+        "damageEntries": 14,
+        "basic": 14,
+        "crossingObserved": false
+      }
+    },
+    {
+      "enemyId": "enemy_jf_maiden_ghost",
+      "flow": "gauge",
+      "options": {},
+      "events": [
+        {
+          "turn": 1,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 6,
+          "actionId": 5
+        },
+        {
+          "turn": 2,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "prepare",
+          "skillId": "skill_jf_enemy_sorrow_cry",
+          "targetId": "enemy-1",
+          "message": "처녀귀신이 서러운 곡성을 준비한다! (1턴 뒤)",
+          "actionId": 14,
+          "charging": {
+            "skillId": "skill_jf_enemy_sorrow_cry",
+            "skillName": "서러운 곡성",
+            "turnsLeft": 1
+          }
+        },
+        {
+          "turn": 3,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_sorrow_cry",
+          "targetId": "actor_mage",
+          "amount": 10,
+          "actionId": 19
+        },
+        {
+          "turn": 4,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 6,
+          "actionId": 28
+        },
+        {
+          "turn": 5,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "prepare",
+          "skillId": "skill_jf_enemy_sorrow_cry",
+          "targetId": "enemy-1",
+          "message": "처녀귀신이 서러운 곡성을 준비한다! (1턴 뒤)",
+          "actionId": 33,
+          "charging": {
+            "skillId": "skill_jf_enemy_sorrow_cry",
+            "skillName": "서러운 곡성",
+            "turnsLeft": 1
+          }
+        },
+        {
+          "turn": 6,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_sorrow_cry",
+          "targetId": "actor_mage",
+          "amount": 10,
+          "actionId": 42
+        },
+        {
+          "turn": 7,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 6,
+          "actionId": 47
+        },
+        {
+          "turn": 8,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "prepare",
+          "skillId": "skill_jf_enemy_sorrow_cry",
+          "targetId": "enemy-1",
+          "message": "처녀귀신이 서러운 곡성을 준비한다! (1턴 뒤)",
+          "actionId": 56,
+          "charging": {
+            "skillId": "skill_jf_enemy_sorrow_cry",
+            "skillName": "서러운 곡성",
+            "turnsLeft": 1
+          }
+        },
+        {
+          "turn": 9,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_sorrow_cry",
+          "targetId": "actor_mage",
+          "amount": 10,
+          "actionId": 61
+        },
+        {
+          "turn": 10,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 6,
+          "actionId": 70
+        },
+        {
+          "turn": 11,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "prepare",
+          "skillId": "skill_jf_enemy_sorrow_cry",
+          "targetId": "enemy-1",
+          "message": "처녀귀신이 서러운 곡성을 준비한다! (1턴 뒤)",
+          "actionId": 75,
+          "charging": {
+            "skillId": "skill_jf_enemy_sorrow_cry",
+            "skillName": "서러운 곡성",
+            "turnsLeft": 1
+          }
+        },
+        {
+          "turn": 12,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_sorrow_cry",
+          "targetId": "actor_mage",
+          "amount": 10,
+          "actionId": 84
+        },
+        {
+          "turn": 13,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 6,
+          "actionId": 89
+        },
+        {
+          "turn": 14,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "prepare",
+          "skillId": "skill_jf_enemy_sorrow_cry",
+          "targetId": "enemy-1",
+          "message": "처녀귀신이 서러운 곡성을 준비한다! (1턴 뒤)",
+          "actionId": 98,
+          "charging": {
+            "skillId": "skill_jf_enemy_sorrow_cry",
+            "skillName": "서러운 곡성",
+            "turnsLeft": 1
+          }
+        },
+        {
+          "turn": 15,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_sorrow_cry",
+          "targetId": "actor_mage",
+          "amount": 10,
+          "actionId": 103
+        },
+        {
+          "turn": 16,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 6,
+          "actionId": 112
+        },
+        {
+          "turn": 17,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "prepare",
+          "skillId": "skill_jf_enemy_sorrow_cry",
+          "targetId": "enemy-1",
+          "message": "처녀귀신이 서러운 곡성을 준비한다! (1턴 뒤)",
+          "actionId": 117,
+          "charging": {
+            "skillId": "skill_jf_enemy_sorrow_cry",
+            "skillName": "서러운 곡성",
+            "turnsLeft": 1
+          }
+        },
+        {
+          "turn": 18,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_sorrow_cry",
+          "targetId": "actor_mage",
+          "amount": 10,
+          "actionId": 126
+        },
+        {
+          "turn": 19,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 6,
+          "actionId": 131
+        },
+        {
+          "turn": 20,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "prepare",
+          "skillId": "skill_jf_enemy_sorrow_cry",
+          "targetId": "enemy-1",
+          "message": "처녀귀신이 서러운 곡성을 준비한다! (1턴 뒤)",
+          "actionId": 140,
+          "charging": {
+            "skillId": "skill_jf_enemy_sorrow_cry",
+            "skillName": "서러운 곡성",
+            "turnsLeft": 1
+          }
+        },
+        {
+          "turn": 21,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_sorrow_cry",
+          "targetId": "actor_mage",
+          "amount": 10,
+          "actionId": 145
+        },
+        {
+          "turn": 22,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 6,
+          "actionId": 154
+        },
+        {
+          "turn": 23,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "prepare",
+          "skillId": "skill_jf_enemy_sorrow_cry",
+          "targetId": "enemy-1",
+          "message": "처녀귀신이 서러운 곡성을 준비한다! (1턴 뒤)",
+          "actionId": 159,
+          "charging": {
+            "skillId": "skill_jf_enemy_sorrow_cry",
+            "skillName": "서러운 곡성",
+            "turnsLeft": 1
+          }
+        },
+        {
+          "turn": 24,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_sorrow_cry",
+          "targetId": "actor_mage",
+          "amount": 10,
+          "actionId": 168
+        },
+        {
+          "turn": 25,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 6,
+          "actionId": 173
+        },
+        {
+          "turn": 26,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "prepare",
+          "skillId": "skill_jf_enemy_sorrow_cry",
+          "targetId": "enemy-1",
+          "message": "처녀귀신이 서러운 곡성을 준비한다! (1턴 뒤)",
+          "actionId": 182,
+          "charging": {
+            "skillId": "skill_jf_enemy_sorrow_cry",
+            "skillName": "서러운 곡성",
+            "turnsLeft": 1
+          }
+        },
+        {
+          "turn": 27,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_sorrow_cry",
+          "targetId": "actor_mage",
+          "amount": 10,
+          "actionId": 187
+        },
+        {
+          "turn": 28,
+          "enemyHp": 100,
+          "enemyMaxHp": 100,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 6,
+          "actionId": 196
+        }
+      ],
+      "damageChecks": [
+        {
+          "actorId": "actor_hero",
+          "level1Hp": 120,
+          "open": 21,
+          "guard": 10
+        },
+        {
+          "actorId": "actor_scout",
+          "level1Hp": 120,
+          "open": 21,
+          "guard": 10
+        },
+        {
+          "actorId": "actor_mage",
+          "level1Hp": 120,
+          "open": 21,
+          "guard": 10
+        },
+        {
+          "actorId": "actor_cleric",
+          "level1Hp": 120,
+          "open": 21,
+          "guard": 10
+        }
+      ],
+      "summary": {
+        "prepares": 9,
+        "releaseActions": 9,
+        "damageEntries": 9,
+        "basic": 10,
+        "crossingObserved": false
+      }
+    },
+    {
+      "enemyId": "enemy_jf_bronze_dokkaebi",
+      "flow": "gauge",
+      "options": {},
+      "events": [
+        {
+          "turn": 1,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 5
+        },
+        {
+          "turn": 2,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "prepare",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "enemy-1",
+          "message": "청동도깨비가 청동 내려치기를 준비한다! (1턴 뒤)",
+          "actionId": 14,
+          "charging": {
+            "skillId": "skill_jf_enemy_bronze_smash",
+            "skillName": "청동 내려치기",
+            "turnsLeft": 1
+          }
+        },
+        {
+          "turn": 3,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_hero",
+          "amount": 16,
+          "actionId": 19
+        },
+        {
+          "turn": 3,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_scout",
+          "amount": 16,
+          "actionId": 19
+        },
+        {
+          "turn": 3,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_mage",
+          "amount": 16,
+          "actionId": 19
+        },
+        {
+          "turn": 3,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_cleric",
+          "amount": 16,
+          "actionId": 19
+        },
+        {
+          "turn": 4,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 28
+        },
+        {
+          "turn": 5,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 33
+        },
+        {
+          "turn": 6,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "prepare",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "enemy-1",
+          "message": "청동도깨비가 청동 내려치기를 준비한다! (1턴 뒤)",
+          "actionId": 42,
+          "charging": {
+            "skillId": "skill_jf_enemy_bronze_smash",
+            "skillName": "청동 내려치기",
+            "turnsLeft": 1
+          }
+        },
+        {
+          "turn": 7,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_hero",
+          "amount": 16,
+          "actionId": 47
+        },
+        {
+          "turn": 7,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_scout",
+          "amount": 16,
+          "actionId": 47
+        },
+        {
+          "turn": 7,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_mage",
+          "amount": 16,
+          "actionId": 47
+        },
+        {
+          "turn": 7,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_cleric",
+          "amount": 16,
+          "actionId": 47
+        },
+        {
+          "turn": 8,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 56
+        },
+        {
+          "turn": 9,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 61
+        },
+        {
+          "turn": 10,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "prepare",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "enemy-1",
+          "message": "청동도깨비가 청동 내려치기를 준비한다! (1턴 뒤)",
+          "actionId": 70,
+          "charging": {
+            "skillId": "skill_jf_enemy_bronze_smash",
+            "skillName": "청동 내려치기",
+            "turnsLeft": 1
+          }
+        },
+        {
+          "turn": 11,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_hero",
+          "amount": 16,
+          "actionId": 75
+        },
+        {
+          "turn": 11,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_scout",
+          "amount": 16,
+          "actionId": 75
+        },
+        {
+          "turn": 11,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_mage",
+          "amount": 16,
+          "actionId": 75
+        },
+        {
+          "turn": 11,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_cleric",
+          "amount": 16,
+          "actionId": 75
+        },
+        {
+          "turn": 12,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 84
+        },
+        {
+          "turn": 13,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 89
+        },
+        {
+          "turn": 14,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "prepare",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "enemy-1",
+          "message": "청동도깨비가 청동 내려치기를 준비한다! (1턴 뒤)",
+          "actionId": 98,
+          "charging": {
+            "skillId": "skill_jf_enemy_bronze_smash",
+            "skillName": "청동 내려치기",
+            "turnsLeft": 1
+          }
+        },
+        {
+          "turn": 15,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_hero",
+          "amount": 16,
+          "actionId": 103
+        },
+        {
+          "turn": 15,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_scout",
+          "amount": 16,
+          "actionId": 103
+        },
+        {
+          "turn": 15,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_mage",
+          "amount": 16,
+          "actionId": 103
+        },
+        {
+          "turn": 15,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_cleric",
+          "amount": 16,
+          "actionId": 103
+        },
+        {
+          "turn": 16,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 112
+        }
+      ],
+      "damageChecks": [
+        {
+          "actorId": "actor_hero",
+          "level1Hp": 120,
+          "open": 32,
+          "guard": 16
+        },
+        {
+          "actorId": "actor_scout",
+          "level1Hp": 120,
+          "open": 32,
+          "guard": 16
+        },
+        {
+          "actorId": "actor_mage",
+          "level1Hp": 120,
+          "open": 32,
+          "guard": 16
+        },
+        {
+          "actorId": "actor_cleric",
+          "level1Hp": 120,
+          "open": 32,
+          "guard": 16
+        }
+      ],
+      "summary": {
+        "prepares": 4,
+        "releaseActions": 4,
+        "damageEntries": 16,
+        "basic": 8,
+        "crossingObserved": false
+      }
+    },
+    {
+      "enemyId": "enemy_jf_bronze_dokkaebi",
+      "flow": "gauge",
+      "options": {
+        "hpCross": true
+      },
+      "events": [
+        {
+          "turn": 1,
+          "enemyHp": 438,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 5
+        },
+        {
+          "turn": 2,
+          "enemyHp": 236,
+          "enemyMaxHp": 640,
+          "kind": "prepare",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "enemy-1",
+          "message": "청동도깨비가 청동 내려치기를 준비한다! (1턴 뒤)",
+          "actionId": 14,
+          "charging": {
+            "skillId": "skill_jf_enemy_bronze_smash",
+            "skillName": "청동 내려치기",
+            "turnsLeft": 1
+          }
+        },
+        {
+          "turn": 3,
+          "enemyHp": 236,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_hero",
+          "amount": 16,
+          "actionId": 19
+        },
+        {
+          "turn": 3,
+          "enemyHp": 236,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_scout",
+          "amount": 16,
+          "actionId": 19
+        },
+        {
+          "turn": 3,
+          "enemyHp": 236,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_mage",
+          "amount": 16,
+          "actionId": 19
+        },
+        {
+          "turn": 3,
+          "enemyHp": 236,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_cleric",
+          "amount": 16,
+          "actionId": 19
+        },
+        {
+          "turn": 4,
+          "enemyHp": 236,
+          "enemyMaxHp": 640,
+          "kind": "prepare",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "enemy-1",
+          "message": "청동도깨비가 청동 내려치기를 준비한다! (1턴 뒤)",
+          "actionId": 28,
+          "charging": {
+            "skillId": "skill_jf_enemy_bronze_smash",
+            "skillName": "청동 내려치기",
+            "turnsLeft": 1
+          }
+        },
+        {
+          "turn": 5,
+          "enemyHp": 236,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_hero",
+          "amount": 16,
+          "actionId": 33
+        },
+        {
+          "turn": 5,
+          "enemyHp": 236,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_scout",
+          "amount": 16,
+          "actionId": 33
+        },
+        {
+          "turn": 5,
+          "enemyHp": 236,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_mage",
+          "amount": 16,
+          "actionId": 33
+        },
+        {
+          "turn": 5,
+          "enemyHp": 236,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_cleric",
+          "amount": 16,
+          "actionId": 33
+        },
+        {
+          "turn": 6,
+          "enemyHp": 236,
+          "enemyMaxHp": 640,
+          "kind": "prepare",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "enemy-1",
+          "message": "청동도깨비가 청동 내려치기를 준비한다! (1턴 뒤)",
+          "actionId": 42,
+          "charging": {
+            "skillId": "skill_jf_enemy_bronze_smash",
+            "skillName": "청동 내려치기",
+            "turnsLeft": 1
+          }
+        },
+        {
+          "turn": 7,
+          "enemyHp": 236,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_hero",
+          "amount": 16,
+          "actionId": 47
+        },
+        {
+          "turn": 7,
+          "enemyHp": 236,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_scout",
+          "amount": 16,
+          "actionId": 47
+        },
+        {
+          "turn": 7,
+          "enemyHp": 236,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_mage",
+          "amount": 16,
+          "actionId": 47
+        },
+        {
+          "turn": 7,
+          "enemyHp": 236,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_cleric",
+          "amount": 16,
+          "actionId": 47
+        },
+        {
+          "turn": 8,
+          "enemyHp": 236,
+          "enemyMaxHp": 640,
+          "kind": "prepare",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "enemy-1",
+          "message": "청동도깨비가 청동 내려치기를 준비한다! (1턴 뒤)",
+          "actionId": 56,
+          "charging": {
+            "skillId": "skill_jf_enemy_bronze_smash",
+            "skillName": "청동 내려치기",
+            "turnsLeft": 1
+          }
+        },
+        {
+          "turn": 9,
+          "enemyHp": 236,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_hero",
+          "amount": 16,
+          "actionId": 61
+        },
+        {
+          "turn": 9,
+          "enemyHp": 236,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_scout",
+          "amount": 16,
+          "actionId": 61
+        },
+        {
+          "turn": 9,
+          "enemyHp": 236,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_mage",
+          "amount": 16,
+          "actionId": 61
+        },
+        {
+          "turn": 9,
+          "enemyHp": 236,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_cleric",
+          "amount": 16,
+          "actionId": 61
+        },
+        {
+          "turn": 10,
+          "enemyHp": 236,
+          "enemyMaxHp": 640,
+          "kind": "prepare",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "enemy-1",
+          "message": "청동도깨비가 청동 내려치기를 준비한다! (1턴 뒤)",
+          "actionId": 70,
+          "charging": {
+            "skillId": "skill_jf_enemy_bronze_smash",
+            "skillName": "청동 내려치기",
+            "turnsLeft": 1
+          }
+        },
+        {
+          "turn": 11,
+          "enemyHp": 236,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_hero",
+          "amount": 16,
+          "actionId": 75
+        },
+        {
+          "turn": 11,
+          "enemyHp": 236,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_scout",
+          "amount": 16,
+          "actionId": 75
+        },
+        {
+          "turn": 11,
+          "enemyHp": 236,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_mage",
+          "amount": 16,
+          "actionId": 75
+        },
+        {
+          "turn": 11,
+          "enemyHp": 236,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_cleric",
+          "amount": 16,
+          "actionId": 75
+        },
+        {
+          "turn": 12,
+          "enemyHp": 236,
+          "enemyMaxHp": 640,
+          "kind": "prepare",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "enemy-1",
+          "message": "청동도깨비가 청동 내려치기를 준비한다! (1턴 뒤)",
+          "actionId": 84,
+          "charging": {
+            "skillId": "skill_jf_enemy_bronze_smash",
+            "skillName": "청동 내려치기",
+            "turnsLeft": 1
+          }
+        },
+        {
+          "turn": 13,
+          "enemyHp": 236,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_hero",
+          "amount": 16,
+          "actionId": 89
+        },
+        {
+          "turn": 13,
+          "enemyHp": 236,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_scout",
+          "amount": 16,
+          "actionId": 89
+        },
+        {
+          "turn": 13,
+          "enemyHp": 236,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_mage",
+          "amount": 16,
+          "actionId": 89
+        },
+        {
+          "turn": 13,
+          "enemyHp": 236,
+          "enemyMaxHp": 640,
+          "kind": "damage",
+          "skillId": "skill_jf_enemy_bronze_smash",
+          "targetId": "actor_cleric",
+          "amount": 16,
+          "actionId": 89
+        }
+      ],
+      "damageChecks": [
+        {
+          "actorId": "actor_hero",
+          "level1Hp": 120,
+          "open": 32,
+          "guard": 16
+        },
+        {
+          "actorId": "actor_scout",
+          "level1Hp": 120,
+          "open": 32,
+          "guard": 16
+        },
+        {
+          "actorId": "actor_mage",
+          "level1Hp": 120,
+          "open": 32,
+          "guard": 16
+        },
+        {
+          "actorId": "actor_cleric",
+          "level1Hp": 120,
+          "open": 32,
+          "guard": 16
+        }
+      ],
+      "summary": {
+        "prepares": 6,
+        "releaseActions": 6,
+        "damageEntries": 24,
+        "basic": 1,
+        "crossingObserved": true
+      }
+    },
+    {
+      "enemyId": "enemy_jf_bronze_dokkaebi",
+      "flow": "gauge",
+      "options": {
+        "missingSkill": true
+      },
+      "events": [
+        {
+          "turn": 1,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 5
+        },
+        {
+          "turn": 2,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 14
+        },
+        {
+          "turn": 3,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 19
+        },
+        {
+          "turn": 4,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 28
+        },
+        {
+          "turn": 5,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 33
+        },
+        {
+          "turn": 6,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 42
+        },
+        {
+          "turn": 7,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 47
+        },
+        {
+          "turn": 8,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 56
+        },
+        {
+          "turn": 9,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 61
+        },
+        {
+          "turn": 10,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 70
+        },
+        {
+          "turn": 11,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 75
+        },
+        {
+          "turn": 12,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 84
+        },
+        {
+          "turn": 13,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 89
+        },
+        {
+          "turn": 14,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 98
+        },
+        {
+          "turn": 15,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 103
+        },
+        {
+          "turn": 16,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 112
+        },
+        {
+          "turn": 17,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 117
+        },
+        {
+          "turn": 18,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 126
+        },
+        {
+          "turn": 19,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 131
+        },
+        {
+          "turn": 20,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 140
+        },
+        {
+          "turn": 21,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 145
+        },
+        {
+          "turn": 22,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 154
+        },
+        {
+          "turn": 23,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 159
+        },
+        {
+          "turn": 24,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 168
+        },
+        {
+          "turn": 25,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 173
+        },
+        {
+          "turn": 26,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 182
+        },
+        {
+          "turn": 27,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 187
+        },
+        {
+          "turn": 28,
+          "enemyHp": 640,
+          "enemyMaxHp": 640,
+          "kind": "basic",
+          "targetId": "actor_mage",
+          "amount": 15,
+          "actionId": 196
+        }
+      ],
+      "damageChecks": [
+        {
+          "actorId": "actor_hero",
+          "level1Hp": 120,
+          "open": 32,
+          "guard": 16
+        },
+        {
+          "actorId": "actor_scout",
+          "level1Hp": 120,
+          "open": 32,
+          "guard": 16
+        },
+        {
+          "actorId": "actor_mage",
+          "level1Hp": 120,
+          "open": 32,
+          "guard": 16
+        },
+        {
+          "actorId": "actor_cleric",
+          "level1Hp": 120,
+          "open": 32,
+          "guard": 16
+        }
+      ],
+      "summary": {
+        "prepares": 0,
+        "releaseActions": 0,
+        "damageEntries": 0,
+        "basic": 28,
+        "crossingObserved": false
+      }
+    }
+  ],
+  "fixtureOverrides": {
+    "actors": {
+      "maxHp": 2000,
+      "maxMp": 100,
+      "attack": 20,
+      "agility": 60,
+      "initialEquipment": {},
+      "hpCrossFirstActorAttack": 140
+    },
+    "enemies": [
+      {
+        "maxHp": 120,
+        "maxMp": 12,
+        "attack": 18,
+        "defense": 10,
+        "mind": 12,
+        "agility": 40
+      },
+      {
+        "maxHp": 100,
+        "maxMp": 12,
+        "attack": 16,
+        "defense": 10,
+        "mind": 12,
+        "agility": 40
+      },
+      {
+        "maxHp": 100,
+        "maxMp": 12,
+        "attack": 14,
+        "defense": 10,
+        "mind": 20,
+        "agility": 40
+      },
+      {
+        "maxHp": 640,
+        "maxMp": 12,
+        "attack": 26,
+        "defense": 16,
+        "mind": 26,
+        "agility": 40
+      }
+    ],
+    "skills": "design.skillRequirements; no actual skills-role records available"
+  },
+  "limits": [
+    "real skills/monster art/balance integration pending",
+    "actor durability 2000 for long traces; damage checks use original prototype L1 HP",
+    "PNG is a review board, not player screenshot",
+    "full gates/vitest/typecheck not run"
+  ]
+}

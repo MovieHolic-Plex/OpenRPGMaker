@@ -1,0 +1,116 @@
+{
+  "author": "GPT 6.1 sol high behavior worker (session-assigned role)",
+  "newWork": "4 EnemyActionPattern tables; 15-species outline; focused runtime smoke; trace visualization",
+  "artGeneration": "No image API or new monster drawing. Existing source art shown explicitly as review-only reference.",
+  "regenerations": [
+    "python3 scripts/content/joseon-folklore/behavior/author-pilot.py",
+    "node scripts/content/joseon-folklore/behavior/run-smoke.mjs",
+    "python3 scripts/content/joseon-folklore/behavior/render-review.py"
+  ],
+  "inputs": [
+    {
+      "path": "content-packs/joseon-folklore/CONTRACT.md",
+      "sha256": "264047073af4aa0bd34c4f66e30da1f27249a6442a157eb90aefd6b83e98c5d8"
+    },
+    {
+      "path": "content-packs/joseon-folklore/ids.json",
+      "sha256": "efc3c4593777a4bc6b4f594f89a6d3b2a451064525b83dca346349ddf2c520a9"
+    },
+    {
+      "path": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/output/jf-workers/prototype-database.json",
+      "sha256": "a8d06a510f40ae239ed670a7aeba9a25c384ee98a0b623c7634d3c085c946965"
+    },
+    {
+      "path": "src/battle/runtime.ts",
+      "sha256": "54b886fe49bf3a8ca0c1444eb0d7991acdf679839696e408bd87f74f5d9335a2"
+    },
+    {
+      "path": "src/battle/combatConditions.ts",
+      "sha256": "be8feef635631d666973b2524a26d470ba33e04fa772fd99c43898726de91052"
+    },
+    {
+      "path": "src/project/databaseEnemyTroopRecordModel.ts",
+      "sha256": "2ba7a39e65db67d20914cf8beab6e2875955fee427f049b609509f56a4af08e5"
+    }
+  ],
+  "sources": [
+    {
+      "pilotEnemyId": "enemy_jf_wild_boar",
+      "purpose": "review only; not installed as joseon monster",
+      "originalPath": "public/assets/generated/pixel-enemies/boar-tusk.png",
+      "sha256": "bd7c8dd087c5b25ec8a1bfbf7312af1bad610a928f1f4f1880227021219e0180",
+      "dimensions": [
+        192,
+        192
+      ],
+      "cell": 64,
+      "transform": "none; original 192x192 pasted at native size; separate nearest review x2",
+      "repositoryAuthoringEntry": "scripts/asset-gen/pixel-enemy/redraw/organic.py",
+      "licenseNote": "existing repository art; no new ownership claim or redistribution outside this repository"
+    },
+    {
+      "pilotEnemyId": "enemy_jf_straw_dokkaebi",
+      "purpose": "review only; not installed as joseon monster",
+      "originalPath": "public/assets/generated/pixel-enemies/goblin-scout.png",
+      "sha256": "8551d1e1d357ee705b0effffff7ba00353c58e690102f0c5e6c312e368c05c0a",
+      "dimensions": [
+        192,
+        192
+      ],
+      "cell": 64,
+      "transform": "none; original 192x192 pasted at native size; separate nearest review x2",
+      "repositoryAuthoringEntry": "scripts/asset-gen/pixel-enemy/redraw/humanoid.py",
+      "licenseNote": "existing repository art; no new ownership claim or redistribution outside this repository"
+    },
+    {
+      "pilotEnemyId": "enemy_jf_maiden_ghost",
+      "purpose": "review only; not installed as joseon monster",
+      "originalPath": "public/assets/generated/pixel-enemies/ghost-pale.png",
+      "sha256": "5fb2a4e965a065b61be79947e0988d2ddf7abe480831ea16f08d81885a8d2c28",
+      "dimensions": [
+        192,
+        192
+      ],
+      "cell": 64,
+      "transform": "none; original 192x192 pasted at native size; separate nearest review x2",
+      "repositoryAuthoringEntry": "scripts/asset-gen/pixel-enemy/redraw/arcane.py",
+      "licenseNote": "existing repository art; no new ownership claim or redistribution outside this repository"
+    },
+    {
+      "pilotEnemyId": "enemy_jf_bronze_dokkaebi",
+      "purpose": "review only; not installed as joseon monster",
+      "originalPath": "public/assets/generated/pixel-enemies/goblin-brute.png",
+      "sha256": "fd3a4e5b286b1c2654d141072bf7cef7564d84047667db5d12059851a9204747",
+      "dimensions": [
+        192,
+        192
+      ],
+      "cell": 64,
+      "transform": "none; original 192x192 pasted at native size; separate nearest review x2",
+      "repositoryAuthoringEntry": "scripts/asset-gen/pixel-enemy/redraw/humanoid.py",
+      "licenseNote": "existing repository art; no new ownership claim or redistribution outside this repository"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "content-packs/joseon-folklore/behavior/data.json",
+      "sha256": "dbe197b61b4350c22f5b25743142016eb32595c297c255d7237a9b597dda37da"
+    },
+    {
+      "path": "content-packs/joseon-folklore/behavior/design.json",
+      "sha256": "d4b7040eb1f9b83ce1bc6ec0740fafee5e8d85f57fdcb85794f50f4ead04636f"
+    },
+    {
+      "path": "content-packs/joseon-folklore/behavior/smoke-results.json",
+      "sha256": "96ea41c84ee349739186395650a7a83fe983516c3f764ed82ad82d3ad4298006"
+    },
+    {
+      "path": "public/assets/joseon-folklore/behavior/pilot-review.png",
+      "sha256": "261609795c0baff9d036a7f91aa9d2539fc5e1a8efa90c45a3f805a928f50e58"
+    },
+    {
+      "path": "public/assets/joseon-folklore/behavior/source-poses-nearest.png",
+      "sha256": "38b5f75ef8ab9b5b2c5e282dd8ca2c3e68d53e229d6a07434d70db47cb5b671a"
+    }
+  ]
+}
