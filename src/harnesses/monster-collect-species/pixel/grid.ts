@@ -26,7 +26,9 @@ function backgroundMask(image: RgbaImage): Uint8Array {
   const mask = new Uint8Array(width * height);
   for (let i = 0; i < width * height; i += 1) {
     const d = image.data;
-    if (isMagentaBackground(d[i * 4]!, d[i * 4 + 1]!, d[i * 4 + 2]!)) mask[i] = 1;
+    // Generated PNGs keep arbitrary RGB behind transparent / faint alpha.
+    // Sampling that RGB as ink created colored halos and oversized bounding boxes.
+    if (d[i * 4 + 3]! < 128 || isMagentaBackground(d[i * 4]!, d[i * 4 + 1]!, d[i * 4 + 2]!)) mask[i] = 1;
   }
   const corner: number[][] = [];
   let magentaCorners = 0;
@@ -182,6 +184,8 @@ export function edgeProfiles(source: RgbaImage): { bg: Uint8Array; dx: number[];
 }
 
 export type GridOptions = {
+  /** 동일 시트 프레임의 검토된 블록 크기. 자동 탐색보다 우선한다. */
+  block?: number;
   /** 블록 크기 하한 (기본 5) */
   minBlock?: number;
   /** 블록 크기를 대략 안다면 그 ±30% 안에서만 고른다 (동작 줄: 기준 스프라이트 폭으로 잰다 — anim/row.ts) */
@@ -193,7 +197,10 @@ export function extractGrid(source: RgbaImage, options: GridOptions = {}): GridR
   const { bg, dx, dy } = edgeProfiles(source);
   const lo = options.around ? Math.max(2, Math.floor(options.around * 0.7)) : options.minBlock ?? DEFAULT_MIN_BLOCK;
   const hi = options.around ? Math.ceil(options.around * 1.3) : 40;
-  const block = chooseBlock([...peakGaps(dx, lo), ...peakGaps(dy, lo)], lo, hi) || (options.around ? Math.round(options.around) : 0);
+  if (options.block !== undefined && (!Number.isInteger(options.block) || options.block < 2 || options.block > 40)) {
+    throw new Error("고정 픽셀 블록은 2~40 사이의 정수여야 한다");
+  }
+  const block = options.block ?? (chooseBlock([...peakGaps(dx, lo), ...peakGaps(dy, lo)], lo, hi) || (options.around ? Math.round(options.around) : 0));
   if (block === 0) throw new Error("픽셀 격자를 찾지 못했다 — 도트풍 그림이 아니다");
   const xs = gridLines(dx, block);
   const ys = gridLines(dy, block);
