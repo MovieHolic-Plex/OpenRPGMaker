@@ -5,8 +5,9 @@ import shutil
 
 import art_choices
 import store
+import art_layout
 
-CHECKS = ('identity', 'scale', 'attachments', 'circulation', 'style')
+CHECKS = art_layout.SCENE_CHECKS
 
 
 def read(path, default=None):
@@ -37,6 +38,7 @@ def review_input(data, cid):
     manifest_path = folder / 'art-choices.json'
     manifest = read(manifest_path, {})
     state = art_choices.view(data, cid)
+    contexts = read(folder / 'art-context-review.json', {}).get('groups', {})
     groups = []
     for group in manifest.get('groups', []):
         current = next(g for g in state['groups'] if g['id'] == group['id'])
@@ -44,13 +46,17 @@ def review_input(data, cid):
         candidates = []
         for c in group['candidates']:
             visible = next(v for v in current['candidates'] if v['id'] == c['id'])
-            if c['passed'] and not visible['stale'] and group.get('requiresContextReview'):
+            prior = contexts.get(group['id'], {}).get(c['id'], {})
+            reviewed = (prior.get('fingerprint') == art_choices.fingerprint(c) and prior.get('gateVersion') == art_layout.VERSION
+                        and all(k in prior.get('checks', {}) for k in CHECKS))
+            if not reviewed and not visible['stale'] and group.get('requiresContextReview'):
                 candidates.append(dict(c, fingerprint=art_choices.fingerprint(c)))
         if candidates: groups.append({'id': group['id'], 'title': group['title'], 'candidates': candidates})
     return {'manifestSha256': art_choices.digest(manifest_path), 'groups': groups,
             'root': str(Path(data) / 'art-worktrees' / cid),
             'previousFeedback': read(folder / 'art-feedback.json', {}),
-            'repairBrief': read(folder / 'parking-repair-brief.json', {})}
+            'repairBrief': read(folder / 'parking-repair-brief.json', {}),
+            'approvedLayout': read(folder / 'art-layout-input.json', {}), 'gateVersion': art_layout.VERSION}
 
 
 def validate_review(data, cid, result, request):
@@ -66,6 +72,7 @@ def validate_review(data, cid, result, request):
             raise ValueError('요청 후보와 판정 목록 불일치')
         for c in group['candidates']:
             r = result.get('groups', {}).get(group['id'], {}).get(c['id'], {})
+            if r.get('gateVersion') != art_layout.VERSION: raise ValueError('이전 검수 기준으로 승인할 수 없습니다.')
             if r.get('fingerprint') != c['fingerprint'] or r.get('verdict') not in ('PASS', 'FAIL'):
                 raise ValueError('후보별 조립 판정 또는 해시 누락')
             expected = {v['sha256'] for v in c['images']}
@@ -101,7 +108,8 @@ def queue_repair(data, cid):
         failed = [g for g in state['groups'] if not any(c['ready'] for c in g['candidates'])]
         if not failed: return False
         previous = read(folder / 'art-feedback.json', {})
-        if previous.get('manifestSha256') == source:
+        review_fingerprint = art_choices.fingerprint({'version': art_layout.VERSION, 'context': read(folder / 'art-context-review.json', {})})
+        if previous.get('manifestSha256') == source and previous.get('reviewFingerprint') == review_fingerprint:
             current = store.concept(cid)
             if current['stage'] == 'art' and current['status'] == 'running':
                 store.update_concept(cid, stage='blocked', status='idle', note='같은 실패 후보를 그대로 반환함 — 새 수정 근거 필요')
@@ -113,7 +121,7 @@ def queue_repair(data, cid):
                 raw = next(c for g in manifest['groups'] if g['id'] == group['id'] for c in g['candidates'] if c['id'] == candidate['id'])
                 review = context.get(group['id'], {}).get(candidate['id'], {})
                 matching = review.get('fingerprint') == art_choices.fingerprint(raw)
-                fixes = (review.get('fixes', []) if matching else []) or raw.get('repairFixes', [])
+                fixes = (review.get('fixes', []) if matching else []) + raw.get('repairFixes', [])
                 evidence_root = folder / 'art-feedback-history' / source / 'evidence'
                 evidence_root.mkdir(parents=True, exist_ok=True)
                 archived = []
@@ -131,7 +139,7 @@ def queue_repair(data, cid):
         revision = c.get('art_revision') or 0
         cap = limits(data, cid)
         exhausted = revision >= cap['maxRevisions']
-        feedback = {'version': 1, 'manifestSha256': source, 'previousRevision': revision,
+        feedback = {'version': 2, 'manifestSha256': source, 'reviewFingerprint': review_fingerprint, 'previousRevision': revision,
             'revision': revision if exhausted else revision + 1, 'limits': cap,
             'status': 'limit-reached' if exhausted else 'queued', 'repairs': repairs,
             'preserveGroups': [g['id'] for g in state['groups'] if g not in failed],

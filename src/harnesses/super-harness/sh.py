@@ -35,6 +35,7 @@ import planning_details  # noqa: E402
 import art_execution  # noqa: E402
 import art_choices  # noqa: E402
 import art_feedback  # noqa: E402
+import art_layout  # noqa: E402
 
 DATA = store.DATA
 WORK = os.path.join(DATA, 'work')
@@ -379,7 +380,7 @@ def on_bake(meta, code, result):
     pass   # 굽기는 스레드에서 끝까지 처리한다(bake_thread).
 
 
-HANDLERS = {'plan': lambda *a: on_plan(*a), 'plan-review': lambda *a: on_plan_review(*a), 'survey': lambda *a: on_survey(*a), 'material-review': lambda *a: on_material_review(*a), 'art': lambda *a: on_art(*a), 'art-native': lambda *a: on_art_native(*a), 'art-context-review': lambda *a: on_art_context_review(*a), 'discover': on_discover, 'build': on_build, 'review': on_review, 'probe': on_probe, 'judge': on_judge, 'bake': on_bake}
+HANDLERS = {'plan': lambda *a: on_plan(*a), 'plan-review': lambda *a: on_plan_review(*a), 'survey': lambda *a: on_survey(*a), 'material-review': lambda *a: on_material_review(*a), 'art': lambda *a: on_art(*a), 'art-native': lambda *a: on_art_native(*a), 'art-layout-review': lambda *a: on_art_layout_review(*a), 'art-context-review': lambda *a: on_art_context_review(*a), 'discover': on_discover, 'build': on_build, 'review': on_review, 'probe': on_probe, 'judge': on_judge, 'bake': on_bake}
 
 
 def probe_scores(cid, attempt):
@@ -637,13 +638,10 @@ def on_art(meta, code, result):
             art_execution.prepare(wt, request)
             request_path = cdir(cid, 'art-execution.json')
             write_json(request_path, request)
-            native_result = cdir(cid, 'art-execution-result.json')
-            if os.path.exists(native_result): os.remove(native_result)
-            start_proc(cid, 'art-native', 'drawing', [sys.executable, os.path.join(HERE, 'art_execution.py'),
-                       wt, request_path, native_result], ROOT, cdir(cid, 'logs', 'art-native.log'), CODEX_TIMEOUT * 2,
-                       {'result': native_result})
-            store.update_concept(cid, status='running', note='전용 하네스 직접 실행 — 후보 제작·독립 검수')
-        except (OSError, ValueError, TypeError) as error:
+            layout = art_layout.build_input(wt, request)
+            write_json(cdir(cid, 'art-layout-input.json'), layout)
+            store.update_concept(cid, stage='art-layout-review', status='queued', note='제작 전 배치·비례·여백 적대적 검수 대기')
+        except (OSError, ValueError, TypeError, KeyError) as error:
             store.update_concept(cid, stage='blocked', status='idle', note='그림 실행 준비 오류', reasons=[str(error)])
         return
     candidates = result.get('candidates') or []
@@ -750,6 +748,59 @@ def on_art_context_review(meta, code, result):
         store.log(cid, '조립 검수 통과 → 사람 선택')
     else:
         art_feedback.queue_repair(DATA, cid)
+
+
+def start_art_layout_review(c):
+    cid = c['id']
+    request = read_json(cdir(cid, 'art-execution.json'))
+    wt = os.path.join(DATA, 'art-worktrees', cid)
+    try:
+        layout = art_layout.build_input(wt, request)
+    except (OSError, ValueError, TypeError, KeyError) as error:
+        store.update_concept(cid, stage='blocked', status='idle', note='제작 전 도면 입력 변경/오류', reasons=[str(error)])
+        return
+    write_json(cdir(cid, 'art-layout-input.json'), layout)
+    output = cdir(cid, 'art-layout-review.json')
+    if os.path.exists(output): os.remove(output)
+    prompt = fill(prompt_template('art-layout-review.md'), INPUT=cdir(cid, 'art-layout-input.json'), OUTPUT=output,
+                  FEEDBACK=read_json(cdir(cid, 'art-feedback.json'), {}), ROOT=wt)
+    start_codex(cid, 'art-layout-review', 'layout', prompt, output)
+    store.update_concept(cid, status='running', note='제작 전 도면의 비례·여백·구성 검수 중')
+
+
+def on_art_layout_review(meta, code, result):
+    cid = meta['concept']
+    try:
+        if code != 0: raise ValueError('도면 검수 실행 실패')
+        request = read_json(cdir(cid, 'art-execution.json'))
+        wt = os.path.join(DATA, 'art-worktrees', cid)
+        layout = art_layout.build_input(wt, request)
+        art_layout.validate_verdict(result, layout['fingerprint'], art_layout.LAYOUT_CHECKS)
+        write_json(cdir(cid, 'art-layout-history', layout['fingerprint'] + '.json'), result)
+        if result['verdict'] == 'FAIL':
+            history = read_json(cdir(cid, 'art-layout-rejections.json'), [])
+            history.append(result)
+            write_json(cdir(cid, 'art-layout-rejections.json'), history)
+            # Two preparation corrections per art revision, then stop. No drawing attempt spent.
+            revision = store.concept(cid).get('art_revision', 0)
+            count = sum(r.get('revision') == revision for r in history[:-1]) + 1
+            history[-1]['revision'] = revision
+            write_json(cdir(cid, 'art-layout-rejections.json'), history)
+            store.update_concept(cid, stage='art' if count < 3 else 'blocked', status='queued' if count < 3 else 'idle',
+                note='도면 반려 — 배치 명세부터 수정' if count < 3 else '도면 3회 반려 — 확인 필요', reasons=result.get('reasons', []))
+            return
+        request['layoutApproval'] = cdir(cid, 'art-layout-review.json')
+        write_json(cdir(cid, 'art-execution.json'), request)
+        art_layout.require_approval(wt, request)
+        art_execution.prepare(wt, request)
+        native_result = cdir(cid, 'art-execution-result.json')
+        if os.path.exists(native_result): os.remove(native_result)
+        start_proc(cid, 'art-native', 'drawing', [sys.executable, os.path.join(HERE, 'art_execution.py'),
+                   wt, cdir(cid, 'art-execution.json'), native_result], ROOT, cdir(cid, 'logs', 'art-native.log'), CODEX_TIMEOUT * 2,
+                   {'result': native_result})
+        store.update_concept(cid, stage='art', status='running', reasons=[], note='도면 검수 통과 — 후보 제작·독립 검수')
+    except (OSError, ValueError, TypeError, KeyError) as error:
+        store.update_concept(cid, stage='blocked', status='idle', note='제작 전 도면 검수 오류', reasons=[str(error)])
 
 
 def on_art_native(meta, code, result):
@@ -993,10 +1044,10 @@ def tick():
         return
     max_codex = int(store.setting('max_codex'))
     # 하루 상한은 없다(2026-10-04 사용자) — 동시 실행 수만 지킨다.
-    codex_free = lambda need=1: len(running(['discover', 'plan', 'plan-review', 'survey', 'material-review', 'art', 'art-context-review', 'build', 'review', 'judge'])) + need <= max_codex
+    codex_free = lambda need=1: len(running(['discover', 'plan', 'plan-review', 'survey', 'material-review', 'art', 'art-layout-review', 'art-context-review', 'build', 'review', 'judge'])) + need <= max_codex
 
     release_waiting()
-    active = store.concepts("stage IN ('plan','plan-review','survey','material-review','art-context-review','build','review','probe','bake','unbake')")
+    active = store.concepts("stage IN ('plan','plan-review','survey','material-review','art-layout-review','art-context-review','build','review','probe','bake','unbake')")
     for c in store.concepts("stage='discovered'"):
         if len([a for a in active if a['stage'] != 'bake']) >= int(store.setting('max_active')):
             break
@@ -1032,6 +1083,8 @@ def tick():
             start_survey(c)
         elif c['stage'] == 'material-review' and codex_free():
             start_material_review(c)
+        elif c['stage'] == 'art-layout-review' and codex_free():
+            start_art_layout_review(c)
         elif c['stage'] == 'art-context-review' and codex_free():
             start_art_context_review(c)
         elif c['stage'] == 'build' and codex_free():
@@ -1148,7 +1201,7 @@ def action(body):
 
 # ── 갤러리(사람용 화면) — 그림 한 장 + 한 줄 상태 + 한 줄 설명. 가볍게. ──
 THUMBS = os.path.join(DATA, 'thumbs')
-GROUP = {'plan': 'work', 'plan-review': 'work', 'survey': 'work', 'material-review': 'work', 'art-review': 'pick', 'art-context-review': 'work', 'done': 'done', 'discovered': 'wait', 'waiting': 'wait', 'art': 'wait', 'blocked': 'stop', 'discarded': 'stop'}
+GROUP = {'plan': 'work', 'plan-review': 'work', 'survey': 'work', 'material-review': 'work', 'art-review': 'pick', 'art-layout-review': 'work', 'art-context-review': 'work', 'done': 'done', 'discovered': 'wait', 'waiting': 'wait', 'art': 'wait', 'blocked': 'stop', 'discarded': 'stop'}
 
 
 def first_sentence(text, limit=90):
@@ -1173,6 +1226,8 @@ def plain_status(c):
         return '재료 조사 — 맵 제작 전'
     if stage == 'material-review':
         return '시대·필수 칩 독립 검수'
+    if stage == 'art-layout-review':
+        return '제작 전 배치·비례·여백 검수'
     if stage == 'art-context-review':
         return '조립 예시 독립 검수 중' if c['status'] == 'running' else '조립 예시 검수 대기'
     if stage == 'art-review':
@@ -1249,7 +1304,7 @@ def candidate_images(cid):
 
 
 def before_build(c):
-    return c['stage'] in ('plan', 'plan-review', 'survey', 'material-review', 'art', 'art-review', 'art-context-review') or (
+    return c['stage'] in ('plan', 'plan-review', 'survey', 'material-review', 'art', 'art-review', 'art-layout-review', 'art-context-review') or (
         c['stage'] == 'blocked' and not gates.material_report(cdir(c['id']))['ok'])
 
 
@@ -1316,6 +1371,17 @@ def concept_markdown(cid):
     card = read_json(cdir(cid, 'card.json'), {}) or {}
     L = [f'# {d["title"]}', '', f'**상태** {d["status"]}' + (f' · 「{d["parent"]}」의 하위' if d['parent'] else '') + (f' · [PR]({d["pr"]})' if d['pr'] else ''), '']
     L += ['> ' + line for line in str(d['about']).splitlines()] + ['']
+    layout_input = read_json(cdir(cid, 'art-layout-input.json'), {}) or {}
+    if layout_input:
+        layout = layout_input.get('layout', {})
+        review = read_json(cdir(cid, 'art-layout-review.json'), {}) or {}
+        verdict = review.get('verdict', '검수 대기') if review.get('fingerprint') == layout_input.get('fingerprint') else '검수 대기'
+        L += ['## 이번 표본 도면 · 제작 전 검수', '', f'판정: **{verdict}**', '', '```text', *layout.get('grid', []), '```', '']
+        L += [f'- {symbol}: {item.get("purpose", "")}' for symbol, item in layout.get('legend', {}).items()]
+        L += ['', '| 검수 항목 | 판정 | 근거 |', '|---|---|---|']
+        if review.get('fingerprint') == layout_input.get('fingerprint'):
+            L += [f'| {md_cell(k)} | {md_cell(v.get("verdict"))} | {md_cell(v.get("evidence"))} |' for k, v in review.get('checks', {}).items()]
+        L += ['']
     feedback = read_json(cdir(cid, 'art-feedback.json'), {}) or {}
     if feedback:
         L += ['## 검수 피드백 → 자동 수정', '', f'수정 차수: {feedback.get("revision")} / {feedback.get("limits", {}).get("maxRevisions")} · {c.get("note", "")}', '']
