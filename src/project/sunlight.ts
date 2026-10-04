@@ -75,7 +75,7 @@ export class SunlightField {
     this.params = normalizeSunlight(map.sunlight);
     this.lift = map.relief ? reliefLiftField(map.relief) : null;
     this.terrain = map.relief ? prune(effectiveHeights(gridFromRelief(map.relief))) : null;
-    this.bridges = map.relief ? reliefBridgeMask(map.relief) : null;
+    this.bridges = map.relief ? reliefBridgeMask(map.relief) : undefined;
     this.maxTerrain = this.lift?.maxLift ?? 0;
     const casters: Caster[] = [];
     const kits = new Map(tileset?.structureKits?.map(k => [k.id, k]));
