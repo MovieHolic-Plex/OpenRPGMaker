@@ -5,6 +5,20 @@
 
 <!-- releases -->
 
+## 0.116.1 — 2026-10-04
+
+### 수정
+
+- **relief** — 경사로 칸 값에 숫자 타입을 붙인다 (`26ec401`)
+- require visible first-game scenes and verify shipping playback (#2040) (`501a450`)
+- remove super harness daily caps and make orders readable (`7e6b3bf`)
+- catch sprite transparency holes with adversarial alpha review (`208a367`)
+- ground ramp movement and expose original Beodeul houses (`401b26d`)
+
+### 문서
+
+- record native house, ramp input and full terrain seam visual QA (`5179dcb`)
+
 ## 0.116.0 — 2026-10-04
 
 ### 기능
