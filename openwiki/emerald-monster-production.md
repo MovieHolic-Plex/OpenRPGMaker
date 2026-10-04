@@ -4,6 +4,15 @@ User intent is a reusable editor assistant capability, with Starlight Islands as
 the dogfood campaign. Read `docs/content/emerald-monster-production-contract.md`
 for the full acceptance matrix. Applying a skin alone is insufficient.
 
+`configureEmeraldMonsterTiles` adopts the seven `emerald_monster_*` native variants
+after world authoring, and in assistant campaign repair. It changes map tileset IDs
+without changing a single raster index, event, start position or session value.
+Each variant inherits the actual author's passability, priority, terrain, kits and
+groups; this matters because canonical Starlight priority differs from the shipped
+template. Original definitions remain available. Geometry mismatches are rejected;
+custom atlas images and previously authored variant definitions are preserved.
+Shared Emerald assembly categories supplement the retained author references.
+
 `src/project/emeraldMonsterStyle.ts` owns the versioned authored metadata
 `meta.oprnMonsterStyle`, the explicit configuration function and AI guidance.
 Player code checks `isEmeraldMonsterStyle`, not `system.genre`. Existing wire enum

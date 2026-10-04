@@ -4,8 +4,8 @@ import type { Project } from './types';
 export type EmeraldMonsterStyle = { version: 1; reference: 'emerald' };
 
 export const EMERALD_MONSTER_TILESET_IDS = [
-  'monster_overworld', 'monster_wild', 'monster_coast', 'monster_climate',
-  'monster_rooms', 'monster_dungeon', 'monster_gyms',
+  'emerald_monster_overworld', 'emerald_monster_wild', 'emerald_monster_coast', 'emerald_monster_climate',
+  'emerald_monster_rooms', 'emerald_monster_dungeon', 'emerald_monster_gyms',
 ] as const;
 
 export function isEmeraldMonsterStyle(project: Pick<Project, 'meta'>): boolean {

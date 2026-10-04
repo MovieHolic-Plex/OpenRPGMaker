@@ -1,5 +1,5 @@
 import {mkdir,cp,readFile,writeFile} from 'node:fs/promises';
-import {resolve,sep} from 'node:path';
+import {resolve,sep,dirname} from 'node:path';
 import {withTsModule} from '../ontology-ts-loader.mjs';
 import {createHash} from 'node:crypto';
 const out=resolve(process.argv[2]??'/home/main/claude-viz/monster-expedition');
@@ -34,8 +34,13 @@ if (canonicalPath) {
  for (const tileset of Object.values(canonical.tilesets)) delete tileset.referenceDocuments;
  await writeFile(resolve(out,'project.json'),JSON.stringify(canonical));
 } else await cp('public/monster-expedition/project.json',resolve(out,'project.json'));
-await cp('public/monster-expedition/world-manifest.json',resolve(out,'world-manifest.json'));
-const assets=JSON.parse(await readFile('public/monster-expedition/public-assets.json','utf8'));
+const contentDir=dirname(resolve(process.argv[4] ?? 'public/monster-expedition/project.json'));
+await cp(resolve(contentDir,'world-manifest.json'),resolve(out,'world-manifest.json'));
+// Derive runtime files from the actual shipping document. A stale demonstration
+// manifest cannot describe newly adopted native tile variants or authored assets.
+const shipping = JSON.parse(await readFile(resolve(out,'project.json'),'utf8'));
+const assets=await withTsModule(resolve('src/project/webExport.ts'),'campaign-public-assets.mjs',m=>
+ m.prepareWebExport(shipping).assets.filter(asset=>asset.kind==='public'));
 for(const asset of assets) {
   if (/^https?:/.test(asset.sourcePath)) throw Error('Campaign export unexpectedly depends on a remote asset: '+asset.sourcePath);
   const target=resolve(out,asset.zipPath);
@@ -44,7 +49,6 @@ for(const asset of assets) {
 }
 // Authored animatic cues may select a real library sound beyond the original
 // campaign manifest. Export those exact local files alongside the player.
-const shipping = JSON.parse(await readFile(resolve(out,'project.json'),'utf8'));
 const needed = new Set();
 for (const animation of shipping.database.battleAnimations ?? []) if (animation.resourceId) needed.add(animation.resourceId);
 for (const scene of shipping.system.opening?.scenes ?? []) {
