@@ -38,7 +38,7 @@ export function reliefSlopes(r: ReliefData): ReliefSlope[] {
   const smooth = reliefSmoothStairs(r.style), carved = reliefCarvedStairs(r.style);
   const seen = new Uint8Array(r.width * r.height), out: ReliefSlope[] = [];
   for (let s = 0; s < seen.length; s++) {
-    const v = r.ramps[s] ?? 0;
+    const v: number = r.ramps[s] ?? 0;
     if (!v || v > 8 || seen[s]) continue;
     const dir = DIRS[(v - 1) % 4]!, [dx, dy] = DV[dir];
     const lo = r.levels[s] ?? 0, cells: number[] = [];
