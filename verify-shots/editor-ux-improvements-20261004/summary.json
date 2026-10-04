@@ -1,0 +1,47 @@
+{
+  "beforeCommit": "d7a3f0136eca4239fc5c340c8237048bfa848e25",
+  "comparisons": [
+    {
+      "name": "아이템 설명 / 1,000개",
+      "before": 1291,
+      "after": 148,
+      "reductionPercent": 89
+    },
+    {
+      "name": "Ctrl+Z / 512×512",
+      "before": 860,
+      "after": 328,
+      "reductionPercent": 62
+    },
+    {
+      "name": "이벤트 목록 열기 / 1,000개",
+      "before": 3521,
+      "after": 2153,
+      "reductionPercent": 39
+    }
+  ],
+  "nativeMeasuredWindows": 59,
+  "nativeChecks": 16,
+  "pageErrors": 0,
+  "typingRows": [
+    {
+      "renderedRows": 21,
+      "addedRows": 0,
+      "removedRows": 0,
+      "longTasks": []
+    },
+    {
+      "renderedRows": 21,
+      "addedRows": 0,
+      "removedRows": 0,
+      "longTasks": []
+    },
+    {
+      "renderedRows": 21,
+      "addedRows": 0,
+      "removedRows": 0,
+      "longTasks": []
+    }
+  ],
+  "sourceHashesVerified": true
+}
