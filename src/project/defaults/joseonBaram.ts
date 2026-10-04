@@ -83,7 +83,7 @@ export function ensureJoseonBaramTileset(tileset: TilesetDef): boolean {
   if (sheetCopy && tileset.count === data.count) return mergeShippedKits(tileset) || changed;
   const fresh = createJoseonBaramTileset();
   // 저자가 더한 부품·묶음·오토타일(번들 id 가 아닌 것)은 지킨다 — 칸 번호는 판이 늘어도 바뀌지 않으므로(앞 칸 불변) 그대로 유효하다.
-  const shippedGroupIds = new Set(fresh.tileGroups.map(group => group.id));
+  const shippedGroupIds = new Set((fresh.tileGroups ?? []).map(group => group.id));
   const shippedAutotileIds = new Set((fresh.autotileGroups ?? []).map(group => group.id));
   const authorKits = (tileset.structureKits ?? []).filter(kit => !kit.id.startsWith(JOSEON_BARAM_PREFIX));
   const authorGroups = (tileset.tileGroups ?? []).filter(group => !group.id.startsWith("jb:") && !shippedGroupIds.has(group.id));
@@ -94,9 +94,9 @@ export function ensureJoseonBaramTileset(tileset: TilesetDef): boolean {
   tileset.priority = fresh.priority;
   tileset.terrain = fresh.terrain;
   tileset.tileMeta = fresh.tileMeta;
-  tileset.tileGroups = [...fresh.tileGroups, ...authorGroups];
+  tileset.tileGroups = [...(fresh.tileGroups ?? []), ...authorGroups];
   tileset.animationStrips = fresh.animationStrips;
-  tileset.structureKits = [...fresh.structureKits, ...authorKits];
+  tileset.structureKits = [...(fresh.structureKits ?? []), ...authorKits];
   tileset.autotileGroups = [...(fresh.autotileGroups ?? []), ...authorAutotiles];
   if (!tileset.referenceSourceTilesetId && tileset.referenceDocuments?.length) {
     const shipped = new Map(REFERENCES.map(category => [category.id, category]));
