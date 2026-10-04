@@ -1,5 +1,7 @@
 # 실패 원인 단계로 돌아가 새 queued 판 준비
 작업 폴더 {{ROOT}}, 개념 폴더 {{CDIR}}.
+각 명령은 작업 폴더를 명시한다. 입력 일치 확인 모듈은 {{ART_LAYOUT_MODULE}}이다.
+그 파일의 부모 폴더를 sys.path 맨 앞에 넣고 import art_layout 한다. 홈 전체에서 다른 사본을 찾지 않는다.
 승인 모델 {{ART_MODEL_OVERRIDE}}, 상한 {{ART_LIMITS}}.
 기존 하네스와 기준 자동차는 이미 준비되어 있다. 이번 작업은 명세/배치/시점의 교정과 native 실행 준비다.
 먼저 art-feedback.json의 policy와 art-calibration.json(있으면)을 읽고 수정 경로를 따른다.

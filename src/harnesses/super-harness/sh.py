@@ -610,12 +610,16 @@ def start_art(c):
         subprocess.run(['npm', 'run', 'wt', '--', 'adopt', 'super-art-' + cid, '--path', wt], cwd=ROOT, check=True, capture_output=True)
     previous = cdir(cid, 'art-result.json')
     if os.path.isfile(previous):
-        os.replace(previous, cdir(cid, 'art-result.previous.json'))
+        if read_json(previous, {}).get('candidates'):
+            os.replace(previous, cdir(cid, 'art-result.previous.json'))
+        else:
+            os.remove(previous)
     feedback = read_json(cdir(cid, 'art-feedback.json'), {}) or {}
     prior_layout = read_json(cdir(cid, 'art-layout-review.json'), {}) or {}
     template = 'art-layout-repair.md' if prior_layout.get('verdict') == 'FAIL' or feedback.get('policy') else 'art.md'
     prompt = fill(prompt_template(template), ROOT=wt, CDIR=cdir(cid), CONCEPT=concept_context(c),
                   ART_FEEDBACK=feedback, ART_LIMITS=art_feedback.limits(DATA, cid),
+                  ART_LAYOUT_MODULE=os.path.join(HERE, 'art_layout.py'),
                   ART_MODEL_OVERRIDE=json.loads(store.setting('art_model_overrides') or '{}').get(cid))
     start_codex(cid, 'art', 'prepare', prompt, cdir(cid, 'art-result.json'), write_root=wt)
     store.update_concept(cid, status='running', note='형태·시점 명세와 제작 주문서 준비 중')

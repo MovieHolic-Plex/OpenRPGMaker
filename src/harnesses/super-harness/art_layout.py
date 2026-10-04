@@ -62,6 +62,11 @@ def build_input(root, request):
     required = {str(data/name) for name in ('seed.json', 'harness.sqlite', 'harness.sqlite-wal') if (Path(root)/data/name).is_file()}
     if not required: raise ValueError('준비된 시드 또는 native 후보 저장소가 필요합니다.')
     if request['harness'] == 'modern-chipset':
+        seed_path = Path(root) / data / 'seed.json'
+        seed = json.loads(seed_path.read_text())
+        for name in ('promptTemplate', 'reviewTemplate'):
+            if seed.get(name):
+                required.add(str((Path(root) / seed[name]).resolve().relative_to(Path(root).resolve())))
         for name in ('parking-contract.json', 'parking-brief.md'):
             if (Path(root)/data/name).is_file(): required.add(str(data/name))
         round_dir = Path(request['runs'])/request['round']
