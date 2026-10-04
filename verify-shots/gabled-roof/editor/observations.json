@@ -6,7 +6,7 @@
       "name": "01-gable",
       "house": {
         "id": "sp_4e36815d-5fed-4f58-acc9-253a9b2b5201",
-        "kitId": "quick_house_beodeul-manor-a_9_2_roof11x4_gable",
+        "kitId": "quick_house_beodeul-manor-a_9_2_roof11x4_joined_gable",
         "x": 19,
         "y": 38,
         "w": 11,
@@ -228,7 +228,7 @@
       "name": "03-gable",
       "house": {
         "id": "sp_4e36815d-5fed-4f58-acc9-253a9b2b5201",
-        "kitId": "quick_house_beodeul-manor-a_9_2_roof11x4_gable",
+        "kitId": "quick_house_beodeul-manor-a_9_2_roof11x4_joined_gable",
         "x": 19,
         "y": 38,
         "w": 11,
@@ -302,7 +302,7 @@
       "name": "04-low-sun",
       "house": {
         "id": "sp_4e36815d-5fed-4f58-acc9-253a9b2b5201",
-        "kitId": "quick_house_beodeul-manor-a_9_2_roof11x4_gable",
+        "kitId": "quick_house_beodeul-manor-a_9_2_roof11x4_joined_gable",
         "x": 19,
         "y": 38,
         "w": 11,
@@ -376,7 +376,7 @@
       "name": "05-short-sun",
       "house": {
         "id": "sp_4e36815d-5fed-4f58-acc9-253a9b2b5201",
-        "kitId": "quick_house_beodeul-manor-a_9_2_roof11x4_gable",
+        "kitId": "quick_house_beodeul-manor-a_9_2_roof11x4_joined_gable",
         "x": 19,
         "y": 38,
         "w": 11,
@@ -450,7 +450,7 @@
       "name": "06-reloaded",
       "house": {
         "id": "sp_4e36815d-5fed-4f58-acc9-253a9b2b5201",
-        "kitId": "quick_house_beodeul-manor-a_9_2_roof11x4_gable",
+        "kitId": "quick_house_beodeul-manor-a_9_2_roof11x4_joined_gable",
         "x": 19,
         "y": 38,
         "w": 11,
@@ -458,10 +458,10 @@
       },
       "stats": {
         "builds": 1,
-        "frames": 87,
+        "frames": 86,
         "pending": 0,
         "visible": 84,
-        "textures": 87,
+        "textures": 86,
         "enabled": true,
         "params": {
           "enabled": true,
@@ -526,5 +526,5 @@
   "wallTilesUnchanged": true,
   "nativeRoofControl": true,
   "finalAltitude": 65,
-  "revision": 11
+  "revision": 16
 }

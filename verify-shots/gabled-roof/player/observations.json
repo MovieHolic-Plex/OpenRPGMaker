@@ -4,13 +4,13 @@
   "states": [
     {
       "altitude": 35,
-      "sha256": "9c341239fcf999c24eea85a7adc43c396f51ffe1901acc698c1e0fe84cba0c37",
+      "sha256": "25f94c0c52235e6091092f39bb98823213f4f22a62290065ad4d8b100a1fdde8",
       "stats": {
         "builds": 2,
-        "frames": 47,
+        "frames": 188,
         "pending": 0,
-        "visible": 20,
-        "textures": 20,
+        "visible": 93,
+        "textures": 93,
         "enabled": true,
         "params": {
           "enabled": true,
@@ -71,13 +71,13 @@
     },
     {
       "altitude": 65,
-      "sha256": "079602faea3f307b09ad2ceeac70b74713081a47741117db4559058a076ac2bb",
+      "sha256": "bf684340a084fd1c8a59e746d71284e6f21f7442fb806716134dcdc6443d18ac",
       "stats": {
         "builds": 3,
-        "frames": 67,
+        "frames": 281,
         "pending": 0,
-        "visible": 20,
-        "textures": 20,
+        "visible": 93,
+        "textures": 93,
         "enabled": true,
         "params": {
           "enabled": true,
