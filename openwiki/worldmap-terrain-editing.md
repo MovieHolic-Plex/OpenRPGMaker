@@ -46,7 +46,7 @@
 ## 새 구조 만들기 — `base: "generate"` (2026-10-03)
 
 「20조각 대륙」「고리 대륙」「은하」처럼 손 대륙과 다른 구조는 `edit_world_terrain({base: "generate", ops: [{op: "continents", style, count, land?, seed?}, …]})`.
-style: `blobs`(대륙 몇 개) · `shards`(조각 count 개, 1~40) · `ring`(가운데 내해를 두른 고리) · `pangaea`(초대륙 하나 + 섬) · `archipelago`(군도) · `galaxy`(우주) · `peninsula`(반도) · `river-continent`(강 문명 대륙) · `arc-islands`(열도) · `korea`(실제 한반도 윤곽).
+style: `blobs`(대륙 몇 개) · `shards`(조각 count 개, 1~40) · `ring`(가운데 내해를 두른 고리) · `pangaea`(초대륙 하나 + 섬) · `archipelago`(군도) · `galaxy`(우주) · `peninsula`(반도) · `river-continent`(강 문명 대륙) · `arc-islands`(열도) · `korea`(조선 테마용 한반도 윤곽) · `real`(실제 지리 — 지구 어디든).
 `climate {wet?, cold?}` 로 기후를 기울이고, `wall`·`dune_sea`·`sky_island`·`move_place` 로 자동 맞춤을 덮는다.
 
 - **5막 여정은 자동 맞춤**(사용자 결정): 어떤 구조든 키트(`kit_fit.py`)가 시작·관문 산벽·항구·사구 바다·2막 땅·천공섬과 장소 31곳을 놓고
@@ -58,7 +58,7 @@ style: `blobs`(대륙 몇 개) · `shards`(조각 count 개, 1~40) · `ring`(가
 - **문화권 지리 구조**(2026-10-03): `peninsula`(조선·반도) · `river-continent`(중국·무협) · `arc-islands`(일본·전국).
   실제 지도를 따라 그리지 않고 특징만 살린 생성기(`kit/lib/kit_geo.py`)라서 시드마다 모양이 다르다. 땅 모양 말고도 **힌트**를 같이 낸다 —
   척추 산줄기·이끌린 강(맞춤이 장소를 비켜 놓는다), 기후 기울기(위도 범위·서쪽 고원·북쪽 사막), 산벽 극(2막 방향), 사구 바다 극(사막 자리).
-  - `joseon`·`wuxia`·`sengoku` 테마는 이제 기본 지형이 각각 `terrains/joseon-korea`(실제 한반도 윤곽, style `korea`)·`wuxia-continent`·`sengoku-islands`(생성 바탕)이고
+  - `joseon`·`wuxia`·`sengoku` 테마는 이제 기본 지형이 각각 `terrains/joseon-korea`(한반도 윤곽, style `korea`)·`wuxia-china`·`sengoku-japan`(실제 지리 style `real`)이고
     여정은 `journeys/joseon-5act`·`wuxia-5act`·`sengoku-5act`(장소 id 는 판타지와 같고 label·이야기·장벽·수단 이름만 — 마패·판옥선·모래배·선학 등).
     생성기: `journeys/src/make_culture_journeys.py`. 이 세 테마로 이미 만든 세계 지도는 다시 빌드하면 새 구조로 바뀐다.
   - 테마 지형이 생성 바탕일 때 편집이 `continents`·`climate` 을 직접 주면 테마의 것은 버린다(`kit_terrain.merge`). 전에는 테마 것이 앞서 이겨 편집이 무시됐다.
@@ -68,6 +68,19 @@ style: `blobs`(대륙 몇 개) · `shards`(조각 count 개, 1~40) · `ring`(가
     여정 배치: 산벽 = 요동만→압록강 북쪽→백두산→두만강(`hint_wall` 꺾은선, `hint_a_pole` 로 한반도 쪽이 1막), 2막 = 만주,
     3막 = 바다 건너 일본·제주, 4막 사구 = 요동 벌판(`hint_dune`, `hint_dune_rim` 으로 모래벌 테두리 좁힘), 기후 t0 .25 ~ t1 .76 + 습도 .12(북한이 눈밭이 되지 않게).
     세토 내해는 한 칸이라 시코쿠가 떨어지면 길이 막혀 아와지 목을 넣었다. 시드 1~8 미리보기 8/8 통과.
+  - **`real` — 실제 지리, 지구 어디든**(2026-10-04, 「조수가 이런 걸 정보 없이 할 수 있어야」). 나라마다 꼭짓점을 손으로 넣지 않는다.
+    `continents{style:"real", region}` 또는 `{style:"real", box:[서경,남위,동경,북위], home?, beyond?, sands?}` — 범위는 조수가 제 지식으로 정한다.
+    자료 `tiledata/worldmap-kit/geo/`(Natural Earth 해안선·호수·강·이름난 지역 + NOAA ETOPO1 높이 0.25°, 564KB, 출처는 그 폴더 README).
+    `kit/lib/kit_realgeo.py`: 범위를 4:3(가운데 위도 cos)으로 넓혀 칸에 칠한다(4×4 표본 다수결). 산 = 둘레보다 솟은 곳(높이 − 가우스 평균)+이름난 산맥,
+    긴 축을 척추 산줄기로(큰 산지는 두 줄). 기후 = 실제 위도 꺾은선(`_temp_of_lat`: 34~43° 온대, 브리튼 온대, 65°~ 툰드라) + 높이 냉각, 사막 지역은 모래.
+    강 = 이름난 강 중 긴 것 6줄(바다 쪽 끝을 어귀로). 가장 큰 사막 = 4막 사구 바다(없으면 시작 땅 내륙), 지어낸 산줄기·강은 끈다(`hint_auto=0`).
+    맞춤 쪽 조정(실제 지리일 때만): 시작 땅 = `home` 가까운 땅(`home_pole`, 일본이면 혼슈), 배 장벽 깎기 4.6 → 2.6칸(`home_gap`),
+    바다 장벽 최소 폭 4 → 2칸(`journey_check_v9.MIN_SEA_GAP` — 영국 해협 같은 실제 해협), 사구는 작은 것부터(`dune_small`), 장소 둘레 바닥 무리 없음(적도 아프리카 눈밭).
+    저장된 지도의 재검사는 `layout.min_sea_gap` 를 읽고, 없는 옛 지도는 매번 4칸으로 되돌린다(직전 실제 지리 검사의 2칸 기준이 다른 지도에 남지 않는다).
+    지역 프리셋 20개(`REGIONS`, TS `WORLDMAP_REGIONS`) — 미리보기 스윕 20/20 통과(`kit/tools/sweep_real.sh`).
+    한계: `beyond`(2막 쪽)·`sands`(사구 자리)는 선호일 뿐 — 「첫 화면(20×15)에 시작·관문·항구·탑」 규칙이 앞서서 무시될 수 있다(무협은 맞춤이 고른 내몽골 장성,
+    전국은 서국·혼슈 북단으로 여정 글을 맞췄다). 배로 갈 실제 땅이 모자라면(남미·호주·아이슬란드) 가상 섬 5개를 띄우고 layout.notes 에 적는다.
+    혼슈처럼 좁은 땅은 사구가 가운데 오면 1막 땅이 갈려 끝으로만 간다. 자료가 1:5천만이라 box 가로 3° 미만은 거절한다.
   - 우주는 `galaxy` 그대로. 「조선인데 섬나라로」처럼 테마와 다른 땅을 원하면 다른 style 을 주면 된다 — 테마는 기본값일 뿐이다.
 - **칩셋 계열 검사 예외**(2026-10-03): 세계 지도(`worldmapSource` + 칩셋 `worldmap_<mapId>`)는 지도 그림을 자른 전용 타일셋이라
   `toolRunner.rejectTilesetFamilyChange` 가 대상에서도, 「보는 맵」 기준에서도 뺀다. 전에는 버들항 빈 맵을 보던 조수의
@@ -75,6 +88,14 @@ style: `blobs`(대륙 몇 개) · `shards`(조각 count 개, 1~40) · `ring`(가
 - `edit_world_terrain.characterScale`(0.25~1): 빌드한 세계 지도의 `map.characterScale` 을 같이 정한다 — 「월드맵에서 캐릭터 작게」.
 - 시험: `scripts/qa-game/worldmap-generate-offline.mts`(모델 없이 생성 → 저장 → 읽기 → 덧붙이기).
 - 키트 쪽 상세: `tiledata/worldmap-kit/docs/README.md` ⑦.
+
+## 후속 조수 실행·SQLite 재로드 (2026-10-04)
+
+근거:
+[`verify-shots/worldmap-real-geography/README.md`](../verify-shots/worldmap-real-geography/README.md).
+조선은 조수가 `joseon_baram` 한양 고을을 가져와 성문 `(27,25)`에 연결했고,
+프리셋 없는 유카탄은 조수가 실제 경도·위도 범위를 골랐다. 기존 실행물은 별도 SQLite 폴더에 저장한 뒤
+닫고 다시 열어 지도·이벤트·시작 위치·원본 PNG의 일치를 확인했다. 전체 게임 엔딩은 검증 범위 밖이다.
 
 ## 지형 경계 v9 (2026-10-03)
 

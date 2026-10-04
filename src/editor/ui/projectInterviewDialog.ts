@@ -3,14 +3,15 @@ import { isTopModal, registerModal, unregisterModal } from "./modalStack";
 import { GAME_BRIEF_ANSWER_LIMIT, GAME_BRIEF_SUMMARY_LIMIT, normalizeGameDesignBrief,
   type GameDesignAnswer, type GameDesignAnswers, type GameDesignBrief, type GamePresetId } from "@/project/gameDesignBrief";
 import { interviewPreset, type GameInterview, type InterviewGenre } from "@/project/gameInterview";
-import { INTERVIEW_SCENES, SCENE_SLOTS, blendChoices, cinematicInterviewSummary, interviewSceneUrl, sceneGenre } from "@/editor/cinematicInterviewQuestions";
+import { INTERVIEW_SCENES, SCENE_SLOTS, blendChoices, cinematicInterviewSummary, sceneGenre } from "@/editor/cinematicInterviewQuestions";
+import { generateInterviewScene, interviewArtPrompt } from "@/editor/interviewSceneGeneration";
 import type { ProjectInterviewOptions } from "./legacyProjectInterviewDialog";
 import "@/styles/shell/dialogs/cinematic-interview.css";
 export type { ProjectInterviewOptions } from "./legacyProjectInterviewDialog";
 
 type SceneOption = { id: string; label: string; detail: string; image: string };
 
-/** The production interview. No project writes or model calls until the caller receives confirmation. */
+/** The production interview generates ephemeral art. Project writes start only after confirmation. */
 export async function showProjectInterview(presetId: GamePresetId, options: ProjectInterviewOptions = {}): Promise<GameDesignBrief | null> {
   if (typeof document === "undefined" || !document.body) return null;
   // Keep older authored transcripts editable without reinterpreting their questions or dropping answers.
@@ -34,6 +35,9 @@ export async function showProjectInterview(presetId: GamePresetId, options: Proj
     let summaryBasis = basis();
     let sceneToken = 0;
     let sceneKey = "";
+    let sceneAbort: AbortController | undefined;
+    let sceneTimer: ReturnType<typeof setTimeout> | undefined;
+    let latestFocus = "새로운 세계의 첫 풍경";
     let front = 0;
     const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
     let motion = !motionPreference.matches;
@@ -45,14 +49,16 @@ export async function showProjectInterview(presetId: GamePresetId, options: Proj
     const images = [el("img", { attrs: { alt: "", draggable: "false" } }), el("img", { attrs: { alt: "", draggable: "false" } })];
     background.append(video, ...images, el("div", { class: "ci-vignette" }));
     const body = el("div", { class: "ci-body" });
+    const top = el("div", { class: "ci-top" });
+    const navigation = el("div", { class: "ci-navigation" });
+    const controls = el("div", { class: "ci-controls", children: [top, body, navigation] });
     const caption = el("aside", { class: "ci-scene-caption", children: [
-      el("span", { text: "YOUR NEXT STORY" }), el("strong", { text: "선택이 장면이 되는 순간" }),
-      el("p", { text: "그림은 분위기 참고용이에요. 주인공과 설정은 직접 고른 답변으로 정해요." }),
+      el("span", { text: "YOUR NEXT STORY" }), el("strong", { text: "당신이 고른 세계" }),
     ] });
     const status = el("p", { class: "ci-status", attrs: { role: "status", "aria-live": "polite" } });
     const done = (brief: GameDesignBrief | null) => {
       if (closed) return;
-      closed = true; sceneToken++; motionPreference.removeEventListener("change", onMotionPreference); video.pause(); video.removeAttribute("src"); video.load();
+      closed = true; sceneToken++; sceneAbort?.abort(); clearTimeout(sceneTimer); motionPreference.removeEventListener("change", onMotionPreference); video.pause(); video.removeAttribute("src"); video.load();
       unregisterModal(overlay); overlay.remove(); resolve(brief);
       if (opener instanceof HTMLElement && document.contains(opener)) opener.focus();
     };
@@ -61,35 +67,45 @@ export async function showProjectInterview(presetId: GamePresetId, options: Proj
     });
     const syncMotion = () => {
       panel.classList.toggle("is-still", !motion);
-      if (motion && !sceneKey) void video.play().catch(() => { /* Poster remains available when autoplay is denied. */ });
+      if (motion && !video.hidden) void video.play().catch(() => { /* Poster remains available when autoplay is denied. */ });
       else video.pause();
     };
-    const showScene = async (key: string) => {
-      if (sceneKey === key) return;
-      sceneKey = key;
+    const showScene = (focus: string, force = false) => {
+      latestFocus = focus;
+      const prompt = interviewArtPrompt(draft, answers, focus);
+      if (!force && sceneKey === prompt) return;
+      sceneKey = prompt;
       const token = ++sceneToken;
-      const url = interviewSceneUrl(key);
-      const probe = new Image(); probe.src = url;
-      try { await probe.decode(); } catch {
-        if (!closed && token === sceneToken) {
-          // The same choice must be retryable when connectivity returns.
-          sceneKey = "";
-          status.textContent = "참고 그림을 불러오지 못했어요. 답변은 계속 고를 수 있어요.";
-        }
-        return;
-      }
-      if (closed || token !== sceneToken) return;
-      const next = 1 - front;
-      images[next]!.src = url;
-      images[next]!.className = "is-visible";
-      images[front]!.className = "";
-      front = next; video.pause(); video.hidden = true;
-      panel.dataset.scene = key;
-      status.textContent = "";
+      sceneAbort?.abort(); clearTimeout(sceneTimer);
+      const controller = sceneAbort = new AbortController();
+      images.forEach(image => { image.className = ""; image.removeAttribute("src"); });
+      video.hidden = false; syncMotion();
+      panel.dataset.artState = "generating";
+      status.textContent = "새 장면 그리는 중…";
+      sceneTimer = setTimeout(() => {
+        void generateInterviewScene(prompt, controller.signal, (phase, attempt) => {
+          if (closed || token !== sceneToken) return;
+          panel.dataset.artState = phase;
+          status.textContent = phase === "reviewing" ? "도트 확인 중…" : phase === "retrying" ? `다시 그리는 중 · ${attempt}/3` : "새 장면 그리는 중…";
+        }).then(async url => {
+          const probe = new Image(); probe.src = url; await probe.decode();
+          if (closed || token !== sceneToken || controller.signal.aborted) return;
+          const next = 1 - front;
+          images[next]!.src = url; images[next]!.className = "is-visible";
+          images[front]!.className = ""; front = next;
+          video.pause(); video.hidden = true;
+          panel.dataset.artState = "accepted"; panel.dataset.scene = focus;
+          status.textContent = "";
+        }).catch(() => {
+          if (closed || token !== sceneToken || controller.signal.aborted) return;
+          panel.dataset.artState = "error";
+          status.textContent = "그림을 준비하지 못했어요. 선택은 계속할 수 있어요.";
+        });
+      }, 750);
     };
     const fields = (label: string, value: string, id: string, limit: number, update: (text: string) => void, rows = 2) => {
       const input = el("textarea", { class: "ci-input", value, attrs: { id, rows: String(rows), maxlength: String(limit) }, dataset: { testid: id } });
-      input.addEventListener("input", () => update(input.value));
+      input.addEventListener("input", () => { update(input.value); showScene(latestFocus); });
       return el("label", { class: "ci-field", attrs: { for: id }, children: [el("span", { text: label }), input] });
     };
     const questions = () => {
@@ -100,13 +116,6 @@ export async function showProjectInterview(presetId: GamePresetId, options: Proj
       const list = questions().map(q => q.id);
       if (draft.secondary) list.splice(2, 0, "blend");
       return list;
-    };
-    const currentImage = () => {
-      for (const q of [...questions()].reverse()) {
-        const selected = q.options.find(o => o.id === draft.choiceIds[q.slot]);
-        if (selected) return selected.image;
-      }
-      return sceneGenre(draft.genre).image;
     };
     const render = () => {
       if (closed) return;
@@ -121,7 +130,6 @@ export async function showProjectInterview(presetId: GamePresetId, options: Proj
       const progress = el("p", { class: "ci-progress", text: step < 0 ? "01 / DIRECTION" : summary ? "마지막 · 게임의 방향 확인" : `${String(step + 1).padStart(2, "0")} / ${ids.length} · ${sceneGenre(draft.genre).label}${draft.secondary ? ` + ${sceneGenre(draft.secondary).label}` : ""}` });
       body.append(progress);
       if (step < 0) {
-        body.append(el("p", { class: "ci-hint", text: "마음이 가는 장르를 고르세요. 다른 장르를 섞거나, 내 말로 시작해도 좋아요." }));
         const choices = el("div", { class: "ci-genres" });
         for (const g of INTERVIEW_SCENES) {
           const id = g.id as InterviewGenre;
@@ -133,12 +141,11 @@ export async function showProjectInterview(presetId: GamePresetId, options: Proj
               if (draft.secondary === id) delete draft.secondary;
               delete draft.blend;
             }
-            void showScene(g.image); render();
+            showScene(g.label); render();
           });
           b.classList.add("ci-genre"); b.setAttribute("aria-pressed", String(id === draft.genre));
           b.disabled = !!original && id !== draft.genre;
-          b.append(el("img", { attrs: { src: interviewSceneUrl(g.image), alt: "", loading: "lazy" } }),
-            el("span", { children: [el("strong", { text: g.label }), el("small", { text: g.tag })] }));
+          b.append(el("span", { children: [el("strong", { text: g.label }), el("small", { text: g.tag })] }));
           choices.append(b);
         }
         body.append(choices);
@@ -151,10 +158,10 @@ export async function showProjectInterview(presetId: GamePresetId, options: Proj
         secondary.value = draft.secondary ?? "";
         // Editing an existing project never silently changes its configured engine.
         if (original && interviewPreset(draft.genre) !== original.presetId) secondary.querySelector("option")!.disabled = true;
-        secondary.addEventListener("change", () => { draft.secondary = secondary.value as InterviewGenre || undefined; delete draft.blend; render(); });
+        secondary.addEventListener("change", () => { draft.secondary = secondary.value as InterviewGenre || undefined; delete draft.blend; showScene(draft.secondary ? `${sceneGenre(draft.genre).label} + ${sceneGenre(draft.secondary).label}` : sceneGenre(draft.genre).label); render(); });
         body.append(el("label", { class: "ci-field", attrs: { for: "ci-secondary" }, children: [el("span", { text: "장르 섞기" }), secondary] }),
           fields("떠오르는 아이디어 · 자유롭게", draft.concept, "project-interview-concept", 1000, text => { draft.concept = text; }),
-          el("footer", { class: "ci-actions", children: [button("이 방향으로 시작", "project-interview-begin", () => { step = 0; void showScene(sceneGenre(draft.genre).image); render(); }, true)] }));
+          el("footer", { class: "ci-actions", children: [button("이 방향으로 시작", "project-interview-begin", () => { step = 0; showScene(sceneGenre(draft.genre).label); render(); }, true)] }));
       } else if (!summary) {
         const id = ids[step]!;
         const q = questions().find(q => q.id === id);
@@ -164,8 +171,8 @@ export async function showProjectInterview(presetId: GamePresetId, options: Proj
         const choices: SceneOption[] = blending ? blendChoices(draft.genre, draft.secondary!) : q!.options;
         const read = () => blending ? draft.blend : answers[q!.slot];
         let selectedId = blending ? choices.find(o => read()?.text === `${o.label} — ${o.detail}`)?.id : draft.choiceIds[q!.slot];
-        body.append(el("h3", { text: title, attrs: { id: "project-interview-question" } }), el("p", { class: "ci-hint", text: blending ? "각 장르에서 하는 일이 하나의 게임 안에 이어져요." : q!.hint }));
-        const optionsNode = el("div", { class: "ci-options", attrs: { role: "group", "aria-labelledby": "project-interview-question" } });
+        body.querySelector("#project-interview-title")!.textContent = title;
+        const optionsNode = el("div", { class: "ci-options", attrs: { role: "group", "aria-labelledby": "project-interview-title" } });
         const next = button(step === ids.length - 1 ? "기획 확인하기" : "다음 장면", "project-interview-next", () => { if (!read()?.text.trim()) return; step++; render(); }, true);
         const sync = () => {
           next.disabled = !read()?.text.trim();
@@ -177,30 +184,28 @@ export async function showProjectInterview(presetId: GamePresetId, options: Proj
           else { answers[q!.slot] = answer; if (optionId) draft.choiceIds[q!.slot] = optionId; else delete draft.choiceIds[q!.slot]; }
           selectedId = optionId; sync();
         };
-        const field = fields("내 말로 답하거나 덧붙이기", read()?.text ?? "", "project-interview-answer", GAME_BRIEF_ANSWER_LIMIT, text => set(text, "user"));
+        const field = fields("직접 쓰기 · 선택", read()?.text ?? "", "project-interview-answer", GAME_BRIEF_ANSWER_LIMIT, text => set(text, "user"));
         for (const [index, option] of choices.entries()) {
           const b = button("", `project-interview-option-${index}`, () => {
             const text = `${option.label} — ${option.detail}`;
-            set(text, "user", option.id); field.querySelector("textarea")!.value = text; void showScene(option.image);
+            set(text, "user", option.id); field.querySelector("textarea")!.value = text; showScene(text);
           });
           b.classList.add("ci-option"); b.dataset.optionId = option.id;
-          b.append(el("img", { attrs: { src: interviewSceneUrl(option.image), alt: "", loading: "lazy" } }),
-            el("span", { children: [el("strong", { text: option.label }), el("small", { text: option.detail })] }));
+          b.append(el("span", { children: [el("strong", { text: option.label })] }));
           optionsNode.append(b);
         }
-        const recommend = button("추천으로 골라 보기", "project-interview-recommend", () => {
+        const recommend = button("추천", "project-interview-recommend", () => {
           const option = choices[0]!; const text = `${option.label} — ${option.detail}`;
-          set(text, "recommended", option.id); field.querySelector("textarea")!.value = text; void showScene(option.image);
+          set(text, "recommended", option.id); field.querySelector("textarea")!.value = text; showScene(text);
           status.textContent = "추천안으로 담았어요. 직접 고칠 수 있어요.";
         });
-        body.append(optionsNode, field, recommend, el("footer", { class: "ci-actions", children: [
-          button("이전", "project-interview-previous", () => { step--; render(); }), next,
+        body.append(optionsNode, field, el("footer", { class: "ci-actions", children: [
+          button("이전", "project-interview-previous", () => { step--; render(); }), recommend, next,
         ] }));
         sync();
-        const selected = choices.find(o => o.id === selectedId);
-        if (selected) void showScene(selected.image);
+
       } else {
-        void showScene(currentImage());
+
         const review = el("div", { class: "ci-review" });
         for (const [index, id] of ids.entries()) {
           const q = questions().find(q => q.id === id);
@@ -208,7 +213,7 @@ export async function showProjectInterview(presetId: GamePresetId, options: Proj
           const edit = button(`${a?.label ?? "장르의 연결"} · ${a?.text ?? "답변 필요"}${a?.source === "recommended" ? " (추천안)" : ""}`, `project-interview-edit-${q?.slot ?? "blend"}`, () => { step = index; render(); });
           edit.setAttribute("translate", "no"); review.append(edit);
         }
-        body.append(el("p", { class: "ci-hint", text: "고른 방향을 확인하세요. 시작하면 AI 조수가 이 기획을 이어받아 첫 구간을 만듭니다." }), review,
+        body.append(review,
           button("장르와 아이디어 다시 보기", "project-interview-edit-genre", () => { step = -1; render(); }));
         const summaryField = fields("우리가 만들 게임", summaryOverride ?? cinematicInterviewSummary(draft, answers), "project-interview-summary", GAME_BRIEF_SUMMARY_LIMIT, text => { summaryOverride = text; summaryBasis = basis(); syncSummary(); }, 7);
         const summaryInput = summaryField.querySelector("textarea")!;
@@ -230,10 +235,16 @@ export async function showProjectInterview(presetId: GamePresetId, options: Proj
           summaryField, warning, el("footer", { class: "ci-actions", children: [button("답변으로 요약 갱신", "project-interview-refresh-summary", () => { summaryOverride = undefined; summaryBasis = basis(); render(); }), confirm] }));
         syncSummary();
       }
-      body.append(status);
+      top.replaceChildren(); navigation.replaceChildren();
+      const header = body.querySelector(".ci-header"), meter = body.querySelector(".ci-progress");
+      if (header) top.append(header);
+      if (meter) top.append(meter);
+      const actions = body.querySelector(".ci-actions");
+      if (actions) navigation.append(actions);
+      navigation.append(status);
       body.scrollTop = 0;
       panel.scrollTop = 0;
-      body.querySelector<HTMLElement>("#project-interview-title")?.focus({ preventScroll: true });
+      top.querySelector<HTMLElement>("#project-interview-title")?.focus({ preventScroll: true });
     };
     const motionButton = button("모션", "project-interview-motion", () => { motion = !motion; syncMotion(); motionButton.setAttribute("aria-pressed", String(motion)); });
     motionButton.classList.add("ci-motion"); motionButton.setAttribute("aria-pressed", String(motion));
@@ -242,7 +253,8 @@ export async function showProjectInterview(presetId: GamePresetId, options: Proj
       motion = false; syncMotion(); motionButton.setAttribute("aria-pressed", "false");
     };
     motionPreference.addEventListener("change", onMotionPreference);
-    panel.append(background, caption, body, motionButton); overlay.append(panel); document.body.append(overlay);
+    caption.append(button("다시 그리기", "project-interview-redraw", () => showScene(latestFocus, true)));
+    panel.append(background, caption, controls, motionButton); overlay.append(panel); document.body.append(overlay);
     panel.addEventListener("keydown", event => {
       if (event.key !== "Tab" || !isTopModal(overlay)) return;
       const controls = [...panel.querySelectorAll<HTMLElement>("button:not(:disabled), textarea, select")];
@@ -250,6 +262,6 @@ export async function showProjectInterview(presetId: GamePresetId, options: Proj
       if (event.shiftKey && (document.activeElement === first || !controls.includes(document.activeElement as HTMLElement))) { event.preventDefault(); last?.focus(); }
       else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
     });
-    registerModal(overlay, () => done(null)); syncMotion(); render();
+    registerModal(overlay, () => done(null)); syncMotion(); render(); showScene(latestFocus);
   });
 }

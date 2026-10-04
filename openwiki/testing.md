@@ -2035,3 +2035,28 @@ parity 목록의 `equipment.elementalDefenseIds` 소비자 주소는 전투 코�
 추가 heap을 구분한다. 원시 로그·스크린샷·코드 해시는 같은 폴더에 있다.
 바닥 타일 1층, 높이 없음, NPC 0명 조건이므로 1024의 비평탄 relief·많은 이벤트·길찾기
 성능까지 입증하지 않는다. 높이 붓은 기존 전체 맵 CanvasTexture 경로가 남아 있다.
+
+### Maker repair and click-first startup (2026-10-04)
+
+Focused QA scripts (no Vitest/full-gate invocation):
+- `scripts/qa/maker-art-repair.mts`: synthetic production worker scenarios for
+  review rejection, bounded repair, locks, immutable authored events, read-only,
+  cancellation and mandatory current-image completion.
+- `scripts/qa/maker-terrain-reference.mjs`: terrain-kit source-purpose evidence
+  gate, including the observed sewer bridge used as a garden-path bypass.
+- `scripts/qa/maker-interview-ui.mjs`: production component click-only completion
+  at desktop/short/mobile widths, fixed-action geometry and absence of branch
+  thumbnails/shortcut hints, with explicitly synthetic network failure.
+- `scripts/qa/maker-interview-art-live.mjs`: real generation + real vision image
+  receipt, including rejection/redraw. No game-content writes.
+- `scripts/qa/maker-fullscreen-electron.mjs`: actual packaged renderer startup in
+  Electron, native fullscreen flag and visible click toggle. Use Xvfb with a window
+  manager when asserting screen-sized bounds; a bare Xvfb has no WM to honor them.
+
+Do not turn an observer timeout, a synthetic provider test, a component fixture or
+an independently polished reference game into a claim that New Game's full
+production turn finished. Those are distinct evidence categories.
+Committed evidence and its limitations: `verify-shots/maker-click-first/README.md`.
+The live maker task finished and saved/reloaded, but its observer composite is
+FAIL because of one framebuffer error; the subsequent read-only resize probe and
+dedicated exported player passed. Do not describe this as all browser checks green.

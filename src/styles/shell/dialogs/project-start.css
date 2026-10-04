@@ -1,5 +1,7 @@
 @layer shell {
-  .app-modal-card.project-start-window { width: min(900px, calc(100vw - 48px)); max-height: calc(100dvh - 48px); overflow: auto; padding: 26px; box-sizing: border-box; background: var(--bg-surface); word-break: keep-all; }
+  .app-modal-card.project-start-window { width: min(900px, calc(100vw - 48px)); max-height: calc(100dvh - 48px); overflow: hidden; display: flex; flex-direction: column; padding: 20px; box-sizing: border-box; background: var(--bg-surface); word-break: keep-all; }
+  .project-start-scroll { min-height: 0; overflow: auto; flex: 1; }
+  .project-start-window > .app-modal-actions { flex: none; padding-top: 14px; }
   .project-start-header { display: flex; align-items: center; justify-content: space-between; gap: 15px; }
   .project-start-header h2 { margin: 7px 0 10px; font-size: 24px; }
   .project-start-kicker { font-size: 12px; color: var(--text-2); }

@@ -1,0 +1,1060 @@
+{
+  "componentQA": true,
+  "syntheticNetwork": true,
+  "viewports": [
+    {
+      "size": {
+        "width": 1440,
+        "height": 900
+      },
+      "clickOnly": true,
+      "noBank": true,
+      "noShortcut": true,
+      "stages": [
+        {
+          "stage": "genre",
+          "button": {
+            "x": 1239.5625,
+            "y": 774.421875,
+            "w": 133.25,
+            "h": 45.1875,
+            "visible": true,
+            "uncovered": true
+          }
+        },
+        {
+          "stage": "question-0",
+          "button": {
+            "x": 1275.6875,
+            "y": 774.421875,
+            "w": 97.125,
+            "h": 45.1875,
+            "visible": true,
+            "uncovered": true
+          },
+          "options": [
+            {
+              "x": 888.8125,
+              "y": 193.890625,
+              "w": 484,
+              "h": 52.390625,
+              "visible": true,
+              "uncovered": true
+            },
+            {
+              "x": 888.8125,
+              "y": 256.28125,
+              "w": 484,
+              "h": 52.390625,
+              "visible": true,
+              "uncovered": true
+            },
+            {
+              "x": 888.8125,
+              "y": 318.671875,
+              "w": 484,
+              "h": 52.390625,
+              "visible": true,
+              "uncovered": true
+            }
+          ],
+          "recommend": {
+            "x": 950.8125,
+            "y": 776.015625,
+            "w": 52,
+            "h": 42,
+            "visible": true,
+            "uncovered": true
+          }
+        },
+        {
+          "stage": "question-1",
+          "button": {
+            "x": 1275.6875,
+            "y": 774.421875,
+            "w": 97.125,
+            "h": 45.1875,
+            "visible": true,
+            "uncovered": true
+          },
+          "options": [
+            {
+              "x": 888.8125,
+              "y": 193.890625,
+              "w": 484,
+              "h": 52.390625,
+              "visible": true,
+              "uncovered": true
+            },
+            {
+              "x": 888.8125,
+              "y": 256.28125,
+              "w": 484,
+              "h": 52.390625,
+              "visible": true,
+              "uncovered": true
+            },
+            {
+              "x": 888.8125,
+              "y": 318.671875,
+              "w": 484,
+              "h": 52.390625,
+              "visible": true,
+              "uncovered": true
+            }
+          ],
+          "recommend": {
+            "x": 950.8125,
+            "y": 776.015625,
+            "w": 52,
+            "h": 42,
+            "visible": true,
+            "uncovered": true
+          }
+        },
+        {
+          "stage": "question-2",
+          "button": {
+            "x": 1275.6875,
+            "y": 774.421875,
+            "w": 97.125,
+            "h": 45.1875,
+            "visible": true,
+            "uncovered": true
+          },
+          "options": [
+            {
+              "x": 888.8125,
+              "y": 237.28125,
+              "w": 484,
+              "h": 52.390625,
+              "visible": true,
+              "uncovered": true
+            },
+            {
+              "x": 888.8125,
+              "y": 299.671875,
+              "w": 484,
+              "h": 52.390625,
+              "visible": true,
+              "uncovered": true
+            },
+            {
+              "x": 888.8125,
+              "y": 362.0625,
+              "w": 484,
+              "h": 52.390625,
+              "visible": true,
+              "uncovered": true
+            }
+          ],
+          "recommend": {
+            "x": 950.8125,
+            "y": 776.015625,
+            "w": 52,
+            "h": 42,
+            "visible": true,
+            "uncovered": true
+          }
+        },
+        {
+          "stage": "question-3",
+          "button": {
+            "x": 1275.6875,
+            "y": 774.421875,
+            "w": 97.125,
+            "h": 45.1875,
+            "visible": true,
+            "uncovered": true
+          },
+          "options": [
+            {
+              "x": 888.8125,
+              "y": 237.28125,
+              "w": 484,
+              "h": 52.390625,
+              "visible": true,
+              "uncovered": true
+            },
+            {
+              "x": 888.8125,
+              "y": 299.671875,
+              "w": 484,
+              "h": 52.390625,
+              "visible": true,
+              "uncovered": true
+            },
+            {
+              "x": 888.8125,
+              "y": 362.0625,
+              "w": 484,
+              "h": 52.390625,
+              "visible": true,
+              "uncovered": true
+            }
+          ],
+          "recommend": {
+            "x": 950.8125,
+            "y": 776.015625,
+            "w": 52,
+            "h": 42,
+            "visible": true,
+            "uncovered": true
+          }
+        },
+        {
+          "stage": "question-4",
+          "button": {
+            "x": 1253.6875,
+            "y": 774.421875,
+            "w": 119.125,
+            "h": 45.1875,
+            "visible": true,
+            "uncovered": true
+          },
+          "options": [
+            {
+              "x": 888.8125,
+              "y": 237.28125,
+              "w": 484,
+              "h": 52.390625,
+              "visible": true,
+              "uncovered": true
+            },
+            {
+              "x": 888.8125,
+              "y": 299.671875,
+              "w": 484,
+              "h": 52.390625,
+              "visible": true,
+              "uncovered": true
+            },
+            {
+              "x": 888.8125,
+              "y": 362.0625,
+              "w": 484,
+              "h": 52.390625,
+              "visible": true,
+              "uncovered": true
+            }
+          ],
+          "recommend": {
+            "x": 950.8125,
+            "y": 776.015625,
+            "w": 52,
+            "h": 42,
+            "visible": true,
+            "uncovered": true
+          }
+        },
+        {
+          "stage": "confirm",
+          "button": {
+            "x": 1239.5625,
+            "y": 774.421875,
+            "w": 133.25,
+            "h": 45.1875,
+            "visible": true,
+            "uncovered": true
+          }
+        }
+      ],
+      "brief": {
+        "genre": "romance",
+        "answers": 5,
+        "protagonist": ""
+      }
+    },
+    {
+      "size": {
+        "width": 960,
+        "height": 540
+      },
+      "clickOnly": true,
+      "noBank": true,
+      "noShortcut": true,
+      "stages": [
+        {
+          "stage": "genre",
+          "button": {
+            "x": 773.953125,
+            "y": 420.421875,
+            "w": 133.25,
+            "h": 45.1875,
+            "visible": true,
+            "uncovered": true
+          }
+        },
+        {
+          "stage": "question-0",
+          "button": {
+            "x": 810.078125,
+            "y": 420.421875,
+            "w": 97.125,
+            "h": 45.1875,
+            "visible": true,
+            "uncovered": true
+          },
+          "options": [
+            {
+              "x": 493.375,
+              "y": 143.296875,
+              "w": 413.828125,
+              "h": 44.390625,
+              "visible": true,
+              "uncovered": true
+            },
+            {
+              "x": 493.375,
+              "y": 194.6875,
+              "w": 413.828125,
+              "h": 44.390625,
+              "visible": true,
+              "uncovered": true
+            },
+            {
+              "x": 493.375,
+              "y": 246.078125,
+              "w": 413.828125,
+              "h": 44.390625,
+              "visible": true,
+              "uncovered": true
+            }
+          ],
+          "recommend": {
+            "x": 555.375,
+            "y": 422.015625,
+            "w": 52,
+            "h": 42,
+            "visible": true,
+            "uncovered": true
+          }
+        },
+        {
+          "stage": "question-1",
+          "button": {
+            "x": 810.078125,
+            "y": 420.421875,
+            "w": 97.125,
+            "h": 45.1875,
+            "visible": true,
+            "uncovered": true
+          },
+          "options": [
+            {
+              "x": 493.375,
+              "y": 143.296875,
+              "w": 413.828125,
+              "h": 44.390625,
+              "visible": true,
+              "uncovered": true
+            },
+            {
+              "x": 493.375,
+              "y": 194.6875,
+              "w": 413.828125,
+              "h": 44.390625,
+              "visible": true,
+              "uncovered": true
+            },
+            {
+              "x": 493.375,
+              "y": 246.078125,
+              "w": 413.828125,
+              "h": 44.390625,
+              "visible": true,
+              "uncovered": true
+            }
+          ],
+          "recommend": {
+            "x": 555.375,
+            "y": 422.015625,
+            "w": 52,
+            "h": 42,
+            "visible": true,
+            "uncovered": true
+          }
+        },
+        {
+          "stage": "question-2",
+          "button": {
+            "x": 810.078125,
+            "y": 420.421875,
+            "w": 97.125,
+            "h": 45.1875,
+            "visible": true,
+            "uncovered": true
+          },
+          "options": [
+            {
+              "x": 493.375,
+              "y": 143.296875,
+              "w": 413.828125,
+              "h": 44.390625,
+              "visible": true,
+              "uncovered": true
+            },
+            {
+              "x": 493.375,
+              "y": 194.6875,
+              "w": 413.828125,
+              "h": 44.390625,
+              "visible": true,
+              "uncovered": true
+            },
+            {
+              "x": 493.375,
+              "y": 246.078125,
+              "w": 413.828125,
+              "h": 44.390625,
+              "visible": true,
+              "uncovered": true
+            }
+          ],
+          "recommend": {
+            "x": 555.375,
+            "y": 422.015625,
+            "w": 52,
+            "h": 42,
+            "visible": true,
+            "uncovered": true
+          }
+        },
+        {
+          "stage": "question-3",
+          "button": {
+            "x": 810.078125,
+            "y": 420.421875,
+            "w": 97.125,
+            "h": 45.1875,
+            "visible": true,
+            "uncovered": true
+          },
+          "options": [
+            {
+              "x": 493.375,
+              "y": 143.296875,
+              "w": 413.828125,
+              "h": 44.390625,
+              "visible": true,
+              "uncovered": true
+            },
+            {
+              "x": 493.375,
+              "y": 194.6875,
+              "w": 413.828125,
+              "h": 44.390625,
+              "visible": true,
+              "uncovered": true
+            },
+            {
+              "x": 493.375,
+              "y": 246.078125,
+              "w": 413.828125,
+              "h": 44.390625,
+              "visible": true,
+              "uncovered": true
+            }
+          ],
+          "recommend": {
+            "x": 555.375,
+            "y": 422.015625,
+            "w": 52,
+            "h": 42,
+            "visible": true,
+            "uncovered": true
+          }
+        },
+        {
+          "stage": "question-4",
+          "button": {
+            "x": 788.078125,
+            "y": 420.421875,
+            "w": 119.125,
+            "h": 45.1875,
+            "visible": true,
+            "uncovered": true
+          },
+          "options": [
+            {
+              "x": 493.375,
+              "y": 143.296875,
+              "w": 413.828125,
+              "h": 44.390625,
+              "visible": true,
+              "uncovered": true
+            },
+            {
+              "x": 493.375,
+              "y": 194.6875,
+              "w": 413.828125,
+              "h": 44.390625,
+              "visible": true,
+              "uncovered": true
+            },
+            {
+              "x": 493.375,
+              "y": 246.078125,
+              "w": 413.828125,
+              "h": 44.390625,
+              "visible": true,
+              "uncovered": true
+            }
+          ],
+          "recommend": {
+            "x": 555.375,
+            "y": 422.015625,
+            "w": 52,
+            "h": 42,
+            "visible": true,
+            "uncovered": true
+          }
+        },
+        {
+          "stage": "confirm",
+          "button": {
+            "x": 773.953125,
+            "y": 420.421875,
+            "w": 133.25,
+            "h": 45.1875,
+            "visible": true,
+            "uncovered": true
+          }
+        }
+      ],
+      "brief": {
+        "genre": "romance",
+        "answers": 5,
+        "protagonist": ""
+      }
+    },
+    {
+      "size": {
+        "width": 390,
+        "height": 844
+      },
+      "clickOnly": true,
+      "noBank": true,
+      "noShortcut": true,
+      "stages": [
+        {
+          "stage": "genre",
+          "button": {
+            "x": 227.75,
+            "y": 729.421875,
+            "w": 133.25,
+            "h": 45.1875,
+            "visible": true,
+            "uncovered": true
+          }
+        },
+        {
+          "stage": "question-0",
+          "button": {
+            "x": 263.875,
+            "y": 729.421875,
+            "w": 97.125,
+            "h": 45.1875,
+            "visible": true,
+            "uncovered": true
+          },
+          "options": [
+            {
+              "x": 29,
+              "y": 217.6875,
+              "w": 332,
+              "h": 48.390625,
+              "visible": true,
+              "uncovered": true
+            },
+            {
+              "x": 29,
+              "y": 274.078125,
+              "w": 332,
+              "h": 48.390625,
+              "visible": true,
+              "uncovered": true
+            },
+            {
+              "x": 29,
+              "y": 330.46875,
+              "w": 332,
+              "h": 48.390625,
+              "visible": true,
+              "uncovered": true
+            }
+          ],
+          "recommend": {
+            "x": 91,
+            "y": 730.015625,
+            "w": 52,
+            "h": 44,
+            "visible": true,
+            "uncovered": true
+          }
+        },
+        {
+          "stage": "question-1",
+          "button": {
+            "x": 263.875,
+            "y": 729.421875,
+            "w": 97.125,
+            "h": 45.1875,
+            "visible": true,
+            "uncovered": true
+          },
+          "options": [
+            {
+              "x": 29,
+              "y": 217.6875,
+              "w": 332,
+              "h": 48.390625,
+              "visible": true,
+              "uncovered": true
+            },
+            {
+              "x": 29,
+              "y": 274.078125,
+              "w": 332,
+              "h": 48.390625,
+              "visible": true,
+              "uncovered": true
+            },
+            {
+              "x": 29,
+              "y": 330.46875,
+              "w": 332,
+              "h": 48.390625,
+              "visible": true,
+              "uncovered": true
+            }
+          ],
+          "recommend": {
+            "x": 91,
+            "y": 730.015625,
+            "w": 52,
+            "h": 44,
+            "visible": true,
+            "uncovered": true
+          }
+        },
+        {
+          "stage": "question-2",
+          "button": {
+            "x": 263.875,
+            "y": 729.421875,
+            "w": 97.125,
+            "h": 45.1875,
+            "visible": true,
+            "uncovered": true
+          },
+          "options": [
+            {
+              "x": 29,
+              "y": 249.875,
+              "w": 332,
+              "h": 48.390625,
+              "visible": true,
+              "uncovered": true
+            },
+            {
+              "x": 29,
+              "y": 306.265625,
+              "w": 332,
+              "h": 48.390625,
+              "visible": true,
+              "uncovered": true
+            },
+            {
+              "x": 29,
+              "y": 362.65625,
+              "w": 332,
+              "h": 48.390625,
+              "visible": true,
+              "uncovered": true
+            }
+          ],
+          "recommend": {
+            "x": 91,
+            "y": 730.015625,
+            "w": 52,
+            "h": 44,
+            "visible": true,
+            "uncovered": true
+          }
+        },
+        {
+          "stage": "question-3",
+          "button": {
+            "x": 263.875,
+            "y": 729.421875,
+            "w": 97.125,
+            "h": 45.1875,
+            "visible": true,
+            "uncovered": true
+          },
+          "options": [
+            {
+              "x": 29,
+              "y": 249.875,
+              "w": 332,
+              "h": 48.390625,
+              "visible": true,
+              "uncovered": true
+            },
+            {
+              "x": 29,
+              "y": 306.265625,
+              "w": 332,
+              "h": 48.390625,
+              "visible": true,
+              "uncovered": true
+            },
+            {
+              "x": 29,
+              "y": 362.65625,
+              "w": 332,
+              "h": 48.390625,
+              "visible": true,
+              "uncovered": true
+            }
+          ],
+          "recommend": {
+            "x": 91,
+            "y": 730.015625,
+            "w": 52,
+            "h": 44,
+            "visible": true,
+            "uncovered": true
+          }
+        },
+        {
+          "stage": "question-4",
+          "button": {
+            "x": 241.875,
+            "y": 729.421875,
+            "w": 119.125,
+            "h": 45.1875,
+            "visible": true,
+            "uncovered": true
+          },
+          "options": [
+            {
+              "x": 29,
+              "y": 249.875,
+              "w": 332,
+              "h": 48.390625,
+              "visible": true,
+              "uncovered": true
+            },
+            {
+              "x": 29,
+              "y": 306.265625,
+              "w": 332,
+              "h": 48.390625,
+              "visible": true,
+              "uncovered": true
+            },
+            {
+              "x": 29,
+              "y": 362.65625,
+              "w": 332,
+              "h": 48.390625,
+              "visible": true,
+              "uncovered": true
+            }
+          ],
+          "recommend": {
+            "x": 91,
+            "y": 730.015625,
+            "w": 52,
+            "h": 44,
+            "visible": true,
+            "uncovered": true
+          }
+        },
+        {
+          "stage": "confirm",
+          "button": {
+            "x": 227.75,
+            "y": 729.421875,
+            "w": 133.25,
+            "h": 45.1875,
+            "visible": true,
+            "uncovered": true
+          }
+        }
+      ],
+      "brief": {
+        "genre": "romance",
+        "answers": 5,
+        "protagonist": ""
+      }
+    },
+    {
+      "size": {
+        "width": 320,
+        "height": 568
+      },
+      "clickOnly": true,
+      "noBank": true,
+      "noShortcut": true,
+      "stages": [
+        {
+          "stage": "genre",
+          "button": {
+            "x": 157.75,
+            "y": 453.421875,
+            "w": 133.25,
+            "h": 45.1875,
+            "visible": true,
+            "uncovered": true
+          }
+        },
+        {
+          "stage": "question-0",
+          "button": {
+            "x": 193.875,
+            "y": 453.421875,
+            "w": 97.125,
+            "h": 45.1875,
+            "visible": true,
+            "uncovered": true
+          },
+          "options": [
+            {
+              "x": 29,
+              "y": 249.875,
+              "w": 262,
+              "h": 48.390625,
+              "visible": true,
+              "uncovered": true
+            },
+            {
+              "x": 29,
+              "y": 306.265625,
+              "w": 262,
+              "h": 48.390625,
+              "visible": true,
+              "uncovered": true
+            },
+            {
+              "x": 29,
+              "y": 362.65625,
+              "w": 262,
+              "h": 48.390625,
+              "visible": true,
+              "uncovered": true
+            }
+          ],
+          "recommend": {
+            "x": 91,
+            "y": 454.015625,
+            "w": 52,
+            "h": 44,
+            "visible": true,
+            "uncovered": true
+          }
+        },
+        {
+          "stage": "question-1",
+          "button": {
+            "x": 193.875,
+            "y": 453.421875,
+            "w": 97.125,
+            "h": 45.1875,
+            "visible": true,
+            "uncovered": true
+          },
+          "options": [
+            {
+              "x": 29,
+              "y": 249.875,
+              "w": 262,
+              "h": 48.390625,
+              "visible": true,
+              "uncovered": true
+            },
+            {
+              "x": 29,
+              "y": 306.265625,
+              "w": 262,
+              "h": 48.390625,
+              "visible": true,
+              "uncovered": true
+            },
+            {
+              "x": 29,
+              "y": 362.65625,
+              "w": 262,
+              "h": 48.390625,
+              "visible": true,
+              "uncovered": true
+            }
+          ],
+          "recommend": {
+            "x": 91,
+            "y": 454.015625,
+            "w": 52,
+            "h": 44,
+            "visible": true,
+            "uncovered": true
+          }
+        },
+        {
+          "stage": "question-2",
+          "button": {
+            "x": 193.875,
+            "y": 453.421875,
+            "w": 97.125,
+            "h": 45.1875,
+            "visible": true,
+            "uncovered": true
+          },
+          "options": [
+            {
+              "x": 29,
+              "y": 249.875,
+              "w": 262,
+              "h": 48.390625,
+              "visible": true,
+              "uncovered": true
+            },
+            {
+              "x": 29,
+              "y": 306.265625,
+              "w": 262,
+              "h": 48.390625,
+              "visible": true,
+              "uncovered": true
+            },
+            {
+              "x": 29,
+              "y": 362.65625,
+              "w": 262,
+              "h": 48.390625,
+              "visible": true,
+              "uncovered": true
+            }
+          ],
+          "recommend": {
+            "x": 91,
+            "y": 454.015625,
+            "w": 52,
+            "h": 44,
+            "visible": true,
+            "uncovered": true
+          }
+        },
+        {
+          "stage": "question-3",
+          "button": {
+            "x": 193.875,
+            "y": 453.421875,
+            "w": 97.125,
+            "h": 45.1875,
+            "visible": true,
+            "uncovered": true
+          },
+          "options": [
+            {
+              "x": 29,
+              "y": 249.875,
+              "w": 262,
+              "h": 48.390625,
+              "visible": true,
+              "uncovered": true
+            },
+            {
+              "x": 29,
+              "y": 306.265625,
+              "w": 262,
+              "h": 48.390625,
+              "visible": true,
+              "uncovered": true
+            },
+            {
+              "x": 29,
+              "y": 362.65625,
+              "w": 262,
+              "h": 48.390625,
+              "visible": true,
+              "uncovered": true
+            }
+          ],
+          "recommend": {
+            "x": 91,
+            "y": 454.015625,
+            "w": 52,
+            "h": 44,
+            "visible": true,
+            "uncovered": true
+          }
+        },
+        {
+          "stage": "question-4",
+          "button": {
+            "x": 171.875,
+            "y": 453.421875,
+            "w": 119.125,
+            "h": 45.1875,
+            "visible": true,
+            "uncovered": true
+          },
+          "options": [
+            {
+              "x": 29,
+              "y": 249.875,
+              "w": 262,
+              "h": 48.390625,
+              "visible": true,
+              "uncovered": true
+            },
+            {
+              "x": 29,
+              "y": 306.265625,
+              "w": 262,
+              "h": 48.390625,
+              "visible": true,
+              "uncovered": true
+            },
+            {
+              "x": 29,
+              "y": 362.65625,
+              "w": 262,
+              "h": 48.390625,
+              "visible": true,
+              "uncovered": true
+            }
+          ],
+          "recommend": {
+            "x": 91,
+            "y": 454.015625,
+            "w": 52,
+            "h": 44,
+            "visible": true,
+            "uncovered": true
+          }
+        },
+        {
+          "stage": "confirm",
+          "button": {
+            "x": 157.75,
+            "y": 453.421875,
+            "w": 133.25,
+            "h": 45.1875,
+            "visible": true,
+            "uncovered": true
+          }
+        }
+      ],
+      "brief": {
+        "genre": "romance",
+        "answers": 5,
+        "protagonist": ""
+      }
+    }
+  ],
+  "errors": [],
+  "passed": true
+}

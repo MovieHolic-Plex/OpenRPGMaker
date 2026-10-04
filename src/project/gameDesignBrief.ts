@@ -99,6 +99,7 @@ export function gameDesignBriefContext(brief: GameDesignBrief | undefined): stri
     ...(brief.implementation?.harnessId === 'romance-scene' ? [ROMANCE_ART_DIRECTION] : []),
     ...(brief.implementation ? [
       '## 실행 하네스 계약', JSON.stringify(brief.implementation),
+      '새 게임 첫 제작의 review_map 반려는 실행기가 기존 맵 수정 예산 안에서 시공 배정 → 실제 변경 적용 → 새 원본 이미지 검수를 자동으로 반복한다. 팀장은 별도의 예시 게임을 만들거나 지적을 숨기지 않는다. 자동 수정이 모두 소진되어도 반려가 남으면 미완료로 보고한다. 읽기 전용 요청은 수정하지 않는다.',
       '이 계약의 인물·장소·선택 문구·한 맵 범위는 보존한다. 임시 초안은 완료가 아니다. 첫 시공 배정의 첫 쓰기는 author_romance_scene으로 한다. 배경을 꾸미기 전에 첫 대화가 화면에 반영되어야 한다. 이 도구로 실제 도입·선택별 다른 반응·재대화·마무리를 작성한다. 장소를 실제 타일·구조·소품으로 꾸미고 inspect_romance_scene으로 동작을 확인한다. finish는 실행기가 같은 계약의 양쪽 선택·재대화·취소·종료를 검사하며 실패하면 받지 않는다. 이름 변경·맵 이름 변경만으로 완료하지 않는다. review_map의 검수자는 show_map_region으로 실제 원본 이미지를 보고 report_review에서 지적이 없는 결과를 제출해야 한다. 검수 후 바뀐 맵은 다시 검수한다. 이 검수 없이 finish하지 않는다. 정본 SQLite 저장·재로드는 별도로 확인한다.',
     ] : []),
     gameDesignExecutionContext(brief),

@@ -23,12 +23,12 @@ import scipy.ndimage as ndi
 import make_map_v4 as M4
 
 W, H = M4.W, M4.H
-STYLES = ('blobs', 'shards', 'ring', 'pangaea', 'archipelago', 'galaxy', 'peninsula', 'river-continent', 'arc-islands', 'korea')
+STYLES = ('blobs', 'shards', 'ring', 'pangaea', 'archipelago', 'galaxy', 'peninsula', 'river-continent', 'arc-islands', 'korea', 'real')
 DEFAULT = {'blobs': dict(count=4, land=.42), 'shards': dict(count=12, land=.44), 'ring': dict(count=3, land=.40),
            'pangaea': dict(count=6, land=.50), 'archipelago': dict(count=24, land=.36), 'galaxy': dict(count=12, land=.36),
            'peninsula': dict(count=10, land=.40), 'river-continent': dict(count=4, land=.52), 'arc-islands': dict(count=6, land=.36),
-           'korea': dict(count=0, land=.40)}
-GEO = ('peninsula', 'river-continent', 'arc-islands', 'korea')   # 지리 구조: 땅 모양이 정해져 있고 land 는 섬·바다 몫만 조금 바꾼다
+           'korea': dict(count=0, land=.40), 'real': dict(count=0, land=.40)}
+GEO = ('peninsula', 'river-continent', 'arc-islands', 'korea', 'real')   # 지리 구조: 땅 모양이 정해져 있고 land 는 섬·바다 몫만 조금 바꾼다
 HOME_GAP = 4.6          # 시작 대륙과 다른 땅 사이 바다(배 장벽 4칸 이상)
 GAP = 2.2               # 다른 땅끼리
 
@@ -132,14 +132,14 @@ def _warp(salt, amp, scale=7.0):
 
 
 # ───────────────────────────── 대륙 구조 ─────────────────────────────
-def gen_land(style='blobs', count=None, land=None, seed=1):
-    """땅 마스크와 정보. 시작 대륙은 늘 가장 큰 덩이."""
+def gen_land(style='blobs', count=None, land=None, seed=1, box=None, region=None, home=None, beyond=None, sands=None):
+    """땅 마스크와 정보. 시작 대륙은 늘 가장 큰 덩이. box·region 은 style real(실제 지리)에만."""
     if style not in STYLES:
         raise GenError('continents style 은 %s' % ' | '.join(STYLES))
     d = DEFAULT[style]
     count = int(count if count is not None else d['count'])
     land = float(land if land is not None else d['land'])
-    if not (0 if style == 'korea' else 1) <= count <= 40:
+    if not (0 if d['count'] == 0 else 1) <= count <= 40:
         raise GenError('continents count 는 1~40')
     if not .2 <= land <= .7:
         raise GenError('continents land(땅 비율)는 0.2~0.7')
@@ -147,12 +147,20 @@ def gen_land(style='blobs', count=None, land=None, seed=1):
     rng = np.random.default_rng(int(seed) * 7919 + STYLES.index(style))
     salt = 3000 + (int(seed) * 131) % 90000
     target = land * W * H
-    if style in GEO:
+    if style == 'real':
+        import kit_realgeo as KReal
+        fn = lambda r, s, c, t: KReal.real(r, s, c, t, box=box, region=region, home=home, beyond=beyond, sands=sands)
+    elif style in GEO:
         import kit_geo as KGeo
         fn = KGeo.STYLES[style]
     else:
         fn = {'blobs': _blobs, 'shards': _shards, 'ring': _ring, 'pangaea': _pangaea, 'archipelago': _archipelago, 'galaxy': _galaxy}[style]
-    m, info = fn(rng, salt, count, target)
+    try:
+        m, info = fn(rng, salt, count, target)
+    except ValueError as e:                          # kit_realgeo.RealGeoError — 범위가 바다뿐·땅뿐·너무 좁음
+        if style != 'real':
+            raise
+        raise GenError(str(e))
     EDGE_LAND[0] = bool(info.get('edge_land'))
     m = clean_land(m)
     if style != 'galaxy':                            # 배로 갈 땅(3막)이 모자라면 바깥 섬을 띄운다 — 「대륙 하나」도 여정이 서게
@@ -161,7 +169,8 @@ def gen_land(style='blobs', count=None, land=None, seed=1):
             sz = ndi.sum(m, lab, range(1, n + 1))
             home = lab == (int(np.argmax(sz)) + 1)
             other = int((m & ~home).sum())
-            if other < (.15 if style in GEO else .24) * target:   # 지리 구조는 제 섬을 갖고 있다 — 큰 섬을 덧대면 모양이 안 읽혔다(적대 QA)
+            need = .04 * W * H if style == 'real' else (.15 if style in GEO else .24) * target   # 실제 지리는 가짜 섬을 거의 안 띄운다 — 배로 갈 땅이 정말 없을 때만
+            if other < need:   # 지리 구조는 제 섬을 갖고 있다 — 큰 섬을 덧대면 모양이 안 읽혔다(적대 QA)
                 m = clean_land(_add_islands(rng, salt + 500, m, home, .30 * target - other, 5))
                 info['islands_added'] = 5
     lab, n = comps(m)
@@ -431,10 +440,14 @@ def climate(land, seed=1, wet=0.0, cold=0.0, bias=None):
     b = bias or {}
     ys, xs = np.mgrid[0:H, 0:W].astype(float)
     dco = ndi.distance_transform_edt(land)
-    elev = np.clip(dco / 11.0, 0, 1) * .6 + fbm(8, s) * .4 + b.get('elev', 0)
+    measured = bool(b.get('measured'))                      # 실제 지리(real): 높이·위도가 자료라 지어낸 높이(해안 거리)와 큰 기온 흔들림을 줄인다
+    if measured:
+        elev = np.clip(dco / 11.0, 0, 1) * .12 + fbm(8, s) * .1 + b.get('elev', 0)
+    else:
+        elev = np.clip(dco / 11.0, 0, 1) * .6 + fbm(8, s) * .4 + b.get('elev', 0)
     t0 = float(b.get('t0', .08))
     span = float(b['t1']) - t0 if 't1' in b else .92        # 기본은 옛 식 그대로(.92 — 1.0-.08 로 쓰면 부동소수 끝자리가 달라 저장된 세계가 움직인다)
-    temp = t0 + span * (ys / (H - 1)) + (fbm(13, s + 3) - .5) * .42 - .22 * elev - float(cold) * .3 + b.get('temp', 0)
+    temp = t0 + span * (ys / (H - 1)) + (fbm(13, s + 3) - .5) * (.16 if measured else .42) - .22 * elev - float(cold) * .3 + b.get('temp', 0)
     moist = _norm(fbm(10, s + 7)) * .72 + .28 * (1 - np.clip(dco / 9.0, 0, 1)) + float(wet) * .3 + b.get('moist', 0)
     g = np.full((H, W), M4.GRASS, np.int16)
     t, m = temp, moist
@@ -456,6 +469,8 @@ def climate(land, seed=1, wet=0.0, cold=0.0, bias=None):
         g = _majority(g, land)
     if b.get('glacier') is False:
         g[g == M4.GLACIER] = M4.SNOW
+    for m, gname in b.get('paint') or []:            # 실제 지리: 사막 지역은 모래로
+        g[m & land] = getattr(M4, gname)
     g[~land] = M4.SEA
     return g, dict(temp=temp, moist=moist, elev=elev, dco=dco)
 
@@ -524,7 +539,7 @@ def _guides(land, hints):
                 rv_m[y, x] = True
     av_r = ndi.binary_dilation(rv_m, iterations=2) if rv_m.any() else None
     av = ndi.binary_dilation(sp_m | rv_m, iterations=2) if (sp_m | rv_m).any() else None
-    return dict(spines=spines, rivers=rivers, avoid=av, avoid_rivers=av_r)
+    return dict(spines=spines, rivers=rivers, avoid=av, avoid_rivers=av_r, auto=hints.get('auto', 1.0))
 
 
 def _cut_line(pts, bad, keep_all=True, min_pts=10):
@@ -591,7 +606,7 @@ def features(land, G, lay, clim, seed=1, guide=None):
             continue
         M4.RIVERS.append(('큰 강 %d' % len(M4.RIVERS), p2, wide, salt))
         out['rivers'] += 1
-    auto_scale = .5 if guide['spines'] else 1.0
+    auto_scale = guide.get('auto', 1.0) * (.5 if guide['spines'] else 1.0)   # 실제 지리(real)는 0 — 산·강은 자료에서만
     # 산줄기: 땅 덩이마다 넓이에 맞춰 0~4줄
     for k in range(1, n + 1):
         mk = lab == k
@@ -665,7 +680,7 @@ def features(land, G, lay, clim, seed=1, guide=None):
     for k in range(1, n + 1):
         mk = lab == k
         area = int(mk.sum())
-        nv = 0 if area < 90 else int(min(4, area // 300 + 1) * (.5 if guide['rivers'] else 1))
+        nv = 0 if area < 90 else int(min(4, area // 300 + 1) * (.5 if guide['rivers'] else 1) * guide.get('auto', 1.0))
         tries = 0
         made = 0
         while made < nv and tries < nv * 6:
@@ -771,7 +786,7 @@ def generate(spec, journey, salt=0):
     cop = next((o for o in ops if o['op'] == 'climate'), {})
     seed = int(cont.get('seed', 1))
     style = cont.get('style', 'blobs')
-    land, info = gen_land(style, cont.get('count'), cont.get('land'), seed)
+    land, info = gen_land(style, cont.get('count'), cont.get('land'), seed, cont.get('box'), cont.get('region'), cont.get('home'), cont.get('beyond'), cont.get('sands'))
     hints = {k[5:]: info.pop(k) for k in list(info) if k.startswith('hint_')}
     edit = np.zeros((H, W), bool)
     paint = []
@@ -819,11 +834,19 @@ def generate(spec, journey, salt=0):
         ov['wall_pole'] = hints['pole']
     if hints.get('dune') and 'dune_sea' not in ov:
         ov['dune_pole'] = hints['dune']
+    if hints.get('home'):
+        ov['home_pole'] = hints['home']
+    if hints.get('home_gap'):
+        ov['home_gap'] = hints['home_gap']
+    if hints.get('dune_small'):
+        ov['dune_small'] = True
     if hints.get('dune_coast'):
         ov['dune_coast'] = hints['dune_coast']
     if hints.get('wall') and 'wall' not in ov:            # 실제 국경(압록강·두만강)을 산벽으로
         ov['wall'] = hints['wall']
         ov['a_pole'] = hints.get('a_pole')
+    import journey_check_v9 as JC
+    JC.MIN_SEA_GAP[0] = 2 if style == 'real' else 4     # 실제 해협(영국 해협 등)은 칸 한두 개
     lay = None
     for avoid in (guide['avoid'], guide['avoid_rivers'], None):     # 척추·강을 비켜 놓다가 자리가 없으면 강만, 그래도 없으면 비키지 않는다
         try:
@@ -837,7 +860,9 @@ def generate(spec, journey, salt=0):
             len(guide['spines']), len(guide['rivers']), '' if lay.get('avoid') is guide['avoid'] else ' (자리가 모자라 일부는 장소에 끊긴다)'))
     land = lay['land']
     G[~land] = M4.SEA
-    _decorate(G, land, lay, journey, seed, space=space, rim=hints.get('dune_rim'))
+    _decorate(G, land, lay, journey, seed, space=space, rim=hints.get('dune_rim'), real=style == 'real')
+    if style == 'real' and info.get('islands_added'):
+        lay['notes'].append('실제 지리에 배로 갈 땅(3막)이 모자라 가상 섬 %d개를 덧붙였다 — 싫으면 box 를 바다 건너 실제 땅이 들어오게 넓혀라' % info['islands_added'])
     if not space:
         _harmonize(G, land, lay)
     feat = KS.space_features(land, G, lay, info['systems'], seed) if space else features(land, G, lay, clim, seed, guide)
@@ -861,7 +886,7 @@ def generate(spec, journey, salt=0):
                    ship_landmasses=len(set(np.unique(lab[land & ~lay['home']])) - {0}),
                    wall_cells=len(lay['wall']), gate=lay['gate'], harbour=lay['harbour'], start=list(j['start']['cell']),
                    places={k: [int(v[0]), int(v[1])] for k, v in lay['rect'].items()}, roads=len(j['roads']),
-                   features=feat, notes=lay['notes'], systems=info.get('systems'), core=info.get('core'), spiral=info.get('spiral'), road_ends=[[r['id'], r['from'], r['to']] for r in j['roads']])
+                   features=feat, notes=lay['notes'], min_sea_gap=JC.MIN_SEA_GAP[0], real=info.get('real'), systems=info.get('systems'), core=info.get('core'), spiral=info.get('spiral'), road_ends=[[r['id'], r['from'], r['to']] for r in j['roads']])
     reg = np.full((H, W), '~', '<U1')
     reg[land] = 's'
     reg[lay['A']] = 'a'
@@ -922,7 +947,7 @@ def _snow_peaks(cx, cy, r, lay, land, D, salt):
             return
 
 
-def _decorate(G, land, lay, journey, seed, space=False, rim=None):
+def _decorate(G, land, lay, journey, seed, space=False, rim=None, real=False):
     """배치에 맞춰 바닥을 손본다: 사구 바다·둘레 모래, 장소 바닥 무리(눈 마을 둘레 눈밭 …), 화산재, 길 자리의 빙하."""
     s = 8000 + (int(seed) * 97) % 90000
     D = lay['dune']
@@ -946,7 +971,7 @@ def _decorate(G, land, lay, journey, seed, space=False, rim=None):
         if '늪' in pid:
             G[blob_mask(cx, cy, 4.2, 3.6, s + 50 + i, 1.0) & land & ~D] = M4.MARSH
             continue
-        if not gname or gname not in KF.FAMILY or p['act'] == 3 or space:   # 우주는 성계마다 성운 하나 — 장소 바닥 무리가 얼룩이 된다
+        if not gname or gname not in KF.FAMILY or p['act'] == 3 or space or real:   # 우주는 성계마다 성운 하나 — 장소 바닥 무리가 얼룩이 된다. 실제 지리는 바닥이 실제 기후다(적도 아프리카에 눈밭이 생겼다)
             continue
         fam = KF.FAMILY[gname]
         win = G[max(y - 3, 0):y + h + 3, max(x - 3, 0):x + w + 3]
