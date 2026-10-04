@@ -207,12 +207,11 @@ function cgroupBudget(args) {
   // `Ineffective mark-compacts near heap limit` 으로 죽고 결과를 못 내놓는다.
   if (usableMb != null) {
     const memoryMaxMb = memoryMax / 1024 / 1024;
-    // 16GB 이하에서는 워커를 둘 이상 두면 슬라이스가 12GiB 에 붙는다.
-    // 2×3584MB 도 워커가 `Ineffective mark-compacts near heap limit` 으로 죽었다
-    // (run 37187303515). 워커는 하나, 힙은 8GB. 자라는 건 그 파일만큼이다.
+    // 16GB 이하에서는 워커를 하나 둔다. 8GB 힙도 `invalid table size` 로 죽었다
+    // (run 37190574621). 슬라이스 상한은 16GB 이고, 워커 힙은 그 75% 인 12GB 다.
     if (memoryMaxMb <= 16 * 1024) {
       workers = 1;
-      heapMb = FALLBACK_HEAP_MB;
+      heapMb = Math.min(12288, Math.floor(memoryMaxMb * 0.75));
     } else {
       heapMb = heapForWorkers(usableMb, workers);
       const inherited = inheritedHeapMb();

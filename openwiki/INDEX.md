@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **140쪽 / 4811KB / 약 1,396,794 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **140쪽 / 4811KB / 약 1,396,783 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -28,7 +28,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/runtime-pre-edit-routing.md` | 111KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 809 | ~33,372 |
 | `openwiki/runtime-project-schema.md` | 214KB | 67KB ⚠상한 초과 — 절을 더 쪼개라 | 1537 | ~59,914 |
 | `openwiki/runtime-sessions.md` | 123KB | 50KB | 627 | ~33,263 |
-| `openwiki/testing.md` | 219KB | 48KB | 2088 | ~60,951 |
+| `openwiki/testing.md` | 219KB | 48KB | 2088 | ~60,940 |
 | `openwiki/tileset-reference-documents.md` | 54KB | 4KB | 558 | ~16,396 |
 
 ## 한국어 산문이 깨진 페이지
@@ -2261,7 +2261,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L68` 저장·크기 변경
 - `L77` 확인
 
-### `openwiki/testing.md` — 219KB · 2088줄 · ~60,951 토큰 · 통째읽기 잘림
+### `openwiki/testing.md` — 219KB · 2088줄 · ~60,940 토큰 · 통째읽기 잘림
 
 - `L3` AI 세션 테스트의 모델 id 는 임의로 짓지 않는다 (2026-09-14)
 - `L19` 전체 스위트가 워커 힙에서 죽던 문제 (2026-09-11)
