@@ -8,6 +8,8 @@ import { deserialize, serialize } from "@/project/io";
 import { DEFAULT_ACTOR_ID } from "@/project/defaults/constants";
 import { prepareWebExport } from "@/project/webExport";
 import { configureMonsterPresentation } from "@/project/monsterPresentation";
+import { configureEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
+import { configureEmeraldMonsterOpening } from "@/project/emeraldMonsterOpening";
 
 /** Complete, ordinary editable campaign: the player uses the shipping engine. */
 export function createMonsterExpedition() {
@@ -45,6 +47,10 @@ export function createMonsterExpedition() {
   project.database.enemies = project.database.enemies.filter(e => e.id.startsWith("mx_enemy_"));
   project.database.troops = project.database.troops.filter(t => t.id.startsWith("mx_troop_"));
   project.system.initialTroopId = project.database.troops[0]!.id;
+  // The shared campaign and editor tool must produce the same coherent profile.
+  // Apply after world creation so the intro names the actual starting place.
+  configureEmeraldMonsterStyle(project);
+  configureEmeraldMonsterOpening(project);
   // The canonical loader checks command IDs, tiles, assets and all DB references.
   const serialized = serialize(project);
   const reloaded = deserialize(serialized);
