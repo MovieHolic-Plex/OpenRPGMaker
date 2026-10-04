@@ -10,8 +10,8 @@ DB = os.path.join(DATA, 'sh.sqlite')
 _lock = threading.RLock()
 
 # 개념이 지나가는 칸. 화면의 칸 순서와 같다.
-STAGES = ['discovered', 'survey', 'material-review', 'art-review', 'waiting', 'art', 'build', 'review', 'probe', 'bake', 'done', 'blocked', 'discarded', 'unbake']
-ACTIVE = ('survey', 'material-review', 'build', 'review', 'probe', 'bake', 'unbake')
+STAGES = ['discovered', 'plan', 'plan-review', 'survey', 'material-review', 'art-review', 'waiting', 'art', 'build', 'review', 'probe', 'bake', 'done', 'blocked', 'discarded', 'unbake']
+ACTIVE = ('plan', 'plan-review', 'survey', 'material-review', 'build', 'review', 'probe', 'bake', 'unbake')
 
 DEFAULT_SETTINGS = {
     'paused': '0',
@@ -69,6 +69,13 @@ def init():
             # 기존 초안·그림은 보존하고, 배포 전의 모든 개념을 새 재료 관문 앞으로 옮긴다.
             con.execute("UPDATE concepts SET stage='survey', status='queued', note='재료 관문 재확인 — 이전 초안은 보존됨' WHERE stage NOT IN ('done','discarded','unbake')")
             con.execute("INSERT OR REPLACE INTO settings VALUES('material_gate_version','2')")
+            con.execute("INSERT OR REPLACE INTO settings VALUES('paused','1')")
+        if 'plan_attempt' not in cols:
+            con.execute('ALTER TABLE concepts ADD COLUMN plan_attempt INTEGER DEFAULT 1')
+        planning = con.execute("SELECT value FROM settings WHERE key='planning_gate_version'").fetchone()
+        if not planning or planning[0] != '1':
+            con.execute("UPDATE concepts SET stage='plan', status='queued', note='기획·텍스트 도면 관문 재확인 — 이전 초안 보존' WHERE stage NOT IN ('done','discarded','unbake')")
+            con.execute("INSERT OR REPLACE INTO settings VALUES('planning_gate_version','1')")
             con.execute("INSERT OR REPLACE INTO settings VALUES('paused','1')")
         # 폐기한 하루 상한은 기존 저장소에서도 제거한다.
         con.execute("DELETE FROM settings WHERE key IN ('budget_codex_day', 'budget_probe_day')")
