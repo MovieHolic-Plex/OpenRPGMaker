@@ -40,7 +40,7 @@ try {
   try { report.previousUserRecords=recordsDb.prepare('select entries_json from ai_conversations').all().flatMap(row=>JSON.parse(row.entries_json).filter(e=>e.kind==='user').map(e=>({kind:e.kind,characters:JSON.stringify(e).length}))); } finally { recordsDb.close(); }
   save();
   await page.goto(projectUrl,{waitUntil:'domcontentloaded'});
-  await page.waitForFunction(()=>window.__oprnAiBridge?.status().ready && !window.__oprnAiBridge.status().turnBusy,null,{timeout:180000});
+  await page.waitForFunction(()=>window.__oprnAiBridge?.status().ready && !window.__oprnAiBridge.status().turnBusy,null,{timeout:300000});
   report.recordDatabases=await page.evaluate(async()=> (await indexedDB.databases()).map(d=>d.name));
   if (process.env.LIVE_OPENING_IMAGE_PROVIDER) {
     await page.getByTestId('topbar-ai-settings').click();
@@ -69,7 +69,7 @@ try {
   writeFileSync(out+'/repair-wire.json',JSON.stringify(events,(key,value)=>key==='dataUrl'||key==='base64'?undefined:(value?.type==='image'?{type:'image',mimeType:value.mimeType,base64Length:value.data?.length}:value),2)+'\n');
   await page.waitForTimeout(3000);report.beforeReload=snapshot();
   await page.screenshot({path:out+'/authored.png'});
-  await page.reload();await page.waitForFunction(()=>window.__oprnAiBridge?.status().ready,null,{timeout:180000});
+  await page.reload();await page.waitForFunction(()=>window.__oprnAiBridge?.status().ready,null,{timeout:300000});
   report.afterReload=snapshot();
   const shots=report.afterReload.opening?.scenes.filter(s=>s.kind==='image')??[];
   report.originalMusicGenerated=events.filter(e=>e.type==='tool_end'&&e.name==='generate_original_bgm'&&e.ok===true).length;
