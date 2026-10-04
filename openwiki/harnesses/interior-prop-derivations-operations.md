@@ -9,20 +9,20 @@
 
 | 항목 | 당시 값 |
 |---|---|
-| 통합 입구 | `http://mdc-server:18312/harness` |
-| 기물 단독 화면 | `http://mdc-server:18312/harness/props` |
-| 기물 유닛 | `prop-harness-test.service` (이름에 test가 있어도 사용자가 쓰는 라이브 서버) |
-| 실제 코드/후보 체크아웃 | `/home/main/z-project/rpg-zzu-interior-v34b` |
+| 통합 입구 | `http://mdc-server:18315/harness` |
+| 기물 단독 화면 | `http://mdc-server:18315/harness/props` |
+| 통합 유닛 | `super-harness.service`; 18312는 같은 프로세스의 이동 전용 |
+| 통합 코드 | `/home/main/z-project/rpg-zzu-super-harness-unified` |
+| 후보 콘텐츠 체크아웃 | `/home/main/z-project/rpg-zzu-interior-v34b` (`PROP_HARNESS_CONTENT_ROOT`) |
 | 기물 데이터 | `/home/main/.local/share/oprn/prop-harness` |
 | 선택 정본 | `/home/main/.local/share/oprn/hand-interior-pick/picks.sqlite` |
 | 호스트 공용 정본 | `/home/main/.local/share/oprn/shared-content.sqlite` |
 | 기존 공간 유닛/체크아웃 | `super-harness.service`, `/home/main/z-project/rpg-zzu-super-harness` |
-| 기존 공간 화면 | `http://mdc-server:18315/` |
+| 공간 단독 화면 | `http://mdc-server:18315/spaces` |
 
 고정 경로를 믿고 바로 편집하지 말고 다시 확인한다. 서비스의 전체 환경/명령 인자에는 비밀값이 있을 수 있어 출력하지 않는다.
 
 ```bash
-systemctl --user show prop-harness-test.service -p WorkingDirectory -p MainPID
 systemctl --user show super-harness.service -p WorkingDirectory -p MainPID
 git worktree list
 ```
@@ -30,12 +30,12 @@ git worktree list
 읽기 API:
 
 ```bash
-curl --fail --silent http://127.0.0.1:18312/api/super-harness/status
-curl --fail --silent http://127.0.0.1:18312/api/harness/suggestions
-curl --fail --silent --compressed http://127.0.0.1:18312/api/harness/state
+curl --fail --silent http://127.0.0.1:18315/api/super-harness/status
+curl --fail --silent http://127.0.0.1:18315/api/harness/suggestions
+curl --fail --silent --compressed http://127.0.0.1:18315/api/harness/state
 ```
 
-state는 후보·판·검수·일꾼·공용 반영 상태를 포함한다. 연결 실패와 작업 실패를 구분한다.
+state는 후보·판·검수·일꾼·공용 반영 상태를 포함한다. 연결 실패와 작업 실패를 구분한다. 통합 서비스·경로·복구 계약은 [통합 문서](super-harness-integration.md)를 따른다.
 super status의 shared.revision은 실제 공용 DB 판본, publication.receipt는 마지막 게시 일꾼의 결과다.
 둘이 다르면 게시 중이거나 외부에서 공용 행이 바뀌었는지 확인한다. 오래된 receipt만 보고 완료라고 하지 않는다.
 기존 공간 `/api/state`는 무거운 디버그 응답이므로 일반 상태 확인에는 `/api/list`를 쓴다.
@@ -72,6 +72,8 @@ super status의 shared.revision은 실제 공용 DB 판본, publication.receipt�
 
 | 변수 | 기본·역할 |
 |---|---|
+| `PROP_HARNESS_CONTENT_ROOT` | 후보·v5·new 정의·현재 시트를 가진 콘텐츠 체크아웃; 코드와 분리 가능 |
+| `SUPER_HARNESS_CODE_ROOT` | 다른 세션의 최신 공간 코드 유지용 override; 기본 통합 체크아웃 |
 | `PROP_HARNESS_DATA` | `~/.local/share/oprn/prop-harness`; 판·작업지시서·대기열·baseline |
 | `HIP_DATA`, `HIP_DB` | `~/.local/share/oprn/hand-interior-pick`, 그 아래 picks.sqlite |
 | `HIP_PICK` | picks_db의 export/import 폴더; common의 실제 후보 루트를 바꾸는 설정은 아님 |

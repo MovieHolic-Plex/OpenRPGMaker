@@ -13,10 +13,14 @@
 import hashlib, json, os, sys, time
 from PIL import Image
 
+if not __package__:
+    sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
+    __package__ = 'src.harnesses.interior-props'
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, '..', '..', '..'))
 sys.path.insert(0, os.path.join(ROOT, 'scripts/content/hand-interior-pick'))
-from common import CAND, NEW_ITEMS, SETS, atomic_write, geom, objects_by_id, resize_spec, slug  # noqa: E402
+from common import CONTENT_ROOT, CAND, NEW_ITEMS, SETS, atomic_write, geom, objects_by_id, resize_spec, slug  # noqa: E402
 
 FACINGS = ['S', 'E', 'N', 'W']
 FACING_KO = {'S': '남', 'E': '동', 'N': '북', 'W': '서'}
@@ -71,14 +75,14 @@ def _stem(i):
 
 
 def _pic(i):
-    import brief
+    from . import brief
     brief.ensure_folder(i)
     return Image.open(brief.cand_png(i, brief.current_choice(i))).convert('RGBA')
 
 
 _SPEC = {}
 def _spec_object(i):
-    p = os.path.join(ROOT, 'src/assets/handInteriorSpec.json'); mt = os.path.getmtime(p)
+    p = os.path.join(CONTENT_ROOT, 'src/assets/handInteriorSpec.json'); mt = os.path.getmtime(p)
     if _SPEC.get('mt') != mt: _SPEC.update(mt=mt, objs=json.load(open(p, encoding='utf-8'))['objects'])
     return _SPEC['objs'].get(i) or {}
 
@@ -116,7 +120,8 @@ def suggest(i, context=None):
 
 def suggestions():
     """기존 원본 전체에서 파생을 먼저 제안한다. 읽기 전용이며 주문/선택을 만들지 않는다."""
-    import picks_db, store
+    import picks_db
+    from . import store
     by = objects_by_id(); picks = picks_db.current_all()
     context = dict(by=by, sets=load_sets(), items=json.load(open(NEW_ITEMS, encoding='utf-8'))['items'])
     rounds = {}; runs = {}
@@ -351,7 +356,7 @@ def lock_check(o, png, brief_dir=None):
         lock = json.load(open(os.path.join(brief_dir, 'lock.json'), encoding='utf-8'))
     bim = None
     if lock.get('base'):
-        import brief
+        from . import brief
         bim = Image.open(brief.cand_png(o['id'], lock['base'])).convert('RGBA')
     for x in s['slots']:
         ref = seed if x['locked'] else (bim if bim is not None and x['key'] != lock.get('slot') else None)
@@ -384,7 +389,8 @@ def _pal_and_rows(im):
 
 def slice_pick(sid, choice, rnd):
     """묶음 후보를 골랐다 → 칸을 잘라 자식 기물의 고른 그림으로. 넣은 (자식 id, 이름) 목록."""
-    import brief, picks_db, store
+    from . import brief, store
+    import picks_db
     by = objects_by_id(); o = by[sid]; s = set_of(o)
     if not s or choice == 'keep': return []
     im = Image.open(brief.cand_png(sid, choice)).convert('RGBA')

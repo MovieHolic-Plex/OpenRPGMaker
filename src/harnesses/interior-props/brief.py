@@ -9,14 +9,18 @@
 import glob, json, os, shutil, sqlite3, subprocess, sys
 from PIL import Image
 
+if not __package__:
+    sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
+    __package__ = 'src.harnesses.interior-props'
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, '..', '..', '..'))
 sys.path.insert(0, os.path.join(ROOT, 'scripts/content/hand-interior-pick'))
 from check_candidate import LINE_THICK_MAX, LINE_NONE_MAX  # noqa: E402
-from common import CAND, SHARED_PAL, TOP_MIN_SHALLOW, blockout_image, geom, objects_by_id, slug, top_min, top_rule_text  # noqa: E402
+from common import CONTENT_ROOT, CAND, SHARED_PAL, TOP_MIN_SHALLOW, blockout_image, geom, objects_by_id, slug, top_min, top_rule_text  # noqa: E402
 import picks_db  # noqa: E402
 import outline_select  # noqa: E402
-import store  # noqa: E402
+from . import store  # noqa: E402
 
 # 방향 — 한 판 5장의 작업자마다 하나. 같은 기물을 다른 해석으로 찍게 해서 사용자가 고를 폭을 만든다.
 DIRECTIONS = [
@@ -57,7 +61,7 @@ def is_new(item):
 
 
 def directions(item, base='', slot=''):
-    import derive
+    from . import derive
     d = derive.directions(objects_by_id()[item], slot)   # 파생(묶음·큰 판)은 그 갈래
     if d: return d
     if '@' in (base or ''): return STATE_DIRECTIONS
@@ -116,7 +120,7 @@ def family(item):
     return [i for i, m in by.items() if i != item and i.split()[0].split(':')[0] == head and m['category_ko'] == cat]
 
 
-AUDIT = os.path.join(ROOT, 'tiledata/hand-interior/pick/audit/v34-audit-verdicts.json')
+AUDIT = os.path.join(CONTENT_ROOT, 'tiledata/hand-interior/pick/audit/v34-audit-verdicts.json')
 FLATKINDS = ('hang', 'flat')   # 벽면 걸이·바닥 무늬 — 평평한 게 정상이라 가구의 기준 그림으로 주면 정면도를 배운다(투구 선반 h49)
 
 
@@ -223,7 +227,7 @@ def make(rid, item, note='', base='', slot=''):
           + (' (크기 바뀜: resize.json)' if G['resized'] else ''),
           f'- 후보 폴더: `{os.path.relpath(d, ROOT)}` (팔레트 `palette.pal`, 지금 그림 `{"v5.pxg" if cur == "v5" else cur + ".pxg"}`)',
           f'- 방 안 맥락: `context.png` ({room})', '']
-    import derive
+    from . import derive
     if o.get('set'):
         md += derive.brief_lines(o, base, slot)
     elif is_new(item):

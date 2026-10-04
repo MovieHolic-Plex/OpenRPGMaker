@@ -12,11 +12,23 @@ import urllib.request
 import urllib.parse
 import zipfile
 
-import shared_publish
+import sys
+if not __package__:
+    sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
+    __package__ = 'src.harnesses.interior-props'
+from . import shared_publish
 
 _LOCK = threading.Lock()
 _STATUS = {}
 _PACK = {}
+_SPACE_LIST = None
+
+
+def attach_space(provider):
+    """The unified host supplies its own gallery; no loopback HTTP or second server."""
+    global _SPACE_LIST
+    _SPACE_LIST = provider
+    _STATUS.clear()
 
 
 def origin():
@@ -43,10 +55,13 @@ def status():
     with _LOCK:
         if time.monotonic() - _STATUS.get('at', -100) > 10:
             try:
-                req = urllib.request.Request(origin() + '/api/list', headers={'Accept': 'application/json'})
-                opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
-                with opener.open(req, timeout=2) as response:
-                    data = json.loads(response.read(1024 * 1024))
+                if _SPACE_LIST:
+                    data = _SPACE_LIST()
+                else:
+                    req = urllib.request.Request(origin() + '/api/list', headers={'Accept': 'application/json'})
+                    opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
+                    with opener.open(req, timeout=2) as response:
+                        data = json.loads(response.read(1024 * 1024))
                 items = data['items']
                 result = dict(online=True, paused=data.get('paused'), concepts=len(items),
                               running=sum(bool(i.get('running')) for i in items))
@@ -62,7 +77,7 @@ def status():
     except sqlite3.Error:
         shared = dict(available=False, error='공용 재료 DB를 읽을 수 없습니다.')
     return dict(space=space, shared=shared, publication=publication,
-                spacePort=urllib.parse.urlsplit(origin()).port or 80)
+                unified=bool(_SPACE_LIST), spacePort=urllib.parse.urlsplit(origin()).port or 80)
 
 
 def material_pack():

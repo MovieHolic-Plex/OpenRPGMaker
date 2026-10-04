@@ -1,7 +1,10 @@
-# 슈퍼하네스 (super-harness) — 개념 카드 자동 공급
+# 슈퍼하네싱 (super-harness) — 기물·파생·공간
 
 사람이 큐만 보고, 에이전트가 「조수가 모르는 낱말」을 스스로 찾아 개념 카드로 만들어 공용 번들에 굽는 지휘자 하네스.
 화면: **http://mdc-server:18315/** (systemd --user `super-harness.service`, 코드 `src/harnesses/super-harness/`).
+
+기물·파생도 같은 서비스에서 제공한다. 실행 입구는 `unified.py run`, 공간 단독 뷰는 `/spaces`.
+운영·모듈 분리·후보 경로·기존 세션 유지·복구는 [통합 문서](super-harness-integration.md)를 따른다.
 
 ## 왜 (2026-10-03 실측)
 

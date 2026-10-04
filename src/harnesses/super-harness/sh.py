@@ -2,7 +2,7 @@
 """슈퍼하네스 — 조수가 모르는 낱말(미궁·카타콤…)을 에이전트가 스스로 찾아 개념 카드로 만들고, 적대 검수·조수 시험을 거쳐
 공용 번들(src/assets/conceptCards.json)에 굽는다. 사람은 화면(http://mdc-server:18315/)에서 큐를 보고 교정·폐기만 한다.
 
-  python3 src/harnesses/super-harness/sh.py run        # 데몬 + 화면 (systemd --user super-harness.service)
+  python3 src/harnesses/super-harness/unified.py run   # 기물·파생·공간 통합 (systemd --user super-harness.service)
   python3 src/harnesses/super-harness/sh.py status
   python3 src/harnesses/super-harness/sh.py add <id> <제목> [별칭…]
   python3 src/harnesses/super-harness/sh.py pause|resume
