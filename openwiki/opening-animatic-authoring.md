@@ -117,6 +117,53 @@ Skip/completion/abort and disposal. Synthetic colour poses and stubbed audio
 methods verify mechanics only. Actual generated art, native shipping playback,
 canonical save/reload and listening remain separate required evidence.
 
+### Actual standalone export motion probe
+
+After the final art and runtime are exported, the supervisor can run:
+
+```bash
+node scripts/qa/runtime/pokemon-native-motion.mjs \
+  --export /absolute/path/to/standalone-game --port 19842 \
+  --out /tmp/pokemon-native-motion \
+  --canonical /absolute/path/to/canonical-reloaded.json
+```
+
+This is an actual compiled `player.html` probe. It serves only the supplied export
+on its explicit private localhost port and fails if that port is occupied. It
+never starts/restarts a public service, changes project/assets, or writes a save.
+`--url` can instead target an existing private standalone player. The probe adds
+only the existing `qaInstrumentation` boot flag in the served HTML; original
+project, JS and HTML hashes are recorded. A supplied canonical snapshot is compared
+read-only; this comparison does not replace a fresh canonical SQLite reload.
+
+Normal New Game waits for the title sequence, then native Enter traverses all
+eight confirm pages. Actual pose canvas pixels must yield at least four distinct
+frames and a native-resolution WebM clip. Controller, still portrait and BGM
+object/track/clock persist across pages. WASD and repeated held Enter must not
+restart BGM/current voice. Real media events and playheads are observed without
+stubbing playback. A separate browser context checks OS reduced motion, neutral
+frame0 and Skip cleanup. Completion must stop the detached pose clock and reach
+the original authored start map. Browser/resource errors fail the probe. Audio
+listening and artistic approval remain human checks; absent authored narration
+is explicitly reported instead of claiming voice playback was verified.
+
+Walking uses clearly reported preparation: after native opening/startup dialogue,
+private QA hooks teleport within original authored maps to event-free three-tile
+lanes, inject direction into actual Input, and advance normal Phaser updates at
+17ms. Collision, movement speed, gait state, sprite selection and project data
+are not patched. Actual gait must contain `[0,1,2,1]`, idle must use pattern1, and
+all four direction rows must have three distinct native pose pixel frames. Pose
+geometry comes from the actual selected Phaser frame, including opaque bounds and
+display scale; no 24px/16px sprite width is assumed. This measures runtime gait,
+not Emerald source scale fidelity or natural campaign progress. The separately
+registered art harness owns source-reference and palette/anchor quality gates.
+
+Default lanes are chosen with the repository's pure collision authority and avoid
+authored events. Dynamic NPCs can still block a lane; failures retain frame traces
+and a screenshot. `--walk-map`, `--walk-x` and `--walk-y` select explicit original
+map corridors. `--opening-only` skips walking and records that reduced scope.
+Read `SUMMARY.md` first, then the named screenshots/WebM and `record.json`.
+
 ## Review includes authored layers
 
 `review_opening` counts real illustration IDs in animatic layers, includes displayed text layers in reading-time hints, and validates their illustration/audio cue references. A six-panel book with four source paintings reports four paintings rather than zero. Native playback and listening remain separate evidence.
