@@ -44,7 +44,7 @@ Pi의 그림 생성 도구도 실제 생성 대신 UI 요청만 반환했다.
 
 - 내려받은 ZIP을 수정하지 않고 풀어 `player.html` 전용 런타임 경로로 확인했다. 에디터 play 경로를 사용하지 않았다.
 - ZIP 350,202,865바이트, 4,170항목. 내보내기 오류·누락 요청 없음. 이 큰 패키지 크기는 남은 개선점이다.
-- 플레이어 SDK artifact `4c88079802161cab`, sourceDigest `320ea9f9b9ea4a4fb81b991300646a936942fb4c3237cab9ff5543ab60299c3a`, sourceRevision `d27f12e3f6`, schema 4. 이후 통합한 main 변경은 문서/QA 기록뿐이며 표시 코드가 바뀌지 않았다.
+- 플레이어 SDK artifact `4c88079802161cab`, sourceDigest `320ea9f9b9ea4a4fb81b991300646a936942fb4c3237cab9ff5543ab60299c3a`, sourceRevision `d27f12e3f6`, schema 4. 이후 main의 문서/QA 기록과 별도 캐릭터 하네스를 통합했다. 검증 대상인 첫 제작·타이틀·오프닝 표시 코드는 바뀌지 않았다.
 - 두 선택 각각 7개 확인 지점(타이틀→그림 오프닝→조작 반환→시계 조사→선택 결과 대사→기억의 길→엔딩), **14/14 통과**, 런타임 오류 없음.
 - 실제 프로젝트의 system/database/endings와 저장된 맵·이벤트·타일 레이어를 비교했다. 원화 파일의 SHA256 및 길이도 정본과 같다.
 - 타이틀의 실제 WebGL/animation, smooth 합성, 표시 무대에 맞는 캔버스 크기를 확인했다. SwiftShader의 기존 0.5 해상도 배율은 유지한다.
