@@ -5,6 +5,21 @@
 
 <!-- releases -->
 
+## 0.124.0 — 2026-10-04
+
+### 기능
+
+- produce character variations from sealed human-kept pixels (`2ad3d82`)
+
+### 수정
+
+- retain native roof pixels behind gable seams (`0eb25bd`)
+
+### 문서
+
+- verify joined gable in canonical editor and player (`4aeec74`)
+- capture complete gabled house in shipping player (`4874087`)
+
 ## 0.123.1 — 2026-10-04
 
 ### 수정

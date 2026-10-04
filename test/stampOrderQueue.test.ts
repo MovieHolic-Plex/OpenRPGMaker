@@ -1,4 +1,4 @@
-// 바로 깔기 주문 대기열 — 겹치는 영역만 기다리고, 떨어진 영역은 동시에 읽고, 조수 턴 동안에는 깔기를 미룬다.
+// 바로 깔기 주문 대기열 — 같은 맵은 직렬, 다른 맵은 병렬, 조수 턴 동안 새 주문은 대기한다.
 // 러너는 주입한다(모델·스토어 없음). 러너가 받는 waitForApply 를 실제로 기다려야 게이트 동작이 보인다.
 import { afterEach, describe, expect, it } from "vitest";
 import {
@@ -21,8 +21,9 @@ function harness(options: { readonly concurrency?: number; readonly projectKey?:
   const queue = createStampOrderQueue({
     concurrency: options.concurrency ?? 3,
     projectKey: options.projectKey ?? (() => "p1"),
-    mapSize: (mapId) => (mapId === "m1" || mapId === "m2" ? { width: 20, height: 20 } : undefined),
+    mapSize: (mapId) => (["m1", "m2", "m3"].includes(mapId) ? { width: 20, height: 20 } : undefined),
     run: (input) => new Promise<StampRunResult>((resolve) => {
+      input.signal?.addEventListener("abort", () => resolve({ ok: false, lines: [], applied: 0, usedModel: true }), { once: true });
       started.push({
         input,
         finish: async (result) => {
@@ -64,26 +65,25 @@ describe("stampOrderRect / overlap", () => {
 });
 
 describe("createStampOrderQueue", () => {
-  it("runs separate regions at the same time and holds an overlapping one", async () => {
+  it("serializes separated regions of the same map in FIFO order", async () => {
     const h = harness();
     live = h.queue;
     const a = h.queue.enqueue({ text: "숲", mapId: "m1", selection: sel(0, 0) })!;
     const b = h.queue.enqueue({ text: "연못", mapId: "m1", selection: sel(10, 10) })!;
     const c = h.queue.enqueue({ text: "길", mapId: "m1", selection: sel(2, 2) })!;
-    expect(h.started.map((p) => p.input.text)).toEqual(["숲", "연못"]);
+    expect(h.started.map((p) => p.input.text)).toEqual(["숲"]);
     expect(c.status).toBe("waiting");
     expect(c.wait).toBe("overlap");
     expect(c.blockedBy).toBe(a.id);
-    expect(h.queue.summary()).toEqual({ waiting: 1, running: 2, total: 3 });
-
-    await h.started[1]!.finish();
-    await flush();
-    expect(b.status).toBe("done");
-    expect(c.status).toBe("waiting"); // 연못은 길과 겹치지 않는다 — 숲이 끝나야 길이 선다.
+    expect(h.queue.summary()).toEqual({ waiting: 2, running: 1, total: 3 });
 
     await h.started[0]!.finish();
     await flush();
     expect(a.status).toBe("done");
+    expect(b.status).toBe("planning");
+    expect(c.status).toBe("waiting");
+    await h.started[1]!.finish();
+    await flush();
     expect(c.status).toBe("planning");
     expect(h.started.map((p) => p.input.text)).toEqual(["숲", "연못", "길"]);
   });
@@ -109,8 +109,8 @@ describe("createStampOrderQueue", () => {
     const h = harness({ concurrency: 2 });
     live = h.queue;
     h.queue.enqueue({ text: "a", mapId: "m1", selection: sel(0, 0, 2, 2) });
-    h.queue.enqueue({ text: "b", mapId: "m1", selection: sel(5, 0, 2, 2) });
-    const c = h.queue.enqueue({ text: "c", mapId: "m1", selection: sel(10, 0, 2, 2) })!;
+    h.queue.enqueue({ text: "b", mapId: "m2", selection: sel(5, 0, 2, 2, "m2") });
+    const c = h.queue.enqueue({ text: "c", mapId: "m3", selection: sel(10, 0, 2, 2, "m3") })!;
     expect(h.started).toHaveLength(2);
     expect(c.wait).toBe("capacity");
     await h.started[0]!.finish();
@@ -118,12 +118,18 @@ describe("createStampOrderQueue", () => {
     expect(c.status).toBe("planning");
   });
 
-  it("holds the apply while a chat turn runs and releases it on poke", async () => {
+  it("holds a new model call while chat runs, then also gates apply", async () => {
     let chatBusy = true;
     const h = harness();
     live = h.queue;
     h.queue.setChatBusyProbe(() => chatBusy);
     const order = h.queue.enqueue({ text: "숲", mapId: "m1", selection: sel(0, 0) })!;
+    expect(h.started).toHaveLength(0);
+    expect(order.wait).toBe("chat");
+    chatBusy = false;
+    h.queue.pokeGate();
+    expect(h.started).toHaveLength(1);
+    chatBusy = true;
     const done = h.started[0]!.finish();
     await flush();
     expect(order.status).toBe("applying");

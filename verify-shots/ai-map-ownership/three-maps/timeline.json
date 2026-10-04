@@ -1,0 +1,707 @@
+{
+  "events": [
+    {
+      "t": 138802,
+      "runId": "79f838a5-7d11-487d-a49d-dce90eb0890f",
+      "type": "heartbeat",
+      "seq": 0
+    },
+    {
+      "t": 146344,
+      "runId": "79f838a5-7d11-487d-a49d-dce90eb0890f",
+      "type": "start",
+      "seq": 1
+    },
+    {
+      "t": 146368,
+      "runId": "79f838a5-7d11-487d-a49d-dce90eb0890f",
+      "type": "heartbeat",
+      "seq": 2
+    },
+    {
+      "t": 146371,
+      "runId": "eabd5fc9-e169-4f90-8de4-019382985868",
+      "type": "start",
+      "seq": 0
+    },
+    {
+      "t": 146371,
+      "runId": "eabd5fc9-e169-4f90-8de4-019382985868",
+      "type": "heartbeat",
+      "seq": 1
+    },
+    {
+      "t": 146379,
+      "runId": "078d543d-197e-4a7c-98d7-83fd14d72ba4",
+      "type": "start",
+      "seq": 0
+    },
+    {
+      "t": 146379,
+      "runId": "078d543d-197e-4a7c-98d7-83fd14d72ba4",
+      "type": "heartbeat",
+      "seq": 1
+    },
+    {
+      "t": 146379,
+      "runId": "078d543d-197e-4a7c-98d7-83fd14d72ba4",
+      "type": "turn",
+      "seq": 2
+    },
+    {
+      "t": 146401,
+      "runId": "79f838a5-7d11-487d-a49d-dce90eb0890f",
+      "type": "turn",
+      "seq": 3
+    },
+    {
+      "t": 146405,
+      "runId": "eabd5fc9-e169-4f90-8de4-019382985868",
+      "type": "turn",
+      "seq": 2
+    },
+    {
+      "t": 146422,
+      "runId": "79f838a5-7d11-487d-a49d-dce90eb0890f",
+      "type": "prompt_inspection",
+      "seq": 4
+    },
+    {
+      "t": 146422,
+      "runId": "eabd5fc9-e169-4f90-8de4-019382985868",
+      "type": "prompt_inspection",
+      "seq": 3
+    },
+    {
+      "t": 146423,
+      "runId": "078d543d-197e-4a7c-98d7-83fd14d72ba4",
+      "type": "prompt_inspection",
+      "seq": 3
+    },
+    {
+      "t": 148946,
+      "runId": "078d543d-197e-4a7c-98d7-83fd14d72ba4",
+      "type": "tool_start",
+      "seq": 4,
+      "toolId": "call_1723728",
+      "name": "get_map_region"
+    },
+    {
+      "t": 148946,
+      "runId": "078d543d-197e-4a7c-98d7-83fd14d72ba4",
+      "type": "tool_end",
+      "seq": 5,
+      "toolId": "call_1723728",
+      "name": "get_map_region",
+      "ok": true
+    },
+    {
+      "t": 148966,
+      "runId": "078d543d-197e-4a7c-98d7-83fd14d72ba4",
+      "type": "turn",
+      "seq": 6
+    },
+    {
+      "t": 148966,
+      "runId": "078d543d-197e-4a7c-98d7-83fd14d72ba4",
+      "type": "prompt_inspection",
+      "seq": 7
+    },
+    {
+      "t": 150329,
+      "runId": "eabd5fc9-e169-4f90-8de4-019382985868",
+      "type": "tool_start",
+      "seq": 4,
+      "toolId": "call_1446746",
+      "name": "get_map_region"
+    },
+    {
+      "t": 150329,
+      "runId": "eabd5fc9-e169-4f90-8de4-019382985868",
+      "type": "tool_start",
+      "seq": 5,
+      "toolId": "call_1446752",
+      "name": "get_map_region"
+    },
+    {
+      "t": 150329,
+      "runId": "eabd5fc9-e169-4f90-8de4-019382985868",
+      "type": "tool_start",
+      "seq": 6,
+      "toolId": "call_1446755",
+      "name": "get_map_region"
+    },
+    {
+      "t": 150329,
+      "runId": "eabd5fc9-e169-4f90-8de4-019382985868",
+      "type": "tool_end",
+      "seq": 7,
+      "toolId": "call_1446746",
+      "name": "get_map_region",
+      "ok": true
+    },
+    {
+      "t": 150329,
+      "runId": "eabd5fc9-e169-4f90-8de4-019382985868",
+      "type": "tool_end",
+      "seq": 8,
+      "toolId": "call_1446752",
+      "name": "get_map_region",
+      "ok": true
+    },
+    {
+      "t": 150329,
+      "runId": "eabd5fc9-e169-4f90-8de4-019382985868",
+      "type": "tool_end",
+      "seq": 9,
+      "toolId": "call_1446755",
+      "name": "get_map_region",
+      "ok": true
+    },
+    {
+      "t": 150360,
+      "runId": "eabd5fc9-e169-4f90-8de4-019382985868",
+      "type": "turn",
+      "seq": 10
+    },
+    {
+      "t": 150360,
+      "runId": "eabd5fc9-e169-4f90-8de4-019382985868",
+      "type": "prompt_inspection",
+      "seq": 11
+    },
+    {
+      "t": 151039,
+      "runId": "79f838a5-7d11-487d-a49d-dce90eb0890f",
+      "type": "tool_start",
+      "seq": 5,
+      "toolId": "call_2025859",
+      "name": "get_map_region"
+    },
+    {
+      "t": 151039,
+      "runId": "79f838a5-7d11-487d-a49d-dce90eb0890f",
+      "type": "tool_end",
+      "seq": 6,
+      "toolId": "call_2025859",
+      "name": "get_map_region",
+      "ok": true
+    },
+    {
+      "t": 151068,
+      "runId": "79f838a5-7d11-487d-a49d-dce90eb0890f",
+      "type": "turn",
+      "seq": 7
+    },
+    {
+      "t": 151068,
+      "runId": "79f838a5-7d11-487d-a49d-dce90eb0890f",
+      "type": "prompt_inspection",
+      "seq": 8
+    },
+    {
+      "t": 152061,
+      "runId": "078d543d-197e-4a7c-98d7-83fd14d72ba4",
+      "type": "delta",
+      "seq": 8
+    },
+    {
+      "t": 152061,
+      "runId": "078d543d-197e-4a7c-98d7-83fd14d72ba4",
+      "type": "assistant",
+      "seq": 9
+    },
+    {
+      "t": 152088,
+      "runId": "078d543d-197e-4a7c-98d7-83fd14d72ba4",
+      "type": "done",
+      "seq": 10,
+      "stats": {
+        "ms": 4733,
+        "turns": 2,
+        "toolCalls": 1,
+        "toolErrors": 0,
+        "usage": {
+          "input": 9234,
+          "output": 45,
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "totalTokens": 9279,
+          "calls": 2
+        }
+      },
+      "changedKeys": []
+    },
+    {
+      "t": 152091,
+      "runId": "eabd5fc9-e169-4f90-8de4-019382985868",
+      "type": "heartbeat",
+      "seq": 12
+    },
+    {
+      "t": 152091,
+      "runId": "79f838a5-7d11-487d-a49d-dce90eb0890f",
+      "type": "heartbeat",
+      "seq": 9
+    },
+    {
+      "t": 153145,
+      "runId": "eabd5fc9-e169-4f90-8de4-019382985868",
+      "type": "delta",
+      "seq": 13
+    },
+    {
+      "t": 153145,
+      "runId": "eabd5fc9-e169-4f90-8de4-019382985868",
+      "type": "assistant",
+      "seq": 14
+    },
+    {
+      "t": 153146,
+      "runId": "eabd5fc9-e169-4f90-8de4-019382985868",
+      "type": "done",
+      "seq": 15,
+      "stats": {
+        "ms": 7887,
+        "turns": 2,
+        "toolCalls": 3,
+        "toolErrors": 0,
+        "usage": {
+          "input": 9808,
+          "output": 381,
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "totalTokens": 10189,
+          "calls": 2
+        }
+      },
+      "changedKeys": []
+    },
+    {
+      "t": 153285,
+      "runId": "79f838a5-7d11-487d-a49d-dce90eb0890f",
+      "type": "tool_start",
+      "seq": 10,
+      "toolId": "call_1523579",
+      "name": "get_map_region"
+    },
+    {
+      "t": 153285,
+      "runId": "79f838a5-7d11-487d-a49d-dce90eb0890f",
+      "type": "tool_end",
+      "seq": 11,
+      "toolId": "call_1523579",
+      "name": "get_map_region",
+      "ok": true
+    },
+    {
+      "t": 153314,
+      "runId": "79f838a5-7d11-487d-a49d-dce90eb0890f",
+      "type": "turn",
+      "seq": 12
+    },
+    {
+      "t": 153314,
+      "runId": "79f838a5-7d11-487d-a49d-dce90eb0890f",
+      "type": "prompt_inspection",
+      "seq": 13
+    },
+    {
+      "t": 156963,
+      "runId": "79f838a5-7d11-487d-a49d-dce90eb0890f",
+      "type": "delta",
+      "seq": 14
+    },
+    {
+      "t": 156963,
+      "runId": "79f838a5-7d11-487d-a49d-dce90eb0890f",
+      "type": "assistant",
+      "seq": 15
+    },
+    {
+      "t": 156988,
+      "runId": "79f838a5-7d11-487d-a49d-dce90eb0890f",
+      "type": "done",
+      "seq": 16,
+      "stats": {
+        "ms": 13608,
+        "turns": 3,
+        "toolCalls": 2,
+        "toolErrors": 0,
+        "usage": {
+          "input": 14106,
+          "output": 84,
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "totalTokens": 14190,
+          "calls": 3
+        }
+      },
+      "changedKeys": []
+    },
+    {
+      "t": 170362,
+      "type": "bubble",
+      "role": "assistant",
+      "text": "동시성 검증 B"
+    },
+    {
+      "t": 170362,
+      "type": "bubble",
+      "role": "system",
+      "text": "프로젝트는 바뀌지 않았습니다."
+    }
+  ],
+  "hud": [
+    {
+      "t": 9359,
+      "visible": false,
+      "rows": []
+    },
+    {
+      "t": 71137,
+      "visible": true,
+      "phase": "preparing",
+      "rows": []
+    },
+    {
+      "t": 146345,
+      "visible": true,
+      "phase": "thinking",
+      "rows": []
+    },
+    {
+      "t": 146375,
+      "visible": true,
+      "phase": "thinking",
+      "rows": [
+        {
+          "agentId": "parallel_evidence_b",
+          "toolId": "",
+          "phase": "is-thinking",
+          "text": "•\n동시성 검증 B\n다음 작업을 정리하는 중"
+        },
+        {
+          "agentId": "parallel_evidence_c",
+          "toolId": "",
+          "phase": "is-thinking",
+          "text": "•\n동시성 검증 C\n다음 작업을 정리하는 중"
+        }
+      ]
+    },
+    {
+      "t": 146381,
+      "visible": true,
+      "phase": "thinking",
+      "rows": [
+        {
+          "agentId": "parallel_evidence_b",
+          "toolId": "",
+          "phase": "is-thinking",
+          "text": "•\n동시성 검증 B\n다음 작업을 정리하는 중"
+        },
+        {
+          "agentId": "parallel_evidence_c",
+          "toolId": "",
+          "phase": "is-thinking",
+          "text": "•\n동시성 검증 C\n다음 작업을 정리하는 중"
+        },
+        {
+          "agentId": "parallel_evidence_a",
+          "toolId": "",
+          "phase": "is-thinking",
+          "text": "•\n동시성 검증 A\n다음 작업을 정리하는 중"
+        }
+      ]
+    },
+    {
+      "t": 152090,
+      "visible": true,
+      "phase": "thinking",
+      "rows": [
+        {
+          "agentId": "parallel_evidence_b",
+          "toolId": "",
+          "phase": "is-thinking",
+          "text": "•\n동시성 검증 B\n다음 작업을 정리하는 중"
+        },
+        {
+          "agentId": "parallel_evidence_c",
+          "toolId": "",
+          "phase": "is-thinking",
+          "text": "•\n동시성 검증 C\n다음 작업을 정리하는 중"
+        },
+        {
+          "agentId": "parallel_evidence_a",
+          "toolId": "",
+          "phase": "is-done",
+          "text": "✓\n동시성 검증 A\n작업을 마쳤어요"
+        }
+      ]
+    },
+    {
+      "t": 153148,
+      "visible": true,
+      "phase": "thinking",
+      "rows": [
+        {
+          "agentId": "parallel_evidence_b",
+          "toolId": "",
+          "phase": "is-thinking",
+          "text": "•\n동시성 검증 B\n다음 작업을 정리하는 중"
+        },
+        {
+          "agentId": "parallel_evidence_c",
+          "toolId": "",
+          "phase": "is-done",
+          "text": "✓\n동시성 검증 C\n작업을 마쳤어요"
+        },
+        {
+          "agentId": "parallel_evidence_a",
+          "toolId": "",
+          "phase": "is-done",
+          "text": "✓\n동시성 검증 A\n작업을 마쳤어요"
+        }
+      ]
+    },
+    {
+      "t": 156991,
+      "visible": true,
+      "phase": "reviewing",
+      "rows": [
+        {
+          "agentId": "parallel_evidence_b",
+          "toolId": "",
+          "phase": "is-done",
+          "text": "✓\n동시성 검증 B\n작업을 마쳤어요"
+        },
+        {
+          "agentId": "parallel_evidence_c",
+          "toolId": "",
+          "phase": "is-done",
+          "text": "✓\n동시성 검증 C\n작업을 마쳤어요"
+        },
+        {
+          "agentId": "parallel_evidence_a",
+          "toolId": "",
+          "phase": "is-done",
+          "text": "✓\n동시성 검증 A\n작업을 마쳤어요"
+        }
+      ]
+    },
+    {
+      "t": 170363,
+      "visible": false,
+      "rows": []
+    }
+  ],
+  "requests": [
+    {
+      "id": "078d543d-197e-4a7c-98d7-83fd14d72ba4",
+      "mapIds": [
+        "parallel_evidence_a"
+      ],
+      "provider": "google-antigravity",
+      "model": "gemini-3.8-flash",
+      "readOnly": true,
+      "projectKey": "{\"kind\":\"local-session\",\"id\":\"bc18336a-1dee-4e1e-a8ff-7c3586f64e9d\"}",
+      "started": 77165,
+      "status": 409,
+      "head": 77246
+    },
+    {
+      "id": "79f838a5-7d11-487d-a49d-dce90eb0890f",
+      "mapIds": [
+        "parallel_evidence_b"
+      ],
+      "provider": "google-antigravity",
+      "model": "gemini-3.8-flash",
+      "readOnly": true,
+      "projectKey": "{\"kind\":\"local-session\",\"id\":\"bc18336a-1dee-4e1e-a8ff-7c3586f64e9d\"}",
+      "started": 77178,
+      "status": 409,
+      "head": 77247
+    },
+    {
+      "id": "eabd5fc9-e169-4f90-8de4-019382985868",
+      "mapIds": [
+        "parallel_evidence_c"
+      ],
+      "provider": "google-antigravity",
+      "model": "gemini-3.8-flash",
+      "readOnly": true,
+      "projectKey": "{\"kind\":\"local-session\",\"id\":\"bc18336a-1dee-4e1e-a8ff-7c3586f64e9d\"}",
+      "started": 77244,
+      "status": 409,
+      "head": 77341
+    },
+    {
+      "id": "79f838a5-7d11-487d-a49d-dce90eb0890f",
+      "mapIds": [
+        "parallel_evidence_b"
+      ],
+      "provider": "google-antigravity",
+      "model": "gemini-3.8-flash",
+      "readOnly": true,
+      "projectKey": "{\"kind\":\"local-session\",\"id\":\"bc18336a-1dee-4e1e-a8ff-7c3586f64e9d\"}",
+      "started": 111870,
+      "status": 200,
+      "head": 138800,
+      "agentStarted": 146344,
+      "firstTurn": 146401,
+      "done": 156988,
+      "streamEnded": 156992
+    },
+    {
+      "id": "078d543d-197e-4a7c-98d7-83fd14d72ba4",
+      "mapIds": [
+        "parallel_evidence_a"
+      ],
+      "provider": "google-antigravity",
+      "model": "gemini-3.8-flash",
+      "readOnly": true,
+      "projectKey": "{\"kind\":\"local-session\",\"id\":\"bc18336a-1dee-4e1e-a8ff-7c3586f64e9d\"}",
+      "started": 113487,
+      "status": 200,
+      "head": 146366,
+      "agentStarted": 146379,
+      "firstTurn": 146379,
+      "done": 152088,
+      "streamEnded": 152092
+    },
+    {
+      "id": "eabd5fc9-e169-4f90-8de4-019382985868",
+      "mapIds": [
+        "parallel_evidence_c"
+      ],
+      "provider": "google-antigravity",
+      "model": "gemini-3.8-flash",
+      "readOnly": true,
+      "projectKey": "{\"kind\":\"local-session\",\"id\":\"bc18336a-1dee-4e1e-a8ff-7c3586f64e9d\"}",
+      "started": 116893,
+      "status": 200,
+      "head": 146345,
+      "agentStarted": 146371,
+      "firstTurn": 146405,
+      "done": 153146,
+      "streamEnded": 153165
+    },
+    {
+      "id": "6ea6c79f-a451-4eb4-8483-e9e849bfa0f8",
+      "mapIds": [
+        "parallel_evidence_a"
+      ],
+      "provider": "google-antigravity",
+      "model": "gemini-3.8-flash",
+      "readOnly": true,
+      "projectKey": "{\"kind\":\"local-session\",\"id\":\"bc18336a-1dee-4e1e-a8ff-7c3586f64e9d\"}",
+      "started": 146443,
+      "status": 409,
+      "head": 146453,
+      "code": "map-busy"
+    },
+    {
+      "id": "0c88a859-9029-4b0b-8170-9aa181a8be87",
+      "mapIds": [
+        "parallel_evidence_b"
+      ],
+      "provider": "google-antigravity",
+      "model": "gemini-3.8-flash",
+      "readOnly": true,
+      "projectKey": "{\"kind\":\"local-session\",\"id\":\"bc18336a-1dee-4e1e-a8ff-7c3586f64e9d\"}",
+      "started": 146455,
+      "status": 409,
+      "head": 146461,
+      "code": "map-busy"
+    },
+    {
+      "id": "b1489f15-11df-448d-a981-d2cf8dc73197",
+      "mapIds": [
+        "parallel_evidence_c"
+      ],
+      "provider": "google-antigravity",
+      "model": "gemini-3.8-flash",
+      "readOnly": true,
+      "projectKey": "{\"kind\":\"local-session\",\"id\":\"bc18336a-1dee-4e1e-a8ff-7c3586f64e9d\"}",
+      "started": 146462,
+      "status": 409,
+      "head": 146687,
+      "code": "map-busy"
+    }
+  ],
+  "finished": true,
+  "fixtureMapIds": [
+    "parallel_evidence_a",
+    "parallel_evidence_b",
+    "parallel_evidence_c"
+  ],
+  "startedAt": "2026-10-04T13:16:41.566Z",
+  "t0": 71000,
+  "ownership": [
+    {
+      "mapId": "parallel_evidence_a",
+      "browserAt": 146443,
+      "browserNoHttp": true,
+      "browserRejected": true,
+      "hostAt": 146443,
+      "hostDone": 146454,
+      "hostRunId": "6ea6c79f-a451-4eb4-8483-e9e849bfa0f8",
+      "hostRejected": true,
+      "hostStatus": 409,
+      "hostCode": "map-busy"
+    },
+    {
+      "mapId": "parallel_evidence_b",
+      "browserAt": 146454,
+      "browserNoHttp": true,
+      "browserRejected": true,
+      "hostAt": 146454,
+      "hostDone": 146462,
+      "hostRunId": "0c88a859-9029-4b0b-8170-9aa181a8be87",
+      "hostRejected": true,
+      "hostStatus": 409,
+      "hostCode": "map-busy"
+    },
+    {
+      "mapId": "parallel_evidence_c",
+      "browserAt": 146462,
+      "browserNoHttp": true,
+      "browserRejected": true,
+      "hostAt": 146462,
+      "hostDone": 146700,
+      "hostRunId": "b1489f15-11df-448d-a981-d2cf8dc73197",
+      "hostRejected": true,
+      "hostStatus": 409,
+      "hostCode": "map-busy"
+    }
+  ],
+  "ok": true,
+  "projectUnchangedAfterRun": true,
+  "finishedAt": 171932,
+  "errors": [],
+  "captures": [
+    "ownership-checked",
+    "01-both-live",
+    "02-one-done-other-live"
+  ],
+  "overlapMs": 5709,
+  "globalPeak": 3,
+  "perMapPeak": {
+    "parallel_evidence_a": 1,
+    "parallel_evidence_b": 1,
+    "parallel_evidence_c": 1
+  },
+  "checks": {
+    "expectedRealCompletedRuns": true,
+    "overlappingAgentLifetimes": true,
+    "allVisibleWorkers": true,
+    "completedWorkerDoesNotClearOther": true,
+    "projectUnchanged": true,
+    "noPageErrors": true,
+    "perMapMaximumOne": true,
+    "globalPeakMatchesMaps": true,
+    "duplicateBlockedBeforeModel": true,
+    "duplicateBlockedByCompanion": true,
+    "rejectedRunsNeverStarted": true
+  }
+}

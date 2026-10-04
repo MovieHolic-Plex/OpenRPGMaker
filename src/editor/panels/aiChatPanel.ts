@@ -60,6 +60,7 @@ import { AUTONOMY_LEVELS, resolveAutonomy, type AutonomyLevel, type AutonomyReso
 import { isAutonomyLevel, loadAiConfig, saveAiConfig, type AiConfig } from "@/ai/llmClient";
 import { store } from "@/project/store";
 import { parsePiCommand, plainPiCommand, runPiCommand, type ParsedPiCommand, type PiChangeReceipt, type PiRunOptions } from "./aiPiAgentCommand";
+import { aiProjectRunKey } from "@/editor/aiMapRunOwnership";
 import { createTeamPanel } from "./aiTeamPanel";
 import { createAiTeamSidebar } from "./aiTeamSidebar";
 import { createTilesetChangeCard } from "./aiTilesetChangeCard";
@@ -325,7 +326,7 @@ const panelPendingWork = createPendingWorkTracker();
 // 실제 러너·스토어 배선은 여기서 한 번 건다. 대기열 모듈은 스토어를 import 하지 않는다.
 configureStampOrderQueue(() => createStampOrderQueue({
   run: (input) => runStampPlace(input),
-  projectKey: () => store.getProjectIdentity().id,
+  projectKey: aiProjectRunKey,
   mapSize: (mapId) => store.getCurrent().maps[mapId],
 }));
 
