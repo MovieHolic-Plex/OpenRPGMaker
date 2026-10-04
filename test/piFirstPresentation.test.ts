@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { createBlankProject } from '@/project/defaults';
 import { inspectFirstPresentation } from '@/ai/piAgent/firstPresentation';
-import { presentationArtImages } from '@/editor/tools/presentationTools';
+import { presentationArtImages, PRESENTATION_TOOLS } from '@/editor/tools/presentationTools';
 
 function authored() {
   const project = createBlankProject();
@@ -60,5 +60,7 @@ describe('first creation presentation boundary', () => {
     expect(inspectFirstPresentation(project)).toEqual([]);
     // Inline bytes are unavailable here. The actual image must arrive from the browser asset bridge.
     expect(presentationArtImages(project)).toEqual([]);
+    const show = PRESENTATION_TOOLS.find(tool => tool.name === 'show_title_opening')!;
+    expect(show.run(project, {}).summary).toContain('원화 3장');
   });
 });

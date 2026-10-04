@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **139쪽 / 4743KB / 약 1,376,010 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **139쪽 / 4743KB / 약 1,376,121 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -16,7 +16,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
 | `openwiki/editor-ai-panel.md` | 597KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 3690 | ~173,873 |
-| `openwiki/editor-ai-tools.md` | 321KB | 87KB ⚠상한 초과 — 절을 더 쪼개라 | 2662 | ~92,657 |
+| `openwiki/editor-ai-tools.md` | 322KB | 87KB ⚠상한 초과 — 절을 더 쪼개라 | 2665 | ~92,768 |
 | `openwiki/editor-database.md` | 404KB | 63KB ⚠상한 초과 — 절을 더 쪼개라 | 2376 | ~118,408 |
 | `openwiki/editor-event-authoring.md` | 168KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 986 | ~49,100 |
 | `openwiki/editor-event-commands.md` | 67KB | 32KB | 301 | ~18,613 |
@@ -544,7 +544,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L3671` 조수창
   - `L3680` 재현·증거
 
-### `openwiki/editor-ai-tools.md` — 321KB · 2662줄 · ~92,657 토큰 · 통째읽기 잘림 · 깨진 줄 6
+### `openwiki/editor-ai-tools.md` — 322KB · 2665줄 · ~92,768 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
 - `L3` 대화 초상 선택과 게임 글꼴 (2026-10-04)
 - `L32` 조수 스킬 저작 — 기믹·연출 빌리기 (2026-09-30)
@@ -649,10 +649,10 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L2594` Monster follower graphic authoring (2026-09-25)
 - `L2610` 기존 서사 플래그의 설명 수정 (2026-09-25)
 - `L2623` 타이틀 오프닝 효과 도구 (2026-09-25)
-- `L2635` 크로노 트리거식 필드 도구 인자 (2026-09-26)
-- `L2645` 세계 지도 지형 도구 (2026-10-03)
-- `L2651` Bounded romance authoring tools
-  - `L2655` 선택 정수 enum의 Antigravity 전달 (2026-10-04)
+- `L2638` 크로노 트리거식 필드 도구 인자 (2026-09-26)
+- `L2648` 세계 지도 지형 도구 (2026-10-03)
+- `L2654` Bounded romance authoring tools
+  - `L2658` 선택 정수 enum의 Antigravity 전달 (2026-10-04)
 
 ### `openwiki/editor-database.md` — 404KB · 2376줄 · ~118,408 토큰 · 통째읽기 잘림 · 깨진 줄 8
 

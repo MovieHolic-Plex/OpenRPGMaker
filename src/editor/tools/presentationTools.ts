@@ -31,10 +31,10 @@ export const PRESENTATION_TOOLS: readonly ToolDefinition[] = [{
   description: '연결된 실제 타이틀·오프닝 그림과 현재 설정을 함께 본다. 생성했다는 말이나 리소스 이름만으로 검수하지 않는다.',
   parameters: { type: 'object', properties: {}, additionalProperties: false },
   run(project) {
-    const images = presentationArtImages(project);
-    const missing = presentationArtIds(project).filter(id => !project.assets.uploaded[id]?.dataUrl && !project.assets.uploaded[id]?.ref);
-    return { summary: `타이틀·오프닝 그림 ${images.length}장입니다. 이것은 원화 확인이며 실제 재생 확인은 별도입니다.`,
+    const ids = presentationArtIds(project);
+    const missing = ids.filter(id => !project.assets.uploaded[id]?.dataUrl && !project.assets.uploaded[id]?.ref);
+    return { summary: `연결된 타이틀·오프닝 원화 ${ids.length}장입니다. 이것은 원화 확인이며 실제 재생 확인은 별도입니다.`,
       data: { titleScreen: project.system.titleScreen ?? null, opening: project.system.opening ?? null,
-        images: images.map(({ resourceId, label }) => ({ resourceId, label })), missing } };
+        images: ids.map(resourceId => ({ resourceId, label: project.assets.uploaded[resourceId]?.name ?? resourceId })), missing } };
   },
 }];

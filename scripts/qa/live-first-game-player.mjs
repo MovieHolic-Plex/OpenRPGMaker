@@ -124,6 +124,10 @@ try {
       ...(index===0?{recordVideo:{dir:resolve(out,'video'),size:{width:1280,height:900}}}:{})});
     const recordingStarted = Date.now();
     const page = await context.newPage();
+    // Software WebGL can stall animation-frame polling while the scene clock keeps running.
+    // Observe the same conditions on a wall-clock interval, without changing playback.
+    const waitForFunction = page.waitForFunction.bind(page);
+    page.waitForFunction = (fn, arg, options) => waitForFunction(fn, arg, {polling:100, ...options});
     // Give the recorded first run a short reading pause at each real beat.
     // These pauses do not change the game, skip animation, or advance dialogue.
     const screenshot = page.screenshot.bind(page);
@@ -163,7 +167,8 @@ try {
           assert.equal(facts.narrationWordBreak,'keep-all','Opening narration must preserve Korean words when wrapping');
         }
       }
-      const expectedScene = await page.getByTestId('cinematic-sequence').getAttribute('data-scene-id').catch(() => null);
+      const cinematic = page.getByTestId('cinematic-sequence');
+      const expectedScene = await cinematic.count() ? await cinematic.getAttribute('data-scene-id') : null;
       if (expectedScene) await page.locator('.cinematic-narration:not([hidden])').waitFor({timeout:1000});
       const bytes = await screenshot({...options, animations:'allow'});
       if (expectedScene) assert.equal(await page.getByTestId('cinematic-sequence').getAttribute('data-scene-id'), expectedScene, 'Screenshot must belong to the observed shot');

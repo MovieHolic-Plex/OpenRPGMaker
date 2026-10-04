@@ -2630,6 +2630,9 @@ Pi의 `generate_title_art`·`generate_opening_image`는 UI 핸드오프를 실�
 그림을 등록한다(타이틀은 연결까지). `get_title_screen`은 설정 조회,
 `show_title_opening`은 연결된 원화와 설정을 함께 전달한다. 기본 타이틀·꺼진 오프닝은 완료를 막으며,
 첫 장면 검수는 전체 맵과 연결된 원화의 실제 이미지 전달을 각각 확인한다.
+`show_title_opening`의 요약과 `data.images`는 inline 바이트 유무와 관계없이 연결된 원화를 센다.
+파일 분리된 `ref` 그림은 Pi 래퍼가 브라우저 자산 브리지에서 읽어 모델에 전달하며,
+실제로 보낸 id 목록은 `presentation.image.delivered`에 남긴다. 연결 수와 전달 성공을 혼동하지 않는다.
 
 
 ## 크로노 트리거식 필드 도구 인자 (2026-09-26)
