@@ -695,8 +695,9 @@ export function renderRelief(h: HeightGrid, opt: ReliefRenderOptions = {}): Reli
   // 뒤·옆 가장자리 턱(rim): 북쪽 가장자리 안쪽 밝은 턱 줄 + 뒤 둑 + 동·서·대각 가장자리 바깥 낮은 땅 위 옆면 띠(벽 램프).
   // 칠한 화소는 가장자리(edge) 표시를 받아 타일 위(over)로 간다. 늪(2026-09-28)에서 시작해 2026-09-29 렌더러 r2 부터
   // 이름 있는 모든 양식의 기본(RELIEF_DEFAULT_RIM, 양식이 rim:false 면 끔).
-  // 실제 바닥 타일을 쓰는 기본 흙벽도 뒤 둑이 있어야 북쪽 단 차이가 면으로 읽힌다.
-  const rim = S ? S.rim : opt.ground ? RELIEF_DEFAULT_RIM : null;
+  // 기본 흙벽도 뒤 둑이 있어야 북쪽 단 차이가 면으로 읽힌다. 재질 없이 윗면을 고르는
+  // reliefPickPoint도 실제 화면과 같은 둑/벽 경계를 써야 한다.
+  const rim = S ? S.rim : RELIEF_DEFAULT_RIM;
   const rimPx = rim ? take("rimPx", i8, N, -1, true) : null;
   if (rim && rimPx) {
     // 가장자리 화소(외곽선 OUT_G, edge) 하나마다: 그 화소 둘레 8칸 중 윗면이 아닌(더 낮은 땅) 쪽으로 옆면 띠를 편다.
