@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/hall_floor/s1-C.pxg",
+ "set": "school",
+ "id": "hall_floor",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.266
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.059
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 4,
+ "bbox": [
+  0,
+  0,
+  15,
+  15
+ ],
+ "note": "8px 체스판 복도 타일 — 밝/어둠 두 톤 + 줄눈, 사방 이음 맞춤",
+ "ok": true
+}

@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/shipping_bin/h187-E.pxg",
+ "id": "shipping bin",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.008
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 15,
+ "v5_colors": 0,
+ "bbox": [
+  0,
+  8,
+  31,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "넓은 경첩 뚜껑과 세로 널판에 철제 모서리 보강·출하 표찰을 단 농가 수거함으로 재해석, 높이 24px·접지선 y=31; 꼭대기 윗면 10행(y=8~17).",
+ "ok": true
+}

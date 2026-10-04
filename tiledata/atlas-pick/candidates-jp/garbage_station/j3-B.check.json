@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/garbage_station/j3-B.pxg",
+ "set": "jp",
+ "id": "garbage_station",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.114
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.045
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "dither"
+  ]
+ },
+ "colors": 14,
+ "bbox": [
+  0,
+  3,
+  30,
+  15
+ ],
+ "note": "파란 그물을 쓰고 더미 오른쪽 옆을 1단까지 눌러 어둡게, 왼쪽·위는 5단으로 밝게 해 명암을 벌림, 접지 그림자 길게, 철망 상자는 가장 어두운 윤곽에 밝은 윗줄",
+ "ok": true
+}

@@ -1,0 +1,40 @@
+{
+ "id": "wall_paper_stain",
+ "slug": "wall_paper_stain",
+ "name": "곰팡이·얼룩 벽지 벽",
+ "scene": "낡은 서양 저택",
+ "cells": [
+  2,
+  2
+ ],
+ "canvas": [
+  32,
+  32
+ ],
+ "layer": "facade",
+ "layer_ko": "건물 외관 블록(불투명 허용)",
+ "description": "wall_paper_torn 과 같은 벽지·징두리에 찢김 대신 위에서 흘러내린 물 얼룩(세로 번짐 두 줄)과 구석 곰팡이 점 덩이(hmoss). 두 벽을 섞어 깔 수 있게 무늬·징두리 높이가 같아야 한다. 칸 전부 불투명.",
+ "palette_hint": "paper, damask, rot, hmoss 곰팡이",
+ "worker_v1": "h4",
+ "stage": 1,
+ "stage_ko": "1단계 기본(1판에서 옮김)",
+ "kit": "manor",
+ "role": "벽지 벽면 변형(얼룩)",
+ "worker": "h4",
+ "set_with": [
+  "wall_paper_torn"
+ ],
+ "v5_ref": [
+  {
+   "id": "wall:plaster",
+   "name_ko": "회벽+판자 징두리",
+   "atlas": {
+    "x": 320,
+    "y": 1720,
+    "w": 32,
+    "h": 32
+   },
+   "file": "ref-v5-1.png"
+  }
+ ]
+}

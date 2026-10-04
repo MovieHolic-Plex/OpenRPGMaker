@@ -1,0 +1,68 @@
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat a vwood 1
+@mat b vwood 5
+@mat c vwood 3
+@mat d vwood 4
+@mat e vwood 2
+@mat f vred 3
+@mat g vred 4
+@mat h vred 1
+@mat i vred 5
+@mat j vwhite 3
+@mat k vwhite 4
+@mat l vwhite 1
+@mat m vwhite 5
+@mat n vblue 3
+@mat o vblue 4
+@mat p vblue 1
+@mat q vblue 5
+@mat r vblack 3
+@mat s vblack 4
+@mat t vblack 1
+@mat u vblack 5
+@mat v vwood 6
+@mat w washi 4
+@mat x washi 5
+@mat y washi 2
+@mat z vgreen 3
+@mat A vgreen 2
+@mat B viron 5
+@mat C vblack 2
+@mat D vred 2
+@mat E vyellow 5
+@mat F vyellow 6
+@mblock 0 0
+.dbbbbbbbbbbbbbbbbbbbbbbbbbbbbe.
+.dcccccccccccccccccccccccccccae.
+.dcaaaaaaaaaaaaammmmmaaaiiaaaae.
+.dcaaaaaaaaaaiiikjjjlaaaghuuuuu.
+.dcaaaaaaaaaagfhkmmmlqqqghsrrrt.
+.dcaaaaaaDDDagihkjjjlonpghsuuut.
+.dcaaaaaffffagfhkjjjloqpghsrrrt.
+.dcaaaagggggagfhkjjjlonpghsrrrt.
+.bbbbbrrrEEEbbbbbbbbbbbbbbbbbbb.
+.eeeeerteeeFeeeeeeeeeeeeeeeeeee.
+vvvvvvrtvvvvvvvvvvvvvvvvvvvvvvvv
+bbbbbbrtbbbjxxxxxxxbbbbbbbbbbbbb
+ddddddrtdddjzzzzzwwBBddddddddddd
+ddddddrtcccjAAAAAAwcccccdddddddd
+ddddssssssdjyyyyyyyddddddddddddd
+eeeeCttttCeeeeeeeeeeeeeeeeeeeeee
+cccccccccccccccccccccccccccccccc
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+.dc..................dddddddeea.
+.dc..................dcccccceea.
+.dc........giiiiiiiihdcbbbbceea.
+.dc........ggggggggghdcccccceea.
+.dc........gffffffffhdaaaaaaeea.
+.dc........gffffffffhdcccccceea.
+.dc........ghhhhhhhhhdcccccceea.
+.dc.......bbbbbbbbbbbbcbbbbceea.
+.dc.......eeeeeeeeeeeecccccceea.
+.dc.......ea........eaaaaaaaeea.
+.dc.......ea........ea......cea.
+.dc.......ea........ea......cea.
+..~~~~~~~~~~~~~~~~~~~~~~~~~~~~~.
+..-----------------------------.

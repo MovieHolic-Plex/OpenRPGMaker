@@ -1,0 +1,37 @@
+{
+ "id": "tall stained window",
+ "slug": "tall_stained_window",
+ "name_ko": "큰 색유리창(2칸)",
+ "category": "예배당",
+ "kind": "hang",
+ "kind_ko": "벽면 걸이(벽 두 줄 중 윗줄)",
+ "canvas": [
+  32,
+  32
+ ],
+ "padTop": 10,
+ "image": {
+  "w": 32,
+  "h": 22
+ },
+ "footprint": {
+  "w": 2,
+  "h": 0
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "제단 뒤 벽 가운데에 거는 큰 아치 색유리창(2칸, 벽면 윗줄에서 아래로). 좌우 대칭의 중심.",
+ "where": "좌우 대칭의 중심.",
+ "placement": [
+  "벽면 두 줄 중 윗줄(y=벽면 첫 줄)에 건다. 바닥 칸은 차지하지 않는다"
+ ],
+ "v5_bbox": [
+  2,
+  11,
+  29,
+  31
+ ],
+ "v5_colors": 18,
+ "material": "glass",
+ "related": []
+}

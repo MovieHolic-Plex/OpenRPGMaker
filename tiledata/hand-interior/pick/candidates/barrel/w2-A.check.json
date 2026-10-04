@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/barrel/w2-A.pxg",
+ "id": "barrel",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.025
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "light"
+  ],
+  "pass": false
+ },
+ "colors": 9,
+ "v5_colors": 10,
+ "bbox": [
+  1,
+  1,
+  14,
+  14
+ ],
+ "v5_bbox": [
+  1,
+  1,
+  14,
+  14
+ ],
+ "note": "v5 정리: 순검정 외곽을 나무 최암부로 교체, 테 굴곡 정돈, 굽 줄 정리",
+ "ok": true
+}

@@ -1,0 +1,9 @@
+{
+ "schema": "worldmap-theme/1",
+ "id": "monster",
+ "name": "몬스터 수집",
+ "iconset": "monster",
+ "palette": "bright",
+ "overlays": [],
+ "kind": "land"
+}

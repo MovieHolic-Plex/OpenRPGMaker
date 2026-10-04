@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/double_bed_blue/w4-B.pxg",
+ "id": "double bed blue",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.088
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 17,
+ "v5_colors": 22,
+ "bbox": [
+  0,
+  10,
+  31,
+  47
+ ],
+ "v5_bbox": [
+  0,
+  10,
+  31,
+  47
+ ],
+ "note": "A 에 강한 명암: 머리판이 베개 위로 드리우는 그림자, 두 베개 사이 골, 이불의 왼쪽 빛·오른쪽 그늘, 침대 아래 바닥 그림자를 넣었다.",
+ "ok": true
+}

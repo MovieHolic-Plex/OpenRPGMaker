@@ -1,0 +1,33 @@
+// 금빛 결속띠와 붉은 봉인을 두른 양피지 두루마리 세 개; 꼭대기 윗면 3행(y=2~4).
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat A linen 6
+@mat B linen 5
+@mat C linen 4
+@mat D linen 3
+@mat E linen 2
+@mat F linen 1
+@mat G gold 5
+@mat H gold 4
+@mat J gold 2
+@mat R red 2
+@mat S red 1
+@layer scrolls
+@mblock 0 0
+................
+......EEEEEEE...
+.....BAAAGGABE..
+....BAAAAGGABCE.
+...BAABBBHHBCCF.
+...AEECBBRRDDCF.
+...BEBEDDJSDDF..
+....CDDFFFFFF...
+..EEEBBGGBBBE...
+.AABAAAHHBBCCE..
+AEECBBBHJCDDDF..
+BEBEDDEBBBGGBBE.
+.CDDFAAAAAGGBCCE
+..FFBAECBBHHDCCE
+....BEBEDDJJDDDF
+.....CDDFFFFFFF.

@@ -1,0 +1,46 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/dart_board/w11-D.pxg",
+ "id": "dart board",
+ "hard": [],
+ "warn": [],
+ "resized": {
+  "canvas": [
+   32,
+   32
+  ],
+  "footprint": {
+   "w": 2,
+   "h": 0
+  },
+  "why": "사용자 메모: 다트판은 2x2 로 하되, 66% 정도만 차지하는 큰 버전으로."
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.084
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "outline",
+   "outline_black"
+  ],
+  "pass": false
+ },
+ "colors": 5,
+ "v5_colors": 7,
+ "bbox": [
+  5,
+  5,
+  26,
+  26
+ ],
+ "v5_bbox": [
+  1,
+  1,
+  14,
+  14
+ ],
+ "note": "정석 재현: 12쐐기 검정/아마색 + 초록·빨강 이중 띠, 빨간 중심, 얇은 검은 테. 지름 21px 을 32×32 한가운데 (나머지 투명)",
+ "ok": true
+}

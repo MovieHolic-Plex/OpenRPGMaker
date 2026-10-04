@@ -1,0 +1,58 @@
+{
+ "id": "pillar_stone",
+ "slug": "pillar_stone",
+ "name": "돌기둥",
+ "scene": "공통 뼈대",
+ "cells": [
+  1,
+  3
+ ],
+ "canvas": [
+  16,
+  48
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "v5 돌기둥 자리(1×3): 발 칸 = 받침(윗면 보임), 몸통 2칸 위로 벽면 높이까지, 위 끝 머리 장식. 원통 명암(밝은 덩이 왼쪽). 방 가운데 줄로 세워 복도를 나눈다.",
+ "palette_hint": "vstone/grave",
+ "stage": 1,
+ "stage_ko": "1단계 기본(2판 새로)",
+ "kit": "frame",
+ "role": "기둥(돌)",
+ "worker": "hf1",
+ "set_with": [
+  "ceil_black",
+  "ceil_plaster",
+  "exit_dark",
+  "stairs_up_wood",
+  "stairs_up_stone",
+  "stairs_down",
+  "pillar_marble",
+  "moonlight_floor"
+ ],
+ "v5_ref": [
+  {
+   "id": "column stone",
+   "name_ko": "돌 기둥",
+   "atlas": {
+    "x": 400,
+    "y": 576,
+    "w": 16,
+    "h": 48,
+    "frames": 1,
+    "padTop": 8
+   },
+   "image": {
+    "w": 16,
+    "h": 40
+   },
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "pick_dir": "tiledata/hand-interior/pick/candidates/column_stone",
+   "file": "ref-v5-1.png"
+  }
+ ]
+}

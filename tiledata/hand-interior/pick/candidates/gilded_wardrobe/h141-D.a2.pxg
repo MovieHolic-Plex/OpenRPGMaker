@@ -1,0 +1,49 @@
+// 흰 두 문·금 문양·처마를 유지하고 문 몸통 16행 축소, 전체 높이 32px; 꼭대기 윗면 5행(y=17~21)
+@size 32 48
+@cell 16
+@palette palette.pal
+@mat a gold 1
+@mat b gold 2
+@mat c gold 3
+@mat d gold 4
+@mat e gold 5
+@mat f gold 6
+@mat K white 0
+@mat M white 2
+@mat N white 3
+@mat O white 4
+@mat P white 5
+@layer wardrobe
+@mblock 1 16
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+efffffffffffffffffffffffffffeb
+ePPPPPPPPPPPPPPPPPPPPPPPPPPPOb
+ePPOOOOOOOOOOOOOOOOOOOOOOOOOOb
+ePPOOOOOOOOOOOOOOOOOOOOOOOOOOb
+eOOOOOOOOOOOOOOOOOOOOOOOOOOOdb
+ffffffffffffffffffffffffffffed
+deeeeeeeeeeeeeeeeeeeeeeeeeeecb
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbaa
+dPeeeeeeeeeedbaKdeeeeeeeeedbca
+dPePPPPPPPPPNbaKeOOOOOOOOOMbca
+dPePOddOOddONbaKeONccNNccNMbca
+dPePedOOOOdeNbaKeOdccNNccdMbca
+dPePeOOOOOOeNbaKeOdNNNNNNdMbca
+dPePOOOeeOOONbaKeONNNddNNNMbca
+dPePOOeffeOONbaKeONNdeedNNMbca
+dPePOedffdeONbaKeONcdeedcNMbca
+dPePOOeddeOONbaKeONNccdcNNMbca
+dPePOOOddOOONbaKeONNNccNNNMbca
+dPePOOOOOOefNbaKeffNNNNNNNMbca
+dPePOOOOOOedNbaKedcNNNNNNNMbca
+dPePOOOOOOcbNbaKecbNNNNNNNMbca
+dPePeeeeeeeedbaKeeddddddddcbca
+dPePOddOOddONbaKeONccNNccNMbca
+dPePOdOOOOdONbaKeONcNNNNcNMbca
+dPePddddddddcbaKedccccccccbbca
+dPdcccccccccbaaKcbbbbbbbbbaaca
+eeeeeeeeeeeeeeeeeeeeeeeeeeeedb
+ddddddddddddddddddddddddddddba
+.bbbba..................abbb..
+.dPMba..................aNcb..
+.cbbaa..................aaba..

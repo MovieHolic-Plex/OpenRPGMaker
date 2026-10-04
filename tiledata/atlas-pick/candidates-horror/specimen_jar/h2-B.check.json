@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/specimen_jar/h2-B.pxg",
+ "set": "horror",
+ "id": "specimen_jar",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.03
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.051
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies",
+   "outline_black"
+  ]
+ },
+ "colors": 16,
+ "bbox": [
+  0,
+  1,
+  15,
+  15
+ ],
+ "note": "B: 바닥에 ~/- 그림자를 깔고 액체 윗면을 밝은 인광 단으로, 아랫배는 어둡게. 눈은 선명(bisque 4)하게 떠올림.",
+ "ok": true
+}

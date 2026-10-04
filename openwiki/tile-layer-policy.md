@@ -216,8 +216,7 @@ RGB(224,103,191)만 투명 처리하며 리사이즈/감색/재질 합성을 하
 ## 성채 공통 기본 제공 타일셋 (2026-09-19)
 
 `opengameart_castle` / `tex_opengameart_castle`, 표시명 `성채 · OpenGameArt (CC-BY 3.0)`.
-사용자 지정 범위는 **모든 프로젝트의 선택 목록에 추가**다. 시작 맵이나 기본 선택
-`DEFAULT_TILESET_ID`는 바꾸지 않는다. `defaultTilesets`가 신규 프로젝트에 제공하고,
+사용자 지정 범위는 **모든 프로젝트의 선택 목록에 추가**다. 시작 맵이나 기본 선택은 이 항목으로 바꾸지 않는다(`DEFAULT_TILESET_ID` 는 2026-09-30 부터 버들항 — `openwiki/beodeul-city.md`). `defaultTilesets`가 신규 프로젝트에 제공하고,
 기존 프로젝트는 `ensureBundledTilesets` / `ensureBundledResourceProfiles`로 추가된다.
 이미 존재하는 정의의 사용자 설정은 교체하지 않는다.
 

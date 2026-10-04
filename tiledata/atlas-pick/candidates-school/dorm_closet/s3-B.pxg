@@ -1,0 +1,47 @@
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a vwood 6
+@mat b vwood 4
+@mat c vwood 3
+@mat d vwood 1
+@mat e vwood 5
+@mat f vwood 2
+@mat g uniform 2
+@mat h vwood 0
+@mat i uniform 5
+@mat j vbrass 5
+@mat k vbrass 6
+@mblock 0 0
+.aaaaaaaaaaaaaa.
+eeeeeeeeeeeeeeee
+bbbbbbbbbbbbbbbd
+bbbbbbbbbbbbbfcd
+bbbccccccccccfcd
+bbbccccccccacfcd
+bbbccccccccdcfcd
+bbbccccccccccfcd
+bbbfffffffffffcd
+ffffffffffffffff
+eeeeeeeeeeeeeeee
+dddddddddddddddd
+bbbeeeefhbeeeefd
+bbbccccfhbccccfd
+bbbfffffgbfffffd
+bbbccccfibccccfd
+bbbccccfgbccccfd
+bbbccccfgbccccfd
+bbbccccfgbccccfd
+bbbccccfibccccfd
+bbbbbbbfgbbbbbfd
+bbbccckfgbkcccfd
+bbbcccjfgbjcccfd
+bbbcccjfibjcccfd
+bbbccccfgbccccfd
+bbbccccfgbccccfd
+bbbccccfgbccccfd
+bbddddddgddddddd
+cccccccccccccccc
+hhhhhhhhhhhhhhhh
+.~~~~~~~~~~~~~~.
+.--------------.

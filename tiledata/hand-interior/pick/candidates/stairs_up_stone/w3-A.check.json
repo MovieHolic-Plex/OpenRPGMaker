@@ -1,0 +1,31 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/stairs_up_stone/w3-A.pxg",
+ "id": "stairs up stone",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 9,
+  "atLeast95": 0,
+  "max": 0.074
+ },
+ "lint": {
+  "failed": [],
+  "pass": true
+ },
+ "colors": 12,
+ "v5_colors": 12,
+ "bbox": [
+  0,
+  0,
+  47,
+  47
+ ],
+ "v5_bbox": [
+  0,
+  0,
+  47,
+  47
+ ],
+ "note": "v5 다듬기 — 위로 갈수록 어둡고 아래로 올수록 밝은 4줄 주기(코 밝음·디딤면·턱 둘)를 유지하되, 코는 I→K→L 로 세 단계, 디딤면 J→I→K, 턱 G→H 로 단마다 한 단계씩 밝혀 깊이를 만들고 턱 맨 밑줄을 한 톤 어둡게 깔아 계단이 서로 떨어져 보이게 함. 디딤면에 갈라진 금 한 점씩, 왼쪽 두 칸은 코를 밝게(빛 방향). 기둥은 벽돌 이음(F) 유지.",
+ "ok": true
+}

@@ -1,0 +1,43 @@
+// window_barred hf3-C (hf3)
+@size 16 16
+@cell 16
+@palette palette.pal
+@layer main
+@mat a grave 0
+@mat b viron 0
+@mat c murk 0
+@mat d rust 0
+@mblock 0 0
+................
+................
+.aaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaa.
+.aabbccbbccbbaa.
+.aabbccbbccbbaa.
+.aabbccbbccbbaa.
+.aabbccbbccbbaa.
+.aabbccbbccbbaa.
+.aabbccdbccbbaa.
+.aadbccddccbbaa.
+.aabdccbbccdbaa.
+.aaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaa.
+................
+@tblock 0 0
+................
+................
+.00000000000000.
+.05555555555550.
+.05521152115220.
+.05521152115221.
+.05521152115221.
+.05521152115220.
+.05521152115220.
+.05521132115220.
+.05321132115220.
+.05521152113220.
+.05222222222220.
+.55555555555555.
+.33333333333333.
+................

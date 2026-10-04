@@ -213,14 +213,12 @@ describe("species replacement decision", () => {
 });
 
 describe.each(["explicit", "legacy"] as const)("one-time species appearance copy via %s", (link) => {
-  it.each(["monsterResourceId", "graphicHue", "transparent", "flying"] as const)("exposes %s-only differences and changes only the four copy fields", (key) => {
+  it("exposes a picture difference and changes only the four copy fields", () => {
     seed(link);
     store.update((project) => {
       const species = project.database.monsterSpecies?.[0];
       if (!species) throw new Error("Missing species");
-      if (key === "monsterResourceId") species.graphic.monsterResourceId = "different-resource";
-      else if (key === "graphicHue") species.graphic.graphicHue = 90;
-      else species.graphic[key] = true;
+      species.graphic.monsterResourceId = "different-resource";
     });
     const before = structuredClone(store.getCurrent().database);
     const graphic = before.monsterSpecies?.[0]?.graphic;
@@ -228,6 +226,20 @@ describe.each(["explicit", "legacy"] as const)("one-time species appearance copy
     render();
     control("db-enemy-species-copy-graphic").click();
     expect(store.getCurrent().database).toEqual({ ...before, enemies: [{ ...before.enemies[0], monsterResourceId: graphic.monsterResourceId, graphicHue: graphic.graphicHue, transparent: graphic.transparent, flying: graphic.flying }] });
+    expect(document.querySelector('[data-testid="db-enemy-species-copy-graphic"]')).toBeNull();
+  });
+
+  // 색조·투명·비행은 화면에서 지운 칸이다(2026-10-02) — 그 차이만으로는 고칠 데 없는 경고를 띄우지 않는다.
+  it.each(["graphicHue", "transparent", "flying"] as const)("does not flag a %s-only difference", (key) => {
+    seed(link);
+    store.update((project) => {
+      const species = project.database.monsterSpecies?.[0];
+      if (!species) throw new Error("Missing species");
+      if (key === "graphicHue") species.graphic.graphicHue = 90;
+      else species.graphic[key] = true;
+    });
+    render();
+    expect(document.querySelector('[data-testid="db-enemy-species-graphic-mismatch"]')).toBeNull();
     expect(document.querySelector('[data-testid="db-enemy-species-copy-graphic"]')).toBeNull();
   });
 });

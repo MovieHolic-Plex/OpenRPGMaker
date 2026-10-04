@@ -27,7 +27,7 @@ const GENERATED = path.join(ROOT, "public", "assets", "generated");
 const KNOWN_DAMAGED = [];
 
 /** 정상 그림 대조군 — 탐지기가 멀쩡한 그림을 가짜로 몰면 이 목록 검사가 무의미해진다. */
-const KNOWN_GOOD = "public/assets/generated/starter/battle-icon-bag.png";
+const KNOWN_GOOD = "public/assets/generated/pixel-enemy-portraits/hydra-three.png";
 
 function collectPngs(dir) {
   const found = [];

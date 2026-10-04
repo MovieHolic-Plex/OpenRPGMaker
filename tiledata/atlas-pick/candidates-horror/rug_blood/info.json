@@ -1,0 +1,47 @@
+{
+ "id": "rug_blood",
+ "slug": "rug_blood",
+ "name": "핏자국 양탄자",
+ "scene": "낡은 서양 저택",
+ "cells": [
+  3,
+  2
+ ],
+ "canvas": [
+  48,
+  32
+ ],
+ "layer": "decal",
+ "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+ "description": "v5 붉은 양탄자(3×2)의 낡은 판: 가장자리 술 장식, 빛바랜 무늬, 한가운데 오래 마른 검붉은 얼룩 한 덩이(blood 어두운 쪽 + 가장자리 $), 한쪽 모서리가 말려 올라감. 얼룩은 양탄자 면적의 1/6 정도로.",
+ "palette_hint": "velv 바탕, damask 무늬, blood/$ 얼룩",
+ "worker_v1": "h2",
+ "stage": 2,
+ "stage_ko": "2단계 연출(기본이 선 뒤)",
+ "worker": "h2",
+ "v5_ref": [
+  {
+   "id": "rug red",
+   "name_ko": "붉은 양탄자",
+   "atlas": {
+    "x": 272,
+    "y": 384,
+    "w": 48,
+    "h": 32,
+    "frames": 1,
+    "padTop": 0
+   },
+   "image": {
+    "w": 48,
+    "h": 32
+   },
+   "kind": "flat",
+   "footprint": {
+    "w": 3,
+    "h": 2
+   },
+   "pick_dir": "tiledata/hand-interior/pick/candidates/rug_red",
+   "file": "ref-v5-1.png"
+  }
+ ]
+}

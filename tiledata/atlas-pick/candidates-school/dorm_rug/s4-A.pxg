@@ -1,0 +1,72 @@
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat a vlinen 3
+@mat b sakura 3
+@mat c vblue 3
+@mblock 0 0
+................................
+................................
+................................
+...a.a.a.a.a.a.a.a.a.a.a.a.a....
+...aaaaaaaaaaaaaaaaaaaaaaaaaa...
+..aaaaaaaaaaaaaaaaaaaaaaaaaaaa..
+..aaaaaaaaaaaaaaaaaaaaaaaaaaaa..
+..aabbbbbbbbbbbbbbbbbbbbbbbbaa..
+..aabbbbbbbbbbbbbbbbbbbbbbbbaa..
+..aaaaaaaaaaaaaaaaaaaaaaaaaaaa..
+..aaccccccccccccccccccccccccaa..
+..aaaaaaaaaaaaaaaaaaaaaaaaaaaa..
+..aaaaaaaaaaaaaaaaaaaaaaaaaaaa..
+..aabbbbbbbbbbbbbbbbbbbbbbbbaa..
+..aabbbbbbbbbbbbbbbbbbbbbbbbaa..
+..aaaaaaaaaaaaaaaaaaaaaaaaaaaa..
+..aaccccccccccccccccccccccccaa..
+..aaaaaaaaaaaaaaaaaaaaaaaaaaaa..
+..aaaaaaaaaaaaaaaaaaaaaaaaaaaa..
+..aabbbbbbbbbbbbbbbbbbbbbbbbaa..
+..aabbbbbbbbbbbbbbbbbbbbbbbbaa..
+..aaaaaaaaaaaaaaaaaaaaaaaaaaaa..
+..aaccccccccccccccccccccccccaa..
+..aaaaaaaaaaaaaaaaaaaaaaaaaaaa..
+..aaaaaaaaaaaaaaaaaaaaaaaaaaaa..
+..aaaaaaaaaaaaaaaaaaaaaaaaaaaa..
+..aaaaaaaaaaaaaaaaaaaaaaaaaaaa..
+...aaaaaaaaaaaaaaaaaaaaaaaaaa...
+...a.a.a.a.a.a.a.a.a.a.a.a.a....
+................................
+................................
+................................
+@tblock 0 0
+................................
+................................
+................................
+...5.5.5.5.5.5.5.5.5.5.5.5.5....
+...66666666666666666666666666...
+..6444444444444444444444444442..
+..6444444444444444444444444442..
+..6433333333333333333333333342..
+..6444444444444444444444444442..
+..6444444444444444444444444442..
+..6433333333333333333333333342..
+..6444444444444444444444444442..
+..6444444444444444444444444442..
+..6433333333333333333333333342..
+..6444444444444444444444444442..
+..6444444444444444444444444442..
+..6433333333333333333333333342..
+..6444444444444444444444444442..
+..6444444444444444444444444442..
+..6433333333333333333333333342..
+..6444444444444444444444444442..
+..6444444444444444444444444442..
+..6433333333333333333333333342..
+..6444444444444444444444444442..
+..6444444444444444444444444442..
+..6444444444444444444444444442..
+..6444444444444444444444444442..
+...22222222222222222222222222...
+...3.3.3.3.3.3.3.3.3.3.3.3.3....
+................................
+................................
+................................

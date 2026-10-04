@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/chair_wood/hf4-B.pxg",
+ "set": "horror",
+ "id": "chair_wood",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.065
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "outline_black"
+  ]
+ },
+ "colors": 4,
+ "bbox": [
+  2,
+  1,
+  13,
+  15
+ ],
+ "note": "B: 어두운 방용 — 앉는 판·윗 테를 6단으로 크게 밝히고 앞 두께는 1~3 으로 떨궈 윗면이 먼저 뜸, 살 사이 홈은 1단으로 굵게",
+ "ok": true
+}

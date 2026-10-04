@@ -1,0 +1,256 @@
+{
+ "id": "snow-north",
+ "name": "설원·북방",
+ "tile": 16,
+ "key": [
+  255,
+  103,
+  139
+ ],
+ "shadow_key": [
+  254,
+  103,
+  139
+ ],
+ "sheet": "sheet.png",
+ "extra_colors": [],
+ "camera": {
+  "kx": 0.0,
+  "ky": 0.62,
+  "light": "orig"
+ },
+ "renderer": "_scene3d (경사 투영 레이캐스터, 정면 카메라)",
+ "icons": [
+  {
+   "role": "capital",
+   "name": "얼음 왕성",
+   "id": "capital",
+   "cells": [
+    6,
+    6
+   ],
+   "col": 0,
+   "row": 0,
+   "desc": "눈 덮인 돌 성벽·둥근 탑, 높은 기단 위 얼음 궁전 돔과 첨탑"
+  },
+  {
+   "role": "fort_city",
+   "name": "통나무 요새 도시",
+   "id": "fort_city",
+   "cells": [
+    4,
+    4
+   ],
+   "col": 16,
+   "row": 0,
+   "desc": "뾰족 말뚝 목책·네 귀 망루·롱하우스들"
+  },
+  {
+   "role": "harbor_city",
+   "name": "피오르 항구",
+   "id": "harbor_city",
+   "cells": [
+    5,
+    4
+   ],
+   "col": 6,
+   "row": 0,
+   "desc": "롱쉽(용머리 배) 둘·나무 부두·롱하우스"
+  },
+  {
+   "role": "castle",
+   "name": "얼음 성",
+   "id": "castle",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 26,
+   "row": 0,
+   "desc": "눈 언덕 위 얼음 성벽과 푸른 얼음 첨탑"
+  },
+  {
+   "role": "castle",
+   "name": "장군 전당",
+   "id": "castle_b",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 29,
+   "row": 0,
+   "desc": "큰 롱하우스·방패 벽·깃발"
+  },
+  {
+   "role": "large_town",
+   "name": "눈 마을",
+   "id": "large_town",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 0,
+   "row": 6,
+   "desc": "눈 쌓인 박공 통나무집·장작더미·전나무"
+  },
+  {
+   "role": "village",
+   "name": "이글루 마을",
+   "id": "village",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 9,
+   "row": 6,
+   "desc": "눈 벽돌 이글루 셋·썰매"
+  },
+  {
+   "role": "village",
+   "name": "롱하우스 마을",
+   "id": "village_b",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 11,
+   "row": 6,
+   "desc": "롱하우스 둘·창고·전나무"
+  },
+  {
+   "role": "camp",
+   "name": "순록 유목 천막",
+   "id": "camp",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 13,
+   "row": 6,
+   "desc": "가죽 원뿔 천막·썰매·순록"
+  },
+  {
+   "role": "tower_small",
+   "name": "봉화탑",
+   "id": "tower_small",
+   "cells": [
+    1,
+    2
+   ],
+   "col": 23,
+   "row": 6,
+   "desc": "눈 덮인 돌 원탑 꼭대기의 봉화"
+  },
+  {
+   "role": "tower_great",
+   "name": "얼음 첨탑",
+   "id": "tower_great",
+   "cells": [
+    2,
+    4
+   ],
+   "col": 20,
+   "row": 0,
+   "desc": "눈 바위 위 팔각 얼음 기둥과 결정"
+  },
+  {
+   "role": "cave",
+   "name": "얼음 동굴",
+   "id": "cave",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 15,
+   "row": 6,
+   "desc": "눈 덮인 바위 언덕·푸른 얼음 입구·고드름"
+  },
+  {
+   "role": "ruin",
+   "name": "룬석 무덤",
+   "id": "ruin",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 17,
+   "row": 6,
+   "desc": "눈 덮인 봉분과 붉은 룬 선돌"
+  },
+  {
+   "role": "ruin_city",
+   "name": "얼어붙은 폐허 도시",
+   "id": "ruin_city",
+   "cells": [
+    4,
+    3
+   ],
+   "col": 22,
+   "row": 0,
+   "desc": "눈에 묻힌 지붕·부서진 돌담·얼음 기둥"
+  },
+  {
+   "role": "shrine",
+   "name": "오딘 신전",
+   "id": "shrine",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 3,
+   "row": 6,
+   "desc": "검은 목조 스타브 교회·겹 박공·용머리"
+  },
+  {
+   "role": "landmark_nature",
+   "name": "세계수",
+   "id": "landmark_nature",
+   "cells": [
+    3,
+    3
+   ],
+   "col": 6,
+   "row": 6,
+   "desc": "눈 덮인 거대 물푸레나무"
+  },
+  {
+   "role": "circle",
+   "name": "룬 돌원",
+   "id": "circle",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 19,
+   "row": 6,
+   "desc": "눈 모자를 쓴 선돌 고리와 제단석"
+  },
+  {
+   "role": "volcano",
+   "name": "설산 화산",
+   "id": "volcano",
+   "cells": [
+    2,
+    2
+   ],
+   "col": 21,
+   "row": 6,
+   "desc": "눈 덮인 비탈과 붉은 화구"
+  },
+  {
+   "role": "floating",
+   "name": "오로라 빙산섬",
+   "id": "floating",
+   "cells": [
+    5,
+    4
+   ],
+   "col": 11,
+   "row": 0,
+   "desc": "오로라 아래 떠 있는 빙산섬과 롱하우스"
+  }
+ ],
+ "license": {
+  "note": "지형 팔레트는 EasyRPG World.png(CC BY 4.0)의 색을 바탕으로 한다. 그림은 이 폴더의 scenes.py 를 _scene3d 렌더러로 찍은 것이며 생성 이미지·트레이싱이 없다."
+ }
+}

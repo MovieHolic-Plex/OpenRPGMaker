@@ -1,0 +1,4 @@
+/pi map_blank_start 저장·실행 QA다. 기존 맵을 get_map으로 먼저 읽고, 아래 upsert_event 호출 한 번으로 작은 이웃 NPC를 작성해라. 지정된 첫 대사와 두 선택지를 그대로 사용하고 각 선택의 다른 후속 대사만 넣는다. 실패하면 실제 오류만 수정한다. 다른 맵·장르·주인공·타이틀은 유지한다. 인물의 외형은 미정이고 기존 기본 NPC 그림으로 충분하다. 새 그림 생성이나 맵 시공은 하지 않는다.
+네이티브 도구 인수:
+{"mapId":"map_blank_start","event":{"id":"ev_interview_qa_neighbor","name":"QA 이웃","x":11,"y":8,"pages":[{"id":"page_interview_qa","name":"첫 만남","conditions":[],"trigger":"action","priority":"same","movement":{"type":"fixed","speed":3,"frequency":3},"commands":[{"kind":"text","speaker":"이웃","body":"지우, 이웃에 오신 걸 환영해요."},{"kind":"choices","prompt":"어떻게 대답할까요?","options":[{"text":"반갑게 인사한다","branch":[{"kind":"text","speaker":"이웃","body":"앞으로 종종 만나요."}]},{"text":"조심스럽게 묻는다","branch":[{"kind":"text","speaker":"이웃","body":"궁금한 게 있으면 편하게 물어보세요."}]}]}]}]}}
+적용 결과를 get_event로 재조회하고 정확히 두 선택지가 있는지 확인한 뒤 마쳐라. 이 요청에서는 추가 제작을 하지 않는다.

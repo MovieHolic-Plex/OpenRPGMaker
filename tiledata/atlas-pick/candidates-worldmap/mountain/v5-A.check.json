@@ -1,0 +1,140 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/mountain/v5-A.pxg",
+ "set": "worldmap",
+ "id": "mountain",
+ "hard": [],
+ "warn": [
+  "메모 없음: <후보>.note 에 한 줄"
+ ],
+ "easyrpg": {
+  "cells": 11,
+  "atLeast95": 0,
+  "max": 0.16
+ },
+ "refmap": {
+  "cells": 11,
+  "atLeast95": 0,
+  "max": 0.23
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies",
+   "outline_black",
+   "noise",
+   "dither"
+  ]
+ },
+ "colors": 6,
+ "bbox": [
+  2,
+  0,
+  47,
+  60
+ ],
+ "note": "",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 11,
+   "atLeast95": 0,
+   "max": 0.0
+  },
+  "refmapWorld": {
+   "cells": 11,
+   "atLeast95": 0,
+   "max": 0.215
+  },
+  "shore": {
+   "profile": {
+    "n": [
+     4,
+     5,
+     5,
+     5,
+     5,
+     5,
+     5,
+     5,
+     5,
+     5,
+     4,
+     4,
+     3,
+     4,
+     4,
+     4
+    ],
+    "s": [
+     4,
+     4,
+     4,
+     4,
+     4,
+     3,
+     3,
+     3,
+     3,
+     4,
+     4,
+     4,
+     3,
+     3,
+     4,
+     4
+    ],
+    "w": [
+     4,
+     4,
+     3,
+     3,
+     3,
+     3,
+     3,
+     3,
+     3,
+     3,
+     3,
+     3,
+     3,
+     3,
+     4,
+     4
+    ],
+    "e": [
+     4,
+     3,
+     3,
+     4,
+     4,
+     3,
+     3,
+     4,
+     4,
+     3,
+     4,
+     5,
+     5,
+     4,
+     3,
+     4
+    ]
+   },
+   "strait": 7,
+   "steps": {
+    "n": 1,
+    "s": 1,
+    "w": 1,
+    "e": 1
+   },
+   "amp": {
+    "n": 2,
+    "s": 1,
+    "w": 1,
+    "e": 2
+   },
+   "joinWorst": 0
+  },
+  "seam": 0.8
+ }
+}

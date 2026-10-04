@@ -1,0 +1,37 @@
+{
+ "id": "roundtable",
+ "slug": "roundtable",
+ "name_ko": "원탁",
+ "category": "가구·살림",
+ "kind": "floor",
+ "kind_ko": "바닥 기물(막힘)",
+ "canvas": [
+  16,
+  16
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 16,
+  "h": 16
+ },
+ "footprint": {
+  "w": 1,
+  "h": 1
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "외다리 둥근 탁자(윗면에 종이·잔). 거실·서재 구석에 1개. 안락의자 곁, 찻상 대신.",
+ "where": "거실·서재 구석에 1개. 안락의자 곁, 찻상 대신.",
+ "placement": [
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": [
+  0,
+  1,
+  15,
+  15
+ ],
+ "v5_colors": 12,
+ "material": "wood",
+ "related": []
+}

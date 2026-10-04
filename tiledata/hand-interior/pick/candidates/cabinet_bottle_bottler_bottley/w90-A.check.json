@@ -1,0 +1,35 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/cabinet_bottle_bottler_bottley/w90-A.pxg",
+ "id": "cabinet:bottle+bottler+bottley",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.031
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "outline",
+   "outline_black"
+  ],
+  "pass": false
+ },
+ "colors": 20,
+ "v5_colors": 18,
+ "bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "note": "술병장: 윗면 T5+처마 그림자, 병 세 칸 앞면. 네 귀퉁이 한 칸씩 깎아 배경 검사 통과.",
+ "ok": true
+}

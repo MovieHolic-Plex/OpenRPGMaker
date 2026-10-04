@@ -1,0 +1,35 @@
+@layer shell {
+  .app-modal-card.project-start-window { width: min(900px, calc(100vw - 48px)); max-height: calc(100dvh - 48px); overflow: hidden; display: flex; flex-direction: column; padding: 20px; box-sizing: border-box; background: var(--bg-surface); word-break: keep-all; }
+  .project-start-scroll { min-height: 0; overflow: auto; flex: 1; }
+  .project-start-window > .app-modal-actions { flex: none; padding-top: 14px; }
+  .project-start-header { display: flex; align-items: center; justify-content: space-between; gap: 15px; }
+  .project-start-header h2 { margin: 7px 0 10px; font-size: 24px; }
+  .project-start-kicker { font-size: 12px; color: var(--text-2); }
+  .project-start-hint { font-size: 13px; line-height: 1.7; color: var(--text-2); margin: 8px 0 18px; }
+  .project-start-examples { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin: 23px 0; }
+  .project-start-example { padding: 0; min-width: 0; border: 1px solid var(--border-default); border-radius: var(--radius-m); background: var(--bg-raised); color: var(--text-1); text-align: left; font: inherit; cursor: pointer; overflow: hidden; }
+  .project-start-example > img { width: 100%; aspect-ratio: 1.45; object-fit: cover; display: block; }
+  .project-start-example-copy { display: grid; gap: 10px; padding: 16px; }
+  .project-start-example-copy > span { font-size: 12px; line-height: 1.65; color: var(--text-2); }
+  .project-start-example-copy .project-start-example-action { color: var(--accent); margin-top: 8px; }
+  .project-start-example:hover { border-color: var(--accent); }
+  .project-start-other { display: flex; align-items: center; justify-content: space-between; gap: 15px; border-top: 1px solid var(--border-default); padding: 15px 0; font-size: 13px; }
+  .project-start-setup { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 28px; margin: 22px 0; }
+  .project-start-preview { border: 1px solid var(--border-default); border-radius: var(--radius-m); overflow: hidden; background: var(--bg-raised); }
+  .project-start-preview > img { width: 100%; aspect-ratio: 1.65; object-fit: cover; display: block; }
+  .project-start-preview > div { padding: 20px; }
+  .project-start-preview h3 { font-size: 17px; margin: 0 0 10px; }
+  .project-start-preview p, .project-start-preview li { font-size: 13px; line-height: 1.7; }
+  .project-start-preview p { color: var(--text-2); }
+  .project-start-preview ul { list-style: none; padding: 15px 0 0; margin: 15px 0 0; border-top: 1px solid var(--border-default); }
+  .project-start-preview li { margin: 7px 0; }
+  .project-start-preview li::before { content: "✓"; color: var(--accent); margin-right: 8px; }
+  .project-start-fields { min-width: 0; }
+  .project-start-fields > label { font-size: 13px; display: block; margin: 8px 0; }
+  .project-start-fields .app-modal-input { width: 100%; box-sizing: border-box; resize: vertical; }
+  .project-start-fields details { border-top: 1px solid var(--border-default); margin-top: 22px; padding-top: 15px; color: var(--text-2); font-size: 13px; }
+  .project-start-fields summary { cursor: pointer; }
+  .project-start-size-options label { display: flex; align-items: flex-start; gap: 8px; margin-top: 14px; }
+  .project-start-example:focus-visible { outline: var(--focus-outline); outline-offset: 2px; }
+  @media (max-width: 700px) { .project-start-examples, .project-start-setup { grid-template-columns: 1fr; } .project-start-example { display: flex; } .project-start-example > img { width: 110px; aspect-ratio: auto; } .project-start-example-copy { padding: 13px; } .app-modal-card.project-start-window { padding: 20px; } }
+}

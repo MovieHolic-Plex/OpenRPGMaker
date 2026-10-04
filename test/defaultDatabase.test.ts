@@ -89,9 +89,10 @@ describe("default database starter party", () => {
       battleCharacterResourceId: "charset-battler-actor2-0",
     });
     expect(mage).toMatchObject({
-      faceResourceId: "easyrpg-faceset-actor2-00",
-      characterResourceId: "easyrpg-charset-actor3",
-      battleCharacterResourceId: "charset-battler-actor3-0",
+      faceResourceId: "easyrpg-faceset-actor1-05",
+      characterResourceId: "easyrpg-charset-actor1",
+      characterIndex: 5,
+      battleCharacterResourceId: "charset-battler-actor1-5",
     });
     expect(scout).toMatchObject({
       faceResourceId: "easyrpg-faceset-actor2-08",
@@ -103,8 +104,9 @@ describe("default database starter party", () => {
     // hero-01 시트를 돌려 써서 같은 그림이 두 번 섰고, 전용 시트를 그려 끊었다.
     expect(cleric).toMatchObject({ characterIndex: 7, battleCharacterResourceId: "charset-battler-actor1-7" });
     expect(ranger).toMatchObject({ characterIndex: 3, battleCharacterResourceId: "charset-battler-actor2-3" });
-    const allBattleResourceIds = restored.database.actors.map((actor) => actor.battleCharacterResourceId);
-    expect(new Set(allBattleResourceIds).size).toBe(restored.database.actors.length);
+    // 2차 로스터: 전투 시트가 아직 없는 People·비인간형 칩은 battleCharacterResourceId 가 비어 있다(기존 스킨 폴백). 있는 것끼리는 겹치면 안 된다.
+    const allBattleResourceIds = restored.database.actors.map((actor) => actor.battleCharacterResourceId).filter((id): id is string => Boolean(id));
+    expect(new Set(allBattleResourceIds).size).toBe(allBattleResourceIds.length);
     const starterBattleResourceIds = restored.system.startActorIds.map(
       (id) => restored.database.actors.find((actor) => actor.id === id)?.battleCharacterResourceId
     );
@@ -141,6 +143,6 @@ describe("default database starter party", () => {
       monsterResourceId: "generated-enemy-dragon-01",
     });
     expect(troop?.members).toEqual([{ enemyId: "enemy_dragon", x: 168, y: 104, hidden: false }]);
-    expect(troop?.previewBackgroundResourceId).toBe("generated-battle-reference-forest");
+    expect(troop?.previewBackgroundResourceId).toBe("battle-scenery-forest");
   });
 });

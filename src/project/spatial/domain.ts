@@ -115,9 +115,16 @@ export function occurrenceChildId(parent: S.SpatialId, slot: S.SpatialId, index:
 export function occurrencePortId(occurrence: S.SpatialId, port: S.SpatialId): S.SpatialId {
   return spatialId(`port:${occurrence.length}:${occurrence}${port.length}:${port}`);
 }
+// 컴파일 격리(compileIsolation.ts)가 저장소에서 포인터로 빌려 온 타일셋. 복사본이 아니므로 얼리지도, 훑지도 않는다.
+const borrowed = new WeakSet<object>();
+export function borrowSpatial<T extends object>(value: T): T {
+  borrowed.add(value);
+  return value;
+}
 /** Parsed copies are acyclic plain records; freezing never freezes caller-owned assets. */
 export function freezeSpatial<T>(value: T): T {
   if (value !== null && typeof value === "object") {
+    if (borrowed.has(value)) return value;
     for (const child of Object.values(value)) freezeSpatial(child);
     Object.freeze(value);
   }

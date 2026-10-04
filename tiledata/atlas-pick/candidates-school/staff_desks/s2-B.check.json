@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/staff_desks/s2-B.pxg",
+ "set": "school",
+ "id": "staff_desks",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.188
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.031
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 26,
+ "bbox": [
+  1,
+  2,
+  31,
+  31
+ ],
+ "note": "명암 강조: 윗면을 3단으로 눌러 어둡게 하고 빛 가장자리 5단만 세움, 칸막이 그림자가 먼 책상 윗면으로 드리우고, 책상 밑을 ~ 로 짙게 채움.",
+ "ok": true
+}

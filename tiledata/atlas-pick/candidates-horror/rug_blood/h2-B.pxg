@@ -1,0 +1,55 @@
+@size 48 32
+@cell 16
+@palette palette.pal
+@mat a rot 4
+@mat b rot 5
+@mat c velv 0
+@mat d rot 3
+@mat e wax 2
+@mat f rot 2
+@mat g velv 2
+@mat h velv 1
+@mat i velv 3
+@mat j wax 1
+@mat k damask 3
+@mat l velv 4
+@mat m damask 4
+@mat n wax 3
+@mat o velv 5
+@mat p blood 2
+@mat q blood 3
+@mat r blood 1
+@mat s blood 0
+@mblock 0 0
+.......................................ab.......
+...cccccccccccccccccccccccccccccccccccccab......
+.dcccccccccccccccccccccccccccccccccccccccab.....
+..cceeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeccab....
+fdcceggggggggggggggggggggggghgggggggggiggccab..f
+..cceggghgggiggggghgggggggggghggggggggghggccab..
+fdcceggjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjggccabf
+..cceggjigkiiiiiiiiiiiiiiigiiiiilliiikigjghecca.
+fdcceggjikmkiiiiiiiiiiileiiliiiiiiiikmkijggeccdf
+..cceigjiikiiiiiiigiiineheniiiiiiiiiikiijggehc..
+fdcceggjiiiiiiiiiilinehoooheniiiiiiiiiiijggeccdf
+.fcceggjiiiiliiiiiiehoo$$ooohei$$$iiliiijggeccf.
+fdcceggjiiiiigiiinehoo$pppp$$pppppp$$$iijggeccdf
+.fcceggjiiiiiiinehooo$pppppppppppppppp$ijggeccf.
+.dcheggjiiiiigeh$$pppppppppppppqpppppp$ijggeccd.
+.fccehgjiiiine$$ppppppppprrrrrrspppppp$ijggeccf.
+fdcceggjiiiiii$$ppppppsrrqrrrrrrpppp$iiijggeccdf
+..cceggjiiiiiii$ppppppqssrrrrrrpppp$igiijggecc..
+.dcceggjiiiiiiii$ppppppprrrrrrrpppp$iiiijghehcd.
+..cceggjiililiiii$pppppppsrrrsrppppp$iiijggecc..
+.dcceggjiiiiiiiiiiiin$$pppqppppppppp$liijggeccd.
+..cceggjiiiiiiiiiiiiii$pppppppppppp$iihljggecc..
+fdcceggjiikiiiiiiiiiip$ppppppppppp$iikiijggeccdf
+.fcceggjikmkiihigiioip$ppppppppp$$pikmkijggeccf.
+fdcceggjiikiiligiiili$ii$$$i$iiiii$igkiijhgehcdf
+..cceggjjjjjjjjjjjjjjjjjjjjj$jjjjj$jjjjjjggecc..
+fdccegghggghggiggggggggggggggigggg$ggggggggeccdf
+..cceggggggggggggggggggggghggggggggigggggggecc..
+.dcceeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeccd.
+..cccccccccccchccccccccccccccccccccccccccccccc..
+...cccccccccccccccccccccccccccccccccccccccccc...
+...------------------------------------------...

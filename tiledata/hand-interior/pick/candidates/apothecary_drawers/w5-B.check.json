@@ -1,0 +1,36 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/apothecary_drawers/w5-B.pxg",
+ "id": "apothecary drawers",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.004
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "outline",
+   "outline_black",
+   "noise"
+  ],
+  "pass": false
+ },
+ "colors": 14,
+ "v5_colors": 12,
+ "bbox": [
+  0,
+  0,
+  14,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "note": "명암 강화: 본체를 15폭으로 줄여 오른쪽 열에 반투명 그림자, 서랍마다 왼쪽 위에 가장 밝은 나무색 한 점, 아래 오른쪽 접지 그림자",
+ "ok": true
+}

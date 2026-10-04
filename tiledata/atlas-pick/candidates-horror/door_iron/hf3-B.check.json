@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/door_iron/hf3-B.pxg",
+ "set": "horror",
+ "id": "door_iron",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.219
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.145
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "outline",
+   "outline_black"
+  ]
+ },
+ "colors": 13,
+ "bbox": [
+  0,
+  2,
+  15,
+  31
+ ],
+ "note": "철문 B — 틀 6단, 문짝 0단, 큼직한 창살 창(테 6단, 창살 셋 5·4단, 속 void), 굵은 5단 대갈못 줄 둘. 어둠 속 실루엣용.",
+ "ok": true
+}

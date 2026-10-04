@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/double_bed_red/w6-B.pxg",
+ "id": "double bed red",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.086
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 22,
+ "v5_colors": 22,
+ "bbox": [
+  0,
+  10,
+  31,
+  47
+ ],
+ "v5_bbox": [
+  0,
+  10,
+  31,
+  47
+ ],
+ "note": "왼쪽 위 나무와 이불을 밝히고 오른쪽을 눌러 입체를 주는 명암 강화 (바닥 그림자는 앵커 때문에 생략)",
+ "ok": true
+}

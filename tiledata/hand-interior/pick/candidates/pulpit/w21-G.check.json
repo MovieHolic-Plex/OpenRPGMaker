@@ -1,0 +1,35 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/pulpit/w21-G.pxg",
+ "id": "pulpit",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 7,
+  "atLeast95": 0,
+  "max": 0.053
+ },
+ "lint": {
+  "failed": [
+   "banding",
+   "saturation",
+   "outline_black"
+  ],
+  "pass": false
+ },
+ "colors": 26,
+ "v5_colors": 16,
+ "bbox": [
+  0,
+  10,
+  29,
+  62
+ ],
+ "v5_bbox": [
+  0,
+  10,
+  29,
+  63
+ ],
+ "note": "짙은 흑갈색 나무 설교단에 보라 천과 금 난간 계단: 어두운 벽 앞에서 밝은 금·책·왼면으로 윤곽을 살린 대비형",
+ "ok": true
+}

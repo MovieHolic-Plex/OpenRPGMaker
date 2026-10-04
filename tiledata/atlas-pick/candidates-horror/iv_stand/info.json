@@ -1,0 +1,24 @@
+{
+ "id": "iv_stand",
+ "slug": "iv_stand",
+ "name": "링거 걸이",
+ "scene": "폐병원",
+ "cells": [
+  1,
+  2
+ ],
+ "canvas": [
+  16,
+  32
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "바퀴 다섯 발 받침 위 가는 쇠 기둥, 맨 위 고리에 매단 링거 봉지(반투명 느낌은 밝은 테 + 속 한 단 어둡게, 속 액체는 검붉게 — 수혈 팩), 관이 아래로 늘어짐. 1px 기둥이 먹히지 않게 2px.",
+ "palette_hint": "tin 기둥, murk/sheet 봉지, blood 액체, ~ 그림자",
+ "worker_v1": "h4",
+ "stage": 1,
+ "stage_ko": "1단계 기본(1판에서 옮김)",
+ "kit": "ward",
+ "role": "링거 걸이",
+ "worker": "h4"
+}

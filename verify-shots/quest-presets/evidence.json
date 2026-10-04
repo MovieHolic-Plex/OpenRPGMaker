@@ -1,0 +1,287 @@
+{
+  "records": [],
+  "errors": [],
+  "request": "「위협 제거」 프리셋으로 짧은 퀘스트 하나를 만들어줘.\n현재 맵: 빈 맵 (mapId=map_blank_start).\n이야기 소재: 상인이 숲길을 막고 있는 몬스터 때문에 배달을 못 하고 있다.\n완료 보상: 150G. 진행: 의뢰 수락 → 적 물리치기 → 보고하고 보상.\n현재 프로젝트의 맵·NPC·아이템·부대를 먼저 조회하고 어울리는 기존 인물과 장소를 활용해줘. 필요한 목표는 접근 가능한 칸에 배치해줘.\n새 NPC나 적의 필드 그림은 list_npc_graphics로 실제 그림을 조회하여 고르고, 조회한 정확한 이름이나 textureKey를 사용해줘. 분실물은 기존 소품 주변에 두고 찾을 위치를 대사로 알려줘.\ncreate_quest의 def.presetId=\"hunt\"를 반드시 지정. steps는 kill 하나. 실제 troopId와 at를 사용. 난이도는 현재 파티가 이길 수 있는 짧은 전투.\n제목·줄거리와 목표 대사에 소재를 반영하고 def.dialogue의 accepted, declined, reminder, completed, afterComplete에 인물다운 짧은 대사를 넣어줘.\n수락 전 목표 진행 금지, 완료 보고 시 보상 한 번, 완료 후 대사 전환. 분실물은 보고 시 실제 소지 여부를 확인하고 돌려주기. 처치는 승리할 때만 진행.\n생성한 퀘스트와 이벤트 ID, 의뢰인과 목표 위치, 확인할 플레이 순서를 보고해줘. 자동 완주 검증이 없는 단계형 퀘스트를 검증 완료라고 보고하지 마.",
+  "bounds": [
+    {
+      "id": "feature16-close",
+      "left": 932.515625,
+      "right": 982.515625
+    },
+    {
+      "id": "feature16-tab-quests",
+      "left": 41.484375,
+      "right": 143.1875
+    },
+    {
+      "id": "feature16-tab-library",
+      "left": 151.1875,
+      "right": 288.890625
+    },
+    {
+      "id": "feature16-tab-dialogue",
+      "left": 296.890625,
+      "right": 430.75
+    },
+    {
+      "id": "feature16-tab-inspector",
+      "left": 438.75,
+      "right": 552.453125
+    },
+    {
+      "id": "feature16-quest-errand",
+      "left": 41.484375,
+      "right": 348.484375
+    },
+    {
+      "id": "feature16-quest-lost_item",
+      "left": 358.484375,
+      "right": 665.5
+    },
+    {
+      "id": "feature16-quest-hunt",
+      "left": 675.5,
+      "right": 982.5
+    },
+    {
+      "id": "quest-preset-idea",
+      "left": 41.484375,
+      "right": 589.296875
+    },
+    {
+      "id": "feature16-quest-gold",
+      "left": 41.484375,
+      "right": 589.296875
+    },
+    {
+      "id": "feature16-quest-apply",
+      "left": 41.484375,
+      "right": 143.1875
+    }
+  ],
+  "authored": {
+    "results": [
+      {
+        "ok": true,
+        "summary": "퀘스트 '내일의 시장' 컴파일 — 이벤트 2개, 단계 1개"
+      },
+      {
+        "ok": true,
+        "issues": [
+          {
+            "severity": "warning",
+            "code": "authoring:shared-object-graphic",
+            "mapId": "map_blank_start",
+            "message": "서로 다른 조사물 3개가 같은 그림입니다 (약초꾼, 촌장, 아이). 임시 표식이면 실제 물체 그림으로 교체하세요."
+          }
+        ],
+        "summary": "퀘스트 '작은 분실물' 컴파일 — 이벤트 2개, 단계 1개"
+      },
+      {
+        "ok": true,
+        "issues": [
+          {
+            "severity": "warning",
+            "code": "authoring:shared-object-graphic",
+            "mapId": "map_blank_start",
+            "message": "서로 다른 조사물 6개가 같은 그림입니다 (약초꾼, 촌장, 아이). 임시 표식이면 실제 물체 그림으로 교체하세요."
+          }
+        ],
+        "summary": "퀘스트 '숲길의 위협' 컴파일 — 이벤트 2개, 단계 1개"
+      }
+    ],
+    "checks": [
+      {
+        "presetId": "errand",
+        "name": "objective blocked before acceptance",
+        "ok": true
+      },
+      {
+        "presetId": "errand",
+        "name": "decline leaves quest inactive",
+        "ok": true
+      },
+      {
+        "presetId": "errand",
+        "name": "acceptance starts quest",
+        "ok": true
+      },
+      {
+        "presetId": "errand",
+        "name": "early report gives no reward",
+        "ok": true
+      },
+      {
+        "presetId": "errand",
+        "name": "objective completes",
+        "ok": true
+      },
+      {
+        "presetId": "errand",
+        "name": "report rewards exactly once",
+        "ok": true
+      },
+      {
+        "presetId": "errand",
+        "name": "repeat report gives no second reward",
+        "ok": true
+      },
+      {
+        "presetId": "errand",
+        "name": "completion dialogue changes",
+        "ok": true
+      },
+      {
+        "presetId": "errand",
+        "name": "repeated objective does not add progress",
+        "ok": true
+      },
+      {
+        "presetId": "lost_item",
+        "name": "objective blocked before acceptance",
+        "ok": true
+      },
+      {
+        "presetId": "lost_item",
+        "name": "decline leaves quest inactive",
+        "ok": true
+      },
+      {
+        "presetId": "lost_item",
+        "name": "acceptance starts quest",
+        "ok": true
+      },
+      {
+        "presetId": "lost_item",
+        "name": "early report gives no reward",
+        "ok": true
+      },
+      {
+        "presetId": "lost_item",
+        "name": "objective completes",
+        "ok": true
+      },
+      {
+        "presetId": "lost_item",
+        "name": "pickup grants one item",
+        "ok": true
+      },
+      {
+        "presetId": "lost_item",
+        "name": "cannot return an absent item",
+        "ok": true
+      },
+      {
+        "presetId": "lost_item",
+        "name": "report rewards exactly once",
+        "ok": true
+      },
+      {
+        "presetId": "lost_item",
+        "name": "report returns the item",
+        "ok": true
+      },
+      {
+        "presetId": "lost_item",
+        "name": "repeat report gives no second reward",
+        "ok": true
+      },
+      {
+        "presetId": "lost_item",
+        "name": "completion dialogue changes",
+        "ok": true
+      },
+      {
+        "presetId": "lost_item",
+        "name": "repeated objective does not add progress",
+        "ok": true
+      },
+      {
+        "presetId": "hunt",
+        "name": "objective blocked before acceptance",
+        "ok": true
+      },
+      {
+        "presetId": "hunt",
+        "name": "decline leaves quest inactive",
+        "ok": true
+      },
+      {
+        "presetId": "hunt",
+        "name": "acceptance starts quest",
+        "ok": true
+      },
+      {
+        "presetId": "hunt",
+        "name": "early report gives no reward",
+        "ok": true
+      },
+      {
+        "presetId": "hunt",
+        "name": "escaping does not complete objective",
+        "ok": true
+      },
+      {
+        "presetId": "hunt",
+        "name": "objective completes",
+        "ok": true
+      },
+      {
+        "presetId": "hunt",
+        "name": "report rewards exactly once",
+        "ok": true
+      },
+      {
+        "presetId": "hunt",
+        "name": "repeat report gives no second reward",
+        "ok": true
+      },
+      {
+        "presetId": "hunt",
+        "name": "completion dialogue changes",
+        "ok": true
+      },
+      {
+        "presetId": "hunt",
+        "name": "repeated objective does not add progress",
+        "ok": true
+      }
+    ],
+    "invalidRejected": true,
+    "questIds": [
+      {
+        "key": "preset_errand",
+        "presetId": "errand",
+        "dialogue": {
+          "accepted": "고마워요. 기다리고 있을게요.",
+          "declined": "괜찮아요. 나중에 다시 와 주세요.",
+          "reminder": "부탁한 일은 어떻게 됐나요?",
+          "completed": "정말 고마워요! 약속한 보상이에요.",
+          "afterComplete": "덕분에 마음이 놓였어요."
+        }
+      },
+      {
+        "key": "preset_lost",
+        "presetId": "lost_item",
+        "dialogue": {
+          "accepted": "고마워요. 기다리고 있을게요.",
+          "declined": "괜찮아요. 나중에 다시 와 주세요.",
+          "reminder": "부탁한 일은 어떻게 됐나요?",
+          "completed": "정말 고마워요! 약속한 보상이에요.",
+          "afterComplete": "덕분에 마음이 놓였어요."
+        }
+      },
+      {
+        "key": "preset_hunt",
+        "presetId": "hunt",
+        "dialogue": {
+          "accepted": "고마워요. 기다리고 있을게요.",
+          "declined": "괜찮아요. 나중에 다시 와 주세요.",
+          "reminder": "부탁한 일은 어떻게 됐나요?",
+          "completed": "정말 고마워요! 약속한 보상이에요.",
+          "afterComplete": "덕분에 마음이 놓였어요."
+        }
+      }
+    ]
+  }
+}

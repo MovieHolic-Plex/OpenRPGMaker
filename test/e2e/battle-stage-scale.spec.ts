@@ -95,9 +95,9 @@ test("battle scene fills its host without clipping on the battle-test route", as
   assertStage(await page.evaluate(probeStage));
 });
 
-test("vxace hides the command window while a round resolves", async ({ page }) => {
+test("the default retro2003 skin hides the command window while a round resolves", async ({ page }) => {
   test.setTimeout(120_000);
-  await seedReferenceBattleProject(page, { battleUiStyle: "vxace" });
+  await seedReferenceBattleProject(page, { battleUiStyle: "retro2003" });
   await page.getByTestId("mode-play").click();
   await expect(page.getByTestId("test-play-window")).toBeVisible();
   await startNewGameFromTitle(page);
@@ -106,7 +106,7 @@ test("vxace hides the command window while a round resolves", async ({ page }) =
   await expect(page.getByTestId("actor-command-attack")).toBeVisible({ timeout: 25_000 });
 
   const scene = page.getByTestId("battle-scene");
-  await expect(scene).toHaveAttribute("data-battle-skin", "vxace");
+  await expect(scene).toHaveAttribute("data-battle-skin", "retro2003");
   // 입력 단계에서는 명령창이 보인다.
   await expect(page.locator(".battle-command-host")).toBeVisible();
 

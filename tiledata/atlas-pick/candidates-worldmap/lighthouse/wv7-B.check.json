@@ -1,0 +1,45 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/lighthouse/wv7-B.pxg",
+ "set": "worldmap",
+ "id": "lighthouse",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.052
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.06
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "banding",
+   "dither"
+  ]
+ },
+ "colors": 27,
+ "bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "note": "붉은 지붕 등실 + 창·문, 오른쪽 그늘과 몸통 명암 강조로 깊이감",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 2,
+   "atLeast95": 0,
+   "max": 0.055
+  },
+  "refmapWorld": {
+   "cells": 2,
+   "atLeast95": 0,
+   "max": 0.098
+  }
+ }
+}

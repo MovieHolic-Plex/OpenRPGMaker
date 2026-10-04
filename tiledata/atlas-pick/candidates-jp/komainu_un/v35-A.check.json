@@ -1,0 +1,42 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/komainu_un/v35-A.pxg",
+ "set": "jp",
+ "id": "komainu_un",
+ "hard": [],
+ "warn": [],
+ "std": {
+  "cells": [
+   1,
+   1
+  ],
+  "canvas": [
+   16,
+   16
+  ]
+ },
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.075
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.048
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "orphans"
+  ]
+ },
+ "colors": 8,
+ "bbox": [
+  3,
+  0,
+  12,
+  15
+ ],
+ "note": "16x16 · 폭 8. 고마이누 응(입 다묾, 이마에 작은 뿔). komainu_a 와 한 쌍.",
+ "ok": true
+}

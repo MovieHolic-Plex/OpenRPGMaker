@@ -1,0 +1,24 @@
+{
+ "id": "bunk_bed",
+ "slug": "bunk_bed",
+ "name": "이층 침대",
+ "scene": "기숙사",
+ "place": "in",
+ "cells": [
+  2,
+  3
+ ],
+ "canvas": [
+  32,
+  48
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "나무 또는 쇠 이층 침대 — 위 칸·아래 칸 매트리스·베개·이불(색 다르게), 옆 사다리, 기둥 2px. 키 큰 가구라 앞면이 주인공, 위 칸 이불 윗면 띠.",
+ "palette_hint": "vpine/locker 틀, vlinen 매트리스, vblue·sakura 이불",
+ "pair": [
+  "dorm_desk",
+  "dorm_closet"
+ ],
+ "worker": "s3"
+}

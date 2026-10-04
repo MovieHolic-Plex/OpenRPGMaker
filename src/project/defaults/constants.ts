@@ -1,12 +1,21 @@
 import type { AssetRef } from "../types";
 import { BUILTIN_SPRITE_SLICING, RESOURCE_SLICING } from "@/assets/resourceSlicing";
 
-export const DEFAULT_TILESET_ID = "easyrpg_chipset_combined_town";
+/** 합본 마을(EasyRPG CC0). 2026-09-30 까지 기본 타일셋이었다. 기존 프로젝트·`TILE.*` 칸 번호·combined_town 하네스는 이 이름으로 가리킨다. */
+export const COMBINED_TOWN_TILESET_ID = "easyrpg_chipset_combined_town";
 // 표시명 규약은 src/assets/bundled.ts 헤더 주석 참고 — 이 값은 새 프로젝트의 타일셋
 // 이름으로 저장되고 UI 에 그대로 보인다. bundled.ts 의 같은 textureKey 항목과 일치해야
 // 한다(test/easyrpgAssets.test.ts 가 두 값을 비교한다).
-export const DEFAULT_TILESET_NAME = "합본 마을 · EasyRPG (CC0)";
-export const DEFAULT_TILESET_TEXTURE_KEY = "tex_easyrpg_chipset_combined_town";
+export const COMBINED_TOWN_TILESET_NAME = "합본 마을 · EasyRPG (CC0)";
+export const COMBINED_TOWN_TILESET_TEXTURE_KEY = "tex_easyrpg_chipset_combined_town";
+/**
+ * 새 프로젝트의 기본 타일셋 = 버들항(beodeul_city, 2026-09-30~).
+ * 7MB 짜리 beodeulCityTileset.json 을 끌어오지 않으려고 문자열을 여기 둔다 — beodeulCity.ts 의 상수와 같아야 한다.
+ * 주의: `TILE.GRASS`(240) 같은 상수는 합본 마을 칸 번호다. 버들항에서 240 은 벽이다. 기본 타일셋에 TILE.* 을 칠하지 마라.
+ */
+export const DEFAULT_TILESET_ID = "beodeul_city";
+export const DEFAULT_TILESET_NAME = "버들항 v6 · 로마풍 항구 도시 (손 도트)";
+export const DEFAULT_TILESET_TEXTURE_KEY = "tex_beodeul_city";
 /** Castle2.png 원본 512px를 축소하지 않고 엔진의 16px 셀(32열)로 나눈다. */
 export const CASTLE_TILESET_ID = "opengameart_castle";
 export const CASTLE_TILESET_NAME = "성채 · OpenGameArt (CC-BY 3.0)";

@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/assembly_podium/s1-B.pxg",
+ "set": "school",
+ "id": "assembly_podium",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.191
+ },
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.094
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 14,
+ "bbox": [
+  2,
+  4,
+  45,
+  31
+ ],
+ "note": "B: 명암 강화 — 위판 왼쪽 가장자리 밝은 줄, 오른쪽 어두운 면, 마이크 그림자, 바닥 접지 그림자",
+ "ok": true
+}

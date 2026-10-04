@@ -1,0 +1,47 @@
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a gold 5
+@mat c gold 4
+@mat d gold 3
+@mat e gold 2
+@mat z gold 1
+@mat w red 5
+@mat r red 4
+@mat s red 3
+@mat t red 2
+@mat u red 1
+@mat v red 0
+@mblock 0 0
+................
+................
+..zaaaaaaaaaaz..
+..zeeeeeeeeeez..
+...uwwrsstttu...
+...uaaaaaaaau...
+...uddddddddu...
+...uwwrsstttu...
+...uwwrsstttu~..
+...uwaraatatu~..
+...uwaaaaaatu~..
+...uwcccccctu~..
+...uwddddddtu~..
+...uwwrsstttu~..
+...uwrssttttu~..
+...uwrsaatttu~..
+...uwraccattu~..
+...uwrscdtttu~..
+...uwrssttttu~..
+...uwrssttttu~..
+...uwrssttttu~..
+...uccccccccu~..
+...ueeeeeeeeu~..
+...uwwrsstttu~..
+...uwwrsstttu~..
+...uwwrsstttu~..
+...uwwruutttu~..
+...uwwu..uttu~..
+...uwu....utu~..
+...uu......uu~..
+................
+................

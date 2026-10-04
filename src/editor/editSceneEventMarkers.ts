@@ -1,3 +1,5 @@
+import { reliefCellLiftPx } from "@/player/reliefStrips";
+import { terrainPreviewSees } from "@/player/terrainVision";
 import { mapTileSize } from "@/project/tileGeometry";
 import type Phaser from "phaser";
 import { TILE_SIZE } from "@/assets/bundled";
@@ -135,6 +137,7 @@ export function renderEventMarkers(context: EventMarkerRenderContext, map: GameM
   const overlapping = activeLayer === "event" ? overlappingEventIds(events) : new Set<string>();
   const tileSize = context.tileSize ?? mapTileSize(map);
   for (const event of events) {
+    if (state.tool === "relief" && state.terrainVisionPreview && map.terrainDesign?.gameplay?.visionBlocking && !terrainPreviewSees(context.scene, map, event)) continue;
     const cx = event.x * tileSize + tileSize / 2;
     const cy = event.y * tileSize + tileSize / 2;
     const position = { x: cx, y: cy };
@@ -151,9 +154,10 @@ export function renderEventMarkers(context: EventMarkerRenderContext, map: GameM
         addFootprintOverlay(context, event, body, passRows, overlapping.has(event.id), tileSize);
       }
       if (spriteTexture) {
-        context.overlayLayer.add(
-          createEditableEventSprite(context.scene, event, body, graphic, spriteTexture, tileSize)
-        );
+        const sprite = createEditableEventSprite(context.scene, event, body, graphic, spriteTexture, tileSize);
+        // 높이 지형: 게임처럼 선 칸의 윗면에 세운다. 클릭 칸·마커는 들지 않는다(편집 좌표는 맵 칸 그대로).
+        sprite.y -= reliefCellLiftPx(map.relief, event.x, event.y, tileSize);
+        context.overlayLayer.add(sprite);
       }
     } else {
       // 타일 레이어(바닥·상위·높이)에서는 그림이 있어도 E 배지만 그린다(2026-08-31 결정, 2026-09-27 복구).

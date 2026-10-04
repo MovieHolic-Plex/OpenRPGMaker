@@ -1,0 +1,56 @@
+// D: 금장·검은 테·금 간 거울·붉은 눈 유지, 몸통 단축으로 높이 32px; 꼭대기 윗면 3행(y=17~19), 받침 윗면 2행(y=40~41)
+@size 16 48
+@cell 16
+@palette palette.pal
+@mat a black 1
+@mat b black 2
+@mat c black 3
+@mat d black 4
+@mat e iron 3
+@mat f gold 1
+@mat g gold 2
+@mat h gold 3
+@mat i gold 4
+@mat j gold 5
+@mat k glass 0
+@mat l glass 1
+@mat m glass 2
+@mat n iron 2
+@mat p red 1
+@mat q red 2
+@mat r red 3
+@mat s red 4
+@mat t red 5
+@mblock 0 16
+...aaaaaaaaaa...
+..adjjiiiiiddb..
+..adhiiggihhcb..
+..adhiiggihhcb..
+..addccddccccb..
+..abbbbbbbbbba..
+..aghiiggiihga..
+..ahgabbbbagfa..
+..adgbllllbgba..
+..adlmmllllkba..
+..adlmnnlllkba..
+..adlllnkknkba..
+..adlkkkkkknba..
+..adkkppppkkba..
+..adkprrrrqkba..
+..adqstaatsqba..
+..adqrsaasrqba..
+..adkqrrrqpkba..
+..adkkppppkkba..
+..adknkkkkknba..
+..adgkkkkkkgba..
+..ahgkkkkkkgfa..
+..aghiiggiihga..
+..abbbbbbbbbba..
+..adcccccccbba..
+..adcccccccbba..
+..adgghiiggfba..
+..adgfhjjhgaba..
+..adccghgfcbba..
+..abbbffbbbbba..
+..acccccccccba..
+..abbbbbbbbbba..

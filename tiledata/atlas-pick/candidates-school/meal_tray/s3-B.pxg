@@ -1,0 +1,39 @@
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat a tray 3
+@mat b tray 5
+@mat c tray 0
+@mat e tray 1
+@mat f vgreen 3
+@mat g vleaf 6
+@mat h vyellow 4
+@mat i vyellow 6
+@mat j vred 3
+@mat k vred 5
+@mat l vred 6
+@mat m vwhite 6
+@mat n vwhite 2
+@mat o morange 2
+@mat p morange 4
+@mat q morange 0
+@mat r viron 5
+@mat s viron 3
+@mat t viron 6
+@mblock 0 0
+................
+..bbbbbbbbbbbb..
+.beeeaeeeeaeeec.
+.bggfaiiihakjjc.
+.bfffahhhhajjlc.
+.baaaaaaaaaaaac.
+.bmmmmmmappppoc.
+.bmmmmmmaoooooc.
+.bmmmmmnaoopooc.
+.bnnnnnnaqqqqqc.
+..cccccccccccc..
+................
+....rrrrrrtt....
+.~~~s~~~~~~s~~~.
+.--------------.
+................

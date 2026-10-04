@@ -2,7 +2,7 @@
 // 빈 프로젝트 무결성 검증 — v2 스키마(3레이어/Database/Map Tree).
 
 import { describe, it, expect } from "vitest";
-import { createBlankProject, ensureSwitchVariableSlots, createBlankMap, createStarterMap, TILE, DEFAULT_TILESET_ID, DEFAULT_TILESET_NAME, DEFAULT_TILESET_TEXTURE_KEY, DEFAULT_TILE_SIZE, DEFAULT_EASYRPG_CHARSET_ID, LEGACY_RM_TILESET_ID, LEGACY_RM_TILESET_TEXTURE_KEY, ensureBundledResourceProfiles, removeLegacyRmTileset } from "@/project/defaults";
+import { createBlankProject, ensureSwitchVariableSlots, createBlankMap, createStarterMap, TILE, COMBINED_TOWN_TILESET_ID, DEFAULT_TILESET_ID, DEFAULT_TILESET_NAME, DEFAULT_TILESET_TEXTURE_KEY, DEFAULT_TILE_SIZE, DEFAULT_EASYRPG_CHARSET_ID, LEGACY_RM_TILESET_ID, LEGACY_RM_TILESET_TEXTURE_KEY, ensureBundledResourceProfiles, removeLegacyRmTileset } from "@/project/defaults";
 import { createSampleAdventureProject } from "@/project/defaults/defaultProject";
 import { TERRAIN_TAG, describeChipsetTile, dirtLikeTiles, tileLabelForIndex } from "@/project/defaults/chipsetMapping";
 import { TILE_SIZE as RUNTIME_TILE_SIZE } from "@/assets/bundled";
@@ -99,7 +99,8 @@ describe("createBlankProject", () => {
     expect(startMap.events).toHaveLength(0);
     expect(startMap.lowerTiles).toHaveLength(20 * 15);
     expect(startMap.upperTiles).toHaveLength(20 * 15);
-    expect(startMap.lowerTiles.every((tile) => tile === TILE.GRASS)).toBe(true);
+    // 버들항의 민무늬 풀 칸(737). TILE.GRASS(240)는 합본 마을 번호라 버들항에서는 벽이다.
+    expect(startMap.lowerTiles.every((tile) => tile === 737)).toBe(true);
     expect(startMap.upperTiles.every((tile) => tile === TILE.EMPTY)).toBe(true);
     expect(p.mapTree).toEqual({ mapId: p.startMapId, children: [] });
     expect(p.villageInfoDocuments).toEqual([]);
@@ -184,12 +185,13 @@ describe("createBlankProject", () => {
     expect(p.session.variables).toEqual({ var_legacy_score: 5 });
   });
 
-  it("uses EasyRPG RTP Combined Town as the project-wide default chipset", () => {
+  it("uses Beodeul City as the project-wide default chipset while keeping Combined Town bundled", () => {
     const p = createBlankProject();
     const defaultTileset = p.tilesets[DEFAULT_TILESET_ID];
     const chipsetProfiles = p.resourceProfiles.filter((profile) => profile.kind === "chipset");
 
-    expect(DEFAULT_TILESET_ID).toBe("easyrpg_chipset_combined_town");
+    expect(DEFAULT_TILESET_ID).toBe("beodeul_city");
+    expect(p.tilesets["easyrpg_chipset_combined_town"]).toBeDefined();
     expect(defaultTileset?.name).toBe(DEFAULT_TILESET_NAME);
     expect(defaultTileset?.image).toEqual({ type: "bundled", id: DEFAULT_TILESET_TEXTURE_KEY });
     expect(p.maps[p.startMapId].tilesetId).toBe(DEFAULT_TILESET_ID);
@@ -214,7 +216,7 @@ describe("createBlankProject", () => {
     expect(removeLegacyRmTileset(p)).toBe(true);
 
     expect(p.tilesets[LEGACY_RM_TILESET_ID]).toBeUndefined();
-    expect(p.maps.map_town.tilesetId).toBe(DEFAULT_TILESET_ID);
+    expect(p.maps.map_town.tilesetId).toBe(COMBINED_TOWN_TILESET_ID);
     expect(p.maps.map_dungeon.tilesetId).toBe("easyrpg_chipset_dungeon");
     expect(p.maps.map_interior.tilesetId).toBe("easyrpg_chipset_interior");
   });
@@ -305,7 +307,8 @@ describe("createBlankProject", () => {
 
   it("maps bundled chipset terrain, priority, and passability by atlas index", () => {
     const p = createBlankProject();
-    const tileset = p.tilesets[DEFAULT_TILESET_ID];
+    // TILE.* 는 합본 마을 시트의 칸 번호다 — 기본 타일셋(버들항)이 아니라 합본 마을로 확인한다.
+    const tileset = p.tilesets[COMBINED_TOWN_TILESET_ID];
     const passable = { up: true, down: true, left: true, right: true };
     const solid = { up: false, down: false, left: false, right: false };
 
@@ -379,7 +382,9 @@ describe("createBlankMap", () => {
 
   it("기본 lower는 전부 잔디, upper는 전부 빈 칸", () => {
     const m = createBlankMap("테스트", 3, 3);
-    expect(m.lowerTiles.every((t: number) => t === TILE.GRASS)).toBe(true);
+    expect(m.lowerTiles.every((t: number) => t === 737)).toBe(true);
+    const town = createBlankMap("테스트", 3, 3, COMBINED_TOWN_TILESET_ID);
+    expect(town.lowerTiles.every((t: number) => t === TILE.GRASS)).toBe(true);
     expect(m.upperTiles.every((t: number) => t === TILE.EMPTY)).toBe(true);
   });
 

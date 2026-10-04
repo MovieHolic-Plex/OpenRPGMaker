@@ -1,3 +1,5 @@
+import type { BlendModeName } from "@/project/blendMode";
+import type { EasingName } from "@/project/easing";
 import type {
   ActorId,
   AssetRef,
@@ -272,7 +274,9 @@ export type MessageWindowSettings = {
 export type FaceGraphic = {
   /** 낱장 얼굴 리소스 id. 얼굴 한 칸 = 파일 한 장이라 칸 번호가 없다. */
   readonly resourceId: string;
-  readonly presentation?: "face" | "bust";
+  readonly presentation?: "face" | "bust" | "full";
+  /** 전신 초상 장면 배율(%). 프로젝트 기본 크기에 곱한다. 생략 = 100. */
+  readonly fullScale?: number;
   readonly position: "left" | "right";
   readonly flipHorizontally: boolean;
 };
@@ -323,6 +327,11 @@ export type Command =
       context?: string;
       /** 대사 그릇(DialogueContainerId): box·balloon·bark·corner. 비우면 화자 프로필 → 상자. */
       container?: string;
+      /**
+       * 이 한 줄의 대화창 위치. 비우면 프로젝트의 「문장 표시 설정」(displayTextSettings)을 따른다.
+       * auto = 화면 속 주인공을 가리지 않는 쪽으로 자동, top·center·bottom = 고정(주인공이 가려져도 그대로).
+       */
+      position?: "auto" | "top" | "center" | "bottom";
     }
   | ({ kind: "changeFace"; appearanceId?: string } & FaceGraphic)
   | {
@@ -478,6 +487,10 @@ export type Command =
       opacity?: number;
       rotation?: number;
       durationMs?: number;
+      /** 이동 곡선(생략 = 일정하게). 그림이 가감속하며 들어오고 멈춘다. */
+      easing?: EasingName;
+      /** 아래 화면과 섞는 방식(생략 = 보통). */
+      blendMode?: Exclude<BlendModeName, "normal">;
       waitForPicture?: boolean;
       /** 시스템이 갤러리를 켜 둔 동안, 이 그림을 한 번 보면 메뉴 목록에 남긴다. */
       recordInGallery?: boolean;
@@ -642,6 +655,8 @@ export interface EventPageGraphic {
   scale?: number;
   /** 생략 시 scale이 없으면 자동, 기존 scale이 있으면 수동(호환). */
   scaleMode?: "auto" | "manual";
+  /** 아래 화면과 섞는 방식(생략 = 보통). 빛·유령은 add, 그림자는 multiply. `@/project/blendMode`. */
+  blendMode?: Exclude<BlendModeName, "normal">;
 }
 
 export interface NpcLivingDestination {

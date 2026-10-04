@@ -1,0 +1,37 @@
+{
+ "id": "shelf:toy",
+ "slug": "shelf_toy",
+ "name_ko": "인형 벽 선반",
+ "category": "잡화",
+ "kind": "hang",
+ "kind_ko": "벽면 걸이(벽 두 줄 중 윗줄)",
+ "canvas": [
+  16,
+  16
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 16,
+  "h": 16
+ },
+ "footprint": {
+  "w": 1,
+  "h": 0
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "인형 벽 선반 — 2단 벽 선반, 담긴 상품만 다른 변형. 잡화점·장난감 가게의 벽면 윗줄에 1~2개 나란히.",
+ "where": "잡화점·장난감 가게의 벽면 윗줄에 1~2개 나란히.",
+ "placement": [
+  "벽면 두 줄 중 윗줄(y=벽면 첫 줄)에 건다. 바닥 칸은 차지하지 않는다"
+ ],
+ "v5_bbox": [
+  1,
+  1,
+  14,
+  15
+ ],
+ "v5_colors": 8,
+ "material": "wood",
+ "related": []
+}

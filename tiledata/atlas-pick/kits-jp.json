@@ -1,0 +1,511 @@
+{
+ "version": 1,
+ "set": "jp",
+ "note": "일본 세트 조립형 킷 정의(손으로 쓰는 정본). 한 장 그림 대신 이어 붙는 부품 + 조립 설계도. 작업자 절차 WORKER-JP-KIT.md, 배정 jobs-jp-kit.json, 조립기 scripts/content/atlas-pick/jp_kit_compose.py. 킷 하나 = 고르는 화면의 항목 하나(item_id jp/<킷 slug>), 후보 하나 = 부품 전부를 같은 결로 찍은 부품 시트 한 장(kN-A.pxg).",
+ "grammar": {
+  "sheet": "부품 시트 = 부품을 kits 순서대로 선반 채우기(폭 sheetCols 칸, 줄마다 왼쪽부터, 줄 높이 = 그 줄 가장 큰 부품)로 놓은 한 장. 자리는 조립기가 정한다: `jp_kit_compose.py prepare` → candidates-jp/<킷>/info.json·slots.txt·guide.png.",
+  "cells": "부품 칸 수 [가로, 세로]. 1칸 = 16px. 건물 한 층 = 2줄(32px) — 사람(16×24)과 문 높이가 맞는다.",
+  "layer": "ground 바닥(불투명) · decal 바닥 덧칠(투명) · facade 건물 블록(불투명) · object 물체(투명, 바닥에 선다) · wall 벽 걸이(투명) · over 공중(투명, 사람 위)",
+  "repeat": "x = 가로로 같은 부품을 이어 붙인다(좌우 끝이 이어져야 한다), y = 세로로, xy = 둘 다, null = 한 번만",
+  "walk": "칸마다 통행. 한 글자면 부품 전 칸, 줄 목록이면 위→아래 줄마다(글자 수 = 가로 칸 수). X 막힘(벽·지붕·기계 몸통·기둥 밑동) · F 걸음(문·계단·통로·바닥) · C 위를 지나감(사람 위에 그려지는 처마·팔·전선·기둥 윗부분, 그 밑 칸은 걸을 수 있다)",
+  "door": "door=true 인 부품의 F 칸 = 드나드는 칸(문·계단·참배 자리). 조립기가 거리에서 걸어서 닿는지 본다(DOOR_REACH).",
+  "joins": "left/right/up/down = 그 쪽에 붙어도 되는 부품(fnmatch 무늬, '|' 는 예의 가장자리·빈칸). 설계도가 어기면 JOIN 오류.",
+  "examples": "조립 예 = 설계도. layers 는 ground → main → upper 순서로 합친다. 한 줄 = 칸 줄, 낱말 = 부품 slug. '.' 빈칸(바탕 그대로) · '+' 여러 칸 부품이 덮는 칸 · 'S:slug' 다른 킷 부품(aliases 로 킷 이름을 줄임, 후보는 사용자가 고른 것 → 같은 방향 글자 → 아무거나 순) · '=pave' '=asph' 보도·차도 바탕 칸 · 'slug!' 좌우 뒤집기(얇은 대칭 부품만 — 빛이 왼쪽 위라 명암 있는 부품은 따로 그린다). walk(선택) = 설계도 통행 덮어쓰기(공백 = 부품 값 그대로). through='ns' = 위 가장자리에서 아래 가장자리로 걸어서 지나갈 수 있어야 한다(THROUGH). ctx = street(아래 보도 2줄 + 차도 2줄) | floor(사방 1칸 바닥) | none."
+ },
+ "sheetCols": 8,
+ "kits": [
+  {
+   "slug": "kit_shopfront",
+   "name": "킷: 1층 가게 정면(콘비니·이자카야·라멘 공용 뼈대)",
+   "scene": "역 앞 번화가",
+   "replaces": ["konbini_front", "izakaya_front", "ramen_front"],
+   "about": "가게 1층 = 간판 띠 1줄 + 정면 2줄(한 층). 뼈대(양 끝 기둥·창·문)는 모든 가게가 같이 쓰고, 간판 띠·글자·차양·노렌·등롱만 갈아 끼워 콘비니·이자카야·라멘이 된다. 폭은 3칸부터 몇 칸이든. 위층은 kit_bldg 가 얹는다.",
+   "palette_hint": "mwhite·mconc 기둥, mglass 유리, mmetal 문틀, kgreen·korange·kblue 콘비니 띠, sumi·hinoki 이자카야 나무, akachin·taxi 라멘, ai 노렌",
+   "contract": [
+    "간판 띠 줄(band_*·text_*)의 맨 아래 2px = 띠 밑 그늘(mconc 1~2단) — 띠가 정면보다 튀어나와 보인다. 모든 간판 띠 부품이 같은 높이·같은 단.",
+    "정면 부품(pil_*·win_*·door_*·wall_*·shutter)은 1×2(32px). 위 2px = 띠가 드리운 그늘 한 줄, 아래 3px = 문턱·걸레받이(mconc) — 가로로 이어 붙였을 때 이 두 줄이 끊기지 않는다.",
+    "pil_l 은 왼쪽 1~2px 가 빛(밝은 단), pil_r 은 오른쪽 2px 가 한 단 어둡다. 가게 둘이 붙으면 pil_r|pil_l 이 한 번에 두꺼운 기둥으로 읽힌다.",
+    "위층(kit_bldg)과 만나는 곳: 간판 띠 줄 맨 위 1px = kit_bldg 벽 부품 맨 아래 1px 와 같은 단(mconc 2). 서로 다른 작업자가 그리므로 이 한 줄만은 꼭 지킨다."
+   ],
+   "parts": [
+    {"slug": "pil_l", "name": "왼 끝 기둥", "cells": [1, 2], "layer": "facade", "repeat": null, "walk": "X", "desc": "가게 정면 왼쪽 끝 벽기둥(흰 타일·콘크리트). 빛 쪽이라 왼 테 밝게.", "right": ["win_*", "door_*", "wall_*", "shutter"], "left": ["|", "pil_r"]},
+    {"slug": "pil_r", "name": "오른 끝 기둥", "cells": [1, 2], "layer": "facade", "repeat": null, "walk": "X", "desc": "오른쪽 끝 벽기둥. 오른 테 한 단 어둡게.", "left": ["win_*", "door_*", "wall_*", "shutter"]},
+    {"slug": "win_glass", "name": "유리창(빈 가게)", "cells": [1, 2], "layer": "facade", "repeat": "x", "walk": "X", "desc": "알루미늄 틀 큰 유리. 안쪽 어둡게, 왼 위 반사 사선 한두 줄. 가로로 이어도 틀이 겹치지 않게(틀은 왼쪽에만 1px)."},
+    {"slug": "win_shelf", "name": "유리창(선반 보이는 콘비니)", "cells": [1, 2], "layer": "facade", "repeat": "x", "walk": "X", "desc": "유리 너머 밝은 매장: 잡지 칸·선반 색 점 줄(작은 색 점 두세 줄). 밤에도 밝은 판."},
+    {"slug": "win_koshi", "name": "나무 격자창(이자카야)", "cells": [1, 2], "layer": "facade", "repeat": "x", "walk": "X", "desc": "짙은 나무 틀 + 세로 격자(코시) 사이로 따뜻한 불빛(washi)."},
+    {"slug": "wall_plain", "name": "민벽 판", "cells": [1, 2], "layer": "facade", "repeat": "x", "walk": "X", "desc": "창 없는 벽 판(타일·회벽). 문 옆 벽이나 좁은 가게 채움."},
+    {"slug": "door_auto_l", "name": "자동문 왼 짝", "cells": [1, 2], "layer": "facade", "repeat": null, "walk": ["X", "F"], "door": true, "desc": "유리 자동문 왼 짝. 아랫칸이 드나드는 칸. door_auto_r 과 짝으로 가운데 틈이 보인다.", "right": ["door_auto_r"]},
+    {"slug": "door_auto_r", "name": "자동문 오른 짝", "cells": [1, 2], "layer": "facade", "repeat": null, "walk": ["X", "F"], "door": true, "desc": "유리 자동문 오른 짝.", "left": ["door_auto_l"]},
+    {"slug": "door_slide", "name": "미닫이 나무문", "cells": [1, 2], "layer": "facade", "repeat": null, "walk": ["X", "F"], "door": true, "desc": "격자 유리 미닫이 나무문(라멘·작은 가게). 노렌 없는 판."},
+    {"slug": "door_noren", "name": "노렌 걸린 문", "cells": [1, 2], "layer": "facade", "repeat": null, "walk": ["X", "F"], "door": true, "desc": "미닫이 위에 남색 노렌(윗칸 대부분, 세 갈래 트임). 이자카야 입구."},
+    {"slug": "shutter", "name": "셔터(문 닫은 가게)", "cells": [1, 2], "layer": "facade", "repeat": "x", "walk": "X", "desc": "은회색 가로 골 셔터. 가로로 이어 붙여도 골 줄이 맞게."},
+    {"slug": "band_l", "name": "간판 띠 왼 끝", "cells": [1, 1], "layer": "facade", "repeat": null, "walk": "X", "desc": "간판 띠 왼 끝 마감(흰 테). 모든 간판 종류가 같이 쓴다."},
+    {"slug": "band_r", "name": "간판 띠 오른 끝", "cells": [1, 1], "layer": "facade", "repeat": null, "walk": "X", "desc": "간판 띠 오른 끝 마감."},
+    {"slug": "band_cvs", "name": "간판 띠: 콘비니 세 줄", "cells": [1, 1], "layer": "facade", "repeat": "x", "walk": "X", "desc": "초록·주황·파랑 가로 줄무늬(상표 금지, 줄만). 이어 붙이면 줄이 끊기지 않는다."},
+    {"slug": "band_izakaya", "name": "간판 띠: 이자카야 나무", "cells": [1, 1], "layer": "facade", "repeat": "x", "walk": "X", "desc": "짙은 나무 판 + 위 처마 기와 한 줄 느낌."},
+    {"slug": "band_ramen", "name": "간판 띠: 라멘 붉은 판", "cells": [1, 1], "layer": "facade", "repeat": "x", "walk": "X", "desc": "붉은 판 + 노란 테."},
+    {"slug": "band_plain", "name": "간판 띠: 흰 민판", "cells": [1, 1], "layer": "facade", "repeat": "x", "walk": "X", "desc": "빈 흰 간판(닫은 가게·빈 점포)."},
+    {"slug": "text_ramen", "name": "글자 「ラーメン」", "cells": [2, 1], "layer": "facade", "repeat": null, "walk": "X", "desc": "band_ramen 바탕 위 노란 가타카나 네 자(획 2px). band_ramen 사이에 끼운다."},
+    {"slug": "text_sake", "name": "글자 「酒」", "cells": [1, 1], "layer": "facade", "repeat": null, "walk": "X", "desc": "band_izakaya 바탕 위 흰 한자 한 자."},
+    {"slug": "awn_l", "name": "차양 왼 끝", "cells": [1, 1], "layer": "over", "repeat": null, "walk": "C", "desc": "정면 윗칸 위에 덧씌우는 줄무늬 천 차양 왼 끝(윗 8~10px 만, 아래 끝 물결 테). 사람 위층."},
+    {"slug": "awn_m", "name": "차양 가운데", "cells": [1, 1], "layer": "over", "repeat": "x", "walk": "C", "desc": "차양 가운데(줄무늬 주기 8px — 이어 붙여도 줄이 맞게)."},
+    {"slug": "awn_r", "name": "차양 오른 끝", "cells": [1, 1], "layer": "over", "repeat": null, "walk": "C", "desc": "차양 오른 끝(그늘 쪽 한 단 어둡게)."},
+    {"slug": "lantern", "name": "붉은 등롱", "cells": [1, 1], "layer": "over", "repeat": null, "walk": "C", "desc": "정면 윗칸에 매단 붉은 등롱(아카초칭) 하나. 둘레 불빛 % 조금."},
+    {"slug": "entry_mat", "name": "문 앞 발깔개", "cells": [1, 1], "layer": "ground", "repeat": "x", "walk": "F", "desc": "보도 위 문 앞 회색 매트(보도 바탕까지 칠한 불투명 바닥 칸)."}
+   ],
+   "examples": [
+    {"id": "konbini6", "name": "콘비니 6칸", "ctx": "street", "layers": {
+      "ground": [". . . . . .", ". . . . . .", ". . . . . .", ". . entry_mat entry_mat . ."],
+      "main": ["band_l band_cvs band_cvs band_cvs band_cvs band_r", "pil_l win_shelf door_auto_l door_auto_r win_shelf pil_r", "+ + + + + +"]}},
+    {"id": "konbini9", "name": "넓은 콘비니 9칸(창을 더 잇기)", "ctx": "street", "layers": {
+      "main": ["band_l band_cvs band_cvs band_cvs band_cvs band_cvs band_cvs band_cvs band_r", "pil_l win_shelf win_shelf win_shelf door_auto_l door_auto_r win_shelf win_shelf pil_r", "+ + + + + + + + +"]}},
+    {"id": "izakaya5", "name": "이자카야 5칸(노렌·등롱)", "ctx": "street", "layers": {
+      "main": ["band_l band_izakaya text_sake band_izakaya band_r", "pil_l win_koshi door_noren win_koshi pil_r", "+ + + + +"],
+      "upper": [". . . . .", ". lantern . lantern ."]}},
+    {"id": "ramen4", "name": "라멘집 4칸(차양)", "ctx": "street", "layers": {
+      "main": ["band_l text_ramen + band_r", "pil_l door_slide win_glass pil_r", "+ + + +"],
+      "upper": [". . . .", "awn_l awn_m awn_m awn_r"]}},
+    {"id": "closed3", "name": "문 닫은 좁은 가게 3칸", "ctx": "street", "layers": {
+      "main": ["band_l band_plain band_r", "pil_l shutter pil_r", "+ + +"]}},
+    {"id": "row15", "name": "가게 줄 15칸(콘비니·이자카야·라멘 한 뼈대)", "ctx": "street", "layers": {
+      "main": ["band_l band_cvs band_cvs band_cvs band_cvs band_r band_l band_izakaya text_sake band_izakaya band_r band_l text_ramen + band_r",
+               "pil_l win_shelf door_auto_l door_auto_r win_shelf pil_r pil_l win_koshi door_noren win_koshi pil_r pil_l door_slide win_glass pil_r",
+               "+ + + + + + + + + + + + + + +"],
+      "upper": [". . . . . . . . . . . . . . .", ". . . . . . . lantern . lantern . awn_l awn_m awn_m awn_r"]}}
+   ]
+  },
+  {
+   "slug": "kit_bldg",
+   "name": "킷: 건물 뼈대(잡거빌딩·상가빌딩)",
+   "scene": "역 앞 번화가",
+   "replaces": ["zakkyo_building"],
+   "aliases": {"S": "kit_shopfront"},
+   "about": "평지붕 옥상(뒤 난간·바닥·앞 난간 × 왼·가운데·오른) + 층(벽 1×2: 끝·민벽·창 세 종) + 층 간판 띠·세로 돌출 간판(덧칠) + 계단 입구. 폭·층수 자유. 1층은 kit_shopfront 를 얹어 가게를 넣거나 계단 입구만 둔다.",
+   "palette_hint": "mconc·mtile·mpave 벽, mglass·mdglass 창, mmetal 난간·물탱크, neon·neonc·taxi·akachin 간판",
+   "contract": [
+    "한 층 = 벽 부품 1×2. 모든 벽·창 부품의 위 1px = 층 이음 줄(창틀 위 slab 선, mconc 2), 아래 1px = 같은 줄 — 층을 쌓으면 층마다 가는 띠가 보인다.",
+    "wall_l 왼 2px 밝게, wall_r 오른 2px 한 단 어둡게(빛 왼쪽 위). 창 부품 좌우 가장자리 2px 는 wall_m 과 같은 벽 재질 — 창을 몇 개 이어도 벽이 이어진다.",
+    "벽 부품 맨 아래 1px = kit_shopfront 간판 띠 맨 위 1px 와 같은 단(mconc 2).",
+    "옥상: roof_n* 뒤 난간(윗면 밝게) → roof_m* 옥상 바닥(y 반복) → roof_s* 앞 난간(두께 보이게). 설비(rt_*)는 옥상 바닥 줄에만, 양 끝 열 금지."
+   ],
+   "parts": [
+    {"slug": "roof_nl", "name": "옥상 뒤 난간 왼", "cells": [1, 1], "layer": "facade", "repeat": null, "walk": "X", "desc": "옥상 뒤쪽 난간 왼 모서리."},
+    {"slug": "roof_nm", "name": "옥상 뒤 난간 가운데", "cells": [1, 1], "layer": "facade", "repeat": "x", "walk": "X", "desc": "뒤 난간(윗면 밝은 두께 2~3px)."},
+    {"slug": "roof_nr", "name": "옥상 뒤 난간 오른", "cells": [1, 1], "layer": "facade", "repeat": null, "walk": "X", "desc": "뒤 난간 오른 모서리."},
+    {"slug": "roof_ml", "name": "옥상 바닥 왼", "cells": [1, 1], "layer": "facade", "repeat": "y", "walk": "X", "desc": "옥상 바닥 왼 가장자리(옆 난간 두께)."},
+    {"slug": "roof_mm", "name": "옥상 바닥", "cells": [1, 1], "layer": "facade", "repeat": "xy", "walk": "X", "desc": "옥상 바닥(콘크리트·방수 도료, 조용하게)."},
+    {"slug": "roof_mr", "name": "옥상 바닥 오른", "cells": [1, 1], "layer": "facade", "repeat": "y", "walk": "X", "desc": "옥상 바닥 오른 가장자리."},
+    {"slug": "roof_sl", "name": "옥상 앞 난간 왼", "cells": [1, 1], "layer": "facade", "repeat": null, "walk": "X", "desc": "앞 난간 왼 모서리(두께 + 윗면)."},
+    {"slug": "roof_sm", "name": "옥상 앞 난간 가운데", "cells": [1, 1], "layer": "facade", "repeat": "x", "walk": "X", "desc": "앞 난간(윗면 밝은 줄, 앞 두께 한 단 어둡게, 아래 처마 그늘)."},
+    {"slug": "roof_sr", "name": "옥상 앞 난간 오른", "cells": [1, 1], "layer": "facade", "repeat": null, "walk": "X", "desc": "앞 난간 오른 모서리."},
+    {"slug": "rt_tank", "name": "옥상 물탱크", "cells": [2, 2], "layer": "object", "repeat": null, "walk": "X", "desc": "옥상 위 네모 물탱크(철 받침 다리, 윗면 보이게)."},
+    {"slug": "rt_ac", "name": "옥상 실외기", "cells": [1, 1], "layer": "object", "repeat": null, "walk": "X", "desc": "옥상 실외기 하나(팬 원)."},
+    {"slug": "wall_l", "name": "벽 왼 끝(한 층)", "cells": [1, 2], "layer": "facade", "repeat": "y", "walk": "X", "desc": "층 왼 끝 벽(모서리 밝게, 빗물 홈통 한 줄 있어도 좋다)."},
+    {"slug": "wall_m", "name": "민벽(한 층)", "cells": [1, 2], "layer": "facade", "repeat": "xy", "walk": "X", "desc": "창 없는 벽(타일 줄눈·얼룩 조금)."},
+    {"slug": "wall_r", "name": "벽 오른 끝(한 층)", "cells": [1, 2], "layer": "facade", "repeat": "y", "walk": "X", "desc": "층 오른 끝 벽(한 단 어둡게)."},
+    {"slug": "win_plain", "name": "창: 알루미늄 창", "cells": [1, 2], "layer": "facade", "repeat": "xy", "walk": "X", "desc": "가로 긴 알루미늄 창(두 짝), 창턱 그늘."},
+    {"slug": "win_lit", "name": "창: 불 켜진 창·블라인드", "cells": [1, 2], "layer": "facade", "repeat": "xy", "walk": "X", "desc": "블라인드 줄 사이 불빛(washi·taxi 밝은 단)."},
+    {"slug": "win_sign", "name": "창: 글자 붙은 창", "cells": [1, 2], "layer": "facade", "repeat": "xy", "walk": "X", "desc": "잡거빌딩 창에 붙인 커다란 색 글자판(가짜 글자 금지 — 색 네모·점 무늬 또는 가나 한 자)."},
+    {"slug": "fsign_l", "name": "층 간판 왼", "cells": [1, 1], "layer": "wall", "repeat": null, "walk": "C", "desc": "층 윗칸에 덧붙이는 가로 간판 판 왼 끝(투명 배경, 판 높이 8~10px)."},
+    {"slug": "fsign_m", "name": "층 간판 가운데 A", "cells": [1, 1], "layer": "wall", "repeat": "x", "walk": "C", "desc": "가로 간판 가운데(한 색)."},
+    {"slug": "fsign_m2", "name": "층 간판 가운데 B", "cells": [1, 1], "layer": "wall", "repeat": "x", "walk": "C", "desc": "다른 색·글자 무늬 변형(층마다 색이 다르게)."},
+    {"slug": "fsign_r", "name": "층 간판 오른", "cells": [1, 1], "layer": "wall", "repeat": null, "walk": "C", "desc": "가로 간판 오른 끝."},
+    {"slug": "vsign_t", "name": "세로 간판 위", "cells": [1, 1], "layer": "wall", "repeat": null, "walk": "C", "desc": "벽에서 튀어나온 세로 간판 윗 끝(쇠 받침 + 판 윗테)."},
+    {"slug": "vsign_m", "name": "세로 간판 가운데", "cells": [1, 1], "layer": "wall", "repeat": "y", "walk": "C", "desc": "세로 간판 칸(색 네모 한 칸 = 가게 하나, 세로로 이어 붙이면 칸마다 판이 나뉜다)."},
+    {"slug": "vsign_b", "name": "세로 간판 아래", "cells": [1, 1], "layer": "wall", "repeat": null, "walk": "C", "desc": "세로 간판 아래 끝(받침·전선)."},
+    {"slug": "stair_door", "name": "계단 입구(위층 가는 좁은 문)", "cells": [1, 2], "layer": "facade", "repeat": null, "walk": ["X", "F"], "door": true, "desc": "1층 좁은 입구: 어두운 계단이 안쪽으로 올라가는 게 보이는 문틀, 층 안내판 작은 줄."}
+   ],
+   "examples": [
+    {"id": "b3f3", "name": "3칸 3층(1층 셔터·세로 간판)", "ctx": "street", "layers": {
+      "main": ["roof_nl roof_nm roof_nr", "roof_sl roof_sm roof_sr", "wall_l win_plain wall_r", "+ + +", "wall_l win_lit wall_r", "+ + +",
+               "S:band_l S:band_plain S:band_r", "S:pil_l S:shutter S:pil_r", "+ + +"],
+      "upper": [". . .", ". . .", ". . vsign_t", ". . vsign_m", ". . vsign_m", ". . vsign_b"]}},
+    {"id": "b5f5", "name": "5칸 5층(물탱크·층 간판·1층 이자카야)", "ctx": "street", "layers": {
+      "main": ["roof_nl roof_nm roof_nm roof_nm roof_nr", "roof_ml roof_mm roof_mm roof_mm roof_mr", "roof_ml roof_mm roof_mm roof_mm roof_mr", "roof_sl roof_sm roof_sm roof_sm roof_sr",
+               "wall_l win_plain wall_m win_plain wall_r", "+ + + + +",
+               "wall_l win_lit wall_m win_lit wall_r", "+ + + + +",
+               "wall_l win_sign wall_m win_sign wall_r", "+ + + + +",
+               "wall_l win_lit wall_m win_plain wall_r", "+ + + + +",
+               "S:band_l S:band_izakaya S:text_sake S:band_izakaya S:band_r", "S:pil_l S:win_koshi S:door_noren S:win_koshi S:pil_r", "+ + + + +"],
+      "upper": [". . . . .", ". rt_tank + rt_ac .", ". + + . .", ". . . . .", ". . . . .", ". . . . .",
+                "fsign_l fsign_m fsign_m fsign_m fsign_r", ". . . . .", ". . . . .", ". . . . .",
+                "fsign_l fsign_m2 fsign_m2 fsign_m2 fsign_r", ". . . . .", ". . . . .", ". S:lantern . S:lantern ."]}},
+    {"id": "b4f2", "name": "4칸 2층(킷 혼자 — 계단 입구)", "ctx": "street", "layers": {
+      "main": ["roof_nl roof_nm roof_nm roof_nr", "roof_sl roof_sm roof_sm roof_sr", "wall_l win_plain win_plain wall_r", "+ + + +", "wall_l stair_door win_lit wall_r", "+ + + +"]}},
+    {"id": "b8f4", "name": "8칸 4층(1층 콘비니+라멘)", "ctx": "street", "layers": {
+      "main": ["roof_nl roof_nm roof_nm roof_nm roof_nm roof_nm roof_nm roof_nr", "roof_ml roof_mm roof_mm roof_mm roof_mm roof_mm roof_mm roof_mr", "roof_sl roof_sm roof_sm roof_sm roof_sm roof_sm roof_sm roof_sr",
+               "wall_l win_plain wall_m win_plain win_plain wall_m win_plain wall_r", "+ + + + + + + +",
+               "wall_l win_sign wall_m win_lit win_lit wall_m win_sign wall_r", "+ + + + + + + +",
+               "wall_l win_lit wall_m win_plain win_plain wall_m win_lit wall_r", "+ + + + + + + +",
+               "S:band_l S:band_cvs S:band_cvs S:band_r S:band_l S:text_ramen + S:band_r", "S:pil_l S:door_auto_l S:door_auto_r S:pil_r S:pil_l S:door_slide S:win_glass S:pil_r", "+ + + + + + + +"],
+      "upper": [". . . . . . . .", ". . . rt_ac . rt_ac . .", ". . . . . . . .", ". . . . . . . vsign_t", ". . . . . . . vsign_m", ". . . . . . . vsign_m", ". . . . . . . vsign_m", ". . . . . . . vsign_b",
+                ". . . . . . . .", ". . . . . . . .", ". . . . . S:awn_l S:awn_m S:awn_r"]}},
+    {"id": "pair", "name": "높이 다른 두 채 붙이기(3칸 4층 + 4칸 2층)", "ctx": "street", "layers": {
+      "main": ["roof_nl roof_nm roof_nr . . . .", "roof_sl roof_sm roof_sr . . . .", "wall_l win_lit wall_r . . . .", "+ + + . . . .",
+               "wall_l win_sign wall_r roof_nl roof_nm roof_nm roof_nr", "+ + + roof_sl roof_sm roof_sm roof_sr",
+               "wall_l win_plain wall_r wall_l win_plain win_lit wall_r", "+ + + + + + +",
+               "wall_l stair_door wall_r wall_l win_plain stair_door wall_r", "+ + + + + + +"]}}
+   ]
+  },
+  {
+   "slug": "kit_station",
+   "name": "킷: 역 입구(지하철 출입구·역 건물 정면)",
+   "scene": "역 앞 번화가",
+   "replaces": ["station_entrance"],
+   "about": "지붕판(캐노피) + 간판 띠(駅·출구 번호) + 옆벽·기둥 + 내려가는 계단(걸음) + 난간, 또는 유리벽·자동문(역 건물). 계단 폭·길이, 건물 폭 자유.",
+   "palette_hint": "mconc·mgran 지붕판·벽, mwhite 간판, kgreen·kblue 띠, lacq 글자, mmetal 난간, mtile 계단",
+   "contract": [
+    "지붕판(can_*) 윗면 3~4px 밝게 + 앞 두께 한 단 어둡게, 맨 아래 2px 그늘. 간판 띠(sign_*)는 지붕판 바로 밑 줄, 모든 sign_* 가 같은 띠 높이·같은 초록 줄.",
+    "계단(stairs)은 위로 갈수록(= 안으로 내려갈수록) 한 단씩 어두워 보이게 칸 안에서 3~4 디딤판. 세로로 이어 붙이면 디딤판 간격이 그대로 이어진다.",
+    "stairs_lip = 보도 높이에서 계단이 시작하는 턱(노란 미끄럼 방지 줄). 아래 가장자리는 보도(mpave) 색으로 끝난다.",
+    "side_*·rail_* 는 계단 양옆 낮은 벽(두께·윗면). 계단 칸과 닿는 쪽은 그늘."
+   ],
+   "parts": [
+    {"slug": "can_l", "name": "지붕판 왼", "cells": [1, 1], "layer": "facade", "repeat": null, "walk": "X", "desc": "캐노피 지붕판 왼 끝."},
+    {"slug": "can_m", "name": "지붕판 가운데", "cells": [1, 1], "layer": "facade", "repeat": "x", "walk": "X", "desc": "캐노피 지붕판(윗면·앞 두께)."},
+    {"slug": "can_r", "name": "지붕판 오른", "cells": [1, 1], "layer": "facade", "repeat": null, "walk": "X", "desc": "캐노피 오른 끝."},
+    {"slug": "sign_l", "name": "간판 띠 왼", "cells": [1, 1], "layer": "facade", "repeat": null, "walk": "X", "desc": "흰 간판 띠 왼 끝(초록 줄)."},
+    {"slug": "sign_m", "name": "간판 띠 가운데", "cells": [1, 1], "layer": "facade", "repeat": "x", "walk": "X", "desc": "흰 간판 띠(글자 없는 칸)."},
+    {"slug": "sign_r", "name": "간판 띠 오른", "cells": [1, 1], "layer": "facade", "repeat": null, "walk": "X", "desc": "간판 띠 오른 끝."},
+    {"slug": "sign_eki", "name": "간판 「駅」", "cells": [1, 1], "layer": "facade", "repeat": null, "walk": "X", "desc": "띠 가운데 한자 「駅」 한 자(획 2px, 짙게)."},
+    {"slug": "sign_exit", "name": "간판 출구 번호", "cells": [1, 1], "layer": "facade", "repeat": null, "walk": "X", "desc": "노란 네모 안 숫자(1~4 중 하나) — 출구 번호판."},
+    {"slug": "pil", "name": "기둥", "cells": [1, 2], "layer": "facade", "repeat": "x", "walk": "X", "desc": "지붕판 받치는 사각 기둥(뒤는 어두운 안쪽)."},
+    {"slug": "side_l", "name": "옆벽 왼", "cells": [1, 2], "layer": "facade", "repeat": null, "walk": "X", "desc": "입구 왼 옆벽(타일, 두께가 보이게)."},
+    {"slug": "side_r", "name": "옆벽 오른", "cells": [1, 2], "layer": "facade", "repeat": null, "walk": "X", "desc": "입구 오른 옆벽(한 단 어둡게)."},
+    {"slug": "open_back", "name": "입구 안쪽(어두운 굴 입)", "cells": [1, 1], "layer": "facade", "repeat": "x", "walk": "X", "desc": "지붕판 밑 안쪽 어두운 벽·천장 조명 한 점. 계단 맨 위 칸 바로 위에 놓는다."},
+    {"slug": "stairs", "name": "내려가는 계단", "cells": [1, 1], "layer": "ground", "repeat": "xy", "walk": "F", "door": true, "desc": "디딤판 서너 줄(안으로 갈수록 어둡게). 드나드는 칸 — 맨 윗줄이 지하로 가는 이동 칸."},
+    {"slug": "stairs_lip", "name": "계단 턱(보도와 만나는 곳)", "cells": [1, 1], "layer": "ground", "repeat": "x", "walk": "F", "desc": "보도 높이 첫 턱, 노란 줄."},
+    {"slug": "rail_l", "name": "계단 옆 낮은 벽 왼", "cells": [1, 2], "layer": "facade", "repeat": "y", "walk": "X", "desc": "계단 왼쪽 낮은 벽 + 쇠 손잡이."},
+    {"slug": "rail_r", "name": "계단 옆 낮은 벽 오른", "cells": [1, 2], "layer": "facade", "repeat": "y", "walk": "X", "desc": "계단 오른쪽 낮은 벽."},
+    {"slug": "glass_wall", "name": "유리벽(역 건물)", "cells": [1, 2], "layer": "facade", "repeat": "x", "walk": "X", "desc": "역 건물 정면 큰 유리(안에 개찰 불빛 어렴풋)."},
+    {"slug": "door_l", "name": "자동문 왼 짝(역 건물)", "cells": [1, 2], "layer": "facade", "repeat": null, "walk": ["X", "F"], "door": true, "desc": "유리 자동문 왼 짝.", "right": ["door_r"]},
+    {"slug": "door_r", "name": "자동문 오른 짝(역 건물)", "cells": [1, 2], "layer": "facade", "repeat": null, "walk": ["X", "F"], "door": true, "desc": "유리 자동문 오른 짝.", "left": ["door_l"]}
+   ],
+   "examples": [
+    {"id": "exit4", "name": "지하철 출구 4칸(계단 두 줄)", "ctx": "street", "layers": {
+      "ground": [". . . .", ". . . .", ". . . .", ". stairs stairs .", ". stairs stairs .", ". stairs_lip stairs_lip ."],
+      "main": ["can_l can_m can_m can_r", "sign_l sign_eki sign_exit sign_r", "side_l open_back open_back side_r", "+ . . +", "rail_l . . rail_r", "+ . . +"]}},
+    {"id": "exit5long", "name": "넓고 긴 출구 5칸(계단 세 줄·네 칸 길이)", "ctx": "street", "layers": {
+      "ground": [". . . . .", ". . . . .", ". . . . .", ". stairs stairs stairs .", ". stairs stairs stairs .", ". stairs stairs stairs .", ". stairs stairs stairs .", ". stairs_lip stairs_lip stairs_lip ."],
+      "main": ["can_l can_m can_m can_m can_r", "sign_l sign_m sign_eki sign_exit sign_r", "side_l open_back open_back open_back side_r", "+ . . . +", "rail_l . . . rail_r", "+ . . . +", "rail_l . . . rail_r", "+ . . . +"]}},
+    {"id": "eki8", "name": "역 건물 정면 8칸(기둥·유리·자동문)", "ctx": "street", "layers": {
+      "main": ["can_l can_m can_m can_m can_m can_m can_m can_r", "sign_l sign_m sign_m sign_eki sign_exit sign_m sign_m sign_r", "side_l pil glass_wall door_l door_r glass_wall pil side_r", "+ + + + + + + +"]}},
+    {"id": "eki5", "name": "작은 역 건물 5칸", "ctx": "street", "layers": {
+      "main": ["can_l can_m can_m can_m can_r", "sign_l sign_eki sign_m sign_m sign_r", "side_l door_l door_r glass_wall side_r", "+ + + + +"]}}
+   ]
+  },
+  {
+   "slug": "kit_gate",
+   "name": "킷: 개찰구(통로 걸을 수 있음)",
+   "scene": "역 앞 번화가",
+   "replaces": ["station_gate"],
+   "about": "개찰 기계 = 세로로 긴 몸통(뒤 끝·가운데 반복·앞 끝) 1칸 폭, 기계 사이 통로 1칸(걸음) — 기계 수·통로 수·길이 자유. 끝 막음·낮은 칸막이·머리 위 안내판. 사용자 요구: 실제로 통행할 수 있어야 한다(설계도마다 THROUGH 검사).",
+   "palette_hint": "mmetal·mconc 몸통, mwhite 윗면, kblue IC 판, kgreen 진입 화살표, akachin 금지 표시, mpave·mgran 역 바닥",
+   "contract": [
+    "기계 몸통은 칸 가운데 10~12px 폭, 좌우 2~3px 는 투명(통로 쪽으로 문 날개만 1~2px 튀어나온다). 몸통 윗면(밝은 단)은 뒤 끝 → 앞 끝까지 같은 x 에서 이어진다.",
+    "gm_t(뒤 끝) · gm_m(가운데, 세로 반복) · gm_b_*(앞 끝, IC 판·화살표) 를 세로로 쌓아 기계 하나. 앞 끝은 남쪽(화면 아래)을 본다.",
+    "통로(lane_*)는 투명 바탕 위 문 날개 그림자·바닥 선 정도의 덧칠(decal). 걸음 칸.",
+    "floor(역 바닥)는 불투명 바닥 칸, xy 반복."
+   ],
+   "parts": [
+    {"slug": "floor", "name": "역 바닥", "cells": [1, 1], "layer": "ground", "repeat": "xy", "walk": "F", "desc": "역 안 바닥 타일(조용하게 4~5단, 줄눈 8px 주기)."},
+    {"slug": "gm_t", "name": "기계 뒤 끝", "cells": [1, 1], "layer": "object", "repeat": null, "walk": "X", "desc": "개찰 기계 뒤쪽 끝(둥근 윗면 모서리)."},
+    {"slug": "gm_m", "name": "기계 가운데", "cells": [1, 1], "layer": "object", "repeat": "y", "walk": "X", "desc": "기계 몸통 가운데(세로 반복 — 긴 기계)."},
+    {"slug": "gm_b_in", "name": "기계 앞 끝: 진입(초록 화살표)", "cells": [1, 1], "layer": "object", "repeat": null, "walk": "X", "desc": "앞 끝 IC 판(파란 원) + 초록 화살표 등."},
+    {"slug": "gm_b_out", "name": "기계 앞 끝: 진입 금지(빨강)", "cells": [1, 1], "layer": "object", "repeat": null, "walk": "X", "desc": "앞 끝 빨간 금지 표시(나가는 쪽 기계)."},
+    {"slug": "gm_b_ic", "name": "기계 앞 끝: IC 전용(파랑)", "cells": [1, 1], "layer": "object", "repeat": null, "walk": "X", "desc": "IC 전용 파란 판(표 넣는 곳 없음)."},
+    {"slug": "lane_t", "name": "통로 뒤", "cells": [1, 1], "layer": "decal", "repeat": null, "walk": "F", "desc": "통로 뒤 끝(바닥 선·열린 문 날개 끝)."},
+    {"slug": "lane_m", "name": "통로 가운데", "cells": [1, 1], "layer": "decal", "repeat": "y", "walk": "F", "desc": "통로 가운데(옆 기계 그늘 한 줄)."},
+    {"slug": "lane_b", "name": "통로 앞", "cells": [1, 1], "layer": "decal", "repeat": null, "walk": "F", "desc": "통로 앞 끝(양옆에서 튀어나온 문 날개 — 열린 상태, 가운데는 비움)."},
+    {"slug": "end_l", "name": "끝 막음 왼", "cells": [1, 2], "layer": "object", "repeat": null, "walk": "X", "desc": "개찰 줄 왼 끝 막음 칸막이(유리·쇠)."},
+    {"slug": "end_r", "name": "끝 막음 오른", "cells": [1, 2], "layer": "object", "repeat": null, "walk": "X", "desc": "오른 끝 막음."},
+    {"slug": "fence", "name": "낮은 칸막이", "cells": [1, 2], "layer": "object", "repeat": "x", "walk": "X", "desc": "개찰 줄을 벽까지 잇는 낮은 칸막이(가로 반복)."},
+    {"slug": "disp_l", "name": "머리 위 안내판 왼", "cells": [1, 1], "layer": "over", "repeat": null, "walk": "C", "desc": "천장에 매단 검은 안내판 왼 끝(매단 줄)."},
+    {"slug": "disp_m", "name": "머리 위 안내판 가운데", "cells": [1, 1], "layer": "over", "repeat": "x", "walk": "C", "desc": "안내판(주황 글자 점 줄·화살표)."},
+    {"slug": "disp_r", "name": "머리 위 안내판 오른", "cells": [1, 1], "layer": "over", "repeat": null, "walk": "C", "desc": "안내판 오른 끝."}
+   ],
+   "examples": [
+    {"id": "g3", "name": "통로 셋(기계 넷)", "ctx": "floor", "through": "ns", "layers": {
+      "ground": ["floor floor floor floor floor floor floor floor floor", "floor floor floor floor floor floor floor floor floor", "floor floor floor floor floor floor floor floor floor", "floor floor floor floor floor floor floor floor floor"],
+      "main": [". . . . . . . . .", "end_l gm_t lane_t gm_t lane_t gm_t lane_t gm_t end_r", "+ gm_b_in lane_b gm_b_ic lane_b gm_b_out lane_b gm_b_in +", ". . . . . . . . ."],
+      "upper": [". disp_l disp_m disp_m disp_m disp_m disp_m disp_r ."]}},
+    {"id": "g5long", "name": "통로 다섯·긴 기계·넓은 통로 하나", "ctx": "floor", "through": "ns", "layers": {
+      "ground": ["floor floor floor floor floor floor floor floor floor floor floor floor floor floor", "floor floor floor floor floor floor floor floor floor floor floor floor floor floor", "floor floor floor floor floor floor floor floor floor floor floor floor floor floor", "floor floor floor floor floor floor floor floor floor floor floor floor floor floor", "floor floor floor floor floor floor floor floor floor floor floor floor floor floor"],
+      "main": [". . . . . . . . . . . . . .", "end_l gm_t lane_t gm_t lane_t gm_t lane_t gm_t lane_t gm_t lane_t lane_t gm_t end_r", "+ gm_m lane_m gm_m lane_m gm_m lane_m gm_m lane_m gm_m lane_m lane_m gm_m +", "fence gm_b_in lane_b gm_b_in lane_b gm_b_ic lane_b gm_b_out lane_b gm_b_out lane_b lane_b gm_b_ic fence", "+ . . . . . . . . . . . . +"],
+      "upper": [". disp_l disp_m disp_m disp_m disp_m disp_m disp_m disp_m disp_m disp_m disp_m disp_r ."]}},
+    {"id": "g2fence", "name": "통로 둘 + 칸막이로 벽까지", "ctx": "floor", "through": "ns", "layers": {
+      "ground": ["floor floor floor floor floor floor floor floor", "floor floor floor floor floor floor floor floor", "floor floor floor floor floor floor floor floor", "floor floor floor floor floor floor floor floor"],
+      "main": [". . . . . . . .", "end_l gm_t lane_t gm_t lane_t gm_t fence fence", "+ gm_b_in lane_b gm_b_ic lane_b gm_b_out + +", ". . . . . . . ."]}}
+   ]
+  },
+  {
+   "slug": "kit_signal",
+   "name": "킷: 신호등(가로형 차량등·보행등·기둥·팔)",
+   "scene": "역 앞 번화가",
+   "replaces": ["jp_signal", "ped_signal"],
+   "about": "기둥(밑동 막힘 + 윗부분 지나감, 세로 반복) + 이음쇠 + 팔(가로 반복) + 등 머리(초록·노랑·빨강 켜짐 세 벌) + 보행등(빨강·초록) + 누름단추·이름판. 팔 길이·기둥 높이·양쪽 팔 자유.",
+   "palette_hint": "pole·mmetal 기둥·팔, lacq 등 상자, kgreen·taxi·akachin 켜진 등, kblue 이름판",
+   "contract": [
+    "기둥은 칸 가운데 4~5px 폭(x=6~10), 모든 기둥 부품이 같은 x·같은 명암 — 세로로 이어도 한 줄 기둥.",
+    "팔은 한 칸 위쪽 y=3~6 높이 한 줄(4px), 모든 팔·이음쇠·등 머리가 같은 높이에서 만난다.",
+    "등 머리(head_*)는 2×1, 가로 상자 속 등 셋(파랑빛 초록·노랑·빨강 순, 켜진 등만 밝게 + % 번짐). 세 벌은 켜진 등만 다르다.",
+    "기둥 밑동(pole_base)만 막힘. 나머지는 사람 위(C)."
+   ],
+   "parts": [
+    {"slug": "pole_base", "name": "기둥 밑동", "cells": [1, 1], "layer": "object", "repeat": null, "walk": "X", "desc": "기둥 밑동(받침판·오른 아래 그림자)."},
+    {"slug": "pole", "name": "기둥", "cells": [1, 1], "layer": "object", "repeat": "y", "walk": "C", "desc": "기둥 한 칸(세로 반복)."},
+    {"slug": "pole_btn", "name": "기둥 + 누름단추 상자", "cells": [1, 1], "layer": "object", "repeat": null, "walk": "C", "desc": "허리 높이 노란 누름단추 상자가 붙은 기둥."},
+    {"slug": "joint_r", "name": "이음쇠(오른쪽 팔)", "cells": [1, 1], "layer": "object", "repeat": null, "walk": "C", "desc": "기둥 꼭대기 + 오른쪽으로 나가는 팔 시작."},
+    {"slug": "joint_l", "name": "이음쇠(왼쪽 팔)", "cells": [1, 1], "layer": "object", "repeat": null, "walk": "C", "desc": "기둥 꼭대기 + 왼쪽으로 나가는 팔 시작."},
+    {"slug": "joint_lr", "name": "이음쇠(양쪽 팔)", "cells": [1, 1], "layer": "object", "repeat": null, "walk": "C", "desc": "기둥 꼭대기 + 양쪽 팔."},
+    {"slug": "arm", "name": "팔", "cells": [1, 1], "layer": "object", "repeat": "x", "walk": "C", "desc": "가로 팔(가로 반복)."},
+    {"slug": "arm_end_r", "name": "팔 오른 끝", "cells": [1, 1], "layer": "object", "repeat": null, "walk": "C", "desc": "팔 오른 끝 마개."},
+    {"slug": "arm_end_l", "name": "팔 왼 끝", "cells": [1, 1], "layer": "object", "repeat": null, "walk": "C", "desc": "팔 왼 끝 마개."},
+    {"slug": "head_g", "name": "차량등(초록 켜짐)", "cells": [2, 1], "layer": "object", "repeat": null, "walk": "C", "desc": "가로 등 상자, 왼 등(초록빛 청록) 켜짐 + 햇빛 가리개 차양."},
+    {"slug": "head_y", "name": "차량등(노랑 켜짐)", "cells": [2, 1], "layer": "object", "repeat": null, "walk": "C", "desc": "가운데 노랑 켜짐."},
+    {"slug": "head_r", "name": "차량등(빨강 켜짐)", "cells": [2, 1], "layer": "object", "repeat": null, "walk": "C", "desc": "오른 빨강 켜짐."},
+    {"slug": "ped_r", "name": "보행등(빨간 사람)", "cells": [1, 1], "layer": "object", "repeat": null, "walk": "C", "desc": "기둥에 붙은 보행등 상자, 위 칸 빨간 서 있는 사람 켜짐."},
+    {"slug": "ped_g", "name": "보행등(초록 사람)", "cells": [1, 1], "layer": "object", "repeat": null, "walk": "C", "desc": "아래 칸 초록 걷는 사람 켜짐."},
+    {"slug": "plate", "name": "팔 밑 이름판", "cells": [1, 1], "layer": "object", "repeat": null, "walk": "C", "desc": "팔 밑에 매단 파란 교차로 이름판(흰 점 글자 무늬)."}
+   ],
+   "examples": [
+    {"id": "corner", "name": "팔 둘·초록", "ctx": "street", "layers": {
+      "ground": ["=pave =asph =asph =asph =asph =asph", "=pave =asph =asph =asph =asph =asph", "=pave =asph =asph =asph =asph =asph", "=pave =asph =asph =asph =asph =asph", "=pave =asph =asph =asph =asph =asph"],
+      "main": ["joint_r arm arm head_g + arm_end_r", "ped_g . plate . . .", "pole . . . . .", "pole_btn . . . . .", "pole_base . . . . ."]}},
+    {"id": "long_red", "name": "긴 팔·빨강·보행 빨강", "ctx": "street", "layers": {
+      "ground": ["=pave =asph =asph =asph =asph =asph =asph =asph", "=pave =asph =asph =asph =asph =asph =asph =asph", "=pave =asph =asph =asph =asph =asph =asph =asph", "=pave =asph =asph =asph =asph =asph =asph =asph", "=pave =asph =asph =asph =asph =asph =asph =asph", "=pave =asph =asph =asph =asph =asph =asph =asph"],
+      "main": ["joint_r arm arm arm arm head_r + arm_end_r", "pole . . . plate . . .", "ped_r . . . . . . .", "pole . . . . . . .", "pole_btn . . . . . . .", "pole_base . . . . . . ."]}},
+    {"id": "ped_only", "name": "보행등만(좁은 길)", "ctx": "street", "layers": {
+      "main": ["ped_g", "pole", "pole_btn", "pole_base"]}},
+    {"id": "both", "name": "양쪽 팔(중앙 분리대)", "ctx": "street", "layers": {
+      "ground": ["=asph =asph =asph =asph =pave =asph =asph =asph =asph", "=asph =asph =asph =asph =pave =asph =asph =asph =asph", "=asph =asph =asph =asph =pave =asph =asph =asph =asph", "=asph =asph =asph =asph =pave =asph =asph =asph =asph", "=asph =asph =asph =asph =pave =asph =asph =asph =asph"],
+      "main": ["arm_end_l head_y + arm joint_lr arm head_r + arm_end_r", ". . . . pole . . . .", ". . . . ped_r . . . .", ". . . . pole . . . .", ". . . . pole_base . . . ."]}}
+   ]
+  },
+  {
+   "slug": "kit_house",
+   "name": "킷: 주택(기와지붕·외벽·현관)",
+   "scene": "주택가 골목",
+   "replaces": ["house_wall", "house_roof"],
+   "about": "기와지붕(용마루·비탈·처마 × 왼·가운데·오른, 비탈은 세로 반복) + 층 벽(끝·민벽·창 세 종 1×2) + 1층 위 작은 차양 지붕(층 사이 띠) + 현관 미닫이(걸음) + 현관 차양. 단층·2층, 4~8칸.",
+   "palette_hint": "kawara 기와, washi·mwhite·mtile 외벽, hinoki·sumi 나무, mglass 창, mmetal 난간",
+   "contract": [
+    "사용자 집 외형 규칙: 벽 면 3칸 이상, 창은 벽 가운데 칸에만(문 바로 옆 금지), 지붕 사선 뒤 빈칸 금지(지붕 줄은 벽 폭과 같은 칸 수).",
+    "기와 가로 골 줄 주기 8px — 가로·세로로 이어 붙여도 골이 맞는다. 처마(rf_e*) 아래 3px = 벽에 떨어지는 처마 그늘.",
+    "벽 부품 1×2 의 아래 3px = 기초(mconc). 1층·2층 벽 부품이 같다(2층은 기초 대신 hisashi 가 밑에 온다).",
+    "hisashi_* = 1층 위에 두르는 작은 기와 차양 1줄(층 사이 띠). 윗면 기와 + 앞 끝 테."
+   ],
+   "parts": [
+    {"slug": "rf_tl", "name": "용마루 왼", "cells": [1, 1], "layer": "facade", "repeat": null, "walk": "X", "desc": "지붕 꼭대기 용마루 왼 끝(오니가와라 작은 덩이)."},
+    {"slug": "rf_tm", "name": "용마루", "cells": [1, 1], "layer": "facade", "repeat": "x", "walk": "X", "desc": "용마루(굵은 기와 줄 + 그 아래 비탈 시작)."},
+    {"slug": "rf_tr", "name": "용마루 오른", "cells": [1, 1], "layer": "facade", "repeat": null, "walk": "X", "desc": "용마루 오른 끝."},
+    {"slug": "rf_sl", "name": "비탈 왼", "cells": [1, 1], "layer": "facade", "repeat": "y", "walk": "X", "desc": "지붕 비탈 왼 끝(박공 테)."},
+    {"slug": "rf_sm", "name": "비탈", "cells": [1, 1], "layer": "facade", "repeat": "xy", "walk": "X", "desc": "기와 비탈(가로 골)."},
+    {"slug": "rf_sr", "name": "비탈 오른", "cells": [1, 1], "layer": "facade", "repeat": "y", "walk": "X", "desc": "비탈 오른 끝."},
+    {"slug": "rf_el", "name": "처마 왼", "cells": [1, 1], "layer": "facade", "repeat": null, "walk": "X", "desc": "처마 끝 왼(기와 끝 둥근 막새 줄)."},
+    {"slug": "rf_em", "name": "처마", "cells": [1, 1], "layer": "facade", "repeat": "x", "walk": "X", "desc": "처마(막새 줄 + 아래 그늘)."},
+    {"slug": "rf_er", "name": "처마 오른", "cells": [1, 1], "layer": "facade", "repeat": null, "walk": "X", "desc": "처마 오른."},
+    {"slug": "wall_l", "name": "외벽 왼 끝(한 층)", "cells": [1, 2], "layer": "facade", "repeat": "y", "walk": "X", "desc": "외벽 왼 모서리(밝게)."},
+    {"slug": "wall_m", "name": "민벽(한 층)", "cells": [1, 2], "layer": "facade", "repeat": "xy", "walk": "X", "desc": "창 없는 외벽(사이딩 가로 결 또는 회벽)."},
+    {"slug": "wall_r", "name": "외벽 오른 끝(한 층)", "cells": [1, 2], "layer": "facade", "repeat": "y", "walk": "X", "desc": "외벽 오른 모서리(한 단 어둡게)."},
+    {"slug": "win_slide", "name": "미닫이 유리창", "cells": [1, 2], "layer": "facade", "repeat": "x", "walk": "X", "desc": "알루미늄 미닫이 창(두 짝) + 방충망 반쪽 + 창턱."},
+    {"slug": "win_small", "name": "작은 젖빛 창", "cells": [1, 2], "layer": "facade", "repeat": null, "walk": "X", "desc": "욕실·화장실 작은 젖빛 창 + 방범 격자."},
+    {"slug": "win_veranda", "name": "베란다(2층)", "cells": [1, 2], "layer": "facade", "repeat": "x", "walk": "X", "desc": "2층 큰 창 앞 쇠 난간 베란다(가로 반복 — 빨래 기물을 걸 수 있게)."},
+    {"slug": "genkan", "name": "현관 미닫이", "cells": [1, 2], "layer": "facade", "repeat": null, "walk": ["X", "F"], "door": true, "desc": "격자 유리 현관 미닫이, 아래 디딤돌 한 줄. 아랫칸이 드나드는 칸."},
+    {"slug": "genkan_hisashi", "name": "현관 차양", "cells": [1, 1], "layer": "over", "repeat": null, "walk": "C", "desc": "현관 위 작은 차양(윗 6~8px, 투명 배경)."},
+    {"slug": "hisashi_l", "name": "1층 차양 지붕 왼", "cells": [1, 1], "layer": "facade", "repeat": null, "walk": "X", "desc": "1층 위 작은 기와 차양 왼 끝."},
+    {"slug": "hisashi_m", "name": "1층 차양 지붕", "cells": [1, 1], "layer": "facade", "repeat": "x", "walk": "X", "desc": "층 사이 기와 차양(윗면 기와 + 앞 테 + 아래 그늘)."},
+    {"slug": "hisashi_r", "name": "1층 차양 지붕 오른", "cells": [1, 1], "layer": "facade", "repeat": null, "walk": "X", "desc": "층 사이 차양 오른 끝."}
+   ],
+   "examples": [
+    {"id": "hira5", "name": "단층 5칸", "ctx": "street", "layers": {
+      "main": ["rf_tl rf_tm rf_tm rf_tm rf_tr", "rf_el rf_em rf_em rf_em rf_er", "wall_l genkan wall_m win_slide wall_r", "+ + + + +"],
+      "upper": [". . . . .", ". . . . .", ". genkan_hisashi . . ."]}},
+    {"id": "two5", "name": "2층 5칸(층 사이 차양)", "ctx": "street", "layers": {
+      "main": ["rf_tl rf_tm rf_tm rf_tm rf_tr", "rf_sl rf_sm rf_sm rf_sm rf_sr", "rf_el rf_em rf_em rf_em rf_er", "wall_l win_slide wall_m win_small wall_r", "+ + + + +",
+               "hisashi_l hisashi_m hisashi_m hisashi_m hisashi_r", "wall_l genkan wall_m win_slide wall_r", "+ + + + +"],
+      "upper": [". . . . .", ". . . . .", ". . . . .", ". . . . .", ". . . . .", ". . . . .", ". genkan_hisashi . . ."]}},
+    {"id": "two6v", "name": "2층 6칸(베란다·오른 현관)", "ctx": "street", "layers": {
+      "main": ["rf_tl rf_tm rf_tm rf_tm rf_tm rf_tr", "rf_sl rf_sm rf_sm rf_sm rf_sm rf_sr", "rf_el rf_em rf_em rf_em rf_em rf_er", "wall_l win_veranda win_veranda wall_m win_small wall_r", "+ + + + + +",
+               "hisashi_l hisashi_m hisashi_m hisashi_m hisashi_m hisashi_r", "wall_l win_slide wall_m wall_m genkan wall_r", "+ + + + + +"],
+      "upper": [". . . . . .", ". . . . . .", ". . . . . .", ". . . . . .", ". . . . . .", ". . . . . .", ". . . . genkan_hisashi ."]}},
+    {"id": "wide8", "name": "넓은 2층 8칸(지붕 깊이 4)", "ctx": "street", "layers": {
+      "main": ["rf_tl rf_tm rf_tm rf_tm rf_tm rf_tm rf_tm rf_tr", "rf_sl rf_sm rf_sm rf_sm rf_sm rf_sm rf_sm rf_sr", "rf_sl rf_sm rf_sm rf_sm rf_sm rf_sm rf_sm rf_sr", "rf_el rf_em rf_em rf_em rf_em rf_em rf_em rf_er",
+               "wall_l win_slide wall_m win_veranda win_veranda wall_m win_slide wall_r", "+ + + + + + + +",
+               "hisashi_l hisashi_m hisashi_m hisashi_m hisashi_m hisashi_m hisashi_m hisashi_r", "wall_l win_slide win_slide wall_m genkan wall_m win_small wall_r", "+ + + + + + + +"],
+      "upper": [". . . . . . . .", ". . . . . . . .", ". . . . . . . .", ". . . . . . . .", ". . . . . . . .", ". . . . . . . .", ". . . . . . . .", ". . . . genkan_hisashi . . ."]}}
+   ]
+  },
+  {
+   "slug": "kit_shrine",
+   "name": "킷: 신사 건물(배전·작은 사당·데미즈야)",
+   "scene": "신사 한 켠",
+   "replaces": ["shrine_hall", "temizuya"],
+   "about": "휜 지붕(용마루·비탈·처마, 처마 양끝이 들린다) + 가라하후 박공 덧칠 + 들보 줄 + 기둥·격자문·방울 달린 가운데 앞 + 돌 기단·나무 계단(참배 자리, 걸음). 같은 지붕·기둥으로 폭 3~7 배전, 작은 사당, 기둥 넷 데미즈야(물통)까지.",
+   "palette_hint": "kawara·kasa(동판 녹) 지붕, shu 기둥·들보, hinoki 격자·계단, washi 시데, ishi 기단·물통, taxi 방울",
+   "contract": [
+    "지붕 비탈 결 주기 8px, 처마 줄(sr_e*)의 앞 테는 모든 가운데 부품에서 같은 높이 — 양끝(sr_el·sr_er)만 위로 휜다.",
+    "기둥(hashira)은 칸 가운데 5~6px, 주홍 앞면 + 오른쪽 그늘 1px. koshi·ent_bell 은 기둥 없이 칸 가득 — 기둥과 번갈아 놓는다.",
+    "기단(kidan_*)·계단(kiza) 윗면 높이가 같다. kiza 는 걸음 칸(참배 자리) — 거리에서 닿아야 한다.",
+    "데미즈야는 같은 지붕 부품 + post(기둥 1×2: 윗칸 지나감, 아랫칸 막힘) + basin(돌 물통 2×1)."
+   ],
+   "parts": [
+    {"slug": "sr_tl", "name": "지붕 용마루 왼", "cells": [1, 1], "layer": "facade", "repeat": null, "walk": "X", "desc": "용마루 왼 끝(치기·가쓰오기 느낌 작은 돌출)."},
+    {"slug": "sr_tm", "name": "지붕 용마루", "cells": [1, 1], "layer": "facade", "repeat": "x", "walk": "X", "desc": "용마루."},
+    {"slug": "sr_tr", "name": "지붕 용마루 오른", "cells": [1, 1], "layer": "facade", "repeat": null, "walk": "X", "desc": "용마루 오른 끝."},
+    {"slug": "sr_sl", "name": "지붕 비탈 왼", "cells": [1, 1], "layer": "facade", "repeat": "y", "walk": "X", "desc": "비탈 왼(바깥으로 휘어 나가는 테)."},
+    {"slug": "sr_sm", "name": "지붕 비탈", "cells": [1, 1], "layer": "facade", "repeat": "xy", "walk": "X", "desc": "비탈(기와 골 또는 동판 녹 줄)."},
+    {"slug": "sr_sr", "name": "지붕 비탈 오른", "cells": [1, 1], "layer": "facade", "repeat": "y", "walk": "X", "desc": "비탈 오른."},
+    {"slug": "sr_el", "name": "처마 왼(들림)", "cells": [1, 1], "layer": "facade", "repeat": null, "walk": "X", "desc": "처마 왼 끝이 위로 휜다."},
+    {"slug": "sr_em", "name": "처마", "cells": [1, 1], "layer": "facade", "repeat": "x", "walk": "X", "desc": "처마 앞 테 + 서까래 끝 점 줄 + 아래 그늘."},
+    {"slug": "sr_er", "name": "처마 오른(들림)", "cells": [1, 1], "layer": "facade", "repeat": null, "walk": "X", "desc": "처마 오른 끝 휨."},
+    {"slug": "hafu", "name": "가라하후 박공", "cells": [3, 1], "layer": "over", "repeat": null, "walk": "X", "desc": "처마 줄 가운데에 덧칠하는 물결 박공(가운데 볼록, 금빛 장식 점). 투명 배경."},
+    {"slug": "nuki_l", "name": "들보 왼", "cells": [1, 1], "layer": "facade", "repeat": null, "walk": "X", "desc": "처마 밑 주홍 들보 줄 왼 끝."},
+    {"slug": "nuki_m", "name": "들보", "cells": [1, 1], "layer": "facade", "repeat": "x", "walk": "X", "desc": "들보(주홍 + 흰 벽 띠 조금)."},
+    {"slug": "nuki_r", "name": "들보 오른", "cells": [1, 1], "layer": "facade", "repeat": null, "walk": "X", "desc": "들보 오른 끝."},
+    {"slug": "hashira", "name": "기둥 칸", "cells": [1, 2], "layer": "facade", "repeat": "y", "walk": "X", "desc": "주홍 둥근 기둥 + 뒤 흰 벽."},
+    {"slug": "koshi", "name": "격자문 칸", "cells": [1, 2], "layer": "facade", "repeat": "x", "walk": "X", "desc": "나무 격자문(시토미)."},
+    {"slug": "ent_bell", "name": "가운데 앞(방울·새끼줄)", "cells": [1, 2], "layer": "facade", "repeat": null, "walk": "X", "desc": "어두운 안쪽 + 매단 방울(스즈)과 굵은 줄."},
+    {"slug": "kiza", "name": "나무 계단(참배 자리)", "cells": [1, 1], "layer": "facade", "repeat": "x", "walk": "F", "door": true, "desc": "기단 위로 오르는 나무 계단 서너 단. 걸음 칸."},
+    {"slug": "kidan_l", "name": "돌 기단 왼", "cells": [1, 1], "layer": "facade", "repeat": null, "walk": "X", "desc": "돌 기단 왼 모서리."},
+    {"slug": "kidan_m", "name": "돌 기단", "cells": [1, 1], "layer": "facade", "repeat": "x", "walk": "X", "desc": "돌 기단(두세 단 덩이·이끼 점)."},
+    {"slug": "kidan_r", "name": "돌 기단 오른", "cells": [1, 1], "layer": "facade", "repeat": null, "walk": "X", "desc": "돌 기단 오른."},
+    {"slug": "post", "name": "데미즈야 기둥", "cells": [1, 2], "layer": "object", "repeat": null, "walk": ["C", "X"], "desc": "가는 나무 기둥 + 돌 받침(투명 배경)."},
+    {"slug": "basin", "name": "돌 물통(국자)", "cells": [2, 1], "layer": "object", "repeat": null, "walk": "X", "desc": "네모 돌 물통, 물 윗면 밝은 줄, 국자 두셋 걸침."}
+   ],
+   "examples": [
+    {"id": "hall5", "name": "배전 5칸", "ctx": "floor", "layers": {
+      "main": ["sr_tl sr_tm sr_tm sr_tm sr_tr", "sr_sl sr_sm sr_sm sr_sm sr_sr", "sr_el sr_em sr_em sr_em sr_er", "nuki_l nuki_m nuki_m nuki_m nuki_r", "hashira koshi ent_bell koshi hashira", "+ + + + +", "kidan_l kidan_m kiza kidan_m kidan_r"],
+      "upper": [". . . . .", ". . . . .", ". hafu + + ."]}},
+    {"id": "hall7", "name": "배전 7칸(계단 세 칸)", "ctx": "floor", "layers": {
+      "main": ["sr_tl sr_tm sr_tm sr_tm sr_tm sr_tm sr_tr", "sr_sl sr_sm sr_sm sr_sm sr_sm sr_sm sr_sr", "sr_sl sr_sm sr_sm sr_sm sr_sm sr_sm sr_sr", "sr_el sr_em sr_em sr_em sr_em sr_em sr_er", "nuki_l nuki_m nuki_m nuki_m nuki_m nuki_m nuki_r", "hashira koshi hashira ent_bell hashira koshi hashira", "+ + + + + + +", "kidan_l kidan_m kiza kiza kiza kidan_m kidan_r"],
+      "upper": [". . . . . . .", ". . . . . . .", ". . . . . . .", ". . hafu + + . ."]}},
+    {"id": "hokora3", "name": "작은 사당 3칸", "ctx": "floor", "layers": {
+      "main": ["sr_tl sr_tm sr_tr", "sr_el sr_em sr_er", "hashira ent_bell hashira", "+ + +", "kidan_l kiza kidan_r"]}},
+    {"id": "temizuya4", "name": "데미즈야 4칸(같은 지붕 + 기둥 넷 + 물통)", "ctx": "floor",
+     "walk": ["CCCC", "CCCC", "    ", "    "], "layers": {
+      "main": ["sr_tl sr_tm sr_tm sr_tr", "sr_el sr_em sr_em sr_er", "post basin + post", "+ . . +"]}}
+   ]
+  },
+  {
+   "slug": "kit_torii",
+   "name": "킷: 도리이(폭·높이 자유, 밑으로 지나감)",
+   "scene": "신사 한 켠",
+   "replaces": ["torii"],
+   "about": "가사기(맨 위 휜 들보: 양 끝·가운데 반복) + 편액 + 누키(아래 들보: 끝·기둥 관통·가운데) + 기둥(세로 반복) + 기둥 밑동(검은 받침, 막힘). 기둥 사이 칸은 걸어서 지나간다(THROUGH).",
+   "palette_hint": "shu 기둥·누키, lacq 가사기 윗단·밑동, washi·sumi 편액",
+   "contract": [
+    "가사기 윗면 높이·두께가 kasagi_m 에서 같고, 양 끝(kasagi_l·kasagi_r)만 위로 휜다(바깥 칸 절반까지).",
+    "기둥은 칸 가운데 6~8px 폭, 모든 hashira·nuki_p·hashira_base 가 같은 x. 세로로 이어 한 줄.",
+    "누키는 가사기보다 가늘게(3~4px), nuki_p 에서 기둥이 누키 앞을 지난다.",
+    "기둥 밑동만 막힘. 가사기·누키·기둥 윗부분은 사람 위(C)."
+   ],
+   "parts": [
+    {"slug": "kasagi_l", "name": "가사기 왼 끝(휨)", "cells": [1, 1], "layer": "object", "repeat": null, "walk": "C", "desc": "맨 위 들보 왼 끝, 위로 휜 끝."},
+    {"slug": "kasagi_m", "name": "가사기", "cells": [1, 1], "layer": "object", "repeat": "x", "walk": "C", "desc": "맨 위 들보(검은 윗단 + 주홍 아랫단)."},
+    {"slug": "kasagi_r", "name": "가사기 오른 끝(휨)", "cells": [1, 1], "layer": "object", "repeat": null, "walk": "C", "desc": "오른 끝 휨."},
+    {"slug": "gaku", "name": "편액", "cells": [1, 1], "layer": "object", "repeat": null, "walk": "C", "desc": "가사기와 누키 사이 가운데 작은 현판(검은 테·흰 바탕 세로 글자 점)."},
+    {"slug": "hashira", "name": "기둥", "cells": [1, 1], "layer": "object", "repeat": "y", "walk": "C", "desc": "주홍 기둥 한 칸(세로 반복, 왼 빛·오른 그늘)."},
+    {"slug": "nuki_l", "name": "누키 왼 끝", "cells": [1, 1], "layer": "object", "repeat": null, "walk": "C", "desc": "기둥 밖으로 조금 나온 누키 끝."},
+    {"slug": "nuki_p", "name": "누키 × 기둥", "cells": [1, 1], "layer": "object", "repeat": null, "walk": "C", "desc": "기둥이 누키를 꿰는 칸."},
+    {"slug": "nuki_m", "name": "누키", "cells": [1, 1], "layer": "object", "repeat": "x", "walk": "C", "desc": "아래 들보."},
+    {"slug": "nuki_r", "name": "누키 오른 끝", "cells": [1, 1], "layer": "object", "repeat": null, "walk": "C", "desc": "누키 오른 끝."},
+    {"slug": "hashira_base", "name": "기둥 밑동", "cells": [1, 1], "layer": "object", "repeat": null, "walk": "X", "desc": "검은 받침(가메바라) + 오른 아래 그림자."}
+   ],
+   "examples": [
+    {"id": "t5", "name": "작은 도리이 5칸(통로 1칸)", "ctx": "floor", "through": "ns", "layers": {
+      "main": ["kasagi_l kasagi_m kasagi_m kasagi_m kasagi_r", ". hashira gaku hashira .", "nuki_l nuki_p nuki_m nuki_p nuki_r", ". hashira . hashira .", ". hashira_base . hashira_base ."]}},
+    {"id": "t7", "name": "도리이 7칸(통로 3칸)", "ctx": "floor", "through": "ns", "layers": {
+      "main": ["kasagi_l kasagi_m kasagi_m kasagi_m kasagi_m kasagi_m kasagi_r", ". hashira . gaku . hashira .", "nuki_l nuki_p nuki_m nuki_m nuki_m nuki_p nuki_r", ". hashira . . . hashira .", ". hashira . . . hashira .", ". hashira_base . . . hashira_base ."]}},
+    {"id": "t9tall", "name": "큰 도리이 9칸(통로 5칸·높게)", "ctx": "floor", "through": "ns", "layers": {
+      "main": ["kasagi_l kasagi_m kasagi_m kasagi_m kasagi_m kasagi_m kasagi_m kasagi_m kasagi_r", ". hashira . . gaku . . hashira .", "nuki_l nuki_p nuki_m nuki_m nuki_m nuki_m nuki_m nuki_p nuki_r", ". hashira . . . . . hashira .", ". hashira . . . . . hashira .", ". hashira . . . . . hashira .", ". hashira_base . . . . . hashira_base ."]}}
+   ]
+  },
+  {
+   "slug": "kit_crossing",
+   "name": "킷: 건널목(선로·바닥판·경보기·차단기)",
+   "scene": "주택가 골목",
+   "replaces": ["railway_crossing", "rail_track", "crossing_deck"],
+   "about": "선로(가로 반복 1×2) + 길이 선로를 건너는 바닥판(끝·가운데) + 경보기(X자 표지·붉은 등 둘·줄무늬 기둥·차단기 상자) + 차단기 팔(내림: 가로 반복·끝 왼/오른, 올림: 세로). 길 폭·선로 수 자유.",
+   "palette_hint": "taxi·lacq 노랑검정 줄무늬, akachin 경보등, ishi·moss 자갈, mmetal·sumi 레일·침목, mconc·masph 바닥판",
+   "contract": [
+    "선로(rail)는 1×2: 위아래 자갈 테 + 침목 8px 주기 + 레일 두 줄(y=10·21 근처). deck·deck_* 도 레일 높이가 같다 — 길과 선로가 만나는 곳에서 레일 줄이 이어진다.",
+    "deck_l·deck_r 은 바닥판 양 끝(아스팔트와 만나는 테), deck 은 가로 반복.",
+    "차단기 팔(arm_m)은 칸 중간 높이 y=6~9 노랑·검정 줄무늬 주기 8px. cr_box 의 회전축과 같은 높이.",
+    "경보기 기둥(cr_pole)은 칸 가운데 4px, 노랑·검정 사선 줄무늬 — 세로로 이어도 사선이 맞는다."
+   ],
+   "parts": [
+    {"slug": "rail", "name": "선로", "cells": [1, 2], "layer": "ground", "repeat": "x", "walk": "F", "desc": "자갈 위 침목·레일 두 줄(가로로 달린다)."},
+    {"slug": "deck", "name": "건널목 바닥판", "cells": [1, 2], "layer": "ground", "repeat": "x", "walk": "F", "desc": "레일 사이·옆을 메운 콘크리트·고무 판(레일은 그대로 보인다)."},
+    {"slug": "deck_l", "name": "바닥판 왼 끝", "cells": [1, 2], "layer": "ground", "repeat": null, "walk": "F", "desc": "바닥판이 시작하는 테(왼쪽은 선로 자갈)."},
+    {"slug": "deck_r", "name": "바닥판 오른 끝", "cells": [1, 2], "layer": "ground", "repeat": null, "walk": "F", "desc": "바닥판 오른 끝 테."},
+    {"slug": "cr_top", "name": "경보기 X자 표지", "cells": [1, 1], "layer": "object", "repeat": null, "walk": "C", "desc": "노랑·검정 X자 표지."},
+    {"slug": "cr_lamps", "name": "경보등 둘", "cells": [1, 1], "layer": "object", "repeat": null, "walk": "C", "desc": "좌우 붉은 경보등 둘(한쪽 켜짐 + % 번짐) + 방향 화살표 판."},
+    {"slug": "cr_pole", "name": "경보기 기둥", "cells": [1, 1], "layer": "object", "repeat": "y", "walk": "C", "desc": "노랑·검정 사선 줄무늬 기둥."},
+    {"slug": "cr_box", "name": "차단기 상자(밑동)", "cells": [1, 1], "layer": "object", "repeat": null, "walk": "X", "desc": "기둥 밑 차단기 기계 상자 + 팔 회전축."},
+    {"slug": "arm_m", "name": "차단기 팔(내림)", "cells": [1, 1], "layer": "object", "repeat": "x", "walk": "C", "desc": "가로 팔 노랑·검정 줄무늬."},
+    {"slug": "arm_tip_r", "name": "팔 끝(오른쪽을 가리킴)", "cells": [1, 1], "layer": "object", "repeat": null, "walk": "C", "desc": "팔 끝(가는 끝 + 매단 술)."},
+    {"slug": "arm_tip_l", "name": "팔 끝(왼쪽을 가리킴)", "cells": [1, 1], "layer": "object", "repeat": null, "walk": "C", "desc": "팔 끝 왼쪽."},
+    {"slug": "arm_up", "name": "차단기 팔(올림)", "cells": [1, 1], "layer": "object", "repeat": "y", "walk": "C", "desc": "세운 팔(세로 줄무늬)."},
+    {"slug": "arm_up_top", "name": "올린 팔 끝", "cells": [1, 1], "layer": "object", "repeat": null, "walk": "C", "desc": "세운 팔 맨 위 끝."}
+   ],
+   "examples": [
+    {"id": "down4", "name": "4칸 길·차단기 내림", "ctx": "street", "through": "ns", "layers": {
+      "ground": ["=pave =pave =asph =asph =asph =asph =pave =pave", "=pave =pave =asph =asph =asph =asph =pave =pave", "=pave =pave =asph =asph =asph =asph =pave =pave", "=pave =pave =asph =asph =asph =asph =pave =pave",
+                 "rail rail deck_l deck deck deck_r rail rail", "+ + + + + + + +",
+                 "=pave =pave =asph =asph =asph =asph =pave =pave", "=pave =pave =asph =asph =asph =asph =pave =pave", "=pave =pave =asph =asph =asph =asph =pave =pave"],
+      "main": [". cr_top . . . . . .", ". cr_lamps . . . . . .", ". cr_pole . . . . . .", ". cr_box arm_m arm_m arm_m arm_tip_r . .", ". . . . . . cr_top .", ". . . . . . cr_lamps .", ". . . . . . cr_pole .", ". . arm_tip_l arm_m arm_m arm_m cr_box .", ". . . . . . . ."]}},
+    {"id": "up4", "name": "4칸 길·차단기 올림", "ctx": "street", "through": "ns", "layers": {
+      "ground": ["=pave =pave =asph =asph =asph =asph =pave =pave", "=pave =pave =asph =asph =asph =asph =pave =pave", "=pave =pave =asph =asph =asph =asph =pave =pave", "=pave =pave =asph =asph =asph =asph =pave =pave",
+                 "rail rail deck_l deck deck deck_r rail rail", "+ + + + + + + +",
+                 "=pave =pave =asph =asph =asph =asph =pave =pave", "=pave =pave =asph =asph =asph =asph =pave =pave", "=pave =pave =asph =asph =asph =asph =pave =pave"],
+      "main": [". cr_top arm_up_top . . . . .", ". cr_lamps arm_up . . . . .", ". cr_pole arm_up . . . . .", ". cr_box . . . . . .", ". . . . . arm_up_top cr_top .", ". . . . . arm_up cr_lamps .", ". . . . . arm_up cr_pole .", ". . . . . . cr_box .", ". . . . . . . ."]}},
+    {"id": "alley2", "name": "좁은 골목 건널목(차단기 없음)", "ctx": "street", "through": "ns", "layers": {
+      "ground": ["=pave =asph =asph =pave", "=pave =asph =asph =pave", "=pave =asph =asph =pave", "rail deck_l deck_r rail", "+ + + +", "=pave =asph =asph =pave"],
+      "main": ["cr_top . . .", "cr_lamps . . .", "cr_box . . .", ". . . .", ". . . .", ". . . ."]}},
+    {"id": "double", "name": "복선(선로 두 줄)", "ctx": "street", "through": "ns", "layers": {
+      "ground": ["=pave =asph =asph =asph =pave", "rail deck_l deck deck_r rail", "+ + + + +", "rail deck_l deck deck_r rail", "+ + + + +", "=pave =asph =asph =asph =pave"]}}
+   ]
+  },
+  {
+   "slug": "kit_pole",
+   "name": "킷: 전봇대·전선",
+   "scene": "주택가 골목",
+   "replaces": ["utility_pole", "power_lines"],
+   "about": "기둥 꼭대기(완목·애자) + 완목 좌우 끝(전선이 매이는 자리) + 기둥(세로 반복)·변압기·표지판 붙은 기둥·가로등 붙은 기둥 + 밑동(막힘) + 버팀줄 + 전선(가로 반복·처짐). 기둥 높이·간격 자유, 전선이 기둥 사이를 잇는다.",
+   "palette_hint": "pole 콘크리트 기둥, mmetal 완목·변압기, washi 애자, lacq 전선, taxi 표지 띠",
+   "contract": [
+    "기둥은 칸 가운데 4~5px(x=6~10), 모든 기둥 부품이 같은 x·명암. 세로로 이어도 한 줄.",
+    "전선 세 가닥 높이: 완목 끝(arm_l·arm_r)에서 y=4·7·10, wire_m 도 같은 높이(좌우 끝 높이가 같아 가로로 이어 붙는다). wire_dip 은 가운데가 1~2px 처지고 양 끝은 같은 높이.",
+    "기둥 밑동(pole_base)·버팀줄 발(stay 아랫칸)만 막힘. 나머지는 사람 위(C)."
+   ],
+   "parts": [
+    {"slug": "pole_top", "name": "기둥 꼭대기 + 완목", "cells": [1, 1], "layer": "object", "repeat": null, "walk": "C", "desc": "기둥 끝 + 가로 완목 가운데 + 애자 몇 개."},
+    {"slug": "arm_l", "name": "완목 왼 끝", "cells": [1, 1], "layer": "over", "repeat": null, "walk": "C", "desc": "완목 왼 끝 애자 + 왼쪽으로 나가는 전선 세 가닥 시작."},
+    {"slug": "arm_r", "name": "완목 오른 끝", "cells": [1, 1], "layer": "over", "repeat": null, "walk": "C", "desc": "완목 오른 끝 + 오른쪽 전선 시작."},
+    {"slug": "pole", "name": "기둥", "cells": [1, 1], "layer": "object", "repeat": "y", "walk": "C", "desc": "콘크리트 기둥(발판 볼트 점 드문드문)."},
+    {"slug": "trans", "name": "기둥 + 변압기", "cells": [1, 1], "layer": "object", "repeat": null, "walk": "C", "desc": "회색 원통 변압기가 붙은 기둥."},
+    {"slug": "pole_tag", "name": "기둥 + 표지판", "cells": [1, 1], "layer": "object", "repeat": null, "walk": "C", "desc": "노랑·검정 띠 또는 동네 이름 판이 감긴 기둥."},
+    {"slug": "pole_lamp", "name": "기둥 + 가로등", "cells": [1, 1], "layer": "object", "repeat": null, "walk": "C", "desc": "오른쪽으로 나온 작은 가로등 팔 + 등(% 번짐)."},
+    {"slug": "pole_base", "name": "기둥 밑동", "cells": [1, 1], "layer": "object", "repeat": null, "walk": "X", "desc": "밑동 + 오른 아래 그림자."},
+    {"slug": "stay", "name": "버팀줄(3칸)", "cells": [1, 3], "layer": "object", "repeat": null, "walk": ["C", "C", "X"], "desc": "기둥 오른쪽 옆 칸: 위에서 아래로 비스듬한 버팀줄 + 발(노란 덮개)."},
+    {"slug": "wire_m", "name": "전선", "cells": [1, 1], "layer": "over", "repeat": "x", "walk": "C", "desc": "전선 세 가닥(가로 반복)."},
+    {"slug": "wire_dip", "name": "전선(처짐)", "cells": [1, 1], "layer": "over", "repeat": "x", "walk": "C", "desc": "가운데가 조금 처진 전선(기둥 사이 가운데 칸들)."}
+   ],
+   "examples": [
+    {"id": "single", "name": "전봇대 하나(변압기·표지)", "ctx": "street", "layers": {
+      "main": [". pole_top .", ". trans .", ". pole .", ". pole_tag .", ". pole_base ."],
+      "upper": ["arm_l . arm_r"]}},
+    {"id": "span", "name": "두 기둥 사이 전선", "ctx": "street", "layers": {
+      "main": [". pole_top . . . . . . pole_top .", ". pole . . . . . . trans .", ". pole_lamp . . . . . . pole .", ". pole . . . . . . pole_tag .", ". pole_base . . . . . . pole_base ."],
+      "upper": ["arm_l . arm_r wire_m wire_dip wire_dip wire_m arm_l . arm_r"]}},
+    {"id": "stay", "name": "버팀줄 달린 전봇대", "ctx": "street", "layers": {
+      "main": [". pole_top . .", ". pole . .", ". pole stay .", ". pole + .", ". pole_base + ."],
+      "upper": ["arm_l . arm_r ."]}},
+    {"id": "street3", "name": "세 기둥 골목(높이 다름)", "ctx": "street", "layers": {
+      "main": [". pole_top . . . . pole_top . . . . pole_top .", ". trans . . . . pole . . . . pole .", ". pole . . . . pole_lamp . . . . trans .", ". pole . . . . pole . . . . pole .", ". pole_tag . . . . pole . . . . pole_tag .", ". pole_base . . . . pole_base . . . . pole_base ."],
+      "upper": ["arm_l . arm_r wire_dip wire_dip arm_l . arm_r wire_m wire_dip arm_l . arm_r"]}}
+   ]
+  }
+ ]
+}

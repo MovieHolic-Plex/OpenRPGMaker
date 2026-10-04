@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/hall_wall/s1-C.pxg",
+ "set": "school",
+ "id": "hall_wall",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.121
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.145
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 10,
+ "bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "note": "C: 나무 손잡이 레일 + 세로 홈판 회색 징두리 + 나무 걸레받이(같은 칸수 다른 실루엣)",
+ "ok": true
+}

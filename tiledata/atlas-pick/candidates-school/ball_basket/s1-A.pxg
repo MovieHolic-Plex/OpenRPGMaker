@@ -1,0 +1,31 @@
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat m mmetal 5
+@mat n mmetal 3
+@mat o mmetal 2
+@mat p mmetal 1
+@mat r vred 4
+@mat R vred 2
+@mat W vwhite 5
+@mat w vwhite 3
+@mat Y vyellow 5
+@mat y vyellow 3
+@mat k vblack 3
+@mblock 0 0
+................
+................
+........WW......
+....rr.WWwW.....
+...rrrrwww.YY...
+...RRRRWWWYyYY..
+...rrrr...YYYY..
+.mmmmmmmmmmmmmo.
+.nnpnpnpnpnpnpo.
+.pppppppppppppp.
+.nnpnpnpnpnpnpo.
+.nnpnpnpnpnpnpo.
+.pppppppppppppo.
+..ok........ok..
+..kk--------kk..
+................

@@ -1,0 +1,45 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/ore_pile/w27-C.pxg",
+ "id": "ore pile",
+ "hard": [],
+ "warn": [],
+ "resized": {
+  "canvas": [
+   32,
+   32
+  ],
+  "footprint": {
+   "w": 2,
+   "h": 2
+  },
+  "why": "사용자 메모: 광석 더미는 1x1 말고 2x2 로 (w3-C 선택)."
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.018
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "dither"
+  ],
+  "pass": false
+ },
+ "colors": 14,
+ "v5_colors": 6,
+ "bbox": [
+  1,
+  16,
+  31,
+  30
+ ],
+ "v5_bbox": [
+  1,
+  6,
+  14,
+  15
+ ],
+ "note": "금 위주 더미 — 흙빛 돌 무더기에 금 덩이가 촘촘히 박히고 오른쪽에만 청록 결정. 광산 분위기 다른 색. 2x2.",
+ "ok": true
+}

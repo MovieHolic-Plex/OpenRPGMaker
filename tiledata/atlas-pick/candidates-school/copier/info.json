@@ -1,0 +1,23 @@
+{
+ "id": "copier",
+ "slug": "copier",
+ "name": "복사기",
+ "scene": "특별실",
+ "place": "in",
+ "cells": [
+  1,
+  2
+ ],
+ "canvas": [
+  16,
+  32
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "교무실 복사기 — 윗면 유리판 뚜껑·조작판(작은 초록 불 점), 몸통 앞 종이 서랍 두 칸, 옆 배출 받침에 종이 한 장. 상자형이니 윗면이 보여야 한다.",
+ "palette_hint": "mwhite/cream 몸통, locker 서랍, vgreen 불",
+ "pair": [
+  "staff_desks"
+ ],
+ "worker": "s2"
+}

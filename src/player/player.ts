@@ -123,8 +123,8 @@ export type RenderPlayerOptions = {
   readonly startOverride?: { readonly mapId: string; readonly x: number; readonly y: number };
   // 커뮤니티 호스팅 셸이 주입한 기능(전체화면 토글 등). 에디터 테스트플레이에서는 없다 → 아무것도 렌더되지 않음.
   readonly hostBridge?: HostBridge;
-  // 플레이 서피스 배율 정책. 배포/커뮤니티 플레이어는 정수 배율(기본)을 유지하고,
-  // 에디터 테스트 플레이 창만 "fit" 으로 창을 가득 채운다.
+  // 플레이 서피스 배율 정책. 내보낸 게임과 테스트 플레이는 fit으로 창에 맞춘다.
+  // 명시적인 integer 호스트는 정수 배율을 유지한다.
   readonly surfaceScaleMode?: PlaySurfaceScaleMode;
   // 타이틀을 건너뛰고 새 런을 바로 시작한다. 편집 → 테스트 왕복마다 Enter 를 눌러
   // 타이틀을 통과하던 비용을 없앤다(startOverride / initialSession 가 있으면 이미 그 경로다).
@@ -273,7 +273,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     if (!bypass && opening?.enabled && opening.scenes.length > 0) {
       stopTitleBgm();
       clearChildren(layout);
-      const surface = createPlaySurface(resolvePlayResolution(store.getCurrent().system), surfaceScaleMode);
+      const surface = createPlaySurface(resolvePlayResolution(store.getCurrent().system), surfaceScaleMode, store.getCurrent().system.displayFilter);
       playStage = surface.stage;
       cleanupPlaySurface = surface.cleanup;
       layout.append(surface.viewport);
@@ -314,7 +314,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     const startedAt = performance.now();
     playStartedAt = startedAt;
     clearChildren(layout);
-    const surface = createPlaySurface(resolvePlayResolution(store.getCurrent().system), surfaceScaleMode);
+    const surface = createPlaySurface(resolvePlayResolution(store.getCurrent().system), surfaceScaleMode, store.getCurrent().system.displayFilter);
     playStage = surface.stage;
     layout.append(surface.viewport);
     mountHostControls(surface.viewport);
@@ -640,7 +640,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       onLoadAutosave: () => loadAutosave(fromTitle),
     });
     if (fromTitle) {
-      const surface = createPlaySurface(resolvePlayResolution(store.getCurrent().system), surfaceScaleMode);
+      const surface = createPlaySurface(resolvePlayResolution(store.getCurrent().system), surfaceScaleMode, store.getCurrent().system.displayFilter);
       clearChildren(surface.stage);
       playStage = surface.stage;
       cleanupPlaySurface = surface.cleanup;
@@ -836,7 +836,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     // 타이틀을 보는 동안 맵/캐릭셋 이미지를 HTTP 캐시에 미리 올려
     // "새 게임" 직후 로딩 체감을 줄인다(Phaser 텍스처 등록은 여전히 씬 preload).
     void warmBundledPlayAssets(project);
-    const surface = createPlaySurface(resolvePlayResolution(project.system), surfaceScaleMode);
+    const surface = createPlaySurface(resolvePlayResolution(project.system), surfaceScaleMode, project.system.displayFilter);
     clearChildren(surface.stage);
     playStage = surface.stage;
     cleanupPlaySurface = surface.cleanup;
@@ -888,7 +888,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     stopGame();
     clearChildren(layout);
     const project = store.getCurrent();
-    const surface = createPlaySurface(resolvePlayResolution(project.system), surfaceScaleMode);
+    const surface = createPlaySurface(resolvePlayResolution(project.system), surfaceScaleMode, project.system.displayFilter);
     clearChildren(surface.stage);
     playStage = surface.stage;
     cleanupPlaySurface = surface.cleanup;

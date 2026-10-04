@@ -1,3 +1,4 @@
+import { phaserEaseName, type EasingName } from "@/project/easing";
 import { mapTileSize } from "@/project/tileGeometry";
 import type Phaser from "phaser";
 import { TILE_SIZE } from "@/assets/bundled";
@@ -10,6 +11,7 @@ import { store } from "@/project/store";
 import { CAMERA_ZOOM_LIMITS, resolveCameraZoom } from "@/project/cameraZoom";
 import { bumpPerfCounter } from "@/player/runtimePerfCounters";
 import { runtimeMapViewZoom } from "@/player/runtimeViewScale";
+import { reliefTopOverhangPx } from "@/player/playSceneRelief";
 
 export type ScrollMapDirection = "down" | "left" | "right" | "up";
 
@@ -56,10 +58,12 @@ function syncRuntimeCameraBounds(camera: Phaser.Cameras.Scene2D.Camera, map: Gam
   const viewWidth = camera.width / zoom;
   const viewHeight = camera.height / zoom;
   const mapWidth = Math.max(tile, map.width * tile);
-  const mapHeight = Math.max(tile, map.height * tile);
+  // 높이 지형: 북쪽 끝 고지대는 월드 y=0 위로 그려진다 — 경계를 그만큼 위로 넓혀야 잘리지 않는다.
+  const overhang = reliefTopOverhangPx(map, tile);
+  const mapHeight = Math.max(tile, map.height * tile + overhang);
   const paddingX = Math.max(0, (viewWidth - mapWidth) / 2);
   const paddingY = Math.max(0, (viewHeight - mapHeight) / 2);
-  camera.setBounds(-paddingX, -paddingY, Math.max(viewWidth, mapWidth), Math.max(viewHeight, mapHeight));
+  camera.setBounds(-paddingX, -paddingY - overhang, Math.max(viewWidth, mapWidth), Math.max(viewHeight, mapHeight));
 }
 
 export function calculateScrollMapPanTarget(input: ScrollMapPanInput): ScrollMapPanTarget {
@@ -119,6 +123,7 @@ export type CameraControlStep = {
   readonly offsetX?: number;
   readonly offsetY?: number;
   readonly zoom?: number;
+  readonly easing?: EasingName;
 };
 
 export function applyStoredCameraState(scene: PlaySceneContext): void {
@@ -152,14 +157,14 @@ export function applyCameraControl(scene: PlaySceneContext, step: CameraControlS
     }
     if (step.mode === "return" || step.returnToPlayer) {
       scene.cameras.main.stopFollow();
-      await panToTarget(scene, { kind: "player" }, step.durationMs, step.offsetX, step.offsetY);
+      await panToTarget(scene, { kind: "player" }, step.durationMs, step.offsetX, step.offsetY, step.easing);
       followCameraTarget(scene, { kind: "player" });
       scene.session.camera = { mode: "follow", target: { kind: "player" }, zoom: step.zoom };
       scene.syncRuntimeState();
       return;
     }
     scene.cameras.main.stopFollow();
-    await panToTarget(scene, step.target, step.durationMs, step.offsetX, step.offsetY);
+    await panToTarget(scene, step.target, step.durationMs, step.offsetX, step.offsetY, step.easing);
     scene.session.camera = cameraState("fixed", step);
     scene.syncRuntimeState();
   };
@@ -225,10 +230,11 @@ function panToTarget(
   target: RuntimeCameraTarget,
   durationMs: number,
   offsetX = 0,
-  offsetY = 0
+  offsetY = 0,
+  easing?: EasingName
 ): Promise<void> {
   const resolved = resolveCameraTarget(scene, target, offsetX, offsetY);
-  return panCamera(scene.cameras.main, resolved.x, resolved.y, durationMs);
+  return panCamera(scene.cameras.main, resolved.x, resolved.y, durationMs, easing);
 }
 
 function resolveCameraTarget(
@@ -265,7 +271,14 @@ function applyCameraZoom(scene: PlaySceneContext, zoom: number | undefined): voi
   syncRuntimeCameraBounds(camera, scene.map);
 }
 
-export function panCamera(camera: Phaser.Cameras.Scene2D.Camera, x: number, y: number, durationMs: number): Promise<void> {
+/** `easing` 생략 = 일정하게(Linear) — 저장된 옛 명령의 움직임은 그대로다. */
+export function panCamera(
+  camera: Phaser.Cameras.Scene2D.Camera,
+  x: number,
+  y: number,
+  durationMs: number,
+  easing?: EasingName,
+): Promise<void> {
   return new Promise((resolve) => {
     const duration = Math.max(0, Math.round(durationMs));
     if (duration === 0) {
@@ -274,6 +287,6 @@ export function panCamera(camera: Phaser.Cameras.Scene2D.Camera, x: number, y: n
       return;
     }
     camera.once("camerapancomplete", () => resolve());
-    camera.pan(x, y, duration, "Linear", true);
+    camera.pan(x, y, duration, phaserEaseName(easing), true);
   });
 }

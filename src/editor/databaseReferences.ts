@@ -1,9 +1,10 @@
+import { eventReferenceMatches } from "@/editor/databaseEventReferences";
 import { commandsResourceReference } from "@/editor/databaseCommandReferences";
 import type { DatabaseCollection } from "@/editor/databaseActions";
 import { store } from "@/project/store";
 import { namedReferenceMessage, commandLocationMessage, projectDatabaseReferenceMessage, projectSwitchVariableReferenceMessage } from "./databaseRecordReferences";
 import type { Command, ItemRecord, SkillRecord } from "@/project/types";
-import { presentItemBranchLists } from "@/project/eventCommands/presentItemBranches";
+import { eventCommandBranches } from "@/editor/eventCommandBranches";
 import { troopAfterBattleLists } from "@/project/troopAfterBattle";
 
 export function databaseReferenceMessage(collection: DatabaseCollection, id: string): string | null {
@@ -87,7 +88,9 @@ export function commonEventReferenceMessage(id: string): string | null {
   if (
     project.commonEvents.some((event) => event.id !== id && commandListReferencesCommonEvent(event.commands, id)) ||
     Object.values(project.maps).some((map) =>
-      map.events.some((event) => commandListReferencesCommonEvent(event.commands, id) || (event.pages ?? []).some((page) => commandListReferencesCommonEvent(page.commands, id)))
+      map.events.some((event) => eventReferenceMatches(event, (body) =>
+        commandListReferencesCommonEvent(body.commands, id) || (body.pages ?? []).some((page) => commandListReferencesCommonEvent(page.commands, id))
+      ))
     ) ||
     project.database.troops.some((troop) => troop.battleEventPages.some((page) => commandListReferencesCommonEvent(page.commands, id))
       || troopAfterBattleLists(troop).some((list) => commandListReferencesCommonEvent(list.commands, id)))
@@ -100,24 +103,8 @@ function commandListReferencesCommonEvent(commands: readonly Command[], id: stri
 }
 
 function commandReferencesCommonEvent(command: Command, id: string): boolean {
-  switch (command.kind) {
-    case "callCommonEvent":
-      return command.commonEventId === id;
-    case "choices":
-      return command.options.some((option) => commandListReferencesCommonEvent(option.branch, id)) || commandListReferencesCommonEvent(command.cancelBranch ?? [], id);
-    case "presentItem":
-      return presentItemBranchLists(command).some((branch) => commandListReferencesCommonEvent(branch, id));
-    case "fork":
-      return commandListReferencesCommonEvent(command.then, id) || commandListReferencesCommonEvent(command.else ?? [], id);
-    case "loop":
-      return commandListReferencesCommonEvent(command.body, id);
-    case "shop":
-      return commandListReferencesCommonEvent(command.transactionBranch ?? [], id);
-    case "inn":
-      return commandListReferencesCommonEvent(command.notEnoughBranch ?? [], id);
-    default:
-      return false;
-  }
+  return (command.kind === "callCommonEvent" && command.commonEventId === id)
+    || eventCommandBranches(command).some((branch) => commandListReferencesCommonEvent(branch.commands, id));
 }
 
 export function resourceReferenceMessage(resourceId: string): string | null {
@@ -129,7 +116,9 @@ export function resourceReferenceMessage(resourceId: string): string | null {
   if (project.database.enemies.some((record) => record.monsterResourceId === resourceId)) return "몬스터가 이 리소스를 사용 중입니다.";
   if (project.database.troops.some((record) => record.previewBackgroundResourceId === resourceId)) return "적 그룹이 이 리소스를 사용 중입니다.";
   if (project.database.battleAnimations.some((record) => record.resourceId === resourceId)) return "전투 애니메이션이 이 리소스를 사용 중입니다.";
-  if (project.system.titleResourceId === resourceId || project.system.systemResourceId === resourceId || project.system.battleSystemResourceId === resourceId) return "시스템 설정이 이 리소스를 사용 중입니다.";
+  // battleSystemResourceId(System2)는 전투가 그림으로 쓰지 않고 고칠 화면도 없다(2026-10-02) — 삭제를 막지 않는다.
+  // 지울 때 그 칸을 비우는 쪽은 resourceManager 의 삭제다.
+  if (project.system.titleResourceId === resourceId || project.system.systemResourceId === resourceId) return "시스템 설정이 이 리소스를 사용 중입니다.";
   if (commandsResourceReference(project, resourceId)) return "이벤트 명령이 이 리소스를 사용 중입니다.";
   return null;
 }

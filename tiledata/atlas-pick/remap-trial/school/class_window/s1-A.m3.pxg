@@ -1,0 +1,76 @@
+// s1-A.pxg → modern3 자동 재채색(remap_modern3.py)
+@size 32 32
+@cell 16
+@palette palette.pal
+@layer main
+@mat a conc 0
+@mat b garasu 0
+@mat c hodo 0
+@mat d kinari 0
+@mat e tekko 0
+@mblock 0 0
+................................
+................................
+eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeea
+eaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+eadddddddbbbbbbeabbbbbbbbbbbbbea
+eadddddddbbbbbbeabbbbbbbbbbbbbea
+eadddddddbbbbbbeabbbbbbbbbbbbbea
+eadddddddbbbbbbeabbbbbbbbbbbbbea
+eadddddddbbbbbbeabbbbbbbbbbbbbea
+eadddddddbbbbbbeabbbbbbbbbbbbbea
+eadddddddbbbbbbeabbbbbbbbbbbbbea
+eadddddddbbbbbbeabbbbbbbbbbbbbea
+eadddddddbbbbbbeabbbbbbbbbbbbbea
+eadddddddbbbbbbeabbbbbbbbbbbbbea
+eadddddbbbbbbbbeabbbbbbbbbbbbbea
+eadddddbbbbbbbbeabbbbbbbbbbbbbea
+eadddddbbbbbbbbeabbbbbbbbbbbbbea
+eaddddddbbbbbbbeabbbbbbbbbbbbbea
+eaddddddbbbbbbbeabbbbbbbbbbbbbea
+eaddddddbbbbbbbeabbbbbbbbbbbbbea
+eadddddbbbbbbbbeabbbbbbbbbbbbbea
+eadddddbbbbbbbbeabbbbbbbbbbbbbea
+eadddddbbbbbbbbeabbbbbbbbbbbbbea
+aadddddbbbbbbbbaabbbbbbbbbbbbbaa
+eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeea
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+cccccccccccccccccccccccccccccccc
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+................................
+................................
+@tblock 0 0
+................................
+................................
+66666666666666666666666666666661
+63333333333333333333333333333331
+11111111111111111111111111111111
+61432432444444461444444444444461
+61432432444444661444444444444661
+61432432444444661444444444444661
+61432432444446461444444444446461
+61432432444446461444444444446461
+61432432444464461444444444464461
+61432432433353361333333333353361
+61432432433533361333333333533361
+61432432433533361333333333533361
+61432432435333561333333335333561
+61432433335333561333333335333561
+61111123353335361333333353335361
+61432433353335361333333353335361
+61432432533353361333333533353361
+61432432533353361333333533353361
+61432432333533361333335333533361
+61432435333533361333335333533361
+61432433335333361333353335333361
+61432433335333361333353335333361
+11432433333333311333333333333311
+66666666666666666666666666666661
+11111111111111111111111111111111
+66666666666666666666666666666666
+33333333333333333333333333333333
+11111111111111111111111111111111
+................................
+................................

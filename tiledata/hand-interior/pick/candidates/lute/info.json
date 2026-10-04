@@ -1,0 +1,37 @@
+{
+ "id": "lute",
+ "slug": "lute",
+ "name_ko": "류트",
+ "category": "선술집",
+ "kind": "hang",
+ "kind_ko": "벽면 걸이(벽 두 줄 중 윗줄)",
+ "canvas": [
+  16,
+  16
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 16,
+  "h": 16
+ },
+ "footprint": {
+  "w": 1,
+  "h": 0
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "벽에 건 류트. 선술집·음유시인 집 벽면.",
+ "where": "선술집·음유시인 집 벽면.",
+ "placement": [
+  "벽면 두 줄 중 윗줄(y=벽면 첫 줄)에 건다. 바닥 칸은 차지하지 않는다"
+ ],
+ "v5_bbox": [
+  4,
+  1,
+  10,
+  11
+ ],
+ "v5_colors": 6,
+ "material": "wood",
+ "related": []
+}

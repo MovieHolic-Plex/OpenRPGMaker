@@ -1,0 +1,35 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/armor_stand/w3-C.pxg",
+ "id": "armor stand",
+ "hard": [],
+ "warn": [
+  "폭: 불투명 폭이 v5 보다 +4px"
+ ],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.071
+ },
+ "lint": {
+  "failed": [
+   "dither"
+  ],
+  "pass": false
+ },
+ "colors": 19,
+ "v5_colors": 13,
+ "bbox": [
+  1,
+  2,
+  14,
+  31
+ ],
+ "v5_bbox": [
+  3,
+  2,
+  12,
+  31
+ ],
+ "note": "실루엣 재해석 — 붉은 깃털 투구, 넓은 어깨 갑옷, 붉은 옷자락 위 금 허리띠, 다리 대신 판금 치마(태셋), 받침이 넓어 안정적",
+ "ok": true
+}

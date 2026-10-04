@@ -1,0 +1,21 @@
+{
+ "id": "basketball_hoop",
+ "slug": "basketball_hoop",
+ "name": "농구 골대",
+ "scene": "체육관",
+ "place": "in",
+ "cells": [
+  2,
+  3
+ ],
+ "canvas": [
+  32,
+  48
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "체육관 이동식 농구 골대 — 흰 백보드(빨간 네모 테), 주황 링·흰 그물(1px 엇갈림), 굵은 받침 기둥과 뒤로 뻗은 바닥 받침(바퀴). 실루엣으로 링·보드가 또렷해야 한다.",
+ "palette_hint": "vwhite 보드, vred 테, vred·vyellow 링, locker 기둥",
+ "pair": [],
+ "worker": "s3"
+}

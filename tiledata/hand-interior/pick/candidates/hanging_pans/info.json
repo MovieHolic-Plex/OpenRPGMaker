@@ -1,0 +1,37 @@
+{
+ "id": "hanging pans",
+ "slug": "hanging_pans",
+ "name_ko": "냄비 걸이",
+ "category": "부엌",
+ "kind": "hang",
+ "kind_ko": "벽면 걸이(벽 두 줄 중 윗줄)",
+ "canvas": [
+  16,
+  16
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 16,
+  "h": 16
+ },
+ "footprint": {
+  "w": 1,
+  "h": 0
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "검은 냄비·프라이팬을 매단 막대 걸이. 부엌 벽면 윗줄에 1개. 화덕(레인지·스토브) 위나 옆.",
+ "where": "부엌 벽면 윗줄에 1개. 화덕(레인지·스토브) 위나 옆.",
+ "placement": [
+  "벽면 두 줄 중 윗줄(y=벽면 첫 줄)에 건다. 바닥 칸은 차지하지 않는다"
+ ],
+ "v5_bbox": [
+  0,
+  1,
+  15,
+  14
+ ],
+ "v5_colors": 7,
+ "material": "metal",
+ "related": []
+}

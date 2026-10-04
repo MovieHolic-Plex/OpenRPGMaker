@@ -1,0 +1,58 @@
+{
+ "id": "blk-fa-til",
+ "slug": "blk_fa_til",
+ "name": "외벽 (fa.til)",
+ "scene": "건물 블록",
+ "cells": [
+  1,
+  1
+ ],
+ "canvas": [
+  16,
+  16
+ ],
+ "layer": "ground",
+ "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+ "description": "외벽 · fa.til.d.l.blank 1×1. 건물 조립: 참고문서 「건물 조립법」의 블록 이름 문법대로만 잇는다(지붕 → 층마다 윗칸·아랫칸 → 1층). 문(F) 칸의 남쪽 한 칸은 인도여야 한다.",
+ "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+ "worker": "-",
+ "members": [
+  "mob-fa-til-d-l-blank",
+  "mob-fa-til-d-l-win",
+  "mob-fa-til-d-m-blank",
+  "mob-fa-til-d-m-pil",
+  "mob-fa-til-d-m-win",
+  "mob-fa-til-d-r-blank",
+  "mob-fa-til-d-r-win",
+  "mob-fa-til-u-l-blank",
+  "mob-fa-til-u-m-blank",
+  "mob-fa-til-u-m-pil",
+  "mob-fa-til-u-m-win",
+  "mob-fa-til-u-r-blank"
+ ],
+ "tiles": [
+  3973,
+  3975,
+  3976,
+  3977,
+  3978,
+  3979,
+  3981,
+  3982,
+  3985,
+  3986,
+  3987,
+  3988
+ ],
+ "ctx": {
+  "at": [
+   48,
+   48
+  ],
+  "map": "modern-gangnam-station",
+  "cell": [
+   75,
+   68
+  ]
+ }
+}

@@ -1,6 +1,6 @@
 // 대조군 — 포켓몬 수정이 다른 스킨을 건드리지 않았는지 확인한다.
 // CSS 변경은 전부 [data-battle-ui-style="pokemon"] 스코프이고, JS 변경(markMenuCursor)만
-// 공유 경로다. rm2000/rm2003 의 명령 국면이 예전 그대로인지 눈으로 본다.
+// 공유 경로다. retro2003/rm2003 의 명령 국면이 예전 그대로인지 눈으로 본다.
 import { expect, test, type Page } from "@playwright/test";
 import { seedProjectForEditor } from "./projectSeed";
 import { createBlankProject } from "@/project/defaults";
@@ -30,10 +30,6 @@ async function shoot(page: Page, skin: string): Promise<void> {
   console.log(`\n${skin}: 커서=${JSON.stringify(cursor)}`);
 }
 
-test("rm2000 대조", async ({ page }) => {
-  await shoot(page, "rm2000");
-});
-
-test("rm2003 대조", async ({ page }) => {
-  await shoot(page, "rm2003");
+test("retro2003 대조", async ({ page }) => {
+  await shoot(page, "retro2003");
 });

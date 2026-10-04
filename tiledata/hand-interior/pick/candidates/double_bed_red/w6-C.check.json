@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/double_bed_red/w6-C.pxg",
+ "id": "double bed red",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.016
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "outline"
+  ],
+  "pass": false
+ },
+ "colors": 21,
+ "v5_colors": 22,
+ "bbox": [
+  0,
+  10,
+  31,
+  47
+ ],
+ "v5_bbox": [
+  0,
+  10,
+  31,
+  47
+ ],
+ "note": "머리판을 3줄 낮추고 이불 몸을 4줄 깊게 늘려 위에서 내려다본 낮고 넓은 침대 비율로 재해석, 접힘 줄무늬는 위쪽 띠 하나로",
+ "ok": true
+}

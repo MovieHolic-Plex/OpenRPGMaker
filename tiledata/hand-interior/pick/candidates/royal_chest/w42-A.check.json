@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/royal_chest/w42-A.pxg",
+ "id": "royal chest",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.005
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 9,
+ "v5_colors": 10,
+ "bbox": [
+  2,
+  2,
+  14,
+  14
+ ],
+ "v5_bbox": [
+  2,
+  3,
+  14,
+  14
+ ],
+ "note": "왕실 상자: 윗면 뚜껑 4줄(밝은 분홍)+앞 이음 띠+앞면 6줄, 자물쇠 이음새 유지",
+ "ok": true
+}

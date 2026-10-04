@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/vanity_mirror/w1-B.pxg",
+ "id": "vanity mirror",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.016
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 19,
+ "v5_colors": 18,
+ "bbox": [
+  0,
+  1,
+  15,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  1,
+  15,
+  31
+ ],
+ "note": "명암 강화: 분홍 램프 전 단으로 상판(밝음)→서랍 아래(어두움) 세로 그라데이션 + 왼쪽 밝고 오른쪽 어두운 옆면, 거울은 오른쪽 아래로 분홍빛(D) 그림자, 거울이 상판에 드리우는 반투명 그림자(-), 서랍 손잡이 금+그림자",
+ "ok": true
+}

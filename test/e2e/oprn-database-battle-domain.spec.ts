@@ -32,7 +32,7 @@ test("T5 battle-domain tabs persist enemy, troop, and battle screen settings int
       "open Database modal",
       "edit Enemies canonical fields",
       "edit Troops canonical fields",
-      "edit Battle Screen system aggregate fields",
+      "edit Battle Screen hit feel and System startup initial troop",
       "apply, close, reopen, export JSON",
       "instantiate battle runtime from edited system.initialTroopId",
       "capture screenshots and state packet",
@@ -40,7 +40,7 @@ test("T5 battle-domain tabs persist enemy, troop, and battle screen settings int
     acceptance: [
       "enemies tab writes Project.database.enemies",
       "troops tab writes Project.database.troops",
-      "battleScreen tab writes Project.system.battleSystemResourceId and Project.system.initialTroopId",
+      "battleScreen tab writes Project.system.battleHitFeel; System startup writes Project.system.initialTroopId",
       "export/reopen preserves edited values",
       "battle runtime reads the edited troop/background/enemy surfaces",
     ],
@@ -53,6 +53,7 @@ test("T5 battle-domain tabs persist enemy, troop, and battle screen settings int
   const enemiesTab = tabBySlug("enemies");
   const troopsTab = tabBySlug("troops");
   const battleScreenTab = tabBySlug("battle-screen");
+  const systemTab = tabBySlug("system");
 
   await switchDatabaseTab(page, enemiesTab);
   await page.getByTestId("db-field-name").fill("T5 Runtime Hornet");
@@ -72,15 +73,20 @@ test("T5 battle-domain tabs persist enemy, troop, and battle screen settings int
   const editedTroop = edited.database.troops.find((troop) => troop.name === "T5 Runtime Troop");
   if (!editedTroop) throw new Error("T5 troop edit did not produce a troop record");
 
+  // 2026-10-02: 전투 화면 탭은 전투 방식·타격감·꾸미기만 남고, 초기 적 그룹은 시스템 › 시작 설정으로 옮겨졌다.
   await switchDatabaseTab(page, battleScreenTab);
-  await page.getByTestId("db-field-battle-system-resource").fill("easyrpg-system2-system2-b");
-  await page.getByTestId("db-picker-battle-initial-troop").selectOption({ label: editedTroop.name });
+  await page.getByTestId("db-field-system-battle-hit-feel").selectOption("light");
+  await switchDatabaseTab(page, systemTab);
+  await page.getByTestId("db-system-nav-startup").click();
+  await page.getByTestId("db-picker-system-initial-troop").selectOption({ label: editedTroop.name });
   await applyDatabaseChanges(page);
   await closeAndReopenDatabase(page);
 
   await switchDatabaseTab(page, battleScreenTab);
-  await expect(page.getByTestId("db-field-battle-system-resource")).toHaveValue("easyrpg-system2-system2-b");
-  await expect(page.getByTestId("db-picker-battle-initial-troop")).toHaveValue(editedTroop.id);
+  await expect(page.getByTestId("db-field-system-battle-hit-feel")).toHaveValue("light");
+  await switchDatabaseTab(page, systemTab);
+  await page.getByTestId("db-system-nav-startup").click();
+  await expect(page.getByTestId("db-picker-system-initial-troop")).toHaveValue(editedTroop.id);
 
   const packet = await captureDatabaseEvidencePacket(page, evidenceDir, battleTabs);
   const project = packet.project;
@@ -95,7 +101,7 @@ test("T5 battle-domain tabs persist enemy, troop, and battle screen settings int
     members: [{ enemyId: enemy?.id, x: 188, y: 104 }],
     previewBackgroundResourceId: "easyrpg-backdrop-dawn1",
   });
-  expect(project.system.battleSystemResourceId).toBe("easyrpg-system2-system2-b");
+  expect(project.system.battleHitFeel).toBe("light");
   expect(project.system.initialTroopId).toBe(troop?.id);
 
   const runtimeState = await page.evaluate<T5RuntimeState>(async () => {
@@ -222,7 +228,7 @@ test("T8 troop battle event pages edit active commands and enemy action pickers 
   await writeFile(`${task8EvidenceDir}/state-capture.json`, `${JSON.stringify({ enemyAction, troopPage }, null, 2)}\n`, "utf8");
 });
 
-function tabBySlug(slug: "battle-screen" | "enemies" | "troops") {
+function tabBySlug(slug: "battle-screen" | "enemies" | "system" | "troops") {
   const tab = DATABASE_TAB_SPECS.find((candidate) => candidate.slug === slug);
   if (!tab) throw new Error(`missing Database tab spec: ${slug}`);
   return tab;

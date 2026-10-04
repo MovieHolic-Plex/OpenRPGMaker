@@ -17,7 +17,7 @@ import { lintHorrorAuthoring } from "./horrorAuthoringLint";
 //  - event-selfswitch-gate-unwritten (warning) selfSwitch 로 잠긴 페이지인데 그것을 켜는 커맨드가 없음
 //  - event-footprint-impassable (warning) 다중 타일 이벤트의 통행 사각이 통행 불가 칸을 덮음(걸어서 닿을 수 없는 자리)
 //  - duplicate-event       (warning) 같은 맵 내 이벤트 **몸 사각** 겹침
-//  - map-size              (error)   256×256 초과 맵(생성 계약과 동일한 상한)
+//  - map-size              (error)   공통 지원 상한 초과 맵(생성 계약과 동일한 상한)
 //  - runtime-support:*     (warning) command is not fully supported by the map runtime
 //  - story-flag:*          (warning) 서사 플래그 read/write/미선언 사용 문제
 //  - quest-graph:*         (error|warning) 퀘스트 그래프 조건/도달성 문제

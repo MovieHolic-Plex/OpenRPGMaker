@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/track_line/s1-B.pxg",
+ "set": "school",
+ "id": "track_line",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.049
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 4,
+ "bbox": [
+  0,
+  5,
+  15,
+  11
+ ],
+ "note": "B: 선 아랫줄 그늘 한 단, 가루 번짐 점 더 많이",
+ "ok": true
+}

@@ -1,0 +1,94 @@
+{
+  "label": "after3",
+  "strokeMs": 6303,
+  "during": {
+    "toolbarKept": true,
+    "bannerKept": true,
+    "journeyChildKept": true,
+    "muts": {
+      "total": 232,
+      "toolbar": 0,
+      "banner": 0,
+      "journey": 0,
+      "other": 232
+    },
+    "changes": 22
+  },
+  "after": {
+    "frames": 264,
+    "p50": 16.7,
+    "p95": 66.7,
+    "max": 100.1,
+    "over50": 41,
+    "longTasks": 44,
+    "longTaskMax": 91,
+    "longTaskSum": 2854,
+    "mutsTotal": {
+      "total": 269,
+      "toolbar": 0,
+      "banner": 0,
+      "journey": 2,
+      "other": 267
+    },
+    "otherTop": [
+      [
+        "topbar-save-status > DIV.topbar-save-status",
+        44
+      ],
+      [
+        "db-footer-status > DIV.database-footer-status",
+        44
+      ],
+      [
+        "cursor-lower > SPAN.",
+        39
+      ],
+      [
+        "toolbar-save > BUTTON.studio-icon-button studio-save-button",
+        24
+      ],
+      [
+        "- > BODY.ai-chat-dock-float ai-command-bar-active",
+        22
+      ],
+      [
+        "toolbar-save-autosave > SPAN.visually-hidden",
+        22
+      ],
+      [
+        "cursor-position > SPAN.",
+        21
+      ],
+      [
+        "palette-work-pane-paint > DIV.sidebar-paint-options",
+        4
+      ],
+      [
+        "ai-undo-last > BUTTON.ai-assistant-action ai-undo-last",
+        2
+      ],
+      [
+        "ai-composer-undo > BUTTON.ai-composer-undo",
+        2
+      ],
+      [
+        "ai-collapsed-undo > BUTTON.ai-collapsed-undo",
+        2
+      ],
+      [
+        "- > DIV.topbar",
+        2
+      ]
+    ],
+    "changes": 22,
+    "afterKept": {
+      "toolbar": true,
+      "banner": true,
+      "journeyChild": false
+    },
+    "toolbarText": "−2x+0.25x0.5x1x2x3x4x6x8x만들기다듬기검사AI 요청⋯",
+    "journeyText": "프로젝트✓ 이슬 장터 — 30분 · 맵 16개맵✓ 맵 변경 감지확인이벤트✓ 커밋 43개확인데이터참조 정상확인테스트플레이어 시작 전",
+    "bannerClass": "map-lock-banner is-hidden",
+    "toolbarChildren": 7
+  }
+}

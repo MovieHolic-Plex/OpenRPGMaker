@@ -1,0 +1,137 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/sea_deep/v4-A.pxg",
+ "set": "worldmap",
+ "id": "sea_deep",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 11,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "refmap": {
+  "cells": 11,
+  "atLeast95": 0,
+  "max": 0.006
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "orphans",
+   "jaggies",
+   "saturation"
+  ]
+ },
+ "colors": 3,
+ "bbox": [
+  1,
+  0,
+  47,
+  61
+ ],
+ "note": "4판 깊은 바다: 3판 색 유지, 물결 반복 줄임.",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 11,
+   "atLeast95": 0,
+   "max": 0.0
+  },
+  "refmapWorld": {
+   "cells": 11,
+   "atLeast95": 0,
+   "max": 0.001
+  },
+  "shore": {
+   "profile": {
+    "n": [
+     3,
+     3,
+     2,
+     2,
+     2,
+     2,
+     3,
+     3,
+     3,
+     3,
+     4,
+     4,
+     4,
+     4,
+     3,
+     3
+    ],
+    "s": [
+     3,
+     2,
+     2,
+     3,
+     4,
+     4,
+     4,
+     4,
+     4,
+     4,
+     4,
+     4,
+     3,
+     3,
+     3,
+     3
+    ],
+    "w": [
+     3,
+     2,
+     3,
+     3,
+     3,
+     2,
+     3,
+     3,
+     3,
+     3,
+     2,
+     2,
+     2,
+     3,
+     3,
+     3
+    ],
+    "e": [
+     3,
+     3,
+     3,
+     4,
+     4,
+     4,
+     4,
+     4,
+     4,
+     4,
+     4,
+     4,
+     4,
+     4,
+     3,
+     3
+    ]
+   },
+   "strait": 8,
+   "steps": {
+    "n": 1,
+    "s": 1,
+    "w": 1,
+    "e": 1
+   },
+   "amp": {
+    "n": 2,
+    "s": 2,
+    "w": 1,
+    "e": 1
+   },
+   "joinWorst": 0
+  },
+  "seam": 0.67
+ }
+}

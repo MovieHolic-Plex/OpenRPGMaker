@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/vending_coffee/r1-B.pxg",
+ "set": "jp",
+ "id": "vending_coffee",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.059
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.042
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation"
+  ]
+ },
+ "colors": 40,
+ "bbox": [
+  2,
+  0,
+  31,
+  31
+ ],
+ "note": "명암 강화: 붉은 앞면 3단·윗면 5단·옆면 1단, 따뜻한 칸 불빛 %가 바닥에 번지고 접지 그림자 3줄 || 식구 공통(r2 는 이대로): A 와 같은 치수, 그림자만 3줄(y=29..31)+왼쪽 불빛 번짐 %; 톤은 윗면 5단·앞면 3단",
+ "ok": true
+}

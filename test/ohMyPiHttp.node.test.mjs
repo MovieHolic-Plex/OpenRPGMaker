@@ -17,6 +17,7 @@ describe("oh-my-pi companion HTTP", () => {
     assert.equal(isCompanionPath("/auth/providers"), true);
     assert.equal(isCompanionPath("/auth/key"), true);
     assert.equal(isCompanionPath("/auth/logout"), true);
+    assert.equal(isCompanionPath("/auth/login-cancel"), true);
     assert.equal(isCompanionPath("/auth/env-scan"), true);
     assert.equal(isCompanionPath("/v1/chat/completions"), true);
     assert.equal(isCompanionPath("/v1/images/generations"), true);
@@ -171,6 +172,27 @@ describe("oh-my-pi companion HTTP", () => {
       ["logout", "groq"],
       ["complete", "openrouter", "openai/gpt-5.5"],
     ]);
+  });
+
+  it("진행 중인 원격 로그인 정보를 상태 조회에 복원하고 취소는 logout 과 구분한다", async () => {
+    let pending = { verificationUrl: "http://127.0.0.1:51121/launch", userCode: "", expiresAt: 12345 };
+    let canceled = "";
+    const adapters = {
+      status: async () => ({ connected: false, pendingLogin: pending }),
+      cancelLogin: async provider => { canceled = provider; pending = undefined; return { connected: false }; },
+      logout: async () => { throw new Error("Cancel must not log out an existing credential"); },
+    };
+    const restored = await handleCompanionRequest({
+      method: "GET", url: "/auth/status?provider=google-antigravity",
+      headers: { origin: "https://editor.example.test" },
+    }, adapters);
+    assert.equal(restored.body.pendingLogin.verificationUrl, "https://editor.example.test/oauth/launch?port=51121");
+    assert.equal(restored.body.pendingLogin.pasteCallback, true);
+    assert.equal(restored.body.pendingLogin.expiresAt, 12345);
+    const result = await handleCompanionRequest({ method: "POST", url: "/auth/login-cancel?provider=google-antigravity" }, adapters);
+    assert.equal(result.status, 200);
+    assert.equal(canceled, "google-antigravity");
+    assert.equal((await adapters.status()).pendingLogin, undefined);
   });
 
   it("이미지 생성은 제공자와 프롬프트를 넘기고 dataUrl 로 감싸 돌려준다", async () => {

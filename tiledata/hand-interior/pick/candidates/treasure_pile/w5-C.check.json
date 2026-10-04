@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/treasure_pile/w5-C.pxg",
+ "id": "treasure pile",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.008
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 30,
+ "v5_colors": 21,
+ "bbox": [
+  2,
+  0,
+  31,
+  15
+ ],
+ "v5_bbox": [
+  1,
+  2,
+  30,
+  15
+ ],
+ "note": "모양을 바꿈: 더미 대신 뚜껑 열린 나무 궤짝(쇠 띠·놋 자물쇠)에서 금화가 넘쳐 오른쪽으로 쏟아짐, 보석·수정 한 조각. 정면 앞판 중심으로 부피",
+ "ok": true
+}

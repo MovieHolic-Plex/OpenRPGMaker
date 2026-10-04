@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/column_wood/w100-A.pxg",
+ "id": "column wood",
+ "hard": [],
+ "warn": [
+  "파일 이름이 <작업자>-<방향>.pxg 꼴이 아니다(w1-A.pxg): w100-A.pxg"
+ ],
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.019
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 11,
+ "v5_colors": 10,
+ "bbox": [
+  1,
+  8,
+  14,
+  47
+ ],
+ "v5_bbox": [
+  2,
+  8,
+  13,
+  47
+ ],
+ "note": "머리 타원 윗면 5행 + 옆 띠 3행 + 아래 호 1행, 밑동 윗면 3행 + 앞 3행; 캔버스 그대로",
+ "ok": true
+}

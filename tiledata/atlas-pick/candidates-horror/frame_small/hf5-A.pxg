@@ -1,0 +1,43 @@
+// frame_small hf5-A (hf5)
+@size 16 16
+@cell 16
+@palette palette.pal
+@layer main
+@mat t tarn 0
+@mat v velv 0
+@mat s sheet 0
+@mat g vgreen 0
+@mblock 0 0
+................
+................
+..tttttttttttt..
+..tttttttttttt..
+..ttvvvvvvvvtt..
+..ttvvvggvvvtt..
+..ttvvgvvvvvtt..
+..ttvvvssvvvtt..
+..ttvvssssvvtt..
+..ttvvssssvvtt..
+..ttvvvsssvvtt..
+..ttvvvvvvvvtt..
+..ttvvvvvvvvtt..
+..tttttttttttt..
+..tttttttttttt..
+................
+@tblock 0 0
+................
+................
+..111111111111..
+..155555555521..
+..152222222221..
+..152222222221..
+..152222212221..
+..152225522221..
+..152253352221..
+..152253352221..
+..152222222221..
+..151111111121..
+..151111111121..
+..152222222221..
+..111111111111..
+................

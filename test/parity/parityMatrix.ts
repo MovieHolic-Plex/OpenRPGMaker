@@ -54,7 +54,7 @@ export const PARITY_MATRIX: readonly ParityRow[] = [
   { contentType: "items", field: "learnedSkillId", playerConsumer: "src/player/playerItemUse.ts#useItem", harness: "runSceneTest", status: "gap" },
 
   { contentType: "equipment", field: "effectFlags.doubleAttack", playerConsumer: "src/battle/runtime.ts#doubleAttack", harness: "simulateBattle", status: "planned-T4" },
-  { contentType: "equipment", field: "elementalDefenseIds", playerConsumer: "src/battle/runtime.ts#elementalDefenseIds", harness: "simulateBattle", status: "planned-T4" },
+  { contentType: "equipment", field: "elementalDefenseIds", playerConsumer: "src/battle/battleElementModifiers.ts#elementalDefenseIds", harness: "simulateBattle", status: "planned-T4" },
   { contentType: "equipment", field: "stateDefenseIds", playerConsumer: "src/battle/runtime.ts#stateEffects", harness: "simulateBattle", status: "planned-T4" },
   { contentType: "equipment", field: "statBonuses", playerConsumer: "src/battle/battleBattlers.ts#statBonuses", harness: "simulateBattle", status: "planned-T5" },
   { contentType: "equipment", field: "slot", playerConsumer: "src/battle/battleBattlers.ts#classId", harness: "roundTrip", status: "planned-T6" },

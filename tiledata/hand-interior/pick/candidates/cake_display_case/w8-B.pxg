@@ -1,0 +1,62 @@
+// w8-B x
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat a wood 1
+@mat b wood 2
+@mat w wood 3
+@mat c wood 4
+@mat d wood 5
+@mat e wood 6
+@mat f wood 7
+@mat i glass 4
+@mat g glass 5
+@mat h glass 6
+@mat j ice 6
+@mat k linen 6
+@mat l linen 5
+@mat m linen 3
+@mat n red 4
+@mat o red 3
+@mat p bread 6
+@mat q bread 5
+@mat r bread 4
+@mat s bread 3
+@mat t bread 2
+@mat u brass 5
+@mat v brass 2
+@mat y glass 3
+@mat z glass 2
+@mblock 0 0
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa..
+ddhhhhhhhhhhhhhhhhhhhhhhhhhhba..
+ddhhhggnnggggjggcgggiiuuiiiiba..
+ddhhhkkkkkkgjgggcggbbbbbbbbjba..
+ddhpppppppppqgggcgcbbbbbbbbbba..
+ddhkkkkkkkkkkgggcgkkkkkkkkkkba..
+ddhppppppppppgggcgcbbbbbbbbbba..
+ddhqqqqqqqqqrgggcgbbbbbbbbbbba..
+ddmllllllllllllmllllllllllllba..
+dffffffffffffffffffffffffffffb..
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-.
+beeeeeeeeeeeeebaaeeeeeeeeeeeba-.
+beddddddddddddbaaeddddddddddba-.
+beddbbbbbbbbddbaaeddbbbbbbbbba-.
+beddbcccccceddbaaeddbcccccceba-.
+beddbccccccedubaaeudbcccccceba-.
+beddbccccccedubaaeudbcccccceba~.
+beddbccccccedvbaaevdbcccccceba~.
+beddeeeeeeeeddbaaeddeeeeeeeeba~-
+beddddddddddddbaaeddddddddddba~-
+bbbbbbbbbbbbbbbaabbbbbbbbbbbba~-
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa~-

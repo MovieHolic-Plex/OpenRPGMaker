@@ -1,0 +1,597 @@
+[
+  {
+    "resourceId": "generated-enemy-crab-01",
+    "oldPath": "assets/generated/starter/monster-crab-01.png",
+    "slug": "crab-01",
+    "metadata": {
+      "name": "바위 게",
+      "tags": [
+        "게",
+        "crab",
+        "갑각류",
+        "crustacean",
+        "동물",
+        "animal"
+      ],
+      "description": "바위처럼 단단하고 금이 간 질감의 등껍질을 지닌 게 형태의 생물입니다. 껍질과 커다란 집게발 곳곳에 녹색 이끼가 묻어 있으며, 노란색으로 빛나는 눈을 번뜩이며 앞을 향해 자세를 취하고 있습니다."
+    }
+  },
+  {
+    "resourceId": "generated-enemy-spider-01",
+    "oldPath": "assets/generated/starter/monster-spider-01.png",
+    "slug": "spider-01",
+    "metadata": {
+      "name": "보라색 가시 거미",
+      "tags": [
+        "거미",
+        "spider",
+        "괴물",
+        "monster",
+        "보라색",
+        "가시"
+      ],
+      "description": "짙은 보라색과 녹색 무늬가 섞인 거대한 거미 형태의 생물입니다. 몸통 전체에 작고 뾰족한 가시들이 돋아 있으며, 여러 개의 붉은 눈과 날카로운 턱을 드러낸 채 다리를 벌리고 서 있습니다."
+    }
+  },
+  {
+    "resourceId": "generated-enemy-snake-01",
+    "oldPath": "assets/generated/starter/monster-snake-01.png",
+    "slug": "snake-01",
+    "metadata": {
+      "name": "초록색 코브라",
+      "tags": [
+        "뱀",
+        "snake",
+        "코브라",
+        "cobra",
+        "파충류",
+        "reptile"
+      ],
+      "description": "녹색과 갈색 비늘이 섞인 몸을 똬리 틀고 상체를 높이 세운 뱀 형태의 생물입니다. 목 부분을 넓게 펼친 채 입을 크게 벌려 날카로운 송곳니를 드러내고 있습니다."
+    }
+  },
+  {
+    "resourceId": "generated-enemy-scorpion-01",
+    "oldPath": "assets/generated/starter/monster-scorpion-01.png",
+    "slug": "scorpion-01",
+    "metadata": {
+      "name": "황갈색 전갈",
+      "tags": [
+        "전갈",
+        "scorpion",
+        "절지동물",
+        "arthropod",
+        "거미류",
+        "arachnid"
+      ],
+      "description": "황갈색 외골격에 짙은 갈색 얼룩무늬를 가진 전갈 형태의 생물입니다. 커다란 두 집게발을 앞으로 내밀고, 끝에 뾰족한 침이 있는 꼬리를 등 위로 둥글게 말아 올린 자세를 취하고 있습니다."
+    }
+  },
+  {
+    "resourceId": "generated-enemy-wolf-01",
+    "oldPath": "assets/generated/starter/monster-wolf-01.png",
+    "slug": "wolf-01",
+    "metadata": {
+      "name": "회색 늑대",
+      "tags": [
+        "늑대",
+        "동물",
+        "야수",
+        "wolf",
+        "animal",
+        "beast"
+      ],
+      "description": "짙은 회색과 밝은 회색 털이 섞인 네 발 짐승입니다. 몸을 낮추고 이빨을 드러내며 위협하는 자세를 취하고 있습니다."
+    }
+  },
+  {
+    "resourceId": "generated-enemy-centipede-01",
+    "oldPath": "assets/generated/starter/monster-centipede-01.png",
+    "slug": "centipede-01",
+    "metadata": {
+      "name": "거대 지네",
+      "tags": [
+        "지네",
+        "centipede",
+        "절지동물",
+        "arthropod",
+        "자주색",
+        "주황색 다리"
+      ],
+      "description": "짙은 보라색 등갑과 주황색 다리를 가진 거대한 지네 형태의 생물입니다. 몸을 둥글게 만 채 날카로운 큰턱과 붉은 눈을 번뜩이며 위협적인 자세를 취하고 있습니다."
+    }
+  },
+  {
+    "resourceId": "generated-enemy-horse-01",
+    "oldPath": "assets/generated/starter/monster-horse-01.png",
+    "slug": "horse-01",
+    "metadata": {
+      "name": "무장한 갈색 말",
+      "tags": [
+        "말",
+        "horse",
+        "동물",
+        "animal",
+        "갑옷",
+        "armor"
+      ],
+      "description": "갈색 털을 가진 동물이 머리, 목, 등에 금속과 가죽으로 된 갑옷과 안장을 착용하고 있습니다. 앞다리를 들고 뛰어오르거나 달리는 듯한 역동적인 자세를 취하고 있습니다."
+    }
+  },
+  {
+    "resourceId": "generated-enemy-unicorn-01",
+    "oldPath": "assets/generated/starter/monster-unicorn-01.png",
+    "slug": "unicorn-01",
+    "metadata": {
+      "name": "하얀 유니콘",
+      "tags": [
+        "유니콘",
+        "unicorn",
+        "말",
+        "horse",
+        "동물",
+        "animal"
+      ],
+      "description": "이마에 긴 나선형 뿔이 돋아 있는 하얀색 말 형태의 생물입니다. 두 앞다리를 공중으로 번쩍 들고 도약하는 듯한 자세를 취하고 있습니다."
+    }
+  },
+  {
+    "resourceId": "generated-enemy-cat-01",
+    "oldPath": "assets/generated/starter/monster-cat-01.png",
+    "slug": "cat-01",
+    "metadata": {
+      "name": "무장한 줄무늬 고양이",
+      "tags": [
+        "고양이",
+        "cat",
+        "동물",
+        "animal",
+        "줄무늬",
+        "tabby"
+      ],
+      "description": "주황색과 갈색의 줄무늬 털을 가진 고양이 형태의 생물입니다. 징이 박힌 가죽 목걸이와 양 앞다리에 스파이크가 달린 가죽 팔찌를 착용한 채, 앞을 향해 걷거나 경계하는 듯한 자세를 취하고 있습니다."
+    }
+  },
+  {
+    "resourceId": "generated-enemy-cockatrice-01",
+    "oldPath": "assets/generated/starter/monster-cockatrice-01.png",
+    "slug": "cockatrice-01",
+    "metadata": {
+      "name": "비늘 코카트리스",
+      "tags": [
+        "코카트리스",
+        "cockatrice",
+        "닭",
+        "chicken",
+        "비늘",
+        "긴 꼬리"
+      ],
+      "description": "붉은 볏을 가진 닭의 머리에 갈색 비늘로 덮인 몸통과 긴 꼬리를 지닌 생물입니다. 날카로운 발톱을 가진 두 발로 서서 한쪽 다리를 들어 올린 자세를 취하고 있습니다."
+    }
+  },
+  {
+    "resourceId": "generated-enemy-parasite-01",
+    "oldPath": "assets/generated/starter/monster-parasite-01.png",
+    "slug": "parasite-01",
+    "metadata": {
+      "name": "붉은 촉수 벌레",
+      "tags": [
+        "벌레",
+        "worm",
+        "괴물",
+        "monster",
+        "촉수",
+        "tentacle",
+        "붉은색"
+      ],
+      "description": "마디가 있는 붉은색과 살구색 몸통을 가진 벌레 형태의 생물입니다. 크게 벌린 입에는 날카로운 이빨이 가득하고 여러 갈래의 붉은 촉수가 뻗어 나와 있습니다."
+    }
+  },
+  {
+    "resourceId": "generated-enemy-mantis-01",
+    "oldPath": "assets/generated/starter/monster-mantis-01.png",
+    "slug": "mantis-01",
+    "metadata": {
+      "name": "거대 사마귀",
+      "tags": [
+        "사마귀",
+        "곤충",
+        "초록색",
+        "mantis",
+        "insect",
+        "green"
+      ],
+      "description": "녹색과 갈색이 섞인 단단한 외골격을 지닌 거대한 사마귀 형태의 생물입니다. 가시가 돋친 크고 낫 모양인 앞다리를 들어 올린 채 서 있습니다."
+    }
+  },
+  {
+    "resourceId": "generated-enemy-fish-01",
+    "oldPath": "assets/generated/starter/monster-fish-01.png",
+    "slug": "fish-01",
+    "metadata": {
+      "name": "파란 이빨물고기",
+      "tags": [
+        "물고기",
+        "fish",
+        "이빨",
+        "비늘",
+        "파란색",
+        "주황색"
+      ],
+      "description": "날카로운 이빨을 드러내고 입을 벌린 채 있는 물고기입니다. 등 부분은 파란색, 배와 지느러미 부분은 주황색을 띠며 뚜렷한 비늘을 가지고 있습니다."
+    }
+  },
+  {
+    "resourceId": "generated-enemy-bat-cave",
+    "oldPath": "assets/generated/starter/monster-bat-cave.png",
+    "slug": "bat-cave",
+    "metadata": {
+      "name": "갈색 박쥐",
+      "tags": [
+        "박쥐",
+        "bat",
+        "동물",
+        "animal",
+        "갈색",
+        "brown",
+        "동굴",
+        "cave"
+      ],
+      "description": "갈색 털과 짙은 갈색의 넓은 날개막을 가진 박쥐 형태의 생물입니다. 날개를 활짝 펴고 비행하는 자세로, 입을 벌려 날카로운 이빨을 드러내고 있습니다."
+    }
+  },
+  {
+    "resourceId": "generated-enemy-spider-widow",
+    "oldPath": "assets/generated/starter/monster-spider-widow.png",
+    "slug": "spider-widow",
+    "metadata": {
+      "name": "가시 돋친 흑거미",
+      "tags": [
+        "거미",
+        "spider",
+        "벌레",
+        "bug",
+        "절지동물",
+        "arthropod"
+      ],
+      "description": "어두운 색상의 몸체에 뾰족한 가시들이 돋아 있는 거미 형태의 생물입니다. 붉은색 눈 여러 개와 날카로운 이빨을 드러낸 채 여덟 개의 다리로 서 있습니다."
+    }
+  },
+  {
+    "resourceId": "generated-enemy-beetle-horn",
+    "oldPath": "assets/generated/starter/monster-beetle-horn.png",
+    "slug": "beetle-horn",
+    "metadata": {
+      "name": "푸른 장수풍뎅이",
+      "tags": [
+        "곤충",
+        "장수풍뎅이",
+        "딱정벌레",
+        "insect",
+        "beetle"
+      ],
+      "description": "머리와 앞가슴에 크고 날카로운 뿔을 가진 장수풍뎅이 형태의 생물입니다. 단단해 보이는 외골격은 푸른색과 보라색이 감도는 짙은 금속성 광택을 띠고 있습니다."
+    }
+  },
+  {
+    "resourceId": "generated-enemy-centipede-fire",
+    "oldPath": "assets/generated/starter/monster-centipede-fire.png",
+    "slug": "centipede-fire",
+    "metadata": {
+      "name": "자줏빛 등갑 지네",
+      "tags": [
+        "지네",
+        "centipede",
+        "벌레",
+        "bug",
+        "절지동물",
+        "arthropod"
+      ],
+      "description": "보라색 등껍질과 주황색 마디, 수많은 뾰족한 다리를 가진 지네 형태의 생물입니다. 몸을 C자 형태로 구부린 채 붉은 눈과 날카로운 턱을 드러내고 있습니다."
+    }
+  },
+  {
+    "resourceId": "generated-enemy-moth-dust",
+    "oldPath": "assets/generated/starter/monster-moth-dust.png",
+    "slug": "moth-dust",
+    "metadata": {
+      "name": "갈색 털 나방",
+      "tags": [
+        "나방",
+        "moth",
+        "곤충",
+        "insect",
+        "갈색",
+        "brown"
+      ],
+      "description": "복슬복슬한 털로 덮인 몸통과 크고 둥근 검은 눈을 가진 갈색 곤충 형태의 생물입니다. 짙은 갈색의 소용돌이무늬가 있는 크고 다소 너덜너덜한 날개를 펼친 채 날아가는 자세를 취하고 있습니다."
+    }
+  },
+  {
+    "resourceId": "generated-enemy-worm-sand",
+    "oldPath": "assets/generated/starter/monster-worm-sand.png",
+    "slug": "worm-sand",
+    "metadata": {
+      "name": "갈색 거대 벌레",
+      "tags": [
+        "벌레",
+        "worm",
+        "괴물",
+        "monster",
+        "촉수",
+        "tentacle",
+        "가시",
+        "spike"
+      ],
+      "description": "단단해 보이는 마디진 갈색 몸통에 가시 돌기가 돋아난 거대한 벌레 형태의 생물입니다. 몸을 둥글게 말고 입을 크게 벌려 뾰족한 이빨과 입가에 달린 촉수들을 드러내고 있습니다."
+    }
+  },
+  {
+    "resourceId": "generated-enemy-ant-soldier",
+    "oldPath": "assets/generated/starter/monster-ant-soldier.png",
+    "slug": "ant-soldier",
+    "metadata": {
+      "name": "붉은 개미",
+      "tags": [
+        "개미",
+        "ant",
+        "곤충",
+        "insect",
+        "붉은색",
+        "red"
+      ],
+      "description": "적갈색 외골격과 크고 날카로운 큰턱을 가진 곤충형 생물입니다. 몸통 곳곳에 작은 가시 돌기가 돋아 있으며 여섯 개의 다리를 이용해 서 있습니다."
+    }
+  },
+  {
+    "resourceId": "generated-enemy-wolf-dire",
+    "oldPath": "assets/generated/starter/monster-wolf-dire.png",
+    "slug": "wolf-dire",
+    "metadata": {
+      "name": "보랏빛 눈 늑대",
+      "tags": [
+        "늑대",
+        "wolf",
+        "짐승",
+        "beast",
+        "검은색",
+        "black"
+      ],
+      "description": "보라색 눈을 번뜩이며 날카로운 이빨을 드러낸 채 몸을 낮추고 걷고 있는 짙은 회색 털의 늑대입니다. 입을 벌려 으르렁거리는 듯한 자세를 취하고 있습니다."
+    }
+  },
+  {
+    "resourceId": "generated-enemy-tiger-saber",
+    "oldPath": "assets/generated/starter/monster-tiger-saber.png",
+    "slug": "tiger-saber",
+    "metadata": {
+      "name": "갑옷 입은 검치호랑이",
+      "tags": [
+        "호랑이",
+        "tiger",
+        "야수",
+        "beast",
+        "검치호",
+        "saber-toothed cat"
+      ],
+      "description": "검은 줄무늬가 있는 주황색 털과 위턱에 거대한 두 개의 송곳니를 가진 맹수입니다. 가슴과 어깨에 긁힌 자국이 있는 금속 갑옷을 착용하고, 입을 크게 벌린 채 앞으로 뛰어드는 역동적인 자세를 취하고 있습니다."
+    }
+  },
+  {
+    "resourceId": "generated-enemy-rat-giant",
+    "oldPath": "assets/generated/starter/monster-rat-giant.png",
+    "slug": "rat-giant",
+    "metadata": {
+      "name": "붉은 눈의 갈색 쥐",
+      "tags": [
+        "쥐",
+        "rat",
+        "동물",
+        "animal",
+        "설치류",
+        "rodent"
+      ],
+      "description": "갈색 털과 붉은 눈을 가진 쥐 형태의 생물입니다. 입을 크게 벌려 날카로운 이빨을 드러낸 채 앞다리를 들고 뛰어오르는 듯한 자세를 취하고 있습니다."
+    }
+  },
+  {
+    "resourceId": "generated-enemy-bird-hawk",
+    "oldPath": "assets/generated/starter/monster-bird-hawk.png",
+    "slug": "bird-hawk",
+    "metadata": {
+      "name": "갈색 매",
+      "tags": [
+        "새",
+        "bird",
+        "맹금류",
+        "hawk",
+        "비행",
+        "동물"
+      ],
+      "description": "갈색과 흰색 무늬가 섞인 깃털을 가진 맹금류가 날개를 활짝 펴고 비행하는 모습입니다. 날카로운 노란색 부리와 발톱을 아래로 향하고 있습니다."
+    }
+  },
+  {
+    "resourceId": "generated-enemy-cat-shadow",
+    "oldPath": "assets/generated/starter/monster-cat-shadow.png",
+    "slug": "cat-shadow",
+    "metadata": {
+      "name": "보라색 줄무늬 고양이",
+      "tags": [
+        "고양이",
+        "짐승",
+        "보라색",
+        "줄무늬",
+        "cat",
+        "beast",
+        "purple",
+        "stripe"
+      ],
+      "description": "가시가 박힌 가죽 목줄과 앞발목 장식을 착용한 보라색 줄무늬 고양이입니다. 꼬리를 위로 치켜들고 네 발로 서서 앞으로 나아가는 자세를 취하고 있습니다."
+    }
+  },
+  {
+    "resourceId": "generated-enemy-goat-mountain",
+    "oldPath": "assets/generated/starter/monster-goat-mountain.png",
+    "slug": "goat-mountain",
+    "metadata": {
+      "name": "갈색 큰뿔 산양",
+      "tags": [
+        "산양",
+        "염소",
+        "동물",
+        "goat",
+        "animal",
+        "brown"
+      ],
+      "description": "크고 둥글게 말린 두 개의 뿔과 턱수염을 가진 갈색 털의 산양 형태입니다. 네 발굽을 모아 공중으로 도약하는 듯한 자세를 취하고 있습니다."
+    }
+  },
+  {
+    "resourceId": "generated-enemy-ape-stone",
+    "oldPath": "assets/generated/starter/monster-ape-stone.png",
+    "slug": "ape-stone",
+    "metadata": {
+      "name": "이끼 낀 바위 고릴라",
+      "tags": [
+        "고릴라",
+        "gorilla",
+        "바위",
+        "stone",
+        "이끼",
+        "moss",
+        "주황빛 틈새"
+      ],
+      "description": "회색 바위로 이루어진 몸통의 틈새로 주황색 빛이 새어 나오는 고릴라 형태의 생물입니다. 머리와 어깨, 관절 부위에 녹색 이끼가 털처럼 덮여 있으며 양 주먹을 꽉 쥔 채 웅크린 자세를 취하고 있습니다."
+    }
+  },
+  {
+    "resourceId": "generated-enemy-deer-forest",
+    "oldPath": "assets/generated/starter/monster-deer-forest.png",
+    "slug": "deer-forest",
+    "metadata": {
+      "name": "룬 무늬 뿔사슴",
+      "tags": [
+        "사슴",
+        "deer",
+        "동물",
+        "animal",
+        "뿔",
+        "antlers",
+        "룬",
+        "rune"
+      ],
+      "description": "이마와 거대한 뿔에 빛나는 기호가 새겨진 갈색 털의 사슴 형태 생물입니다. 뿔 곳곳에 초록색 이끼가 자라나 있으며, 앞다리를 살짝 들고 걷는 듯한 자세를 취하고 있습니다."
+    }
+  },
+  {
+    "resourceId": "generated-enemy-fish-piranha",
+    "oldPath": "assets/generated/starter/monster-fish-piranha.png",
+    "slug": "fish-piranha",
+    "metadata": {
+      "name": "청색 주황 비늘 괴어",
+      "tags": [
+        "물고기",
+        "fish",
+        "어류",
+        "괴어",
+        "monster fish",
+        "이빨",
+        "teeth"
+      ],
+      "description": "등 쪽은 파란색, 얼굴과 지느러미 쪽은 주황색을 띠는 물고기 형태의 생물입니다. 날카로운 이빨이 가득한 큰 입을 벌리고 헤엄치는 자세를 취하고 있습니다."
+    }
+  },
+  {
+    "resourceId": "generated-enemy-squid-deep",
+    "oldPath": "assets/generated/starter/monster-squid-deep.png",
+    "slug": "squid-deep",
+    "metadata": {
+      "name": "보라색 부리 오징어",
+      "tags": [
+        "두족류",
+        "오징어",
+        "보라색",
+        "cephalopod",
+        "squid",
+        "purple"
+      ],
+      "description": "짙은 보라색 몸체에 밝은 청록색 반점이 덮여 있는 두족류 형태의 생물입니다. 노란색의 큰 눈을 가지고 있으며, 얼굴 정면에 새의 부리를 연상시키는 뾰족한 구조가 돌출되어 있고 아래로 빨판이 달린 여러 개의 촉수가 뻗어 있습니다."
+    }
+  },
+  {
+    "resourceId": "generated-enemy-shark-land",
+    "oldPath": "assets/generated/starter/monster-shark-land.png",
+    "slug": "shark-land",
+    "metadata": {
+      "name": "사족보행 상어",
+      "tags": [
+        "상어",
+        "괴물",
+        "사족보행",
+        "shark",
+        "monster",
+        "quadruped"
+      ],
+      "description": "푸른색 등과 밝은 배를 가진 상어의 몸체에 발톱과 비늘이 있는 네 개의 다리가 달린 생물입니다. 네 발로 땅을 딛고 서서 날카로운 이빨을 드러낸 채 입을 벌리고 있습니다."
+    }
+  },
+  {
+    "resourceId": "generated-enemy-eel-electric",
+    "oldPath": "assets/generated/starter/monster-eel-electric.png",
+    "slug": "eel-electric",
+    "metadata": {
+      "name": "푸른 번개장어",
+      "tags": [
+        "물고기",
+        "fish",
+        "뱀장어",
+        "eel",
+        "번개",
+        "lightning"
+      ],
+      "description": "파란색과 노란색의 지그재그 무늬가 교차하는 길쭉한 뱀장어 형태의 생물입니다. 날카로운 이빨을 드러낸 채 몸을 둥글게 구부리고 있으며, 몸 주변에 노란색 번개 모양의 시각 효과가 있습니다."
+    }
+  },
+  {
+    "resourceId": "generated-enemy-leaf-fox",
+    "oldPath": "assets/generated/corrected/leaf-fox.png",
+    "slug": "leaf-fox",
+    "metadata": {
+      "name": "풀잎 여우",
+      "tags": [
+        "여우",
+        "fox",
+        "식물",
+        "plant",
+        "나뭇잎",
+        "leaf",
+        "풀잎여우",
+        "풀잎 여우",
+        "leaf fox"
+      ],
+      "description": "짙은 녹색과 크림색 털을 가진 여우 형태의 생물입니다. 목과 꼬리를 비롯한 몸 곳곳에 나뭇잎이 돋아나 있으며, 한쪽 앞발을 살짝 들고 고개를 돌려 서 있습니다."
+    }
+  },
+  {
+    "resourceId": "generated-enemy-fire-pup",
+    "oldPath": "assets/generated/corrected/fire-pup.png",
+    "slug": "fire-pup",
+    "metadata": {
+      "name": "불꽃 강아지",
+      "tags": [
+        "강아지",
+        "dog",
+        "puppy",
+        "불꽃",
+        "fire",
+        "불꽃강아지",
+        "불꽃 강아지",
+        "불씨강아지",
+        "불씨 강아지",
+        "불씨"
+      ],
+      "description": "주황색 털을 가진 강아지 형태의 생물로, 머리 양옆과 말린 꼬리 끝에 불꽃이 타오르고 있습니다. 입을 벌려 웃는 표정으로 한쪽 앞발을 들어 올린 자세를 취하고 있습니다."
+    }
+  }
+]

@@ -1,0 +1,23 @@
+{
+ "id": "volcano",
+ "slug": "volcano",
+ "name": "화산",
+ "scene": "산·화산",
+ "kind": "icon",
+ "cells": [
+  2,
+  2
+ ],
+ "canvas": [
+  32,
+  32
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "under": "ash",
+ "under_ko": "화산재(ash 몸통 고른 판)",
+ "passage": "block",
+ "description": "World.png 화산처럼 **큰 산과 같은 원뿔 틀**에 꼭대기 분화구(윗면 타원) + 붉은 용암이 한쪽 비탈로 흘러내린 줄기 하나, 비탈은 잿빛 바위(큰 산보다 회색·검게). 연기는 선택(투명 배경 위 회색 두세 단, 작게). 빛나는 용암은 면적 작게 한 덩이로.",
+ "palette_hint": "wash 비탈, wlava 용암, mconc·mwhite 연기",
+ "worker": "wv4"
+}

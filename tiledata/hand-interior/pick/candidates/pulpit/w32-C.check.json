@@ -1,0 +1,45 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/pulpit/w32-C.pxg",
+ "id": "pulpit",
+ "hard": [],
+ "warn": [],
+ "resized": {
+  "canvas": [
+   64,
+   48
+  ],
+  "footprint": {
+   "w": 4,
+   "h": 3
+  },
+  "why": "사용자 메모: 설교단은 공간감이 별로 → 오른쪽에서 올라가는 계단, 대략 4x3 사이즈."
+ },
+ "refmap": {
+  "cells": 11,
+  "atLeast95": 0,
+  "max": 0.047
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 38,
+ "v5_colors": 16,
+ "bbox": [
+  3,
+  1,
+  62,
+  45
+ ],
+ "v5_bbox": [
+  0,
+  10,
+  29,
+  63
+ ],
+ "note": "방향 C: 뒤 반원 부채꼴 덮개(금줄) + 회색 돌계단 4단, 실루엣을 위로 키워 공간감.",
+ "ok": true
+}

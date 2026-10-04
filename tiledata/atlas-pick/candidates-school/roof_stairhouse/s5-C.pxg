@@ -1,0 +1,109 @@
+// s5 후보 — s5-C.pxg
+@size 32 48
+@cell 16
+@palette palette.pal
+@mat a mconc
+@mat b mmetal
+@mat c vbrass
+@mat d vyellow
+@mat e locker
+@mat f mwhite
+@mat g mglass
+@mblock 0 0
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaa------------------------aaaa
+aaaa---------bbbbbb---------aaaa
+aaaa----------cccc----------aaaa
+aaaaaaaaaaaaaacdddaaaaaaaaaaaaaa
+aaaaaaaaaaaaaacdddaaaaaaaaaaaaaa
+aaaaaaaaaaaaaacdddaaaaaaaaaaaaaa
+aaaaaaaaaaaaaabbbbaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaeeeeeeeeeeeeaaaaaaaaaa
+aaaaaaaaaaeeeeeeeeeeeeaaaaaaaaaa
+aaaaaaaaaaeeeeeeeeeeeeaaaaaaaaaa
+aaaaaaaaaaeeeeeeeeeeeeaaaaaaaaaa
+aaaaaaaaaaeeeefggggeeeaaaaaaaaaa
+aaaaaaaaaaeeeefggggeeeaaaaaaaaaa
+aaaaaaaaaaeeeegggggeeeaaaaaaaaaa
+aaaaaaaaaaeeeegggggeeeaaaaaaaaaa
+aaaaaaaaaaeeeegggggeeeaaaaaaaaaa
+aaaaaaaaaaeeeegggggeeeaaaaaaaaaa
+aaaaaaaaaaeeeegggggeeeaaaaaaaaaa
+aaaaaaaaaaeeeeeeeeeeeeaaaaaaaaaa
+aaaaaaaaaaeeeeeeeeeeeeaaaaaaaaaa
+aaaaaaaaaaeeeeeeeeeeeeaaaaaaaaaa
+aaaaaaaaaaeeeeeeeeeeeeaaaaaaaaaa
+aaaaaaaaaaeeeeeeeeeeeeaaaaaaaaaa
+aaaaaaaaaaeeeeeeeeeeeeaaaaaaaaaa
+aaaaaaaaaaeeeeeeeeeeeeaaaaaaaaaa
+aaaaaaaaaaeeeeeeeeeeeeaaaaaaaaaa
+aaaaaaaaaaeeeeeeeeebeeaaaaaaaaaa
+aaaaaaaaaaeeeeeeeeebeeaaaaaaaaaa
+aaaaaaaaaaeeeeeeeeebeeaaaaaaaaaa
+aaaaaaaaaaeeeeeeeeeeeeaaaaaaaaaa
+aaaaaaaaaaeeeeeeeeeeeeaaaaaaaaaa
+aaaaaaaaaaeeeeeeeeeeeeaaaaaaaaaa
+aaaaaaaaaaeeeeeeeeeeeeaaaaaaaaaa
+aaaaaaaaaaeeeeeeeeeeeeaaaaaaaaaa
+aaaaaaaaaaeeeeeeeeeeeeaaaaaaaaaa
+aaaaaaaaaaeeeeeeeeeeeeaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+@tblock 0 0
+66666666666666666666666666666666
+44444444444444444444444444444444
+44444444444444444444444444444444
+44444444444444444444444444444444
+22222222222222222222222222222222
+11111111111111111111111111111111
+0000........................0000
+3333.........222222.........3333
+3333..........6666..........3333
+33333333333333655533333333333333
+33334233333333655533333333213333
+33334233333333655533333333213333
+33344233333333555533333333213333
+33334233333333333333333333213333
+33334233344444444444444333213333
+33334233335555555555551333213333
+33334233334333333333321333213333
+33334233334333333333321333213333
+33334233334332222223321334213333
+33334233334332553523321333213333
+33334233334332553523321333213333
+33334233334332553523321333213333
+33334233334332553523321333213333
+33334233334332553523321333213333
+22224222234332553523321222212222
+44444244434332553523321444214444
+33334233334334444443321333213333
+33334233334333333333321333213333
+33334233334333333333321333213333
+33334233334333333333321333213333
+33334233334322222222321333213333
+33334233234344444444321333213333
+33334233334333333333321333213333
+33334233334333333336321333213333
+33334233334333333335321333213333
+33334233334333333335321333213333
+22224222234333333332321222212222
+33334233334333333333321333213333
+33334233334333333333321333213333
+33334233334333333333321333213333
+33334243334322222222321333213333
+33334233334344444444321333213333
+33334233334333333333321333212233
+33334233334333333333321333213333
+44444444444444444444444444444444
+22222222222222222222222222222222
+22222222222222222222222222222222
+11111111111111111111111111111111

@@ -1,0 +1,38 @@
+{
+  "plan": {
+    "readOnly": false,
+    "planOnly": false,
+    "maxTurns": 200,
+    "thinkingLevel": "low",
+    "routineEdit": false,
+    "routingAudit": "intent:llm mode=create space=outdoor target=map_blank_start plan tools=author_village 64220ms — 선언 오류: 시간 초과(60000ms) → 마을 계약 없음(버들항 마을)"
+  },
+  "initialToolNames": [
+    "find_tools",
+    "read_project_wiki",
+    "tile_query",
+    "create_map",
+    "resize_map",
+    "ask_tileset_change",
+    "get_project_summary",
+    "list_resources",
+    "get_database_records",
+    "focus_editor_view",
+    "web_search",
+    "get_map_region",
+    "find_events",
+    "get_event",
+    "find_layout_regions",
+    "author_village",
+    "author_beodeul_town",
+    "check_city_form",
+    "check_reachability"
+  ],
+  "intentNote": "[의도] 지금 맵 위 야외 시공이다(author_house/author_village/fill_region/place_props; 대상 맵이 버들항 계열이면 마을은 author_beodeul_town). 집은 author_house(interior:\"linked-interior\")가 기본이다 — 실내맵과 양방향 전이가 함께 생긴다. 겉모습만 필요하면 명시적으로 interior:\"exterior-only\". 독립 실내 세션은 만들지 말 것. 이미 확인된 의도이므로 되묻지 말고 진행하라.\n[마을 시공 — 버들항] 이 요청의 마을은 버들항 타일셋이다. author_village·author_house 는 숲마을 생성기라 쓰지 않는다. author_beodeul_town 한 호출이 길 위계·블록 격자·건물 키트(주택·상점·시장·저택·교회)·풀밭·소품을 버들항 문법으로 조립한다 — paint_road·fill_region·place_props 로 길과 집을 손으로 깔지 말 것.\n지금 맵 'map_blank_start' 에는 이미 내용이 있다 → mapId 를 주지 말고 author_beodeul_town({name, id?, width?, height?}) 로 새 버들항 맵을 만든다. 기존 맵을 지우지 않는다.\n크기는 기본 60×60(작게는 16×10, 블록 격자에 맞게 조금 조정된다). 항구·바다·호수·부두 마을이면 harbour:true(가로 83 이상). 같은 seed 는 같은 마을이니 다른 배치를 원하면 seed 를 바꾼다.\n시공 뒤 check_city_form 으로 길 위계를 보고, check_reachability({mapId, from, targets}) 로 문 앞 도달을 확인한다. NPC·출입구 이벤트가 필요하면 그 뒤에 얹는다(문 앞 칸은 결과 data 에 있다).",
+  "before": {
+    "maps": {
+      "map_blank_start": "beodeul_city"
+    },
+    "currentMapId": "map_blank_start"
+  }
+}

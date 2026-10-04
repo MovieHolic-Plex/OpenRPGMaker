@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/bulletin_board/s5-A.pxg",
+ "set": "school",
+ "id": "bulletin_board",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.117
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.066
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 20,
+ "bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "note": "코르크 게시판 — 짙은 나무 틀, 흰·연노랑·연분홍 종이 네다섯 장이 살짝 기울어 압정(빨강·파랑)으로 고정, 종이 안에 희미한 글줄",
+ "ok": true
+}

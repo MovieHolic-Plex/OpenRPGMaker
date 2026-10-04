@@ -1,0 +1,75 @@
+// 숫돌 받침의 따뜻한 나무 결과 짙은 윤곽으로 압착기 신작; 꼭대기 윗면 3행(y=1~3)
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat w wood 5
+@mat d dwood 3
+@mat i iron 3
+@mat c cheese 4
+@layer press
+@mblock 0 0
+..dddddddddddd..
+.wwwwwwwwwwwwwd.
+.wwwwwwwwwwwwwd.
+.wwwwwwwwwwwwwd.
+.wwwwwwwwwwwwwd.
+.dddddddddddddd.
+..www..dd..wwd..
+..wwd..dd..wwd..
+..wwd..dd..wwd..
+..wwd.dddd.wwd..
+..wwddddddwwwd..
+..wwd..dd..wwd..
+..wwd..dd..wwd..
+..wwd..dd..wwd..
+..wwd..dd..wwd..
+..wwd.wwww.wwd..
+..wwdwwwwwwwwd..
+..wwdddddddwwd..
+..wwd.cccc.wwd..
+..wwdccccccwwd..
+..wwdcccccwwwd..
+..wwdccccccwwd..
+..wwdccccccwwd..
+..wwddccccdwwd..
+.wwwwwwwwwwwwwd.
+.wwwwwwwwwwwwwd.
+.wwwwwwwwwwwwwd.
+.dddddddddddddd.
+..wwd......wwd..
+..wwd......wwd..
+..wwd......wwd..
+..ddd......ddd..
+@tblock 0 0
+..222222222222..
+.77777677777762.
+.76666566666652.
+.76666666566652.
+.65555555555542.
+.22222222222211.
+..752..54..642..
+..652..35..542..
+..652..53..542..
+..652.2442.542..
+..653445433542..
+..652..35..542..
+..652..53..542..
+..652..35..542..
+..652..43..542..
+..652.7776.542..
+..652766665542..
+..652222222542..
+..652.5554.542..
+..652565544542..
+..652555445542..
+..652444433542..
+..652443333542..
+..652233332542..
+.77777677777762.
+.76666666566652.
+.65555555555542.
+.22222222222211.
+..652......542..
+..652......542..
+..542......432..
+..221......211..

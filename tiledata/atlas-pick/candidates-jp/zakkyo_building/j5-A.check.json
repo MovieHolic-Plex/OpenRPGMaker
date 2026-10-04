@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/zakkyo_building/j5-A.pxg",
+ "set": "jp",
+ "id": "zakkyo_building",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 15,
+  "atLeast95": 0,
+  "max": 0.137
+ },
+ "refmap": {
+  "cells": 15,
+  "atLeast95": 0,
+  "max": 0.148
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 42,
+ "bbox": [
+  0,
+  0,
+  47,
+  79
+ ],
+ "note": "강남: 4층 잡거빌딩 — 층마다 색 다른 세로 간판(中王米日)+창 두 개(불 켜진 창·에어컨·분홍 창), 1층 줄무늬 차양+유리문, 옥상 물탱크·안테나",
+ "ok": true
+}

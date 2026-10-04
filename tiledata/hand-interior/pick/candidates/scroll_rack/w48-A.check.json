@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/scroll_rack/w48-A.pxg",
+ "id": "scroll rack",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.004
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 10,
+ "v5_colors": 11,
+ "bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "note": "3/4: 칸막이 안 두루마리(자리·색·개수)는 w2-C 그대로. 위 틀만 윗면 3px(어두운 중간색)+앞가장자리 밝은 1행+처마 그림자(기존 어두운 줄)로 바꿈",
+ "ok": true
+}

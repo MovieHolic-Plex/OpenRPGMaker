@@ -1,0 +1,35 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/column_live/w90-A.pxg",
+ "id": "column live",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.043
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "outline",
+   "outline_black"
+  ],
+  "pass": false
+ },
+ "colors": 14,
+ "v5_colors": 11,
+ "bbox": [
+  1,
+  8,
+  15,
+  47
+ ],
+ "v5_bbox": [
+  0,
+  8,
+  15,
+  47
+ ],
+ "note": "살아 있는 나무 기둥: 잎 머리를 흩뿌린 잎무더기 대신 밝은 윗면(뒤 어둡게·앞 가장자리 밝게)+아래 잎 앞면의 둥근 수관으로 다시 찍음.",
+ "ok": true
+}

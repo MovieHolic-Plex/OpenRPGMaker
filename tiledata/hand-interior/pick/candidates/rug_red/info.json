@@ -1,0 +1,37 @@
+{
+ "id": "rug red",
+ "slug": "rug_red",
+ "name_ko": "붉은 양탄자",
+ "category": "장식",
+ "kind": "flat",
+ "kind_ko": "바닥 무늬(밟을 수 있음)",
+ "canvas": [
+  48,
+  32
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 48,
+  "h": 32
+ },
+ "footprint": {
+  "w": 3,
+  "h": 2
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "금테 두른 붉은 마름모 무늬 양탄자(3×2, 밟음). 예배당·저택 식당·여관 응접실 가운데 바닥에 1장. 식탁·찻상 밑.",
+ "where": "예배당·저택 식당·여관 응접실 가운데 바닥에 1장. 식탁·찻상 밑.",
+ "placement": [
+  "밟을 수 있다. 다른 기물 밑에 먼저 깐다"
+ ],
+ "v5_bbox": [
+  2,
+  2,
+  45,
+  29
+ ],
+ "v5_colors": 5,
+ "material": "cloth",
+ "related": []
+}

@@ -17,11 +17,11 @@ describe("추리 기획 지시", () => {
     const prompt = buildWelcomeGenrePresetPrompt(welcomeGenrePresetById("story-cutscene")!, brief);
     expect(prompt).toContain("추리 저작 요령");
     expect(prompt.indexOf("추리 저작 요령")).toBeGreaterThan(prompt.indexOf("script_cutscene"));
-    expect(prompt).toContain("place_concept");
+    expect(prompt).toContain("build_hand_interior_room");
     expect(prompt).toContain("author_mystery_case");
     expect(prompt).toContain("지금은 run_scene_test 를 호출하지 마라");
     const exposed = names(prompt);
-    expect(exposed).toEqual(expect.arrayContaining(["get_concept_facility", "place_concept", "author_mystery_case", "check_mystery_case"]));
+    expect(exposed).toEqual(expect.arrayContaining(["list_hand_interior_parts", "build_hand_interior_room", "author_mystery_case", "check_mystery_case"]));
   });
 
   it("추리 낱말이 없는 회상 기획에는 사건 도구를 심지 않는다", () => {
@@ -35,7 +35,7 @@ describe("추리 기획 지시", () => {
     const brief = interviewBrief("story-cutscene");
     brief.summary += "\n추리. 용의자 지목.";
     mystery.gameDesignBrief = brief;
-    expect(buildPiAgentSystemPrompt(mystery, [], false).join("\n")).toContain("place_concept(plan, 새 mapId)");
+    expect(buildPiAgentSystemPrompt(mystery, [], false).join("\n")).toContain("build_hand_interior_room(plan, 새 mapId)");
     const story = createBlankProject();
     story.gameDesignBrief = interviewBrief("story-cutscene");
     expect(buildPiAgentSystemPrompt(story, [], false).join("\n")).not.toContain("author_mystery_case");

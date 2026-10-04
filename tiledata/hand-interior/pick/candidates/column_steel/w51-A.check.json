@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/column_steel/w51-A.pxg",
+ "id": "column steel",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.047
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 8,
+ "v5_colors": 6,
+ "bbox": [
+  1,
+  8,
+  14,
+  47
+ ],
+ "v5_bbox": [
+  2,
+  8,
+  13,
+  47
+ ],
+ "note": "머리·초석 3/4 짜임 공통(뒷가장자리 줄, 윗면 3줄 왼쪽 밝게, 앞가장자리 빛 줄, 머리 밑 그림자, 초석 윗면+빛 줄). 강철: 리벳 줄·고리띠 3줄 유지, 초석 리벳 줄 유지, 윗면 D. 관문 ok.",
+ "ok": true
+}

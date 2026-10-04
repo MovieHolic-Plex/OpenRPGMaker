@@ -115,6 +115,7 @@ import {
   estimateContextTokens,
   findCompactionCutPoint,
   findPreviousSummary,
+  resolveContextWindow,
   resolveThresholdContextTokens,
   shouldCompact,
   type ContextUsage,
@@ -311,6 +312,7 @@ import { batchRecordTarget, failedRecordReference, type BatchRecordTarget } from
 import { spatialReferenceImages } from '@/editor/tools/spatialReferenceTools';
 import { interiorPresetImages } from '@/editor/tools/interiorPresetExamples';
 import { villageReferenceImages } from '@/ai/villageReferenceExamples';
+import { retroChoreographyPreviewImages } from '@/assets/retroChoreographyPreviewImage';
 import { ASSISTANT_TURN_RETRY_ATTEMPTS, appendTransientRetryGuidance, sleep } from "./session/transientRetry";
 import { completedWorkItemIdFromResult, findWorkItemById } from "./session/workItemLookup";
 import type {
@@ -819,6 +821,12 @@ export class AssistantSession {
 
   /** Capture before application/proof awaits; a later run never inherits this authority. */
   getRunOperation(): RunOperation { return this.runOperation; }
+
+  /** Current user request only; automatic continuation never carries navigation. */
+  allowsViewNavigation(): boolean {
+    return !this.turnIsDriverContinue && this.turnIntent?.source === "llm"
+      && this.turnIntent.viewNavigation === true;
+  }
 
   retireRun(): TurnResult | undefined {
     const owner = this.runResult;
@@ -4842,6 +4850,8 @@ export class AssistantSession {
           requiredReadTools: this.readEvidence.requiredReadTools(),
           workPlan: this.workPlan,
           fullCatalogFallback: this.eventCommandScope ? true : this.turnFullCatalogFallback,
+          // 이벤트 명령 범위는 전체에서 걸러 쓰므로 창 판정을 하지 않는다.
+          ...(this.eventCommandScope ? {} : { contextWindow: resolveContextWindow(this.config.model) }),
         }),
         GET_ORIGINAL_CONTEXT_TOOL,
         CORRECT_VERIFICATION_TOOL,
@@ -5246,13 +5256,12 @@ export class AssistantSession {
               const applied = runTool(this.ctx, "upsert_resource", {
                 resource: {
                   id: asset.resourceId, name: asset.name, kind: asset.kind, dataUrl: asset.dataUrl,
-                  ...(asset.kind === "monster" ? { monsterMetadata: { name: asset.name, tags: asset.tags, description: asset.prompt } } : {}),
                 },
               }, { dryRun: false });
               toolResult = applied.ok
                 ? {
                   ...applied,
-                  summary: `${asset.kind} 그림 ${asset.resourceId} 를 만들어 등록했습니다. ${asset.kind === "monster" ? "get_monster_resource로 상세를 조회한 뒤 enemy.monsterResourceId와 appearanceTags에 연결하세요." : "관련 DB/시스템 레코드에 resourceId를 연결하세요."}`,
+                  summary: `${asset.kind} 그림 ${asset.resourceId} 를 만들어 등록했습니다. 관련 DB/시스템 레코드에 resourceId를 연결하세요.`,
                   data: { status: "generated", kind: asset.kind, resourceId: asset.resourceId, name: asset.name, tags: asset.tags },
                 }
                 : applied;
@@ -5327,7 +5336,7 @@ export class AssistantSession {
                 ? this.specGate(name, args)
                 : { warnings: [] };
               if (isSpecGatePass(gate)) {
-                if (name !== EVENT_COMMAND_ASSIST_TOOL && tool?.prepare) await operation.wait(prepareTool(name, args));
+                if (name !== EVENT_COMMAND_ASSIST_TOOL && tool?.prepare) await operation.wait(prepareTool(name, args, this.ctx.project));
                 const before = this.ctx.project;
                 toolResult = name === EVENT_COMMAND_ASSIST_TOOL
                   ? await operation.wait(runToolAsync(this.ctx, name, args, {
@@ -5490,6 +5499,9 @@ export class AssistantSession {
           }
           if (name === "get_concept_facility" && toolResult.ok) {
             roundImages.push(...await operation.wait(interiorPresetImages(toolResult.data)));
+          }
+          if (name === "preview_choreography" && toolResult.ok) {
+            roundImages.push(...await operation.wait(retroChoreographyPreviewImages(toolResult.data)));
           }
           if (name === "author_village" && toolResult.ok) {
             roundImages.push(...await operation.wait(villageReferenceImages(toolResult.data)));

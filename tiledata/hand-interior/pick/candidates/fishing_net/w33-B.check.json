@@ -1,0 +1,44 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/fishing_net/w33-B.pxg",
+ "id": "fishing net",
+ "hard": [],
+ "warn": [],
+ "resized": {
+  "canvas": [
+   48,
+   32
+  ],
+  "footprint": {
+   "w": 3,
+   "h": 0
+  },
+  "why": "사용자 메모: 좀 더 큰 3x2 사이즈로 (v5 그물 결 그대로 3칸 너비로 키움)."
+ },
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.077
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 16,
+ "v5_colors": 6,
+ "bbox": [
+  2,
+  1,
+  45,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  1,
+  15,
+  14
+ ],
+ "note": "처진 밧줄 두 못에 걸려 늘어진 그물, 아래로 매단 큰 부표",
+ "ok": true
+}

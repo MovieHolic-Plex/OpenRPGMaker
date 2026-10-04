@@ -1,0 +1,45 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/village/wv7-B.pxg",
+ "set": "worldmap",
+ "id": "village",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.034
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.045
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies",
+   "light"
+  ]
+ },
+ "colors": 27,
+ "bbox": [
+  0,
+  0,
+  31,
+  15
+ ],
+ "note": "집 세 채를 앞뒤로 겹쳐 깊이감, 지붕 5단 명암, 오른쪽 나무",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 2,
+   "atLeast95": 0,
+   "max": 0.086
+  },
+  "refmapWorld": {
+   "cells": 2,
+   "atLeast95": 0,
+   "max": 0.02
+  }
+ }
+}

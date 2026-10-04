@@ -10,7 +10,7 @@ import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { openClusterAiModal } from "@/editor/panels/clusterAiModal";
 import type { ChangeSummary } from "@/editor/tools/types";
 import { createBlankProject } from "@/project/defaults";
-import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { store } from "@/project/store";
 import type { Project } from "@/project/types";
 import { installFakeDom } from "./fakeDom";
@@ -186,7 +186,7 @@ describe("cluster AI range-classify modal", () => {
       kind: "range-classify",
       rect: { x: 2, y: 3, w: 4, h: 2 },
       tileIds: [10, 11, 12, 13, 14, 15, 16, 17],
-      tilesetId: DEFAULT_TILESET_ID,
+      tilesetId: COMBINED_TOWN_TILESET_ID,
     });
     await finishTurn();
 
@@ -208,14 +208,14 @@ describe("cluster AI range-classify modal", () => {
   });
 
   it("enters suggest/image/one-tap flow and accepts the upsert proposal", async () => {
-    const previewData = { tilesetId: DEFAULT_TILESET_ID, tileIds: [20, 21, 22, 23] };
+    const previewData = { tilesetId: COMBINED_TOWN_TILESET_ID, tileIds: [20, 21, 22, 23] };
     const proposed = createBlankProject();
     proposed.meta.title = "Range Classified";
     mocks.proposedProject = proposed;
     mocks.renderToolImages.mockResolvedValue([{ dataUrl: "data:image/png;base64,range", label: "범위 미리보기" }]);
     mocks.turns.push((onEvent: (event: SessionEvent) => void) => {
       onEvent({
-        args: { rect: { x: 5, y: 6, w: 2, h: 2 }, tilesetId: DEFAULT_TILESET_ID },
+        args: { rect: { x: 5, y: 6, w: 2, h: 2 }, tilesetId: COMBINED_TOWN_TILESET_ID },
         name: "suggest_group_from_range",
         result: { ok: true, summary: "성벽 분류 초안", data: { name: "성벽", role: "wall" } },
         type: "tool_call",
@@ -237,7 +237,7 @@ describe("cluster AI range-classify modal", () => {
           role: "wall",
           sourceRect: { height: 2, width: 2, x: 5, y: 6 },
           tileIds: [20, 21, 22, 23],
-          tilesetId: DEFAULT_TILESET_ID,
+          tilesetId: COMBINED_TOWN_TILESET_ID,
         },
         destructive: false,
         name: "upsert_tile_group",
@@ -252,7 +252,7 @@ describe("cluster AI range-classify modal", () => {
       kind: "range-classify",
       rect: { x: 5, y: 6, w: 2, h: 2 },
       tileIds: [20, 21, 22, 23],
-      tilesetId: DEFAULT_TILESET_ID,
+      tilesetId: COMBINED_TOWN_TILESET_ID,
     });
     await finishTurn();
 
@@ -287,7 +287,7 @@ describe("cluster AI range-classify modal", () => {
       kind: "range-classify",
       rect: { x: 1, y: 1, w: 1, h: 1 },
       tileIds: [1],
-      tilesetId: DEFAULT_TILESET_ID,
+      tilesetId: COMBINED_TOWN_TILESET_ID,
     });
     await finishTurn();
 

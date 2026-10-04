@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/rope_barrier/hf5-A.pxg",
+ "set": "horror",
+ "id": "rope_barrier",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.074
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.027
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 7,
+ "bbox": [
+  0,
+  2,
+  31,
+  14
+ ],
+ "note": "A: v5 식구 — tarn 놋 기둥(폭 2px 몸통+공 꼭지+원반 밑단) 둘, 벨벳 붉은 줄(velv 4/3/2)이 가운데로 처짐(0→3px). 기둥 중심 x=7,23 → 이어 붙이면 16px 간격, 줄 끝이 x=31→0 으로 이어진다.",
+ "ok": true
+}

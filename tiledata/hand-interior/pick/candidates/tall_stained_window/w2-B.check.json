@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/tall_stained_window/w2-B.pxg",
+ "id": "tall stained window",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.064
+ },
+ "lint": {
+  "failed": [
+   "jaggies"
+  ],
+  "pass": false
+ },
+ "colors": 17,
+ "v5_colors": 18,
+ "bbox": [
+  2,
+  11,
+  29,
+  31
+ ],
+ "v5_bbox": [
+  2,
+  11,
+  29,
+  31
+ ],
+ "note": "명암 강화: 납선 왼쪽·위쪽 유리는 한 단 밝게, 오른쪽·아래쪽 유리는 한 단 어둡게(빛이 왼쪽 위에서), 스페클 정리",
+ "ok": true
+}

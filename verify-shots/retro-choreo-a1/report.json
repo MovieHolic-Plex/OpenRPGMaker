@@ -1,0 +1,1224 @@
+{
+  "set": "custom",
+  "reduced": false,
+  "clips": [
+    {
+      "skill": "skill_chor_leap_bolt",
+      "start": 10.96,
+      "duration": 2.28,
+      "group": 0,
+      "file": "/home/main/z-project/rpg-zzu-retro-default/verify-shots/retro-choreo-a1/skill-skill_chor_leap_bolt.gif",
+      "bytes": 1097011
+    },
+    {
+      "skill": "skill_chor_triple",
+      "start": 13.32,
+      "duration": 4.92,
+      "group": 0,
+      "file": "/home/main/z-project/rpg-zzu-retro-default/verify-shots/retro-choreo-a1/skill-skill_chor_triple.gif",
+      "bytes": 1983218
+    },
+    {
+      "skill": "skill_chor_big_flame",
+      "start": 18.32,
+      "duration": 1.72,
+      "group": 0,
+      "file": "/home/main/z-project/rpg-zzu-retro-default/verify-shots/retro-choreo-a1/skill-skill_chor_big_flame.gif",
+      "bytes": 700786
+    },
+    {
+      "skill": "skill_chor_sweep",
+      "start": 20.12,
+      "duration": 4.12,
+      "group": 0,
+      "file": "/home/main/z-project/rpg-zzu-retro-default/verify-shots/retro-choreo-a1/skill-skill_chor_sweep.gif",
+      "bytes": 1630352
+    }
+  ],
+  "errors": [],
+  "evidence": [
+    {
+      "skill": "skill_chor_leap_bolt",
+      "group": 0,
+      "completed": true,
+      "effects": [
+        {
+          "at": 11515,
+          "fx": "hero_meteor_trail",
+          "anchor": "projectile",
+          "size": "32",
+          "box": "64",
+          "frames": [
+            0,
+            1
+          ],
+          "positions": [
+            "0px 0px",
+            "-64px 0px"
+          ],
+          "width": "64px",
+          "rendering": "pixelated"
+        },
+        {
+          "at": 11622,
+          "fx": "hero_meteor_impact",
+          "anchor": "target",
+          "size": "128",
+          "box": "128",
+          "frames": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "positions": [
+            "0px 0px",
+            "-128px 0px",
+            "-256px 0px",
+            "-384px 0px",
+            "-512px 0px",
+            "-640px 0px",
+            "-768px 0px",
+            "-896px 0px",
+            "-1024px 0px",
+            "-1152px 0px"
+          ],
+          "width": "128px",
+          "rendering": "pixelated"
+        },
+        {
+          "at": 12011,
+          "fx": "mage_chain_bolt",
+          "anchor": "target",
+          "size": "64",
+          "box": "128",
+          "frames": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "positions": [
+            "0px 0px",
+            "-128px 0px",
+            "-256px 0px",
+            "-384px 0px",
+            "-512px 0px",
+            "-640px 0px",
+            "-768px 0px",
+            "-896px 0px"
+          ],
+          "width": "128px",
+          "rendering": "pixelated"
+        }
+      ],
+      "poses": [
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "idle",
+          "flip": false
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "defend",
+          "flip": false
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "evade",
+          "flip": false
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "attack_windup",
+          "flip": false
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "attack_strike",
+          "flip": false
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "attack",
+          "flip": false
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "walk_a",
+          "flip": false
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "walk_c",
+          "flip": false
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "idle",
+          "flip": false
+        }
+      ],
+      "cells": [],
+      "legacyLayers": 0,
+      "popups": [
+        {
+          "target": "enemy-1",
+          "text": "-153",
+          "heal": false
+        }
+      ],
+      "lines": [
+        ">슬라임 1을 노린다 (← → 대상 변경)",
+        ">시험관이 도약 뇌격을 사용했다!",
+        ">시험관이 도약 뇌격을 사용했다!슬라임 1에게 153 피해!",
+        ">시험관은 무엇을 할까?"
+      ],
+      "statuses": [],
+      "sounds": 4,
+      "remainingFx": 0,
+      "layerKeys": [
+        "hero_meteor_trail",
+        "hero_meteor_impact",
+        "mage_chain_bolt"
+      ],
+      "problems": []
+    },
+    {
+      "skill": "skill_chor_triple",
+      "group": 0,
+      "completed": true,
+      "effects": [
+        {
+          "at": 13801,
+          "fx": "samurai_moon",
+          "anchor": "target",
+          "size": "64",
+          "box": "128",
+          "frames": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "positions": [
+            "0px 0px",
+            "-128px 0px",
+            "-256px 0px",
+            "-384px 0px",
+            "-512px 0px",
+            "-640px 0px",
+            "-768px 0px",
+            "-896px 0px",
+            "-1024px 0px",
+            "-1152px 0px"
+          ],
+          "width": "128px",
+          "rendering": "pixelated"
+        },
+        {
+          "at": 14131,
+          "fx": "mage_missile_hit",
+          "anchor": "target",
+          "size": "64",
+          "box": "128",
+          "frames": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "positions": [
+            "0px 0px",
+            "-128px 0px",
+            "-256px 0px",
+            "-384px 0px",
+            "-512px 0px",
+            "-640px 0px",
+            "-768px 0px",
+            "-896px 0px"
+          ],
+          "width": "128px",
+          "rendering": "pixelated"
+        },
+        {
+          "at": 15248,
+          "fx": "samurai_moon",
+          "anchor": "target",
+          "size": "64",
+          "box": "128",
+          "frames": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "positions": [
+            "0px 0px",
+            "-128px 0px",
+            "-256px 0px",
+            "-384px 0px",
+            "-512px 0px",
+            "-640px 0px",
+            "-768px 0px",
+            "-896px 0px",
+            "-1024px 0px",
+            "-1152px 0px"
+          ],
+          "width": "128px",
+          "rendering": "pixelated"
+        },
+        {
+          "at": 15584,
+          "fx": "mage_missile_hit",
+          "anchor": "target",
+          "size": "64",
+          "box": "128",
+          "frames": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "positions": [
+            "0px 0px",
+            "-128px 0px",
+            "-256px 0px",
+            "-384px 0px",
+            "-512px 0px",
+            "-640px 0px",
+            "-768px 0px",
+            "-896px 0px"
+          ],
+          "width": "128px",
+          "rendering": "pixelated"
+        },
+        {
+          "at": 16687,
+          "fx": "samurai_moon",
+          "anchor": "target",
+          "size": "64",
+          "box": "128",
+          "frames": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "positions": [
+            "0px 0px",
+            "-128px 0px",
+            "-256px 0px",
+            "-384px 0px",
+            "-512px 0px",
+            "-640px 0px",
+            "-768px 0px",
+            "-896px 0px",
+            "-1024px 0px",
+            "-1152px 0px"
+          ],
+          "width": "128px",
+          "rendering": "pixelated"
+        },
+        {
+          "at": 17015,
+          "fx": "mage_missile_hit",
+          "anchor": "target",
+          "size": "64",
+          "box": "128",
+          "frames": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "positions": [
+            "0px 0px",
+            "-128px 0px",
+            "-256px 0px",
+            "-384px 0px",
+            "-512px 0px",
+            "-640px 0px",
+            "-768px 0px",
+            "-896px 0px"
+          ],
+          "width": "128px",
+          "rendering": "pixelated"
+        }
+      ],
+      "poses": [
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "idle",
+          "flip": false
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "attack_windup",
+          "flip": false
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "walk_b",
+          "flip": false
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "attack_windup",
+          "flip": false
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "attack_strike",
+          "flip": false
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "attack",
+          "flip": false
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "attack_windup",
+          "flip": true
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "attack_strike",
+          "flip": true
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "attack",
+          "flip": true
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "attack_windup",
+          "flip": false
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "attack_strike",
+          "flip": false
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "attack",
+          "flip": false
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "attack_windup",
+          "flip": true
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "attack_strike",
+          "flip": true
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "attack",
+          "flip": true
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "attack_follow",
+          "flip": false
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "walk_a",
+          "flip": false
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "walk_c",
+          "flip": false
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "idle",
+          "flip": false
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "attack_windup",
+          "flip": false
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "walk_b",
+          "flip": false
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "attack_windup",
+          "flip": false
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "attack_strike",
+          "flip": false
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "attack",
+          "flip": false
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "attack_windup",
+          "flip": true
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "attack_strike",
+          "flip": true
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "attack",
+          "flip": true
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "attack_windup",
+          "flip": false
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "attack_strike",
+          "flip": false
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "attack",
+          "flip": false
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "attack_windup",
+          "flip": true
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "attack_strike",
+          "flip": true
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "attack",
+          "flip": true
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "attack_follow",
+          "flip": false
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "walk_a",
+          "flip": false
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "walk_c",
+          "flip": false
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "idle",
+          "flip": false
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "attack_windup",
+          "flip": false
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "walk_b",
+          "flip": false
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "attack_windup",
+          "flip": false
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "attack_strike",
+          "flip": false
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "attack",
+          "flip": false
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "attack_windup",
+          "flip": true
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "attack_strike",
+          "flip": true
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "attack",
+          "flip": true
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "attack_windup",
+          "flip": false
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "attack_strike",
+          "flip": false
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "attack",
+          "flip": false
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "attack_windup",
+          "flip": true
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "attack_strike",
+          "flip": true
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "attack",
+          "flip": true
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "attack_follow",
+          "flip": false
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "walk_a",
+          "flip": false
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "walk_c",
+          "flip": false
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "idle",
+          "flip": false
+        }
+      ],
+      "cells": [],
+      "legacyLayers": 0,
+      "popups": [
+        {
+          "target": "enemy-1",
+          "text": "-85",
+          "heal": false
+        },
+        {
+          "target": "enemy-1",
+          "text": "-82",
+          "heal": false
+        },
+        {
+          "target": "enemy-1",
+          "text": "-127",
+          "heal": false
+        }
+      ],
+      "lines": [
+        ">슬라임 1을 노린다 (← → 대상 변경)",
+        ">시험관이 삼연 난타를 사용했다!",
+        ">시험관이 삼연 난타를 사용했다!슬라임 1에게 85 피해!",
+        ">시험관이 삼연 난타를 사용했다!",
+        ">시험관이 삼연 난타를 사용했다!슬라임 1이 82 피해를 입었다!",
+        ">시험관이 삼연 난타를 사용했다!",
+        ">시험관이 삼연 난타를 사용했다!슬라임 1이 127 피해를 입었다!",
+        ">시험관은 무엇을 할까?"
+      ],
+      "statuses": [],
+      "sounds": 21,
+      "remainingFx": 0,
+      "layerKeys": [
+        "samurai_moon",
+        "mage_missile_hit"
+      ],
+      "problems": []
+    },
+    {
+      "skill": "skill_chor_big_flame",
+      "group": 0,
+      "completed": true,
+      "effects": [
+        {
+          "at": 18540,
+          "fx": "hero_flame_aura",
+          "anchor": "user",
+          "size": "64",
+          "box": "128",
+          "frames": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "positions": [
+            "0px 0px",
+            "-128px 0px",
+            "-256px 0px",
+            "-384px 0px",
+            "-512px 0px",
+            "-640px 0px"
+          ],
+          "width": "128px",
+          "rendering": "pixelated"
+        },
+        {
+          "at": 18689,
+          "fx": "hero_flame_slash",
+          "anchor": "target",
+          "size": "64",
+          "box": "256",
+          "frames": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ],
+          "positions": [
+            "0px 0px",
+            "-256px 0px",
+            "-512px 0px",
+            "-768px 0px",
+            "-1024px 0px",
+            "-1280px 0px",
+            "-1536px 0px",
+            "-1792px 0px",
+            "-2048px 0px",
+            "-2304px 0px"
+          ],
+          "width": "256px",
+          "rendering": "pixelated"
+        }
+      ],
+      "poses": [
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "idle",
+          "flip": false
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "attack_windup",
+          "flip": false
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "walk_b",
+          "flip": false
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "attack_windup",
+          "flip": false
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "attack_strike",
+          "flip": false
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "attack",
+          "flip": false
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "attack_windup",
+          "flip": false
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "attack_strike",
+          "flip": false
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "attack_follow",
+          "flip": false
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "walk_a",
+          "flip": false
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "walk_c",
+          "flip": false
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "idle",
+          "flip": false
+        }
+      ],
+      "cells": [],
+      "legacyLayers": 0,
+      "popups": [
+        {
+          "target": "enemy-1",
+          "text": "-119",
+          "heal": false
+        }
+      ],
+      "lines": [
+        ">슬라임 1을 노린다 (← → 대상 변경)",
+        ">시험관이 큰 불꽃 베기를 사용했다!",
+        ">시험관이 큰 불꽃 베기를 사용했다!슬라임 1에게 119 피해!",
+        ">시험관은 무엇을 할까?"
+      ],
+      "statuses": [],
+      "sounds": 3,
+      "remainingFx": 0,
+      "layerKeys": [
+        "hero_flame_aura",
+        "hero_flame_slash"
+      ],
+      "problems": []
+    },
+    {
+      "skill": "skill_chor_sweep",
+      "group": 0,
+      "completed": true,
+      "effects": [
+        {
+          "at": 20532,
+          "fx": "mage_missile_hit",
+          "anchor": "target",
+          "size": "64",
+          "box": "128",
+          "frames": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "positions": [
+            "0px 0px",
+            "-128px 0px",
+            "-256px 0px",
+            "-384px 0px",
+            "-512px 0px",
+            "-640px 0px",
+            "-768px 0px",
+            "-896px 0px"
+          ],
+          "width": "128px",
+          "rendering": "pixelated"
+        },
+        {
+          "at": 20626,
+          "fx": "mage_missile_hit",
+          "anchor": "target",
+          "size": "64",
+          "box": "128",
+          "frames": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "positions": [
+            "0px 0px",
+            "-128px 0px",
+            "-256px 0px",
+            "-384px 0px",
+            "-512px 0px",
+            "-640px 0px",
+            "-768px 0px",
+            "-896px 0px"
+          ],
+          "width": "128px",
+          "rendering": "pixelated"
+        },
+        {
+          "at": 20731,
+          "fx": "mage_missile_hit",
+          "anchor": "target",
+          "size": "64",
+          "box": "128",
+          "frames": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "positions": [
+            "0px 0px",
+            "-128px 0px",
+            "-256px 0px",
+            "-384px 0px",
+            "-512px 0px",
+            "-640px 0px",
+            "-768px 0px",
+            "-896px 0px"
+          ],
+          "width": "128px",
+          "rendering": "pixelated"
+        },
+        {
+          "at": 20973,
+          "fx": "mage_chain_bolt",
+          "anchor": "target",
+          "size": "64",
+          "box": "128",
+          "frames": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "positions": [
+            "0px 0px",
+            "-128px 0px",
+            "-256px 0px",
+            "-384px 0px",
+            "-512px 0px",
+            "-640px 0px",
+            "-768px 0px",
+            "-896px 0px"
+          ],
+          "width": "128px",
+          "rendering": "pixelated"
+        }
+      ],
+      "poses": [
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "idle",
+          "flip": false
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "cast_charge",
+          "flip": false
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "cast_raise",
+          "flip": false
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "cast_release",
+          "flip": false
+        },
+        {
+          "actor": "actor_choreo_tester",
+          "pose": "idle",
+          "flip": false
+        }
+      ],
+      "cells": [],
+      "legacyLayers": 0,
+      "popups": [
+        {
+          "target": "enemy-1",
+          "text": "-100",
+          "heal": false
+        },
+        {
+          "target": "enemy-2",
+          "text": "-97",
+          "heal": false
+        },
+        {
+          "target": "enemy-3",
+          "text": "-129",
+          "heal": false
+        }
+      ],
+      "lines": [
+        ">시험관은 무엇을 할까?",
+        ">시험관이 전체 뇌우를 사용했다!",
+        ">시험관이 전체 뇌우를 사용했다!슬라임 1에게 100 피해!",
+        ">시험관이 전체 뇌우를 사용했다!동굴 박쥐가 97 피해를 입었다!",
+        ">시험관이 전체 뇌우를 사용했다!슬라임 2가 129 피해를 입었다!",
+        ">시험관은 무엇을 할까?"
+      ],
+      "statuses": [],
+      "sounds": 5,
+      "remainingFx": 0,
+      "layerKeys": [
+        "mage_missile_hit",
+        "mage_chain_bolt"
+      ],
+      "problems": []
+    }
+  ],
+  "custom": {
+    "file": "verify-shots/retro-choreo-a1/spec.json",
+    "contract": [
+      {
+        "id": "skill_chor_leap_bolt",
+        "actorId": "actor_choreo_tester",
+        "motion": "leap-strike",
+        "layers": [
+          "hero_meteor_trail",
+          "hero_meteor_impact",
+          "mage_chain_bolt"
+        ],
+        "scales": {},
+        "label": "연출 ① 도약 + 번개 층.",
+        "choreographyId": "chor_custom",
+        "hits": 1,
+        "expect": {
+          "fx": [
+            {
+              "key": "hero_meteor_trail",
+              "at": 310,
+              "kind": "projectile",
+              "anchor": "projectile",
+              "scale": 1
+            },
+            {
+              "key": "hero_meteor_impact",
+              "at": 410,
+              "kind": "fx",
+              "anchor": "target",
+              "scale": 1
+            },
+            {
+              "key": "mage_chain_bolt",
+              "at": 806,
+              "kind": "fx",
+              "anchor": "target",
+              "scale": 1
+            }
+          ],
+          "sounds": 4,
+          "layerCount": 3
+        }
+      },
+      {
+        "id": "skill_chor_triple",
+        "actorId": "actor_choreo_tester",
+        "motion": "flurry",
+        "layers": [
+          "samurai_moon",
+          "mage_missile_hit"
+        ],
+        "scales": {},
+        "label": "연출 ② 3타, 타마다 임팩트.",
+        "choreographyId": "chor_custom_2",
+        "hits": 3,
+        "expect": {
+          "fx": [
+            {
+              "key": "samurai_moon",
+              "at": 240,
+              "kind": "fx",
+              "anchor": "target",
+              "scale": 1
+            },
+            {
+              "key": "mage_missile_hit",
+              "at": 570,
+              "kind": "fx",
+              "anchor": "target",
+              "scale": 1
+            },
+            {
+              "key": "mage_missile_hit",
+              "at": 660,
+              "kind": "fx",
+              "anchor": "target",
+              "scale": 1
+            },
+            {
+              "key": "mage_missile_hit",
+              "at": 750,
+              "kind": "fx",
+              "anchor": "target",
+              "scale": 1
+            }
+          ],
+          "sounds": 9,
+          "layerCount": 2
+        }
+      },
+      {
+        "id": "skill_chor_big_flame",
+        "actorId": "actor_choreo_tester",
+        "motion": "dash-strike",
+        "layers": [
+          "hero_flame_aura",
+          "hero_flame_slash"
+        ],
+        "scales": {
+          "hero_flame_slash": 2
+        },
+        "label": "연출 ③ 복제 + 2배·지연.",
+        "choreographyId": "chor_hero_flame_sword",
+        "hits": 1,
+        "expect": {
+          "fx": [
+            {
+              "key": "hero_flame_aura",
+              "at": 50,
+              "kind": "fx",
+              "anchor": "user",
+              "scale": 1
+            },
+            {
+              "key": "hero_flame_slash",
+              "at": 200,
+              "kind": "fx",
+              "anchor": "target",
+              "scale": 2
+            }
+          ],
+          "sounds": 3,
+          "layerCount": 2
+        }
+      },
+      {
+        "id": "skill_chor_sweep",
+        "actorId": "actor_choreo_tester",
+        "motion": "cast",
+        "layers": [
+          "mage_chain_bolt",
+          "mage_missile_hit"
+        ],
+        "scales": {},
+        "label": "연출 ④ 전체 대상 + 착탄마다 임팩트.",
+        "choreographyId": "chor_custom_3",
+        "hits": 1,
+        "expect": {
+          "fx": [
+            {
+              "key": "mage_missile_hit",
+              "at": 300,
+              "kind": "fx",
+              "anchor": "target",
+              "scale": 1
+            },
+            {
+              "key": "mage_chain_bolt",
+              "at": 740,
+              "kind": "fx",
+              "anchor": "target",
+              "scale": 1
+            }
+          ],
+          "sounds": 3,
+          "layerCount": 2
+        }
+      }
+    ],
+    "log": [
+      "OK   list_fx_sheets 이펙트 시트 0장 중 0장",
+      "     list_fx_sheets(\"번개\") -> ",
+      "OK   list_fx_sheets 이펙트 시트 5장 중 5장",
+      "     list_fx_sheets(\"chain\") -> mage_chain_bolt, dark_knight_chain, dark_lord_chains, galleon_chain, galleon_chain_hit",
+      "OK   list_fx_sheets 이펙트 시트 2장 중 2장",
+      "     list_fx_sheets(\"missile\") -> mage_missile_hit, mage_missile_orb",
+      "OK   list_fx_sheets 이펙트 시트 8장 중 6장",
+      "     list_fx_sheets(\"moon\") -> druid_moonbeam, samurai_moon, mothman_moonwing_sky, samurai_blood_moon, scarecrow_moon_sky, sdance_moon",
+      "OK   upsert_choreography 연출 '도약 뇌격'(chor_custom) 추가 — 3층, 스킬에는 retroChoreographyId:\"chor_custom\" 로 붙인다",
+      "OK   upsert_choreography 연출 '삼연 난타'(chor_custom_2) 추가 — 2층, 스킬에는 retroChoreographyId:\"chor_custom_2\" 로 붙인다",
+      "OK   duplicate_choreography 연출 '화염검'(skill_hero_flame_sword) → '큰 불꽃 베기'(chor_hero_flame_sword) 복제 — 2층. 스킬에는 retroChoreographyId:\"chor_hero_flame_sword\" 로 붙이고, 고치려면 upsert_choreography",
+      "OK   upsert_choreography 연출 '큰 불꽃 베기'(chor_hero_flame_sword) 수정 — 2층, 스킬에는 retroChoreographyId:\"chor_hero_flame_sword\" 로 붙인다",
+      "OK   upsert_choreography 연출 '전체 뇌우'(chor_custom_3) 추가 — 2층, 스킬에는 retroChoreographyId:\"chor_custom_3\" 로 붙인다",
+      "OK   upsert_skill 스킬 '도약 뇌격' 추가",
+      "OK   upsert_skill 스킬 '삼연 난타' 추가",
+      "OK   upsert_skill 스킬 '큰 불꽃 베기' 추가",
+      "OK   upsert_skill 스킬 '전체 뇌우' 추가",
+      "OK   upsert_class 클래스 '연출 시험관' 추가",
+      "OK   upsert_actor 액터 '시험관' 추가",
+      "OK   serialize→deserialize skillChoreographies 4개 동일"
+    ]
+  },
+  "passed": true
+}

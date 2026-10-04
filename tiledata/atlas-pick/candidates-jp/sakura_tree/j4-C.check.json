@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/sakura_tree/j4-C.pxg",
+ "set": "jp",
+ "id": "sakura_tree",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 7,
+  "atLeast95": 0,
+  "max": 0.037
+ },
+ "refmap": {
+  "cells": 7,
+  "atLeast95": 0,
+  "max": 0.119
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies",
+   "banding",
+   "dither"
+  ]
+ },
+ "colors": 10,
+ "bbox": [
+  0,
+  1,
+  47,
+  47
+ ],
+ "note": "실루엣 재구상: 두 갈래 줄기 위 납작한 우산형 수관, 아래로 처지는 꽃가지",
+ "ok": true
+}

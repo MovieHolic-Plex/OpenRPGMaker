@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/gym_line/s2-C.pxg",
+ "set": "school",
+ "id": "gym_line",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 0,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "refmap": {
+  "cells": 0,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 4,
+ "bbox": [
+  0,
+  7,
+  13,
+  8
+ ],
+ "note": "초록 점선(6칸 선 2칸 틈) — 3점 라인 등 보조선 실루엣",
+ "ok": true
+}

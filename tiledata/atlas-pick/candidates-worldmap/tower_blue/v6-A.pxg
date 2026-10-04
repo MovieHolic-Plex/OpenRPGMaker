@@ -1,0 +1,51 @@
+// tower_blue v6-A (6판: 목표 월드맵 실측 — 그린 형태(사선 붓질·층진 침엽수·자갈 해안))
+@size 16 32
+@cell 16
+@palette ../../palette/worldmap6.pal
+@layer main
+@mat a wink 0
+@mat b wgold 2
+@mat c wgold 3
+@mat d wroofb 3
+@mat e wroofb 2
+@mat f wroofb 1
+@mat g wroofb 4
+@mat h wstone 5
+@mat i wstone 3
+@mat j wstone 4
+@mat k wstone 2
+@mat l wbark 1
+@mat m wbark 0
+@mblock 0 0
+................
+........a.......
+.......aba......
+.......aca......
+.......ada......
+......addea.....
+......aeefa.....
+.....agddeea....
+.....agddeea....
+....addeeeffa...
+...aggddddeeea..
+...aggddddeeea..
+..adddeeeeffffa.
+.aggggdddddeeeea
+agghhdhhdiieieee
+.aahjjkjjjjikaaa
+..ahjjjjjjjiia..
+..ahjjjjjjjiia..
+..akkkkkkkkkka..
+..akjjjaakjiia..
+..ahjjjaajjiia..
+..ahjjjjjjjiia..
+..akkkkkkkkkka..
+..ahjjkjjjjika..
+..ahjjjjjjjiia..
+..ahjjjlljjiia..
+..akkklllmkkka..
+..akjjllcmjiia..
+..ahjjlllmjiia..
+.--aaaaaaaaaa--.
+...-----------..
+................

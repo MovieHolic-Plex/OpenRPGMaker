@@ -1,0 +1,21 @@
+// h10-A: 윗면 위 바퀴 접지 그늘 + 윗면 앞 모서리 밝힘
+@size 16 16
+@cell 16
+@palette palette.pal
+@block 0 0
+................
+.....ABBCCA.....
+....ABBBCCCA....
+....BBBBDDCCEEE.
+...ABBBBDDCCE.E.
+...BBBBFFDDCC.E.
+...CCDDDDDDCC...
+...ACCDDDDCCA...
+....CCDDDDCC....
+.EEEEEEEEEEEEEE.
+.GHHIIIIIIHHHHE.
+.GHIIIJJJIIIJJE.
+.EHHHHHHHHHHHHE.
+.KGGGGGGGGGGGGK.
+.KLJJJJJJJJJJGK.
+.KKJGKKKKKKKJGK.

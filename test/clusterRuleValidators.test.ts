@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { runTool } from "@/editor/tools/toolRunner";
-import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { createBlankProject } from "@/project/defaults/defaultProject";
 import { validateClusterRules } from "@/project/lint/clusterRuleValidators";
 import type { ClusterRule, GameMap, Project, TileGroupMetadata } from "@/project/types";
@@ -18,7 +18,7 @@ function blankMap(): GameMap {
     lowerTiles: new Array<number>(width * height).fill(TILE.GRASS),
     name: "클러스터 규칙 테스트",
     tileSize: 16,
-    tilesetId: DEFAULT_TILESET_ID,
+    tilesetId: COMBINED_TOWN_TILESET_ID,
     upperTiles: new Array<number>(width * height).fill(TILE.EMPTY),
     width,
   };
@@ -49,7 +49,7 @@ function projectWithRules(rules: readonly ClusterRule[], patternGrammar?: Patter
   project.mapTree = { mapId: MAP_ID, children: [] };
   project.startMapId = MAP_ID;
   project.startPos = { x: 0, y: 0 };
-  project.tilesets[DEFAULT_TILESET_ID].tileGroups = [groupWithRules(rules, patternGrammar)];
+  project.tilesets[COMBINED_TOWN_TILESET_ID].tileGroups = [groupWithRules(rules, patternGrammar)];
   return { map, project };
 }
 

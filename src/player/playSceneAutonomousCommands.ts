@@ -1,3 +1,4 @@
+import { mapCharacterSizeFactor } from "@/project/characterScale";
 import { fallHop, jumpHop } from "@/player/characterHop";
 import { invalidateEventIdIndexPass } from "@/project/runtimeEventState";
 import { mapTileSize } from "@/project/tileGeometry";
@@ -175,7 +176,7 @@ export function executeInstantCommand(
       target.mover.moveIntervalMs = npcMoveIntervalMs(target.mover.frequencyRank);
       return true;
     case "changeGraphic":
-      applyMoveRouteGraphicChange(command.spriteId, target.view, target.sprite, mapTileSize(routeContext.scene.map));
+      applyMoveRouteGraphicChange(command.spriteId, target.view, target.sprite, mapTileSize(routeContext.scene.map), mapCharacterSizeFactor(routeContext.scene.map));
       return true;
     case "npcTransfer":
       applyNpcTransfer(routeContext, target, command);

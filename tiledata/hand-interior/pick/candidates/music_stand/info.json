@@ -1,0 +1,38 @@
+{
+ "id": "music stand",
+ "slug": "music_stand",
+ "name_ko": "보면대",
+ "category": "극장",
+ "kind": "floor",
+ "kind_ko": "바닥 기물(막힘)",
+ "canvas": [
+  16,
+  32
+ ],
+ "padTop": 8,
+ "image": {
+  "w": 16,
+  "h": 24
+ },
+ "footprint": {
+  "w": 1,
+  "h": 1
+ },
+ "overhang_px": 8,
+ "surface": null,
+ "description": "흰 악보를 올린 검은 쇠 보면대. 극장 오케스트라 석에 5개 안팎 반원으로. 지휘대를 향해.",
+ "where": "극장 오케스트라 석에 5개 안팎 반원으로. 지휘대를 향해.",
+ "placement": [
+  "그림이 발밑 칸 위로 8px 솟는다 → 위 1칸은 플레이어 위에 그리는 겹침층",
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": [
+  2,
+  10,
+  13,
+  30
+ ],
+ "v5_colors": 5,
+ "material": "wood",
+ "related": []
+}

@@ -1,0 +1,21 @@
+{
+ "id": "assembly_podium",
+ "slug": "assembly_podium",
+ "name": "조회대",
+ "scene": "옥상·운동장·교문",
+ "place": "out",
+ "cells": [
+  3,
+  2
+ ],
+ "canvas": [
+  48,
+  32
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "운동장 앞 조회대(구령대) — 콘크리트 단(앞 계단 두 줄), 위 작은 쇠 난간, 가운데 마이크 스탠드. 윗면이 보이는 각.",
+ "palette_hint": "mconc 단, mmetal 난간",
+ "pair": [],
+ "worker": "s1"
+}

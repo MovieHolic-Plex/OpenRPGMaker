@@ -1,0 +1,30 @@
+16 16
+a leaf 1
+b leaf 2
+c leaf 3
+d leaf 4
+e leaf 5
+f leaf 6
+p clay 1
+q clay 2
+r clay 3
+s clay 4
+t clay 5
+u clay 6
+---
+................
+....a...a.......
+...abc.cb..a....
+..abdec.dcdba...
+.abddefdedcccb..
+..bcdeeddcccb...
+...bcddccccb....
+....abccccb.....
+.....abcb.......
+...ppppppppppp..
+...puuuuuuurrp~.
+....pttssssrp~..
+.....psssssrp~..
+......pqrrqp~~..
+.......pppp~~~..
+.......~~~~~~...

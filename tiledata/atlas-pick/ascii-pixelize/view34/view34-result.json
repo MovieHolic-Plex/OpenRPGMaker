@@ -1,0 +1,82 @@
+[
+ {
+  "name": "vending_red",
+  "size": [
+   16,
+   30
+  ],
+  "shape_ok": true,
+  "padded_rows": 0,
+  "bad_chars": [],
+  "check": [
+   "as-pick/ascii-pixelize/view34/vending_red-view34.png prop          7    23  0.304  OK"
+  ],
+  "cost_usd": 0.5496095999999999
+ },
+ {
+  "name": "vending_blue",
+  "size": [
+   16,
+   30
+  ],
+  "shape_ok": true,
+  "padded_rows": 0,
+  "bad_chars": [],
+  "check": [
+   "s-pick/ascii-pixelize/view34/vending_blue-view34.png prop          6    24   0.25  OK"
+  ],
+  "cost_usd": 0.9831312
+ },
+ {
+  "name": "taxi",
+  "size": [
+   56,
+   32
+  ],
+  "shape_ok": true,
+  "padded_rows": 1,
+  "bad_chars": [],
+  "check": [
+   "ata/atlas-pick/ascii-pixelize/view34/taxi-view34.png vehicle_h     7    25   0.28  OK"
+  ],
+  "cost_usd": 1.1188117999999998
+ },
+ {
+  "name": "guardrail",
+  "size": [
+   48,
+   16
+  ],
+  "shape_ok": true,
+  "padded_rows": 0,
+  "bad_chars": [],
+  "check": [
+   "tlas-pick/ascii-pixelize/view34/guardrail-view34.png prop          0    16    0.0  NOTOP 윗면이 없다(앞면만) — 상자에 윗면이 없다"
+  ],
+  "cost_usd": 0.9222322
+ },
+ {
+  "name": "traffic_light",
+  "size": [
+   32,
+   48
+  ],
+  "shape_ok": true,
+  "padded_rows": 0,
+  "bad_chars": [],
+  "check": null,
+  "cost_usd": 1.0567936
+ },
+ {
+  "name": "street_lamp",
+  "size": [
+   16,
+   40
+  ],
+  "shape_ok": true,
+  "padded_rows": 0,
+  "bad_chars": [],
+  "check": null,
+  "cost_usd": 0.9574324000000001
+ }
+]

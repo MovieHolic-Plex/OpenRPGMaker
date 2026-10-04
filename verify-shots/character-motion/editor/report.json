@@ -1,0 +1,1243 @@
+{
+  "actors": 136,
+  "rows": [
+    {
+      "actor": "actor_hero",
+      "style": "balanced",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/actor1-0.png\")",
+      "left": "84px",
+      "top": "63px",
+      "time": "0.4 / 1.1초"
+    },
+    {
+      "actor": "actor_guardian",
+      "style": "heavy",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/actor2-0.png\")",
+      "left": "85px",
+      "top": "63px",
+      "time": "0.6 / 1.3초"
+    },
+    {
+      "actor": "actor_mage",
+      "style": "caster",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/actor1-5.png\")",
+      "left": "85px",
+      "top": "63px",
+      "time": "0.5 / 1.2초"
+    },
+    {
+      "actor": "actor_scout",
+      "style": "agile",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/actor4-0.png\")",
+      "left": "83px",
+      "top": "63px",
+      "time": "0.4 / 0.9초"
+    },
+    {
+      "actor": "actor_cleric",
+      "style": "caster",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/actor1-7.png\")",
+      "left": "85px",
+      "top": "63px",
+      "time": "0.5 / 1.2초"
+    },
+    {
+      "actor": "actor_ranger",
+      "style": "ranged",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/actor2-3.png\")",
+      "left": "84px",
+      "top": "63px",
+      "time": "0.4 / 1.1초"
+    },
+    {
+      "actor": "actor_samurai",
+      "style": "agile",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/actor3-0-samurai.png\")",
+      "left": "95px",
+      "top": "63px",
+      "time": "0.4 / 1.0초"
+    },
+    {
+      "actor": "actor_ninja",
+      "style": "agile",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/actor3-2.png\")",
+      "left": "87px",
+      "top": "63px",
+      "time": "0.4 / 0.9초"
+    },
+    {
+      "actor": "actor_monk",
+      "style": "martial",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/actor3-5.png\")",
+      "left": "83px",
+      "top": "63px",
+      "time": "0.4 / 1.0초"
+    },
+    {
+      "actor": "actor_bard",
+      "style": "caster",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/actor3-6.png\")",
+      "left": "83px",
+      "top": "63px",
+      "time": "0.5 / 1.1초"
+    },
+    {
+      "actor": "actor_druid",
+      "style": "caster",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/actor3-4.png\")",
+      "left": "83px",
+      "top": "63px",
+      "time": "0.5 / 1.2초"
+    },
+    {
+      "actor": "actor_witch",
+      "style": "caster",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/actor4-7.png\")",
+      "left": "83px",
+      "top": "63px",
+      "time": "0.5 / 1.2초"
+    },
+    {
+      "actor": "actor_valkyrie",
+      "style": "lancer",
+      "cell": "-48px 0px",
+      "sheet": "url(\"/assets/generated/charset-battlers/actor1-1.png\")",
+      "left": "95px",
+      "top": "63px",
+      "time": "0.5 / 1.1초"
+    },
+    {
+      "actor": "actor_paladin",
+      "style": "heavy",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/actor1-2.png\")",
+      "left": "84px",
+      "top": "63px",
+      "time": "0.6 / 1.3초"
+    },
+    {
+      "actor": "actor_red_mage",
+      "style": "balanced",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/actor1-3.png\")",
+      "left": "84px",
+      "top": "63px",
+      "time": "0.4 / 1.1초"
+    },
+    {
+      "actor": "actor_dark_knight",
+      "style": "heavy",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/actor1-4.png\")",
+      "left": "93px",
+      "top": "63px",
+      "time": "0.6 / 1.3초"
+    },
+    {
+      "actor": "actor_chronomancer",
+      "style": "caster",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/actor1-6.png\")",
+      "left": "85px",
+      "top": "63px",
+      "time": "0.5 / 1.2초"
+    },
+    {
+      "actor": "actor_thief",
+      "style": "agile",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/actor2-1.png\")",
+      "left": "85px",
+      "top": "63px",
+      "time": "0.4 / 0.9초"
+    },
+    {
+      "actor": "actor_beast_tamer",
+      "style": "ranged",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/actor2-2.png\")",
+      "left": "84px",
+      "top": "63px",
+      "time": "0.5 / 1.1초"
+    },
+    {
+      "actor": "actor_pirate",
+      "style": "balanced",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/actor2-4.png\")",
+      "left": "85px",
+      "top": "63px",
+      "time": "0.4 / 1.1초"
+    },
+    {
+      "actor": "actor_sorceress",
+      "style": "caster",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/actor2-5.png\")",
+      "left": "85px",
+      "top": "63px",
+      "time": "0.5 / 1.2초"
+    },
+    {
+      "actor": "actor_elf_archer",
+      "style": "ranged",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/actor2-6.png\")",
+      "left": "82px",
+      "top": "63px",
+      "time": "0.4 / 1.1초"
+    },
+    {
+      "actor": "actor_hunter",
+      "style": "ranged",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/actor2-7.png\")",
+      "left": "91px",
+      "top": "63px",
+      "time": "0.4 / 1.1초"
+    },
+    {
+      "actor": "actor_brawler",
+      "style": "martial",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/actor3-1.png\")",
+      "left": "87px",
+      "top": "63px",
+      "time": "0.4 / 1.0초"
+    },
+    {
+      "actor": "actor_martial_artist",
+      "style": "martial",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/actor3-3.png\")",
+      "left": "87px",
+      "top": "63px",
+      "time": "0.4 / 1.0초"
+    },
+    {
+      "actor": "actor_general",
+      "style": "heavy",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/actor3-7.png\")",
+      "left": "83px",
+      "top": "63px",
+      "time": "0.6 / 1.3초"
+    },
+    {
+      "actor": "actor_prince",
+      "style": "balanced",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/actor4-1.png\")",
+      "left": "83px",
+      "top": "63px",
+      "time": "0.4 / 1.1초"
+    },
+    {
+      "actor": "actor_berserker",
+      "style": "heavy",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/actor4-2.png\")",
+      "left": "83px",
+      "top": "63px",
+      "time": "0.6 / 1.3초"
+    },
+    {
+      "actor": "actor_gunner",
+      "style": "ranged",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/actor4-3.png\")",
+      "left": "92px",
+      "top": "63px",
+      "time": "0.4 / 1.1초"
+    },
+    {
+      "actor": "actor_dancer",
+      "style": "agile",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/actor4-4.png\")",
+      "left": "83px",
+      "top": "63px",
+      "time": "0.4 / 1.0초"
+    },
+    {
+      "actor": "actor_alchemist",
+      "style": "caster",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/actor4-5.png\")",
+      "left": "83px",
+      "top": "63px",
+      "time": "0.5 / 1.2초"
+    },
+    {
+      "actor": "actor_summoner",
+      "style": "caster",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/actor4-6.png\")",
+      "left": "83px",
+      "top": "63px",
+      "time": "0.5 / 1.2초"
+    },
+    {
+      "actor": "actor_squire",
+      "style": "balanced",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/people1-0.png\")",
+      "left": "86px",
+      "top": "63px",
+      "time": "0.4 / 1.1초"
+    },
+    {
+      "actor": "actor_flower_girl",
+      "style": "caster",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/people1-1.png\")",
+      "left": "87px",
+      "top": "63px",
+      "time": "0.5 / 1.2초"
+    },
+    {
+      "actor": "actor_swordsman",
+      "style": "balanced",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/people1-2.png\")",
+      "left": "85px",
+      "top": "63px",
+      "time": "0.4 / 1.1초"
+    },
+    {
+      "actor": "actor_scholar",
+      "style": "caster",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/people1-3.png\")",
+      "left": "85px",
+      "top": "63px",
+      "time": "0.5 / 1.2초"
+    },
+    {
+      "actor": "actor_miner",
+      "style": "heavy",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/people1-4.png\")",
+      "left": "92px",
+      "top": "63px",
+      "time": "0.6 / 1.3초"
+    },
+    {
+      "actor": "actor_farmer",
+      "style": "heavy",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/people1-5.png\")",
+      "left": "86px",
+      "top": "63px",
+      "time": "0.6 / 1.3초"
+    },
+    {
+      "actor": "actor_elder",
+      "style": "caster",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/people1-6.png\")",
+      "left": "85px",
+      "top": "63px",
+      "time": "0.5 / 1.2초"
+    },
+    {
+      "actor": "actor_grandma",
+      "style": "caster",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/people1-7.png\")",
+      "left": "85px",
+      "top": "63px",
+      "time": "0.5 / 1.2초"
+    },
+    {
+      "actor": "actor_gunslinger",
+      "style": "ranged",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/people2-0.png\")",
+      "left": "93px",
+      "top": "63px",
+      "time": "0.4 / 1.1초"
+    },
+    {
+      "actor": "actor_butler",
+      "style": "agile",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/people2-1.png\")",
+      "left": "87px",
+      "top": "63px",
+      "time": "0.4 / 0.9초"
+    },
+    {
+      "actor": "actor_priest_monk",
+      "style": "martial",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/people2-2.png\")",
+      "left": "86px",
+      "top": "63px",
+      "time": "0.4 / 1.0초"
+    },
+    {
+      "actor": "actor_gypsy",
+      "style": "caster",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/people2-3.png\")",
+      "left": "88px",
+      "top": "63px",
+      "time": "0.5 / 1.2초"
+    },
+    {
+      "actor": "actor_sword_dancer",
+      "style": "agile",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/people2-4.png\")",
+      "left": "92px",
+      "top": "63px",
+      "time": "0.4 / 1.0초"
+    },
+    {
+      "actor": "actor_gambler",
+      "style": "agile",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/people2-5.png\")",
+      "left": "83px",
+      "top": "63px",
+      "time": "0.4 / 0.9초"
+    },
+    {
+      "actor": "actor_seraph",
+      "style": "floating",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/people2-6.png\")",
+      "left": "96px",
+      "top": "63px",
+      "time": "0.5 / 1.2초"
+    },
+    {
+      "actor": "actor_fairy",
+      "style": "floating",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/people2-7.png\")",
+      "left": "90px",
+      "top": "63px",
+      "time": "0.5 / 1.2초"
+    },
+    {
+      "actor": "actor_king",
+      "style": "balanced",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/people3-0.png\")",
+      "left": "93px",
+      "top": "63px",
+      "time": "0.4 / 1.1초"
+    },
+    {
+      "actor": "actor_merchant",
+      "style": "caster",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/people3-1.png\")",
+      "left": "84px",
+      "top": "63px",
+      "time": "0.5 / 1.1초"
+    },
+    {
+      "actor": "actor_noble",
+      "style": "caster",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/people3-2.png\")",
+      "left": "95px",
+      "top": "63px",
+      "time": "0.5 / 1.2초"
+    },
+    {
+      "actor": "actor_princess",
+      "style": "caster",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/people3-3.png\")",
+      "left": "90px",
+      "top": "63px",
+      "time": "0.5 / 1.2초"
+    },
+    {
+      "actor": "actor_archmage",
+      "style": "caster",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/people3-4.png\")",
+      "left": "96px",
+      "top": "63px",
+      "time": "0.5 / 1.2초"
+    },
+    {
+      "actor": "actor_heavy_knight",
+      "style": "heavy",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/people3-5.png\")",
+      "left": "93px",
+      "top": "63px",
+      "time": "0.6 / 1.3초"
+    },
+    {
+      "actor": "actor_mercenary",
+      "style": "balanced",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/people3-6.png\")",
+      "left": "94px",
+      "top": "63px",
+      "time": "0.4 / 1.1초"
+    },
+    {
+      "actor": "actor_dragoon",
+      "style": "lancer",
+      "cell": "-48px 0px",
+      "sheet": "url(\"/assets/generated/charset-battlers/people3-7.png\")",
+      "left": "96px",
+      "top": "63px",
+      "time": "0.5 / 1.1초"
+    },
+    {
+      "actor": "actor_villager",
+      "style": "balanced",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/people4-0.png\")",
+      "left": "92px",
+      "top": "63px",
+      "time": "0.4 / 1.1초"
+    },
+    {
+      "actor": "actor_tribal",
+      "style": "balanced",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/people4-1.png\")",
+      "left": "88px",
+      "top": "63px",
+      "time": "0.4 / 1.1초"
+    },
+    {
+      "actor": "actor_fortune_teller",
+      "style": "caster",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/people4-2.png\")",
+      "left": "96px",
+      "top": "63px",
+      "time": "0.5 / 1.2초"
+    },
+    {
+      "actor": "actor_sailor",
+      "style": "balanced",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/people4-3.png\")",
+      "left": "91px",
+      "top": "63px",
+      "time": "0.4 / 1.1초"
+    },
+    {
+      "actor": "actor_monk_elder",
+      "style": "martial",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/people4-4.png\")",
+      "left": "88px",
+      "top": "63px",
+      "time": "0.4 / 1.0초"
+    },
+    {
+      "actor": "actor_noblewoman",
+      "style": "caster",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/people4-5.png\")",
+      "left": "94px",
+      "top": "63px",
+      "time": "0.5 / 1.2초"
+    },
+    {
+      "actor": "actor_nomad",
+      "style": "ranged",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/people4-6.png\")",
+      "left": "85px",
+      "top": "63px",
+      "time": "0.4 / 1.1초"
+    },
+    {
+      "actor": "actor_nun",
+      "style": "caster",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/people4-7.png\")",
+      "left": "87px",
+      "top": "63px",
+      "time": "0.5 / 1.2초"
+    },
+    {
+      "actor": "actor_jester",
+      "style": "agile",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/people5-0.png\")",
+      "left": "89px",
+      "top": "63px",
+      "time": "0.4 / 0.9초"
+    },
+    {
+      "actor": "actor_girl_alchemist",
+      "style": "caster",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/people5-1.png\")",
+      "left": "86px",
+      "top": "63px",
+      "time": "0.5 / 1.2초"
+    },
+    {
+      "actor": "actor_ronin",
+      "style": "balanced",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/people5-2.png\")",
+      "left": "84px",
+      "top": "63px",
+      "time": "0.4 / 1.1초"
+    },
+    {
+      "actor": "actor_shrine_maiden",
+      "style": "caster",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/people5-3.png\")",
+      "left": "88px",
+      "top": "63px",
+      "time": "0.5 / 1.2초"
+    },
+    {
+      "actor": "actor_desert_warrior",
+      "style": "balanced",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/people5-4.png\")",
+      "left": "91px",
+      "top": "63px",
+      "time": "0.4 / 1.1초"
+    },
+    {
+      "actor": "actor_maid",
+      "style": "agile",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/people5-5.png\")",
+      "left": "88px",
+      "top": "63px",
+      "time": "0.4 / 0.9초"
+    },
+    {
+      "actor": "actor_hermit",
+      "style": "caster",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/people5-6.png\")",
+      "left": "87px",
+      "top": "63px",
+      "time": "0.5 / 1.2초"
+    },
+    {
+      "actor": "actor_old_warrior",
+      "style": "balanced",
+      "cell": "-48px -144px",
+      "sheet": "url(\"/assets/generated/charset-battlers/people5-7.png\")",
+      "left": "84px",
+      "top": "63px",
+      "time": "0.4 / 1.1초"
+    },
+    {
+      "actor": "actor_dog",
+      "style": "beast",
+      "cell": "-96px -48px",
+      "sheet": "url(\"/assets/generated/party-pixel/animal-0.png\")",
+      "left": "84px",
+      "top": "64px",
+      "time": "0.4 / 1.0초"
+    },
+    {
+      "actor": "actor_cat",
+      "style": "beast",
+      "cell": "-96px -48px",
+      "sheet": "url(\"/assets/generated/party-pixel/animal-1.png\")",
+      "left": "84px",
+      "top": "64px",
+      "time": "0.4 / 1.0초"
+    },
+    {
+      "actor": "actor_rooster",
+      "style": "beast",
+      "cell": "-96px -48px",
+      "sheet": "url(\"/assets/generated/party-pixel/animal-2.png\")",
+      "left": "84px",
+      "top": "64px",
+      "time": "0.4 / 1.0초"
+    },
+    {
+      "actor": "actor_sheep",
+      "style": "beast",
+      "cell": "-96px -48px",
+      "sheet": "url(\"/assets/generated/party-pixel/animal-3.png\")",
+      "left": "84px",
+      "top": "64px",
+      "time": "0.4 / 1.0초"
+    },
+    {
+      "actor": "actor_cow",
+      "style": "beast",
+      "cell": "-128px -64px",
+      "sheet": "url(\"/assets/generated/party-pixel/animal-4.png\")",
+      "left": "80px",
+      "top": "48px",
+      "time": "0.4 / 1.0초"
+    },
+    {
+      "actor": "actor_horse",
+      "style": "beast",
+      "cell": "-128px -64px",
+      "sheet": "url(\"/assets/generated/party-pixel/animal-5.png\")",
+      "left": "80px",
+      "top": "48px",
+      "time": "0.4 / 1.0초"
+    },
+    {
+      "actor": "actor_tiger",
+      "style": "beast",
+      "cell": "-128px -64px",
+      "sheet": "url(\"/assets/generated/party-pixel/animal-6.png\")",
+      "left": "80px",
+      "top": "48px",
+      "time": "0.4 / 1.0초"
+    },
+    {
+      "actor": "actor_lion",
+      "style": "beast",
+      "cell": "-128px -64px",
+      "sheet": "url(\"/assets/generated/party-pixel/animal-7.png\")",
+      "left": "80px",
+      "top": "48px",
+      "time": "0.4 / 1.0초"
+    },
+    {
+      "actor": "actor_skiff",
+      "style": "vehicle",
+      "cell": "-96px -48px",
+      "sheet": "url(\"/assets/generated/party-pixel/vehicles-0.png\")",
+      "left": "95px",
+      "top": "64px",
+      "time": "0.5 / 1.4초"
+    },
+    {
+      "actor": "actor_galleon",
+      "style": "vehicle",
+      "cell": "-128px -64px",
+      "sheet": "url(\"/assets/generated/party-pixel/vehicles-1.png\")",
+      "left": "95px",
+      "top": "48px",
+      "time": "0.5 / 1.4초"
+    },
+    {
+      "actor": "actor_gunboat",
+      "style": "vehicle",
+      "cell": "-128px -64px",
+      "sheet": "url(\"/assets/generated/party-pixel/vehicles-2.png\")",
+      "left": "95px",
+      "top": "48px",
+      "time": "0.5 / 1.4초"
+    },
+    {
+      "actor": "actor_balloon",
+      "style": "floating",
+      "cell": "-96px -48px",
+      "sheet": "url(\"/assets/generated/party-pixel/vehicles-3.png\")",
+      "left": "88px",
+      "top": "64px",
+      "time": "0.5 / 1.2초"
+    },
+    {
+      "actor": "actor_drill",
+      "style": "vehicle",
+      "cell": "-96px -48px",
+      "sheet": "url(\"/assets/generated/party-pixel/vehicles-4.png\")",
+      "left": "94px",
+      "top": "64px",
+      "time": "0.5 / 1.4초"
+    },
+    {
+      "actor": "actor_tank",
+      "style": "vehicle",
+      "cell": "-128px -64px",
+      "sheet": "url(\"/assets/generated/party-pixel/vehicles-5.png\")",
+      "left": "95px",
+      "top": "48px",
+      "time": "0.5 / 1.4초"
+    },
+    {
+      "actor": "actor_airship",
+      "style": "floating",
+      "cell": "-128px -64px",
+      "sheet": "url(\"/assets/generated/party-pixel/vehicles-6.png\")",
+      "left": "95px",
+      "top": "48px",
+      "time": "0.5 / 1.2초"
+    },
+    {
+      "actor": "actor_ufo",
+      "style": "floating",
+      "cell": "-96px -48px",
+      "sheet": "url(\"/assets/generated/party-pixel/vehicles-7.png\")",
+      "left": "95px",
+      "top": "64px",
+      "time": "0.5 / 1.2초"
+    },
+    {
+      "actor": "actor_slime_pal",
+      "style": "soft",
+      "cell": "-96px -48px",
+      "sheet": "url(\"/assets/generated/party-pixel/monster1-0.png\")",
+      "left": "83px",
+      "top": "64px",
+      "time": "0.5 / 1.2초"
+    },
+    {
+      "actor": "actor_demon",
+      "style": "caster",
+      "cell": "-128px -64px",
+      "sheet": "url(\"/assets/generated/party-pixel/monster1-1.png\")",
+      "left": "79px",
+      "top": "48px",
+      "time": "0.5 / 1.2초"
+    },
+    {
+      "actor": "actor_ogre_kid",
+      "style": "heavy",
+      "cell": "-128px -64px",
+      "sheet": "url(\"/assets/generated/party-pixel/monster1-2.png\")",
+      "left": "79px",
+      "top": "48px",
+      "time": "0.6 / 1.3초"
+    },
+    {
+      "actor": "actor_ghost_pal",
+      "style": "floating",
+      "cell": "-128px -64px",
+      "sheet": "url(\"/assets/generated/party-pixel/monster1-3.png\")",
+      "left": "78px",
+      "top": "48px",
+      "time": "0.5 / 1.2초"
+    },
+    {
+      "actor": "actor_skeleton_pal",
+      "style": "balanced",
+      "cell": "-96px -48px",
+      "sheet": "url(\"/assets/generated/party-pixel/monster1-4.png\")",
+      "left": "84px",
+      "top": "64px",
+      "time": "0.4 / 1.1초"
+    },
+    {
+      "actor": "actor_zombie_pal",
+      "style": "heavy",
+      "cell": "-128px -64px",
+      "sheet": "url(\"/assets/generated/party-pixel/monster1-5.png\")",
+      "left": "79px",
+      "top": "48px",
+      "time": "0.6 / 1.3초"
+    },
+    {
+      "actor": "actor_reaper",
+      "style": "floating",
+      "cell": "-128px -64px",
+      "sheet": "url(\"/assets/generated/party-pixel/monster1-6.png\")",
+      "left": "80px",
+      "top": "48px",
+      "time": "0.5 / 1.2초"
+    },
+    {
+      "actor": "actor_minotaur_pal",
+      "style": "heavy",
+      "cell": "-128px -64px",
+      "sheet": "url(\"/assets/generated/party-pixel/monster1-7.png\")",
+      "left": "80px",
+      "top": "48px",
+      "time": "0.6 / 1.3초"
+    },
+    {
+      "actor": "actor_harpy_pal",
+      "style": "floating",
+      "cell": "-128px -64px",
+      "sheet": "url(\"/assets/generated/party-pixel/monster2-0.png\")",
+      "left": "80px",
+      "top": "48px",
+      "time": "0.5 / 1.2초"
+    },
+    {
+      "actor": "actor_gargoyle_pal",
+      "style": "floating",
+      "cell": "-128px -64px",
+      "sheet": "url(\"/assets/generated/party-pixel/monster2-1.png\")",
+      "left": "80px",
+      "top": "48px",
+      "time": "0.5 / 1.2초"
+    },
+    {
+      "actor": "actor_vampire",
+      "style": "agile",
+      "cell": "-128px -64px",
+      "sheet": "url(\"/assets/generated/party-pixel/monster2-2.png\")",
+      "left": "80px",
+      "top": "48px",
+      "time": "0.4 / 1.0초"
+    },
+    {
+      "actor": "actor_demon_knight",
+      "style": "heavy",
+      "cell": "-128px -64px",
+      "sheet": "url(\"/assets/generated/party-pixel/monster2-3.png\")",
+      "left": "80px",
+      "top": "48px",
+      "time": "0.6 / 1.3초"
+    },
+    {
+      "actor": "actor_golem_pal",
+      "style": "heavy",
+      "cell": "-128px -64px",
+      "sheet": "url(\"/assets/generated/party-pixel/monster2-4.png\")",
+      "left": "79px",
+      "top": "48px",
+      "time": "0.6 / 1.3초"
+    },
+    {
+      "actor": "actor_dragonewt",
+      "style": "balanced",
+      "cell": "-128px -64px",
+      "sheet": "url(\"/assets/generated/party-pixel/monster2-5.png\")",
+      "left": "77px",
+      "top": "48px",
+      "time": "0.4 / 1.1초"
+    },
+    {
+      "actor": "actor_oni_warrior",
+      "style": "balanced",
+      "cell": "-128px -64px",
+      "sheet": "url(\"/assets/generated/party-pixel/monster2-6.png\")",
+      "left": "79px",
+      "top": "48px",
+      "time": "0.4 / 1.1초"
+    },
+    {
+      "actor": "actor_dark_lord",
+      "style": "caster",
+      "cell": "-128px -64px",
+      "sheet": "url(\"/assets/generated/party-pixel/monster2-7.png\")",
+      "left": "80px",
+      "top": "48px",
+      "time": "0.5 / 1.2초"
+    },
+    {
+      "actor": "actor_siren",
+      "style": "caster",
+      "cell": "-96px -48px",
+      "sheet": "url(\"/assets/generated/party-pixel/monster3-0.png\")",
+      "left": "95px",
+      "top": "64px",
+      "time": "0.5 / 1.2초"
+    },
+    {
+      "actor": "actor_lamia",
+      "style": "soft",
+      "cell": "-96px -48px",
+      "sheet": "url(\"/assets/generated/party-pixel/monster3-1.png\")",
+      "left": "95px",
+      "top": "64px",
+      "time": "0.5 / 1.2초"
+    },
+    {
+      "actor": "actor_wraith_mage",
+      "style": "floating",
+      "cell": "-96px -48px",
+      "sheet": "url(\"/assets/generated/party-pixel/monster3-2.png\")",
+      "left": "93px",
+      "top": "64px",
+      "time": "0.5 / 1.2초"
+    },
+    {
+      "actor": "actor_succubus",
+      "style": "floating",
+      "cell": "-96px -48px",
+      "sheet": "url(\"/assets/generated/party-pixel/monster3-3.png\")",
+      "left": "95px",
+      "top": "64px",
+      "time": "0.5 / 1.2초"
+    },
+    {
+      "actor": "actor_mound",
+      "style": "soft",
+      "cell": "-96px -48px",
+      "sheet": "url(\"/assets/generated/party-pixel/monster3-4.png\")",
+      "left": "94px",
+      "top": "64px",
+      "time": "0.5 / 1.2초"
+    },
+    {
+      "actor": "actor_red_dragon_pal",
+      "style": "beast",
+      "cell": "-96px -48px",
+      "sheet": "url(\"/assets/generated/party-pixel/monster3-5.png\")",
+      "left": "92px",
+      "top": "64px",
+      "time": "0.4 / 1.0초"
+    },
+    {
+      "actor": "actor_flame_spirit",
+      "style": "floating",
+      "cell": "-96px -48px",
+      "sheet": "url(\"/assets/generated/party-pixel/monster3-6.png\")",
+      "left": "95px",
+      "top": "64px",
+      "time": "0.5 / 1.2초"
+    },
+    {
+      "actor": "actor_demon_general",
+      "style": "heavy",
+      "cell": "-96px -48px",
+      "sheet": "url(\"/assets/generated/party-pixel/monster3-7.png\")",
+      "left": "92px",
+      "top": "64px",
+      "time": "0.6 / 1.3초"
+    },
+    {
+      "actor": "actor_treant",
+      "style": "heavy",
+      "cell": "-96px -48px",
+      "sheet": "url(\"/assets/generated/party-pixel/monster4-0.png\")",
+      "left": "93px",
+      "top": "64px",
+      "time": "0.6 / 1.3초"
+    },
+    {
+      "actor": "actor_mushroom",
+      "style": "soft",
+      "cell": "-96px -48px",
+      "sheet": "url(\"/assets/generated/party-pixel/monster4-1.png\")",
+      "left": "94px",
+      "top": "64px",
+      "time": "0.5 / 1.2초"
+    },
+    {
+      "actor": "actor_kappa",
+      "style": "martial",
+      "cell": "-96px -48px",
+      "sheet": "url(\"/assets/generated/party-pixel/monster4-2.png\")",
+      "left": "96px",
+      "top": "64px",
+      "time": "0.4 / 1.0초"
+    },
+    {
+      "actor": "actor_kitsune",
+      "style": "caster",
+      "cell": "-96px -48px",
+      "sheet": "url(\"/assets/generated/party-pixel/monster4-3.png\")",
+      "left": "94px",
+      "top": "64px",
+      "time": "0.5 / 1.2초"
+    },
+    {
+      "actor": "actor_tanuki",
+      "style": "agile",
+      "cell": "-96px -48px",
+      "sheet": "url(\"/assets/generated/party-pixel/monster4-4.png\")",
+      "left": "95px",
+      "top": "64px",
+      "time": "0.4 / 1.0초"
+    },
+    {
+      "actor": "actor_golem_moss",
+      "style": "heavy",
+      "cell": "-96px -48px",
+      "sheet": "url(\"/assets/generated/party-pixel/monster4-5.png\")",
+      "left": "96px",
+      "top": "64px",
+      "time": "0.6 / 1.3초"
+    },
+    {
+      "actor": "actor_sprite_ice",
+      "style": "floating",
+      "cell": "-96px -48px",
+      "sheet": "url(\"/assets/generated/party-pixel/monster4-6.png\")",
+      "left": "95px",
+      "top": "64px",
+      "time": "0.5 / 1.2초"
+    },
+    {
+      "actor": "actor_mandrake",
+      "style": "caster",
+      "cell": "-96px -48px",
+      "sheet": "url(\"/assets/generated/party-pixel/monster4-7.png\")",
+      "left": "94px",
+      "top": "64px",
+      "time": "0.5 / 1.2초"
+    },
+    {
+      "actor": "actor_mimic_pal",
+      "style": "soft",
+      "cell": "-96px -48px",
+      "sheet": "url(\"/assets/generated/party-pixel/monster5-0.png\")",
+      "left": "93px",
+      "top": "64px",
+      "time": "0.5 / 1.2초"
+    },
+    {
+      "actor": "actor_living_armor",
+      "style": "heavy",
+      "cell": "-96px -48px",
+      "sheet": "url(\"/assets/generated/party-pixel/monster5-1.png\")",
+      "left": "94px",
+      "top": "64px",
+      "time": "0.6 / 1.3초"
+    },
+    {
+      "actor": "actor_lantern_ghost",
+      "style": "floating",
+      "cell": "-96px -48px",
+      "sheet": "url(\"/assets/generated/party-pixel/monster5-2.png\")",
+      "left": "93px",
+      "top": "64px",
+      "time": "0.5 / 1.2초"
+    },
+    {
+      "actor": "actor_doll",
+      "style": "agile",
+      "cell": "-96px -48px",
+      "sheet": "url(\"/assets/generated/party-pixel/monster5-3.png\")",
+      "left": "93px",
+      "top": "64px",
+      "time": "0.4 / 1.0초"
+    },
+    {
+      "actor": "actor_book_demon",
+      "style": "floating",
+      "cell": "-96px -48px",
+      "sheet": "url(\"/assets/generated/party-pixel/monster5-4.png\")",
+      "left": "91px",
+      "top": "64px",
+      "time": "0.5 / 1.2초"
+    },
+    {
+      "actor": "actor_scarecrow",
+      "style": "balanced",
+      "cell": "-96px -48px",
+      "sheet": "url(\"/assets/generated/party-pixel/monster5-5.png\")",
+      "left": "92px",
+      "top": "64px",
+      "time": "0.4 / 1.1초"
+    },
+    {
+      "actor": "actor_clockwork",
+      "style": "ranged",
+      "cell": "-96px -48px",
+      "sheet": "url(\"/assets/generated/party-pixel/monster5-6.png\")",
+      "left": "91px",
+      "top": "64px",
+      "time": "0.5 / 1.1초"
+    },
+    {
+      "actor": "actor_candle_imp",
+      "style": "soft",
+      "cell": "-96px -48px",
+      "sheet": "url(\"/assets/generated/party-pixel/monster5-7.png\")",
+      "left": "91px",
+      "top": "64px",
+      "time": "0.5 / 1.2초"
+    },
+    {
+      "actor": "actor_yeti",
+      "style": "heavy",
+      "cell": "-128px -64px",
+      "sheet": "url(\"/assets/generated/party-pixel/monster6-0.png\")",
+      "left": "87px",
+      "top": "48px",
+      "time": "0.6 / 1.3초"
+    },
+    {
+      "actor": "actor_merfolk",
+      "style": "lancer",
+      "cell": "-96px -48px",
+      "sheet": "url(\"/assets/generated/party-pixel/monster6-1.png\")",
+      "left": "95px",
+      "top": "64px",
+      "time": "0.5 / 1.1초"
+    },
+    {
+      "actor": "actor_cyclops",
+      "style": "heavy",
+      "cell": "-128px -64px",
+      "sheet": "url(\"/assets/generated/party-pixel/monster6-2.png\")",
+      "left": "89px",
+      "top": "48px",
+      "time": "0.6 / 1.3초"
+    },
+    {
+      "actor": "actor_mothman",
+      "style": "floating",
+      "cell": "-96px -48px",
+      "sheet": "url(\"/assets/generated/party-pixel/monster6-3.png\")",
+      "left": "86px",
+      "top": "64px",
+      "time": "0.5 / 1.2초"
+    },
+    {
+      "actor": "actor_basilisk",
+      "style": "caster",
+      "cell": "-96px -48px",
+      "sheet": "url(\"/assets/generated/party-pixel/monster6-4.png\")",
+      "left": "91px",
+      "top": "64px",
+      "time": "0.5 / 1.2초"
+    },
+    {
+      "actor": "actor_djinn",
+      "style": "floating",
+      "cell": "-128px -64px",
+      "sheet": "url(\"/assets/generated/party-pixel/monster6-5.png\")",
+      "left": "90px",
+      "top": "48px",
+      "time": "0.5 / 1.2초"
+    },
+    {
+      "actor": "actor_chimera",
+      "style": "beast",
+      "cell": "-128px -64px",
+      "sheet": "url(\"/assets/generated/party-pixel/monster6-6.png\")",
+      "left": "87px",
+      "top": "48px",
+      "time": "0.4 / 1.0초"
+    },
+    {
+      "actor": "actor_dark_angel",
+      "style": "floating",
+      "cell": "-96px -48px",
+      "sheet": "url(\"/assets/generated/party-pixel/monster6-7.png\")",
+      "left": "85px",
+      "top": "64px",
+      "time": "0.5 / 1.2초"
+    }
+  ],
+  "persistence": {
+    "saved": {
+      "style": "heavy",
+      "recovery": 1.4,
+      "reach": 9
+    },
+    "actorUi": true,
+    "instanceId": true,
+    "classOverride": true,
+    "equipmentChange": true,
+    "explicitUnequip": true,
+    "canonicalSave": false
+  },
+  "errors": []
+}

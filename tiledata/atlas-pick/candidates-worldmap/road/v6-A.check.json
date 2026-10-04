@@ -1,0 +1,141 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/road/v6-A.pxg",
+ "set": "worldmap",
+ "id": "road",
+ "hard": [],
+ "warn": [
+  "메모 없음: <후보>.note 에 한 줄",
+  "shore-strait: 1칸 폭 줄 속 6px — 8 이상이면 해협·길이 또렷하다"
+ ],
+ "easyrpg": {
+  "cells": 11,
+  "atLeast95": 0,
+  "max": 0.106
+ },
+ "refmap": {
+  "cells": 11,
+  "atLeast95": 0,
+  "max": 0.02
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "orphans",
+   "saturation",
+   "noise",
+   "dither"
+  ]
+ },
+ "colors": 6,
+ "bbox": [
+  1,
+  0,
+  47,
+  60
+ ],
+ "note": "",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 11,
+   "atLeast95": 0,
+   "max": 0.0
+  },
+  "refmapWorld": {
+   "cells": 11,
+   "atLeast95": 0,
+   "max": 0.026
+  },
+  "shore": {
+   "profile": {
+    "n": [
+     5,
+     5,
+     5,
+     4,
+     4,
+     4,
+     4,
+     5,
+     5,
+     5,
+     4,
+     4,
+     4,
+     4,
+     5,
+     5
+    ],
+    "s": [
+     5,
+     5,
+     5,
+     5,
+     5,
+     5,
+     5,
+     5,
+     5,
+     5,
+     4,
+     5,
+     5,
+     4,
+     4,
+     5
+    ],
+    "w": [
+     5,
+     5,
+     4,
+     4,
+     4,
+     4,
+     4,
+     4,
+     4,
+     4,
+     4,
+     4,
+     4,
+     4,
+     4,
+     5
+    ],
+    "e": [
+     5,
+     5,
+     5,
+     5,
+     5,
+     4,
+     4,
+     4,
+     4,
+     4,
+     4,
+     4,
+     5,
+     5,
+     5,
+     5
+    ]
+   },
+   "strait": 6,
+   "steps": {
+    "n": 1,
+    "s": 1,
+    "w": 1,
+    "e": 1
+   },
+   "amp": {
+    "n": 1,
+    "s": 1,
+    "w": 1,
+    "e": 1
+   },
+   "joinWorst": 1
+  },
+  "seam": 0.96
+ }
+}

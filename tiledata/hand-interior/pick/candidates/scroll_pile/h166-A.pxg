@@ -1,0 +1,49 @@
+// A: 끈 묶은 양피지 세 개를 두 단으로 쌓고, 윗몸통 5행과 둥근 말림 끝을 드러냄.
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat a linen 1
+@mat b linen 2
+@mat c linen 3
+@mat d linen 4
+@mat e linen 5
+@mat f linen 6
+@mat r wood 3
+@mat s wood 5
+@layer parchment
+@mblock 1 5
+.cddc.
+dffedc
+dffedc
+rssrrs
+dfeerc
+deeedc
+.deed.
+dfeedc
+feadec
+cededb
+.cccc.
+@mblock 9 5
+.cddc.
+dfeedc
+dfeedc
+rsrrrs
+deeerc
+deeddc
+.deed.
+deeedc
+eacddc
+cdedcb
+.cccc.
+@mblock 5 0
+cddddc
+dffedc
+dffedc
+rssrrs
+dfeerc
+dfeedc
+.deed.
+dfeedc
+feadec
+cededb
+.cccc.

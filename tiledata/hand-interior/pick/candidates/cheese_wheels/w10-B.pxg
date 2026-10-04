@@ -1,0 +1,27 @@
+// w10 w10-B
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat b cheese 5
+@mat c cheese 4
+@mat d cheese 3
+@mat e cheese 2
+@mat o cheese 1
+@mat q cheese 6
+@mblock 0 0
+................
+................
+................
+.....oooooo.....
+....obqqbbco....
+....obbbbbco....
+....oeecccdo....
+....ocdddddo....
+.ooooddddeeoooo.
+obqqbooooooqbbco
+obbbbccooccbbbco
+oeecccdooeecccdo
+ocdddddoocdddeeo
+oddddeeoodddeeeo
+.oooooo..oooooo.
+.-~~~~~~~~~~~~-.

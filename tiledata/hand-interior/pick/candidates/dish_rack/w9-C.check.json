@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/dish_rack/w9-C.pxg",
+ "id": "dish rack",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.008
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 9,
+ "v5_colors": 9,
+ "bbox": [
+  1,
+  1,
+  14,
+  15
+ ],
+ "v5_bbox": [
+  1,
+  1,
+  14,
+  15
+ ],
+ "note": "재해석: 접시를 옆면 줄이 아니라 정면 원반(파란 무늬)으로, 컵은 고리에 걸고 손잡이 달기, 아랫선반엔 사발 셋",
+ "ok": true
+}

@@ -1,0 +1,31 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/white_tree/w6-B.pxg",
+ "id": "white tree",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.076
+ },
+ "lint": {
+  "failed": [],
+  "pass": true
+ },
+ "colors": 15,
+ "v5_colors": 7,
+ "bbox": [
+  0,
+  9,
+  15,
+  47
+ ],
+ "v5_bbox": [
+  1,
+  10,
+  14,
+  47
+ ],
+ "note": "수관 밝은 위-왼/짙은 아래-오른 대비를 키우고 줄기 좌우 명암을 뚜렷이 함",
+ "ok": true
+}

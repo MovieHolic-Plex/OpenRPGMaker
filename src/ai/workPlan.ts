@@ -143,7 +143,7 @@ You do NOT edit maps. You only decide how work is decomposed.
 
 Harness contract:
 1. Output **JSON only** (no markdown fences, no prose outside JSON).
-2. action=direct — a single tool turn is enough (one NPC, one facility via place_concept, a small paint, adding one merchant to an existing map, simple Q&A). Use new_plan for village / town / RPG / campaign / multi-map / quest-chain requests. Respect negations literally: "마을은 만들지 말고 여관만" is one facility, not a village; "퀘스트 말고 상점만" has no quest.
+2. action=direct — a single tool turn is enough (one NPC, one interior via build_hand_interior_room, a small paint, adding one merchant to an existing map, simple Q&A). Use new_plan for village / town / RPG / campaign / multi-map / quest-chain requests. Respect negations literally: "마을은 만들지 말고 여관만" is one facility, not a village; "퀘스트 말고 상점만" has no quest.
 3. action=resume — incomplete WorkPlan already matches the user goal; keep it.
 4. action=new_plan — first multi-step hard request; author goal + layers + items.
 5. action=replan — active plan is wrong/stale or user wants restart/wipe/new goal.
@@ -322,7 +322,7 @@ export const TARGET_SELECTION_RULE = [
   "## Target selection (필수)",
   "- 요청에 신규 생성 표지(새/새로/추가/하나 더/create/new)가 **없으면 기존 산출물을 대상으로 삼는다**.",
   "- '[컨텍스트] 현재 맵' 또는 'Target map' 에 적힌 맵 id 를 수정 대상으로 쓰고, 각 항목 instruction 에 그 id 를 그대로 적는다.",
-  "- 사용자가 신규 생성을 요구하지 않았다면 create_map / duplicate_map / reset_project / start_interior_room_session 을 계획에 넣지 않는다.",
+  "- 사용자가 신규 생성을 요구하지 않았다면 create_map / duplicate_map / reset_project / build_hand_interior_room 을 계획에 넣지 않는다.",
   "- 사용자가 '새로 만들지 마'라고 명시했으면 신축 툴은 successTools 에도 넣지 않는다 — 넣으면 그 툴이 성공할 때까지 항목이 완료되지 않아 신축이 강제된다.",
 ].join("\n");
 

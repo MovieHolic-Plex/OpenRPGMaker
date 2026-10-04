@@ -1,0 +1,37 @@
+{
+ "id": "ice chest:fish+fishg+fishr",
+ "slug": "ice_chest_fish_fishg_fishr",
+ "name_ko": "생선·푸른 생선·붉은 생선 얼음 진열함",
+ "category": "생선가게",
+ "kind": "floor",
+ "kind_ko": "바닥 기물(막힘)",
+ "canvas": [
+  32,
+  16
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 32,
+  "h": 16
+ },
+ "footprint": {
+  "w": 2,
+  "h": 1
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "생선·푸른 생선·붉은 생선 얼음 진열함 — 얼음 깐 2칸 진열함, 담긴 상품만 다른 변형. 생선가게·항구 창고의 카운터 줄 옆에 1~2개.",
+ "where": "생선가게·항구 창고의 카운터 줄 옆에 1~2개.",
+ "placement": [
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": [
+  0,
+  3,
+  31,
+  15
+ ],
+ "v5_colors": 31,
+ "material": "wood",
+ "related": []
+}

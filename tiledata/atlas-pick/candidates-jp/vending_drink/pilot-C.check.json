@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/vending_drink/pilot-C.pxg",
+ "set": "jp",
+ "id": "vending_drink",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.059
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.017
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation",
+   "outline"
+  ]
+ },
+ "colors": 24,
+ "bbox": [
+  1,
+  1,
+  15,
+  29
+ ],
+ "note": "실루엣 재해석: 파란 옆판이 보이는 3/4 각, 불 켜진 머리 띠, 가는 병 견본 두 줄(1×3), 입구 넓게",
+ "ok": true
+}

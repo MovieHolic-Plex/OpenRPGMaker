@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/pulpit/w21-E.pxg",
+ "id": "pulpit",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 7,
+  "atLeast95": 0,
+  "max": 0.05
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 26,
+ "v5_colors": 16,
+ "bbox": [
+  0,
+  10,
+  29,
+  62
+ ],
+ "v5_bbox": [
+  0,
+  10,
+  29,
+  63
+ ],
+ "note": "장의자와 같은 밝은 소나무 설교단: 붉은 방석과 같은 붉은 천, 황동 손잡이 난간 달린 계단, 앞턱 그림자와 받침 접지 그림자로 공간감 강조",
+ "ok": true
+}

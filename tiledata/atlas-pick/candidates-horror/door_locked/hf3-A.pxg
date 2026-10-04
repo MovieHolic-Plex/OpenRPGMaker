@@ -1,0 +1,74 @@
+// door_locked hf3-A (hf3)
+@size 16 32
+@cell 16
+@palette palette.pal
+@layer main
+@mat a mahog 0
+@mat b tin 0
+@mat c tarn 0
+@mblock 0 0
+................
+................
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaabbbabbbabbaaa
+aaababbbabbbaaaa
+aaaaaababaaaaaaa
+aaaaabbbbccaaaaa
+aaaaabbbbccaaaaa
+aaaaabbbbaaaaaaa
+aaaaabbbbaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+@tblock 0 0
+................
+................
+1111111111111111
+1555555555555541
+1444444444444431
+1542222222222431
+1542333333334431
+1542322222234431
+1542323333434431
+1542323333434431
+1542323333434431
+1542323333434431
+1542323333434431
+1542323333434431
+1542334444434431
+1542333333334431
+1542333333334431
+1542322222234431
+1545543554455431
+1543334333434431
+1542325333434431
+1542355555434431
+1542354133234431
+1542354133434431
+1542353333434431
+1542320000434431
+1542323333434431
+1542323333434431
+1542334444434431
+1542333333334431
+1542222222224431
+1111111111111111

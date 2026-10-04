@@ -1,0 +1,117 @@
+{
+  "realModel": true,
+  "provider": "opencodex",
+  "modelId": "gpt-6-astra",
+  "uiIntentRequestExercised": false,
+  "sharedDatabase": "/home/main/.local/share/oprn/shared-content.sqlite",
+  "libraries": [
+    "worldmap-human-selected",
+    "worldmap-real-joseon",
+    "worldmap-real-yucatan"
+  ],
+  "folder": "/home/main/.local/share/oprn/worldmap-shared-ai-joseon-final-20261004",
+  "projectId": "c9849afe-5372-4000-a0d2-276e2e5f6f88",
+  "revision": 2,
+  "elapsedSeconds": 355.85,
+  "counts": {
+    "get_project_summary": 2,
+    "read_project_wiki": 1,
+    "find_tools": 3,
+    "list_spatial_designs": 1,
+    "list_worldmap_icons": 1,
+    "read_spatial_reference": 3,
+    "list_tileset_references": 1,
+    "read_tileset_reference": 3,
+    "import_region_reference": 1,
+    "get_map_region": 4,
+    "show_map_region": 9,
+    "read_world_terrain": 1,
+    "stamp_worldmap_icon": 2,
+    "set_map_properties": 1,
+    "inspect_worldmap_icon": 2,
+    "check_reachability": 2
+  },
+  "failures": [],
+  "imported": [
+    {
+      "referenceId": "shared_worldmap_real_joseon",
+      "mapId": "map_joseon_travel",
+      "worldmapSource": {
+        "theme": "joseon",
+        "ops": [
+          {
+            "style": "real",
+            "region": "korea",
+            "op": "continents",
+            "count": 0
+          }
+        ],
+        "terrainId": "joseon-korea+edit",
+        "palette": "joseon",
+        "base": "generate",
+        "fitSalt": 0
+      },
+      "characterScale": 0.75,
+      "events": 0,
+      "groundPreserved": true,
+      "geographyPreserved": true,
+      "privateTileset": true
+    }
+  ],
+  "placements": [
+    {
+      "args": {
+        "mapId": "map_joseon_travel",
+        "iconId": "fantasy/castle_dark_grand",
+        "at": {
+          "x": 6,
+          "y": 14
+        },
+        "referencePurpose": "wmi-fantasy"
+      },
+      "inspected": {
+        "ok": true,
+        "iconId": "fantasy/castle_dark_grand",
+        "sha256": "f144946d5540426542583e759e4d9e596a71405e55c246196b89252ca8d96660",
+        "issues": []
+      },
+      "entranceWalkable": true
+    },
+    {
+      "args": {
+        "mapId": "map_joseon_travel",
+        "iconId": "fantasy/village_wood",
+        "at": {
+          "x": 35,
+          "y": 50
+        },
+        "referencePurpose": "wmi-fantasy"
+      },
+      "inspected": {
+        "ok": true,
+        "iconId": "fantasy/village_wood",
+        "sha256": "5796fede768ba92fed925e1e06e3e4b63bb7387bf9c4289f6151503072f9e594",
+        "issues": []
+      },
+      "entranceWalkable": true
+    }
+  ],
+  "stats": {
+    "ms": 342367,
+    "turns": 18,
+    "toolCalls": 38,
+    "toolErrors": 0,
+    "usage": {
+      "input": 1300229,
+      "output": 5447,
+      "cacheRead": 85888,
+      "cacheWrite": 0,
+      "totalTokens": 1391564,
+      "calls": 18
+    }
+  },
+  "loadedCatalogLibraries": 41,
+  "originalMapsPreserved": false,
+  "passed": false,
+  "savedAndReopened": true
+}

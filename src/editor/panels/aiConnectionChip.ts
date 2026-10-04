@@ -22,7 +22,10 @@ import {
   getAiConnectionStatus,
   refreshAiConnectionStatus,
   type AiConnectionStatus,
+  AI_CONNECTION_STATUS_CHANGED_EVENT,
+  resetAiConnectionStatusCache,
 } from "@/editor/panels/aiConnectionStatus";
+import { AI_CONFIG_CHANGED_EVENT, AI_TRANSPORT_HEALTH_EVENT } from "@/ai/llmClient";
 import { el } from "@/util/dom";
 
 export const AI_CONNECTION_CHIP_TESTIDS = {
@@ -76,14 +79,27 @@ export function renderAiConnectionChip(openSettings: () => void): {
     },
   }) as HTMLButtonElement;
 
+  const win = typeof window === "undefined" ? undefined : window;
   const repaint = (): void => { paint(button, label, openSettings); };
+  const onConfigChanged = (): void => {
+    resetAiConnectionStatusCache();
+    repaint();
+    void refreshAiConnectionStatus(repaint).catch(() => repaint());
+  };
+  win?.addEventListener?.(AI_CONNECTION_STATUS_CHANGED_EVENT, repaint);
+  win?.addEventListener?.(AI_TRANSPORT_HEALTH_EVENT, repaint);
+  win?.addEventListener?.(AI_CONFIG_CHANGED_EVENT, onConfigChanged);
   // **먼저 칠한다.** refreshAiConnectionStatus 는 chatgpt 모드가 아니면 콜백을 부르지 않으므로,
   // 그 콜백만 기대면 칩이 빈 채로 남는다(2026-09-22 실측: text:"" — 존재하지만 라벨이 없었다).
   repaint();
   // 캐시가 차가우면 여기서 "확인 중" 이 보이고, 조회가 끝나면 repaint 로 실제 상태가 된다.
   void refreshAiConnectionStatus(repaint).catch(() => repaint());
 
-  return { element: button, dispose: () => undefined };
+  return { element: button, dispose: () => {
+    win?.removeEventListener?.(AI_CONNECTION_STATUS_CHANGED_EVENT, repaint);
+    win?.removeEventListener?.(AI_TRANSPORT_HEALTH_EVENT, repaint);
+    win?.removeEventListener?.(AI_CONFIG_CHANGED_EVENT, onConfigChanged);
+  } };
 }
 
 /** 칩을 현재 상태로 칠하고, 그 상태를 돌려준다(클릭 핸들러가 재판정에 쓴다). */

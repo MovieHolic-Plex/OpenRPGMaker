@@ -1,0 +1,53 @@
+// E: 가로보를 8행 내려 기둥·나사를 줄임, 치즈·압착판·받침 유지; 꼭대기 윗면 4행(y=8~11)
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a pine 0
+@mat b pine 1
+@mat c pine 2
+@mat d pine 3
+@mat e pine 4
+@mat f pine 5
+@mat g iron 1
+@mat h iron 2
+@mat i iron 3
+@mat j iron 4
+@mat k cheese 1
+@mat l cheese 2
+@mat m cheese 3
+@mat n cheese 4
+@mat o cheese 5
+@mat p cheese 6
+@mblock 0 0
+................
+................
+................
+................
+................
+................
+................
+................
+..cddddddddddc..
+.cfeeeedeeeeeec.
+.cfeedddeeeeedd.
+.cfeeeeeeddeddc.
+.bddddddddddddb.
+.bdccddddccddcb.
+.abbaabggbaabba.
+.bec.ccddcc.dca.
+.bedceeeeedcdca.
+.bedfeeedeeedca.
+.bddcccccccccca.
+.bdc.kopook.dca.
+.becoopooonndca.
+.becoonnnnmmdca.
+.becnnmmlmmlcca.
+.becmmmmlmmlcca.
+.bdc.kllllk.dca.
+.bcdeeeeeeeedca.
+.cfeeeddeeeeedc.
+.cfeeeeeeddeddc.
+.bddddddddddccb.
+.abbbccccccbbba.
+..bec......dca..
+..bba......baa..

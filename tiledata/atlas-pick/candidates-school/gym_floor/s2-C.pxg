@@ -1,0 +1,40 @@
+// gym_floor s2-C
+@size 16 16
+@cell 16
+@palette palette.pal
+@layer main
+@mat a gym 0
+@mblock 0 0
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+@tblock 0 0
+6666666666666666
+5555255555555555
+4444244444444444
+5555253333555555
+4444244444444444
+5333255555555555
+4444244444444444
+2222222222222222
+6666666666662666
+5555555555552555
+4444444444442444
+5555555555333355
+4444444444442444
+5555555555333555
+4444444444442444
+2222222222222222

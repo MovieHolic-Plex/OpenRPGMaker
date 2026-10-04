@@ -1,0 +1,32 @@
+{
+ "src": "tiledata/atlas-pick/candidates-school/desk_set/s4-B.pxg",
+ "out": "tiledata/atlas-pick/remap-trial/school/desk_set/s4-B.m3.pxg",
+ "size": [
+  16,
+  32
+ ],
+ "stat": {
+  "ramp": 19
+ },
+ "weak": [],
+ "ambiguous": {},
+ "unmapped": {},
+ "marker": 0,
+ "translucentDropped": 34,
+ "droppedBy": {
+  "~": 25,
+  "-": 9
+ },
+ "baked": {},
+ "outOfPalette": 0,
+ "translucentPx": 0,
+ "markerLeft": false,
+ "colors": 15,
+ "ramps": [
+  "conc",
+  "ita",
+  "soil",
+  "tekko",
+  "yuka"
+ ]
+}

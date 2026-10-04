@@ -1,0 +1,43 @@
+{
+ "id": "magitek engine",
+ "slug": "magitek_engine",
+ "name_ko": "마도 기관(움직임, 3×2)",
+ "category": "마도 기관",
+ "kind": "floor",
+ "kind_ko": "바닥 기물(막힘)",
+ "canvas": [
+  48,
+  48
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 48,
+  "h": 48
+ },
+ "footprint": {
+  "w": 3,
+  "h": 2
+ },
+ "overhang_px": 16,
+ "surface": null,
+ "description": "마도 기관(3×2, 핵이 맥동). 기관 홀 한가운데, 증기관 자동 타일로 벽과 잇는다.",
+ "where": "기관 홀 한가운데, 증기관 자동 타일로 벽과 잇는다.",
+ "placement": [
+  "그림이 발밑 칸 위로 16px 솟는다 → 위 1칸은 플레이어 위에 그리는 겹침층",
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": [
+  0,
+  7,
+  47,
+  47
+ ],
+ "v5_colors": 12,
+ "material": "wood",
+ "related": [
+  "pipe",
+  "gauge panel",
+  "gear wall",
+  "steam vent"
+ ]
+}

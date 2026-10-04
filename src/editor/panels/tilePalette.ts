@@ -18,7 +18,11 @@ import { makeTileBrushControls } from "@/editor/panels/tilePaletteStampStatus";
 import { selectPaletteStamp } from "@/editor/panels/tileToolbarActions";
 import { dismissLocationDrawModeForTool } from "@/editor/locationDrawMode";
 import {
+  applyPaletteSheetImage,
   makeCustomPalette,
+  setCustomPaletteFilter,
+  setVirtualPaletteActive,
+  revealVirtualPaletteTile,
   makeGridPalette,
   gridPaletteDisplayTile,
   gridPaletteVisibleCount,
@@ -71,25 +75,67 @@ type PaletteScroll = {
   readonly sheetTop: number;
 };
 
-/** 칸 집합이 같을 때 시트 노드를 유지한다. 도구·붓·선택은 크롬만 다시 그린다. */
+/**
+ * 칸 집합이 같을 때 시트 노드를 유지한다. 도구·붓·선택은 크롬만 다시 그린다.
+ *
+ * 키에 **넣지 않는 것**(2026-09-30 렉 수정): 그림 주소(타일 이식 베이크가 끝나면 바뀌지만 판의 CSS 변수
+ * 하나만 갈면 된다 — applyPaletteSheetImage), 그리고 커스텀 판의 레이어·분류·검색어(칸 집합이 그 셋과
+ * 무관하고 안 맞는 칸을 흐리게만 하므로 setCustomPaletteFilter 가 클래스만 맞춘다). 커스텀 1140칸을
+ * 레이어·필터 전환마다 다시 짓던 것이 사라진다. 기본 리플로우 판은 칸 집합 자체가 레이어·필터로 바뀌므로 넣는다.
+ */
 function paintSheetRetainKey(tileset: TilesetDef, layer: Exclude<Layer, "event">): string {
-  return [
-    tileset.id,
-    tilesetImageUrl(tileset),
-    tileset.count,
-    tileset.tilesPerRow,
-    layer,
-    activeTileCategory,
-    tileSearchQuery,
-    isCustomTileset(tileset) ? "custom" : "grid",
-  ].join("|");
+  if (isCustomTileset(tileset)) return [tileset.id, tileset.count, tileset.tilesPerRow, "custom"].join("|");
+  return [tileset.id, tileset.count, tileset.tilesPerRow, layer, activeTileCategory, tileSearchQuery, "grid"].join("|");
 }
 
-function detachRetainedPalette(container: HTMLElement, key: string): HTMLElement | null {
-  const sheet = container.querySelector<HTMLElement>('[data-testid="tile-palette"]');
+/** 필터가 켜져 있으면 기본 판은 칸 집합이 달라져 못 살린다. 커스텀 판은 언제나 살린다. */
+function canRetainPalette(tileset: TilesetDef): boolean {
+  return isCustomTileset(tileset) || !isFilterActive();
+}
+
+/**
+ * 살릴 시트가 있으면 그 시트를 **DOM 에 둔 채** 돌려준다(떼지 않는다).
+ *
+ * 왜 (2026-09-30 실측, 기본 칩셋 1140칸): 예전에는 시트를 떼어 새 셸에 다시 붙였다. 떼는 순간 1140개 칸과
+ * 자식 요소의 스타일·레이아웃 정보가 버려져, 맵 전환·레이어 전환마다 「Removed from layout / Added to layout」
+ * 1139건 + UpdateLayoutTree 40ms 안팎이 다시 돌았다(같은 시트인데도). 이제 낡은 셸·판(pane)은 그대로 두고
+ * 시트 앞뒤 형제만 새로 짠 것으로 바꾼다(swapPaneAroundSheet) — 시트는 한 번도 DOM 을 떠나지 않는다.
+ * 셸 구조가 예상과 다르면(도크에 다른 자식이 있는 등) null → 예전 경로(전체 재생성)로 간다.
+ */
+interface InPlacePalette {
+  readonly shell: HTMLElement;
+  readonly pane: HTMLElement;
+  readonly sheet: HTMLElement;
+}
+
+function findInPlacePalette(container: HTMLElement, key: string): InPlacePalette | null {
+  if (container.childNodes.length !== 1) return null;
+  const shell = container.firstElementChild;
+  if (!(shell instanceof HTMLElement) || shell.dataset.testid !== "palette-work-shell") return null;
+  if (shell.childNodes.length !== 1) return null;
+  const pane = shell.firstElementChild;
+  if (!(pane instanceof HTMLElement) || pane.dataset.testid !== "palette-work-pane-paint") return null;
+  const sheet = Array.from(pane.children).find(
+    (child): child is HTMLElement => child instanceof HTMLElement && child.dataset.testid === "tile-palette",
+  );
   if (!sheet || sheet.dataset.retainKey !== key) return null;
-  sheet.remove();
-  return sheet;
+  return { shell, pane, sheet };
+}
+
+/** 낡은 판에서 시트만 남기고, 새 판의 자리표시자 앞뒤 자식을 시트 앞뒤로 옮긴다. */
+function swapPaneAroundSheet(pane: HTMLElement, sheet: HTMLElement, next: HTMLElement, slot: Node): void {
+  for (const child of Array.from(pane.childNodes)) {
+    if (child !== sheet) child.remove();
+  }
+  const before: Node[] = [];
+  const after: Node[] = [];
+  let seenSlot = false;
+  for (const child of Array.from(next.childNodes)) {
+    if (child === slot) { seenSlot = true; continue; }
+    (seenSlot ? after : before).push(child);
+  }
+  for (const node of before) pane.insertBefore(node, sheet);
+  for (const node of after) pane.append(node);
 }
 
 /**
@@ -127,8 +173,7 @@ function paletteRenderInputs(): readonly unknown[] | null {
     state.clusterAssistMode,
     state.activePaletteStamp,
     state.brushSize,
-    state.reliefMode,
-    state.reliefLevel,
+    state.reliefTopGrass,
     activeTileCategory,
     tileSearchQuery,
     showQuickTileNumbers,
@@ -161,16 +206,19 @@ if (typeof window !== "undefined" && typeof window.addEventListener === "functio
 export function renderTilePalette(container: HTMLElement): void {
   renderedPaletteInputs.delete(container);
   const focusSnapshot = captureFocus(container);
-  const previousPaletteScroll = readPaletteScroll(container);
   const state = editorState.get();
-  let retainedSheet: HTMLElement | null = null;
-  if (state.layer !== "event" && !isFilterActive()) {
+  let inPlace: InPlacePalette | null = null;
+  if (state.layer !== "event") {
     const project = store.getCurrent();
     const map = project.maps[state.currentMapId ?? project.startMapId];
     const tileset = map ? project.tilesets[map.tilesetId] : undefined;
-    if (tileset) retainedSheet = detachRetainedPalette(container, paintSheetRetainKey(tileset, state.layer));
+    if (tileset && canRetainPalette(tileset)) {
+      inPlace = findInPlacePalette(container, paintSheetRetainKey(tileset, state.layer));
+    }
   }
-  clearChildren(container);
+  // 시트가 제자리에 남으면 스크롤도 그대로다 — 스크롤 읽기(강제 레이아웃 ~65ms)와 복원을 건너뛴다.
+  const previousPaletteScroll = inPlace ? null : readPaletteScroll(container);
+  if (!inPlace) clearChildren(container);
 
   if (state.layer === "event") {
     // 레이어 전환은 캔버스가 소유한다. 여기서는 공통 셸 안의 내용을 이벤트 목록으로 바꾼다.
@@ -225,16 +273,22 @@ export function renderTilePalette(container: HTMLElement): void {
     return;
   }
 
-  const body = makePaletteSurface({ map, state, tileLayer, tileset, retainedSheet });
-  shell.append(body.root);
+  const body = makePaletteSurface({ map, state, tileLayer, tileset, retainedSheet: inPlace ? inPlace.sheet : null });
+  let liveShell: Element = shell;
+  if (inPlace && body.sheetSlot) {
+    swapPaneAroundSheet(inPlace.pane, inPlace.sheet, body.root, body.sheetSlot);
+    liveShell = inPlace.shell;
+  } else {
+    shell.append(body.root);
+    container.append(shell);
+  }
   const palette: HTMLElement | null = body.palette;
 
-  container.append(shell);
   const inputs = paletteRenderInputs();
-  if (inputs) renderedPaletteInputs.set(container, { shell, inputs });
+  if (inputs) renderedPaletteInputs.set(container, { shell: liveShell, inputs });
   applyRovingTabindex(container);
   restoreFocus(container, focusSnapshot);
-  if (palette) restorePaletteScroll(container, palette, previousPaletteScroll);
+  if (palette && previousPaletteScroll) restorePaletteScroll(container, palette, previousPaletteScroll);
   if (pendingRevealSelectedTile) {
     pendingRevealSelectedTile = false;
     const tile = state.selectedTile;
@@ -252,6 +306,46 @@ export function renderTilePalette(container: HTMLElement): void {
  *  · 타일셋 이름 → 「맵 설정」을 열고 「타일 그림판」 선택에 초점. 타일셋을 바꾸는 집은 그 창
  *    하나이므로(헤더 IA 「한 동작에 집 하나」) 여기서 두 번째 선택기를 만들지 않는다.
  */
+function selectedTileStatusKey(
+  tileset: TilesetDef,
+  map: { readonly id: string; readonly name: string },
+  hasTile: boolean,
+): string {
+  return `${tileset.id}|${tileset.name}|${map.id}|${map.name}|${hasTile ? 1 : 0}`;
+}
+
+/**
+ * 선택 칩을 DOM 교체 없이 갱신한다. 이 칩을 replaceWith 로 바꾸면 그 삽입·제거가 문서 전체 스타일 재계산
+ * (실측 ~2,400개 요소, ~50ms)을 부르지만 텍스트·속성 변경은 0.3ms 다. 타일셋·맵·「타일 있음」 여부가
+ * 같을 때만 재사용하고, 아니면 false 를 돌려 호출부가 새로 지어 갈아 끼운다.
+ */
+function updateSelectedTileStatus(
+  chip: HTMLElement,
+  selectedTile: number,
+  tileset: TilesetDef,
+  map: { readonly id: string; readonly name: string },
+): boolean {
+  const hasTile = selectedTile >= 0 && selectedTile < tileset.count;
+  if (chip.dataset.statusKey !== selectedTileStatusKey(tileset, map, hasTile)) return false;
+  const labelButton = chip.querySelector<HTMLElement>(".selected-tile-label");
+  if (!labelButton) return false;
+  const name = hasTile ? quickTileName(tileset, selectedTile) : "";
+  const label = !hasTile ? "공백" : name.startsWith(`${selectedTile} `) ? name : `${selectedTile} ${name}`;
+  if (hasTile) {
+    const thumb = chip.querySelector<HTMLElement>(".selected-tile-thumb");
+    if (!thumb) return false;
+    thumb.setAttribute("style", tilesetTileBackgroundStyle(tileset, selectedTile, 24));
+  }
+  chip.dataset.selectedTile = String(selectedTile);
+  chip.title = `선택 타일: ${label} · 타일셋: ${tileset.name}`;
+  // textContent 대입은 자식 노드를 갈아 끼워(삽입·제거) 전체 재계산을 부른다 — 글 노드의 data 만 바꾼다.
+  const labelText = labelButton.firstChild;
+  if (labelText instanceof Text && labelButton.childNodes.length === 1) labelText.data = label;
+  else labelButton.textContent = label;
+  labelButton.setAttribute("aria-label", hasTile ? `선택 타일 ${label} — 팔레트에서 위치 보기` : "선택 타일 없음");
+  return true;
+}
+
 function makeSelectedTileStatus(
   selectedTile: number,
   tileset: TilesetDef,
@@ -264,7 +358,12 @@ function makeSelectedTileStatus(
   const chip = el("div", {
     class: "selected-tile-status",
     attrs: { title: `선택 타일: ${label} · 타일셋: ${tileset.name}` },
-    dataset: { testid: "selected-tile-status" },
+    dataset: {
+      testid: "selected-tile-status",
+      // 제자리 갱신(updateSelectedTileStatus)이 같은 칩을 재사용해도 되는지 가르는 열쇠와, 클릭이 읽는 현재 값.
+      statusKey: selectedTileStatusKey(tileset, map, hasTile),
+      selectedTile: String(selectedTile),
+    },
   });
   if (hasTile) {
     chip.append(
@@ -285,7 +384,7 @@ function makeSelectedTileStatus(
         "aria-label": hasTile ? `선택 타일 ${label} — 팔레트에서 위치 보기` : "선택 타일 없음",
       },
       dataset: { testid: "selected-tile-reveal" },
-      on: { click: () => { if (hasTile) revealPaletteTileFromMap(selectedTile); } },
+      on: { click: () => { if (hasTile) revealPaletteTileFromMap(Number(chip.dataset.selectedTile)); } },
     })
   );
   chip.append(
@@ -312,7 +411,7 @@ function makeSelectedTileStatus(
         "aria-label": "타일 속성 열기",
       },
       dataset: { testid: "selected-tile-props-open" },
-      on: { click: () => openTilePropsDialog(selectedTile, tileset) },
+      on: { click: () => openTilePropsDialog(Number(chip.dataset.selectedTile), tileset) },
     })
   );
   return chip;
@@ -328,7 +427,7 @@ function makePaletteSurface(input: {
   readonly tileLayer: Exclude<Layer, "event">;
   readonly tileset: TilesetDef;
   readonly retainedSheet: HTMLElement | null;
-}): { readonly root: HTMLElement; readonly palette: HTMLElement } {
+}): { readonly root: HTMLElement; readonly palette: HTMLElement; readonly sheetSlot: Node | null } {
   const { map, state, tileLayer, tileset, retainedSheet } = input;
   const root = el("div", {
     class: "palette-work-pane is-paint",
@@ -373,12 +472,17 @@ function makePaletteSurface(input: {
       }));
   palette.dataset.retainKey = paintSheetRetainKey(tileset, tileLayer);
   if (retainedSheet) {
+    // 살린 판은 칸을 다시 짓지 않는다 — 그림(이식 베이크)과 필터·선택만 제자리에서 맞춘다.
+    applyPaletteSheetImage(palette, tilesetImageUrl(tileset));
+    if (isCustomTileset(tileset)) setCustomPaletteFilter(palette, visibleTiles, state.selectedTile);
     const displayTile = isCustomTileset(tileset) ? state.selectedTile : gridPaletteDisplayTile(tileset, state.selectedTile);
     movePaletteActiveCell(palette, displayTile);
   }
   if (showQuickTileNumbers) palette.classList.add("show-index");
   else palette.classList.remove("show-index");
-  root.append(palette);
+  // 살린 시트는 제자리에 두므로 새 판에는 자리표시자만 둔다(swapPaneAroundSheet 가 앞뒤를 시트 둘레로 옮긴다).
+  const sheetSlot: Node | null = retainedSheet ? document.createComment("palette-sheet-slot") : null;
+  root.append(sheetSlot ?? palette);
 
   root.append(makeSelectedTileStatus(state.selectedTile, tileset, map));
   // ⋯ 검사·기록 메뉴는 도구막대 행 끝으로 옮겼다(2026-09-17) — 이 줄엔 붓 보조·조합만 남는다.
@@ -405,7 +509,7 @@ function makePaletteSurface(input: {
     rerender: renderPalettePreservingViewport, body: () => kitShelf }));
   root.append(utilities);
 
-  return { root, palette };
+  return { root, palette, sheetSlot };
 }
 
 /**
@@ -440,7 +544,7 @@ function makePaletteFilterBar(
         if (tileSearchRenderTimer !== null) clearTimeout(tileSearchRenderTimer);
         tileSearchRenderTimer = setTimeout(() => {
           tileSearchRenderTimer = null;
-          renderPalettePreservingViewport();
+          refreshPaletteFilter();
         }, TILE_SEARCH_RENDER_DELAY_MS);
       },
     },
@@ -469,7 +573,7 @@ function makePaletteFilterBar(
       const value = event.currentTarget.value;
       const category = TILE_CATEGORIES.find(item => item.id === value);
       if (category) activeTileCategory = category.id;
-      renderPalettePreservingViewport();
+      refreshPaletteFilter();
     } },
   });
   for (const category of TILE_CATEGORIES) {
@@ -481,35 +585,45 @@ function makePaletteFilterBar(
   categorySelect.value = activeTileCategory;
   bar.append(el("div", { class: "palette-filter-search-row", children: [search, categorySelect, numberToggle] }));
 
-  if (isFilterActive()) {
-    // 개수는 **팔레트가 실제로 그리는 칸**을 센다(아래 paletteMatchCount 참고). 예전에는
-    // 타일셋 인덱스 일치 수를 세서 표기가 화면과 갈라졌다.
-    const matched = paletteMatchCount(tileset, tileLayer, selectedTile, filteredTileIdSet(tileset));
-    bar.append(
-      el("div", {
-        class: "palette-filter-status",
-        dataset: { testid: "palette-filter-status" },
-        children: [
-          el("span", { text: `${matched}칸 표시` }),
-          el("button", {
-            class: "btn btn-mini palette-filter-clear",
-            text: "필터 해제",
-            attrs: { type: "button", title: "검색어와 분류 필터를 지운다" },
-            dataset: { testid: "palette-filter-clear" },
-            on: {
-              click: () => {
-                tileSearchQuery = "";
-                activeTileCategory = "all";
-                renderPalettePreservingViewport();
-                document.querySelector<HTMLElement>('[data-testid="tile-search-input"]')?.focus();
-              },
-            },
-          }),
-        ],
-      })
-    );
-  }
+  const status = makePaletteFilterStatus(tileset, tileLayer, selectedTile);
+  if (status) bar.append(status);
   return bar;
+}
+
+/** 필터 결과 줄(「N칸 표시」+ 해제 버튼). 필터가 없으면 null. 분류 수를 다시 세지 않으려고 바와 따로 만든다. */
+function makePaletteFilterStatus(
+  tileset: TilesetDef,
+  tileLayer: Exclude<Layer, "event">,
+  selectedTile: number,
+  visibleTiles: ReadonlySet<number> | null = filteredTileIdSet(tileset),
+): HTMLElement | null {
+  if (!isFilterActive()) return null;
+  // 개수는 **팔레트가 실제로 그리는 칸**을 센다(아래 paletteMatchCount 참고). 예전에는
+  // 타일셋 인덱스 일치 수를 세서 표기가 화면과 갈라졌다.
+  const matched = paletteMatchCount(tileset, tileLayer, selectedTile, visibleTiles);
+  return (
+    el("div", {
+      class: "palette-filter-status",
+      dataset: { testid: "palette-filter-status" },
+      children: [
+        el("span", { text: `${matched}칸 표시` }),
+        el("button", {
+          class: "btn btn-mini palette-filter-clear",
+          text: "필터 해제",
+          attrs: { type: "button", title: "검색어와 분류 필터를 지운다" },
+          dataset: { testid: "palette-filter-clear" },
+          on: {
+            click: () => {
+              tileSearchQuery = "";
+              activeTileCategory = "all";
+              refreshPaletteFilter();
+              document.querySelector<HTMLElement>('[data-testid="tile-search-input"]')?.focus();
+            },
+          },
+        }),
+      ],
+    })
+  );
 }
 
 /**
@@ -546,6 +660,40 @@ function makeBrushAssistSection(
 function renderCurrentPalette(): void {
   const root = document.querySelector<HTMLElement>('[data-testid="left-palette-root"]');
   if (root) renderTilePalette(root);
+}
+
+/**
+ * 검색어·분류만 바뀐 경우 — 도구줄·붓 보조·구조 킷 선반을 다시 짓지 않고 시트의 흐림과 「N칸 표시」 줄만 맞춘다.
+ * 실측(버들항 23,936칸): 전체 다시 그리기 600~770ms 중 선반·보조 패널 재구성이 350ms 였다.
+ * 커스텀 아틀라스가 제자리에 살아 있을 때만 쓰고, 아니면 전체 경로로 돌아간다.
+ */
+function refreshPaletteFilter(): void {
+  const root = document.querySelector<HTMLElement>('[data-testid="left-palette-root"]');
+  const pane = root?.querySelector<HTMLElement>('[data-testid="palette-work-pane-paint"]');
+  const sheet = pane?.querySelector<HTMLElement>('[data-testid="tile-palette"]');
+  const bar = pane?.querySelector<HTMLElement>('[data-testid="palette-filter-bar"]');
+  const state = editorState.get();
+  const project = store.getCurrent();
+  const map = project.maps[currentMapId()];
+  const tileset = map ? project.tilesets[map.tilesetId] : undefined;
+  if (!root || !pane || !sheet || !bar || !tileset || state.layer === "event"
+    || root.querySelector("[data-sidebar-surface]") || !isCustomTileset(tileset)
+    || sheet.dataset.retainKey !== paintSheetRetainKey(tileset, state.layer)) {
+    renderPalettePreservingViewport();
+    return;
+  }
+  const visibleTiles = filteredTileIdSet(tileset);
+  if (!setCustomPaletteFilter(sheet, visibleTiles, state.selectedTile)) {
+    renderPalettePreservingViewport();
+    return;
+  }
+  const searchInput = bar.querySelector<HTMLInputElement>('[data-testid="tile-search-input"]');
+  if (searchInput && searchInput.value !== tileSearchQuery) searchInput.value = tileSearchQuery;
+  const select = bar.querySelector<HTMLSelectElement>('[data-testid="tile-category-select"]');
+  if (select) select.value = activeTileCategory;
+  bar.querySelector('[data-testid="palette-filter-status"]')?.remove();
+  const status = makePaletteFilterStatus(tileset, state.layer, state.selectedTile, visibleTiles);
+  if (status) bar.append(status);
 }
 
 function renderPalettePreservingViewport(): void {
@@ -653,9 +801,32 @@ export function syncMountedPaletteSelection(): boolean {
   if (!sheet || !movePaletteActiveCell(sheet, displayTile)) return false;
   const map = store.getCurrent().maps[currentMapId()];
   const status = root.querySelector<HTMLElement>('[data-testid="selected-tile-status"]');
-  if (status && map) status.replaceWith(makeSelectedTileStatus(state.selectedTile, tileset, map));
+  if (status && map && !updateSelectedTileStatus(status, state.selectedTile, tileset, map)) {
+    status.replaceWith(makeSelectedTileStatus(state.selectedTile, tileset, map));
+  }
   rememberMountedPaletteInputs(root);
   return true;
+}
+
+/**
+ * 레이어만 바뀐 통지에서 붓 줄의 다른 점이 「상태 칩의 data-layer」 하나뿐이면 그 속성만 옮긴다.
+ * 줄을 replaceWith 하면 삽입·제거가 문서 전체 스타일 재계산(~50ms)을 부른다. 다른 점이 더 있으면
+ * (크기 선택 유무·도장·높이 붓 등) false 를 돌려 호출부가 통째로 갈아 끼운다.
+ */
+function patchBrushControlsInPlace(current: HTMLElement, next: HTMLElement): boolean {
+  const currentState = current.querySelector<HTMLElement>('[data-testid="tile-brush-state"]');
+  const nextState = next.querySelector<HTMLElement>('[data-testid="tile-brush-state"]');
+  if (!currentState || !nextState) return false;
+  const nextLayer = nextState.dataset.layer ?? "";
+  if (currentState.dataset.layer === nextLayer) {
+    return current.outerHTML === next.outerHTML;
+  }
+  const previousLayer = currentState.dataset.layer;
+  currentState.dataset.layer = nextLayer;
+  if (current.outerHTML === next.outerHTML) return true;
+  if (previousLayer === undefined) currentState.removeAttribute("data-layer");
+  else currentState.dataset.layer = previousLayer;
+  return false;
 }
 
 /**
@@ -682,7 +853,8 @@ export function syncMountedPaletteLayerSelection(): boolean {
   if (!syncMountedPaletteSelection()) return false;
   const controls = document.querySelector<HTMLElement>('[data-testid="left-palette-root"] [data-testid="tile-brush-controls"]');
   if (!controls) return false;
-  controls.replaceWith(makeTileBrushControls(editorState.get(), renderPalettePreservingViewport));
+  const nextControls = makeTileBrushControls(editorState.get(), renderPalettePreservingViewport);
+  if (!patchBrushControlsInPlace(controls, nextControls)) controls.replaceWith(nextControls);
   const root = document.querySelector<HTMLElement>('[data-testid="left-palette-root"]');
   if (root) rememberMountedPaletteInputs(root);
   return true;
@@ -726,6 +898,8 @@ export function syncMountedPaletteToolPick(): boolean {
 }
 
 function movePaletteActiveCell(sheet: HTMLElement, displayTile: number): boolean {
+  // 가상화된 큰 아틀라스: 칸이 그려져 있지 않아도 상태만 옮기면 되므로 다시 그릴 필요가 없다.
+  if (setVirtualPaletteActive(sheet, displayTile)) return true;
   const nextActive = sheet.querySelector<HTMLElement>(`[data-tile-index="${displayTile}"]`);
   if (!nextActive) return false;
   const oldActive = sheet.querySelector<HTMLElement>(".chipset-tile.active");
@@ -796,7 +970,9 @@ function revealChipsetTileInPalette(tile: number): void {
   // Custom atlases expose exact source cells; RM2K chipsets collapse authored autotile variants.
   const tileset = currentTilesetForPalette();
   const displayTile = tileset && !isCustomTileset(tileset) ? gridPaletteDisplayTile(tileset, tile) : tile;
+  const virtualSheet = root.querySelector<HTMLElement>('[data-testid="tile-palette"]');
   const cell =
+    (virtualSheet ? revealVirtualPaletteTile(virtualSheet, displayTile) : null) ??
     root.querySelector<HTMLElement>('[data-testid="chipset-tile-' + displayTile + '"]') ??
     root.querySelector<HTMLElement>('[data-testid="chipset-tile-' + tile + '"]') ??
     root.querySelector<HTMLElement>('[data-testid="quick-tile-' + tile + '"]');

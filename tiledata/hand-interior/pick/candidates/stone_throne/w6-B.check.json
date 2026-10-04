@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/stone_throne/w6-B.pxg",
+ "id": "stone throne",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.113
+ },
+ "lint": {
+  "failed": [
+   "outline_black"
+  ],
+  "pass": false
+ },
+ "colors": 18,
+ "v5_colors": 7,
+ "bbox": [
+  0,
+  2,
+  15,
+  30
+ ],
+ "v5_bbox": [
+  1,
+  2,
+  14,
+  31
+ ],
+ "note": "A 에 강한 위-왼 빛과 짙은 오른쪽 그늘, 접지 그림자 추가",
+ "ok": true
+}

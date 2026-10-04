@@ -1,0 +1,37 @@
+{
+ "id": "chopping block",
+ "slug": "chopping_block",
+ "name_ko": "도마 통나무",
+ "category": "정육점",
+ "kind": "floor",
+ "kind_ko": "바닥 기물(막힘)",
+ "canvas": [
+  16,
+  16
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 16,
+  "h": 16
+ },
+ "footprint": {
+  "w": 1,
+  "h": 1
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "칼이 꽂힌 통나무 도마. 정육점·생선 손질터 작업대 옆 바닥에 둔다.",
+ "where": "정육점·생선 손질터 작업대 옆 바닥에 둔다.",
+ "placement": [
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": [
+  1,
+  1,
+  14,
+  14
+ ],
+ "v5_colors": 10,
+ "material": "wood",
+ "related": []
+}

@@ -1,0 +1,29 @@
+// B: 약초 걸이의 가는 줄·조용한 덩이와 방 안 천의 따뜻한 흰색을 따라 셔츠와 양말을 손도트로 그림.
+@size 32 16
+@cell 16
+@palette palette.pal
+@mat a linen 2
+@mat b linen 3
+@mat c linen 4
+@mat d linen 5
+@mat e linen 6
+@mat r pine 2
+@mat s pine 3
+@layer laundry
+@mblock 0 0
+................................
+r..............................r
+rsrr.......................rrrsr
+....rrrsrrrrrrrrrsrrrrrsrrrr..rr
+.......s.ddca.dd.s.....s....s...
+......cdeedbcdddcc.....cdc..cdc.
+.....cdeeedddddddcc....edd..edd.
+....cdeeeddddddddccc...edd..edd.
+....cdeedddddddddccc...edc..edc.
+....bcc.cedddddcbcc....edc..edc.
+........ceddddc.......edc..edc..
+........ceddddc......cedc..edc..
+........ceddddc......ddc...edc..
+........ceddddc......bb....dddc.
+........cdddddc............bbc..
+........bcccccb.................

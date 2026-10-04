@@ -47,7 +47,8 @@ export class FakeNode {
   /** True while attached under document.body (or any parent chain). */
   get isConnected(): boolean {
     let node: FakeNode | null = this;
-    const body = (globalThis.document as unknown as { body?: FakeNode }).body;
+    // 테스트가 가짜 DOM 을 걷은 뒤에 도는 마이크로태스크(battleCommandDom syncCue)도 있다 — document 가 없으면 떨어진 노드다.
+    const body = (globalThis.document as unknown as { body?: FakeNode } | undefined)?.body;
     while (node) {
       if (body && node === body) return true;
       if (node.parentNode === null) return false;

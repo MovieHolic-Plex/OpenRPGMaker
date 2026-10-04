@@ -1,0 +1,46 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/volcano/w3-B.pxg",
+ "set": "worldmap",
+ "id": "volcano",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.057
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.107
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies",
+   "outline_black",
+   "dither"
+  ]
+ },
+ "colors": 17,
+ "bbox": [
+  2,
+  0,
+  26,
+  31
+ ],
+ "note": "2x2 화산 — 밝은 비탈과 강한 명암, 흰 연기(mwhite)와 회색 밑면, 남동 ~ - 그림자.",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 4,
+   "atLeast95": 0,
+   "max": 0.082
+  },
+  "refmapWorld": {
+   "cells": 4,
+   "atLeast95": 0,
+   "max": 0.141
+  }
+ }
+}

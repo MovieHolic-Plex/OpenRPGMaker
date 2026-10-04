@@ -1,0 +1,41 @@
+{
+ "id": "piano",
+ "slug": "piano",
+ "name_ko": "피아노",
+ "category": "선술집",
+ "kind": "wall",
+ "kind_ko": "북쪽 벽 앞 기물(막힘, 벽에 붙임)",
+ "canvas": [
+  32,
+  32
+ ],
+ "padTop": 8,
+ "image": {
+  "w": 32,
+  "h": 24
+ },
+ "footprint": {
+  "w": 2,
+  "h": 1
+ },
+ "overhang_px": 8,
+ "surface": null,
+ "description": "업라이트 피아노(2칸). 선술집·저택 홀 북쪽 벽, 앞에 스툴.",
+ "where": "선술집·저택 홀 북쪽 벽, 앞에 스툴.",
+ "placement": [
+  "발밑 줄이 북쪽 벽면 바로 아래 첫 바닥 줄이어야 한다",
+  "그림이 발밑 칸 위로 8px 솟는다 → 위 1칸은 플레이어 위에 그리는 겹침층",
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": [
+  0,
+  8,
+  31,
+  31
+ ],
+ "v5_colors": 14,
+ "material": "wood",
+ "related": [
+  "stool"
+ ]
+}

@@ -1,0 +1,437 @@
+{
+ "refCells48": 2348,
+ "refFiles": 27,
+ "threshold": 0.95,
+ "tolerance": 8,
+ "sets": {
+  "trials48": {
+   "ourCells": 8,
+   "modes": {
+    "direct48": {
+     "exactMatches": 0,
+     "atLeast95": 0,
+     "atLeast90": 0,
+     "atLeast50": 0,
+     "maxSimilarity": 0.3273,
+     "perCell": [
+      {
+       "ours": [
+        "barrel/final.png",
+        0
+       ],
+       "ref": [
+        "D_REFMAP_Interior_Extra.png",
+        2
+       ],
+       "similarity": 0.0468
+      },
+      {
+       "ours": [
+        "floor/final-b.png",
+        0
+       ],
+       "ref": [
+        "A4_REFMAP_Interior.png",
+        174
+       ],
+       "similarity": 0.3077
+      },
+      {
+       "ours": [
+        "floor/final-c.png",
+        0
+       ],
+       "ref": [
+        "A4_REFMAP_Interior.png",
+        174
+       ],
+       "similarity": 0.3273
+      },
+      {
+       "ours": [
+        "floor/final.png",
+        0
+       ],
+       "ref": [
+        "A4_REFMAP_Interior.png",
+        174
+       ],
+       "similarity": 0.3207
+      },
+      {
+       "ours": [
+        "table/final.png",
+        0
+       ],
+       "ref": [
+        "refmap_throne_hall.png",
+        674
+       ],
+       "similarity": 0.0312
+      },
+      {
+       "ours": [
+        "table/final.png",
+        1
+       ],
+       "ref": [
+        "refmap_general_store.png",
+        407
+       ],
+       "similarity": 0.026
+      },
+      {
+       "ours": [
+        "table/final.png",
+        2
+       ],
+       "ref": [
+        "B_REFMAP_Interior.png",
+        95
+       ],
+       "similarity": 0.0851
+      },
+      {
+       "ours": [
+        "table/final.png",
+        3
+       ],
+       "ref": [
+        "B_REFMAP_Interior.png",
+        95
+       ],
+       "similarity": 0.0803
+      }
+     ]
+    },
+    "both32_LANCZOS": {
+     "exactMatches": 0,
+     "atLeast95": 0,
+     "atLeast90": 0,
+     "atLeast50": 0,
+     "maxSimilarity": 0.3652,
+     "perCell": [
+      {
+       "ours": [
+        "barrel/final.png",
+        0
+       ],
+       "ref": [
+        "B_REFMAP_Interior.png",
+        94
+       ],
+       "similarity": 0.043
+      },
+      {
+       "ours": [
+        "floor/final-b.png",
+        0
+       ],
+       "ref": [
+        "A4_REFMAP_Interior.png",
+        174
+       ],
+       "similarity": 0.3564
+      },
+      {
+       "ours": [
+        "floor/final-c.png",
+        0
+       ],
+       "ref": [
+        "A4_REFMAP_Interior.png",
+        174
+       ],
+       "similarity": 0.3652
+      },
+      {
+       "ours": [
+        "floor/final.png",
+        0
+       ],
+       "ref": [
+        "A4_REFMAP_Interior.png",
+        174
+       ],
+       "similarity": 0.333
+      },
+      {
+       "ours": [
+        "table/final.png",
+        0
+       ],
+       "ref": [
+        "refmap_general_store.png",
+        407
+       ],
+       "similarity": 0.0264
+      },
+      {
+       "ours": [
+        "table/final.png",
+        1
+       ],
+       "ref": [
+        "refmap_general_store.png",
+        103
+       ],
+       "similarity": 0.0371
+      },
+      {
+       "ours": [
+        "table/final.png",
+        2
+       ],
+       "ref": [
+        "D_REFMAP_Interior_Extra.png",
+        65
+       ],
+       "similarity": 0.0846
+      },
+      {
+       "ours": [
+        "table/final.png",
+        3
+       ],
+       "ref": [
+        "D_REFMAP_Interior_Extra.png",
+        65
+       ],
+       "similarity": 0.1074
+      }
+     ]
+    }
+   }
+  },
+  "trials32": {
+   "ourCells": 6,
+   "modes": {
+    "ref48to32_LANCZOS": {
+     "exactMatches": 0,
+     "atLeast95": 0,
+     "atLeast90": 0,
+     "atLeast50": 1,
+     "maxSimilarity": 0.5029,
+     "perCell": [
+      {
+       "ours": [
+        "barrel/final.png",
+        0
+       ],
+       "ref": [
+        "C_REFMAP_Interior.png",
+        1
+       ],
+       "similarity": 0.024
+      },
+      {
+       "ours": [
+        "floor/final.png",
+        0
+       ],
+       "ref": [
+        "refmap_general_store.png",
+        407
+       ],
+       "similarity": 0.1211
+      },
+      {
+       "ours": [
+        "table/final.png",
+        0
+       ],
+       "ref": [
+        "refmap_manor_library.png",
+        415
+       ],
+       "similarity": 0.4951
+      },
+      {
+       "ours": [
+        "table/final.png",
+        1
+       ],
+       "ref": [
+        "refmap_herbalist_hut.png",
+        82
+       ],
+       "similarity": 0.5029
+      },
+      {
+       "ours": [
+        "table/final.png",
+        2
+       ],
+       "ref": [
+        "D_REFMAP_Interior_Extra.png",
+        65
+       ],
+       "similarity": 0.0412
+      },
+      {
+       "ours": [
+        "table/final.png",
+        3
+       ],
+       "ref": [
+        "B_REFMAP_Interior.png",
+        14
+       ],
+       "similarity": 0.0443
+      }
+     ]
+    },
+    "ref48to32_NEAREST": {
+     "exactMatches": 0,
+     "atLeast95": 0,
+     "atLeast90": 0,
+     "atLeast50": 0,
+     "maxSimilarity": 0.4375,
+     "perCell": [
+      {
+       "ours": [
+        "barrel/final.png",
+        0
+       ],
+       "ref": [
+        "C_REFMAP_Interior.png",
+        1
+       ],
+       "similarity": 0.0215
+      },
+      {
+       "ours": [
+        "floor/final.png",
+        0
+       ],
+       "ref": [
+        "A2_REFMAP_Interior.png",
+        96
+       ],
+       "similarity": 0.1104
+      },
+      {
+       "ours": [
+        "table/final.png",
+        0
+       ],
+       "ref": [
+        "refmap_manor_library.png",
+        415
+       ],
+       "similarity": 0.4316
+      },
+      {
+       "ours": [
+        "table/final.png",
+        1
+       ],
+       "ref": [
+        "A2_REFMAP_Interior.png",
+        151
+       ],
+       "similarity": 0.4375
+      },
+      {
+       "ours": [
+        "table/final.png",
+        2
+       ],
+       "ref": [
+        "D_REFMAP_Interior_Extra.png",
+        65
+       ],
+       "similarity": 0.0377
+      },
+      {
+       "ours": [
+        "table/final.png",
+        3
+       ],
+       "ref": [
+        "refmap_general_store.png",
+        338
+       ],
+       "similarity": 0.0498
+      }
+     ]
+    },
+    "ours32to48_NEAREST": {
+     "exactMatches": 0,
+     "atLeast95": 0,
+     "atLeast90": 0,
+     "atLeast50": 0,
+     "maxSimilarity": 0.4332,
+     "perCell": [
+      {
+       "ours": [
+        "barrel/final.png",
+        0
+       ],
+       "ref": [
+        "D_REFMAP_Interior_Extra.png",
+        2
+       ],
+       "similarity": 0.0228
+      },
+      {
+       "ours": [
+        "floor/final.png",
+        0
+       ],
+       "ref": [
+        "refmap_throne_hall.png",
+        674
+       ],
+       "similarity": 0.1042
+      },
+      {
+       "ours": [
+        "table/final.png",
+        0
+       ],
+       "ref": [
+        "refmap_manor_library.png",
+        415
+       ],
+       "similarity": 0.4154
+      },
+      {
+       "ours": [
+        "table/final.png",
+        1
+       ],
+       "ref": [
+        "refmap_manor_library.png",
+        415
+       ],
+       "similarity": 0.4332
+      },
+      {
+       "ours": [
+        "table/final.png",
+        2
+       ],
+       "ref": [
+        "D_REFMAP_Interior_Extra.png",
+        65
+       ],
+       "similarity": 0.0397
+      },
+      {
+       "ours": [
+        "table/final.png",
+        3
+       ],
+       "ref": [
+        "D_REFMAP_Interior_Extra.png",
+        65
+       ],
+       "similarity": 0.0369
+      }
+     ]
+    }
+   }
+  }
+ }
+}

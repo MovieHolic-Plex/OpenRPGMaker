@@ -1,0 +1,43 @@
+{
+ "id": "20261002-2144-recolor/c-green-page__sonnet-r1",
+ "brief": "c-green-page",
+ "name": "초록 옷의 시동",
+ "base": "People3:2",
+ "base_label": "People3 3번",
+ "strength": "normal",
+ "files": {
+  "chr": "c-green-page__sonnet-r1__20261002-2144-recolor.chr.txt",
+  "sheet": "c-green-page__sonnet-r1__20261002-2144-recolor.png"
+ },
+ "description": {
+  "label": "연갈색 머리 초록 옷 시동",
+  "gender": "남",
+  "attributes": {
+   "kind": "사람",
+   "age": "어린이",
+   "hair": "연갈색 머리"
+  },
+  "role": "시동 (시중 드는 소년)",
+  "appearance": "윗머리가 뾰족하게 솟고 옆머리가 얼굴을 덮는 연한 갈색 머리에 초록 눈의 소년. 밝은 초록 상의에 흰 옷깃이 보이고, 짙은 초록 바지에 갈색 신발을 신었다. 소지품은 없다.",
+  "colors": [
+   "연갈색 머리",
+   "밝은 초록 상의",
+   "흰 옷깃",
+   "짙은 초록 바지",
+   "갈색 신발"
+  ],
+  "tags": [
+   "시동",
+   "소년",
+   "시종",
+   "초록 옷",
+   "성·저택",
+   "중세 판타지",
+   "마을 아이",
+   "심부름꾼"
+  ],
+  "fits": "성이나 귀족 저택, 여관에서 심부름하거나 주인 곁을 따르는 어린 시종 NPC로 두기에 어울린다.",
+  "by": "Claude Sonnet 5.5 · medium",
+  "at": "2026-10-02T22:40:50+00:00"
+ }
+}

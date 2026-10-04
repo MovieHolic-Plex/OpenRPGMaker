@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/sack_flour/w6-A.pxg",
+ "id": "sack:flour",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.018
+ },
+ "lint": {
+  "failed": [
+   "orphans",
+   "dither"
+  ],
+  "pass": false
+ },
+ "colors": 15,
+ "v5_colors": 10,
+ "bbox": [
+  2,
+  2,
+  14,
+  14
+ ],
+ "v5_bbox": [
+  2,
+  2,
+  12,
+  13
+ ],
+ "note": "v5 다듬기: 가루 더미 아래에 끈으로 묶은 목(갈색 줄)을 넣어 자루로 읽히게, 삼베 결(밝은/어두운 낱칸)과 왼쪽 하이라이트·오른쪽 아래 어둠 추가",
+ "ok": true
+}

@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/hay_bale/w44-A.pxg",
+ "id": "hay bale",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.009
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 7,
+ "v5_colors": 6,
+ "bbox": [
+  1,
+  2,
+  14,
+  14
+ ],
+ "v5_bbox": [
+  1,
+  3,
+  14,
+  14
+ ],
+ "note": "관문(object) ok t=6 f=7(접힘선 측정은 약함, 눈 판정 O). 윗면 5줄(짚 결+끈)+밝은 앞모서리 후 앞면 짚 단면 6줄, 끈 1줄이 위·앞을 잇는다.",
+ "ok": true
+}

@@ -1,0 +1,44 @@
+{
+ "id": "floor_manor_plank",
+ "slug": "floor_manor_plank",
+ "name": "저택 마루(기본)",
+ "scene": "낡은 서양 저택",
+ "cells": [
+  2,
+  2
+ ],
+ "canvas": [
+  32,
+  32
+ ],
+ "layer": "ground",
+ "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+ "description": "바닥 2×2(32×32) 칸 전부 불투명, 사방 이어짐(@tile). 조용하게 4~5단, 명도 차 ~25. 옹이·이음은 한두 곳만(반복이 띠로 보이지 않게). 벽면보다 두 단 어둡게. v5 짙은 마루(널 폭 4px 가로 널) 결, 깨끗한 기본판(들뜬 널·구멍 없이 — 그건 floor_creaky·floor_creaky_broken).",
+ "palette_hint": "rot/vdwood 널",
+ "stage": 1,
+ "stage_ko": "1단계 기본(2판 새로)",
+ "kit": "manor",
+ "role": "바닥(마루)",
+ "worker": "hf2",
+ "set_with": [
+  "wall_manor_damask",
+  "wall_manor_stripe",
+  "wall_wood_panel",
+  "floor_manor_carpet",
+  "floor_checker",
+  "carpet_runner"
+ ],
+ "v5_ref": [
+  {
+   "id": "floor:dplank",
+   "name_ko": "짙은 마루",
+   "atlas": {
+    "x": 160,
+    "y": 1656,
+    "w": 32,
+    "h": 32
+   },
+   "file": "ref-v5-1.png"
+  }
+ ]
+}

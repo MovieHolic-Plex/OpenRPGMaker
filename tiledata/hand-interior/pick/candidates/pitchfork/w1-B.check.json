@@ -1,0 +1,31 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/pitchfork/w1-B.pxg",
+ "id": "pitchfork",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.032
+ },
+ "lint": {
+  "failed": [],
+  "pass": true
+ },
+ "colors": 10,
+ "v5_colors": 3,
+ "bbox": [
+  6,
+  1,
+  12,
+  15
+ ],
+ "v5_bbox": [
+  7,
+  1,
+  11,
+  15
+ ],
+ "note": "벽에 걸린 그림자: 자루·갈래 오른쪽에 반투명 그림자 한 줄(벽에서 떠 있는 느낌), 갈래 끝 밝게·머리 어둡게 대비 강화.",
+ "ok": true
+}

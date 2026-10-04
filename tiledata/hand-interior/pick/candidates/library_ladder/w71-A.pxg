@@ -1,0 +1,121 @@
+@size 16 48
+@cell 16
+@palette palette.pal
+@mat a wood
+@mat b brass
+@mblock 0 0
+.aaaaaaaaaaaaaa.
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+baaaa......aaaab
+.aaaa......aaaa.
+.aaaa......aaaa.
+.aaaa......aaaa.
+.aaaa......aaaa.
+.aaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaa.
+.aaaaa.....aaaa.
+.aaaa......aaaa.
+.aaaa......aaaa.
+.aaaa......aaaa.
+.aaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaa.
+.aaaaa.....aaaa.
+.aaaa......aaaa.
+.aaaa......aaaa.
+.aaaa......aaaa.
+.aaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaa.
+.aaaaa.....aaaa.
+.aaaa......aaaa.
+.aaaa......aaaa.
+.aaaa......aaaa.
+.aaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaa.
+.aaaaa.....aaaa.
+.aaaa......aaaa.
+.aaaa......aaaa.
+.aaaa......aaaa.
+.aaaaaaaaaaaaaa.
+.aaaaaaaaaaaaaa.
+.aaaaa.....aaaa.
+.aaaa......aaaa.
+.aaaa......aaaa.
+.aaaa......aaaa.
+.bbbb......bbbb.
+.bbbb......bbbb.
+................
+................
+@tblock 0 0
+.44444444444444.
+0655555555555540
+0666666666666640
+0666666666666640
+0666666666666640
+0888888888888860
+0555555555555550
+0333333333333330
+0111111111111110
+40642......05312
+.0542......0431.
+.0642......0531.
+.0642......0531.
+.0642......0531.
+.06327776660521.
+.06423332220531.
+.06421.....0531.
+.0542......0431.
+.0642......0531.
+.0642......0531.
+.06427776660531.
+.06423332220531.
+.06421.....0531.
+.0632......0521.
+.0542......0431.
+.0642......0531.
+.06427776660531.
+.06423332220531.
+.06421.....0531.
+.0642......0531.
+.0642......0531.
+.0542......0431.
+.06327776660521.
+.06423332220531.
+.06421.....0531.
+.0642......0531.
+.0642......0531.
+.0642......0531.
+.05427776660431.
+.06423332220531.
+.06421.....0531.
+.0632......0521.
+.0642......0531.
+.0642......0531.
+.5432......5432.
+.3311......2200.
+................
+................
+@px 1 46 ~
+@px 2 46 ~
+@px 3 46 ~
+@px 4 46 ~
+@px 11 46 ~
+@px 12 46 ~
+@px 13 46 ~
+@px 14 46 ~
+@px 15 46 ~
+@px 1 47 -
+@px 2 47 -
+@px 3 47 -
+@px 4 47 -
+@px 11 47 -
+@px 12 47 -
+@px 13 47 -
+@px 14 47 -
+@px 15 47 -

@@ -16,6 +16,7 @@
 import { runTool } from "@/editor/tools";
 import { runGameCheck } from "@/qa/gameCheck";
 import type { Project } from "@/project/types";
+import { authoringHarnessFor, eligibleAuthoringHarnessFor, inspectAuthoringHarness } from '../harnesses/_core/authoringRegistry';
 import {
   hasPlayableSegmentSkeleton,
   playableSegmentGenre,
@@ -45,7 +46,10 @@ export type PlayableSegmentVerdict =
  * 구간 끝까지 갈 수 있는가. 자동 플레이가 SEGMENT_END_ENDING_ID 에 닿아야 합격이다.
  * 다른 엔딩에 닿은 것만으로는 합격이 아니다 — 첫 구간의 약속은 이 엔딩이다.
  */
-export function judgePlayableSegment(project: Project, options: { readonly budgetMs?: number } = {}): PlayableSegmentVerdict {
+export function judgePlayableSegment(project: Project, options: { readonly budgetMs?: number; readonly expected?: Project } = {}): PlayableSegmentVerdict {
+  const authoring = inspectAuthoringHarness(project, options.expected ?? project);
+  if (authoring) return authoring.ok ? { ok: true, endingId: 'ending_romance_first_meeting', ms: authoring.ms }
+    : { ok: false, blockers: authoring.blockers, ms: authoring.ms };
   const started = Date.now();
   const report = runGameCheck(project, { autoPlayBudgetMs: options.budgetMs ?? 60_000 });
   const reached = report.autoPlay?.runs.some((run) => run.ok && run.endingReached === SEGMENT_END_ENDING_ID) === true;
@@ -63,6 +67,7 @@ export function judgePlayableSegment(project: Project, options: { readonly budge
  * 합격하지 않은 프로젝트(저자가 이미 뼈대를 고쳐 끊은 경우 등)는 판정으로 되돌릴 합격본이 없으므로 대상이 아니다.
  */
 export function playableSegmentGateApplies(project: Project): boolean {
+  if (authoringHarnessFor(project)) return true;
   return supportsPlayableSegment(project) && hasPlayableSegmentSkeleton(project) && judgePlayableSegment(project).ok;
 }
 
@@ -231,6 +236,14 @@ export function buildPlayableSegmentSkeleton(input: Project): Project {
  * 호출부는 예전 흐름(AI 만)으로 진행한다. 실패는 코드 결함이므로 콘솔에 남긴다.
  */
 export function withVerifiedPlayableSegment(project: Project): Project | null {
+  const harness = authoringHarnessFor(project) ?? eligibleAuthoringHarnessFor(project);
+  if (harness) {
+    const seeded = harness.seed(project);
+    if (!seeded) return null;
+    const verdict = harness.inspect(seeded, seeded, { allowDraft: true });
+    if (!verdict.ok) throw Error('첫 만남 초안 실행 실패: ' + verdict.blockers.join(' / '));
+    return seeded;
+  }
   if (!supportsPlayableSegment(project) || hasPlayableSegmentSkeleton(project)) return null;
   try {
     const skeleton = buildPlayableSegmentSkeleton(project);

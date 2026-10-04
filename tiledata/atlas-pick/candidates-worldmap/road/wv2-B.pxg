@@ -1,0 +1,77 @@
+// road wv2-B
+@size 48 64
+@cell 16
+@palette palette.pal
+@layer main
+@mat a wdirt 1
+@mat b wdirt 2
+@mat c wdirt 3
+@mat d wdirt 4
+@mat e wgrass 2
+@mat f wgrass 3
+@mat g wgrass 4
+@mblock 0 0
+................dccccdccccdccccc..ebccccccdcdf..
+.......gf.......cdcdccccdbcccdccggebccccccccdegf
+.....ggeegf.....cccccbdcccccddcceeacccddcccccaee
+....geeaaeef....bccddcccdcccccccaabcccccccdcbbaa
+...geaabbaaeg...cccccccccbccdcdcbbdcccddccccccbb
+...eabbccbbaf...ccccccccccdccdcccccccdccdccccccc
+..gebccccccdef..ccccccccdbcccdccccccccccddcccccc
+..eaccccccbbaf..ccccccccccccccccccccccccccbdccbd
+..ebccccccccdf..cdccdcdcccccccccbcbccccccdccdcdc
+..gfbdccccddfg..cccccccdccccccccccdcccccbccccccc
+...ebccccccdf...cccccdccccdccccddccccccccccccccd
+...ffbdccddfg...cbcccccdcccccccccdccccdccccccccc
+....gffbdffg....ccdcccccccccdccbddcbcccccccdccdd
+......gffg......dcccdcccccccccccffbcdccccccccdff
+................dccdcccdcccbcccd.gfbcccdccccdfg.
+................dbccbdcccccccccd..ebcdccbcccdf..
+...................gf..............gf...........
+.......gg...ffgggffeeffff...gggfgfgeegfgg.......
+.....ggeefgfeeeeeeeaaeeeefggeeeeeeeaaeeeegg.....
+....geeaaeeeaaaaaaabbaaaaeeeaaaaaaabbaaaaeef....
+...feaabbaaabbbbbbbcbbbbbaaabbbbbbbccbbbbaaeg...
+...eabbdcbbbccddddcccccccbbbcccddccccdccdbbaf...
+..gebcbcdcccccddcccccdccdcbcddccccccccccdccdef..
+..eacbccccccccccccdcccdccccdccccccccccccccccaf..
+..ebccccccccccdccccdcccbcddcccccbcccccccdcccdeg.
+..ebccccdcccccbcbccccccdcccdccccccdccccccccccaf.
+..ebcdccccdbbccccccccdcccbdcdccdcccccccbbbdccdf.
+..ffbcccdcccccdccccccdcccccccdcccccddccccccbdff.
+..gebcccccccccccccccddcccccdcccccdccccdcccdcdf..
+..eacccccccccccbbdccccdddccccbdbccccccccddccdf..
+..ebcccdccccdccccccdcccccccccccccccccccdccccdf..
+..ebccbccccccdccdccccdccccccdbcdccccbccccddcdf..
+..ebdcdcccccccccdcccdccccccccdcccccccccccbccdf..
+.gebcccbcdddccccccccccccccccccdccccdccccccbcdf..
+.eaccccccccccccccccccccdcccdccccccdcccdcccccdf..
+.ebbccccccccccccccccccccccccccdcccccccccccccdf..
+.ebcccccdcccdcccccdcccccdccccccbcccccccccbcdfg..
+.gfbccdcbcdcccccdcccccccccccccccccccdddcccbdf...
+..ebccccccccccccbccdcccddccccccccccdcccccccdef..
+..ebccccccccccdccccdccdccbcdcbccccccccccccccaf..
+..ebcccccdccccdcccccdcccccccbccccccccccccdccdeg.
+..ebccccccbcccccccdccccdcdccccbbccdccccccccccaf.
+..ebcccccddcccccdccccdccccdccdcdcccccdcccccccdf.
+..ffbcccdccccdccccccccccdcccccccccdcccccdcccdfg.
+..gebcdccccdcdcccdccccdcccdcccccccccccdbccccdf..
+..eaccccccccbcccccbccccccdcccccbccccdccccdccdf..
+..ebcccccdccccddccddccccccccdcdcccdccccdccdddf..
+..ebbccccdccdcccccccccccccdccbcddcccdccccdccdf..
+..ebcdcccccccccddcbccdcccbcccccdcbccccccdcdcdf..
+.febccccdcccccccccbcccccdcccbdcccccdcccccccddf..
+.eacccccccccdcccccccccdccccdcccccccccdccccccdf..
+.ebdcdccccccccccccccccccccccdccdccccdccccdccdf..
+.ebcccccbcdccccccccccbcdccccdcccccdccccccccdff..
+.ffbddcccccccdcdccbcccccccdcccccdccccccccccdf...
+..ebcdcccccbcdbcccddccccccdcddcdcccdcbcccccdef..
+..ebccdccccccbccccccdcccccbcccccbccccccdcccdaf..
+..ebccccccccccccccccccccccccccdccccccccccdcbdf..
+..gfbccdccccdcdccccccccdcccccccccccdbccdcccdfg..
+...ebccdbcdcccccdcdccccccccccccccccccdcbcccdf...
+...gfbdccccccccccddccdccccbcccbccddcccdccddfg...
+....fffbddcccddddffbddddddcccddddffbdddddfff....
+......ffffbddffffggfffffffbddffffgfffffffg......
+.........gffff...........gffff..................
+................................................

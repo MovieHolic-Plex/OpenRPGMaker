@@ -1,5 +1,5 @@
 import { DatabaseSync } from "node:sqlite";
-import { mkdtemp, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
@@ -72,6 +72,16 @@ describe("로컬 서버가 브라우저에 로컬 정본을 연다", () => {
     expect((await fetch(`${server.url}/%2e%2e%2fetc%2fpasswd`)).status).toBeGreaterThanOrEqual(400);
     expect((await fetch(`${server.url}/%2eenv`)).status).toBe(403);
     expect((await fetch(`${server.url}/%E0%A4%A`)).status).toBe(400);
+  });
+
+  it("내보내기 SDK HTML의 해시 대상 바이트를 바꾸지 않는다", async () => {
+    const html = '<!doctype html><head><script>window.player=true</script></head><body>player</body>';
+    await mkdir(join(distDir, "export-player"));
+    await writeFile(join(distDir, "export-player", "player.html"), html);
+    const response = await fetch(`${server.url}/export-player/player.html`);
+    expect(response.status).toBe(200);
+    expect(response.headers.get("content-type")).toContain("text/html");
+    expect(await response.text()).toBe(html);
   });
 
   it("토큰이 없으면 브리지 호출을 거절한다", async () => {

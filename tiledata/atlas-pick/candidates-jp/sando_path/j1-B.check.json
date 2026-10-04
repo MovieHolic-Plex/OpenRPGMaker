@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/sando_path/j1-B.pxg",
+ "set": "jp",
+ "id": "sando_path",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.074
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.172
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 9,
+ "bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "note": "센 빛: 판석 윗변 밝은 줄 + 오른쪽·아래 그림자 띠를 돌에 직접 깎아 넣음, 자갈 대비 크게",
+ "ok": true
+}

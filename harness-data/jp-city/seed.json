@@ -1,0 +1,2117 @@
+{
+ "$comment": "jp-city 하네스 시드 — 사람이 쓴다. 번들 타일셋 jp_city(modern3, 16px, 3/4)의 주택가·역·공원·신사 그림 후보 목록. 진행 기록은 ledger.json(하네스가 씀), 고른 결과는 picked/<항목>.pxg|png.",
+ "palette": {
+  "name": "modern3",
+  "src": "tiledata/atlas-pick/palette/modern3.pal",
+  "note": "28램프·154색, 반투명 없음, 마커 #e040c0 금지. palette.py 가 palette.pal·mats.txt 를 만든다."
+ },
+ "contract": [
+  "3/4 정면 고정(윗면+앞면), 빛은 왼쪽 위, 1px 윤곽(재료의 가장 어두운 단), modern3 색만, 반투명 없음.",
+  "사람·행인·글자(한자·가나·알파벳)·상표·로고 금지. 간판·편액·역명판은 색 판으로 비운다.",
+  "건물은 윗면 T=깊이×16·앞면 F=층수×32(modern-style-bible §10). 집 외형: 벽 3칸 이상, 창은 벽 가운데 칸만, 사선 뒤 빈칸 금지.",
+  "기존 시트(jp_shopstreet16)·옛 후보(candidates-jp, 옛 jp.pal)·지구 그림은 눈으로만 참고, 화소 복사 금지."
+ ],
+ "anchors": {
+  "houses_a": "districts/district_yanaka.png@0,640,560,820",
+  "houses_b": "districts/district_yanaka.png@990,650,1440,830",
+  "gate_lantern": "districts/district_yanaka.png@990,0,1300,165",
+  "playground": "districts/district_yanaka.png@1185,655,1430,835",
+  "apartment": "districts/district_yanaka.png@1310,205,1536,350",
+  "shrine_hall": "districts/district_asakusa_v2.png@690,0,975,200",
+  "shrine_court": "districts/district_asakusa_v2.png@540,170,1000,400",
+  "temizuya": "districts/district_asakusa_v2.png@1000,190,1110,260",
+  "trees_gold": "districts/district_asakusa_v2.png@540,10,700,200",
+  "shrine_gate_red": "districts/district_asakusa_v2.png@735,665,925,815",
+  "pole_wires": "districts/district_shibuya_v2.png@200,235,430,350",
+  "vending_street": "districts/district_shibuya_v2.png@0,650,420,735",
+  "station_front": "districts/district_shibuya_v2.png@0,735,780,865",
+  "station_entr": "districts/district_shibuya_v2.png@580,860,1000,1000"
+ },
+ "context": {
+  "sw": "st.sw",
+  "lawn": "st.lawn",
+  "gravel": "st.gravel",
+  "sando": "st.sando",
+  "water": "st.water",
+  "pave": "st.pave_a",
+  "road": "st.road_c",
+  "plant": "st.plant_strip",
+  "quay": "st.quay"
+ },
+ "items": {
+  "house_gable_kawara": {
+   "wave": "houses",
+   "kind": "building-part",
+   "title": "단독주택 — 기와 박공(평입 切妻)",
+   "desc": "일본 교외 단독주택. 잿빛 기와 박공 지붕, 중2층, 현관·격자창·툇마루 차양.",
+   "size": [
+    5,
+    5
+   ],
+   "walk": "solid",
+   "brief": "캔버스 80x80(5×5칸). 위 2칸(32px) = 지붕 윗면(능선이 가로로 달린 평입 박공: 앞 경사면이 큰 면으로 보이고 용마루 짙은 한 줄이 위쪽, 가로 기와 골 줄, 처마 끝 둥근 기와 한 줄, 처마 밑 3px 그림자). 아래 3칸(48px) = 남쪽 정면: 위 1칸 = 중2층 벽(작은 창 하나, 가운데 칸) + 아래 2칸 = 1층(현관문 28~30px 문 + 작은 차양, 격자 유리창 하나, 툇마루 또는 발치 콘크리트 단). 벽은 연한 모르타르(kinari/shiro)·판자(ita) 한 면 + 몸채 아래 띠. 지붕은 `kawara` 계열. 집 외형 규칙: 정면 벽 한 면은 3칸 이상 폭, 창은 벽 가운데 민벽 칸에만(문 바로 옆·끝 모서리 금지, 억지 창 금지), 지붕 사선 뒤에 빈칸 금지, 현관은 문+작은 차양+문 앞 맨 아래 줄 열림. 정면이 5칸이므로 「끝|창|문|창|끝」 식 리듬은 피하고 문 한쪽에 3칸 벽 구간을 둔다. 【공통】 사람·글자·상표 금지, 3/4 정면(윗면+앞면), 빛 왼쪽 위, 1px 짙은 재료단 윤곽, modern3 색만.",
+   "refs": [
+    "anchor:houses_a",
+    "anchor:houses_b",
+    "cand:house_roof",
+    "cand:house_wall",
+    "prop:post_box"
+   ],
+   "ground": "sw",
+   "walk_note": "몸채 막힘, 문 앞 맨 아래 한 칸 열림, 지붕·처마는 사람 위(star)"
+  },
+  "house_gable_slate": {
+   "wave": "houses",
+   "kind": "building-part",
+   "title": "단독주택 — 슬레이트 박공(처마 앞 妻入)",
+   "desc": "은청회색 슬레이트 박공 지붕이 앞을 향한 2층 주택. 정면 박공벽·외계단 없는 현관.",
+   "size": [
+    5,
+    5
+   ],
+   "walk": "solid",
+   "brief": "캔버스 80x80(5×5칸). 위 2칸(32px) = 지붕 윗면: **능선이 앞뒤(세로)로 달려** 윗면이 왼쪽 경사(밝음)·오른쪽 경사(어둠) 두 면으로 갈리고 가운데 세로 능선 한 줄, 슬레이트 큰 판 이음선(`tairu`/`conc` 은청회색, 기와 골이 아님). 아래 3칸(48px) = 정면: 윗부분에 박공 `/\\` 삼각 벽(박풍판 1px, 작은 환기창 하나), 그 아래 처마 띠, 1층 = 현관문(28~30px)+차양, 가로로 긴 창 하나. 외벽은 판자(ita)나 연한 회벽. 집 외형 규칙: 정면 벽 한 면은 3칸 이상 폭, 창은 벽 가운데 민벽 칸에만(문 바로 옆·끝 모서리 금지, 억지 창 금지), 지붕 사선 뒤에 빈칸 금지, 현관은 문+작은 차양+문 앞 맨 아래 줄 열림. 사선(`/` `\\`) 뒤는 반드시 지붕이다 — 바닥이 비치면 불합격. 【공통】 사람·글자·상표 금지, 3/4 정면(윗면+앞면), 빛 왼쪽 위, 1px 짙은 재료단 윤곽, modern3 색만.",
+   "refs": [
+    "anchor:houses_a",
+    "anchor:houses_b",
+    "cand:house_roof",
+    "cand:house_wall"
+   ],
+   "ground": "sw",
+   "walk_note": "몸채 막힘, 문 앞 한 칸 열림, 지붕 star"
+  },
+  "house_hip_kawara": {
+   "wave": "houses",
+   "kind": "building-part",
+   "title": "단독주택 — 기와 우진각(寄棟)",
+   "desc": "네 면이 경사진 기와 지붕의 단층 주택. 정면 현관과 큰 창, 앞마당 쪽 차양.",
+   "size": [
+    5,
+    5
+   ],
+   "walk": "solid",
+   "brief": "캔버스 80x80(5×5칸). 위 2칸(32px) = 지붕 윗면: 우진각 — 윗면 양 끝이 사선으로 접히고 가운데 짧은 용마루, 앞 경사는 기와 가로 골, 처마 둘레 어두운 그늘(`kawara` 램프). 아래 3칸(48px) = 정면(단층+높은 벽): 현관문(28~30px) + 작은 차양, 폭 넓은 미닫이 유리창(가운데 3칸 벽 구간 한가운데), 발치 콘크리트 단. 외벽은 연한 모르타르. 집 외형 규칙: 정면 벽 한 면은 3칸 이상 폭, 창은 벽 가운데 민벽 칸에만(문 바로 옆·끝 모서리 금지, 억지 창 금지), 지붕 사선 뒤에 빈칸 금지, 현관은 문+작은 차양+문 앞 맨 아래 줄 열림. 우진각 사선 안쪽은 전부 지붕으로 채운다(빈칸 금지). 【공통】 사람·글자·상표 금지, 3/4 정면(윗면+앞면), 빛 왼쪽 위, 1px 짙은 재료단 윤곽, modern3 색만.",
+   "refs": [
+    "anchor:houses_a",
+    "anchor:houses_b",
+    "cand:house_roof",
+    "cand:house_wall"
+   ],
+   "ground": "sw",
+   "walk_note": "몸채 막힘, 문 앞 한 칸 열림, 지붕 star"
+  },
+  "house_garage_modern": {
+   "wave": "houses",
+   "kind": "building-part",
+   "title": "단독주택 — 모던 평지붕+차고",
+   "desc": "평지붕 박스형 신축 주택. 왼쪽 차고 셔터, 오른쪽 현관, 옥상 태양광.",
+   "size": [
+    5,
+    5
+   ],
+   "walk": "solid",
+   "brief": "캔버스 80x80(5×5칸). 위 2칸(32px) = 평지붕 윗면(옥상: 난간 `shiro` 테두리 1~2px, 윗면 +2, 태양광 패널 한 장 또는 실외기 하나만 — 윗면 면적 절반 미만, 앞으로 −2 그림자). 아래 3칸(48px) = 정면: 왼쪽 2칸 = 차고(셔터 가로 줄 `tekko`, 위에 처마 슬래브), 오른쪽 = 현관문 28~30px + 작은 차양 + 세로로 긴 창 하나(3칸 벽 구간 가운데). 벽은 `conc`/`kinari` 두 톤 면 분할. 집 외형 규칙: 정면 벽 한 면은 3칸 이상 폭, 창은 벽 가운데 민벽 칸에만(문 바로 옆·끝 모서리 금지, 억지 창 금지), 지붕 사선 뒤에 빈칸 금지, 현관은 문+작은 차양+문 앞 맨 아래 줄 열림. 【공통】 사람·글자·상표 금지, 3/4 정면(윗면+앞면), 빛 왼쪽 위, 1px 짙은 재료단 윤곽, modern3 색만.",
+   "refs": [
+    "anchor:houses_a",
+    "anchor:apartment",
+    "prop:post_box"
+   ],
+   "ground": "sw",
+   "walk_note": "몸채 막힘(차고 셔터도 막힘), 현관 앞 한 칸 열림, 지붕 star"
+  },
+  "apartment_wood2": {
+   "wave": "houses",
+   "kind": "building-part",
+   "title": "목조 2층 아파트 — 외계단·발코니",
+   "desc": "일본 木造アパート. 슬레이트 박공 낮은 지붕, 2층 복도 난간, 철제 외계단, 문 셋.",
+   "size": [
+    5,
+    5
+   ],
+   "walk": "solid",
+   "brief": "캔버스 80x80(5×5칸). 위 1칸(16px) = 낮은 박공 지붕 윗면(슬레이트 은청회색, 용마루, 처마 그림자). 아래 4칸(64px, 2층) = 정면: 1층 = 문 3개(각 28~30px, 문 위 작은 번호판 자리는 색 판) + 우편함 줄 하나, 2층 = 복도(난간 `tekko` 2px + 가장자리 1px, 복도 바닥 윗면 4px)와 문 3개, **오른쪽 끝에 철제 외계단**(디딤판 2~3단이 앞면 위로 비스듬히, 난간) — 계단은 그림 한 줄기로. 벽은 판자(ita)·연한 외장. 이웃 빌려 쓰지 않는 독립 완성 건물. 문 앞(맨 아래 줄)은 열려 있다. 【공통】 사람·글자·상표 금지, 3/4 정면(윗면+앞면), 빛 왼쪽 위, 1px 짙은 재료단 윤곽, modern3 색만.",
+   "refs": [
+    "anchor:apartment",
+    "anchor:houses_a",
+    "cand:house_wall",
+    "cand:laundry"
+   ],
+   "ground": "sw",
+   "walk_note": "몸채 막힘, 1층 문 앞 열림, 지붕·2층 난간 star"
+  },
+  "blockwall_kit": {
+   "wave": "houses",
+   "kind": "kit",
+   "title": "블록담 세트 — 직선·끝·모서리·철문·우편함",
+   "desc": "회색 콘크리트 블록 담장 조각 세트(가로 반복, 끝, 세로 구간, 모서리) + 철문 2칸 + 우편함 칸.",
+   "size": [
+    5,
+    2
+   ],
+   "walk": "mixed",
+   "brief": "캔버스 80x32(5×2칸), 칸 표대로 1×1 부품. 블록담 = 회색 콘크리트 블록(`conc`/`hodo`) 줄눈 격자 + 윗면 갓돌 한 줄 밝게(윗면 3~4px) + 앞면 12px + 발치 그림자. WS 는 가로로 이어 붙는 직선(블록 줄눈 주기 8px, 좌우 이음), WL/WR 은 끝(윤곽 닫힘, 끝 기둥), WV 는 세로 구간(남쪽에서 보면 윗면 갓돌 띠 6~8px 폭 + 아랫부분 짧은 앞면), WCL/WCR 은 가로 담이 위로 꺾이는 모서리. GL/GR = 철문 2칸(왼쪽 돌 기둥+검은 철살 문짝 반, 오른쪽 기둥+문짝 반 — 두 칸이 합쳐져 한 쌍 문, 문짝 철살은 세로 2px 간격, 열려 보이지 않게 닫힌 모양). MB = 우편함 칸(블록담 칸 위에 얹힌 빨강 우편함 상자, 윗면 보임). 담 윗선·갓돌 높이는 모든 부품 같은 픽셀 높이(이음 높이: 갓돌 맨 위 y=3, 갓돌 아래 줄 y=6). 【공통】 사람·글자·상표 금지, 3/4 정면(윗면+앞면), 빛 왼쪽 위, 1px 짙은 재료단 윤곽, modern3 색만. WCR 는 WCL 의 반대(왼쪽으로 가로 담이 이어지고 위로 세로 담) — 좌우 반전 복사 대신 빛(왼쪽 위)에 맞게 명암을 다시 놓는다.",
+   "refs": [
+    "anchor:houses_a",
+    "cand:block_wall",
+    "cand:mailbox_red",
+    "prop:post_box"
+   ],
+   "ground": "sw",
+   "cells": {
+    "WS": {
+     "x": 0,
+     "y": 0,
+     "walk": "solid",
+     "desc": "가로 직선(좌우 반복)",
+     "repeat": "x"
+    },
+    "WL": {
+     "x": 1,
+     "y": 0,
+     "walk": "solid",
+     "desc": "왼쪽 끝"
+    },
+    "WR": {
+     "x": 2,
+     "y": 0,
+     "walk": "solid",
+     "desc": "오른쪽 끝"
+    },
+    "WV": {
+     "x": 3,
+     "y": 0,
+     "walk": "solid",
+     "desc": "세로 구간(상하 반복)",
+     "repeat": "y"
+    },
+    "WCL": {
+     "x": 4,
+     "y": 0,
+     "walk": "solid",
+     "desc": "모서리: 오른쪽으로 가로 담, 위로 세로 담"
+    },
+    "GL": {
+     "x": 0,
+     "y": 1,
+     "walk": "walk",
+     "desc": "철문 왼쪽(기둥+문짝 반)"
+    },
+    "GR": {
+     "x": 1,
+     "y": 1,
+     "walk": "walk",
+     "desc": "철문 오른쪽(문짝 반+기둥)"
+    },
+    "MB": {
+     "x": 2,
+     "y": 1,
+     "walk": "solid",
+     "desc": "우편함 칸"
+    },
+    "WCR": {
+     "x": 3,
+     "y": 1,
+     "walk": "solid",
+     "desc": "모서리: 왼쪽으로 가로 담, 위로 세로 담"
+    }
+   },
+   "examples": {
+    "run5": {
+     "grid": [
+      [
+       "WL",
+       "WS",
+       "WS",
+       "WS",
+       "WR"
+      ]
+     ]
+    },
+    "gated": {
+     "grid": [
+      [
+       "WL",
+       "WS",
+       "GL",
+       "GR",
+       "WS",
+       "WR"
+      ]
+     ]
+    },
+    "mailbox": {
+     "grid": [
+      [
+       "WL",
+       "WS",
+       "MB",
+       "WS",
+       "WR"
+      ]
+     ]
+    },
+    "corner": {
+     "grid": [
+      [
+       "WV",
+       ".",
+       ".",
+       "."
+      ],
+      [
+       "WV",
+       ".",
+       ".",
+       "."
+      ],
+      [
+       "WCL",
+       "WS",
+       "WS",
+       "WR"
+      ]
+     ]
+    },
+    "corner_r": {
+     "grid": [
+      [
+       ".",
+       ".",
+       ".",
+       "WV"
+      ],
+      [
+       ".",
+       ".",
+       ".",
+       "WV"
+      ],
+      [
+       "WL",
+       "WS",
+       "WS",
+       "WCR"
+      ]
+     ]
+    }
+   }
+  },
+  "bike_parking": {
+   "wave": "houses",
+   "kind": "prop",
+   "title": "자전거 거치대와 자전거",
+   "desc": "집 앞·골목의 자전거 거치대에 자전거 두 대(엄마 자전거 마마챠리 포함).",
+   "size": [
+    2,
+    1
+   ],
+   "walk": "solid",
+   "brief": "캔버스 32x16(2×1칸). 옆면(오른쪽이 앞) 자전거 둘이 나란히 선 거치대: 바닥 쇠 거치 레일(밝은 윗면 줄), 자전거 바퀴 굵기 2px 이상 속찬 원반 또는 굵은 고리(윗면에서 약간 내려다봐 세로 타원), 프레임 단순, 앞 바구니 하나. 색은 서로 다른 램프(`sora` 파랑·`aka` 빨강 중 소량, 바퀴·안장은 `tekko`). 맨 아래 줄 접지, 레일 그림자. 1px 가는 살 표현 금지(바퀴는 덩이). 【공통】 사람·글자·상표 금지, 3/4 정면(윗면+앞면), 빛 왼쪽 위, 1px 짙은 재료단 윤곽, modern3 색만.",
+   "refs": [
+    "cand:bicycle_parking",
+    "prop:bike_rack",
+    "prop:bike.sora",
+    "anchor:vending_street"
+   ],
+   "ground": "sw",
+   "walk_note": "소품 밑 막힘(solid)"
+  },
+  "garbage_station": {
+   "wave": "houses",
+   "kind": "prop",
+   "title": "쓰레기 집하장 (네트+상자)",
+   "desc": "골목 쓰레기 두는 곳: 초록 그물을 덮은 봉투 더미와 접이식 철망 상자.",
+   "size": [
+    2,
+    2
+   ],
+   "walk": "solid",
+   "brief": "캔버스 32x32(2×2칸). 왼쪽에 철망 상자(윗면 보이는 격자 뚜껑, 앞면 철망 세로 줄 2px 간격, `tekko`), 오른쪽에 초록(`midori` 어두운 단) 그물을 덮은 쓰레기봉투 더미(흰 봉투 덩이 3~4개가 그물 사이로, 그물은 격자 점 + 가장자리 늘어진 단). 윗면 2~3행, 오른쪽 아래 그림자. 맨 아래 줄 접지. 【공통】 사람·글자·상표 금지, 3/4 정면(윗면+앞면), 빛 왼쪽 위, 1px 짙은 재료단 윤곽, modern3 색만.",
+   "refs": [
+    "cand:garbage_station",
+    "prop:garbage_net",
+    "anchor:houses_a"
+   ],
+   "ground": "sw",
+   "walk_note": "막힘(solid)"
+  },
+  "utility_pole": {
+   "wave": "houses",
+   "kind": "prop",
+   "title": "전신주",
+   "desc": "콘크리트 전신주: 가로 완목 두 줄·애자·변압기·노랑검정 반사띠.",
+   "size": [
+    1,
+    4
+   ],
+   "walk": "solid",
+   "brief": "캔버스 16x64(1×4칸). 기둥 폭 3~4px(왼쪽 밝은 단/오른쪽 어두운 단, 위로 조금 가늘게), 위쪽 완목 두 줄(폭 14px 안쪽, 두께 2px, 끝에 애자 점 2px 덩이), 기둥 중간 변압기 통(원통 덩이 6x10, 윗면 한 단), 가운데 노랑(`kii`)+검정(`sumi`) 반사띠, 번지 표찰 작은 판(색 판, 글자 금지), 밑동 받침 폭 6px + 오른쪽 아래 그림자. 전선은 그리지 않는다(별도 wire_overlay). 머리 윗면 3px. 맨 아래 줄 접지. 【공통】 사람·글자·상표 금지, 3/4 정면(윗면+앞면), 빛 왼쪽 위, 1px 짙은 재료단 윤곽, modern3 색만.",
+   "refs": [
+    "anchor:pole_wires",
+    "cand:utility_pole",
+    "prop:utility_pole",
+    "prop:utility_pole2"
+   ],
+   "ground": "sw",
+   "walk_note": "밑동 막힘(solid)"
+  },
+  "wire_overlay": {
+   "wave": "houses",
+   "kind": "kit",
+   "title": "전선 칸 오버레이",
+   "desc": "전신주 완목 사이를 잇는 전선 투명 칸: 왼 시작·가로 반복·오른 끝·인입 대각.",
+   "size": [
+    4,
+    1
+   ],
+   "walk": "star",
+   "brief": "캔버스 64x16(4×1칸), 칸 표대로. **투명 덧칠 칸**(맨 위층, 사람 위에 그려진다). 전선은 어두운 회청색(`tekko` 단 0~1 / `sumi`) 1px 선 2~3가닥(이 항목은 thin 허용), 살짝 처지는 곡선. 모든 칸에서 전선이 같은 y(이음 높이: 맨 위 가닥 y=3, 가운데 y=6, 아래 y=9)로 칸 가장자리를 지나가 가로로 이어 붙는다. WL = 왼쪽 가장자리에서 완목 애자 점(y=3,6,9에서 시작) → 오른쪽으로, WR = 반대, WH = 가로 직선, WD = 위 왼쪽(y=3)에서 아래 오른쪽(y=12)으로 내려가는 인입선 한 가닥. 칸 밖(투명)에는 아무것도 칠하지 않는다. 기둥은 그리지 않는다. 【공통】 사람·글자·상표 금지, 3/4 정면(윗면+앞면), 빛 왼쪽 위, 1px 짙은 재료단 윤곽, modern3 색만.",
+   "refs": [
+    "anchor:pole_wires",
+    "cand:power_lines",
+    "cand:kit_pole"
+   ],
+   "ground": "sw",
+   "flags": [
+    "overlay",
+    "thin"
+   ],
+   "cells": {
+    "WL": {
+     "x": 0,
+     "y": 0,
+     "walk": "star",
+     "desc": "왼쪽 끝(전신주 쪽 시작)"
+    },
+    "WH": {
+     "x": 1,
+     "y": 0,
+     "walk": "star",
+     "desc": "가로 직선",
+     "repeat": "x"
+    },
+    "WR": {
+     "x": 2,
+     "y": 0,
+     "walk": "star",
+     "desc": "오른쪽 끝"
+    },
+    "WD": {
+     "x": 3,
+     "y": 0,
+     "walk": "star",
+     "desc": "인입선(대각 하강)"
+    }
+   },
+   "examples": {
+    "span4": {
+     "grid": [
+      [
+       "WL",
+       "WH",
+       "WH",
+       "WR"
+      ]
+     ]
+    },
+    "span6": {
+     "grid": [
+      [
+       "WL",
+       "WH",
+       "WH",
+       "WH",
+       "WH",
+       "WR"
+      ]
+     ]
+    },
+    "drop": {
+     "grid": [
+      [
+       "WL",
+       "WH",
+       "WD"
+      ]
+     ]
+    }
+   }
+  },
+  "vending_pair": {
+   "wave": "houses",
+   "kind": "prop",
+   "title": "자판기 군 — 음료 2종",
+   "desc": "골목·길가의 음료 자판기 두 대(흰 몸통 음료 / 파란 몸통 음료).",
+   "size": [
+    2,
+    2
+   ],
+   "walk": "solid",
+   "brief": "캔버스 32x32(2×2칸). 자판기 한 대 = 16x32(1×2칸), 둘이 나란히. 윗면 2~3행 밝은 지붕판, 앞면 위 절반 = 유리칸 속 캔·페트 견본 세 줄(색 점 줄, 글자 금지), 아래 = 돈 넣는 곳·버튼 줄·꺼내는 입구(짙게), 오른쪽 옆면 −2 한 단, 발치 그림자. 둘은 같은 높이·같은 윗면 두께·같은 옆면 폭이고 몸통 색만 다르다(흰 `shiro`/`conc` + 빨강 띠, 파랑 `sora` + 흰 띠). 맨 아래 줄 접지. 【공통】 사람·글자·상표 금지, 3/4 정면(윗면+앞면), 빛 왼쪽 위, 1px 짙은 재료단 윤곽, modern3 색만.",
+   "refs": [
+    "anchor:vending_street",
+    "cand:vending_drink",
+    "prop:vend_pair",
+    "prop:vending.aka"
+   ],
+   "ground": "sw",
+   "walk_note": "막힘(solid)",
+   "slots": [
+    {
+     "id": "vend_a",
+     "x": 0,
+     "y": 0,
+     "w": 1,
+     "h": 2,
+     "walk": "solid",
+     "desc": "흰 몸통 음료 자판기"
+    },
+    {
+     "id": "vend_b",
+     "x": 1,
+     "y": 0,
+     "w": 1,
+     "h": 2,
+     "walk": "solid",
+     "desc": "파란 몸통 음료 자판기"
+    }
+   ]
+  },
+  "garden_props": {
+   "wave": "houses",
+   "kind": "prop",
+   "title": "주택 정원 소품 — 화분·빨래대",
+   "desc": "현관 앞 화분 3종과 마당 빨래 건조대.",
+   "size": [
+    5,
+    2
+   ],
+   "walk": "solid",
+   "brief": "캔버스 80x32(5×2칸), 슬롯 표대로. 화분 A = 1×2(토기 화분 + 키 큰 관엽 잎 덩이), 화분 B = 1×2(플라스틱 화분 + 꽃 한 송이 덩이, 분홍/주황), 화분 C = 1×1(작은 화분 + 둥근 잎), 빨래대 = 2×2(ㅍ자 쇠 건조대, 폭 넓은 두 단 가로대에 흰 셔츠·색 수건·양말 덩이가 걸려 늘어짐; 옷은 덩이로 — 1px 줄 금지). 각 소품 자기 슬롯 맨 아래 정렬, 슬롯 사이 투명. 화분은 윗면(흙/잎 위)이 보이게. 【공통】 사람·글자·상표 금지, 3/4 정면(윗면+앞면), 빛 왼쪽 위, 1px 짙은 재료단 윤곽, modern3 색만.",
+   "refs": [
+    "cand:potted_plants",
+    "cand:laundry",
+    "anchor:houses_a",
+    "prop:pot",
+    "prop:planter"
+   ],
+   "ground": "sw",
+   "walk_note": "막힘(solid)",
+   "slots": [
+    {
+     "id": "pot_a",
+     "x": 0,
+     "y": 0,
+     "w": 1,
+     "h": 2,
+     "walk": "solid",
+     "desc": "키 큰 화분"
+    },
+    {
+     "id": "pot_b",
+     "x": 1,
+     "y": 0,
+     "w": 1,
+     "h": 2,
+     "walk": "solid",
+     "desc": "꽃 화분"
+    },
+    {
+     "id": "pot_c",
+     "x": 2,
+     "y": 1,
+     "w": 1,
+     "h": 1,
+     "walk": "solid",
+     "desc": "작은 화분"
+    },
+    {
+     "id": "laundry",
+     "x": 3,
+     "y": 0,
+     "w": 2,
+     "h": 2,
+     "walk": "solid",
+     "desc": "빨래 건조대"
+    }
+   ]
+  },
+  "station_building": {
+   "wave": "station",
+   "kind": "building-part",
+   "title": "지상 역사 정면",
+   "desc": "교외 지상 역사 건물 정면: 가운데 출입구, 역명판 자리(비움), 시계, 양쪽 유리·타일 벽.",
+   "size": [
+    8,
+    5
+   ],
+   "walk": "solid",
+   "brief": "캔버스 128x80(8×5칸). 위 1칸(16px) = 지붕 윗면(평지붕 난간 `shiro` 테두리, 윗면 +2, 옥상에 작은 기계실 하나). 아래 4칸(64px) = 2층 규모 정면: 가운데 출입구 2칸 폭(자동문 유리 `garasu`, 문 높이 28~30px, 문 위에 **역명판 자리 = 글자 없는 색 판** 폭 3칸), 출입구 위 중앙에 **둥근 시계**(원반 덩이 8px, 바늘 2px 굵기, 숫자 없음), 양쪽 날개에 2층 창 줄(가운데 칸에만) + 1층 쇼윈도/타일 벽, 처마 캐노피(앞으로 튀어나온 윗면 7 + 앞 3 + 그림자 2). 벽은 `conc` 흰 타일 + `tairu` 푸른 띠 포인트. 문 앞(맨 아래 줄) 열림. 【공통】 사람·글자·상표 금지, 3/4 정면(윗면+앞면), 빛 왼쪽 위, 1px 짙은 재료단 윤곽, modern3 색만.",
+   "refs": [
+    "anchor:station_entr",
+    "anchor:station_front",
+    "cand:station_entrance",
+    "cand:station_nameboard",
+    "prop:station_gate"
+   ],
+   "ground": "pave",
+   "walk_note": "몸채 막힘, 출입구 앞 열림, 지붕 star"
+  },
+  "platform_tiles": {
+   "wave": "station",
+   "kind": "tilesheet",
+   "title": "승강장 바닥 3종",
+   "desc": "승강장 바닥: 콘크리트 판 / 점자 안전블록 띠 / 가장자리 흰 선 띠.",
+   "size": [
+    3,
+    1
+   ],
+   "walk": "walk",
+   "brief": "캔버스 48x16(3×1칸), 각 16x16 꽉 찬 불투명. 0 = 승강장 콘크리트 판(밝은 회색 `hodo`/`conc`, 판 줄눈 16px 주기, 잔 결, 4×4 반복 이음 없음) · 1 = 점자 안전블록 띠(노랑 `kii` 돌기 2×2px 덩이가 4px 간격으로 세로 4줄 가로 4줄, 돌기 둘레 어두운 노랑 단, 칸 가로로 이어 붙는다 — 위아래 가장자리는 판 바닥색으로 닫힘) · 2 = 가장자리 흰 선 띠(승강장 끝: 안쪽 판 바닥, 아래쪽 4px 흰 `shiro` 선 + 그 밖 어두운 낭떠러지 줄, 좌우로 이어짐). 0·1·2 를 위→아래로 [0,1,2] 쌓아 깔았을 때 승강장 끝이 읽히게 색 대비를 맞춘다. 【공통】 사람·글자·상표 금지, 3/4 정면(윗면+앞면), 빛 왼쪽 위, 1px 짙은 재료단 윤곽, modern3 색만.",
+   "refs": [
+    "cand:crosswalk_jp",
+    "anchor:vending_street",
+    "prop:vend_pair"
+   ],
+   "ground": "pave",
+   "seamless_cells": [
+    0,
+    1,
+    2
+   ],
+   "seam_axes": {
+    "0": "xy",
+    "1": "x",
+    "2": "x"
+   },
+   "walk_note": "걸음(walk)"
+  },
+  "platform_roof_kit": {
+   "wave": "station",
+   "kind": "kit",
+   "title": "승강장 지붕+기둥 조각",
+   "desc": "승강장 캐노피: 지붕 왼 끝·가운데 반복·오른 끝 + 기둥 윗칸·가운데 반복·밑동.",
+   "size": [
+    4,
+    2
+   ],
+   "walk": "mixed",
+   "brief": "캔버스 64x32(4×2칸), 칸 표대로. 승강장 지붕 = 남쪽에서 비스듬히 본 캐노피: 윗면(밝은 `conc`/`shiro` 판, 윗면 8px)+앞 가장자리 띠(`tairu` 푸른 2px+흰 선)+아래 그림자. RL/RR 은 끝(윤곽 닫힘, 끝 기둥 머리 돌출), RM 은 가로 반복(이음 높이: 지붕 윗면 맨 위 y=2, 앞 가장자리 띠 y=10~12). PT = 기둥 윗칸(지붕 아래 브래킷 + 기둥 시작, 이 칸 위쪽은 지붕 그림자 1px), PM = 기둥 가운데(세로 반복, 폭 4~5px 밝은/어두운 두 단), PB = 기둥 밑동(받침 폭 8px + 안전 노랑 띠 `kii` 4px + 그림자). 기둥은 칸 가운데 폭 6px 안. 【공통】 사람·글자·상표 금지, 3/4 정면(윗면+앞면), 빛 왼쪽 위, 1px 짙은 재료단 윤곽, modern3 색만.",
+   "refs": [
+    "anchor:station_entr",
+    "anchor:station_front",
+    "cand:kit_station",
+    "prop:catenary_pole",
+    "prop:viaduct6"
+   ],
+   "ground": "pave",
+   "flags": [
+    "overlay"
+   ],
+   "cells": {
+    "RL": {
+     "x": 0,
+     "y": 0,
+     "walk": "star",
+     "desc": "지붕 왼 끝"
+    },
+    "RM": {
+     "x": 1,
+     "y": 0,
+     "walk": "star",
+     "desc": "지붕 가운데(가로 반복)",
+     "repeat": "x"
+    },
+    "RR": {
+     "x": 2,
+     "y": 0,
+     "walk": "star",
+     "desc": "지붕 오른 끝"
+    },
+    "PT": {
+     "x": 3,
+     "y": 0,
+     "walk": "star",
+     "desc": "기둥 윗칸"
+    },
+    "PM": {
+     "x": 0,
+     "y": 1,
+     "walk": "star",
+     "desc": "기둥 가운데(세로 반복)",
+     "repeat": "y"
+    },
+    "PB": {
+     "x": 1,
+     "y": 1,
+     "walk": "solid",
+     "desc": "기둥 밑동(막힘)"
+    }
+   },
+   "examples": {
+    "roof4": {
+     "grid": [
+      [
+       "RL",
+       "RM",
+       "RM",
+       "RR"
+      ],
+      [
+       "PT",
+       ".",
+       ".",
+       "PT"
+      ],
+      [
+       "PM",
+       ".",
+       ".",
+       "PM"
+      ],
+      [
+       "PB",
+       ".",
+       ".",
+       "PB"
+      ]
+     ]
+    },
+    "roof6": {
+     "grid": [
+      [
+       "RL",
+       "RM",
+       "RM",
+       "RM",
+       "RM",
+       "RR"
+      ],
+      [
+       "PT",
+       ".",
+       ".",
+       ".",
+       ".",
+       "PT"
+      ],
+      [
+       "PM",
+       ".",
+       ".",
+       ".",
+       ".",
+       "PM"
+      ],
+      [
+       "PB",
+       ".",
+       ".",
+       ".",
+       ".",
+       "PB"
+      ]
+     ]
+    }
+   }
+  },
+  "platform_bench": {
+   "wave": "station",
+   "kind": "prop",
+   "title": "승강장 벤치",
+   "desc": "승강장·역 앞 금속 다리 벤치 2인용(등받이).",
+   "size": [
+    2,
+    1
+   ],
+   "walk": "solid",
+   "brief": "캔버스 32x16(2×1칸). 등받이 있는 벤치: 좌판 윗면(널 3장, 밝은 `ita`/`tekko` 단) + 앞면, 금속 다리 둘(폭 3px), 등받이 윗선, 오른쪽 아래 그림자. 윗면 2~3행. 맨 아래 줄 접지. 청회색 바닥과 대비되는 어두운 초록 또는 갈색 `ki`/`ita`. 【공통】 사람·글자·상표 금지, 3/4 정면(윗면+앞면), 빛 왼쪽 위, 1px 짙은 재료단 윤곽, modern3 색만.",
+   "refs": [
+    "anchor:vending_street",
+    "prop:bench",
+    "anchor:station_entr"
+   ],
+   "ground": "pave",
+   "walk_note": "막힘(solid)"
+  },
+  "platform_door_kit": {
+   "wave": "station",
+   "kind": "kit",
+   "title": "홈도어(승강장 안전문) 조각",
+   "desc": "승강장 가장자리 안전문: 왼 끝·유리문 반복·열린 문 칸(통행)·오른 끝.",
+   "size": [
+    4,
+    1
+   ],
+   "walk": "mixed",
+   "brief": "캔버스 64x16(4×1칸), 칸 표대로. 안전문 = 승강장 가장자리 따라 선 허리~가슴 높이 문(16px 높이 안): 윗면 레일 2px(`conc` 밝은) + 유리 패널 앞면(`garasu` 2톤, 대각 하이라이트 1줄) + 아래 기단 + 발치 노랑 `kii` 경고 띠 2px. HDM 은 가로 반복(유리 패널 폭 16px, 틀은 왼쪽 1px 한쪽에만), HDL/HDR 은 끝 기둥(윤곽 닫힘), HDG 는 **열린 문 칸**(양쪽 문짝이 옆으로 물러나 사람이 지나가는 빈 통로, 바닥 노랑 경고 띠는 남김; 칸이 거의 비어도 문틀 기둥 2px 은 있다). 【공통】 사람·글자·상표 금지, 3/4 정면(윗면+앞면), 빛 왼쪽 위, 1px 짙은 재료단 윤곽, modern3 색만.",
+   "refs": [
+    "anchor:station_front",
+    "anchor:station_entr",
+    "cand:kit_gate"
+   ],
+   "ground": "pave",
+   "flags": [
+    "overlay"
+   ],
+   "cells": {
+    "HDL": {
+     "x": 0,
+     "y": 0,
+     "walk": "solid",
+     "desc": "왼쪽 끝 기둥"
+    },
+    "HDM": {
+     "x": 1,
+     "y": 0,
+     "walk": "solid",
+     "desc": "유리문 반복",
+     "repeat": "x"
+    },
+    "HDG": {
+     "x": 2,
+     "y": 0,
+     "walk": "walk",
+     "desc": "열린 문 칸(통행)"
+    },
+    "HDR": {
+     "x": 3,
+     "y": 0,
+     "walk": "solid",
+     "desc": "오른쪽 끝 기둥"
+    }
+   },
+   "examples": {
+    "doors5": {
+     "grid": [
+      [
+       "HDL",
+       "HDM",
+       "HDG",
+       "HDM",
+       "HDR"
+      ]
+     ]
+    },
+    "doors7": {
+     "grid": [
+      [
+       "HDL",
+       "HDM",
+       "HDM",
+       "HDG",
+       "HDM",
+       "HDM",
+       "HDR"
+      ]
+     ]
+    }
+   }
+  },
+  "ticket_gate_kit": {
+   "wave": "station",
+   "kind": "kit",
+   "title": "개찰구 조립 (기계+통로)",
+   "desc": "자동 개찰구: 기계 앞 끝·몸통(세로 반복)·뒤 끝 + 통로 칸. 통로가 실제로 걸어 지나가는 모양.",
+   "size": [
+    2,
+    3
+   ],
+   "walk": "mixed",
+   "brief": "캔버스 32x48(2×3칸), 칸 표대로. 개찰 기계는 **세로로 긴 몸통**(사람은 북쪽으로 걸어 통로를 지난다): GF = 남쪽 앞 끝(둥근 문 날개 `tairu`, 윗면에 IC 터치 파란 원판 `sora`, 앞면 어두운 한 단), GB = 몸통(세로 반복, 윗면 밝게·허리 높이 회색 상자·옆면 −2, 이음 높이: 몸통 폭 10~12px 가운데 정렬 x=3~13), GK = 북쪽 뒤 끝(윤곽 닫힘, 작은 등), GP = 통로 칸(**걸음**: 거의 투명, 바닥 안내 노랑 화살 모양 점 하나와 칸 양쪽 기계 밑 그늘만 — 기계에 먹혀 보이면 통행이 거짓이다). 기계 몸통은 좁게, 통로 폭 16px 중 가운데 8px 이상이 열려 보인다. 【공통】 사람·글자·상표 금지, 3/4 정면(윗면+앞면), 빛 왼쪽 위, 1px 짙은 재료단 윤곽, modern3 색만.",
+   "refs": [
+    "anchor:station_entr",
+    "cand:kit_gate",
+    "cand:station_gate",
+    "prop:station_gate"
+   ],
+   "ground": "pave",
+   "flags": [
+    "overlay"
+   ],
+   "cells": {
+    "GF": {
+     "x": 0,
+     "y": 0,
+     "walk": "solid",
+     "desc": "기계 앞(남쪽) 끝"
+    },
+    "GB": {
+     "x": 0,
+     "y": 1,
+     "walk": "solid",
+     "desc": "기계 몸통(세로 반복)",
+     "repeat": "y"
+    },
+    "GK": {
+     "x": 0,
+     "y": 2,
+     "walk": "solid",
+     "desc": "기계 뒤(북쪽) 끝"
+    },
+    "GP": {
+     "x": 1,
+     "y": 0,
+     "walk": "walk",
+     "desc": "통로(걸음)",
+     "repeat": "y"
+    }
+   },
+   "examples": {
+    "lane1": {
+     "grid": [
+      [
+       "GF",
+       "GP",
+       "GF"
+      ],
+      [
+       "GB",
+       "GP",
+       "GB"
+      ],
+      [
+       "GB",
+       "GP",
+       "GB"
+      ],
+      [
+       "GK",
+       "GP",
+       "GK"
+      ]
+     ]
+    },
+    "lane2": {
+     "grid": [
+      [
+       "GF",
+       "GP",
+       "GF",
+       "GP",
+       "GF"
+      ],
+      [
+       "GB",
+       "GP",
+       "GB",
+       "GP",
+       "GB"
+      ],
+      [
+       "GK",
+       "GP",
+       "GK",
+       "GP",
+       "GK"
+      ]
+     ]
+    }
+   }
+  },
+  "ticket_vending": {
+   "wave": "station",
+   "kind": "prop",
+   "title": "승차권 발매기",
+   "desc": "벽에 붙은 승차권 발매기 한 대(1×2).",
+   "size": [
+    1,
+    2
+   ],
+   "walk": "solid",
+   "brief": "캔버스 16x32(1×2칸). 윗면 2~3행 밝은 지붕판(비스듬한 조작판 윗면 4px), 앞면 위 = 노선도 판(글자 없는 색 판 + 선 덩이), 가운데 = 화면(청록 `garasu` 밝은 단 빛), 아래 = 동전·지폐 넣는 곳·승차권 꺼내는 입구(짙게), 오른쪽 옆면 −2, 발치 그림자. 색은 어두운 `tairu`/`sora` 몸통 + 흰 안내 띠. 맨 아래 줄 접지. 【공통】 사람·글자·상표 금지, 3/4 정면(윗면+앞면), 빛 왼쪽 위, 1px 짙은 재료단 윤곽, modern3 색만.",
+   "refs": [
+    "cand:ticket_machine",
+    "cand:vending_drink",
+    "prop:vending.sora",
+    "anchor:station_entr"
+   ],
+   "ground": "pave",
+   "walk_note": "막힘(solid)"
+  },
+  "station_signs": {
+   "wave": "station",
+   "kind": "prop",
+   "title": "역 앞 표지 3종 — 로터리·버스 정류장·택시 승강장",
+   "desc": "역 앞 로터리 안내 표지 폴, 버스 정류장 표지판, 택시 승강장 표지.",
+   "size": [
+    3,
+    2
+   ],
+   "walk": "solid",
+   "brief": "캔버스 48x32(3×2칸), 슬롯 표대로, 각 1×2칸. **글자 없음** — 표지 판은 도형 덩이로. rotary = 로터리 표지(원형 파랑 `sora` 판 + 흰 화살표 덩이 + 폴 + 받침) · bus = 버스 정류장 표지(둥근 파랑 판 + 흰 버스 실루엣 덩이 + 아래 시간표 판 색 덩이, 폴, 밑동 콘크리트 받침 `hodo`) · taxi = 택시 승강장 표지(노랑 `kii` 사각 판 + 검정 `sumi` 램프 덩이 + 폴). 폴 굵기 3px, 윗면 판 두께 2px, 받침 폭 8px, 오른쪽 아래 그림자. 맨 아래 줄 접지. 【공통】 사람·글자·상표 금지, 3/4 정면(윗면+앞면), 빛 왼쪽 위, 1px 짙은 재료단 윤곽, modern3 색만.",
+   "refs": [
+    "anchor:station_entr",
+    "anchor:vending_street",
+    "cand:station_nameboard"
+   ],
+   "ground": "pave",
+   "walk_note": "밑동 막힘(solid)",
+   "slots": [
+    {
+     "id": "rotary",
+     "x": 0,
+     "y": 0,
+     "w": 1,
+     "h": 2,
+     "walk": "solid",
+     "desc": "로터리 표지"
+    },
+    {
+     "id": "bus",
+     "x": 1,
+     "y": 0,
+     "w": 1,
+     "h": 2,
+     "walk": "solid",
+     "desc": "버스 정류장 표지"
+    },
+    {
+     "id": "taxi",
+     "x": 2,
+     "y": 0,
+     "w": 1,
+     "h": 2,
+     "walk": "solid",
+     "desc": "택시 승강장 표지"
+    }
+   ]
+  },
+  "pond_edge_kit": {
+   "wave": "park",
+   "kind": "kit",
+   "title": "일본 정원 연못 호안 + 징검돌 4칸",
+   "desc": "연못 가장자리 돌 호안 덧칠(가장자리 4·모서리 4) + 물 위 징검돌 4종.",
+   "size": [
+    6,
+    2
+   ],
+   "walk": "mixed",
+   "brief": "캔버스 96x32(6×2칸), 칸 표대로. **투명 덧칠 칸**: 기본 땅(잔디 `lawn`·물 `water`) 질감은 기존 시트가 이미 깔아 주므로 **화소를 베끼지도 흉내 내지도 않고** 호안 돌만 그린다. 돌은 회색 화강암 `hodo`/`conc` 덩이 3~5px, 서로 크기를 섞고(3·4·5px) 윤곽은 단 0~1, 윗면 밝게. 물에 놓이는 칸(맥락에서 물 위)에 얹는다: rim_n = 북쪽(위)이 땅인 물칸(칸 위쪽 가장자리를 따라 돌 윗면 줄), rim_s = 남쪽이 땅(칸 아래쪽 돌의 앞면 + 물에 어른거리는 어두운 그림자 `garasu` 낮은 단), rim_w/rim_e = 서/동쪽이 땅(세로로 선 돌 덩이 줄), cnw/cne/csw/cse = 볼록 모서리(두 방향이 땅). st1~st4 = 물 위 징검돌 한 칸(둥근 평평한 돌 1~2개, 윗면 밝은 타원, 물에 비치는 어두운 그림자 한 줄, 서로 다른 크기·위치). 이음: rim_n/rim_s 는 좌우로 이어 붙고 rim_w/rim_e 는 상하로 이어 붙는다(돌 줄이 칸 경계에서 끊기거나 겹치지 않게). 【공통】 사람·글자·상표 금지, 3/4 정면(윗면+앞면), 빛 왼쪽 위, 1px 짙은 재료단 윤곽, modern3 색만.",
+   "refs": [
+    "anchor:gate_lantern",
+    "anchor:shrine_court",
+    "prop:stone_lantern",
+    "cand:sando_path"
+   ],
+   "ground": "lawn",
+   "flags": [
+    "overlay"
+   ],
+   "cells": {
+    "rim_n": {
+     "x": 0,
+     "y": 0,
+     "walk": "solid",
+     "desc": "북쪽이 땅 — 위쪽 돌 줄",
+     "repeat": "x"
+    },
+    "rim_s": {
+     "x": 1,
+     "y": 0,
+     "walk": "solid",
+     "desc": "남쪽이 땅 — 아래쪽 돌 앞면",
+     "repeat": "x"
+    },
+    "rim_w": {
+     "x": 2,
+     "y": 0,
+     "walk": "solid",
+     "desc": "서쪽이 땅",
+     "repeat": "y"
+    },
+    "rim_e": {
+     "x": 3,
+     "y": 0,
+     "walk": "solid",
+     "desc": "동쪽이 땅",
+     "repeat": "y"
+    },
+    "cnw": {
+     "x": 4,
+     "y": 0,
+     "walk": "solid",
+     "desc": "모서리(북·서가 땅)"
+    },
+    "cne": {
+     "x": 5,
+     "y": 0,
+     "walk": "solid",
+     "desc": "모서리(북·동)"
+    },
+    "csw": {
+     "x": 0,
+     "y": 1,
+     "walk": "solid",
+     "desc": "모서리(남·서)"
+    },
+    "cse": {
+     "x": 1,
+     "y": 1,
+     "walk": "solid",
+     "desc": "모서리(남·동)"
+    },
+    "st1": {
+     "x": 2,
+     "y": 1,
+     "walk": "walk",
+     "desc": "징검돌 1"
+    },
+    "st2": {
+     "x": 3,
+     "y": 1,
+     "walk": "walk",
+     "desc": "징검돌 2"
+    },
+    "st3": {
+     "x": 4,
+     "y": 1,
+     "walk": "walk",
+     "desc": "징검돌 3"
+    },
+    "st4": {
+     "x": 5,
+     "y": 1,
+     "walk": "walk",
+     "desc": "징검돌 4"
+    }
+   },
+   "examples": {
+    "pond4x3": {
+     "grid": [
+      [
+       ".",
+       ".",
+       ".",
+       ".",
+       ".",
+       "."
+      ],
+      [
+       ".",
+       "cnw",
+       "rim_n",
+       "rim_n",
+       "cne",
+       "."
+      ],
+      [
+       ".",
+       "rim_w",
+       ".",
+       ".",
+       "rim_e",
+       "."
+      ],
+      [
+       ".",
+       "csw",
+       "rim_s",
+       "rim_s",
+       "cse",
+       "."
+      ],
+      [
+       ".",
+       ".",
+       ".",
+       ".",
+       ".",
+       "."
+      ]
+     ],
+     "base": [
+      [
+       "lawn",
+       "lawn",
+       "lawn",
+       "lawn",
+       "lawn",
+       "lawn"
+      ],
+      [
+       "lawn",
+       "water",
+       "water",
+       "water",
+       "water",
+       "lawn"
+      ],
+      [
+       "lawn",
+       "water",
+       "water",
+       "water",
+       "water",
+       "lawn"
+      ],
+      [
+       "lawn",
+       "water",
+       "water",
+       "water",
+       "water",
+       "lawn"
+      ],
+      [
+       "lawn",
+       "lawn",
+       "lawn",
+       "lawn",
+       "lawn",
+       "lawn"
+      ]
+     ]
+    },
+    "pond6x3_stones": {
+     "grid": [
+      [
+       ".",
+       ".",
+       ".",
+       ".",
+       ".",
+       ".",
+       ".",
+       "."
+      ],
+      [
+       ".",
+       "cnw",
+       "rim_n",
+       "rim_n",
+       "rim_n",
+       "rim_n",
+       "cne",
+       "."
+      ],
+      [
+       ".",
+       "rim_w",
+       "st1",
+       "st2",
+       "st3",
+       "st4",
+       "rim_e",
+       "."
+      ],
+      [
+       ".",
+       "csw",
+       "rim_s",
+       "rim_s",
+       "rim_s",
+       "rim_s",
+       "cse",
+       "."
+      ],
+      [
+       ".",
+       ".",
+       ".",
+       ".",
+       ".",
+       ".",
+       ".",
+       "."
+      ]
+     ],
+     "base": [
+      [
+       "lawn",
+       "lawn",
+       "lawn",
+       "lawn",
+       "lawn",
+       "lawn",
+       "lawn",
+       "lawn"
+      ],
+      [
+       "lawn",
+       "water",
+       "water",
+       "water",
+       "water",
+       "water",
+       "water",
+       "lawn"
+      ],
+      [
+       "lawn",
+       "water",
+       "water",
+       "water",
+       "water",
+       "water",
+       "water",
+       "lawn"
+      ],
+      [
+       "lawn",
+       "water",
+       "water",
+       "water",
+       "water",
+       "water",
+       "water",
+       "lawn"
+      ],
+      [
+       "lawn",
+       "lawn",
+       "lawn",
+       "lawn",
+       "lawn",
+       "lawn",
+       "lawn",
+       "lawn"
+      ]
+     ]
+    },
+    "pond3x4": {
+     "grid": [
+      [
+       ".",
+       ".",
+       ".",
+       ".",
+       "."
+      ],
+      [
+       ".",
+       "cnw",
+       "rim_n",
+       "cne",
+       "."
+      ],
+      [
+       ".",
+       "rim_w",
+       ".",
+       "rim_e",
+       "."
+      ],
+      [
+       ".",
+       "rim_w",
+       ".",
+       "rim_e",
+       "."
+      ],
+      [
+       ".",
+       "csw",
+       "rim_s",
+       "cse",
+       "."
+      ],
+      [
+       ".",
+       ".",
+       ".",
+       ".",
+       "."
+      ]
+     ],
+     "base": [
+      [
+       "lawn",
+       "lawn",
+       "lawn",
+       "lawn",
+       "lawn"
+      ],
+      [
+       "lawn",
+       "water",
+       "water",
+       "water",
+       "lawn"
+      ],
+      [
+       "lawn",
+       "water",
+       "water",
+       "water",
+       "lawn"
+      ],
+      [
+       "lawn",
+       "water",
+       "water",
+       "water",
+       "lawn"
+      ],
+      [
+       "lawn",
+       "water",
+       "water",
+       "water",
+       "lawn"
+      ],
+      [
+       "lawn",
+       "lawn",
+       "lawn",
+       "lawn",
+       "lawn"
+      ]
+     ]
+    }
+   }
+  },
+  "stone_lantern": {
+   "wave": "park",
+   "kind": "prop",
+   "title": "석등 (카스가형)",
+   "desc": "화강암 석등: 보주·지붕돌·불 켜는 칸·기둥·받침돌. 신사·공원·정원 겸용(1×2).",
+   "size": [
+    1,
+    2
+   ],
+   "walk": "solid",
+   "brief": "캔버스 16x32(1×2칸). 위에서부터 보주(작은 구 3px) → 육각 지붕돌(처마가 넓게 폭 12px, 윗면 밝은 한 단 + 앞 처마 + 아래 그림자) → 화대(불 켜는 칸: 네모 구멍 2개, 속은 어둡고 `mado` 불빛 점 1~2px) → 가운데 받침(잘록한 마디) → 기둥(폭 4px) → 바닥 받침돌 폭 10px. 회색 `hodo`/`conc` 3~4단 + 이끼 점 `ki` 몇 개. 오른쪽 아래 그림자. 맨 아래 줄 접지. 신사 한 쌍으로도 쓰이므로 좌우 대칭에 가까운 정면 그림. 【공통】 사람·글자·상표 금지, 3/4 정면(윗면+앞면), 빛 왼쪽 위, 1px 짙은 재료단 윤곽, modern3 색만.",
+   "refs": [
+    "anchor:gate_lantern",
+    "anchor:shrine_court",
+    "cand:stone_lantern",
+    "prop:stone_lantern",
+    "prop:lantern_post"
+   ],
+   "ground": "sando",
+   "walk_note": "밑동 막힘(solid)"
+  },
+  "sakura_tree": {
+   "wave": "park",
+   "kind": "prop",
+   "title": "벚나무 (만개)",
+   "desc": "꽃이 만개한 벚나무: 분홍 꽃 수관 덩이 3×3칸 + 줄기 한 칸 + 발치 꽃잎. 계절 수관.",
+   "size": [
+    3,
+    4
+   ],
+   "walk": "mixed",
+   "brief": "캔버스 48x64(3×4칸). 수관(위 3칸 폭 × 약 3칸 높이)은 분홍 덩이 둘~셋(`pinku` 단 2~4, 빛 쪽 위 왼쪽이 가장 밝게, 속은 한 단 어둡게, 가장자리에 꽃잎 점 `shiro`/`pinku` 4~6개), 수관 윗면이 둥근 덩이로 읽힌다. 줄기는 가운데 아래 칸에(짙은 갈색 `ita` 단 0~3, 폭 = 수관 아래 받침 폭 6~8px, 밑동 넓게), 줄기 양옆에는 수관이 닿지 않는 투명. 발치에 떨어진 꽃잎 몇 점 + 오른쪽 아래 그림자. 맨 아래 줄 접지. 통행: 수관(위 3칸)은 사람 위로 그려지고(star) 줄기 밑 칸만 막힌다 — 그림이 이와 맞게 줄기 밑 칸 양옆이 비어 보인다. 【공통】 사람·글자·상표 금지, 3/4 정면(윗면+앞면), 빛 왼쪽 위, 1px 짙은 재료단 윤곽, modern3 색만.",
+   "refs": [
+    "anchor:trees_gold",
+    "anchor:playground",
+    "prop:tree.sakura",
+    "cand:sakura_tree"
+   ],
+   "ground": "lawn",
+   "walk_note": "수관 위 3칸 star, 줄기 밑 1칸 solid"
+  },
+  "petal_overlay": {
+   "wave": "park",
+   "kind": "tilesheet",
+   "title": "꽃잎 날리는 바닥 오버레이 3종",
+   "desc": "벚꽃잎이 떨어진 바닥 덧칠 3종(드문·몰림·길가).",
+   "size": [
+    3,
+    1
+   ],
+   "walk": "star",
+   "brief": "캔버스 48x16(3×1칸), **투명 덧칠 타일**(알파 0/255). 각 칸에 1~2px 분홍 꽃잎 점. 0 = 드문 꽃잎 5~6점(고르지 않게 흩어짐) · 1 = 한쪽 모서리로 몰린 꽃잎 8~10점(덩이 2~3개) · 2 = 가로로 긴 띠 모양으로 날린 꽃잎 7~9점(바람 방향 오른쪽, 점들이 대각으로 길게). 색은 `pinku` 단 3~4 + `shiro` 단 3 한두 점, 어두운 윤곽 없음. 점은 칸 가장자리에 걸리지 않는다(2px 이상 안쪽). 어떤 바닥(잔디·자갈·보도) 위에서도 읽힌다. 【공통】 사람·글자·상표 금지, 3/4 정면(윗면+앞면), 빛 왼쪽 위, 1px 짙은 재료단 윤곽, modern3 색만.",
+   "refs": [
+    "cand:sakura_petals",
+    "anchor:trees_gold"
+   ],
+   "ground": "sw",
+   "flags": [
+    "overlay",
+    "thin"
+   ],
+   "seamless_cells": [
+    0,
+    1,
+    2
+   ],
+   "seam_axes": {
+    "0": "",
+    "1": "",
+    "2": ""
+   },
+   "walk_note": "위층 덧칠(star)"
+  },
+  "playground_set": {
+   "wave": "park",
+   "kind": "prop",
+   "title": "놀이터 철봉·시소",
+   "desc": "공원 놀이터 철봉(2×2)과 시소(2×2).",
+   "size": [
+    4,
+    2
+   ],
+   "walk": "solid",
+   "brief": "캔버스 64x32(4×2칸), 슬롯 표대로, 각 2×2칸. bar = 철봉(기둥 둘 폭 3px + 위 가로봉 2px 밝은 `tekko`, 높이가 서로 다른 봉 2개, 기둥 밑 받침 모래 점 몇 개, 윗면 보이는 봉 윗선) · seesaw = 시소(널판 한 장이 비스듬히 기울어 한쪽이 위, 중앙 받침대 삼각, 양 끝 손잡이 막대, 널판 윗면이 면으로 보임, 색 `daidai` 주황/`midori` 초록 포인트 한 곳). 오른쪽 아래 그림자. 맨 아래 줄 접지, 슬롯 사이 투명. 【공통】 사람·글자·상표 금지, 3/4 정면(윗면+앞면), 빛 왼쪽 위, 1px 짙은 재료단 윤곽, modern3 색만.",
+   "refs": [
+    "anchor:playground",
+    "cand:kit_gate",
+    "prop:slide",
+    "prop:swing",
+    "prop:sandbox"
+   ],
+   "ground": "lawn",
+   "walk_note": "막힘(solid)",
+   "slots": [
+    {
+     "id": "bar",
+     "x": 0,
+     "y": 0,
+     "w": 2,
+     "h": 2,
+     "walk": "solid",
+     "desc": "철봉"
+    },
+    {
+     "id": "seesaw",
+     "x": 2,
+     "y": 0,
+     "w": 2,
+     "h": 2,
+     "walk": "solid",
+     "desc": "시소"
+    }
+   ]
+  },
+  "public_toilet": {
+   "wave": "park",
+   "kind": "building-part",
+   "title": "공중화장실 (공원)",
+   "desc": "공원 한켠의 작은 공중화장실 건물. 평지붕, 남녀·다목적 출입구 셋(글자 없음), 환기창.",
+   "size": [
+    4,
+    3
+   ],
+   "walk": "solid",
+   "brief": "캔버스 64x48(4×3칸). 위 1칸(16px) = 평지붕 윗면(난간 `shiro`, 윗면 +2, 환기통 하나). 아래 2칸(32px) = 정면: 입구 3개(각 폭 12~14px, 문 높이 28px — 벽은 `conc` 흰 콘크리트, 문 위 **색 판**만: 파랑/빨강/초록 포인트 `sora`·`aka`·`midori` 사각 덩이, 글자·사람 픽토 금지), 위쪽 가로 환기창 줄(창은 벽 가운데 칸에만), 처마 슬래브 그림자 3px, 발치 `hodo` 단. 입구 앞(맨 아래 줄) 열림. 【공통】 사람·글자·상표 금지, 3/4 정면(윗면+앞면), 빛 왼쪽 위, 1px 짙은 재료단 윤곽, modern3 색만.",
+   "refs": [
+    "anchor:apartment",
+    "anchor:playground",
+    "cand:kit_gate",
+    "prop:station_gate"
+   ],
+   "ground": "lawn",
+   "walk_note": "몸채 막힘, 입구 앞 한 칸 열림, 지붕 star"
+  },
+  "azumaya": {
+   "wave": "park",
+   "kind": "building-part",
+   "title": "아즈마야 (정원 정자)",
+   "desc": "공원 정원 정자: 네 기둥 위 우진각 기와 지붕, 안쪽 벤치, 사방이 트임.",
+   "size": [
+    4,
+    4
+   ],
+   "walk": "mixed",
+   "brief": "캔버스 64x64(4×4칸). 위 2칸(32px) = 우진각 지붕 윗면(기와 `kawara`/`tairu` 회색 기와, 윗면 사선 접힘, 용마루 짧게, 처마 끝 살짝 올라감, 아래 그림자). 아래 2칸(32px) = 네 기둥(폭 4px 짙은 `ita`, 앞 기둥 둘은 앞면 전체 높이, 뒤 기둥 둘은 위 지붕 아래로 보임) + 사이가 트여 안쪽 바닥이 보이고 뒤쪽 벽 없이 가로 난간 + 안쪽 긴 벤치 윗면. 통행: 지붕은 star, 기둥 밑동 두 곳만 solid(안쪽 바닥은 walk) — 그림이 맞게 기둥 사이 아래가 열려 보이고 기둥 밑동은 받침돌(폭 8px). 윤곽 1px. 【공통】 사람·글자·상표 금지, 3/4 정면(윗면+앞면), 빛 왼쪽 위, 1px 짙은 재료단 윤곽, modern3 색만.",
+   "refs": [
+    "anchor:temizuya",
+    "anchor:shrine_court",
+    "cand:temizuya",
+    "prop:chozuya",
+    "prop:honden"
+   ],
+   "ground": "lawn",
+   "walk_note": "지붕 star, 기둥 밑동 solid, 안쪽 walk"
+  },
+  "drinking_fountain": {
+   "wave": "park",
+   "kind": "prop",
+   "title": "음수대",
+   "desc": "공원 음수대 한 칸: 돌 기둥 + 수반 + 위로 꺾인 수도꼭지.",
+   "size": [
+    1,
+    1
+   ],
+   "walk": "solid",
+   "brief": "캔버스 16x16(1×1칸). 돌 기둥(폭 6px, `conc`/`hodo` 3단, 윗면 밝게) 위에 둥근 수반(윗면 타원 한 단, 안쪽 물 `garasu` 밝은 한 줄), 위로 꺾인 수도꼭지(2px 굵기 `tekko`), 발치 받침 폭 10px, 오른쪽 아래 그림자. 맨 아래 줄 접지. 【공통】 사람·글자·상표 금지, 3/4 정면(윗면+앞면), 빛 왼쪽 위, 1px 짙은 재료단 윤곽, modern3 색만.",
+   "refs": [
+    "anchor:vending_street",
+    "prop:chozuya",
+    "prop:planter"
+   ],
+   "ground": "lawn",
+   "walk_note": "막힘(solid)"
+  },
+  "park_fence_kit": {
+   "wave": "park",
+   "kind": "kit",
+   "title": "공원 울타리·입구 기둥",
+   "desc": "공원 울타리(가로 반복·끝·세로 구간) + 입구 기둥 2칸(윗칸·밑칸).",
+   "size": [
+    4,
+    2
+   ],
+   "walk": "mixed",
+   "brief": "캔버스 64x32(4×2칸), 칸 표대로. 울타리 = 짙은 초록 `midori`/`tekko` 쇠 말뚝(폭 2px, 간격 4px, 끝이 뾰족하지 않게) + 위·아래 가로대 2px + 윗선 밝은 한 줄 + 풀밭 위 발치 그림자. FS 가로 반복(주기 8px, 좌우 이음), FL/FR 끝 기둥(굵은 기둥 4px, 윤곽 닫힘), FV 세로 구간(남쪽에서 보면 말뚝 윗면이 점 줄로 보이는 폭 6px 띠 + 아랫부분 짧은 앞면, 상하 반복). PT = 입구 기둥 윗칸(돌 기둥 윗부분, 갓돌+작은 등롱 모양 머리), PB = 입구 기둥 밑칸(받침돌, 막힘). 기둥은 칸 가운데 폭 8px. 이음 높이: 가로대 위 y=6, 아래 y=12. 【공통】 사람·글자·상표 금지, 3/4 정면(윗면+앞면), 빛 왼쪽 위, 1px 짙은 재료단 윤곽, modern3 색만.",
+   "refs": [
+    "anchor:playground",
+    "anchor:gate_lantern",
+    "cand:kit_gate"
+   ],
+   "ground": "lawn",
+   "flags": [
+    "overlay"
+   ],
+   "cells": {
+    "FS": {
+     "x": 0,
+     "y": 0,
+     "walk": "solid",
+     "desc": "울타리 직선(가로 반복)",
+     "repeat": "x"
+    },
+    "FL": {
+     "x": 1,
+     "y": 0,
+     "walk": "solid",
+     "desc": "왼쪽 끝 기둥"
+    },
+    "FR": {
+     "x": 2,
+     "y": 0,
+     "walk": "solid",
+     "desc": "오른쪽 끝 기둥"
+    },
+    "FV": {
+     "x": 3,
+     "y": 0,
+     "walk": "solid",
+     "desc": "세로 구간(상하 반복)",
+     "repeat": "y"
+    },
+    "PT": {
+     "x": 0,
+     "y": 1,
+     "walk": "star",
+     "desc": "입구 기둥 윗칸"
+    },
+    "PB": {
+     "x": 1,
+     "y": 1,
+     "walk": "solid",
+     "desc": "입구 기둥 밑칸"
+    }
+   },
+   "examples": {
+    "run5": {
+     "grid": [
+      [
+       "FL",
+       "FS",
+       "FS",
+       "FS",
+       "FR"
+      ]
+     ]
+    },
+    "entrance": {
+     "grid": [
+      [
+       ".",
+       ".",
+       "PT",
+       ".",
+       "PT",
+       ".",
+       "."
+      ],
+      [
+       "FL",
+       "FS",
+       "PB",
+       ".",
+       "PB",
+       "FS",
+       "FR"
+      ]
+     ]
+    },
+    "corner": {
+     "grid": [
+      [
+       "FV",
+       ".",
+       ".",
+       "."
+      ],
+      [
+       "FV",
+       ".",
+       ".",
+       "."
+      ],
+      [
+       "FL",
+       "FS",
+       "FS",
+       "FR"
+      ]
+     ]
+    }
+   }
+  },
+  "torii_kit": {
+   "wave": "shrine",
+   "kind": "kit",
+   "title": "도리이 (폭 가변 조각 세트)",
+   "desc": "명신 도리이: 가사기(양끝 들림)·시마기, 누키(가로대)·가쿠 자리, 기둥 위/가운데/밑동. 3칸·5칸 완성.",
+   "size": [
+    6,
+    2
+   ],
+   "walk": "mixed",
+   "brief": "캔버스 96x32(6×2칸), 칸 표대로. 주홍(`aka`/`daidai` 중 주홍 계열, 램프가 모자라면 `aka` 단 2~3) 도리이: KL/KR = 가사기 양 끝(검은 `sumi` 윗판이 바깥으로 살짝 들리고 그 아래 주홍 시마기, 기둥 위로 8px 돌출 — 칸 가장자리까지), KM = 가사기 가운데(가로 반복, 윗판 윗면 밝게, 이음 높이: 윗판 윗선 y=2, 윗판 아랫선 y=6, 시마기 y=7~10), PLU/PRU = 기둥 윗칸(기둥 폭 6px 칸 가운데, 누키가 기둥을 관통해 칸 바깥으로 3px 돌출, 누키 두께 3px y=3~5), NM = 누키 가운데(가로 반복, 이음 높이 y=3~5), NG = 누키 가운데 + 가쿠(편액 자리 = 글자 없는 검은 테 `sumi` 사각 + 안쪽 흰 판 `shiro` 8x10), PLM/PRM = 기둥 가운데(세로 반복, 왼쪽 밝고 오른쪽 어두운 두 단, 폭 6px), PLB/PRB = 기둥 밑동(검은 받침돌 `sumi`/`hodo` 폭 8px 높이 5px, 막힘). 기둥 가운데 아래 칸은 비어 사람이 걸어 지나간다. 【공통】 사람·글자·상표 금지, 3/4 정면(윗면+앞면), 빛 왼쪽 위, 1px 짙은 재료단 윤곽, modern3 색만.",
+   "refs": [
+    "anchor:shrine_gate_red",
+    "anchor:gate_lantern",
+    "cand:torii",
+    "cand:kit_torii",
+    "prop:kaminarimon"
+   ],
+   "ground": "sando",
+   "flags": [
+    "overlay"
+   ],
+   "cells": {
+    "KL": {
+     "x": 0,
+     "y": 0,
+     "walk": "star",
+     "desc": "가사기 왼 끝"
+    },
+    "KM": {
+     "x": 1,
+     "y": 0,
+     "walk": "star",
+     "desc": "가사기 가운데(가로 반복)",
+     "repeat": "x"
+    },
+    "KR": {
+     "x": 2,
+     "y": 0,
+     "walk": "star",
+     "desc": "가사기 오른 끝"
+    },
+    "PLU": {
+     "x": 3,
+     "y": 0,
+     "walk": "star",
+     "desc": "왼 기둥 윗칸+누키 끝"
+    },
+    "NM": {
+     "x": 4,
+     "y": 0,
+     "walk": "star",
+     "desc": "누키 가운데(가로 반복)",
+     "repeat": "x"
+    },
+    "NG": {
+     "x": 5,
+     "y": 0,
+     "walk": "star",
+     "desc": "누키 가운데+가쿠(편액 자리)"
+    },
+    "PRU": {
+     "x": 0,
+     "y": 1,
+     "walk": "star",
+     "desc": "오른 기둥 윗칸+누키 끝"
+    },
+    "PLM": {
+     "x": 1,
+     "y": 1,
+     "walk": "star",
+     "desc": "왼 기둥 가운데(세로 반복)",
+     "repeat": "y"
+    },
+    "PRM": {
+     "x": 2,
+     "y": 1,
+     "walk": "star",
+     "desc": "오른 기둥 가운데(세로 반복)",
+     "repeat": "y"
+    },
+    "PLB": {
+     "x": 3,
+     "y": 1,
+     "walk": "solid",
+     "desc": "왼 기둥 밑동(막힘)"
+    },
+    "PRB": {
+     "x": 4,
+     "y": 1,
+     "walk": "solid",
+     "desc": "오른 기둥 밑동(막힘)"
+    }
+   },
+   "examples": {
+    "torii3": {
+     "grid": [
+      [
+       "KL",
+       "KM",
+       "KR"
+      ],
+      [
+       "PLU",
+       "NG",
+       "PRU"
+      ],
+      [
+       "PLM",
+       ".",
+       "PRM"
+      ],
+      [
+       "PLB",
+       ".",
+       "PRB"
+      ]
+     ]
+    },
+    "torii5": {
+     "grid": [
+      [
+       "KL",
+       "KM",
+       "KM",
+       "KM",
+       "KR"
+      ],
+      [
+       "PLU",
+       "NM",
+       "NG",
+       "NM",
+       "PRU"
+      ],
+      [
+       "PLM",
+       ".",
+       ".",
+       ".",
+       "PRM"
+      ],
+      [
+       "PLB",
+       ".",
+       ".",
+       ".",
+       "PRB"
+      ]
+     ]
+    },
+    "torii3_tall": {
+     "grid": [
+      [
+       "KL",
+       "KM",
+       "KR"
+      ],
+      [
+       "PLU",
+       "NG",
+       "PRU"
+      ],
+      [
+       "PLM",
+       ".",
+       "PRM"
+      ],
+      [
+       "PLM",
+       ".",
+       "PRM"
+      ],
+      [
+       "PLB",
+       ".",
+       "PRB"
+      ]
+     ]
+    }
+   }
+  },
+  "komainu_pair": {
+   "wave": "shrine",
+   "kind": "prop",
+   "title": "고마이누 한 쌍 (아형·운형)",
+   "desc": "신사 참배길 양옆의 사자개 한 쌍(각 1×2). 좌우 거울쌍이지만 입 모양이 다르다(입 벌림/입 다묾).",
+   "size": [
+    2,
+    2
+   ],
+   "walk": "solid",
+   "brief": "캔버스 32x32(2×2칸), 슬롯 표대로, 각 1×2칸. 돌 받침(폭 14px 높이 8px `hodo`/`conc`) 위에 앉은 사자개: 머리를 크게(1×2 에서 사자개로 읽히는 게 먼저), 곱슬 갈기 덩이 3~4개, 앞다리 곧게 둘, 꼬리 불꽃 모양 덩이. comA(왼쪽) = **입을 벌린 아형**, 오른쪽을 본다(짝과 마주 봄). comB(오른쪽) = **입을 다문 운형**, 왼쪽을 본다 — 실루엣·받침·크기는 거울쌍이지만 명암은 빛(왼쪽 위)에 맞게 다시 놓는다(거울 복사 금지). 돌 3단 + 이끼 점. 오른쪽 아래 그림자. 맨 아래 줄 접지. 【공통】 사람·글자·상표 금지, 3/4 정면(윗면+앞면), 빛 왼쪽 위, 1px 짙은 재료단 윤곽, modern3 색만.",
+   "refs": [
+    "anchor:gate_lantern",
+    "anchor:shrine_court",
+    "cand:komainu_a",
+    "cand:komainu_un",
+    "cand:fox_statue"
+   ],
+   "ground": "sando",
+   "walk_note": "막힘(solid)",
+   "slots": [
+    {
+     "id": "komainu_a",
+     "x": 0,
+     "y": 0,
+     "w": 1,
+     "h": 2,
+     "walk": "solid",
+     "desc": "아형(입 벌림), 오른쪽을 봄"
+    },
+    {
+     "id": "komainu_un",
+     "x": 1,
+     "y": 0,
+     "w": 1,
+     "h": 2,
+     "walk": "solid",
+     "desc": "운형(입 다묾), 왼쪽을 봄"
+    }
+   ]
+  },
+  "shimenawa_kit": {
+   "wave": "shrine",
+   "kind": "kit",
+   "title": "시메나와 (가로 반복 조각)",
+   "desc": "굵게 꼰 새끼줄에 흰 시데 종이를 단 줄: 왼 시작·시데 있는 반복·시데 없는 반복·오른 끝.",
+   "size": [
+    4,
+    1
+   ],
+   "walk": "star",
+   "brief": "캔버스 64x16(4×1칸), 칸 표대로. **투명 덧칠 칸**(도리이·배전 위에 거는 줄, 사람 위). 굵게 꼰 새끼줄(`kinari` 단 1~3, 꼰 결 사선 줄 2px 간격, 굵기 4px, 아랫선 짙은 단)이 가운데가 살짝 처지게 가로로 지나간다. SA = 시데(흰 `shiro` 번개꼴 종이 2~3장이 줄에 매달려 늘어짐, 높이 6px 정도, 줄 아래로), SB = 시데 없는 줄만, SL = 왼쪽 시작(기둥에 묶인 매듭 덩이 + 줄 시작), SR = 오른쪽 끝(매듭). 모든 칸에서 줄의 높이는 같은 y(이음 높이: 줄 윗선 y=4, 아랫선 y=8)로 칸 가장자리를 지나 가로로 이어진다. 시데 종이만 줄 아래로 튀어나온다. 【공통】 사람·글자·상표 금지, 3/4 정면(윗면+앞면), 빛 왼쪽 위, 1px 짙은 재료단 윤곽, modern3 색만.",
+   "refs": [
+    "anchor:shrine_hall",
+    "cand:shimenawa",
+    "cand:shrine_hall",
+    "prop:honden"
+   ],
+   "ground": "sando",
+   "flags": [
+    "overlay",
+    "thin"
+   ],
+   "cells": {
+    "SL": {
+     "x": 0,
+     "y": 0,
+     "walk": "star",
+     "desc": "왼쪽 시작(매듭)"
+    },
+    "SA": {
+     "x": 1,
+     "y": 0,
+     "walk": "star",
+     "desc": "줄+시데(가로 반복)",
+     "repeat": "x"
+    },
+    "SB": {
+     "x": 2,
+     "y": 0,
+     "walk": "star",
+     "desc": "줄만(가로 반복)",
+     "repeat": "x"
+    },
+    "SR": {
+     "x": 3,
+     "y": 0,
+     "walk": "star",
+     "desc": "오른쪽 끝(매듭)"
+    }
+   },
+   "examples": {
+    "span3": {
+     "grid": [
+      [
+       "SL",
+       "SA",
+       "SR"
+      ]
+     ]
+    },
+    "span5": {
+     "grid": [
+      [
+       "SL",
+       "SA",
+       "SB",
+       "SA",
+       "SR"
+      ]
+     ]
+    }
+   }
+  },
+  "saisen_box": {
+   "wave": "shrine",
+   "kind": "prop",
+   "title": "사이센 상자 (새전함)",
+   "desc": "배전 앞 새전함(2×1): 나무 상자 윗면 가로 살 + 앞면.",
+   "size": [
+    2,
+    1
+   ],
+   "walk": "solid",
+   "brief": "캔버스 32x16(2×1칸). 나무(`ita` 단 1~4) 상자: 윗면 4~5행에 동전이 들어가는 가로 살(어두운 홈 줄 5~6개, 굵기 1px 대신 2px 어두운 덩이 간격), 앞면 위 가로 보 한 줄 + 앞 기둥, 앞면 가운데에 **금색 `kii` 점 두 덩이**(奉納 자리 — 글자 금지), 양 끝 다리, 오른쪽 옆면 −2, 발치 그림자. 윗면이 면으로 읽혀야 한다. 맨 아래 줄 접지. 【공통】 사람·글자·상표 금지, 3/4 정면(윗면+앞면), 빛 왼쪽 위, 1px 짙은 재료단 윤곽, modern3 색만.",
+   "refs": [
+    "anchor:shrine_hall",
+    "cand:saisen_box",
+    "prop:honden"
+   ],
+   "ground": "sando",
+   "walk_note": "막힘(solid)"
+  },
+  "ema_rack": {
+   "wave": "shrine",
+   "kind": "prop",
+   "title": "에마 걸이",
+   "desc": "작은 지붕 아래 가로 걸이 두 줄에 에마 판이 겹쳐 걸린 걸이(2×2).",
+   "size": [
+    2,
+    2
+   ],
+   "walk": "solid",
+   "brief": "캔버스 32x32(2×2칸). 위 8행 = 작은 기와/동판 지붕 윗면(`tairu` 은청회색 또는 동판 녹청 `midori` 낮은 단, 윗면 면 + 앞 처마 + 그림자), 아래 = 기둥 둘(폭 3px 흰 나무 `ita` 밝은 단) 사이 가로 걸이 두 줄(2px) + 오각형 나무 에마 판 여러 장이 겹쳐 걸림(판 하나 6x7px, 밝은 `yuka`/`ita` 단 + 아래 붉은 끈 점 `aka`, 글자는 어두운 점 2개로만, 판마다 방향·위치 어긋나게). 기둥 밑동 받침, 오른쪽 아래 그림자. 맨 아래 줄 접지. 【공통】 사람·글자·상표 금지, 3/4 정면(윗면+앞면), 빛 왼쪽 위, 1px 짙은 재료단 윤곽, modern3 색만.",
+   "refs": [
+    "anchor:shrine_court",
+    "cand:ema_rack",
+    "cand:omikuji_rack",
+    "prop:honden"
+   ],
+   "ground": "sando",
+   "walk_note": "기둥 밑동 solid(그림은 통짜로 막힘 처리)"
+  },
+  "omikuji_rack": {
+   "wave": "shrine",
+   "kind": "prop",
+   "title": "오미쿠지 걸이",
+   "desc": "나무 틀에 흰 종이 오미쿠지가 매듭지어 묶인 곳(2×2).",
+   "size": [
+    2,
+    2
+   ],
+   "walk": "solid",
+   "brief": "캔버스 32x32(2×2칸). 흰 나무 틀(`ita` 밝은 단, 기둥 둘 폭 3px + 위 가로 보 + 중간 가로 줄 두세 줄 2px), 줄마다 흰 종이 오미쿠지 매듭이 촘촘히(작은 흰 `shiro` 덩이 2~3px 줄 — 고른 점박이 금지, 덩이 크기·간격 섞기, 줄 아래로 늘어진 종이 끝), 틀 윗면 면으로 보임. 작은 지붕은 없다. 기둥 밑동 받침, 오른쪽 아래 그림자. 맨 아래 줄 접지. 에마 걸이와 같은 시트에서 한 세트로 보이게 기둥 굵기·나무 램프를 맞춘다. 【공통】 사람·글자·상표 금지, 3/4 정면(윗면+앞면), 빛 왼쪽 위, 1px 짙은 재료단 윤곽, modern3 색만.",
+   "refs": [
+    "anchor:shrine_court",
+    "cand:omikuji_rack",
+    "cand:ema_rack"
+   ],
+   "ground": "sando",
+   "walk_note": "막힘(solid)"
+  },
+  "haiden": {
+   "wave": "shrine",
+   "kind": "building-part",
+   "title": "배전 (拝殿) — 가라하후",
+   "desc": "신사 배전: 가운데 곡선 박공 가라하후 지붕, 처마 밑 시메나와 자리, 격자문, 돌 기단·계단.",
+   "size": [
+    6,
+    5
+   ],
+   "walk": "solid",
+   "brief": "캔버스 96x80(6×5칸). 위 2칸(32px) = 지붕 윗면(짙은 기와/동판 `tairu` 은청회색 또는 `kawara`, **가운데가 곡선으로 솟은 가라하후 박공**: 윗면 가운데 아치형 덧지붕, 박풍판 1px, 용마루 짙은 한 줄, 처마 끝 양쪽이 살짝 들림, 처마 밑 3px 그림자). 아래 3칸(48px) = 정면: 위쪽 기둥 위 들보 띠(주홍 `aka` 2px), **시메나와 걸 자리**(비워 둔 가로 띠 y=2칸 높이 3px, 줄은 별도 키트), 가운데 3칸 폭 흰 나무(`ita` 밝은 단) 격자 문(검은 틀 `sumi` + 흰 살, 안쪽 어둡게), 양옆 주홍 기둥(폭 5px) 둘씩, 돌 기단 윗면 4px + 앞 돌계단 3단(가운데 폭 3칸, 맨 아래 줄은 계단 앞 길 쪽 열림). 글자·편액 글자 금지. 【공통】 사람·글자·상표 금지, 3/4 정면(윗면+앞면), 빛 왼쪽 위, 1px 짙은 재료단 윤곽, modern3 색만.",
+   "refs": [
+    "anchor:shrine_hall",
+    "anchor:shrine_court",
+    "cand:shrine_hall",
+    "cand:kit_shrine",
+    "prop:honden",
+    "prop:kaminarimon"
+   ],
+   "ground": "sando",
+   "walk_note": "몸채 막힘, 계단 앞 한 칸 열림, 지붕 star"
+  },
+  "honden": {
+   "wave": "shrine",
+   "kind": "building-part",
+   "title": "본전 (本殿)",
+   "desc": "신사 본전: 작은 박공 기와 지붕(치기), 높은 기단 위 작은 사당, 앞 계단과 난간.",
+   "size": [
+    4,
+    4
+   ],
+   "walk": "solid",
+   "brief": "캔버스 64x64(4×4칸). 위 2칸(32px) = 지붕 윗면(짙은 기와 `tairu`/`kawara` 덮개, 용마루 위 치기(교차 장식 두 개 2px 굵기), 처마 끝 살짝 들림, 아래 그림자). 아래 2칸(32px) = 정면: 주홍 기둥 둘(폭 4px) 사이 닫힌 작은 문(흰 나무 + 검은 틀), 위 가로 보 `aka`, 돌 기단(윗면 4px, 앞 가장자리 2px) 위 난간(주홍 2px), 가운데 앞 돌계단 2~3단. 글자 금지. 배전보다 작고 단정하게(같은 램프·같은 윤곽으로 한 세트). 【공통】 사람·글자·상표 금지, 3/4 정면(윗면+앞면), 빛 왼쪽 위, 1px 짙은 재료단 윤곽, modern3 색만.",
+   "refs": [
+    "anchor:shrine_hall",
+    "anchor:shrine_court",
+    "cand:shrine_hall",
+    "prop:honden",
+    "prop:kaminarimon"
+   ],
+   "ground": "sando",
+   "walk_note": "몸채 막힘, 계단 앞 열림, 지붕 star"
+  },
+  "stone_stairs": {
+   "wave": "shrine",
+   "kind": "building-part",
+   "title": "돌계단 (참배길 오름)",
+   "desc": "위로 오르는(북쪽) 돌계단 3×3: 디딤판 줄·층계참·좌우 돌 난간 받침.",
+   "size": [
+    3,
+    3
+   ],
+   "walk": "walk",
+   "brief": "캔버스 48x48(3×3칸). 한 줄기 계단 그림(칸마다 디딤판 타일을 깔면 틈 있는 벽돌 상자로 읽힌다): 가운데 폭 2칸(32px)이 오르는 계단 — 디딤판 윗면 밝은 줄(`hodo`/`conc` 단 4~5) + 챌판 어두운 줄(단 2~3)이 6~7단 번갈아 위로 올라가며 위쪽이 약간 좁아지지 않는다(정면 고정, 원근 없음), 맨 위에 층계참 윗면 한 줄, 좌우 1칸씩 돌 난간 받침(윗면 3px 갓돌 + 앞면, 안쪽 계단과 만나는 곳에 윤곽). 오르는 방향이 위(북)로 읽혀야 한다. 맨 아래 줄은 계단 시작(길과 이어짐). 이끼 점 몇 개. 【공통】 사람·글자·상표 금지, 3/4 정면(윗면+앞면), 빛 왼쪽 위, 1px 짙은 재료단 윤곽, modern3 색만.",
+   "refs": [
+    "anchor:shrine_hall",
+    "anchor:shrine_court",
+    "prop:stairs_stone8",
+    "prop:yuyake_stairs",
+    "cand:sando_path"
+   ],
+   "ground": "sando",
+   "flags": [
+    "bleed"
+   ],
+   "walk_note": "계단 가운데 2칸 walk, 좌우 난간 solid"
+  },
+  "temizuya_roofed": {
+   "wave": "shrine",
+   "kind": "building-part",
+   "title": "오미즈야 (지붕+수반)",
+   "desc": "손 씻는 곳: 네 기둥 작은 기와 지붕 아래 긴 돌 수반, 대나무 국자.",
+   "size": [
+    3,
+    3
+   ],
+   "walk": "mixed",
+   "brief": "캔버스 48x48(3×3칸). 위 1칸(16px) = 작은 지붕 윗면(`tairu` 은청회색 기와 덮개 + 박공 작은 용마루, 처마 그림자). 아래 2칸(32px) = 정면: 주홍 기둥 둘(폭 4px) 사이 긴 돌 수반(윗면 물 `garasu` 밝은 한 줄 반짝임, 앞면 돌 `hodo`/`conc` 단), 수반 위 가로 대나무 국자 서넛(`yuka`/`kinari` 2px 굵기 가로대 위에 놓임), 한쪽 끝 용 모양 물 주둥이(2px 덩이), 돌 기단 윗면 4px. 통행: 지붕 star, 수반 막힘 — 그림이 맞게 기둥 사이 아래가 수반으로 막혀 보인다. 【공통】 사람·글자·상표 금지, 3/4 정면(윗면+앞면), 빛 왼쪽 위, 1px 짙은 재료단 윤곽, modern3 색만.",
+   "refs": [
+    "anchor:temizuya",
+    "cand:temizuya",
+    "prop:chozuya"
+   ],
+   "ground": "sando",
+   "walk_note": "지붕 star, 수반 solid"
+  },
+  "cedar_tree": {
+   "wave": "shrine",
+   "kind": "prop",
+   "title": "신사 숲 삼나무",
+   "desc": "신사 숲의 키 큰 삼나무(2×4): 좁은 원뿔 수관, 곧은 줄기, 발치 낙엽.",
+   "size": [
+    2,
+    4
+   ],
+   "walk": "mixed",
+   "brief": "캔버스 32x64(2×4칸). 위 3칸 = 좁고 긴 원뿔형 수관(짙은 `ki` 단 0~4, 층층이 뾰족한 가지 덩이 5~6단이 아래로 퍼지며 빛 쪽 왼쪽 위가 밝게, 윗끝은 뾰족, 가장자리는 톱니 덩이), 줄기는 아래 가운데(폭 4~6px, `ita` 어두운 단, 곧게, 밑동 살짝 넓게), 수관 아래 줄기 양옆은 투명. 발치 낙엽·뿌리 몇 점 + 오른쪽 아래 그림자. 맨 아래 줄 접지. 통행: 수관 star, 줄기 밑 solid. 기존 시트 나무(`prop:tree.*`)와 같은 수관 결을 쓰되 잎이 아니라 바늘 덩이. 【공통】 사람·글자·상표 금지, 3/4 정면(윗면+앞면), 빛 왼쪽 위, 1px 짙은 재료단 윤곽, modern3 색만.",
+   "refs": [
+    "anchor:trees_gold",
+    "anchor:shrine_court",
+    "prop:tree.zelkova",
+    "prop:tree.ginkgo"
+   ],
+   "ground": "sando",
+   "walk_note": "수관 star, 줄기 밑 solid"
+  }
+ }
+}

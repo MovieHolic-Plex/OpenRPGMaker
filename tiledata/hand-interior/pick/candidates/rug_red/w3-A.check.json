@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/rug_red/w3-A.pxg",
+ "id": "rug red",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.005
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "dither"
+  ],
+  "pass": false
+ },
+ "colors": 8,
+ "v5_colors": 5,
+ "bbox": [
+  2,
+  2,
+  45,
+  29
+ ],
+ "v5_bbox": [
+  2,
+  2,
+  45,
+  29
+ ],
+ "note": "v5 다듬기 — 무작위 점 무늬를 2칸 벽돌 엇배열 짜임으로 정리, 금띠는 좌·상 밝게(gold:5)/우·하 어둡게(gold:3), 마름모 테두리도 같은 방향으로 명암, 중앙에 red:5 한 점.",
+ "ok": true
+}

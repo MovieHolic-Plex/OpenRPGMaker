@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/wall_gallery_white/hf5-B.pxg",
+ "set": "horror",
+ "id": "wall_gallery_white",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.035
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.562
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 9,
+ "bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "note": "B: 어둠에서 읽히게 — 가장 밝은 넓은 면(dust6)과 어두운 걸레받이·몰딩의 명도 폭 최대. 몰딩 윗줄 흰 하이라이트, 걸레받이 윗줄 dust3 로 또렷한 선. 무늬는 32px 이음 홈 하나뿐.",
+ "ok": true
+}

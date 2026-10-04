@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/wall_paper_stain/h4-A.pxg",
+ "set": "horror",
+ "id": "wall_paper_stain",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.227
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.148
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 18,
+ "bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "note": "torn A 와 같은 벽·무늬에 위→아래 물때 두 줄(세로 얼룩, 물결)과 줄 끝·갓돌 위 곰팡이 점",
+ "ok": true
+}

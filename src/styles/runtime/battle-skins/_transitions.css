@@ -1,24 +1,14 @@
 /* src/styles/runtime/battle-skins/_transitions.css
-   B: 10종 스킨 트랜지션을 [data-battle-transition] + skinClass로 재생.
+   B: 스킨 트랜지션을 [data-battle-transition] + skinClass로 재생.
 
    스킨 색은 **막대(.battle-transition-blind-bar)** 에만 준다. 컨테이너(.battle-transition-blinds)
    는 inset:0 이라 여기에 배경을 주면 부착 즉시 화면 전체가 불투명해져 플래시·블라인드
    닫힘·인트로 안무가 전부 그 판 뒤에서 재생되고 사용자는 하드컷만 본다(2026-09-14 실측:
    rm2000/rm2003 진입이 "파랑 판 1초 → 컷" 이었다). */
-.battle-transition-overlay.battle-transition--wipe-blue { --battle-transition-cover: #1742a5; }
 .battle-transition-overlay.battle-transition--wipe-black { --battle-transition-cover: #000; }
 .battle-transition-overlay.battle-transition--flash-white .battle-transition-flash { background: #fff; }
-.battle-transition-overlay.battle-transition--fade[data-battle-transition-phase="exit"],
-.battle-transition-overlay.battle-transition--fade[data-battle-transition-phase="reveal"]:not(:has(.battle-transition-blinds)) { background: rgba(0,0,0,.72); }
 /* 왼쪽에서 밀려오는 판 — 막대가 왼쪽 끝에서 자란다(컨테이너 슬라이드는 배경이 없어 보이지 않았다). */
 .battle-transition-overlay.battle-transition--slide-pokemon .battle-transition-blind-bar { transform-origin: left; }
-.battle-transition-overlay.battle-transition--focus-blur { backdrop-filter: blur(6px); }
-.battle-transition-overlay.battle-transition--focus-blur .battle-transition-flash { backdrop-filter: blur(12px); background: rgba(12,16,32,.35); }
-.battle-transition-overlay.battle-transition--sweep-cyan .battle-transition-blinds::before { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(46,196,255,.18), transparent); animation: sweep-cyan 480ms ease forwards; pointer-events: none; }
-@keyframes sweep-cyan { 0%{transform:translateX(-100%)} 100%{transform:translateX(100%)} }
-.battle-transition-overlay.battle-transition--brave-shift { --battle-transition-cover: #f6ecd4; }
-.battle-transition-overlay.battle-transition--psychedelic .battle-transition-blind-bar { background: conic-gradient(from 0deg,#ff4fd8,#4f8cff,#4fffa0,#ffe14f,#ff4fd8); }
-.battle-transition-overlay.battle-transition--curtain-dq .battle-transition-blind-bar { transform-origin: top; }
 
 /* 도트 측면 진입: 흰 번쩍임 두 번(340ms) → 교차 가로 줄 닫힘(260ms).
    JS 타임라인 안에서 190 + 7×10ms에 모두 닫힌다. 전투 씬이 생기기 전의

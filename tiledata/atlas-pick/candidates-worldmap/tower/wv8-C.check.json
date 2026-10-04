@@ -1,0 +1,42 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/tower/wv8-C.pxg",
+ "set": "worldmap",
+ "id": "tower",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.08
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.087
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 12,
+ "bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "note": "다른 해석 — 금빛 긴 첨탑, 발치가 넓은 받침, 가는 실루엣",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 2,
+   "atLeast95": 0,
+   "max": 0.065
+  },
+  "refmapWorld": {
+   "cells": 2,
+   "atLeast95": 0,
+   "max": 0.126
+  }
+ }
+}

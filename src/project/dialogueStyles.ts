@@ -19,6 +19,7 @@ import type { GamePresetId } from "@/project/gameDesignBrief";
 
 export const DIALOGUE_STYLE_IDS = [
   "glass",
+  "pixel-cinematic",
   "classic",
   "retro-black",
   "retro-blue",
@@ -74,6 +75,11 @@ export interface DialogueStyleDefinition {
 }
 
 export const DIALOGUE_STYLES: Readonly<Record<DialogueStyleId, DialogueStyleDefinition>> = {
+  "pixel-cinematic": {
+    id: "pixel-cinematic", label: "도트 · 반투명 영화창", defaultVoice: "soft",
+    description: "작은 반투명 먹빛 창, 각진 이중 테두리와 픽셀 글꼴. 배경과 인물이 계속 보입니다.",
+    fit: "16비트 도트 배경의 관계·연애와 조용한 첫 만남.",
+  },
   glass: {
     id: "glass", label: "유리 · 기본", defaultVoice: "none",
     description: "반투명 남색 유리창과 가는 테두리. 지금까지의 기본 대화창입니다.",
@@ -300,6 +306,64 @@ export function parseDialogueEmotion(value: string): DialogueEmotionId | undefin
 
 /** 프로젝트 기본 말 빠르기 배율 범위(화자 speed 와 곱한다). */
 export const DIALOGUE_PROJECT_SPEED_LIMITS = { min: 0.5, max: 2 } as const;
+/**
+ * 하단 대사창 뒤에 서는 전신 초상의 배치. 값은 모두 백분율(정수)이다.
+ *   height — 초상 높이 = 화면 높이의 몇 % (그림은 9:16 이라 폭은 따라온다)
+ *   drop   — 초상 높이의 몇 % 를 화면 아래로 내려 자르나(다리를 얼마나 숨기나)
+ * 프로젝트 기본(system.dialogueFullPortrait)에 장면별 배율(FaceGraphic.fullScale)이 한 번 더 곱해진다.
+ */
+export const DIALOGUE_FULL_PORTRAIT_DEFAULTS = { height: 125, drop: 20 } as const;
+export const DIALOGUE_FULL_PORTRAIT_LIMITS = {
+  height: { min: 40, max: 200 },
+  drop: { min: 0, max: 60 },
+  scale: { min: 40, max: 200 },
+} as const;
+export interface DialogueFullPortraitSettings {
+  readonly height?: number;
+  readonly drop?: number;
+}
+export interface DialogueFullPortraitLayout {
+  /** 화면 높이 대비 초상 높이 배율(1.25 = 125%). 장면 배율까지 곱한 값. */
+  readonly heightRatio: number;
+  /** 초상 높이 대비 화면 밖으로 내리는 비율. */
+  readonly dropRatio: number;
+}
+
+function clampPercent(value: unknown, limit: { readonly min: number; readonly max: number }): number | undefined {
+  if (typeof value !== "number" || !Number.isFinite(value)) return undefined;
+  return Math.round(clamp(value, limit.min, limit.max));
+}
+
+/** 저장용 정규화 — 기본값과 같은 칸은 지운다. 남는 칸이 없으면 undefined. */
+export function normalizeDialogueFullPortraitSettings(value: unknown): DialogueFullPortraitSettings | undefined {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return undefined;
+  const record = value as Record<string, unknown>;
+  const height = clampPercent(record.height, DIALOGUE_FULL_PORTRAIT_LIMITS.height);
+  const drop = clampPercent(record.drop, DIALOGUE_FULL_PORTRAIT_LIMITS.drop);
+  const out = {
+    ...(height !== undefined && height !== DIALOGUE_FULL_PORTRAIT_DEFAULTS.height ? { height } : {}),
+    ...(drop !== undefined && drop !== DIALOGUE_FULL_PORTRAIT_DEFAULTS.drop ? { drop } : {}),
+  };
+  return Object.keys(out).length > 0 ? out : undefined;
+}
+
+/** 장면 배율(%) 정규화 — 100 과 무효값은 undefined(저장하지 않음). */
+export function normalizeDialogueFullScale(value: unknown): number | undefined {
+  const scale = clampPercent(value, DIALOGUE_FULL_PORTRAIT_LIMITS.scale);
+  return scale === undefined || scale === 100 ? undefined : scale;
+}
+
+/** 런타임·에디터 미리보기가 같이 쓰는 전신 배치. */
+export function resolveDialogueFullPortraitLayout(
+  settings: unknown,
+  fullScale?: unknown,
+): DialogueFullPortraitLayout {
+  const normalized = normalizeDialogueFullPortraitSettings(settings);
+  const height = normalized?.height ?? DIALOGUE_FULL_PORTRAIT_DEFAULTS.height;
+  const drop = normalized?.drop ?? DIALOGUE_FULL_PORTRAIT_DEFAULTS.drop;
+  const scale = normalizeDialogueFullScale(fullScale) ?? 100;
+  return { heightRatio: (height / 100) * (scale / 100), dropRatio: drop / 100 };
+}
 /** 구두점 뒤 쉼(ms). 기본 글자 간격과 같이 화자 빠르기로 늘고 준다. */
 export const DIALOGUE_PUNCTUATION_PAUSE_MS = { comma: 120, stop: 300 } as const;
 const COMMA_CHARS = new Set([",", "、", "，"]);
@@ -403,7 +467,7 @@ export const RECOMMENDED_DIALOGUE_STYLE_BY_PRESET: Readonly<Record<GamePresetId,
   "horror-gallery": "float",
   "school-horror": "mono-heavy",
   "farm-life": "wood",
-  "partner-raise": "cream",
+  "partner-raise": "pixel-cinematic",
   "action-rpg": "white-card",
 };
 

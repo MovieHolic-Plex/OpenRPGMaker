@@ -1,0 +1,31 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/stairs_up_stone/w3-C.pxg",
+ "id": "stairs up stone",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 9,
+  "atLeast95": 0,
+  "max": 0.082
+ },
+ "lint": {
+  "failed": [],
+  "pass": true
+ },
+ "colors": 12,
+ "v5_colors": 12,
+ "bbox": [
+  0,
+  0,
+  47,
+  47
+ ],
+ "v5_bbox": [
+  0,
+  0,
+  47,
+  47
+ ],
+ "note": "실루엣·비례 재해석 — 가로로 꽉 찬 띠 대신 위쪽 아치형 어둠(x12~35) 아래로 좁게 시작해 아래로 갈수록 넓어지는 사다리꼴 계단(폭 24→39칸). 바깥은 벽돌 결 있는 옆벽, 계단 옆에는 경사 난간 그늘(H/J 밝은 쪽, A/F 어두운 쪽)을 둠. 원근이 강해 오르는 방향이 뚜렷함.",
+ "ok": true
+}

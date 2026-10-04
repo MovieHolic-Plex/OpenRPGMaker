@@ -1,0 +1,23 @@
+{
+ "id": "meal_tray",
+ "slug": "meal_tray",
+ "name": "식판",
+ "scene": "급식실·매점",
+ "place": "in",
+ "cells": [
+  1,
+  1
+ ],
+ "canvas": [
+  16,
+  16
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "스테인리스 식판 한 개 — 칸 다섯(밥 흰색·국 주황·반찬 초록·빨강 점), 옆 숟가락. 탁상 물건이라 16px 안에 작게(발치 그림자 없이 받침 그늘 1px).",
+ "palette_hint": "tray 식판, vwhite 밥, vred·vgreen·vyellow 반찬",
+ "pair": [
+  "cafeteria_table"
+ ],
+ "worker": "s3"
+}

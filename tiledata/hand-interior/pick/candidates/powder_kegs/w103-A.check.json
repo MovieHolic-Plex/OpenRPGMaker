@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/powder_kegs/w103-A.pxg",
+ "id": "powder kegs",
+ "hard": [],
+ "warn": [
+  "파일 이름이 <작업자>-<방향>.pxg 꼴이 아니다(w1-A.pxg): w103-A.pxg"
+ ],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.056
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 15,
+ "v5_colors": 5,
+ "bbox": [
+  0,
+  1,
+  14,
+  12
+ ],
+ "v5_bbox": [
+  2,
+  2,
+  13,
+  12
+ ],
+ "note": "화약 통: 통 둘, 각각 위 타원 뚜껑 4줄(밝은 앞 테)+몸통 6줄, 쇠띠 둘, 앞 통 붉은 표",
+ "ok": true
+}

@@ -1,0 +1,50 @@
+{
+ "id": "portrait_slashed",
+ "slug": "portrait_slashed",
+ "name": "찢긴 초상화",
+ "scene": "낡은 서양 저택",
+ "cells": [
+  1,
+  2
+ ],
+ "canvas": [
+  16,
+  32
+ ],
+ "layer": "wall",
+ "layer_ko": "벽 걸이(위층, 투명 배경·벽면에 붙는다)",
+ "description": "portrait_eyes 와 같은 액자·같은 크기, 캔버스가 칼로 X 자로 찢겨 속 어둠이 보이고 얼굴 부분이 떨어져 늘어짐. 두 초상을 벽에 나란히 걸면 한 식구로 보이게 액자는 같게.",
+ "palette_hint": "tarn 테, bisque, velv, void 찢긴 속",
+ "worker_v1": "h1",
+ "stage": 2,
+ "stage_ko": "2단계 연출(기본이 선 뒤)",
+ "worker": "h1",
+ "set_with": [
+  "portrait_eyes"
+ ],
+ "v5_ref": [
+  {
+   "id": "picture",
+   "name_ko": "그림",
+   "atlas": {
+    "x": 592,
+    "y": 352,
+    "w": 16,
+    "h": 16,
+    "frames": 1,
+    "padTop": 0
+   },
+   "image": {
+    "w": 16,
+    "h": 16
+   },
+   "kind": "hang",
+   "footprint": {
+    "w": 1,
+    "h": 0
+   },
+   "pick_dir": "tiledata/hand-interior/pick/candidates/picture",
+   "file": "ref-v5-1.png"
+  }
+ ]
+}

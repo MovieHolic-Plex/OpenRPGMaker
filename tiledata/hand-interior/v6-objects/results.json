@@ -1,0 +1,779 @@
+{
+ "targets": 113,
+ "drawings": 44,
+ "v5": {
+  "meanDiff": 29.3,
+  "bigDiffPct": 28.0,
+  "ditherPct": 2.5,
+  "colors": 218,
+  "innerPx": 27463
+ },
+ "v6": {
+  "meanDiff": 23.0,
+  "bigDiffPct": 21.4,
+  "ditherPct": 0.3,
+  "colors": 156,
+  "innerPx": 27226
+ },
+ "bodyOnlyV5": {
+  "meanDiff": 26.4,
+  "bigDiffPct": 26.7,
+  "ditherPct": 0.4,
+  "colors": 107,
+  "innerPx": 11876
+ },
+ "bodyOnlyV6": {
+  "meanDiff": 18.1,
+  "bigDiffPct": 17.3,
+  "ditherPct": 0.1,
+  "colors": 45,
+  "innerPx": 11729
+ },
+ "v6Colors": {
+  "all": 156,
+  "sharedRamp": 56,
+  "goodsAndFire": 100,
+  "bodyOnly": 45,
+  "rampSize": 64
+ },
+ "refCompare": {
+  "v6": {
+   "cells": 188,
+   "maxSimilarity": 0.48,
+   "cells95": 0
+  },
+  "v5": {
+   "cells": 188,
+   "maxSimilarity": 0.395,
+   "cells95": 0
+  },
+  "refCells": 3083,
+  "refSources": 360
+ },
+ "rooms": [
+  {
+   "key": "bakery",
+   "name": "빵집",
+   "v6Items": 12,
+   "items": 30
+  },
+  {
+   "key": "inn",
+   "name": "조랑말 여관",
+   "v6Items": 30,
+   "items": 56
+  },
+  {
+   "key": "manor_1f",
+   "name": "저택 1층",
+   "v6Items": 29,
+   "items": 67
+  }
+ ],
+ "perObject": {
+  "bed green": {
+   "v5": {
+    "meanDiff": 27.8,
+    "bigDiffPct": 26.5,
+    "ditherPct": 0.2,
+    "colors": 22,
+    "innerPx": 498
+   },
+   "v6": {
+    "meanDiff": 18.0,
+    "bigDiffPct": 14.1,
+    "ditherPct": 0.4,
+    "colors": 14,
+    "innerPx": 492
+   }
+  },
+  "double bed red": {
+   "v5": {
+    "meanDiff": 22.4,
+    "bigDiffPct": 25.0,
+    "ditherPct": 0.4,
+    "colors": 22,
+    "innerPx": 1074
+   },
+   "v6": {
+    "meanDiff": 16.1,
+    "bigDiffPct": 13.4,
+    "ditherPct": 0.2,
+    "colors": 14,
+    "innerPx": 1052
+   }
+  },
+  "bed blue": {
+   "v5": {
+    "meanDiff": 28.6,
+    "bigDiffPct": 30.5,
+    "ditherPct": 0.2,
+    "colors": 22,
+    "innerPx": 498
+   },
+   "v6": {
+    "meanDiff": 18.5,
+    "bigDiffPct": 17.2,
+    "ditherPct": 0.4,
+    "colors": 14,
+    "innerPx": 492
+   }
+  },
+  "bookshelf 1w": {
+   "v5": {
+    "meanDiff": 37.7,
+    "bigDiffPct": 34.2,
+    "ditherPct": 0.0,
+    "colors": 24,
+    "innerPx": 500
+   },
+   "v6": {
+    "meanDiff": 23.6,
+    "bigDiffPct": 27.0,
+    "ditherPct": 0.0,
+    "colors": 22,
+    "innerPx": 504
+   }
+  },
+  "bookshelf 2w": {
+   "v5": {
+    "meanDiff": 34.8,
+    "bigDiffPct": 32.0,
+    "ditherPct": 0.0,
+    "colors": 32,
+    "innerPx": 1076
+   },
+   "v6": {
+    "meanDiff": 23.4,
+    "bigDiffPct": 25.6,
+    "ditherPct": 0.0,
+    "colors": 22,
+    "innerPx": 1080
+   }
+  },
+  "bookshelf 3w": {
+   "v5": {
+    "meanDiff": 36.2,
+    "bigDiffPct": 32.2,
+    "ditherPct": 0.0,
+    "colors": 32,
+    "innerPx": 1652
+   },
+   "v6": {
+    "meanDiff": 22.8,
+    "bigDiffPct": 26.2,
+    "ditherPct": 0.0,
+    "colors": 24,
+    "innerPx": 1656
+   }
+  },
+  "wardrobe": {
+   "v5": {
+    "meanDiff": 18.8,
+    "bigDiffPct": 26.1,
+    "ditherPct": 0.0,
+    "colors": 10,
+    "innerPx": 420
+   },
+   "v6": {
+    "meanDiff": 12.0,
+    "bigDiffPct": 10.8,
+    "ditherPct": 0.0,
+    "colors": 8,
+    "innerPx": 410
+   }
+  },
+  "clock": {
+   "v5": {
+    "meanDiff": 45.2,
+    "bigDiffPct": 45.8,
+    "ditherPct": 0.0,
+    "colors": 13,
+    "innerPx": 184
+   },
+   "v6": {
+    "meanDiff": 37.9,
+    "bigDiffPct": 37.4,
+    "ditherPct": 0.0,
+    "colors": 10,
+    "innerPx": 150
+   }
+  },
+  "nightstand": {
+   "v5": {
+    "meanDiff": 33.2,
+    "bigDiffPct": 41.7,
+    "ditherPct": 0.0,
+    "colors": 9,
+    "innerPx": 120
+   },
+   "v6": {
+    "meanDiff": 17.9,
+    "bigDiffPct": 17.3,
+    "ditherPct": 0.0,
+    "colors": 8,
+    "innerPx": 122
+   }
+  },
+  "cupboard": {
+   "v5": {
+    "meanDiff": 23.4,
+    "bigDiffPct": 24.3,
+    "ditherPct": 1.0,
+    "colors": 12,
+    "innerPx": 308
+   },
+   "v6": {
+    "meanDiff": 16.4,
+    "bigDiffPct": 16.3,
+    "ditherPct": 0.0,
+    "colors": 8,
+    "innerPx": 286
+   }
+  },
+  "chest": {
+   "v5": {
+    "meanDiff": 22.8,
+    "bigDiffPct": 25.6,
+    "ditherPct": 0.0,
+    "colors": 10,
+    "innerPx": 110
+   },
+   "v6": {
+    "meanDiff": 21.7,
+    "bigDiffPct": 18.6,
+    "ditherPct": 0.0,
+    "colors": 12,
+    "innerPx": 110
+   }
+  },
+  "royal chest": {
+   "v5": {
+    "meanDiff": 31.1,
+    "bigDiffPct": 39.2,
+    "ditherPct": 0.0,
+    "colors": 10,
+    "innerPx": 110
+   },
+   "v6": {
+    "meanDiff": 29.3,
+    "bigDiffPct": 31.2,
+    "ditherPct": 0.0,
+    "colors": 9,
+    "innerPx": 110
+   }
+  },
+  "barrel": {
+   "v5": {
+    "meanDiff": 16.8,
+    "bigDiffPct": 12.7,
+    "ditherPct": 0.8,
+    "colors": 10,
+    "innerPx": 122
+   },
+   "v6": {
+    "meanDiff": 17.1,
+    "bigDiffPct": 10.6,
+    "ditherPct": 0.0,
+    "colors": 12,
+    "innerPx": 120
+   }
+  },
+  "barrel:apple": {
+   "v5": {
+    "meanDiff": 32.5,
+    "bigDiffPct": 41.8,
+    "ditherPct": 0.0,
+    "colors": 19,
+    "innerPx": 122
+   },
+   "v6": {
+    "meanDiff": 28.9,
+    "bigDiffPct": 27.7,
+    "ditherPct": 0.0,
+    "colors": 17,
+    "innerPx": 118
+   }
+  },
+  "barrel:fish": {
+   "v5": {
+    "meanDiff": 32.7,
+    "bigDiffPct": 35.1,
+    "ditherPct": 0.0,
+    "colors": 21,
+    "innerPx": 117
+   },
+   "v6": {
+    "meanDiff": 29.2,
+    "bigDiffPct": 20.3,
+    "ditherPct": 0.0,
+    "colors": 19,
+    "innerPx": 112
+   }
+  },
+  "quench barrel": {
+   "v5": {
+    "meanDiff": 24.4,
+    "bigDiffPct": 26.8,
+    "ditherPct": 0.0,
+    "colors": 15,
+    "innerPx": 110
+   },
+   "v6": {
+    "meanDiff": 19.1,
+    "bigDiffPct": 12.6,
+    "ditherPct": 0.0,
+    "colors": 15,
+    "innerPx": 106
+   }
+  },
+  "weapon barrel": {
+   "v5": {
+    "meanDiff": 30.7,
+    "bigDiffPct": 36.5,
+    "ditherPct": 0.0,
+    "colors": 15,
+    "innerPx": 112
+   },
+   "v6": {
+    "meanDiff": 17.0,
+    "bigDiffPct": 11.6,
+    "ditherPct": 0.0,
+    "colors": 12,
+    "innerPx": 111
+   }
+  },
+  "water jar": {
+   "v5": {
+    "meanDiff": 19.2,
+    "bigDiffPct": 14.5,
+    "ditherPct": 0.0,
+    "colors": 8,
+    "innerPx": 84
+   },
+   "v6": {
+    "meanDiff": 15.2,
+    "bigDiffPct": 7.6,
+    "ditherPct": 0.0,
+    "colors": 9,
+    "innerPx": 90
+   }
+  },
+  "pot": {
+   "v5": {
+    "meanDiff": 21.2,
+    "bigDiffPct": 6.2,
+    "ditherPct": 0.0,
+    "colors": 6,
+    "innerPx": 76
+   },
+   "v6": {
+    "meanDiff": 16.8,
+    "bigDiffPct": 11.3,
+    "ditherPct": 1.3,
+    "colors": 6,
+    "innerPx": 78
+   }
+  },
+  "sofa": {
+   "v5": {
+    "meanDiff": 16.2,
+    "bigDiffPct": 15.1,
+    "ditherPct": 0.0,
+    "colors": 5,
+    "innerPx": 338
+   },
+   "v6": {
+    "meanDiff": 14.3,
+    "bigDiffPct": 7.0,
+    "ditherPct": 0.0,
+    "colors": 6,
+    "innerPx": 284
+   }
+  },
+  "armchair": {
+   "v5": {
+    "meanDiff": 29.5,
+    "bigDiffPct": 38.8,
+    "ditherPct": 0.0,
+    "colors": 7,
+    "innerPx": 97
+   },
+   "v6": {
+    "meanDiff": 17.1,
+    "bigDiffPct": 12.2,
+    "ditherPct": 0.0,
+    "colors": 6,
+    "innerPx": 114
+   }
+  },
+  "chair S": {
+   "v5": {
+    "meanDiff": 24.8,
+    "bigDiffPct": 26.6,
+    "ditherPct": 0.0,
+    "colors": 8,
+    "innerPx": 66
+   },
+   "v6": {
+    "meanDiff": 21.3,
+    "bigDiffPct": 29.3,
+    "ditherPct": 0.0,
+    "colors": 5,
+    "innerPx": 28
+   }
+  },
+  "chair N": {
+   "v5": {
+    "meanDiff": 23.7,
+    "bigDiffPct": 27.0,
+    "ditherPct": 0.0,
+    "colors": 7,
+    "innerPx": 87
+   },
+   "v6": {
+    "meanDiff": 26.5,
+    "bigDiffPct": 38.5,
+    "ditherPct": 0.0,
+    "colors": 5,
+    "innerPx": 60
+   }
+  },
+  "chair E": {
+   "v5": {
+    "meanDiff": 23.3,
+    "bigDiffPct": 20.8,
+    "ditherPct": 0.0,
+    "colors": 8,
+    "innerPx": 47
+   },
+   "v6": {
+    "meanDiff": 17.3,
+    "bigDiffPct": 18.8,
+    "ditherPct": 0.0,
+    "colors": 5,
+    "innerPx": 34
+   }
+  },
+  "chair W": {
+   "v5": {
+    "meanDiff": 23.3,
+    "bigDiffPct": 20.8,
+    "ditherPct": 0.0,
+    "colors": 8,
+    "innerPx": 47
+   },
+   "v6": {
+    "meanDiff": 20.1,
+    "bigDiffPct": 27.5,
+    "ditherPct": 0.0,
+    "colors": 5,
+    "innerPx": 45
+   }
+  },
+  "stool": {
+   "v5": {
+    "meanDiff": 24.5,
+    "bigDiffPct": 30.3,
+    "ditherPct": 0.0,
+    "colors": 6,
+    "innerPx": 57
+   },
+   "v6": {
+    "meanDiff": 6.3,
+    "bigDiffPct": 10.5,
+    "ditherPct": 5.3,
+    "colors": 5,
+    "innerPx": 38
+   }
+  },
+  "bar stool": {
+   "v5": {
+    "meanDiff": 8.2,
+    "bigDiffPct": 17.9,
+    "ditherPct": 0.0,
+    "colors": 8,
+    "innerPx": 21
+   },
+   "v6": {
+    "meanDiff": 18.4,
+    "bigDiffPct": 27.0,
+    "ditherPct": 0.0,
+    "colors": 7,
+    "innerPx": 27
+   }
+  },
+  "bench 2": {
+   "v5": {
+    "meanDiff": 17.1,
+    "bigDiffPct": 15.5,
+    "ditherPct": 0.0,
+    "colors": 7,
+    "innerPx": 204
+   },
+   "v6": {
+    "meanDiff": 13.8,
+    "bigDiffPct": 16.0,
+    "ditherPct": 0.0,
+    "colors": 5,
+    "innerPx": 222
+   }
+  },
+  "crate": {
+   "v5": {
+    "meanDiff": 24.4,
+    "bigDiffPct": 35.2,
+    "ditherPct": 0.0,
+    "colors": 8,
+    "innerPx": 110
+   },
+   "v6": {
+    "meanDiff": 18.7,
+    "bigDiffPct": 16.1,
+    "ditherPct": 0.9,
+    "colors": 6,
+    "innerPx": 110
+   }
+  },
+  "crate:apple": {
+   "v5": {
+    "meanDiff": 44.4,
+    "bigDiffPct": 48.5,
+    "ditherPct": 0.0,
+    "colors": 13,
+    "innerPx": 148
+   },
+   "v6": {
+    "meanDiff": 33.1,
+    "bigDiffPct": 42.2,
+    "ditherPct": 0.0,
+    "colors": 11,
+    "innerPx": 148
+   }
+  },
+  "basket:apple": {
+   "v5": {
+    "meanDiff": 47.1,
+    "bigDiffPct": 34.5,
+    "ditherPct": 23.7,
+    "colors": 10,
+    "innerPx": 93
+   },
+   "v6": {
+    "meanDiff": 39.3,
+    "bigDiffPct": 33.9,
+    "ditherPct": 0.0,
+    "colors": 11,
+    "innerPx": 93
+   }
+  },
+  "basket:bun": {
+   "v5": {
+    "meanDiff": 38.3,
+    "bigDiffPct": 17.0,
+    "ditherPct": 28.0,
+    "colors": 9,
+    "innerPx": 93
+   },
+   "v6": {
+    "meanDiff": 32.3,
+    "bigDiffPct": 18.8,
+    "ditherPct": 4.3,
+    "colors": 10,
+    "innerPx": 93
+   }
+  },
+  "sack:grain": {
+   "v5": {
+    "meanDiff": 25.2,
+    "bigDiffPct": 17.9,
+    "ditherPct": 1.4,
+    "colors": 10,
+    "innerPx": 69
+   },
+   "v6": {
+    "meanDiff": 21.3,
+    "bigDiffPct": 13.6,
+    "ditherPct": 1.3,
+    "colors": 9,
+    "innerPx": 77
+   }
+  },
+  "cabinet:pie": {
+   "v5": {
+    "meanDiff": 24.1,
+    "bigDiffPct": 20.1,
+    "ditherPct": 0.0,
+    "colors": 10,
+    "innerPx": 420
+   },
+   "v6": {
+    "meanDiff": 24.9,
+    "bigDiffPct": 24.9,
+    "ditherPct": 0.0,
+    "colors": 10,
+    "innerPx": 420
+   }
+  },
+  "cabinet:bottle+bottler+bottley": {
+   "v5": {
+    "meanDiff": 28.8,
+    "bigDiffPct": 34.9,
+    "ditherPct": 0.0,
+    "colors": 18,
+    "innerPx": 420
+   },
+   "v6": {
+    "meanDiff": 28.8,
+    "bigDiffPct": 38.2,
+    "ditherPct": 0.0,
+    "colors": 18,
+    "innerPx": 420
+   }
+  },
+  "cake display case": {
+   "v5": {
+    "meanDiff": 24.5,
+    "bigDiffPct": 31.7,
+    "ditherPct": 0.5,
+    "colors": 22,
+    "innerPx": 600
+   },
+   "v6": {
+    "meanDiff": 17.3,
+    "bigDiffPct": 18.0,
+    "ditherPct": 0.4,
+    "colors": 21,
+    "innerPx": 554
+   }
+  },
+  "potted fern": {
+   "v5": {
+    "meanDiff": 21.4,
+    "bigDiffPct": 20.6,
+    "ditherPct": 0.0,
+    "colors": 9,
+    "innerPx": 24
+   },
+   "v6": {
+    "meanDiff": 25.0,
+    "bigDiffPct": 21.2,
+    "ditherPct": 0.0,
+    "colors": 8,
+    "innerPx": 49
+   }
+  },
+  "potted flowering": {
+   "v5": {
+    "meanDiff": 21.4,
+    "bigDiffPct": 20.6,
+    "ditherPct": 0.0,
+    "colors": 9,
+    "innerPx": 24
+   },
+   "v6": {
+    "meanDiff": 31.2,
+    "bigDiffPct": 30.8,
+    "ditherPct": 0.0,
+    "colors": 12,
+    "innerPx": 70
+   }
+  },
+  "potted sapling": {
+   "v5": {
+    "meanDiff": 20.0,
+    "bigDiffPct": 12.9,
+    "ditherPct": 2.4,
+    "colors": 11,
+    "innerPx": 42
+   },
+   "v6": {
+    "meanDiff": 18.5,
+    "bigDiffPct": 11.3,
+    "ditherPct": 0.0,
+    "colors": 11,
+    "innerPx": 71
+   }
+  },
+  "fireplace": {
+   "v5": {
+    "meanDiff": 22.8,
+    "bigDiffPct": 24.5,
+    "ditherPct": 0.1,
+    "colors": 21,
+    "innerPx": 900
+   },
+   "v6": {
+    "meanDiff": 16.8,
+    "bigDiffPct": 12.8,
+    "ditherPct": 0.1,
+    "colors": 17,
+    "innerPx": 900
+   }
+  },
+  "bread oven": {
+   "v5": {
+    "meanDiff": 31.1,
+    "bigDiffPct": 35.5,
+    "ditherPct": 0.3,
+    "colors": 20,
+    "innerPx": 702
+   },
+   "v6": {
+    "meanDiff": 18.2,
+    "bigDiffPct": 9.8,
+    "ditherPct": 0.1,
+    "colors": 20,
+    "innerPx": 696
+   }
+  },
+  "stove": {
+   "v5": {
+    "meanDiff": 24.7,
+    "bigDiffPct": 23.7,
+    "ditherPct": 0.0,
+    "colors": 10,
+    "innerPx": 264
+   },
+   "v6": {
+    "meanDiff": 19.9,
+    "bigDiffPct": 10.4,
+    "ditherPct": 0.0,
+    "colors": 10,
+    "innerPx": 254
+   }
+  },
+  "kitchen range": {
+   "v5": {
+    "meanDiff": 24.3,
+    "bigDiffPct": 27.9,
+    "ditherPct": 1.4,
+    "colors": 14,
+    "innerPx": 940
+   },
+   "v6": {
+    "meanDiff": 17.1,
+    "bigDiffPct": 12.1,
+    "ditherPct": 0.0,
+    "colors": 13,
+    "innerPx": 940
+   }
+  },
+  "counter 3x1": {
+   "v5": {
+    "meanDiff": 13.8,
+    "bigDiffPct": 18.0,
+    "ditherPct": 2.4,
+    "colors": 8,
+    "innerPx": 1012
+   },
+   "v6": {
+    "meanDiff": 8.8,
+    "bigDiffPct": 6.8,
+    "ditherPct": 0.0,
+    "colors": 6,
+    "innerPx": 1012
+   }
+  }
+ }
+}

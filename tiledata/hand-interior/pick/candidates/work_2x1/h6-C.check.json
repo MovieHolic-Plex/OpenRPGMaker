@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/work_2x1/h6-C.pxg",
+ "id": "work 2x1",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.018
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 7,
+ "v5_colors": 7,
+ "bbox": [
+  0,
+  1,
+  31,
+  15
+ ],
+ "v5_bbox": [
+  0,
+  1,
+  31,
+  15
+ ],
+ "note": "앵커 결에 맞춤: 왼쪽 B 테를 A 윤곽으로 통일, 윗면 위·왼 밝은 C 한 줄, 결을 짧은 점무늬에서 E 긴 줄 몇 가닥으로, 앞턱 E 줄 유지(윗면 8줄·앞판 2줄·다리 그대로)",
+ "ok": true
+}

@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/hosp_floor/h5-C.pxg",
+ "set": "horror",
+ "id": "hosp_floor",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.184
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.098
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "outline_black"
+  ]
+ },
+ "colors": 11,
+ "bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "note": "끌린 핏자국이 바닥을 가로질러 손바닥·손가락 자국으로 끝남(핏빛 6분의 1 이하), 아래 왼쪽에 깨진 타일과 틈. 타일은 어두운 청회색이라 핏빛만 튐",
+ "ok": true
+}

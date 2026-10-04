@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/reredos/w1-A.pxg",
+ "id": "reredos",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.027
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 12,
+ "v5_colors": 13,
+ "bbox": [
+  0,
+  2,
+  47,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  2,
+  47,
+  31
+ ],
+ "note": "v5 를 정리: 세 칸 모두 같은 틀로 — 위 띠(밝은 점 반복)·기둥(왼쪽 밝음/오른쪽 어두움)·아치 감실 파랑을 왼쪽 밝고 오른쪽 어둡게, 감실 위·왼쪽 가장자리는 어두운 금, 아래·오른쪽은 밝은 금으로 파인 느낌. v5 의 어지러운 사선 무늬를 없애고 가운데 금 십자가·좌우 붉은/녹색 휘장으로 읽기 쉽게",
+ "ok": true
+}

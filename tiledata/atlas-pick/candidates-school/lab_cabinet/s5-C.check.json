@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/lab_cabinet/s5-C.pxg",
+ "set": "school",
+ "id": "lab_cabinet",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.135
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.044
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 14,
+ "bbox": [
+  1,
+  1,
+  30,
+  31
+ ],
+ "note": "실루엣 재해석: 나무(vwood) 진열장 — 위쪽 튀어나온 왕관 턱, 큰 통유리 문 한 짝에 병 두 줄, 아래 서랍 둘, 굵은 발",
+ "ok": true
+}

@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/pew_E2/w45-A.pxg",
+ "id": "pew E2",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.055
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 9,
+ "v5_colors": 9,
+ "bbox": [
+  2,
+  8,
+  14,
+  46
+ ],
+ "v5_bbox": [
+  2,
+  8,
+  14,
+  47
+ ],
+ "note": "남향 회중석 시점: 서쪽 등받이가 5줄 솟고 긴 좌판 윗면+붉은 방석 2개, 남쪽 끝 앞면. 관문 ok t=5 f=33",
+ "ok": true
+}

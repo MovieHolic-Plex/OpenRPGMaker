@@ -1,7 +1,12 @@
 import { PiTilesetReferenceGate } from "./tilesetReferenceGate";
+import { NULLABLE_OPTIONAL_TOOLS, nullableOptionalParameters, omitUnusedOptionalArguments } from './optionalToolArguments';
 import { spatialReferenceImages } from '@/editor/tools/spatialReferenceTools';
 import { interiorPresetImages } from '@/editor/tools/interiorPresetExamples';
 import { villageReferenceImages } from '@/ai/villageReferenceExamples';
+import { retroChoreographyPreviewImages } from '@/assets/retroChoreographyPreviewImage';
+import { cutscenePreviewImages } from '@/editor/tools/cutscenePreviewTools';
+import { cutsceneArtImages } from '@/editor/tools/cutsceneArtTools';
+import { worldTerrainImages } from '@/editor/tools/worldTerrainTools';
 import { TILESET_REFERENCE_READ_TOOLS, TILESET_REFERENCE_WRITERS } from "@/editor/tools/tilesetReferenceTools";
 // 레지스트리 툴 → Pi AgentTool 모양 어댑터. 순수 함수라 브라우저/Bun/Node 어디서나 같다.
 //
@@ -18,6 +23,7 @@ import { runTool } from "@/editor/tools";
 import { EVENT_COMMAND_ASSIST_TOOL } from "@/editor/tools/eventCommandAssistTool";
 import { prepareTool, runToolAsync } from "@/editor/tools/asyncToolRunner";
 import type { ToolContext, ToolResult } from "@/editor/tools/types";
+import { synthesizeToolConstructionLogs, withConstructionLog, type ConstructionLog } from "@/editor/tools/constructionLog";
 import type { Project } from "@/project/types";
 import { mapBundleMapSpill } from "./mapBundle";
 import { modernTilesetViolation, type ModernTilesetPolicy } from '../modernTilesetPolicy';
@@ -48,6 +54,8 @@ export interface PiToolCallRecord {
   readonly name: string;
   readonly args: unknown;
   readonly result: ToolResult;
+  /** 쓰기 도구가 남긴 시공 단계(마을 짓기 등). 체크포인트에 실려 편집기 재생에만 쓰인다. */
+  readonly constructionLogs?: readonly ConstructionLog[];
 }
 
 export interface CreatePiToolsetOptions {
@@ -77,6 +85,13 @@ export interface CreatePiToolsetOptions {
 }
 
 const DEFAULT_MAX_DATA_CHARS = 12_000;
+/**
+ * read_tileset_reference 한 쪽의 결과 상한. 쪽은 코드 울타리를 통째로 지키느라 최대 약 18,000자(JSON 으로 약 24,000)까지 갈 수 있는데,
+ * 기본 상한 12,000 에서 잘린 쪽(dataTruncated)은 선행 읽기 게이트가 «읽은 증거»로 인정하지 않는다(tilesetReferenceGate.payload) —
+ * 그 쪽은 몇 번을 다시 읽어도 영영 통과하지 못한다. 실측(2026-10-04): jp_city 입구 용도 jp-start 의 jp-dict-groups 첫 쪽(15,723자)이 그랬고
+ * fill_region·paint_tiles 가 끝내 막혀 새 맵의 땅을 못 깔았다. 모든 번들 참고문서 1,403쪽 중 61쪽(12개 타일셋)이 12,000자를 넘는다(최대 15,776).
+ */
+const REFERENCE_PAGE_MAX_DATA_CHARS = 30_000;
 const DEFAULT_MAX_ISSUES = 8;
 
 export function selectPiToolDefinitions(
@@ -191,7 +206,7 @@ function scopeViolation(before: Project, after: Project, scopeMapIds: readonly s
     summary: `${toolName} 호출을 되돌렸습니다: ${names} 은(는) 이번 작업 범위(${scopeMapIds.join(", ")}와 그 실내 맵) 밖이라 이 변경은 병합 때 버려집니다.`
       + (allowsSystem ? " DB·시스템(데이터베이스·설정·스위치 등)은 이번 작업에서도 편집할 수 있지만, 다른 맵은 바꿀 수 없습니다." : "")
       + ` 범위 밖 맵에 문·이벤트·타일을 달지 마세요. 게임 시작 지점이 범위 밖 맵이면 set_start_position 으로 시작 위치를 범위 안 맵(${scopeMapIds[0]})으로 옮기고,`
-      + " 맵 사이 연결은 범위 안 맵끼리(실내는 place_concept·start_interior_room_session 으로 범위 안에 만든다) 만드세요.",
+      + " 맵 사이 연결은 범위 안 맵끼리(실내는 build_hand_interior_room 으로 범위 안에 만든다) 만드세요.",
   };
 }
 
@@ -212,17 +227,23 @@ export function createPiToolset(ctx: ToolContext, options: CreatePiToolsetOption
     name: tool.name,
     label: tool.name,
     description: tool.description,
-    parameters: tool.parameters,
+    parameters: NULLABLE_OPTIONAL_TOOLS.has(tool.name) ? nullableOptionalParameters(tool.parameters) : tool.parameters,
     concurrency: tool.mode === "read" ? "shared" as const : "exclusive" as const,
     async execute(_toolCallId, params, signal) {
-      const args = params && typeof params === "object" ? (params as Record<string, unknown>) : {};
+      const raw = params && typeof params === "object" ? params as Record<string, unknown> : {};
+      const args = NULLABLE_OPTIONAL_TOOLS.has(tool.name)
+        ? omitUnusedOptionalArguments(tool.parameters, raw) as Record<string, unknown> : raw;
       const before = tool.mode === "write" ? captureActivityVisuals(ctx.project, tool.name, args, undefined, "before") : [];
       const gate = tool.mode === "write" ? referenceGate.beforeWrite(ctx.project, tool.name, args) : null;
       const beforeProject = ctx.project;
-      if (!gate && tool.prepare) await prepareTool(tool.name, args);
+      if (!gate && tool.prepare) await prepareTool(tool.name, args, ctx.project);
+      let constructionLogs: readonly ConstructionLog[] = [];
+      const writeStarted = Date.now();
       let result = gate ?? (tool.name === EVENT_COMMAND_ASSIST_TOOL
         ? await runToolAsync(ctx, tool.name, args, { signal })
-        : runTool(ctx, tool.name, args));
+        : tool.mode === "write"
+          ? (({ value, logs }) => { constructionLogs = logs; return value; })(withConstructionLog(tool.name, () => runTool(ctx, tool.name, args)))
+          : runTool(ctx, tool.name, args));
       if (tool.mode === 'write' && result.ok && options.modernTilesetPolicy) {
         const violation = modernTilesetViolation(beforeProject, ctx.project, options.modernTilesetPolicy);
         if (violation) { ctx.project = beforeProject; result = { ok: false, summary: violation }; }
@@ -238,10 +259,15 @@ export function createPiToolset(ctx: ToolContext, options: CreatePiToolsetOption
           if (warnings.length > 0) result = { ...result, warnings: [...(result.warnings ?? []), ...warnings] };
         }
       }
+      // 시공 기록이 없는 쓰기 도구도 실제 변경을 아래층 → 위층 순서로 맵 위에서 다시 튼다(예전 밑그림, 2026-10-04).
+      if (tool.mode === "write" && result.ok && ctx.project !== beforeProject) {
+        constructionLogs = [...constructionLogs, ...synthesizeToolConstructionLogs(tool.name, beforeProject, ctx.project, constructionLogs, Date.now() - writeStarted)];
+      }
       const after = captureActivityVisuals(ctx.project, tool.name, args, result, !result.ok ? "failed" : tool.mode === "write" ? "draft" : "read");
-      options.onCall?.({ toolCallId: _toolCallId, name: tool.name, args, result, visuals: [...before, ...after] });
+      options.onCall?.({ toolCallId: _toolCallId, name: tool.name, args, result, visuals: [...before, ...after],
+        ...(result.ok && constructionLogs.length ? { constructionLogs } : {}) });
       if (!result.ok) throw new Error(formatPiToolFailure(result, maxIssues));
-      const content: PiToolExecResult["content"] = [{ type: "text", text: formatPiToolSuccess(result, maxDataChars) }];
+      const content: PiToolExecResult["content"] = [{ type: "text", text: formatPiToolSuccess(result, tool.name === "read_tileset_reference" ? Math.max(maxDataChars, REFERENCE_PAGE_MAX_DATA_CHARS) : maxDataChars) }];
       if (tool.name === "read_tileset_reference") {
         for (const image of await referenceGate.read(ctx.project, result)) {
           const comma = image.dataUrl.indexOf(",");
@@ -252,6 +278,18 @@ export function createPiToolset(ctx: ToolContext, options: CreatePiToolsetOption
         content.push({type:'image',mimeType:image.dataUrl.slice(5,image.dataUrl.indexOf(';')),data:image.dataUrl.slice(image.dataUrl.indexOf(',')+1)});
       }
       if (tool.name === 'get_concept_facility') for (const image of await interiorPresetImages(result.data)) {
+        content.push({type:'image',mimeType:image.dataUrl.slice(5,image.dataUrl.indexOf(';')),data:image.dataUrl.slice(image.dataUrl.indexOf(',')+1)});
+      }
+      if (tool.name === 'read_world_terrain' || tool.name === 'edit_world_terrain') for (const image of worldTerrainImages(tool.name)) {
+        content.push({type:'image',mimeType:image.dataUrl.slice(5,image.dataUrl.indexOf(';')),data:image.dataUrl.slice(image.dataUrl.indexOf(',')+1)});
+      }
+      if (tool.name === 'generate_cutscene_art') for (const image of cutsceneArtImages(ctx.project, result.data)) {
+        content.push({type:'image',mimeType:image.dataUrl.slice(5,image.dataUrl.indexOf(';')),data:image.dataUrl.slice(image.dataUrl.indexOf(',')+1)});
+      }
+      if (tool.name === 'preview_cutscene') for (const image of await cutscenePreviewImages(ctx.project, args)) {
+        content.push({type:'image',mimeType:image.dataUrl.slice(5,image.dataUrl.indexOf(';')),data:image.dataUrl.slice(image.dataUrl.indexOf(',')+1)});
+      }
+      if (tool.name === 'preview_choreography') for (const image of await retroChoreographyPreviewImages(result.data)) {
         content.push({type:'image',mimeType:image.dataUrl.slice(5,image.dataUrl.indexOf(';')),data:image.dataUrl.slice(image.dataUrl.indexOf(',')+1)});
       }
       if (tool.name === 'author_village') for (const image of await villageReferenceImages(result.data)) {

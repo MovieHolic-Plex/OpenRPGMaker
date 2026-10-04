@@ -5,6 +5,8 @@ import { ensureUploadedTilesetTextures } from "@/assets/uploadedTilesets";
 // 데이터는 직접 쓰지 않고 store.subscribe 로 갱신을 받아 재렌더.
 
 import type Phaser from "phaser";
+import { reliefGroundFromImage, reliefTilesetImage } from "./reliefGroundSurface";
+import { hasRelief } from "@/project/relief/walk";
 import { getLoadedPhaser } from "@/app/phaserRuntime";
 import {
   ensureBundledProjectTextures,
@@ -38,6 +40,8 @@ import { StampOrderRenderer } from "@/editor/stampOrderRenderer";
 import { isAgentGhostPreviewHidden, subscribeAgentGhostPreview } from "@/editor/agentGhostPreview";
 import { AI_LIVE_CANVAS_EVENT } from "@/editor/aiLiveCanvas";
 import { AgentFocusRenderer, AgentGhostPreviewRenderer } from "@/editor/agentPreviewRenderers";
+import { AgentConstructionRevealRenderer } from "@/editor/agentConstructionRevealRenderer";
+import { subscribeAgentConstructionReveal } from "@/editor/agentConstructionReveal";
 import { subscribeInlineProposalActions } from "@/editor/proposalInlineApproval";
 import { CameraScrollbars } from "@/editor/CameraScrollbars";
 import { CameraPanController, pointerScreenPosition } from "@/editor/CameraPanController";
@@ -90,6 +94,8 @@ import {
   applyCameraView,
   shouldLazilyRenderEditMap,
   chunkCoord,
+  EDIT_RELIEF_ROW_DEPTH,
+  RELIEF_STRIP_NAME,
   type EditSceneRenderStats,
   type EditSceneTileIndex,
   syncSelectionOverlay,
@@ -157,12 +163,14 @@ import type { GameMap, MapId } from "@/project/types";
 import { clearMapDissolveVeil } from "@/editor/mapDissolveVeil";
 import { prefersReducedMotion } from "@/util/reducedMotion";
 import { toast } from "@/util/toast";
-import { effectiveHeights, renderRelief } from "@/project/relief/render";
-import { gridFromRelief, RELIEF_TILE } from "@/project/relief/types";
 import { reliefIsFlat } from "@/project/relief/edit";
+import { reliefSignature, reliefTileSlotChangedCells } from "@/project/relief/screen";
+import type { ReliefData } from "@/project/relief/types";
+import { reliefCellLiftPx } from "@/player/reliefStrips";
+import { ReliefLiveStrips } from "@/editor/reliefLiveStrips";
+import { tilesetTextureKey } from "@/editor/tilesetImage";
 
 const PhaserRuntime = getLoadedPhaser();
-const RELIEF_TEXTURE_KEY = "__oprn_edit_relief";
 
 type EventLayerClick = {
   readonly at: number;
@@ -250,6 +258,11 @@ export class EditScene extends PhaserRuntime.Scene {
   /** 높이(relief) 절벽 그림 — 하층 타일 위, 상층 타일 아래. 맵에 relief 가 없으면 비어 있다. */
   private reliefLayer: Phaser.GameObjects.Container | null = null;
   private reliefRenderKey = "";
+  /** 절벽 띠 — 높이 붓이 바꾼 창만 다시 굽는다(reliefLiveStrips.ts). reliefLayer 를 만들 때 같이 만든다. */
+  private reliefStrips: ReliefLiveStrips | null = null;
+  /** 벽면 장식 이미지(띠와 같은 이름 — 타일 다시 그리기가 지우지 않는다). 장식·칩셋이 바뀔 때만 다시 만든다. */
+  private reliefDecorImages: Phaser.GameObjects.Image[] = [];
+  private reliefDecorKey = "";
   private hoverPreviewLayer: Phaser.GameObjects.Container | null = null;
   private selectionLayer: Phaser.GameObjects.Container | null = null;
   private overlayLayer: Phaser.GameObjects.Container | null = null;
@@ -270,6 +283,7 @@ export class EditScene extends PhaserRuntime.Scene {
   /** 미리보기 중인 레이어 스펙(배율 재계산용). */
   private mapBackgroundPreviewSpecs: readonly { readonly fit: "native" | "cover" }[] = [];
   private unsubAgentFocus: (() => void) | null = null;
+  private unsubConstructionReveal: (() => void) | null = null;
   private unsubCameraFocus: (() => void) | null = null;
   private unsubInlineApproval: (() => void) | null = null;
   private unsubAgentBlueprint: (() => void) | null = null;
@@ -280,6 +294,7 @@ export class EditScene extends PhaserRuntime.Scene {
   private agentBlueprintRenderer: AgentBlueprintRenderer | null = null;
   private agentGhostPreviewRenderer: AgentGhostPreviewRenderer | null = null;
   private agentFocusRenderer: AgentFocusRenderer | null = null;
+  private constructionRevealRenderer: AgentConstructionRevealRenderer | null = null;
   private isPainting = false;
   private lastPaintKey = "";
   private lastEventLayerClick: EventLayerClick | null = null;
@@ -501,6 +516,12 @@ export class EditScene extends PhaserRuntime.Scene {
 
     this.tileLayer = this.add.container(0, 0);
     this.reliefLayer = this.add.container(0, 0);
+    this.reliefStrips = new ReliefLiveStrips({
+      scene: this,
+      layer: this.reliefLayer,
+      name: RELIEF_STRIP_NAME,
+      depthOf: (row, part) => row * EDIT_RELIEF_ROW_DEPTH + (part === 1 ? 0 : 7),
+    });
     this.upperTileLayer = this.add.container(0, 0);
     // tileLayer(기본 depth 0)와 upperTileLayer(기본 depth 0)는 add 순서대로 그려진다 —
     // 같은 depth면 display list 등록 순서가 드로 순서다. 명시 depth는 붙이지 않는다:
@@ -525,6 +546,10 @@ export class EditScene extends PhaserRuntime.Scene {
     this.agentGhostPreviewLayer.setDepth(10.5);
     this.agentFocusHighlightLayer = this.add.container(0, 0);
     this.agentFocusHighlightLayer.setDepth(11);
+    // 조수 시공 연출(청사진 덮개가 걷히며 지어지는 모습). 실제 칸 위·고스트 아래.
+    const constructionRevealLayer = this.add.container(0, 0);
+    constructionRevealLayer.setDepth(10.45);
+    this.constructionRevealRenderer = new AgentConstructionRevealRenderer(this, constructionRevealLayer, () => this.mapId());
     this.agentBlueprintRenderer = new AgentBlueprintRenderer(this, this.agentBlueprintLayer, () => this.mapId());
     this.stampOrderRenderer = new StampOrderRenderer(this, this.stampOrderLayer, () => this.mapId());
     this.agentGhostPreviewRenderer = new AgentGhostPreviewRenderer(this, this.agentGhostPreviewLayer, () => this.mapId());
@@ -571,6 +596,11 @@ export class EditScene extends PhaserRuntime.Scene {
       this.redrawWhenViewStateChanges();
     });
     this.unsubAgentFocus = subscribeAgentFocusHighlight((target) => this.showAgentFocusHighlight(target));
+    this.unsubConstructionReveal = subscribeAgentConstructionReveal((plan) => {
+      const played = this.constructionRevealRenderer?.play(plan) ?? false;
+      if (played) this.clearAgentFocusHighlight();
+      return played;
+    });
     this.unsubCameraFocus = subscribeEditorCameraFocus((target) => this.panCameraToTile(target));
     this.unsubAgentGhost = subscribeAgentGhostPreview(() => {
       this.renderAgentGhostPreview();
@@ -611,11 +641,22 @@ export class EditScene extends PhaserRuntime.Scene {
         __oprnEditWorldToClient?: (worldX: number, worldY: number) => { x: number; y: number };
         __oprnEditMapViewport?: () => unknown;
         __oprnEditVisibleArea?: () => unknown;
+        __oprnEditReliefStats?: () => unknown;
+        __oprnEditReliefRebuild?: () => void;
       };
       // 조수가 실제로 읽는 뷰포트 스냅샷과, 그 스냅샷을 만든 기하학(캔버스·가림 제외·worldView·줌).
       // e2e 가 카메라·가림 계산을 다시 구현하면 두 소스가 갈라지므로 씬의 값을 그대로 내보낸다.
       editWindow.__oprnEditMapViewport = () => getEditorMapViewport();
       editWindow.__oprnEditVisibleArea = () => this.cameraVisibleArea();
+      // 높이 붓 굽기 방식별 횟수 — 붓질이 전체 굽기로 떨어지지 않는지 e2e 가 본다(reliefLiveStrips.ts).
+      editWindow.__oprnEditReliefStats = () => ({ ...this.reliefStrips?.counts });
+      // 띠를 버리고 전체를 다시 굽는다 — e2e 가 창 굽기 결과와 전체 굽기 결과의 화면이 같은지 비교한다.
+      editWindow.__oprnEditReliefRebuild = () => {
+        this.reliefStrips?.clear();
+        this.reliefRenderKey = "";
+        this.renderReliefLayer(true);
+        this.requestRenderFrame();
+      };
       editWindow.__oprnEditCamera = () => {
         const c = this.cameras.main;
         return { scrollX: c.scrollX, scrollY: c.scrollY, width: c.width, height: c.height, zoom: c.zoom };
@@ -651,6 +692,7 @@ export class EditScene extends PhaserRuntime.Scene {
   }
 
   private cleanup(): void {
+    this.tilePaintEngine?.endStroke(false);
     this.cancelTextureRedraw();
     this.cancelCameraFocus(false);
     this.unbindCanvasPanGuards();
@@ -670,7 +712,11 @@ export class EditScene extends PhaserRuntime.Scene {
     resetCullableTiles(this);
     // 씬을 다시 만들면 relief 도 다시 그려야 한다 — 키를 비워 둔다.
     this.reliefRenderKey = "";
-    if (this.textures.exists(RELIEF_TEXTURE_KEY)) this.textures.remove(RELIEF_TEXTURE_KEY);
+    this.reliefTileRelief = undefined;
+    this.reliefStrips?.forget();
+    this.reliefStrips = null;
+    this.reliefDecorImages = [];
+    this.reliefDecorKey = "";
 
     this.mapEdgeBand?.destroy();
     this.mapEdgeBand = null;
@@ -681,6 +727,9 @@ export class EditScene extends PhaserRuntime.Scene {
     this.unsubEditor?.();
     this.unsubAgentGhost?.();
     this.unsubAgentFocus?.();
+    this.unsubConstructionReveal?.();
+    this.unsubConstructionReveal = null;
+    this.constructionRevealRenderer?.clear();
     this.unsubCameraFocus?.();
     this.unsubMapBackgroundPreview?.();
     this.unsubAgentBlueprint?.();
@@ -836,6 +885,7 @@ export class EditScene extends PhaserRuntime.Scene {
           tileLayer: this.tileLayer,
           upperTileLayer: this.upperTileLayer,
           tileChunks: this.tileChunks,
+          reliefLayer: this.reliefLayer ?? undefined,
           overlayLayer: this.overlayLayer,
           gridGraphics: this.gridGraphics,
           mapId,
@@ -857,9 +907,10 @@ export class EditScene extends PhaserRuntime.Scene {
       if (chunkKey !== this.lastChunkVisibilityKey) {
         this.lastChunkVisibilityKey = chunkKey;
         for (const [key, chunk] of this.tileChunks) {
-          const comma = key.indexOf(",");
-          const cx = Number(key.slice(0, comma));
-          const cy = Number(key.slice(comma + 1));
+          const coordinates = key.slice(key.indexOf(":") + 1);
+          const comma = coordinates.indexOf(",");
+          const cx = Number(coordinates.slice(0, comma));
+          const cy = Number(coordinates.slice(comma + 1));
           const visible = cx >= firstCx && cx <= lastCx && cy >= firstCy && cy <= lastCy;
           if (chunk.visible !== visible) chunk.setVisible(visible);
         }
@@ -1015,7 +1066,7 @@ export class EditScene extends PhaserRuntime.Scene {
     if (plan.kind === "cells") {
       this.redrawCells(plan.cells);
       // 높이 붓이 절벽을 타일로 구운 칸 — 옛 덧그림이 남아 있으면 걷어 낸다.
-      if (change.scope === "map" && change.relief) this.scheduleReliefRender();
+      if (change.scope === "map" && (change.relief || plan.cells.some(c => c.layer === "lower") && store.getCurrent().maps[mapId!]?.relief)) this.scheduleReliefRender();
       return;
     }
     this.redraw();
@@ -2215,6 +2266,7 @@ export class EditScene extends PhaserRuntime.Scene {
       tileLayer,
       upperTileLayer,
       tileChunks: this.tileChunks,
+      reliefLayer: this.reliefLayer ?? undefined,
       overlayLayer,
       gridGraphics,
       mapId: mid,
@@ -2230,6 +2282,7 @@ export class EditScene extends PhaserRuntime.Scene {
     // 배경 미리보기는 타일 렌더와 별개다 — 토글·맵·그림이 바뀔 때만 스프라이트를 다시 만든다.
     this.renderMapBackgroundPreview();
     this.renderReliefLayer();
+    this.reliefTileRelief = renderedMap?.relief;
     this.renderAgentGhostPreview();
     // 청사진도 고스트와 같이 다시 그린다 — 청사진 스토어 구독만으로는 부족하다. 맵 전환은
     // editorState/store 만 흔들므로, 다시 그리지 않으면 A 맵의 "2/7 집" 사각형이 B 맵의 같은
@@ -2345,6 +2398,7 @@ export class EditScene extends PhaserRuntime.Scene {
       this.reliefRenderQueued = false;
       if (!this.reliefLayer) return;
       const started = performance.now();
+      this.syncReliefLiftedTiles();
       this.renderReliefLayer();
       this.lastReliefRenderAt = performance.now();
       this.lastReliefRenderCost = this.lastReliefRenderAt - started;
@@ -2354,37 +2408,74 @@ export class EditScene extends PhaserRuntime.Scene {
     else requestAnimationFrame(run);
   }
 
-    /**
-   * 높이 절벽 그림. 16px 칸으로 그린 뒤 맵 칸 크기에 맞춰 늘린다. 윗면이 들리는 만큼(pad) 위로 올린다.
-   * 0단 칸은 투명이라 타일이 그대로 보인다. relief 가 같으면(키) 다시 그리지 않는다.
+  /**
+   * 높이 절벽 그림. 맵 줄마다 윗면·벽 띠로 잘라 reliefLayer 에 줄 depth 로 넣는다 — 들린 하층 타일이 같은
+   * 컨테이너에서 섞여(editSceneRender §addTileObject) 남쪽 절벽이 북쪽 고지대를 가린다. 벽면 장식도 여기서 그린다.
+   * relief(단·경사로·벽면 장식)가 같으면(키) 다시 그리지 않는다. 띠는 ReliefLiveStrips 가 바뀐 창만 다시 굽고 올린다.
    */
-  private renderReliefLayer(): void {
+  private renderReliefLayer(forceFull = false): void {
     const layer = this.reliefLayer;
-    if (!layer) return;
+    const strips = this.reliefStrips;
+    if (!layer || !strips) return;
     const mapId = this.mapId();
-    const relief = mapId ? store.getCurrent().maps[mapId]?.relief : undefined;
+    const map = mapId ? store.getCurrent().maps[mapId] : undefined;
+    const relief = map?.relief;
     const tileSize = this.activeTileSize();
-    const key = relief ? `${mapId}|${tileSize}|${relief.width}x${relief.height}|${relief.baked ? "baked" : relief.levels.join(",")}` : "";
-    if (key === this.reliefRenderKey) return;
+    const tileset = map ? store.getCurrent().tilesets[map.tilesetId] : undefined;
+    const textureKey = tileset ? tilesetTextureKey(tileset) : null;
+    const ground = map && tileset && relief && textureKey ? reliefGroundFromImage(map, tileset, reliefTilesetImage(this.textures, textureKey)) : undefined;
+    const active = editorState.get().layer;
+    strips.setGroundAppearance(ground ? active === "upper" ? .58 : active === "event" ? .62 : 1 : 1, ground && active === "upper" ? 0xc8d9bf : null);
+    const key = relief ? `${mapId}|${tileSize}|${map?.tilesetId}|${reliefSignature(relief)}|${ground?.signature ?? "none"}` : "";
+    if (!forceFull && key === this.reliefRenderKey) return;
     this.reliefRenderKey = key;
-    layer.removeAll(true);
-    if (!relief || reliefIsFlat(relief) || relief.baked) {
-      if (this.textures.exists(RELIEF_TEXTURE_KEY)) this.textures.remove(RELIEF_TEXTURE_KEY);
+    strips.sync(map && relief && !reliefIsFlat(relief) ? relief : undefined, tileSize, forceFull, ground);
+    const decor = relief && !reliefIsFlat(relief) && textureKey && this.textures.exists(textureKey) ? relief.wallDecor ?? [] : [];
+    // 장식 자리는 그 칸 들림을 따른다 — 장식 목록·들림이 그대로면(붓질 대부분) 다시 만들지 않는다
+    const decorKey = decor.length
+      ? `${mapId}|${tileSize}|${textureKey}|${decor.map((d) => `${d.x},${d.y},${d.row},${d.tile},${reliefCellLiftPx(relief, d.x, d.y, tileSize)}`).join(";")}`
+      : "";
+    if (decorKey === this.reliefDecorKey) return;
+    this.reliefDecorKey = decorKey;
+    for (const image of this.reliefDecorImages) image.destroy();
+    this.reliefDecorImages = [];
+    if (!decor.length || !textureKey) return;
+    for (const item of decor) {
+      const top = item.y * tileSize - reliefCellLiftPx(relief, item.x, item.y, tileSize);
+      const image = this.add.image(item.x * tileSize, top + item.row * tileSize, textureKey, `tile_${item.tile}`).setOrigin(0, 0);
+      image.setName(RELIEF_STRIP_NAME).setDepth(item.y * EDIT_RELIEF_ROW_DEPTH + 8);
+      layer.add(image);
+      this.reliefDecorImages.push(image);
+    }
+    layer.sort("depth");
+  }
+
+  /**
+   * 높이가 바뀌어 타일 자리(들림)가 달라진 칸의 타일만 다시 올린다. 들린 타일은 relief 에 따라 위치·컨테이너가
+   * 달라지므로 절벽 띠만 다시 굽는 것으로는 모자란다. 맵 전체를 다시 그리지 않고 바뀐 칸만 그린다 —
+   * 높이 붓 드래그의 비용이 붓 크기에 비례하게 남는다(scheduleReliefRender 의 굽기 간격 조절과 같은 틀 안에서 돈다).
+   */
+  private reliefTileRelief: ReliefData | undefined;
+  private syncReliefLiftedTiles(): void {
+    const mapId = this.mapId();
+    const map = mapId ? store.getCurrent().maps[mapId] : undefined;
+    if (!mapId || !map) return;
+    const before = this.reliefTileRelief, after = map.relief;
+    if (before === after) return;
+    const changed = hasRelief(before) !== hasRelief(after)
+      ? Array.from({ length: map.width * map.height }, (_, i) => ({ x: i % map.width, y: Math.floor(i / map.width) }))
+      : reliefTileSlotChangedCells(before, after, map.width, map.height);
+    this.reliefTileRelief = after;
+    if (changed.length === 0) return;
+    if (!this.canIncrementallyRenderCells(mapId)) {
+      this.redraw();
       return;
     }
-    const r = renderRelief(effectiveHeights(gridFromRelief(relief)), { transparentGround: true });
-    // 같은 크기면 캔버스 텍스처를 고쳐 쓴다 — 드래그 중 텍스처를 매번 만들고 지우면 GPU 업로드가 겹친다.
-    const existing = this.textures.exists(RELIEF_TEXTURE_KEY) ? this.textures.get(RELIEF_TEXTURE_KEY) : null;
-    const reusable = existing instanceof PhaserRuntime.Textures.CanvasTexture
-      && existing.width === r.PW && existing.height === r.SH ? existing : null;
-    if (existing && !reusable) this.textures.remove(RELIEF_TEXTURE_KEY);
-    const texture = reusable ?? this.textures.createCanvas(RELIEF_TEXTURE_KEY, r.PW, r.SH);
-    if (!texture) return;
-    texture.context.putImageData(new ImageData(new Uint8ClampedArray(r.rgba), r.PW, r.SH), 0, 0);
-    texture.refresh();
-    texture.setFilter(PhaserRuntime.Textures.FilterMode.NEAREST);
-    const scale = tileSize / RELIEF_TILE;
-    layer.add(this.add.image(0, -r.pad * scale, RELIEF_TEXTURE_KEY).setOrigin(0, 0).setScale(scale));
+    // lower 한 칸을 다시 그리면 같은 칸 upper 와 8방 이웃도 같이 다시 그려진다(editSceneRender §uniqueRenderableTileCells).
+    const cells: ProjectChangeCell[] = changed.map(({ x, y }) => ({ x, y, layer: "lower" as const }));
+    // 이벤트 레이어에서는 이벤트 그림도 칸 들림만큼 올라 있다 — 덧그림을 다시 만든다.
+    if (editorState.get().layer === "event") cells.push({ x: changed[0]!.x, y: changed[0]!.y, layer: "event" as const });
+    this.redrawCells(cells);
   }
 
   private layoutMapBackgroundPreview(): void {
@@ -2417,13 +2508,14 @@ export class EditScene extends PhaserRuntime.Scene {
       tileLayer,
       upperTileLayer,
       tileChunks: this.tileChunks,
+      reliefLayer: this.reliefLayer ?? undefined,
       overlayLayer,
       gridGraphics,
       mapId: mid,
       tileIndex: this.tileIndex,
     }, cells);
     if (cells.some((cell) => cell.layer === "event")) {
-      refreshEditSceneOverlay({ scene: this, tileLayer, upperTileLayer, tileChunks: this.tileChunks, overlayLayer, gridGraphics, mapId: mid });
+      refreshEditSceneOverlay({ scene: this, tileLayer, upperTileLayer, tileChunks: this.tileChunks, reliefLayer: this.reliefLayer ?? undefined, overlayLayer, gridGraphics, mapId: mid });
     }
     if (this.lastPointerTile && this.shouldRenderPaintHover()) this.renderHoverPreview(this.lastPointerTile.x, this.lastPointerTile.y);
     this.syncSelectionOverlay();
@@ -2482,6 +2574,7 @@ export class EditScene extends PhaserRuntime.Scene {
       tileLayer,
       upperTileLayer,
       tileChunks: this.tileChunks,
+      reliefLayer: this.reliefLayer ?? undefined,
       overlayLayer,
       gridGraphics,
       mapId,
@@ -2524,6 +2617,9 @@ export class EditScene extends PhaserRuntime.Scene {
       state.selectedEventId ?? "none",
       state.selectedEventPageId ?? "none",
       state.showGrid ? "grid" : "nogrid",
+      state.terrainReachability ? "reach" : "noreach",
+      ...(state.terrainVisionPreview ? [Math.floor(this.cameras.main.scrollX / 16), Math.floor(this.cameras.main.scrollY / 16), this.cameras.main.zoom, this.cameras.main.width, this.cameras.main.height] : []),
+      JSON.stringify(state.terrainHouseDrag), state.terrainHouseStyle, state.terrainHouseKitId, state.terrainHouseWidth, state.terrainHouseStories, state.terrainHouseResize, state.terrainHouseRoofWidth, JSON.stringify(state.terrainPoints), JSON.stringify(state.terrainRoute), state.terrainRouteWidth, JSON.stringify(state.terrainRouteBody), state.terrainRouteEvents, state.terrainRouteDoorId, state.terrainRouteDoors, JSON.stringify(state.terrainRouteSwitches), state.terrainVisionPreview, JSON.stringify(state.terrainVisionOrigin), state.terrainSymmetry, state.terrainBrush,
     ].join("|");
   }
 
@@ -2846,6 +2942,7 @@ export class EditScene extends PhaserRuntime.Scene {
    */
   /** 되돌리기·다시실행이 적용된 스트로크는 커밋하지 않고 끝낸다. */
   private abandonOpenPaintGesture(): void {
+    this.tilePaintEngine?.endStroke(false);
     this.isPainting = false;
     this.lastPaintKey = "";
     this.dragOperationHandler?.clear();
@@ -2864,6 +2961,8 @@ export class EditScene extends PhaserRuntime.Scene {
     // 승격되지 않은 팬 후보도 여기서 내려야 한다. 남으면 다음 pointermove(버튼을 뗀 뒤의
     // 단순 호버)가 옛 기준점으로 카메라를 밀어 버린다.
     this.eventLayerPanCandidate = null;
+    // 높이 붓: 누르면 자라던 타이머를 멈추고 지나간 자리를 정리한다(TilePaintEngine.endStroke).
+    if (this.isPainting) this.tilePaintEngine?.endStroke();
     this.isPainting = false;
     this.lastPaintKey = "";
     this.stopPan();
@@ -3317,11 +3416,30 @@ export class EditScene extends PhaserRuntime.Scene {
   }
 }
 
+const tileToolStatusNodes = new Map<string, Element>();
+
 function setTileToolStatus(testId: string, text: string): void {
-  const node = document.querySelector(`[data-testid="${testId}"]`);
+  let node = tileToolStatusNodes.get(testId);
+  if (!node || !node.isConnected) {
+    node = document.querySelector(`[data-testid="${testId}"]`) ?? undefined;
+    if (!node) {
+      tileToolStatusNodes.delete(testId);
+      return;
+    }
+    tileToolStatusNodes.set(testId, node);
+  }
   // Runs per pointermove; an equal write still replaces the text node and wakes every
   // body-subtree MutationObserver.
-  if (!node || node.textContent === text) return;
+  if (node.textContent === text) return;
+  // textContent= 는 자식 텍스트 노드를 통째로 갈아 끼우는 childList 변이다. 문서에 :has() 규칙이
+  // 있으면(body:has(.editor-layout), .canvas-area:has(.persistence-mode-banner)) 그 앵커의 스타일이
+  // 무효화되어 포인터 한 번마다 문서 전체 스타일 재계산(≈32ms, 소프트웨어 GL 측정)이 돈다.
+  // 텍스트 노드가 하나뿐이면 data 만 바꾸는 characterData 변이로 충분하다.
+  const only = node.firstChild;
+  if (only && only.nodeType === Node.TEXT_NODE && only === node.lastChild) {
+    (only as Text).data = text;
+    return;
+  }
   node.textContent = text;
 }
 

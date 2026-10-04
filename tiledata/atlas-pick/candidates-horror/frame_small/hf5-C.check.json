@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/frame_small/hf5-C.pxg",
+ "set": "horror",
+ "id": "frame_small",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.065
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.085
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "outline",
+   "outline_black",
+   "dither"
+  ]
+ },
+ "colors": 11,
+ "bbox": [
+  2,
+  2,
+  13,
+  14
+ ],
+ "note": "C: 재료·무늬 — 다마스크 벽(damask 2/3 체크 문양) 위 화병. 테는 tarn 에 윗줄 구슬 세 점.",
+ "ok": true
+}

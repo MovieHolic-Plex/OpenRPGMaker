@@ -1,11 +1,12 @@
 import type { GameMap, InteriorRoomKindRecord, TilesetDef } from "../types";
 import type { TilesetReferenceCategory } from "../tilesetReferences";
+import { MAX_TOOL_MAP_DIMENSION } from "../mapSizeLimits";
 
 declare const spatialId: unique symbol;
 /** Opaque identity; labels and legacy qualified names are never identity parsers. */
 export type SpatialId = string & { readonly [spatialId]: true };
 export type SpatialKind = "object" | "space" | "place" | "region" | "world";
-export const SPATIAL_SIZE_MAX = 256;
+export const SPATIAL_SIZE_MAX = MAX_TOOL_MAP_DIMENSION;
 export type SpatialPoint = { readonly x: number; readonly y: number };
 export type SpatialRect = SpatialPoint & { readonly width: number; readonly height: number };
 export type SpatialPort = SpatialPoint & { readonly id: SpatialId; readonly name: string };

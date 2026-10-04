@@ -132,6 +132,8 @@ export const M2_PERSISTED_BEHAVIOR_IDS = {
     "m2-221-quick-time-event",
     "m2-222-high-score",
     "m2-223-teleport-menu",
+    "m2-224-particle-effect",
+    "m2-225-sprite-look",
   ],
   partial: [],
   editorOnly: [
@@ -188,6 +190,13 @@ export const M2_MAP_COMMON_FULL_IDS = [
   "m2-221-quick-time-event",
   "m2-222-high-score",
   "m2-223-teleport-menu",
+  // 화면 효과(2026-10-02) — 렌더러 없는 blur 를 목록에서 내린 뒤 남은 선택지(페이드·플래시·색조·날씨·왜곡·레터박스)는
+  // 전부 출하 플레이어에서 그려진다(test/fieldStaging.test.ts 「렌더 경로」, scripts/qa/runtime/*.capture). partial 로 두면
+  // script_cutscene 이 페이드·레터박스마다 「런타임 제한 커맨드」 를 세어 조수가 멀쩡한 연출을 의심했다.
+  "m2-202-screen-effect",
+  // 필드 연출(2026-10-02) — 맵·공통 이벤트에서 그려진다. 전투 화면에는 필드 스프라이트가 없다.
+  "m2-224-particle-effect",
+  "m2-225-sprite-look",
 ] as const;
 
 export const M2_TROOP_FULL_IDS = [

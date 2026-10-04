@@ -1,0 +1,27 @@
+{
+ "src": "tiledata/atlas-pick/candidates-school/classroom_wall/s2-A.pxg",
+ "out": "tiledata/atlas-pick/remap-trial/school/classroom_wall/s2-A.m3.pxg",
+ "size": [
+  16,
+  32
+ ],
+ "stat": {
+  "ramp": 11
+ },
+ "weak": [],
+ "ambiguous": {},
+ "unmapped": {},
+ "marker": 0,
+ "translucentDropped": 0,
+ "droppedBy": {},
+ "baked": {},
+ "outOfPalette": 0,
+ "translucentPx": 0,
+ "markerLeft": false,
+ "colors": 9,
+ "ramps": [
+  "kinari",
+  "soil",
+  "yuka"
+ ]
+}

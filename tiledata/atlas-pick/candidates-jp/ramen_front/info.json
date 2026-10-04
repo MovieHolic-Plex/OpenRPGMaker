@@ -1,0 +1,19 @@
+{
+ "id": "ramen_front",
+ "slug": "ramen_front",
+ "name": "라멘집 외관",
+ "scene": "역 앞 번화가",
+ "cells": [
+  4,
+  3
+ ],
+ "canvas": [
+  64,
+  48
+ ],
+ "layer": "facade",
+ "layer_ko": "건물 외관 블록(불투명 허용)",
+ "description": "라멘집 1층 앞면: 문 위 가로 간판(붉은 바탕에 흰 가나 「らーめん」, 획 2px), 남색 노렌 세 폭(흰 글자 한 자 「麺」), 가게 앞 유리창 김서림(밝은 흰 덩이), 문 옆 붉은 등롱 하나. 한국 분식집과 다르게 노렌이 주인공.",
+ "palette_hint": "akachin 간판, ai 노렌, mwhite 글자, mglass 창, hinoki 문틀",
+ "worker": "j5"
+}

@@ -1,0 +1,53 @@
+// h54-C 단순·또렷: 유리 윗면 7행 안에 반지·목걸이·부적 덩어리 셋, 앞면 유리띠+나무 앞판, 나무 다리 4행
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat o dwood 1
+@mat D dwood 2
+@mat d dwood 3
+@mat w dwood 5
+@mat l dwood 6
+@mat G glass 5
+@mat g glass 4
+@mat u purple 3
+@mat v purple 2
+@mat y gold 4
+@mat Y gold 6
+@mat r red 4
+@mat b blue 5
+@mat e green 4
+@mat p wood 4
+@mat q wood 5
+@mblock 0 0
+................
+................
+................
+................
+................
+................
+................
+................
+.oooooooooooooo.
+.oGGGGGGGGGGGGo.
+.oGuuuuuuuuuuvo.
+.oGurruuyyyuuvo.
+.oguryuyYyuebvo.
+.oguuuuuyuueevo.
+.ogvvvvvvvvvvvo.
+.olllllllllllgo.
+.oGggggggggggDo.
+.oGggggggggggDo.
+.opqqqqqqqqqqpo.
+.opqqqqqqqqqqpo.
+.opqqqqqqqqqqpo.
+.opqqqqqqqqqqpo.
+.opqqqqqqqqqqpo.
+.opqqqqqqqqqqpo.
+.opqqqqqqqqqqpo.
+.opppppppppppDo.
+.oDDDDDDDDDDDDo.
+..oodo....odoo..
+..owdo....owdo..
+..owdo....owdo..
+..owdo....owdo..
+..oDDo....oDDo..

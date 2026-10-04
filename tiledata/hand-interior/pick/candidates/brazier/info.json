@@ -1,0 +1,37 @@
+{
+ "id": "brazier",
+ "slug": "brazier",
+ "name_ko": "화로(움직임)",
+ "category": "장식",
+ "kind": "floor",
+ "kind_ko": "바닥 기물(막힘)",
+ "canvas": [
+  16,
+  16
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 16,
+  "h": 16
+ },
+ "footprint": {
+  "w": 1,
+  "h": 1
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "불꽃 셋이 이는 쇠 바닥 화로(1칸). 왕좌 단 양옆·드워프 홀 문 양옆에 2개씩 짝으로.",
+ "where": "왕좌 단 양옆·드워프 홀 문 양옆에 2개씩 짝으로.",
+ "placement": [
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": [
+  2,
+  1,
+  13,
+  14
+ ],
+ "v5_colors": 7,
+ "material": "wood",
+ "related": []
+}

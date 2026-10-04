@@ -1,0 +1,42 @@
+# jp_city 칸 통행 종류(pc) 정하는 규칙
+
+`bake_jp.py` 가 칸마다 pc 를 정한다. pc → 통행·층은 modern_city 와 같은 표다(`bake_lib.PC`).
+
+| pc | 층(priority) | 통행 | 홈 레이어 | 쓰임 |
+|---|---|---|---|---|
+| floor | 아래 | 걷는다 | 아래 | 불투명 땅(보도·도로·잔디 …) |
+| solidfloor | 아래 | 막힘 | 아래 | 불투명인데 막힌 땅(물) |
+| flat | 아래 | 걷는다 | 위(덧그림) | 투명 바닥 표시·소품 아랫단(캐릭터 밑) |
+| solid | 위 | 막힘 | 위 | 건물 아래 두 줄·소품 밑동·가드레일 |
+| star | 위 | 걷는다 ★ | 위 | 건물 윗층·처마·옥상 기물·소품 윗부분(사람 위에 그려짐) |
+| blank | 아래 | 막힘 | 아래 | 빈 칸 |
+
+## 칸의 쓰임(맥락)마다 정한다 — 카탈로그 walkLegend(F 걸음 / C 지나감 / S·X 막힘)와 층(lo/up)이 근거
+
+1. **소품(props)** 칸 하나마다 카탈로그의 walk·layer·투명도로:
+   - 막힘(S·X): 아래층(lo)이면서 불투명 → `solidfloor`, 그 밖 → `solid`
+   - 지나감(C): 아래층(lo) 불투명 → `floor`, 아래층(lo) 투명 → `flat`(바퀴·열차 아랫줄처럼 사람 밑), 위층(up) → `star`
+2. **건물(bands/recipes)** 위치마다: 지면 층 띠(`gr.*`)의 둘째·셋째 줄과 문 칸은 `solid`(몸채·문은 막힘, 문 앞 접근 칸은 키트 바깥 한 줄 아래), 그 위(윗층·처마·옥상·옥상 간판·지면 층 첫 줄)는 `star`.
+   L자 건물의 마당 바닥(lot·sw …)은 불투명이므로 `floor`(아래층).
+   ※ 원본 카탈로그는 문 앞 칸을 F(걸음)로 두었으나, 에디터 키트 규약(문 칸 = 입구 부위 = 막힘, 접근 칸 = 키트 바깥 한 줄 아래)에 맞춰 문 칸을 막힘으로 굽는다.
+3. **부착물(decos)** 낱칸은 모두 `star`(문 부착물만 맨 아래 두 줄 `solid`). 키트 안에서는 건물 칸과 겹쳐 **합성 칸**(`jp16c/…`)으로 구워 위치 맥락의 pc 를 쓴다.
+4. **거리 바닥(street)** 은 `floor`, 단 가드레일은 투명이라 `solid`, 물은 `solidfloor`.
+5. 어느 이름에도 안 쓰인 원본 칸 110개는 투명이면 `solid`, 불투명이면 `solidfloor`(키트·그룹에 안 넣음, 번호만 지킨다). 행인 자리 155칸은 `blank`.
+
+## 한 칸이 여러 맥락에서 다른 pc 를 요구하면
+
+한 칸 번호는 통행이 하나뿐이다. 원본 번호에는 **가장 많이 쓰이는 맥락의 pc**(동률이면 floor > solidfloor > solid > star > flat)를 주고,
+다른 pc 가 필요한 키트 칸은 같은 그림의 복제 칸(`jp16/<번호>@<pc>`)을 시트 끝에 덧붙여 쓴다. 원본 번호는 안 움직인다.
+
+## 그룹 층(defaultLayer·layerHome)은 칸 홈에서 유도한다 (2026-10-03 정정)
+
+엔진은 커스텀 타일셋의 칸 홈을 **칸 단위**로만 정한다(`tileLayerHome`: 잠긴 칸의 `defaultLayer`, 아니면 `priority`). 그룹의 `defaultLayer` 는 홈 판정에 안 쓰이고 어휘 설명만 정한다.
+그래서 굽기(`bake_lib.derive_group_layer`)가 그룹 층을 멤버 칸의 홈에서 유도한다 — 전부 위층이면 `upper`, 전부 아래층이면 `lower`, 섞이면 `mixed`(+`layerHome: perCell`).
+정의 검사 `group-layer-vs-tile-home` 가 일치를 지킨다. 정정 전에는 투명 덧그림 5그룹이 `lower`(엔진 홈 위층, 74칸), 소품·육교 8그룹이 `upper`(아래층 칸 103개 섞임)로 선언돼 있었다.
+부수 효과: 투명 덧그림 그룹(`upper`)은 `fill_region` 재료가 아니다(`tileVocabulary.isFlatFillGroup` 이 위층 그룹을 거부) — `paint_tiles` layer "2" 로 칠한다.
+★ 칸 중 태그에 stair·계단·사다리가 있는 54칸은 엔진이 일부러 캐릭터 아래로 그린다(`characterDepth.isWalkableStairTile`) — 어긋남이 아니라 설계된 예외다.
+
+## 투명도 규칙(tile-layer-policy)
+
+투명 조각을 아래층에 두지 않는다(받침 없이 검게 비친다). 투명 조각은 위층(`solid`·`star`) 또는 투명 덧그림(`flat`, 홈 레이어 위·`layerBacking: none`)이다.
+불투명한 칸만 아래층(`floor`·`solidfloor`)이 된다. 건물 몸채는 불투명이어도 위층 pc 를 쓴다(키트는 위층에만 올린다).

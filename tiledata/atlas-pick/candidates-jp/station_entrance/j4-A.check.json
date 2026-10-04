@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/station_entrance/j4-A.pxg",
+ "set": "jp",
+ "id": "station_entrance",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 15,
+  "atLeast95": 0,
+  "max": 0.316
+ },
+ "refmap": {
+  "cells": 15,
+  "atLeast95": 0,
+  "max": 0.102
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 23,
+ "bbox": [
+  0,
+  0,
+  79,
+  47
+ ],
+ "note": "강남 결: 초록 줄 사이 흰 띠 간판에 「駅」, 양옆 타일 벽·기둥, 어두운 열린 입구 속 개찰구 세 대",
+ "ok": true
+}

@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/theater_seat/w32-B.pxg",
+ "id": "theater seat",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.019
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "outline_black"
+  ],
+  "pass": false
+ },
+ "colors": 10,
+ "v5_colors": 9,
+ "bbox": [
+  0,
+  1,
+  15,
+  14
+ ],
+ "v5_bbox": [
+  1,
+  2,
+  14,
+  14
+ ],
+ "note": "방향 B: 등판 꼭대기에 나무 덧대(뒤에서 보이는 윗면) + 금 마개 팔걸이 끝이 양옆으로 튀어 3개 이으면 금 레일이 이어진 객석 줄.",
+ "ok": true
+}

@@ -1,0 +1,38 @@
+{
+ "id": "floor_creaky_broken",
+ "slug": "floor_creaky_broken",
+ "name": "꺼진 마루(구멍)",
+ "scene": "낡은 서양 저택",
+ "cells": [
+  2,
+  2
+ ],
+ "canvas": [
+  32,
+  32
+ ],
+ "layer": "ground",
+ "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+ "description": "floor_creaky 와 같은 널 줄 위에 가운데가 부서져 내려앉은 구멍 하나(가장자리 널이 부러진 톱니 끝, 구멍 속은 void 로 깊게, 위쪽 가장자리 아래로 널 두께 한 줄 보임). 바깥 테두리는 floor_creaky 와 그대로 이어진다. 밟으면 떨어지는 함정 칸.",
+ "palette_hint": "rot 널, void 구멍, dust",
+ "worker_v1": "h3",
+ "stage": 2,
+ "stage_ko": "2단계 연출(기본이 선 뒤)",
+ "worker": "h3",
+ "set_with": [
+  "floor_creaky"
+ ],
+ "v5_ref": [
+  {
+   "id": "floor:dplank",
+   "name_ko": "짙은 마루",
+   "atlas": {
+    "x": 160,
+    "y": 1656,
+    "w": 32,
+    "h": 32
+   },
+   "file": "ref-v5-1.png"
+  }
+ ]
+}

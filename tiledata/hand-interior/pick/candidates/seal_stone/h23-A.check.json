@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/seal_stone/h23-A.pxg",
+ "id": "seal stone",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.118
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 8,
+ "v5_colors": 0,
+ "bbox": [
+  2,
+  6,
+  13,
+  30
+ ],
+ "v5_bbox": null,
+ "note": "검은 돌 비석 12폭, 둥근 머리 윗면 밝게, 앞면에 보랏빛 봉인 원+마름모+아래 룬 하나",
+ "ok": true
+}

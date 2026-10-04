@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/jp_signal/j5-C.pxg",
+ "set": "jp",
+ "id": "jp_signal",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 5,
+  "atLeast95": 0,
+  "max": 0.035
+ },
+ "refmap": {
+  "cells": 5,
+  "atLeast95": 0,
+  "max": 0.145
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "banding"
+  ]
+ },
+ "colors": 19,
+ "bbox": [
+  0,
+  2,
+  31,
+  47
+ ],
+ "note": "실루엣 재해석: 등마다 튀어나온 차양(일본 신호등 특유의 모자)을 크게 과장, 폴을 4px 굵게 해 왼쪽 끝에 붙임 — 한눈에 일본 가로 신호로 읽힘",
+ "ok": true
+}

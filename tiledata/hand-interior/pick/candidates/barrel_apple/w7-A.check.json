@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/barrel_apple/w7-A.pxg",
+ "id": "barrel:apple",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.011
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 17,
+ "v5_colors": 19,
+ "bbox": [
+  2,
+  1,
+  13,
+  15
+ ],
+ "v5_bbox": [
+  2,
+  1,
+  14,
+  15
+ ],
+ "note": "사과를 4px 둥근 알(왼쪽 위 밝음·오른쪽 아래 어두움) 다섯 개로 나눠 쌓고 통 아가리 립(밝은 한 줄)로 통 안쪽이 보이게, 통널 이음과 쇠테 둘(양끝 어두움)로 배 부른 통으로 다듬음",
+ "ok": true
+}

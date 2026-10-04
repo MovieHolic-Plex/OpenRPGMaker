@@ -1,0 +1,31 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/sofa/w2-C.pxg",
+ "id": "sofa",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.008
+ },
+ "lint": {
+  "failed": [],
+  "pass": true
+ },
+ "colors": 5,
+ "v5_colors": 5,
+ "bbox": [
+  0,
+  1,
+  31,
+  15
+ ],
+ "v5_bbox": [
+  1,
+  1,
+  30,
+  15
+ ],
+ "note": "등받이를 쿠션 셋으로 나누고 팔걸이를 둥글게 말린 롤 암으로 바꾼 응접실 소파; 팔 위 굴곡·앞 접힘선",
+ "ok": true
+}

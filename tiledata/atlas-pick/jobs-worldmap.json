@@ -1,0 +1,2844 @@
+{
+ "version": 2,
+ "set": "worldmap",
+ "grid": 16,
+ "note": "JRPG 월드맵(필드 축척) 16px 조각 배정표 2판. 작업자별 기물 slug 목록(겹침 없음, 순서 = 작업 순서). 절차는 WORKER-WORLDMAP.md, 형태 근거는 worldmap-reference-study.md. 팔레트 palette/worldmap.pal. 2판 후보 파일은 wvN-A.pxg(1판 w1-A.pxg 는 그대로 남는다).",
+ "revisions": [
+  {
+   "version": 1,
+   "date": "2026-09-30",
+   "items": 32,
+   "workers": {
+    "w1": [
+     "coast_grass",
+     "coast_sand",
+     "coast_snow",
+     "sea_deep",
+     "port"
+    ],
+    "w2": [
+     "plains_base",
+     "plains_scatter",
+     "meadow",
+     "hills",
+     "road",
+     "river",
+     "bridge_h",
+     "bridge_v"
+    ],
+    "w3": [
+     "mountain",
+     "snow_mountain",
+     "big_mountain",
+     "ash",
+     "lava",
+     "volcano"
+    ],
+    "w4": [
+     "forest",
+     "conifer",
+     "snow_conifer",
+     "swamp",
+     "ruins",
+     "cave"
+    ],
+    "w5": [
+     "snow",
+     "desert",
+     "village",
+     "town",
+     "castle",
+     "tower",
+     "temple"
+    ]
+   },
+   "files": "wN-X.pxg"
+  },
+  {
+   "version": 2,
+   "date": "2026-09-30",
+   "items": 48,
+   "files": "wvN-X.pxg",
+   "why": "사용자: 「월드맵 칩은 World.png(EasyRPG RTP) 보고 많이 수정해라」. 1판 해안이 네모·톱니·해협에 흰 줄 — 기슭 깊이·사분면 이음 규칙과 shore-* 검사 추가, 기물 16개 추가(깊이 단계·독늪·숲 종류·고원·작은 장소)."
+  },
+  {
+   "version": 3,
+   "date": "2026-09-30",
+   "items": 55,
+   "files": "v4-A.pxg",
+   "why": "사용자: 「월드맵이 허접하다 … 성은 3x3, 5x5」. 4판 = 3판 색·물 유지, 형태 교체: 아이콘 크기 등급(1×1~5×5)과 2×2 큰 덩이 겹판 추가. 연구: worldmap-ff6-study.md."
+  }
+ ],
+ "directions": {
+  "A": "World.png 구조를 우리 팔레트로(덩이 크기·격자·기슭 깊이·테 방식을 참고 연구 표대로)",
+  "B": "명암·깊이 강화(A 구조에 3/4 시점 면·발치 그림자·물 깊이 단 한 단 더)",
+  "C": "다른 해석(같은 기슭·이음 수치 안에서 World.png 와 다른 형태 언어)"
+ },
+ "styles": {
+  "line": "1칸 폭 줄로도 쓰는 지형 — 해협·길·강 속 폭 6px 이상(hard)",
+  "flat": "평지 덩이 — 기슭 2~4px·이음·톱니 검사",
+  "mass": "숲·산처럼 덩이 무늬 — 이음 경고만"
+ },
+ "kinds": {
+  "bundle": "이어짐 조각 묶음 3×4칸(외딴·몸통 변형·안쪽 모서리 / 3×3 틀), 바깥 투명",
+  "base": "바탕 몸통 변형 3칸(불투명)",
+  "scatter": "흩뿌림 단품 3칸",
+  "piece": "한 축으로 이어지는 단품",
+  "icon": "장소 아이콘(위층)"
+ },
+ "bundle_layout": [
+  [
+   "isolated",
+   "body_alt",
+   "inner"
+  ],
+  [
+   "corner_nw",
+   "edge_n",
+   "corner_ne"
+  ],
+  [
+   "edge_w",
+   "body",
+   "edge_e"
+  ],
+  [
+   "corner_sw",
+   "edge_s",
+   "corner_se"
+  ]
+ ],
+ "under": {
+  "plains": "평원 풀(plains_base 고른 판)",
+  "sand": "사막 모래(desert 몸통 고른 판)",
+  "snow": "설원(snow 몸통 고른 판)",
+  "ash": "화산재(ash 몸통 고른 판)",
+  "sea": "얕은 바다(coast_grass 몸통 고른 판)",
+  "river": "강물(river 몸통 고른 판)"
+ },
+ "families": [
+  {
+   "name": "바다 몸통 공유",
+   "slugs": [
+    "coast_grass",
+    "coast_sand",
+    "coast_snow"
+   ]
+  },
+  {
+   "name": "바다 깊이 단계",
+   "slugs": [
+    "sea_deep",
+    "shoal"
+   ]
+  },
+  {
+   "name": "산 봉우리",
+   "slugs": [
+    "mountain",
+    "snow_mountain",
+    "big_mountain"
+   ]
+  },
+  {
+   "name": "다리 둘",
+   "slugs": [
+    "bridge_h",
+    "bridge_v"
+   ]
+  },
+  {
+   "name": "화산 셋",
+   "slugs": [
+    "ash",
+    "lava",
+    "volcano"
+   ]
+  },
+  {
+   "name": "침엽수 둘",
+   "slugs": [
+    "conifer",
+    "snow_conifer"
+   ]
+  },
+  {
+   "name": "활엽 수관",
+   "slugs": [
+    "forest",
+    "trees_scatter",
+    "big_tree"
+   ]
+  },
+  {
+   "name": "마을 지붕",
+   "slugs": [
+    "hamlet",
+    "village",
+    "snow_village",
+    "town",
+    "port"
+   ]
+  },
+  {
+   "name": "성 돌",
+   "slugs": [
+    "castle",
+    "dark_castle",
+    "tower",
+    "gate_fort"
+   ]
+  },
+  {
+   "name": "흰 돌 성소",
+   "slugs": [
+    "temple",
+    "shrine"
+   ]
+  },
+  {
+   "name": "던전 아이콘",
+   "slugs": [
+    "ruins",
+    "cave"
+   ]
+  }
+ ],
+ "workers": {
+  "wv1": [
+   "coast_grass",
+   "coast_sand",
+   "coast_snow",
+   "sea_deep",
+   "shoal"
+  ],
+  "wv2": [
+   "plains_base",
+   "plains_scatter",
+   "meadow",
+   "hills",
+   "road",
+   "river",
+   "bridge_h",
+   "bridge_v"
+  ],
+  "wv3": [
+   "mountain",
+   "snow_mountain",
+   "cliff_plateau",
+   "big_mountain",
+   "gate_fort"
+  ],
+  "wv4": [
+   "ash",
+   "lava",
+   "volcano",
+   "poison_marsh",
+   "dead_forest"
+  ],
+  "wv5": [
+   "forest",
+   "conifer",
+   "snow_conifer",
+   "jungle",
+   "trees_scatter",
+   "big_tree"
+  ],
+  "wv6": [
+   "snow",
+   "desert",
+   "swamp",
+   "ice_sea",
+   "desert_scatter",
+   "oasis"
+  ],
+  "wv7": [
+   "hamlet",
+   "village",
+   "snow_village",
+   "town",
+   "port",
+   "lighthouse"
+  ],
+  "wv8": [
+   "castle",
+   "dark_castle",
+   "tower",
+   "temple",
+   "shrine",
+   "ruins",
+   "cave"
+  ],
+  "v4": [
+   "village_2x2",
+   "town_3x3",
+   "castle_3x3",
+   "castle_5x5",
+   "mountain_peaks",
+   "forest_crowns",
+   "conifer_crowns",
+   "mountain",
+   "forest",
+   "conifer",
+   "coast_grass",
+   "sea_deep",
+   "hamlet",
+   "cave",
+   "tower"
+  ],
+  "v6": [
+   "castle_keep",
+   "city_district",
+   "field_crop",
+   "field_wheat",
+   "gate_tower",
+   "hall_blue",
+   "house_blue_a",
+   "house_blue_b",
+   "mountain_cliff",
+   "shore_rocks",
+   "timber_a",
+   "timber_b",
+   "tower_blue",
+   "wall_h",
+   "wall_tower",
+   "wall_v"
+  ]
+ },
+ "items": [
+  {
+   "id": "coast_grass",
+   "slug": "coast_grass",
+   "name": "바다·해안(풀 해안)",
+   "scene": "물가",
+   "kind": "bundle",
+   "cells": [
+    3,
+    4
+   ],
+   "canvas": [
+    48,
+    64
+   ],
+   "layer": "decal",
+   "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+   "under": "plains",
+   "under_ko": "평원 풀(plains_base 고른 판)",
+   "passage": "block",
+   "description": "대륙을 두른 바다. 덩이 안 = 얕은 바다, 바깥(투명) = 풀 땅. **기슭 깊이 = 칸 바깥 2~4px(이음 열 0·7·8·15 은 모두 같은 값 J=3 권장)**, 해협(1칸 폭 물) 속 8px 이상. 물가 = 땅 쪽 어두운 흙 둑 한 줄(북쪽 물가는 3/4 시점 둑 앞면 2px) + 물 쪽 밝은 테 1px + 여울 2px, **흰 거품 금지**. 바깥 모서리 큰 원, 안쪽 모서리 홈 반지름 3. 몸통 = 드문 물결 획(무늬 벽지 금지). 기준: candidates-worldmap/coast_grass/pilot-A.",
+   "palette_hint": "wsea 물, 둑 wdirt·wgrass 어두운 단",
+   "worker": "wv1",
+   "style": "line",
+   "layout": [
+    [
+     "isolated",
+     "body_alt",
+     "inner"
+    ],
+    [
+     "corner_nw",
+     "edge_n",
+     "corner_ne"
+    ],
+    [
+     "edge_w",
+     "body",
+     "edge_e"
+    ],
+    [
+     "corner_sw",
+     "edge_s",
+     "corner_se"
+    ]
+   ],
+   "roles_ko": {
+    "isolated": "외딴 한 칸(이웃 없이 혼자 선 통그림)",
+    "body_alt": "몸통 변형(몸통과 섞어 까는 두 번째 속)",
+    "inner": "안쪽 모서리(네 귀에 바깥이 파고든 오목 모서리 넷)",
+    "corner_nw": "북서 모서리",
+    "edge_n": "북쪽 변",
+    "corner_ne": "북동 모서리",
+    "edge_w": "서쪽 변",
+    "body": "몸통(사방이 같은 땅)",
+    "edge_e": "동쪽 변",
+    "corner_sw": "남서 모서리",
+    "edge_s": "남쪽 변",
+    "corner_se": "남동 모서리"
+   }
+  },
+  {
+   "id": "coast_sand",
+   "slug": "coast_sand",
+   "name": "바다·해안(모래 해변)",
+   "scene": "물가",
+   "kind": "bundle",
+   "cells": [
+    3,
+    4
+   ],
+   "canvas": [
+    48,
+    64
+   ],
+   "layer": "decal",
+   "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+   "under": "sand",
+   "under_ko": "사막 모래(desert 몸통 고른 판)",
+   "passage": "block",
+   "description": "coast_grass 와 같은 바다·같은 기슭선(깊이 표를 그대로)에 밑바탕이 모래인 판. 물가 = 젖은 모래 한 줄(한 단 어둡게) + 밝은 테. 바다 몸통 화소는 coast_grass 와 같게.",
+   "palette_hint": "wsea 물, 젖은 모래 wsand 어두운 단",
+   "worker": "wv1",
+   "style": "line",
+   "layout": [
+    [
+     "isolated",
+     "body_alt",
+     "inner"
+    ],
+    [
+     "corner_nw",
+     "edge_n",
+     "corner_ne"
+    ],
+    [
+     "edge_w",
+     "body",
+     "edge_e"
+    ],
+    [
+     "corner_sw",
+     "edge_s",
+     "corner_se"
+    ]
+   ],
+   "roles_ko": {
+    "isolated": "외딴 한 칸(이웃 없이 혼자 선 통그림)",
+    "body_alt": "몸통 변형(몸통과 섞어 까는 두 번째 속)",
+    "inner": "안쪽 모서리(네 귀에 바깥이 파고든 오목 모서리 넷)",
+    "corner_nw": "북서 모서리",
+    "edge_n": "북쪽 변",
+    "corner_ne": "북동 모서리",
+    "edge_w": "서쪽 변",
+    "body": "몸통(사방이 같은 땅)",
+    "edge_e": "동쪽 변",
+    "corner_sw": "남서 모서리",
+    "edge_s": "남쪽 변",
+    "corner_se": "남동 모서리"
+   }
+  },
+  {
+   "id": "coast_snow",
+   "slug": "coast_snow",
+   "name": "바다·해안(얼음 해안)",
+   "scene": "물가",
+   "kind": "bundle",
+   "cells": [
+    3,
+    4
+   ],
+   "canvas": [
+    48,
+    64
+   ],
+   "layer": "decal",
+   "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+   "under": "snow",
+   "under_ko": "설원(snow 몸통 고른 판)",
+   "passage": "block",
+   "description": "coast_grass 와 같은 바다·같은 기슭선에 밑바탕이 설원인 판. 물가 = 얼음 테(푸른 흰 판 2px, 윗면 밝게) — World.png 눈 해안처럼 테가 굵고 밝다. 바다 몸통 화소는 coast_grass 와 같게.",
+   "palette_hint": "wsea 물, wice 얼음 테, wsnow",
+   "worker": "wv1",
+   "style": "line",
+   "layout": [
+    [
+     "isolated",
+     "body_alt",
+     "inner"
+    ],
+    [
+     "corner_nw",
+     "edge_n",
+     "corner_ne"
+    ],
+    [
+     "edge_w",
+     "body",
+     "edge_e"
+    ],
+    [
+     "corner_sw",
+     "edge_s",
+     "corner_se"
+    ]
+   ],
+   "roles_ko": {
+    "isolated": "외딴 한 칸(이웃 없이 혼자 선 통그림)",
+    "body_alt": "몸통 변형(몸통과 섞어 까는 두 번째 속)",
+    "inner": "안쪽 모서리(네 귀에 바깥이 파고든 오목 모서리 넷)",
+    "corner_nw": "북서 모서리",
+    "edge_n": "북쪽 변",
+    "corner_ne": "북동 모서리",
+    "edge_w": "서쪽 변",
+    "body": "몸통(사방이 같은 땅)",
+    "edge_e": "동쪽 변",
+    "corner_sw": "남서 모서리",
+    "edge_s": "남쪽 변",
+    "corner_se": "남동 모서리"
+   }
+  },
+  {
+   "id": "sea_deep",
+   "slug": "sea_deep",
+   "name": "깊은 바다",
+   "scene": "물가",
+   "kind": "bundle",
+   "cells": [
+    3,
+    4
+   ],
+   "canvas": [
+    48,
+    64
+   ],
+   "layer": "decal",
+   "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+   "under": "sea",
+   "under_ko": "얕은 바다(coast_grass 몸통 고른 판)",
+   "passage": "block",
+   "description": "얕은 바다 가운데 깔리는 깊은 바다(World.png 는 깊은 물 몸통을 따로 둔다 — 얕은 곳보다 두 단 어둡다). 속 = 얕은 바다보다 두 단 어둡고 푸르게, 물결 더 드물게. 경계 = 얕은 물과 부드럽게 두세 화소 섞인 혹 진 선, 기슭 깊이 2~4px, 모서리 둥글게.",
+   "palette_hint": "wdeep 물, 경계 wsea",
+   "worker": "wv1",
+   "style": "flat",
+   "layout": [
+    [
+     "isolated",
+     "body_alt",
+     "inner"
+    ],
+    [
+     "corner_nw",
+     "edge_n",
+     "corner_ne"
+    ],
+    [
+     "edge_w",
+     "body",
+     "edge_e"
+    ],
+    [
+     "corner_sw",
+     "edge_s",
+     "corner_se"
+    ]
+   ],
+   "roles_ko": {
+    "isolated": "외딴 한 칸(이웃 없이 혼자 선 통그림)",
+    "body_alt": "몸통 변형(몸통과 섞어 까는 두 번째 속)",
+    "inner": "안쪽 모서리(네 귀에 바깥이 파고든 오목 모서리 넷)",
+    "corner_nw": "북서 모서리",
+    "edge_n": "북쪽 변",
+    "corner_ne": "북동 모서리",
+    "edge_w": "서쪽 변",
+    "body": "몸통(사방이 같은 땅)",
+    "edge_e": "동쪽 변",
+    "corner_sw": "남서 모서리",
+    "edge_s": "남쪽 변",
+    "corner_se": "남동 모서리"
+   }
+  },
+  {
+   "id": "shoal",
+   "slug": "shoal",
+   "name": "여울·암초",
+   "scene": "물가",
+   "kind": "bundle",
+   "cells": [
+    3,
+    4
+   ],
+   "canvas": [
+    48,
+    64
+   ],
+   "layer": "decal",
+   "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+   "under": "sea",
+   "under_ko": "얕은 바다(coast_grass 몸통 고른 판)",
+   "passage": "block",
+   "description": "얕은 바다 속 밝은 여울(모래톱)과 암초 덩이 — 깊이 단계 세 번째(깊은 바다 < 얕은 바다 < 여울). 속 = 얕은 바다보다 두 단 밝은 청록 물 아래 모래 비침 + 바위 머리 점 몇 개(배가 못 다닌다). 경계 = 부드럽게 섞인 혹 진 선, 기슭 깊이 2~4px.",
+   "palette_hint": "wsea 밝은 단, wsand 비침, wrock 바위 머리",
+   "worker": "wv1",
+   "style": "flat",
+   "layout": [
+    [
+     "isolated",
+     "body_alt",
+     "inner"
+    ],
+    [
+     "corner_nw",
+     "edge_n",
+     "corner_ne"
+    ],
+    [
+     "edge_w",
+     "body",
+     "edge_e"
+    ],
+    [
+     "corner_sw",
+     "edge_s",
+     "corner_se"
+    ]
+   ],
+   "roles_ko": {
+    "isolated": "외딴 한 칸(이웃 없이 혼자 선 통그림)",
+    "body_alt": "몸통 변형(몸통과 섞어 까는 두 번째 속)",
+    "inner": "안쪽 모서리(네 귀에 바깥이 파고든 오목 모서리 넷)",
+    "corner_nw": "북서 모서리",
+    "edge_n": "북쪽 변",
+    "corner_ne": "북동 모서리",
+    "edge_w": "서쪽 변",
+    "body": "몸통(사방이 같은 땅)",
+    "edge_e": "동쪽 변",
+    "corner_sw": "남서 모서리",
+    "edge_s": "남쪽 변",
+    "corner_se": "남동 모서리"
+   }
+  },
+  {
+   "id": "plains_base",
+   "slug": "plains_base",
+   "name": "평원 바탕",
+   "scene": "들·길",
+   "kind": "base",
+   "cells": [
+    3,
+    1
+   ],
+   "canvas": [
+    48,
+    16
+   ],
+   "layer": "ground",
+   "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+   "under": null,
+   "under_ko": null,
+   "passage": "walk",
+   "description": "월드맵의 맨땅 풀밭. 세 칸 = 몸통 변형 셋(① 민풀 ② 풀 결 몇 가닥 ③ 작은 풀 덩이 하나). World.png 평원은 **3색**뿐이다 — 우리도 3~4단, 명도 차 ~20. 셋을 아무렇게나 섞어 깔아도 칸 경계가 안 보여야 한다(16px 주기, 평균 명도 같게). 이 풀이 모든 묶음의 바깥(밑바탕)이 된다 — 조용할수록 위 지형이 산다.",
+   "palette_hint": "wgrass 2~4단만, 꽃 점 금지(흩뿌림 몫)",
+   "worker": "wv2",
+   "variants": 3
+  },
+  {
+   "id": "plains_scatter",
+   "slug": "plains_scatter",
+   "name": "평원 흩뿌림",
+   "scene": "들·길",
+   "kind": "scatter",
+   "cells": [
+    3,
+    1
+   ],
+   "canvas": [
+    48,
+    16
+   ],
+   "layer": "decal",
+   "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+   "under": "plains",
+   "under_ko": "평원 풀(plains_base 고른 판)",
+   "passage": "walk",
+   "description": "빈 평원에 한 칸씩 흩뿌리는 덧칠 셋: ① 바위 두어 개 ② 꽃무더기(작은 덤불 + 꽃 점 서너 개) ③ 풀 둔덕. 나무는 trees_scatter 몫. 숲 덩이보다 작고 조용하게, 칸 가운데 10px 안.",
+   "palette_hint": "wrock 바위, wmead·mwhite·wgold 꽃",
+   "worker": "wv2",
+   "variants": 3
+  },
+  {
+   "id": "meadow",
+   "slug": "meadow",
+   "name": "초원(짙은 풀)",
+   "scene": "들·길",
+   "kind": "bundle",
+   "cells": [
+    3,
+    4
+   ],
+   "canvas": [
+    48,
+    64
+   ],
+   "layer": "decal",
+   "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+   "under": "plains",
+   "under_ko": "평원 풀(plains_base 고른 판)",
+   "passage": "walk",
+   "description": "평원 위 짙은 풀밭 덩이(World.png 「짙은 풀」 블록). 경계는 기슭 깊이 2~4px 안에서 풀잎 끝이 바깥으로 삐져나온다(높이 1~2px, 폭 섞음 — 같은 간격 톱니 금지). 속은 평원보다 한두 단 어둡고 짧은 세로 풀 획이 드문드문. 모서리 둥글게.",
+   "palette_hint": "wmead 풀, 가장자리 끝 wgrass 밝은 단",
+   "worker": "wv2",
+   "style": "flat",
+   "layout": [
+    [
+     "isolated",
+     "body_alt",
+     "inner"
+    ],
+    [
+     "corner_nw",
+     "edge_n",
+     "corner_ne"
+    ],
+    [
+     "edge_w",
+     "body",
+     "edge_e"
+    ],
+    [
+     "corner_sw",
+     "edge_s",
+     "corner_se"
+    ]
+   ],
+   "roles_ko": {
+    "isolated": "외딴 한 칸(이웃 없이 혼자 선 통그림)",
+    "body_alt": "몸통 변형(몸통과 섞어 까는 두 번째 속)",
+    "inner": "안쪽 모서리(네 귀에 바깥이 파고든 오목 모서리 넷)",
+    "corner_nw": "북서 모서리",
+    "edge_n": "북쪽 변",
+    "corner_ne": "북동 모서리",
+    "edge_w": "서쪽 변",
+    "body": "몸통(사방이 같은 땅)",
+    "edge_e": "동쪽 변",
+    "corner_sw": "남서 모서리",
+    "edge_s": "남쪽 변",
+    "corner_se": "남동 모서리"
+   }
+  },
+  {
+   "id": "hills",
+   "slug": "hills",
+   "name": "언덕",
+   "scene": "들·길",
+   "kind": "bundle",
+   "cells": [
+    3,
+    4
+   ],
+   "canvas": [
+    48,
+    64
+   ],
+   "layer": "decal",
+   "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+   "under": "plains",
+   "under_ko": "평원 풀(plains_base 고른 판)",
+   "passage": "walk",
+   "description": "풀 덮인 낮은 언덕 무리. World.png 산맥 블록의 **배치 원리**(봉우리를 16px 격자에 두고 8px 엇갈려 겹친다)를 낮고 둥근 둔덕으로: 둔덕 하나 = 폭 12~14px·높이 6~8px 반원, 윗왼 비탈 밝게·오른아래 비탈 어둡게, 앞 둔덕이 뒤 둔덕 밑동을 가린다. 바위 없음. 산맥과 실루엣이 확실히 달라야 한다(뾰족 금지).",
+   "palette_hint": "whill 비탈, 그늘 wgrass 어두운 단",
+   "worker": "wv2",
+   "style": "mass",
+   "layout": [
+    [
+     "isolated",
+     "body_alt",
+     "inner"
+    ],
+    [
+     "corner_nw",
+     "edge_n",
+     "corner_ne"
+    ],
+    [
+     "edge_w",
+     "body",
+     "edge_e"
+    ],
+    [
+     "corner_sw",
+     "edge_s",
+     "corner_se"
+    ]
+   ],
+   "roles_ko": {
+    "isolated": "외딴 한 칸(이웃 없이 혼자 선 통그림)",
+    "body_alt": "몸통 변형(몸통과 섞어 까는 두 번째 속)",
+    "inner": "안쪽 모서리(네 귀에 바깥이 파고든 오목 모서리 넷)",
+    "corner_nw": "북서 모서리",
+    "edge_n": "북쪽 변",
+    "corner_ne": "북동 모서리",
+    "edge_w": "서쪽 변",
+    "body": "몸통(사방이 같은 땅)",
+    "edge_e": "동쪽 변",
+    "corner_sw": "남서 모서리",
+    "edge_s": "남쪽 변",
+    "corner_se": "남동 모서리"
+   }
+  },
+  {
+   "id": "road",
+   "slug": "road",
+   "name": "흙길",
+   "scene": "들·길",
+   "kind": "bundle",
+   "cells": [
+    3,
+    4
+   ],
+   "canvas": [
+    48,
+    64
+   ],
+   "layer": "decal",
+   "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+   "under": "plains",
+   "under_ko": "평원 풀(plains_base 고른 판)",
+   "passage": "walk",
+   "description": "장소 사이를 잇는 흙길. 1칸 폭 길이 주 용도 → 기슭(풀 테) 깊이는 칸 바깥 3~4px, 길 속 폭 8~10px. 풀 테는 길 위로 1~2px 불규칙하게 덮는다(World.png 흙 블록처럼 풀 덩이가 흙을 파먹는 모양, 같은 간격 톱니 금지). 속은 흙 결만(바퀴 자국 금지), 대비 낮게.",
+   "palette_hint": "wdirt 흙, 테 wgrass",
+   "worker": "wv2",
+   "style": "line",
+   "layout": [
+    [
+     "isolated",
+     "body_alt",
+     "inner"
+    ],
+    [
+     "corner_nw",
+     "edge_n",
+     "corner_ne"
+    ],
+    [
+     "edge_w",
+     "body",
+     "edge_e"
+    ],
+    [
+     "corner_sw",
+     "edge_s",
+     "corner_se"
+    ]
+   ],
+   "roles_ko": {
+    "isolated": "외딴 한 칸(이웃 없이 혼자 선 통그림)",
+    "body_alt": "몸통 변형(몸통과 섞어 까는 두 번째 속)",
+    "inner": "안쪽 모서리(네 귀에 바깥이 파고든 오목 모서리 넷)",
+    "corner_nw": "북서 모서리",
+    "edge_n": "북쪽 변",
+    "corner_ne": "북동 모서리",
+    "edge_w": "서쪽 변",
+    "body": "몸통(사방이 같은 땅)",
+    "edge_e": "동쪽 변",
+    "corner_sw": "남서 모서리",
+    "edge_s": "남쪽 변",
+    "corner_se": "남동 모서리"
+   }
+  },
+  {
+   "id": "river",
+   "slug": "river",
+   "name": "강",
+   "scene": "들·길",
+   "kind": "bundle",
+   "cells": [
+    3,
+    4
+   ],
+   "canvas": [
+    48,
+    64
+   ],
+   "layer": "decal",
+   "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+   "under": "plains",
+   "under_ko": "평원 풀(plains_base 고른 판)",
+   "passage": "block",
+   "description": "평원을 흐르는 강. 1칸 폭 강줄기가 주 용도 → 기슭 깊이 3~4px, 물 폭 8~10px. 물가 = World.png 물가처럼 **어두운 흙 둑 한 줄(1~2px, 혹 진 선)** + 물 쪽 밝은 테 1px. 흰 거품 금지. 속은 흐름 방향 짧은 밝은 획 두어 개. 바다보다 밝고 초록빛 도는 민물.",
+   "palette_hint": "wriver 물, 둑 wdirt 어두운 단, 테 wriver 밝은 단",
+   "worker": "wv2",
+   "style": "line",
+   "layout": [
+    [
+     "isolated",
+     "body_alt",
+     "inner"
+    ],
+    [
+     "corner_nw",
+     "edge_n",
+     "corner_ne"
+    ],
+    [
+     "edge_w",
+     "body",
+     "edge_e"
+    ],
+    [
+     "corner_sw",
+     "edge_s",
+     "corner_se"
+    ]
+   ],
+   "roles_ko": {
+    "isolated": "외딴 한 칸(이웃 없이 혼자 선 통그림)",
+    "body_alt": "몸통 변형(몸통과 섞어 까는 두 번째 속)",
+    "inner": "안쪽 모서리(네 귀에 바깥이 파고든 오목 모서리 넷)",
+    "corner_nw": "북서 모서리",
+    "edge_n": "북쪽 변",
+    "corner_ne": "북동 모서리",
+    "edge_w": "서쪽 변",
+    "body": "몸통(사방이 같은 땅)",
+    "edge_e": "동쪽 변",
+    "corner_sw": "남서 모서리",
+    "edge_s": "남쪽 변",
+    "corner_se": "남동 모서리"
+   }
+  },
+  {
+   "id": "bridge_h",
+   "slug": "bridge_h",
+   "name": "다리(가로)",
+   "scene": "들·길",
+   "kind": "piece",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "decal",
+   "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+   "under": "river",
+   "under_ko": "강물(river 몸통 고른 판)",
+   "passage": "walk",
+   "description": "세로로 흐르는 강을 동서로 건너는 다리 한 칸. World.png 다리는 **돌** 상판에 양쪽 난간 테가 굵게(2px) 서고 상판 가운데가 한 단 밝다 — 월드맵 축척에서는 난간이 다리를 대표한다. 나무·돌 중 하나로, 남쪽 물 위 그림자 한 줄. 좌우 끝이 같은 높이라 여러 칸 이어 붙는다.",
+   "palette_hint": "wstone 또는 mwood, 그림자 ~",
+   "worker": "wv2",
+   "joins": "x"
+  },
+  {
+   "id": "bridge_v",
+   "slug": "bridge_v",
+   "name": "다리(세로)",
+   "scene": "들·길",
+   "kind": "piece",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "decal",
+   "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+   "under": "river",
+   "under_ko": "강물(river 몸통 고른 판)",
+   "passage": "walk",
+   "description": "가로로 흐르는 강을 남북으로 건너는 다리 한 칸. bridge_h 와 같은 재료·같은 난간 두께(동서 난간 2px), 동쪽 물 위 그림자 한 줄. 위아래 끝이 이어 붙는다.",
+   "palette_hint": "wstone 또는 mwood, 그림자 ~",
+   "worker": "wv2",
+   "joins": "y"
+  },
+  {
+   "id": "mountain",
+   "slug": "mountain",
+   "name": "산맥",
+   "scene": "산·화산",
+   "kind": "bundle",
+   "cells": [
+    3,
+    4
+   ],
+   "canvas": [
+    48,
+    64
+   ],
+   "layer": "decal",
+   "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+   "under": "plains",
+   "under_ko": "평원 풀(plains_base 고른 판)",
+   "passage": "block",
+   "description": "World.png 산맥 블록의 형태: **봉우리 하나 = 폭 14~15px·높이 11~13px 세모(꼭대기 1~2px 뾰족), 16px 격자에 놓고 줄마다 8px 엇갈려** 앞 봉우리가 뒤 봉우리 아랫도리를 가린다 → 겹친 줄기(능선)로 읽힌다. 왼쪽 비탈 밝게(2단), 오른쪽 비탈 어둡게(2단), 가운데 능선 한 줄 가장 어둡게, 비탈에 짧은 골 1~2줄. 가장자리 = 봉우리 발치가 칸 바깥쪽 8px 안에서 풀밭에 앉는다. 외딴 칸 = 봉우리 하나(칸 꽉). 언덕과 확실히 다르게 — 바위·뾰족.",
+   "palette_hint": "wrock 4~5단, 기슭 whill·wgrass 어두운 단",
+   "worker": "wv3",
+   "style": "mass",
+   "layout": [
+    [
+     "isolated",
+     "body_alt",
+     "inner"
+    ],
+    [
+     "corner_nw",
+     "edge_n",
+     "corner_ne"
+    ],
+    [
+     "edge_w",
+     "body",
+     "edge_e"
+    ],
+    [
+     "corner_sw",
+     "edge_s",
+     "corner_se"
+    ]
+   ],
+   "roles_ko": {
+    "isolated": "외딴 한 칸(이웃 없이 혼자 선 통그림)",
+    "body_alt": "몸통 변형(몸통과 섞어 까는 두 번째 속)",
+    "inner": "안쪽 모서리(네 귀에 바깥이 파고든 오목 모서리 넷)",
+    "corner_nw": "북서 모서리",
+    "edge_n": "북쪽 변",
+    "corner_ne": "북동 모서리",
+    "edge_w": "서쪽 변",
+    "body": "몸통(사방이 같은 땅)",
+    "edge_e": "동쪽 변",
+    "corner_sw": "남서 모서리",
+    "edge_s": "남쪽 변",
+    "corner_se": "남동 모서리"
+   }
+  },
+  {
+   "id": "snow_mountain",
+   "slug": "snow_mountain",
+   "name": "설산",
+   "scene": "산·화산",
+   "kind": "bundle",
+   "cells": [
+    3,
+    4
+   ],
+   "canvas": [
+    48,
+    64
+   ],
+   "layer": "decal",
+   "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+   "under": "snow",
+   "under_ko": "설원(snow 몸통 고른 판)",
+   "passage": "block",
+   "description": "mountain 과 같은 봉우리·격자에 꼭대기 1/3 이 눈(눈 경계는 비탈 골을 따라 들쭉날쭉, 왼쪽 비탈 눈이 더 밝다). 밑바탕은 설원. mountain 과 같은 글자끼리 한 식구.",
+   "palette_hint": "wrock 바위, wsnow 눈",
+   "worker": "wv3",
+   "style": "mass",
+   "layout": [
+    [
+     "isolated",
+     "body_alt",
+     "inner"
+    ],
+    [
+     "corner_nw",
+     "edge_n",
+     "corner_ne"
+    ],
+    [
+     "edge_w",
+     "body",
+     "edge_e"
+    ],
+    [
+     "corner_sw",
+     "edge_s",
+     "corner_se"
+    ]
+   ],
+   "roles_ko": {
+    "isolated": "외딴 한 칸(이웃 없이 혼자 선 통그림)",
+    "body_alt": "몸통 변형(몸통과 섞어 까는 두 번째 속)",
+    "inner": "안쪽 모서리(네 귀에 바깥이 파고든 오목 모서리 넷)",
+    "corner_nw": "북서 모서리",
+    "edge_n": "북쪽 변",
+    "corner_ne": "북동 모서리",
+    "edge_w": "서쪽 변",
+    "body": "몸통(사방이 같은 땅)",
+    "edge_e": "동쪽 변",
+    "corner_sw": "남서 모서리",
+    "edge_s": "남쪽 변",
+    "corner_se": "남동 모서리"
+   }
+  },
+  {
+   "id": "cliff_plateau",
+   "slug": "cliff_plateau",
+   "name": "고원 절벽",
+   "scene": "산·화산",
+   "kind": "bundle",
+   "cells": [
+    3,
+    4
+   ],
+   "canvas": [
+    48,
+    64
+   ],
+   "layer": "decal",
+   "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+   "under": "plains",
+   "under_ko": "평원 풀(plains_base 고른 판)",
+   "passage": "block",
+   "description": "산맥 사이·대륙 가운데 솟은 고원(World.png 위층 고원 블록의 형태). 덩이 안 = 고원 윗면(평원보다 한 단 밝은 풀, 조용하게), **남쪽 변 = 절벽 앞면 6~8px(바위 결 세로 골, 위 밝게 아래 어둡게)**, 동서 변 = 절벽 옆면 2~3px, 북쪽 변 = 윗면 테 1px 만(뒤쪽이라 앞면이 안 보인다). 모서리는 둥글게 휜 절벽. 산맥의 관문 틈 둘레, 성이 선 대지.",
+   "palette_hint": "whill·wgrass 윗면, wrock 절벽",
+   "worker": "wv3",
+   "style": "mass",
+   "layout": [
+    [
+     "isolated",
+     "body_alt",
+     "inner"
+    ],
+    [
+     "corner_nw",
+     "edge_n",
+     "corner_ne"
+    ],
+    [
+     "edge_w",
+     "body",
+     "edge_e"
+    ],
+    [
+     "corner_sw",
+     "edge_s",
+     "corner_se"
+    ]
+   ],
+   "roles_ko": {
+    "isolated": "외딴 한 칸(이웃 없이 혼자 선 통그림)",
+    "body_alt": "몸통 변형(몸통과 섞어 까는 두 번째 속)",
+    "inner": "안쪽 모서리(네 귀에 바깥이 파고든 오목 모서리 넷)",
+    "corner_nw": "북서 모서리",
+    "edge_n": "북쪽 변",
+    "corner_ne": "북동 모서리",
+    "edge_w": "서쪽 변",
+    "body": "몸통(사방이 같은 땅)",
+    "edge_e": "동쪽 변",
+    "corner_sw": "남서 모서리",
+    "edge_s": "남쪽 변",
+    "corner_se": "남동 모서리"
+   }
+  },
+  {
+   "id": "big_mountain",
+   "slug": "big_mountain",
+   "name": "홀로 선 큰 산",
+   "scene": "산·화산",
+   "kind": "icon",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "under": "plains",
+   "under_ko": "평원 풀(plains_base 고른 판)",
+   "passage": "block",
+   "description": "World.png 큰 산처럼 **2×2 를 꽉 채운 넓은 원뿔 하나**: 꼭대기에서 발치로 퍼지는 능선 서너 줄(방사형 골), 왼쪽 면 밝게·오른쪽 면 어둡게 큰 면으로 나뉜다. 꼭대기 눈 한 점(선택). 산맥 봉우리와 같은 바위 결.",
+   "palette_hint": "wrock 바위, 꼭대기 wsnow 조금",
+   "worker": "wv3"
+  },
+  {
+   "id": "gate_fort",
+   "slug": "gate_fort",
+   "name": "관문 요새",
+   "scene": "산·화산",
+   "kind": "icon",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "under": "plains",
+   "under_ko": "평원 풀(plains_base 고른 판)",
+   "passage": "walk",
+   "description": "산맥 관문 틈을 막는 작은 요새(outdoor-guide-world 「산맥 줄기 + 관문 틈」). 흉벽 두른 돌 문루 하나 + 가운데 어두운 문 아치, 양옆 벽 토막. 칸 폭 80% 이상. 성보다 작고 낮게, 탑·지붕 없음.",
+   "palette_hint": "wstone 벽, 문 mout",
+   "worker": "wv3"
+  },
+  {
+   "id": "ash",
+   "slug": "ash",
+   "name": "화산재 벌판",
+   "scene": "산·화산",
+   "kind": "bundle",
+   "cells": [
+    3,
+    4
+   ],
+   "canvas": [
+    48,
+    64
+   ],
+   "layer": "decal",
+   "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+   "under": "plains",
+   "under_ko": "평원 풀(plains_base 고른 판)",
+   "passage": "walk",
+   "description": "화산 둘레의 검은 재 땅. 속 = 어두운 회갈 재 + 굳은 용암 돌 덩이 몇 개 + 가는 금 두어 줄, 대비 낮게. 경계 = 기슭 깊이 2~4px, 풀이 타서 누렇게 사라지며 재로 넘어간다(혹 진 선, 모서리 둥글게).",
+   "palette_hint": "wash 재, 테 wgrass·wsand 어두운 단",
+   "worker": "wv4",
+   "style": "flat",
+   "layout": [
+    [
+     "isolated",
+     "body_alt",
+     "inner"
+    ],
+    [
+     "corner_nw",
+     "edge_n",
+     "corner_ne"
+    ],
+    [
+     "edge_w",
+     "body",
+     "edge_e"
+    ],
+    [
+     "corner_sw",
+     "edge_s",
+     "corner_se"
+    ]
+   ],
+   "roles_ko": {
+    "isolated": "외딴 한 칸(이웃 없이 혼자 선 통그림)",
+    "body_alt": "몸통 변형(몸통과 섞어 까는 두 번째 속)",
+    "inner": "안쪽 모서리(네 귀에 바깥이 파고든 오목 모서리 넷)",
+    "corner_nw": "북서 모서리",
+    "edge_n": "북쪽 변",
+    "corner_ne": "북동 모서리",
+    "edge_w": "서쪽 변",
+    "body": "몸통(사방이 같은 땅)",
+    "edge_e": "동쪽 변",
+    "corner_sw": "남서 모서리",
+    "edge_s": "남쪽 변",
+    "corner_se": "남동 모서리"
+   }
+  },
+  {
+   "id": "lava",
+   "slug": "lava",
+   "name": "용암",
+   "scene": "산·화산",
+   "kind": "bundle",
+   "cells": [
+    3,
+    4
+   ],
+   "canvas": [
+    48,
+    64
+   ],
+   "layer": "decal",
+   "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+   "under": "ash",
+   "under_ko": "화산재(ash 몸통 고른 판)",
+   "passage": "block",
+   "description": "재 벌판 속 용암 강·호수. 1칸 폭 용암 줄기로도 이어진다 → 기슭 깊이 3~4px, 속 폭 8px 이상. 경계 = 검붉은 굳은 테 1~2px(바로 안쪽이 가장 밝다), 속 = 밝은 주황에 검붉은 껍질 조각. World.png 물가처럼 테가 혹 진 한 줄.",
+   "palette_hint": "wlava 용암, 테 wash",
+   "worker": "wv4",
+   "style": "line",
+   "layout": [
+    [
+     "isolated",
+     "body_alt",
+     "inner"
+    ],
+    [
+     "corner_nw",
+     "edge_n",
+     "corner_ne"
+    ],
+    [
+     "edge_w",
+     "body",
+     "edge_e"
+    ],
+    [
+     "corner_sw",
+     "edge_s",
+     "corner_se"
+    ]
+   ],
+   "roles_ko": {
+    "isolated": "외딴 한 칸(이웃 없이 혼자 선 통그림)",
+    "body_alt": "몸통 변형(몸통과 섞어 까는 두 번째 속)",
+    "inner": "안쪽 모서리(네 귀에 바깥이 파고든 오목 모서리 넷)",
+    "corner_nw": "북서 모서리",
+    "edge_n": "북쪽 변",
+    "corner_ne": "북동 모서리",
+    "edge_w": "서쪽 변",
+    "body": "몸통(사방이 같은 땅)",
+    "edge_e": "동쪽 변",
+    "corner_sw": "남서 모서리",
+    "edge_s": "남쪽 변",
+    "corner_se": "남동 모서리"
+   }
+  },
+  {
+   "id": "volcano",
+   "slug": "volcano",
+   "name": "화산",
+   "scene": "산·화산",
+   "kind": "icon",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "under": "ash",
+   "under_ko": "화산재(ash 몸통 고른 판)",
+   "passage": "block",
+   "description": "World.png 화산처럼 **큰 산과 같은 원뿔 틀**에 꼭대기 분화구(윗면 타원) + 붉은 용암이 한쪽 비탈로 흘러내린 줄기 하나, 비탈은 잿빛 바위(큰 산보다 회색·검게). 연기는 선택(투명 배경 위 회색 두세 단, 작게). 빛나는 용암은 면적 작게 한 덩이로.",
+   "palette_hint": "wash 비탈, wlava 용암, mconc·mwhite 연기",
+   "worker": "wv4"
+  },
+  {
+   "id": "poison_marsh",
+   "slug": "poison_marsh",
+   "name": "독늪",
+   "scene": "숲·늪",
+   "kind": "bundle",
+   "cells": [
+    3,
+    4
+   ],
+   "canvas": [
+    48,
+    64
+   ],
+   "layer": "decal",
+   "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+   "under": "plains",
+   "under_ko": "평원 풀(plains_base 고른 판)",
+   "passage": "block",
+   "description": "World.png 독늪처럼 한눈에 「밟으면 다치는 땅」: 채도 낮춘 보라 물에 **둥근 돌·거품 덩이(지름 4~6px, 윗왼 밝은 테)** 가 자갈처럼 빽빽이, 드문 반짝임 한 점. 가장자리 = 짙은 테 1px(끊긴 선) + 풀이 파먹는 불규칙한 선, 기슭 깊이 2~4px, 모서리 둥글게. 늪(swamp)과 색·결 모두 달라야 한다.",
+   "palette_hint": "wpoison 물·거품, 테 wpoison:0·wdirt:0",
+   "worker": "wv4",
+   "style": "flat",
+   "layout": [
+    [
+     "isolated",
+     "body_alt",
+     "inner"
+    ],
+    [
+     "corner_nw",
+     "edge_n",
+     "corner_ne"
+    ],
+    [
+     "edge_w",
+     "body",
+     "edge_e"
+    ],
+    [
+     "corner_sw",
+     "edge_s",
+     "corner_se"
+    ]
+   ],
+   "roles_ko": {
+    "isolated": "외딴 한 칸(이웃 없이 혼자 선 통그림)",
+    "body_alt": "몸통 변형(몸통과 섞어 까는 두 번째 속)",
+    "inner": "안쪽 모서리(네 귀에 바깥이 파고든 오목 모서리 넷)",
+    "corner_nw": "북서 모서리",
+    "edge_n": "북쪽 변",
+    "corner_ne": "북동 모서리",
+    "edge_w": "서쪽 변",
+    "body": "몸통(사방이 같은 땅)",
+    "edge_e": "동쪽 변",
+    "corner_sw": "남서 모서리",
+    "edge_s": "남쪽 변",
+    "corner_se": "남동 모서리"
+   }
+  },
+  {
+   "id": "dead_forest",
+   "slug": "dead_forest",
+   "name": "고목 숲",
+   "scene": "숲·늪",
+   "kind": "bundle",
+   "cells": [
+    3,
+    4
+   ],
+   "canvas": [
+    48,
+    64
+   ],
+   "layer": "decal",
+   "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+   "under": "plains",
+   "under_ko": "평원 풀(plains_base 고른 판)",
+   "passage": "block",
+   "description": "저주받은 땅·화산 둘레의 잎 없는 고목 숲. 가지가 갈라진 앙상한 나무(줄기 2px, 가지 1px)가 8px 엇갈린 격자로 서고, 발치에 마른 풀·재. 수관이 없으므로 밑바탕이 비친다 — 나무가 촘촘해야 덩이로 읽힌다(한 칸에 두세 그루). 실루엣만으로 가지가 읽혀야 한다.",
+   "palette_hint": "wbark 줄기, wash 발치 재, wswamp 마른 풀",
+   "worker": "wv4",
+   "style": "mass",
+   "layout": [
+    [
+     "isolated",
+     "body_alt",
+     "inner"
+    ],
+    [
+     "corner_nw",
+     "edge_n",
+     "corner_ne"
+    ],
+    [
+     "edge_w",
+     "body",
+     "edge_e"
+    ],
+    [
+     "corner_sw",
+     "edge_s",
+     "corner_se"
+    ]
+   ],
+   "roles_ko": {
+    "isolated": "외딴 한 칸(이웃 없이 혼자 선 통그림)",
+    "body_alt": "몸통 변형(몸통과 섞어 까는 두 번째 속)",
+    "inner": "안쪽 모서리(네 귀에 바깥이 파고든 오목 모서리 넷)",
+    "corner_nw": "북서 모서리",
+    "edge_n": "북쪽 변",
+    "corner_ne": "북동 모서리",
+    "edge_w": "서쪽 변",
+    "body": "몸통(사방이 같은 땅)",
+    "edge_e": "동쪽 변",
+    "corner_sw": "남서 모서리",
+    "edge_s": "남쪽 변",
+    "corner_se": "남동 모서리"
+   }
+  },
+  {
+   "id": "forest",
+   "slug": "forest",
+   "name": "숲(활엽수 덩이)",
+   "scene": "숲·늪",
+   "kind": "bundle",
+   "cells": [
+    3,
+    4
+   ],
+   "canvas": [
+    48,
+    64
+   ],
+   "layer": "decal",
+   "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+   "under": "plains",
+   "under_ko": "평원 풀(plains_base 고른 판)",
+   "passage": "block",
+   "description": "World.png 숲 블록의 형태: **둥근 수관(지름 7~9px)이 8px 간격 엇갈린 격자로 겹겹이** 놓이고, 수관마다 윗왼 밝은 덩이·오른아래 짙은 그늘, 수관 사이 틈은 가장 어두운 초록. 가장자리 = 수관 둥근 윤곽이 칸 바깥쪽 8px 안에서 불룩(곧은 테 금지), **남쪽 변만 줄기 2px 가 보이고**(3/4 시점) 동쪽 변엔 줄기 한두 개. 외딴 칸 = 나무 두세 그루 덩이. 몸통은 16px 주기로 수관이 이어진다(칸 경계에서 수관이 잘리지 않게 걸쳐 그린다).",
+   "palette_hint": "wleaf 4~5단, wbark 줄기, ~ 발치",
+   "worker": "wv5",
+   "style": "mass",
+   "layout": [
+    [
+     "isolated",
+     "body_alt",
+     "inner"
+    ],
+    [
+     "corner_nw",
+     "edge_n",
+     "corner_ne"
+    ],
+    [
+     "edge_w",
+     "body",
+     "edge_e"
+    ],
+    [
+     "corner_sw",
+     "edge_s",
+     "corner_se"
+    ]
+   ],
+   "roles_ko": {
+    "isolated": "외딴 한 칸(이웃 없이 혼자 선 통그림)",
+    "body_alt": "몸통 변형(몸통과 섞어 까는 두 번째 속)",
+    "inner": "안쪽 모서리(네 귀에 바깥이 파고든 오목 모서리 넷)",
+    "corner_nw": "북서 모서리",
+    "edge_n": "북쪽 변",
+    "corner_ne": "북동 모서리",
+    "edge_w": "서쪽 변",
+    "body": "몸통(사방이 같은 땅)",
+    "edge_e": "동쪽 변",
+    "corner_sw": "남서 모서리",
+    "edge_s": "남쪽 변",
+    "corner_se": "남동 모서리"
+   }
+  },
+  {
+   "id": "conifer",
+   "slug": "conifer",
+   "name": "침엽수림",
+   "scene": "숲·늪",
+   "kind": "bundle",
+   "cells": [
+    3,
+    4
+   ],
+   "canvas": [
+    48,
+    64
+   ],
+   "layer": "decal",
+   "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+   "under": "plains",
+   "under_ko": "평원 풀(plains_base 고른 판)",
+   "passage": "block",
+   "description": "뾰족한 전나무 숲. 나무 하나 = 폭 6~8px 세모 두세 층, 활엽수와 같은 **8px 엇갈린 격자**로 겹친다(앞줄이 뒷줄 밑동을 가림). 왼쪽 면 밝게 오른쪽 면 어둡게. 남쪽 변은 밑동 줄기 1~2px. 둥근 덩이 금지.",
+   "palette_hint": "wpine 잎, wbark 밑동",
+   "worker": "wv5",
+   "style": "mass",
+   "layout": [
+    [
+     "isolated",
+     "body_alt",
+     "inner"
+    ],
+    [
+     "corner_nw",
+     "edge_n",
+     "corner_ne"
+    ],
+    [
+     "edge_w",
+     "body",
+     "edge_e"
+    ],
+    [
+     "corner_sw",
+     "edge_s",
+     "corner_se"
+    ]
+   ],
+   "roles_ko": {
+    "isolated": "외딴 한 칸(이웃 없이 혼자 선 통그림)",
+    "body_alt": "몸통 변형(몸통과 섞어 까는 두 번째 속)",
+    "inner": "안쪽 모서리(네 귀에 바깥이 파고든 오목 모서리 넷)",
+    "corner_nw": "북서 모서리",
+    "edge_n": "북쪽 변",
+    "corner_ne": "북동 모서리",
+    "edge_w": "서쪽 변",
+    "body": "몸통(사방이 같은 땅)",
+    "edge_e": "동쪽 변",
+    "corner_sw": "남서 모서리",
+    "edge_s": "남쪽 변",
+    "corner_se": "남동 모서리"
+   }
+  },
+  {
+   "id": "snow_conifer",
+   "slug": "snow_conifer",
+   "name": "눈 덮인 침엽수림",
+   "scene": "숲·늪",
+   "kind": "bundle",
+   "cells": [
+    3,
+    4
+   ],
+   "canvas": [
+    48,
+    64
+   ],
+   "layer": "decal",
+   "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+   "under": "snow",
+   "under_ko": "설원(snow 몸통 고른 판)",
+   "passage": "block",
+   "description": "conifer 와 같은 나무 모양·격자에 층 윗변마다 눈(1~2px). World.png 눈 숲처럼 눈 얹힌 윗면이 밝고, 남쪽 줄기 사이로 초록 한두 점. conifer 와 같은 글자끼리 한 식구.",
+   "palette_hint": "wpine 잎, wsnow 눈 얹힘",
+   "worker": "wv5",
+   "style": "mass",
+   "layout": [
+    [
+     "isolated",
+     "body_alt",
+     "inner"
+    ],
+    [
+     "corner_nw",
+     "edge_n",
+     "corner_ne"
+    ],
+    [
+     "edge_w",
+     "body",
+     "edge_e"
+    ],
+    [
+     "corner_sw",
+     "edge_s",
+     "corner_se"
+    ]
+   ],
+   "roles_ko": {
+    "isolated": "외딴 한 칸(이웃 없이 혼자 선 통그림)",
+    "body_alt": "몸통 변형(몸통과 섞어 까는 두 번째 속)",
+    "inner": "안쪽 모서리(네 귀에 바깥이 파고든 오목 모서리 넷)",
+    "corner_nw": "북서 모서리",
+    "edge_n": "북쪽 변",
+    "corner_ne": "북동 모서리",
+    "edge_w": "서쪽 변",
+    "body": "몸통(사방이 같은 땅)",
+    "edge_e": "동쪽 변",
+    "corner_sw": "남서 모서리",
+    "edge_s": "남쪽 변",
+    "corner_se": "남동 모서리"
+   }
+  },
+  {
+   "id": "jungle",
+   "slug": "jungle",
+   "name": "밀림",
+   "scene": "숲·늪",
+   "kind": "bundle",
+   "cells": [
+    3,
+    4
+   ],
+   "canvas": [
+    48,
+    64
+   ],
+   "layer": "decal",
+   "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+   "under": "plains",
+   "under_ko": "평원 풀(plains_base 고른 판)",
+   "passage": "block",
+   "description": "남쪽 섬의 열대 밀림. 활엽수 숲보다 어둡고 채도 높은 초록, 수관 사이로 **야자 잎 갈래(가는 잎 5갈래 별꼴)** 가 섞여 윤곽이 들쭉날쭉. 숲(forest)과 한눈에 구분되게 — 잎 끝이 뾰족하게 삐져나온다. 남쪽 변 줄기는 가늘고 휜다.",
+   "palette_hint": "wmead 짙은 단·wleaf, wbark",
+   "worker": "wv5",
+   "style": "mass",
+   "layout": [
+    [
+     "isolated",
+     "body_alt",
+     "inner"
+    ],
+    [
+     "corner_nw",
+     "edge_n",
+     "corner_ne"
+    ],
+    [
+     "edge_w",
+     "body",
+     "edge_e"
+    ],
+    [
+     "corner_sw",
+     "edge_s",
+     "corner_se"
+    ]
+   ],
+   "roles_ko": {
+    "isolated": "외딴 한 칸(이웃 없이 혼자 선 통그림)",
+    "body_alt": "몸통 변형(몸통과 섞어 까는 두 번째 속)",
+    "inner": "안쪽 모서리(네 귀에 바깥이 파고든 오목 모서리 넷)",
+    "corner_nw": "북서 모서리",
+    "edge_n": "북쪽 변",
+    "corner_ne": "북동 모서리",
+    "edge_w": "서쪽 변",
+    "body": "몸통(사방이 같은 땅)",
+    "edge_e": "동쪽 변",
+    "corner_sw": "남서 모서리",
+    "edge_s": "남쪽 변",
+    "corner_se": "남동 모서리"
+   }
+  },
+  {
+   "id": "trees_scatter",
+   "slug": "trees_scatter",
+   "name": "외딴 나무 셋",
+   "scene": "들·길",
+   "kind": "scatter",
+   "cells": [
+    3,
+    1
+   ],
+   "canvas": [
+    48,
+    16
+   ],
+   "layer": "decal",
+   "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+   "under": "plains",
+   "under_ko": "평원 풀(plains_base 고른 판)",
+   "passage": "block",
+   "description": "한 칸짜리 외딴 나무 셋: ① 둥근 활엽수 한 그루(수관 지름 10~12px, 윗왼 밝은 덩이 셋 + 오른아래 어두운 틈, 줄기 2px, 발치 그림자) ② 잎 없는 고목(갈라진 가지, 줄기 윤곽) ③ 야자수(휘어진 줄기 + 잎 다섯 갈래). World.png 는 이것들을 위층 단품으로 따로 둔다 — 숲 덩이 가장자리에 붙여 숲 끝을 흐트러뜨리는 용도도 있다.",
+   "palette_hint": "wleaf·wbark, 고목 wbark·wash, 야자 wmead·wbark",
+   "worker": "wv5",
+   "variants": 3
+  },
+  {
+   "id": "big_tree",
+   "slug": "big_tree",
+   "name": "거목",
+   "scene": "숲·늪",
+   "kind": "icon",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "under": "plains",
+   "under_ko": "평원 풀(plains_base 고른 판)",
+   "passage": "block",
+   "description": "대륙의 이정표 거목(세계수): World.png 큰 나무처럼 2×2 를 꽉 채운 둥근 수관(덩이 여섯~여덟, 윗왼 밝게) + 굵은 줄기와 뿌리. 숲 수관과 같은 잎 결, 크기로 구분.",
+   "palette_hint": "wleaf 수관, wbark 줄기",
+   "worker": "wv5"
+  },
+  {
+   "id": "snow",
+   "slug": "snow",
+   "name": "설원",
+   "scene": "눈",
+   "kind": "bundle",
+   "cells": [
+    3,
+    4
+   ],
+   "canvas": [
+    48,
+    64
+   ],
+   "layer": "decal",
+   "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+   "under": "plains",
+   "under_ko": "평원 풀(plains_base 고른 판)",
+   "passage": "walk",
+   "description": "World.png 설원처럼 **가장 조용한 덩이**: 흰 눈에 옅은 푸른 결(바람 자국 가로 획 드문드문), 경계 = 푸른 그늘 테 1px + 둥근 모서리(반지름 4~6px), 기슭 깊이 2~3px. 새하얀 판 금지(밝은 끝 한 단은 빛 받는 곳만). 7색 이내.",
+   "palette_hint": "wsnow 눈, 테 wsnow 어두운 단·wgrass",
+   "worker": "wv6",
+   "style": "flat",
+   "layout": [
+    [
+     "isolated",
+     "body_alt",
+     "inner"
+    ],
+    [
+     "corner_nw",
+     "edge_n",
+     "corner_ne"
+    ],
+    [
+     "edge_w",
+     "body",
+     "edge_e"
+    ],
+    [
+     "corner_sw",
+     "edge_s",
+     "corner_se"
+    ]
+   ],
+   "roles_ko": {
+    "isolated": "외딴 한 칸(이웃 없이 혼자 선 통그림)",
+    "body_alt": "몸통 변형(몸통과 섞어 까는 두 번째 속)",
+    "inner": "안쪽 모서리(네 귀에 바깥이 파고든 오목 모서리 넷)",
+    "corner_nw": "북서 모서리",
+    "edge_n": "북쪽 변",
+    "corner_ne": "북동 모서리",
+    "edge_w": "서쪽 변",
+    "body": "몸통(사방이 같은 땅)",
+    "edge_e": "동쪽 변",
+    "corner_sw": "남서 모서리",
+    "edge_s": "남쪽 변",
+    "corner_se": "남동 모서리"
+   }
+  },
+  {
+   "id": "desert",
+   "slug": "desert",
+   "name": "사막",
+   "scene": "사막",
+   "kind": "bundle",
+   "cells": [
+    3,
+    4
+   ],
+   "canvas": [
+    48,
+    64
+   ],
+   "layer": "decal",
+   "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+   "under": "plains",
+   "under_ko": "평원 풀(plains_base 고른 판)",
+   "passage": "walk",
+   "description": "World.png 모래 블록처럼 모래에 **사선 물결 줄(모래 언덕 등성이, 밝은 선 + 바로 아래 그늘 선이 짝)** 두세 줄이 칸 경계를 넘어 이어진다(16px 주기). 경계 = 풀 덩이가 모래를 파먹는 불규칙한 선, 기슭 깊이 2~4px, 모서리 둥글게. 바닥이므로 대비 낮게.",
+   "palette_hint": "wsand 모래, wdune 등성이, 테 wgrass",
+   "worker": "wv6",
+   "style": "flat",
+   "layout": [
+    [
+     "isolated",
+     "body_alt",
+     "inner"
+    ],
+    [
+     "corner_nw",
+     "edge_n",
+     "corner_ne"
+    ],
+    [
+     "edge_w",
+     "body",
+     "edge_e"
+    ],
+    [
+     "corner_sw",
+     "edge_s",
+     "corner_se"
+    ]
+   ],
+   "roles_ko": {
+    "isolated": "외딴 한 칸(이웃 없이 혼자 선 통그림)",
+    "body_alt": "몸통 변형(몸통과 섞어 까는 두 번째 속)",
+    "inner": "안쪽 모서리(네 귀에 바깥이 파고든 오목 모서리 넷)",
+    "corner_nw": "북서 모서리",
+    "edge_n": "북쪽 변",
+    "corner_ne": "북동 모서리",
+    "edge_w": "서쪽 변",
+    "body": "몸통(사방이 같은 땅)",
+    "edge_e": "동쪽 변",
+    "corner_sw": "남서 모서리",
+    "edge_s": "남쪽 변",
+    "corner_se": "남동 모서리"
+   }
+  },
+  {
+   "id": "swamp",
+   "slug": "swamp",
+   "name": "늪",
+   "scene": "숲·늪",
+   "kind": "bundle",
+   "cells": [
+    3,
+    4
+   ],
+   "canvas": [
+    48,
+    64
+   ],
+   "layer": "decal",
+   "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+   "under": "plains",
+   "under_ko": "평원 풀(plains_base 고른 판)",
+   "passage": "block",
+   "description": "검푸른 늪물 웅덩이와 갈대·이끼 둔덕이 섞인 습지(독늪과 다르다 — 보라 없음). 속 = 어두운 물 웅덩이(둥근 덩이 4~6px) 사이로 풀 둔덕, 갈대 세로 획 몇 개. 경계 = 기슭 깊이 2~4px, 풀이 질척하게 어두워지며 녹아든다. 모서리 둥글게.",
+   "palette_hint": "wbog 물, wswamp 둔덕·갈대",
+   "worker": "wv6",
+   "style": "flat",
+   "layout": [
+    [
+     "isolated",
+     "body_alt",
+     "inner"
+    ],
+    [
+     "corner_nw",
+     "edge_n",
+     "corner_ne"
+    ],
+    [
+     "edge_w",
+     "body",
+     "edge_e"
+    ],
+    [
+     "corner_sw",
+     "edge_s",
+     "corner_se"
+    ]
+   ],
+   "roles_ko": {
+    "isolated": "외딴 한 칸(이웃 없이 혼자 선 통그림)",
+    "body_alt": "몸통 변형(몸통과 섞어 까는 두 번째 속)",
+    "inner": "안쪽 모서리(네 귀에 바깥이 파고든 오목 모서리 넷)",
+    "corner_nw": "북서 모서리",
+    "edge_n": "북쪽 변",
+    "corner_ne": "북동 모서리",
+    "edge_w": "서쪽 변",
+    "body": "몸통(사방이 같은 땅)",
+    "edge_e": "동쪽 변",
+    "corner_sw": "남서 모서리",
+    "edge_s": "남쪽 변",
+    "corner_se": "남동 모서리"
+   }
+  },
+  {
+   "id": "ice_sea",
+   "slug": "ice_sea",
+   "name": "유빙 바다",
+   "scene": "물가",
+   "kind": "bundle",
+   "cells": [
+    3,
+    4
+   ],
+   "canvas": [
+    48,
+    64
+   ],
+   "layer": "decal",
+   "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+   "under": "sea",
+   "under_ko": "얕은 바다(coast_grass 몸통 고른 판)",
+   "passage": "block",
+   "description": "북쪽 바다에 떠 있는 얼음판 덩이(World.png 얼음 칸처럼 얼음판 윗면 밝고 앞면 한 단 어둡다). 속 = 얼음판(모서리 깎인 네모·다각 4~8px) 사이로 검푸른 물 틈. 경계 = 얼음판 조각이 물로 흩어진다, 기슭 깊이 2~4px.",
+   "palette_hint": "wice 얼음, wsea·wdeep 물 틈",
+   "worker": "wv6",
+   "style": "flat",
+   "layout": [
+    [
+     "isolated",
+     "body_alt",
+     "inner"
+    ],
+    [
+     "corner_nw",
+     "edge_n",
+     "corner_ne"
+    ],
+    [
+     "edge_w",
+     "body",
+     "edge_e"
+    ],
+    [
+     "corner_sw",
+     "edge_s",
+     "corner_se"
+    ]
+   ],
+   "roles_ko": {
+    "isolated": "외딴 한 칸(이웃 없이 혼자 선 통그림)",
+    "body_alt": "몸통 변형(몸통과 섞어 까는 두 번째 속)",
+    "inner": "안쪽 모서리(네 귀에 바깥이 파고든 오목 모서리 넷)",
+    "corner_nw": "북서 모서리",
+    "edge_n": "북쪽 변",
+    "corner_ne": "북동 모서리",
+    "edge_w": "서쪽 변",
+    "body": "몸통(사방이 같은 땅)",
+    "edge_e": "동쪽 변",
+    "corner_sw": "남서 모서리",
+    "edge_s": "남쪽 변",
+    "corner_se": "남동 모서리"
+   }
+  },
+  {
+   "id": "desert_scatter",
+   "slug": "desert_scatter",
+   "name": "사막 흩뿌림",
+   "scene": "사막",
+   "kind": "scatter",
+   "cells": [
+    3,
+    1
+   ],
+   "canvas": [
+    48,
+    16
+   ],
+   "layer": "decal",
+   "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+   "under": "sand",
+   "under_ko": "사막 모래(desert 몸통 고른 판)",
+   "passage": "walk",
+   "description": "사막 위 한 칸 덧칠 셋: ① 선인장(팔 둘) ② 바위 무더기 ③ 짐승 뼈·해골. 모래와 대비되게 윤곽 1px, 발치 그림자.",
+   "palette_hint": "wmead·wleaf 선인장, wrock 바위, mwhite·wsand 뼈",
+   "worker": "wv6",
+   "variants": 3
+  },
+  {
+   "id": "oasis",
+   "slug": "oasis",
+   "name": "오아시스",
+   "scene": "사막",
+   "kind": "icon",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "under": "sand",
+   "under_ko": "사막 모래(desert 몸통 고른 판)",
+   "passage": "walk",
+   "description": "사막 속 작은 샘: 둥근 물웅덩이(지름 8~10px, 물가 둑 1px) + 곁 야자 한 그루. 칸 폭 80% 이상.",
+   "palette_hint": "wriver·wsea 물, wmead·wbark 야자",
+   "worker": "wv6"
+  },
+  {
+   "id": "hamlet",
+   "slug": "hamlet",
+   "name": "작은 마을",
+   "scene": "장소",
+   "kind": "icon",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "under": "plains",
+   "under_ko": "평원 풀(plains_base 고른 판)",
+   "passage": "walk",
+   "description": "World.png 마을처럼 **한 칸짜리** 작은 마을: 큰 박공지붕 집 하나 + 곁에 작은 집·탑 하나, 지붕이 칸 폭 절반 이상(지붕이 마을을 대표한다). 윤곽 1px. village(2×1) 보다 작다.",
+   "palette_hint": "wroofr 지붕, mwhite·mbrick 벽",
+   "worker": "wv7"
+  },
+  {
+   "id": "village",
+   "slug": "village",
+   "name": "마을",
+   "scene": "장소",
+   "kind": "icon",
+   "cells": [
+    2,
+    1
+   ],
+   "canvas": [
+    32,
+    16
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "under": "plains",
+   "under_ko": "평원 풀(plains_base 고른 판)",
+   "passage": "walk",
+   "description": "마을: 박공지붕 집 두세 채(지붕이 벽보다 크고 밝게), 문 한 점, 집 사이 나무 한 그루. 집 모양·지붕 색을 섞되 한 식구. 성벽 없음.",
+   "palette_hint": "wroofr·wroofb 지붕, mwhite·mbrick 벽, mwood 문",
+   "worker": "wv7"
+  },
+  {
+   "id": "snow_village",
+   "slug": "snow_village",
+   "name": "눈 마을",
+   "scene": "눈",
+   "kind": "icon",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "under": "snow",
+   "under_ko": "설원(snow 몸통 고른 판)",
+   "passage": "walk",
+   "description": "hamlet 과 같은 틀에 지붕이 눈으로 덮인 판(World.png 눈 마을). 지붕 윗면 흰 눈, 처마 끝 푸른 그늘, 벽은 나무. 밑바탕 설원.",
+   "palette_hint": "wsnow 눈 지붕, mwood 벽",
+   "worker": "wv7"
+  },
+  {
+   "id": "town",
+   "slug": "town",
+   "name": "성벽 도시",
+   "scene": "장소",
+   "kind": "icon",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "under": "plains",
+   "under_ko": "평원 풀(plains_base 고른 판)",
+   "passage": "walk",
+   "description": "낮은 성벽이 두른 도시: 성벽 테(윗면 한 줄 밝게, 흉벽 톱니) 안에 지붕 여럿이 빽빽이, 남쪽 가운데 성문(어두운 아치). 마을보다 크고 단단해 보이게, 성보다 낮게.",
+   "palette_hint": "wstone 성벽, wroofr·wroofb 지붕",
+   "worker": "wv7"
+  },
+  {
+   "id": "port",
+   "slug": "port",
+   "name": "항구",
+   "scene": "물가",
+   "kind": "icon",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "under": "plains",
+   "under_ko": "평원 풀(plains_base 고른 판)",
+   "passage": "walk",
+   "description": "해안 마을의 항구: 위 칸 = 창고·집 지붕 둘, 아래 칸 = 바다로 뻗은 나무 부두 + 돛배 한 척(흰 돛 세모, 선체 갈색). 아래 칸 부두·배 둘레는 투명(바다가 비친다). 마을과 한 식구 지붕.",
+   "palette_hint": "wroofr 지붕, mwood 부두·선체, mwhite 돛",
+   "worker": "wv7"
+  },
+  {
+   "id": "lighthouse",
+   "slug": "lighthouse",
+   "name": "등대",
+   "scene": "물가",
+   "kind": "icon",
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "under": "plains",
+   "under_ko": "평원 풀(plains_base 고른 판)",
+   "passage": "walk",
+   "description": "곶 끝의 등대: 흰 원통 몸통(붉은 띠 한두 줄, 왼쪽 밝게) + 꼭대기 등실(노란 불빛 %) + 바위 받침. 1×2 를 꽉 채워 높이를 과장. 탑(tower)과 색으로 구분.",
+   "palette_hint": "mwhite·mred 몸통, wgold·% 불빛, wrock 받침",
+   "worker": "wv7"
+  },
+  {
+   "id": "castle",
+   "slug": "castle",
+   "name": "성",
+   "scene": "장소",
+   "kind": "icon",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "under": "plains",
+   "under_ko": "평원 풀(plains_base 고른 판)",
+   "passage": "walk",
+   "description": "World.png 성처럼 **네 귀 둥근 탑(흉벽 톱니) + 가운데 본성 + 앞 성문**, 돌 윤곽 1px(가장 어두운 단), 탑마다 왼쪽 밝게 오른쪽 어둡게. 뾰족 지붕 탑 하나 이상으로 도시와 구분, 깃발 한 점.",
+   "palette_hint": "wstone 벽, wroofb 지붕, wgold·mred 깃발",
+   "worker": "wv8"
+  },
+  {
+   "id": "dark_castle",
+   "slug": "dark_castle",
+   "name": "마왕성",
+   "scene": "장소",
+   "kind": "icon",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "under": "ash",
+   "under_ko": "화산재(ash 몸통 고른 판)",
+   "passage": "walk",
+   "description": "마지막 던전: castle 과 같은 틀을 **검보라 돌 + 뾰족 첨탑 셋 이상**(가운데가 가장 높다)으로, 창에 붉은 불빛 두세 점(%). 성과 실루엣이 달라야 한다(첨탑 수·높이). 밑바탕 재.",
+   "palette_hint": "wstone 어두운 단·mpurple, 불빛 wlava·%",
+   "worker": "wv8"
+  },
+  {
+   "id": "tower",
+   "slug": "tower",
+   "name": "탑",
+   "scene": "장소",
+   "kind": "icon",
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "under": "plains",
+   "under_ko": "평원 풀(plains_base 고른 판)",
+   "passage": "walk",
+   "description": "World.png 탑처럼 1×2 를 꽉 채운 원통(왼쪽 밝게·오른쪽 어둡게 세로 명암), 층마다 흉벽 테, 창 한두 점, 발치 문. 마법사 탑이면 꼭대기 뾰족 지붕.",
+   "palette_hint": "wstone 몸통, wroofb·wroofr 지붕",
+   "worker": "wv8"
+  },
+  {
+   "id": "temple",
+   "slug": "temple",
+   "name": "신전",
+   "scene": "장소",
+   "kind": "icon",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "under": "plains",
+   "under_ko": "평원 풀(plains_base 고른 판)",
+   "passage": "walk",
+   "description": "흰 돌 신전: 세모 박공 지붕 + 앞 기둥 열(기둥 넷, 기둥 사이 어두운 그늘) + 계단 받침 두세 단. 성·도시와 다르게 — 돌이 밝고 지붕이 낮은 세모.",
+   "palette_hint": "wstone 밝은 단, 박공 wgold 한 줄",
+   "worker": "wv8"
+  },
+  {
+   "id": "shrine",
+   "slug": "shrine",
+   "name": "사당",
+   "scene": "장소",
+   "kind": "icon",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "under": "plains",
+   "under_ko": "평원 풀(plains_base 고른 판)",
+   "passage": "walk",
+   "description": "World.png 작은 돔 사당처럼 한 칸짜리 성소: 둥근 돔 지붕(윗왼 밝게) + 앞 기둥 둘 + 어두운 입구, 돌 받침. 신전(2×2)의 작은 판 — 같은 흰 돌.",
+   "palette_hint": "wstone 밝은 단, 돔 wroofb 또는 wgold",
+   "worker": "wv8"
+  },
+  {
+   "id": "ruins",
+   "slug": "ruins",
+   "name": "폐허",
+   "scene": "장소",
+   "kind": "icon",
+   "cells": [
+    2,
+    1
+   ],
+   "canvas": [
+    32,
+    16
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "under": "plains",
+   "under_ko": "평원 풀(plains_base 고른 판)",
+   "passage": "walk",
+   "description": "무너진 옛 도시·신전 터. World.png 폐허처럼 **돌 벽 토막(흉벽 톱니가 부서진)** 두세 개가 높이가 다르게 서고, 무너진 돌 더미. 윤곽 1px(돌 가장 어두운 단), 윗면 밝게. 멀쩡한 건물로 읽히면 실패.",
+   "palette_hint": "wstone 돌, 이끼 wswamp·wmead 점",
+   "worker": "wv8"
+  },
+  {
+   "id": "cave",
+   "slug": "cave",
+   "name": "동굴 입구",
+   "scene": "장소",
+   "kind": "icon",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "under": "plains",
+   "under_ko": "평원 풀(plains_base 고른 판)",
+   "passage": "walk",
+   "description": "바위 언덕에 뚫린 어두운 동굴 입구. **칸 폭의 60% 넘는 검은 아치**(속 가장 어두운 단, 아치 안쪽 테 한 단 밝게), 아치 위 바위 이마(윗면 밝게), 아래 흙 문턱. 실루엣 한 색으로도 아치가 읽혀야 한다.",
+   "palette_hint": "wrock 바위, 구멍 mout·wrock:0",
+   "worker": "wv8"
+  },
+  {
+   "id": "village_2x2",
+   "slug": "village_2x2",
+   "name": "마을(2×2)",
+   "scene": "장소",
+   "kind": "icon",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "under": "plains",
+   "under_ko": "평원 풀(plains_base 고른 판)",
+   "passage": "walk",
+   "description": "4판 크기 등급: 작은 마을. 집 셋과 나무 한 그루, 앞길 꼬리. 한 장 그림(칸 경계 없음).",
+   "palette_hint": "wroofr·wroofb 지붕, wplast 벽",
+   "worker": "v4"
+  },
+  {
+   "id": "town_3x3",
+   "slug": "town_3x3",
+   "name": "도시(3×3)",
+   "scene": "장소",
+   "kind": "icon",
+   "cells": [
+    3,
+    3
+   ],
+   "canvas": [
+    48,
+    48
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "under": "plains",
+   "under_ko": "평원 풀(plains_base 고른 판)",
+   "passage": "walk",
+   "description": "4판 크기 등급: 도시. 낮은 성벽 + 성문 + 집 둘 + 가운데 종탑. 한 장 그림.",
+   "palette_hint": "wstone 성벽, wroofr·wroofb",
+   "worker": "v4"
+  },
+  {
+   "id": "castle_3x3",
+   "slug": "castle_3x3",
+   "name": "성(3×3)",
+   "scene": "장소",
+   "kind": "icon",
+   "cells": [
+    3,
+    3
+   ],
+   "canvas": [
+    48,
+    48
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "under": "plains",
+   "under_ko": "평원 풀(plains_base 고른 판)",
+   "passage": "walk",
+   "description": "4판 크기 등급: 성. 앞 모서리 탑 둘 + 본성 + 성문. 한 장 그림.",
+   "palette_hint": "wstone, wroofr·wroofb",
+   "worker": "v4"
+  },
+  {
+   "id": "castle_5x5",
+   "slug": "castle_5x5",
+   "name": "대성·왕도(5×5)",
+   "scene": "장소",
+   "kind": "icon",
+   "cells": [
+    5,
+    5
+   ],
+   "canvas": [
+    80,
+    80
+   ],
+   "layer": "object",
+   "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+   "under": "plains",
+   "under_ko": "평원 풀(plains_base 고른 판)",
+   "passage": "walk",
+   "description": "4판 크기 등급: 대성. 앞 모서리 탑 둘·옆탑 둘·중앙 본성·문루·길 꼬리. 한 장 그림.",
+   "palette_hint": "wstone, wroofr·wroofb",
+   "worker": "v4"
+  },
+  {
+   "id": "mountain_peaks",
+   "slug": "mountain_peaks",
+   "name": "산 봉우리 겹판(2×2 ×3)",
+   "scene": "산·화산",
+   "kind": "scatter",
+   "cells": [
+    6,
+    2
+   ],
+   "canvas": [
+    96,
+    32
+   ],
+   "layer": "decal",
+   "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+   "under": "plains",
+   "under_ko": "평원 풀(plains_base 고른 판)",
+   "passage": "block",
+   "description": "4판: 산맥 몸통 위에 얹는 2×2(32px) 큰 봉우리 셋. 아랫줄은 산 몸통 칸 위, 윗줄은 밖으로 튀어나와도 된다. 같은 조각 반복을 막는다.",
+   "palette_hint": "wrock 4~5단",
+   "worker": "v4",
+   "variants": 3
+  },
+  {
+   "id": "forest_crowns",
+   "slug": "forest_crowns",
+   "name": "활엽 큰 수관 겹판(2×2 ×3)",
+   "scene": "숲",
+   "kind": "scatter",
+   "cells": [
+    6,
+    2
+   ],
+   "canvas": [
+    96,
+    32
+   ],
+   "layer": "decal",
+   "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+   "under": "plains",
+   "under_ko": "평원 풀(plains_base 고른 판)",
+   "passage": "block",
+   "description": "4판: 활엽수 숲 몸통 위에 얹는 2×2 큰 수관 셋.",
+   "palette_hint": "wleaf",
+   "worker": "v4",
+   "variants": 3
+  },
+  {
+   "id": "conifer_crowns",
+   "slug": "conifer_crowns",
+   "name": "침엽 큰 수관 겹판(2×2 ×3)",
+   "scene": "숲",
+   "kind": "scatter",
+   "cells": [
+    6,
+    2
+   ],
+   "canvas": [
+    96,
+    32
+   ],
+   "layer": "decal",
+   "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+   "under": "plains",
+   "under_ko": "평원 풀(plains_base 고른 판)",
+   "passage": "block",
+   "description": "4판: 침엽수 숲 몸통 위에 얹는 2×2 큰 수관 셋.",
+   "palette_hint": "wpine",
+   "worker": "v4",
+   "variants": 3
+  },
+  {
+   "id": "castle_keep",
+   "slug": "castle_keep",
+   "name": "마당 있는 성",
+   "scene": "성·마을",
+   "kind": "icon",
+   "cells": [
+    4,
+    4
+   ],
+   "canvas": [
+    64,
+    64
+   ],
+   "layer": "object",
+   "layer_ko": "위층 단품(그림자 포함)",
+   "under": "plains",
+   "under_ko": "평원 풀(plains_base 고른 판)",
+   "passage": "block",
+   "description": "6판: 4×4 바깥 성벽·모서리 푸른 원뿔탑·안뜰·푸른 홀·정문.",
+   "palette_hint": "wstone,wplast,wroofb,wroofr,wink",
+   "worker": "v6"
+  },
+  {
+   "id": "city_district",
+   "slug": "city_district",
+   "name": "성벽 안 도시 구역",
+   "scene": "성·마을",
+   "kind": "icon",
+   "cells": [
+    4,
+    3
+   ],
+   "canvas": [
+    64,
+    48
+   ],
+   "layer": "object",
+   "layer_ko": "위층 단품(그림자 포함)",
+   "under": "plains",
+   "under_ko": "평원 풀(plains_base 고른 판)",
+   "passage": "block",
+   "description": "6판: 4×3 돌 건물 빽빽한 구역, 푸른·붉은 지붕과 중앙 탑.",
+   "palette_hint": "wstone,wplast,wroofb,wroofr,wink",
+   "worker": "v6"
+  },
+  {
+   "id": "field_crop",
+   "slug": "field_crop",
+   "name": "푸른 작물밭 덩이",
+   "scene": "들·길",
+   "kind": "bundle",
+   "cells": [
+    3,
+    4
+   ],
+   "canvas": [
+    48,
+    64
+   ],
+   "layer": "decal",
+   "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+   "under": "plains",
+   "under_ko": "평원 풀(plains_base 고른 판)",
+   "passage": "walk",
+   "description": "6판: 목표 월드맵의 초록 작물밭 — 밀밭과 같은 세로 줄무늬 무늬, 올리브 초록 6단, 어두운 가장자리.",
+   "palette_hint": "wcrop 6단",
+   "worker": "v6",
+   "style": "mass"
+  },
+  {
+   "id": "field_wheat",
+   "slug": "field_wheat",
+   "name": "밀밭 무늬 덩이",
+   "scene": "들·길",
+   "kind": "bundle",
+   "cells": [
+    3,
+    4
+   ],
+   "canvas": [
+    48,
+    64
+   ],
+   "layer": "decal",
+   "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+   "under": "plains",
+   "under_ko": "평원 풀(plains_base 고른 판)",
+   "passage": "walk",
+   "description": "6판: 목표 월드맵의 밀밭 — 5~8칸 둥근 육각 무늬, 세로 줄무늬(길이 3~6px 토막), 6단 갈색조, 어두운 갈색 가장자리. 남·동쪽 테는 더 어둡다.",
+   "palette_hint": "wfield 6단",
+   "worker": "v6",
+   "style": "mass"
+  },
+  {
+   "id": "gate_tower",
+   "slug": "gate_tower",
+   "name": "도시 성문",
+   "scene": "성·마을",
+   "kind": "icon",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "위층 단품(그림자 포함)",
+   "under": "plains",
+   "under_ko": "평원 풀(plains_base 고른 판)",
+   "passage": "block",
+   "description": "6판: 2×2 두 돌탑 사이 어두운 문. 성곽선 한복판.",
+   "palette_hint": "wstone,wplast,wroofb,wroofr,wink",
+   "worker": "v6"
+  },
+  {
+   "id": "hall_blue",
+   "slug": "hall_blue",
+   "name": "성 안 긴 홀",
+   "scene": "성·마을",
+   "kind": "icon",
+   "cells": [
+    3,
+    2
+   ],
+   "canvas": [
+    48,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "위층 단품(그림자 포함)",
+   "under": "plains",
+   "under_ko": "평원 풀(plains_base 고른 판)",
+   "passage": "block",
+   "description": "6판: 3×2 두 단 푸른 지붕의 긴 홀. 창 줄과 아치 문.",
+   "palette_hint": "wstone,wplast,wroofb,wroofr,wink",
+   "worker": "v6"
+  },
+  {
+   "id": "house_blue_a",
+   "slug": "house_blue_a",
+   "name": "푸른 지붕 회벽집(긴 변)",
+   "scene": "성·마을",
+   "kind": "icon",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "위층 단품(그림자 포함)",
+   "under": "plains",
+   "under_ko": "평원 풀(plains_base 고른 판)",
+   "passage": "block",
+   "description": "6판: 2×2 정면 긴 집. 푸른 지붕 한 면·굴뚝·지붕창·창 셋·문.",
+   "palette_hint": "wstone,wplast,wroofb,wroofr,wink",
+   "worker": "v6"
+  },
+  {
+   "id": "house_blue_b",
+   "slug": "house_blue_b",
+   "name": "푸른 지붕 회벽집(높은 변)",
+   "scene": "성·마을",
+   "kind": "icon",
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "위층 단품(그림자 포함)",
+   "under": "plains",
+   "under_ko": "평원 풀(plains_base 고른 판)",
+   "passage": "block",
+   "description": "6판: 2×2 높은 지붕 집. 앞 맞배 하나.",
+   "palette_hint": "wstone,wplast,wroofb,wroofr,wink",
+   "worker": "v6"
+  },
+  {
+   "id": "mountain_cliff",
+   "slug": "mountain_cliff",
+   "name": "산 절벽면 남·동",
+   "scene": "들·길",
+   "kind": "base",
+   "cells": [
+    6,
+    1
+   ],
+   "canvas": [
+    96,
+    16
+   ],
+   "layer": "ground",
+   "layer_ko": "바닥(산 위에 통째로 얹는 절벽 칸)",
+   "under": "plains",
+   "under_ko": "평원 풀(plains_base 고른 판)",
+   "passage": "block",
+   "description": "6판: 산 덩이 남쪽·동쪽 가장자리와 안쪽 지층 턱에 통째로 얹는 어두운 세로 절벽면(남면 3·동면 3). 목표 그림의 절벽 약 17%.",
+   "palette_hint": "wrock 윗입술 + wcliff 4단",
+   "worker": "v6"
+  },
+  {
+   "id": "shore_rocks",
+   "slug": "shore_rocks",
+   "name": "물가 돌 셋",
+   "scene": "들·길",
+   "kind": "scatter",
+   "cells": [
+    3,
+    1
+   ],
+   "canvas": [
+    48,
+    16
+   ],
+   "layer": "decal",
+   "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+   "under": "plains",
+   "under_ko": "평원 풀(plains_base 고른 판)",
+   "passage": "block",
+   "description": "6판: 물가·풀밭에 놓는 둥근 회색 돌 한두 알. 왼위 밝게·아래 어둡게, 아래에 반투명 그림자 한 줄.",
+   "palette_hint": "wpebble 4단",
+   "worker": "v6"
+  },
+  {
+   "id": "timber_a",
+   "slug": "timber_a",
+   "name": "목조 2층집 A",
+   "scene": "성·마을",
+   "kind": "icon",
+   "cells": [
+    2,
+    3
+   ],
+   "canvas": [
+    32,
+    48
+   ],
+   "layer": "object",
+   "layer_ko": "위층 단품(그림자 포함)",
+   "under": "plains",
+   "under_ko": "평원 풀(plains_base 고른 판)",
+   "passage": "block",
+   "description": "6판: 2×3 붉은 지붕, 회벽 위 보·기둥, 위층 오버행.",
+   "palette_hint": "wstone,wplast,wroofb,wroofr,wink",
+   "worker": "v6"
+  },
+  {
+   "id": "timber_b",
+   "slug": "timber_b",
+   "name": "목조 2층집 B",
+   "scene": "성·마을",
+   "kind": "icon",
+   "cells": [
+    2,
+    3
+   ],
+   "canvas": [
+    32,
+    48
+   ],
+   "layer": "object",
+   "layer_ko": "위층 단품(그림자 포함)",
+   "under": "plains",
+   "under_ko": "평원 풀(plains_base 고른 판)",
+   "passage": "block",
+   "description": "6판: 2×3 좁고 높은 목조집, 굴뚝.",
+   "palette_hint": "wstone,wplast,wroofb,wroofr,wink",
+   "worker": "v6"
+  },
+  {
+   "id": "tower_blue",
+   "slug": "tower_blue",
+   "name": "푸른 원뿔 돌탑",
+   "scene": "성·마을",
+   "kind": "icon",
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "layer": "object",
+   "layer_ko": "위층 단품(그림자 포함)",
+   "under": "plains",
+   "under_ko": "평원 풀(plains_base 고른 판)",
+   "passage": "block",
+   "description": "6판: 1×2 돌탑, 푸른 원뿔 지붕, 금 꼭대기.",
+   "palette_hint": "wstone,wplast,wroofb,wroofr,wink",
+   "worker": "v6"
+  },
+  {
+   "id": "wall_h",
+   "slug": "wall_h",
+   "name": "성벽 가로 조각",
+   "scene": "들·길",
+   "kind": "piece",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "decal",
+   "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+   "under": "plains",
+   "under_ko": "평원 풀(plains_base 고른 판)",
+   "passage": "block",
+   "description": "6판: 목표 월드맵의 얇은 돌 성곽선 — 가로로 이어 붙는 정면 돌담 한 칸(두께 5px). 윗면 밝게, 벽돌 줄눈, 아래 그림자.",
+   "palette_hint": "wstone",
+   "worker": "v6",
+   "joins": "x"
+  },
+  {
+   "id": "wall_tower",
+   "slug": "wall_tower",
+   "name": "성벽 감시탑",
+   "scene": "들·길",
+   "kind": "icon",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "object",
+   "layer_ko": "위층 단품(그림자 포함)",
+   "under": "plains",
+   "under_ko": "평원 풀(plains_base 고른 판)",
+   "passage": "block",
+   "description": "6판: 성곽선 모서리·중간에 서는 정사각 감시탑 한 칸. 2단 총안, 어두운 문.",
+   "palette_hint": "wstone,wink",
+   "worker": "v6"
+  },
+  {
+   "id": "wall_v",
+   "slug": "wall_v",
+   "name": "성벽 세로 조각",
+   "scene": "들·길",
+   "kind": "piece",
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "layer": "decal",
+   "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+   "under": "plains",
+   "under_ko": "평원 풀(plains_base 고른 판)",
+   "passage": "block",
+   "description": "6판: 세로로 이어 붙는 얇은 돌담(폭 4px, 위에서 본 시점). 왼쪽 밝게·오른쪽 어둡게, 오른쪽에 그림자 한 줄.",
+   "palette_hint": "wstone",
+   "worker": "v6",
+   "joins": "y"
+  }
+ ]
+}

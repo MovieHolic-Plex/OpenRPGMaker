@@ -1,0 +1,139 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/coast_grass/v3-A.pxg",
+ "set": "worldmap",
+ "id": "coast_grass",
+ "hard": [],
+ "warn": [
+  "메모 없음: <후보>.note 에 한 줄"
+ ],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.005
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.013
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies",
+   "saturation",
+   "dither"
+  ]
+ },
+ "colors": 8,
+ "bbox": [
+  1,
+  0,
+  47,
+  62
+ ],
+ "note": "",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.016
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.007
+  },
+  "shore": {
+   "profile": {
+    "n": [
+     3,
+     2,
+     2,
+     3,
+     3,
+     4,
+     4,
+     3,
+     3,
+     3,
+     3,
+     2,
+     3,
+     3,
+     3,
+     3
+    ],
+    "s": [
+     3,
+     3,
+     4,
+     3,
+     3,
+     3,
+     2,
+     3,
+     3,
+     3,
+     4,
+     4,
+     3,
+     2,
+     3,
+     3
+    ],
+    "w": [
+     3,
+     3,
+     3,
+     4,
+     3,
+     3,
+     2,
+     3,
+     3,
+     2,
+     3,
+     3,
+     4,
+     4,
+     3,
+     3
+    ],
+    "e": [
+     3,
+     3,
+     4,
+     4,
+     3,
+     2,
+     2,
+     3,
+     3,
+     3,
+     3,
+     3,
+     2,
+     3,
+     3,
+     3
+    ]
+   },
+   "strait": 8,
+   "steps": {
+    "n": 1,
+    "s": 1,
+    "w": 1,
+    "e": 1
+   },
+   "amp": {
+    "n": 2,
+    "s": 2,
+    "w": 2,
+    "e": 2
+   },
+   "joinWorst": 0
+  },
+  "seam": 0.51
+ }
+}

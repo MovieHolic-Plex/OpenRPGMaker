@@ -3,19 +3,33 @@ import type { ActorParameterCurves, ActorParameterKey, ClassBattleCommand, Class
 import { normalizeClassRecord } from "../databaseRecordModel";
 import { DEFAULT_ANIMATION_ID, DEFAULT_CLASS_ID, DEFAULT_SKILL_ID } from "./constants";
 import {
+  BARD_EQUIPMENT_IDS,
+  CLASS_BARD_ID,
   CLASS_CLERIC_ID,
+  CLASS_DRUID_ID,
   CLASS_GUARDIAN_ID,
   CLASS_MAGE_ID,
+  CLASS_MONK_ID,
+  CLASS_NINJA_ID,
   CLASS_RANGER_ID,
+  CLASS_SAMURAI_ID,
   CLASS_SCOUT_ID,
+  CLASS_WITCH_ID,
   CLERIC_EQUIPMENT_IDS,
+  DRUID_EQUIPMENT_IDS,
   GUARDIAN_EQUIPMENT_IDS,
   HERO_EQUIPMENT_IDS,
   MAGE_EQUIPMENT_IDS,
+  MONK_EQUIPMENT_IDS,
+  NINJA_EQUIPMENT_IDS,
   RANGER_EQUIPMENT_IDS,
+  SAMURAI_EQUIPMENT_IDS,
   SCOUT_EQUIPMENT_IDS,
+  WITCH_EQUIPMENT_IDS,
 } from "./defaultDatabaseRecordIds";
 import { applyGeneratedBattleEffectClassBindings } from "./generatedBattleEffectBindings";
+import { retroClassLearnedSkills } from "./retroClassSkillRecords";
+import { retroRosterClassRecords } from "./retroRosterRecords";
 
 const STANDARD_BATTLE_COMMANDS = [
   { id: "cmd_attack", name: "공격", kind: "attack" },
@@ -68,6 +82,26 @@ function roleParameterCurves(role: ClassGrowthRole): ActorParameterCurves {
     mind: interpolateCurve(starts.mind, ends.mind),
     agility: interpolateCurve(starts.agility, ends.agility),
   };
+}
+
+/** retro2003 확장 직업. 레벨 1 은 통상 공격만 알고, 직업 기술은 계약 레벨대로 뒤에서 붙는다. */
+function retroExtensionClass(
+  id: string,
+  name: string,
+  role: ClassGrowthRole,
+  equipmentIds: readonly string[],
+  options: { readonly dualWield: boolean; readonly mightyGuard: boolean },
+): ClassRecord {
+  return normalizeClassRecord({
+    id,
+    name,
+    options: { dualWield: options.dualWield, autoBattle: false, fixedEquipment: false, mightyGuard: options.mightyGuard },
+    animationId: DEFAULT_ANIMATION_ID,
+    skillIds: [DEFAULT_SKILL_ID],
+    battleCommands: [...STANDARD_BATTLE_COMMANDS],
+    parameterCurves: roleParameterCurves(role),
+    equipmentPermissions: { actorIds: [], classIds: [], equipmentIds: [...equipmentIds] },
+  });
 }
 
 export function defaultClassRecords(): ClassRecord[] {
@@ -156,7 +190,23 @@ export function defaultClassRecords(): ClassRecord[] {
         equipmentIds: [...RANGER_EQUIPMENT_IDS],
       },
     }),
+    // ── retro2003 확장 직업 6개(2026-09-28). 기술은 아래 계약 습득표가 붙인다. 배우는 예비 배우라 시작 파티는 그대로다.
+    retroExtensionClass(CLASS_SAMURAI_ID, "사무라이", "striker", SAMURAI_EQUIPMENT_IDS, { dualWield: false, mightyGuard: false }),
+    retroExtensionClass(CLASS_NINJA_ID, "닌자", "agile", NINJA_EQUIPMENT_IDS, { dualWield: true, mightyGuard: false }),
+    retroExtensionClass(CLASS_MONK_ID, "무도가", "striker", MONK_EQUIPMENT_IDS, { dualWield: false, mightyGuard: true }),
+    retroExtensionClass(CLASS_BARD_ID, "음유시인", "agile", BARD_EQUIPMENT_IDS, { dualWield: false, mightyGuard: false }),
+    retroExtensionClass(CLASS_DRUID_ID, "드루이드", "caster", DRUID_EQUIPMENT_IDS, { dualWield: false, mightyGuard: true }),
+    retroExtensionClass(CLASS_WITCH_ID, "마녀", "caster", WITCH_EQUIPMENT_IDS, { dualWield: false, mightyGuard: false }),
+    // ── retro2003 2차 로스터(2026-09-28): 걷기 칩 약 100개마다 직업 하나(마도사는 기존 직업이라 제외). 스킬은 아래 공용 루프가 붙인다.
+    ...retroRosterClassRecords(),
   ];
+  // retro2003 직업 스킬: 계약의 레벨대로 배운다. 기존 스킬(레벨 1)은 그대로 둔다.
+  for (const record of records) {
+    const known = new Set(record.learnedSkills.map((entry) => entry.skillId));
+    const added = retroClassLearnedSkills(record.id).filter((entry) => !known.has(entry.skillId));
+    record.learnedSkills = [...record.learnedSkills, ...added];
+    record.skillIds = record.learnedSkills.map((entry) => entry.skillId);
+  }
   applyGeneratedBattleEffectClassBindings(records);
   return records;
 }

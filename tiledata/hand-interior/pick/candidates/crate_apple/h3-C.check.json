@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/crate_apple/h3-C.pxg",
+ "id": "crate:apple",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.031
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 13,
+ "v5_colors": 13,
+ "bbox": [
+  1,
+  1,
+  14,
+  15
+ ],
+ "v5_bbox": [
+  1,
+  1,
+  14,
+  15
+ ],
+ "note": "앞면 판 5줄 줄무늬를 판 둘+이음 한 줄로, 나뭇결·못 두 개 추가(사과·테·윤곽은 그대로)",
+ "ok": true
+}

@@ -1,0 +1,93 @@
+// C: 손잡이 머리 윗면을 앞쪽으로 넓히고 아래 정면을 구분, 받침 윗면 2행과 남쪽 면 분리. 꼭대기 윗면 3행(y=1~3).
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat a brass 0
+@mat b brass 1
+@mat c brass 2
+@mat d brass 3
+@mat e brass 4
+@mat f brass 5
+@mat g brass 6
+@mat v wood 2
+@mat w wood 4
+@mat x wood 6
+@mat z wood 7
+@mat i iron 1
+@mat j iron 3
+@mat k iron 4
+@mat l linen 4
+@mat m linen 5
+@layer console
+@mblock 1 8
+= 2. 26b 2.
+= 1. 1b 26f 1b 1.
+= 1b 1f 26e 1d 1b
+= 1b 1f 26e 1d 1b
+= 1b 1f 26e 1d 1b
+= 1b 1f 26e 1d 1b
+= 1b 1f 26e 1d 1b
+= 1b 1f 26e 1d 1b
+= 1b 1f 26e 1d 1b
+= 1b 1f 25e 2d 1b
+= 1b 27d 2b
+= 1b 1e 26c 2b
+= 1b 1e 26c 2b
+= 1b 1d 25c 2b 1a
+= 1b 27c 1b 1a
+= 1. 28a 1.
+= 3. 1b 1e 2c 1a 5. 1b 2d 1a 5. 1b 1d 2c 1a 3.
+= 3. 1b 1e 2c 1a 5. 1b 2d 1a 5. 1b 1d 2c 1a 3.
+= 3. 1b 1e 2c 1a 5. 1b 2d 1a 5. 1b 1d 2c 1a 3.
+= 3. 1b 1d 2c 1a 5. 1b 2c 1a 5. 1b 1d 2c 1a 3.
+= 3. 1v 1z 21x 1v 3.
+= 2. 1v 24x 1v 2.
+= 2. 1v 23w 2v 2.
+= 3. 24v 3.
+@layer instruments
+@mblock 3 11
+.bbbb.
+bmmmlb
+bmmilb
+.bbbb.
+@mblock 24 11
+.bbbb.
+bmmmlb
+bmjilb
+.bbbb.
+@mblock 5 16
+kk
+jj
+ii
+ib
+bb
+@mblock 26 16
+kk
+jj
+ij
+ib
+bb
+@layer wheel
+@mblock 8 0
+......vvvv......
+.....vzzzzv.....
+.....vzzzzv.....
+....vzzzzzzv....
+....vxxxxxxv....
+....vvwwwwvv....
+..vvzxxwwwwwvv..
+.vzxxv.vw.vwwvv.
+vzxxv..vw..vwwvv
+vxxv...vw...vwwv
+vxwv...vw...vwwv
+vxwv..beeb..vwwv
+vxwwvvfggdbvvwwv
+vxxwwwfgedbwwwwv
+vxwv..bdda..vwwv
+vwwv...vv...vwwv
+.vwwv..vw..vwwv.
+..vwwv.vw.vwwv..
+...vwwwwwwwwv...
+....vvvvvvvv....
+......vwwv......
+......vvvv......

@@ -1,0 +1,566 @@
+{
+ "$comment": "joseon-baram 하네스 시드 — 사람이 쓴다. 번들 타일셋 joseon_baram(조선·바람의나라풍, 16px, 3/4) 전용. 진행 기록은 ledger.json(하네스가 씀). 조각 메타·판정·적대 리뷰의 정본은 scripts/content/lib/joseon/harness/ 아래 JSON 이고 여기에 복사하지 않는다.",
+ "version": 1,
+ "tileset": {
+  "id": "joseon_baram",
+  "family": "oprn-joseon",
+  "tile": 16,
+  "view": "정면-위 3/4. 빛은 왼쪽 위, 그림자는 오른쪽 아래. 건물은 좌우 대칭, 물체를 비스듬히 돌리지 않는다.",
+  "sheet": "public/assets/joseon-baram/joseon-baram-chipset.png",
+  "doc": "openwiki/joseon-baram.md",
+  "otherTilesets": "버들항(beodeul_city)·jp_city·modern4 는 별도 하네스/문서다. 이 하네스는 joseon_baram 만 다룬다."
+ },
+ "toolchain": {
+  "dir": "scripts/content/lib/joseon",
+  "harnessDir": "scripts/content/lib/joseon/harness",
+  "catalog": "scripts/content/lib/joseon/catalog.py",
+  "gate": "scripts/content/lib/joseon/harness/gate.py",
+  "verdict": "scripts/content/lib/joseon/harness/verdict.py",
+  "adversarial": "scripts/content/lib/joseon/harness/adversarial.py",
+  "mapgate": "scripts/content/lib/joseon/harness/mapgate.py",
+  "calibration": "scripts/content/lib/joseon/harness/calibration.json",
+  "spaceCalibration": "scripts/content/lib/joseon/harness/space_calibration.json",
+  "piecesMeta": "scripts/content/lib/joseon/harness/pieces_meta.json",
+  "verdicts": "scripts/content/lib/joseon/harness/verdicts.json",
+  "adversarialRecords": "scripts/content/lib/joseon/harness/adversarial.json",
+  "contract": "scripts/content/lib/joseon/harness/CONTRACT.md",
+  "adversarialDoc": "scripts/content/lib/joseon/harness/ADVERSARIAL.md",
+  "baramStudy": "scripts/content/lib/joseon/harness/BARAM_STUDY.md",
+  "tilesetBuilder": "scripts/content/build-joseon-tileset.py",
+  "referencesBuilder": "scripts/content/prepare-joseon-baram-references.py",
+  "rebuild": "scripts/content/rebuild-joseon.sh",
+  "save": "scripts/content/save-joseon-baram.mjs",
+  "regions": "scripts/content/prepare-joseon-regions.mjs",
+  "bridge": "src/harnesses/joseon-baram/bridge.py"
+ },
+ "palette": {
+  "file": "scripts/content/lib/joseon/harness/palette.json",
+  "allowedColors": 91,
+  "rampCount": 14,
+  "shadow": "#0c1110",
+  "rule": "허용 색 = 램프 색의 합집합 ∪ 그림자색. 램프 밖 색은 한 화소도 안 된다. 색을 코드에 직접 쓰지 않는다(tk.py 가 VIOLATIONS 로 센다).",
+  "lockScript": "scripts/content/lib/joseon/harness/lock_palette_baram.py --bright",
+  "previous": {
+   "file": "scripts/content/lib/joseon/harness/palette_beodeul.json",
+   "allowedColors": 267,
+   "note": "옛 버들항 잠금(CONTRACT.md 의 267색). 지금 잠금은 바람의나라 군집 램프 91색(밝은 판)이고 옛 것은 되돌리기용으로만 보존."
+  },
+  "relockWarning": "다시 잠그면 색이 바뀌어 조각 해시가 전부 달라지고 V 판정이 전부 무효가 된다. 이 값(allowedColors)도 함께 고친다."
+ },
+ "pieceClasses": {
+  "built": "블록 조립 건물(기와집·초가·문루·정자). blocks.house 조립이어야 하고(K) 좌우 비대칭을 본다.",
+  "prop": "소품(우물·장독·평상·다리·솟대 …). 정면 소품은 front_only 로 표시한다.",
+  "wall": "담·성벽·치. 조각 안에 이음이 열려 있으면 seam_open.",
+  "tree": "나무(수관 900화소 이상, 잎 결 검사 TR).",
+  "bush": "덤불(수관 300화소 이상, TR).",
+  "sapling": "묘목(수관 350화소 이상, TR).",
+  "tuft": "풀숲(수관 150화소 이상, TR)."
+ },
+ "terrainWithVerdict": [
+  "water47",
+  "water47g",
+  "water_deep",
+  "fld_trail32",
+  "fld_tall32",
+  "fld_forest32",
+  "fld_bog94",
+  "fld_rock32",
+  "fld_rock_in8",
+  "fld_face32",
+  "cav_floor",
+  "cav_floor_lit",
+  "cav_floor_sh",
+  "cav_roof47",
+  "cav_face24",
+  "cav_pool94",
+  "in_floor_ondol",
+  "in_floor_maru",
+  "in_floor_dirt",
+  "in_floor_stone",
+  "in_floor_jeondol",
+  "in_floor_deck",
+  "in_floor_yard",
+  "in_ceil47",
+  "in_ceil_front",
+  "in_void",
+  "pal_floor_jeon",
+  "pal_floor_maru",
+  "pal_floor_ondol",
+  "pal_floor_dais",
+  "pal_floor_yard",
+  "pal_floor_carpet",
+  "pal_ceil47",
+  "pal_ceil_front"
+ ],
+ "gates": [
+  {
+   "code": "P",
+   "name": "팔레트",
+   "blocking": true,
+   "threshold": "허용 밖 색 0",
+   "where": "gate.py + palette.json"
+  },
+  {
+   "code": "E",
+   "name": "외곽선",
+   "blocking": true,
+   "threshold": "안쪽/가장자리 밝기비 >= calibration.band.edge_ratio.p5 (seam_open 제외)",
+   "where": "calibration.json"
+  },
+  {
+   "code": "T",
+   "name": "가는 줄",
+   "blocking": true,
+   "threshold": "폭 1px 비율 <= calibration.band.thin_ratio.p95 * 2 + 0.02 (thin_ok 제외)",
+   "where": "calibration.json"
+  },
+  {
+   "code": "L",
+   "name": "빛",
+   "blocking": true,
+   "threshold": "왼쪽 반 - 오른쪽 반 밝기 >= calibration.band.light_lr.p5 (front_only 제외)",
+   "where": "calibration.json"
+  },
+  {
+   "code": "S",
+   "name": "그림자",
+   "blocking": true,
+   "threshold": "반투명 그림자 무게중심이 본체 아래",
+   "where": "metrics.py"
+  },
+  {
+   "code": "A",
+   "name": "적대 리뷰",
+   "blocking": true,
+   "threshold": "두 렌즈(culture·view) 모두 현재 해시에 keep",
+   "where": "adversarial.json"
+  },
+  {
+   "code": "K",
+   "name": "조립",
+   "blocking": true,
+   "threshold": "built 조각은 pieces_meta 의 kit 이 있어야 함(통그림 금지)",
+   "where": "pieces_meta.json"
+  },
+  {
+   "code": "TR",
+   "name": "나무",
+   "blocking": true,
+   "threshold": "수관 최소 화소(나무 900·묘목 350·덤불 300·풀숲 150) · 잎 결 >= 0.095",
+   "where": "gate.py + space_calibration.json"
+  },
+  {
+   "code": "V",
+   "name": "판정",
+   "blocking": true,
+   "threshold": "현재 그림 해시에 묶인 3/4 판정 줄이 있고 redo 가 아님",
+   "where": "verdicts.json"
+  }
+ ],
+ "verdictStatuses": [
+  "pass",
+  "note",
+  "user",
+  "redo"
+ ],
+ "adversarial": {
+  "lenses": [
+   "culture",
+   "view"
+  ],
+  "maxRounds": 3,
+  "keepRule": "score >= 4 이고 blocker·major 0 일 때만 keep. 결함은 최소 2개. 기본 태도는 기각.",
+  "independence": "그린 사람과 다른 맥락의 새 리뷰어. 같은 리뷰어 재사용 금지."
+ },
+ "maps": [
+  {
+   "id": "joseon_v20",
+   "name": "조선 마을 20호",
+   "profile": "village20",
+   "builder": "scripts/content/lib/joseon/demo20.py",
+   "builderSeed": 7,
+   "size": [
+    64,
+    56
+   ],
+   "out": "tiledata/joseon-village20",
+   "stem": "joseon-village20",
+   "sheetOrder": 0,
+   "role": "기준 시트. 칸 번호(0~8,495)는 이미 배포되어 있어 다시 굽지 않는다(rebuild REGEN_VILLAGE=1 일 때만).",
+   "overwritesTracked": true
+  },
+  {
+   "id": "gungnae",
+   "name": "국내성",
+   "profile": "gungnae",
+   "builder": "scripts/content/lib/joseon/demo_gungnae.py",
+   "builderSeed": 7,
+   "size": [
+    96,
+    96
+   ],
+   "out": "tiledata/joseon-gungnae",
+   "stem": "joseon-gungnae",
+   "sheetOrder": 1,
+   "role": "두 번째 시트·맵. 기준 시트에 합쳐지고 새 조각은 꼬리에 덧붙는다.",
+   "overwritesTracked": true
+  },
+  {
+   "id": "gungnae_full",
+   "name": "국내성 원작 규모",
+   "profile": "gungnae_full",
+   "builder": "scripts/content/lib/joseon/demo_gungnae_full.py",
+   "builderSeed": 7,
+   "size": [
+    200,
+    208
+   ],
+   "out": "tiledata/joseon-gungnae-full",
+   "stem": "joseon-gungnae-full",
+   "sheetOrder": 2,
+   "role": "세 번째 시트·맵(통합 수정판).",
+   "overwritesTracked": true
+  },
+  {
+   "id": "joseon_field",
+   "name": "조선 사냥터",
+   "profile": "field",
+   "builder": "scripts/content/lib/joseon/demo_field.py",
+   "builderSeed": 7,
+   "size": [
+    96,
+    96
+   ],
+   "out": "tiledata/joseon-field",
+   "stem": "joseon-field",
+   "sheetOrder": 3,
+   "role": "네 번째 시트·맵(사냥터 96×96: 북쪽 성문 출구·굴 입구 3·야영지·쉼터). 새 조각 fld_ 는 꼬리에 덧붙는다.",
+   "overwritesTracked": true
+  },
+  {
+   "id": "joseon_cave",
+   "name": "조선 동굴",
+   "profile": "cave",
+   "builder": "scripts/content/lib/joseon/demo_cave.py",
+   "builderSeed": 7,
+   "size": [
+    48,
+    48
+   ],
+   "out": "tiledata/joseon-cave",
+   "stem": "joseon-cave",
+   "sheetOrder": 4,
+   "role": "다섯 번째 시트·맵(동굴 48×48: 입구 하나·방들). 새 조각 cav_ 는 꼬리에 덧붙는다.",
+   "overwritesTracked": true
+  },
+  {
+   "id": "joseon_in_house",
+   "name": "조선 민가 실내",
+   "profile": "interior",
+   "builder": "scripts/content/lib/joseon/demo_interior.py",
+   "builderSeed": 7,
+   "size": [
+    15,
+    15
+   ],
+   "out": "tiledata/joseon-interior/joseon_in_house",
+   "stem": "joseon_in_house",
+   "sheetOrder": 5,
+   "role": "실내 방 맵. 빌더는 같은 스크립트의 방을 모두 굽는다(인자 없이 실행). 새 조각 in_/pal_ 는 꼬리에 덧붙는다.",
+   "overwritesTracked": true
+  },
+  {
+   "id": "joseon_in_inn",
+   "name": "조선 주막 실내",
+   "profile": "interior",
+   "builder": "scripts/content/lib/joseon/demo_interior.py",
+   "builderSeed": 7,
+   "size": [
+    22,
+    16
+   ],
+   "out": "tiledata/joseon-interior/joseon_in_inn",
+   "stem": "joseon_in_inn",
+   "sheetOrder": 6,
+   "role": "실내 방 맵. 빌더는 같은 스크립트의 방을 모두 굽는다(인자 없이 실행). 새 조각 in_/pal_ 는 꼬리에 덧붙는다.",
+   "overwritesTracked": true
+  },
+  {
+   "id": "joseon_in_smith",
+   "name": "조선 대장간 실내",
+   "profile": "interior",
+   "builder": "scripts/content/lib/joseon/demo_interior.py",
+   "builderSeed": 7,
+   "size": [
+    12,
+    10
+   ],
+   "out": "tiledata/joseon-interior/joseon_in_smith",
+   "stem": "joseon_in_smith",
+   "sheetOrder": 7,
+   "role": "실내 방 맵. 빌더는 같은 스크립트의 방을 모두 굽는다(인자 없이 실행). 새 조각 in_/pal_ 는 꼬리에 덧붙는다.",
+   "overwritesTracked": true
+  },
+  {
+   "id": "joseon_in_pharmacy",
+   "name": "조선 약방 실내",
+   "profile": "interior",
+   "builder": "scripts/content/lib/joseon/demo_interior.py",
+   "builderSeed": 7,
+   "size": [
+    12,
+    10
+   ],
+   "out": "tiledata/joseon-interior/joseon_in_pharmacy",
+   "stem": "joseon_in_pharmacy",
+   "sheetOrder": 8,
+   "role": "실내 방 맵. 빌더는 같은 스크립트의 방을 모두 굽는다(인자 없이 실행). 새 조각 in_/pal_ 는 꼬리에 덧붙는다.",
+   "overwritesTracked": true
+  },
+  {
+   "id": "joseon_in_school",
+   "name": "조선 서당 실내",
+   "profile": "interior",
+   "builder": "scripts/content/lib/joseon/demo_interior.py",
+   "builderSeed": 7,
+   "size": [
+    16,
+    14
+   ],
+   "out": "tiledata/joseon-interior/joseon_in_school",
+   "stem": "joseon_in_school",
+   "sheetOrder": 9,
+   "role": "실내 방 맵. 빌더는 같은 스크립트의 방을 모두 굽는다(인자 없이 실행). 새 조각 in_/pal_ 는 꼬리에 덧붙는다.",
+   "overwritesTracked": true
+  },
+  {
+   "id": "joseon_in_office",
+   "name": "조선 관아 실내",
+   "profile": "interior",
+   "builder": "scripts/content/lib/joseon/demo_interior.py",
+   "builderSeed": 7,
+   "size": [
+    17,
+    15
+   ],
+   "out": "tiledata/joseon-interior/joseon_in_office",
+   "stem": "joseon_in_office",
+   "sheetOrder": 10,
+   "role": "실내 방 맵. 빌더는 같은 스크립트의 방을 모두 굽는다(인자 없이 실행). 새 조각 in_/pal_ 는 꼬리에 덧붙는다.",
+   "overwritesTracked": true
+  },
+  {
+   "id": "joseon_in_throne",
+   "name": "조선 궁 어좌전",
+   "profile": "interior",
+   "builder": "scripts/content/lib/joseon/demo_palace_in.py",
+   "builderSeed": 7,
+   "size": [
+    24,
+    24
+   ],
+   "out": "tiledata/joseon-interior/joseon_in_throne",
+   "stem": "joseon_in_throne",
+   "sheetOrder": 11,
+   "role": "실내 방 맵. 빌더는 같은 스크립트의 방을 모두 굽는다(인자 없이 실행). 새 조각 in_/pal_ 는 꼬리에 덧붙는다.",
+   "overwritesTracked": true
+  },
+  {
+   "id": "joseon_in_corridor",
+   "name": "조선 궁 회랑",
+   "profile": "interior",
+   "builder": "scripts/content/lib/joseon/demo_palace_in.py",
+   "builderSeed": 7,
+   "size": [
+    34,
+    10
+   ],
+   "out": "tiledata/joseon-interior/joseon_in_corridor",
+   "stem": "joseon_in_corridor",
+   "sheetOrder": 12,
+   "role": "실내 방 맵. 빌더는 같은 스크립트의 방을 모두 굽는다(인자 없이 실행). 새 조각 in_/pal_ 는 꼬리에 덧붙는다.",
+   "overwritesTracked": true
+  },
+  {
+   "id": "joseon_in_bedchamber",
+   "name": "조선 궁 침전",
+   "profile": "interior",
+   "builder": "scripts/content/lib/joseon/demo_palace_in.py",
+   "builderSeed": 7,
+   "size": [
+    16,
+    14
+   ],
+   "out": "tiledata/joseon-interior/joseon_in_bedchamber",
+   "stem": "joseon_in_bedchamber",
+   "sheetOrder": 13,
+   "role": "실내 방 맵. 빌더는 같은 스크립트의 방을 모두 굽는다(인자 없이 실행). 새 조각 in_/pal_ 는 꼬리에 덧붙는다.",
+   "overwritesTracked": true
+  },
+  {
+   "id": "joseon_in_library",
+   "name": "조선 궁 서고",
+   "profile": "interior",
+   "builder": "scripts/content/lib/joseon/demo_palace_in.py",
+   "builderSeed": 7,
+   "size": [
+    20,
+    12
+   ],
+   "out": "tiledata/joseon-interior/joseon_in_library",
+   "stem": "joseon_in_library",
+   "sheetOrder": 14,
+   "role": "실내 방 맵. 빌더는 같은 스크립트의 방을 모두 굽는다(인자 없이 실행). 새 조각 in_/pal_ 는 꼬리에 덧붙는다.",
+   "overwritesTracked": true
+  }
+ ],
+ "mapFiles": [
+  "{stem}-chipset.png",
+  "{stem}-map.png",
+  "pieces.json",
+  "map.json",
+  "extra.json"
+ ],
+ "mapGate": {
+  "source": "scripts/content/lib/joseon/harness/mapgate.py (JS_PROFILE 환경변수로 임계가 바뀐다)",
+  "profiles": {
+   "default": {
+    "lawnMax": 0.2,
+    "treeMin": 0.08,
+    "objMin": 0.3,
+    "depthMin": 6,
+    "bldMin": 0.006,
+    "heightsMin": 3
+   },
+   "village20": {
+    "lawnMax": 0.33,
+    "treeMin": 0.06,
+    "objMin": 0.22,
+    "depthMin": 6,
+    "bldMin": 0.006,
+    "heightsMin": 3
+   },
+   "gungnae": {
+    "lawnMax": 0.25,
+    "treeMin": 0.07,
+    "objMin": 0.3,
+    "depthMin": 6,
+    "bldMin": 0.004,
+    "heightsMin": 3
+   },
+   "gungnae_full": {
+    "lawnMax": 0.25,
+    "treeMin": 0.07,
+    "objMin": 0.22,
+    "depthMin": 6,
+    "bldMin": 0.0007,
+    "heightsMin": 3
+   },
+   "interior": {
+    "lawnMax": 1.0,
+    "treeMin": 0.0,
+    "objMin": 0.0,
+    "depthMin": 0,
+    "bldMin": 0.0,
+    "heightsMin": 0
+   },
+   "field": {
+    "lawnMax": 0.4,
+    "treeMin": 0.18,
+    "objMin": 0.2,
+    "depthMin": 6,
+    "bldMin": 0.001,
+    "heightsMin": 3
+   },
+   "cave": {
+    "lawnMax": 1.0,
+    "treeMin": 0.0,
+    "objMin": 0.03,
+    "depthMin": 0,
+    "bldMin": 0.003,
+    "heightsMin": 0
+   }
+  }
+ },
+ "reviewZones": {
+  "grid": [
+   4,
+   4
+  ],
+  "scale": 2,
+  "lenses": [
+   "culture",
+   "view"
+  ],
+  "outDir": "qa-runs/harnesses/joseon-baram/review",
+  "note": "지도 한 장을 4x4 = 16구역으로 잘라 원 해상도(×2 최근접) 크롭을 구역마다 독립 리뷰어에게 준다. 전체 한 장을 한꺼번에 보여 주지 않는다."
+ },
+ "characters": {
+  "sheet": "public/assets/easyrpg/charset/Actor1.png",
+  "textureId": "tex_easyrpg_charset_actor1",
+  "rule": "사람은 Actor1 24x32 프레임을 그대로 쓴다(people.py). 캐릭터를 새로 그리거나 생성하지 않는다. 칩셋 시트에는 넣지 않고 맵 NPC 로만 둔다."
+ },
+ "sources": {
+  "baramScreens": {
+   "dir": "~/third-party-assets/baram",
+   "commit": false,
+   "use": "화풍·배치 규칙을 읽는 참조 전용(BARAM_STUDY.md). 그림을 저장소·번들·참고문서에 넣지 않는다. 여기에는 해시만 둔다.",
+   "files": {
+    "gate.png": {
+     "sha256": "9634bb691f67dc82865504bc6263857601d39689b73e618ff7eddc1a531e75b8",
+     "bytes": 353944
+    },
+    "thatch.png": {
+     "sha256": "48f39f632b5581b08bbbbca3e315a07933c4622c7ca6882c8d5d0ec476901edc",
+     "bytes": 424929
+    },
+    "thatch2.png": {
+     "sha256": "d6f023a929271f270d42b9b1ddcff6d3203464efd785b8c6bfe3c806c57ffb31",
+     "bytes": 156787
+    },
+    "village.png": {
+     "sha256": "b98d420965b80de6c1385b5f8b86c07a6f1792faa176c577fad332fba7a462c2",
+     "bytes": 768129
+    }
+   }
+  },
+  "beodeulReference": {
+   "dir": "tiledata/beodeul-city/render",
+   "use": "게이트 기준값(calibration.json)과 검수 시트의 기준 조각 출처. gate --sheets 와 calibrate 가 읽는다."
+  }
+ },
+ "forbidden": [
+  {
+   "id": "generated-images",
+   "rule": "AI 생성 이미지를 조각·타일·참고 그림으로 쓰지 않는다. 조선 조각은 코드 도트(tk.py·blocks.py)로만 그린다."
+  },
+  {
+   "id": "generated-characters",
+   "rule": "캐릭터를 생성하지 않는다. Actor1 을 쓴다(characters 절)."
+  },
+  {
+   "id": "baram-screens-commit",
+   "rule": "바람의나라 스크린샷·그 파생 그림을 커밋하지 않는다. sources.baramScreens 의 해시와 같은 파일이 추적되면 validate 가 실패한다."
+  },
+  {
+   "id": "palette-direct-color",
+   "rule": "색을 코드에 직접 적지 않는다. palette.json 램프에서만 고른다."
+  },
+  {
+   "id": "verdict-hand-edit",
+   "rule": "verdicts.json·adversarial.json 을 손으로 고치지 않는다. verdict·review record 단계로만 쓴다(해시 묶음 유지)."
+  },
+  {
+   "id": "baseline-resheet",
+   "rule": "마을 20호 기준 시트를 맘대로 다시 굽지 않는다(칸 번호가 어긋난다)."
+  },
+  {
+   "id": "other-tilesets",
+   "rule": "버들항·jp_city·modern4 조각을 이 하네스로 고치지 않는다."
+  }
+ ],
+ "stalePolicy": {
+  "verdictHash": "판정은 조각의 현재 픽셀 해시에 묶인다. 그림이 한 화소라도 바뀌면 V 가 다시 막는다.",
+  "scoreJitter": "점수는 ±1 흔들린다. 통과/탈락을 점수 숫자 하나로 결정하지 않는다."
+ }
+}

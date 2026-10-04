@@ -1,8 +1,6 @@
-// 수락된 변경에 하이라이트만 켜고 카메라를 두면, 변경 영역이 화면 밖일 때 사용자는
-// "아무 일도 일어나지 않았다"고 본다. bbox 는 focusAcceptedAgentChanges 가 이미 계산하므로
-// 같은 자리에서 카메라 요청까지 낸다 — 실제로 움직일지는 씬이 planCameraFocus 로 판정한다.
+// 자동 적용은 맵·카메라를 유지한다. 사람이 미리보기 버튼을 직접 누른 경우만 이동한다.
 
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { editorState } from "@/editor/editorState";
 import { focusAcceptedAgentChanges, subscribeAgentFocusHighlight, type AgentFocusTarget } from "@/editor/agentFocus";
 import { subscribeEditorCameraFocus, type CameraFocusTarget } from "@/editor/editorCameraFocus";
@@ -23,6 +21,7 @@ beforeEach(() => {
   unsubscribeHighlight = subscribeAgentFocusHighlight((target) => highlights.push(target));
   unsubscribeCamera = subscribeEditorCameraFocus((target) => cameraRequests.push(target));
   editorState.set({ currentMapId: null, selection: null, layer: "lower", tool: "paint" });
+  vi.spyOn(document, "hasFocus").mockReturnValue(true);
 });
 
 afterEach(() => {
@@ -30,6 +29,7 @@ afterEach(() => {
   unsubscribeCamera?.();
   unsubscribeHighlight = null;
   unsubscribeCamera = null;
+  vi.restoreAllMocks();
 });
 
 function projectWithMap(width: number, height: number): Project {
@@ -39,7 +39,7 @@ function projectWithMap(width: number, height: number): Project {
   return project;
 }
 
-describe("focusAcceptedAgentChanges 가 카메라도 요청한다", () => {
+describe("사용자가 직접 요청한 변경 위치 이동", () => {
   it("변경 bbox 중심을 화면 밖일 때만 이동하도록 요청한다", () => {
     const before = projectWithMap(40, 30);
     store.replace(before);
@@ -47,7 +47,7 @@ describe("focusAcceptedAgentChanges 가 카메라도 요청한다", () => {
     // (20,10) 한 칸만 바꾼다.
     after.maps["m1"].lowerTiles[10 * 40 + 20] = 77;
 
-    const target = focusAcceptedAgentChanges(before, after);
+    const target = focusAcceptedAgentChanges(before, after, { follow: true });
     expect(target?.bounds).toEqual({ x: 20, y: 10, width: 1, height: 1 });
     expect(highlights).toHaveLength(1);
     expect(cameraRequests).toHaveLength(1);
@@ -69,7 +69,7 @@ describe("focusAcceptedAgentChanges 가 카메라도 요청한다", () => {
       for (let x = 6; x < 16; x += 1) after.maps["m1"].lowerTiles[y * 40 + x] = 5;
     }
 
-    focusAcceptedAgentChanges(before, after);
+    focusAcceptedAgentChanges(before, after, { follow: true });
     expect(cameraRequests).toHaveLength(1);
     expect(cameraRequests[0].bounds).toEqual({ x: 6, y: 4, width: 10, height: 8 });
     expect(cameraRequests[0].tileX).toBe(11);
@@ -84,5 +84,43 @@ describe("focusAcceptedAgentChanges 가 카메라도 요청한다", () => {
     expect(focusAcceptedAgentChanges(before, after)).toBeNull();
     expect(highlights).toHaveLength(0);
     expect(cameraRequests).toHaveLength(0);
+  });
+
+  it("자동 적용은 같은 맵의 화면 밖 변경도 따라가지 않는다", () => {
+    const before = projectWithMap(40, 30);
+    store.replace(before);
+    editorState.set({ currentMapId: "m1", zoom: 2 });
+    const view = editorState.get();
+    const after = structuredClone(before);
+    after.maps.m1.lowerTiles[20 * 40 + 35] = 77;
+    focusAcceptedAgentChanges(before, after);
+    expect(cameraRequests).toEqual([]);
+    expect(editorState.get()).toEqual(view);
+    expect(highlights).toHaveLength(1);
+  });
+
+  it("새 맵을 만들거나 다른 맵을 고쳐도 현재 맵을 유지한다", () => {
+    const before = projectWithMap(40, 30);
+    store.replace(before);
+    editorState.set({ currentMapId: "m1" });
+    const after = structuredClone(before);
+    after.maps.m2 = { ...createBlankMap("m2", 20, 20), id: "m2" };
+    store.replace(after);
+    focusAcceptedAgentChanges(before, after);
+    expect(editorState.get().currentMapId).toBe("m1");
+    expect(cameraRequests).toEqual([]);
+    expect(highlights).toEqual([]);
+  });
+
+  it("앱이 백그라운드면 강조·이동 요청을 남기지 않는다", () => {
+    vi.mocked(document.hasFocus).mockReturnValue(false);
+    const before = projectWithMap(40, 30);
+    store.replace(before);
+    const after = structuredClone(before);
+    after.maps.m1.lowerTiles[15] = 77;
+    focusAcceptedAgentChanges(before, after);
+    vi.mocked(document.hasFocus).mockReturnValue(true);
+    expect(cameraRequests).toEqual([]);
+    expect(highlights).toEqual([]);
   });
 });

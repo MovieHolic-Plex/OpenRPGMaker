@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/picture/w5-C.pxg",
+ "id": "picture",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.014
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "outline"
+  ],
+  "pass": false
+ },
+ "colors": 11,
+ "v5_colors": 11,
+ "bbox": [
+  3,
+  0,
+  13,
+  14
+ ],
+ "v5_bbox": [
+  1,
+  2,
+  14,
+  12
+ ],
+ "note": "실루엣 재해석: 가로 액자를 세로 타원 초상 액자로(안쪽 좁은 풍경, 나무 한 그루), 위에 거는 끈 꼭지",
+ "ok": true
+}

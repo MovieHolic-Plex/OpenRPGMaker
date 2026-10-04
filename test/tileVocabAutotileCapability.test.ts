@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { defaultTileset } from "@/project/defaults/defaultAssets";
+import { combinedTownTileset as defaultTileset } from "@/project/defaults/defaultAssets";
 import { roleCapabilities } from "@/project/tileRoles";
 import { resolveMaterialByLabel } from "@/project/tileVocabulary";
 import type { TilesetDef } from "@/project/types";

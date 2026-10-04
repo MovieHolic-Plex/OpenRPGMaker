@@ -1,3 +1,4 @@
+import { getLoadedPhaser } from "@/app/phaserRuntime";
 import { mapTileSize } from "@/project/tileGeometry";
 import { carryPursuitThroughDoor } from "./horrorRuntime";
 import { diagnosticObserved, diagnosticToken, publishDiagnostic } from "@/util/diagnosticObserver";
@@ -232,7 +233,13 @@ const SHAKE_MAX_RATIO = 0.1;
 export function shakeCamera(scene: PlaySceneContext, step: ShakeScreenStep): Promise<void> {
   return new Promise((resolve) => {
     scene.cameras.main.once("camerashakecomplete", () => resolve());
-    scene.cameras.main.shake(step.durationMs, shakeIntensityRatio(step.intensity));
+    const ratio = shakeIntensityRatio(step.intensity);
+    // 방향은 Phaser 의 축별 세기(Vector2)로 낸다. 한 축을 0 으로 두면 그 축은 흔들리지 않는다.
+    const direction = step.direction ?? "both";
+    const intensity = direction === "both"
+      ? ratio
+      : new (getLoadedPhaser().Math.Vector2)(direction === "horizontal" ? ratio : 0, direction === "vertical" ? ratio : 0);
+    scene.cameras.main.shake(step.durationMs, intensity);
   });
 }
 

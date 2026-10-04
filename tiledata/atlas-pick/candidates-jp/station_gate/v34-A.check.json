@@ -1,0 +1,36 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/station_gate/v34-A.pxg",
+ "set": "jp",
+ "id": "station_gate",
+ "hard": [
+  "bg: 배경이 투명하지 않다(귀퉁이 셋 이상이 불투명) — 이 층은 투명 배경 위에 그린다"
+ ],
+ "warn": [
+  "메모 없음: <후보>.note 에 한 줄"
+ ],
+ "easyrpg": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.523
+ },
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.327
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation"
+  ]
+ },
+ "colors": 24,
+ "bbox": [
+  0,
+  0,
+  47,
+  31
+ ],
+ "note": "",
+ "ok": false
+}

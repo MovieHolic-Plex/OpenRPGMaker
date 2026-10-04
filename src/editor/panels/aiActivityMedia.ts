@@ -24,9 +24,19 @@ async function loadImage(url: string): Promise<HTMLImageElement> {
 const pending = new Map<string, Promise<Blob | undefined>>();
 const rasterLanes: Promise<unknown>[] = [Promise.resolve(), Promise.resolve(), Promise.resolve()];
 let nextLane = 0;
+/**
+ * 그림 굽기는 한가할 때 시작한다. 960px 맵 렌더·toBlob 이 체크포인트 적용 직후에 몰리면 그 사이 조수창·캔버스가
+ * 멈춰 보였다(2026-10-03 조사). 그림은 기록이라 1.5초 늦어도 된다 — 모자라면 timeout 이 시작을 보장한다.
+ */
+function whenIdle(): Promise<void> {
+  return new Promise(resolve => {
+    if (typeof requestIdleCallback === "function") requestIdleCallback(() => resolve(), { timeout: 1500 });
+    else setTimeout(resolve, 0);
+  });
+}
 function rasterQueued(visual: ActivityVisual): Promise<Blob | undefined> {
   const lane = nextLane++ % rasterLanes.length;
-  const job = rasterLanes[lane]!.then(() => raster(visual));
+  const job = rasterLanes[lane]!.then(whenIdle).then(() => raster(visual));
   rasterLanes[lane] = job.catch(() => undefined);
   return job;
 }
@@ -59,7 +69,7 @@ async function raster(visual: ActivityVisual): Promise<Blob | undefined> {
     canvas = document.createElement("canvas"); canvas.width = Math.ceil(frame.width * scale); canvas.height = Math.ceil(frame.height * scale);
     const ctx = canvas.getContext("2d"); if (!ctx) return undefined;
     ctx.imageSmoothingEnabled = false;
-    if (visual.hue) ctx.filter = `hue-rotate(${visual.hue}deg)`;
+    // 몬스터 색조(graphicHue)는 전투가 읽지 않으므로(2026-10-02) 원래 색으로 그린다.
     ctx.drawImage(image, frame.x, frame.y, frame.width, frame.height, 0, 0, canvas.width, canvas.height);
     // Standard asset chroma key; preserve all other authored colors.
     const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
@@ -104,7 +114,17 @@ function releaseImage(image: HTMLImageElement, now = Date.now()): void {
   if (image.isConnected) { entry.mounted = true; return; }
   if (!image.complete) return;
   if (!entry.mounted && now - entry.createdAt < UNMOUNTED_IMAGE_GRACE_MS) return;
-  URL.revokeObjectURL(entry.url); imageUrls.delete(image);
+  URL.revokeObjectURL(entry.url); dropImageUrl(image);
+}
+/** 그림 하나를 목록에서 뺀다. 더 감시할 그림이 없으면 body 전역 관찰자도 끈다(다음 attachImage 가 다시 만든다). */
+function dropImageUrl(image: HTMLImageElement): void {
+  imageUrls.delete(image);
+  if (imageUrls.size === 0) disposeActivityImageObserver();
+}
+/** body 전역 MutationObserver 를 끊는다. 그림이 하나도 없을 때 자동 호출되고, 테스트·정리 경로도 부를 수 있다. */
+export function disposeActivityImageObserver(): void {
+  imageObserver?.disconnect();
+  imageObserver = undefined;
 }
 export function releaseDetachedActivityImages(now = Date.now()): void {
   for (const image of imageUrls.keys()) releaseImage(image, now);
@@ -144,7 +164,7 @@ export function attachImage(surface: HTMLElement, blob: Blob, title: string): vo
   const image = document.createElement("img"); image.alt = title; image.decoding = "async";
   imageUrls.set(image, { url, createdAt: Date.now(), mounted: false });
   image.addEventListener("load", () => { surface.dataset.ready = "true"; queueMicrotask(() => releaseImage(image)); }, { once: true });
-  image.addEventListener("error", () => { surface.textContent = "이미지를 불러오지 못했어요"; URL.revokeObjectURL(url); imageUrls.delete(image); }, { once: true });
+  image.addEventListener("error", () => { surface.textContent = "이미지를 불러오지 못했어요"; URL.revokeObjectURL(url); dropImageUrl(image); }, { once: true });
   image.src = url;
   surface.replaceChildren(image);
   // Revoking on load can leave offscreen/async decoded images blank when scrolled back.

@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/tomare_sign/j5-B.pxg",
+ "set": "jp",
+ "id": "tomare_sign",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.159
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.032
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation"
+  ]
+ },
+ "colors": 11,
+ "bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "note": "빛 강화: 표지 윗변 밝은 붉은색, 오른쪽에 반투명 두께 그림자, 기둥 4단 명암 원통감, 밑동 접지 그림자",
+ "ok": true
+}

@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/magic_circle/w8-B.pxg",
+ "id": "magic circle",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.112
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 5,
+ "v5_colors": 3,
+ "bbox": [
+  2,
+  2,
+  29,
+  29
+ ],
+ "v5_bbox": [
+  2,
+  2,
+  29,
+  29
+ ],
+ "note": "보라 발광형: 안쪽을 반투명 어둠으로 채우고 육망성 선을 좌상 밝게, 룬 점 6개",
+ "ok": true
+}

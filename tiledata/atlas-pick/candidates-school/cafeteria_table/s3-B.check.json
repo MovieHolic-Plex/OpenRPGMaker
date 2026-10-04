@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/cafeteria_table/s3-B.pxg",
+ "set": "school",
+ "id": "cafeteria_table",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.029
+ },
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.137
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 12,
+ "bbox": [
+  1,
+  1,
+  46,
+  30
+ ],
+ "note": "센 명암: 크림 상판 왼쪽 밝고 오른쪽 그늘, 상판 밑 짙은 그림자, 짙은 회색 철 벤치와 다리",
+ "ok": true
+}

@@ -1,0 +1,35 @@
+{
+ "id": "globe",
+ "slug": "globe",
+ "name_ko": "지구본",
+ "category": "서재",
+ "kind": "floor",
+ "kind_ko": "바닥 기물(막힘)",
+ "canvas": [
+  16,
+  32
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 16,
+  "h": 32
+ },
+ "footprint": {
+  "w": 1,
+  "h": 1
+ },
+ "overhang_px": 16,
+ "surface": null,
+ "description": "나무 받침 위 지구본(바다 파랑·땅 초록, 금속 자오환). 서재·선장실.",
+ "where": "서재·선장실.",
+ "placement": [
+  "그림이 발밑 칸 위로 16px 솟는다 → 위 1칸은 플레이어 위에 그리는 겹침층",
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": null,
+ "v5_colors": 0,
+ "material": "wood",
+ "related": [],
+ "new": true,
+ "contextRoom": "scholar"
+}

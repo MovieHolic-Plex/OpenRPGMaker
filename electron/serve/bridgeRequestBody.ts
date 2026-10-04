@@ -32,7 +32,10 @@ export async function readBridgeRequestBody(request: IncomingMessage): Promise<{
   const projectDocument = channelHint === OPRN_CHANNELS.projectSave || channelHint === OPRN_CHANNELS.startCreateProject
     || channelHint === OPRN_CHANNELS.projectSaveMapPatch;
   const decodedLimit = projectDocument ? PROJECT_SAVE_BODY_LIMIT : BRIDGE_BODY_LIMIT;
-  const wireLimit = encoding === 'gzip' ? BRIDGE_BODY_LIMIT : decodedLimit;
+  // 문서 채널은 gzip 전송량도 해제 상한까지 허용한다 — 해제량을 스트리밍 중에 따로 자르므로 이 값이 느슨해도
+  // 받는 양은 늘지 않는다. 실측(2026-09-28): 새 프로젝트 첫 전체 저장이 해제 187MB · gzip 69MB 였고
+  // 예전 gzip 64MiB 상한에서 413 이 나 재시도마다 같은 413 을 받았다(SQLite 에 아무것도 남지 않았다).
+  const wireLimit = encoding === 'gzip' && !projectDocument ? BRIDGE_BODY_LIMIT : decodedLimit;
   const declaredLength = Number(request.headers['content-length']);
   if (Number.isFinite(declaredLength) && declaredLength > wireLimit) {
     request.resume();

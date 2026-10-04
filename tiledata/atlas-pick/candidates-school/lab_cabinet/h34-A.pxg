@@ -1,0 +1,77 @@
+// lab_cabinet h34-A (H 방법: Tibo 3/4 → C → E)
+@size 32 32
+@cell 16
+@palette palette.pal
+@layer main
+@mat a cream 0
+@mat b gym 0
+@mat c stile 0
+@mat d undo 0
+@mat e vwood 0
+@mat f washi 0
+@mblock 0 0
+................................
+..ffffffffffffffffffffffffffff..
+..ffffffffffffffffffffffffffff..
+..ffffffffffffffffffffffffffff..
+..ffffffffffffffffffffffffffff..
+..fffffffffffffffffffffffffffa..
+..dddddddddddddddddddddddddddd..
+..fffffffffffffffffffffffffffa..
+..ffccccccccccffffccccccccccfa..
+..ffccccccccccffffcfffccccccfa..
+..ffccecceccccffffccfcccccecfa..
+..ffcbbebbecccffffccfccccbbefa..
+..ffcbbebbecfcffffccfccfcbbefa..
+..ffcbbebbecfcffffccfccfcbbefa..
+..ffcbeebeecccfbbfcccccccbeefa..
+..ffccccccccccfbbfccccccccccfa..
+..ffccccccccccfbbfccccccccccfa..
+..ffccccccccecffffccccceccccfa..
+..ffcccccccbbeffffccccbbecccfa..
+..ffcccccccbbeffffccfcbbecfcfa..
+..ffbbbbbbcbbeffffcffcbbecfcfa..
+..ffbccccbcbeeffffccccbeecccfa..
+..fffffffffffffffffffffffffffa..
+..fffffffffffffffffffffffffffa..
+..fbbbbbbbbbbbbbbbbbbbbbbbbbbf..
+..fbbbbbbbbbbbbbbbbbbbbbbbbbbf..
+..fbbbbbbbbbbbbbbbbbbbbbbbbbbf..
+..fbbbbbbbbbbbebbebbbbbbbbbbbf..
+..fbbbbbbbbbbbbbbbbbbbbbbbbbbf..
+..fbbbbbbbbbbbbbbbbbbbbbbbbbbf..
+..fbbbbbbbbbbbbbbbbbbbbbbbbbbf..
+..fbbbbbbbbbbbbbbbbbbbbbbbbbbf..
+@tblock 0 0
+................................
+..4444444444444444444444444444..
+..4444444444444444444444444444..
+..4444444444444444444444444444..
+..4444444444444444444444444444..
+..4444444444444444444444444441..
+..5555555555555555555555555555..
+..3333333333333333333333333331..
+..3322000000003333220000000031..
+..3320000000003333233300000031..
+..3300000000203333023200000031..
+..3302122120203333023222221231..
+..3302122122323333023224221231..
+..3302122122323333023224221231..
+..3301221222223213022222212231..
+..3322222222223213222222222231..
+..3300000000003213000000000031..
+..3300000000003333002000000031..
+..3302020202123333002021222231..
+..3302020202123333023221224231..
+..3322222202123333233221224231..
+..3310000101223333222212222231..
+..3333333333333333333333333331..
+..3333333333333333333333333331..
+..3222222222222122222222222213..
+..3222212221222122221222122213..
+..3222212221222122221222122213..
+..3222212221222122221222122213..
+..3222212221222122221222122213..
+..3222212221222122221222122213..
+..3222212221222122221222122213..
+..3111111111111111111111111113..

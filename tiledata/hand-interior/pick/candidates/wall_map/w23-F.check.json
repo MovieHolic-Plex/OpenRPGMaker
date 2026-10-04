@@ -1,0 +1,44 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/wall_map/w23-F.pxg",
+ "id": "wall map",
+ "hard": [],
+ "warn": [],
+ "resized": {
+  "canvas": [
+   32,
+   32
+  ],
+  "footprint": {
+   "w": 2,
+   "h": 0
+  },
+  "why": "사용자 메모: 2x2 사이즈로 키움."
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.079
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 20,
+ "v5_colors": 5,
+ "bbox": [
+  3,
+  5,
+  28,
+  27
+ ],
+ "v5_bbox": [
+  1,
+  2,
+  14,
+  12
+ ],
+ "note": "액자 없는 낡은 지도: 종이 네 모서리를 쇠못으로 벽에 박고 가운데 접힌 자국, 위 왼쪽 모서리가 말림. 못 머리·종이 그림자로 붙어 있음을 보임",
+ "ok": true
+}

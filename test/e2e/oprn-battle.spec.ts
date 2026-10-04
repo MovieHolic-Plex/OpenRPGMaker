@@ -53,7 +53,7 @@ test("side-view battleProcessing plays through victory and restores the map", as
   test.setTimeout(120_000);
   await page.setViewportSize({ width: 1280, height: 800 });
   await seedProject(page, (project) => {
-    project.system.battleUiStyle = "rm2000";
+    project.system.battleUiStyle = "retro2003";
   });
   await startPlayFromEditor(page);
   await expect(page.locator('[data-testid="event-battle-start"]')).toBeVisible({ timeout: 5_000 });
@@ -106,7 +106,7 @@ test("side-view battleProcessing plays through victory and restores the map", as
     animationId: "anim_magic",
     frameCount: "2",
     renderedFrameCount: "2",
-    resourceId: "easyrpg-battle-blow",
+    resourceId: "scarloxy-battle-anim-scratch",
     screenShake: "true",
   });
   expect(animationState.currentFrame).toMatch(/^[01]$/);

@@ -1,0 +1,38 @@
+{
+ "id": "spiral stair",
+ "slug": "spiral_stair",
+ "name_ko": "나선 계단(2×2)",
+ "category": "마법사의 탑",
+ "kind": "floor",
+ "kind_ko": "바닥 기물(막힘)",
+ "canvas": [
+  32,
+  64
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 32,
+  "h": 64
+ },
+ "footprint": {
+  "w": 2,
+  "h": 2
+ },
+ "overhang_px": 32,
+ "surface": null,
+ "description": "나선 계단(2×2, 32px 솟음). 열 계단이 남쪽 바닥에서 시계 방향으로 기둥을 돌아 오른다. 탑·종탑.",
+ "where": "열 계단이 남쪽 바닥에서 시계 방향으로 기둥을 돌아 오른다. 탑·종탑.",
+ "placement": [
+  "그림이 발밑 칸 위로 32px 솟는다 → 위 2칸은 플레이어 위에 그리는 겹침층",
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": [
+  1,
+  9,
+  30,
+  63
+ ],
+ "v5_colors": 9,
+ "material": "wood",
+ "related": []
+}

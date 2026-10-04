@@ -1,0 +1,21 @@
+{
+ "id": "bd-out-hay-barrels",
+ "name": "외곽 건초·통·상자",
+ "w": 3,
+ "h": 1,
+ "walk": [
+  "XXX"
+ ],
+ "description": "통 둘과 건초를 쌓은 상자, 3칸x1줄.",
+ "rules": "집 옆이나 광장 가장자리에 놓는다.",
+ "tags": [
+  "외곽",
+  "소품",
+  "건초",
+  "통"
+ ],
+ "role": "prop",
+ "doors": [],
+ "notes": "",
+ "assembly": []
+}

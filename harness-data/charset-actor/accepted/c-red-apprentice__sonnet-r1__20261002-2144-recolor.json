@@ -1,0 +1,43 @@
+{
+ "id": "20261002-2144-recolor/c-red-apprentice__sonnet-r1",
+ "brief": "c-red-apprentice",
+ "name": "붉은 머리 견습생",
+ "base": "Actor4:0",
+ "base_label": "Actor4 1번",
+ "strength": "normal",
+ "files": {
+  "chr": "c-red-apprentice__sonnet-r1__20261002-2144-recolor.chr.txt",
+  "sheet": "c-red-apprentice__sonnet-r1__20261002-2144-recolor.png"
+ },
+ "description": {
+  "label": "붉은 머리 갈색 옷 견습생",
+  "gender": "남",
+  "attributes": {
+   "kind": "사람",
+   "age": "청년",
+   "hair": "붉은 주황 머리"
+  },
+  "role": "견습생 (수습 모험가·도제)",
+  "appearance": "삐죽삐죽 흩어진 붉은 주황색 짧은 머리에 앞머리가 이마를 덮고, 밝은 피부에 눈이 또렷한 청년이다. 연한 베이지 목깃이 달린 갈색 가죽 조끼풍 상의에 짙은 남색 바지, 갈색 장화를 입었고 소지품은 보이지 않는다.",
+  "colors": [
+   "붉은 주황 머리",
+   "갈색 상의",
+   "베이지 목깃",
+   "짙은 남색 바지",
+   "갈색 장화"
+  ],
+  "tags": [
+   "견습생",
+   "수습",
+   "모험가",
+   "청년",
+   "마을 사람",
+   "판타지",
+   "중세",
+   "공방"
+  ],
+  "fits": "마을 광장·공방·길드·여관 등에서 일을 배우는 젊은 수습생이나 초반 모험 동료 NPC 로 둔다.",
+  "by": "Claude Sonnet 5.5 · medium",
+  "at": "2026-10-02T22:41:05+00:00"
+ }
+}

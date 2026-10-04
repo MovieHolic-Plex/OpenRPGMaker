@@ -1,0 +1,35 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/firewood_rack/w2-A.pxg",
+ "id": "firewood rack",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.035
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "outline",
+   "outline_black"
+  ],
+  "pass": false
+ },
+ "colors": 16,
+ "v5_colors": 17,
+ "bbox": [
+  0,
+  2,
+  15,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  2,
+  15,
+  31
+ ],
+ "note": "v5 정리: 순검정 기둥 외곽을 짙은 갈색(H)으로, 통나무 배열은 그대로",
+ "ok": true
+}

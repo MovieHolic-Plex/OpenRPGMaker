@@ -1,0 +1,48 @@
+// 같은 방 화풍: royal_chest 결(붉은 칠·금테·밝은 왼쪽 위) 그대로 넓힌 납작 둥근 뚜껑, 금 띠 둘·자물쇠판·푸른 보석
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat A wood 1
+@mat H wood 0
+@mat B red 4
+@mat C red 5
+@mat D red 3
+@mat E red 1
+@mat G iron 3
+@mat I brass 3
+@mat J brass 5
+@mat K blue 3
+@mat L blue 5
+@mblock 0 0
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+......AAAAAAAAAAAAAAAAAAAA......
+....ACCCCJICCCCCCCCCCJIBBBBA....
+...ACCCCCJICCCCCCCCCCJIBBBBBA...
+..ACCCCCCJICCCLLLLBBBJIBBBBBBA..
+..ABBBBBBJIBBBKKKKBBBJIDDDDDDA..
+..ADDDDDDJIDDDDDDDDDDJIEEEEEEA..
+..AJJJJJJJJJJJJJJIIIIIIIIIIIIA..
+..ACCCCCCJICCCCCCCCCCJICCCCDEA..
+..ACBBBBBJIBBBBBBBBBBJIBBBBDEA..
+..ACBBBBBJIBBBBBBBBBBJIBBBBDEA..
+..ACBBBBBJIBBJJJJJJBBJIBBBBDEA..
+..ACBBBBBJIBBJIIIIIBBJIBBBBDEA..
+..ACBBBBBJIBBJIGGIIBBJIBBBBDEA..
+..ACBBBBBJIBBJIIGIIBBJIBBBBDEA..
+..ACBBBBBJIBBIIIIIIBBJIBBBBDEA..
+..ACBBBBBJIBBBBBBBBBBJIBBBBDEA..
+..ACBBBBBJIBBBBBBBBBBJIBBBBDEA..
+..ACDDDDDJIDDDDDDDDDDJIDDDDEEA..
+..ACDDDDDJIDDDDDDDDDDJIDDDDEEA..
+..AEEEEEEJIEEEEEEEEEEJIEEEEEEA..
+..HHHHHHHHHHHHHHHHHHHHHHHHHHHH..

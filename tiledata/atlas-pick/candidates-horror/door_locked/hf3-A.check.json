@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/door_locked/hf3-A.pxg",
+ "set": "horror",
+ "id": "door_locked",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.086
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.023
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "outline_black"
+  ]
+ },
+ "colors": 14,
+ "bbox": [
+  0,
+  2,
+  15,
+  31
+ ],
+ "note": "잠긴 문 A — door_wood A 와 같은 문(틀·패널·손잡이 그대로), 가로 사슬 두 줄(쇠 5·4·3단)과 사슬에 걸린 쇠 자물쇠(열쇠구멍 1단). 사슬이 문짝(3단)보다 두 단 이상 밝아 어둠에서도 읽힌다.",
+ "ok": true
+}

@@ -1,0 +1,22 @@
+{
+ "projectId": "6f86ae29-f2a4-4c06-a396-511f972cea52",
+ "render": "verify-shots/beodeul-assistant-r2/reloaded-render.png",
+ "vsNoTownsfolk": {
+  "against": "tiledata/beodeul-city/render/city6.png",
+  "pixels": 2560000,
+  "differing": 0,
+  "ratio": 0,
+  "maxChannelDelta": 0,
+  "meanDeltaOfDiffering": 0,
+  "cellsTouched": 0
+ },
+ "vsCity6": {
+  "against": "tiledata/beodeul-city/render-full/city6.png",
+  "pixels": 2560000,
+  "differing": 29447,
+  "ratio": 0.011503,
+  "maxChannelDelta": 255,
+  "meanDeltaOfDiffering": 100.56,
+  "cellsTouched": 275
+ }
+}

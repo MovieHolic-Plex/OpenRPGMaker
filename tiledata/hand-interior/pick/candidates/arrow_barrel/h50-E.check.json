@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/arrow_barrel/h50-E.pxg",
+ "id": "arrow barrel",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.011
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 15,
+ "v5_colors": 0,
+ "bbox": [
+  2,
+  0,
+  13,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "화살 셋을 입구에서 부채꼴로 벌리고 깃을 파랑·아마로, 통은 좁은 12px 널 이음 선명 + 쇠테 둘(위 4 줄 간격)",
+ "ok": true
+}

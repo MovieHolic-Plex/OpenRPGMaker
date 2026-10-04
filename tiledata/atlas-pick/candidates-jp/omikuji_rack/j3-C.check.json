@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/omikuji_rack/j3-C.pxg",
+ "set": "jp",
+ "id": "omikuji_rack",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.042
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.023
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 11,
+ "bbox": [
+  0,
+  2,
+  31,
+  31
+ ],
+ "note": "실루엣 재해석: 네모 틀 대신 위가 좁고 아래가 넓은 A자 틀, 줄이 아래로 갈수록 길어져 매듭 덩이가 삼각으로 쌓인다",
+ "ok": true
+}

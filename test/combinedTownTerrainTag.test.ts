@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { COMBINED_TOWN_HARNESS_GROUPS } from "@/project/tilesetHarness/combinedTownGroups";
 import { applyCombinedTownHarness } from "@/project/tilesetHarness/combinedTown";
 import { TERRAIN_TAG } from "@/project/defaults/chipsetMapping";
-import { defaultTileset } from "@/project/defaults/defaultAssets";
+import { combinedTownTileset as defaultTileset } from "@/project/defaults/defaultAssets";
 import { roleCapabilities } from "@/project/tileRoles";
 
 /** terrain 배열을 오염시킨 뒤 하네스를 다시 적용해, 실제로 재기록된 값을 본다. */

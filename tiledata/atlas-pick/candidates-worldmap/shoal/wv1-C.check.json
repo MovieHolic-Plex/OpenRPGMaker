@@ -1,0 +1,136 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/shoal/wv1-C.pxg",
+ "set": "worldmap",
+ "id": "shoal",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.007
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies",
+   "dither"
+  ]
+ },
+ "colors": 8,
+ "bbox": [
+  2,
+  0,
+  47,
+  61
+ ],
+ "note": "다른 해석: 모래 얼룩 점 + 작은 바위 머리 여럿. 해협 8·어긋남 0·seam 0.74.",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.004
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.013
+  },
+  "shore": {
+   "profile": {
+    "n": [
+     3,
+     2,
+     2,
+     3,
+     3,
+     4,
+     4,
+     3,
+     3,
+     3,
+     3,
+     2,
+     3,
+     3,
+     3,
+     3
+    ],
+    "s": [
+     3,
+     3,
+     4,
+     3,
+     3,
+     3,
+     2,
+     3,
+     3,
+     3,
+     4,
+     4,
+     3,
+     2,
+     3,
+     3
+    ],
+    "w": [
+     3,
+     3,
+     3,
+     4,
+     3,
+     3,
+     2,
+     3,
+     3,
+     2,
+     3,
+     3,
+     4,
+     4,
+     3,
+     3
+    ],
+    "e": [
+     3,
+     3,
+     4,
+     4,
+     3,
+     2,
+     2,
+     3,
+     3,
+     3,
+     3,
+     3,
+     2,
+     3,
+     3,
+     3
+    ]
+   },
+   "strait": 8,
+   "steps": {
+    "n": 1,
+    "s": 1,
+    "w": 1,
+    "e": 1
+   },
+   "amp": {
+    "n": 2,
+    "s": 2,
+    "w": 2,
+    "e": 2
+   },
+   "joinWorst": 0
+  },
+  "seam": 0.74
+ }
+}

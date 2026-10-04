@@ -1,0 +1,40 @@
+{
+ "id": "anvil",
+ "slug": "anvil",
+ "name_ko": "모루",
+ "category": "대장간",
+ "kind": "floor",
+ "kind_ko": "바닥 기물(막힘)",
+ "canvas": [
+  16,
+  16
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 16,
+  "h": 16
+ },
+ "footprint": {
+  "w": 1,
+  "h": 1
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "검은 쇠모루(1칸). 대장간 작업장 용광로 앞 1~2칸에 1개. 옆에 담금질 통.",
+ "where": "대장간 작업장 용광로 앞 1~2칸에 1개. 옆에 담금질 통.",
+ "placement": [
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": [
+  1,
+  4,
+  13,
+  13
+ ],
+ "v5_colors": 6,
+ "material": "metal",
+ "related": [
+  "forge",
+  "quench barrel"
+ ]
+}

@@ -4,9 +4,10 @@
 // - 오브젝트: 공용 오브젝트 카탈로그(src/assets/sharedObjectCatalog.json — 잎 없는 고목·화산 봉우리·기후 지형·항구 부품·
 //   생성 건물·집 외형·마을 소품 + 파이프라인이 뽑은 tiledata/*/shared-objects.json(가구·탈것·표지물 등), 생성기 scripts/content/build-shared-object-catalog.mjs) + 이 프로젝트 타일셋의 다른 구조 킷·
 //   도안 있는 타일 그룹 → stamp_object.
+import { isRetiredInteriorPlace, isRetiredInteriorTileset } from "@/project/retiredInteriorTilesets";
 import catalog from "@/assets/sharedObjectCatalog.json";
 import { REGION_REFERENCES, PLACE_REFERENCES } from "@/project/regionReferences";
-import { SHARED_REGION_REFERENCES } from "@/project/sharedSpatialReferences";
+import { sharedRegionReferences } from "@/project/sharedSpatialReferences";
 import { reviewedPlaceIndex } from "@/project/defaults/spatial/reviewedPlaceIndex";
 import { TRUNK_ONLY_FOREST_GROUPS } from "@/project/defaults/forestTrunkOnlyParts";
 import type { Project, TilesetDef } from "@/project/types";
@@ -16,6 +17,7 @@ export type SharedPlaceEntry = {
   readonly placeKind: "facility" | "settlement" | "natural";
   readonly tilesetId: string | null; readonly width?: number; readonly height?: number;
   readonly tags: readonly string[]; readonly source: "registered" | "reviewed"; readonly use: string;
+  readonly referenceRead?: { readonly kind: "region"; readonly id: string };
 };
 
 export type SharedObjectCategory = "tree" | "volcano" | "gate" | "terrain" | "harbor" | "house" | "prop" | "furniture" | "vehicle" | "landmark";
@@ -65,14 +67,16 @@ export function sharedPlaces(): SharedPlaceEntry[] {
     id: `reviewed:${place.id}`, kind: "place", name: place.name, placeKind: place.kind, tilesetId: place.tilesetId,
     tags: place.tags, source: "reviewed", use: `import_region_reference({id:'reviewed:${place.id}'}) — 장소의 맵 전부를 새 맵으로`,
   }));
-  const registered = [...REGION_REFERENCES, ...PLACE_REFERENCES, ...SHARED_REGION_REFERENCES].map((entry): SharedPlaceEntry => {
+  const registered = [...REGION_REFERENCES, ...PLACE_REFERENCES, ...sharedRegionReferences()].map((entry): SharedPlaceEntry => {
     const placeKind = "placeKind" in entry && typeof entry.placeKind === "string" ? entry.placeKind as SharedPlaceEntry["placeKind"]
       : "regionKind" in entry && entry.regionKind === "terrain" ? "natural" : "settlement";
     return { id: entry.id, kind: "place", name: entry.name, placeKind, tilesetId: entry.tilesetId, width: entry.width, height: entry.height,
       tags: [placeKind, entry.tilesetId, `${entry.width}×${entry.height}`], source: "registered",
-      use: `import_region_reference({id:'${entry.id}'}) · 칸 배열은 read_region_reference` };
+      referenceRead: { kind: "region", id: entry.id },
+      use: `import_region_reference({id:'${entry.id}'}) · 칸 배열은 read_region_reference · 소유자 문서는 read_spatial_reference({kind:'region',id:'${entry.id}'})` };
   });
-  return [...reviewed, ...registered];
+  // 폐기된 실내 칩셋(Tibo·EasyRPG 실내·LPC 가구)의 장소는 조수에게 보이지 않는다 — 실내는 손 도트 v5 만(retiredInteriorTilesets.ts).
+  return [...reviewed, ...registered].filter(entry => !isRetiredInteriorPlace(entry));
 }
 
 // Bundled pieces the catalog already carries — not repeated as raw kit:/group: rows.
@@ -107,14 +111,17 @@ export function catalogEntry(object: SharedObjectDef): SharedObjectEntry {
 
 /** Every reusable object the assistant can stamp in this project: the shared catalog, then this project's other kits/groups. */
 export function sharedObjects(project: Project): SharedObjectEntry[] {
-  const out: SharedObjectEntry[] = SHARED_OBJECTS.map(catalogEntry);
-  for (const tileset of Object.values(project.tilesets)) out.push(...kitObjects(tileset), ...groupObjects(tileset));
+  const out: SharedObjectEntry[] = SHARED_OBJECTS.filter(object => !isRetiredInteriorTileset(object.tilesetId)).map(catalogEntry);
+  for (const tileset of Object.values(project.tilesets)) {
+    if (isRetiredInteriorTileset(tileset.id, tileset)) continue;
+    out.push(...kitObjects(tileset), ...groupObjects(tileset));
+  }
   return out;
 }
 
 export function isSharedDesignId(id: string): boolean {
   return /^(reviewed:|kit:|group:|obj:|refkit:|part:|pattern:|house:)/.test(id)
-    || [...REGION_REFERENCES, ...PLACE_REFERENCES, ...SHARED_REGION_REFERENCES].some(entry => entry.id === id);
+    || [...REGION_REFERENCES, ...PLACE_REFERENCES, ...sharedRegionReferences()].some(entry => entry.id === id);
 }
 
 export function matchesQuery(entry: { id: string; name: string; tags: readonly string[] }, query: string): boolean {

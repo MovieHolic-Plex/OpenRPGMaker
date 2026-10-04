@@ -1,11 +1,11 @@
-// OPRN-OUT-018 — 지원 상한 256×256을 "생성/크기변경 전 경로 + lint" 한 곳으로 맞춘다.
+// OPRN-OUT-018 — 지원 상한을 "생성/크기변경 전 경로 + lint" 한 곳으로 맞춘다.
 //
 // 실측 결함: create_map·resize_map·generate_map·author_village 는 257을 거부했는데
 // build_world 만 상한이 없어 257×257 셀 배열을 실제로 할당했고(라이브 재현: 제안 생성은
 // 성공, 이어진 검토가 입력 크기 HTTP 400 으로 실패), projectLint 는 그 맵을 warning 으로만
 // 보고해 "지원하지 않는데 존재하는" 상태가 그대로 남았다.
 //
-// 경계는 항상 짝으로 본다 — 256은 통과, 257은 할당 전에 거부.
+// 경계는 항상 짝으로 본다 — 현재 1024는 통과, 1025는 할당 전에 거부.
 import { describe, expect, it } from "vitest";
 import { addChildMap, addMap, createMapFromSpec, deleteMap, resizeMap } from "@/editor/actions";
 import { selectEditorMap } from "@/editor/mapSelection";
@@ -17,6 +17,7 @@ import { projectLint } from "@/project/lint/projectLint";
 import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
 import { store } from "@/project/store";
 import { installFakeDom } from "./fakeDom";
+import { deserialize, serialize } from '@/project/io';
 
 const OVER = MAX_TOOL_MAP_DIMENSION + 1;
 
@@ -110,6 +111,31 @@ describe("plan_world 크기 힌트 상한", () => {
 });
 
 describe("나머지 조수 생성/크기변경 경로", () => {
+  it.each([{ size: 512 }, { size: 1024 }])('official $size×$size maps retain the edge cells through export and reload', ({ size }) => {
+    const context = ctx();
+    const created = runTool(context, 'create_map', { name: `${size} 경계`, width: size, height: size, id: 'map_edge' });
+    expect(created.ok, created.summary).toBe(true);
+    const map = context.project.maps.map_edge!;
+    expect(map.lowerTiles).toHaveLength(size * size);
+    const edgeTile = map.lowerTiles[0] === 0 ? 1 : 0;
+    map.lowerTiles[size * size - 1] = edgeTile;
+    map.upperTiles[size * size - 1] = edgeTile;
+    map.lowerOverlayTiles = new Array(size * size).fill(-1);
+    map.upperOverlayTiles = new Array(size * size).fill(-1);
+    map.shadowBits = new Array(size * size).fill(0);
+    map.lowerOverlayTiles[size * size - 1] = edgeTile;
+    map.upperOverlayTiles[size * size - 1] = edgeTile;
+    map.shadowBits[size * size - 1] = 15;
+    const restored = deserialize(serialize(context.project)).maps.map_edge!;
+    expect([restored.width, restored.height]).toEqual([size, size]);
+    for (const layer of [restored.lowerTiles, restored.upperTiles, restored.lowerOverlayTiles, restored.upperOverlayTiles]) {
+      expect(layer).toHaveLength(size * size);
+      expect(layer![size * size - 1]).toBe(edgeTile);
+    }
+    expect(restored.shadowBits).toHaveLength(size * size);
+    expect(restored.shadowBits![size * size - 1]).toBe(15);
+    expect(projectLint(context.project).filter(issue => issue.code === 'map-size')).toEqual([]);
+  });
   it.each([
     ["create_map", { name: "경계", width: MAX_TOOL_MAP_DIMENSION, height: MAX_TOOL_MAP_DIMENSION, id: "map_edge" }, true],
     ["create_map", { name: "초과", width: OVER, height: OVER, id: "map_edge" }, false],
@@ -117,7 +143,8 @@ describe("나머지 조수 생성/크기변경 경로", () => {
     ["generate_map", { theme: "forest", width: OVER, height: OVER, id: "map_edge" }, false],
   ] as const)("%s %o → ok:%s", (tool, args, ok) => {
     const context = ctx();
-    const result = runTool(context, tool, { ...args });
+    const result = runTool(context, tool, { ...args,
+      ...(tool === 'generate_map' ? { tilesetId: 'easyrpg_chipset_combined_town' } : {}) });
     expect(result.ok, result.summary).toBe(ok);
     if (!ok) {
       expectRejection(result.summary);
@@ -125,7 +152,7 @@ describe("나머지 조수 생성/크기변경 경로", () => {
     }
   });
 
-  it("resize_map 은 256까지 늘리고 257은 거부한다", () => {
+  it("resize_map 은 지원 상한까지 늘리고 초과는 거부한다", () => {
     const context = ctx();
     expect(runTool(context, "create_map", { name: "확장", width: 12, height: 12, id: "map_resize" }).ok).toBe(true);
     const grown = runTool(context, "resize_map", { mapId: "map_resize", width: MAX_TOOL_MAP_DIMENSION, height: MAX_TOOL_MAP_DIMENSION });
@@ -215,7 +242,7 @@ describe("사람 생성/크기변경 경로", () => {
     });
   });
 
-  it("addMap 은 경계 256을 그대로 만든다", () => {
+  it("addMap 은 지원 상한을 그대로 만든다", () => {
     withDom(() => {
       store.replace(createBlankProject());
       const id = addMap("경계", MAX_TOOL_MAP_DIMENSION, MAX_TOOL_MAP_DIMENSION);

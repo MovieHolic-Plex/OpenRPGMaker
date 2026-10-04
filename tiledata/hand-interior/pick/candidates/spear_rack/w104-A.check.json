@@ -1,0 +1,29 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/spear_rack/w104-A.pxg",
+ "id": "spear rack",
+ "hard": [],
+ "warn": [
+  "파일 이름이 <작업자>-<방향>.pxg 꼴이 아니다(w1-A.pxg): w104-A.pxg"
+ ],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.047
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 15,
+ "v5_colors": 0,
+ "bbox": [
+  0,
+  1,
+  15,
+  46
+ ],
+ "v5_bbox": null,
+ "note": "3/4: 창 셋이 꽂힌 둥근 나무 통 — 윗면 타원(입구 7줄, 뒤 테두리·앞 입술 밝은 줄)+앞면 통판 11줄+쇠테 2줄. 캔버스 16x48 그대로.",
+ "ok": true
+}

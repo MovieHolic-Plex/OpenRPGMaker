@@ -1,4 +1,8 @@
+import { CHARACTER_MOTION_STYLES } from "@/battle/characterMotion";
+import { normalizeBattleGimmick } from "@/battle/battleGimmickRules";
 import { normalizeGallerySettings } from "./gallery";
+import { normalizeBattleAura } from "@/assets/battleStateAuras";
+import { normalizeSkillChoreographyRecords } from "./skillChoreographyRecords";
 import { normalizeChapterSettings, normalizeNewGamePlusSettings } from "./newGamePlus";
 import { normalizeVehicleConfigs } from "./vehicles";
 import { normalizeFieldHud } from "./fieldHud";
@@ -10,14 +14,17 @@ import {
   clampLevel,
   normalizeActorRecord,
 } from "@/project/actorModel";
-import { DEFAULT_BATTLE_SKIN_ID } from "@/battle/skins/registry";
+import { DEFAULT_BATTLE_SKIN_ID, resolveSkinId, retiredSkinLookWindow } from "@/battle/skins/registry";
+import { isPokemonMoveMotion } from "@/battle/pokemonMoveMotion";
 import { DEFAULT_BATTLE_HIT_FEEL, isBattleHitFeel } from "@/project/battleHitFeel";
+import { normalizeDisplayFilter } from "@/project/displayFilter";
+import { normalizeBattleLook } from "@/project/battleLook";
 import { DEFAULT_MENU_SKIN_ID, isMenuSkinId } from "@/player/menuSkins/registry";
 import { normalizeBattleAnimationRecord } from "@/project/databaseAnimationRecordModel";
 import { normalizeActionCombatConfig, normalizeActionSkillProfile, normalizeActionWeaponProfile } from "@/project/actionCombat";
 import { normalizeEnemyRecord, normalizeTroopRecord } from "@/project/databaseEnemyTroopRecordModel";
 import { normalizeSystemFontConfig } from "@/project/fontRegistry";
-import { DEFAULT_DIALOGUE_STYLE_ID, DIALOGUE_PROJECT_SPEED_LIMITS, isDialogueStyleId } from "@/project/dialogueStyles";
+import { DEFAULT_DIALOGUE_STYLE_ID, DIALOGUE_PROJECT_SPEED_LIMITS, isDialogueStyleId, normalizeDialogueFullPortraitSettings } from "@/project/dialogueStyles";
 import { isFontFamilyId } from "@/project/fontRegistry";
 import { normalizeElementRecords, normalizeGlobalBattleCommands, normalizeTerrainRecords } from "@/project/databaseUtilityRecordModel";
 import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
@@ -106,6 +113,7 @@ export function normalizeStateRecord(record: Partial<StateRecord> & Pick<StateRe
       return emotion ? { emotion } : {};
     })(),
     ...(typeof record.disablesEquipSlot === "string" && record.disablesEquipSlot ? { disablesEquipSlot: record.disablesEquipSlot } : {}),
+    ...(normalizeBattleAura(record.battleAura) ? { battleAura: normalizeBattleAura(record.battleAura) } : {}),
   };
 }
 
@@ -118,7 +126,7 @@ function normalizeStateEmotion(value: unknown): StateRecord["emotion"] {
 
 type ProjectDatabaseInput = DatabaseRecords & Partial<Pick<ProjectDatabaseRecords,
   "battleCommands" | "elements" | "terrains" | "monsterSpecies" | "crops" | "lifeSkills"
-  | "farmAnimalSpecies" | "fishSpecies" | "farmBuildingTypes" | "homeDecorationTypes"
+  | "farmAnimalSpecies" | "fishSpecies" | "farmBuildingTypes" | "homeDecorationTypes" | "skillChoreographies"
 >>;
 
 /**
@@ -163,6 +171,9 @@ export function normalizeDatabaseRecords(database: ProjectDatabaseInput): Projec
     ...(database.homeDecorationTypes !== undefined
       ? { homeDecorationTypes: normalizeHomeDecorationTypes(database.homeDecorationTypes) ?? [] }
       : {}),
+    ...(database.skillChoreographies !== undefined
+      ? { skillChoreographies: normalizeSkillChoreographyRecords(database.skillChoreographies) ?? [] }
+      : {}),
   };
 }
 
@@ -184,6 +195,17 @@ export function normalizeSystemWindowSkinId(value: unknown): string | undefined 
   if (id.startsWith("easyrpg-system2-")) return DEFAULT_RUNTIME_WINDOW_SKIN_ID;
   if (EASYRPG_SYSTEM_SHEET_IDS.has(id)) return DEFAULT_RUNTIME_WINDOW_SKIN_ID;
   return id;
+}
+
+/**
+ * 지운 측면 스킨(먹빛·청람·세피아·금갈색·유리)의 창 색을 전투 화면 꾸미기 창으로 옮긴다(2026-10-02).
+ * 꾸밈을 손대지 않은 프로젝트(프리셋·창 칸이 없음)에서만 — 꾸밈을 고른 프로젝트는 그 꾸밈 창이 이미 보이고 있었다.
+ */
+function battleLookWithRetiredSkinWindow(system: { battleUiStyle?: unknown; battleLook?: unknown }): unknown {
+  const lookWindow = retiredSkinLookWindow(system.battleUiStyle);
+  const look = system.battleLook && typeof system.battleLook === "object" ? system.battleLook as Record<string, unknown> : undefined;
+  if (!lookWindow || look?.preset !== undefined || look?.window !== undefined) return system.battleLook;
+  return { ...look, window: lookWindow };
 }
 
 export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<SystemRecords, "startActorIds">): SystemRecords {
@@ -240,17 +262,20 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
       ? { escapeBonusPercent: clampInteger(system.escapeBonusPercent, 0, 100) }
       : {}),
     ...(system.battleCommandCss?.trim() ? { battleCommandCss: system.battleCommandCss } : {}),
-    // 기본 스킨(DEFAULT_BATTLE_SKIN_ID = rm2000)만 저장하지 않는다. 그 밖의 명시적 선택은 반드시
+    // 기본 스킨(DEFAULT_BATTLE_SKIN_ID = retro2003)만 저장하지 않는다. 그 밖의 명시적 선택은 반드시
     // 보존해야 한다 — 기본이 바뀐 뒤에 명시값을 생략하면 왕복 후 다른 스킨으로 바뀌어버린다
-    // (기본이 vxace 였던 시절 실제로 그랬다). 옛 id(rm2003·classic)도 여기서는 손대지 않고
-    // 렌더 시점의 resolveSkinId 가 rm2000 으로 푼다.
-    ...(system.battleUiStyle && system.battleUiStyle !== DEFAULT_BATTLE_SKIN_ID
-      ? { battleUiStyle: system.battleUiStyle }
+    // (기본이 vxace 였던 시절 실제로 그랬다). 지운 정면 스킨(rm2000·classic 등)과 모르는 값은
+    // resolveSkinId 가 기본으로 풀어 여기서 지워진다(2026-10-02).
+    ...(system.battleUiStyle && resolveSkinId(system.battleUiStyle) !== DEFAULT_BATTLE_SKIN_ID
+      ? { battleUiStyle: resolveSkinId(system.battleUiStyle) }
       : {}),
     // 타격감도 같은 계약 — 기본(impact)과 미등록 값은 저장하지 않고 명시 선택만 남긴다.
     ...(isBattleHitFeel(system.battleHitFeel) && system.battleHitFeel !== DEFAULT_BATTLE_HIT_FEEL
       ? { battleHitFeel: system.battleHitFeel }
       : {}),
+    ...(normalizeDisplayFilter(system.displayFilter) ? { displayFilter: normalizeDisplayFilter(system.displayFilter) } : {}),
+    // 전투 화면 꾸미기도 같은 계약 — 프리셋과 같은 칸·미등록 값은 저장하지 않는다(project/battleLook.ts).
+    ...(normalizeBattleLook(battleLookWithRetiredSkinWindow(system)) ? { battleLook: normalizeBattleLook(battleLookWithRetiredSkinWindow(system)) } : {}),
     // ESC 메뉴 스킨도 같은 계약 — 기본(workbench)과 미등록 값은 저장하지 않고 명시 선택만 남긴다.
     ...(isMenuSkinId(system.menuUiStyle) && system.menuUiStyle !== DEFAULT_MENU_SKIN_ID
       ? { menuUiStyle: system.menuUiStyle }
@@ -264,6 +289,10 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
       ? { dialogueSpeed: Math.round(Math.min(DIALOGUE_PROJECT_SPEED_LIMITS.max, Math.max(DIALOGUE_PROJECT_SPEED_LIMITS.min, system.dialogueSpeed)) * 100) / 100 }
       : {}),
     ...(system.dialoguePunctuationPause === false ? { dialoguePunctuationPause: false } : {}),
+    ...(() => {
+      const fullPortrait = normalizeDialogueFullPortraitSettings(system.dialogueFullPortrait);
+      return fullPortrait ? { dialogueFullPortrait: fullPortrait } : {};
+    })(),
     // 기본(actors)은 저장하지 않고, 명시적 monsters 선택만 보존한다.
     ...(system.battleParty === "monsters" ? { battleParty: "monsters" as const } : {}),
     // 기본(rm2k3)은 저장하지 않고, 명시적 gen1 선택만 보존한다(무효값도 rm2k3로 정규화).
@@ -654,7 +683,15 @@ export function normalizeSkillRecord(record: Partial<SkillRecord> & Pick<SkillRe
     ...(Number.isFinite(record.criticalMultiplier) ? { criticalMultiplier: Math.max(1, Math.min(10, record.criticalMultiplier!)) } : {}),
     ...(Number.isFinite(record.cooldownTurns) ? { cooldownTurns: clampInteger(record.cooldownTurns!, 0, 99) } : {}),
     ...(typeof record.fieldCommonEventId === "string" && record.fieldCommonEventId.trim() ? { fieldCommonEventId: record.fieldCommonEventId.trim() } : {}),
+    ...(Number.isFinite(record.hpCostPercent) && record.hpCostPercent! > 0 ? { hpCostPercent: clampInteger(record.hpCostPercent!, 0, 100) } : {}),
+    ...(Number.isFinite(record.drainPercent) && record.drainPercent! > 0 ? { drainPercent: clampInteger(record.drainPercent!, 0, 100) } : {}),
+    ...(Number.isFinite(record.gaugeShift) && record.gaugeShift !== 0 ? { gaugeShift: clampInteger(record.gaugeShift!, -100, 100) } : {}),
+    ...(Number.isFinite(record.chargeTurns) && record.chargeTurns! > 0 ? { chargeTurns: clampInteger(record.chargeTurns!, 1, 3) } : {}),
+    ...(typeof record.summonResourceId === "string" && record.summonResourceId.trim() ? { summonResourceId: record.summonResourceId.trim().slice(0, 96) } : {}),
+    ...(typeof record.retroChoreographyId === "string" && record.retroChoreographyId.trim() ? { retroChoreographyId: record.retroChoreographyId.trim().slice(0, 96) } : {}),
+    ...(isPokemonMoveMotion(record.moveMotion) ? { moveMotion: record.moveMotion } : {}),
     ...(Array.isArray(record.hitSequence) && record.hitSequence.length ? { hitSequence: record.hitSequence.slice(0, 16).map(value => Number.isFinite(value) ? Math.max(0, Math.min(10, value)) : 1) } : {}),
+    ...(normalizeBattleGimmick(record.battleGimmick) ? {battleGimmick:normalizeBattleGimmick(record.battleGimmick)} : {}),
     effect: normalizeSkillEffect(record.effect),
     elementId: typeof record.elementId === "string" ? record.elementId : undefined,
     stateEffects: normalizeStateEffects(record.stateEffects),
@@ -736,6 +773,7 @@ export function normalizeItemRecord(record: Partial<ItemRecord> & Pick<ItemRecor
 
 export function normalizeEquipmentRecord(record: Partial<EquipmentRecord> & Pick<EquipmentRecord, "id" | "name">): EquipmentRecord {
   return {
+    ...(record.battleMotionStyle && CHARACTER_MOTION_STYLES.includes(record.battleMotionStyle) ? {battleMotionStyle:record.battleMotionStyle} : {}),
     id: record.id,
     name: record.name,
     imageResourceId: cleanOptionalId(record.imageResourceId),
@@ -823,11 +861,12 @@ function normalizeBattleCommands(commands: readonly Partial<ClassBattleCommand>[
     kind: normalizeBattleCommandKind(command.kind),
     skillSubsetName: cleanOptionalId(command.skillSubsetName),
     skillId: cleanOptionalId(command.skillId),
+    ...(cleanOptionalId(command.commonEventId) ? { commonEventId: cleanOptionalId(command.commonEventId) } : {}),
   }));
 }
 
 function normalizeBattleCommandKind(kind: ClassBattleCommand["kind"] | undefined): ClassBattleCommand["kind"] {
-  return kind === "skill" || kind === "skillSubset" || kind === "defend" || kind === "guard" || kind === "item" || kind === "capture" || kind === "escape" || kind === "switch" || kind === "event"
+  return kind === "skill" || kind === "skillSubset" || kind === "defend" || kind === "guard" || kind === "item" || kind === "capture" || kind === "escape" || kind === "switch" || kind === "event" || kind === "commonEvent"
     ? kind
     : "attack";
 }

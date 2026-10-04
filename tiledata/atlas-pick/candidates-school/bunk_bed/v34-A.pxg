@@ -1,0 +1,69 @@
+@size 32 48
+@cell 16
+@palette palette.pal
+@mat a vpine 6
+@mat b vpine 1
+@mat c vpine 5
+@mat d vpine 4
+@mat e vpine 2
+@mat f vlinen 6
+@mat g vlinen 5
+@mat h vblue 6
+@mat i vblue 5
+@mat j vlinen 4
+@mat k vblue 4
+@mat l vpine 0
+@mat m vlinen 3
+@mat n vpine 3
+@mat o sakura 4
+@mat p sakura 3
+@mat q sakura 2
+@mblock 0 0
+.aaabbbbbbbbbbbbbbbbbbbbbaaa....
+.cdefffffffgghhhhhhhhhhhhcde....
+.cdefffffffggiiiiiiiiiiiicde....
+.cdefffffffggiiiiiiiiiiiicde....
+.cdefffffffggiiiiiiiiiiiicde....
+.cdejjjjjjjggkkkkkkkkkkkkcde....
+.cdelllllllllllllllllllllcde....
+.cdejjjjjjjjjjjjjjjjjjjjjcde....
+.cdemmmmmmmmmmmmmmmmmmmmmcded.n.
+.cdennnnnnnnnnnnnnnnnnnnncded.n.
+.cdebbbbbbbbbbbbbbbbbbbbbcded.n.
+.cdelllllllllllllllllllllcdeaaa.
+.cdebbbbbbbbbbbbbbbbbbbbbcdeeee.
+.cdefffffffoooooooooooooocded.n.
+.cdegggggggppppppppppppppcded.n.
+.cdegggggggppppppppppppppcded.n.
+.cdegggggggppppppppppppppcdeaaa.
+.cdemmmmmmmqqqqqqqqqqqqqqcdeeee.
+.cdebbbbbbbbbbbbbbbbbbbbbcded.n.
+.cdebbbbbbbbbbbbbbbbbbbbbcded.n.
+.cdeccccccccccccccccccccccded.n.
+.cdeeeeeeeeeeeeeeeeeeeeeecdeaaa.
+.cdeeeeeeeeeeeeeeeeeeeeeecdeeee.
+.cdeeeeeeeeeeeeeeeeeeeeeecded.n.
+.cde.....................cded.n.
+.cde.....................cded.n.
+.cde.....................cdeaaa.
+.cde.....................cdeeee.
+.cde.....................cded.n.
+.cde.....................cded.n.
+.cde.....................cded.n.
+.cde.....................cdeaaa.
+.cde.....................cdeeee.
+.cde.....................cded.n.
+.cde.....................cded.n.
+.cde.....................cded.n.
+.cde.....................cdeaaa.
+.cde.....................cdeeee.
+.cde.....................cded.n.
+.cde.....................cded.n.
+.cde.....................cde....
+.cde.....................cde....
+.cde.....................cde....
+.bbb.....................bbb....
+................................
+................................
+.~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~.
+.------------------------------.

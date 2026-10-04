@@ -1,0 +1,37 @@
+// v5 현재판 herb drying rack (16x32, 패딩 위 0px 포함). 방향 A 는 이 파일을 복사해 다듬는다.
+@size 16 32
+@cell 16
+@palette palette.pal
+@block 0 0
+................
+................
+................
+................
+.AAAAAAAAAAAAAA.
+.BBBBBBBBBBBBBB.
+.CD..........DC.
+.CE.F.EG.G.HHDC.
+.CDEFEGIJIHKHHC.
+.CL.E.LGMG.NNDC.
+.CDOPO..M..HHDC.
+.CDPPP.MMM...DC.
+.CD..........DC.
+.CD..........DC.
+.AAAAAAAAAAAAAA.
+.BBBBBBBBBBBBBB.
+.CD..........DC.
+.CDG.G.HH.E.FDE.
+.CGIJIHKHH.EFEC.
+.CDGMG.NN.L.EDL.
+.CD.M..HH..OPOC.
+.CDMMM.....PPPC.
+.CD..........DC.
+.CD..........DC.
+.AAAAAAAAAAAAAA.
+.BBBBBBBBBBBBBB.
+.CD..........DC.
+.CD..........DC.
+.CD..........DC.
+.CD..........DC.
+.CD..........DC.
+.CD..........DC.

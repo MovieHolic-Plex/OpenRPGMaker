@@ -1,0 +1,43 @@
+// gn_bike_share v34-A 3/4
+@size 48 16
+@cell 16
+@palette ../../palette/modern3.pal
+@layer main
+@mat a conc 0
+@mat b midori 0
+@mat c sumi 0
+@mat d tekko 0
+@mblock 0 0
+................................................
+.........ccccc...........ccccc...........ccccc..
+........cbbbbbc.........cbbbbbc.........cbbbbbc.
+........cbbbbbc.........cbbbbbc.........cbbbbbc.
+........cbbbbbc.........cbbbbbc.........cbbbbbc.
+...cccc.cbbbbbc....cccc.cbbbbbc....cccc.cbbbbbc.
+..cddddccbbbbbc...cddddccbbbbbc...cddddccbbbbbc.
+..cdcdc.cbbbbbc...cdcdc.cbbbbbc...cdcdc.cbbbbbc.
+.ccccdc.cbbcbbc..ccccdc.cbbcbbc..ccccdc.cbbcbbc.
+cccdcccccccdccc.cccdcccccccdccc.cccdcccccccdccc.
+ccdadcdddcdadcc.ccdadcdddcdadcc.ccdadcdddcdadcc.
+cdaaadcccdaaadcccdaaadcccdaaadcccdaaadcccdaaadcc
+ccdadcc.ccdadcc.ccdadcc.ccdadcc.ccdadcc.ccdadcc.
+cccdccc.cccdccc.cccdccc.cccdccc.cccdccc.cccdccc.
+cccccccccccccccccccccccccccccccccccccccccccccccc
+cccccccccccccccccccccccccccccccccccccccccccccccc
+@tblock 0 0
+................................................
+.........00000...........00000...........00000..
+........0444440.........0444440.........0444440.
+........0444440.........0444440.........0444440.
+........0444440.........0444440.........0444440.
+...0000.0333330....0000.0333330....0000.0333330.
+..0444400322210...0444400322210...0444400322210.
+..02030.0322210...02030.0322210...02030.0322210.
+.001030.0321210..001030.0321210..001030.0321210.
+011111000111110.011111000111110.011111000111110.
+011311333113110.011311333113110.011311333113110.
+113431101134311011343110113431101134311011343110
+0113110.0113110.0113110.0113110.0113110.0113110.
+0111110.0111110.0111110.0111110.0111110.0111110.
+000100000001000000010000000100000001000000010000
+111111111111111111111111111111111111111111111111

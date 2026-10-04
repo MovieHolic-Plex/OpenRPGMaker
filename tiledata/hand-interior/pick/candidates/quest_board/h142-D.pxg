@@ -1,0 +1,48 @@
+// D: 나무 게시판에 금장 모서리·중앙 문양, 붉은 핀과 글 줄이 있는 쪽지 여섯 장; 꼭대기 윗면 3행(y=0~2)
+@size 32 16
+@cell 16
+@palette palette.pal
+@mat a wood 2
+@mat b wood 4
+@mat c wood 5
+@mat d wood 6
+@mat e dwood 3
+@mat f dwood 4
+@mat g gold 2
+@mat h gold 4
+@mat i gold 5
+@mat j linen 3
+@mat k linen 5
+@mat l linen 6
+@mat r red 4
+@layer board
+@mblock 0 0
+..aaaaaaaaaaaaaaaaaaaaaaaaaaaa..
+.adihddddddddiiiidddddddddhidba.
+.adhhcccccccihhhiicccccccchhgba.
+.ahgccccccccchhhccccccccccghbba.
+.adceffffffffffffffffffffffebba.
+.adceffffffffffffffffffffffebba.
+.adceffffffffffffffffffffffebba.
+.adceffffffffffffffffffffffebba.
+.adceffffffffffffffffffffffebba.
+.adceffffffffffffffffffffffebba.
+.adceffffffffffffffffffffffebba.
+.adceffffffffffffffffffffffebba.
+.adceffffffffffffffffffffffebba.
+.ahgccccccccccccccccccccccghbba.
+.aghbbbbbbbbbbbbbbbbbbbbbbhgbaa.
+..aaaaaaaaaaaaaaaaaaaaaaaaaaaa..
+@layer notices
+@mblock 4 4
+llrlll..lllrlll..llrllll
+lkkkkl..lkkkkkl..lkkkkkl
+lkjjkl..lkjjjkl..lkjjkkl
+lkkkkl..lkkkkkl..lkkkkkl
+kkkkkj..kkkjjjj..kkkkkkj
+@mblock 5 9
+llrllll..llrlll..llrlll
+lkkkkkl..lkkkkl..lkkkkl
+lkjjjkl..lkjjkl..lkjjkl
+lkkjkkl..lkkkkl..lkkkkl
+kkkkkkj..kkkkkj..kkkkkj

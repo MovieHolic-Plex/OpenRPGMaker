@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/stage_curtain/w3-B.pxg",
+ "id": "stage curtain",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.008
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 13,
+ "v5_colors": 7,
+ "bbox": [
+  0,
+  2,
+  15,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  2,
+  15,
+  31
+ ],
+ "note": "B: 빛을 세게 - 왼쪽 위 무대등 빛으로 왼쪽 주름 마루는 red5·red6 광택, 오른쪽은 한두 단 어둡게 눌러 골이 거의 검붉게, 봉 밑과 아랫단이 어둡고 금 봉 왼쪽이 번쩍",
+ "ok": true
+}

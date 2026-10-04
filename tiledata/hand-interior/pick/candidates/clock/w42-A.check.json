@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/clock/w42-A.pxg",
+ "id": "clock",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.071
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 12,
+ "v5_colors": 13,
+ "bbox": [
+  3,
+  3,
+  12,
+  30
+ ],
+ "v5_bbox": [
+  3,
+  3,
+  12,
+  30
+ ],
+ "note": "괘종시계: w90-A(t=5 f=23) 채택",
+ "ok": true
+}

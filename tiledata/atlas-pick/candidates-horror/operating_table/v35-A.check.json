@@ -1,0 +1,40 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/operating_table/v35-A.pxg",
+ "set": "horror",
+ "id": "operating_table",
+ "hard": [],
+ "warn": [],
+ "std": {
+  "cells": [
+   1,
+   2
+  ],
+  "canvas": [
+   16,
+   32
+  ]
+ },
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.055
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.064
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 13,
+ "bbox": [
+  3,
+  0,
+  12,
+  31
+ ],
+ "note": "v35-A: 3/4 손 도트 16x32 (F14+T18) — 뒤 모서리 선+머리 받침+누런 천 덮개 윗면(가슴께 얼룩)+앞 모서리 하이라이트, 판 앞면, 기둥, 받침. 폭 10 (무영등은 생략)",
+ "ok": true
+}

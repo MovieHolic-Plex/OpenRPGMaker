@@ -88,7 +88,8 @@ export interface ToolDefinition {
   // 이 툴이 노출되는 컨텍스트 모드(§2.2). 레지스트리가 패밀리 단위로 일괄 태깅한다.
   readonly domains?: readonly ToolDomain[];
   // run 앞에서 기다릴 지연 데이터(청크를 따로 받는 참고 자료 등). 비동기 실행 경로(prepareTool)만 부른다.
-  readonly prepare?: (args: Record<string, unknown>) => Promise<void>;
+  // project 는 실행 직전의 프로젝트(읽기 전용) — 맵에 쌓인 원본을 읽어 무엇을 준비할지 정하는 도구(edit_world_terrain)가 쓴다. 없을 수도 있다.
+  readonly prepare?: (args: Record<string, unknown>, project?: Project) => Promise<void>;
   // true 면 실행기의 업로드 타일셋 바꿔치기 검사(toolRunner.rejectUploadedTilesetSwap)를 건너뛴다.
   // 프로젝트를 통째로 되돌리거나 갈아 끼우는 도구(revert_last_edit·reset_project)만 켠다 — 그 도구의 계약이
   // "이전/새 프로젝트 그대로"라 칩셋이 달라지는 것이 정상이고, tilesetId 인자를 받을 수도 없다.

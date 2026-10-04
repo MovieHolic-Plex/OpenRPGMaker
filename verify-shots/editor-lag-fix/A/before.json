@@ -1,0 +1,30 @@
+{
+  "N": 12,
+  "timesMs": [
+    2214,
+    7082,
+    6561,
+    7462,
+    1330,
+    1885,
+    1355,
+    1248,
+    1722,
+    1375,
+    1722,
+    2009
+  ],
+  "median": 1885,
+  "fingerprint": {
+    "revision": 376,
+    "infoSha": "eb45876e54dfd0f601e4781dc81b1208720f69dbd8be80729b6605261726b49c",
+    "exportedTextSha": "eb45876e54dfd0f601e4781dc81b1208720f69dbd8be80729b6605261726b49c",
+    "canonicalSha": "965a566d2951b64a4ce8a8d36c3c4458e6ad25fad299255b89f87b901d9249b5",
+    "exportedLength": 112013409
+  },
+  "mirrorSha": "7d2a3eedab6fde70a073680615b4f001bd51afaf3ec1a22459c0a3241b4c09b5",
+  "rowCounts": {
+    "blobs": 385,
+    "maps": 121
+  }
+}

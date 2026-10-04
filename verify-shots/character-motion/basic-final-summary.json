@@ -1,0 +1,572 @@
+{
+  "clips": 11,
+  "errors": [],
+  "rows": [
+    {
+      "skill": "attack:thief",
+      "completed": true,
+      "poses": [
+        {
+          "at": 14288,
+          "actor": "actor_thief",
+          "pose": "attack_windup",
+          "flip": false
+        },
+        {
+          "at": 14405,
+          "actor": "actor_thief",
+          "pose": "walk_c",
+          "flip": false
+        },
+        {
+          "at": 14463,
+          "actor": "actor_thief",
+          "pose": "attack_strike",
+          "flip": false
+        }
+      ],
+      "cells": [],
+      "problems": []
+    },
+    {
+      "skill": "attack:hero",
+      "completed": true,
+      "poses": [
+        {
+          "at": 15765,
+          "actor": "actor_hero",
+          "pose": "attack_windup",
+          "flip": false
+        },
+        {
+          "at": 15905,
+          "actor": "actor_hero",
+          "pose": "walk_a",
+          "flip": false
+        },
+        {
+          "at": 15914,
+          "actor": "actor_hero",
+          "pose": "walk_c",
+          "flip": false
+        },
+        {
+          "at": 16026,
+          "actor": "actor_hero",
+          "pose": "attack_strike",
+          "flip": false
+        }
+      ],
+      "cells": [],
+      "problems": []
+    },
+    {
+      "skill": "attack:guardian",
+      "completed": true,
+      "poses": [
+        {
+          "at": 17395,
+          "actor": "actor_guardian",
+          "pose": "attack_windup",
+          "flip": false
+        },
+        {
+          "at": 17558,
+          "actor": "actor_guardian",
+          "pose": "walk_a",
+          "flip": false
+        },
+        {
+          "at": 17616,
+          "actor": "actor_guardian",
+          "pose": "walk_c",
+          "flip": false
+        },
+        {
+          "at": 17666,
+          "actor": "actor_guardian",
+          "pose": "attack_strike",
+          "flip": false
+        },
+        {
+          "at": 18014,
+          "actor": "actor_guardian",
+          "pose": "attack",
+          "flip": false
+        },
+        {
+          "at": 18128,
+          "actor": "actor_guardian",
+          "pose": "walk_a",
+          "flip": false
+        },
+        {
+          "at": 18301,
+          "actor": "actor_guardian",
+          "pose": "walk_b",
+          "flip": false
+        },
+        {
+          "at": 18475,
+          "actor": "actor_guardian",
+          "pose": "walk_c",
+          "flip": false
+        },
+        {
+          "at": 18665,
+          "actor": "actor_guardian",
+          "pose": "walk_b",
+          "flip": false
+        },
+        {
+          "at": 18803,
+          "actor": "actor_guardian",
+          "pose": "idle",
+          "flip": false
+        }
+      ],
+      "cells": [],
+      "problems": []
+    },
+    {
+      "skill": "attack:ranger",
+      "completed": true,
+      "poses": [
+        {
+          "at": 11598,
+          "actor": "actor_ranger",
+          "pose": "cast_charge",
+          "flip": false
+        },
+        {
+          "at": 11822,
+          "actor": "actor_ranger",
+          "pose": "cast_raise",
+          "flip": false
+        },
+        {
+          "at": 12047,
+          "actor": "actor_ranger",
+          "pose": "cast_release",
+          "flip": false
+        },
+        {
+          "at": 12360,
+          "actor": "actor_ranger",
+          "pose": "idle",
+          "flip": false
+        }
+      ],
+      "cells": [],
+      "problems": []
+    },
+    {
+      "skill": "attack:valkyrie",
+      "completed": true,
+      "poses": [
+        {
+          "at": 12993,
+          "actor": "actor_valkyrie",
+          "pose": "defend",
+          "flip": false
+        },
+        {
+          "at": 13127,
+          "actor": "actor_valkyrie",
+          "pose": "attack_windup",
+          "flip": false
+        },
+        {
+          "at": 13171,
+          "actor": "actor_valkyrie",
+          "pose": "attack_strike",
+          "flip": false
+        },
+        {
+          "at": 13221,
+          "actor": "actor_valkyrie",
+          "pose": "attack",
+          "flip": false
+        },
+        {
+          "at": 13575,
+          "actor": "actor_valkyrie",
+          "pose": "walk_a",
+          "flip": false
+        },
+        {
+          "at": 13700,
+          "actor": "actor_valkyrie",
+          "pose": "walk_b",
+          "flip": false
+        },
+        {
+          "at": 13826,
+          "actor": "actor_valkyrie",
+          "pose": "walk_c",
+          "flip": false
+        },
+        {
+          "at": 13952,
+          "actor": "actor_valkyrie",
+          "pose": "walk_b",
+          "flip": false
+        },
+        {
+          "at": 14053,
+          "actor": "actor_valkyrie",
+          "pose": "idle",
+          "flip": false
+        }
+      ],
+      "cells": [],
+      "problems": []
+    },
+    {
+      "skill": "attack:monk",
+      "completed": true,
+      "poses": [
+        {
+          "at": 14572,
+          "actor": "actor_monk",
+          "pose": "attack_windup",
+          "flip": false
+        },
+        {
+          "at": 14658,
+          "actor": "actor_monk",
+          "pose": "walk_a",
+          "flip": false
+        },
+        {
+          "at": 14712,
+          "actor": "actor_monk",
+          "pose": "walk_c",
+          "flip": false
+        },
+        {
+          "at": 14805,
+          "actor": "actor_monk",
+          "pose": "attack_strike",
+          "flip": false
+        }
+      ],
+      "cells": [],
+      "problems": []
+    },
+    {
+      "skill": "attack:mage",
+      "completed": true,
+      "poses": [
+        {
+          "at": 11495,
+          "actor": "actor_mage",
+          "pose": "attack_windup",
+          "flip": false
+        },
+        {
+          "at": 11662,
+          "actor": "actor_mage",
+          "pose": "walk_a",
+          "flip": false
+        },
+        {
+          "at": 11694,
+          "actor": "actor_mage",
+          "pose": "walk_c",
+          "flip": false
+        },
+        {
+          "at": 11731,
+          "actor": "actor_mage",
+          "pose": "attack_strike",
+          "flip": false
+        },
+        {
+          "at": 12040,
+          "actor": "actor_mage",
+          "pose": "attack",
+          "flip": false
+        },
+        {
+          "at": 12158,
+          "actor": "actor_mage",
+          "pose": "walk_a",
+          "flip": false
+        },
+        {
+          "at": 12317,
+          "actor": "actor_mage",
+          "pose": "walk_b",
+          "flip": false
+        },
+        {
+          "at": 12449,
+          "actor": "actor_mage",
+          "pose": "walk_c",
+          "flip": false
+        },
+        {
+          "at": 12596,
+          "actor": "actor_mage",
+          "pose": "walk_b",
+          "flip": false
+        },
+        {
+          "at": 12714,
+          "actor": "actor_mage",
+          "pose": "idle",
+          "flip": false
+        }
+      ],
+      "cells": [
+        "idle"
+      ],
+      "problems": []
+    },
+    {
+      "skill": "attack:dog",
+      "completed": true,
+      "poses": [],
+      "cells": [
+        "idle",
+        "windup",
+        "idle",
+        "move",
+        "idle",
+        "move",
+        "idle",
+        "idle_c",
+        "idle",
+        "idle_c",
+        "idle",
+        "move",
+        "idle",
+        "move",
+        "idle",
+        "attack",
+        "idle",
+        "attack",
+        "idle",
+        "recover",
+        "idle",
+        "recover",
+        "idle",
+        "recover",
+        "idle",
+        "recover",
+        "idle",
+        "move",
+        "idle",
+        "move",
+        "idle",
+        "move",
+        "idle",
+        "move",
+        "idle",
+        "move",
+        "idle",
+        "move",
+        "idle",
+        "move",
+        "idle",
+        "move",
+        "idle",
+        "move",
+        "idle",
+        "move",
+        "idle",
+        "move",
+        "idle",
+        "move",
+        "idle",
+        "idle_a",
+        "idle"
+      ],
+      "problems": []
+    },
+    {
+      "skill": "attack:ghost_pal",
+      "completed": true,
+      "poses": [],
+      "cells": [
+        "idle",
+        "windup",
+        "idle",
+        "move",
+        "idle",
+        "idle_c",
+        "idle",
+        "idle_c",
+        "idle",
+        "idle_c",
+        "idle",
+        "move",
+        "idle",
+        "move",
+        "idle",
+        "attack",
+        "idle",
+        "attack",
+        "idle",
+        "recover",
+        "idle",
+        "recover",
+        "idle",
+        "recover",
+        "idle",
+        "recover",
+        "idle",
+        "recover",
+        "idle",
+        "recover",
+        "idle",
+        "recover",
+        "idle",
+        "recover",
+        "idle",
+        "recover",
+        "idle",
+        "recover",
+        "idle",
+        "recover",
+        "idle",
+        "recover",
+        "idle",
+        "recover",
+        "idle",
+        "recover",
+        "idle",
+        "recover",
+        "idle",
+        "idle_b",
+        "idle",
+        "idle_c",
+        "idle",
+        "idle_c",
+        "idle",
+        "idle_a",
+        "idle"
+      ],
+      "problems": []
+    },
+    {
+      "skill": "attack:tank",
+      "completed": true,
+      "poses": [],
+      "cells": [
+        "idle",
+        "windup",
+        "idle",
+        "windup",
+        "idle",
+        "move",
+        "idle",
+        "move",
+        "idle",
+        "move",
+        "idle",
+        "attack",
+        "idle",
+        "attack",
+        "idle",
+        "recover",
+        "idle",
+        "recover",
+        "idle",
+        "recover",
+        "idle",
+        "recover",
+        "idle",
+        "recover",
+        "idle",
+        "recover",
+        "idle",
+        "recover",
+        "idle",
+        "recover",
+        "idle",
+        "recover",
+        "idle",
+        "recover",
+        "idle",
+        "recover",
+        "idle",
+        "recover",
+        "idle",
+        "recover",
+        "idle",
+        "idle_b",
+        "idle",
+        "idle_b",
+        "idle",
+        "idle_b",
+        "idle"
+      ],
+      "problems": []
+    },
+    {
+      "skill": "attack:slime_pal",
+      "completed": true,
+      "poses": [],
+      "cells": [
+        "idle",
+        "windup",
+        "idle",
+        "move",
+        "idle",
+        "recover",
+        "idle",
+        "move",
+        "idle",
+        "move",
+        "idle",
+        "move",
+        "idle",
+        "move",
+        "idle",
+        "attack",
+        "idle",
+        "attack",
+        "idle",
+        "recover",
+        "idle",
+        "recover",
+        "idle",
+        "recover",
+        "idle",
+        "recover",
+        "idle",
+        "recover",
+        "idle",
+        "recover",
+        "idle",
+        "recover",
+        "idle",
+        "recover",
+        "idle",
+        "recover",
+        "idle",
+        "recover",
+        "idle",
+        "recover",
+        "idle",
+        "recover",
+        "idle",
+        "move",
+        "idle",
+        "move",
+        "idle",
+        "move",
+        "idle",
+        "move",
+        "idle",
+        "move",
+        "idle",
+        "recover",
+        "idle"
+      ],
+      "problems": []
+    }
+  ]
+}

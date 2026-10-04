@@ -22,7 +22,6 @@ import { dialogueHost, dialogueUi } from "@/player/playSceneDom";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { store } from "@/project/store";
 import { markBattleEntry } from "@/app/perfMetrics";
-import { giveMonster } from "@/project/monsterCollection";
 import { nextSessionRandom } from "@/project/session";
 import type { MonsterInstance, PlaySession } from "@/project/session";
 import type { Project } from "@/project/types";
@@ -172,20 +171,6 @@ export async function playBattle(
       partyMonsters: monsterPartyMode ? partyMonsters : undefined,
       // Terrain at the player's tile feeds battle backdrop when troop has no preview.
       captureLocation: { mapId: scene.session.currentMapId, x: scene.session.x, y: scene.session.y },
-      onMonsterCaptured: (capture) => {
-        if (!current()) return;
-        giveMonster(project, session, {
-          speciesId: capture.speciesId,
-          level: capture.level,
-          caughtAt: capture.caughtAt,
-          ivs: capture.ivs,
-          currentHp: capture.currentHp,
-          stateIds: capture.stateIds,
-          stateTurns: capture.stateTurns,
-          skillIds: capture.skillIds,
-          skillPp: capture.skillPp,
-        });
-      },
       rng: () => current() ? nextSessionRandom(session, "battle") : 0.5,
       playAudio: (resourceId, loop) => {
         if (!current()) return;
@@ -225,6 +210,11 @@ export async function playBattle(
       // 마운트에서 치르면 커버가 걷히는 순간 한 프레임이 30~50ms 멈춘다(SwiftShader 실측, 준비 뒤 9ms).
       preloadBattleJuiceSamples();
       warmBattleStyles(host, runtime.snapshot());
+      // 겹 배경 네 장도 커버 동안 읽는다. 안 그러면 첫 1~2초 단일 배경이 보이다 바뀐다(「전투 도중 배경이 바뀐다」).
+      if (entrySkin.scenery === "layered") {
+        const backdropResourceId = runtime.snapshot().backdropResourceId;
+        void import("@/player/battleScenery").then(({ preloadBattleScenery }) => preloadBattleScenery(project, backdropResourceId));
+      }
       const cleanup = (): void => {
         signal?.removeEventListener("abort", abort);
         scene.events?.off("shutdown", onShutdown);
@@ -325,7 +315,7 @@ export async function playBattle(
                   exitBattleAudio(project, session, savedAudio);
                 }
                 applyBattleRewardsToSession(session,
-                  { result, canLose: snapshot.canLose, rewards: snapshot.rewards, actors: [...snapshot.actors, ...snapshot.reserveActors], eventState: snapshot.eventState, participatingActorIds: snapshot.participatingActorIds, monsterPartyMode }, project);
+                  { result, canLose: snapshot.canLose, rewards: snapshot.rewards, actors: [...snapshot.actors, ...snapshot.reserveActors], eventState: snapshot.eventState, capturedMonsters: terminalDefeat ? [] : snapshot.capturedMonsters, participatingActorIds: snapshot.participatingActorIds, monsterPartyMode }, project);
                 if (!terminalDefeat && scene.runtimeTimers) {
                   applyBattleTimerWrites({ session, runtimeTimers: scene.runtimeTimers }, snapshot.eventState);
                 }

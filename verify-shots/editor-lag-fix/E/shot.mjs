@@ -1,0 +1,21 @@
+// 팔레트 픽셀 비교용 결정적 촬영: node shot.mjs <label> — 팔레트 루트 요소만 찍는다
+import { chromium } from "playwright";
+const label = process.argv[2];
+const b = await chromium.launch({ headless: true, args: ["--disable-dev-shm-usage"] });
+const page = await b.newPage({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1 });
+await page.addInitScript(() => { localStorage.setItem("oprn:standard-welcome-seen", "1"); localStorage.setItem("oprn:ai-panel-collapsed", "1"); });
+await page.goto("http://127.0.0.1:9838/?freshProject=1", { waitUntil: "domcontentloaded" });
+await page.getByTestId("edit-canvas").waitFor({ timeout: 90000 });
+await page.waitForTimeout(3000);
+await page.evaluate(() => { const s = window.__oprnEditorStore; s.update((d) => { d.maps[d.startMapId].tilesetId = "easyrpg_chipset_combined_town_retro_world"; }); });
+await page.waitForTimeout(5000);
+const dir = "verify-shots/editor-lag-fix/E/px";
+const snap = async (n) => { await page.waitForTimeout(800); await page.mouse.move(5, 5); await page.getByTestId("left-palette-root").screenshot({ path: `${dir}/${label}-${n}.png`, animations: "disabled" }); };
+await snap("default");
+await page.getByTestId("layer-upper").click(); await snap("upper");
+await page.getByTestId("layer-lower").click(); await snap("lower");
+const input = page.getByTestId("tile-search-input"); await input.fill("나무"); await snap("filter"); await input.fill(""); await snap("cleared");
+const cells = page.locator("[data-testid='tile-palette'] .chipset-tile");
+await cells.nth(300).click(); await snap("sel300");
+await cells.nth(700).click(); await snap("sel700");
+await b.close();

@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/firewood_rack/w49-A.pxg",
+ "id": "firewood rack",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.039
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 14,
+ "v5_colors": 17,
+ "bbox": [
+  0,
+  5,
+  15,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  2,
+  15,
+  31
+ ],
+ "note": "발 달린 받침 위 3-2-1 더미를 7px 둥근 마구리 원(밝은 나이테+어두운 껍질)으로 다시 그림, 맨 위에 눕힌 통나무 윗면 띠(밝은 3px), 받침 윗판 윗면+앞가장자리",
+ "ok": true
+}

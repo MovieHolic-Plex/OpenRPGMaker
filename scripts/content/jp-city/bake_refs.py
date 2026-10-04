@@ -1,0 +1,1932 @@
+#!/usr/bin/env python3
+"""jp_city 참고문서(AI-REFERENCE-CONTRACT 8항목) 굽기 — 번들이 소유한다.
+
+  python3 scripts/content/jp-city/bake_refs.py             engine-results.json 을 읽어 문서·그림을 굽는다
+  python3 scripts/content/jp-city/bake_refs.py --dump      먼저 엔진 덤프를 새로 돌린다(약 3분: npx tsx tiledata/jp-city/refs/engine_dump.mts)
+
+입력  src/assets/jpCityTileset.json (칸 번호·그룹·오토타일·키트) · src/assets/jpCityBuildingSpec.json (건물 부품 사전·완성 예제 25)
+      public/assets/jp-city/jp-city-chipset.png (48열 16px 시트) · tiledata/jp-city/{pins,kit-index,bake-report}.json
+      tiledata/jp-city/refs/engine-results.json  ← engine_dump.mts 가 만든 **진짜 도구·엔진 실측**
+        (build_jp_city_building · paint_tiles · fill_region · lay_path · stamp_object · stamp_layer_block 을 실제로 호출한 결과,
+         isPassable · passabilityOf · tileLayerPolicy · autotileEngine 판정)
+출력  src/assets/jpCityReferences.json          TilesetReferenceCategory[] (분류 id 접두 `jp-`, 그림은 `/assets/...` 경로 문자열만 — 바이트 없음)
+      public/assets/jp-city-references/*.png    그림(긴 변 ≤ 820px, ≤128색, 확대는 nearest-neighbor 만)
+      tiledata/jp-city/refs/*.md                같은 쪽의 출처 사본 + check-evidence.json
+문서의 칸 번호·키트 id·좌표·오류 코드는 전부 정의 JSON·엔진 실측에서 읽은 것이다(손으로 쓴 값 금지). 쓰기 전에 문서를 다시 파싱해
+정의에 없는 키트 id·범위 밖 칸 번호·키트 배열 불일치가 하나라도 있으면 실패한다. 그림은 시트에서 직접 합성한다(AI 모형 없음).
+같은 입력이면 같은 바이트(난수·시각 없음).
+"""
+import argparse, collections, hashlib, json, os, re, subprocess, sys
+from PIL import Image, ImageDraw, ImageFont
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+ROOT = os.path.abspath(os.path.join(HERE, '..', '..', '..'))
+T = 16
+PFX = 'jp-'
+IMG_DIR = os.path.join(ROOT, 'public/assets/jp-city-references')
+IMG_URL = '/assets/jp-city-references'
+MD_DIR = os.path.join(ROOT, 'tiledata/jp-city/refs')
+OUT_JSON = os.path.join(ROOT, 'src/assets/jpCityReferences.json')
+ENGINE_JSON = os.path.join(MD_DIR, 'engine-results.json')
+
+ap = argparse.ArgumentParser()
+ap.add_argument('--dump', action='store_true', help='engine_dump.mts 를 먼저 다시 돌린다')
+ARGS = ap.parse_args()
+if ARGS.dump or not os.path.exists(ENGINE_JSON):
+    print('engine_dump.mts 실행(약 3분) …', flush=True)
+    subprocess.run(['npx', '--no-install', 'tsx', 'tiledata/jp-city/refs/engine_dump.mts'], cwd=ROOT, check=True)
+
+D = json.load(open(os.path.join(ROOT, 'src/assets/jpCityTileset.json'), encoding='utf-8'))
+SPEC = json.load(open(os.path.join(ROOT, 'src/assets/jpCityBuildingSpec.json'), encoding='utf-8'))
+PINS = json.load(open(os.path.join(ROOT, 'tiledata/jp-city/pins.json'), encoding='utf-8'))
+REPORT = json.load(open(os.path.join(ROOT, 'tiledata/jp-city/bake-report.json'), encoding='utf-8'))
+EN = json.load(open(ENGINE_JSON, encoding='utf-8'))
+SHEET_PATH = 'public/assets/jp-city/jp-city-chipset.png'
+SHEET = Image.open(os.path.join(ROOT, SHEET_PATH)).convert('RGBA')
+COUNT, TPR, TID, TEX, FAMILY = D['count'], D['tilesPerRow'], D['id'], D['textureKey'], D['family']
+SHEET_PX = SHEET.size
+assert SHEET_PX == (TPR * T, -(-COUNT // TPR) * T), SHEET_PX
+META = D['tileMeta']
+KITS = {k['id']: k for k in D['structureKits']}
+AT = {g['id']: g for g in D['autotileGroups']}
+ST = SPEC['street']
+
+FONT_S = ImageFont.load_default(size=8)
+FONT = ImageFont.load_default(size=9)
+for _p in ('/usr/share/fonts/truetype/nanum/NanumGothic.ttf', '/usr/share/fonts/truetype/nanum/NanumBarunGothic.ttf'):
+    if os.path.exists(_p):
+        FONT_K = ImageFont.truetype(_p, 10); FONT_KS = ImageFont.truetype(_p, 9); break
+else:
+    FONT_K = FONT_KS = FONT
+
+emitted_tiles = set()      # 문서에 적은 모든 칸 번호(검증용)
+emitted_kits = set()
+
+
+def tnum(t):
+    t = int(t)
+    assert -1 <= t < COUNT, t
+    if t >= 0: emitted_tiles.add(t)
+    return t
+
+
+# ====================================================================== 그림 도구
+_CELL = {}
+
+
+def cell(t):
+    if t not in _CELL:
+        x, y = t % TPR * T, t // TPR * T
+        _CELL[t] = SHEET.crop((x, y, x + T, y + T))
+    return _CELL[t]
+
+
+def up(im, k):
+    return im.resize((im.width * k, im.height * k), Image.NEAREST) if k > 1 else im
+
+
+def quant(im):
+    return im.convert('RGB').quantize(colors=128, method=Image.Quantize.MEDIANCUT, dither=Image.Dither.NONE)
+
+
+def checker(w, h, a=(70, 70, 78), b=(58, 58, 66), cell_=8):
+    im = Image.new('RGBA', (w, h), a); d = ImageDraw.Draw(im)
+    for y in range(0, h, cell_):
+        for x in range(0, w, cell_):
+            if (x // cell_ + y // cell_) % 2: d.rectangle([x, y, x + cell_ - 1, y + cell_ - 1], fill=b)
+    return im
+
+
+def text(d, xy, s, fill=(255, 255, 255, 255), font=FONT_K, outline=True):
+    x, y = xy
+    if outline:
+        for dx, dy in ((-1, 0), (1, 0), (0, -1), (0, 1)): d.text((x + dx, y + dy), s, fill=(0, 0, 0, 255), font=font)
+    d.text(xy, s, fill=fill, font=font)
+
+
+def render(layers, W, H, bg=(0, 0, 0, 255)):
+    """layers: {'1'|'2'|'3'|'4': 평평한 칸 번호 배열(행 우선, -1 = 빈 칸)}. 에디터 그림 순서와 같다(1→2→3→4). 칸이 비면 검게 보인다."""
+    im = Image.new('RGBA', (W * T, H * T), bg)
+    for key in ('1', '2', '3', '4'):
+        arr = layers.get(key)
+        if not arr: continue
+        for i, t in enumerate(arr):
+            if t is not None and t >= 0: im.alpha_composite(cell(t), ((i % W) * T, (i // W) * T))
+    return im
+
+
+def mark_cells(im, cells, scale, color=(255, 40, 40, 255), width=2, pad=0):
+    d = ImageDraw.Draw(im)
+    for (x, y) in cells:
+        d.rectangle([x * T * scale + pad, y * T * scale + pad, (x + 1) * T * scale - 1 - pad, (y + 1) * T * scale - 1 - pad], outline=color, width=width)
+    return im
+
+
+def _wrap(d, lab, width):
+    """라벨을 그림 폭에 맞춰 줄바꿈(글자 단위)."""
+    lines, cur = [], ''
+    for ch in lab.replace('→', '->'):
+        if cur and d.textlength(cur + ch, font=FONT_K) > width:
+            lines.append(cur); cur = ch
+        else: cur += ch
+    lines.append(cur)
+    return lines
+
+
+def panels(items, gap=8, head=14, bg=(34, 34, 40, 255)):
+    """items [(라벨, RGBA 이미지)] → 라벨 띠를 위에 단 나란한 그림(라벨은 그림 폭에서 줄바꿈)."""
+    probe = ImageDraw.Draw(Image.new('RGBA', (4, 4)))
+    wr = [_wrap(probe, lab, im.width) for lab, im in items]
+    head = max(head, 12 * max(len(w) for w in wr) + 2)
+    w = sum(i.width for _, i in items) + gap * (len(items) + 1)
+    h = max(i.height for _, i in items) + head + gap * 2
+    out = Image.new('RGBA', (w, h), bg); d = ImageDraw.Draw(out)
+    x = gap
+    for lines, (lab, im) in zip(wr, items):
+        for li, line in enumerate(lines): d.text((x, 1 + 12 * li), line, fill=(255, 255, 255, 255), font=FONT_K)
+        out.alpha_composite(im, (x, head + gap)); x += im.width + gap
+    return out
+
+
+def best_scale(widths, heights, gap=8, side=820, kmax=4):
+    for k in range(kmax, 0, -1):
+        if sum(w * k for w in widths) + gap * (len(widths) + 1) <= side and max(h * k for h in heights) + 14 + gap * 2 <= side: return k
+    return 1
+
+
+def contact_sheet(ids, cols, scale, label=True, bg=(46, 46, 54, 255), pad=3):
+    """칸 번호 목록 → 번호 라벨이 붙은 모음 그림(투명 칸은 체크 무늬)."""
+    cw = T * scale + pad; lh = 10 if label else 0
+    rows = -(-len(ids) // cols)
+    im = Image.new('RGBA', (cols * cw + pad, rows * (T * scale + lh + pad) + pad), bg); d = ImageDraw.Draw(im)
+    for i, t in enumerate(ids):
+        x = pad + (i % cols) * cw; y = pad + (i // cols) * (T * scale + lh + pad)
+        c = up(cell(t), scale); b = checker(c.width, c.height); b.alpha_composite(c); im.alpha_composite(b, (x, y))
+        if label: d.text((x, y + T * scale), str(t), fill=(255, 255, 255, 255), font=FONT_S)
+    return im
+
+
+IMAGES = collections.OrderedDict()      # 이름 → (분류, 기록)
+
+
+def save_img(name, im, caption, cat):
+    """긴 변 820 초과는 만들지 않는다(호출자가 쪼갠다)."""
+    assert max(im.size) <= 820, (name, im.size)
+    os.makedirs(IMG_DIR, exist_ok=True)
+    quant(im).save(os.path.join(IMG_DIR, f'{name}.png'), optimize=True)
+    rec = dict(id=f'{PFX}img-{name}', name=f'{name}.png', caption=caption, dataUrl=f'{IMG_URL}/{name}.png')
+    IMAGES[name] = (cat, rec)
+    return rec['id']
+
+
+# ====================================================================== 글 도구
+def md_table(head, rows):
+    out = ['| ' + ' | '.join(head) + ' |', '|' + '|'.join('---' for _ in head) + '|']
+    out += ['| ' + ' | '.join(str(c) for c in r) + ' |' for r in rows]
+    return '\n'.join(out)
+
+
+def jline(o):
+    return json.dumps(o, ensure_ascii=False, separators=(',', ':'))
+
+
+def jfences(items, maxc=11000, head=None):
+    """목록은 항목마다 한 줄 — 한 펜스가 maxc 글자를 넘으면 새 펜스(페이지가 펜스 경계에서 온전히 끊긴다)."""
+    out, cur, size = [], [], 0
+    for it in items:
+        s = jline(it)
+        if cur and size + len(s) + 2 > maxc:
+            out.append(cur); cur, size = [], 0
+        cur.append(s); size += len(s) + 2
+    if cur: out.append(cur)
+    return '\n\n'.join('```json\n[\n' + ',\n'.join(c) + '\n]\n```' for c in out)
+
+
+def flat_rows(rows, w=None):
+    """2차원 → 줄마다 `y=NN: 번호 번호 …`(-1 은 '.')."""
+    return '\n'.join(f'y={y:02d}: ' + ' '.join('.' if v < 0 else str(tnum(v)) for v in r) for y, r in enumerate(rows))
+
+
+def to_rows(flat, W):
+    return [flat[i:i + W] for i in range(0, len(flat), W)]
+
+
+def runs_of(ids):
+    ids = sorted(ids); out = []; s = p = None
+    for i in ids:
+        if s is None: s = p = i
+        elif i == p + 1: p = i
+        else: out.append((s, p)); s = p = i
+    if s is not None: out.append((s, p))
+    return out
+
+
+def fmt_runs(runs, limit=14):
+    parts = [f'{a}' if a == b else f'{a}~{b}' for a, b in runs]
+    if len(parts) > limit: return ', '.join(parts[:limit]) + f' … (총 {len(parts)}구간)'
+    return ', '.join(parts)
+
+
+HEAD = (f'tilesetId `{TID}` · 그림 `{SHEET_PATH}`(텍스처 `{TEX}`, **{COUNT}칸**, 16px 칸, 시트 {SHEET_PX[0]}×{SHEET_PX[1]}px, 한 줄 **{TPR}칸** — 번호 n 의 칸은 '
+        f'열 n%{TPR}, 행 n÷{TPR}(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `{FAMILY}` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.')
+CATS = collections.OrderedDict()
+MD_FILES = []
+
+
+def new_cat(cid, name, desc):
+    CATS[f'{PFX}{cid}'] = dict(id=f'{PFX}{cid}', name=name, description=desc, documents=[])
+    return f'{PFX}{cid}'
+
+
+def add_doc(cat, did, name, md):
+    CATS[cat]['documents'].append(dict(id=f'{PFX}{did}', name=name, markdown=md))
+    MD_FILES.append((f'{did}.md', md))
+
+
+def label_of(t):
+    return META[t].get('label') or ''
+
+
+def kit_rows(k, key):
+    return [[tnum(t) for t in r[key]] for r in k['rows']]
+
+
+def codes_str(rows):
+    return rows
+
+
+def tool_json(obj):
+    return '```json\n' + json.dumps(obj, ensure_ascii=False, separators=(', ', ': ')) + '\n```'
+
+
+# ====================================================================== 데이터 파생(전부 정의 JSON 에서)
+AUD = EN['layerAudit']
+CODES = AUD['codes']          # 칸 번호 → 'h w d' 세 글자: 홈(l/u/b) · 걷기(1/0) · 그림 순서(a 항상 위 / b 캐릭터 아래 / y 캐릭터와 y정렬)
+
+
+def code_text(t):
+    c = CODES[t]
+    if not c: return '(빈 칸·미사용)'
+    home = {'l': '아래층(1층)', 'u': '위층(3층)', 'b': '양쪽'}[c[0]]
+    walk = '걸음' if c[1] == '1' else '막힘'
+    depth = {'a': '항상 캐릭터 위', 'b': '캐릭터 아래', 'y': '캐릭터와 y 정렬'}[c[2]]
+    return f'{home}·{walk}·{depth}'
+
+
+GROUP_FAMILY = {}
+for _g in D['tileGroups']:
+    _p = _g['id'].split(':')
+    for _t in _g['tileIds']:
+        GROUP_FAMILY.setdefault(_t, _p[1] if _p[1] in ('band', 'deco', 'prop', 'street') else 'block')
+PIN_BLOCK = collections.defaultdict(list)
+for _k, _v in PINS['cells'].items():
+    PIN_BLOCK[_k.split('/')[0]].append(_v)
+REGION = {}
+for _t in range(COUNT):
+    _l = label_of(_t)
+    if _l.startswith('빈 칸'): REGION[_t] = 'people'
+    elif _l.startswith('미사용'): REGION[_t] = 'unused'
+    elif _t in GROUP_FAMILY and GROUP_FAMILY[_t] != 'block': REGION[_t] = GROUP_FAMILY[_t]
+    else: REGION[_t] = '?'
+for _t in PIN_BLOCK['jp16c']: REGION[_t] = 'composite'
+for _t in range(3133, 3137): REGION[_t] = 'pcvariant'
+for _b, _name in (('autotiles_ground', 'at8'), ('autotiles_lines', 'at4'), ('roads', 'roadblock')):
+    for _t in PIN_BLOCK[_b]: REGION[_t] = _name
+assert '?' not in set(REGION.values()), [t for t in REGION if REGION[t] == '?'][:10]
+RUNS = {r: runs_of([t for t in range(COUNT) if REGION[t] == r]) for r in set(REGION.values())}
+NCELL = {r: sum(b - a + 1 for a, b in RUNS[r]) for r in RUNS}
+for _r in ('people', 'unused'): assert NCELL[_r] == (155 if _r == 'people' else 110), (_r, NCELL[_r])
+
+N_KITS = collections.Counter(k.split('-')[1] for k in KITS)      # recipe/road/door/prop/fumikiri/underpass/footbridge
+ROAD_KITS = [k for k in KITS if k.startswith(('jp-road-', 'jp-fumikiri', 'jp-underpass', 'jp-footbridge'))]
+RECIPES = [k for k in KITS if k.startswith('jp-recipe-')]
+DOORS = [k for k in KITS if k.startswith('jp-door-')]
+PROPS = [k for k in KITS if k.startswith('jp-prop-')]
+assert (len(ROAD_KITS), len(RECIPES), len(DOORS), len(PROPS)) == (39, 25, 9, 142), (len(ROAD_KITS), len(RECIPES), len(DOORS), len(PROPS))
+assert len(AT) == 17 and len(SPEC['examples']) == 25 and len(SPEC['decos']) == 73 and len(SPEC['bands']) == 60
+
+
+# ====================================================================== 분류 1 — 읽는 순서·시트 지도
+C_START = new_cat('start', '일본 도시 · 읽는 순서·시트 지도',
+                  'jp_city(일본 상가 거리 손 도트 번들 칩셋)를 처음 깔 때 읽는 입구: 이 타일셋이 무엇이고 무엇이 없는지·읽는 순서·층과 통행(엔진 판정)·실행 순서·도구 지도·칸 번호 영역 지도·거리 칸 사전·그룹 사전.')
+
+
+def doc_order():
+    A = EN['atMatrix']
+    return f'''# 일본 도시 (jp_city) — 읽는 순서 · 층과 통행 · 실행 순서
+
+{HEAD}
+
+modern3 팔레트(154색) 손 도트로 그린 **일본 상가 거리** 칩셋이다. 건물 한 채는 낱칸이 아니라 **띠 부품 조립**(지붕 + 층 N + 1층 띠, `build_jp_city_building`)이고,
+땅은 **오토타일 {len(AT)}세트**, 도로·교차로·건널목은 **키트 {len(ROAD_KITS)}종**, 완성 상가 건물은 **레시피 키트 {len(RECIPES)}종**(문 {len(DOORS)}종), 거리 소품은 **키트 {len(PROPS)}종**이다
+(구조 키트 총 {len(KITS)}종, 타일 그룹 {len(D['tileGroups'])}개). 낱칸으로 건물·소품을 칠하지 않는다 — 칸 번호는 같은 그림이 여러 키트에 공유되어 낱칸만 봐서는 무엇인지 알 수 없다.
+
+## 이 타일셋에 없는 것 (쓰지 말 것)
+- **사람(행인)**: 없다. 851~1005({NCELL['people']}칸)은 행인이 있던 자리의 **빈 칸**(번호만 유지, 통행 막힘)이다 — 칠하지 않는다. 행인·NPC 는 이벤트의 캐릭터 그래픽(Actor1 등)으로 둔다.
+- **움직이는 칸**: 없다(`animationStrips` {len(D['animationStrips'])}개). 연못·수로 물도 정지 그림이다.
+- **실내**: 없다. 거리와 건물 외관만이다. 실내는 다른 칩셋의 실내 맵으로 만든다.
+- **止まれ(정지) 글자**: 역삼각 표지(`jp-road-sign-tomare`, 글자 없음)와 별개로 노면 글자 키트 `jp-road-mark-tomare-n/e/s/w`(JIS 16×16 글리프, 운전자가 읽는 방향 4가지)가 있다. 위에서 보는 지도에서는 동·서·남행은 글자가 돌아가 있어 읽기 어렵다 — 북행(글자가 바로 선다)을 우선 쓴다.
+- **후속 추가 자리**: 주택가·역·공원·신사 구역 키트와 그 조립 지침은 그림이 들어온 뒤 이 용도에 덧붙인다(지금은 없다). 지금 있는 것은 소품 사전의 개별 소품뿐이다.
+- 다른 칩셋(버들항·현대 도시·조선·EasyRPG)의 칸 번호를 이 맵에 섞지 않는다. 같은 번호가 전혀 다른 그림이다.
+
+## 읽는 순서
+1. 이 문서 → 2. `jp-sheet-map`(칸 번호 영역 지도 + 거리 칸 사전) · `jp-dict-groups`(그룹 사전) →
+3. 용도 「오토타일」(17세트: 사용법 `jp-at-usage` + 세트별 문서) → 4. 용도 「도로·교차로 키트」 →
+5. 용도 「건물 조립 도구」(`jp-bld-tool` → 부품 사전 → 완성 예제 25) → 6. 용도 「상가 키트·문·소품」 → 7. 용도 「정상/오류·자동 검사」.
+이 문서를 건너뛰고 칸 번호부터 쓰면 안 된다. 같은 그림의 통행이 맥락(건물 아래 두 줄·문·소품 윗줄)마다 다르다(복제 칸 `jp16/<번호>@<종류>` 가 시트 끝에 있다).
+
+## 층과 통행 (엔진 판정 — 칸 {AUD['checked']}개를 엔진 함수로 대조: `src/editor/tileLayerPolicy.ts` · `src/project/collision.ts` · `src/player/characterDepth.ts`)
+| 층 | 맵 칸 | 이 칩셋에서 싣는 것 | 그림 순서 |
+|---|---|---|---|
+| 1층 | `lowerTiles`(빈칸 -1 은 검게 보인다) | 불투명 땅: 보도·도로·잔디·자갈·판석·물·선로·주차장 | 맨 아래 |
+| 2층 | `lowerOverlayTiles`(선택) | **투명 덧그림**: 중앙선·차선 점선·횡단보도·점자블록(오토타일), 도로 표시 | 땅 위, 캐릭터 아래 |
+| 3층 | `upperTiles` | 건물·소품·담·생울타리·철망·가드레일, 도로 키트의 표시·화살표 칸 | 막힘 칸은 캐릭터와 y 정렬, ★ 칸은 항상 캐릭터 위 |
+| 4층 | `upperOverlayTiles`(선택) | 3층 칸 위에 또 얹는 부착물(건물 띠 + 부착물 한 장까지 — 건물 조립 도구가 쓴다) | 3층 위 |
+
+칸 하나의 판정(엔진 실측, 칸 수):
+{md_table(['홈 레이어(붓)', '걷기', '그림 순서', '칸 수', '무엇'], [
+    ['위층', '걸음 ★', '항상 캐릭터 위', AUD['kindCount']['star|prio=upper|home=upper|depth=above'], '건물 윗층·처마·옥상·소품 윗부분'],
+    ['위층', '막힘', '캐릭터와 y 정렬', AUD['kindCount']['solid|prio=upper|home=upper|depth=ysort'], '건물 아래 두 줄·문·소품 밑동·담·가드레일'],
+    ['아래층', '걸음', '캐릭터 아래', AUD['kindCount']['passable|prio=lower|home=lower|depth=below'], '불투명 땅(보도·도로·잔디 …)'],
+    ['아래층', '막힘', '캐릭터와 y 정렬', AUD['kindCount']['solid|prio=lower|home=lower|depth=ysort'], '막힌 땅(연못·수로 물)'],
+    ['위층', '걸음', '캐릭터 아래', AUD['kindCount']['passable|prio=lower|home=upper|depth=below'], '**투명 덧그림**(중앙선·표시·점자블록·소품 아랫단)'],
+    ['위층', '걸음 ★(계단)', '캐릭터 아래', AUD['kindCount']['star|prio=upper|home=upper|depth=below'], '돌계단·계단 칸(걸어 오르내리는 계단은 엔진이 아래로 그린다)'],
+])}
+- 통행: 맨 위 층(4→3→2)부터 내려가며 빈칸과 ★ 를 건너뛰고 **처음 만난 칸의 통행**이 그 칸을 정한다. 없으면 1층이 정한다. 1층이 비면 막힘.
+- **투명하다고 위층에 두는 것이 아니다**(투명 여부·홈 레이어·통행·그림 순서는 별개 정보): 투명 오버레이(중앙선 등)는 홈이 위층이지만 오토타일 모양 재계산은 **2층**에서 된다(`jp-at-usage` 실측). 건물 몸채는 불투명이어도 위층 칸이다.
+- 칸 통행의 정본은 엔진이다. 이 표는 `tiledata/jp-city/refs/engine_dump.mts` 가 엔진 함수를 직접 불러 센 값이다.
+
+## 실행 순서 (한 장면을 만들 때)
+1. **땅**: 보도·도로·잔디·물은 오토타일로 칠한다(`fill_region`/`lay_path`/`paint_tiles`, 용도 「오토타일」). 선로·중앙선 같은 선형은 `paint_tiles` 의 line.
+2. **도로 키트**: 교차로·T자·굽은 길·건널목은 키트를 `stamp_object` 로 찍는다(용도 「도로·교차로 키트」). 키트는 서로 이어 붙이고, 오토타일과는 이음새가 닫힌다(한계).
+3. **건물**: 문 앞 바닥(보도)을 **먼저** 깔고, **뒷줄 건물을 앞줄보다 먼저** `build_jp_city_building` 으로 짓는다(용도 「건물 조립 도구」). 완성 레시피를 그대로 찍으려면 `stamp_object`.
+4. **소품**: 가로등·자판기·나무·차량은 키트로 찍는다. 문 앞 접근칸(문 바로 아래 한 줄)을 막지 않는다(용도 「상가 키트·문·소품」).
+5. **검사**: 오류 코드·좌표 표(용도 「정상/오류·자동 검사」)로 맞춘다. 이벤트 실행(문 이동)·미적 품질은 검사 범위 밖이다.
+
+## 도구 지도 (실제 호출로 확인한 것만)
+{md_table(['도구', '이 타일셋에서', '확인한 사실'], [
+    ['`paint_tiles`', '오토타일 낱칸 칠하기(rect/line/cells)', '`layer` 는 문자열 "1"~"4"(또는 lower/upper). 17세트 전부 칠한 뒤 이웃에 맞춰 자동 재성형(검사 오류 0). 투명 덧그림 칸을 "1" 로 요청하면 3층으로 **돌려 놓고 재성형하지 않는다**'],
+    ['`fill_region`', '면 채우기: 보도 연석·생활도로·잔디·자갈 참배길·판석 광장·연못·수로', 'material = 그룹 이름(한국어). 블록담·생울타리·철망 울타리·가드레일은 「면 채우기 재료가 아님」으로 거부'],
+    ['`lay_path`', '경유점을 잇는 길(8방 오토타일 7종만)', '선형 4방 10세트는 `path-needs-autotile` 로 거부'],
+    ['`stamp_object`', '키트 찍기', 'objectId = `kit:jp_city/<키트 id>`, (x,y) = 키트 **왼쪽 위** 칸. -1 칸은 맵을 건드리지 않는다'],
+    ['`stamp_layer_block`', '층별 배열을 그대로 찍기', '1·2층 오토타일 칸은 기본 재성형(`reshape:false` 면 번호 그대로). **3층 오토타일(담·울타리)은 재성형 안 됨**'],
+    ['`build_jp_city_building`', '건물 한 채(L자 포함) 조립', '오류가 하나라도 있으면 맵을 한 칸도 바꾸지 않는다. jp_city 맵에서만 동작'],
+    ['`list_jp_city_building_parts`', '부품 사전·완성 예제 조회', '`example` 로 예제 입력을 받는다(x,y 만 더해 그대로 짓는다)'],
+    ['`list_tileset_references` / `read_tileset_reference`', '이 문서 읽기', '용도의 MD 모든 페이지·이미지를 읽은 뒤 배치한다'],
+])}
+'''
+
+
+add_doc(C_START, 'order', '일본 도시 · 읽는 순서·층과 통행·실행 순서', doc_order())
+
+
+def doc_sheet_map():
+    reg = [
+        ('band', '건물 층 띠', '건물 한 채를 이루는 띠 부품 칸(왼쪽 끝 · 몸통 변형 · 오른쪽 끝) 60종. **낱칸으로 칠하지 말고 `build_jp_city_building`**'),
+        ('deco', '부착물', '간판·문·실외기·차양·창가림·비상계단 등 73종의 칸. 문(`door.*`)은 건물 1층 위에 얹는다'),
+        ('street', '거리 바닥', '보도·도로·횡단보도·주차장·잔디·판석·선로·물 등 거리 칸 43칸(`jp:street:*`). 아래 사전'),
+        ('unused', '미사용 원본 칸', '원본 번호만 지킨다(키트·그룹에 안 씀). 쓰지 않는다'),
+        ('people', '행인 자리(빈 칸)', 'Actor1 행인이 있던 자리. 투명 빈 칸 · 막힘. **쓰지 않는다**'),
+        ('prop', '소품 칸', '소품 키트 142종의 재료 칸(가로등·자판기·나무·차량·열차·신사 문·계단 …). **키트로 찍는다**'),
+        ('composite', '겹쳐 구운 건물 칸', '건물 레시피 키트 안에서 문·간판을 건물 칸과 한 칸에 구워 합친 칸. **레시피 키트 안에서만**'),
+        ('pcvariant', '통행 변형 복제 칸', '같은 그림을 다른 통행으로 쓰는 복제 칸(`jp16/<번호>@<종류>`) 4칸'),
+        ('at8', '지면 8방 오토타일', '7세트 × 49칸 — 용도 「오토타일」'),
+        ('at4', '선형 4방 오토타일', '10세트(블록담·생울타리·철망·가드레일·선로·중앙선·점선·횡단보도 둘·점자블록) — 용도 「오토타일」'),
+        ('roadblock', '도로 키트 블록', '도로·교차로·건널목·지하도·육교·표지 키트의 재료 칸 112칸(오토타일 칸을 화소 그대로 복사한 칸 포함) — 용도 「도로·교차로 키트」'),
+    ]
+    rows = []
+    for key, name, desc in reg:
+        rows.append([name, fmt_runs(RUNS[key]), NCELL[key], desc])
+    tot = sum(NCELL.values()); assert tot == COUNT, (tot, COUNT)
+    street = [[n, ST[n], label_of(ST[n]), code_text(ST[n])] for n in ST]
+    pc_note = md_table(['칸 종류(pc)', '층(priority)', '통행', '홈 레이어', '쓰임'], [
+        ['floor', '아래', '걸음', '아래', '불투명 땅(보도·도로·잔디 …)'], ['solidfloor', '아래', '막힘', '아래', '불투명인데 막힌 땅(물)'],
+        ['flat', '아래', '걸음', '위(덧그림)', '투명 바닥 표시·소품 아랫단(캐릭터 밑)'], ['solid', '위', '막힘', '위', '건물 아래 두 줄·문·소품 밑동·담·가드레일'],
+        ['star', '위', '걸음 ★', '위', '건물 윗층·처마·옥상·소품 윗부분(사람 위에 그려짐)'], ['blank', '아래', '막힘', '아래', '빈 칸(행인 자리)']])
+    return f'''# 일본 도시 — 칸 번호 영역 지도 · 거리 칸 사전
+
+{HEAD}
+
+## 번호 → 칸 위치 (0 기준)
+`열 = n % {TPR}`, `행 = n ÷ {TPR}`(내림), 픽셀 `(열×16, 행×16)`. 예: 번호 {ST['sw']}(보도 포석) → 열 {ST['sw'] % TPR}, 행 {ST['sw'] // TPR}, 픽셀 ({ST['sw'] % TPR * T}, {ST['sw'] // TPR * T}).
+시트는 {COUNT}칸 = {COUNT // TPR}줄 × {TPR}칸(높이 {SHEET_PX[1]}px ≤ 4096). 칸 번호는 **덧붙이기 전용**이다 — 다시 구워도 앞 번호는 그대로이고 새 칸은 끝에 붙는다.
+
+## 영역 지도 (번호 구간은 정의 JSON 에서 센 값)
+{md_table(['영역', '번호 구간', '칸 수', '내용·쓰는 법'], rows)}
+합계 {tot}칸 = 시트 칸 수 {COUNT} (겹침·빠짐 없음).
+
+## 칸의 통행 종류(pc)
+{pc_note}
+한 칸 번호는 통행이 하나뿐이다. 같은 그림이 맥락마다 다른 통행을 요구하면 복제 칸을 시트 끝에 덧붙였다(원본 번호는 안 움직인다).
+
+## 거리 칸 사전 (건물 조립·도구가 쓰는 이름 → 칸 번호)
+`jp_city` 의 거리 바닥 칸 이름이다(건물 조립 도구의 `yard`·문 앞 바닥, 완성 예제의 보도). 판정은 엔진 실측이다.
+{md_table(['이름', '칸 번호', '라벨', '엔진 판정(홈·통행·그림 순서)'], street)}
+- 같은 번호를 여러 이름이 가리킬 수 있다(`road_c`·`lane_c` = {ST['road_c']} 등) — 이름은 쓰임새 구분이고 그림은 같다.
+- 보도 `sw` = {ST['sw']}, 도로 `road_c` = {ST['road_c']}, 잔디 `lawn` = {ST['lawn']}, 자갈 `gravel` = {ST['gravel']}, 물 `water` = {ST['water']}(막힘).
+'''
+
+
+add_doc(C_START, 'sheet-map', '일본 도시 · 칸 번호 영역 지도·거리 칸 사전', doc_sheet_map())
+
+
+def doc_dict_groups():
+    items = []
+    for g in D['tileGroups']:
+        t = g['tileIds']
+        for x in t: tnum(x)
+        items.append({'id': g['id'], 'name': g['name'], 'role': g['role'], 'layer': g['defaultLayer'], 'n': len(t), 'from': min(t), 'to': max(t)})
+    by = collections.Counter(g['role'] for g in D['tileGroups'])
+    return f'''# 일본 도시 — 타일 그룹 사전 ({len(items)}개)
+
+{HEAD}
+
+그룹은 「같은 뜻의 칸 묶음」이다(`fill_region`·`lay_path` 의 material 은 그룹 **이름**으로 찾는다 — id 를 넣지 않는다). 항목 = `id`·한국어 이름·역할(role)·기본 층(layer: 멤버 칸의 엔진 홈에서 유도 — 전부 위 `upper`, 전부 아래 `lower`, 섞이면 `mixed` 로 칸마다 엔진이 판정)·칸 수(n)·번호 최소~최대(`from`~`to`, 구간 사이에 다른 칸이 끼어 있을 수 있다).
+역할별 개수: {', '.join(f'{k} {v}' for k, v in sorted(by.items()))}.
+id 머리 `jp:band:` = 건물 층 띠, `jp:deco:` = 부착물, `jp:street:` = 거리 바닥, `jp:prop:` = 소품 칸, 그 밖(`jp:sidewalk-curb` 등) = 오토타일·도로 키트 칸.
+정확한 칸 목록은 정의 JSON(`src/assets/jpCityTileset.json` 의 `tileGroups[].tileIds`)이 정본이고, 건물 띠·부착물의 **칸 배열**은 용도 「건물 조립 도구」의 부품 사전에 전부 있다.
+
+{jfences(items)}
+'''
+
+
+add_doc(C_START, 'dict-groups', '일본 도시 · 타일 그룹 사전', doc_dict_groups())
+
+
+def img_start():
+    sheet_small = SHEET.copy()
+    bg = checker(*sheet_small.size); bg.alpha_composite(sheet_small)
+    s = 820 / bg.height
+    ov = bg.resize((int(bg.width * s), 820), Image.LANCZOS)
+    save_img('sheet-overview', ov, f'시트 전체 개요({SHEET_PX[0]}×{SHEET_PX[1]}px 를 820px 높이로 줄인 것 — **원본 해상도 아님**, 투명 칸은 체크 무늬). 영역 지도는 `jp-sheet-map`.', C_START)
+    street_ids = list(dict.fromkeys(ST.values()))
+    sh = contact_sheet(street_ids, 12, 3)
+    save_img('sheet-street', sh, f'거리 칸 모음(번호 = 시트 칸 번호, 원본 ×3, 중복 번호 제거 {len(street_ids)}칸). `jp-sheet-map` 의 거리 칸 사전과 같은 번호.', C_START)
+    strips = []
+    for key, name in (('band', '건물 층 띠'), ('deco', '부착물'), ('prop', '소품'), ('composite', '겹쳐 구운 건물 칸'), ('at8', '지면 8방 오토타일'), ('at4', '선형 4방 오토타일'), ('roadblock', '도로 키트 블록')):
+        first = [t for t in range(COUNT) if REGION[t] == key][:24]
+        strips.append((f'{name} — 번호 {first[0]}~ (처음 24칸)', contact_sheet(first, 12, 2)))
+    h = sum(i.height for _, i in strips) + 14 * len(strips) + 8
+    im = Image.new('RGBA', (max(i.width for _, i in strips) + 8, h), (34, 34, 40, 255)); d = ImageDraw.Draw(im); y = 4
+    for lab, i in strips:
+        d.text((4, y), lab, fill=(255, 255, 255, 255), font=FONT_K); im.alpha_composite(i, (4, y + 13)); y += i.height + 14
+    save_img('sheet-regions', im, '영역별 대표 칸(각 영역의 처음 24칸, 원본 ×2, 번호 라벨). 영역 구간은 `jp-sheet-map`.', C_START)
+
+
+img_start()
+
+
+# ====================================================================== 분류 2 — 오토타일 17세트
+C_AT = new_cat('autotile', '일본 도시 · 오토타일 17세트',
+               '지면 8방 7종(보도 연석·생활도로·잔디·자갈 참배길·판석 광장·연못·수로)과 선형 4방 10종(블록담·생울타리·철망·가드레일·선로·중앙선·차선 점선·횡단보도 둘·점자블록): 세트마다 칸 번호 사전·이웃 마스크→칸 규칙·쓰는 도구와 층·입력→전체 배열→그림·정상/오류 그림과 자동 좌표 검증.')
+AT_DEMO = {a['id']: a for a in EN['autotiles']}
+AT_MAT = {m['id']: m for m in EN['atMatrix']}
+LAYER_NAME = {1: '1층(lowerTiles)', 2: '2층(lowerOverlayTiles)', 3: '3층(upperTiles)'}
+LAYER_ARG = {1: '"1"', 2: '"2"', 3: '"3"'}
+AT_INFO = {
+    'jp-sidewalk-curb': ('아스팔트 도로(`road_c` 칸)', '보도 한 덩이의 둘레에 연석. 높은 지형이라 **남쪽 변에 앞면**(3/4 시점). 안쪽 모서리는 연석 모서리 사선 접합.'),
+    'jp-lane-road': ('집 앞 콘크리트(`sw` 칸)', '보도 없는 생활도로 아스팔트. 가장자리에 1px 간격의 흰 외측선.'),
+    'jp-lawn-dirt': ('맨흙(`gravel` 칸)', '잔디 덩이. 바깥 = 맨흙.'),
+    'jp-gravel-lawn': ('잔디(`lawn` 칸)', '자갈 참배길(신사 길 느낌). 바깥 = 잔디.'),
+    'jp-plaza-pave': ('잔디(`lawn` 칸)', '판석 광장. 높은 지형이라 **남쪽 변에 앞면**.'),
+    'jp-water-pond': ('잔디(`lawn` 칸)', '연못 물(막힘). 낮은 지형이라 **북쪽 변에 앞면**(호안). 정지 그림.'),
+    'jp-water-canal': ('콘크리트 보도(`sw` 칸)', '수로 물(막힘). 낮은 지형이라 북쪽 변에 앞면.'),
+    'jp-wall-block': ('(위층 덧그림 — 아래는 보도 `sw`)', '블록담. 위층·막힘. 담 칸은 한 칸 안(윗면 + 앞면)에 그려 사람이 담 남쪽 칸에 서면 머리 윗 8px 가 담 앞면에 가려진다.'),
+    'jp-hedge': ('(위층 덧그림 — 아래는 잔디 `lawn`)', '생울타리. 위층·막힘.'),
+    'jp-fence-mesh': ('(위층 덧그림 — 아래는 보도 `sw`)', '철망 울타리. 위층·막힘.'),
+    'jp-guardrail': ('(위층 덧그림 — 아래는 보도 `sw`)', '가드레일. 위층·막힘(투명이라 solid 위층 칸).'),
+    'jp-rail-track': ('자갈(`gravel` 칸)', '선로. **불투명 1층 땅**(걸을 수 있음). T·십자는 분기기 없이 평면 교차로 그렸다.'),
+    'jp-lane-center': ('(2층 투명 덧그림 — 아래는 도로 `road_c`)', '중앙선(노란 이중선). 투명·걸을 수 있음·캐릭터 밑.'),
+    'jp-lane-dash': ('(2층 투명 덧그림 — 아래는 도로 `road_c`)', '차선 경계 점선. 투명·걸을 수 있음.'),
+    'jp-crosswalk-ew': ('(2층 투명 덧그림 — 아래는 도로 `road_c`)', '횡단보도(동서로 건너는 줄). 양 끝·몸통·외딴 4칸은 그림이 같다(줄 간격이 칸 주기라 키만 4종).'),
+    'jp-crosswalk-ns': ('(2층 투명 덧그림 — 아래는 도로 `road_c`)', '횡단보도(남북으로 건너는 줄). 키 4종.'),
+    'jp-tactile': ('(2층 투명 덧그림 — 아래는 보도 `sw`)', '점자블록 선. 투명·걸을 수 있음.'),
+}
+BIT8 = [('N', 1), ('E', 2), ('S', 4), ('W', 8), ('NE', 16), ('SE', 32), ('SW', 64), ('NW', 128)]
+
+
+def at_range(g):
+    m = g['memberTileIds']; return min(m), max(m)
+
+
+def mask_text(m, nbr):
+    names = [n for n, b in BIT8 if m & b and (nbr == 8 or b < 16)]
+    return '+'.join(names) if names else '(이웃 없음)'
+
+
+def suffix_label(g, t):
+    l = label_of(t); p = g['name'] + ' · '
+    return l[len(p):] if l.startswith(p) else l
+
+
+def canon8(m):
+    c = m & 15
+    for adj, diag in ((3, 16), (6, 32), (12, 64), (9, 128)):
+        if m & adj == adj and m & diag: c |= diag
+    return c
+
+
+def at_dict_items(g):
+    nbr = g.get('neighborhood', 4)
+    vm = g['variantMap']
+    keys = sorted({canon8(m) for m in range(256)}) if nbr == 8 else sorted(range(16))
+    for k in keys: assert str(k) in vm, (g['id'], k)
+    if nbr == 8:
+        for m in range(256): assert vm[str(m)] == vm[str(canon8(m))], (g['id'], m)
+    return [{'mask': k, 'nbrs': mask_text(k, nbr), 'tile': tnum(vm[str(k)]), 'label': suffix_label(g, vm[str(k)])} for k in keys]
+
+
+def at_pattern_text(pat):
+    return '\n'.join(f'y={y:02d}: {row}' for y, row in enumerate(pat))
+
+
+def issue_rows(issues, key=None):
+    return [(i['x'], i['y']) for i in issues if key is None or i['code'] == key]
+
+
+def fmt_coords(cs, n=8):
+    s = ' '.join(f'({x},{y})' for x, y in cs[:n])
+    return s + (f' … (총 {len(cs)}칸)' if len(cs) > n else '')
+
+
+def doc_at_usage():
+    canon = EN['canonRule']
+    rows = []
+    for gid, g in AT.items():
+        a, b = at_range(g); d = AT_DEMO[gid]
+        tool = ('`fill_region`(면)·`lay_path`(길)·`paint_tiles`' if g.get('neighborhood', 4) == 8 else
+                '`paint_tiles`(line/cells)')
+        rows.append([f'`{gid}`', g['name'], f"{g.get('neighborhood', 4)}방", f'{a}~{b}({len(g["memberTileIds"])}칸)', LAYER_NAME[d['layer']], tool, f'`jp-at-{gid[3:]}`'])
+    mat = []
+    for gid in AT:
+        m = AT_MAT[gid]; d = AT_DEMO[gid]
+        def ent(layer):
+            p = m['paint'][layer]; return f"{p['landed']}층에 놓임·{'정상' if p['stale'] == 0 else '재계산 안 됨 ' + str(p['stale']) + '칸'}"
+        fill = ('거부 `' + m['fill']['code'] + '`' if not m['fill']['ok'] else ('정상' if m['fill']['stale'] == 0 else '면이 깔림(1층)·재계산 안 됨 ' + str(m['fill']['stale']) + '칸')) if m['fill'] else '-'
+        if d['layer'] != 1 and 'fillL' in m:
+            f2 = m['fillL']; fill += f" / layer \"{d['layer']}\": " + ('정상' if f2['stale'] == 0 and f2['ok'] else ('재계산 안 됨 ' + str(f2['stale']) + '칸' if f2['ok'] else '거부'))
+        path = '정상' if m['path']['ok'] else '거부 `' + m['path']['code'] + '`'
+        mat.append([f'`{gid}`', fill, path, ent('1'), ent('2'), ent('3')])
+    j = EN['joinExp']['laneJoin']
+    join_cells = to_rows(j['layers']['1'], 18)
+    return f'''# 일본 도시 — 오토타일 사용법 · 도구와 층 · 정상/오류 판정
+
+{HEAD}
+
+오토타일은 「같은 세트의 칸끼리 이웃을 보고 가장자리·모서리 그림을 스스로 고르는 칸 묶음」이다. 맵에는 **몸통 칸**(8방: `variantMap[255]`, 4방: `variantMap[15]`)을 칠하면 도구가 둘레를 다시 계산해 알맞은 칸으로 바꾼다. 번호를 직접 골라 찍으면 모양이 안 맞는다.
+
+## 이웃 비트와 칸 고르기 (엔진 `src/project/defaults/autotileEngine.ts`)
+- 비트: N=1 E=2 S=4 W=8 NE=16 SE=32 SW=64 NW=128(8방), 4방은 하위 4비트만. `mask` = 이웃 칸(같은 세트의 칸) 쪽 비트의 합.
+- 8방 정규화: 대각 비트는 **인접한 두 변이 모두 켜졌을 때만** 남는다(`canon`). 정의의 8방 7세트 모두 256키 전부에서 `variantMap[m] == variantMap[canon(m)]` 이고 서로 다른 `canon` 은 {sorted({v['canonCount'] for v in canon.values()})[0]}개다(7세트 검증: {sum(1 for v in canon.values() if v['ok'])}/7 일치). 그래서 세트 문서의 사전은 `canon` 마스크 {sorted({v['canonCount'] for v in canon.values()})[0]}개만 적는다.
+- 칸 고르기: 칸의 이웃 8칸이 같은 세트 칸이면 비트 1, 아니면 0 → `mask` 를 `canon` 으로 바꿔 사전에서 칸 번호를 찾는다. 이웃으로 세는 칸(`connectTileIds`)은 **자기 세트 칸뿐**이다 — 다른 오토타일·도로 키트의 복사 칸과는 이어지지 않는다.
+- 맵 밖은 이웃이 아니다(`edgeConnects:false`).
+
+## 17세트 한눈에
+{md_table(['오토타일 id', '이름(그룹 이름 = material)', '이웃', '칸 번호 범위', '칠하는 층', '도구', '문서'], rows)}
+
+## 도구 행렬 (실제 호출 실측 — `tiledata/jp-city/refs/engine_dump.mts`)
+같은 12×8 시험판(몸통 칸을 칠한 마스크)을 도구마다 실제로 칠하고 엔진으로 검사한 결과다. 「N층에 놓임」은 도구가 그 칸을 놓은 층, 「재계산 안 됨 N칸」은 칠한 뒤에도 이웃에 맞는 칸이 아닌 칸 수다.
+{md_table(['세트', 'fill_region(면 채우기)', 'lay_path(길)', 'paint_tiles layer "1"', 'layer "2"', 'layer "3"'], mat)}
+읽는 법과 규칙:
+1. **지면 8방 7종**: 면은 `fill_region`, 굽은 길·강은 `lay_path`(경유점 2개 이상, `naturalness`·`seed`) 또는 `fill_region` 의 `path`+`width`, 낱칸은 `paint_tiles` layer "1". 전부 칠한 뒤 재계산 0칸 어긋남.
+2. **위층 4방 4종(블록담·생울타리·철망·가드레일)**: `paint_tiles` layer **"3"** 의 line/cells. `fill_region` 은 「면 채우기 재료가 아님」으로 거부, `lay_path` 는 `path-needs-autotile`. **`stamp_layer_block` 은 3층 오토타일을 재성형하지 않는다**(기본 `reshape:true` 라도 1·2층만) — 번호를 그대로 찍어 어긋난다.
+3. **선로**: 불투명 1층 땅 — `paint_tiles` layer "1" 의 line. `lay_path` 는 4방이라 거부.
+4. **투명 덧그림 5세트(중앙선·차선 점선·횡단보도 둘·점자블록)**: **layer "2"** 로 칠한다. layer "1"·"3" 으로 요청하면 도구가 칸을 **3층으로 돌려 놓고 재성형하지 않아** 몸통 칸(십자)이 그대로 남는다(위 행렬 9칸 어긋남). `fill_region` 도 layer 를 안 주면 1층에 깔아 아래 땅이 없는 투명 칸이 검게 보이니 `layer:"2"` 를 준다.
+5. **직접 번호 찍기 금지**: `stamp_layer_block` + `reshape:false`, 또는 맵 배열 직접 쓰기는 이웃을 보지 않으므로 어긋난다(세트 문서의 「오류 1」 그림).
+6. **속칸 변형(`interiorVariants`)**: 8방 세트가 몸통 둘레 바깥에 갖는 깊이 변형 칸(단 0·단 1). 엔진 `shadeAutotileInterior` 의 몫인데 저장소에서 그것을 부르는 곳은 숲 윤곽 도구(`forestContour.ts`)뿐이다 — jp_city 도구 경로는 부르지 않으므로 도구가 칠한 속은 몸통 한 칸(`variantMap[255]`)이다. 손으로 속칸 변형을 심으면(완전 속칸에서) 재성형이 그 칸을 건드리지 않는다(`shapeAutotileGroupAround` 가 건너뜀).
+
+## 키트와 이어붙이기 (한계 — 실측)
+도로 키트의 도로 칸(3616~)은 오토타일 칸을 화소 그대로 **복사한 별개 칸**이라 오토타일의 멤버가 아니다(`jp-lane-road` 멤버와 겹치는 키트 칸 {EN['joinExp']['laneJoin']['kitCellsAreMembers']}개). 그래서 `jp-road-lane-h` 키트(6×4) 바로 오른쪽을 `fill_region` 으로 생활도로 칠하면 첫 칸이 **가장자리 칸 {join_cells[0][6]}**(「{suffix_label(AT['jp-lane-road'], join_cells[0][6])}」 — 이웃이 없다고 본 끝)으로 닫힌다 — 키트와 오토타일은 이음새에서 끊긴다.
+키트는 키트끼리, 오토타일은 오토타일끼리 이어 칠한다(용도 「도로·교차로 키트」).
+
+## 자동 좌표 검증 (이 용도)
+검사 스크립트 `tiledata/jp-city/refs/engine_dump.mts` 는 엔진 함수 `autotileVariantForCell`·`tileLayerPolicy` 로 맵의 오토타일 멤버 칸을 훑는다.
+| 코드 | 뜻 | 고치는 법 |
+|---|---|---|
+| `autotile-stale` | 멤버 칸이 있는 층에서 그 칸의 이웃으로 엔진이 고를 칸과 번호가 다르다(재계산 안 됨) | 몸통 칸을 `paint_tiles` 로 다시 칠한다 |
+| `wrong-layer` | 멤버 칸이 그 세트의 칠하는 층이 아닌 층에 있다(세트 표 「칠하는 층」) | 칸을 지우고 맞는 층에 `paint_tiles` 로 칠한다 |
+보는 범위는 **구조**(칸 번호와 층)다. 이벤트 실행·미적 품질·낮은 성능 모델이 맞게 칠할 확률은 이 검사로 주장하지 않는다. 변조 좌표는 세트 문서마다 있다.
+'''
+
+
+add_doc(C_AT, 'at-usage', '일본 도시 · 오토타일 사용법·도구와 층·정상/오류 판정', doc_at_usage())
+
+
+def doc_autotile(gid):
+    g = AT[gid]; d = AT_DEMO[gid]; m = AT_MAT[gid]
+    nbr = g.get('neighborhood', 4); a, b = at_range(g)
+    out_t, note = AT_INFO[gid]
+    items = at_dict_items(g)
+    members = set(g['memberTileIds']); mapped = {v for v in g['variantMap'].values()}
+    extra = sorted(members - mapped)
+    interior = g.get('interiorVariants') or []
+    layer = d['layer']; W, H = d['W'], d['H']
+    body = d['body']
+    normal = d['normal']; se = d['staleErr']; le = d['layerErr']
+    n_cells = d['cells']
+    tg = next(x for x in D['tileGroups'] if x['id'] == ('jp:crosswalk' if gid.startswith('jp-crosswalk') else 'jp:' + gid[3:]))
+    stale = issue_rows(se['issues'], 'autotile-stale'); wrong = issue_rows(le['issues'], 'wrong-layer')
+    wrong_t = sorted({(i['layer']) for i in le['issues']})
+    tool_ex = []
+    if nbr == 8:
+        tool_ex.append(('면 채우기', {'tool': 'fill_region', 'args': {'mapId': '<맵>', 'material': g['name'], 'rect': {'x': 2, 'y': 2, 'w': 8, 'h': 4}}}))
+        tool_ex.append(('굽은 길', {'tool': 'lay_path', 'args': {'mapId': '<맵>', 'material': g['name'], 'points': [{'x': 1, 'y': 2}, {'x': 10, 'y': 2}, {'x': 10, 'y': 7}]}}))
+        tool_ex.append(('낱칸·선', {'tool': 'paint_tiles', 'args': {'mapId': '<맵>', 'layer': str(layer), 'mode': 'rect', 'tile': body, 'from': {'x': 2, 'y': 2}, 'to': {'x': 9, 'y': 5}}}))
+    else:
+        tool_ex.append(('선 긋기', {'tool': 'paint_tiles', 'args': {'mapId': '<맵>', 'layer': str(layer), 'mode': 'line', 'tile': body, 'from': {'x': 1, 'y': 3}, 'to': {'x': 9, 'y': 3}}}))
+    for _, e in tool_ex: tnum(body)
+    ex_lines = '\n'.join(f'- {n}: `{jline(e)}`' for n, e in tool_ex)
+    under_line = f'- 아래 땅(1층): 모든 칸 {tnum(d["under"])}({label_of(d["under"])})' if layer != 1 else f'- 바깥 지형(마스크 밖): 모든 칸 {tnum(d["outside"])}({label_of(d["outside"])})'
+    err_rows = [
+        ['오류 1 — 재계산 안 함(몸통 칸 번호 그대로 찍음)', f'`stamp_layer_block` `reshape:false` 로 마스크 칸 전부를 몸통 {body} 로', '`autotile-stale`', len(stale), fmt_coords(stale, 6)],
+        [f'오류 2 — 잘못된 층({LAYER_NAME[layer]} 대신 {LAYER_NAME[d["wrongLayer"]]})', f'맞게 칠한 결과를 `stamp_layer_block` 로 {d["wrongLayer"]}층에 옮김', '`wrong-layer`', len(wrong), fmt_coords(wrong, 6)],
+    ]
+    if d.get('reroute'):
+        rr = d['reroute']
+        err_rows.append(['오류 3 — 도구에 1층으로 요청', f'`paint_tiles` layer "1" 로 같은 마스크', '`wrong-layer`', rr['issues'], f'도구가 {rr["onLayer3"]}칸을 3층에 놓고 재성형 안 함(서로 다른 칸 {rr["distinct"]}종 = 몸통 {body} 한 종)'])
+    return f'''# 일본 도시 — 오토타일 · {g['name']} (`{gid}`)
+
+{HEAD}
+
+{note}
+
+## 한눈에
+{md_table(['항목', '값'], [
+    ['오토타일 id · 그룹 이름', f'`{gid}` · `{g["name"]}`(fill_region·lay_path 의 material)'],
+    ['타일 그룹', f'`{tg["id"]}`({len(tg["tileIds"])}칸, role `{tg["role"]}`)'],
+    ['이웃', f'{nbr}방({"N E S W + 대각 NE SE SW NW" if nbr == 8 else "N E S W"})'],
+    ['칸 번호 범위', f'{a}~{b}({len(g["memberTileIds"])}칸, 열 {a % TPR}·행 {a // TPR} ~ 열 {b % TPR}·행 {b // TPR})'],
+    ['칠하는 층', f'**{LAYER_NAME[layer]}** (정의의 `layer`: {g.get("layer", "lower")} — 도구 실측으로 정한 칠하는 층)'],
+    ['몸통 칸(맵에 칠하는 칸)', f'**{body}**({label_of(body)}) = `variantMap[{255 if nbr == 8 else 15}]`'],
+    ['통행·그림 순서(몸통 칸, 엔진)', code_text(body)],
+    ['바깥 지형 가정', out_t],
+    ['이어지는 칸(connectTileIds)', f'자기 세트 {len(g["connectTileIds"])}칸뿐' + ('(복사본인 도로 키트 칸·다른 오토타일과 이어지지 않음)' if True else '')],
+    ['속칸 변형', ('단 0 = ' + ', '.join(str(tnum(t)) for t in sorted(set(interior[0]))) + ' · 단 1 = ' + ', '.join(str(tnum(t)) for t in sorted(set(interior[1])))) if interior else '없음(4방 세트)'],
+    ['몸통 변형 칸(사전 밖 멤버)', ', '.join(str(tnum(t)) + '(' + suffix_label(g, t) + ')' for t in extra) if extra else '없음'],
+])}
+
+## 칸 번호 사전 (정규화 마스크 → 칸 번호, 전체)
+비트 N=1 E=2 S=4 W=8{" NE=16 SE=32 SW=64 NW=128" if nbr == 8 else ""}. `mask` 는 {"`canon` 으로 정규화한 값 " if nbr == 8 else ""}(같은 세트 이웃이 있는 쪽 비트의 합), `nbrs` 는 이웃이 있는 방향.
+{"비정규 마스크(대각만 켜진 경우 등)는 `canon` 으로 바꿔 찾는다 — 256키 모두 같은 칸을 가리킨다(검증됨)." if nbr == 8 else "4방은 16키 전부가 사전에 있다."}
+{jfences(items)}
+
+## 쓰는 법 (실행 순서)
+1. 맵 칩셋이 `jp_city` 인지, 칠할 층({LAYER_NAME[layer]})이 맞는지 확인한다{"" if layer == 1 else f" — 아래 1층에 땅 칸(보통 {tnum(d['under'])})이 먼저 깔려 있어야 한다(투명 칸이라 땅이 없으면 검게 보인다)" if layer in (2, 3) else ""}.
+2. 몸통 칸 {body} 를 칠한다(도구가 이웃을 보고 가장자리·모서리 칸으로 바꾼다):
+{ex_lines}
+3. 낱번호를 직접 찍지 않는다. 이미 찍어 어긋났다면 몸통 칸으로 다시 칠한다.
+4. 같은 세트가 마스크 밖 이웃(다른 지형)과 맞닿는 가장자리 그림은 **바깥 지형 가정**({out_t})으로 구워져 있다 — 다른 지형과 맞닿으면 가장자리 그림이 어색하다.
+
+## 입력 → 전체 정답 배열 → 그림
+입력(마스크 `#` = 이 세트 칸, `.` = 바깥, {W}×{H}칸, 좌표는 맵 칸 0 기준):
+```text
+{at_pattern_text(d['pattern'])}
+```
+{under_line}
+도구: `paint_tiles` layer "{layer}" mode cells, tile {body}, cells = `#` 위치 {n_cells}칸. 결과 {LAYER_NAME[layer]} 전체 배열(행 우선, 모든 칸):
+```text
+{flat_rows(to_rows(normal['layers'][str(layer)], W))}
+```
+검사: `autotile-stale` {len(issue_rows(normal['issues'], 'autotile-stale'))}칸 · `wrong-layer` {len(issue_rows(normal['issues'], 'wrong-layer'))}칸 — 정상. 사용한 서로 다른 마스크 {d['distinctMasks']}종.
+그림: `jp-img-at-{gid[3:]}-ok`(정상, 원본 ×3) · `jp-img-at-{gid[3:]}-tiles`(세트 칸 전체) · `jp-img-at-{gid[3:]}-err`(오류 1·2).
+
+## 정상/오류 — 자동 좌표 검증
+{md_table(['변조', '방법', '코드', '칸 수', '맵 좌표 (x,y)'], err_rows)}
+오류 그림의 빨강 테두리 = 검사가 짚은 칸. 같은 입력 마스크에서 한 가지만 바꿨다. **검사 범위**: 칸 번호와 층의 구조. 이벤트 실행·미적 품질은 보지 않는다.
+**레이어 정정 조건**: 이 세트 칸이 {LAYER_NAME[wrong_t[0]] if wrong_t else ""} 에 있으면 칠하는 층({LAYER_NAME[layer]})으로 옮긴다 — {"투명 덧그림은 아래 땅(1층)이 있어야 하고, 1층에 두면 아래 땅이 사라져 검게 보인다." if layer == 2 else "위층 칸은 3층에서만 이웃을 센다." if layer == 3 else "불투명 땅은 1층에서만 이웃을 센다."}
+'''
+
+
+for _gid in AT:
+    add_doc(C_AT, f'at-{_gid[3:]}', f'일본 도시 · 오토타일 · {AT[_gid]["name"]}', doc_autotile(_gid))
+
+
+def img_autotiles():
+    for gid, g in AT.items():
+        d = AT_DEMO[gid]; W, H = d['W'], d['H']; layer = d['layer']; short = gid[3:]
+        ok = render(d['normal']['layers'], W, H)
+        save_img(f'at-{short}-ok', panels([(f'정상 — paint_tiles layer "{layer}" 로 칠한 결과(원본 ×3, {W}×{H}칸)', up(ok, 3))]),
+                 f'`{gid}` 정상: 마스크({d["cells"]}칸)를 `paint_tiles` layer "{layer}" 로 칠한 결과. 둘레 가장자리·모서리가 이웃에 맞게 재계산됨(검사 0칸). 칸 번호 배열은 `jp-at-{short}`.', C_AT)
+        members = sorted(g['memberTileIds'])
+        cols = 7 if len(members) == 49 else 4 if len(members) == 16 else 4
+        save_img(f'at-{short}-tiles', contact_sheet(members, cols, 3),
+                 f'`{gid}` 세트 칸 전체 {len(members)}칸(번호 라벨, 원본 ×3). 사전은 `jp-at-{short}`.', C_AT)
+        k = best_scale([W * T, W * T], [H * T, H * T])
+        e1 = up(render(d['staleErr']['layers'], W, H), k); e2 = up(render(d['layerErr']['layers'], W, H), k)
+        s1 = issue_rows(d['staleErr']['issues'], 'autotile-stale'); s2 = issue_rows(d['layerErr']['issues'], 'wrong-layer')
+        mark_cells(e1, s1, k, width=1); mark_cells(e2, s2, k, width=1)
+        save_img(f'at-{short}-err', panels([(f'오류 1 · 재계산 안 함 — autotile-stale {len(s1)}칸', e1), (f'오류 2 · 잘못된 층({d["wrongLayer"]}층) — wrong-layer {len(s2)}칸', e2)]),
+                 f'`{gid}` 오류: 왼쪽 = 몸통 칸 번호 그대로 찍음(가장자리·모서리가 없다), 오른쪽 = 같은 칸을 {d["wrongLayer"]}층에 놓음. 빨강 테두리 = 검사가 짚은 칸(원본 ×{k}). 좌표는 `jp-at-{short}`.', C_AT)
+
+
+img_autotiles()
+
+
+# ====================================================================== 분류 3 — 건물 조립 도구
+C_BLD = new_cat('building', '일본 도시 · 건물 조립 도구',
+                '`build_jp_city_building` 사용법 전부: 입력 스키마·좌표·조립 규칙(띠 문법)·부품 사전의 실제 id 목록과 칸 배열 전체·완성 예제 25(입력 → 칸 배열 → 통행 → 도구가 만든 결과 그림)·오류 코드 표와 오류 입력→결과 그림·문 앞 접근칸·뒷줄 먼저·L자 별채.')
+BLD = {b['name']: b for b in EN['buildings']}
+EXMETA = EN['exampleMeta']
+BANDS = SPEC['bands']
+DECOS = SPEC['decos']
+for _n, _m in EXMETA.items():           # 높이 = 띠 줄수 합 (도구 결과와 일치 확인)
+    if BLD[_n]['ok'] or True:
+        _tot = sum(q['rows'] for q in _m)
+        _sp = 0
+        assert _tot == BLD[_n]['asm']['rows'] or _n.startswith('L_'), (_n, _tot, BLD[_n]['asm'])
+
+
+def tile_list(t):
+    return None if t is None else tnum(t)
+
+
+def band_item(bid):
+    b = BANDS[bid]
+    item = {'band': bid, 'ko': b['ko'], 'kind': b['kind'], 'rows': b['rows'], 'modw': b['modw'],
+            'L': [tile_list(t) for t in b['L']], 'R': [[tile_list(t) for t in c] for c in b['R']],
+            'mods': {v: [[tile_list(t) for t in col] for col in cols] for v, cols in b['mods'].items()}, 'F': None if b['F'] is None else [tile_list(t) for t in b['F']]}
+    return item
+
+
+def deco_item(did):
+    d = DECOS[did]
+    return {'deco': did, 'ko': d['ko'], 'group': d['group'], 'w': d['w'], 'h': d['h'], 'avoidsWindows': d['avoidsWindows'],
+            'cells': [[tile_list(t) for t in r] for r in d['cells']]}
+
+
+def doc_bld_tool():
+    ex = BLD['konbini_block']
+    first_ok = ex['summary']
+    clash = BLD['L_flats_lot']
+    n_cl = sum(1 for b in BLD.values() if not b['ok'])
+    rows_formula = []
+    for n, m in EXMETA.items():
+        kinds = collections.Counter(BANDS[q['bid']]['kind'] for q in m)
+        rows_formula.append([n, ' + '.join(f"{q['bid']}({q['rows']})" for q in m), sum(q['rows'] for q in m), BLD[n]['rect']['h']])
+    sum_rows = [r for r in rows_formula if not r[0].startswith('L_')]
+    for r in sum_rows: assert r[2] == r[3], r
+    return f'''# 일본 도시 — 건물 조립 도구 `build_jp_city_building` 사용법
+
+{HEAD}
+
+가변 폭·층수 **상가 건물**(상가·아파트·사무소·마치야·L자 별채)을 **부품 사전 + 순수 조립기 + 맵 도구**로 짓는다. 건물을 낱칸으로 칠하지 않는다. **오류가 하나라도 있으면 맵을 한 칸도 바꾸지 않는다**(복제본에 찍어 엔진 통행으로 다시 확인한 뒤에만 반영). jp_city 맵에서만 동작한다.
+관련 도구: `list_jp_city_building_parts`(읽기 — 부품 사전·`example` 로 완성 예제 입력). 코드: `src/editor/tools/jpCityTools.ts` · 조립기 `src/editor/jpCity/builder.ts` · 사전 `src/assets/jpCityBuildingSpec.json`.
+
+## 좌표 (원점·방향)
+- `x`,`y` = 건물 **발 = 왼쪽 아래 칸**(0 기준 맵 좌표). 사각형은 `(x, y-높이+1)`~`(x+w-1, y)` — 위로 자란다.
+- 문 칸 = 건물 맨 아래 줄(막힘). **문 앞 접근칸 = 문 바로 아래 한 줄**(`y+1`, 건물 사각형 바깥) — 걸을 수 있는 보도·도로여야 한다.
+- 높이는 `띠 줄 수의 합`이다: 지붕(또는 옥상 간판) + 윗층 N×2 + (처마) + 1층 3줄 + (셋백이면 테라스 1줄). 예제 22개 전부 도구 결과의 높이와 일치(아래 표 + 각 예제).
+
+## 실행 순서 (반드시)
+1. `list_jp_city_building_parts` 로 id 를 확인한다(인자 없음 = 층 종류·벽·1층·지붕·문 목록, `query` = 부착물 검색, `example` = 완성 예제 입력). id 를 지어내지 않는다 — 사전은 이 용도의 「부품 사전」 문서에 칸 배열째 있다.
+2. **문 앞 바닥을 먼저 깐다**: 문 아래 접근칸에서 걸을 수 있는 칸이 6개 이상 이어져야 한다(보도·도로). 바닥이 없으면 `DOOR_BLOCKED`.
+3. **뒷줄 건물(발 y 가 작은 쪽)을 앞줄보다 먼저** 짓는다. 겹치는 두 건물은 나중에 찍은 쪽이 위에 그려진다.
+4. `build_jp_city_building` 을 부른다. 성공하면 `rect`·`doors`·`access`·`solidCells`·`warnings` 를 돌려준다. 실패하면 코드·좌표·고칠 방법만 오고 맵은 그대로다.
+5. 문 이동 이벤트는 **도구가 만들지 않는다**. 이벤트는 문 칸(`data.doors`), 길은 접근칸(`data.access`)에서 끝낸다 — 문 그림·문 앞 접근칸·출입구·상호작용(이벤트)은 서로 다른 것이다.
+
+## 입력 스키마 (`additionalProperties:false`, 자유 키 객체 없음)
+```json
+{{"mapId":"<jp_city 맵 id, 생략하면 지금 보는 맵>","x":4,"y":12,"w":6,
+ "floors":3,"floorKind":"pairs","wall":"shiro",
+ "floorPlan":[{{"kind":"ribbon","wall":"conc","variants":[0,1]}}],
+ "ground":"gr.konbini.0","groundVariants":[0],
+ "door":{{"type":"auto","col":2}},
+ "roof":"roof.ac.tank","head":"roofsign.aka","eave":"eave.slate",
+ "setback":{{"upper":2,"ins":1}},
+ "decos":[{{"deco":"pipe","col":5,"floor":"0","row":0,"cols":["kii","aka"]}}],
+ "wing":{{"w":4,"ground":"gr.glass.kii","roof":"roof.plain.plain","door":{{"type":"cafe","col":1}},"side":"L","depth":2,"yard":"lot"}}}}
+```
+{md_table(['필드', '뜻', '규칙'], [
+    ['`x`,`y`,`w`,`ground`', '필수. 발 칸·폭·1층 종류', '`w` 최소 3(왼쪽 끝 1 + 오른쪽 끝 2). 1층 종류는 `gr.` 를 생략해도 된다(`shop` 은 같은 뜻의 별칭)'],
+    ['`floors`/`floorKind`/`wall`', '윗층 수(숫자)·모든 층의 띠 종류·기본 벽', '한 층 = 위·아래 2줄. 기본 띠 `pairs`, 기본 벽 `kinari`'],
+    ['`floorPlan`', '층별 지정(**위에서 아래 순서**, `[0]` 이 맨 위 층)', '주면 `floors`·`floorKind`·`wall` 대신. 항목 = `kind`·`wall`·`variants`(몸통 변형 번호 목록, 모듈마다 돌려 쓴다)·`band`(띠 id 직접 지정, 보통 안 쓴다)'],
+    ['`door`', '문 종류와 왼쪽 열 `col`(0 기준)', '생략하면 1층 종류의 기본 문을 **오른쪽 끝**에. `type:"none"`/null = 문 없음 → `NO_DOOR`'],
+    ['`roof` / `head` / `eave`', '지붕 띠·옥상 간판 띠(지붕 자리를 대신)·처마 띠(1층 바로 위)', '맨 위는 지붕 띠(`roof.*`) 또는 옥상 간판(`roofsign.*`)이어야 한다'],
+    ['`setback`', '`upper` 번호 층보다 위는 양쪽 `ins` 칸 안으로 들인다', '`w - 2×ins ≥ 3`. 들이는 층 아래에 테라스 띠(`terrace`) 1줄이 낀다'],
+    ['`decos[]`', '부착물(간판·차양·실외기·비상계단 …)', '`deco`(id)·`col`(건물 왼쪽 끝 기준 열)·`floor`(**문자열** "0"(맨 위 윗층)·"1"… / `ground` / `head`)·`row`(띠 안에서 아래로 내릴 줄 수)·`cols`(`vstack.{{c}}` 의 색 목록)'],
+    ['`wing`', 'L자: 본채 + 앞으로 튀어나온 별채', '`w`·`ground` 필수. `side` L/R(기본 L)·`depth`(기본 2, 1~12)·`yard`(본채 앞 남는 땅: `lot` 주차장 기본 또는 거리 칸 이름). 별채 폭 ≤ 본채 폭 − 2'],
+])}
+
+## 조립 규칙 (띠 문법 — `Kit` 의 TS 이식, Python 원본과 칸 배열·화소 일치를 증명)
+- **띠 한 장**(폭 `nb`): 왼쪽 끝 `L` 1칸 + 몸통 모듈 `⌊(nb-3)/modw⌋` 번 반복(모듈마다 `variants` 를 돌려 쓴다) + 남는 칸은 채움 `F` + 오른쪽 끝 `R0`·`R1` 2칸. `modw` 가 2 인 띠(베란다·발코니·옥상 간판·1층 대부분)는 홀수 남는 칸을 `F` 가 메운다. 띠의 칸 배열 전체는 「부품 사전」 문서.
+- **위에서 아래**: 지붕(또는 옥상 간판) → 윗층들(각 2줄) → (처마) → 1층(3줄). 셋백이면 위쪽 층만 안으로 들이고 사이에 `terrace`.
+- **문**(`door.*` 2×3, 마치야 3×3)은 부착물로 1층 위에 얹는다. 문 칸은 막힘(맨 아래 두 줄), 접근칸 = 문 바로 아래 한 줄. 문 그림은 **고정** 조각(늘어나지 않는다), 띠 몸통·층 수는 **반복**.
+- **L자**: 본채 + `wing`. 본채 앞 남는 땅은 `lot`(주차장) 또는 거리 칸. 별채 오른쪽 5px 그림자는 칸 번호로 못 그려 **생략**하고 경고 `SHADOW_OMITTED`.
+- **층 배정**: 에디터 위층은 3층(`upperTiles`)·4층(`upperOverlayTiles`) 둘뿐 — 한 칸에 `[띠 + 부착물 하나]`까지 얹는다. 위 칸이 온전히 불투명하면 밑 칸은 버린다(화면은 같다). 그래도 위층 칸이 3장 넘으면 `DECO_CLASH`.
+- **통행은 칸 번호가 정한다**(막힘 칸 = 위층 + 통행 불가). 도구는 찍은 뒤 엔진 `isPassable` 로 ① 막힘 칸이 실제로 막혔는지 ② 문 앞 접근칸에서 걸어갈 수 있는 칸이 **6개 이상** 이어지는지 다시 검사하고, 아니면 맵을 되돌린다.
+
+## 응답 예 (실제 도구 결과)
+정상(`konbini_block`, 맵 {ex['W']}×{ex['H']}, 발 ({ex['foot']['x']},{ex['foot']['y']})):
+> {first_ok}
+
+거부(`L_flats_lot`):
+> {clash['summary'][:420]}
+
+## 높이 = 띠 줄 수의 합 (예제 25, 도구 결과의 사각형 높이와 대조)
+{md_table(['예제', '띠(위→아래)(줄 수)', '줄 수 합', '도구 결과 높이'], rows_formula)}
+(L자 3종은 본채+별채 합성이라 별채가 더 튀어나온 만큼 높이가 다르다.)
+
+## 한계 (정직하게)
+- 한 칸에 투명 부착물 둘 + 띠(위층 3장)는 에디터 위층이 둘뿐이라 못 짓는다 → `DECO_CLASH`. 완성 예제 중 **{n_cl}개가 이 도구로 거부된다**: {', '.join(f'`{n}`' for n, b in BLD.items() if not b['ok'])}(각 예제의 오류 코드·좌표는 「완성 예제」 문서). 원본 렌더는 겹쳐 그리지만 에디터 층 한계로 못 짓는다.
+- L자 별채의 그림자 5px 는 생략. 별채가 본채 앞 줄을 덮는 칸은 엔진 통행 기준(밑 본채 막힘 칸이 먼저 막는다).
+- 층고 3칸·마치야 용마루·같은 높이 L자 지붕 병합 등은 이번 부품에 없다.
+- **검사 범위**: 구조(띠 순서·층 쌍·문·부착물 충돌)와 통행(막힘 칸·접근칸 도달). 이벤트 실행·미적 품질·낮은 성능 모델의 성공률은 검사하지 않는다.
+- 주택가·역·공원·신사용 건물 부품은 **후속 추가 자리**(지금 없음).
+'''
+
+
+add_doc(C_BLD, 'bld-tool', '일본 도시 · 건물 조립 도구 사용법·입력·좌표·규칙', doc_bld_tool())
+
+
+def doc_bld_parts():
+    fk = SPEC['floorKinds']
+    groups = collections.OrderedDict()
+    for did, d in DECOS.items():
+        g = groups.setdefault(d['group'], dict(ko=d['groupKo'], ids=[], w=d['w'], h=d['h'], aw=d['avoidsWindows']))
+        g['ids'].append(did)
+    return f'''# 일본 도시 — 건물 부품 사전 (id 전체 목록)
+
+{HEAD}
+
+`build_jp_city_building` 이 받는 id 의 **전체** 목록이다. 칸 배열(어느 칸 번호가 어느 자리인지)은 이어지는 「띠 사전」·「부착물 사전」 문서에 있다. id 를 지어내면 `UNKNOWN_PART`.
+제한: 폭 최소 {SPEC['limits']['minWidth']}칸 · 한 층 = {SPEC['limits']['floorRows']}줄 · 한 칸 위층 최대 {SPEC['limits']['maxLayersOverBase'] + 1}장(띠 + 부착물 하나).
+
+## 벽 재질 (`wall`)
+{md_table(['id', '뜻'], [[k, v] for k, v in SPEC['walls'].items()])}
+
+## 층 띠 종류 (`floorKind` / `floorPlan[].kind`) — 띠 id = `fl.<kind>.<wall>`
+{md_table(['kind', '이름', '모듈 폭 modw', '벽', '몸통 변형 번호(variants)'], [[k, v['ko'], v['modw'], ' '.join(v['walls']), ' '.join(map(str, v['variants']))] for k, v in fk.items()])}
+- `curtain`·`tile` 은 `kinari` 벽 한 가지뿐(건물 `wall` 이 shiro 여도 kinari). `variants` 는 몸통 모듈마다 돌려 쓰는 변형 번호 목록이며 목록에 없는 번호는 `UNKNOWN_PART`.
+
+## 1층 종류 (`ground`) — 띠 id = `gr.*`
+{md_table(['id', '이름', '기본 문', '모듈 폭', '몸통 변형(groundVariants)'], [[k, v['ko'], v['door'], v['modw'], ' '.join(map(str, v['variants']))] for k, v in SPEC['grounds'].items()])}
+
+## 지붕·옥상 간판·처마
+{md_table(['구분', 'id', '이름', '비고'], [['지붕 `roof`', k, v['ko'], '경사 지붕' if v['pitched'] else '평지붕'] for k, v in SPEC['roofs'].items()] + [['옥상 간판 `head`(지붕 자리를 대신)', k, v['ko'], ''] for k, v in SPEC['heads'].items()] + [['처마 `eave`(1층 바로 위)', k, v['ko'], ''] for k, v in SPEC['eaves'].items()])}
+- 지붕 id 는 `roof.` 를 생략할 수 있다(예: `plain.tank`). 건물 맨 위는 지붕 띠 또는 옥상 간판이어야 한다(`ROOF_ORDER`).
+
+## 문 (`door.type`) — 부착물 `door.<type>`
+{md_table(['type', '이름', '폭×높이(칸)', '1층 기본 문으로 쓰는 1층'], [[k, v['ko'], f"{v['w']}×{v['h']}", ', '.join(g for g, d in SPEC['doorDefault'].items() if d == k) or '-'] for k, v in SPEC['doors'].items()])}
+- 문 칸 = 맨 아래 두 줄(막힘) + 윗줄(★). 접근칸 = 문 바로 아래 한 줄.
+
+## 부착물 분류 ({len(DECOS)}종, `decos[].deco`)
+{md_table(['분류(group)', '이름', '개수', '크기(칸)', '창 위 금지', 'id'], [[k, g['ko'], len(g['ids']), f"{g['w']}×{g['h']}", '예' if g['aw'] else '아니오', ', '.join(g['ids'])] for k, g in groups.items()])}
+- 「창 위 금지」= 창이 있는 띠 위에 얹으면 `DECO_CLASH`(간판·차양·실외기·빨래·광고·무시코). 민벽(`blank`)이나 창 없는 칸에 얹는다.
+- `vstack.{{c}}` 는 색 목록 `cols`(`kii aka sora midori`)와 정수 `floor` 가 필요하다. `fe`(비상계단)는 맨 아래 층에서 `fe_end` 로 바뀐다.
+
+## 마당 · 거리 칸 (`wing.yard`) — {len(SPEC['yards'])}종
+`{'`, `'.join(SPEC['yards'])}` — 번호는 `jp-sheet-map` 의 거리 칸 사전.
+
+## 조립 결과를 맵에 적는 칸 목록(사전 속 번호의 집합)
+- 아래층(1층) 칸: {len(SPEC['lower'])}종 · 막힘 칸: {len(SPEC['solid'])}종 · 불투명 칸(위 칸이 이것이면 밑 칸이 가려진다): {len(SPEC['opaque'])}종 — 전체 목록은 `src/assets/jpCityBuildingSpec.json` 의 `lower`·`solid`·`opaque`.
+'''
+
+
+add_doc(C_BLD, 'bld-parts', '일본 도시 · 건물 부품 사전(id 전체 목록)', doc_bld_parts())
+
+
+def doc_bld_bands(did, title, ids):
+    items = [band_item(b) for b in ids]
+    return f'''# 일본 도시 — 건물 띠 사전 · {title}
+
+{HEAD}
+
+띠(band) 한 종의 **칸 번호 전체**다. 항목: `band` id · `kind` · `rows`(띠 줄 수) · `modw`(몸통 모듈 폭) · `L`(왼쪽 끝 칸, 줄마다) · `R`(오른쪽 끝 두 열: `R[0]`=끝에서 둘째 열, `R[1]`=맨 끝 열, 줄마다) ·
+`mods`(몸통 변형 번호 → 모듈 열들 → 줄마다 칸) · `F`(남는 칸 채움, 줄마다, 없으면 null).
+조립(폭 `nb` 의 띠): 열 0 = `L[줄]`, 열 `nb-2` = `R[0][줄]`, 열 `nb-1` = `R[1][줄]`, `k` 번째 모듈(0부터)의 `j` 번째 열 = 열 `1 + k×modw + j` ← `mods[변형][j][줄]`(변형은 `variants` 를 `k` 로 돌려 쓴 값), 남는 열 = `F[줄]`.
+칸 번호는 `jp-sheet-map` 의 영역 지도 기준 시트 번호다(통행은 맥락별 복제 칸 번호가 이미 반영돼 있다).
+
+{jfences(items, 12000)}
+'''
+
+
+_floor_ids = [b for b, v in BANDS.items() if v['kind'] == 'floor']
+_other_ids = [b for b, v in BANDS.items() if v['kind'] != 'floor']
+add_doc(C_BLD, 'bld-bands-floors', '일본 도시 · 건물 띠 사전 · 층 띠 30종', doc_bld_bands('bands-floors', '층 띠 30종(fl.*)', _floor_ids))
+add_doc(C_BLD, 'bld-bands-other', '일본 도시 · 건물 띠 사전 · 지붕·옥상 간판·처마·테라스·1층', doc_bld_bands('bands-other', '지붕 13 · 옥상 간판 3 · 처마 2 · 테라스 1 · 1층 11', _other_ids))
+
+
+def doc_bld_decos():
+    ids = list(DECOS)
+    half = len(ids) // 2 + 1
+    items = [deco_item(i) for i in ids]
+    return f'''# 일본 도시 — 건물 부착물 사전 ({len(ids)}종, 칸 번호 전체)
+
+{HEAD}
+
+부착물(`decos[].deco`) 한 종의 **칸 번호 배열**이다. 항목: `deco` id · `ko` · `group` · `w`×`h` · `avoidsWindows`(창 위에 얹으면 `DECO_CLASH`) · `cells`(줄마다 칸 번호, 비면 null). 건물 위층에 얹히므로 통행: 문(`door.*`)은 맨 아래 두 줄이 막힘, 나머지는 걸어 지나갈 수 있다(★).
+`col`·`floor`·`row` 로 건물 띠 위에 놓는다(「건물 조립 도구」 문서). 그림은 이 용도의 `jp-img-parts-decos-*`.
+
+{jfences(items, 12000)}
+'''
+
+
+add_doc(C_BLD, 'bld-decos', '일본 도시 · 건물 부착물 사전(칸 번호 전체)', doc_bld_decos())
+
+
+def grid_image(cells, scale=2, bg=None):
+    h = len(cells); w = max(len(r) for r in cells)
+    im = Image.new('RGBA', (w * T, h * T), (0, 0, 0, 0))
+    for y, row in enumerate(cells):
+        for x, t in enumerate(row):
+            if t is not None and t >= 0: im.alpha_composite(cell(t), (x * T, y * T))
+    return up(im, scale)
+
+
+def shelf_pack(items, width=816, pad=6, label_h=12, maxh=816):
+    pages = []; cur = []; x = y = rowh = 0
+    def flush():
+        nonlocal cur, x, y, rowh
+        if not cur: return
+        im = Image.new('RGBA', (width, y + rowh + 2), (46, 46, 54, 255)); d = ImageDraw.Draw(im)
+        for lab, g, px, py in cur:
+            d.text((px + 1, py), lab, fill=(255, 255, 255, 255), font=FONT_S)
+            bgc = checker(g.width, g.height); bgc.alpha_composite(g); im.alpha_composite(bgc, (px, py + label_h))
+        pages.append(im); cur = []; x = y = rowh = 0
+    for lab, g in items:
+        w = max(g.width, 4 * len(lab)) + pad; h = g.height + label_h + pad
+        if x + w > width and x > 0: x = 0; y += rowh; rowh = 0
+        if y + h > maxh and cur: flush()
+        cur.append((lab, g, x, y)); x += w; rowh = max(rowh, h)
+    flush()
+    return pages
+
+
+def img_parts():
+    bv = EN['bandViews']
+    fl = [(b, grid_image([[c for c in row] for row in bv[b]['cells']], 2)) for b in _floor_ids if bv[b].get('ok') is not None and 'cells' in bv[b]]
+    for i, pg in enumerate(shelf_pack(fl)):
+        save_img(f'parts-floors-{i + 1}', pg, f'층 띠 30종 도감 {i + 1}(폭 6칸·몸통 변형 0 으로 조립기가 낸 칸을 그대로, 원본 ×2, 라벨 = 띠 id). 칸 번호는 `jp-bld-bands-floors`.', C_BLD)
+    ot = [(b, grid_image(bv[b]['cells'], 2)) for b in _other_ids if 'cells' in bv[b]]
+    for i, pg in enumerate(shelf_pack(ot)):
+        save_img(f'parts-other-{i + 1}', pg, f'지붕·옥상 간판·처마·테라스·1층 띠 도감 {i + 1}(폭 6칸, 원본 ×2, 라벨 = 띠 id). 1층 띠에는 기본 문이 겹치지 않은 상태. 칸 번호는 `jp-bld-bands-other`.', C_BLD)
+    vv = EN['variantViews']
+    va = [(k, grid_image(v['cells'], 2)) for k, v in vv.items() if 'cells' in v]
+    for i, pg in enumerate(shelf_pack(va)):
+        save_img(f'parts-variants-{i + 1}', pg, f'층 띠 몸통 변형 도감 {i + 1}(아이보리 벽, 폭 6칸에 변형 번호 하나를 돌려 쓴 결과, 라벨 = `<kind>/<variant>`, 원본 ×2). 변형 번호는 `jp-bld-parts` 의 variants.', C_BLD)
+    dc = [(d, grid_image(DECOS[d]['cells'], 2)) for d in DECOS]
+    for i, pg in enumerate(shelf_pack(dc)):
+        save_img(f'parts-decos-{i + 1}', pg, f'부착물 {len(DECOS)}종 도감 {i + 1}(원본 ×2, 라벨 = deco id). 칸 번호는 `jp-bld-decos`.', C_BLD)
+
+
+img_parts()
+
+
+# ---- 완성 예제 25: 입력 → 칸 배열 → 통행 → 그림
+RECIPE_EN = {r['id']: r for r in EN['recipes']}
+EQ = {}
+
+
+def _recipe_id(name):
+    return 'jp-recipe-' + name.lower().replace('_', '-')
+
+
+def _px_diff(l1, W1, H1, l2, W2, H2):
+    if (W1, H1) != (W2, H2): return None
+    a = render(l1, W1, H1); b = render(l2, W2, H2)
+    import numpy as np
+    A = np.array(a); B = np.array(b)
+    return int((A != B).any(axis=2).sum()), A.shape[0] * A.shape[1]
+
+
+for _n, _b in BLD.items():
+    _r = RECIPE_EN.get(_recipe_id(_n))
+    if _b['ok'] and _r: EQ[_n] = _px_diff(_b['layers'], _b['W'], _b['H'], _r['layers'], _r['W'], _r['H'])
+
+
+def flat_rows_at(rows, y0, x0=0):
+    return '\n'.join(f'y={y0 + i:02d}: ' + ' '.join('.' if v < 0 else str(tnum(v)) for v in r) for i, r in enumerate(rows))
+
+
+def crop(arr, W, rect):
+    return [arr[(rect['y0'] + r) * W + rect['x0']: (rect['y0'] + r) * W + rect['x0'] + rect['w']] for r in range(rect['h'])]
+
+
+def ex_section(name):
+    b = BLD[name]; rect = b['rect']; W = b['W']
+    ko = SPEC['examples'][name]['ko']
+    layers = b['layers'] if b['ok'] else b['wouldBe']
+    st = EXMETA[name]
+    stack = ' → '.join(f"`{q['bid']}`({q['rows']}줄)" for q in st)
+    args = b['toolArgs']
+    l1 = crop(layers['1'], W, rect); l3 = crop(layers['3'], W, rect); l4 = crop(layers['4'], W, rect)
+    yard = any(v != ST['sw'] for r in l1 for v in r)
+    walk_rows = [b['walk'][y][max(0, rect['x0'] - 1): rect['x0'] + rect['w'] + 1] for y in range(rect['y0'], min(len(b['walk']), rect['y0'] + rect['h'] + 1))]
+    d = b['data']
+    if b['ok']:
+        res = (f"**지어졌다** — {b['summary']}\n- 도구 데이터: 문 {jline(d['doors'])} · 문 앞 접근칸 {jline(d['access'])} · 칠한 칸 {d['placedCells']}개 · 막힘 칸 {d['solidCells']}개(엔진 통행과 일치)"
+               + (f" · 경고 {jline(d['warnings'])}" if d['warnings'] else ''))
+        eq = EQ.get(name)
+        rec = RECIPE_EN.get(_recipe_id(name))
+        eqt = (f"- 같은 이름의 레시피 키트 `{_recipe_id(name)}` 를 같은 자리에 `stamp_object` 로 찍은 화면과 화소 비교: 다른 화소 {eq[0]}/{eq[1]}" + ('(일치)' if eq[0] == 0 else '(L자 별채 그림자 등 차이 — 한계 참고)')) if eq else ''
+    else:
+        e = [i for i in b['issues'] if i['severity'] == 'error']
+        res = (f"**거부됐다** — `{b['code']}` — {b['summary'][:300]}\n- 오류 {len(e)}건: " + ', '.join(f"`{i['code']}`@({i['x']},{i['y']})" for i in e) + '\n- 맵은 한 칸도 바뀌지 않았다. 아래 배열·그림은 **조립기가 계산한 「지었다면」 결과**(맵에 쓰지 않음, 빨강 테두리 = 오류 칸)다.')
+        eqt = ''
+    out = f'''## {name} — {ko} (그림 `jp-img-ex-{name}`)
+- 결과: {res}
+{eqt}
+- 맵 시험판: {W}×{b['H']}칸, 1층 전체 보도 {ST['sw']}(`sw`), 아래 3줄 도로 {ST['road_c']}(`road_c`). 건물 사각형 ({rect['x0']},{rect['y0']})~({rect['x0'] + rect['w'] - 1},{rect['y0'] + rect['h'] - 1}) = {rect['w']}×{rect['h']}칸.
+- 띠 쌓기(위→아래, 줄 수의 합 {sum(q['rows'] for q in st)}): {stack}
+- 도구 인자:
+```json
+{json.dumps(args, ensure_ascii=False, separators=(',', ':'))}
+```
+- 3층(`upperTiles`) 사각형 안 전체 배열(맵 좌표 y, 열 {rect['x0']}~{rect['x0'] + rect['w'] - 1}):
+```text
+{flat_rows_at(l3, rect['y0'])}
+```
+- 4층(`upperOverlayTiles`):
+```text
+{flat_rows_at(l4, rect['y0'])}
+```
+{('- 1층(`lowerTiles`, 마당·주차장이 바꾼 칸 포함):' + chr(10) + '```text' + chr(10) + flat_rows_at(l1, rect['y0']) + chr(10) + '```') if yard else f'- 1층: 건물 사각형 안은 전부 보도 {ST["sw"]}(마당 없음).'}
+- 통행 격자(엔진 `isPassable`, `#` 막힘 `.` 걸음, 열 {max(0, rect['x0'] - 1)}~{rect['x0'] + rect['w']}, 맨 아래 줄 = 문 앞 접근칸 줄):
+```text
+''' + '\n'.join(f'y={rect["y0"] + i:02d}: {r}' for i, r in enumerate(walk_rows)) + '\n```\n'
+    return out
+
+
+def doc_bld_ex(idx, names):
+    body = '\n'.join(ex_section(n) for n in names)
+    return f'''# 일본 도시 — 건물 조립 · 완성 예제 {idx}/5 ({', '.join(f'`{n}`' for n in names)})
+
+{HEAD}
+
+`list_jp_city_building_parts({{"example":"<이름>"}})` 의 완성 예제 입력을 **실제 `build_jp_city_building` 도구로 지은 결과**다(`tiledata/jp-city/refs/engine_dump.mts` 가 도구를 호출해 맵 배열을 읽었다).
+시험판 맵: 폭 = 건물 폭 + 4, 높이 = 건물 높이 + 5, 1층 전체가 보도(`sw`), 아래 3줄이 도로(`road_c`), 건물 사각형은 맵 (2,1) 에서 시작한다. 좌표는 맵 칸 0 기준.
+도구 인자의 `x`,`y` = 건물 발(왼쪽 아래 칸). 배열은 **건물 사각형 안만** 보여 준다 — 사각형 밖 칸은 시험판 바닥 그대로다. `.` 은 -1(빈 칸).
+그림은 원본 해상도 ×2 로 시트에서 직접 합성한 것이다(AI 모형 아님).
+
+{body}
+'''
+
+
+_names = list(SPEC['examples'])
+for _i in range(5):
+    _chunk = _names[_i * 5:(_i + 1) * 5]
+    add_doc(C_BLD, f'bld-ex-{_i + 1}', f'일본 도시 · 건물 조립 · 완성 예제 {_i + 1}/5', doc_bld_ex(_i + 1, _chunk))
+
+
+def img_examples():
+    for n, b in BLD.items():
+        W, H = b['W'], b['H']; layers = b['layers'] if b['ok'] else b['wouldBe']
+        im = up(render(layers, W, H), 2)
+        if not b['ok']:
+            mark_cells(im, [(i['x'], i['y']) for i in b['issues'] if i['severity'] == 'error'], 2, width=2)
+        ko = SPEC['examples'][n]['ko']
+        lab = f"{n} — {ko} · " + ('지은 결과' if b['ok'] else f"거부({b['code']}) — 지었다면")
+        save_img(f'ex-{n}', panels([(lab + f' (원본 ×2, {W}×{H}칸)', im)]),
+                 f"완성 예제 `{n}`({ko}): " + ('`build_jp_city_building` 이 지은 결과(시험판 맵, 원본 ×2).' if b['ok'] else f"도구가 `{b['code']}` 로 거부한 입력을 조립기가 계산한 「지었다면」 그림(맵에 쓰지 않음, 빨강 테두리 = 오류 칸, 원본 ×2).") + ' 칸 배열·통행은 `jp-bld-ex-*`.', C_BLD)
+
+
+img_examples()
+
+# ---- 건물 오류: 코드 표 · 변조 실험 · 정상/오류 그림
+FIX = {
+    'TOO_NARROW': '폭을 늘린다(최소 3, 문 폭·셋백 들임 후 윗층 폭·별채 폭 ≤ 본채−2 도 확인)',
+    'ROOF_ORDER': '맨 위에 `roof.*`(또는 `head`)를 둔다. 처마 `eave` 는 1층 바로 위 처마 띠로, 지붕 자리에 1층 띠를 넣지 않는다',
+    'FLOOR_PAIR': '층 자리에는 위·아래 2줄 한 쌍인 층 띠(`fl.*`)만 넣는다(`terrace`·지붕 띠 금지)',
+    'NO_DOOR': '`door` 를 주거나 생략한다(`type:"none"`·null 금지)',
+    'DOOR_NOT_BOTTOM': '(조립 결과 손상 검사 전용 — 입력으로는 만들 수 없다)',
+    'DOOR_BLOCKED': '문 앞 접근칸(문 바로 아래 한 줄)에서 걸을 수 있는 보도·도로를 6칸 이상 이어 깐다. 본채 문이 별채에 가리지 않게 `door.col` 을 옮긴다',
+    'DECO_CLASH': '간판·차양·실외기 등은 민벽(`blank`)·창 없는 칸에 얹고, 같은 칸에 부착물 둘을 겹치지 않는다',
+    'UNKNOWN_PART': '`list_jp_city_building_parts` 로 실제 id 를 확인한다',
+    'DOOR_OUT_OF_RANGE': '`door.col` 을 0~(폭−문 폭) 안으로',
+    'DECO_OUT_OF_RANGE': '`decos[].col`·`floor`·`row` 를 건물 사각형 안·있는 층으로',
+    'OUT_OF_MAP': '건물 발을 옮겨 사각형 전체가 맵 안에 들게 한다',
+    'BAD_INPUT': '숫자·필드 형식을 고친다(`floor` 는 문자열 "0"…)',
+    'SHADOW_OMITTED': '(경고) L자 별채 그림자 생략 — 조치 없음',
+}
+
+
+def doc_bld_errors():
+    codes = EN['issueCodes']
+    cr = [[f'`{k}`', v, FIX[k]] for k, v in codes.items()]
+    tr = []
+    for t in EN['tampers']:
+        errs = ', '.join(f"`{e['code']}`@({e['x']},{e['y']})" for e in t['errors']) or '(없음)'
+        tr.append([t['id'], t['title'], t['what'], f"`{t['want']}`", ('거부 `' + t['toolCode'] + '`' if not t['toolOk'] else '**지어졌다(검출 실패)**'), '예' if t['mapUnchanged'] else '아니오', errs, f"`jp-img-err-bld-{t['id'].lower()}`"])
+    sr = [[s['what'], ', '.join(f'`{g}`' for g in s['got'])] for s in EN['structureTampers']]
+    return f'''# 일본 도시 — 건물 조립 · 정상/오류 · 자동 좌표 검증
+
+{HEAD}
+
+`build_jp_city_building` 은 일부러 틀린 입력을 **정확한 코드와 맵 좌표로 거부**하고(맵 불변), 정상 입력은 짓는다. 아래는 실제 도구를 호출한 결과다(`engine_dump.mts`, 시험판 맵 건물 폭+4 × 높이+5, 사각형 (2,1) 시작 — 좌표는 맵 칸 0 기준).
+저장 전에 실패하면 **부분 배치가 남지 않는다**: 도구는 복제본에 찍어 엔진 통행으로 다시 검사한 뒤에만 반영한다(변조 11건 모두 「맵 불변」 확인, 아래 표).
+
+## 오류 코드와 고치는 법
+{md_table(['코드', '뜻', '고치는 법'], cr)}
+
+## 변조 실험 (정상/오류 나란한 그림은 `jp-img-err-bld-<번호>`)
+정상 입력은 편의점 6칸(3층, shiro, 지붕 `roof.ac.tank`, 문 auto 열 2)이다(B10 은 L자 정상판). 좌표는 오류 칸의 맵 좌표.
+{md_table(['번호', '변조', '방법', '기대 코드', '도구 결과', '맵 불변', '검출 코드@맵 좌표', '그림'], tr)}
+
+## 조립 결과를 직접 손상 (입력으로는 못 만드는 코드)
+`checkJpCityStructure` 를 조립 결과에 직접 손상을 가해 돌렸다. 좌표는 건물 사각형 안 (열, 행).
+{md_table(['손상', '검출'], sr)}
+
+## 검사 범위 (과대 주장 금지)
+- 보는 것: 띠 순서·층 쌍·문 유무와 위치·부착물의 창 위 얹힘과 겹침·사전에 없는 id·맵 안 여부·문 앞 접근칸의 통행과 도달(≥6칸)·막힘 칸이 엔진에서 실제로 막히는지.
+- **보지 않는 것**: 문 이동 이벤트 실행·움직이는 NPC·미적 품질(색 조화·밀도)·이 문서를 읽는 낮은 성능 모델이 맞게 지을 확률. 검사 통과는 「구조와 통행이 맞다」는 뜻일 뿐이다.
+- 회귀 시험 스크립트 `node scripts/content/jp-city/tamper_builder.mjs`(조립기 32건 + 도구 10건)는 이 문서를 만들 때 전부 통과했다.
+
+## 레이어 정정 조건 (건물)
+건물·부착물 칸은 **3층(`upperTiles`)·4층(`upperOverlayTiles`)** 에만 둔다(홈 레이어 위층). 1층에 두면 아래 땅이 없어 검게 보이고 그림 순서가 어긋난다 — 상가 용도의 오류 코드 `building-in-lower-layer`(용도 「상가 키트·문·소품」). 1층(`lowerTiles`)에는 땅(마당·주차장·보도)만 둔다.
+'''
+
+
+add_doc(C_BLD, 'bld-errors', '일본 도시 · 건물 조립 · 정상/오류·자동 좌표 검증', doc_bld_errors())
+
+
+def img_bld_errors():
+    for t in EN['tampers']:
+        g = t['good']; bd = t['bad']
+        k = best_scale([g['W'] * T, bd['W'] * T], [g['H'] * T, bd['H'] * T])
+        gi = up(render(g['layers'], g['W'], g['H']), k)
+        bi = up(render(bd['layers'], bd['W'], bd['H']), k)
+        mark_cells(bi, [(e['x'], e['y']) for e in t['errors']], k, width=2)
+        lab_bad = ', '.join(sorted({e['code'] for e in t['errors']})) or '?'
+        save_img(f"err-bld-{t['id'].lower()}", panels([('정상 — 도구가 지은 결과', gi), (f"오류 {t['id']} — {t['title']} → {lab_bad}(거부, 지었다면)", bi)]),
+                 f"건물 변조 {t['id']}: 정상(왼쪽, 도구가 지은 결과)/오류(오른쪽, 조립기가 계산한 「지었다면」 — 도구는 맵을 바꾸지 않고 거부). 변조: {t['what']}. 검출 {t['errors'] and ', '.join(e['code'] + '@(' + str(e['x']) + ',' + str(e['y']) + ')' for e in t['errors'])}. 빨강 테두리 = 오류 칸, 원본 ×{k}. 표는 `jp-bld-errors`.", C_BLD)
+
+
+img_bld_errors()
+
+
+# ====================================================================== 분류 4 — 도로·교차로 키트
+C_ROAD = new_cat('road', '일본 도시 · 도로·교차로 키트',
+                 '도로·교차로·건널목 키트 39종(생활도로 직선·T자·십자·굽은 길·막다른 길·횡단보도 2, 간선도로 4차선 직선·십자 교차로(신호기 4기 포함), 철도 건널목 4, 지하도·육교, 노면 표시·止まれ 글자 4방향·표지, 신호기 4종): 키트 id·크기·앵커·반복축·변 연결(팔) 위치·칸 번호 전체 배열·통행 코드, 키트를 이어 붙이는 공식과 정답 조립(생활도로 직선→T→십자, 굽은 길, 간선 교차로, 건널목), 오토타일과의 이음 한계, 정상/오류 그림.')
+RC = {c['name']: c for c in EN['roadComps']}
+RERR = EN['roadErrors']
+KIT_CODES = EN['kitCodes']
+LANE_KITS = [k for k in ROAD_KITS if k.startswith('jp-road-lane-')]
+TRUNK_KITS = [k for k in ROAD_KITS if k.startswith('jp-road-trunk-')]
+MISC_ROAD = [k for k in ROAD_KITS if k not in LANE_KITS and k not in TRUNK_KITS]
+assert (len(LANE_KITS), len(TRUNK_KITS), len(MISC_ROAD)) == (17, 3, 19), (len(LANE_KITS), len(TRUNK_KITS), len(MISC_ROAD))
+
+
+def kit_grid(kid):
+    k = KITS[kid]
+    return k['width'], k['height'], [r['tiles'] for r in k['rows']], [r['upperTiles'] for r in k['rows']]
+
+
+def boundary_runs(kid):
+    w, h, lo, upv = kit_grid(kid)
+    occ = lambda x, y: lo[y][x] >= 0 or upv[y][x] >= 0
+    sides = {'N': [occ(x, 0) for x in range(w)], 'S': [occ(x, h - 1) for x in range(w)], 'W': [occ(0, y) for y in range(h)], 'E': [occ(w - 1, y) for y in range(h)]}
+    out = {}
+    for s, v in sides.items():
+        runs = []; st = None
+        for i, b in enumerate(v + [False]):
+            if b and st is None: st = i
+            if not b and st is not None: runs.append((st, i - 1)); st = None
+        out[s] = runs
+    return out
+
+
+def arms_of(kid):
+    """도로가 이어 나가는 변(팔): 변 위 칸이 찬 구간이 도로 폭과 같은 것. 막다른 길(end-*)은 이름이 닫는 변을 뺀다."""
+    width = 17 if kid.startswith('jp-road-trunk') else 4
+    br = boundary_runs(kid); arms = {}
+    closed = None
+    m = re.search(r'lane-end-([nsew])$', kid)
+    if m: closed = m.group(1).upper()
+    for s, runs in br.items():
+        if s == closed: continue
+        for a, b in runs:
+            if b - a + 1 == width: arms[s] = (a, b)
+    return arms
+
+
+OPP = {'N': 'S', 'S': 'N', 'E': 'W', 'W': 'E'}
+
+
+def next_pos(apos, akit, side, bkit):
+    """A 의 side 팔에 B 를 이을 때 B 의 왼쪽 위 좌표(두 팔이 같은 선에 서도록)."""
+    ax, ay = apos; aw, ah, _, _ = kit_grid(akit); bw, bh, _, _ = kit_grid(bkit)
+    a0 = arms_of(akit)[side][0]; b0 = arms_of(bkit)[OPP[side]][0]
+    if side == 'E': return (ax + aw, ay + a0 - b0)
+    if side == 'W': return (ax - bw, ay + a0 - b0)
+    if side == 'S': return (ax + a0 - b0, ay + ah)
+    return (ax + a0 - b0, ay - bh)
+
+
+# 정답 조립 좌표가 공식과 일치하는지(문서에 적는 공식의 근거) — 어긋나면 실패
+_LC = [(p[0], p[1], p[2]) for p in RC['lane-chain']['placements']]
+_ADJ = [(0, 'E', 1), (1, 'E', 2), (2, 'E', 3), (1, 'S', 4), (4, 'S', 5), (5, 'W', 6), (5, 'E', 7), (7, 'E', 8), (5, 'S', 9)]
+for _a, _s, _b in _ADJ:
+    got = next_pos((_LC[_a][1], _LC[_a][2]), _LC[_a][0], _s, _LC[_b][0])
+    assert got == (_LC[_b][1], _LC[_b][2]), (_a, _s, _b, got, _LC[_b])
+_TC = RC['trunk-cross']['placements']
+for _a, _s, _b in ((0, 'E', 1), (1, 'E', 2)):
+    got = next_pos((_TC[_a][1], _TC[_a][2]), _TC[_a][0], _s, _TC[_b][0])
+    assert got == (_TC[_b][1], _TC[_b][2]), (_a, _s, _b, got, _TC[_b])
+
+
+def kit_item(kid):
+    k = KITS[kid]; ai = k['ai']; w, h, lo, upv = kit_grid(kid)
+    arms = arms_of(kid)
+    it = {'kit': kid, 'name': k['name'], 'w': w, 'h': h, 'anchor': ai.get('anchor'), 'repeat': (ai.get('growthAxis') if ai.get('repeatability') == 'repeat' else None),
+          'arms': {s: [a, b] for s, (a, b) in arms.items()},
+          'tiles': [[tnum(t) for t in r] for r in lo], 'upperTiles': [[tnum(t) for t in r] for r in upv], 'codes': KIT_CODES[kid]}
+    if ai.get('access'): it['access'] = ai['access']
+    emitted_kits.add(kid)
+    return it
+
+
+def kit_table(ids):
+    rows = []
+    for kid in ids:
+        k = KITS[kid]; ai = k['ai']; arms = arms_of(kid)
+        rows.append([f'`{kid}`', k['name'], f"{k['width']}×{k['height']}", ('반복 ' + ai['growthAxis']) if ai.get('repeatability') == 'repeat' else '고정',
+                     (f"({ai['anchor']['dx']},{ai['anchor']['dy']})" if ai.get('anchor') else '-'),
+                     ' '.join(f'{s}:{a}~{b}' for s, (a, b) in arms.items()) or '-'])
+    return md_table(['키트 id', '이름', '크기 w×h', '반복/고정', '앵커(dx,dy)', '팔(변:시작~끝 오프셋)'], rows)
+
+
+def doc_road_kit_dict(did, title, ids, extra=''):
+    items = [kit_item(k) for k in ids]
+    return f'''# 일본 도시 — 도로 키트 사전 · {title}
+
+{HEAD}
+
+키트 한 종의 **칸 번호 전체**다. 항목: `kit` id · `name` · `w`×`h` · `anchor`(키트의 「발」 기준점 dx,dy — 왼쪽 위가 (0,0)) · `repeat`(이어 붙여도 되는 축, null = 고정) · `arms`(도로가 이어 나가는 변 `N/S/E/W` → 변 위 시작~끝 오프셋, 변 위 칸이 찬 구간이 도로 폭과 같은 곳) ·
+`tiles`(1층 칸, 줄마다) · `upperTiles`(3층 칸, 줄마다, 표시·화살표·표지 칸) · `codes`(칸마다 엔진 판정: `X` 막힘 · `*` 걸음 ★(캐릭터 위) · `.` 걸음 · `_` 빈 칸) · `access`(있으면 문 앞 같은 접근칸 오프셋).
+-1 칸(위 배열에서는 -1 로 적힌 칸)은 **찍을 때 맵을 건드리지 않는다** — 키트 밖 땅(집 앞 보도·콘크리트)은 비어 있으니 먼저 깔고 겹쳐 찍는다. 찍는 법: `stamp_object({{"objectId":"kit:jp_city/<kit id>","mapId":"<맵>","x":<왼쪽 위 x>,"y":<왼쪽 위 y>}})`(기본 layers both).
+{extra}
+{kit_table(ids)}
+
+{jfences(items, 14000)}
+'''
+
+
+add_doc(C_ROAD, 'road-dict-lane', '일본 도시 · 도로 키트 사전 · 생활도로 17종', doc_road_kit_dict('road-dict-lane', '생활도로 17종', LANE_KITS,
+        '생활도로: 폭 4칸, 보도 없음, 가장자리에 흰 외측선. 직선(`lane-h` 6×4 가로 반복, `lane-v` 4×6 세로 반복)·T자 4방향·십자·굽은 길 4방향·막다른 길 4방향·횡단보도 2종(`lane-crosswalk-h` 6×4 가로 도로 · `lane-crosswalk-v` 4×6 세로 도로: 가운데 2칸 폭에 횡단보도 오토타일 칸을 얹은 직선 키트 — 직선 키트 한 곳을 이 키트로 바꿔 찍는다).'))
+add_doc(C_ROAD, 'road-dict-trunk', '일본 도시 · 도로 키트 사전 · 간선도로 3종', doc_road_kit_dict('road-dict-trunk', '간선도로 3종', TRUNK_KITS,
+        '간선도로 4차선: 차도 13줄(3칸 차선 넷 + 중앙분리대 1칸) + 양쪽 보도 2칸 = 폭 17칸. 왼쪽 통행(동쪽으로 가는 차는 북쪽 반). 분리대는 생울타리, 차선 경계는 점선. 직선은 `trunk-h` 8×17 가로 반복·`trunk-v` 17×8 세로 반복, 십자 교차로 `trunk-x` 는 29×29(정지선·방향 화살표·횡단보도 포함, 분리대는 횡단보도 앞에서 끝난다, 네 모퉁이 보도 끝에 신호기: 차량 3색 머리 + 보행 신호 달린 기둥, 마주 보는 모퉁이는 같은 신호).'))
+add_doc(C_ROAD, 'road-dict-misc', '일본 도시 · 도로 키트 사전 · 건널목·지하도·육교·노면 표시·표지·신호기', doc_road_kit_dict('road-dict-misc', '철도 건널목 4 · 지하도 · 육교 · 노면 표시(자전거·止まれ 4방향) · 표지 4 · 신호기 4', MISC_ROAD,
+        '건널목: 폭 4칸 생활도로 × 선로 한 줄, 경보기 둘 + 차단기 둘 + 바닥판 + 정지선. `-closed` 는 차단기 팔이 내려와 접근 차선을 막은 상태(열차 통과 연출용). 위층(경보기 머리·올라간 차단기 팔)은 지나갈 수 있고 기둥·본체·내려온 팔은 막힌다. 지하도·육교는 북쪽을 향한 한 방향. 신호기 1×2: `jp-road-signal-car`(차량 3색 머리, 青 켜짐)·`-car-red`(赤 켜짐)·`jp-road-signal-ped`(보행 신호, 赤 선 사람)·`-ped-green`(青 걷는 사람) — 머리칸(★ 지나감) 아래 기둥 받침(막힘). 큰 신호기·가로등은 시트의 기존 소품(`jp-prop-signal`·`jp-prop-lamp-post` 등)을 쓴다. 노면 글자 `jp-road-mark-tomare-n/e/s/w`(止まれ, 운전자가 북·동·남·서쪽으로 가며 읽는 방향)는 흰 칠 투명 오버레이라 도로(아래층) 위에 `stamp_object`(3층)로 얹는다.'))
+
+
+def comp_doc(name, title, note):
+    c = RC[name]; W, H = c['W'], c['H']
+    pl = [[k, x, y] for k, x, y in c['placements']]
+    for k, _, _ in pl: assert k in KITS, k
+    log_ok = all(l['ok'] for l in c['log'])
+    return f'''## {title} (그림 `jp-img-road-{name}`)
+{note}
+- 시험판 맵 {W}×{H}칸, 1층 전체 보도 `sw`({c['under']}) 위에 키트를 **위 순서대로** `stamp_object` 로 찍었다(전부 성공: {log_ok}). 좌표 = 키트 **왼쪽 위** 칸, 맵 칸 0 기준.
+- 배치 목록 `[키트 id, x, y]`(찍는 순서):
+{jfences(pl, 9000)}
+- 결과 1층(`lowerTiles`) 전체 배열:
+```text
+{flat_rows(to_rows(c['layers']['1'], W))}
+```
+- 결과 3층(`upperTiles`) 전체 배열(표시·화살표·표지·경보기):
+```text
+{flat_rows(to_rows(c['layers']['3'], W))}
+```
+'''
+
+
+def doc_road_assembly():
+    adj_rows = []
+    for a, s, b in _ADJ:
+        pa, pb = _LC[a], _LC[b]
+        adj_rows.append([f'`{pa[0]}`({pa[1]},{pa[2]})', s, f'`{pb[0]}`', f'({pb[1]},{pb[2]})', f"{arms_of(pa[0])[s][0]} → {arms_of(pb[0])[OPP[s]][0]}"])
+    j = EN['joinExp']['laneJoin']
+    lj = to_rows(j['layers']['1'], 18)
+    return f'''# 일본 도시 — 도로·교차로 키트 조립 (공식 · 정답 조립 · 이음 한계)
+
+{HEAD}
+
+도로 키트 {len(ROAD_KITS)}종은 **낱칸이 아니라 키트 단위**로 찍는다. 키트 칸의 정확한 번호 배열은 `jp-road-dict-lane`·`jp-road-dict-trunk`·`jp-road-dict-misc`, 정답 조립 배열은 `jp-road-ex-*`.
+
+## 키트 한눈에
+{kit_table(ROAD_KITS)}
+- **반복/고정**: 반복 가능 = 직선 4종(`lane-h`·`lane-v`·`trunk-h`·`trunk-v`, 같은 키트를 축 방향으로 키트 크기만큼 간격을 두고 연달아 찍는다). 나머지(교차로·굽은 길·막다른 길·횡단보도·건널목·지하도·육교·표시·표지·신호기)는 **고정** — 늘리거나 이어 붙이지 않는다.
+- 도로 폭: 생활도로 4칸, 간선 17칸(차도 13 + 보도 2×2). 팔(`arms`)은 도로가 이어 나가는 변이다.
+
+## 이어 붙이는 공식 (정답 조립 좌표로 검증됨)
+A 키트 왼쪽 위 (ax,ay), A 의 `S` 변 팔 시작 오프셋 a0, B 키트의 맞은편 변(`OPP[S]`) 팔 시작 b0, B 크기 (bw,bh) 이면 B 의 왼쪽 위는
+- `E`: (ax + aw, ay + a0 − b0) · `W`: (ax − bw, ay + a0 − b0) · `S`: (ax + a0 − b0, ay + ah) · `N`: (ax + a0 − b0, ay − bh).
+즉 두 팔이 맞닿는 변에서 팔이 **같은 줄(열)** 에 서도록 오프셋 차이만큼 옮긴다. 직선 반복은 같은 키트로 이 식을 되풀이한 것이다(`lane-h` → `E` → `lane-h`: x 가 6씩).
+아래 표는 정답 조립 `lane-chain` 의 이음 {len(_ADJ)}곳을 이 식으로 다시 계산해 **좌표가 정확히 일치**함을 확인한 것이다(스크립트 단언).
+{md_table(['A (왼쪽 위)', 'A 의 변', 'B', 'B 왼쪽 위', '팔 시작 오프셋 a0 → b0'], adj_rows)}
+
+## 실행 순서
+1. **바닥**: 키트 밖(-1 칸)은 비어 있다. 집 앞 땅(보도 `sw`·콘크리트)을 먼저 깐다 — 키트 모서리 바깥이 비면 검게 보인다.
+2. **도로 키트를 찍는다**: 교차로(T·십자)를 먼저 놓고 위 공식으로 직선·굽은 길·막다른 길을 이어 붙인다(찍는 순서는 결과에 영향이 없다 — 키트 칸이 겹치지 않는다).
+3. 간선도로는 건물 쪽 보도가 키트 밖으로 이어지는 것으로 그려져 있으니 **건물 앞 보도에 겹쳐** 놓는다.
+4. 신호기는 교차로 키트 `trunk-x` 에 네 모퉁이로 이미 들어 있다. 다른 곳(생활도로 십자·횡단보도 끝)에는 `jp-road-signal-car`·`jp-road-signal-ped` 1×2 를 보도 가장자리에 한 개씩 세운다(머리칸이 위, 기둥 받침이 아래 — 보도 폭이 2칸이면 한 칸만 막히니 안쪽 칸으로 지나가게 둔다). 가로등·볼라드는 도로 키트 밖 보도에 소품 키트로 찍는다(용도 「상가 키트·문·소품」).
+5. **생활도로 횡단보도**: 가로 생활도로의 한 곳(6칸)을 `jp-road-lane-crosswalk-h`, 세로 생활도로의 한 곳(6칸)을 `jp-road-lane-crosswalk-v` 로 바꿔 찍는다. 도로 칸은 직선 키트와 같아 앞뒤 직선·오토타일 도로와 이음새가 맞는다.
+6. **止まれ 노면 글자**: 일시정지 표지 `jp-road-sign-tomare`(1×2, 글자 없는 역삼각)를 길가에 세우고 그 앞 접근 차선에 `jp-road-mark-tomare-<방향>`(1×3 또는 3×1)을 얹는다. 방향 n=북행(글자가 똑바로 선다)·e=동행·s=남행·w=서행 — 운전자가 앞을 보고 읽는 방향이라 위에서 보는 지도에서는 n 만 바로 읽힌다(나머지는 글자가 돌아 있다).
+
+## 정답 조립 4가지 (입력 = 배치 목록 → 전체 배열 → 그림은 실제 `stamp_object` 결과)
+- 생활도로 직선 → T → 십자: `jp-road-ex-lane`(`lane-chain` 30×32: 직선 반복, T자 남쪽 가지, 세로 직선, 십자, 막다른 길).
+- 굽은 길·막다른 길: `jp-road-ex-lane`(`lane-bends`).
+- 간선 교차로: `jp-road-ex-trunk`(`trunk-cross` 45×29: `trunk-h` + `trunk-x` + `trunk-h`).
+- 건널목: `jp-road-ex-fumikiri`(세로 건널목 열림 + 가로 건널목 닫힘).
+
+## 오토타일과의 이음 (한계 — 실측)
+키트의 도로·보도·선로 칸은 오토타일 칸을 화소 그대로 **복사한 별개 칸**(3616~)이라 오토타일의 멤버가 아니다(`jp-lane-road` 멤버와 겹치는 키트 칸 {j['kitCellsAreMembers']}개). 그래서 `jp-road-lane-h` 바로 오른쪽 (6,0) 부터 `fill_region` 으로 생활도로를 채운 시험(그림 `jp-img-road-join-limit`)에서
+키트 쪽 이웃을 못 보고 첫 칸 (6,0) 이 가장자리 칸 {lj[0][6]}(「{suffix_label(AT['jp-lane-road'], lj[0][6])}」)로 닫혔다 — **키트와 오토타일은 이음새에서 끊긴다**. 키트는 키트끼리, 오토타일은 오토타일끼리 이어 칠한다.
+
+## 한계
+- 止まれ: 표지(`jp-road-sign-tomare`)는 역삼각 도형뿐(16px 도형 안에 글자가 안 들어간다). 글자는 노면 키트 `jp-road-mark-tomare-*` 가 맡지만 JIS 16×16 글리프를 가로로 1px 부풀린 것이라 가늘고, 동·서·남행은 글자가 돌아가 지도에서 읽기 어렵다(북행만 바로 읽힌다). 실제 예제 맵 ①(상가 거리)에는 쓰지 않았다.
+- 차선 폭 3칸이라 간선 키트가 17칸 높이, 십자는 29×29(정의 크기)다.
+- 건널목은 단선·생활도로(폭 4) 한 가지. 지하도·육교는 북쪽을 향한 한 방향.
+- 신호기: 간선 십자 교차로 `trunk-x` 네 모퉁이에 4기가 들어 있고(위쪽 둘은 보도 ㄱ자 바깥 끝 칸, 아래쪽 둘은 한 칸 바깥), 단독 키트 `jp-road-signal-*`(1×2)도 있다. 신호는 정지 그림(青/赤 고정)이라 신호가 바뀌는 연출은 없다. 생활도로 십자·T자·건널목에는 신호기를 따로 찍어야 한다. 가로등·큰 신호기(`jp-prop-signal` 2×6)는 소품 키트다.
+- 키트 칸 배열은 한 방향(canonical)으로 만들고 90도 회전해 4방향을 구웠다(T·굽은 길·막다른 길).
+- **검사 범위**: 칸 번호·키트 id 와 좌표(공식 일치·도로 줄 끊김·층)만 본다. 신호·차량 흐름·이벤트·미적 품질은 보지 않는다.
+
+## 정상/오류 — 자동 좌표 검증
+{md_table(['코드', '뜻', '변조', '맵 좌표(x,y)', '그림'], [
+    ['`road-gap`', '직선 반복 도로 줄 사이에 도로가 아닌 칸이 끼었다', '`lane-h` 반복 사이를 한 칸 비움(두 번째를 x=7 에)', ', '.join(f"({e['x']},{e['y']})" for e in RERR['badGap']['extra']), '`jp-img-err-road-gap`'],
+    ['`arm-misaligned`', '이어 붙인 두 키트의 팔이 같은 줄에 서지 않는다(공식 위치와 다르다)', '`lane-v` 를 T 가지 아래 x=11 에(정답 x=10)', f"({RERR['shiftNote']['to'][0]},{RERR['shiftNote']['to'][1]}) 에서 +1열", '`jp-img-err-road-shift`'],
+    ['`overlay-in-base-layer`', '투명 표시 칸(자전거 정차선 등)을 1층에 놓아 아래 땅이 사라졌다', '`stamp_layer_block` 로 `jp-road-mark-bike-stop` 칸을 1층에', ', '.join(f"({e['x']},{e['y']})" for e in RERR['markLower']['extra']['errors']), '`jp-img-err-road-mark-layer`'],
+])}
+**레이어 정정 조건**: 도로 키트의 1층 칸은 불투명 땅, 표시·화살표·표지·경보기 칸은 **3층**(`upperTiles`, 투명)이다. 3층 칸을 1층에 두면 `overlay-in-base-layer`, 땅 칸을 3층에 두면 위층 칸이 땅을 가린다. 키트는 `stamp_object` 로 통째로 찍어 층을 지킨다.
+'''
+
+
+add_doc(C_ROAD, 'road-assembly', '일본 도시 · 도로 키트 조립(공식·정답 조립·이음 한계·오류)', doc_road_assembly())
+add_doc(C_ROAD, 'road-ex-lane', '일본 도시 · 도로 정답 조립 · 생활도로 직선→T→십자·굽은 길',
+        f'''# 일본 도시 — 도로 정답 조립 · 생활도로
+
+{HEAD}
+
+입력(배치 목록) → 전체 1층·3층 배열 → 원본 해상도 그림. 실제 `stamp_object` 호출 결과다.
+
+''' + comp_doc('lane-chain', '생활도로 직선 → T자 → 십자 → 막다른 길', '`lane-h` 를 6칸씩 이어 직선을 늘리고, T자 남쪽 가지에 `lane-v`, 그 아래에 십자 `lane-x`, 십자 남쪽에 막다른 길 `lane-end-s`, 십자 좌우에 다시 직선. 이음 좌표는 공식으로 계산한 값과 같다.')
+        + comp_doc('lane-bends', '굽은 길·막다른 길', '서쪽 막다른 길 `lane-end-w` → 굽은 길 `bend-es`(동·남) → 세로 직선 → 굽은 길 `bend-ne` → 가로 직선 → 동쪽 막다른 길.'))
+add_doc(C_ROAD, 'road-ex-trunk', '일본 도시 · 도로 정답 조립 · 간선 교차로',
+        f'''# 일본 도시 — 도로 정답 조립 · 간선 교차로
+
+{HEAD}
+
+''' + comp_doc('trunk-cross', '간선 십자 교차로 + 좌우 직선', '`trunk-h`(8×17) · `trunk-x`(29×29) · `trunk-h` 를 가로로 이었다. `trunk-x` 의 서쪽·동쪽 팔은 y 6~22(17칸) — 직선은 y=6 에 놓는다.'))
+add_doc(C_ROAD, 'road-ex-fumikiri', '일본 도시 · 도로 정답 조립 · 철도 건널목',
+        f'''# 일본 도시 — 도로 정답 조립 · 철도 건널목
+
+{HEAD}
+
+건널목 키트는 **고정**이다(선로 한 줄 + 도로 4칸). 위 아래(좌우)로 생활도로 직선 키트를 이어 도로를 늘린다.
+
+''' + comp_doc('fumikiri', '세로 도로 × 가로 선로(열림)', '`lane-v` → `fumikiri-v` → `lane-v`. 건널목 키트 폭 8 안에서 도로는 x 2~5(4칸).')
+        + comp_doc('fumikiri-closed', '가로 도로 × 세로 선로(닫힘)', '`lane-h` 를 서쪽에 두고 `fumikiri-h-closed`(차단기 팔이 내려와 접근 차선을 막은 상태)를 이어 찍었다.'))
+
+
+def img_roads():
+    # 키트 도감
+    def kit_img(kid, k=1):
+        w, h, lo, upv = kit_grid(kid)
+        layers = {'1': [t for r in lo for t in r], '3': [t for r in upv for t in r]}
+        return up(render(layers, w, h, bg=(0, 0, 0, 0)), k)
+    for i, pg in enumerate(shelf_pack([(k[8:], kit_img(k)) for k in LANE_KITS])):
+        save_img(f'road-kits-lane-{i + 1}' if i else 'road-kits-lane', pg, f'생활도로 키트 17종 도감(원본 해상도, 라벨 = 키트 id 에서 `jp-road-` 를 뺀 것, 투명 칸은 체크 무늬 = -1 칸). 칸 번호는 `jp-road-dict-lane`.', C_ROAD)
+    for i, pg in enumerate(shelf_pack([(k[8:], kit_img(k)) for k in TRUNK_KITS])):
+        save_img(f'road-kits-trunk-{i + 1}' if i else 'road-kits-trunk', pg, f'간선도로 키트 3종 도감(원본 해상도, `trunk-x` 는 네 모퉁이에 신호기가 선 상태). 칸 번호는 `jp-road-dict-trunk`.', C_ROAD)
+    for i, pg in enumerate(shelf_pack([(k[3:], kit_img(k, 2)) for k in MISC_ROAD])):
+        save_img(f'road-kits-misc-{i + 1}' if i else 'road-kits-misc', pg, f'건널목 4·지하도·육교·노면 표시(止まれ 4방향 포함)·표지·신호기 키트 도감(원본 ×2). 칸 번호는 `jp-road-dict-misc`.', C_ROAD)
+    # 정답 조립
+    for name, k in (('lane-chain', 1), ('lane-bends', 1), ('trunk-cross', 1), ('fumikiri', 2), ('fumikiri-closed', 2)):
+        c = RC[name]; im = up(render(c['layers'], c['W'], c['H']), k)
+        save_img(f'road-{name}', panels([(f'{name} — 키트 {len(c["placements"])}개를 stamp_object 로 찍은 결과(원본 ×{k}, {c["W"]}×{c["H"]}칸)', im)]),
+                 f'도로 정답 조립 `{name}`: 배치 목록 {len(c["placements"])}개를 실제 `stamp_object` 로 찍은 결과(원본 ×{k}). 배치 목록·전체 배열은 `jp-road-ex-*`.', C_ROAD)
+    # 이음 한계
+    j = EN['joinExp']['laneJoin']
+    im = up(render(j['layers'], 18, 4), 2)
+    mark_cells(im, [(6, y) for y in range(4)], 2, width=2)
+    save_img('road-join-limit', panels([('왼쪽 6칸 = lane-h 키트 · 오른쪽 12칸 = fill_region(생활도로) — 이음새에서 닫힘(빨강 = 첫 오토타일 칸)', im)]),
+             '키트와 오토타일의 이음 한계 실측: `jp-road-lane-h` 키트(x 0~5) 바로 오른쪽(x 6~17)을 `fill_region` 으로 생활도로 채웠다. 키트 칸은 오토타일 멤버가 아니라 첫 칸이 가장자리 칸으로 닫힌다(원본 ×2).', C_ROAD)
+    # 오류 그림
+    g = RERR['goodGap']; b = RERR['badGap']; k = best_scale([g['W'] * T, b['W'] * T], [g['H'] * T, b['H'] * T])
+    gi = up(render(g['layers'], g['W'], g['H']), k); bi = up(render(b['layers'], b['W'], b['H']), k)
+    mark_cells(bi, [(e['x'], e['y']) for e in b['extra']], k, width=2)
+    save_img('err-road-gap', panels([('정상 — lane-h 를 6칸 간격(x 0·6·12)', gi), (f'오류 — 두 번째를 x=7 에: road-gap {len(b["extra"])}칸', bi)]),
+             f'도로 변조 road-gap: 정상(왼쪽, `lane-h` 를 6칸 간격으로 반복)/오류(오른쪽, 두 번째 키트를 한 칸 띄움 → 도로 줄이 끊김, 좌표 ' + ', '.join(f"({e['x']},{e['y']})" for e in b['extra']) + f'). 빨강 테두리 = 오류 칸, 원본 ×{k}. 표는 `jp-road-assembly`.', C_ROAD)
+    sb = RERR['shiftBad']; gd = RC['lane-chain']
+    x0, y0, cw, ch = 6, 6, 12, 12
+    def cropped(c):
+        layers = {key: [c['layers'][key][(y0 + r) * c['W'] + x0 + col] for r in range(ch) for col in range(cw)] for key in ('1', '2', '3', '4')}
+        return up(render(layers, cw, ch), 2)
+    gi = cropped(gd); bi = cropped(sb)
+    mark_cells(bi, [(11 - x0, 8 - y0 + r) for r in range(6)], 2, width=1)
+    save_img('err-road-shift', panels([('정상 — lane-v 를 T 가지 바로 아래(x=10)', gi), ('오류 — lane-v 를 x=11 에: arm-misaligned', bi)]),
+             f'도로 변조 arm-misaligned: 정상(왼쪽, `lane-v` 가 T자 남쪽 가지와 같은 줄 x=10)/오류(오른쪽, x=11 로 한 칸 어긋남 → 도로 폭이 틀어짐). 맵 칸 x {x0}~{x0 + cw - 1}, y {y0}~{y0 + ch - 1} 만 잘라 원본 ×2. 빨강 테두리 = 어긋난 키트(x=11, y 8~13).', C_ROAD)
+    md = RERR['markDefault']; ml = RERR['markLower']; k = best_scale([md['W'] * T, ml['W'] * T], [md['H'] * T, ml['H'] * T])
+    gi = up(render(md['layers'], md['W'], md['H']), k); bi = up(render(ml['layers'], ml['W'], ml['H']), k)
+    mark_cells(bi, [(e['x'], e['y']) for e in ml['extra']['errors']], k, width=2)
+    save_img('err-road-mark-layer', panels([('정상 — stamp_object (표시 칸은 3층)', gi), (f'오류 — 같은 칸을 1층에: overlay-in-base-layer {len(ml["extra"]["errors"])}칸', bi)]),
+             f'도로 표시 변조 overlay-in-base-layer: `jp-road-mark-bike-stop`(투명 1칸). 정상(왼쪽, `stamp_object` → 3층)/오류(오른쪽, `stamp_layer_block` 로 1층에 → 아래 도로가 사라져 검게 보임). 좌표 ' + ', '.join(f"({e['x']},{e['y']})" for e in ml['extra']['errors']) + f'. 원본 ×{k}.', C_ROAD)
+
+
+# arm-misaligned 를 공식으로 검증(오류 합성에서 lane-v 가 공식 위치와 다르다)
+_sh = [(p[0], p[1], p[2]) for p in RERR['shiftBad']['placements']]
+_good_v = next_pos((_LC[1][1], _LC[1][2]), _LC[1][0], 'S', _LC[4][0])
+_bad_v = (_sh[4][1], _sh[4][2])
+assert _bad_v != _good_v and _bad_v == (_good_v[0] + 1, _good_v[1]), (_bad_v, _good_v)
+img_roads()
+
+
+# ====================================================================== 분류 5 — 상가 키트·문·소품
+C_SHOP = new_cat('shop', '일본 도시 · 상가 키트·문·소품',
+                 '완성 상가 건물 레시피 25종·문 9종·거리 소품 142종: 키트 id·크기·앵커·문 앞 접근칸·입구·간판 부위·칸 번호 전체 배열·엔진 통행 코드, 3/4 시점 규칙, 통행·반복/고정·문 그림/접근칸/출입구/이벤트 구분, 배치 실행 순서, 정상/오류(문 앞 막힘·뒷줄/앞줄 순서·건물 칸을 1층에) 그림과 좌표.')
+SE = EN['shopErrors']
+PROP_GROUPS = [
+    ('vehicle', '자동차·버스·트럭·인력거', r'^jp-prop-(car-|van-|bus|ad-truck|ricksha)'),
+    ('rail', '열차·고가·역 설비', r'^jp-prop-(train|viaduct|catenary|station-gate|guard-tunnel|signal-overhead)'),
+    ('shrine', '신사·절·참배 길', r'^jp-prop-(kaminarimon|hozomon|pagoda|honden|nakamise|censer|chozuya|lantern-post|stone-lantern|sanmon|string-lanterns)'),
+    ('green', '나무·화분', r'^jp-prop-(tree-|planter|pot)'),
+    ('sign', '간판·네온·깃발·상점 앞', r'^jp-prop-(neon-stack|akiba-neon|led-tower|nobori|blade-sign|street-flag|a-frame|coin-sign|coin-p|shop-cover|gacha-wall|theatre-front|arch-|omoide|tin-stall|maid-flyer)'),
+    ('wall', '담·문·계단·차단물', r'^jp-prop-(wall-|gate-|stairs-|iron-stair|yuyake|barricade|cone)'),
+    ('animal', '동물·놀이터', r'^jp-prop-(cat-|slide|swing|sandbox|hachiko)'),
+    ('street', '거리 설비(자판기·자전거·신호·전봇대·벤치 등)', r'^jp-prop-'),
+]
+
+
+def prop_group(kid):
+    for key, name, rx in PROP_GROUPS:
+        if re.search(rx, kid): return key
+    raise AssertionError(kid)
+
+
+PG_NAME = {k: n for k, n, _ in PROP_GROUPS}
+PG_COUNT = collections.Counter(prop_group(k) for k in PROPS)
+assert sum(PG_COUNT.values()) == 142
+
+
+def shop_item(kid):
+    k = KITS[kid]; ai = k['ai']; w, h, lo, upv = kit_grid(kid)
+    it = {'kit': kid, 'name': k['name'], 'w': w, 'h': h}
+    if ai.get('anchor'): it['anchor'] = ai['anchor']
+    if ai.get('access'): it['access'] = ai['access']
+    parts = [{'kind': p['kind'], 'dx': p['dx'], 'dy': p['dy'], 'w': p['w'], 'h': p['h']} for p in k.get('parts', [])]
+    if parts: it['parts'] = parts
+    if any(t >= 0 for r in lo for t in r): it['tiles'] = [[tnum(t) for t in r] for r in lo]
+    it['upperTiles'] = [[tnum(t) for t in r] for r in upv]
+    it['codes'] = KIT_CODES[kid]
+    emitted_kits.add(kid)
+    return it
+
+
+def doc_shop_rules():
+    pr = [[r['id'], '; '.join(f"({a['x'] - 2},{a['y'] - 1}) 도달 {a['reach']}" for a in r['access'])] for r in EN['recipes']]
+    eqrows = []
+    for n in SPEC['examples']:
+        b = BLD[n]; eq = EQ.get(n)
+        eqrows.append([f'`{n}`', f"`{_recipe_id(n)}`", ('도구 거부 ' + b['code']) if not b['ok'] else (f'{eq[0]}/{eq[1]} 화소 다름' if eq else '-')])
+    n_eq0 = sum(1 for v in EQ.values() if v and v[0] == 0)
+    return f'''# 일본 도시 — 상가 키트·문·소품 규칙 (시점·통행·문 앞·반복/고정·배치 순서)
+
+{HEAD}
+
+## 키트 세 종류
+- **레시피 {len(RECIPES)}종**(`jp-recipe-*`): 건물 한 채 완성품(문·간판 부위 포함). 건물 조립 도구의 완성 예제 {len(SPEC['examples'])}개와 이름이 1:1 로 대응한다(`konbini_block` ↔ `jp-recipe-konbini-block`, L자는 `jp-recipe-l-…`). 칸 배열은 문서 「상가 레시피 사전」.
+- **문 {len(DOORS)}종**(`jp-door-*`, 2×3 · 마치야 3×3): 건물 지면 층 위에 겹쳐 찍는 부착물. 문서 「문 사전」.
+- **소품 {len(PROPS)}종**(`jp-prop-*`): 자판기·자전거·신호기·전봇대·나무·차량·열차·신사 문·계단·네온 등 거리 소품. 문서 「소품 사전」. 후속 추가 자리: 주택가·역·공원·신사 구역용 세트는 없다(여기 있는 건 개별 소품).
+**모든 키트는 고정**(`repeatability: fixed`)이다 — 늘리거나 이어 붙이지 않는다. 가로로 늘어놓고 싶은 것(자전거 줄·볼라드 줄)은 같은 키트를 칸 간격으로 **한 번씩 따로** 찍는다.
+
+## 3/4 시점 규칙 (그림 규약, 블록 계약 `scripts/content/jp-city/CONTRACT.md`)
+- 시점: 윗면 + **남쪽 정면**(3/4). 빛은 왼쪽 위, 그림자는 오른쪽 아래. 높은 지형·건물은 남쪽 변에 앞면, 낮은 지형(물)은 북쪽 변에 앞면.
+- 팔레트: modern3(154색) 안의 색만, 알파 0/255(반투명 없음), 윤곽은 램프의 어두운 단. AI 이미지·행인(Actor1)은 번들에 없다.
+- 키트 칸의 위·아래 겹침(문+건물 칸)은 **겹쳐 구운 칸**(2880~3132)에 이미 반영돼 있다 — 낱칸으로 다시 겹치지 않는다.
+
+## 통행 (엔진 판정 — 키트마다 `codes` 가 문서에 있다)
+- 건물 레시피: **지면 층(1층 띠) 아래 두 줄과 문 칸은 막힘**, 그 위(윗층·처마·옥상)는 걸어 지나갈 수 있고 사람 위에 그려진다(★).
+- 소품: **밑동 칸은 막힘**, 윗부분은 ★(걸음·캐릭터 위). 투명 소품도 밑동은 막는다. 바퀴·열차 아랫줄 같은 투명 아랫단은 걸을 수 있다(캐릭터 밑).
+- 차량·열차는 정지 그림(움직이지 않는다) — 밑동 막힘.
+- 칸 종류와 층·통행 대응표는 `jp-sheet-map`(칸의 통행 종류). 키트 `codes` 문자: `X` 막힘 · `*` 걸음 ★ · `.` 걸음 · `_` 빈 칸.
+
+## 문 그림 · 문 앞 접근칸 · 출입구 · 상호작용 이벤트 (서로 다른 것)
+{md_table(['구분', '무엇', '통행', '비고'], [
+    ['문 그림', '`jp-door-*` 2×3 부착물(레시피 안에는 합성 칸으로 이미 들어 있다)', '맨 아래 두 줄 막힘, 윗줄 ★', '그림일 뿐 이동을 일으키지 않는다'],
+    ['출입구(입구 부위)', '키트 `parts` 의 `entrance`(문 칸 위치 dx,dy,w,h)', '막힘(문 칸)', '`stamp_object` 응답이 입구 맵 좌표를 돌려준다(이벤트 자리)'],
+    ['문 앞 접근칸', '키트 바깥 **한 줄 아래**(`access`)', '걸을 수 있는 보도여야 한다', '소품·차량으로 막지 않는다(막으면 `door-access-blocked`)'],
+    ['상호작용·전이 이벤트', '문 이동·대화 이벤트(저작자가 만든다)', '-', '도구가 만들지 않는다. 이벤트는 입구 칸, 길은 입구 바로 아래 칸에서 끝낸다. **이 문서의 검사는 이벤트 실행을 보지 않는다**'],
+])}
+
+## 실행 순서 (상가 한 구역)
+1. **바닥**: 보도·도로를 먼저 깐다(오토타일·도로 키트). 건물 키트의 -1 칸 아래가 비면 검게 보이고, 접근칸이 막힌다.
+2. **건물**: 뒷줄(발 y 가 작은 쪽) 먼저, 앞줄 나중. 레시피는 `stamp_object({{"objectId":"kit:jp_city/jp-recipe-<이름>","mapId":"<맵>","x":<왼쪽 위 x>,"y":<왼쪽 위 y>}})`(키트 크기는 사전의 `w`×`h`, 발 = 왼쪽 위 + (0,h−1)). 폭·층을 바꾸려면 `build_jp_city_building`(용도 「건물 조립 도구」).
+3. **문 앞 접근칸 확인**: 레시피마다 `access` 오프셋(문 아래 한 줄)에서 걸을 수 있는 칸이 6칸 이상 이어져야 한다 — 시험판(보도 위)에서는 전부 도달 7칸(아래 표).
+4. **소품**: 보도·도로 위에 소품 키트를 찍는다. 접근칸·횡단보도 접점을 피한다. 소품 발밑이 막힘 칸이므로 길을 막지 않는 자리에 둔다.
+5. **검사**: 용도 「정상/오류」·이 문서 끝의 변조 표(문 앞 막힘·뒷줄/앞줄 순서·건물 칸을 1층에).
+
+## 레시피 25종의 문 앞 접근칸 도달 (시험판 맵 보도 위, 키트 왼쪽 위 (2,1), 엔진 `isPassable` BFS, 6칸이면 통과)
+{md_table(['레시피', '접근칸(키트 안 오프셋) 도달 칸 수(최대 7까지 센다)'], pr)}
+{len(EN['recipes'])}종 전부 모든 접근칸에서 도달 ≥ 6.
+
+## 레시피 = 건물 조립 도구 결과? (같은 자리 화소 비교)
+도구가 지은 화면과 같은 이름 레시피를 같은 자리에 `stamp_object` 로 찍은 화면을 화소 단위로 비교했다.
+{md_table(['건물 조립 예제', '레시피 키트', '비교'], eqrows)}
+화소가 완전히 같은 예제 {n_eq0}개. 나머지 4개 중 `L_office_cafe` 는 별채 그림자(도구가 칸 번호로 못 그려 생략)에 해당하는 화소만 다르고, 3개(`machiya_izakaya` `L_machiya_annex` `L_flats_lot`)는 도구가 `DECO_CLASH` 로 거부해 비교 대상이 아니다.
+
+## 정상/오류 — 자동 좌표 검증
+{md_table(['코드', '뜻', '변조', '맵 좌표(x,y)', '그림'], [
+    ['`door-access-blocked`', '문 앞 접근칸이 소품·차량·땅 때문에 막혔거나 걸어서 6칸 못 간다', '`jp-recipe-konbini-block`(발 아래 접근칸 (5,12)(6,12)) 위에 `jp-prop-vend-pair`(4×2)를 (4,11) 에 찍음', ', '.join(f"({e['x']},{e['y']})" for e in SE['blockedAccess']['errors']), '`jp-img-err-shop-door-access`'],
+    ['`back-over-front`', '겹치는 두 건물을 뒷줄이 나중에 찍혀 앞 건물을 덮었다', '앞 `konbini-block`·뒤 `sushi-bar` 를 앞→뒤 순서로 찍음', f"{len(SE['orderBad']['errors'])}칸: " + ', '.join(f"({e['x']},{e['y']})" for e in SE['orderBad']['errors'][:6]) + ' …', '`jp-img-err-shop-order`'],
+    ['`building-in-lower-layer`', '건물·소품 칸(홈 위층)이 1층에 있다 — 아래 땅이 사라지고 그림 순서가 어긋난다', '`stamp_layer_block` 로 건물 칸 66칸을 1층에 놓음', f"{len(SE['lowerBuilding']['errors'])}칸(예: " + ', '.join(f"({e['x']},{e['y']})" for e in SE['lowerBuilding']['errors'][:4]) + f"…), 그중 엔진에서 걸을 수 있다고 판정된 칸 {SE['lowerBuilding']['walkableBuildingCells']}", '`jp-img-err-shop-layer`'],
+])}
+- 정상 대조: 변조 전 같은 맵 — `door-access-blocked` 0건(접근칸 도달 {', '.join(str(a['reach']) for a in SE['okAccess']['acc'])}), `back-over-front`(뒷 → 앞 순서) {len(SE['orderGood']['errors'])}건.
+- **검사 범위**: 칸 번호·층·통행·접근칸 도달(구조). 이벤트 실행·움직이는 NPC·미적 품질·낮은 성능 모델이 맞게 깔 확률은 보지 않는다. 저장 전 실패하면 부분 배치가 남지 않는다는 보장은 `build_jp_city_building` 에만 있다 — `stamp_object` 는 맵 밖으로 나간 칸을 잘라 내고 경고만 한다(검사는 이 표의 코드를 사후에 훑는 방식).
+**레이어 정정 조건**: 건물·소품 칸은 3층(`upperTiles`)에만, 땅은 1층에만 둔다. 건물 칸이 1층에 있으면 `building-in-lower-layer` — 3층으로 옮기고 1층은 땅(보도)으로 되돌린다. 키트를 `stamp_object` 로 통째로 찍으면 층이 지켜진다.
+'''
+
+
+add_doc(C_SHOP, 'shop-rules', '일본 도시 · 상가 키트·문·소품 규칙(시점·통행·문 앞·배치 순서·오류)', doc_shop_rules())
+
+
+def doc_shop_recipes(idx, ids):
+    items = []
+    by = {r['id']: r for r in EN['recipes']}
+    for kid in ids:
+        it = shop_item(kid)
+        it['accessReach'] = [a['reach'] for a in by[kid]['access']]
+        items.append(it)
+    return f'''# 일본 도시 — 상가 레시피 사전 {idx}/2 ({len(ids)}종, 칸 번호 전체)
+
+{HEAD}
+
+완성 상가 건물 키트의 **칸 번호 전체**다. 항목: `kit` · `name` · `w`×`h` · `access`(문 앞 접근칸 오프셋 dx,dy — 키트 왼쪽 위 기준, 건물 사각형 **바깥** 한 줄 아래) · `parts`(`entrance` = 입구/문 칸 dx,dy,w,h · `sign` = 간판 부위) ·
+`tiles`(1층 칸, 있으면) · `upperTiles`(3층 칸, 줄마다) · `codes`(엔진 판정 `X` 막힘 · `*` ★ · `.` 걸음 · `_` 빈 칸) · `accessReach`(시험판 보도 위에서 접근칸마다 걸어 갈 수 있는 칸 수, 최대 7).
+`-1` 은 찍을 때 맵을 건드리지 않는 칸이다. 발 = 왼쪽 위 + (0, h−1). 규칙은 `jp-shop-rules`, 그림은 `jp-img-shop-recipes-*`.
+
+{jfences(items, 14000)}
+'''
+
+
+_half = (len(RECIPES) + 1) // 2
+add_doc(C_SHOP, 'shop-recipes-1', '일본 도시 · 상가 레시피 사전 1/2', doc_shop_recipes(1, RECIPES[:_half]))
+add_doc(C_SHOP, 'shop-recipes-2', '일본 도시 · 상가 레시피 사전 2/2', doc_shop_recipes(2, RECIPES[_half:]))
+
+
+def doc_shop_doors():
+    items = [shop_item(k) for k in DOORS]
+    return f'''# 일본 도시 — 문 사전 ({len(DOORS)}종, 칸 번호 전체)
+
+{HEAD}
+
+문 키트(`jp-door-*`)는 건물 지면 층(1층 띠 3줄) **위에 겹쳐** 찍는 2×3(마치야 3×3) 부착물이다. 맨 아래 두 줄은 막힘(문 칸), 윗줄은 ★. 문 앞 접근칸 = 키트 바깥 한 줄 아래(`access`).
+건물 조립 도구에서는 `door.type` 으로 고른다(`lattice·auto·lobby·steel·cafe·noren·rollup·machiya·house`). 항목 필드는 「상가 레시피 사전」과 같다. 그림 `jp-img-shop-doors`.
+
+{jfences(items, 12000)}
+'''
+
+
+add_doc(C_SHOP, 'shop-doors', '일본 도시 · 문 사전(9종)', doc_shop_doors())
+
+
+def doc_shop_props():
+    ordered = sorted(PROPS, key=lambda k: ([g[0] for g in PROP_GROUPS].index(prop_group(k)), PROPS.index(k)))
+    docs = []; cur = []; size = 0
+    for kid in ordered:
+        it = shop_item(kid); n = len(jline(it))
+        if cur and size + n > 38000: docs.append(cur); cur = []; size = 0
+        cur.append((kid, it)); size += n
+    if cur: docs.append(cur)
+    return docs
+
+
+_PD = doc_shop_props()
+for _i, _chunk in enumerate(_PD):
+    _groups = list(dict.fromkeys(prop_group(k) for k, _ in _chunk))
+    _toc = '\n'.join(f"- {PG_NAME[g]}: " + ', '.join(f'`{k}`' for k, _ in _chunk if prop_group(k) == g) for g in _groups)
+    add_doc(C_SHOP, f'shop-props-{_i + 1}', f'일본 도시 · 소품 사전 {_i + 1}/{len(_PD)}',
+            f'''# 일본 도시 — 소품 사전 {_i + 1}/{len(_PD)} ({len(_chunk)}종, 칸 번호 전체)
+
+{HEAD}
+
+거리 소품 키트 {len(PROPS)}종 중 이 문서의 {len(_chunk)}종이다(분류: 아래 목록, 전체는 {len(_PD)}개 문서). 항목 필드는 「상가 레시피 사전」과 같다(소품에는 `access`·`parts` 가 없다). 모든 소품은 **고정**.
+`codes` 의 `X` = 밑동(막힘) · `*` = 윗부분 ★(걸음·캐릭터 위) · `.` = 걸음 · `_` 빈 칸. 소품은 **보도·도로·잔디 위**에 찍고, 문 앞 접근칸과 횡단보도 접점을 피한다. 그림 `jp-img-shop-props-*`.
+{_toc}
+
+{jfences([it for _, it in _chunk], 13000)}
+''')
+
+
+def img_shop():
+    def kit_im(kid, k):
+        w, h, lo, upv = kit_grid(kid)
+        return up(render({'1': [t for r in lo for t in r], '3': [t for r in upv for t in r]}, w, h, bg=(0, 0, 0, 0)), k)
+    for i, pg in enumerate(shelf_pack([(k[10:], kit_im(k, 1)) for k in RECIPES])):
+        save_img(f'shop-recipes-{i + 1}', pg, f'상가 레시피 {len(RECIPES)}종 도감 {i + 1}(키트를 그대로, 원본 해상도, 라벨 = 키트 id 에서 `jp-recipe-` 를 뺀 것, 체크 무늬 = 키트 밖 -1 칸). 칸 번호는 `jp-shop-recipes-*`.', C_SHOP)
+    for i, pg in enumerate(shelf_pack([(k[8:], kit_im(k, 4)) for k in DOORS])):
+        save_img(f'shop-doors-{i + 1}' if i else 'shop-doors', pg, f'문 {len(DOORS)}종 도감(원본 ×4, 라벨 = 키트 id 에서 `jp-door-` 를 뺀 것). 칸 번호는 `jp-shop-doors`.', C_SHOP)
+    order = sorted(PROPS, key=lambda k: ([g[0] for g in PROP_GROUPS].index(prop_group(k)), PROPS.index(k)))
+    for gk, gn, _ in PROP_GROUPS:
+        ids = [k for k in order if prop_group(k) == gk]
+        items = [(k[8:], kit_im(k, 2 if max(KITS[k]['width'], KITS[k]['height']) <= 6 else 1)) for k in ids]
+        for i, pg in enumerate(shelf_pack(items)):
+            save_img(f'shop-props-{gk}-{i + 1}', pg, f'소품 도감 — {gn} {len(ids)}종 {i + 1}쪽(작은 소품 ×2, 큰 소품 원본 해상도, 라벨 = 키트 id 에서 `jp-prop-` 를 뺀 것). 칸 번호는 `jp-shop-props-*`.', C_SHOP)
+    # 오류 그림
+    a = SE['okAccess']; b = SE['blockedAccess']; W, H = 12, 17
+    k = best_scale([W * T, W * T], [H * T, H * T])
+    gi = up(render(a['layers'], W, H), k); bi = up(render(b['layers'], W, H), k)
+    mark_cells(bi, [(e['x'], e['y']) for e in b['errors']], k, width=2); mark_cells(gi, [(x['x'], x['y']) for x in a['acc']], k, color=(40, 220, 80, 255), width=1)
+    save_img('err-shop-door-access', panels([('정상 — 문 앞 접근칸(초록)이 열려 있다', gi), (f'오류 — 소품이 접근칸을 막음: door-access-blocked {len(b["errors"])}칸', bi)]),
+             f'상가 변조 door-access-blocked: `jp-recipe-konbini-block` 문 앞 접근칸 (5,12)(6,12). 정상(왼쪽, 초록 테두리 = 접근칸, 도달 7)/오류(오른쪽, `jp-prop-vend-pair` 를 (4,11) 에 찍어 접근칸 도달 0). 좌표 ' + ', '.join(f"({e['x']},{e['y']})" for e in b['errors']) + f'. 원본 ×{k}.', C_SHOP)
+    g, bd = SE['orderGood'], SE['orderBad']; W, H = 14, 19
+    k = best_scale([W * T, W * T], [H * T, H * T])
+    gi = up(render(g['layers'], W, H), k); bi = up(render(bd['layers'], W, H), k)
+    mark_cells(bi, [(e['x'], e['y']) for e in bd['errors']], k, width=1)
+    save_img('err-shop-order', panels([('정상 — 뒷줄(sushi-bar) 먼저, 앞줄(konbini-block) 나중', gi), (f'오류 — 앞줄 먼저·뒷줄 나중: back-over-front {len(bd["errors"])}칸', bi)]),
+             f'상가 변조 back-over-front: 겹치는 두 건물. 정상(왼쪽, 뒤→앞 순서)/오류(오른쪽, 앞→뒤 순서로 찍어 뒷건물이 앞건물 위로 올라옴). 빨강 테두리 = 앞 건물 칸이 뒷건물에 덮인 {len(bd["errors"])}칸, 좌표 ' + ', '.join(f"({e['x']},{e['y']})" for e in bd['errors'][:6]) + f' … 원본 ×{k}.', C_SHOP)
+    lb = SE['lowerBuilding']; W, H = 12, 17
+    k = best_scale([W * T, W * T], [H * T, H * T])
+    gi = up(render(a['layers'], W, H), k); bi = up(render(lb['layers'], W, H), k)
+    mark_cells(bi, [(e['x'], e['y']) for e in lb['errors']][:80], k, width=1)
+    save_img('err-shop-layer', panels([('정상 — 건물 칸은 3층', gi), (f'오류 — 건물 칸을 1층에: building-in-lower-layer {len(lb["errors"])}칸', bi)]),
+             f'상가 변조 building-in-lower-layer: 정상(왼쪽, `stamp_object` → 3층)/오류(오른쪽, `stamp_layer_block` 로 같은 칸을 1층에 → 아래 보도가 사라져 투명 부분이 검게 보이고 그림 순서가 어긋남). 엔진에서 걸을 수 있다고 판정된 건물 칸 {lb["walkableBuildingCells"]}칸. 원본 ×{k}.', C_SHOP)
+
+
+img_shop()
+
+
+# ====================================================================== 분류 6 — 정상/오류·자동 검사(총괄)
+C_ERR = new_cat('errors', '일본 도시 · 정상/오류·자동 좌표 검증·층 정정',
+                '모든 용도의 정상/오류 실험을 한곳에 모은 총괄: 검사 코드 → 용도·문서·그림 지도, 변조별 맵 좌표 표(오토타일 17세트·건물 11+3·도로 3·상가 3), 검사 범위(과대 주장 금지), 엔진 판정과 안 맞는 층 설명의 정정(전/후)과 투명 덧그림 층 돌려놓기 실험.')
+
+# 층 설명 대조: 그룹 defaultLayer 는 굽기가 멤버 칸의 엔진 홈에서 유도한다(bake_lib.derive_group_layer) — 정정 후 어긋남 0 을 여기서 다시 확인한다.
+# 정정 전(2026-10-03 이전 굽기)의 선언값 — 역사 기록용 상수. 투명 덧그림 5그룹은 lower, 나머지 8그룹은 upper 였다.
+OLD_GROUP_LAYER = {'jp:lane-center': 'lower', 'jp:lane-dash': 'lower', 'jp:crosswalk': 'lower', 'jp:tactile': 'lower', 'jp:road-kit-marking': 'lower',
+                   'jp:prop:street': 'upper', 'jp:prop:green': 'upper', 'jp:prop:gate': 'upper', 'jp:prop:shrine': 'upper', 'jp:prop:stairs': 'upper',
+                   'jp:prop:storefront': 'upper', 'jp:prop:play': 'upper', 'jp:underpass-footbridge': 'upper'}
+_GROUP_HOMES = collections.OrderedDict()            # 정정 대상 그룹 → {'upper': [칸], 'lower': [칸]} (엔진 홈 기준)
+_LEFT_MISMATCH = []                                  # 정정 후에도 그룹 층과 칸 홈이 어긋난 (그룹, 칸) — 0 이어야 한다
+HIST_TILES = 3728      # 정정(2026-10-03) 당시 칸 수 — 이후에 덧붙은 칸(번호 ≥ 3728)은 정정 전/후 비교 표에 세지 않는다
+for _g in D['tileGroups']:
+    _homes = {'upper': [], 'lower': []}; _hist = {'upper': [], 'lower': []}
+    for _t in _g['tileIds']:
+        _c = CODES[_t]
+        if not _c or _c[0] == 'b': continue
+        _homes['lower' if _c[0] == 'l' else 'upper'].append(_t)
+        if _t < HIST_TILES: _hist['lower' if _c[0] == 'l' else 'upper'].append(_t)
+    if _g['id'] in OLD_GROUP_LAYER: _GROUP_HOMES[_g['id']] = _hist
+    if _g['defaultLayer'] == 'event': continue
+    _want = 'mixed' if (_homes['upper'] and _homes['lower']) else ('upper' if _homes['upper'] else 'lower' if _homes['lower'] else _g['defaultLayer'])
+    if _g['defaultLayer'] != _want: _LEFT_MISMATCH.append(_g['id'])
+assert not _LEFT_MISMATCH, _LEFT_MISMATCH
+assert not AUD['groupLayerMismatches'], AUD['groupLayerMismatches']
+assert set(_GROUP_HOMES) == set(OLD_GROUP_LAYER), set(OLD_GROUP_LAYER) ^ set(_GROUP_HOMES)
+_LM_UP_BY = collections.OrderedDict((gid, h['upper']) for gid, h in _GROUP_HOMES.items() if OLD_GROUP_LAYER[gid] == 'lower')     # 옛 선언 아래층·엔진 홈 위층(투명 덧그림)
+_LM_LO_BY = collections.OrderedDict((gid, h['lower']) for gid, h in _GROUP_HOMES.items() if OLD_GROUP_LAYER[gid] == 'upper' and h['lower'])   # 옛 선언 위층·엔진 홈 아래층
+_LM_UP = [t for v in _LM_UP_BY.values() for t in v]
+_LM_LO = [t for v in _LM_LO_BY.values() for t in v]
+assert len(_LM_UP) == 74 and len(_LM_LO) == 103, (len(_LM_UP), len(_LM_LO))
+_STAIR_STAR = [{'tile': t} for t in AUD['walkableStairs']]
+assert len(_STAIR_STAR) == 54, len(_STAIR_STAR)
+
+
+def n_issue(lst): return len(lst)
+
+
+def doc_err_overview():
+    B = EN['tampers']
+    rows = [
+        ['`autotile-stale`', '오토타일 멤버 칸이 이웃과 안 맞는다(재계산 안 됨)', f'오토타일 17세트(세트마다 1건)', '`jp-at-<세트>`·`jp-at-usage`', '`jp-img-at-<세트>-err`(왼쪽)', '몸통 칸을 `paint_tiles` 로 다시 칠한다'],
+        ['`wrong-layer`', '오토타일 칸이 칠하는 층이 아닌 층에 있다', '오토타일 17세트(세트마다 1건)', '`jp-at-<세트>`·`jp-at-usage`', '`jp-img-at-<세트>-err`(오른쪽)', '지우고 맞는 층에 `paint_tiles` 로 칠한다'],
+    ]
+    for t in B:
+        codes = ', '.join(f'`{c}`' for c in sorted({e["code"] for e in t['errors']}))
+        rows.append([codes, t['title'], f"건물 {t['id']}", '`jp-bld-errors`', f"`jp-img-err-bld-{t['id'].lower()}`", '표의 「고치는 법」(`jp-bld-errors`)'])
+    rows += [
+        ['`road-gap`', '직선 반복 도로 줄이 끊김', '도로 키트', '`jp-road-assembly`', '`jp-img-err-road-gap`', '간격을 키트 폭으로 맞춘다'],
+        ['`arm-misaligned`', '키트 팔이 같은 줄에 안 선다', '도로 키트', '`jp-road-assembly`', '`jp-img-err-road-shift`', '팔 오프셋 공식 위치로 옮긴다'],
+        ['`overlay-in-base-layer`', '투명 표시 칸이 1층에 있다', '도로 키트', '`jp-road-assembly`', '`jp-img-err-road-mark-layer`', '3층으로 옮긴다(`stamp_object`)'],
+        ['`door-access-blocked`', '문 앞 접근칸이 막혔다', '상가 키트', '`jp-shop-rules`', '`jp-img-err-shop-door-access`', '소품을 접근칸 밖으로 옮긴다'],
+        ['`back-over-front`', '뒷건물이 앞건물을 덮었다', '상가 키트', '`jp-shop-rules`', '`jp-img-err-shop-order`', '뒷줄 먼저·앞줄 나중 순서로 찍는다'],
+        ['`building-in-lower-layer`', '건물 칸이 1층에 있다', '상가 키트', '`jp-shop-rules`', '`jp-img-err-shop-layer`', '3층으로 옮기고 1층은 땅으로'],
+    ]
+    return f'''# 일본 도시 — 정상/오류 · 자동 좌표 검증 · 층 정정 (총괄)
+
+{HEAD}
+
+이 용도는 다른 용도(오토타일·건물 조립 도구·도로 키트·상가 키트)에 흩어진 **정상/오류 나란한 그림과 맵 좌표 검증**을 한곳에서 찾는 지도다.
+각 용도 문서에 정상 그림·오류 그림·변조 좌표가 이미 들어 있다 — 아래 표의 문서·그림 이름으로 찾아 읽는다. 이 용도 자체에는 변조 좌표 전체표(`jp-err-scenarios`)와 층 설명 정정(`jp-err-layer-correction`)이 있다.
+
+## 검사의 정체
+- 검사는 사람이 쓴 규칙이 아니라 **엔진 함수의 판정**이다: 오토타일은 `autotileVariantForCell`(이웃으로 고르는 칸), 층은 `tileLayerPolicy().home`, 통행은 `isPassable`·`passabilityOf`, 그림 순서는 `mapUpperTileDepth`, 건물은 `checkJpCityStructure`(조립기).
+- 오류 그림은 정상 입력에서 **한 가지만 일부러 틀리게 바꾼** 실제 맵(`tiledata/jp-city/refs/engine_dump.mts` 가 실제 도구를 호출해 만든 결과)이고, 빨강 테두리가 검사가 짚은 칸이다. 좌표는 맵 칸 0 기준 (x,y).
+- 건물 조립 도구(`build_jp_city_building`)는 틀린 입력이면 **맵을 바꾸지 않고** 코드와 좌표로 거부한다(변조 {len(B)}건 전부 「맵 불변」). 낱칸 도구(`paint_tiles`·`stamp_layer_block`·`stamp_object`)는 막지 않고 사후 검사로만 잡는다.
+
+## 코드 → 용도·문서·그림 지도
+{md_table(['코드', '뜻', '실험', '문서', '오류 그림', '고치는 법(레이어 정정 포함)'], rows)}
+
+## 검사 범위 (과대 주장 금지)
+| 보는 것 | 보지 않는 것 |
+|---|---|
+| 칸 번호·층·이웃 재계산 일치·막힘/걸음·문 앞 접근칸 도달·그림 순서·키트 팔 좌표 | 이벤트 실행(문 이동·대화)·움직이는 NPC·신호와 차량 흐름 |
+| 건물 띠 순서·층 쌍·문 위치·부착물 겹침(조립기) | 색 조화·밀도·「좋아 보이는가」 같은 미적 품질 |
+| 번들 안 키트·부품 id 와 좌표 | 이 문서를 읽는 낮은 성능 모델이 맞게 깔 확률(측정하지 않았다) |
+검사 통과는 「구조·층·통행이 맞다」는 뜻일 뿐이다. 이 문서 묶음은 저장소의 전체 시험(`vitest`·게이트)을 돌린 결과가 아니다.
+
+## 읽는 순서
+`jp-err-overview`(이 문서) → 해당 용도의 문서(위 표) → 변조 좌표 전체표 `jp-err-scenarios` → 층 설명 정정 `jp-err-layer-correction`.
+'''
+
+
+add_doc(C_ERR, 'err-overview', '일본 도시 · 정상/오류 총괄(코드 → 용도·문서·그림 지도)', doc_err_overview())
+
+
+def doc_err_scenarios():
+    at_rows = []
+    for gid in AT:
+        d = AT_DEMO[gid]; short = gid[3:]
+        s1 = issue_rows(d['staleErr']['issues'], 'autotile-stale'); s2 = issue_rows(d['layerErr']['issues'], 'wrong-layer')
+        at_rows.append([f'`{gid}`', LAYER_NAME[d['layer']], f'몸통 칸 {d["body"]} 그대로 찍음(재계산 없이)', f'`autotile-stale` {len(s1)}칸: ' + fmt_coords(s1, 5),
+                        f'같은 칸을 {d["wrongLayer"]}층에 놓음', f'`wrong-layer` {len(s2)}칸: ' + fmt_coords(s2, 5), f'`jp-img-at-{short}-err`'])
+    bl = []
+    for t in EN['tampers']:
+        errs = ', '.join(f"`{e['code']}`@({e['x']},{e['y']})" for e in t['errors']) or '(없음)'
+        bl.append([t['id'], t['what'], ('거부 `' + t['toolCode'] + '`' if not t['toolOk'] else '**지어졌다**'), '맵 불변' if t['mapUnchanged'] else '**맵이 바뀜**', errs])
+    sr = [[s['what'], ', '.join(f'`{g}`' for g in s['got'])] for s in EN['structureTampers']]
+    RE = EN['roadErrors']; SE_ = EN['shopErrors']
+    rd = [
+        ['`road-gap`', '`lane-h` 반복 두 번째를 x=7 에(정답 x=6)', ', '.join(f"({e['x']},{e['y']})" for e in RE['badGap']['extra'])],
+        ['`arm-misaligned`', '`lane-v` 를 x=11 에(정답 x=10)', f"({RE['shiftNote']['to'][0]},{RE['shiftNote']['to'][1]}) 에서 +1열"],
+        ['`overlay-in-base-layer`', '`jp-road-mark-bike-stop` 칸을 1층에', ', '.join(f"({e['x']},{e['y']})" for e in RE['markLower']['extra']['errors'])],
+        ['`door-access-blocked`', '`jp-prop-vend-pair` 를 (4,11) 에 찍어 `konbini-block` 접근칸을 막음', ', '.join(f"({e['x']},{e['y']})" for e in SE_['blockedAccess']['errors'])],
+        ['`back-over-front`', '앞줄 `konbini-block` 먼저·뒷줄 `sushi-bar` 나중', f"{len(SE_['orderBad']['errors'])}칸: " + ', '.join(f"({e['x']},{e['y']})" for e in SE_['orderBad']['errors'][:6]) + ' …'],
+        ['`building-in-lower-layer`', '`stamp_layer_block` 으로 건물 칸을 1층에', f"{len(SE_['lowerBuilding']['errors'])}칸(예: " + ', '.join(f"({e['x']},{e['y']})" for e in SE_['lowerBuilding']['errors'][:4]) + '…)'],
+    ]
+    return f'''# 일본 도시 — 변조 실험 전체표 (좌표)
+
+{HEAD}
+
+모든 실험은 실제 도구를 호출해 만든 맵이다(`tiledata/jp-city/refs/engine_dump.mts`, 같은 입력이면 같은 결과). 좌표는 시험판 맵의 칸 0 기준 (x,y), 「N칸」은 검사가 짚은 칸 수. 오류 그림은 각 용도 문서의 이름으로 열린다.
+
+## 오토타일 17세트 (세트마다 2건, 입력 마스크는 각 세트 문서)
+{md_table(['세트', '칠하는 층', '오류 1', '검출 1', '오류 2', '검출 2', '그림'], at_rows)}
+
+## 건물 조립 도구 변조 B1~B11 (실제 `build_jp_city_building`, 시험판 건물 폭+4 × 높이+5, 사각형 (2,1) 시작)
+{md_table(['번호', '변조', '도구 결과', '맵', '검출 코드@맵 좌표'], bl)}
+조립 결과 직접 손상(`checkJpCityStructure`, 좌표는 건물 사각형 안 (열,행)):
+{md_table(['손상', '검출'], sr)}
+
+## 도로·상가 변조 6건
+{md_table(['코드', '변조', '맵 좌표(x,y)'], rd)}
+
+## 읽는 법
+- 코드 한 줄이 짚은 칸이 곧 고칠 자리다. 고치는 법은 총괄 `jp-err-overview` 의 표.
+- 「맵 불변」은 도구가 부분 배치를 남기지 않는다는 뜻이다. 낱칸 도구의 오류는 맵이 이미 바뀐 뒤 사후 검사로 보인다.
+- **보는 범위**: 칸 번호·층·통행·접근칸 도달. 이벤트 실행·미적 품질·모델 성공률은 보지 않는다.
+'''
+
+
+add_doc(C_ERR, 'err-scenarios', '일본 도시 · 변조 실험 전체표(맵 좌표)', doc_err_scenarios())
+
+
+def doc_err_layer():
+    kc = AUD['kindCount']
+    now = {g['id']: g for g in D['tileGroups']}
+    up_rows = [[f'`{gid}`', f'{len(v)}칸', fmt_runs(runs_of(v), 8), f"`{OLD_GROUP_LAYER[gid]}` → `{now[gid]['defaultLayer']}`(layerHome `{now[gid]['layerHome']}`)", '3층 위(투명), 그림 순서는 캐릭터 아래'] for gid, v in _LM_UP_BY.items()]
+    lo_rows = [[f'`{gid}`', f'{len(v)}칸', fmt_runs(runs_of(v), 8), f"`{OLD_GROUP_LAYER[gid]}` → `{now[gid]['defaultLayer']}`(layerHome `{now[gid]['layerHome']}`)", code_text(v[0])] for gid, v in _LM_LO_BY.items()]
+    stair = fmt_runs(runs_of([e['tile'] for e in _STAIR_STAR]), 10)
+    nm = EN['autotiles'][12]
+    return f'''# 일본 도시 — 층 설명 정정 (엔진 판정 대 정의 설명, 전/후 — 정의 정정 완료)
+
+{HEAD}
+
+타일 그룹의 `defaultLayer`(정의의 층 설명)와 엔진 판정(`tileLayerPolicy().home` · `passabilityOf` · `mapUpperTileDepth`)을 칸 {AUD['checked']}개에 대조했다. **엔진이 정본이다** — 둘이 다르면 엔진을 따른다.
+**정의 정정 완료**: 어긋났던 그룹 13개의 층 설명은 이제 멤버 칸의 엔진 홈에서 유도한 값이다(굽기 `bake_lib.derive_group_layer`). 정정 뒤 다시 잰 어긋남은 **0건**(그룹 {AUD['groups']}개 전부 일치)이다. 칸 번호·그림·통행·칸 `priority` 는 바뀌지 않았다 — 엔진은 칸 홈을 칸 단위(잠긴 칸의 `defaultLayer`, 아니면 `priority`)로만 정하고 그룹 `defaultLayer` 는 홈 판정에 쓰지 않기 때문에, 칠하는 결과는 정정 전후가 같고 **어휘 설명(AI가 읽는 그룹 층)만 바로잡혔다**.
+
+## 1. 엔진 판정 여섯 종 (검사한 칸 {AUD['checked']}개, 빈 칸 {AUD['blank']}개 제외)
+{md_table(['홈', '통행', '그림 순서', '칸 수', '무엇'], [
+    ['위층', '걸음 ★', '항상 캐릭터 위', kc['star|prio=upper|home=upper|depth=above'], '건물 윗층·처마·옥상·소품 윗부분'],
+    ['위층', '막힘', '캐릭터와 y 정렬', kc['solid|prio=upper|home=upper|depth=ysort'], '건물 아래 두 줄·문·소품 밑동·담·가드레일'],
+    ['아래층', '걸음', '캐릭터 아래', kc['passable|prio=lower|home=lower|depth=below'], '불투명 땅(보도·도로·잔디 …)'],
+    ['아래층', '막힘', '캐릭터와 y 정렬', kc['solid|prio=lower|home=lower|depth=ysort'], '막힌 땅(연못·수로 물)'],
+    ['위층', '걸음', '캐릭터 아래', kc['passable|prio=lower|home=upper|depth=below'], '**투명 덧그림**(중앙선·표시·점자블록·소품 아랫단)'],
+    ['위층', '걸음 ★(계단)', '캐릭터 아래', kc['star|prio=upper|home=upper|depth=below'], '돌계단·계단 칸 (태그에 stair·계단·사다리)'],
+])}
+정의 검사 `group-layer-vs-tile-home` 가 이 일치를 굽기마다 확인한다(그룹 층 = 멤버 칸 홈이 전부 위이면 `upper`, 전부 아래이면 `lower`, 섞이면 `mixed` + `layerHome: perCell`).
+
+## 2. 정정 A — 그룹 설명이 「아래층」이던 투명 덧그림 5그룹 ({len(_LM_UP)}칸) → 「위층」
+{md_table(['그룹', '칸 수', '칸 번호', '전 → 후(그룹 층)', '엔진 판정(정본)'], up_rows)}
+엔진 홈은 위층, **재성형 층은 2층(`lowerOverlayTiles`)** — 아래 1층에 땅이 있어야 하고, 칸은 2층에 칠한다. 그림 순서는 캐릭터 아래(`depth=below`), 통행은 걸음이다. 1층에 직접 칠하면 아래 땅이 없어 검게 보인다. 도구 실측: `paint_tiles` 에 layer "1"·"3" 을 주면 이 칸을 **3층으로 돌려 놓고 재성형하지 않는다**(아래 「층 돌려놓기 실험」).
+
+## 3. 정정 B — 그룹 설명이 「위층」이던 소품·육교 8그룹 ({len(_LM_LO)}칸이 엔진 홈 아래층) → 「mixed」
+{md_table(['그룹', '아래층 칸 수', '아래층 칸 번호', '전 → 후(그룹 층)', '엔진 판정(정본)'], lo_rows)}
+이 그룹들은 위층 칸과 아래층 칸이 섞여 있어(소품 밑동·바닥 쪽 칸은 아래층 홈) 그룹 층을 하나로 못 박지 못한다 — 이제 `mixed`·`perCell` 이라 어휘 도구가 칸마다 엔진 홈을 따른다. 키트는 키트 배열대로(`stamp_object`) 찍으면 칸마다 정해진 층에 놓이므로 문제가 없다 — 낱칸을 직접 칠할 때만 이 판정을 따라 층을 고른다.
+
+## 4. 계단 {len(_STAIR_STAR)}칸 — 정정 대상이 아니다(엔진의 설계된 예외)
+칸 번호 {stair}(그룹 `jp:prop:stairs` 등). 통행은 `star` 인데 그림 순서가 「아래」라서 처음에는 어긋남으로 셌다. 그러나 엔진은 `star` 칸이라도 **태그에 stair·계단·사다리가 있으면 밟는 계단**으로 보고 일부러 캐릭터 아래로 그린다(`src/player/characterDepth.ts` `isWalkableStairTile` · `mapUpperTileDepth`) — 오르내리는 계단이라 캐릭터가 위로 지나간다. 정의(`passage=star` + `stairs`/`계단` 태그)가 이 규칙에 맞게 되어 있어 **바꾸지 않는다**. 이 칸을 「캐릭터를 가리는 처마」처럼 쓰지 않는다 — 가려지지 않는다. 같은 규칙을 `star` 칸 54개에 태그로 적용하고, 나머지 `star` 칸 2221개는 항상 캐릭터 위다.
+
+## 층 돌려놓기 실험 (투명 덧그림을 잘못된 층으로 칠했을 때)
+`jp-lane-center`(중앙선, 정답 층 2층)를 같은 입력으로 두 번 칠했다. 정상은 `paint_tiles` layer **"2"**, 오류는 layer "1" — 도구 응답: 「{nm['reroute']['summary']}」 (경고 {len(nm['reroute']['warnings'])}건). 결과: 3층에 {nm['reroute']['onLayer3']}칸, 2층에 {nm['reroute']['onLayer2']}칸, 서로 다른 칸 번호 {nm['reroute']['distinct']}종(몸통 칸 하나뿐 — 재성형 안 됨), `autotile-stale`/`wrong-layer` {nm['reroute']['issues']}건.
+그림 `jp-img-err-layer-reroute`(왼쪽 정상, 오른쪽 오류).
+**정정(전 → 후)**: 오류 맵의 칸을 3층에서 지우고 아래 1층에 땅이 있는지 확인한 뒤 layer "2" 로 몸통 칸을 칠한다 — 왼쪽 정상 그림이 이 결과다(같은 입력을 layer "2" 로 칠한 실측: 2층에 이웃에 맞는 칸, 검사 0건). 지우는 단계 자체는 따로 실행해 보지 않았다.
+
+## 한계
+- 위 대조는 이 번들의 타일 정의와 엔진 함수에 대한 것이다. 사용자가 올린 타일셋·다른 칩셋에는 적용되지 않는다.
+- 이미 만들어 둔 프로젝트의 타일셋 사본은 칸 수·칸 층 표가 같으면 갱신되지 않는다(`ensureJpCityTileset` 의 형태 서명이 그룹 층을 안 본다) — 정정된 그룹 층은 새 프로젝트부터 보인다. 칠하는 결과는 칸 홈이 정하므로 동작은 같다.
+'''
+
+
+add_doc(C_ERR, 'err-layer-correction', '일본 도시 · 층 설명 정정(엔진 판정 대 정의 설명, 전/후)', doc_err_layer())
+
+
+def img_err():
+    nm = [a for a in EN['autotiles'] if a['id'] == 'jp-lane-center'][0]; W, H = nm['W'], nm['H']
+    k = best_scale([W * T, W * T], [H * T, H * T])
+    gi = up(render(nm['normal']['layers'], W, H), k); bi = up(render(nm['reroute']['layers'], W, H), k)
+    save_img('err-layer-reroute', panels([('정상 — layer "2" 로 칠함(2층, 재성형)', gi), (f'오류 — layer "1" 로 요청 → 3층으로 돌려놓음, 몸통 칸만({nm["reroute"]["issues"]}칸 어긋남)', bi)]),
+             f'`jp-lane-center`(투명 덧그림, 정답 2층): 정상(왼쪽, layer "2")/오류(오른쪽, layer "1" 요청 → 도구가 3층으로 돌려 놓고 재성형하지 않아 중앙선 이음이 몸통 칸 하나로만 보임). 좌표·결과는 `jp-err-layer-correction`. 원본 ×{k}.', C_ERR)
+
+
+img_err()
+
+
+# ====================================================================== 마무리 — 검증·쓰기
+def finalize():
+    # 그림 → 분류
+    for name, (cat, rec) in IMAGES.items():
+        CATS[cat].setdefault('images', []).append(rec)
+    cats = list(CATS.values())
+    for c in cats: c.setdefault('images', [])
+    # 한도
+    assert len(cats) <= 32, len(cats)
+    for c in cats:
+        assert len(c['documents']) <= 64, (c['id'], len(c['documents']))
+        assert len(c['images']) <= 256, (c['id'], len(c['images']))
+        for d in c['documents']: assert len(d['markdown']) <= 120000, (d['id'], len(d['markdown']))
+    # 그림 파일 — 경로 형식·존재·크기·색 수
+    img_ids = set()
+    for c in cats:
+        for im in c['images']:
+            assert re.fullmatch(r'/assets/jp-city-references/[A-Za-z0-9_-]+\.png', im['dataUrl']), im['dataUrl']
+            p = os.path.join(ROOT, 'public' + im['dataUrl'])
+            assert os.path.exists(p), p
+            with Image.open(p) as f:
+                assert max(f.size) <= 820, (p, f.size)
+                assert f.mode == 'P' and len(f.getpalette()) // 3 <= 256
+                assert len([c_ for c_ in f.getcolors(maxcolors=100000) or [] ]) <= 128, p
+            assert 'data:image' not in im['dataUrl']
+            assert im['id'] not in img_ids, im['id']; img_ids.add(im['id'])
+    # 안 쓰는 PNG 청소(이전 실행의 찌꺼기)
+    used = {os.path.basename(im['dataUrl']) for c in cats for im in c['images']}
+    for fn in sorted(os.listdir(IMG_DIR)):
+        if fn.endswith('.png') and fn not in used: os.remove(os.path.join(IMG_DIR, fn)); print('stale 삭제', fn)
+    # 문서 id 유일, 설명 글에 쓴 id 토큰 확인
+    doc_ids = [d['id'] for c in cats for d in c['documents']]
+    assert len(doc_ids) == len(set(doc_ids))
+    known = set(doc_ids) | img_ids | set(KITS) | set(AT) | {TID, FAMILY}
+    unknown = collections.Counter()
+    for c in cats:
+        for d in c['documents']:
+            for tok in re.findall(r'`(jp-[A-Za-z0-9_-]+)`', d['markdown']):
+                if tok in known or tok.endswith('-'): continue
+                unknown[(d['id'], tok)] += 1
+    kit_like = [(d, t) for (d, t) in unknown if re.match(r'jp-(recipe|road|door|prop|fumikiri|underpass|footbridge)', t)]
+    assert not kit_like, kit_like[:10]
+    # 문서에 적힌 배열 ↔ 정의(키트·오토타일 사전) 대조
+    checked_items = 0
+    fence = re.compile(r'```json\n(.*?)\n```', re.S)
+    for c in cats:
+        for d in c['documents']:
+            for m in fence.finditer(d['markdown']):
+                try: arr = json.loads(m.group(1))
+                except Exception: continue
+                if not isinstance(arr, list): continue
+                for it in arr:
+                    if not isinstance(it, dict): continue
+                    if 'kit' in it and 'upperTiles' in it:
+                        k = KITS[it['kit']]
+                        w, h, lo, upv = kit_grid(it['kit'])
+                        assert (it['w'], it['h']) == (w, h), it['kit']
+                        assert it['upperTiles'] == [[int(t) for t in r] for r in upv], it['kit']
+                        if 'tiles' in it: assert it['tiles'] == [[int(t) for t in r] for r in lo], it['kit']
+                        checked_items += 1
+                    for key in ('tile',):
+                        if key in it and isinstance(it[key], int): assert -1 <= it[key] < COUNT
+    # 범위 밖 칸 번호 — emitted_tiles 는 tnum 에서 이미 단언. 키트 전부 문서에 있어야 한다.
+    missing = sorted(set(KITS) - emitted_kits)
+    assert not missing, missing[:10]
+    for k in RECIPES + DOORS + PROPS: assert k in emitted_kits
+    # 건물 예제 25·오토타일 17 문서 존재
+    for gid in AT: assert f'{PFX}at-{gid[3:]}' in doc_ids, gid
+    # JSON
+    out = json.dumps(cats, ensure_ascii=False, indent=1) + '\n'
+    assert 'data:image' not in out
+    open(OUT_JSON, 'w', encoding='utf-8').write(out)
+    for fn, md in MD_FILES: open(os.path.join(MD_DIR, fn), 'w', encoding='utf-8').write(md)
+    ev = collections.OrderedDict()
+    ev['categories'] = [dict(id=c['id'], name=c['name'], documents=len(c['documents']), images=len(c['images']),
+                             chars=sum(len(d['markdown']) for d in c['documents'])) for c in cats]
+    ev['totals'] = dict(categories=len(cats), documents=len(doc_ids), images=len(img_ids), chars=sum(len(d['markdown']) for c in cats for d in c['documents']),
+                        maxDocChars=max(len(d['markdown']) for c in cats for d in c['documents']), maxImagePx=max(max(Image.open(os.path.join(IMG_DIR, f)).size) for f in used))
+    ev['tilesEmitted'] = len(emitted_tiles)
+    ev['kitsEmitted'] = len(emitted_kits)
+    ev['kitArrayItemsRoundtrip'] = checked_items
+    ev['unknownTokens'] = sorted(f'{d}:{t}' for (d, t) in unknown)
+    ev['sha256'] = dict(json=hashlib.sha256(out.encode()).hexdigest(),
+                        images=hashlib.sha256(b''.join(open(os.path.join(IMG_DIR, f), 'rb').read() for f in sorted(used))).hexdigest())
+    open(os.path.join(MD_DIR, 'check-evidence.json'), 'w', encoding='utf-8').write(json.dumps(ev, ensure_ascii=False, indent=1) + '\n')
+    print(json.dumps(ev['totals'], ensure_ascii=False)); print('sha', ev['sha256']); print('unknown 토큰', len(unknown))
+    for c in ev['categories']: print(c)
+
+
+finalize()

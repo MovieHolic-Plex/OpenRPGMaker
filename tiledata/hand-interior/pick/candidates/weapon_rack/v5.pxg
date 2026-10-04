@@ -1,0 +1,21 @@
+// v5 현재판 weapon rack (16x16, 패딩 위 0px 포함). 방향 A 는 이 파일을 복사해 다듬는다.
+@size 16 16
+@cell 16
+@palette palette.pal
+@block 0 0
+...A....B.......
+...BC..CBD......
+...BC..CBDBCEF..
+...BC..CGDACEF..
+...BC...G.ACEF..
+...BC...G.ACEF..
+...BC...G.HHEF..
+...BC...G...EF..
+...BC...G...EF..
+..IEFJ..G...EF..
+...EF...G...EF..
+...EF...G...EF..
+KKKKKKKKKKKKKKKK
+LLLLLLLLLLLLLLLL
+MMMMMMMMMMMMMMMM
+................

@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/purple_rug/w6-C.pxg",
+ "id": "purple rug",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.016
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "dither"
+  ],
+  "pass": false
+ },
+ "colors": 14,
+ "v5_colors": 5,
+ "bbox": [
+  0,
+  2,
+  31,
+  29
+ ],
+ "v5_bbox": [
+  1,
+  1,
+  30,
+  30
+ ],
+ "note": "네모 대신 둥글린 원형에 가까운 양탄자, 겹띠와 별 메달리온, 좌우 술로 재해석",
+ "ok": true
+}

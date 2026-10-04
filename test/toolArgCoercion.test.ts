@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { runTool } from "@/editor/tools";
 import { normalizeToolArgs } from "@/editor/tools/toolRunner";
 import { createBlankProject } from "@/project/defaults";
-import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { COMBINED_TOWN_HARNESS_PREFIX } from "@/project/tilesetHarness/combinedTownGroups";
 import type { ToolContext } from "@/editor/tools";
 
@@ -10,7 +10,7 @@ const MAP_ID = "map_blank_start";
 const WALL_GROUP_ID = `${COMBINED_TOWN_HARNESS_PREFIX}plaster-wall-9slice`;
 
 function approveDefaultWallVocabulary(ctx: ToolContext): void {
-  const tileset = ctx.project.tilesets[DEFAULT_TILESET_ID];
+  const tileset = ctx.project.tilesets[COMBINED_TOWN_TILESET_ID];
   const group = tileset.tileGroups?.find((entry) => entry.id === WALL_GROUP_ID);
   if (!group) throw new Error(`기본 벽 그룹 없음: ${WALL_GROUP_ID}`);
   group.origin = "user";

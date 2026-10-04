@@ -1,4 +1,5 @@
 import { deserialize, serialize } from "../io";
+import { yieldToTask } from "@/util/yieldToTask";
 import { deserializeParsed, projectWireView } from "../io/serialize";
 import { assetBlobOwners, parseFoldedDocument, restoreAssetBlobs, unfoldedDocumentTree } from "./core/foldedProject";
 import { jsonContentDigest } from "./core/contentDigest";
@@ -10,6 +11,7 @@ import { setUploadedAssetResolver } from "./assetAccessors";
 import type { ProjectWriteAuthority } from "../spatial/saveRouting";
 import type { DbPersistenceDisabledReason } from "./types";
 import type { Project, UploadedAssetRef } from "../types";
+import type { ProjectBackupEntry, RestoredProject } from "./backupTypes";
 import type { LocalProjectTarget, ProjectTarget } from "./target";
 import type {
   AiActivityInput, AiAnalysisRunInput, CommitInput, CommitListItem, ConversationInput, ConversationListOptions,
@@ -51,6 +53,8 @@ export type OprnBridgeProject = {
   backup(payload: { readonly projectDir: string }): Promise<string>;
   /** 시작 화면 카드 그림(cover.jpg). 데스크톱 앱만 있다 — 팀 호스트 브라우저 브리지에는 없다. */
   saveCover?(payload: { readonly projectDir: string; readonly dataUrl: string }): Promise<boolean>;
+  listBackups(payload: { readonly projectDir: string }): Promise<readonly ProjectBackupEntry[]>;
+  restoreBackup(payload: { readonly projectDir: string; readonly backupId: string }): Promise<RestoredProject>;
 };
 export type OprnBridgeCommits = {
   record(payload: unknown): Promise<SaveResult>;
@@ -107,6 +111,7 @@ export type OprnAssetBrowser = {
 };
 
 export type OprnBridge = {
+  readonly windowControl?: (action: "toggle-fullscreen" | "close") => Promise<boolean>;
   readonly team?: import("../../../electron/shared/team").TeamBridge;
   /** true 면 닫기 절차를 호스트(일렉트론 메인)가 연다. 브라우저 로컬 서버는 false 라서 페이지가 직접 막는다. */
   readonly closeIsHostDriven: boolean;
@@ -167,10 +172,6 @@ export type ElectronRepository = ProjectRepository & {
   readonly adoptOpenProject: () => Promise<boolean>;
 };
 
-function yieldToMain(): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, 0));
-}
-
 export function createElectronRepository(): ElectronRepository {
   let opened: LocalProjectTarget | null = null;
   let loadedSha: string | null = null;
@@ -193,6 +194,17 @@ export function createElectronRepository(): ElectronRepository {
     const resolved = openedRef(target);
     if (!resolved) throw new Error("열린 프로젝트 폴더가 없습니다");
     return resolved;
+  };
+  const savePreparedProject = async (persisted: Project, target: ProjectTarget): Promise<SaveResult> => {
+    const resolved = requireOpened(target);
+    const serialized = serialize(persisted);
+    const result = await electronBridge().project.save({ projectDir: resolved.projectDir, serialized, expectedSha: loadedSha });
+    if (result.kind === "saved") loadedSha = result.sha256 ?? null;
+    if (result.kind !== "saved") return result;
+    const revision = result.revision === undefined ? {} : { revision: result.revision };
+    return result.serialized
+      ? { kind: "saved", project: deserialize(result.serialized), sha256: result.sha256, ...revision }
+      : { kind: "saved", project: persisted, submitted: persisted, sha256: result.sha256, ...revision };
   };
 
   const snapshotOf = (serialized: string | null | undefined, sha256: string | null | undefined, target: LocalProjectTarget): ProjectSnapshot | null => {
@@ -313,6 +325,12 @@ export function createElectronRepository(): ElectronRepository {
     async backup(target?: ProjectTarget | null): Promise<string> {
       return await electronBridge().project.backup({ projectDir: requireOpened(target).projectDir });
     },
+    async listBackups(target?: ProjectTarget | null): Promise<readonly ProjectBackupEntry[]> {
+      return await electronBridge().project.listBackups({ projectDir: requireOpened(target).projectDir });
+    },
+    async restoreBackup(backupId: string, target?: ProjectTarget | null): Promise<RestoredProject> {
+      return await electronBridge().project.restoreBackup({ projectDir: requireOpened(target).projectDir, backupId });
+    },
     status(disabledReason: DbPersistenceDisabledReason | null): PersistenceStatus {
       if (disabledReason) return { kind: "disabled", reason: disabledReason };
       return opened ? { kind: "ready", projectId: opened.projectId, source: "custom", url: opened.projectDir } : { kind: "not-configured", missing: ["url", "anonKey"], projectId: "", source: "legacy" };
@@ -331,17 +349,7 @@ export function createElectronRepository(): ElectronRepository {
       return await loadSnapshotFromHost(requireOpened(target));
     },
     async save(project, target, _authority?: ProjectWriteAuthority) {
-      const resolved = requireOpened(target);
-      const persisted = projectWithoutEventDrafts(project);
-      const serialized = serialize(persisted);
-      const result = await electronBridge().project.save({ projectDir: resolved.projectDir, serialized, expectedSha: loadedSha });
-      if (result.kind === "saved") loadedSha = result.sha256 ?? null;
-      if (result.kind !== "saved") return result;
-      const revision = result.revision === undefined ? {} : { revision: result.revision };
-      // 호스트가 문서를 돌려보내지 않았으면 제출한 사적 사본(persisted)이 곧 저장된 내용이다.
-      return result.serialized
-        ? { kind: "saved", project: deserialize(result.serialized), sha256: result.sha256, ...revision }
-        : { kind: "saved", project: persisted, submitted: persisted, sha256: result.sha256, ...revision };
+      return savePreparedProject(projectWithoutEventDrafts(project), target);
     },
     async saveMapPatch(input: MapPatchInput, target) {
       const resolved = requireOpened(target);
@@ -354,7 +362,7 @@ export function createElectronRepository(): ElectronRepository {
       // `JSON.parse(serialize(x))` 왕부가 «보기» 로 샀던 유일한 것이다. 복사 없이 같은 판정을 늨는다.
       // 비교는 잘게 나눠 돈다(수십 칸 타일셋 대조가 한 번에 약 1s). 쉬는 동안 스토어는 가지를 교체만 하므로
       // 입력 보기가 가리키는 내용은 제출 때 그대로다.
-      const patch = withWirePatchValues(await diffProjectDocumentsSliced(projectWireView(baseProject), projectWireView(persisted), yieldToMain));
+      const patch = withWirePatchValues(await diffProjectDocumentsSliced(projectWireView(baseProject), projectWireView(persisted), yieldToTask));
       // 호스트가 이 패치를 기준본 위에 얹어 저장하므로, 같은 연산이 곧 저장될 내용의 사적 사본이다.
       // 패치 값은 이미 JSON 왕복 사본이고, 나머지 가지는 기준본(사적·불변)을 공유한다 — 복제가 변경량에 비례한다.
       // 실측(2026-09-26, 81MB 새 프로젝트): 저장마다 전체 복제 1.2s 를 없앤다. serialize(submitted) 는 호스트 행과 같다.

@@ -1,0 +1,37 @@
+{
+ "id": "gn-vent",
+ "slug": "gn_vent",
+ "name": "지하철 환기구",
+ "scene": "역·정류장",
+ "cells": [
+  2,
+  1
+ ],
+ "canvas": [
+  32,
+  16
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "지하철 환기구 2×1. 생활 소품: 출구·정류장·가게 앞 두 칸 안 무리로. 공공자전거 거치대는 넓은 인도 안쪽 줄, 노점은 출구 곁(출구 앞 칸은 비움), 공사 가림막은 한 곳에만 한 줄로.",
+ "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+ "worker": "-",
+ "members": [
+  "gn-vent"
+ ],
+ "tiles": [
+  4832,
+  4833
+ ],
+ "ctx": {
+  "at": [
+   48,
+   48
+  ],
+  "map": "modern-gangnam-station",
+  "cell": [
+   30,
+   15
+  ]
+ }
+}

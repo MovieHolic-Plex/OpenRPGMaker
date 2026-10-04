@@ -1,0 +1,46 @@
+{
+ "id": "blk-gb-kb",
+ "slug": "blk_gb_kb",
+ "name": "벽돌 쌍둥이 탑",
+ "scene": "건물 블록",
+ "cells": [
+  1,
+  1
+ ],
+ "canvas": [
+  16,
+  16
+ ],
+ "layer": "ground",
+ "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+ "description": "벽돌 쌍둥이 탑 · gb.kb.d.l 1×1. 강남역 건물 조립: 참고문서 「강남역」의 이름 배열대로.",
+ "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+ "worker": "-",
+ "members": [
+  "gnb-kb-d-l",
+  "gnb-kb-d-m",
+  "gnb-kb-d-r",
+  "gnb-kb-u-l",
+  "gnb-kb-u-m",
+  "gnb-kb-u-r"
+ ],
+ "tiles": [
+  5889,
+  5890,
+  5891,
+  5892,
+  5893,
+  5894
+ ],
+ "ctx": {
+  "at": [
+   16,
+   48
+  ],
+  "map": "modern-gangnam-station",
+  "cell": [
+   1,
+   10
+  ]
+ }
+}

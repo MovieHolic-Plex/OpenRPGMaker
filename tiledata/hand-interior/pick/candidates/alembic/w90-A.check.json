@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/alembic/w90-A.pxg",
+ "id": "alembic",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.008
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 20,
+ "v5_colors": 8,
+ "bbox": [
+  0,
+  0,
+  15,
+  15
+ ],
+ "v5_bbox": [
+  3,
+  1,
+  15,
+  15
+ ],
+ "note": "증류기: 화로를 윗면(철 3/5/6)+그림자 줄+불 앞면의 상자로 다시 찍고 플라스크는 그대로.",
+ "ok": true
+}

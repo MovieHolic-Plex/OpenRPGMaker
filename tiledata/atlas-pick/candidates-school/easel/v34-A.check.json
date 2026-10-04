@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/easel/v34-A.pxg",
+ "set": "school",
+ "id": "easel",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.097
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.032
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 15,
+ "bbox": [
+  1,
+  0,
+  14,
+  31
+ ],
+ "note": "이젤 3/4 — 나무 틀 윗면이 밝게 보이고, 하늘·풀밭 그림이 든 캔버스 앞면, 받침턱과 세 다리",
+ "ok": true
+}

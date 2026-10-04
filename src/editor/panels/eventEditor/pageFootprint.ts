@@ -15,6 +15,7 @@ import {
 } from "@/project/footprint";
 import { eventGraphicRenderScale, renderFootprintPreview } from "./eventGraphicPreview";
 import { isAutomaticCharacterScale } from "@/project/characterScale";
+import { BLEND_MODE_LABELS, BLEND_MODE_NAMES, normalizeBlendMode } from "@/project/blendMode";
 import { mapTileSize } from "@/project/tileGeometry";
 import { store } from "@/project/store";
 import type { CharacterFootprint, EventPage, MapId } from "@/project/types";
@@ -78,6 +79,13 @@ export function renderPageFootprint(mapId: MapId, eventId: string, page: EventPa
     dataset: { testid: "event-page-body-scale-manual" },
   }) as HTMLInputElement;
   manualToggle.checked = manual;
+  const blendSelect = el("select", {
+    dataset: { testid: "event-page-blend-mode" },
+    children: BLEND_MODE_NAMES.map((name) => el("option", { attrs: { value: name }, text: BLEND_MODE_LABELS[name] })),
+  }) as HTMLSelectElement;
+  blendSelect.value = page.graphic.blendMode ?? "normal";
+  /** 이 컨트롤이 마지막으로 쓴 그림 설정. 배율·겹치기를 따로 커밋해도 서로의 값을 덮지 않는다. */
+  let latestGraphic: EventPage["graphic"] = page.graphic;
 
   const summary = el("p", {
     class: "event-footprint-summary",
@@ -107,7 +115,11 @@ export function renderPageFootprint(mapId: MapId, eventId: string, page: EventPa
     const scale = manualToggle.checked
       ? normalizeCharacterScale(Number.parseFloat(scaleInput.value))
       : derivedScaleForBody(footprint);
-    const graphic: EventPage["graphic"] = { ...page.graphic, scale, scaleMode: manualToggle.checked ? "manual" : "auto" };
+    const graphic: EventPage["graphic"] = withBlendMode(
+      { ...latestGraphic, scale, scaleMode: manualToggle.checked ? "manual" : "auto" },
+      blendSelect.value,
+    );
+    latestGraphic = graphic;
     updateEventPage(mapId, eventId, page.id, { footprint, passRows: rows, graphic });
     reflect(footprint, rows, graphic);
   }
@@ -134,6 +146,7 @@ export function renderPageFootprint(mapId: MapId, eventId: string, page: EventPa
   for (const input of [widthInput, heightInput, passInput, scaleInput]) {
     input.addEventListener("change", () => commit(currentFields()));
   }
+  blendSelect.addEventListener("change", () => commit(currentFields()));
   manualToggle.addEventListener("change", () => {
     scaleInput.disabled = !manualToggle.checked;
     commit(currentFields());
@@ -165,10 +178,18 @@ export function renderPageFootprint(mapId: MapId, eventId: string, page: EventPa
           children: [manualToggle, el("span", { text: "배율 직접 지정" })],
         }),
         labeled("배율", scaleInput, "그림 크기. 몸 사각과 독립이다"),
+        labeled("겹치기", blendSelect, "아래 화면과 섞는 법. 더하기=불꽃·빛기둥·유령, 곱하기=그림자·물들임"),
       ],
     })
   );
   return control;
+}
+
+/** 겹치기 값을 그림 설정에 반영한다. 보통이면 키를 지워 옛 저장 바이트를 유지한다. */
+function withBlendMode(graphic: EventPage["graphic"], value: string): EventPage["graphic"] {
+  const { blendMode: _previous, ...rest } = graphic;
+  const blendMode = normalizeBlendMode(value);
+  return blendMode ? { ...rest, blendMode } : rest;
 }
 
 function clamp(value: number, max: number): number {

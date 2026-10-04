@@ -1,0 +1,48 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/conifer/w4-B.pxg",
+ "set": "worldmap",
+ "id": "conifer",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.099
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.031
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "orphans",
+   "outline_black",
+   "light",
+   "dither"
+  ]
+ },
+ "colors": 9,
+ "bbox": [
+  1,
+  0,
+  47,
+  63
+ ],
+ "note": "빛·볼륨 — 단마다 왼쪽 밝은 면·오른쪽 짙은 면, 꼭대기 밝은 점, 바닥을 더 어둡게",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.5
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.43
+  },
+  "seam": 0.99
+ }
+}

@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/confessional/w22-D.pxg",
+ "id": "confessional",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 9,
+  "atLeast95": 0,
+  "max": 0.074
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "outline_black"
+  ],
+  "pass": false
+ },
+ "colors": 16,
+ "v5_colors": 15,
+ "bbox": [
+  0,
+  8,
+  47,
+  47
+ ],
+ "v5_bbox": [
+  0,
+  8,
+  47,
+  47
+ ],
+ "note": "방향 C: 키 큰 상자 — 지붕판 윗면(밝음)과 앞 처마 두 단, 오른쪽 옆면 한 단 어둡게, 앞면은 보라 커튼 두 칸과 창살 달린 사제 문, 아래 굽 두께",
+ "ok": true
+}

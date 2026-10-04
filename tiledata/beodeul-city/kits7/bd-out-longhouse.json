@@ -1,0 +1,152 @@
+{
+ "id": "bd-out-longhouse",
+ "name": "외곽 통나무 긴 집",
+ "w": 10,
+ "h": 6,
+ "walk": [
+  "......C...",
+  "XXXXXXXXXX",
+  "XXXXXXXXXX",
+  "XXXXXXXXXX",
+  "XXXXXXXXXX",
+  "XXXXXXXXXX"
+ ],
+ "description": "옆박공 긴 통나무 집: 물결 끝단 널 지붕, 용마루 통나무 끝, 벽에 꽃상자 창과 덧문 창 둘, 판자문(초록), 용마루 위 돌 굴뚝, 모서리 덩굴.",
+ "rules": "문은 (4,5). 굴뚝 머리 (6,0)은 C. 맨 윗줄은 굴뚝 자리만 있다.",
+ "tags": [
+  "외곽",
+  "나무집",
+  "긴집"
+ ],
+ "role": "building",
+ "doors": [
+  {
+   "dx": 4,
+   "dy": 5,
+   "note": "판자문 (아래 칸이 문 앞)"
+  }
+ ],
+ "notes": "",
+ "assembly": [
+  {
+   "kit": "bd-out-roof-hl",
+   "x": 0,
+   "y": 1
+  },
+  {
+   "kit": "bd-out-roof-m",
+   "x": 1,
+   "y": 1
+  },
+  {
+   "kit": "bd-out-roof-m",
+   "x": 2,
+   "y": 1
+  },
+  {
+   "kit": "bd-out-roof-m2",
+   "x": 3,
+   "y": 1
+  },
+  {
+   "kit": "bd-out-roof-m",
+   "x": 4,
+   "y": 1
+  },
+  {
+   "kit": "bd-out-roof-m",
+   "x": 5,
+   "y": 1
+  },
+  {
+   "kit": "bd-out-roof-m",
+   "x": 6,
+   "y": 1
+  },
+  {
+   "kit": "bd-out-roof-m2",
+   "x": 7,
+   "y": 1
+  },
+  {
+   "kit": "bd-out-roof-m",
+   "x": 8,
+   "y": 1
+  },
+  {
+   "kit": "bd-out-roof-hr",
+   "x": 9,
+   "y": 1
+  },
+  {
+   "kit": "bd-out-ridge-end-l",
+   "x": 1,
+   "y": 1
+  },
+  {
+   "kit": "bd-out-ridge-end-r",
+   "x": 8,
+   "y": 1
+  },
+  {
+   "kit": "bd-out-log-l",
+   "x": 0,
+   "y": 4
+  },
+  {
+   "kit": "bd-out-log-wall",
+   "x": 1,
+   "y": 4
+  },
+  {
+   "kit": "bd-out-log-window-box",
+   "x": 2,
+   "y": 4
+  },
+  {
+   "kit": "bd-out-log-wall",
+   "x": 3,
+   "y": 4
+  },
+  {
+   "kit": "bd-out-log-door-green",
+   "x": 4,
+   "y": 4
+  },
+  {
+   "kit": "bd-out-log-wall",
+   "x": 5,
+   "y": 4
+  },
+  {
+   "kit": "bd-out-log-wall",
+   "x": 6,
+   "y": 4
+  },
+  {
+   "kit": "bd-out-log-wall",
+   "x": 7,
+   "y": 4
+  },
+  {
+   "kit": "bd-out-log-window-shut",
+   "x": 8,
+   "y": 4
+  },
+  {
+   "kit": "bd-out-log-r",
+   "x": 9,
+   "y": 4
+  },
+  {
+   "kit": "bd-out-ivy-corner",
+   "x": 5,
+   "y": 4
+  },
+  {
+   "kit": "bd-out-chimney",
+   "x": 6,
+   "y": 0
+  }
+ ]
+}

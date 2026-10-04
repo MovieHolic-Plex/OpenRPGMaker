@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/omikuji_rack/j3-B.pxg",
+ "set": "jp",
+ "id": "omikuji_rack",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.03
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.039
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 13,
+ "bbox": [
+  2,
+  3,
+  31,
+  31
+ ],
+ "note": "빛 구조 강화: 윗보 윗면 두 줄 밝게·기둥 왼쪽 가장 밝게 오른쪽 가장 어둡게, 종이 매듭 위쪽 한 점 흰빛, 오른쪽 아래로 접지 그림자와 오른쪽 옆 번짐",
+ "ok": true
+}

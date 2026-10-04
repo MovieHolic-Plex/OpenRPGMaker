@@ -1,0 +1,37 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/magitek_armor/w26-F.pxg",
+ "id": "magitek armor",
+ "hard": [],
+ "warn": [
+  "폭: 불투명 폭이 v5 보다 +6px"
+ ],
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.048
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "outline",
+   "outline_black"
+  ],
+  "pass": false
+ },
+ "colors": 29,
+ "v5_colors": 9,
+ "bbox": [
+  0,
+  2,
+  31,
+  46
+ ],
+ "v5_bbox": [
+  3,
+  4,
+  28,
+  47
+ ],
+ "note": "게걸음 새다리 보행기: 낮고 넓은 선체 위 돔 조종석과 안테나, 무릎이 바깥으로 굽은 다리, 황동 집게 팔",
+ "ok": true
+}

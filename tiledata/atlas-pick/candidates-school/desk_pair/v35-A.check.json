@@ -1,0 +1,42 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/desk_pair/v35-A.pxg",
+ "set": "school",
+ "id": "desk_pair",
+ "hard": [],
+ "warn": [],
+ "std": {
+  "cells": [
+   2,
+   1
+  ],
+  "canvas": [
+   32,
+   16
+  ]
+ },
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.036
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.035
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation"
+  ]
+ },
+ "colors": 18,
+ "bbox": [
+  6,
+  0,
+  24,
+  15
+ ],
+ "note": "긴 두 자리 책상 3/4 — 합판 상판 T4·가운데 이음선, 앞 F12 에 칸막이 다리·아래 책칸 (폭 19px)",
+ "ok": true
+}

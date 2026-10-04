@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/crossed_swords/h138-E.pxg",
+ "id": "crossed swords",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.01
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 15,
+ "v5_colors": 0,
+ "bbox": [
+  4,
+  0,
+  27,
+  15
+ ],
+ "v5_bbox": null,
+ "note": "청색 원형 방패·황동 보스와 은빛 교차 검으로 새 디자인; 꼭대기 윗면 0행(y=해당 없음, 지시서의 벽면 걸이 평면 기준).",
+ "ok": true
+}

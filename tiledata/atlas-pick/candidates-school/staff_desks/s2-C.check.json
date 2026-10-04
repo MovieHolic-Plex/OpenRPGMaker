@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/staff_desks/s2-C.pxg",
+ "set": "school",
+ "id": "staff_desks",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.07
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.027
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 25,
+ "bbox": [
+  1,
+  1,
+  31,
+  31
+ ],
+ "note": "실루엣 재해석: 솟은 모니터가 위로 튀고 낮은 칸막이는 판 하나, 서랍 기둥 두 개로 책상을 받쳐 H꼴, 서류는 3단 계단 더미. 한 색 실루엣만 봐도 서랍 책상 섬.",
+ "ok": true
+}

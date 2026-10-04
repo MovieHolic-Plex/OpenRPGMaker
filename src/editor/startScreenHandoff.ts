@@ -1,16 +1,9 @@
-// editor/startScreenHandoff.ts
-// 데스크톱 시작 화면에서 「만들기」로 넘어온 첫 부팅을 마무리한다.
-//
-// 시작 화면은 빈 폴더만 만들고(편집기 트리를 싣지 않으려고) 고른 장르·한 문장을 sessionStorage 에 남긴다.
-// 편집기가 **그 폴더를** 열었을 때만 여기서 장르 씨앗을 채택·저장하고, 한 문장이 있으면 조수에게 넘길 프롬프트를 만든다.
-// 씨앗은 메뉴의 「새 프로젝트」와 같은 정본 경로(createNewProjectSeed)다 — 두 표면이 다른 시작점을 만들지 않는다.
-//
-// 장르(프리셋)를 골랐으면 메뉴의 「새 프로젝트」와 같은 흐름을 탄다(2026-09-28): AI 연결 관문 → 기획 인터뷰 →
-// gameDesignBrief(generationPending) → prepareProjectInterviewStartup 이 팀 첫 생성을 넘긴다. 예전에는 인터뷰 없이
-// 한 문장을 자유 입력 프롬프트로만 보내서 기획·팀 첫 생성·장르 저작 지침이 모두 빠졌고, 한 문장을 비우면 장르만 켜진
-// 빈 맵에서 아무 일도 일어나지 않았다. 인터뷰를 취소하거나 관문에서 「나중에」를 고르면 예전 한 문장 경로로 돌아간다.
+// Adopt the launcher intent into its matching SQLite folder using the same factory as the editor menu.
+// Example and blank starts open the first-edit guide; AI starts continue through the planning interview.
 
-import { createNewProjectSeed } from "@/editor/genrePacks";
+import { createNewProjectSeed } from "./genrePacks";
+import { createProjectStartSeed } from "./projectStartSeed";
+import { projectStartMode } from "@/start/projectStart";
 import { focusProjectStartMap } from "@/editor/mapSelection";
 import { newProjectChoiceById } from "@/editor/newProjectChoices";
 import { getAiConnectionStatus } from "@/editor/panels/aiConnectionStatus";
@@ -25,7 +18,7 @@ import type { GameDesignBrief } from "@/project/gameDesignBrief";
 import { projectRepository } from "@/project/persistence/repository";
 import { isLocalTarget } from "@/project/persistence/target";
 import { store } from "@/project/store";
-import { takeStartScreenIntent, type StartScreenIntent } from "@/start/startIntent";
+import { START_SCREEN_INTENT_KEY, takeStartScreenIntent, type StartScreenIntent } from "@/start/startIntent";
 
 export type StartScreenHandoff = {
   readonly intent: StartScreenIntent;
@@ -72,14 +65,19 @@ export async function applyStartScreenHandoff(): Promise<StartScreenHandoff | nu
   if (!target || !isLocalTarget(target)) return null;
   const intent = takeStartScreenIntent(storage, target.projectDir);
   if (!intent) return null;
-  const packId = intent.choiceId ? newProjectChoiceById(intent.choiceId)?.packId ?? null : null;
-  const seed = createNewProjectSeed(packId, intent.title);
-  store.replaceProject(seed, { label: "새 게임 시작", origin: "system" });
-  const saved = await store.flush();
-  if (saved.kind !== "saved") throw new Error("새 게임을 폴더에 저장하지 못했습니다.");
+  const mode = projectStartMode(intent.choiceId, intent.startMode);
+  try {
+    const seed = await createProjectStartSeed(intent.choiceId, intent.title, mode, intent.screenSize);
+    store.replaceProject(seed, { label: "새 게임 시작", origin: "system" });
+    const saved = await store.flush();
+    if (saved.kind !== "saved") throw new Error("새 게임을 폴더에 저장하지 못했습니다.");
+  } catch (error) {
+    storage.setItem(START_SCREEN_INTENT_KEY, JSON.stringify(intent));
+    throw error;
+  }
   focusProjectStartMap();
-  const presetId = packId !== null && welcomeGenrePresetById(intent.choiceId ?? undefined) ? intent.choiceId as WelcomeGenrePresetId : null;
-  const prompt = startScreenPrompt(intent);
+  const presetId = mode === "ai" && welcomeGenrePresetById(intent.choiceId ?? undefined) ? intent.choiceId as WelcomeGenrePresetId : null;
+  const prompt = mode === "ai" ? startScreenPrompt(intent) : null;
   let autoSend = false;
   if (prompt) {
     try {
@@ -124,8 +122,17 @@ export async function runStartScreenPresetInterview(
   const connected = await dependencies.ensureAiConnected(label).catch(() => false);
   if (!connected) return "declined";
   const brief = await dependencies.interview(presetId, handoff.intent.intent);
-  if (!brief || brief.presetId !== presetId || JSON.stringify(store.getProjectIdentity()) !== scope) return "declined";
+  if (!brief || JSON.stringify(store.getProjectIdentity()) !== scope) return "declined";
+  const chosen = newProjectChoiceById(brief.presetId);
+  if (!chosen) return "declined";
   store.update(project => {
+    // The fresh folder was seeded before the interview. Replace only its system defaults when
+    // the author chooses another engine; do not leave collection/battle flags from the first seed.
+    if (brief.presetId !== presetId) {
+      const playResolution = project.system.playResolution;
+      project.system = createNewProjectSeed(chosen.packId, project.meta.title).system;
+      if (playResolution) project.system.playResolution = playResolution;
+    }
     project.gameDesignBrief = { ...brief, generationPending: true };
   }, { scope: "project", label: "게임 기획 확정", origin: "human" });
   return "brief";

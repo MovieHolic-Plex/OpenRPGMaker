@@ -1,0 +1,21 @@
+// v5 현재판 fishing net (16x16, 패딩 위 0px 포함). 방향 A 는 이 파일을 복사해 다듬는다.
+@size 16 16
+@cell 16
+@palette palette.pal
+@block 0 0
+................
+AAAAAAAAAAAAAAAA
+BBBBBBBBBBBBBBBB
+.C.C.C.C.C.C.C..
+....C...C...C...
+.C.C.C.C.C.C.C..
+..C...C...C...C.
+.C.C.C.C.C.C.C..
+....D...D...D...
+.D.D.D.D.D.D.D..
+..D...D...EF..D.
+.D.D.D.D.D.D.D..
+....EF..D...D...
+.D.D.D.D.D.D.D..
+..D...D...D...D.
+................

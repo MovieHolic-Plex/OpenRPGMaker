@@ -79,3 +79,15 @@ describe("히스토리 단축키는 열린 모달 계층에 소유권을 양보�
     expect(historyHotkeyOwnedByPanel()).toBe(false);
   });
 });
+
+describe("공방 화면이 떠 있으면 에디터 단축키를 무시한다", () => {
+  it("workshop-host 가 있으면 일반 키도 무시, 없으면 통과", () => {
+    const plain = el("button", { text: "일반" });
+    document.body.append(plain);
+    expect(shouldIgnoreEditorShortcut(keyEvent("2", plain))).toBe(false);
+    const host = el("div", { attrs: { "data-testid": "workshop-host" } });
+    document.body.append(host);
+    expect(shouldIgnoreEditorShortcut(keyEvent("2", plain))).toBe(true);
+    expect(shouldIgnoreEditorShortcut(keyEvent("Delete", host))).toBe(true);
+  });
+});

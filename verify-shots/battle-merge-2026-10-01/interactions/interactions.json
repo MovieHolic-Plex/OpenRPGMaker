@@ -1,0 +1,735 @@
+[
+  {
+    "id": "crosskind",
+    "errors": [],
+    "menu": {
+      "scene": {
+        "testid": "battle-scene",
+        "battleUiStyle": "classic",
+        "battleSkin": "retro2003",
+        "battleMotion": "retro",
+        "battleSkinFamily": "glass",
+        "battleTransition": "shatter-2003",
+        "battleHud": "rows",
+        "battleLayout": "sideview",
+        "battleAtbMode": "wait",
+        "battleHitFeelPreset": "impact",
+        "battleSystemResource": "easyrpg-system2-system2-c",
+        "battleSystem2": "applied",
+        "systemResource": "windowskin-warm",
+        "battleStageScale": "0.500",
+        "battleSequenceBusy": "false",
+        "battleDirectorStep": "command",
+        "battlePhase": "actorCommand",
+        "battleFlow": "strict",
+        "battleEventPause": "",
+        "battleEventRequest": "",
+        "battleBgmActive": "true",
+        "battleHitFeel": "false"
+      },
+      "prompt": false,
+      "enemyGauges": [
+        "0%",
+        "0%",
+        "0%"
+      ],
+      "active": "actor_hero",
+      "actors": [
+        {
+          "id": "actor_hero",
+          "text": "주인공Lv 22HP 9999/9999MP 999/999전대기 1"
+        }
+      ],
+      "buttons": [
+        {
+          "id": "actor-skill-skill_audit_mon_borrow",
+          "text": "감사 산성 연출MP 0"
+        },
+        {
+          "id": "actor-skill-skill_attack",
+          "text": "공격MP 0"
+        },
+        {
+          "id": "actor-skill-skill_focus",
+          "text": "집중MP 2"
+        },
+        {
+          "id": "actor-skill-skill_hero_cross_slash",
+          "text": "십자베기SwordMP 3"
+        },
+        {
+          "id": "actor-skill-skill_sword_slash",
+          "text": "검격MP 0"
+        },
+        {
+          "id": "actor-skill-skill_hero_rush_pierce",
+          "text": "돌진 찌르기SpearMP 5"
+        },
+        {
+          "id": "actor-skill-skill_hero_rising_blade",
+          "text": "올려베기SwordMP 6"
+        },
+        {
+          "id": "actor-skill-skill_hero_flame_sword",
+          "text": "화염검FireMP 8"
+        },
+        {
+          "id": "actor-skill-skill_hero_whirlwind",
+          "text": "회전베기SwordMP 12"
+        },
+        {
+          "id": "actor-skill-skill_hero_war_cry",
+          "text": "함성MP 10"
+        },
+        {
+          "id": "actor-skill-skill_hero_meteor_drop",
+          "text": "낙하참MP 16"
+        },
+        {
+          "id": "actor-skill-skill_hero_brave_blade",
+          "text": "브레이브 블레이드HolyMP 30"
+        },
+        {
+          "id": "actor-command-back",
+          "text": "뒤로"
+        }
+      ]
+    },
+    "after": {
+      "scene": {
+        "testid": "battle-scene",
+        "battleUiStyle": "classic",
+        "battleSkin": "retro2003",
+        "battleMotion": "retro",
+        "battleSkinFamily": "glass",
+        "battleTransition": "shatter-2003",
+        "battleHud": "rows",
+        "battleLayout": "sideview",
+        "battleAtbMode": "wait",
+        "battleHitFeelPreset": "impact",
+        "battleSystemResource": "easyrpg-system2-system2-c",
+        "battleSystem2": "applied",
+        "systemResource": "windowskin-warm",
+        "battleStageScale": "0.500",
+        "battleSequenceBusy": "true",
+        "battleDirectorStep": "impact",
+        "battlePhase": "actorCommand",
+        "battleFlow": "strict",
+        "battleEventPause": "",
+        "battleEventRequest": "",
+        "battleBgmActive": "true",
+        "battleHitFeel": "false",
+        "hitIntensity": "graze"
+      },
+      "prompt": false,
+      "enemyGauges": [
+        "0%",
+        "0%",
+        "0%"
+      ],
+      "active": "actor_hero",
+      "actors": [
+        {
+          "id": "actor_hero",
+          "text": "주인공Lv 22HP 9996/9999MP 999/999전대기 1"
+        }
+      ],
+      "buttons": [
+        {
+          "id": "actor-command-attack",
+          "text": "공격"
+        },
+        {
+          "id": "actor-command-skill",
+          "text": "스킬"
+        },
+        {
+          "id": "actor-command-defend",
+          "text": "방어"
+        },
+        {
+          "id": "actor-command-item",
+          "text": "아이템없음",
+          "inert": "true",
+          "reason": "없음"
+        },
+        {
+          "id": "actor-command-escape",
+          "text": "도주"
+        }
+      ]
+    },
+    "observedSkillIds": [
+      "skill_mon_acid_spit"
+    ],
+    "observedFx": [
+      "mon_acid_blob",
+      "mon_acid_splash"
+    ],
+    "fixed": true
+  },
+  {
+    "id": "same-name",
+    "errors": [],
+    "menu": {
+      "scene": {
+        "testid": "battle-scene",
+        "battleUiStyle": "classic",
+        "battleSkin": "retro2003",
+        "battleMotion": "retro",
+        "battleSkinFamily": "glass",
+        "battleTransition": "shatter-2003",
+        "battleHud": "rows",
+        "battleLayout": "sideview",
+        "battleAtbMode": "wait",
+        "battleHitFeelPreset": "impact",
+        "battleSystemResource": "easyrpg-system2-system2-c",
+        "battleSystem2": "applied",
+        "systemResource": "windowskin-warm",
+        "battleStageScale": "0.500",
+        "battleSequenceBusy": "false",
+        "battleDirectorStep": "command",
+        "battlePhase": "actorCommand",
+        "battleFlow": "strict",
+        "battleEventPause": "",
+        "battleEventRequest": "",
+        "battleBgmActive": "true",
+        "battleHitFeel": "false"
+      },
+      "prompt": false,
+      "enemyGauges": [
+        "0%",
+        "0%",
+        "0%"
+      ],
+      "active": "actor_ranger",
+      "actors": [
+        {
+          "id": "actor_ranger",
+          "text": "궁수Lv 22HP 9999/9999MP 999/999궁대기 1"
+        }
+      ],
+      "buttons": [
+        {
+          "id": "actor-skill-skill_attack",
+          "text": "공격MP 0"
+        },
+        {
+          "id": "actor-skill-skill_poison_sting",
+          "text": "독침MP 0"
+        },
+        {
+          "id": "actor-skill-skill_ranger_power_shot",
+          "text": "강사BowMP 3"
+        },
+        {
+          "id": "actor-skill-skill_sword_slash",
+          "text": "검격MP 0"
+        },
+        {
+          "id": "actor-skill-skill_weaken",
+          "text": "약화MP 3"
+        },
+        {
+          "id": "actor-skill-skill_ranger_multi_shot",
+          "text": "연사BowMP 5"
+        },
+        {
+          "id": "actor-skill-skill_ranger_fire_arrow",
+          "text": "화염 화살FireMP 6"
+        },
+        {
+          "id": "actor-skill-skill_ranger_frost_arrow",
+          "text": "빙결 화살IceMP 6"
+        },
+        {
+          "id": "actor-skill-skill_ranger_arrow_rain",
+          "text": "화살비BowMP 12"
+        },
+        {
+          "id": "actor-skill-skill_ranger_snipe",
+          "text": "저격BowMP 12"
+        },
+        {
+          "id": "actor-skill-skill_ranger_nature_call",
+          "text": "자연의 부름MP 14"
+        },
+        {
+          "id": "actor-skill-skill_ranger_storm_arrow",
+          "text": "폭풍의 화살ThunderMP 32"
+        },
+        {
+          "id": "actor-skill-skill_gunner_snipe",
+          "text": "저격SpearMP 6"
+        },
+        {
+          "id": "actor-command-back",
+          "text": "뒤로"
+        }
+      ]
+    },
+    "after": {
+      "scene": {
+        "testid": "battle-scene",
+        "battleUiStyle": "classic",
+        "battleSkin": "retro2003",
+        "battleMotion": "retro",
+        "battleSkinFamily": "glass",
+        "battleTransition": "shatter-2003",
+        "battleHud": "rows",
+        "battleLayout": "sideview",
+        "battleAtbMode": "wait",
+        "battleHitFeelPreset": "impact",
+        "battleSystemResource": "easyrpg-system2-system2-c",
+        "battleSystem2": "applied",
+        "systemResource": "windowskin-warm",
+        "battleStageScale": "0.500",
+        "battleSequenceBusy": "true",
+        "battleDirectorStep": "acting",
+        "battlePhase": "actorCommand",
+        "battleFlow": "strict",
+        "battleEventPause": "",
+        "battleEventRequest": "",
+        "battleBgmActive": "true",
+        "battleHitFeel": "false",
+        "hitIntensity": "graze"
+      },
+      "prompt": false,
+      "enemyGauges": [
+        "0%",
+        "0%",
+        "0%"
+      ],
+      "active": "actor_ranger",
+      "actors": [
+        {
+          "id": "actor_ranger",
+          "text": "궁수Lv 22HP 9997/9999MP 993/999궁대기 1"
+        }
+      ],
+      "buttons": [
+        {
+          "id": "actor-command-attack",
+          "text": "공격"
+        },
+        {
+          "id": "actor-command-skill",
+          "text": "스킬"
+        },
+        {
+          "id": "actor-command-defend",
+          "text": "방어"
+        },
+        {
+          "id": "actor-command-item",
+          "text": "아이템없음",
+          "inert": "true",
+          "reason": "없음"
+        },
+        {
+          "id": "actor-command-escape",
+          "text": "도주"
+        }
+      ]
+    },
+    "observedSkillIds": [
+      "skill_gunner_snipe"
+    ],
+    "observedFx": [
+      "gunner_scope"
+    ],
+    "fixed": true
+  },
+  {
+    "id": "enemy-crosskind",
+    "errors": [],
+    "after": {
+      "scene": {
+        "testid": "battle-scene",
+        "battleUiStyle": "classic",
+        "battleSkin": "retro2003",
+        "battleMotion": "retro",
+        "battleSkinFamily": "glass",
+        "battleTransition": "shatter-2003",
+        "battleHud": "rows",
+        "battleLayout": "sideview",
+        "battleAtbMode": "wait",
+        "battleHitFeelPreset": "impact",
+        "battleSystemResource": "easyrpg-system2-system2-c",
+        "battleSystem2": "applied",
+        "systemResource": "windowskin-warm",
+        "battleStageScale": "0.500",
+        "battleSequenceBusy": "false",
+        "battleDirectorStep": "command",
+        "battlePhase": "actorCommand",
+        "battleFlow": "strict",
+        "battleEventPause": "",
+        "battleEventRequest": "",
+        "battleBgmActive": "true",
+        "battleHitFeel": "false",
+        "hitIntensity": "graze"
+      },
+      "prompt": false,
+      "enemyGauges": [
+        "0%",
+        "0%",
+        "0%"
+      ],
+      "active": "actor_hero",
+      "actors": [
+        {
+          "id": "actor_hero",
+          "text": "주인공Lv 22HP 9969/9999MP 999/999전대기 1"
+        }
+      ],
+      "buttons": [
+        {
+          "id": "actor-command-attack",
+          "text": "공격"
+        },
+        {
+          "id": "actor-command-skill",
+          "text": "스킬"
+        },
+        {
+          "id": "actor-command-defend",
+          "text": "방어"
+        },
+        {
+          "id": "actor-command-item",
+          "text": "아이템없음",
+          "inert": "true",
+          "reason": "없음"
+        },
+        {
+          "id": "actor-command-escape",
+          "text": "도주"
+        }
+      ]
+    },
+    "observedSkillIds": [
+      "skill_gunner_snipe"
+    ],
+    "observedFx": [
+      "gunner_scope"
+    ],
+    "fixed": true
+  },
+  {
+    "id": "enemy-special",
+    "errors": [],
+    "after": {
+      "scene": {
+        "testid": "battle-scene",
+        "battleUiStyle": "classic",
+        "battleSkin": "retro2003",
+        "battleMotion": "retro",
+        "battleSkinFamily": "glass",
+        "battleTransition": "shatter-2003",
+        "battleHud": "rows",
+        "battleLayout": "sideview",
+        "battleAtbMode": "wait",
+        "battleHitFeelPreset": "impact",
+        "battleSystemResource": "easyrpg-system2-system2-c",
+        "battleSystem2": "applied",
+        "systemResource": "windowskin-warm",
+        "battleStageScale": "0.500",
+        "battleSequenceBusy": "false",
+        "battleDirectorStep": "command",
+        "battlePhase": "actorCommand",
+        "battleFlow": "strict",
+        "battleEventPause": "",
+        "battleEventRequest": "",
+        "battleBgmActive": "true",
+        "battleHitFeel": "false"
+      },
+      "prompt": false,
+      "enemyGauges": [
+        "0%",
+        "0%",
+        "0%"
+      ],
+      "active": "actor_hero",
+      "actors": [
+        {
+          "id": "actor_hero",
+          "text": "주인공Lv 22HP 9999/9999MP 999/999전대기 1"
+        }
+      ],
+      "buttons": [
+        {
+          "id": "actor-command-attack",
+          "text": "공격"
+        },
+        {
+          "id": "actor-command-skill",
+          "text": "스킬"
+        },
+        {
+          "id": "actor-command-defend",
+          "text": "방어"
+        },
+        {
+          "id": "actor-command-item",
+          "text": "아이템없음",
+          "inert": "true",
+          "reason": "없음"
+        },
+        {
+          "id": "actor-command-escape",
+          "text": "도주"
+        }
+      ]
+    },
+    "observedSkillIds": [
+      "skill_gunner_snipe"
+    ],
+    "observedFx": [
+      "gunner_scope"
+    ],
+    "fixed": true
+  },
+  {
+    "id": "record-actor",
+    "errors": [],
+    "menu": {
+      "scene": {
+        "testid": "battle-scene",
+        "battleUiStyle": "classic",
+        "battleSkin": "retro2003",
+        "battleMotion": "retro",
+        "battleSkinFamily": "glass",
+        "battleTransition": "shatter-2003",
+        "battleHud": "rows",
+        "battleLayout": "sideview",
+        "battleAtbMode": "wait",
+        "battleHitFeelPreset": "impact",
+        "battleSystemResource": "easyrpg-system2-system2-c",
+        "battleSystem2": "applied",
+        "systemResource": "windowskin-warm",
+        "battleStageScale": "0.500",
+        "battleSequenceBusy": "false",
+        "battleDirectorStep": "command",
+        "battlePhase": "actorCommand",
+        "battleFlow": "strict",
+        "battleEventPause": "",
+        "battleEventRequest": "",
+        "battleBgmActive": "true",
+        "battleHitFeel": "false"
+      },
+      "prompt": false,
+      "enemyGauges": [
+        "0%",
+        "0%",
+        "0%"
+      ],
+      "active": "actor_hero",
+      "actors": [
+        {
+          "id": "actor_hero",
+          "text": "주인공Lv 22HP 9999/9999MP 999/999전대기 1"
+        }
+      ],
+      "buttons": [
+        {
+          "id": "actor-skill-skill_audit_record",
+          "text": "skill_audit_recordMP 0"
+        },
+        {
+          "id": "actor-skill-skill_attack",
+          "text": "공격MP 0"
+        },
+        {
+          "id": "actor-skill-skill_focus",
+          "text": "집중MP 2"
+        },
+        {
+          "id": "actor-skill-skill_hero_cross_slash",
+          "text": "십자베기SwordMP 3"
+        },
+        {
+          "id": "actor-skill-skill_sword_slash",
+          "text": "검격MP 0"
+        },
+        {
+          "id": "actor-skill-skill_hero_rush_pierce",
+          "text": "돌진 찌르기SpearMP 5"
+        },
+        {
+          "id": "actor-skill-skill_hero_rising_blade",
+          "text": "올려베기SwordMP 6"
+        },
+        {
+          "id": "actor-skill-skill_hero_flame_sword",
+          "text": "화염검FireMP 8"
+        },
+        {
+          "id": "actor-skill-skill_hero_whirlwind",
+          "text": "회전베기SwordMP 12"
+        },
+        {
+          "id": "actor-skill-skill_hero_war_cry",
+          "text": "함성MP 10"
+        },
+        {
+          "id": "actor-skill-skill_hero_meteor_drop",
+          "text": "낙하참MP 16"
+        },
+        {
+          "id": "actor-skill-skill_hero_brave_blade",
+          "text": "브레이브 블레이드HolyMP 30"
+        },
+        {
+          "id": "actor-command-back",
+          "text": "뒤로"
+        }
+      ]
+    },
+    "after": {
+      "scene": {
+        "testid": "battle-scene",
+        "battleUiStyle": "classic",
+        "battleSkin": "retro2003",
+        "battleMotion": "retro",
+        "battleSkinFamily": "glass",
+        "battleTransition": "shatter-2003",
+        "battleHud": "rows",
+        "battleLayout": "sideview",
+        "battleAtbMode": "wait",
+        "battleHitFeelPreset": "impact",
+        "battleSystemResource": "easyrpg-system2-system2-c",
+        "battleSystem2": "applied",
+        "systemResource": "windowskin-warm",
+        "battleStageScale": "0.500",
+        "battleSequenceBusy": "true",
+        "battleDirectorStep": "impact",
+        "battlePhase": "actorCommand",
+        "battleFlow": "strict",
+        "battleEventPause": "",
+        "battleEventRequest": "",
+        "battleBgmActive": "true",
+        "battleHitFeel": "false",
+        "hitIntensity": "graze"
+      },
+      "prompt": false,
+      "enemyGauges": [
+        "0%",
+        "0%",
+        "0%"
+      ],
+      "active": "actor_hero",
+      "actors": [
+        {
+          "id": "actor_hero",
+          "text": "주인공Lv 22HP 9996/9999MP 999/999전대기 1"
+        }
+      ],
+      "buttons": [
+        {
+          "id": "actor-command-attack",
+          "text": "공격"
+        },
+        {
+          "id": "actor-command-skill",
+          "text": "스킬"
+        },
+        {
+          "id": "actor-command-defend",
+          "text": "방어"
+        },
+        {
+          "id": "actor-command-item",
+          "text": "아이템없음",
+          "inert": "true",
+          "reason": "없음"
+        },
+        {
+          "id": "actor-command-escape",
+          "text": "도주"
+        }
+      ]
+    },
+    "observedSkillIds": [
+      "chor_merge_probe"
+    ],
+    "observedFx": [
+      "gunner_scope"
+    ],
+    "fixed": true
+  },
+  {
+    "id": "enemy-record",
+    "errors": [],
+    "after": {
+      "scene": {
+        "testid": "battle-scene",
+        "battleUiStyle": "classic",
+        "battleSkin": "retro2003",
+        "battleMotion": "retro",
+        "battleSkinFamily": "glass",
+        "battleTransition": "shatter-2003",
+        "battleHud": "rows",
+        "battleLayout": "sideview",
+        "battleAtbMode": "wait",
+        "battleHitFeelPreset": "impact",
+        "battleSystemResource": "easyrpg-system2-system2-c",
+        "battleSystem2": "applied",
+        "systemResource": "windowskin-warm",
+        "battleStageScale": "0.500",
+        "battleSequenceBusy": "false",
+        "battleDirectorStep": "command",
+        "battlePhase": "actorCommand",
+        "battleFlow": "strict",
+        "battleEventPause": "",
+        "battleEventRequest": "",
+        "battleBgmActive": "true",
+        "battleHitFeel": "false",
+        "hitIntensity": "graze"
+      },
+      "prompt": false,
+      "enemyGauges": [
+        "0%",
+        "0%",
+        "0%"
+      ],
+      "active": "actor_hero",
+      "actors": [
+        {
+          "id": "actor_hero",
+          "text": "주인공Lv 22HP 9969/9999MP 999/999전대기 1"
+        }
+      ],
+      "buttons": [
+        {
+          "id": "actor-command-attack",
+          "text": "공격"
+        },
+        {
+          "id": "actor-command-skill",
+          "text": "스킬"
+        },
+        {
+          "id": "actor-command-defend",
+          "text": "방어"
+        },
+        {
+          "id": "actor-command-item",
+          "text": "아이템없음",
+          "inert": "true",
+          "reason": "없음"
+        },
+        {
+          "id": "actor-command-escape",
+          "text": "도주"
+        }
+      ]
+    },
+    "observedSkillIds": [
+      "chor_merge_probe"
+    ],
+    "observedFx": [
+      "gunner_scope"
+    ],
+    "fixed": true
+  }
+]

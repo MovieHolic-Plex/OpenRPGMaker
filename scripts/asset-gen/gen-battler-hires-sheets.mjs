@@ -45,6 +45,7 @@ export function hiresTargets() {
 
 const isMain = process.argv[1] && path.resolve(process.argv[1]) === path.resolve(import.meta.filename);
 if (isMain) {
+  throw new Error("Starter artwork was removed on 2026-10-03; this generator is retired.");
   const check = process.argv.includes("--check");
   let drift = 0;
   for (const target of hiresTargets()) {

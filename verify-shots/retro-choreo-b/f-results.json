@@ -1,0 +1,70 @@
+{
+ "note": "각 스킬은 별도 프로세스(새 전투)에서 녹화. statuses 는 녹화 하네스가 읽은 적 상태 칩.",
+ "capCheck": {
+  "five": [
+   "poison-bubble",
+   "shield-shimmer",
+   "berserk-pulse"
+  ],
+  "dup": [
+   "poison-bubble"
+  ],
+  "how": "resolveBattlerAuras(state_deep_poison,protect,berserk,wet,blind) 를 vite-node 로 직접 호출 — 3개 상한. DOM data-battle-aura 값은 녹화에 담기지 않았다."
+ },
+ "runs": {
+  "freeze": [
+   "enemy-1-stop:스톱",
+   "enemy-2-stop:스톱",
+   "enemy-3-stop:스톱"
+  ],
+  "berserk": [
+   "enemy-1-berserk:버서크",
+   "enemy-2-berserk:버서크",
+   "enemy-3-berserk:버서크"
+  ],
+  "shield": [
+   "enemy-1-protect:프로텍트",
+   "enemy-2-protect:프로텍트",
+   "enemy-3-protect:프로텍트"
+  ],
+  "wet": [
+   "enemy-1-wet:젖음",
+   "enemy-2-wet:젖음",
+   "enemy-3-wet:젖음"
+  ],
+  "poison": [
+   "enemy-1-poison:맹독",
+   "enemy-2-poison:맹독",
+   "enemy-3-poison:맹독"
+  ],
+  "dark": [
+   "enemy-1-blind:암흑",
+   "enemy-2-blind:암흑",
+   "enemy-3-blind:암흑"
+  ],
+  "petrify": [
+   "enemy-1-petrify:석화",
+   "enemy-2-petrify:석화",
+   "enemy-3-petrify:석화"
+  ],
+  "regen": [
+   "enemy-1-regen:재생",
+   "enemy-2-regen:재생",
+   "enemy-3-regen:재생"
+  ],
+  "cap5": [
+   "enemy-1-poison:맹독",
+   "enemy-1-protect:프로텍트",
+   "enemy-1-berserk:버서크",
+   "enemy-1-wet:젖음",
+   "enemy-2-poison:맹독",
+   "enemy-2-protect:프로텍트",
+   "enemy-2-berserk:버서크",
+   "enemy-2-wet:젖음",
+   "enemy-3-poison:맹독",
+   "enemy-3-protect:프로텍트",
+   "enemy-3-berserk:버서크",
+   "enemy-3-wet:젖음"
+  ]
+ }
+}

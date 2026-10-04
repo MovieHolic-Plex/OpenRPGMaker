@@ -3,7 +3,7 @@
 // 편집기 번들이 없는 데스크톱 시작 화면도 같은 규칙으로 맵 썸네일을 그린다(src/start/startCover.ts).
 // 예전에는 tilesetImage.ts 에 있었고, 그 파일이 store 를 import 해서 시작 화면이 쓸 수 없었다.
 
-import { DEFAULT_TILESET_TEXTURE_KEY, LEGACY_RM_TILESET_TEXTURE_KEY } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_TEXTURE_KEY, LEGACY_RM_TILESET_TEXTURE_KEY } from "@/project/defaults/constants";
 import { isWorldTileset } from "@/project/defaults/worldCoastMapping";
 import { INTERIOR_TEXTURE_KEY, isDungeonSheetTexture } from "@/project/tilesetHarness/themePacks";
 import type { TilesetDef } from "@/project/types";
@@ -37,7 +37,7 @@ export function usesCombinedTownWaterBlock(tileset: TilesetDef): boolean {
 export function isDefaultTilesetTexture(tileset: TilesetDef): boolean {
   return (
     tileset.image.type === "bundled" &&
-    (tileset.image.id === DEFAULT_TILESET_TEXTURE_KEY || tileset.image.id === LEGACY_RM_TILESET_TEXTURE_KEY)
+    (tileset.image.id === COMBINED_TOWN_TILESET_TEXTURE_KEY || tileset.image.id === LEGACY_RM_TILESET_TEXTURE_KEY)
   );
 }
 

@@ -1,0 +1,44 @@
+{
+ "id": "wall_cellar_brick",
+ "slug": "wall_cellar_brick",
+ "name": "벽돌 벽면(젖은)",
+ "scene": "지하·돌방",
+ "cells": [
+  2,
+  2
+ ],
+ "canvas": [
+  32,
+  32
+ ],
+ "layer": "facade",
+ "layer_ko": "건물 외관 블록(불투명 허용)",
+ "description": "wall_stone_block 과 같은 높이 규칙, 작은 붉은 갈색 벽돌(8×4 엇갈림), 위에서 흐른 물 얼룩 세로 한 줄. 지하 창고·보일러실.",
+ "palette_hint": "vclay/rust 벽돌, grave 줄눈",
+ "stage": 1,
+ "stage_ko": "1단계 기본(2판 새로)",
+ "kit": "cellar",
+ "role": "벽면(벽돌)",
+ "worker": "hf7",
+ "set_with": [
+  "wall_stone_block",
+  "floor_stone",
+  "floor_dirt",
+  "door_cell",
+  "torch_wall",
+  "shelf_cellar"
+ ],
+ "v5_ref": [
+  {
+   "id": "wall:rubble",
+   "name_ko": "잡석",
+   "atlas": {
+    "x": 416,
+    "y": 1720,
+    "w": 32,
+    "h": 32
+   },
+   "file": "ref-v5-1.png"
+  }
+ ]
+}

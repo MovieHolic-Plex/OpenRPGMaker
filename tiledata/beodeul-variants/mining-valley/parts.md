@@ -1,0 +1,44 @@
+# 새로 찍은 조각 — mining-valley
+
+- `parts/ground-meadow.png` (48x48 px) — 골짜기 풀밭 / 3x3칸 표본
+- `parts/ground-meadow2.png` (48x48 px) — 윗단 풀밭 / 3x3칸 표본
+- `parts/ground-yard2.png` (48x48 px) — 윗단 갱구 앞마당(재 섞인 흙) / 3x3칸 표본
+- `parts/hall.png` (110x115 px) — 광부 회관(1층 다듬은 돌·큰 쌍문, 2층 판자, 판자 모임지붕+종탑) / 7x8칸
+- `parts/s2.png` (60x87 px) — 돌 기초 판자 창고(앞 박공, 미닫이 문) / 4x6칸
+- `parts/boss.png` (78x103 px) — 감독관 집(2층 돌, 점판암 지붕+지붕창, 퇴창) / 5x7칸
+- `parts/d1.png` (60x67 px) — 통나무 오두막(판자 모임지붕·쇠 연통) / 4x5칸
+- `parts/e2.png` (60x89 px) — 나무집(벽 이전 그대로, 지붕만 판자 앞 박공으로) / 4x6칸
+- `parts/w3.png` (60x76 px) — 나무집(벽 이전 그대로, 지붕만 판자 모임지붕으로) / 4x5칸
+- `parts/e1.png` (86x83 px) — e1 / 6x6칸
+- `parts/e3.png` (70x83 px) — e3 / 5x6칸
+- `parts/w1.png` (86x83 px) — w1 / 6x6칸
+- `parts/w2.png` (70x83 px) — w2 / 5x6칸
+- `parts/s1.png` (86x83 px) — s1 / 6x6칸
+- `parts/smelt.png` (118x83 px) — smelt / 8x6칸
+- `parts/smith.png` (86x83 px) — smith / 6x6칸
+- `parts/w4.png` (86x83 px) — w4 / 6x6칸
+- `parts/d2.png` (76x83 px) — 판자 광부집+옆 헛간(앞 박공 판자 지붕) / 5x6칸
+- `parts/s3.png` (70x83 px) — s3 / 5x6칸
+- `parts/inn.png` (94x132 px) — 여관(1층 막돌·처마 차양·간판, 2층 내민 판자층, 앞 박공 판자 지붕) / 6x9칸
+- `parts/adit.png` (48x50 px) — adit / 3x4칸
+- `parts/headframe.png` (48x64 px) — headframe / 3x4칸
+- `parts/cart.png` (16x20 px) — cart / 1x2칸
+- `parts/ore.png` (28x18 px) — ore / 2x2칸
+- `parts/rack.png` (32x28 px) — rack / 2x2칸
+- `parts/lamp.png` (18x44 px) — 광산 등 기둥 / 2x3칸
+- `parts/slagrock.png` (24x18 px) — slagrock / 2x2칸
+- `parts/pile.png` (40x30 px) — 갱목 더미(끝면이 앞) / 3x2칸
+- `parts/buffer.png` (16x16 px) — buffer / 1x1칸
+- `parts/bin.png` (32x34 px) — bin / 2x3칸
+- `parts/cart_h.png` (28x20 px) — cart_h / 2x2칸
+- `parts/bench.png` (32x20 px) — bench / 2x2칸
+- `parts/crates.png` (32x32 px) — crates / 2x2칸
+- `parts/kiln.png` (40x40 px) — kiln / 3x3칸
+- `parts/chimney.png` (24x80 px) — chimney / 2x5칸
+- `parts/slagheap.png` (48x34 px) — slagheap / 3x3칸
+- `parts/sluice.png` (48x32 px) — sluice / 3x2칸
+- `parts/barrel.png` (16x16 px) — barrel / 1x1칸
+- `parts/board.png` (32x32 px) — board / 2x2칸
+- `parts/fir.png` (24x38 px) — fir / 2x3칸
+
+합계: 40 조각

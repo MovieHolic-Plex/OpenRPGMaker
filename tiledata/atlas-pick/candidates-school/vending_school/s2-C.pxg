@@ -1,0 +1,111 @@
+// vending_school s2-C
+@size 16 32
+@cell 16
+@palette palette.pal
+@layer main
+@mat a locker 0
+@mat b mglass 0
+@mat c mwhite 0
+@mat d vblue 0
+@mat e vwhite 0
+@mat f vyellow 0
+@mblock 0 0
+..aaaaaaaaaaaa..
+.adddddddddddda.
+.adddddddddddda.
+.addeeeeeeeedda.
+.adddddddddddda.
+.adddddddddddda.
+.acaaaaaaaaaaca.
+.acabbbbbbbbaca.
+.acaeebffbdbaca.
+.acaeebffbbdaca.
+.acaddbffbddaca.
+.acaeebffbddaca.
+.acaeebffbddaca.
+.acaaaaaaaaaaca.
+.acaffbddbeeaca.
+.acaffbddbeeaca.
+.acaffbddbddaca.
+.acaffbddbeeaca.
+.acaffbddbeeaca.
+.acaaaaaaaaaaca.
+.acaaaaaaaaaaca.
+.acccccccccccca.
+.accfffccaaacca.
+.accfffccaaacca.
+.acccccccccccca.
+.acaaaaaaaaaaca.
+.acaaaaaaaaaaca.
+.acaaaaaaaaaaca.
+.acaaaaaaaaaaca.
+.acccccccccccca.
+.aaaaaaaaaaaaaa.
+................
+@tblock 0 0
+..111111111111..
+.14444444444441.
+.12222222222221.
+.12255555555221.
+.12222222222221.
+.11111111111111.
+.15111111111121.
+.15134444444121.
+.15122111115121.
+.15152151151121.
+.15155151151121.
+.15152151151121.
+.15152151151121.
+.15133333333121.
+.15111111122121.
+.15151151152121.
+.15151151155121.
+.15151151152121.
+.15151151152121.
+.15133333333121.
+.15111111111121.
+.15333333333321.
+.15333333222321.
+.15333333222321.
+.15333333333321.
+.15111111111121.
+.15111111111121.
+.15100000000121.
+.15100000000121.
+.10000000000001.
+.11111111111111.
+................
+@layer shadow
+@block 0 0
+................
+................
+................
+................
+................
+................
+................
+................
+................
+................
+................
+................
+................
+................
+................
+................
+................
+................
+................
+................
+................
+................
+................
+................
+................
+................
+................
+................
+................
+................
+...............-
+..~~~~~~~~~~~~~.

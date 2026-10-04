@@ -1,0 +1,41 @@
+// mo_trash v34-A 3/4
+@size 16 16
+@cell 16
+@palette ../../palette/modern3.pal
+@layer main
+@mat a sumi 0
+@mat b tekko 0
+@mblock 0 0
+................
+...aaaaaaaaaa...
+..abbbbbbbbbba..
+..abbbbbbbbbba..
+..abbbbbbbbbba..
+..abbbbbbbbbba..
+.abbbbbbbbbbbba.
+..abbbbbbbbbba..
+..abbbbbbbbbba..
+..abbbbbbbbbba..
+..abbbbbbbbbba..
+..abbbbbbbbbba..
+..abbbbbbbbbba..
+..abbbbbbbbbba..
+..aaaaaaaaaaaa..
+...aaaaaaaaaa...
+@tblock 0 0
+................
+...0000000000...
+..055555555550..
+..055555555550..
+..055555555550..
+..055555555550..
+.06666666666660.
+..043333333320..
+..043323323320..
+..043323323320..
+..043323323320..
+..043323323320..
+..043323323320..
+..011111111110..
+..011111111110..
+...0000000000...

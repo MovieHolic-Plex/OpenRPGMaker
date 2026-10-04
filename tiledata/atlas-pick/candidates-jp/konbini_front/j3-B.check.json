@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/konbini_front/j3-B.pxg",
+ "set": "jp",
+ "id": "konbini_front",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.195
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.109
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 48,
+ "bbox": [
+  0,
+  0,
+  63,
+  47
+ ],
+ "note": "빛 구조 강화: 간판 윗면 밝게·아래 처마 그림자 세 줄, 유리 안이 밝고(위에서 아래로 어두워짐), 창틀 윗면 밝고 오른쪽 어둡게, 문 손잡이·상단 센서 강조",
+ "ok": true
+}

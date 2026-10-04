@@ -1,0 +1,36 @@
+// w8-C x
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat r wood 5
+@mat R wood 3
+@mat d wood 2
+@mat n brass 4
+@mat m brass 6
+@mat q linen 6
+@mat p linen 5
+@mat o linen 4
+@mat l linen 3
+@mat s blue 4
+@mat t blue 5
+@mat g green 4
+@mat e green 3
+@mat X red 5
+@mat c dwood 3
+@mblock 0 0
+................
+................
+.nRRRRRRRRRRRRm.
+..dddddddddddd..
+...ooooooooooo..
+...pqqqqqqqqqo..
+...pqqqXqqgeqo..
+...pqqXXXqggqo..
+...pqttqqqeeqo..
+...pqtssqqqqqo..
+...pqqttqqqqqo..
+...pqqqqqqqqqo..
+...poooooooool..
+..nrRRRRRRRRRdm.
+...cddddddddc...
+................

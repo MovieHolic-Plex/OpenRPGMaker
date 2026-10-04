@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/bookshelf_1w/w2-B.pxg",
+ "id": "bookshelf 1w",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.047
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 25,
+ "v5_colors": 24,
+ "bbox": [
+  0,
+  10,
+  15,
+  46
+ ],
+ "v5_bbox": [
+  0,
+  10,
+  15,
+  47
+ ],
+ "note": "명암 강화: 오른쪽 안쪽·기둥을 한 단 더 어둡게, 왼쪽 기둥·판 윗면은 밝게 유지, 바닥선에 반투명 접지 그림자",
+ "ok": true
+}

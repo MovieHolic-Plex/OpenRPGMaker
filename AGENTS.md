@@ -14,6 +14,50 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
 2. **`openwiki/INDEX.md`** — 위키 절 좌표(생성 파일, `npm run openwiki:index`). 위키는 41쪽 약 1MB(약 27만 토큰)이고
    7쪽은 읽기 도구 상한 50KB 를 넘어 **통째로 읽으면 조용히 잘린다**. 필요한 절만 줄 번호로 잘라 읽어라.
 
+## 하네스 (hard rule)
+
+아래 작업은 손으로 하지 말고 해당 하네스를 실행한다. 목록·단계는 `src/harnesses/INDEX.md`(생성 파일),
+구조 규칙은 `openwiki/harnesses/README.md`.
+
+- **에디터용 RM2000 캐릭터를 변형·대량 저작·검사·패킹할 때**
+  → `charset-actor` · 시드 `harness-data/charset-actor/briefs.json`
+  → `npm run harness -- charset-actor <단계>` · 문서 `openwiki/harnesses/charset-actor.md`
+  → GPT 6.1 sol high가 자유롭게 픽셀 저작 → 결손 검사 → GIF. 사람이 남기기/폐기를 결정하며 남긴 칩만 팩으로 만든다. `produce --count 100`으로 시작하고 설치는 별도다.
+
+- **몬스터 수집(포켓몬류) 게임의 종·스타터·진화 계통 전투 스프라이트(앞모습·뒷모습)를 만들 때**
+  → `monster-collect-species` · 시드 `harness-data/monster-collect-species/seed.json`
+  → `npm run harness -- monster-collect-species <단계>` · 문서 `openwiki/harnesses/monster-collect-species.md`
+  → 후보는 사람이 고른다. JRPG 일반 적 그림에는 쓰지 않는다.
+- **modern3 현대 거리 칩셋의 기물 도트(현재 탈것: 자동차·버스·트럭·열차)를 그릴 때** (3/4 시점: 윗면이 면으로 보여야 한다)
+  → `modern-chipset` · 시드 `harness-data/modern-chipset/seed.json`
+  → `npm run harness -- modern-chipset <단계>` · 문서 `openwiki/harnesses/modern-chipset.md`
+  → 기준 = 프로젝트의 modern-city-atlas 경찰차. 후보는 Sonnet 5명이 pxgrid 로 찍고 사람이 고른다. 직접 그리지 말 것.
+- **jp_city 번들(일본 도시, modern3)의 주택가·역·공원·신사 그림(건물 외형·소품·바닥 타일·키트)을 그릴 때** (3/4 시점, 사람·글자·상표 금지)
+  → `jp-city` · 시드 `harness-data/jp-city/seed.json`(항목 40, wave houses/station/park/shrine)
+  → `npm run harness -- jp-city <단계>` · 문서 `openwiki/harnesses/jp-city.md`
+  → 후보는 Sonnet 5명이 pxgrid 로 찍고 **사람이 고른다**(시트 `~/claude-viz/jp-<판>.html`). 직접 그리거나 감독이 고르지 말 것. 웨이브 구동 `src/harnesses/jp-city/waves.py`.
+- **조선(바람의나라풍) 칩셋 joseon_baram 의 조각·지도를 만지거나 번들을 재생성할 때** (팔레트 잠금·게이트 P/E/T/L/S/A/K/TR/V·판정·지도 관문·16구역 적대 검수)
+  → `joseon-baram` · 시드 `harness-data/joseon-baram/seed.json`(지도 15장·관문·쓰지 말 것)
+  → `npm run harness -- joseon-baram <단계>` (palette·validate·list·gate·verdict·build·map·review·status) · 문서 `openwiki/harnesses/joseon-baram.md`
+  → 기존 `scripts/content/lib/joseon/` 도구를 한 입구로 묶은 것이다. 그림은 코드 도트만(생성 이미지·생성 캐릭터 금지, Actor1 사용), 바람의나라 스크린샷 커밋 금지, 판정은 해시에 묶이니 손으로 고치지 말 것.
+
+- **조수가 특정 공간 낱말(미궁·감옥·하수도…)을 잘못 깔 때 / 개념 카드(`src/assets/conceptCards.json`)를 고칠 때**
+  → `super-harness` · 시드 `harness-data/super-harness/seed.json` · 문서 `openwiki/harnesses/super-harness.md`
+  → 자동으로 도는 데몬이다(화면 http://mdc-server:18315/). 카드를 손으로 쓰지 말고 화면에서 교정 지시·폐기.
+
+- **월드맵 아이콘을 검수·교정·선택 시트로 굽거나 공용 스탬프에 넣을 때**
+  → `worldmap-icons` · 시드 `harness-data/worldmap-icons/seed.json` · 문서 `openwiki/harnesses/worldmap-icons.md`
+  → `npm run harness -- worldmap-icons <단계>` (intake·review·draw·serve·status·export·build·check·preview).
+  → 사람이 선택한 현재 해시만 굽는다. 선택 정본은 `WMI_HARNESS_DATA/harness.sqlite`, 칸 번호는 덧붙이기 전용이다.
+
+- **단일 관계·연애 / 대화 중심 / 한 관계 / 첫 만남 한 장면을 제작할 때**
+  → `romance-scene` · 시드 `harness-data/romance-scene/seed.json` · 문서 `openwiki/harnesses/romance-scene.md`
+  → `author_romance_scene`으로 원자적으로 저작하고 `inspect_romance_scene`으로 양쪽 선택·재대화·취소·종료를 검사한다.
+  → 임시 초안·조수의 완료 선언은 합격이 아니다. 실제 이미지 검수와 정본 저장·재로드를 따로 확인한다.
+
+새 하네스를 만들면 `src/harnesses/<id>/` 폴더 하나에 두고, `src/harnesses/_core/registry.ts` 에 등록하고,
+`npm run harness -- list` 로 INDEX 를 다시 쓰고, 이 목록에 한 줄을 더한다.
+
 그다음에 아래 순서로 간다.
 
 1. `openwiki/PROJECT_WIKI.md` - the current project-specific AI map.
@@ -23,8 +67,11 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
    - Editor event authoring: `openwiki/editor-event-authoring.md` + `openwiki/editor-event-commands.md` + `openwiki/editor-event-command-fixes.md`
    - Editor database: `openwiki/editor-database.md`
    - 세계 생성 규칙 (AI 마을 생성의 물·숲·길 수치와 낱말 판정을 DB 「세계 → 생성 규칙」 탭으로 저작): `openwiki/world-generation-rules.md`
+   - 버들항 v6 · 로마풍 항구 도시 (Python 손 도트 100×100 을 칸으로 자른 공용 타일셋 beodeul_city 23,936칸·animationStrips 1,699·구역/건물/소품 키트 120, 참고문서 4용도·정본 저장·조수 시험, 다음 판 참고 그림): `openwiki/beodeul-city.md`
+   - 조선(바람의나라풍) 칩셋 joseon_baram · 손 도트 조각 291종+실내·사냥터·동굴 키트·오토타일 19종을 공용 번들 타일셋으로 (변환기 `build-joseon-tileset.py`, 시트 여러 장 합치기, 칸 통행 X/C/F·꼬리 복사본, 참고문서 6용도, 지도 15장 저장·장소 카드, 재실행 한 줄 `rebuild-joseon.sh`): `openwiki/joseon-baram.md`
    - Editor AI panel & tools: `openwiki/editor-ai-panel.md` + `openwiki/editor-ai-tools.md`
    - Editor misc workflows: `openwiki/editor-workflows-misc.md`
+   - 에디터 「공방」 (하네스를 에디터 안에서 사용자 계정 모델로 돌리기 — 왼쪽 막대, 실행기·저장·표면): `openwiki/editor-workshop.md`
    - Editor validation: `openwiki/editor-validation.md`
    - **타일을 저작하는 모든 에이전트:** 먼저 현재 프로젝트의 `타일 → 참고문서 → 해당 용도`를 읽어라. `list_tileset_references`로 용도/자료 목록을 조회하고 `read_tileset_reference`로 MD 전 페이지와 실제 이미지를 확인한 뒤 배치한다. 코딩 에이전트는 정본(SQLite 호스트) 프로젝트를 읽어 `scripts/content/export-tileset-references.mjs`로 추출하고 이미지를 직접 연다. 이전 대화나 저장소의 옛 학습 문서만으로 대체하지 않는다. 구현·도구 계약은 `openwiki/tileset-reference-documents.md`.
    - **새 타일·타일 학습은 공용에 넣는다 (hard rule):** 특정 프로젝트에만 추가하고 끝내지 마라. 타일 그림은 `src/assets/bundled.ts` 번들로, 학습 자료는 `tiledata/<칩셋>/` 에 출처를 커밋하고 `scripts/content/prepare-*-references.mjs` 로 `src/assets/*References.json` 번들을 만들어 타일셋 정의와 `ensureBundledTilesets` 에 배선한다. 아래 「새 타일·타일 학습은 공용에 추가한다」 절을 따른다.
@@ -34,10 +81,14 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
    - 공통 지연 툴팁 (아이콘 컨트롤 툴팁 동작 계약·명시 롤아웃 목록·문구 규칙): `openwiki/delayed-tooltip.md`
    - 편집기 다국어 (ko/en/ja/zh 언어 결정 순서·DOM 번역 계층·화면 글자 역참조 금지 계약·카탈로그 추가 절차): `openwiki/i18n.md`
    - Interior room harness: `openwiki/editor-interior-room-harness.md`
+   - **월드맵 아이콘은 하네스를 거친다:** `src/harnesses/worldmap-icons/README.md` — 검수자(시점 계약: 윗면+정면 벽, 옆면 금지)가 판정하고 사용자가 http://mdc-server:18313/ 에서 받기/버리기. 결정 `harness-data/worldmap-icons/decisions.json`. 감독이 대신 고르거나 바로 번들·지도에 넣지 않는다.
+   - **캐릭터 칩(RM2000 CharSet)은 하네스로 만든다:** `src/harnesses/charset-actor/README.md` — GPT 6.1 sol high가 원본 격자를 직접 자유 저작 → 결손 검사 → GIF 대기열. 사용자가 http://mdc-server:18314/ 에서 남기기/폐기만 결정한다. `npm run harness -- charset-actor produce --count 100` 또는 화면에서 시작한다. 사람 선택은 현재 그림 해시에 묶으며 실제 남긴 캐릭터만 다운로드한다. 데이터는 저장소 밖 `CHR_HARNESS_DATA`에 보존하고 프로젝트 설치는 별도다.
+   - **실내는 손 도트 v5 하나 (hard rule, 2026-09-29):** 공용 실내 `atlas_biome_interior` = 손 도트 실내 v5 전용 시트(옛 Tibo·EasyRPG 실내·LPC 가구 칩셋은 폐기, 조수에게 안 보이고 거부된다), 배·던전은 `atlas_biome_dungeon`. 도구 `build_hand_interior_room`, 스킬 원본 `assistant-skills/interior-room-authoring/SKILL.md`, 편집기 「새 맵 → 실내」 기본도 이 칩셋: `openwiki/atlas-biome-interior.md`
    - `openwiki/editor-workflows.md` is now a slim index linking to the above topic pages.
    - `openwiki/large-village-generation.md` for 100×100 river/market village plan → build → road → QA flow.
    - Runtime pre-edit routing & cautions: `openwiki/runtime-pre-edit-routing.md` (read first for any runtime change)
    - 타이틀 오프닝 효과 (WebGL 빛내림·칼날 반사·물결·안개, AI 키아트 + 비전 좌표 맞춤): `openwiki/title-opening-effects.md`
+   - 세계 지도 지형 편집 (조수가 대륙·해협·섬·산맥·강·숲·바닥을 ops 로 다시 그림, 월드맵 키트 빌드 경로·저장 형태): `openwiki/worldmap-terrain-editing.md`
    - Runtime battle: `openwiki/runtime-battle.md`
    - 포켓몬풍 완결 게임 「몬스터 테이머」(19맵, 지역 파일 계약·진행 보정·검증 명령): `openwiki/pokemon-full-game.md`
    - 배틀러 idle 애니메이션을 **새로 추가하는 절차**(표시 상자 실측 → 클립 → 창 탐색 → 패킹 → 검증, 네 계약과 함정): `openwiki/battler-idle-playbook.md`
@@ -46,6 +97,7 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
    - Runtime project schema & persistence: `openwiki/runtime-project-schema.md`
    - Runtime M2 flow controls: `openwiki/runtime-m2-flow-controls.md`
    - State system (authored definition, ontology, runtime application, editor surface): `openwiki/state-system.md`
+   - 높이 지형 relief (단·경사로·벽면 장식 — 편집기 붓·절벽 띠·들린 타일, 게임 걷기·들림·depth, 성능 계약, 알려진 한계): `openwiki/relief-terrain.md`
    - `openwiki/runtime-and-data.md` is now a slim index linking to the above topic pages.
    - `openwiki/architecture.md` for boot flow and ownership boundaries.
    - `openwiki/testing.md` for validation expectations.

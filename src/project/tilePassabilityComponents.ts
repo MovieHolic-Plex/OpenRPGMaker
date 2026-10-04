@@ -16,7 +16,7 @@
 // ── 비용을 어디에 두었는가 (실측 100×100 = 1만 칸)
 // 색인을 만드는 데 2.9ms 다. 그래서 **미리 만들지 않는다** — A* 가 실제로 빈 경로를 낸
 // 뒤에만(이미 6.7ms 를 쓴 뒤) 만들어 둔다. 그 다음부터 같은 질의는 25µs 다.
-// 두 값 모두 맵 면적에 **선형**이다. clampMapSize 상한 256×256(6.5만 칸)이면 빌드 약
+// 두 값 모두 맵 면적에 **선형**이다. 당시 상한 256×256(6.5만 칸)이면 빌드 약
 // 19ms, 지문 약 160µs 로 예산을 넘는다 — 그래서 방금 훑은 범위가 면적에 비해 작으면
 // 아예 만들지 않는다(§armTerrainComponents 의 scannedCells).
 // 도달 **가능** 질의는 라벨 두 번 읽기로 끝나 지문 비용을 치르지 않는다 — 낙관적으로 낸
@@ -261,6 +261,9 @@ function passabilityFingerprint(map: GameMap, tileset: TilesetDef | null): Int32
   // 2·4층(선택 칸)도 칸 통행을 바꾼다(collision.ts §layeredPassability).
   pushTiles(push, 2, map.lowerOverlayTiles);
   pushTiles(push, 4, map.upperOverlayTiles);
+  pushTiles(push, 9, map.terrainDesign?.waterDepth);
+  pushTiles(push, 10, map.relief?.levels);
+  pushTiles(push, 11, map.relief?.ramps);
   pushStacks(push, 5, map.lowerTileStacks);
   pushStacks(push, 6, map.upperTileStacks);
   pushTilesetPassage(push, tileset);

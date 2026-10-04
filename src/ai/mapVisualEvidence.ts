@@ -4,6 +4,7 @@ import type { GameMap, Project, TilesetDef } from "@/project/types";
 export function mapVisualContent(map: GameMap) {
   return { width: map.width, height: map.height, tileSize: map.tileSize, tilesetId: map.tilesetId,
     lowerTiles: map.lowerTiles, upperTiles: map.upperTiles,
+    ...(map.relief ? { relief: map.relief } : {}),
     lowerTileStacks: map.lowerTileStacks, upperTileStacks: map.upperTileStacks,
     // MZ 2·4층·그림자도 그려지는 칸이다 — 있을 때만 싣는다(옛 맵의 투영·비교 문자열은 그대로).
     ...(map.lowerOverlayTiles ? { lowerOverlayTiles: map.lowerOverlayTiles } : {}),

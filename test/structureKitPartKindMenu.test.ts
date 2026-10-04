@@ -7,7 +7,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { registerStructureKit } from "@/editor/harnessSuggestion/structureKitActions";
 import { openStructureKitEditor } from "@/editor/panels/structureKitEditorDialog";
-import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { store } from "@/project/store";
 import type { SectionStructureKitDef } from "@/project/types";
 import { FakeElement, installFakeDom } from "./fakeDom";
@@ -51,7 +51,7 @@ afterEach(() => {
 });
 
 function seedKit(): void {
-  registerStructureKit(DEFAULT_TILESET_ID, {
+  registerStructureKit(COMBINED_TOWN_TILESET_ID, {
     id: "kit_part_menu",
     kind: "section",
     name: "우물",
@@ -67,7 +67,7 @@ function seedKit(): void {
 }
 
 function storedKit(): SectionStructureKitDef {
-  return store.getCurrent().tilesets[DEFAULT_TILESET_ID]!.structureKits!
+  return store.getCurrent().tilesets[COMBINED_TOWN_TILESET_ID]!.structureKits!
     .find((kit) => kit.id === "kit_part_menu") as SectionStructureKitDef;
 }
 
@@ -88,7 +88,7 @@ function clickMenuOption(kind: string): void {
 describe("부위 종류 팝오버", () => {
   it("드래그를 떼면 네 종류를 묻고, 고르기 전에는 부위를 만들지 않는다", () => {
     seedKit();
-    openStructureKitEditor(DEFAULT_TILESET_ID, "kit_part_menu", () => {});
+    openStructureKitEditor(COMBINED_TOWN_TILESET_ID, "kit_part_menu", () => {});
     dragOnePartCell();
 
     const menu = document.querySelector("[data-testid='structure-kit-part-kind-menu']");
@@ -104,7 +104,7 @@ describe("부위 종류 팝오버", () => {
 
   it("창문을 고르면 창문 부위가 생긴다 — 예전에는 종류가 언제나 입구로 굳었다", () => {
     seedKit();
-    openStructureKitEditor(DEFAULT_TILESET_ID, "kit_part_menu", () => {});
+    openStructureKitEditor(COMBINED_TOWN_TILESET_ID, "kit_part_menu", () => {});
     dragOnePartCell();
     clickMenuOption("window");
 
@@ -115,7 +115,7 @@ describe("부위 종류 팝오버", () => {
 
   it("부위 행의 ✎ 로 종류를 간판으로 바꾼다", () => {
     seedKit();
-    openStructureKitEditor(DEFAULT_TILESET_ID, "kit_part_menu", () => {});
+    openStructureKitEditor(COMBINED_TOWN_TILESET_ID, "kit_part_menu", () => {});
     dragOnePartCell();
     clickMenuOption("entrance");
 
@@ -132,7 +132,7 @@ describe("부위 종류 팝오버", () => {
 describe("편집기 [문에서 추정]", () => {
   it("문 타일에서 입구 부위를 만든다 — 인스펙터에서 편집기로 옮긴 버튼이다", () => {
     seedKit();
-    openStructureKitEditor(DEFAULT_TILESET_ID, "kit_part_menu", () => {});
+    openStructureKitEditor(COMBINED_TOWN_TILESET_ID, "kit_part_menu", () => {});
 
     const estimate = document.querySelector("[data-testid='structure-kit-estimate-entrance']");
     expect(estimate).not.toBeNull();
@@ -154,7 +154,7 @@ describe("칸 힌트 팝오버", () => {
 
   it("칸을 누르면 축 세 가지와 지우기를 묻고, 고르기 전에는 아무것도 쓰지 않는다", () => {
     seedKit();
-    openStructureKitEditor(DEFAULT_TILESET_ID, "kit_part_menu", () => {});
+    openStructureKitEditor(COMBINED_TOWN_TILESET_ID, "kit_part_menu", () => {});
     pressHintCell();
 
     const menu = document.querySelector("[data-testid='structure-kit-editor-hint-menu']");
@@ -168,7 +168,7 @@ describe("칸 힌트 팝오버", () => {
 
   it("«세로로 증분 가능» 을 고르면 그 칸에 세로 축이 붙는다", () => {
     seedKit();
-    openStructureKitEditor(DEFAULT_TILESET_ID, "kit_part_menu", () => {});
+    openStructureKitEditor(COMBINED_TOWN_TILESET_ID, "kit_part_menu", () => {});
     pressHintCell();
     (document.querySelector("[data-testid='structure-kit-editor-hint-option-vertical']") as unknown as FakeElement).click();
 
@@ -177,7 +177,7 @@ describe("칸 힌트 팝오버", () => {
 
   it("지우기를 고르면 그 칸의 힌트가 사라진다", () => {
     seedKit();
-    openStructureKitEditor(DEFAULT_TILESET_ID, "kit_part_menu", () => {});
+    openStructureKitEditor(COMBINED_TOWN_TILESET_ID, "kit_part_menu", () => {});
     pressHintCell();
     (document.querySelector("[data-testid='structure-kit-editor-hint-option-both']") as unknown as FakeElement).click();
     expect(storedKit().cellHints).toHaveLength(1);

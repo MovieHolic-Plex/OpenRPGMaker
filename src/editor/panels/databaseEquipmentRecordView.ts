@@ -1,3 +1,4 @@
+import { CHARACTER_MOTION_STYLES, CHARACTER_MOTION_LABELS, type CharacterMotionStyle } from "@/battle/characterMotion";
 import { equipmentSlots } from "@/project/equipmentSlots";
 import { equipmentSlotManager } from "@/editor/panels/equipmentSlotManager";
 import { equipmentFields } from "@/editor/panels/databaseBasicRecordFields";
@@ -304,6 +305,7 @@ export function renderEquipmentRecordForm(form: HTMLElement, record: EquipmentRe
                     combatAxisField(record, "criticalRate", "치명타율(%p)", "db-field-equipment-critical-rate", refreshOverview),
                   ],
                 }),
+                ...(record.slot === "weapon" ? [selectField("전투 동작 (없음: 캐릭터 기본)", "db-equipment-motion-style",record.battleMotionStyle??"",CHARACTER_MOTION_STYLES.map(id=>({id,name:CHARACTER_MOTION_LABELS[id]})),v=>updateDatabaseRecord("equipment",record.id,{battleMotionStyle:(v||undefined) as CharacterMotionStyle|undefined}))] : []),
                 ...(record.slot === "weapon" || record.twoHanded ? [toggleSwitch("양손 장비", "db-field-equipment-two-handed", record.twoHanded, (twoHanded) => {
                   updateDatabaseRecord("equipment", record.id, { twoHanded });
                   refreshOverview();

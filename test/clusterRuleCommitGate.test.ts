@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { commitChangeset } from "@/editor/tools/changeset";
-import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { createBlankProject } from "@/project/defaults/defaultProject";
 import type { ClusterRule, GameMap, Project, TileGroupMetadata } from "@/project/types";
 
@@ -16,7 +16,7 @@ function mapForGate(): GameMap {
     lowerTiles: new Array<number>(width * height).fill(TILE.GRASS),
     name: "클러스터 게이트",
     tileSize: 16,
-    tilesetId: DEFAULT_TILESET_ID,
+    tilesetId: COMBINED_TOWN_TILESET_ID,
     upperTiles: new Array<number>(width * height).fill(TILE.EMPTY),
     width,
   };
@@ -50,7 +50,7 @@ function projectForGate(): { readonly map: GameMap; readonly project: Project } 
     candidate.lowerTiles.fill(TILE.GRASS);
     candidate.upperTiles.fill(TILE.EMPTY);
   }
-  project.tilesets[DEFAULT_TILESET_ID].tileGroups = [clusterGroup()];
+  project.tilesets[COMBINED_TOWN_TILESET_ID].tileGroups = [clusterGroup()];
   return { map, project };
 }
 

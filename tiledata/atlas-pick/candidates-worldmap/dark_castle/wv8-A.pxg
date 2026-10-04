@@ -1,0 +1,75 @@
+// dark_castle wv8-A
+@size 32 32
+@cell 16
+@palette palette.pal
+@layer main
+@mat a mgran 0
+@mat b mpurple 0
+@mat c mred 0
+@mat d mout 0
+@mblock 0 0
+...............a................
+...............a................
+..............aaa...............
+.............aaaaa..............
+.............aaaaa..............
+.............aaaaa..............
+....a.......aaaaaaa........a....
+...aaa.....aaaaaaaaa......aaa...
+...aaa.....aaaaaaaaa......aaa...
+..aaaaa..a..bbbbbbbb.a...aaaaa..
+..aaaaa.aaa.bbbbbbbbaaa..aaaaa..
+.aaaaaaaaaa.bbbbbbbbaaa.aaaaaaa.
+.aaaaaaaaaaabbbccbbaaaaaaaaaaaa.
+aaaaaaaaaaaabbbccbbaaaaaaaaaaaaa
+.bbbbbaaaaaaabbcbbaaaaaaabbbbbb.
+.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.
+.bbbcbbbbbbbbbbbbbbbbbbbbbbcbbb.
+.bbbcbbbbbbbbbbbbbbbbbbbbbbcbbb.
+.bbbbcbbbbbbbbbbbbbbbbbbbbcbbbb.
+.bbbbcbbbbbbbbbbbbbbbbbbbbcbbbb.
+.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbbddbbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbddddbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbddddbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbddddbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbddddbbbbbbbbbbbbb.
+.bbbbbbbbbbbbbddddbbbbbbbbbbbbb.
+................................
+@tblock 0 0
+...............0................
+...............0................
+..............110...............
+.............12100..............
+.............12100..............
+.............12100..............
+....0.......1221000........0....
+...110.....122210000......110...
+...110.....000000000......110...
+..12100..0..11111110.0...12100..
+..12100.110.15433220110..12100..
+.1221000110.14312110110.1221000.
+.122100121001324400121001221000.
+00000001210014344111210000000000
+.111110000000434210000000111110.
+.154332011101332210011101543320.
+.143211014301321100014301332210.
+.132110013201432211013201321100.
+.143421013201432211013201434210.
+.143421013201432111013201434210.
+.142241013201321100013201442110.
+.132140013201432211013201341100.
+.143221000001432211000001432210.
+.143221044341422211023331432210.
+.143220022221321100011111422210.
+.132110033331430011022221321100.
+.143221023331400001022211432210.
+.143221022221400001011111432210.
+.143121033331300000022221432200.
+.132110033321400001021221321100.
+.000000000000000000000000000000.
+................................

@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/tomare_sign/j5-A.pxg",
+ "set": "jp",
+ "id": "tomare_sign",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.144
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.033
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation"
+  ]
+ },
+ "colors": 7,
+ "bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "note": "강남: 흰 테두리 빨간 표지에 흰 3×5 「止まれ」, 회색 기둥. 16px 폭이라 글자가 뭉개짐 — 2×2 로 키우자",
+ "ok": true
+}

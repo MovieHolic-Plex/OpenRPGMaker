@@ -1,0 +1,40 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/grand_piano/v35-A.pxg",
+ "set": "school",
+ "id": "grand_piano",
+ "hard": [],
+ "warn": [],
+ "std": {
+  "cells": [
+   2,
+   2
+  ],
+  "canvas": [
+   32,
+   32
+  ]
+ },
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.093
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.15
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 10,
+ "bbox": [
+  4,
+  0,
+  30,
+  31
+ ],
+ "note": "그랜드 피아노 3/4 — 검은 뚜껑 윗면 T15(왼쪽 곧고 오른쪽 굽은 날개)·앞 F16 건반·치마·다리 셋 (폭 24px)",
+ "ok": true
+}

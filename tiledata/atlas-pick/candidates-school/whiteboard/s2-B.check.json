@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/whiteboard/s2-B.pxg",
+ "set": "school",
+ "id": "whiteboard",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.105
+ },
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.283
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 17,
+ "bbox": [
+  1,
+  1,
+  47,
+  30
+ ],
+ "note": "칠판 B 와 같은 3단 틀·안쪽 그늘·벽 그림자. 받침 윗면을 밝게, 펜은 받침 위에 또렷이",
+ "ok": true
+}

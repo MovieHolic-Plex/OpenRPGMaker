@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/bicycle_parking/j1-C.pxg",
+ "set": "jp",
+ "id": "bicycle_parking",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 5,
+  "atLeast95": 0,
+  "max": 0.074
+ },
+ "refmap": {
+  "cells": 5,
+  "atLeast95": 0,
+  "max": 0.041
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "dither"
+  ]
+ },
+ "colors": 22,
+ "bbox": [
+  0,
+  9,
+  47,
+  31
+ ],
+ "note": "한 줄이 아니라 두 줄로 세운 거치대: 뒷줄은 반대 방향·한 단 어둡게 깔아 자전거가 빽빽한 역 앞 주차장 느낌으로 재해석",
+ "ok": true
+}

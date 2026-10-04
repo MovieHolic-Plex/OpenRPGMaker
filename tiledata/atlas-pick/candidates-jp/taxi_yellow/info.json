@@ -1,0 +1,19 @@
+{
+ "id": "taxi_yellow",
+ "slug": "taxi_yellow",
+ "name": "노랑 택시",
+ "scene": "역 앞 번화가",
+ "cells": [
+  2,
+  3
+ ],
+ "canvas": [
+  32,
+  48
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "같은 크기·같은 각의 노랑 택시(연두 테 줄 한 줄). 검정 택시와 나란히 두었을 때 한 식구로 보이게.",
+ "palette_hint": "taxi 몸통, kgreen 테 줄, mglass 유리, washi 행등",
+ "worker": "j2"
+}

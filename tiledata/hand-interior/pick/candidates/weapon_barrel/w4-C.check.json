@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/weapon_barrel/w4-C.pxg",
+ "id": "weapon barrel",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.011
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 15,
+ "v5_colors": 15,
+ "bbox": [
+  2,
+  0,
+  13,
+  15
+ ],
+ "v5_bbox": [
+  2,
+  0,
+  14,
+  15
+ ],
+ "note": "실루엣 다시: 통을 배불뚝이(위아래 좁게)로, 검 둘을 X 로 교차·가운데 창을 세운 부채꼴 배치",
+ "ok": true
+}

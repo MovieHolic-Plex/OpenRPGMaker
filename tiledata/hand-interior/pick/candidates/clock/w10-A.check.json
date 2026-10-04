@@ -1,0 +1,35 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/clock/w10-A.pxg",
+ "id": "clock",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.097
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "outline",
+   "outline_black"
+  ],
+  "pass": false
+ },
+ "colors": 11,
+ "v5_colors": 13,
+ "bbox": [
+  3,
+  3,
+  12,
+  30
+ ],
+ "v5_bbox": [
+  3,
+  3,
+  12,
+  30
+ ],
+ "note": "v5 다듬기: 문자판을 좌우 대칭 원으로 정리해 분침·시침을 또렷이, 추 창 안 추를 로드+추 3단으로 정돈",
+ "ok": true
+}

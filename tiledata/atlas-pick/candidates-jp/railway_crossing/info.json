@@ -1,0 +1,19 @@
+{
+ "id": "railway_crossing",
+ "slug": "railway_crossing",
+ "name": "건널목 차단기",
+ "scene": "주택가 골목",
+ "cells": [
+  2,
+  3
+ ],
+ "canvas": [
+  32,
+  48
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "일본 건널목: 기둥 위 검정·노랑 X자 표지(踏切), 그 아래 좌우로 붉은 경보등 둘(하나 켜짐), 노랑·검정 줄무늬 차단 봉이 옆 칸으로 가로질러 내려온 판. 기둥 아래 노랑·검정 받침.",
+ "palette_hint": "taxi·lacq 줄무늬, akachin 등, pole 기둥",
+ "worker": "j2"
+}

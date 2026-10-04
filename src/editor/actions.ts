@@ -1,3 +1,4 @@
+import { MAP_CHARACTER_SCALE_MIN } from "@/project/characterScale";
 import { normalizeAtmosphereEffects } from "@/project/atmosphere";
 import { normalizeMapClimate, type MapClimate } from "@/project/mapClimate";
 // editor/actions.ts
@@ -19,7 +20,8 @@ import { genId } from "@/util/id";
 import { toast } from "@/util/toast";
 import { cloneGameMap } from "@/project/mapClone";
 import { clampLocationsToMapSize } from "@/project/mapNamedLocations";
-import { clampMapSize, INTERIOR_FLOOR_TILE, INTERIOR_TILESET_ID, type MapCreateSpec } from "@/project/mapCreateSpec";
+import { clampMapSize, EASYRPG_INTERIOR_FLOOR_TILE, EASYRPG_INTERIOR_TILESET_ID, INTERIOR_SHELL_FLOOR, INTERIOR_SHELL_WALL, INTERIOR_TILESET_ID, type MapCreateSpec } from "@/project/mapCreateSpec";
+import { handInteriorStructure } from "@/editor/handInterior/builder";
 import { exceedsMapDimensionLimit, mapSizeLimitMessage } from "@/project/mapSizeLimits";
 import {
   appendToTree,
@@ -36,6 +38,7 @@ import {
 import { applyMapDeletions, planMapDeletion, planMapDeletions, type MapDeletionBatchOptions, type MapDeletionImpact } from "@/project/mapDeletion";
 import { resizedTileStacks } from "@/project/mapOverlayTiles";
 import { remapExtraLayers } from "@/project/mapLayers";
+import { extendedLowerTiles, groundFeaturePredicate } from "@/project/mapGroundFill";
 export {
   eraseTile,
   eraseTilesBulk,
@@ -64,12 +67,20 @@ function allowMapSize(width: number, height: number): boolean {
   return false;
 }
 
-export function addMap(name: string, width = 16, height = 16, tilesetId?: string, fillTile?: number): MapId {
+/** 한 칸 번호로 채우거나(옛 칩셋) 칸마다 번호를 준다(손 도트 실내 방 껍데기). */
+type MapFill = number | readonly number[];
+
+function applyFill(tiles: number[], fill: MapFill): void {
+  if (typeof fill === "number") tiles.fill(fill);
+  else for (let i = 0; i < tiles.length && i < fill.length; i++) tiles[i] = fill[i]!;
+}
+
+export function addMap(name: string, width = 16, height = 16, tilesetId?: string, fillTile?: MapFill): MapId {
   if (!allowMapSize(width, height)) return "";
   let newId: MapId = "";
   store.update((p) => {
     const m = createBlankMap(name || "새 맵", width, height, tilesetId ?? defaultOutdoorTilesetId(p));
-    if (fillTile !== undefined) m.lowerTiles.fill(fillTile);
+    if (fillTile !== undefined) applyFill(m.lowerTiles, fillTile);
     p.maps[m.id] = m;
     // mapTree에 루트 자식으로 추가.
     appendToTree(p.mapTree, m.id);
@@ -83,14 +94,14 @@ type AddChildMapSize = {
   readonly width: number;
 };
 
-export function addChildMap(parentId: MapId, name: string, size: AddChildMapSize = { width: 16, height: 16 }, tilesetId?: string, fillTile?: number): MapId {
+export function addChildMap(parentId: MapId, name: string, size: AddChildMapSize = { width: 16, height: 16 }, tilesetId?: string, fillTile?: MapFill): MapId {
   if (!allowMapSize(size.width, size.height)) return "";
   let newId: MapId = "";
   store.update((p) => {
     const parent = findTreeNode(p.mapTree, parentId);
     if (!p.maps[parentId] && !parent) return;
     const m = createBlankMap(name || "새 맵", size.width, size.height, tilesetId ?? defaultOutdoorTilesetId(p));
-    if (fillTile !== undefined) m.lowerTiles.fill(fillTile);
+    if (fillTile !== undefined) applyFill(m.lowerTiles, fillTile);
     p.maps[m.id] = m;
     appendToTree(p.mapTree, m.id, parentId);
     newId = m.id;
@@ -102,11 +113,23 @@ export function createMapFromSpec(spec: MapCreateSpec): MapId {
   const width = clampMapSize(spec.width, 20);
   const height = clampMapSize(spec.height, 15);
   const name = spec.name.trim() || "새 맵";
-  const fillTile = spec.preset === "interior" || spec.tilesetId === INTERIOR_TILESET_ID
-    ? INTERIOR_FLOOR_TILE
-    : undefined;
+  const fillTile = interiorFill(spec.tilesetId, width, height);
   if (spec.parentId) return addChildMap(spec.parentId, name, { width, height }, spec.tilesetId, fillTile);
   return addMap(name, width, height, spec.tilesetId, fillTile);
+}
+
+/**
+ * 실내 칩셋으로 만드는 새 맵의 1층. 손 도트 v5 는 바닥 한 칸으로 채우면 벽·천장이 없는 판이 되므로
+ * 사방 테두리를 벽으로 둔 방 평면을 build_hand_interior_room 과 같은 구조 규칙(handInteriorStructure)으로 깐다.
+ */
+function interiorFill(tilesetId: string, width: number, height: number): MapFill | undefined {
+  if (tilesetId === EASYRPG_INTERIOR_TILESET_ID) return EASYRPG_INTERIOR_FLOOR_TILE;
+  if (tilesetId !== INTERIOR_TILESET_ID || width < 3 || height < 5) return undefined;
+  // 맨 아래 줄 가운데 한 칸은 출입구 — build_hand_interior_room 과 같은 약속이라 문 이벤트를 바로 달 수 있다.
+  const wall = "#".repeat(width);
+  const door = Math.floor(width / 2);
+  const plan = [wall, ...Array.from({ length: height - 2 }, () => `#${".".repeat(width - 2)}#`), `${"#".repeat(door)}.${"#".repeat(width - door - 1)}`];
+  return handInteriorStructure({ plan, floor: INTERIOR_SHELL_FLOOR, wall: INTERIOR_SHELL_WALL }).lower;
 }
 
 export function addMapFolder(parentId: MapId | "", name = "새 분류"): MapId {
@@ -214,23 +237,18 @@ export function resizeMap(mapId: MapId, width: number, height: number): void {
   store.update((p) => {
     const m = p.maps[mapId];
     if (!m) return;
-    const oldLower = m.lowerTiles;
     const oldUpper = m.upperTiles;
     const oldLowerStacks = m.lowerTileStacks;
     const oldUpperStacks = m.upperTileStacks;
     const oldW = m.width;
     const oldH = m.height;
-    const newLower = new Array<number>(width * height).fill(TILE.EMPTY);
+    // 새로 생기는 아래층 칸은 가장자리 바탕 타일을 이어 채운다(검은 빈칸 금지). 위층·확장 레이어는 비운다.
+    const newLower = extendedLowerTiles(m, width, height, groundFeaturePredicate(m, p.tilesets));
     const newUpper = new Array<number>(width * height).fill(TILE.EMPTY);
-    // 빈 맵은 잔디로 채움(관례).
-    if (oldLower.every((t) => t === TILE.GRASS)) {
-      newLower.fill(TILE.GRASS);
-    }
     const minW = Math.min(oldW, width);
     const minH = Math.min(m.height, height);
     for (let y = 0; y < minH; y++) {
       for (let x = 0; x < minW; x++) {
-        newLower[y * width + x] = oldLower[y * oldW + x];
         newUpper[y * width + x] = oldUpper[y * oldW + x];
       }
     }
@@ -375,6 +393,17 @@ export function setMapFlags(mapId: MapId, flags: { disableSave?: boolean; disabl
     if (flags.disableSave) map.disableSave = true; else delete map.disableSave;
     if (flags.disableTeleport) map.disableTeleport = true; else delete map.disableTeleport;
     if (flags.disableEscape) map.disableEscape = true; else delete map.disableEscape;
+  }, { scope: "map", mapId });
+}
+
+/** 이 맵의 걷는 캐릭터 크기 배율(0.25~1). undefined 나 1 이면 지워서 기본 크기로 돌아간다. */
+export function setMapCharacterScale(mapId: MapId, scale: number | undefined): void {
+  if (!allowMapMutation(mapId)) return;
+  store.update((p) => {
+    const map = p.maps[mapId];
+    if (!map) return;
+    if (scale === undefined || !Number.isFinite(scale) || scale >= 1) delete map.characterScale;
+    else map.characterScale = Math.max(MAP_CHARACTER_SCALE_MIN, scale);
   }, { scope: "map", mapId });
 }
 

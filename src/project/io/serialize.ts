@@ -4,6 +4,7 @@ import { ProjectFormatError } from "./errors";
 import { requireNumber, requireRecord } from "./guards";
 import { migrateV1toV3, migrateV2toV3, migrateV3toV4 } from "./migration";
 import { validateProjectV1, validateProjectV2, validateProjectV4 } from "./shape";
+import { restoreOwnedReferenceDocuments, reuseTilesetsView, withoutOwnedReferenceDocuments } from "../referenceOwnership";
 
 function omitRetiredTerrainTemplates<T extends object>(owner: T): T | Record<string, unknown> {
   // 버려진 키가 없으면 같은 객체를 돌려준다 — 매번 새 객체를 만들면 저장 비교의 같은-객체 단축이 깨져
@@ -15,15 +16,28 @@ function omitRetiredTerrainTemplates<T extends object>(owner: T): T | Record<str
 /**
  * Only the project root and tileset records own the retired field, never nested dictionaries.
  * The returned view shares everything below those records with `project` — read it, never mutate it.
+ *
+ * 번들·공용 라이브러리가 소유한 참고문서(배열 전체가 소유자 판본과 같은 것)는 표지로 바꿔 뺀다 — referenceOwnership.ts.
+ * 소유자 해석기가 등록되지 않은 곳(헤드리스·플레이어·Electron main)에서는 예전과 똑같이 아무것도 빼지 않는다.
+ * `keepReferenceDocuments` 는 .oprn 내보내기처럼 문서가 자기완결이어야 하는 곳용이다.
  */
-export function projectWireView(project: Project) {
+export function projectWireView(project: Project, options?: { readonly keepReferenceDocuments?: boolean }) {
+  const strip = options?.keepReferenceDocuments !== true;
   let tilesets: Record<string, unknown> | null = null;
-  for (const [id, tileset] of Object.entries(project.tilesets)) {
-    const view = omitRetiredTerrainTemplates(tileset);
-    if (view === tileset) continue;
-    tilesets ??= { ...project.tilesets };
-    tilesets[id] = view;
+  let parts: Map<string, unknown> | null = null;
+  const entries = Object.entries(project.tilesets);
+  for (let index = 0; index < entries.length; index += 1) {
+    const [id, tileset] = entries[index];
+    const base = omitRetiredTerrainTemplates(tileset);
+    const view = strip ? withoutOwnedReferenceDocuments(id, tileset, base) : base;
+    if (view === tileset) { if (parts) parts.set(id, view); continue; }
+    if (!parts) {
+      parts = new Map();
+      for (let earlier = 0; earlier < index; earlier += 1) parts.set(entries[earlier][0], entries[earlier][1]);
+    }
+    parts.set(id, view);
   }
+  if (parts) tilesets = reuseTilesetsView(project.tilesets as Record<string, unknown>, parts);
   return {
     ...omitRetiredTerrainTemplates(project),
     tilesets: tilesets ?? project.tilesets,
@@ -52,7 +66,7 @@ export function serializeForComparison(project: Project): string {
 
 /** Human-readable project.json for .oprn packages and debug dumps only. */
 export function serializePretty(project: Project): string {
-  return JSON.stringify(projectWireView(project), null, 2);
+  return JSON.stringify(projectWireView(project, { keepReferenceDocuments: true }), null, 2);
 }
 
 export function deserialize(raw: string): Project {
@@ -78,6 +92,11 @@ export function deserializeParsed(parsed: unknown): Project {
   if (version === 2) return migrateV2toV3(validateProjectV2(data));
   // v3 는 얼굴 짝(시트 id + faceIndex)을 들고 있다 — 낱장 얼굴 id 로 바꾼 뒤 검사한다.
   if (version === 3) return migrateV3toV4(data);
-  if (version === SCHEMA_VERSION) return validateProjectV4(data, { adoptParsed: true });
+  if (version === SCHEMA_VERSION) {
+    const project = validateProjectV4(data, { adoptParsed: true });
+    // 저장본에서 뺀 번들·공용 참고문서를 되돌린다 — 정규화 전에 되돌려야 「로드가 프로젝트를 바꿨다」로 세지 않는다.
+    restoreOwnedReferenceDocuments(project);
+    return project;
+  }
   throw new ProjectFormatError(`지원하지 않는 스키마 버전입니다: ${version} (현재 ${SCHEMA_VERSION})`);
 }

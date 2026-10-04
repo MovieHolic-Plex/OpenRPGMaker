@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/broken_desk/h1-B.pxg",
+ "set": "horror",
+ "id": "broken_desk",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.03
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.062
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "dither"
+  ]
+ },
+ "colors": 19,
+ "bbox": [
+  0,
+  3,
+  15,
+  15
+ ],
+ "note": "B: 왼쪽 위 빛 — 윗판 왼쪽·윗모서리가 밝고 앞판과 다리 안쪽은 깊게 어둡다. 낙서 홈은 어두운 줄+밝은 언저리. 기운 책상 오른쪽 아래에 반투명 접촉 그림자(~ -).",
+ "ok": true
+}

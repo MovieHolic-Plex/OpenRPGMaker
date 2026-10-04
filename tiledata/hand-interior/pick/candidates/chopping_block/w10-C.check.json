@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/chopping_block/w10-C.pxg",
+ "id": "chopping block",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.014
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 10,
+ "v5_colors": 10,
+ "bbox": [
+  1,
+  1,
+  13,
+  14
+ ],
+ "v5_bbox": [
+  1,
+  1,
+  14,
+  14
+ ],
+ "note": "재해석: 칼 대신 손도끼가 비스듬히 꽂힌 그루터기 — 몸통을 조금 좁히고(폭 10) 도끼날이 오른쪽 위로 삐져나가 실루엣이 달라짐",
+ "ok": true
+}

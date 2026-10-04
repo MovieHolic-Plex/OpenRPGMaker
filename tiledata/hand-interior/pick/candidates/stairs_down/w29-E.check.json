@@ -1,0 +1,44 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/stairs_down/w29-E.pxg",
+ "id": "stairs down",
+ "hard": [],
+ "warn": [],
+ "resized": {
+  "canvas": [
+   32,
+   32
+  ],
+  "footprint": {
+   "w": 2,
+   "h": 2
+  },
+  "why": "사용자 메모: 2x2 로"
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.125
+ },
+ "lint": {
+  "failed": [
+   "banding"
+  ],
+  "pass": false
+ },
+ "colors": 18,
+ "v5_colors": 9,
+ "bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  0,
+  15,
+  15
+ ],
+ "note": "D 에 쇠 난간 두 줄(왼쪽 밝게·오른쪽 어둡게)과 놋쇠 기둥머리를 얹은 난간 있는 지하 계단, 난간 아래 접지 그림자",
+ "ok": true
+}

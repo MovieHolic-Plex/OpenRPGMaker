@@ -1,0 +1,19 @@
+{
+ "id": "kanji_sign_drug",
+ "slug": "kanji_sign_drug",
+ "name": "「薬」 세로 간판",
+ "scene": "역 앞 번화가",
+ "cells": [
+  1,
+  2
+ ],
+ "canvas": [
+  16,
+  32
+ ],
+ "layer": "wall",
+ "layer_ko": "벽 걸이(위층, 투명 배경·벽면에 붙는다)",
+ "description": "드럭스토어 벽 세로 간판: 노랑 판에 굵은 한자 「薬」 한 자(획 2px, 12×12 안). 판 테 한 줄 어둡게.",
+ "palette_hint": "taxi 판, lacq 글자",
+ "worker": "j3"
+}

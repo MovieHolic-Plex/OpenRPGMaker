@@ -108,7 +108,7 @@ T+3R:   [SW T+90]     [S T+91]        [SE T+92]
 - 구현·검사: `src/project/defaults/iceGrandPlain64.ts` (`CLIFF_HEIGHT` = 3 · `CLIFF_WALL_ROWS` = 2 ·
   `MEASURED_CLIFF_FACTS` · `CLIFF_ORE_ROCK` · `CLIFF_LIP` · `FLOOR_PROP_SHAPES` · `BANNED_WATER_TILES`),
   `test/iceGrandPlain64.test.ts`, e2e `test/e2e/ice-plain-64-wall-look.spec.ts`.
-- 커스텀 타일셋의 물 애니는 `TilesetDef.animationStrips` 데이터 모델 사용(렌더 연동은 진행 중 — `chipsetTileRender.ts:170`·`playSceneMapRuntime.ts:257` 의 `isDefaultTilesetTexture` 가드 교체 예정).
+- 타일셋이 직접 적은 애니메이션은 `TilesetDef.animationStrips`(baseTile부터 가로 연속 frames칸, fps). 업로드·번들 시트 모두 재생한다 — `tilesetAnimationKeyForTile`(`editor/tilesetImage.ts`)이 이름을 고르고, `registerTilesetStripAnimations`(`assets/uploadedTilesets.ts`)가 부팅(`registerUploadedTilesets`)·늦은 번들 로드(`ensureBundledProjectTextures`)·이식/투명색 베이크(`ensureTilesetTexture`) 세 경로에서 `${텍스처키}:${이름}` 애니를 만든다. 기본 칩셋의 내장 물 스트립(`CHIPSET_ANIMATION_STRIPS`)은 별개 규칙이다(2026-09-28).
 
 ## 4. 오토타일 등록 경로 3가지
 

@@ -1,5 +1,5 @@
 import { createHash, randomUUID } from "node:crypto";
-import { copyFileSync, existsSync, mkdirSync, rmSync, readFileSync, unlinkSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, rmSync, unlinkSync } from "node:fs";
 import { join } from "node:path";
 import { decodeDataUrlBytes, dataUrlExtension, dataUrlMime } from "../../src/project/persistence/core/dataUrl";
 import { canonicalJsonString } from "../../src/project/persistence/core/canonicalJson";
@@ -11,7 +11,8 @@ import type { GameMap, Project, UploadedAsset, UploadedAssetRef } from "../../sr
 import { applyStorePragmas, openNodeSqliteDriver, readDataVersion, type Driver, type DriverValue } from "./driver";
 import { LocalStoreError } from "./errors";
 import { ASSETS_DIR, BACKUPS_DIR, LOCAL_STORE_FORMAT_VERSION, META_KEYS, PROJECT_STORE_FILE, STORE_DDL, TILESET_BLOBS_DDL } from "./schema";
-import { blobOfText, deepFreeze, foldDocument, foldedTilesetShas, foldSubmittedText, type FoldedDocument, type TilesetBlob } from "./tilesetFold";
+import { blobOfText, createFoldHashCache, deepFreeze, foldDocument, foldedTilesetShas, foldSubmittedText, type FoldedDocument, type TilesetBlob } from "./tilesetFold";
+import { assetFileName, readVerifiedAsset, writeAssetFile } from "./assetFiles";
 
 export type LocalStoreSaveResult =
   | { readonly kind: "saved"; readonly sha256: string; readonly revision: number; readonly serialized?: string }
@@ -218,10 +219,11 @@ type HostWire = FoldedDocument;
 
 function writeProjectRow(driver: Driver, project: Project, wire: HostWire, projectId: string, now: string): number {
   const revision = (readProjectMeta(driver)?.revision ?? 0) + 1;
-  // 이미 있는 본문은 다시 매기지 않는다 — 매 저장 80MB 를 SQLite 에 넘기게 된다.
-  const exists = driver.prepare("SELECT 1 AS present FROM tileset_blobs WHERE sha256 = ?");
+  // 이미 있는 본문은 다시 매기지 않는다 — 매 저장 80MB 를 SQLite 에 넘기게 된다. 있는 sha 는 한 번의 조회로 모은다.
+  const storedBlobShas = new Set<string>();
+  for (const row of driver.prepare("SELECT sha256 FROM tileset_blobs").all([])) storedBlobShas.add(String(row.sha256));
   const insertBlob = driver.prepare("INSERT INTO tileset_blobs (sha256, body, created_at) VALUES (?, ?, ?)");
-  for (const [sha, text] of wire.blobs) if (!exists.get([sha])) insertBlob.run([sha, text, now]);
+  for (const [sha, text] of wire.blobs) if (!storedBlobShas.has(sha)) insertBlob.run([sha, text, now]);
   if (wire.blobs.size > 0) writeMeta(driver, META_KEYS.formatVersion, String(LOCAL_STORE_FORMAT_VERSION));
   driver.prepare(
     `INSERT INTO project (id, project_id, title, document_version, current_json, current_sha256, revision, updated_at)
@@ -239,8 +241,8 @@ function writeProjectRow(driver: Driver, project: Project, wire: HostWire, proje
     now,
   ]);
   // 현재 행이 가리키지 않는 본문은 지운다. 커밋은 문서 sha 만 남기고 백업은 그 시점 표를 통째로 복사한다.
-  driver.prepare("DELETE FROM tileset_blobs WHERE sha256 NOT IN (SELECT value FROM json_each(?))")
-    .run([JSON.stringify([...wire.blobs.keys()])]);
+  const dropBlob = driver.prepare("DELETE FROM tileset_blobs WHERE sha256 = ?");
+  for (const sha of storedBlobShas) if (!wire.blobs.has(sha)) dropBlob.run([sha]);
   replaceMapMirrors(driver, projectId, project, now);
   return revision;
 }
@@ -314,16 +316,19 @@ function replaceMapMirrors(driver: Driver, projectId: string, project: Project, 
        name = excluded.name, width = excluded.width, height = excluded.height, tileset_id = excluded.tileset_id,
        map_json = excluded.map_json, sha256 = excluded.sha256, updated_at = excluded.updated_at`,
   );
+  // 바뀐 맵만 다시 쓴다. 거울 행의 map_json 과 글이 같으면 이름·크기·sha 도 같으므로 정본 JSON·해시를 건너뛴다.
+  const storedJson = new Map<string, string>();
+  for (const row of driver.prepare("SELECT map_id, map_json FROM maps WHERE project_id = ?").all([projectId])) {
+    storedJson.set(String(row.map_id), String(row.map_json));
+  }
   const present = new Set<string>();
   for (const [mapId, map] of Object.entries(project.maps)) {
-    upsert.run(mapRowValues(projectId, mapId, map, now));
     present.add(mapId);
+    if (storedJson.get(mapId) === JSON.stringify(map)) continue;
+    upsert.run(mapRowValues(projectId, mapId, map, now));
   }
   const removal = driver.prepare("DELETE FROM maps WHERE project_id = ? AND map_id = ?");
-  for (const row of driver.prepare("SELECT map_id FROM maps WHERE project_id = ?").all([projectId])) {
-    const mapId = String(row.map_id);
-    if (!present.has(mapId)) removal.run([projectId, mapId]);
-  }
+  for (const mapId of storedJson.keys()) if (!present.has(mapId)) removal.run([projectId, mapId]);
 }
 
 function jsonOrNull(value: unknown): string | null {
@@ -386,7 +391,7 @@ function writeAssetBytes(
   const assetsDir = join(projectDir, ASSETS_DIR);
   mkdirSync(assetsDir, { recursive: true });
   const filePath = join(assetsDir, `${sha256}.${input.extension}`);
-  if (!existsSync(filePath)) writeFileSync(filePath, bytes);
+  writeAssetFile(filePath, bytes, sha256);
   driver.prepare(
     `INSERT INTO assets (sha256, mime, bytes, extension, original_name, kind, created_at)
      VALUES (?, ?, ?, ?, ?, ?, ?)
@@ -451,8 +456,9 @@ function blobObject(driver: Driver, sha256: string): unknown {
 }
 
 /** 저장 행 글 → 펼친 글. 접힌 행이면 본문을 끼워 예전과 같은 글을 만들고 행의 sha 로 대조한다. */
-function unfoldRowText(driver: Driver, raw: string, sha256: string): string {
+function unfoldRowText(driver: Driver, raw: string, sha256: string, onShas?: (shas: ReadonlyMap<string, string> | null) => void): string {
   const folded = foldedTilesetShas(raw);
+  onShas?.(folded?.shas ?? null);
   if (!folded) return raw;
   const wire = foldDocument(folded.document, (marker) => {
     const sha = (marker as { readonly $blob: string }).$blob;
@@ -466,8 +472,9 @@ function unfoldRowText(driver: Driver, raw: string, sha256: string): string {
  * 호스트 전용 문서 트리. 타일셋은 얼린 공유 객체라 본문을 다시 파싱·직렬화하지 않는다. 타일셋 밖은 부르는 때마다 새 트리다.
  * 실측(2026-09-27, 82MB): 펼친 글 파싱 + 검증이 패치마다 1–8s 였다. 이 트리로는 검증 약 0.6s, 타일셋 재직렬화 0칸.
  */
-function hostDocumentTree(driver: Driver, raw: string): unknown {
+function hostDocumentTree(driver: Driver, raw: string, onShas?: (shas: ReadonlyMap<string, string> | null) => void): unknown {
   const folded = foldedTilesetShas(raw);
+  onShas?.(folded?.shas ?? null);
   if (!folded) return JSON.parse(raw);
   const tilesets: Record<string, unknown> = {};
   for (const [id, sha] of folded.shas) tilesets[id] = blobObject(driver, sha);
@@ -485,7 +492,17 @@ function createStore(driver: Driver, options: OpenLocalProjectStoreOptions, proj
   };
   const cachedFor = (sha256: string | null | undefined) => (sha256 && cached?.sha256 === sha256 ? { serialized: cached.text() } : null);
   const storeToken = Symbol(options.projectDir);
-  const liveFrom = (raw: string): ReadonlySet<string> => new Set(foldedTilesetShas(raw)?.shas.values() ?? []);
+  // 행 sha(펼친 글의 해시)가 같으면 가리키는 타일셋 본문도 같다. 접힌 행(1–3MB)을 읽기마다 다시 파싱해 살아 있는 본문 목록을
+  // 만들던 것을, 같은 행을 이미 파싱한 경로(문서 트리·펼침)가 남긴 목록으로 대신한다.
+  let liveMemo: { readonly sha256: string; readonly live: ReadonlySet<string> } | null = null;
+  const memoLive = (sha256: string) => (shas: ReadonlyMap<string, string> | null): void => {
+    liveMemo = { sha256, live: new Set(shas?.values() ?? []) };
+  };
+  const liveFrom = (row: ProjectRow): ReadonlySet<string> => {
+    if (liveMemo?.sha256 === row.sha256) return liveMemo.live;
+    memoLive(row.sha256)(foldedTilesetShas(row.serialized)?.shas ?? null);
+    return liveMemo!.live;
+  };
   // 다른 프로세스가 행과 본문을 바꾼 사이에 읽으면 본문이 없거나 sha 가 어긋난다. 한 번 다시 읽는다.
   const readRowConsistently = <T>(read: (row: ProjectRow) => T): T | null => {
     for (let attempt = 0; ; attempt += 1) {
@@ -493,7 +510,7 @@ function createStore(driver: Driver, options: OpenLocalProjectStoreOptions, proj
       if (!row) return null;
       try {
         const value = read(row);
-        retainLiveBlobs(storeToken, liveFrom(row.serialized));
+        retainLiveBlobs(storeToken, liveFrom(row));
         return value;
       } catch (error) {
         if (attempt > 0 || !(error instanceof LocalStoreError) || error.code !== "row") throw error;
@@ -506,16 +523,20 @@ function createStore(driver: Driver, options: OpenLocalProjectStoreOptions, proj
     const hit = cachedFor(meta.sha256);
     if (hit) return hit.serialized;
     return readRowConsistently((row) => {
-      const full = unfoldRowText(driver, row.serialized, row.sha256);
+      const full = unfoldRowText(driver, row.serialized, row.sha256, memoLive(row.sha256));
       remember(row.sha256, full);
       return full;
     });
   };
-  const storedTree = (): unknown => readRowConsistently((row) => hostDocumentTree(driver, row.serialized));
-  const wireOf = (project: Project): HostWire => foldDocument(projectWireView(project), blobFor);
+  const storedTree = (): unknown => readRowConsistently((row) => hostDocumentTree(driver, row.serialized, memoLive(row.sha256)));
+  // 펼친 글 해시의 타일셋 앞부분 상태를 저장소마다 하나 둔다(tilesetFold.ts FoldHashCache). 읽기 검증(unfoldRowText)은 일부러 캐시를 쓰지 않는다.
+  const foldHashCache = createFoldHashCache();
+  const wireOf = (project: Project): HostWire => foldDocument(projectWireView(project), blobFor, foldHashCache);
   const written = (wire: HostWire): void => {
     remember(wire.sha256, wire.full);
-    retainLiveBlobs(storeToken, new Set(wire.blobs.keys()));
+    const live = new Set(wire.blobs.keys());
+    liveMemo = { sha256: wire.sha256, live };
+    retainLiveBlobs(storeToken, live);
   };
   return {
     projectDir: options.projectDir,
@@ -624,7 +645,7 @@ function createStore(driver: Driver, options: OpenLocalProjectStoreOptions, proj
     },
     tilesetBlobs(sha256s: readonly string[]): Readonly<Record<string, string>> {
       const row = readProjectRow(driver);
-      const live = row ? liveFrom(row.serialized) : new Set<string>();
+      const live = row ? liveFrom(row) : new Set<string>();
       const out: Record<string, string> = {};
       for (const sha of sha256s) if (live.has(sha)) out[sha] = readBlobText(driver, sha);
       return out;
@@ -640,9 +661,10 @@ function createStore(driver: Driver, options: OpenLocalProjectStoreOptions, proj
         driver.exec(`VACUUM INTO ${sqlLiteral(target)}`);
         const snapshot = openNodeSqliteDriver(target);
         try {
-          for (const row of snapshot.prepare('SELECT sha256,extension FROM assets').all([])) {
-            const name = `${String(row.sha256)}.${String(row.extension)}`;
-            copyFileSync(join(options.projectDir, ASSETS_DIR, name), join(backupDir, ASSETS_DIR, name));
+          for (const row of snapshot.prepare('SELECT sha256,extension,bytes FROM assets').all([])) {
+            const sha256 = String(row.sha256), extension = String(row.extension);
+            const bytes = readVerifiedAsset(join(options.projectDir, ASSETS_DIR), sha256, extension, Number(row.bytes));
+            writeAssetFile(join(backupDir, ASSETS_DIR, assetFileName(sha256, extension)), bytes, sha256);
           }
         } finally { snapshot.close(); }
       } catch (error) { rmSync(backupDir, { recursive: true, force: true }); throw error; }
@@ -776,10 +798,10 @@ function createStore(driver: Driver, options: OpenLocalProjectStoreOptions, proj
     putAsset(bytes: Uint8Array, input: LocalAssetInput): Promise<UploadedAssetRef> {
       return Promise.resolve(writeAssetBytes(options.projectDir, driver, bytes, input, clock()));
     },
-    assetBytes(sha256: string): Promise<Uint8Array> {
-      const row = driver.prepare("SELECT extension FROM assets WHERE sha256 = ?").get([sha256]);
-      if (!row) return Promise.reject(new LocalStoreError("asset", `asset ${sha256} is not registered`));
-      return Promise.resolve(new Uint8Array(readFileSync(join(options.projectDir, ASSETS_DIR, `${sha256}.${String(row.extension)}`))));
+    async assetBytes(sha256: string): Promise<Uint8Array> {
+      const row = driver.prepare("SELECT extension,bytes FROM assets WHERE sha256 = ?").get([sha256]);
+      if (!row) throw new LocalStoreError("asset", `asset ${sha256} is not registered`);
+      return readVerifiedAsset(join(options.projectDir, ASSETS_DIR), sha256, String(row.extension), Number(row.bytes));
     },
     listAssets(): readonly LocalAssetRow[] {
       return driver

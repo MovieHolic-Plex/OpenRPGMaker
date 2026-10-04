@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/stairs_up_wood/hf1-C.pxg",
+ "set": "horror",
+ "id": "stairs_up_wood",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 9,
+  "atLeast95": 0,
+  "max": 0.117
+ },
+ "refmap": {
+  "cells": 9,
+  "atLeast95": 0,
+  "max": 0.27
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "light"
+  ]
+ },
+ "colors": 14,
+ "bbox": [
+  0,
+  0,
+  47,
+  47
+ ],
+ "note": "C(재질·무늬): 7단 · 앞면 널 이음(엇갈림)+못 머리 · 난간 기둥은 볼록 마디 · 마녀의 집풍 나무 결",
+ "ok": true
+}

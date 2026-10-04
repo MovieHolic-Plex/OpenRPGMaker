@@ -1,4 +1,5 @@
 import { isNpcSight, isDetectionEncounter } from '@/project/npcBehavior';
+import { isBlendModeName } from "@/project/blendMode";
 import { assert, requireArray, requireBoolean, requireNumber, requireRecord, requireString } from "./guards";
 import {
   CHARACTER_FOOTPRINT_AXIS_MAX,
@@ -294,6 +295,7 @@ function validateEventGraphic(label: string, value: unknown): void {
   if (graphic.scaleMode !== undefined) {
     assert(graphic.scaleMode === "auto" || graphic.scaleMode === "manual", `${label}.scaleMode must be auto or manual`);
   }
+  if (graphic.blendMode !== undefined) assert(isBlendModeName(graphic.blendMode), `${label}.blendMode must be normal, add, screen or multiply`);
 }
 
 /**
@@ -464,6 +466,7 @@ function validatePageShape(label: string, value: unknown): void {
   if (graphic.scaleMode !== undefined) {
     assert(graphic.scaleMode === "auto" || graphic.scaleMode === "manual", `${label}.graphic.scaleMode must be auto or manual`);
   }
+  if (graphic.blendMode !== undefined) assert(isBlendModeName(graphic.blendMode), `${label}.graphic.blendMode must be normal, add, screen or multiply`);
   validateCharacterFootprintFields(label, page);
   validateTrigger(`${label}.trigger`, page.trigger);
   requireString(`${label}.priority`, page.priority);

@@ -81,7 +81,7 @@ async function loadScene(id: string): Promise<RegionReferenceScene> {
   await preloadRegionReference(id);
   const snapshot = regionReferenceSnapshotScene(id);
   if (!snapshot) throw new Error(`${id}: 이 장소의 맵 자료를 찾을 수 없습니다`);
-  return { referenceId: id, name: reference.name, map: snapshot.map, tileset: snapshot.tileset, assets: {}, source: "snapshot" };
+  return { referenceId: id, name: reference.name, map: snapshot.map, tileset: snapshot.tileset, assets: snapshot.assets ?? {}, source: "snapshot" };
 }
 
 /** Load one reference's importable scene (download first, snapshot second). Cached per id. */
@@ -343,8 +343,16 @@ function appendToMapTree(project: Project, mapId: string): void {
 
 /** Install the tileset, then create a map from the scene or paste it into `target.mapId` at (x, y). */
 export function importReferenceScene(project: Project, scene: RegionReferenceScene, target: ReferenceImportTarget = {}): ReferenceImportResult {
-  const tileset = installReferenceTileset(project, scene);
   const source = scene.map;
+  if (target.mapId === undefined && source.worldmapSource) {
+    const mapId = target.newMapId ?? freshMapId(project, `map_ref_${scene.referenceId.replace(/[^a-z0-9]+/gi, "_")}`);
+    if (project.maps[mapId]) throw new Error(`이미 있는 맵 id 입니다: ${mapId}`);
+    const tilesetId = `worldmap_${mapId}`;
+    if (project.tilesets[tilesetId]) throw new Error(`전용 월드맵 타일셋이 이미 있습니다: ${tilesetId} — 다른 newMapId를 사용하세요.`);
+    scene = { ...scene, tileset: { ...structuredClone(scene.tileset), id: tilesetId } };
+    target = { ...target, newMapId: mapId };
+  }
+  const tileset = installReferenceTileset(project, scene);
   const sourceExtras = source as GameMap & ExtraLayerFields;
   const extraLayers = EXTRA_LAYER_KEYS.filter(key => Array.isArray(sourceExtras[key]));
   if (target.mapId === undefined) {
@@ -366,6 +374,10 @@ export function importReferenceScene(project: Project, scene: RegionReferenceSce
     };
     const extras = map as GameMap & ExtraLayerFields;
     for (const key of extraLayers) (extras as unknown as Record<string, unknown>)[key] = structuredClone(sourceExtras[key]);
+    // A whole world map remains editable with its original geography and character size.
+    if (source.worldmapSource) map.worldmapSource = structuredClone(source.worldmapSource);
+    if (source.characterScale !== undefined) map.characterScale = source.characterScale;
+    if (source.locations) map.locations = structuredClone(source.locations);
     project.maps[mapId] = map;
     appendToMapTree(project, mapId);
     if (!project.maps[project.startMapId]) {

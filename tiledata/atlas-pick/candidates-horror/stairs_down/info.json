@@ -1,0 +1,58 @@
+{
+ "id": "stairs_down",
+ "slug": "stairs_down",
+ "name": "내림 계단(바닥 구멍)",
+ "scene": "공통 뼈대",
+ "cells": [
+  1,
+  1
+ ],
+ "canvas": [
+  16,
+  16
+ ],
+ "layer": "decal",
+ "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+ "description": "v5 규칙: 바닥의 1×1 구멍. 위 가장자리 바닥 턱(밝은 1px) 아래로 단 3~4개가 점점 어두워져 검정(void)으로. 둘레 1px 투명(어느 바닥에도 얹힌다).",
+ "palette_hint": "grave/rot 단, void",
+ "stage": 1,
+ "stage_ko": "1단계 기본(2판 새로)",
+ "kit": "frame",
+ "role": "내림 계단",
+ "worker": "hf1",
+ "set_with": [
+  "ceil_black",
+  "ceil_plaster",
+  "exit_dark",
+  "stairs_up_wood",
+  "stairs_up_stone",
+  "pillar_stone",
+  "pillar_marble",
+  "moonlight_floor"
+ ],
+ "v5_ref": [
+  {
+   "id": "stairwell down",
+   "name_ko": "내려가는 계단통(2층)",
+   "atlas": {
+    "x": 288,
+    "y": 528,
+    "w": 48,
+    "h": 32,
+    "frames": 1,
+    "padTop": 0
+   },
+   "image": {
+    "w": 48,
+    "h": 32
+   },
+   "kind": "flat",
+   "footprint": {
+    "w": 3,
+    "h": 2
+   },
+   "pick_dir": "tiledata/hand-interior/pick/candidates/stairwell_down",
+   "file": "ref-v5-1.png"
+  }
+ ]
+}

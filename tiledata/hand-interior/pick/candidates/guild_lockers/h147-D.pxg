@@ -1,0 +1,182 @@
+// D: 금장 처마와 번호판, 여섯 쇠 손잡이의 나무 보관함; 꼭대기 윗면 4행(y=3~6)
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat o wood 2
+@mat d wood 3
+@mat w wood 5
+@mat h wood 6
+@mat H wood 7
+@mat g gold 4
+@mat G gold 5
+@mat b gold 2
+@mat i iron 3
+@mat I iron 5
+@layer cabinet
+@mblock 1 2
+= 30d
+= 1h 28H 1d
+= 1h 7h 3w 9h 4w 5h 1d
+= 1h 28h 1d
+= 1h 4h 6w 12h 5w 1h 1d
+= 1b 28g 1b
+= 30o
+= 1h 1w 8d 1o 8d 1o 8d 2o
+= 1h 1w 8w 1o 8w 1o 8w 2o
+= 1h 1w 8w 1o 8w 1o 8w 2o
+= 1h 1w 8w 1o 8w 1o 8w 2o
+= 1h 1w 8w 1o 8w 1o 8w 2o
+= 1h 1w 8w 1o 8w 1o 8w 2o
+= 1h 1w 8w 1o 8w 1o 8w 2o
+= 1h 1w 8w 1o 8w 1o 8w 2o
+= 1h 1w 8w 1o 8w 1o 8w 2o
+= 1h 1w 8d 1o 8d 1o 8d 2o
+= 1h 28h 1o
+= 1h 1w 8d 1o 8d 1o 8d 2o
+= 1h 1w 8w 1o 8w 1o 8w 2o
+= 1h 1w 8w 1o 8w 1o 8w 2o
+= 1h 1w 8w 1o 8w 1o 8w 2o
+= 1h 1w 8w 1o 8w 1o 8w 2o
+= 1h 1w 8w 1o 8w 1o 8w 2o
+= 1h 1w 8w 1o 8w 1o 8w 2o
+= 1h 1w 8w 1o 8w 1o 8w 2o
+= 1h 1w 8w 1o 8w 1o 8w 2o
+= 1h 1w 8d 1o 8d 1o 8d 2o
+= 1h 28w 1o
+= 30o
+@def door
+hhhhhhdd
+hwwwwwwd
+hwwwwwwd
+hwwwwwwd
+hwwwwwwd
+hwwwwwwd
+hwwwwwwd
+hwIIIwwd
+hwioiwwd
+dddddddd
+@end
+@mstamp door 3 9
+@mstamp door 12 9
+@mstamp door 21 9
+@mstamp door 3 20
+@mstamp door 12 20
+@mstamp door 21 20
+@mblock 4 10
+ggogg
+googg
+ggogg
+ggogg
+gooog
+@mblock 13 10
+gooog
+gggog
+gooog
+goggg
+gooog
+@mblock 22 10
+gooog
+gggog
+ggoog
+gggog
+gooog
+@mblock 4 21
+gogog
+gogog
+gooog
+gggog
+gggog
+@mblock 13 21
+gooog
+goggg
+gooog
+gggog
+gooog
+@mblock 22 21
+gooog
+goggg
+gooog
+gogog
+gooog
+// 금장 끝쇠의 연결된 꺾쇠: 잔점 대신 굵은 장식
+@mblock 2 7
+GGG
+G..
+@mblock 27 7
+ggg
+..b
+@mblock 2 29
+G..
+GGG
+@mblock 27 29
+..b
+ggg
+// 재료를 덧놓은 뒤 각 화소의 명암을 손으로 지정
+@def door_tones
+66666633
+65555553
+65555553
+65555553
+65555553
+65555553
+65555553
+65555553
+65323553
+33333333
+@end
+@tstamp door_tones 3 9
+@tstamp door_tones 12 9
+@tstamp door_tones 21 9
+@tstamp door_tones 3 20
+@tstamp door_tones 12 20
+@tstamp door_tones 21 20
+@tblock 4 10
+44244
+42244
+44244
+44244
+42224
+@tblock 13 10
+42224
+44424
+42224
+42444
+42224
+@tblock 22 10
+42224
+44424
+44224
+44424
+42224
+@tblock 4 21
+42424
+42424
+42224
+44424
+44424
+@tblock 13 21
+42224
+42444
+42224
+44424
+42224
+@tblock 22 21
+42224
+42444
+42224
+42424
+42224
+@tblock 1 7
+= 12 284 12
+@tblock 2 7
+555
+5..
+@tblock 27 7
+444
+..2
+@tblock 2 29
+5..
+555
+@tblock 27 29
+..2
+444

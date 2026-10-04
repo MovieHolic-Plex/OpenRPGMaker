@@ -1,0 +1,13 @@
+{
+ "schema": "worldmap-theme/1",
+ "id": "steampunk",
+ "name": "스팀펑크·마도",
+ "iconset": "steampunk",
+ "palette": "industrial",
+ "overlays": [
+  "rail",
+  "sprawl:steam",
+  "smog"
+ ],
+ "kind": "land"
+}

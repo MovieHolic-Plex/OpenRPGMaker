@@ -1,0 +1,31 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/bathtub/w22-E.pxg",
+ "id": "bathtub",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.054
+ },
+ "lint": {
+  "failed": [],
+  "pass": true
+ },
+ "colors": 10,
+ "v5_colors": 6,
+ "bbox": [
+  1,
+  1,
+  30,
+  15
+ ],
+ "v5_bbox": [
+  1,
+  2,
+  30,
+  15
+ ],
+ "note": "방향 D: 앞발 달린 타원 욕조 — 끝이 둥글게 좁아지는 옆선, 높은 앞 배(세 단)와 작은 놋 앞발, 물면은 옅은 파랑, 도기는 차가운 흰색",
+ "ok": true
+}

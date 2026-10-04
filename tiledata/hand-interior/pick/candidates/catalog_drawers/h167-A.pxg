@@ -1,0 +1,29 @@
+// 높이만 16행으로 압축: 기존 윗판·목재색·아홉 놋쇠 이름표 유지, 꼭대기 윗면 3행(y=17~19).
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a wood 1
+@mat b wood 3
+@mat c wood 4
+@mat d wood 5
+@mat e wood 6
+@mat f wood 7
+@mat g brass 3
+@mat h brass 5
+@mblock 0 16
+.bbbbbbbbbbbbbb.
+beeeeeeeeeeeeeeb
+bfdddcdddddcdddb
+bfeeeeeeeeeeeecb
+beeeeeeeeeeeeecb
+baaaaaaaaaaaaaab
+beddbbeddbbeddbb
+behhbbehhbbehhbb
+beggbbeggbbeggbb
+baaaaaaaaaaaaaab
+behhbbehhbbehhbb
+beggbbeggbbeggbb
+baaaaaaaaaaaaaab
+behhbbehhbbehhbb
+beggbbeggbbeggbb
+bcbbbbbbbbbbbbab

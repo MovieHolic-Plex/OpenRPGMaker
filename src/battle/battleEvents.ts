@@ -178,6 +178,12 @@ export type BattleEventRuntimeResult =
 
 export type BattleEventRuntime = {
   applyTroopEvents(context: BattleEventContext): BattleEventRuntimeResult;
+  /**
+   * RM2003 「이벤트 연결」 전투 명령이 부른 공통 이벤트를 다음 applyTroopEvents 앞머리에 끼운다(2026-10-02).
+   * 그 행동 뒤 트룹 이벤트보다 먼저 돌고, 문장·선택지·기다림은 트룹 이벤트와 같은 정지·재개 흐름을 탄다.
+   * 없는 공통 이벤트면 false.
+   */
+  queueCommonEvent(commonEventId: string): boolean;
   resumeChoice(requestId: number, index: number): BattleEventRuntimeResult | undefined;
   resumePause(requestId: number, response: BattleEventPauseResponse): BattleEventRuntimeResult | undefined;
   cancel(): void;
@@ -232,6 +238,7 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
   const firedBattleEventPageRoundKeys = new Set<string>();
   const extraActorActions: Record<string, number> = {};
   const logs: BattleEventLogSnapshot[] = [];
+  const queuedCommonEvents: string[] = [];
   const invocations: BattleInvocation[] = [];
   let batch: { readonly context: BattleEventContext; nextPage: number } | undefined;
   let pendingChoice: { readonly command: Extract<Command, { kind: "choices" }>; readonly request: BattleEventChoiceSnapshot } | undefined;
@@ -264,7 +271,22 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
     if (pendingChoice) return { kind: "choice", request: pendingChoice.request };
     if (pendingPause) return { kind: "pause", request: pendingPause };
     batch ??= { context: { ...context }, nextPage: 0 };
+    // 실행 스택이라 마지막에 쌓은 것이 먼저 돈다 — 고른 순서대로 돌게 거꾸로 쌓는다.
+    const queued = queuedCommonEvents.splice(0);
+    for (const commonEventId of queued.reverse()) {
+      const commonEvent = options.project.commonEvents.find((entry) => entry.id === commonEventId);
+      if (!commonEvent) continue;
+      const page: BattleEventPageRecord = { id: `command-common-event:${commonEventId}`, name: commonEvent.name, conditions: [], span: "battle", commands: commonEvent.commands };
+      logs.push({ pageId: page.id, round: batch.context.turn, triggerId: page.id, kind: "fired", detail: `commonEvent ${commonEventId}` });
+      pushInvocation(page, commonEvent.commands, batch.context, 1);
+    }
     return drainBatch();
+  }
+
+  function queueCommonEvent(commonEventId: string): boolean {
+    if (stopped || !options.project.commonEvents.some((entry) => entry.id === commonEventId)) return false;
+    queuedCommonEvents.push(commonEventId);
+    return true;
   }
 
   function drainBatch(): BattleEventRuntimeResult {
@@ -1212,7 +1234,7 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
     pushInvocation(page, targetPage.commands, context, depth);
   }
 
-  return { applyTroopEvents, resumeChoice, resumePause, cancel, consumeExtraActorAction, logExternal, snapshot, logs: eventLogs };
+  return { applyTroopEvents, queueCommonEvent, resumeChoice, resumePause, cancel, consumeExtraActorAction, logExternal, snapshot, logs: eventLogs };
 }
 
 // playSceneInterpreter 의 default: assertNever(step) 전례를 따르는 로컬 전수 검증 헬퍼.

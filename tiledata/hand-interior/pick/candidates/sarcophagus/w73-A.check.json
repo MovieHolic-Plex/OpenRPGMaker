@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/sarcophagus/w73-A.pxg",
+ "id": "sarcophagus",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.054
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 8,
+ "v5_colors": 0,
+ "bbox": [
+  2,
+  4,
+  29,
+  30
+ ],
+ "v5_bbox": null,
+ "note": "석관: 돌 뚜껑 윗면에 누운 조각(머리·어깨·팔짱·발)+두꺼운 뚜껑 가장자리+들어간 몸통 앞면 패널 둘, 왼쪽 위 빛",
+ "ok": true
+}

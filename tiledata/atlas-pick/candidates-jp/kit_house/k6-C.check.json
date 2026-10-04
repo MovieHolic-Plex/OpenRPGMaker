@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/kit_house/k6-C.pxg",
+ "set": "jp",
+ "id": "kit_house",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 27,
+  "atLeast95": 0,
+  "max": 0.246
+ },
+ "refmap": {
+  "cells": 27,
+  "atLeast95": 0,
+  "max": 0.195
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 36,
+ "bbox": [
+  0,
+  0,
+  127,
+  63
+ ],
+ "note": "붉은 물고기비늘 기와·검은 세로 판벽·장지 격자창·원형 작은 창·나무 난간으로 형태 재해석",
+ "ok": true
+}

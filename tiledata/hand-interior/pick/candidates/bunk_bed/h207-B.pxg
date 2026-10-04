@@ -1,0 +1,64 @@
+// B: 위 머리판 윗면을 1행에서 3행으로 확장; y=3 앞면·그림자와 나머지 화소 유지.
+@size 16 48
+@cell 16
+@palette palette.pal
+@mat A wood 2
+@mat B wood 3
+@mat C wood 4
+@mat D wood 5
+@mat E wood 6
+@mat F wood 7
+@mat L linen 6
+@mat M linen 5
+@mat N linen 4
+@mat O linen 3
+@mat P linen 2
+@mblock 0 0
+.EEEEEEEEEEED...
+AEEEEEEEDEEEA...
+AEEEDEEEEEEEA...
+ADCCCCCCCCBBA...
+ADNMMNMMMMNCA...
+ADLLLNMMMMMCA...
+ADLLLNMMLMNCA...
+ADMMMNMMLMNCA...
+ADNNNNMMMMMCA...
+ADMMMMNMMMNCA...
+ADNMMMNMMNNCA...
+ADOONNNNNNOCE..B
+AEEEEEEEEEECE..B
+ADCCCCDCCCBCEEEB
+ABBBBBBBBBBAEBBB
+AD.........AE..B
+AD.........AE..B
+AC.........AE..B
+AC.........AE..B
+AD.........AE..B
+AD.........AEEEB
+AD.........AEBBB
+AD.........AE..B
+AC.........AE..B
+AC.........AE..B
+AD.........AE..B
+AD.........AEEEB
+AD.........AEBBB
+AD.........AE..B
+AD.........AE..B
+AC.........AE..B
+AC.........AE..B
+AEEEEEEEEEECEEEB
+AEDDDDDCDDDCEBBB
+AEDCCDDDDDCCA..B
+ADCCCCCCCCBCA..B
+ADNMMNMMMMNCA..B
+ADLLLNMMMMMCA..B
+ADLLLNMMLMNCEEEB
+ADMMMNMMLMNCEBBB
+ADNNNNMMMMMCA..B
+ADMMMMNMMMNCA..B
+ADNMMMNMMNNCA..B
+ADOONNNNNNOCA..B
+AEEEEEEEEEECEEEB
+ADCCCCDCCCBCEBBB
+ABBBBBBBBBBAE..B
+AB.........AB..B

@@ -1,3 +1,20 @@
+## 내보낸 게임은 창에 맞춘다 (2026-10-04)
+
+`exportEntry.ts`는 `renderPlayer(surfaceScaleMode:'fit')`로 부팅한다. 기존 integer 기본에서는
+1280×900 창에 960×720만 그렸다(면적 60%). fit은 원래 화면 비율을 유지하며 창의 최대 contain
+배율을 쓴다(320×240이면 1200×900). 게임/UI를 자르거나 늘려 왜곡하지 않는다. 정수 배율을
+명시한 다른 호스트의 선택은 유효하다. 오프닝 QA는 reduced-motion이나 ESC로 실제 연출을
+넘기지 않고 출하 player.html에서 자연 재생/첫 조작을 녹화한다.
+
+## 그림 아이콘을 조사 물체로 쓴다 (2026-10-04)
+
+기존 `CC0_ICON_ASSETS`의 그림 id는 이벤트 `graphic.sprite`로 사용할 수 있다.
+`eventSpriteResources`는 charset frame을 적용하지 않고 `__BASE` 전체 그림을 16px 상자에 맞춘다.
+`bundled.ts`는 맵 이벤트/공간 구조가 참조한 아이콘만 로드한다(도감의 아이템 1,000개 그림 전체를 미리 싣지 않는다). `toolImageEventSprites`도 같은 크기/원본 알파로
+그린다. `ensureBundledProjectTextures`도 새 사물 참조를 로드하여 편집 직후 재로드 없이 보이게 한다. 기존 공용 그림의 표시 경로를 재사용한다. 회중시계 예: `cc0-jetrel-clock`.
+
+- **도트 대화창 (2026-10-04):** `pixel-cinematic`은 별도 저작 스타일이다(`project/dialogueStyles.ts`, `styles/dialogueStyles.css`). 새 관계·연애 프리셋의 기본이며 기존 프로젝트의 cream/gold를 이관하지 않는다. 각진 반투명 창·Galmuri9·25% 높이를 사용하고 긴 본문은 기존 페이지 나누기를 따른다. 긴 선택지는 내부 리스트에서 줄바꿈/스크롤하며 `dialogue.ts`가 선택된 행만 리스트 안으로 옮긴다. DOM 측정값과 scrollTop의 배율이 달라 단계 스케일로 나누며 페이지나 게임 무대를 스크롤하지 않는다. 검증 증거는 `verify-shots/romance-art/SUMMARY.md`; 합성 긴 문구 fixture와 실제 SQLite 장면의 출하 플레이어 증거를 구별한다.
+
 - **런타임 프레임 예산 (2026-09-27, 렉 조사):** 매 프레임·주기 경로에서 아래를 다시 넣지 않는다.
   회귀는 `test/runtimeLagFixes.test.ts`(예전 구현과 같은 답을 내는지 대조한다).
   - QA 상태 미러(`runtime-state-json`)는 **읽을 때만** 만든다(`RuntimeDomOverlay.syncRuntimeStateSource`).
@@ -28,8 +45,8 @@
     안개 층 위치는 매 프레임 옮긴다.
   - 남은 후보(고치지 않음): 자동저장은 동기다(큰 세션에서 스냅샷 약 17–28ms, stringify 약 3ms). `maybeAutosave` 가
     곧바로 true 를 내고 복제 실패를 동기로 던지는 계약(`test/autosave.test.ts`)이 있어 미루지 않았다.
-    맵 이동 때 타일 층 전체 재생성은 그대로다 — Phaser Container 는 자식을 깊이로 정렬하지 않고 넣은 순서가 그리는
-    순서라 칸 단위 부분 갱신은 위험하다. 칸당 비용을 줄이는 쪽으로 풀었다.
+    맵 타일 표시는 아래 「화면 주변 타일 유지」로 바뀌었다(2026-10-01). Phaser Container 는 자식을 깊이로 정렬하지
+    않으므로, 칸을 추가한 뒤 원래 행/칸/조각 순서와 농지·설치물의 마지막 순서를 복원해야 한다.
   - **3차(서브에이전트 5명 조사 + 적대적 리뷰, `test/runtimeLagFixes2.test.ts` "3차" 절):**
     - 명령 이력 배열(`m2Runtime.expressions/debug/screenEffects/pathfinding/waits/checkpoints/dialogue/fallbacks`)은
       `pushM2History` 로만 넣는다. 상한 `M2_HISTORY_LIMIT`(64). 상한이 없어서 오래 플레이하면 세션을 복제하는 모든
@@ -749,3 +766,32 @@ Do not use matching map IDs or a canvas-export PNG alone as evidence for Phaser 
 수정 전과 같은 날씨 입자 실패 4건, 앱 typecheck exit 0. 프레임 예산 준수 또는 모든 맵의 개선을 주장하지 않는다.
 최초 /tmp 증거 소실 후 허용된 새 사본으로 다시 측정해 원시 JSON/PNG를 저장소 증거 폴더에 보존했다.
 백업/로그는 `/home/main/.cache/a5a8-r8/mapload/`에 둔다.
+
+## 화면 주변 타일 유지 (2026-10-01)
+
+`playSceneMapRuntime.renderTiles`의 실제 런타임 경로는 `RuntimeTileWindow`로 카메라 주변
+칸만 유지한다. 여유는 4칸이며 겹치는 칸의 객체는 재사용하고, 창에서 나간 칸의 컨테이너/루트
+객체는 파괴한다. 논리 맵 배열·충돌·NPC 시뮬레이션은 전역 상태를 그대로 사용한다.
+농지/설치물은 기존 전역 렌더링을 유지한다. 줌을 멀리 빼면 표시 객체 수도 보이는 칸 수에 따라 늘어난다.
+
+- 타일 이미지/스프라이트는 `scene.make.*({add:false})`로 만든 뒤 공식 `Container.add(array)`로
+  일괄 등록한다. `list.push`로 대체하면 부모/파괴 리스너/Sprite UpdateList 계약이 사라진다.
+  솔리드 upper만 `addToDisplayList`로 루트에 올린다.
+- 칸 저장소는 수명만 소유한다. 청크 컨테이너로 묶지 않는다. 평평한 컨테이너 목록을 기존
+  행→칸→조각 순서로 정렬하고, 농지/설치물은 마지막에 유지한다. 루트 upper는 depth와 동률 순서를
+  복원해 캐릭터와 섞는다. `rootYSortTiles`는 Set이며 퇴거 때 삭제해 파괴된 가구를 붙잡지 않는다.
+- 이동/점프/줌/리사이즈는 `PlayScene.update`에서 컬링 전에 동기화한다. `worldView`는 Phaser가
+  렌더 단계에서 갱신하므로 `runtimeCameraTileView`는 최신 scroll/zoom으로 뷰를 계산한다.
+  낡은 worldView만 사용하면 순간이동 첫 프레임에 도착 타일이 없다.
+- 새 물 스프라이트는 남아 있는 동일 애니메이션의 프레임과 누적 시간을 이어받는다.
+  표시 객체 추적 목록도 현재 칸으로 다시 만들어 여행 거리만큼 커지지 않는다.
+- 타일/밭/설치물 변경은 기존 입력 서명으로 표시 창을 재생성한다. 화면 밖의 변경은 돌아올 때
+  전체 논리 배열에서 읽는다. 씬 shutdown/destroy는 `releaseRuntimeTileWindow`로 참조를 정리한다.
+- 카메라 없는 최소 렌더 컨텍스트는 기존 전체 맵 경로를 유지한다. 이것을 차등 렌더 오라클로 쓴다.
+  편집기의 lazy/chunk 렌더와 공유 컬링 계약은 바꾸지 않는다.
+
+검증: `test/runtimeTileWindow.test.ts`(512/1024 맵의 화면 객체 유지 상한/겹침 재사용/긴 이동/순서/16·32px/줌/
+제자리 변경/물 위상/해제), 기존 컬링·NPC 재사용·지형/호수 테스트. 실제 내보내기 플레이어의
+픽셀 대조는 `scripts/qa/runtime-tile-window.mjs`, 크기별 전후 실측은
+`scripts/qa/map-size-benchmark.mjs`와 `verify-shots/map-size-optimized-20261001/` 참조.
+공식 1024 확장 뒤 같은 조건의 512/1024 비교는 `verify-shots/map-size-1024-20261001/`다.

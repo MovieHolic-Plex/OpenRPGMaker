@@ -1,0 +1,37 @@
+{
+ "id": "crate",
+ "slug": "crate",
+ "name_ko": "궤짝",
+ "category": "가구·살림",
+ "kind": "floor",
+ "kind_ko": "바닥 기물(막힘)",
+ "canvas": [
+  16,
+  16
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 16,
+  "h": 16
+ },
+ "footprint": {
+  "w": 1,
+  "h": 1
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "X 띠를 두른 빈 나무 궤짝. 창고·대장간·기관실 구석에 1~3개 쌓는다. 통·자루와 섞는다.",
+ "where": "창고·대장간·기관실 구석에 1~3개 쌓는다. 통·자루와 섞는다.",
+ "placement": [
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": [
+  2,
+  2,
+  13,
+  14
+ ],
+ "v5_colors": 8,
+ "material": "wood",
+ "related": []
+}

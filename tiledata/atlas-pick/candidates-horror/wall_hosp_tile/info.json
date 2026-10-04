@@ -1,0 +1,42 @@
+{
+ "id": "wall_hosp_tile",
+ "slug": "wall_hosp_tile",
+ "name": "병원 벽면(흰 타일 반벽)",
+ "scene": "폐병원",
+ "cells": [
+  2,
+  2
+ ],
+ "canvas": [
+  32,
+  32
+ ],
+ "layer": "facade",
+ "layer_ko": "건물 외관 블록(불투명 허용)",
+ "description": "벽면 2×2(32×32) 칸 전부 불투명, 가로로 32px 마다 이어진다(무늬·징두리 이음이 맞게). 위에서 아래로: y0~2 몰딩(천장 테 밑 그늘은 조립기가 1~2px 더한다) → 넓은 면(방에서 가장 밝은 넓은 면, 바닥보다 두 단 밝게) → 징두리(y22~28 쯤) → y29~31 걸레받이(가장 어두운 단 + 윗줄 밝은 1px). 벽면 두 줄이 한 벽이다. 위 절반 = 바랜 회녹 칠(hosp_wall 과 같은 색), 아래 절반 = 흰 사각 타일(8px, 줄눈 1px) + 걸레받이. 수술실·욕실·복도. hosp_wall 과 섞어 깔 수 있게 몰딩·걸레받이 높이 같게.",
+ "palette_hint": "ward 칠, sheet/dust 타일, grave 줄눈",
+ "stage": 1,
+ "stage_ko": "1단계 기본(2판 새로)",
+ "kit": "ward",
+ "role": "벽면(타일 반벽)",
+ "worker": "hf6",
+ "set_with": [
+  "floor_hosp_linoleum",
+  "bedside_cabinet",
+  "hosp_chair",
+  "ward_sink"
+ ],
+ "v5_ref": [
+  {
+   "id": "wall:ktile",
+   "name_ko": "부엌 타일 벽",
+   "atlas": {
+    "x": 128,
+    "y": 1720,
+    "w": 32,
+    "h": 32
+   },
+   "file": "ref-v5-1.png"
+  }
+ ]
+}

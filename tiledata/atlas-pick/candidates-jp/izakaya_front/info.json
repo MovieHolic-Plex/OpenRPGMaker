@@ -1,0 +1,19 @@
+{
+ "id": "izakaya_front",
+ "slug": "izakaya_front",
+ "name": "이자카야 외관",
+ "scene": "주택가 골목",
+ "cells": [
+  4,
+  3
+ ],
+ "canvas": [
+  64,
+  48
+ ],
+ "layer": "facade",
+ "layer_ko": "건물 외관 블록(불투명 허용)",
+ "description": "목조 이자카야 1층 앞면: 짙은 나무 판벽, 가운데 나무 격자 미닫이 유리문(격자 틈으로 노란 불빛), 문 위 짧은 노렌, 처마 끝에 붉은 제등 둘, 문 옆 작은 메뉴판. 따뜻한 불빛.",
+ "palette_hint": "sumi 판벽, hinoki 격자, washi 불빛, akachin 제등, ai 노렌",
+ "worker": "j4"
+}

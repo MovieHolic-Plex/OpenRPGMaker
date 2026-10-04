@@ -22,6 +22,18 @@ afterEach(() => {
 });
 
 describe("show_map_region event depiction", () => {
+  it('renders a catalog pocket watch as a static object and ignores inherited charset frame numbers', async () => {
+    restoreDom = installToolImageRasterDom();
+    const project = seededProject(), map = requireMap(project);
+    const empty = await renderRegion(project, map.id);
+    placeNpc(map, multiPageEvent('watch', 4, 3, [pageGraphic('p0', {
+      sprite: {type:'bundled',id:'cc0-jetrel-clock'}, pattern:79,
+    })]));
+    const watch = await renderRegion(project, map.id);
+    expect(pixelDiffRatio(empty.raster, watch.raster)).toBeGreaterThan(0);
+    requirePage(requireEvent(map, 'watch'), 0).graphic.pattern = 0;
+    expect((await renderRegion(project, map.id)).dataUrl).toBe(watch.dataUrl);
+  });
   it("Ultrabrain preserves whole-map detail and events at the far edge within its image budget", async () => {
     restoreDom = installToolImageRasterDom();
     const project = seededProject(), map = requireMap(project);

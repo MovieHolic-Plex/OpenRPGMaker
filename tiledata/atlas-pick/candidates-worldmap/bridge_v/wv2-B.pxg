@@ -1,0 +1,47 @@
+// bridge_v wv2-B
+@size 16 16
+@cell 16
+@palette palette.pal
+@layer main
+@mat a wstone 0
+@mat b wstone 1
+@mat c wstone 2
+@mat d wstone 3
+@mat e wstone 4
+@mat f wstone 5
+@mat g wstone 6
+@mblock 0 0
+...gebcddfffda..
+...gecdeeffgdb..
+...gecdeeffgdb..
+...gecdeeffgdb..
+...gecdeeeegdb..
+...gecdeeffgdb..
+...gecdeeffgdb..
+...gecdeeffgdb..
+...gebcddfffda..
+...gecdeeffgdb..
+...gecdeeffgdb..
+...gecdeeffgdb..
+...gecdeeeegdb..
+...gecdeeffgdb..
+...gecdeeffgdb..
+...gecdeeffgdb..
+@layer shadow
+@block 0 0
+..............~-
+..............~-
+..............~-
+..............~-
+..............~-
+..............~-
+..............~-
+..............~-
+..............~-
+..............~-
+..............~-
+..............~-
+..............~-
+..............~-
+..............~-
+..............~-

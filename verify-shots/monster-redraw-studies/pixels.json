@@ -1,0 +1,56 @@
+[
+  {
+    "slug": "wolf-grey",
+    "cell": 64,
+    "bbox": [
+      3,
+      11,
+      62,
+      61
+    ],
+    "colors": 14,
+    "alpha": [
+      0,
+      255
+    ],
+    "sha256": "9806b9e854b8de9a3e71da12bddbbf6dc433e9bacb0b5ea7cffaca871b36b66c",
+    "poses": 1,
+    "catalogWritten": false
+  },
+  {
+    "slug": "bat-cave",
+    "cell": 64,
+    "bbox": [
+      3,
+      4,
+      62,
+      59
+    ],
+    "colors": 17,
+    "alpha": [
+      0,
+      255
+    ],
+    "sha256": "d7ab5bc37129ff4abd19eb463a12e682bf620535a35ed8bcdc5e2c66bba63810",
+    "poses": 1,
+    "catalogWritten": false
+  },
+  {
+    "slug": "skeleton-knight",
+    "cell": 64,
+    "bbox": [
+      10,
+      4,
+      61,
+      61
+    ],
+    "colors": 16,
+    "alpha": [
+      0,
+      255
+    ],
+    "sha256": "668dd8730b307b02b73195a82992a20c687d4914c0dc6af2c7eac9d79ed560f6",
+    "poses": 1,
+    "catalogWritten": false
+  }
+]

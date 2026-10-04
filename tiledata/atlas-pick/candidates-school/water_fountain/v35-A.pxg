@@ -1,0 +1,30 @@
+// water_fountain v35-A: 음수대 3/4 — 강철 상판 T4(물받이·수도꼭지)·앞 F12 두 짝 문·굽도리 (폭 16px)
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat q stile 0
+@mat w stile 1
+@mat x stile 2
+@mat y stile 3
+@mat z stile 4
+@mat Z stile 5
+@mat S stile 6
+@mat h vglass 3
+@mat B vblue 3
+@mblock 0 0
+qqqqqqqqqqqqqqqq
+qzzwwwSSwwwwwzzq
+qzzwhhhhhhhhwzzq
+qZZZZZZZZZZZZZZq
+qxxxxxxxxxxxxxxq
+qzyyyyyyyyyyBBxq
+qzwwwwwyywwwwwxq
+qzyyyyyqqyyyyyxq
+qzyyyyxqqxyyyyxq
+qzyyyyxqqxyyyyxq
+qzyyyyyqqyyyyyxq
+qzxxxxxqqxxxxxxq
+qzwwwwwyywwwwwxq
+qwwwwwwwwwwwwwwq
+qxxxxxxxxxxxxxxq
+qqqqqqqqqqqqqqqq

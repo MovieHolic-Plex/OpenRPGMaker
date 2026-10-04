@@ -1,0 +1,42 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/castle/wv8-A.pxg",
+ "set": "worldmap",
+ "id": "castle",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.065
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.094
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 14,
+ "bbox": [
+  0,
+  0,
+  31,
+  29
+ ],
+ "note": "World.png 구조를 우리 팔레트로 — 큰 주탑 위 푸른 뾰족 지붕과 붉은 깃발, 톱니 두른 원통 곁탑 둘, 앞 성벽과 어두운 성문",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 4,
+   "atLeast95": 0,
+   "max": 0.074
+  },
+  "refmapWorld": {
+   "cells": 4,
+   "atLeast95": 0,
+   "max": 0.094
+  }
+ }
+}

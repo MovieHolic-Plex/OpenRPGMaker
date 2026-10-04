@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/treasure_pile/w5-B.pxg",
+ "id": "treasure pile",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.027
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 32,
+ "v5_colors": 21,
+ "bbox": [
+  1,
+  0,
+  30,
+  14
+ ],
+ "v5_bbox": [
+  1,
+  2,
+  30,
+  15
+ ],
+ "note": "A 의 더미에 명암 폭을 넓힘: 왼쪽 위 밝은 금(6), 오른쪽·아래 어두운 금(0~1). 바닥에 반투명 그림자 한 줄로 무게, 수정이 더 솟음",
+ "ok": true
+}

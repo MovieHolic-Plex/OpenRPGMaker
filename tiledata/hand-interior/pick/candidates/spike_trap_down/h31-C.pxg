@@ -1,0 +1,39 @@
+// C 숨은 가시: 가시를 구멍 속으로 접고 쇠판 위의 솟은 끝을 지웠다. 구멍을 2x2(어두운 칸+한 칸 쇠끝 빛)로 키워 3x2 여섯 개가 한눈에 읽히게
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat i iron 3
+@mblock 0 0
+................
+................
+................
+................
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+.iiiiiiiiiiiiii.
+@tblock 0 0
+................
+................
+................
+................
+.11151115111511.
+.14454445444541.
+.14003300330021.
+.14043304330421.
+.14353335333531.
+.14353335333531.
+.14003300330021.
+.14043304330421.
+.14333333333321.
+.14333333333321.
+.12222222222221.
+.11111111111111.

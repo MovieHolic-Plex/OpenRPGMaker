@@ -1,0 +1,37 @@
+{
+ "id": "gauge panel",
+ "slug": "gauge_panel",
+ "name_ko": "계기판(움직임)",
+ "category": "마도 기관",
+ "kind": "hang",
+ "kind_ko": "벽면 걸이(벽 두 줄 중 윗줄)",
+ "canvas": [
+  16,
+  16
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 16,
+  "h": 16
+ },
+ "footprint": {
+  "w": 1,
+  "h": 0
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "바늘 두 개가 흔들리는 계기판(벽면 윗줄). 기관 홀·제어실 벽면 윗줄에 방마다 2개. 제어반 위.",
+ "where": "기관 홀·제어실 벽면 윗줄에 방마다 2개. 제어반 위.",
+ "placement": [
+  "벽면 두 줄 중 윗줄(y=벽면 첫 줄)에 건다. 바닥 칸은 차지하지 않는다"
+ ],
+ "v5_bbox": [
+  1,
+  1,
+  14,
+  14
+ ],
+ "v5_colors": 7,
+ "material": "wood",
+ "related": []
+}

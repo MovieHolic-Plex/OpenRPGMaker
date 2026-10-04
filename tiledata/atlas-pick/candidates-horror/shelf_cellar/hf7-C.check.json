@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/shelf_cellar/hf7-C.pxg",
+ "set": "horror",
+ "id": "shelf_cellar",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.062
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.223
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "banding",
+   "outline",
+   "outline_black"
+  ]
+ },
+ "colors": 18,
+ "bbox": [
+  1,
+  2,
+  14,
+  31
+ ],
+ "note": "C(재질·무늬): rot 썩은 나무 + 거미줄 모서리 + 녹 점 + 곰팡이 병(hmoss)·흙 항아리(soil)",
+ "ok": true
+}

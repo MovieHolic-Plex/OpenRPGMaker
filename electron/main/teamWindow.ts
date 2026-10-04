@@ -34,7 +34,7 @@ export function openTeamWindow(target: URL, options: TeamWindowOptions = {}): Br
     show: false,
     title: "팀 프로젝트 · " + target.host,
     ...(options.icon ? { icon: options.icon } : {}),
-    webPreferences: { partition: TEAM_PARTITION, contextIsolation: true, sandbox: true, nodeIntegration: false, webSecurity: true },
+    webPreferences: { partition: TEAM_PARTITION, contextIsolation: true, sandbox: true, nodeIntegration: false, webSecurity: true, backgroundThrottling: false },
   });
   const sameOrigin = (url: string): boolean => {
     try { return new URL(url).origin === origin; } catch { return false; }

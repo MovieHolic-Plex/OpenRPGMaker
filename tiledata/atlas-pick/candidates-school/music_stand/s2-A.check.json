@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/music_stand/s2-A.pxg",
+ "set": "school",
+ "id": "music_stand",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.024
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.06
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "outline",
+   "outline_black",
+   "dither"
+  ]
+ },
+ "colors": 11,
+ "bbox": [
+  1,
+  1,
+  14,
+  15
+ ],
+ "note": "보면대 A: 검정 판(외곽 0단·면 2단·왼쪽 위 4단)에 악보 종이 washi 한 장(오른쪽·아래 그늘, 오선 두 줄 점선), 악보 턱 한 줄, 쇠 기둥 세 단, 세 발. 피아노 A와 같은 vblack 톤 사다리.",
+ "ok": true
+}

@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/instrument_tray/h5-A.pxg",
+ "set": "horror",
+ "id": "instrument_tray",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.027
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.038
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies"
+  ]
+ },
+ "colors": 11,
+ "bbox": [
+  1,
+  3,
+  14,
+  15
+ ],
+ "note": "쇠 수레: 윗판 쟁반 안에 메스·가위·집게 밝은 선, 피 묻은 거즈 덩이, 아래 선반과 바퀴. 윗면이 칸 절반 이상",
+ "ok": true
+}

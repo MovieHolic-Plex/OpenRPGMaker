@@ -1,0 +1,60 @@
+== invalidations (count total) ==
+   408 Layout | Removed from layout |  | sel= | cls= | node=path
+   408 Layout | Added to layout |  | sel= | cls= | node=path
+   320 Layout | Removed from layout |  | sel= | cls= | node=#text
+   320 Layout | Added to layout |  | sel= | cls= | node=#text
+   316 StyleRecalc | Control |  | sel= | cls= | node=DIV
+   280 ScheduleStyle |  |  | sel= | cls= | node=BODY class='ai-chat-dock-float ai-command-bar-active'
+   200 Layout | Removed from layout |  | sel= | cls= | node=svg
+   200 Layout | Added to layout |  | sel= | cls= | node=svg
+    96 StyleRecalc | Affected by :has() |  | sel= | cls= | node=DIV class='left-panel ai-chat-sidebar-tools'
+    96 Layout | Removed from layout |  | sel= | cls= | node=circle
+    96 Layout | Added to layout |  | sel= | cls= | node=circle
+    72 Layout | Removed from layout |  | sel= | cls= | node=SLOT id='details-content'
+    72 Layout | Added to layout |  | sel= | cls= | node=SLOT id='details-content'
+    48 Layout | Removed from layout |  | sel= | cls= | node=BUTTON class='btn sidebar-surface-button'
+    48 Layout | Removed from layout |  | sel= | cls= | node=BUTTON class='oprn-tile-tool'
+    48 Layout | Added to layout |  | sel= | cls= | node=BUTTON class='btn sidebar-surface-button'
+    48 Layout | Added to layout |  | sel= | cls= | node=BUTTON class='oprn-tile-tool'
+    40 ScheduleStyle |  |  | sel= | cls= | node=DIV class='canvas-area'
+    36 StyleInvalidator | Invalidation set invalidates subtree |  | sel= | cls= | node=BODY class='ai-chat-dock-float ai-command-bar-active'
+    36 StyleRecalc | Related style rule |  | sel= | cls= | node=BODY class='ai-chat-dock-float ai-command-bar-active'
+    36 Layout | Child anonymous block changed |  | sel= | cls= | node=DETAILS class='ai-activity-setting'
+    36 Layout | Added to layout |  | sel= | cls= | node=SUMMARY class='ai-activity-setting-summary'
+    36 Layout | Added to layout |  | sel= | cls= | node=DETAILS class='ai-activity-setting'
+    32 ScheduleStyle |  |  | sel= | cls= | node=SPAN class='ai-deck-rail-ctx'
+    32 StyleInvalidator | Invalidation set invalidates self |  | sel= | cls= | node=SPAN class='ai-deck-rail-ctx'
+== main-thread self time by bucket ==
+   322.2ms/op task-other
+   236.7ms/op style
+   130.0ms/op js
+    37.5ms/op paint/raster
+    23.3ms/op layout
+     9.9ms/op gc
+     0.2ms/op other:IntersectionObserverController::computeIntersections
+     0.0ms/op other:PaintImage
+     0.0ms/op other:ClearWeaknessProcessor start
+     0.0ms/op other:Parallel scavenge started
+     0.0ms/op other:ComputeWeaknessProcessor start
+long tasks(>20ms): 150,118,61,420,55,124,107,57,58,134,111,73,129,122,59,142,121,65,66,149,107,66,58,128,125,63,149,130,87
+  BODYINV ScheduleStyle  clearChildren@util/dom.ts:32 < renderAuthoringJourneyNow@panels/editor.ts:777 < refreshAuthoringJourney@panels/editor.ts:763 < refreshPanels@panels/editor.ts:728 < run@panels/editor.ts:713
+  BODYINV StyleInvalidator Invalidation set invalidates subtree 
+  BODYINV StyleRecalc Related style rule clearChildren@util/dom.ts:32 < renderAuthoringJourneyNow@panels/editor.ts:777 < refreshAuthoringJourney@panels/editor.ts:763 < refreshPanels@panels/editor.ts:728 < run@panels/editor.ts:713
+  BODYINV ScheduleStyle  renderAuthoringJourneyNow@panels/editor.ts:778 < refreshAuthoringJourney@panels/editor.ts:763 < refreshPanels@panels/editor.ts:728 < run@panels/editor.ts:713
+  BODYINV ScheduleStyle  clearChildren@util/dom.ts:32 < paintPersistenceBanner@panels/editor.ts:410 < refreshPanels@panels/editor.ts:729 < run@panels/editor.ts:713
+  BODYINV ScheduleStyle  clearChildren@util/dom.ts:32 < paintPersistenceBanner@panels/editor.ts:410 < refreshPanels@panels/editor.ts:729 < run@panels/editor.ts:713
+  BODYINV ScheduleStyle  paintPersistenceBanner@panels/editor.ts:412 < refreshPanels@panels/editor.ts:729 < run@panels/editor.ts:713
+  BODYINV ScheduleStyle  paintPersistenceBanner@panels/editor.ts:412 < refreshPanels@panels/editor.ts:729 < run@panels/editor.ts:713
+  BODYINV ScheduleStyle  swapPaneAroundSheet@panels/tilePalette.ts:67 < renderTilePalette@panels/tilePalette.ts:192 < refreshTilePalette@panels/tilePalette.ts:119 < render@workspace/panelRegistry.ts:9 < renderDockPanels@workspace/dockHost.ts:53 < renderLeftDockPanels@panels/editor.ts:308
+  BODYINV ScheduleStyle  swapPaneAroundSheet@panels/tilePalette.ts:67 < renderTilePalette@panels/tilePalette.ts:192 < refreshTilePalette@panels/tilePalette.ts:119 < render@workspace/panelRegistry.ts:9 < renderDockPanels@workspace/dockHost.ts:53 < renderLeftDockPanels@panels/editor.ts:308
+  BODYINV ScheduleStyle  swapPaneAroundSheet@panels/tilePalette.ts:67 < renderTilePalette@panels/tilePalette.ts:192 < refreshTilePalette@panels/tilePalette.ts:119 < render@workspace/panelRegistry.ts:9 < renderDockPanels@workspace/dockHost.ts:53 < renderLeftDockPanels@panels/editor.ts:308
+  BODYINV ScheduleStyle  swapPaneAroundSheet@panels/tilePalette.ts:67 < renderTilePalette@panels/tilePalette.ts:192 < refreshTilePalette@panels/tilePalette.ts:119 < render@workspace/panelRegistry.ts:9 < renderDockPanels@workspace/dockHost.ts:53 < renderLeftDockPanels@panels/editor.ts:308
+  BODYINV ScheduleStyle  swapPaneAroundSheet@panels/tilePalette.ts:67 < renderTilePalette@panels/tilePalette.ts:192 < refreshTilePalette@panels/tilePalette.ts:119 < render@workspace/panelRegistry.ts:9 < renderDockPanels@workspace/dockHost.ts:53 < renderLeftDockPanels@panels/editor.ts:308
+  BODYINV ScheduleStyle  swapPaneAroundSheet@panels/tilePalette.ts:67 < renderTilePalette@panels/tilePalette.ts:192 < refreshTilePalette@panels/tilePalette.ts:119 < render@workspace/panelRegistry.ts:9 < renderDockPanels@workspace/dockHost.ts:53 < renderLeftDockPanels@panels/editor.ts:308
+  BODYINV ScheduleStyle  swapPaneAroundSheet@panels/tilePalette.ts:79 < renderTilePalette@panels/tilePalette.ts:192 < refreshTilePalette@panels/tilePalette.ts:119 < render@workspace/panelRegistry.ts:9 < renderDockPanels@workspace/dockHost.ts:53 < renderLeftDockPanels@panels/editor.ts:308
+  BODYINV ScheduleStyle  swapPaneAroundSheet@panels/tilePalette.ts:79 < renderTilePalette@panels/tilePalette.ts:192 < refreshTilePalette@panels/tilePalette.ts:119 < render@workspace/panelRegistry.ts:9 < renderDockPanels@workspace/dockHost.ts:53 < renderLeftDockPanels@panels/editor.ts:308
+  BODYINV ScheduleStyle  swapPaneAroundSheet@panels/tilePalette.ts:79 < renderTilePalette@panels/tilePalette.ts:192 < refreshTilePalette@panels/tilePalette.ts:119 < render@workspace/panelRegistry.ts:9 < renderDockPanels@workspace/dockHost.ts:53 < renderLeftDockPanels@panels/editor.ts:308
+  BODYINV ScheduleStyle  swapPaneAroundSheet@panels/tilePalette.ts:79 < renderTilePalette@panels/tilePalette.ts:192 < refreshTilePalette@panels/tilePalette.ts:119 < render@workspace/panelRegistry.ts:9 < renderDockPanels@workspace/dockHost.ts:53 < renderLeftDockPanels@panels/editor.ts:308
+  BODYINV ScheduleStyle  swapPaneAroundSheet@panels/tilePalette.ts:80 < renderTilePalette@panels/tilePalette.ts:192 < refreshTilePalette@panels/tilePalette.ts:119 < render@workspace/panelRegistry.ts:9 < renderDockPanels@workspace/dockHost.ts:53 < renderLeftDockPanels@panels/editor.ts:308
+  BODYINV ScheduleStyle  swapPaneAroundSheet@panels/tilePalette.ts:80 < renderTilePalette@panels/tilePalette.ts:192 < refreshTilePalette@panels/tilePalette.ts:119 < render@workspace/panelRegistry.ts:9 < renderDockPanels@workspace/dockHost.ts:53 < renderLeftDockPanels@panels/editor.ts:308
+ULE 39ms 2435el parents=RunTask

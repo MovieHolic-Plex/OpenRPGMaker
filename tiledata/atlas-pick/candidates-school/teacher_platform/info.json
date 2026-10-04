@@ -1,0 +1,23 @@
+{
+ "id": "teacher_platform",
+ "slug": "teacher_platform",
+ "name": "교단",
+ "scene": "교실",
+ "place": "in",
+ "cells": [
+  3,
+  1
+ ],
+ "canvas": [
+  48,
+  16
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "칠판 앞 한 뼘 높이 나무 단(교단). 윗면 = 널 세 장 가로 결, 앞 턱 = 2~3px 어두운 띠. 좌우로 이어 붙일 수 있게 양 끝 모양 같게(가운데 칸 반복 가능).",
+ "palette_hint": "cfloor 윗면, vdwood 앞 턱",
+ "pair": [
+  "lectern"
+ ],
+ "worker": "s4"
+}

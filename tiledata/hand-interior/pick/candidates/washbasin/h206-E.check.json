@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/washbasin/h206-E.pxg",
+ "id": "washbasin",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.004
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 22,
+ "v5_colors": 14,
+ "bbox": [
+  1,
+  8,
+  14,
+  31
+ ],
+ "v5_bbox": [
+  1,
+  8,
+  14,
+  31
+ ],
+ "note": "대야·받침장 비율과 앞면을 유지하고 왼쪽 상판 가장자리에서 내려오는 흰 수건만 복원; 꼭대기 윗면 5행(y=15~19)",
+ "ok": true
+}

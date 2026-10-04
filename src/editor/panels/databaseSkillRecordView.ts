@@ -30,6 +30,8 @@ import {
   type SkillComposerEffectKind,
 } from "@/editor/panels/databaseSkillComposerModel";
 import { renderSkillAnimationStage, type SkillAnimationStage } from "@/editor/panels/databaseSkillAnimationStage";
+import { retroChoreographyPicker } from "@/editor/panels/databaseSkillRetroPicker";
+import { renderSkillRetroStage, retroStageSignature, type SkillRetroStage } from "@/editor/panels/databaseSkillRetroStage";
 import { sectionCard } from "@/editor/panels/databaseWorkspace";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
 import { storyFlagOptionLabel } from "@/project/storyFlags";
@@ -37,6 +39,7 @@ import { store } from "@/project/store";
 import type { DatabaseStateEffect, Project, SkillEffect, SkillRecord } from "@/project/types";
 import { el } from "@/util/dom";
 import { specialSkillEffectLabel } from "@/battle/battleSpecialEffects";
+import { POKEMON_MOVE_MOTIONS, POKEMON_MOVE_MOTION_LABELS, isPokemonMoveMotion, pokemonMoveMotion } from "@/battle/pokemonMoveMotion";
 
 const SKILL_EFFECT_KINDS = ["damage", "healing", "support", "switch", "steal", "scan", "learnEnemySkill", "randomSkillFrom"] as const satisfies readonly SkillEffect["kind"][];
 const SKILL_EFFECT_AFFECTS = ["hp", "mp"] as const satisfies readonly SkillEffectAffects[];
@@ -72,6 +75,8 @@ export function renderSkillRecordForm(form: HTMLElement, record: SkillRecord): v
   const effectBody = el("div", { class: "db-skill-effect-fields" });
   const stateBody = el("div", { class: "db-skill-state-effects" });
   const previewBody = el("div", { class: "db-skill-preview-slot" });
+  const retroBody = el("div", { class: "db-skill-retro-slot" });
+  const pickerBody = el("div", { class: "db-skill-retro-picker-slot" });
   const actionBody = el("div", { class: "db-skill-action-fields" });
   const renderEffectPanel = () => effectBody.replaceChildren(...effectFields(currentSkill(record), renderEffectPanel));
   const renderStatePanel = () => stateBody.replaceChildren(...stateEffectFields(currentSkill(record), renderStatePanel));
@@ -81,6 +86,25 @@ export function renderSkillRecordForm(form: HTMLElement, record: SkillRecord): v
     animationStage = renderSkillAnimationStage(currentSkill(record), store.getCurrent());
     previewBody.replaceChildren(animationStage.element);
   };
+  // 도트 전투 미리보기(retro2003). 계약 스킬이나 런타임 레시피가 있을 때만 그린다.
+  // 이름·범위·효과 종류가 바뀌면 레시피가 달라질 수 있어 서명이 바뀔 때만 다시 그린다(입력마다 재생이 끊기지 않게).
+  let retroStage: SkillRetroStage | null = null;
+  let retroSignature = "";
+  const renderRetroPanel = (force = false): void => {
+    const skill = currentSkill(record);
+    const signature = retroStageSignature(skill, store.getCurrent().database.skillChoreographies);
+    if (!force && signature === retroSignature) return;
+    retroSignature = signature;
+    retroStage?.stop();
+    retroStage = renderSkillRetroStage(skill, store.getCurrent());
+    retroBody.replaceChildren(...(retroStage ? [retroStage.element] : []));
+    presentationCard?.classList.toggle("db-skill-card-has-retro", Boolean(retroStage));
+  };
+  // 「도트 연출」 고르기 — 고르면 상태 문구·무대를 함께 다시 그린다.
+  const renderPickerPanel = (): void => {
+    pickerBody.replaceChildren(retroChoreographyPicker(currentSkill(record), () => { renderPickerPanel(); renderRetroPanel(true); }));
+  };
+  let presentationCard: HTMLElement | null = null;
   // 투사체를 켜도 데미지/사거리/탄약 필드가 안 나타나던 문제(개편 전부터 있던 결함) —
   // 효과/상태 패널처럼 이 카드도 토글 후 다시 그린다.
   const renderActionPanel = () => actionBody.replaceChildren(...actionSkillFields(currentSkill(record), renderActionPanel));
@@ -88,6 +112,8 @@ export function renderSkillRecordForm(form: HTMLElement, record: SkillRecord): v
   renderEffectPanel();
   renderStatePanel();
   renderPreviewPanel();
+  renderRetroPanel(true);
+  renderPickerPanel();
   renderActionPanel();
 
   let composer = skillComposer(currentSkill(record));
@@ -151,17 +177,18 @@ export function renderSkillRecordForm(form: HTMLElement, record: SkillRecord): v
       }),
       sectionCard({ title: "효과", hint: "전투에서 대상에게 적용됩니다", testid: "db-skill-card-effect", children: [effectBody] }),
       sectionCard({ title: "상태 변화", testid: "db-skill-card-states", children: [stateBody] }),
-      sectionCard({
+      (presentationCard = sectionCard({
         title: "연출",
+        hint: retroStage ? "도트 전투 미리보기 · ▶ 재생을 누르면 효과음도 들립니다" : undefined,
         testid: "db-skill-card-presentation",
-        children: [...(animationNode ? [animationNode] : []), previewBody],
-      }),
+        children: [retroBody, pickerBody, ...(animationNode ? [animationNode] : []), previewBody],
+      })),
       sectionCard({
         title: "Gen1 기술",
         hint: gen1BattleModel() ? "포켓몬풍 전투 전용" : "포켓몬풍 전투 전용 · 이 게임은 사용 안 함",
         testid: "db-skill-card-gen1",
         collapsible: true,
-        collapsed: !advancedOpen(gen1BattleModel() || (record.maxPp ?? 0) > 0 || record.gen1CriticalRate === "high"),
+        collapsed: !advancedOpen(gen1BattleModel() || (record.maxPp ?? 0) > 0 || record.gen1CriticalRate === "high" || Boolean(record.moveMotion)),
         children: [
           numberField("최대 PP", "db-field-skill-max-pp", record.maxPp ?? 0, (maxPp) =>
             updateDatabaseRecord("skills", record.id, { maxPp: maxPp > 0 ? maxPp : undefined }), { min: 0, max: 99 }
@@ -169,6 +196,13 @@ export function renderSkillRecordForm(form: HTMLElement, record: SkillRecord): v
           el("p", { class: "db-skill-card-note", text: "최대 PP 를 0 으로 두면 사용 횟수 제한이 없습니다." }),
           selectLiteral("급소율", "db-field-skill-gen1-critical", record.gen1CriticalRate ?? "normal", ["normal", "high"], (gen1CriticalRate) =>
             updateDatabaseRecord("skills", record.id, { gen1CriticalRate })
+          ),
+          // 비워 두면 효과·대상·이펙트로 자동 판정한다 — 자동 줄에 판정 결과를 같이 보여 준다.
+          selectField("움직임", "db-field-skill-move-motion", record.moveMotion ?? "", [
+            { id: "", name: `자동 (${POKEMON_MOVE_MOTION_LABELS[pokemonMoveMotion({ ...record, moveMotion: undefined })].split(" — ")[0]})` },
+            ...POKEMON_MOVE_MOTIONS.map((id) => ({ id, name: POKEMON_MOVE_MOTION_LABELS[id] })),
+          ], (value) =>
+            updateDatabaseRecord("skills", record.id, { moveMotion: isPokemonMoveMotion(value) ? value : undefined })
           ),
         ],
       }),
@@ -184,7 +218,7 @@ export function renderSkillRecordForm(form: HTMLElement, record: SkillRecord): v
   });
 
   stack.append(skillCombatRuleCard(currentSkill(record), {
-    collapsed: !advancedOpen(Boolean(record.damageFormula) || (record.hitSequence ?? [1]).join(",") !== "1"),
+    collapsed: !advancedOpen(Boolean(record.damageFormula) || (record.hitSequence ?? [1]).join(",") !== "1" || Boolean(record.hpCostPercent || record.drainPercent || record.gaugeShift || record.chargeTurns || record.summonResourceId || record.area || record.comboActorIds?.length)),
   }));
   stack.append(skillInputSequenceFields(currentSkill(record)));
   stack.append(usedByCard(form, currentSkill(record)));
@@ -200,6 +234,9 @@ export function renderSkillRecordForm(form: HTMLElement, record: SkillRecord): v
   form.addEventListener("change", refreshComposer);
   form.addEventListener("click", refreshComposer);
   bindAnimationPreviewRefresh(form, renderPreviewPanel);
+  // 도트 무대는 확정된 변경(change)에서만 서명을 다시 본다.
+  form.addEventListener("change", () => renderRetroPanel());
+  presentationCard?.classList.toggle("db-skill-card-has-retro", Boolean(retroStage));
 }
 
 /**

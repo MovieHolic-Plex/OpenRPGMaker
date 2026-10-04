@@ -1,0 +1,1123 @@
+{
+ "jp": {
+  "vending_drink": {
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "tags": [
+    "h34-B",
+    "v35-A"
+   ],
+   "basis": {
+    "table": "vending_1",
+    "W": 1.0,
+    "D": 0.8,
+    "H": 1.8,
+    "wpx": 16,
+    "F": 28,
+    "T": 4,
+    "F_raw": 29,
+    "T_raw": 13,
+    "T_c": 7.8,
+    "px_per_m": 16
+   }
+  },
+  "vending_ice": {
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "tags": [
+    "h34-B",
+    "v35-A"
+   ],
+   "basis": {
+    "table": "vending_1",
+    "W": 1.0,
+    "D": 0.8,
+    "H": 1.8,
+    "wpx": 16,
+    "F": 28,
+    "T": 4,
+    "F_raw": 29,
+    "T_raw": 13,
+    "T_c": 7.8,
+    "px_per_m": 16
+   }
+  },
+  "vending_cig": {
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "tags": [
+    "v35-A"
+   ],
+   "basis": {
+    "W": 1.0,
+    "D": 0.8,
+    "H": 1.8,
+    "wpx": 16,
+    "F": 28,
+    "T": 4,
+    "table": "vending_1"
+   }
+  },
+  "vending_coffee": {
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "tags": [
+    "v35-A"
+   ],
+   "basis": {
+    "W": 1.0,
+    "D": 0.8,
+    "H": 1.8,
+    "wpx": 16,
+    "F": 28,
+    "T": 4,
+    "table": "vending_1"
+   }
+  },
+  "konbini_pole": {
+   "cells": [
+    1,
+    4
+   ],
+   "canvas": [
+    16,
+    64
+   ],
+   "tags": [
+    "v35-A"
+   ],
+   "basis": {
+    "W": 0.5,
+    "D": 0.5,
+    "H": 4.0,
+    "wpx": 8,
+    "F": 62,
+    "T": 2,
+    "table": null
+   }
+  },
+  "ped_signal": {
+   "cells": [
+    1,
+    3
+   ],
+   "canvas": [
+    16,
+    48
+   ],
+   "tags": [
+    "v35-A"
+   ],
+   "basis": {
+    "W": 0.4,
+    "D": 0.3,
+    "H": 2.5,
+    "wpx": 6,
+    "F": 40,
+    "T": 3,
+    "table": "ped_signal"
+   }
+  },
+  "tomare_sign": {
+   "cells": [
+    1,
+    3
+   ],
+   "canvas": [
+    16,
+    48
+   ],
+   "tags": [
+    "v35-A"
+   ],
+   "basis": {
+    "W": 0.6,
+    "D": 0.1,
+    "H": 2.5,
+    "wpx": 10,
+    "F": 40,
+    "T": 2,
+    "table": "road_sign"
+   }
+  },
+  "jp_signal": {
+   "cells": [
+    3,
+    5
+   ],
+   "canvas": [
+    48,
+    80
+   ],
+   "tags": [
+    "v35-A"
+   ],
+   "basis": {
+    "W": 2.5,
+    "D": 0.4,
+    "H": 5.0,
+    "wpx": 40,
+    "F": 78,
+    "T": 2,
+    "table": null
+   }
+  },
+  "mamachari": {
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "tags": [
+    "v35-A"
+   ],
+   "basis": {
+    "W": 1.8,
+    "D": 0.55,
+    "H": 1.0,
+    "wpx": 29,
+    "F": 16,
+    "T": 5,
+    "table": "bicycle"
+   }
+  },
+  "garbage_station": {
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "tags": [
+    "v35-A"
+   ],
+   "basis": {
+    "W": 1.8,
+    "D": 0.8,
+    "H": 1.0,
+    "wpx": 29,
+    "F": 16,
+    "T": 8,
+    "table": null
+   }
+  },
+  "phone_booth": {
+   "cells": [
+    1,
+    3
+   ],
+   "canvas": [
+    16,
+    48
+   ],
+   "tags": [
+    "v35-A"
+   ],
+   "basis": {
+    "W": 0.8,
+    "D": 0.8,
+    "H": 2.0,
+    "wpx": 13,
+    "F": 32,
+    "T": 8,
+    "table": null
+   }
+  },
+  "bus_stop_jp": {
+   "cells": [
+    1,
+    3
+   ],
+   "canvas": [
+    16,
+    48
+   ],
+   "tags": [
+    "v35-A"
+   ],
+   "basis": {
+    "W": 0.6,
+    "D": 0.1,
+    "H": 2.5,
+    "wpx": 10,
+    "F": 40,
+    "T": 2,
+    "table": "road_sign"
+   }
+  },
+  "standing_sign": {
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "tags": [
+    "v35-A"
+   ],
+   "basis": {
+    "W": 0.6,
+    "D": 0.5,
+    "H": 1.0,
+    "wpx": 10,
+    "F": 16,
+    "T": 5,
+    "table": "a_frame_sign"
+   }
+  },
+  "komainu_a": {
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "tags": [
+    "v35-A"
+   ],
+   "basis": {
+    "W": 0.5,
+    "D": 0.7,
+    "H": 0.9,
+    "wpx": 8,
+    "F": 12,
+    "T": 4,
+    "table": null
+   }
+  },
+  "komainu_un": {
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "tags": [
+    "v35-A"
+   ],
+   "basis": {
+    "W": 0.5,
+    "D": 0.7,
+    "H": 0.9,
+    "wpx": 8,
+    "F": 12,
+    "T": 4,
+    "table": null
+   }
+  }
+ },
+ "horror": {
+  "wardrobe_ajar": {
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "tags": [
+    "h34-B"
+   ],
+   "basis": {
+    "table": "wardrobe_1",
+    "W": 1.0,
+    "D": 0.6,
+    "H": 2.0,
+    "wpx": 16,
+    "F": 28,
+    "T": 4,
+    "F_raw": 32,
+    "T_raw": 10,
+    "T_c": 6.0,
+    "px_per_m": 16
+   }
+  },
+  "dresser": {
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "tags": [
+    "h34-B",
+    "v35-A"
+   ],
+   "basis": {
+    "table": "chest_dresser",
+    "W": 1.0,
+    "D": 0.5,
+    "H": 1.0,
+    "wpx": 16,
+    "F": 16,
+    "T": 5,
+    "F_raw": 16,
+    "T_raw": 8,
+    "T_c": 4.8,
+    "px_per_m": 16
+   }
+  },
+  "pillar_stone": {
+   "cells": [
+    1,
+    4
+   ],
+   "canvas": [
+    16,
+    64
+   ],
+   "tags": [
+    "v35-A"
+   ],
+   "basis": {
+    "table": null,
+    "W": 0.8,
+    "D": 0.8,
+    "H": 3.0,
+    "wpx": 13,
+    "F": 48,
+    "T": 8,
+    "px_per_m": 16
+   }
+  },
+  "bed_manor": {
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "tags": [
+    "v35-A"
+   ],
+   "basis": {
+    "table": "bed_single",
+    "W": 1.0,
+    "D": 2.0,
+    "H": 0.5,
+    "wpx": 16,
+    "F": 8,
+    "T": 19,
+    "px_per_m": 16
+   }
+  },
+  "hosp_bed": {
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "tags": [
+    "v35-A"
+   ],
+   "basis": {
+    "table": "bed_single",
+    "W": 1.0,
+    "D": 2.0,
+    "H": 0.5,
+    "wpx": 16,
+    "F": 8,
+    "T": 19,
+    "px_per_m": 16
+   }
+  },
+  "bedside_cabinet": {
+   "cells": [
+    2,
+    1
+   ],
+   "canvas": [
+    32,
+    16
+   ],
+   "tags": [
+    "v35-A"
+   ],
+   "basis": {
+    "table": "low_dresser",
+    "W": 1.1,
+    "D": 0.45,
+    "H": 0.8,
+    "wpx": 18,
+    "F": 12,
+    "T": 4,
+    "px_per_m": 16
+   }
+  },
+  "canopy_bed_rot": {
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "tags": [
+    "v35-A",
+    "v35-B"
+   ],
+   "basis": {
+    "table": "bed_double",
+    "W": 1.5,
+    "D": 2.0,
+    "H": 0.55,
+    "wpx": 24,
+    "F": 9,
+    "T": 19,
+    "px_per_m": 16
+   },
+   "alt": {
+    "v35-B": {
+     "cells": [
+      2,
+      3
+     ],
+     "canvas": [
+      32,
+      48
+     ],
+     "basis": {
+      "table": "canopy_bed_rot",
+      "W": 1.5,
+      "D": 2.0,
+      "H": 2.2,
+      "wpx": 24,
+      "F": 35,
+      "T": 13,
+      "F_raw": 35,
+      "T_raw": 32,
+      "T_c": 16.0,
+      "px_per_m": 16
+     }
+    }
+   }
+  },
+  "wheelchair": {
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "tags": [
+    "v35-A",
+    "v35-B"
+   ],
+   "basis": {
+    "table": null,
+    "W": 0.65,
+    "D": 1.0,
+    "H": 0.9,
+    "wpx": 10,
+    "F": 14,
+    "T": 10,
+    "px_per_m": 16
+   },
+   "alt": {
+    "v35-B": {
+     "cells": [
+      1,
+      1
+     ],
+     "canvas": [
+      16,
+      16
+     ],
+     "basis": {
+      "table": "wheelchair",
+      "W": 0.85,
+      "D": 1.0,
+      "H": 0.9,
+      "wpx": 14,
+      "F": 12,
+      "T": 4,
+      "F_raw": 14,
+      "T_raw": 16,
+      "T_c": 4.0,
+      "px_per_m": 16
+     }
+    }
+   }
+  },
+  "operating_table": {
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "tags": [
+    "v35-A",
+    "v35-B"
+   ],
+   "basis": {
+    "table": null,
+    "W": 0.6,
+    "D": 2.0,
+    "H": 0.9,
+    "wpx": 10,
+    "F": 14,
+    "T": 18,
+    "px_per_m": 16
+   },
+   "alt": {
+    "v35-B": {
+     "cells": [
+      2,
+      1
+     ],
+     "canvas": [
+      32,
+      16
+     ],
+     "basis": {
+      "table": "operating_table",
+      "W": 2.0,
+      "D": 0.6,
+      "H": 0.9,
+      "wpx": 32,
+      "F": 12,
+      "T": 4,
+      "F_raw": 14,
+      "T_raw": 10,
+      "T_c": 6.0,
+      "px_per_m": 16
+     }
+    }
+   }
+  }
+ },
+ "school": {
+  "locker_row": {
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "tags": [
+    "h34-B"
+   ],
+   "basis": {
+    "table": "locker_row6",
+    "W": 1.8,
+    "D": 0.5,
+    "H": 1.8,
+    "wpx": 29,
+    "F": 28,
+    "T": 4,
+    "F_raw": 29,
+    "T_raw": 8,
+    "T_c": 4.8,
+    "px_per_m": 16
+   }
+  },
+  "lab_cabinet": {
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "tags": [
+    "h34-B"
+   ],
+   "basis": {
+    "table": "lab_cabinet",
+    "W": 1.5,
+    "D": 0.45,
+    "H": 1.8,
+    "wpx": 24,
+    "F": 28,
+    "T": 4,
+    "F_raw": 29,
+    "T_raw": 7,
+    "T_c": 4.2,
+    "px_per_m": 16
+   }
+  },
+  "desk_set": {
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "tags": [
+    "v35-A"
+   ],
+   "basis": {
+    "W": 0.6,
+    "D": 0.9,
+    "H": 0.9,
+    "wpx": 10,
+    "F": 12,
+    "T": 4,
+    "px_per_m": 16
+   }
+  },
+  "desk_pair": {
+   "cells": [
+    2,
+    1
+   ],
+   "canvas": [
+    32,
+    16
+   ],
+   "tags": [
+    "v35-A"
+   ],
+   "basis": {
+    "W": 1.2,
+    "D": 0.5,
+    "H": 0.75,
+    "wpx": 19,
+    "F": 12,
+    "T": 4,
+    "px_per_m": 16
+   }
+  },
+  "water_fountain": {
+   "cells": [
+    1,
+    1
+   ],
+   "canvas": [
+    16,
+    16
+   ],
+   "tags": [
+    "v35-A"
+   ],
+   "basis": {
+    "W": 1.0,
+    "D": 0.5,
+    "H": 0.9,
+    "wpx": 16,
+    "F": 12,
+    "T": 4,
+    "px_per_m": 16
+   }
+  },
+  "lab_bench": {
+   "cells": [
+    2,
+    1
+   ],
+   "canvas": [
+    32,
+    16
+   ],
+   "tags": [
+    "v35-A"
+   ],
+   "basis": {
+    "W": 2.0,
+    "D": 0.9,
+    "H": 0.9,
+    "wpx": 32,
+    "F": 12,
+    "T": 4,
+    "px_per_m": 16
+   }
+  },
+  "grand_piano": {
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "tags": [
+    "v35-A"
+   ],
+   "basis": {
+    "W": 1.5,
+    "D": 2.0,
+    "H": 1.0,
+    "wpx": 24,
+    "F": 16,
+    "T": 16,
+    "px_per_m": 16
+   }
+  },
+  "music_stand": {
+   "cells": [
+    1,
+    2
+   ],
+   "canvas": [
+    16,
+    32
+   ],
+   "tags": [
+    "v35-A"
+   ],
+   "basis": {
+    "W": 0.5,
+    "D": 0.4,
+    "H": 1.2,
+    "wpx": 8,
+    "F": 19,
+    "T": 3,
+    "px_per_m": 16
+   }
+  },
+  "library_shelf": {
+   "cells": [
+    1,
+    3
+   ],
+   "canvas": [
+    16,
+    48
+   ],
+   "tags": [
+    "v35-A"
+   ],
+   "basis": {
+    "table": "bookshelf_tall",
+    "W": 0.9,
+    "D": 0.35,
+    "H": 2.2,
+    "wpx": 14,
+    "F": 35,
+    "T": 4,
+    "px_per_m": 16
+   }
+  },
+  "library_counter": {
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "tags": [
+    "v35-A"
+   ],
+   "basis": {
+    "table": "counter",
+    "W": 2.0,
+    "D": 0.6,
+    "H": 1.0,
+    "wpx": 32,
+    "F": 16,
+    "T": 6,
+    "px_per_m": 16
+   }
+  },
+  "staff_desks": {
+   "cells": [
+    3,
+    2
+   ],
+   "canvas": [
+    48,
+    32
+   ],
+   "tags": [
+    "v35-A"
+   ],
+   "basis": {
+    "W": 2.8,
+    "D": 1.4,
+    "H": 0.75,
+    "wpx": 45,
+    "F": 12,
+    "T": 13,
+    "px_per_m": 16
+   }
+  },
+  "broadcast_desk": {
+   "cells": [
+    2,
+    1
+   ],
+   "canvas": [
+    32,
+    16
+   ],
+   "tags": [
+    "v35-A"
+   ],
+   "basis": {
+    "W": 2.0,
+    "D": 0.8,
+    "H": 0.9,
+    "wpx": 32,
+    "F": 12,
+    "T": 4,
+    "px_per_m": 16
+   }
+  },
+  "cafeteria_table": {
+   "cells": [
+    3,
+    1
+   ],
+   "canvas": [
+    48,
+    16
+   ],
+   "tags": [
+    "v35-A"
+   ],
+   "basis": {
+    "W": 2.4,
+    "D": 0.9,
+    "H": 0.72,
+    "wpx": 38,
+    "F": 12,
+    "T": 4,
+    "px_per_m": 16
+   }
+  },
+  "kiosk_counter": {
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "tags": [
+    "v35-A"
+   ],
+   "basis": {
+    "table": "counter",
+    "W": 2.0,
+    "D": 0.6,
+    "H": 1.0,
+    "wpx": 32,
+    "F": 16,
+    "T": 6,
+    "px_per_m": 16
+   }
+  },
+  "bunk_bed": {
+   "cells": [
+    1,
+    3
+   ],
+   "canvas": [
+    16,
+    48
+   ],
+   "tags": [
+    "v35-A"
+   ],
+   "basis": {
+    "W": 1.0,
+    "D": 2.0,
+    "H": 1.7,
+    "wpx": 16,
+    "F": 27,
+    "T": 19,
+    "px_per_m": 16
+   }
+  },
+  "dorm_desk": {
+   "cells": [
+    2,
+    1
+   ],
+   "canvas": [
+    32,
+    16
+   ],
+   "tags": [
+    "v35-A"
+   ],
+   "basis": {
+    "table": "office_desk",
+    "W": 1.4,
+    "D": 0.7,
+    "H": 0.75,
+    "wpx": 22,
+    "F": 12,
+    "T": 4,
+    "px_per_m": 16
+   }
+  }
+ },
+ "_note": "§12 실제 비율 표준 캔버스(1칸=16px=1m). tags 에 든 후보(h34-B)만 이 캔버스로 잰다. info.json·jobs 원본은 그대로.",
+ "modern": {
+  "gn_delivery_scooter": {
+   "cells": [
+    2,
+    2
+   ],
+   "canvas": [
+    32,
+    32
+   ],
+   "tags": [
+    "v35-A"
+   ],
+   "basis": {
+    "table": "free",
+    "W": 1.8,
+    "D": 0.6,
+    "H": 1.1,
+    "wpx": 29,
+    "F": 18,
+    "T": 6,
+    "px_per_m": 16
+   }
+  },
+  "mo_ped_signal": {
+   "cells": [
+    1,
+    3
+   ],
+   "canvas": [
+    16,
+    48
+   ],
+   "tags": [
+    "v35-A"
+   ],
+   "basis": {
+    "table": "ped_signal",
+    "W": 0.4,
+    "D": 0.3,
+    "H": 2.5,
+    "wpx": 6,
+    "F": 40,
+    "T": 3,
+    "px_per_m": 16
+   }
+  },
+  "gn_bike_share": {
+   "cells": [
+    3,
+    2
+   ],
+   "canvas": [
+    48,
+    32
+   ],
+   "tags": [
+    "v35-A",
+    "v35-B"
+   ],
+   "basis": {
+    "table": "free",
+    "W": 2.7,
+    "D": 0.6,
+    "H": 1.0,
+    "wpx": 43,
+    "F": 16,
+    "T": 6,
+    "px_per_m": 16
+   }
+  },
+  "gn_street_stall": {
+   "cells": [
+    2,
+    3
+   ],
+   "canvas": [
+    32,
+    48
+   ],
+   "tags": [
+    "v35-A"
+   ],
+   "basis": {
+    "table": "free",
+    "W": 2.0,
+    "D": 1.2,
+    "H": 2.0,
+    "wpx": 32,
+    "F": 32,
+    "T": 11,
+    "px_per_m": 16
+   }
+  },
+  "mo_sculpture": {
+   "cells": [
+    1,
+    3
+   ],
+   "canvas": [
+    16,
+    48
+   ],
+   "tags": [
+    "v35-A"
+   ],
+   "basis": {
+    "table": "free",
+    "W": 1.0,
+    "D": 1.0,
+    "H": 1.8,
+    "wpx": 16,
+    "F": 29,
+    "T": 10,
+    "px_per_m": 16
+   }
+  }
+ }
+}

@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/table_bolt_yarn/w7-C.pxg",
+ "id": "table:bolt+yarn",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.047
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 33,
+ "v5_colors": 16,
+ "bbox": [
+  0,
+  0,
+  31,
+  14
+ ],
+ "v5_bbox": [
+  0,
+  1,
+  31,
+  15
+ ],
+ "note": "C: 진열대 — 낮은 상판 위 왼쪽 옷감 두루마리 무더기, 오른쪽 실타래 바구니",
+ "ok": true
+}

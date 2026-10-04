@@ -1,0 +1,42 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/port/w1-B.pxg",
+ "set": "worldmap",
+ "id": "port",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.092
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.056
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 24,
+ "bbox": [
+  0,
+  1,
+  31,
+  30
+ ],
+ "note": "명암 강화: 푸른 지붕 창고+붉은 지붕 집(색 대비), 처마 아래 반투명 그늘, 부두 4단 두껍게 최밝음 윗면, 돛배는 오른쪽",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 4,
+   "atLeast95": 0,
+   "max": 0.039
+  },
+  "refmapWorld": {
+   "cells": 4,
+   "atLeast95": 0,
+   "max": 0.03
+  }
+ }
+}

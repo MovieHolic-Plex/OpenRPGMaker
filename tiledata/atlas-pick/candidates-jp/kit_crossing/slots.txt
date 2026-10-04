@@ -1,0 +1,15 @@
+// kit_crossing 부품 시트 128x48px (8×3칸). 부품 = 칸 자리(x y 는 px, 좌상단).
+// slug  x  y  w  h  층  반복  통행  이름
+rail                0    0  16  32  ground  x   F     선로
+deck               16    0  16  32  ground  x   F     건널목 바닥판
+deck_l             32    0  16  32  ground  -   F     바닥판 왼 끝
+deck_r             48    0  16  32  ground  -   F     바닥판 오른 끝
+cr_top             64    0  16  16  object  -   C     경보기 X자 표지
+cr_lamps           80    0  16  16  object  -   C     경보등 둘
+cr_pole            96    0  16  16  object  y   C     경보기 기둥
+cr_box            112    0  16  16  object  -   X     차단기 상자(밑동)
+arm_m               0   32  16  16  object  x   C     차단기 팔(내림)
+arm_tip_r          16   32  16  16  object  -   C     팔 끝(오른쪽을 가리킴)
+arm_tip_l          32   32  16  16  object  -   C     팔 끝(왼쪽을 가리킴)
+arm_up             48   32  16  16  object  y   C     차단기 팔(올림)
+arm_up_top         64   32  16  16  object  -   C     올린 팔 끝

@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/keg_rack/w4-A.pxg",
+ "id": "keg rack",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.047
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 13,
+ "v5_colors": 11,
+ "bbox": [
+  0,
+  9,
+  31,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  9,
+  31,
+  31
+ ],
+ "note": "v5 정리: 통 얼굴 살대 무늬를 세로 세 줄로 굵게, 철테 위-왼 밝음/아래-오른 어둠, 놋 꼭지 한 덩이, 받침보 단 정리",
+ "ok": true
+}

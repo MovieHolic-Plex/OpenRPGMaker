@@ -113,8 +113,14 @@ function collect() {
     if (!trackedByBase.has(base)) trackedByBase.set(base, []);
     trackedByBase.get(base).push(file);
   }
+  // 하네스 문서는 openwiki/harnesses/<id>.md 에 모은다 (openwiki/harnesses/README.md).
+  const harnessDir = join(ROOT, "openwiki", "harnesses");
+  const harnessPages = existsSync(harnessDir)
+    ? readdirSync(harnessDir).filter((name) => name.endsWith(".md")).map((name) => `harnesses/${name}`)
+    : [];
   const pages = readdirSync(join(ROOT, "openwiki"))
     .filter((name) => name.endsWith(".md") && name !== "INDEX.md")
+    .concat(harnessPages)
     .sort()
     .map((name) => {
       const rel = `openwiki/${name}`;

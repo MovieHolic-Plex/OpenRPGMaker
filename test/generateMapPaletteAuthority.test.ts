@@ -5,7 +5,7 @@ import { MAP_GEN_TOOLS } from "@/editor/tools/generateMapTool";
 import { MAP_GENERATION_PROFILES } from "@/editor/tools/mapGenerationProfiles";
 import { markUserTileRuntimeMetadata, setTileLayerOverride } from "@/editor/runtimeTileMetadata";
 import { ensureBundledTilesets } from "@/project/defaults/defaultAssets";
-import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { deserialize, serialize, serializeForComparison } from "@/project/io";
 import { blockedFlag, passableFlag } from "@/project/tilesetPassage";
 import { checkReachability } from "@/project/lint/reachability";
@@ -13,7 +13,7 @@ import { isPassable } from "@/project/collision";
 import type { Project, TilesetDef } from "@/project/types";
 
 // Round10 terminal-harness.audit[192], copied as a minimal offline regression input.
-const capturedArgs = { tilesetId: DEFAULT_TILESET_ID, name: "지하실", theme: "cave", id: "map_cellar",
+const capturedArgs = { tilesetId: COMBINED_TOWN_TILESET_ID, name: "지하실", theme: "cave", id: "map_cellar",
   entrance: { y: 8, x: 1 }, pois: [{ x: 9, y: 2 }], border: "wall", height: 10, width: 12 };
 const capturedLower = [
   306,306,306,306,306,306,306,306,306,306,306,306,
@@ -54,8 +54,8 @@ describe("generate_map palette authority", () => {
   it("replays the captured combined-town cave/settlement map without changing any shared tile rules", () => {
     const ctx = { project: project() };
     const before = structuredClone(ctx.project.tilesets);
-    expect(before[DEFAULT_TILESET_ID]!.priority[385]).toBe("upper");
-    expect(before[DEFAULT_TILESET_ID]!.passability[385]).toEqual(blockedFlag());
+    expect(before[COMBINED_TOWN_TILESET_ID]!.priority[385]).toBe("upper");
+    expect(before[COMBINED_TOWN_TILESET_ID]!.passability[385]).toEqual(blockedFlag());
     const result = runTool(ctx, "generate_map", capturedArgs);
     expect(result.ok, result.summary).toBe(true);
     expect(ctx.project.maps.map_cellar!.lowerTiles).toEqual(capturedLower);
@@ -67,7 +67,7 @@ describe("generate_map palette authority", () => {
 
   it.each(["lower", "upper"] as const)("retains an unused authored %s accent, including metadata", layer => {
     const ctx = { project: project() };
-    authored(ctx.project.tilesets[DEFAULT_TILESET_ID]!, 385, layer, layer === "upper");
+    authored(ctx.project.tilesets[COMBINED_TOWN_TILESET_ID]!, 385, layer, layer === "upper");
     const before = structuredClone(ctx.project.tilesets);
     const result = runTool(ctx, "generate_map", capturedArgs);
     expect(result.ok, result.summary).toBe(true);
@@ -77,7 +77,7 @@ describe("generate_map palette authority", () => {
 
   it("keeps compatible authored lower/passable ground and upper/solid obstacles on their own layers", () => {
     const ctx = { project: project() };
-    const ts = ctx.project.tilesets[DEFAULT_TILESET_ID]!;
+    const ts = ctx.project.tilesets[COMBINED_TOWN_TILESET_ID]!;
     authored(ts, 423, "lower", false);
     authored(ts, 306, "upper", true);
     const before = structuredClone(ctx.project.tilesets);
@@ -95,7 +95,7 @@ describe("generate_map palette authority", () => {
   it.each(["upper-ground", "blocked-path", "directional-path", "open-obstacle", "stale-runtime", "image", "columns", "tile-size", "count"])(
     "rejects incompatible %s before direct-module or runner project mutation", kind => {
       const p = project();
-      const ts = p.tilesets[DEFAULT_TILESET_ID]!;
+      const ts = p.tilesets[COMBINED_TOWN_TILESET_ID]!;
       if (kind === "upper-ground") authored(ts, 423, "upper", true);
       if (kind === "blocked-path") authored(ts, 360, "lower", true);
       if (kind === "directional-path") ts.passability[360] = { ...passableFlag(), right: false };
@@ -121,7 +121,7 @@ describe("generate_map palette authority", () => {
 
   it("does not validate or change an obstacle when no algorithm placement consumes it", () => {
     const ctx = { project: project() };
-    authored(ctx.project.tilesets[DEFAULT_TILESET_ID]!, 306, "upper", false);
+    authored(ctx.project.tilesets[COMBINED_TOWN_TILESET_ID]!, 306, "upper", false);
     const before = structuredClone(ctx.project.tilesets);
     const result = runTool(ctx, "generate_map", { ...capturedArgs, border: "none", chokepoints: 0 });
     expect(result.ok, result.summary).toBe(true);

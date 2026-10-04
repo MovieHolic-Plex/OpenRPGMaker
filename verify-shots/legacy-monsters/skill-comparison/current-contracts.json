@@ -1,0 +1,431 @@
+{
+  "classSkills": 1088,
+  "fxSheets": 895,
+  "monsterSkills": 42,
+  "frameMs": {
+    "32": 60,
+    "64": 60,
+    "128": 72
+  },
+  "rows": [
+    {
+      "skill": {
+        "id": "skill_mage_fireball",
+        "classId": "class_mage",
+        "actorId": "actor_mage",
+        "name": "파이어볼",
+        "level": 1,
+        "motion": "cast",
+        "description": "지팡이 끝에서 불덩이를 쏘아 터뜨린다",
+        "layers": [
+          {
+            "key": "mage_fireball_orb",
+            "anchor": "projectile",
+            "frame": 32,
+            "frames": 4
+          },
+          {
+            "key": "mage_fire_burst",
+            "anchor": "target",
+            "frame": 64,
+            "frames": 10
+          }
+        ]
+      },
+      "timeline": {
+        "durationMs": 2140,
+        "castType": "fire",
+        "side": "enemies",
+        "representativeMs": 1290,
+        "events": [
+          {
+            "kind": "pose",
+            "at": 0,
+            "pose": "idle"
+          },
+          {
+            "kind": "pose",
+            "at": 60,
+            "pose": "cast_charge"
+          },
+          {
+            "kind": "pose",
+            "at": 360,
+            "pose": "cast_raise"
+          },
+          {
+            "kind": "pose",
+            "at": 680,
+            "pose": "cast_release"
+          },
+          {
+            "kind": "sound",
+            "at": 680,
+            "id": "easyrpg-sound-fire1"
+          },
+          {
+            "kind": "projectile",
+            "at": 720,
+            "durationMs": 300,
+            "layer": 0,
+            "key": "mage_fireball_orb",
+            "frame": 32,
+            "frames": 4,
+            "frameMs": 60,
+            "path": "throw",
+            "aim": 0
+          },
+          {
+            "kind": "sound",
+            "at": 720,
+            "id": "easyrpg-sound-magic1"
+          },
+          {
+            "kind": "fx",
+            "at": 1020,
+            "layer": 1,
+            "key": "mage_fire_burst",
+            "anchor": "target",
+            "frame": 64,
+            "cells": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9
+            ],
+            "frameMs": 60
+          },
+          {
+            "kind": "sound",
+            "at": 1020,
+            "id": "easyrpg-sound-fire1"
+          },
+          {
+            "kind": "hit",
+            "at": 1170,
+            "durationMs": 280,
+            "who": "target"
+          },
+          {
+            "kind": "pose",
+            "at": 1460,
+            "pose": "idle"
+          }
+        ]
+      }
+    },
+    {
+      "skill": {
+        "id": "skill_mage_blizzard",
+        "classId": "class_mage",
+        "actorId": "actor_mage",
+        "name": "블리자드",
+        "level": 5,
+        "motion": "cast",
+        "description": "모든 적 위에 눈보라와 얼음 기둥을 내린다",
+        "layers": [
+          {
+            "key": "mage_blizzard",
+            "anchor": "allTargets",
+            "frame": 64,
+            "frames": 10
+          },
+          {
+            "key": "mage_snow",
+            "anchor": "screen",
+            "frame": 128,
+            "frames": 8
+          }
+        ]
+      },
+      "timeline": {
+        "durationMs": 2166,
+        "castType": "ice",
+        "side": "enemies",
+        "representativeMs": 1010,
+        "events": [
+          {
+            "kind": "pose",
+            "at": 0,
+            "pose": "idle"
+          },
+          {
+            "kind": "pose",
+            "at": 60,
+            "pose": "cast_charge"
+          },
+          {
+            "kind": "pose",
+            "at": 360,
+            "pose": "cast_raise"
+          },
+          {
+            "kind": "pose",
+            "at": 680,
+            "pose": "cast_release"
+          },
+          {
+            "kind": "sound",
+            "at": 680,
+            "id": "easyrpg-sound-ice1"
+          },
+          {
+            "kind": "fx",
+            "at": 740,
+            "layer": 0,
+            "key": "mage_blizzard",
+            "anchor": "allTargets",
+            "frame": 64,
+            "cells": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9
+            ],
+            "frameMs": 60
+          },
+          {
+            "kind": "sound",
+            "at": 740,
+            "id": "easyrpg-sound-ice1"
+          },
+          {
+            "kind": "hit",
+            "at": 890,
+            "durationMs": 280,
+            "who": "allTargets"
+          },
+          {
+            "kind": "fx",
+            "at": 1070,
+            "layer": 1,
+            "key": "mage_snow",
+            "anchor": "screen",
+            "frame": 128,
+            "cells": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "frameMs": 72
+          },
+          {
+            "kind": "sound",
+            "at": 1070,
+            "id": "easyrpg-sound-ice1"
+          },
+          {
+            "kind": "hit",
+            "at": 1214,
+            "durationMs": 280,
+            "who": "allTargets"
+          },
+          {
+            "kind": "pose",
+            "at": 1486,
+            "pose": "idle"
+          }
+        ]
+      }
+    },
+    {
+      "skill": {
+        "id": "skill_mage_chain_lightning",
+        "classId": "class_mage",
+        "actorId": "actor_mage",
+        "name": "연쇄 번개",
+        "level": 7,
+        "motion": "cast",
+        "description": "번개가 적에서 적으로 튀어 나간다",
+        "layers": [
+          {
+            "key": "mage_chain_bolt",
+            "anchor": "allTargets",
+            "frame": 64,
+            "frames": 8
+          }
+        ]
+      },
+      "timeline": {
+        "durationMs": 1740,
+        "castType": "thunder",
+        "side": "enemies",
+        "representativeMs": 956,
+        "events": [
+          {
+            "kind": "pose",
+            "at": 0,
+            "pose": "idle"
+          },
+          {
+            "kind": "pose",
+            "at": 60,
+            "pose": "cast_charge"
+          },
+          {
+            "kind": "pose",
+            "at": 360,
+            "pose": "cast_raise"
+          },
+          {
+            "kind": "pose",
+            "at": 680,
+            "pose": "cast_release"
+          },
+          {
+            "kind": "sound",
+            "at": 680,
+            "id": "easyrpg-sound-flash3"
+          },
+          {
+            "kind": "screen",
+            "at": 740,
+            "durationMs": 120,
+            "effect": "flash"
+          },
+          {
+            "kind": "fx",
+            "at": 740,
+            "layer": 0,
+            "key": "mage_chain_bolt",
+            "anchor": "allTargets",
+            "frame": 64,
+            "cells": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7
+            ],
+            "frameMs": 60
+          },
+          {
+            "kind": "sound",
+            "at": 740,
+            "id": "easyrpg-sound-flash3"
+          },
+          {
+            "kind": "hit",
+            "at": 860,
+            "durationMs": 280,
+            "who": "allTargets"
+          },
+          {
+            "kind": "pose",
+            "at": 1060,
+            "pose": "idle"
+          }
+        ]
+      }
+    },
+    {
+      "skill": {
+        "id": "skill_cleric_heal_light",
+        "classId": "class_cleric",
+        "actorId": "actor_cleric",
+        "name": "치유의 빛",
+        "level": 1,
+        "motion": "cast",
+        "description": "아군 하나에게 부드러운 빛을 내려 치유한다",
+        "layers": [
+          {
+            "key": "cleric_heal",
+            "anchor": "target",
+            "frame": 64,
+            "frames": 10
+          }
+        ]
+      },
+      "timeline": {
+        "durationMs": 1860,
+        "castType": "heal",
+        "side": "allies",
+        "representativeMs": 1010,
+        "events": [
+          {
+            "kind": "pose",
+            "at": 0,
+            "pose": "idle"
+          },
+          {
+            "kind": "pose",
+            "at": 60,
+            "pose": "cast_charge"
+          },
+          {
+            "kind": "pose",
+            "at": 360,
+            "pose": "cast_raise"
+          },
+          {
+            "kind": "pose",
+            "at": 680,
+            "pose": "cast_release"
+          },
+          {
+            "kind": "sound",
+            "at": 680,
+            "id": "easyrpg-sound-holy2"
+          },
+          {
+            "kind": "fx",
+            "at": 740,
+            "layer": 0,
+            "key": "cleric_heal",
+            "anchor": "target",
+            "frame": 64,
+            "cells": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9
+            ],
+            "frameMs": 60
+          },
+          {
+            "kind": "sound",
+            "at": 740,
+            "id": "easyrpg-sound-holy2"
+          },
+          {
+            "kind": "hit",
+            "at": 890,
+            "durationMs": 280,
+            "who": "target"
+          },
+          {
+            "kind": "pose",
+            "at": 1180,
+            "pose": "idle"
+          }
+        ]
+      }
+    }
+  ]
+}

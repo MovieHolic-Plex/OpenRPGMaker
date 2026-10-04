@@ -1,11 +1,31 @@
+import { isCatalogBgmAvailable } from '@/assets/audioResourceCatalog';
 import { createBlankProject } from "@/project/defaults";
 import { CAMERA_ZOOM_LIMITS, resolveCameraZoom, storeCameraZoom } from "@/project/cameraZoom";
 import { applyGenrePreset, type GenrePresetId } from "@/project/genrePresets";
 import { replaceProjectContents } from "./historyTools";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
-import type { BattleUiStyle, Terms } from "@/project/types";
+import type { Terms } from "@/project/types";
 import { BATTLE_HIT_FEEL_IDS, DEFAULT_BATTLE_HIT_FEEL, isBattleHitFeel } from "@/project/battleHitFeel";
-import { DEFAULT_DIALOGUE_STYLE_ID, DIALOGUE_PROJECT_SPEED_LIMITS, DIALOGUE_STYLE_IDS, DIALOGUE_STYLES, dialogueStyleGuideLines, isDialogueStyleId, recommendedDialogueStyleForPreset } from "@/project/dialogueStyles";
+import { DISPLAY_FILTER_LABELS, DISPLAY_FILTERS, isDisplayFilterName, normalizeDisplayFilter } from "@/project/displayFilter";
+import { BATTLE_SKINS, isRetiredBattleSkinId, listActiveBattleSkinIds } from "@/battle/skins/registry";
+import { applyBattleMethod } from "@/project/battleMethod";
+import {
+  BATTLE_LOOK_COMMAND_IDS,
+  BATTLE_LOOK_COMMAND_LABELS,
+  BATTLE_LOOK_FIELD_IDS,
+  BATTLE_LOOK_PARTY_IDS,
+  BATTLE_LOOK_PARTY_LABELS,
+  BATTLE_LOOK_PRESET_IDS,
+  BATTLE_LOOK_WINDOW_IDS,
+  BATTLE_LOOK_WINDOW_LABELS,
+  battleLookForPreset,
+  battleLookMoodGuide,
+  isBattleAccentColor,
+  isBattleLookPresetId,
+  patchBattleLook,
+  type BattleLookSettings,
+} from "@/project/battleLook";
+import { DEFAULT_DIALOGUE_STYLE_ID, DIALOGUE_FULL_PORTRAIT_DEFAULTS, DIALOGUE_FULL_PORTRAIT_LIMITS, DIALOGUE_PROJECT_SPEED_LIMITS, DIALOGUE_STYLE_IDS, DIALOGUE_STYLES, dialogueStyleGuideLines, isDialogueStyleId, normalizeDialogueFullPortraitSettings, recommendedDialogueStyleForPreset } from "@/project/dialogueStyles";
 import { FONT_REGISTRY, isFontFamilyId } from "@/project/fontRegistry";
 import {
   CHAPTER_LABEL_MAX,
@@ -23,6 +43,47 @@ const termSchema = Object.fromEntries(TERM_KEYS.map((key) => [key, { type: "stri
 const MAX_PROMPT_LENGTH = 2000;
 const MAX_TITLE_LENGTH = 120;
 const GENRE_PRESETS: readonly GenrePresetId[] = ["monster-collect", "horror-chase", "farm-life"];
+
+/** set_project_settings battle.look — preset 은 칸을 비우고 갈아타며, 나머지 칸은 검사 후 덮는다. 틀린 값은 조용히 버리지 않고 거절한다. */
+function applyBattleLookArgs(current: BattleLookSettings | undefined, raw: unknown): BattleLookSettings | undefined {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) throw new ToolError("battle.look 은 객체여야 합니다.", { code: "invalid-args" });
+  const look = raw as Record<string, unknown>;
+  if (look.preset !== undefined && !isBattleLookPresetId(look.preset)) {
+    throw new ToolError(`알 수 없는 전투 화면 프리셋입니다: ${String(look.preset)}. 가능: ${BATTLE_LOOK_PRESET_IDS.join(", ")}`, { code: "invalid-args" });
+  }
+  const base = isBattleLookPresetId(look.preset) ? battleLookForPreset(look.preset) : current;
+  const patch: Record<string, unknown> = {};
+  const oneOf = (key: string, ids: readonly string[]): void => {
+    if (look[key] === undefined) return;
+    if (!ids.includes(String(look[key]))) throw new ToolError(`battle.look.${key} 값이 틀렸습니다: ${String(look[key])}. 가능: ${ids.join(", ")}`, { code: "invalid-args" });
+    patch[key] = look[key];
+  };
+  oneOf("party", BATTLE_LOOK_PARTY_IDS);
+  oneOf("command", BATTLE_LOOK_COMMAND_IDS);
+  oneOf("field", BATTLE_LOOK_FIELD_IDS);
+  oneOf("window", BATTLE_LOOK_WINDOW_IDS);
+  for (const key of ["turnOrder", "enemyNames", "letterbox", "grade"] as const) {
+    if (look[key] === undefined) continue;
+    if (typeof look[key] !== "boolean") throw new ToolError(`battle.look.${key} 는 true/false 여야 합니다.`, { code: "invalid-args" });
+    patch[key] = look[key];
+  }
+  for (const key of ["light", "dust", "vignette", "blur"] as const) {
+    if (look[key] === undefined) continue;
+    if (look[key] !== 0 && look[key] !== 1 && look[key] !== 2) throw new ToolError(`battle.look.${key} 는 0·1·2 중 하나여야 합니다.`, { code: "invalid-args" });
+    patch[key] = look[key];
+  }
+  if (look.font !== undefined) {
+    if (look.font === null || look.font === "") patch.font = undefined;
+    else if (!isFontFamilyId(look.font)) throw new ToolError(`알 수 없는 글꼴입니다: ${String(look.font)}. 가능: ${FONT_REGISTRY.map((entry) => entry.id).join(", ")}`, { code: "invalid-args" });
+    else patch.font = look.font;
+  }
+  if (look.accent !== undefined) {
+    if (look.accent === null || look.accent === "") patch.accent = undefined;
+    else if (!isBattleAccentColor(look.accent)) throw new ToolError(`battle.look.accent 는 #rrggbb 여야 합니다(받은 값 ${JSON.stringify(look.accent)}).`, { code: "invalid-args" });
+    else patch.accent = look.accent.toLowerCase();
+  }
+  return patchBattleLook(base, patch as Partial<BattleLookSettings>);
+}
 
 function boundedText(args: Record<string, unknown>, key: "prompt" | "title", maxLength: number): string {
   const value = args[key];
@@ -86,7 +147,7 @@ const resetProject: ToolDefinition = {
 
 const setProjectSettings: ToolDefinition = {
   name: "set_project_settings",
-  description: "프로젝트 설정(project settings): 제목(title)·저자(author)·용어(terms)·화면 해상도(playResolution)·기본 음악/시스템 리소스·초기 파티·전투 기본값·대화창 스타일(dialogue.style)·강하게 다시 하기(newGamePlus)·장 표시(chapter)를 한 번에 설정한다. 해상도는 픽셀 밀도이고 시야는 카메라 배율이 정한다 — 둘을 같이 맞춰야 한다.",
+  description: "프로젝트 설정(project settings): 제목(title)·저자(author)·용어(terms)·화면 해상도(playResolution)·기본 음악/시스템 리소스·초기 파티·전투 기본값·전투 화면 꾸미기(battle.look — 전투창 디자인·전투 UI 를 소박하게/화려하게: 창 모양·파티/명령 배치·빛 연출 프리셋 12종)·대화창 스타일(dialogue.style)·강하게 다시 하기(newGamePlus)·장 표시(chapter)를 한 번에 설정한다. 해상도는 픽셀 밀도이고 시야는 카메라 배율이 정한다 — 둘을 같이 맞춰야 한다.",
   mode: "write",
   domains: ["system", "database"],
   parameters: {
@@ -95,6 +156,11 @@ const setProjectSettings: ToolDefinition = {
       title: { type: "string" },
       author: { type: "string" },
       terms: { type: "object", properties: termSchema, additionalProperties: false },
+      displayFilter: {
+        type: "string",
+        enum: ["none", "scanlines", "crt"],
+        description: "화면 표시 필터 — 맵·전투·대화를 덮는 옛 TV 느낌. scanlines 가로줄만, crt 가로줄+색 결+가장자리 어둡게. 레트로 감성 게임에만 켠다(생략 = 그대로).",
+      },
       cameraZoom: {
         type: "number",
         minimum: CAMERA_ZOOM_LIMITS.min,
@@ -120,7 +186,7 @@ const setProjectSettings: ToolDefinition = {
       resources: {
         type: "object",
         properties: {
-          titleResourceId: { type: "string" }, systemResourceId: { type: "string" }, battleSystemResourceId: { type: "string" },
+          titleResourceId: { type: "string" }, systemResourceId: { type: "string" },
           defaultBgmResourceId: { type: "string" }, battleBgmResourceId: { type: "string" },
           battleVictoryMeResourceId: { type: "string" }, battleDefeatSeResourceId: { type: "string" }, battleEscapeSeResourceId: { type: "string" },
         },
@@ -130,8 +196,37 @@ const setProjectSettings: ToolDefinition = {
         type: "object",
         properties: {
           flow: { type: "string", enum: ["gauge", "strict"] },
-          uiStyle: { type: "string" },
+          uiStyle: {
+            type: "string",
+            description: `전투 방식. 화면과 규칙을 같이 정한다 — retro2003 = 도트 측면(RM식 규칙, 기본), pokemon = 몬스터 대치(Gen1 규칙). 창 색·배치·글꼴·연출은 look 으로 고른다. 가능: ${listActiveBattleSkinIds().map((id) => `${id}(${BATTLE_SKINS[id].label})`).join(", ")}`,
+          },
           hitFeel: { type: "string", enum: [...BATTLE_HIT_FEEL_IDS], description: "타격감. impact(묵직하게, 기본) · light(가볍게) · calm(차분하게 — 화면 흔들림·번쩍임 없음)" },
+          look: {
+            type: "object",
+            description: "전투 화면 꾸미기(도트 측면 스킨). preset 을 주면 그 프리셋으로 바꾸고 이전에 바꾼 칸은 버린다. 나머지 칸은 프리셋 위에 덮어쓴다(프리셋과 같은 값은 저장하지 않는다). 칸만 주면 지금 프리셋을 두고 그 칸만 바꾼다.",
+            properties: {
+              preset: {
+                type: "string",
+                enum: [...BATTLE_LOOK_PRESET_IDS],
+                description: `게임 분위기에 맞춰 고른다. ${battleLookMoodGuide()}`,
+              },
+              party: { type: "string", enum: [...BATTLE_LOOK_PARTY_IDS], description: `파티 상태 배치. ${BATTLE_LOOK_PARTY_IDS.map((id) => `${id}=${BATTLE_LOOK_PARTY_LABELS[id]}`).join(" · ")}` },
+              command: { type: "string", enum: [...BATTLE_LOOK_COMMAND_IDS], description: `명령 배치. ${BATTLE_LOOK_COMMAND_IDS.map((id) => `${id}=${BATTLE_LOOK_COMMAND_LABELS[id]}`).join(" · ")}` },
+              field: { type: "string", enum: [...BATTLE_LOOK_FIELD_IDS], description: "band = 전장이 아래 창 위에서 끝남 · full = 전장을 화면 끝까지(창이 무대 위에 뜬다)" },
+              window: { type: "string", enum: [...BATTLE_LOOK_WINDOW_IDS], description: `창 꾸밈. ${BATTLE_LOOK_WINDOW_IDS.map((id) => `${id}=${BATTLE_LOOK_WINDOW_LABELS[id]}`).join(" · ")}` },
+              font: { type: "string", description: `전투 글꼴 id. 빈 문자열 = 프리셋·창 꾸밈 기본. 가능: ${FONT_REGISTRY.map((entry) => entry.id).join(", ")}` },
+              accent: { type: "string", description: "강조색 #rrggbb(커서·선택·테두리). 빈 문자열 = 창 꾸밈 기본" },
+              turnOrder: { type: "boolean", description: "왼쪽 위 차례 순서 줄" },
+              enemyNames: { type: "boolean", description: "적 발밑 이름표" },
+              letterbox: { type: "boolean", description: "위아래 영화 띠" },
+              light: { type: "integer", enum: [0, 1, 2], description: "빛내림 0 끔 · 1 약하게 · 2 강하게" },
+              dust: { type: "integer", enum: [0, 1, 2], description: "떠다니는 먼지 0~2" },
+              vignette: { type: "integer", enum: [0, 1, 2], description: "가장자리 어둡게 0~2" },
+              blur: { type: "integer", enum: [0, 1, 2], description: "위아래 흐림(피사계 심도) 0~2" },
+              grade: { type: "boolean", description: "색보정(채도·대비를 조금 올림)" },
+            },
+            additionalProperties: false,
+          },
           activeSlots: { type: "integer", minimum: 1 },
           initialTroopId: { type: "string" },
           atbMode: { type: "string", enum: ["active", "wait"], description: "gauge 흐름 전용. active = 명령 메뉴가 열려 있어도 적이 행동한다(크로노 트리거 Active). 기본 wait" },
@@ -182,6 +277,18 @@ const setProjectSettings: ToolDefinition = {
           font: { type: "string", enum: FONT_REGISTRY.map((font) => font.id), description: "대사창 글꼴(편집기 글꼴과 별개). 보통 생략 — 스타일이 어울리는 글꼴을 이미 고른다." },
           speed: { type: "number", minimum: DIALOGUE_PROJECT_SPEED_LIMITS.min, maximum: DIALOGUE_PROJECT_SPEED_LIMITS.max, description: "모든 대사의 기본 말 빠르기 배율(1=기본). 느긋한 이야기 0.8, 경쾌한 액션 1.2." },
           punctuationPause: { type: "boolean", description: "쉼표·마침표에서 잠깐 쉬기(기본 true). 기계·로봇 톤이면 false." },
+          fullPortraitHeight: {
+            type: "integer",
+            minimum: DIALOGUE_FULL_PORTRAIT_LIMITS.height.min,
+            maximum: DIALOGUE_FULL_PORTRAIT_LIMITS.height.max,
+            description: `하단 대사창 뒤 전신 초상의 높이 = 화면 높이의 %(기본 ${DIALOGUE_FULL_PORTRAIT_DEFAULTS.height}). 장면마다는 changeFace.fullScale(%)로 더 곱한다.`,
+          },
+          fullPortraitDrop: {
+            type: "integer",
+            minimum: DIALOGUE_FULL_PORTRAIT_LIMITS.drop.min,
+            maximum: DIALOGUE_FULL_PORTRAIT_LIMITS.drop.max,
+            description: `전신 초상 아래쪽을 화면 밖으로 내려 자르는 비율 %(기본 ${DIALOGUE_FULL_PORTRAIT_DEFAULTS.drop}). 클수록 다리가 덜 보인다.`,
+          },
         },
         additionalProperties: false,
       },
@@ -260,6 +367,15 @@ const setProjectSettings: ToolDefinition = {
       draft.meta.terms = { ...draft.meta.terms, ...patch } as Terms;
       changed.push("용어");
     }
+    if (args.displayFilter !== undefined) {
+      if (!isDisplayFilterName(args.displayFilter)) {
+        throw new ToolError(`displayFilter 는 ${DISPLAY_FILTERS.join(", ")} 중 하나입니다(받은 값 ${JSON.stringify(args.displayFilter)}).`, { code: "invalid-args" });
+      }
+      const next = normalizeDisplayFilter(args.displayFilter);
+      if (next) draft.system.displayFilter = next;
+      else delete draft.system.displayFilter;
+      changed.push(`화면 필터=${DISPLAY_FILTER_LABELS[args.displayFilter]}`);
+    }
     if (typeof args.cameraZoom === "number") {
       storeCameraZoom(draft.system, args.cameraZoom);
       changed.push(`카메라 배율=${resolveCameraZoom(draft.system)}`);
@@ -271,18 +387,33 @@ const setProjectSettings: ToolDefinition = {
     }
     if (args.resources && typeof args.resources === "object" && !Array.isArray(args.resources)) {
       const resources = args.resources as Record<string, unknown>;
-      for (const key of ["titleResourceId", "systemResourceId", "battleSystemResourceId", "defaultBgmResourceId", "battleBgmResourceId", "battleVictoryMeResourceId", "battleDefeatSeResourceId", "battleEscapeSeResourceId"] as const) {
-        if (typeof resources[key] === "string") draft.system[key] = resources[key];
+      for (const key of ["titleResourceId", "systemResourceId", "defaultBgmResourceId", "battleBgmResourceId", "battleVictoryMeResourceId", "battleDefeatSeResourceId", "battleEscapeSeResourceId"] as const) {
+        if (typeof resources[key] === "string") {
+          if (!isCatalogBgmAvailable(resources[key])) throw new ToolError(`미설치 BGM '${resources[key]}'는 지정할 수 없습니다. recommend_bgm으로 현재 사용 가능한 곡을 고르세요.`, { code: 'resource-not-found' });
+          draft.system[key] = resources[key];
+        }
       }
       changed.push("리소스");
     }
     if (args.battle && typeof args.battle === "object" && !Array.isArray(args.battle)) {
       const battle = args.battle as Record<string, unknown>;
       if (battle.flow === "gauge" || battle.flow === "strict") draft.system.battleFlow = battle.flow;
-      if (typeof battle.uiStyle === "string") draft.system.battleUiStyle = battle.uiStyle as BattleUiStyle;
+      if (typeof battle.uiStyle === "string") {
+        if (!(listActiveBattleSkinIds() as readonly string[]).includes(battle.uiStyle)) {
+          const retired = isRetiredBattleSkinId(battle.uiStyle) ? " 지운 옛 스킨이다 — 도트 측면은 retro2003 이고 창 색은 look.window 로 고른다." : "";
+          throw new ToolError(`알 수 없는 전투 스킨입니다: ${battle.uiStyle}. 가능: ${listActiveBattleSkinIds().join(", ")}.${retired}`, { code: "invalid-args" });
+        }
+        // 방식 하나가 화면과 규칙을 같이 정한다(자료집 「전투 방식」과 같은 규칙, project/battleMethod.ts).
+        applyBattleMethod(draft, battle.uiStyle === "pokemon" ? "monster" : "side");
+      }
       if (isBattleHitFeel(battle.hitFeel)) {
         if (battle.hitFeel === DEFAULT_BATTLE_HIT_FEEL) delete draft.system.battleHitFeel;
         else draft.system.battleHitFeel = battle.hitFeel;
+      }
+      if (battle.look !== undefined) {
+        const next = applyBattleLookArgs(draft.system.battleLook, battle.look);
+        if (next) draft.system.battleLook = next;
+        else delete draft.system.battleLook;
       }
       if (typeof battle.activeSlots === "number") draft.system.activeSlots = Math.trunc(battle.activeSlots);
       // 기본값은 저장하지 않는다 — normalizeSystemRecords 와 같은 계약.
@@ -341,7 +472,7 @@ const setProjectSettings: ToolDefinition = {
         else draft.system.dialogueStyle = style;
         changed.push(`대화창=${DIALOGUE_STYLES[style].label}`);
       }
-      const { font, speed, punctuationPause } = args.dialogue as Record<string, unknown>;
+      const { font, speed, punctuationPause, fullPortraitHeight, fullPortraitDrop } = args.dialogue as Record<string, unknown>;
       if (font !== undefined) {
         if (font === null || font === "") delete draft.system.dialogueFont;
         else if (!isFontFamilyId(font)) throw new ToolError(`알 수 없는 글꼴입니다: ${String(font)}`, { code: "invalid-args" });
@@ -358,6 +489,19 @@ const setProjectSettings: ToolDefinition = {
         if (punctuationPause) delete draft.system.dialoguePunctuationPause;
         else draft.system.dialoguePunctuationPause = false;
         changed.push(`구두점 쉼=${punctuationPause ? "켬" : "끔"}`);
+      }
+      if (fullPortraitHeight !== undefined || fullPortraitDrop !== undefined) {
+        const current = draft.system.dialogueFullPortrait ?? {};
+        const next = normalizeDialogueFullPortraitSettings({
+          ...DIALOGUE_FULL_PORTRAIT_DEFAULTS,
+          ...current,
+          ...(typeof fullPortraitHeight === "number" ? { height: fullPortraitHeight } : {}),
+          ...(typeof fullPortraitDrop === "number" ? { drop: fullPortraitDrop } : {}),
+        });
+        if (next) draft.system.dialogueFullPortrait = next;
+        else delete draft.system.dialogueFullPortrait;
+        const layout = { ...DIALOGUE_FULL_PORTRAIT_DEFAULTS, ...next };
+        changed.push(`전신 초상=높이 ${layout.height}%·내림 ${layout.drop}%`);
       }
     }
     if (Array.isArray(args.startActorIds)) {

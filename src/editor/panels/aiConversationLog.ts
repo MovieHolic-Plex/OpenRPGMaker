@@ -9,7 +9,7 @@ import type { ToolResult } from "@/editor/tools";
 import { renderAiDocument } from "@/editor/panels/aiDocRenderers";
 import { sanitizeUserFacingToolId } from "@/editor/uiCopy";
 import { tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
-import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { store } from "@/project/store";
 import type { AiDocument } from "@/project/types";
 import { formatRunRecapPlayerLine, parseRunRecapPayload } from "@/ai/runRecap";
@@ -110,8 +110,11 @@ export function markPriorTurns(log: HTMLElement): void {
     body.append(node);
   }
 
+  // 맵별 대기열에서 아직 돌거나 기다리는 실행 카드(aiMapRunCard)는 다음 요청을 보냈다고 접지 않는다 — 진행이 보여야 한다.
+  const liveRun = '.ai-map-run-card[data-state="running"], .ai-map-run-card[data-state="waiting"]';
+  const keepOpen = toWrap.some((node) => node.matches?.(liveRun) || node.querySelector?.(liveRun));
   const group = el("div", {
-    class: "ai-turn-group is-prior-turn is-collapsed",
+    class: keepOpen ? "ai-turn-group is-prior-turn" : "ai-turn-group is-prior-turn is-collapsed",
     dataset: { testid: "ai-turn-group" },
   });
   const toggle = el("button", {
@@ -119,11 +122,11 @@ export function markPriorTurns(log: HTMLElement): void {
     attrs: {
       type: "button",
       title: "이전 턴 펼치기/접기",
-      "aria-expanded": "false",
+      "aria-expanded": String(keepOpen),
       "aria-label": "이전 턴 펼치기/접기",
     },
     dataset: { testid: "ai-turn-group-toggle" },
-    text: `▸ ${preview}`,
+    text: `${keepOpen ? "▾" : "▸"} ${preview}`,
     on: {
       click: () => {
         const collapsed = group.classList.toggle("is-collapsed");
@@ -341,7 +344,7 @@ export function createConversationLogHost(options: {
   // 타일 이미지를 채팅에 렌더한다(show_tiles 툴콜).
   const appendTileThumbs = (tilesetId: string, tiles: readonly number[]): void => {
     removeStartScreen();
-    const tileset = store.getCurrent().tilesets[tilesetId] ?? store.getCurrent().tilesets[DEFAULT_TILESET_ID];
+    const tileset = store.getCurrent().tilesets[tilesetId] ?? store.getCurrent().tilesets[COMBINED_TOWN_TILESET_ID];
     if (!tileset) return;
     const bubble = el("div", {
       class: "ai-command-attachment ai-chat-tiles",
@@ -379,7 +382,7 @@ export function createConversationLogHost(options: {
   // 맵 영역을 하위+상위 합성 그리드로 채팅에 렌더 — 구조물 학습 인터뷰의 시각 자료.
   const appendTileGrid = (data: TileGridData): void => {
     removeStartScreen();
-    const tileset = store.getCurrent().tilesets[data.tilesetId] ?? store.getCurrent().tilesets[DEFAULT_TILESET_ID];
+    const tileset = store.getCurrent().tilesets[data.tilesetId] ?? store.getCurrent().tilesets[COMBINED_TOWN_TILESET_ID];
     if (!tileset) return;
     const rows: HTMLElement[] = [];
     for (let row = 0; row < data.h; row += 1) {

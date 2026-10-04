@@ -1,0 +1,41 @@
+// 방의 자루와 같은 누런 천 덩이·접힌 결, 묶음 둘과 앞 금화 자루; 꼭대기 윗면 3행(y=0~2)
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat s straw 3
+@mat g gold 4
+@layer sacks
+@mblock 0 0
+...ssss.........
+..ssssss........
+...ssss....sss..
+....ss....sssss.
+...ssss....sss..
+..ssssss....ss..
+.ssssssss..ssss.
+ssssssssssssssss
+ssssssssssssssss
+ssssssssggsgssss
+sssssssgggggssss
+ssssssssgggsssss
+ssssssssssssssss
+.sssssssssssssss
+..sssssssssssss.
+.....ssssssss...
+@tblock 0 0
+...2332.........
+..245432........
+...3442....232..
+....21....24532.
+...4542....342..
+..455432....21..
+.45554432..4542.
+2455444332455432
+2454444334554432
+2454443256252432
+2454432463562432
+2344332243422432
+2344324544432332
+.233224554432232
+..2222454432222.
+.....22333222...

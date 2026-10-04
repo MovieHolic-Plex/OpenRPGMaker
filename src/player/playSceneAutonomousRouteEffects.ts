@@ -24,13 +24,14 @@ export function applyMoveRouteGraphicChange(
   view: RuntimeEventView,
   sprite: AutonomousNpcSprite | undefined,
   tileSize = 16,
+  mapCharacterFactor = 1,
 ): void {
   const normalized = spriteId.trim();
   if (!normalized || !sprite) return;
   const texture = resolveEventSpriteTexture(store.getCurrent(), normalized, view.page?.graphic.pattern);
   if (texture) {
     sprite.setTexture(texture.texture, texture.frame);
-    sprite.setScale?.(eventSpriteScale(texture, sprite, view.page?.graphic.scale, tileSize, view.page?.graphic.scaleMode, projectReferenceTileSize(store.getCurrent())));
+    sprite.setScale?.(eventSpriteScale(texture, sprite, view.page?.graphic.scale, tileSize, view.page?.graphic.scaleMode, projectReferenceTileSize(store.getCurrent()), mapCharacterFactor));
   }
 }
 

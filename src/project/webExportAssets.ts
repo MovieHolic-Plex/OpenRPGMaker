@@ -1,9 +1,10 @@
-import { charsetBattler, resolvePartyBattleCharset } from "@/assets/charsetBattlers";
+import { charsetBattler, RETRO_FALLBACK_PARTY_BATTLERS, resolvePartyBattleCharset } from "@/assets/charsetBattlers";
 import { BATTLE_SCENERY_CATALOG } from "@/assets/battleSceneryCatalog";
 import { findOpeningStillPackEntry } from "@/assets/openingStillPackRuntime";
 import { openingStillPackUrl } from "@/assets/openingStillPackCdn";
 import { BUNDLED_IMAGE_ASSETS, TEX_DIALOGUE_FRAME, TEX_TILESET } from "@/assets/bundled";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+import { sharedPortraitExpressionSiblings } from "@/assets/sharedPortraitAssets";
 import { DEFAULT_GAME_OVER_BACKGROUND_RESOURCE_ID } from "./cinematicSettings";
 import { battlerIdleAnimation } from "@/assets/battlerIdleAnimations";
 import { pixelEnemySheet } from "@/assets/pixelEnemySheets";
@@ -18,19 +19,22 @@ import type { ResourceKind } from "@/project/types";
 import { requiredRuntimeAssetPaths } from "@/project/webExportRuntimeAssets";
 import type { Project } from "@/project/types";
 import type { WebExportAsset } from "@/project/webExportTypes";
+import { webUploadedAssetPath } from './webUploadedAssetPath';
+export { safeFileName } from './webUploadedAssetPath';
 import { CASTLE_REFERENCE_TILESET_TEXTURE_KEY, CASTLE_TILESET_TEXTURE_KEY, LPC_WOODEN_FURNITURE_TILESET_TEXTURE_KEY } from "./defaults/constants";
 
 const encoder = new TextEncoder();
 
 export function collectWebExportAssets(project: Project): readonly WebExportAsset[] {
   const ids = collectProjectStrings(project);
+  // 공용 흉상·전신은 대사의 표정에 따라 런타임이 같은 모양의 다른 표정 그림으로 바꾼다 — 참조된 모양의 5표정을 같이 싣는다.
+  for (const id of [...ids]) for (const sibling of sharedPortraitExpressionSiblings(id)) ids.add(sibling);
   const usedUploadedIds = collectUsedUploadedAssetIds(project);
   const assets = new Map<string, WebExportAsset>();
   for (const path of requiredRuntimeAssetPaths(project)) {
     assets.set(path, { kind: "public", sourcePath: path, zipPath: path });
   }
   if (getBattleSkin(resolveSkinId(project.system.battleUiStyle)).scenery === "layered") {
-    ids.add("generated-battle-reference-forest");
     // 겹 배경 5지형 × 4레이어는 저장소에 커밋된 번들 그림이다(public/assets/generated/battle-scenery).
     // 지형은 전투마다 위치·기후로 정해지므로 전부 싣는다(약 1.3MB).
     for (const entry of BATTLE_SCENERY_CATALOG) {
@@ -38,6 +42,10 @@ export function collectWebExportAssets(project: Project): readonly WebExportAsse
         assets.set(path, { kind: "public", sourcePath: path, zipPath: path });
       }
     }
+  }
+  // 종류 id(battle-scenery-*)의 단일 그림 — 몬스터 대치에서 이 id 를 고르면 이 한 장을 깐다(다섯 장 약 35KB).
+  for (const entry of BATTLE_SCENERY_CATALOG) {
+    assets.set(entry.preview, { kind: "public", sourcePath: entry.preview, zipPath: entry.preview });
   }
   for (const asset of BUNDLED_IMAGE_ASSETS) {
     if (asset.textureKey === TEX_TILESET || asset.textureKey === TEX_DIALOGUE_FRAME || ids.has(asset.textureKey)) {
@@ -54,6 +62,14 @@ export function collectWebExportAssets(project: Project): readonly WebExportAsse
     assets.set(path, { kind: "public", sourcePath: path, zipPath: path });
   }
   for (const id of ids) {
+    const charset = charsetBattler(id);
+    if (charset) {
+      // The caster's element-specific pose sheet is selected at runtime, never stored in the actor row.
+      assets.set(charset.castPath, {
+        kind: "public", sourcePath: charset.castPath, zipPath: charset.castPath,
+        resourceId: `${charset.resourceId}-cast`,
+      });
+    }
     const idle = battlerIdleAnimation(id);
     if (idle) assets.set(idle.path, { kind: "public", sourcePath: idle.path, zipPath: idle.path });
     // 도트 측면 전투의 적 도트 시트도 경로로만 참조된다(pixelEnemySheets.ts) — 같은 id 면 함께 싣는다.
@@ -75,7 +91,7 @@ export function collectWebExportAssets(project: Project): readonly WebExportAsse
   for (const id of usedUploadedIds) {
     const asset = project.assets.uploaded[id];
     if (!asset) continue;
-    const zipPath = `assets/uploaded/${safeFileName(asset.id)}.${asset.ref ? asset.ref.extension : uploadedAssetExtension(asset.dataUrl ?? "")}`;
+    const zipPath = webUploadedAssetPath(asset);
     assets.set(zipPath, { kind: "uploaded", asset, zipPath });
   }
   if (ids.has(CASTLE_TILESET_TEXTURE_KEY)) {
@@ -92,6 +108,10 @@ export function collectWebExportAssets(project: Project): readonly WebExportAsse
   }
   if (ids.has('tex_harbor_kit')) {
     const path = 'assets/harbor-kit/CREDITS.txt';
+    assets.set(path, { kind: 'public', sourcePath: path, zipPath: path });
+  }
+  if (ids.has('tex_worldmap_selected')) {
+    const path = 'assets/worldmap-icons/ATTRIBUTION.md';
     assets.set(path, { kind: 'public', sourcePath: path, zipPath: path });
   }
   if (ids.has('castle_courtyard_harbor_atlas')) {
@@ -135,11 +155,6 @@ export function dataUrlBytes(dataUrl: string): Uint8Array {
   return encoder.encode(decodeURIComponent(body));
 }
 
-export function safeFileName(value: string): string {
-  const safe = value.trim().replace(/[<>:"/\\|?*\u0000-\u001f]+/g, "-").replace(/\s+/g, "-");
-  return safe || "oprn";
-}
-
 // 바이너리 dataUrl 문자열 폭발·오탐 방지(기존).
 const USAGE_WALK_SKIPPED_KEYS: readonly string[] = ["uploaded"];
 
@@ -166,8 +181,11 @@ function collectProjectStrings(project: Project): Set<string> {
   // Include reserve actors too: party membership/order can change after export.
   for (const actor of project.database.actors) {
     if (facing === "front") {
-      const sheet = resolvePartyBattleCharset(actor, skinId === "retro2003");
+      const retro = getBattleSkin(skinId).motionStyle === "retro";
+      const sheet = resolvePartyBattleCharset(actor, retro);
       if (sheet) { values.add(sheet); continue; }
+      // 칩 대응이 없으면 자리 순서에 따라 두 기본 도트 중 하나가 선다 — 파티 순서는 내보낸 뒤에도 바뀐다.
+      if (retro) { for (const fallback of RETRO_FALLBACK_PARTY_BATTLERS) values.add(fallback); continue; }
     }
     // Either fallback slot can be selected after reordering the party.
     for (const index of [0, 1]) {
@@ -217,19 +235,4 @@ function base64ToBytes(value: string): Uint8Array {
   const bytes = new Uint8Array(binary.length);
   for (let index = 0; index < binary.length; index += 1) bytes[index] = binary.charCodeAt(index);
   return bytes;
-}
-
-function uploadedAssetExtension(dataUrl: string): string {
-  const comma = dataUrl.indexOf(",");
-  const media = dataUrl.slice(0, comma >= 0 ? comma : dataUrl.length).toLowerCase();
-  if (media.includes("image/jpeg")) return "jpg";
-  if (media.includes("image/webp")) return "webp";
-  if (media.includes("image/gif")) return "gif";
-  if (media.includes("video/mp4")) return "mp4";
-  if (media.includes("video/webm")) return "webm";
-  if (media.includes("video/ogg")) return "ogv";
-  if (media.includes("audio/mpeg")) return "mp3";
-  if (media.includes("audio/wav")) return "wav";
-  if (media.includes("audio/ogg")) return "ogg";
-  return "png";
 }

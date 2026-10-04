@@ -1,0 +1,59 @@
+// 지팡이 걸이 A: 보석 지팡이 셋(파랑 가운데 가장 길게·빨강·초록)이 놋쇠 목에서 꽂힌 나무 받침 상자, 윗면 3줄에 구멍 그림자
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat A wood 1
+@mat B wood 2
+@mat C wood 3
+@mat D wood 4
+@mat E wood 5
+@mat F wood 6
+@mat G wood 7
+@mat H blue 2
+@mat I blue 3
+@mat J blue 4
+@mat K blue 5
+@mat L red 2
+@mat M red 3
+@mat N red 4
+@mat O red 5
+@mat P green 2
+@mat Q green 3
+@mat R green 4
+@mat S green 5
+@mat T brass 3
+@mat U brass 4
+@mat V brass 5
+@mblock 0 0
+.......KJ.......
+......KJJI......
+......JJII......
+..OM..UIHT......
+.ONNM..VU.......
+.NMML..FC...SR..
+.UMLT..FC..SRRQ.
+..VU...FC..RQQP.
+..FC...FC..UQPT.
+..FC...FC...VU..
+..FC...FC...FC..
+..FC...FC...FC..
+..FC...FC...FC..
+..FC...FC...FC..
+..FC...FC...FC..
+..FC...FC...FC..
+..FC...FC...FC..
+..FC...FC...FC..
+..FC...FC...FC..
+..FC...FC...FC..
+..FC...FC...FC..
+..FC...FC...FC..
+AGFCGGGFCGGGGFCA
+AEBBEEEBBEEEBBEA
+AEEEEEEEEEEEEEEA
+AAAAAAAAAAAAAAAA
+AFFFFFFFFFFFFFFA
+ADDDDBDDDDDDBDDA
+ADDDDDDDDDDDDDDA
+ACCCCCCCCCCCCCCA
+ABBBBBBBBBBBBBBA
+AAAAAAAAAAAAAAAA

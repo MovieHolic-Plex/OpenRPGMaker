@@ -1,0 +1,65 @@
+{
+  "version": 1,
+  "picks": {
+    "sparkit": {
+      "front": {
+        "grid": "grids/sparkit-front.png",
+        "sourceSha256": "500e2307b251fdcae032157cc5e52445d41c8a1a4da1d21964730cf0fb182eb2",
+        "sourcePath": "qa-runs/harnesses/monster-collect-species/sparkit/front/20261001-092923/raw-1.png",
+        "prompt": "(2026-10-01 시안 genf2.mjs / genfm.mjs 프롬프트 — prompts.ts frontPrompt 의 전신)",
+        "block": 10,
+        "pickedAt": "2026-10-01T09:30:05.520Z",
+        "note": "2026-10-01 사용자 선택: 불5·물1·풀2 (시안 qa-runs/hand-monster)"
+      },
+      "back": {
+        "grid": "grids/sparkit-back.png",
+        "sourceSha256": "8bf23ea6b2ce116aa7b6f5fddc109f89d7b59924ea1dcc2044e997843a69bfbc",
+        "sourcePath": "qa-runs/harnesses/monster-collect-species/sparkit/back/20261001-092931/raw-1.png",
+        "prompt": "(2026-10-01 시안 genb3.mjs — prompts.ts backPrompt 의 전신)",
+        "block": 11,
+        "pickedAt": "2026-10-01T09:30:11.888Z",
+        "note": "2026-10-01 사용자 선택: 불5·물1·풀2 (시안 qa-runs/hand-monster)"
+      }
+    },
+    "aqualing": {
+      "front": {
+        "grid": "grids/aqualing-front.png",
+        "sourceSha256": "372acec2adc3873ca03c608b3e18dc1a6c54183d8006bb1c2d1d3b56a58a7152",
+        "sourcePath": "qa-runs/harnesses/monster-collect-species/aqualing/front/20261001-092924/raw-1.png",
+        "prompt": "(2026-10-01 시안 genf2.mjs / genfm.mjs 프롬프트 — prompts.ts frontPrompt 의 전신)",
+        "block": 8,
+        "pickedAt": "2026-10-01T09:30:18.238Z",
+        "note": "2026-10-01 사용자 선택: 불5·물1·풀2 (시안 qa-runs/hand-monster)"
+      },
+      "back": {
+        "grid": "grids/aqualing-back.png",
+        "sourceSha256": "57dc4a423f6c2904fa404927a6d4c9b674a9c6a29a6a322cd551e2050a54943a",
+        "sourcePath": "qa-runs/harnesses/monster-collect-species/aqualing/back/20261001-092931/raw-1.png",
+        "prompt": "(2026-10-01 시안 genb3.mjs — prompts.ts backPrompt 의 전신)",
+        "block": 14,
+        "pickedAt": "2026-10-01T09:30:24.492Z",
+        "note": "2026-10-01 사용자 선택: 불5·물1·풀2 (시안 qa-runs/hand-monster)"
+      }
+    },
+    "leafling": {
+      "front": {
+        "grid": "grids/leafling-front.png",
+        "sourceSha256": "9e1d388137d874974fdc1e4c6f4e1386230333c398cbb98ed4373ef491d48d33",
+        "sourcePath": "qa-runs/harnesses/monster-collect-species/leafling/front/20261001-092924/raw-1.png",
+        "prompt": "(2026-10-01 시안 genf2.mjs / genfm.mjs 프롬프트 — prompts.ts frontPrompt 의 전신)",
+        "block": 15,
+        "pickedAt": "2026-10-01T09:30:30.919Z",
+        "note": "2026-10-01 사용자 선택: 불5·물1·풀2 (시안 qa-runs/hand-monster)"
+      },
+      "back": {
+        "grid": "grids/leafling-back.png",
+        "sourceSha256": "cb477a20e0c0b752220a94bc00b3cde1b93f582fcb8f1b0a8dfac36669d3ef77",
+        "sourcePath": "qa-runs/harnesses/monster-collect-species/leafling/back/20261001-092931/raw-1.png",
+        "prompt": "(2026-10-01 시안 genb3.mjs — prompts.ts backPrompt 의 전신)",
+        "block": 14,
+        "pickedAt": "2026-10-01T09:30:37.990Z",
+        "note": "2026-10-01 사용자 선택: 불5·물1·풀2 (시안 qa-runs/hand-monster)"
+      }
+    }
+  }
+}

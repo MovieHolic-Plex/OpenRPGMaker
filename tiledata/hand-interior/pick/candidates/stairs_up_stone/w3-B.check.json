@@ -1,0 +1,31 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/stairs_up_stone/w3-B.pxg",
+ "id": "stairs up stone",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 9,
+  "atLeast95": 0,
+  "max": 0.078
+ },
+ "lint": {
+  "failed": [],
+  "pass": true
+ },
+ "colors": 12,
+ "v5_colors": 12,
+ "bbox": [
+  0,
+  0,
+  47,
+  47
+ ],
+ "v5_bbox": [
+  0,
+  0,
+  47,
+  47
+ ],
+ "note": "강한 명암 — 먼 계단은 E/G(거의 검정)로 눌러 넣고 가까운 계단은 코가 stone:6 까지 밝아지는 큰 그라데이션. 왼쪽 기둥이 디딤면 왼쪽 6칸에 드리운 그림자와 오른쪽 그늘, 턱 아랫줄은 한 톤 어두운 접합선. 코 한가운데(x12~20)에 반짝임 띠. 접지 그림자는 벽 기물이라 넣지 않음.",
+ "ok": true
+}

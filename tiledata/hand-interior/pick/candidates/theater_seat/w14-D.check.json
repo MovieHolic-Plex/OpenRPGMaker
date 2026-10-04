@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/theater_seat/w14-D.pxg",
+ "id": "theater seat",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 9,
+ "v5_colors": 9,
+ "bbox": [
+  0,
+  2,
+  15,
+  14
+ ],
+ "v5_bbox": [
+  1,
+  2,
+  14,
+  14
+ ],
+ "note": "D: 등받이 뒷면 상자에 좌우 팔걸이 기둥을 세운 분리형(낱개 의자). 무대를 향한 상자형 뒷모습.",
+ "ok": true
+}

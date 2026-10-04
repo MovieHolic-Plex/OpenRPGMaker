@@ -1,0 +1,225 @@
+{
+  "id": "retro-1024-settled",
+  "settings": {
+    "id": "retro-1024-settled",
+    "viewport": {
+      "width": 1024,
+      "height": 768
+    },
+    "skin": "retro2003",
+    "result": true
+  },
+  "extra": [
+    {
+      "name": "result-settled",
+      "geometry": {
+        "viewport": [
+          1024,
+          768
+        ],
+        "phase": "resolved",
+        "step": "result",
+        "busy": "false",
+        "scene": {
+          "x": 32,
+          "y": 24,
+          "width": 960,
+          "height": 720,
+          "top": 24,
+          "right": 992,
+          "bottom": 744,
+          "left": 32
+        },
+        "message": {
+          "text": "승리",
+          "display": "grid",
+          "visibility": "visible",
+          "rect": {
+            "x": 44,
+            "y": 36,
+            "width": 936,
+            "height": 60,
+            "top": 36,
+            "right": 980,
+            "bottom": 96,
+            "left": 44
+          }
+        },
+        "summary": {
+          "text": "승리\nEXP +17\n+14 G",
+          "rect": {
+            "x": 56,
+            "y": 48,
+            "width": 912,
+            "height": 96,
+            "top": 48,
+            "right": 968,
+            "bottom": 144,
+            "left": 56
+          }
+        },
+        "messageOverlapsSummary": true,
+        "buttons": [
+          {
+            "id": "enemy-1",
+            "text": "",
+            "disabled": true,
+            "rect": {
+              "x": 130.760009765625,
+              "y": 503.95281982421875,
+              "width": 149.03997802734375,
+              "height": 149.03997802734375,
+              "top": 503.95281982421875,
+              "right": 279.79998779296875,
+              "bottom": 652.9927978515625,
+              "left": 130.760009765625
+            }
+          },
+          {
+            "id": "enemy-2",
+            "text": "",
+            "disabled": true,
+            "rect": {
+              "x": 230.1199951171875,
+              "y": 339.3877868652344,
+              "width": 149.04000854492188,
+              "height": 149.04000854492188,
+              "top": 339.3877868652344,
+              "right": 379.1600036621094,
+              "bottom": 488.42779541015625,
+              "left": 230.1199951171875
+            }
+          },
+          {
+            "id": "enemy-3",
+            "text": "",
+            "disabled": true,
+            "rect": {
+              "x": 329.4800109863281,
+              "y": 503.95281982421875,
+              "width": 149.03997802734375,
+              "height": 149.03997802734375,
+              "top": 503.95281982421875,
+              "right": 478.5199890136719,
+              "bottom": 652.9927978515625,
+              "left": 329.4800109863281
+            }
+          },
+          {
+            "id": "battle-result-confirm",
+            "text": "확인",
+            "disabled": false,
+            "rect": {
+              "x": 698,
+              "y": 657,
+              "width": 270,
+              "height": 60,
+              "top": 657,
+              "right": 968,
+              "bottom": 717,
+              "left": 698
+            }
+          }
+        ],
+        "images": [
+          {
+            "rect": {
+              "x": 130.760009765625,
+              "y": 503.95281982421875,
+              "width": 149.03997802734375,
+              "height": 149.03997802734375,
+              "top": 503.95281982421875,
+              "right": 279.79998779296875,
+              "bottom": 652.9927978515625,
+              "left": 130.760009765625
+            },
+            "bg": "url(\"http://127.0.0.1:36193/assets/generated/pixel-enemies/slime.png\")",
+            "rendering": "pixelated"
+          },
+          {
+            "rect": {
+              "x": 230.1199951171875,
+              "y": 339.3877868652344,
+              "width": 149.04000854492188,
+              "height": 149.04000854492188,
+              "top": 339.3877868652344,
+              "right": 379.1600036621094,
+              "bottom": 488.42779541015625,
+              "left": 230.1199951171875
+            },
+            "bg": "url(\"http://127.0.0.1:36193/assets/generated/pixel-enemies/bat.png\")",
+            "rendering": "pixelated"
+          },
+          {
+            "rect": {
+              "x": 329.4800109863281,
+              "y": 503.95281982421875,
+              "width": 149.03997802734375,
+              "height": 149.03997802734375,
+              "top": 503.95281982421875,
+              "right": 478.5199890136719,
+              "bottom": 652.9927978515625,
+              "left": 329.4800109863281
+            },
+            "bg": "url(\"http://127.0.0.1:36193/assets/generated/pixel-enemies/slime.png\")",
+            "rendering": "pixelated"
+          }
+        ],
+        "scroll": []
+      }
+    },
+    {
+      "name": "result-revealed",
+      "geometry": {
+        "viewport": [
+          1024,
+          768
+        ],
+        "scene": null,
+        "message": {
+          "display": null,
+          "visibility": null,
+          "rect": null
+        },
+        "summary": {
+          "rect": null
+        },
+        "messageOverlapsSummary": false,
+        "buttons": [],
+        "images": [],
+        "scroll": []
+      }
+    }
+  ],
+  "errors": [],
+  "beats": [
+    {
+      "id": "title",
+      "failures": []
+    },
+    {
+      "id": "field-start",
+      "failures": []
+    },
+    {
+      "id": "face-battle-event",
+      "failures": []
+    },
+    {
+      "id": "battle-intro",
+      "failures": []
+    },
+    {
+      "id": "battle-command",
+      "failures": []
+    },
+    {
+      "id": "battle-attack",
+      "failures": []
+    },
+    {
+      "id": "battle-result",
+      "failures": []
+    }
+  ]
+}

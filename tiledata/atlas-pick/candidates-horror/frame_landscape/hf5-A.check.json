@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/frame_landscape/hf5-A.pxg",
+ "set": "horror",
+ "id": "frame_landscape",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.077
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.066
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 10,
+ "bbox": [
+  1,
+  2,
+  30,
+  14
+ ],
+ "note": "A: v5 식구 — 금테(tarn 5/4 위·왼, 2 아래·오른, 윤곽 1) 안에 조용한 풍경(하늘 moon3/4, 구름 paper5, 언덕·들판 vgreen1/2, 나무 한 그루). 이상한 것 없음.",
+ "ok": true
+}

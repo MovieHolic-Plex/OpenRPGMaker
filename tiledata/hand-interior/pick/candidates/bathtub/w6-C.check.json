@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/bathtub/w6-C.pxg",
+ "id": "bathtub",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.047
+ },
+ "lint": {
+  "failed": [
+   "jaggies"
+  ],
+  "pass": false
+ },
+ "colors": 9,
+ "v5_colors": 6,
+ "bbox": [
+  0,
+  1,
+  31,
+  15
+ ],
+ "v5_bbox": [
+  1,
+  2,
+  30,
+  15
+ ],
+ "note": "직사각 상자 대신 둥근 타원 테두리와 안쪽 수면이 위쪽 대부분을 차지하고 얕은 앞면과 굵은 두 칸 발을 단 위에서 내려다본 재해석",
+ "ok": true
+}

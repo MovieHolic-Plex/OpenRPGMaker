@@ -1,0 +1,35 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/tall_vase_red/w2-B.pxg",
+ "id": "tall vase red",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.027
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "saturation",
+   "outline"
+  ],
+  "pass": false
+ },
+ "colors": 7,
+ "v5_colors": 6,
+ "bbox": [
+  4,
+  10,
+  11,
+  27
+ ],
+ "v5_bbox": [
+  4,
+  10,
+  11,
+  27
+ ],
+ "note": "명암 강화: 왼쪽 밝은 줄(D), 오른쪽 그림자 줄(F), 몸통 아래로 갈수록 어둡게, 발밑 반투명 접지 그림자",
+ "ok": true
+}

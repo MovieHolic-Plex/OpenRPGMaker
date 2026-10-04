@@ -18,6 +18,7 @@ import { BGM_CATALOG, bgmTrackLabel } from "@/assets/bgmCatalog";
 import { CC0_MUSIC_ASSETS, CC0_SOUND_ASSETS } from "@/assets/cc0AudioAssets";
 import { EASYRPG_MUSIC_ASSETS, EASYRPG_SOUND_ASSETS } from "@/assets/easyrpgRtp";
 import { AUTHORABLE_FACESET_FACE_ASSETS, LEGACY_FACESET_SHEET_IDS } from "@/assets/facesetFaceAssets";
+import { SHARED_PORTRAIT_ASSETS, findSharedPortrait } from "@/assets/sharedPortraitAssets";
 import { builtinGeneratedResourceIds } from "@/assets/generatedAssetResourceResolver";
 import { GENERATED_ASSET_PLAN } from "@/assets/oprnGeneratedAssetPlan";
 import { SE_CATALOG, SE_CATALOG_CATEGORIES } from "@/assets/seCatalog";
@@ -137,9 +138,14 @@ function collect(
       for (const id of builtinGeneratedResourceIds()) {
         if (id.startsWith(GENERATED_FACE_PREFIX)) add(id, `${id} (대형 초상 레이아웃)`);
       }
+      // 공용 표정 세트 76종의 흉상·전신은 760장이라 다 실으면 낱장이 잘린다 — 규칙을 알리는 예시 두 줄만 앞에 둔다.
+      // 나머지는 아래에서 검증 집합에만 넣는다(프롬프트 머리 40칸 밖).
+      add("shared-brown-headband-expressions-bust-base", "공용 흉상 예시 — 모든 표정 세트에 shared-<세트>-expressions-bust-base 가 있다. 이어지는 대사의 emotion(happy·sad·angry·surprised)이 같은 인물의 표정 흉상으로 바꾼다");
+      add("shared-brown-headband-expressions-full-base", "공용 전신 예시 — shared-<세트>-expressions-full-base. 대사 창 뒤에 크게 선다. 표정은 위와 같이 emotion 으로");
       // 낱장 얼굴. 분할 전 4×4 시트 id 는 저장본 호환으로 등록만 남아 있으므로 뺀다 —
       // 시트를 얼굴 한 장으로 지정하면 대화창에 엉뚱한 칸이 뜬다. 생성 시리즈도 뺀다.
       for (const asset of AUTHORABLE_FACESET_FACE_ASSETS) add(asset.id, asset.name);
+      for (const asset of SHARED_PORTRAIT_ASSETS) add(asset.id, asset.name);
       break;
     case "music": {
       // 장면 축을 라운드로빈으로 **맨 앞에** 둔다. 카탈로그 순서를 그대로 실으면
@@ -231,6 +237,7 @@ function matchesSlot(slot: EventResourceSlot, kind: string | undefined, id: stri
       return (
         kind === "faceset"
         || id.startsWith(GENERATED_FACE_PREFIX)
+        || Boolean(findSharedPortrait(id))
         || (id.startsWith("generated-actor-") && id.endsWith("-face"))
       );
     case "music":

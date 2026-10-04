@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/theater_seat/w10-C.pxg",
+ "id": "theater seat",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.005
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "outline_black"
+  ],
+  "pass": false
+ },
+ "colors": 7,
+ "v5_colors": 9,
+ "bbox": [
+  1,
+  2,
+  14,
+  14
+ ],
+ "v5_bbox": [
+  1,
+  2,
+  14,
+  14
+ ],
+ "note": "재해석: 위는 둥근 등받이, 가운데 A 줄로 등받이와 방석을 분리, 팔걸이 아래 발이 튀어나옴",
+ "ok": true
+}

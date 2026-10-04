@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/stairs_up_wood/hf1-A.pxg",
+ "set": "horror",
+ "id": "stairs_up_wood",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 9,
+  "atLeast95": 0,
+  "max": 0.125
+ },
+ "refmap": {
+  "cells": 9,
+  "atLeast95": 0,
+  "max": 0.324
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "banding",
+   "light"
+  ]
+ },
+ "colors": 13,
+ "bbox": [
+  0,
+  0,
+  47,
+  47
+ ],
+ "note": "A(v5 기본): 나무 단 8개 · 윗면 rot 밝게/앞면 mahog 어둡게 · 위로 갈수록 한 단계씩 어두워져 void 로 · 양옆 4px 난간 기둥(왼쪽 밝음) · 끝단에 dust 한 줄",
+ "ok": true
+}

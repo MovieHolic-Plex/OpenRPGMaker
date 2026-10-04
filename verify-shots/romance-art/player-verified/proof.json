@@ -1,0 +1,240 @@
+{
+  "project": "/home/main/.codex/worktrees/08da/rpg-zzu/output/qa/romance-art/package-shipping/project.json",
+  "playerRoute": true,
+  "packaged": true,
+  "noStateInjection": true,
+  "branches": [
+    {
+      "branch": 1,
+      "reaction": "\"안녕하세요, 지우 씨! 그렇게 환하게 인사해 주시니 덩달아 기분이\n밝아져요. 앞으로 좋은 이웃으로 잘 지내봐요.\"\n나래\n■\n기록",
+      "remembered": "\"지우 씨의 다정한 인사가 계속 귓가에 맴돌아요. 오늘 남은 하루도\n좋은 일만 가득하길 바랄게요!\"\n나래\n■\n기록",
+      "cancelOk": true,
+      "choiceValue": 1,
+      "relationshipAfterRepeat": 1,
+      "endingBody": "514 / 514\n우리의 여정\n첫 만남\nZ / Enter 계속\nev_romance_partner_after_0\nev_romance_partner_after_0"
+    },
+    {
+      "branch": 2,
+      "reaction": "\"아, 이 편지요? 실은... 오랫동안 망설이다 겨우 부친 소중한\n답장이거든요. 조금 쑥스럽지만 물어봐 주셔서 고마워요.\"\n나래\n■\n기록",
+      "remembered": "\"덕분에 편지를 보내고 가벼워진 마음으로 돌아가요. 지우 씨에게도\n오늘 따뜻한 소식이 닿기를 바랄게요.\"\n나래\n■\n기록",
+      "cancelOk": true,
+      "choiceValue": 2,
+      "relationshipAfterRepeat": 2,
+      "endingBody": "514 / 514\n우리의 여정\n첫 만남\nZ / Enter 계속\nev_romance_partner_after_1\nev_romance_partner_after_1"
+    }
+  ],
+  "errors": [],
+  "warnings": [
+    "network: /assets/cc0/audio/catalog/rtp-fld-003-amber-meadow-end-final_f5dafd12.mp3: net::ERR_ABORTED",
+    "network: /assets/cc0/audio/catalog/rtp-fld-003-amber-meadow-end-final_f5dafd12.mp3: net::ERR_ABORTED"
+  ],
+  "art": [
+    {
+      "branch": 1,
+      "name": "choices",
+      "style": "pixel-cinematic",
+      "heightRatio": 0.25,
+      "background": "rgba(17, 28, 35, 0.82)",
+      "font": "Galmuri9, Galmuri11, NeoDunggeunmo, GulimChe, DotumChe, \"MS Gothic\", monospace",
+      "radius": "0px",
+      "choices": [
+        {
+          "text": "반갑게 인사한다",
+          "clipped": false
+        },
+        {
+          "text": "편지를 물어본다",
+          "clipped": false
+        }
+      ],
+      "textClipped": false
+    },
+    {
+      "branch": 1,
+      "name": "reaction",
+      "style": "pixel-cinematic",
+      "heightRatio": 0.25,
+      "background": "rgba(17, 28, 35, 0.82)",
+      "font": "Galmuri9, Galmuri11, NeoDunggeunmo, GulimChe, DotumChe, \"MS Gothic\", monospace",
+      "radius": "0px",
+      "choices": [],
+      "textClipped": false
+    },
+    {
+      "branch": 1,
+      "name": "remembered",
+      "style": "pixel-cinematic",
+      "heightRatio": 0.25,
+      "background": "rgba(17, 28, 35, 0.82)",
+      "font": "Galmuri9, Galmuri11, NeoDunggeunmo, GulimChe, DotumChe, \"MS Gothic\", monospace",
+      "radius": "0px",
+      "choices": [],
+      "textClipped": false
+    },
+    {
+      "branch": 2,
+      "name": "choices",
+      "style": "pixel-cinematic",
+      "heightRatio": 0.25,
+      "background": "rgba(17, 28, 35, 0.82)",
+      "font": "Galmuri9, Galmuri11, NeoDunggeunmo, GulimChe, DotumChe, \"MS Gothic\", monospace",
+      "radius": "0px",
+      "choices": [
+        {
+          "text": "반갑게 인사한다",
+          "clipped": false
+        },
+        {
+          "text": "편지를 물어본다",
+          "clipped": false
+        }
+      ],
+      "textClipped": false
+    },
+    {
+      "branch": 2,
+      "name": "reaction",
+      "style": "pixel-cinematic",
+      "heightRatio": 0.25,
+      "background": "rgba(17, 28, 35, 0.82)",
+      "font": "Galmuri9, Galmuri11, NeoDunggeunmo, GulimChe, DotumChe, \"MS Gothic\", monospace",
+      "radius": "0px",
+      "choices": [],
+      "textClipped": false
+    },
+    {
+      "branch": 2,
+      "name": "remembered",
+      "style": "pixel-cinematic",
+      "heightRatio": 0.25,
+      "background": "rgba(17, 28, 35, 0.82)",
+      "font": "Galmuri9, Galmuri11, NeoDunggeunmo, GulimChe, DotumChe, \"MS Gothic\", monospace",
+      "radius": "0px",
+      "choices": [],
+      "textClipped": false
+    }
+  ],
+  "network": [
+    {
+      "path": "/player.html",
+      "status": 200
+    },
+    {
+      "path": "/assets/player-BapAPwua.css",
+      "status": 200
+    },
+    {
+      "path": "/player.js",
+      "status": 200
+    },
+    {
+      "path": "/__runtime-qa/project.json",
+      "status": 200
+    },
+    {
+      "path": "/assets/generated/title/oprn-title-field.png",
+      "status": 200
+    },
+    {
+      "path": "/assets/easyrpg-chipset-exterior.png",
+      "status": 200
+    },
+    {
+      "path": "/assets/generated-emotes.png",
+      "status": 200
+    },
+    {
+      "path": "/assets/dialogue-frame.png",
+      "status": 200
+    },
+    {
+      "path": "/assets/easyrpg/charset/Actor2.png",
+      "status": 200
+    },
+    {
+      "path": "/assets/easyrpg/charset/Actor1.png",
+      "status": 200
+    },
+    {
+      "path": "/assets/beodeul-city/beodeul-city-chipset.png",
+      "status": 200
+    },
+    {
+      "path": "/assets/easyrpg/sound/Decision2.wav",
+      "status": 200
+    },
+    {
+      "path": "/assets/easyrpg/sound/Decision1.wav",
+      "status": 200
+    },
+    {
+      "path": "/assets/easyrpg/charset/Actor3.png",
+      "status": 200
+    },
+    {
+      "path": "/assets/easyrpg/charset/Actor4.png",
+      "status": 200
+    },
+    {
+      "path": "/assets/easyrpg/charset/Animal.png",
+      "status": 200
+    },
+    {
+      "path": "/assets/easyrpg/charset/Monster1.png",
+      "status": 200
+    },
+    {
+      "path": "/assets/easyrpg/charset/Monster2.png",
+      "status": 200
+    },
+    {
+      "path": "/assets/cc0/audio/bgm/town-theme.mp3",
+      "status": 200
+    },
+    {
+      "path": "/assets/easyrpg/charset/Monster3.png",
+      "status": 200
+    },
+    {
+      "path": "/assets/easyrpg/charset/People2.png",
+      "status": 200
+    },
+    {
+      "path": "/assets/easyrpg/charset/People1.png",
+      "status": 200
+    },
+    {
+      "path": "/assets/easyrpg/charset/People3.png",
+      "status": 200
+    },
+    {
+      "path": "/assets/easyrpg/charset/People5.png",
+      "status": 200
+    },
+    {
+      "path": "/assets/easyrpg/charset/People4.png",
+      "status": 200
+    },
+    {
+      "path": "/assets/easyrpg/charset/Vehicles.png",
+      "status": 200
+    },
+    {
+      "path": "/assets/phaser.min-CwlHMuXa.js",
+      "status": 200
+    },
+    {
+      "path": "/assets/generated/charsets/Monster4.png",
+      "status": 200
+    },
+    {
+      "path": "/assets/generated/charsets/Monster5.png",
+      "status": 200
+    },
+    {
+      "path": "/assets/generated/charsets/Monster6.png",
+      "status": 200
+    }
+  ],
+  "ok": true
+}

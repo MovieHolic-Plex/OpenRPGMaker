@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/dorm_rug/s4-C.pxg",
+ "set": "school",
+ "id": "dorm_rug",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.005
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.159
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 8,
+ "bbox": [
+  2,
+  6,
+  29,
+  28
+ ],
+ "note": "재해석: 직사각 대신 타원 러그, 동심원 링 5겹(분홍·파랑 교대)",
+ "ok": true
+}

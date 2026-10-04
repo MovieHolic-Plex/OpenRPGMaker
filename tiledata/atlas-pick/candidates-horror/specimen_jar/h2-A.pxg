@@ -1,0 +1,34 @@
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat a tin 5
+@mat b tin 6
+@mat c tin 3
+@mat d tin 1
+@mat e murk 1
+@mat f murk 5
+@mat g murk 3
+@mat h murk 2
+@mat i murk 0
+@mat j murk 4
+@mat k bisque 3
+@mat l blood 3
+@mat m void 1
+@mat n bisque 2
+@mblock 0 0
+................
+................
+.abaaaaaa.......
+.bccccccd.......
+..efgghi........
+.efjggghi.......
+efjjgggghi......
+efjggggggi......
+efjkkkgggi......
+efklmlkggi......
+efjkkkgggi..aa..
+efgggggghi.efgi.
+efggggghhi.engi.
+efgggghhhi.engi.
+.ifhhhhhi..efgi.
+..iiiiii....ii..

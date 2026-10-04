@@ -444,6 +444,14 @@
 - Style follows EasyRPG portraits; the EasyRPG and Scarloxy attributions above still apply to the referenced sprites. Generation does not establish a new license.
 
 
+## Generated bust and full-body portraits for the common expression library (2026-10-01)
+
+- AI-generated with god-tibo-imagen (MDC image API) at the user's request, so every one of the 76 common expression sets (`shared/faceset/*-expressions`) has a dialogue bust and a full-body portrait.
+- One generation per expression draws the full figure and the bust together on one sheet, so both stay consistent. Inputs per sheet: a house-style bust as style reference, the set's face cell, the paired walking sprite (front + side, as ground truth for headwear, clothing and body plan) and a proportion mannequin (about 8 heads for adults, 6 for children, 7–7.5 for elders; animals and monsters keep their natural body).
+- Expressions: all 16 face cells — base (00), smile (01), happy (02), content (03), surprised (04), embarrassed (05), doubtful (06), serious (07), annoyed (08), angry (09), sad (10), crying (11), worried (12), determined (13), shy (14), wink (15); expression sheets are edits of the base sheet.
+- Files: `shared/portraits/<stem>/{bust,full}-<expression>.png`, 2432 files (magenta key removed, trimmed, 128-colour PNG).
+- The EasyRPG and supplied-expression attributions above still apply to the referenced faces and sprites. Generation does not establish a new license.
+
 ### Forest harmony bundled snapshot (2026-09-18)
 `forest-harmony/chipset.png` packages the approved forest village atlas with
 existing town/retro-world components attributed above and user-reference-derived
@@ -636,3 +644,70 @@ claim; existing forest-harmony component notices still apply.
 - Each cell is a single shade colour (#10261a) at stepped alpha, shaped only by the transparency mask of an existing
   `forest-harmony/chipset.png` trunk cell. No pixels are copied from any source; the chipset's own notice applies.
 - `generated/battle-scenery/{plains,forest,cave,snow,desert}/*.png`: OPRN Studio 자체 생성 이미지 (OpenAI image_gen, 2026-09-28); 원화 시트와 프롬프트 포함, `scripts/asset-gen/gen-battle-scenery.mjs`로 도트 양자화·레이어 분리·이음매 보정. 외부 게임 소재를 복사하지 않음.
+
+## 손 도트 실내 v5 `atlas-interior/interior-chipset.png` (2026-09-29)
+
+`tex_atlas_biome_interior` / `atlas_biome_interior` (family `oprn-atlas`). Every cell is cut by
+`scripts/content/hand-interior/build_tileset.py` from the hand-pixel interior kit in `tiledata/hand-interior/v5`
+(pixels drawn in code in this repository, 2026-09-28; no third-party image). Some floor/wall surface textures in that
+kit sample tile interiors of `atlas-biomes/jungle-chipset.png` (this repository's own generated sheet). Its conventions were
+measured from the EasyRPG RTP (CC BY 4.0) as a visual reference only; no RTP pixels are pasted.
+Reference renders in `hand-interior-references/` are renders of the bundled example maps from this sheet (nearest-neighbour only).
+
+## 배·던전 `atlas-interior/dungeon-chipset.png` (2026-09-29)
+
+`tex_atlas_biome_dungeon` / `atlas_biome_dungeon` (family `oprn-atlas`), cut by `scripts/content/atlas-dungeon/split-dungeon.mjs`
+from the retired atlas interior sheet (commit 8e02e8e4e, cells 2160–3299):
+- Cells 0–479: EasyRPG `ChipSet/Ship.png` (JasonPerry, CC0). 480–509 blank (former Tibo graft slots).
+- Cells 510–989: EasyRPG `ChipSet/Dungeon.png` (JasonPerry, CC0); 990–992 blank, 993–998 cells grafted from EasyRPG combined town (CC0).
+- Cells 1020–1025: trapdoors, wall breach and rubble drawn in this repository. 1080+: composed water/abyss looks baked from app renders of those CC0 cells.
+- Native enemy additions (2026-10-02): the 100 original final-grid sheets in
+  `generated/pixel-enemies/` are drawn by editable repository code in
+  `scripts/asset-gen/pixel-enemy/retirement/{organic,arcane,humanoid}/`, extending
+  this repository's pixel drawing helpers. No third-party image pixels, painted
+  source shrink, tracing or smoothing is used. `generated/pixel-enemy-portraits/`
+  contains exact idle-cell derivatives of the 140 native enemy sheets.
+  `generated-enemy-sparkit-fire` reuses the existing human-selected collect sprite
+  documented in `harness-data/monster-collect-species/ledger.json`.
+
+## Common monster hand-pixel refresh (2026-10-03)
+
+The latest follow-up replaces the rejected batch with 135 fresh drawings in
+`scripts/asset-gen/pixel-enemy/redraw/`: organic44, arcane55, humanoid28 and bosses8.
+The teal hydra and revised kappa, gray wolf, cave bat and skeleton knight retain
+their exact approved reference pixels. All140 common species now use native64/96
+cells (126 at64px and14 at96px), nine poses each. Source coordinates, joint motion
+and separately painted fallen bodies are authored directly using Pillow; no
+generative image tool or finished-bitmap resizing is used. Organic part fitting
+transforms a complete source part around its attachment anchor before painting,
+with explicit coordinate and stroke bounds; it does not clamp individual vertices.
+Current source notes: `tiledata/monster-redraw-all/README.md`.
+The following139-species paragraph describes the earlier rejected batch.
+
+The 140 common battle species in `generated/pixel-enemies/` have 1,260 original
+native-grid pose cells. The approved teal hydra is retained; the other 139 species
+are newly drawn in `scripts/asset-gen/pixel-enemy/refresh/{organic,arcane,humanoid,bosses}.py`
+and any focused helper modules in that folder. These are original OPRN pixel
+artwork under the repository code/asset policy. No generative image model,
+third-party pixels, resized painted source, traced raster or smoothing is used.
+Portraits are exact copies of their first pose. Editable source cells and drawing
+notes are in `tiledata/monster-refresh/`. Existing species IDs and native cell
+dimensions were preserved for the initial batch. The human-selected collect sprite `sparkit-fire` is
+separate from this battle-sheet refresh and retains its recorded source.
+
+The revised kappa, gray wolf, cave bat and skeleton knight use new individually
+authored 64px originals, nine poses per species. Source:
+`scripts/asset-gen/pixel-enemy/kappa-redraw-draft.py`, `monster-redraw-studies.py`,
+and the source-coordinate joint rig `study_motion.py`; build with
+`build-study-battles.py`. Wolf and skeleton cells were changed from 48px to 64px
+without downsampling. Documentation: `tiledata/monster-battle-four/README.md`.
+
+## Three-headed hydra redraw (2026-10-03)
+
+`generated/pixel-enemies/hydra-three.png` and its exact idle portrait in
+`generated/pixel-enemy-portraits/hydra-three.png` are original OPRN pixel artwork,
+drawn directly on the final 96px grid by `scripts/asset-gen/pixel-enemy/hydra-three.py`.
+No source image or image-generation model is used. The humanoid batch generator
+loads this same authoring source. Repository code/asset policy applies.
+The later teal redesign uses 22 colors, independently posed heads and necks,
+and a separately drawn fallen body across the same nine-cell battle contract.

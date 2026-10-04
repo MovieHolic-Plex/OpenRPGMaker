@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/spiral_stair/w6-A.pxg",
+ "id": "spiral stair",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.068
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 9,
+ "v5_colors": 9,
+ "bbox": [
+  1,
+  9,
+  30,
+  63
+ ],
+ "v5_bbox": [
+  1,
+  9,
+  30,
+  63
+ ],
+ "note": "디딤판 위에 흩어진 밝은 점을 지워 면을 매끈하게 한 v5 정리 (모양 그대로)",
+ "ok": true
+}

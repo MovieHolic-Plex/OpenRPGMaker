@@ -1,0 +1,52 @@
+{
+ "id": "nightstand",
+ "slug": "nightstand",
+ "name_ko": "협탁",
+ "category": "가구·살림",
+ "kind": "floor",
+ "kind_ko": "바닥 기물(막힘)",
+ "canvas": [
+  16,
+  32
+ ],
+ "padTop": 8,
+ "image": {
+  "w": 16,
+  "h": 24
+ },
+ "footprint": {
+  "w": 1,
+  "h": 1
+ },
+ "overhang_px": 8,
+ "surface": {
+  "rect_px": [
+   3,
+   9,
+   12,
+   11
+  ],
+  "capacity": 1,
+  "note": "탁상 물건의 밑변을 윗면 안에 둔다"
+ },
+ "description": "서랍 하나 달린 작은 협탁(윗면에 촛대·책). 모든 침실·객실 침대 바로 옆에 1개(닫집 침대는 양옆 2개).",
+ "where": "모든 침실·객실 침대 바로 옆에 1개(닫집 침대는 양옆 2개).",
+ "placement": [
+  "그림이 발밑 칸 위로 8px 솟는다 → 위 1칸은 플레이어 위에 그리는 겹침층",
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다",
+  "윗면에 탁상 물건(goods:*)을 올린다. 비워 두지 않는다"
+ ],
+ "v5_bbox": [
+  2,
+  16,
+  13,
+  29
+ ],
+ "v5_colors": 9,
+ "material": "wood",
+ "related": [
+  "bed green",
+  "goods:candle",
+  "goods:lamp"
+ ]
+}

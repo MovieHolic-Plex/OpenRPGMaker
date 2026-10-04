@@ -1,0 +1,24 @@
+{
+ "id": "plains_base",
+ "slug": "plains_base",
+ "name": "평원 바탕",
+ "scene": "들·길",
+ "kind": "base",
+ "cells": [
+  3,
+  1
+ ],
+ "canvas": [
+  48,
+  16
+ ],
+ "layer": "ground",
+ "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+ "under": null,
+ "under_ko": null,
+ "passage": "walk",
+ "description": "월드맵의 맨땅 풀밭. 세 칸 = 몸통 변형 셋(① 민풀 ② 풀 결 몇 가닥 ③ 작은 풀 덩이 하나). World.png 평원은 **3색**뿐이다 — 우리도 3~4단, 명도 차 ~20. 셋을 아무렇게나 섞어 깔아도 칸 경계가 안 보여야 한다(16px 주기, 평균 명도 같게). 이 풀이 모든 묶음의 바깥(밑바탕)이 된다 — 조용할수록 위 지형이 산다.",
+ "palette_hint": "wgrass 2~4단만, 꽃 점 금지(흩뿌림 몫)",
+ "worker": "wv2",
+ "variants": 3
+}

@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/telescope/w7-A.pxg",
+ "id": "telescope",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.003
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 8,
+ "v5_colors": 5,
+ "bbox": [
+  3,
+  3,
+  13,
+  15
+ ],
+ "v5_bbox": [
+  3,
+  3,
+  13,
+  15
+ ],
+ "note": "v5 그대로의 자세, 놋쇠 윗면에 밝은 점을 찍고 다리는 왼쪽 밝게·오른쪽 어둡게 다시 칠함",
+ "ok": true
+}

@@ -1,0 +1,37 @@
+{
+ "id": "straw bed",
+ "slug": "straw_bed",
+ "name_ko": "짚 침대",
+ "category": "가구·살림",
+ "kind": "floor",
+ "kind_ko": "바닥 기물(막힘)",
+ "canvas": [
+  16,
+  32
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 16,
+  "h": 32
+ },
+ "footprint": {
+  "w": 1,
+  "h": 2
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "짚을 깐 1×2 거친 잠자리(머리 쪽 흰 베개 천). 감방·광부 쉼터·도둑 소굴 바닥 구석에 1개씩. 벽에 붙이지 않아도 된다.",
+ "where": "감방·광부 쉼터·도둑 소굴 바닥 구석에 1개씩. 벽에 붙이지 않아도 된다.",
+ "placement": [
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": [
+  1,
+  4,
+  14,
+  29
+ ],
+ "v5_colors": 7,
+ "material": "cloth",
+ "related": []
+}

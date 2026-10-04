@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/mine_cart/w2-B.pxg",
+ "id": "mine cart",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.031
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "dither"
+  ],
+  "pass": false
+ },
+ "colors": 11,
+ "v5_colors": 9,
+ "bbox": [
+  1,
+  1,
+  14,
+  15
+ ],
+ "v5_bbox": [
+  1,
+  1,
+  14,
+  15
+ ],
+ "note": "명암 강화: 왼쪽 벽 한 단 밝게·오른쪽 벽 한 단 어둡게, 맨 아래 띠 어둡게, 바퀴 사이 반투명 접지 그림자",
+ "ok": true
+}

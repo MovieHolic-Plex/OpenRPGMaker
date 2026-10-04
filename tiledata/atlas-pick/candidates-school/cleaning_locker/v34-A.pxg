@@ -1,0 +1,42 @@
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a locker 2
+@mat b locker 5
+@mat c locker 6
+@mat d locker 1
+@mat e locker 4
+@mat f locker 3
+@mblock 0 0
+................
+..aaaaaaaaaaa...
+.abbbbbbbbbbba..
+.bbbbbbbbbbbbb..
+.bbbbbbbbbbbbb..
+.ccccccccccccc..
+.ddddddddddddd..
+.ddddddddddddd..
+.efffffffffffa..
+.efeeeeeeeeefa..
+.efefffffffafa..
+.efedddddddafa..
+.efeeeeeeeeafa..
+.efedddddddafa..
+.efeeeeeeeeafa..
+.efedddddddafa..
+.efeeeeeeeeafa..
+.efedddddddafa..
+.efeeeeeeeeafa..
+.efefffffffafa..
+.efeeeeefffafa..
+.efeaaaafcbafa..
+.efefffffcbafa..
+.efefffffcbafa..
+.efefffffcbafa..
+.efefffffaaafa..
+.efefffffffafa..
+.efaaaaaaaaafa..
+.efffffffffffa..
+.aaaaaaaaaaaaa..
+..~~~~~~~~~~~~~~
+..--------------

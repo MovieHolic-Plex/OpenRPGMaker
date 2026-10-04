@@ -1,0 +1,18 @@
+{
+  "playerBuildExit": 0,
+  "shippingPlayerHash": "9b7b2d23ddf6d23d6459b2aab825659ab69c8526d89002810a1a7c23f3ef2de2",
+  "playerBuildLogTail": [
+    "- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.",
+    "✓ built in 19.20s",
+    "sdk-manifest: 407 files + 36 runtime assets, artifact 7f5e1decfc67f52b, source 2999705c92c5cb52, schema v4",
+    ""
+  ],
+  "fullSuitesRun": false,
+  "appBuildExit": 0,
+  "appBuildLogTail": [
+    "- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.",
+    "✓ built in 3m 36s",
+    ""
+  ],
+  "earlierBuildInterrupted": true
+}

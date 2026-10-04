@@ -1,0 +1,34 @@
+// 같은 방 화풍: 게시판처럼 통나무 방 결의 나무틀, 검은 분필판에 흰 글 줄·잔·빵. 윗틀 밝게, 오른쪽·아래 틀 어둡게.
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat d wood 2
+@mat W wood 7
+@mat w wood 6
+@mat v wood 4
+@mat k black 1
+@mat K black 2
+@mat c white 6
+@mat C white 4
+@mat y gold 3
+@mat Y gold 5
+@mat b bread 4
+@mat B bread 5
+@mat e bread 2
+@mblock 0 0
+................
+................
+................
+..dddddddddddd..
+.dWWWWWWWWWWWWd.
+.dwwwwwwwwwwwvd.
+.dwkkkkkkkkkkvd.
+.dwKcccKccccKvd.
+.dwKKKKKKKKKKvd.
+.dwKyYyKKbbbKvd.
+.dwKyyyyKbBbKvd.
+.dwKyyyKKeeeKvd.
+.dwKCCCCKCCCKvd.
+.dwKKKKKKKKKKvd.
+.dvvvvvvvvvvvvd.
+.dddddddddddddd.

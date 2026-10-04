@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/operating_table/h5-C.pxg",
+ "set": "horror",
+ "id": "operating_table",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.021
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.114
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 13,
+ "bbox": [
+  1,
+  0,
+  31,
+  30
+ ],
+ "note": "몸 없는 수술대: 판에 사람 모양으로 번진 핏자국, 늘어진 가죽 끈 둘, 판 모서리에서 피가 떨어져 바닥에 고임. 등은 꺾여 오른쪽으로 쏠려 매달림",
+ "ok": true
+}

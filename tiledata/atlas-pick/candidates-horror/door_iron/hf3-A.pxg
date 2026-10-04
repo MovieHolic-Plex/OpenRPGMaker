@@ -1,0 +1,74 @@
+// door_iron hf3-A (hf3)
+@size 16 32
+@cell 16
+@palette palette.pal
+@layer main
+@mat a tin 0
+@mat b viron 0
+@mat c rust 0
+@mblock 0 0
+................
+................
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbaabaaaa
+aaaabbbbbaabaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaabccbbbbbaaaa
+aaaabccbbbbbaaaa
+aaaabccbbbbbaaaa
+aaaabbbbbbbbaaaa
+aaaaaaaaaaaaaaaa
+@tblock 0 0
+................
+................
+0000000000000000
+0555555555555540
+0444444444444430
+0542222222222320
+0542322222213320
+0542322222213320
+0542354554513320
+0542311111113320
+0542322222213320
+0542324444213320
+0542324321213320
+0542324321213320
+0542324321213320
+0542324321213320
+0542324111213320
+0542322222213320
+0542322222213320
+0542322222213320
+0542311111113320
+0542322222213320
+0542322225413320
+0542322223213320
+0542322222213320
+0542322222213320
+0542354554513320
+0542322111113320
+0542322222213320
+0542311222213320
+0542322222213320
+1111111111111111

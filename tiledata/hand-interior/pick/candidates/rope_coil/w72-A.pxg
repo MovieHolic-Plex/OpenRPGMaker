@@ -1,0 +1,27 @@
+// w72-A 밧줄 사리
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat o straw 1
+@mat a straw 2
+@mat b straw 3
+@mat c straw 4
+@mat d straw 5
+@mat e straw 6
+@mblock 0 0
+................
+................
+................
+.....ooooooo....
+...ooedbdcedoo..
+..oecbdcbdcbdo..
+.oedbooooooobco.
+.odcooaaaaaaobo.
+.obdoaaaaaaaocao
+.ocboaaaaaaaoabo
+.obdcoaaaaaoabbo
+..ocbcooooobcao.
+..oabdcbdcbabo..
+...ooabcabaoooo.
+.....oooooooabo.
+..~~~~~~~~~~~oo.

@@ -1,0 +1,47 @@
+{
+ "id": "floor_gallery_stone",
+ "slug": "floor_gallery_stone",
+ "name": "미술관 돌판 바닥",
+ "scene": "미술관",
+ "cells": [
+  2,
+  2
+ ],
+ "canvas": [
+  32,
+  32
+ ],
+ "layer": "ground",
+ "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+ "description": "바닥 2×2(32×32) 칸 전부 불투명, 사방 이어짐(@tile). 조용하게 4~5단, 명도 차 ~25. 옹이·이음은 한두 곳만(반복이 띠로 보이지 않게). 벽면보다 두 단 어둡게. 회색 대리석 판(16px 판, 줄눈 1px, 판마다 한 단 차이), 결 한두 줄. 홀·조각 전시실.",
+ "palette_hint": "vmarble/grave 판",
+ "stage": 1,
+ "stage_ko": "1단계 기본(2판 새로)",
+ "kit": "gallery",
+ "role": "바닥(돌판)",
+ "worker": "hf5",
+ "set_with": [
+  "wall_gallery_white",
+  "wall_gallery_grey",
+  "floor_gallery_wood",
+  "frame_landscape",
+  "frame_small",
+  "plaque",
+  "pedestal",
+  "rope_barrier",
+  "bench_gallery"
+ ],
+ "v5_ref": [
+  {
+   "id": "floor:marble",
+   "name_ko": "대리석",
+   "atlas": {
+    "x": 480,
+    "y": 1656,
+    "w": 32,
+    "h": 32
+   },
+   "file": "ref-v5-1.png"
+  }
+ ]
+}

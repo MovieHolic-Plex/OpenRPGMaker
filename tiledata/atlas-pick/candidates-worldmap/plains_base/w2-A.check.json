@@ -1,0 +1,48 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/plains_base/w2-A.pxg",
+ "set": "worldmap",
+ "id": "plains_base",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.152
+ },
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.062
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 7,
+ "bbox": [
+  0,
+  0,
+  47,
+  15
+ ],
+ "note": "강남 공원 잔디 결: 4단 저대비, 짧은 잎 뭉치 흩뿌림. 2번 잎줄기, 3번 꽃점+돌점",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 3,
+   "atLeast95": 0,
+   "max": 0.0
+  },
+  "refmapWorld": {
+   "cells": 3,
+   "atLeast95": 0,
+   "max": 0.109
+  },
+  "seam": 0.11,
+  "variantLuma": [
+   123.4,
+   123.6,
+   123.6
+  ]
+ }
+}

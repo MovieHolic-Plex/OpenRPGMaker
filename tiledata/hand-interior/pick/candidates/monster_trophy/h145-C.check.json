@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/monster_trophy/h145-C.pxg",
+ "id": "monster trophy",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.026
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 14,
+ "v5_colors": 0,
+ "bbox": [
+  7,
+  0,
+  24,
+  15
+ ],
+ "v5_bbox": null,
+ "note": "큰 초록 용 머리·밝은 뿔 두 개·방패꼴 갈색 판으로 단순화하고 세부를 눈과 콧구멍만 남김; 꼭대기 윗면 3행(y=3~5), 벽걸이 평면 시점.",
+ "ok": true
+}

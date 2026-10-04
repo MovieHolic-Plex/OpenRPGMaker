@@ -9,14 +9,14 @@ import { RM_TYPE_GRAMMAR_PROFILE } from "@/editor/tools/v3/grammarProfiles";
 import { buildEightNeighborVariantMap, expandRoof, expandWall, resolveAutotile } from "@/editor/tools/v3/rmTypeExpander";
 import { AUTOTILE_DIR } from "@/project/defaults/autotileEngine";
 import { createBlankProject } from "@/project/defaults";
-import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { COMBINED_TOWN_HARNESS_PREFIX } from "@/project/tilesetHarness/combinedTownGroups";
 import type { AutotileGroup, TileGroupMetadata, TilesetDef } from "@/project/types";
 
 const EXAMPLE = { mapId: "map_1", rect: { x: 0, y: 0, w: 4, h: 4 }, wallVocabId: "wall" };
 
 function tileset(): TilesetDef {
-  return createBlankProject().tilesets[DEFAULT_TILESET_ID];
+  return createBlankProject().tilesets[COMBINED_TOWN_TILESET_ID];
 }
 
 function nineSliceWall(def: TilesetDef): TileGroupMetadata {

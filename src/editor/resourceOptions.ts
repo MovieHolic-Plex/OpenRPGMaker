@@ -1,6 +1,7 @@
 // editor/resourceOptions.ts
 // 리소스 종류별 후보 목록의 단일 정본 — DB 피커와 AI 툴이 같은 목록을 봐야 한다.
 // DOM/스토어를 모르는 순수 모듈이라 툴 레이어(headless 포함)에서도 쓸 수 있다.
+import { findSharedPortrait } from "@/assets/sharedPortraitAssets";
 import { listAudioResources } from "@/assets/audioResourceCatalog";
 import { CHARSET_ASSETS } from "@/assets/charsetCatalog";
 import { CC0_ICON_ASSETS } from "@/assets/cc0IconAssets";
@@ -14,6 +15,7 @@ import {
 import { AUTHORABLE_FACESET_FACE_ASSETS, LEGACY_FACESET_SHEET_IDS } from "@/assets/facesetFaceAssets";
 import { GENERATED_EFFECT_SHEET_ASSETS } from "@/assets/generatedEffectSheets";
 import { charsetBattler } from "@/assets/charsetBattlers";
+import { partyPixelLabel, partyPixelSheet } from "@/assets/partyPixelSheets";
 import { builtinGeneratedResourceIds } from "@/assets/generatedAssetResourceResolver";
 import { listMonsterResources } from "@/assets/monsterResourceCatalog";
 import { GENERATED_ASSET_PLAN } from "@/assets/oprnGeneratedAssetPlan";
@@ -62,6 +64,21 @@ export type DatabaseResourceOption = {
 export function prettyId(id: string): string {
   return id.replace(/^generated-(actor|enemy|item|equipment)-/u, "").replaceAll("-", " ");
 }
+
+/**
+ * 고르는 목록에서 뺀 옛 전투 그림(2026-10-03 deprecated/). 은퇴 스킨 배경 전부, 옛 숲 레퍼런스, AI 고치·씨앗,
+ * 배경 목록에 끼던 슬라임 미리보기, EasyRPG Hornet. id 는 저장본·공용 장소가 들고 있어 리졸버에 별칭으로
+ * 남기고(지금 그림을 가리킨다), 새로 고르는 목록에서만 뺀다.
+ */
+const RETIRED_PICKER_IDS: ReadonlySet<string> = new Set([
+  ...["rm2000", "rm2003", "dragonquest", "mother", "mv", "vxace", "ff", "chrono", "octopath", "bravely", "goldensun", "pokemon"]
+    .map((skin) => `battle-skin-${skin}-backdrop`),
+  "generated-battle-reference-forest",
+  "generated-enemy-reference-cocoon",
+  "generated-enemy-reference-seed-back",
+  "generated-troop-preview-slime",
+  "easyrpg-monster-hornet",
+]);
 
 /**
  * 데이터베이스 피커와 이벤트 명령 폼, 그리고 AI 오프닝 툴이 함께 쓰는 리소스 목록의 단일 정본이다.
@@ -149,18 +166,24 @@ export function listDatabaseResourceOptions(
   }
 
   for (const asset of GENERATED_ASSET_PLAN.assets) {
-    if (asset.status !== "promoted") continue;
+    if (asset.status !== "promoted" || RETIRED_PICKER_IDS.has(asset.resourceId)) continue;
     if (matchesGeneratedKind(kind, asset.resourceKind, asset.resourceId)) {
       add(asset.resourceId, `${prettyId(asset.resourceId)} <생성>`);
     }
   }
   for (const id of builtinGeneratedResourceIds()) {
-    if (matchesGeneratedKind(kind, undefined, id)) add(id, charsetBattler(id)?.label ?? `${prettyId(id)} <생성>`);
+    if (RETIRED_PICKER_IDS.has(id)) continue;
+    if (matchesGeneratedKind(kind, undefined, id)) add(id, charsetBattler(id)?.label ?? findSharedPortrait(id)?.name ?? (partyPixelSheet(id) ? partyPixelLabel(partyPixelSheet(id)!) : `${prettyId(id)} <생성>`));
   }
   for (const [id, uploaded] of Object.entries(project.assets.uploaded ?? {})) {
     if (uploadedMatchesKind(kind, uploaded.kind, id)) {
       add(id, uploaded.name || id);
     }
+  }
+  if (kind === "picture") {
+    // Static map objects use the same whole-image resource as item pictures.
+    // Keep existing browse order, and make actual objects discoverable by name/id.
+    for (const asset of CC0_ICON_ASSETS) add(asset.id, asset.name);
   }
   if (kind === "still") {
     // 호환 꼬리: 아이콘으로 저작된 기존 오프닝·게임 오버 배경이 "종류 불일치"로 사라지지 않게 한다.
@@ -179,7 +202,11 @@ export function matchesGeneratedKind(kind: DatabaseResourcePickerKind, resourceK
       || matchesGeneratedKind("picture", resourceKind, id);
   }
   if (kind === "movie") return resourceKind === "movie";
-  if (kind === "picture") return resourceKind === "picture" || id === "generated-face-actor1-bust" || id === "generated-face-actor1-full";
+  if (kind === "picture") {
+    // 공용 흉상·전신은 기본 표정 한 장씩만 고르게 한다 — 대사의 표정이 나머지를 고른다(sharedPortraitAssets.ts).
+    return resourceKind === "picture" || id === "generated-face-actor1-bust" || id === "generated-face-actor1-full"
+      || findSharedPortrait(id)?.expression === "base";
+  }
   if (kind === "faceset") {
     // 분할 전 4×4 시트는 얼굴 한 장이 아니다 — 등록만 남기고 피커 목록에서는 제외한다.
     if (LEGACY_FACESET_SHEET_IDS.includes(id)) return false;
@@ -187,7 +214,7 @@ export function matchesGeneratedKind(kind: DatabaseResourcePickerKind, resourceK
   }
   if (kind === "charset") return resourceKind === "charset" || (id.startsWith("generated-actor-") && id.endsWith("-charset"));
   if (kind === "battleCharset") {
-    return resourceKind === "battleCharset" || Boolean(charsetBattler(id)) || id === "hero" || (id.startsWith("generated-actor-") && id.endsWith("-battle"));
+    return resourceKind === "battleCharset" || Boolean(charsetBattler(id)) || Boolean(partyPixelSheet(id)) || id === "hero" || (id.startsWith("generated-actor-") && id.endsWith("-battle"));
   }
   if (kind === "monster") return resourceKind === "monster" || id.startsWith("generated-enemy-");
   if (kind === "title") return resourceKind === "title" || id.includes("title");
@@ -206,7 +233,7 @@ export function matchesGeneratedKind(kind: DatabaseResourcePickerKind, resourceK
   }
   if (kind === "system") return resourceKind === "system";
   if (kind === "system2") return resourceKind === "system2";
-  if (kind === "backdrop") return resourceKind === "backdrop" || id.includes("backdrop") || id.includes("troop-preview") || id.startsWith("battle-scenery-");
+  if (kind === "backdrop") return resourceKind === "backdrop" || id.includes("backdrop") || id.startsWith("battle-scenery-");
   if (kind === "battle") return resourceKind === "battle" || id.startsWith("easyrpg-battle-") || id.includes("battle-anim");
   if (kind === "icon") {
     return (

@@ -1,0 +1,29 @@
+{
+ "schema": "worldmap-palette/1",
+ "id": "ruin",
+ "name": "① 무너진 세계",
+ "desc": "FF6 후반부식: 탁한 녹청 바다 · 마른 풀 · 고목 · 재 낀 산",
+ "light": { "lk": 0.97, "cs": 0.92, "hi_a": 0.004, "hi_b": 0.012 },
+ "roles": {
+  "sea": { "ramp": ["0c2626", "163c38", "2c5e56", "4a7c70", "86ae9c", "c6dccc"], "pos": [0, 0.33, 0.42, 0.6, 0.85, 1] },
+  "river": { "ramp": ["2f6a60", "5c8c7c", "a3c2ae"] },
+  "lava": { "cs": 0.92, "lk": 0.96 },
+  "toxic": { "cs": 0.75, "lk": 0.9 },
+  "grass": { "hue": 100, "hue_amt": 0.85, "cs": 0.6, "lk": 1.0, "tint": ["8c874a", 0.1] },
+  "farm": { "cs": 0.6, "lk": 0.92, "dh": -8 },
+  "savanna": { "dh": -8, "cs": 0.6, "lk": 0.9 },
+  "sand": { "cs": 0.6, "lk": 0.9, "dh": -4 },
+  "dirt": { "cs": 0.7, "lk": 0.93 },
+  "badlands": { "cs": 0.65, "lk": 0.9 },
+  "ash": { "cs": 0.65, "lk": 0.88, "dh": 12 },
+  "swamp": { "cs": 0.62, "lk": 0.88, "dh": -6 },
+  "tundra": { "cs": 0.5, "lk": 0.94 },
+  "snow": { "cs": 0.6, "lk": 0.9, "tint": ["b9b4af", 0.18] },
+  "forest": { "hue": 92, "hue_amt": 0.8, "cs": 0.45, "lk": 0.84, "ct": 1.05 },
+  "deadwood": { "cs": 0.75, "lk": 0.92 },
+  "mount": { "cs": 0.4, "lk": 0.9, "tint": ["7a7570", 0.2] },
+  "volcano": { "lk": 0.95 },
+  "rock": { "cs": 0.5, "lk": 0.9, "ct": 0.97 },
+  "road": { "cs": 0.8, "lk": 0.96 }
+ }
+}

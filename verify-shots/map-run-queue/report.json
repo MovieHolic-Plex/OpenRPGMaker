@@ -1,0 +1,320 @@
+{
+  "transport": "scripted model; real checkpoint apply",
+  "errors": [],
+  "checks": [
+    {
+      "name": "B 는 다른 맵이라 A 가 도는 중에 바로 시작했다",
+      "passed": true,
+      "detail": {
+        "a": {
+          "index": 0,
+          "mapId": "map_blank_start",
+          "startedAt": 82682,
+          "endedAt": 100641,
+          "row": 2,
+          "tile": 7
+        },
+        "b": {
+          "index": 1,
+          "mapId": "map_blank_start_qa2",
+          "startedAt": 89246,
+          "endedAt": 96849,
+          "row": 4,
+          "tile": 8
+        }
+      }
+    },
+    {
+      "name": "C 는 A 와 같은 맵이라 「이 맵 앞에」 대기 카드로 섰다",
+      "passed": true,
+      "detail": [
+        {
+          "state": "running",
+          "status": "작업 중…",
+          "map": "둘째 맵"
+        },
+        {
+          "state": "waiting",
+          "status": "대기 · 이 맵 앞에 1개",
+          "map": "첫째 맵"
+        }
+      ]
+    },
+    {
+      "name": "C 를 보낸 뒤에도 돌고 있는 B 카드가 접히지 않는다",
+      "passed": true,
+      "detail": [
+        "둘째 맵",
+        "첫째 맵"
+      ]
+    },
+    {
+      "name": "C 는 A 가 끝난 뒤에 시작했다",
+      "passed": true,
+      "detail": {
+        "a": {
+          "index": 0,
+          "mapId": "map_blank_start",
+          "startedAt": 82682,
+          "endedAt": 100641,
+          "row": 2,
+          "tile": 7
+        },
+        "c": {
+          "index": 2,
+          "mapId": "map_blank_start",
+          "startedAt": 104877,
+          "endedAt": 110985,
+          "row": 6,
+          "tile": 9
+        }
+      }
+    },
+    {
+      "name": "체크포인트 셋 다 적용됐다",
+      "passed": true,
+      "detail": [
+        {
+          "id": "paint-1",
+          "ok": true,
+          "issue": null,
+          "at": 95035
+        },
+        {
+          "id": "paint-0",
+          "ok": true,
+          "issue": null,
+          "at": 98032
+        },
+        {
+          "id": "paint-2",
+          "ok": true,
+          "issue": null,
+          "at": 109177
+        }
+      ]
+    },
+    {
+      "name": "세 실행의 칸이 모두 남았다(서로 덮지 않음)",
+      "passed": true,
+      "detail": [
+        {
+          "mapId": "map_blank_start",
+          "row": 2,
+          "want": 7,
+          "got": [
+            7,
+            7,
+            7,
+            7,
+            7,
+            7,
+            7,
+            7
+          ]
+        },
+        {
+          "mapId": "map_blank_start_qa2",
+          "row": 4,
+          "want": 8,
+          "got": [
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8,
+            8
+          ]
+        },
+        {
+          "mapId": "map_blank_start",
+          "row": 6,
+          "want": 9,
+          "got": [
+            9,
+            9,
+            9,
+            9,
+            9,
+            9,
+            9,
+            9
+          ]
+        }
+      ]
+    },
+    {
+      "name": "맵별 카드 둘이 끝남으로 닫혔다",
+      "passed": true,
+      "detail": [
+        {
+          "state": "done",
+          "status": "끝남",
+          "map": "둘째 맵",
+          "steps": [
+            "“둘째 맵 의 4번째 줄을 칠할게요.”",
+            "타일을 칠했어요",
+            "“4번째 줄을 칠했어요.”"
+          ]
+        },
+        {
+          "state": "done",
+          "status": "끝남",
+          "map": "첫째 맵",
+          "steps": [
+            "“첫째 맵 의 6번째 줄을 칠할게요.”",
+            "타일을 칠했어요",
+            "“6번째 줄을 칠했어요.”"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "거절·적용 실패 문구가 없다",
+      "passed": true
+    },
+    {
+      "name": "페이지 오류 없음",
+      "passed": true,
+      "detail": []
+    }
+  ],
+  "maps": {
+    "first": "map_blank_start",
+    "second": "map_blank_start_qa2"
+  },
+  "runs": [
+    {
+      "index": 0,
+      "mapId": "map_blank_start",
+      "startedAt": 82682,
+      "endedAt": 100641,
+      "row": 2,
+      "tile": 7
+    },
+    {
+      "index": 1,
+      "mapId": "map_blank_start_qa2",
+      "startedAt": 89246,
+      "endedAt": 96849,
+      "row": 4,
+      "tile": 8
+    },
+    {
+      "index": 2,
+      "mapId": "map_blank_start",
+      "startedAt": 104877,
+      "endedAt": 110985,
+      "row": 6,
+      "tile": 9
+    }
+  ],
+  "acks": [
+    {
+      "id": "paint-1",
+      "ok": true,
+      "issue": null,
+      "at": 95035
+    },
+    {
+      "id": "paint-0",
+      "ok": true,
+      "issue": null,
+      "at": 98032
+    },
+    {
+      "id": "paint-2",
+      "ok": true,
+      "issue": null,
+      "at": 109177
+    }
+  ],
+  "waitingCard": [
+    {
+      "state": "running",
+      "status": "작업 중…",
+      "map": "둘째 맵"
+    },
+    {
+      "state": "waiting",
+      "status": "대기 · 이 맵 앞에 1개",
+      "map": "첫째 맵"
+    }
+  ],
+  "cards": [
+    {
+      "state": "done",
+      "status": "끝남",
+      "map": "둘째 맵",
+      "steps": [
+        "“둘째 맵 의 4번째 줄을 칠할게요.”",
+        "타일을 칠했어요",
+        "“4번째 줄을 칠했어요.”"
+      ]
+    },
+    {
+      "state": "done",
+      "status": "끝남",
+      "map": "첫째 맵",
+      "steps": [
+        "“첫째 맵 의 6번째 줄을 칠할게요.”",
+        "타일을 칠했어요",
+        "“6번째 줄을 칠했어요.”"
+      ]
+    }
+  ],
+  "tiles": [
+    {
+      "mapId": "map_blank_start",
+      "row": 2,
+      "want": 7,
+      "got": [
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "mapId": "map_blank_start_qa2",
+      "row": 4,
+      "want": 8,
+      "got": [
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8
+      ]
+    },
+    {
+      "mapId": "map_blank_start",
+      "row": 6,
+      "want": 9,
+      "got": [
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9,
+        9
+      ]
+    }
+  ],
+  "bVisibleWhileC": [
+    "둘째 맵",
+    "첫째 맵"
+  ],
+  "strayLine": "SECTION.ai-map-run-card ai-map-run-card ← ai-chat-log"
+}

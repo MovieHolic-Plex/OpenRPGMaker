@@ -1,0 +1,40 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/bedside_cabinet/v35-A.pxg",
+ "set": "horror",
+ "id": "bedside_cabinet",
+ "hard": [],
+ "warn": [],
+ "std": {
+  "cells": [
+   2,
+   1
+  ],
+  "canvas": [
+   32,
+   16
+  ]
+ },
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.09
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.122
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 9,
+ "bbox": [
+  7,
+  0,
+  24,
+  15
+ ],
+ "note": "v35-A: 3/4 손 도트 32x16 (F12+T4) — sheet 윗면 4줄(뒤 모서리·밝은 판·앞 모서리 하이라이트) + tin 서랍 두 칸 앞면(손잡이) + 다리. 폭 18",
+ "ok": true
+}

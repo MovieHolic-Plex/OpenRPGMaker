@@ -1,0 +1,144 @@
+{
+ "id": "bd-manor-small",
+ "name": "작은 저택 (반목조 11칸)",
+ "w": 11,
+ "h": 12,
+ "walk": [
+  "...C...C...",
+  "CXXXXXXXXXC",
+  "XXXXXXXXXXX",
+  "XXXXXXXXXXX",
+  "XXXXXXXXXXX",
+  "XXXXXXXXXXX",
+  "XXXXXXXXXXX",
+  "XXXXXXXXXXX",
+  "XXXXXXXXXXX",
+  "...XXXXX...",
+  "...XFFFX...",
+  "...XFFFX..."
+ ],
+ "description": "11칸x12줄 작은 대칭 저택: 4면 지붕, 가운데 5칸 박공, 좌우 3칸 날개(굴뚝 둘), 창 열, 기둥 현관과 끝장식 계단.",
+ "rules": "문은 (5,9). 문 앞 (5,10)은 계단 맨 윗칸.",
+ "tags": [
+  "귀족저택",
+  "반목조",
+  "대칭",
+  "작은"
+ ],
+ "role": "building",
+ "doors": [
+  {
+   "dx": 5,
+   "dy": 9,
+   "note": "현관 겹문 (계단 위)"
+  }
+ ],
+ "notes": "",
+ "assembly": [
+  {
+   "kit": "bd-mpart-roof-l",
+   "x": 0,
+   "y": 1
+  },
+  {
+   "kit": "bd-mpart-roof-m",
+   "x": 3,
+   "y": 1
+  },
+  {
+   "kit": "bd-mpart-roof-m",
+   "x": 4,
+   "y": 1
+  },
+  {
+   "kit": "bd-mpart-roof-m",
+   "x": 5,
+   "y": 1
+  },
+  {
+   "kit": "bd-mpart-roof-m",
+   "x": 6,
+   "y": 1
+  },
+  {
+   "kit": "bd-mpart-roof-m",
+   "x": 7,
+   "y": 1
+  },
+  {
+   "kit": "bd-mpart-roof-r",
+   "x": 8,
+   "y": 1
+  },
+  {
+   "kit": "bd-mpart-gable",
+   "x": 3,
+   "y": 1
+  },
+  {
+   "kit": "bd-mpart-chimney",
+   "x": 3,
+   "y": 0
+  },
+  {
+   "kit": "bd-mpart-chimney",
+   "x": 7,
+   "y": 0
+  },
+  {
+   "kit": "bd-mpart-bay-win-a-l",
+   "x": 0,
+   "y": 4
+  },
+  {
+   "kit": "bd-mpart-bay-plain-l",
+   "x": 1,
+   "y": 4
+  },
+  {
+   "kit": "bd-mpart-bay-win-lit-l",
+   "x": 2,
+   "y": 4
+  },
+  {
+   "kit": "bd-mpart-bay-win-b-r",
+   "x": 8,
+   "y": 4
+  },
+  {
+   "kit": "bd-mpart-bay-plain-r",
+   "x": 9,
+   "y": 4
+  },
+  {
+   "kit": "bd-mpart-bay-win-a-r",
+   "x": 10,
+   "y": 4
+  },
+  {
+   "kit": "bd-mpart-bay-win-b-l",
+   "x": 3,
+   "y": 5
+  },
+  {
+   "kit": "bd-mpart-door-bay",
+   "x": 4,
+   "y": 5
+  },
+  {
+   "kit": "bd-mpart-bay-win-a-r",
+   "x": 7,
+   "y": 5
+  },
+  {
+   "kit": "bd-mpart-porch",
+   "x": 4,
+   "y": 7
+  },
+  {
+   "kit": "bd-mpart-stairs",
+   "x": 3,
+   "y": 10
+  }
+ ]
+}

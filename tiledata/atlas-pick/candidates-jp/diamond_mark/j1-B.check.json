@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/diamond_mark/j1-B.pxg",
+ "set": "jp",
+ "id": "diamond_mark",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.098
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.068
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "light"
+  ]
+ },
+ "colors": 9,
+ "bbox": [
+  0,
+  0,
+  15,
+  15
+ ],
+ "note": "센 빛: 페인트 윗변 최고단(5), 아랫변은 어두운 단(1)+바깥에 검은 그림자 한 줄, 아스팔트도 한 단 어둡게 해 대비 크게",
+ "ok": true
+}

@@ -1,0 +1,17 @@
+// w10-C.pxg 평탄화 격자 16x16
+................
+AAAAAAAAAAAAAAAA
+BBBBBBBBBBBBBBBB
+...C.....C...E..
+...C.....C...E..
+...C...CCCCC.E..
+...C...CDDDC..F.
+...C...CAAAC..F.
+...C....CCC...F.
+..CCC.........F.
+.CDDDC........F.
+.CDDDC.......EFE
+.CAAAC.......EGE
+..CCC.........E.
+................
+................

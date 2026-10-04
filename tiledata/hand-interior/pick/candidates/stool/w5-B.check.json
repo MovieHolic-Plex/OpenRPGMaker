@@ -1,0 +1,35 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/stool/w5-B.pxg",
+ "id": "stool",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.126
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "outline",
+   "outline_black"
+  ],
+  "pass": false
+ },
+ "colors": 8,
+ "v5_colors": 6,
+ "bbox": [
+  3,
+  2,
+  13,
+  14
+ ],
+ "v5_bbox": [
+  3,
+  2,
+  12,
+  14
+ ],
+ "note": "명암 강화: 윗면 왼쪽 위 밝은 B 덩이, 오른쪽 아래 D 그늘, 옆면 아래 어둡게, 오른쪽 바닥에 반투명 접지 그림자",
+ "ok": true
+}

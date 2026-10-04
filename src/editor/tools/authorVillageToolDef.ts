@@ -13,6 +13,7 @@ import { isCombinedTownCompatibleTileset } from "@/project/tilesetHarness/combin
 import { estimateVillageSize } from "@/ai/constructionDeclaration";
 import type { GameMap, Project } from "@/project/types";
 import { createDraft } from "./changeset";
+import { AUTHOR_BEODEUL_TOWN_TOOL } from "./authorBeodeulTown";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import { resizedTileStacks } from "@/project/mapOverlayTiles";
 import { cropExtraLayers } from "@/project/mapLayers";
@@ -107,7 +108,7 @@ export function createAuthorVillageTool(dependencies: AuthorVillageDependencies 
             kind: { type: "string", enum: ["existing", "new"] },
             mapId: { type: "string" },
             name: { type: "string", description: "마을(맵) 이름. kind=new 는 필수. kind=existing 이면 시공 뒤 그 맵 이름을 이것으로 바꾼다 — 생략하면 '빈 맵' 같은 자리표시 이름만 '마을'로 바꾼다." },
-            tilesetId: { type: "string", description: "kind=new 전용. 생략하면 숲마을 · 거리별 잔디. 사용자가 선택한 칩셋은 여기에 지정한다. 기존 맵은 원래 칩셋을 유지한다." },
+            tilesetId: { type: "string", description: "kind=new 전용. 생략하면 프로젝트 야외 기본(새 프로젝트는 버들항 — 이 경우 author_beodeul_town 으로 넘어간다, 그 밖엔 숲마을). 사용자가 선택한 칩셋은 여기에 지정한다. 기존 맵은 원래 칩셋을 유지한다." },
             width: { type: "integer" },
             height: { type: "integer" },
             minSize: {
@@ -239,6 +240,9 @@ export function createAuthorVillageTool(dependencies: AuthorVillageDependencies 
       interior: false,
     },
     run(draft, args): ToolExecResult {
+      // 버들항 타일셋 대상이면 숲마을 생성기가 아니라 블록 조립 생성기로 보낸다(이 생성기는 버들항 그림을 모른다).
+      const beodeul = rerouteToBeodeulTown(draft, args);
+      if (beodeul) return beodeul;
       // referenceId 는 결과 비교용 — 파서(허용 키 고정)와 시공기에 넘기지 않는다.
       const { referenceId: rawReferenceId, ...buildArgs } = args;
       const referenceId = typeof rawReferenceId === "string" && rawReferenceId.trim() ? rawReferenceId.trim() : undefined;
@@ -359,6 +363,46 @@ function renameVillageTargetMap(draft: Project, mapId: string, requested: string
       ? `맵 이름: '${previous}' → '${next}'.`
       : `맵 이름이 자리표시 '${previous}'라 '${next}'(으)로 바꿨습니다 — 고유 마을 이름은 target.name 또는 set_map_properties 로 지정하세요.`,
   ];
+}
+
+/**
+ * author_village 의 대상이 버들항이면 author_beodeul_town 으로 넘긴다.
+ * 새 맵: target.tilesetId 가 버들항이거나, 생략했는데 프로젝트 야외 기본이 버들항(새 프로젝트)일 때.
+ * 기존 맵: 맵 타일셋이 버들항일 때(맵 전체를 다시 깐다).
+ */
+function rerouteToBeodeulTown(draft: Project, args: Record<string, unknown>): ToolExecResult | null {
+  const target = args.target;
+  if (!target || typeof target !== "object") return null;
+  const t = target as Record<string, unknown>;
+  const isNew = t.kind === "new";
+  const existing = !isNew && typeof t.mapId === "string" ? draft.maps[t.mapId] : undefined;
+  const tilesetId = isNew
+    ? (typeof t.tilesetId === "string" && t.tilesetId.trim() ? t.tilesetId.trim() : defaultOutdoorTilesetId(draft))
+    : existing?.tilesetId;
+  if (tilesetId !== "beodeul_city") return null;
+  const number = (v: unknown): number | undefined => (typeof v === "number" && Number.isFinite(v) ? v : undefined);
+  const text = JSON.stringify(args);
+  const forwarded: Record<string, unknown> = {};
+  if (existing) forwarded.mapId = existing.id;
+  if (typeof t.name === "string" && t.name.trim()) forwarded.name = t.name.trim();
+  if (isNew && typeof t.mapId === "string" && t.mapId.trim()) forwarded.id = t.mapId.trim();
+  const width = number(t.width), height = number(t.height);
+  if (width !== undefined) forwarded.width = width;
+  if (height !== undefined) forwarded.height = height;
+  if (number(args.seed) !== undefined) forwarded.seed = number(args.seed);
+  // 마을 문법 테마: 말에서 고른다(도시·로마풍이라고 할 때만 블록 격자 도시)
+  const ground = typeof args.groundTheme === "string" ? args.groundTheme : "";
+  forwarded.theme = /도시|로마|블록/.test(text) ? "city" // "city" 낱말은 tilesetId(beodeul_city)에도 있으니 보지 않는다
+    : ground === "desert" || /사막|오아시스|desert/i.test(text) ? "desert"
+    : ground === "snow" || /설원|눈 ?마을|겨울|snow/i.test(text) ? "snow"
+    : /늪|습지|swamp|marsh/i.test(text) ? "swamp"
+    : /항구|포구|어촌|바다|해안|harbou?r|port\b|부두|선착장|coast/i.test(text) ? "coast" : "river";
+  if (forwarded.theme === "city" && /항구|harbou?r|port\b|부두|선착장/i.test(text)) forwarded.harbour = true;
+  const result = AUTHOR_BEODEUL_TOWN_TOOL.run(draft, forwarded);
+  return {
+    ...result,
+    summary: `author_village 는 숲마을 생성기라 버들항 타일셋에서는 author_beodeul_town(theme ${String(forwarded.theme)})으로 대신 시공했다. ` + result.summary,
+  };
 }
 
 /**

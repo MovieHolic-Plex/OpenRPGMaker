@@ -1,0 +1,31 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/armor_stand/w3-A.pxg",
+ "id": "armor stand",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.103
+ },
+ "lint": {
+  "failed": [],
+  "pass": true
+ },
+ "colors": 13,
+ "v5_colors": 13,
+ "bbox": [
+  3,
+  2,
+  12,
+  31
+ ],
+ "v5_bbox": [
+  3,
+  2,
+  12,
+  31
+ ],
+ "note": "v5 모양 그대로 — 오른쪽 반을 한 단씩 어둡게(빛 왼쪽 위), 투구 눈 슬릿을 4px 한 줄로, 투구 윗면 한 단 밝게",
+ "ok": true
+}

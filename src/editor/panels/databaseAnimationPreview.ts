@@ -368,7 +368,8 @@ function stageCellSprite(context: AnimationPreviewContext, cell: BattleAnimation
   sprite.style.setProperty("--animation-cell-x", `${cell.x}px`);
   sprite.style.setProperty("--animation-cell-y", `${cell.y}px`);
   sprite.style.setProperty("--animation-cell-scale", String(cell.zoom / 100));
-  sprite.style.transform = `translate(${cell.x}px, ${cell.y}px) scale(${cell.zoom / 100})`;
+  const zoom = cell.zoom / 100;
+  sprite.style.transform = `translate(${cell.x}px, ${cell.y}px) rotate(${cell.rotation ?? 0}deg) scale(${cell.mirror ? -zoom : zoom}, ${zoom})`;
   sprite.style.opacity = String(cell.visible ? cell.opacity / 255 : Math.min(cell.opacity / 255, 0.38));
   return sprite;
 }

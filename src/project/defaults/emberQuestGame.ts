@@ -11,7 +11,7 @@ import {
   DEFAULT_EQUIPMENT_ID,
   DEFAULT_ITEM_ID,
   DEFAULT_TILE_SIZE,
-  DEFAULT_TILESET_ID,
+  COMBINED_TOWN_TILESET_ID,
   TILE,
 } from "./constants";
 import {
@@ -882,7 +882,7 @@ function charsetGraphic(spriteId: string, characterIndex: number): EventPage["gr
 }
 
 function makeMap(id: string, name: string, width: number, height: number): GameMap {
-  const map = createBlankMap(name, width, height, DEFAULT_TILESET_ID, DEFAULT_TILE_SIZE);
+  const map = createBlankMap(name, width, height, COMBINED_TOWN_TILESET_ID, DEFAULT_TILE_SIZE);
   map.id = id;
   for (let x = 0; x < width; x += 1) {
     setLower(map, x, 0, TILE.WALL);

@@ -1,0 +1,19 @@
+{
+ "id": "potted_plants",
+ "slug": "potted_plants",
+ "name": "골목 화분 줄",
+ "scene": "주택가 골목",
+ "cells": [
+  2,
+  1
+ ],
+ "canvas": [
+  32,
+  16
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "집 앞 골목에 늘어놓은 화분 네다섯(크기·잎 모양 다르게 — 둥근 잎, 가는 잎, 꽃 한 송이), 토기 화분·플라스틱 화분 섞어. 두 칸 폭.",
+ "palette_hint": "matsu/mgreen 잎, mbrick/korange 화분, sakura 꽃",
+ "worker": "j2"
+}

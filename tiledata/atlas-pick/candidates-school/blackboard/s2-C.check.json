@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/blackboard/s2-C.pxg",
+ "set": "school",
+ "id": "blackboard",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 8,
+  "atLeast95": 0,
+  "max": 0.02
+ },
+ "refmap": {
+  "cells": 8,
+  "atLeast95": 0,
+  "max": 0.059
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 14,
+ "bbox": [
+  0,
+  0,
+  63,
+  30
+ ],
+ "note": "밀어 여는 두 짝 칠판: 나무 틀(hinoki)·위 레일·오른 짝이 낮게 어긋남·굵은 받침 — 실루엣이 두 덩이로 읽힌다",
+ "ok": true
+}

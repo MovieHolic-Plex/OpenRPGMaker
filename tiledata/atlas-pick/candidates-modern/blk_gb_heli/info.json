@@ -1,0 +1,42 @@
+{
+ "id": "blk-gb-heli",
+ "slug": "blk_gb_heli",
+ "name": "헬리패드",
+ "scene": "건물 블록",
+ "cells": [
+  1,
+  1
+ ],
+ "canvas": [
+  16,
+  16
+ ],
+ "layer": "ground",
+ "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+ "description": "헬리패드 · gb.heli.bl.w 1×1. 강남역 건물 조립: 참고문서 「강남역」의 이름 배열대로.",
+ "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+ "worker": "-",
+ "members": [
+  "gnb-heli-bl-w",
+  "gnb-heli-br-w",
+  "gnb-heli-tl-w",
+  "gnb-heli-tr-w"
+ ],
+ "tiles": [
+  5876,
+  5880,
+  5884,
+  5888
+ ],
+ "ctx": {
+  "at": [
+   48,
+   48
+  ],
+  "map": "modern-gangnam-station",
+  "cell": [
+   4,
+   65
+  ]
+ }
+}

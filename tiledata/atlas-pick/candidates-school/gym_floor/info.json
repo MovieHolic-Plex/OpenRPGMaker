@@ -1,0 +1,23 @@
+{
+ "id": "gym_floor",
+ "slug": "gym_floor",
+ "name": "체육관 마루",
+ "scene": "체육관",
+ "place": "in",
+ "cells": [
+  1,
+  1
+ ],
+ "canvas": [
+  16,
+  16
+ ],
+ "layer": "ground",
+ "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+ "description": "체육관 바닥 한 칸 — 밝은 단풍나무 널(가로 결, 가는 이음), 바니시 광 한 줄. 사방 이음 맞춤. classroom_floor 보다 밝고 노랗다.",
+ "palette_hint": "gym",
+ "pair": [
+  "gym_line"
+ ],
+ "worker": "s2"
+}

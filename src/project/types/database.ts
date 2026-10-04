@@ -1,3 +1,4 @@
+import type { CharacterMotionSettings, CharacterMotionStyle } from "@/battle/characterMotion";
 import type {
   ActorId,
   BattleAnimationId,
@@ -14,6 +15,9 @@ import type {
   StateId,
   TroopId,
 } from "./base";
+import type { RetroFxAnchor, RetroSkillMotion } from "@/assets/retroClassSkills";
+import type { RetroMonsterSkillMotion } from "@/assets/retroMonsterSkills";
+import type { PokemonMoveMotion } from "@/battle/pokemonMoveMotion";
 import type { Command, Condition, EventPageGraphic, WeatherKind } from "./events";
 import type { Season, TimePhase, TimeSystemConfig } from "../gameTime";
 import type { GenrePackId } from "../genrePackId";
@@ -26,9 +30,13 @@ export interface CharacterAppearanceRecord {
   charset?: { resourceId: string; characterIndex: number };
   face?: { resourceId: string };
   bust?: { resourceId: string };
+  /** 대사 창 뒤에 크게 서는 전신(선택). 없으면 흉상, 그것도 없으면 얼굴. */
+  full?: { resourceId: string };
 }
 
 export interface ActorRecord {
+  /** Optional overrides over the bundled class/body motion. */
+  battleMotion?: CharacterMotionSettings;
   id: ActorId;
   name: string;
   nickname: string;
@@ -57,6 +65,11 @@ export interface ActorRecord {
    * 생략 = 장착 개념 없음(배운 스킬 전부 사용, 기존 동작).
    */
   loadoutSlots?: number;
+  /**
+   * 이 배우만의 전투 명령(전역 전투 명령 목록 database.battleCommands 의 id, 메뉴 순서대로). RM2003 의 배우별 명령.
+   * 생략·빈 배열 = 직업의 전투 명령을 쓴다. 전투 중 이벤트로 바꾼 명령(eventState.actorBattleCommands)이 이보다 앞선다.
+   */
+  battleCommandIds?: string[];
 }
 
 export type ActorRateGrade = "A" | "B" | "C" | "D" | "E";
@@ -146,15 +159,13 @@ export type BattleFlow = "gauge" | "strict";
 /** ATB 대기 방식(Chrono Trigger 설정의 Active/Wait). 생략 = wait — 명령·대상 메뉴가 열려 있는 동안 시간이 멈춘다. */
 export type BattleAtbMode = "active" | "wait";
 
-/** 전투 화면 UI 스킨 — @/battle/skins/registry 의 11-스킨 union + legacy 별칭 2종.
- *  "rm2003" 은 정면 전투 스킨의 옛 id(2026-09-03 개명 전) 이고 "classic" 은 그보다 앞선 별칭이다.
- *  둘 다 resolveSkinId 가 rm2000 으로 매핑한다 — 저장된 프로젝트가 깨지지 않게 타입에는 남긴다. */
+/** 전투 화면 UI 스킨 — @/battle/skins/registry 의 BattleSkinId(도트 측면 retro2003 + pokemon).
+ *  2026-10-02 정면 스킨(rm2000·dragonquest·mother·mv·vxace·classic)과 창 색만 다르던 측면 스킨
+ *  (rm2003·octopath·chrono·bravely·ff·goldensun)을 지웠다. 저장된 옛 값은 로드 때 normalizeSystem 이 지우고
+ *  (→ 기본 retro2003, 창 색은 battleLook.window 로), 렌더 때도 resolveSkinId 가 retro2003 으로 푼다. */
 export type BattleUiStyle =
-  | "pokemon" | "rm2000" | "octopath" | "chrono"
-  | "bravely" | "dragonquest" | "ff" | "mother" | "goldensun" | "mv" | "vxace"
-  | "rm2003" // 측면 전투(2026-09-03 되살림 — 그 전 몇 시간은 rm2000 의 옛 id 였다)
-  | "retro2003" // 도트 측면 전투(2026-09-28): 청색 픽셀 창 · 겹 배경 · 전진 걸음 연출
-  | "classic"; // legacy alias, remapped by resolveSkinId → rm2000
+  | "pokemon"
+  | "retro2003"; // 도트 측면 전투(기본): 청색 픽셀 창 · 겹 배경 · 전진 걸음 연출
 
 /** ESC(X) 게임 메뉴 스킨 — @/player/menuSkins/registry 의 id union. 프로젝트 파일에 저장되므로
  *  id 를 함부로 바꾸지 않는다. 미설정·미지값은 resolveMenuSkinId 가 workbench 로 푼다. */
@@ -164,7 +175,8 @@ export type MenuUiStyle = "pixel" | "field-list" | "workbench" | "party-first" |
  *  monsters: 잡은 파티 몬스터가 필드에 나서 싸움(포켓몬식). */
 export type BattleParty = "actors" | "monsters";
 
-export type ClassBattleCommandKind = "attack" | "skill" | "skillSubset" | "defend" | "guard" | "item" | "capture" | "escape" | "switch" | "event";
+/** "event" 는 옛 저장값으로 교체(switch)의 별칭이다. 공통 이벤트를 부르는 명령은 "commonEvent"(RM2003 「이벤트 연결」, 2026-10-02). */
+export type ClassBattleCommandKind = "attack" | "skill" | "skillSubset" | "defend" | "guard" | "item" | "capture" | "escape" | "switch" | "event" | "commonEvent";
 
 export interface ClassBattleCommand {
   id: string;
@@ -172,6 +184,8 @@ export interface ClassBattleCommand {
   kind: ClassBattleCommandKind;
   skillSubsetName?: string;
   skillId?: SkillId;
+  /** kind "commonEvent" 일 때 고르면 실행할 공통 이벤트. 없으면 그 명령은 메뉴에 나오지 않는다. */
+  commonEventId?: string;
 }
 
 export type DatabaseElementKind = "physical" | "magical";
@@ -216,6 +230,8 @@ export interface DatabaseBattleCommandRecord {
   kind: ClassBattleCommandKind;
   skillSubsetName?: string;
   skillId?: SkillId;
+  /** kind "commonEvent" 일 때 실행할 공통 이벤트. */
+  commonEventId?: string;
 }
 
 export interface ClassEquipmentPermissions {
@@ -225,6 +241,8 @@ export interface ClassEquipmentPermissions {
 }
 
 export interface SkillRecord {
+  /** Native turn battle gimmick. Omitted keeps the original skill rules. */
+  battleGimmick?: import("@/battle/battleGimmickRules").BattleGimmick;
   id: SkillId;
   name: string;
   scope: "self" | "ally" | "allAllies" | "enemy" | "allEnemies";
@@ -285,6 +303,42 @@ export interface SkillRecord {
   learnable?: boolean;
   /** 입력 커맨드: 성공/실패에 따라 위력이 달라진다. 생략 = 입력 없음. */
   inputSequence?: SkillInputSequence;
+  /**
+   * HP 대가(0~100): 시전할 때 시전자가 최대 HP 의 N% 를 잃는다(FFT 암흑검·희생). HP 1 밑으로는 깎지 않는다.
+   * 전투 타임라인에 시전자 자신을 대상으로 한 damage 엔트리(skillName = 기술 이름)를 남긴다. 생략 = 대가 없음.
+   */
+  hpCostPercent?: number;
+  /**
+   * 흡수(0~100): 준 피해의 N% 를 시전자가 회복한다(FFT 흡수 검). effect.affects 가 mp 면 MP 를 흡수한다.
+   * 타임라인에 시전자 자신을 대상으로 한 healing 엔트리(resource hp|mp)를 남긴다. 생략 = 흡수 없음.
+   */
+  drainPercent?: number;
+  /**
+   * 게이지 밀기(-100~100, ATB 게이지 흐름 전용): 명중한 대상의 행동 게이지를 이만큼 옮긴다. 음수 = 늦추기(크로노 트리거
+   * 시간 계열·FF 의 딜레이 공격), 양수 = 앞당기기(아군 퀵). 타격마다 적용한다. strict 턴제에서는 아무 일도 없다. 생략 = 없음.
+   */
+  gaugeShift?: number;
+  /**
+   * 힘 모으기(1~3): 쓰겠다고 정한 차례에는 예고만 하고(「…을 준비한다!」), 자기 차례가 이만큼 더 지난 뒤에 발동한다.
+   * 적이 쓰면 보스 대기술 예고가 된다 — 플레이어가 방어·회복으로 대비할 틈. 아군도 같다. 생략 = 바로 발동.
+   */
+  chargeTurns?: number;
+  /**
+   * 소환(retro2003 연출): 파티원 도트 시트 id("party-pixel-<칩>"). 시전하면 그 몬스터가 시전자 앞에 나타나
+   * 대상에게 달려가 첫 착탄에 맞춰 치고 사라진다. 그림만이다 — 위력·타수·상태는 이 레코드 값 그대로. 생략 = 소환 없음.
+   */
+  summonResourceId?: string;
+  /**
+   * retro2003 도트 연출 빌리기: 이 스킬 id 가 연출 계약(retroClassSkills·retroRosterSkills·retroMonsterSkills)에 없을 때,
+   * 재생할 계약 스킬 id. 새 스킬·복제 스킬이 850여 개 계약 연출을 그대로 쓴다. 조회 순서는 「자기 id → 이 필드」.
+   * 위력·비용·상태는 이 레코드 값을 쓰고 그림·움직임·소리·타수 간격만 빌린다. 생략 = 빌리지 않음.
+   */
+  retroChoreographyId?: string;
+  /**
+   * 포켓몬 스킨 움직임 종류(접촉·발사체·현장 발생·범위·능력 올리기·상태 걸기·회복). 생략 = 효과·계산 능력치·대상·이펙트 id 로
+   * 자동 판정(battle/pokemonMoveMotion.ts). 판정이 틀린 기술만 적는다. 그림·움직임만 바뀌고 위력·명중은 그대로다.
+   */
+  moveMotion?: PokemonMoveMotion;
 }
 
 export interface SkillArea {
@@ -451,6 +505,8 @@ export interface ItemEquipmentEffectFlags {
 }
 
 export interface EquipmentRecord {
+  /** Explicit battle movement family; does not replace a baked sprite weapon. */
+  battleMotionStyle?: CharacterMotionStyle;
   id: EquipmentId;
   name: string;
   imageResourceId?: string;
@@ -525,6 +581,8 @@ export interface EnemyRecord {
   reactions?: EnemyReaction[];
   /** 훔치기 표. rate 0~100. 생략 = 훔칠 것 없음. */
   stealItems?: EnemyStealItem[];
+  /** 쓰러지는 연출(project/enemyCollapse.ts). 생략 = 스킨 기본 소멸. */
+  collapseEffect?: "pixelBreak" | "bossSink" | "flash" | "instant";
 }
 
 export interface EnemyStealItem {
@@ -732,6 +790,8 @@ export interface TroopRecord {
   previewBackgroundResourceId?: string;
   /** 전투 배경 움직임(스크롤·물결·색 순환). 생략 = 정지 배경(기존). project/battleBackdropAnimation.ts 가 정규화한다. */
   backdropAnimation?: BattleBackdropAnimation;
+  /** 배경 겹(안개·구름·비·눈·불티·별·빛줄기·저자 그림), 최대 4. project/battleBackdropLayers.ts. 모든 스킨에서 보인다. */
+  backdropLayers?: BattleBackdropLayer[];
   battleFlow?: BattleFlow;
   activeSlots?: number;
   battleEventPages: BattleEventPageRecord[];
@@ -762,6 +822,21 @@ export interface BattleBackdropAnimation {
   waveFrequency?: number;
   /** 색 순환 주기(초, 0~60). 0 = 끔. 주기마다 색상이 한 바퀴(hue-rotate 360°) 돈다. */
   paletteCycleSeconds?: number;
+}
+
+export interface BattleBackdropLayer {
+  /** 그림 없이 그리는 프리셋. resourceId 가 있으면 그림이 먼저다. */
+  preset?: "fog" | "clouds" | "mist" | "rain" | "snow" | "embers" | "stars" | "lightRays";
+  /** 바둑판으로 깔 그림(투명 PNG 권장). */
+  resourceId?: string;
+  /** true = 배틀러·이펙트 앞(덤불·안개 장막). 생략 = 배경 바로 위. */
+  front?: boolean;
+  /** 흐르는 속도 px/초(-1200~1200). 생략 = 프리셋 기본. */
+  scrollX?: number;
+  scrollY?: number;
+  /** 불투명도 %(0~100). 생략 = 프리셋 기본. */
+  opacity?: number;
+  blendMode?: "add" | "screen" | "multiply";
 }
 
 export interface StateRecord {
@@ -804,6 +879,8 @@ export interface StateRecord {
   emotion?: StateEmotion;
   /** 부위 손실: 이 상태인 동안 해당 장비 슬롯(weapon/shield/armor/helmet/accessory)의 능력치 보너스를 잃는다. */
   disablesEquipSlot?: string;
+  /** retro2003 전투에서 이 상태가 걸린 동안 몸 위에 남는 오라 프리셋 id(src/assets/battleStateAuras.ts). "none" = 끔, 없으면 기본 상태 id 표. */
+  battleAura?: string;
 }
 
 export interface StateEmotion {
@@ -835,6 +912,25 @@ export interface StateRuntimeEffects {
   incapacitates?: boolean;
   /** 받는 HP 피해 중 이 비율(0~1)을 MP 에서 대신 깎는다(MP 가 모자라면 남은 만큼만). */
   damageToMpRate?: number;
+  /** 반격: 상대의 물리(공격력 계열) 타격을 맞으면 이 확률(%)로 통상 공격을 되돌려 준다. */
+  counterChance?: number;
+  /** 도발: 적이 대상을 고를 때 이 상태인 배우를 먼저 노린다. */
+  taunt?: boolean;
+  /** 감싸기: HP 가 1/4 이하인 동료가 단일 물리 공격을 받으면 대신 맞는다. */
+  cover?: boolean;
+  /** 회피: 물리(공격력 계열) 피해 타격을 이 확률(%, 최대 95)로 피한다. */
+  evasionChance?: number;
+  /** 리플렉: 이 배틀러를 겨눈 단일 대상 마법(정신력 계열 피해·회복, 보조)을 시전자에게 되돌린다. 되돌린 마법은 다시 튕기지 않는다. */
+  reflect?: boolean;
+  /** 리레이즈: 쓰러지면 최대 HP 의 이 %(1~100)로 한 번 일어나고 상태가 풀린다(배우만). */
+  reraisePercent?: number;
+  /** 선고: 걸린 뒤 자기 턴이 이만큼 지나면 쓰러진다(1~9). */
+  doomTurns?: number;
+  /**
+   * 변신: 이 상태인 동안 전투 그림을 이 리소스 id 로 바꾼다. 아군은 전투 그림 id(예 "party-pixel-monster4-5" 9칸 시트,
+   * 걷기 칩 전투 시트), 적은 몬스터 그림 id. 능력치는 같은 상태의 배율 칸으로 바꾼다. 풀리면 원래 그림으로 돌아온다.
+   */
+  transformResourceId?: string;
 }
 
 export interface BattleAnimationRecord {
@@ -853,6 +949,12 @@ export interface BattleAnimationRecord {
    * 전체 길이는 본체와 후속의 끝 중 늦은 쪽이고, 시퀀서가 그만큼 recover 비트를 늘린다.
    */
   followUps?: BattleAnimationFollowUp[];
+  /**
+   * 겹치기 방식(2026-10-02). 마법 빛·불꽃은 "add"(더하기)로 아래 배틀러·배경을 밝힌다. 생략 = 보통.
+   * 셀마다가 아니라 레코드 하나에 거는 이유: 전투 이펙트 노드는 transform·z-index 로 스태킹 컨텍스트를
+   * 만들어서, 안쪽 셀에 섞기를 걸면 투명한 자기 상자와만 섞인다. 노드 자체에 걸어야 무대와 섞인다.
+   */
+  blendMode?: "add" | "screen" | "multiply";
 }
 
 export interface BattleAnimationFollowUp {
@@ -890,6 +992,10 @@ export interface BattleAnimationCell {
   opacity: number;
   visible: boolean;
   tone?: BattleAnimationTone;
+  /** 회전(도, 시계 방향, -360~360). 생략 = 0. 칼 궤적·회오리처럼 한 장을 돌려 쓰는 셀. */
+  rotation?: number;
+  /** 좌우 뒤집기. 생략 = false. 한 시트로 왼쪽·오른쪽 베기를 함께 낸다. */
+  mirror?: boolean;
 }
 
 export interface BattleAnimationTone {
@@ -1106,7 +1212,47 @@ export interface HomeDecorationTypeRecord {
   readonly allowedMapIds?: MapId[];
 }
 
+/** 스킬 연출 레코드의 층 하나. 시트 키(pixel-fx)만 저장하고 frame·frames 는 시트 메타(retroFxSheetMeta)에서 읽는다. */
+export interface SkillChoreographyLayer {
+  /** 이펙트 시트 키(public/assets/generated/pixel-fx/<key>.png). 모르는 키는 정규화가 버린다. */
+  sheet: string;
+  anchor: RetroFxAnchor;
+  /** 시작 시각(ms, 0~5000). 없으면 기존 타임라인이 정하는 시각. */
+  startMs?: number;
+  /** 0.5~3. 기본 1. */
+  scale?: number;
+  /** 같은 층을 이어서 반복 재생하는 횟수(1~6). 기본 1. */
+  repeat?: number;
+  /** each: 다단 스킬이면 타수마다 이 착탄 층을 다시 깐다. first(기본): 첫 타에 한 번. */
+  onHit?: "first" | "each";
+  tint?: string;
+  /** 층이 시작될 때 울리는 효과음 id. */
+  se?: string;
+}
+
+/** 프로젝트가 소유하는 스킬 도트 연출. 기본 연출(계약 카탈로그 약 1,130개)은 복사하지 않고 읽기 전용으로 남는다. id 는 chor_<slug>. */
+export interface SkillChoreographyRecord {
+  /** Shared motion program used in preview and exported player. */
+  movement?: import("@/battle/battleMotionProgram").BattleMotionProgram;
+  id: string;
+  name: string;
+  description?: string;
+  /** 직업 동작 9종 또는 몬스터 동작 7종(몬스터 기본 연출을 복제할 수 있게 합집합). */
+  motion: RetroSkillMotion | RetroMonsterSkillMotion;
+  layers: SkillChoreographyLayer[];
+  /** 0.5~2. */
+  speed?: number;
+  weight?: "light" | "normal" | "heavy";
+  tint?: string;
+  screen?: { shake?: number; flash?: string; dim?: boolean; cutIn?: boolean };
+  tags?: { family?: string; element?: string };
+  /** 복제 원본(기본 연출 id 또는 다른 프로젝트 레코드 id). */
+  sourceId?: string;
+}
+
 export interface ProjectDatabaseRecords extends DatabaseRecords {
+  /** 스킬 연출 레코드. 없음 = 빈 배열(스키마 변경 없이 덧붙는 옵셔널 컬렉션). */
+  skillChoreographies?: SkillChoreographyRecord[];
   characterAppearances?: CharacterAppearanceRecord[];
   /** Optional additive catalog; built-in slots always remain available. */
   equipmentSlots?: EquipmentSlotRecord[];
@@ -1469,6 +1615,10 @@ export interface SystemRecords {
   battleUiStyle?: BattleUiStyle;
   /** 전투 타격감 프리셋(project/battleHitFeel.ts). 생략 = impact(묵직하게). 스킨과 별개 축이다. */
   battleHitFeel?: import("@/project/battleHitFeel").BattleHitFeel;
+  /** 전투 화면 꾸미기(project/battleLook.ts) — 프리셋 + 바꾼 칸. 생략 = 「도트 창」 프리셋. 스킨(전투 방식)과 별개 축이다. */
+  battleLook?: import("@/project/battleLook").BattleLookSettings;
+  /** 화면 표시 필터(project/displayFilter.ts) — 주사선·브라운관. 생략 = 없음. */
+  displayFilter?: "scanlines" | "crt";
   /** ESC(X) 게임 메뉴 디자인. 생략 = workbench(작업대, 지금 화면). */
   menuUiStyle?: MenuUiStyle;
   /** 대화창 스타일(project/dialogueStyles.ts). 생략 = glass(지금까지의 유리 창). */
@@ -1479,6 +1629,8 @@ export interface SystemRecords {
   dialogueSpeed?: number;
   /** false 면 구두점 뒤에 쉬지 않는다. 생략 = 쉰다. */
   dialoguePunctuationPause?: boolean;
+  /** 하단 대사창 뒤 전신 초상의 크기·내림(%). 생략 = 높이 125·내림 20. */
+  dialogueFullPortrait?: import("@/project/dialogueStyles").DialogueFullPortraitSettings;
   fieldHud?: import("../fieldHud").FieldHudConfig;
   /** Project-wide, scoped battle menu CSS; absent preserves the selected skin. */
   battleCommandCss?: string;

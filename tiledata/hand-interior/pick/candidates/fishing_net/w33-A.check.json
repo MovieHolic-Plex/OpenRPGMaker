@@ -1,0 +1,45 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/fishing_net/w33-A.pxg",
+ "id": "fishing net",
+ "hard": [],
+ "warn": [],
+ "resized": {
+  "canvas": [
+   48,
+   32
+  ],
+  "footprint": {
+   "w": 3,
+   "h": 0
+  },
+  "why": "사용자 메모: 좀 더 큰 3x2 사이즈로 (v5 그물 결 그대로 3칸 너비로 키움)."
+ },
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.09
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 17,
+ "v5_colors": 6,
+ "bbox": [
+  1,
+  1,
+  46,
+  30
+ ],
+ "v5_bbox": [
+  0,
+  1,
+  15,
+  14
+ ],
+ "note": "가로 막대에 넓게 건 마름모 그물, 부표 셋과 아래 추",
+ "ok": true
+}

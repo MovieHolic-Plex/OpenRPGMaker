@@ -1930,3 +1930,159 @@ under `test/fixtures` derives existing engine test data without remote persisten
 수집형은 실제 방향키/Enter/Escape 메뉴 왕복, 호러형은 생명 5/3/1/0꽃잎을 확인한다.
 `scripts/qa/field-hud-editor.probe.mjs`는 글꼴·메뉴·수치 표시를 실제 DB 컨트롤로
 저장하고 serialize/deserialize 및 섹션 왕복을 확인한다. 운영 콘텐츠 작성은 하지 않는다.
+
+## 실제 첫 생성 → 정본 재로드 → 출하 ZIP 플레이 (2026-10-03)
+
+`scripts/qa/live-first-game.mjs`는 독립된 루프백 SQLite 호스트에서 실제 새 프로젝트 인터뷰와
+기본 모델을 실행한다. 프롬프트 원문 포함 여부·첫 커밋 지연·정본 재로드를 기록하며, 워커의
+`done` 신호 없이 보드만 유휴 상태가 된 실행은 성공으로 보지 않는다. 중간 체크포인트가
+저장된 것과 게임 제작 완료는 다르다.
+
+`live-first-game-export.mjs`는 같은 프로젝트의 실제 편집기 메뉴에서 ZIP을 내려받는다.
+`live-first-game-player.mjs`는 그 ZIP을 푼 폴더를 독립 서버에서 제공하고 실제 `player.html`과
+`project.json`을 전용 런타임 QA로 검사한다.
+두 기억 선택지의 서로 다른 대사, 정상 이동,
+첫 구간 엔딩을 각각 확인하며 외부 호스트 요청은 거절한다. fixture를 손으로 고쳐 통과시키지 않는다.
+전환 목적지 좌표는 페이드가 끝나기 전에 커밋된다. 다음 방향키를 보내기 전 `runtime-state-json`의
+`data-live-flags`에서 해당 목적지·입력 ON·실행 이벤트 종료를 기다린다. 좌표만 기다리면 첫 입력을 잃는다.
+
+`runRuntimeQa`의 `entryPath`·`projectUrl` 옵션은 출하 패키지의 실제 진입 파일과 프로젝트를
+검사하기 위한 것이다. 직접 프로젝트 URL을 쓰면 시스템 설정 패치를 허용하지 않는다.
+플레이어 부팅 실패도 `SUMMARY.md`·`boot-failure.json`·PNG를 남긴다. 먼저 SUMMARY를 읽는다.
+이 흐름은 전체 Vitest/gates 실행을 대신하지 않는다. 게이트 실행 제한은 AGENTS를 따른다.
+
+자동 실행이 기획을 완성하지 못하면 `live-first-game-complete.mjs`로 실제 조수에게 후속
+제작을 맡길 수 있다(`LIVE_GAME_REPAIR_TASK`로 수정 요청 지정). 기록은 `completion.json`으로
+분리하고 `automaticBuildCompleted:false`를 유지한다. 후속 제작의 성공을 자동 첫 생성 성공으로
+합산하지 않는다. 최종 패키지의 맵·이벤트·기획은 같은 SQLite 정본과 비교한다.
+
+## 맵 크기 성능 실측 (2026-10-01)
+
+사용자가 성능 실측을 요청했을 때 `node scripts/qa/map-size-benchmark.mjs`로 256×256과
+512×512를 비교한다. `startPlayerQaServer`의 전용 `player.html`/export store shim을 쓰며
+정본 프로젝트나 맵 크기 상한을 바꾸지 않는다. 최초 실측 당시 상한은 256이었고 512는
+실험용 fixture였다. 같은 날짜 후속 변경으로 공식 상한이 512, 이어 1024가 됐으며, 새 실행은
+`supportedDimension`에 현재 상한을 기록한다. 같은 합본 마을 바닥 타일 360(칸당 쿼터 이미지 4개), NPC 0명,
+같은 카메라·화면에서 준비 실행을 버리고 크기별 3회 교대 측정한다.
+
+결과는 `verify-shots/map-size-benchmark-20261001/SUMMARY.md`를 먼저 읽는다.
+`raw-results.json`에는 맵 진입 동기 시간, GC 후 JS heap, 타일 객체 수,
+180프레임씩의 정지/이동 CPU 시간·간격, 실제 이동 좌표, 오류와 환경이 있다.
+`SOURCE-EVIDENCE.md`에는 전체 타일 생성, Phaser Container.add의 누적 목록 검색,
+화면 밖 타일 숨김 뒤에도 남는 프레임별 전체 목록 순회의 코드 좌표가 있다.
+
+측정 환경은 공유 Linux Chromium/SwiftShader다. `ERR_NETWORK_CHANGED`를 피하기 위해
+로컬 HTTP 파일은 Node fetch로 전달하고 사용하지 않는 Vite 개발 WebSocket은 connected
+응답으로 대체한다. JS heap은 native/GPU 메모리를 포함하지 않고, 프레임 CPU는 GPU 완료
+시간을 포함하지 않는다. 이 결과는 편집기 붓·되돌리기·파일 저장이나 메모리 부족 임계점을
+측정한 결과가 아니며 사용자 GPU의 절대 FPS나 범용 안전 상한으로 해석하지 않는다.
+
+### 화면 주변 타일 유지 검증
+
+2026-10-01 최적화 후 결과는 `verify-shots/map-size-optimized-20261001/SUMMARY.md`와
+`COMPARISON.md`다. 개선 전 증거 폴더는 보존한다. 재측정은
+`node scripts/qa/map-size-benchmark.mjs --out verify-shots/map-size-current`로 별도 폴더에 한다.
+출력 경로를 생략하면 실행 시각으로 새 폴더를 만든다. 원시 JSON에 실행 코드 SHA-256을 남긴다.
+진입 동기 시간과 별도로 첫 postrender까지의 지연도 기록한다(기준선에는 후자 측정이 없다).
+초기 타일 창 생성 뒤 도착 카메라 창을 첫 update에서 맞추는 비용을 숨기지 않기 위해서다.
+
+`node scripts/qa/runtime-tile-window.mjs`는 전용 player에서 64×64의 16px/32px 맵을 쓴다.
+4층/쿼터/물/그림자/솔리드 upper/★ upper/NPC/밭/설치물을 포함하고,
+이동·순간이동·복귀·맵 전환·줌·타일 수정 화면을 카메라 없는 전체 맵 렌더 경로와 RGBA로 대조한다.
+물의 비교 위상은 표시 창이 갱신된 **뒤** 고정한다. 복귀 시 새로 생성된 물을 고정 전에
+찍으면 위상 차이가 그림 차이로 오인된다. 실제 물 UpdateList 틱은 별도로 네 프레임으로 확인한다.
+`verify-shots/runtime-tile-window-20261001/SUMMARY.md`를 먼저 읽고 지정 PNG만 연다.
+이 스크립트는 테스트 fixture만 로드하며 정본 프로젝트를 저장하지 않는다.
+
+관련 테스트는 `npm test -- test/runtimeTileWindow.test.ts test/playSceneTileCulling.test.ts
+test/eventLayerReuse.test.ts test/terrainQuarterAutotile.test.ts test/lakeAutotile.test.ts
+--maxWorkers=2 --minWorkers=1`. 앱 타입 검사는 기본 Node heap 한도에서 OOM(exit 134)이므로
+`NODE_OPTIONS=--max-old-space-size=8192 npm run typecheck:app`로 확인했다.
+테스트 실행에는 AGENTS.md의 세션별 사용자 명시 허가가 필요하다.
+
+### 공식 512×512 저작 상한 검증
+
+공식 상한 변경의 증거는 `verify-shots/official-map-512-20261001/SUMMARY.md`다.
+핵심 테스트는 `mapSizeGuard`·`mapEdgeGrow`·`mapCreateSpec`·`runtimeTileWindow` 네 파일을
+`--maxWorkers=1 --minWorkers=1`로 실행한다. 공간 설계 저장/초과 크기와 기존 도구 경계는
+`spatialSchema`·`spatialBindingProjection`·`generateMap`·`toolsMapManagement` 네 파일에
+`-t '512×512|unbounded size|oversized extent|지원 상한 초과'`를 주어 별도로 확인한다.
+512×512 생성·확장·마지막 셀 저장 왕복·편집기 선택 허용·513 거부를 검증한다.
+
+`node scripts/qa/official-map-size.mjs`는 새 `npm run dev:worktree` 서버에서 실제 편집기
+생성창·actions·store·io 모듈만 독립 브라우저 화면으로 실행한다(검사 중 HMR 편집 금지).
+입력 max=512, 513 거부, 512 생성과 재로드 배열 길이를 확인한다. 전체 편집기 부팅/캔버스
+검사와 SQLite 정본 저장 증거는 아니다. 전체 셸을 쓰던 최초 시도는 브라우저 종료로 미완료다.
+플레이어 화면 QA는 위 전용 런타임 하네스를 별도로 쓴다.
+
+큰 6파일 실행에서는 148개 assertion이 통과했지만 Vitest `onTaskUpdate` RPC 시간 초과
+2건으로 exit 1이었다. 이를 초록으로 세지 않는다. 위 작은 묶음의 실제 종료 코드와 로그를 쓴다.
+더 넓은 8파일 실행의 16개 실패는 수정하지 않은 main `c7de9b0b7`에서도 재현했다:
+기본 beodeul_city에 구 generate_map 프로필이 없고, 구 테스트의 잔디 번호/이벤트 오류 경로
+기대값이 현재 기본값과 다르다. 경계 테스트는 생성기 지원 칩셋을 명시해 크기 계약 자체를 검사한다.
+전체 게이트/전체 스위트는 이 변경에서 로컬 실행하지 않았다.
+
+CI의 기존 main 실행이 러너 연결 끊김으로 실패하고 PR 검사도 지연돼 빠른 레인 명령
+(`build:app`, `gates:barrel`, `gates:self-hosted`, `test:parity`)은 추가로 로컬에서 확인했다.
+parity 목록의 `equipment.elementalDefenseIds` 소비자 주소는 전투 코드 이동 뒤 남은
+`runtime.ts`에서 실제 계산 파일 `battleElementModifiers.ts`로 바로잡았다. 상태/래칫과
+전투 동작은 그대로다. 상세 결과/기준선 SHA는 같은 공식 상한 증거 폴더를 본다.
+
+### 공식 1024×1024 저작 상한과 성능 검증
+
+현재 상한은 1024, 거부 경계는 1025다. 512의 과거 결과는 위 폴더에 보존한다.
+`mapSizeGuard`는 512/1024 모두의 4개 타일 층과 그림자 길이·마지막 셀을 저장 왕복하며,
+`runtimeTileWindow`는 두 크기 모두 긴 이동 뒤 화면 객체 수가 제한되는지 검사한다.
+핵심 네 파일의 실행 옵션은 위와 같다. 공간/도구 경계 필터는 이제
+`-t 'roundtrips an authored|unbounded size|oversized extent|지원 상한 초과'`다.
+브라우저 생성창 검사기는 소스 상한을 읽고 1025 거부 → 1024 생성 → 재로드를 검증한다:
+`node scripts/qa/official-map-size.mjs --out verify-shots/official-map-1024-20261001`.
+전체 편집기 셸·캔버스 및 SQLite 정본 저장 검사는 아니다.
+
+전용 플레이어 실측은 `node scripts/qa/map-size-benchmark.mjs --sizes 512,1024 --frames 600
+--out verify-shots/map-size-1024-20261001`로 크기별 3회, 정지/이동 각 600프레임을 기록한다.
+진입/CPU 중앙값 외 CPU p95·최대, 프레임 간격 p95, GC 후 총 JS heap과 기준 맵 대비
+추가 heap을 구분한다. 원시 로그·스크린샷·코드 해시는 같은 폴더에 있다.
+바닥 타일 1층, 높이 없음, NPC 0명 조건이므로 1024의 비평탄 relief·많은 이벤트·길찾기
+성능까지 입증하지 않는다. 높이 붓은 기존 전체 맵 CanvasTexture 경로가 남아 있다.
+
+## 첫 자동 게임의 실제 대사 대기 (2026-10-04)
+
+`waitForText`는 DOM의 실제 typewriter 문구가 완성되기를 기다린다. 선택 직후 고정 Enter를
+누르면 짧은 결과 대사가 이미 끝난 경우 다음 대사로 넘어가 잘못된 실패를 만든다.
+페이지네이터가 삽입한 실제 줄바꿈은 `visibleText`와 같이 공백 하나로 정규화한다.
+`live-first-game-player.mjs`는 자연 motion·오프닝 전체·정상 키보드·충돌 기반 경로로 두 선택을
+확인하고 SQLite 정본의 4층 타일/대상 이벤트가 내보내기에 보존됐는지 비교한다.
+
+브라우저 관측기가 끊겨도 원래 서버 실행이 정상 종료됐다면 `live-first-game-reload.mjs`로
+같은 실행의 종료·핵심/장면 검수 기록을 읽고 같은 SQLite 프로젝트를 Chromium에서 재로드한다.
+추가 AI POST는 0이어야 한다. 원래 실패한 `generation.json`은 그대로 두고 `reloaded.json`을
+따로 기록한다. 이는 게임을 고치는 후속 제작이 아니며, 내보내기/플레이 성공을 뜻하지 않는다.
+출하 ZIP 다운로드와 두 선택의 실제 키보드 플레이도 Chromium으로 수행한다.
+엔딩은 루트 DOM의 생성만으로 통과시키지 않는다. `data-phase=epilogue`와 실제 엔딩 제목을
+확인하고 `waitForVisible`의 `descendant: '.ending-heading', minAlpha: 0.95`로 자식 페이드까지 기다린다.
+
+### Maker repair and click-first startup (2026-10-04)
+
+Focused QA scripts (no Vitest/full-gate invocation):
+- `scripts/qa/maker-art-repair.mts`: synthetic production worker scenarios for
+  review rejection, bounded repair, locks, immutable authored events, read-only,
+  cancellation and mandatory current-image completion.
+- `scripts/qa/maker-terrain-reference.mjs`: terrain-kit source-purpose evidence
+  gate, including the observed sewer bridge used as a garden-path bypass.
+- `scripts/qa/maker-interview-ui.mjs`: production component click-only completion
+  at desktop/short/mobile widths, fixed-action geometry and absence of branch
+  thumbnails/shortcut hints, with explicitly synthetic network failure.
+- `scripts/qa/maker-interview-art-live.mjs`: real generation + real vision image
+  receipt, including rejection/redraw. No game-content writes.
+- `scripts/qa/maker-fullscreen-electron.mjs`: actual packaged renderer startup in
+  Electron, native fullscreen flag and visible click toggle. Use Xvfb with a window
+  manager when asserting screen-sized bounds; a bare Xvfb has no WM to honor them.
+
+Do not turn an observer timeout, a synthetic provider test, a component fixture or
+an independently polished reference game into a claim that New Game's full
+production turn finished. Those are distinct evidence categories.
+Committed evidence and its limitations: `verify-shots/maker-click-first/README.md`.
+The live maker task finished and saved/reloaded, but its observer composite is
+FAIL because of one framebuffer error; the subsequent read-only resize probe and
+dedicated exported player passed. Do not describe this as all browser checks green.

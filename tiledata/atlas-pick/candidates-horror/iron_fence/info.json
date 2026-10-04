@@ -1,0 +1,25 @@
+{
+ "id": "iron_fence",
+ "slug": "iron_fence",
+ "name": "녹슨 쇠 울타리(이어 붙이기)",
+ "scene": "밤 숲·묘지",
+ "cells": [
+  2,
+  1
+ ],
+ "canvas": [
+  32,
+  16
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "묘지 쇠 울타리 한 토막: 세로 창살(끝이 창촉 모양) 여섯~여덟 개, 위아래 가로 띠, 한 창살이 휘어짐, 녹 점. 좌우로 이어 붙는다(양 끝 가로 띠 높이 같게). 사람 가슴 높이.",
+ "palette_hint": "tin/rust 쇠, ~ 그림자",
+ "worker_v1": "h5",
+ "stage": 2,
+ "stage_ko": "2단계 연출(기본이 선 뒤)",
+ "worker": "h5",
+ "set_with": [
+  "cemetery_gate"
+ ]
+}

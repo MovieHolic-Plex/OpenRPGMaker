@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/fabric_bolt_rack/w6-A.pxg",
+ "id": "fabric bolt rack",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "noise"
+  ],
+  "pass": false
+ },
+ "colors": 38,
+ "v5_colors": 39,
+ "bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  0,
+  15,
+  31
+ ],
+ "note": "순검정(wood:0) 테두리를 짙은 갈색으로, 위 두 귀퉁이를 비워(배경 검사) 나머지 기물과 결을 맞춘 v5 정리 (모양 그대로)",
+ "ok": true
+}

@@ -1,0 +1,23 @@
+{
+ "id": "schoolyard",
+ "slug": "schoolyard",
+ "name": "운동장 흙",
+ "scene": "옥상·운동장·교문",
+ "place": "out",
+ "cells": [
+  1,
+  1
+ ],
+ "canvas": [
+  16,
+  16
+ ],
+ "layer": "ground",
+ "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+ "description": "운동장 마사토 한 칸 — 옅은 흙에 모래알 점 두세 단, 발자국 흔적 하나. 사방 이음 맞춤. 보도·아스팔트와 명도 분리.",
+ "palette_hint": "undo",
+ "pair": [
+  "track_line"
+ ],
+ "worker": "s1"
+}

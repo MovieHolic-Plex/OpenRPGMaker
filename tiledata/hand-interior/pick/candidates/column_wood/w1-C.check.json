@@ -1,0 +1,36 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/column_wood/w1-C.pxg",
+ "id": "column wood",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.1
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "saturation",
+   "outline",
+   "outline_black"
+  ],
+  "pass": false
+ },
+ "colors": 8,
+ "v5_colors": 10,
+ "bbox": [
+  2,
+  8,
+  13,
+  47
+ ],
+ "v5_bbox": [
+  2,
+  8,
+  13,
+  47
+ ],
+ "note": "윤곽 재설계: 몸통을 선반 깎은 기둥(두 줄 굵기 오르내림)으로 바꾼 정면 실루엣, 머리·받침은 좁은 나무 판",
+ "ok": true
+}

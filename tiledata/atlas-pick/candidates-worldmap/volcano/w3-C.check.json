@@ -1,0 +1,46 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/volcano/w3-C.pxg",
+ "set": "worldmap",
+ "id": "volcano",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.083
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.075
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies",
+   "outline_black",
+   "dither"
+  ]
+ },
+ "colors": 17,
+ "bbox": [
+  1,
+  0,
+  29,
+  31
+ ],
+ "note": "2x2 화산 — 낮고 넓은 분화구를 크게, 연기는 화강 회색 세 단으로 옆으로 퍼짐.",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 4,
+   "atLeast95": 0,
+   "max": 0.098
+  },
+  "refmapWorld": {
+   "cells": 4,
+   "atLeast95": 0,
+   "max": 0.227
+  }
+ }
+}

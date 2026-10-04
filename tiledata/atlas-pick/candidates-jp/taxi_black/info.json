@@ -1,0 +1,19 @@
+{
+ "id": "taxi_black",
+ "slug": "taxi_black",
+ "name": "검정 택시",
+ "scene": "역 앞 번화가",
+ "cells": [
+  2,
+  3
+ ],
+ "canvas": [
+  32,
+  48
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "위에서 약간 내려다본 세로 택시(남쪽을 향함). 검정 몸통, 지붕 위 작은 표시등(행등, 흰·노랑), 앞유리·뒷유리, 옆 흰 문 테 줄 없이 은색 테. 일본식 둥근 모서리 세단. 차 밑 오른쪽 아래 반투명 그림자.",
+ "palette_hint": "lacq 몸통, mglass 유리, washi·taxi 행등, mmetal 테",
+ "worker": "j2"
+}

@@ -239,6 +239,7 @@ function diffDatabase(before: Project, after: Project, summary: ChangeSummary): 
     "fishSpecies",
     "farmBuildingTypes",
     "homeDecorationTypes",
+    "skillChoreographies",
   ];
   for (const key of keys) {
     // 같은 배열 객체면 내용도 같다 — 저장 기준본은 바뀌지 않은 가지를 공유한다(electronRepository accepted).

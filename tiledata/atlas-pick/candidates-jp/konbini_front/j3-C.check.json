@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/konbini_front/j3-C.pxg",
+ "set": "jp",
+ "id": "konbini_front",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.32
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.121
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 46,
+ "bbox": [
+  0,
+  0,
+  63,
+  47
+ ],
+ "note": "실루엣 재해석: 가로 띠 간판 대신 초록·주황·파랑 세로 줄무늬 물결 차양으로 지붕 밑을 덮고, 창은 한 장으로 길게 이은 뒤 가운데 좁은 미닫이 문틀이 튀어나온다",
+ "ok": true
+}

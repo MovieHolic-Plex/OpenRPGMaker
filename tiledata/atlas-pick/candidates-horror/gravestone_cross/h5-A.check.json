@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/gravestone_cross/h5-A.pxg",
+ "set": "horror",
+ "id": "gravestone_cross",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.105
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.074
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "dither"
+  ]
+ },
+ "colors": 15,
+ "bbox": [
+  0,
+  2,
+  15,
+  31
+ ],
+ "note": "돌 십자 비석: 팔 끝 넓어지는 십자, 두꺼운 받침, 윗·왼면 밝은 한 단, 금 한 줄, 이끼 점, 발치 풀",
+ "ok": true
+}

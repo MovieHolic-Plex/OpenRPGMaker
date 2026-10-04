@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/lectern/w102-A.pxg",
+ "id": "lectern",
+ "hard": [],
+ "warn": [
+  "파일 이름이 <작업자>-<방향>.pxg 꼴이 아니다(w1-A.pxg): w102-A.pxg"
+ ],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.133
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 15,
+ "v5_colors": 11,
+ "bbox": [
+  1,
+  8,
+  14,
+  31
+ ],
+ "v5_bbox": [
+  2,
+  8,
+  14,
+  31
+ ],
+ "note": "성경대: 펼친 책 윗면 9행(두 쪽·가운데 접힘·글줄 2줄) + 앞날 + 앞판 4행(붉은 책갈피·금 걸쇠) + 둥근 기둥 + 받침 윗면 2행. 몸통 24행(v5 와 같음), 캔버스 그대로.",
+ "ok": true
+}

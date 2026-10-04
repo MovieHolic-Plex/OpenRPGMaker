@@ -1,0 +1,40 @@
+// laundry C — 다시 생각: 바람에 쏠려 펄럭이는 셔츠 소매·수건 끝, 양말 크기 차이
+@size 32 16
+@cell 16
+@palette palette.pal
+@mat o mwhite 0
+@mat W mwhite 4
+@mat V mwhite 3
+@mat Z mwhite 2
+@mat p mmetal 5
+@mat q mmetal 3
+@mat r mmetal 1
+@mat b kblue 3
+@mat B kblue 2
+@mat c kblue 1
+@mat d kblue 5
+@mat s sakura 3
+@mat S sakura 2
+@mat t sakura 1
+@mat u sakura 5
+@mat y taxi 4
+@mat Y taxi 3
+@mat z taxi 1
+@mat x taxi 5
+@mblock 0 0
+................................
+pppppppppppppppppppppppppppppppp
+qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq
+..ooor...r...ccrcrcc..oooo.ooooo
+..oWWooooooo.cddddbcc.uSSo.xzzzo
+..oWWWWWWWWWocbbbbBBc.usso.xyyyo
+..oWWWVVVWWWWcWWWWWWc.usso.xyyyo
+..oWWVVVVWWWWcbbbbbBc.ussooxYYYo
+..ooWVVVVWWWocBBBBBc..uSSSoooooo
+...oWVVVVWZo.ccccccc..ooooo.....
+...oWVVVVWZo....................
+...oWVVVZZZo....................
+...ooooooooo....................
+................................
+................................
+................................

@@ -1,0 +1,54 @@
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat a vpine 4
+@mat b vpine 5
+@mat c vpine 3
+@mat d vpine 1
+@mat e vpine 2
+@mat f vbrass 6
+@mat g vwhite 6
+@mat h vpine 0
+@mat i vdwood 1
+@mat j vdwood 2
+@mat k viron 5
+@mat l jersey 3
+@mat m jersey 5
+@mat n jersey 1
+@mat o viron 6
+@mat p uniform 4
+@mat q uniform 2
+@mat r uniform 5
+@mblock 0 0
+................................
+................................
+................................
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+dbbbbbbdjjjjjjjjdbbbbbbddbbbbbbd
+dbccccbdihhhhhhidbcccceddbcccced
+dbddddbdikkookkidbddddeddbdddded
+dbccccbdihmllnhidbcccceddbcccced
+dbddddbdihmllnhidbddddeddbdddded
+dbccccbdihmllnhidbcccceddbcccced
+dbdddfbdihmllnhidbdddfeddbdddfed
+dbcggcbdihmllnhidbcggceddbcggced
+dbccccbdihmllnhidbcccceddbcccced
+dbccccbdihhhhhhidbcccceddbcccced
+deeeeebdihhhhhhideeeeeeddeeeeeed
+dddddddddddddddddddddddddddddddd
+dbbbbbbddbbbbbbddbbbbbbddbbbbbbd
+dbcccceddbcccceddbcccceddbcccced
+dbddddeddbddddeddbddddeddbdddded
+dbcccceddbcccceddbcccceddbcccced
+dbddddeddbddddeddbddddeddbdddded
+dbcccceddbcccceddbcccceddbcccced
+dbdddfeddbdddfeddbdddfeddbdddfed
+dbcggceddbcggceddbcggceddbcggced
+dbcccceddbcccceddbcccceddbcccced
+dbcccceddbcccceddbccrppddbcccced
+deeeeeeddeeeeeeddeeepppddeeeeeed
+ddddddddddddddddddddqqqddddddddd
+dddddddddddddddddddddddddddddddd
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+--------------------------------

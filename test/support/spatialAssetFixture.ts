@@ -1,5 +1,5 @@
 import { createBlankProject } from "@/project/defaults/defaultProject";
-import { INTERIOR_TILESET_ID } from "@/project/mapCreateSpec";
+import { EASYRPG_INTERIOR_TILESET_ID as INTERIOR_TILESET_ID } from "@/project/mapCreateSpec";
 import type { StructureKitDef, TilesetDef } from "@/project/types";
 import baseline from "../fixtures/spatial/interiorCatalogBaseline.json";
 import { designBase, emptySpatialDocument } from "./spatialSchemaFixture";

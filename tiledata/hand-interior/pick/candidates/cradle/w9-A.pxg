@@ -1,0 +1,44 @@
+// w9 A — v5 모양 유지: 흰 이불·아기 얼굴·파란 담요를 3단으로 나누고 나무 테두리를 위-왼 밝게/아래-오른 어둡게, 요람 발도 밝은 나무색으로
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat a black 3
+@mat b blue 3
+@mat c ice 3
+@mat d pine 3
+@mat e pink 3
+@mat f wood 3
+@mblock 0 0
+................
+................
+................
+.dddddddddddddd.
+.ddccccccccccdd.
+.ddcceeeeccccdd.
+.ddcceaeaecccdd.
+.ddbbbbbbbbbbdd.
+.ddbbbbbbbbbbdd.
+.ddbbbbbbbbbbdd.
+.dddddddddddddd.
+.dddddddddddddd.
+.dddddddddddddd.
+.dddddddddddddd.
+..ffffffffffff..
+...ffffffffff...
+@tblock 0 0
+................
+................
+................
+.01111111111110.
+.16666666666631.
+.15665555666631.
+.15655151556631.
+.15666666666631.
+.15555555555531.
+.15444454444331.
+.06666666666642.
+.03555555555430.
+.02333333333320.
+.00000000000000.
+..444444444444..
+...1111111111...

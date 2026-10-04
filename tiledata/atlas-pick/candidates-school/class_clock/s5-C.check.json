@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/class_clock/s5-C.pxg",
+ "set": "school",
+ "id": "class_clock",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.044
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.098
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 10,
+ "bbox": [
+  0,
+  0,
+  15,
+  15
+ ],
+ "note": "실루엣 재해석: 둥근 시계를 네모난 회색 철망 틀이 감싼 체육관식 시계",
+ "ok": true
+}

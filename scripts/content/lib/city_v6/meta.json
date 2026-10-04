@@ -1,0 +1,4248 @@
+{
+ "schema": "oprn.prop-meta/v0 (draft)",
+ "source": "버들항 v4 (100x100, 16px)",
+ "coords": "cell x,y = footprint top-left; px,py = image top-left in map pixels",
+ "dropped_since_v3": {
+  "ids": [
+   "rope_coil",
+   "lobster_pots",
+   "buoys",
+   "horseshoe_board",
+   "bollards_chain",
+   "wall_fountain",
+   "tarp_pile",
+   "oar_rack",
+   "advert_column",
+   "gazebo",
+   "stall_tent",
+   "stall_carpet"
+  ],
+  "why": "적대적 QA: 1배·3배에서 무엇인지 안 읽히거나(밧줄·통발·부표·편자 판·쇠사슬·가면 샘·천 짐·노 거치대·광고 기둥·정자) 광장에 안 들어감"
+ },
+ "props": [
+  {
+   "id": "lamp_double",
+   "name_ko": "쌍등 가로등",
+   "name_en": "Double street lamp",
+   "description_ko": "철 기둥 양팔에 등 두 개를 단 큰 가로등. 광장 네 모서리에 세운다.",
+   "category": "street",
+   "tags": [
+    "market",
+    "plaza"
+   ],
+   "footprint_cells": [
+    2,
+    1
+   ],
+   "image_px": [
+    32,
+    48
+   ],
+   "overhang_up_px": 32,
+   "role_grid": {
+    "rows": [
+     "OO",
+     "OO",
+     "BB"
+    ],
+    "anchor": "맨 아랫줄 왼쪽 칸 = 배치 좌표"
+   },
+   "placement_rules": [
+    "광장 모서리 칸",
+    "문 앞 2칸 금지",
+    "문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지",
+    "통행로 연결을 끊지 않음(BFS 재확인)"
+   ],
+   "related": [
+    {
+     "id": "festoon",
+     "why": "광장 조명 한 벌"
+    }
+   ],
+   "variants_group": "lamp",
+   "animation_frames": null,
+   "status": "v4",
+   "drawn_by": "/tmp/j8city/pz.py"
+  },
+  {
+   "id": "lamp_crook",
+   "name_ko": "목 굽은 가로등",
+   "name_en": "Crook street lamp",
+   "description_ko": "목이 굽은 철 기둥에 등 하나를 매단 가로등. 2칸 폭 큰길과 부두 옆 잔디 가장자리에 10칸 간격으로 세운다.",
+   "category": "street",
+   "tags": [
+    "street",
+    "harbour"
+   ],
+   "footprint_cells": [
+    1,
+    1
+   ],
+   "image_px": [
+    16,
+    48
+   ],
+   "overhang_up_px": 32,
+   "role_grid": {
+    "rows": [
+     "O",
+     "O",
+     "B"
+    ],
+    "anchor": "맨 아랫줄 왼쪽 칸 = 배치 좌표"
+   },
+   "placement_rules": [
+    "길과 맞닿은 잔디 칸 (길 쪽이 앞)",
+    "다른 가로등과 10칸 이상",
+    "문 앞 2칸 금지",
+    "문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지",
+    "통행로 연결을 끊지 않음(BFS 재확인)"
+   ],
+   "related": [
+    {
+     "id": "bench_wood",
+     "why": "밤에 앉는 자리를 비춤"
+    }
+   ],
+   "variants_group": "lamp",
+   "animation_frames": null,
+   "status": "v4",
+   "drawn_by": "/tmp/j8city/pz.py"
+  },
+  {
+   "id": "bench_wood",
+   "name_ko": "나무 벤치",
+   "name_en": "Wooden bench",
+   "description_ko": "쇠다리에 나무 널을 댄 등받이 벤치. 광장·분수·우물 쉼터를 바라보게 둔다.",
+   "category": "street",
+   "tags": [
+    "plaza",
+    "park"
+   ],
+   "footprint_cells": [
+    2,
+    1
+   ],
+   "image_px": [
+    32,
+    16
+   ],
+   "overhang_up_px": 0,
+   "role_grid": {
+    "rows": [
+     "BB"
+    ],
+    "anchor": "맨 아랫줄 왼쪽 칸 = 배치 좌표"
+   },
+   "placement_rules": [
+    "광장·분수·우물 옆 3칸 안",
+    "앉는 면이 정면(아래)을 향함",
+    "문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지",
+    "통행로 연결을 끊지 않음(BFS 재확인)"
+   ],
+   "related": [
+    {
+     "id": "fountain_small",
+     "why": "앉아서 바라볼 것"
+    },
+    {
+     "id": "well_roofed",
+     "why": "쉼터 한 벌"
+    }
+   ],
+   "variants_group": "bench",
+   "animation_frames": null,
+   "status": "v4",
+   "drawn_by": "/tmp/j8city/pz.py"
+  },
+  {
+   "id": "table_mugs",
+   "name_ko": "주막 탁자",
+   "name_en": "Tavern table with mugs",
+   "description_ko": "맥주잔과 빵이 놓인 긴 탁자와 앞뒤 벤치. 여관 문 옆에만 둔다.",
+   "category": "shop",
+   "tags": [
+    "inn"
+   ],
+   "footprint_cells": [
+    2,
+    1
+   ],
+   "image_px": [
+    32,
+    32
+   ],
+   "overhang_up_px": 16,
+   "role_grid": {
+    "rows": [
+     "OO",
+     "BB"
+    ],
+    "anchor": "맨 아랫줄 왼쪽 칸 = 배치 좌표"
+   },
+   "placement_rules": [
+    "여관 간판이 걸린 집 문 옆 1~2칸",
+    "문 앞 2칸 금지",
+    "문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지",
+    "통행로 연결을 끊지 않음(BFS 재확인)"
+   ],
+   "related": [
+    {
+     "id": "sign_inn",
+     "why": "여관임을 알리는 간판"
+    },
+    {
+     "id": "parasol_table",
+     "why": "여관 앞마당 한 벌"
+    }
+   ],
+   "variants_group": "table",
+   "animation_frames": null,
+   "status": "v4",
+   "drawn_by": "/tmp/j8city/pz.py"
+  },
+  {
+   "id": "parasol_table",
+   "name_ko": "파라솔 탁자",
+   "name_en": "Parasol table",
+   "description_ko": "줄무늬 파라솔을 꽂은 둥근 탁자. 여관·빵집 문 옆에 둔다.",
+   "category": "shop",
+   "tags": [
+    "inn",
+    "bakery"
+   ],
+   "footprint_cells": [
+    2,
+    1
+   ],
+   "image_px": [
+    32,
+    32
+   ],
+   "overhang_up_px": 16,
+   "role_grid": {
+    "rows": [
+     "OO",
+     "BB"
+    ],
+    "anchor": "맨 아랫줄 왼쪽 칸 = 배치 좌표"
+   },
+   "placement_rules": [
+    "가게 문 옆",
+    "파라솔은 겹침층",
+    "문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지",
+    "통행로 연결을 끊지 않음(BFS 재확인)"
+   ],
+   "related": [
+    {
+     "id": "sign_bakery",
+     "why": "빵집 앞 자리"
+    },
+    {
+     "id": "table_mugs",
+     "why": "여관 앞마당 한 벌"
+    }
+   ],
+   "variants_group": "table",
+   "animation_frames": null,
+   "status": "v4",
+   "drawn_by": "/tmp/j8city/pz.py"
+  },
+  {
+   "id": "statue_sage",
+   "name_ko": "현자 석상",
+   "name_en": "Sage statue",
+   "description_ko": "지팡이 든 현자 석상과 받침대. 언덕 위 한 곳에 기념물로 하나만 둔다.",
+   "category": "monument",
+   "tags": [
+    "hill"
+   ],
+   "footprint_cells": [
+    2,
+    2
+   ],
+   "image_px": [
+    32,
+    64
+   ],
+   "overhang_up_px": 32,
+   "role_grid": {
+    "rows": [
+     "OO",
+     "OO",
+     "BB",
+     "BB"
+    ],
+    "anchor": "맨 아랫줄 왼쪽 칸 = 배치 좌표"
+   },
+   "placement_rules": [
+    "넓은 길 가장자리 또는 광장, 지구마다 하나",
+    "윗 두 칸은 겹침층",
+    "문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지",
+    "통행로 연결을 끊지 않음(BFS 재확인)"
+   ],
+   "related": [
+    {
+     "id": "planter_round",
+     "why": "기념물 둘레 장식"
+    }
+   ],
+   "variants_group": "statue",
+   "animation_frames": null,
+   "status": "v4",
+   "drawn_by": "/tmp/j8city/pz.py"
+  },
+  {
+   "id": "column_monument",
+   "name_ko": "기념 원주",
+   "name_en": "Memorial column",
+   "description_ko": "금빛 구슬을 얹은 돌 원기둥. 성 앞마당에 하나 둔다.",
+   "category": "monument",
+   "tags": [
+    "castle"
+   ],
+   "footprint_cells": [
+    1,
+    1
+   ],
+   "image_px": [
+    16,
+    64
+   ],
+   "overhang_up_px": 48,
+   "role_grid": {
+    "rows": [
+     "O",
+     "O",
+     "O",
+     "B"
+    ],
+    "anchor": "맨 아랫줄 왼쪽 칸 = 배치 좌표"
+   },
+   "placement_rules": [
+    "성 앞마당 판석 칸",
+    "문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지",
+    "통행로 연결을 끊지 않음(BFS 재확인)"
+   ],
+   "related": [
+    {
+     "id": "flagpole",
+     "why": "성 앞 의장 한 벌"
+    }
+   ],
+   "variants_group": "statue",
+   "animation_frames": null,
+   "status": "v4",
+   "drawn_by": "/tmp/j8city/pz.py"
+  },
+  {
+   "id": "fountain_small",
+   "name_ko": "작은 분수",
+   "name_en": "Small fountain",
+   "description_ko": "물줄기 하나가 솟는 둥근 돌 분수(움직임 4장). 신전 마당과 골목 광장에 둔다.",
+   "category": "water",
+   "tags": [
+    "plaza",
+    "temple"
+   ],
+   "footprint_cells": [
+    2,
+    2
+   ],
+   "image_px": [
+    32,
+    32
+   ],
+   "overhang_up_px": 0,
+   "role_grid": {
+    "rows": [
+     "BB",
+     "BB"
+    ],
+    "anchor": "맨 아랫줄 왼쪽 칸 = 배치 좌표"
+   },
+   "placement_rules": [
+    "2×2 막힘, 둘레 1칸 비움",
+    "문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지",
+    "통행로 연결을 끊지 않음(BFS 재확인)"
+   ],
+   "related": [
+    {
+     "id": "bench_wood",
+     "why": "분수를 바라보는 자리"
+    }
+   ],
+   "variants_group": "fountain",
+   "animation_frames": 4,
+   "status": "v4",
+   "drawn_by": "/tmp/j8city/pz.py"
+  },
+  {
+   "id": "fish_pool",
+   "name_ko": "물고기 연못 분수",
+   "name_en": "Fish pool fountain",
+   "description_ko": "물고기상이 물을 뿜는 긴 연못(움직임 4장). 항구 광장 한가운데에 하나.",
+   "category": "water",
+   "tags": [
+    "harbour"
+   ],
+   "footprint_cells": [
+    3,
+    2
+   ],
+   "image_px": [
+    48,
+    32
+   ],
+   "overhang_up_px": 0,
+   "role_grid": {
+    "rows": [
+     "BBB",
+     "BBB"
+    ],
+    "anchor": "맨 아랫줄 왼쪽 칸 = 배치 좌표"
+   },
+   "placement_rules": [
+    "항구 광장 칸, 3×2 막힘",
+    "문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지",
+    "통행로 연결을 끊지 않음(BFS 재확인)"
+   ],
+   "related": [
+    {
+     "id": "anchor_display",
+     "why": "항구 광장 표지 한 벌"
+    },
+    {
+     "id": "flagpole",
+     "why": "광장 입구 의장"
+    }
+   ],
+   "variants_group": "fountain",
+   "animation_frames": 4,
+   "status": "v4",
+   "drawn_by": "/tmp/j8city/pz.py"
+  },
+  {
+   "id": "flowerbox_long",
+   "name_ko": "긴 꽃상자",
+   "name_en": "Long flower box",
+   "description_ko": "꽃이 핀 긴 나무 화분 상자. 살림집 문 옆에 둔다.",
+   "category": "planter",
+   "tags": [
+    "residential"
+   ],
+   "footprint_cells": [
+    2,
+    1
+   ],
+   "image_px": [
+    32,
+    16
+   ],
+   "overhang_up_px": 0,
+   "role_grid": {
+    "rows": [
+     "BB"
+    ],
+    "anchor": "맨 아랫줄 왼쪽 칸 = 배치 좌표"
+   },
+   "placement_rules": [
+    "집 앞줄 문 옆, 문 칸 금지",
+    "2칸 폭 길 가장자리만",
+    "문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지",
+    "통행로 연결을 끊지 않음(BFS 재확인)"
+   ],
+   "related": [
+    {
+     "id": "door_pots",
+     "why": "같은 집 앞 장식 (둘 중 하나만)"
+    }
+   ],
+   "variants_group": "planter",
+   "animation_frames": null,
+   "status": "v4",
+   "drawn_by": "/tmp/j8city/pz.py"
+  },
+  {
+   "id": "planter_round",
+   "name_ko": "둥근 돌 화분",
+   "name_en": "Round stone planter",
+   "description_ko": "꽃을 심은 둥근 돌 화분. 계단 위·아래 양옆과 신전 마당에 짝으로 둔다.",
+   "category": "planter",
+   "tags": [
+    "stair",
+    "temple"
+   ],
+   "footprint_cells": [
+    1,
+    1
+   ],
+   "image_px": [
+    16,
+    16
+   ],
+   "overhang_up_px": 0,
+   "role_grid": {
+    "rows": [
+     "B"
+    ],
+    "anchor": "맨 아랫줄 왼쪽 칸 = 배치 좌표"
+   },
+   "placement_rules": [
+    "계단 발치·꼭대기 양옆에 대칭으로",
+    "문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지",
+    "통행로 연결을 끊지 않음(BFS 재확인)"
+   ],
+   "related": [
+    {
+     "id": "stair_rail",
+     "why": "계단을 표시하는 한 벌"
+    }
+   ],
+   "variants_group": "planter",
+   "animation_frames": null,
+   "status": "v4",
+   "drawn_by": "/tmp/j8city/pz.py"
+  },
+  {
+   "id": "door_pots",
+   "name_ko": "문간 화분 둘",
+   "name_en": "Pair of door pots",
+   "description_ko": "꽃 핀 토분 두 개. 집이나 가게 문 바로 옆 칸에 둔다.",
+   "category": "planter",
+   "tags": [
+    "residential",
+    "shop"
+   ],
+   "footprint_cells": [
+    1,
+    1
+   ],
+   "image_px": [
+    16,
+    16
+   ],
+   "overhang_up_px": 0,
+   "role_grid": {
+    "rows": [
+     "B"
+    ],
+    "anchor": "맨 아랫줄 왼쪽 칸 = 배치 좌표"
+   },
+   "placement_rules": [
+    "문 옆 칸 (문 앞 칸 금지)",
+    "문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지",
+    "통행로 연결을 끊지 않음(BFS 재확인)"
+   ],
+   "related": [
+    {
+     "id": "flowerbox_long",
+     "why": "같은 집 앞 장식 (둘 중 하나만)"
+    }
+   ],
+   "variants_group": "planter",
+   "animation_frames": null,
+   "status": "v4",
+   "drawn_by": "/tmp/j8city/pz.py"
+  },
+  {
+   "id": "tree_planter",
+   "name_ko": "화분 속 가로수",
+   "name_en": "Tree in a planter",
+   "description_ko": "돌 화분에 심은 가로수(칩셋 덤불 수관). 큰길(33~34줄) 가에 8칸 간격으로 심는다.",
+   "category": "planter",
+   "tags": [
+    "street"
+   ],
+   "footprint_cells": [
+    2,
+    1
+   ],
+   "image_px": [
+    32,
+    48
+   ],
+   "overhang_up_px": 32,
+   "role_grid": {
+    "rows": [
+     "OO",
+     "OO",
+     "BB"
+    ],
+    "anchor": "맨 아랫줄 왼쪽 칸 = 배치 좌표"
+   },
+   "placement_rules": [
+    "큰길과 맞닿은 잔디 칸",
+    "아래 1줄 막힘, 수관 2줄은 겹침층",
+    "문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지",
+    "통행로 연결을 끊지 않음(BFS 재확인)"
+   ],
+   "related": [
+    {
+     "id": "lamp_crook",
+     "why": "큰길 가로 한 벌"
+    }
+   ],
+   "variants_group": "tree",
+   "animation_frames": null,
+   "status": "v4",
+   "drawn_by": "/tmp/j8city/pz.py"
+  },
+  {
+   "id": "hedge",
+   "name_ko": "다듬은 산울타리",
+   "name_en": "Clipped hedge",
+   "description_ko": "네모로 다듬은 산울타리 3칸 길이. 우물 쉼터 뒤를 두른다.",
+   "category": "planter",
+   "tags": [
+    "park"
+   ],
+   "footprint_cells": [
+    3,
+    1
+   ],
+   "image_px": [
+    48,
+    24
+   ],
+   "overhang_up_px": 8,
+   "role_grid": {
+    "rows": [
+     "OOO",
+     "BBB"
+    ],
+    "anchor": "맨 아랫줄 왼쪽 칸 = 배치 좌표"
+   },
+   "placement_rules": [
+    "쉼터 뒤쪽 가장자리",
+    "문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지",
+    "통행로 연결을 끊지 않음(BFS 재확인)"
+   ],
+   "related": [
+    {
+     "id": "well_roofed",
+     "why": "쉼터의 뒤 담"
+    }
+   ],
+   "variants_group": "hedge",
+   "animation_frames": null,
+   "status": "v4",
+   "drawn_by": "/tmp/j8city/pz.py"
+  },
+  {
+   "id": "sandwich_board",
+   "name_ko": "입간판 (분필)",
+   "name_en": "Chalk sandwich board",
+   "description_ko": "분필로 쓴 A자 입간판. 빵집·약방·서점 등 가게 문 옆에 둔다.",
+   "category": "shop",
+   "tags": [
+    "shop"
+   ],
+   "footprint_cells": [
+    1,
+    1
+   ],
+   "image_px": [
+    16,
+    16
+   ],
+   "overhang_up_px": 0,
+   "role_grid": {
+    "rows": [
+     "B"
+    ],
+    "anchor": "맨 아랫줄 왼쪽 칸 = 배치 좌표"
+   },
+   "placement_rules": [
+    "가게 문 옆 1칸",
+    "문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지",
+    "통행로 연결을 끊지 않음(BFS 재확인)"
+   ],
+   "related": [
+    {
+     "id": "sign_bakery",
+     "why": "같은 가게 표시"
+    },
+    {
+     "id": "sign_pharm",
+     "why": "같은 가게 표시"
+    }
+   ],
+   "variants_group": "sign",
+   "animation_frames": null,
+   "status": "v4",
+   "drawn_by": "/tmp/j8city/pz.py"
+  },
+  {
+   "id": "flagpole",
+   "name_ko": "깃대 (나부낌)",
+   "name_en": "Flagpole with pennant",
+   "description_ko": "제비꼬리 깃발이 나부끼는 깃대(움직임 4장). 광장 입구와 성 앞마당에 쌍으로 세운다.",
+   "category": "monument",
+   "tags": [
+    "market",
+    "harbour",
+    "castle"
+   ],
+   "footprint_cells": [
+    2,
+    1
+   ],
+   "image_px": [
+    32,
+    64
+   ],
+   "overhang_up_px": 48,
+   "role_grid": {
+    "rows": [
+     "OO",
+     "OO",
+     "OO",
+     "BB"
+    ],
+    "anchor": "맨 아랫줄 왼쪽 칸 = 배치 좌표"
+   },
+   "placement_rules": [
+    "광장 입구 양쪽 대칭",
+    "아래 1줄 막힘",
+    "문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지",
+    "통행로 연결을 끊지 않음(BFS 재확인)"
+   ],
+   "related": [
+    {
+     "id": "column_monument",
+     "why": "성 앞 의장"
+    },
+    {
+     "id": "fish_pool",
+     "why": "항구 광장 입구"
+    }
+   ],
+   "variants_group": "flag",
+   "animation_frames": 4,
+   "status": "v4",
+   "drawn_by": "/tmp/j8city/pz.py"
+  },
+  {
+   "id": "stall_cheese_meat",
+   "name_ko": "노점: 치즈·고기",
+   "name_en": "Stall: cheese & meat",
+   "description_ko": "파란 차양 아래 치즈 바퀴와 매단 고기를 파는 노점.",
+   "category": "market",
+   "tags": [
+    "market"
+   ],
+   "footprint_cells": [
+    2,
+    2
+   ],
+   "image_px": [
+    32,
+    49
+   ],
+   "overhang_up_px": 17,
+   "role_grid": {
+    "rows": [
+     "OO",
+     "OO",
+     "BB",
+     "BB"
+    ],
+    "anchor": "맨 아랫줄 왼쪽 칸 = 배치 좌표"
+   },
+   "placement_rules": [
+    "시장 광장 칸만",
+    "아래 2줄 막힘, 차양은 겹침층",
+    "앞 1칸 손님 자리",
+    "문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지",
+    "통행로 연결을 끊지 않음(BFS 재확인)"
+   ],
+   "related": [
+    {
+     "id": "stall_veg",
+     "why": "시장 줄"
+    }
+   ],
+   "variants_group": "stall",
+   "animation_frames": null,
+   "status": "v4",
+   "drawn_by": "/tmp/j8city/pz.py"
+  },
+  {
+   "id": "stall_jug_bottle",
+   "name_ko": "노점: 옹기·술병",
+   "name_en": "Stall: jugs & bottles",
+   "description_ko": "빨간 차양 아래 옹기와 유리병을 파는 노점.",
+   "category": "market",
+   "tags": [
+    "market"
+   ],
+   "footprint_cells": [
+    2,
+    2
+   ],
+   "image_px": [
+    32,
+    49
+   ],
+   "overhang_up_px": 17,
+   "role_grid": {
+    "rows": [
+     "OO",
+     "OO",
+     "BB",
+     "BB"
+    ],
+    "anchor": "맨 아랫줄 왼쪽 칸 = 배치 좌표"
+   },
+   "placement_rules": [
+    "시장 광장 칸만",
+    "앞 1칸 손님 자리",
+    "문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지",
+    "통행로 연결을 끊지 않음(BFS 재확인)"
+   ],
+   "related": [
+    {
+     "id": "stall_cheese_meat",
+     "why": "시장 줄"
+    }
+   ],
+   "variants_group": "stall",
+   "animation_frames": null,
+   "status": "v4",
+   "drawn_by": "/tmp/j8city/pz.py"
+  },
+  {
+   "id": "stall_herb_flower",
+   "name_ko": "노점: 약초·꽃",
+   "name_en": "Stall: herbs & flowers",
+   "description_ko": "약초 다발과 꽃을 파는 노점.",
+   "category": "market",
+   "tags": [
+    "market"
+   ],
+   "footprint_cells": [
+    2,
+    2
+   ],
+   "image_px": [
+    32,
+    49
+   ],
+   "overhang_up_px": 17,
+   "role_grid": {
+    "rows": [
+     "OO",
+     "OO",
+     "BB",
+     "BB"
+    ],
+    "anchor": "맨 아랫줄 왼쪽 칸 = 배치 좌표"
+   },
+   "placement_rules": [
+    "시장 광장 칸만",
+    "문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지",
+    "통행로 연결을 끊지 않음(BFS 재확인)"
+   ],
+   "related": [
+    {
+     "id": "flower_cart",
+     "why": "꽃 파는 자리 옆"
+    }
+   ],
+   "variants_group": "stall",
+   "animation_frames": null,
+   "status": "v4",
+   "drawn_by": "/tmp/j8city/pz.py"
+  },
+  {
+   "id": "stall_veg",
+   "name_ko": "노점: 호박·양배추",
+   "name_en": "Stall: pumpkins & cabbages",
+   "description_ko": "호박과 양배추를 쌓아 파는 3칸 노점.",
+   "category": "market",
+   "tags": [
+    "market",
+    "harbour"
+   ],
+   "footprint_cells": [
+    3,
+    2
+   ],
+   "image_px": [
+    48,
+    49
+   ],
+   "overhang_up_px": 17,
+   "role_grid": {
+    "rows": [
+     "OOO",
+     "OOO",
+     "BBB",
+     "BBB"
+    ],
+    "anchor": "맨 아랫줄 왼쪽 칸 = 배치 좌표"
+   },
+   "placement_rules": [
+    "시장·항구 광장 칸만",
+    "문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지",
+    "통행로 연결을 끊지 않음(BFS 재확인)"
+   ],
+   "related": [
+    {
+     "id": "veg_cart",
+     "why": "채소 파는 자리 옆"
+    }
+   ],
+   "variants_group": "stall",
+   "animation_frames": null,
+   "status": "v4",
+   "drawn_by": "/tmp/j8city/pz.py"
+  },
+  {
+   "id": "flower_cart",
+   "name_ko": "꽃 수레",
+   "name_en": "Flower cart",
+   "description_ko": "꽃 양동이 셋을 실은 손수레. 시장 광장 안에 둔다.",
+   "category": "market",
+   "tags": [
+    "market"
+   ],
+   "footprint_cells": [
+    2,
+    1
+   ],
+   "image_px": [
+    32,
+    32
+   ],
+   "overhang_up_px": 16,
+   "role_grid": {
+    "rows": [
+     "OO",
+     "BB"
+    ],
+    "anchor": "맨 아랫줄 왼쪽 칸 = 배치 좌표"
+   },
+   "placement_rules": [
+    "광장 칸",
+    "문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지",
+    "통행로 연결을 끊지 않음(BFS 재확인)"
+   ],
+   "related": [
+    {
+     "id": "stall_herb_flower",
+     "why": "꽃 파는 자리"
+    }
+   ],
+   "variants_group": "cart",
+   "animation_frames": null,
+   "status": "v4",
+   "drawn_by": "/tmp/j8city/pz.py"
+  },
+  {
+   "id": "veg_cart",
+   "name_ko": "채소 손수레",
+   "name_en": "Vegetable handcart",
+   "description_ko": "채소를 수북이 실은 손수레. 시장 광장과 청과상 앞에 둔다.",
+   "category": "market",
+   "tags": [
+    "market",
+    "grocer"
+   ],
+   "footprint_cells": [
+    2,
+    1
+   ],
+   "image_px": [
+    32,
+    32
+   ],
+   "overhang_up_px": 16,
+   "role_grid": {
+    "rows": [
+     "OO",
+     "BB"
+    ],
+    "anchor": "맨 아랫줄 왼쪽 칸 = 배치 좌표"
+   },
+   "placement_rules": [
+    "광장 또는 청과상 문 옆",
+    "문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지",
+    "통행로 연결을 끊지 않음(BFS 재확인)"
+   ],
+   "related": [
+    {
+     "id": "sign_grocer",
+     "why": "청과상 표시"
+    },
+    {
+     "id": "crate_apple",
+     "why": "같은 물건"
+    }
+   ],
+   "variants_group": "cart",
+   "animation_frames": null,
+   "status": "v4",
+   "drawn_by": "/tmp/j8city/pz.py"
+  },
+  {
+   "id": "crate_apple",
+   "name_ko": "과일 상자",
+   "name_en": "Open crate of apples",
+   "description_ko": "사과가 담긴 나무 상자. 청과상 문 옆과 시장에 둔다.",
+   "category": "shop",
+   "tags": [
+    "grocer",
+    "market"
+   ],
+   "footprint_cells": [
+    1,
+    1
+   ],
+   "image_px": [
+    16,
+    16
+   ],
+   "overhang_up_px": 0,
+   "role_grid": {
+    "rows": [
+     "B"
+    ],
+    "anchor": "맨 아랫줄 왼쪽 칸 = 배치 좌표"
+   },
+   "placement_rules": [
+    "가게 문 옆",
+    "문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지",
+    "통행로 연결을 끊지 않음(BFS 재확인)"
+   ],
+   "related": [
+    {
+     "id": "sign_grocer",
+     "why": "청과상 표시"
+    }
+   ],
+   "variants_group": "crate",
+   "animation_frames": null,
+   "status": "v4",
+   "drawn_by": "/tmp/j8city/pz.py"
+  },
+  {
+   "id": "crate_cabbage",
+   "name_ko": "양배추 상자",
+   "name_en": "Open crate of cabbages",
+   "description_ko": "양배추가 담긴 나무 상자. 청과상 문 옆과 시장에 둔다.",
+   "category": "shop",
+   "tags": [
+    "grocer",
+    "market"
+   ],
+   "footprint_cells": [
+    1,
+    1
+   ],
+   "image_px": [
+    16,
+    16
+   ],
+   "overhang_up_px": 0,
+   "role_grid": {
+    "rows": [
+     "B"
+    ],
+    "anchor": "맨 아랫줄 왼쪽 칸 = 배치 좌표"
+   },
+   "placement_rules": [
+    "가게 문 옆",
+    "문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지",
+    "통행로 연결을 끊지 않음(BFS 재확인)"
+   ],
+   "related": [
+    {
+     "id": "sign_grocer",
+     "why": "청과상 표시"
+    }
+   ],
+   "variants_group": "crate",
+   "animation_frames": null,
+   "status": "v4",
+   "drawn_by": "/tmp/j8city/pz.py"
+  },
+  {
+   "id": "crate_fish",
+   "name_ko": "생선 상자",
+   "name_en": "Open crate of fish",
+   "description_ko": "얼음 위 생선이 담긴 상자. 생선 가게 문 옆에 둔다.",
+   "category": "shop",
+   "tags": [
+    "fish"
+   ],
+   "footprint_cells": [
+    1,
+    1
+   ],
+   "image_px": [
+    16,
+    16
+   ],
+   "overhang_up_px": 0,
+   "role_grid": {
+    "rows": [
+     "B"
+    ],
+    "anchor": "맨 아랫줄 왼쪽 칸 = 배치 좌표"
+   },
+   "placement_rules": [
+    "생선 가게 문 옆",
+    "문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지",
+    "통행로 연결을 끊지 않음(BFS 재확인)"
+   ],
+   "related": [
+    {
+     "id": "sign_fish",
+     "why": "생선 가게 표시"
+    }
+   ],
+   "variants_group": "crate",
+   "animation_frames": null,
+   "status": "v4",
+   "drawn_by": "/tmp/j8city/pz.py"
+  },
+  {
+   "id": "goods_pile",
+   "name_ko": "통·상자·자루 더미",
+   "name_en": "Barrel, crate & sack pile",
+   "description_ko": "술통·나무 상자·곡식 자루 짐 더미. 부두 물가, 창고·대장간·푸줏간 옆에 둔다.",
+   "category": "storage",
+   "tags": [
+    "harbour",
+    "warehouse"
+   ],
+   "footprint_cells": [
+    2,
+    1
+   ],
+   "image_px": [
+    32,
+    32
+   ],
+   "overhang_up_px": 16,
+   "role_grid": {
+    "rows": [
+     "OO",
+     "BB"
+    ],
+    "anchor": "맨 아랫줄 왼쪽 칸 = 배치 좌표"
+   },
+   "placement_rules": [
+    "건물 옆 또는 부두 물가 줄",
+    "문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지",
+    "통행로 연결을 끊지 않음(BFS 재확인)"
+   ],
+   "related": [
+    {
+     "id": "crane",
+     "why": "부리는 짐"
+    }
+   ],
+   "variants_group": "pile",
+   "animation_frames": null,
+   "status": "v4",
+   "drawn_by": "/tmp/j8city/pz.py"
+  },
+  {
+   "id": "laundry_rack",
+   "name_ko": "빨래 건조대",
+   "name_en": "Laundry drying rack",
+   "description_ko": "빨래를 넌 두 기둥 건조대. 살림집 바로 옆 잔디에 띄엄띄엄 둔다.",
+   "category": "residential",
+   "tags": [
+    "residential"
+   ],
+   "footprint_cells": [
+    2,
+    1
+   ],
+   "image_px": [
+    32,
+    32
+   ],
+   "overhang_up_px": 16,
+   "role_grid": {
+    "rows": [
+     "OO",
+     "BB"
+    ],
+    "anchor": "맨 아랫줄 왼쪽 칸 = 배치 좌표"
+   },
+   "placement_rules": [
+    "집 옆벽에 붙은 칸",
+    "다른 건조대와 16칸 이상",
+    "문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지",
+    "통행로 연결을 끊지 않음(BFS 재확인)"
+   ],
+   "related": [
+    {
+     "id": "laundry_line",
+     "why": "주거지 표시"
+    }
+   ],
+   "variants_group": "laundry",
+   "animation_frames": null,
+   "status": "v4",
+   "drawn_by": "/tmp/j8city/pz.py"
+  },
+  {
+   "id": "laundry_line",
+   "name_ko": "골목 빨랫줄",
+   "name_en": "Laundry line across an alley",
+   "description_ko": "두 집 벽 사이 1~3칸 틈 위에 걸린 빨랫줄. 발자국 없는 겹침층.",
+   "category": "residential",
+   "tags": [
+    "residential"
+   ],
+   "footprint_cells": [
+    3,
+    0
+   ],
+   "image_px": [
+    48,
+    28
+   ],
+   "overhang_up_px": 28,
+   "role_grid": {
+    "rows": [
+     "OOO",
+     "OOO"
+    ],
+    "anchor": "맨 아랫줄 왼쪽 칸 = 배치 좌표"
+   },
+   "placement_rules": [
+    "같은 줄에 선 서로 다른 두 집 사이",
+    "통행 안 막음 (공중)"
+   ],
+   "related": [
+    {
+     "id": "laundry_rack",
+     "why": "주거지 표시"
+    }
+   ],
+   "variants_group": "laundry",
+   "animation_frames": null,
+   "status": "v4",
+   "drawn_by": "/tmp/j8city/pz.py"
+  },
+  {
+   "id": "mooring_bollard",
+   "name_ko": "계선주",
+   "name_en": "Mooring bollard",
+   "description_ko": "밧줄이 감긴 무쇠 계선주. 부두 물가 줄과 잔교 머리 양옆에 둔다.",
+   "category": "harbour",
+   "tags": [
+    "harbour"
+   ],
+   "footprint_cells": [
+    1,
+    1
+   ],
+   "image_px": [
+    16,
+    16
+   ],
+   "overhang_up_px": 0,
+   "role_grid": {
+    "rows": [
+     "B"
+    ],
+    "anchor": "맨 아랫줄 왼쪽 칸 = 배치 좌표"
+   },
+   "placement_rules": [
+    "물과 맞닿은 부두 줄",
+    "잔교 머리 양옆",
+    "문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지",
+    "통행로 연결을 끊지 않음(BFS 재확인)"
+   ],
+   "related": [
+    {
+     "id": "pier",
+     "why": "배를 매는 곳"
+    }
+   ],
+   "variants_group": "bollard",
+   "animation_frames": null,
+   "status": "v4",
+   "drawn_by": "/tmp/j8city/pz.py"
+  },
+  {
+   "id": "net_rack",
+   "name_ko": "그물 건조대",
+   "name_en": "Net drying rack",
+   "description_ko": "찌 달린 그물을 넌 건조대. 부두와 항구 광장에 둔다.",
+   "category": "harbour",
+   "tags": [
+    "harbour"
+   ],
+   "footprint_cells": [
+    2,
+    1
+   ],
+   "image_px": [
+    32,
+    32
+   ],
+   "overhang_up_px": 16,
+   "role_grid": {
+    "rows": [
+     "OO",
+     "BB"
+    ],
+    "anchor": "맨 아랫줄 왼쪽 칸 = 배치 좌표"
+   },
+   "placement_rules": [
+    "부두 물가 줄 또는 항구 광장",
+    "문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지",
+    "통행로 연결을 끊지 않음(BFS 재확인)"
+   ],
+   "related": [
+    {
+     "id": "fish_crates",
+     "why": "어부의 부두"
+    }
+   ],
+   "variants_group": "net",
+   "animation_frames": null,
+   "status": "v4",
+   "drawn_by": "/tmp/j8city/pz.py"
+  },
+  {
+   "id": "anchor_display",
+   "name_ko": "닻 전시대",
+   "name_en": "Anchor on a stand",
+   "description_ko": "나무 받침에 세운 큰 닻. 항구 광장 표지물로 하나.",
+   "category": "harbour",
+   "tags": [
+    "harbour"
+   ],
+   "footprint_cells": [
+    2,
+    1
+   ],
+   "image_px": [
+    32,
+    32
+   ],
+   "overhang_up_px": 16,
+   "role_grid": {
+    "rows": [
+     "OO",
+     "BB"
+    ],
+    "anchor": "맨 아랫줄 왼쪽 칸 = 배치 좌표"
+   },
+   "placement_rules": [
+    "항구 광장, 하나만",
+    "문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지",
+    "통행로 연결을 끊지 않음(BFS 재확인)"
+   ],
+   "related": [
+    {
+     "id": "fish_pool",
+     "why": "항구 광장 한 벌"
+    }
+   ],
+   "variants_group": "monument",
+   "animation_frames": null,
+   "status": "v4",
+   "drawn_by": "/tmp/j8city/pz.py"
+  },
+  {
+   "id": "crane",
+   "name_ko": "부두 기중기",
+   "name_en": "Treadwheel dock crane",
+   "description_ko": "쳇바퀴와 비스듬한 붐으로 짐 상자를 매단 부두 기중기(갈고리 흔들림 4장). 창고 앞 부두에 하나.",
+   "category": "harbour",
+   "tags": [
+    "harbour",
+    "warehouse"
+   ],
+   "footprint_cells": [
+    4,
+    1
+   ],
+   "image_px": [
+    64,
+    80
+   ],
+   "overhang_up_px": 64,
+   "role_grid": {
+    "rows": [
+     "OOOO",
+     "OOOO",
+     "OOOO",
+     "OOOO",
+     "BBBB"
+    ],
+    "anchor": "맨 아랫줄 왼쪽 칸 = 배치 좌표"
+   },
+   "placement_rules": [
+    "창고 앞 부두 물가 줄, 아래 1줄 막힘",
+    "붐·짐은 겹침층",
+    "문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지",
+    "통행로 연결을 끊지 않음(BFS 재확인)"
+   ],
+   "related": [
+    {
+     "id": "goods_pile",
+     "why": "부리는 짐"
+    }
+   ],
+   "variants_group": "crane",
+   "animation_frames": 4,
+   "status": "v4",
+   "drawn_by": "/tmp/j8city/pz.py"
+  },
+  {
+   "id": "fish_crates",
+   "name_ko": "얼음 생선 궤짝",
+   "name_en": "Fish crates on ice",
+   "description_ko": "얼음 위 생선 궤짝 두 개. 생선 가게 앞과 부두에 둔다.",
+   "category": "harbour",
+   "tags": [
+    "harbour",
+    "fish"
+   ],
+   "footprint_cells": [
+    2,
+    1
+   ],
+   "image_px": [
+    32,
+    16
+   ],
+   "overhang_up_px": 0,
+   "role_grid": {
+    "rows": [
+     "BB"
+    ],
+    "anchor": "맨 아랫줄 왼쪽 칸 = 배치 좌표"
+   },
+   "placement_rules": [
+    "부두 물가 줄 또는 생선 가게 문 옆",
+    "문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지",
+    "통행로 연결을 끊지 않음(BFS 재확인)"
+   ],
+   "related": [
+    {
+     "id": "sign_fish",
+     "why": "생선 가게 표시"
+    },
+    {
+     "id": "net_rack",
+     "why": "어부의 부두"
+    }
+   ],
+   "variants_group": "crate",
+   "animation_frames": null,
+   "status": "v4",
+   "drawn_by": "/tmp/j8city/pz.py"
+  },
+  {
+   "id": "fish_barrel",
+   "name_ko": "생선 통",
+   "name_en": "Fish barrel",
+   "description_ko": "생선 꼬리가 삐져나온 나무 통. 생선 가게 앞에 둔다.",
+   "category": "shop",
+   "tags": [
+    "fish",
+    "harbour"
+   ],
+   "footprint_cells": [
+    1,
+    1
+   ],
+   "image_px": [
+    16,
+    16
+   ],
+   "overhang_up_px": 0,
+   "role_grid": {
+    "rows": [
+     "B"
+    ],
+    "anchor": "맨 아랫줄 왼쪽 칸 = 배치 좌표"
+   },
+   "placement_rules": [
+    "가게 문 옆",
+    "문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지",
+    "통행로 연결을 끊지 않음(BFS 재확인)"
+   ],
+   "related": [
+    {
+     "id": "sign_fish",
+     "why": "생선 가게 표시"
+    }
+   ],
+   "variants_group": "barrel",
+   "animation_frames": null,
+   "status": "v4",
+   "drawn_by": "/tmp/j8city/pz.py"
+  },
+  {
+   "id": "sign_bakery",
+   "name_ko": "걸이 간판: 빵집",
+   "name_en": "Hanging sign (bakery)",
+   "description_ko": "쇠 팔걸이에 매단 빵집 간판. 그 가게 문 오른쪽 1층 벽에 붙이고, 문 옆에 같은 업종 물건을 내놓는다.",
+   "category": "shop-sign",
+   "tags": [
+    "shop",
+    "bakery"
+   ],
+   "footprint_cells": [
+    2,
+    0
+   ],
+   "image_px": [
+    20,
+    20
+   ],
+   "overhang_up_px": 20,
+   "role_grid": {
+    "rows": [
+     "OO",
+     "OO"
+    ],
+    "anchor": "맨 아랫줄 왼쪽 칸 = 배치 좌표"
+   },
+   "placement_rules": [
+    "집 문 오른쪽 벽(문 칸+1), 1층 높이",
+    "발자국 없음(벽 겹침층)",
+    "같은 업종 물건 1~2개를 문 옆 칸에"
+   ],
+   "related": [
+    {
+     "id": "bread_rack",
+     "why": "같은 가게 앞에 내놓는 물건"
+    },
+    {
+     "id": "sandwich_board",
+     "why": "같은 가게 앞에 내놓는 물건"
+    },
+    {
+     "id": "parasol_table",
+     "why": "같은 가게 앞에 내놓는 물건"
+    }
+   ],
+   "variants_group": "hanging_sign",
+   "animation_frames": null,
+   "status": "v4",
+   "drawn_by": "/tmp/j8city/pz.py"
+  },
+  {
+   "id": "sign_fish",
+   "name_ko": "걸이 간판: 생선 가게",
+   "name_en": "Hanging sign (fishmonger)",
+   "description_ko": "쇠 팔걸이에 매단 생선 가게 간판. 그 가게 문 오른쪽 1층 벽에 붙이고, 문 옆에 같은 업종 물건을 내놓는다.",
+   "category": "shop-sign",
+   "tags": [
+    "shop",
+    "fish"
+   ],
+   "footprint_cells": [
+    2,
+    0
+   ],
+   "image_px": [
+    20,
+    20
+   ],
+   "overhang_up_px": 20,
+   "role_grid": {
+    "rows": [
+     "OO",
+     "OO"
+    ],
+    "anchor": "맨 아랫줄 왼쪽 칸 = 배치 좌표"
+   },
+   "placement_rules": [
+    "집 문 오른쪽 벽(문 칸+1), 1층 높이",
+    "발자국 없음(벽 겹침층)",
+    "같은 업종 물건 1~2개를 문 옆 칸에"
+   ],
+   "related": [
+    {
+     "id": "crate_fish",
+     "why": "같은 가게 앞에 내놓는 물건"
+    },
+    {
+     "id": "fish_crates",
+     "why": "같은 가게 앞에 내놓는 물건"
+    },
+    {
+     "id": "fish_barrel",
+     "why": "같은 가게 앞에 내놓는 물건"
+    }
+   ],
+   "variants_group": "hanging_sign",
+   "animation_frames": null,
+   "status": "v4",
+   "drawn_by": "/tmp/j8city/pz.py"
+  },
+  {
+   "id": "sign_pharm",
+   "name_ko": "걸이 간판: 약방",
+   "name_en": "Hanging sign (apothecary)",
+   "description_ko": "쇠 팔걸이에 매단 약방 간판. 그 가게 문 오른쪽 1층 벽에 붙이고, 문 옆에 같은 업종 물건을 내놓는다.",
+   "category": "shop-sign",
+   "tags": [
+    "shop",
+    "pharm"
+   ],
+   "footprint_cells": [
+    2,
+    0
+   ],
+   "image_px": [
+    20,
+    20
+   ],
+   "overhang_up_px": 20,
+   "role_grid": {
+    "rows": [
+     "OO",
+     "OO"
+    ],
+    "anchor": "맨 아랫줄 왼쪽 칸 = 배치 좌표"
+   },
+   "placement_rules": [
+    "집 문 오른쪽 벽(문 칸+1), 1층 높이",
+    "발자국 없음(벽 겹침층)",
+    "같은 업종 물건 1~2개를 문 옆 칸에"
+   ],
+   "related": [
+    {
+     "id": "herb_rack",
+     "why": "같은 가게 앞에 내놓는 물건"
+    },
+    {
+     "id": "sandwich_board",
+     "why": "같은 가게 앞에 내놓는 물건"
+    }
+   ],
+   "variants_group": "hanging_sign",
+   "animation_frames": null,
+   "status": "v4",
+   "drawn_by": "/tmp/j8city/pz.py"
+  },
+  {
+   "id": "sign_smith",
+   "name_ko": "걸이 간판: 대장간",
+   "name_en": "Hanging sign (smithy)",
+   "description_ko": "쇠 팔걸이에 매단 대장간 간판. 그 가게 문 오른쪽 1층 벽에 붙이고, 문 옆에 같은 업종 물건을 내놓는다.",
+   "category": "shop-sign",
+   "tags": [
+    "shop",
+    "smith"
+   ],
+   "footprint_cells": [
+    2,
+    0
+   ],
+   "image_px": [
+    20,
+    20
+   ],
+   "overhang_up_px": 20,
+   "role_grid": {
+    "rows": [
+     "OO",
+     "OO"
+    ],
+    "anchor": "맨 아랫줄 왼쪽 칸 = 배치 좌표"
+   },
+   "placement_rules": [
+    "집 문 오른쪽 벽(문 칸+1), 1층 높이",
+    "발자국 없음(벽 겹침층)",
+    "같은 업종 물건 1~2개를 문 옆 칸에"
+   ],
+   "related": [
+    {
+     "id": "sword_barrel",
+     "why": "같은 가게 앞에 내놓는 물건"
+    },
+    {
+     "id": "goods_pile",
+     "why": "같은 가게 앞에 내놓는 물건"
+    }
+   ],
+   "variants_group": "hanging_sign",
+   "animation_frames": null,
+   "status": "v4",
+   "drawn_by": "/tmp/j8city/pz.py"
+  },
+  {
+   "id": "sign_inn",
+   "name_ko": "걸이 간판: 여관",
+   "name_en": "Hanging sign (inn)",
+   "description_ko": "쇠 팔걸이에 매단 여관 간판. 그 가게 문 오른쪽 1층 벽에 붙이고, 문 옆에 같은 업종 물건을 내놓는다.",
+   "category": "shop-sign",
+   "tags": [
+    "shop",
+    "inn"
+   ],
+   "footprint_cells": [
+    2,
+    0
+   ],
+   "image_px": [
+    20,
+    20
+   ],
+   "overhang_up_px": 20,
+   "role_grid": {
+    "rows": [
+     "OO",
+     "OO"
+    ],
+    "anchor": "맨 아랫줄 왼쪽 칸 = 배치 좌표"
+   },
+   "placement_rules": [
+    "집 문 오른쪽 벽(문 칸+1), 1층 높이",
+    "발자국 없음(벽 겹침층)",
+    "같은 업종 물건 1~2개를 문 옆 칸에"
+   ],
+   "related": [
+    {
+     "id": "table_mugs",
+     "why": "같은 가게 앞에 내놓는 물건"
+    },
+    {
+     "id": "parasol_table",
+     "why": "같은 가게 앞에 내놓는 물건"
+    },
+    {
+     "id": "sandwich_board",
+     "why": "같은 가게 앞에 내놓는 물건"
+    }
+   ],
+   "variants_group": "hanging_sign",
+   "animation_frames": null,
+   "status": "v4",
+   "drawn_by": "/tmp/j8city/pz.py"
+  },
+  {
+   "id": "sign_tailor",
+   "name_ko": "걸이 간판: 재단사",
+   "name_en": "Hanging sign (tailor)",
+   "description_ko": "쇠 팔걸이에 매단 재단사 간판. 그 가게 문 오른쪽 1층 벽에 붙이고, 문 옆에 같은 업종 물건을 내놓는다.",
+   "category": "shop-sign",
+   "tags": [
+    "shop",
+    "tailor"
+   ],
+   "footprint_cells": [
+    2,
+    0
+   ],
+   "image_px": [
+    20,
+    20
+   ],
+   "overhang_up_px": 20,
+   "role_grid": {
+    "rows": [
+     "OO",
+     "OO"
+    ],
+    "anchor": "맨 아랫줄 왼쪽 칸 = 배치 좌표"
+   },
+   "placement_rules": [
+    "집 문 오른쪽 벽(문 칸+1), 1층 높이",
+    "발자국 없음(벽 겹침층)",
+    "같은 업종 물건 1~2개를 문 옆 칸에"
+   ],
+   "related": [
+    {
+     "id": "cloth_stand",
+     "why": "같은 가게 앞에 내놓는 물건"
+    },
+    {
+     "id": "door_pots",
+     "why": "같은 가게 앞에 내놓는 물건"
+    }
+   ],
+   "variants_group": "hanging_sign",
+   "animation_frames": null,
+   "status": "v4",
+   "drawn_by": "/tmp/j8city/pz.py"
+  },
+  {
+   "id": "sign_jewel",
+   "name_ko": "걸이 간판: 보석상",
+   "name_en": "Hanging sign (jeweller)",
+   "description_ko": "쇠 팔걸이에 매단 보석상 간판. 그 가게 문 오른쪽 1층 벽에 붙이고, 문 옆에 같은 업종 물건을 내놓는다.",
+   "category": "shop-sign",
+   "tags": [
+    "shop",
+    "jewel"
+   ],
+   "footprint_cells": [
+    2,
+    0
+   ],
+   "image_px": [
+    20,
+    20
+   ],
+   "overhang_up_px": 20,
+   "role_grid": {
+    "rows": [
+     "OO",
+     "OO"
+    ],
+    "anchor": "맨 아랫줄 왼쪽 칸 = 배치 좌표"
+   },
+   "placement_rules": [
+    "집 문 오른쪽 벽(문 칸+1), 1층 높이",
+    "발자국 없음(벽 겹침층)",
+    "같은 업종 물건 1~2개를 문 옆 칸에"
+   ],
+   "related": [
+    {
+     "id": "door_pots",
+     "why": "같은 가게 앞에 내놓는 물건"
+    },
+    {
+     "id": "sandwich_board",
+     "why": "같은 가게 앞에 내놓는 물건"
+    }
+   ],
+   "variants_group": "hanging_sign",
+   "animation_frames": null,
+   "status": "v4",
+   "drawn_by": "/tmp/j8city/pz.py"
+  },
+  {
+   "id": "sign_butcher",
+   "name_ko": "걸이 간판: 푸줏간",
+   "name_en": "Hanging sign (butcher)",
+   "description_ko": "쇠 팔걸이에 매단 푸줏간 간판. 그 가게 문 오른쪽 1층 벽에 붙이고, 문 옆에 같은 업종 물건을 내놓는다.",
+   "category": "shop-sign",
+   "tags": [
+    "shop",
+    "butcher"
+   ],
+   "footprint_cells": [
+    2,
+    0
+   ],
+   "image_px": [
+    20,
+    20
+   ],
+   "overhang_up_px": 20,
+   "role_grid": {
+    "rows": [
+     "OO",
+     "OO"
+    ],
+    "anchor": "맨 아랫줄 왼쪽 칸 = 배치 좌표"
+   },
+   "placement_rules": [
+    "집 문 오른쪽 벽(문 칸+1), 1층 높이",
+    "발자국 없음(벽 겹침층)",
+    "같은 업종 물건 1~2개를 문 옆 칸에"
+   ],
+   "related": [
+    {
+     "id": "goods_pile",
+     "why": "같은 가게 앞에 내놓는 물건"
+    },
+    {
+     "id": "sandwich_board",
+     "why": "같은 가게 앞에 내놓는 물건"
+    }
+   ],
+   "variants_group": "hanging_sign",
+   "animation_frames": null,
+   "status": "v4",
+   "drawn_by": "/tmp/j8city/pz.py"
+  },
+  {
+   "id": "sign_grocer",
+   "name_ko": "걸이 간판: 청과상",
+   "name_en": "Hanging sign (greengrocer)",
+   "description_ko": "쇠 팔걸이에 매단 청과상 간판. 그 가게 문 오른쪽 1층 벽에 붙이고, 문 옆에 같은 업종 물건을 내놓는다.",
+   "category": "shop-sign",
+   "tags": [
+    "shop",
+    "grocer"
+   ],
+   "footprint_cells": [
+    2,
+    0
+   ],
+   "image_px": [
+    20,
+    20
+   ],
+   "overhang_up_px": 20,
+   "role_grid": {
+    "rows": [
+     "OO",
+     "OO"
+    ],
+    "anchor": "맨 아랫줄 왼쪽 칸 = 배치 좌표"
+   },
+   "placement_rules": [
+    "집 문 오른쪽 벽(문 칸+1), 1층 높이",
+    "발자국 없음(벽 겹침층)",
+    "같은 업종 물건 1~2개를 문 옆 칸에"
+   ],
+   "related": [
+    {
+     "id": "crate_apple",
+     "why": "같은 가게 앞에 내놓는 물건"
+    },
+    {
+     "id": "crate_cabbage",
+     "why": "같은 가게 앞에 내놓는 물건"
+    },
+    {
+     "id": "veg_cart",
+     "why": "같은 가게 앞에 내놓는 물건"
+    }
+   ],
+   "variants_group": "hanging_sign",
+   "animation_frames": null,
+   "status": "v4",
+   "drawn_by": "/tmp/j8city/pz.py"
+  },
+  {
+   "id": "sign_books",
+   "name_ko": "걸이 간판: 서점",
+   "name_en": "Hanging sign (bookshop)",
+   "description_ko": "쇠 팔걸이에 매단 서점 간판. 그 가게 문 오른쪽 1층 벽에 붙이고, 문 옆에 같은 업종 물건을 내놓는다.",
+   "category": "shop-sign",
+   "tags": [
+    "shop",
+    "books"
+   ],
+   "footprint_cells": [
+    2,
+    0
+   ],
+   "image_px": [
+    20,
+    20
+   ],
+   "overhang_up_px": 20,
+   "role_grid": {
+    "rows": [
+     "OO",
+     "OO"
+    ],
+    "anchor": "맨 아랫줄 왼쪽 칸 = 배치 좌표"
+   },
+   "placement_rules": [
+    "집 문 오른쪽 벽(문 칸+1), 1층 높이",
+    "발자국 없음(벽 겹침층)",
+    "같은 업종 물건 1~2개를 문 옆 칸에"
+   ],
+   "related": [
+    {
+     "id": "sandwich_board",
+     "why": "같은 가게 앞에 내놓는 물건"
+    },
+    {
+     "id": "planter_round",
+     "why": "같은 가게 앞에 내놓는 물건"
+    }
+   ],
+   "variants_group": "hanging_sign",
+   "animation_frames": null,
+   "status": "v4",
+   "drawn_by": "/tmp/j8city/pz.py"
+  },
+  {
+   "id": "bread_rack",
+   "name_ko": "빵 진열대",
+   "name_en": "Bread rack",
+   "description_ko": "빵을 얹은 3단 진열대. 빵집 문 옆에 둔다.",
+   "category": "shop",
+   "tags": [
+    "bakery"
+   ],
+   "footprint_cells": [
+    1,
+    1
+   ],
+   "image_px": [
+    16,
+    32
+   ],
+   "overhang_up_px": 16,
+   "role_grid": {
+    "rows": [
+     "O",
+     "B"
+    ],
+    "anchor": "맨 아랫줄 왼쪽 칸 = 배치 좌표"
+   },
+   "placement_rules": [
+    "빵집 문 옆",
+    "문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지",
+    "통행로 연결을 끊지 않음(BFS 재확인)"
+   ],
+   "related": [
+    {
+     "id": "sign_bakery",
+     "why": "빵집 표시"
+    }
+   ],
+   "variants_group": "rack",
+   "animation_frames": null,
+   "status": "v4",
+   "drawn_by": "/tmp/j8city/pz.py"
+  },
+  {
+   "id": "herb_rack",
+   "name_ko": "약초 걸이·절구",
+   "name_en": "Herb rack & mortar",
+   "description_ko": "약초 다발 걸이와 절구. 약방 문 옆에 둔다.",
+   "category": "shop",
+   "tags": [
+    "pharm"
+   ],
+   "footprint_cells": [
+    1,
+    1
+   ],
+   "image_px": [
+    16,
+    32
+   ],
+   "overhang_up_px": 16,
+   "role_grid": {
+    "rows": [
+     "O",
+     "B"
+    ],
+    "anchor": "맨 아랫줄 왼쪽 칸 = 배치 좌표"
+   },
+   "placement_rules": [
+    "약방 문 옆",
+    "문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지",
+    "통행로 연결을 끊지 않음(BFS 재확인)"
+   ],
+   "related": [
+    {
+     "id": "sign_pharm",
+     "why": "약방 표시"
+    }
+   ],
+   "variants_group": "rack",
+   "animation_frames": null,
+   "status": "v4",
+   "drawn_by": "/tmp/j8city/pz.py"
+  },
+  {
+   "id": "cloth_stand",
+   "name_ko": "옷감 걸이",
+   "name_en": "Cloth stand",
+   "description_ko": "색 옷감 네 필을 건 틀. 재단사 문 옆에 둔다.",
+   "category": "shop",
+   "tags": [
+    "tailor"
+   ],
+   "footprint_cells": [
+    2,
+    1
+   ],
+   "image_px": [
+    32,
+    32
+   ],
+   "overhang_up_px": 16,
+   "role_grid": {
+    "rows": [
+     "OO",
+     "BB"
+    ],
+    "anchor": "맨 아랫줄 왼쪽 칸 = 배치 좌표"
+   },
+   "placement_rules": [
+    "재단사 문 옆",
+    "문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지",
+    "통행로 연결을 끊지 않음(BFS 재확인)"
+   ],
+   "related": [
+    {
+     "id": "sign_tailor",
+     "why": "재단사 표시"
+    }
+   ],
+   "variants_group": "rack",
+   "animation_frames": null,
+   "status": "v4",
+   "drawn_by": "/tmp/j8city/pz.py"
+  },
+  {
+   "id": "sword_barrel",
+   "name_ko": "칼 꽂은 통",
+   "name_en": "Barrel of swords",
+   "description_ko": "칼 세 자루를 꽂은 통. 대장간 문 옆에 둔다.",
+   "category": "shop",
+   "tags": [
+    "smith"
+   ],
+   "footprint_cells": [
+    1,
+    1
+   ],
+   "image_px": [
+    16,
+    16
+   ],
+   "overhang_up_px": 0,
+   "role_grid": {
+    "rows": [
+     "B"
+    ],
+    "anchor": "맨 아랫줄 왼쪽 칸 = 배치 좌표"
+   },
+   "placement_rules": [
+    "대장간 문 옆",
+    "문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지",
+    "통행로 연결을 끊지 않음(BFS 재확인)"
+   ],
+   "related": [
+    {
+     "id": "sign_smith",
+     "why": "대장간 표시"
+    }
+   ],
+   "variants_group": "barrel",
+   "animation_frames": null,
+   "status": "v4",
+   "drawn_by": "/tmp/j8city/pz.py"
+  },
+  {
+   "id": "stair_rail",
+   "name_ko": "계단 난간",
+   "name_en": "Stair railing",
+   "description_ko": "계단 양옆을 따라 내려가는 쇠 난간. 모든 계단 양쪽에 겹침층으로 붙는다.",
+   "category": "street",
+   "tags": [
+    "stair"
+   ],
+   "footprint_cells": [
+    1,
+    0
+   ],
+   "image_px": [
+    4,
+    48
+   ],
+   "overhang_up_px": 48,
+   "role_grid": {
+    "rows": [
+     "O",
+     "O",
+     "O"
+    ],
+    "anchor": "맨 아랫줄 왼쪽 칸 = 배치 좌표"
+   },
+   "placement_rules": [
+    "계단 좌우 가장자리 (계단은 통행)"
+   ],
+   "related": [
+    {
+     "id": "planter_round",
+     "why": "계단 발치 장식"
+    }
+   ],
+   "variants_group": "rail",
+   "animation_frames": null,
+   "status": "v4",
+   "drawn_by": "/tmp/j8city/pz.py"
+  },
+  {
+   "id": "festoon",
+   "name_ko": "등불 줄 (깜빡임)",
+   "name_en": "Festoon lanterns",
+   "description_ko": "시장 광장 위를 가로지르는 등불 줄(깜빡임 6장). 발자국 없는 겹침층.",
+   "category": "street",
+   "tags": [
+    "market"
+   ],
+   "footprint_cells": [
+    4,
+    0
+   ],
+   "image_px": [
+    64,
+    20
+   ],
+   "overhang_up_px": 20,
+   "role_grid": {
+    "rows": [
+     "OOOO",
+     "OOOO"
+    ],
+    "anchor": "맨 아랫줄 왼쪽 칸 = 배치 좌표"
+   },
+   "placement_rules": [
+    "시장 광장 북쪽 한 줄"
+   ],
+   "related": [
+    {
+     "id": "lamp_double",
+     "why": "광장 조명 한 벌"
+    }
+   ],
+   "variants_group": "lamp",
+   "animation_frames": 6,
+   "status": "v4",
+   "drawn_by": "/tmp/j8city/pz.py"
+  },
+  {
+   "id": "well_roofed",
+   "name_ko": "돌 우물 (지붕)",
+   "name_en": "Roofed stone well",
+   "description_ko": "지붕 얹은 돌 우물(기존 채택 조각). 뒤에 산울타리, 옆에 꽃밭·벤치를 둔 동네 쉼터의 중심.",
+   "category": "water",
+   "tags": [
+    "residential",
+    "park"
+   ],
+   "footprint_cells": [
+    2,
+    2
+   ],
+   "image_px": [
+    32,
+    32
+   ],
+   "overhang_up_px": 0,
+   "role_grid": {
+    "rows": [
+     "BB",
+     "BB"
+    ],
+    "anchor": "맨 아랫줄 왼쪽 칸 = 배치 좌표"
+   },
+   "placement_rules": [
+    "길에서 1칸 안쪽 잔디",
+    "아래 2줄 막힘",
+    "앞(아래)에 길이 닿아야 함",
+    "문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지",
+    "통행로 연결을 끊지 않음(BFS 재확인)"
+   ],
+   "related": [
+    {
+     "id": "bench_wood",
+     "why": "쉼터 자리"
+    },
+    {
+     "id": "hedge",
+     "why": "쉼터 뒤 담"
+    }
+   ],
+   "variants_group": "well",
+   "animation_frames": null,
+   "status": "v4",
+   "drawn_by": "pe.py / pl.py (accepted earlier pieces)"
+  },
+  {
+   "id": "flowerbed",
+   "name_ko": "꽃밭",
+   "name_en": "Flower bed",
+   "description_ko": "작은 꽃밭(기존 조각). 우물 쉼터 옆에 둔다.",
+   "category": "planter",
+   "tags": [
+    "park"
+   ],
+   "footprint_cells": [
+    2,
+    1
+   ],
+   "image_px": [
+    32,
+    16
+   ],
+   "overhang_up_px": 0,
+   "role_grid": {
+    "rows": [
+     "BB"
+    ],
+    "anchor": "맨 아랫줄 왼쪽 칸 = 배치 좌표"
+   },
+   "placement_rules": [
+    "쉼터 옆",
+    "문 앞 2칸·성문 통로·계단 앞뒤 2칸·다리 끝 금지",
+    "통행로 연결을 끊지 않음(BFS 재확인)"
+   ],
+   "related": [
+    {
+     "id": "well_roofed",
+     "why": "쉼터 한 벌"
+    }
+   ],
+   "variants_group": "planter",
+   "animation_frames": null,
+   "status": "v4",
+   "drawn_by": "pe.py / pl.py (accepted earlier pieces)"
+  },
+  {
+   "id": "bridge_ew",
+   "name_ko": "동서 돌다리",
+   "name_en": "East-west stone bridge",
+   "description_ko": "남북으로 흐르는 강을 동서로 건너는 2칸 폭 돌다리. 북쪽 난간 윗면, 자갈 상판 2줄, 남쪽 난간과 아치가 뚫린 두꺼운 앞면, 물 위 그림자.",
+   "category": "street",
+   "tags": [
+    "river",
+    "street"
+   ],
+   "footprint_cells": [
+    4,
+    2
+   ],
+   "image_px": [
+    72,
+    64
+   ],
+   "overhang_up_px": 5,
+   "role_grid": {
+    "rows": [
+     "OOOO",
+     "WWWW",
+     "WWWW",
+     "OOOO"
+    ],
+    "anchor": "상판 첫 줄 왼쪽 칸 = (bx,by), 그림은 (bx*16-4, by*16-5)",
+    "legend": {
+     "W": "상판 (통행)",
+     "O": "북쪽 난간 윗부분·남쪽 앞면 (물 위, 겹침층)"
+    }
+   },
+   "placement_rules": [
+    "강 양쪽 둑에 같은 줄 2칸 폭 길이 있을 때만",
+    "강 폭 4칸을 가로로 덮음, 판석 결은 길과 같은 방향",
+    "세로(남북) 띠로 깔지 않음 — v3 거절 사유"
+   ],
+   "related": [
+    {
+     "id": "lamp_crook",
+     "why": "다리 머리 가로등"
+    }
+   ],
+   "variants_group": "bridge",
+   "animation_frames": null,
+   "status": "v4",
+   "drawn_by": "pz.bridge_ew"
+  },
+  {
+   "id": "grass_lawn",
+   "name_ko": "기본 잔디",
+   "name_en": "Base lawn",
+   "description_ko": "칩셋 기본 잔디. 땅 전체의 바탕.",
+   "category": "ground",
+   "tags": [
+    "ground",
+    "grass"
+   ],
+   "footprint_cells": [
+    1,
+    1
+   ],
+   "image_px": [
+    16,
+    16
+   ],
+   "overhang_up_px": 0,
+   "role_grid": {
+    "rows": [
+     "W"
+    ]
+   },
+   "placement_rules": [
+    "나머지 전부",
+    "칸 단위 무작위 점찍기 금지: 픽셀 단위 덩어리 노이즈 + ±0.05 디더 경계",
+    "ground.py render()"
+   ],
+   "related": [
+    {
+     "id": "grass_meadow",
+     "why": "같은 땅 섞기 묶음"
+    },
+    {
+     "id": "grass_shade",
+     "why": "같은 땅 섞기 묶음"
+    },
+    {
+     "id": "grass_flower",
+     "why": "같은 땅 섞기 묶음"
+    },
+    {
+     "id": "grass_worn",
+     "why": "같은 땅 섞기 묶음"
+    }
+   ],
+   "variants_group": "grass",
+   "animation_frames": null,
+   "status": "v4",
+   "source": "jungle-chipset 0,128"
+  },
+  {
+   "id": "grass_meadow",
+   "name_ko": "밝은 풀밭",
+   "name_en": "Light meadow",
+   "description_ko": "칩셋의 밝고 잘게 얼룩진 풀. 큰 덩어리(약 70px 규모) 노이즈로 바탕 위에 섞는다.",
+   "category": "ground",
+   "tags": [
+    "ground",
+    "grass"
+   ],
+   "footprint_cells": [
+    1,
+    1
+   ],
+   "image_px": [
+    16,
+    16
+   ],
+   "overhang_up_px": 0,
+   "role_grid": {
+    "rows": [
+     "W"
+    ]
+   },
+   "placement_rules": [
+    "노이즈 > 0.60 인 덩어리",
+    "칸 단위 무작위 점찍기 금지: 픽셀 단위 덩어리 노이즈 + ±0.05 디더 경계",
+    "ground.py render()"
+   ],
+   "related": [
+    {
+     "id": "grass_lawn",
+     "why": "같은 땅 섞기 묶음"
+    },
+    {
+     "id": "grass_shade",
+     "why": "같은 땅 섞기 묶음"
+    },
+    {
+     "id": "grass_flower",
+     "why": "같은 땅 섞기 묶음"
+    },
+    {
+     "id": "grass_worn",
+     "why": "같은 땅 섞기 묶음"
+    }
+   ],
+   "variants_group": "grass",
+   "animation_frames": null,
+   "status": "v4",
+   "source": "jungle-chipset 304,304"
+  },
+  {
+   "id": "grass_shade",
+   "name_ko": "나무 밑 짙은 풀",
+   "name_en": "Shade grass",
+   "description_ko": "칩셋의 짙은 풀. 나무 수관 아래와 둘레(흐림 9px)에 깔고, 드물게 노이즈 덩어리로도.",
+   "category": "ground",
+   "tags": [
+    "ground",
+    "grass"
+   ],
+   "footprint_cells": [
+    1,
+    1
+   ],
+   "image_px": [
+    16,
+    16
+   ],
+   "overhang_up_px": 0,
+   "role_grid": {
+    "rows": [
+     "W"
+    ]
+   },
+   "placement_rules": [
+    "나무 칸 둘레 + 노이즈 > 0.83",
+    "칸 단위 무작위 점찍기 금지: 픽셀 단위 덩어리 노이즈 + ±0.05 디더 경계",
+    "ground.py render()"
+   ],
+   "related": [
+    {
+     "id": "grass_lawn",
+     "why": "같은 땅 섞기 묶음"
+    },
+    {
+     "id": "grass_meadow",
+     "why": "같은 땅 섞기 묶음"
+    },
+    {
+     "id": "grass_flower",
+     "why": "같은 땅 섞기 묶음"
+    },
+    {
+     "id": "grass_worn",
+     "why": "같은 땅 섞기 묶음"
+    }
+   ],
+   "variants_group": "grass",
+   "animation_frames": null,
+   "status": "v4",
+   "source": "jungle-chipset 112,2144"
+  },
+  {
+   "id": "grass_flower",
+   "name_ko": "들꽃 풀",
+   "name_en": "Wildflower grass",
+   "description_ko": "노란 들꽃 점이 박힌 칩셋 풀. 작은 덩어리(20px 규모)로, 짙은 풀 위에는 안 깐다.",
+   "category": "ground",
+   "tags": [
+    "ground",
+    "grass"
+   ],
+   "footprint_cells": [
+    1,
+    1
+   ],
+   "image_px": [
+    16,
+    16
+   ],
+   "overhang_up_px": 0,
+   "role_grid": {
+    "rows": [
+     "W"
+    ]
+   },
+   "placement_rules": [
+    "노이즈 > 0.70, 짙은 풀 제외",
+    "칸 단위 무작위 점찍기 금지: 픽셀 단위 덩어리 노이즈 + ±0.05 디더 경계",
+    "ground.py render()"
+   ],
+   "related": [
+    {
+     "id": "grass_lawn",
+     "why": "같은 땅 섞기 묶음"
+    },
+    {
+     "id": "grass_meadow",
+     "why": "같은 땅 섞기 묶음"
+    },
+    {
+     "id": "grass_shade",
+     "why": "같은 땅 섞기 묶음"
+    },
+    {
+     "id": "grass_worn",
+     "why": "같은 땅 섞기 묶음"
+    }
+   ],
+   "variants_group": "grass",
+   "animation_frames": null,
+   "status": "v4",
+   "source": "jungle-chipset 112,608"
+  },
+  {
+   "id": "grass_worn",
+   "name_ko": "길가 닳은 풀",
+   "name_en": "Worn grass",
+   "description_ko": "칩셋 올리브빛 흙풀의 가운데 8×8. 자갈길 연석 바깥 3px 띠에 노이즈로 끊어 깐다.",
+   "category": "ground",
+   "tags": [
+    "ground",
+    "grass"
+   ],
+   "footprint_cells": [
+    1,
+    1
+   ],
+   "image_px": [
+    16,
+    16
+   ],
+   "overhang_up_px": 0,
+   "role_grid": {
+    "rows": [
+     "W"
+    ]
+   },
+   "placement_rules": [
+    "길에서 3px 안, 노이즈 > 0.52",
+    "칸 단위 무작위 점찍기 금지: 픽셀 단위 덩어리 노이즈 + ±0.05 디더 경계",
+    "ground.py render()"
+   ],
+   "related": [
+    {
+     "id": "grass_lawn",
+     "why": "같은 땅 섞기 묶음"
+    },
+    {
+     "id": "grass_meadow",
+     "why": "같은 땅 섞기 묶음"
+    },
+    {
+     "id": "grass_shade",
+     "why": "같은 땅 섞기 묶음"
+    },
+    {
+     "id": "grass_flower",
+     "why": "같은 땅 섞기 묶음"
+    }
+   ],
+   "variants_group": "grass",
+   "animation_frames": null,
+   "status": "v4",
+   "source": "jungle-chipset 16,1776"
+  }
+ ],
+ "city_placements": [
+  {
+   "id": "stall_cheese_meat",
+   "x": 63,
+   "y": 36,
+   "w": 2,
+   "h": 2,
+   "px": 1008,
+   "py": 559
+  },
+  {
+   "id": "stall_jug_bottle",
+   "x": 59,
+   "y": 42,
+   "w": 2,
+   "h": 2,
+   "px": 944,
+   "py": 655
+  },
+  {
+   "id": "stall_herb_flower",
+   "x": 62,
+   "y": 42,
+   "w": 2,
+   "h": 2,
+   "px": 992,
+   "py": 655
+  },
+  {
+   "id": "flower_cart",
+   "x": 63,
+   "y": 35,
+   "w": 2,
+   "h": 1,
+   "px": 1008,
+   "py": 544
+  },
+  {
+   "id": "veg_cart",
+   "x": 59,
+   "y": 39,
+   "w": 2,
+   "h": 1,
+   "px": 944,
+   "py": 608
+  },
+  {
+   "id": "crate_apple",
+   "x": 60,
+   "y": 40,
+   "w": 1,
+   "h": 1,
+   "px": 960,
+   "py": 640
+  },
+  {
+   "id": "crate_cabbage",
+   "x": 64,
+   "y": 42,
+   "w": 1,
+   "h": 1,
+   "px": 1024,
+   "py": 672
+  },
+  {
+   "id": "flagpole",
+   "x": 60,
+   "y": 34,
+   "w": 2,
+   "h": 1,
+   "px": 960,
+   "py": 496
+  },
+  {
+   "id": "flagpole",
+   "x": 67,
+   "y": 34,
+   "w": 2,
+   "h": 1,
+   "px": 1072,
+   "py": 496
+  },
+  {
+   "id": "fish_pool",
+   "x": 67,
+   "y": 70,
+   "w": 3,
+   "h": 2,
+   "px": 1072,
+   "py": 1120
+  },
+  {
+   "id": "anchor_display",
+   "x": 65,
+   "y": 71,
+   "w": 2,
+   "h": 1,
+   "px": 1040,
+   "py": 1120
+  },
+  {
+   "id": "net_rack",
+   "x": 68,
+   "y": 66,
+   "w": 2,
+   "h": 1,
+   "px": 1088,
+   "py": 1040
+  },
+  {
+   "id": "fish_crates",
+   "x": 64,
+   "y": 73,
+   "w": 2,
+   "h": 1,
+   "px": 1024,
+   "py": 1168
+  },
+  {
+   "id": "stall_veg",
+   "x": 64,
+   "y": 72,
+   "w": 3,
+   "h": 1,
+   "px": 1024,
+   "py": 1119
+  },
+  {
+   "id": "fish_barrel",
+   "x": 63,
+   "y": 67,
+   "w": 1,
+   "h": 1,
+   "px": 1008,
+   "py": 1072
+  },
+  {
+   "id": "crane",
+   "x": 55,
+   "y": 86,
+   "w": 4,
+   "h": 1,
+   "px": 880,
+   "py": 1312
+  },
+  {
+   "id": "mooring_bollard",
+   "x": 19,
+   "y": 89,
+   "w": 1,
+   "h": 1,
+   "px": 304,
+   "py": 1424
+  },
+  {
+   "id": "mooring_bollard",
+   "x": 22,
+   "y": 89,
+   "w": 1,
+   "h": 1,
+   "px": 352,
+   "py": 1424
+  },
+  {
+   "id": "mooring_bollard",
+   "x": 37,
+   "y": 86,
+   "w": 1,
+   "h": 1,
+   "px": 592,
+   "py": 1376
+  },
+  {
+   "id": "mooring_bollard",
+   "x": 40,
+   "y": 86,
+   "w": 1,
+   "h": 1,
+   "px": 640,
+   "py": 1376
+  },
+  {
+   "id": "mooring_bollard",
+   "x": 64,
+   "y": 86,
+   "w": 1,
+   "h": 1,
+   "px": 1024,
+   "py": 1376
+  },
+  {
+   "id": "mooring_bollard",
+   "x": 75,
+   "y": 89,
+   "w": 1,
+   "h": 1,
+   "px": 1200,
+   "py": 1424
+  },
+  {
+   "id": "mooring_bollard",
+   "x": 78,
+   "y": 89,
+   "w": 1,
+   "h": 1,
+   "px": 1248,
+   "py": 1424
+  },
+  {
+   "id": "mooring_bollard",
+   "x": 14,
+   "y": 92,
+   "w": 1,
+   "h": 1,
+   "px": 224,
+   "py": 1472
+  },
+  {
+   "id": "fish_crates",
+   "x": 24,
+   "y": 87,
+   "w": 2,
+   "h": 1,
+   "px": 384,
+   "py": 1392
+  },
+  {
+   "id": "mooring_bollard",
+   "x": 29,
+   "y": 87,
+   "w": 1,
+   "h": 1,
+   "px": 464,
+   "py": 1392
+  },
+  {
+   "id": "goods_pile",
+   "x": 59,
+   "y": 86,
+   "w": 2,
+   "h": 1,
+   "px": 944,
+   "py": 1360
+  },
+  {
+   "id": "mooring_bollard",
+   "x": 69,
+   "y": 87,
+   "w": 1,
+   "h": 1,
+   "px": 1104,
+   "py": 1392
+  },
+  {
+   "id": "net_rack",
+   "x": 84,
+   "y": 92,
+   "w": 2,
+   "h": 1,
+   "px": 1344,
+   "py": 1456
+  },
+  {
+   "id": "sign_tailor",
+   "x": 17,
+   "y": 74,
+   "w": 2,
+   "h": 0,
+   "layer": "wall-overlay",
+   "door": [
+    16,
+    75
+   ]
+  },
+  {
+   "id": "sign_fish",
+   "x": 93,
+   "y": 72,
+   "w": 2,
+   "h": 0,
+   "layer": "wall-overlay",
+   "door": [
+    92,
+    73
+   ]
+  },
+  {
+   "id": "sign_bakery",
+   "x": 43,
+   "y": 73,
+   "w": 2,
+   "h": 0,
+   "layer": "wall-overlay",
+   "door": [
+    42,
+    74
+   ]
+  },
+  {
+   "id": "sign_fish",
+   "x": 4,
+   "y": 74,
+   "w": 2,
+   "h": 0,
+   "layer": "wall-overlay",
+   "door": [
+    3,
+    75
+   ]
+  },
+  {
+   "id": "sign_grocer",
+   "x": 10,
+   "y": 74,
+   "w": 2,
+   "h": 0,
+   "layer": "wall-overlay",
+   "door": [
+    9,
+    75
+   ]
+  },
+  {
+   "id": "sign_books",
+   "x": 82,
+   "y": 31,
+   "w": 2,
+   "h": 0,
+   "layer": "wall-overlay",
+   "door": [
+    81,
+    32
+   ]
+  },
+  {
+   "id": "sign_grocer",
+   "x": 95,
+   "y": 31,
+   "w": 2,
+   "h": 0,
+   "layer": "wall-overlay",
+   "door": [
+    94,
+    32
+   ]
+  },
+  {
+   "id": "sign_butcher",
+   "x": 83,
+   "y": 89,
+   "w": 2,
+   "h": 0,
+   "layer": "wall-overlay",
+   "door": [
+    82,
+    90
+   ]
+  },
+  {
+   "id": "sign_inn",
+   "x": 68,
+   "y": 84,
+   "w": 2,
+   "h": 0,
+   "layer": "wall-overlay",
+   "door": [
+    67,
+    85
+   ]
+  },
+  {
+   "id": "sign_tailor",
+   "x": 17,
+   "y": 89,
+   "w": 2,
+   "h": 0,
+   "layer": "wall-overlay",
+   "door": [
+    16,
+    90
+   ]
+  },
+  {
+   "id": "sign_fish",
+   "x": 55,
+   "y": 83,
+   "w": 2,
+   "h": 0,
+   "layer": "wall-overlay",
+   "door": [
+    54,
+    84
+   ]
+  },
+  {
+   "id": "sign_bakery",
+   "x": 83,
+   "y": 80,
+   "w": 2,
+   "h": 0,
+   "layer": "wall-overlay",
+   "door": [
+    82,
+    81
+   ]
+  },
+  {
+   "id": "sign_fish",
+   "x": 90,
+   "y": 79,
+   "w": 2,
+   "h": 0,
+   "layer": "wall-overlay",
+   "door": [
+    89,
+    80
+   ]
+  },
+  {
+   "id": "sign_fish",
+   "x": 24,
+   "y": 74,
+   "w": 2,
+   "h": 0,
+   "layer": "wall-overlay (baked into house)",
+   "door": [
+    23,
+    75
+   ]
+  },
+  {
+   "id": "sign_smith",
+   "x": 46,
+   "y": 9,
+   "w": 2,
+   "h": 0,
+   "layer": "wall-overlay (baked into house)",
+   "door": [
+    45,
+    10
+   ]
+  },
+  {
+   "id": "sign_bakery",
+   "x": 73,
+   "y": 17,
+   "w": 2,
+   "h": 0,
+   "layer": "wall-overlay (baked into house)",
+   "door": [
+    72,
+    18
+   ]
+  },
+  {
+   "id": "sign_grocer",
+   "x": 77,
+   "y": 72,
+   "w": 2,
+   "h": 0,
+   "layer": "wall-overlay (baked into house)",
+   "door": [
+    76,
+    73
+   ]
+  },
+  {
+   "id": "sign_jewel",
+   "x": 25,
+   "y": 19,
+   "w": 2,
+   "h": 0,
+   "layer": "wall-overlay (baked into house)",
+   "door": [
+    24,
+    20
+   ]
+  },
+  {
+   "id": "sign_pharm",
+   "x": 63,
+   "y": 53,
+   "w": 2,
+   "h": 0,
+   "layer": "wall-overlay (baked into house)",
+   "door": [
+    62,
+    54
+   ]
+  },
+  {
+   "id": "sign_tailor",
+   "x": 97,
+   "y": 53,
+   "w": 2,
+   "h": 0,
+   "layer": "wall-overlay (baked into house)",
+   "door": [
+    96,
+    54
+   ]
+  },
+  {
+   "id": "sign_butcher",
+   "x": 27,
+   "y": 84,
+   "w": 2,
+   "h": 0,
+   "layer": "wall-overlay (baked into house)",
+   "door": [
+    26,
+    85
+   ]
+  },
+  {
+   "id": "sign_jewel",
+   "x": 60,
+   "y": 31,
+   "w": 2,
+   "h": 0,
+   "layer": "wall-overlay (baked into house)",
+   "door": [
+    59,
+    32
+   ]
+  },
+  {
+   "id": "sign_inn",
+   "x": 36,
+   "y": 83,
+   "w": 2,
+   "h": 0,
+   "layer": "wall-overlay (baked into house)",
+   "door": [
+    35,
+    84
+   ]
+  },
+  {
+   "id": "crate_fish",
+   "x": 24,
+   "y": 76,
+   "w": 1,
+   "h": 1,
+   "px": 384,
+   "py": 1216
+  },
+  {
+   "id": "fish_crates",
+   "x": 25,
+   "y": 76,
+   "w": 2,
+   "h": 1,
+   "px": 400,
+   "py": 1216
+  },
+  {
+   "id": "bread_rack",
+   "x": 73,
+   "y": 19,
+   "w": 1,
+   "h": 1,
+   "px": 1168,
+   "py": 288
+  },
+  {
+   "id": "sandwich_board",
+   "x": 71,
+   "y": 19,
+   "w": 1,
+   "h": 1,
+   "px": 1136,
+   "py": 304
+  },
+  {
+   "id": "crate_apple",
+   "x": 77,
+   "y": 74,
+   "w": 1,
+   "h": 1,
+   "px": 1232,
+   "py": 1184
+  },
+  {
+   "id": "crate_cabbage",
+   "x": 75,
+   "y": 74,
+   "w": 1,
+   "h": 1,
+   "px": 1200,
+   "py": 1184
+  },
+  {
+   "id": "door_pots",
+   "x": 25,
+   "y": 21,
+   "w": 1,
+   "h": 1,
+   "px": 400,
+   "py": 336
+  },
+  {
+   "id": "sandwich_board",
+   "x": 23,
+   "y": 21,
+   "w": 1,
+   "h": 1,
+   "px": 368,
+   "py": 336
+  },
+  {
+   "id": "herb_rack",
+   "x": 63,
+   "y": 55,
+   "w": 1,
+   "h": 1,
+   "px": 1008,
+   "py": 864
+  },
+  {
+   "id": "sandwich_board",
+   "x": 61,
+   "y": 55,
+   "w": 1,
+   "h": 1,
+   "px": 976,
+   "py": 880
+  },
+  {
+   "id": "cloth_stand",
+   "x": 97,
+   "y": 55,
+   "w": 2,
+   "h": 1,
+   "px": 1552,
+   "py": 864
+  },
+  {
+   "id": "door_pots",
+   "x": 95,
+   "y": 55,
+   "w": 1,
+   "h": 1,
+   "px": 1520,
+   "py": 880
+  },
+  {
+   "id": "goods_pile",
+   "x": 24,
+   "y": 86,
+   "w": 2,
+   "h": 1,
+   "px": 384,
+   "py": 1360
+  },
+  {
+   "id": "sandwich_board",
+   "x": 27,
+   "y": 86,
+   "w": 1,
+   "h": 1,
+   "px": 432,
+   "py": 1376
+  },
+  {
+   "id": "door_pots",
+   "x": 58,
+   "y": 33,
+   "w": 1,
+   "h": 1,
+   "px": 928,
+   "py": 528
+  },
+  {
+   "id": "sandwich_board",
+   "x": 57,
+   "y": 33,
+   "w": 1,
+   "h": 1,
+   "px": 912,
+   "py": 528
+  },
+  {
+   "id": "table_mugs",
+   "x": 33,
+   "y": 85,
+   "w": 2,
+   "h": 1,
+   "px": 528,
+   "py": 1344
+  },
+  {
+   "id": "cloth_stand",
+   "x": 17,
+   "y": 76,
+   "w": 2,
+   "h": 1,
+   "px": 272,
+   "py": 1200
+  },
+  {
+   "id": "door_pots",
+   "x": 15,
+   "y": 76,
+   "w": 1,
+   "h": 1,
+   "px": 240,
+   "py": 1216
+  },
+  {
+   "id": "crate_fish",
+   "x": 93,
+   "y": 74,
+   "w": 1,
+   "h": 1,
+   "px": 1488,
+   "py": 1184
+  },
+  {
+   "id": "fish_crates",
+   "x": 94,
+   "y": 74,
+   "w": 2,
+   "h": 1,
+   "px": 1504,
+   "py": 1184
+  },
+  {
+   "id": "bread_rack",
+   "x": 43,
+   "y": 75,
+   "w": 1,
+   "h": 1,
+   "px": 688,
+   "py": 1184
+  },
+  {
+   "id": "sandwich_board",
+   "x": 41,
+   "y": 75,
+   "w": 1,
+   "h": 1,
+   "px": 656,
+   "py": 1200
+  },
+  {
+   "id": "crate_fish",
+   "x": 4,
+   "y": 76,
+   "w": 1,
+   "h": 1,
+   "px": 64,
+   "py": 1216
+  },
+  {
+   "id": "fish_crates",
+   "x": 5,
+   "y": 76,
+   "w": 2,
+   "h": 1,
+   "px": 80,
+   "py": 1216
+  },
+  {
+   "id": "crate_apple",
+   "x": 10,
+   "y": 76,
+   "w": 1,
+   "h": 1,
+   "px": 160,
+   "py": 1216
+  },
+  {
+   "id": "crate_cabbage",
+   "x": 8,
+   "y": 76,
+   "w": 1,
+   "h": 1,
+   "px": 128,
+   "py": 1216
+  },
+  {
+   "id": "sandwich_board",
+   "x": 82,
+   "y": 33,
+   "w": 1,
+   "h": 1,
+   "px": 1312,
+   "py": 528
+  },
+  {
+   "id": "planter_round",
+   "x": 80,
+   "y": 33,
+   "w": 1,
+   "h": 1,
+   "px": 1280,
+   "py": 528
+  },
+  {
+   "id": "crate_apple",
+   "x": 95,
+   "y": 33,
+   "w": 1,
+   "h": 1,
+   "px": 1520,
+   "py": 528
+  },
+  {
+   "id": "crate_cabbage",
+   "x": 93,
+   "y": 33,
+   "w": 1,
+   "h": 1,
+   "px": 1488,
+   "py": 528
+  },
+  {
+   "id": "sandwich_board",
+   "x": 81,
+   "y": 91,
+   "w": 1,
+   "h": 1,
+   "px": 1296,
+   "py": 1456
+  },
+  {
+   "id": "table_mugs",
+   "x": 65,
+   "y": 86,
+   "w": 2,
+   "h": 1,
+   "px": 1040,
+   "py": 1360
+  },
+  {
+   "id": "sandwich_board",
+   "x": 68,
+   "y": 86,
+   "w": 1,
+   "h": 1,
+   "px": 1088,
+   "py": 1376
+  },
+  {
+   "id": "door_pots",
+   "x": 17,
+   "y": 91,
+   "w": 1,
+   "h": 1,
+   "px": 272,
+   "py": 1456
+  },
+  {
+   "id": "crate_fish",
+   "x": 56,
+   "y": 85,
+   "w": 1,
+   "h": 1,
+   "px": 896,
+   "py": 1360
+  },
+  {
+   "id": "fish_barrel",
+   "x": 55,
+   "y": 85,
+   "w": 1,
+   "h": 1,
+   "px": 880,
+   "py": 1360
+  },
+  {
+   "id": "bread_rack",
+   "x": 81,
+   "y": 82,
+   "w": 1,
+   "h": 1,
+   "px": 1296,
+   "py": 1296
+  },
+  {
+   "id": "sandwich_board",
+   "x": 80,
+   "y": 82,
+   "w": 1,
+   "h": 1,
+   "px": 1280,
+   "py": 1312
+  },
+  {
+   "id": "crate_fish",
+   "x": 90,
+   "y": 81,
+   "w": 1,
+   "h": 1,
+   "px": 1440,
+   "py": 1296
+  },
+  {
+   "id": "fish_crates",
+   "x": 91,
+   "y": 81,
+   "w": 2,
+   "h": 1,
+   "px": 1456,
+   "py": 1296
+  },
+  {
+   "id": "table_mugs",
+   "x": 70,
+   "y": 33,
+   "w": 2,
+   "h": 1,
+   "px": 1120,
+   "py": 512
+  },
+  {
+   "id": "sword_barrel",
+   "x": 18,
+   "y": 54,
+   "w": 1,
+   "h": 1,
+   "px": 288,
+   "py": 864
+  },
+  {
+   "id": "goods_pile",
+   "x": 19,
+   "y": 54,
+   "w": 2,
+   "h": 1,
+   "px": 304,
+   "py": 848
+  },
+  {
+   "id": "door_pots",
+   "x": 17,
+   "y": 21,
+   "w": 1,
+   "h": 1,
+   "px": 272,
+   "py": 336
+  },
+  {
+   "id": "door_pots",
+   "x": 91,
+   "y": 17,
+   "w": 1,
+   "h": 1,
+   "px": 1456,
+   "py": 272
+  },
+  {
+   "id": "door_pots",
+   "x": 75,
+   "y": 53,
+   "w": 1,
+   "h": 1,
+   "px": 1200,
+   "py": 848
+  },
+  {
+   "id": "door_pots",
+   "x": 39,
+   "y": 11,
+   "w": 1,
+   "h": 1,
+   "px": 624,
+   "py": 176
+  },
+  {
+   "id": "door_pots",
+   "x": 35,
+   "y": 53,
+   "w": 1,
+   "h": 1,
+   "px": 560,
+   "py": 848
+  },
+  {
+   "id": "door_pots",
+   "x": 68,
+   "y": 19,
+   "w": 1,
+   "h": 1,
+   "px": 1088,
+   "py": 304
+  },
+  {
+   "id": "door_pots",
+   "x": 89,
+   "y": 74,
+   "w": 1,
+   "h": 1,
+   "px": 1424,
+   "py": 1184
+  },
+  {
+   "id": "door_pots",
+   "x": 80,
+   "y": 74,
+   "w": 1,
+   "h": 1,
+   "px": 1280,
+   "py": 1184
+  },
+  {
+   "id": "door_pots",
+   "x": 29,
+   "y": 21,
+   "w": 1,
+   "h": 1,
+   "px": 464,
+   "py": 336
+  },
+  {
+   "id": "door_pots",
+   "x": 44,
+   "y": 21,
+   "w": 1,
+   "h": 1,
+   "px": 704,
+   "py": 336
+  },
+  {
+   "id": "door_pots",
+   "x": 66,
+   "y": 55,
+   "w": 1,
+   "h": 1,
+   "px": 1056,
+   "py": 880
+  },
+  {
+   "id": "door_pots",
+   "x": 22,
+   "y": 54,
+   "w": 1,
+   "h": 1,
+   "px": 352,
+   "py": 864
+  },
+  {
+   "id": "flowerbox_long",
+   "x": 92,
+   "y": 55,
+   "w": 2,
+   "h": 1,
+   "px": 1472,
+   "py": 880
+  },
+  {
+   "id": "door_pots",
+   "x": 3,
+   "y": 93,
+   "w": 1,
+   "h": 1,
+   "px": 48,
+   "py": 1488
+  },
+  {
+   "id": "flowerbox_long",
+   "x": 34,
+   "y": 60,
+   "w": 2,
+   "h": 1,
+   "px": 544,
+   "py": 960
+  },
+  {
+   "id": "door_pots",
+   "x": 63,
+   "y": 49,
+   "w": 1,
+   "h": 1,
+   "px": 1008,
+   "py": 784
+  },
+  {
+   "id": "door_pots",
+   "x": 94,
+   "y": 49,
+   "w": 1,
+   "h": 1,
+   "px": 1504,
+   "py": 784
+  },
+  {
+   "id": "door_pots",
+   "x": 80,
+   "y": 14,
+   "w": 1,
+   "h": 1,
+   "px": 1280,
+   "py": 224
+  },
+  {
+   "id": "door_pots",
+   "x": 6,
+   "y": 11,
+   "w": 1,
+   "h": 1,
+   "px": 96,
+   "py": 176
+  },
+  {
+   "id": "flowerbox_long",
+   "x": 19,
+   "y": 11,
+   "w": 2,
+   "h": 1,
+   "px": 304,
+   "py": 176
+  },
+  {
+   "id": "laundry_line",
+   "x": 21,
+   "y": 20,
+   "w": 1,
+   "h": 0,
+   "layer": "overlay",
+   "between": [
+    "barracks",
+    "h112_0"
+   ]
+  },
+  {
+   "id": "laundry_line",
+   "x": 51,
+   "y": 20,
+   "w": 2,
+   "h": 0,
+   "layer": "overlay",
+   "between": [
+    "h113_1",
+    "h144_0"
+   ]
+  },
+  {
+   "id": "laundry_line",
+   "x": 62,
+   "y": 32,
+   "w": 2,
+   "h": 0,
+   "layer": "overlay",
+   "between": [
+    "h133_0",
+    "inn"
+   ]
+  },
+  {
+   "id": "laundry_line",
+   "x": 88,
+   "y": 42,
+   "w": 2,
+   "h": 0,
+   "layer": "overlay",
+   "between": [
+    "h127_1",
+    "h121_0"
+   ]
+  },
+  {
+   "id": "laundry_line",
+   "x": 63,
+   "y": 70,
+   "w": 1,
+   "h": 0,
+   "layer": "overlay",
+   "between": [
+    "hst0",
+    "hst1"
+   ]
+  },
+  {
+   "id": "laundry_line",
+   "x": 84,
+   "y": 73,
+   "w": 2,
+   "h": 0,
+   "layer": "overlay",
+   "between": [
+    "h111_1",
+    "h109_0"
+   ]
+  },
+  {
+   "id": "laundry_rack",
+   "x": 93,
+   "y": 86,
+   "w": 2,
+   "h": 1,
+   "px": 1488,
+   "py": 1360
+  },
+  {
+   "id": "laundry_rack",
+   "x": 63,
+   "y": 79,
+   "w": 2,
+   "h": 1,
+   "px": 1008,
+   "py": 1248
+  },
+  {
+   "id": "laundry_rack",
+   "x": 83,
+   "y": 28,
+   "w": 2,
+   "h": 1,
+   "px": 1328,
+   "py": 432
+  },
+  {
+   "id": "laundry_rack",
+   "x": 56,
+   "y": 17,
+   "w": 2,
+   "h": 1,
+   "px": 896,
+   "py": 256
+  },
+  {
+   "id": "laundry_rack",
+   "x": 65,
+   "y": 46,
+   "w": 2,
+   "h": 1,
+   "px": 1040,
+   "py": 720
+  },
+  {
+   "id": "lamp_crook",
+   "x": 20,
+   "y": 32,
+   "w": 1,
+   "h": 1,
+   "px": 320,
+   "py": 480
+  },
+  {
+   "id": "lamp_crook",
+   "x": 32,
+   "y": 32,
+   "w": 1,
+   "h": 1,
+   "px": 512,
+   "py": 480
+  },
+  {
+   "id": "lamp_crook",
+   "x": 84,
+   "y": 32,
+   "w": 1,
+   "h": 1,
+   "px": 1344,
+   "py": 480
+  },
+  {
+   "id": "lamp_crook",
+   "x": 30,
+   "y": 42,
+   "w": 1,
+   "h": 1,
+   "px": 480,
+   "py": 640
+  },
+  {
+   "id": "lamp_crook",
+   "x": 85,
+   "y": 63,
+   "w": 1,
+   "h": 1,
+   "px": 1360,
+   "py": 976
+  },
+  {
+   "id": "lamp_crook",
+   "x": 59,
+   "y": 73,
+   "w": 1,
+   "h": 1,
+   "px": 944,
+   "py": 1136
+  },
+  {
+   "id": "lamp_crook",
+   "x": 10,
+   "y": 90,
+   "w": 1,
+   "h": 1,
+   "px": 160,
+   "py": 1408
+  },
+  {
+   "id": "tree_planter",
+   "x": 2,
+   "y": 35,
+   "w": 2,
+   "h": 1,
+   "px": 32,
+   "py": 528
+  },
+  {
+   "id": "tree_planter",
+   "x": 10,
+   "y": 35,
+   "w": 2,
+   "h": 1,
+   "px": 160,
+   "py": 528
+  },
+  {
+   "id": "tree_planter",
+   "x": 18,
+   "y": 35,
+   "w": 2,
+   "h": 1,
+   "px": 288,
+   "py": 528
+  },
+  {
+   "id": "tree_planter",
+   "x": 26,
+   "y": 32,
+   "w": 2,
+   "h": 1,
+   "px": 416,
+   "py": 480
+  },
+  {
+   "id": "tree_planter",
+   "x": 37,
+   "y": 32,
+   "w": 2,
+   "h": 1,
+   "px": 592,
+   "py": 480
+  },
+  {
+   "id": "tree_planter",
+   "x": 45,
+   "y": 35,
+   "w": 2,
+   "h": 1,
+   "px": 720,
+   "py": 528
+  },
+  {
+   "id": "tree_planter",
+   "x": 53,
+   "y": 35,
+   "w": 2,
+   "h": 1,
+   "px": 848,
+   "py": 528
+  },
+  {
+   "id": "tree_planter",
+   "x": 72,
+   "y": 35,
+   "w": 2,
+   "h": 1,
+   "px": 1152,
+   "py": 528
+  },
+  {
+   "id": "tree_planter",
+   "x": 80,
+   "y": 35,
+   "w": 2,
+   "h": 1,
+   "px": 1280,
+   "py": 528
+  },
+  {
+   "id": "tree_planter",
+   "x": 90,
+   "y": 32,
+   "w": 2,
+   "h": 1,
+   "px": 1440,
+   "py": 480
+  },
+  {
+   "id": "planter_round",
+   "x": 9,
+   "y": 17,
+   "w": 1,
+   "h": 1,
+   "px": 144,
+   "py": 272
+  },
+  {
+   "id": "planter_round",
+   "x": 14,
+   "y": 17,
+   "w": 1,
+   "h": 1,
+   "px": 224,
+   "py": 272
+  },
+  {
+   "id": "planter_round",
+   "x": 60,
+   "y": 61,
+   "w": 1,
+   "h": 1,
+   "px": 960,
+   "py": 976
+  },
+  {
+   "id": "bench_wood",
+   "x": 72,
+   "y": 34,
+   "w": 2,
+   "h": 1,
+   "px": 1152,
+   "py": 544
+  },
+  {
+   "id": "bench_wood",
+   "x": 64,
+   "y": 43,
+   "w": 2,
+   "h": 1,
+   "px": 1024,
+   "py": 688
+  },
+  {
+   "id": "bench_wood",
+   "x": 59,
+   "y": 75,
+   "w": 2,
+   "h": 1,
+   "px": 944,
+   "py": 1200
+  },
+  {
+   "id": "bench_wood",
+   "x": 63,
+   "y": 75,
+   "w": 2,
+   "h": 1,
+   "px": 1008,
+   "py": 1200
+  },
+  {
+   "id": "bench_wood",
+   "x": 83,
+   "y": 20,
+   "w": 2,
+   "h": 1,
+   "px": 1328,
+   "py": 320
+  },
+  {
+   "id": "bench_wood",
+   "x": 95,
+   "y": 19,
+   "w": 2,
+   "h": 1,
+   "px": 1520,
+   "py": 304
+  },
+  {
+   "id": "column_monument",
+   "x": 5,
+   "y": 20,
+   "w": 1,
+   "h": 1,
+   "px": 80,
+   "py": 272
+  },
+  {
+   "id": "lamp_double",
+   "x": 4,
+   "y": 19,
+   "w": 2,
+   "h": 1,
+   "px": 64,
+   "py": 272
+  },
+  {
+   "id": "fountain_small",
+   "x": 89,
+   "y": 19,
+   "w": 2,
+   "h": 2,
+   "px": 1424,
+   "py": 304
+  },
+  {
+   "id": "planter_round",
+   "x": 93,
+   "y": 20,
+   "w": 1,
+   "h": 1,
+   "px": 1488,
+   "py": 320
+  },
+  {
+   "id": "planter_round",
+   "x": 82,
+   "y": 19,
+   "w": 1,
+   "h": 1,
+   "px": 1312,
+   "py": 304
+  },
+  {
+   "id": "statue_sage",
+   "x": 25,
+   "y": 23,
+   "w": 2,
+   "h": 2,
+   "px": 400,
+   "py": 336
+  },
+  {
+   "id": "well_roofed",
+   "x": 76,
+   "y": 63,
+   "w": 2,
+   "h": 2,
+   "px": 1216,
+   "py": 1008
+  },
+  {
+   "id": "flowerbed",
+   "x": 78,
+   "y": 64,
+   "w": 2,
+   "h": 1,
+   "px": 1248,
+   "py": 1024
+  },
+  {
+   "id": "hedge",
+   "x": 75,
+   "y": 62,
+   "w": 3,
+   "h": 1,
+   "px": 1200,
+   "py": 984
+  },
+  {
+   "id": "fountain_small",
+   "x": 86,
+   "y": 51,
+   "w": 2,
+   "h": 2,
+   "px": 1376,
+   "py": 816
+  },
+  {
+   "id": "festoon",
+   "x": 59,
+   "y": 34,
+   "w": 10,
+   "h": 0,
+   "layer": "overlay"
+  },
+  {
+   "id": "stair_rail",
+   "x": 11,
+   "y": 14,
+   "w": 2,
+   "h": 3,
+   "side": "both",
+   "layer": "overlay"
+  },
+  {
+   "id": "stair_rail",
+   "x": 23,
+   "y": 27,
+   "w": 2,
+   "h": 3,
+   "side": "both",
+   "layer": "overlay"
+  },
+  {
+   "id": "stair_rail",
+   "x": 44,
+   "y": 28,
+   "w": 2,
+   "h": 3,
+   "side": "both",
+   "layer": "overlay"
+  },
+  {
+   "id": "stair_rail",
+   "x": 88,
+   "y": 25,
+   "w": 2,
+   "h": 3,
+   "side": "both",
+   "layer": "overlay"
+  },
+  {
+   "id": "stair_rail",
+   "x": 56,
+   "y": 62,
+   "w": 3,
+   "h": 3,
+   "side": "both",
+   "layer": "overlay"
+  },
+  {
+   "id": "stair_rail",
+   "x": 12,
+   "y": 58,
+   "w": 2,
+   "h": 3,
+   "side": "both",
+   "layer": "overlay"
+  },
+  {
+   "id": "stair_rail",
+   "x": 70,
+   "y": 61,
+   "w": 2,
+   "h": 3,
+   "side": "both",
+   "layer": "overlay"
+  },
+  {
+   "id": "bridge_ew",
+   "x": 33,
+   "y": 33,
+   "w": 4,
+   "h": 2,
+   "layer": "deck (walkable) + front face over water"
+  },
+  {
+   "id": "bridge_ew",
+   "x": 47,
+   "y": 85,
+   "w": 4,
+   "h": 2,
+   "layer": "deck (walkable) + front face over water"
+  }
+ ]
+}

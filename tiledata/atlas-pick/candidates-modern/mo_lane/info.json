@@ -1,0 +1,44 @@
+{
+ "id": "mo-lane",
+ "slug": "mo_lane",
+ "name": "차선(노란 중앙선·흰 점선)",
+ "scene": "도로·보도 표시",
+ "cells": [
+  1,
+  1
+ ],
+ "canvas": [
+  16,
+  16
+ ],
+ "layer": "ground",
+ "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+ "description": "노란 중앙선 · 동서 · 위쪽 1×1. 도로 표시(아래층 불투명 칸): 아스팔트 속 칸(8방향이 모두 아스팔트)에만 찍는다 — 연석 가장자리 칸에 찍으면 연석이 끊긴다. 위층에 찍지 않는다(사람 위에 그려진다).",
+ "palette_hint": "현대 칩셋 m* 램프 + v0 가 쓰는 색",
+ "worker": "-",
+ "members": [
+  "mo-lane-ew-a-solid",
+  "mo-lane-ew-b-dash",
+  "mo-lane-ew-b-solid",
+  "mo-lane-ns-m-solid",
+  "mo-lane-ns-b-dash"
+ ],
+ "tiles": [
+  3763,
+  3766,
+  3767,
+  3771,
+  3772
+ ],
+ "ctx": {
+  "at": [
+   0,
+   32
+  ],
+  "map": "modern-gangnam-station",
+  "cell": [
+   0,
+   2
+  ]
+ }
+}

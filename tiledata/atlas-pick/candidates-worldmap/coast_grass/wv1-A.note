@@ -1,0 +1,2 @@
+바다 안·풀밭 밖. 해안 깊이 2~4px(J=3), 바깥 모서리 원 r²=52·안쪽 홈 r²=9. 북쪽 둑 앞면은 흙 2단, 남쪽 입술은 풀 1줄, 어두운 테+물쪽 밝은 줄(흰 거품 없음). 파랑 바탕은 월드맵 구조(파일럿A와 같은 골격). 해협 9·이음 어긋남 0·seam 0.21.
+생성기: work/wv1_gen.py (tiledata/atlas-pick/candidates-worldmap/coast_grass/work/wv1_gen.py)

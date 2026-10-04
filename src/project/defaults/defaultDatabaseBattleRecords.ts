@@ -3,9 +3,12 @@ import { normalizeMonsterSpeciesRecord } from "../monsterCollection";
 import { DEFAULT_ENEMY_ID, DEFAULT_SKILL_ID, DEFAULT_TROOP_ID } from "./constants";
 import { archetypeActions } from "./enemyActionArchetypes";
 import { generatedEnemyRecords } from "./generatedEnemyRecords";
+import { withRetroMonsterSkills } from "./retroMonsterSkillRecords";
 
 export function defaultBattleRecords() {
   return {
+    // 도트 시트(PIXEL_ENEMY_SHEETS)가 있는 적은 레벨대별 몬스터 스킬(RETRO_MONSTER_SKILLSETS)을 행동으로 받는다.
+    // generatedEnemyRecords() 자체는 아키타입 출력 그대로 둔다(test/enemyActionArchetypes 의 역판정 계약).
     enemies: [
       normalizeEnemyRecord({"id":"enemy_slime","name":"슬라임","level":1,"speciesId":"species_wild_slime","monsterResourceId":"generated-enemy-slime-01","stats":{"maxHp":324,"maxMp":10,"attack":57,"defense":15,"mind":57,"agility":34},"rewards":{"exp":98,"gold":30,"dropRatePercent":15},"actions":archetypeActions("blob")}),
       normalizeEnemyRecord({"id":"enemy_meadow_slime","name":"초원 슬라임","level":3,"speciesId":"species_king_slime","monsterResourceId":"generated-enemy-slime-01","stats":{"maxHp":107,"maxMp":10,"attack":36,"defense":16,"mind":36,"agility":34},"rewards":{"exp":40,"gold":37,"dropRatePercent":15},"actions":archetypeActions("blob")}),
@@ -36,7 +39,7 @@ export function defaultBattleRecords() {
       // 검을 든 skeleton-01로 가짜 1:1 매핑을 만들거나 legacy enemy_extra 폴백을 쓰지 않는다.
       normalizeEnemyRecord({"id":"enemy_mine_skel_archer","name":"광산 해골 궁수","level":16,"speciesId":"species_mine_skeleton","monsterResourceId":"generated-enemy-skeleton-archer","stats":{"maxHp":256,"maxMp":10,"attack":75,"defense":27,"mind":75,"agility":38},"rewards":{"exp":108,"gold":68,"dropItemId":"item_bone","dropRatePercent":15},"actions":archetypeActions("curse"),"actionProfile":{"contactDamage":8,"aggroRange":9,"moveIntervalMs":450,"knockbackResist":0,"attack":{"kind":"projectile","windupMs":700,"recoverMs":300,"damage":18,"range":8,"cooldownMs":1400,"projectileSpeedTilesPerSec":7}}}),
       ...generatedEnemyRecords(),
-    ],
+    ].map(withRetroMonsterSkills),
     troops: [
       normalizeTroopRecord({
         id: DEFAULT_TROOP_ID,
@@ -44,7 +47,7 @@ export function defaultBattleRecords() {
         enemyIds: [DEFAULT_ENEMY_ID],
         members: [{ enemyId: DEFAULT_ENEMY_ID, x: 88, y: 96 }],
         autoAlign: false,
-        previewBackgroundResourceId: "generated-battle-reference-forest",
+        previewBackgroundResourceId: "battle-scenery-forest",
         battleEventPages: [],
       }),
       normalizeTroopRecord({
@@ -56,7 +59,7 @@ export function defaultBattleRecords() {
           { enemyId: "enemy_meadow_slime", x: 116, y: 120 },
         ],
         autoAlign: false,
-        previewBackgroundResourceId: "generated-battle-reference-forest",
+        previewBackgroundResourceId: "battle-scenery-forest",
         battleEventPages: [],
       }),
       normalizeTroopRecord({
@@ -69,7 +72,7 @@ export function defaultBattleRecords() {
           { enemyId: "enemy_cave_bat", x: 72, y: 132 },
         ],
         autoAlign: false,
-        previewBackgroundResourceId: "generated-battle-reference-forest",
+        previewBackgroundResourceId: "battle-scenery-forest",
         battleEventPages: [],
       }),
       // ── 잿불의 유산 진행에 필요한 전투 그룹 3종 ─────────────────────────────
@@ -90,7 +93,7 @@ export function defaultBattleRecords() {
         // 슬라임 둘의 다음 단계 — 수는 하나 늘고 빠른 개체가 섞인다.
         enemyIds: ["enemy_meadow_slime", "enemy_cave_bat", "enemy_meadow_slime"],
         autoAlign: true,
-        previewBackgroundResourceId: "generated-battle-reference-forest",
+        previewBackgroundResourceId: "battle-scenery-forest",
         battleEventPages: [],
       }),
       normalizeTroopRecord({
@@ -99,7 +102,7 @@ export function defaultBattleRecords() {
         // 폐광 보스 — 단단한 본체 + 빠른 호위 둘. 박쥐 떼보다 화력이 높다.
         enemyIds: ["enemy_cave_bat", "enemy_stone_golem", "enemy_cave_bat"],
         autoAlign: true,
-        previewBackgroundResourceId: "generated-battle-reference-forest",
+        previewBackgroundResourceId: "battle-scenery-forest",
         battleEventPages: [],
       }),
       normalizeTroopRecord({
@@ -108,7 +111,7 @@ export function defaultBattleRecords() {
         // 폐광 갱도의 원거리 견제 — 단독 배치. 액션 전투 맵 스폰 전용.
         enemyIds: ["enemy_mine_skel_archer"],
         autoAlign: true,
-        previewBackgroundResourceId: "generated-battle-reference-forest",
+        previewBackgroundResourceId: "battle-scenery-forest",
         battleEventPages: [],
       }),
       normalizeTroopRecord({
@@ -117,7 +120,7 @@ export function defaultBattleRecords() {
         // 최종 보스 — 단독. 호위를 붙이면 canLose=false 결전이 과해진다.
         enemyIds: ["enemy_dragon"],
         autoAlign: true,
-        previewBackgroundResourceId: "generated-battle-reference-forest",
+        previewBackgroundResourceId: "battle-scenery-forest",
         battleEventPages: [],
       }),
     ],
@@ -138,7 +141,7 @@ export function defaultBattleRecords() {
       normalizeMonsterSpeciesRecord({"id":"species_cave_bat","name":"동굴 박쥐","types":["fire"],"graphic":{"monsterResourceId":"generated-enemy-bat-01","graphicHue":0,"transparent":false,"flying":true},"baseStats":{"maxHp":20,"maxMp":6,"attack":9,"defense":6,"mind":8,"agility":18},"captureRate":0.55,"skillsByLevel":[{"level":1,"skillId":DEFAULT_SKILL_ID},{"level":4,"skillId":"skill_fire"}]}),
       normalizeMonsterSpeciesRecord({"id":"species_stone_golem","name":"돌 골렘","types":["grass"],"graphic":{"monsterResourceId":"generated-enemy-golem-01","graphicHue":0,"transparent":false,"flying":false},"baseStats":{"maxHp":64,"maxMp":8,"attack":16,"defense":18,"mind":8,"agility":4},"captureRate":0.35,"skillsByLevel":[{"level":1,"skillId":DEFAULT_SKILL_ID},{"level":5,"skillId":"skill_leaf"}]}),
       normalizeMonsterSpeciesRecord({"id":"species_ember_drake","name":"붉은 드래곤","types":["fire"],"graphic":{"monsterResourceId":"generated-enemy-dragon-01","graphicHue":0,"transparent":false,"flying":false},"baseStats":{"maxHp":70,"maxMp":10,"attack":22,"defense":20,"mind":12,"agility":14},"captureRate":0.15,"skillsByLevel":[{"level":1,"skillId":DEFAULT_SKILL_ID},{"level":6,"skillId":"skill_fire"}]}),
-      normalizeMonsterSpeciesRecord({"id":"species_forest_hornet","name":"숲 말벌","types":["grass"],"graphic":{"monsterResourceId":"easyrpg-monster-hornet","graphicHue":0,"transparent":false,"flying":true},"baseStats":{"maxHp":26,"maxMp":4,"attack":13,"defense":8,"mind":7,"agility":20},"captureRate":0.5,"skillsByLevel":[{"level":1,"skillId":DEFAULT_SKILL_ID},{"level":4,"skillId":"skill_leaf"}]}),
+      normalizeMonsterSpeciesRecord({"id":"species_forest_hornet","name":"숲 말벌","types":["grass"],"graphic":{"monsterResourceId":"generated-enemy-sylph-hornet","graphicHue":0,"transparent":false,"flying":true},"baseStats":{"maxHp":26,"maxMp":4,"attack":13,"defense":8,"mind":7,"agility":20},"captureRate":0.5,"skillsByLevel":[{"level":1,"skillId":DEFAULT_SKILL_ID},{"level":4,"skillId":"skill_leaf"}]}),
       // 광산 해골 궁수(enemy_mine_skel_archer)의 짝 종족. 포획·도감·진화 파이프라인에
       // 들어가려면 speciesId 참조가 있어야 한다. 갱도 등불 컨셉으로 fire — 차트 밖 타입은
       // 배율이 안 보이므로 fire/water/grass 중에서 고른다.

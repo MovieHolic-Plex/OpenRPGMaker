@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/bench_2/w6-B.pxg",
+ "id": "bench 2",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.064
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "outline"
+  ],
+  "pass": false
+ },
+ "colors": 9,
+ "v5_colors": 7,
+ "bbox": [
+  0,
+  3,
+  31,
+  15
+ ],
+ "v5_bbox": [
+  0,
+  3,
+  31,
+  15
+ ],
+ "note": "윗면 앞줄 밝은 테(7)→아래로 한 단씩 어둡게, 앞널·다리 짙게, 다리 아래 오른쪽 접지 그림자 2줄",
+ "ok": true
+}

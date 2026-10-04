@@ -1,0 +1,28 @@
+{
+ "id": "writing_wall",
+ "slug": "writing_wall",
+ "name": "벽 핏글씨",
+ "scene": "연출",
+ "cells": [
+  2,
+  1
+ ],
+ "canvas": [
+  32,
+  16
+ ],
+ "layer": "wall",
+ "layer_ko": "벽 걸이(위층, 투명 배경·벽면에 붙는다)",
+ "description": "벽에 핏빛 큰 글씨 「살려줘」 가 무리면 「도와」 두 자 또는 「돌아가」 — 2칸 폭에 들어가는 만큼만(획 2px), 획 끝이 아래로 흘러내린 줄. 투명 배경. broken_blackboard 글씨와 같은 피 색.",
+ "palette_hint": "blood, $",
+ "worker_v1": "h3",
+ "stage": 2,
+ "stage_ko": "2단계 연출(기본이 선 뒤)",
+ "worker": "h3",
+ "set_with": [
+  "blood_pool",
+  "blood_trail",
+  "handprints_wall",
+  "footprints"
+ ]
+}

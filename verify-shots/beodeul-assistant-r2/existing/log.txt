@@ -1,0 +1,239 @@
+STATUS map.image.delivered 현재 초안 이미지를 모델 도구 응답에 포함했습니다.
+OK   get_project_summary — 프로젝트 '소금 평원 · 간헐천 지대 필드 5장 (정본)' — 맵 6개, 아이템 228, 트룹 7
+OK   read_project_wiki — 프로젝트 위키 0개 문서
+OK   show_map_region — 맵 미리보기: (0,0) 100×100 (버들항 비슷한 도시 (조수))
+OK   list_spatial_designs — 장소 저작 비활성(프로젝트 설계 0) · 공용 0건
+OK   get_database_records — maps 1건 / 1건
+OK   tile_query — 타일 라벨 30개 — place_props/fill_region/build_wall 등의 material 인자에 label 문자열을 넣으세요(그룹 id 금지).
+OK   list_shared_scenes — 공용 장면 839개
+OK   list_tileset_references — 타일셋 → 용도 → MD와 이미지. 선택한 용도를 읽은 다음 응답에서 배치하세요.
+OK   list_tileset_references — 버들항 · 도시 한 장 조립(원본은 예시) 자료 목록. nextOffset이 있으면 다음 목록도 확인하세요.
+OK   list_tileset_references — 버들항 · 구역 키트(왕성·저택·포룸·성당·풍차·항구·강/다리) 자료 목록. nextOffset이 있으면 다음 목록도 확인하세요.
+OK   list_tileset_references — 버들항 · QA 결함 교훈(오류 그림) 자료 목록. nextOffset이 있으면 다음 목록도 확인하세요.
+OK   read_tileset_reference — 버들항 · 도시 한 장 조립(원본은 예시) / 도시 한 장 조립 · 읽는 순서 (0–4144, 1/1쪽)
+OK   read_tileset_reference — 버들항 · 도시 한 장 조립(원본은 예시) / 배치 규칙 · 구역 출구 · 거리 · 집 줄 · 다리 (0–3793, 1/1쪽)
+OK   read_tileset_reference — 버들항 · 도시 한 장 조립(원본은 예시) / 예시 배치 · 언덕 위 성 아래 마을 (0–7444, 1/2쪽)
+OK   read_tileset_reference — 버들항 · 도시 한 장 조립(원본은 예시) / 예시 배치 · 강어귀 항구 도시 (0–5917, 1/2쪽)
+OK   read_tileset_reference — 버들항 · 도시 한 장 조립(원본은 예시) / 예시 배치 · 강어귀 항구 도시 (5917–16029, 2/2쪽)
+OK   read_tileset_reference — 버들항 · 도시 한 장 조립(원본은 예시) / 예시 배치 · 언덕 위 성 아래 마을 (7444–17643, 2/2쪽)
+OK   read_tileset_reference — 버들항 · 도시 한 장 조립(원본은 예시) / layout-estuary.png — 실제 이미지를 확인하세요.
+OK   read_tileset_reference — 버들항 · 도시 한 장 조립(원본은 예시) / layout-hilltop.png — 실제 이미지를 확인하세요.
+OK   read_tileset_reference — 버들항 · 도시 한 장 조립(원본은 예시) / city-districts.png — 실제 이미지를 확인하세요.
+OK   list_tileset_references — 버들항 · 자동타일과 강·폭포·다리·항구 자료 목록. nextOffset이 있으면 다음 목록도 확인하세요.
+OK   list_tileset_references — 버들항 · 귀족 저택과 성 밖 목조 마을 자료 목록. nextOffset이 있으면 다음 목록도 확인하세요.
+OK   list_tileset_references — 버들항 · 건물·소품·나무 조각 사전 자료 목록. nextOffset이 있으면 다음 목록도 확인하세요.
+OK   read_tileset_reference — 버들항 · QA 결함 교훈(오류 그림) / 16구역 QA 결함 교훈 · 오류 그림 (0–5054, 1/1쪽)
+OK   read_tileset_reference — 버들항 · 자동타일과 강·폭포·다리·항구 / 강·폭포·다리·호수 항구 키트 (0–6092, 1/1쪽)
+OK   read_tileset_reference — 버들항 · 자동타일과 강·폭포·다리·항구 / 자동타일 · 길·물·모랫길 (0–1190, 1/1쪽)
+OK   read_tileset_reference — 버들항 · 귀족 저택과 성 밖 목조 마을 / 성 밖 목조집·우물 광장 키트와 조립표 (0–5825, 1/2쪽)
+OK   read_tileset_reference — 버들항 · 구역 키트(왕성·저택·포룸·성당·풍차·항구·강/다리) / 구역 키트 · 버들항 왕성 (0–1695, 1/1쪽)
+OK   read_tileset_reference — 버들항 · 구역 키트(왕성·저택·포룸·성당·풍차·항구·강/다리) / 구역 키트 · 버들항 항구 (0–2993, 1/1쪽)
+OK   read_tileset_reference — 버들항 · 구역 키트(왕성·저택·포룸·성당·풍차·항구·강/다리) / 구역 키트 · 버들항 귀족 저택 (0–1040, 1/1쪽)
+OK   read_tileset_reference — 버들항 · 구역 키트(왕성·저택·포룸·성당·풍차·항구·강/다리) / 구역 키트 · 버들항 포룸 (0–1012, 1/1쪽)
+OK   read_tileset_reference — 버들항 · 구역 키트(왕성·저택·포룸·성당·풍차·항구·강/다리) / 구역 키트 · 버들항 풍차 들 (0–1001, 1/1쪽)
+OK   read_tileset_reference — 버들항 · 구역 키트(왕성·저택·포룸·성당·풍차·항구·강/다리) / 구역 키트 · 버들항 성당 언덕 (0–987, 1/1쪽)
+OK   read_tileset_reference — 버들항 · 건물·소품·나무 조각 사전 / 건물 조각 사전 1 (0–5891, 1/2쪽)
+OK   list_spatial_designs — 장소 저작 비활성(프로젝트 설계 0) · 공용 70건
+OK   list_spatial_designs — 장소 저작 비활성(프로젝트 설계 0) · 공용 70건
+OK   list_spatial_designs — 장소 저작 비활성(프로젝트 설계 0) · 공용 22건
+OK   list_spatial_designs — 장소 저작 비활성(프로젝트 설계 0) · 공용 6건
+OK   read_tileset_reference — 버들항 · 건물·소품·나무 조각 사전 / 소품·나무 조각 사전 (0–5871, 1/3쪽)
+OK   read_tileset_reference — 버들항 · 귀족 저택과 성 밖 목조 마을 / 귀족 저택·정원 키트와 조립표 (0–5725, 1/3쪽)
+OK   read_tileset_reference — 버들항 · 귀족 저택과 성 밖 목조 마을 / 성 밖 목조집·우물 광장 키트와 조립표 (5825–9536, 2/2쪽)
+OK   read_tileset_reference — 버들항 · 자동타일과 강·폭포·다리·항구 / kit-harbour-lake.png — 실제 이미지를 확인하세요.
+OK   read_tileset_reference — 버들항 · 구역 키트(왕성·저택·포룸·성당·풍차·항구·강/다리) / kit-castle.png — 실제 이미지를 확인하세요.
+OK   read_tileset_reference — 버들항 · 구역 키트(왕성·저택·포룸·성당·풍차·항구·강/다리) / 구역 안 조각 배치(왕성·저택·포룸 정답) (0–2819, 1/1쪽)
+STATUS set_build_spec 밑그림을 맵에 표시했습니다.
+OK   set_build_spec — 
+FAIL fill_region — 타일셋 참고문서 선행 읽기 필요 (2건): read_tileset_reference(tilesetId:"beodeul_city", categoryId:"beodeul-city", imageId:"bd-city-overview") — 이미지 입력 전달 필요; read_tileset_reference(tilesetId:"beodeul_city", categor
+OK   stamp_object — 「버들항 호수 항구」 → beodeul_like (17,85) 83×15 · 1245칸
+OK   read_tileset_reference — 버들항 · 도시 한 장 조립(원본은 예시) / city-overview.png — 실제 이미지를 확인하세요.
+OK   read_tileset_reference — 버들항 · 도시 한 장 조립(원본은 예시) / city-levels-walk.png — 실제 이미지를 확인하세요.
+OK   fill_region — 버들항 비슷한 도시 (조수) (0,0) 100×85을 '버들항 풀밭'로 채움 — 8510/8500칸 (벽 틈 메움 10칸), 실제 변경 8510칸, 오토타일 재계산 0칸.
+OK   fill_region — 버들항 비슷한 도시 (조수) (0,85) 17×15을 '버들항 풀밭'로 채움 — 263/255칸 (벽 틈 메움 8칸), 실제 변경 263칸, 오토타일 재계산 0칸.
+OK   fill_region — 버들항 비슷한 도시 (조수) (62,0) 4×45을 '버들항 물'로 채움 — 180/180칸, 실제 변경 180칸, 오토타일 재계산 92칸.
+OK   fill_region — 버들항 비슷한 도시 (조수) (55,41) 11×4을 '버들항 물'로 채움 — 44/44칸, 실제 변경 32칸, 오토타일 재계산 23칸.
+OK   fill_region — 버들항 비슷한 도시 (조수) (55,41) 4×44을 '버들항 물'로 채움 — 176/176칸, 실제 변경 164칸, 오토타일 재계산 87칸.
+OK   stamp_object — 「버들항 왕성」 → beodeul_like (67,0) 33×33 · 1089칸
+OK   stamp_object — 「버들항 귀족 저택」 → beodeul_like (3,3) 21×22 · 462칸
+OK   stamp_object — 「버들항 성당 언덕」 → beodeul_like (26,3) 17×22 · 374칸
+OK   stamp_object — 「버들항 풍차 들」 → beodeul_like (48,3) 12×22 · 264칸
+OK   stamp_object — 「버들항 포룸」 → beodeul_like (20,35) 22×14 · 308칸
+OK   stamp_object — 「귀족 저택 (반목조, 가운데 박공)」 → beodeul_like (72,51) 17×12 · 153칸 · 입구 (80,60) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (80,61) 에서 끝낸다
+OK   stamp_object — 「정형 정원 (대칭 자갈 십자길·산울타리·사이프러스 통)」 → beodeul_like (72,63) 17×9 · 115칸
+OK   stamp_object — 「버들항 강 위 아치 다리」 → beodeul_like (62,32) 4×5 · 20칸
+OK   stamp_object — 「버들항 강 위 아치 다리」 → beodeul_like (55,48) 4×5 · 20칸
+OK   stamp_object — 「버들항 강 위 아치 다리」 → beodeul_like (55,60) 4×5 · 20칸
+OK   stamp_object — 「버들항 강 위 아치 다리」 → beodeul_like (55,71) 4×5 · 20칸
+OK   fill_region — 버들항 비슷한 도시 (조수) (0,33) 62×2을 '버들항 길 포석'로 채움 — 139/124칸 (벽 틈 메움 15칸), 실제 변경 139칸, 오토타일 재계산 123칸.
+OK   fill_region — 버들항 비슷한 도시 (조수) (66,33) 34×2을 '버들항 길 포석'로 채움 — 74/68칸 (벽 틈 메움 6칸), 실제 변경 74칸, 오토타일 재계산 65칸.
+OK   fill_region — 버들항 비슷한 도시 (조수) (11,25) 2×8을 '버들항 길 포석'로 채움 — 16/16칸, 실제 변경 18칸, 오토타일 재계산 18칸.
+OK   fill_region — 버들항 비슷한 도시 (조수) (32,25) 2×8을 '버들항 길 포석'로 채움 — 16/16칸, 실제 변경 18칸, 오토타일 재계산 18칸.
+OK   fill_region — 버들항 비슷한 도시 (조수) (60,0) 2×33을 '버들항 길 포석'로 채움 — 80/66칸 (벽 틈 메움 14칸), 실제 변경 82칸, 오토타일 재계산 68칸.
+OK   fill_region — 버들항 비슷한 도시 (조수) (0,49) 55×2을 '버들항 길 포석'로 채움 — 112/110칸 (벽 틈 메움 2칸), 실제 변경 112칸, 오토타일 재계산 107칸.
+OK   fill_region — 버들항 비슷한 도시 (조수) (59,49) 41×2을 '버들항 길 포석'로 채움 — 97/82칸 (벽 틈 메움 15칸), 실제 변경 97칸, 오토타일 재계산 82칸.
+OK   fill_region — 버들항 비슷한 도시 (조수) (0,61) 55×2을 '버들항 길 포석'로 채움 — 110/110칸, 실제 변경 110칸, 오토타일 재계산 110칸.
+OK   fill_region — 버들항 비슷한 도시 (조수) (59,61) 11×2을 '버들항 길 포석'로 채움 — 22/22칸, 실제 변경 22칸, 오토타일 재계산 22칸.
+OK   fill_region — 버들항 비슷한 도시 (조수) (91,61) 9×2을 '버들항 길 포석'로 채움 — 18/18칸, 실제 변경 18칸, 오토타일 재계산 18칸.
+OK   fill_region — 버들항 비슷한 도시 (조수) (0,72) 55×2을 '버들항 길 포석'로 채움 — 110/110칸, 실제 변경 110칸, 오토타일 재계산 110칸.
+OK   fill_region — 버들항 비슷한 도시 (조수) (59,72) 41×2을 '버들항 길 포석'로 채움 — 92/82칸 (벽 틈 메움 10칸), 실제 변경 92칸, 오토타일 재계산 82칸.
+OK   fill_region — 버들항 비슷한 도시 (조수) (18,35) 2×49을 '버들항 길 포석'로 채움 — 103/98칸 (벽 틈 메움 5칸), 실제 변경 106칸, 오토타일 재계산 91칸.
+OK   fill_region — 버들항 비슷한 도시 (조수) (42,35) 2×49을 '버들항 길 포석'로 채움 — 102/98칸 (벽 틈 메움 4칸), 실제 변경 104칸, 오토타일 재계산 88칸.
+OK   fill_region — 버들항 비슷한 도시 (조수) (53,51) 2×33을 '버들항 길 포석'로 채움 — 66/66칸, 실제 변경 68칸, 오토타일 재계산 60칸.
+OK   fill_region — 버들항 비슷한 도시 (조수) (59,51) 2×33을 '버들항 길 포석'로 채움 — 66/66칸, 실제 변경 68칸, 오토타일 재계산 60칸.
+OK   fill_region — 버들항 비슷한 도시 (조수) (70,51) 2×21을 '버들항 길 포석'로 채움 — 49/42칸 (벽 틈 메움 7칸), 실제 변경 55칸, 오토타일 재계산 46칸.
+OK   fill_region — 버들항 비슷한 도시 (조수) (89,51) 2×33을 '버들항 길 포석'로 채움 — 75/66칸 (벽 틈 메움 9칸), 실제 변경 79칸, 오토타일 재계산 66칸.
+OK   fill_region — 버들항 비슷한 도시 (조수) (95,35) 2×14을 '버들항 길 포석'로 채움 — 28/28칸, 실제 변경 32칸, 오토타일 재계산 32칸.
+OK   fill_region — 버들항 비슷한 도시 (조수) (18,84) 37×1을 '버들항 길 포석'로 채움 — 40/37칸 (벽 틈 메움 3칸), 실제 변경 44칸, 오토타일 재계산 44칸.
+OK   fill_region — 버들항 비슷한 도시 (조수) (59,84) 41×1을 '버들항 길 포석'로 채움 — 48/41칸 (벽 틈 메움 7칸), 실제 변경 52칸, 오토타일 재계산 51칸.
+OK   fill_region — 버들항 비슷한 도시 (조수) (0,82) 18×2을 '버들항 모랫길'로 채움 — 37/36칸 (벽 틈 메움 1칸), 실제 변경 37칸, 오토타일 재계산 36칸.
+OK   fill_region — 버들항 비슷한 도시 (조수) (0,92) 17×2을 '버들항 모랫길'로 채움 — 35/34칸 (벽 틈 메움 1칸), 실제 변경 35칸, 오토타일 재계산 35칸.
+STATUS map.image.delivered 현재 초안 이미지를 모델 도구 응답에 포함했습니다.
+OK   show_map_region — 맵 미리보기: (0,0) 100×100 (버들항 비슷한 도시 (조수))
+assistant: Now the houses. Each one goes on the north side of an east–west street, so its door faces the street.
+OK   stamp_object — 「버들항 살림집 7×6」 → beodeul_like (0,27) 7×6 · 32칸 · 입구 (2,32) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (2,33) 에서 끝낸다
+OK   stamp_object — 「버들항 살림집 3×6」 → beodeul_like (7,27) 3×6 · 16칸 · 입구 (8,32) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (8,33) 에서 끝낸다
+OK   stamp_object — 「버들항 빵집 가게집 5×8」 → beodeul_like (13,25) 5×8 · 35칸 · 입구 (15,32) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (15,33) 에서 끝낸다
+OK   stamp_object — 「버들항 살림집 6×6」 → beodeul_like (18,27) 6×6 · 30칸 · 입구 (20,32) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (20,33) 에서 끝낸다
+OK   stamp_object — 「버들항 살림집 4×6」 → beodeul_like (24,27) 4×6 · 22칸 · 입구 (26,32) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (26,33) 에서 끝낸다
+OK   stamp_object — 「버들항 푸줏간 가게집 3×6」 → beodeul_like (29,27) 3×6 · 16칸 · 입구 (30,32) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (30,33) 에서 끝낸다
+OK   stamp_object — 「버들항 광장 여관 8×8」 → beodeul_like (34,25) 8×8 · 54칸 · 입구 (39,32) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (39,33) 에서 끝낸다
+OK   stamp_object — 「버들항 살림집 7×6」 → beodeul_like (43,27) 7×6 · 35칸 · 입구 (45,32) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (45,33) 에서 끝낸다
+OK   stamp_object — 「버들항 빵집 가게집 6×8」 → beodeul_like (50,25) 6×8 · 42칸 · 입구 (53,32) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (53,33) 에서 끝낸다
+OK   stamp_object — 「버들항 서점 가게집 4×6」 → beodeul_like (56,27) 4×6 · 22칸 · 입구 (58,32) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (58,33) 에서 끝낸다
+OK   stamp_object — 「버들항 살림집 7×8」 → beodeul_like (0,41) 7×8 · 49칸 · 입구 (2,48) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (2,49) 에서 끝낸다
+OK   stamp_object — 「버들항 대장간 가게집 3×6」 → beodeul_like (7,43) 3×6 · 16칸 · 입구 (8,48) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (8,49) 에서 끝낸다
+OK   stamp_object — 「버들항 보석상 가게집 6×6」 → beodeul_like (10,43) 6×6 · 30칸 · 입구 (12,48) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (12,49) 에서 끝낸다
+OK   stamp_object — 「버들항 재단사 가게집 5×6」 → beodeul_like (44,43) 5×6 · 28칸 · 입구 (46,48) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (46,49) 에서 끝낸다
+OK   stamp_object — 「버들항 살림집 4×8」 → beodeul_like (49,41) 4×8 · 30칸 · 입구 (51,48) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (51,49) 에서 끝낸다
+OK   stamp_object — 「버들항 살림집 9×8」 → beodeul_like (66,41) 9×8 · 49칸 · 입구 (70,48) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (70,49) 에서 끝낸다
+OK   stamp_object — 「버들항 생선 가게 가게집 7×6」 → beodeul_like (75,43) 7×6 · 32칸 · 입구 (77,48) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (77,49) 에서 끝낸다
+OK   stamp_object — 「버들항 살림집 4×8」 → beodeul_like (83,41) 4×8 · 30칸 · 입구 (85,48) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (85,49) 에서 끝낸다
+OK   stamp_object — 「버들항 재단사 가게집 6×6」 → beodeul_like (87,43) 6×6 · 30칸 · 입구 (90,48) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (90,49) 에서 끝낸다
+OK   stamp_object — 「버들항 살림집 3×6」 → beodeul_like (97,43) 3×6 · 16칸 · 입구 (98,48) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (98,49) 에서 끝낸다
+OK   stamp_object — 「버들항 살림집 5×6」 → beodeul_like (0,55) 5×6 · 28칸 · 입구 (2,60) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (2,61) 에서 끝낸다
+OK   stamp_object — 「버들항 살림집 8×8」 → beodeul_like (5,53) 8×8 · 45칸 · 입구 (6,60) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (6,61) 에서 끝낸다
+OK   stamp_object — 「버들항 살림집 3×6」 → beodeul_like (13,55) 3×6 · 16칸 · 입구 (14,60) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (14,61) 에서 끝낸다
+OK   stamp_object — 「버들항 살림집 5×6」 → beodeul_like (20,55) 5×6 · 25칸 · 입구 (22,60) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (22,61) 에서 끝낸다
+OK   stamp_object — 「버들항 살림집 4×8」 → beodeul_like (25,53) 4×8 · 30칸 · 입구 (27,60) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (27,61) 에서 끝낸다
+OK   stamp_object — 「버들항 살림집 6×6」 → beodeul_like (29,55) 6×6 · 30칸 · 입구 (31,60) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (31,61) 에서 끝낸다
+OK   stamp_object — 「버들항 청과상 가게집 5×6」 → beodeul_like (36,55) 5×6 · 28칸 · 입구 (38,60) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (38,61) 에서 끝낸다
+OK   stamp_object — 「버들항 살림집 6×7」 → beodeul_like (44,54) 6×7 · 33칸 · 입구 (47,59) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (47,60) 에서 끝낸다
+OK   stamp_object — 「버들항 살림집 3×6」 → beodeul_like (50,55) 3×6 · 16칸 · 입구 (51,60) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (51,61) 에서 끝낸다
+OK   stamp_object — 「버들항 살림집 6×6」 → beodeul_like (61,55) 6×6 · 30칸 · 입구 (64,60) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (64,61) 에서 끝낸다
+OK   stamp_object — 「버들항 살림집 5×6」 → beodeul_like (91,55) 5×6 · 25칸 · 입구 (93,60) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (93,61) 에서 끝낸다
+OK   stamp_object — 「버들항 살림집 4×8」 → beodeul_like (96,53) 4×8 · 30칸 · 입구 (98,60) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (98,61) 에서 끝낸다
+OK   stamp_object — 「버들항 살림집 5×6」 → beodeul_like (0,66) 5×6 · 28칸 · 입구 (2,71) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (2,72) 에서 끝낸다
+OK   stamp_object — 「버들항 살림집 7×6」 → beodeul_like (5,66) 7×6 · 33칸 · 입구 (8,71) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (8,72) 에서 끝낸다
+OK   stamp_object — 「버들항 살림집 3×6」 → beodeul_like (12,66) 3×6 · 16칸 · 입구 (13,71) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (13,72) 에서 끝낸다
+OK   stamp_object — 「버들항 살림집 5×6」 → beodeul_like (20,66) 5×6 · 25칸 · 입구 (22,71) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (22,72) 에서 끝낸다
+OK   stamp_object — 「버들항 청과상 가게집 9×9」 → beodeul_like (25,63) 9×9 · 73칸 · 입구 (27,71) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (27,72) 에서 끝낸다
+OK   stamp_object — 「버들항 생선 가게 가게집 5×8」 → beodeul_like (34,64) 5×8 · 38칸 · 입구 (36,71) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (36,72) 에서 끝낸다
+OK   stamp_object — 「버들항 살림집 3×6」 → beodeul_like (39,66) 3×6 · 16칸 · 입구 (40,71) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (40,72) 에서 끝낸다
+OK   stamp_object — 「버들항 살림집 6×6」 → beodeul_like (44,66) 6×6 · 30칸 · 입구 (47,71) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (47,72) 에서 끝낸다
+OK   stamp_object — 「버들항 살림집 3×6」 → beodeul_like (50,66) 3×6 · 16칸 · 입구 (51,71) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (51,72) 에서 끝낸다
+OK   stamp_object — 「버들항 생선 가게 가게집 7×8」 → beodeul_like (61,64) 7×8 · 47칸 · 입구 (65,71) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (65,72) 에서 끝낸다
+OK   stamp_object — 「버들항 약방 가게집 7×8」 → beodeul_like (91,64) 7×8 · 47칸 · 입구 (95,71) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (95,72) 에서 끝낸다
+OK   stamp_object — 「외곽 통나무 긴 집」 → beodeul_like (0,76) 10×6 · 51칸 · 입구 (4,81) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (4,82) 에서 끝낸다
+OK   stamp_object — 「외곽 통나무 오두막(박공 정면)」 → beodeul_like (11,76) 5×6 · 28칸 · 입구 (13,81) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (13,82) 에서 끝낸다
+OK   stamp_object — 「외곽 우물 광장 (모래길 위)」 → beodeul_like (4,84) 9×8 · 62칸
+OK   stamp_object — 「외곽 작은 통나무 오두막」 → beodeul_like (0,88) 4×4 · 16칸 · 입구 (1,91) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (1,92) 에서 끝낸다
+OK   stamp_object — 「외곽 작은 통나무 오두막」 → beodeul_like (13,88) 4×4 · 16칸 · 입구 (14,91) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (14,92) 에서 끝낸다
+OK   stamp_object — 「버들항 살림집 7×6」 → beodeul_like (20,78) 7×6 · 32칸 · 입구 (22,83) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (22,84) 에서 끝낸다
+OK   stamp_object — 「버들항 살림집 8×8」 → beodeul_like (27,76) 8×8 · 54칸 · 입구 (31,83) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (31,84) 에서 끝낸다
+OK   stamp_object — 「버들항 살림집 6×6」 → beodeul_like (35,78) 6×6 · 30칸 · 입구 (38,83) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (38,84) 에서 끝낸다
+OK   stamp_object — 「버들항 살림집 6×7」 → beodeul_like (44,77) 6×7 · 33칸 · 입구 (47,82) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (47,83) 에서 끝낸다
+OK   stamp_object — 「버들항 살림집 3×6」 → beodeul_like (50,78) 3×6 · 16칸 · 입구 (51,83) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (51,84) 에서 끝낸다
+OK   stamp_object — 「버들항 살림집 8×8」 → beodeul_like (61,76) 8×8 · 54칸 · 입구 (66,83) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (66,84) 에서 끝낸다
+OK   stamp_object — 「버들항 항구 창고 6×7」 → beodeul_like (70,77) 6×7 · 42칸 · 입구 (72,83) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (72,84) 에서 끝낸다
+OK   stamp_object — 「버들항 여관 가게집 5×6」 → beodeul_like (77,78) 5×6 · 28칸 · 입구 (79,83) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (79,84) 에서 끝낸다
+OK   stamp_object — 「버들항 재단사 가게집 7×6」 → beodeul_like (82,78) 7×6 · 33칸 · 입구 (85,83) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (85,84) 에서 끝낸다
+OK   stamp_object — 「버들항 생선 가게 가게집 6×7」 → beodeul_like (91,77) 6×7 · 33칸 · 입구 (94,82) — 이벤트는 입구 칸, 길은 입구 바로 아래 칸 (94,83) 에서 끝낸다
+OK   fill_region — 버들항 비슷한 도시 (조수) (47,83) 1×1을 '버들항 길 포석'로 채움 — 1/1칸, 실제 변경 2칸, 오토타일 재계산 2칸.
+OK   fill_region — 버들항 비슷한 도시 (조수) (94,83) 1×1을 '버들항 길 포석'로 채움 — 2/1칸 (벽 틈 메움 1칸), 실제 변경 2칸, 오토타일 재계산 2칸.
+assistant: Trees, lawn patterns, and props go on the open ground: the lake's east side (x≥83 below row 88 is lake), and the gaps.
+OK   stamp_object — 「버들항 나무 4×5」 → beodeul_like (79,36) 4×5 · 20칸
+OK   stamp_object — 「버들항 나무 2×2」 → beodeul_like (22,95) 2×2 · 4칸
+OK   stamp_object — 「버들항 나무 1×3」 → beodeul_like (25,0) 1×3 · 3칸
+OK   stamp_object — 「버들항 나무 3×3」 → beodeul_like (0,19) 3×3 · 9칸
+OK   stamp_object — 「버들항 나무 3×4」 → beodeul_like (44,2) 3×4 · 12칸
+OK   stamp_object — 「버들항 나무 4×5」 → beodeul_like (5,95) 4×5 · 20칸
+OK   stamp_object — 「버들항 나무 2×2」 → beodeul_like (90,37) 2×2 · 4칸
+OK   stamp_object — 「버들항 나무 3×3」 → beodeul_like (1,36) 3×3 · 9칸
+OK   stamp_object — 「버들항 잔디 무늬 조각 2 6×6」 → beodeul_like (6,37) 6×6 · 30칸
+OK   stamp_object — 「버들항 잔디 무늬 조각 1 6×6」 → beodeul_like (74,35) 6×6 · 28칸
+OK   stamp_object — 「버들항 나무 3×4」 → beodeul_like (10,95) 3×4 · 12칸
+OK   stamp_object — 「버들항 나무 3×3」 → beodeul_like (85,37) 3×3 · 9칸
+OK   stamp_object — 「버들항 나무 2×2」 → beodeul_like (70,36) 2×2 · 4칸
+OK   stamp_object — 「버들항 나무 2×2」 → beodeul_like (1,0) 2×2 · 4칸
+OK   stamp_object — 「버들항 나무 2×2」 → beodeul_like (16,96) 2×2 · 4칸
+OK   stamp_object — 「버들항 나무 2×2」 → beodeul_like (1,96) 2×2 · 4칸
+OK   stamp_object — 「버들항 나무 1×3」 → beodeul_like (46,10) 1×3 · 3칸
+OK   stamp_object — 「버들항 나무 3×3」 → beodeul_like (44,15) 3×3 · 9칸
+OK   stamp_object — 「버들항 나무 1×3」 → beodeul_like (95,38) 1×3 · 3칸
+OK   stamp_object — 「버들항 나무 3×4」 → beodeul_like (12,36) 3×4 · 12칸
+OK   stamp_object — 「버들항 나무 2×2」 → beodeul_like (43,20) 2×2 · 4칸
+STATUS map.image.delivered 현재 초안 이미지를 모델 도구 응답에 포함했습니다.
+OK   show_map_region — 맵 미리보기: (0,0) 100×100 (버들항 비슷한 도시 (조수))
+OK   fill_region — 버들항 비슷한 도시 (조수) (47,60) 1×1을 '버들항 길 포석'로 채움 — 1/1칸, 실제 변경 2칸, 오토타일 재계산 2칸.
+assistant: Now the reachability check from the main street, covering the front of every door plus the key kit exits.
+OK   check_reachability — 도달성: 전부 도달 가능
+STATUS map.image.delivered 현재 초안 이미지를 모델 도구 응답에 포함했습니다.
+OK   show_map_region — 맵 미리보기: (44,28) 24×24 (버들항 비슷한 도시 (조수))
+assistant: 버들항과 같은 재료로 새 로마풍 항구 도시를 100×100 맵 전체에 깔았습니다. 자리 배치와 길·강 흐름은 원본은 물론 참고문서의 예시 배치 두 가지와도 다르게 새로 설계했습니다. 문 앞 칸과 주요 구역 출구 62곳은 큰길에서 모두 걸어서 닿는 것을 확인했습니다.  **배치** - **성:** 북동쪽 (67,0)에 있습니다. 성문 앞 둑길이 33행 큰길로 바로 이어집니다. - **귀족 저택:** 두 곳입니다. 북서쪽 담장 저택은 (3,3)에 있고, 동쪽 반목조 저택은 (72,51)에 정형 정원과 함께 있습니다. 정원 발치가 72행 거리에 닿습니다. - **성당 언덕과 풍차 들:** 성당은 (26,3), 풍차는 (48,3)에 있습니다. - **포룸 광장:** 서쪽 가운데 (20,35)에 있고, 네 방향 거리
+STATUS layout_quality 배치 품질 기준 미달 — 한 번 더 채웁니다: beodeul_like 빈 바닥 53% (기준 ≤30%), 소품 없는 빈 정사각형 9×9칸 (왼위 59,47) (기준 ≤5)
+STATUS map.image.delivered 현재 초안 이미지를 모델 도구 응답에 포함했습니다.
+OK   show_map_region — 맵 미리보기: (40,33) 24×24 (버들항 비슷한 도시 (조수))
+OK   read_tileset_reference — 버들항 · 건물·소품·나무 조각 사전 / 소품·나무 조각 사전 (5871–11816, 2/3쪽)
+OK   tile_erase — 버들항 비슷한 도시 (조수) (95,38) 1×3 정리(upper) — 3/3칸.
+OK   stamp_object — 「버들항 소품 현자 석상 2×4」 → beodeul_like (44,35) 2×4 · 8칸
+OK   stamp_object — 「버들항 나무 4×5」 → beodeul_like (47,35) 4×5 · 20칸
+OK   stamp_object — 「버들항 나무 3×3」 → beodeul_like (51,36) 3×3 · 9칸
+OK   stamp_object — 「버들항 나무 2×2」 → beodeul_like (53,39) 2×2 · 4칸
+OK   stamp_object — 「버들항 소품 나무 벤치 2×1」 → beodeul_like (44,40) 2×1 · 2칸
+OK   stamp_object — 「버들항 소품 꽃밭 2×1」 → beodeul_like (50,40) 2×1 · 2칸
+OK   stamp_object — 「버들항 소품 빨래 건조대 2×2」 → beodeul_like (53,46) 2×2 · 4칸
+OK   stamp_object — 「버들항 나무 3×4」 → beodeul_like (60,45) 3×4 · 12칸
+OK   stamp_object — 「버들항 나무 2×2」 → beodeul_like (64,46) 2×2 · 4칸
+OK   stamp_object — 「버들항 나무 3×3」 → beodeul_like (62,51) 3×3 · 9칸
+OK   stamp_object — 「버들항 나무 2×2」 → beodeul_like (66,52) 2×2 · 4칸
+OK   stamp_object — 「버들항 나무 1×3」 → beodeul_like (69,55) 1×3 · 3칸
+OK   stamp_object — 「버들항 소품 빨래 건조대 2×2」 → beodeul_like (67,58) 2×2 · 4칸
+OK   stamp_object — 「버들항 잔디 무늬 조각 3 6×6」 → beodeul_like (66,35) 6×6 · 26칸
+OK   stamp_object — 「버들항 잔디 무늬 조각 1 6×6」 → beodeul_like (20,74) 6×6 · 28칸
+OK   stamp_object — 「버들항 잔디 무늬 조각 6 6×6」 → beodeul_like (32,51) 6×6 · 28칸
+OK   stamp_object — 「버들항 잔디 무늬 조각 2 6×6」 → beodeul_like (44,63) 6×6 · 30칸
+OK   stamp_object — 「버들항 잔디 무늬 조각 4 6×6」 → beodeul_like (11,94) 6×6 · 30칸
+OK   stamp_object — 「버들항 잔디 무늬 조각 3 6×6」 → beodeul_like (92,74) 6×6 · 26칸
+OK   stamp_object — 「버들항 나무 2×2」 → beodeul_like (86,75) 2×2 · 4칸
+OK   stamp_object — 「버들항 나무 3×3」 → beodeul_like (36,74) 3×3 · 9칸
+OK   stamp_object — 「버들항 잔디 무늬 조각 6 6×6」 → beodeul_like (0,94) 6×6 · 28칸
+OK   stamp_object — 「버들항 나무 1×3」 → beodeul_like (97,74) 1×3 · 3칸
+OK   stamp_object — 「버들항 잔디 무늬 조각 5 6×6」 → beodeul_like (61,74) 6×6 · 28칸
+OK   stamp_object — 「버들항 잔디 무늬 조각 5 6×6」 → beodeul_like (0,63) 6×6 · 28칸
+OK   stamp_object — 「버들항 잔디 무늬 조각 4 6×6」 → beodeul_like (88,35) 6×6 · 30칸
+OK   stamp_object — 「버들항 잔디 무늬 조각 5 6×6」 → beodeul_like (63,51) 6×6 · 28칸
+OK   stamp_object — 「버들항 잔디 무늬 조각 3 6×6」 → beodeul_like (8,63) 6×6 · 26칸
+OK   stamp_object — 「버들항 잔디 무늬 조각 4 6×6」 → beodeul_like (44,74) 6×6 · 30칸
+OK   stamp_object — 「버들항 잔디 무늬 조각 6 6×6」 → beodeul_like (72,74) 6×6 · 28칸
+OK   stamp_object — 「버들항 잔디 무늬 조각 6 6×6」 → beodeul_like (92,51) 6×6 · 28칸
+OK   stamp_object — 「버들항 잔디 무늬 조각 1 6×6」 → beodeul_like (21,51) 6×6 · 28칸
+OK   stamp_object — 「버들항 잔디 무늬 조각 2 6×6」 → beodeul_like (10,74) 6×6 · 30칸
+OK   stamp_object — 「버들항 나무 2×2」 → beodeul_like (21,75) 2×2 · 4칸
+OK   stamp_object — 「버들항 나무 3×3」 → beodeul_like (77,74) 3×3 · 9칸
+OK   stamp_object — 「버들항 나무 2×2」 → beodeul_like (68,65) 2×2 · 4칸
+OK   stamp_object — 「버들항 잔디 무늬 조각 2 6×6」 → beodeul_like (44,51) 6×6 · 30칸
+OK   stamp_object — 「버들항 잔디 무늬 조각 4 6×6」 → beodeul_like (0,51) 6×6 · 30칸
+OK   stamp_object — 「버들항 잔디 무늬 조각 1 6×6」 → beodeul_like (0,74) 6×6 · 28칸
+OK   stamp_object — 「버들항 잔디 무늬 조각 2 6×6」 → beodeul_like (82,74) 6×6 · 30칸
+STATUS map.image.delivered 현재 초안 이미지를 모델 도구 응답에 포함했습니다.
+OK   check_reachability — 도달성: 전부 도달 가능
+OK   show_map_region — 맵 미리보기: (0,0) 100×100 (버들항 비슷한 도시 (조수))
+OK   stamp_object — 「버들항 나무 3×3」 → beodeul_like (38,51) 3×3 · 9칸
+OK   stamp_object — 「버들항 나무 2×2」 → beodeul_like (15,51) 2×2 · 4칸
+OK   stamp_object — 「버들항 나무 2×2」 → beodeul_like (1,51) 2×2 · 4칸
+OK   stamp_object — 「버들항 소품 나무 벤치 2×1」 → beodeul_like (82,63) 2×1 · 2칸
+OK   stamp_object — 「정형 정원 (대칭 자갈 십자길·산울타리·사이프러스 통)」 → beodeul_like (72,63) 17×9 · 115칸
+OK   check_reachability — 도달성: 전부 도달 가능
+assistant: 검사에서 지적된 빈 땅을 용도에 맞는 덩어리로 채웠습니다. 다만 빈 바닥 비율을 다시 재 보지는 못해서, 기준(30% 이하)을 넘었는지는 아직 확인하지 못했습니다.  - **가장 비어 있던 곳 (42~60, 34~41):** 포룸 동쪽 큰길 가를 작은 쉼터 공원으로 정했습니다. 현자 석상, 벤치, 꽃밭을 두고, 크기가 다른 나무 세 그루로 한쪽에 치우친 수풀을 만들었습니다. - **강 굽이 안쪽 빈터 (59~69, 45~59):** 강가 뒷마당으로 정했습니다. 크기가 다른 나무 네 그루, 빨래 건조대 두 개, 사이프러스 한 그루를 한쪽으로 몰아 두었습니다. - **나머지 빈 풀밭:** 집 줄 뒤, 성 밖 마을, 항구 윗줄, 성 앞 둔덕에 잔디 무늬 조각 약 22개를 깔았습니다. 나무는 몇 그루만 더했고, 같
+STATUS layout_quality 배치 품질 수리 뒤에도 기준 미달: beodeul_like 빈 바닥 48% (기준 ≤30%), 소품 없는 빈 정사각형 8×8칸 (왼위 4,33) (기준 ≤5)

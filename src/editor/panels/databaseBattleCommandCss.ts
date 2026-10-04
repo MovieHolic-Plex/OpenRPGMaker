@@ -61,7 +61,7 @@ export function battleCommandCssEditor(labels: readonly string[], rerender: () =
   });
   update();
   return sectionCard({ title: "메뉴 스타일 · Custom CSS", hint: "프로젝트 공통 · 모든 직업의 전투 명령과 하위 메뉴에 적용됩니다", testid: "db-command-css-editor", children: [
-    el("p", { text: "스타일 샘플입니다. 실제 크기와 배치는 선택한 전투 스킨을 따릅니다. 버튼에 Tab으로 초점을 옮겨 선택 상태를 확인하세요." }),
+    el("p", { text: "스타일 샘플입니다. 실제 크기와 배치는 전투 방식(도트 측면/몬스터 대치)을 따릅니다. 버튼에 Tab으로 초점을 옮겨 선택 상태를 확인하세요." }),
     preview,
     el("label", { text: "Custom CSS", attrs: { for: "db-command-css-input" } }),
     input,
@@ -70,7 +70,7 @@ export function battleCommandCssEditor(labels: readonly string[], rerender: () =
       apply,
       button("저장된 CSS로", "db-command-css-revert", () => { input.value = saved; update(); }),
       button("다크 프리셋", "db-command-css-preset", () => { input.value = PRESET; update(); }),
-      button("기본 스킨으로", "db-command-css-reset", () => { input.value = ""; update(); commit(""); }),
+      button("기본 모양으로", "db-command-css-reset", () => { input.value = ""; update(); commit(""); }),
     ] }),
     status,
   ] });

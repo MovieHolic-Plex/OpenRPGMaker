@@ -2,13 +2,13 @@ import { describe, expect, it } from "vitest";
 import { runTool } from "@/editor/tools/toolRunner";
 import { allTools } from "@/editor/tools/toolRegistry";
 import { createBlankProject } from "@/project/defaults";
-import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import type { TileGroupMetadata } from "@/project/types";
 import type { ToolContext } from "@/editor/tools/types";
 
 function contextWithGroup(): ToolContext {
   const project = createBlankProject();
-  project.tilesets[DEFAULT_TILESET_ID].tileGroups = [roofGroup()];
+  project.tilesets[COMBINED_TOWN_TILESET_ID].tileGroups = [roofGroup()];
   return { project };
 }
 
@@ -44,18 +44,18 @@ describe("structure rule tools", () => {
     const first = runTool(ctx, "set_group_junction", {
       groupId: "roof-main",
       junction: { action: "omit", atRoles: ["bottom"], side: "below", withRole: "wall" },
-      tilesetId: DEFAULT_TILESET_ID,
+      tilesetId: COMBINED_TOWN_TILESET_ID,
     });
     const second = runTool(ctx, "set_group_junction", {
       groupId: "roof-main",
       junction: { action: "replace", atRoles: ["bottomLeft"], replaceWith: [4], side: "below", withRole: "wall" },
-      tilesetId: DEFAULT_TILESET_ID,
+      tilesetId: COMBINED_TOWN_TILESET_ID,
     });
 
     // Then: the rule is updated in place instead of duplicated.
     expect(first.ok, first.summary).toBe(true);
     expect(second.ok, second.summary).toBe(true);
-    const group = ctx.project.tilesets[DEFAULT_TILESET_ID].tileGroups?.[0];
+    const group = ctx.project.tilesets[COMBINED_TOWN_TILESET_ID].tileGroups?.[0];
     expect(group?.junctions).toEqual([
       { action: "replace", atRoles: ["bottomLeft"], replaceWith: [4], side: "below", withRole: "wall" },
     ]);
@@ -69,18 +69,18 @@ describe("structure rule tools", () => {
     const first = runTool(ctx, "set_group_overlay", {
       groupId: "roof-main",
       overlay: { tileIds: [5], when: "diagonalCorner" },
-      tilesetId: DEFAULT_TILESET_ID,
+      tilesetId: COMBINED_TOWN_TILESET_ID,
     });
     const second = runTool(ctx, "set_group_overlay", {
       groupId: "roof-main",
       overlay: { tileIds: [6, 7], when: "diagonalCorner" },
-      tilesetId: DEFAULT_TILESET_ID,
+      tilesetId: COMBINED_TOWN_TILESET_ID,
     });
 
     // Then: the condition has the latest tile set.
     expect(first.ok, first.summary).toBe(true);
     expect(second.ok, second.summary).toBe(true);
-    const group = ctx.project.tilesets[DEFAULT_TILESET_ID].tileGroups?.[0];
+    const group = ctx.project.tilesets[COMBINED_TOWN_TILESET_ID].tileGroups?.[0];
     expect(group?.overlays).toEqual([{ tileIds: [6, 7], when: "diagonalCorner" }]);
   });
 
@@ -92,12 +92,12 @@ describe("structure rule tools", () => {
     const junction = runTool(ctx, "set_group_junction", {
       groupId: "missing",
       junction: { action: "omit", side: "below", withRole: "wall" },
-      tilesetId: DEFAULT_TILESET_ID,
+      tilesetId: COMBINED_TOWN_TILESET_ID,
     });
     const overlay = runTool(ctx, "set_group_overlay", {
       groupId: "missing",
       overlay: { tileIds: [5], when: "ridge" },
-      tilesetId: DEFAULT_TILESET_ID,
+      tilesetId: COMBINED_TOWN_TILESET_ID,
     });
 
     // Then: both tools report a group-not-found failure.
@@ -118,13 +118,13 @@ describe("structure rule tools", () => {
       overlays: [{ tileIds: [8], when: "eaveEnd" }],
       role: "roof",
       tileIds: [1, 2, 3],
-      tilesetId: DEFAULT_TILESET_ID,
+      tilesetId: COMBINED_TOWN_TILESET_ID,
     });
 
     // Then: both optional arrays are persisted on the group.
     expect(result.ok, result.summary).toBe(true);
     const groupId = (result.data as { readonly groupId: string }).groupId;
-    const group = ctx.project.tilesets[DEFAULT_TILESET_ID].tileGroups?.find((candidate) => candidate.id === groupId);
+    const group = ctx.project.tilesets[COMBINED_TOWN_TILESET_ID].tileGroups?.find((candidate) => candidate.id === groupId);
     expect(group?.junctions).toEqual([{ action: "omit", atRoles: ["bottom"], side: "below", withRole: "wall" }]);
     expect(group?.overlays).toEqual([{ tileIds: [8], when: "eaveEnd" }]);
   });

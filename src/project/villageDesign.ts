@@ -1,4 +1,5 @@
 import type { VillageDesign, VillageLayoutPresetRecord } from "./types/village";
+import { MAX_TOOL_MAP_DIMENSION } from "./mapSizeLimits";
 
 export const VILLAGE_DESIGN_GROUPS = ["appearance", "layout", "nature", "residents", "interior"] as const;
 export const VILLAGE_DESIGN_GROUP_LABELS = {
@@ -49,7 +50,7 @@ export function villageDesignIssue(value: unknown): string | undefined {
     if (!o || o.composition !== "compact" || !["balanced", "tight"].includes(o.clustering)) return "저장 건물 배치 설정이 올바르지 않습니다.";
     if (!Array.isArray(o.objectIds) || !o.objectIds.length || o.objectIds.length > 128 || o.objectIds.some(id => typeof id !== "string" || !id.trim()) || new Set(o.objectIds).size !== o.objectIds.length) return "건물 오브젝트 후보는 중복 없는 ID 1~128개여야 합니다.";
     if (!Number.isInteger(o.multiStoreyCount) || o.multiStoreyCount < 0 || o.multiStoreyCount > c.min) return "2층 이상 건물 수는 전체 최소 집 수 이하여야 합니다.";
-    if (!o.previewSize || ![o.previewSize.width, o.previewSize.height].every(n => Number.isInteger(n) && n >= 20 && n <= 256)) return "기준 맵 크기는 20~256칸이어야 합니다.";
+    if (!o.previewSize || ![o.previewSize.width, o.previewSize.height].every(n => Number.isInteger(n) && n >= 20 && n <= MAX_TOOL_MAP_DIMENSION)) return `기준 맵 크기는 20~${MAX_TOOL_MAP_DIMENSION}칸이어야 합니다.`;
     if (d.interior) return "저장 건물 외형의 실내 공간은 별도로 연결해야 합니다.";
     if (o.decorations !== undefined && (!Array.isArray(o.decorations) || o.decorations.length > 32
       || o.decorations.some(r => !r || typeof r.spaceId !== "string" || !r.spaceId.trim()

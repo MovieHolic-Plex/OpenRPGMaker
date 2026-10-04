@@ -1,0 +1,35 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/potted_fern/w7-A.pxg",
+ "id": "potted fern",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.013
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "saturation",
+   "dither"
+  ],
+  "pass": false
+ },
+ "colors": 11,
+ "v5_colors": 9,
+ "bbox": [
+  2,
+  0,
+  14,
+  14
+ ],
+ "v5_bbox": [
+  3,
+  0,
+  12,
+  14
+ ],
+ "note": "v5 그대로 두고 고사리 잎을 부채꼴로 채움: 잎 끝 밝게(leaf:6)·아래 잎 어둡게, 화분은 윤곽 clay:1 유지",
+ "ok": true
+}

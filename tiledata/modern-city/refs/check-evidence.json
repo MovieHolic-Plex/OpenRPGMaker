@@ -1,0 +1,249 @@
+{
+ "E1": {
+  "code": "door-access-blocked",
+  "cells": [
+   [
+    6,
+    11
+   ]
+  ],
+  "crop": {
+   "x0": 1,
+   "y0": 5,
+   "w": 12,
+   "h": 10
+  },
+  "tamper": {
+   "why": "문 앞 접근 칸에 막히는 소품을 얹었다",
+   "kit": "mc-prop-fence-a",
+   "building": "mc-bld-fire-A",
+   "door_access": [
+    6,
+    11
+   ]
+  },
+  "detected": [
+   {
+    "code": "door-access-blocked",
+    "x": 6,
+    "y": 11,
+    "kit": "mc-bld-fire-A",
+    "why": "막힘",
+    "blocker": "mc-prop-fence-a"
+   }
+  ],
+  "all_codes": {
+   "door-access-blocked": 1
+  },
+  "image": "mc-img-err-e1-door-access-blocked"
+ },
+ "E2": {
+  "code": "back-over-front",
+  "cells": [
+   [
+    33,
+    30
+   ]
+  ],
+  "crop": {
+   "x0": 29,
+   "y0": 27,
+   "w": 12,
+   "h": 10
+  },
+  "tamper": {
+   "why": "뒷줄 건물과 앞줄 건물의 찍는 순서를 맞바꿨다",
+   "back": "mc-bld-dept-C",
+   "front": "mc-bld-shop-B",
+   "overlap": [
+    33,
+    30,
+    37,
+    30
+   ]
+  },
+  "detected": [
+   {
+    "code": "back-over-front",
+    "x": 33,
+    "y": 30,
+    "kit": "mc-bld-dept-C",
+    "front": "mc-bld-shop-B",
+    "overlap": [
+     33,
+     30,
+     37,
+     30
+    ]
+   }
+  ],
+  "all_codes": {
+   "back-over-front": 1
+  },
+  "image": "mc-img-err-e2-back-over-front"
+ },
+ "E3": {
+  "code": "marking-in-intersection",
+  "cells": [
+   [
+    25,
+    17
+   ]
+  ],
+  "crop": {
+   "x0": 19,
+   "y0": 12,
+   "w": 12,
+   "h": 10
+  },
+  "tamper": {
+   "why": "교차로 중심 6×6 안에 노란 중앙선 칸을 얹었다",
+   "tile": 25
+  },
+  "detected": [
+   {
+    "code": "marking-in-intersection",
+    "x": 25,
+    "y": 17,
+    "kit": null,
+    "tile": 25
+   }
+  ],
+  "all_codes": {
+   "marking-in-intersection": 1
+  },
+  "image": "mc-img-err-e3-marking-in-intersection"
+ },
+ "E4": {
+  "code": "tall-prop-on-road",
+  "cells": [
+   [
+    25,
+    29
+   ]
+  ],
+  "crop": {
+   "x0": 19,
+   "y0": 22,
+   "w": 12,
+   "h": 10
+  },
+  "tamper": {
+   "why": "키 큰 소품(가로등류)을 도로 한가운데 발밑에 세웠다",
+   "kit": "mc-prop-lamp-a"
+  },
+  "detected": [
+   {
+    "code": "tall-prop-on-road",
+    "x": 25,
+    "y": 29,
+    "kit": "mc-prop-lamp-a",
+    "tile": 1
+   }
+  ],
+  "all_codes": {
+   "tall-prop-on-road": 1
+  },
+  "image": "mc-img-err-e4-tall-prop-on-road"
+ },
+ "E5": {
+  "code": "building-in-lower-layer",
+  "cells": [
+   [
+    34,
+    32
+   ]
+  ],
+  "crop": {
+   "x0": 30,
+   "y0": 28,
+   "w": 12,
+   "h": 10
+  },
+  "tamper": {
+   "why": "건물 벽 칸 하나를 3층 대신 1층에 찍었다",
+   "building": "mc-bld-shop-B",
+   "tile": 1235
+  },
+  "detected": [
+   {
+    "code": "building-in-lower-layer",
+    "x": 34,
+    "y": 32,
+    "kit": null,
+    "tile": 1235
+   }
+  ],
+  "all_codes": {
+   "layer-mismatch": 1,
+   "building-in-lower-layer": 1
+  },
+  "image": "mc-img-err-e5-building-in-lower-layer"
+ },
+ "E6": {
+  "code": "overlay-in-base-layer",
+  "cells": [
+   [
+    4,
+    17
+   ]
+  ],
+  "crop": {
+   "x0": 0,
+   "y0": 12,
+   "w": 12,
+   "h": 10
+  },
+  "tamper": {
+   "why": "투명 중앙선 칸을 2층 대신 1층에 찍었다(아래 아스팔트가 사라져 검게 보인다)",
+   "tile": 25
+  },
+  "detected": [
+   {
+    "code": "overlay-in-base-layer",
+    "x": 4,
+    "y": 17,
+    "kit": null,
+    "tile": 25
+   }
+  ],
+  "all_codes": {
+   "overlay-in-base-layer": 1
+  },
+  "image": "mc-img-err-e6-overlay-in-base-layer"
+ },
+ "E7": {
+  "code": "curb-mismatch",
+  "cells": [
+   [
+    10,
+    14
+   ]
+  ],
+  "crop": {
+   "x0": 4,
+   "y0": 9,
+   "w": 12,
+   "h": 10
+  },
+  "tamper": {
+   "why": "가로 도로 북쪽 연석 칸을 반대 방향(북쪽이 도로) 연석으로 바꿨다",
+   "tile": 10,
+   "expected": 9
+  },
+  "detected": [
+   {
+    "code": "curb-mismatch",
+    "x": 10,
+    "y": 14,
+    "kit": null,
+    "tile": 10,
+    "expected": 9
+   }
+  ],
+  "all_codes": {
+   "curb-mismatch": 1
+  },
+  "image": "mc-img-err-e7-curb-mismatch"
+ }
+}

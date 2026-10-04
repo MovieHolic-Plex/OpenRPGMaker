@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/hosp_wall/h5-A.pxg",
+ "set": "horror",
+ "id": "hosp_wall",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.254
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.086
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 14,
+ "bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "note": "병원 벽 v5 판: 바랜 회녹 페인트 위 벗겨진 얼룩 세 곳(속 회색), 아래는 짙은 녹색 징두리와 경계 가로줄, 걸레받이, 녹물 한 줄. 좌우 이음은 x0/x31 열 동일",
+ "ok": true
+}

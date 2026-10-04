@@ -1,0 +1,43 @@
+// D: 나무 벽걸이 우편함에 금장 입구·명패·밑테, 편지 한 통; 꼭대기 윗면 3행(y=5~7)
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat w wood 5
+@mat b brass 3
+@mat l linen 4
+@mat d dwood 2
+@layer mailbox
+@mblock 0 0
+................
+.....llllll.....
+.....llllll.....
+....dlllllld....
+...wwllllllww...
+..wwwllllllwww..
+..wddllllllddw..
+..wbbbbbbbbbbw..
+..wbwwwwwwwwbw..
+..wbwwbbbbwwbw..
+..wbwwbbbbwwbw..
+..wbwwwwwwwwbw..
+..wwwwwwwwwwww..
+..wwwwwwwwwwww..
+..wbbbbbbbbbbw..
+...wwwwwwwwww...
+@tblock 0 0
+................
+.....355553.....
+.....545544.....
+....23544532....
+...7635533263...
+..766344443653..
+..622333332223..
+..755555444323..
+..655555554423..
+..655554325423..
+..655544325423..
+..655555554423..
+..655555554433..
+..654455554333..
+..655554443223..
+...3333333322...

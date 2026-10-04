@@ -1,0 +1,46 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/bridge_h/w2-B.pxg",
+ "set": "worldmap",
+ "id": "bridge_h",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.129
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.025
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies",
+   "saturation"
+  ]
+ },
+ "colors": 8,
+ "bbox": [
+  0,
+  2,
+  15,
+  14
+ ],
+ "note": "밝은 윗 난간·짙은 아래 난간·기둥머리, 남동 그림자 두 줄로 볼륨",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 1,
+   "atLeast95": 0,
+   "max": 0.039
+  },
+  "refmapWorld": {
+   "cells": 1,
+   "atLeast95": 0,
+   "max": 0.019
+  },
+  "seam": 0.02
+ }
+}

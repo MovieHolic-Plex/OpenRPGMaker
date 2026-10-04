@@ -1,0 +1,6380 @@
+{
+ "schema": "worldmap-icon-decisions/1",
+ "note": "client=web 결정만. 감독이 쓰지 않는다.",
+ "items": {
+  "alien/조사 캠프": {
+   "role": "camp",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "c3c3ddf74e74",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "주황색·하늘색 돔과 앞쪽 탐사차가 모인 작은 탐사 야영지."
+   }
+  },
+  "alien/이주민 돔 도시": {
+   "role": "capital",
+   "cells": [
+    6,
+    6
+   ],
+   "sha": "7120a0c1d3a7",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "큰 유리 돔과 관측탑, 작은 돔이 모인 미래형 도시로 보인다."
+   }
+  },
+  "alien/군 전초기지": {
+   "role": "castle",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "fd3c71413c29",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "감시탑과 정문 방벽을 갖춘 소형 기지·요새로 보인다."
+   }
+  },
+  "alien/여왕 둥지": {
+   "role": "castle",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "1a395074fa08",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 보라색 첨탑 다발과 발광 문을 가진 외계 둥지형 요새로 보인다."
+   }
+  },
+  "alien/수정 동굴": {
+   "role": "cave",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "2aec3d976f29",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "주황 바위에 검은 동굴 입구가 있고 둘레에 청록 수정이 돋은 장소로 보인다."
+   }
+  },
+  "alien/공명석 원": {
+   "role": "circle",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "4acb1193ba60",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "검은 선돌들이 청록빛 수정과 빛 고리를 둘러싼 돌원으로 보인다."
+   }
+  },
+  "alien/중력 이상 부유섬": {
+   "role": "floating",
+   "cells": [
+    5,
+    4
+   ],
+   "sha": "06c3b2ac5890",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "보라색 지면과 푸른 돔을 얹은 역삼각 암반 주위로 작은 조각들이 떠 있는 부유섬."
+   }
+  },
+  "alien/방어 기지": {
+   "role": "fort_city",
+   "cells": [
+    4,
+    4
+   ],
+   "sha": "9a28eafb8211",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "네 귀 포탑과 중앙 철문으로 둘러싸인 유리 돔 방어 기지로 보인다."
+   }
+  },
+  "alien/우주항": {
+   "role": "harbor_city",
+   "cells": [
+    5,
+    4
+   ],
+   "sha": "ca88936675fe",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 발사 로켓과 탱크, 격납고, 두 착륙장이 모인 우주항으로 보인다."
+   }
+  },
+  "alien/촉수 나무": {
+   "role": "landmark_nature",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "93c71459e1b2",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 굵은 보라색 줄기와 늘어진 촉수 가지, 분홍빛 끝을 가진 외계 나무로 보인다."
+   }
+  },
+  "alien/버섯 마을": {
+   "role": "large_town",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "cc9f79d3a0cc",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "큰 버섯 집 세 채와 작은 버섯이 모인 버섯 마을로 보인다."
+   }
+  },
+  "alien/추락한 우주선": {
+   "role": "ruin",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "79bbd474f324",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "READ"
+    ],
+    "reads_as": "지도 1배에서는 하늘색 결정이나 판 조각이 붙은 보라색 기계 잔해로 보인다."
+   }
+  },
+  "alien/고대 문명 유적": {
+   "role": "ruin_city",
+   "cells": [
+    4,
+    3
+   ],
+   "sha": "b18f3a9fc82f",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 기둥과 아치, 흩어진 잔해와 수정이 남은 고대 유적지로 보인다."
+   }
+  },
+  "alien/외계 신전": {
+   "role": "shrine",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "ea7519602b06",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "계단 기단 위에 빛나는 고리와 양옆 기둥이 선 외계 제단·신전으로 보인다."
+   }
+  },
+  "alien/고대 오벨리스크": {
+   "role": "tower_great",
+   "cells": [
+    2,
+    4
+   ],
+   "sha": "7af87af1d221",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "계단 기단 위에 청록 문양과 꼭대기 수정이 빛나는 거대한 오벨리스크로 보인다."
+   }
+  },
+  "alien/통신 안테나": {
+   "role": "tower_small",
+   "cells": [
+    1,
+    2
+   ],
+   "sha": "b005d108dffe",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "READ"
+    ],
+    "reads_as": "지도 1배에서는 작은 발광 기둥이나 표지등으로 보인다."
+   }
+  },
+  "alien/수정 마을": {
+   "role": "village",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "24728a2debcb",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "청록 수정이 솟은 주황 바위 움집 세 채가 모인 작은 촌락."
+   }
+  },
+  "alien/캡슐 마을": {
+   "role": "village",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "0d9ef4a16060",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 낮은 주거 세 동과 급수탑이 모인 작은 미래형 촌락으로 보인다."
+   }
+  },
+  "alien/얼음 화산": {
+   "role": "volcano",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "b4a8e841b7bf",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "READ"
+    ],
+    "reads_as": "지도 1배에서는 회색 받침 위의 밝은 얼음 원뿔이나 플라스크처럼 보인다."
+   }
+  },
+  "classical/원정군 야영": {
+   "role": "camp",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "d4720b32d2dc",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 붉은 천막을 중심으로 작은 천막들이 모인 야영지로 보인다."
+   }
+  },
+  "classical/로마": {
+   "role": "capital",
+   "cells": [
+    6,
+    6
+   ],
+   "sha": "36fd6bcbcafb",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "콜로세움과 신전, 수도교, 붉은 지붕 주거지가 모인 로마풍 대도시·수도로 보인다."
+   }
+  },
+  "classical/군단 요새": {
+   "role": "castle",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "63419da658f4",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 네 모서리 망루와 중앙 문이 있는 사각 목책 요새로 보인다."
+   }
+  },
+  "classical/미노스 궁전": {
+   "role": "castle",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "4e00fabf9a37",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 붉은 기둥과 여러 높이의 평지붕을 가진 궁전·성채로 보인다."
+   }
+  },
+  "classical/신탁 동굴": {
+   "role": "cave",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "46e65e45282e",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 갈색 바위에 밝은 석조 문틀이 둘러진 어두운 동굴 입구로 보인다."
+   }
+  },
+  "classical/원형 극장": {
+   "role": "circle",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "639f677aff16",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "반원형 계단 객석이 원형 무대를 둘러싼 석조 야외 극장으로 보인다."
+   }
+  },
+  "classical/신들의 하늘섬": {
+   "role": "floating",
+   "cells": [
+    5,
+    4
+   ],
+   "sha": "506cd4170b72",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "STYLE"
+    ],
+    "reads_as": "구름 위에 금빛 지붕 신전과 나무가 있는 떠 있는 섬으로 읽힌다."
+   }
+  },
+  "classical/아크로폴리스": {
+   "role": "fort_city",
+   "cells": [
+    4,
+    4
+   ],
+   "sha": "af64c858d8b8",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "바위 언덕 위 성벽과 기둥 신전, 언덕 아래 붉은 지붕 집들이 있는 성곽 도시."
+   }
+  },
+  "classical/지중해 항구": {
+   "role": "harbor_city",
+   "cells": [
+    5,
+    4
+   ],
+   "sha": "a5a9d3ea8d7e",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "붉은 지붕의 신전·집 뒤로 돌 부두와 배, 오른쪽 등대가 있는 항구 도시로 보인다."
+   }
+  },
+  "classical/올림포스 산": {
+   "role": "landmark_nature",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "7999ae9d219d",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "READ"
+    ],
+    "reads_as": "지도 1배에서는 구름 띠를 두른 단일 설산과 산기슭의 작은 붉은 지붕 집으로 보인다."
+   }
+  },
+  "classical/빌라 마을": {
+   "role": "large_town",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "569e951b1d3c",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 붉은 지붕 집들이 모인 마을로 보인다."
+   }
+  },
+  "classical/무너진 신전": {
+   "role": "ruin",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "e42151f06377",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 기둥과 들보가 일부 남은 석조 신전 폐허로 보인다."
+   }
+  },
+  "classical/폼페이": {
+   "role": "ruin_city",
+   "cells": [
+    4,
+    3
+   ],
+   "sha": "860b883439be",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "READ"
+    ],
+    "reads_as": "붉은 지붕의 건물들과 흰 열주 신전, 뒤의 회색 산이 있는 마을로 보인다."
+   }
+  },
+  "classical/파르테논": {
+   "role": "shrine",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "8662a0310118",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 삼각 박공과 기둥 주랑을 갖춘 고전 신전으로 보인다."
+   }
+  },
+  "classical/파로스 등대": {
+   "role": "tower_great",
+   "cells": [
+    2,
+    4
+   ],
+   "sha": "b227b9ef4ecb",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 불빛이 있는 등롱을 얹은 높고 큰 석조 등대로 읽힌다."
+   }
+  },
+  "classical/국경 감시탑": {
+   "role": "tower_small",
+   "cells": [
+    1,
+    2
+   ],
+   "sha": "029de61ccc90",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "READ",
+     "STYLE"
+    ],
+    "reads_as": "지도 1배에서는 붉은 덮개를 얹은 가느다란 돌탑으로 보인다."
+   }
+  },
+  "classical/기념 기둥": {
+   "role": "tower_small",
+   "cells": [
+    1,
+    2
+   ],
+   "sha": "1ebe2f1c6620",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "FRONT"
+    ],
+    "reads_as": "지도 1배에서는 받침대에 세운 가느다란 석주와 갈색 꼭지로 보인다."
+   }
+  },
+  "classical/포도밭 농가": {
+   "role": "village",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "1504a20e89d0",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "붉은 지붕 농가와 부속 건물 앞에 줄지어 재배하는 밭이 있는 작은 농촌으로 보인다."
+   }
+  },
+  "classical/흰 마을": {
+   "role": "village",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "81f057531865",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "READ"
+    ],
+    "reads_as": "지도 1배에서는 갈색 비탈에 모인 밝은 집들의 작은 촌락으로 보인다."
+   }
+  },
+  "classical/베수비오": {
+   "role": "volcano",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "68c08d18d9cf",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 붉은 화구와 용암 줄기, 연기가 있는 회녹색 화산으로 보인다."
+   }
+  },
+  "dark-gothic/사냥꾼 야영": {
+   "role": "camp",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "f8cf292c7833",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 갈색 천막 두 동과 작은 모닥불이 있는 야영지로 보인다."
+   }
+  },
+  "dark-gothic/검은 왕도": {
+   "role": "capital",
+   "cells": [
+    6,
+    6
+   ],
+   "sha": "d0f424c9d74d",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "높은 성벽 안에 첨탑 대성당과 검은 지붕 집들이 밀집한 어두운 성곽 수도."
+   }
+  },
+  "dark-gothic/마녀 사냥꾼 요새": {
+   "role": "castle",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "7733d289ccba",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 흉벽과 각진 망루, 중앙 문이 있는 회색 요새로 보인다."
+   }
+  },
+  "dark-gothic/흡혈귀 성": {
+   "role": "castle",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "a77326974f61",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 세 뾰족탑과 붉은 창을 가진 어두운 성으로 읽힌다."
+   }
+  },
+  "dark-gothic/괴물 소굴": {
+   "role": "cave",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "0dbd1e9f0792",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 어두운 동굴 입구와 입구 앞에 흩어진 밝은 뼈 조각으로 보인다."
+   }
+  },
+  "dark-gothic/마녀의 돌원": {
+   "role": "circle",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "efdec1a8a784",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "검은 선돌들이 붉은 불을 둘러싼 작은 의식 장소로 보인다."
+   }
+  },
+  "dark-gothic/저주받은 떠 있는 성": {
+   "role": "floating",
+   "cells": [
+    5,
+    4
+   ],
+   "sha": "83b8b4c6e6e2",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "READ",
+     "STYLE"
+    ],
+    "reads_as": "떠 있는 바위섬 위의 성과 작은 구름들, 그 아래 선명한 분홍색 덩어리로 보인다."
+   }
+  },
+  "dark-gothic/피깃발 성채 도시": {
+   "role": "fort_city",
+   "cells": [
+    4,
+    4
+   ],
+   "sha": "22f2346bbf4d",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 네 모서리 탑과 중앙 아성, 남쪽 성문이 있는 성곽 도시로 보인다."
+   }
+  },
+  "dark-gothic/늪 항구": {
+   "role": "harbor_city",
+   "cells": [
+    5,
+    4
+   ],
+   "sha": "3aa9a61718d6",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "물가의 나무 부두에 배가 붙어 있고 창고와 탑이 모인 항구 도시로 보인다."
+   }
+  },
+  "dark-gothic/교수목": {
+   "role": "landmark_nature",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "16902af94293",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "READ"
+    ],
+    "reads_as": "잎 없는 나무에 밝은 줄이나 그네가 매달린 모습."
+   }
+  },
+  "dark-gothic/마녀 오두막": {
+   "role": "landmark_nature",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "88e821fcca1d",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "닭다리로 서 있는 작은 오두막과 보라 연기, 주변 말뚝·솥이 있는 마녀의 장소로 보인다."
+   }
+  },
+  "dark-gothic/역병 마을": {
+   "role": "large_town",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "bde394c09e68",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 어두운 집 여러 채와 앞쪽 묘비·울타리가 모인 음산한 마을로 보인다."
+   }
+  },
+  "dark-gothic/엘프 유적": {
+   "role": "ruin",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "0260f22bc56c",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "덩굴이 감긴 밝은 돌문과 부러진 기둥이 남은 작은 폐허."
+   }
+  },
+  "dark-gothic/전쟁 폐허": {
+   "role": "ruin_city",
+   "cells": [
+    4,
+    3
+   ],
+   "sha": "e1e3e146b093",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 불씨가 남은 무너진 집들과 성벽으로 이루어진 폐허 마을로 보인다."
+   }
+  },
+  "dark-gothic/버려진 수도원": {
+   "role": "shrine",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "1d9732190f99",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 왼쪽 종탑과 아치 창이 있는 낡은 교회·수도원으로 보인다."
+   }
+  },
+  "dark-gothic/해골 첨탑": {
+   "role": "tower_great",
+   "cells": [
+    2,
+    4
+   ],
+   "sha": "7251b8e996b4",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 긴 첨탑과 종루가 있는 검은 고층 탑으로 보인다."
+   }
+  },
+  "dark-gothic/마법사의 탑": {
+   "role": "tower_small",
+   "cells": [
+    1,
+    2
+   ],
+   "sha": "11ce0b1328df",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 보라 고깔과 보라 창이 있는 가느다란 돌탑으로 보인다."
+   }
+  },
+  "dark-gothic/늪 마을": {
+   "role": "village",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "c96d73843eb8",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 물가에 오두막 세 채가 모인 작은 촌락으로 보인다."
+   }
+  },
+  "dark-gothic/숯쟁이 마을": {
+   "role": "village",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "c33a271f20a4",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "READ"
+    ],
+    "reads_as": "연기 나는 갈색 흙더미와 작은 오두막이 있는 작업장으로 보인다."
+   }
+  },
+  "dark-gothic/잿빛 화산": {
+   "role": "volcano",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "f358ff42e8b1",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 잿빛 원뿔을 따라 용암이 흐르는 화산으로 보인다."
+   }
+  },
+  "desert-east/검은 천막 야영": {
+   "role": "camp",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "b5da248a58fb",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-01T23:51:19+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 깃대와 천막들이 모인 작은 야영지로 보인다."
+   }
+  },
+  "desert-east/게르 야영": {
+   "role": "camp",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "beab226e82f3",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-01T23:51:20+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 흰 둥근 천막 두 채가 모인 작은 야영지로 보인다."
+   }
+  },
+  "desert-east/궁성 도시": {
+   "role": "capital",
+   "cells": [
+    6,
+    6
+   ],
+   "sha": "511b118d6249",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:19:36+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 여러 기와 문루와 큰 전각을 성벽으로 둘러싼 동양풍 궁성으로 보인다."
+   }
+  },
+  "desert-east/산성 누각": {
+   "role": "castle",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "89c05ce59d9c",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:19:37+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 석축 성벽으로 둘러싼 흙 언덕 위 동양식 다층 누각으로 보인다."
+   }
+  },
+  "desert-east/산성 요새": {
+   "role": "castle",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "4c6ccb4cfde5",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:19:39+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 중앙 성문과 양쪽 망루를 갖춘 석축 요새로 보인다."
+   }
+  },
+  "desert-east/석굴 사원": {
+   "role": "cave",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "b5ff42febe7c",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:20:08+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "사암 바위에 어두운 입구와 회색 처마가 붙은 석굴로 보인다."
+   }
+  },
+  "desert-east/석등과 선돌": {
+   "role": "circle",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "a5b2703cbf29",
+   "decision": "pick",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:20:24+00:00",
+   "picked": "r15/C",
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 석등을 가운데 둔 선돌 무리로 보인다."
+   }
+  },
+  "desert-east/신선의 섬": {
+   "role": "floating",
+   "cells": [
+    5,
+    4
+   ],
+   "sha": "0ca173c9e027",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:20:42+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 흰 구름 위에 떠 있는 초록 섬과 옥색 지붕 전각 하나로 보인다."
+   }
+  },
+  "desert-east/읍성": {
+   "role": "fort_city",
+   "cells": [
+    4,
+    4
+   ],
+   "sha": "3a1eab2dcd7e",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:20:44+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 문루와 내부 전각을 성벽으로 둘러싼 동양풍 성곽 도시로 보인다."
+   }
+  },
+  "desert-east/항구 읍성": {
+   "role": "harbor_city",
+   "cells": [
+    5,
+    4
+   ],
+   "sha": "6358b90c46f9",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:20:45+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 성벽과 탑으로 둘러싸인 해안 읍성, 앞쪽 나무 부두와 작은 붉은 돛으로 보인다."
+   }
+  },
+  "desert-east/사막 바오바브": {
+   "role": "landmark_nature",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "e16ccc060f4b",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 납작하고 넓은 수관과 불룩한 줄기를 가진 큰 나무로 읽힌다."
+   }
+  },
+  "desert-east/신목": {
+   "role": "landmark_nature",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "fd168973b419",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:29:34+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 붉은 띠와 장식을 두른 큰 나무로 보인다."
+   }
+  },
+  "desert-east/기와집 마을": {
+   "role": "large_town",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "cc63e0ea6ed6",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:29:43+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "회청색 기와지붕 집들이 두 줄로 모인 큰 마을로 보인다."
+   }
+  },
+  "desert-east/오아시스 마을": {
+   "role": "large_town",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "8ab9f98a513b",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:29:58+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "흙집과 돔 사원, 첨탑이 모인 사막풍 마을."
+   }
+  },
+  "desert-east/무너진 석탑": {
+   "role": "ruin",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "49c2005d715a",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:30:00+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 층이 일부 무너진 낮은 석탑 밑동과 주변 돌무더기로 보인다."
+   }
+  },
+  "desert-east/모래에 묻힌 성채": {
+   "role": "ruin_city",
+   "cells": [
+    4,
+    3
+   ],
+   "sha": "c7249db5f897",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:30:03+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "모래에 하단이 묻힌 성벽과 문루의 폐허로 보인다."
+   }
+  },
+  "desert-east/대사원": {
+   "role": "shrine",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "f8206908bd61",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:30:05+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 중앙 계단과 높은 석조 기단 위에 옥색 기와를 얹은 2층 사원 전각으로 보인다."
+   }
+  },
+  "desert-east/9층 팔각탑": {
+   "role": "tower_great",
+   "cells": [
+    2,
+    4
+   ],
+   "sha": "e1032d354c34",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:30:06+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 처마가 여러 층 겹쳐진 높고 큰 전탑으로 보인다."
+   }
+  },
+  "desert-east/3층 전탑": {
+   "role": "tower_small",
+   "cells": [
+    1,
+    2
+   ],
+   "sha": "5810025e0685",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:30:08+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 층마다 처마가 있는 가늘고 높은 3층 탑으로 보인다."
+   }
+  },
+  "desert-east/사막 흙벽 마을": {
+   "role": "village",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "6539b1897a35",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:30:10+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 야자가 곁에 선 황토색 흙집 촌락으로 보인다."
+   }
+  },
+  "desert-east/초가 촌락": {
+   "role": "village",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "bec81ff23bbd",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:30:12+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 누런 초가지붕 집들이 모인 작은 촌락으로 보인다."
+   }
+  },
+  "desert-east/화산 제단": {
+   "role": "volcano",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "2f04496bee2b",
+   "decision": "pick",
+   "reasons": [],
+   "note": "투영 렌더러로 그린 세트 — 옆면이 반드시 생긴다",
+   "decided_at": "2026-10-02T05:25:50+00:00",
+   "picked": "r30/B",
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "READ"
+    ],
+    "reads_as": "지도 1배에서는 꼭대기와 왼쪽 아래에 용암이 있는 회색 화산으로 보인다."
+   }
+  },
+  "fantasy/oasis_camp": {
+   "role": "camp",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "2e94c94e7718",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-01T23:47:28+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 파란 못 앞에 천막 두 동이 있는 오아시스 야영지로 보인다."
+   }
+  },
+  "fantasy/tent_camp": {
+   "role": "camp",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "e4a29d7129a5",
+   "decision": "pick",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T03:38:53+00:00",
+   "picked": "r2/E",
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 천막 세 동이 모인 작은 야영지로 보인다."
+   }
+  },
+  "fantasy/castle_dark_grand": {
+   "role": "capital",
+   "cells": [
+    5,
+    5
+   ],
+   "sha": "0684df7fa5ba",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-01T23:47:45+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배 파일이 없어 확인 불가. 아이콘 확대에서는 바깥 성벽·문과 안쪽 높은 성이 있는 대성으로 보인다."
+   }
+  },
+  "fantasy/city_capital": {
+   "role": "capital",
+   "cells": [
+    6,
+    6
+   ],
+   "sha": "61aabdf77720",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-01T23:20:08+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "SIDE"
+    ],
+    "reads_as": "지도 1배에서 성과 작은 집들을 성벽으로 둘러싼 요새 도시로 보인다."
+   }
+  },
+  "fantasy/castle_dark": {
+   "role": "castle",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "ec9147a5bb24",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-01T23:48:15+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 두 둥근 탑과 중앙 성벽을 가진 어두운 성·요새로 보인다."
+   }
+  },
+  "fantasy/flame_fortress": {
+   "role": "castle",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "b799f905ed06",
+   "decision": "pick",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T01:48:02+00:00",
+   "picked": "r4/B",
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "SIDE"
+    ],
+    "reads_as": "지도 1배에서 붉은 첨탑과 용암 바닥을 가진 성채로 읽힌다."
+   }
+  },
+  "fantasy/pass_fortress": {
+   "role": "castle",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "caac856e0120",
+   "decision": "pick",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T01:48:20+00:00",
+   "picked": "r5/A",
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 붉은 이층 문루와 사암 성벽을 갖춘 관문 요새로 보인다."
+   }
+  },
+  "fantasy/cave_rock": {
+   "role": "cave",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "65c9a425efb8",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-01T23:48:26+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 갈색 바위 더미에 검은 입구가 뚫린 동굴로 보인다."
+   }
+  },
+  "fantasy/cave_vine": {
+   "role": "cave",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "8872ac667c85",
+   "decision": "pick",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T01:48:32+00:00",
+   "picked": "r6/D",
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 덩굴이 드리운 바위 동굴 입구로 보인다."
+   }
+  },
+  "fantasy/stone_circle": {
+   "role": "circle",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "506f781c88ec",
+   "decision": "pick",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T01:48:43+00:00",
+   "picked": "r7/F",
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 돌기둥들이 푸른 빛을 둘러싼 작은 돌원으로 보인다."
+   }
+  },
+  "fantasy/sky_island": {
+   "role": "floating",
+   "cells": [
+    5,
+    4
+   ],
+   "sha": "4937e9bfe4ad",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-01T23:48:42+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "나무와 작은 건물, 폭포가 있는 공중에 떠 있는 섬으로 보인다."
+   }
+  },
+  "fantasy/city_fort": {
+   "role": "fort_city",
+   "cells": [
+    4,
+    4
+   ],
+   "sha": "25afba1b35ec",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-01T23:48:49+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 네 모서리 탑과 성벽으로 둘러싸인 작은 성곽 도시로 보인다."
+   }
+  },
+  "fantasy/city_harbor": {
+   "role": "harbor_city",
+   "cells": [
+    5,
+    4
+   ],
+   "sha": "76f9b5269310",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-01T23:48:51+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 남쪽 부두에 범선이 정박한 성곽 항구 도시로 보인다."
+   }
+  },
+  "fantasy/giant_tree": {
+   "role": "landmark_nature",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "41459f6ef9bc",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-01T23:48:55+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 주변 숲보다 큰 수관과 굵은 줄기를 가진 거목으로 보인다."
+   }
+  },
+  "fantasy/harbor_town": {
+   "role": "large_town",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "fa4e1597cd22",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-01T23:48:59+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "SIDE"
+    ],
+    "reads_as": "지도 1배에서 여러 집과 두 부두, 돛단배가 있는 항구 마을로 읽힌다."
+   }
+  },
+  "fantasy/log_village": {
+   "role": "large_town",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "021c322aab64",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-01T23:49:01+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "SIDE"
+    ],
+    "reads_as": "지도 1배에서 눈 덮인 목조 집 세 채와 침엽수가 모인 설원 마을로 보인다."
+   }
+  },
+  "fantasy/town_bell": {
+   "role": "large_town",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "2978a6d363b7",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "SIDE"
+    ],
+    "reads_as": "지도 1배에서 높은 돌탑과 집들이 모인 마을로 보인다."
+   }
+  },
+  "fantasy/town_red": {
+   "role": "large_town",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "252387b50a37",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-01T23:49:10+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "SIDE"
+    ],
+    "reads_as": "지도 1배에서 붉은 지붕 집 여섯 채가 모인 큰 마을로 읽힌다."
+   }
+  },
+  "fantasy/town_snow": {
+   "role": "large_town",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "47b8bbfabb19",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-01T23:49:13+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "SIDE"
+    ],
+    "reads_as": "지도 1배에서 눈 덮인 지붕 여섯 채가 모인 큰 마을로 보인다."
+   }
+  },
+  "fantasy/windmill_farm": {
+   "role": "large_town",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "206909e7f945",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "SIDE"
+    ],
+    "reads_as": "지도 1배에서 풍차와 붉은 헛간이 있는 작은 농장으로 보인다."
+   }
+  },
+  "fantasy/crypt": {
+   "role": "ruin",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "6872542d153a",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-01T23:50:38+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "SIDE"
+    ],
+    "reads_as": "지도 1배에서 죽은 나무와 묘비가 딸린 작은 묘당으로 보인다."
+   }
+  },
+  "fantasy/desert_colonnade": {
+   "role": "ruin",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "2a2b5ebb4b28",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-01T23:50:42+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 상인방이 남은 두 기둥과 부러진 기둥이 있는 사막 폐허로 보인다."
+   }
+  },
+  "fantasy/stepped_pyramid": {
+   "role": "ruin",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "6219b1cec6ec",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-01T23:50:43+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "SIDE"
+    ],
+    "reads_as": "지도 1배에서 꼭대기에 작은 신전이 있는 계단 피라미드로 보인다."
+   }
+  },
+  "fantasy/ruined_city": {
+   "role": "ruin_city",
+   "cells": [
+    4,
+    3
+   ],
+   "sha": "cc45add0292f",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-01T23:50:47+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "무너진 탑과 성벽이 남은 석조 폐허 도시."
+   }
+  },
+  "fantasy/desert_temple": {
+   "role": "shrine",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "858be4562210",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-01T23:50:48+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "SIDE"
+    ],
+    "reads_as": "지도 1배에서 중앙 계단과 꼭대기 출입구가 있는 사막의 계단식 신전으로 읽힌다."
+   }
+  },
+  "fantasy/giant_tower": {
+   "role": "tower_great",
+   "cells": [
+    2,
+    4
+   ],
+   "sha": "1033b6317b3d",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T01:49:57+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 푸른 빛이 꼭대기에 떠 있는 높고 거대한 석조 탑으로 보인다."
+   }
+  },
+  "fantasy/lighthouse": {
+   "role": "tower_small",
+   "cells": [
+    1,
+    2
+   ],
+   "sha": "477b64ad3396",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-01T23:50:59+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "모래 해안에 선 빨강·하양 띠의 작은 등대로 보인다."
+   }
+  },
+  "fantasy/mage_spire": {
+   "role": "tower_small",
+   "cells": [
+    1,
+    2
+   ],
+   "sha": "91e0cee177b0",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-01T23:51:00+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 푸른 뾰족 지붕과 하얀 몸통을 가진 작은 첨탑으로 보인다."
+   }
+  },
+  "fantasy/witch_tower": {
+   "role": "tower_small",
+   "cells": [
+    1,
+    2
+   ],
+   "sha": "954fe12e3e6e",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-01T23:51:02+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 늪 위 나무 말뚝에 세운, 휜 모자 지붕과 초록 창빛의 작은 탑으로 보인다."
+   }
+  },
+  "fantasy/adobe_village": {
+   "role": "village",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "eaf2016225ae",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T01:50:03+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "SIDE",
+     "DIAG"
+    ],
+    "reads_as": "지도 1배에서는 황토색 건물 여러 채와 줄무늬 차양이 있는 작은 촌락으로 보인다."
+   }
+  },
+  "fantasy/igloo_camp": {
+   "role": "village",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "fc49fcd18ef2",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-01T23:51:07+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "눈밭에 크기가 다른 이글루 여러 채와 침엽수가 모인 작은 촌락으로 보인다."
+   }
+  },
+  "fantasy/mine_town": {
+   "role": "village",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "b5a549d5c795",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-01T23:51:09+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "SIDE"
+    ],
+    "reads_as": "지도 1배에서는 갱도 입구와 작은 탑이 붙은 광산 시설로 보인다."
+   }
+  },
+  "fantasy/monastery": {
+   "role": "village",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "dbb0e0701a5d",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-01T23:51:10+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "SIDE"
+    ],
+    "reads_as": "지도 1배에서 푸른 돔의 예배당과 종탑이 붙은 작은 수도원으로 보인다."
+   }
+  },
+  "fantasy/stilt_village": {
+   "role": "village",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "a89de0a2daf0",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-01T23:51:12+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "푸른 물 위에 말뚝으로 세운 집 세 채가 모인 작은 수상 촌락으로 보인다."
+   }
+  },
+  "fantasy/treehouse_village": {
+   "role": "village",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "57085b7cdfa1",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-01T23:51:15+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 나무 아래 굵은 기둥 위에 초가집 두 채가 모인 나무 위 촌락으로 보인다."
+   }
+  },
+  "fantasy/village_snow": {
+   "role": "village",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "473c76ef654a",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-01T23:51:16+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "SIDE"
+    ],
+    "reads_as": "지도 1배에서 눈 덮인 집 세 채와 침엽수가 모인 설원 촌락으로 보인다."
+   }
+  },
+  "fantasy/village_wood": {
+   "role": "village",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "90011582d457",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-01T23:51:17+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "SIDE"
+    ],
+    "reads_as": "지도 1배에서 붉은 지붕 집 세 채와 덤불이 모인 작은 촌락으로 보인다."
+   }
+  },
+  "fantasy/volcano_altar": {
+   "role": "volcano",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "c7d323cc6908",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-01T23:51:18+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "SIDE"
+    ],
+    "reads_as": "붉은 분화구에서 용암이 흐르는 화산과 기슭의 작은 돌 제단으로 보인다."
+   }
+  },
+  "fantasy-dungeons/물의 던전": {
+   "role": "cave",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "b03b745d6970",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "이끼 낀 바위의 동굴 입구와 오른쪽 물줄기, 앞의 작은 못으로 보인다."
+   }
+  },
+  "fantasy-dungeons/불의 던전": {
+   "role": "cave",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "ad53b34f44ac",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "붉은 바위에 검은 동굴 입구가 있고 용암이 흘러나오는 불의 동굴로 보인다."
+   }
+  },
+  "fantasy-dungeons/숲의 던전": {
+   "role": "cave",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "ab6a03c8731a",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "둥근 수관의 거목 아래, 뿌리 사이에 초록빛 어두운 입구가 있는 숲 동굴."
+   }
+  },
+  "fantasy-dungeons/얼음 던전": {
+   "role": "cave",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "14d32af4799c",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "눈으로 덮인 푸른 얼음 동굴 입구로 보인다."
+   }
+  },
+  "fantasy-dungeons/마스터 검의 대좌": {
+   "role": "circle",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "c0f25edc6dba",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "나무 사이의 둥근 돌 단에 푸른 손잡이 검이 꽂힌 대좌로 보인다."
+   }
+  },
+  "fantasy-dungeons/요정의 샘": {
+   "role": "circle",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "bace23afeca3",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "돌테로 둘러싼 작은 못에서 밝은 빛 기둥이 솟는 마법의 샘."
+   }
+  },
+  "fantasy-dungeons/봉인된 문": {
+   "role": "ruin",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "269eaf8d3c38",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "READ"
+    ],
+    "reads_as": "지도 1배에서는 바위에 박힌 작은 석문과 안쪽의 모래시계 같은 금색 표식으로 보인다."
+   }
+  },
+  "fantasy-dungeons/사막 신전 입구": {
+   "role": "ruin",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "a7ba849a4e6c",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "모래에 묻힌 작은 피라미드형 석조 유적과 어두운 입구로 보인다."
+   }
+  },
+  "fantasy-dungeons/바람의 신전": {
+   "role": "shrine",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "3d685a5442ee",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 높은 계단과 기둥, 푸른 바람 장식이 있는 작은 신전으로 보인다."
+   }
+  },
+  "fantasy-dungeons/빛의 신전": {
+   "role": "shrine",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "30cc2c6bcc45",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "흰 계단과 기둥 위에 금빛 지붕이 솟은 작은 신전으로 보인다."
+   }
+  },
+  "fantasy-dungeons/어둠의 신전": {
+   "role": "shrine",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "c14f6618eb7e",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 보라빛 입구와 세 첨탑이 있는 검은 신전으로 보인다."
+   }
+  },
+  "fantasy-dungeons/마법사의 외딴 탑": {
+   "role": "tower_small",
+   "cells": [
+    1,
+    2
+   ],
+   "sha": "56f5cb574ce7",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 바위 위에 선 보라 고깔 지붕의 작은 마법사 탑으로 보인다."
+   }
+  },
+  "joseon/보부상 야영": {
+   "role": "camp",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "5ed5bf286f0d",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "FRONT"
+    ],
+    "reads_as": "밝은 천막 두 동과 작은 모닥불, 오른쪽 짐이 있는 야영지로 보인다."
+   }
+  },
+  "joseon/한양 도성": {
+   "role": "capital",
+   "cells": [
+    6,
+    6
+   ],
+   "sha": "9d7bd8e41577",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "성곽 안에 큰 궁궐과 민가가 있고 남쪽에 중층 성문이 있는 도성으로 보인다."
+   }
+  },
+  "joseon/산성": {
+   "role": "castle",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "beea44da1a03",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 작은 언덕을 석축 성벽으로 둘러싸고 뒤쪽에 장대를 세운 산성으로 보인다."
+   }
+  },
+  "joseon/석굴": {
+   "role": "cave",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "c9ef089bb454",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "큰 바위 아래 어두운 입구와 두 기둥이 있는 석굴로 보인다."
+   }
+  },
+  "joseon/고인돌": {
+   "role": "circle",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "e2ac161a7309",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 넓은 덮개돌을 두 받침돌로 떠받친 탁자식 고인돌 두 기로 보인다."
+   }
+  },
+  "joseon/신선 봉우리": {
+   "role": "floating",
+   "cells": [
+    5,
+    4
+   ],
+   "sha": "79818c75f06a",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "흰 구름 위에 솟은 세 바위 봉우리와 중앙의 작은 정자, 봉우리에 붙은 나무로 보인다."
+   }
+  },
+  "joseon/읍성": {
+   "role": "fort_city",
+   "cells": [
+    4,
+    4
+   ],
+   "sha": "ad12df7a605e",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "돌 성곽과 남쪽 성문 안에 기와집·초가가 모인 성곽 도시로 보인다."
+   }
+  },
+  "joseon/포구 고을": {
+   "role": "harbor_city",
+   "cells": [
+    5,
+    4
+   ],
+   "sha": "c06b3bcd9adf",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "성곽과 기와 건물, 선창과 배가 모인 해안의 항구 고을로 보인다."
+   }
+  },
+  "joseon/당산나무": {
+   "role": "landmark_nature",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "5f95ff5cecb2",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 굵은 줄기의 큰 나무와 옆에 놓인 작은 돌 제물 표식으로 보인다."
+   }
+  },
+  "joseon/양반 마을": {
+   "role": "large_town",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "5c02b541cdbe",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 여러 기와집과 담장·대문, 작은 연못이 모인 마을로 보인다."
+   }
+  },
+  "joseon/장터 마을": {
+   "role": "large_town",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "8605d60ce26f",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "초가와 흰 차일 상점들이 모인 작은 장터 마을로 보인다."
+   }
+  },
+  "joseon/무너진 석탑": {
+   "role": "ruin",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "34b24ea2d7d6",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "READ"
+    ],
+    "reads_as": "지도 1배에서는 작은 비석과 주변 돌조각으로 보인다."
+   }
+  },
+  "joseon/옛 궁터": {
+   "role": "ruin_city",
+   "cells": [
+    4,
+    3
+   ],
+   "sha": "acf2dee92a02",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "READ"
+    ],
+    "reads_as": "지도 1배에서는 담으로 둘러싸인 녹색 정원이나 텃밭이 있는 뜰로 보인다."
+   }
+  },
+  "joseon/산사": {
+   "role": "shrine",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "9d5d40ae5125",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "회색 기와 대웅전과 앞쪽 문, 나무가 있는 사찰로 보인다."
+   }
+  },
+  "joseon/5층 목탑": {
+   "role": "tower_great",
+   "cells": [
+    2,
+    4
+   ],
+   "sha": "39850e596deb",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 층층이 지붕이 쌓인 높고 큰 목탑으로 보인다."
+   }
+  },
+  "joseon/봉수대": {
+   "role": "tower_small",
+   "cells": [
+    1,
+    2
+   ],
+   "sha": "b2fb451f836d",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 돌로 쌓은 작은 탑 위에 밝은 연기가 한 줄 솟는 봉수대로 보인다."
+   }
+  },
+  "joseon/어촌": {
+   "role": "village",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "b4e104ebfa33",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "해안가의 초가와 작은 배가 있는 어촌으로 보인다."
+   }
+  },
+  "joseon/초가 마을": {
+   "role": "village",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "e181f1f8dabc",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 누런 초가지붕 세 채가 모인 작은 촌락으로 보인다."
+   }
+  },
+  "joseon/백두산": {
+   "role": "volcano",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "8e654f9cec5b",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "회색 산체 꼭대기에 눈 테두리와 푸른 화구호가 있는 산으로 보인다."
+   }
+  },
+  "modern-sf/camp_a": {
+   "role": "camp",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "a335074138e2",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:30:15+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 조명 기둥 옆에 여러 돔 텐트가 모인 작은 야영지로 보인다."
+   }
+  },
+  "modern-sf/camp_b": {
+   "role": "camp",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "14720c4def19",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:30:16+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 여러 천막과 높은 안테나가 모인 작은 야영지로 보인다."
+   }
+  },
+  "modern-sf/capital": {
+   "role": "capital",
+   "cells": [
+    6,
+    6
+   ],
+   "sha": "4631ef03834e",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:30:17+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 중앙 광장과 첨탑을 둘러싼 고층 빌딩 군의 대도시로 보인다."
+   }
+  },
+  "modern-sf/castle_a": {
+   "role": "castle",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "1db83bd61595",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:30:18+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 높은 관측·레이더 타워와 방벽, 중앙 철문을 갖춘 군사 기지로 보인다."
+   }
+  },
+  "modern-sf/castle_b": {
+   "role": "castle",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "8454a9f732c8",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:30:19+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 네 포탑과 중앙 고층동, 앞쪽 문루를 갖춘 SF 군사 기지·요새로 보인다."
+   }
+  },
+  "modern-sf/cave": {
+   "role": "cave",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "fd097ab68de4",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:30:22+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 철문과 환기구가 있는 작은 콘크리트 벙커 입구로 보인다."
+   }
+  },
+  "modern-sf/circle": {
+   "role": "circle",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "8737e1a12bb1",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:30:25+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 접시 안테나 세 개가 모인 위성 통신 시설로 보인다."
+   }
+  },
+  "modern-sf/floating": {
+   "role": "floating",
+   "cells": [
+    5,
+    4
+   ],
+   "sha": "a664c8cf1e4a",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:30:28+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "STYLE"
+    ],
+    "reads_as": "고층 건물과 돔이 올라간 부유 원판 도시이며, 아래에 선명한 분홍색 타원이 보인다."
+   }
+  },
+  "modern-sf/fort_city": {
+   "role": "fort_city",
+   "cells": [
+    4,
+    4
+   ],
+   "sha": "1a36d8e14f27",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:30:29+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 앞 문루와 네 모서리 탑이 고층 빌딩을 둘러싼 SF 방벽 도시로 보인다."
+   }
+  },
+  "modern-sf/harbor_city": {
+   "role": "harbor_city",
+   "cells": [
+    5,
+    4
+   ],
+   "sha": "07e9fc4c1228",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:30:30+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 화물선과 컨테이너 더미, 고층 건물이 모인 항구 도시로 보인다."
+   }
+  },
+  "modern-sf/landmark_nature": {
+   "role": "landmark_nature",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "f2ea2b2bf9be",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:30:32+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "푸른 태양광 패널이 여러 줄로 늘어서고 오른쪽 아래에 작은 관리동이 붙은 태양광 발전 단지."
+   }
+  },
+  "modern-sf/large_town_a": {
+   "role": "large_town",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "233bed255a68",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:30:33+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 낮은 주택들이 두 줄로 모인 교외 주택가로 보인다."
+   }
+  },
+  "modern-sf/large_town_b": {
+   "role": "large_town",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "7c0034dfe669",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:30:36+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 낮은 평지붕 주택 여섯 동이 모인 교외 주택가로 보인다."
+   }
+  },
+  "modern-sf/ruin": {
+   "role": "ruin",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "5cb9a1cfe62d",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:30:37+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 벽이 뜯긴 회색 건물과 낮게 무너진 잔해가 있는 폐허로 보인다."
+   }
+  },
+  "modern-sf/ruin_city": {
+   "role": "ruin_city",
+   "cells": [
+    4,
+    3
+   ],
+   "sha": "3128776e918a",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:30:38+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 벽이 뚫리고 지붕이 무너진 고층 건물군과 잔해가 있는 폐허 도시로 보인다."
+   }
+  },
+  "modern-sf/shrine": {
+   "role": "shrine",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "e57744ee550c",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:30:39+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 큰 관측 돔과 부속 건물이 있는 SF 관측·연구 시설로 보인다."
+   }
+  },
+  "modern-sf/tower_great": {
+   "role": "tower_great",
+   "cells": [
+    2,
+    4
+   ],
+   "sha": "99d75667ccc8",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:30:40+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "넓은 기단 위에 전망 고리와 안테나가 달린 높은 SF 탑."
+   }
+  },
+  "modern-sf/tower_small_a": {
+   "role": "tower_small",
+   "cells": [
+    1,
+    2
+   ],
+   "sha": "3f251818850d",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:30:41+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 적백 줄무늬 몸통과 꼭대기 안테나가 있는 작은 송신탑으로 보인다."
+   }
+  },
+  "modern-sf/tower_small_b": {
+   "role": "tower_small",
+   "cells": [
+    1,
+    2
+   ],
+   "sha": "ac761673c26b",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:30:42+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 흰 기둥 위에 세 날개가 달린 작은 풍력 터빈으로 보인다."
+   }
+  },
+  "modern-sf/village_a": {
+   "role": "village",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "2e7335783238",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:30:43+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "색이 다른 상자형 집들과 탑이 모인 작은 촌락."
+   }
+  },
+  "modern-sf/village_b": {
+   "role": "village",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "a177fa729397",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:30:45+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "붉은 헛간과 사일로, 작은 살림집이 모인 농가로 보인다."
+   }
+  },
+  "modern-sf/volcano": {
+   "role": "volcano",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "7b78ebf53516",
+   "decision": "accept",
+   "reasons": [],
+   "note": "",
+   "decided_at": "2026-10-02T07:30:48+00:00",
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 증기를 내뿜는 냉각탑과 낮은 건물이 붙은 발전 시설로 보인다."
+   }
+  },
+  "modern-town/캠핑장": {
+   "role": "camp",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "0a81d6c33f8e",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "캠핑카와 주황 텐트가 있는 작은 야영지로 보인다."
+   }
+  },
+  "modern-town/역 앞 도심": {
+   "role": "capital",
+   "cells": [
+    6,
+    6
+   ],
+   "sha": "cd31612a47a7",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "FRONT"
+    ],
+    "reads_as": "지도 1배에서는 방송탑과 고층 빌딩이 밀집한 현대 도심으로 보인다."
+   }
+  },
+  "modern-town/병원": {
+   "role": "castle",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "c488a8bb3251",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "흰 고층 본관과 낮은 부속동, 앞의 구급차가 있는 병원 단지로 보인다."
+   }
+  },
+  "modern-town/학교": {
+   "role": "castle",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "5abe514f64ee",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "창문이 줄지어 있는 학교 본관과 초록 지붕 부속 건물, 앞 운동장으로 보인다."
+   }
+  },
+  "modern-town/터널": {
+   "role": "cave",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "9f77b7faa8d0",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "초록 언덕에 난 콘크리트 터널 입구로 보인다."
+   }
+  },
+  "modern-town/원형 광장 분수": {
+   "role": "circle",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "840a93783ca0",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 푸른 물과 중앙 물줄기가 있는 원형 돌 분수로 보인다."
+   }
+  },
+  "modern-town/비행장": {
+   "role": "floating",
+   "cells": [
+    5,
+    4
+   ],
+   "sha": "ab4a2aaadd56",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "READ"
+    ],
+    "reads_as": "바다 위에 활주로·비행기·관제탑·건물이 바로 놓인 작은 비행장으로 보인다."
+   }
+  },
+  "modern-town/신도시 단지": {
+   "role": "fort_city",
+   "cells": [
+    4,
+    4
+   ],
+   "sha": "a9df9c571b10",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 높이가 다른 아파트 네 동과 앞쪽 작은 놀이터가 있는 주거 단지로 보인다."
+   }
+  },
+  "modern-town/항구 마을": {
+   "role": "harbor_city",
+   "cells": [
+    5,
+    4
+   ],
+   "sha": "9e03fd68db8a",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 등대·창고·터미널과 여객선이 모인 항구 마을로 보인다."
+   }
+  },
+  "modern-town/호수 공원 큰 나무": {
+   "role": "landmark_nature",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "88b8cca1ebd5",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "큰 나무와 작은 수면, 벤치가 있는 물가 공원으로 보인다."
+   }
+  },
+  "modern-town/상점가": {
+   "role": "large_town",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "4f9720040ec7",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "초록 아케이드와 여러 간판·차양이 모인 큰 상점가로 보인다."
+   }
+  },
+  "modern-town/폐공장": {
+   "role": "ruin",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "9498a57b7fa7",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "READ"
+    ],
+    "reads_as": "지도 1배에서는 높은 굴뚝이 달린 붉은 벽돌 공장으로 보이며, 폐허라는 표지가 약하다."
+   }
+  },
+  "modern-town/폐쇄된 놀이공원": {
+   "role": "ruin_city",
+   "cells": [
+    4,
+    3
+   ],
+   "sha": "08d6a7d6f300",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "READ"
+    ],
+    "reads_as": "지도 1배에서는 관람차와 붉은 지붕이 있는 작은 놀이공원으로 보이며, 폐허라는 인상은 약하다."
+   }
+  },
+  "modern-town/동네 신사": {
+   "role": "shrine",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "41b4b09a0da6",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "초록 지붕의 배전과 빨간 도리이가 있는 작은 신사로 읽힌다."
+   }
+  },
+  "modern-town/방송 타워": {
+   "role": "tower_great",
+   "cells": [
+    2,
+    4
+   ],
+   "sha": "f100da3bad2e",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "가늘고 높은 첨탑과 두 단의 전망대가 있는 방송 타워로 보인다."
+   }
+  },
+  "modern-town/소방망루": {
+   "role": "tower_small",
+   "cells": [
+    1,
+    2
+   ],
+   "sha": "f62e6746abf1",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 빨간 지붕을 얹은 가느다란 철골 망루로 보인다."
+   }
+  },
+  "modern-town/교외 주택가": {
+   "role": "village",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "f4f99f02c0cc",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 빨강·파랑 지붕 집 두 채와 작은 마당이 있는 주택 촌락으로 보인다."
+   }
+  },
+  "modern-town/시골 정류장 마을": {
+   "role": "village",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "2e265ca2b736",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "READ"
+    ],
+    "reads_as": "지도 1배에서는 파란 지붕과 빨간 지붕의 작은 상점 두 채처럼 보인다."
+   }
+  },
+  "modern-town/온천 화산": {
+   "role": "volcano",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "d52dcecc276e",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "김이 오르는 갈색 산 앞에 초록 지붕 숙소와 파란 노천탕이 있는 온천 장소."
+   }
+  },
+  "monster/캠핑장": {
+   "role": "camp",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "d61e9f9c8d3a",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 파랑·주황 천막 두 개와 갈색 간판이 있는 작은 야영지로 보인다."
+   }
+  },
+  "monster/대도시": {
+   "role": "capital",
+   "cells": [
+    6,
+    6
+   ],
+   "sha": "77f369c63486",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 방송탑과 고층 건물, 분수 광장을 갖춘 큰 현대 도시로 보인다."
+   }
+  },
+  "monster/리그 본부": {
+   "role": "castle",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "1408fd27878d",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 파란 지붕과 기둥, 앞 계단을 갖춘 큰 석조 본부 건물로 보인다."
+   }
+  },
+  "monster/달맞이산 동굴": {
+   "role": "cave",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "1b292799ccb8",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 둥근 바위산 앞에 검은 동굴 입구가 있고 오른쪽에 사다리가 붙은 장소로 보인다."
+   }
+  },
+  "monster/바위 원": {
+   "role": "circle",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "bfcbb712be90",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "큰 바위 네 개가 가운데 작은 납작돌을 둘러싼 돌무리로 보인다."
+   }
+  },
+  "monster/하늘 기둥 섬": {
+   "role": "floating",
+   "cells": [
+    5,
+    4
+   ],
+   "sha": "bbbf094455e8",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "FRONT",
+     "STYLE"
+    ],
+    "reads_as": "지도 1배에서 구름 위 풀 덮인 작은 섬과 층층이 쌓인 사각 돌탑으로 읽힌다."
+   }
+  },
+  "monster/체육관 도시": {
+   "role": "fort_city",
+   "cells": [
+    4,
+    4
+   ],
+   "sha": "186d99582517",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "흰 울타리 안에 큰 중앙 건물과 작은 집 넷이 모인 도시로 보인다."
+   }
+  },
+  "monster/항구 도시": {
+   "role": "harbor_city",
+   "cells": [
+    5,
+    4
+   ],
+   "sha": "e5b8887c94b1",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "해안의 건물군과 여객선·부두·등대가 있는 항구 도시"
+   }
+  },
+  "monster/열매 거목": {
+   "role": "landmark_nature",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "5e061a38ad29",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 붉은 열매가 달린 넓은 수관과 굵은 줄기의 큰 나무로 읽힌다."
+   }
+  },
+  "monster/농장 마을": {
+   "role": "large_town",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "44c3cf0fd257",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "붉은 헛간과 풍차, 작은 살림집이 울타리·건초와 모인 농장 마을."
+   }
+  },
+  "monster/회복소 마을": {
+   "role": "large_town",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "4bfbe32a80f6",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "READ",
+     "STYLE"
+    ],
+    "reads_as": "지도 1배에서는 빨강·파랑 지붕의 집 네 채와 나무가 있는 작은 마을로 보이며, 회복소 표식은 식별되지 않는다."
+   }
+  },
+  "monster/알프 유적": {
+   "role": "ruin",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "7d5557259dc0",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 돌 기단 위에 석판 셋이 선 작은 유적으로 보인다."
+   }
+  },
+  "monster/버려진 발전소": {
+   "role": "ruin_city",
+   "cells": [
+    4,
+    3
+   ],
+   "sha": "0a7af7177de7",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "톱날 지붕과 두 굴뚝, 녹슨 탱크가 있는 낡은 공장 시설로 보인다."
+   }
+  },
+  "monster/전설 사당": {
+   "role": "shrine",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "c608d38890ca",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "둥근 돌 단에 기둥과 파란 제단이 있고 뒤에 나무가 선 야외 사당."
+   }
+  },
+  "monster/방울탑": {
+   "role": "tower_great",
+   "cells": [
+    2,
+    4
+   ],
+   "sha": "7f68b5c8a689",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 금빛 꼭대기 장식이 달린 오층 목탑으로 보인다."
+   }
+  },
+  "monster/등대": {
+   "role": "tower_small",
+   "cells": [
+    1,
+    2
+   ],
+   "sha": "1b9c49524001",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 작은 바위 받침 위에 선 적백 줄무늬 등대로 보인다."
+   }
+  },
+  "monster/숲속 오두막 마을": {
+   "role": "village",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "c0a84116fb26",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "침엽수에 둘러싸인 작은 오두막 두 채의 촌락."
+   }
+  },
+  "monster/시작 마을": {
+   "role": "village",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "6a8817e0333e",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 빨강·파랑 지붕 집 두 채와 뒤쪽의 큰 건물로 이루어진 작은 마을로 보인다."
+   }
+  },
+  "monster/불꽃섬 화산": {
+   "role": "volcano",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "c17ab88b98c5",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "연기와 붉은 용암이 있는 화산, 오른쪽 기슭의 작은 건물로 보인다."
+   }
+  },
+  "prehistoric/사냥 야영": {
+   "role": "camp",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "5c93d0b2c6a5",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "READ"
+    ],
+    "reads_as": "지도 1배에서는 막대에 걸린 가죽 두 장과 작은 색 덩어리로 보이며, 사냥 야영지로 읽기 어렵다."
+   }
+  },
+  "prehistoric/부족 대마을": {
+   "role": "capital",
+   "cells": [
+    6,
+    6
+   ],
+   "sha": "e3b54f497b67",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "목책과 뼈 아치 대문 안에 큰 족장 움집과 작은 움집들이 모인 부족 중심 마을."
+   }
+  },
+  "prehistoric/공룡족 둥지 요새": {
+   "role": "castle",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "2f4f1d89c1c7",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "회색 돌탑 셋이 노란 둥지를 둘러싼 작은 요새로 보인다."
+   }
+  },
+  "prehistoric/매머드 뼈 전당": {
+   "role": "castle",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "32e0f4e193bf",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "뼈 테두리가 둘러싼 큰 가죽 돔 전당과 중앙 출입구로 보인다."
+   }
+  },
+  "prehistoric/벽화 동굴": {
+   "role": "cave",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "b1e104838999",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "갈색 바위 언덕에 큰 검은 입구가 난 동굴로 보인다."
+   }
+  },
+  "prehistoric/선돌 원": {
+   "role": "circle",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "8613fb3454ec",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "들보를 얹은 돌문과 그 앞·양옆에 선돌이 둘러선 작은 유적."
+   }
+  },
+  "prehistoric/떠 있는 바위섬": {
+   "role": "floating",
+   "cells": [
+    5,
+    4
+   ],
+   "sha": "8b55c38b92b0",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "STYLE"
+    ],
+    "reads_as": "풀과 움집 같은 원뿔 세 개가 얹힌 공중 바위섬과 오른쪽 폭포로 보인다."
+   }
+  },
+  "prehistoric/목책 부락": {
+   "role": "fort_city",
+   "cells": [
+    4,
+    4
+   ],
+   "sha": "b3857109f225",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "STYLE"
+    ],
+    "reads_as": "갈색 목책으로 둘러싼 작은 취락으로 보인다."
+   }
+  },
+  "prehistoric/호숫가 수상 부락": {
+   "role": "harbor_city",
+   "cells": [
+    5,
+    4
+   ],
+   "sha": "427217b46ae3",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "STYLE"
+    ],
+    "reads_as": "호숫가에 말뚝집과 배가 모인 작은 수상 마을로 읽힌다."
+   }
+  },
+  "prehistoric/거대 고사리 숲": {
+   "role": "landmark_nature",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "6390c8083f82",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "READ"
+    ],
+    "reads_as": "지도 1배에서는 긴 줄기의 야자수 또는 둥근 수관을 가진 나무 다섯 그루로 보인다."
+   }
+  },
+  "prehistoric/움집 마을": {
+   "role": "large_town",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "df88b6f6b2a8",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "READ"
+    ],
+    "reads_as": "지도 1배에서는 나무 두 그루 사이에 짚지붕 움집이 모인 마을로 보인다."
+   }
+  },
+  "prehistoric/공룡 화석": {
+   "role": "ruin",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "170b89034b84",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "흙더미에 반쯤 묻힌 큰 동물의 뼈대와 두개골로 보인다."
+   }
+  },
+  "prehistoric/운석 충돌구": {
+   "role": "ruin_city",
+   "cells": [
+    4,
+    3
+   ],
+   "sha": "79d12ad75562",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "바위 둑에 둘러싸인, 연기가 피어오르는 충돌구로 보인다."
+   }
+  },
+  "prehistoric/태양 제단": {
+   "role": "shrine",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "1e485942e62b",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 해 원반을 세운 계단식 돌 제단으로 보인다."
+   }
+  },
+  "prehistoric/거대 바위 기둥": {
+   "role": "tower_great",
+   "cells": [
+    2,
+    4
+   ],
+   "sha": "a7c7ab958b02",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "READ"
+    ],
+    "reads_as": "지도 1배에서는 풀 조금 붙은 길쭉한 층층 바위 기둥으로 보인다."
+   }
+  },
+  "prehistoric/토템 기둥": {
+   "role": "tower_small",
+   "cells": [
+    1,
+    2
+   ],
+   "sha": "ed89c32760f7",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "밝은 머리 장식과 붉은 띠가 있는 작은 토템 기둥으로 보인다."
+   }
+  },
+  "prehistoric/나무 위 부락": {
+   "role": "village",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "a45a3b6c9314",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "나무 줄기 위에 움집 두 채가 올라간 작은 나무 부락으로 보인다."
+   }
+  },
+  "prehistoric/동굴 집 마을": {
+   "role": "village",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "e02c05c71635",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "바위 언덕에 여러 출입구가 있는 작은 동굴 집 촌락으로 보인다."
+   }
+  },
+  "prehistoric/화산": {
+   "role": "volcano",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "c83f8a000838",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 붉은 용암이 흘러내리는 어두운 원뿔형 화산으로 보인다."
+   }
+  },
+  "sea-isles/난파 생존자 야영": {
+   "role": "camp",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "ccf05b37cbf6",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "흰 천막과 부서진 배 조각이 붙어 있는 해안 야영지."
+   }
+  },
+  "sea-isles/해상 왕국 수도": {
+   "role": "capital",
+   "cells": [
+    6,
+    6
+   ],
+   "sha": "2014152a6b08",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "READ"
+    ],
+    "reads_as": "풀밭 위에 놓인 푸른 지붕의 성벽 도시·궁성으로 보인다."
+   }
+  },
+  "sea-isles/해안 포대": {
+   "role": "castle",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "29ca7e16b8b7",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 돌 성벽과 높은 망루, 붉은 지붕 창고가 있는 작은 요새로 보인다."
+   }
+  },
+  "sea-isles/해적 요새": {
+   "role": "castle",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "4a5605ae9fbc",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "바위 언덕 위에 깃발과 망루가 있는 통나무 요새로 보인다."
+   }
+  },
+  "sea-isles/해적 보물 동굴": {
+   "role": "cave",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "1756b91dd815",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "READ"
+    ],
+    "reads_as": "해안의 바위 동굴 입구와 모래 턱으로 보이며, 보물 상자·금화는 식별되지 않는다."
+   }
+  },
+  "sea-isles/석상 원": {
+   "role": "circle",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "2b9ce8ece633",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "돌 단 위에 나란히 선 석상 셋으로 보인다."
+   }
+  },
+  "sea-isles/하늘섬": {
+   "role": "floating",
+   "cells": [
+    5,
+    4
+   ],
+   "sha": "2fb2048a6310",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "STYLE"
+    ],
+    "reads_as": "초가와 야자가 있는 부유섬에서 폭포가 구름으로 떨어지는 모습으로 읽힌다."
+   }
+  },
+  "sea-isles/해안 요새 도시": {
+   "role": "fort_city",
+   "cells": [
+    4,
+    4
+   ],
+   "sha": "e33b721dfb58",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 네 귀 포대와 성벽으로 둘러싸인 작은 요새 도시로 보인다."
+   }
+  },
+  "sea-isles/해적 항구": {
+   "role": "harbor_city",
+   "cells": [
+    5,
+    4
+   ],
+   "sha": "811f56f03964",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 집들이 모인 나무 부두와 검은 돛배가 있는 항구로 보인다."
+   }
+  },
+  "sea-isles/거대 산호초": {
+   "role": "landmark_nature",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "3d40dc975607",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "밝은 얕은 물 위에 붉은 가지 산호가 솟은 산호초 군락."
+   }
+  },
+  "sea-isles/고래 뼈 해변": {
+   "role": "landmark_nature",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "e8fcc97f189f",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "READ"
+    ],
+    "reads_as": "지도 1배에서는 모래톱 위 작은 천막이나 뾰족한 바위로 보인다."
+   }
+  },
+  "sea-isles/섬 마을": {
+   "role": "large_town",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "619d58e88f4e",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "모래 바닥에 초가들이 모여 있고 야자가 둘러선 큰 마을로 읽힌다."
+   }
+  },
+  "sea-isles/난파선": {
+   "role": "ruin",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "02d336a983be",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "모래 위에 박힌 작은 난파선과 돛대 잔해로 보인다."
+   }
+  },
+  "sea-isles/가라앉은 도시": {
+   "role": "ruin_city",
+   "cells": [
+    4,
+    3
+   ],
+   "sha": "f2ed96785b8f",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "물에 잠긴 지붕과 기둥이 남아 있는 작은 도시 유적."
+   }
+  },
+  "sea-isles/바다 신전": {
+   "role": "shrine",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "f5f096f5097a",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 푸른 돔과 흰 기둥 회랑이 있는 신전으로 보인다."
+   }
+  },
+  "sea-isles/큰 등대": {
+   "role": "tower_great",
+   "cells": [
+    2,
+    4
+   ],
+   "sha": "4a7bead94476",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 돌 기단 위에 선 흰색 대형 등대로 보인다."
+   }
+  },
+  "sea-isles/등대": {
+   "role": "tower_small",
+   "cells": [
+    1,
+    2
+   ],
+   "sha": "478810df5071",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 흰·빨강 띠와 붉은 꼭대기가 있는 작은 등대로 읽힌다."
+   }
+  },
+  "sea-isles/수상 가옥 마을": {
+   "role": "village",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "1f5b2395e11e",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "얕은 물 위에 초가 세 채가 모인 작은 수상 촌락."
+   }
+  },
+  "sea-isles/어촌": {
+   "role": "village",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "6a035064cb80",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "초가 두 채와 앞에 놓인 작은 배가 있는 해안 촌락으로 보인다."
+   }
+  },
+  "sea-isles/화산섬": {
+   "role": "volcano",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "e3022c64c210",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 붉은 화구와 연기가 있는 작은 화산섬으로 보인다."
+   }
+  },
+  "sengoku/전장 진지": {
+   "role": "camp",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "cd51c7d3c6be",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "노보리 깃발과 흰 장막을 두른 소규모 군진·야영지로 보인다."
+   }
+  },
+  "sengoku/교토풍 수도": {
+   "role": "capital",
+   "cells": [
+    6,
+    6
+   ],
+   "sha": "7d9d6988ba22",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "해자와 큰 축대 위 다층 일본식 성, 앞의 성하 마을과 오른쪽 탑이 있는 수도로 읽힌다."
+   }
+  },
+  "sengoku/산성": {
+   "role": "castle",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "d5642b652f8e",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "초록 언덕 위에 좌우 목조 망루와 중앙 문을 갖춘 산성."
+   }
+  },
+  "sengoku/천수각 성": {
+   "role": "castle",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "8ebc1dd8ec4e",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 돌 축대 위에 다층 천수각과 좌우 망루가 있는 성으로 보인다."
+   }
+  },
+  "sengoku/산속 동굴 사당": {
+   "role": "cave",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "7b88d8477bb7",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "갈색 바위산 입구에 붉은 도리이가 선 작은 동굴 사당으로 보인다."
+   }
+  },
+  "sengoku/도리이 길": {
+   "role": "circle",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "d2600500b6b0",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 작은 붉은 도리이가 연속된 참배길과 양옆 석등으로 보인다."
+   }
+  },
+  "sengoku/신의 섬": {
+   "role": "floating",
+   "cells": [
+    5,
+    4
+   ],
+   "sha": "82c7b66f94fa",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "구름 위에 떠 있는 작은 신사 섬으로, 붉은 문과 양쪽 분홍 벚나무가 보인다."
+   }
+  },
+  "sengoku/성하 마을": {
+   "role": "fort_city",
+   "cells": [
+    4,
+    4
+   ],
+   "sha": "a1acb0e5e9f9",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 높은 천수각과 성벽, 양옆의 기와집 줄이 있는 일본식 성곽 마을로 보인다."
+   }
+  },
+  "sengoku/나가사키풍 무역항": {
+   "role": "harbor_city",
+   "cells": [
+    5,
+    4
+   ],
+   "sha": "d3479313e581",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "해안의 창고 건물들 앞에 큰 배와 작은 배가 붙어 있는 항구 도시."
+   }
+  },
+  "sengoku/벚나무 거목": {
+   "role": "landmark_nature",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "93e87af1b28d",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 분홍 꽃 수관과 굵은 줄기가 있는 큰 벚나무로 보인다."
+   }
+  },
+  "sengoku/후지풍 설산": {
+   "role": "landmark_nature",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "79abf3225ef2",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "넓은 원뿔형 산에 눈 덮인 정상과 양쪽 허리 구름이 있는 설산으로 보인다."
+   }
+  },
+  "sengoku/역참 마을": {
+   "role": "large_town",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "9ed35a827b72",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 큰 중앙 건물과 양쪽 집들이 길을 둘러싼 마을로 보인다."
+   }
+  },
+  "sengoku/무너진 성 축대": {
+   "role": "ruin",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "324055a6b25c",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 윗부분이 무너진 회색 돌 성벽·축대 폐허로 보인다."
+   }
+  },
+  "sengoku/불탄 성하 마을": {
+   "role": "ruin_city",
+   "cells": [
+    4,
+    3
+   ],
+   "sha": "4ac2371c7f82",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "READ"
+    ],
+    "reads_as": "연기가 나는 무너진 성문 또는 석조 관문으로 보인다."
+   }
+  },
+  "sengoku/신사": {
+   "role": "shrine",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "c7bf270631e5",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 붉은 도리이와 뒤쪽 지붕이 있는 일본 신사로 보인다."
+   }
+  },
+  "sengoku/오층탑": {
+   "role": "tower_great",
+   "cells": [
+    2,
+    4
+   ],
+   "sha": "bf9f6821b453",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 붉은 몸체와 회흑색 처마가 층층이 쌓이고 금색 상륜이 솟은 높은 탑으로 보인다."
+   }
+  },
+  "sengoku/망루": {
+   "role": "tower_small",
+   "cells": [
+    1,
+    2
+   ],
+   "sha": "9405f9e69c89",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "READ"
+    ],
+    "reads_as": "지도 1배에서는 둥근 머리가 달린 가느다란 석탑 또는 돌기둥으로 보인다."
+   }
+  },
+  "sengoku/농촌": {
+   "role": "village",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "b8dc7bc66e3e",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "초가집 두 채와 물이 든 경작지가 붙어 있는 작은 농촌 촌락으로 보인다."
+   }
+  },
+  "sengoku/닌자 마을": {
+   "role": "village",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "41de56361bde",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "READ",
+     "STYLE"
+    ],
+    "reads_as": "지도 1배에서는 침엽수에 둘러싸인 갈색 울타리나 숲속 시설로 보이며, 초가집 촌락과 망루는 분명하지 않다."
+   }
+  },
+  "sengoku/화산": {
+   "role": "volcano",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "86b593e6a911",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 정상에 붉은 용암과 회색 분연이 있는 작은 화산으로 보인다."
+   }
+  },
+  "snow-north/순록 유목 천막": {
+   "role": "camp",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "e26dcf7ad6c5",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "READ"
+    ],
+    "reads_as": "지도 1배에서는 길쭉한 갈색 구조물 두 개와 바닥의 상자들로 보이며, 순록 유목 야영지로 명확히 읽히지 않는다."
+   }
+  },
+  "snow-north/얼음 왕성": {
+   "role": "capital",
+   "cells": [
+    6,
+    6
+   ],
+   "sha": "1143520641b7",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "눈 덮인 성벽과 둥근 탑 안에 푸른 얼음 돔·첨탑 궁전이 있는 큰 왕성으로 보인다."
+   }
+  },
+  "snow-north/얼음 성": {
+   "role": "castle",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "ae361f5a5bac",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "FRONT"
+    ],
+    "reads_as": "푸른 얼음 첨탑과 작은 출입구가 있는 성으로 보인다."
+   }
+  },
+  "snow-north/장군 전당": {
+   "role": "castle",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "d9594e4f837d",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "눈 덮인 큰 목조 전당과 앞쪽의 방패 벽·붉은 깃발로 보인다."
+   }
+  },
+  "snow-north/얼음 동굴": {
+   "role": "cave",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "b19729b9b0c3",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "눈 덮인 바위 언덕 아래 푸른 얼음과 고드름이 둘러싼 동굴 입구로 보인다."
+   }
+  },
+  "snow-north/룬 돌원": {
+   "role": "circle",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "5c7b68527d31",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "눈 덮인 선돌들이 중앙 제단석을 둘러싼 돌원으로 보인다."
+   }
+  },
+  "snow-north/오로라 빙산섬": {
+   "role": "floating",
+   "cells": [
+    5,
+    4
+   ],
+   "sha": "60880c196691",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "오로라 아래 작은 집을 얹고 공중에 떠 있는 빙산섬으로 보인다."
+   }
+  },
+  "snow-north/통나무 요새 도시": {
+   "role": "fort_city",
+   "cells": [
+    4,
+    4
+   ],
+   "sha": "82139a47aa6e",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "눈 덮인 집들이 목책과 네 귀 망루 안에 모인 통나무 요새 도시로 읽힌다."
+   }
+  },
+  "snow-north/피오르 항구": {
+   "role": "harbor_city",
+   "cells": [
+    5,
+    4
+   ],
+   "sha": "82da3e089235",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "눈 덮인 긴 건물 두 채와 돛배 두 척이 나란히 있는 항구 마을."
+   }
+  },
+  "snow-north/세계수": {
+   "role": "landmark_nature",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "c79b513888f8",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "눈이 얹힌 넓은 수관과 굵은 줄기·뿌리를 가진 거목 랜드마크."
+   }
+  },
+  "snow-north/눈 마을": {
+   "role": "large_town",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "7440fba6a440",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "눈 덮인 통나무집 여러 채가 모인 큰 마을로 보인다."
+   }
+  },
+  "snow-north/룬석 무덤": {
+   "role": "ruin",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "6051b92a0c24",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "눈 덮인 봉분에 어두운 묘실 입구와 붉은 표식의 선돌이 선 무덤으로 보인다."
+   }
+  },
+  "snow-north/얼어붙은 폐허 도시": {
+   "role": "ruin_city",
+   "cells": [
+    4,
+    3
+   ],
+   "sha": "242db51e8709",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 눈 덮인 석벽과 푸른 얼음 기둥이 남은 폐허 건물군으로 보인다."
+   }
+  },
+  "snow-north/오딘 신전": {
+   "role": "shrine",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "3d10fefbcae3",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "눈 덮인 겹지붕과 높은 첨탑이 있는 목조 신전·교회로 보인다."
+   }
+  },
+  "snow-north/얼음 첨탑": {
+   "role": "tower_great",
+   "cells": [
+    2,
+    4
+   ],
+   "sha": "0a5db10fc8c8",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "눈 덮인 바위 위에 솟은 거대한 얼음 결정 첨탑으로 보인다."
+   }
+  },
+  "snow-north/봉화탑": {
+   "role": "tower_small",
+   "cells": [
+    1,
+    2
+   ],
+   "sha": "c69c5895493a",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 꼭대기에 붉은 불이 켜진 가느다란 돌 봉화탑으로 보인다."
+   }
+  },
+  "snow-north/롱하우스 마을": {
+   "role": "village",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "e1e34e780e7e",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "눈 덮인 긴 목조 건물 둘과 작은 창고가 모인 촌락으로 보인다."
+   }
+  },
+  "snow-north/이글루 마을": {
+   "role": "village",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "a1af248abafd",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "눈 돔 집 세 채가 모인 작은 이글루 마을과 왼쪽의 갈색 썰매로 보인다."
+   }
+  },
+  "snow-north/설산 화산": {
+   "role": "volcano",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "6f30909d6524",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 눈 덮인 산 정상에 붉은 화구가 있는 화산으로 보인다."
+   }
+  },
+  "starmap/보급선 정박지": {
+   "role": "camp",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "35c1918961b4",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "READ"
+    ],
+    "reads_as": "지도 1배에서는 밝은 왼쪽 선체와 어두운 오른쪽 선체가 붙은 우주선 한 덩어리로 보인다."
+   }
+  },
+  "starmap/모항성 수도": {
+   "role": "capital",
+   "cells": [
+    6,
+    6
+   ],
+   "sha": "a6c6593cd86a",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "푸른 대양과 초록 대륙을 가진 큰 행성에 바위 고리와 시설이 달린 궤도 고리가 둘러진 우주 거점."
+   }
+  },
+  "starmap/군 요새 위성": {
+   "role": "castle",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "69c28f29cc46",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "큰 원형 포구와 적도 띠가 있는 회색 인공 요새 위성."
+   }
+  },
+  "starmap/적 기함": {
+   "role": "castle",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "d189618ba936",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 붉은 띠와 높은 함교, 뒤쪽 추진 불꽃이 있는 우주 전함으로 보인다."
+   }
+  },
+  "starmap/점프 게이트": {
+   "role": "cave",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "9d839fc592ef",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "FRONT"
+    ],
+    "reads_as": "지도 1배에서 청록빛 금속 고리 안에 보라색 소용돌이가 있는 우주 포털로 읽힌다."
+   }
+  },
+  "starmap/소행성 고리": {
+   "role": "circle",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "f0bd427616b8",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "밝은 얼음빛 작은 행성을 갈색 바위 고리가 둘러싼 모습."
+   }
+  },
+  "starmap/다이슨 고리 조각": {
+   "role": "floating",
+   "cells": [
+    5,
+    4
+   ],
+   "sha": "4e112a24428b",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "빛나는 별 위를 감싼 푸른 인공 고리의 끊어진 조각으로 보인다."
+   }
+  },
+  "starmap/요새 정거장": {
+   "role": "fort_city",
+   "cells": [
+    4,
+    4
+   ],
+   "sha": "2787d2314f09",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "FRONT"
+    ],
+    "reads_as": "지도 1배에서 네 방향 돌출부와 바퀴살이 있는 고리형 우주 정거장으로 보인다."
+   }
+  },
+  "starmap/우주 조선소": {
+   "role": "harbor_city",
+   "cells": [
+    5,
+    4
+   ],
+   "sha": "fa05492a2acd",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "주황색 골조 도크 안에 함선이 놓이고 왼쪽 아래에 관제동이 붙은 우주 조선소."
+   }
+  },
+  "starmap/가스 거인": {
+   "role": "landmark_nature",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "b5f2138862cc",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "주황·크림색 줄무늬의 큰 행성과 아래쪽 붉은 폭풍, 왼쪽의 작은 얼음 위성으로 보인다."
+   }
+  },
+  "starmap/개척 행성": {
+   "role": "large_town",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "33f179d7fb8f",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "READ"
+    ],
+    "reads_as": "초록 대륙이 있는 행성과 오른쪽 작은 위성, 왼쪽의 작은 회색 고리로 보인다."
+   }
+  },
+  "starmap/함선 잔해": {
+   "role": "ruin",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "4c6816826074",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 붉은 띠가 있는 회색 선체 두 조각과 주변 파편으로 된 함선 잔해로 보인다."
+   }
+  },
+  "starmap/파괴된 행성": {
+   "role": "ruin_city",
+   "cells": [
+    4,
+    3
+   ],
+   "sha": "e13186340b3f",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "검은 우주에서 껍질이 갈라지고 밝은 주황색 속과 핵이 드러난 파괴된 행성으로 보인다."
+   }
+  },
+  "starmap/고대 외계 유물": {
+   "role": "shrine",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "eb9a750ff39b",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "금빛 고리에 둘러싸인 부유 수정과 돌기둥으로 된 외계 유물 장소."
+   }
+  },
+  "starmap/궤도 엘리베이터": {
+   "role": "tower_great",
+   "cells": [
+    2,
+    4
+   ],
+   "sha": "f73620621b25",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "행성에서 긴 줄로 상부 고리 정거장과 연결된 궤도 엘리베이터로 보인다."
+   }
+  },
+  "starmap/항법 부표": {
+   "role": "tower_small",
+   "cells": [
+    1,
+    2
+   ],
+   "sha": "54f72f859b53",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "푸른 태양 날개와 밝은 비콘을 단 가느다란 우주 부표로 보인다."
+   }
+  },
+  "starmap/소행성 채굴촌": {
+   "role": "village",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "e31f412b70bd",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "갈색 소행성 위에 밝은 돔 두 채와 주황색 탑이 모인 작은 우주 거점으로 보인다."
+   }
+  },
+  "starmap/얼음 위성": {
+   "role": "village",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "8eba2d8b3f68",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "READ"
+    ],
+    "reads_as": "푸른 얼음 위성 위에 작은 검은 돌기가 붙은 모습으로 보인다."
+   }
+  },
+  "starmap/용암 행성": {
+   "role": "volcano",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "69992c8d55cf",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 밝은 용암 균열이 퍼진 둥근 암석 행성으로 보인다."
+   }
+  },
+  "steampunk/조사단 캠프": {
+   "role": "camp",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "b7e899765602",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "READ"
+    ],
+    "reads_as": "지도 1배에서는 작은 건물과 연기 나는 기계가 붙은 공업 시설로 보인다."
+   }
+  },
+  "steampunk/마도 제국 수도": {
+   "role": "capital",
+   "cells": [
+    6,
+    6
+   ],
+   "sha": "89c72b14232f",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "시계탑·연기 나는 굴뚝·비행선이 있는 성벽 두른 산업 도시, 수도급 거점으로 읽힌다."
+   }
+  },
+  "steampunk/마도 요새": {
+   "role": "castle",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "dec0278d051b",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 굴뚝이 솟은 철제 본루와 좌우 포탑, 중앙 문을 갖춘 요새로 보인다."
+   }
+  },
+  "steampunk/비행선 기지": {
+   "role": "castle",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "3118cf5e2a04",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "밝은 비행선이 계류탑 옆에 떠 있는 철책 두른 기지"
+   }
+  },
+  "steampunk/광산 갱도": {
+   "role": "cave",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "ce146bfbbf31",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 갈색 바위산에 검은 입구가 뚫린 동굴·갱도로 보인다."
+   }
+  },
+  "steampunk/마석 원": {
+   "role": "circle",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "16bc47fb399b",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "놋쇠색 원형 받침에 보라색 수정들이 둘러선 마법 제단."
+   }
+  },
+  "steampunk/부유 대륙": {
+   "role": "floating",
+   "cells": [
+    5,
+    4
+   ],
+   "sha": "4d80fba1b8f8",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "시계탑과 작은 건물들이 올라선, 보라색 부유석이 달린 떠 있는 섬 마을."
+   }
+  },
+  "steampunk/공업 도시": {
+   "role": "fort_city",
+   "cells": [
+    4,
+    4
+   ],
+   "sha": "9c442d5d47b4",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 굴뚝이 솟은 공장과 탱크를 성벽·철문으로 둘러싼 공업 도시로 보인다."
+   }
+  },
+  "steampunk/증기선 항구": {
+   "role": "harbor_city",
+   "cells": [
+    5,
+    4
+   ],
+   "sha": "cbb1baf5211f",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 창고와 크레인, 외륜 증기선이 모인 해안 항구로 보인다."
+   }
+  },
+  "steampunk/마석 수정 언덕": {
+   "role": "landmark_nature",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "bf642feea295",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "갈색 바위 언덕을 뚫고 솟은 보라색 수정 무리로 보인다."
+   }
+  },
+  "steampunk/톱니 유적 바위산": {
+   "role": "landmark_nature",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "42a3ab10580f",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "회색 바위산에 거대한 녹슨 톱니가 박힌 자연 랜드마크로 보인다."
+   }
+  },
+  "steampunk/탄광 마을": {
+   "role": "large_town",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "3312922f0117",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "바위 갱도 입구와 권양탑 앞에 오두막들이 모인 광산 마을."
+   }
+  },
+  "steampunk/추락한 비행선": {
+   "role": "ruin",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "b2e74302f4fc",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "READ"
+    ],
+    "reads_as": "지도 1배에서는 연기를 내는 작은 기관차나 바퀴 달린 기계로 보인다."
+   }
+  },
+  "steampunk/폭주 공장 지대": {
+   "role": "ruin_city",
+   "cells": [
+    4,
+    3
+   ],
+   "sha": "0f9cedbe0dd3",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 보라색 마석이 솟은 낡고 부서진 공장 지대로 보인다."
+   }
+  },
+  "steampunk/마도 연구소": {
+   "role": "shrine",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "74b91624c850",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 푸른 유리 돔과 양쪽 장치가 있는 벽돌 연구 시설로 보인다."
+   }
+  },
+  "steampunk/거대 시계탑": {
+   "role": "tower_great",
+   "cells": [
+    2,
+    4
+   ],
+   "sha": "afc7fdefaa53",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 큰 시계판과 구리색 돔을 얹은 높은 벽돌 시계탑으로 보인다."
+   }
+  },
+  "steampunk/증기 굴뚝 탑": {
+   "role": "tower_small",
+   "cells": [
+    1,
+    2
+   ],
+   "sha": "41ee1035bb1b",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "놋쇠 띠가 둘러진 가느다란 굴뚝탑에서 밝은 증기가 솟는 모습."
+   }
+  },
+  "steampunk/철도역 마을": {
+   "role": "village",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "1c65dae27b60",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "READ"
+    ],
+    "reads_as": "지도 1배에서는 회색·붉은 철도 장비 덩어리로 보이며, 철도역 마을로는 읽히지 않는다."
+   }
+  },
+  "steampunk/풍차 공방 마을": {
+   "role": "village",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "315c5ea7faef",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 풍차와 굴뚝이 있는 작은 공방 건물 무리로 보인다."
+   }
+  },
+  "steampunk/지열 증기 화산": {
+   "role": "volcano",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "607b485b6bd6",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "READ"
+    ],
+    "reads_as": "지도 1배에서는 푸른 증기를 내는 굴뚝이 달린 회색 바위와 작은 오두막으로 보인다."
+   }
+  },
+  "wuxia/표국 야영": {
+   "role": "camp",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "5accf6b9f617",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 표기를 세운 짐마차와 천막이 있는 작은 야영지로 보인다."
+   }
+  },
+  "wuxia/황도 자금성": {
+   "role": "capital",
+   "cells": [
+    6,
+    6
+   ],
+   "sha": "54e3b6dc3f8b",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "붉은 담과 삼문 안에 노란 겹지붕 전각과 좌우 배전이 모인 대형 황궁으로 읽힌다."
+   }
+  },
+  "wuxia/마교 총단": {
+   "role": "castle",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "a6c6b68a804d",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 검은 기와 대전과 붉은 문·깃발·불빛을 갖춘 성벽 요새로 보인다."
+   }
+  },
+  "wuxia/무림 문파 본산": {
+   "role": "castle",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "caa05e9e60d1",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 청록 지붕과 중앙 돌계단, 앞 산문을 갖춘 높은 석축의 산중 문파 성채로 보인다."
+   }
+  },
+  "wuxia/수련 동굴": {
+   "role": "cave",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "3b69d35ad8ae",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "바위 동굴 입구 옆으로 폭포가 내려와 작은 물웅덩이에 모이는 장소."
+   }
+  },
+  "wuxia/팔괘진": {
+   "role": "circle",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "09e93d677859",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "기둥과 중앙 무늬가 있는 원형 돌 제단·진법 자리로 보인다."
+   }
+  },
+  "wuxia/구름 위 선계": {
+   "role": "floating",
+   "cells": [
+    5,
+    4
+   ],
+   "sha": "7512a155752c",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "구름에 둘러싸인 공중 바위섬 위 금색·청록색 지붕의 누각으로 보인다."
+   }
+  },
+  "wuxia/장성 성곽 도시": {
+   "role": "fort_city",
+   "cells": [
+    4,
+    4
+   ],
+   "sha": "8d807be3c3a1",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "지도 1배에서 회색 성벽과 모서리 탑이 기와 건물들을 둘러싼 성곽 도시로 보인다."
+   }
+  },
+  "wuxia/강 포구": {
+   "role": "harbor_city",
+   "cells": [
+    5,
+    4
+   ],
+   "sha": "589498cded43",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "강가 성벽 마을 앞에 돛배 두 척이 모인 포구로 보인다."
+   }
+  },
+  "wuxia/기암 소나무 봉우리": {
+   "role": "landmark_nature",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "5da3bdda8f27",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "구름이 걸린 세 개의 가파른 바위 봉우리와 꼭대기의 작은 나무가 있는 자연 랜드마크."
+   }
+  },
+  "wuxia/객잔 거리": {
+   "role": "large_town",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "e8f5851ed37e",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "기와 건물 여러 채와 중앙의 큰 객잔이 모인 마을 거리로 보인다."
+   }
+  },
+  "wuxia/무너진 사당": {
+   "role": "ruin",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "2f9e4d137ed1",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "붉은 문틀과 허물어진 담, 바닥에 내려앉은 기와가 있는 작은 사당 폐허."
+   }
+  },
+  "wuxia/장성 폐허": {
+   "role": "ruin_city",
+   "cells": [
+    4,
+    3
+   ],
+   "sha": "d611c27baa75",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "FRONT"
+    ],
+    "reads_as": "지도 1배에서는 돌벽과 탑 일부가 남은 작은 성곽 폐허로 보인다."
+   }
+  },
+  "wuxia/소림사": {
+   "role": "shrine",
+   "cells": [
+    3,
+    3
+   ],
+   "sha": "3f6280843b5c",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "회청색 큰 전각 지붕과 황토 담·붉은 산문이 있는 동양 사찰로 보인다."
+   }
+  },
+  "wuxia/9층 팔각 전탑": {
+   "role": "tower_great",
+   "cells": [
+    2,
+    4
+   ],
+   "sha": "a196c103c6ab",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "밝은 기단 위에 처마가 여러 층 겹치고 금빛 꼭대기가 있는 높은 탑으로 보인다."
+   }
+  },
+  "wuxia/누각": {
+   "role": "tower_small",
+   "cells": [
+    1,
+    2
+   ],
+   "sha": "1ce63b7564c3",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "READ"
+    ],
+    "reads_as": "지도 1배에서는 녹색 머리와 붉은 몸통의 가느다란 탑으로 보이며, 2층 누각은 구분되지 않는다."
+   }
+  },
+  "wuxia/대나무 숲 마을": {
+   "role": "village",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "98c350254490",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "키 큰 녹색 수목 사이에 초가지붕 집 두 채가 있는 작은 촌락."
+   }
+  },
+  "wuxia/산골 마을": {
+   "role": "village",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "b6549c38bfb2",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "PASS",
+    "codes": [],
+    "reads_as": "청회색 지붕의 집 세 채와 나무가 모인 작은 촌락."
+   }
+  },
+  "wuxia/화염산": {
+   "role": "volcano",
+   "cells": [
+    2,
+    2
+   ],
+   "sha": "a1596fe19aeb",
+   "decision": null,
+   "reasons": [],
+   "note": "",
+   "decided_at": null,
+   "picked": null,
+   "review": {
+    "verdict": "FAIL",
+    "codes": [
+     "READ"
+    ],
+    "reads_as": "지도 1배에서는 붉은 기둥 여러 개 위에 불붙은 모닥불처럼 보인다."
+   }
+  }
+ }
+}

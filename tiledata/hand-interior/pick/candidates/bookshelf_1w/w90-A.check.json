@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/bookshelf_1w/w90-A.pxg",
+ "id": "bookshelf 1w",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.008
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 18,
+ "v5_colors": 24,
+ "bbox": [
+  0,
+  10,
+  15,
+  47
+ ],
+ "v5_bbox": [
+  0,
+  10,
+  15,
+  47
+ ],
+ "note": "책장(폭1): 윗면 T5(뒤 어두움·가운데 중간·앞 가장자리 밝음)+처마 그림자 아래 오목한 앞면. 아래 칸 압축.",
+ "ok": true
+}

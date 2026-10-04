@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/floor_manor_carpet/hf2-B.pxg",
+ "set": "horror",
+ "id": "floor_manor_carpet",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.004
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation",
+   "outline_black",
+   "dither"
+  ]
+ },
+ "colors": 3,
+ "bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "note": "B(어둠에서 읽힘): 짙은 남청(vblue 1) 바탕(0)에 16px 마름모 격자 한 줄(1) + 교차·중심 점(2). 무늬가 성겨 어두운 판에서도 격자가 읽힘",
+ "ok": true
+}

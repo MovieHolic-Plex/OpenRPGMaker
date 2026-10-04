@@ -1,0 +1,35 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/broom_and_bucket/w9-A.pxg",
+ "id": "broom and bucket",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.021
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "saturation",
+   "dither"
+  ],
+  "pass": false
+ },
+ "colors": 10,
+ "v5_colors": 10,
+ "bbox": [
+  1,
+  0,
+  14,
+  12
+ ],
+ "v5_bbox": [
+  1,
+  0,
+  14,
+  12
+ ],
+ "note": "v5 실루엣 유지, 떠 있던 쇠 손잡이를 고리 모양으로 이어 붙이고 양동이 띠·널 배치를 정리, 왼쪽 밝음·오른쪽 어두움",
+ "ok": true
+}

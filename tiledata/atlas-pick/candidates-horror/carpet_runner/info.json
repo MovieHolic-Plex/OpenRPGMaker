@@ -1,0 +1,32 @@
+{
+ "id": "carpet_runner",
+ "slug": "carpet_runner",
+ "name": "카펫 러너(자동 타일)",
+ "scene": "낡은 서양 저택",
+ "cells": [
+  4,
+  3
+ ],
+ "canvas": [
+  64,
+  48
+ ],
+ "layer": "decal",
+ "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+ "description": "복도·전시실을 가로지르는 긴 카펫. 자동 타일 4×3(64×48): 왼쪽 3×3 칸 = 덩이 하나(왼위 모서리·위 변·오른위 모서리 / 왼 변·속·오른 변 / 아래 셋), (3,0) 칸 = 안쪽 모서리 네 조각(8px 사분면마다 그 방향 대각선만 비었을 때의 모양), 나머지 칸은 투명. 조립기가 칸마다 8px 사분면 넷을 이웃에 따라 골라 붙인다(RPG 쯔꾸르 A2 결). 변·모서리 칸의 바깥 테가 이어져 보이게, 속 칸은 사방으로 이어지게(가장자리 무늬가 맞게). 바탕 = 짙은 붉은 벨벳, 테 = 2px 금(tarn) 줄 + 바깥 1px 어두운 술, 속 무늬 작게(16px 반복). 바깥 모서리 화소는 둥글게 투명(귀퉁이 투명 규칙). v5 붉은 깔개(line:rug red)와 같은 쓰임.",
+ "palette_hint": "velv/vred 바탕, tarn 테",
+ "stage": 1,
+ "stage_ko": "1단계 기본(2판 새로)",
+ "kit": "manor",
+ "role": "러너(자동 타일)",
+ "worker": "hf2",
+ "autotile": "quad3x3+inner",
+ "set_with": [
+  "wall_manor_damask",
+  "wall_manor_stripe",
+  "wall_wood_panel",
+  "floor_manor_plank",
+  "floor_manor_carpet",
+  "floor_checker"
+ ]
+}

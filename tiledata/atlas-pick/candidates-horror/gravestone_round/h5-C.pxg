@@ -1,0 +1,51 @@
+// gravestone_round h5-C
+@size 16 16
+@cell 16
+@palette palette.pal
+@layer main
+@mat a blood 0
+@mat b board 0
+@mat c dust 0
+@mat d grave 0
+@mat e hmoss 0
+@mat f moon 0
+@mat g murk 0
+@mat h night 0
+@mat i rot 0
+@mat j rust 0
+@mat k tarn 0
+@mat l tin 0
+@mblock 0 0
+................
+.....deee.......
+....eeddd.......
+...dedddd.d.....
+...ddddddd...d..
+...ddddddd...d..
+...dddddd....d..
+...dddddd....d..
+...ddddddddddd..
+...dddddddddd...
+...dddddddddd...
+...dddddddddd...
+...dddddddddd.h.
+.hdedddddddddhh.
+.hdddddddddddhh.
+.aaaaaaaaaaaaaa.
+@tblock 0 0
+................
+.....6212.......
+....13444.......
+...624444.0.....
+...6444440...6..
+...6411110...6..
+...644440....4..
+...641110....4..
+...54444004004..
+...5441011141...
+...5444044441...
+...5440444441...
+...2222222222.3.
+.34122222222233.
+.31111111111133.
+.00011111111000.

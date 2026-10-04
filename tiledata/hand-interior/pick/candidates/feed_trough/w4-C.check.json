@@ -1,0 +1,37 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/feed_trough/w4-C.pxg",
+ "id": "feed trough",
+ "hard": [],
+ "warn": [
+  "키: 위 끝 y=1 (v5 y=4) — 낮은 가구가 솟았다"
+ ],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.027
+ },
+ "lint": {
+  "failed": [
+   "orphans",
+   "jaggies",
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 13,
+ "v5_colors": 10,
+ "bbox": [
+  0,
+  1,
+  31,
+  14
+ ],
+ "v5_bbox": [
+  0,
+  4,
+  31,
+  14
+ ],
+ "note": "실루엣 재설계: 풀이 둥근 더미로 솟고 짚이 삐져나옴, 구유는 아래가 좁은 사다리꼴+짧은 다리 둘, 다리 사이 그림자",
+ "ok": true
+}

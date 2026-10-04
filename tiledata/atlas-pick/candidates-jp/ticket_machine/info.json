@@ -1,0 +1,26 @@
+{
+ "id": "ticket_machine",
+ "slug": "ticket_machine",
+ "name": "매표기",
+ "scene": "역 앞 번화가",
+ "cells": [
+  3,
+  2
+ ],
+ "canvas": [
+  48,
+  32
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "3×2 역 매표기 줄(사용자: 3x2 및 공간감을 살려라). 세 대가 벽에 붙어 나란히, 몸통 윗면 비스듬한 조작판(밝은 단 3~4px — 공간감의 핵심), 앞면 화면(청록 빛)·동전·지폐 넣는 곳, 기계 사이 이음 그늘 1px, 오른 끝 옆면 한 단 어둡게, 위쪽에 노선 요금표 판(작은 색 선 여러 줄) 뒤 벽에. 발치 그림자.",
+ "palette_hint": "mmetal·mwhite 몸통, neonc 화면, kblue·akachin·kgreen 노선 선",
+ "worker": "r2",
+ "resized": {
+  "from": [
+   2,
+   2
+  ],
+  "why": "사용자 메모 「3x2 및, 공간감을 살려라」"
+ }
+}

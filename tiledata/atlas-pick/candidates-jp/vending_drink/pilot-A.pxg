@@ -1,0 +1,81 @@
+// vending_drink pilot-A
+@size 16 32
+@cell 16
+@palette palette.pal
+@layer main
+@mat a akachin 0
+@mat b kblue 0
+@mat c kgreen 0
+@mat d lacq 0
+@mat e mdglass 0
+@mat f mglass 0
+@mat g mmetal 0
+@mat h mwhite 0
+@mat i neonc 0
+@mat j taxi 0
+@mblock 0 0
+................
+................
+................
+................
+..ghhhhhhhhhhg..
+.ghhhhhhhhhhhhg.
+.ghhhhhhhhhhhhhg
+.gheeeeeeeeeehhg
+.gheaaebbeccehhg
+.gheaaebbeccehhg
+.gheggggggggehhg
+.ghejjeaaebbehhg
+.ghejjeaaebbehhg
+.gheggggggggehhg
+.gheccejjeaaehhg
+.gheccejjeaaehhg
+.gheggggggggehhg
+.ghdjdjdjdjddhhg
+.ghhhhhhhhhhhhhg
+.ghhggghhdddhhhg
+.ghhgighhdgdhhhg
+.ghhggghhdddhhhg
+.ghhhhhhhhhhhhhg
+.ghhhhhhhhhhhhhg
+.ghhhhhhhhhhhhhg
+.ghhddddddddhhhg
+.ghhddddddddhhhg
+.ghhddddddddhhhg
+.ghhhhhhhhhhhhhg
+.ggggggggggggggg
+..ggggggggggggg.
+................
+@tblock 0 0
+................
+................
+................
+................
+..155555555551..
+.15555555555521.
+.133333333333201
+.131111111111201
+.131351351351201
+.131331331331201
+.133444444443201
+.131351351351201
+.131331331331201
+.133444444443201
+.131351351351201
+.131331331331201
+.133444444443201
+.131313131311201
+.133333333333201
+.133333331333201
+.133353331633201
+.133333331333201
+.133333333333201
+.133333333333201
+.122222222222201
+.133111111113201
+.133133333313201
+.133111111113201
+.133333333333201
+.122222222222221
+..1111111111111.
+................

@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/picture/w5-A.pxg",
+ "id": "picture",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.017
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "outline"
+  ],
+  "pass": false
+ },
+ "colors": 10,
+ "v5_colors": 11,
+ "bbox": [
+  1,
+  2,
+  14,
+  12
+ ],
+ "v5_bbox": [
+  1,
+  2,
+  14,
+  12
+ ],
+ "note": "v5 그대로 다듬기: 외톨이 구름/언덕 화소를 덩이로(구름 2px, 언덕 봉우리 2px), 풍경을 하늘·언덕·풀 세 띠로 정리",
+ "ok": true
+}

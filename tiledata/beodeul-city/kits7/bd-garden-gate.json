@@ -1,0 +1,22 @@
+{
+ "id": "bd-garden-gate",
+ "name": "정원 정문 (돌기둥·열린 쇠문)",
+ "w": 5,
+ "h": 3,
+ "walk": [
+  "XCCCX",
+  "XFFFX",
+  "XFFFX"
+ ],
+ "description": "5x3칸: 항아리 얹은 돌기둥 둘 사이 3칸 쇠문(활짝 열려 기둥 쪽에 접혀 있음), 바닥은 자갈. 가운데 세 칸은 걸을 수 있다.",
+ "rules": "정원 아래쪽 끝 가운데 길(7~9칸) 위에 놓는다: 게이트 x = 정원 x + 6, y = 정원 y + 8.",
+ "tags": [
+  "귀족저택",
+  "정원",
+  "문"
+ ],
+ "role": "garden",
+ "doors": [],
+ "notes": "STAMP: gate.x = garden.x + 6 (path cells 7..9 of the formal garden), gate.y = garden.y + 8 (the gate cobble rows 1-2 continue the path; garden path rows are y+0..y+8, so the gate overlaps the last path row).",
+ "assembly": []
+}

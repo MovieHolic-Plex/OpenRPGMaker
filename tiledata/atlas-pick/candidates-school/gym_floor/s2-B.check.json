@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/gym_floor/s2-B.pxg",
+ "set": "school",
+ "id": "gym_floor",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.133
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.008
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation"
+  ]
+ },
+ "colors": 5,
+ "bbox": [
+  0,
+  0,
+  15,
+  15
+ ],
+ "note": "널 윗줄 광을 길게, 이음 짙게. 바니시 광 강조",
+ "ok": true
+}

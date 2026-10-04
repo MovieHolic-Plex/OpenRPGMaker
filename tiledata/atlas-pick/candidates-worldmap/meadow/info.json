@@ -1,0 +1,60 @@
+{
+ "id": "meadow",
+ "slug": "meadow",
+ "name": "초원(짙은 풀)",
+ "scene": "들·길",
+ "kind": "bundle",
+ "cells": [
+  3,
+  4
+ ],
+ "canvas": [
+  48,
+  64
+ ],
+ "layer": "decal",
+ "layer_ko": "바닥 덧칠(아래층 위 투명 무늬)",
+ "under": "plains",
+ "under_ko": "평원 풀(plains_base 고른 판)",
+ "passage": "walk",
+ "description": "평원 위 짙은 풀밭 덩이(World.png 「짙은 풀」 블록). 경계는 기슭 깊이 2~4px 안에서 풀잎 끝이 바깥으로 삐져나온다(높이 1~2px, 폭 섞음 — 같은 간격 톱니 금지). 속은 평원보다 한두 단 어둡고 짧은 세로 풀 획이 드문드문. 모서리 둥글게.",
+ "palette_hint": "wmead 풀, 가장자리 끝 wgrass 밝은 단",
+ "worker": "wv2",
+ "style": "flat",
+ "layout": [
+  [
+   "isolated",
+   "body_alt",
+   "inner"
+  ],
+  [
+   "corner_nw",
+   "edge_n",
+   "corner_ne"
+  ],
+  [
+   "edge_w",
+   "body",
+   "edge_e"
+  ],
+  [
+   "corner_sw",
+   "edge_s",
+   "corner_se"
+  ]
+ ],
+ "roles_ko": {
+  "isolated": "외딴 한 칸(이웃 없이 혼자 선 통그림)",
+  "body_alt": "몸통 변형(몸통과 섞어 까는 두 번째 속)",
+  "inner": "안쪽 모서리(네 귀에 바깥이 파고든 오목 모서리 넷)",
+  "corner_nw": "북서 모서리",
+  "edge_n": "북쪽 변",
+  "corner_ne": "북동 모서리",
+  "edge_w": "서쪽 변",
+  "body": "몸통(사방이 같은 땅)",
+  "edge_e": "동쪽 변",
+  "corner_sw": "남서 모서리",
+  "edge_s": "남쪽 변",
+  "corner_se": "남동 모서리"
+ }
+}

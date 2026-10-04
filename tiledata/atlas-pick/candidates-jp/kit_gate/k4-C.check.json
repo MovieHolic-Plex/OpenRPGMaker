@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/kit_gate/k4-C.pxg",
+ "set": "jp",
+ "id": "kit_gate",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 15,
+  "atLeast95": 0,
+  "max": 0.398
+ },
+ "refmap": {
+  "cells": 15,
+  "atLeast95": 0,
+  "max": 0.406
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 36,
+ "bbox": [
+  0,
+  0,
+  112,
+  47
+ ],
+ "note": "밝은 백색 육중한 몸통 12px, 화강 바닥, 그림자 1줄, 날개 2px",
+ "ok": true
+}

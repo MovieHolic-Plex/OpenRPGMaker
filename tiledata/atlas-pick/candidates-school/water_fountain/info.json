@@ -1,0 +1,21 @@
+{
+ "id": "water_fountain",
+ "slug": "water_fountain",
+ "name": "복도 세면대",
+ "scene": "복도·현관",
+ "place": "in",
+ "cells": [
+  2,
+  2
+ ],
+ "canvas": [
+  32,
+  32
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "복도 끝 긴 세면대 — 스테인리스 개수대에 수도꼭지 세 개(작은 은색 T), 뒤 벽 타일 한 줄, 개수대 안 어두운 물 고임. 윗면이 넓게 보이는 각.",
+ "palette_hint": "tray 개수대, stile 타일, mglass 물",
+ "pair": [],
+ "worker": "s4"
+}

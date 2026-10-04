@@ -16,7 +16,7 @@ import {
   cloneDefaultAutotileGroups,
 } from "@/project/defaults/autotileGroups";
 import { DIRT_ROAD_TILE, SAND_TILE } from "@/project/defaults/chipsetMapping";
-import { createBlankProject, DEFAULT_TILESET_ID, TILE } from "@/project/defaults";
+import { createBlankProject, COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults";
 import type { AutotileGroup } from "@/project/types";
 
 type MapView = { width: number; height: number; lowerTiles: number[] };
@@ -238,13 +238,13 @@ describe("built-in default groups reproduce legacy road/sand behavior", () => {
     // 내장 그룹 수가 늘어도 깨지지 않게 파생값으로 대조 (2026-07-17: 4→11종).
     expect(autotileGroupsForTileset(undefined)).toHaveLength(DEFAULT_AUTOTILE_GROUPS.length);
     const project = createBlankProject();
-    expect(autotileGroupsForTileset(project.tilesets[DEFAULT_TILESET_ID])).toHaveLength(DEFAULT_AUTOTILE_GROUPS.length);
+    expect(autotileGroupsForTileset(project.tilesets[COMBINED_TOWN_TILESET_ID])).toHaveLength(DEFAULT_AUTOTILE_GROUPS.length);
     // 던전은 내장 Combined Town 그룹으로 폴백하지 않고 자기 시드 그룹만 노출한다.
     const dungeonGroups = autotileGroupsForTileset(project.tilesets.easyrpg_chipset_dungeon);
     expect(dungeonGroups.every((group) => group.id.startsWith("harness-dungeon-v1-terrain-"))).toBe(true);
     expect(dungeonGroups.some((group) => group.id.startsWith("builtin_"))).toBe(false);
     // 병합 폴백: 흙길만 덮는 사용자 그룹이 영속돼 있어도 내장 모래 그룹은 살아있어야 한다.
-    const withCustomRoad = structuredClone(project.tilesets[DEFAULT_TILESET_ID]!);
+    const withCustomRoad = structuredClone(project.tilesets[COMBINED_TOWN_TILESET_ID]!);
     withCustomRoad.autotileGroups = [
       { id: "custom_road", name: "커스텀 흙길", neighborhood: 8, memberTileIds: [DIRT_ROAD_TILE.BODY], variantMap: {} },
     ];

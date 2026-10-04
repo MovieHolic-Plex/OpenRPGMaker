@@ -1,0 +1,35 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/potted_flowering/w3-B.pxg",
+ "id": "potted flowering",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.026
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "saturation",
+   "dither"
+  ],
+  "pass": false
+ },
+ "colors": 17,
+ "v5_colors": 9,
+ "bbox": [
+  2,
+  1,
+  13,
+  14
+ ],
+ "v5_bbox": [
+  3,
+  0,
+  12,
+  14
+ ],
+ "note": "B: 같은 모양, 빛을 왼쪽 위로 세게 - 꽃 덩이 위왼쪽 밝고 아래오른쪽 어둡게, 화분 테 윗면 밝고 오른쪽 어둡게, 발 옆에 접지 그림자",
+ "ok": true
+}

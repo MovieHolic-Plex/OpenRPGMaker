@@ -1,0 +1,31 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/altar_E/w21-F.pxg",
+ "id": "altar E",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.062
+ },
+ "lint": {
+  "failed": [],
+  "pass": true
+ },
+ "colors": 14,
+ "v5_colors": 15,
+ "bbox": [
+  2,
+  10,
+  31,
+  46
+ ],
+ "v5_bbox": [
+  0,
+  8,
+  31,
+  47
+ ],
+ "note": "장의자와 같은 소나무 탁자 제단: 윗판 나뭇결, 붉은 러너가 앞으로 흘러내리고 다리 사이 그림자로 공간을 보여 줌",
+ "ok": true
+}

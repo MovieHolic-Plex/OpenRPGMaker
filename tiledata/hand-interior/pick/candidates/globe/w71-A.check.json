@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/globe/w71-A.pxg",
+ "id": "globe",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.062
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 30,
+ "v5_colors": 0,
+ "bbox": [
+  0,
+  1,
+  13,
+  29
+ ],
+ "v5_bbox": null,
+ "note": "나무 둥근 받침(윗면 보임)+황동 줄기·자오선 고리 위 구체(바다 파랑·대륙 초록, 왼위 빛). 관문 object(rim)는 구체라 윗면 없음→참고만, 눈 O",
+ "ok": true
+}

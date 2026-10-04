@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/broken_locker/h5-C.pxg",
+ "set": "horror",
+ "id": "broken_locker",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.211
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.215
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 12,
+ "bbox": [
+  1,
+  0,
+  15,
+  31
+ ],
+ "note": "윗칸이 열려 어둠 속에서 창백한 손 하나가 문틀을 붙잡고, 윗부분이 오른쪽으로 살짝 기울어 있다",
+ "ok": true
+}

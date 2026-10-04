@@ -1,0 +1,56 @@
+{
+ "id": "candle_table",
+ "slug": "candle_table",
+ "name": "탁상 촛대",
+ "scene": "낡은 서양 저택",
+ "cells": [
+  1,
+  1
+ ],
+ "canvas": [
+  16,
+  16
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "탁자·서랍장 윗면에 얹는 작은 놋쇠 촛대 하나(초 한 자루, 켜진 불꽃 2~3px + 둘레 % 번짐 작게). 칸 아래 가운데에 작게 — 얹힐 때 밑변이 가구 윗면 안에 들어오게. candelabra_drip 과 같은 불꽃·초 색.",
+ "palette_hint": "tarn 촛대, wax 초, flame 불꽃, %",
+ "stage": 1,
+ "stage_ko": "1단계 기본(2판 새로)",
+ "kit": "manor",
+ "role": "탁상 촛대",
+ "worker": "hf4",
+ "set_with": [
+  "table_wood",
+  "chair_wood",
+  "chair_wood_back",
+  "bookshelf_manor",
+  "bed_manor",
+  "dresser",
+  "side_table"
+ ],
+ "v5_ref": [
+  {
+   "id": "candle",
+   "name_ko": "촛대",
+   "atlas": {
+    "x": 0,
+    "y": 352,
+    "w": 16,
+    "h": 16,
+    "frames": 12,
+    "padTop": 0
+   },
+   "image": {
+    "w": 16,
+    "h": 16
+   },
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "file": "ref-v5-1.png"
+  }
+ ]
+}

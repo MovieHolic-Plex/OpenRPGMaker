@@ -1,0 +1,42 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/bunk_bed/v35-A.pxg",
+ "set": "school",
+ "id": "bunk_bed",
+ "hard": [],
+ "warn": [],
+ "std": {
+  "cells": [
+   1,
+   3
+  ],
+  "canvas": [
+   16,
+   48
+  ]
+ },
+ "easyrpg": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.039
+ },
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.031
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation"
+  ]
+ },
+ "colors": 16,
+ "bbox": [
+  0,
+  1,
+  15,
+  47
+ ],
+ "note": "이층 침대 3/4 — 위 침대 윗면 T19(베개·파란 담요)·앞 F27 기둥·옆판·아래 침대·사다리 (폭 16px)",
+ "ok": true
+}

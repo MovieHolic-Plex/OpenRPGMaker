@@ -1,0 +1,34 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/choir_stall/w6-C.pxg",
+ "id": "choir stall",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 9,
+  "atLeast95": 0,
+  "max": 0.105
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "outline_black"
+  ],
+  "pass": false
+ },
+ "colors": 10,
+ "v5_colors": 11,
+ "bbox": [
+  0,
+  8,
+  47,
+  47
+ ],
+ "v5_bbox": [
+  0,
+  8,
+  47,
+  47
+ ],
+ "note": "자리를 다섯 칸에서 넓은 네 칸으로 줄이고 칸막이를 3칸 굵은 기둥으로, 뒷벽에 키 큰 첨두 감실을 세운 정면 위주 재해석",
+ "ok": true
+}

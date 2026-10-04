@@ -1,0 +1,222 @@
+{
+ "digestColdMs": 4780,
+ "digestWarmMs": 391,
+ "rows": [
+  {
+   "pass": "pass1",
+   "name": "legacyDialogue",
+   "applied": false,
+   "ms": 1.3
+  },
+  {
+   "pass": "pass1",
+   "name": "mapConnections",
+   "applied": false,
+   "ms": 0
+  },
+  {
+   "pass": "pass1",
+   "name": "scarloxyInteriors",
+   "applied": false,
+   "ms": 0.2
+  },
+  {
+   "pass": "pass1",
+   "name": "mapTreeCoverage",
+   "applied": false,
+   "ms": 0.4
+  },
+  {
+   "pass": "pass1",
+   "name": "switchVariableSlots",
+   "applied": false,
+   "ms": 0.2
+  },
+  {
+   "pass": "pass1",
+   "name": "bundledTilesets",
+   "applied": true,
+   "ms": 68.1
+  },
+  {
+   "pass": "pass1",
+   "name": "sharedTileReferences",
+   "applied": true,
+   "ms": 246.1
+  },
+  {
+   "pass": "pass1",
+   "name": "bundledReferenceImages",
+   "applied": false,
+   "ms": 2.3
+  },
+  {
+   "pass": "pass1",
+   "name": "interiorPropLayers",
+   "applied": false,
+   "ms": 0.6
+  },
+  {
+   "pass": "pass1",
+   "name": "legacyRmTileset",
+   "applied": false,
+   "ms": 0.1
+  },
+  {
+   "pass": "pass1",
+   "name": "legacySpriteRefs",
+   "applied": false,
+   "ms": 695.1
+  },
+  {
+   "pass": "pass1",
+   "name": "bundledResourceProfiles",
+   "applied": false,
+   "ms": 27.4
+  },
+  {
+   "pass": "pass1",
+   "name": "databaseIconResources",
+   "applied": false,
+   "ms": 0.4
+  },
+  {
+   "pass": "pass1",
+   "name": "bundledBattleAnimations",
+   "applied": false,
+   "ms": 2.5
+  },
+  {
+   "pass": "pass1",
+   "name": "retroRoster",
+   "applied": false,
+   "ms": 96.4
+  },
+  {
+   "pass": "pass1",
+   "name": "faceMatches",
+   "applied": false,
+   "ms": 1
+  },
+  {
+   "pass": "pass1",
+   "name": "(합계 정규화기)",
+   "applied": true,
+   "ms": 1142.2
+  },
+  {
+   "pass": "pass1",
+   "name": "(jsonContentDigest 뒤)",
+   "applied": null,
+   "ms": 1354.3
+  },
+  {
+   "pass": "pass2",
+   "name": "legacyDialogue",
+   "applied": false,
+   "ms": 0.1
+  },
+  {
+   "pass": "pass2",
+   "name": "mapConnections",
+   "applied": false,
+   "ms": 0
+  },
+  {
+   "pass": "pass2",
+   "name": "scarloxyInteriors",
+   "applied": false,
+   "ms": 0
+  },
+  {
+   "pass": "pass2",
+   "name": "mapTreeCoverage",
+   "applied": false,
+   "ms": 0
+  },
+  {
+   "pass": "pass2",
+   "name": "switchVariableSlots",
+   "applied": false,
+   "ms": 0
+  },
+  {
+   "pass": "pass2",
+   "name": "bundledTilesets",
+   "applied": false,
+   "ms": 44.3
+  },
+  {
+   "pass": "pass2",
+   "name": "sharedTileReferences",
+   "applied": false,
+   "ms": 165.1
+  },
+  {
+   "pass": "pass2",
+   "name": "bundledReferenceImages",
+   "applied": false,
+   "ms": 2
+  },
+  {
+   "pass": "pass2",
+   "name": "interiorPropLayers",
+   "applied": false,
+   "ms": 0.4
+  },
+  {
+   "pass": "pass2",
+   "name": "legacyRmTileset",
+   "applied": false,
+   "ms": 0.1
+  },
+  {
+   "pass": "pass2",
+   "name": "legacySpriteRefs",
+   "applied": false,
+   "ms": 19.9
+  },
+  {
+   "pass": "pass2",
+   "name": "bundledResourceProfiles",
+   "applied": false,
+   "ms": 24.7
+  },
+  {
+   "pass": "pass2",
+   "name": "databaseIconResources",
+   "applied": false,
+   "ms": 0.1
+  },
+  {
+   "pass": "pass2",
+   "name": "bundledBattleAnimations",
+   "applied": false,
+   "ms": 1
+  },
+  {
+   "pass": "pass2",
+   "name": "retroRoster",
+   "applied": false,
+   "ms": 42.3
+  },
+  {
+   "pass": "pass2",
+   "name": "faceMatches",
+   "applied": false,
+   "ms": 0.3
+  },
+  {
+   "pass": "pass2",
+   "name": "(합계 정규화기)",
+   "applied": false,
+   "ms": 300.4
+  },
+  {
+   "pass": "pass2",
+   "name": "(jsonContentDigest 뒤)",
+   "applied": null,
+   "ms": 356.3
+  }
+ ]
+}

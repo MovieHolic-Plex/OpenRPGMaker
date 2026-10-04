@@ -1,0 +1,43 @@
+// frame_landscape hf5-C (hf5)
+@size 32 16
+@cell 16
+@palette palette.pal
+@layer main
+@mat t tarn 0
+@mat m moon 0
+@mat p paper 0
+@mat g vgreen 0
+@mblock 0 0
+................................
+................................
+.tttttttttttttttttttttttttttttt.
+.tttttttttttttttttttttttttttttt.
+.tttttttttttttttttttttttttttttt.
+.tttttttttttttttttttttttttttttt.
+.ttttmmmmmmmmmmmmmmmmmmmmmmtttt.
+.ttttmmmpmpmmmmmmmmmmmpmmmmtttt.
+.ttttmmmmggggmmmmmgggggmmmmtttt.
+.ttttggggggggggggggggggggggtttt.
+.ttttggggggggggggggggggggggtttt.
+.tttttttttttttttttttttttttttttt.
+.tttttttttttttttttttttttttttttt.
+.tttttttttttttttttttttttttttttt.
+.tttttttttttttttttttttttttttttt.
+................................
+@tblock 0 0
+................................
+................................
+.000000000000000000000000000000.
+.053555555555555555555555555220.
+.053433433433433433433433433220.
+.053000000000000000000000000220.
+.053032323432343232343234320220.
+.053043454543434243434543440220.
+.053043422322434322322343420220.
+.053023212323232312232323220220.
+.053012101201121012110212110220.
+.053000000000000000000000000220.
+.053222222222222222222222222220.
+.053222222222222222222222222220.
+.000000000000000000000000000000.
+................................

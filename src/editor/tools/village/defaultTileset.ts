@@ -1,7 +1,7 @@
 import { RIVER_VILLAGE_STYLE } from "@/project/defaults/riverVillageStyle";
 import type { Project } from "@/project/types";
 import type { AuthorVillageRequest } from "@/editor/construction/contracts";
-import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { createForestHarmonyTileset, FOREST_HARMONY_ID } from "@/project/defaults/forestHarmony";
 
 /** Choose the village default before the scope baseline, just like blank-map sizing.
@@ -12,7 +12,7 @@ export function prepareVillageDefaultTileset(project: Project, request: AuthorVi
     return;
   }
   const map = project.maps[request.target.mapId];
-  if (!map || request.target.bounds || map.tilesetId !== DEFAULT_TILESET_ID || map.events.length
+  if (!map || request.target.bounds || map.tilesetId !== COMBINED_TOWN_TILESET_ID || map.events.length
     || map.lowerTiles.some(tile => tile !== TILE.GRASS) || map.upperTiles.some(tile => tile !== TILE.EMPTY)
     || Object.values(map.lowerTileStacks ?? {}).some(stack => stack?.length)
     || Object.values(map.upperTileStacks ?? {}).some(stack => stack?.length)

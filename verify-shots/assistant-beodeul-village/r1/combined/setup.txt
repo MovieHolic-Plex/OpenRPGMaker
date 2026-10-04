@@ -1,0 +1,2 @@
+create_map: 맵 '옛 마을' (90x50) 생성 — id old_town, BGM cc0-bgm-rtp-api-001
+author_village: true Village authored: 4/4 houses on old_town. 참고 마을 「강변 숲마을」(78×44·집 8채)와 비교: 지은 마을 90×50·집 4채.

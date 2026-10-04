@@ -1,3 +1,5 @@
+import { mapCharacterSizeFactor } from "@/project/characterScale";
+import { isRetiredInteriorTileset, retiredInteriorMessage } from "@/project/retiredInteriorTilesets";
 import { isMapLoop, mapLoopLabel, mapLoopsX, mapLoopsY, MAP_LOOP_VALUES } from "@/project/mapLoop";
 import { isMapRoleKind, MAP_ROLE_LABELS } from "@/project/mapRole";
 import { ensureDocumentedTileset } from "@/project/defaults/dungeonSheetTilesets";
@@ -12,6 +14,7 @@ import { normalizeMapClimate } from "@/project/mapClimate";
 import { isPassable } from "@/project/collision";
 import { normalizeCloudShadowParams } from "@/player/cloudShadows";
 import { TILE } from "@/project/defaults/constants";
+import { plainGrassTileFor } from "@/project/defaults/defaultMaps";
 import { exceedsMapDimensionLimit, MAX_TOOL_MAP_DIMENSION, mapSizeLimitMessage } from "@/project/mapSizeLimits";
 import { DIRT_ROAD_TILE, isPanoramaWindowTile, SAND_TILE } from "@/project/defaults/chipsetMapping";
 import { autotileGroupsForTileset, DEFAULT_ROAD_AUTOTILE_GROUP, DEFAULT_SAND_AUTOTILE_GROUP } from "@/project/defaults/autotileGroups";
@@ -36,9 +39,11 @@ import { tileLayerHome } from "@/editor/tileLayerClassification";
 import { stampRectHouseKit } from "@/editor/houseKit";
 import { resizedTileStacks } from "@/project/mapOverlayTiles";
 import { EXTRA_LAYER_KEYS, compactMapLayers, cropExtraLayers, layerTileAt, setLayerTileAt, setShadowAt, shadowAt, type TileLayerNo } from "@/project/mapLayers";
+import { extendedLowerTiles, groundFeaturePredicate } from "@/project/mapGroundFill";
 import { stampTownCityPlot, type TownCityPlotStyle } from "@/project/defaults/townHousePatterns";
 import { kitIdForSmallHouseMaterial, type SmallHouseMaterial } from "@/editor/content/dbExtractedHouseTemplate";
 import { recommendMapBgm } from "@/assets/bgmThemeRecommendation";
+import { isCatalogBgmAvailable } from '@/assets/audioResourceCatalog';
 import { genId } from "@/util/id";
 import { resolveWikiCombatMode } from "@/ai/projectWikiContext";
 import {
@@ -82,6 +87,7 @@ import {
   roadRepairWarnings,
   withWidthCells,
 } from "./roadObstacles";
+import { BATTLE_BACKDROP_ID_HINT } from "@/assets/battleSceneryCatalog";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 import { isSeason, isTimePhase, SEASONS, TIME_PHASES } from "@/project/gameTime";
 import { COORD_SCHEMA, RECT_SCHEMA } from "./schemaShapes";
@@ -148,6 +154,13 @@ function usedBgmResourceIds(draft: Project, excludeMapId: string): string[] {
    return mixed === 0 ? 1 : mixed;
  }
 
+function assertInstalledMapBgm(resourceId: string, mapId: string): void {
+  if (!isCatalogBgmAvailable(resourceId)) throw new ToolError(
+    `미설치 BGM '${resourceId}'는 지정할 수 없습니다. recommend_bgm으로 현재 사용 가능한 곡을 고르거나 bgm.mode를 none으로 설정하세요.`,
+    { code: 'resource-not-found', mapId },
+  );
+}
+
 export function assignCreatedMapBgm(
   map: GameMap,
   args: Record<string, unknown>,
@@ -166,12 +179,14 @@ export function assignCreatedMapBgm(
         throw new ToolError("bgm.mode가 custom이면 resourceId가 필요합니다.", { code: "invalid-args", mapId: map.id });
       }
       bgm.resourceId = resourceId;
+      assertInstalledMapBgm(resourceId, map.id);
     }
     map.bgm = bgm;
     return bgm.mode === "custom" ? (bgm.resourceId ?? bgm.mode) : bgm.mode;
   }
   const explicitId = typeof args.bgmResourceId === "string" ? args.bgmResourceId.trim() : "";
   if (explicitId) {
+    assertInstalledMapBgm(explicitId, map.id);
     map.bgm = { mode: "custom", resourceId: explicitId };
     return explicitId;
   }
@@ -195,7 +210,7 @@ const createMap: ToolDefinition = {
   // 설명을 "명시 요청 때만" 으로 바꿔도 선택은 그대로였다(3/3). 스키마에서 감추면 0/3.
   // 맵 밖은 이미 엔진이 통행 불가라(project/collision.ts canMove 의 inBounds) 테두리 벽은 화면 장식일 뿐이고,
   // 작은 맵에서는 면적만 먹는다(12×10 지하실 = 120칸 중 40칸). 런타임 호출 호환은 남긴다 — 과거 대화
-  description: `새 맵을 생성한다(테두리 없는 잔디 평지, 최대 ${MAX_TOOL_MAP_DIMENSION}×${MAX_TOOL_MAP_DIMENSION}). 시작 맵이 없으면 이 맵을 시작 맵으로 채택한다. BGM은 맵 이름을 각 곡의 제목·태그·기획 설명·청취 설명과 대조해 고른다(seed 생략 시 맵 id에서 유도 + 이미 쓴 곡 회피, bgm/bgmResourceId가 있으면 그걸 쓴다). 실내 시설·방을 만들라는 요청에서 빈 맵만 만들고 끝내지 말 것 — 실내는 place_concept 또는 start_interior_room_session 이 새 mapId 까지 함께 시공한다.`,
+  description: `새 맵을 생성한다(테두리 없는 잔디 평지, 최대 ${MAX_TOOL_MAP_DIMENSION}×${MAX_TOOL_MAP_DIMENSION}). 시작 맵이 없으면 이 맵을 시작 맵으로 채택한다. BGM은 맵 이름을 각 곡의 제목·태그·기획 설명·청취 설명과 대조해 고른다(seed 생략 시 맵 id에서 유도 + 이미 쓴 곡 회피, bgm/bgmResourceId가 있으면 그걸 쓴다). 실내 시설·방을 만들라는 요청에서 빈 맵만 만들고 끝내지 말 것 — 실내는 build_hand_interior_room(손 도트 v5, atlas_biome_interior)이 새 mapId 까지 함께 시공한다. 옛 실내 칩셋(easyrpg_chipset_interior·tibo_interior_expanded·LPC 가구)은 폐기되어 거부된다.`,
   mode: "write",
   defaultTilesetId: defaultOutdoorTilesetId,
   parameters: {
@@ -238,6 +253,8 @@ const createMap: ToolDefinition = {
     ensureDocumentedTileset(draft, tilesetId);
     const tileset = draft.tilesets[tilesetId];
     if (!tileset) throw new ToolError(`타일셋을 찾을 수 없습니다: ${tilesetId}`, { code: "tileset-not-found" });
+    // 폐기된 실내 칩셋(Tibo·EasyRPG 실내·LPC 가구)으로는 새 맵을 만들지 않는다 — 실내는 build_hand_interior_room(손 도트 v5).
+    if (isRetiredInteriorTileset(tilesetId, tileset)) throw new ToolError(retiredInteriorMessage(tilesetId), { code: "retired-interior-tileset" });
     const map: GameMap = {
       id,
       name,
@@ -248,7 +265,8 @@ const createMap: ToolDefinition = {
       // 맵만 16 으로 남아 렌더·히트테스트가 반 칸씩 어긋난다(set_map_properties 는 이미
       // 타일셋 크기를 따라가므로, 생성 경로만 규칙에서 빠져 있었다).
       tileSize: tileset.tileSize,
-      lowerTiles: new Array<number>(size).fill(isCombinedTownCompatibleTileset(tileset) ? TILE.GRASS : TILE.EMPTY),
+      // 버들항은 합본 마을 번호가 아니라 자기 잔디(737)로 채운다 — 예전엔 빈칸(-1)으로 남아 새 맵이 검었다.
+      lowerTiles: new Array<number>(size).fill(plainGrassTileFor(tilesetId) ?? (isCombinedTownCompatibleTileset(tileset) ? TILE.GRASS : TILE.EMPTY)),
       upperTiles: new Array<number>(size).fill(TILE.EMPTY),
       events: [],
     };
@@ -1914,7 +1932,7 @@ function loopEdgeOpenings(project: Project, map: GameMap): number {
 // 맵 속성 설정. 크기 변경은 resize_map, 트리 위치는 manage_map_tree로 분리.
 const setMapProperties: ToolDefinition = {
   name: "set_map_properties",
-  description: "맵 편집기의 전체 속성을 설정한다: 이름·타일셋·인카운트·BGM·배경(먼 풍경 파노라마·parallax background — 회상·꿈·하늘 장면은 background.layerSet 한 칸 + showInEmptyCells + clearForBackground 로 하늘 자리 비우기, 층마다 깊이가 달라 시차 스크롤이 된다)·전투 배경·저장/이동/도주 제한·미니맵·구름 그림자·기후(실내 차단/고정/상속)·반복 맵(loop: 가장자리가 반대편으로 이어짐 — 끝없는 숲·꿈 세계·반복 복도는 가장자리 이동 이벤트 대신 이것).",
+  description: "맵 편집기의 전체 속성을 설정한다: 이름·타일셋·캐릭터 크기(characterScale — 월드맵에서 캐릭터를 작게)·인카운트·BGM·배경(먼 풍경 파노라마·parallax background — 회상·꿈·하늘 장면은 background.layerSet 한 칸 + showInEmptyCells + clearForBackground 로 하늘 자리 비우기, 층마다 깊이가 달라 시차 스크롤이 된다)·전투 배경·저장/이동/도주 제한·미니맵·구름 그림자·기후(실내 차단/고정/상속)·반복 맵(loop: 가장자리가 반대편으로 이어짐 — 끝없는 숲·꿈 세계·반복 복도는 가장자리 이동 이벤트 대신 이것).",
   mode: "write",
   parameters: {
     type: "object",
@@ -1929,7 +1947,7 @@ const setMapProperties: ToolDefinition = {
       background: backgroundSchema,
       clearBackground: { type: "boolean" },
       clearForBackground: clearForBackgroundSchema,
-      battleBackground: { type: "string" },
+      battleBackground: { type: "string", description: BATTLE_BACKDROP_ID_HINT },
       clearBattleBackground: { type: "boolean" },
       mapRole: {
         type: "string",
@@ -1947,6 +1965,7 @@ const setMapProperties: ToolDefinition = {
       clearCloudShadows: { type: "boolean" },
       climate: mapClimateSchema,
       clearClimate: { type: "boolean" },
+      characterScale: { type: "number", description: "이 맵에서 걷는 캐릭터(주인공·동료·탈것·캐릭터 이벤트) 크기 배율 0.25~1. 월드맵처럼 땅을 멀리서 보는 지도에서 0.5~0.75 로 줄인다. 1 이면 기본 크기로 되돌린다. 사용자가 원할 때만 — 기본은 줄이지 않는다." },
       loop: { type: "string", enum: ["none", ...MAP_LOOP_VALUES], description: "반복 맵. horizontal=좌우 끝이 이어짐, vertical=위아래, both=사방, none=끔. 플레이어가 가장자리를 넘으면 반대편 같은 줄에 선다(반대편 칸이 통행 가능해야 한다)." },
     },
     required: ["mapId"],
@@ -2002,6 +2021,7 @@ const setMapProperties: ToolDefinition = {
     } else if (args.bgm && typeof args.bgm === "object" && !Array.isArray(args.bgm)) {
       const bgm = structuredClone(args.bgm) as GameMap["bgm"];
       if (bgm?.mode === "custom" && !bgm.resourceId) throw new ToolError("bgm.mode가 custom이면 resourceId가 필요합니다.", { code: "invalid-args", mapId: map.id });
+      if (bgm?.mode === 'custom' && bgm.resourceId) assertInstalledMapBgm(bgm.resourceId, map.id);
       map.bgm = bgm;
       changed.push(`BGM=${bgm?.mode}`);
     }
@@ -2068,6 +2088,15 @@ const setMapProperties: ToolDefinition = {
       // 저장」하려고 모든 맵에 저장 금지를 걸었고, 일기장이 있는 방까지 막혀 저장할 곳이 사라졌다.
       if (map.disableSave && JSON.stringify(map.events).includes('"kind":"openSaveMenu"')) {
         saveWarnings.push(`${map.name} 에는 저장 메뉴를 여는 이벤트가 있는데 저장 금지를 켰습니다 — 그 이벤트(일기장·세이브 포인트)도 저장할 수 없게 됩니다. 메뉴 저장만 막으려면 이 맵은 저장 금지를 끄세요.`);
+      }
+    }
+    if (typeof args.characterScale === "number" && Number.isFinite(args.characterScale)) {
+      if (args.characterScale >= 1) {
+        delete map.characterScale;
+        changed.push("캐릭터 크기=기본");
+      } else {
+        map.characterScale = mapCharacterSizeFactor({ characterScale: args.characterScale });
+        changed.push(`캐릭터 크기=${Math.round(map.characterScale * 100)}%`);
       }
     }
     if (args.loop === "none") {
@@ -2275,10 +2304,10 @@ const createFarmPlot: ToolDefinition = {
   },
 };
 
-// 맵 크기 변경(좌상단 기준 유지, 확장부는 잔디/빈 칸). 이벤트가 잘려 나가는 축소는 거부한다.
+// 맵 크기 변경(좌상단 기준 유지, 확장부 아래층은 가장자리 바탕 타일 연장). 이벤트가 잘려 나가는 축소는 거부한다.
 const resizeMapTool: ToolDefinition = {
   name: "resize_map",
-  description: `맵 크기를 바꾼다(좌상단 기준, 확장부는 잔디, 최대 ${MAX_TOOL_MAP_DIMENSION}×${MAX_TOOL_MAP_DIMENSION}). 축소로 이벤트가 범위 밖에 나가면 거부 — 먼저 move_event/remove_event로 정리하라.`,
+  description: `맵 크기를 바꾼다(좌상단 기준, 확장부는 가장자리 바탕 타일을 이어 채움, 최대 ${MAX_TOOL_MAP_DIMENSION}×${MAX_TOOL_MAP_DIMENSION}). 축소로 이벤트가 범위 밖에 나가면 거부 — 먼저 move_event/remove_event로 정리하라.`,
   mode: "write",
   parameters: {
     type: "object",
@@ -2307,11 +2336,11 @@ const resizeMapTool: ToolDefinition = {
     }
     const oldW = map.width;
     const oldH = map.height;
-    const newLower = new Array<number>(width * height).fill(TILE.GRASS);
+    // 확장부 아래층은 가장자리 바탕 타일을 이어 채운다(에디터 테두리 드래그·크기 대화상자와 같은 규칙).
+    const newLower = extendedLowerTiles(map, width, height, groundFeaturePredicate(map, draft.tilesets));
     const newUpper = new Array<number>(width * height).fill(TILE.EMPTY);
     for (let y = 0; y < Math.min(oldH, height); y += 1) {
       for (let x = 0; x < Math.min(oldW, width); x += 1) {
-        newLower[y * width + x] = map.lowerTiles[y * oldW + x];
         newUpper[y * width + x] = map.upperTiles[y * oldW + x];
       }
     }

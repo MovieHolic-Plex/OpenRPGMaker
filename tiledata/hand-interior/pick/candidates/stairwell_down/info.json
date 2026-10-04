@@ -1,0 +1,39 @@
+{
+ "id": "stairwell down",
+ "slug": "stairwell_down",
+ "name_ko": "내려가는 계단통(2층)",
+ "category": "가구·살림",
+ "kind": "flat",
+ "kind_ko": "바닥 무늬(밟을 수 있음)",
+ "canvas": [
+  48,
+  32
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 48,
+  "h": 32
+ },
+ "footprint": {
+  "w": 3,
+  "h": 2
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "2층 바닥의 내려가는 계단통(3×2, 난간 셋). 1층 올라가는 계단과 같은 (x,y) 에 둔다 → 1층 이동 이벤트.",
+ "where": "1층 올라가는 계단과 같은 (x,y) 에 둔다 → 1층 이동 이벤트.",
+ "placement": [
+  "밟을 수 있다. 다른 기물 밑에 먼저 깐다"
+ ],
+ "v5_bbox": [
+  0,
+  0,
+  47,
+  31
+ ],
+ "v5_colors": 14,
+ "material": "wood",
+ "related": [
+  "stairs up wood"
+ ]
+}

@@ -1,0 +1,55 @@
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat c wood 1
+@mat d wood 2
+@mat e wood 3
+@mat f wood 4
+@mat g wood 5
+@mat h wood 6
+@mat i wood 7
+@mat j red 4
+@mat k yellow 4
+@mat l red 2
+@mat m dwood 2
+@mat n straw 3
+@mat o straw 5
+@mat p straw 4
+@mat q linen 5
+@mat r linen 3
+@mat s yellow 3
+@mat t red 5
+@mat u straw 6
+@mblock 0 0
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+................................
+..cccc....................cccc..
+..chhc....................chhc..
+..cgeccccccccccccccccccccccgec..
+..cgechhhhhhhhhhhhhhhhhhhhcgec..
+..cgecffffffffffffffffffffcgec..
+..cgeceeeeeeeeeeeeeeeeeeeecgec..
+..chgccccccccccccccccccccccgfc..
+..chgcddddddddddddddddddddcgfc..
+..chgcnqnoqonqnoqonqnoqonocgfc..
+..chgcnqnoqonqnoqonqnoqonocgfc..
+..chgcnonononononononononocgfc..
+..chgcljljljljljljljljljljcgfc..
+..chgcttttkkttttttkkttttttcgfc..
+..chgcjjjjsshiiiiihsjjjjjjcgfc..
+..chgcttttkkttttttkkttttttcgfc..
+..chgcjjjjssjjjjjjssjjjjjjcgfc..
+..chhhhhhhhhhhhhhhhhhhhhhhhhhc..
+..cggggggggggggggggggggggggggc..
+..cffffffffffffffffffffffffffc..
+..ceeeeeeeeeeeeeeeeeeeeeeeeeec..
+...cgeccccccccccccccccccccgec...
+...cgec..................cgec...
+...cgec..................cgec...
+...cccc..................cccc...

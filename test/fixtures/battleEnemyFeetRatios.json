@@ -1,5 +1,5 @@
 {
-  "_note": "실측 잠금(measurement lock): 적 배치 y 를 바꾸면 이 픽스처가 어긋나 RED 가 된다. 갱신 방법: node scripts/runtime-qa.mjs --scenario battle --skin <id> 로 12종을 다시 재고 verify-shots/runtime-qa/*/manifest.json 의 battlers 값으로 이 파일을 다시 쓴다. (2026-09-03: 정면 스킨 id rm2003 → rm2000 개명. 옛 deprecated rm2000 항목은 그 스킨이 제거되며 함께 삭제.) (2026-09-25: 지원 종료 9종을 유리 뼈대 변형으로 되살리며 배치·필드 CSS 가 정면 rm2000 / 측면 rm2003 과 같아졌다 — 그 9종 항목은 해당 구도 실측값의 사본이다. 색·HUD 변형은 필드 기하를 건드리지 않는다.) (2026-09-28: retro2003 은 자기 배치 RETRO_SIDEVIEW 의 실측값 — scripts/qa/runtime/retro2003.scenario.mjs 의 battle-command 비트.)",
+  "_note": "실측 잠금(measurement lock): 적 배치 y 를 바꾸면 이 픽스처가 어긋나 RED 가 된다. 갱신 방법: node scripts/runtime-qa.mjs --scenario battle --skin <id> 로 12종을 다시 재고 verify-shots/runtime-qa/*/manifest.json 의 battlers 값으로 이 파일을 다시 쓴다. (2026-09-03: 정면 스킨 id rm2003 → rm2000 개명. 옛 deprecated rm2000 항목은 그 스킨이 제거되며 함께 삭제.) (2026-09-25: 지원 종료 9종을 유리 뼈대 변형으로 되살리며 배치·필드 CSS 가 정면 rm2000 / 측면 rm2003 과 같아졌다 — 그 9종 항목은 해당 구도 실측값의 사본이다. 색·HUD 변형은 필드 기하를 건드리지 않는다.) (2026-09-28: retro2003 은 자기 배치 RETRO_SIDEVIEW 의 실측값 — scripts/qa/runtime/retro2003.scenario.mjs 의 battle-command 비트.) (2026-10-01: 측면 스킨 여섯(rm2003·octopath·chrono·bravely·ff·goldensun)이 도트 측면 뼈대로 옮겨 가 배치가 retro2003 과 같아졌다 — 그 항목은 retro2003 실측값의 사본이다.)",
   "_axes": {
     "groundBandRatio": 0.6,
     "noTopClipRatio": 0
@@ -26,234 +26,129 @@
         ]
       }
     },
-    "rm2000": {
+    "rm2003": {
       "authoredY": [
-        104,
-        112,
-        104
+        128,
+        140,
+        128
       ],
       "measured": {
         "fieldTop": 24,
-        "fieldHeight": 420,
+        "fieldHeight": 528,
         "feetRatio": [
-          0.636,
-          0.636,
-          0.91
+          0.828,
+          0.892,
+          0.828
         ],
         "topRatio": [
-          0.136,
-          0.136,
-          0.41
-        ]
-      }
-    },
-    "rm2003": {
-      "authoredY": [
-        112,
-        124,
-        112
-      ],
-      "measured": {
-        "fieldTop": 0,
-        "fieldHeight": 540,
-        "feetRatio": [
-          0.74,
-          0.805,
-          0.74
-        ],
-        "topRatio": [
-          0.248,
-          0.312,
-          0.24
+          0.466,
+          0.528,
+          0.468
         ]
       }
     },
     "octopath": {
       "authoredY": [
-        112,
-        124,
-        112
+        128,
+        140,
+        128
       ],
       "measured": {
-        "fieldTop": 0,
-        "fieldHeight": 540,
+        "fieldTop": 24,
+        "fieldHeight": 528,
         "feetRatio": [
-          0.74,
-          0.805,
-          0.74
+          0.828,
+          0.892,
+          0.828
         ],
         "topRatio": [
-          0.248,
-          0.312,
-          0.24
+          0.466,
+          0.528,
+          0.468
         ]
       }
     },
     "chrono": {
       "authoredY": [
-        112,
-        124,
-        112
+        128,
+        140,
+        128
       ],
       "measured": {
-        "fieldTop": 0,
-        "fieldHeight": 540,
+        "fieldTop": 24,
+        "fieldHeight": 528,
         "feetRatio": [
-          0.74,
-          0.805,
-          0.74
+          0.828,
+          0.892,
+          0.828
         ],
         "topRatio": [
-          0.248,
-          0.312,
-          0.24
+          0.466,
+          0.528,
+          0.468
         ]
       }
     },
     "bravely": {
       "authoredY": [
-        112,
-        124,
-        112
-      ],
-      "measured": {
-        "fieldTop": 0,
-        "fieldHeight": 540,
-        "feetRatio": [
-          0.74,
-          0.805,
-          0.74
-        ],
-        "topRatio": [
-          0.248,
-          0.312,
-          0.24
-        ]
-      }
-    },
-    "dragonquest": {
-      "authoredY": [
-        104,
-        112,
-        104
+        128,
+        140,
+        128
       ],
       "measured": {
         "fieldTop": 24,
-        "fieldHeight": 420,
+        "fieldHeight": 528,
         "feetRatio": [
-          0.636,
-          0.636,
-          0.91
+          0.828,
+          0.892,
+          0.828
         ],
         "topRatio": [
-          0.136,
-          0.136,
-          0.41
+          0.466,
+          0.528,
+          0.468
         ]
       }
     },
     "ff": {
       "authoredY": [
-        112,
-        124,
-        112
-      ],
-      "measured": {
-        "fieldTop": 0,
-        "fieldHeight": 540,
-        "feetRatio": [
-          0.74,
-          0.805,
-          0.74
-        ],
-        "topRatio": [
-          0.248,
-          0.312,
-          0.24
-        ]
-      }
-    },
-    "mother": {
-      "authoredY": [
-        104,
-        112,
-        104
+        128,
+        140,
+        128
       ],
       "measured": {
         "fieldTop": 24,
-        "fieldHeight": 420,
+        "fieldHeight": 528,
         "feetRatio": [
-          0.636,
-          0.636,
-          0.91
+          0.828,
+          0.892,
+          0.828
         ],
         "topRatio": [
-          0.136,
-          0.136,
-          0.41
+          0.466,
+          0.528,
+          0.468
         ]
       }
     },
     "goldensun": {
       "authoredY": [
-        112,
-        124,
-        112
-      ],
-      "measured": {
-        "fieldTop": 0,
-        "fieldHeight": 540,
-        "feetRatio": [
-          0.74,
-          0.805,
-          0.74
-        ],
-        "topRatio": [
-          0.248,
-          0.312,
-          0.24
-        ]
-      }
-    },
-    "mv": {
-      "authoredY": [
-        104,
-        112,
-        104
+        128,
+        140,
+        128
       ],
       "measured": {
         "fieldTop": 24,
-        "fieldHeight": 420,
+        "fieldHeight": 528,
         "feetRatio": [
-          0.636,
-          0.636,
-          0.91
+          0.828,
+          0.892,
+          0.828
         ],
         "topRatio": [
-          0.136,
-          0.136,
-          0.41
-        ]
-      }
-    },
-    "vxace": {
-      "authoredY": [
-        104,
-        112,
-        104
-      ],
-      "measured": {
-        "fieldTop": 24,
-        "fieldHeight": 420,
-        "feetRatio": [
-          0.636,
-          0.636,
-          0.91
-        ],
-        "topRatio": [
-          0.136,
-          0.136,
-          0.41
+          0.466,
+          0.528,
+          0.468
         ]
       }
     },

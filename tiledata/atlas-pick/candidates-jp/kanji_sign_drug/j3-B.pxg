@@ -1,0 +1,74 @@
+// kanji_sign_drug j3-B
+@size 16 32
+@cell 16
+@palette palette.pal
+@layer main
+@mat a kgreen 3
+@mat b lacq 3
+@mat c taxi 3
+@mblock 0 0
+.cc%%%%%%%%%%cc.
+cccccccccccccccc
+cccccccccccccccc
+ccccccccccccccc~
+cccbbccccbbcccc~
+.bbbbbbbbbbbbcc~
+cccbbbbbbbbcccc~
+ccbbcbbbbcbbccc~
+cccbcbccbcbcccc~
+ccbbcbbbbcbbccc~
+ccbbbbbbbbbbccc~
+ccbcccbbcccbccc~
+ccbbbbbbbbbbccc~
+cccccbbbbcccccc~
+ccbbbcbbcbbbccc~
+.bbcccbbcccbbcc~
+ccccccccccccccc~
+ccccccccccccccc~
+ccccccccccccccc~
+ccccccccccccccc~
+cccccaaaccccccc~
+cccccaaaccccccc~
+cccaaaaaaaccccc~
+cccaaaaaaaccccc~
+cccaaaaaaaccccc~
+cccccaaaccccccc~
+cccccaaaccccccc~
+ccccccccccccccc~
+ccccccccccccccc~
+ccccccccccccccc~
+.cccccccccccccc.
+..~~~~~~~~~~~~~~
+@tblock 0 0
+.00..........00.
+0555555555555220
+0544444444444110
+054444444444411.
+054114444114411.
+.11001111001111.
+054100000004411.
+051041000411411.
+054141441414411.
+051041110411411.
+051010000100411.
+051444104441411.
+051111001110411.
+054441000444411.
+051114104111411.
+.10444104441111.
+054444444444411.
+054444444444411.
+054444444444411.
+054444444444411.
+054445554444411.
+054445334444411.
+054553333344411.
+054333333344411.
+054333331144411.
+054443314444411.
+054443314444411.
+054444444444411.
+054444444444411.
+000000000000000.
+.00000000000000.
+................

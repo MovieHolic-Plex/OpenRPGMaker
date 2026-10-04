@@ -1,0 +1,46 @@
+// A: 묘비 앞면의 긴 세로 구간을 16행 줄여 전체 높이 16px; 꽃·줄기·밑돌 색과 윤곽 및 접지선 유지; 꼭대기 윗면 3행(y=16~18)
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a stone 1
+@mat b stone 2
+@mat c stone 3
+@mat d stone 4
+@mat e stone 5
+@mat u white 1
+@mat v white 3
+@mat w white 5
+@mat W white 6
+@mat l leaf 2
+@mat L leaf 3
+@mat r linen 4
+@mat R linen 5
+@layer stone
+@mblock 0 16
+.....dddddd.....
+....deeeeedd....
+...deeeedddda...
+...eddcccccca...
+...edccbbccba...
+...edccbdccba...
+...edbbbbbcba...
+...edccbdccba...
+...edccbdccba...
+..bddddcccccb...
+..deddccccccba..
+.bdddcccccccba..
+.bccccccbbbbaa..
+.bcccccbbbbbaa..
+..bbbbbbbaaaa...
+...aaaaaaaaa....
+@layer bouquet
+@mblock 0 23
+..........uwwu..
+.........uWWwvu.
+......uwwuvwrvu.
+.....uWWwvluvu..
+.....uwrvvLuwu..
+......uvvlwWWvu.
+.......lLluwrvu.
+......LlRrluvu..
+.....LlRrll.....

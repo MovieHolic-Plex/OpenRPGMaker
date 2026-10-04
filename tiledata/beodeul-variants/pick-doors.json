@@ -1,0 +1,270 @@
+{
+"bd-pick-desert-oasis-e2": {
+"dx": 2,
+"dy": 3
+},
+"bd-pick-desert-oasis-khan": {
+"dx": 3,
+"dy": 8
+},
+"bd-pick-desert-oasis-n1": {
+"dx": 2,
+"dy": 3
+},
+"bd-pick-desert-oasis-n2": {
+"dx": 2,
+"dy": 5
+},
+"bd-pick-desert-oasis-n3": {
+"dx": 2,
+"dy": 6
+},
+"bd-pick-desert-oasis-n4": {
+"dx": 1,
+"dy": 5
+},
+"bd-pick-desert-oasis-n5": {
+"dx": 1,
+"dy": 6
+},
+"bd-pick-desert-oasis-n6": {
+"dx": 3,
+"dy": 4
+},
+"bd-pick-desert-oasis-s1": {
+"dx": 2,
+"dy": 6
+},
+"bd-pick-desert-oasis-s2": {
+"dx": 1,
+"dy": 4
+},
+"bd-pick-desert-oasis-s3": {
+"dx": 1,
+"dy": 3
+},
+"bd-pick-desert-oasis-shrine": {
+"dx": 1,
+"dy": 5
+},
+"bd-pick-desert-oasis-temple": {
+"dx": 3,
+"dy": 4
+},
+"bd-pick-desert-oasis-w1": {
+"dx": 3,
+"dy": 6
+},
+"bd-pick-desert-oasis-w2": {
+"dx": 1,
+"dy": 6
+},
+"bd-pick-fishing-port-lighthouse": {
+"dx": 1,
+"dy": 8
+},
+"bd-pick-headland-lighthouse-lighthouse": {
+"dx": 6,
+"dy": 18
+},
+"bd-pick-mining-valley-adit": {
+"dx": 2,
+"dy": 3
+},
+"bd-pick-mining-valley-boss": {
+"dx": 2,
+"dy": 6
+},
+"bd-pick-mining-valley-d1": {
+"dx": 1,
+"dy": 4
+},
+"bd-pick-mining-valley-d2": {
+"dx": 3,
+"dy": 5
+},
+"bd-pick-mining-valley-e1": {
+"dx": 2,
+"dy": 5
+},
+"bd-pick-mining-valley-e2": {
+"dx": 2,
+"dy": 5
+},
+"bd-pick-mining-valley-e3": {
+"dx": 2,
+"dy": 5
+},
+"bd-pick-mining-valley-hall": {
+"dx": 1,
+"dy": 7
+},
+"bd-pick-mining-valley-inn": {
+"dx": 1,
+"dy": 8
+},
+"bd-pick-mining-valley-s1": {
+"dx": 2,
+"dy": 5
+},
+"bd-pick-mining-valley-s2": {
+"dx": 2,
+"dy": 5
+},
+"bd-pick-mining-valley-s3": {
+"dx": 2,
+"dy": 5
+},
+"bd-pick-mining-valley-smelt": {
+"dx": 3,
+"dy": 5
+},
+"bd-pick-mining-valley-smith": {
+"dx": 2,
+"dy": 5
+},
+"bd-pick-mining-valley-w1": {
+"dx": 2,
+"dy": 5
+},
+"bd-pick-mining-valley-w2": {
+"dx": 2,
+"dy": 5
+},
+"bd-pick-mining-valley-w3": {
+"dx": 2,
+"dy": 4
+},
+"bd-pick-mining-valley-w4": {
+"dx": 2,
+"dy": 5
+},
+"bd-pick-mountain-pass-guard-post": {
+"dx": 1,
+"dy": 3
+},
+"bd-pick-snowfield-bath": {
+"dx": 1,
+"dy": 5
+},
+"bd-pick-snowfield-e1": {
+"dx": 2,
+"dy": 5
+},
+"bd-pick-snowfield-e2": {
+"dx": 2,
+"dy": 5
+},
+"bd-pick-snowfield-hall": {
+"dx": 3,
+"dy": 6
+},
+"bd-pick-snowfield-hut": {
+"dx": 2,
+"dy": 4
+},
+"bd-pick-snowfield-n2": {
+"dx": 2,
+"dy": 5
+},
+"bd-pick-snowfield-s1": {
+"dx": 2,
+"dy": 5
+},
+"bd-pick-snowfield-s2": {
+"dx": 2,
+"dy": 4
+},
+"bd-pick-snowfield-shed": {
+"dx": 1,
+"dy": 5
+},
+"bd-pick-snowfield-w1": {
+"dx": 2,
+"dy": 5
+},
+"bd-pick-snowfield-w2": {
+"dx": 2,
+"dy": 5
+},
+"bd-pick-snowfield-w3": {
+"dx": 2,
+"dy": 4
+},
+"bd-pick-swamp-stilt-e1": {
+"dx": 2,
+"dy": 5
+},
+"bd-pick-swamp-stilt-e2": {
+"dx": 2,
+"dy": 5
+},
+"bd-pick-swamp-stilt-e2-reed": {
+"dx": 2,
+"dy": 5
+},
+"bd-pick-swamp-stilt-e3": {
+"dx": 1,
+"dy": 4
+},
+"bd-pick-swamp-stilt-hall": {
+"dx": 3,
+"dy": 7
+},
+"bd-pick-swamp-stilt-loom": {
+"dx": 2,
+"dy": 5
+},
+"bd-pick-swamp-stilt-n1": {
+"dx": 2,
+"dy": 5
+},
+"bd-pick-swamp-stilt-n2": {
+"dx": 2,
+"dy": 5
+},
+"bd-pick-swamp-stilt-pierhut": {
+"dx": 1,
+"dy": 4
+},
+"bd-pick-swamp-stilt-s1": {
+"dx": 2,
+"dy": 5
+},
+"bd-pick-swamp-stilt-s2": {
+"dx": 2,
+"dy": 5
+},
+"bd-pick-swamp-stilt-s2-shingle": {
+"dx": 2,
+"dy": 5
+},
+"bd-pick-swamp-stilt-shrine": {
+"dx": 2,
+"dy": 5
+},
+"bd-pick-swamp-stilt-w1": {
+"dx": 2,
+"dy": 5
+},
+"bd-pick-swamp-stilt-w2": {
+"dx": 2,
+"dy": 5
+},
+"bd-pick-swamp-stilt-w3": {
+"dx": 1,
+"dy": 4
+},
+"bd-pick-vineyard-winery": {
+"dx": 4,
+"dy": 5
+},
+"bd-pick-wizard-tower-greenhouse": {
+"dx": 1,
+"dy": 3
+},
+"bd-pick-wizard-tower-wizard-tower": {
+"dx": 3,
+"dy": 15
+}
+}

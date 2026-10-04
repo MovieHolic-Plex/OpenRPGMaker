@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/spike_trap_down/h31-B.pxg",
+ "id": "spike trap down",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.094
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 6,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  4,
+  14,
+  15
+ ],
+ "v5_bbox": null,
+ "note": "가시가 구멍 속에 잠김: 구멍 5곳(뒤 3·앞 2 엇갈림)을 2x2로 키우고 구멍 안 아래 오른쪽에 가시 끝 밝은 점 하나씩, 판·윤곽 그대로",
+ "ok": true
+}

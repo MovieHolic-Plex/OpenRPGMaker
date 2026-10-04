@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/piano_dusty/h1-A.pxg",
+ "set": "horror",
+ "id": "piano_dusty",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.085
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.062
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 24,
+ "bbox": [
+  1,
+  5,
+  30,
+  31
+ ],
+ "note": "A: v5 업라이트 피아노를 낡게 — 뚜껑 위에 먼지가 덮이고 손가락 자국 세 줄, 건반 두 개가 빠져 구멍이 났다. 악보는 누렇게 바랬고 오른쪽에 촛대 하나. 위 8칸은 비움.",
+ "ok": true
+}

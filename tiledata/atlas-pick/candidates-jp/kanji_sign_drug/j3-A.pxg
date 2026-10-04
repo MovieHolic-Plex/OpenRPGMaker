@@ -1,0 +1,74 @@
+// kanji_sign_drug j3-A
+@size 16 32
+@cell 16
+@palette palette.pal
+@layer main
+@mat a kgreen 3
+@mat b lacq 3
+@mat c taxi 3
+@mblock 0 0
+.cccccccccccccc.
+cccccccccccccccc
+cccccccccccccccc
+ccccccccccccccc~
+ccccbbccccbbccc~
+ccbbbbbbbbbbbbc~
+ccccbbbbbbbbccc~
+cccbbcbbbbcbbcc~
+ccccbcbccbcbccc~
+cccbbcbbbbcbbcc~
+cccbbbbbbbbbbcc~
+cccbcccbbcccbcc~
+cccbbbbbbbbbbcc~
+ccccccbbbbccccc~
+cccbbbcbbcbbbcc~
+ccbbcccbbcccbbc~
+ccccccccccccccc~
+ccccccccccccccc~
+ccccccccccccccc~
+ccccccccccccccc~
+ccccccaaacccccc~
+ccccccaaacccccc~
+ccccaaaaaaacccc~
+ccccaaaaaaacccc~
+ccccaaaaaaacccc~
+ccccccaaacccccc~
+ccccccaaacccccc~
+ccccccccccccccc~
+ccccccccccccccc~
+ccccccccccccccc~
+.cccccccccccccc.
+..--------------
+@tblock 0 0
+.00000000000000.
+0444444444444410
+0433333333333310
+043333333333331.
+043322333322331.
+042211222211221.
+043320111100331.
+043203200032231.
+043323233232331.
+043203222032231.
+043202011020031.
+043233320333231.
+043222211222031.
+043333211033331.
+043222320322231.
+042033320333221.
+043333333333331.
+043333333333331.
+043333333333331.
+043333333333331.
+043333444333331.
+043333433333331.
+043344333333331.
+043333333333331.
+043333333223331.
+043333332333331.
+043333332333331.
+043333333333331.
+043333333333331.
+011111111111111.
+.00000000000000.
+................

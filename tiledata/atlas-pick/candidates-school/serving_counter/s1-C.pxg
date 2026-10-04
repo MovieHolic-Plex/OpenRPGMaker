@@ -1,0 +1,52 @@
+@size 48 32
+@cell 16
+@palette palette.pal
+@mat a tray 5
+@mat b tray 4
+@mat c tray 3
+@mat d tray 2
+@mat e tray 1
+@mat f tray 0
+@mat W vwhite 5
+@mat w vwhite 4
+@mat x vwhite 3
+@mat R vred 3
+@mat r vred 4
+@mat O vyellow 4
+@mat Y vyellow 5
+@mat G vgreen 4
+@mat g vgreen 3
+@mat k vblack 3
+@mblock 0 0
+................................................
+................................................
+.cbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbd.
+.c&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&d.
+.c&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&d.
+.c&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&d.
+.c&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&d.
+.c&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&d.
+.c&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&d.
+.cccccWccccccccccccccWccccccccccccccWcccccccccd.
+aaaaaaaaaaaWaaaaaaaaaaaaffWaaaaaaaaaaaaaaWaaaaad
+abbbbbbbbbbbbbbbbbbbbbbbbfbbbbbbbbbbbbbbbbbbbbbd
+abbeeeeeeeeeeeebbbeeeeeeefeeeebbbeeeeeeeeeeeebbd
+abbexxxxxxxxxxebbbeYYYYYYfYYYebbbeggggggggggebbd
+abbeWWWWWWWWWWebbbeOOOOOeeeOOebbbeGGGGGGGGGGebbd
+abbeWWWWWWWWWWebbbeOOOOOeeeOOebbbeGGGGGGGGGGebbd
+abbeWWWWWWWWWWebbbeOOOOOOOOOOebbbeGGGGGGGGGGebbd
+abbeWWWWWWWWWWebbbeOOOOOOOOOOebbbeGGGGGGGGGGebbd
+abbeeeeeeeeeeeebbbeeeeeeeeeeeebbbeeeeeeeeeeeebbd
+abbffffffffffffbbbffffffffffffbbbffffffffffffbbd
+accccccccccccccccccccccccccccccccccccccccccccccd
+dddddddddddddddddddddddddddddddddddddddddddddddd
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbde
+bcccccccccccdcccccccccccdcccccccccccdcccccccccde
+bccccfccccccdccccfccccccdccccfccccccdccccfccccde
+bcccccccccccdcccccccccccdcccccccccccdcccccccccde
+bcccccccccccdcccccccccccdcccccccccccdcccccccccde
+bcccccccccccdcccccccccccdcccccccccccdcccccccccde
+bcccccccccccdcccccccccccdcccccccccccdcccccccccde
+eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+.~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~.
+..--------------------------------------------..

@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/serving_counter/s1-B.pxg",
+ "set": "school",
+ "id": "serving_counter",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.137
+ },
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.094
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 15,
+ "bbox": [
+  0,
+  2,
+  47,
+  31
+ ],
+ "note": "B: 명암 강화 — 유리 하이라이트 점, 앞판 아랫줄 더 어둡게, 김 점 더 많이",
+ "ok": true
+}

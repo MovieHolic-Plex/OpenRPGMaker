@@ -1,0 +1,44 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/konbini_pole/v35-A.pxg",
+ "set": "jp",
+ "id": "konbini_pole",
+ "hard": [],
+ "warn": [
+  "메모 없음: <후보>.note 에 한 줄"
+ ],
+ "std": {
+  "cells": [
+   1,
+   4
+  ],
+  "canvas": [
+   16,
+   64
+  ]
+ },
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.126
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.078
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation"
+  ]
+ },
+ "colors": 19,
+ "bbox": [
+  3,
+  0,
+  12,
+  63
+ ],
+ "note": "",
+ "ok": true
+}

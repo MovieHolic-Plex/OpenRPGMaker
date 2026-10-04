@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { buildGroupSample, type GroupSampleInput } from "@/ai/groupSampleBuilder";
-import { defaultTileset } from "@/project/defaults/defaultAssets";
+import { combinedTownTileset as defaultTileset } from "@/project/defaults/defaultAssets";
 
 describe("buildGroupSample — 역할별 샘플 모양 (특성화)", () => {
   it("wall 은 문법이 없어도 나인슬라이스 크기로 나온다", () => {

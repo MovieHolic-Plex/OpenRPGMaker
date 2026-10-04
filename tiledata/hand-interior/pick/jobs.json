@@ -1,0 +1,3677 @@
+{
+ "version": 1,
+ "note": "작업자별 기물 id 목록(겹침 없음). 절차는 WORKER.md. queue = 381개 전체 우선순위(later = 1차 범위 밖).",
+ "directions": {
+  "A": "v5 결을 살려 다듬기",
+  "B": "명암·그림자 강화",
+  "C": "실루엣·비율 재해석"
+ },
+ "rounds": [
+  {
+   "round": 1,
+   "nWorkers": 10,
+   "per": 11,
+   "workers": {
+    "w1": [
+     "window",
+     "doormat",
+     "column marble",
+     "tapestry",
+     "cabinet:bottle+bottler+bottley",
+     "column wood",
+     "drain grate",
+     "throne",
+     "vanity mirror",
+     "reredos",
+     "round window"
+    ],
+    "w2": [
+     "barrel",
+     "bookshelf 1w",
+     "firewood rack",
+     "scroll rack",
+     "straw bed",
+     "tall stained window",
+     "mine cart",
+     "tall vase red",
+     "wall clock",
+     "pew",
+     "saddle rack"
+    ],
+    "w3": [
+     "chest",
+     "armor stand",
+     "shield",
+     "rug red",
+     "washbasin",
+     "slop bucket",
+     "ore pile",
+     "star chart",
+     "altar E",
+     "ore vein",
+     "stairs up stone"
+    ],
+    "w4": [
+     "chair N",
+     "keg rack",
+     "royal banner",
+     "hang:ham",
+     "weapon barrel",
+     "elven harp",
+     "piano",
+     "shelf:cheese",
+     "canopy bed",
+     "feed trough",
+     "water trough"
+    ],
+    "w5": [
+     "picture",
+     "bar stool",
+     "stool",
+     "tool wall",
+     "pew E2",
+     "apothecary drawers",
+     "round arch",
+     "quench barrel",
+     "column dwarf",
+     "confessional",
+     "aisle runner"
+    ],
+    "w6": [
+     "bench 2",
+     "curtained window",
+     "royal chest",
+     "weapon rack",
+     "fabric bolt rack",
+     "spiral stair",
+     "stairwell down",
+     "lute",
+     "double bed red",
+     "choir stall",
+     "bathtub"
+    ],
+    "w7": [
+     "crate",
+     "potted fern",
+     "bottles",
+     "fur rug",
+     "mannequin",
+     "telescope",
+     "anvil",
+     "herb drying rack",
+     "hay bale",
+     "timber prop",
+     "bread shelf"
+    ],
+    "w8": [
+     "water jar",
+     "nightstand",
+     "coat rack",
+     "wall map",
+     "pick rack",
+     "music stand",
+     "basket:herb",
+     "grindstone",
+     "magic circle",
+     "shackles",
+     "cake display case"
+    ],
+    "w9": [
+     "armchair",
+     "wardrobe",
+     "dish rack",
+     "notice board",
+     "powder kegs",
+     "firewood bundle",
+     "broom and bucket",
+     "deer trophy",
+     "magitek armor",
+     "scenery flat",
+     "column live"
+    ],
+    "w10": [
+     "sack:grain",
+     "theater seat",
+     "hanging pans",
+     "kitchen sink",
+     "coal bin",
+     "dart board",
+     "chopping block",
+     "clock",
+     "pulpit",
+     "round rug",
+     "curtain wing"
+    ]
+   },
+   "pilot": [
+    "dining 2x1",
+    "bed green"
+   ]
+  },
+  {
+   "round": 2,
+   "nWorkers": 10,
+   "per": 12,
+   "workers": {
+    "w1": [
+     "chair W",
+     "pitchfork",
+     "proofing rack",
+     "spinning wheel",
+     "tailor mirror",
+     "mortar and pestle",
+     "plant"
+    ],
+    "w2": [
+     "bed blue",
+     "pipe organ",
+     "sofa",
+     "spellbook stand",
+     "tall vase blue",
+     "cupboard",
+     "pot"
+    ],
+    "w3": [
+     "potted flowering",
+     "meat hooks",
+     "stage curtain",
+     "pipe rack",
+     "towel rail",
+     "crystal ball",
+     "roundtable"
+    ],
+    "w4": [
+     "bookshelf 2w",
+     "loom",
+     "stained glass",
+     "peel rack",
+     "double bed blue",
+     "column stone",
+     "shelf pots"
+    ],
+    "w5": [
+     "hang:onion",
+     "ice chest:fish+fishg+fishr",
+     "treasure pile",
+     "lectern",
+     "green rug",
+     "column steel",
+     "stairs down"
+    ],
+    "w6": [
+     "sack:flour",
+     "elven bed",
+     "white tree",
+     "hymn board",
+     "purple rug",
+     "balance scale",
+     "stone throne"
+    ],
+    "w7": [
+     "barrel:apple",
+     "display potion",
+     "alembic",
+     "holy water font",
+     "bench 3",
+     "table:bolt+yarn"
+    ],
+    "w8": [
+     "cabinet:candle",
+     "bread shelf baguette",
+     "banner green",
+     "fishing net",
+     "pew E3",
+     "round door"
+    ],
+    "w9": [
+     "crate:potato",
+     "basket:mushroom",
+     "bell rope",
+     "cradle",
+     "runner",
+     "fish ice chest"
+    ],
+    "w10": [
+     "shelf:coins",
+     "stairs up wood",
+     "cheese wheels",
+     "conductor podium",
+     "altar",
+     "firewood rack 2w"
+    ]
+   },
+   "pilot": []
+  }
+ ],
+ "queue": [
+  {
+   "id": "window",
+   "slug": "window",
+   "score": 75,
+   "uses": 29,
+   "rooms": 15,
+   "group": "window",
+   "later": null
+  },
+  {
+   "id": "barrel",
+   "slug": "barrel",
+   "score": 69,
+   "uses": 23,
+   "rooms": 15,
+   "group": "barrel",
+   "later": null
+  },
+  {
+   "id": "chest",
+   "slug": "chest",
+   "score": 65,
+   "uses": 19,
+   "rooms": 15,
+   "group": "chest",
+   "later": null
+  },
+  {
+   "id": "chair N",
+   "slug": "chair_N",
+   "score": 60,
+   "uses": 23,
+   "rooms": 12,
+   "group": "chair",
+   "later": null
+  },
+  {
+   "id": "picture",
+   "slug": "picture",
+   "score": 57,
+   "uses": 20,
+   "rooms": 12,
+   "group": "picture",
+   "later": null
+  },
+  {
+   "id": "bench 2",
+   "slug": "bench_2",
+   "score": 54,
+   "uses": 25,
+   "rooms": 9,
+   "group": "bench",
+   "later": null
+  },
+  {
+   "id": "crate",
+   "slug": "crate",
+   "score": 52,
+   "uses": 18,
+   "rooms": 11,
+   "group": "crate",
+   "later": null
+  },
+  {
+   "id": "water jar",
+   "slug": "water_jar",
+   "score": 50,
+   "uses": 13,
+   "rooms": 12,
+   "group": "water jar",
+   "later": null
+  },
+  {
+   "id": "armchair",
+   "slug": "armchair",
+   "score": 46,
+   "uses": 18,
+   "rooms": 9,
+   "group": "armchair",
+   "later": null
+  },
+  {
+   "id": "sack:grain",
+   "slug": "sack_grain",
+   "score": 46,
+   "uses": 12,
+   "rooms": 11,
+   "group": "sack",
+   "later": null
+  },
+  {
+   "id": "chair W",
+   "slug": "chair_W",
+   "score": 45,
+   "uses": 17,
+   "rooms": 9,
+   "group": "chair",
+   "later": null
+  },
+  {
+   "id": "theater seat",
+   "slug": "theater_seat",
+   "score": 44,
+   "uses": 40,
+   "rooms": 1,
+   "group": "theater seat",
+   "later": null
+  },
+  {
+   "id": "chair E",
+   "slug": "chair_E",
+   "score": 40,
+   "uses": 15,
+   "rooms": 8,
+   "group": "chair",
+   "later": null
+  },
+  {
+   "id": "wardrobe",
+   "slug": "wardrobe",
+   "score": 40,
+   "uses": 12,
+   "rooms": 9,
+   "group": "wardrobe",
+   "later": null
+  },
+  {
+   "id": "nightstand",
+   "slug": "nightstand",
+   "score": 39,
+   "uses": 14,
+   "rooms": 8,
+   "group": "nightstand",
+   "later": null
+  },
+  {
+   "id": "potted fern",
+   "slug": "potted_fern",
+   "score": 38,
+   "uses": 13,
+   "rooms": 8,
+   "group": "potted",
+   "later": null
+  },
+  {
+   "id": "curtained window",
+   "slug": "curtained_window",
+   "score": 34,
+   "uses": 12,
+   "rooms": 7,
+   "group": "curtained window",
+   "later": null
+  },
+  {
+   "id": "dining 1x1",
+   "slug": "dining_1x1",
+   "score": 34,
+   "uses": 12,
+   "rooms": 7,
+   "group": "dining",
+   "later": "autotile"
+  },
+  {
+   "id": "work 2x1",
+   "slug": "work_2x1",
+   "score": 34,
+   "uses": 8,
+   "rooms": 8,
+   "group": "work",
+   "later": "autotile"
+  },
+  {
+   "id": "dining 2x1",
+   "slug": "dining_2x1",
+   "score": 33,
+   "uses": 10,
+   "rooms": 7,
+   "group": "dining",
+   "later": "autotile"
+  },
+  {
+   "id": "chair S",
+   "slug": "chair_S",
+   "score": 32,
+   "uses": 16,
+   "rooms": 5,
+   "group": "chair",
+   "later": null
+  },
+  {
+   "id": "wall torch",
+   "slug": "wall_torch",
+   "score": 32,
+   "uses": 10,
+   "rooms": 7,
+   "group": "wall torch",
+   "later": "animated"
+  },
+  {
+   "id": "fireplace",
+   "slug": "fireplace",
+   "score": 31,
+   "uses": 8,
+   "rooms": 7,
+   "group": "fireplace",
+   "later": "animated"
+  },
+  {
+   "id": "tea 1x1",
+   "slug": "tea_1x1",
+   "score": 30,
+   "uses": 8,
+   "rooms": 7,
+   "group": "tea",
+   "later": "autotile"
+  },
+  {
+   "id": "bar stool",
+   "slug": "bar_stool",
+   "score": 28,
+   "uses": 15,
+   "rooms": 4,
+   "group": "bar stool",
+   "later": null
+  },
+  {
+   "id": "keg rack",
+   "slug": "keg_rack",
+   "score": 28,
+   "uses": 8,
+   "rooms": 6,
+   "group": "keg rack",
+   "later": null
+  },
+  {
+   "id": "armor stand",
+   "slug": "armor_stand",
+   "score": 27,
+   "uses": 14,
+   "rooms": 4,
+   "group": "armor stand",
+   "later": null
+  },
+  {
+   "id": "kcounter 2x1",
+   "slug": "kcounter_2x1",
+   "score": 27,
+   "uses": 7,
+   "rooms": 6,
+   "group": "kcounter",
+   "later": "autotile"
+  },
+  {
+   "id": "bed green",
+   "slug": "bed_green",
+   "score": 26,
+   "uses": 6,
+   "rooms": 6,
+   "group": "bed",
+   "later": null
+  },
+  {
+   "id": "bookshelf 1w",
+   "slug": "bookshelf_1w",
+   "score": 26,
+   "uses": 7,
+   "rooms": 6,
+   "group": "bookshelf",
+   "later": null
+  },
+  {
+   "id": "desk 2x1",
+   "slug": "desk_2x1",
+   "score": 26,
+   "uses": 6,
+   "rooms": 6,
+   "group": "desk",
+   "later": "autotile"
+  },
+  {
+   "id": "doormat",
+   "slug": "doormat",
+   "score": 26,
+   "uses": 7,
+   "rooms": 6,
+   "group": "doormat",
+   "later": null
+  },
+  {
+   "id": "column marble",
+   "slug": "column_marble",
+   "score": 25,
+   "uses": 18,
+   "rooms": 2,
+   "group": "column marble",
+   "later": null
+  },
+  {
+   "id": "firewood rack",
+   "slug": "firewood_rack",
+   "score": 25,
+   "uses": 6,
+   "rooms": 6,
+   "group": "firewood rack",
+   "later": null
+  },
+  {
+   "id": "shield",
+   "slug": "shield",
+   "score": 24,
+   "uses": 8,
+   "rooms": 5,
+   "group": "shield",
+   "later": null
+  },
+  {
+   "id": "royal banner",
+   "slug": "royal_banner",
+   "score": 23,
+   "uses": 10,
+   "rooms": 4,
+   "group": "royal banner",
+   "later": null
+  },
+  {
+   "id": "stool",
+   "slug": "stool",
+   "score": 23,
+   "uses": 7,
+   "rooms": 5,
+   "group": "stool",
+   "later": null
+  },
+  {
+   "id": "work 3x1",
+   "slug": "work_3x1",
+   "score": 23,
+   "uses": 5,
+   "rooms": 5,
+   "group": "work",
+   "later": "autotile"
+  },
+  {
+   "id": "bed blue",
+   "slug": "bed_blue",
+   "score": 22,
+   "uses": 5,
+   "rooms": 5,
+   "group": "bed",
+   "later": null
+  },
+  {
+   "id": "kitchen range",
+   "slug": "kitchen_range",
+   "score": 22,
+   "uses": 5,
+   "rooms": 5,
+   "group": "kitchen range",
+   "later": "animated"
+  },
+  {
+   "id": "potted flowering",
+   "slug": "potted_flowering",
+   "score": 22,
+   "uses": 6,
+   "rooms": 5,
+   "group": "potted",
+   "later": null
+  },
+  {
+   "id": "royal chest",
+   "slug": "royal_chest",
+   "score": 22,
+   "uses": 6,
+   "rooms": 5,
+   "group": "royal chest",
+   "later": null
+  },
+  {
+   "id": "bottles",
+   "slug": "bottles",
+   "score": 21,
+   "uses": 5,
+   "rooms": 5,
+   "group": "bottles",
+   "later": null
+  },
+  {
+   "id": "coat rack",
+   "slug": "coat_rack",
+   "score": 21,
+   "uses": 5,
+   "rooms": 5,
+   "group": "coat rack",
+   "later": null
+  },
+  {
+   "id": "dish rack",
+   "slug": "dish_rack",
+   "score": 21,
+   "uses": 5,
+   "rooms": 5,
+   "group": "dish rack",
+   "later": null
+  },
+  {
+   "id": "hanging pans",
+   "slug": "hanging_pans",
+   "score": 21,
+   "uses": 5,
+   "rooms": 5,
+   "group": "hanging pans",
+   "later": null
+  },
+  {
+   "id": "kitchen sink",
+   "slug": "kitchen_sink",
+   "score": 21,
+   "uses": 5,
+   "rooms": 5,
+   "group": "kitchen sink",
+   "later": null
+  },
+  {
+   "id": "notice board",
+   "slug": "notice_board",
+   "score": 21,
+   "uses": 5,
+   "rooms": 5,
+   "group": "notice board",
+   "later": null
+  },
+  {
+   "id": "wall map",
+   "slug": "wall_map",
+   "score": 21,
+   "uses": 5,
+   "rooms": 5,
+   "group": "wall map",
+   "later": null
+  },
+  {
+   "id": "bookshelf 2w",
+   "slug": "bookshelf_2w",
+   "score": 20,
+   "uses": 6,
+   "rooms": 4,
+   "group": "bookshelf",
+   "later": null
+  },
+  {
+   "id": "brazier",
+   "slug": "brazier",
+   "score": 20,
+   "uses": 7,
+   "rooms": 4,
+   "group": "brazier",
+   "later": "animated"
+  },
+  {
+   "id": "counter 3x1",
+   "slug": "counter_3x1",
+   "score": 20,
+   "uses": 5,
+   "rooms": 4,
+   "group": "counter",
+   "later": "autotile"
+  },
+  {
+   "id": "counter 4x1",
+   "slug": "counter_4x1",
+   "score": 20,
+   "uses": 4,
+   "rooms": 4,
+   "group": "counter",
+   "later": "autotile"
+  },
+  {
+   "id": "fur rug",
+   "slug": "fur_rug",
+   "score": 20,
+   "uses": 4,
+   "rooms": 4,
+   "group": "fur rug",
+   "later": null
+  },
+  {
+   "id": "weapon rack",
+   "slug": "weapon_rack",
+   "score": 20,
+   "uses": 7,
+   "rooms": 4,
+   "group": "weapon rack",
+   "later": null
+  },
+  {
+   "id": "tool wall",
+   "slug": "tool_wall",
+   "score": 19,
+   "uses": 6,
+   "rooms": 4,
+   "group": "tool wall",
+   "later": null
+  },
+  {
+   "id": "hang:ham",
+   "slug": "hang_ham",
+   "score": 18,
+   "uses": 5,
+   "rooms": 4,
+   "group": "hang",
+   "later": null
+  },
+  {
+   "id": "rug red",
+   "slug": "rug_red",
+   "score": 18,
+   "uses": 3,
+   "rooms": 3,
+   "group": "rug",
+   "later": null
+  },
+  {
+   "id": "scroll rack",
+   "slug": "scroll_rack",
+   "score": 18,
+   "uses": 5,
+   "rooms": 4,
+   "group": "scroll rack",
+   "later": null
+  },
+  {
+   "id": "tapestry",
+   "slug": "tapestry",
+   "score": 18,
+   "uses": 8,
+   "rooms": 3,
+   "group": "tapestry",
+   "later": null
+  },
+  {
+   "id": "cabinet:bottle+bottler+bottley",
+   "slug": "cabinet_bottle_bottler_bottley",
+   "score": 17,
+   "uses": 4,
+   "rooms": 4,
+   "group": "cabinet",
+   "later": null
+  },
+  {
+   "id": "straw bed",
+   "slug": "straw_bed",
+   "score": 17,
+   "uses": 6,
+   "rooms": 3,
+   "group": "straw bed",
+   "later": null
+  },
+  {
+   "id": "washbasin",
+   "slug": "washbasin",
+   "score": 17,
+   "uses": 4,
+   "rooms": 4,
+   "group": "washbasin",
+   "later": null
+  },
+  {
+   "id": "weapon barrel",
+   "slug": "weapon_barrel",
+   "score": 17,
+   "uses": 4,
+   "rooms": 4,
+   "group": "weapon barrel",
+   "later": null
+  },
+  {
+   "id": "footlights",
+   "slug": "footlights",
+   "score": 16,
+   "uses": 12,
+   "rooms": 1,
+   "group": "footlights",
+   "later": "animated"
+  },
+  {
+   "id": "hanging lantern",
+   "slug": "hanging_lantern",
+   "score": 16,
+   "uses": 6,
+   "rooms": 3,
+   "group": "hanging lantern",
+   "later": "animated"
+  },
+  {
+   "id": "wall sconce",
+   "slug": "wall_sconce",
+   "score": 16,
+   "uses": 6,
+   "rooms": 3,
+   "group": "wall sconce",
+   "later": "animated"
+  },
+  {
+   "id": "pew E2",
+   "slug": "pew_E2",
+   "score": 15,
+   "uses": 10,
+   "rooms": 1,
+   "group": "pew E2",
+   "later": null
+  },
+  {
+   "id": "bed red",
+   "slug": "bed_red",
+   "score": 14,
+   "uses": 3,
+   "rooms": 3,
+   "group": "bed",
+   "later": null
+  },
+  {
+   "id": "fabric bolt rack",
+   "slug": "fabric_bolt_rack",
+   "score": 14,
+   "uses": 7,
+   "rooms": 2,
+   "group": "fabric bolt rack",
+   "later": null
+  },
+  {
+   "id": "mannequin",
+   "slug": "mannequin",
+   "score": 14,
+   "uses": 7,
+   "rooms": 2,
+   "group": "mannequin",
+   "later": null
+  },
+  {
+   "id": "pick rack",
+   "slug": "pick_rack",
+   "score": 14,
+   "uses": 4,
+   "rooms": 3,
+   "group": "pick rack",
+   "later": null
+  },
+  {
+   "id": "powder kegs",
+   "slug": "powder_kegs",
+   "score": 14,
+   "uses": 4,
+   "rooms": 3,
+   "group": "powder kegs",
+   "later": null
+  },
+  {
+   "id": "cauldron",
+   "slug": "cauldron",
+   "score": 13,
+   "uses": 3,
+   "rooms": 3,
+   "group": "cauldron",
+   "later": "animated"
+  },
+  {
+   "id": "coal bin",
+   "slug": "coal_bin",
+   "score": 13,
+   "uses": 3,
+   "rooms": 3,
+   "group": "coal bin",
+   "later": null
+  },
+  {
+   "id": "dart board",
+   "slug": "dart_board",
+   "score": 13,
+   "uses": 3,
+   "rooms": 3,
+   "group": "dart board",
+   "later": null
+  },
+  {
+   "id": "dining 4x1",
+   "slug": "dining_4x1",
+   "score": 13,
+   "uses": 3,
+   "rooms": 2,
+   "group": "dining",
+   "later": "autotile"
+  },
+  {
+   "id": "firewood bundle",
+   "slug": "firewood_bundle",
+   "score": 13,
+   "uses": 3,
+   "rooms": 3,
+   "group": "firewood bundle",
+   "later": null
+  },
+  {
+   "id": "hang:onion",
+   "slug": "hang_onion",
+   "score": 13,
+   "uses": 3,
+   "rooms": 3,
+   "group": "hang",
+   "later": null
+  },
+  {
+   "id": "music stand",
+   "slug": "music_stand",
+   "score": 13,
+   "uses": 6,
+   "rooms": 2,
+   "group": "music stand",
+   "later": null
+  },
+  {
+   "id": "stove",
+   "slug": "stove",
+   "score": 13,
+   "uses": 3,
+   "rooms": 3,
+   "group": "stove",
+   "later": "animated"
+  },
+  {
+   "id": "telescope",
+   "slug": "telescope",
+   "score": 13,
+   "uses": 3,
+   "rooms": 3,
+   "group": "telescope",
+   "later": null
+  },
+  {
+   "id": "work 1x1",
+   "slug": "work_1x1",
+   "score": 13,
+   "uses": 3,
+   "rooms": 3,
+   "group": "work",
+   "later": "autotile"
+  },
+  {
+   "id": "bookshelf 3w",
+   "slug": "bookshelf_3w",
+   "score": 12,
+   "uses": 3,
+   "rooms": 2,
+   "group": "bookshelf",
+   "later": null
+  },
+  {
+   "id": "drip puddle",
+   "slug": "drip_puddle",
+   "score": 12,
+   "uses": 5,
+   "rooms": 2,
+   "group": "drip puddle",
+   "later": "animated"
+  },
+  {
+   "id": "spiral stair",
+   "slug": "spiral_stair",
+   "score": 12,
+   "uses": 2,
+   "rooms": 2,
+   "group": "spiral stair",
+   "later": null
+  },
+  {
+   "id": "apothecary drawers",
+   "slug": "apothecary_drawers",
+   "score": 11,
+   "uses": 4,
+   "rooms": 2,
+   "group": "apothecary drawers",
+   "later": null
+  },
+  {
+   "id": "display 3x1",
+   "slug": "display_3x1",
+   "score": 11,
+   "uses": 2,
+   "rooms": 2,
+   "group": "display",
+   "later": "autotile"
+  },
+  {
+   "id": "elven harp",
+   "slug": "elven_harp",
+   "score": 11,
+   "uses": 4,
+   "rooms": 2,
+   "group": "elven harp",
+   "later": null
+  },
+  {
+   "id": "felt 2x1",
+   "slug": "felt_2x1",
+   "score": 11,
+   "uses": 3,
+   "rooms": 2,
+   "group": "felt 2x1",
+   "later": "autotile"
+  },
+  {
+   "id": "potted sapling",
+   "slug": "potted_sapling",
+   "score": 11,
+   "uses": 4,
+   "rooms": 2,
+   "group": "potted",
+   "later": null
+  },
+  {
+   "id": "sack:flour",
+   "slug": "sack_flour",
+   "score": 11,
+   "uses": 4,
+   "rooms": 2,
+   "group": "sack",
+   "later": null
+  },
+  {
+   "id": "slop bucket",
+   "slug": "slop_bucket",
+   "score": 11,
+   "uses": 4,
+   "rooms": 2,
+   "group": "slop bucket",
+   "later": null
+  },
+  {
+   "id": "tall stained window",
+   "slug": "tall_stained_window",
+   "score": 11,
+   "uses": 6,
+   "rooms": 1,
+   "group": "tall stained window",
+   "later": null
+  },
+  {
+   "id": "tea 2x1",
+   "slug": "tea_2x1",
+   "score": 11,
+   "uses": 3,
+   "rooms": 2,
+   "group": "tea",
+   "later": "autotile"
+  },
+  {
+   "id": "column wood",
+   "slug": "column_wood",
+   "score": 10,
+   "uses": 6,
+   "rooms": 1,
+   "group": "column wood",
+   "later": null
+  },
+  {
+   "id": "counter 2x1",
+   "slug": "counter_2x1",
+   "score": 10,
+   "uses": 2,
+   "rooms": 2,
+   "group": "counter",
+   "later": "autotile"
+  },
+  {
+   "id": "display 2x1",
+   "slug": "display_2x1",
+   "score": 10,
+   "uses": 2,
+   "rooms": 2,
+   "group": "display",
+   "later": "autotile"
+  },
+  {
+   "id": "drain grate",
+   "slug": "drain_grate",
+   "score": 10,
+   "uses": 3,
+   "rooms": 2,
+   "group": "drain grate",
+   "later": null
+  },
+  {
+   "id": "felt 3x2",
+   "slug": "felt_3x2",
+   "score": 10,
+   "uses": 1,
+   "rooms": 1,
+   "group": "felt 3x2",
+   "later": "autotile"
+  },
+  {
+   "id": "forge",
+   "slug": "forge",
+   "score": 10,
+   "uses": 2,
+   "rooms": 2,
+   "group": "forge",
+   "later": "animated"
+  },
+  {
+   "id": "hang:herb",
+   "slug": "hang_herb",
+   "score": 10,
+   "uses": 3,
+   "rooms": 2,
+   "group": "hang",
+   "later": null
+  },
+  {
+   "id": "leaf lantern",
+   "slug": "leaf_lantern",
+   "score": 10,
+   "uses": 6,
+   "rooms": 1,
+   "group": "leaf lantern",
+   "later": "animated"
+  },
+  {
+   "id": "magitek engine",
+   "slug": "magitek_engine",
+   "score": 10,
+   "uses": 1,
+   "rooms": 1,
+   "group": "magitek engine",
+   "later": "animated"
+  },
+  {
+   "id": "mine cart",
+   "slug": "mine_cart",
+   "score": 10,
+   "uses": 3,
+   "rooms": 2,
+   "group": "mine cart",
+   "later": null
+  },
+  {
+   "id": "moon pool",
+   "slug": "moon_pool",
+   "score": 10,
+   "uses": 1,
+   "rooms": 1,
+   "group": "moon pool",
+   "later": "animated"
+  },
+  {
+   "id": "ore pile",
+   "slug": "ore_pile",
+   "score": 10,
+   "uses": 3,
+   "rooms": 2,
+   "group": "ore pile",
+   "later": null
+  },
+  {
+   "id": "piano",
+   "slug": "piano",
+   "score": 10,
+   "uses": 2,
+   "rooms": 2,
+   "group": "piano",
+   "later": null
+  },
+  {
+   "id": "round arch",
+   "slug": "round_arch",
+   "score": 10,
+   "uses": 4,
+   "rooms": 1,
+   "group": "round arch",
+   "later": null
+  },
+  {
+   "id": "slot machine",
+   "slug": "slot_machine",
+   "score": 10,
+   "uses": 6,
+   "rooms": 1,
+   "group": "slot machine",
+   "later": "animated"
+  },
+  {
+   "id": "stairwell down",
+   "slug": "stairwell_down",
+   "score": 10,
+   "uses": 1,
+   "rooms": 1,
+   "group": "stairwell down",
+   "later": null
+  },
+  {
+   "id": "anvil",
+   "slug": "anvil",
+   "score": 9,
+   "uses": 2,
+   "rooms": 2,
+   "group": "anvil",
+   "later": null
+  },
+  {
+   "id": "barrel:apple",
+   "slug": "barrel_apple",
+   "score": 9,
+   "uses": 2,
+   "rooms": 2,
+   "group": "barrel",
+   "later": null
+  },
+  {
+   "id": "basket:herb",
+   "slug": "basket_herb",
+   "score": 9,
+   "uses": 2,
+   "rooms": 2,
+   "group": "basket",
+   "later": null
+  },
+  {
+   "id": "broom and bucket",
+   "slug": "broom_and_bucket",
+   "score": 9,
+   "uses": 2,
+   "rooms": 2,
+   "group": "broom and bucket",
+   "later": null
+  },
+  {
+   "id": "cabinet:candle",
+   "slug": "cabinet_candle",
+   "score": 9,
+   "uses": 2,
+   "rooms": 2,
+   "group": "cabinet",
+   "later": null
+  },
+  {
+   "id": "cabinet:jar+jarb+jarg",
+   "slug": "cabinet_jar_jarb_jarg",
+   "score": 9,
+   "uses": 2,
+   "rooms": 2,
+   "group": "cabinet",
+   "later": null
+  },
+  {
+   "id": "cabinet:potion+potionb+potiong",
+   "slug": "cabinet_potion_potionb_potiong",
+   "score": 9,
+   "uses": 2,
+   "rooms": 2,
+   "group": "cabinet",
+   "later": null
+  },
+  {
+   "id": "chopping block",
+   "slug": "chopping_block",
+   "score": 9,
+   "uses": 2,
+   "rooms": 2,
+   "group": "chopping block",
+   "later": null
+  },
+  {
+   "id": "clock",
+   "slug": "clock",
+   "score": 9,
+   "uses": 2,
+   "rooms": 2,
+   "group": "clock",
+   "later": null
+  },
+  {
+   "id": "crate:potato",
+   "slug": "crate_potato",
+   "score": 9,
+   "uses": 2,
+   "rooms": 2,
+   "group": "crate",
+   "later": null
+  },
+  {
+   "id": "deer trophy",
+   "slug": "deer_trophy",
+   "score": 9,
+   "uses": 2,
+   "rooms": 2,
+   "group": "deer trophy",
+   "later": null
+  },
+  {
+   "id": "grindstone",
+   "slug": "grindstone",
+   "score": 9,
+   "uses": 2,
+   "rooms": 2,
+   "group": "grindstone",
+   "later": null
+  },
+  {
+   "id": "hang:sausage",
+   "slug": "hang_sausage",
+   "score": 9,
+   "uses": 2,
+   "rooms": 2,
+   "group": "hang",
+   "later": null
+  },
+  {
+   "id": "herb drying rack",
+   "slug": "herb_drying_rack",
+   "score": 9,
+   "uses": 2,
+   "rooms": 2,
+   "group": "herb drying rack",
+   "later": null
+  },
+  {
+   "id": "long hearth 5",
+   "slug": "long_hearth_5",
+   "score": 9,
+   "uses": 1,
+   "rooms": 1,
+   "group": "long hearth 5",
+   "later": "animated"
+  },
+  {
+   "id": "lute",
+   "slug": "lute",
+   "score": 9,
+   "uses": 2,
+   "rooms": 2,
+   "group": "lute",
+   "later": null
+  },
+  {
+   "id": "quench barrel",
+   "slug": "quench_barrel",
+   "score": 9,
+   "uses": 2,
+   "rooms": 2,
+   "group": "quench barrel",
+   "later": null
+  },
+  {
+   "id": "shelf:cheese",
+   "slug": "shelf_cheese",
+   "score": 9,
+   "uses": 2,
+   "rooms": 2,
+   "group": "shelf",
+   "later": null
+  },
+  {
+   "id": "shelf:coins",
+   "slug": "shelf_coins",
+   "score": 9,
+   "uses": 2,
+   "rooms": 2,
+   "group": "shelf",
+   "later": null
+  },
+  {
+   "id": "shelf:gem+gemr",
+   "slug": "shelf_gem_gemr",
+   "score": 9,
+   "uses": 2,
+   "rooms": 2,
+   "group": "shelf",
+   "later": null
+  },
+  {
+   "id": "shelf:potion+potionb+potiong",
+   "slug": "shelf_potion_potionb_potiong",
+   "score": 9,
+   "uses": 2,
+   "rooms": 2,
+   "group": "shelf",
+   "later": null
+  },
+  {
+   "id": "star chart",
+   "slug": "star_chart",
+   "score": 9,
+   "uses": 2,
+   "rooms": 2,
+   "group": "star chart",
+   "later": null
+  },
+  {
+   "id": "tall vase red",
+   "slug": "tall_vase_red",
+   "score": 9,
+   "uses": 2,
+   "rooms": 2,
+   "group": "tall vase",
+   "later": null
+  },
+  {
+   "id": "throne",
+   "slug": "throne",
+   "score": 9,
+   "uses": 2,
+   "rooms": 2,
+   "group": "throne",
+   "later": null
+  },
+  {
+   "id": "vanity mirror",
+   "slug": "vanity_mirror",
+   "score": 9,
+   "uses": 2,
+   "rooms": 2,
+   "group": "vanity mirror",
+   "later": null
+  },
+  {
+   "id": "wall clock",
+   "slug": "wall_clock",
+   "score": 9,
+   "uses": 2,
+   "rooms": 2,
+   "group": "wall clock",
+   "later": null
+  },
+  {
+   "id": "altar E",
+   "slug": "altar_E",
+   "score": 8,
+   "uses": 1,
+   "rooms": 1,
+   "group": "altar E",
+   "later": null
+  },
+  {
+   "id": "baptismal font",
+   "slug": "baptismal_font",
+   "score": 8,
+   "uses": 1,
+   "rooms": 1,
+   "group": "baptismal font",
+   "later": "animated"
+  },
+  {
+   "id": "canopy bed",
+   "slug": "canopy_bed",
+   "score": 8,
+   "uses": 1,
+   "rooms": 1,
+   "group": "canopy bed",
+   "later": null
+  },
+  {
+   "id": "chocobo",
+   "slug": "chocobo",
+   "score": 8,
+   "uses": 4,
+   "rooms": 1,
+   "group": "chocobo",
+   "later": "animated"
+  },
+  {
+   "id": "column dwarf",
+   "slug": "column_dwarf",
+   "score": 8,
+   "uses": 4,
+   "rooms": 1,
+   "group": "column dwarf",
+   "later": null
+  },
+  {
+   "id": "double bed red",
+   "slug": "double_bed_red",
+   "score": 8,
+   "uses": 1,
+   "rooms": 1,
+   "group": "double bed",
+   "later": null
+  },
+  {
+   "id": "gauge panel",
+   "slug": "gauge_panel",
+   "score": 8,
+   "uses": 4,
+   "rooms": 1,
+   "group": "gauge panel",
+   "later": "animated"
+  },
+  {
+   "id": "hay bale",
+   "slug": "hay_bale",
+   "score": 8,
+   "uses": 4,
+   "rooms": 1,
+   "group": "hay bale",
+   "later": null
+  },
+  {
+   "id": "magic circle",
+   "slug": "magic_circle",
+   "score": 8,
+   "uses": 1,
+   "rooms": 1,
+   "group": "magic circle",
+   "later": null
+  },
+  {
+   "id": "magitek armor",
+   "slug": "magitek_armor",
+   "score": 8,
+   "uses": 1,
+   "rooms": 1,
+   "group": "magitek armor",
+   "later": null
+  },
+  {
+   "id": "pulpit",
+   "slug": "pulpit",
+   "score": 8,
+   "uses": 1,
+   "rooms": 1,
+   "group": "pulpit",
+   "later": null
+  },
+  {
+   "id": "roulette table",
+   "slug": "roulette_table",
+   "score": 8,
+   "uses": 1,
+   "rooms": 1,
+   "group": "roulette table",
+   "later": "animated"
+  },
+  {
+   "id": "round rug",
+   "slug": "round_rug",
+   "score": 8,
+   "uses": 1,
+   "rooms": 1,
+   "group": "round rug",
+   "later": null
+  },
+  {
+   "id": "scenery flat",
+   "slug": "scenery_flat",
+   "score": 8,
+   "uses": 2,
+   "rooms": 1,
+   "group": "scenery flat",
+   "later": null
+  },
+  {
+   "id": "shackles",
+   "slug": "shackles",
+   "score": 8,
+   "uses": 4,
+   "rooms": 1,
+   "group": "shackles",
+   "later": null
+  },
+  {
+   "id": "timber prop",
+   "slug": "timber_prop",
+   "score": 8,
+   "uses": 4,
+   "rooms": 1,
+   "group": "timber prop",
+   "later": null
+  },
+  {
+   "id": "choir stall",
+   "slug": "choir_stall",
+   "score": 7,
+   "uses": 1,
+   "rooms": 1,
+   "group": "choir stall",
+   "later": null
+  },
+  {
+   "id": "confessional",
+   "slug": "confessional",
+   "score": 7,
+   "uses": 1,
+   "rooms": 1,
+   "group": "confessional",
+   "later": null
+  },
+  {
+   "id": "desk 3x1",
+   "slug": "desk_3x1",
+   "score": 7,
+   "uses": 1,
+   "rooms": 1,
+   "group": "desk",
+   "later": "autotile"
+  },
+  {
+   "id": "feed trough",
+   "slug": "feed_trough",
+   "score": 7,
+   "uses": 2,
+   "rooms": 1,
+   "group": "feed trough",
+   "later": null
+  },
+  {
+   "id": "gear wall",
+   "slug": "gear_wall",
+   "score": 7,
+   "uses": 2,
+   "rooms": 1,
+   "group": "gear wall",
+   "later": "animated"
+  },
+  {
+   "id": "ore vein",
+   "slug": "ore_vein",
+   "score": 7,
+   "uses": 3,
+   "rooms": 1,
+   "group": "ore vein",
+   "later": null
+  },
+  {
+   "id": "pew",
+   "slug": "pew",
+   "score": 7,
+   "uses": 2,
+   "rooms": 1,
+   "group": "pew",
+   "later": null
+  },
+  {
+   "id": "reredos",
+   "slug": "reredos",
+   "score": 7,
+   "uses": 1,
+   "rooms": 1,
+   "group": "reredos",
+   "later": null
+  },
+  {
+   "id": "round window",
+   "slug": "round_window",
+   "score": 7,
+   "uses": 3,
+   "rooms": 1,
+   "group": "round window",
+   "later": null
+  },
+  {
+   "id": "saddle rack",
+   "slug": "saddle_rack",
+   "score": 7,
+   "uses": 3,
+   "rooms": 1,
+   "group": "saddle rack",
+   "later": null
+  },
+  {
+   "id": "sideboard 2x1",
+   "slug": "sideboard_2x1",
+   "score": 7,
+   "uses": 2,
+   "rooms": 1,
+   "group": "sideboard",
+   "later": "autotile"
+  },
+  {
+   "id": "stairs up stone",
+   "slug": "stairs_up_stone",
+   "score": 7,
+   "uses": 1,
+   "rooms": 1,
+   "group": "stairs up",
+   "later": null
+  },
+  {
+   "id": "stairs up wood",
+   "slug": "stairs_up_wood",
+   "score": 7,
+   "uses": 1,
+   "rooms": 1,
+   "group": "stairs up",
+   "later": null
+  },
+  {
+   "id": "water trough",
+   "slug": "water_trough",
+   "score": 7,
+   "uses": 2,
+   "rooms": 1,
+   "group": "water trough",
+   "later": null
+  },
+  {
+   "id": "aisle runner",
+   "slug": "aisle_runner",
+   "score": 6,
+   "uses": 0,
+   "rooms": 0,
+   "group": "aisle runner",
+   "later": null
+  },
+  {
+   "id": "barrel:fish",
+   "slug": "barrel_fish",
+   "score": 6,
+   "uses": 2,
+   "rooms": 1,
+   "group": "barrel",
+   "later": null
+  },
+  {
+   "id": "basket:mushroom",
+   "slug": "basket_mushroom",
+   "score": 6,
+   "uses": 2,
+   "rooms": 1,
+   "group": "basket",
+   "later": null
+  },
+  {
+   "id": "bathtub",
+   "slug": "bathtub",
+   "score": 6,
+   "uses": 1,
+   "rooms": 1,
+   "group": "bathtub",
+   "later": null
+  },
+  {
+   "id": "bread oven",
+   "slug": "bread_oven",
+   "score": 6,
+   "uses": 1,
+   "rooms": 1,
+   "group": "bread oven",
+   "later": "animated"
+  },
+  {
+   "id": "bread shelf",
+   "slug": "bread_shelf",
+   "score": 6,
+   "uses": 2,
+   "rooms": 1,
+   "group": "bread shelf",
+   "later": null
+  },
+  {
+   "id": "bread shelf baguette",
+   "slug": "bread_shelf_baguette",
+   "score": 6,
+   "uses": 2,
+   "rooms": 1,
+   "group": "bread shelf",
+   "later": null
+  },
+  {
+   "id": "bread shelf pie",
+   "slug": "bread_shelf_pie",
+   "score": 6,
+   "uses": 2,
+   "rooms": 1,
+   "group": "bread shelf",
+   "later": null
+  },
+  {
+   "id": "cake display case",
+   "slug": "cake_display_case",
+   "score": 6,
+   "uses": 1,
+   "rooms": 1,
+   "group": "cake display case",
+   "later": null
+  },
+  {
+   "id": "candelabra",
+   "slug": "candelabra",
+   "score": 6,
+   "uses": 2,
+   "rooms": 1,
+   "group": "candelabra",
+   "later": "animated"
+  },
+  {
+   "id": "column live",
+   "slug": "column_live",
+   "score": 6,
+   "uses": 2,
+   "rooms": 1,
+   "group": "column live",
+   "later": null
+  },
+  {
+   "id": "control console",
+   "slug": "control_console",
+   "score": 6,
+   "uses": 1,
+   "rooms": 1,
+   "group": "control console",
+   "later": "animated"
+  },
+  {
+   "id": "curtain wing",
+   "slug": "curtain_wing",
+   "score": 6,
+   "uses": 2,
+   "rooms": 1,
+   "group": "curtain wing",
+   "later": null
+  },
+  {
+   "id": "desk 3x2",
+   "slug": "desk_3x2",
+   "score": 6,
+   "uses": 0,
+   "rooms": 0,
+   "group": "desk",
+   "later": "autotile"
+  },
+  {
+   "id": "desk 4x2",
+   "slug": "desk_4x2",
+   "score": 6,
+   "uses": 0,
+   "rooms": 0,
+   "group": "desk",
+   "later": "autotile"
+  },
+  {
+   "id": "dining 3x2",
+   "slug": "dining_3x2",
+   "score": 6,
+   "uses": 0,
+   "rooms": 0,
+   "group": "dining",
+   "later": "autotile"
+  },
+  {
+   "id": "dining 4x2",
+   "slug": "dining_4x2",
+   "score": 6,
+   "uses": 0,
+   "rooms": 0,
+   "group": "dining",
+   "later": "autotile"
+  },
+  {
+   "id": "display 3x2",
+   "slug": "display_3x2",
+   "score": 6,
+   "uses": 0,
+   "rooms": 0,
+   "group": "display",
+   "later": "autotile"
+  },
+  {
+   "id": "display 4x2",
+   "slug": "display_4x2",
+   "score": 6,
+   "uses": 0,
+   "rooms": 0,
+   "group": "display",
+   "later": "autotile"
+  },
+  {
+   "id": "display potion",
+   "slug": "display_potion",
+   "score": 6,
+   "uses": 2,
+   "rooms": 1,
+   "group": "display",
+   "later": null
+  },
+  {
+   "id": "elven bed",
+   "slug": "elven_bed",
+   "score": 6,
+   "uses": 1,
+   "rooms": 1,
+   "group": "elven bed",
+   "later": null
+  },
+  {
+   "id": "fish tank",
+   "slug": "fish_tank",
+   "score": 6,
+   "uses": 1,
+   "rooms": 1,
+   "group": "fish tank",
+   "later": "animated"
+  },
+  {
+   "id": "ice chest:fish+fishg+fishr",
+   "slug": "ice_chest_fish_fishg_fishr",
+   "score": 6,
+   "uses": 1,
+   "rooms": 1,
+   "group": "ice chest",
+   "later": null
+  },
+  {
+   "id": "ice chest:fish+fishr+fish",
+   "slug": "ice_chest_fish_fishr_fish",
+   "score": 6,
+   "uses": 1,
+   "rooms": 1,
+   "group": "ice chest",
+   "later": null
+  },
+  {
+   "id": "ice chest:ham+steak+ham",
+   "slug": "ice_chest_ham_steak_ham",
+   "score": 6,
+   "uses": 1,
+   "rooms": 1,
+   "group": "ice chest",
+   "later": null
+  },
+  {
+   "id": "ice chest:squid+crab+shell",
+   "slug": "ice_chest_squid_crab_shell",
+   "score": 6,
+   "uses": 1,
+   "rooms": 1,
+   "group": "ice chest",
+   "later": null
+  },
+  {
+   "id": "ice chest:steak+ham+sausage",
+   "slug": "ice_chest_steak_ham_sausage",
+   "score": 6,
+   "uses": 1,
+   "rooms": 1,
+   "group": "ice chest",
+   "later": null
+  },
+  {
+   "id": "long hearth 6",
+   "slug": "long_hearth_6",
+   "score": 6,
+   "uses": 0,
+   "rooms": 0,
+   "group": "long hearth 6",
+   "later": "animated"
+  },
+  {
+   "id": "loom",
+   "slug": "loom",
+   "score": 6,
+   "uses": 1,
+   "rooms": 1,
+   "group": "loom",
+   "later": null
+  },
+  {
+   "id": "meat hooks",
+   "slug": "meat_hooks",
+   "score": 6,
+   "uses": 1,
+   "rooms": 1,
+   "group": "meat hooks",
+   "later": null
+  },
+  {
+   "id": "pipe organ",
+   "slug": "pipe_organ",
+   "score": 6,
+   "uses": 1,
+   "rooms": 1,
+   "group": "pipe organ",
+   "later": null
+  },
+  {
+   "id": "pitchfork",
+   "slug": "pitchfork",
+   "score": 6,
+   "uses": 2,
+   "rooms": 1,
+   "group": "pitchfork",
+   "later": null
+  },
+  {
+   "id": "proofing rack",
+   "slug": "proofing_rack",
+   "score": 6,
+   "uses": 2,
+   "rooms": 1,
+   "group": "proofing rack",
+   "later": null
+  },
+  {
+   "id": "rune stone",
+   "slug": "rune_stone",
+   "score": 6,
+   "uses": 2,
+   "rooms": 1,
+   "group": "rune stone",
+   "later": "animated"
+  },
+  {
+   "id": "sofa",
+   "slug": "sofa",
+   "score": 6,
+   "uses": 1,
+   "rooms": 1,
+   "group": "sofa",
+   "later": null
+  },
+  {
+   "id": "stage curtain",
+   "slug": "stage_curtain",
+   "score": 6,
+   "uses": 2,
+   "rooms": 1,
+   "group": "stage curtain",
+   "later": null
+  },
+  {
+   "id": "stained glass",
+   "slug": "stained_glass",
+   "score": 6,
+   "uses": 2,
+   "rooms": 1,
+   "group": "stained glass",
+   "later": null
+  },
+  {
+   "id": "steam vent",
+   "slug": "steam_vent",
+   "score": 6,
+   "uses": 2,
+   "rooms": 1,
+   "group": "steam vent",
+   "later": "animated"
+  },
+  {
+   "id": "tea 3x2",
+   "slug": "tea_3x2",
+   "score": 6,
+   "uses": 0,
+   "rooms": 0,
+   "group": "tea",
+   "later": "autotile"
+  },
+  {
+   "id": "tea 4x2",
+   "slug": "tea_4x2",
+   "score": 6,
+   "uses": 0,
+   "rooms": 0,
+   "group": "tea",
+   "later": "autotile"
+  },
+  {
+   "id": "treasure pile",
+   "slug": "treasure_pile",
+   "score": 6,
+   "uses": 1,
+   "rooms": 1,
+   "group": "treasure pile",
+   "later": null
+  },
+  {
+   "id": "votive stand",
+   "slug": "votive_stand",
+   "score": 6,
+   "uses": 2,
+   "rooms": 1,
+   "group": "votive stand",
+   "later": "animated"
+  },
+  {
+   "id": "white tree",
+   "slug": "white_tree",
+   "score": 6,
+   "uses": 2,
+   "rooms": 1,
+   "group": "white tree",
+   "later": null
+  },
+  {
+   "id": "work 3x2",
+   "slug": "work_3x2",
+   "score": 6,
+   "uses": 0,
+   "rooms": 0,
+   "group": "work",
+   "later": "autotile"
+  },
+  {
+   "id": "work 4x2",
+   "slug": "work_4x2",
+   "score": 6,
+   "uses": 0,
+   "rooms": 0,
+   "group": "work",
+   "later": "autotile"
+  },
+  {
+   "id": "alembic",
+   "slug": "alembic",
+   "score": 5,
+   "uses": 1,
+   "rooms": 1,
+   "group": "alembic",
+   "later": null
+  },
+  {
+   "id": "banner green",
+   "slug": "banner_green",
+   "score": 5,
+   "uses": 1,
+   "rooms": 1,
+   "group": "banner",
+   "later": null
+  },
+  {
+   "id": "barrel:crab",
+   "slug": "barrel_crab",
+   "score": 5,
+   "uses": 1,
+   "rooms": 1,
+   "group": "barrel",
+   "later": null
+  },
+  {
+   "id": "barrel:grape",
+   "slug": "barrel_grape",
+   "score": 5,
+   "uses": 1,
+   "rooms": 1,
+   "group": "barrel",
+   "later": null
+  },
+  {
+   "id": "basket:cabbage",
+   "slug": "basket_cabbage",
+   "score": 5,
+   "uses": 1,
+   "rooms": 1,
+   "group": "basket",
+   "later": null
+  },
+  {
+   "id": "basket:carrot",
+   "slug": "basket_carrot",
+   "score": 5,
+   "uses": 1,
+   "rooms": 1,
+   "group": "basket",
+   "later": null
+  },
+  {
+   "id": "basket:egg",
+   "slug": "basket_egg",
+   "score": 5,
+   "uses": 1,
+   "rooms": 1,
+   "group": "basket",
+   "later": null
+  },
+  {
+   "id": "basket:shell",
+   "slug": "basket_shell",
+   "score": 5,
+   "uses": 1,
+   "rooms": 1,
+   "group": "basket",
+   "later": null
+  },
+  {
+   "id": "basket:tomato",
+   "slug": "basket_tomato",
+   "score": 5,
+   "uses": 1,
+   "rooms": 1,
+   "group": "basket",
+   "later": null
+  },
+  {
+   "id": "basket:wool",
+   "slug": "basket_wool",
+   "score": 5,
+   "uses": 1,
+   "rooms": 1,
+   "group": "basket",
+   "later": null
+  },
+  {
+   "id": "basket:yarn+yarnb+yarny",
+   "slug": "basket_yarn_yarnb_yarny",
+   "score": 5,
+   "uses": 1,
+   "rooms": 1,
+   "group": "basket",
+   "later": null
+  },
+  {
+   "id": "bell rope",
+   "slug": "bell_rope",
+   "score": 5,
+   "uses": 1,
+   "rooms": 1,
+   "group": "bell rope",
+   "later": null
+  },
+  {
+   "id": "cabinet:bolt+boltg+boltr",
+   "slug": "cabinet_bolt_boltg_boltr",
+   "score": 5,
+   "uses": 1,
+   "rooms": 1,
+   "group": "cabinet",
+   "later": null
+  },
+  {
+   "id": "cabinet:book+bookb+bookg",
+   "slug": "cabinet_book_bookb_bookg",
+   "score": 5,
+   "uses": 1,
+   "rooms": 1,
+   "group": "cabinet",
+   "later": null
+  },
+  {
+   "id": "cabinet:cheese",
+   "slug": "cabinet_cheese",
+   "score": 5,
+   "uses": 1,
+   "rooms": 1,
+   "group": "cabinet",
+   "later": null
+  },
+  {
+   "id": "cabinet:pie",
+   "slug": "cabinet_pie",
+   "score": 5,
+   "uses": 1,
+   "rooms": 1,
+   "group": "cabinet",
+   "later": null
+  },
+  {
+   "id": "cabinet:vial+flask",
+   "slug": "cabinet_vial_flask",
+   "score": 5,
+   "uses": 1,
+   "rooms": 1,
+   "group": "cabinet",
+   "later": null
+  },
+  {
+   "id": "cheese wheels",
+   "slug": "cheese_wheels",
+   "score": 5,
+   "uses": 1,
+   "rooms": 1,
+   "group": "cheese wheels",
+   "later": null
+  },
+  {
+   "id": "conductor podium",
+   "slug": "conductor_podium",
+   "score": 5,
+   "uses": 1,
+   "rooms": 1,
+   "group": "conductor podium",
+   "later": null
+  },
+  {
+   "id": "cradle",
+   "slug": "cradle",
+   "score": 5,
+   "uses": 1,
+   "rooms": 1,
+   "group": "cradle",
+   "later": null
+  },
+  {
+   "id": "crate:cabbage",
+   "slug": "crate_cabbage",
+   "score": 5,
+   "uses": 1,
+   "rooms": 1,
+   "group": "crate",
+   "later": null
+  },
+  {
+   "id": "crate:crab",
+   "slug": "crate_crab",
+   "score": 5,
+   "uses": 1,
+   "rooms": 1,
+   "group": "crate",
+   "later": null
+  },
+  {
+   "id": "crate:fish",
+   "slug": "crate_fish",
+   "score": 5,
+   "uses": 1,
+   "rooms": 1,
+   "group": "crate",
+   "later": null
+  },
+  {
+   "id": "crate:fish+ice",
+   "slug": "crate_fish_ice",
+   "score": 5,
+   "uses": 1,
+   "rooms": 1,
+   "group": "crate",
+   "later": null
+  },
+  {
+   "id": "crate:fishr",
+   "slug": "crate_fishr",
+   "score": 5,
+   "uses": 1,
+   "rooms": 1,
+   "group": "crate",
+   "later": null
+  },
+  {
+   "id": "crate:onion",
+   "slug": "crate_onion",
+   "score": 5,
+   "uses": 1,
+   "rooms": 1,
+   "group": "crate",
+   "later": null
+  },
+  {
+   "id": "crate:shell",
+   "slug": "crate_shell",
+   "score": 5,
+   "uses": 1,
+   "rooms": 1,
+   "group": "crate",
+   "later": null
+  },
+  {
+   "id": "crate:squid",
+   "slug": "crate_squid",
+   "score": 5,
+   "uses": 1,
+   "rooms": 1,
+   "group": "crate",
+   "later": null
+  },
+  {
+   "id": "desk 1x1",
+   "slug": "desk_1x1",
+   "score": 5,
+   "uses": 1,
+   "rooms": 1,
+   "group": "desk",
+   "later": "autotile"
+  },
+  {
+   "id": "fishing net",
+   "slug": "fishing_net",
+   "score": 5,
+   "uses": 1,
+   "rooms": 1,
+   "group": "fishing net",
+   "later": null
+  },
+  {
+   "id": "hang:fish",
+   "slug": "hang_fish",
+   "score": 5,
+   "uses": 1,
+   "rooms": 1,
+   "group": "hang",
+   "later": null
+  },
+  {
+   "id": "hang:fishr",
+   "slug": "hang_fishr",
+   "score": 5,
+   "uses": 1,
+   "rooms": 1,
+   "group": "hang",
+   "later": null
+  },
+  {
+   "id": "hang:mushroom",
+   "slug": "hang_mushroom",
+   "score": 5,
+   "uses": 1,
+   "rooms": 1,
+   "group": "hang",
+   "later": null
+  },
+  {
+   "id": "holy water font",
+   "slug": "holy_water_font",
+   "score": 5,
+   "uses": 1,
+   "rooms": 1,
+   "group": "holy water font",
+   "later": null
+  },
+  {
+   "id": "hymn board",
+   "slug": "hymn_board",
+   "score": 5,
+   "uses": 1,
+   "rooms": 1,
+   "group": "hymn board",
+   "later": null
+  },
+  {
+   "id": "lectern",
+   "slug": "lectern",
+   "score": 5,
+   "uses": 1,
+   "rooms": 1,
+   "group": "lectern",
+   "later": null
+  },
+  {
+   "id": "orrery",
+   "slug": "orrery",
+   "score": 5,
+   "uses": 1,
+   "rooms": 1,
+   "group": "orrery",
+   "later": "animated"
+  },
+  {
+   "id": "owl perch",
+   "slug": "owl_perch",
+   "score": 5,
+   "uses": 1,
+   "rooms": 1,
+   "group": "owl perch",
+   "later": "animated"
+  },
+  {
+   "id": "paschal candle",
+   "slug": "paschal_candle",
+   "score": 5,
+   "uses": 1,
+   "rooms": 1,
+   "group": "paschal candle",
+   "later": "animated"
+  },
+  {
+   "id": "peel rack",
+   "slug": "peel_rack",
+   "score": 5,
+   "uses": 1,
+   "rooms": 1,
+   "group": "peel rack",
+   "later": null
+  },
+  {
+   "id": "pipe rack",
+   "slug": "pipe_rack",
+   "score": 5,
+   "uses": 1,
+   "rooms": 1,
+   "group": "pipe rack",
+   "later": null
+  },
+  {
+   "id": "sanctuary lamp",
+   "slug": "sanctuary_lamp",
+   "score": 5,
+   "uses": 1,
+   "rooms": 1,
+   "group": "sanctuary lamp",
+   "later": "animated"
+  },
+  {
+   "id": "shelf:bottle+bottler+bottley",
+   "slug": "shelf_bottle_bottler_bottley",
+   "score": 5,
+   "uses": 1,
+   "rooms": 1,
+   "group": "shelf",
+   "later": null
+  },
+  {
+   "id": "shelf:jar+jarb+jarg",
+   "slug": "shelf_jar_jarb_jarg",
+   "score": 5,
+   "uses": 1,
+   "rooms": 1,
+   "group": "shelf",
+   "later": null
+  },
+  {
+   "id": "shelf:yarn+yarnb+yarny",
+   "slug": "shelf_yarn_yarnb_yarny",
+   "score": 5,
+   "uses": 1,
+   "rooms": 1,
+   "group": "shelf",
+   "later": null
+  },
+  {
+   "id": "spellbook stand",
+   "slug": "spellbook_stand",
+   "score": 5,
+   "uses": 1,
+   "rooms": 1,
+   "group": "spellbook stand",
+   "later": null
+  },
+  {
+   "id": "spinning wheel",
+   "slug": "spinning_wheel",
+   "score": 5,
+   "uses": 1,
+   "rooms": 1,
+   "group": "spinning wheel",
+   "later": null
+  },
+  {
+   "id": "tailor mirror",
+   "slug": "tailor_mirror",
+   "score": 5,
+   "uses": 1,
+   "rooms": 1,
+   "group": "tailor mirror",
+   "later": null
+  },
+  {
+   "id": "tall vase blue",
+   "slug": "tall_vase_blue",
+   "score": 5,
+   "uses": 1,
+   "rooms": 1,
+   "group": "tall vase",
+   "later": null
+  },
+  {
+   "id": "tall vase teal",
+   "slug": "tall_vase_teal",
+   "score": 5,
+   "uses": 1,
+   "rooms": 1,
+   "group": "tall vase",
+   "later": null
+  },
+  {
+   "id": "tall vase yellow",
+   "slug": "tall_vase_yellow",
+   "score": 5,
+   "uses": 1,
+   "rooms": 1,
+   "group": "tall vase",
+   "later": null
+  },
+  {
+   "id": "towel rail",
+   "slug": "towel_rail",
+   "score": 5,
+   "uses": 1,
+   "rooms": 1,
+   "group": "towel rail",
+   "later": null
+  },
+  {
+   "id": "desk 2x2",
+   "slug": "desk_2x2",
+   "score": 4,
+   "uses": 0,
+   "rooms": 0,
+   "group": "desk",
+   "later": "autotile"
+  },
+  {
+   "id": "desk 4x1",
+   "slug": "desk_4x1",
+   "score": 4,
+   "uses": 0,
+   "rooms": 0,
+   "group": "desk",
+   "later": "autotile"
+  },
+  {
+   "id": "dining 2x2",
+   "slug": "dining_2x2",
+   "score": 4,
+   "uses": 0,
+   "rooms": 0,
+   "group": "dining",
+   "later": "autotile"
+  },
+  {
+   "id": "display 2x2",
+   "slug": "display_2x2",
+   "score": 4,
+   "uses": 0,
+   "rooms": 0,
+   "group": "display",
+   "later": "autotile"
+  },
+  {
+   "id": "display 4x1",
+   "slug": "display_4x1",
+   "score": 4,
+   "uses": 0,
+   "rooms": 0,
+   "group": "display",
+   "later": "autotile"
+  },
+  {
+   "id": "double bed blue",
+   "slug": "double_bed_blue",
+   "score": 4,
+   "uses": 0,
+   "rooms": 0,
+   "group": "double bed",
+   "later": null
+  },
+  {
+   "id": "double bed green",
+   "slug": "double_bed_green",
+   "score": 4,
+   "uses": 0,
+   "rooms": 0,
+   "group": "double bed",
+   "later": null
+  },
+  {
+   "id": "felt 2x2",
+   "slug": "felt_2x2",
+   "score": 4,
+   "uses": 0,
+   "rooms": 0,
+   "group": "felt 2x2",
+   "later": "autotile"
+  },
+  {
+   "id": "green rug",
+   "slug": "green_rug",
+   "score": 4,
+   "uses": 0,
+   "rooms": 0,
+   "group": "green rug",
+   "later": null
+  },
+  {
+   "id": "kcounter 4x1",
+   "slug": "kcounter_4x1",
+   "score": 4,
+   "uses": 0,
+   "rooms": 0,
+   "group": "kcounter",
+   "later": "autotile"
+  },
+  {
+   "id": "long hearth 4",
+   "slug": "long_hearth_4",
+   "score": 4,
+   "uses": 0,
+   "rooms": 0,
+   "group": "long hearth 4",
+   "later": "animated"
+  },
+  {
+   "id": "purple rug",
+   "slug": "purple_rug",
+   "score": 4,
+   "uses": 0,
+   "rooms": 0,
+   "group": "purple rug",
+   "later": null
+  },
+  {
+   "id": "sideboard 4x1",
+   "slug": "sideboard_4x1",
+   "score": 4,
+   "uses": 0,
+   "rooms": 0,
+   "group": "sideboard",
+   "later": "autotile"
+  },
+  {
+   "id": "tea 2x2",
+   "slug": "tea_2x2",
+   "score": 4,
+   "uses": 0,
+   "rooms": 0,
+   "group": "tea",
+   "later": "autotile"
+  },
+  {
+   "id": "tea 4x1",
+   "slug": "tea_4x1",
+   "score": 4,
+   "uses": 0,
+   "rooms": 0,
+   "group": "tea",
+   "later": "autotile"
+  },
+  {
+   "id": "work 2x2",
+   "slug": "work_2x2",
+   "score": 4,
+   "uses": 0,
+   "rooms": 0,
+   "group": "work",
+   "later": "autotile"
+  },
+  {
+   "id": "work 4x1",
+   "slug": "work_4x1",
+   "score": 4,
+   "uses": 0,
+   "rooms": 0,
+   "group": "work",
+   "later": "autotile"
+  },
+  {
+   "id": "bench 3",
+   "slug": "bench_3",
+   "score": 3,
+   "uses": 0,
+   "rooms": 0,
+   "group": "bench",
+   "later": null
+  },
+  {
+   "id": "dining 3x1",
+   "slug": "dining_3x1",
+   "score": 3,
+   "uses": 0,
+   "rooms": 0,
+   "group": "dining",
+   "later": "autotile"
+  },
+  {
+   "id": "felt 3x1",
+   "slug": "felt_3x1",
+   "score": 3,
+   "uses": 0,
+   "rooms": 0,
+   "group": "felt 3x1",
+   "later": "autotile"
+  },
+  {
+   "id": "kcounter 3x1",
+   "slug": "kcounter_3x1",
+   "score": 3,
+   "uses": 0,
+   "rooms": 0,
+   "group": "kcounter",
+   "later": "autotile"
+  },
+  {
+   "id": "long hearth 3",
+   "slug": "long_hearth_3",
+   "score": 3,
+   "uses": 0,
+   "rooms": 0,
+   "group": "long hearth 3",
+   "later": "animated"
+  },
+  {
+   "id": "pew E3",
+   "slug": "pew_E3",
+   "score": 3,
+   "uses": 0,
+   "rooms": 0,
+   "group": "pew E3",
+   "later": null
+  },
+  {
+   "id": "runner",
+   "slug": "runner",
+   "score": 3,
+   "uses": 0,
+   "rooms": 0,
+   "group": "runner",
+   "later": null
+  },
+  {
+   "id": "sideboard 3x1",
+   "slug": "sideboard_3x1",
+   "score": 3,
+   "uses": 0,
+   "rooms": 0,
+   "group": "sideboard",
+   "later": "autotile"
+  },
+  {
+   "id": "tea 3x1",
+   "slug": "tea_3x1",
+   "score": 3,
+   "uses": 0,
+   "rooms": 0,
+   "group": "tea",
+   "later": "autotile"
+  },
+  {
+   "id": "altar",
+   "slug": "altar",
+   "score": 2,
+   "uses": 0,
+   "rooms": 0,
+   "group": "altar",
+   "later": null
+  },
+  {
+   "id": "firewood rack 2w",
+   "slug": "firewood_rack_2w",
+   "score": 2,
+   "uses": 0,
+   "rooms": 0,
+   "group": "firewood rack",
+   "later": null
+  },
+  {
+   "id": "fish ice chest",
+   "slug": "fish_ice_chest",
+   "score": 2,
+   "uses": 0,
+   "rooms": 0,
+   "group": "fish ice chest",
+   "later": null
+  },
+  {
+   "id": "round door",
+   "slug": "round_door",
+   "score": 2,
+   "uses": 0,
+   "rooms": 0,
+   "group": "round door",
+   "later": null
+  },
+  {
+   "id": "table:bolt+yarn",
+   "slug": "table_bolt_yarn",
+   "score": 2,
+   "uses": 0,
+   "rooms": 0,
+   "group": "table",
+   "later": null
+  },
+  {
+   "id": "table:book+scroll",
+   "slug": "table_book_scroll",
+   "score": 2,
+   "uses": 0,
+   "rooms": 0,
+   "group": "table",
+   "later": null
+  },
+  {
+   "id": "table:cake+pie",
+   "slug": "table_cake_pie",
+   "score": 2,
+   "uses": 0,
+   "rooms": 0,
+   "group": "table",
+   "later": null
+  },
+  {
+   "id": "table:fish+fishr",
+   "slug": "table_fish_fishr",
+   "score": 2,
+   "uses": 0,
+   "rooms": 0,
+   "group": "table",
+   "later": null
+  },
+  {
+   "id": "table:gem+coins",
+   "slug": "table_gem_coins",
+   "score": 2,
+   "uses": 0,
+   "rooms": 0,
+   "group": "table",
+   "later": null
+  },
+  {
+   "id": "table:loaf+bun",
+   "slug": "table_loaf_bun",
+   "score": 2,
+   "uses": 0,
+   "rooms": 0,
+   "group": "table",
+   "later": null
+  },
+  {
+   "id": "table:mug+bottle",
+   "slug": "table_mug_bottle",
+   "score": 2,
+   "uses": 0,
+   "rooms": 0,
+   "group": "table",
+   "later": null
+  },
+  {
+   "id": "table:plate+cup",
+   "slug": "table_plate_cup",
+   "score": 2,
+   "uses": 0,
+   "rooms": 0,
+   "group": "table",
+   "later": null
+  },
+  {
+   "id": "table:potion+flask",
+   "slug": "table_potion_flask",
+   "score": 2,
+   "uses": 0,
+   "rooms": 0,
+   "group": "table",
+   "later": null
+  },
+  {
+   "id": "table:steak+ham",
+   "slug": "table_steak_ham",
+   "score": 2,
+   "uses": 0,
+   "rooms": 0,
+   "group": "table",
+   "later": null
+  },
+  {
+   "id": "balance scale",
+   "slug": "balance_scale",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "balance scale",
+   "later": null
+  },
+  {
+   "id": "banner blue",
+   "slug": "banner_blue",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "banner",
+   "later": null
+  },
+  {
+   "id": "banner red",
+   "slug": "banner_red",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "banner",
+   "later": null
+  },
+  {
+   "id": "barrel:fish+ice",
+   "slug": "barrel_fish_ice",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "barrel",
+   "later": null
+  },
+  {
+   "id": "barrel:fishg",
+   "slug": "barrel_fishg",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "barrel",
+   "later": null
+  },
+  {
+   "id": "barrel:fishr",
+   "slug": "barrel_fishr",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "barrel",
+   "later": null
+  },
+  {
+   "id": "barrel:potato",
+   "slug": "barrel_potato",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "barrel",
+   "later": null
+  },
+  {
+   "id": "barrel:shell",
+   "slug": "barrel_shell",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "barrel",
+   "later": null
+  },
+  {
+   "id": "barrel:squid",
+   "slug": "barrel_squid",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "barrel",
+   "later": null
+  },
+  {
+   "id": "basket:apple",
+   "slug": "basket_apple",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "basket",
+   "later": null
+  },
+  {
+   "id": "basket:baguette",
+   "slug": "basket_baguette",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "basket",
+   "later": null
+  },
+  {
+   "id": "basket:bun",
+   "slug": "basket_bun",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "basket",
+   "later": null
+  },
+  {
+   "id": "basket:cake",
+   "slug": "basket_cake",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "basket",
+   "later": null
+  },
+  {
+   "id": "basket:eggplant",
+   "slug": "basket_eggplant",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "basket",
+   "later": null
+  },
+  {
+   "id": "basket:fish",
+   "slug": "basket_fish",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "basket",
+   "later": null
+  },
+  {
+   "id": "basket:fish+ice",
+   "slug": "basket_fish_ice",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "basket",
+   "later": null
+  },
+  {
+   "id": "basket:flower",
+   "slug": "basket_flower",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "basket",
+   "later": null
+  },
+  {
+   "id": "basket:grape",
+   "slug": "basket_grape",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "basket",
+   "later": null
+  },
+  {
+   "id": "basket:jar+jarb+jarg",
+   "slug": "basket_jar_jarb_jarg",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "basket",
+   "later": null
+  },
+  {
+   "id": "basket:lemon",
+   "slug": "basket_lemon",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "basket",
+   "later": null
+  },
+  {
+   "id": "basket:loaf",
+   "slug": "basket_loaf",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "basket",
+   "later": null
+  },
+  {
+   "id": "basket:onion",
+   "slug": "basket_onion",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "basket",
+   "later": null
+  },
+  {
+   "id": "basket:pie",
+   "slug": "basket_pie",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "basket",
+   "later": null
+  },
+  {
+   "id": "basket:potato",
+   "slug": "basket_potato",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "basket",
+   "later": null
+  },
+  {
+   "id": "basket:potion+potionb+potiong",
+   "slug": "basket_potion_potionb_potiong",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "basket",
+   "later": null
+  },
+  {
+   "id": "basket:pumpkin",
+   "slug": "basket_pumpkin",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "basket",
+   "later": null
+  },
+  {
+   "id": "basket:vial+flask",
+   "slug": "basket_vial_flask",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "basket",
+   "later": null
+  },
+  {
+   "id": "cabinet:bun",
+   "slug": "cabinet_bun",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "cabinet",
+   "later": null
+  },
+  {
+   "id": "cabinet:gem+gemr",
+   "slug": "cabinet_gem_gemr",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "cabinet",
+   "later": null
+  },
+  {
+   "id": "cabinet:loaf",
+   "slug": "cabinet_loaf",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "cabinet",
+   "later": null
+  },
+  {
+   "id": "cabinet:toy",
+   "slug": "cabinet_toy",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "cabinet",
+   "later": null
+  },
+  {
+   "id": "candle",
+   "slug": "candle",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "candle",
+   "later": "animated"
+  },
+  {
+   "id": "column steel",
+   "slug": "column_steel",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "column steel",
+   "later": null
+  },
+  {
+   "id": "column stone",
+   "slug": "column_stone",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "column stone",
+   "later": null
+  },
+  {
+   "id": "counter 1x1",
+   "slug": "counter_1x1",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "counter",
+   "later": "autotile"
+  },
+  {
+   "id": "crate:apple",
+   "slug": "crate_apple",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "crate",
+   "later": null
+  },
+  {
+   "id": "crate:baguette",
+   "slug": "crate_baguette",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "crate",
+   "later": null
+  },
+  {
+   "id": "crate:bun",
+   "slug": "crate_bun",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "crate",
+   "later": null
+  },
+  {
+   "id": "crate:cake",
+   "slug": "crate_cake",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "crate",
+   "later": null
+  },
+  {
+   "id": "crate:carrot",
+   "slug": "crate_carrot",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "crate",
+   "later": null
+  },
+  {
+   "id": "crate:eggplant",
+   "slug": "crate_eggplant",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "crate",
+   "later": null
+  },
+  {
+   "id": "crate:fishg",
+   "slug": "crate_fishg",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "crate",
+   "later": null
+  },
+  {
+   "id": "crate:grape",
+   "slug": "crate_grape",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "crate",
+   "later": null
+  },
+  {
+   "id": "crate:lemon",
+   "slug": "crate_lemon",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "crate",
+   "later": null
+  },
+  {
+   "id": "crate:loaf",
+   "slug": "crate_loaf",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "crate",
+   "later": null
+  },
+  {
+   "id": "crate:pie",
+   "slug": "crate_pie",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "crate",
+   "later": null
+  },
+  {
+   "id": "crate:pumpkin",
+   "slug": "crate_pumpkin",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "crate",
+   "later": null
+  },
+  {
+   "id": "crate:tomato",
+   "slug": "crate_tomato",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "crate",
+   "later": null
+  },
+  {
+   "id": "crystal ball",
+   "slug": "crystal_ball",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "crystal ball",
+   "later": null
+  },
+  {
+   "id": "cupboard",
+   "slug": "cupboard",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "cupboard",
+   "later": null
+  },
+  {
+   "id": "display 1x1",
+   "slug": "display_1x1",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "display",
+   "later": "autotile"
+  },
+  {
+   "id": "display apple",
+   "slug": "display_apple",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "display",
+   "later": null
+  },
+  {
+   "id": "display bread",
+   "slug": "display_bread",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "display",
+   "later": null
+  },
+  {
+   "id": "felt 1x1",
+   "slug": "felt_1x1",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "felt 1x1",
+   "later": "autotile"
+  },
+  {
+   "id": "hang:flower",
+   "slug": "hang_flower",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "hang",
+   "later": null
+  },
+  {
+   "id": "kcounter 1x1",
+   "slug": "kcounter_1x1",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "kcounter",
+   "later": "autotile"
+  },
+  {
+   "id": "mortar and pestle",
+   "slug": "mortar_and_pestle",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "mortar and pestle",
+   "later": null
+  },
+  {
+   "id": "plant",
+   "slug": "plant",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "plant",
+   "later": null
+  },
+  {
+   "id": "pot",
+   "slug": "pot",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "pot",
+   "later": null
+  },
+  {
+   "id": "potted cactus",
+   "slug": "potted_cactus",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "potted",
+   "later": null
+  },
+  {
+   "id": "roundtable",
+   "slug": "roundtable",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "roundtable",
+   "later": null
+  },
+  {
+   "id": "sack",
+   "slug": "sack",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "sack",
+   "later": null
+  },
+  {
+   "id": "shelf pots",
+   "slug": "shelf_pots",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "shelf pots",
+   "later": null
+  },
+  {
+   "id": "shelf:bolt+boltg+boltr",
+   "slug": "shelf_bolt_boltg_boltr",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "shelf",
+   "later": null
+  },
+  {
+   "id": "shelf:book+bookb+bookg",
+   "slug": "shelf_book_bookb_bookg",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "shelf",
+   "later": null
+  },
+  {
+   "id": "shelf:candle",
+   "slug": "shelf_candle",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "shelf",
+   "later": null
+  },
+  {
+   "id": "shelf:flower",
+   "slug": "shelf_flower",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "shelf",
+   "later": null
+  },
+  {
+   "id": "shelf:herb",
+   "slug": "shelf_herb",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "shelf",
+   "later": null
+  },
+  {
+   "id": "shelf:ingot+ingotg",
+   "slug": "shelf_ingot_ingotg",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "shelf",
+   "later": null
+  },
+  {
+   "id": "shelf:mushroom",
+   "slug": "shelf_mushroom",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "shelf",
+   "later": null
+  },
+  {
+   "id": "shelf:scroll",
+   "slug": "shelf_scroll",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "shelf",
+   "later": null
+  },
+  {
+   "id": "shelf:skull+crystal",
+   "slug": "shelf_skull_crystal",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "shelf",
+   "later": null
+  },
+  {
+   "id": "shelf:toy",
+   "slug": "shelf_toy",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "shelf",
+   "later": null
+  },
+  {
+   "id": "shelf:vial+flask",
+   "slug": "shelf_vial_flask",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "shelf",
+   "later": null
+  },
+  {
+   "id": "sideboard 1x1",
+   "slug": "sideboard_1x1",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "sideboard",
+   "later": "autotile"
+  },
+  {
+   "id": "stairs down",
+   "slug": "stairs_down",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "stairs down",
+   "later": null
+  },
+  {
+   "id": "stone throne",
+   "slug": "stone_throne",
+   "score": 1,
+   "uses": 0,
+   "rooms": 0,
+   "group": "stone throne",
+   "later": null
+  }
+ ]
+}

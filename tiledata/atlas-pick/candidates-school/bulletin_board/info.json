@@ -1,0 +1,21 @@
+{
+ "id": "bulletin_board",
+ "slug": "bulletin_board",
+ "name": "게시판",
+ "scene": "교실",
+ "place": "in",
+ "cells": [
+  2,
+  2
+ ],
+ "canvas": [
+  32,
+  32
+ ],
+ "layer": "wall",
+ "layer_ko": "벽 걸이(위층, 투명 배경·벽면에 붙는다)",
+ "description": "교실 뒤 코르크 게시판. 나무 틀, 코르크 면에 종이 네다섯 장(흰색·연노랑·연분홍, 크기 다르게, 살짝 기울게)과 빨강·파랑 압정 점. 종이 위 글줄은 1px 흐린 줄.",
+ "palette_hint": "cork 면, vdwood 틀, washi·vyellow·sakura 종이",
+ "pair": [],
+ "worker": "s5"
+}

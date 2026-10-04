@@ -1,0 +1,74 @@
+// C 또렷하게: 뚜껑을 오른쪽 아래로 밀어 위쪽 절반이 열려 붉은 안감과 어두운 빈 속이 크게 보인다
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a wood
+@mat b brass
+@mat r red
+@mblock 0 0
+................
+....aaaaaaaa....
+...aaaaaaaaaa...
+..aarrrrrrrraa..
+.aaarrrrrrrraaa.
+.aaarrrrrrrraaa.
+.aaarrrrrrrraaa.
+.aaarrrrrrrraaa.
+.aaarrrrrrrraaa.
+..aarrrrrrrraa..
+..aarrrrrrrraa..
+..aarrrrrrrraa..
+..aarrrrrrrraa..
+...aarrrrrraa...
+...aarraaaaaaaa.
+...aaraaaaaaaaa.
+...aaaaaaaaaaaa.
+...aaaaaaaaaaaa.
+...aaaaaabaaaaa.
+...aaaaabbbaaaa.
+...aaaaaabaaaaa.
+...aaaaaabaaaaa.
+...aaaaaaaaaaaa.
+...aaaaaaaaaaaa.
+...aaaaaaaaaaaa.
+...aaaaaaaaaaaa.
+...aaaaaaaaaa...
+...aaaaaaaaaa...
+...aaaaaaaaaa...
+...aaaaaaaaaa...
+...aaaaaaaaaa...
+................
+@tblock 0 0
+................
+....11111111....
+...1666666661...
+..151111111131..
+.16522222222331.
+.16545333332331.
+.16545333322331.
+.16545433222331.
+.16535432222331.
+..154543222231..
+..154543222231..
+..154432222231..
+..153322222131..
+...1543222231...
+...154216666661.
+...154166555551.
+...151665555551.
+...116666554431.
+...116666554431.
+...116655554431.
+...116666554431.
+...116666554331.
+...116655444331.
+...114444433331.
+...113333333321.
+...111111111111.
+...1433333321...
+...1411111121...
+...1422222221...
+...1222222221...
+...1111111111...
+................
+@px 3 31 - 4 31 ~ 5 31 ~ 6 31 ~ 7 31 ~ 8 31 ~ 9 31 ~ 10 31 ~ 11 31 ~ 12 31 -

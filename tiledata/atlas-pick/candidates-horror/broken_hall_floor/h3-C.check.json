@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/broken_hall_floor/h3-C.pxg",
+ "set": "horror",
+ "id": "broken_hall_floor",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.105
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.203
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 14,
+ "bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "note": "금 사이로 뼈처럼 창백한 손가락 셋이 바닥 밑에서 짚고 올라온다 + 종이 쪼가리",
+ "ok": true
+}

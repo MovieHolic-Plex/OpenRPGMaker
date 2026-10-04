@@ -1,0 +1,31 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/mine_cart/w2-C.pxg",
+ "id": "mine cart",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.029
+ },
+ "lint": {
+  "failed": [],
+  "pass": true
+ },
+ "colors": 9,
+ "v5_colors": 9,
+ "bbox": [
+  1,
+  1,
+  14,
+  15
+ ],
+ "v5_bbox": [
+  1,
+  1,
+  14,
+  15
+ ],
+ "note": "재해석: 위가 넓고 아래가 좁은 사다리꼴 통, 큰 광석 더미(금 알갱이), 바퀴를 바깥으로",
+ "ok": true
+}

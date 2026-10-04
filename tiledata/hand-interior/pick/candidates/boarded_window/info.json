@@ -1,0 +1,34 @@
+{
+ "id": "boarded window",
+ "slug": "boarded_window",
+ "name_ko": "판자로 막은 창",
+ "category": "폐가",
+ "kind": "hang",
+ "kind_ko": "벽면 걸이(벽 두 줄 중 윗줄)",
+ "canvas": [
+  16,
+  16
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 16,
+  "h": 16
+ },
+ "footprint": {
+  "w": 1,
+  "h": 0
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "판자 세 장을 비스듬히 못 박아 막은 창.",
+ "where": "",
+ "placement": [
+  "벽면 두 줄 중 윗줄(y=벽면 첫 줄)에 건다. 바닥 칸은 차지하지 않는다"
+ ],
+ "v5_bbox": null,
+ "v5_colors": 0,
+ "material": "glass",
+ "related": [],
+ "new": true,
+ "contextRoom": "manor"
+}

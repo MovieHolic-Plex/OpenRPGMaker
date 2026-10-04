@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/hang_fish/w63-A.pxg",
+ "id": "hang:fish",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.007
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 11,
+ "v5_colors": 11,
+ "bbox": [
+  0,
+  1,
+  15,
+  8
+ ],
+ "v5_bbox": [
+  0,
+  1,
+  15,
+  8
+ ],
+ "note": "몸통=hang:ham w4-A(막대 wood6/2 + straw:2 끈 둘, 끈이 물건 윗점에 닿음). 매단 물고기은 v5 그대로; 걸이 짜임이 ham 과 이미 같아 위치 변경 없음. 합성 work/w63-compose.py",
+ "ok": true
+}

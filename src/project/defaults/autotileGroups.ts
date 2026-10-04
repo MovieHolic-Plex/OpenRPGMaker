@@ -1,7 +1,7 @@
 import type { AutotileGroup, TilesetDef } from "../types";
 import { buildEdgeCornerInnerVariantMap, type EdgeCornerInnerTileSet } from "./autotileEngine";
 import { CHIPSET_TILE_GROUPS, COBBLE_TILE, DIRT_ROAD_TILE, FARMLAND_TILE, SAND_TILE } from "./chipsetMapping";
-import { DEFAULT_TILES_PER_ROW, DEFAULT_TILESET_TEXTURE_KEY } from "./constants";
+import { DEFAULT_TILES_PER_ROW, COMBINED_TOWN_TILESET_TEXTURE_KEY } from "./constants";
 
 // 내장 오토타일 기본 그룹 정의.
 // 기존에 하드코딩돼 있던 흙길(road)/모래(sand) 셰이핑을 범용 엔진 데이터 모델로 표현한다.
@@ -244,7 +244,7 @@ export function cloneDefaultAutotileGroups(): AutotileGroup[] {
 // (예: 건축 팔레트가 흙길 8방 그룹만 영속시킨 프로젝트에서 모래 오토타일이 죽는 회귀 방지)
 export function autotileGroupsForTileset(tileset: TilesetDef | undefined): readonly AutotileGroup[] {
   const custom = tileset?.autotileGroups ?? [];
-  const isDefaultTileset = !tileset || (tileset.image.type === "bundled" && tileset.image.id === DEFAULT_TILESET_TEXTURE_KEY);
+  const isDefaultTileset = !tileset || (tileset.image.type === "bundled" && tileset.image.id === COMBINED_TOWN_TILESET_TEXTURE_KEY);
   if (!isDefaultTileset) return custom;
   if (custom.length === 0) return DEFAULT_AUTOTILE_GROUPS;
   const coveredMembers = new Set<number>(custom.flatMap((group) => group.memberTileIds));

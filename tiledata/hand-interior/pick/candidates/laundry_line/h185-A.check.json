@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/laundry_line/h185-A.pxg",
+ "id": "laundry line",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.035
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 8,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  0,
+  31,
+  15
+ ],
+ "v5_bbox": null,
+ "note": "벽 사이 처진 줄과 나무 집게에 흰 칼라 셔츠·양말 한 쌍을 널고 왼쪽 위 빛의 천 주름을 표현; 꼭대기 윗면 0행(y=없음, 지시서의 벽면 걸이 평면 예외).",
+ "ok": true
+}

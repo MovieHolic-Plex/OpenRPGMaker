@@ -1,0 +1,53 @@
+// A: 작은 나무 침대, 별 머리판과 베개·분홍 이불; 머리판 윗면 3행(y=0~2).
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a dwood 2
+@mat b pine 2
+@mat c pine 3
+@mat d pine 4
+@mat e pine 5
+@mat f pine 6
+@mat p linen 3
+@mat q linen 4
+@mat r linen 5
+@mat s linen 6
+@mat j pink 2
+@mat k pink 3
+@mat l pink 4
+@mat m pink 5
+@mat u brass 4
+@mat v brass 5
+@mblock 0 0
+..dddddddddddd..
+.deeeedddeeeedb.
+.dddccddddddcdb.
+.abbbbbbbbbbbba.
+.adccccccccccba.
+.adccccvcccccba.
+.adccuvvvucccba.
+.adcccuvuccccba.
+.adcccucuccccba.
+.abbbbbbbbbbbba.
+.acqqrrrrrrqqba.
+.adqsssssssrqba.
+.adrsssssssrqba.
+.acqrrrrrrrqpba.
+.adppqqqqqqppba.
+.admmlmmmmllkba.
+.admmlllllllkba.
+.admmlllllllkba.
+.adlmmmlllllkba.
+.adllmmlllllkba.
+.adllllllllkkba.
+.adlllllllklkba.
+.adlllkllllkkba.
+.adlllkklllkkba.
+.adkkkkkkkkkjba.
+.acjjjjjjjjjjba.
+.adddddddddddba.
+.adcccccddcccba.
+.acccbbccccccba.
+.abbbbbbbbbbbba.
+.acb........bba.
+.aab........aaa.

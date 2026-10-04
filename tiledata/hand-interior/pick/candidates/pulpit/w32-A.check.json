@@ -1,0 +1,45 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/pulpit/w32-A.pxg",
+ "id": "pulpit",
+ "hard": [],
+ "warn": [],
+ "resized": {
+  "canvas": [
+   64,
+   48
+  ],
+  "footprint": {
+   "w": 4,
+   "h": 3
+  },
+  "why": "사용자 메모: 설교단은 공간감이 별로 → 오른쪽에서 올라가는 계단, 대략 4x3 사이즈."
+ },
+ "refmap": {
+  "cells": 11,
+  "atLeast95": 0,
+  "max": 0.047
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 34,
+ "v5_colors": 16,
+ "bbox": [
+  3,
+  8,
+  62,
+  45
+ ],
+ "v5_bbox": [
+  0,
+  10,
+  29,
+  63
+ ],
+ "note": "붉은 천 장식판 설교단 + 오른쪽에서 4단 나무 계단(단마다 윗면·앞면 명암), 왼쪽 위 빛·접지 그림자, 4x3.",
+ "ok": true
+}

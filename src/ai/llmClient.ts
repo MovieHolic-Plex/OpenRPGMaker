@@ -55,6 +55,8 @@ export interface AiConfig {
   // 실행 모델: 쓰기 툴 루프와 반복/배치 보조 호출. 저장값이 없으면 DEFAULT_LITE_MODEL을 쓴다.
   liteModel?: string;
   roleModels?: SpecialistModels;
+  /** Slots edited directly by the user. Unpinned defaults follow the account selection. */
+  modelSelectionOverrides?: Partial<Record<"ultrabrain" | "vision" | "writer" | "deep" | "image", true>>;
   ultrabrainProviderId?: string;
   ultrabrainModel?: string;
   ultrabrainReasoningEffort?: "low" | "medium" | "high";
@@ -164,6 +166,7 @@ export function defaultAiConfig(): AiConfig {
   return {
     authMode: "chatgpt",
     providerId: DEFAULT_OH_MY_PI_PROVIDER,
+    modelSelectionOverrides: {},
     imageProviderId: DEFAULT_IMAGE_PROVIDER_ID,
     imageModel: DEFAULT_IMAGE_MODEL,
     baseUrl: DEFAULT_BASE_URL,
@@ -187,6 +190,7 @@ export function defaultAiConfig(): AiConfig {
 }
 
 export const AI_CONFIG_STORAGE_KEY = "oprn:ai-config";
+export const AI_CONFIG_CHANGED_EVENT = "oprn:ai-config-changed";
 
 /** 저장 blob 스키마 버전. scrubStoredAiCredentials 의 멱등 표식이다. */
 export const AI_CONFIG_VERSION = 2;
@@ -299,6 +303,18 @@ export function loadAiConfig(): AiConfig {
       roleModels: parsed.roleModelsPolicyVersion === 1
         ? parseRoleModels(parsed.roleModels)
         : withoutLegacySeededDeepRole(parseRoleModels(parsed.roleModels), providerId, liteModel || model),
+      // Old blobs cannot distinguish a user selection from an automatically seeded row.
+      // Preserve every stored slot until the user explicitly chooses to align it.
+      modelSelectionOverrides: Object.fromEntries(
+        (["ultrabrain", "vision", "writer", "deep", "image"] as const).filter(slot => {
+          if (parsed.modelSelectionOverrides && typeof parsed.modelSelectionOverrides === "object") {
+            return parsed.modelSelectionOverrides[slot] === true;
+          }
+          return slot === "ultrabrain" ? Boolean(parsed.ultrabrainModel || parsed.ultrabrainProviderId)
+            : slot === "image" ? Boolean(parsed.imageModel || parsed.imageProviderId)
+            : Boolean(parsed.roleModels?.[slot]);
+        }).map(slot => [slot, true as const]),
+      ),
       ultrabrainProviderId: parseOhMyPiProvider(parsed.ultrabrainProviderId, DEFAULT_ULTRABRAIN_PROVIDER),
       ultrabrainModel: typeof parsed.ultrabrainModel === "string" && parsed.ultrabrainModel.trim()
         ? parsed.ultrabrainModel.trim() : DEFAULT_ULTRABRAIN_MODEL,
@@ -345,6 +361,9 @@ export function saveAiConfig(config: AiConfig): void {
   // 사용자가 고른 Codex 를 Antigravity 로 되돌리지는 않는다.
   const normalized: AiConfig = { ...config, piApplyPolicyVersion: 1, roleModelsPolicyVersion: 1, providerId: parseOhMyPiProvider(config.providerId) };
   localStorage.setItem(AI_CONFIG_STORAGE_KEY, JSON.stringify(normalized));
+  if (typeof window !== "undefined" && typeof window.dispatchEvent === "function") {
+    window.dispatchEvent(new CustomEvent(AI_CONFIG_CHANGED_EVENT));
+  }
 }
 
 export function configForLiteModel(config: AiConfig): AiConfig {

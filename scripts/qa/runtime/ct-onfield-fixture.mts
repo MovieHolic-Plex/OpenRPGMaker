@@ -18,7 +18,7 @@ function call(name: string, args: Record<string, unknown>): ReturnType<typeof ru
 
 call("set_project_settings", {
   title: "CT 필드 위 전투 QA",
-  battle: { flow: "gauge", uiStyle: "chrono", atbSpeed: 1, presentation: "onField" },
+  battle: { flow: "gauge", uiStyle: "retro2003", atbSpeed: 1, presentation: "onField" },
 });
 call("set_party", { scope: "start", actorIds: ["actor_hero", "actor_guardian"] });
 call("configure_companion_rules", { fromParty: true });

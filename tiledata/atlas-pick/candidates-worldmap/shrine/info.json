@@ -1,0 +1,23 @@
+{
+ "id": "shrine",
+ "slug": "shrine",
+ "name": "사당",
+ "scene": "장소",
+ "kind": "icon",
+ "cells": [
+  1,
+  1
+ ],
+ "canvas": [
+  16,
+  16
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "under": "plains",
+ "under_ko": "평원 풀(plains_base 고른 판)",
+ "passage": "walk",
+ "description": "World.png 작은 돔 사당처럼 한 칸짜리 성소: 둥근 돔 지붕(윗왼 밝게) + 앞 기둥 둘 + 어두운 입구, 돌 받침. 신전(2×2)의 작은 판 — 같은 흰 돌.",
+ "palette_hint": "wstone 밝은 단, 돔 wroofb 또는 wgold",
+ "worker": "wv8"
+}

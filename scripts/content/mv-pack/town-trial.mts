@@ -70,7 +70,7 @@ const autonomy = resolveAutonomy(config.autonomyLevel ?? "balanced");
 let t = Date.now();
 const classified = await classifyPlainPiTurn({
   project: base, text: task, currentMapId: mapId, selection: null, hasActivePlan: false, autonomy,
-  declarer: () => createLlmIntentDeclarer({ chat, audit: chat, getConfig: () => config, timeoutMs: 60_000 }),
+  declarer: () => createLlmIntentDeclarer({ chat, audit: chat, getConfig: () => config, timeoutMs: 60_000, coverageAudit: false }),
   piTeam: false,
 });
 timings.intent = Date.now() - t;

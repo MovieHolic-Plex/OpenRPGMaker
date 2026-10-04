@@ -1,3 +1,6 @@
+import type { BlendModeName } from "@/project/blendMode";
+import type { ParticlePreset, ShakeDirection } from "@/project/eventCommands/cinematicStaging";
+import type { EasingName } from "@/project/easing";
 import type { EmoteKind } from "@/project/emotes";
 import type { AudioChannel, AudioTrackState } from "@/project/session";
 import type {
@@ -22,12 +25,18 @@ import type {
 import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
 import type { RuntimeCameraTarget } from "@/project/sessionRuntimeTypes"
 
+/** 연출이 붙을 대상 — 주인공·이벤트·맵 칸. */
+export type StagingTarget =
+  | { readonly kind: "player" }
+  | { readonly kind: "event"; readonly eventId: string }
+  | { readonly kind: "tile"; readonly x: number; readonly y: number };
+
 export type StepResult =
   | { kind: "done" }
   | import("./minigameCommands").TimedChoiceStep
   | import("./minigameCommands").QuickTimeStep
   | import("./minigameCommands").TeleportMenuStep
-  | { kind: "text"; speaker?: string; body: string; face?: FaceGraphic; settings?: MessageWindowSettings; autoAdvance?: boolean; emotion?: string; style?: string; context?: string; container?: string; voiceResourceId?: string }
+  | { kind: "text"; speaker?: string; body: string; face?: FaceGraphic; settings?: MessageWindowSettings; autoAdvance?: boolean; emotion?: string; style?: string; context?: string; container?: string; position?: "auto" | "top" | "center" | "bottom"; voiceResourceId?: string }
   | {
       kind: "choices";
       prompt?: string;
@@ -122,6 +131,8 @@ export type StepResult =
       opacity?: number;
       rotation?: number;
       durationMs?: number;
+      easing?: EasingName;
+      blendMode?: Exclude<BlendModeName, "normal">;
       waitForPicture?: boolean;
     }
   | { kind: "erasePicture"; pictureId: string }
@@ -133,7 +144,11 @@ export type StepResult =
   | { kind: "showEmote"; target: EmoteTarget; emote: EmoteKind; durationMs: number }
   | { kind: "playMovie"; resourceId: string; wait: boolean; skippable: boolean }
   | { kind: "flashScreen"; red: number; green: number; blue: number; durationMs: number }
-  | { kind: "shakeScreen"; intensity: number; durationMs: number }
+  | { kind: "shakeScreen"; intensity: number; durationMs: number; direction?: ShakeDirection }
+  /** 한 자리·한 인물에 터지는 파티클. wait 가 아니면 흐름을 막지 않는다. */
+  | { kind: "particleEffect"; preset: ParticlePreset; target: StagingTarget; durationMs: number; wait: boolean }
+  /** 캐릭터 모습 효과. 장면이 세션(m2Runtime.screen.spriteLooks)에 써서 매 프레임 그린다. */
+  | { kind: "spriteLook"; target: Exclude<StagingTarget, { kind: "tile" }>; fields: Readonly<Record<string, unknown>> }
   | {
       kind: "scrollMap";
       direction: "down" | "left" | "right" | "up";
@@ -153,6 +168,7 @@ export type StepResult =
       offsetX?: number;
       offsetY?: number;
       zoom?: number;
+      easing?: EasingName;
     }
   | { kind: "relocateEvents"; eventIds: readonly string[] }
   /** Get On/Off Vehicle — 씬이 정면·발밑의 탈것에 타거나 내린다(안 되면 아무 일도 없다). */

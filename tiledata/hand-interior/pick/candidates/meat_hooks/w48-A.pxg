@@ -1,0 +1,37 @@
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat T wood 7
+@mblock 0 0
+.DDDDDDDDDDDDDDDDDDDDDDDDDDDDDD.
+ACAAAAAAAAAAAAAAAAAAAAAAAAAAAACA
+ACAAAAAAAAAAAAAAAAAAAAAAAAAAAACA
+TBCTTTTTTTTTTTTTTTTTTTTTTTTTTCBT
+DBCDDDDDDDDDDDDDDDDDDDDDDDDDDCBD
+.BC~~~~E~~~~~E~~~~~~E~~~~~E~~CB.
+.BC~~~~F~~~~~F~~~~~~F~~~~~F~~CB.
+.BC...GH...........GH........CB.
+.BC..GHIHG..G.G.G.GHIHG..GH..CB.
+.BC..JGHGJ.JHJHJHJJGHGJ.GHIHGCB.
+.BC..KLJL..L.L.L.LKLJL..JGHGJCB.
+.BC.....................KLJL.CB.
+.BC..........................CB.
+.BC..........................CB.
+.BC..........................CB.
+.BC..........................CB.
+.BC..........................CB.
+.BC..........................CB.
+.BC..........................CB.
+.BC..........................CB.
+.BC..........................CB.
+.BC..........................CB.
+.BC..........................CB.
+.BC..........................CB.
+.BC..........................CB.
+.BC..........................CB.
+.BC..........................CB.
+.BC..........................CB.
+.BC..........................CB.
+.BC..........................CB.
+.MMMMMMMMMMMMMMMMMMMMMMMMMMMMMM.
+.NNNNNNNNNNNNNNNNNNNNNNNNNNNNNN.

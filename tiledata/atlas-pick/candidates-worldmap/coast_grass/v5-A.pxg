@@ -1,0 +1,80 @@
+// coast_grass v5-A (5판: FF6 실측 톤(어둡고 채도 낮음), 외곽선 없음)
+@size 48 64
+@cell 16
+@palette ../../palette/worldmap5.pal
+@layer main
+@mat a wrock 3
+@mat b wrock 4
+@mat c wgrass 0
+@mat d wrock 2
+@mat e wgrass 1
+@mat f wsea 3
+@mat g wsea 2
+@mat h wsea 1
+@mat i wsea 0
+@mat j wsea 4
+@mblock 0 0
+...abaccccccdab.................adeffgfhhhggfcab
+..badeffffffcaba................adeffghiiigffcad
+.abacffgffggfeda................ecfggiiihhigffec
+badefgggggggfeda................ffggiihhiifigfff
+badefgghhigffeda................ffghhhhhhiihhgfg
+adcfgghhhigffcab................gghhiihhhiiiiigg
+adefggiiiiggfcab................iiiiiiiiiiiiiiii
+acffgiiiiigffcab................iiiiiiiiiiiiiiii
+acjggiiiiigfjcab................iiiiiiiiiiihhiii
+acffgiiiiihgfjed................iiiiiiiiiihhiiii
+dcffgihhhhhggfca................gghhiihhhhhiiigg
+bacffgiihhgffeda................gfghhiiihhhiigff
+badeffggggggfeda................fffgihhhiiiiggff
+.abacfffgfffcaba................ecffghhhiiiggfec
+..badeffjfcedab.................dacffgiiiigffcda
+...badccccadab..................bacfggjiihgffeda
+.....badadabababbadadadadababababadadadadab.....
+....abacecababaddececececedababadececececaba....
+...badeffjedadaccfjfffffffcadadecfjffffffcaba...
+..badcfggfjccccffgffgffggffececffgffgffggfedab..
+.abacfggggfjfffgfgggggggggffffjgfgggggggggfcaba.
+badeffghhigffgfgghhhiihhhigfggfgghhhiihhhggfedab
+bacjggiiiiiggggiiiiiiiiiiiiggggiiiiiiiiiiggfedab
+deffgiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiigffcaba
+acfggiiiiiihhiiiiiiiiiiiiiihhiiiiiiiiiiiigffcaba
+acfggiiiiihhiiiiiiiiiiiiiihhiiiiiiiiiiiiiigffeda
+acffgihhhhhiiiihhhhhiihhhhhiiiihhhhhiihhhhggfeda
+acfggiiihhhiiihhhhihhiiihhhiiihhhhihhiiihhgffeda
+adefgghhiiiiiiiiiiiiihhhiiiiiiiiiiiiihhhiiigffcd
+badcfgghiiiiiiiihhhihhhhiiiiiiiihhhihhhhiiggfcab
+badefggiiiiiiiiihhiiiiiiiiiiiiiihhiiiiiiigffedab
+bacffgjiihhhhiihhhhiiijiihhhhiihhhhiiijiihgffcab
+bacfggfhhhiihhiihhiiiifhhhiihhiihhiiiifhhhggfcda
+acfgghhiiiiihhiiiiiiihhiiiiihhiiiiiiihhiiigffeda
+acfggiiihhiiiiiiihhhiiiihhiiiiiiihhhiiiihhggfeda
+acffgihhiifihhhiiiiiiihhiifihhhiiiiiiihhiiggfeda
+acffghhhhiihhhhhiihhhhhhhiihhhhhiihhhhhhhgffcaba
+acjggihhhiiiiiiifhhhiihhhiiiiiiifhhhiihhhggfcdab
+dcffgiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiigffedab
+deffgiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiigfjedab
+defggiiiiiihhiiiiiiiiiiiiiihhiiiiiiiiiiiiggfedab
+defggiiiiihhiiiiiiiiiiiiiihhiiiiiiiiiiiiiiggfcab
+deffgihhhhhiiiihhhhhiihhhhhiiiihhhhhiihhhhggfcda
+acfggiiihhhiiihhhhihhiiihhhiiihhhhihhiiihhgffeda
+adefgghhiiiiiiiiiiiiihhhiiiiiiiiiiiiihhhiiigffca
+abacfgghiiiiiiiihhhihhhhiiiiiiiihhhihhhhiiggfeda
+abacfggiiiiiiiiihhiiiiiiiiiiiiiihhiiiiiiigffcaba
+adeffgjiihhhhiihhhhiiijiihhhhiihhhhiiijiihgffcab
+bacfggfhhhiihhiihhiiiifhhhiihhiihhiiiifhhhgffcab
+deffghhiiiiihhiiiiiiihhiiiiihhiiiiiiihhiiigfjcab
+dejggiiihhiiiiiiihhhiiiihhiiiiiiihhhiiiihhggfcab
+deffgihhiifihhhiiiiiiihhiifihhhiiiiiiihhiiggfcda
+acffghhhhiihhhhhiihhhhhhhiihhhhhiihhhhhhhggfcaba
+acfggihhhiiiiiiifhhhiihhhiiiiiiifhhhiihhhggfcaba
+acfggiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiigffcaba
+acffgiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiigffcaba
+acfggiiiiiihhiiiiiiiiiiiiiihhiiiiiiiiiiiiggfcdab
+bacfggiiiigggggiiiiiiiiiiigggggiiiiiiiiiiiggfcab
+badefgggggfgffggggghiihgggfggffgggghiihgggfjedab
+.abacfgfggfjfffggfgggggffgffffffgffgggggfgfcaba.
+..badeffffcececffffggfffffececefffffgfffffedab..
+...abacecedadadeeceffffcecadadaccccfjffcccdab...
+....abadadababadadacecedadababaddadececadaba....
+.....bababababababadadabababababbabadadabab.....

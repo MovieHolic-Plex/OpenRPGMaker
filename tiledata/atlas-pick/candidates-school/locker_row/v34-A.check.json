@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/locker_row/v34-A.pxg",
+ "set": "school",
+ "id": "locker_row",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.142
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.059
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 10,
+ "bbox": [
+  1,
+  0,
+  31,
+  31
+ ],
+ "note": "사물함 줄 3/4 — 회청색 네 칸 두 단, 밝은 윗면과 처마 그림자, 문마다 통풍 살·손잡이",
+ "ok": true
+}

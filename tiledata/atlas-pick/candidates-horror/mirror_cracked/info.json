@@ -1,0 +1,70 @@
+{
+ "id": "mirror_cracked",
+ "slug": "mirror_cracked",
+ "name": "금 간 거울",
+ "scene": "낡은 서양 저택",
+ "cells": [
+  1,
+  2
+ ],
+ "canvas": [
+  16,
+  32
+ ],
+ "layer": "object",
+ "layer_ko": "물체(위층, 투명 배경·바닥에 선다)",
+ "description": "v5 화장대 거울 자리의 낡은 판: 나무 틀 거울(윗부분 둥근 아치), 거울 속은 탁한 청회(murk) + 한가운데서 방사형으로 갈라진 금(1px 밝은 선 + 한 단 어두운 선 짝), 한 조각이 떨어져 비었다. 아래 작은 서랍 받침. 거울 속에 흐릿한 사람 그림자 하나(선택, B·C 에서).",
+ "palette_hint": "mahog 틀, murk 거울, moon 금 반짝임, void 빠진 조각",
+ "worker_v1": "h3",
+ "stage": 2,
+ "stage_ko": "2단계 연출(기본이 선 뒤)",
+ "worker": "h3",
+ "v5_ref": [
+  {
+   "id": "vanity mirror",
+   "name_ko": "화장대",
+   "atlas": {
+    "x": 368,
+    "y": 208,
+    "w": 16,
+    "h": 32,
+    "frames": 1,
+    "padTop": 0
+   },
+   "image": {
+    "w": 16,
+    "h": 32
+   },
+   "kind": "wall",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "pick_dir": "tiledata/hand-interior/pick/candidates/vanity_mirror",
+   "file": "ref-v5-1.png"
+  },
+  {
+   "id": "tailor mirror",
+   "name_ko": "전신 거울",
+   "atlas": {
+    "x": 96,
+    "y": 304,
+    "w": 16,
+    "h": 32,
+    "frames": 1,
+    "padTop": 0
+   },
+   "image": {
+    "w": 16,
+    "h": 32
+   },
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "pick_dir": "tiledata/hand-interior/pick/candidates/tailor_mirror",
+   "file": "ref-v5-2.png"
+  }
+ ]
+}

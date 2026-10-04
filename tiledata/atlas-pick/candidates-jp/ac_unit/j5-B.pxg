@@ -1,0 +1,40 @@
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat A lacq 2
+@mat B mmetal 2
+@mat C mwhite 2
+@mblock 0 0
+...BB...........
+...BB...........
+.BBBBBBBBBBBBBB.
+.BCCCCCCCCCCCCB.
+.BCCCCCCCCCCCCB.
+.BCCCCCCCAAACCB.
+.BCCCCCCAAAAACB.
+.BCCCCCAAAAAAAB.
+.BCCCCCAAAAAAAB.
+.BCCCCCAAAAAAAB.
+.BCCCCCCAAAAACB.
+.BCCCCCCCAAACCB.
+.BBBBBBBBBBBBBB.
+..BB........BB..
+..~~~~~~~~~~~~~-
+....------------
+@tblock 0 0
+...53...........
+...53...........
+.22222222222222.
+.25555555555552.
+.24444444444441.
+.23222122333201.
+.23222123000301.
+.23000130040031.
+.23222130444031.
+.23000130040031.
+.23222123000311.
+.23111122333211.
+.21111111111111.
+..22........22..
+................
+................

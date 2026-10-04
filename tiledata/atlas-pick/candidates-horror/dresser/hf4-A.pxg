@@ -1,0 +1,43 @@
+// dresser hf4-A
+@size 16 16
+@cell 16
+@palette palette.pal
+@layer main
+@mat m mahog 0
+@mat t tarn 0
+@mat f flame 0
+@mat w wax 0
+@mblock 0 0
+................
+.mmmmmmmmmmmmmm.
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+mmmmmtmmmmtmmmmm
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+mmmmmtmmmmtmmmmm
+mmmmmmmmmmmmmmmm
+mmmmmmmmmmmmmmmm
+mmmmmtmmmmtmmmmm
+mmmmmmmmmmmmmmmm
+.mmmmmmmmmmmmmm.
+.mmm........mmm.
+@tblock 0 0
+................
+.11111111111111.
+1666666666666661
+1555555555555551
+1444444444444441
+1344444444444421
+1333343333433321
+1322222222222221
+1344444444444421
+1333343333433321
+1322222222222221
+1344444444444421
+1333343333433321
+1322222222222221
+.11111111111111.
+.131........131.

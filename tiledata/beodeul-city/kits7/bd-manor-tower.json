@@ -1,0 +1,157 @@
+{
+ "id": "bd-manor-tower",
+ "name": "귀족 저택 (둥근 탑 딸린 본채)",
+ "w": 14,
+ "h": 11,
+ "walk": [
+  ".C.....C......",
+  "CXXXXXXXXXXXXC",
+  "XXXXXXXXXXXXXX",
+  "XXXXXXXXXXXXXX",
+  "XXXXXXXXXXXXXX",
+  "XXXXXXXXXXXXXX",
+  "XXXXXXXXXXXXXX",
+  "XXXXXXXXXXXXXX",
+  "XXXXXXXXXXXXXX",
+  ".......XFFFX..",
+  ".......XFFFX.."
+ ],
+ "description": "비대칭 14칸x11줄: 왼쪽에 3칸 둥근 회벽 탑(원뿔 테라코타 지붕, 층마다 아치 창), 오른쪽으로 길게 4면 지붕 본채(지붕창·현관 위 벽 박공·굴뚝), 문은 본채 오른쪽 3칸 현관(박공 지붕 기둥 현관, 꼭지 장식 계단).",
+ "rules": "문은 (9,8). 문 앞 (9,9)은 계단 맨 윗칸. 탑 아래쪽은 본채 앞 마당 쪽으로 튀어나오지 않아 같은 바닥선을 쓴다.",
+ "tags": [
+  "귀족저택",
+  "탑",
+  "비대칭"
+ ],
+ "role": "building",
+ "doors": [
+  {
+   "dx": 9,
+   "dy": 8,
+   "note": "현관 겹문 (계단 위)"
+  }
+ ],
+ "notes": "",
+ "assembly": [
+  {
+   "kit": "bd-mpart-roof-l",
+   "x": 2,
+   "y": 1
+  },
+  {
+   "kit": "bd-mpart-roof-m",
+   "x": 5,
+   "y": 1
+  },
+  {
+   "kit": "bd-mpart-roof-m",
+   "x": 6,
+   "y": 1
+  },
+  {
+   "kit": "bd-mpart-roof-m",
+   "x": 7,
+   "y": 1
+  },
+  {
+   "kit": "bd-mpart-roof-m",
+   "x": 8,
+   "y": 1
+  },
+  {
+   "kit": "bd-mpart-roof-m",
+   "x": 9,
+   "y": 1
+  },
+  {
+   "kit": "bd-mpart-roof-m",
+   "x": 10,
+   "y": 1
+  },
+  {
+   "kit": "bd-mpart-roof-r",
+   "x": 11,
+   "y": 1
+  },
+  {
+   "kit": "bd-mpart-dormer",
+   "x": 5,
+   "y": 2
+  },
+  {
+   "kit": "bd-mpart-gable-s",
+   "x": 8,
+   "y": 1
+  },
+  {
+   "kit": "bd-mpart-chimney",
+   "x": 7,
+   "y": 0
+  },
+  {
+   "kit": "bd-mpart-bay-plain-l",
+   "x": 2,
+   "y": 4
+  },
+  {
+   "kit": "bd-mpart-bay-win-a-l",
+   "x": 3,
+   "y": 4
+  },
+  {
+   "kit": "bd-mpart-bay-plain-l",
+   "x": 4,
+   "y": 4
+  },
+  {
+   "kit": "bd-mpart-bay-win-b-l",
+   "x": 5,
+   "y": 4
+  },
+  {
+   "kit": "bd-mpart-bay-plain-l",
+   "x": 6,
+   "y": 4
+  },
+  {
+   "kit": "bd-mpart-bay-win-a-l",
+   "x": 7,
+   "y": 4
+  },
+  {
+   "kit": "bd-mpart-door-bay",
+   "x": 8,
+   "y": 4
+  },
+  {
+   "kit": "bd-mpart-bay-win-lit-r",
+   "x": 11,
+   "y": 4
+  },
+  {
+   "kit": "bd-mpart-bay-plain-r",
+   "x": 12,
+   "y": 4
+  },
+  {
+   "kit": "bd-mpart-bay-win-b-r",
+   "x": 13,
+   "y": 4
+  },
+  {
+   "kit": "bd-mpart-porch",
+   "x": 8,
+   "y": 6
+  },
+  {
+   "kit": "bd-mpart-stairs",
+   "x": 7,
+   "y": 9
+  },
+  {
+   "kit": "bd-mpart-tower",
+   "x": 0,
+   "y": 0
+  }
+ ]
+}

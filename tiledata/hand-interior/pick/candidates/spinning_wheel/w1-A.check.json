@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/spinning_wheel/w1-A.pxg",
+ "id": "spinning wheel",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.013
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 16,
+ "v5_colors": 9,
+ "bbox": [
+  1,
+  1,
+  14,
+  15
+ ],
+ "v5_bbox": [
+  1,
+  1,
+  14,
+  15
+ ],
+ "note": "v5 구도 그대로. 바퀴 테를 왼위 밝음→오른아래 어둠 4단으로 굴리고 살을 밝은/어두운 쪽으로 나눔, 허브 금속 4단, 붉은 실뭉치를 둥근 공으로, 받침 윗면·앞면 분리 + 통통한 다리.",
+ "ok": true
+}

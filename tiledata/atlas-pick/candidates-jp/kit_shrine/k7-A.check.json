@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/kit_shrine/k7-A.pxg",
+ "set": "jp",
+ "id": "kit_shrine",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 29,
+  "atLeast95": 0,
+  "max": 0.449
+ },
+ "refmap": {
+  "cells": 29,
+  "atLeast95": 0,
+  "max": 0.141
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "banding"
+  ]
+ },
+ "colors": 37,
+ "bbox": [
+  0,
+  0,
+  127,
+  94
+ ],
+ "note": "A: 강남식 — 회색 기와·주홍 기둥, 같은 명암 단계와 어두운 톤 윤곽, 그림자 없음",
+ "ok": true
+}

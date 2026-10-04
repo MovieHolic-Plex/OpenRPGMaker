@@ -16,7 +16,7 @@ import {
 } from "@/project/defaults/pokemonChipsetPreset";
 import { CHIPSET_TILE_GROUPS, describeChipsetTile } from "@/project/defaults/chipsetMapping";
 import { COMBINED_TOWN_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsCombinedTown";
-import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { COMBINED_TOWN_HARNESS_PREFIX } from "@/project/tilesetHarness/combinedTownGroups";
 import { isTrustedGroupSource } from "@/project/tileVocabulary";
 import type { TilesetDef } from "@/project/types";
@@ -24,7 +24,7 @@ import type { TilesetDef } from "@/project/types";
 const MAP_ID = "map_blank_start";
 
 function defaultTilesetOf(): TilesetDef {
-  return createBlankProject().tilesets[DEFAULT_TILESET_ID];
+  return createBlankProject().tilesets[COMBINED_TOWN_TILESET_ID];
 }
 
 describe("포켓몬풍 오버월드 프리셋 — role 노출", () => {
@@ -48,7 +48,7 @@ describe("포켓몬풍 오버월드 프리셋 — role 노출", () => {
     // 한국어 라벨(사람이 읽는) 부여 확인.
     expect(pokemonPresetRole("tall_grass")?.label).toContain("키큰 풀");
     expect(pokemonPresetRoleLabels().find((r) => r.role === "grass_field")?.label).toBe("잔디 벌판");
-    expect(POKEMON_OVERWORLD_PRESET.tilesetId).toBe(DEFAULT_TILESET_ID);
+    expect(POKEMON_OVERWORLD_PRESET.tilesetId).toBe(COMBINED_TOWN_TILESET_ID);
   });
 
   it("참조하는 group id 는 전부 실재하는 bundled-default 하네스 그룹이고 승인 취급된다", () => {

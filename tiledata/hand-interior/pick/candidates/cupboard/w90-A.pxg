@@ -1,0 +1,72 @@
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat a wood
+@mat b brass
+@mat c cheese
+@mblock 0 0
+................
+................
+................
+................
+................
+................
+................
+................
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaabcaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaabcaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaabcaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+aaaaaaaaaaaaaaaa
+@tblock 0 0
+................
+................
+................
+................
+................
+................
+................
+................
+1333333333333331
+1655555555555551
+1655555555555551
+1655555555555551
+1777777777777771
+1333333333333331
+1111111111111111
+1666666666666661
+1666655666665561
+1555555555555550
+1222222222222230
+1577777777777730
+1575555205555430
+1111111111111130
+1577777777777730
+1576666666666430
+1575555205555430
+1111111111111130
+1577777777777730
+1576666666666430
+1575555205555430
+1111111111111130
+1333333333333330
+1111000000001100

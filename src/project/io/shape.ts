@@ -1,3 +1,4 @@
+import { QUEST_PRESET_IDS } from '@/project/quest/questPresetIds';
 import { troopAfterBattleLists } from "@/project/troopAfterBattle";
 import { canonicalizeCommandFieldAliases } from "@/project/eventCommands/commandFieldAliases";
 import { validateEndingPresentation } from "./shapeDatabaseFields";
@@ -32,6 +33,8 @@ import { repairProjectReferences, validateProjectReferences } from "./references
 import { validateConditionShape } from "./shapeCommandFields";
 import { stampCharacterIdsForSocialEvents } from "../characterIdStamp";
 import { normalizeRelief } from "@/project/relief/edit";
+import { normalizeDoodadGroups } from "@/project/doodadGroups";
+import { normalizeTerrainDesign, normalizeTerrainStamps } from "@/project/terrainDesign";
 import { validateCharacters } from "./shapeCharacterFields";
 import {
   requirePosition,
@@ -301,7 +304,13 @@ function normalizeProjectPlanningItems(project: Project): void {
 
 /** 높이 지형 정리 — 맵 크기에 맞추고 0~14단으로 자른다. 전부 평지거나 모양이 틀리면 필드를 지운다. */
 function normalizeProjectRelief(project: Project): void {
+  const stamps = normalizeTerrainStamps(project.terrainStamps);
+  if (stamps) project.terrainStamps = stamps; else delete project.terrainStamps;
   for (const map of Object.values(project.maps)) {
+    const design = normalizeTerrainDesign(map.terrainDesign, map.width * map.height);
+    if (design) map.terrainDesign = design; else delete map.terrainDesign;
+    const groups=normalizeDoodadGroups(map.doodadGroups,map.width*map.height);
+    if(groups)map.doodadGroups=groups;else delete map.doodadGroups;
     if (map.relief === undefined) continue;
     const normalized = normalizeRelief(map.relief, map.width, map.height);
     if (normalized) map.relief = normalized;
@@ -515,7 +524,36 @@ function validateQuests(value: unknown, mapIds: ReadonlySet<string>): void {
     requireString(`quests[${index}].key`, quest.key);
     requireString(`quests[${index}].title`, quest.title);
     requireString(`quests[${index}].summary`, quest.summary);
+    if (quest.presetId !== undefined) {
+      const presetId = requireString(`quests[${index}].presetId`, quest.presetId);
+      assert((QUEST_PRESET_IDS as readonly string[]).includes(presetId), `quests[${index}].presetId가 올바르지 않습니다.`);
+    }
+    if (quest.dialogue !== undefined) {
+      const dialogue = requireRecord(`quests[${index}].dialogue`, quest.dialogue);
+      for (const key of ['accepted', 'declined', 'reminder', 'completed', 'afterComplete']) {
+        if (dialogue[key] !== undefined) requireString(`quests[${index}].dialogue.${key}`, dialogue[key]);
+      }
+    }
+    if (quest.order !== undefined) assert(quest.order === 'sequence' || quest.order === 'any', `quests[${index}].order가 올바르지 않습니다.`);
+    if (quest.repeatable !== undefined) requireBoolean(`quests[${index}].repeatable`, quest.repeatable);
+    const kinds = ['talk','collect','kill','reach','inspect','deliver','choice','escort','craft'];
+    if (quest.blueprint !== undefined) {
+      assert(Array.isArray(quest.blueprint), `quests[${index}].blueprint는 배열이어야 합니다.`);
+      quest.blueprint.forEach((kind, i) => assert(kinds.includes(requireString(`quests[${index}].blueprint[${i}]`, kind)), '올바르지 않은 목표 종류입니다.'));
+    }
+    if (quest.requiresQuestKeys !== undefined) {
+      assert(Array.isArray(quest.requiresQuestKeys), `quests[${index}].requiresQuestKeys는 배열이어야 합니다.`);
+      quest.requiresQuestKeys.forEach((key, i) => requireString(`quests[${index}].requiresQuestKeys[${i}]`, key));
+    }
+    for (const name of ['onAcceptItems','worldChanges']) if (quest[name] !== undefined) assert(Array.isArray(quest[name]), `quests[${index}].${name}는 배열이어야 합니다.`);
+    if (quest.effects !== undefined) requireRecord(`quests[${index}].effects`, quest.effects);
     assert(Array.isArray(quest.steps), `quests[${index}].steps는 배열이어야 합니다.`);
+    quest.steps.forEach((raw, i) => {
+      const step = requireRecord(`quests[${index}].steps[${i}]`, raw);
+      assert(kinds.includes(requireString(`quests[${index}].steps[${i}].kind`, step.kind)), '올바르지 않은 목표 종류입니다.');
+      if (step.label !== undefined) requireString(`quests[${index}].steps[${i}].label`, step.label);
+      if (step.timePhase !== undefined) assert(['morning','day','evening','night'].includes(requireString(`quests[${index}].steps[${i}].timePhase`, step.timePhase)), '올바르지 않은 시간대입니다.');
+    });
     // giver가 기존 이벤트 참조면 맵 존재를 확인(생성형이면 컴파일 시 생성되므로 생략).
     const giver = quest.giver as { mapId?: unknown } | undefined;
     if (giver && typeof giver.mapId === "string") {

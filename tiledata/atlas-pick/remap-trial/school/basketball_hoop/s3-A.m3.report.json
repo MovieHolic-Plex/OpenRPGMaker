@@ -1,0 +1,48 @@
+{
+ "src": "tiledata/atlas-pick/candidates-school/basketball_hoop/s3-A.pxg",
+ "out": "tiledata/atlas-pick/remap-trial/school/basketball_hoop/s3-A.m3.pxg",
+ "size": [
+  32,
+  48
+ ],
+ "stat": {
+  "ramp": 19,
+  "weak": 2
+ },
+ "weak": [
+  {
+   "frm": "#ec9900",
+   "nearest": "#eb8e4f",
+   "position": "daidai2",
+   "px": 1
+  },
+  {
+   "frm": "#8abae4",
+   "nearest": "#7b9cf7",
+   "position": "sora3",
+   "px": 1
+  }
+ ],
+ "ambiguous": {},
+ "unmapped": {},
+ "marker": 0,
+ "translucentDropped": 50,
+ "droppedBy": {
+  "~": 25,
+  "-": 25
+ },
+ "baked": {},
+ "outOfPalette": 0,
+ "translucentPx": 0,
+ "markerLeft": false,
+ "colors": 16,
+ "ramps": [
+  "aka",
+  "daidai",
+  "kon",
+  "shiro",
+  "sora",
+  "tekko",
+  "yoru"
+ ]
+}

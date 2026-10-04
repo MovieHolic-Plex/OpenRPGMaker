@@ -1,0 +1,38 @@
+{
+  "realEditor": true,
+  "modelRun": "../editor/observations.json",
+  "before": {
+    "project_id": "1b54a408-19e2-471a-9582-0872e77af853",
+    "revision": 5,
+    "mapSha256": "445174904343e53075c0904d879f9a55b807374b70845d86eda57430c6fea252"
+  },
+  "film": {
+    "frames": 25,
+    "skippedCaptureFrames": 0,
+    "crop": {
+      "x": 0,
+      "y": 0,
+      "width": 1440,
+      "height": 960
+    },
+    "phases": [
+      {
+        "seconds": 0.007,
+        "text": "실제 AI 조수가 만든 버들항 집 · 높이 4·6·9와 매끈한 경사로"
+      },
+      {
+        "seconds": 4.565,
+        "text": "에디터에도 집이 표시됨 · 버들항 집과 지붕 크기 도구"
+      }
+    ],
+    "gif": "terrain-assistant-editor-2x.mp4"
+  },
+  "after": {
+    "project_id": "1b54a408-19e2-471a-9582-0872e77af853",
+    "revision": 5,
+    "mapSha256": "445174904343e53075c0904d879f9a55b807374b70845d86eda57430c6fea252"
+  },
+  "mapUnchanged": true,
+  "errors": [],
+  "passed": true
+}

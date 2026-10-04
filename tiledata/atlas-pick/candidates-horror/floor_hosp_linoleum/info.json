@@ -1,0 +1,42 @@
+{
+ "id": "floor_hosp_linoleum",
+ "slug": "floor_hosp_linoleum",
+ "name": "병원 리놀륨 바닥",
+ "scene": "폐병원",
+ "cells": [
+  2,
+  2
+ ],
+ "canvas": [
+  32,
+  32
+ ],
+ "layer": "ground",
+ "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+ "description": "바닥 2×2(32×32) 칸 전부 불투명, 사방 이어짐(@tile). 조용하게 4~5단, 명도 차 ~25. 옹이·이음은 한두 곳만(반복이 띠로 보이지 않게). 벽면보다 두 단 어둡게. 긴 리놀륨 판(가로 16px 판, 이음 드물게), 바랜 회녹·누런 회 한 색 + 광택 한 줄, 닳은 자리 한 곳. hosp_floor(타일)와 방 단위로 바꿔 깐다.",
+ "palette_hint": "ward/sheet",
+ "stage": 1,
+ "stage_ko": "1단계 기본(2판 새로)",
+ "kit": "ward",
+ "role": "바닥(리놀륨)",
+ "worker": "hf6",
+ "set_with": [
+  "wall_hosp_tile",
+  "bedside_cabinet",
+  "hosp_chair",
+  "ward_sink"
+ ],
+ "v5_ref": [
+  {
+   "id": "floor:grey",
+   "name_ko": "회색 판석",
+   "atlas": {
+    "x": 384,
+    "y": 1656,
+    "w": 32,
+    "h": 32
+   },
+   "file": "ref-v5-1.png"
+  }
+ ]
+}

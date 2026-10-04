@@ -1,0 +1,42 @@
+
+> oprn@0.57.0 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/runtimeTileWindow.test.ts test/playSceneTileCulling.test.ts test/eventLayerReuse.test.ts test/terrainQuarterAutotile.test.ts test/lakeAutotile.test.ts --maxWorkers=2 --minWorkers=1
+
+
+ RUN  v3.2.4 /home/main/.codex/worktrees/320d/rpg-zzu
+
+ ✓ test/runtimeTileWindow.test.ts (7 tests) 7730ms
+   ✓ runtime viewport tile residency > uses a teleported or zoomed camera immediately, before worldView refreshes  363ms
+   ✓ runtime viewport tile residency > keeps only the camera neighborhood even on a 512 map, reuses overlap, evicts roots and containers  1166ms
+   ✓ runtime viewport tile residency > matches complete-map draw order, quarters, four layers, shadows and root depths at tile size 16  2093ms
+   ✓ runtime viewport tile residency > matches complete-map draw order, quarters, four layers, shadows and root depths at tile size 32  2036ms
+   ✓ runtime viewport tile residency > recreates changed tiles on return and resets resident cells on tile refresh  1037ms
+   ✓ runtime viewport tile residency > new water sprites inherit the retained visible animation frame and fractional time  1010ms
+ ✓ test/playSceneTileCulling.test.ts (9 tests) 1985ms
+   ✓ playSceneTileCulling > renderTiles 가 만든 타일은 화면 밖이면 숨는다  1978ms
+ ✓ test/lakeAutotile.test.ts (8 tests) 10ms
+ ✓ test/eventLayerReuse.test.ts (18 tests) 20367ms
+   ✓ event layer reuse > retains 500 NPC objects across renderTiles surface refreshes  2275ms
+   ✓ event layer reuse > updates fractional movement, direction and frames without replacing sprites  1034ms
+   ✓ event layer reuse > replaces only changed graphics, keeps pattern overrides, and removes absent graphics  1024ms
+   ✓ event layer reuse > keeps old fresh-object semantics for transient alpha and captured callbacks  1038ms
+   ✓ event layer reuse > keeps old fresh-object semantics for transient visible and captured callbacks  1034ms
+   ✓ event layer reuse > keeps old fresh-object semantics for transient blendMode and captured callbacks  1072ms
+   ✓ event layer reuse > keeps old fresh-object semantics for transient isTinted and captured callbacks  1047ms
+   ✓ event layer reuse > keeps old fresh-object semantics for transient flipX and captured callbacks  1087ms
+   ✓ event layer reuse > keeps old fresh-object semantics for transient rotation and captured callbacks  1160ms
+   ✓ event layer reuse > keeps old fresh-object semantics for transient tween and captured callbacks  1094ms
+   ✓ event layer reuse > keeps old fresh-object semantics for transient chain and captured callbacks  1216ms
+   ✓ event layer reuse > reuses shadows, hides them at the old refresh boundary, and cleans erased owners  1089ms
+   ✓ event layer reuse > matches the frozen legacy path across in-place graphic and footprint edits  1126ms
+   ✓ event layer reuse > keeps furniture push coordinates and a previously opened dialogue anchor live  1016ms
+   ✓ event layer reuse > preserves equal-depth order against other root objects after an event is replaced  1030ms
+   ✓ event layer reuse > invalidates texture resolution, static art fitting, and transparent pages  1017ms
+   ✓ event layer reuse > keeps emote objects through refresh and removes them when their host disappears  1015ms
+   ✓ event layer reuse > replaces sprites when a texture manager replaces a resource under the same key  991ms
+ ✓ test/terrainQuarterAutotile.test.ts (12 tests) 8ms
+
+ Test Files  5 passed (5)
+      Tests  54 passed (54)
+   Start at  19:56:18
+   Duration  32.97s (transform 8.50s, setup 0ms, collect 26.73s, tests 30.10s, environment 1ms, prepare 422ms)

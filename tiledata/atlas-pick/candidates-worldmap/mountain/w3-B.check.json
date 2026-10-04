@@ -1,0 +1,136 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/mountain/w3-B.pxg",
+ "set": "worldmap",
+ "id": "mountain",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.141
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.182
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "outline_black",
+   "dither"
+  ]
+ },
+ "colors": 9,
+ "bbox": [
+  1,
+  0,
+  47,
+  62
+ ],
+ "note": "빛·부피를 세게 — 밝은 바위면과 어두운 그늘면 대비를 키우고 남동쪽 발치에 ~ - 그림자, 봉우리 꼭대기 하이라이트.",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.156
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.2
+  },
+  "shore": {
+   "profile": {
+    "n": [
+     4,
+     3,
+     2,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     5,
+     4,
+     3,
+     4,
+     5,
+     6,
+     5
+    ],
+    "s": [
+     4,
+     3,
+     3,
+     4,
+     5,
+     5,
+     4,
+     3,
+     3,
+     4,
+     5,
+     5,
+     4,
+     4,
+     3,
+     3
+    ],
+    "w": [
+     4,
+     5,
+     6,
+     6,
+     5,
+     4,
+     4,
+     5,
+     6,
+     5,
+     4,
+     4,
+     5,
+     6,
+     6,
+     5
+    ],
+    "e": [
+     4,
+     5,
+     6,
+     6,
+     5,
+     4,
+     4,
+     5,
+     6,
+     5,
+     4,
+     4,
+     5,
+     6,
+     6,
+     5
+    ]
+   },
+   "strait": 4,
+   "steps": {
+    "n": 1,
+    "s": 1,
+    "w": 1,
+    "e": 1
+   },
+   "amp": {
+    "n": 5,
+    "s": 2,
+    "w": 2,
+    "e": 2
+   },
+   "joinWorst": 2
+  },
+  "seam": 1.05
+ }
+}

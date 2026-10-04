@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/ward_sink/hf6-A.pxg",
+ "set": "horror",
+ "id": "ward_sink",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.007
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.068
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies"
+  ]
+ },
+ "colors": 8,
+ "bbox": [
+  2,
+  1,
+  13,
+  15
+ ],
+ "note": "v5 결 기본: sheet5 흰 대야 테두리, 속 sheet2~3(한 단 이상 어둡게)에 쇠 배수구, 꼭지 tin4~5 + 손잡이 둘, 받침 기둥 sheet3(왼쪽 밝게)",
+ "ok": true
+}

@@ -1,0 +1,42 @@
+{
+ "id": "pulpit",
+ "slug": "pulpit",
+ "name_ko": "설교단(2×2, 계단)",
+ "category": "예배당",
+ "kind": "floor",
+ "kind_ko": "바닥 기물(막힘)",
+ "canvas": [
+  32,
+  64
+ ],
+ "padTop": 8,
+ "image": {
+  "w": 32,
+  "h": 56
+ },
+ "footprint": {
+  "w": 2,
+  "h": 2
+ },
+ "overhang_px": 24,
+ "surface": null,
+ "description": "설교단(2×2, 24px 솟음, 서쪽 계단). 신랑 동쪽 끝 북쪽 기둥 곁.",
+ "where": "신랑 동쪽 끝 북쪽 기둥 곁.",
+ "placement": [
+  "그림이 발밑 칸 위로 24px 솟는다 → 위 2칸은 플레이어 위에 그리는 겹침층",
+  "출입문 칸과 문으로 이어지는 통로를 막지 않는다"
+ ],
+ "v5_bbox": [
+  0,
+  10,
+  29,
+  63
+ ],
+ "v5_colors": 16,
+ "material": "wood",
+ "related": [
+  "hymn board",
+  "column marble",
+  "lectern"
+ ]
+}

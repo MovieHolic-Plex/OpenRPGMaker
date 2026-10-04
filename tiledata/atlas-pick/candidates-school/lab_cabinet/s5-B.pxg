@@ -1,0 +1,80 @@
+// s5 후보 — s5-B.pxg
+@size 32 32
+@cell 16
+@palette palette.pal
+@mat a cream
+@mat b mglass
+@mat c vbrass
+@mat d mwhite
+@mat e vgreen
+@mat f vwood
+@mat g vred
+@mat h vblue
+@mat i vdwood
+@mat j mmetal
+@mblock 0 0
+................................
+..aaaaaaaaaaaaaaaaaaaaaaaaaaaa..
+..aaaaaaaaaaaaaaaaaaaaaaaaaaaa..
+..aaaaaaaaaaaaaaaaaaaaaaaaaaaa..
+..aaaaaaaaaaaaaaaaaaaaaaaaaaaa..
+..aaaaaaaaaaaaaaaaaaaaaaaaaaaa~~
+..aaab&&bbbbbbbaab&&bbbbbbbaaa~~
+..aaab&cbdbbcebaab&bbdbbbcbaaa~~
+..aaabffbbbbeebaabggbbbbbfbaaa~~
+..aaabffbbbb&&baabggbhhhbfbaaa~~
+..aaabffbbbb&ebaabggbhhhbfbaaa~~
+..aaaiiiiiiiiiiaaiiiiiiiiiiaaa~~
+..aaaiiiiiiiiiiaaiiiiiiiiiiaaa~~
+..aaabccbbbbbbbaabcbbbbbbbbaaa~~
+..aaabhhbbbbffbaabeeebbbbggaaa~~
+..aaabhhbbbbffbaabeeebbbbggaaa~~
+..aaabhhbbbbffbaabeeebbbbggaaa~~
+..aaabbbbbbbbbbaabbbbbbbbbbaaa~~
+..aaaaaaaaaaaaaaaaaaaaaaaaaaaa~~
+..aaaaaaaaaaaaaaaaaaaaaaaaaaaa~~
+..aaaaaaaaaaaaaaaaaaaaaaaaaaaa~~
+..aaaaaaaaaaaaaaaaaaaaaaaaaaaa~~
+..aaaaaaaaaaaaaaaaaaaaaaaaaaaa~~
+..aaaaaaaaaaajaaaajaaaaaaaaaaa~~
+..aaaaaaaaaaajaaaajaaaaaaaaaaa~~
+..aaaaaaaaaaaaaaaaaaaaaaaaaaaa~~
+..aaaaaaaaaaaaaaaaaaaaaaaaaaaa~~
+..aaaaaaaaaaaaaaaaaaaaaaaaaaaa~~
+..aaaaaaaaaaaaaaaaaaaaaaaaaaaa~~
+..aaaaaaaaaaaaaaaaaaaaaaaaaaaa~~
+...aaa....................aaa~~~
+...aaa------------------------..
+@tblock 0 0
+................................
+..3555555555555555555555555552..
+..4444444444444444444444444444..
+..2222222222222222222222222222..
+..5444444444444444444444444222..
+..5422222222222222222222222222..
+..5425..5555555335..5555555222..
+..5425.45555645335.55555545222..
+..5425445555445335335555545222..
+..5425445555..5335335444545222..
+..5425445555.45335335444545222..
+..5425555555555335555555555222..
+..5422222222222332222222222222..
+..5425445555555335455555555222..
+..5425445555445335444555533222..
+..5425445555445335444555533222..
+..5425445555445335444555533222..
+..5423333333333333333333333222..
+..5422222222222222222222222222..
+..5333333333333333333333333222..
+..5555555555555555555555222222..
+..5554444444444254444444222222..
+..5554444444444254444444222222..
+..5554444444424254244444222222..
+..5554444444424254244444222222..
+..5554444444444254444444222222..
+..5522222222222222222222222222..
+..5222222222222222222222222222..
+..5000000000000000000000000002..
+..0000000000000000000000000000..
+...222....................222...
+...000..........................

@@ -1,0 +1,34 @@
+{
+ "id": "trapdoor",
+ "slug": "trapdoor",
+ "name_ko": "뚜껑문",
+ "category": "가구·살림",
+ "kind": "flat",
+ "kind_ko": "바닥 무늬(밟을 수 있음)",
+ "canvas": [
+  16,
+  16
+ ],
+ "padTop": 0,
+ "image": {
+  "w": 16,
+  "h": 16
+ },
+ "footprint": {
+  "w": 1,
+  "h": 1
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "바닥 나무 뚜껑문(쇠 고리 손잡이, 밟을 수 있음). 지하 창고 입구.",
+ "where": "지하 창고 입구.",
+ "placement": [
+  "밟을 수 있다. 다른 기물 밑에 먼저 깐다"
+ ],
+ "v5_bbox": null,
+ "v5_colors": 0,
+ "material": "wood",
+ "related": [],
+ "new": true,
+ "contextRoom": "inn"
+}

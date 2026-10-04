@@ -1,0 +1,73 @@
+// 학원 세트 팔레트 — m* 현대 칩셋(jp.pal 과 같다) + v* v5 손 도트 실내 + 일본 공용 램프 + 학교 전용 램프.
+// 이 파일은 scripts/content/atlas-pick/make_school_palette.py 가 만든다. 손으로 색을 더하지 마라(검사가 이 밖의 색을 불합격시킨다).
+// 격자: @mat 글자 램프 [기본단] → @mblock / @tblock X Y 램프 / @tadj. 0 = 가장 어두움.
+
+// ── 1. 현대 칩셋 바탕(강남·일본 세트와 같은 색) ──
+@rampc mout     #111310 #071528 #1c2626
+@rampc masph    #241924 #3c3e41 #4e5053 #56585a #5e6063 #686a6c
+@rampc mconc    #3c3e41 #56585a #6f7173 #868887 #a2a29f #b6b6b0 #dee0dd
+@rampc mpave    #6f7173 #858582 #92928d #9f9f99 #a7a7a0 #acaca5 #b7b7b0 #c2ccc7
+@rampc mgran    #3c3e41 #4e5053 #7e7f7f #a2a29f #b9bbb8 #c4c6c3 #dee0dd
+@rampc mbrick   #2b1407 #431d00 #6c4835 #8c6c5b #9e8d83 #bcaaa0
+@rampc mtile    #6c4835 #9e8d83 #aa8a7e #bcaaa0 #d9d2be #ecd6c6
+@rampc mglass   #071528 #212d42 #315a6b #366476 #6693a0 #9cc6cc #a7d4db #d6d8d5
+@rampc mdglass  #071528 #0d1b2e #1f2636 #2b3243 #363e5a #575f7d #747b8f #959dbe
+@rampc mmetal   #111310 #3e403d #5b6667 #777579 #90928f #b6b6b0 #beb8b7 #dee0dd
+@rampc mwhite   #8f918e #b9bbb8 #dee0dd #eaf8f8 #f7fdff #fefffc
+@rampc myellow  #583b01 #ad8604 #ec9900 #fbc10d #f4ef5d #ffff01
+@rampc mred     #2b1407 #a40100 #9e2514 #dd2912 #e0482a #e1975a
+@rampc mgreen   #071528 #143a27 #205030 #4b8232 #62a04b #7cb85c
+@rampc mblue    #071528 #202737 #363e5a #575f7d #959dbe #c2ccc7
+@rampc mteal    #1d2c33 #315a6b #3fa2ae #8ca9a3 #a7d4db
+@rampc mwood    #312210 #452a17 #633712 #885a26 #aa7a08 #ba9d71
+@rampc morange  #431d00 #7c4114 #cd7121 #ec9900 #e1975a #f0c6a8
+@rampc mpurple  #2b203f #4f4352 #703f57 #895261 #9e6574 #ae7a87
+@rampc mnavy    #071528 #0d1b2e #202737 #2b3243 #444c5e #747b8f
+@rampc msoil    #2b1407 #431d00 #5a3011 #744c2a
+
+// ── 2. v5 손 도트 실내 램프(v5 방 가구와 같은 색). 이름 앞 v ──
+@rampc vwood    #000000 #411e05 #63310b #6d3b15 #9a5435 #9e684b #b77246 #d59147 #ffebd7
+@rampc vdwood   #1a0e06 #2a180b #3a2210 #4a2c16 #5f3d21 #744e2c #8a6038
+@rampc vpine    #3a2410 #5c3e22 #7e5935 #a07448 #ba9262 #d5b17d #f0d098
+@rampc viron    #0e1216 #22282e #363e47 #4a5460 #76808a #a3acb5 #d0d8e0
+@rampc vbrass   #3a2600 #5c4108 #7e5c10 #a07818 #bfa045 #dfc872 #fff0a0
+@rampc vstone   #1d2228 #333942 #49505d #606878 #828a95 #a5adb2 #c8d0d0
+@rampc vlinen   #3a3530 #645c54 #8e8378 #b9ab9d #d0c4b6 #e7ded0 #fff8ea
+@rampc vred     #3a0508 #67030c #950110 #c30014 #d73a42 #eb7571 #ffb0a0
+@rampc vblue    #0a1a3a #113461 #184e88 #1f68b0 #5491ca #8abae4 #c0e4ff
+@rampc vgreen   #0c2a10 #1b4a1a #2a6a25 #3a8a30 #69ac53 #98ce76 #c8f09a
+@rampc vyellow  #3a2a00 #6c5408 #9e7e10 #d0a818 #dfc24a #efdd7d #fff8b0
+@rampc vglass   #10283a #234a66 #366d93 #4a90c0 #81b5d5 #b8daea #f0ffff
+@rampc vblack   #08080a #131317 #1e1e24 #2a2a32 #41414c #585866 #707080
+@rampc vwhite   #5a5a66 #7e7e8a #a3a3af #c8c8d4 #dadae2 #ececf0 #ffffff
+@rampc vleaf    #0c240e #174617 #226820 #2e8a2a #5cac46 #8ace63 #b8f080
+
+// ── 3a. 일본 세트와 같은 램프 ──
+@rampc sakura   #5e2a40 #94486a #c47492 #e09cb4 #f0c2d2 #fbe2ea
+@rampc hinoki   #3a2414 #5c3c20 #82603a #a6825a #c6a47c #e0c6a0 #f2e2c6
+@rampc washi    #6c6252 #9c907a #c8bc9e #e2d8bc #f4eedc #fffaf0
+@rampc ai       #0c1224 #15224a #1f336c #2d4a8c #5270a8 #8498c4 #bcc6de
+
+// ── 3b. 학교 전용 ──
+@rampc kokuban  #0e1a16 #16291f #1e3a2c #284c3a #36604a #4c765e #6a8e78
+@rampc wboard   #7c8290 #9ea4b0 #bfc4cc #dadde2 #eceef0 #fafbfc
+@rampc cork     #4a2c14 #6e4422 #92603a #b07e52 #c89c70 #dcbc94
+@rampc locker   #2a3038 #3e4652 #56606e #707c8a #8e9aa6 #aeb8c2 #cdd4da
+@rampc cream    #5e5644 #84795e #a89c7c #c8bc9a #ded4b6 #eee8d2
+@rampc cfloor   #3e2412 #5e3a1c #7e5430 #9e7046 #ba8e60 #d4ac80 #e8cca2
+@rampc lino     #243028 #34443a #48584c #5e7062 #76887a #94a496 #b4c0b2
+@rampc gym      #5a3410 #80501c #a8702c #c89042 #deae5e #eeca84 #f8e2b0
+@rampc gmat     #0c1e34 #143054 #1e4674 #2c5e94 #4a7eb2 #76a2cc
+@rampc jersey   #2a0c2a #4a1640 #6a2458 #8a3670 #a8568c #c47eaa
+@rampc fence    #0e2418 #163822 #22502e #346a3e #4e8656 #72a474
+@rampc undo     #4e3c28 #6c5438 #8a6e4c #a48a64 #bca47e #d4c09c #e8dcc0
+@rampc stile    #4c5a64 #6c7c86 #8c9ca6 #aabac2 #c6d2d8 #dee8ec #f2f8fa
+@rampc tray     #3a4044 #5a6266 #7e8688 #a2a8aa #c2c6c6 #dee0de
+@rampc uniform  #10141e #1a2030 #262e44 #343e58 #4a5670 #66728c
+
+// 반투명(빛은 왼쪽 위 → 그림자는 오른쪽 아래). 가구 발치·책상 밑·처마 밑에만.
+~ #141218 110   // 그림자 속
+- #141218 58    // 그림자 번짐
+% #fff8d0 120   // 불빛 번짐(형광등·창으로 든 햇빛이 바닥에 비친 자리)
+& #cfe8f0 96    // 유리 반사(창·약품장 유리문·수조 — 뒤가 비치는 면)
+# #e040c0       // 실루엣 단계 표시색(최종본에 남으면 불합격)

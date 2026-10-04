@@ -1,0 +1,174 @@
+{
+ "rows": [
+  {
+   "role": "cave",
+   "name": "불의 던전",
+   "id": "cave_fire",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "붉은 바위 언덕·뿔 바위, 현무암 문틀 안에서 용암 빛, 흘러나온 용암과 화로 둘",
+   "fill": "30x27",
+   "side_px": 81,
+   "col": 9,
+   "row": 0
+  },
+  {
+   "role": "cave",
+   "name": "물의 던전",
+   "id": "cave_water",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "이끼 낀 푸른 바위의 석문 입구, 옆으로 떨어지는 물줄기와 앞 못",
+   "fill": "31x26",
+   "side_px": 62,
+   "col": 11,
+   "row": 0
+  },
+  {
+   "role": "cave",
+   "name": "숲의 던전",
+   "id": "cave_forest",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "거목 밑동 뿌리 사이 어두운 입구(초록 빛)와 둥근 수관",
+   "fill": "31x27",
+   "side_px": 68,
+   "col": 13,
+   "row": 0
+  },
+  {
+   "role": "cave",
+   "name": "얼음 던전",
+   "id": "cave_ice",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "눈 언덕의 얼음 벽돌 아치·고드름, 둘레 푸른 수정 기둥",
+   "fill": "32x25",
+   "side_px": 134,
+   "col": 15,
+   "row": 0
+  },
+  {
+   "role": "shrine",
+   "name": "바람의 신전",
+   "id": "shrine_wind",
+   "cells": [
+    3,
+    3
+   ],
+   "desc": "흰 3단 기단·높은 계단, 흰 기둥 회랑과 박공 위 회오리",
+   "fill": "47x47",
+   "side_px": 72,
+   "col": 0,
+   "row": 0
+  },
+  {
+   "role": "shrine",
+   "name": "빛의 신전",
+   "id": "shrine_light",
+   "cells": [
+    3,
+    3
+   ],
+   "desc": "흰 계단 위 흰 원통 몸체·기둥 회랑, 금빛 돔과 첨탑",
+   "fill": "44x43",
+   "side_px": 234,
+   "col": 3,
+   "row": 0
+  },
+  {
+   "role": "shrine",
+   "name": "어둠의 신전",
+   "id": "shrine_dark",
+   "cells": [
+    3,
+    3
+   ],
+   "desc": "검은 기단 위 첨탑 셋, 보라 빛 창·입구와 보라 불",
+   "fill": "39x41",
+   "side_px": 166,
+   "col": 6,
+   "row": 0
+  },
+  {
+   "role": "ruin",
+   "name": "사막 신전 입구",
+   "id": "ruin_desert",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "모래에 반쯤 묻힌 금 머릿돌 피라미드와 앞 입구",
+   "fill": "30x22",
+   "side_px": 59,
+   "col": 17,
+   "row": 0
+  },
+  {
+   "role": "ruin",
+   "name": "봉인된 문",
+   "id": "ruin_seal",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "절벽의 돌문에 금빛 문장, 쇠사슬 X 와 자물쇠",
+   "fill": "30x26",
+   "side_px": 100,
+   "col": 19,
+   "row": 0
+  },
+  {
+   "role": "circle",
+   "name": "요정의 샘",
+   "id": "circle_fairy",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "돌테 안 못에서 솟는 빛 기둥·반짝이, 둘레 꽃",
+   "fill": "30x31",
+   "side_px": 93,
+   "col": 21,
+   "row": 0
+  },
+  {
+   "role": "tower_small",
+   "name": "마법사의 외딴 탑",
+   "id": "tower_wizard",
+   "cells": [
+    1,
+    2
+   ],
+   "desc": "바위 위 돌 원통 탑, 난간, 보라 고깔 지붕과 금별",
+   "fill": "13x30",
+   "side_px": 73,
+   "col": 25,
+   "row": 0
+  },
+  {
+   "role": "circle",
+   "name": "마스터 검의 대좌",
+   "id": "circle_sword",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "숲 빈터의 둥근 돌 단, 대좌에 꽂힌 푸른 손잡이 검",
+   "fill": "31x24",
+   "side_px": 66,
+   "col": 23,
+   "row": 0
+  }
+ ],
+ "problems": [],
+ "new_colors": 11
+}

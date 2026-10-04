@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/fish_ice_chest/w9-A.pxg",
+ "id": "fish ice chest",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.018
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 27,
+ "v5_colors": 31,
+ "bbox": [
+  0,
+  3,
+  31,
+  15
+ ],
+ "v5_bbox": [
+  0,
+  3,
+  31,
+  15
+ ],
+ "note": "v5 배치 유지: 생선마다 머리·눈·꼬리 분명하게, 얼음 알갱이 3톤, 나무상자 앞판 널빤지 이음을 톤으로 정리",
+ "ok": true
+}

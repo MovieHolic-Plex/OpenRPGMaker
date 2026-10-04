@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/proofing_rack/w1-B.pxg",
+ "id": "proofing rack",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.004
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 17,
+ "v5_colors": 10,
+ "bbox": [
+  1,
+  2,
+  14,
+  31
+ ],
+ "v5_bbox": [
+  1,
+  2,
+  14,
+  31
+ ],
+ "note": "A 에 오른쪽 벽 그림자 열(x15)을 깔고 각 단 뒤판을 더 어둡게(wood1) 해서 안쪽 깊이·단 사이 명암을 세게 함.",
+ "ok": true
+}

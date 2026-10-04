@@ -1,0 +1,17 @@
+// w10-A.pxg 평탄화 격자 16x16
+................
+........AAAA....
+........AAAAC...
+.........BB.....
+...DDDDDBBDDDD..
+..DFFFFFFBFFFFD.
+.DFFGGGGGGGGFFH.
+.DFGFFFFFFFFGFH.
+..HFGGGGGGGGFH..
+..CEEEEEEEEEEC..
+..CHEEIEEEEIIC..
+..CHEEIEEEEIIC..
+..CHEEEEEIEIIC..
+..CHEEEEEIEIIC..
+..JCCCCCCCCCCJ..
+................

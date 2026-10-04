@@ -1,7 +1,7 @@
 import type { EventPageGraphic, GameMap, MapId } from "../types";
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import { WOOD_FLOOR_PASSABILITY } from "./chipsetMapping";
-import { DEFAULT_TILE_SIZE, DEFAULT_TILESET_ID, DEFAULT_TROOP_ID, TILE } from "./constants";
+import { DEFAULT_TILE_SIZE, COMBINED_TOWN_TILESET_ID, DEFAULT_TROOP_ID, TILE } from "./constants";
 
 export const STARTER_HOUSE_INTERIOR_MAP_ID = "map_starter_house_interior";
 
@@ -73,7 +73,7 @@ export function createStarterHouseInteriorMap(returnMapId: MapId): GameMap {
     name: "시작 집 내부",
     width,
     height,
-    tilesetId: DEFAULT_TILESET_ID,
+    tilesetId: COMBINED_TOWN_TILESET_ID,
     tileSize: DEFAULT_TILE_SIZE,
     lowerTiles,
     upperTiles,

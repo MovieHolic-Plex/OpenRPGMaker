@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/rug_red/w3-C.pxg",
+ "id": "rug red",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.008
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 10,
+ "v5_colors": 5,
+ "bbox": [
+  2,
+  2,
+  45,
+  29
+ ],
+ "v5_bbox": [
+  2,
+  2,
+  45,
+  29
+ ],
+ "note": "실루엣 재해석 — 양 짧은 끝에 리넨 술을 달고, 마름모 대신 파란 타원 메달리온(금 테두리)을 넣은 페르시아식 러그. 필드 짜임은 2칸 엇배열 유지.",
+ "ok": true
+}

@@ -1,0 +1,41 @@
+{
+ "id": "night_grass",
+ "slug": "night_grass",
+ "name": "밤 풀밭",
+ "scene": "밤 숲·묘지",
+ "cells": [
+  2,
+  2
+ ],
+ "canvas": [
+  32,
+  32
+ ],
+ "layer": "ground",
+ "layer_ko": "바닥(아래층, 칸을 꽉 채운 불투명)",
+ "description": "밤 풀밭: 짙은 푸른 녹 바탕에 풀 포기 짧은 V 획(한 단 밝게) 덩이가 몰리게(고른 점박이 금지), 흙이 드러난 점 한두 곳. 사방 이어 붙기. 어두워도 바닥 명도가 비석·나무보다 한 단 낮게.",
+ "palette_hint": "night 풀, soil 흙",
+ "worker_v1": "h1",
+ "stage": 1,
+ "stage_ko": "1단계 기본(1판에서 옮김)",
+ "kit": "outdoor",
+ "role": "밤 풀밭(야외 바닥)",
+ "worker": "h1",
+ "set_with": [
+  "night_path",
+  "grave_open"
+ ],
+ "v5_ref": [
+  {
+   "id": "floor:earth",
+   "name_ko": "흙바닥",
+   "atlas": {
+    "x": 256,
+    "y": 1656,
+    "w": 32,
+    "h": 32
+   },
+   "file": "ref-v5-1.png"
+  }
+ ]
+}

@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/fish_tank/w44-A.pxg",
+ "id": "fish tank",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.026
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 23,
+ "v5_colors": 23,
+ "bbox": [
+  0,
+  8,
+  31,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  8,
+  31,
+  31
+ ],
+ "note": "관문 ok t=6 f=18(object 동일). 윗면에 물 수면(나무 테두리+하이라이트 점) 4줄을 올리고 앞 유리 1줄 뒤 물속은 v5 그대로(마스크 행 14~25 불변).",
+ "ok": true
+}

@@ -1,0 +1,45 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/volcano/wv4-B.pxg",
+ "set": "worldmap",
+ "id": "volcano",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.097
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.115
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies",
+   "dither"
+  ]
+ },
+ "colors": 18,
+ "bbox": [
+  2,
+  0,
+  26,
+  31
+ ],
+ "note": "밝은 흰 연기와 분화구 위 빛번짐(%), 오른쪽 아래 그림자(~,-)로 입체감을 세운 원뿔",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 4,
+   "atLeast95": 0,
+   "max": 0.059
+  },
+  "refmapWorld": {
+   "cells": 4,
+   "atLeast95": 0,
+   "max": 0.106
+  }
+ }
+}

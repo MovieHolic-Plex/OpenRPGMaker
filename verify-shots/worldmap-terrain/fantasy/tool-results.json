@@ -1,0 +1,26 @@
+[
+  {
+    "name": "read_world_terrain",
+    "ok": true,
+    "seconds": 3.359,
+    "summary": "세계 지형 shared-v9(fantasy) — 장소 31곳, 여정 검사 통과"
+  },
+  {
+    "name": "edit_world_terrain",
+    "ok": false,
+    "seconds": 1.514,
+    "summary": "'edit_world_terrain' 실행 실패: 월드맵 빌드 실패:\n입력 오류:\n지형 오류:\n장소 대성 의 발자국(25,21)이 물 위다 — move_place 로 땅으로 옮기거나 그 자리에 땅을 더하라\n\n작업(ops, 칸 좌표 96×72, x 오른쪽·y 아래): land{poly,ground?} 땅 더하기 · sea{poly} 바다로 자르기(대륙 가르기·만 파기) · island{x,y,rx,ry,gr…"
+  },
+  {
+    "name": "edit_world_terrain",
+    "ok": true,
+    "seconds": 104.393,
+    "summary": "새 세계 지도 world_map — 테마 fantasy, 지형 작업 3개, 장소 31곳, 여정 검사 통과(104.3초)"
+  },
+  {
+    "name": "edit_world_terrain",
+    "ok": true,
+    "seconds": 103.085,
+    "summary": "세계 지도 world_map — 테마 fantasy, 지형 작업 4개, 장소 31곳, 여정 검사 통과(103초)"
+  }
+]

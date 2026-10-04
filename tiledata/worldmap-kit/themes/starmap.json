@@ -1,0 +1,11 @@
+{
+ "schema": "worldmap-theme/1",
+ "id": "starmap",
+ "name": "성계 지도",
+ "iconset": "starmap",
+ "palette": "original",
+ "overlays": [],
+ "kind": "space",
+ "terrain": "galaxy",
+ "journey": "space-5act"
+}

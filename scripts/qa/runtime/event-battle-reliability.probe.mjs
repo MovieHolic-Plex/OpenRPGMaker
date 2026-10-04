@@ -26,7 +26,7 @@ function fixture(test) {
   const troop = project.database.troops[0];
   project.commonEvents = [];
   project.system.battleFlow = 'strict';
-  project.system.battleUiStyle = 'rm2000';
+  project.system.battleUiStyle = 'retro2003';
   project.variables = [{ id: 'selectedTroop', name: 'Selected troop' }];
   project.session.variables = { selectedTroop: test.invalid === 'variable' ? 999999 : (test.variable ?? 1) };
   project.session.monsterParty = [];

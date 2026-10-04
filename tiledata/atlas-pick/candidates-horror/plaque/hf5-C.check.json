@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/plaque/hf5-C.pxg",
+ "set": "horror",
+ "id": "plaque",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.038
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.039
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 5,
+ "bbox": [
+  3,
+  4,
+  12,
+  10
+ ],
+ "note": "C: 재료·무늬 — 누렇게 바랜 밀랍색(wax) 종이 명패에 tarn 못 네 개, 잉크 획 두 줄(한 줄 띄움). 오래 걸린 명패.",
+ "ok": true
+}

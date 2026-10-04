@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/column_live/w51-A.pxg",
+ "id": "column live",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 3,
+  "atLeast95": 0,
+  "max": 0.04
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 11,
+ "v5_colors": 11,
+ "bbox": [
+  0,
+  8,
+  15,
+  47
+ ],
+ "v5_bbox": [
+  0,
+  8,
+  15,
+  47
+ ],
+ "note": "산 기둥: 잎머리 실루엣 유지, 위쪽 C(밝은 잎)·아래 D/E 로 위에서 본 둥근 수관, 초석 윗면 H 한 줄+몸 밑 그림자. 3/4 짜임은 머리가 수관이라 윗면 대신 잎 명암으로. 관문 ok.",
+ "ok": true
+}

@@ -1,0 +1,106 @@
+// 가장 높은 머리판 y=0~2를 연속 윗면으로 정리하고 결을 y=3 앞판에 이동; 이불·간격·사다리·금장 장식 유지
+@size 16 48
+@cell 16
+@palette palette.pal
+@mat A wood 1
+@mat B wood 3
+@mat C wood 4
+@mat D wood 6
+@mat E wood 7
+@mat F linen 2
+@mat G linen 3
+@mat H linen 4
+@mat I linen 5
+@mat J linen 6
+@mat K brass 2
+@mat L brass 4
+@mat M brass 5
+@mat N brass 6
+@layer bed
+@mblock 0 0
+.EEEEEEEEEEEEDB.
+DEEEEEEEEEEEEDB.
+DEEEEEEEEEEEEDB.
+AKKKDDDDDDKKKBA.
+ABJJJIIIIIIIBBA.
+ADJJJIIIIIIICBA.
+ADHHHIIIIIHHCBA.
+ADIHIIIIIIHHCBA.
+ADIIIIIIIHHHCBA.
+ADIIIIIIHHHGCBA.
+ADHHHHHHHHGGCBA.
+ADGGGGGGGGFFBBA.
+AMLLLLLLLLLLKBA.
+ADCCCLMMCCCCBBA.
+ADCCLMMMCCCCBBA.
+ABBBBKLLBBBBABA.
+AD..........ABA.
+AD..........ADB.
+AD..........ADB.
+AD..........ADB.
+AD..........ADB.
+AD..........ADB.
+AD..........ADB.
+AD..........ADB.
+AD..........ADB.
+AD..........ADB.
+AD..........ADB.
+ADCCCCCCCCCCBBA.
+ADEEEEEEEEDDCBA.
+ADJJJIIIIIIICBA.
+ADJJJIIIIIIICBA.
+ADHHHIIIIIHHCBA.
+ADIHIIIIIIHHCBA.
+ADIIIIIIIHHHCBA.
+ADIIIIIIHHHGCBA.
+ADHHHHHHHHGGCBA.
+ADGGGGGGGGFFBBA.
+AMLLLLLLLLLLKBA.
+ADCCCLMMCCCCBBA.
+ADCCLMMMCCCCBBA.
+ABBBBKLLBBBBABA.
+AD..........ABA.
+AD..........ABA.
+AD..........ABA.
+AD..........ABA.
+AK..........AKA.
+AK..........AKA.
+.B..........ABA.
+@layer ladder
+@mblock 13 12
+D.B
+D.B
+D.B
+EMD
+B.A
+D.B
+D.B
+D.B
+EMD
+B.A
+D.B
+D.B
+D.B
+EMD
+B.A
+D.B
+D.B
+D.B
+EMD
+B.A
+D.B
+D.B
+D.B
+EMD
+B.A
+D.B
+D.B
+D.B
+EMD
+B.A
+D.B
+D.B
+D.B
+EMD
+B.A
+B.A

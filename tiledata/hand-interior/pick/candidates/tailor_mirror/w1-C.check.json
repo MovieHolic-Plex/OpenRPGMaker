@@ -1,0 +1,36 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/tailor_mirror/w1-C.pxg",
+ "id": "tailor mirror",
+ "hard": [],
+ "warn": [
+  "폭: 불투명 폭이 v5 보다 +4px"
+ ],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.016
+ },
+ "lint": {
+  "failed": [
+   "saturation",
+   "dither"
+  ],
+  "pass": false
+ },
+ "colors": 16,
+ "v5_colors": 6,
+ "bbox": [
+  0,
+  0,
+  15,
+  30
+ ],
+ "v5_bbox": [
+  2,
+  0,
+  13,
+  30
+ ],
+ "note": "액자 대신 이동식 전신거울(체벌 거울): 양옆 나무 기둥 위에 금 구슬, 기둥 사이에 타원 유리가 금 축으로 매달리고 넓은 십자 발판 — 실루엣이 '거울 액자'와 완전히 다르게.",
+ "ok": true
+}

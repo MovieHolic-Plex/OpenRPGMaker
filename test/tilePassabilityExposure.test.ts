@@ -6,7 +6,7 @@ import { allTools, getTool, runTool, toOpenAiTools, validateArgs } from "@/edito
 import { MAP_TOOLS } from "@/editor/tools/mapTools";
 import { isPassable } from "@/project/collision";
 import { createBlankProject } from "@/project/defaults";
-import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { applyCombinedTownHarness } from "@/project/tilesetHarness";
 import type { Project, TilesetDef } from "@/project/types";
 
@@ -32,7 +32,7 @@ function passage(passable: boolean) {
 function fixture(initialPassable = false): Project {
   const project = createBlankProject();
   const tileset: TilesetDef = {
-    id: TILESET, name: "Passage fixture", image: project.tilesets[DEFAULT_TILESET_ID].image,
+    id: TILESET, name: "Passage fixture", image: project.tilesets[COMBINED_TOWN_TILESET_ID].image,
     tileSize: 16, tilesPerRow: 3, count: 3,
     passability: [passage(true), passage(initialPassable), passage(true)],
     priority: ["lower", "lower", "lower"], terrain: [0, 0, 0],
@@ -211,10 +211,10 @@ describe("public technical tile passage capability", () => {
     expect(schema).toBeDefined();
     const args = { tile: 342, passable: true, reason: "repair physical passage" };
     expect(validateArgs(schema!.function.parameters, args)).toEqual([]);
-    const before = structuredClone(context.project.tilesets[DEFAULT_TILESET_ID]);
+    const before = structuredClone(context.project.tilesets[COMBINED_TOWN_TILESET_ID]);
     expect(runTool(context, SETTER, { tile: 342, passable: true }).ok).toBe(true);
     const reloaded = JSON.parse(JSON.stringify(context.project)) as Project;
-    const tileset = reloaded.tilesets[DEFAULT_TILESET_ID];
+    const tileset = reloaded.tilesets[COMBINED_TOWN_TILESET_ID];
     const target = structuredClone(tileset.tileMeta![342]);
     expect(target).toMatchObject({ passage: "passable", origin: "user", source: "user", locked: true, userLocked: true });
     applyCombinedTownHarness(tileset);

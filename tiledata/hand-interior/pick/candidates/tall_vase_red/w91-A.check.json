@@ -1,0 +1,35 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/tall_vase_red/w91-A.pxg",
+ "id": "tall vase red",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.001
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "saturation",
+   "outline"
+  ],
+  "pass": false
+ },
+ "colors": 6,
+ "v5_colors": 6,
+ "bbox": [
+  4,
+  10,
+  11,
+  27
+ ],
+ "v5_bbox": [
+  4,
+  10,
+  11,
+  27
+ ],
+ "note": "v5 원본 모양·색 유지, 윗면 T 를 가장 밝은 단으로 재조명하고 앞모서리 하이라이트·뒤모서리선·처마 그림자 추가",
+ "ok": true
+}

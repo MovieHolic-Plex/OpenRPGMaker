@@ -1,0 +1,116 @@
+{
+  "kind": "real-production-components-in-isolation",
+  "results": [
+    {
+      "menu": {
+        "choiceId": "monster-collect",
+        "brief": {
+          "version": 1,
+          "presetId": "monster-collect",
+          "answers": {
+            "experience": {
+              "question": "어떤 만남으로 시작할까요?",
+              "label": "이야기의 시작",
+              "text": "조금씩 가까워지는 이웃 — 작은 마을에서 우연한 만남이 이어져요.",
+              "source": "user"
+            },
+            "activity": {
+              "question": "무엇을 하며 가까워질까요?",
+              "label": "중심 플레이",
+              "text": "대화를 선택하며 — 상대의 이야기를 듣고 내 마음을 전해요.",
+              "source": "user"
+            },
+            "progression": {
+              "question": "관계는 어떤 흐름으로 이어질까요?",
+              "label": "진행 방식",
+              "text": "가까워질 상대를 선택하기 — 인물마다 다른 사건과 관계의 결말을 만나요.",
+              "source": "user"
+            },
+            "detail": {
+              "question": "어떤 감정이 오래 남으면 좋을까요?",
+              "label": "분위기",
+              "text": "긴장과 비밀이 있게 — 감춰진 사정 때문에 마음을 쉽게 내보일 수 없어요.",
+              "source": "user"
+            },
+            "scope": {
+              "question": "첫 번째로 어디까지 만들어 볼까요?",
+              "label": "첫 제작 범위",
+              "text": "첫 만남 한 장면 — 두 인물의 대화와 첫 선택 하나까지.",
+              "source": "user"
+            }
+          },
+          "summary": "관계·연애와 몬스터 수집·육성를 결합한 게임을 만든다.\n\n처음 떠올린 아이디어: 성인 두 사람이 알에서 태어난 생물과 비밀을 풀어가는 이야기\n\n이야기의 출발점은 조금씩 가까워지는 이웃 — 작은 마을에서 우연한 만남이 이어져요.\n\n플레이어의 핵심 행동: 대화를 선택하며 — 상대의 이야기를 듣고 내 마음을 전해요.\n\n두 장르를 잇는 방법: 파트너와 생물을 돌보며 가까워지기 — 생물의 성장 사건이 두 사람의 관계를 바꿔요.\n\n분위기: 긴장과 비밀이 있게 — 감춰진 사정 때문에 마음을 쉽게 내보일 수 없어요.\n\n진행 흐름: 가까워질 상대를 선택하기 — 인물마다 다른 사건과 관계의 결말을 만나요.\n\n먼저 완주 가능하게 만들 구간: 첫 만남 한 장면 — 두 인물의 대화와 첫 선택 하나까지.\n\n사용자가 정한 주인공: 주인공은 사용자가 정한 약사. 이름과 외형은 미정.\n\n추가 요청: 전투 없이 교감과 선택으로 진행",
+          "interview": {
+            "version": 1,
+            "genre": "romance",
+            "secondary": "monster",
+            "blend": {
+              "question": "두 장르는 어떻게 이어질까요?",
+              "label": "장르의 연결",
+              "text": "파트너와 생물을 돌보며 가까워지기 — 생물의 성장 사건이 두 사람의 관계를 바꿔요.",
+              "source": "user"
+            },
+            "concept": "성인 두 사람이 알에서 태어난 생물과 비밀을 풀어가는 이야기",
+            "protagonist": "주인공은 사용자가 정한 약사. 이름과 외형은 미정.",
+            "notes": "전투 없이 교감과 선택으로 진행",
+            "choiceIds": {
+              "experience": "town",
+              "activity": "talk",
+              "progression": "routes",
+              "detail": "secret",
+              "scope": "scene"
+            }
+          }
+        }
+      },
+      "roundtrip": true,
+      "internalTasks": true,
+      "staleSummaryBlocked": true
+    },
+    {
+      "genre": "romance",
+      "preset": "story-cutscene",
+      "reopened": true,
+      "cancelled": true
+    },
+    {
+      "genre": "monster",
+      "preset": "monster-collect",
+      "reopened": true,
+      "cancelled": true
+    },
+    {
+      "genre": "adventure",
+      "preset": "adventure-jrpg",
+      "reopened": true,
+      "cancelled": true
+    },
+    {
+      "genre": "mystery",
+      "preset": "story-cutscene",
+      "reopened": true,
+      "cancelled": true
+    },
+    {
+      "welcomeConfirmedEngine": "story-cutscene",
+      "cancelWrites": 0
+    },
+    {
+      "launcherNewGame": "ai-planning",
+      "examplesAccessible": true
+    }
+  ],
+  "mobile": {
+    "width": 390,
+    "documentWidth": 390,
+    "panelWidth": 390,
+    "videoPaused": true,
+    "motion": true
+  },
+  "errors": [],
+  "missing": [],
+  "limitations": [
+    "No live AI generation",
+    "No canonical project writes; JSON normalization roundtrip only"
+  ]
+}

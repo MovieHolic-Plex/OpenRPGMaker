@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/lectern/v34-A.pxg",
+ "set": "school",
+ "id": "lectern",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.15
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.012
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 16,
+ "bbox": [
+  1,
+  0,
+  30,
+  31
+ ],
+ "note": "교탁 3/4 — 밤색 나무 윗면에 종이 한 장, 앞 모서리 하이라이트, 안쪽이 들어간 앞 판과 놋 손잡이",
+ "ok": true
+}

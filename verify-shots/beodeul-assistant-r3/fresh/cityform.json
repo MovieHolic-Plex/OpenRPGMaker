@@ -1,0 +1,302 @@
+{
+ "deadEnds": [],
+ "lines": {
+  "count": 64,
+  "longStraight": [
+   {
+    "orient": "h",
+    "from": [
+     0,
+     23
+    ],
+    "to": [
+     54,
+     23
+    ],
+    "len": 55
+   },
+   {
+    "orient": "h",
+    "from": [
+     0,
+     69
+    ],
+    "to": [
+     54,
+     69
+    ],
+    "len": 55
+   },
+   {
+    "orient": "v",
+    "from": [
+     15,
+     0
+    ],
+    "to": [
+     15,
+     86
+    ],
+    "len": 87
+   },
+   {
+    "orient": "v",
+    "from": [
+     18,
+     0
+    ],
+    "to": [
+     18,
+     84
+    ],
+    "len": 85
+   },
+   {
+    "orient": "v",
+    "from": [
+     40,
+     38
+    ],
+    "to": [
+     40,
+     84
+    ],
+    "len": 47
+   },
+   {
+    "orient": "v",
+    "from": [
+     61,
+     0
+    ],
+    "to": [
+     61,
+     84
+    ],
+    "len": 85
+   },
+   {
+    "orient": "v",
+    "from": [
+     84,
+     33
+    ],
+    "to": [
+     84,
+     84
+    ],
+    "len": 52
+   },
+   {
+    "orient": "v",
+    "from": [
+     99,
+     33
+    ],
+    "to": [
+     99,
+     84
+    ],
+    "len": 52
+   }
+  ],
+  "longestLen": 87
+ },
+ "graph": {
+  "meanDepth": 1.12,
+  "maxDepth": 2,
+  "components": 2,
+  "isolated": [
+   {
+    "from": [
+     61,
+     0
+    ],
+    "to": [
+     61,
+     84
+    ],
+    "len": 85
+   }
+  ]
+ },
+ "spacing": {
+  "vGaps": [
+   25,
+   21,
+   23,
+   15
+  ],
+  "hGaps": [
+   11,
+   5,
+   10,
+   5,
+   10,
+   5,
+   4,
+   10
+  ],
+  "cv": 0.591
+ },
+ "bentStreetCells": 68,
+ "canal": {
+  "cells": 1219,
+  "orient": "v",
+  "bends": 0,
+  "straightShare": 0.986,
+  "straight": true
+ },
+ "nodes": [
+  {
+   "at": [
+    76,
+    15
+   ],
+   "cells": 102
+  },
+  {
+   "at": [
+    28,
+    15
+   ],
+   "cells": 92
+  },
+  {
+   "at": [
+    95,
+    16
+   ],
+   "cells": 31
+  },
+  {
+   "at": [
+    48,
+    20
+   ],
+   "cells": 56
+  },
+  {
+   "at": [
+    48,
+    31
+   ],
+   "cells": 182
+  },
+  {
+   "at": [
+    33,
+    34
+   ],
+   "cells": 35
+  },
+  {
+   "at": [
+    73,
+    56
+   ],
+   "cells": 260
+  },
+  {
+   "at": [
+    4,
+    55
+   ],
+   "cells": 24
+  },
+  {
+   "at": [
+    48,
+    61
+   ],
+   "cells": 182
+  },
+  {
+   "at": [
+    73,
+    78
+   ],
+   "cells": 160
+  },
+  {
+   "at": [
+    92,
+    78
+   ],
+   "cells": 112
+  }
+ ],
+ "landmarks": [
+  "bd-castle",
+  "bd-estate",
+  "bd-forum",
+  "bd-windmill"
+ ],
+ "blocks": {
+  "count": 20,
+  "distinct": 14,
+  "neighbourRepeats": [
+   {
+    "id": "bd-block-market-14x13",
+    "a": [
+     41,
+     25
+    ],
+    "b": [
+     41,
+     55
+    ]
+   },
+   {
+    "id": "bd-block-manor-14x13",
+    "a": [
+     41,
+     40
+    ],
+    "b": [
+     41,
+     70
+    ]
+   },
+   {
+    "id": "bd-block-out-14x8",
+    "a": [
+     0,
+     24
+    ],
+    "b": [
+     0,
+     42
+    ]
+   },
+   {
+    "id": "bd-block-out-14x8",
+    "a": [
+     0,
+     42
+    ],
+    "b": [
+     0,
+     60
+    ]
+   },
+   {
+    "id": "bd-block-out-14x8",
+    "a": [
+     0,
+     60
+    ],
+    "b": [
+     0,
+     78
+    ]
+   }
+  ],
+  "overused": [
+   {
+    "id": "bd-block-out-14x8",
+    "n": 4
+   }
+  ]
+ }
+}

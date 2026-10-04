@@ -7,6 +7,7 @@
 import { installGlobalErrorTrap } from "@/app/errorTrap";
 import { installVitePreloadRecovery } from "@/app/moduleLoadRecovery";
 import "./styles/index.css";
+import { mountWindowControls } from "@/start/windowControls";
 // ⚠ 순서 의존: 저장 키 마이그레이션이 import 시점에 localStorage 를 읽는 모듈보다 **먼저**
 // 평가돼야 한다. 자세한 이유는 src/storageBoot.ts 헤더 주석 — 진입점 본문의 함수 호출로는
 // 안 된다(import 호이스팅).
@@ -14,6 +15,7 @@ import "@/storageBoot";
 import { initializeTeamAccess, startTeamSession } from "@/editor/teamSession";
 import { loadSharedTileReferences } from "@/project/sharedTileReferences";
 import { loadSharedContent } from "@/project/sharedContent";
+import { installReferenceDocumentOwners } from "@/project/installReferenceOwners";
 import { bootApp } from "@/app/mode";
 import { dismissBootLoader, reportBootStage } from "@/app/bootLoader";
 import { editorState } from "@/editor/editorState";
@@ -24,6 +26,7 @@ import { store } from "@/project/store";
 import { hasElectronBridge } from "@/project/persistence/electronRepository";
 import { adoptElectronOpenProject } from "@/project/persistence/repository";
 import { initI18n } from "@/i18n";
+import { configureProjectInterviewBootPreparation } from "@/editor/projectInterviewBootPreparation";
 
 // 첫 import 에서 이미 설치됐다(idempotent). 진입점에 남겨두는 이유는 부팅 순서에서
 // 이게 1번이라는 사실을 코드로 읽히게 하려는 것 — 누가 import 를 정리해도 의도가 남는다.
@@ -47,6 +50,7 @@ if (typeof window !== "undefined" && window.location) {
       document.body.classList.add(flag.replace(/([A-Z])/g, "-$1").toLowerCase());
     }
   }
+  mountWindowControls();
   if (window.oprn?.closeIsHostDriven === true) {
     // 닫기는 주 프로세스가 flush-before-close 로 연다 — 브라우저 beforeunload 경고와 겹치지 않게 한다.
     window.oprn.lifecycle.onFlushBeforeClose(() => {
@@ -107,13 +111,23 @@ async function bootEditorWithOpenedProject(host: HTMLElement): Promise<void> {
   const tileReferences = loadSharedTileReferences();
   reportBootStage("shared");
   await loadSharedContent({ scope: "defaults" });
+  // 공용 카탈로그가 설치된 뒤·프로젝트 로드 전에 켠다 — 로드가 표지를 되돌릴 소유자 판본을 알아야 한다.
+  installReferenceDocumentOwners();
+  let remainingContent: Promise<void> | undefined;
+  const loadRemainingContent = () => remainingContent ??= loadSharedContent({ scope: "rest" });
+  configureProjectInterviewBootPreparation(async () => {
+    // References can need libraries outside the boot-default scope. Start those
+    // here too: waiting for bootApp to return would deadlock its interview handoff.
+    await Promise.all([tileReferences, loadRemainingContent()]);
+    store.applySharedReferenceRefresh();
+  });
   await bootApp(host);
   startTeamSession();
   void tileReferences.then(() => store.applySharedReferenceRefresh());
   // 장소·지역 카탈로그 전체는 편집기가 뜬 뒤 받는다. 기본 라이브러리는 위에서 이미 설치됐으므로
   // 정규화 결과(프로젝트에 들어가는 shared_* 타일셋)는 바뀌지 않는다.
   // 나머지(rest)만 받아 합친다 — 전체(all)를 받으면 위에서 받은 기본 20MB(gzip)가 두 번 온다(2026-09-27 실측).
-  void loadSharedContent({ scope: "rest" });
+  void loadRemainingContent();
 }
 
 async function registerPwaIfEnabled(): Promise<void> {

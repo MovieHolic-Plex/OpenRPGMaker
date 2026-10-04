@@ -1,0 +1,272 @@
+{
+ "rows": [
+  {
+   "role": "capital",
+   "name": "얼음 왕성",
+   "id": "capital",
+   "cells": [
+    6,
+    6
+   ],
+   "desc": "눈 덮인 돌 성벽·둥근 탑, 높은 기단 위 얼음 궁전 돔과 첨탑",
+   "fill": "90x74",
+   "side_px": 1160,
+   "col": 0,
+   "row": 0
+  },
+  {
+   "role": "fort_city",
+   "name": "통나무 요새 도시",
+   "id": "fort_city",
+   "cells": [
+    4,
+    4
+   ],
+   "desc": "뾰족 말뚝 목책·네 귀 망루·롱하우스들",
+   "fill": "64x51",
+   "side_px": 447,
+   "col": 16,
+   "row": 0
+  },
+  {
+   "role": "harbor_city",
+   "name": "피오르 항구",
+   "id": "harbor_city",
+   "cells": [
+    5,
+    4
+   ],
+   "desc": "롱쉽(용머리 배) 둘·나무 부두·롱하우스",
+   "fill": "77x40",
+   "side_px": 129,
+   "col": 6,
+   "row": 0
+  },
+  {
+   "role": "castle",
+   "name": "얼음 성",
+   "id": "castle",
+   "cells": [
+    3,
+    3
+   ],
+   "desc": "눈 언덕 위 얼음 성벽과 푸른 얼음 첨탑",
+   "fill": "48x47",
+   "side_px": 346,
+   "col": 26,
+   "row": 0
+  },
+  {
+   "role": "castle",
+   "name": "장군 전당",
+   "id": "castle_b",
+   "cells": [
+    3,
+    3
+   ],
+   "desc": "큰 롱하우스·방패 벽·깃발",
+   "fill": "47x35",
+   "side_px": 18,
+   "col": 29,
+   "row": 0
+  },
+  {
+   "role": "large_town",
+   "name": "눈 마을",
+   "id": "large_town",
+   "cells": [
+    3,
+    3
+   ],
+   "desc": "눈 쌓인 박공 통나무집·장작더미·전나무",
+   "fill": "47x32",
+   "side_px": 22,
+   "col": 0,
+   "row": 6
+  },
+  {
+   "role": "village",
+   "name": "이글루 마을",
+   "id": "village",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "눈 벽돌 이글루 셋·썰매",
+   "fill": "29x20",
+   "side_px": 84,
+   "col": 9,
+   "row": 6
+  },
+  {
+   "role": "village",
+   "name": "롱하우스 마을",
+   "id": "village_b",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "롱하우스 둘·창고·전나무",
+   "fill": "30x23",
+   "side_px": 10,
+   "col": 11,
+   "row": 6
+  },
+  {
+   "role": "camp",
+   "name": "순록 유목 천막",
+   "id": "camp",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "가죽 원뿔 천막·썰매·순록",
+   "fill": "32x30",
+   "side_px": 156,
+   "col": 13,
+   "row": 6
+  },
+  {
+   "role": "tower_small",
+   "name": "봉화탑",
+   "id": "tower_small",
+   "cells": [
+    1,
+    2
+   ],
+   "desc": "눈 덮인 돌 원탑 꼭대기의 봉화",
+   "fill": "15x30",
+   "side_px": 80,
+   "col": 23,
+   "row": 6
+  },
+  {
+   "role": "tower_great",
+   "name": "얼음 첨탑",
+   "id": "tower_great",
+   "cells": [
+    2,
+    4
+   ],
+   "desc": "눈 바위 위 팔각 얼음 기둥과 결정",
+   "fill": "32x58",
+   "side_px": 315,
+   "col": 20,
+   "row": 0
+  },
+  {
+   "role": "cave",
+   "name": "얼음 동굴",
+   "id": "cave",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "눈 덮인 바위 언덕·푸른 얼음 입구·고드름",
+   "fill": "31x27",
+   "side_px": 133,
+   "col": 15,
+   "row": 6
+  },
+  {
+   "role": "ruin",
+   "name": "룬석 무덤",
+   "id": "ruin",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "눈 덮인 봉분과 붉은 룬 선돌",
+   "fill": "31x21",
+   "side_px": 72,
+   "col": 17,
+   "row": 6
+  },
+  {
+   "role": "ruin_city",
+   "name": "얼어붙은 폐허 도시",
+   "id": "ruin_city",
+   "cells": [
+    4,
+    3
+   ],
+   "desc": "눈에 묻힌 지붕·부서진 돌담·얼음 기둥",
+   "fill": "63x37",
+   "side_px": 202,
+   "col": 22,
+   "row": 0
+  },
+  {
+   "role": "shrine",
+   "name": "오딘 신전",
+   "id": "shrine",
+   "cells": [
+    3,
+    3
+   ],
+   "desc": "검은 목조 스타브 교회·겹 박공·용머리",
+   "fill": "42x46",
+   "side_px": 34,
+   "col": 3,
+   "row": 6
+  },
+  {
+   "role": "landmark_nature",
+   "name": "세계수",
+   "id": "landmark_nature",
+   "cells": [
+    3,
+    3
+   ],
+   "desc": "눈 덮인 거대 물푸레나무",
+   "fill": "46x46",
+   "side_px": 208,
+   "col": 6,
+   "row": 6
+  },
+  {
+   "role": "circle",
+   "name": "룬 돌원",
+   "id": "circle",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "눈 모자를 쓴 선돌 고리와 제단석",
+   "fill": "30x24",
+   "side_px": 8,
+   "col": 19,
+   "row": 6
+  },
+  {
+   "role": "volcano",
+   "name": "설산 화산",
+   "id": "volcano",
+   "cells": [
+    2,
+    2
+   ],
+   "desc": "눈 덮인 비탈과 붉은 화구",
+   "fill": "30x30",
+   "side_px": 14,
+   "col": 21,
+   "row": 6
+  },
+  {
+   "role": "floating",
+   "name": "오로라 빙산섬",
+   "id": "floating",
+   "cells": [
+    5,
+    4
+   ],
+   "desc": "오로라 아래 떠 있는 빙산섬과 롱하우스",
+   "fill": "72x63",
+   "side_px": 163,
+   "col": 11,
+   "row": 0
+  }
+ ],
+ "problems": [],
+ "new_colors": 0
+}

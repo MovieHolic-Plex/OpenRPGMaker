@@ -20,7 +20,7 @@ import { inferRequirementsFromQuery } from "@/editor/tools/villageRequirements";
 import { buildTerrainConstraintMasks } from "@/editor/tools/villageTerrainPass";
 import { renderWorldGenPreview } from "@/editor/panels/worldGenPreview";
 import { createBlankProject } from "@/project/defaults";
-import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { deserialize, serialize } from "@/project/io";
 import { store } from "@/project/store";
 
@@ -220,7 +220,7 @@ describe("정규화", () => {
 describe("미리보기와 시공 계산 패리티", () => {
   it("미리보기 facts는 산포 성공 수가 아니라 엔진 헬퍼의 목표 수를 합산한다", () => {
     const project = createBlankProject();
-    delete project.tilesets[DEFAULT_TILESET_ID];
+    delete project.tilesets[COMBINED_TOWN_TILESET_ID];
     store.replace(project);
     const rules = resolveWorldGenRules({ forest: { coniferGap: 8, coniferAreaPerTree: 3 } });
     const query = "깊은 숲 마을";

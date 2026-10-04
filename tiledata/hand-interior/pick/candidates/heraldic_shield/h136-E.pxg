@@ -1,0 +1,35 @@
+// 오른 어깨 홈의 토너먼트 방패, 파랑·금 사분 바탕과 치켜든 사자
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat o brass 1
+@mat e brass 2
+@mat r brass 4
+@mat h brass 5
+@mat f gold 3
+@mat s gold 2
+@mat b blue 2
+@mat c blue 3
+@mat d blue 1
+@mat l gold 5
+@mat k gold 4
+@block 0 0
+................
+@layer shield
+@mblock 0 0
+...oooooooooo...
+..orhhhhhhhreo..
+..ohccccffsreo..
+..ohccccldsro...
+..ohccckllbso...
+..ohcllclfsreo..
+..ohlclclllfreo.
+..orclcclffsreo.
+..orflllbbbdreo.
+...orflkkbbdeo..
+...orfflllbdeo..
+....orllblleo...
+.....orlbleo....
+......orreo.....
+.......oeo......
+........o.......

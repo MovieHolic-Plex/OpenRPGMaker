@@ -1,0 +1,76 @@
+{
+ "new": {
+  "info": {
+   "map": "map_blank_start",
+   "mapTileset": "beodeul_city",
+   "count": 27648,
+   "kits": 725,
+   "pickKits": 439,
+   "pickCats": [
+    "beodeul-picks-village:5문서/9그림",
+    "beodeul-picks-climate-village:5문서/8그림",
+    "beodeul-picks-dungeon:5문서/8그림",
+    "beodeul-picks-special:5문서/8그림",
+    "beodeul-picks-field:5문서/8그림"
+   ]
+  },
+  "stamped": [
+   {
+    "kitId": "bd-pick-desert-oasis-n4",
+    "name": "버들항 사막 오아시스 마을 · 황토 돔집+야자잎 차양 5×6",
+    "changedCells": 25
+   },
+   {
+    "kitId": "bd-pick-coast-cliff-road-fir-l",
+    "name": "버들항 해안 절벽길 · 전나무 3×4",
+    "changedCells": 10
+   },
+   {
+    "kitId": "bd-pick-temple-ruins-roof-hip-shrine",
+    "name": "버들항 신전 폐허 · 진입로 작은 사당 3×3",
+    "changedCells": 9
+   }
+  ],
+  "errors": []
+ },
+ "existing": {
+  "beforeLoad": {
+   "count": 23936,
+   "pickKits": 0,
+   "kits": 287
+  },
+  "afterLoad": {
+   "count": 27648,
+   "kits": 726,
+   "pickKits": 439,
+   "authorKitKept": true,
+   "mapUnchanged": true,
+   "basePassabilitySame": true,
+   "pickCats": [
+    "beodeul-picks-village",
+    "beodeul-picks-climate-village",
+    "beodeul-picks-dungeon",
+    "beodeul-picks-special",
+    "beodeul-picks-field"
+   ]
+  },
+  "stamped": [
+   {
+    "kitId": "bd-pick-mining-valley-headframe",
+    "name": "버들항 광산 골짜기 마을 · 갱 탑 3×4",
+    "changedCells": 11
+   },
+   {
+    "kitId": "bd-pick-swamp-stilt-mangrove",
+    "name": "버들항 늪 수상 마을 · 늪 맹그로브 3×4",
+    "changedCells": 11
+   },
+   {
+    "kitId": "bd-pick-volcano-cave-furnace",
+    "name": "버들항 화산 동굴 · 대장간 큰 화덕 3×3",
+    "changedCells": 9
+   }
+  ],
+  "errors": []
+ }
+}

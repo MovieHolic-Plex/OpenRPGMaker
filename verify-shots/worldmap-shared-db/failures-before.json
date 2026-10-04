@@ -1,0 +1,233 @@
+[
+  {
+    "case": "yucatan-astra",
+    "i": 9,
+    "name": "read_spatial_reference",
+    "args": {
+      "kind": "place",
+      "id": "shared_worldmap_real_yucatan",
+      "tilesetId": "",
+      "categoryId": "",
+      "documentId": "",
+      "imageId": "",
+      "offset": 0
+    },
+    "ok": false,
+    "summary": "'read_spatial_reference' 실행 실패: 해당 소유자의 참고문서 용도를 찾을 수 없습니다."
+  },
+  {
+    "case": "yucatan-astra",
+    "i": 17,
+    "name": "list_tileset_references",
+    "args": {
+      "tilesetId": "shared_worldmap_real_yucatan_tiles",
+      "categoryId": "worldmap-real-yucatan",
+      "offset": 0
+    },
+    "ok": false,
+    "summary": "'list_tileset_references' 실행 실패: 용도의 자료 목록에는 tilesetId가 필요합니다."
+  },
+  {
+    "case": "yucatan-astra",
+    "i": 18,
+    "name": "import_region_reference",
+    "args": {
+      "id": "shared_worldmap_real_yucatan",
+      "mapId": "",
+      "x": 0,
+      "y": 0,
+      "newMapId": "map_yucatan_travel",
+      "name": "유카탄 여행 지도",
+      "includeEvents": false,
+      "referencePurpose": "worldmap-real-yucatan"
+    },
+    "ok": false,
+    "summary": "'import_region_reference' 실행 실패: newMapId·name·includeEvents 는 새 맵으로 가져올 때만 쓴다 — mapId 와 함께 줄 수 없다"
+  },
+  {
+    "case": "yucatan-fixed",
+    "i": 20,
+    "name": "read_world_terrain",
+    "args": {
+      "mapId": "map_yucatan_travel",
+      "theme": "fantasy",
+      "base": "generate",
+      "ops": [
+        {
+          "op": "continents",
+          "poly": [],
+          "line": [],
+          "lava": [],
+          "x": 0,
+          "y": 0,
+          "rx": 0,
+          "ry": 0,
+          "r": 0,
+          "ground": "grass",
+          "kind": "broad",
+          "width": 1,
+          "peak": [],
+          "widen": 0,
+          "density": 0,
+          "what": "all",
+          "level": 1,
+          "id": "",
+          "style": "real",
+          "count": 0,
+          "land": 0.42,
+          "region": "caribbean",
+          "box": [
+            -93,
+            14,
+            -86,
+            22
+          ],
+          "home": [
+            -89,
+            20.8
+          ],
+          "beyond": [],
+          "sands": [],
+          "seed": 1,
+          "wet": 0,
+          "cold": 0,
+          "gate": [],
+          "note": ""
+        }
+      ]
+    },
+    "ok": false,
+    "summary": "'read_world_terrain' 실행 실패: 월드맵 빌드 실패:\n입력 오류:\n지형 편집: ops[0] (continents): 모르는 키 cold, density, gate, ground, id, kind, lava, level, line, peak, poly, r, rx, ry, wet, what, widen, width, x, y\n\n같은 ops 의 앞부분만 read_world_terrain(ops…"
+  },
+  {
+    "case": "yucatan-fixed",
+    "i": 34,
+    "name": "set_map_properties",
+    "args": {
+      "mapId": "map_yucatan_travel",
+      "name": "유카탄 여행 지도",
+      "tilesetId": "shared_worldmap_real_yucatan_tiles",
+      "encounterRate": 0,
+      "troopIds": [],
+      "bgm": {
+        "mode": "parent",
+        "resourceId": "",
+        "fadeInMs": 0
+      },
+      "clearBgm": false,
+      "background": {
+        "layerSet": "oga-craftpix-hills",
+        "cloudDrift": 0,
+        "imageId": "",
+        "scrollX": 0,
+        "scrollY": 0,
+        "loopX": false,
+        "loopY": false,
+        "fit": "native",
+        "cameraFollow": 0,
+        "showInEmptyCells": false,
+        "layers": []
+      },
+      "clearBackground": true,
+      "clearForBackground": {
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1
+      },
+      "battleBackground": "",
+      "clearBattleBackground": false,
+      "mapRole": "auto",
+      "flags": {
+        "disableSave": false,
+        "disableTeleport": false,
+        "disableEscape": false
+      },
+      "minimap": {
+        "enabled": false,
+        "corner": "topRight",
+        "scale": 0.1,
+        "showEvents": false,
+        "fogOfWar": false
+      },
+      "clearMinimap": false,
+      "cloudShadows": {
+        "enabled": false,
+        "amount": 0,
+        "opacity": 0.1,
+        "speed": 0,
+        "angleDeg": 0,
+        "scale": 1
+      },
+      "clearCloudShadows": false,
+      "climate": {
+        "mode": "inherit",
+        "weather": "none",
+        "intensity": 0
+      },
+      "clearClimate": false,
+      "characterScale": 0.75,
+      "loop": "none",
+      "referencePurpose": "worldmap-real-yucatan"
+    },
+    "ok": false,
+    "summary": "'set_map_properties' 실행 실패: climate: weather/intensity는 fixed 모드에서만 사용합니다."
+  },
+  {
+    "case": "yucatan-fixed",
+    "i": 42,
+    "name": "revert_last_edit",
+    "args": {
+      "steps": 1
+    },
+    "ok": false,
+    "summary": "'revert_last_edit' 실행 실패: 되돌릴 이전 상태가 없습니다"
+  },
+  {
+    "case": "joseon",
+    "i": 21,
+    "name": "read_world_terrain",
+    "args": {
+      "mapId": "map_joseon_travel",
+      "theme": "joseon",
+      "base": "generate",
+      "ops": [
+        {
+          "op": "continents",
+          "poly": [],
+          "line": [],
+          "lava": [],
+          "x": 0,
+          "y": 0,
+          "rx": 0,
+          "ry": 0,
+          "r": 0,
+          "ground": "grass",
+          "kind": "mount",
+          "width": 1,
+          "peak": [],
+          "widen": 0,
+          "density": 0,
+          "what": "all",
+          "level": 1,
+          "id": "",
+          "style": "real",
+          "count": 0,
+          "land": 0.4,
+          "region": "korea",
+          "box": [],
+          "home": [],
+          "beyond": [],
+          "sands": [],
+          "seed": 1,
+          "wet": 0,
+          "cold": 0,
+          "gate": [],
+          "note": ""
+        }
+      ]
+    },
+    "ok": false,
+    "summary": "'read_world_terrain' 실행 실패: 월드맵 빌드 실패:\n입력 오류:\n지형 편집: ops[0] (continents): 모르는 키 cold, density, gate, ground, id, kind, lava, level, line, peak, poly, r, rx, ry, wet, what, widen, width, x, y\n\n같은 ops 의 앞부분만 read_world_terrain(ops…"
+  }
+]

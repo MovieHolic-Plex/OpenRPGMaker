@@ -1,0 +1,63 @@
+// w74-A 서재 사다리 재작: 윗판 없이 두 옆기둥+가로대 6개, 북벽(책장)에 기대 세움. 기둥 왼 밝은 면·오른 어두운 면, 가로대마다 윗선 밝음+아래 그늘, 윗끝 황동 갈고리 둘.
+@size 16 48
+@cell 16
+@palette palette.pal
+@mat a wood 1
+@mat b wood 2
+@mat c wood 4
+@mat d wood 6
+@mat e wood 7
+@mat f brass 3
+@mat g brass 5
+@mat h brass 1
+@mat i iron 1
+@mat j iron 3
+@mblock 0 0
+................
+..hg........hg..
+.hggh......hggh.
+.fgfh......fgfh.
+.hggh......hggh.
+.adcb......adcb.
+.adcb......adcb.
+.adcb......adcb.
+.adcb......adcb.
+.adcb......adcb.
+.adcbddddddadcb.
+.adcbccccccadcb.
+.adcbbbbbbbadcb.
+.adcb......adcb.
+.adcb......adcb.
+.adcb......adcb.
+.adcbddddddadcb.
+.adcbccccccadcb.
+.adcbbbbbbbadcb.
+.adcb......adcb.
+.adcb......adcb.
+.adcb......adcb.
+.adcbddddddadcb.
+.adcbccccccadcb.
+.adcbbbbbbbadcb.
+.adcb......adcb.
+.adcb......adcb.
+.adcb......adcb.
+.adcbddddddadcb.
+.adcbccccccadcb.
+.adcbbbbbbbadcb.
+.adcb......adcb.
+.adcb......adcb.
+.adcb......adcb.
+.adcbddddddadcb.
+.adcbccccccadcb.
+.adcbbbbbbbadcb.
+.adcb......adcb.
+.adcb......adcb.
+.adcb......adcb.
+.adcbddddddadcb.
+.adcbccccccadcb.
+.adcbbbbbbbadcb.
+.adcb......adcb.
+.adcb......adcb.
+.ijjb......ijjb.
+.-~~~~~~~~~~~~-~
+...--------.....

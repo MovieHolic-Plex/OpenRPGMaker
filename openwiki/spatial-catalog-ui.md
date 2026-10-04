@@ -11,6 +11,21 @@
   이 스크립트는 `public/assets/reviewed-places` 파일과 호스트 공용 SQLite `previews` 의 data URL을 같은 256px 썸네일로 넣는다. 새솔마을처럼 원본 PNG 파일이 없는 장소도 목록은 그 썸네일을 연다.
 - 장소·지역·세계 스테이지(맵 컴파일, 칸 격자)는 「상세」를 열었을 때만 붙는다. 오브젝트 카드는 그 물건의 칸만 나중에 굽는다.
 
+## 카드 미리보기 컴파일: 격리 경계와 카드 캐시 (2026-09-30)
+
+「장소」 카드 그림은 맵 컴파일(`previewPlaceMaps` → `compileSpatialOccurrence` …)이다. 예전에는 컴파일 단계마다
+`deserialize(JSON.stringify(project))` 로 프로젝트 전체를 왕복했고, 프로젝트 무게의 약 97% 가 타일셋(참고문서·tileMeta·그룹 등, 실측 26MB+)이라
+카드 하나가 약 5.3초였다(34장 181.8초).
+
+- 격리는 `src/editor/spatial/compileIsolation.ts` 의 `isolateProject` 하나다(compile*·preview·actions.apply 가 씀).
+  타일셋 밖만 JSON 왕복으로 복제하고, 검증(`deserializeParsed`)에는 무거운 필드(referenceDocuments·tileMeta·tileGroups·autotileGroups·palettePresets·structureKits 문서)를 뺀 스텁을 넣은 뒤,
+  검증이 끝나면 **원본 타일셋 객체를 포인터로 되돌린다**. 컴파일은 타일셋을 읽기만 하고, 저장소 타일셋은 제자리 변경 금지(`projectClone.ts` 계약)라 안전하다.
+- 그렇게 빌려 온 타일셋은 `borrowSpatial` 로 표시해 `freezeSpatial` 이 얼리지도 훑지도 않는다(`domain.ts`). 컴파일 결과 프로젝트의 tilesets 는 저장소 객체 그 자체다 — **결과를 고쳐 쓰지 말 것.**
+- 카드 캐시(`spatialPlacePreview.ts` `cachedPlaceMaps`): 장소 설계·maps·mapTree·mapConnections·tilesets·villagePresets·시작 위치가 모두 같은 참조이면 이전 컴파일 결과(maps)를 재사용한다.
+  `spatialAuthoring` 을 WeakMap 키로 쓰므로 편집으로 문서가 바뀌면 자동 폐기된다. 입력 하나라도 다르면 예전처럼 다시 컴파일한다.
+- 화면 밖 카드를 컴파일하지 않는 것은 이미 `spatialCardThumbs.ts`(rAF 8ms 예산 · 400px 앞당김 · 세대 캐시)가 한다. IntersectionObserver 는 추가하지 않았다.
+- 검증: `verify-shots/editor-lag-fix/C/` — `bench-compile.mts`(카드별 지문) + `diff-digests.mjs`. 34장 지문 전부 동일, 카드당 평균 5347ms → 961ms.
+
 ## Concept and selection contract (2026-09-12)
 
 `spatialStage.ts` shows a short, persistent explanation above the object, space

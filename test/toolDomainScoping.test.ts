@@ -102,7 +102,9 @@ describe("T4 — toOpenAiTools 모드 스코핑", () => {
       expect(exposed.has(route.name), route.name).toBe(true);
       expect(browserNames.has(route.name), route.name).toBe(true);
     }
-    expect(exposed.has("start_interior_room_session")).toBe(true);
+    // 2026-09-29: 실내 = 손 도트 v5 하나 — 옛 방 세션은 숨기고 build_hand_interior_room 이 노출된다.
+    expect(exposed.has("start_interior_room_session")).toBe(false);
+    expect(exposed.has("build_hand_interior_room")).toBe(true);
   });
 
   it("mode 없으면 종전 동작(deprecated 만 제외한 전체 노출)", () => {

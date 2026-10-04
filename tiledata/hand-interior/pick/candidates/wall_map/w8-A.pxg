@@ -1,0 +1,32 @@
+// w8-A v5 정리: 가장자리 명암, 바다·땅 두 단 음영
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat A linen 3
+@mat a linen 2
+@mat i linen 4
+@mat B linen 5
+@mat C blue 4
+@mat c blue 3
+@mat d blue 5
+@mat D red 4
+@mat E green 4
+@mat e green 3
+@mat f green 5
+@mblock 0 0
+................
+................
+.AAAAAAAAAAAAAa.
+.Aiiiiiiiiiiiia.
+.AiBBBBBBBBBBBa.
+.AiBBBBBdBDDBBa.
+.AiBBBBdCdBBBBa.
+.AiBBfdCCCdBBBa.
+.AiBfEfdCcBBBfa.
+.AiBeEEfdBBBBea.
+.AiBBeeBBBBBBBa.
+.AiBBBBBBBBBBBa.
+.aaaaaaaaaaaaaa.
+................
+................
+................

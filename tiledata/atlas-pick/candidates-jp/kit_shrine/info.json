@@ -1,0 +1,468 @@
+{
+ "id": "kit_shrine",
+ "slug": "kit_shrine",
+ "kind": "kit",
+ "name": "킷: 신사 건물(배전·작은 사당·데미즈야)",
+ "scene": "신사 한 켠",
+ "cells": [
+  8,
+  6
+ ],
+ "canvas": [
+  128,
+  96
+ ],
+ "layer": "kit",
+ "layer_ko": "조립 킷 부품 시트(부품마다 층이 다르다 — kits-<세트>.json)",
+ "description": "휜 지붕(용마루·비탈·처마, 처마 양끝이 들린다) + 가라하후 박공 덧칠 + 들보 줄 + 기둥·격자문·방울 달린 가운데 앞 + 돌 기단·나무 계단(참배 자리, 걸음). 같은 지붕·기둥으로 폭 3~7 배전, 작은 사당, 기둥 넷 데미즈야(물통)까지. (부품 22 · 조립 예 4)",
+ "palette_hint": "kawara·kasa(동판 녹) 지붕, shu 기둥·들보, hinoki 격자·계단, washi 시데, ishi 기단·물통, taxi 방울",
+ "worker": "k7",
+ "replaces": [
+  "shrine_hall",
+  "temizuya"
+ ],
+ "aliases": {},
+ "contract": [
+  "지붕 비탈 결 주기 8px, 처마 줄(sr_e*)의 앞 테는 모든 가운데 부품에서 같은 높이 — 양끝(sr_el·sr_er)만 위로 휜다.",
+  "기둥(hashira)은 칸 가운데 5~6px, 주홍 앞면 + 오른쪽 그늘 1px. koshi·ent_bell 은 기둥 없이 칸 가득 — 기둥과 번갈아 놓는다.",
+  "기단(kidan_*)·계단(kiza) 윗면 높이가 같다. kiza 는 걸음 칸(참배 자리) — 거리에서 닿아야 한다.",
+  "데미즈야는 같은 지붕 부품 + post(기둥 1×2: 윗칸 지나감, 아랫칸 막힘) + basin(돌 물통 2×1)."
+ ],
+ "parts": [
+  {
+   "slug": "sr_tl",
+   "name": "지붕 용마루 왼",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "facade",
+   "repeat": null,
+   "walk": "X",
+   "desc": "용마루 왼 끝(치기·가쓰오기 느낌 작은 돌출).",
+   "at": [
+    0,
+    0
+   ]
+  },
+  {
+   "slug": "sr_tm",
+   "name": "지붕 용마루",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "facade",
+   "repeat": "x",
+   "walk": "X",
+   "desc": "용마루.",
+   "at": [
+    1,
+    0
+   ]
+  },
+  {
+   "slug": "sr_tr",
+   "name": "지붕 용마루 오른",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "facade",
+   "repeat": null,
+   "walk": "X",
+   "desc": "용마루 오른 끝.",
+   "at": [
+    2,
+    0
+   ]
+  },
+  {
+   "slug": "sr_sl",
+   "name": "지붕 비탈 왼",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "facade",
+   "repeat": "y",
+   "walk": "X",
+   "desc": "비탈 왼(바깥으로 휘어 나가는 테).",
+   "at": [
+    3,
+    0
+   ]
+  },
+  {
+   "slug": "sr_sm",
+   "name": "지붕 비탈",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "facade",
+   "repeat": "xy",
+   "walk": "X",
+   "desc": "비탈(기와 골 또는 동판 녹 줄).",
+   "at": [
+    4,
+    0
+   ]
+  },
+  {
+   "slug": "sr_sr",
+   "name": "지붕 비탈 오른",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "facade",
+   "repeat": "y",
+   "walk": "X",
+   "desc": "비탈 오른.",
+   "at": [
+    5,
+    0
+   ]
+  },
+  {
+   "slug": "sr_el",
+   "name": "처마 왼(들림)",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "facade",
+   "repeat": null,
+   "walk": "X",
+   "desc": "처마 왼 끝이 위로 휜다.",
+   "at": [
+    6,
+    0
+   ]
+  },
+  {
+   "slug": "sr_em",
+   "name": "처마",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "facade",
+   "repeat": "x",
+   "walk": "X",
+   "desc": "처마 앞 테 + 서까래 끝 점 줄 + 아래 그늘.",
+   "at": [
+    7,
+    0
+   ]
+  },
+  {
+   "slug": "sr_er",
+   "name": "처마 오른(들림)",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "facade",
+   "repeat": null,
+   "walk": "X",
+   "desc": "처마 오른 끝 휨.",
+   "at": [
+    0,
+    1
+   ]
+  },
+  {
+   "slug": "hafu",
+   "name": "가라하후 박공",
+   "cells": [
+    3,
+    1
+   ],
+   "layer": "over",
+   "repeat": null,
+   "walk": "X",
+   "desc": "처마 줄 가운데에 덧칠하는 물결 박공(가운데 볼록, 금빛 장식 점). 투명 배경.",
+   "at": [
+    1,
+    1
+   ]
+  },
+  {
+   "slug": "nuki_l",
+   "name": "들보 왼",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "facade",
+   "repeat": null,
+   "walk": "X",
+   "desc": "처마 밑 주홍 들보 줄 왼 끝.",
+   "at": [
+    4,
+    1
+   ]
+  },
+  {
+   "slug": "nuki_m",
+   "name": "들보",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "facade",
+   "repeat": "x",
+   "walk": "X",
+   "desc": "들보(주홍 + 흰 벽 띠 조금).",
+   "at": [
+    5,
+    1
+   ]
+  },
+  {
+   "slug": "nuki_r",
+   "name": "들보 오른",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "facade",
+   "repeat": null,
+   "walk": "X",
+   "desc": "들보 오른 끝.",
+   "at": [
+    6,
+    1
+   ]
+  },
+  {
+   "slug": "hashira",
+   "name": "기둥 칸",
+   "cells": [
+    1,
+    2
+   ],
+   "layer": "facade",
+   "repeat": "y",
+   "walk": "X",
+   "desc": "주홍 둥근 기둥 + 뒤 흰 벽.",
+   "at": [
+    7,
+    1
+   ]
+  },
+  {
+   "slug": "koshi",
+   "name": "격자문 칸",
+   "cells": [
+    1,
+    2
+   ],
+   "layer": "facade",
+   "repeat": "x",
+   "walk": "X",
+   "desc": "나무 격자문(시토미).",
+   "at": [
+    0,
+    3
+   ]
+  },
+  {
+   "slug": "ent_bell",
+   "name": "가운데 앞(방울·새끼줄)",
+   "cells": [
+    1,
+    2
+   ],
+   "layer": "facade",
+   "repeat": null,
+   "walk": "X",
+   "desc": "어두운 안쪽 + 매단 방울(스즈)과 굵은 줄.",
+   "at": [
+    1,
+    3
+   ]
+  },
+  {
+   "slug": "kiza",
+   "name": "나무 계단(참배 자리)",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "facade",
+   "repeat": "x",
+   "walk": "F",
+   "door": true,
+   "desc": "기단 위로 오르는 나무 계단 서너 단. 걸음 칸.",
+   "at": [
+    2,
+    3
+   ]
+  },
+  {
+   "slug": "kidan_l",
+   "name": "돌 기단 왼",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "facade",
+   "repeat": null,
+   "walk": "X",
+   "desc": "돌 기단 왼 모서리.",
+   "at": [
+    3,
+    3
+   ]
+  },
+  {
+   "slug": "kidan_m",
+   "name": "돌 기단",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "facade",
+   "repeat": "x",
+   "walk": "X",
+   "desc": "돌 기단(두세 단 덩이·이끼 점).",
+   "at": [
+    4,
+    3
+   ]
+  },
+  {
+   "slug": "kidan_r",
+   "name": "돌 기단 오른",
+   "cells": [
+    1,
+    1
+   ],
+   "layer": "facade",
+   "repeat": null,
+   "walk": "X",
+   "desc": "돌 기단 오른.",
+   "at": [
+    5,
+    3
+   ]
+  },
+  {
+   "slug": "post",
+   "name": "데미즈야 기둥",
+   "cells": [
+    1,
+    2
+   ],
+   "layer": "object",
+   "repeat": null,
+   "walk": [
+    "C",
+    "X"
+   ],
+   "desc": "가는 나무 기둥 + 돌 받침(투명 배경).",
+   "at": [
+    6,
+    3
+   ]
+  },
+  {
+   "slug": "basin",
+   "name": "돌 물통(국자)",
+   "cells": [
+    2,
+    1
+   ],
+   "layer": "object",
+   "repeat": null,
+   "walk": "X",
+   "desc": "네모 돌 물통, 물 윗면 밝은 줄, 국자 두셋 걸침.",
+   "at": [
+    0,
+    5
+   ]
+  }
+ ],
+ "examples": [
+  {
+   "id": "hall5",
+   "name": "배전 5칸",
+   "ctx": "floor",
+   "layers": {
+    "main": [
+     "sr_tl sr_tm sr_tm sr_tm sr_tr",
+     "sr_sl sr_sm sr_sm sr_sm sr_sr",
+     "sr_el sr_em sr_em sr_em sr_er",
+     "nuki_l nuki_m nuki_m nuki_m nuki_r",
+     "hashira koshi ent_bell koshi hashira",
+     "+ + + + +",
+     "kidan_l kidan_m kiza kidan_m kidan_r"
+    ],
+    "upper": [
+     ". . . . .",
+     ". . . . .",
+     ". hafu + + ."
+    ]
+   }
+  },
+  {
+   "id": "hall7",
+   "name": "배전 7칸(계단 세 칸)",
+   "ctx": "floor",
+   "layers": {
+    "main": [
+     "sr_tl sr_tm sr_tm sr_tm sr_tm sr_tm sr_tr",
+     "sr_sl sr_sm sr_sm sr_sm sr_sm sr_sm sr_sr",
+     "sr_sl sr_sm sr_sm sr_sm sr_sm sr_sm sr_sr",
+     "sr_el sr_em sr_em sr_em sr_em sr_em sr_er",
+     "nuki_l nuki_m nuki_m nuki_m nuki_m nuki_m nuki_r",
+     "hashira koshi hashira ent_bell hashira koshi hashira",
+     "+ + + + + + +",
+     "kidan_l kidan_m kiza kiza kiza kidan_m kidan_r"
+    ],
+    "upper": [
+     ". . . . . . .",
+     ". . . . . . .",
+     ". . . . . . .",
+     ". . hafu + + . ."
+    ]
+   }
+  },
+  {
+   "id": "hokora3",
+   "name": "작은 사당 3칸",
+   "ctx": "floor",
+   "layers": {
+    "main": [
+     "sr_tl sr_tm sr_tr",
+     "sr_el sr_em sr_er",
+     "hashira ent_bell hashira",
+     "+ + +",
+     "kidan_l kiza kidan_r"
+    ]
+   }
+  },
+  {
+   "id": "temizuya4",
+   "name": "데미즈야 4칸(같은 지붕 + 기둥 넷 + 물통)",
+   "ctx": "floor",
+   "walk": [
+    "CCCC",
+    "CCCC",
+    "    ",
+    "    "
+   ],
+   "layers": {
+    "main": [
+     "sr_tl sr_tm sr_tm sr_tr",
+     "sr_el sr_em sr_em sr_er",
+     "post basin + post",
+     "+ . . +"
+    ]
+   }
+  }
+ ]
+}

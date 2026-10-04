@@ -1,0 +1,37 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/magitek_armor/w31-D.pxg",
+ "id": "magitek armor",
+ "hard": [],
+ "warn": [
+  "폭: 불투명 폭이 v5 보다 +6px"
+ ],
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.048
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "outline",
+   "outline_black"
+  ],
+  "pass": false
+ },
+ "colors": 24,
+ "v5_colors": 9,
+ "bbox": [
+  0,
+  2,
+  31,
+  46
+ ],
+ "v5_bbox": [
+  3,
+  4,
+  28,
+  47
+ ],
+ "note": "w26-F 에서 사람 제거: 조종석을 어둡게 비우고 철 좌석·머리받침 + 테두리 계기 점(노랑·빨강)",
+ "ok": true
+}

@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/display_potion/w7-C.pxg",
+ "id": "display potion",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.097
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 20,
+ "v5_colors": 19,
+ "bbox": [
+  1,
+  0,
+  14,
+  15
+ ],
+ "v5_bbox": [
+  1,
+  1,
+  14,
+  15
+ ],
+ "note": "실루엣 재해석: 납작 상자 대신 2단 계단 진열대 — 위 단에 키 큰 파랑·초록 병, 아래 단에 작은 병 셋. 병마다 단 위에 서 있어 세로 층이 읽히고 무엇을 파는 가구인지 한눈에 보인다",
+ "ok": true
+}

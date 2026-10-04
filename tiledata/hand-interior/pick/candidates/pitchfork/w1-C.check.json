@@ -1,0 +1,36 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/pitchfork/w1-C.pxg",
+ "id": "pitchfork",
+ "hard": [],
+ "warn": [
+  "폭: 불투명 폭이 v5 보다 +5px"
+ ],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.009
+ },
+ "lint": {
+  "failed": [
+   "jaggies",
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 11,
+ "v5_colors": 3,
+ "bbox": [
+  4,
+  1,
+  13,
+  15
+ ],
+ "v5_bbox": [
+  7,
+  1,
+  11,
+  15
+ ],
+ "note": "재해석: 갈래를 넷으로 늘려 안쪽 둘은 곧게·바깥 둘은 밖으로 휘게, 갈래 뿌리에 통 모양 쇠 물림(소켓)을 두고 자루를 3px 로 굵게. 한눈에 쇠스랑.",
+ "ok": true
+}

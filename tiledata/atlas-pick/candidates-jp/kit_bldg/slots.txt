@@ -1,0 +1,27 @@
+// kit_bldg 부품 시트 128x112px (8×7칸). 부품 = 칸 자리(x y 는 px, 좌상단).
+// slug  x  y  w  h  층  반복  통행  이름
+roof_nl             0    0  16  16  facade  -   X     옥상 뒤 난간 왼
+roof_nm            16    0  16  16  facade  x   X     옥상 뒤 난간 가운데
+roof_nr            32    0  16  16  facade  -   X     옥상 뒤 난간 오른
+roof_ml            48    0  16  16  facade  y   X     옥상 바닥 왼
+roof_mm            64    0  16  16  facade  xy  X     옥상 바닥
+roof_mr            80    0  16  16  facade  y   X     옥상 바닥 오른
+roof_sl            96    0  16  16  facade  -   X     옥상 앞 난간 왼
+roof_sm           112    0  16  16  facade  x   X     옥상 앞 난간 가운데
+roof_sr             0   16  16  16  facade  -   X     옥상 앞 난간 오른
+rt_tank            16   16  32  32  object  -   X     옥상 물탱크
+rt_ac              48   16  16  16  object  -   X     옥상 실외기
+wall_l             64   16  16  32  facade  y   X     벽 왼 끝(한 층)
+wall_m             80   16  16  32  facade  xy  X     민벽(한 층)
+wall_r             96   16  16  32  facade  y   X     벽 오른 끝(한 층)
+win_plain         112   16  16  32  facade  xy  X     창: 알루미늄 창
+win_lit             0   48  16  32  facade  xy  X     창: 불 켜진 창·블라인드
+win_sign           16   48  16  32  facade  xy  X     창: 글자 붙은 창
+fsign_l            32   48  16  16  wall    -   C     층 간판 왼
+fsign_m            48   48  16  16  wall    x   C     층 간판 가운데 A
+fsign_m2           64   48  16  16  wall    x   C     층 간판 가운데 B
+fsign_r            80   48  16  16  wall    -   C     층 간판 오른
+vsign_t            96   48  16  16  wall    -   C     세로 간판 위
+vsign_m           112   48  16  16  wall    y   C     세로 간판 가운데
+vsign_b             0   80  16  16  wall    -   C     세로 간판 아래
+stair_door         16   80  16  32  facade  -   X/F   계단 입구(위층 가는 좁은 문)

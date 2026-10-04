@@ -1,0 +1,106 @@
+// B: 약재 서랍장과 같은 목재 테·절제된 결, 아홉 서랍의 놋쇠 이름표; 꼭대기 윗면 3행(y=1~3)
+@size 16 32
+@cell 16
+@palette palette.pal
+@mat w wood 4
+@mat b brass 4
+@layer cabinet
+@mblock 0 0
+.wwwwwwwwwwwwww.
+wwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwww
+wwbbwwwbbwwwbbww
+wwbbwwwbbwwwbbww
+wwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwww
+wwbbwwwbbwwwbbww
+wwbbwwwbbwwwbbww
+wwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwww
+wwbbwwwbbwwwbbww
+wwbbwwwbbwwwbbww
+wwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwww
+.wwwwwwwwwwwwww.
+.wwww.......www.
+.wwww.......www.
+@tblock 0 0 wood only=w
+.33333333333333.
+7666666655666663
+7666556666665663
+7666666665566663
+7777777777777763
+3222222222222221
+3666626666266661
+3544425444254441
+35..425..425..41
+35..425..425..41
+3544425444254441
+3443324433244331
+3222222222222221
+3666626666266661
+3544425444254441
+35..425..425..41
+35..425..425..41
+3544425444254441
+3444324433244331
+3222222222222221
+3666626666266661
+3544425444254441
+35..425..425..41
+35..425..425..41
+3544425444254441
+3443324433244331
+3222222222222221
+3666666666666651
+3444444444444431
+.33333333333332.
+.3222.......322.
+.2111.......211.
+@tblock 0 0 brass only=b
+................
+................
+................
+................
+................
+................
+................
+................
+..54...54...54..
+..21...21...21..
+................
+................
+................
+................
+................
+..54...54...54..
+..21...21...21..
+................
+................
+................
+................
+................
+..54...54...54..
+..21...21...21..
+................
+................
+................
+................
+................
+................
+................
+................

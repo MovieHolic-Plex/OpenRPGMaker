@@ -1,0 +1,30 @@
+{
+ "file": "tiledata/atlas-pick/candidates-jp/vending_cig/j3-A.pxg",
+ "set": "jp",
+ "id": "vending_cig",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.108
+ },
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.141
+ },
+ "lint": {
+  "pass": true,
+  "failed": []
+ },
+ "colors": 34,
+ "bbox": [
+  0,
+  1,
+  15,
+  31
+ ],
+ "note": "강남 자판기 결로 갈색 몸통 담배 자판기, 견본 창은 어두운 유리에 갑 격자",
+ "ok": true
+}

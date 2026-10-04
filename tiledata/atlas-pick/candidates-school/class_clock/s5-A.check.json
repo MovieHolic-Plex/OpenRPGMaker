@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/atlas-pick/candidates-school/class_clock/s5-A.pxg",
+ "set": "school",
+ "id": "class_clock",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.039
+ },
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.098
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "outline",
+   "dither"
+  ]
+ },
+ "colors": 4,
+ "bbox": [
+  0,
+  0,
+  15,
+  15
+ ],
+ "note": "교실 벽시계 — 흰 문자판, 검은 테, 시침·분침 굵게 10시 10분, 12·3·6·9시에만 점",
+ "ok": true
+}

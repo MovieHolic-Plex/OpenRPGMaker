@@ -1,0 +1,80 @@
+// coast_grass wv1-B — 2판 (work/wv1_gen.py 가 만든다; 손으로 고칠 땐 이 격자를 직접 고친다)
+@size 48 64
+@cell 16
+@palette palette.pal
+@layer main
+@mat a wdirt 0
+@mat b wdirt 1
+@mat c wdirt 3
+@mat d wgrass 1
+@mat e wgrass 2
+@mat f wsea 0
+@mat g wsea 1
+@mat h wsea 2
+@mat i wsea 3
+@mat j wsea 4
+@mblock 0 0
+.......ee.......ghhggggggggggggg.ebjihgggghijbe.
+.....eeccee.....ggffggggggggggggccajihhgghhijacc
+....eccaacce....ggggggggggggggggaajihhfgggghijaa
+....caajjaac....gggggggggffgggggjjihhgggggghhijj
+...eajjiijjae...gggggggggggffgggiihhggggggighhii
+..ebjiihhiijbe..gggggggggggggggghhhgggggghhggghh
+..eajihhhhijae..ggggghhgggggggggghggggggggffgghg
+.ebjihhgghhijbe.ggggggffgggggggggggggggggggggggg
+.ebjihhgghhijbe.ggggggggggggggghgffggggggggggggg
+..edjihhhhijde..fggggggggggggggfghgffggggggggghg
+..ebjiihhiijbe..gggggggggggggggghhggggggggggghhh
+...edjjiijjde...ggggggggggggggggiihhgggggggghhii
+....eddjjdde....ggggggggggghhhggjjihhgggggghhijj
+.....eeddee.....ggggggggggggfffgddjihgghgghhijdd
+.......ee.......ggggggggggggggggeedjihhffhhijdee
+................ggiggggggggggggg.ebjihgggghijbe.
+.......eeeeee..eeeee..eeeeeee..eeeee..eee.......
+.....eecccccceeccccceeccccccceeccccceecccee.....
+....eccaaaaaaccaaaaaccaaaaaaaccaaaaaccaaacce....
+....caajjjjjjaajjjjjaajjjjjjjaajjjjjaajjjaac....
+...eajjiiiiiijjiiiiijjiiiiiiijjiiiiijjiiijjae...
+..ebjiihhhhhhiihhhhhiihhhhhhhiihhhhhiihhhiijbe..
+..eajihhhghhghhgghhghhghhghhghhgghhghhghhhijae..
+.ebjihhgggggghgggggghgggggggghgggggghgggghhijbe.
+.ebjihhggggggggggffggggggggggggggffgggggghhijae.
+.ebjihgggggggggggggffggggggggggggggffggggghhijbe
+.ebjihhggggggggggggggggggggggggggggggggggghhijbe
+.ebjihhgggggghhgggggggggggggghhgggggggggghhijde.
+..edjihhggggggffggggggggggggggffgggggggggghijbe.
+..ebjihhggggggggggggggghggggggggggggggghghhijbe.
+..eajihffggggggggggggggffggggggggggggggffhhijbe.
+.ebjihgggggggggggggggggggggggggggggggggggghijbe.
+.ebjihgggggggggggggggggggggggggggggggggggghijbe.
+.ebjihhgggggggggggghhhggggggggggggghhhggghijde..
+.ebjihhgggggggggggggfffgggggggggggggfffghhijae..
+.ebjihgggggggggggggggggggggggggggggggggggghijbe.
+.eajihhgggigggggggggggggggigggggggggggggghhijbe.
+ebjihhggghhgggggggggggggghhgggggggggggggghhijbe.
+ebjihhggggffggggggggggggggffgggggggggggggghijbe.
+ebjihgggggggggggggggggggggggggggggggggggghhijbe.
+.edjihhggggggggggffggggggggggggggffgggggghhijae.
+.ebjihgggggggggggggffggggggggggggggffggggghhijbe
+.ebjihhggggggggggggggggggggggggggggggggggghhijbe
+.ebjihhgggggghhgggggggggggggghhgggggggggghhijde.
+..edjihhggggggffggggggggggggggffgggggggggghijbe.
+..ebjihhggggggggggggggghggggggggggggggghghhijbe.
+..eajihffggggggggggggggffggggggggggggggffhhijbe.
+.ebjihgggggggggggggggggggggggggggggggggggghijbe.
+.ebjihgggggggggggggggggggggggggggggggggggghijbe.
+.ebjihhgggggggggggghhhggggggggggggghhhggghijde..
+.ebjihhgggggggggggggfffgggggggggggggfffghhijae..
+.ebjihgggggggggggggggggggggggggggggggggggghijbe.
+.eajihhgggigggggggggggggggigggggggggggggghhijbe.
+ebjihhggghhgggggggggggggghhgggggggggggggghhijbe.
+ebjihhggggffggggggggggggggffgggggggggggggghijbe.
+ebjihgggggggggggggggggggggggggggggggggggghhijbe.
+.edjihhgggghhggggffgggggggghhggggffgggggghhijbe.
+..edjihhhghhhhhgghgffhghhghhhhhgghgffhghhhijde..
+..ebjiihhhhiihhhhhghhhhhhhhiihhhhhghhhhhhiijbe..
+...edjjiiiijjiiiiihhhiiiiiijjiiiiihhhiiiijjde...
+....eddjjjjddjjjjjiiijjjjjjddjjjjjiiijjjjdde....
+.....eeddddeedddddjjjddddddeedddddjjjddddee.....
+.......eeee..eeeeedddeeeeee..eeeeedddeeee.......
+..................eee.............eee...........

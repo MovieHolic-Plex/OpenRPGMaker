@@ -1,0 +1,46 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/lava/w3-C.pxg",
+ "set": "worldmap",
+ "id": "lava",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.006
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.027
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "jaggies",
+   "saturation"
+  ]
+ },
+ "colors": 6,
+ "bbox": [
+  1,
+  0,
+  47,
+  61
+ ],
+ "note": "용암 몸통 — 가로로 흐르는 결 위주, 흐름 방향이 읽힘.",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.047
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.027
+  },
+  "seam": 0.68
+ }
+}

@@ -1,0 +1,47 @@
+// h1-A.pxg — h1 작업자(손으로 놓은 픽셀). 램프:단 열쇠 / 반투명은 팔레트 글자
+@size 16 32
+@cell 16
+@palette palette.pal
+@layer b
+@px 6 1 bisque:4 7 1 bisque:4 8 1 blood:2 9 1 blood:3
+@px 5 2 bisque:4 6 2 bisque:4 7 2 bisque:4 8 2 blood:3 9 2 blood:3 10 2 blood:2
+@px 4 3 bisque:4 5 3 bisque:4 6 3 bisque:4 7 3 bisque:4 8 3 blood:3 9 3 blood:2 10 3 blood:3 11 3 blood:3
+@px 4 4 bisque:4 5 4 bisque:2 6 4 bisque:4 7 4 bisque:4 8 4 blood:2 9 4 blood:0 10 4 blood:3 11 4 blood:2
+@px 4 5 bisque:4 5 5 sheet:5 6 5 void:0 7 5 bisque:4 8 5 blood:3 9 5 void:0 10 5 void:0 11 5 blood:3
+@px 4 6 bisque:4 5 6 bisque:4 6 6 bisque:4 7 6 bisque:2 8 6 blood:1 9 6 blood:2 10 6 blood:1 11 6 blood:3
+@px 4 7 bisque:4 5 7 bisque:4 6 7 bisque:4 7 7 bisque:3 8 7 blood:2 9 7 blood:3 10 7 blood:3 11 7 blood:2
+@px 5 8 bisque:4 6 8 bisque:1 7 8 blood:0 8 8 blood:0 9 8 blood:3 10 8 blood:2
+@px 6 9 bisque:4 7 9 bisque:4 8 9 blood:3 9 9 blood:2
+@px 6 10 bisque:3 7 10 bisque:3 8 10 blood:2 9 10 blood:3
+@px 6 11 bisque:3 7 11 bisque:3 8 11 blood:3 9 11 blood:3
+@px 3 12 bisque:2 4 12 bisque:4 5 12 bisque:4 6 12 bisque:4 7 12 bisque:4 8 12 blood:3 9 12 blood:2 10 12 blood:3
+@px 11 12 blood:3 12 12 blood:1
+@px 2 13 bisque:4 3 13 bisque:3 4 13 bisque:4 5 13 bisque:4 6 13 bisque:4 7 13 bisque:4 8 13 blood:2 9 13 blood:4
+@px 10 13 blood:4 11 13 blood:4 12 13 blood:1 13 13 blood:5
+@px 2 14 bisque:4 3 14 bisque:3 4 14 bisque:4 5 14 bisque:5 6 14 bisque:5 7 14 bisque:4 8 14 blood:3 9 14 blood:3
+@px 10 14 vgreen:3 11 14 blood:3 12 14 blood:5 13 14 paper:5
+@px 2 15 bisque:4 3 15 bisque:3 4 15 bisque:2 5 15 bisque:5 6 15 bisque:4 7 15 bisque:4 8 15 blood:3 9 15 blood:5
+@px 10 15 blood:4 11 15 vgreen:2 13 15 blood:2
+@px 2 16 bisque:4 3 16 bisque:3 4 16 bisque:2 5 16 bisque:4 6 16 bisque:4 7 16 bisque:4 8 16 blood:2 9 16 blood:3
+@px 10 16 blood:3 11 16 blood:1
+@px 1 17 bisque:4 2 17 bisque:3 4 17 bisque:2 5 17 bisque:4 6 17 bisque:4 7 17 bisque:4 8 17 blood:3 9 17 blood:4
+@px 10 17 vyellow:3 11 17 blood:4
+@px 1 18 bisque:4 2 18 bisque:3 5 18 bisque:2 6 18 bisque:4 7 18 bisque:4 8 18 blood:3 9 18 vgreen:3 10 18 blood:1
+@px 1 19 bisque:4 2 19 bisque:3 5 19 bisque:2 6 19 bisque:4 7 19 bisque:4 8 19 blood:2 9 19 blood:4 10 19 blood:4
+@px 11 19 vyellow:2
+@px 1 20 bisque:4 2 20 bisque:3 5 20 bisque:2 6 20 bisque:4 7 20 bisque:4 8 20 blood:3 9 20 blood:3 10 20 blood:1
+@px 1 21 bisque:4 2 21 bisque:3 5 21 bisque:4 6 21 bisque:4 7 21 bisque:4 8 21 blood:3 9 21 blood:2 10 21 blood:3
+@px 1 22 bisque:4 2 22 bisque:3 5 22 bisque:4 6 22 bisque:4 7 22 bisque:4 8 22 blood:2 9 22 blood:3 10 22 blood:3
+@px 1 23 bisque:4 2 23 bisque:3 5 23 bisque:4 6 23 bisque:4 7 23 bisque:2 8 23 blood:1 9 23 blood:3 10 23 blood:2
+@px 0 24 bisque:2 1 24 bisque:2 2 24 bisque:3 5 24 bisque:4 6 24 bisque:4 7 24 bisque:2 8 24 blood:1 9 24 blood:2
+@px 10 24 blood:3
+@px 5 25 bisque:4 6 25 bisque:4 7 25 bisque:2 8 25 blood:1 9 25 blood:3 10 25 blood:3
+@px 5 26 bisque:4 6 26 bisque:4 7 26 bisque:2 8 26 blood:1 9 26 blood:3 10 26 blood:2
+@px 5 27 bisque:3 6 27 bisque:3 7 27 bisque:2 8 27 blood:1 9 27 blood:2 10 27 blood:3
+@px 4 28 bisque:3 5 28 bisque:3 6 28 bisque:3 7 28 bisque:3 8 28 blood:1 9 28 blood:1 10 28 blood:1 11 28 blood:1
+@px 2 29 tin:4 3 29 tin:5 4 29 tin:5 5 29 tin:5 6 29 tin:5 7 29 tin:5 8 29 tin:5 9 29 tin:5
+@px 10 29 tin:5 11 29 tin:5 12 29 tin:4 14 29 bisque:4 15 29 bisque:3
+@px 2 30 tin:3 3 30 tin:3 4 30 tin:3 5 30 tin:3 6 30 tin:3 7 30 tin:2 8 30 tin:2 9 30 paper:5
+@px 10 30 blood:3 11 30 blood:3 12 30 bisque:4 13 30 bisque:4 14 30 bisque:4 15 30 bisque:5
+@px 2 31 tin:1 3 31 tin:1 4 31 tin:1 5 31 tin:1 6 31 tin:1 7 31 tin:1 8 31 tin:1 9 31 blood:1
+@px 10 31 blood:1 11 31 blood:1 12 31 bisque:2 13 31 bisque:2 14 31 bisque:2 15 31 bisque:3

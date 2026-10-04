@@ -1,0 +1,253 @@
+{
+  "id": "retro-active",
+  "settings": {
+    "id": "retro-active",
+    "viewport": {
+      "width": 1024,
+      "height": 768
+    },
+    "skin": "retro2003",
+    "atbMode": "active"
+  },
+  "extra": [
+    {
+      "name": "command-settled",
+      "geometry": {
+        "viewport": [
+          1024,
+          768
+        ],
+        "phase": "actorCommand",
+        "step": "command",
+        "busy": "false",
+        "scene": {
+          "x": 32,
+          "y": 24,
+          "width": 960,
+          "height": 720,
+          "top": 24,
+          "right": 992,
+          "bottom": 744,
+          "left": 32
+        },
+        "message": {
+          "text": "정찰병은 무엇을 할까?",
+          "display": "grid",
+          "visibility": "visible",
+          "rect": {
+            "x": 44,
+            "y": 36,
+            "width": 936,
+            "height": 60,
+            "top": 36,
+            "right": 980,
+            "bottom": 96,
+            "left": 44
+          }
+        },
+        "summary": {
+          "rect": null
+        },
+        "messageOverlapsSummary": false,
+        "buttons": [
+          {
+            "id": "enemy-1",
+            "text": "",
+            "disabled": true,
+            "rect": {
+              "x": 140,
+              "y": 313.3359375,
+              "width": 144,
+              "height": 144,
+              "top": 313.3359375,
+              "right": 284,
+              "bottom": 457.3359375,
+              "left": 140
+            }
+          },
+          {
+            "id": "enemy-2",
+            "text": "",
+            "disabled": true,
+            "rect": {
+              "x": 236,
+              "y": 211.3359375,
+              "width": 144,
+              "height": 144,
+              "top": 211.3359375,
+              "right": 380,
+              "bottom": 355.3359375,
+              "left": 236
+            }
+          },
+          {
+            "id": "enemy-3",
+            "text": "",
+            "disabled": true,
+            "rect": {
+              "x": 332,
+              "y": 313.3359375,
+              "width": 144,
+              "height": 144,
+              "top": 313.3359375,
+              "right": 476,
+              "bottom": 457.3359375,
+              "left": 332
+            }
+          },
+          {
+            "id": "actor-command-attack",
+            "text": "공격",
+            "disabled": false,
+            "cursor": "true",
+            "rect": {
+              "x": 592.5546875,
+              "y": 534,
+              "width": 190.7109375,
+              "height": 48,
+              "top": 534,
+              "right": 783.265625,
+              "bottom": 582,
+              "left": 592.5546875
+            }
+          },
+          {
+            "id": "actor-command-skill",
+            "text": "스킬",
+            "disabled": false,
+            "rect": {
+              "x": 783.265625,
+              "y": 534,
+              "width": 190.734375,
+              "height": 48,
+              "top": 534,
+              "right": 974,
+              "bottom": 582,
+              "left": 783.265625
+            }
+          },
+          {
+            "id": "actor-command-defend",
+            "text": "방어",
+            "disabled": false,
+            "rect": {
+              "x": 592.5546875,
+              "y": 582,
+              "width": 190.7109375,
+              "height": 48,
+              "top": 582,
+              "right": 783.265625,
+              "bottom": 630,
+              "left": 592.5546875
+            }
+          },
+          {
+            "id": "actor-command-item",
+            "text": "아이템",
+            "disabled": false,
+            "rect": {
+              "x": 783.265625,
+              "y": 582,
+              "width": 190.734375,
+              "height": 48,
+              "top": 582,
+              "right": 974,
+              "bottom": 630,
+              "left": 783.265625
+            }
+          },
+          {
+            "id": "actor-command-escape",
+            "text": "도주",
+            "disabled": false,
+            "rect": {
+              "x": 592.5546875,
+              "y": 630,
+              "width": 190.7109375,
+              "height": 48,
+              "top": 630,
+              "right": 783.265625,
+              "bottom": 678,
+              "left": 592.5546875
+            }
+          }
+        ],
+        "images": [
+          {
+            "rect": {
+              "x": 140,
+              "y": 313.3359375,
+              "width": 144,
+              "height": 144,
+              "top": 313.3359375,
+              "right": 284,
+              "bottom": 457.3359375,
+              "left": 140
+            },
+            "bg": "url(\"http://127.0.0.1:36193/assets/generated/pixel-enemies/slime.png\")",
+            "rendering": "pixelated"
+          },
+          {
+            "rect": {
+              "x": 236,
+              "y": 211.3359375,
+              "width": 144,
+              "height": 144,
+              "top": 211.3359375,
+              "right": 380,
+              "bottom": 355.3359375,
+              "left": 236
+            },
+            "bg": "url(\"http://127.0.0.1:36193/assets/generated/pixel-enemies/bat.png\")",
+            "rendering": "pixelated"
+          },
+          {
+            "rect": {
+              "x": 332,
+              "y": 313.3359375,
+              "width": 144,
+              "height": 144,
+              "top": 313.3359375,
+              "right": 476,
+              "bottom": 457.3359375,
+              "left": 332
+            },
+            "bg": "url(\"http://127.0.0.1:36193/assets/generated/pixel-enemies/slime.png\")",
+            "rendering": "pixelated"
+          }
+        ],
+        "scroll": [
+          {
+            "cls": "battle-command-menu battle-standard-root",
+            "clientHeight": 128,
+            "scrollHeight": 128,
+            "scrollTop": 0
+          }
+        ]
+      }
+    }
+  ],
+  "errors": [],
+  "beats": [
+    {
+      "id": "title",
+      "failures": []
+    },
+    {
+      "id": "field-start",
+      "failures": []
+    },
+    {
+      "id": "face-battle-event",
+      "failures": []
+    },
+    {
+      "id": "battle-intro",
+      "failures": []
+    },
+    {
+      "id": "battle-command",
+      "failures": []
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/healing_spring/h16-E.pxg",
+ "id": "healing spring",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.066
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 11,
+ "v5_colors": 0,
+ "bbox": [
+  0,
+  1,
+  31,
+  31
+ ],
+ "v5_bbox": null,
+ "note": "대리석 분수 해석: 북쪽 돌기둥에서 하늘색 물줄기가 떨어져 물 표면에 번지는 샘, 남쪽 돌 앞면 두껍게",
+ "ok": true
+}

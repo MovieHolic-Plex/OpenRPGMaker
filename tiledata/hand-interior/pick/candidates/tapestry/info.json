@@ -1,0 +1,37 @@
+{
+ "id": "tapestry",
+ "slug": "tapestry",
+ "name_ko": "태피스트리(2줄)",
+ "category": "연회장·알현실",
+ "kind": "hang",
+ "kind_ko": "벽면 걸이(벽 두 줄 중 윗줄)",
+ "canvas": [
+  16,
+  32
+ ],
+ "padTop": 2,
+ "image": {
+  "w": 16,
+  "h": 30
+ },
+ "footprint": {
+  "w": 1,
+  "h": 0
+ },
+ "overhang_px": 0,
+ "surface": null,
+ "description": "벽면 두 줄을 덮는 태피스트리(tall 걸이). 큰 가구 위에 걸지 않는다.",
+ "where": "큰 가구 위에 걸지 않는다.",
+ "placement": [
+  "벽면 두 줄 중 윗줄(y=벽면 첫 줄)에 건다. 바닥 칸은 차지하지 않는다"
+ ],
+ "v5_bbox": [
+  1,
+  2,
+  14,
+  30
+ ],
+ "v5_colors": 8,
+ "material": "cloth",
+ "related": []
+}

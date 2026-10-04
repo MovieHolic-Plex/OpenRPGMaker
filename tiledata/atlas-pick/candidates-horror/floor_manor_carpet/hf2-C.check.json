@@ -1,0 +1,32 @@
+{
+ "file": "tiledata/atlas-pick/candidates-horror/floor_manor_carpet/hf2-C.pxg",
+ "set": "horror",
+ "id": "floor_manor_carpet",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.035
+ },
+ "refmap": {
+  "cells": 4,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "noise"
+  ]
+ },
+ "colors": 5,
+ "bbox": [
+  0,
+  0,
+  31,
+  31
+ ],
+ "note": "C(벨벳 결+메달리온): 자줏빛 벨벳 바탕에 결 알갱이(1·3), 16px 마다 4잎 꽃 메달리온(3·4·5), 모서리 점",
+ "ok": true
+}

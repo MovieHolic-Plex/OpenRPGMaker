@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/canopy_bed/w4-A.pxg",
+ "id": "canopy bed",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.035
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 26,
+ "v5_colors": 26,
+ "bbox": [
+  0,
+  0,
+  31,
+  47
+ ],
+ "v5_bbox": [
+  0,
+  0,
+  31,
+  47
+ ],
+ "note": "v5 정리: 기둥 밝/어두운 면 분리, 닫집 술 달린 밸런스+금 구슬, 양옆 커튼 주름, 머리판 패널, 베개 둘·접은 시트·붉은 이불 헴 무늬",
+ "ok": true
+}

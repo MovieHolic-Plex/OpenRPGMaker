@@ -1,0 +1,131 @@
+[
+ {
+  "name": "tree_sakura",
+  "cls": "exempt",
+  "size": [
+   32,
+   48
+  ],
+  "shape_ok": true,
+  "padded_rows": 0,
+  "bad_chars": [],
+  "check": {},
+  "cost_usd": 0.5394882
+ },
+ {
+  "name": "tree_green",
+  "cls": "exempt",
+  "size": [
+   32,
+   48
+  ],
+  "shape_ok": true,
+  "padded_rows": 0,
+  "bad_chars": [],
+  "check": {},
+  "cost_usd": 0.5743894
+ },
+ {
+  "name": "vending_red",
+  "cls": "prop",
+  "size": [
+   16,
+   30
+  ],
+  "shape_ok": true,
+  "padded_rows": 0,
+  "bad_chars": [],
+  "check": {
+   "c": "data/atlas-pick/ascii-pixelize/h34/vending_red-c.png prop          4    24  0.167  OK",
+   "post": "a/atlas-pick/ascii-pixelize/h34/vending_red-post.png prop          4    24  0.167  OK"
+  },
+  "cost_usd": 0.5220282
+ },
+ {
+  "name": "vending_blue",
+  "cls": "prop",
+  "size": [
+   16,
+   30
+  ],
+  "shape_ok": true,
+  "padded_rows": 0,
+  "bad_chars": [],
+  "check": {
+   "c": "ata/atlas-pick/ascii-pixelize/h34/vending_blue-c.png prop          5    24  0.208  OK",
+   "post": "/atlas-pick/ascii-pixelize/h34/vending_blue-post.png prop          5    24  0.208  OK"
+  },
+  "cost_usd": 0.5419381999999999
+ },
+ {
+  "name": "street_lamp",
+  "cls": "exempt",
+  "size": [
+   16,
+   40
+  ],
+  "shape_ok": true,
+  "padded_rows": 0,
+  "bad_chars": [],
+  "check": {},
+  "cost_usd": 0.5560728
+ },
+ {
+  "name": "traffic_light",
+  "cls": "exempt",
+  "size": [
+   32,
+   48
+  ],
+  "e_failed": true,
+  "shape_ok": false,
+  "note": "재실행까지 두 번 모두 줄 수/길이 초과(1회 49줄, 재시도 시 33자 줄) → C 그대로",
+  "check": null,
+  "cost_usd": 2.1402232000000003
+ },
+ {
+  "name": "hero",
+  "cls": "exempt",
+  "size": [
+   16,
+   24
+  ],
+  "shape_ok": true,
+  "padded_rows": 0,
+  "bad_chars": [],
+  "check": {},
+  "cost_usd": 0.5423422
+ },
+ {
+  "name": "taxi",
+  "cls": "vehicle",
+  "size": [
+   56,
+   32
+  ],
+  "shape_ok": true,
+  "padded_rows": 1,
+  "bad_chars": [],
+  "check": {
+   "c": "ck/tiledata/atlas-pick/ascii-pixelize/h34/taxi-c.png vehicle_h     8    24  0.333  OK",
+   "post": "tiledata/atlas-pick/ascii-pixelize/h34/taxi-post.png vehicle_h     8    24  0.333  OK"
+  },
+  "cost_usd": 1.7277538000000001
+ },
+ {
+  "name": "guardrail",
+  "cls": "prop",
+  "size": [
+   48,
+   16
+  ],
+  "shape_ok": true,
+  "padded_rows": 0,
+  "bad_chars": [],
+  "check": {
+   "c": "drail-c.png prop          7     6  1.167  TOPDOWN T/F=1.167 > 0.95 — 위에서 내려다본 그림, 앞면이 모자란다",
+   "post": "il-post.png prop          7     6  1.167  TOPDOWN T/F=1.167 > 0.95 — 위에서 내려다본 그림, 앞면이 모자란다"
+  },
+  "cost_usd": 0.5178042
+ }
+]

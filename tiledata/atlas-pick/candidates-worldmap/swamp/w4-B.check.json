@@ -1,0 +1,46 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/swamp/w4-B.pxg",
+ "set": "worldmap",
+ "id": "swamp",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.382
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.262
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "outline_black",
+   "light"
+  ]
+ },
+ "colors": 10,
+ "bbox": [
+  1,
+  0,
+  47,
+  62
+ ],
+ "note": "빛·볼륨 — 둔덕 5단 명암·물은 짙게, 물빛 점 반짝, 갈대 네 다발",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.547
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.277
+  },
+  "seam": 1.18
+ }
+}

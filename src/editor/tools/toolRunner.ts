@@ -9,8 +9,9 @@ import { normalizePlaceToolArgs } from "./spatialPlaceContract";
 //   dryRun이면 통과해도 ctx.project를 갱신하지 않는다.
 
 import type { LintIssue } from "@/project/lint/projectLint";
-import type { Project } from "@/project/types";
+import type { GameMap, Project } from "@/project/types";
 import { sameFamilyTilesets, tilesetFamily, tilesetFamilyLabel } from "@/project/tilesetFamily";
+import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { beginSpatialToolProposal, sealSpatialToolProposal } from "./spatialToolState";
 import { verifyPostTilePlacement } from "@/project/lint/postTileVerify";
 import { compactMapLayers, EXTRA_LAYER_KEYS, hasExtraLayers } from "@/project/mapLayers";
@@ -20,6 +21,7 @@ import { resolveForestCanopyReplacementExemptTileIds } from "./forestComposition
 import { commitChangeset, createDraft, finishDraftTilesets, shareUnchangedTilesets, summarizeChanges, tileBuffersDiffer, tileChangedMapIds } from "./changeset";
 import { normalizeArgsForSchema, validateArgs } from "./jsonSchema";
 import { getTool } from "./toolRegistry";
+import { authoringWritePrerequisite } from '../../harnesses/_core/authoringRegistry';
 import { ToolError, type ToolContext, type ToolDefinition, type ToolResult } from "./types";
 import { assertHouseProtection, captureHouseProtection, newlyBuiltHouseSnapshots, type HouseSnapshot } from "./houseProtection";
 
@@ -48,6 +50,42 @@ function rejectUploadedTilesetSwap(before: Project, draft: Project, name: string
   }
 }
 
+/** edit_world_terrain 이 만든 세계 지도 — 칩셋이 그 맵 전용 `worldmap_<mapId>` 다. */
+function isWorldmapKitMap(map: GameMap): boolean {
+  return Boolean(map.worldmapSource) && map.tilesetId === `worldmap_${map.id}`;
+}
+
+/**
+ * 기본 칩셋 한 가지 타일로만 채우고 이벤트도 없는 맵 — 새 프로젝트의 빈 시작 맵처럼 사용자가 아직 그림체를 고르지 않은 맵.
+ * 사용자가 다른 칩셋을 고른 빈 맵(업로드 칩셋 등)은 고른 것이므로 기준으로 남는다.
+ */
+function isBlankCanvasMap(map: GameMap): boolean {
+  if (map.tilesetId !== DEFAULT_TILESET_ID || map.events.length > 0 || map.upperTiles.some((t) => t >= 0)) return false;
+  if (EXTRA_LAYER_KEYS.some((key) => map[key]?.some((t) => key === "shadowBits" ? t !== 0 : t >= 0))) return false;
+  if (map.relief?.levels.some((level) => level !== 0) || map.relief?.ramps?.some((ramp) => ramp !== 0)
+    || map.relief?.wallDecor?.length || map.doodadGroups?.length) return false;
+  const first = map.lowerTiles[0];
+  return map.lowerTiles.every((t) => t === first);
+}
+
+/**
+ * 그림체 기준 맵. 보는 맵이 세계 지도(지도 그림을 자른 전용 칩셋)거나 빈 캔버스(새 프로젝트의 빈 시작 맵)면 그 칩셋은 사용자가 고른 그림체가 아니다 —
+ * 프로젝트에서 실제로 칠한 맵 중 가장 많은 계열의 맵을 기준으로, 그런 맵이 없으면 기준 없음(검사 안 함 — 조수가 처음 고른 계열이 다음부터 기준이 된다).
+ * 실측(2026-10-03 조선 시험): 빈 버들항 시작 맵 때문에 조선 고을을 로마풍 버들항 칩셋으로 깔았다.
+ */
+function familyBaselineMap(project: Project, viewed: GameMap): GameMap | undefined {
+  if (!isWorldmapKitMap(viewed) && !isBlankCanvasMap(viewed)) return viewed;
+  const painted = Object.values(project.maps).filter((map) => !isWorldmapKitMap(map) && !isBlankCanvasMap(map));
+  if (!painted.length) return undefined;
+  const counts = new Map<string, number>();
+  for (const map of painted) {
+    const family = tilesetFamily(project, map.tilesetId);
+    counts.set(family, (counts.get(family) ?? 0) + 1);
+  }
+  const top = [...counts.entries()].sort((a, b) => b[1] - a[1])[0]![0];
+  return painted.find((map) => tilesetFamily(project, map.tilesetId) === top);
+}
+
 /** 계열 검사 메시지에 싣는 같은 계열 후보 수 상한. */
 const FAMILY_CANDIDATE_LIMIT = 8;
 
@@ -58,13 +96,18 @@ const FAMILY_CANDIDATE_LIMIT = 8;
  * 같은 계열 후보를 알려 주고, 없으면 ask_tileset_change 로 견본을 보여 묻고 턴을 끝내라고 지시한다.
  */
 function rejectTilesetFamilyChange(ctx: ToolContext, before: Project, draft: Project, name: string): void {
-  const currentMap = ctx.currentMapId ? before.maps[ctx.currentMapId] : undefined;
+  const viewed = ctx.currentMapId ? before.maps[ctx.currentMapId] : undefined;
+  if (!viewed) return;
+  const currentMap = familyBaselineMap(before, viewed);
   if (!currentMap) return;
   const baseFamily = tilesetFamily(before, currentMap.tilesetId);
   const approved = new Set(ctx.approvedTilesetFamilies ?? []);
   for (const [id, next] of Object.entries(draft.maps)) {
     const previous = before.maps[id];
     if (previous && previous.tilesetId === next.tilesetId) continue;
+    // 세계 지도를 만들거나 다시 빌드하는 것도 그림체를 바꾸는 게 아니다. 실측(2026-10-03 조선 시험): 버들항 빈 맵을 보던 조수의
+    // edit_world_terrain 이 여기서 거부되고, 없는 타일셋으로 ask_tileset_change 를 부르다 턴을 끝냈다.
+    if (isWorldmapKitMap(next)) continue;
     const family = tilesetFamily(draft, next.tilesetId);
     if (family === baseFamily || approved.has(family)) continue;
     const fromName = before.tilesets[currentMap.tilesetId]?.name ?? currentMap.tilesetId;
@@ -74,7 +117,7 @@ function rejectTilesetFamilyChange(ctx: ToolContext, before: Project, draft: Pro
     const fromLabel = tilesetFamilyLabel(before, baseFamily);
     const toLabel = tilesetFamilyLabel(draft, family);
     throw new ToolError(
-      `사용자가 보고 있는 맵 ${currentMap.id} 의 칩셋은 「${fromName}」(${currentMap.tilesetId}, ${fromLabel} 계열)인데 `
+      `${currentMap === viewed ? "사용자가 보고 있는 맵" : "프로젝트에서 칠한 맵"} ${currentMap.id} 의 칩셋은 「${fromName}」(${currentMap.tilesetId}, ${fromLabel} 계열)인데 `
       + `${name} 이 맵 ${id} 에 「${toName}」(${next.tilesetId}, ${toLabel} 계열)을 쓰려 해 거부했다 — 사용자 승인 없이 타일 그림체를 바꾸지 않는다. `
       + `같은 계열 후보: ${candidates.length ? candidates.join(", ") : "없음"}. `
       + `같은 계열 후보 중 맞는 것을 tilesetId 로 지정해 다시 불러라(이 도구가 tilesetId 를 못 받으면 create_map(tilesetId=후보) 로 빈 맵을 만든 뒤 칠하기 도구로 직접 깔아라). `
@@ -94,7 +137,8 @@ function argsWithCurrentMapTileset(ctx: ToolContext, tool: ToolDefinition, args:
   }
   if (!tool.defaultTilesetId || !ctx.currentMapId) return args;
   if (typeof args.tilesetId === "string" && args.tilesetId.trim().length > 0) return args;
-  const currentMap = ctx.project.maps[ctx.currentMapId];
+  const viewed = ctx.project.maps[ctx.currentMapId];
+  const currentMap = viewed ? familyBaselineMap(ctx.project, viewed) : undefined;   // 빈 시작 맵·세계 지도는 채울 칩셋의 기준이 아니다
   if (!currentMap || !ctx.project.tilesets[currentMap.tilesetId]) return args;
   const own = tool.defaultTilesetId(ctx.project);
   if (tilesetFamily(ctx.project, own) === tilesetFamily(ctx.project, currentMap.tilesetId)) return args;
@@ -235,6 +279,12 @@ export function runToolDefinition(
   }
 
   // 쓰기 툴: draft에 적용.
+  const prerequisite = authoringWritePrerequisite(ctx.project);
+  if (prerequisite && name !== prerequisite && name !== 'set_build_spec'
+    && tool.domains?.some(domain => domain === 'event' || domain === 'map' || domain === 'tile')) {
+    return { ok: false, summary: '첫 대화를 먼저 작성하세요.', issues: [{ severity: 'error', code: 'authoring-prerequisite',
+      message: `${prerequisite}으로 확정한 두 선택의 대사를 먼저 작성한 뒤 장소를 꾸미세요. 임시 초안을 두고 배경 시공부터 시작하지 않습니다.` }] };
+  }
   const before = ctx.project;
   const draft = createDraft(before);
   let exec;

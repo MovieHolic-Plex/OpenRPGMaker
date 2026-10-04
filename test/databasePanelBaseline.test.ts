@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { addSwitch, addVariable, renameSwitch, renameVariable } from "@/editor/actions";
-import { createBlankProject, DEFAULT_TILESET_ID } from "@/project/defaults";
+import { createBlankProject, COMBINED_TOWN_TILESET_ID } from "@/project/defaults";
 import { store } from "@/project/store";
 
 describe("Database panel baseline behavior", () => {
@@ -49,8 +49,8 @@ describe("Database panel baseline behavior", () => {
         trigger: "parallel",
         commands: [{ kind: "text", body: "open" }],
       });
-      project.tilesets[DEFAULT_TILESET_ID].priority[0] = "upper";
-      project.tilesets[DEFAULT_TILESET_ID].passability[0].up = false;
+      project.tilesets[COMBINED_TOWN_TILESET_ID].priority[0] = "upper";
+      project.tilesets[COMBINED_TOWN_TILESET_ID].passability[0].up = false;
       project.meta.terms.gold = "Coins";
     });
 
@@ -60,8 +60,8 @@ describe("Database panel baseline behavior", () => {
       trigger: "parallel",
       commands: [{ kind: "text", body: "open" }],
     });
-    expect(project.tilesets[DEFAULT_TILESET_ID].priority[0]).toBe("upper");
-    expect(project.tilesets[DEFAULT_TILESET_ID].passability[0].up).toBe(false);
+    expect(project.tilesets[COMBINED_TOWN_TILESET_ID].priority[0]).toBe("upper");
+    expect(project.tilesets[COMBINED_TOWN_TILESET_ID].passability[0].up).toBe(false);
     expect(project.meta.terms.gold).toBe("Coins");
   });
 });

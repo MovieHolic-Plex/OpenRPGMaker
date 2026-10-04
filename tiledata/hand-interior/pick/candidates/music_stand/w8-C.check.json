@@ -1,0 +1,35 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/music_stand/w8-C.pxg",
+ "id": "music stand",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 2,
+  "atLeast95": 0,
+  "max": 0.226
+ },
+ "lint": {
+  "failed": [
+   "orphans",
+   "jaggies",
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 9,
+ "v5_colors": 5,
+ "bbox": [
+  2,
+  9,
+  14,
+  30
+ ],
+ "v5_bbox": [
+  2,
+  10,
+  13,
+  30
+ ],
+ "note": "재해석: 검은 쇠 대신 나무 삼각대(세 다리 벌어짐)와 놋쇠 악보 받침대, 기울인 악보판 두께 표현.",
+ "ok": true
+}

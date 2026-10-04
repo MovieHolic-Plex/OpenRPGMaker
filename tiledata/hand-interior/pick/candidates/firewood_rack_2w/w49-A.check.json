@@ -1,0 +1,41 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/firewood_rack_2w/w49-A.pxg",
+ "id": "firewood rack 2w",
+ "hard": [],
+ "warn": [],
+ "resized": {
+  "canvas": [
+   48,
+   32
+  ],
+  "footprint": {
+   "w": 3,
+   "h": 1
+  },
+  "why": "사용자 메모: 사이즈를 키워도 좋으니 장작을 대각선으로 눕힌 것처럼 (3x2 로 키움)."
+ },
+ "refmap": {
+  "cells": 6,
+  "atLeast95": 0,
+  "max": 0.069
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 12,
+ "v5_colors": 17,
+ "bbox": [
+  0,
+  5,
+  47,
+  31
+ ],
+ "v5_bbox": [
+  0,
+  2,
+  31,
+  31
+ ],
+ "note": "48x32(3x1) 발 달린 긴 받침 위에 7px 둥근 마구리(밝은 나이테+어두운 껍질) 6개·5개를 엇갈려 쌓고 맨 위에 눕힌 통나무 윗면 띠(밝은 앞모서리), 받침 윗판 윗면+앞가장자리. current 와 같은 나무·틀색",
+ "ok": true
+}

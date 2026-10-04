@@ -1,0 +1,27 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/trapdoor/w73-A.pxg",
+ "id": "trapdoor",
+ "hard": [],
+ "warn": [],
+ "new": true,
+ "skipped": "v5 비교(바닥선·폭·키) 생략: 새 기물은 v5 그림이 없다. 캔버스는 new/items.json 기준",
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.047
+ },
+ "lint": {
+  "error": "[Errno 2] No such file or directory: '/home/main/z-project/rpg-zzu-interior-v34b/tiledata/pixel-harness/refmap-stats.json'"
+ },
+ "colors": 15,
+ "v5_colors": 0,
+ "bbox": [
+  1,
+  1,
+  14,
+  14
+ ],
+ "v5_bbox": null,
+ "note": "뚜껑문: 바닥 나무 판 셋에 어두운 나무 틀·쇠 경첩 띠·가운데 쇠 고리 손잡이, 위에서 본 평면, 왼쪽 위 빛",
+ "ok": true
+}

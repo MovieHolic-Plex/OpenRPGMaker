@@ -1,0 +1,77 @@
+// s3-A.pxg → modern3 자동 재채색(remap_modern3.py)
+@size 32 32
+@cell 16
+@palette palette.pal
+@layer main
+@mat a conc 0
+@mat b kii 0
+@mat c pinku 0
+@mat d shiro 0
+@mat e tairu 0
+@mat f tekko 0
+@mblock 0 0
+................................
+................................
+................................
+ffffffffffffffffffffffffffffffff
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+ffffffffffffffffffffffffffffffff
+ffaaaaafffaaaaafffaaaaafffaaaaaf
+ffffffafffffffafffffffafffffffaf
+ffaaaaafffaaaaafffaaaaafffaaaaaf
+ffffffafffffffafffffffafffffffaf
+ffaaaaafffaaaaafffaaaaafffaaaaaf
+fffffbaffffffbaffffffbaffffffbaf
+ffaddaafffaddaafffaddaafffaddaaf
+ffaaaaafffaaaaafffaaaaafffaaaaaf
+ffaaaaafffacccafffaaaaafffaaaaaf
+faaaaaaffaacccaffaaaaaaffaaaaaaf
+fffffffffffcccffffffffffffffffff
+ffffffffffffffffffffffffffffffff
+ffaaaaafffaaaaafffaaaaafffaaaaaf
+ffffffafffffffafffffffafffffffaf
+ffaaaaafffaaaaafffaaaaafffaaaaaf
+ffffffafffffffafffffffafffffffaf
+ffaaaaafffaaaaafffaaaaafffaaaaaf
+fffffbaffffffbaffffffbaffffffbaf
+ffaddaafffaddaafffaddaafffaddaaf
+ffaaaaafffaaaaafffaaaaafffaaaaaf
+ffaaaaafffaaaaafffaaeeefffaaaaaf
+faaaaaaffaaaaaaffaaaeeeffaaaaaaf
+ffffffffffffffffffffeeefffffffff
+ffffffffffffffffffffffffffffffff
+................................
+................................
+@tblock 0 0
+................................
+................................
+................................
+66666666666666666666666666666666
+55555555555555555555555555555555
+36666663366666633666666336666663
+36333323363333233633332336333323
+36222223362222233622222336222223
+36333323363333233633332336333323
+36222223362222233622222336222223
+36333323363333233633332336333323
+36222423362224233622242336222423
+36344323363443233634432336344323
+36333323363333233633332336333323
+36333323363322233633332336333323
+32222223322222233222222332222223
+33333333333111333333333333333333
+36666663366666633666666336666663
+36333323363333233633332336333323
+36222223362222233622222336222223
+36333323363333233633332336333323
+36222223362222233622222336222223
+36333323363333233633332336333323
+36222423362224233622242336222423
+36344323363443233634432336344323
+36333323363333233633332336333323
+36333323363333233633422336333323
+32222223322222233222222332222223
+22222222222222222222000222222222
+33333333333333333333333333333333
+................................
+................................

@@ -14,6 +14,17 @@ import {
   defaultTerrainRecords,
 } from "./defaultDatabaseUtilityRecords";
 import { DEFAULT_TROOP_ID } from "./constants";
+import { DEPRECATED_EASYRPG_BATTLE_SHEETS } from "@/assets/retroPixelAnimations";
+import { rosterClassIds } from "./retroRosterRecords";
+import { appendRetroRosterDependencies, type RetroRosterDatabase } from "./retroRosterDependencies";
+import {
+  CLASS_BARD_ID,
+  CLASS_DRUID_ID,
+  CLASS_MONK_ID,
+  CLASS_NINJA_ID,
+  CLASS_SAMURAI_ID,
+  CLASS_WITCH_ID,
+} from "./defaultDatabaseRecordIds";
 
 /**
  * 번들 전투 애니메이션 수렴. `ensureBundledResourceProfiles` 와 같은 계열이다.
@@ -25,19 +36,108 @@ import { DEFAULT_TROOP_ID } from "./constants";
  * ▶테스트를 막지는 않지만(게이트 제거), 재생 시 애니메이션이 통째로 빠진다.
  *
  * 같은 id 가 이미 있으면 저자가 손댔을 수 있으므로 건드리지 않고 빠진 것만 채운다.
+ * 예외는 deprecated/ 로 옮긴 EasyRPG 전투 시트를 가리키는 기록뿐이다(아래).
  */
 export function ensureBundledBattleAnimations(project: {
   database: { battleAnimations: BattleAnimationRecord[] };
 }): boolean {
+  const defaults = defaultBattleAnimationRecords();
   const existingIds = new Set(project.database.battleAnimations.map((record) => record.id));
   let changed = false;
-  for (const record of defaultBattleAnimationRecords()) {
+  // EasyRPG Blow·Sword1·Arrow 시트는 2026-10-03 deprecated/ 로 옮겼다. 그 시트를 가리키는 기록은 기본 id 면
+  // 지금 기본값으로, 저자가 만든 기록이면 그림 칸(시트·프레임)만 같은 역할의 번들 효과로 바꾼다.
+  project.database.battleAnimations = project.database.battleAnimations.map((record) => {
+    const slug = DEPRECATED_EASYRPG_BATTLE_SHEETS[record.resourceId ?? ""];
+    const replacement = slug && (defaults.find((entry) => entry.id === record.id)
+      ?? defaults.find((entry) => entry.resourceId === `generated-battle-anim-${slug}`));
+    if (!replacement) return record;
+    changed = true;
+    return replacement.id === record.id ? replacement : { ...record, resourceId: replacement.resourceId, sheet: replacement.sheet, frames: replacement.frames };
+  });
+  for (const record of defaults) {
     if (existingIds.has(record.id)) continue;
     project.database.battleAnimations.push(record);
     existingIds.add(record.id);
     changed = true;
   }
   return changed;
+}
+
+/** 2차 로스터 기믹 상태 8종 + 반응·표적 상태 7종(defaultDatabaseStarterRecords.ts 「기믹 상태」·「반응·표적 상태」 블록). */
+const RETRO_GIMMICK_STATE_IDS: readonly string[] = [
+  "state_blind", "state_stop", "state_protect", "state_shell",
+  "state_berserk", "state_petrify", "state_wet", "state_oiled",
+  "state_counter", "state_taunt", "state_cover", "state_evade", "state_reflect", "state_reraise", "state_doom", "state_form_stone",
+];
+const RETRO_EXTENSION_CLASS_IDS: readonly string[] = [
+  CLASS_SAMURAI_ID, CLASS_NINJA_ID, CLASS_MONK_ID, CLASS_BARD_ID, CLASS_DRUID_ID, CLASS_WITCH_ID,
+];
+
+/**
+ * retro2003 로스터 수렴. `ensureBundledBattleAnimations` 와 같은 계열이다.
+ *
+ * 왜 필요한가: 로스터(확장 직업 6 + 2차 직업·예비 배우·스킬)와 기믹 상태 8종은 기본 DB 생성기에만 들어 있어,
+ * 그 전에 저장된 프로젝트는 발키리·암흑기사 같은 직업이 직업 목록에 없고 기술 참조가 끊긴다.
+ *
+ * 빠진 직업·예비 배우·스킬·기믹 상태와 새 레코드의 참조 의존성을 id 로 덧붙인다. 같은 id 가 이미 있으면 저자가 손댔을 수
+ * 있으므로 건드리지 않는다. 시작 파티(system.startActorIds)·battleUiStyle·저자 레코드는 바꾸지 않는다.
+ */
+export function ensureRetroRosterRecords(project: {
+  database: RetroRosterDatabase;
+}): boolean {
+  const db = project.database;
+  const wantedClassIds = new Set<string>([...RETRO_EXTENSION_CLASS_IDS, ...rosterClassIds()]);
+  const party = defaultPartyRecords();
+  const skills = defaultSkillRecords();
+  const commonMotionIds=new Set(db.skills.map(r=>r.id));
+  const missingMotions=skills.filter(r=>r.id.startsWith("skill_motion_")&&!commonMotionIds.has(r.id));
+  db.skills.push(...missingMotions);
+  const states = defaultStateRecords();
+  const added: Parameters<typeof appendRetroRosterDependencies>[2] = [];
+  let changed = missingMotions.length>0;
+  const classIds = new Set(db.classes.map((record) => record.id));
+  for (const record of party.classes) {
+    if (!wantedClassIds.has(record.id) || classIds.has(record.id)) continue;
+    db.classes.push(record);
+    added.push({ kind: "classes", record });
+    classIds.add(record.id);
+    changed = true;
+  }
+  const actorIds = new Set(db.actors.map((record) => record.id));
+  for (const record of party.actors) {
+    if (!wantedClassIds.has(record.classId) || actorIds.has(record.id)) continue;
+    db.actors.push(record);
+    added.push({ kind: "actors", record });
+    actorIds.add(record.id);
+    changed = true;
+  }
+  const wantedSkillIds = new Set<string>();
+  for (const record of party.classes) {
+    if (!wantedClassIds.has(record.id)) continue;
+    for (const skillId of record.skillIds) wantedSkillIds.add(skillId);
+  }
+  const skillIds = new Set(db.skills.map((record) => record.id));
+  for (const record of skills) {
+    if (!wantedSkillIds.has(record.id) || skillIds.has(record.id)) continue;
+    db.skills.push(record);
+    added.push({ kind: "skills", record });
+    skillIds.add(record.id);
+    changed = true;
+  }
+  const stateIds = new Set(db.states.map((record) => record.id));
+  for (const record of states) {
+    if (!RETRO_GIMMICK_STATE_IDS.includes(record.id) || stateIds.has(record.id)) continue;
+    db.states.push(record);
+    added.push({ kind: "states", record });
+    stateIds.add(record.id);
+    changed = true;
+  }
+  if (added.length === 0) return changed;
+  return appendRetroRosterDependencies(db, {
+    actors: party.actors, classes: party.classes, equipment: party.equipment,
+    skills, states,
+    battleAnimations: defaultBattleAnimationRecords(), elements: defaultElementRecords(),
+  }, added) || changed;
 }
 
 export function defaultTerms(): Required<Terms> {

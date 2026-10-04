@@ -1,0 +1,46 @@
+{
+ "file": "tiledata/atlas-pick/candidates-worldmap/coast_snow/w1-C.pxg",
+ "set": "worldmap",
+ "id": "coast_snow",
+ "hard": [],
+ "warn": [],
+ "easyrpg": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.0
+ },
+ "refmap": {
+  "cells": 12,
+  "atLeast95": 0,
+  "max": 0.006
+ },
+ "lint": {
+  "pass": false,
+  "failed": [
+   "saturation",
+   "dither"
+  ]
+ },
+ "colors": 8,
+ "bbox": [
+  0,
+  0,
+  47,
+  63
+ ],
+ "note": "깨진 얼음 해안: 기슭선 0~3px 들쭉날쭉, 얼음 조각 2px 두께에 물 테 한 줄, 몸통은 풀 해안 C 와 동일",
+ "ok": true,
+ "worldmap": {
+  "worldEasyrpg": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.0
+  },
+  "refmapWorld": {
+   "cells": 12,
+   "atLeast95": 0,
+   "max": 0.006
+  },
+  "seam": 0.79
+ }
+}

@@ -1,0 +1,33 @@
+{
+ "file": "tiledata/hand-interior/pick/candidates/nightstand/w8-B.pxg",
+ "id": "nightstand",
+ "hard": [],
+ "warn": [],
+ "refmap": {
+  "cells": 1,
+  "atLeast95": 0,
+  "max": 0.03
+ },
+ "lint": {
+  "failed": [
+   "saturation"
+  ],
+  "pass": false
+ },
+ "colors": 10,
+ "v5_colors": 9,
+ "bbox": [
+  2,
+  16,
+  13,
+  29
+ ],
+ "v5_bbox": [
+  2,
+  16,
+  13,
+  29
+ ],
+ "note": "윗면 하이라이트와 서랍 왼쪽 밝음·오른쪽 어두움을 크게, 서랍 사이 틈을 진하게 하고 발 오른쪽 아래에 반투명 접지 그림자 3줄",
+ "ok": true
+}

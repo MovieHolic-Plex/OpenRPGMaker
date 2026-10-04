@@ -1,0 +1,44 @@
+// D 효과: 뚜껑 뒷판 유지, 속 바닥 y4~7 을 어두운 입구 면으로 넓히고 뚜껑 앞면 띠 제거, 앞벽 윗날 y8 만 밝게, 금빛 반짝 둘
+@size 16 16
+@cell 16
+@palette palette.pal
+@mat o wood 1
+@mat i wood 3
+@mat w wood 6
+@mat g gold 4
+@mat d wood 4
+@mat k gold 0
+@mblock 0 0
+................
+...ooooooooooo..
+...oiggiiiggio..
+...oiggiiiggio..
+..oiiiiiiiiiiio.
+..oiiigiiigiiio.
+..ogggggggggggo.
+..ogggggggggggo.
+..odggdddddggdo.
+..odggdgggdggdo.
+..odggdgkgdggdo.
+..odggdgggdggdo.
+..odggdddddggdo.
+..odggdddddggdo.
+..ooooooooooooo.
+................
+@tblock 0 0
+................
+...11111111111..
+...15445554431..
+...14334443321..
+..1000000000001.
+..1000000000001.
+..1100000000011.
+..1110103010111.
+..1565666666540.
+..1454655433330.
+..1454350433330.
+..1454344333330.
+..1454333333330.
+..1343222222220.
+..0000000000000.
+................

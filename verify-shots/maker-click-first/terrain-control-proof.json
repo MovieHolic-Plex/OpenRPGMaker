@@ -1,0 +1,11 @@
+{
+  "terrainBlocked": true,
+  "propPreservesExistingRoute": true,
+  "graftedSourceBlocked": true,
+  "unreadPurposeBlocked": true,
+  "observedBridgeBypassBlocked": true,
+  "sourceId": "beodeul_city",
+  "terrainKit": "bd-harbour-lake",
+  "propKit": "bd-prop-stall_cheese_meat",
+  "observedKit": "bd-pick-aqueduct-sewer-bridge-ns-stone"
+}
