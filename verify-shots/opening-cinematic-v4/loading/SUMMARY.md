@@ -8,5 +8,3 @@
 - reduced-motion-and-skip-during-prefetch: PASS
 
 즉시 확인: 02-previous-shot-retained.png, 03-picture-retry.png, 04-reduced-skip-first-play.png
-
-
