@@ -1,341 +1,64 @@
 <!doctype html>
 <html lang="ko">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>캐릭터 칩 하네스 — 받기 / 버리기</title>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>캐릭터 GIF 공방</title>
 <style>
-  :root { --bg:#17161b; --panel:#201f26; --line:#34323d; --text:#e8e6ef; --dim:#9a97a8; --ok:#5fbf77; --bad:#e0605a; --acc:#7aa8ff; }
-  * { box-sizing:border-box; }
-  body { margin:0; background:var(--bg); color:var(--text); font:14px/1.45 system-ui, "Noto Sans KR", sans-serif; display:grid; grid-template-columns:290px 1fr; height:100vh; }
-  aside { border-right:1px solid var(--line); display:flex; flex-direction:column; min-height:0; }
-  header { padding:12px 14px; border-bottom:1px solid var(--line); }
-  header h1 { font-size:15px; margin:0 0 6px; }
-  .prog { color:var(--dim); font-size:12px; }
-  .bar { height:4px; background:var(--line); border-radius:2px; margin-top:6px; overflow:hidden; display:flex; }
-  .bar i { display:block; height:100%; }
-  .filters { padding:8px 14px; display:flex; flex-wrap:wrap; gap:6px; border-bottom:1px solid var(--line); }
-  .chip { border:1px solid var(--line); background:transparent; color:var(--dim); border-radius:12px; padding:2px 9px; font-size:12px; cursor:pointer; }
-  .chip.on { color:var(--text); border-color:var(--acc); background:#2a3350; }
-  ul { list-style:none; margin:0; padding:0; overflow:auto; flex:1; }
-  li.grp { padding:8px 14px 4px; color:var(--dim); font-size:11px; position:sticky; top:0; background:var(--bg); z-index:1; }
-  li.it { display:flex; align-items:center; gap:8px; padding:4px 14px; cursor:pointer; border-left:3px solid transparent; }
-  li.it:hover { background:#1f1e25; }
-  li.it.sel { background:#262533; border-left-color:var(--acc); }
-  .thumb { width:48px; height:64px; flex:none; background-color:#3d6b2f; background-repeat:no-repeat; image-rendering:pixelated; border-radius:3px;
-           background-size:144px 256px; background-position:-48px -128px; }
-  li.it .nm { flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-  li.it .nm small { color:var(--dim); display:block; font-size:11px; }
-  .tag { font-size:10px; padding:1px 5px; border-radius:3px; white-space:nowrap; }
-  .d-accept { background:var(--ok); color:#0d1a10; } .d-reject { background:var(--bad); color:#1d0b0a; } .t-run { color:var(--dim); border:1px solid var(--line); }
-  main { overflow:auto; padding:18px 22px 150px; }
-  .head { display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; }
-  .head h2 { margin:0; font-size:20px; }
-  .meta { color:var(--dim); }
-  .desc { color:#c9c6d6; margin:6px 0 14px; max-width:920px; }
-  .views { display:flex; gap:18px; align-items:flex-end; flex-wrap:wrap; }
-  figure { margin:0; }
-  figure img { image-rendering:pixelated; display:block; border:1px solid var(--line); border-radius:4px; }
-  figcaption { color:var(--dim); font-size:12px; margin-top:4px; }
-  .box { margin:14px 0; padding:10px 14px; background:var(--panel); border:1px solid var(--line); border-radius:6px; max-width:920px; }
-  .box .f { color:#ff9a9a; margin:3px 0; } .box .w { color:#e8d27a; margin:3px 0; } .box .m { color:var(--dim); font-size:12px; }
-  .v-pass { color:var(--ok); } .v-fail { color:var(--bad); }
-  .decide { position:fixed; left:290px; right:0; bottom:0; background:#1b1a21f2; border-top:1px solid var(--line); padding:10px 22px; display:flex; flex-direction:column; gap:8px; }
-  .row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
-  button.big { font-size:15px; padding:7px 18px; border-radius:6px; border:1px solid var(--line); cursor:pointer; color:var(--text); background:#2a2933; }
-  button.acc { background:#244a2f; border-color:#3c7a4c; } button.rej { background:#4a2826; border-color:#7a3c38; }
-  .reasons .chip.on { border-color:var(--bad); background:#3a2322; color:var(--text); }
-  input.note { flex:1; min-width:240px; background:#15141a; border:1px solid var(--line); color:var(--text); border-radius:5px; padding:6px 9px; font:inherit; }
-  .cur { color:var(--dim); font-size:13px; }
-  kbd { border:1px solid var(--line); border-bottom-width:2px; border-radius:3px; padding:0 4px; font-size:11px; color:var(--dim); }
-  details { margin-top:10px; } summary { cursor:pointer; color:var(--dim); }
-  .ba { display:flex; flex-direction:column; gap:12px; }
-  .ba .col { background:var(--panel); border:1px solid var(--line); border-radius:6px; padding:8px 12px; }
-  .ba .lbl { color:var(--dim); font-size:12px; margin-bottom:6px; }
-  img.x2 { width:144px; height:256px; } img.fx { width:192px; height:192px; } img.fs { width:96px; height:96px; opacity:.85; }
-  .strength { font-size:11px; padding:1px 6px; border-radius:3px; border:1px solid var(--line); color:#e8d27a; }
-  .dbox { border-color:#3a4a6a; } .dbox b { color:#cfe0ff; } .dbox .tags span { display:inline-block; font-size:11px; color:var(--dim); border:1px solid var(--line); border-radius:9px; padding:0 7px; margin:2px 3px 0 0; }
-  #newBtn { margin-top:8px; width:100%; }
-  .modal { position:fixed; inset:0; background:#000a; display:flex; align-items:center; justify-content:center; z-index:10; }
-  .modal[hidden] { display:none; }
-  .modal .card { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:16px 18px; width:min(560px, 94vw); max-height:94vh; overflow:auto; display:flex; flex-direction:column; gap:10px; }
-  .modal h3 { margin:0; font-size:16px; }
-  .modal label { color:var(--dim); font-size:12px; }
-  .modal input[type=text], .modal textarea { width:100%; background:#15141a; border:1px solid var(--line); color:var(--text); border-radius:5px; padding:6px 9px; font:inherit; }
-  .modal textarea { height:64px; resize:vertical; }
-  .modal .prev { image-rendering:pixelated; max-width:100%; max-height:240px; object-fit:contain; align-self:flex-start; background:#3d6b2f; border-radius:4px; }
-  .modal .st { display:flex; gap:8px; } .modal .st .chip.on { border-color:#e8d27a; background:#3a3420; color:var(--text); }
-  .modal .msg { color:var(--dim); font-size:12px; white-space:pre-wrap; } .modal .msg.err { color:#ff9a9a; }
-  div.fx.wait { width:192px; height:192px; display:flex; align-items:center; justify-content:center; color:var(--dim); border:1px dashed var(--line); border-radius:4px; }
-  .library-controls { padding:8px 14px; border-bottom:1px solid var(--line); display:flex; flex-wrap:wrap; gap:6px; }
-  #search { width:100%; min-width:0; margin:4px 0; }
-  .gallery { display:grid; grid-template-columns:repeat(auto-fill,minmax(185px,1fr)); gap:12px; margin-top:18px; }
-  .gallery-card { color:var(--text); font:inherit; text-align:left; cursor:pointer; border:1px solid var(--line); border-radius:8px; background:var(--panel); padding:12px; }
-  .gallery-card:hover { border-color:var(--acc); }
-  .gallery-card .thumb { width:72px; height:96px; background-size:216px 384px; background-position:-72px -192px; margin:0 auto 12px; }
-  .gallery-card strong { display:block; font-size:13px; min-height:38px; }
-  .gallery-card small { display:block; color:var(--dim); margin-top:5px; }
-  .gallery-card .tags { font-size:11px; color:var(--dim); margin-top:6px; }
-  a { color:var(--acc); }
+:root{color-scheme:dark;--bg:#15171b;--panel:#202329;--line:#343943;--dim:#a3aab6;--fg:#edf0f5;--green:#88d9a1;--red:#f19f9a;--accent:#a2baff}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.5 system-ui,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--fg);padding:9px 14px}button:hover{border-color:var(--accent)}button:disabled{opacity:.45;cursor:default}.keep{background:#224831;color:var(--green);border-color:#407755}.trash{background:#482d2e;color:var(--red);border-color:#785253}button.on{border-color:var(--accent);color:var(--accent)}header{padding:22px 28px;border-bottom:1px solid var(--line);display:flex;gap:18px;justify-content:space-between;align-items:center;flex-wrap:wrap}h1{font-size:21px;margin:0}p{margin:5px 0;color:var(--dim)}.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.toolbar{position:sticky;top:0;z-index:2;padding:12px 28px;background:#15171bf2;border-bottom:1px solid var(--line)}input,select,textarea{background:var(--panel);color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:8px}select{max-width:260px}#search{max-width:200px}#stats{color:var(--dim);margin-left:auto}.production{margin:16px 28px 0;background:var(--panel);padding:12px 16px;border:1px solid var(--line);border-radius:10px}.production strong{font-weight:500}.progress{height:5px;background:var(--line);margin:9px 0;border-radius:5px;overflow:hidden}.progress i{display:block;height:100%;background:var(--accent)}main{padding:22px 28px 80px}.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,370px),1fr));gap:16px}.card{border:1px solid var(--line);border-radius:12px;background:var(--panel);overflow:hidden}.card-head{display:flex;justify-content:space-between;padding:12px 16px;gap:8px;align-items:center}.card-head h2{font-size:15px;margin:0}.badge{font-size:12px;color:var(--dim);white-space:nowrap}.card.kept{border-color:#407755}.card.rejected{opacity:.7;border-color:#785253}.walk{display:block;width:100%;image-rendering:pixelated;background:#557b3b;min-height:120px;object-fit:contain}.waiting{display:grid;place-items:center;height:160px;color:var(--dim)}.card-foot{padding:12px 16px;display:flex;gap:8px}.card-foot .keep,.card-foot .trash{flex:1}.inspect{padding:10px 16px}.inspect img{display:block;image-rendering:pixelated;max-width:100%;margin:8px 0}.inspect .sheet{width:144px}.inspect summary{cursor:pointer;color:var(--dim)}.empty{padding:65px 10px;text-align:center;color:var(--dim)}#notice{color:var(--accent);min-height:22px;padding:0 28px}.error{color:var(--red)!important}.modal{position:fixed;inset:0;background:#000b;z-index:5;display:grid;place-items:center;padding:16px}.modal[hidden]{display:none}.modal form{width:min(540px,100%);max-height:95vh;overflow:auto;padding:24px;background:var(--panel);border:1px solid var(--line);border-radius:14px;display:grid;gap:12px}.modal h2{margin:0;font-size:20px}.modal label{display:grid;gap:6px;color:var(--dim)}textarea{min-height:85px;resize:vertical}.prev{image-rendering:pixelated;max-height:180px;max-width:100%;object-fit:contain}.focus .gallery{max-width:640px;margin:auto;grid-template-columns:1fr}.focus .card-foot{position:sticky;bottom:0;background:var(--panel)}kbd{font:11px system-ui;color:var(--dim)}a{color:var(--accent)}@media(max-width:650px){header,.toolbar{padding:14px}main{padding:16px 14px 60px}.production{margin:14px 14px 0}#stats{margin-left:0;width:100%}.toolbar .row{gap:6px}button{padding:8px 10px}.gallery{gap:14px}}
 </style>
 </head>
 <body>
-<aside>
-  <header>
-    <h1>캐릭터 칩 — 받기 / 버리기</h1>
-    <div class="prog" id="prog"></div>
-    <div class="bar" id="bar"></div>
-    <button class="big" id="newBtn">그림 넣어 고치기…</button>
-  </header>
-  <div class="filters" id="filters"></div>
-  <div class="library-controls">
-    <button class="chip" id="gridBtn">모아 보기</button><button class="chip" id="detailBtn">하나씩 보기</button>
-    <input class="note" id="search" type="search" placeholder="이름·외형·역할 검색" aria-label="캐릭터 검색">
-    <div id="genres"></div>
-  </div>
-  <ul id="list"></ul>
-</aside>
-<div class="modal" id="modal" hidden><div class="card">
-  <h3>칩 그림 넣어 고치기</h3>
-  <div class="msg">RPG Maker 2000/2003 CharSet(72×128 한 명 또는 288×256 여덟 명). 배경은 왼쪽 위 픽셀 색이나 투명. 캐릭터가 있는 칸마다, 고른 강도마다 하나씩 그린다.</div>
-  <input type="file" id="nFile" accept="image/png,image/gif,image/bmp">
-  <img id="nPrev" class="prev" hidden>
-  <label>이름</label><input type="text" id="nName" placeholder="예: 조선 병사">
-  <label>얼마나 고칠까 (여러 개 고르면 강도마다 하나씩)</label>
-  <div class="st" id="nSt">
-    <button class="chip" data-s="weak" title="모양은 그대로, 색만 바꾼다(실루엣 그대로)">약함 — 색만</button>
-    <button class="chip on" data-s="normal" title="머리 모양·옷 무늬까지. 새 소지품은 안 된다">보통 — 머리·옷 무늬</button>
-    <button class="chip" data-s="strong" title="머리·옷 형태와 작은 장신구까지. 큰 무기·날개는 안 된다">강함 — 다른 사람</button>
-  </div>
-  <label>무엇으로 바꿀지 (선택 — 비우면 작업자가 강도 안에서 정한다)</label>
-  <textarea id="nBrief" placeholder="예: 같은 병사인데 푸른 군복의 다른 부대 / 여자 병사로"></textarea>
-  <div class="row"><button class="big acc" id="nGo">그리기 시작</button><button class="big" id="nCancel">닫기</button></div>
-  <div class="msg" id="nMsg"></div>
-</div></div>
-<main id="main"><p class="cur">불러오는 중…</p></main>
-<div class="decide" id="decide" hidden>
-  <div class="row">
-    <button class="big acc" id="bAcc">받기 <kbd>A</kbd></button>
-    <button class="big rej" id="bRej">버리기 <kbd>R</kbd></button>
-    <button class="big" id="bClr">결정 지우기</button>
-    <span class="cur" id="curDec"></span>
-    <span class="cur" style="margin-left:auto"><kbd>↑</kbd><kbd>↓</kbd> 이동 · 버리기는 이유를 누르고 <kbd>Enter</kbd> (이유 없이 R 두 번도 됨)</span>
-  </div>
-  <div class="row reasons" id="reasons"></div>
-  <div class="row"><input class="note" id="note" placeholder="메모(선택) — 어디가 왜 마음에 안 드는지 적으면 다음 지시문에 반영한다"></div>
-</div>
+<header><div><h1>캐릭터 GIF 공방</h1><p>AI가 만들면, GIF를 보고 남기거나 폐기하세요.</p></div><div class="row"><button id="download">남긴 캐릭터 다운로드</button><button class="keep" id="generate">새 캐릭터 만들기</button></div></header>
+<section class="toolbar"><div class="row"><div id="tabs" class="row"><button data-tab="todo" class="on">검토 대기</button><button data-tab="accept">남김</button><button data-tab="reject">폐기</button><button data-tab="all">전체</button></div><select id="runs" aria-label="실행 선택"><option value="all">모든 실행</option></select><input id="search" type="search" placeholder="캐릭터 찾기" aria-label="캐릭터 검색"><button id="view">하나씩 보기</button><span id="stats"></span></div></section>
+<div id="production"></div><p id="notice" role="status" aria-live="polite"></p>
+<main id="main"><p class="empty">GIF 불러오는 중…</p></main>
+<div class="modal" id="modal" hidden><form id="form"><h2>AI 자유 저작</h2><p>GPT 6.1 sol high가 인물과 복식을 정하고 걷는 GIF를 만듭니다.</p><label>몇 명 만들까요?<input id="count" type="number" min="1" max="500" value="100" required></label><label>전체 방향 (선택)<textarea id="prompt" placeholder="비우면 한국풍·판타지·현대·SF를 섞어 자유롭게 만듭니다."></textarea></label><label>참고 캐릭터 시트 (선택)<input id="file" type="file" accept="image/png,image/gif,image/bmp"></label><p>72×128 한 명 / 288×256 여덟 명. 비우면 기본 캐릭터를 뼈대로 만듭니다.</p><img id="preview" class="prev" hidden><div class="row"><button class="keep" id="start" type="submit">생성 시작</button><button id="close" type="button">닫기</button></div><p id="formMsg" role="status"></p></form></div>
 <script>
-let S = { items: [], reasons: [] }, sel = null, rej = new Set(), armed = false;
-const params = new URLSearchParams(location.search);
-const F = { show: ['todo','accept','reject','all'].includes(params.get('show')) ? params.get('show') : 'todo', run: params.get('run') || 'all',
-  view: new URLSearchParams(location.search).get('view') === 'grid' ? 'grid' : 'detail', genre: 'all', q: '' };
-const STL = { weak: '약함', normal: '보통', strong: '강함' };
-const $ = (id) => document.getElementById(id);
-const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-const fu = (it, p) => `/f/${it.run}/${it.dir}/${p}?t=${encodeURIComponent(it.gate?.sourceSha256 || '')}`;
-const genreOf = (it) => ['한국풍', '판타지', '현대', 'SF'].find((g) => it.name.includes(g)) || '기타';
-
-async function load(keep) {
-  const r = await fetch('/api/state');
-  S = await r.json();
-  if (F.run !== 'all' && !S.items.some((i) => i.run === F.run)) F.run = 'all';
-  if (!keep || !S.items.find((i) => i.id === sel)) sel = (visible()[0] || {}).id || null;
-  render();
-}
-function visible() {
-  return S.items.filter((it) => {
-    if (F.run !== 'all' && it.run !== F.run) return false;
-    if (F.genre !== 'all' && genreOf(it) !== F.genre) return false;
-    if (F.q && ![it.name, it.desc?.label, it.desc?.appearance, it.desc?.role, ...(it.desc?.tags || [])].join(' ').toLowerCase().includes(F.q.toLowerCase())) return false;
-    const d = it.decision ? it.decision.decision : null;
-    if (F.show === 'todo') return it.status !== 'failed' && !d;
-    if (F.show === 'accept') return d === 'accept';
-    if (F.show === 'reject') return d === 'reject';
-    return true;
-  });
-}
-function render() {
-  const scoped = S.items.filter((i) => F.run === 'all' || i.run === F.run);
-  const done = scoped.filter((i) => i.status === 'done');
-  const acc = done.filter((i) => i.decision && i.decision.decision === 'accept').length;
-  const rejn = done.filter((i) => i.decision && i.decision.decision === 'reject').length;
-  const running = scoped.filter((i) => i.status === 'running').length;
-  $('prog').textContent = `완성 ${done.length} · 받음 ${acc} · 버림 ${rejn} · 남음 ${done.length - acc - rejn}` + (running ? ` · 그리는 중 ${running}` : '');
-  const t = Math.max(done.length, 1);
-  $('bar').innerHTML = `<i style="width:${acc / t * 100}%;background:var(--ok)"></i><i style="width:${rejn / t * 100}%;background:var(--bad)"></i>`;
-  const runs = [...new Set(S.items.map((i) => i.run))];
-  const chips = [['todo', '남은 것'], ['accept', '받음'], ['reject', '버림'], ['all', '전부']]
-    .map(([k, n]) => `<button class="chip ${F.show === k ? 'on' : ''}" data-show="${k}">${n}</button>`).join('')
-    + `<button class="chip ${F.run === 'all' ? 'on' : ''}" data-run="all">모든 실행</button>`
-    + runs.map((r) => `<button class="chip ${F.run === r ? 'on' : ''}" data-run="${esc(r)}">${esc(r)}</button>`).join('');
-  $('filters').innerHTML = chips;
-  $('filters').querySelectorAll('[data-show]').forEach((b) => (b.onclick = () => { F.show = b.dataset.show; sel = (visible()[0] || {}).id; render(); }));
-  $('filters').querySelectorAll('[data-run]').forEach((b) => (b.onclick = () => { F.run = b.dataset.run; sel = (visible()[0] || {}).id; render(); }));
-  $('gridBtn').classList.toggle('on', F.view === 'grid');
-  $('detailBtn').classList.toggle('on', F.view === 'detail');
-  const genres = ['all', ...new Set(scoped.map(genreOf))];
-  $('genres').innerHTML = genres.map((g) => `<button class="chip ${F.genre === g ? 'on' : ''}" data-genre="${esc(g)}">${g === 'all' ? '모든 장르' : esc(g)}</button>`).join(' ');
-  $('genres').querySelectorAll('[data-genre]').forEach((b) => b.onclick = () => { F.genre = b.dataset.genre; sel = (visible()[0] || {}).id; render(); });
-  const vis = visible();
-  let html = '', grp = null;
-  for (const it of vis) {
-    if (it.run !== grp) { grp = it.run; html += `<li class="grp">${esc(grp)}</li>`; }
-    const d = it.decision ? it.decision.decision : null;
-    const tag = it.status !== 'done' ? `<span class="tag t-run">${it.status === 'running' ? '그리는 중' : '실패'}</span>`
-      : d ? `<span class="tag d-${d}">${d === 'accept' ? '받음' : '버림'}</span>` : '';
-    const th = it.status === 'done' ? `style="background-image:url('${fu(it, 'views/sheet.png')}')"` : '';
-    html += `<li class="it ${it.id === sel ? 'sel' : ''}" data-id="${esc(it.id)}"><div class="thumb" ${th}></div>
-      <div class="nm">${esc(it.name)}<small>${it.desc ? esc(it.desc.label) + ' · ' : ''}${esc(it.gender)}${it.gender ? ' · ' : ''}${esc(it.dir.split('__')[1])}${it.strength !== 'normal' || it.upload ? ' · 강도 ' + esc(STL[it.strength]) : ''}</small></div>${tag}</li>`;
+const $=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const params=new URLSearchParams(location.search);
+let state={items:[],runs:[]}, tab=['todo','accept','reject','all'].includes(params.get('show'))?params.get('show'):'todo', run=params.get('run')||'all', focus=params.get('view')==='detail', current=null, query='', image=null, busy=false, loading=false, initial=true;
+const seen=new Set();
+const binding=it=>Object.fromEntries(['version','sourceSha256','baseSha256','strength'].map(k=>[k,it.gate?.[k]]));
+const url=(it,file)=>`/f/${encodeURIComponent(it.run)}/${encodeURIComponent(it.dir)}/${file}?t=${encodeURIComponent(it.gate?.sourceSha256||'')}`;
+const name=it=>it.desc?.label||it.name;
+function notice(text,error=false){$('notice').textContent=text;$('notice').classList.toggle('error',error)}
+async function post(path,body){const response=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const result=await response.json();if(!response.ok)throw Error(result.error||'저장 실패');return result}
+function scoped(){return state.items.filter(it=>run==='all'||it.run===run)}
+function visible(){return scoped().filter(it=>{const decision=it.decision?.decision;if(tab==='todo'&&(decision||it.status!=='done'))return false;if(tab==='accept'&&decision!=='accept')return false;if(tab==='reject'&&decision!=='reject')return false;return [name(it),it.desc?.appearance,it.desc?.role,...(it.desc?.tags||[])].join(' ').toLowerCase().includes(query.toLowerCase())})}
+async function load(){if(loading)return;loading=true;try{const response=await fetch('/api/state');if(!response.ok)throw Error('불러오기 실패');state=await response.json();if(initial){initial=false;if(!params.has('run')&&state.runs.length)run=state.runs[0].run}render()}catch(error){notice(error.message,true)}finally{loading=false}}
+function render(){
+  const all=scoped(), kept=all.filter(it=>it.decision?.decision==='accept').length, rejected=all.filter(it=>it.decision?.decision==='reject').length, todo=all.filter(it=>it.status==='done'&&!it.decision).length;
+  $('stats').textContent=`대기 ${todo} · 남김 ${kept} · 폐기 ${rejected}`;
+  $('download').disabled=!kept||busy;
+  $('tabs').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.tab===tab));
+  const runs=[...new Set([...state.runs.map(r=>r.run),...state.items.map(it=>it.run)])];
+  const opts='<option value="all">모든 실행</option>'+runs.map(r=>`<option value="${esc(r)}">${esc(r)}</option>`).join('');
+  if($('runs').innerHTML!==opts)$('runs').innerHTML=opts;$('runs').value=run;
+  $('view').textContent=focus?'모아 보기':'하나씩 보기';$('main').classList.toggle('focus',focus);
+  const phase={running:'AI가 그리는 중',pausing:'현재 묶음 완성 후 일시 정지',paused:'일시 정지됨',completed:'생성 작업 종료',failed:'작업 오류',interrupted:'작업 중단됨'};
+  $('production').innerHTML=state.runs.filter(r=>run==='all'||r.run===run).slice(0,run==='all'?3:1).map(r=>`<section class="production"><div class="row"><strong>${esc(phase[r.phase]||r.phase)} · ${r.ready}/${r.planned}명 GIF</strong><span class="badge">결손 차단 ${r.blocked}명</span><button data-control="${r.phase==='running'?'pause':'resume'}" data-run="${esc(r.run)}" ${r.phase==='pausing'||r.phase==='completed'?'disabled':''}>${r.phase==='running'||r.phase==='pausing'?'일시 정지':'이어 만들기'}</button></div><div class="progress"><i style="width:${r.ready/Math.max(1,r.planned)*100}%"></i></div>${r.error?`<p class="error">${esc(r.error)}</p>`:''}<p>완성되는 대로 이곳에 나타납니다. 결손 차단 후보는 검토 대기열에 넣지 않습니다.</p></section>`).join('');
+  $('production').querySelectorAll('[data-control]').forEach(b=>b.onclick=async()=>{b.disabled=true;try{await post('/api/'+b.dataset.control,{run:b.dataset.run});notice(b.dataset.control==='pause'?'현재 묶음이 끝나면 생성을 멈춥니다.':'생성을 재개했습니다.');await load()}catch(e){notice(e.message,true);b.disabled=false}});
+  let rows=visible();if(focus){if(!rows.some(it=>it.id===current))current=rows[0]?.id;rows=rows.filter(it=>it.id===current)}
+  const existing=new Map([...$('main').querySelectorAll('[data-card]')].map(el=>[el.dataset.card,el]));
+  if(!rows.length){$('main').innerHTML=`<div class="empty">${tab==='todo'?'지금 검토할 GIF가 없습니다. 새 캐릭터가 완성되면 여기에 나타납니다.':'표시할 캐릭터가 없습니다.'}</div>`;return}
+  if(!$('main').querySelector('.gallery'))$('main').innerHTML='<div class="gallery"></div>';
+  const gallery=$('main').querySelector('.gallery');const ids=new Set(rows.map(it=>it.id));for(const [id,el]of existing)if(!ids.has(id))el.remove();
+  for(const it of rows){const key=JSON.stringify([it.status,it.gate?.sourceSha256,it.render_fresh,it.decision,it.desc,it.quality]);let card=existing.get(it.id);if(card?.dataset.version===key)continue;
+    const d=it.decision?.decision, ready=it.status==='done'&&it.render_fresh, canKeep=ready&&it.gate?.ok&&(it.review_mode==='human'?true:it.review&&!it.review.stale&&!it.review.discard&&!it.review.fatal?.length);
+    const html=`<div class="card-head"><h2>${esc(name(it))}</h2><span class="badge">${d==='accept'?'남김':d==='reject'?'폐기':ready?'검토 대기':it.status==='running'?'그리는 중':'작업 미완료'}</span></div>${ready?`<img class="walk" src="${url(it,'views/walk.gif')}" alt="${esc(name(it))} 네 방향 걷기 GIF">`:`<div class="waiting">${it.status==='running'?'GIF를 만드는 중…':'아직 완성된 GIF가 없습니다'}</div>`}<div class="card-foot"><button class="keep" data-action="accept" ${!canKeep?'disabled':''}>남기기 <kbd>A</kbd></button><button class="trash" data-action="reject" ${!ready?'disabled':''}>폐기 <kbd>R</kbd></button>${d?'<button data-action="clear" title="이 선택 되돌리기">되돌리기</button>':''}</div>${ready?`<details class="inspect"><summary>게임 속 걷기 · 원본 비교 · 시트</summary><img src="${url(it,'views/stroll.gif')}" alt="칸 위를 걷기"><p>${esc(it.desc?.appearance||'')}</p><p>원본</p><img src="${url(it,'base-views/walk.gif')}" alt="원본 네 방향 걷기"><img class="sheet" src="${url(it,'views/sheet.png')}" alt="12프레임 시트">${it.review_mode==='legacy'?'<p>이전 검수 방식으로 만든 후보입니다.</p>':''}${it.decision_stale?'<p class="error">그림이 바뀌어 이전 선택을 다시 확인해야 합니다.</p>':''}</details>`:''}`;
+    if(!card){card=document.createElement('article');card.dataset.card=it.id;gallery.append(card)}card.className='card'+(d==='accept'?' kept':d==='reject'?' rejected':'');card.dataset.version=key;card.innerHTML=html;
+    card.querySelector('.walk')?.addEventListener('load',()=>seen.add(it.id+':'+it.gate.sourceSha256),{once:true});
+    card.querySelectorAll('[data-action]').forEach(b=>b.onclick=()=>decide(it,b.dataset.action));
   }
-  $('list').innerHTML = html || '<li class="grp">없음</li>';
-  $('list').querySelectorAll('li.it').forEach((li) => (li.onclick = () => { sel = li.dataset.id; F.view = 'detail'; render(); }));
-  const cur = $('list').querySelector('li.sel');
-  if (cur) cur.scrollIntoView({ block: 'nearest' });
-  renderMain();
 }
-let lastMain = '';
-function renderMain() {
-  if (F.view === 'grid') {
-    const rows = visible();
-    const key = JSON.stringify(['grid', F.run, F.genre, F.q, rows.map((i) => [i.id, i.status, i.gate?.sourceSha256, i.gate?.ok, i.review?.score, i.review?.stale, i.desc?.at, i.decision])]);
-    if (key === lastMain) return;
-    lastMain = key;
-    $('decide').hidden = true;
-    $('main').innerHTML = `<div class="head"><h2>캐릭터 모아 보기 · ${rows.length}명</h2></div>
-      <p class="cur">캐릭터를 누르면 원본 비교·4방향 걷기·설명·검수 결과를 볼 수 있습니다.</p>
-      <div class="gallery">${rows.map((it) => `<button class="gallery-card" data-id="${esc(it.id)}">
-        <div class="thumb" ${it.render_fresh ? `style="background-image:url('${fu(it, 'views/sheet.png')}')"` : ''}></div>
-        <strong>${esc(it.name)}</strong><small>${esc(it.desc?.label || (it.status === 'running' ? '그리는 중…' : ''))}</small>
-        <small>${it.review ? `시각 검수 ${esc(it.review.score)}/10 · ${esc(it.review.verdict)}` : it.status === 'running' ? esc(it.label) : '시각 검수 대기'}</small>
-        <div class="tags">${esc((it.desc?.tags || []).slice(0,4).join(' · '))}</div></button>`).join('')}</div>`;
-    $('main').querySelectorAll('.gallery-card').forEach((b) => b.onclick = () => { sel = b.dataset.id; F.view = 'detail'; render(); $('main').scrollTop = 0; });
-    return;
-  }
-  const it = S.items.find((i) => i.id === sel);
-  // 주기 새로고침이 GIF 를 처음부터 다시 돌리거나 고르던 이유를 지우지 않게, 바뀐 게 없으면 그대로 둔다
-  const key = JSON.stringify([sel, it && it.status, it?.gate?.sourceSha256, it?.review?.stale, it?.render_fresh, it && it.decision, it && it.review && it.review.score, it && it.face, it && it.face_gen && it.face_gen.at, it && it.desc && it.desc.at]);
-  if (key === lastMain) return;
-  lastMain = key;
-  if (!it) { $('main').innerHTML = '<p class="cur">고를 것이 없습니다.</p>'; $('decide').hidden = true; return; }
-  if (it.status !== 'done') {
-    $('main').innerHTML = `<div class="head"><h2>${esc(it.name)}</h2><span class="meta">${esc(it.label)} · ${it.status === 'running' ? '그리는 중…' : '결과 없음'}</span></div>`;
-    $('decide').hidden = true; return;
-  }
-  const g = it.gate || { ok: true, fails: [], warns: [], metrics: {} };
-  const rv = it.review;
-  const rvHtml = rv ? `<div class="box">검수자(Sonnet 5.5 medium, 참고용) <b class="${rv.verdict === 'PASS' ? 'v-pass' : 'v-fail'}">${esc(rv.verdict)}</b> · 점수 ${esc(rv.score)}
-      ${(rv.issues || []).map((i) => `<div class="${['high', 'mid'].includes(i.severity) ? 'f' : 'w'}">[${esc(i.severity)}] ${esc(i.where)} — ${esc(i.what)}</div>`).join('')}
-      ${rv.good && rv.good.length ? `<div class="m">잘 된 점: ${esc(rv.good.join(' / '))}</div>` : ''}</div>` : '<div class="box m">시각 검수 결과 없음</div>';
-  const gHtml = `<div class="box">기계 검수 <b class="${g.ok ? 'v-pass' : 'v-fail'}">${g.ok ? '통과' : '불통과'}</b>
-      ${g.fails.map((x) => `<div class="f">✗ ${esc(x)}</div>`).join('')}${g.warns.map((x) => `<div class="w">△ ${esc(x)}</div>`).join('')}</div>`;
-  $('main').innerHTML = `<div class="head"><h2>${esc(it.name)}</h2><span class="strength">강도 ${esc(STL[it.strength] || it.strength)}</span><span class="meta">${esc(it.gender)} · 뼈대 ${esc(it.base_label)} · ${esc(it.label)} · ${esc(it.run)}</span></div>
-    <div class="desc">${esc(it.brief_text || '(지시 없음 — 작업자가 강도 안에서 정함)')}</div>
-    ${it.desc ? `<div class="box dbox"><b>${esc(it.desc.label)}</b> <span class="m">· ${esc(it.desc.gender || '')} · ${esc((it.desc.attributes || {}).age || '')} · ${esc((it.desc.attributes || {}).hair || '')} · ${esc(it.desc.role || '')}</span>
-      <div>${esc(it.desc.appearance || '')}</div>
-      ${it.desc.fits ? `<div class="m">어울리는 곳: ${esc(it.desc.fits)}</div>` : ''}
-      <div class="tags">${(it.desc.tags || []).map((t) => `<span>${esc(t)}</span>`).join('')}</div>
-      <div class="m">설명 — ${esc(it.desc.by || '')}가 그림만 보고 씀 · AI 조수가 NPC 를 고를 때 읽는다</div></div>` : '<div class="box dbox m">설명 아직 없음</div>'}
-    <div class="ba">
-      <div class="col"><div class="lbl">비포 — ${esc(it.base_label)} 원본</div>
-        <div class="views">
-          <figure><img src="${fu(it, 'base-views/walk.gif')}"><figcaption>걷기 4방향 (4배)</figcaption></figure>
-          <figure><img src="${fu(it, 'base-views/turn.gif')}"><figcaption>돌기</figcaption></figure>
-          <figure><img src="${fu(it, 'base-views/sheet.png')}" class="x2"><figcaption>시트 (2배)</figcaption></figure>
-          ${it.face ? `<figure><img src="${fu(it, 'face/ref/base_face_x4.png')}" class="fx"><figcaption>얼굴</figcaption></figure>` : ''}
-        </div></div>
-      <div class="col"><div class="lbl">애프터 — 새 캐릭터</div>
-        <div class="views">
-          <figure><img src="${fu(it, 'views/walk.gif')}"><figcaption>걷기 4방향 (4배)</figcaption></figure>
-          <figure><img src="${fu(it, 'views/turn.gif')}"><figcaption>돌기</figcaption></figure>
-          <figure><img src="${fu(it, 'views/sheet.png')}" class="x2"><figcaption>시트 (2배)</figcaption></figure>
-          ${!it.has_face ? `<figure><div class="fx wait">${it.upload ? '올린 그림 — 짝 얼굴 없음' : '짝 얼굴 뼈대 없음'}</div></figure>` : it.face_gen ? `<figure><img src="${fu(it, 'face_gen/face_x4.png') + '&v=' + encodeURIComponent(it.face_gen.at || '')}" class="fx"><figcaption>얼굴 (생성 ${esc(it.face_gen.version || 'v1')}${it.face_gen.angle != null ? ` · 각도 <b class="${it.face_gen.ok ? 'v-pass' : 'v-fail'}">${it.face_gen.angle}/10</b>` : it.face_gen.pose != null ? ` · 골격 일치 <b class="${it.face_gen.ok ? 'v-pass' : 'v-fail'}">${it.face_gen.pose}</b>` : ''})</figcaption></figure>` : '<figure><div class="fx wait">생성 얼굴 만드는 중…</div></figure>'}
-          ${it.face === 'done' ? `<figure><img src="${fu(it, 'face/views/face_x4.png')}" class="fs"><figcaption>얼굴 (손 도트)</figcaption></figure>` : ''}
-        </div></div>
-    </div>
-    <div class="views" style="margin-top:14px">
-      <figure><img src="${fu(it, 'views/context.png')}"><figcaption>같은 칩셋 원본 캐릭터 옆에 세움 (3배)</figcaption></figure>
-      <figure><img src="${fu(it, 'views/stroll.gif')}"><figcaption>칸 위를 걷기 (3배)</figcaption></figure>
-    </div>
-    ${rvHtml}${gHtml}
-    <details><summary>8배 시트 · 필름 띠</summary><div class="views"><img src="${fu(it, 'views/sheet_x8.png')}" style="image-rendering:pixelated"><img src="${fu(it, 'views/strip.png')}" style="image-rendering:pixelated;max-width:640px"></div></details>`;
-  $('decide').hidden = false;
-  $('bAcc').disabled = !g.ok || !rv || !!rv?.discard || !!rv?.fatal?.length || !!rv?.stale || !it.render_fresh;
-  const d = it.decision;
-  rej = new Set(d && d.decision === 'reject' ? d.reasons : []);
-  armed = false;
-  $('note').value = d ? d.note || '' : '';
-  $('curDec').textContent = d ? `현재: ${d.decision === 'accept' ? '받음' : '버림'}${d.reasons && d.reasons.length ? ' (' + d.reasons.join(', ') + ')' : ''}` : '';
-  $('reasons').innerHTML = S.reasons.map((r) => `<button class="chip ${rej.has(r) ? 'on' : ''}">${esc(r)}</button>`).join('');
-  $('reasons').querySelectorAll('.chip').forEach((b) => (b.onclick = () => { const r = b.textContent; rej.has(r) ? rej.delete(r) : rej.add(r); b.classList.toggle('on'); armed = true; }));
-}
-async function decide(decision) {
-  if (F.view !== 'detail') return;
-  const it = S.items.find((i) => i.id === sel);
-  if (!it || it.status !== 'done') return;
-  const vis = visible(), idx = vis.findIndex((i) => i.id === sel);
-  const response = await fetch('/api/decide', { method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ id: it.id, decision, reasons: decision === 'reject' ? [...rej] : [], note: $('note').value }) });
-  if (!response.ok) { const error=await response.json(); $('curDec').textContent=error.error || '결정을 저장하지 못했습니다'; return; }
-  const r = await fetch('/api/state'); S = await r.json();
-  const nv = visible();
-  sel = (nv.find((i, k) => k >= idx && i.id !== it.id) || nv[nv.length - 1] || {}).id || it.id;
-  if (F.show === 'all') sel = (vis[idx + 1] || vis[idx]).id;
-  render();
-}
-function move(k) {
-  const vis = visible(), i = vis.findIndex((x) => x.id === sel);
-  const n = vis[Math.min(vis.length - 1, Math.max(0, i + k))];
-  if (n) { sel = n.id; render(); }
-}
-$('bAcc').onclick = () => decide('accept');
-$('bRej').onclick = () => decide('reject');
-$('bClr').onclick = () => decide('clear');
-$('gridBtn').onclick = () => { F.view = 'grid'; render(); };
-$('detailBtn').onclick = () => { F.view = 'detail'; render(); };
-$('search').oninput = () => { F.q = $('search').value.trim(); sel = (visible()[0] || {}).id; render(); };
-// 그림 넣기
-let nData = null;
-$('newBtn').onclick = () => { $('modal').hidden = false; $('nMsg').textContent = ''; };
-$('nCancel').onclick = () => { $('modal').hidden = true; };
-$('nSt').querySelectorAll('.chip').forEach((b) => (b.onclick = () => b.classList.toggle('on')));
-$('nFile').onchange = () => {
-  const f = $('nFile').files[0];
-  if (!f) return;
-  if (!$('nName').value) $('nName').value = f.name.replace(/\.[^.]+$/, '');
-  const rd = new FileReader();
-  rd.onload = () => { nData = rd.result; $('nPrev').src = nData; $('nPrev').hidden = false;
-    $('nPrev').onload = () => { $('nPrev').style.width = Math.min(520, $('nPrev').naturalWidth * 2) + 'px'; }; };
-  rd.readAsDataURL(f);
-};
-$('nGo').onclick = async () => {
-  const strengths = [...$('nSt').querySelectorAll('.chip.on')].map((b) => b.dataset.s);
-  if (!nData) { $('nMsg').className = 'msg err'; $('nMsg').textContent = '그림을 고르세요'; return; }
-  if (!strengths.length) { $('nMsg').className = 'msg err'; $('nMsg').textContent = '강도를 하나 이상 고르세요'; return; }
-  $('nGo').disabled = true; $('nMsg').className = 'msg'; $('nMsg').textContent = '넣는 중…';
-  try {
-    const r = await fetch('/api/new', { method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ image: nData, name: $('nName').value, strengths, brief: $('nBrief').value }) });
-    const j = await r.json();
-    if (!r.ok) throw new Error(j.error || r.status);
-    const bad = Object.entries(j.selfcheck || {}).filter(([, f]) => f.length);
-    $('nMsg').textContent = `칸 ${j.slots.map((n) => n + 1).join(', ')} × 강도 ${strengths.map((s) => STL[s]).join('·')} = ${j.briefs.length}명 그리기 시작 (실행 ${j.run}). 한 명에 10~20분.`
-      + (bad.length ? `\n원본 자체 검사 경고: ${bad.map(([n, f]) => (+n + 1) + '번 ' + f.join('; ')).join(' / ')}` : '');
-    F.run = j.run; F.show = 'all'; await load();
-  } catch (e) { $('nMsg').className = 'msg err'; $('nMsg').textContent = '실패: ' + e.message; }
-  $('nGo').disabled = false;
-};
-document.addEventListener('keydown', (e) => {
-  if (!$('modal').hidden) { if (e.key === 'Escape') $('modal').hidden = true; return; }
-  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') { if (e.target.id === 'note' && e.key === 'Enter') decide('reject'); return; }
-  if (F.view === 'grid') return;
-  if (e.key === 'ArrowDown') { move(1); e.preventDefault(); }
-  else if (e.key === 'ArrowUp') { move(-1); e.preventDefault(); }
-  else if (e.key === 'a' || e.key === 'A') decide('accept');
-  else if (e.key === 'r' || e.key === 'R') { if (armed || rej.size) decide('reject'); else { armed = true; $('curDec').textContent = '버리려면 R 한 번 더 (또는 이유를 고르고 Enter)'; } }
-  else if (e.key === 'Enter' && (armed || rej.size)) decide('reject');
-});
-load();
-setInterval(() => { if ($('modal').hidden && document.activeElement.tagName !== 'INPUT' && !armed && !rej.size) load(true); }, 20000);
+async function decide(it,decision){if(busy)return;if(decision!=='clear'&&!seen.has(it.id+':'+it.gate.sourceSha256)){notice('GIF를 불러온 다음 결정해 주세요.',true);return}busy=true;const rows=visible(),idx=rows.findIndex(i=>i.id===it.id);try{await post('/api/decide',{id:it.id,decision,inspected:binding(it)});current=rows[idx+1]?.id||rows[idx-1]?.id;notice(`${name(it)} · ${decision==='accept'?'남겼습니다':decision==='reject'?'폐기했습니다':'선택을 되돌렸습니다'}`);await load()}catch(error){notice(error.message,true)}finally{busy=false;render()}}
+$('tabs').querySelectorAll('button').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;current=null;render()});$('runs').onchange=()=>{run=$('runs').value;current=null;render()};$('search').oninput=()=>{query=$('search').value;current=null;render()};$('view').onclick=()=>{focus=!focus;current=null;render()};
+$('download').onclick=async()=>{if(busy)return;busy=true;$('download').disabled=true;notice('남긴 캐릭터를 묶는 중…');try{const result=await post('/api/export',{run});const link=document.createElement('a');link.href=result.url;link.download='';link.click();notice(`${result.count}명 다운로드 팩을 만들었습니다.`)}catch(e){notice(e.message,true)}finally{busy=false;render()}};
+$('generate').onclick=()=>{$('modal').hidden=false;$('formMsg').textContent='';$('count').focus()};$('close').onclick=()=>{$('modal').hidden=true};$('file').onchange=()=>{const file=$('file').files[0];image=null;$('preview').hidden=true;if(!file)return;const reader=new FileReader();reader.onload=()=>{image=reader.result;$('preview').src=image;$('preview').hidden=false};reader.readAsDataURL(file)};
+$('form').onsubmit=async event=>{event.preventDefault();$('start').disabled=true;$('formMsg').textContent='자유 저작을 시작하는 중…';try{const result=await post('/api/produce',{count:Number($('count').value),prompt:$('prompt').value,image});run=result.run;tab='todo';current=null;$('modal').hidden=true;notice(`${result.count}명 생성 시작. 완성된 GIF부터 검토할 수 있습니다.`);await load()}catch(e){$('formMsg').textContent=e.message}finally{$('start').disabled=false}};
+addEventListener('keydown',e=>{if(!$('modal').hidden){if(e.key==='Escape')$('modal').hidden=true;return}if(['INPUT','TEXTAREA','SELECT','BUTTON'].includes(e.target.tagName)||busy)return;const rows=visible(),it=focus?rows.find(i=>i.id===current):rows[0];if(!it)return;if(e.key.toLowerCase()==='a'){e.preventDefault();decide(it,'accept')}else if(e.key.toLowerCase()==='r'){e.preventDefault();decide(it,'reject')}else if(focus&&['ArrowRight','ArrowDown','ArrowLeft','ArrowUp'].includes(e.key)){e.preventDefault();const idx=rows.findIndex(i=>i.id===current),step=['ArrowRight','ArrowDown'].includes(e.key)?1:-1;current=rows[Math.max(0,Math.min(rows.length-1,idx+step))].id;render()}});
+load();setInterval(()=>{if($('modal').hidden&&!busy)load()},5000);
 </script>
 </body>
 </html>
