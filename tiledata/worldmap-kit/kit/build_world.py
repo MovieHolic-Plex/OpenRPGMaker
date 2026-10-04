@@ -53,7 +53,7 @@ def signature(journey_id, roles_data, terrain=None):
         h.update(json.dumps(terrain, sort_keys=True, ensure_ascii=False).encode())
     h.update(json.dumps(roles_data['roles'], sort_keys=True).encode())
     for f in sorted(K.LIB.glob('*.py')):
-        if f.name.startswith(('kit_palette', 'kit_common', 'kit_theme')):      # 팔레트·입력 검사·테마 덧칠 코드는 지형에 영향이 없다
+        if f.name.startswith(('kit_palette', 'kit_common', 'kit_theme', 'kit_selected_icons')):      # 팔레트·입력 검사·아이콘·테마 덧칠 코드는 지형에 영향이 없다
             continue
         h.update(f.name.encode())
         h.update(f.read_bytes())
@@ -164,6 +164,8 @@ def icon_metrics(terrain, final, ic, sky_site):
         lab = KP.to_oklab(final[icon_mask].astype(np.float64))
         res[name] = float((np.linalg.norm(lab - ring_lab, axis=1) >= 0.08).mean())
     vals = sorted(res.items(), key=lambda kv: kv[1])
+    if not vals:
+        return dict(min=('none', 0.0), median=0.0, lowest=[])
     return dict(min=vals[0], median=float(np.median([v for _, v in vals])), lowest=vals[:3])
 
 
@@ -283,6 +285,7 @@ def main():
     ap.add_argument('--journey', help='journeys/<id> — 없으면 테마의 journey(없으면 fantasy-5act)')
     ap.add_argument('--out', required=True)
     ap.add_argument('--tint-icons', type=float, default=None, help='아이콘 색을 팔레트 빛으로 옮기는 정도 0..1 (기본 0.25, 팔레트 icon_tint 가 있으면 그 값)')
+    ap.add_argument('--selected-icons', help='호스트 저작: 사람 선택 selected.json만 원본 RGBA로 붙인다. 미선택은 위치만 남긴다')
     ap.add_argument('--cache', help='지형 캐시 폴더')
     ap.add_argument('--no-check', action='store_true', help='여정 도달성 검사를 건너뛴다')
     ap.add_argument('--terrain', help='terrains/<id> 또는 지형 편집 JSON 경로 — 공용 지형(shared-v9) 위에 작업(ops)을 얹는다')
@@ -347,6 +350,10 @@ def _main(a):
             raise K.KitError('지형 편집: ' + str(e))
         iconset = K.IconSet(a.iconset)
         assign = K.assign_icons(roles, journey, iconset)          # 역할 채움 검사 포함(모자라면 여기서 KitError)
+        selected = None
+        if a.selected_icons:
+            from kit_selected_icons import SelectedIcons
+            selected = SelectedIcons(a.selected_icons)
         pdir = K.WM / 'palettes'
         if a.palette == 'all':
             ids = sorted([p.stem for p in pdir.glob('*.json')], key=lambda s: (PALETTE_ORDER.index(s) if s in PALETTE_ORDER else 99, s))
@@ -361,7 +368,7 @@ def _main(a):
             raise K.KitError('--tint-icons 는 0..1')
         out = Path(a.out)
         if a.preview:
-            return preview(journey, roles, iconset, assign, out, a.no_check, terrain)
+            return preview(journey, roles, iconset, assign, out, a.no_check, terrain, selected)
         t = build_terrain(journey, roles, roles_data, iconset, assign, a.cache, terrain)
     except K.KitError as e:
         print('입력 오류:\n' + str(e), file=sys.stderr)
@@ -374,6 +381,9 @@ def _main(a):
     import kit_world as W
     ic = {k: tuple(v) for k, v in world['ic'].items()}
     sky_site = tuple(world['sky_site'])
+    selection = selected.selection(iconset, assign, ic, sky_site) if selected else None
+    if selection:
+        world['icon_selection'] = selection
     report = dict(theme=theme['id'] if theme else None, iconset=iconset.id, journey=journey['id'], terrain_seconds=t['seconds'], role_purity=t['purity'], palettes={})
     files = {}
     for pal in palettes:
@@ -390,7 +400,7 @@ def _main(a):
             if theme:
                 img = KT.force_road_band(img, world, t['C'], t['ukeys'], t['role'], pal, road_px)
                 img, extra['overlays'] = KT.apply_land(img, world, theme, road_px)
-        final = W.paste_icons(img, ic, sky_site, iconset, assign, lambda arr: KP.tint_icon(arr, pal, tint, iconset.key, iconset.shadow_key))
+        final = selected.paste(img, selection) if selected else W.paste_icons(img, ic, sky_site, iconset, assign, lambda arr: KP.tint_icon(arr, pal, tint, iconset.key, iconset.shadow_key))
         fn = ('%s-%s.png' % (theme['id'], pal['id'])) if theme else ('%s-%s.png' % (iconset.id, pal['id']))
         Image.fromarray(final).save(out / fn, optimize=True)
         files[pal['id']] = fn
@@ -401,6 +411,9 @@ def _main(a):
             pal['id'], fn, tint, m['key_min_pair'][0], m['key_min_pair'][1], m['key_min_steps'][0], m['key_min_steps'][1]))
         print('            아이콘 구별(둘레와 다른 화소 비율): 최저 %s %.2f · 중앙 %.2f' % (im['min'][0], im['min'][1], im['median']))
     world.update(iconset=iconset.id, icons_used=sorted(set(assign.values())), palettes=[p['id'] for p in palettes], images=files)
+    if selection:
+        world['icons_used'] = sorted({site['iconId'] for site in selection['rendered']})
+        report['icon_selection'] = selection
     if len(palettes) == 1:
         world['palette'] = palettes[0]['id']
     world['walk'] = walk_rows(world)
@@ -416,7 +429,7 @@ def _main(a):
     (out / 'build-report.json').write_text(json.dumps(report, ensure_ascii=False, indent=1))
 
 
-def preview(journey, roles, iconset, assign, out, no_check, terrain):
+def preview(journey, roles, iconset, assign, out, no_check, terrain, selected=None):
     """픽셀 렌더를 건너뛰고 칸 배열·길·장소만 만든다 — 지형 편집을 몇 초 만에 확인한다."""
     import kit_world as W
     t0 = time.time()
@@ -432,6 +445,8 @@ def preview(journey, roles, iconset, assign, out, no_check, terrain):
     world['edit_ground'] = _edit_ground_cells()
     _collect_warnings(world, terrain)
     world['walk'] = walk_rows(world)
+    if selected:
+        world['icon_selection'] = selected.selection(iconset, assign, world['ic'], world['sky_site'])
     out.mkdir(parents=True, exist_ok=True)
     (out / 'world.json').write_text(json.dumps(world, ensure_ascii=False))
     (out / 'terrain.txt').write_text(ascii_map(world) + '\n')

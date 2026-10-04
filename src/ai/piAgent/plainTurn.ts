@@ -194,6 +194,7 @@ export interface UltrabrainModel {
 
 /** 계획 턴 요청(읽기 전용). */
 export function buildUltrabrainPlanRequest(input: {
+  readonly projectKey?: string;
   readonly brain: UltrabrainModel;
   readonly modelTask: string;
   readonly mapIds: readonly string[];
@@ -205,7 +206,7 @@ export function buildUltrabrainPlanRequest(input: {
   readonly initialToolNames?: readonly string[];
 }): PiAgentRequest {
   return {
-    mode: "single", provider: input.brain.providerId!, model: input.brain.model,
+    mode: "single", provider: input.brain.providerId!, model: input.brain.model, projectKey: input.projectKey,
     task: `${PLAN_ONLY_PREFIX}${input.modelTask}`, mapIds: input.mapIds,
     ...(input.currentMapId ? { currentMapId: input.currentMapId } : {}), project: input.project,
     ...(input.approvedTilesetFamilies?.length ? { approvedTilesetFamilies: input.approvedTilesetFamilies } : {}),
@@ -236,6 +237,7 @@ export function withUltrabrainPlan(modelTask: string, plan: string): string {
 
 /** 실행 턴(또는 계획 전용 턴) 요청. */
 export function buildPiRunRequest(input: {
+  readonly projectKey?: string;
   readonly team: boolean;
   readonly planOnly?: boolean;
   readonly readOnly: boolean;
@@ -272,6 +274,7 @@ export function buildPiRunRequest(input: {
   const level = !brainRun && input.preferCallerThinking && input.callerThinkingLevel ? input.callerThinkingLevel : roleLevel;
   return {
     mode: input.team ? "team" : "single",
+    projectKey: input.projectKey,
     applyMode: input.applyMode,
     villageContract: input.villageContract,
     provider: brainRun ? input.brain.providerId! : input.deep.provider,

@@ -15,6 +15,7 @@
 @import "./responsive-a.css" layer(map);
 @import "./inline-assist.css" layer(map);
 @import "./ghost-phase-chip.css" layer(map);
+@import "./ai-canvas-activity.css" layer(map);
 @import "./delayed-tooltip.css" layer(map);
 @import "./ai-activity-live.css" layer(map);
 @import "./ai-canvas-progress.css" layer(map);

@@ -91,10 +91,12 @@ export function createLlmIntentDeclarer(
   options: {
     readonly chat?: ChatFn; readonly audit?: ChatFn; readonly getConfig?: () => AiConfig; readonly timeoutMs?: number;
     /**
-     * 커버리지 감사(두 번째 모델 호출)를 부를지. 기본 true. 감사 결과(requestRequirements)는 옛 세션 경로만 읽는다 —
-     * Pi 채팅 경로(plainTurn)는 한 번도 읽지 않는데, 라우팅 뒤에 **직렬로** 최대 시간 상한만큼 더 기다렸다
-     * (2026-10-03 실측: 「마을 만들어 줘」 r1·r2 다섯 번 모두 이 콜이 60초 상한에 걸려 선언이 ~65초).
+     * 커버리지 감사를 라우팅과 **동시에** 부른다. 감사는 라우팅 결과가 아니라 같은 사실(facts)만 보므로 기다릴 이유가 없다 —
+     * 결과를 파싱할 때만 라우팅의 functionalRefinements 를 쓴다. 만들기·고치기가 아니면 감사를 끊고 버린다(가벼운 모델 한 번 낭비).
+     * 왜(2026-10-04 실측, Pi 입력창): 라우팅 2.2~5.8s 뒤에 감사 2.2~3.9s 를 차례로 기다렸다. 기본은 꺼짐 — 호출 순서·횟수를 보는
+     * 기존 테스트와 세션 경로는 그대로다.
      */
+    readonly parallelAudit?: boolean;
     readonly coverageAudit?: boolean;
   } = {},
 ): IntentDeclarer {
@@ -124,33 +126,51 @@ export function createLlmIntentDeclarer(
      * 항목이 생겼다. 모델은 그 항목을 닫으려 repair_acceptance·correct_verification 를 반복하다 예산을 태우고
      * 초안을 버렸다. 감사 실패는 여전히 미확인 항목으로 남기되, 실패 이유가 「라우팅이 예산을 썼다」면 안 된다.
      */
-    const auditCoverage = async (intent: IntentDeclaration): Promise<{ requirements: readonly RequestRequirement[]; error?: string }> => {
+    /** 감사 호출만 띄운다(파싱은 라우팅 결과가 필요해 나중에). 실패는 값으로 돌려준다 — 던지지 않는다. */
+    const startAudit = (): { readonly reply: Promise<{ text: string } | { reason: string }>; readonly cancel: () => void } => {
       const auditController = new AbortController();
       const auditTimer = setTimeout(() => auditController.abort(), timeoutMs);
       const onAuditAbort = (): void => auditController.abort();
       signal?.addEventListener("abort", onAuditAbort, { once: true });
-      try {
-        const result = await (options.audit ?? chat)(routingConfig(), {
-          messages: [{ role: "system", content: REQUEST_COVERAGE_AUDIT },
-            { role: "user", content: buildIntentUserPayload(facts) }],
-          response_format: { type: "json_object" }, temperature: 0.1,
-          signal: auditController.signal, disableTransientRetry: true,
-        });
-        const coverage = parseRequestCoverageResult(contentText(result), facts,
-          (intent.functionalRefinements ?? []).map(refinement => refinement.requirementId));
-        return { requirements: coverage.requirements, ...(coverage.error ? { error: coverage.error } : {}) };
-      } catch (cause) {
-        const reason = auditController.signal.aborted && !signal?.aborted
-          ? `시간 초과(${timeoutMs}ms)`
-          : cause instanceof Error ? cause.message : String(cause);
-        return { requirements: unresolvedRequestCoverage(reason), error: reason };
-      } finally {
-        clearTimeout(auditTimer);
-        signal?.removeEventListener("abort", onAuditAbort);
-      }
+      let cancelled = false;
+      const reply = (async () => {
+        try {
+          const result = await (options.audit ?? chat)(routingConfig(), {
+            messages: [{ role: "system", content: REQUEST_COVERAGE_AUDIT },
+              { role: "user", content: buildIntentUserPayload(facts) }],
+            response_format: { type: "json_object" }, temperature: 0.1,
+            signal: auditController.signal, disableTransientRetry: true,
+          });
+          return { text: contentText(result) };
+        } catch (cause) {
+          const reason = auditController.signal.aborted && !signal?.aborted && !cancelled
+            ? `시간 초과(${timeoutMs}ms)`
+            : cause instanceof Error ? cause.message : String(cause);
+          return { reason };
+        } finally {
+          clearTimeout(auditTimer);
+          signal?.removeEventListener("abort", onAuditAbort);
+        }
+      })();
+      return { reply, cancel: () => { cancelled = true; auditController.abort(); } };
+    };
+    // 동시 감사: 라우팅을 먼저 띄운 **뒤에** 띄운다(아래 try 첫머리). 호출 순서를 라우팅 → 감사로 지킨다.
+    let earlyAudit: ReturnType<typeof startAudit> | null = null;
+    const auditCoverage = async (intent: IntentDeclaration): Promise<{ requirements: readonly RequestRequirement[]; error?: string }> => {
+      const audit = earlyAudit ?? startAudit();
+      earlyAudit = null;
+      const reply = await audit.reply;
+      if ("reason" in reply) return { requirements: unresolvedRequestCoverage(reply.reason), error: reply.reason };
+      const coverage = parseRequestCoverageResult(reply.text, facts,
+        (intent.functionalRefinements ?? []).map(refinement => refinement.requirementId));
+      return { requirements: coverage.requirements, ...(coverage.error ? { error: coverage.error } : {}) };
     };
     const assessed = async (intent: IntentDeclaration, error?: string): Promise<IntentDeclarationOutcome> => {
-      if ((intent.mode !== "create" && intent.mode !== "modify") || options.coverageAudit === false) return { intent, elapsedMs: Date.now() - started, error };
+      if ((intent.mode !== "create" && intent.mode !== "modify") || options.coverageAudit === false) {
+        earlyAudit?.cancel();
+        earlyAudit = null;
+        return { intent, elapsedMs: Date.now() - started, error };
+      }
       // This call sees the original request/facts, not the planner or authored draft.
       const coverage = await auditCoverage(intent);
       return { intent: { ...intent, requestRequirements: coverage.requirements }, elapsedMs: Date.now() - started,
@@ -169,7 +189,9 @@ export function createLlmIntentDeclarer(
         signal: controller.signal,
         disableTransientRetry: true,
       };
-      const result = await chat(config, request);
+      const routing = chat(config, request);
+      if (options.parallelAudit && options.coverageAudit !== false) earlyAudit = startAudit();
+      const result = await routing;
       const parsed = parseIntentDeclaration(contentText(result), facts);
       if (parsed.intent) {
         const error = invalidNpcRewardReason(parsed.intent);
@@ -199,6 +221,8 @@ export function createLlmIntentDeclarer(
         : cause instanceof Error ? cause.message : String(cause);
       return { intent: { ...(invalidIntent ?? fallbackIntentDeclaration(facts)), requestRequirements: unresolvedRequestCoverage(reason) }, elapsedMs: Date.now() - started, error: reason };
     } finally {
+      // 폴백·오류로 끝났으면 쓰지 않은 동시 감사를 끊는다.
+      earlyAudit?.cancel();
       clearTimeout(timer);
       signal?.removeEventListener("abort", onOuterAbort);
     }

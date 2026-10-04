@@ -421,7 +421,7 @@ it("외부·실내 담당이 직접 출입구를 협의하고 팀장은 대기 �
   expect(events.find(e => e.type === "team_report")).toMatchObject({ text: "출입구 협의 완료" });
 });
 
-it("읽기 설계 두 작업을 병렬 배정하고 보고서를 받아 공통 텍스트를 적용한다", async () => {
+it("전체 범위를 읽는 설계 작업은 직렬 배정하고 보고서로 공통 텍스트를 적용한다", async () => {
   let release!: () => void;
   const gate = new Promise<void>(resolve => { release = resolve; });
   let started = 0;
@@ -431,10 +431,12 @@ it("읽기 설계 두 작업을 병렬 배정하고 보고서를 받아 공통 �
       const tools = opts.extraTools ?? [];
       if (tools.some(t => t.name === "assign_task_agent")) {
         await callTool(tools, "assign_task_agent", { task: "용어집", mode: "read" });
-        await callTool(tools, "assign_task_agent", { task: "UI 번역안", mode: "read", member: "reviewer" });
-        expect(started).toBe(2);
+        await expect(callTool(tools, "assign_task_agent", { task: "UI 번역안", mode: "read", member: "reviewer" })).rejects.toThrow(/같은 맵/);
+        expect(started).toBe(1);
         await expect(callTool(tools, "finish", { report: "끝" })).rejects.toThrow(/아직 실행/);
         release();
+        await callTool(tools, "wait_agents", {});
+        await callTool(tools, "assign_task_agent", { task: "UI 번역안", mode: "read", member: "reviewer" });
         const reports = await callTool(tools, "wait_agents", {});
         expect((reports.agents as { summary: string }[]).map(a => a.summary)).toEqual(["용어집: 여관=Inn", "UI 번역안: 여관=Inn"]);
         await callTool(tools, "assign_task_agent", { task: "제목 번역 적용: Inn", mode: "project" });
@@ -681,7 +683,7 @@ describe("팀 초기 생성 — 맵 사이 연결 계약", () => {
 
   // 깨질 것(2026-09-28 재현): 시작 맵은 트리 루트라 그 묶음이 곧 모든 맵이다. 시작 맵 담당이 늦게 끝나면
   // 그 사이 병합된 들판 담당의 결과를 출발 사본으로 덮었고, 충돌 보고도 없었다.
-  it("시작 맵(트리 루트) 담당이 늦게 끝나도 먼저 병합된 다른 맵을 덮지 않는다", async () => {
+  it("트리 루트 담당이 끝나야 그 묶음의 자식 맵을 재배정한다", async () => {
     const project = seeded();
     const root = project.mapTree.mapId;
     let releaseRoot = (): void => {};
@@ -693,9 +695,10 @@ describe("팀 초기 생성 — 맵 사이 연결 계약", () => {
         const tools = opts.extraTools ?? [];
         if (tools.some((tool) => tool.name === "assign_map_agent")) {
           await callTool(tools, "assign_map_agent", { mapId: root, task: "시작 마을" });
-          await callTool(tools, "assign_map_agent", { mapId: "map_a", task: "들판" });
-          await callTool(tools, "wait_agents", { agentIds: ["builder-2"] });
+          await expect(callTool(tools, "assign_map_agent", { mapId: "map_a", task: "들판" })).rejects.toThrow(/같은 맵/);
           releaseRoot();
+          await callTool(tools, "wait_agents", {});
+          await callTool(tools, "assign_map_agent", { mapId: "map_a", task: "들판" });
           await callTool(tools, "wait_agents", {});
           await callTool(tools, "finish", { report: "끝" });
           return doneWith(req.project);

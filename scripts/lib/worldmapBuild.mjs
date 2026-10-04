@@ -69,7 +69,8 @@ export async function buildWorldmap(request = {}) {
   const dir = await mkdtemp(join(tmpdir(), "oprn-worldmap-"));
   try {
     // 여정은 테마가 고른다(starmap = 우주 5막, 나머지 = 판타지 5막)
-    const args = ["kit/build_world.py", "--theme", theme, "--out", join(dir, "out"), "--cache", CACHE];
+    const args = ["kit/build_world.py", "--theme", theme, "--out", join(dir, "out"), "--cache", CACHE,
+      "--selected-icons", join(kitDir(), "selected", "selected.json")];
     if (request.terrain && typeof request.terrain === "object") {
       const spec = { schema: "worldmap-terrain/1", ...request.terrain, id: String(request.terrain.id || "edit") };
       if (spec.base == null) delete spec.base;           // 없으면 테마 지형의 바탕(공용 shared-v9 또는 생성)을 따른다
@@ -92,6 +93,8 @@ export async function buildWorldmap(request = {}) {
     const png = await readFile(join(out, imageFile));
     const ascii = await readFile(join(out, "terrain.txt"), "utf8");
     const warnings = res.stdout.split("\n").filter((l) => l.startsWith("지형 경고:")).map((l) => l.replace(/^지형 경고:\s*/, ""));
+    const selection = world.icon_selection;
+    if (selection?.pending.length) warnings.push(`테마 ${theme}: 사람 선택이 없거나 발자국이 다른 장소 ${selection.pending.length}곳은 아이콘을 붙이지 않았다. 장소 좌표와 여정 검사는 논리 위치이며 완성된 거점 그림이나 이동 이벤트가 아니다. 후보 선택은 월드맵 아이콘 하네스에서 사용자가 한다.`);
     return {
       ok: true,
       preview,
@@ -105,6 +108,7 @@ export async function buildWorldmap(request = {}) {
         layout: layoutSummary(world.layout),
       },
       themeNote: await themeNote(theme),
+      iconSelection: selection,
       ascii,
       journeyCheck: report.journey_check ?? null,
       warnings,
