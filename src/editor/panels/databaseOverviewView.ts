@@ -10,6 +10,7 @@
 // requestIdleCallback(폴백 setTimeout 200ms)으로 지연 계산해 db-overview-charts 에
 // 주입한다. 밸런스 계산은 idle callback 안에서만 실행해 첫 렌더를 막지 않는다.
 // 읽기 전용: store 쓰기 경로가 전혀 없다(카운트/계산만 읽음).
+import { renderDatabaseContentPacks } from "./databaseContentPacks";
 import type { DatabaseCollection } from "@/editor/databaseActions";
 import { databaseTabLabel, switchDatabaseActiveTab, type DatabaseTab } from "@/editor/panels/database";
 import {
@@ -135,6 +136,7 @@ export function renderOverviewTab(host: HTMLElement, _rerender: () => void): voi
     );
   }
   overview.append(statsRow);
+  overview.append(renderDatabaseContentPacks());
 
   // 무거운 계산(곡선/산점도/감지 + battlePredict 그래프)은 첫 렌더 이후로 미룬다 —
   // 모달 첫 진입을 늦추지 않고, overview 가 아닌 탭에서는 이 경로가 아예 실행되지 않는다.

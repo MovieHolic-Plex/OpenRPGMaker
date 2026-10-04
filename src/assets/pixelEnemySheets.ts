@@ -9,6 +9,7 @@
 //
 // 같은 리소스 id 의 일반 이미지/다른 스킨은 pixelEnemyPortraits.ts 의 idle_a 한 칸을 그린다.
 // 옛 통짜 그림은 폐기했다. retro2003 에서만 이 3×3 포즈 시트를 직접 읽는다.
+import joseonAssets from "./joseonFolkloreAssets.json";
 import { withInlineAsset } from "@/assets/inlineAssetStore";
 
 export const PIXEL_ENEMY_CELL = 48;
@@ -32,6 +33,8 @@ export interface PixelEnemySheet {
   readonly resourceId: string;
   /** public 기준 경로(선행 슬래시 없음). */
   readonly path: string;
+  /** Optional idle-cell portrait for packs outside the historical pixel-enemies folder. */
+  readonly portraitPath?: string;
   readonly motion: PixelEnemyMotion;
   /** 대기 루프 한 칸 길이(ms). a→b→c→b 네 칸. */
   readonly idleFrameMs: number;
@@ -40,6 +43,7 @@ export interface PixelEnemySheet {
 }
 
 export const PIXEL_ENEMY_SHEETS: readonly PixelEnemySheet[] = [
+  ...joseonAssets.sheets as PixelEnemySheet[],
   { resourceId: "generated-enemy-slime-01", path: "assets/generated/pixel-enemies/slime.png", cell: 64, motion: "hop", idleFrameMs: 220 },
   { resourceId: "generated-enemy-bat-01", path: "assets/generated/pixel-enemies/bat.png", cell: 64, motion: "swoop", idleFrameMs: 110 },
   { resourceId: "generated-enemy-golem-01", path: "assets/generated/pixel-enemies/golem.png", cell: 64, motion: "stomp", idleFrameMs: 300 },

@@ -1,3 +1,4 @@
+import joseonAssets from "./joseonFolkloreAssets.json";
 import { PIXEL_ENEMY_PORTRAIT_URLS } from "./pixelEnemyPortraits";
 import { pixelEnemySheet } from "./pixelEnemySheets";
 import { CHARSET_BATTLERS } from "./charsetBattlers";
@@ -33,6 +34,7 @@ const BATTLE_SCENERY_PREVIEW = Object.fromEntries(BATTLE_SCENERY_CATALOG.map((en
 // 파일 경로(*.png) 자체는 안 옮겼다 — 에셋 파일 개명은 별도 라운드(Phase 5).
 // null entries preserve saved IDs of the removed starter artwork.
 const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string | null> = {
+  ...Object.fromEntries((joseonAssets.icons as { resourceId: string; path: string }[]).map(asset => [asset.resourceId, `/${asset.path}`])),
   ...Object.fromEntries(CHARSET_BATTLERS.flatMap((entry) => [
     [entry.resourceId, `/${entry.path}`],
     [`${entry.resourceId}-cast`, `/${entry.castPath}`],

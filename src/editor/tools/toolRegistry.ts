@@ -11,6 +11,7 @@ import { TILESET_REFERENCE_TOOLS, withTilesetReferencePurpose } from "./tilesetR
 import { BATTLE_TOOLS } from "./battleTools";
 import { TROOP_BATTLE_PAGE_TOOLS } from "./troopBattlePageTools";
 import { CLUSTER_RULE_TOOLS } from "./clusterRuleTools";
+import { CONTENT_PACK_TOOLS } from "./contentPackTools";
 import { DB_TOOLS } from "./dbTools";
 import { ENDING_TOOLS } from "./endingTools";
 import { COMPANION_TOOLS } from "./companionTools";
@@ -265,6 +266,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(LIGHTING_TOOLS, "event"),
   ...withDomain(ENDING_TOOLS, "event"),
   ...withDomain(DB_TOOLS, "database"),
+  ...withDomain(CONTENT_PACK_TOOLS, "database"),
   ...withDomain(RETRO_CHOREOGRAPHY_TOOLS, "database"),
   ...withDomain(LIFE_SYSTEM_TOOLS, "database"),
   ...withDomain(LIFE_ECONOMY_TOOLS, "database"),

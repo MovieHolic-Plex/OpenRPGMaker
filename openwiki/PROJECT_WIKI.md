@@ -175,3 +175,7 @@ If source behavior disagrees with the wiki, the source wins for the immediate fi
 높이·표면·강·군집 선택, 네 방향 경사로·두 둑 다리·군집 복원·시작점 통행 미리보기: [terrain-placement-tools.md](terrain-placement-tools.md).
 
 지형 설계·적용 후 제어점 재편집·자동 경사 연결·침식/평활화·수심/폭포·게임 상태 경로 검사·공용 도장·시야 토글/발사체 높이: [terrain-design-suite.md](terrain-design-suite.md).
+
+## 조선 설화 콘텐츠 팩
+
+선택형 아이템·장비·몬스터·행동·직업·기술 묶음: [joseon-folklore-content.md](joseon-folklore-content.md). 기존 RM2003 데이터와 런타임을 쓴다.

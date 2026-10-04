@@ -1,0 +1,58 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import { execFileSync } from 'node:child_process';
+const root=path.resolve('content-packs/joseon-folklore');
+const collections=['classes','skills','items','equipment','enemies','troops','states','elements'];
+const data={packId:'joseon-folklore',schemaVersion:1,...Object.fromEntries(collections.map(key=>[key,[]]))};
+const roles=['consumables','equipment','monsters','behavior','classes','skills'];
+let actions=[];
+for(const role of roles) {
+  const file=path.join(root,role,'data.json');
+  if(!fs.existsSync(file)) continue;
+  const source=JSON.parse(fs.readFileSync(file,'utf8'));
+  for(const key of collections) data[key].push(...(source[key]??[]));
+  actions.push(...(source.enemyActions??[]));
+}
+for(const patch of actions) {
+  const enemy=data.enemies.find(row=>row.id===patch.enemyId);
+  if(!enemy) throw new Error('AI enemy missing: '+patch.enemyId);
+  for(const key of ['actions','skillIds','reactions']) if(patch[key]!==undefined) enemy[key]=patch[key];
+}
+for(const key of collections) {
+  const ids=new Set();
+  for(const row of data[key]) { if(ids.has(row.id)) throw new Error('Duplicate '+row.id); ids.add(row.id); }
+}
+const icons=[];
+// The worker sources are durable code art; publication is owned by this integration step.
+for(const role of ['consumables','equipment']) {
+  const manifestName=role==='consumables'?'art-manifest.json':'assets.json';
+  const manifest=JSON.parse(fs.readFileSync(path.join(root,role,manifestName),'utf8'));
+  for(const asset of Array.isArray(manifest)?manifest:manifest.icons) {
+    const source=path.join(root,role,asset.sourcePath??asset.sourceFile);
+    const target=path.join('public',asset.path);
+    fs.mkdirSync(path.dirname(target),{recursive:true});fs.copyFileSync(source,target);
+  }
+}
+
+for(const role of ['consumables','equipment']) {
+  const records=JSON.parse(fs.readFileSync(path.join(root,role,'data.json'),'utf8'));
+  for(const row of [...(records.items??[]),...(records.equipment??[])]) {
+    const id=row.iconResourceId;
+    if(!id) throw new Error('Missing icon '+row.id);
+    const filename=id.replace(/^jf-icon-/,'')+'.png';
+    const file=`assets/joseon-folklore/${role}/${filename}`;
+    if(!fs.existsSync(path.join('public',file))) throw new Error('Missing '+file);
+    if(!icons.some(icon=>icon.resourceId===id)) icons.push({resourceId:id,path:file});
+  }
+}
+const sourceSheets=JSON.parse(fs.readFileSync(path.join(root,'monsters/sheets.json'),'utf8'));
+const sheets=(Array.isArray(sourceSheets)?sourceSheets:sourceSheets.sheets).map(sheet=>({...sheet,portraitPath:sheet.path.replace(/\.png$/,'-portrait.png')}));
+for(const sheet of sheets) {
+  const target=path.join('public',sheet.path);
+  fs.mkdirSync(path.dirname(target),{recursive:true});
+  fs.copyFileSync(path.join(root,'monsters/assets',path.basename(sheet.path)),target);
+  execFileSync('python3',['-c','from PIL import Image;import sys; im=Image.open(sys.argv[1]); c=int(sys.argv[3]); assert im.size==(c*3,c*3); im.crop((0,0,c,c)).save(sys.argv[2])',path.join('public',sheet.path),path.join('public',sheet.portraitPath),String(sheet.cell)]);
+}
+fs.writeFileSync('src/assets/joseonFolkloreData.json',JSON.stringify(data,null,2)+'\n');
+fs.writeFileSync('src/assets/joseonFolkloreAssets.json',JSON.stringify({icons,sheets},null,2)+'\n');
+console.log(JSON.stringify({counts:Object.fromEntries(collections.map(key=>[key,data[key].length])),icons:icons.length,sheets:sheets.length}));
