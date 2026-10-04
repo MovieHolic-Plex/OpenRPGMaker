@@ -6,6 +6,7 @@
 | id | 무엇 | 범위 | 시드 | 문서 |
 |---|---|---|---|---|
 | `monster-collect-species` | 몬스터 수집 종 스프라이트 | 장르 `monster-collect` 전용 | `harness-data/monster-collect-species/seed.json` | `openwiki/harnesses/monster-collect-species.md` |
+| `pokemon-character-motion` | 몬스터 수집 캐릭터 모션 | 장르 `monster-collect` 전용 | `harness-data/pokemon-character-motion/seed.json` | `openwiki/harnesses/pokemon-character-motion.md` |
 | `modern-chipset` | 현대 칩셋 도트 (modern4) | 장르 무관 | `harness-data/modern-chipset/seed.json` | `openwiki/harnesses/modern-chipset.md` |
 | `interior-props` | 손 도트 실내 기물 (16px) | 장르 무관 | `src/assets/handInteriorSpec.json` | `openwiki/harnesses/interior-props.md` |
 | `jp-city` | 일본 도시 칩셋 도트 (jp_city · modern3) | 장르 무관 | `harness-data/jp-city/seed.json` | `openwiki/harnesses/jp-city.md` |
@@ -30,6 +31,25 @@
 - `build` — 번들 굽기: 골라 둔 격자 원본을 112 캔버스로 맞춰 public/assets/harnesses/ 아래에 쓰고, 대기·동작 스트립과 anim.json 을 만들고 검사한다.
 - `check` — 검사: 번들 스프라이트의 색 수·마젠타 잔점·윤곽·앞뒤 색 일치, 애니메이션 프레임(대기 0번=원본·발 고정, 동작 색·몸집)을 검사한다.
 - `preview` — 미리보기: 번들 스프라이트의 대기·동작을 전투 배율로 재생하는 HTML 한 쪽을 만든다.
+
+**들어오는 길:** CLI 있음 · 에디터 화면 아직 없음 · 조수 도구 아직 없음
+
+## pokemon-character-motion — 몬스터 수집 캐릭터 모션
+
+생성 원본의 4방향 3포즈를 공통 격자·배율·팔레트로 가져오고 걷기·오프닝 클립을 재생 검수한 뒤 해시에 묶인 관문을 통과한 결과만 굽는다.
+
+**이럴 때 쓴다:**
+- 몬스터 수집 게임의 주인공·NPC 걷기 도트나 오프닝 그림 모션을 생성·교체할 때
+- 픽셀 수치가 방향·다리 교대 의미를 증명하지 않는다. 애니메이션 재생 증거를 남긴다.
+
+**단계** (`npm run harness -- pokemon-character-motion <단계>`):
+- `status` — 현황: 역할별 후보와 관문·검수·결과 해시 상태를 읽는다.
+- `import` — 가져오기: 생성 아틀라스 또는 기존 네이티브 시트를 불변 출처와 함께 후보로 저장한다.
+- `check` — 구조 검사: 12프레임·색 합집합·알파·머리 흔들림·다리 변화·연속성을 검사한다.
+- `preview` — 재생 검수: 원본 크기와 3배율로 네 방향 및 선택 클립을 재생하는 HTML을 만든다.
+- `review` — 시각 판정: 재생 증거·검수자·이유를 출처와 최종 그림 해시에 묶어 기록한다.
+- `gate` — 출하 관문: 구조 검사와 현재 해시의 시각 판정을 확인한다. 실패는 종료 코드 1이다.
+- `build` — 굽기: 현재 관문·검수의 해시가 같은 결과만 로컬 출력 폴더에 복사한다.
 
 **들어오는 길:** CLI 있음 · 에디터 화면 아직 없음 · 조수 도구 아직 없음
 
