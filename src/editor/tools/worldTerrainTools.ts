@@ -15,6 +15,8 @@ import {
   type WorldmapBase, type WorldmapBuildRequest, type WorldmapBuildResult,
 } from "@/editor/worldmap/worldmapBuild";
 import { PLACE_REFERENCES } from "@/project/regionReferences";
+import themeCatalog from "@/assets/worldmapThemeCatalog.json";
+import { WORLDMAP_SELECTED_ICONS, WORLDMAP_SELECTED_ID } from "@/project/defaults/worldmapSelected";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 
 export const WORLDMAP_THEMES = [
@@ -222,6 +224,7 @@ function townArtHint(theme: string): string {
   const tilesets = THEME_TOWN_TILESETS[theme] ?? [];
   const places = PLACE_REFERENCES.filter(p => "placeKind" in p && p.placeKind === "settlement" && tilesets.includes(String(p.tilesetId)));
   const interior = "실내는 build_hand_interior_room(손 도트 v5 atlas_biome_interior), 배·던전은 atlas_biome_dungeon 을 쓴다.";
+  if (theme === "starmap" || theme === "alien") return `테마 ${theme} 전용 정거장·외계 거점 칩셋과 완성 지역은 현재 없다. 지형 생성과 거점 저작의 준비 상태를 구분해서 보고하라. 기본 로마풍 마을을 우주정거장으로 대신 깔지 마라. 월드맵 후보 아이콘은 사람이 하네스에서 선택한 것만 사용할 수 있다. ${interior}`;
   if (!tilesets.length) return `테마 ${theme} 전용 마을 칩셋은 없다 — 마을은 기본 마을 도구로 깔고 이름·NPC·대사로 문화권을 살려라. ${interior}`;
   return `야외 마을은 이 테마와 같은 문화권 칩셋 ${tilesets.join("·")} 으로 깔아라(버들항 등 다른 계열 도구로 깔지 말 것). `
     + (places.length ? `완성 마을: ${places.map(p => `${p.id}「${p.name}」`).join(", ")} — import_region_reference({id}) 한 번으로 가져와 이름만 바꿔도 된다. ` : "")
@@ -330,6 +333,25 @@ function applyWorldmap(
   return { created: !existing, strandedEvents };
 }
 
+const listWorldmapThemes: ToolDefinition = {
+  name: "list_worldmap_themes",
+  mode: "read",
+  domains: ["world", "map"],
+  description: "월드맵 세계관 17종의 생성 구조·여정과 사람 선택 아이콘 준비 상태를 조회한다. 우주 성계 지도와 외계 행성 지도를 구분하며, 테마가 있다는 것만으로 거점 그림·내부·이동 이벤트가 완성된 것은 아니다. 새 세계 지도를 만들기 전에 읽는다.",
+  parameters: { type: "object", properties: { query: { type: "string" } }, additionalProperties: false },
+  run(_project, args): ToolExecResult {
+    const query = String(args.query ?? "").trim().toLowerCase();
+    const themes = themeCatalog.filter(entry => !query || `${entry.id} ${entry.name} ${entry.kind} ${entry.terrainNote ?? ""} ${entry.kind === "space" ? "우주 은하 space galaxy" : ""} ${entry.id === "alien" ? "외계 행성 planet" : ""}`.toLowerCase().includes(query)).map(entry => {
+      const selected = WORLDMAP_SELECTED_ICONS.filter(icon => icon.theme === entry.iconset);
+      return { ...entry, selectedIcons: selected.length, iconReadiness: selected.length ? "partial-human-selection" : "human-selection-required",
+        ...(selected.length ? { referenceRead: { tilesetId: WORLDMAP_SELECTED_ID, categoryId: `wmi-${entry.iconset}` } } : {}),
+        ...(entry.kind === "space" ? { semantics: "항행 공간·깊은 공허·성운·소행성대·이온 폭풍·초공간 항로. 항로 허가증→워프→폭풍 항법→점프 게이트." } : {}) };
+    });
+    return { summary: `월드맵 세계관 ${themes.length}종 — 생성기와 확정 그림의 준비 상태`, data: { themes,
+      help: "read_world_terrain({theme})로 지형·여정을 미리 보고 edit_world_terrain({theme,ops:[]})로 새 지도를 만든다. 결과마다 여정 검사를 확인한다. 전용 타일셋 worldmap_<mapId>는 생성 후 생기며 worldmap_<theme> 같은 ID를 추측하지 않는다. 미선택 후보는 지도에 붙이지 않는다. 논리 장소·장벽 검사는 실제 거점 그림과 게임 해금 이벤트의 완성이 아니다." } };
+  },
+};
+
 const readWorldTerrain: ToolDefinition = {
   name: "read_world_terrain",
   description:
@@ -360,7 +382,7 @@ const readWorldTerrain: ToolDefinition = {
       summary: `세계 지형 ${result.world.terrain}(${request.theme}) — 장소 ${result.world.places.length}곳, 여정 검사 ${result.journeyCheck?.ok === false ? "불일치" : "통과"}`,
       data: {
         theme: request.theme, mapId: map?.id ?? null, ops: request.terrain?.ops ?? [],
-        themeNote: result.themeNote, ascii: result.ascii, places: placesSummary(result), journeyCheck: result.journeyCheck,
+        themeNote: result.themeNote, iconSelection: result.iconSelection, ascii: result.ascii, places: placesSummary(result), journeyCheck: result.journeyCheck,
         layout: layoutOf(result, true), warnings: result.warnings, help: OP_HELP,
       },
     };
@@ -372,7 +394,7 @@ const editWorldTerrain: ToolDefinition = {
   description:
     "세계 지도의 지형 자체를 바꾼다 — 대륙을 바다로 갈라 섬나라로, 섬을 더하고, 산줄기·고개·강·숲·고원을 놓고, 지역의 바닥(사막·설원·늪…)을 바꾸고, 장소를 옮긴다. "
     + "base=generate 면 대륙 구조를 아예 새로 만든다(20조각 대륙·고리 대륙·초대륙·군도·은하) — 여정 장소는 키트가 자동으로 다시 놓는다. "
-    + "월드맵 키트(테마 17종: 판타지·우주·현대·스팀펑크·조선…)가 같은 화풍으로 다시 그리고 여정 도달성(걸어서·배·사막선·비공정)을 검사한다. "
+    + "월드맵 키트(테마 17종: 판타지·우주·현대·스팀펑크·조선…)가 같은 화풍으로 다시 그리고 여정 도달성(걸어서·배·사막선·비공정)을 검사한다. 먼저 list_worldmap_themes로 생성 구조와 사람 선택 아이콘 준비 상태를 조회한다. 후보는 사용자가 선택하기 전에는 붙이지 않으며 iconSelection.pending은 그림이 없는 논리 장소다. "
     + "mapId 가 기존 월드맵 키트 지도면 거기 쌓인 작업 뒤에 ops 를 잇는다(replace=true 면 ops 로 갈아 끼운다). mapId 가 없으면 새 세계 지도 맵을 만든다. 결과 data.townArt 가 이 테마의 야외 마을 칩셋·완성 마을과 공용 실내 칩셋을 알려 준다 — 마을을 깔기 전에 따르라. "
     + "좌표는 먼저 read_world_terrain 의 글자 지도로 고른다. 장소 발자국이 물이 되거나 길이 막히면 실패하고 이유를 돌려준다 — 그 문장대로 작업을 고쳐 다시 부른다. "
     + "preview=true 는 저장하지 않고 몇 초 만에 도식 그림만 본다(도식은 바닥 종류 색이라 테마 팔레트와 다르다 — themeNote 를 보라). 실제 빌드는 처음 2분 남짓, 같은 지형은 캐시. "
@@ -409,7 +431,7 @@ const editWorldTerrain: ToolDefinition = {
     const result = resultFor(request);
     lastImage.set("edit_world_terrain", result.imageDataUrl);
     const base = {
-      theme: request.theme, themeNote: result.themeNote, ops: request.terrain?.ops ?? [], ascii: result.ascii, places: placesSummary(result),
+      theme: request.theme, themeNote: result.themeNote, iconSelection: result.iconSelection, ops: request.terrain?.ops ?? [], ascii: result.ascii, places: placesSummary(result),
       journeyCheck: result.journeyCheck, warnings: result.warnings, seconds: result.seconds,
       ...(result.world.layout ? { base: "generate", layout: layoutOf(result, false) } : {}),
     };
@@ -447,7 +469,7 @@ const editWorldTerrain: ToolDefinition = {
   },
 };
 
-export const WORLD_TERRAIN_TOOLS: readonly ToolDefinition[] = [readWorldTerrain, editWorldTerrain];
+export const WORLD_TERRAIN_TOOLS: readonly ToolDefinition[] = [listWorldmapThemes, readWorldTerrain, editWorldTerrain];
 
 /** 조수가 방금 빌드한 지도(미리보기면 도식)를 눈으로 보게 한다. */
 export function worldTerrainImages(toolName: string): { dataUrl: string; label: string }[] {

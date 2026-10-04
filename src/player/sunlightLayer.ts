@@ -5,6 +5,7 @@ import type { GameMap, TilesetDef } from "@/project/types";
 import { ensureTilesetTexture } from "@/editor/tilesetImage";
 import { canvasSunlightArt } from "@/project/sunlightArtCanvas";
 import type { SunlightArtSource } from "@/project/sunlightArt";
+import { reliefReadSignature } from "@/project/relief/screen";
 
 const instances = new WeakMap<object, SunlightLayer>();
 let serial = 0;
@@ -47,12 +48,12 @@ export class SunlightLayer {
 
   sync(map: GameMap | undefined, tileset: TilesetDef | undefined): boolean {
     const params = normalizeSunlight(map?.sunlight);
-    const key = JSON.stringify(params);
     if (!map || !params.enabled || params.opacity === 0) {
       if (this.map || this.patches.size) this.clear();
       this.map = undefined; this.field = null; this.artSource = undefined;
       return false;
     }
+    const key = `${JSON.stringify(params)}|${reliefReadSignature(map.relief)}`;
     if (this.map !== map || this.tileset !== tileset || this.inputKey !== key || (!this.artSource && tileset)) {
       this.clear(); this.map = map; this.tileset = tileset; this.inputKey = key;
       this.artSource = undefined;
@@ -127,6 +128,7 @@ export class SunlightLayer {
       textures: this.patches.size, enabled: !!this.map && normalizeSunlight(this.map.sunlight).enabled,
       params: this.map ? normalizeSunlight(this.map.sunlight) : undefined,
       nativeArt: !!this.artSource,
+      maxTerrain: this.field?.maxTerrain ?? 0,
       casters: this.field?.casters.map(({ id, kind, height, base, x, y, w, d, volumes }) =>
         ({ id, kind, height, base, x, y, w, d, components: volumes?.length ?? 1 })) ?? [] };
   }

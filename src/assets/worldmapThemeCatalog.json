@@ -1,0 +1,172 @@
+[
+  {
+    "id": "alien",
+    "name": "외계 행성",
+    "kind": "land",
+    "iconset": "alien",
+    "candidateIcons": 19,
+    "terrain": "shared-v9",
+    "journey": "fantasy-5act",
+    "terrainNote": null
+  },
+  {
+    "id": "classical",
+    "name": "고대 그리스·로마",
+    "kind": "land",
+    "iconset": "classical",
+    "candidateIcons": 20,
+    "terrain": "shared-v9",
+    "journey": "fantasy-5act",
+    "terrainNote": null
+  },
+  {
+    "id": "dark-gothic",
+    "name": "다크 판타지·고딕",
+    "kind": "land",
+    "iconset": "dark-gothic",
+    "candidateIcons": 20,
+    "terrain": "shared-v9",
+    "journey": "fantasy-5act",
+    "terrainNote": null
+  },
+  {
+    "id": "desert-east",
+    "name": "사막·동양풍",
+    "kind": "land",
+    "iconset": "desert-east",
+    "candidateIcons": 22,
+    "terrain": "shared-v9",
+    "journey": "fantasy-5act",
+    "terrainNote": null
+  },
+  {
+    "id": "fantasy-dungeons",
+    "name": "판타지 던전·신전",
+    "kind": "land",
+    "iconset": "fantasy-dungeons",
+    "candidateIcons": 12,
+    "terrain": "shared-v9",
+    "journey": "fantasy-5act",
+    "terrainNote": null
+  },
+  {
+    "id": "fantasy",
+    "name": "판타지 (기본)",
+    "kind": "land",
+    "iconset": "fantasy",
+    "candidateIcons": 38,
+    "terrain": "shared-v9",
+    "journey": "fantasy-5act",
+    "terrainNote": null
+  },
+  {
+    "id": "joseon",
+    "name": "조선",
+    "kind": "land",
+    "iconset": "joseon",
+    "candidateIcons": 19,
+    "terrain": "joseon-korea",
+    "journey": "joseon-5act",
+    "terrainNote": "조선 테마의 기본 구조 — 위·경도 꼭짓점으로 옮긴 한반도와 둘레(요동·산둥·연해주·일본 열도·제주). 압록강 북쪽~두만강 산벽 너머 만주가 2막, 바다 건너 일본·제주가 3막, 요동 벌판이 4막 모래벌. 시드는 해안 굽이만 바꾼다."
+  },
+  {
+    "id": "modern-sf",
+    "name": "현대·SF",
+    "kind": "land",
+    "iconset": "modern-sf",
+    "candidateIcons": 22,
+    "terrain": "shared-v9",
+    "journey": "fantasy-5act",
+    "terrainNote": null
+  },
+  {
+    "id": "modern-town",
+    "name": "현대 소도시",
+    "kind": "land",
+    "iconset": "modern-town",
+    "candidateIcons": 19,
+    "terrain": "shared-v9",
+    "journey": "fantasy-5act",
+    "terrainNote": null
+  },
+  {
+    "id": "monster",
+    "name": "몬스터 수집",
+    "kind": "land",
+    "iconset": "monster",
+    "candidateIcons": 19,
+    "terrain": "shared-v9",
+    "journey": "fantasy-5act",
+    "terrainNote": null
+  },
+  {
+    "id": "prehistoric",
+    "name": "선사·원시",
+    "kind": "land",
+    "iconset": "prehistoric",
+    "candidateIcons": 19,
+    "terrain": "shared-v9",
+    "journey": "fantasy-5act",
+    "terrainNote": null
+  },
+  {
+    "id": "sea-isles",
+    "name": "바다·군도",
+    "kind": "land",
+    "iconset": "sea-isles",
+    "candidateIcons": 20,
+    "terrain": "archipelago",
+    "journey": "fantasy-5act",
+    "terrainNote": null
+  },
+  {
+    "id": "sengoku",
+    "name": "일본 전국",
+    "kind": "land",
+    "iconset": "sengoku",
+    "candidateIcons": 20,
+    "terrain": "sengoku-japan",
+    "journey": "sengoku-5act",
+    "terrainNote": "전국 테마의 기본 구조 — 실제 일본 열도(규슈~혼슈 북단). 시작 땅 혼슈(간토 쪽), 관소 산벽 너머 2막 = 서국(주고쿠), 4막 모래벌 = 혼슈 북쪽 끝, 3막 = 바다 건너 규슈·시코쿠·한반도. 혼슈는 좁아 사구를 가운데 두면 1막 땅이 둘로 갈려 끝에만 둘 수 있다(맞춤이 고른다)."
+  },
+  {
+    "id": "snow-north",
+    "name": "설원·북방",
+    "kind": "land",
+    "iconset": "snow-north",
+    "candidateIcons": 19,
+    "terrain": "shared-v9",
+    "journey": "fantasy-5act",
+    "terrainNote": null
+  },
+  {
+    "id": "starmap",
+    "name": "성계 지도",
+    "kind": "space",
+    "iconset": "starmap",
+    "candidateIcons": 19,
+    "terrain": "galaxy",
+    "journey": "space-5act",
+    "terrainNote": "성계 지도(starmap) 테마의 기본 구조 — 은하 핵을 두른 시작 성단 + 나선팔 성단들. 땅 = 항행 공간, 바다 = 공허(워프), 산 = 소행성대, 사구 = 이온 폭풍."
+  },
+  {
+    "id": "steampunk",
+    "name": "스팀펑크·마도",
+    "kind": "land",
+    "iconset": "steampunk",
+    "candidateIcons": 20,
+    "terrain": "shared-v9",
+    "journey": "fantasy-5act",
+    "terrainNote": null
+  },
+  {
+    "id": "wuxia",
+    "name": "무협 중국",
+    "kind": "land",
+    "iconset": "wuxia",
+    "candidateIcons": 19,
+    "terrain": "wuxia-china",
+    "journey": "wuxia-5act",
+    "terrainNote": "무협 테마의 기본 구조 — 실제 중국 지리(Natural Earth 해안선·ETOPO1 높이). 티베트 고원·히말라야·쿤룬, 황하·장강, 고비·타클라마칸. 맞춤이 고른 산벽이 내몽골 장성 자리라 2막 = 장성 너머 북방 초원(몽골·만주), 4막 대막 = 서북 고비·하서 회랑, 3막 = 바다 건너 한반도·일본·타이완."
+  }
+]
