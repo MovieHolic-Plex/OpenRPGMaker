@@ -12,7 +12,7 @@ export function configureEmeraldMonsterOpening(project: Project, options: {
   const professor = professorArtwork as UploadedAsset;
   project.assets.uploaded[professor.id] = { ...professor, meta: { ...professor.meta } };
   const species = project.database.monsterSpecies ?? [];
-  const starter = ['grass', 'fire', 'water'].map(type => species.find(s => s.types.includes(type)));
+  const starter = ['grass', 'fire', 'water'].map(type => species.find(s => s.types?.includes(type)));
   const professorName = options.professorName ?? '천문박사';
   const place = project.maps[project.startMapId]?.name ?? '새로운 마을';
   const pages: EmeraldOpeningPage[] = options.pages ?? [
@@ -24,6 +24,7 @@ export function configureEmeraldMonsterOpening(project: Project, options: {
     { id: 'emerald_intro_departure', text: `${place}에서 너의 모험이 시작된단다.\n먼저 연구소에 들러 보렴. 기다리고 있겠다!` },
   ];
   if (pages.length < 2 || pages.length > 32) throw Error('Emerald introduction needs 2..32 confirmed pages');
+  if (new Set(pages.map(page => page.id)).size !== pages.length) throw Error('Opening page ids must be unique');
   const scenes = pages.map(page => {
     if (!page.id || !page.text.trim()) throw Error('Opening page needs an id and readable text');
     const monster = page.monsterSpeciesId ? species.find(s => s.id === page.monsterSpeciesId) : undefined;
