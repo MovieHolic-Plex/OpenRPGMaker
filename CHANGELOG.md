@@ -5,6 +5,16 @@
 
 <!-- releases -->
 
+## 0.111.0 — 2026-10-04
+
+### 기능
+
+- simplify terrain dock and add a modal creation guide (`dfac859`)
+
+### 수정
+
+- **harness** — include upstream character credits in exported packs (`ea39b71`)
+
 ## 0.110.0 — 2026-10-04
 
 ### 기능
