@@ -132,7 +132,8 @@ provenance의 version/contract/source/prompt/final/clip-meta 해시, 실제구�
 ```bash
 node src/harnesses/pokemon-character-motion/node/verify.mjs
 node src/harnesses/pokemon-character-motion/node/verify.mjs --raster
+node src/harnesses/pokemon-character-motion/node/verify.mjs --clip-raster
 node src/harnesses/pokemon-character-motion/node/verify.mjs --references /path/external-emerald-reference
 ```
 
-일반36개와raster21개의 집중 제어는 정상native, x0/bottom32, height/top/feet/palette위반, duplicate/head jump/scale/shuffle/seam, 작은 hair-tip 반올림값과 실제 픽셀 등록 차이·2px root 거부, 3/4행·4/5행 면적 오판 양성제어·실제몸통 축소 음성제어, exacteditorpadding·legacyoutsideink·alpha128/127·hiddenRGB·magenta·비대칭팔·nohead·unknownsampling·oldversion·fullCLI/lifecycle·clip·파일변조를 검사한다. 작은도형fixture는 테스트용이며 출하그림/실제시각승인이 아니다. reference 제어는 외부May/Brendan/Birch/woman PNG를 직접읽어 원본native계약을 검사하고 source/probeSHA와 수치만 남긴다. 원본그림을 저장소로 복사하지 않는다. 서버·Vitest·전체tsc·전체gates를 실행하지 않는다.
+일반36개와raster21개의 집중 제어는 정상native, x0/bottom32, height/top/feet/palette위반, duplicate/head jump/scale/shuffle/seam, 작은 hair-tip 반올림값과 실제 픽셀 등록 차이·2px root 거부, 3/4행·4/5행 면적 오판 양성제어·실제몸통 축소 음성제어, exacteditorpadding·legacyoutsideink·alpha128/127·hiddenRGB·magenta·비대칭팔·nohead·unknownsampling·oldversion·fullCLI/lifecycle·clip·파일변조를 검사한다. 작은도형fixture는 테스트용이며 출하그림/실제시각승인이 아니다. clip-raster11개는 동일source발을native에보존·알파128/127·hiddenRGB·명시crop·잘못된옵션·translation-only·custom64×96을 검사한다. 원본 몸/발 변화가 있는 경우 이를 숨기지 않고 metadata와native에 그대로 남김도 확인한다. generic clip 구조통과가 교수의 몸 고정 시각조건을 대신하지 않으므로 교수 시각검수에서 이러한 실제원본변화는 거부한다. reference 제어는 외부May/Brendan/Birch/woman PNG를 직접읽어 원본native계약을 검사하고 source/probeSHA와 수치만 남긴다. 원본그림을 저장소로 복사하지 않는다. 서버·Vitest·전체tsc·전체gates를 실행하지 않는다.
