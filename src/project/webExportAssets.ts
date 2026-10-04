@@ -17,6 +17,7 @@ import { PLAYER_RUNTIME_AUDIO_RESOURCE_IDS } from "@/player/playerRuntimeAudioId
 import { getResourceProfileSpec } from "@/project/resourceProfiles";
 import type { ResourceKind } from "@/project/types";
 import { requiredRuntimeAssetPaths } from "@/project/webExportRuntimeAssets";
+import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
 import type { Project } from "@/project/types";
 import type { WebExportAsset } from "@/project/webExportTypes";
 import { CASTLE_REFERENCE_TILESET_TEXTURE_KEY, CASTLE_TILESET_TEXTURE_KEY, LPC_WOODEN_FURNITURE_TILESET_TEXTURE_KEY } from "./defaults/constants";
@@ -173,6 +174,13 @@ function collectProjectStrings(project: Project): Set<string> {
   const values = new Set<string>();
   if ([project.system.gameOver, ...(project.system.gameOvers ?? []).map(row => row.settings)].some(settings => !settings?.backgroundResourceId)) values.add(DEFAULT_GAME_OVER_BACKGROUND_RESOURCE_ID);
   collectStrings({ ...project, audioDescriptions: undefined, monsterMetadata: undefined }, values);
+  // Party menus resolve a separately authored sibling icon at runtime. Retain
+  // those indirect dependencies when pruning uploaded assets for publication.
+  if (isEmeraldMonsterStyle(project)) for (const species of project.database.monsterSpecies ?? []) {
+    const front = species.graphic.monsterResourceId;
+    const icon = front?.replace(/_front$/u, '_icon');
+    if (icon && icon !== front && project.assets.uploaded[icon]) values.add(icon);
+  }
   // 소스에 박힌 재생 — 프로젝트 문자열에는 없지만 플레이어가 반드시 읽는다.
   for (const id of PLAYER_RUNTIME_AUDIO_RESOURCE_IDS) values.add(id);
   const skinId = resolveSkinId(project.system.battleUiStyle);

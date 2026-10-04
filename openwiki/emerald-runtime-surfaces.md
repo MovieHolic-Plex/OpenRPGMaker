@@ -35,3 +35,10 @@ Do not call it complete campaign validation: canonical save/reload and final com
 `/tmp/oprn-emerald-20261004/surfaces-browser-fresh/SUMMARY.md` and `report.json` record the full72map/60species portable factory export. Native six-slot party, independent stats/current-PP summary, bag context/use/target and actual medicine HP/inventory mutation were reached. Fight/moves/currentPP and Bag/items used the actual battle DOM. The viewport was960×640 with a480×320 scene inside the game host; editor chrome0, page errors0, HTTP errors0. The probe moves away from the lab NPC before directly launching the QA battle so Enter cannot trigger a separate field conversation. This direct scene launch is session preparation, not proof of encounter frequency or campaign progression. Art at this snapshot is the existing authored front/back fallback; new shared creature icons/assets are a separate integration.
 
 The previous revision25 portable file failed before title because17 authored battle animations referenced absent pixel-fx resources; the receipt is `/tmp/oprn-emerald-20261004/raw-v25-boot-failure/failure.json`. This surface probe uses the new portable factory export and does not normalize or claim to repair that old loading failure. Compatibility belongs to its dedicated loader change.
+
+## Shipping icon dependencies
+
+`collectProjectStrings` in `webExportAssets.ts` includes an existing uploaded
+`_front` → `_icon` sibling for every Emerald species. The menu derives that ID at
+runtime, so ordinary direct-string scanning otherwise prunes all60icons. Missing
+icons retain the authored front fallback; exports never invent a resource.
