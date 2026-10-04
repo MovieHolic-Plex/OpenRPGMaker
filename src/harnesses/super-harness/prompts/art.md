@@ -2,6 +2,7 @@
 
 개념: {{CONCEPT}}
 독립 작업 워크트리: {{ROOT}}
+도면 입력 확인 모듈: {{ART_LAYOUT_MODULE}} (부모 폴더를 sys.path 앞에 추가하여 import art_layout; 다른 사본 검색 불필요).
 재료 조사/부족분: {{CDIR}}/materials.json, {{CDIR}}/gaps.json
 결과: {{CDIR}}/art-result.json
 

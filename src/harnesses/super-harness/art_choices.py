@@ -120,8 +120,11 @@ def prepare(data, cid):
                         'caution': '기존 검수 방에 놓은 크기·화풍 예시입니다. 계단 높이·통행 및 문 상태 연결은 별도 검증이 필요합니다.'})
                 groups.append(group)
     generation = digest(concept / 'art-result.json')
+    layout_file = concept / 'art-layout-input.json'
+    phase = read(layout_file).get('layout', {}).get('phase', 'scene') if layout_file.is_file() else 'scene'
     for group in groups:
-        for candidate in group['candidates']: candidate['generation'] = generation
+        for candidate in group['candidates']:
+            candidate.update(generation=generation, phase=phase)
     manifest = {'version': 1, 'artResultSha256': generation, 'groups': groups}
     path = concept / 'art-choices.json'
     temporary = path.with_suffix('.tmp')
@@ -145,22 +148,22 @@ def view(data, cid):
     groups = document.get('groups', [])
     result_file = Path(data) / 'concepts' / cid / 'art-result.json'
     current = result_file.is_file() and digest(result_file) == document.get('artResultSha256')
-    previous_file = result_file.with_name('art-result.previous.json')
+    # The manifest owns immutable image/receipt hashes. Preparation responses
+    # can replace art-result.previous.json several times before a new drawing.
     previous_visible = (not current and c['stage'] in ('art', 'art-layout-review', 'art-context-review')
-                        and previous_file.is_file() and digest(previous_file) == document.get('artResultSha256'))
+                        and bool(document.get('artResultSha256')))
     context_path = Path(data) / 'concepts' / cid / 'art-context-review.json'
     context_reviews = read(context_path).get('groups', {}) if context_path.is_file() else {}
     saved = selections(cid)
     feedback_file = Path(data) / 'concepts' / cid / 'art-feedback.json'
     feedback = read(feedback_file) if feedback_file.is_file() else {}
-    layout_file = Path(data) / 'concepts' / cid / 'art-layout-input.json'
-    calibration = layout_file.is_file() and read(layout_file).get('layout', {}).get('phase') == 'calibration'
     count = 0
     output = []
     for group in groups:
         g = {k: group[k] for k in ('id', 'title', 'description')}
         g['candidates'] = []
         for candidate in group['candidates']:
+            calibration = candidate.get('phase') == 'calibration'
             item = {k: candidate[k] for k in ('id', 'title', 'summary', 'reasons', 'caution')}
             candidate_token = fingerprint(candidate)
             context = context_reviews.get(group['id'], {}).get(candidate['id'], {})
