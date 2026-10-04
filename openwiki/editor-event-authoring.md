@@ -1,5 +1,18 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 이벤트 보기의 지연 생성 (2026-10-04)
+
+`content.ts`는 현재 목록·스토리·플로우 보기만 처음에 만든다. 목록은 `ensureCommandList`에서 한 번 생성하며,
+스토리와 플로우는 같은 보기에 머무는 재적용에서 중복 생성하지 않는다. 다른 보기로 나가면 스토리/플로우 본문을
+비우고 다음 진입 때 최신 미리보기 위치로 다시 만든다. 기존 목록이 이미 생성됐으면 보기 전환에서 재사용한다.
+검색은 전체 명령을 대상으로 유지한다. 플로우의 검색 결과 수를 계산할 때만 숨은 목록을 필요에 따라 생성한다.
+
+선택 권위는 `commandInspector.selectedCommandPath`다. AI 삽입 대상도 이 값을 읽도록 `aiAssist`의 선택 콜백을
+연결했다. 숨은 목록의 `.selected` DOM 유무로 스토리/플로우의 선택을 잃어서는 안 된다.
+명령 본문 변경은 기존 modal 재렌더·command history 계약을 따르며 실제 LLM 호출이나 명령 저장은 바꾸지 않았다.
+네이티브 화면의 긴 목록, 보기 전환, 검색·선택 및 스토리부터 연 경우의 지연 생성 근거는
+`verify-shots/editor-ux-improvements-20261004/README.md`와 `scripts/qa/editor-ux-forms-audit.mjs`를 본다.
+
 ## 명령 드래그 소유권과 레거시 페이지 붙여넣기 (2026-10-02)
 
 - `commandListDragDrop.ts`는 같은 렌더의 `CommandListActions`가 시작한 전용 MIME 드래그만 받는다. 일반 `text/plain`의 `[0]`, 다른 이벤트 편집면의 드래그, 페이지 전환 전 드래그, 원본과 다른 경로 payload는 명령 이동이 아니다. 분기 경로의 음수 sentinel은 유지한다.

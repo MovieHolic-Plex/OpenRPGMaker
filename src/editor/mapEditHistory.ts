@@ -1,6 +1,7 @@
 import type { GameMap, MapId, Project } from "@/project/types";
 import { mapWithCommittedEvents, projectWithoutEventDrafts } from "@/project/eventDrafts";
-import { store } from "@/project/store";
+import { hasEventDraftVaultEntries } from "@/project/eventDraftVault";
+import { store, type ProjectChangeCell } from "@/project/store";
 import { canWriteTeamProject } from "@/project/teamAccess";
 import { cloneProjectSharingSharedDictionaries } from "@/project/projectClone";
 import { jsonEqual } from "@/util/structuralJson";
@@ -165,8 +166,51 @@ function applySnapshotToProject(base: Project, snapshot: HistorySnapshot): Proje
   return next;
 }
 
+/** Only dense base-layer edits qualify. Every other map shape uses full restoration. */
+function restoredTileCells(current: GameMap | undefined, restored: GameMap): ProjectChangeCell[] | undefined {
+  if (!current || current.width !== restored.width || current.height !== restored.height) return undefined;
+  const { lowerTiles: lowerBefore, upperTiles: upperBefore, ...beforeRest } = current;
+  const { lowerTiles: lowerAfter, upperTiles: upperAfter, ...afterRest } = restored;
+  if (!jsonEqual(beforeRest, afterRest)) return undefined;
+  const cells: ProjectChangeCell[] = [];
+  for (const [layer, before, after] of [
+    ["lower", lowerBefore, lowerAfter],
+    ["upper", upperBefore, upperAfter],
+  ] as const) {
+    if (before.length !== after.length || before.length !== restored.width * restored.height) return undefined;
+    for (let index = 0; index < before.length; index += 1) {
+      if (before[index] === after[index]) continue;
+      cells.push({ x: index % restored.width, y: Math.floor(index / restored.width), layer });
+      // Large fills still use the existing full redraw instead of a huge cell descriptor.
+      if (cells.length > 4096) return undefined;
+    }
+  }
+  return cells.length ? cells : undefined;
+}
+
 function replaceWithSnapshot(snapshot: HistorySnapshot): void {
-  store.replace(applySnapshotToProject(store.getCurrent(), snapshot));
+  const current = store.getCurrent();
+  const map = snapshot.kind === "map" ? current.maps[snapshot.mapId] : undefined;
+  // A vaulted draft may restore an event during replacement, so it needs the
+  // full project notification. Locked terrain also retains the existing restore
+  // semantics rather than passing through painting's lock enforcement.
+  const cells = snapshot.kind === "map" && !snapshot.beforeTilesets
+    && !map?.terrainDesign?.lockedCells?.length && !hasEventDraftVaultEntries()
+    ? restoredTileCells(map, snapshot.before)
+    : undefined;
+  if (cells && snapshot.kind === "map") {
+    // Copy-on-write tile adoption keeps unrelated maps and persistence baselines
+    // intact, and emits the same cell descriptor as the original paint stroke.
+    store.updateMapTiles(snapshot.mapId, draft => {
+      for (const cell of cells) {
+        const index = cell.y * draft.width + cell.x;
+        if (cell.layer === "lower") draft.lowerTiles[index] = snapshot.before.lowerTiles[index];
+        else draft.upperTiles[index] = snapshot.before.upperTiles[index];
+      }
+    }, { cells });
+    return;
+  }
+  store.replace(applySnapshotToProject(current, snapshot));
 }
 
 /** replace 가 쓰기 거부로 현재 프로젝트를 그대로 두면 false. 호출자가 스택을 되돌린다. */
