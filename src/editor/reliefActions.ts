@@ -5,7 +5,8 @@ import { store, type ProjectChangeCell } from "@/project/store";
 import { TILE } from "@/project/defaults";
 import { plainGrassTileFor } from "@/project/defaults/defaultMaps";
 import { layerTileAt, setLayerTileAt } from "@/project/mapLayers";
-import { emptyRelief, reliefIsFlat, type ReliefBrushMode } from "@/project/relief/edit";
+import { reliefChangedCells, type ReliefCellChange } from "@/project/relief/changes";
+import { copyRelief, emptyRelief, reliefIsFlat, type ReliefBrushMode } from "@/project/relief/edit";
 import { roughReliefStroke, tidyReliefRegion, type ReliefRoughOptions } from "@/project/relief/roughBrush";
 import { RELIEF_STYLES } from "@/project/relief/styles";
 import type { ReliefData } from "@/project/relief/types";
@@ -41,10 +42,17 @@ export function commitReliefEdit(
   const project = store.getCurrent();
   const map = project.maps[mapId];
   if (!map) return false;
-  const next: ReliefData = map.relief ? { ...map.relief, levels: map.relief.levels.slice() } : emptyRelief(map.width, map.height);
+  const next: ReliefData = map.relief ? copyRelief(map.relief) : emptyRelief(map.width, map.height);
   const before = map.relief?.levels;
   if (!edit(next)) return false;
-  for (const index of map.terrainDesign?.lockedCells ?? []) next.levels[index] = before?.[index] ?? 0;
+  const locks = new Set(map.terrainDesign?.lockedCells ?? []);
+  for (const index of locks) {
+    next.levels[index] = before?.[index] ?? 0;
+    if (next.ramps) next.ramps[index] = map.relief?.ramps?.[index] ?? 0;
+  }
+  if (locks.size && (next.wallDecor || map.relief?.wallDecor)) {
+    next.wallDecor = [...(next.wallDecor ?? []).filter(d => !locks.has(d.y * map.width + d.x)), ...(map.relief?.wallDecor ?? []).filter(d => locks.has(d.y * map.width + d.x)).map(d => ({ ...d }))];
+  }
   const grass = options.topGrass ? reliefTopGrassTile(project.tilesets[map.tilesetId]) : undefined;
   let memory = coveredGround.get(mapId);
   const tileEdits: { readonly index: number; readonly ground: number; readonly overlay: number }[] = [];
@@ -70,14 +78,19 @@ export function commitReliefEdit(
     }
   }
   const cells: ProjectChangeCell[] = tileEdits.map(({ index }) => ({ x: index % map.width, y: Math.floor(index / map.width), layer: "lower" as const }));
+  const storedRelief = reliefIsFlat(next) ? undefined : next;
+  const reliefCells = reliefChangedCells(map.relief, storedRelief, map.width, map.height);
+  const change: ReliefCellChange & { label: string; relief: true; cells?: readonly ProjectChangeCell[] } = {
+    label: options.label, relief: true, ...(cells.length ? { cells } : {}), ...(reliefCells === undefined ? {} : { reliefCells }),
+  };
   store.updateMapTiles(mapId, (draft) => {
-    if (reliefIsFlat(next)) delete draft.relief;
+    if (!storedRelief) delete draft.relief;
     else draft.relief = next;
     for (const { index, ground, overlay } of tileEdits) {
       setLayerTileAt(draft, 1, index, ground);
       if (layerTileAt(draft, 2, index) !== overlay) setLayerTileAt(draft, 2, index, overlay);
     }
-  }, { label: options.label, relief: true, ...(cells.length > 0 ? { cells } : {}) });
+  }, change);
   return true;
 }
 

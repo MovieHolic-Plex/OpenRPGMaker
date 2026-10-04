@@ -57,6 +57,54 @@
   창 굽기 한 번은 node 기준 중앙값 약 32ms(반지름 2 붓, 6단 언덕).
 - 붓질 중 `refreshAuthoringJourney` 는 프로젝트 참조 점검을 다시 돌리지 않는다 — 칠하기마다 store 세대가 올라 문서 키가 늘 달라져, 키만 보고 표본마다 점검을 돌리던 것을 막았다.
 
+## UX2 높이·컬링 수정 (2026-10-04, 소스 변경 · 브라우저 QA 대기)
+
+이 절은 위의 전체 픽셀 backing/shift 설명을 대체한다. `reliefLiveStrips.ts`는
+`relief/paged.ts`의 256×256 페이지를 화면과 한 페이지 여유 범위에 보존한다.
+페이지 y는 `화면 raster y − pad`인 땅 좌표다. 최고 단 변경은 논리적 원점만 바꾸며
+기존 페이지 배열을 밀거나 복사하지 않는다. 화면 밖 페이지는 원본 격자/경사로/재질에서
+다시 생성한다. 페이지 화소의 행 주인과 under/over, 경사로 전체 의존 범위, 24px 뒤 패스
+여백, 절대 무늬 좌표를 유지한다. 맵 가장자리의 반대쪽 열 읽기는 기존 창 규칙대로 전체
+가로 폭을 읽는다. 이는 임시 raster 작업 범위이며 보존 backing은 여전히 페이지다.
+벽 보로노이 표도 창 크기와 원점으로 할당하며 필요한 화소만 계산한다.
+
+서명 기본 API `reliefSignature`는 내용 검사를 생략하지 않는다. 저장소 게시 전 얕은 초안이
+같은 배열/장식 객체를 수정한 경우도 감지한다. 편집기 읽기는 `prepareReliefRead`와
+`reliefReadSignature`를 쓰고, `store.getVersionToken()`의 lineage/generation에 서명·높이 유무를
+기억한다. 따라서 같은 세대의 호버는 배열을 다시 읽지 않고, levels/ramps/style/wallDecor의
+제자리 쓰기·undo·프로젝트 교체는 새 세대에서 다시 읽는다. 게시 전에 기하를 조회하는
+쓰기 도우미는 `invalidateReliefRevision`/`invalidateReliefSlopes`를 호출한다.
+버전 없는 입력은 계속 내용 검사한다. 내보내기 플레이어는 쓰기 API가 없는 정적 프로젝트를
+읽으며, 편집 가능한 store와 별도의 읽기 전용 계약이다. picking의 탐색 상한은 `field.maxLift`다.
+
+지면은 같은 입력이면 기존 surface/fingerprint를 그대로 쓴다. lower 셀 통지는 1층·2층·그림자·
+스택의 해당 지문을 갱신하고 8이웃 합성 캐시를 비운다. relief만/upper만 바뀌면 ground 서명은
+바뀌지 않는다. 범위 없는 맵 변경·자산/프로젝트 교체는 보수적으로 캐시를 버린다.
+첫/마지막 언덕은 현재 원본 행 창(최대 들림 포함)과 남아 있는 tileIndex 셀을 먼저 합친다.
+이후에만 타일 자리 비교·이웃 확장·정렬을 한다. 전체 맵 좌표 객체를 만들고 거르는 경로는 제거했다.
+
+`playSceneTileCulling`은 실제 destroy 이벤트에서 즉시 dense swap-remove하며, 편집기도 제거 전에
+명시적으로 unregister한다. 버킷과 좌표를 함께 갱신하므로 카메라가 같은 창에 있거나 다른 버킷을
+방문하지 않아도 죽은 GameObject가 보존되지 않는다. 숨김은 active를 변경하지 않고 물 애니메이션을
+pause/resume한다. 마지막 자식을 제거한 청크는 실제 부모 정체성으로 찾아 registry에서 제거하고 파괴한다.
+
+조수 구독용 추가 계약은 `relief/changes.ts`의 `ReliefCellChange.reliefCells`다. `commitReliefEdit`은
+잠금 복원을 적용한 최종 relief의 원시 변경 칸을 이 필드로 통지한다. 기존 `cells`는 실제 바닥/상층
+편집 칸이며 두 필드는 서로 대신하지 않는다. `[]`는 알려진 변경 없음, 필드 부재는 범위를 모르는
+전체 변경(양식 변경 포함)이다. store/조수 구독 타입 소유자는 이 확장 필드를 받아야 한다.
+이 슬라이스는 해당 파일을 수정하지 않는다.
+
+전체 raster 기준 경로(`renderRelief`와 `window.ts`의 전체 image/patch)는 남겨 둔다.
+편집기 `__oprnEditReliefRebuild()`의 full 기준 비교는 96×96 이하 QA 맵으로 제한한다.
+일반 fallback은 모든 **resident 페이지**를 다시 굽으며 전체 맵 화소 배열을 만들지 않는다.
+`__oprnEditReliefStats()`는 기존 mode 횟수에 backing(page 수·7바이트/화소 배열 크기·pad·원점),
+culling(추적 수·버킷 수·죽은 수), resident 타일 객체 수, 청크 수와 빈 청크 수를 추가한다.
+바이트 수는 세 보존 배열만이며 atlas/scratch/canvas/GPU/격자를 포함하지 않는다.
+
+회귀: `test/reliefUx2Pages.test.ts`는 페이지 RGBA·주인 행·under/over와 전체 렌더,
+재질/계단/경사로/다리, pad 증감, 왕복 팬의 보존량, 게시 전 제자리 서명과 warm 읽기 비용을 비교한다.
+이번 세션은 테스트/게이트/typecheck/브라우저를 실행하지 않는다. native 기하/raster QA는 통합 후 수행한다.
+
 ## 지형 설치 확장 (2026-10-03)
 
 [지형 설치 도구](terrain-placement-tools.md)가 현재 계약이다. 네 방향 경사로 폭 2/4/6, 두 둑 클릭 다리,

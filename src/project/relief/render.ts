@@ -202,22 +202,25 @@ function chunkRaw(x: number, y: number): [number, number] {
   }
   return [bx, by];
 }
-// 벽 덩이(보로노이) 표는 좌표에만 의존하므로 모자랄 때만 다시 만든다(더 넓은 표는 그대로 쓴다 — 값은 좌표로만 정해진다).
-// 줄은 쓰는 만큼만 채운다(r0..r1) — 편집기 부분 굽기는 창 높이만큼만 읽는다(100×100 맵 표 전체는 약 0.4초).
-let CK: Int32Array | null = null, CKX = new Int32Array(0), CKY = new Int32Array(0), CKW = 0, CKH = 0, CKFILLED = new Uint8Array(0);
-function ensureChunks(PW: number, SH: number, r0 = 0, r1 = SH + 5) {
-  if (!CK || CKW < PW + 1 || CKH < SH + 5) {
-    CKW = PW + 1; CKH = SH + 5 + 64;
-    CK = new Int32Array(CKW * CKH); CKX = new Int32Array(CKW * CKH); CKY = new Int32Array(CKW * CKH); CKFILLED = new Uint8Array(CKH);
+// Window-local, lazily populated Voronoi table. Coordinates remain absolute;
+// a distant page must not allocate a table covering the entire map rectangle.
+let CK = new Int32Array(0), CKX = new Int32Array(0), CKY = new Int32Array(0), CKFILLED = new Uint8Array(0);
+let CKW = 0, CKH = 0, CKOX = 0, CKOY = 0;
+function ensureChunks(x0: number, y0: number, width: number, height: number): void {
+  CKOX = x0; CKOY = y0; CKW = width; CKH = height;
+  const n = width * height;
+  if (CK.length < n) {
+    CK = new Int32Array(n); CKX = new Int32Array(n); CKY = new Int32Array(n); CKFILLED = new Uint8Array(n);
+  } else CKFILLED.fill(0, 0, n);
+}
+function chunkIndex(x: number, y: number): number {
+  const i = (y - CKOY) * CKW + x - CKOX;
+  if (x < CKOX || x >= CKOX + CKW || y < CKOY || y >= CKOY + CKH) throw new RangeError("Relief pattern halo");
+  if (!CKFILLED[i]) {
+    const [a, b] = chunkRaw(x, y);
+    CKX[i] = a; CKY[i] = b; CK[i] = (a + 4096) * 8192 + (b + 4096); CKFILLED[i] = 1;
   }
-  for (let r = Math.max(0, r0); r < Math.min(CKH, r1); r++) {
-    if (CKFILLED[r]) continue;
-    CKFILLED[r] = 1;
-    for (let x = 0; x < CKW; x++) {
-      const [a, b] = chunkRaw(x, r - 2), i = r * CKW + x;
-      CKX[i] = a; CKY[i] = b; CK[i] = (a + 4096) * 8192 + (b + 4096);
-    }
-  }
+  return i;
 }
 
 // ---- 높이 규칙: 렌더가 그릴 수 없는 1칸 폭 돌기·홈을 깎는다 ----
@@ -494,9 +497,9 @@ export function renderRelief(h: HeightGrid, opt: ReliefRenderOptions = {}): Reli
   // 무늬 세로 좌표 = 화면 y + yb (땅 기준, PATTERN_BIAS 참고)
   const yb = oy - pad + PATTERN_BIAS;
   // 벽 화소가 읽는 표 줄: (무늬 y ± 2) + 2 → yb .. yb + SH + 4
-  ensureChunks(win ? win.PW : PW, (win ? win.SH - win.pad : PH) + PATTERN_BIAS, yb, yb + SH + 5);
+  ensureChunks(ox, yb - 2, PW + 1, SH + 5);
   const CKa = CK!;
-  const ck = (x: number, y: number) => CKa[(y + 2) * CKW + x];
+  const ck = (x: number, y: number) => CKa[chunkIndex(x, y)];
   // 반환 배열(kind·lev·src·edge·fl·mpy·ssl·sst·rgba·xray·overSlope)은 창 굽기일 때만 모아 쓴다
   const ret = !!win;
   const kind = take("kind", i8, N, -1, ret), lev = take("lev", i8, N, 0, ret), dep = take("dep", i16, N, 0, true), run = take("run", i16, N, 0, true);
@@ -577,7 +580,7 @@ export function renderRelief(h: HeightGrid, opt: ReliefRenderOptions = {}): Reli
     } else if (d < de) {
       p = LIP[L ? "L" : R ? "R" : "M"][Math.max(0, d - j) * T + (L ? 0 : R ? 15 : sx % T)];
     } else {
-      const dd = d - de, ci = (ay + 2) * CKW + ax, cid = CKa[ci];
+      const dd = d - de, ci = chunkIndex(ax, ay), cid = CKa[ci];
       const hr = hsh3(CKX[ci], CKY[ci], 31);
       const tl = TILES[hr % TILES.length];
       const t = tl[((ay + (hr >>> 5)) % 14) * 14 + (ax + (hr >>> 9)) % 14];

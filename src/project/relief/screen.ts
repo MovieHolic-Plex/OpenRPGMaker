@@ -8,6 +8,7 @@ import { RELIEF_TILE, type ReliefData } from "./types";
 import { reliefGrids } from "./window";
 import { hasRelief, reliefBridgeMask, reliefSlopes } from "./walk";
 import { reliefRampArt } from "./styles";
+import { reliefState } from "./revision";
 
 export interface ReliefLiftField {
   readonly width: number;
@@ -19,13 +20,14 @@ export interface ReliefLiftField {
   readonly maxLift: number;
 }
 
-const fields = new WeakMap<ReliefData, { levels: number[]; field: ReliefLiftField }>();
+const fields = new WeakMap<ReliefData, { signature: number; field: ReliefLiftField }>();
 
 /** relief → 칸 들림 표. 같은 relief 객체면 다시 계산하지 않는다(런타임은 매 프레임 부른다). */
 export function reliefLiftField(relief: ReliefData): ReliefLiftField {
+  const signature = reliefState(relief).signature;
   const cached = fields.get(relief);
+  if (cached?.signature === signature) return cached.field;
   const slopes = reliefSlopes(relief);
-  if (cached && cached.levels === relief.levels && cached.field.slopes === slopes) return cached.field;
   const { width, height } = relief;
   const drawn = reliefGrids(relief).pruned;
   const elevation = new Float32Array(width * height);
@@ -47,7 +49,7 @@ export function reliefLiftField(relief: ReliefData): ReliefLiftField {
   for (const h of elevation) maxLift = Math.max(maxLift, h);
   for (const s of slopes) maxLift = Math.max(maxLift, s.hi);
   const field = { width, height, elevation, slopes, slopeOwners, maxLift };
-  fields.set(relief, { levels: relief.levels, field });
+  fields.set(relief, { signature, field });
   return field;
 }
 
@@ -73,15 +75,17 @@ export function reliefRenderOptions(relief: ReliefData, ground?: ReliefRenderOpt
  * 편집기가 높이 붓 한 번마다 맵 전체 타일을 다시 만들지 않고 이 칸들의 타일만 다시 올리는 데 쓴다.
  * 맵 크기는 같다고 본다(크기가 바뀌면 호출부가 전체를 다시 그린다). 평지·relief 없음은 들림 0 이다.
  */
-export function reliefTileSlotChangedCells(before: ReliefData | undefined, after: ReliefData | undefined, width: number, height: number): { x: number; y: number }[] {
+export function reliefTileSlotChangedCells(before: ReliefData | undefined, after: ReliefData | undefined, width: number, height: number, candidates?: readonly { x: number; y: number }[]): { x: number; y: number }[] {
   const a = hasRelief(before) ? reliefLiftField(before) : null;
   const b = hasRelief(after) ? reliefLiftField(after) : null;
   if (!a && !b && !before?.ramps && !after?.ramps) return [];
   const cells: { x: number; y: number }[] = [];
-  for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) {
+  const compare = (x: number, y: number) => {
     const liftBefore = a ? cellLift(a, x, y) : 0, liftAfter = b ? cellLift(b, x, y) : 0;
     if (liftBefore !== liftAfter || reliefPaintsCell(before, x, y) !== reliefPaintsCell(after, x, y)) cells.push({ x, y });
-  }
+  };
+  if (candidates) for (const { x, y } of candidates) compare(x, y);
+  else for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) compare(x, y);
   return cells;
 }
 
@@ -133,19 +137,17 @@ export function pointLift(field: ReliefLiftField, fx: number, fy: number): numbe
   return (a * (1 - tx) + b * tx) * (1 - ty) + (c * (1 - tx) + d * tx) * ty;
 }
 
-/** 단·경사로·벽면 장식 전부를 담는 32비트 서명. 타일 계층 재생성 판정·편집기 렌더 키에 쓴다. */
+/** Always content verified, including a shallow draft alias before publication.
+ * 단·경사로·벽면 장식 전부를 담는 32비트 서명. 타일 계층 재생성 판정·편집기 렌더 키에 쓴다. */
 export function reliefSignature(relief: ReliefData | undefined): number {
   if (!relief) return 0;
-  let hash = 0x811c9dc5;
-  const mix = (v: number) => { hash ^= v & 0xffff; hash = Math.imul(hash, 0x01000193); hash ^= v >>> 16; hash = Math.imul(hash, 0x01000193); };
-  mix(relief.width); mix(relief.height);
-  for (const v of relief.levels) mix(v);
-  mix(relief.ramps?.length ?? 0);
-  for (const v of relief.ramps ?? []) mix(v);
-  mix(relief.wallDecor?.length ?? 0);
-  for (const d of relief.wallDecor ?? []) { mix(d.x); mix(d.y); mix(d.row); mix(d.tile); }
-  for (const ch of relief.style ?? "") mix(ch.charCodeAt(0));
-  return hash >>> 0;
+  return reliefState(relief, true).signature;
+}
+
+/** Committed read path only. The binder must expose an authoritative writer
+ * revision; unbound/draft input still gets content verification. */
+export function reliefReadSignature(relief: ReliefData | undefined): number {
+  return relief ? reliefState(relief).signature : 0;
 }
 
 /** 윗면(단 > 0, 불투명)은 그 줄 타일 **밑**, 벽·0단 발치 그늘·윗단 가장자리 선은 그 줄 타일 **위**에 그린다. */
@@ -210,8 +212,7 @@ export function reliefOverRgba(render: ReliefRender): Uint8ClampedArray {
 export function reliefPickCell(relief: ReliefData | undefined, x: number, groundY: number): { x: number; y: number; face: "top" | "wall" } {
   if (!relief || !hasRelief(relief) || x < 0 || x >= relief.width) return { x, y: groundY, face: "top" };
   const field = reliefLiftField(relief);
-  let maxLift = 0;
-  for (let i = 0; i < field.elevation.length; i++) maxLift = Math.max(maxLift, field.elevation[i] ?? 0);
+  const maxLift = field.maxLift;
   const fy = groundY + 0.5;
   for (let y = Math.min(relief.height - 1, groundY + Math.ceil(maxLift) + 1); y >= Math.max(0, groundY); y--) {
     const lift = cellLift(field, x, y), top = y - lift;

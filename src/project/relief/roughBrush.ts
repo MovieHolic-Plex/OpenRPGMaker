@@ -2,6 +2,7 @@
 // 노이즈가 큰 쪽은 한 번에 2단 떨어지는 절벽이 된다. 정밀 붓은 edit.ts 의 brushRelief 다.
 // 시안: claude-viz relief-brush-redesign.html (2026-10-03).
 
+import { invalidateReliefRevision } from "./revision";
 import { brushRelief, type ReliefBrushMode } from "./edit";
 import { hsh3 } from "./render";
 import { RELIEF_MAX_LEVEL, type ReliefData } from "./types";
@@ -53,6 +54,7 @@ export interface ReliefRoughOptions {
  *  · smooth·rough: 정밀 붓과 같은 연산을 큰 반지름으로.
  */
 export function roughReliefStroke(r: ReliefData, cx: number, cy: number, mode: ReliefBrushMode, opts: ReliefRoughOptions): boolean {
+  invalidateReliefRevision(r);
   const R = Math.max(1, opts.radius);
   if (mode === "smooth" || mode === "rough") return brushRelief(r, cx, cy, mode, { radius: R });
   const cap = clamp(opts.cap), base = clamp(opts.base), peak = clamp(opts.peak);
@@ -92,6 +94,7 @@ export function roughReliefStroke(r: ReliefData, cx: number, cy: number, mode: R
  * 경사로·다리가 놓인 칸은 건드리지 않는다. 사각형 밖은 조수·저자가 일부러 만든 것일 수 있어 그대로 둔다.
  */
 export function tidyReliefRegion(r: ReliefData, box: { x0: number; y0: number; x1: number; y1: number }): boolean {
+  invalidateReliefRevision(r);
   const x0 = Math.max(0, box.x0), y0 = Math.max(0, box.y0), x1 = Math.min(r.width - 1, box.x1), y1 = Math.min(r.height - 1, box.y1);
   if (x1 < x0 || y1 < y0) return false;
   const locked = (i: number) => (r.ramps?.[i] ?? 0) > 0;

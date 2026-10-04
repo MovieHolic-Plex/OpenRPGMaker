@@ -3,15 +3,16 @@
 // 런타임(player/reliefStrips.ts)은 맵을 열 때 한 번 굽고 줄 띠를 페이지 텍스처에 쌓는다. 편집기는 붓 표본마다 relief 가 바뀌므로
 // 같은 방식이면 표본마다 맵 전체를 굽고(100×100 약 0.8초) 페이지 전체를 다시 올린다(2026-10-03 실측: 120표본 드래그 13.9초,
 // 최대 2.5초 멈춤). 여기서는
-//   1) 전체 그림 버퍼(RGBA·주인 줄·윗면/벽)를 들고 있다가 바뀐 칸 둘레 창만 굽어 덮어쓰고(relief/window.ts — 전체 굽기와 화소 일치),
-//   2) 띠를 (줄, 윗면/벽, 256px 열 묶음) 단위 텍스처로 나눠 덮어쓴 사각형에 걸린 띠만 다시 올린다.
+//   1) 땅 좌표 256px 페이지를 화면 주변에만 보존한다.
+//   2) 바뀐 페이지에 걸친 (줄, 윗면/벽, 열 묶음) 띠만 올린다.
 // 줄 depth 계약은 그대로다: 줄 Y 의 윗면 = Y × EDIT_RELIEF_ROW_DEPTH, 벽 = + 7(editSceneRender.ts).
 import type Phaser from "phaser";
 import { reliefIsFlat } from "@/project/relief/edit";
 import { renderRelief, type ReliefGroundSurface } from "@/project/relief/render";
-import { reliefRenderOptions } from "@/project/relief/screen";
+import { reliefRenderOptions, reliefReadSignature as reliefSignature } from "@/project/relief/screen";
 import { RELIEF_TILE, type ReliefData } from "@/project/relief/types";
-import { applyReliefPatch, emptyReliefImage, planReliefPatch, reliefGrids, reliefImageFromRender, type ReliefImage, type ReliefScene } from "@/project/relief/window";
+import { planReliefPatch, reliefGrids, type ReliefScene } from "@/project/relief/window";
+import { ReliefPagedImage, type ReliefPageView } from "@/project/relief/paged";
 
 /** 띠를 가로로 자르는 폭(px, 16px 그림 기준). 붓 한 번이 건드리는 띠 수와 텍스처 수 사이의 타협. */
 const COLUMN = 256;
@@ -38,6 +39,8 @@ export interface ReliefLiveStripsHost {
   readonly name: string;
   /** 줄·띠(1 윗면, 2 벽)의 depth */
   depthOf(row: number, part: 1 | 2): number;
+  /** Optional override for full-map capture hosts. World pixels. */
+  viewport?(): ReliefPageView | undefined;
 }
 
 export interface ReliefLiveStripsStats {
@@ -46,10 +49,12 @@ export interface ReliefLiveStripsStats {
 }
 
 export class ReliefLiveStrips {
-  private image: ReliefImage | null = null;
+  private image: ReliefPagedImage | null = null;
   /** image 를 만든 굽기 입력 — 다음 relief 와 견줘 바뀐 창을 찾는다 */
   private scene: ReliefScene | null = null;
   private tileSize = 0;
+  private revision = "";
+  private groundSignature: number | undefined;
   private readonly strips = new Map<number, Strip>();
   private serial = 0;
   private groundAlpha = 1;
@@ -84,31 +89,39 @@ export class ReliefLiveStrips {
     }
     const scene: ReliefScene = { grids: reliefGrids(relief), opts: reliefRenderOptions(relief, ground) };
     if (tileSize !== this.tileSize) this.clear();
-    // 이전 그림이 없으면 평지 그림에서 시작한다 — 빈 맵에 처음 칠한 붓도 창으로 굽는다
     const sameSize = this.image?.W === relief.width && this.image.H === relief.height;
-    const base = sameSize ? this.image! : emptyReliefImage(relief.width, relief.height);
-    const plan = forceFull ? null : planReliefPatch(sameSize ? this.scene : null, scene, base);
-    if (plan === "same") {
-      this.scene = scene;
-      return { mode: "same", strips: 0 };
-    }
-    if (plan) {
-      if (!sameSize) this.clear();
-      this.image = base;
-      this.tileSize = tileSize;
-      const { shift, rows } = applyReliefPatch(base, scene, plan);
-      this.scene = scene;
-      // pad 가 바뀌면 그림이 세로로 밀렸다 — 띠 상자만 옮긴다(월드 위치·캔버스 내용은 그대로)
-      if (shift) for (const strip of this.strips.values()) { strip.y0 += shift; strip.y1 += shift; }
-      return { mode: "window", strips: this.redrawRects(rows, plan.windows) };
-    }
-    const next = reliefImageFromRender(renderRelief(scene.grids.eff, scene.opts), relief.width, relief.height);
-    // 그림 폭이 바뀌면 띠 번호(열 묶음 수)가 달라진다 — 옛 띠를 다 버린다
     if (!sameSize) this.clear();
-    this.image = next;
-    this.scene = scene;
+    this.image ??= new ReliefPagedImage(relief.width, relief.height);
     this.tileSize = tileSize;
-    return { mode: "full", strips: this.rebuildAll() };
+    const revision = `${reliefSignature(relief)}:${ground?.signature ?? "none"}`;
+    const plan = forceFull || this.groundSignature !== ground?.signature ? null : planReliefPatch(this.scene, scene, this.image);
+    // The full raster remains an independent reference for small parity fixtures.
+    // Production fallbacks bake every resident page, never a map-wide pixel image.
+    if (forceFull && relief.width * relief.height > 96 * 96) throw new RangeError("Full relief reference is limited to 96×96 QA fixtures");
+    const reference = forceFull ? renderRelief(scene.grids.eff, scene.opts) : undefined;
+    const patch = this.image.sync(scene, revision, this.viewport(), reference, plan === "same" ? [] : plan?.windows);
+    this.scene = scene; this.revision = revision; this.groundSignature = ground?.signature;
+    if (patch.shift) for (const strip of this.strips.values()) { strip.y0 += patch.shift; strip.y1 += patch.shift; }
+    const updated = forceFull ? this.rebuildAll() : this.redrawRects(patch.rows, patch.rects);
+    return { mode: !patch.rects.length ? "same" : forceFull || !plan ? "full" : "window", strips: updated };
+  }
+
+  /** Camera movement only prepares newly resident pages, using retained inputs. */
+  syncView(): void {
+    if (!this.image || !this.scene) return;
+    const patch = this.image.sync(this.scene, this.revision, this.viewport());
+    if (patch.rects.length) this.redrawRects(patch.rows, patch.rects);
+  }
+
+  get backingStats(): { pages: number; bytes: number; pad: number; originY: number; strips: number } {
+    return { ...(this.image?.stats ?? { pages: 0, bytes: 0, pad: 0, originY: 0 }), strips: this.strips.size };
+  }
+
+  private viewport(): ReliefPageView | undefined {
+    const view = this.host.viewport ? this.host.viewport() : this.host.scene.cameras?.main?.worldView;
+    if (!view || view.width <= 0 || view.height <= 0) return undefined;
+    const scale = RELIEF_TILE / this.tileSize;
+    return { x: view.x * scale, y: view.y * scale, width: view.width * scale, height: view.height * scale };
   }
 
   /** 띠·텍스처를 모두 버린다. */
@@ -117,6 +130,7 @@ export class ReliefLiveStrips {
     this.strips.clear();
     this.image = null;
     this.scene = null;
+    this.revision = ""; this.groundSignature = undefined;
   }
 
   /** 씬이 내려가 이미지가 이미 파괴됐을 때 — 참조만 버리고 텍스처를 지운다. */
@@ -125,6 +139,7 @@ export class ReliefLiveStrips {
     this.strips.clear();
     this.image = null;
     this.scene = null;
+    this.revision = ""; this.groundSignature = undefined;
   }
 
   private columns(): number {
@@ -139,21 +154,15 @@ export class ReliefLiveStrips {
   private rebuildAll(): number {
     const image = this.image!;
     const boxes = new Map<number, [number, number, number, number]>();
-    const { PW, SH, owner, part } = image;
-    for (let sy = 0; sy < SH; sy++) {
-      for (let sx = 0; sx < PW; sx++) {
-        const i = sy * PW + sx, p = part[i]!;
-        if (!p) continue;
-        const k = this.stripKey(owner[i]!, p, (sx / COLUMN) | 0);
-        const box = boxes.get(k);
-        if (!box) boxes.set(k, [sx, sy, sx + 1, sy + 1]);
-        else {
-          if (sx < box[0]) box[0] = sx;
-          if (sx >= box[2]) box[2] = sx + 1;
-          if (sy >= box[3]) box[3] = sy + 1;
-        }
+    image.visit({ x0: 0, y0: 0, x1: image.PW, y1: image.SH }, (sx, sy, row, p) => {
+      const k = this.stripKey(row, p, Math.floor(sx / COLUMN));
+      const box = boxes.get(k);
+      if (!box) boxes.set(k, [sx, sy, sx + 1, sy + 1]);
+      else {
+        box[0] = Math.min(box[0], sx); box[1] = Math.min(box[1], sy);
+        box[2] = Math.max(box[2], sx + 1); box[3] = Math.max(box[3], sy + 1);
       }
-    }
+    });
     for (const [k, strip] of this.strips) if (!boxes.has(k)) { this.destroyStrip(strip); this.strips.delete(k); }
     let added = false;
     for (const [k, box] of boxes) added = this.drawStrip(k, box[0], box[1], box[2], box[3], true) || added;
@@ -164,26 +173,19 @@ export class ReliefLiveStrips {
   /** 창 덮어쓰기 뒤: 덮어쓴 사각형들에 걸린 (줄, 띠, 열 묶음)만 다시 올린다. */
   private redrawRects(rows: ReadonlySet<number>, rects: readonly { x0: number; y0: number; x1: number; y1: number }[]): number {
     const image = this.image!;
-    const { PW, owner, part } = image;
     // 덮어쓴 사각형 안 새 화소의 상자 — 띠 상자는 이것과 옛 상자의 합집합으로 넓힌다
     const fresh = new Map<number, [number, number, number, number]>();
     const keys = new Set<number>();
     for (const { x0, y0, x1, y1 } of rects) {
-      for (let sy = y0; sy < y1; sy++) {
-        for (let sx = x0; sx < x1; sx++) {
-          const i = sy * PW + sx, p = part[i]!;
-          if (!p) continue;
-          const k = this.stripKey(owner[i]!, p, (sx / COLUMN) | 0);
-          const box = fresh.get(k);
-          if (!box) fresh.set(k, [sx, sy, sx + 1, sy + 1]);
-          else {
-            if (sx < box[0]) box[0] = sx;
-            if (sy < box[1]) box[1] = sy;
-            if (sx >= box[2]) box[2] = sx + 1;
-            if (sy >= box[3]) box[3] = sy + 1;
-          }
+      image.visit({ x0, y0, x1, y1 }, (sx, sy, row, p) => {
+        const k = this.stripKey(row, p, Math.floor(sx / COLUMN));
+        const box = fresh.get(k);
+        if (!box) fresh.set(k, [sx, sy, sx + 1, sy + 1]);
+        else {
+          box[0] = Math.min(box[0], sx); box[1] = Math.min(box[1], sy);
+          box[2] = Math.max(box[2], sx + 1); box[3] = Math.max(box[3], sy + 1);
         }
-      }
+      });
       const c0 = (x0 / COLUMN) | 0, c1 = ((x1 - 1) / COLUMN) | 0;
       for (const row of rows) for (const p of [1, 2]) for (let c = c0; c <= c1; c++) keys.add(this.stripKey(row, p, c));
     }
@@ -206,7 +208,7 @@ export class ReliefLiveStrips {
    */
   private drawStrip(k: number, x0: number, y0: number, x1: number, y1: number, tight: boolean): boolean {
     const image = this.image!;
-    const { PW, pad, owner, part } = image;
+    const { pad } = image;
     const cols = this.columns();
     const row = Math.floor(k / cols / 2), p = Math.floor(k / cols) % 2 + 1;
     const w = x1 - x0, h = y1 - y0;
@@ -219,17 +221,12 @@ export class ReliefLiveStrips {
     const dst = scratch.subarray(0, tw * th);
     dst.fill(0);
     const pixels = new ImageData(new Uint8ClampedArray(dst.buffer, 0, tw * th * 4), tw, th);
-    const src = new Uint32Array(image.rgba.buffer, image.rgba.byteOffset, image.rgba.length >> 2);
     let any = false;
-    for (let sy = y0; sy < y1; sy++) {
-      const base = sy * PW, out = (sy - y0) * tw - x0;
-      for (let sx = x0; sx < x1; sx++) {
-        const i = base + sx;
-        if (part[i] !== p || owner[i] !== row) continue;
-        dst[out + sx] = src[i]!;
-        any = true;
-      }
-    }
+    image.visit({ x0, y0, x1, y1 }, (sx, sy, owner, part, rgba) => {
+      if (part !== p || owner !== row) return;
+      dst[(sy - y0) * tw + sx - x0] = rgba;
+      any = true;
+    });
     if (!any) {
       if (strip) { this.destroyStrip(strip); this.strips.delete(k); }
       return false;
