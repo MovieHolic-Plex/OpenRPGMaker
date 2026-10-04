@@ -2,6 +2,9 @@ import type Phaser from "phaser";
 import { sunlightField, normalizeSunlight, type SunlightField } from "@/project/sunlight";
 import { mapTileSize } from "@/project/tileGeometry";
 import type { GameMap, TilesetDef } from "@/project/types";
+import { ensureTilesetTexture } from "@/editor/tilesetImage";
+import { canvasSunlightArt } from "@/project/sunlightArtCanvas";
+import type { SunlightArtSource } from "@/project/sunlightArt";
 
 const instances = new WeakMap<object, SunlightLayer>();
 let serial = 0;
@@ -29,6 +32,7 @@ export class SunlightLayer {
   private inputKey = "";
   private viewKey = "";
   private field: SunlightField | null = null;
+  private artSource: SunlightArtSource | undefined;
   private readonly prefix = `sunlight-${serial++}-`;
   readonly counts = { builds: 0, frames: 0, pending: 0 };
 
@@ -46,12 +50,20 @@ export class SunlightLayer {
     const key = JSON.stringify(params);
     if (!map || !params.enabled || params.opacity === 0) {
       if (this.map || this.patches.size) this.clear();
-      this.map = undefined; this.field = null;
+      this.map = undefined; this.field = null; this.artSource = undefined;
       return false;
     }
-    if (this.map !== map || this.tileset !== tileset || this.inputKey !== key) {
+    if (this.map !== map || this.tileset !== tileset || this.inputKey !== key || (!this.artSource && tileset)) {
       this.clear(); this.map = map; this.tileset = tileset; this.inputKey = key;
-      this.field = sunlightField(map, tileset); this.counts.builds++;
+      this.artSource = undefined;
+      if (tileset) {
+        const textureKey = ensureTilesetTexture(this.scene, tileset);
+        if (this.scene.textures.exists(textureKey)) {
+          const image = this.scene.textures.get(textureKey).getSourceImage() as CanvasImageSource;
+          this.artSource = canvasSunlightArt(image, tileset.tileSize, tileset.tilesPerRow);
+        }
+      }
+      this.field = sunlightField(map, tileset, this.artSource); this.counts.builds++;
     }
     const field = this.field;
     const view = this.scene.cameras.main.worldView;
@@ -114,7 +126,9 @@ export class SunlightLayer {
     return { ...this.counts, visible: [...this.patches.values()].filter(p => p.image.visible).length,
       textures: this.patches.size, enabled: !!this.map && normalizeSunlight(this.map.sunlight).enabled,
       params: this.map ? normalizeSunlight(this.map.sunlight) : undefined,
-      casters: this.field?.casters.map(({ id, kind, height, base, x, y, w, d }) => ({ id, kind, height, base, x, y, w, d })) ?? [] };
+      nativeArt: !!this.artSource,
+      casters: this.field?.casters.map(({ id, kind, height, base, x, y, w, d, volumes }) =>
+        ({ id, kind, height, base, x, y, w, d, components: volumes?.length ?? 1 })) ?? [] };
   }
 }
 export function invalidateSunlight(scene: object): void { instances.get(scene)?.invalidate(); }

@@ -5,7 +5,7 @@ import {resolve} from 'node:path';
 import {DatabaseSync} from 'node:sqlite';
 import {createHash} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
-const folder=resolve('.vite-cache/sunlight/project'),out=resolve('verify-shots/sunlight/editor');mkdirSync(out,{recursive:true});
+const folder=resolve('.vite-cache/sunlight/project'),out=resolve(process.env.OPRN_SUNLIGHT_QA_OUT??'verify-shots/sunlight/editor');mkdirSync(out,{recursive:true});
 const hash=value=>createHash('sha256').update(JSON.stringify(value)).digest('hex');
 const snapshot=()=>{const db=new DatabaseSync(resolve(folder,'project.sqlite'),{readOnly:true});try{
  const info=db.prepare('select project_id,revision from project where id=1').get(),rows=db.prepare('select map_id,map_json from maps').all();
@@ -41,6 +41,9 @@ try{
  await saved(m=>m.sunlight.azimuth===315&&m.sunlight.altitude===24);await page.screenshot({path:resolve(out,'02-controls.png')});await close();await idle(true);
  await caption('북서쪽 낮은 태양 · 고지 위 집과 절벽의 긴 그림자');await shot('02-northwest-low');proof.states.push({name:'northwest-low',stats:await page.evaluate(()=>window.__oprnEditSunlightStats())});await page.waitForTimeout(1500);
  const beforeIdle=await page.evaluate(()=>window.__oprnEditSunlightStats());await page.waitForTimeout(1500);const afterIdle=await page.evaluate(()=>window.__oprnEditSunlightStats());
+ if(!beforeIdle.nativeArt||beforeIdle.casters.length!==4)throw Error('Native building silhouettes not active');
+ if(beforeIdle.casters.find(c=>c.id==='sp_a2ff01d4-09f0-4e24-a2c7-65a12be34406')?.components!==3)throw Error('House and detached statues merged');
+ proof.nativeBuildingSilhouettes=true;
  if(beforeIdle.frames!==afterIdle.frames||beforeIdle.builds!==afterIdle.builds)throw Error('Static sun rebuilt during idle');proof.idleCache=true;
  await open();await number('azimuth',135);await saved(m=>m.sunlight.azimuth===135&&m.sunlight.altitude===24);await close();await idle(true);
  await caption('태양을 남동쪽으로 · 그림자가 반대쪽으로 이동');await shot('03-southeast-low');proof.states.push({name:'southeast-low',stats:await page.evaluate(()=>window.__oprnEditSunlightStats())});await page.waitForTimeout(1500);

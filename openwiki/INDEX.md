@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **141쪽 / 4828KB / 약 1,401,965 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **141쪽 / 4829KB / 약 1,402,327 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -128,7 +128,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/tile-geometry.md` | 2 | `output/slates-reference/source-row.json`, `scripts/content/save-slates-reference.mjs` |
 | `openwiki/tile-layer-policy.md` | 2 | `Castle2_5.png`, `clean_furniture.png` |
 | `openwiki/tileset-reference-documents.md` | 3 | `scripts/content/save-tileset-references.mjs`, `tilesetAiQuestionEditor.ts`, `tilesetCheckerSummary.ts` |
-| `openwiki/title-opening-effects.md` | 3 | `.effects.json`, `features/SUMMARY.md`, `verify-shots/runtime-qa/title-effects/SUMMARY.md` |
+| `openwiki/title-opening-effects.md` | 2 | `.effects.json`, `verify-shots/runtime-qa/title-effects/SUMMARY.md` |
 | `openwiki/town-tile-benchmark.md` | 1 | `combined-town-chipset-report.html` |
 | `openwiki/ui-discovery-pilot.md` | 2 | `direct/RESULTS.json`, `output/evidence/ui-discovery-v2/report.html` |
 | `openwiki/village-design.md` | 7 | `20260907000000_spatial_authoring_cas.sql`, `depth-review.json`, `output/evidence/house-heights/REVIEW.md`, `output/village-direction/index.html`, `scripts/build-house-study-gallery.mts`, `scripts/publish-compact-village.mts`, `scripts/publish-object-village.mts` |
@@ -2197,11 +2197,11 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L30` 실제 데이터 보존
 - `L43` 역사 자료와 검증
 
-### `openwiki/sunlight-shadows.md` — 4KB · 52줄 · ~1,257 토큰
+### `openwiki/sunlight-shadows.md` — 5KB · 61줄 · ~1,619 토큰
 
 - `L3` 저작과 저장
 - `L13` 공통 계산과 그리기
-- `L43` 조수와 검수
+- `L50` 조수와 검수
 
 ### `openwiki/teaching-assistant-tilesets.md` — 44KB · 369줄 · ~13,309 토큰
 
