@@ -1,0 +1,101 @@
+{
+  "projectId": "fca4b134-ed34-4365-9021-450c7ee24894",
+  "hostProject": "649482df-81ca-4af9-806b-2613f7d7bebb",
+  "host": "http://mdc-server:18364",
+  "projectDir": "/home/main/.local/share/oprn/web-workspace/.oprn-projects/649482df-81ca-4af9-806b-2613f7d7bebb",
+  "url": "http://mdc-server:18364/?hostProject=649482df-81ca-4af9-806b-2613f7d7bebb",
+  "revision": 27,
+  "sha256": "e30da78a338c910e81b10f12148f3478619e678f5d36c674a443376eeffcf01a",
+  "reloadedThroughFreshConnection": true,
+  "mediaByteReloads": [
+    {
+      "id": "oprn_emerald_field_cast_1",
+      "sha256": "0be4e37acc4d31f67d19748d7a1be1a07e1fb1570051d0dc53b7cc9179fd46d4"
+    },
+    {
+      "id": "oprn_emerald_field_cast_2",
+      "sha256": "deb778cbad7a6209c8ec51815d3c41e6ffc5716e2381a250f1c831a4a39ea1f8"
+    },
+    {
+      "id": "oprn_emerald_professor",
+      "sha256": "c428e66830d0ab88327717bbf2caa1415d710e26092d17f11ecada0f93b9b69e"
+    },
+    {
+      "id": "oprn_emerald_title_stag",
+      "sha256": "86a627ab7fd3ebce0a7dfe49ff72258210b9263d91642f7d36de69b5e4df9f5d"
+    },
+    {
+      "id": "oprn_emerald_signpost",
+      "sha256": "11c47bb3366f6df4415319a5c1f0b95f5702b078d7caadd4dfbc7892fdc58690"
+    },
+    {
+      "id": "oprn_emerald_trainer_hero",
+      "sha256": "329871a5fa0d2e378f6988749846dd78bf45659c59e6870cc30ca728cade5429"
+    },
+    {
+      "id": "oprn_emerald_trainer_rival",
+      "sha256": "a6e4ab1b743ed50f6949a37b05c22eefecee3750370ce3fe81a03056e5b98b1a"
+    },
+    {
+      "id": "oprn_emerald_trainer_professor",
+      "sha256": "c428e66830d0ab88327717bbf2caa1415d710e26092d17f11ecada0f93b9b69e"
+    },
+    {
+      "id": "oprn_emerald_trainer_nurse",
+      "sha256": "87175b30fb3fce47fe46c11346ead7f3a053d13547d101cd9265b0481fae3b8a"
+    },
+    {
+      "id": "oprn_emerald_trainer_merchant",
+      "sha256": "906e9e79340d67b55e233023eb334b5813c92b927faab614727f838901e6ec4f"
+    },
+    {
+      "id": "oprn_emerald_trainer_mother",
+      "sha256": "0bc4ca7d5ca8f6e9116504b1dc95d1296a560da1930dfbdbf79cc98d93990e1f"
+    },
+    {
+      "id": "oprn_emerald_trainer_resident",
+      "sha256": "a9d429bc5febf0bf62ecf64bbd2252b4b463b43efd259626a4522bc9f65579e2"
+    },
+    {
+      "id": "oprn_emerald_trainer_gym_leader",
+      "sha256": "6b67d376ec8d4fb0ca4ac23e9e24092c9f065665f6b75362b80e43eb7db0885e"
+    },
+    {
+      "id": "oprn_emerald_trainer_company_agent",
+      "sha256": "65c95df71a0cf66694ce37d80f0d0fda6067ee830fc5432a9f214f595225ae07"
+    },
+    {
+      "id": "oprn_emerald_trainer_captain",
+      "sha256": "cd9ae91918c6e18cbc30dab367f7c5bd1cb6c9685643eff5e2a4a7c938bcde66"
+    },
+    {
+      "id": "oprn_emerald_trainer_worker",
+      "sha256": "3643459dc92ee7dce59fe58d33e29f35b9d6b7d6e48c01d85eb8b33ada56fe37"
+    },
+    {
+      "id": "oprn_emerald_trainer_explorer",
+      "sha256": "e6018dd07a13ea8710d380e1b03b5ae0ba7d4da6fad9f06ffd42e585ecce5a48"
+    },
+    {
+      "id": "oprn_emerald_trainer_student",
+      "sha256": "ee96bd7a9c4bf67a03f0a3a44c84fa3d2148dbebfac78b4f840548f48e62021b"
+    },
+    {
+      "id": "oprn_emerald_trainer_ranger",
+      "sha256": "ded15da5513d7f123e7b2cac72c56059984a7c255c43a33be8206431aff32950"
+    },
+    {
+      "id": "oprn_emerald_trainer_moon_leader",
+      "sha256": "1706436e7c015538c9e58045b28111629b85246d6b32aae98b001a0886a5ed73"
+    },
+    {
+      "id": "oprn_emerald_trainer_hiker",
+      "sha256": "6f7acc259fa505302ba71c89473988f21509a62a12f65801c134d87d28bffe00"
+    },
+    {
+      "id": "oprn_emerald_trainer_hero_back",
+      "sha256": "80d58d6286e6bf5e69edb16319494270dda53b8dab187776ca006aa65bf0d05c"
+    }
+  ],
+  "maps": 72
+}

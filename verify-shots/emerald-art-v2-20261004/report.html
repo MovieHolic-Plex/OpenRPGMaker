@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>비취섬 · 그림과 오프닝 개선</title>
+<style>body{margin:0;background:#e9efe4;color:#253b35;font:17px/1.65 system-ui,sans-serif}main{max-width:1100px;margin:auto;padding:28px 20px}h1,h2{line-height:1.3}a{color:#175a73}nav{display:flex;flex-wrap:wrap;gap:14px}section{margin:32px 0}figure{margin:18px 0}img{display:block;max-width:100%;height:auto;image-rendering:pixelated}figcaption{margin-top:8px;font-size:15px}.pair{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,400px),1fr));gap:20px}.pending{background:#fff1ce;padding:18px;border-left:5px solid #93620a}code{overflow-wrap:anywhere}details{background:#f7f9f1;padding:15px}li{margin:8px 0}small{font-size:15px}</style></head>
+<body><main>
+<h1>비취섬 · 그림과 오프닝 개선</h1>
+<nav><a href="/monster-expedition/player.html?build=art-v2-20261004">업데이트된 게임</a><a href="http://100.73.251.77:8811/2026/10/02/01a0feb7-7622-7fc2-909a-56cb6370f071/emerald-monster-art-choices.view.html">몬스터 60종 비교·선택</a></nav>
+<p>첫 마을에 쓰던 인물과 몬스터는 이전 작업에서 코드로 좌표를 찍어 만든 그림이었다. 걷기·리소스 연결만 확인하고 그림 품질을 승인한 것처럼 취급한 것이 문제였다. 이번 인물 그림은 실제 imagegen 생성 원본에서 추출했다.</p>
+<div class="pending"><strong>몬스터는 아직 새 그림을 게임에 적용하지 않았다.</strong> 60종 × 앞·뒤 = 120장 후보를 제작했다. 프로젝트 AGENTS.md의 몬스터 하네스 규칙이 사람의 후보 선택을 요구한다. 비교 화면에서 선택한 내용을 채팅으로 전달하면 해당 그림을 정본과 공용 팩에 적용한다. “60종 전부 새 그림으로 적용”으로 한 번에 선택할 수도 있다.</div>
+<section><h2>인물 · 필드와 전투</h2>
+<p>주인공·라이벌·박사·상점 주인·간호사 등 16역할을 다시 생성했다. 네 방향 × 세 걷기 자세로 192프레임, 전투 인물 그림 17장을 공용 팩에 등록했다. 표지판을 사람 그림으로 표시하던 연결도 고쳤다.</p>
+<div class="pair"><figure><img src="/emerald-art-v2-evidence/first-town.png" alt="새 인물 그림이 적용된 첫 마을"><figcaption>실제 새 게임의 첫 마을. 배치·이동 경로·충돌 설정은 기존 저작 데이터를 유지했다.</figcaption></figure><figure><img src="/emerald-art-v2-evidence/trainer.png" alt="새 라이벌과 주인공 뒤모습의 전투 도입"><figcaption>실제 라이벌 전투 첫 문장에 새 인물 그림을 표시한다. 몬스터 출전 문장부터 본래 몬스터 화면으로 돌아간다.</figcaption></figure></div>
+<p>새 그림이 없거나 맞지 않는 커스텀 인물은 다른 역할의 그림으로 대체하지 않는다. 이번 실제 전투 검사는 라이벌과 주인공을 확인했으며, 16역할 모두의 전투를 플레이한 것은 아니다.</p></section>
+<section><h2>오프닝 · 움직임과 소리</h2>
+<p>타이틀에 빛내림·물결·잎 그림자·빛 입자·광원·시차 이동을 설정했다. 박사 소개에는 유지되는 빛과 입자, 박사·몬스터의 작은 움직임, 진입·페이지 효과음을 추가했다. 효과음은 플레이어 SE 음량을 따른다.</p>
+<div class="pair"><figure><img src="/emerald-art-v2-evidence/title.png" alt="빛과 물결 효과가 적용된 실제 타이틀"><figcaption>정지 그림으로는 움직임과 소리를 확인할 수 없으므로 게임에서 확인할 수 있다.</figcaption></figure><figure><img src="/emerald-art-v2-evidence/opening.png" alt="새 박사와 연속 소개 화면"><figcaption>Enter로 8페이지 진행. 페이지마다 교수 그림과 BGM을 유지하고, 같은 화면에서 다음 메시지를 표시한다.</figcaption></figure></div>
+<p>최종 플레이어에서 WASD가 페이지를 넘기거나 BGM을 재시작하지 않았고, Enter를 누르고 있어도 한 페이지만 넘어갔다. 동작 줄이기 설정과 장면 종료 시 효과·음원 정리도 확인했다.</p></section>
+<section><h2>승리 · 실제 경험치와 레벨 업</h2>
+<p>결과창이 일반 배우 경험치만 읽어 몬스터 경험치를 제대로 표시하지 못하던 문제를 고쳤다. 실제 몬스터 EXP의 전투 전·후 차이로 게이지를 표시한다. 결과창을 낮은 하단 창으로 줄이고, 몬스터 그림과 겹침 및 기절 배지를 정리했다.</p>
+<figure><img src="/emerald-art-v2-evidence/victory.png" alt="실제 경험치20과 레벨5에서6으로 오르는 승리 화면"><figcaption>실제 원래 야생 전투의 +20EXP 및 Lv5→6. 이 레벨 업 검사는 전투 전에 경험치를264로 준비한 별도 QA 사례다. 화면의 몬스터 그림은 아직 기존 그림이다.</figcaption></figure>
+<p>트레이너 전투190→220(+30), 야생 전투264→284(+20), 예비 몬스터121 유지. Enter 유지·추가 확인 후에도 보상은 한 번만 지급됐다.</p></section>
+<section><h2>저장·검증 근거</h2><details><summary>실제 저장 대상과 검사 범위</summary>
+<ul><li>프로젝트 <code>fca4b134-ed34-4365-9021-450c7ee24894</code> / 호스트 프로젝트 <code>649482df-81ca-4af9-806b-2613f7d7bebb</code>.</li>
+<li>SQLite 호스트 API로 revision27에 저장했다. 새로운 연결로 재로드하고 새 미디어22개를 바이트 단위 비교했다. 72맵·60종·기술·PP·진화·서식지·시작 위치·세이브 이름공간을 보존했다.</li>
+<li>출하용 player.js·project.json·CSS 그대로 검사. 새 게임 오프닝과 기존 세이브 Continue 검사 오류0. 전투는 개인 브라우저에 실제 과거 세이브를 복사하고, 자연 획득 파티를 재현한 뒤 원래 라이벌·야생 전투를 호출했다. 야생 레벨 업 사례만 EXP264를 준비했다. 전체 캠페인 완주 검사는 아니다.</li>
+<li>오프닝 검사 도구가 타이틀 연출 완료 전 Enter를 보내던 타이밍 문제를 수정했다. 실제 제품의 오프닝 진입 실패로 판단하지 않았다.</li>
+<li>기존 게임 공개 폴더는 별도로 보존하고, 검사한 빌드 <code>1b3950dca5dc3ca3</code>를 공개했다. <a href="/emerald-art-v2-evidence/SUMMARY.md">검사 요약</a> · <a href="/emerald-art-v2-evidence/canonical-receipt.json">정본 재로드 근거</a></li></ul>
+</details></section>
+</main></body></html>

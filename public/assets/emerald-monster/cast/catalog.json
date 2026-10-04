@@ -1,70 +1,268 @@
 [
   {
     "id": "oprn_emerald_field_cast_1",
-    "file": "field-cast-1.png",
-    "sha256": "b3a13ad9131dea6c0ea621814aea2acdc3e4b9793f0cf547b4bbad26e8718296",
-    "roles": [
-      "traveler",
-      "rival",
-      "professor",
-      "nurse",
-      "merchant",
-      "mother",
-      "resident",
-      "gym_leader"
-    ],
-    "nativeCell": [
-      24,
-      32
-    ],
-    "silhouetteWidth": 16,
-    "frameOrder": [
-      "up",
-      "right",
-      "down",
-      "left"
-    ],
-    "walkOrder": [
-      "leftStep",
-      "idle",
-      "rightStep"
-    ],
-    "alpha": "RGBA transparent",
-    "baseline": 31,
-    "source": "scripts/content/emerald-field-cast.py"
+    "kind": "charset",
+    "file": "cast-1.png",
+    "sha256": "0be4e37acc4d31f67d19748d7a1be1a07e1fb1570051d0dc53b7cc9179fd46d4",
+    "meta": {
+      "width": 288,
+      "height": 256,
+      "frameWidth": 24,
+      "frameHeight": 32,
+      "frames": 96
+    },
+    "source": "assets/emerald-monster-v2/npc-generation.json",
+    "pipeline": "scripts/content/emerald-art-v2-pack.mjs"
   },
   {
     "id": "oprn_emerald_field_cast_2",
-    "file": "field-cast-2.png",
-    "sha256": "ccf82a50b2456c207f07a32d0b82a565e53c57085ba30028d0dc202e3828af50",
-    "roles": [
-      "company_agent",
-      "captain",
-      "worker",
-      "explorer",
-      "student",
-      "ranger",
-      "moon_leader",
-      "hiker"
-    ],
-    "nativeCell": [
-      24,
-      32
-    ],
-    "silhouetteWidth": 16,
-    "frameOrder": [
-      "up",
-      "right",
-      "down",
-      "left"
-    ],
-    "walkOrder": [
-      "leftStep",
-      "idle",
-      "rightStep"
-    ],
-    "alpha": "RGBA transparent",
-    "baseline": 31,
-    "source": "scripts/content/emerald-field-cast.py"
+    "kind": "charset",
+    "file": "cast-2.png",
+    "sha256": "deb778cbad7a6209c8ec51815d3c41e6ffc5716e2381a250f1c831a4a39ea1f8",
+    "meta": {
+      "width": 288,
+      "height": 256,
+      "frameWidth": 24,
+      "frameHeight": 32,
+      "frames": 96
+    },
+    "source": "assets/emerald-monster-v2/npc-generation.json",
+    "pipeline": "scripts/content/emerald-art-v2-pack.mjs"
+  },
+  {
+    "id": "oprn_emerald_signpost",
+    "kind": "charset",
+    "file": "sign.png",
+    "sha256": "11c47bb3366f6df4415319a5c1f0b95f5702b078d7caadd4dfbc7892fdc58690",
+    "meta": {
+      "width": 288,
+      "height": 256,
+      "frameWidth": 24,
+      "frameHeight": 32,
+      "frames": 96
+    },
+    "source": "assets/emerald-monster-v2/npc-generation.json",
+    "pipeline": "scripts/content/emerald-art-v2-pack.mjs"
+  },
+  {
+    "id": "oprn_emerald_trainer_hero",
+    "kind": "picture",
+    "file": "trainer-hero.png",
+    "sha256": "329871a5fa0d2e378f6988749846dd78bf45659c59e6870cc30ca728cade5429",
+    "meta": {
+      "mime": "image/png",
+      "width": 64,
+      "height": 96
+    },
+    "source": "assets/emerald-monster-v2/npc-generation.json",
+    "pipeline": "scripts/content/emerald-art-v2-pack.mjs"
+  },
+  {
+    "id": "oprn_emerald_trainer_rival",
+    "kind": "picture",
+    "file": "trainer-rival.png",
+    "sha256": "a6e4ab1b743ed50f6949a37b05c22eefecee3750370ce3fe81a03056e5b98b1a",
+    "meta": {
+      "mime": "image/png",
+      "width": 64,
+      "height": 96
+    },
+    "source": "assets/emerald-monster-v2/npc-generation.json",
+    "pipeline": "scripts/content/emerald-art-v2-pack.mjs"
+  },
+  {
+    "id": "oprn_emerald_trainer_professor",
+    "kind": "picture",
+    "file": "trainer-professor.png",
+    "sha256": "c428e66830d0ab88327717bbf2caa1415d710e26092d17f11ecada0f93b9b69e",
+    "meta": {
+      "mime": "image/png",
+      "width": 64,
+      "height": 96
+    },
+    "source": "assets/emerald-monster-v2/npc-generation.json",
+    "pipeline": "scripts/content/emerald-art-v2-pack.mjs"
+  },
+  {
+    "id": "oprn_emerald_trainer_nurse",
+    "kind": "picture",
+    "file": "trainer-nurse.png",
+    "sha256": "87175b30fb3fce47fe46c11346ead7f3a053d13547d101cd9265b0481fae3b8a",
+    "meta": {
+      "mime": "image/png",
+      "width": 64,
+      "height": 96
+    },
+    "source": "assets/emerald-monster-v2/npc-generation.json",
+    "pipeline": "scripts/content/emerald-art-v2-pack.mjs"
+  },
+  {
+    "id": "oprn_emerald_trainer_merchant",
+    "kind": "picture",
+    "file": "trainer-merchant.png",
+    "sha256": "906e9e79340d67b55e233023eb334b5813c92b927faab614727f838901e6ec4f",
+    "meta": {
+      "mime": "image/png",
+      "width": 64,
+      "height": 96
+    },
+    "source": "assets/emerald-monster-v2/npc-generation.json",
+    "pipeline": "scripts/content/emerald-art-v2-pack.mjs"
+  },
+  {
+    "id": "oprn_emerald_trainer_mother",
+    "kind": "picture",
+    "file": "trainer-mother.png",
+    "sha256": "0bc4ca7d5ca8f6e9116504b1dc95d1296a560da1930dfbdbf79cc98d93990e1f",
+    "meta": {
+      "mime": "image/png",
+      "width": 64,
+      "height": 96
+    },
+    "source": "assets/emerald-monster-v2/npc-generation.json",
+    "pipeline": "scripts/content/emerald-art-v2-pack.mjs"
+  },
+  {
+    "id": "oprn_emerald_trainer_resident",
+    "kind": "picture",
+    "file": "trainer-resident.png",
+    "sha256": "a9d429bc5febf0bf62ecf64bbd2252b4b463b43efd259626a4522bc9f65579e2",
+    "meta": {
+      "mime": "image/png",
+      "width": 64,
+      "height": 96
+    },
+    "source": "assets/emerald-monster-v2/npc-generation.json",
+    "pipeline": "scripts/content/emerald-art-v2-pack.mjs"
+  },
+  {
+    "id": "oprn_emerald_trainer_gym_leader",
+    "kind": "picture",
+    "file": "trainer-gym_leader.png",
+    "sha256": "6b67d376ec8d4fb0ca4ac23e9e24092c9f065665f6b75362b80e43eb7db0885e",
+    "meta": {
+      "mime": "image/png",
+      "width": 64,
+      "height": 96
+    },
+    "source": "assets/emerald-monster-v2/npc-generation.json",
+    "pipeline": "scripts/content/emerald-art-v2-pack.mjs"
+  },
+  {
+    "id": "oprn_emerald_trainer_company_agent",
+    "kind": "picture",
+    "file": "trainer-company_agent.png",
+    "sha256": "65c95df71a0cf66694ce37d80f0d0fda6067ee830fc5432a9f214f595225ae07",
+    "meta": {
+      "mime": "image/png",
+      "width": 64,
+      "height": 96
+    },
+    "source": "assets/emerald-monster-v2/npc-generation.json",
+    "pipeline": "scripts/content/emerald-art-v2-pack.mjs"
+  },
+  {
+    "id": "oprn_emerald_trainer_captain",
+    "kind": "picture",
+    "file": "trainer-captain.png",
+    "sha256": "cd9ae91918c6e18cbc30dab367f7c5bd1cb6c9685643eff5e2a4a7c938bcde66",
+    "meta": {
+      "mime": "image/png",
+      "width": 64,
+      "height": 96
+    },
+    "source": "assets/emerald-monster-v2/npc-generation.json",
+    "pipeline": "scripts/content/emerald-art-v2-pack.mjs"
+  },
+  {
+    "id": "oprn_emerald_trainer_worker",
+    "kind": "picture",
+    "file": "trainer-worker.png",
+    "sha256": "3643459dc92ee7dce59fe58d33e29f35b9d6b7d6e48c01d85eb8b33ada56fe37",
+    "meta": {
+      "mime": "image/png",
+      "width": 64,
+      "height": 96
+    },
+    "source": "assets/emerald-monster-v2/npc-generation.json",
+    "pipeline": "scripts/content/emerald-art-v2-pack.mjs"
+  },
+  {
+    "id": "oprn_emerald_trainer_explorer",
+    "kind": "picture",
+    "file": "trainer-explorer.png",
+    "sha256": "e6018dd07a13ea8710d380e1b03b5ae0ba7d4da6fad9f06ffd42e585ecce5a48",
+    "meta": {
+      "mime": "image/png",
+      "width": 64,
+      "height": 96
+    },
+    "source": "assets/emerald-monster-v2/npc-generation.json",
+    "pipeline": "scripts/content/emerald-art-v2-pack.mjs"
+  },
+  {
+    "id": "oprn_emerald_trainer_student",
+    "kind": "picture",
+    "file": "trainer-student.png",
+    "sha256": "ee96bd7a9c4bf67a03f0a3a44c84fa3d2148dbebfac78b4f840548f48e62021b",
+    "meta": {
+      "mime": "image/png",
+      "width": 64,
+      "height": 96
+    },
+    "source": "assets/emerald-monster-v2/npc-generation.json",
+    "pipeline": "scripts/content/emerald-art-v2-pack.mjs"
+  },
+  {
+    "id": "oprn_emerald_trainer_ranger",
+    "kind": "picture",
+    "file": "trainer-ranger.png",
+    "sha256": "ded15da5513d7f123e7b2cac72c56059984a7c255c43a33be8206431aff32950",
+    "meta": {
+      "mime": "image/png",
+      "width": 64,
+      "height": 96
+    },
+    "source": "assets/emerald-monster-v2/npc-generation.json",
+    "pipeline": "scripts/content/emerald-art-v2-pack.mjs"
+  },
+  {
+    "id": "oprn_emerald_trainer_moon_leader",
+    "kind": "picture",
+    "file": "trainer-moon_leader.png",
+    "sha256": "1706436e7c015538c9e58045b28111629b85246d6b32aae98b001a0886a5ed73",
+    "meta": {
+      "mime": "image/png",
+      "width": 64,
+      "height": 96
+    },
+    "source": "assets/emerald-monster-v2/npc-generation.json",
+    "pipeline": "scripts/content/emerald-art-v2-pack.mjs"
+  },
+  {
+    "id": "oprn_emerald_trainer_hiker",
+    "kind": "picture",
+    "file": "trainer-hiker.png",
+    "sha256": "6f7acc259fa505302ba71c89473988f21509a62a12f65801c134d87d28bffe00",
+    "meta": {
+      "mime": "image/png",
+      "width": 64,
+      "height": 96
+    },
+    "source": "assets/emerald-monster-v2/npc-generation.json",
+    "pipeline": "scripts/content/emerald-art-v2-pack.mjs"
+  },
+  {
+    "id": "oprn_emerald_trainer_hero_back",
+    "kind": "picture",
+    "file": "trainer-hero_back.png",
+    "sha256": "80d58d6286e6bf5e69edb16319494270dda53b8dab187776ca006aa65bf0d05c",
+    "meta": {
+      "mime": "image/png",
+      "width": 64,
+      "height": 96
+    },
+    "source": "assets/emerald-monster-v2/npc-generation.json",
+    "pipeline": "scripts/content/emerald-art-v2-pack.mjs"
   }
 ]

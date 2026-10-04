@@ -18,6 +18,9 @@ try {
   await page.screenshot({path:out+'/01-title.png'});
   record.title=await page.getByTestId('title-screen').evaluate(e=>({reference:e.dataset.monsterStyle,menu:[...e.querySelectorAll('.rm-title-menu-button')].map(b=>b.textContent),bounds:{width:e.clientWidth,height:e.clientHeight}}));
   assert.equal(record.title.reference,'emerald');
+  // The authored title sequence owns confirm until it finishes. A key sent
+  // immediately after node creation can be consumed by that sequence.
+  await page.waitForFunction(()=>document.querySelector('[data-testid="title-screen"]')?.dataset.seqState==='done',{},{timeout:30000});
   await page.keyboard.press('Enter');
   await page.getByTestId('cinematic-sequence').waitFor({timeout:90000});
   const music=await page.getByTestId('cinematic-music').elementHandle();

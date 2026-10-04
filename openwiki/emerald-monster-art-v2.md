@@ -50,3 +50,24 @@ challenge message. Send-out returns to the actual monster roster.
 
 Canonical content must be saved through the host API with CAS, freshly reloaded,
 and new media compared byte-for-byte before reporting the live game updated.
+
+## 2026-10-04 delivery evidence
+
+Canonical campaign `fca4b134-ed34-4365-9021-450c7ee24894`, host folder
+`649482df-81ca-4af9-806b-2613f7d7bebb`, revision27 was freshly reloaded;
+22 media byte hashes match. Only the NPC/professor/title changes were adopted.
+All60 monster pairs remain pending human selection, isolated from the default
+starter seed and production ledger. Do not interpret candidate creation as approval.
+
+`verify-shots/emerald-art-v2-20261004/SUMMARY.md` describes actual compiled-player
+opening, trainer intro and EXP QA including explicit battle preparations. Genuine
+Continue slot preservation was separately checked. Public-player opening was also
+run directly by the supervising agent, with8 pages, home10,10 and zero errors.
+The corrected native probe waits for the authored title sequence to finish before
+sending its menu Enter. Old immediate Enter was consumed during `seq-state=playing`.
+
+Public game uses artifact `1b3950dca5dc3ca3`; report `/emerald-art-v2-report.html`.
+Shared cast `SOURCES.md`/`catalog.json` describe and hash the registered generated
+bytes, rather than the superseded coordinate placeholder files. Original trainer-a
+generation and the transparency cleanup have separate provenance. No full test
+suite or gates were run in this session.

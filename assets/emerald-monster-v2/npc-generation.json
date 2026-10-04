@@ -2,7 +2,8 @@
   {
     "id": "hero",
     "kind": "npc",
-    "path": "assets/emerald-monster-v2/source/hero.png"
+    "path": "assets/emerald-monster-v2/source/hero.png",
+    "prompt": "Create a production pixel-art RPG character sprite sheet, original Emerald-era GBA monster trainer. ONE cohesive female young adventurer: dark navy hair, coral red headband, ivory short jacket, teal shorts, small ochre backpack, red sneakers. Charming specific silhouette and expressive face, expertly drawn native pixel art, no generic rounded blobs. Transparent background. Exactly 3 columns by 4 rows of equally sized cells, no labels, no borders. Row 1 faces UP (back); row 2 faces RIGHT; row 3 faces DOWN (front); row 4 faces LEFT. Each row shows left-foot walk, standing, right-foot walk. ALL 12 frames same character, scale, anchor at feet, same jacket/backpack/hair. Native logical cell 24 pixels wide by 32 pixels tall. Character roughly 16px wide and 26px tall. The whole sheet is logical 72x128 displayed with perfectly crisp large integer pixel blocks, no antialiasing, no blur, no gradients, no smooth digital illustration. 20-color harmonious GBA palette. Slight dark navy outline, careful two-tone clusters, clean face eyes with restrained pixel details. Frame spacing enough for exact equal cell slicing. Real transparent alpha. No text, no watermark, no additional characters. Final sheet aspect ratio 9:16."
   },
   {
     "id": "rival",
@@ -114,7 +115,9 @@
       "gym_leader"
     ],
     "prompt": "Edit this sprite sheet only to remove ALL background, colored glows, gradients, haze and shadows. Preserve exactly these eight characters, their poses, faces, clothes, pixels, size and positions. Replace every background area and spaces between limbs with ONE perfectly flat solid pure magenta #FF00FF background. Do not add or change any character detail, do not add labels or scenery. The eight full figures must remain isolated with no halo. Professional sprite extraction sheet.",
-    "path": "assets/emerald-monster-v2/source/trainer-a.png"
+    "path": "assets/emerald-monster-v2/source/trainer-a.png",
+    "originalGenerationPrompt": "Eight original RPG human battle trainer pixel sprites on transparent background, EXACTLY FOUR COLUMNS by TWO ROWS of equal cells, no labels. Reading left to right top row then bottom row: 1. hero: young woman adventurer with navy hair and red headband, white jacket, teal shorts and ochre backpack. 2. rival: confident teenage boy, auburn spiky hair, cobalt jacket, sand shorts, blue sneakers. 3. professor: kind elderly woman botanist, silver bun, slim round glasses, white lab coat over plum clothing, brown shoes. 4. nurse: young nurse with rose-pink ponytail, ivory nurse uniform with teal apron, small medical cap. 5. merchant: friendly stout middle-aged shopkeeper, dark moustache, blue apron over mustard shirt, brown trousers. 6. mother: warm adult woman with chestnut bob haircut, violet blouse and long cream skirt. 7. resident: friendly adult with dark curly hair, mint shirt, ochre skirt and sandals. 8. gym_leader: athletic adult woman, emerald ponytail, sleeveless charcoal top and emerald trousers, gold wrist bands. All eight are full-body standing battle introduction poses facing three-quarters toward the LEFT, confidently holding one tiny teal capture orb or gesturing. Same outfits as described, expressive charming specific faces, consistent 2004 GBA pixel-art art direction, native each character approximately 48 pixels wide and 80 pixels tall, strict sharp square pixel blocks and dark colored1px outlines, 24 colors each, clustered two-tone shading, no gradients, blur or smooth illustration. Each full figure fully inside its own equally sized cell with clear transparent gaps, feet aligned in each row, no scenery, text, frames or watermark. Professionally authored trainer battle artwork, not simple geometrical placeholders.",
+    "originalSource": "assets/emerald-monster-v2/source/trainer-a-original.png"
   },
   {
     "id": "trainer-b",
