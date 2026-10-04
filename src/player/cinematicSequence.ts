@@ -227,6 +227,12 @@ export function playCinematicSequence(options: {
       frame.style.setProperty('--cinematic-letterbox', `${presentation?.letterbox ?? 0}%`);
       if (presentation?.letterbox) frame.append(el('div', { class: 'cinematic-letterbox', attrs: { 'aria-hidden': 'true' } }));
       root.replaceChildren(frame, status);
+      if (previous) {
+        previous.dataset.previousFrame = 'true';
+        const shot = previous.querySelector<HTMLElement>('.cinematic-shot');
+        if (shot) shot.dataset.previousShot = 'true';
+        frame.before(previous);
+      }
       root.dataset.sceneId = scene.id;
       root.dataset.sceneKind = scene.kind;
       delete root.dataset.pendingSceneId;
@@ -240,6 +246,7 @@ export function playCinematicSequence(options: {
       const legacy = scene.kind === 'image' ? scene.direction?.transition : undefined;
       const enter = reducedMotion ? 'cut' : presentation?.transition.enter ?? legacy?.kind ?? 'cut';
       const enterMs = Math.min(presentation?.transition.enterMs ?? legacy?.durationMs ?? 0, scene.durationMs > 0 ? scene.durationMs / 2 : 5000);
+      if (previous && (enter !== 'dissolve' || enterMs <= 0)) disposeShot(previous);
       if (enter !== 'cut' && enterMs > 0) {
         if (previous && enter === 'dissolve') {
           previous.dataset.previousFrame = 'true';

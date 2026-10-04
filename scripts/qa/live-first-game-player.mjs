@@ -131,7 +131,7 @@ try {
       let last = '';
       new MutationObserver(() => {
         const root = document.querySelector('[data-testid="cinematic-sequence"]');
-        if (!root || !root.dataset.sceneId || root.dataset.sceneId === last) return;
+        if (!root || !root.dataset.sceneId || root.dataset.transitionState !== 'playing' || root.dataset.sceneId === last) return;
         last = root.dataset.sceneId;
         const image = root.querySelector('.cinematic-shot:not([data-previous-shot]) img');
         const text = root.querySelector('.cinematic-frame:not([data-previous-frame]) .cinematic-narration');
@@ -139,7 +139,7 @@ try {
           text: text?.textContent, animation: text?.dataset.animation,
           imageWidth: image?.naturalWidth, imageHeight: image?.naturalHeight,
           objectFit: image ? getComputedStyle(image).objectFit : null });
-      }).observe(document, { childList: true, subtree: true, attributes: true, attributeFilter: ['data-scene-id'] });
+      }).observe(document, { childList: true, subtree: true, attributes: true, attributeFilter: ['data-scene-id', 'data-transition-state'] });
     });
     // Software WebGL can stall animation-frame polling while the scene clock keeps running.
     // Observe the same conditions on a wall-clock interval, without changing playback.
