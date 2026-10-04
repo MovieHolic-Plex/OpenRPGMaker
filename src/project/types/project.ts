@@ -723,6 +723,7 @@ export interface Project {
   growth?: import("../growth/types").GrowthDefinition;
   version: number;
   meta: {
+    oprnMonsterStyle?: import('../emeraldMonsterStyle').EmeraldMonsterStyle;
     oprnOpeningBook?: {version:1;sceneIds:string[];ink:'amber'|'ivory'};
     oprnShopPreset?: import('./events').ShopUiPreset;
     oprnFieldMenu?: import('../fieldMenu').AuthoredFieldMenu;

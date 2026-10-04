@@ -24,6 +24,11 @@ export function validateMeta(value: unknown): void {
   const meta = requireRecord("meta", value);
   requireString("meta.title", meta.title);
   requireString("meta.author", meta.author);
+  if (meta.oprnMonsterStyle !== undefined) {
+    const style = requireRecord('meta.oprnMonsterStyle', meta.oprnMonsterStyle);
+    assert(style.version === 1 && style.reference === 'emerald', 'Invalid monster style reference');
+    assert(Object.keys(style).every(key => key === 'version' || key === 'reference'), 'Unknown monster style field');
+  }
   if(meta.oprnShopPreset!==undefined)assert(isShopUiPreset(requireString('shop preset',meta.oprnShopPreset)),'Unknown shop preset');
   if(meta.oprnOpeningBook!==undefined){
     const book=requireRecord('opening book',meta.oprnOpeningBook);
