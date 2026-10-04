@@ -36,17 +36,17 @@ async function title(page){await page.goto(base+'/player.html',{waitUntil:'domco
 async function ready(page,index){await page.waitForFunction(id=>{const n=document.querySelector('[data-testid="cinematic-sequence"]');return n?.dataset.sceneId===id&&n.dataset.mediaState==='ready'},shots[index].id,{timeout:40000})}
 async function playing(page){await page.getByTestId('cinematic-sequence').waitFor({state:'hidden',timeout:40000});await page.getByTestId('play-loading-overlay').waitFor({state:'hidden',timeout:40000});assert(await page.locator('canvas').count()>0)}
 try{
- if(wanted.has('delayed')){const{ctx,page}=await open();const begin=requests.length;let releaseFirst;const firstHeld=new Promise(r=>{releaseFirst=r});
-  await page.route('**/*',async route=>{const url=new URL(route.request().url()).pathname;if(url.endsWith(paths[0]))await firstHeld;if(url.endsWith(paths[1]))await new Promise(r=>setTimeout(r,9000));await route.continue()});
+ if(wanted.has('delayed')){const{ctx,page}=await open();const begin=requests.length;let releaseFirst,releaseSecond;const firstHeld=new Promise(r=>{releaseFirst=r});const secondHeld=new Promise(r=>{releaseSecond=r});
+  await page.route('**/*',async route=>{const url=new URL(route.request().url()).pathname;if(url.endsWith(paths[0]))await firstHeld;if(url.endsWith(paths[1]))await secondHeld;await route.continue().catch(()=>{})});
   await title(page);await page.keyboard.press('Enter');await page.waitForTimeout(900);
   assert(await page.getByTestId('title-screen').isVisible(),'Keep title while the first picture is decoded');
   await page.screenshot({path:resolve(out,'loading/01-title-preparing.png')});
   releaseFirst();
   await ready(page,0);assert.equal(await page.locator('.cinematic-effects').first().getAttribute('data-title-effects-renderer'),'webgl');assert.equal(await page.locator('.cinematic-image').evaluate(n=>n.complete&&n.naturalWidth>0),true);
-  await page.waitForFunction(id=>{const n=document.querySelector('[data-testid="cinematic-sequence"]');return n?.dataset.pendingSceneId===id&&n.dataset.mediaState==='loading'},shots[1].id,{timeout:12000});
-  assert.equal(await page.getByTestId('cinematic-sequence').getAttribute('data-scene-id'),shots[0].id);
-  assert(await page.locator('.cinematic-image').count()>0,'Keep previous shot during the delayed next picture');
+  const pending=await page.waitForFunction(id=>{const n=document.querySelector('[data-testid="cinematic-sequence"]');if(n?.dataset.pendingSceneId!==id||n.dataset.mediaState!=='loading')return false;const image=n.querySelector('.cinematic-image');return{sceneId:n.dataset.sceneId,previousDecoded:Boolean(image?.complete&&image.naturalWidth>0),effectsFrozen:n.querySelector('.cinematic-effects')?.dataset.titleEffectsAnimated==='false'}},shots[1].id,{timeout:12000});
+  const heldFrame=await pending.jsonValue();assert.equal(heldFrame.sceneId,shots[0].id);assert(heldFrame.previousDecoded,'Keep previous decoded shot during the delayed next picture');assert(heldFrame.effectsFrozen);
   await page.screenshot({path:resolve(out,'loading/02-previous-shot-retained.png')});
+  releaseSecond();
   await ready(page,1);await ready(page,2);await playing(page);
   const handoff=await page.evaluate(()=>window.__handoffBackdrops);assert(handoff.some(url=>url?.startsWith('blob:')),'Keep the last opening artwork beneath remaining map preparation');
   const times=await page.evaluate(()=>window.__shotTimes);const decoded=shots.map(s=>times.find(t=>t.id===s.id&&t.state==='ready'));
@@ -54,9 +54,9 @@ try{
   const counts=paths.map(path=>requests.slice(begin).filter(r=>r.path.endsWith(path)).length);result.delayDiagnostics={counts,requested:[...requested],times};
   assert.equal(counts[0],1);assert.equal(counts[2],1);assert(counts[1]===1||counts[1]===2);
   const secondRequests=requested.filter(r=>r.path.endsWith(paths[1]));
-  if(counts[1]===2)assert(secondRequests[1].time-secondRequests[0].time>=10000,'A second request must follow the bounded prefetch deadline');
+  if(secondRequests.length===2)assert(secondRequests[1].time-secondRequests[0].time>=10000,'A second request must follow the bounded prefetch deadline');
   assert(!times.some(t=>t.state==='error'),'Expired background preparation must recover before becoming a visible shot error');
-  result.cases.push({name:'delayed-pictures',passed:true,requestsPerOpeningImage:counts,prefetchDeadlineRetry:counts[1]===2,handoffBackdropObserved:true,decodedTimes:decoded,times});await ctx.close();
+  result.cases.push({name:'delayed-pictures',passed:true,requestsPerOpeningImage:counts,prefetchDeadlineRetry:secondRequests.length===2,heldFrame,handoffBackdropObserved:true,decodedTimes:decoded,times});await ctx.close();
  }
  if(wanted.has('reuse')){const{ctx,page}=await open();const begin=requests.length;
   await title(page);await page.keyboard.press('Enter');await ready(page,0);await ready(page,1);await ready(page,2);await playing(page);
