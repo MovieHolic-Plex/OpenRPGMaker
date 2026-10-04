@@ -5,6 +5,55 @@
 
 <!-- releases -->
 
+## 0.117.0 — 2026-10-04
+
+### 기능
+
+- require adversarial review of spatial plans and text diagrams (`fed3ecb`)
+- **worldmap** — publish shared SQLite examples and verify real assistant authoring (`577acfa`)
+- **joseon** — 하네스 시드·단계를 지도 14장으로 확장하고 문서를 맞춘다 (`be2210c`)
+- **joseon** — 장소 카드 14장(사냥터·동굴 natural, 실내·궁 facility)과 내려받기·축소본 (`8fb41a9`)
+- **joseon** — 새 참고문서 3용도(사냥터·동굴 / 실내 / 궁 내부)를 번들이 소유하게 추가 (`6da8e1e`)
+- **joseon** — 새 지도 11장을 번들 시트에 덧붙이고 옛 칸 번호를 동결 장부로 고정 (`28f7c29`)
+- **joseon-palace-int** — 자가 검수 라운드 — 벽 걸이 그리는 순서·용 문양·모퉁이 소품 정리·문 앞 깔개 3종, 보기 페이지 생성기 (`2ca62bb`)
+- **joseon-palace-int** — 궁 내부 방 3장(정전 어좌 홀 21x22·회랑 32x10·침전 20x15) 평면·배치·굽기·점검, mapgate palace_int 프로필 (`22446ef`)
+- **joseon-palace-int** — 궁 내부 조각 77종(pal_) — 단청 키트·어좌 단·카펫·병풍·용상·향로·북·종·침구·용장 (`db1fa57`)
+- **joseon-interior-b** — 조각 판정 149건(통과 94·보충 55), 사람 캐릭터 범위 바로잡음, 서당·동헌 단 배치 수정, 바가지 다시 그림 (`d9f6ada`)
+- **joseon-interior-b** — 계획서, 지도 게이트 interior_b 프로필, 호피 다시 그림, 얇은 줄 조각 정리 (`f34c643`)
+- **joseon-interior-b** — 관아 동헌(21x14) 방과 6방 전체 굽기·점검 통과 (`d0b3ce1`)
+- **joseon-interior-b** — 서당 방(18x13) 평면·배치 (`83c9360`)
+- **joseon-interior-b** — 약방 방(14x10) 평면·배치 (`7036c11`)
+- **joseon-interior-b** — 대장간 방(14x10) 평면·배치 (`35e6e78`)
+- **joseon-interior-b** — 주막 방(22x14) 평면·배치, 맨바닥 판 점검을 2x2 판 기준으로 (`6250144`)
+- **joseon-interior-b** — 조각 메타·통행 보정, 점검기, 민가 방 굽기 (`1892534`)
+- **joseon-interior-b** — 후보 B 실내 키트·기물 초안(inb_*, 접두 in_b_) — 구조 키트·기물 149종과 카탈로그 덧붙임 (`85db58a`)
+
+### 수정
+
+- **joseon** — 번들 타일셋의 그룹·부품이 없을 때를 허용한다 (`3934e1b`)
+- expose dialogue portraits and honor Joseon game fonts (`4f4992e`)
+- preserve reading, selection and human edits during assistant work (`d08d096`)
+- use the visible rear bank boundary when picking cliff surfaces (`bd3d93b`)
+- gate super harness maps on approved materials and visual evidence (`189fa6d`)
+- transfer authored surfaces into charset walking gaps (`fa4a456`)
+- keep moving characters above their floor and preserve cliff rims (`778f4aa`)
+- **joseon** — TREE_KINDS 에 grove 복원, 조각 관문이 쓴 검수 시트 190장은 병합에서 뺀다(생성물) (`e338baf`)
+- **joseon-palace-int** — 엄격 검수 반영 2차 — 바닥 보 띠 제거·정전 비대칭 의례 배치·회랑 기둥 간격 변주·침전 기능 묶음 (`0c43f80`)
+- **joseon-interior-b** — 독립 엄격 검수 반영 — 엮은 돗자리, 무작위 온돌·마루 바닥, 넓은 이부자리, 문틀, 진열대, 방 구성 차별화 (`74fa273`)
+- **joseon-interior-b** — 블라인드 검수 고침 — 서당 목재 단·관아 단/의자/붉은 길/호피·약방 선반·주막 이부자리·문 조각·대장간 정리 (`cbcd59f`)
+
+### 문서
+
+- record moving-body pixel, cliff rim and canonical editor QA (`56e315e`)
+- verify bank picking and retain northern contact evidence (`850d29d`)
+- identify canonical sources in rendered character QA (`dc15a8c`)
+- add packaged editor and canonical runtime fixture QA (`e5a5816`)
+- **joseon-palace-int** — 궁 내부 방 3장 계획서(정전 어좌 홀·회랑·침전) (`c36c539`)
+
+### 잡무
+
+- **joseon** — 새 지도 11장 등록 후 화면 확인 사진 9장과 요약 추가 (`aebcb4e`)
+
 ## 0.116.1 — 2026-10-04
 
 ### 수정
