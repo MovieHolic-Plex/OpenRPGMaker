@@ -267,3 +267,53 @@ art 준비 → art-native 제작/부품 검수 → 결과 수집·예시 생성
 별도 SQLite·파일 사본에서 실패→수정대기, 중복 소비 방지, 상한→blocked, PASS→사람선택의 상태 전이를 확인했다.
 PASS 분기는 컨트롤러 확인용 합성 fixture이며 실제 그림의 합격 근거가 아니다. 원본 그림/운영 선택은 변경하지 않았다.
 근거: `verify-shots/super-harness-feedback-loop/`. 신규 모델을 사용한 전체 재생성의 품질·완주 여부는 아직 확인 전이다.
+
+### 표본 도면과 공간 전체의 품질 관문 v2
+
+실측: 주차장 표본 내부의 약45%에 용도가 없었으나 계약의 치수 준수만으로 비례 PASS가 났다.
+이제 `art 준비 → art-layout-review → art-native → 수집 → art-context-review` 순서다.
+- 준비자는 execution.layout에 실제 픽셀 크기와 일치하는 ASCII, 모든 칸의 용도, 비례/여백/정체성 근거,
+  시드(native SQLite는 DB/WAL)·치수·주문서·queued 판·실행 코드/프롬프트의 해시를 제공한다. 기존 전체 기획의 승인은 재사용하지 않는다.
+- 독립 도면 검수는 proportions/spaceUse/circulation/identity/composition을 본다. 명세 자체를 반려할 수 있다.
+  FAIL은 그림을 시작하지 않고 명세 준비로 돌아간다. 같은 art_revision에서 3회 반려 시 중단한다.
+  실행 직전에 승인 fingerprint와 파일 해시를 다시 확인한다. 수집 때도 native 실행 경로와 도면 승인을 확인하고,
+  실행 중 진행되는 후보 state/DB를 제외한 주문서·코드·참조 해시를 다시 확인한다. 파일이 바뀌면 승인이 무효다.
+- 최종 조립 검수는 기존5축에 spaceUse/composition/specification을 더한8축이다. 부품 FAIL에도 수행하여
+  작은 부품 하나에 가려진 큰 공간 문제를 다음 수정에 함께 전달한다. native/context 수정 지시를 합친다.
+- gateVersion=2와8축 근거가 없으면 기존 PASS로 선택을 해제할 수 없다. 낮은 밀도에 임의 공통 수치 상한을
+  강요하지 않으며 필요한 차로/여백을 독립 검수한다. 이름만 여유 공간으로 붙인 낭비는 반려한다.
+- 도면 반려 후 준비는 `art-layout-repair.md`로 해당 명세만 교정한다. 이미 고정된 전체 참고 자료를 매번 다시
+  조사하는 비용을 줄이고, 새 queued 판과 변경된 명세 해시를 다시 독립 검수한다.
+- 운영 근거 `verify-shots/super-harness-layout-gates/`: 기존 그림은 새 기준에서 style/spaceUse/composition/specification
+  FAIL, 첫 축소 도면은 중복 여백으로 spaceUse FAIL. 도면 반려 시 native 작업이 시작되지 않은 것을 확인했다.
+- 사용자가 게이트 수정 후 재제작을 요청하여 주차장의 누적 그림 수정 상한을2로 올렸다. 320×256 실패 표본을
+  재검수한 뒤, 256×208 도면은 spaceUse FAIL로 그림 실행 전에 차단되었다. 수정한 240×192 도면은5축 PASS 후
+  native 제작에 진입했다. 이는 완성 그림의 합격을 뜻하지 않으며 최종8축 이미지 검수와 사람 선택은 별도다.
+
+### 반복 실패 재설계·시점 표본·전후 비교 v3 (2026-10-04)
+
+사용자 승인으로 자동 수정의 기본값과 운영 주차장 상한은 **누적 5회**다. 기존 2회는 초기화하지 않는다.
+`max_art_revisions` 설정과 개념 brief의 `maxRevisions` 중 작은 값이 적용된다. 기본값 변경은 기존 저장값을
+덮지 않으므로 운영 설정도 별도로 갱신한다. 상한을 높인 뒤 `queue_repair`는 limit-reached 상태의 같은
+실패를 한 번만 재개할 수 있다. 이미 queued인 같은 실패를 다시 소비하지 않는다.
+
+- `art_repair.py`: 연속 세대에서 같은 검수 축이 실패하면 spec으로 되돌린다. 같은 축이라는 것은 같은 물리적
+  결함의 증명이 아니라 명세 재검토가 필요하다는 보수적인 신호다. native/context의 keep 지시도 재검토 대상이다.
+- 도면 v3에는 phase(calibration/scene), repairPlan(route/changes/supersededConstraints), camera가 필요하다.
+  camera는 실제 기준 PNG 해시, 바닥 투영/높이/광원, 물체별 footprint/topFace/verticalFace/contact/occlusion을 담는다.
+  alpha bbox 높이를 바닥 폭으로 대체하지 않는다. 도면 6축·최종 9축에 projection을 독립 추가했다.
+- 반복 style/projection 실패 또는 명시한 requireCalibration은 최대 4종의 작은 시점 표본부터 만든다.
+  주차장에서는 기준차+낮은 멈춤턱+벽 모서리다. 기존 5×26 턱 상자/방향은 고정 제약에서 해제한다.
+  native 제작과 독립 검수까지 통과한 표본을 해시로 보존하고 같은 시점으로 공간을 다시 조립한다.
+  표본은 선택 불가다. 재조립도 누적 수정 한도 안에서 실행하며 상한에 닿으면 표본 승인만 보존하고 중단한다.
+- 최종 검수는 archivedEvidence의 실제 이전 그림도 열고 모든 실패 항목을 comparisons로 대조한다.
+  resolved/unresolved/invalid-prior-claim과 전후 좌표·근거가 필요하다. unresolved가 있으면 PASS를 거부한다.
+  calibration만 공간 범위 밖 문제를 deferred로 남길 수 있고 projection/style/scale은 보류하지 않는다.
+  보류한 결함은 다음 재조립에도 유지하며 scene에는 deferred를 허용하지 않는다.
+- 도색선은 장애물이 아니며, 통행 판단에는 실제 바닥/장애물 범위를 사용한다. 단색 비율만 낮추려 노이즈를 추가하지 않는다.
+- 형식·해시 검사는 모델의 시각 판단이 정확하다는 보증이 아니다. 기준 시점·실패 전후 이미지 비교와 사람 선택은 별도다.
+- 전역 paused=1을 유지하고 주차장 하나만 감독 실행한다. 모델은 기존 사용자 승인 Codex gpt-6.1-sol medium이다.
+
+재제작 준비 중에는 art-result.previous.json의 해시와 기존 후보 파일을 확인하여 이전 그림을 비교용으로 계속 표시한다.
+현재 결과가 아니므로 ready/eligible/selected는 false다. 전체 pause와 단일 개념의 지정 실행 상태를 별도로 안내하고,
+주문서 준비를 실제 그림 제작 중이라고 표시하지 않는다. 이전 비교 PNG도 검수 결과 수용 시 해시를 다시 확인한다.

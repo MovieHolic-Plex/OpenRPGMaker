@@ -2669,3 +2669,13 @@ prepare 단계가 호스트 빌드(미리보기 1~3초, 실제 약 2분)를 기�
 legacy Schema.enum에 ['1','2']를, nullable에 true를 전달한다. 숫자와 null을 문자열 enum 배열에
 함께 넣지 않는다. 원본 스키마는 바꾸지 않으며 중복·소수·잘못된 타입/회원 변경은 계속 거부한다.
 이 계약 불일치는 지형 도구를 직접 호출하지 않는 오프닝 제작 턴도 모델 요청 전에 중단시켰다.
+
+## 글자·장면 오프닝 연출 (2026-10-04)
+
+모든 text/image/video 장면에 선택 `presentation`을 저장한다. 기존 필드가 없으면 기존
+재생을 유지한다. 기본형 subtitle/prologue/chapter/memory/credits, 글자 등장 6종,
+장면 등장 6종, 독립적인 글자·장면 퇴장 시간·색·글꼴·위치·상하 띠를 지원한다.
+`cinematicPresentation.ts`의 엄격 파서를 프로젝트 로드와 AI 도구가 공유하며
+DB 오프닝/게임오버 폼과 미리보기는 같은 레코드/재생기를 쓴다. 꺼진 시퀀스도 보존한다.
+전체 계약·시간·우선순위·reduced-motion·저장/출하 증거는
+[title-opening-effects.md](title-opening-effects.md#글자장면-오프닝-연출-2026-10-04)를 따른다.

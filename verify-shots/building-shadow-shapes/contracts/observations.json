@@ -1,0 +1,94 @@
+{
+  "checks": [
+    "tower, chimney and main roof retain different column heights; detached statues stay below two tiles",
+    "front gable has a pitched silhouette rather than a flat rectangular top",
+    "15-tile roof retains nine-tile walls: air below the eaves and solid central walls",
+    "empty grass inside the stamp receives shadow while opaque wall art stays unchanged",
+    "erased or repainted building tiles do not leave stamp-shaped ghost casters",
+    "art source participates in cache identity; later image loading replaces approximate geometry",
+    "default/off remains allocation-free"
+  ],
+  "casters": [
+    {
+      "id": "sp_a2ff01d4-09f0-4e24-a2c7-65a12be34406",
+      "height": 7.875,
+      "components": [
+        {
+          "x": 6,
+          "y": 19.75,
+          "w": 14,
+          "d": 2.25,
+          "height": 7.875,
+          "lowMin": 0,
+          "lowMax": 0
+        },
+        {
+          "x": 13,
+          "y": 23.5,
+          "w": 1,
+          "d": 0.5,
+          "height": 1.75,
+          "lowMin": 0,
+          "lowMax": 0
+        },
+        {
+          "x": 17,
+          "y": 23.5,
+          "w": 0.75,
+          "d": 0.5,
+          "height": 1.75,
+          "lowMin": 0,
+          "lowMax": 0
+        }
+      ]
+    },
+    {
+      "id": "sp_dbe5965d-2ed8-410c-bf8a-109803471270",
+      "height": 5.25,
+      "components": [
+        {
+          "x": 34,
+          "y": 20.5,
+          "w": 5,
+          "d": 1.5,
+          "height": 5.25,
+          "lowMin": 0,
+          "lowMax": 0
+        }
+      ]
+    },
+    {
+      "id": "sp_6c3b74ec-e76d-487b-96b8-574751c06182",
+      "height": 5.25,
+      "components": [
+        {
+          "x": 54,
+          "y": 17.5,
+          "w": 8,
+          "d": 1.5,
+          "height": 5.25,
+          "lowMin": 0,
+          "lowMax": 0
+        }
+      ]
+    },
+    {
+      "id": "sp_4e36815d-5fed-4f58-acc9-253a9b2b5201",
+      "height": 7,
+      "components": [
+        {
+          "x": 17,
+          "y": 45,
+          "w": 15,
+          "d": 2,
+          "height": 7,
+          "lowMin": 0,
+          "lowMax": 4
+        }
+      ]
+    }
+  ],
+  "emptyGrassAlpha": 82,
+  "opaqueWallAlpha": 0,
+  "projectWrites": false
+}

@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **141쪽 / 4823KB / 약 1,400,291 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **141쪽 / 4835KB / 약 1,404,137 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -16,7 +16,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
 | `openwiki/editor-ai-panel.md` | 606KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 3788 | ~176,700 |
-| `openwiki/editor-ai-tools.md` | 324KB | 87KB ⚠상한 초과 — 절을 더 쪼개라 | 2672 | ~93,410 |
+| `openwiki/editor-ai-tools.md` | 324KB | 87KB ⚠상한 초과 — 절을 더 쪼개라 | 2682 | ~93,639 |
 | `openwiki/editor-database.md` | 413KB | 63KB ⚠상한 초과 — 절을 더 쪼개라 | 2457 | ~120,993 |
 | `openwiki/editor-event-authoring.md` | 176KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 1052 | ~51,583 |
 | `openwiki/editor-event-commands.md` | 68KB | 32KB | 303 | ~18,704 |
@@ -26,7 +26,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-workflows-misc.md` | 84KB | 33KB | 594 | ~23,614 |
 | `openwiki/runtime-battle.md` | 321KB | 32KB | 1758 | ~94,038 |
 | `openwiki/runtime-pre-edit-routing.md` | 111KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 815 | ~33,481 |
-| `openwiki/runtime-project-schema.md` | 214KB | 67KB ⚠상한 초과 — 절을 더 쪼개라 | 1537 | ~59,914 |
+| `openwiki/runtime-project-schema.md` | 215KB | 67KB ⚠상한 초과 — 절을 더 쪼개라 | 1547 | ~60,143 |
 | `openwiki/runtime-sessions.md` | 123KB | 50KB | 627 | ~33,263 |
 | `openwiki/testing.md` | 219KB | 48KB | 2088 | ~60,940 |
 | `openwiki/tileset-reference-documents.md` | 54KB | 4KB | 558 | ~16,396 |
@@ -61,7 +61,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/beodeul-city.md` | 1 | `bundle-assistant-skills.mjs` |
 | `openwiki/bgm-catalog.md` | 4 | `artifacts/bgm-release/bgm-release-v1.json`, `catalog.raw.json`, `output/evidence/agy-interface-smoke-transcript.json`, `output/evidence/audio-ai-final/ingestion-report.json` |
 | `openwiki/castle-map.md` | 12 | `.oprn.json`, `output/castle-reference-revision/runtime/SUMMARY.md`, `output/castle-study/runtime/SUMMARY.md`, `output/grand-castle/composite-recipes.json`, `output/grand-castle/runtime/SUMMARY.md`, `output/grand-castle/save-proof.json`, `save-proof.json`, `scripts/build-castle-2.mts`, `scripts/build-castle-map.mts`, `scripts/build-second-castle.mts`, `scripts/observe-castle-keep.mts`, `scripts/remove-castle-reference-bridge.mjs` |
-| `openwiki/charset-actor-harness.md` | 39 | `SOURCE.md`, `alpha-render.json`, `alpha.png`, `alpha/SUMMARY.md`, `alpha_sheet.png`, `archive-readback.json`, `charset-eight-transparent.png`, `charset-eight.json`, `charset-eight.png`, `charset-normal.png`, `charset-strong.png`, `charset-weak.png`, `context.png`, `desc.json`, `discarded.json`, `driver.json`, `evidence/20261004-continuation/harness-contracts-final.json`, `experiment.json`, `export-readback.json`, `gate.json`, `initial-images-readback.json`, `licenses/easyrpg/AUTHORS.md`, `live-reload.json`, `live-review.png`, `mixed100-002__gpt-r1/views/context.png`, `model-frames.json`, `pack/characters.json`, `pack/editor-assets.json`, `pack/index.html`, `pixel-edits.json`, `pixel-proof.png`, `pixel-worker.md`, `production-errors.json`, `readback.json`, `shared-library-error.json`, `sheet_rgba.png`, `visual-inputs.json`, `walk-qa.json`, `walk-transfer.json` |
+| `openwiki/charset-actor-harness.md` | 38 | `SOURCE.md`, `alpha-render.json`, `alpha.png`, `alpha/SUMMARY.md`, `alpha_sheet.png`, `archive-readback.json`, `charset-eight-transparent.png`, `charset-eight.json`, `charset-eight.png`, `charset-normal.png`, `charset-strong.png`, `charset-weak.png`, `context.png`, `desc.json`, `discarded.json`, `driver.json`, `evidence/20261004-continuation/harness-contracts-final.json`, `experiment.json`, `export-readback.json`, `gate.json`, `initial-images-readback.json`, `licenses/easyrpg/AUTHORS.md`, `live-reload.json`, `live-review.png`, `mixed100-002__gpt-r1/views/context.png`, `model-frames.json`, `pack/characters.json`, `pack/editor-assets.json`, `pack/index.html`, `pixel-edits.json`, `pixel-proof.png`, `production-errors.json`, `readback.json`, `shared-library-error.json`, `sheet_rgba.png`, `visual-inputs.json`, `walk-qa.json`, `walk-transfer.json` |
 | `openwiki/connected-dungeon-generation.md` | 1 | `verify-shots/runtime-qa/connected-dungeon-editor/SUMMARY.md` |
 | `openwiki/delayed-tooltip.md` | 1 | `src/styles/editor/delayed-tooltip.css` |
 | `openwiki/editor-ai-panel.md` | 81 | `.omo/evidence/assistant-glass-fold/measure.json`, `.omo/evidence/autonomous-ai-rpg/task-8-autonomous-ai-rpg.md`, `06-page-modern-forms.css`, `07-wide-compact.png`, `15-assistant-readable.css`, `17-assistant-modern-shell.css`, `DRAFT_20260706_auth_rls.sql`, `after/measure.json`, `ai-tool-usage-YYYY-MM-DD.json`, `aiCommandBar.ts`, `aiGlassPanelWidth.test.ts`, `aiSkillDrawer.ts`, `aiTeamDeck.ts`, `aiTemperatureMenu.ts`, `aiVolatileController.ts`, `assistant-skills.css`, `assistantP2ReviewIntegration.test.ts`, `chat-dock-switch.spec.ts`, `chatDock.ts`, `functionalCompositeClarification.test.ts`, `intentClarify.ts`, `newmain-after-measure.json`, `output/evidence/acceptance-live/README.md`, `output/evidence/ai-activity-levels/06-wide.png`, `output/evidence/ai-team-budget/SUMMARY.json`, `output/evidence/ai-team-menu/SUMMARY.json`, `output/evidence/ai-team-sidebar/SUMMARY.md`, `output/evidence/assistant-clean-glass/phase-2/implementation.md`, `output/evidence/assistant-ui-modern/newmain-before-measure.json`, `output/evidence/studio-drawer/qa/capture-report.json`, `output/evidence/ultrabrain/settings.png`, `plan-wire.json`, `regionIntentRouter.ts`, `review-input.png`, `roles-wire.json`, `scripts/qa/ai-team-budget.mjs`, `scripts/qa/assistant-side-seam-hittest.mjs`, `specialists.png`, `src/ai/intentClarify.ts`, `src/ai/plannerSkip.ts`, `src/ai/skills.ts`, `src/editor/chatDock.ts`, `src/styles/editor/ghost-phase-chip.css`, `stampPlace.ts`, `test/agentBlueprintTurnEnd.test.ts`, `test/aiActivityLiveRow.test.ts`, `test/aiChatObservability.test.ts`, `test/aiChatPanelUxRepairs.test.ts`, `test/aiChatSessionScope.test.ts`, `test/aiComposerEffortPanel.test.ts`, `test/aiConversationRemoteHistory.test.ts`, `test/aiGlassFold.test.ts`, `test/aiGlassPanelWidth.test.ts`, `test/aiNewGoalDraftRetirement.test.ts`, `test/aiNewGoalEarlyOwnership.test.ts`, `test/aiPanelContextSurfaces.test.ts`, `test/aiStickyChecklist.test.ts`, `test/aiToolCallSessionProtocol.test.ts`, `test/aiWorkItemStall.test.ts`, `test/assistantAcceptance.test.ts`, `test/assistantAcceptanceSession.test.ts`, `test/assistantImageTransport.test.ts`, `test/assistantSpatialObligations.test.ts`, `test/chatDock.test.ts`, `test/e2e/_assistant-glass-shots.spec.ts`, `test/e2e/_glass-dock-report.spec.ts`, `test/e2e/chat-dock-switch.spec.ts`, `test/e2e/mode-switch-camera-stability.spec.ts`, `test/editSceneCameraFocus.test.ts`, `test/legacyDbRlsCoverage.node.test.mjs`, `test/plannerSkip.test.ts`, `test/regionIntentExposure.test.ts`, `test/regionTaskRun.test.ts`, `test/tilesetAiClient.test.ts`, `test/turnGuideSharedRules.test.ts`, `test/volumeContractSession.test.ts`, `test/workspaceBarAssistantDock.test.ts`, `verify-shots/feature16-ai/01-library.png`, `verify-shots/first-core-opening/SUMMARY.md`, `verify-shots/preset-first-team-e2e/SUMMARY.json`, `writer-wire.json` |
@@ -79,7 +79,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/emerald-fields.md` | 27 | `ANALYSIS.md`, `VISUAL-SUMMARY.md`, `author-emerald-wide.mts`, `cliff-contours.json`, `editor-saved-proof.json`, `emerald-wide-v2/reloaded-project.json`, `exit-seam-proof.json`, `fidelity/fidelity-proof.json`, `fidelity/reference-vs-editor.png`, `fidelity/runtime-visual/SUMMARY.md`, `inspection-16-fixed/manifest.json`, `inspection-16/REVIEW.md`, `map-open-saved.png`, `output/evidence/emerald-fields/fidelity/VALIDATION.md`, `output/evidence/emerald-region/legacy-db-proof.json`, `output/evidence/emerald-wide/reloaded-project.json`, `refine-emerald-reference.mts`, `region-saved.png`, `road-graph.json`, `scripts/author-emerald-fields.mts`, `scripts/author-emerald-wide.mts`, `scripts/refine-emerald-reference.mts`, `scripts/refine-emerald-wide.mts`, `scripts/register-emerald-region.mts`, `verify-shots/runtime-qa/emerald-fields/SUMMARY.md`, `verify-shots/runtime-qa/emerald-wide-v2/SUMMARY.md`, `verify-shots/runtime-qa/emerald-wide/SUMMARY.md` |
 | `openwiki/feature16-battle-ui.md` | 1 | `verify-shots/runtime-qa/feature16-battle-ui/SUMMARY.md` |
 | `openwiki/growth-trees.md` | 3 | `.omo/evidence/growth-integrated/browser-presets/report.json`, `applied-bundle.json`, `verify-shots/runtime-qa/growth-tree/SUMMARY.md` |
-| `openwiki/harnesses/charset-actor.md` | 4 | `model-frames.json`, `pixel-edits.json`, `pixel_ops.py`, `visual-inputs.json` |
+| `openwiki/harnesses/charset-actor.md` | 3 | `model-frames.json`, `pixel-edits.json`, `visual-inputs.json` |
 | `openwiki/harnesses/interior-prop-derivations-operations.md` | 1 | `library.json` |
 | `openwiki/harnesses/interior-prop-derivations.md` | 1 | `.png` |
 | `openwiki/harnesses/interior-props.md` | 2 | `.loop.json`, `.loop.png` |
@@ -549,7 +549,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L3767` 조수창
   - `L3776` 재현·증거
 
-### `openwiki/editor-ai-tools.md` — 324KB · 2672줄 · ~93,410 토큰 · 통째읽기 잘림 · 깨진 줄 6
+### `openwiki/editor-ai-tools.md` — 324KB · 2682줄 · ~93,639 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
 - `L3` 대화 초상 선택과 게임 글꼴 (2026-10-04)
 - `L32` 조수 스킬 저작 — 기믹·연출 빌리기 (2026-09-30)
@@ -658,6 +658,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L2655` 세계 지도 지형 도구 (2026-10-03)
 - `L2661` Bounded romance authoring tools
   - `L2665` 선택 정수 enum의 Antigravity 전달 (2026-10-04)
+- `L2673` 글자·장면 오프닝 연출 (2026-10-04)
 
 ### `openwiki/editor-database.md` — 413KB · 2457줄 · ~120,993 토큰 · 통째읽기 잘림 · 깨진 줄 8
 
@@ -1224,7 +1225,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L70` 공간 제작에서의 공용 재료 사용
 - `L78` 이관·복구와 확인
 
-### `openwiki/harnesses/super-harness.md` — 28KB · 270줄 · ~8,840 토큰
+### `openwiki/harnesses/super-harness.md` — 34KB · 320줄 · ~10,647 토큰
 
 - `L9` 왜 (2026-10-03 실측)
 - `L16` 조수 쪽 연결 (제품 코드)
@@ -1241,6 +1242,8 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L190` 칩 선택 화면과 조립 예시 (2026-10-04)
   - `L214` 주차장 조립 검수 반려와 선택 관문 (2026-10-04)
   - `L235` 칩 검수 피드백 → 자동 재생성 루프 (2026-10-04)
+  - `L271` 표본 도면과 공간 전체의 품질 관문 v2
+  - `L293` 반복 실패 재설계·시점 표본·전후 비교 v3 (2026-10-04)
 
 ### `openwiki/harnesses/worldmap-icons.md` — 5KB · 65줄 · ~1,592 토큰
 
@@ -1693,7 +1696,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L1750` 공용 몬스터 옛 그림 폐기 (2026-10-02)
   - `L1754` 공용 이동 설계·32종 전투 기믹 (2026-10-02)
 
-### `openwiki/runtime-m2-flow-controls.md` — 46KB · 313줄 · ~12,754 토큰
+### `openwiki/runtime-m2-flow-controls.md` — 47KB · 323줄 · ~12,984 토큰
 
 - `L5` Quest companion presence query (2026-10-01)
 - `L15` Map-effect repair boundary (2026-09-06)
@@ -1710,6 +1713,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L267` Genre ambience presets and sound pairing (2026-09-21)
   - `L291` Thirty audiovisual presets — evidence (2026-09-21)
   - `L306` 그림 컷 준비와 direction (2026-10-04)
+- `L314` 글자·장면 오프닝 연출 (2026-10-04)
 
 ### `openwiki/runtime-pre-edit-routing.md` — 111KB · 815줄 · ~33,481 토큰 · 통째읽기 잘림
 
@@ -1730,7 +1734,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L754` 8차 맵 진입 (2026-09-28)
 - `L787` 화면 주변 타일 유지 (2026-10-01)
 
-### `openwiki/runtime-project-schema.md` — 214KB · 1537줄 · ~59,914 토큰 · 통째읽기 잘림 · 깨진 줄 1
+### `openwiki/runtime-project-schema.md` — 215KB · 1547줄 · ~60,143 토큰 · 통째읽기 잘림 · 깨진 줄 1
 
 - `L3` 맵 캐릭터 크기 — 선택 필드 `map.characterScale` (2026-10-03)
 - `L11` 세계 지도 원본 — 선택 필드 `map.worldmapSource` (2026-10-03)
@@ -1813,6 +1817,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L1510` Optional internal authoring contract
   - `L1514` Desktop fullscreen and mouse controls (2026-10-04)
   - `L1529` Cinematic image direction (2026-10-04)
+- `L1538` 글자·장면 오프닝 연출 (2026-10-04)
 
 ### `openwiki/runtime-sessions.md` — 123KB · 627줄 · ~33,263 토큰 · 통째읽기 잘림
 
@@ -2194,11 +2199,11 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L30` 실제 데이터 보존
 - `L43` 역사 자료와 검증
 
-### `openwiki/sunlight-shadows.md` — 4KB · 52줄 · ~1,257 토큰
+### `openwiki/sunlight-shadows.md` — 5KB · 61줄 · ~1,619 토큰
 
 - `L3` 저작과 저장
 - `L13` 공통 계산과 그리기
-- `L43` 조수와 검수
+- `L50` 조수와 검수
 
 ### `openwiki/teaching-assistant-tilesets.md` — 44KB · 369줄 · ~13,309 토큰
 
@@ -2444,7 +2449,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L531` 수관 잎 채움 (2026-09-24)
 - `L542` 번들 참고 이미지는 정적 경로다 (2026-09-25)
 
-### `openwiki/title-opening-effects.md` — 25KB · 235줄 · ~7,601 토큰
+### `openwiki/title-opening-effects.md` — 28KB · 272줄 · ~8,590 토큰
 
 - `L6` 데이터
 - `L18` 프리셋
@@ -2456,6 +2461,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L137` 범위 밖 (이번에 안 한 것)
 - `L144` 소프트웨어 WebGL 입자 계산 분리 (2026-09-28)
 - `L203` 시네마틱 장면 연출과 백그라운드 준비 (2026-10-04)
+- `L236` 글자·장면 오프닝 연출 (2026-10-04)
 
 ### `openwiki/town-tile-benchmark.md` — 10KB · 153줄 · ~3,024 토큰
 
