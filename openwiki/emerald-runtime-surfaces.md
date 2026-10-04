@@ -49,6 +49,12 @@ resolved skin attribute and set both base variables to128px. Static original
 sprites disable the generic fractional `battler-breathe` scale; registered idle
 strips and container attack/hit motion remain available.
 
+Native first-gym QA also exposed a result-window cascade collision: the Emerald
+24px inset retained the generic centered window's `translate(-50%,-50%)`, moving
+the title and rewards outside the stage. Emerald clears that transform and fixed
+width/height ceiling, reserves the confirm/prompt rows and scrolls actual rewards
+inside the remaining space. It does not alter victory, XP, badge or item handling.
+
 ## Genuine predecessor Continue evidence (2026-10-04)
 
 `emerald-continue-native.probe.mjs` copies the actual predecessor slot's exact
