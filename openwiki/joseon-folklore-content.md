@@ -3,6 +3,17 @@
 `joseon-folklore`는 기존 Project 데이터와 `retro2003` 전투를 쓰는 선택형 콘텐츠 팩이다.
 온라인 기능이나 별도 전투 엔진을 추가하지 않는다. 기본 프로젝트에 강제로 설치하지 않는다.
 
+## 그래픽 교정 상태 (2026-10-05)
+
+사용자가 기본 프리셋의 나무·풀·몬스터 그림을 거부했다. 이전 플레이 비트 통과를 그림 합격으로
+확대하지 않는다. 앞서 수정한 Joseon pilot 나무·기와집은 별도 후보에 남아 있고 실제 프리셋은
+옛 공용 그림을 사용했다. 저작 원본과 선택/배포 상태를 함께 추적한다.
+
+`content-packs/joseon-folklore/art-direction/README.md`에 새 조용한 풀 칸, 보존한 수정 나무,
+새 몬스터3종과 남은 작업이 있다. 모두 시각 교정 후보이며 현재 시트·기본 프리셋·정본을
+교체하지 않았다. 후보 비교는 하네스 조립 그림이다. 몬스터는 정지 자세만 만들었다.
+동일 배치 비교와 브라우저 근거는 `verify-shots/joseon-art-correction/`.
+
 ## 소유권과 등록
 
 - 저작 원본/ID: `content-packs/joseon-folklore/CONTRACT.md`, `ids.json`, 역할별 `data.json`, `design.json`, 원본 도트 코드/해시/검토 그림.

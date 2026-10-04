@@ -1,0 +1,127 @@
+{
+  "errors": [],
+  "widths": [
+    {
+      "width": 736,
+      "states": [
+        {
+          "tab": "숲 후보",
+          "images": [
+            {
+              "loaded": true,
+              "width": 640
+            }
+          ],
+          "overflow": false
+        },
+        {
+          "tab": "숲 현재",
+          "images": [
+            {
+              "loaded": true,
+              "width": 640
+            }
+          ],
+          "overflow": false
+        },
+        {
+          "tab": "적 후보",
+          "images": [
+            {
+              "loaded": true,
+              "width": 64
+            },
+            {
+              "loaded": true,
+              "width": 64
+            },
+            {
+              "loaded": true,
+              "width": 64
+            }
+          ],
+          "overflow": false
+        },
+        {
+          "tab": "적 현재",
+          "images": [
+            {
+              "loaded": true,
+              "width": 64
+            },
+            {
+              "loaded": true,
+              "width": 64
+            },
+            {
+              "loaded": true,
+              "width": 64
+            }
+          ],
+          "overflow": false
+        }
+      ]
+    },
+    {
+      "width": 320,
+      "states": [
+        {
+          "tab": "숲 후보",
+          "images": [
+            {
+              "loaded": true,
+              "width": 640
+            }
+          ],
+          "overflow": false
+        },
+        {
+          "tab": "숲 현재",
+          "images": [
+            {
+              "loaded": true,
+              "width": 640
+            }
+          ],
+          "overflow": false
+        },
+        {
+          "tab": "적 후보",
+          "images": [
+            {
+              "loaded": true,
+              "width": 64
+            },
+            {
+              "loaded": true,
+              "width": 64
+            },
+            {
+              "loaded": true,
+              "width": 64
+            }
+          ],
+          "overflow": false
+        },
+        {
+          "tab": "적 현재",
+          "images": [
+            {
+              "loaded": true,
+              "width": 64
+            },
+            {
+              "loaded": true,
+              "width": 64
+            },
+            {
+              "loaded": true,
+              "width": 64
+            }
+          ],
+          "overflow": false
+        }
+      ]
+    }
+  ]
+}

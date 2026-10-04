@@ -1,0 +1,29 @@
+{
+  "scope": "Candidate tile assembly through existing Joseon pilot compose. Not a runtime screenshot or installed game. No pick/write/save.",
+  "canonicalRead": {
+    "projectId": "f84dfa19-5b71-43f1-8523-b10910d23be7",
+    "revision": 5,
+    "sha256": "87f5c3ed9d61b69bf429e75927f66cd274094c209cd095906d893b92afb0a4dc"
+  },
+  "sourceCandidates": {
+    "trees": {
+      "round": "p1004-105553",
+      "letter": "B",
+      "sha256": "b70c13d61f149603290cb35d3bda68b2c3725f20a030f4ad36ccdaf271ed8499"
+    },
+    "road": "current atlas, same in both views",
+    "grass": {
+      "source": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/content-packs/joseon-folklore/art-direction/quiet-grass.py",
+      "sha256": "45c6f74208cea3d058001f28ceed873b6dd0dbf337a38065c22e0d08658af2f8",
+      "colors": [
+        "#58a035",
+        "#4b8232",
+        "#73b83e"
+      ]
+    }
+  },
+  "sameNativeLayout": true,
+  "pixelScale": 2,
+  "currentAtlasColumns": 72,
+  "humanSelection": "pending"
+}

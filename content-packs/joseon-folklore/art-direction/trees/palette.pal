@@ -1,0 +1,54 @@
+// joseon-baram 파일럿 팔레트 — 생성 파일(palette.py). 정본 scripts/content/lib/joseon/harness/palette_hi.json (램프 25개 × 8단). 손으로 색을 더하지 마라.
+// 격자 쓰는 법: `@mat 글자 램프 기본단` 으로 재료 글자를 정하고 `@mblock`(재료)·`@tblock`(단)·`@tadj`(단 옮김). 단 0 = 가장 어두움, 7 = 가장 밝음. 반투명 없음.
+// `.` 투명/그대로, `_` 지우기, `#` 실루엣 단계 표시색(최종본에 남으면 불합격)
+// 회청 기와(몸채 지붕 기본, 청회색)
+@rampc giwa_gray #0c1312 #17201f #232d2b #333d3b #444e4d #5a6466 #7e8284 #a6a8ac
+// 청록 기와(문루·관아 지붕)
+@rampc giwa_teal #031511 #012d27 #00382f #004236 #005647 #016c5d #2f8878 #6fb0a0
+// 갈색 기와(올리브 갈색, 사랑채·곳간 지붕)
+@rampc giwa_brown #231b08 #3e320f #493d1a #564b28 #625633 #75693f #8f8256 #b3a577
+// 주칠(붉은 기둥·창방·문틀)
+@rampc red #2a0a08 #4d0e04 #6b0f0e #8a1519 #a81d1c #c42f27 #dc5a48 #eba090
+// 주황 단청·붉은 등·감
+@rampc vermil #5a1608 #82240c #a8350f #c64a14 #de6a22 #ee8a38 #f6b062 #fbd496
+// 금박·서까래 끝 황금·용마루 띠
+@rampc gold #3b1d04 #5c3008 #7e4a0c #a56714 #c8851e #e39a3b #f0c070 #f8e0a8
+// 단청 청(기둥머리·보 문양)
+@rampc dblue #0a1030 #121c44 #1b2a5e #263a78 #344c94 #4a64ae #6f86c8 #a4b4e4
+// 단청 녹(석록, 기둥 몸체·창방)
+@rampc dgreen #04251f #07382f #0b4d41 #0f6454 #1a7c68 #36987f #62b499 #98d0b8
+// 목재(문·기둥·마루, 갈색)
+@rampc wood #24120a #3d1f0a #5a2e12 #764224 #905a35 #ab7449 #c4906a #dcb590
+// 연한 나무(문살·툇마루·창호 틀, 베이지)
+@rampc wood_pale #4a3624 #6e5238 #8e6e4e #a98a66 #c2a47e #d6bc98 #e6d2b2 #f3e6cc
+// 회벽·창호지(분홍기 도는 흰 회색)
+@rampc plaster #3a2a24 #5c463c #84705f #a39485 #bdb1a6 #d2cac2 #e5dfd9 #f6f2ed
+// 흙길·마당(밝은 황토색, 현재 지도의 길)
+@rampc earth #2a1a0f #43301e #5e4c38 #77614a #947c5c #b0926a #c89a66 #e0bc88
+// 젖은 흙·그늘 땅(올리브 갈색, 원작 마당 바닥)
+@rampc earth_dark #1f170a #35270c #473a1e #594e2d #695e3b #796e4b #8f845f #a89c78
+// 붉은 황토(흙담 덮개·초가 마당)
+@rampc clay #301a0c #53301a #764223 #8f5228 #a35725 #bc6a2f #ce7e3e #e2a468
+// 밝은 풀(볕 든 잔디·풀잎 끝)
+@rampc grass_light #2f6b2e #4b8232 #5f9a36 #73b83e #8fd24a #a8dc5c #c2e87a #dcf2a0
+// 중간 풀(현재 지도 잔디의 몸통)
+@rampc grass_mid #143a27 #1e4c2c #2c6430 #3b7a31 #4b8c34 #58a035 #6cb23c #82c648
+// 그늘 풀·덤불 속·수관 안쪽
+@rampc grass_shade #071a14 #0c2a1d #133a22 #1c4a28 #285a2a #356e2e #458234 #579a3a
+// 솔잎(푸른빛 도는 짙은 초록)
+@rampc pine #071a1a #0d2a24 #153a2c #1e4a32 #2a5c38 #386e3c #498242 #5f984a
+// 줄기·가지 껍질(회갈)
+@rampc bark #1c1410 #2e211a #43322a #594538 #6f5848 #876e5a #a08670 #bda68c
+// 돌·바위·석축(따뜻한 회색)
+@rampc stone #1c1a1a #34302f #4a4644 #605b59 #78726f #918b87 #aba5a0 #c8c3be
+// 청회색 화강암·성벽·판석(찬 회색)
+@rampc stone_cool #151c1f #28323a #3c464c #525c60 #6a7476 #858e8e #a2aaa8 #c4cac7
+// 이끼(돌·기단·그늘 땅의 누런 초록)
+@rampc moss #1a2410 #2a3a16 #3c5020 #506a2a #658236 #7e9a48 #98b25e #b4ca7c
+// 물(맑은 청록)
+@rampc water #0b1a20 #12303a #1c4552 #285a68 #357080 #4a8c9a #78b0b8 #a8d4d8
+// 초가 이엉(주황 갈색)
+@rampc straw #3a1a08 #55290e #6f3a16 #8a4c20 #a15e2b #b97037 #d08844 #ecc088
+// 분홍 꽃(복사꽃·진달래)
+@rampc blossom #4a1830 #7a2a4a #a64068 #c8608a #de86a8 #eca6c0 #f6c8d8 #fce6ee
+# #e040c0   // 실루엣 단계 표시색(최종본 금지)

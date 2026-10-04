@@ -1,0 +1,44 @@
+{
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "status": "candidate-awaiting-user-visual-steering",
+  "sprites": {
+    "wild-boar": {
+      "sha256": "daad22cd5d3f9349d19812fd731ced631055ff5e96676a20a1623c34706aa769",
+      "cell_size": [
+        64,
+        64
+      ],
+      "silhouette_size": [
+        42,
+        32
+      ],
+      "opaque_colors": 14
+    },
+    "straw-dokkaebi": {
+      "sha256": "78358f3720b9c9c0f122aa04bded88c515e5a7e3639795e79e38de4e0ca19b2e",
+      "cell_size": [
+        64,
+        64
+      ],
+      "silhouette_size": [
+        41,
+        41
+      ],
+      "opaque_colors": 17
+    },
+    "maiden-ghost": {
+      "sha256": "28514f4e45ddfc1de39ca4a0e903f5702eb97c33af0e2bd3d148d8a269b87721",
+      "cell_size": [
+        64,
+        64
+      ],
+      "silhouette_size": [
+        29,
+        45
+      ],
+      "opaque_colors": 14
+    }
+  },
+  "scope": "Three static idle proposals. No installed assets or canonical game mutations."
+}

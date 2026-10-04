@@ -1,0 +1,123 @@
+{
+  "status": "candidate-awaiting-user-visual-steering",
+  "output_directory": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content-jf-monsters/output/art-correction-20261005",
+  "sprites": {
+    "wild-boar": {
+      "path": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content-jf-monsters/output/art-correction-20261005/candidates/wild-boar.png",
+      "sha256": "811e3be2ad1c4d781e862ecc5139461c91f2335c2522450f9221f2556959c739",
+      "cell_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "bbox": [
+        8,
+        22,
+        48,
+        54
+      ],
+      "silhouette_size": [
+        40,
+        32
+      ],
+      "opaque_colors": 14,
+      "alpha_values": [
+        0,
+        255
+      ],
+      "status": "candidate-awaiting-user-visual-steering"
+    },
+    "straw-dokkaebi": {
+      "path": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content-jf-monsters/output/art-correction-20261005/candidates/straw-dokkaebi.png",
+      "sha256": "b83703bd0f3802e14503864bc13a234844b783e7202e5884e578a400916ca252",
+      "cell_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "bbox": [
+        12,
+        12,
+        53,
+        56
+      ],
+      "silhouette_size": [
+        41,
+        44
+      ],
+      "opaque_colors": 17,
+      "alpha_values": [
+        0,
+        255
+      ],
+      "status": "candidate-awaiting-user-visual-steering"
+    },
+    "maiden-ghost": {
+      "path": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content-jf-monsters/output/art-correction-20261005/candidates/maiden-ghost.png",
+      "sha256": "8fcc791b5f709266ff4dc967f7d2d8a8952c9bf4530d6b6c0c7dddea9046436f",
+      "cell_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "bbox": [
+        17,
+        12,
+        46,
+        58
+      ],
+      "silhouette_size": [
+        29,
+        46
+      ],
+      "opaque_colors": 15,
+      "alpha_values": [
+        0,
+        255
+      ],
+      "status": "candidate-awaiting-user-visual-steering"
+    }
+  },
+  "review_sheet": {
+    "path": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content-jf-monsters/output/art-correction-20261005/review-sheet.png",
+    "sha256": "c57fd34120b6baafe2ad2b31dddbd70b414a56ab22db14ab72a653a0ed73b48d"
+  },
+  "actor_scale_reference": {
+    "path": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content-jf-monsters/output/art-correction-20261005/reference/Actor1-original-24x32.png",
+    "source": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content-jf-monsters/public/assets/easyrpg/charset/Actor1.png",
+    "crop": [
+      24,
+      64,
+      48,
+      96
+    ]
+  },
+  "sources": {
+    "wild-boar": {
+      "pxgrid": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content-jf-monsters/output/art-correction-20261005/source/wild-boar.pxgrid",
+      "pxgrid_sha256": "8121ab5e9d8f975403d1325ce4568d7ffd60c30f9966185121c9429e8ec5f417",
+      "palette": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content-jf-monsters/output/art-correction-20261005/source/wild-boar.palette.json",
+      "palette_sha256": "af22898a859c3cbbd6bbb64f78ea7543204dc132f2afffb48341a7df87f191b4"
+    },
+    "straw-dokkaebi": {
+      "pxgrid": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content-jf-monsters/output/art-correction-20261005/source/straw-dokkaebi.pxgrid",
+      "pxgrid_sha256": "543b36009a8fb9077da5bb13fb46ba05f1cf4a77c65eb89654f296b74789171e",
+      "palette": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content-jf-monsters/output/art-correction-20261005/source/straw-dokkaebi.palette.json",
+      "palette_sha256": "d451b292f219efe3c66180e92a6b3f8b96d41f0748d5a5e64274b6318f5f056d"
+    },
+    "maiden-ghost": {
+      "pxgrid": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content-jf-monsters/output/art-correction-20261005/source/maiden-ghost.pxgrid",
+      "pxgrid_sha256": "0acec3f9219a72061f93f8c247d4d31ab0466f2b817e45283617f17762da544e",
+      "palette": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content-jf-monsters/output/art-correction-20261005/source/maiden-ghost.palette.json",
+      "palette_sha256": "ebed2c6db2db0c701a56eaa7023ad519dcf62f5f50b3c226db5db5dfbc0cd814"
+    }
+  },
+  "baking_python": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content-jf-monsters/output/art-correction-20261005/bake.py",
+  "baking_sha256": "89458e70daf4c61d95cbb617fce53c2ced8ac3326a891891e23d012731e61e55",
+  "visual_review": "Pending actual image inspection; see REVIEW.md when finalized.",
+  "limitations": [
+    "Static idle candidates only; pose and animation continuity are untested.",
+    "Candidate sprites have not been installed or evaluated in the shipped battle renderer.",
+    "Palette coherence with corrected foliage awaits the director context comparison."
+  ]
+}

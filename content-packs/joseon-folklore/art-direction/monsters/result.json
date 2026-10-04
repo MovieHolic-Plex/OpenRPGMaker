@@ -1,0 +1,226 @@
+{
+  "status": "candidate-awaiting-user-visual-steering",
+  "output_directory": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/content-packs/joseon-folklore/art-direction/monsters",
+  "sprites": {
+    "wild-boar": {
+      "path": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/content-packs/joseon-folklore/art-direction/monsters/candidates/wild-boar.png",
+      "sha256": "daad22cd5d3f9349d19812fd731ced631055ff5e96676a20a1623c34706aa769",
+      "cell_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "bbox": [
+        8,
+        22,
+        50,
+        54
+      ],
+      "silhouette_size": [
+        42,
+        32
+      ],
+      "opaque_colors": 14,
+      "alpha_values": [
+        0,
+        255
+      ],
+      "status": "candidate-awaiting-user-visual-steering"
+    },
+    "straw-dokkaebi": {
+      "path": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/content-packs/joseon-folklore/art-direction/monsters/candidates/straw-dokkaebi.png",
+      "sha256": "78358f3720b9c9c0f122aa04bded88c515e5a7e3639795e79e38de4e0ca19b2e",
+      "cell_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "bbox": [
+        12,
+        14,
+        53,
+        55
+      ],
+      "silhouette_size": [
+        41,
+        41
+      ],
+      "opaque_colors": 17,
+      "alpha_values": [
+        0,
+        255
+      ],
+      "status": "candidate-awaiting-user-visual-steering"
+    },
+    "maiden-ghost": {
+      "path": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/content-packs/joseon-folklore/art-direction/monsters/candidates/maiden-ghost.png",
+      "sha256": "28514f4e45ddfc1de39ca4a0e903f5702eb97c33af0e2bd3d148d8a269b87721",
+      "cell_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "bbox": [
+        17,
+        12,
+        46,
+        57
+      ],
+      "silhouette_size": [
+        29,
+        45
+      ],
+      "opaque_colors": 14,
+      "alpha_values": [
+        0,
+        255
+      ],
+      "status": "candidate-awaiting-user-visual-steering"
+    }
+  },
+  "review_sheet": {
+    "path": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/content-packs/joseon-folklore/art-direction/monsters/review-sheet.png",
+    "sha256": "ff43ca0cdb6187dc63339f1507e36f2e7c5513a0521df6c85cbefad3e352944e"
+  },
+  "actor_scale_reference": {
+    "path": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/content-packs/joseon-folklore/art-direction/monsters/reference/Actor1-original-24x32.png",
+    "source": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/public/assets/easyrpg/charset/Actor1.png",
+    "crop": [
+      24,
+      64,
+      48,
+      96
+    ]
+  },
+  "sources": {
+    "wild-boar": {
+      "pxgrid": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/content-packs/joseon-folklore/art-direction/monsters/source/wild-boar.pxgrid",
+      "pxgrid_sha256": "5c2192ed240e92a9a2b911f56a2edae44c724c7e0f4f75ad41e34a3a9781acba",
+      "palette": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/content-packs/joseon-folklore/art-direction/monsters/source/wild-boar.palette.json",
+      "palette_sha256": "af22898a859c3cbbd6bbb64f78ea7543204dc132f2afffb48341a7df87f191b4"
+    },
+    "straw-dokkaebi": {
+      "pxgrid": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/content-packs/joseon-folklore/art-direction/monsters/source/straw-dokkaebi.pxgrid",
+      "pxgrid_sha256": "2c4d1425a063ea72c9fcf7a00555661cdef5c9fa0efcd5e39832d4d33c04749e",
+      "palette": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/content-packs/joseon-folklore/art-direction/monsters/source/straw-dokkaebi.palette.json",
+      "palette_sha256": "d451b292f219efe3c66180e92a6b3f8b96d41f0748d5a5e64274b6318f5f056d"
+    },
+    "maiden-ghost": {
+      "pxgrid": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/content-packs/joseon-folklore/art-direction/monsters/source/maiden-ghost.pxgrid",
+      "pxgrid_sha256": "e91f4724f19fcd710dd565fd6c4b8b99d27a13b8c0d22fd5469835c61629eb1d",
+      "palette": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/content-packs/joseon-folklore/art-direction/monsters/source/maiden-ghost.palette.json",
+      "palette_sha256": "ebed2c6db2db0c701a56eaa7023ad519dcf62f5f50b3c226db5db5dfbc0cd814"
+    }
+  },
+  "baking_python": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/content-packs/joseon-folklore/art-direction/monsters/bake.py",
+  "baking_sha256": "a823755cedf0fd6fe8f436d056f005a2b3483087647fae7c8bf9623c79bf6f0f",
+  "visual_review": "Viewed shipped screenshots and old portraits; viewed initial and revised comparison sheets. One visual revision completed. See REVIEW.md for specific limitations.",
+  "visual_review_document": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/content-packs/joseon-folklore/art-direction/monsters/REVIEW.md",
+  "director_handoff": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/content-packs/joseon-folklore/art-direction/monsters/director-handoff.md",
+  "limitations": [
+    "Boar: tucked far hind leg merges with belly at 1x; fur bands still look sculpted; small tusk needs ground-context review.",
+    "Dokkaebi: shallow face turn; coat has diagonal repeats; similar skin/straw values weaken the shoulder boundary at 1x.",
+    "Ghost: tiny fingers merge at 1x; skirt folds remain regular; right shadow is a strong stripe; expression remains restrained.",
+    "Static idle candidates only; pose and animation continuity are untested.",
+    "Candidate sprites have not been installed or evaluated in the shipped battle renderer.",
+    "Palette coherence with corrected foliage awaits the director context comparison."
+  ],
+  "artifacts": [
+    {
+      "path": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/content-packs/joseon-folklore/art-direction/monsters/REVIEW.md",
+      "sha256": "39edcfdce0d1fc631ceb597b0e2e6b9758f53a3e26d58f077c3ad7128fdaba2e"
+    },
+    {
+      "path": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/content-packs/joseon-folklore/art-direction/monsters/bake.py",
+      "sha256": "a823755cedf0fd6fe8f436d056f005a2b3483087647fae7c8bf9623c79bf6f0f"
+    },
+    {
+      "path": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/content-packs/joseon-folklore/art-direction/monsters/candidates/maiden-ghost.png",
+      "sha256": "28514f4e45ddfc1de39ca4a0e903f5702eb97c33af0e2bd3d148d8a269b87721"
+    },
+    {
+      "path": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/content-packs/joseon-folklore/art-direction/monsters/candidates/straw-dokkaebi.png",
+      "sha256": "78358f3720b9c9c0f122aa04bded88c515e5a7e3639795e79e38de4e0ca19b2e"
+    },
+    {
+      "path": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/content-packs/joseon-folklore/art-direction/monsters/candidates/wild-boar.png",
+      "sha256": "daad22cd5d3f9349d19812fd731ced631055ff5e96676a20a1623c34706aa769"
+    },
+    {
+      "path": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/content-packs/joseon-folklore/art-direction/monsters/director-handoff.md",
+      "sha256": "b8c98cc50c43731109ef1d5767ae02f20b05187fc4203714a8bc5696c2ad7589"
+    },
+    {
+      "path": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/content-packs/joseon-folklore/art-direction/monsters/reference/Actor1-original-24x32.png",
+      "sha256": "08188dee874946b2ecd199a71ee2eb3b9c568940ea7fc2a3702d652d3c072ed4"
+    },
+    {
+      "path": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/content-packs/joseon-folklore/art-direction/monsters/reference/old-maiden-ghost.png",
+      "sha256": "e344dff69950172e34eb1ad911d46632dcaffcc3d0aa2766b1e4b092f67e53b1"
+    },
+    {
+      "path": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/content-packs/joseon-folklore/art-direction/monsters/reference/old-straw-dokkaebi.png",
+      "sha256": "dfc09a1b13bd2cf4174261122617fb63dae9cdeb2baf922f6ce434fa96077dcd"
+    },
+    {
+      "path": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/content-packs/joseon-folklore/art-direction/monsters/reference/old-wild-boar.png",
+      "sha256": "068df07b78c1b41e6a996449c6ca46674a3db0ffbdb9df2720b875e1e6e52e00"
+    },
+    {
+      "path": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/content-packs/joseon-folklore/art-direction/monsters/review-sheet.png",
+      "sha256": "ff43ca0cdb6187dc63339f1507e36f2e7c5513a0521df6c85cbefad3e352944e"
+    },
+    {
+      "path": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/content-packs/joseon-folklore/art-direction/monsters/revision-1/author_rows.py",
+      "sha256": "3bd9cd4b23221ee748b6a1d74e0bb56dccee9c5d219386f00ca357ccfecd0f0d"
+    },
+    {
+      "path": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/content-packs/joseon-folklore/art-direction/monsters/revision-1/maiden-ghost.png",
+      "sha256": "8fcc791b5f709266ff4dc967f7d2d8a8952c9bf4530d6b6c0c7dddea9046436f"
+    },
+    {
+      "path": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/content-packs/joseon-folklore/art-direction/monsters/revision-1/review-sheet.png",
+      "sha256": "c57fd34120b6baafe2ad2b31dddbd70b414a56ab22db14ab72a653a0ed73b48d"
+    },
+    {
+      "path": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/content-packs/joseon-folklore/art-direction/monsters/revision-1/straw-dokkaebi.png",
+      "sha256": "b83703bd0f3802e14503864bc13a234844b783e7202e5884e578a400916ca252"
+    },
+    {
+      "path": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/content-packs/joseon-folklore/art-direction/monsters/revision-1/wild-boar.png",
+      "sha256": "811e3be2ad1c4d781e862ecc5139461c91f2335c2522450f9221f2556959c739"
+    },
+    {
+      "path": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/content-packs/joseon-folklore/art-direction/monsters/source/author_rows.py",
+      "sha256": "d7685c768459eff85807cc11176a462225b6920027476fc7fd67fd619b60b148"
+    },
+    {
+      "path": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/content-packs/joseon-folklore/art-direction/monsters/source/maiden-ghost.palette.json",
+      "sha256": "ebed2c6db2db0c701a56eaa7023ad519dcf62f5f50b3c226db5db5dfbc0cd814"
+    },
+    {
+      "path": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/content-packs/joseon-folklore/art-direction/monsters/source/maiden-ghost.pxgrid",
+      "sha256": "e91f4724f19fcd710dd565fd6c4b8b99d27a13b8c0d22fd5469835c61629eb1d"
+    },
+    {
+      "path": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/content-packs/joseon-folklore/art-direction/monsters/source/refine_rows.py",
+      "sha256": "22f74a639cda663d1df7553cfcfb0062738738b0ab9fa52b0343e9fec5f786e0"
+    },
+    {
+      "path": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/content-packs/joseon-folklore/art-direction/monsters/source/straw-dokkaebi.palette.json",
+      "sha256": "d451b292f219efe3c66180e92a6b3f8b96d41f0748d5a5e64274b6318f5f056d"
+    },
+    {
+      "path": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/content-packs/joseon-folklore/art-direction/monsters/source/straw-dokkaebi.pxgrid",
+      "sha256": "2c4d1425a063ea72c9fcf7a00555661cdef5c9fa0efcd5e39832d4d33c04749e"
+    },
+    {
+      "path": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/content-packs/joseon-folklore/art-direction/monsters/source/wild-boar.palette.json",
+      "sha256": "af22898a859c3cbbd6bbb64f78ea7543204dc132f2afffb48341a7df87f191b4"
+    },
+    {
+      "path": "/home/main/z-project/rpg-zzu-codex-joseon-dialogue-codex-jf-content/content-packs/joseon-folklore/art-direction/monsters/source/wild-boar.pxgrid",
+      "sha256": "5c2192ed240e92a9a2b911f56a2edae44c724c7e0f4f75ad41e34a3a9781acba"
+    }
+  ]
+}

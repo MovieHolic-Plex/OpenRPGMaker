@@ -1,0 +1,10 @@
+{
+  "round": "p1004-105553",
+  "candidate": "B",
+  "status": "not-picked-not-installed",
+  "originalSourceSha256": "667772ad955e359b4117870306e6cb2651ac57a4b5669715e7a1930b997e8dbf",
+  "archivedSourceSha256": "baac370a822586dcc5a7da50523a8d42e817b9df9d4ab2d51e0716d462a86abc",
+  "paletteDirectiveRebased": true,
+  "imageSha256": "b70c13d61f149603290cb35d3bda68b2c3725f20a030f4ad36ccdaf271ed8499",
+  "canonicalPaletteUnchanged": true
+}
