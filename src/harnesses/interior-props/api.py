@@ -18,6 +18,7 @@ import store  # noqa: E402
 import harness  # noqa: E402
 from common import CAND, NEW_ITEMS, RESIZE_STAMP, SETS, V5, WORKER_RE, geom, objects_by_id, slug, objects_by_slug, size_from_note, write_resize  # noqa: E402
 import picks_db  # noqa: E402
+import shared_publish  # noqa: E402
 import outline_select  # noqa: E402
 
 SPEC = os.path.join(ROOT, 'src/assets/handInteriorSpec.json')
@@ -95,7 +96,7 @@ def state():
                 pool=dict(alive=harness.pool_alive(), queued=sum(1 for r in allruns if r['status'] == 'queued'),
                           running=sum(1 for r in allruns if r['status'] == 'running'), par=harness.MAX_PAR, attempts=harness.MAX_ATTEMPTS, reviewEffort=harness.REVIEW_EFFORT,
                           model=harness.MODEL, effort=harness.EFFORT),
-                drawErrSeq=_ERR_SEQ[0], drawErrors=dict(_DRAW_ERR))
+                drawErrSeq=_ERR_SEQ[0], drawErrors=dict(_DRAW_ERR), sharedPublish=shared_publish.status())
 
 
 def _set_view(o):
@@ -192,7 +193,7 @@ def _sel_diff(png):
 
 def _fingerprint():
     """상태를 바꾸는 것들의 파일 시각 — 같으면 들고 있던 상태를 그대로 준다."""
-    fs = [store.DB, store.DB + '-wal', picks_db.DB, picks_db.DB + '-wal', NEW_ITEMS, os.path.join(V5, 'interior-meta.json'), RESIZE_STAMP, SETS]
+    fs = [store.DB, store.DB + '-wal', picks_db.DB, picks_db.DB + '-wal', NEW_ITEMS, os.path.join(V5, 'interior-meta.json'), RESIZE_STAMP, SETS, shared_publish.DB, shared_publish.DB + '-wal']
     out = []
     for f in fs:
         try: st = os.stat(f); out.append(f'{st.st_mtime_ns}:{st.st_size}')
@@ -223,8 +224,12 @@ def state_gz(max_stale=False):
 
 def _refresher():
     """뒤에서 1초마다 지문을 보고 바뀌었으면 미리 만들어 둔다 — 화면의 3초 폴링이 거의 늘 만들어진 바이트를 받는다."""
+    last_publish_check = time.monotonic()
     while True:
         try:
+            if time.monotonic() - last_publish_check >= 30:
+                queue_shared_publish()  # 꺼진 일꾼도 내구성 대기열에서 다시 시작한다.
+                last_publish_check = time.monotonic()
             fp = _fingerprint()
             if fp != _SNAP['fp']:
                 with _BUILD:
@@ -242,7 +247,16 @@ def start():
         if row: _SNAP.update(fp=row[0], gz=row[1])
     except Exception as e:
         print('상태 스냅숏 읽기 실패:', repr(e), flush=True)
+    queue_shared_publish()
     threading.Thread(target=_refresher, daemon=True, name='state-refresh').start()
+
+
+def queue_shared_publish():
+    # 사용자 선택은 이미 저장됐다. 등록 대기열 실패로 선택 저장이 실패했다고 답하지 않는다.
+    try: return shared_publish.request()
+    except Exception as e:
+        print('공용 반영 대기열 실패:', repr(e), flush=True)
+        return dict(state='error', error=str(e))
 
 
 def _exists(item, c):
@@ -277,6 +291,7 @@ def decide(body):
         try: picks_db.export()
         except Exception as e: print('picks.json 내보내기 실패:', repr(e), flush=True)
         store.add_feedback(i, 'pick', rnd, choice, [], note)
+        queue_shared_publish()
         if children is not None: return dict(ok=True, children=children)
     return dict(ok=True)
 
@@ -377,6 +392,7 @@ def handle(h, method, parts, body=None):
             if parts == ['api', 'harness', 'decide']: res = decide(body or {})
             elif parts == ['api', 'harness', 'draw']: res = draw(body or {})
             elif parts == ['api', 'harness', 'derive']: res = derive_order(body or {})
+            elif parts == ['api', 'harness', 'publish']: res = shared_publish.request(force=True)
             else: h.send(404, '{}'); return True
         except Conflict as e:
             h.send(409, json.dumps({'error': str(e)}, ensure_ascii=False)); return True

@@ -295,6 +295,7 @@ class H(BaseHTTPRequestHandler):
             picks_db.export()   # 커밋은 끝났다. 내보내기 실패는 저장 실패가 아니다(다음 쓰기·시작 때 다시 쓴다)
         except Exception as e:
             print('picks.json 내보내기 실패:', repr(e), flush=True)
+        if HAPI: HAPI.queue_shared_publish()
         return self.send(200, json.dumps({'ok': True, 'id': i, 'event': eid, 'pick': rec}, ensure_ascii=False))
 
 def main():

@@ -148,3 +148,14 @@ v5 381종 밖의 기물을 추가하는 길. 명세 `tiledata/hand-interior/new/
 모션의 4프레임·150ms를 보존한다(`animationStrips`의 fps=1000/150). 기존 기물은 12프레임·10fps로 유지된다.
 `handInteriorSpec.json`은 방향·상태·움직임의 자식 관계와 `derivationSets`를 함께 배포한다.
 띠가 없거나 명세·해시·첫 프레임이 다르면 이유를 남기고 건너뛴다. 선택 전에는 모션 자식을 등록하거나 번들에 설치하지 않는다.
+
+
+### 서버 하네스의 자동 공용 등록 (2026-10-04)
+
+`/harness`의 확정은 선택 DB 커밋 뒤 공용 SQLite 라이브러리 `oprn-hand-interior-harness`에 자동 게시된다.
+현재 앱 번들과 구분되는 예약 타일셋 `shared_hand_interior_harness`로 그림·기물 킷·참고문서를 함께 싣는다.
+새 프로젝트와 기존 프로젝트 모두 호스트의 공용 기본 목록을 다시 읽을 때 설치된다.
+기물 검색·배치는 `list_spatial_designs`와 `stamp_object`를 사용한다. `build_hand_interior_room`은 앱 번들의 사양이다.
+사용자가 고른 단품·방향/상태 자식·모션만 반영하며, 게시 실패는 선택을 지우지 않는다.
+대기열·재시도·칸 번호 보존·저장 후 재로드 계약: [하네스 문서](harnesses/interior-props.md#서버-확정--공용-sqlite-자동-등록-2026-10-04).
+새 쓰임 `play`(오락기·놀이 기구)는 `use6.USE_KO`의 정식 낱말이다.

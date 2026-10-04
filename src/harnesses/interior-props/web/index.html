@@ -7,9 +7,9 @@
 <style>
 :root { --bg:#1b191e; --panel:#25222a; --panel2:#2d2932; --line:#3a3640; --text:#ece7e0; --dim:#9b958d; --ok:#7fbf6a; --bad:#e0685a; --sel:#f2c14e; --acc:#8fb3e8; --rej:#c2410c; }
 * { box-sizing:border-box; }
-body { margin:0; background:var(--bg); color:var(--text); font:14px/1.45 system-ui, "Noto Sans KR", sans-serif; }
+body { display:flex; flex-direction:column; height:100vh; overflow:hidden; margin:0; background:var(--bg); color:var(--text); font:14px/1.45 system-ui, "Noto Sans KR", sans-serif; }
 button, input, textarea, select { font:inherit; color:var(--text); }
-header { display:flex; gap:10px; align-items:center; padding:8px 14px; border-bottom:1px solid var(--line); background:var(--panel); position:sticky; top:0; z-index:10; height:50px; }
+header { display:flex; gap:10px; align-items:center; padding:8px 14px; border-bottom:1px solid var(--line); background:var(--panel); position:sticky; top:0; z-index:10; height:50px; flex:none; }
 header h1 { font-size:16px; margin:0 6px 0 0; white-space:nowrap; }
 .tab { background:transparent; border:1px solid transparent; border-radius:7px; padding:5px 12px; cursor:pointer; }
 .tab.on { background:#3a3442; border-color:var(--sel); }
@@ -17,7 +17,7 @@ header h1 { font-size:16px; margin:0 6px 0 0; white-space:nowrap; }
 .chip b { color:var(--text); }
 .pool { margin-left:auto; color:var(--dim); font-size:12px; white-space:nowrap; }
 .pool .live { color:var(--ok); }
-.wrap { display:flex; height:calc(100vh - 50px); }
+.wrap { display:flex; flex:1; min-height:0; }
 nav { width:250px; flex:none; overflow:auto; border-right:1px solid var(--line); background:#1f1d23; }
 button.chip { border:0; cursor:pointer; font:inherit; font-size:12px; }
 nav h3.fold { cursor:pointer; }
@@ -183,6 +183,7 @@ main { flex:1; overflow:auto; padding:14px 20px 140px; }
   <span class="chip" id="cEng" title="마지막으로 그린 쪽 — 다시 그린 후보는 마지막 그림의 엔진"></span>
   <span class="pool" id="pool"></span>
 </header>
+<div id="sharedPub" role="status" style="flex:none;padding:5px 14px;font-size:12px;color:var(--dim);border-bottom:1px solid var(--line)"></div>
 <div class="wrap">
   <nav id="nav"></nav>
   <main id="main"></main>
@@ -289,6 +290,15 @@ async function load(keep) {
   $('#cDone').textContent = its.filter(i => i.status === 'done').length;
   const all = its.flatMap(i => i.rounds.flatMap(r => r.runs));
   $('#cEng').innerHTML = `<span class="eng codex">Codex</span> ${all.filter(r => r.engine === 'codex').length}장 · <span class="eng claude">Sonnet</span> ${all.filter(r => r.engine === 'claude').length}장`;
+  const pub = S.data.sharedPublish || {state:'idle'};
+  $('#sharedPub').textContent = pub.state === 'done' ? `공용 반영 완료 · 선택 ${pub.receipt?.selected ?? 0}종 — 다른 프로젝트에서도 사용 가능` :
+    pub.state === 'publishing' ? '공용 반영 중 — 선택은 저장됐습니다' : pub.state === 'queued' ? '공용 반영 대기 중 — 선택은 저장됐습니다' :
+    pub.state === 'error' ? '공용 반영 실패 — 선택은 보존됐습니다. 자동으로 다시 시도합니다. ' : '확정한 기물은 공용으로 자동 반영됩니다';
+  if (pub.state === 'error') {
+    const retry = document.createElement('button'); retry.className = 'btn'; retry.textContent = '지금 다시 시도';
+    retry.onclick = async () => { try { await api('/api/harness/publish', {}); load(true); } catch (e) { toast(e.message, true); } };
+    $('#sharedPub').append(retry);
+  }
   const p = S.data.pool;
   const left = p.queued + p.running, eta = Math.round(left / Math.max(1, p.par) * 5.7);   // 실측: 16명에서 1분에 약 2.8장 = 한 사람 5.7분/장
   const drawing = its.filter(i => i.status === 'drawing').length;
@@ -304,7 +314,7 @@ async function load(keep) {
     if (sn !== S.sigNav || !keep) { S.sigNav = sn; renderNav(); }
     if (sp !== S.sigPick || !keep) { S.sigPick = sp; const y = $('#main').scrollTop; renderPick(); $('#main').scrollTop = y; }
   }
-  clearTimeout(S._poll); S._poll = setTimeout(() => load(true), (p.alive || its.some(i => i.status === 'drawing')) ? 3000 : 15000);
+  clearTimeout(S._poll); S._poll = setTimeout(() => load(true), (p.alive || ['publishing','queued','error'].includes(pub.state) || its.some(i => i.status === 'drawing')) ? 3000 : 15000);
 }
 
 function toggleDone() { S.showDone = !S.showDone; if (S.view === 'pick') renderNav(); }   // 기물 고르기 화면에선 목록을 덮지 않는다

@@ -459,3 +459,12 @@ Manual wire check used the actual109MB canonical document plus its asset patch: 
 실측(새 폴더 · oprn-serve · Playwright, 박스 load 22~35): 칠하기 획의 최장 메인 스레드 정지 12~13s → 0.1~0.46s.
 「자동 저장됨」까지는 7~11s 이고 대부분 호스트 쓰기(81MB 직렬화·해시·SQLite)다 — 남은 바닥은 문서 분리다.
 두 경로 모두 웹(HTTP 브리지)과 Electron(IPC)이 같은 `electronRepository`·`store` 코드를 탄다.
+
+
+### 공용 라이브러리 게시 후 재로드 (2026-10-04)
+
+`scripts/lib/sharedContentSqlite.ts`의 `publishSharedContent`는 CAS 트랜잭션 커밋 뒤
+게시한 라이브러리 행만 새 연결로 다시 읽고 판본 해시를 비교한다.
+공용 DB 전체(수 GB)를 매번 `readSharedContent`로 역직렬화하지 않는다.
+서버 소품 하네스는 이 API로 사용자 확정을 모든 프로젝트용 기본 팩에 자동 등록한다.
+대기열·실패 재시도·칸 번호 보존: [interior-props](harnesses/interior-props.md).

@@ -191,7 +191,13 @@ export function publishSharedContent(id: string, value: SharedContentLibrary, ex
     db.prepare('INSERT INTO content_libraries VALUES (?,?,?,?) ON CONFLICT(id) DO UPDATE SET revision=excluded.revision,payload=excluded.payload,updated_at=excluded.updated_at').run(id,revision,payload,new Date().toISOString());
     db.exec('COMMIT');
   } catch(error) { db.exec('ROLLBACK'); throw error; } finally { db.close(); }
-  const reloaded = readSharedContent(file).libraries[id];
+  // 등록한 라이브러리만 재로드한다. 수 GB인 공용 DB를 매번 전량 읽지 않는다.
+  const check = open(file);
+  let reloaded: SharedContentLibrary;
+  try {
+    const row = check.prepare('SELECT payload FROM content_libraries WHERE id=?').get(id) as { payload: string };
+    reloaded = JSON.parse(row.payload) as SharedContentLibrary;
+  } finally { check.close(); }
   if(hash(JSON.stringify(reloaded)) !== revision) throw new Error('Shared SQLite reload mismatch');
   return {file,id,revision,reloaded};
 }
