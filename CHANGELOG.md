@@ -5,6 +5,13 @@
 
 <!-- releases -->
 
+## 0.129.0 — 2026-10-05
+
+### 기능
+
+- demonstrate approved parking chips across twelve bays (#2124) (`4fc9d9d`)
+- **ai** — center team UI on assistant work and support direct team commands (`d0e587b`)
+
 ## 0.128.0 — 2026-10-05
 
 ### 기능
