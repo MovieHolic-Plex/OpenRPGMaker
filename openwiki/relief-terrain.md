@@ -119,7 +119,8 @@
 - **발 좌표 오차 0은 몸이 보인다는 증거가 아니다.** 앞선 접점/발 위치 QA가 하반신 가림과 북쪽 외곽선 소실을 놓쳤다.
   `capture-terrain-body-rims.mjs`는 실제 출하 플레이어에서 걸음 중 WebGL 스냅샷과 해당 애니메이션 프레임의 불투명 하반신 화소를 비교하고,
   높은 앞 지형의 가림도 별도로 확인한다. `inspect-terrain-rim-surfaces.mts`는 재로드한 버들항 재질로 28개 양식(기본 포함)의
-  부분/전체 RGBA·주인 줄·띠 일치를 비교한다. 렌더 fixture는 사본이며 SQLite 지도에는 쓰지 않는다. 근거: `verify-shots/terrain-body-rims/SUMMARY.md`.
+  부분/전체 RGBA·주인 줄·띠 일치를 비교한다. 렌더 fixture는 사본이며 원본 SQLite 지도에는 쓰지 않는다. 출하용 별도 SQLite에는
+  같은 맵과 참조한 아틀라스를 저장하고 재로드한다. 근거: `verify-shots/terrain-body-rims/SUMMARY.md`.
   화소 비교는 카메라 postrender에서 고정한 해당 프레임의 view를 사용한다. WebGL snapshot Image.onload에서 현재 카메라를 읽으면
   카메라가 이미 다음 프레임으로 진행해 온전한 몸을 가림으로 오판할 수 있다. 재질 유무의 클릭 기하와 뒤 둑 hit도 함께 비교한다.
 
