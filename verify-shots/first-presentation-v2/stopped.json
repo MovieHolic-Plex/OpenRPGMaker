@@ -1,0 +1,6 @@
+{
+  "runId": "002bd747-5252-4c88-a2e9-dbec7be6aa7f",
+  "passed": false,
+  "reason": "Entry validation incorrectly required the final opening before the dedicated presentation stage; cancelled to fix the stage boundary.",
+  "at": "2026-10-04T05:14:13.389Z"
+}
