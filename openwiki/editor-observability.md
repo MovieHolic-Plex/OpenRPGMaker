@@ -2,6 +2,22 @@
 
 # Editor Observability — 계측 초크포인트 · 편집 감사 로그 · 오류 트랩
 
+## 작은 타일 편집의 undo/redo 경로 (2026-10-04)
+
+`mapEditHistory.restoredTileCells`는 맵 크기와 lowerTiles/upperTiles 이외의 모든 값이 같은 경우에만
+최대 4,096개의 정확한 변경 칸을 계산한다. 타일셋 복원, 이벤트 초안 보관함, 잠긴 지형이 있으면 적용하지 않는다.
+이 경로는 기존 `store.updateMapTiles`의 쓰기 시 복제와 칸 단위 통지를 사용한다. 다른 맵이나 저장 기준본을
+고치지 않으며 일반 맵/프로젝트 스냅샷은 기존 `store.replace` 복원·초안 병합·정규화 계약을 유지한다.
+
+`hasEventDraftVaultEntries`는 살아 있는 초안뿐 아니라 화면에서 잠시 사라진 보관 초안도 감지한다.
+보관 초안을 복구하는 적용을 타일 통지만으로 표시하면 이벤트 그림이 갱신되지 않으므로 반드시 전체 경로로 보낸다.
+잠긴 칸 복원도 칠하기의 잠금 검사에 막히지 않도록 전체 경로를 사용한다.
+
+화면 증거와 같은 조건의 비교는 `verify-shots/editor-ux-improvements-20261004/README.md`에 있다.
+`scripts/qa/editor-ux-audit.mjs`는 실제 Ctrl+Z/Ctrl+Y의 타일 결과, 두 레이어, 다른 맵 정체성,
+덧그림/그림자/스택, 크기, 이벤트, 새 초안과 보관함에만 있는 초안, 잠긴 지형, 프로젝트 복원을 확인한다.
+전체 테스트·게이트·typecheck는 이번 세션의 실행 제한에 따라 돌리지 않았다.
+
 ## 되돌리기 복원의 공용 자산 복제 (2026-10-03)
 
 높이 붓 확인 중 Ctrl+Z 뒤 Ctrl+Y에서 Chromium 탭이 죽었고, 바닥 붓 한 칸도 같은 순서로 죽었다.
