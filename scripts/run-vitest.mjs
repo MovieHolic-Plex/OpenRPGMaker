@@ -207,13 +207,12 @@ function cgroupBudget(args) {
   // `Ineffective mark-compacts near heap limit` 으로 죽고 결과를 못 내놓는다.
   if (usableMb != null) {
     const memoryMaxMb = memoryMax / 1024 / 1024;
-    // 16GB 이하에서는 RSS 가 힙 합의 1.5배까지 붙는다. 12GB 슬라이스에서
-    // 상속 힙 4096MB × 워커 2 도 피크 12.00GiB, 리포트 없이 exit 1 이었다
-    // (run 37185897310, OOM kill 0). 힙은 바닥만 주고 워커를 줄인다.
+    // 16GB 이하에서는 워커를 둘 이상 두면 슬라이스가 12GiB 에 붙는다.
+    // 2×3584MB 도 워커가 `Ineffective mark-compacts near heap limit` 으로 죽었다
+    // (run 37187303515). 워커는 하나, 힙은 8GB. 자라는 건 그 파일만큼이다.
     if (memoryMaxMb <= 16 * 1024) {
-      const ceiling = Math.floor(memoryMaxMb * 0.6);
-      heapMb = MIN_WORKER_HEAP_MB;
-      while (workers > 1 && workers * heapMb > ceiling) workers -= 1;
+      workers = 1;
+      heapMb = FALLBACK_HEAP_MB;
     } else {
       heapMb = heapForWorkers(usableMb, workers);
       const inherited = inheritedHeapMb();
@@ -239,9 +238,13 @@ function withHeapOption(nodeOptions, budget) {
   const pinned = explicitHeapMb(current);
   const wanted = heapMbFor(budget);
   // 상한이 없으면 사용자가 준 힙을 그대로 둔다.
-  if (pinned != null && budget == null) return current;
-  // 예산이 그 힙을 감당하면 문자열을 건드리지 않는다. 워커 1개로도 넘치면 낮춘다.
-  if (pinned != null && pinned <= wanted) return current;
+  if (budget == null) {
+    if (pinned != null) return current;
+    return `${current} --max-old-space-size=${wanted}`.trim();
+  }
+  // cgroup 예산이 있으면 그 힙을 쓴다. 러너 서비스의 4096 은 워커를 그 값에 묶어
+  // 8GB 가 필요한 파일을 heap limit 으로 죽인다.
+  if (pinned === wanted) return current;
   const stripped = current.replace(/--max-old-space-size(?:=|\s+)\d+/, "").trim();
   return `${stripped} --max-old-space-size=${wanted}`.trim();
 }
