@@ -5,6 +5,26 @@
 
 <!-- releases -->
 
+## 0.113.0 — 2026-10-04
+
+### 기능
+
+- **worldmap** — 실제 지리 style real — Natural Earth·ETOPO1 로 지구 어디든 세계 지도 (`d158ed9`)
+
+### 수정
+
+- make charset review actions instant and durable (`99f1458`)
+- **ci** — give typecheck a 10GB heap and run it one at a time (`b0ad46e`)
+- make startup fullscreen and interview click-first with fresh reviewed art (`fb9dd1f`)
+- make new game art rejection trigger automatic repairs (`3ad4a55`)
+- **worldmap** — 저작된 맵 보호와 조수 실행물 SQLite 재로드 근거 보완 (`4d9f527`)
+- **worldmap** — 늪 픽셀이 없는 실제 지리 세계에서 swamp_final 통계가 죽던 것 (`38881a5`)
+- **ai** — 빈 기본 시작 맵·세계 지도는 칩셋 계열 기준이 아니다 (`4fee005`)
+
+### 테스트
+
+- record maker validation after main integration (`ac5df99`)
+
 ## 0.112.0 — 2026-10-04
 
 ### 기능
