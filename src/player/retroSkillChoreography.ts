@@ -7,12 +7,13 @@ import type { CastType, ExtendedBattlerPose } from "@/battle/battlePose";
 import type { BattleTimelineEntrySnapshot } from "@/battle/types";
 import type { SkillRecord } from "@/project/types";
 import type { RetroClassSkill } from "@/assets/retroClassSkills";
-import { RETRO_ALL_CLASS_SKILLS, RETRO_ALL_FX_SHEETS, resolveRetroClassChoreography, resolveSkillChoreography, retroClassSkill } from "@/assets/retroSkillCatalog";
-import { RETRO_MONSTER_FX_SHEETS, RETRO_MONSTER_SKILLS } from "@/assets/retroMonsterSkills";
+import { RETRO_ALL_FX_SHEETS, resolveRetroClassChoreography, resolveSkillChoreography, retroClassSkill } from "@/assets/retroSkillCatalog";
+import { RETRO_MONSTER_FX_SHEETS } from "@/assets/retroMonsterSkills";
+import { retroSkillPreloadSoundIds } from "@/assets/retroSkillAudio";
 import type { RetroMonsterSkill } from "@/assets/retroMonsterSkills";
 import type { RetroFxLayer } from "@/assets/retroClassSkills";
 import {
-  retroClassSkillTimeline, retroMonsterCellForPose, retroMonsterSide, retroPartyPixelCellForPose, retroMonsterSkillTimeline, retroSideForScope, retroTimelineSounds, retroTimelineStateAt,
+  retroClassSkillTimeline, retroMonsterCellForPose, retroMonsterSide, retroPartyPixelCellForPose, retroMonsterSkillTimeline, retroSideForScope, retroTimelineStateAt,
   type RetroSkillTimeline, type RetroStagePlace, type RetroTimelineEvent, type RetroTimelineSide,
 } from "@/battle/retroSkillTimeline";
 import { recommendRetroChoreography } from "@/assets/retroChoreographyRecommend";
@@ -1316,10 +1317,7 @@ export function startRetroSpecialSkill(field: HTMLElement, entry: BattleTimeline
 }
 
 export function preloadRetroClassSkillFx(): void {
-  const sounds = new Set<string>();
-  for (const skill of RETRO_ALL_CLASS_SKILLS) for (const id of retroTimelineSounds(retroClassSkillTimeline(skill))) sounds.add(id);
-  for (const skill of RETRO_MONSTER_SKILLS) for (const id of retroTimelineSounds(retroMonsterSkillTimeline(skill))) sounds.add(id);
-  preloadBattleSamples([...sounds]);
+  preloadBattleSamples(retroSkillPreloadSoundIds());
   for (const url of Object.values(classSheets)) { const img = new Image(); img.src = url; }
 }
 

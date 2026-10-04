@@ -1,0 +1,17 @@
+{
+  "counts": {
+    "classes": 5,
+    "skills": 40,
+    "items": 32,
+    "equipment": 36,
+    "enemies": 15,
+    "troops": 15,
+    "states": 10,
+    "elements": 5
+  },
+  "firstInstall": 0,
+  "reapplyAdded": 0,
+  "referenceIssues": [],
+  "icons": 104,
+  "sheets": 15
+}

@@ -20,7 +20,7 @@
       ],
       "stats": {
         "maxHp": 65,
-        "maxMp": 0,
+        "maxMp": 6,
         "attack": 12,
         "defense": 6,
         "mind": 6,
@@ -72,7 +72,7 @@
       ],
       "stats": {
         "maxHp": 110,
-        "maxMp": 0,
+        "maxMp": 9,
         "attack": 14,
         "defense": 10,
         "mind": 8,
@@ -124,7 +124,7 @@
       ],
       "stats": {
         "maxHp": 85,
-        "maxMp": 0,
+        "maxMp": 8,
         "attack": 14,
         "defense": 7,
         "mind": 10,
@@ -176,7 +176,7 @@
       ],
       "stats": {
         "maxHp": 140,
-        "maxMp": 0,
+        "maxMp": 9,
         "attack": 18,
         "defense": 12,
         "mind": 10,

@@ -54,15 +54,20 @@ export function applyJoseonFolklorePack(project: Project): ContentPackInstallRes
       result.counts[collection]++; result.added++;
     }
   }
+  const iconLabels = new Map([...records.items, ...records.equipment].filter(record => record.iconResourceId).map(record => [record.iconResourceId, record.name]));
+  const enemyLabels = new Map(records.enemies.map(record => [record.monsterResourceId, record.name]));
+  for (const icon of assets.icons) {
+    if ('skillId' in icon) iconLabels.set(icon.resourceId, records.skills.find(skill => skill.id === icon.skillId)?.name ?? "조선 설화 기술");
+  }
   const profileIds = new Set(project.resourceProfiles.map(profile => profile.assetId));
   for (const icon of assets.icons as { resourceId: string; path: string }[]) {
     if (profileIds.has(icon.resourceId)) continue;
-    project.resourceProfiles.push({ kind: "picture", name: icon.resourceId, assetId: icon.resourceId, imageWidth: 32, imageHeight: 32 });
+    project.resourceProfiles.push({ kind: "picture", name: `${iconLabels.get(icon.resourceId) ?? "조선 설화"} 아이콘`, assetId: icon.resourceId, imageWidth: 32, imageHeight: 32 });
     profileIds.add(icon.resourceId);
   }
   for (const sheet of assets.sheets as { resourceId: string; path: string; cell: number }[]) {
     if (profileIds.has(sheet.resourceId)) continue;
-    project.resourceProfiles.push({ kind: "monster", name: sheet.resourceId, assetId: sheet.resourceId, imageWidth: sheet.cell, imageHeight: sheet.cell });
+    project.resourceProfiles.push({ kind: "monster", name: enemyLabels.get(sheet.resourceId) ?? "조선 설화 몬스터", assetId: sheet.resourceId, imageWidth: sheet.cell, imageHeight: sheet.cell });
     profileIds.add(sheet.resourceId);
   }
   return result;

@@ -1,0 +1,5 @@
+{
+  "fixture": "freshProject memory UI; injected skipped flush, not canonical evidence",
+  "message": "팩이 추가됐지만 저장을 완료하지 못했습니다. 프로젝트 저장 연결을 확인해 주세요.",
+  "alert": "alert"
+}

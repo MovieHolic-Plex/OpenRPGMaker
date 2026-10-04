@@ -15,7 +15,8 @@ export const CONTENT_PACK_TOOLS: readonly ToolDefinition[] = [
     name: "apply_content_pack", mode: "write", domains: ["database"],
     description: "선택한 공용 콘텐츠 팩의 누락된 데이터와 소재를 현재 프로젝트에 추가한다. 기존 레코드와 맵을 보존한다. 직업 선택·상점·사냥터 이벤트 연결은 별도로 저작한다.",
     parameters: { type: "object", properties: { packId: { type: "string", enum: ["joseon-folklore"] } }, required: ["packId"], additionalProperties: false },
-    run(project) {
+    run(project, args) {
+      if (args.packId !== "joseon-folklore") throw new Error("Unknown content pack");
       const result = applyJoseonFolklorePack(project);
       return { summary: `조선 설화 팩 ${result.added}개 추가, 기존 ${result.preserved}개 보존`, data: result };
     },

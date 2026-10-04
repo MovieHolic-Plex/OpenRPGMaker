@@ -1,0 +1,332 @@
+[
+  {
+    "slug": "bronze_dokkaebi",
+    "flow": "strict",
+    "level": 6,
+    "tier": 2,
+    "warning": "청동 도깨비가 청동강타를 준비한다! (1턴 뒤)",
+    "release": "skill_jf_enemy_bronze_smash",
+    "actors": [
+      {
+        "name": "하람",
+        "maxHp": 238,
+        "hp": 223
+      },
+      {
+        "name": "연두",
+        "maxHp": 191,
+        "hp": 172
+      },
+      {
+        "name": "서린",
+        "maxHp": 169,
+        "hp": 127
+      },
+      {
+        "name": "무결",
+        "maxHp": 204,
+        "hp": 187
+      }
+    ],
+    "enemyMp": 24
+  },
+  {
+    "slug": "bronze_dokkaebi",
+    "flow": "strict",
+    "level": 6,
+    "tier": 2,
+    "basicAttackWithHealingResult": "victory",
+    "turn": 3,
+    "rewards": {
+      "exp": 210,
+      "gold": 120,
+      "items": [
+        "item_jf_mat_bronze_shard"
+      ],
+      "levelUps": [],
+      "monsterLevelUps": [],
+      "enemyLevel": 6
+    },
+    "survivors": [
+      "하람",
+      "연두",
+      "서린",
+      "무결"
+    ]
+  },
+  {
+    "slug": "bronze_dokkaebi",
+    "flow": "gauge",
+    "level": 6,
+    "tier": 2,
+    "warning": "청동 도깨비가 청동강타를 준비한다! (1턴 뒤)",
+    "release": "skill_jf_enemy_bronze_smash",
+    "actors": [
+      {
+        "name": "하람",
+        "maxHp": 238,
+        "hp": 223
+      },
+      {
+        "name": "연두",
+        "maxHp": 191,
+        "hp": 172
+      },
+      {
+        "name": "서린",
+        "maxHp": 169,
+        "hp": 127
+      },
+      {
+        "name": "무결",
+        "maxHp": 204,
+        "hp": 187
+      }
+    ],
+    "enemyMp": 24
+  },
+  {
+    "slug": "bronze_dokkaebi",
+    "flow": "gauge",
+    "level": 6,
+    "tier": 2,
+    "basicAttackWithHealingResult": "victory",
+    "turn": 1,
+    "rewards": {
+      "exp": 210,
+      "gold": 120,
+      "items": [
+        "item_jf_mat_bronze_shard"
+      ],
+      "levelUps": [],
+      "monsterLevelUps": [],
+      "enemyLevel": 6
+    },
+    "survivors": [
+      "하람",
+      "연두",
+      "서린",
+      "무결"
+    ]
+  },
+  {
+    "slug": "bride_wraith",
+    "flow": "strict",
+    "level": 12,
+    "tier": 3,
+    "warning": "신부 원귀가 한의울음을 준비한다! (1턴 뒤)",
+    "release": "skill_jf_enemy_sorrow_cry",
+    "actors": [
+      {
+        "name": "하람",
+        "maxHp": 346,
+        "hp": 346
+      },
+      {
+        "name": "연두",
+        "maxHp": 281,
+        "hp": 281
+      },
+      {
+        "name": "서린",
+        "maxHp": 247,
+        "hp": 247
+      },
+      {
+        "name": "무결",
+        "maxHp": 300,
+        "hp": 300
+      }
+    ],
+    "enemyMp": 75
+  },
+  {
+    "slug": "bride_wraith",
+    "flow": "strict",
+    "level": 12,
+    "tier": 3,
+    "basicAttackWithHealingResult": "victory",
+    "turn": 5,
+    "rewards": {
+      "exp": 650,
+      "gold": 350,
+      "items": [
+        "item_jf_mat_broken_jade"
+      ],
+      "levelUps": [],
+      "monsterLevelUps": [],
+      "enemyLevel": 12
+    },
+    "survivors": [
+      "하람",
+      "연두",
+      "서린",
+      "무결"
+    ]
+  },
+  {
+    "slug": "bride_wraith",
+    "flow": "gauge",
+    "level": 12,
+    "tier": 3,
+    "warning": "신부 원귀가 한의울음을 준비한다! (1턴 뒤)",
+    "release": "skill_jf_enemy_sorrow_cry",
+    "actors": [
+      {
+        "name": "하람",
+        "maxHp": 346,
+        "hp": 346
+      },
+      {
+        "name": "연두",
+        "maxHp": 281,
+        "hp": 281
+      },
+      {
+        "name": "서린",
+        "maxHp": 247,
+        "hp": 247
+      },
+      {
+        "name": "무결",
+        "maxHp": 300,
+        "hp": 300
+      }
+    ],
+    "enemyMp": 75
+  },
+  {
+    "slug": "bride_wraith",
+    "flow": "gauge",
+    "level": 12,
+    "tier": 3,
+    "basicAttackWithHealingResult": "victory",
+    "turn": 2,
+    "rewards": {
+      "exp": 650,
+      "gold": 350,
+      "items": [
+        "item_jf_mat_broken_jade"
+      ],
+      "levelUps": [],
+      "monsterLevelUps": [],
+      "enemyLevel": 12
+    },
+    "survivors": [
+      "하람",
+      "연두",
+      "서린",
+      "무결"
+    ]
+  },
+  {
+    "slug": "mountain_tiger",
+    "flow": "strict",
+    "level": 19,
+    "tier": 4,
+    "warning": "산군 호랑이가 돌내리치기를 준비한다! (1턴 뒤)",
+    "release": "skill_jf_enemy_stone_crush",
+    "actors": [
+      {
+        "name": "하람",
+        "maxHp": 472,
+        "hp": 472
+      },
+      {
+        "name": "연두",
+        "maxHp": 386,
+        "hp": 386
+      },
+      {
+        "name": "서린",
+        "maxHp": 338,
+        "hp": 244
+      },
+      {
+        "name": "무결",
+        "maxHp": 412,
+        "hp": 412
+      }
+    ],
+    "enemyMp": 43
+  },
+  {
+    "slug": "mountain_tiger",
+    "flow": "strict",
+    "level": 19,
+    "tier": 4,
+    "basicAttackWithHealingResult": "victory",
+    "turn": 7,
+    "rewards": {
+      "exp": 1400,
+      "gold": 800,
+      "items": [
+        "item_jf_mat_tiger_claw"
+      ],
+      "levelUps": [],
+      "monsterLevelUps": [],
+      "enemyLevel": 19
+    },
+    "survivors": [
+      "하람",
+      "연두",
+      "서린",
+      "무결"
+    ]
+  },
+  {
+    "slug": "mountain_tiger",
+    "flow": "gauge",
+    "level": 19,
+    "tier": 4,
+    "warning": "산군 호랑이가 돌내리치기를 준비한다! (1턴 뒤)",
+    "release": "skill_jf_enemy_stone_crush",
+    "actors": [
+      {
+        "name": "하람",
+        "maxHp": 472,
+        "hp": 472
+      },
+      {
+        "name": "연두",
+        "maxHp": 386,
+        "hp": 386
+      },
+      {
+        "name": "서린",
+        "maxHp": 338,
+        "hp": 244
+      },
+      {
+        "name": "무결",
+        "maxHp": 412,
+        "hp": 412
+      }
+    ],
+    "enemyMp": 43
+  },
+  {
+    "slug": "mountain_tiger",
+    "flow": "gauge",
+    "level": 19,
+    "tier": 4,
+    "basicAttackWithHealingResult": "victory",
+    "turn": 3,
+    "rewards": {
+      "exp": 1400,
+      "gold": 800,
+      "items": [
+        "item_jf_mat_tiger_claw"
+      ],
+      "levelUps": [],
+      "monsterLevelUps": [],
+      "enemyLevel": 19
+    },
+    "survivors": [
+      "하람",
+      "연두",
+      "서린",
+      "무결"
+    ]
+  }
+]

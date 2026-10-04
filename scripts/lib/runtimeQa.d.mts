@@ -41,6 +41,7 @@ export type RuntimeQaOp =
   | { readonly kind: "teleport"; readonly mapId: string; readonly x: number; readonly y: number }
   | { readonly kind: "waitForEmote"; readonly target: string; readonly frame: number; readonly timeoutMs?: number }
   | { readonly kind: "waitForRuntime"; readonly timeoutMs?: number }
+  | { readonly kind: "waitForFieldReady"; readonly timeoutMs?: number }
   | {
       readonly kind: "waitForPosition";
       readonly mapId: string;

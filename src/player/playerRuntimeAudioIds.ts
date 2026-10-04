@@ -1,3 +1,5 @@
+import { retroSkillPreloadSoundIds } from "@/assets/retroSkillAudio";
+
 /**
  * 플레이어가 **프로젝트 데이터와 무관하게** 재생하는 오디오 리소스 id.
  *
@@ -17,6 +19,8 @@
  * 먼저 빨개진다.
  */
 export const PLAYER_RUNTIME_AUDIO_RESOURCE_IDS: readonly string[] = Object.freeze([
+  // retro2003 eagerly preloads these timeline sounds even if no project row mentions them.
+  ...retroSkillPreloadSoundIds(),
   // mapBgm — 맵에 BGM 이 지정되지 않았을 때의 폴백
   "cc0-bgm-field",
   // runtimeJuice — 메뉴/타이틀 UI

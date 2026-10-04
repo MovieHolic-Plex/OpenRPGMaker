@@ -2085,3 +2085,7 @@ Committed evidence and its limitations: `verify-shots/maker-click-first/README.m
 The live maker task finished and saved/reloaded, but its observer composite is
 FAIL because of one framebuffer error; the subsequent read-only resize probe and
 dedicated exported player passed. Do not describe this as all browser checks green.
+
+## 필드 복귀 뒤 콘텐츠 QA
+
+런타임 시나리오의 `waitForFieldReady`는 QA 플레이어의 실제 PlayScene이 active/inputEnabled이고 이벤트·걷기·fade·메뉴·대화·전투가 끝났을 때만 통과한다. 전투 결과를 닫은 직후 위치만 보고 teleport하면 다음 맵의 이벤트 입력을 잃으므로, 보상 처리 후 이 조건을 기다린다. 일반 플레이어 입력 확인은 QA 훅을 넣지 않은 별도 부팅으로 한다.

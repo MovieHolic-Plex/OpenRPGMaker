@@ -223,6 +223,14 @@ async function applyOp(page, op, runState) {
     case "waitForRuntime":
       await waitForRuntimePredicate(page, (state) => Boolean(state.currentMapId), null, op.timeoutMs);
       return;
+    case "waitForFieldReady":
+      await page.waitForFunction(() => {
+        const scene = window.__oprnHooksScene;
+        return scene?.sys?.isActive() && scene.inputEnabled && !scene.running && !scene.moving
+          && !scene.cameras.main.fadeEffect.isRunning
+          && !document.querySelector('[data-testid="main-menu"], [data-testid="dialogue-box"], [data-testid="battle-scene"]');
+      }, null, { timeout: op.timeoutMs ?? 30000 });
+      return;
     case "waitForPosition":
       await waitForRuntimePredicate(
         page,

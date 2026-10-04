@@ -8,11 +8,11 @@ IDS = json.loads((ROOT.parent/'ids.json').read_text())
 
 # maxHp/maxMp/attack/defense/mind/agility, exp/gold/drop chance.
 FULL = [
-    ('field-rat', '들쥐', 1, [65,0,12,6,6,14], [10,5,35], 'rat-tail'),
-    ('wild-boar', '산멧돼지', 2, [110,0,14,10,8,12], [22,9,35], 'boar-tusk'),
-    ('straw-dokkaebi', '볏짚 도깨비', 3, [140,0,18,12,10,10], [35,13,45], 'straw-knot'),
+    ('field-rat', '들쥐', 1, [65,6,12,6,6,14], [10,5,35], 'rat-tail'),
+    ('wild-boar', '산멧돼지', 2, [110,9,14,10,8,12], [22,9,35], 'boar-tusk'),
+    ('straw-dokkaebi', '볏짚 도깨비', 3, [140,9,18,12,10,10], [35,13,45], 'straw-knot'),
     ('maiden-ghost', '처녀귀신', 5, [145,20,17,8,23,16], [42,17,40], 'ghost-ash'),
-    ('cave-bat', '굴박쥐', 2, [85,0,14,7,10,20], [18,8,35], 'bat-wing'),
+    ('cave-bat', '굴박쥐', 2, [85,8,14,7,10,20], [18,8,35], 'bat-wing'),
     ('lantern-wisp', '도깨비불', 4, [125,20,20,8,24,15], [32,12,40], 'ghost-ash'),
     ('drowned-ghost', '물귀신', 8, [220,28,34,16,32,17], [75,25,40], 'broken-jade'),
     ('grave-ghoul', '묘지귀물', 10, [280,12,40,24,16,12], [95,32,40], 'ghost-ash'),

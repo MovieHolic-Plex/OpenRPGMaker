@@ -1,1 +1,578 @@
-{"icons":[],"sheets":[]}
+{
+  "icons": [
+    {
+      "resourceId": "jf-skill-icon-cleaving-strike",
+      "path": "assets/joseon-folklore/skills/cleaving-strike.png",
+      "skillId": "skill_jf_cleaving_strike"
+    },
+    {
+      "resourceId": "jf-skill-icon-iron-breath",
+      "path": "assets/joseon-folklore/skills/iron-breath.png",
+      "skillId": "skill_jf_iron_breath"
+    },
+    {
+      "resourceId": "jf-skill-icon-whirlwind-cut",
+      "path": "assets/joseon-folklore/skills/whirlwind-cut.png",
+      "skillId": "skill_jf_whirlwind_cut"
+    },
+    {
+      "resourceId": "jf-skill-icon-earth-split",
+      "path": "assets/joseon-folklore/skills/earth-split.png",
+      "skillId": "skill_jf_earth_split"
+    },
+    {
+      "resourceId": "jf-skill-icon-blood-oath",
+      "path": "assets/joseon-folklore/skills/blood-oath.png",
+      "skillId": "skill_jf_blood_oath"
+    },
+    {
+      "resourceId": "jf-skill-icon-mountain-guard",
+      "path": "assets/joseon-folklore/skills/mountain-guard.png",
+      "skillId": "skill_jf_mountain_guard"
+    },
+    {
+      "resourceId": "jf-skill-icon-double-stab",
+      "path": "assets/joseon-folklore/skills/double-stab.png",
+      "skillId": "skill_jf_double_stab"
+    },
+    {
+      "resourceId": "jf-skill-icon-venom-edge",
+      "path": "assets/joseon-folklore/skills/venom-edge.png",
+      "skillId": "skill_jf_venom_edge"
+    },
+    {
+      "resourceId": "jf-skill-icon-shadow-step",
+      "path": "assets/joseon-folklore/skills/shadow-step.png",
+      "skillId": "skill_jf_shadow_step"
+    },
+    {
+      "resourceId": "jf-skill-icon-heart-pierce",
+      "path": "assets/joseon-folklore/skills/heart-pierce.png",
+      "skillId": "skill_jf_heart_pierce"
+    },
+    {
+      "resourceId": "jf-skill-icon-smoke-screen",
+      "path": "assets/joseon-folklore/skills/smoke-screen.png",
+      "skillId": "skill_jf_smoke_screen"
+    },
+    {
+      "resourceId": "jf-skill-icon-moon-slash",
+      "path": "assets/joseon-folklore/skills/moon-slash.png",
+      "skillId": "skill_jf_moon_slash"
+    },
+    {
+      "resourceId": "jf-skill-icon-ember-charm",
+      "path": "assets/joseon-folklore/skills/ember-charm.png",
+      "skillId": "skill_jf_ember_charm"
+    },
+    {
+      "resourceId": "jf-skill-icon-frost-charm",
+      "path": "assets/joseon-folklore/skills/frost-charm.png",
+      "skillId": "skill_jf_frost_charm"
+    },
+    {
+      "resourceId": "jf-skill-icon-thunder-charm",
+      "path": "assets/joseon-folklore/skills/thunder-charm.png",
+      "skillId": "skill_jf_thunder_charm"
+    },
+    {
+      "resourceId": "jf-skill-icon-spirit-drain",
+      "path": "assets/joseon-folklore/skills/spirit-drain.png",
+      "skillId": "skill_jf_spirit_drain"
+    },
+    {
+      "resourceId": "jf-skill-icon-ghost-seal",
+      "path": "assets/joseon-folklore/skills/ghost-seal.png",
+      "skillId": "skill_jf_ghost_seal"
+    },
+    {
+      "resourceId": "jf-skill-icon-heaven-fire",
+      "path": "assets/joseon-folklore/skills/heaven-fire.png",
+      "skillId": "skill_jf_heaven_fire"
+    },
+    {
+      "resourceId": "jf-skill-icon-life-water",
+      "path": "assets/joseon-folklore/skills/life-water.png",
+      "skillId": "skill_jf_life_water"
+    },
+    {
+      "resourceId": "jf-skill-icon-purify",
+      "path": "assets/joseon-folklore/skills/purify.png",
+      "skillId": "skill_jf_purify"
+    },
+    {
+      "resourceId": "jf-skill-icon-protective-talisman",
+      "path": "assets/joseon-folklore/skills/protective-talisman.png",
+      "skillId": "skill_jf_protective_talisman"
+    },
+    {
+      "resourceId": "jf-skill-icon-revive",
+      "path": "assets/joseon-folklore/skills/revive.png",
+      "skillId": "skill_jf_revive"
+    },
+    {
+      "resourceId": "jf-skill-icon-spring-rain",
+      "path": "assets/joseon-folklore/skills/spring-rain.png",
+      "skillId": "skill_jf_spring_rain"
+    },
+    {
+      "resourceId": "jf-skill-icon-heaven-blessing",
+      "path": "assets/joseon-folklore/skills/heaven-blessing.png",
+      "skillId": "skill_jf_heaven_blessing"
+    },
+    {
+      "resourceId": "jf-skill-icon-tusk-charge",
+      "path": "assets/joseon-folklore/skills/tusk-charge.png",
+      "skillId": "skill_jf_enemy_tusk_charge"
+    },
+    {
+      "resourceId": "jf-skill-icon-straw-club",
+      "path": "assets/joseon-folklore/skills/straw-club.png",
+      "skillId": "skill_jf_enemy_straw_club"
+    },
+    {
+      "resourceId": "jf-skill-icon-sorrow-cry",
+      "path": "assets/joseon-folklore/skills/sorrow-cry.png",
+      "skillId": "skill_jf_enemy_sorrow_cry"
+    },
+    {
+      "resourceId": "jf-skill-icon-bronze-smash",
+      "path": "assets/joseon-folklore/skills/bronze-smash.png",
+      "skillId": "skill_jf_enemy_bronze_smash"
+    },
+    {
+      "resourceId": "jf-skill-icon-poison-bite",
+      "path": "assets/joseon-folklore/skills/poison-bite.png",
+      "skillId": "skill_jf_enemy_poison_bite"
+    },
+    {
+      "resourceId": "jf-skill-icon-wing-flurry",
+      "path": "assets/joseon-folklore/skills/wing-flurry.png",
+      "skillId": "skill_jf_enemy_wing_flurry"
+    },
+    {
+      "resourceId": "jf-skill-icon-ghost-fire",
+      "path": "assets/joseon-folklore/skills/ghost-fire.png",
+      "skillId": "skill_jf_enemy_ghost_fire"
+    },
+    {
+      "resourceId": "jf-skill-icon-drowning-hand",
+      "path": "assets/joseon-folklore/skills/drowning-hand.png",
+      "skillId": "skill_jf_enemy_drowning_hand"
+    },
+    {
+      "resourceId": "jf-skill-icon-grave-grasp",
+      "path": "assets/joseon-folklore/skills/grave-grasp.png",
+      "skillId": "skill_jf_enemy_grave_grasp"
+    },
+    {
+      "resourceId": "jf-skill-icon-fox-charm",
+      "path": "assets/joseon-folklore/skills/fox-charm.png",
+      "skillId": "skill_jf_enemy_fox_charm"
+    },
+    {
+      "resourceId": "jf-skill-icon-stone-crush",
+      "path": "assets/joseon-folklore/skills/stone-crush.png",
+      "skillId": "skill_jf_enemy_stone_crush"
+    },
+    {
+      "resourceId": "jf-skill-icon-bamboo-whip",
+      "path": "assets/joseon-folklore/skills/bamboo-whip.png",
+      "skillId": "skill_jf_enemy_bamboo_whip"
+    },
+    {
+      "resourceId": "jf-icon-mugwort-pill",
+      "path": "assets/joseon-folklore/consumables/mugwort-pill.png"
+    },
+    {
+      "resourceId": "jf-icon-ginseng-tea",
+      "path": "assets/joseon-folklore/consumables/ginseng-tea.png"
+    },
+    {
+      "resourceId": "jf-icon-purification-charm",
+      "path": "assets/joseon-folklore/consumables/purification-charm.png"
+    },
+    {
+      "resourceId": "jf-icon-revival-charm",
+      "path": "assets/joseon-folklore/consumables/revival-charm.png"
+    },
+    {
+      "resourceId": "jf-icon-rice-ball",
+      "path": "assets/joseon-folklore/consumables/rice-ball.png"
+    },
+    {
+      "resourceId": "jf-icon-rice-cake",
+      "path": "assets/joseon-folklore/consumables/rice-cake.png"
+    },
+    {
+      "resourceId": "jf-icon-honey-cake",
+      "path": "assets/joseon-folklore/consumables/honey-cake.png"
+    },
+    {
+      "resourceId": "jf-icon-herbal-decoction",
+      "path": "assets/joseon-folklore/consumables/herbal-decoction.png"
+    },
+    {
+      "resourceId": "jf-icon-red-ginseng",
+      "path": "assets/joseon-folklore/consumables/red-ginseng.png"
+    },
+    {
+      "resourceId": "jf-icon-spring-water",
+      "path": "assets/joseon-folklore/consumables/spring-water.png"
+    },
+    {
+      "resourceId": "jf-icon-jade-water",
+      "path": "assets/joseon-folklore/consumables/jade-water.png"
+    },
+    {
+      "resourceId": "jf-icon-antidote",
+      "path": "assets/joseon-folklore/consumables/antidote.png"
+    },
+    {
+      "resourceId": "jf-icon-clear-mind-pill",
+      "path": "assets/joseon-folklore/consumables/clear-mind-pill.png"
+    },
+    {
+      "resourceId": "jf-icon-warming-tea",
+      "path": "assets/joseon-folklore/consumables/warming-tea.png"
+    },
+    {
+      "resourceId": "jf-icon-cooling-tea",
+      "path": "assets/joseon-folklore/consumables/cooling-tea.png"
+    },
+    {
+      "resourceId": "jf-icon-smoke-powder",
+      "path": "assets/joseon-folklore/consumables/smoke-powder.png"
+    },
+    {
+      "resourceId": "jf-icon-fire-charm",
+      "path": "assets/joseon-folklore/consumables/fire-charm.png"
+    },
+    {
+      "resourceId": "jf-icon-ice-charm",
+      "path": "assets/joseon-folklore/consumables/ice-charm.png"
+    },
+    {
+      "resourceId": "jf-icon-thunder-charm",
+      "path": "assets/joseon-folklore/consumables/thunder-charm.png"
+    },
+    {
+      "resourceId": "jf-icon-vitality-tonic",
+      "path": "assets/joseon-folklore/consumables/vitality-tonic.png"
+    },
+    {
+      "resourceId": "jf-icon-rat-tail",
+      "path": "assets/joseon-folklore/consumables/rat-tail.png"
+    },
+    {
+      "resourceId": "jf-icon-boar-tusk",
+      "path": "assets/joseon-folklore/consumables/boar-tusk.png"
+    },
+    {
+      "resourceId": "jf-icon-bat-wing",
+      "path": "assets/joseon-folklore/consumables/bat-wing.png"
+    },
+    {
+      "resourceId": "jf-icon-straw-knot",
+      "path": "assets/joseon-folklore/consumables/straw-knot.png"
+    },
+    {
+      "resourceId": "jf-icon-ghost-ash",
+      "path": "assets/joseon-folklore/consumables/ghost-ash.png"
+    },
+    {
+      "resourceId": "jf-icon-broken-jade",
+      "path": "assets/joseon-folklore/consumables/broken-jade.png"
+    },
+    {
+      "resourceId": "jf-icon-fox-fur",
+      "path": "assets/joseon-folklore/consumables/fox-fur.png"
+    },
+    {
+      "resourceId": "jf-icon-stone-core",
+      "path": "assets/joseon-folklore/consumables/stone-core.png"
+    },
+    {
+      "resourceId": "jf-icon-bamboo-heart",
+      "path": "assets/joseon-folklore/consumables/bamboo-heart.png"
+    },
+    {
+      "resourceId": "jf-icon-rusted-token",
+      "path": "assets/joseon-folklore/consumables/rusted-token.png"
+    },
+    {
+      "resourceId": "jf-icon-bronze-shard",
+      "path": "assets/joseon-folklore/consumables/bronze-shard.png"
+    },
+    {
+      "resourceId": "jf-icon-tiger-claw",
+      "path": "assets/joseon-folklore/consumables/tiger-claw.png"
+    },
+    {
+      "resourceId": "jf-icon-warrior-weapon-1",
+      "path": "assets/joseon-folklore/equipment/warrior-weapon-1.png"
+    },
+    {
+      "resourceId": "jf-icon-warrior-body-1",
+      "path": "assets/joseon-folklore/equipment/warrior-body-1.png"
+    },
+    {
+      "resourceId": "jf-icon-rogue-weapon-1",
+      "path": "assets/joseon-folklore/equipment/rogue-weapon-1.png"
+    },
+    {
+      "resourceId": "jf-icon-rogue-body-1",
+      "path": "assets/joseon-folklore/equipment/rogue-body-1.png"
+    },
+    {
+      "resourceId": "jf-icon-shaman-weapon-1",
+      "path": "assets/joseon-folklore/equipment/shaman-weapon-1.png"
+    },
+    {
+      "resourceId": "jf-icon-shaman-body-1",
+      "path": "assets/joseon-folklore/equipment/shaman-body-1.png"
+    },
+    {
+      "resourceId": "jf-icon-taoist-weapon-1",
+      "path": "assets/joseon-folklore/equipment/taoist-weapon-1.png"
+    },
+    {
+      "resourceId": "jf-icon-taoist-body-1",
+      "path": "assets/joseon-folklore/equipment/taoist-body-1.png"
+    },
+    {
+      "resourceId": "jf-icon-warrior-weapon-2",
+      "path": "assets/joseon-folklore/equipment/warrior-weapon-2.png"
+    },
+    {
+      "resourceId": "jf-icon-warrior-body-2",
+      "path": "assets/joseon-folklore/equipment/warrior-body-2.png"
+    },
+    {
+      "resourceId": "jf-icon-warrior-weapon-3",
+      "path": "assets/joseon-folklore/equipment/warrior-weapon-3.png"
+    },
+    {
+      "resourceId": "jf-icon-warrior-body-3",
+      "path": "assets/joseon-folklore/equipment/warrior-body-3.png"
+    },
+    {
+      "resourceId": "jf-icon-warrior-weapon-4",
+      "path": "assets/joseon-folklore/equipment/warrior-weapon-4.png"
+    },
+    {
+      "resourceId": "jf-icon-warrior-body-4",
+      "path": "assets/joseon-folklore/equipment/warrior-body-4.png"
+    },
+    {
+      "resourceId": "jf-icon-rogue-weapon-2",
+      "path": "assets/joseon-folklore/equipment/rogue-weapon-2.png"
+    },
+    {
+      "resourceId": "jf-icon-rogue-body-2",
+      "path": "assets/joseon-folklore/equipment/rogue-body-2.png"
+    },
+    {
+      "resourceId": "jf-icon-rogue-weapon-3",
+      "path": "assets/joseon-folklore/equipment/rogue-weapon-3.png"
+    },
+    {
+      "resourceId": "jf-icon-rogue-body-3",
+      "path": "assets/joseon-folklore/equipment/rogue-body-3.png"
+    },
+    {
+      "resourceId": "jf-icon-rogue-weapon-4",
+      "path": "assets/joseon-folklore/equipment/rogue-weapon-4.png"
+    },
+    {
+      "resourceId": "jf-icon-rogue-body-4",
+      "path": "assets/joseon-folklore/equipment/rogue-body-4.png"
+    },
+    {
+      "resourceId": "jf-icon-shaman-weapon-2",
+      "path": "assets/joseon-folklore/equipment/shaman-weapon-2.png"
+    },
+    {
+      "resourceId": "jf-icon-shaman-body-2",
+      "path": "assets/joseon-folklore/equipment/shaman-body-2.png"
+    },
+    {
+      "resourceId": "jf-icon-shaman-weapon-3",
+      "path": "assets/joseon-folklore/equipment/shaman-weapon-3.png"
+    },
+    {
+      "resourceId": "jf-icon-shaman-body-3",
+      "path": "assets/joseon-folklore/equipment/shaman-body-3.png"
+    },
+    {
+      "resourceId": "jf-icon-shaman-weapon-4",
+      "path": "assets/joseon-folklore/equipment/shaman-weapon-4.png"
+    },
+    {
+      "resourceId": "jf-icon-shaman-body-4",
+      "path": "assets/joseon-folklore/equipment/shaman-body-4.png"
+    },
+    {
+      "resourceId": "jf-icon-taoist-weapon-2",
+      "path": "assets/joseon-folklore/equipment/taoist-weapon-2.png"
+    },
+    {
+      "resourceId": "jf-icon-taoist-body-2",
+      "path": "assets/joseon-folklore/equipment/taoist-body-2.png"
+    },
+    {
+      "resourceId": "jf-icon-taoist-weapon-3",
+      "path": "assets/joseon-folklore/equipment/taoist-weapon-3.png"
+    },
+    {
+      "resourceId": "jf-icon-taoist-body-3",
+      "path": "assets/joseon-folklore/equipment/taoist-body-3.png"
+    },
+    {
+      "resourceId": "jf-icon-taoist-weapon-4",
+      "path": "assets/joseon-folklore/equipment/taoist-weapon-4.png"
+    },
+    {
+      "resourceId": "jf-icon-taoist-body-4",
+      "path": "assets/joseon-folklore/equipment/taoist-body-4.png"
+    },
+    {
+      "resourceId": "jf-icon-shared-head-1",
+      "path": "assets/joseon-folklore/equipment/shared-head-1.png"
+    },
+    {
+      "resourceId": "jf-icon-shared-head-2",
+      "path": "assets/joseon-folklore/equipment/shared-head-2.png"
+    },
+    {
+      "resourceId": "jf-icon-shared-accessory-1",
+      "path": "assets/joseon-folklore/equipment/shared-accessory-1.png"
+    },
+    {
+      "resourceId": "jf-icon-shared-accessory-2",
+      "path": "assets/joseon-folklore/equipment/shared-accessory-2.png"
+    }
+  ],
+  "sheets": [
+    {
+      "resourceId": "jf-enemy-field-rat",
+      "path": "assets/joseon-folklore/monsters/field-rat.png",
+      "cell": 64,
+      "motion": "dash",
+      "idleFrameMs": 150,
+      "portraitPath": "assets/joseon-folklore/monsters/field-rat-portrait.png"
+    },
+    {
+      "resourceId": "jf-enemy-wild-boar",
+      "path": "assets/joseon-folklore/monsters/wild-boar.png",
+      "cell": 64,
+      "motion": "dash",
+      "idleFrameMs": 190,
+      "portraitPath": "assets/joseon-folklore/monsters/wild-boar-portrait.png"
+    },
+    {
+      "resourceId": "jf-enemy-cave-bat",
+      "path": "assets/joseon-folklore/monsters/cave-bat.png",
+      "cell": 64,
+      "motion": "swoop",
+      "idleFrameMs": 160,
+      "portraitPath": "assets/joseon-folklore/monsters/cave-bat-portrait.png"
+    },
+    {
+      "resourceId": "jf-enemy-straw-dokkaebi",
+      "path": "assets/joseon-folklore/monsters/straw-dokkaebi.png",
+      "cell": 64,
+      "motion": "stomp",
+      "idleFrameMs": 260,
+      "portraitPath": "assets/joseon-folklore/monsters/straw-dokkaebi-portrait.png"
+    },
+    {
+      "resourceId": "jf-enemy-lantern-wisp",
+      "path": "assets/joseon-folklore/monsters/lantern-wisp.png",
+      "cell": 64,
+      "motion": "float",
+      "idleFrameMs": 180,
+      "portraitPath": "assets/joseon-folklore/monsters/lantern-wisp-portrait.png"
+    },
+    {
+      "resourceId": "jf-enemy-maiden-ghost",
+      "path": "assets/joseon-folklore/monsters/maiden-ghost.png",
+      "cell": 64,
+      "motion": "float",
+      "idleFrameMs": 240,
+      "portraitPath": "assets/joseon-folklore/monsters/maiden-ghost-portrait.png"
+    },
+    {
+      "resourceId": "jf-enemy-drowned-ghost",
+      "path": "assets/joseon-folklore/monsters/drowned-ghost.png",
+      "cell": 64,
+      "motion": "float",
+      "idleFrameMs": 280,
+      "portraitPath": "assets/joseon-folklore/monsters/drowned-ghost-portrait.png"
+    },
+    {
+      "resourceId": "jf-enemy-grave-ghoul",
+      "path": "assets/joseon-folklore/monsters/grave-ghoul.png",
+      "cell": 64,
+      "motion": "stomp",
+      "idleFrameMs": 310,
+      "portraitPath": "assets/joseon-folklore/monsters/grave-ghoul-portrait.png"
+    },
+    {
+      "resourceId": "jf-enemy-fox-spirit",
+      "path": "assets/joseon-folklore/monsters/fox-spirit.png",
+      "cell": 64,
+      "motion": "dash",
+      "idleFrameMs": 200,
+      "portraitPath": "assets/joseon-folklore/monsters/fox-spirit-portrait.png"
+    },
+    {
+      "resourceId": "jf-enemy-stone-dokkaebi",
+      "path": "assets/joseon-folklore/monsters/stone-dokkaebi.png",
+      "cell": 64,
+      "motion": "stomp",
+      "idleFrameMs": 340,
+      "portraitPath": "assets/joseon-folklore/monsters/stone-dokkaebi-portrait.png"
+    },
+    {
+      "resourceId": "jf-enemy-bamboo-specter",
+      "path": "assets/joseon-folklore/monsters/bamboo-specter.png",
+      "cell": 64,
+      "motion": "shoot",
+      "idleFrameMs": 220,
+      "portraitPath": "assets/joseon-folklore/monsters/bamboo-specter-portrait.png"
+    },
+    {
+      "resourceId": "jf-enemy-masked-bandit",
+      "path": "assets/joseon-folklore/monsters/masked-bandit.png",
+      "cell": 64,
+      "motion": "dash",
+      "idleFrameMs": 180,
+      "portraitPath": "assets/joseon-folklore/monsters/masked-bandit-portrait.png"
+    },
+    {
+      "resourceId": "jf-enemy-bronze-dokkaebi",
+      "path": "assets/joseon-folklore/monsters/bronze-dokkaebi.png",
+      "cell": 96,
+      "motion": "stomp",
+      "idleFrameMs": 330,
+      "portraitPath": "assets/joseon-folklore/monsters/bronze-dokkaebi-portrait.png"
+    },
+    {
+      "resourceId": "jf-enemy-bride-wraith",
+      "path": "assets/joseon-folklore/monsters/bride-wraith.png",
+      "cell": 96,
+      "motion": "float",
+      "idleFrameMs": 280,
+      "portraitPath": "assets/joseon-folklore/monsters/bride-wraith-portrait.png"
+    },
+    {
+      "resourceId": "jf-enemy-mountain-tiger",
+      "path": "assets/joseon-folklore/monsters/mountain-tiger.png",
+      "cell": 96,
+      "motion": "dash",
+      "idleFrameMs": 250,
+      "portraitPath": "assets/joseon-folklore/monsters/mountain-tiger-portrait.png"
+    }
+  ]
+}

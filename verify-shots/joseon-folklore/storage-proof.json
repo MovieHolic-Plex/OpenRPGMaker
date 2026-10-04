@@ -1,0 +1,37 @@
+{
+  "projectId": "0d6dca6b-a6a7-49be-a49f-1edf5eccc602",
+  "projectDir": "/home/main/z-project/rpg-zzu/.oprn-projects/joseon-beodeul-rpg-20261004",
+  "pilot": false,
+  "beforeRevision": 11,
+  "installed": {
+    "added": 0,
+    "preserved": 158,
+    "counts": {
+      "classes": 0,
+      "skills": 0,
+      "items": 0,
+      "equipment": 0,
+      "enemies": 0,
+      "troops": 0,
+      "states": 0,
+      "elements": 0
+    }
+  },
+  "shops": [
+    {
+      "map": "joseon_v20",
+      "event": "joseon_v20_resident_12",
+      "goods": 56
+    },
+    {
+      "map": "joseon_in_pharmacy_b",
+      "event": "joseon_in_pharmacy_b_resident_0",
+      "goods": 20
+    }
+  ],
+  "referenceIssues": [],
+  "saved": true,
+  "revision": 12,
+  "sha256": "681f7065a5d9e6786650a2a474f0011eac0a5e00e6de0fd1d45f6aaa87f3df61",
+  "reopened": true
+}

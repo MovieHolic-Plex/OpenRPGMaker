@@ -1755,3 +1755,7 @@ Completed runtime timelines persist into bounded session reports accessible from
 
 기존 도트 연출 레코드에 `movement`, 스킬에 `battleGimmick`을 추가했다. 미리보기·실전의 순수 이동 계산,
 배우별 경로, 전투 장부와 조건 분기, 공용 기본 데이터와 편집/조수 저작은 [battle-motion-programs.md](battle-motion-programs.md)를 따른다.
+
+## 도트 기술 효과음과 내보내기
+
+전투 첫 진입에서 전체 기술 타임라인의 효과음을 미리 읽는다. `src/assets/retroSkillAudio.ts`의 `retroSkillPreloadSoundIds()`를 사전 로더와 `PLAYER_RUNTIME_AUDIO_RESOURCE_IDS`가 함께 사용한다. 프로젝트 데이터만 훑으면 Move·Chime2 등 13개 파일이 패키지에서 빠져 실제 player.html 전투에서 404가 났다. 공용 후보 기술이 기존 연출을 빌릴 때도 같은 목록을 포함한다.

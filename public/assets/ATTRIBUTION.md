@@ -616,3 +616,14 @@ No source image or image-generation model is used. The humanoid batch generator
 loads this same authoring source. Repository code/asset policy applies.
 The later teal redesign uses 22 colors, independently posed heads and necks,
 and a separately drawn fallen body across the same nine-cell battle contract.
+
+## Joseon folklore content pack (2026-10-04)
+
+`joseon-folklore/{consumables,equipment,skills,monsters}` contains original OPRN
+pixel artwork authored at final 32/64/96px coordinates by six GPT 6.1 sol high
+workers. Source code, design records, manifests and review sheets are retained in
+`content-packs/joseon-folklore/`. No commercial game sprites were traced or copied;
+no image generation API was used. Repository code/asset policy applies.
+Monster portraits are exact idle-cell crops of the same nine-pose originals.
+Behavior review images use only these pack originals. Runtime effects reuse the
+existing registered retro choreography assets and their recorded provenance.

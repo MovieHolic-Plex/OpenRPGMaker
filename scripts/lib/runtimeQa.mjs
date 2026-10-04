@@ -43,6 +43,7 @@ export const OP_KINDS = [
   "resumeFrames",
   "teleport",
   "waitForRuntime",
+  "waitForFieldReady",
   "waitForEmote",
   "waitForPosition",
   // 조건 대기. 고정 sleep 만으로 UI 전이를 기다리면 느린 호스트에서 flaky 해지고,

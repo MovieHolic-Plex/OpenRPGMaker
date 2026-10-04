@@ -22,7 +22,20 @@ for(const key of collections) {
   const ids=new Set();
   for(const row of data[key]) { if(ids.has(row.id)) throw new Error('Duplicate '+row.id); ids.add(row.id); }
 }
+for(const enemy of data.enemies) for(const action of enemy.actions ?? []) {
+  if(!action.skillId) continue;
+  const skill=data.skills.find(row=>row.id===action.skillId);
+  if(!skill) throw new Error('Unknown enemy skill: '+action.skillId);
+  const cost=skill.mpCost ?? {};
+  if(enemy.stats.maxMp < (cost.flat ?? 0)) throw new Error('Enemy cannot afford its skill: '+enemy.id);
+}
 const icons=[];
+for(const asset of JSON.parse(fs.readFileSync(path.join(root,'skills/art.json'),'utf8'))) {
+  const target=path.join('public',asset.path);
+  fs.mkdirSync(path.dirname(target),{recursive:true});fs.copyFileSync(asset.sourcePath,target);
+  // Item and skill slugs can coincide (e.g. thunder-charm); their images are distinct.
+  icons.push({resourceId:asset.resourceId.replace('jf-icon-','jf-skill-icon-'),path:asset.path,skillId:asset.skillId});
+}
 // The worker sources are durable code art; publication is owned by this integration step.
 for(const role of ['consumables','equipment']) {
   const manifestName=role==='consumables'?'art-manifest.json':'assets.json';
