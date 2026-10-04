@@ -1,6 +1,6 @@
 // Real new-project UI and model, backed by an isolated canonical SQLite host.
 // A completed run is a prerequisite, never a claim that gameplay/export passed.
-import { firefox } from 'playwright';
+import { chromium } from 'playwright';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { gunzipSync } from 'node:zlib';
@@ -87,10 +87,7 @@ function snapshot() {
       records: records.map(r => JSON.parse(r.entries_json).map(e => ({ kind: e.kind, characters: JSON.stringify(e).length }))) };
   } finally { db.close(); }
 }
-const browser = await firefox.launch({ firefoxUserPrefs: {
-  'network.notify.changed': false, 'network.notify.IPv6': false,
-  'network.captive-portal-service.enabled': false, 'network.connectivity-service.enabled': false,
-} });
+const browser = await chromium.launch({ args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--js-flags=--max-old-space-size=6144'] });
 const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce' });
 page.on('pageerror', e => { report.errors.push(e.message); save(); });
 page.on('request', request => {

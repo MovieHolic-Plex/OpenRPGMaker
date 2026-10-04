@@ -6,6 +6,7 @@ import { villageReferenceImages } from '@/ai/villageReferenceExamples';
 import { retroChoreographyPreviewImages } from '@/assets/retroChoreographyPreviewImage';
 import { cutscenePreviewImages } from '@/editor/tools/cutscenePreviewTools';
 import { cutsceneArtImages } from '@/editor/tools/cutsceneArtTools';
+import { presentationArtImages } from '@/editor/tools/presentationTools';
 import { worldTerrainImages } from '@/editor/tools/worldTerrainTools';
 import { TILESET_REFERENCE_READ_TOOLS, TILESET_REFERENCE_WRITERS } from "@/editor/tools/tilesetReferenceTools";
 // 레지스트리 툴 → Pi AgentTool 모양 어댑터. 순수 함수라 브라우저/Bun/Node 어디서나 같다.
@@ -272,6 +273,12 @@ export function createPiToolset(ctx: ToolContext, options: CreatePiToolsetOption
         for (const image of await referenceGate.read(ctx.project, result)) {
           const comma = image.dataUrl.indexOf(",");
           content.push({ type: "image", mimeType: image.dataUrl.slice(5, image.dataUrl.indexOf(";")), data: image.dataUrl.slice(comma + 1) });
+        }
+      }
+      if (tool.name === 'show_title_opening') {
+        for (const image of presentationArtImages(ctx.project)) {
+          content.push({ type: 'text', text: `${image.resourceId}: ${image.label}` });
+          content.push({ type: 'image', mimeType: image.dataUrl.slice(5, image.dataUrl.indexOf(';')), data: image.dataUrl.slice(image.dataUrl.indexOf(',') + 1) });
         }
       }
       if (tool.name === 'read_spatial_reference') for (const image of await spatialReferenceImages(ctx.project,args,result.data)) {

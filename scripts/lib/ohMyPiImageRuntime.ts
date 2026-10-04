@@ -147,8 +147,9 @@ export function imageGenerationProviderFor(requested: string): string {
 export async function generateProviderImage(
   provider: string,
   body: Record<string, unknown>,
-  options?: { apiKey?: string; fetch?: typeof fetch },
+  options?: { apiKey?: string; fetch?: typeof fetch; signal?: AbortSignal },
 ): Promise<GeneratedImage> {
+  options?.signal?.throwIfAborted();
   if (imageGenerationProviderFor(provider) === "") {
     throw statusError(
       `${provider} 경로에서는 이미지를 생성할 수 없습니다. 이미지 생성은 Google Antigravity 구독 경로만 지원합니다.`,
@@ -186,7 +187,7 @@ export async function generateProviderImage(
   const context = {
     systemPrompt: [
       "You are a game art generator for a 2D top-down JRPG maker.",
-      "Always answer by producing the requested image. Keep the subject centered on a plain background.",
+      "Always answer by producing the requested image. Follow the requested composition and background; full-screen scenes must fill the canvas.",
     ],
     messages: [{
       role: "user",
@@ -207,11 +208,13 @@ export async function generateProviderImage(
       ...(options?.apiKey ? { apiKey: options.apiKey } : {}),
       fetch: harvestingFetch(harvested, upstreamFailure, options?.fetch ?? fetch),
       onPayload: withImageModality,
+      signal: options?.signal,
     } as never);
   } catch (error) {
     failure = error;
   }
 
+  options?.signal?.throwIfAborted();
   const image = biggest(imagePartsOfMessage(message)) ?? biggest(harvested);
   if (!image) {
     const reason = failure instanceof Error

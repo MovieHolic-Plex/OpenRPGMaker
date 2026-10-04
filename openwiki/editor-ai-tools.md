@@ -2625,6 +2625,12 @@ retired된 플래그도 설명은 고칠 수 있으나 다시 활성화하지 �
 `set_title_screen` 의 `openingPreset`·`effects` 와 `generate_title_art`(키아트 생성 → 비전 맞춤)는
 [title-opening-effects.md](title-opening-effects.md) 에 정리했다.
 
+2026-10-04: 첫 플레이 제작은 장소/첫 입력 뒤 **작품 타이틀·오프닝 전용 단계**를 반드시 실행한다.
+Pi의 `generate_title_art`·`generate_opening_image`는 UI 핸드오프를 실제 제공자 호출로 대체하고
+그림을 등록한다(타이틀은 연결까지). `get_title_screen`은 설정 조회,
+`show_title_opening`은 연결된 원화와 설정을 함께 전달한다. 기본 타이틀·꺼진 오프닝은 완료를 막으며,
+첫 장면 검수는 전체 맵과 연결된 원화의 실제 이미지 전달을 각각 확인한다.
+
 
 ## 크로노 트리거식 필드 도구 인자 (2026-09-26)
 

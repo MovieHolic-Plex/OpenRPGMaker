@@ -1,4 +1,6 @@
 import { drawMapTileLayer } from "@/editor/mapTileDraw";
+import { resolveAssetResourceUrl } from '@/assets/generatedAssetResourceResolver';
+import { presentationArtIds } from '@/editor/tools/presentationTools';
 import { tileBackingTile } from "@/editor/tileLayerPolicy";
 import { cropExtraLayers } from "@/project/mapLayers";
 import { reliefMapView } from "@/editor/reliefMapView";
@@ -71,6 +73,26 @@ export async function renderPiMapImage(project: Project, data: unknown): Promise
   return images[0].dataUrl;
 }
 
+/** Media refs stay in SQLite/assets. Resolve through the browser's real asset bridge. */
+export async function renderPiToolImage(project: Project, toolName: string, data: unknown): Promise<string> {
+  if (toolName !== 'show_title_opening') return renderPiMapImage(project, data);
+  const resourceId = (data as { resourceId?: unknown } | undefined)?.resourceId;
+  if (typeof resourceId !== 'string') throw new Error('presentation-rendering-unavailable: resource id missing');
+  const url = resolveAssetResourceUrl(resourceId, { project });
+  if (!url) throw new Error('presentation-rendering-unavailable: image missing');
+  const image = new Image();
+  await new Promise<void>((resolve, reject) => { image.onload = () => resolve(); image.onerror = () => reject(new Error('presentation-rendering-unavailable: image failed to load')); image.src = url; });
+  const scale = Math.min(1, 512 / Math.max(image.naturalWidth, image.naturalHeight));
+  const pair = createCanvas(Math.max(1, Math.round(image.naturalWidth * scale)), Math.max(1, Math.round(image.naturalHeight * scale)));
+  if (!pair) throw new Error('presentation-rendering-unavailable: canvas missing');
+  const { canvas, context } = pair;
+  context.imageSmoothingEnabled = true;
+  context.drawImage(image, 0, 0, canvas.width, canvas.height);
+  const png = canvasDataUrl(canvas);
+  if (!png) throw new Error('presentation-rendering-unavailable: no PNG');
+  return png;
+}
+
 export async function renderToolImages(project: Project, toolName: string, data: unknown): Promise<RenderedToolImage[]> {
   if (typeof document === "undefined") return [];
   try {
@@ -81,6 +103,14 @@ export async function renderToolImages(project: Project, toolName: string, data:
     if (toolName === "preview_house") return await renderTileGrid(project, data, "집 미리보기");
     if (toolName === "look_at_houses") return await renderTileGrid(project, data, "깔린 집 관찰");
     if (toolName === "render_group_sample") return await renderGroupSamples(project, data);
+    if (toolName === 'show_title_opening') {
+      const images: RenderedToolImage[] = [];
+      for (const resourceId of presentationArtIds(project)) images.push({
+        dataUrl: await renderPiToolImage(project, toolName, { resourceId }),
+        label: `${resourceId}: ${project.assets.uploaded[resourceId]?.name ?? resourceId}`,
+      });
+      return images;
+    }
     return [];
   } catch (cause) {
     // Intentional unavailable contracts must stay observable; load/decode noise stays soft.
