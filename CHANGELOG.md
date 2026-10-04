@@ -5,6 +5,20 @@
 
 <!-- releases -->
 
+## 0.123.0 — 2026-10-04
+
+### 기능
+
+- add opt-in coordinate pixel editing experiment for character harness (`79c89c7`)
+
+### 수정
+
+- reject reserved palette symbols in coordinate pixel edits (`8429bf5`)
+
+### 문서
+
+- record coordinate character experiment delivery (`063b66a`)
+
 ## 0.122.1 — 2026-10-04
 
 ### 수정
