@@ -278,6 +278,7 @@ let code;
 if(stage==='list'){console.log(seed.cases.map(c=>`${c.id} — ${c.title} (플레이: ${c.runtime})`).join('\n'));code=0;}
 else if(stage==='self-check')code=await selfCheck();
 else if(stage==='self-check-runtime')code=await runtimeSelfCheck();
+else if(stage==='self-check-errors')code=await (await import('./errorControls.mjs')).checkErrorUi(root);
 else if(stage==='recheck')code=await recheckSaved();
 else if(stage==='recapture')code=await recapture();
 else if(stage==='run')code=await runCases();

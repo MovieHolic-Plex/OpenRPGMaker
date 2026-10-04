@@ -72,3 +72,7 @@ npm run harness -- assistant-capability review --out <실행> --case npc-line \
 검사기 교정 49건, 알려진 정상 결과의 플레이 교정 6개는 모두 통과했다. 조수 성공 수와 섞지 않는다. 런타임은 Firefox에서 제품 export 투영과 player.html/shim을 확인했으며 완성 ZIP 패키지나 Electron/Chromium 전체 출하는 측정하지 않았다. 참고 이미지·컨트롤 PNG를 포함한 근거는 `verify-shots/assistant-capability-20261005/`, 전체 정본과 관측 이력은 `qa-runs/harnesses/assistant-capability/20261005-core-r3` 및 `20261005-item-r4`에 남았다.
 
 관측 한계: 초기 packaged DEV 훅/숨겨진 자율성 선택기와 대용량 브라우저 복제로 기동·관측이 실패하여 교정했다. 실제 모델 재시도는 하지 않았다. 맵 이름 시험은 이전 실행기가 SIGTERM 뒤 다음 기동을 시작하여 원본 SSE 기록이 덮였다. 모델 요청 영수증과 저장·변경·화면은 남았으나 실행 gate는 별도 환경 차단으로 집계한다(보존 실패가 전체 판정을 결정한다). 현재 과제 잠금·원본 trace 덮어쓰기 금지·다음 과제 중단 플래그와 종료 그룹 처리가 이 재발을 막는다. 단일 모델·단일 표현·단일 시행이므로 반복 성공률이나 전체 도구 품질로 일반화하지 않는다.
+
+## 제품 회귀와 오류 표시 controls (2026-10-05)
+
+`self-check-tools --out <controls>`는 실제 쓰기 도구의 기존 맵 보존·대상 래스터 보정·dryRun·취소 의미를 검사한다. `self-check-errors`는 별도 폴더에 `prepare --case map-rename` 후 실행한다. 실제 편집기 입력·적용·SQLite 저장 경로에서 제공자 error+done을 주입하며 무변경/변경 반영 두 경우의 실패·전달 축을 검사한다. 모델 요청은 가로채고 별도 kind와 modelCalls:0을 남긴다. 이 controls를 조수 실제 수행 결과로 집계하지 않는다.

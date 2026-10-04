@@ -5,6 +5,10 @@ import { prepare } from './fixture';
 export async function run(argv: string[]): Promise<number> {
   const stage = argv[0];
   const option = (name: string) => { const i = argv.indexOf(`--${name}`); return i >= 0 ? argv[i + 1] : undefined; };
+  if (stage === 'self-check-tools') {
+    const { checkTools } = await import('./toolRegression');
+    return checkTools(resolve(option('out') ?? 'qa-runs/harnesses/assistant-capability/tool-controls'));
+  }
   if (stage === 'prepare') {
     const root = option('out');
     if (!root) throw Error('prepare --out <새 실행 폴더> [--case <id>]');

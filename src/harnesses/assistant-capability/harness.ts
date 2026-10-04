@@ -15,6 +15,8 @@ export const ASSISTANT_CAPABILITY_HARNESS = defineHarness({
     { id: 'recheck', title: '저장 결과 재관측', summary: '원래 시도와 검증을 보존하고 모델 재실행 없이 같은 저장 결과만 재검증한다.' },
     { id: 'recapture', title: '화면 재관측', summary: '이전 그림을 보존하고 모델 재실행 없이 저장 결과의 렌더 완료 화면을 다시 캡처한다.' },
     { id: 'self-check', title: '검증기 반례', summary: '정상 결과와 무변경·잘못된 대상·범위 위반·분기 결손 결과의 오판을 검사한다.' },
+    { id: 'self-check-tools', title: '제품 회귀 반례', summary: '실제 도구의 비타일 편집 보존·타일 보정 범위·dry run·취소 의미를 모델 점수와 분리해 검사한다.' },
+    { id: 'self-check-errors', title: '오류 표시 반례', summary: '별도 정본에서 응답 오류를 주입하여 미반영·반영 상태와 실패 표시를 검사한다. 실모델 점수에 넣지 않는다.' },
     { id: 'self-check-runtime', title: '플레이 검증기 교정', summary: '알려진 정상 결과를 출하 플레이어에서 실행하여 플레이 검사 자체의 오판을 확인한다.' },
     { id: 'review', title: '시각 검수', summary: '실제로 열어 본 그림의 해시에 묶어 독립 검수 결과를 기록한다.' },
     { id: 'report', title: '결과 집계', summary: '미검증·실패·환경 차단을 숨기지 않고 JSON·HTML·Markdown으로 집계한다.' },
