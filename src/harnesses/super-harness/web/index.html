@@ -55,8 +55,8 @@ ul.plain{margin:4px 0;padding-left:18px} .log{font:12px/1.5 ui-monospace,monospa
   <h1>슈퍼하네스</h1>
   <span id="runstate" class="pill">…</span>
   <button id="toggle">…</button>
-  <span class="meter">codex 오늘 <i><b id="mc"></b></i> <span id="mct"></span></span>
-  <span class="meter">조수 시험 오늘 <i><b id="mp"></b></i> <span id="mpt"></span></span>
+  <span class="meter">codex 오늘 <span id="mct"></span>회</span>
+  <span class="meter">조수 시험 오늘 <span id="mpt"></span>판 · 하루 상한 없음</span>
   <span class="pill" id="model"></span>
   <span class="legend">그림 표식 <i style="border-color:#ffc428"></i>상자 <i style="border-color:#eb3c3c"></i>함정 <i style="border-color:#3cdcf0"></i>세이브 <i style="border-color:#4696ff"></i>문 <i style="border-color:#b46eff"></i>스위치 <b style="color:#ff3030">✕</b> 이벤트 없는 장치 그림</span>
 </header>
@@ -199,9 +199,8 @@ function renderTop() {
   $('runstate').className = 'pill ' + (paused ? 'off' : 'on');
   $('toggle').textContent = paused ? '▶ 다시 돌리기' : '❚❚ 전체 멈춤';
   $('toggle').onclick = () => post({ action: paused ? 'resume' : 'pause' });
-  const bc = +S.settings.budget_codex_day, bp = +S.settings.budget_probe_day;
-  $('mc').style.width = Math.min(100, (S.today.codex / bc) * 100) + '%'; $('mct').textContent = `${S.today.codex}/${bc}`;
-  $('mp').style.width = Math.min(100, (S.today.probe / bp) * 100) + '%'; $('mpt').textContent = `${S.today.probe}/${bp}`;
+  $('mct').textContent = S.today.codex;
+  $('mpt').textContent = S.today.probe;
   $('model').textContent = `codex ${S.model} · ${S.effort}`;
   const title = (cid) => S.concepts.find((c) => c.id === cid)?.title ?? '전체';
   $('runbar').innerHTML = S.running.length ? S.running.map((j) => `<span class="job" onclick="openLog(${j.id}, '${esc(title(j.concept))} · ${esc(KIND[j.kind] ?? j.kind)} ${esc(j.tag)}')">${esc(title(j.concept))} · ${esc(KIND[j.kind] ?? j.kind)} ${esc(j.tag)}</span>`).join('') : '<span class="empty">지금 도는 작업 없음</span>';
