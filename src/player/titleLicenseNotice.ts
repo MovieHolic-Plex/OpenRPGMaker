@@ -2,6 +2,7 @@
 // 타이틀 화면의 에셋 라이선스 표기. 정본 내용은 public/assets/ATTRIBUTION.md 이고,
 // 웹 내보내기 zip 이 이 파일을 항상 싣기 때문에 출하 플레이어에서도 같은 경로로 읽힌다.
 import { withInlineAsset } from "@/assets/inlineAssetStore";
+import { isCancelKey, isConfirmKey } from "@/player/keyBindings";
 
 export const ATTRIBUTION_DOC_PATH = "/assets/ATTRIBUTION.md";
 
@@ -44,11 +45,23 @@ function showLicenseDialog(body: string | null, onClose?: () => void): void {
   close.textContent = "닫기";
   close.className = "rm-license-dialog-close";
   close.addEventListener("click", () => dialog.close());
-  // A native dialog owns its keys; they must not reach the game's document handler.
-  dialog.addEventListener("keydown", (event) => event.stopPropagation());
+  // Own keys before editor/document capture handlers (including their Escape stack).
+  const onKeyDown = (event: KeyboardEvent): void => {
+    if (!dialog.open || !dialog.isConnected) return;
+    event.stopPropagation();
+    if (event.isComposing || (!isCancelKey(event.key) && !isConfirmKey(event.key))) return;
+    event.preventDefault();
+    if (!event.repeat) dialog.close();
+  };
+  view.addEventListener("keydown", onKeyDown, true);
   dialog.append(heading, pre, close);
-  dialog.addEventListener("close", () => { dialog.remove(); onClose?.(); });
+  dialog.addEventListener("close", () => {
+    view.removeEventListener("keydown", onKeyDown, true);
+    dialog.remove();
+    onClose?.();
+  });
   view.document.body.append(dialog);
   if (typeof dialog.showModal === "function") dialog.showModal();
   else dialog.setAttribute("open", "");
+  close.focus({ preventScroll: true });
 }

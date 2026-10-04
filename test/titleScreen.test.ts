@@ -6,6 +6,7 @@ import {
   renderTitleScreen,
   titleMenuHeight,
   titleMenuTop,
+  updateTitleSelection,
 } from "@/player/titleScreen";
 import { createBlankProject } from "@/project/defaults";
 import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
@@ -26,6 +27,37 @@ function fullVisibilitySettings(partial: Omit<TitleScreenSettings, "menuVisibili
 }
 
 describe("title screen", () => {
+  it("moves focus and selection without replacing the title or its animated children", () => {
+    const restoreDom = installFakeDom();
+    try {
+      const screen = renderWithFakeDom(() => renderTitleScreen(createBlankProject(), {
+        onNewGame: () => undefined,
+        onResume: () => undefined,
+        onContinue: () => undefined,
+        onCredits: () => undefined,
+        onQuit: () => undefined,
+      }));
+      const children = [...screen.childNodes];
+      const options = Array.from(screen.querySelectorAll(".rm-title-menu-button"));
+      for (const index of [1, 0, options.length - 1]) {
+        updateTitleSelection(screen, index);
+        expect(screen.childNodes).toEqual(children);
+        expect(Array.from(screen.querySelectorAll(".rm-title-menu-button"))).toEqual(options);
+        expect(document.activeElement).toBe(options[index]);
+        options.forEach((option, i) => {
+          expect(option.getAttribute("tabindex")).toBe(i === index ? "0" : "-1");
+          expect(option.getAttribute("aria-selected")).toBe(String(i === index));
+          expect(option.classList.contains("selected")).toBe(i === index);
+          expect(option.getAttribute("aria-current")).toBe(i === index ? "true" : null);
+        });
+        expect(findByTestId(screen, "title-selection-json")?.textContent)
+          .toBe(JSON.stringify({ selectedIndex: index }));
+      }
+    } finally {
+      restoreDom();
+    }
+  });
+
   it("renders the redesigned editorial title composition instead of legacy window chrome", () => {
     const restoreDom = installFakeDom();
     try {
