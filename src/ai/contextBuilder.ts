@@ -128,7 +128,7 @@ const BALANCE_NOTE = [
 ].join("\n");
 
 const HIGH_LEVEL_TOOL_ROUTING_BLOCK = [
-  "지형과 고지의 집은 에디터 도구와 같은 design_terrain/sculpt_relief → place_terrain_house → lay_terrain_road/place_terrain_ramp를 쓴다. 현재 버들항 칩셋의 다양한 원본 외관은 inspect_terrain.houseKits에서 조회해 kitId로 배치한다. 색만 다른 조립식 집으로 다양성을 대신하지 않는다. houseStyles는 크기·지붕 폭 조절 요청에만 쓴다. 원본 kitId는 원래 크기를 유지하며 author_house의 옛 재료 키트는 버들항에 쓰지 않는다. 집 전체와 문 앞은 동일 높이의 빈 땅이어야 하고 벽 폭·층수와 지붕 폭을 따로 정한다. check_terrain_access로 출발점부터 모든 doorFront 칸 자체의 실제 통행을 확인하고 show_map_region의 절벽 높이 포함 그림을 본 뒤 완료를 말한다. 집 외관 도구는 실내/워프를 만들지 않으므로 요청한 실내·이벤트는 별도로 저작한다. 매끈한 경사로는 계단 코드로 대체하지 않는다. 시야 차단 기본은 끔이다.",
+  "지형과 고지의 집은 에디터 도구와 같은 design_terrain/sculpt_relief → place_terrain_house → lay_terrain_road/place_terrain_ramp를 쓴다. 현재 버들항 칩셋의 다양한 원본 외관은 inspect_terrain.houseKits에서 조회해 kitId로 배치한다. 색만 다른 조립식 집으로 다양성을 대신하지 않는다. houseStyles는 크기·지붕 폭 조절 요청에만 쓴다. 기존 지형은 inspect_terrain.features의 id/options를 읽고 design_terrain 또는 lay_terrain_road의 editId로 재편집한다. 생략한 설정은 유지한다. 조립식 집의 지붕만 바꾸려면 resize_terrain_house_roof를 쓴다. 잠금 칸을 보존하고 집터 일부만 올리거나 내리지 않는다. 원본 kitId는 원래 크기를 유지하며 author_house의 옛 재료 키트는 버들항에 쓰지 않는다. 집 전체와 문 앞은 동일 높이의 빈 땅이어야 하고 벽 폭·층수와 지붕 폭을 따로 정한다. check_terrain_access로 출발점부터 모든 doorFront 칸 자체의 실제 통행을 확인하고 show_map_region의 절벽 높이 포함 그림을 본 뒤 완료를 말한다. 집 외관 도구는 실내/워프를 만들지 않으므로 요청한 실내·이벤트는 별도로 저작한다. 매끈한 경사로는 계단 코드로 대체하지 않는다. 시야 차단 기본은 끔이다.",
   // 수정/신규 축(#262 modify 진단). 라우팅 표가 "무엇을 만들 것인가"만 말하고 "만들 것인가
   // 고칠 것인가"를 말하지 않아, "이 침실 좀 고쳐줘"가 신규 시공 경로를 탔다.
   "**대상 선택(라우팅보다 먼저):** 신규 표지(새/새로/추가/create)가 없으면 기존 산출물이 대상이다. '이/여기/지금'은 아래 현재 맵 요약의 mapId다. 수정 요청에 새 맵을 만들지 말고, '새로 만들지 마'면 create_map/duplicate_map/방 세션 시작을 쓰지 않는다.",

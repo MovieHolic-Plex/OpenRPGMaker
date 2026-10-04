@@ -17,6 +17,8 @@ export function terrainEditable(map: GameMap, index: number, objects = true, ram
   return index >= 0 && index < map.width * map.height && !terrainLocked(map.terrainDesign, index)
     && (!objects || layerTileAt(map, 3, index) < 0 && layerTileAt(map, 4, index) < 0)
     && (!ramps || !(map.relief?.ramps?.[index] ?? 0))
+    && (!objects || !map.structurePlacements?.some(p => index % map.width >= p.x && index % map.width < p.x + p.w
+      && Math.floor(index / map.width) >= p.y && Math.floor(index / map.width) < p.y + p.h))
     && !map.events.some(e => e.x === index % map.width && e.y === Math.floor(index / map.width));
 }
 export function copiedTerrainMap(map: GameMap): GameMap { return { ...map, lowerTiles: map.lowerTiles.slice(), upperTiles: map.upperTiles.slice(), ...cloneExtraLayers(map), relief: map.relief && copyRelief(map.relief), terrainDesign: map.terrainDesign && { ...map.terrainDesign, waterDepth: map.terrainDesign.waterDepth?.slice() } }; }
