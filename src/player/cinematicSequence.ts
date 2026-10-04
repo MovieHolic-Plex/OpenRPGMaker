@@ -12,6 +12,7 @@ export type CinematicCompletion = "completed" | "skipped" | "aborted";
 export type CinematicPlayback = {
   readonly done: Promise<CinematicCompletion>;
   readonly teardown: () => void;
+  readonly releaseMusic: (fadeMs?: number) => void;
 };
 
 /** Preserve the visible multi-layer composition across the final map load. */
@@ -52,11 +53,13 @@ export function playCinematicSequence(options: {
   readonly signal: AbortSignal;
   readonly assets?: CinematicAssets;
   readonly musicVolume?: () => number;
+  readonly holdMusicOnComplete?: boolean;
+  readonly musicHost?: HTMLElement;
   readonly onFrame?: (url: string, fadeMs?: number) => void;
 }): CinematicPlayback {
   const { host, project, sequence, signal } = options;
   if (signal.aborted || !sequence?.enabled || sequence.scenes.length === 0) {
-    return { done: Promise.resolve(signal.aborted ? "aborted" : "completed"), teardown: () => undefined };
+    return { done: Promise.resolve(signal.aborted ? "aborted" : "completed"), teardown: () => undefined, releaseMusic: () => undefined };
   }
   const root = el("div", { class: "cinematic-sequence", dataset: { testid: "cinematic-sequence" } });
   const assets = options.assets ?? createCinematicAssets();
@@ -78,10 +81,13 @@ export function playCinematicSequence(options: {
   // 시퀀스 전체에 깔리는 배경음악. 장면마다 root.replaceChildren 이 도니 host 에 붙여 살려 둔다.
   let music: HTMLAudioElement | undefined;
   let musicFadeTimer: ReturnType<typeof setInterval> | undefined;
+  let releasingMusic = false;
   const stopMusic = (fadeMs = 0): void => {
+    if (fadeMs > 0 && releasingMusic) return;
     clearInterval(musicFadeTimer);
     if (!music) return;
     if (fadeMs > 0 && !music.paused) {
+      releasingMusic = true;
       const audio = music, volume = audio.volume, start = performance.now();
       musicFadeTimer = setInterval(() => {
         audio.volume = volume * Math.max(0, 1 - (performance.now() - start) / fadeMs);
@@ -113,7 +119,7 @@ export function playCinematicSequence(options: {
     settled = true;
     cleanScene();
     if (!options.assets) assets.dispose();
-    stopMusic(result === 'completed' ? 600 : 0);
+    if (result !== 'completed' || !options.holdMusicOnComplete) stopMusic(result === 'completed' ? 600 : 0);
     observer.disconnect();
     signal.removeEventListener("abort", abort);
     view.removeEventListener("keydown", onKeyDown, true);
@@ -448,7 +454,7 @@ export function playCinematicSequence(options: {
     if (url) {
       const audio = el("audio", { dataset: { testid: "cinematic-music" } });
       audio.loop = true;
-      host.append(audio);
+      (options.musicHost ?? host).append(audio);
       music = audio;
       // 자동재생 차단·재생 실패는 연출을 막지 않는다(장면 상태 기계와 분리).
       void assets.prepareAudio(url).then(prepared => {
@@ -456,9 +462,10 @@ export function playCinematicSequence(options: {
         audio.src = prepared; audio.volume = 0;
         audio.dataset.prepared = 'true';
         void audio.play().then(() => {
+          if (settled || music !== audio) return;
           const start = performance.now();
           musicFadeTimer = setInterval(() => {
-            if (settled || music !== audio) { clearInterval(musicFadeTimer); return; }
+            if (music !== audio) { clearInterval(musicFadeTimer); return; }
             audio.volume = Math.min(1, Math.max(0, options.musicVolume?.() ?? 0.7)) * Math.min(1, (performance.now() - start) / 600);
           }, 40);
         }, () => { audio.volume = Math.min(1, Math.max(0, options.musicVolume?.() ?? 0.7)); audio.dataset.playback = 'blocked'; });
@@ -471,5 +478,5 @@ export function playCinematicSequence(options: {
   observer.observe(host.ownerDocument, { childList: true, subtree: true });
   root.focus({ preventScroll: true });
   renderScene();
-  return { done, teardown: abort };
+  return { done, teardown: abort, releaseMusic: stopMusic };
 }

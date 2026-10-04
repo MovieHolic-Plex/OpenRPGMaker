@@ -24,8 +24,9 @@ export async function installOpeningEvidence(page, captureAudio) {
     window.addEventListener('keydown', resume, true); window.addEventListener('pointerdown', resume, true);
     const timer = setInterval(() => {
       const root = document.querySelector('[data-testid="cinematic-sequence"]');
-      if (!root || root.dataset.transitionState !== 'playing') return;
-      const shot = root.querySelector('.cinematic-frame:not([data-previous-frame]) .cinematic-shot');
+      const audio = document.querySelector('[data-testid="cinematic-music"]');
+      if ((!root || root.dataset.transitionState !== 'playing') && !audio) return;
+      const shot = root?.querySelector('.cinematic-frame:not([data-previous-frame]) .cinematic-shot');
       if (shot && record.layers.length < 500) {
         const layers = [...shot.querySelectorAll('.cinematic-layer')].map((image, index) => {
           const s = getComputedStyle(image);
@@ -33,14 +34,13 @@ export async function installOpeningEvidence(page, captureAudio) {
         });
         if (layers.length) record.layers.push({ at: Date.now(), sceneId: root.dataset.sceneId, layers });
       }
-      const audio = document.querySelector('[data-testid="cinematic-music"]');
       if (audio && record.audio.length < 500) {
         let rms = null;
         if (analyser) {
           const data = new Float32Array(analyser.fftSize); analyser.getFloatTimeDomainData(data);
           rms = Math.sqrt(data.reduce((sum, v) => sum + v * v, 0) / data.length);
         }
-        record.audio.push({ at: Date.now(), sceneId: root.dataset.sceneId, resourceId: root.dataset.music,
+        record.audio.push({ at: Date.now(), sceneId: root?.dataset.sceneId ?? 'map-handoff', resourceId: root?.dataset.music ?? null,
           currentTime: audio.currentTime, paused: audio.paused, readyState: audio.readyState, volume: audio.volume,
           prepared: audio.dataset.prepared === 'true', rms, contextState: context?.state ?? null });
       }

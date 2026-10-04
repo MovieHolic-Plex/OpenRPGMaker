@@ -167,6 +167,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   const audioEngine = getAudioEngine({ qaInstrumentation: options.qaInstrumentation === true });
 
   let openingController: AbortController | null = null;
+  let openingMusicPlayback: ReturnType<typeof playCinematicSequence> | undefined;
   const cinematicAssets = createCinematicAssets();
   let titleConfirmTimer: ReturnType<typeof setTimeout> | undefined;
   let game: Phaser.Game | null = null;
@@ -205,6 +206,8 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   main.append(layout);
 
   const stopGame = (): void => {
+    openingMusicPlayback?.teardown();
+    openingMusicPlayback = undefined;
     openingController?.abort();
     openingController = null;
     clearTimeout(titleConfirmTimer);
@@ -286,19 +289,20 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       openingController = controller;
       let lastFrame: string | undefined;
       let handoffFadeMs = 500;
-      const playback = playCinematicSequence({ host: surface.stage, project: store.getCurrent(), sequence: opening, signal: controller.signal, assets: cinematicAssets, musicVolume: () => audioEngine.audioStateSnapshot().volume.bgm, onFrame: (url, fadeMs) => { lastFrame = url; if (fadeMs !== undefined) handoffFadeMs = fadeMs; } });
+      const playback = playCinematicSequence({ host: surface.stage, project: store.getCurrent(), sequence: opening, signal: controller.signal, assets: cinematicAssets, holdMusicOnComplete: true, musicHost: main, musicVolume: () => audioEngine.audioStateSnapshot().volume.bgm, onFrame: (url, fadeMs) => { lastFrame = url; if (fadeMs !== undefined) handoffFadeMs = fadeMs; } });
       void playback.done.then(result => {
         if (result === "aborted" || !shellActive || openingController !== controller) return;
         openingController = null;
-        bootRun(request, lastFrame, handoffFadeMs);
+        bootRun(request, lastFrame, handoffFadeMs, playback);
       });
       return;
     }
     bootRun(request);
   };
 
-  const bootRun = (request: PlayBootRequest, cinematicBackdrop?: string, cinematicFadeMs = 500): void => {
+  const bootRun = (request: PlayBootRequest, cinematicBackdrop?: string, cinematicFadeMs = 500, musicPlayback?: ReturnType<typeof playCinematicSequence>): void => {
     stopGame();
+    openingMusicPlayback = musicPlayback;
     // 새 플레이 런은 이전 런의 오토세이브 디바운스 기준 시각을 물려받지 않는다.
     resetAutosaveDebounce();
     lastBootRequest = request;
@@ -370,6 +374,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     repairs: readonly string[],
   ): void => {
     if (run !== startRun) return;
+    openingMusicPlayback?.releaseMusic(600);
     const described = describeBootFailure(context);
     // 부팅이 ready 를 지나 오버레이를 이미 걷어낸 뒤 터졌을 수도 있다 → 그때는 새로 올린다.
     const overlay = loading.root.isConnected ? loading : mountPlayLoadingOverlay(layout, "error");
@@ -407,6 +412,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       resolveReady = resolve;
     });
     const signalReady = (): void => {
+      if (resolveReady) openingMusicPlayback?.releaseMusic(600);
       resolveReady?.();
       resolveReady = null;
     };
@@ -526,6 +532,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       markPlayRender(startedAt);
       loading.remove();
       bootDiag("ready", true, { detail: "boot complete" });
+      signalReady();
       clearStaleModuleReloadMark();
       try {
         options.onPlayBootSuccess?.();
