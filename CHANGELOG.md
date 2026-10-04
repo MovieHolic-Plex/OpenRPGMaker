@@ -5,6 +5,22 @@
 
 <!-- releases -->
 
+## 0.122.0 — 2026-10-04
+
+### 기능
+
+- add authored opening typography and scene transitions (`707bf09`)
+
+### 수정
+
+- 반복 그림 실패를 시점 명세와 표본 검수로 되돌리기 (#2094) (`b54829b`)
+- export from the newest canonical reload receipt (`5b94985`)
+- retain the preceding composition until the next scene paints (`a2b2db9`)
+
+### 문서
+
+- record canonical opening authoring and shipping playback evidence (`27a4b45`)
+
 ## 0.121.1 — 2026-10-04
 
 ### 수정
