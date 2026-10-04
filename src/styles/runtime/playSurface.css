@@ -318,3 +318,13 @@
 .cinematic-narration[data-font="sans"] { font-family: system-ui, sans-serif; }
 .cinematic-narration[data-font="pixel"] { font-family: Galmuri9, var(--runtime-ui-font, monospace); }
 .cinematic-letterbox { position: absolute; inset: 0; pointer-events: none; z-index: 1; background: linear-gradient(to bottom, #000 0% var(--cinematic-letterbox), transparent var(--cinematic-letterbox) calc(100% - var(--cinematic-letterbox)), #000 calc(100% - var(--cinematic-letterbox)) 100%); }
+.cinematic-shot .cinematic-layer {
+  position: absolute;
+  height: auto;
+  object-fit: contain;
+  pointer-events: none;
+  transform-origin: center;
+  max-width: none;
+}
+.cinematic-shot .cinematic-layer[data-depth='background'] { z-index: 1; }
+.cinematic-shot .cinematic-layer[data-depth='foreground'] { z-index: 3; }

@@ -1,0 +1,265 @@
+{
+  "fingerprint": "354bd97b8f03822b593ef331829e619db07387822aebf8476f5c616bb09fe5b8",
+  "chosen": {
+    "id": "A",
+    "title": "후보 A",
+    "passed": true,
+    "summary": "5품목 그림 검수 통과",
+    "reasons": [],
+    "repairFixes": [],
+    "sources": [
+      {
+        "path": "qa-runs/parking-scene-spec-r10/v1005-000602-455770/harness-receipt.json",
+        "sha256": "6282c5c2c8cde62096cf7c49e1b81d25f6dd36265b27e5e093143c86ac587ef8"
+      },
+      {
+        "path": "harness-data/modern-chipset-parking/parking-contract.json",
+        "sha256": "4cff280341970530fc26ec068c1e5e63db42099ff73ef20bb54331266520542d",
+        "label": ""
+      },
+      {
+        "path": "qa-runs/parking-scene-spec-r10/v1005-000602-455770/A.png",
+        "sha256": "970bb1bb0c8efb9200cfd30945c8f69e40a43bf801b3bfc6dd2804e2f5d0b730",
+        "label": ""
+      },
+      {
+        "path": "art-output/calibration/3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133/25b526cc2943abea61d5c38cfdbbc33ea8f656f5b6f489ddf5a14618e6856879.json",
+        "sha256": "25b526cc2943abea61d5c38cfdbbc33ea8f656f5b6f489ddf5a14618e6856879"
+      },
+      {
+        "path": "art-output/calibration/3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133/0c19a3e07c4d4f146599c7a994da7b5afa826ceb7dbfe720af8bd66bde7558d7.json",
+        "sha256": "0c19a3e07c4d4f146599c7a994da7b5afa826ceb7dbfe720af8bd66bde7558d7"
+      },
+      {
+        "path": "art-output/calibration/3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133/3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133.json",
+        "sha256": "3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133"
+      },
+      {
+        "path": "art-output/calibration/3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133/89a96484902b60952010c338c8730007daeb5b704b865568fec051d591793193.json",
+        "sha256": "89a96484902b60952010c338c8730007daeb5b704b865568fec051d591793193"
+      },
+      {
+        "path": "art-output/calibration/3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133/2641a4586e26d34acaab06c5dea06452d4ccf96eb1a6c1e4785d31ae4784c9b9.json",
+        "sha256": "2641a4586e26d34acaab06c5dea06452d4ccf96eb1a6c1e4785d31ae4784c9b9"
+      },
+      {
+        "path": "art-output/calibration/3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133/12548d592f2e11c6c086927f65226f9d81ac67460960936b9fcf3981c72b3106.png",
+        "sha256": "12548d592f2e11c6c086927f65226f9d81ac67460960936b9fcf3981c72b3106"
+      },
+      {
+        "path": "art-output/calibration/3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133/5ebf4fe55081b424e1a93a0bd10dc31a0452ed6a4514d1c3e0638dac3b499c7c.png",
+        "sha256": "5ebf4fe55081b424e1a93a0bd10dc31a0452ed6a4514d1c3e0638dac3b499c7c"
+      },
+      {
+        "path": "art-output/calibration/3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133/6ef35a1fca09116495c13dc4523d92ed8240725d22abf7e2cf69589a843eacfb.png",
+        "sha256": "6ef35a1fca09116495c13dc4523d92ed8240725d22abf7e2cf69589a843eacfb"
+      },
+      {
+        "path": "art-output/calibration/3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133/d0b37cf710bc4dcbf142e5dbd103fd7b5be980342b45f3661bade69993eb3d00.json",
+        "sha256": "d0b37cf710bc4dcbf142e5dbd103fd7b5be980342b45f3661bade69993eb3d00"
+      },
+      {
+        "path": "art-output/calibration/3fef0e00d17ff49f9fa5ef6c3ef50b1af9bc7699492c1a70aff262b07b444133/82c568302a2224524a8e27d63953c64dc60268b17836e0ebb27eac8411ea8ee6.md",
+        "sha256": "82c568302a2224524a8e27d63953c64dc60268b17836e0ebb27eac8411ea8ee6"
+      },
+      {
+        "path": "harness-data/parking-scene-spec-r10/preserved-evidence/art-feedback.json",
+        "sha256": "fe289ef5a726d74e3bad2b125c400b1dace01e7e8d032f1118ebdcde2ac1070b"
+      },
+      {
+        "path": "harness-data/parking-scene-spec-r10/preserved-evidence/art-layout-review.json",
+        "sha256": "ea696b392d59a9b70767b1afde3a499133af39daba2c9ddd262c7a0f4665d093"
+      },
+      {
+        "path": "harness-data/parking-scene-spec-r10/preserved-evidence/art-layout-input.json",
+        "sha256": "6c2da91a7c972f4f105f62071f3cb92fe2caae103da6709a1b611a7a85fcd6d6"
+      },
+      {
+        "path": "harness-data/parking-scene-spec-r10/preserved-evidence/art-calibration.json",
+        "sha256": "4b1944cb51d7cedcdd9412541d584fc5e54b355c13d72af17fab304a6fd48def"
+      },
+      {
+        "path": "harness-data/parking-scene-spec-r10/preserved-evidence/r7-A.png",
+        "sha256": "2191df9d65e22e1e96d4c53559d5e9afc8c75b7aaa93425e3a5602a9d428852d"
+      },
+      {
+        "path": "harness-data/parking-scene-spec-r10/preserved-evidence/r7-A-x3.png",
+        "sha256": "01c30fb04be17310614672f5ec15ff65bf8e4027203b73ca27b43754a304798f"
+      }
+    ],
+    "images": [
+      {
+        "path": "qa-runs/parking-scene-spec-r10/v1005-000602-455770/A.png",
+        "sha256": "970bb1bb0c8efb9200cfd30945c8f69e40a43bf801b3bfc6dd2804e2f5d0b730",
+        "label": "자동차 1대·주차면 2개 실제 조립, 독립 검수 대상"
+      }
+    ],
+    "sheet": {
+      "path": "qa-runs/parking-scene-spec-r10/v1005-000602-455770/A.png",
+      "sha256": "970bb1bb0c8efb9200cfd30945c8f69e40a43bf801b3bfc6dd2804e2f5d0b730",
+      "label": "전체 칩 시트"
+    },
+    "caution": "실제 칩으로 조립한 비교용 예시입니다. 완성 맵·통행 검사 결과는 아닙니다.",
+    "generation": "a4923b718a451f4b85b3c33320ee255b153182a60477e2765a4edae3c5a6a4f9",
+    "phase": "scene",
+    "contextReview": {
+      "gateVersion": 3,
+      "acceptanceSha256": "99096fc64bd67e7ebb0b5ebc948e083c171964b1f2777481b1f47e3375421855",
+      "fingerprint": "b378a19477229ab172f40d7cc828f03f1c2fef5e9e2a1e95c2d386864478e2c7",
+      "verdict": "PASS",
+      "imagesSeen": [
+        "970bb1bb0c8efb9200cfd30945c8f69e40a43bf801b3bfc6dd2804e2f5d0b730"
+      ],
+      "previousImagesSeen": [
+        "2191df9d65e22e1e96d4c53559d5e9afc8c75b7aaa93425e3a5602a9d428852d",
+        "12548d592f2e11c6c086927f65226f9d81ac67460960936b9fcf3981c72b3106",
+        "5ebf4fe55081b424e1a93a0bd10dc31a0452ed6a4514d1c3e0638dac3b499c7c",
+        "6ef35a1fca09116495c13dc4523d92ed8240725d22abf7e2cf69589a843eacfb",
+        "5ebf4fe55081b424e1a93a0bd10dc31a0452ed6a4514d1c3e0638dac3b499c7c",
+        "6ef35a1fca09116495c13dc4523d92ed8240725d22abf7e2cf69589a843eacfb",
+        "3956bd21a5cdb9983754b8e1c23d444c784ce87802a1c5881ca979ed7320b9c3",
+        "a0eea03121a62f4fa61e134dbeb98c7b4cf598129b9ec189bfa2f13c45c3a762",
+        "2f869ef19e8e3659f73dd987ed766b4fb38b0d2d0afd2ac85095f9b17d065a3d",
+        "c0e9f5bfd7283b869b1d027d390546acb9d1f6e7652c4d21dc2f3a1cb5fd077f",
+        "2191df9d65e22e1e96d4c53559d5e9afc8c75b7aaa93425e3a5602a9d428852d"
+      ],
+      "checks": {
+        "identity": {
+          "verdict": "PASS",
+          "evidence": "무라벨 224×112 그림에서 (128,16)의 승용차, x112..207의 y40/72/104 두 주차면 도색, x190..198의 두 낮은 턱, 북쪽 콘크리트 벽과 이음 바닥 및 (128,11)의 벽등이 실제 기물로 식별된다. 임시 상자나 라벨 대체가 없다."
+        },
+        "scale": {
+          "verdict": "PASS",
+          "evidence": "공용 자동차 기준 PNG를 직접 열었다. 파일은 80×48, 출처 sha256은 5ebf4fe55081b424e1a93a0bd10dc31a0452ed6a4514d1c3e0638dac3b499c7c이다. 현재 원점(128,16)의 alpha255 화소 1583개를 원본과 대조해 변경 0개이며 배율 1이다. 주차면 진행축 96px, 피치 32px, 차로 대기 96px가 계약 범위다. alpha bbox의 28px 화면 높이를 지상 차폭으로 해석하지 않았다."
+        },
+        "attachments": {
+          "verdict": "PASS",
+          "evidence": "북캡 x8..223,y4..7에서 서캡 x8..15,y8..19로 공유변이 이어지고, 북전면 y8..31과 서남절단면 y20..43이 바닥 y32 및 서반환 끝 y44에 잇닿는다. 벽등 x128..191,y11..14 아래 y15 부착그림자가 벽 전면에 붙어 있다. 첫 턱의 (192,59..61)/(191,62)/(190,63) 노출부는 앞 타이어에 가려지고 둘째 턱 y98..100 전면·접지로 바닥에 놓인다. 서측 개구와 화면 절단은 승인된 경계다."
+        },
+        "circulation": {
+          "verdict": "PASS",
+          "evidence": "서개구 y44..111에서 차로 x16..111을 거쳐 첫 지상 차체 가설 [133,48,70,16] 및 둘째 [133,80,70,16]로 수평 진입/후진할 바닥이 연속이다. 벽은 y32 및 서반환 y44에서 끝나고 턱은 최종 바퀴 정지부에 있다. 문을 닫은 뒤 x112..183의 북 y32..47/중간 y64..79/남 y96..111 띠에서 서차로로 16px 몸통이 이동할 바닥 합집합이 연결된다. 북띠는 x16..31,y32..63에서 서개구 y48..63으로 꺾인다. 도색과 이음은 장애물이 아니며 차 지붕 가림도 지상 장애물로 세지 않았다. x203..207의 5px 틈은 보행 경로로 사용하지 않는다. 숨은 차체 범위는 도면 가설이며 엔진 충돌 실행은 검증하지 않았다."
+        },
+        "projection": {
+          "verdict": "PASS",
+          "evidence": "승인 calibration 112×80, 공용 80×48 자동차와 구조 기준 PNG를 모두 실제 대조했다. 원본 자동차의 수평 지붕·보닛 윗면과 아래 옆면/타이어, 북벽 4px 캡과 24px 전면, 서캡 12px 깊이와 남단 24px 높이면이 같은 수평 길이/+y 깊이/-y 높이 계약으로 읽힌다. calibration 자동차·턱을 (104,0) 평행이동한 현재 접점이 일치한다. 둘째 턱 x190..197,y84..97의 14px 윗면은 y98..99의 2px 전면 및 y100 접지와 분리되어 직립 막대가 아니다. 첫 턱은 차 뒤에서 정상적으로 가려진다."
+        },
+        "style": {
+          "verdict": "PASS",
+          "evidence": "1배와 최근접 3배에서 공용차 윗면/어두운 옆면, 북벽 밝은 캡/전면, 저상 턱의 밝은 면/2px 전면이 동일 축과 픽셀 두께로 구분된다. 벽등은 y11..14 본체와 y15 부착음영으로 벽 기물로 읽혀 천장·바닥 기물로 오인하지 않는다. 조명 최고색을 차 지붕보다 낮게 해야 한다는 취향은 고정 계약상 필수 실패가 아니다."
+        },
+        "spaceUse": {
+          "verdict": "PASS",
+          "evidence": "실제 화면 224×112=25088px², 북캡 위 여백 4px이다. 차로 x16..111,y32..111은 7680px²(30.6%), 두 도색면 96×32씩은 6144px²(24.5%), 동측 연결띠 x208..223,y32..111은 1280px²(5.1%)이며 공유 통행 띠와 일부 겹치는 기능 영역이다. 북/중간/남의 16px 바닥은 문열림과 문닫은 뒤 보행을 순차 공유한다. 아래 y112 이후 별도 방은 제거됐고 우측은 연결된 16px 통행 띠다. 이름만 clearance인 독립 빈 방이나 면적 채우기 장식이 없다."
+        },
+        "composition": {
+          "verdict": "PASS",
+          "evidence": "최근접 3배는 현재 1배의 정확한 확대임을 화소 비교했다. x64/112/208 벽 패널 이음, y31..32 벽 접지/바닥 경계, y72/73 및 x208/209 바닥 이음의 두 면, y15 조명 부착음영, y98/99 턱 전면과 y100 접지가 구별된다. 북벽과 바닥 반영은 경계를 넘어 하나의 판이 되지 않고 차/도색과 분리된다. 화면과 주차면/차로는 허용 범위이며 단색 사각형으로 구조를 대체하거나 깨진 타일이 없다. 추가 노이즈·소품 수를 완료 조건으로 추가하지 않았다."
+        },
+        "specification": {
+          "verdict": "PASS",
+          "evidence": "approvedLayout.layout.phase는 scene, canvas는 224×112이며 실제와 일치한다. 도면의 원본 자동차(128,16), 북캡 y4..8, 북전면 y8..32, 서반환 끝 y44, 턱 y52/84, 주차면 96px·32px 피치·서차로 96px가 실제 그림과 일치한다. 숨은 차폭28..32와 지상 깊이16은 실측이 아닌 설계 가설로 명시돼 alpha bbox와 혼동하지 않는다. 고정 계약의 original-vehicle 및 허용 치수에 반하는 도면 조건은 관찰되지 않았다. 도면/부품 PASS를 이 판정의 근거로 대체하지 않았다."
+        }
+      },
+      "criterionResults": {
+        "original-vehicle": {
+          "verdict": "PASS",
+          "evidence": "공용 자동차 기준 PNG를 직접 열었다. 파일은 80×48, 출처 sha256은 5ebf4fe55081b424e1a93a0bd10dc31a0452ed6a4514d1c3e0638dac3b499c7c이다. 현재 원점(128,16)의 alpha255 화소 1583개를 원본과 대조해 변경 0개이며 배율 1이다. 주차면 진행축 96px, 피치 32px, 차로 대기 96px가 계약 범위다. alpha bbox의 28px 화면 높이를 지상 차폭으로 해석하지 않았다. 도면에도 동일 원본·원점·배율을 계획한다."
+        },
+        "three-quarter": {
+          "verdict": "PASS",
+          "evidence": "승인 calibration 112×80, 공용 80×48 자동차와 구조 기준 PNG를 모두 실제 대조했다. 원본 자동차의 수평 지붕·보닛 윗면과 아래 옆면/타이어, 북벽 4px 캡과 24px 전면, 서캡 12px 깊이와 남단 24px 높이면이 같은 수평 길이/+y 깊이/-y 높이 계약으로 읽힌다. calibration 자동차·턱을 (104,0) 평행이동한 현재 접점이 일치한다. 둘째 턱 x190..197,y84..97의 14px 윗면은 y98..99의 2px 전면 및 y100 접지와 분리되어 직립 막대가 아니다. 첫 턱은 차 뒤에서 정상적으로 가려진다."
+        },
+        "joined-surfaces": {
+          "verdict": "PASS",
+          "evidence": "북캡 x8..223,y4..7에서 서캡 x8..15,y8..19로 공유변이 이어지고, 북전면 y8..31과 서남절단면 y20..43이 바닥 y32 및 서반환 끝 y44에 잇닿는다. 벽등 x128..191,y11..14 아래 y15 부착그림자가 벽 전면에 붙어 있다. 첫 턱의 (192,59..61)/(191,62)/(190,63) 노출부는 앞 타이어에 가려지고 둘째 턱 y98..100 전면·접지로 바닥에 놓인다. 서측 개구와 화면 절단은 승인된 경계다."
+        },
+        "usable-routes": {
+          "verdict": "PASS",
+          "evidence": "서개구 y44..111에서 차로 x16..111을 거쳐 첫 지상 차체 가설 [133,48,70,16] 및 둘째 [133,80,70,16]로 수평 진입/후진할 바닥이 연속이다. 벽은 y32 및 서반환 y44에서 끝나고 턱은 최종 바퀴 정지부에 있다. 문을 닫은 뒤 x112..183의 북 y32..47/중간 y64..79/남 y96..111 띠에서 서차로로 16px 몸통이 이동할 바닥 합집합이 연결된다. 북띠는 x16..31,y32..63에서 서개구 y48..63으로 꺾인다. 도색과 이음은 장애물이 아니며 차 지붕 가림도 지상 장애물로 세지 않았다. x203..207의 5px 틈은 보행 경로로 사용하지 않는다. 숨은 차체 범위는 도면 가설이며 엔진 충돌 실행은 검증하지 않았다."
+        },
+        "parking-identity": {
+          "verdict": "PASS",
+          "evidence": "무라벨 224×112 그림에서 (128,16)의 승용차, x112..207의 y40/72/104 두 주차면 도색, x190..198의 두 낮은 턱, 북쪽 콘크리트 벽과 이음 바닥 및 (128,11)의 벽등이 실제 기물로 식별된다. 임시 상자나 라벨 대체가 없다."
+        },
+        "bounded-footprint": {
+          "verdict": "PASS",
+          "evidence": "실제 화면 224×112=25088px², 북캡 위 여백 4px이다. 차로 x16..111,y32..111은 7680px²(30.6%), 두 도색면 96×32씩은 6144px²(24.5%), 동측 연결띠 x208..223,y32..111은 1280px²(5.1%)이며 공유 통행 띠와 일부 겹치는 기능 영역이다. 북/중간/남의 16px 바닥은 문열림과 문닫은 뒤 보행을 순차 공유한다. 아래 y112 이후 별도 방은 제거됐고 우측은 연결된 16px 통행 띠다. 이름만 clearance인 독립 빈 방이나 면적 채우기 장식이 없다. 진행축 96px, 피치32px, 대기96px, 최대화면224×160px 및 북여백0..8px 조건을 모두 만족한다."
+        },
+        "material-finish": {
+          "verdict": "PASS",
+          "evidence": "최근접 3배는 현재 1배의 정확한 확대임을 화소 비교했다. x64/112/208 벽 패널 이음, y31..32 벽 접지/바닥 경계, y72/73 및 x208/209 바닥 이음의 두 면, y15 조명 부착음영, y98/99 턱 전면과 y100 접지가 구별된다. 북벽과 바닥 반영은 경계를 넘어 하나의 판이 되지 않고 차/도색과 분리된다. 화면과 주차면/차로는 허용 범위이며 단색 사각형으로 구조를 대체하거나 깨진 타일이 없다. 추가 노이즈·소품 수를 완료 조건으로 추가하지 않았다."
+        }
+      },
+      "comparisons": {
+        "parking-kit/A/check/style/5f1d7caff77a": {
+          "status": "advisory",
+          "before": "r7 224×192에서 북캡 y20..23/전면 y24..47, 등 x130..189,y28..29 최고색(188,189,195), 바닥반영 x128..191,y49..51 최고색(175,177,184)이었다. y47 접지와 반영의 축소 외곽은 이미 구별됐으나 지붕보다 밝거나 같은 색이라는 이유로 반려됐다.",
+          "after": "현재 224×112에서 북캡 y4..7/전면 y8..31과 y32 바닥이 분리된다. 등 코어 x134..185,y12..13은(161,163,172), 바닥반영 x132..187,y33..35는(148,150,161), 다음 x140..179,y36..39는(132,135,148)로 외곽이56→40px 좁아진다. y15 부착그림자와 y31..32 접점, y72/73 이음이 실제 1배·3배에서 남는다.",
+          "evidence": "고정 계약 advisoryOnly의 조명보다 차 지붕이 반드시 밝아야 한다는 취향에 해당하므로 이전 명도 위계 반려는 advisory로 기록한다. 현재는 명도 하향뿐 아니라 벽/바닥 경계, 반영 외곽 축소, 등 본체/부착음영, 콘크리트 이음의 면 분리도 확인했다. material-finish 필수 결함이나 미해결 동선 결함은 관찰되지 않는다."
+        },
+        "parking-kit/A/check/composition/c78eef94c4a2": {
+          "status": "advisory",
+          "before": "r7 224×192에서 북캡 y20..23/전면 y24..47, 등 x130..189,y28..29 최고색(188,189,195), 바닥반영 x128..191,y49..51 최고색(175,177,184)이었다. y47 접지와 반영의 축소 외곽은 이미 구별됐으나 지붕보다 밝거나 같은 색이라는 이유로 반려됐다.",
+          "after": "현재 224×112에서 북캡 y4..7/전면 y8..31과 y32 바닥이 분리된다. 등 코어 x134..185,y12..13은(161,163,172), 바닥반영 x132..187,y33..35는(148,150,161), 다음 x140..179,y36..39는(132,135,148)로 외곽이56→40px 좁아진다. y15 부착그림자와 y31..32 접점, y72/73 이음이 실제 1배·3배에서 남는다.",
+          "evidence": "고정 계약 advisoryOnly의 조명보다 차 지붕이 반드시 밝아야 한다는 취향에 해당하므로 이전 명도 위계 반려는 advisory로 기록한다. 현재는 명도 하향뿐 아니라 벽/바닥 경계, 반영 외곽 축소, 등 본체/부착음영, 콘크리트 이음의 면 분리도 확인했다. material-finish 필수 결함이나 미해결 동선 결함은 관찰되지 않는다."
+        },
+        "parking-kit/A/fix/0/c9f67875f4f3": {
+          "status": "advisory",
+          "before": "r7 224×192에서 북캡 y20..23/전면 y24..47, 등 x130..189,y28..29 최고색(188,189,195), 바닥반영 x128..191,y49..51 최고색(175,177,184)이었다. y47 접지와 반영의 축소 외곽은 이미 구별됐으나 지붕보다 밝거나 같은 색이라는 이유로 반려됐다.",
+          "after": "현재 224×112에서 북캡 y4..7/전면 y8..31과 y32 바닥이 분리된다. 등 코어 x134..185,y12..13은(161,163,172), 바닥반영 x132..187,y33..35는(148,150,161), 다음 x140..179,y36..39는(132,135,148)로 외곽이56→40px 좁아진다. y15 부착그림자와 y31..32 접점, y72/73 이음이 실제 1배·3배에서 남는다.",
+          "evidence": "고정 계약 advisoryOnly의 조명보다 차 지붕이 반드시 밝아야 한다는 취향에 해당하므로 이전 명도 위계 반려는 advisory로 기록한다. 현재는 명도 하향뿐 아니라 벽/바닥 경계, 반영 외곽 축소, 등 본체/부착음영, 콘크리트 이음의 면 분리도 확인했다. material-finish 필수 결함이나 미해결 동선 결함은 관찰되지 않는다. 바닥반영 y40 이후는 차와 도색의 가림을 제외해 바탕 복귀를 판단하며 밝은 차 화소를 반영으로 잘못 세지 않았다."
+        },
+        "parking-kit/A/fix/1/fea53ab48e7d": {
+          "status": "advisory",
+          "before": "r7 224×192에서 북캡 y20..23/전면 y24..47, 등 x130..189,y28..29 최고색(188,189,195), 바닥반영 x128..191,y49..51 최고색(175,177,184)이었다. y47 접지와 반영의 축소 외곽은 이미 구별됐으나 지붕보다 밝거나 같은 색이라는 이유로 반려됐다.",
+          "after": "현재 224×112에서 북캡 y4..7/전면 y8..31과 y32 바닥이 분리된다. 등 코어 x134..185,y12..13은(161,163,172), 바닥반영 x132..187,y33..35는(148,150,161), 다음 x140..179,y36..39는(132,135,148)로 외곽이56→40px 좁아진다. y15 부착그림자와 y31..32 접점, y72/73 이음이 실제 1배·3배에서 남는다.",
+          "evidence": "고정 계약 advisoryOnly의 조명보다 차 지붕이 반드시 밝아야 한다는 취향에 해당하므로 이전 명도 위계 반려는 advisory로 기록한다. 현재는 명도 하향뿐 아니라 벽/바닥 경계, 반영 외곽 축소, 등 본체/부착음영, 콘크리트 이음의 면 분리도 확인했다. material-finish 필수 결함이나 미해결 동선 결함은 관찰되지 않는다. 현재 프레임 x128..129/x190..191과 y15 음영이 벽에 연결돼 부착 관계도 충족한다."
+        },
+        "parking-kit/A/fix/2/f693b24660cd": {
+          "status": "advisory",
+          "before": "r7 224×192에서 북캡 y20..23/전면 y24..47, 등 x130..189,y28..29 최고색(188,189,195), 바닥반영 x128..191,y49..51 최고색(175,177,184)이었다. y47 접지와 반영의 축소 외곽은 이미 구별됐으나 지붕보다 밝거나 같은 색이라는 이유로 반려됐다.",
+          "after": "현재 224×112에서 북캡 y4..7/전면 y8..31과 y32 바닥이 분리된다. 등 코어 x134..185,y12..13은(161,163,172), 바닥반영 x132..187,y33..35는(148,150,161), 다음 x140..179,y36..39는(132,135,148)로 외곽이56→40px 좁아진다. y15 부착그림자와 y31..32 접점, y72/73 이음이 실제 1배·3배에서 남는다. 차는(128,48)에서(128,16)으로, 둘째 턱은 y148에서 y84로 이동했다. 이전 아래 판은 현재도 없고 차로/두32px피치면/공유보행만 남았다.",
+          "evidence": "고정 계약 advisoryOnly의 조명보다 차 지붕이 반드시 밝아야 한다는 취향에 해당하므로 이전 명도 위계 반려는 advisory로 기록한다. 현재는 명도 하향뿐 아니라 벽/바닥 경계, 반영 외곽 축소, 등 본체/부착음영, 콘크리트 이음의 면 분리도 확인했다. material-finish 필수 결함이나 미해결 동선 결함은 관찰되지 않는다. 이전의 시점·접점·동선 PASS를 그대로 인용하지 않고 현재 y32..48/64..80/96..112 바닥 합집합과 서개구y44..112를 다시 관찰했다. 전체 장면에 대한 deferred는 없다."
+        }
+      },
+      "reasons": [
+        "고정 parking-small-v1 계약의 필수 조건 7개와 검수 9축을 실제 이미지·기준 원본·승인 도면 대조로 모두 통과했다. 이전 명도 취향 반려는 advisory로 처리하며 새로운 필수 기준을 추가하지 않았다."
+      ],
+      "fixes": [],
+      "warnings": [
+        "이전 비교 의무 5건의 잔여 반려 근거인 차량 지붕 대비 조명·반영 최고명도는 고정 계약상 권고다. 현 그림은 명도도 낮아졌으며 이를 강제 수정이나 FAIL 근거로 삼지 않았다.",
+        "동쪽 16px 연결띠와 직사각 모서리 잔여 바닥의 추가 압축은 권고 범위다. 별도 빈 방이 없고 기능이 연결돼 bounded-footprint를 통과한다."
+      ],
+      "reviewScope": {
+        "phase": "scene",
+        "scope": "자동차 1대·주차면 2개의 작은 지하주차구역 최종 조립 그림",
+        "limitations": "입력 candidates.images에는 닫힌 원본 자동차 조립 1장이 있고 별도 문열림 그림은 제공되지 않았다. 제공된 모든 현재·이전 이미지를 열었으며 문열림은 도면의8px 공유영역과 순차 이용 조건으로 판단했다. 엔진 충돌, 두 차 동시 운용, 90도 회전, 공용 등록·프로젝트 저장·재로드·사람 선택은 이 이미지 PASS의 완료 주장에 포함하지 않는다."
+      },
+      "supplementaryImagesSeen": [
+        {
+          "path": "/home/main/.local/share/oprn/super-harness/art-worktrees/underground-parking-garage/qa-runs/parking-scene-spec-r10/v1005-000602-455770/A-x3.png",
+          "sha256": "bb9a598bab941e5392f24baebd27eb363701632c0a90c36a76b5161077dc71c5"
+        },
+        {
+          "path": "/home/main/.local/share/oprn/super-harness/art-worktrees/underground-parking-garage/qa-runs/parking-scene-spec-r10/v1005-000602-455770/brief/preserved-evidence/r7-A-x3.png",
+          "sha256": "01c30fb04be17310614672f5ec15ff65bf8e4027203b73ca27b43754a304798f"
+        }
+      ]
+    },
+    "selectionActor": {
+      "kind": "delegated-supervisor",
+      "authorization": {
+        "at": "2026-10-04T23:29:17",
+        "scope": "underground-parking-garage",
+        "maxArtRevisions": 10,
+        "autonomousCandidateApproval": true,
+        "continuePublicRegistrationAndMapWorkflow": true,
+        "userInstruction": "아오 최대 10회까지하고, 네가 자율적으로 승인하게해서 진행해봐.",
+        "reviewPolicy": "실제 도면/그림 검수 유지. 감독이 현재 해시와 실제 그림을 확인한 후보만 선택. 승인 대행 근거를 별도 기록한다."
+      },
+      "authorizationSha256": "ad377d518b06c2c58ba1ec6e7c9bd47976bbe29ed6350a4e3c04f0616d5f5005"
+    }
+  },
+  "selectedAt": "2026-10-05T00:41:11"
+}

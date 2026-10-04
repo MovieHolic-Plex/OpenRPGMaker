@@ -2679,3 +2679,11 @@ legacy Schema.enum에 ['1','2']를, nullable에 true를 전달한다. 숫자와 
 DB 오프닝/게임오버 폼과 미리보기는 같은 레코드/재생기를 쓴다. 꺼진 시퀀스도 보존한다.
 전체 계약·시간·우선순위·reduced-motion·저장/출하 증거는
 [title-opening-effects.md](title-opening-effects.md#글자장면-오프닝-연출-2026-10-04)를 따른다.
+
+## 오프닝 스토리보드·그림 배우·원곡 BGM (2026-10-04)
+
+`generate_opening_image`의 선택 role:foreground는 실제 알파 단일 대상을 생성하고 투명 픽셀을 검사한다.
+`set_opening`/`edit_opening` image.direction.layers로 별도 그림의 위치·회전·크기·불투명도 시간표를 저장한다.
+`generate_original_bgm` write 도구는 조수가 쓴 음표 악보를 실제 WAV로 합성·등록한다.
+원곡 리소스는 기존 BGM 피커/조회·정본 저장·출하 플레이어로 이어진다. 실제 합성·등록 성공을 청취로
+보고하지 않는다. 세부 계약은 [title-opening-effects.md](title-opening-effects.md)의 마지막 절.

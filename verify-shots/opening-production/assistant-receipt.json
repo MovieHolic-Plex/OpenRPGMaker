@@ -1,0 +1,3488 @@
+{
+  "requests": [
+    {
+      "runId": "7388fc5c-33ab-4f7e-9830-2ee2e755e26a",
+      "model": "gemini-3.8-flash",
+      "mode": "single",
+      "characters": 3234,
+      "requestOrigin": "http://127.0.0.1:18435",
+      "imageProvider": "openai-codex",
+      "imageModel": "codex-image-default"
+    },
+    {
+      "runId": "9527b63b-9eae-4ceb-a369-cb9597222bf5",
+      "model": "gemini-3.8-flash",
+      "mode": "single",
+      "characters": 5768,
+      "requestOrigin": "http://127.0.0.1:18435",
+      "imageProvider": "openai-codex",
+      "imageModel": "codex-image-default"
+    }
+  ],
+  "started": {
+    "seq": 0,
+    "type": "start",
+    "provider": "google-antigravity",
+    "model": "gemini-3.8-flash",
+    "toolCount": 34,
+    "at": 1791122969385
+  },
+  "completed": {
+    "seq": 221,
+    "type": "done",
+    "at": 1791123496083,
+    "stats": {
+      "ms": 526666,
+      "turns": 19,
+      "toolCalls": 24,
+      "toolErrors": 3,
+      "usage": {
+        "input": 332339,
+        "output": 13176,
+        "cacheRead": 1358928,
+        "cacheWrite": 0,
+        "totalTokens": 1704443,
+        "calls": 19
+      }
+    }
+  },
+  "calls": [
+    {
+      "id": "call_1768976",
+      "name": "show_title_opening",
+      "args": {},
+      "ok": true,
+      "summary": "연결된 타이틀·오프닝 원화 4장입니다. 이것은 원화 확인이며 실제 재생 확인은 별도입니다.",
+      "durationMs": 640,
+      "result": {
+        "titleScreen": {
+          "title": "멈춘 시계의 기억",
+          "backgroundResourceId": "title_art_b3914fa0-d433-440d-a779-d61f6f8ae361",
+          "layout": {
+            "titleX": 32,
+            "titleY": 48,
+            "menuX": 34,
+            "menuY": 128
+          },
+          "menuLabels": {
+            "newGame": "새 게임",
+            "continueGame": "불러오기",
+            "quit": "종료"
+          },
+          "menuVisibility": {
+            "newGame": true,
+            "continueGame": true,
+            "quit": true
+          },
+          "showInputHint": true,
+          "backgroundFit": "cover",
+          "backgroundRendering": "smooth",
+          "effects": [
+            {
+              "kind": "godRays",
+              "intensity": 1.2,
+              "color": "#fff3d1",
+              "source": [
+                0.72,
+                0.05
+              ],
+              "toward": [
+                0.52,
+                0.72
+              ]
+            },
+            {
+              "kind": "motes",
+              "intensity": 1.1,
+              "color": "#ffe89c",
+              "source": [
+                0.72,
+                0.05
+              ],
+              "toward": [
+                0.52,
+                0.72
+              ]
+            },
+            {
+              "kind": "glow",
+              "intensity": 1.3,
+              "color": "#ffd885",
+              "source": [
+                0.53,
+                0.67
+              ],
+              "spread": 0.15
+            },
+            {
+              "kind": "camera",
+              "speed": 0.4
+            }
+          ],
+          "logoStyle": "gold",
+          "logoSubtitle": "멈춘 시간 속 잃어버린 기억을 찾아서",
+          "menuStyle": "plain",
+          "sequence": {
+            "fadeMs": 1400,
+            "push": 0.06,
+            "logoAtMs": 800,
+            "logoReveal": "rise",
+            "menuAtMs": 1800
+          },
+          "logoShine": "once",
+          "transition": {
+            "kind": "fade",
+            "durationMs": 700
+          }
+        },
+        "opening": {
+          "enabled": true,
+          "skippable": true,
+          "musicResourceId": "cc0-bgm-rtp-ttl-001",
+          "scenes": [
+            {
+              "id": "op_scene_prologue",
+              "narration": "어떤 기억은, 멈춘 시간 속에 남아 있다.",
+              "durationMs": 3000,
+              "kind": "text",
+              "presentation": {
+                "text": {
+                  "delayMs": 250,
+                  "animation": "typewriter",
+                  "revealMs": 1500,
+                  "exitMs": 350
+                },
+                "transition": {
+                  "enterMs": 600,
+                  "enter": "fade",
+                  "exitMs": 450
+                },
+                "preset": "prologue"
+              }
+            },
+            {
+              "id": "op_scene_study_long",
+              "narration": "고요한 서재. 오래 멈춰 있던 시계.",
+              "durationMs": 3000,
+              "presentation": {
+                "transition": {
+                  "enterMs": 750,
+                  "enter": "wipe",
+                  "exitMs": 0
+                },
+                "preset": "subtitle",
+                "text": {
+                  "exitMs": 350,
+                  "revealMs": 600,
+                  "delayMs": 300,
+                  "animation": "fade"
+                }
+              },
+              "kind": "image",
+              "resourceId": "opening_still_ba7e0a9f-9f39-4b2e-9951-76fd684cfe51",
+              "motion": "none",
+              "direction": {
+                "camera": {
+                  "from": "[깊이 상한으로 생략]",
+                  "to": "[깊이 상한으로 생략]"
+                },
+                "transition": {
+                  "kind": "fade",
+                  "durationMs": 600
+                },
+                "effects": [
+                  "[깊이 상한으로 생략]",
+                  "[깊이 상한으로 생략]"
+                ],
+                "narrationDelayMs": 300
+              }
+            },
+            {
+              "id": "op_scene_watch_closeup",
+              "narration": "멈춘 바늘 너머에서, 기억이 빛난다.",
+              "durationMs": 3000,
+              "presentation": {
+                "transition": {
+                  "enter": "dissolve",
+                  "enterMs": 550,
+                  "exitMs": 0
+                },
+                "preset": "memory",
+                "text": {
+                  "animation": "blur",
+                  "layout": "bottom",
+                  "delayMs": 350,
+                  "revealMs": 650,
+                  "exitMs": 350
+                }
+              },
+              "kind": "image",
+              "resourceId": "opening_still_431c13d3-11a6-47d9-8927-efcd41d98ea2",
+              "motion": "none",
+              "direction": {
+                "transition": {
+                  "kind": "cut",
+                  "durationMs": 0
+                },
+                "effects": [
+                  "[깊이 상한으로 생략]"
+                ],
+                "soundResourceId": "easyrpg-sound-magic1",
+                "narrationDelayMs": 300
+              }
+            },
+            {
+              "id": "op_scene_reach_medium",
+              "narration": "서린은 시계에 손을 뻗었다.",
+              "durationMs": 3000,
+              "presentation": {
+                "preset": "subtitle",
+                "text": {
+                  "revealMs": 650,
+                  "animation": "rise",
+                  "delayMs": 300,
+                  "exitMs": 400
+                },
+                "transition": {
+                  "enter": "dissolve",
+                  "exitMs": 500,
+                  "enterMs": 600
+                }
+              },
+              "kind": "image",
+              "resourceId": "opening_still_95e44110-d5f7-4381-8633-c0efc75fbf3b",
+              "motion": "none",
+              "direction": {
+                "camera": {
+                  "from": "[깊이 상한으로 생략]",
+                  "to": "[깊이 상한으로 생략]"
+                },
+                "transition": {
+                  "kind": "dissolve",
+                  "durationMs": 500
+                },
+                "narrationDelayMs": 300
+              }
+            }
+          ]
+        },
+        "images": [
+          {
+            "resourceId": "title_art_b3914fa0-d433-440d-a779-d61f6f8ae361",
+            "label": "멈춘 시계의 기억 타이틀 키아트"
+          },
+          {
+            "resourceId": "opening_still_ba7e0a9f-9f39-4b2e-9951-76fd684cfe51",
+            "label": "서재 전경 원경"
+          },
+          {
+            "resourceId": "opening_still_431c13d3-11a6-47d9-8927-efcd41d98ea2",
+            "label": "사건 - 멈춘 회중시계와 기억의 빛 클로즈업"
+          },
+          {
+            "resourceId": "opening_still_95e44110-d5f7-4381-8633-c0efc75fbf3b",
+            "label": "opening_still_reach_watch"
+          }
+        ],
+        "missing": []
+      }
+    },
+    {
+      "id": "call_1764377",
+      "name": "recommend_bgm",
+      "args": {
+        "limit": 5,
+        "query": "느린 피아노 유리 종 실내 시계 기묘하지만 아름다운 기억"
+      },
+      "ok": true,
+      "summary": "BGM 후보 5건(\"느린 피아노 유리 종 실내 시계 기묘하지만 아름다운 기억\")",
+      "durationMs": 1,
+      "result": {
+        "candidates": [
+          {
+            "resourceId": "original_bgm_8492eb03-bfc6-4bc5-bdb5-ce221454b78d",
+            "name": "서재의 멈춘 시계",
+            "tags": [],
+            "description": "단층의 아늑한 서재, 멈춘 은색 회중시계와 기억의 파편을 표현한 차분하고 기묘하지만 아름다운 4/4박자 곡. 잔잔한 피아노 모티브(E단조/G장조)를 기본으로, 맑은 유리 종(bell)의 기억 암시, 은은하고 따뜻한 현악(strings)과 깊은 베이스(bass)가 16마디 동안 점진적으로 사건을 전개하고 온화하게 종결합니다.\n조수 악보 작곡·내장 합성. 78 BPM, 4/4 16마디, 49.2초. 악기: piano, bell, strings, bass. 곡 시작/끝 페이드가 있어 반복 경계는 무음이다.",
+            "descriptionTruncated": false,
+            "descriptionSource": "project",
+            "score": 190
+          },
+          {
+            "resourceId": "cc0-bgm-inn",
+            "name": "실내 — The Old Tower Inn (CC0)",
+            "tags": [
+              "cc0",
+              "music"
+            ],
+            "description": "어쿠스틱 발현악기의 섬세한 핑거피킹과 잔잔한 아르페지오가 중심을 이루는 이국적인 포크 스타일의 기악곡입니다. 일정한 리듬을 잡아주는 부드러운 핸드 퍼커션 타격음이 조화롭게 어우러집니다. 과도한 잔향 없이 담백하고 따뜻한 어쿠스틱 질감의 사운드를 들려줍니다.",
+            "descriptionTruncated": false,
+            "descriptionSource": "ai-listening",
+            "score": 50
+          },
+          {
+            "resourceId": "cc0-bgm-rtp-ttl-001",
+            "name": "새벽의 의뢰서 — 타이틀 · 메뉴 (2:19)",
+            "tags": [
+              "bgm",
+              "cc0",
+              "타이틀",
+              "메뉴",
+              "차분한 기대",
+              "조용한 결심",
+              "환대",
+              "펠트 피아노",
+              "글라스 벨",
+              "따뜻한 패드",
+              "약한 펄스",
+              "dawn",
+              "guild",
+              "ledger",
+              "G major ↔ E minor",
+              "타이틀 · 메뉴",
+              "Dawn Guild Ledger",
+              "RTP-TTL-001"
+            ],
+            "description": "따뜻하고 맑은 톤의 클린 일렉트릭 기타 아르페지오와 둥근 저음의 베이스가 이끄는 차분한 다운템포/인디 인스트루멘털 트랙입니다. 자극적이지 않고 정갈한 림샷과 하이햇 중심의 드럼 그루브 위로 은은한 공간감을 머금은 서정적인 멜로디 라인이 여유롭게 펼쳐집니다. 과도한 고조 없이 일정한 정서와 편안한 텍스처를 유지하다가 후반부에 부드러운 여운을 남기며 자연스럽게 종결됩니다.",
+            "descriptionTruncated": false,
+            "descriptionSource": "ai-listening",
+            "score": 40
+          },
+          {
+            "resourceId": "easyrpg-music-jend-of-battle-1",
+            "name": "JEnd of Battle 1 · 음악 · EasyRPG",
+            "tags": [
+              "전투",
+              "전투종료",
+              "승리"
+            ],
+            "description": "JEnd of Battle 1 · 음악 · EasyRPG · 전투 · 전투종료 · 승리",
+            "descriptionTruncated": false,
+            "descriptionSource": "metadata-derived",
+            "score": 40
+          },
+          {
+            "resourceId": "easyrpg-music-jend-of-battle-2",
+            "name": "JEnd of Battle 2 · 음악 · EasyRPG",
+            "tags": [
+              "전투",
+              "전투종료",
+              "승리"
+            ],
+            "description": "JEnd of Battle 2 · 음악 · EasyRPG · 전투 · 전투종료 · 승리",
+            "descriptionTruncated": false,
+            "descriptionSource": "metadata-derived",
+            "score": 40
+          }
+        ],
+        "total": 8
+      }
+    },
+    {
+      "id": "call_578862",
+      "name": "generate_original_bgm",
+      "args": {
+        "name": "기억의 태엽소리",
+        "score": {
+          "bars": 16,
+          "tracks": [
+            {
+              "gain": 0.75,
+              "notes": [
+                {
+                  "velocity": 0.7,
+                  "pitch": 64,
+                  "beat": 0,
+                  "duration": 1.5
+                },
+                {
+                  "beat": 1.5,
+                  "velocity": 0.65,
+                  "pitch": 67,
+                  "duration": 1
+                },
+                {
+                  "beat": 2.5,
+                  "duration": 1.5,
+                  "pitch": 71,
+                  "velocity": 0.75
+                },
+                {
+                  "pitch": 62,
+                  "duration": 1.5,
+                  "velocity": 0.7,
+                  "beat": 4
+                },
+                {
+                  "velocity": 0.65,
+                  "pitch": 66,
+                  "beat": 5.5,
+                  "duration": 1
+                },
+                {
+                  "velocity": 0.75,
+                  "pitch": 69,
+                  "beat": 6.5,
+                  "duration": 1.5
+                },
+                {
+                  "beat": 8,
+                  "pitch": 60,
+                  "duration": 1.5,
+                  "velocity": 0.7
+                },
+                {
+                  "velocity": 0.65,
+                  "pitch": 64,
+                  "beat": 9.5,
+                  "duration": 1
+                },
+                {
+                  "pitch": 67,
+                  "duration": 1.5,
+                  "beat": 10.5,
+                  "velocity": 0.75
+                },
+                {
+                  "velocity": 0.7,
+                  "duration": 2,
+                  "beat": 12,
+                  "pitch": 59
+                },
+                {
+                  "duration": 2,
+                  "pitch": 63,
+                  "velocity": 0.75,
+                  "beat": 14
+                },
+                {
+                  "velocity": 0.7,
+                  "beat": 16,
+                  "pitch": 64,
+                  "duration": 1.5
+                },
+                {
+                  "pitch": 67,
+                  "beat": 17.5,
+                  "velocity": 0.65,
+                  "duration": 1
+                },
+                {
+                  "duration": 1.5,
+                  "pitch": 71,
+                  "beat": 18.5,
+                  "velocity": 0.75
+                },
+                {
+                  "duration": 1.5,
+                  "pitch": 62,
+                  "beat": 20,
+                  "velocity": 0.7
+                },
+                {
+                  "velocity": 0.65,
+                  "duration": 1,
+                  "beat": 21.5,
+                  "pitch": 66
+                },
+                {
+                  "duration": 1.5,
+                  "pitch": 69,
+                  "beat": 22.5,
+                  "velocity": 0.75
+                },
+                {
+                  "pitch": 60,
+                  "velocity": 0.7,
+                  "beat": 24,
+                  "duration": 1.5
+                },
+                {
+                  "beat": 25.5,
+                  "pitch": 64,
+                  "velocity": 0.65,
+                  "duration": 1
+                },
+                {
+                  "velocity": 0.75,
+                  "pitch": 67,
+                  "beat": 26.5,
+                  "duration": 1.5
+                },
+                {
+                  "pitch": 59,
+                  "duration": 2,
+                  "velocity": 0.7,
+                  "beat": 28
+                },
+                {
+                  "beat": 30,
+                  "velocity": 0.75,
+                  "pitch": 63,
+                  "duration": 2
+                },
+                {
+                  "duration": 1,
+                  "pitch": 71,
+                  "beat": 32,
+                  "velocity": 0.8
+                },
+                {
+                  "duration": 1,
+                  "beat": 33,
+                  "pitch": 74,
+                  "velocity": 0.8
+                },
+                {
+                  "pitch": 76,
+                  "duration": 2,
+                  "beat": 34,
+                  "velocity": 0.85
+                },
+                {
+                  "velocity": 0.75,
+                  "duration": 1,
+                  "beat": 36,
+                  "pitch": 69
+                },
+                {
+                  "pitch": 72,
+                  "beat": 37,
+                  "velocity": 0.75,
+                  "duration": 1
+                },
+                {
+                  "pitch": 74,
+                  "beat": 38,
+                  "duration": 2,
+                  "velocity": 0.8
+                },
+                {
+                  "velocity": 0.75,
+                  "duration": 1,
+                  "beat": 40,
+                  "pitch": 67
+                },
+                {
+                  "velocity": 0.75,
+                  "pitch": 71,
+                  "beat": 41,
+                  "duration": 1
+                },
+                {
+                  "duration": 2,
+                  "pitch": 72,
+                  "beat": 42,
+                  "velocity": 0.8
+                },
+                {
+                  "duration": 2,
+                  "velocity": 0.75,
+                  "beat": 44,
+                  "pitch": 71
+                },
+                {
+                  "pitch": 67,
+                  "velocity": 0.7,
+                  "duration": 2,
+                  "beat": 46
+                },
+                {
+                  "beat": 48,
+                  "duration": 2,
+                  "pitch": 64,
+                  "velocity": 0.7
+                },
+                {
+                  "duration": 2,
+                  "beat": 50,
+                  "velocity": 0.7,
+                  "pitch": 67
+                },
+                {
+                  "velocity": 0.75,
+                  "beat": 52,
+                  "duration": 4,
+                  "pitch": 71
+                },
+                {
+                  "pitch": 64,
+                  "velocity": 0.7,
+                  "beat": 56,
+                  "duration": 4
+                },
+                {
+                  "velocity": 0.65,
+                  "beat": 60,
+                  "pitch": 60,
+                  "duration": 4
+                }
+              ],
+              "pan": 0,
+              "instrument": "piano"
+            },
+            {
+              "instrument": "bell",
+              "pan": 0.3,
+              "gain": 0.6,
+              "notes": [
+                {
+                  "duration": 1,
+                  "velocity": 0.65,
+                  "beat": 8,
+                  "pitch": 76
+                },
+                {
+                  "velocity": 0.7,
+                  "duration": 1,
+                  "pitch": 79,
+                  "beat": 10
+                },
+                {
+                  "duration": 1,
+                  "pitch": 76,
+                  "velocity": 0.7,
+                  "beat": 16
+                },
+                {
+                  "pitch": 83,
+                  "velocity": 0.75,
+                  "beat": 18,
+                  "duration": 1
+                },
+                {
+                  "duration": 1,
+                  "velocity": 0.7,
+                  "beat": 24,
+                  "pitch": 79
+                },
+                {
+                  "pitch": 84,
+                  "velocity": 0.75,
+                  "duration": 1,
+                  "beat": 26
+                },
+                {
+                  "duration": 0.5,
+                  "beat": 32,
+                  "velocity": 0.8,
+                  "pitch": 88
+                },
+                {
+                  "pitch": 86,
+                  "velocity": 0.75,
+                  "duration": 0.5,
+                  "beat": 33
+                },
+                {
+                  "duration": 1,
+                  "pitch": 83,
+                  "velocity": 0.8,
+                  "beat": 34
+                },
+                {
+                  "pitch": 86,
+                  "velocity": 0.75,
+                  "duration": 0.5,
+                  "beat": 36
+                },
+                {
+                  "velocity": 0.7,
+                  "beat": 37,
+                  "duration": 0.5,
+                  "pitch": 84
+                },
+                {
+                  "pitch": 81,
+                  "velocity": 0.75,
+                  "duration": 1,
+                  "beat": 38
+                },
+                {
+                  "pitch": 79,
+                  "velocity": 0.8,
+                  "beat": 40,
+                  "duration": 1
+                },
+                {
+                  "duration": 1,
+                  "velocity": 0.8,
+                  "beat": 42,
+                  "pitch": 83
+                },
+                {
+                  "pitch": 84,
+                  "beat": 44,
+                  "velocity": 0.75,
+                  "duration": 2
+                },
+                {
+                  "velocity": 0.7,
+                  "pitch": 83,
+                  "beat": 48,
+                  "duration": 2
+                },
+                {
+                  "beat": 52,
+                  "duration": 2,
+                  "pitch": 79,
+                  "velocity": 0.65
+                },
+                {
+                  "velocity": 0.6,
+                  "duration": 4,
+                  "pitch": 76,
+                  "beat": 56
+                }
+              ]
+            },
+            {
+              "gain": 0.55,
+              "instrument": "strings",
+              "notes": [
+                {
+                  "duration": 8,
+                  "velocity": 0.55,
+                  "pitch": 64,
+                  "beat": 16
+                },
+                {
+                  "beat": 24,
+                  "velocity": 0.55,
+                  "duration": 8,
+                  "pitch": 60
+                },
+                {
+                  "velocity": 0.65,
+                  "duration": 8,
+                  "beat": 32,
+                  "pitch": 64
+                },
+                {
+                  "velocity": 0.65,
+                  "pitch": 62,
+                  "duration": 8,
+                  "beat": 40
+                },
+                {
+                  "velocity": 0.6,
+                  "duration": 8,
+                  "pitch": 60,
+                  "beat": 48
+                },
+                {
+                  "beat": 56,
+                  "velocity": 0.55,
+                  "pitch": 59,
+                  "duration": 8
+                }
+              ],
+              "pan": -0.25
+            },
+            {
+              "pan": -0.1,
+              "instrument": "bass",
+              "gain": 0.65,
+              "notes": [
+                {
+                  "pitch": 40,
+                  "duration": 4,
+                  "beat": 0,
+                  "velocity": 0.7
+                },
+                {
+                  "beat": 4,
+                  "velocity": 0.7,
+                  "pitch": 38,
+                  "duration": 4
+                },
+                {
+                  "duration": 4,
+                  "velocity": 0.7,
+                  "pitch": 36,
+                  "beat": 8
+                },
+                {
+                  "velocity": 0.7,
+                  "pitch": 35,
+                  "duration": 4,
+                  "beat": 12
+                },
+                {
+                  "pitch": 40,
+                  "beat": 16,
+                  "velocity": 0.75,
+                  "duration": 4
+                },
+                {
+                  "pitch": 38,
+                  "velocity": 0.75,
+                  "beat": 20,
+                  "duration": 4
+                },
+                {
+                  "pitch": 36,
+                  "beat": 24,
+                  "duration": 4,
+                  "velocity": 0.75
+                },
+                {
+                  "duration": 4,
+                  "velocity": 0.75,
+                  "beat": 28,
+                  "pitch": 35
+                },
+                {
+                  "beat": 32,
+                  "duration": 4,
+                  "pitch": 40,
+                  "velocity": 0.8
+                },
+                {
+                  "velocity": 0.8,
+                  "pitch": 38,
+                  "duration": 4,
+                  "beat": 36
+                },
+                {
+                  "beat": 40,
+                  "velocity": 0.8,
+                  "duration": 4,
+                  "pitch": 36
+                },
+                {
+                  "duration": 4,
+                  "velocity": 0.75,
+                  "pitch": 35,
+                  "beat": 44
+                },
+                {
+                  "beat": 48,
+                  "duration": 4,
+                  "velocity": 0.7,
+                  "pitch": 36
+                },
+                {
+                  "duration": 4,
+                  "beat": 52,
+                  "pitch": 38,
+                  "velocity": 0.65
+                },
+                {
+                  "duration": 8,
+                  "beat": 56,
+                  "pitch": 40,
+                  "velocity": 0.6
+                }
+              ]
+            }
+          ],
+          "tempo": 78
+        },
+        "brief": "단층의 아늑한 서재, 멈춘 은색 회중시계와 기억의 파편을 표현한 차분하고 기묘하지만 아름다운 4/4박자 곡. 잔잔한 피아노 모티브(E단조/G장조)를 기본으로, 맑은 유리 종(bell)의 기억 암시, 은은하고 따뜻한 현악(strings)과 깊은 베이스(bass)가 16마디 동안 점진적으로 사건을 전개하고 온화하게 종결합니다. 78 BPM, 16마디."
+      },
+      "ok": false,
+      "summary": "실행 실패(인자 검증 또는 예외): Validation failed for tool \"generate_original_bgm\":\n  - score/tracks/3/notes/3/pitch: must be >= 36\n  - score/tracks/3/notes/7/pitch: must be >= 36\n  - score/tracks/3/notes/11/pitch: must be >= 36\n\nReceived arguments:\n{\n  \"name\": \"기억의 태엽소리\",\n  \"score\": {\n    \"bars\": 16,\n    \"tracks\": [\n      {\n     …",
+      "durationMs": 0,
+      "result": null
+    },
+    {
+      "id": "call_1462349",
+      "name": "generate_original_bgm",
+      "args": {
+        "name": "기억의 태엽소리",
+        "brief": "단층의 아늑한 서재, 멈춘 은색 회중시계와 기억의 파편을 표현한 차분하고 기묘하지만 아름다운 4/4박자 곡. 잔잔한 피아노 모티브(E단조/G장조)를 기본으로, 맑은 유리 종(bell)의 기억 암시, 은은하고 따뜻한 현악(strings)과 깊은 베이스(bass)가 16마디 동안 점진적으로 사건을 전개하고 온화하게 종결합니다. 78 BPM, 16마디.",
+        "score": {
+          "tempo": 78,
+          "bars": 16,
+          "tracks": [
+            {
+              "pan": 0,
+              "notes": [
+                {
+                  "velocity": 0.7,
+                  "beat": 0,
+                  "duration": 1.5,
+                  "pitch": 64
+                },
+                {
+                  "velocity": 0.65,
+                  "duration": 1,
+                  "pitch": 67,
+                  "beat": 1.5
+                },
+                {
+                  "beat": 2.5,
+                  "pitch": 71,
+                  "duration": 1.5,
+                  "velocity": 0.75
+                },
+                {
+                  "duration": 1.5,
+                  "beat": 4,
+                  "velocity": 0.7,
+                  "pitch": 62
+                },
+                {
+                  "pitch": 66,
+                  "duration": 1,
+                  "beat": 5.5,
+                  "velocity": 0.65
+                },
+                {
+                  "duration": 1.5,
+                  "pitch": 69,
+                  "beat": 6.5,
+                  "velocity": 0.75
+                },
+                {
+                  "duration": 1.5,
+                  "beat": 8,
+                  "pitch": 60,
+                  "velocity": 0.7
+                },
+                {
+                  "pitch": 64,
+                  "velocity": 0.65,
+                  "beat": 9.5,
+                  "duration": 1
+                },
+                {
+                  "duration": 1.5,
+                  "pitch": 67,
+                  "velocity": 0.75,
+                  "beat": 10.5
+                },
+                {
+                  "velocity": 0.7,
+                  "pitch": 59,
+                  "beat": 12,
+                  "duration": 2
+                },
+                {
+                  "velocity": 0.75,
+                  "beat": 14,
+                  "pitch": 63,
+                  "duration": 2
+                },
+                {
+                  "velocity": 0.7,
+                  "duration": 1.5,
+                  "pitch": 64,
+                  "beat": 16
+                },
+                {
+                  "beat": 17.5,
+                  "duration": 1,
+                  "pitch": 67,
+                  "velocity": 0.65
+                },
+                {
+                  "pitch": 71,
+                  "duration": 1.5,
+                  "velocity": 0.75,
+                  "beat": 18.5
+                },
+                {
+                  "pitch": 62,
+                  "duration": 1.5,
+                  "beat": 20,
+                  "velocity": 0.7
+                },
+                {
+                  "velocity": 0.65,
+                  "duration": 1,
+                  "pitch": 66,
+                  "beat": 21.5
+                },
+                {
+                  "beat": 22.5,
+                  "velocity": 0.75,
+                  "pitch": 69,
+                  "duration": 1.5
+                },
+                {
+                  "beat": 24,
+                  "duration": 1.5,
+                  "velocity": 0.7,
+                  "pitch": 60
+                },
+                {
+                  "beat": 25.5,
+                  "pitch": 64,
+                  "velocity": 0.65,
+                  "duration": 1
+                },
+                {
+                  "beat": 26.5,
+                  "pitch": 67,
+                  "velocity": 0.75,
+                  "duration": 1.5
+                },
+                {
+                  "beat": 28,
+                  "duration": 2,
+                  "pitch": 59,
+                  "velocity": 0.7
+                },
+                {
+                  "pitch": 63,
+                  "velocity": 0.75,
+                  "duration": 2,
+                  "beat": 30
+                },
+                {
+                  "pitch": 71,
+                  "duration": 1,
+                  "velocity": 0.8,
+                  "beat": 32
+                },
+                {
+                  "duration": 1,
+                  "pitch": 74,
+                  "beat": 33,
+                  "velocity": 0.8
+                },
+                {
+                  "duration": 2,
+                  "beat": 34,
+                  "velocity": 0.85,
+                  "pitch": 76
+                },
+                {
+                  "duration": 1,
+                  "beat": 36,
+                  "pitch": 69,
+                  "velocity": 0.75
+                },
+                {
+                  "pitch": 72,
+                  "duration": 1,
+                  "beat": 37,
+                  "velocity": 0.75
+                },
+                {
+                  "velocity": 0.8,
+                  "duration": 2,
+                  "beat": 38,
+                  "pitch": 74
+                },
+                {
+                  "duration": 1,
+                  "beat": 40,
+                  "velocity": 0.75,
+                  "pitch": 67
+                },
+                {
+                  "duration": 1,
+                  "velocity": 0.75,
+                  "pitch": 71,
+                  "beat": 41
+                },
+                {
+                  "duration": 2,
+                  "pitch": 72,
+                  "velocity": 0.8,
+                  "beat": 42
+                },
+                {
+                  "duration": 2,
+                  "velocity": 0.75,
+                  "pitch": 71,
+                  "beat": 44
+                },
+                {
+                  "beat": 46,
+                  "pitch": 67,
+                  "duration": 2,
+                  "velocity": 0.7
+                },
+                {
+                  "beat": 48,
+                  "pitch": 64,
+                  "duration": 2,
+                  "velocity": 0.7
+                },
+                {
+                  "beat": 50,
+                  "pitch": 67,
+                  "duration": 2,
+                  "velocity": 0.7
+                },
+                {
+                  "duration": 4,
+                  "beat": 52,
+                  "pitch": 71,
+                  "velocity": 0.75
+                },
+                {
+                  "duration": 4,
+                  "beat": 56,
+                  "pitch": 64,
+                  "velocity": 0.7
+                },
+                {
+                  "beat": 60,
+                  "duration": 4,
+                  "pitch": 60,
+                  "velocity": 0.65
+                }
+              ],
+              "instrument": "piano",
+              "gain": 0.75
+            },
+            {
+              "notes": [
+                {
+                  "beat": 8,
+                  "pitch": 76,
+                  "duration": 1,
+                  "velocity": 0.65
+                },
+                {
+                  "velocity": 0.7,
+                  "beat": 10,
+                  "pitch": 79,
+                  "duration": 1
+                },
+                {
+                  "duration": 1,
+                  "velocity": 0.7,
+                  "pitch": 76,
+                  "beat": 16
+                },
+                {
+                  "velocity": 0.75,
+                  "beat": 18,
+                  "duration": 1,
+                  "pitch": 83
+                },
+                {
+                  "pitch": 79,
+                  "beat": 24,
+                  "velocity": 0.7,
+                  "duration": 1
+                },
+                {
+                  "beat": 26,
+                  "pitch": 84,
+                  "duration": 1,
+                  "velocity": 0.75
+                },
+                {
+                  "duration": 0.5,
+                  "beat": 32,
+                  "velocity": 0.8,
+                  "pitch": 88
+                },
+                {
+                  "beat": 33,
+                  "pitch": 86,
+                  "velocity": 0.75,
+                  "duration": 0.5
+                },
+                {
+                  "velocity": 0.8,
+                  "duration": 1,
+                  "pitch": 83,
+                  "beat": 34
+                },
+                {
+                  "velocity": 0.75,
+                  "beat": 36,
+                  "pitch": 86,
+                  "duration": 0.5
+                },
+                {
+                  "beat": 37,
+                  "duration": 0.5,
+                  "pitch": 84,
+                  "velocity": 0.7
+                },
+                {
+                  "pitch": 81,
+                  "beat": 38,
+                  "velocity": 0.75,
+                  "duration": 1
+                },
+                {
+                  "beat": 40,
+                  "velocity": 0.8,
+                  "pitch": 79,
+                  "duration": 1
+                },
+                {
+                  "duration": 1,
+                  "beat": 42,
+                  "velocity": 0.8,
+                  "pitch": 83
+                },
+                {
+                  "duration": 2,
+                  "beat": 44,
+                  "velocity": 0.75,
+                  "pitch": 84
+                },
+                {
+                  "beat": 48,
+                  "pitch": 83,
+                  "duration": 2,
+                  "velocity": 0.7
+                },
+                {
+                  "pitch": 79,
+                  "beat": 52,
+                  "duration": 2,
+                  "velocity": 0.65
+                },
+                {
+                  "beat": 56,
+                  "duration": 4,
+                  "pitch": 76,
+                  "velocity": 0.6
+                }
+              ],
+              "pan": 0.3,
+              "instrument": "bell",
+              "gain": 0.6
+            },
+            {
+              "instrument": "strings",
+              "pan": -0.25,
+              "gain": 0.55,
+              "notes": [
+                {
+                  "duration": 8,
+                  "beat": 16,
+                  "velocity": 0.55,
+                  "pitch": 64
+                },
+                {
+                  "pitch": 60,
+                  "velocity": 0.55,
+                  "duration": 8,
+                  "beat": 24
+                },
+                {
+                  "beat": 32,
+                  "velocity": 0.65,
+                  "duration": 8,
+                  "pitch": 64
+                },
+                {
+                  "duration": 8,
+                  "pitch": 62,
+                  "beat": 40,
+                  "velocity": 0.65
+                },
+                {
+                  "pitch": 60,
+                  "beat": 48,
+                  "velocity": 0.6,
+                  "duration": 8
+                },
+                {
+                  "beat": 56,
+                  "duration": 8,
+                  "pitch": 59,
+                  "velocity": 0.55
+                }
+              ]
+            },
+            {
+              "instrument": "bass",
+              "notes": [
+                {
+                  "beat": 0,
+                  "duration": 4,
+                  "pitch": 40,
+                  "velocity": 0.7
+                },
+                {
+                  "beat": 4,
+                  "duration": 4,
+                  "pitch": 38,
+                  "velocity": 0.7
+                },
+                {
+                  "duration": 4,
+                  "velocity": 0.7,
+                  "pitch": 36,
+                  "beat": 8
+                },
+                {
+                  "velocity": 0.7,
+                  "pitch": 47,
+                  "duration": 4,
+                  "beat": 12
+                },
+                {
+                  "beat": 16,
+                  "duration": 4,
+                  "pitch": 40,
+                  "velocity": 0.75
+                },
+                {
+                  "duration": 4,
+                  "pitch": 38,
+                  "velocity": 0.75,
+                  "beat": 20
+                },
+                {
+                  "beat": 24,
+                  "velocity": 0.75,
+                  "duration": 4,
+                  "pitch": 36
+                },
+                {
+                  "velocity": 0.75,
+                  "pitch": 47,
+                  "duration": 4,
+                  "beat": 28
+                },
+                {
+                  "velocity": 0.8,
+                  "pitch": 40,
+                  "duration": 4,
+                  "beat": 32
+                },
+                {
+                  "velocity": 0.8,
+                  "beat": 36,
+                  "pitch": 38,
+                  "duration": 4
+                },
+                {
+                  "beat": 40,
+                  "velocity": 0.8,
+                  "pitch": 36,
+                  "duration": 4
+                },
+                {
+                  "velocity": 0.75,
+                  "pitch": 47,
+                  "duration": 4,
+                  "beat": 44
+                },
+                {
+                  "velocity": 0.7,
+                  "pitch": 36,
+                  "duration": 4,
+                  "beat": 48
+                },
+                {
+                  "pitch": 38,
+                  "duration": 4,
+                  "beat": 52,
+                  "velocity": 0.65
+                },
+                {
+                  "beat": 56,
+                  "pitch": 40,
+                  "velocity": 0.6,
+                  "duration": 8
+                }
+              ],
+              "gain": 0.65,
+              "pan": -0.1
+            }
+          ]
+        }
+      },
+      "ok": true,
+      "summary": "원곡 「기억의 태엽소리」을 실제 WAV로 생성·등록했습니다.",
+      "durationMs": 5893,
+      "result": {
+        "resourceId": "original_bgm_41914295-3e6b-41cd-a5f8-716c377486dd",
+        "durationSeconds": 49.23076923076923,
+        "tempo": 78,
+        "instruments": [
+          "piano",
+          "bell",
+          "strings",
+          "bass"
+        ],
+        "bytes": 4342200,
+        "peak": 0.8,
+        "rms": 0.1368909061703163,
+        "source": "model-authored score / built-in synthesis",
+        "playbackVerified": false
+      }
+    },
+    {
+      "id": "call_547680",
+      "name": "generate_opening_image",
+      "args": {
+        "role": "backdrop",
+        "name": "오프닝 1 - 고요한 서재 원경",
+        "prompt": "A quiet, cozy single-room wooden study in the peaceful afternoon. A single tall arched window on the wall lets warm golden sunlight stream into the room. One modest wooden bookshelf filled with books, a small wooden desk with papers and an antique silver pocket watch resting on it. Intimate warm atmosphere, dust motes in the sunbeam, 4:3 safe center composition, no text, no UI, painterly detailed background."
+      },
+      "ok": true,
+      "summary": "오프닝 장면 원화를 생성·등록했습니다. resourceId를 set_opening의 image 장면에 연결하세요.",
+      "durationMs": 38775,
+      "result": {
+        "resourceId": "opening_still_565e4343-b729-4e4a-a6a7-4eecc0ee1c28",
+        "name": "오프닝 1 - 고요한 서재 원경"
+      }
+    },
+    {
+      "id": "call_1553063",
+      "name": "generate_opening_image",
+      "args": {
+        "referenceResourceId": "opening_still_565e4343-b729-4e4a-a6a7-4eecc0ee1c28",
+        "role": "backdrop",
+        "name": "오프닝 2 - 은색 회중시계 바늘 세부 클로즈업",
+        "prompt": "Extreme macro close-up of the antique silver pocket watch resting on the rustic wooden desk surface. Detailed vintage silver casing with fine floral engravings, glass cover, Roman numerals on the white dial face. The watch hands are completely frozen and still. Natural soft warm afternoon light falling from the window, sharp focus on the frozen hands, 4:3 safe center composition, no text, no letters, no UI."
+      },
+      "ok": true,
+      "summary": "오프닝 장면 원화를 생성·등록했습니다. resourceId를 set_opening의 image 장면에 연결하세요.",
+      "durationMs": 37223,
+      "result": {
+        "resourceId": "opening_still_eb637001-a738-49d8-8631-2e09fe9fd822",
+        "name": "오프닝 2 - 은색 회중시계 바늘 세부 클로즈업"
+      }
+    },
+    {
+      "id": "call_2089406",
+      "name": "generate_opening_image",
+      "args": {
+        "name": "오프닝 3 - 시계 유리 안에서 빛이 새는 사건 각도",
+        "role": "backdrop",
+        "referenceResourceId": "opening_still_eb637001-a738-49d8-8631-2e09fe9fd822",
+        "prompt": "Dynamic side-angle view of the antique silver pocket watch lying on the wooden desk. A subtle, magical golden memory light begins to seep through the tiny seam and glass surface of the frozen pocket watch, emitting gentle glowing sparkles and luminous golden threads rising quietly upward. The wooden desk, scattered parchment papers, and soft warm afternoon background are visible. Mysterious yet beautiful, 4:3 safe center, no text, no UI."
+      },
+      "ok": true,
+      "summary": "오프닝 장면 원화를 생성·등록했습니다. resourceId를 set_opening의 image 장면에 연결하세요.",
+      "durationMs": 42979,
+      "result": {
+        "resourceId": "opening_still_7f43848d-9471-4826-8784-21282c451be2",
+        "name": "오프닝 3 - 시계 유리 안에서 빛이 새는 사건 각도"
+      }
+    },
+    {
+      "id": "call_1716583",
+      "name": "generate_opening_image",
+      "args": {
+        "role": "backdrop",
+        "prompt": "Medium over-the-shoulder shot from behind the protagonist Seorin looking toward the wooden desk. Seorin has messy brown hair, wearing a traveler outfit with deep navy blue tunic and subtle dark red cloth trim matching the pixel character. Seorin's back and shoulder are in the foreground, looking at the silver pocket watch on the wooden desk that glows with faint golden memory light. The warm single-room study with the arched window is softly visible in the background. No visible face, focus on the shoulder, desk, and the glowing watch. 4:3 safe center, no text, no UI.",
+        "referenceResourceId": "opening_still_565e4343-b729-4e4a-a6a7-4eecc0ee1c28",
+        "name": "오프닝 4 - 서린의 어깨 너머로 시계를 보는 중경"
+      },
+      "ok": true,
+      "summary": "오프닝 장면 원화를 생성·등록했습니다. resourceId를 set_opening의 image 장면에 연결하세요.",
+      "durationMs": 41804,
+      "result": {
+        "resourceId": "opening_still_14947500-8141-401c-971f-e1bd962c9de0",
+        "name": "오프닝 4 - 서린의 어깨 너머로 시계를 보는 중경"
+      }
+    },
+    {
+      "id": "call_1993424",
+      "name": "generate_opening_image",
+      "args": {
+        "prompt": "Atmospheric medium composition of the cozy wooden study focused on the wooden desk where the silver pocket watch rests quietly. The glowing light from the watch has settled into a gentle, inviting shimmer. A wooden chair is placed neatly beside the desk, and warm sunlight bathes the room from the arched window. Clear, welcoming perspective that directly leads the player into investigating the room and desk. 4:3 safe center composition, painterly style, no text, no UI, clean and inviting.",
+        "referenceResourceId": "opening_still_565e4343-b729-4e4a-a6a7-4eecc0ee1c28",
+        "role": "backdrop",
+        "name": "오프닝 5 - 시계 조사로 넘어갈 서재 책상 구도"
+      },
+      "ok": true,
+      "summary": "오프닝 장면 원화를 생성·등록했습니다. resourceId를 set_opening의 image 장면에 연결하세요.",
+      "durationMs": 37954,
+      "result": {
+        "resourceId": "opening_still_6ad49457-94fc-4e71-ac82-60b3ad42d884",
+        "name": "오프닝 5 - 시계 조사로 넘어갈 서재 책상 구도"
+      }
+    },
+    {
+      "id": "call_1832751",
+      "name": "generate_opening_image",
+      "args": {
+        "name": "기억의 빛 파편 A",
+        "referenceResourceId": "opening_still_7f43848d-9471-4826-8784-21282c451be2",
+        "prompt": "A single delicate floating golden memory light fragment, glowing warm amber and gold spark particle with soft translucent light trail. Isolated on completely transparent alpha background. No background, no floor, no checkerboard, no cut limbs, just a pure floating magical light mote shard.",
+        "role": "foreground"
+      },
+      "ok": true,
+      "summary": "오프닝 장면 원화를 생성·등록했습니다. resourceId를 set_opening의 image 장면에 연결하세요.",
+      "durationMs": 75945,
+      "result": {
+        "resourceId": "opening_still_33d287f3-ba40-4964-adb1-65ffcda5009d",
+        "name": "기억의 빛 파편 A"
+      }
+    },
+    {
+      "id": "call_1739643",
+      "name": "generate_opening_image",
+      "args": {
+        "referenceResourceId": "opening_still_7f43848d-9471-4826-8784-21282c451be2",
+        "role": "foreground",
+        "prompt": "A small, soft, rounded orb of warm golden memory light with gentle radiating glimmer and floating ember dust. Isolated on completely transparent alpha background. No background, no floor, no checkerboard, subtle translucent glow.",
+        "name": "기억의 빛 파편 B"
+      },
+      "ok": true,
+      "summary": "오프닝 장면 원화를 생성·등록했습니다. resourceId를 set_opening의 image 장면에 연결하세요.",
+      "durationMs": 45784,
+      "result": {
+        "resourceId": "opening_still_4db4a53f-eae5-4f0b-99d8-efa799cc0008",
+        "name": "기억의 빛 파편 B"
+      }
+    },
+    {
+      "id": "call_1872626",
+      "name": "set_opening",
+      "args": {
+        "enabled": true,
+        "scenes": [
+          {
+            "id": "op_scene_01_prologue",
+            "narration": "어떤 기억은, 멈춘 시간 속에 남아 있다.",
+            "durationMs": 4500,
+            "kind": "text",
+            "presentation": {
+              "text": {
+                "revealMs": 2200,
+                "exitMs": 600,
+                "animation": "typewriter",
+                "font": "serif",
+                "delayMs": 400,
+                "size": 20,
+                "color": "#f5ebd7",
+                "layout": "center"
+              },
+              "preset": "prologue",
+              "transition": {
+                "enterMs": 800,
+                "exitMs": 600,
+                "enter": "fade"
+              }
+            }
+          },
+          {
+            "kind": "image",
+            "durationMs": 5200,
+            "presentation": {
+              "transition": {
+                "exitMs": 400,
+                "enterMs": 700,
+                "enter": "fade"
+              },
+              "text": {
+                "size": 16,
+                "revealMs": 800,
+                "color": "#fff9e6",
+                "animation": "fade",
+                "font": "serif",
+                "exitMs": 400,
+                "delayMs": 400,
+                "layout": "bottom"
+              },
+              "preset": "subtitle"
+            },
+            "id": "op_scene_02_study_wide",
+            "direction": {
+              "camera": {
+                "to": [
+                  0.54,
+                  0.48,
+                  1
+                ],
+                "from": [
+                  0.46,
+                  0.48,
+                  1
+                ]
+              },
+              "transition": {
+                "kind": "fade",
+                "durationMs": 700
+              },
+              "narrationDelayMs": 400,
+              "effects": [
+                {
+                  "kind": "godRays",
+                  "color": "#fff4d6",
+                  "intensity": 0.5,
+                  "source": [
+                    0.62,
+                    0.1
+                  ],
+                  "toward": [
+                    0.48,
+                    0.7
+                  ]
+                },
+                {
+                  "toward": [
+                    0.48,
+                    0.7
+                  ],
+                  "kind": "motes",
+                  "intensity": 0.4,
+                  "color": "#ffe8b0",
+                  "source": [
+                    0.62,
+                    0.1
+                  ]
+                }
+              ]
+            },
+            "resourceId": "opening_still_565e4343-b729-4e4a-a6a7-4eecc0ee1c28",
+            "narration": "따스한 볕이 머무는, 조용한 오후의 서재.",
+            "motion": "pan"
+          },
+          {
+            "motion": "none",
+            "presentation": {
+              "transition": {
+                "exitMs": 400,
+                "enter": "dissolve",
+                "enterMs": 500
+              },
+              "preset": "subtitle",
+              "text": {
+                "exitMs": 400,
+                "size": 16,
+                "layout": "bottom",
+                "delayMs": 300,
+                "color": "#fff9e6",
+                "revealMs": 700,
+                "font": "serif",
+                "animation": "fade"
+              }
+            },
+            "resourceId": "opening_still_eb637001-a738-49d8-8631-2e09fe9fd822",
+            "kind": "image",
+            "durationMs": 5000,
+            "id": "op_scene_03_watch_detail",
+            "narration": "책상 위, 바늘이 굳어버린 은색 회중시계.",
+            "direction": {
+              "camera": {
+                "to": [
+                  0.5,
+                  0.5,
+                  1
+                ],
+                "from": [
+                  0.5,
+                  0.5,
+                  1
+                ]
+              },
+              "effects": [
+                {
+                  "color": "#fff1cc",
+                  "region": [
+                    [
+                      0.4,
+                      0.3
+                    ],
+                    [
+                      0.75,
+                      0.3
+                    ],
+                    [
+                      0.75,
+                      0.75
+                    ],
+                    [
+                      0.4,
+                      0.75
+                    ]
+                  ],
+                  "kind": "glow",
+                  "intensity": 0.35
+                }
+              ],
+              "narrationDelayMs": 300,
+              "transition": {
+                "kind": "dissolve",
+                "durationMs": 500
+              }
+            }
+          },
+          {
+            "kind": "image",
+            "resourceId": "opening_still_7f43848d-9471-4826-8784-21282c451be2",
+            "presentation": {
+              "preset": "memory",
+              "text": {
+                "size": 16,
+                "exitMs": 450,
+                "revealMs": 850,
+                "animation": "blur",
+                "layout": "bottom",
+                "delayMs": 350,
+                "font": "serif",
+                "color": "#ffe7a3"
+              },
+              "transition": {
+                "exitMs": 400,
+                "enterMs": 600,
+                "enter": "dissolve"
+              }
+            },
+            "durationMs": 5400,
+            "narration": "정적을 깨고, 유리 틈새로 아련한 기억의 빛이 번진다.",
+            "motion": "none",
+            "direction": {
+              "soundResourceId": "easyrpg-sound-magic1",
+              "effects": [
+                {
+                  "intensity": 0.7,
+                  "color": "#ffe085",
+                  "region": [
+                    [
+                      0.45,
+                      0.4
+                    ],
+                    [
+                      0.75,
+                      0.4
+                    ],
+                    [
+                      0.75,
+                      0.75
+                    ],
+                    [
+                      0.45,
+                      0.75
+                    ]
+                  ],
+                  "kind": "glow"
+                }
+              ],
+              "transition": {
+                "durationMs": 600,
+                "kind": "dissolve"
+              },
+              "layers": [
+                {
+                  "frames": [
+                    {
+                      "at": 0,
+                      "scale": 0.4,
+                      "rotation": -15,
+                      "x": 0.58,
+                      "y": 0.56,
+                      "opacity": 0
+                    },
+                    {
+                      "rotation": 5,
+                      "scale": 0.7,
+                      "y": 0.45,
+                      "opacity": 0.95,
+                      "at": 0.35,
+                      "x": 0.59
+                    },
+                    {
+                      "at": 0.75,
+                      "scale": 0.8,
+                      "rotation": 25,
+                      "y": 0.35,
+                      "opacity": 0.85,
+                      "x": 0.61
+                    },
+                    {
+                      "rotation": 40,
+                      "at": 1,
+                      "y": 0.25,
+                      "x": 0.62,
+                      "opacity": 0,
+                      "scale": 0.9
+                    }
+                  ],
+                  "easing": "ease-out",
+                  "resourceId": "opening_still_33d287f3-ba40-4964-adb1-65ffcda5009d",
+                  "depth": "foreground",
+                  "width": 0.18
+                },
+                {
+                  "resourceId": "opening_still_4db4a53f-eae5-4f0b-99d8-efa799cc0008",
+                  "width": 0.14,
+                  "frames": [
+                    {
+                      "opacity": 0,
+                      "at": 0.15,
+                      "y": 0.54,
+                      "scale": 0.3,
+                      "x": 0.62,
+                      "rotation": 0
+                    },
+                    {
+                      "x": 0.64,
+                      "at": 0.5,
+                      "rotation": 30,
+                      "scale": 0.55,
+                      "opacity": 0.85,
+                      "y": 0.42
+                    },
+                    {
+                      "rotation": 60,
+                      "at": 0.85,
+                      "x": 0.66,
+                      "y": 0.32,
+                      "scale": 0.6,
+                      "opacity": 0.75
+                    },
+                    {
+                      "rotation": 90,
+                      "y": 0.24,
+                      "opacity": 0,
+                      "x": 0.67,
+                      "at": 1,
+                      "scale": 0.65
+                    }
+                  ],
+                  "easing": "ease-in-out",
+                  "depth": "foreground"
+                }
+              ],
+              "narrationDelayMs": 350
+            },
+            "id": "op_scene_04_watch_light_event"
+          },
+          {
+            "resourceId": "opening_still_14947500-8141-401c-971f-e1bd962c9de0",
+            "id": "op_scene_05_seorin_over_shoulder",
+            "kind": "image",
+            "motion": "none",
+            "narration": "서린은 멈춰선 채, 빛나는 시계를 조용히 응시했다.",
+            "direction": {
+              "narrationDelayMs": 300,
+              "transition": {
+                "kind": "dissolve",
+                "durationMs": 600
+              },
+              "camera": {
+                "from": [
+                  0.48,
+                  0.52,
+                  1
+                ],
+                "to": [
+                  0.52,
+                  0.5,
+                  1
+                ]
+              },
+              "effects": [
+                {
+                  "intensity": 0.5,
+                  "kind": "glow",
+                  "color": "#ffe294",
+                  "region": [
+                    [
+                      0.7,
+                      0.5
+                    ],
+                    [
+                      0.92,
+                      0.5
+                    ],
+                    [
+                      0.92,
+                      0.75
+                    ],
+                    [
+                      0.7,
+                      0.75
+                    ]
+                  ]
+                }
+              ],
+              "layers": [
+                {
+                  "resourceId": "opening_still_33d287f3-ba40-4964-adb1-65ffcda5009d",
+                  "width": 0.14,
+                  "depth": "foreground",
+                  "frames": [
+                    {
+                      "y": 0.62,
+                      "scale": 0.5,
+                      "x": 0.82,
+                      "opacity": 0.6,
+                      "at": 0,
+                      "rotation": 10
+                    },
+                    {
+                      "y": 0.52,
+                      "opacity": 0.85,
+                      "x": 0.8,
+                      "scale": 0.65,
+                      "rotation": 25,
+                      "at": 0.4
+                    },
+                    {
+                      "rotation": 40,
+                      "y": 0.44,
+                      "scale": 0.7,
+                      "at": 0.8,
+                      "opacity": 0.5,
+                      "x": 0.78
+                    },
+                    {
+                      "at": 1,
+                      "opacity": 0,
+                      "scale": 0.75,
+                      "x": 0.77,
+                      "rotation": 55,
+                      "y": 0.38
+                    }
+                  ],
+                  "easing": "ease-out"
+                }
+              ]
+            },
+            "durationMs": 5200,
+            "presentation": {
+              "transition": {
+                "exitMs": 400,
+                "enter": "dissolve",
+                "enterMs": 600
+              },
+              "text": {
+                "animation": "rise",
+                "color": "#fff9e6",
+                "delayMs": 300,
+                "size": 16,
+                "layout": "bottom",
+                "font": "serif",
+                "revealMs": 750,
+                "exitMs": 400
+              },
+              "preset": "subtitle"
+            }
+          },
+          {
+            "narration": "잃어버린 시간의 틈으로, 손을 뻗을 때가 되었다.",
+            "durationMs": 4800,
+            "direction": {
+              "transition": {
+                "durationMs": 600,
+                "kind": "fade"
+              },
+              "effects": [
+                {
+                  "source": [
+                    0.5,
+                    0.1
+                  ],
+                  "intensity": 0.4,
+                  "color": "#fff4d6",
+                  "toward": [
+                    0.65,
+                    0.6
+                  ],
+                  "kind": "godRays"
+                }
+              ]
+            },
+            "presentation": {
+              "preset": "subtitle",
+              "text": {
+                "font": "serif",
+                "layout": "bottom",
+                "delayMs": 300,
+                "size": 16,
+                "exitMs": 600,
+                "color": "#fff9e6",
+                "animation": "fade",
+                "revealMs": 800
+              },
+              "transition": {
+                "exitMs": 600,
+                "enterMs": 600,
+                "enter": "fade"
+              }
+            },
+            "kind": "image",
+            "resourceId": "opening_still_6ad49457-94fc-4e71-ac82-60b3ad42d884",
+            "motion": "none",
+            "id": "op_scene_06_desk_transition"
+          }
+        ],
+        "musicResourceId": "original_bgm_41914295-3e6b-41cd-a5f8-716c377486dd",
+        "skippable": true
+      },
+      "ok": false,
+      "summary": "'set_opening' 실행 실패: scenes[2].direction: glow.source가 필요합니다.",
+      "durationMs": 0,
+      "result": null
+    },
+    {
+      "id": "call_1876624",
+      "name": "set_opening",
+      "args": {
+        "musicResourceId": "original_bgm_41914295-3e6b-41cd-a5f8-716c377486dd",
+        "skippable": true,
+        "enabled": true,
+        "scenes": [
+          {
+            "presentation": {
+              "text": {
+                "revealMs": 2200,
+                "delayMs": 400,
+                "size": 20,
+                "color": "#f5ebd7",
+                "exitMs": 600,
+                "animation": "typewriter",
+                "font": "serif",
+                "layout": "center"
+              },
+              "preset": "prologue",
+              "transition": {
+                "exitMs": 600,
+                "enterMs": 800,
+                "enter": "fade"
+              }
+            },
+            "narration": "어떤 기억은, 멈춘 시간 속에 남아 있다.",
+            "id": "op_scene_01_prologue",
+            "kind": "text",
+            "durationMs": 4500
+          },
+          {
+            "narration": "따스한 볕이 머무는, 조용한 오후의 서재.",
+            "id": "op_scene_02_study_wide",
+            "motion": "pan",
+            "kind": "image",
+            "durationMs": 5200,
+            "direction": {
+              "effects": [
+                {
+                  "source": [
+                    0.62,
+                    0.1
+                  ],
+                  "intensity": 0.5,
+                  "toward": [
+                    0.48,
+                    0.7
+                  ],
+                  "color": "#fff4d6",
+                  "kind": "godRays"
+                },
+                {
+                  "color": "#ffe8b0",
+                  "kind": "motes",
+                  "source": [
+                    0.62,
+                    0.1
+                  ],
+                  "intensity": 0.4,
+                  "toward": [
+                    0.48,
+                    0.7
+                  ]
+                }
+              ],
+              "camera": {
+                "from": [
+                  0.46,
+                  0.48,
+                  1
+                ],
+                "to": [
+                  0.54,
+                  0.48,
+                  1
+                ]
+              },
+              "narrationDelayMs": 400,
+              "transition": {
+                "durationMs": 700,
+                "kind": "fade"
+              }
+            },
+            "presentation": {
+              "preset": "subtitle",
+              "transition": {
+                "enter": "fade",
+                "enterMs": 700,
+                "exitMs": 400
+              },
+              "text": {
+                "revealMs": 800,
+                "animation": "fade",
+                "delayMs": 400,
+                "exitMs": 400,
+                "font": "serif",
+                "color": "#fff9e6",
+                "layout": "bottom",
+                "size": 16
+              }
+            },
+            "resourceId": "opening_still_565e4343-b729-4e4a-a6a7-4eecc0ee1c28"
+          },
+          {
+            "presentation": {
+              "text": {
+                "revealMs": 700,
+                "animation": "fade",
+                "color": "#fff9e6",
+                "font": "serif",
+                "exitMs": 400,
+                "delayMs": 300,
+                "size": 16,
+                "layout": "bottom"
+              },
+              "preset": "subtitle",
+              "transition": {
+                "enterMs": 500,
+                "exitMs": 400,
+                "enter": "dissolve"
+              }
+            },
+            "durationMs": 5000,
+            "kind": "image",
+            "id": "op_scene_03_watch_detail",
+            "resourceId": "opening_still_eb637001-a738-49d8-8631-2e09fe9fd822",
+            "motion": "none",
+            "narration": "책상 위, 바늘이 굳어버린 은색 회중시계.",
+            "direction": {
+              "transition": {
+                "durationMs": 500,
+                "kind": "dissolve"
+              },
+              "camera": {
+                "to": [
+                  0.5,
+                  0.5,
+                  1
+                ],
+                "from": [
+                  0.5,
+                  0.5,
+                  1
+                ]
+              },
+              "effects": [
+                {
+                  "color": "#fff1cc",
+                  "kind": "glow",
+                  "intensity": 0.35,
+                  "source": [
+                    0.62,
+                    0.52
+                  ],
+                  "spread": 0.25
+                }
+              ],
+              "narrationDelayMs": 300
+            }
+          },
+          {
+            "kind": "image",
+            "motion": "none",
+            "narration": "정적을 깨고, 유리 틈새로 아련한 기억의 빛이 번진다.",
+            "resourceId": "opening_still_7f43848d-9471-4826-8784-21282c451be2",
+            "presentation": {
+              "preset": "memory",
+              "text": {
+                "revealMs": 850,
+                "size": 16,
+                "layout": "bottom",
+                "font": "serif",
+                "delayMs": 350,
+                "exitMs": 450,
+                "color": "#ffe7a3",
+                "animation": "blur"
+              },
+              "transition": {
+                "enter": "dissolve",
+                "exitMs": 400,
+                "enterMs": 600
+              }
+            },
+            "durationMs": 5400,
+            "direction": {
+              "transition": {
+                "durationMs": 600,
+                "kind": "dissolve"
+              },
+              "effects": [
+                {
+                  "spread": 0.25,
+                  "color": "#ffe085",
+                  "intensity": 0.7,
+                  "source": [
+                    0.62,
+                    0.52
+                  ],
+                  "kind": "glow"
+                }
+              ],
+              "soundResourceId": "easyrpg-sound-magic1",
+              "narrationDelayMs": 350,
+              "layers": [
+                {
+                  "frames": [
+                    {
+                      "x": 0.58,
+                      "opacity": 0,
+                      "rotation": -15,
+                      "scale": 0.4,
+                      "y": 0.56,
+                      "at": 0
+                    },
+                    {
+                      "at": 0.35,
+                      "scale": 0.7,
+                      "x": 0.59,
+                      "opacity": 0.95,
+                      "rotation": 5,
+                      "y": 0.45
+                    },
+                    {
+                      "x": 0.61,
+                      "opacity": 0.85,
+                      "rotation": 25,
+                      "at": 0.75,
+                      "y": 0.35,
+                      "scale": 0.8
+                    },
+                    {
+                      "opacity": 0,
+                      "rotation": 40,
+                      "at": 1,
+                      "x": 0.62,
+                      "y": 0.25,
+                      "scale": 0.9
+                    }
+                  ],
+                  "depth": "foreground",
+                  "resourceId": "opening_still_33d287f3-ba40-4964-adb1-65ffcda5009d",
+                  "easing": "ease-out",
+                  "width": 0.18
+                },
+                {
+                  "resourceId": "opening_still_4db4a53f-eae5-4f0b-99d8-efa799cc0008",
+                  "frames": [
+                    {
+                      "opacity": 0,
+                      "x": 0.62,
+                      "scale": 0.3,
+                      "at": 0.15,
+                      "y": 0.54,
+                      "rotation": 0
+                    },
+                    {
+                      "scale": 0.55,
+                      "rotation": 30,
+                      "y": 0.42,
+                      "at": 0.5,
+                      "x": 0.64,
+                      "opacity": 0.85
+                    },
+                    {
+                      "at": 0.85,
+                      "x": 0.66,
+                      "rotation": 60,
+                      "opacity": 0.75,
+                      "y": 0.32,
+                      "scale": 0.6
+                    },
+                    {
+                      "y": 0.24,
+                      "at": 1,
+                      "scale": 0.65,
+                      "rotation": 90,
+                      "x": 0.67,
+                      "opacity": 0
+                    }
+                  ],
+                  "depth": "foreground",
+                  "width": 0.14,
+                  "easing": "ease-in-out"
+                }
+              ]
+            },
+            "id": "op_scene_04_watch_light_event"
+          },
+          {
+            "resourceId": "opening_still_14947500-8141-401c-971f-e1bd962c9de0",
+            "id": "op_scene_05_seorin_over_shoulder",
+            "direction": {
+              "camera": {
+                "to": [
+                  0.52,
+                  0.5,
+                  1
+                ],
+                "from": [
+                  0.48,
+                  0.52,
+                  1
+                ]
+              },
+              "effects": [
+                {
+                  "source": [
+                    0.84,
+                    0.6
+                  ],
+                  "kind": "glow",
+                  "spread": 0.2,
+                  "color": "#ffe294",
+                  "intensity": 0.5
+                }
+              ],
+              "layers": [
+                {
+                  "frames": [
+                    {
+                      "x": 0.82,
+                      "opacity": 0.6,
+                      "y": 0.62,
+                      "rotation": 10,
+                      "at": 0,
+                      "scale": 0.5
+                    },
+                    {
+                      "y": 0.52,
+                      "rotation": 25,
+                      "at": 0.4,
+                      "x": 0.8,
+                      "opacity": 0.85,
+                      "scale": 0.65
+                    },
+                    {
+                      "scale": 0.7,
+                      "x": 0.78,
+                      "rotation": 40,
+                      "opacity": 0.5,
+                      "at": 0.8,
+                      "y": 0.44
+                    },
+                    {
+                      "at": 1,
+                      "y": 0.38,
+                      "scale": 0.75,
+                      "rotation": 55,
+                      "x": 0.77,
+                      "opacity": 0
+                    }
+                  ],
+                  "easing": "ease-out",
+                  "resourceId": "opening_still_33d287f3-ba40-4964-adb1-65ffcda5009d",
+                  "depth": "foreground",
+                  "width": 0.14
+                }
+              ],
+              "narrationDelayMs": 300,
+              "transition": {
+                "durationMs": 600,
+                "kind": "dissolve"
+              }
+            },
+            "kind": "image",
+            "durationMs": 5200,
+            "narration": "서린은 멈춰선 채, 빛나는 시계를 조용히 응시했다.",
+            "presentation": {
+              "preset": "subtitle",
+              "text": {
+                "revealMs": 750,
+                "exitMs": 400,
+                "size": 16,
+                "delayMs": 300,
+                "layout": "bottom",
+                "animation": "rise",
+                "font": "serif",
+                "color": "#fff9e6"
+              },
+              "transition": {
+                "exitMs": 400,
+                "enter": "dissolve",
+                "enterMs": 600
+              }
+            },
+            "motion": "none"
+          },
+          {
+            "durationMs": 4800,
+            "narration": "잃어버린 시간의 틈으로, 손을 뻗을 때가 되었다.",
+            "kind": "image",
+            "direction": {
+              "effects": [
+                {
+                  "color": "#fff4d6",
+                  "source": [
+                    0.5,
+                    0.1
+                  ],
+                  "toward": [
+                    0.65,
+                    0.6
+                  ],
+                  "intensity": 0.4,
+                  "kind": "godRays"
+                }
+              ],
+              "transition": {
+                "kind": "fade",
+                "durationMs": 600
+              }
+            },
+            "resourceId": "opening_still_6ad49457-94fc-4e71-ac82-60b3ad42d884",
+            "id": "op_scene_06_desk_transition",
+            "presentation": {
+              "text": {
+                "exitMs": 600,
+                "color": "#fff9e6",
+                "font": "serif",
+                "delayMs": 300,
+                "animation": "fade",
+                "revealMs": 800,
+                "layout": "bottom",
+                "size": 16
+              },
+              "transition": {
+                "enterMs": 600,
+                "exitMs": 600,
+                "enter": "fade"
+              },
+              "preset": "subtitle"
+            },
+            "motion": "none"
+          }
+        ]
+      },
+      "ok": false,
+      "summary": "'set_opening' 실행 실패: scenes[3].direction: 레이어 시간은 0에서 1까지 엄격히 증가해야 합니다.",
+      "durationMs": 0,
+      "result": null
+    },
+    {
+      "id": "call_2047852",
+      "name": "set_opening",
+      "args": {
+        "enabled": true,
+        "musicResourceId": "original_bgm_41914295-3e6b-41cd-a5f8-716c377486dd",
+        "scenes": [
+          {
+            "kind": "text",
+            "durationMs": 4500,
+            "id": "op_scene_01_prologue",
+            "narration": "어떤 기억은, 멈춘 시간 속에 남아 있다.",
+            "presentation": {
+              "text": {
+                "font": "serif",
+                "revealMs": 2200,
+                "delayMs": 400,
+                "animation": "typewriter",
+                "layout": "center",
+                "color": "#f5ebd7",
+                "size": 20,
+                "exitMs": 600
+              },
+              "preset": "prologue",
+              "transition": {
+                "enterMs": 800,
+                "enter": "fade",
+                "exitMs": 600
+              }
+            }
+          },
+          {
+            "presentation": {
+              "preset": "subtitle",
+              "text": {
+                "font": "serif",
+                "exitMs": 400,
+                "color": "#fff9e6",
+                "size": 16,
+                "delayMs": 400,
+                "revealMs": 800,
+                "animation": "fade",
+                "layout": "bottom"
+              },
+              "transition": {
+                "exitMs": 400,
+                "enterMs": 700,
+                "enter": "fade"
+              }
+            },
+            "direction": {
+              "effects": [
+                {
+                  "toward": [
+                    0.48,
+                    0.7
+                  ],
+                  "color": "#fff4d6",
+                  "intensity": 0.5,
+                  "kind": "godRays",
+                  "source": [
+                    0.62,
+                    0.1
+                  ]
+                },
+                {
+                  "kind": "motes",
+                  "color": "#ffe8b0",
+                  "source": [
+                    0.62,
+                    0.1
+                  ],
+                  "toward": [
+                    0.48,
+                    0.7
+                  ],
+                  "intensity": 0.4
+                }
+              ],
+              "transition": {
+                "kind": "fade",
+                "durationMs": 700
+              },
+              "camera": {
+                "to": [
+                  0.54,
+                  0.48,
+                  1
+                ],
+                "from": [
+                  0.46,
+                  0.48,
+                  1
+                ]
+              },
+              "narrationDelayMs": 400
+            },
+            "resourceId": "opening_still_565e4343-b729-4e4a-a6a7-4eecc0ee1c28",
+            "kind": "image",
+            "motion": "pan",
+            "narration": "따스한 볕이 머무는, 조용한 오후의 서재.",
+            "id": "op_scene_02_study_wide",
+            "durationMs": 5200
+          },
+          {
+            "narration": "책상 위, 바늘이 굳어버린 은색 회중시계.",
+            "durationMs": 5000,
+            "resourceId": "opening_still_eb637001-a738-49d8-8631-2e09fe9fd822",
+            "motion": "none",
+            "direction": {
+              "effects": [
+                {
+                  "spread": 0.25,
+                  "source": [
+                    0.62,
+                    0.52
+                  ],
+                  "color": "#fff1cc",
+                  "intensity": 0.35,
+                  "kind": "glow"
+                }
+              ],
+              "narrationDelayMs": 300,
+              "camera": {
+                "from": [
+                  0.5,
+                  0.5,
+                  1
+                ],
+                "to": [
+                  0.5,
+                  0.5,
+                  1
+                ]
+              },
+              "transition": {
+                "kind": "dissolve",
+                "durationMs": 500
+              }
+            },
+            "id": "op_scene_03_watch_detail",
+            "presentation": {
+              "text": {
+                "revealMs": 700,
+                "animation": "fade",
+                "size": 16,
+                "color": "#fff9e6",
+                "exitMs": 400,
+                "delayMs": 300,
+                "font": "serif",
+                "layout": "bottom"
+              },
+              "transition": {
+                "enter": "dissolve",
+                "exitMs": 400,
+                "enterMs": 500
+              },
+              "preset": "subtitle"
+            },
+            "kind": "image"
+          },
+          {
+            "presentation": {
+              "preset": "memory",
+              "transition": {
+                "enter": "dissolve",
+                "exitMs": 400,
+                "enterMs": 600
+              },
+              "text": {
+                "exitMs": 450,
+                "revealMs": 850,
+                "layout": "bottom",
+                "font": "serif",
+                "color": "#ffe7a3",
+                "size": 16,
+                "animation": "blur",
+                "delayMs": 350
+              }
+            },
+            "direction": {
+              "layers": [
+                {
+                  "frames": [
+                    {
+                      "y": 0.56,
+                      "x": 0.58,
+                      "at": 0,
+                      "rotation": -15,
+                      "scale": 0.4,
+                      "opacity": 0
+                    },
+                    {
+                      "x": 0.59,
+                      "rotation": 5,
+                      "at": 0.35,
+                      "opacity": 0.95,
+                      "y": 0.45,
+                      "scale": 0.7
+                    },
+                    {
+                      "scale": 0.8,
+                      "at": 0.75,
+                      "opacity": 0.85,
+                      "x": 0.61,
+                      "y": 0.35,
+                      "rotation": 25
+                    },
+                    {
+                      "scale": 0.9,
+                      "opacity": 0,
+                      "x": 0.62,
+                      "at": 1,
+                      "rotation": 40,
+                      "y": 0.25
+                    }
+                  ],
+                  "depth": "foreground",
+                  "width": 0.18,
+                  "resourceId": "opening_still_33d287f3-ba40-4964-adb1-65ffcda5009d",
+                  "easing": "ease-out"
+                },
+                {
+                  "resourceId": "opening_still_4db4a53f-eae5-4f0b-99d8-efa799cc0008",
+                  "easing": "ease-in-out",
+                  "frames": [
+                    {
+                      "opacity": 0,
+                      "scale": 0.3,
+                      "rotation": 0,
+                      "at": 0,
+                      "y": 0.54,
+                      "x": 0.62
+                    },
+                    {
+                      "opacity": 0.85,
+                      "x": 0.64,
+                      "y": 0.42,
+                      "rotation": 30,
+                      "scale": 0.55,
+                      "at": 0.4
+                    },
+                    {
+                      "scale": 0.6,
+                      "y": 0.32,
+                      "opacity": 0.75,
+                      "rotation": 60,
+                      "at": 0.8,
+                      "x": 0.66
+                    },
+                    {
+                      "x": 0.67,
+                      "rotation": 90,
+                      "scale": 0.65,
+                      "y": 0.24,
+                      "at": 1,
+                      "opacity": 0
+                    }
+                  ],
+                  "width": 0.14,
+                  "depth": "foreground"
+                }
+              ],
+              "transition": {
+                "kind": "dissolve",
+                "durationMs": 600
+              },
+              "soundResourceId": "easyrpg-sound-magic1",
+              "narrationDelayMs": 350,
+              "effects": [
+                {
+                  "intensity": 0.7,
+                  "kind": "glow",
+                  "spread": 0.25,
+                  "color": "#ffe085",
+                  "source": [
+                    0.62,
+                    0.52
+                  ]
+                }
+              ]
+            },
+            "motion": "none",
+            "durationMs": 5400,
+            "narration": "정적을 깨고, 유리 틈새로 아련한 기억의 빛이 번진다.",
+            "id": "op_scene_04_watch_light_event",
+            "kind": "image",
+            "resourceId": "opening_still_7f43848d-9471-4826-8784-21282c451be2"
+          },
+          {
+            "kind": "image",
+            "resourceId": "opening_still_14947500-8141-401c-971f-e1bd962c9de0",
+            "direction": {
+              "narrationDelayMs": 300,
+              "transition": {
+                "durationMs": 600,
+                "kind": "dissolve"
+              },
+              "camera": {
+                "to": [
+                  0.52,
+                  0.5,
+                  1
+                ],
+                "from": [
+                  0.48,
+                  0.52,
+                  1
+                ]
+              },
+              "effects": [
+                {
+                  "intensity": 0.5,
+                  "spread": 0.2,
+                  "kind": "glow",
+                  "source": [
+                    0.84,
+                    0.6
+                  ],
+                  "color": "#ffe294"
+                }
+              ],
+              "layers": [
+                {
+                  "frames": [
+                    {
+                      "rotation": 10,
+                      "x": 0.82,
+                      "at": 0,
+                      "y": 0.62,
+                      "scale": 0.5,
+                      "opacity": 0.6
+                    },
+                    {
+                      "rotation": 25,
+                      "y": 0.52,
+                      "scale": 0.65,
+                      "at": 0.4,
+                      "opacity": 0.85,
+                      "x": 0.8
+                    },
+                    {
+                      "rotation": 40,
+                      "at": 0.8,
+                      "x": 0.78,
+                      "scale": 0.7,
+                      "y": 0.44,
+                      "opacity": 0.5
+                    },
+                    {
+                      "at": 1,
+                      "opacity": 0,
+                      "scale": 0.75,
+                      "x": 0.77,
+                      "y": 0.38,
+                      "rotation": 55
+                    }
+                  ],
+                  "resourceId": "opening_still_33d287f3-ba40-4964-adb1-65ffcda5009d",
+                  "easing": "ease-out",
+                  "depth": "foreground",
+                  "width": 0.14
+                }
+              ]
+            },
+            "id": "op_scene_05_seorin_over_shoulder",
+            "presentation": {
+              "text": {
+                "size": 16,
+                "font": "serif",
+                "delayMs": 300,
+                "color": "#fff9e6",
+                "revealMs": 750,
+                "exitMs": 400,
+                "animation": "rise",
+                "layout": "bottom"
+              },
+              "transition": {
+                "exitMs": 400,
+                "enter": "dissolve",
+                "enterMs": 600
+              },
+              "preset": "subtitle"
+            },
+            "durationMs": 5200,
+            "motion": "none",
+            "narration": "서린은 멈춰선 채, 빛나는 시계를 조용히 응시했다."
+          },
+          {
+            "presentation": {
+              "text": {
+                "revealMs": 800,
+                "exitMs": 600,
+                "animation": "fade",
+                "color": "#fff9e6",
+                "delayMs": 300,
+                "size": 16,
+                "font": "serif",
+                "layout": "bottom"
+              },
+              "transition": {
+                "exitMs": 600,
+                "enterMs": 600,
+                "enter": "fade"
+              },
+              "preset": "subtitle"
+            },
+            "durationMs": 4800,
+            "narration": "잃어버린 시간의 틈으로, 손을 뻗을 때가 되었다.",
+            "id": "op_scene_06_desk_transition",
+            "kind": "image",
+            "motion": "none",
+            "direction": {
+              "effects": [
+                {
+                  "toward": [
+                    0.65,
+                    0.6
+                  ],
+                  "intensity": 0.4,
+                  "color": "#fff4d6",
+                  "kind": "godRays",
+                  "source": [
+                    0.5,
+                    0.1
+                  ]
+                }
+              ],
+              "transition": {
+                "kind": "fade",
+                "durationMs": 600
+              }
+            },
+            "resourceId": "opening_still_6ad49457-94fc-4e71-ac82-60b3ad42d884"
+          }
+        ],
+        "skippable": true
+      },
+      "ok": true,
+      "summary": "오프닝 장면 6개를 저장했습니다(텍스트 1·이미지 5), 사용 켜짐, 건너뛰기 가능.",
+      "durationMs": 2997,
+      "result": {
+        "opening": {
+          "enabled": true,
+          "skippable": true,
+          "musicResourceId": "original_bgm_41914295-3e6b-41cd-a5f8-716c377486dd",
+          "scenes": [
+            {
+              "id": "op_scene_01_prologue",
+              "narration": "어떤 기억은, 멈춘 시간 속에 남아 있다.",
+              "durationMs": 4500,
+              "presentation": {
+                "text": {
+                  "font": "serif",
+                  "revealMs": 2200,
+                  "delayMs": 400,
+                  "animation": "typewriter",
+                  "layout": "center",
+                  "color": "#f5ebd7",
+                  "size": 20,
+                  "exitMs": 600
+                },
+                "preset": "prologue",
+                "transition": {
+                  "enterMs": 800,
+                  "enter": "fade",
+                  "exitMs": 600
+                }
+              },
+              "kind": "text"
+            },
+            {
+              "id": "op_scene_02_study_wide",
+              "narration": "따스한 볕이 머무는, 조용한 오후의 서재.",
+              "durationMs": 5200,
+              "presentation": {
+                "preset": "subtitle",
+                "text": {
+                  "font": "serif",
+                  "exitMs": 400,
+                  "color": "#fff9e6",
+                  "size": 16,
+                  "delayMs": 400,
+                  "revealMs": 800,
+                  "animation": "fade",
+                  "layout": "bottom"
+                },
+                "transition": {
+                  "exitMs": 400,
+                  "enterMs": 700,
+                  "enter": "fade"
+                }
+              },
+              "kind": "image",
+              "resourceId": "opening_still_565e4343-b729-4e4a-a6a7-4eecc0ee1c28",
+              "motion": "pan",
+              "direction": {
+                "camera": {
+                  "from": "[깊이 상한으로 생략]",
+                  "to": "[깊이 상한으로 생략]"
+                },
+                "transition": {
+                  "kind": "fade",
+                  "durationMs": 700
+                },
+                "effects": [
+                  "[깊이 상한으로 생략]",
+                  "[깊이 상한으로 생략]"
+                ],
+                "narrationDelayMs": 400
+              }
+            },
+            {
+              "id": "op_scene_03_watch_detail",
+              "narration": "책상 위, 바늘이 굳어버린 은색 회중시계.",
+              "durationMs": 5000,
+              "presentation": {
+                "text": {
+                  "revealMs": 700,
+                  "animation": "fade",
+                  "size": 16,
+                  "color": "#fff9e6",
+                  "exitMs": 400,
+                  "delayMs": 300,
+                  "font": "serif",
+                  "layout": "bottom"
+                },
+                "transition": {
+                  "enter": "dissolve",
+                  "exitMs": 400,
+                  "enterMs": 500
+                },
+                "preset": "subtitle"
+              },
+              "kind": "image",
+              "resourceId": "opening_still_eb637001-a738-49d8-8631-2e09fe9fd822",
+              "motion": "none",
+              "direction": {
+                "camera": {
+                  "from": "[깊이 상한으로 생략]",
+                  "to": "[깊이 상한으로 생략]"
+                },
+                "transition": {
+                  "kind": "dissolve",
+                  "durationMs": 500
+                },
+                "effects": [
+                  "[깊이 상한으로 생략]"
+                ],
+                "narrationDelayMs": 300
+              }
+            },
+            {
+              "id": "op_scene_04_watch_light_event",
+              "narration": "정적을 깨고, 유리 틈새로 아련한 기억의 빛이 번진다.",
+              "durationMs": 5400,
+              "presentation": {
+                "preset": "memory",
+                "transition": {
+                  "enter": "dissolve",
+                  "exitMs": 400,
+                  "enterMs": 600
+                },
+                "text": {
+                  "exitMs": 450,
+                  "revealMs": 850,
+                  "layout": "bottom",
+                  "font": "serif",
+                  "color": "#ffe7a3",
+                  "size": 16,
+                  "animation": "blur",
+                  "delayMs": 350
+                }
+              },
+              "kind": "image",
+              "resourceId": "opening_still_7f43848d-9471-4826-8784-21282c451be2",
+              "motion": "none",
+              "direction": {
+                "layers": [
+                  "[깊이 상한으로 생략]",
+                  "[깊이 상한으로 생략]"
+                ],
+                "transition": {
+                  "kind": "dissolve",
+                  "durationMs": 600
+                },
+                "effects": [
+                  "[깊이 상한으로 생략]"
+                ],
+                "soundResourceId": "easyrpg-sound-magic1",
+                "narrationDelayMs": 350
+              }
+            },
+            {
+              "id": "op_scene_05_seorin_over_shoulder",
+              "narration": "서린은 멈춰선 채, 빛나는 시계를 조용히 응시했다.",
+              "durationMs": 5200,
+              "presentation": {
+                "text": {
+                  "size": 16,
+                  "font": "serif",
+                  "delayMs": 300,
+                  "color": "#fff9e6",
+                  "revealMs": 750,
+                  "exitMs": 400,
+                  "animation": "rise",
+                  "layout": "bottom"
+                },
+                "transition": {
+                  "exitMs": 400,
+                  "enter": "dissolve",
+                  "enterMs": 600
+                },
+                "preset": "subtitle"
+              },
+              "kind": "image",
+              "resourceId": "opening_still_14947500-8141-401c-971f-e1bd962c9de0",
+              "motion": "none",
+              "direction": {
+                "layers": [
+                  "[깊이 상한으로 생략]"
+                ],
+                "camera": {
+                  "from": "[깊이 상한으로 생략]",
+                  "to": "[깊이 상한으로 생략]"
+                },
+                "transition": {
+                  "kind": "dissolve",
+                  "durationMs": 600
+                },
+                "effects": [
+                  "[깊이 상한으로 생략]"
+                ],
+                "narrationDelayMs": 300
+              }
+            },
+            {
+              "id": "op_scene_06_desk_transition",
+              "narration": "잃어버린 시간의 틈으로, 손을 뻗을 때가 되었다.",
+              "durationMs": 4800,
+              "presentation": {
+                "text": {
+                  "revealMs": 800,
+                  "exitMs": 600,
+                  "animation": "fade",
+                  "color": "#fff9e6",
+                  "delayMs": 300,
+                  "size": 16,
+                  "font": "serif",
+                  "layout": "bottom"
+                },
+                "transition": {
+                  "exitMs": 600,
+                  "enterMs": 600,
+                  "enter": "fade"
+                },
+                "preset": "subtitle"
+              },
+              "kind": "image",
+              "resourceId": "opening_still_6ad49457-94fc-4e71-ac82-60b3ad42d884",
+              "motion": "none",
+              "direction": {
+                "transition": {
+                  "kind": "fade",
+                  "durationMs": 600
+                },
+                "effects": [
+                  "[깊이 상한으로 생략]"
+                ]
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "call_1805552",
+      "name": "show_title_opening",
+      "args": {},
+      "ok": true,
+      "summary": "연결된 타이틀·오프닝 원화 8장입니다. 이것은 원화 확인이며 실제 재생 확인은 별도입니다.",
+      "durationMs": 7561,
+      "result": {
+        "titleScreen": {
+          "title": "멈춘 시계의 기억",
+          "backgroundResourceId": "title_art_b3914fa0-d433-440d-a779-d61f6f8ae361",
+          "layout": {
+            "titleX": 32,
+            "titleY": 48,
+            "menuX": 34,
+            "menuY": 128
+          },
+          "menuLabels": {
+            "newGame": "새 게임",
+            "continueGame": "불러오기",
+            "quit": "종료"
+          },
+          "menuVisibility": {
+            "newGame": true,
+            "continueGame": true,
+            "quit": true
+          },
+          "showInputHint": true,
+          "backgroundFit": "cover",
+          "backgroundRendering": "smooth",
+          "effects": [
+            {
+              "kind": "godRays",
+              "intensity": 1.2,
+              "color": "#fff3d1",
+              "source": [
+                0.72,
+                0.05
+              ],
+              "toward": [
+                0.52,
+                0.72
+              ]
+            },
+            {
+              "kind": "motes",
+              "intensity": 1.1,
+              "color": "#ffe89c",
+              "source": [
+                0.72,
+                0.05
+              ],
+              "toward": [
+                0.52,
+                0.72
+              ]
+            },
+            {
+              "kind": "glow",
+              "intensity": 1.3,
+              "color": "#ffd885",
+              "source": [
+                0.53,
+                0.67
+              ],
+              "spread": 0.15
+            },
+            {
+              "kind": "camera",
+              "speed": 0.4
+            }
+          ],
+          "logoStyle": "gold",
+          "logoSubtitle": "멈춘 시간 속 잃어버린 기억을 찾아서",
+          "menuStyle": "plain",
+          "sequence": {
+            "fadeMs": 1400,
+            "push": 0.06,
+            "logoAtMs": 800,
+            "logoReveal": "rise",
+            "menuAtMs": 1800
+          },
+          "logoShine": "once",
+          "transition": {
+            "kind": "fade",
+            "durationMs": 700
+          }
+        },
+        "opening": {
+          "enabled": true,
+          "skippable": true,
+          "musicResourceId": "original_bgm_41914295-3e6b-41cd-a5f8-716c377486dd",
+          "scenes": [
+            {
+              "id": "op_scene_01_prologue",
+              "narration": "어떤 기억은, 멈춘 시간 속에 남아 있다.",
+              "durationMs": 4500,
+              "presentation": {
+                "text": {
+                  "font": "serif",
+                  "revealMs": 2200,
+                  "delayMs": 400,
+                  "animation": "typewriter",
+                  "layout": "center",
+                  "color": "#f5ebd7",
+                  "size": 20,
+                  "exitMs": 600
+                },
+                "preset": "prologue",
+                "transition": {
+                  "enterMs": 800,
+                  "enter": "fade",
+                  "exitMs": 600
+                }
+              },
+              "kind": "text"
+            },
+            {
+              "id": "op_scene_02_study_wide",
+              "narration": "따스한 볕이 머무는, 조용한 오후의 서재.",
+              "durationMs": 5200,
+              "presentation": {
+                "preset": "subtitle",
+                "text": {
+                  "font": "serif",
+                  "exitMs": 400,
+                  "color": "#fff9e6",
+                  "size": 16,
+                  "delayMs": 400,
+                  "revealMs": 800,
+                  "animation": "fade",
+                  "layout": "bottom"
+                },
+                "transition": {
+                  "exitMs": 400,
+                  "enterMs": 700,
+                  "enter": "fade"
+                }
+              },
+              "kind": "image",
+              "resourceId": "opening_still_565e4343-b729-4e4a-a6a7-4eecc0ee1c28",
+              "motion": "pan",
+              "direction": {
+                "camera": {
+                  "from": "[깊이 상한으로 생략]",
+                  "to": "[깊이 상한으로 생략]"
+                },
+                "transition": {
+                  "kind": "fade",
+                  "durationMs": 700
+                },
+                "effects": [
+                  "[깊이 상한으로 생략]",
+                  "[깊이 상한으로 생략]"
+                ],
+                "narrationDelayMs": 400
+              }
+            },
+            {
+              "id": "op_scene_03_watch_detail",
+              "narration": "책상 위, 바늘이 굳어버린 은색 회중시계.",
+              "durationMs": 5000,
+              "presentation": {
+                "text": {
+                  "revealMs": 700,
+                  "animation": "fade",
+                  "size": 16,
+                  "color": "#fff9e6",
+                  "exitMs": 400,
+                  "delayMs": 300,
+                  "font": "serif",
+                  "layout": "bottom"
+                },
+                "transition": {
+                  "enter": "dissolve",
+                  "exitMs": 400,
+                  "enterMs": 500
+                },
+                "preset": "subtitle"
+              },
+              "kind": "image",
+              "resourceId": "opening_still_eb637001-a738-49d8-8631-2e09fe9fd822",
+              "motion": "none",
+              "direction": {
+                "camera": {
+                  "from": "[깊이 상한으로 생략]",
+                  "to": "[깊이 상한으로 생략]"
+                },
+                "transition": {
+                  "kind": "dissolve",
+                  "durationMs": 500
+                },
+                "effects": [
+                  "[깊이 상한으로 생략]"
+                ],
+                "narrationDelayMs": 300
+              }
+            },
+            {
+              "id": "op_scene_04_watch_light_event",
+              "narration": "정적을 깨고, 유리 틈새로 아련한 기억의 빛이 번진다.",
+              "durationMs": 5400,
+              "presentation": {
+                "preset": "memory",
+                "transition": {
+                  "enter": "dissolve",
+                  "exitMs": 400,
+                  "enterMs": 600
+                },
+                "text": {
+                  "exitMs": 450,
+                  "revealMs": 850,
+                  "layout": "bottom",
+                  "font": "serif",
+                  "color": "#ffe7a3",
+                  "size": 16,
+                  "animation": "blur",
+                  "delayMs": 350
+                }
+              },
+              "kind": "image",
+              "resourceId": "opening_still_7f43848d-9471-4826-8784-21282c451be2",
+              "motion": "none",
+              "direction": {
+                "layers": [
+                  "[깊이 상한으로 생략]",
+                  "[깊이 상한으로 생략]"
+                ],
+                "transition": {
+                  "kind": "dissolve",
+                  "durationMs": 600
+                },
+                "effects": [
+                  "[깊이 상한으로 생략]"
+                ],
+                "soundResourceId": "easyrpg-sound-magic1",
+                "narrationDelayMs": 350
+              }
+            },
+            {
+              "id": "op_scene_05_seorin_over_shoulder",
+              "narration": "서린은 멈춰선 채, 빛나는 시계를 조용히 응시했다.",
+              "durationMs": 5200,
+              "presentation": {
+                "text": {
+                  "size": 16,
+                  "font": "serif",
+                  "delayMs": 300,
+                  "color": "#fff9e6",
+                  "revealMs": 750,
+                  "exitMs": 400,
+                  "animation": "rise",
+                  "layout": "bottom"
+                },
+                "transition": {
+                  "exitMs": 400,
+                  "enter": "dissolve",
+                  "enterMs": 600
+                },
+                "preset": "subtitle"
+              },
+              "kind": "image",
+              "resourceId": "opening_still_14947500-8141-401c-971f-e1bd962c9de0",
+              "motion": "none",
+              "direction": {
+                "layers": [
+                  "[깊이 상한으로 생략]"
+                ],
+                "camera": {
+                  "from": "[깊이 상한으로 생략]",
+                  "to": "[깊이 상한으로 생략]"
+                },
+                "transition": {
+                  "kind": "dissolve",
+                  "durationMs": 600
+                },
+                "effects": [
+                  "[깊이 상한으로 생략]"
+                ],
+                "narrationDelayMs": 300
+              }
+            },
+            {
+              "id": "op_scene_06_desk_transition",
+              "narration": "잃어버린 시간의 틈으로, 손을 뻗을 때가 되었다.",
+              "durationMs": 4800,
+              "presentation": {
+                "text": {
+                  "revealMs": 800,
+                  "exitMs": 600,
+                  "animation": "fade",
+                  "color": "#fff9e6",
+                  "delayMs": 300,
+                  "size": 16,
+                  "font": "serif",
+                  "layout": "bottom"
+                },
+                "transition": {
+                  "exitMs": 600,
+                  "enterMs": 600,
+                  "enter": "fade"
+                },
+                "preset": "subtitle"
+              },
+              "kind": "image",
+              "resourceId": "opening_still_6ad49457-94fc-4e71-ac82-60b3ad42d884",
+              "motion": "none",
+              "direction": {
+                "transition": {
+                  "kind": "fade",
+                  "durationMs": 600
+                },
+                "effects": [
+                  "[깊이 상한으로 생략]"
+                ]
+              }
+            }
+          ]
+        },
+        "images": [
+          {
+            "resourceId": "title_art_b3914fa0-d433-440d-a779-d61f6f8ae361",
+            "label": "멈춘 시계의 기억 타이틀 키아트"
+          },
+          {
+            "resourceId": "opening_still_565e4343-b729-4e4a-a6a7-4eecc0ee1c28",
+            "label": "오프닝 1 - 고요한 서재 원경"
+          },
+          {
+            "resourceId": "opening_still_eb637001-a738-49d8-8631-2e09fe9fd822",
+            "label": "오프닝 2 - 은색 회중시계 바늘 세부 클로즈업"
+          },
+          {
+            "resourceId": "opening_still_7f43848d-9471-4826-8784-21282c451be2",
+            "label": "오프닝 3 - 시계 유리 안에서 빛이 새는 사건 각도"
+          },
+          {
+            "resourceId": "opening_still_33d287f3-ba40-4964-adb1-65ffcda5009d",
+            "label": "기억의 빛 파편 A"
+          },
+          {
+            "resourceId": "opening_still_4db4a53f-eae5-4f0b-99d8-efa799cc0008",
+            "label": "기억의 빛 파편 B"
+          },
+          {
+            "resourceId": "opening_still_14947500-8141-401c-971f-e1bd962c9de0",
+            "label": "오프닝 4 - 서린의 어깨 너머로 시계를 보는 중경"
+          },
+          {
+            "resourceId": "opening_still_6ad49457-94fc-4e71-ac82-60b3ad42d884",
+            "label": "오프닝 5 - 시계 조사로 넘어갈 서재 책상 구도"
+          }
+        ],
+        "missing": []
+      }
+    }
+  ],
+  "successfulForegroundGenerations": 2
+}

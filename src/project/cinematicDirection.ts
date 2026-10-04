@@ -1,7 +1,9 @@
 import type { TitleEffect } from './types/database';
+import { parseCinematicLayers, type CinematicLayer } from './cinematicLayers';
 
 export type CinematicCameraFrame = [number, number, number]; // focus x/y 0..1, zoom 1..1.6
 export type CinematicDirection = {
+  layers?: CinematicLayer[];
   camera?: { from: CinematicCameraFrame; to: CinematicCameraFrame };
   transition?: { kind: 'cut' | 'dissolve' | 'fade' | 'flash'; durationMs: number };
   effects?: TitleEffect[];
@@ -28,8 +30,9 @@ export function parseCinematicDirection(value: unknown): CinematicDirection {
     if (!Array.isArray(raw) || raw.length !== 2) throw new TypeError('effect: [x,y] 좌표가 필요합니다.');
     return [number(raw[0], 0, 1, 'effect.x'), number(raw[1], 0, 1, 'effect.y')];
   };
-  const input = record(value, ['camera', 'transition', 'effects', 'soundResourceId', 'narrationDelayMs'], 'direction');
+  const input = record(value, ['camera', 'transition', 'effects', 'soundResourceId', 'narrationDelayMs', 'layers'], 'direction');
   const out: CinematicDirection = {};
+  if (input.layers !== undefined) out.layers = parseCinematicLayers(input.layers);
   if (input.camera !== undefined) {
     const camera = record(input.camera, ['from', 'to'], 'camera');
     out.camera = { from: frame(camera.from), to: frame(camera.to) };

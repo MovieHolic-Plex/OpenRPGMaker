@@ -1,0 +1,26 @@
+{
+  "opening_still_33d287f3-ba40-4964-adb1-65ffcda5009d": {
+    "width": 1247,
+    "height": 1261,
+    "clearAlphaFraction": 0.918430720644694,
+    "opaqueAlphaFraction": 0.01855237661585267,
+    "sha256": "a97af043acbbee55f905c077bbebedbafcbe49617eb0bcecd6979d85f89120f5"
+  },
+  "opening_still_4db4a53f-eae5-4f0b-99d8-efa799cc0008": {
+    "width": 1536,
+    "height": 1024,
+    "clearAlphaFraction": 0.8083286285400391,
+    "opaqueAlphaFraction": 0.07934061686197917,
+    "sha256": "22ef4cef303e51308fc75c99b4ce620628bc5e0fdb9965a966b80c6296520996"
+  },
+  "music": {
+    "resourceId": "original_bgm_41914295-3e6b-41cd-a5f8-716c377486dd",
+    "channels": 2,
+    "sampleWidth": 2,
+    "sampleRate": 22050,
+    "durationSeconds": 49.23079365079365,
+    "peak": 0.79998779296875,
+    "rms": 0.13688672094098595,
+    "sha256": "813ee4161cb1a9f4ba3b7ee87260e0fa4d006be401fd29ae1ea4b09ddbe56524"
+  }
+}

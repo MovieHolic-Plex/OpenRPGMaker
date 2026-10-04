@@ -1,0 +1,7 @@
+{
+  "artifactVersion": "5530a358262f6854",
+  "sourceRevision": "27d5bc9105",
+  "sourceDigest": "a38fe7f776eaa68f043bb8403f3102c15bd1310c04c0f4ff469ad4ec3935ee6b",
+  "builtAt": "2026-10-04T15:16:35.019Z",
+  "verification": "final player Vite build; final CSS depth sort reviewed; runtime recordings/edge fixtures use separately documented fixed artifacts"
+}
