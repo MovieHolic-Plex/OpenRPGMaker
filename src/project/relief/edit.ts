@@ -1,5 +1,6 @@
 // 편집기·조수가 map.relief 를 다룰 때 쓰는 작은 도우미. 저장 형태 정규화, 맵 크기 변경, 붓질.
 
+import { invalidateReliefRevision, reliefState } from "./revision";
 import { buildReliefOps } from "./ops";
 import { hsh3 } from "./render";
 import { gridFromRelief, RELIEF_MAX_LEVEL, type HeightGrid, type ReliefData } from "./types";
@@ -69,6 +70,7 @@ export function brushRelief(
   mode: ReliefBrushMode,
   opts: { radius?: number; level?: number; flattenTo?: number } = {},
 ): boolean {
+  invalidateReliefRevision(r);
   const rad = Math.max(0, opts.radius ?? 0);
   if (mode === "mountain" || mode === "canyon") {
     const op = mode === "mountain"
@@ -141,7 +143,11 @@ function writeGrid(r: ReliefData, h: HeightGrid): boolean {
   return changed;
 }
 
-export const reliefIsFlat = (r: ReliefData | undefined) => !r || (!r.levels.some((v) => v > 0) && !r.ramps?.some(v=>v===9));
+export const reliefIsFlat = (r: ReliefData | undefined) => {
+  if (!r) return true;
+  const state = reliefState(r);
+  return !state.elevated && !state.bridge;
+};
 
 export const gridMax = (h: HeightGrid) => h.reduce((m, row) => Math.max(m, ...row), 0);
 

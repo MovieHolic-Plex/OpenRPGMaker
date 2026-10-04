@@ -1,0 +1,21 @@
+{
+  "commit": "49b4c8c48d02a44304d33d23a54b105c12d908a3",
+  "conditions": "Native Chromium preview fixture, normal motion, no host save/model calls",
+  "errors": [],
+  "checks": [
+    "Actual battle preview starts only on active surface, reuses high-water cell DOM, has no body observer, and preserves user Stop on hide/reveal"
+  ],
+  "rows": [
+    {
+      "poolNodes": 2,
+      "childListMutations": 0,
+      "bodyObservers": 0,
+      "parkedStatic": true,
+      "userStopRetained": true
+    }
+  ],
+  "productionSources": {
+    "src/editor/panels/databaseAnimationPreview.ts": "0f9aa9871b0e4a7f0847177a006a4b49a5c3e182efae350f7ac1327af6495c91",
+    "src/editor/panels/databasePreviewLifecycle.ts": "72d3adaa8ab2884efa9c1818bc35f75024861e96d2af6d11156cbbd224d09fc8"
+  }
+}

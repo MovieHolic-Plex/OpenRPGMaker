@@ -9,6 +9,9 @@ import {
   readAiRecord,
   readAllAiRecords,
   registerAiRecordDbResetHook,
+  registerConversationSummaryProjector,
+  queryConversationSummaries,
+  conversationSummaryMapIds,
 } from "@/ai/aiRecordDb";
 import { isConversationTurnContext } from "@/ai/conversationTurnContext";
 import { conversationTranscriptCompacted, indexConversationMaps, isConversationMapIndex, type ConversationMapIndex } from "@/ai/mapConversationStore";
@@ -385,7 +388,12 @@ function toSummary(conversation: ConversationRecord): ConversationSummary {
 /** 최근 저장 순 요약 목록. 저장소 오류는 빈 목록으로 삼킨다(호출자는 UI 라 던져서 얻을 것이 없다). */
 export async function listConversations(): Promise<ConversationSummary[]> {
   try {
-    return (await readAll()).slice(0, CONVERSATION_MAX_RECORDS).map(toSummary);
+    await ensureLegacyMigrated();
+    return (await queryConversationSummaries<ConversationArchiveSummary>({ offset: 0, limit: CONVERSATION_MAX_RECORDS })).records.map(row => ({
+      id: row.id, title: row.title, model: row.model, savedAt: row.savedAt, turnCount: row.turnCount,
+      ...(row.preview === undefined ? {} : { preview: row.preview }),
+      ...(row.projectContextKey ? { projectContextKey: row.projectContextKey } : {}),
+    }));
   } catch (error) {
     console.warn("[ai-conversation] 대화 목록을 읽지 못했습니다:", error);
     return [];
@@ -413,7 +421,9 @@ export async function loadConversation(id: string): Promise<ConversationRecord |
 
 export async function loadLatestConversation(): Promise<ConversationRecord | null> {
   try {
-    return (await readAll())[0] ?? null;
+    await ensureLegacyMigrated();
+    const latest = (await queryConversationSummaries<ConversationArchiveSummary>({ offset: 0, limit: 1 })).records[0];
+    return latest ? loadConversation(latest.id) : null;
   } catch {
     return null;
   }
@@ -429,12 +439,9 @@ export async function loadLatestConversation(): Promise<ConversationRecord | nul
  */
 export async function loadLatestConversationForScope(scopeKey: string): Promise<ConversationRecord | null> {
   try {
-    let latest: ConversationRecord | null = null;
-    for (const conversation of await readAll()) {
-      if (conversation.projectContextKey !== scopeKey) continue;
-      if (!latest || conversation.savedAt > latest.savedAt) latest = conversation;
-    }
-    return latest;
+    await ensureLegacyMigrated();
+    const latest = (await queryConversationSummaries<ConversationArchiveSummary>({ scope: scopeKey, offset: 0, limit: 1 })).records[0];
+    return latest ? loadConversationForScope(latest.id, scopeKey) : null;
   } catch {
     return null;
   }
@@ -489,24 +496,28 @@ export interface ConversationArchiveQuery {
   readonly query?: string;
   readonly offset?: number;
   readonly limit?: number;
+  readonly signal?: AbortSignal;
 }
 
 /** Full archive queries reject storage errors, unlike the compatibility recent-list API. */
 export async function queryConversationArchive(options: ConversationArchiveQuery): Promise<{
   readonly records: readonly ConversationArchiveSummary[]; readonly total: number; readonly hasMore: boolean; readonly durable: boolean;
 }> {
+  await ensureLegacyMigrated();
   const needle = options.query?.trim().toLowerCase();
-  const records = (await readAll()).filter(row => (row.projectContextKey ?? null) === options.projectContextKey).map(row => {
-    const index = isConversationMapIndex(row.mapIndex) ? row.mapIndex : indexConversationMaps(row.entries);
-    return { ...toSummary(row), ...index, mapIds: [...new Set([...index.viewedMapIds, ...index.targetMapIds])].sort(),
-      transcriptCompacted: conversationTranscriptCompacted(row.entries) };
-  }).filter(row => (!options.mapId || row.mapIds.includes(options.mapId))
-    && (!options.unknownOnly || row.mapAttribution === "unknown")
-    && (!needle || `${row.title}\n${row.preview ?? ""}`.toLowerCase().includes(needle)));
   const offset = Math.max(0, Math.floor(options.offset ?? 0));
   const limit = Math.max(1, Math.floor(options.limit ?? 50));
-  return { records: records.slice(offset, offset + limit), total: records.length, hasMore: offset + limit < records.length,
-    durable: await aiRecordBackendKind() === "indexeddb" };
+  return queryConversationSummaries<ConversationArchiveSummary>({ scope: options.projectContextKey, mapId: options.mapId,
+    unknownOnly: options.unknownOnly, offset, limit, signal: options.signal,
+    ...(needle || options.mapId && options.unknownOnly ? { matches: (row: ConversationArchiveSummary) =>
+      (!options.unknownOnly || row.mapAttribution === "unknown")
+      && (!needle || `${row.title}\n${row.preview ?? ""}`.toLowerCase().includes(needle)) } : {}),
+  });
+}
+
+export async function listConversationArchiveMapIds(projectContextKey: string): Promise<string[]> {
+  await ensureLegacyMigrated();
+  return conversationSummaryMapIds(projectContextKey);
 }
 
 export async function loadConversationForScope(id: string, projectContextKey: string | null): Promise<ConversationRecord | null> {
@@ -586,3 +597,12 @@ export function deriveTitle(entries: readonly AuditEntry[]): string {
   }
   return "(빈 대화)";
 }
+
+// Pure projection registration has no I/O. Saves, recovery, old API seeding and
+// deletion update this summary in the SAME IDB transaction as the transcript.
+registerConversationSummaryProjector(value => {
+  if (!isConversationRecord(value)) return null;
+  const index = isConversationMapIndex(value.mapIndex) ? value.mapIndex : indexConversationMaps(value.entries);
+  return { ...toSummary(value), ...(value.projectContextKey === undefined ? {} : { projectContextKey: value.projectContextKey }), ...index, mapIds: [...new Set([...index.viewedMapIds, ...index.targetMapIds])].sort(),
+    transcriptCompacted: conversationTranscriptCompacted(value.entries) };
+});

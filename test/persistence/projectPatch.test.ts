@@ -4,9 +4,36 @@ import {
   applyProjectDocumentPatch,
   diffProjectDocuments,
   resolveMapPatchDocuments,
+  diffProjectDocumentsSliced,
+  withWirePatchValues,
+  withWirePatchValuesSliced,
 } from "@/project/persistence/core/projectPatch";
 
 describe("project document patch", () => {
+  it("큰 맵 내부에서 양보하고 제출본은 다음 편집과 분리한다", async () => {
+    const cells = Array(8192).fill(16);
+    const base = { maps: { m: { lowerTiles: cells } } };
+    const local = { maps: { m: { lowerTiles: [...cells] } } };
+    local.maps.m.lowerTiles[8191] = 23;
+    let yields = 0;
+    const patch = await diffProjectDocumentsSliced(base, local, async () => { yields++; }, 0);
+    expect(yields).toBeGreaterThan(1);
+    const wire = await withWirePatchValuesSliced(patch, async () => {}, 0);
+    local.maps.m.lowerTiles[0] = 99;
+    const submitted = applyProjectDocumentPatch(base, wire) as typeof local;
+    expect(submitted.maps.m.lowerTiles[0]).toBe(16);
+    expect(submitted.maps.m.lowerTiles[8191]).toBe(23);
+    expect(base.maps.m.lowerTiles[8191]).toBe(16);
+  });
+
+  it("JSON 특수값과 중첩 toJSON의 키를 왕복과 동일하게 복사한다", async () => {
+    const value = { missing: undefined, cells: [undefined, NaN, Infinity], child: { toJSON(key: string) { return { key }; } } };
+    const patch = { maps: { set: { m: value } } };
+    const expected = JSON.parse(JSON.stringify(value));
+    expect(withWirePatchValues(patch).maps?.set?.m).toEqual(expected);
+    expect((await withWirePatchValuesSliced(patch, async () => {}, 0)).maps?.set?.m).toEqual(expected);
+  });
+
   it("맵만 바뀌면 타일셋 참고 그림은 본문에 실리지 않는다", () => {
     const blob = "x".repeat(50_000);
     const base: {

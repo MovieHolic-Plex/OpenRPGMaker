@@ -1,3 +1,4 @@
+import { prepareReliefRead } from "./reliefGroundSurface";
 import { mapTileSize } from "@/project/tileGeometry";
 import type Phaser from "phaser";
 import { createChipsetTileObject } from "@/editor/chipsetTileRender";
@@ -11,7 +12,7 @@ import { planEditorTerrainDoodad, planEditorGroupMove } from "./terrainDoodadPla
 import { groupAt } from "./terrainClusters";
 import { terrainBrushPoints } from "./terrainBrush";
 import { RELIEF_ROUGH_RADII } from "@/project/relief/roughBrush";
-import { cellLift, reliefLiftField, reliefPickCell, reliefSignature } from "@/project/relief/screen";
+import { cellLift, reliefLiftField, reliefPickCell, reliefReadSignature as reliefSignature } from "@/project/relief/screen";
 import { isTerrainDesignTool } from "./terrainDesignActions";
 import { symmetricPoints, lineCells, polygonCells, symmetryVariants, transformPoint } from "./terrainDesignGeometry";
 import { planTerrainStamp } from "./terrainStamps";
@@ -133,12 +134,14 @@ function hoverPreviewKey(spec: HoverPreviewSpec): string {
     state.terrainHouseStyle, state.terrainHouseKitId, state.terrainHouseWidth, state.terrainHouseStories, state.terrainHouseResize, state.terrainHouseRoofWidth, state.terrainRoadDrag,
     state.terrainAreaShape, state.terrainDelta, state.terrainSeed, JSON.stringify(state.terrainMixWeights), JSON.stringify(state.terrainPoints),
     ...(state.tool === "relief"
-      ? [state.reliefDoodad ?? "", state.reliefRoughSize, state.terrainBrush, state.terrainMaterial, state.terrainWidth, state.reliefRampWidth, state.reliefClusterDensity, state.reliefClusterEnabled, JSON.stringify(state.reliefBridgeStart), JSON.stringify(state.terrainSelectedGroup), state.terrainMoveGroup, store.getVersionToken(), reliefSignature(store.getCurrent().maps[spec.mapId]?.relief)]
+      ? [state.reliefDoodad ?? "", state.reliefRoughSize, state.terrainBrush, state.terrainMaterial, state.terrainWidth, state.reliefRampWidth, state.reliefClusterDensity, state.reliefClusterEnabled, JSON.stringify(state.reliefBridgeStart), JSON.stringify(state.terrainSelectedGroup), state.terrainMoveGroup, `${store.getVersionToken().lineage}:${store.getVersionToken().generation}`, reliefSignature(store.getCurrent().maps[spec.mapId]?.relief)]
       : []),
   ].join("|");
 }
 
 export function renderHoverTilePreview(spec: HoverPreviewSpec): void {
+  const inputMap = store.getCurrent().maps[spec.mapId];
+  if (inputMap) prepareReliefRead(inputMap);
   const key = hoverPreviewKey(spec);
   if (spec.layer.getData(HOVER_PREVIEW_KEY) === key && spec.layer.list.length > 0) return;
   spec.layer.setData(HOVER_PREVIEW_KEY, key);

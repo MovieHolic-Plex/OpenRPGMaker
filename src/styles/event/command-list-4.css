@@ -115,9 +115,12 @@
   overflow: hidden;
 }
 
+/* Details owns an absolute popover below the toolbar; clipping it makes
+   its visible-sized buttons impossible to click behind neighboring controls. */
 .event-editor .event-editor-command-toolbar > .event-editor-command-edit-menu,
 .event-editor .event-editor-command-toolbar > .event-editor-command-tools-menu {
-  overflow: hidden;
+  overflow: visible;
+  flex-shrink: 0;
 }
 
 /* AI 버튼(aux 그룹)도 도구와 같은 30px 높이·32px 폭을 지킨다 — 글리프만 남아도

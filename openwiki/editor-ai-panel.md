@@ -2,6 +2,102 @@
 
 # Editor AI Panel & Tools
 
+## UX 추가 조사 2 — 공간 체크포인트·사람 칸 비교 (2026-10-04)
+
+`sharedDictionaryJson.serializeForRoundtripCheck`는 `spatialAuthoring`이 있어도 항목별로
+왕복을 통과한 불변 타일셋을 재사용한다. 독립 검증을 이미 통과한 참고문서 본문만 빼며,
+`kind`, `count`, `tileSize`, `tilesPerRow`, `structureKits`의 모든 비문서 필드,
+`tileGrafts`, 실제 통행·레이어·지형 규칙 등 나머지 필드는 보존한다. 소유 문서의 wire view도
+통과한 뒤에만 기억한다. 새/교체 항목은 전체 형태로 검사하고, 공간 참조·정규화·린트·적용
+권위 게이트는 매번 기존 경로를 지난다. 자료를 뺀 투영본은 저장/ACK가 아니라 린트 입력 전용이다.
+
+`assistantHumanEdits`의 descriptor 없는 복원·높이 비교는 같은 dense 배열을 건너뛰고,
+바뀐 배열만 숫자로 비교한다. 벽 장식·잠금·군집·feature patch는 비교 한 번당 칸별로 색인한다.
+전 맵의 칸마다 JSON/멤버십 검색을 반복하지 않는다. 실제 바뀐 칸만 보존하며, descriptor가
+있는 같은 값 붓질 의도와 ACK 뒤 실행 수명 동안의 보호, 최신 live 값 검사, 프로젝트 전환
+무효화는 유지한다. relief 액션 자체의 descriptor 변경은 relief 담당 작업 범위다.
+
+추가 회귀 계약: `test/assistantUx2SpatialRoundtrip.test.ts`,
+`test/assistantUx2HumanFallback.test.ts`. 이번 작업은 실행 금지 지시에 따라 Vitest/게이트/
+typecheck/브라우저를 실행하지 않는다. 소스 검토와 esbuild 구문 검사만 사용하며 성능 실측값은 없다.
+
+## UX 추가 조사 2 — 활동 그림 캡처·그림판·보관 정리 (2026-10-04)
+
+`activityVisual.captureActivityVisuals`는 최대 32×24 crop 좌표를 먼저 계산하고 원본 보조 층에서
+그 칸만 복사한다. 전체 relief/overlay/shadow 배열을 clone한 뒤 자르지 않는다. 벽 장식·잠금·
+그룹 소속은 기존 remapper로 필터/좌표 변환하며 원본은 바꾸지 않는다. 불변 타일셋 항목은
+문서/kit을 제외한 캡처 메타데이터를 한 번 크기 검사·복제·freeze하여 공유한다. 110만 글자
+예산을 넘는 메타데이터는 grid crop/clone 전 거절한다. 업로드 graft 소스도 실행 시점의
+바이트 또는 content ref를 보존하며 새 업로드 항목은 별도 스냅샷이다.
+
+`toolImageCanvas.loadActivityTilesetAtlas`는 활동 그림 전용 LRU를 사용한다. 정확한 source URL/
+바이트, transparency key, 그림판 크기와 graft 내용/캡처 소스가 key다. 서로 다른 visual id도
+같은 불변 그림판은 decode/keying Promise를 공유한다. 보유 상한은 8항목·64MiB이며 key 문자열과
+추정 decoded pixel 메모리를 함께 계수한다. 실패/큰 항목은 보유하지 않는다. 이것은 브라우저
+전체/작업 중 임시 할당의 엄격한 메모리 상한이 아니다. 예전 graft 기록에 업로드 소스가 없으면
+누락 그림으로 처리하고 현재 편집기 그림으로 대체하지 않는다. 기존 유휴 예약·raster 3 lane·
+저장 Blob 재사용·표시 숨김 중 기록·ACK/백그라운드 양보는 유지한다.
+
+`oprn-ai-activity-media` v2는 payload와 `id/orderAt/bytes` 메타데이터를 같은 트랜잭션으로 쓴다.
+v1 자료는 스키마 업그레이드 때 한 번만 cursor로 읽어 메타데이터를 만든다. 일반 prune은
+`metadata.newest.openKeyCursor`의 key만 순회하고 payload/Blob을 조회하지 않는다. 기존 7일/
+64,000,000 byte·동시간 id 순서·메모리 256개/16MB 정책을 유지한다. 조용한 600ms 뒤 정리,
+연속 쓰기는 최초 예약부터 최대 5초 내 정리를 예약한다(저장 큐 완료 시간 보장은 아니다).
+
+추가 회귀 계약: `test/assistantUx2ActivityVisual.test.ts`, `test/assistantUx2ActivityAtlas.test.ts`,
+`test/assistantUx2MediaPrune.test.ts`. 테스트/브라우저는 실행하지 않았고 esbuild 구문 검사만 한다.
+
+## UX 추가 조사 2 — 대화 요약 색인·범위 검색 (2026-10-04)
+
+`oprn-ai-records` v4는 대화 payload와 `conversationSummaries`/준비 표식을 함께 보존한다.
+`aiRecordDb`가 트랜잭션 소유 helper인 이유는 저장·복구·삭제/tombstone과 요약을 원자적으로
+갱신하기 위해서다. `conversationStore`는 순수 projector를 등록한다. 오래된 v1~v3 대화는 첫
+조회 때 cursor로 한 번 검증/요약하며 payload는 다시 쓰거나 버리지 않는다. 잘못된 옛 행은
+원본 그대로 남고 목록에서 제외한다. projector 없이 raw seed한 쓰기는 준비 표식을 무효화한다.
+
+일반 페이지는 scope/저장시각·map multi-entry·unknown attribution 색인에서 count와 cursor
+advance를 사용한다. 같은 시각의 id는 기존 `localeCompare` 순서로 묶어 정렬하여 페이지 경계도
+보존한다(같은 시각에 몰린 행은 그 묶음의 compact 요약만 더 읽는다). 검색은 해당 범위의 작은
+요약만 순회하며 기존 제목+80자 미리보기 부분일치를 유지한다. 키 입력마다 전체 transcript
+getAll/검증/전체 아카이브 정렬을 하지 않는다. 최근 50개 목록·최신 대화 복원도 요약 색인을 쓰고
+선택된 payload만 읽는다. 원문 전체 읽기는 명시적 복구/전체 삭제 등 기존 경로에 남는다.
+
+기록 모달은 현재 맵의 첫 페이지와 별도 map catalog key cursor를 동시에 한 번씩 요청한다.
+검색은 180ms debounce하며 새 입력 즉시 이전 조회를 abort/세대 무효화한다. 닫기/필터 변경은
+예약을 취소하고 pending-work Promise도 정착시킨다. catalog는 독립 세대이므로 검색 입력으로
+초기 맵 목록이 버려지지 않는다. scope·legacy 읽기 전용·복구 admission·프로젝트/modal 소유권·
+compaction/맵 provenance/삭제 억제 계약은 유지한다.
+
+회귀 계약은 `test/assistantUx2HistoryIndex.test.ts`와 갱신된
+`test/aiConversationHistoryStartup.test.ts`이다. 기존 저장/복구/압축 회귀 계약도 유지한다.
+실행하지 않았으며 source-level 검토와 esbuild parse만 완료한다.
+
+통합 뒤 감독자 브라우저/native QA 재현(이 작업에서 실행하지 않음):
+
+1. 폐기 가능한 profile/project에서 v3 DB에 100/1000/5000개의 가짜 대화를 두 scope+legacy로
+   심는다. 일부는 압축 표시·viewed A/target B·unknown·동시간 대소문자/한글 id를 포함한다.
+   v4를 열어 원본 payload/압축 provenance를 비교한다. 최초 migration 뒤 transcript store의
+   `getAll/openCursor`와 summary index 요청을 계수한다. 현재 맵으로 모달을 열면 scoped page 1회+
+   key catalog 1회, 180ms 안에 10글자를 입력하면 마지막 검색 1회여야 한다. page 2·unknown·legacy·
+   제목/미리보기 검색을 확인하고 검색/복구 중 닫기·프로젝트 전환 시 늦은 결과/원격 쓰기가 없어야 한다.
+2. 자료가 많은 유효 spatial fixture의 동일 immutable 항목을 먼저 roundtrip lint로 warm한 뒤
+   한 칸 checkpoint 10개를 적용한다. 새 kit의 width/rows, `interiorMetadata`, graft target/count,
+   새 참고문서를 각각 망가뜨려 기존 deserialize/lint/권위 거절 경로를 확인한다. projection은 모든
+   비문서 교차 참조 필드를 보존하고 새 참고문서 본문은 전체 검증해야 한다. 숨김/blur 상태에서도
+   실제 apply→ACK가 이어지고 돌아온 뒤 과거 연출을 재생하지 않아야 한다.
+3. 조수 실행 중 128×128/512×512 맵에서 descriptor 없는 높이/복원 편집과 같은 값 붓질을 한다.
+   overlay의 missing↔-1, shadow의 missing↔0은 보호 칸을 늘리지 않고 실제 층/높이/경사로/벽·잠금·
+   그룹 변경 칸만 보존해야 한다. 두 ACK 뒤 최신 사람 값은 남고 이웃 조수 칸은 적용되어야 한다.
+   차원/tileset 변경은 fallback 전에 구조 변경으로 처리한다.
+4. 동일 keyed 2048×2048 업로드 그림판으로 서로 다른 작은 활동 crop 20개를 만든다. 원본 보조
+   층의 전체 clone이 없고 캐시 보유 동안 whole-atlas key scan 1회인지 계수한다. key/graft 소스
+   바이트/ref를 바꾸면 새 그림, 옛 기록은 옛 pixels여야 한다. 자료 누락은 누락 표면으로 처리한다.
+   표시 수준 none에서도 기록을 보존한다. 9개 이상의 다른 그림판을 써서 eviction을 확인한다.
+5. 작은 실제 Blob이 있는 v1 media archive를 v2로 올려 재로드한다. synthetic bytes metadata로
+   8/32/64MB와 7일 경계를 만들고 600ms 이상 간격 burst와 5초 연속 쓰기를 비교한다. 일반 prune은
+   metadata key만 읽고 payload/Blob getAll/sort가 없어야 한다. 삭제 대상과 retained Blob을 재로드하고,
+   image 부재/저장 quota 실패가 tool/apply/ACK를 막지 않는지 확인한다. 이 fixture는 실제 기록과 분리한다.
+
 ## 조수 실행 중 읽기·손편집·승인 보존 (2026-10-04)
 
 - `aiConversationScroll.ts`는 로그별로 따라가기 상태를 소유한다. 맨 아래(24px 이내)에서만 새 출력·이미지 크기 변화를 따라간다. 위로 읽으면 현재 위치를 유지하고 로그 밖의 「새 응답 보기」를 보여 준다. 버튼을 누르거나 맨 아래로 돌아오면 따라가기를 재개한다. 스트리밍·영역 실행·첨부·카드도 이 정책을 공유한다. 위를 읽는 중 사용자 발화가 추가돼도 지난 대화를 자동으로 접지 않는다. 패널 폐기 때 관찰자·프레임·리스너를 정리한다.
@@ -3687,3 +3783,5 @@ run20개의 현재run 저장 getAll1→0, 비활성 스튜디오 DOM365→0.
 남은 것: 첫 실행의 무거운 키 해시·gzip(새 프로젝트에서 보내기~실행 요청 약 10s, 이 박스)과 체크포인트 적용 비용(권위 다이제스트·왕복 검사)은 그대로다 — 2026-09-25·28 절의 남은 비용 목록.
 연출은 도구 결과가 한 번에 오는 것을 「지어지는 모습」으로 보여 줄 뿐, 워커 안 단계별 증분 전송은 아니다(`buildBeodeulVillage` §11·§12 사이에 증분을 내려면 비동기 생성기가 필요).
 
+
+높이 붓의 `reliefCells`와 타일 `cells`는 독립적으로 사람 편집 보호에 합친다. 높이 변경 범위를 모르는 작성자는 `relief: true`만 보내면 실제 변경 비교로 보호한다. 혼합 붓에서 타일 descriptor만 보고 높이 편집을 누락하면 안 된다.

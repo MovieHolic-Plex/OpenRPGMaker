@@ -32,6 +32,7 @@ import { isMapPanelCollapsed, setMapPanelCollapsed, toggleMapPanelCollapsed } fr
 
 type RenderNodeContext = {
   readonly activeId: string;
+  readonly canDeleteMap: boolean;
   readonly startMapId: MapId;
   readonly visibleIds: ReadonlySet<MapId>;
 };
@@ -81,6 +82,9 @@ let draggingMapIds: MapId[] = [];
 let renamingMapId: MapId | null = null;
 const selectedMapIds = new Set<MapId>();
 let lastClickedMapId: MapId | null = null;
+// Navigation notifies editor-state subscribers synchronously. Track the actual
+// container render so subscribed panes and standalone switchers both refresh once.
+const mapListRenderVersions = new WeakMap<HTMLElement, number>();
 
 export function renderMapList(container: HTMLElement, options?: { readonly variant?: MapListVariant }): void {
   currentMapListContainer = container;
@@ -159,7 +163,7 @@ export function renderMapList(container: HTMLElement, options?: { readonly varia
     },
   });
   renderNode({
-    context: { activeId, startMapId: project.startMapId, visibleIds },
+    context: { activeId, canDeleteMap: mapCount > 1, startMapId: project.startMapId, visibleIds },
     depth: 0,
     host: tree,
     node: project.mapTree,
@@ -186,6 +190,7 @@ export function renderMapList(container: HTMLElement, options?: { readonly varia
     section.append(tree);
   }
   container.append(section);
+  mapListRenderVersions.set(container, (mapListRenderVersions.get(container) ?? 0) + 1);
   if (typeof globalThis.requestAnimationFrame === "function") {
     globalThis.requestAnimationFrame(() => {
       document.querySelector<HTMLElement>(`[data-testid="map-tree-node-${activeId}"]`)?.scrollIntoView({ block: "nearest" });
@@ -377,7 +382,7 @@ function renderNode(spec: RenderNodeSpec): void {
   const isCollapsed = collapsedMapIds.has(node.mapId) && !mapFilterQuery.trim() && mapFilterFacet === "all";
   const icon = isFolder || depth === 0 || hasChildren ? "folder" : "map-node";
   const actionContext: MapActionContext = {
-    canDelete: isFolder || Object.keys(project.maps).length > 1,
+    canDelete: isFolder || context.canDeleteMap,
     isFolder,
     mapId: node.mapId,
     mapName: mapTreeNodeLabel(node, project.maps),
@@ -1285,8 +1290,15 @@ function applyTreeSelection(mapId: MapId, event: Event, isFolder: boolean): void
   // Direct navigation must not wait for the assistant's cover/paint/reveal sequence.
   // Cancel a pending assistant swap too, or it can overwrite this newer selection.
   clearMapDissolveVeil();
+  const container = currentMapListContainer;
+  const variant = currentMapListVariant;
+  const renderedBeforeSelection = container ? mapListRenderVersions.get(container) : undefined;
   selectEditorMap(mapId);
-  rerenderMapList();
+  // Same-map/chord selection and unsubscribed surfaces still need an explicit
+  // refresh. A different-map click in the activity pane has already refreshed it.
+  if (container && mapListRenderVersions.get(container) === renderedBeforeSelection) {
+    renderMapList(container, { variant });
+  }
   focusMapRow(mapId);
 }
 

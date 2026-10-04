@@ -1,8 +1,9 @@
 import type { DatabaseCollection } from "@/editor/databaseActions";
-import { CONNECTION_COLLECTIONS, recordConnections, type RecordUse } from "@/editor/databaseRecordConnections";
+import { CONNECTION_COLLECTIONS, createRecordConnectionsReader, type RecordConnections, type RecordUse } from "@/editor/databaseRecordConnections";
 import { inventoryCatalogSession, selectedRecordIdForSession, setSelectedRecordId } from "@/editor/panels/databaseRecordViewSession";
 import { store } from "@/project/store";
 import { el } from "@/util/dom";
+import { jsonEqual } from "@/util/structuralJson";
 
 /**
  * 자료집 오른쪽 「연결」 칸(2026-09-27 개선안). 본문(.db-body) 밖의 형제라 탭 캐시·부분 렌더와
@@ -40,6 +41,9 @@ export function createConnectionsPanel(navigate: (target: NonNullable<RecordUse[
     dataset: { testid: "db-connections" },
   });
   let lastKey = "";
+  let lastResult: RecordConnections | undefined;
+  let readConnections = createRecordConnectionsReader();
+  let lastLineage = store.getVersionToken().lineage;
   // 종류별로 「더 보기」를 펼친 묶음. 레코드가 바뀌면 비운다.
   const expanded = new Set<string>();
   const panel: ConnectionsPanel = { element, paint: () => {} };
@@ -54,46 +58,52 @@ export function createConnectionsPanel(navigate: (target: NonNullable<RecordUse[
     if (!collection || !CONNECTION_COLLECTIONS.has(collection) || !record) {
       element.hidden = true;
       lastKey = "";
+      lastResult = undefined;
       return;
     }
     element.hidden = false;
     const project = store.getCurrent();
-    // 같은 프로젝트·같은 레코드면 다시 그리지 않는다 — 클릭마다 불려도 싸다.
+    const lineage = store.getVersionToken().lineage;
+    if (lineage !== lastLineage) {
+      lastLineage = lineage;
+      readConnections = createRecordConnectionsReader();
+      lastKey = "";
+      lastResult = undefined;
+      expanded.clear();
+    }
     const key = `${collection}:${record.id}`;
-    if (key === lastKey && element.dataset.project === projectStamp(project)) return;
+    const result = readConnections(project, collection, record.id);
+    if (key === lastKey && jsonEqual(result, lastResult)) return;
     if (key !== lastKey) expanded.clear();
     lastKey = key;
-    element.dataset.project = projectStamp(project);
-    const { uses, checks } = recordConnections(project, collection, record.id);
+    lastResult = result;
+    const { uses, checks } = result;
+    // Expansion is presentation only; redraw the already computed uses.
     const repaint = (): void => {
-      lastKey = "";
-      paint(tab);
-      lastKey = key;
+      const active = document.activeElement as HTMLElement | null;
+      const focusedKind = active && usesSection.contains(active) ? active.dataset.connectionKind : undefined;
+      usesSection.replaceChildren(
+        el("h4", { class: "db-connections-title", text: "쓰는 곳" }),
+        ...groupedUses(uses, expanded, navigate, repaint),
+      );
+      if (focusedKind) {
+        Array.from(usesSection.querySelectorAll<HTMLButtonElement>(".db-connections-more"))
+          .find((button) => button.dataset.connectionKind === focusedKind)?.focus({ preventScroll: true });
+      }
     };
+    const usesSection = section("쓰는 곳", "db-connections-uses", uses.length
+      ? groupedUses(uses, expanded, navigate, repaint)
+      : [el("p", { class: "db-connections-none", text: "아직 아무 데서도 쓰지 않아요" })]);
     element.replaceChildren(
       section("확인할 것", "db-connections-checks", checks.length
         ? checks.map((text) => el("p", { class: "db-connections-check", attrs: { role: "note" }, text }))
         : [el("p", { class: "db-connections-none", text: "문제 없어요" })]),
-      section("쓰는 곳", "db-connections-uses", uses.length
-        ? groupedUses(uses, expanded, navigate, repaint)
-        : [el("p", { class: "db-connections-none", text: "아직 아무 데서도 쓰지 않아요" })]),
+      usesSection,
     );
   };
 
   panel.paint = paint;
   return panel;
-}
-
-// store 는 편집마다 새 Project 객체를 낸다. 객체 동일성을 숫자로 바꾸는 가벼운 도장.
-const stamps = new WeakMap<object, string>();
-let stampSeq = 0;
-function projectStamp(project: object): string {
-  let stamp = stamps.get(project);
-  if (!stamp) {
-    stamp = String(++stampSeq);
-    stamps.set(project, stamp);
-  }
-  return stamp;
 }
 
 function section(title: string, testid: string, children: readonly HTMLElement[]): HTMLElement {
@@ -131,6 +141,7 @@ function groupedUses(
     if (list.length > GROUP_PREVIEW) {
       out.push(el("button", {
         class: "db-connections-more",
+        dataset: { connectionKind: kind },
         attrs: { type: "button", "aria-expanded": String(open) },
         text: open ? "접기" : `${list.length - GROUP_PREVIEW}개 더 보기`,
         on: {

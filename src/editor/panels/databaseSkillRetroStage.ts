@@ -1,3 +1,4 @@
+import { registerDatabasePreview, setDatabasePreviewsActiveIn, type DatabasePreviewLifecycle } from "./databasePreviewLifecycle";
 import { characterCasting, characterMotionRecipe } from "@/battle/characterMotion";
 import { battleContactBounds } from "@/battle/battleContactGeometry";
 import { resolveCharacterMotion } from "@/assets/characterMotionCatalog";
@@ -49,8 +50,6 @@ import {
   isMonsterSkillId,
   monsterFxUrl,
   renderMonsterSkillStage,
-  resumeMonsterSkillStagesIn,
-  stopMonsterSkillStagesIn,
 } from "@/editor/panels/databaseMonsterSkillStage";
 import type { Project, SkillRecord } from "@/project/types";
 import { el } from "@/util/dom";
@@ -429,8 +428,6 @@ function lerp(a: number, b: number, t: number): number { return a + (b - a) * t;
 
 // ---- 스테이지 ----
 
-type RetroStageController = { readonly stop: () => void; readonly resume: () => void; readonly canAutoplay: boolean };
-const controllers = new WeakMap<HTMLElement, RetroStageController>();
 let sessionSpeed: 0.5 | 1 = 1;
 let sessionRepeat = true;
 
@@ -818,21 +815,24 @@ function renderSkillRetroStageForActor(record: SkillRecord, project: Project, se
   const controls = el("div", { class: "db-skill-retro-controls", children: [playButton, repeatButton, speedGroup, counter,...(timeline.movement?[outcome]:[])] });
   const wrap = el("div", { class: "db-skill-retro-preview", dataset: { testid: "db-skill-retro-preview" }, children: [caption, stage, controls, chips] });
   // 무대 폭에 맞춰 배율을 정한다. 기본 2배(480px), 카드가 좁으면 줄인다 — 도트는 nearest 라 흐려지지 않는다.
+  let resizeObserver: ResizeObserver | undefined;
   if (typeof ResizeObserver === "function") {
-    new ResizeObserver((entries) => {
+    resizeObserver = new ResizeObserver((entries) => {
       const width = entries[0]?.contentRect.width ?? 0;
       if (width > 0) world.style.setProperty("--retro-stage-scale", String(Math.round((width / STAGE_W) * 1000) / 1000));
-    }).observe(stage);
+    });
+    resizeObserver.observe(stage);
   }
 
   let frame: number | null = null;
   let last = 0;
-  let detachedTicks = 0;
   let withSound = false;
   let userPlay = false;
   let soundToken = 0;
   let restUntil = -1;
   const canAutoplay = autoplayAllowed();
+  let wantsPlayback = canAutoplay;
+  let lifecycle: DatabasePreviewLifecycle;
 
   const setRunning = (running: boolean): void => {
     // 자동 반복(무음)은 배경 재생이다 — 버튼은 「▶ 재생」 그대로 두고, 누르면 처음부터 소리와 함께 다시 튼다.
@@ -842,21 +842,18 @@ function renderSkillRetroStageForActor(record: SkillRecord, project: Project, se
     stage.dataset.running = String(running);
     stage.dataset.userPlay = String(userPlaying);
   };
-  const stop = (): void => {
+  const suspend = (): void => {
     soundToken += 1;
-    userPlay = false;
     if (frame !== null && typeof cancelAnimationFrame === "function") cancelAnimationFrame(frame);
     frame = null;
     withSound = false;
     setRunning(false);
   };
+  const stop = (): void => { wantsPlayback = false; userPlay = false; suspend(); };
   const tick = (stamp: number): void => {
     frame = null;
-    if (!stage.isConnected) {
-      // 탭 캐시 재부착 전 한두 틱은 봐주고, 그 뒤엔 확정적으로 끊는다(커밋 2ed96476 의 2틱 상한).
-      detachedTicks += 1;
-      if (detachedTicks >= 2) { stop(); return; }
-    } else detachedTicks = 0;
+    if (!stage.isConnected) { lifecycle.dispose(); return; }
+    if (!lifecycle.isActive()) { suspend(); return; }
     const dt = Math.min(64, Math.max(0, stamp - (last || stamp)));
     last = stamp;
     clock += dt;
@@ -881,12 +878,13 @@ function renderSkillRetroStageForActor(record: SkillRecord, project: Project, se
     if (typeof requestAnimationFrame === "function") frame = requestAnimationFrame(tick);
   };
   const start = (sound: boolean): void => {
-    stop();
+    if (!lifecycle?.isActive()) return;
+    suspend();
+    wantsPlayback = true;
     userPlay = sound;
     now = 0;
     restUntil = -1;
     last = 0;
-    detachedTicks = 0;
     setRunning(true);
     draw();
     if (!sound) { withSound = false; schedule(); return; }
@@ -896,7 +894,7 @@ function renderSkillRetroStageForActor(record: SkillRecord, project: Project, se
     const ready = Promise.all(sounds.map((id) => loadBattleSample(id)));
     const wait = new Promise<void>((resolve) => { setTimeout(resolve, SOUND_WAIT_MS); });
     void Promise.race([ready, wait]).then(() => {
-      if (token !== soundToken || !stage.isConnected) return;
+      if (token !== soundToken || !lifecycle.isActive()) return;
       withSound = true;
       // 0ms 사건(시작 효과음)도 울리게 한 칸 앞에서 시작한다.
       for (const id of retroSoundsBetween(timeline, -1, 0)) playBattleSample(id, SOUND_VOLUME);
@@ -917,21 +915,21 @@ function renderSkillRetroStageForActor(record: SkillRecord, project: Project, se
     speedButtons.forEach((other, otherIndex) => other.setAttribute("aria-pressed", String(otherIndex === index)));
   }));
 
-  controllers.set(stage, {
-    stop,
-    resume: () => { if (canAutoplay && frame === null) start(false); },
-    canAutoplay,
+  lifecycle = registerDatabasePreview(stage, {
+    suspend,
+    resume: () => {
+      if (!wantsPlayback || frame !== null || stage.dataset.running === "true") return;
+      // Resume the retained timeline without replaying buffered sound or hidden elapsed time.
+      last = 0;
+      setRunning(true);
+      schedule();
+    },
+    dispose: () => resizeObserver?.disconnect(),
   });
-
-  if (canAutoplay) {
-    draw();
-    start(false);
-  } else {
-    // 감속 모드·타이머 없는 호스트: 대표 칸에 선다. ▶ 재생으로만 움직인다.
-    now = timeline.representativeMs;
-    draw();
-  }
-  return { element: wrap, stop };
+  // Construction is static, including startup prewarm.
+  now = canAutoplay ? 0 : timeline.representativeMs;
+  draw();
+  return { element: wrap, stop: () => lifecycle.dispose() };
 }
 
 function placeCell(node: HTMLElement, cell: { readonly col: number; readonly row: number }, size: number): void {
@@ -955,17 +953,10 @@ function autoplayAllowed(): boolean {
 
 /** scope 안의 도트 스테이지 루프를 모두 멈춘다. stopSkillAnimationStagesIn 이 함께 부른다. */
 export function stopRetroSkillStagesIn(scope: ParentNode): void {
-  for (const stage of scope.querySelectorAll<HTMLElement>("[data-testid='db-skill-retro-stage']")) controllers.get(stage)?.stop();
-  stopMonsterSkillStagesIn(scope);
+  setDatabasePreviewsActiveIn(scope, false);
 }
-
-/** 캐시에서 다시 붙은 스테이지를 자동 반복으로 되돌린다. resumeSkillAnimationStagesIn 이 함께 부른다. */
 export function resumeRetroSkillStagesIn(scope: ParentNode): void {
-  for (const stage of scope.querySelectorAll<HTMLElement>("[data-testid='db-skill-retro-stage']")) {
-    const controller = controllers.get(stage);
-    if (controller?.canAutoplay) controller.resume();
-  }
-  resumeMonsterSkillStagesIn(scope);
+  setDatabasePreviewsActiveIn(scope, true);
 }
 
 /** 스킬 설정이 바뀌어 스테이지를 다시 그려야 하는지 가르는 서명. */

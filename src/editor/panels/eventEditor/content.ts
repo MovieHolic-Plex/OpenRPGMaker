@@ -1,3 +1,5 @@
+import { commandSummary } from "./commandSummary";
+import { textBodyOf } from "@/project/io/rewriteLegacyDialogue";
 import { editorState } from "@/editor/editorState";
 import { eventCommandBranches } from "@/editor/eventCommandBranches";
 import {
@@ -22,7 +24,7 @@ import {
   replaceEventPageCommandAt,
 } from "@/editor/eventPages";
 import { eventDraftCharacterName } from "@/project/eventDraftAuthored";
-import { store } from "@/project/store";
+import { store, type ProjectChangeDescriptor } from "@/project/store";
 import type { Command, EventPage, MapId } from "@/project/types";
 import { el } from "@/util/dom";
 import { renderEditorIcon, type EditorIconName } from "./editorIcons";
@@ -34,7 +36,7 @@ import { renderEventScheduleEditor } from "./eventScheduleEditor";
 import { openEventCommandEditDialog, openNewEventCommandDialog } from "./commandEditDialog";
 import { applyMemoryOpeningTemplate } from "./memoryOpeningTemplate";
 import { applySceneTemplate } from "./sceneTemplate";
-import { renderCommandList } from "./commandList";
+import { finishCommandListMount, renderCommandList, resumeCommandListMount } from "./commandList";
 import { handleCommandShortcut, openCommandContextMenu } from "./commandListContextMenu";
 import {
   beginEventViewSession,
@@ -49,6 +51,8 @@ import {
 import { newCommand } from "@/editor/eventActions";
 import {
   resetCommandInspectorView,
+  invalidateCommandSelectionRows,
+  isCommandActionKey,
   beginCommandSelectionScope,
   isCommandSelected,
   notifyCommandSelectionChanged,
@@ -84,6 +88,7 @@ type CommandNavigation = {
   readonly key: string;
   readonly root: HTMLElement;
   readonly navigate: (path: readonly number[]) => boolean;
+  readonly refreshMove: () => boolean;
 };
 let commandNavigation: CommandNavigation | undefined;
 
@@ -95,6 +100,15 @@ export function navigateToEventCommand(
   editorState.set({ selectedEventPageId: pageId });
   if (commandNavigation?.key !== `${mapId}:${eventId}:${pageId}` || !commandNavigation.root.isConnected) return false;
   return commandNavigation.navigate(commandPath);
+}
+
+/** Reuse the active List workbench for an array-only move. Other mutations/pages
+ * still use the full staged render and its existing error recovery. */
+export function refreshEventCommandMove(mapId: MapId, eventId: string, change: ProjectChangeDescriptor): boolean {
+  if (change.scope !== "map" || change.mapId !== mapId || change.eventId !== eventId
+    || !change.eventCommandMove) return false;
+  if (!commandNavigation?.root.isConnected || commandNavigation.key !== `${mapId}:${eventId}:${change.eventCommandMove.pageId}`) return false;
+  return commandNavigation.refreshMove();
 }
 
 export function clearEventCommandNavigation(): void { commandNavigation = undefined; }
@@ -195,11 +209,15 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
   const storyboardMode = currentStoryboardMode();
   const cmdList = el("div", { class: "cmd-list" });
   let listRendered = false;
+  let syncListMount: () => void = () => {};
   const ensureCommandList = (): void => {
     if (listRendered) return;
     listRendered = true;
     renderCommandList(cmdList, activePage.commands, [], actions, {
       selectionScope: selectionKey,
+      deferMount: true,
+      reuseImmutableRows: true,
+      onMount: () => syncListMount(),
       issues: activePageIssues,
       pickerContext: "map",
       openCommandPicker: (containerPath) => openCommandPickerForActions(actions, containerPath),
@@ -255,7 +273,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
       openEditor: () => openStoryboardEditor(path) };
   };
   storyboardHost.addEventListener("keydown", event => {
-    if (event.defaultPrevented) return;
+    if (event.defaultPrevented || !isCommandActionKey(event)) return;
     const request = storyboardRequest(event.target);
     if (request) handleCommandShortcut(event, request);
   });
@@ -308,6 +326,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     setCommandSelectionSurface(section);
     if (!isStoryboard && !isFlow) ensureCommandList();
     cmdList.hidden = isStoryboard || isFlow;
+    if (!cmdList.hidden) resumeCommandListMount(cmdList);
     storyboardEl.hidden = !isStoryboard;
     flowHost.hidden = !isFlow;
     const nextToggle = renderViewToggle(currentMode, changeMode, ["list", "storyboard", "flow"]);
@@ -342,6 +361,8 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     } else if (!isFlow) {
       flowHost.replaceChildren();
     }
+    invalidateCommandSelectionRows();
+    notifyCommandSelectionChanged();
     syncToolbarState();
   }
   storyboardHost.append(storyboardEl);
@@ -403,12 +424,15 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     aiDock: aiAssist,
     currentMode: () => currentMode,
     storyboardEl: () => storyboardEl,
-    ensureCommandList,
   });
   // 툴바가 생긴 다음에야 검색·이동 버튼 상태를 맞출 수 있다. 첫 적용은 여기서 한 번.
   syncToolbarState = commandToolbar.sync;
+  syncListMount = () => {
+    searchSurfaces.delete(cmdList);
+    if (currentMode === "list") commandToolbar.sync();
+  };
   // 선택이 바뀌면(목록·스토리 어느 쪽이든) 편집 버튼 상태를 즉시 다시 계산한다.
-  setCommandSelectionListener(() => syncToolbarState());
+  setCommandSelectionListener(commandToolbar.syncSelection);
   applyViewMode();
   commandsColumn.append(
     columnLabel(
@@ -452,6 +476,26 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
   commandNavigation = {
     key: selectionKey,
     root: section,
+    refreshMove: () => {
+      if (currentMode !== "list" || !listRendered) return false;
+      const event = store.getCurrent().maps[mapId]?.events.find(candidate => candidate.id === eventId);
+      const page = event?.pages?.find(candidate => candidate.id === activePage.id);
+      if (!event || !page || editorState.get().selectedEventPageId && editorState.get().selectedEventPageId !== page.id) return false;
+      // activePage is a presentation copy; published store snapshots stay untouched.
+      activePage.commands = page.commands;
+      const issues = eventDraftIssuesForPage(validateEventDraftBody(store.getCurrent(), mapId, event), page.id);
+      renderCommandList(cmdList, page.commands, [], actions, {
+        selectionScope: selectionKey, issues, pickerContext: "map", reuseImmutableRows: true, onMount: () => syncListMount(),
+        openCommandPicker: containerPath => openCommandPickerForActions(actions, containerPath),
+      });
+      cmdList.append(renderEmptyCommandLine(actions, page.commands.length === 0, mapId, eventId, page.id));
+      searchSurfaces.delete(cmdList);
+      setCommandSelectionSurface(section);
+      invalidateCommandSelectionRows();
+      notifyCommandSelectionChanged();
+      commandToolbar.sync();
+      return true;
+    },
     navigate: path => {
       const command = resolveCommandAtPath(activePage.commands, path);
       if (!command) return false;
@@ -461,6 +505,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
       const search = section.querySelector<HTMLInputElement>('[data-testid="event-command-search"]');
       if (search) search.value = "";
       applyViewMode();
+      finishCommandListMount(cmdList);
       showCommandInspector({ command, path: [...path], actions });
       const row = Array.from(cmdList.querySelectorAll<HTMLElement>(".cmd-item"))
         .find(item => item.dataset.cmdPath === JSON.stringify(path));
@@ -511,76 +556,64 @@ type CommandToolbarOptions = {
   readonly aiDock?: HTMLDetailsElement;
   readonly currentMode: () => StoryboardMode;
   readonly storyboardEl: () => HTMLElement;
-  readonly ensureCommandList: () => void;
 };
 
 type CommandToolbar = {
   readonly element: HTMLElement;
   /** 보기 전환·재렌더 뒤에 검색 필터와 편집 버튼 상태를 현재 화면에 맞춘다. */
   readonly sync: () => void;
+  readonly syncSelection: () => void;
 };
 
-/**
- * 명령 검색은 노드 **자기** 요약문만 본다. `textContent` 를 그대로 쓰면 분기를 품은
- * 부모가 자식 텍스트까지 삼켜서 "일치 개수" 가 부풀고, 어떤 줄이 진짜 맞았는지 알 수 없다.
- */
-function ownRowText(node: HTMLElement): string {
-  const chunks: string[] = [];
-  for (const child of Array.from(node.children) as HTMLElement[]) {
-    if (child.classList?.contains("cmd-head")) return child.textContent ?? "";
-    if (child.classList?.contains("kind") || child.classList?.contains("line")) {
-      chunks.push(child.textContent ?? "");
-    }
-  }
-  return chunks.length > 0 ? chunks.join(" ") : (node.textContent ?? "");
+type CommandSearchEntry = { readonly key: string; readonly ancestors: readonly string[]; readonly text: string };
+
+/** Page-version cache: search counts authored commands without constructing a hidden view. */
+export function indexCommandSearch(commands: readonly Command[], container: readonly number[] = []): CommandSearchEntry[] {
+  const result: CommandSearchEntry[] = [];
+  commands.forEach((command, index) => {
+    const path = [...container, index];
+    let summary: string;
+    try { summary = commandSummary(command); } catch { summary = String(command.kind); }
+    const aliases: Record<string, string> = { text: "대사", changeFace: "표정", choices: "선택지", fork: "분기", transfer: "이동" };
+    const text = `${commandKindLabel(command.kind)} ${aliases[command.kind] ?? ""} ${summary} ${command.kind === "text" ? textBodyOf(command).replace(/\s+/g, " ").trim() : ""}`.toLocaleLowerCase("ko");
+    const ancestors: string[] = [];
+    for (let length = 1; length < path.length; length += 2) ancestors.push(JSON.stringify(path.slice(0, length)));
+    result.push({ key: JSON.stringify(path), ancestors, text });
+    for (const branch of eventCommandBranches(command)) result.push(...indexCommandSearch(branch.commands, [...path, branch.branchIndex]));
+  });
+  return result;
 }
 
-/**
- * 한 표시면을 걸러내고 일치 개수를 돌려준다.
- * 부모를 숨기면 일치한 자식이 함께 사라지므로, 일치한 줄의 조상 줄은 항상 남긴다.
- */
-function filterCommandSurface(surface: HTMLElement, query: string): number {
-  const rows = Array.from(surface.querySelectorAll<HTMLElement>("[data-cmd-path]"));
-  const branchGroups = Array.from(surface.querySelectorAll<HTMLElement>(".event-storyboard-branches"));
-  if (query.length === 0) {
-    for (const row of rows) row.hidden = false;
-    for (const group of branchGroups) group.hidden = false;
-    return rows.length;
-  }
-  // 경로로 조상을 찾는다. 스토리 보기는 분기 줄을 카드의 **형제**로 놓기 때문에
-  // DOM 조상 추적만으로는 부모 카드를 못 찾고, 부모를 숨겨 일치한 자식이 고아가 된다.
-  const byPath = new Map<string, HTMLElement>();
-  for (const row of rows) {
-    if (row.dataset.cmdPath) byPath.set(row.dataset.cmdPath, row);
-  }
-  const keep = new Set<HTMLElement>();
-  let matches = 0;
-  for (const row of rows) {
-    if (!ownRowText(row).toLocaleLowerCase("ko").includes(query)) continue;
-    matches += 1;
-    keep.add(row);
-    // 명령 경로는 [명령, 분기, 명령, 분기, …] 로 번갈아 놓인다 — 조상 명령은 홀수 길이 접두어다.
-    const path = parseCommandPath(row.dataset.cmdPath);
-    if (path) {
-      for (let length = 1; length < path.length; length += 2) {
-        const ancestor = byPath.get(JSON.stringify(path.slice(0, length)));
-        if (ancestor) keep.add(ancestor);
-      }
+type SearchSurface = {
+  readonly rows: readonly HTMLElement[];
+  readonly groups: ReadonlyMap<HTMLElement, readonly HTMLElement[]>;
+  query?: string;
+};
+const searchSurfaces = new WeakMap<HTMLElement, SearchSurface>();
+
+/** Cache row/group topology once. Only active views are filtered; write only changed visibility. */
+function filterCommandSurface(surface: HTMLElement, query: string, keep: ReadonlySet<string>): void {
+  let cached = searchSurfaces.get(surface);
+  if (!cached) {
+    const rows = Array.from(surface.querySelectorAll<HTMLElement>("[data-cmd-path]"));
+    const groups = new Map<HTMLElement, HTMLElement[]>();
+    for (const group of surface.querySelectorAll<HTMLElement>(".event-storyboard-branches")) groups.set(group, []);
+    for (const row of rows) {
+      for (let parent = row.parentElement; parent && parent !== surface; parent = parent.parentElement) groups.get(parent)?.push(row);
     }
-    // 중첩이 DOM 으로 표현된 표시면(목록)도 함께 지지한다.
-    let parent = row.parentElement;
-    while (parent && parent !== surface) {
-      if (parent.dataset?.cmdPath) keep.add(parent);
-      parent = parent.parentElement;
-    }
+    cached = { rows, groups };
+    searchSurfaces.set(surface, cached);
   }
-  for (const row of rows) row.hidden = !keep.has(row);
-  // 남은 줄이 하나도 없는 분기 묶음은 제목만 떠 있게 두지 않는다.
-  for (const group of branchGroups) {
-    group.hidden = Array.from(group.querySelectorAll<HTMLElement>("[data-cmd-path]"))
-      .every((row) => row.hidden);
+  if (cached.query === query) return;
+  cached.query = query;
+  for (const row of cached.rows) {
+    const hidden = query.length > 0 && !keep.has(row.dataset.cmdPath!);
+    if (row.hidden !== hidden) row.hidden = hidden;
   }
-  return matches;
+  for (const [group, rows] of cached.groups) {
+    const hidden = query.length > 0 && rows.every(row => row.hidden);
+    if (group.hidden !== hidden) group.hidden = hidden;
+  }
 }
 
 function parseCommandPath(raw: string | undefined): number[] | null {
@@ -729,27 +762,39 @@ function renderCommandToolbar(options: CommandToolbarOptions): CommandToolbar {
     },
   }) as HTMLButtonElement;
 
-  /** 검색은 두 표시면(목록·스토리) 모두에 같은 조건으로 걸린다. */
+  let indexedCommands: readonly Command[] | undefined;
+  let searchIndex: readonly CommandSearchEntry[] = [];
+  let lastQuery: string | undefined;
+  let keep = new Set<string>();
+  let matches = 0;
   function applySearch(): void {
     const query = currentCommandQuery().trim().toLocaleLowerCase("ko");
-    const isPreview = options.currentMode() === "preview";
-    // 미리보기에는 걸러낼 줄이 없다 — 못 하는 일을 할 수 있는 척하지 않는다.
+    const mode = options.currentMode();
+    const isPreview = mode === "preview";
     commandSearch.disabled = isPreview;
     commandSearch.title = isPreview ? "미리보기에서는 검색할 수 없습니다. 목록이나 스토리로 바꾸세요." : "명령 검색";
     searchClear.hidden = query.length === 0;
-    // Flow's existing match count uses list summaries; create that surface only
-    // when a nonempty search actually needs it.
-    if (query.length > 0 && options.currentMode() === "flow") options.ensureCommandList();
-    const listMatches = filterCommandSurface(cmdList, query);
-    const storyMatches = filterCommandSurface(options.storyboardEl(), query);
-    if (query.length === 0 || isPreview) {
-      searchCount.textContent = "";
-      delete searchCount.dataset.state;
-      return;
+    if (query.length > 0 && (indexedCommands !== page.commands || lastQuery !== query)) {
+      if (indexedCommands !== page.commands) {
+        indexedCommands = page.commands;
+        searchIndex = indexCommandSearch(page.commands);
+      }
+      keep = new Set();
+      matches = 0;
+      for (const entry of searchIndex) {
+        if (!entry.text.includes(query)) continue;
+        matches += 1;
+        keep.add(entry.key);
+        for (const ancestor of entry.ancestors) keep.add(ancestor);
+      }
     }
-    const matches = options.currentMode() === "storyboard" ? storyMatches : listMatches;
-    searchCount.textContent = matches > 0 ? `${matches}개 일치` : "일치 없음";
-    searchCount.dataset.state = matches > 0 ? "hit" : "miss";
+    lastQuery = query;
+    if (mode === "list") filterCommandSurface(cmdList, query, keep);
+    else if (mode === "storyboard") filterCommandSurface(options.storyboardEl(), query, keep);
+    // Flow has no filterable rows. Count comes from the model, never a hidden List.
+    searchCount.textContent = query.length === 0 || isPreview ? "" : matches > 0 ? `${matches}개 일치` : "일치 없음";
+    if (query.length === 0 || isPreview) delete searchCount.dataset.state;
+    else searchCount.dataset.state = matches > 0 ? "hit" : "miss";
   }
   commandSearch.addEventListener("input", () => {
     setCommandQuery(commandSearch.value);
@@ -776,16 +821,16 @@ function renderCommandToolbar(options: CommandToolbarOptions): CommandToolbar {
       renderCommandAuxGroup(aiDock),
     ],
   });
+  const syncHistoryButtons = (): void => {
+    const undo = element.querySelector<HTMLButtonElement>('[data-testid="event-command-toolbar-undo"]');
+    const redo = element.querySelector<HTMLButtonElement>('[data-testid="event-command-toolbar-redo"]');
+    if (undo) setDisabled(undo, !commandHistory.canUndo());
+    if (redo) setDisabled(redo, !commandHistory.canRedo());
+  };
   return {
     element,
-    sync: () => {
-      const undo = element.querySelector<HTMLButtonElement>('[data-testid="event-command-toolbar-undo"]');
-      const redo = element.querySelector<HTMLButtonElement>('[data-testid="event-command-toolbar-redo"]');
-      if (undo) setDisabled(undo, !commandHistory.canUndo());
-      if (redo) setDisabled(redo, !commandHistory.canRedo());
-      applySearch();
-      syncEditTools();
-    },
+    syncSelection: () => { syncHistoryButtons(); syncEditTools(); },
+    sync: () => { syncHistoryButtons(); applySearch(); syncEditTools(); },
   };
 }
 
@@ -901,6 +946,7 @@ function pageCommandActions(mapId: MapId, eventId: string, pageId: string): Comm
 function pageCommandHistory(mapId: MapId, eventId: string, pageId: string): CommandToolbarHistory {
   return createCommandToolbarHistory({
     key: `${mapId}:${eventId}:${pageId}`,
+    immutableSnapshots: true,
     readCommands: () => activePageCommands(mapId, eventId, pageId),
     replaceCommands: commands => replaceEventPageCommands(mapId, eventId, pageId, commands),
   });

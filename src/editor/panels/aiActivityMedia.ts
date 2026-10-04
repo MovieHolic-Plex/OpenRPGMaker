@@ -1,7 +1,6 @@
-import { awaitGraftedTilesetImageUrl } from "@/assets/tileGraftImageCache";
 import { tilesetBaseImageUrl } from "@/editor/tilesetImage";
 import { uploadedAssetUrl } from "@/project/persistence/assetAccessors";
-import { keyedTilesetImage } from "@/ai/toolImageCanvas";
+import { loadActivityTilesetAtlas } from "@/ai/toolImageCanvas";
 import type { ActivityVisual, ActivityVisualRef } from "@/ai/activityVisual";
 import { readActivityMedia, saveActivityMediaBlob, setActivityMediaPreparer } from "@/ai/activityMediaArchive";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
@@ -46,17 +45,16 @@ async function raster(visual: ActivityVisual): Promise<Blob | undefined> {
     // Both map and tileset are execution snapshots, never the current editor project.
     let atlas: HTMLImageElement | HTMLCanvasElement | undefined;
     if (visual.tileset.image.type === "uploaded" || visual.tileset.tileGrafts?.length) {
-      let url = visual.tileset.image.type === "uploaded" ? visual.uploaded || (visual.uploadedAsset && uploadedAssetUrl(visual.uploadedAsset)) : tilesetBaseImageUrl(visual.tileset);
+      const url = visual.tileset.image.type === "uploaded" ? visual.uploaded || (visual.uploadedAsset && uploadedAssetUrl(visual.uploadedAsset)) : tilesetBaseImageUrl(visual.tileset);
       if (!url) throw new Error("Uploaded atlas snapshot unavailable");
-      if (visual.tileset.tileGrafts?.length) {
-        const controller = new AbortController();
-        const timer = setTimeout(() => controller.abort(), 5000);
-        try { url = await awaitGraftedTilesetImageUrl(visual.tileset, url, controller.signal) ?? undefined; }
-        finally { clearTimeout(timer); }
-        if (!url) throw new Error("Graft atlas snapshot unavailable");
+      const sources = new Map<string, string>();
+      for (const [id, asset] of Object.entries(visual.graftAssets ?? {})) {
+        const capturedUrl = uploadedAssetUrl(asset);
+        if (!capturedUrl) throw new Error("Graft source snapshot unavailable");
+        sources.set(id, capturedUrl);
       }
-      const image = await loadImage(url);
-      atlas = keyedTilesetImage(visual.tileset, image);
+      // No live-store graft resolver: missing legacy uploaded sources fail closed.
+      atlas = await loadActivityTilesetAtlas(visual.tileset, url, sources);
     }
     canvas = await renderRegionSnapshot({ tilesets: { [visual.tileset.id]: visual.tileset } } as Project, visual.map, { x: 0, y: 0, width: visual.map.width, height: visual.map.height }, { targetWidth: 960, image: atlas });
   } else {
