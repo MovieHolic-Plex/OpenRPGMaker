@@ -1,0 +1,11 @@
+{
+  "artifactVersion": "b82153a2d97f7da6",
+  "sourceRevision": "fc209412f3",
+  "sourceDigest": "0e8670240ae45d41924962ae4b4f9ca9171192c6c27a039a5ae22cfa5a811053",
+  "builtAt": "2026-10-04T14:48:18.203Z",
+  "zipSha256": "bbfe88e2494613ce8b83e598e11dc7447e19c9ddcba9a98cbcbab112d5d1fed8",
+  "zipBytes": 380346628,
+  "playerJsSha256": "698a848f3cfa2b3a5fdbf19adfe7305fd45033c3552581eeabf98bd8dfc4a118",
+  "playerJsMatchedBuild": true,
+  "extraction": "fresh directory from actual UI ZIP; no files patched"
+}

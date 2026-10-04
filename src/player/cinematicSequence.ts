@@ -26,7 +26,9 @@ function flattenCinematicFrame(shot: HTMLElement): string | undefined {
   if (!ctx) return;
   ctx.scale(canvas.width / shot.clientWidth, canvas.height / shot.clientHeight);
   try {
-    for (const image of shot.querySelectorAll<HTMLImageElement>('img')) {
+    const images = [...shot.querySelectorAll<HTMLImageElement>('img')].sort((a, b) =>
+      (parseInt(getComputedStyle(a).zIndex, 10) || 0) - (parseInt(getComputedStyle(b).zIndex, 10) || 0));
+    for (const image of images) {
       const style = getComputedStyle(image);
       const width = parseFloat(style.width), height = parseFloat(style.height);
       const matrix = new DOMMatrix(style.transform === 'none' ? undefined : style.transform);
