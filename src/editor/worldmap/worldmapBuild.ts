@@ -90,6 +90,12 @@ export type WorldmapBuildResult =
     ascii: string;
     /** 테마가 지형을 어떻게 칠하는지(지역 팔레트면 같은 바닥도 자리마다 다른 색). */
     themeNote: string;
+    /** Candidate icons are never installed by host authoring before human selection. */
+    iconSelection?: {
+      mode: "human-selected";
+      rendered: Array<{ placeId: string; iconId: string; sha256: string; x: number; y: number; width: number; height: number }>;
+      pending: Array<{ placeId: string; iconId: string; reason: string; x: number; y: number; width: number; height: number }>;
+    };
     journeyCheck: { ok: boolean; bad: string[] } | null;
     warnings: string[];
     seconds: number;

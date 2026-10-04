@@ -1,0 +1,354 @@
+[
+  {
+    "theme": "alien",
+    "ok": true,
+    "seconds": 2.6,
+    "layout": null,
+    "locations": 31,
+    "iconSelection": {
+      "mode": "human-selected",
+      "rendered": 0,
+      "pending": 31,
+      "pendingReasons": [
+        "human-selection-required"
+      ]
+    },
+    "warnings": [
+      "테마 alien: 사람 선택이 없거나 발자국이 다른 장소 31곳은 아이콘을 붙이지 않았다. 장소 좌표와 여정 검사는 논리 위치이며 완성된 거점 그림이나 이동 이벤트가 아니다. 후보 선택은 월드맵 아이콘 하네스에서 사용자가 한다."
+    ]
+  },
+  {
+    "theme": "classical",
+    "ok": true,
+    "seconds": 2.5,
+    "layout": null,
+    "locations": 31,
+    "iconSelection": {
+      "mode": "human-selected",
+      "rendered": 0,
+      "pending": 31,
+      "pendingReasons": [
+        "human-selection-required"
+      ]
+    },
+    "warnings": [
+      "테마 classical: 사람 선택이 없거나 발자국이 다른 장소 31곳은 아이콘을 붙이지 않았다. 장소 좌표와 여정 검사는 논리 위치이며 완성된 거점 그림이나 이동 이벤트가 아니다. 후보 선택은 월드맵 아이콘 하네스에서 사용자가 한다."
+    ]
+  },
+  {
+    "theme": "dark-gothic",
+    "ok": true,
+    "seconds": 2.5,
+    "layout": null,
+    "locations": 31,
+    "iconSelection": {
+      "mode": "human-selected",
+      "rendered": 0,
+      "pending": 31,
+      "pendingReasons": [
+        "human-selection-required"
+      ]
+    },
+    "warnings": [
+      "테마 dark-gothic: 사람 선택이 없거나 발자국이 다른 장소 31곳은 아이콘을 붙이지 않았다. 장소 좌표와 여정 검사는 논리 위치이며 완성된 거점 그림이나 이동 이벤트가 아니다. 후보 선택은 월드맵 아이콘 하네스에서 사용자가 한다."
+    ]
+  },
+  {
+    "theme": "desert-east",
+    "ok": true,
+    "seconds": 2.7,
+    "layout": null,
+    "locations": 31,
+    "iconSelection": {
+      "mode": "human-selected",
+      "rendered": 31,
+      "pending": 0,
+      "pendingReasons": []
+    },
+    "warnings": []
+  },
+  {
+    "theme": "fantasy-dungeons",
+    "ok": true,
+    "seconds": 2.8,
+    "layout": null,
+    "locations": 31,
+    "iconSelection": {
+      "mode": "human-selected",
+      "rendered": 0,
+      "pending": 31,
+      "pendingReasons": [
+        "human-selection-required"
+      ]
+    },
+    "warnings": [
+      "테마 fantasy-dungeons: 사람 선택이 없거나 발자국이 다른 장소 31곳은 아이콘을 붙이지 않았다. 장소 좌표와 여정 검사는 논리 위치이며 완성된 거점 그림이나 이동 이벤트가 아니다. 후보 선택은 월드맵 아이콘 하네스에서 사용자가 한다."
+    ]
+  },
+  {
+    "theme": "fantasy",
+    "ok": true,
+    "seconds": 2.5,
+    "layout": null,
+    "locations": 31,
+    "iconSelection": {
+      "mode": "human-selected",
+      "rendered": 30,
+      "pending": 1,
+      "pendingReasons": [
+        "human-selection-required"
+      ]
+    },
+    "warnings": [
+      "테마 fantasy: 사람 선택이 없거나 발자국이 다른 장소 1곳은 아이콘을 붙이지 않았다. 장소 좌표와 여정 검사는 논리 위치이며 완성된 거점 그림이나 이동 이벤트가 아니다. 후보 선택은 월드맵 아이콘 하네스에서 사용자가 한다."
+    ]
+  },
+  {
+    "theme": "joseon",
+    "ok": true,
+    "seconds": 5.8,
+    "layout": {
+      "base": "generate",
+      "style": "korea",
+      "seed": 1,
+      "salt": 1,
+      "count": 0,
+      "land": 0.4,
+      "landmasses": 5,
+      "home_cells": 1824,
+      "act1_cells": 667,
+      "act2_cells": 1006,
+      "dune_cells": 121,
+      "ship_landmasses": 4,
+      "wall_cells": 142,
+      "gate": "고갯길 요새",
+      "harbour": "내해 항구",
+      "start": [
+        42,
+        20
+      ],
+      "roads": 22,
+      "features": {
+        "ridges": 4,
+        "passes": 0,
+        "rivers": 1,
+        "forests": 7,
+        "farms": 1
+      },
+      "notes": [
+        "시작 대륙에 바다 4.6칸보다 가까운 땅 4칸을 바다로 깎았다(배 장벽)",
+        "지리 구조 힌트: 척추 산줄기 2줄·이끌린 강 5줄 (자리가 모자라 일부는 장소에 끊긴다)"
+      ],
+      "min_sea_gap": 4,
+      "real": null,
+      "core": null,
+      "spiral": null,
+      "regions_legend": "a 1막(관문 앞) · b 2막(관문 너머) · w 산벽 · d 4막 사구 바다 · s 3막(배로 가는 땅) · ~ 바다"
+    },
+    "locations": 31,
+    "iconSelection": {
+      "mode": "human-selected",
+      "rendered": 0,
+      "pending": 31,
+      "pendingReasons": [
+        "human-selection-required"
+      ]
+    },
+    "warnings": [
+      "테마 joseon: 사람 선택이 없거나 발자국이 다른 장소 31곳은 아이콘을 붙이지 않았다. 장소 좌표와 여정 검사는 논리 위치이며 완성된 거점 그림이나 이동 이벤트가 아니다. 후보 선택은 월드맵 아이콘 하네스에서 사용자가 한다."
+    ]
+  },
+  {
+    "theme": "modern-sf",
+    "ok": true,
+    "seconds": 2.6,
+    "layout": null,
+    "locations": 31,
+    "iconSelection": {
+      "mode": "human-selected",
+      "rendered": 31,
+      "pending": 0,
+      "pendingReasons": []
+    },
+    "warnings": []
+  },
+  {
+    "theme": "modern-town",
+    "ok": true,
+    "seconds": 2.3,
+    "layout": null,
+    "locations": 31,
+    "iconSelection": {
+      "mode": "human-selected",
+      "rendered": 0,
+      "pending": 31,
+      "pendingReasons": [
+        "human-selection-required"
+      ]
+    },
+    "warnings": [
+      "테마 modern-town: 사람 선택이 없거나 발자국이 다른 장소 31곳은 아이콘을 붙이지 않았다. 장소 좌표와 여정 검사는 논리 위치이며 완성된 거점 그림이나 이동 이벤트가 아니다. 후보 선택은 월드맵 아이콘 하네스에서 사용자가 한다."
+    ]
+  },
+  {
+    "theme": "monster",
+    "ok": true,
+    "seconds": 2.8,
+    "layout": null,
+    "locations": 31,
+    "iconSelection": {
+      "mode": "human-selected",
+      "rendered": 0,
+      "pending": 31,
+      "pendingReasons": [
+        "human-selection-required"
+      ]
+    },
+    "warnings": [
+      "테마 monster: 사람 선택이 없거나 발자국이 다른 장소 31곳은 아이콘을 붙이지 않았다. 장소 좌표와 여정 검사는 논리 위치이며 완성된 거점 그림이나 이동 이벤트가 아니다. 후보 선택은 월드맵 아이콘 하네스에서 사용자가 한다."
+    ]
+  },
+  {
+    "theme": "prehistoric",
+    "ok": true,
+    "seconds": 2.3,
+    "layout": null,
+    "locations": 31,
+    "iconSelection": {
+      "mode": "human-selected",
+      "rendered": 0,
+      "pending": 31,
+      "pendingReasons": [
+        "human-selection-required"
+      ]
+    },
+    "warnings": [
+      "테마 prehistoric: 사람 선택이 없거나 발자국이 다른 장소 31곳은 아이콘을 붙이지 않았다. 장소 좌표와 여정 검사는 논리 위치이며 완성된 거점 그림이나 이동 이벤트가 아니다. 후보 선택은 월드맵 아이콘 하네스에서 사용자가 한다."
+    ]
+  },
+  {
+    "theme": "sea-isles",
+    "ok": true,
+    "seconds": 2.4,
+    "layout": null,
+    "locations": 31,
+    "iconSelection": {
+      "mode": "human-selected",
+      "rendered": 0,
+      "pending": 31,
+      "pendingReasons": [
+        "human-selection-required"
+      ]
+    },
+    "warnings": [
+      "ops[11](island 「서쪽 바다 작은 섬」): 섬이 지도 끝에 닿는다(x 1~5, y 18~22) — 안쪽으로 옮겨라",
+      "ops[12](island 「남쪽 모래섬」): 섬이 지도 끝에 닿는다(x 39~43, y 66~70) — 안쪽으로 옮겨라",
+      "테마 sea-isles: 사람 선택이 없거나 발자국이 다른 장소 31곳은 아이콘을 붙이지 않았다. 장소 좌표와 여정 검사는 논리 위치이며 완성된 거점 그림이나 이동 이벤트가 아니다. 후보 선택은 월드맵 아이콘 하네스에서 사용자가 한다."
+    ]
+  },
+  {
+    "theme": "sengoku",
+    "ok": false,
+    "error": "입력 오류:\n생성 지형: 배치를 6번 바꿔 봐도 여정이 맞지 않는다 — 마지막 이유: 길을 낼 수 없다(1줄):\n· 고원 마을 ─ 사막 촌락 (고원 마을 → 사막 촌락) 길이 (45,50) 까지 가고 (44,50) 의 바다에 막혔다\n— 길은 바다·빙하를 못 건넌다(다리는 강에만 생긴다). 해협이 길을 가로지르면 길 자리에 땅 목을 남기고 짧은 강(river)으로 끊어라. 산줄기면 고개(pass)를 내라"
+  },
+  {
+    "theme": "snow-north",
+    "ok": true,
+    "seconds": 2.3,
+    "layout": null,
+    "locations": 31,
+    "iconSelection": {
+      "mode": "human-selected",
+      "rendered": 0,
+      "pending": 31,
+      "pendingReasons": [
+        "human-selection-required"
+      ]
+    },
+    "warnings": [
+      "테마 snow-north: 사람 선택이 없거나 발자국이 다른 장소 31곳은 아이콘을 붙이지 않았다. 장소 좌표와 여정 검사는 논리 위치이며 완성된 거점 그림이나 이동 이벤트가 아니다. 후보 선택은 월드맵 아이콘 하네스에서 사용자가 한다."
+    ]
+  },
+  {
+    "theme": "starmap",
+    "ok": true,
+    "seconds": 2.6,
+    "layout": {
+      "base": "generate",
+      "style": "galaxy",
+      "seed": 4,
+      "salt": 0,
+      "count": 12,
+      "land": 0.36,
+      "landmasses": 10,
+      "home_cells": 924,
+      "act1_cells": 604,
+      "act2_cells": 249,
+      "dune_cells": 175,
+      "ship_landmasses": 9,
+      "wall_cells": 63,
+      "gate": "고갯길 요새",
+      "harbour": "내해 항구",
+      "start": [
+        61,
+        30
+      ],
+      "roads": 18,
+      "features": {
+        "belts": 4,
+        "clusters": 1,
+        "passes": 0
+      },
+      "notes": [],
+      "min_sea_gap": 4,
+      "real": null,
+      "core": [
+        51.81,
+        34.64
+      ],
+      "spiral": {
+        "n": 3,
+        "b": 0.2272,
+        "th0": 3.9573,
+        "squash": 0.72
+      },
+      "regions_legend": "a 1막(관문 앞) · b 2막(관문 너머) · w 산벽 · d 4막 사구 바다 · s 3막(배로 가는 땅) · ~ 바다",
+      "systems": 27
+    },
+    "locations": 31,
+    "iconSelection": {
+      "mode": "human-selected",
+      "rendered": 0,
+      "pending": 31,
+      "pendingReasons": [
+        "human-selection-required"
+      ]
+    },
+    "warnings": [
+      "테마 starmap: 사람 선택이 없거나 발자국이 다른 장소 31곳은 아이콘을 붙이지 않았다. 장소 좌표와 여정 검사는 논리 위치이며 완성된 거점 그림이나 이동 이벤트가 아니다. 후보 선택은 월드맵 아이콘 하네스에서 사용자가 한다."
+    ]
+  },
+  {
+    "theme": "steampunk",
+    "ok": true,
+    "seconds": 2.3,
+    "layout": null,
+    "locations": 31,
+    "iconSelection": {
+      "mode": "human-selected",
+      "rendered": 0,
+      "pending": 31,
+      "pendingReasons": [
+        "human-selection-required"
+      ]
+    },
+    "warnings": [
+      "테마 steampunk: 사람 선택이 없거나 발자국이 다른 장소 31곳은 아이콘을 붙이지 않았다. 장소 좌표와 여정 검사는 논리 위치이며 완성된 거점 그림이나 이동 이벤트가 아니다. 후보 선택은 월드맵 아이콘 하네스에서 사용자가 한다."
+    ]
+  },
+  {
+    "theme": "wuxia",
+    "ok": false,
+    "error": "입력 오류:\n생성 지형: 배치를 6번 바꿔 봐도 여정이 맞지 않는다 — 마지막 이유: 서·동 대륙 사이 바다가 너무 좁아졌다(생성 4칸·실제 지리 2칸 이상) — 그 바다에 섬·땅을 놓거나 대륙을 넓히지 마라(배 없이 건너진다)."
+  }
+]
