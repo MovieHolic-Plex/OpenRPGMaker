@@ -88,4 +88,4 @@ node src/harnesses/pokemon-character-motion/node/verify.mjs --raster
 node src/harnesses/pokemon-character-motion/node/verify.mjs --references /path/external-emerald-reference
 ```
 
-일반31개와raster20개의 집중 제어는 정상native, x0/bottom32, height/top/feet/palette위반, duplicate/head jump/scale/shuffle/seam, exacteditorpadding·legacyoutsideink·alpha128/127·hiddenRGB·magenta·비대칭팔·nohead·unknownsampling·oldversion·fullCLI/lifecycle·clip·파일변조를 검사한다. 작은도형fixture는 테스트용이며 출하그림/실제시각승인이 아니다. reference 제어는 외부May/Brendan/Birch/woman PNG를 직접읽어 원본native계약을 검사하고 source/probeSHA와 수치만 남긴다. 원본그림을 저장소로 복사하지 않는다. 서버·Vitest·전체tsc·전체gates를 실행하지 않는다.
+일반33개와raster20개의 집중 제어는 정상native, x0/bottom32, height/top/feet/palette위반, duplicate/head jump/scale/shuffle/seam, 작은 hair-tip 반올림값과 실제 픽셀 등록 차이·2px root 거부, exacteditorpadding·legacyoutsideink·alpha128/127·hiddenRGB·magenta·비대칭팔·nohead·unknownsampling·oldversion·fullCLI/lifecycle·clip·파일변조를 검사한다. 작은도형fixture는 테스트용이며 출하그림/실제시각승인이 아니다. reference 제어는 외부May/Brendan/Birch/woman PNG를 직접읽어 원본native계약을 검사하고 source/probeSHA와 수치만 남긴다. 원본그림을 저장소로 복사하지 않는다. 서버·Vitest·전체tsc·전체gates를 실행하지 않는다.
