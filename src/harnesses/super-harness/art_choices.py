@@ -45,7 +45,7 @@ def prepare(data, cid):
     root = base / 'art-worktrees' / cid
     concept = base / 'concepts' / cid
     result = read(concept / 'art-result.json')
-    out = root / 'art-output' / 'choice-previews'
+    out = root / 'art-output' / 'choice-previews' / digest(concept / 'art-result.json')[:16]
     out.mkdir(parents=True, exist_ok=True)
     groups = []
     for batch in result.get('candidates', []):
@@ -63,8 +63,9 @@ def prepare(data, cid):
                 png = safe(root, str((receipt_path.parent / (letter + '.png')).relative_to(root)))
                 if digest(png) != row['imageSha256']:
                     raise ValueError('검수한 주차장 그림과 현재 그림이 다릅니다.')
-                previews = []
-                for opened in (False, True):
+                previews = row.get('contextImages', [])
+                for preview in previews: verified(root, preview)
+                for opened in (() if previews else (False, True)):
                     dest = out / f'parking-{letter}-{int(opened)}.png'
                     parking_scene(png, contract, dest, opened)
                     previews.append(ref(root, dest, '문·차단기 열림' if opened else '문·차단기 닫힘'))
@@ -75,10 +76,13 @@ def prepare(data, cid):
                 passed = (row['machine'].get('ok') is True and row['machine'].get('imageSha256') == digest(png)
                           and review.get('verdict') == 'PASS' and review.get('png_sha256') == digest(png) and required <= groups_pass)
                 group['candidates'].append({'id': letter, 'title': f'후보 {letter}', 'passed': passed,
-                    'summary': '13품목 그림 검수 통과' if passed else '수정 필요 · 선택할 수 없음',
-                    'reasons': failures or row.get('issues', []), 'sources': [receipt_ref, ref(root, contract_path), ref(root, png)],
+                    'summary': f'{len(required)}품목 그림 검수 통과' if passed else '수정 필요 · 선택할 수 없음',
+                    'reasons': failures or row.get('issues', []),
+                    'repairFixes': [{'category': 'asset', 'target': ', '.join(i.get('id', i.get('item', '')) for i in review.get('items', []) if i.get('verdict') != 'PASS'), 'problem': ' / '.join(failures), 'change': review['fix'], 'keep': '통과한 다른 품목과 원본 검수 기록'}] if review.get('fix') and not passed else [],
+                    'sources': [receipt_ref, ref(root, contract_path), ref(root, png)] + row.get('contextSources', []),
                     'images': previews, 'sheet': ref(root, png, '전체 칩 시트'),
                     'caution': '실제 칩으로 조립한 비교용 예시입니다. 완성 맵·통행 검사 결과는 아닙니다.'})
+            group['description'] = '같은 배치의 실제 조립 예시로 크기·접합·동선을 비교합니다.'
             groups.append(group)
         elif receipt.get('harness') == 'interior-props' and receipt.get('runs'):
             by_round = {(r['round'], r['letter']): r for r in receipt['runs']}
@@ -86,7 +90,7 @@ def prepare(data, cid):
             for gid, title, rounds in specs:
                 group = {'id': gid, 'title': title, 'description': '열림·닫힘 그림을 같은 후보 묶음으로 고릅니다.' if len(rounds) > 1 else '방 안에서 크기와 계단 방향을 비교하세요.', 'candidates': []}
                 for letter in ('A', 'B'):
-                    sources, images, reasons = [receipt_ref], [], []
+                    sources, images, reasons, native_fixes = [receipt_ref], [], [], []
                     passed = True
                     for rid in rounds:
                         row = by_round[(rid, letter)]
@@ -97,7 +101,9 @@ def prepare(data, cid):
                         review = json.loads(row['review'] or '{}')
                         ok = bool(row['ok']) and review.get('verdict') == 'PASS'
                         passed = passed and ok
-                        if not ok: reasons.append(review.get('reasons') or '그림 검수 미통과')
+                        if not ok:
+                            reasons.append(review.get('reasons') or '그림 검수 미통과')
+                            if review.get('fix'): native_fixes.append({'category': 'asset', 'target': row['item'], 'problem': reasons[-1], 'change': review['fix'], 'keep': '상대 상태 그림과 통과한 품목'})
                         if rid == 1:
                             context = safe(root, str((receipt_path.parent / 'data/rounds/h1/context.png').relative_to(root)))
                             dest = out / f'stairs-{letter}.png'
@@ -108,7 +114,7 @@ def prepare(data, cid):
                             context = safe(root, str(Path(review['pack']) / 'ctx-cand.png'))
                             images.append(ref(root, context, '닫힘' if rid in (2, 4) else '열림'))
                     group['candidates'].append({'id': letter, 'title': f'후보 {letter}', 'passed': passed,
-                        'summary': '개별 그림 검수 통과' if passed else '수정 필요 · 선택할 수 없음', 'reasons': reasons,
+                        'summary': '개별 그림 검수 통과' if passed else '수정 필요 · 선택할 수 없음', 'reasons': reasons, 'repairFixes': native_fixes,
                         'sources': sources, 'images': images, 'sheet': sources[1],
                         'caution': '기존 검수 방에 놓은 크기·화풍 예시입니다. 계단 높이·통행 및 문 상태 연결은 별도 검증이 필요합니다.'})
                 groups.append(group)
@@ -168,6 +174,7 @@ def view(data, cid):
             try:
                 for r in candidate['sources'] + candidate['images'] + [candidate['sheet']]: verified(root, r)
             except (ValueError, OSError, KeyError): valid = False
+            item['ready'] = valid and candidate['passed'] and context_ok
             item.update(fingerprint=token, eligible=valid and candidate['passed'] and context_ok and c['stage'] == 'art-review', stale=not valid)
             item['selected'] = valid and candidate['passed'] and context_ok and saved.get(group['id'], {}).get('fingerprint') == token
             if item['selected']: count += 1
@@ -179,7 +186,8 @@ def view(data, cid):
         g['staleSelection'] = group['id'] in saved and not any(i['selected'] for i in g['candidates'])
         output.append(g)
     return {'id': cid, 'title': c['title'], 'stage': c['stage'], 'paused': store.setting('paused') == '1',
-            'blocked': any(not any(i['eligible'] or i['selected'] for i in g['candidates']) for g in output),
+            'revision': c.get('art_revision', 0), 'status': c['status'], 'note': c.get('note', ''),
+            'blocked': any(not any(i['ready'] or i['selected'] for i in g['candidates']) for g in output),
             'groups': output, 'selectedCount': count, 'total': len(groups), 'complete': bool(groups) and count == len(groups)}
 
 
