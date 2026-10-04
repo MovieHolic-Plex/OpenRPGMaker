@@ -2,6 +2,42 @@
 
 # Editor AI Panel & Tools
 
+## 핵심 플레이를 먼저 작성하는 첫 제작 (2026-10-04)
+
+`piTeamRuntime`의 프리셋 첫 생성 중 기존 첫 구간 뼈대가 있는 세 장르(몬스터 수집·JRPG·스토리)는
+팀장이 장식 작업을 배정하기 전에 핵심 플레이 담당을 직렬 실행한다. 별도 authoring 하네스는
+자기 계약을 사용한다. 이 단계는 `src/ai/piAgent/firstPlay.ts`의 고정 도구 목록으로 실행한다.
+`initialToolNames`나 도메인 선별만 바꾸는 것이 아니라 `RunPiAgentOptions.toolNames`로
+발견·미노출 호출 폴백까지 제한하므로 stamp/copy/마을 생성/그림 생성으로 우회할 수 없다.
+기존 맵의 이벤트·필수 DB·주인공 이름을 먼저 쓰고 모든 쓰기는 호스트 ACK 체크포인트를 거친다.
+
+`report_first_play`는 interaction/resolution 이벤트 ID를 제출한다. 실행 명령이 기본 샘플 그대로인
+보고, 빈 선택 결과, 서로 같은 선택 결과는 거부한다. 종료 후 반환 프로젝트에도 같은 검사를 한다.
+기존 첫 구간 자동 플레이도 통과해야 한다. 그 뒤 읽기 전용 담당이 원문 기획과 실제 이벤트를
+대조하여 요청한 선택/결과 누락을 검사한다. 구조 검사는 의미 판단을 대신하지 않는다.
+`first_play.core_ready`와 `first_play.review_passed` 상태가 이 순서를 기록한다.
+
+핵심 담당은 32턴, 요구 확인은 12턴, 이후 배정은 최대 3회·각 24턴, 팀장은 32턴이다.
+요구 대조에서 실패하면 같은 제한 도구로 남은 문제만 한 번(16턴) 자동 수정하고 다시 검사한다.
+검사 도구의 `blockers`는 누락/실패, `evidence`는 확인 근거다. 성공 근거를 남은 오류로 취급하지 않는다.
+기존 사용자 상한이 더 작으면 보존한다. 실패한 배정 호출은 후속 배정 예산을 쓰지 않는다.
+팀장은 이미 만든 핵심 플레이의 보고를 받고 남은 장면 마무리만 맡긴다. finish에서 핵심 명령을
+다시 검사하며 이벤트가 바뀌면 요구 대조를 다시 한다. 검증된 finish가 없으면 첫 제작 완료를
+반환하지 않는다. 실패해도 이미 정본에 ACK된 쓰기는 보존한다.
+
+실제 자동 제작 검증은 `scripts/qa/live-first-game.mjs`를 사용한다. 요청 task 원문을 따로 보존하고,
+SQLite 재로드와 요청한 두 선택의 다른 결과까지 검사한다. 전용 플레이어 하네스는 실제 다운로드한
+ZIP의 player.html에서 두 선택을 각각 완주한다. `LIVE_GAME_OUT`, `LIVE_GAME_ROOT`,
+`LIVE_GAME_HOST`, `LIVE_GAME_PACKAGE_OUT`으로 이전 미완료 실험과 증거를 분리한다.
+회귀 테스트 `test/piFirstPlay.test.ts`는 추가했으며 세션 규칙에 따라 Vitest/전체 게이트는 실행하지 않았다.
+
+실제 내보내기는 기본 뼈대의 `create_map` BGM 자동 추천 결함도 드러냈다. `기억의 길`이 파일이
+없는 `cc0-bgm-rtp-emo-002`를 고르고, 전체 제작이 끝난 뒤 ZIP 의존 파일 검사에서 실패했다.
+`bgmThemeRecommendation`의 모든 후보/폴백 경로가 `isCatalogBgmAvailable`을 확인한다.
+팩이 하나도 없으면 코어 배포에 포함된 `easyrpg-music-field-1`을 사용한다. 명시적 맵 BGM 쓰기도
+미설치 카탈로그 곡을 거부하고 `recommend_bgm`으로 다음 행동을 안내한다. 기존 기획이나 파일을
+수동으로 고쳐 자동 생성 성공으로 주장하지 않는다. 회귀는 `test/installedBgmRuntime.test.ts`에 추가했다.
+
 ## 실제 첫 제작의 워커 준비와 사본 (2026-10-03)
 
 `scripts/lib/piWorkerSharedContent.ts`가 공용 SQLite 카탈로그 설치를 판본별로 재사용한다.

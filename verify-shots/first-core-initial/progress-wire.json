@@ -1,0 +1,1162 @@
+[
+  {
+    "seq": 0,
+    "type": "team_start",
+    "innerType": "team_start"
+  },
+  {
+    "seq": 1,
+    "type": "agent_spawn",
+    "innerType": "agent_spawn",
+    "agent": "builder-1",
+    "role": "builder",
+    "label": "핵심 플레이 제작"
+  },
+  {
+    "seq": 2,
+    "type": "agent_event",
+    "innerAt": 1791071687754,
+    "innerType": "start",
+    "agent": "builder-1",
+    "model": "gemini-3.8-flash"
+  },
+  {
+    "seq": 3,
+    "type": "agent_event",
+    "innerAt": 1791071688226,
+    "innerType": "turn",
+    "agent": "builder-1"
+  },
+  {
+    "seq": 4,
+    "type": "heartbeat",
+    "at": 1791071688964,
+    "innerAt": 1791071688964,
+    "innerType": "heartbeat"
+  },
+  {
+    "seq": 5,
+    "type": "agent_event",
+    "innerAt": 1791071694512,
+    "innerType": "prompt_inspection",
+    "agent": "builder-1"
+  },
+  {
+    "seq": 6,
+    "type": "heartbeat",
+    "at": 1791071694582,
+    "innerAt": 1791071694582,
+    "innerType": "heartbeat"
+  },
+  {
+    "seq": 7,
+    "type": "agent_event",
+    "innerAt": 1791071698729,
+    "innerType": "tool_start",
+    "name": "get_project_summary",
+    "agent": "builder-1"
+  },
+  {
+    "seq": 8,
+    "type": "agent_event",
+    "innerAt": 1791071698730,
+    "innerType": "tool_start",
+    "name": "get_database_records",
+    "agent": "builder-1"
+  },
+  {
+    "seq": 9,
+    "type": "agent_event",
+    "innerAt": 1791071698730,
+    "innerType": "tool_start",
+    "name": "get_database_records",
+    "agent": "builder-1"
+  },
+  {
+    "seq": 10,
+    "type": "agent_event",
+    "innerAt": 1791071698730,
+    "innerType": "tool_start",
+    "name": "list_endings",
+    "agent": "builder-1"
+  },
+  {
+    "seq": 11,
+    "type": "agent_event",
+    "innerAt": 1791071698730,
+    "innerType": "tool_end",
+    "name": "get_project_summary",
+    "agent": "builder-1",
+    "ok": true
+  },
+  {
+    "seq": 12,
+    "type": "agent_event",
+    "innerAt": 1791071698732,
+    "innerType": "tool_end",
+    "name": "get_database_records",
+    "agent": "builder-1",
+    "ok": true
+  },
+  {
+    "seq": 13,
+    "type": "agent_event",
+    "innerAt": 1791071698733,
+    "innerType": "tool_end",
+    "name": "get_database_records",
+    "agent": "builder-1",
+    "ok": true
+  },
+  {
+    "seq": 14,
+    "type": "agent_event",
+    "innerAt": 1791071698733,
+    "innerType": "tool_end",
+    "name": "list_endings",
+    "agent": "builder-1",
+    "ok": true
+  },
+  {
+    "seq": 15,
+    "type": "agent_event",
+    "innerAt": 1791071698754,
+    "innerType": "turn",
+    "agent": "builder-1"
+  },
+  {
+    "seq": 16,
+    "type": "agent_event",
+    "innerAt": 1791071698851,
+    "innerType": "prompt_inspection",
+    "agent": "builder-1"
+  },
+  {
+    "seq": 17,
+    "type": "heartbeat",
+    "at": 1791071699582,
+    "innerAt": 1791071699582,
+    "innerType": "heartbeat"
+  },
+  {
+    "seq": 18,
+    "type": "agent_event",
+    "innerAt": 1791071703250,
+    "innerType": "tool_start",
+    "name": "find_events",
+    "agent": "builder-1"
+  },
+  {
+    "seq": 19,
+    "type": "agent_event",
+    "innerAt": 1791071703250,
+    "innerType": "tool_start",
+    "name": "find_events",
+    "agent": "builder-1"
+  },
+  {
+    "seq": 20,
+    "type": "agent_event",
+    "innerAt": 1791071703250,
+    "innerType": "tool_start",
+    "name": "get_database_records",
+    "agent": "builder-1"
+  },
+  {
+    "seq": 21,
+    "type": "agent_event",
+    "innerAt": 1791071703250,
+    "innerType": "tool_end",
+    "name": "find_events",
+    "agent": "builder-1",
+    "ok": true
+  },
+  {
+    "seq": 22,
+    "type": "agent_event",
+    "innerAt": 1791071703251,
+    "innerType": "tool_end",
+    "name": "find_events",
+    "agent": "builder-1",
+    "ok": true
+  },
+  {
+    "seq": 23,
+    "type": "agent_event",
+    "innerAt": 1791071703251,
+    "innerType": "tool_end",
+    "name": "get_database_records",
+    "agent": "builder-1",
+    "ok": true
+  },
+  {
+    "seq": 24,
+    "type": "agent_event",
+    "innerAt": 1791071703272,
+    "innerType": "turn",
+    "agent": "builder-1"
+  },
+  {
+    "seq": 25,
+    "type": "agent_event",
+    "innerAt": 1791071703449,
+    "innerType": "prompt_inspection",
+    "agent": "builder-1"
+  },
+  {
+    "seq": 26,
+    "type": "heartbeat",
+    "at": 1791071704594,
+    "innerAt": 1791071704594,
+    "innerType": "heartbeat"
+  },
+  {
+    "seq": 27,
+    "type": "agent_event",
+    "innerAt": 1791071706006,
+    "innerType": "tool_start",
+    "name": "get_event",
+    "agent": "builder-1"
+  },
+  {
+    "seq": 28,
+    "type": "agent_event",
+    "innerAt": 1791071706007,
+    "innerType": "tool_start",
+    "name": "get_event",
+    "agent": "builder-1"
+  },
+  {
+    "seq": 29,
+    "type": "agent_event",
+    "innerAt": 1791071706007,
+    "innerType": "tool_end",
+    "name": "get_event",
+    "agent": "builder-1",
+    "ok": true
+  },
+  {
+    "seq": 30,
+    "type": "agent_event",
+    "innerAt": 1791071706008,
+    "innerType": "tool_end",
+    "name": "get_event",
+    "agent": "builder-1",
+    "ok": true
+  },
+  {
+    "seq": 31,
+    "type": "agent_event",
+    "innerAt": 1791071706039,
+    "innerType": "turn",
+    "agent": "builder-1"
+  },
+  {
+    "seq": 32,
+    "type": "agent_event",
+    "innerAt": 1791071706155,
+    "innerType": "prompt_inspection",
+    "agent": "builder-1"
+  },
+  {
+    "seq": 33,
+    "type": "agent_event",
+    "innerAt": 1791071708891,
+    "innerType": "tool_start",
+    "name": "get_event",
+    "agent": "builder-1"
+  },
+  {
+    "seq": 34,
+    "type": "agent_event",
+    "innerAt": 1791071708891,
+    "innerType": "tool_start",
+    "name": "get_event",
+    "agent": "builder-1"
+  },
+  {
+    "seq": 35,
+    "type": "agent_event",
+    "innerAt": 1791071708891,
+    "innerType": "tool_end",
+    "name": "get_event",
+    "agent": "builder-1",
+    "ok": true
+  },
+  {
+    "seq": 36,
+    "type": "agent_event",
+    "innerAt": 1791071708891,
+    "innerType": "tool_end",
+    "name": "get_event",
+    "agent": "builder-1",
+    "ok": true
+  },
+  {
+    "seq": 37,
+    "type": "agent_event",
+    "innerAt": 1791071708917,
+    "innerType": "turn",
+    "agent": "builder-1"
+  },
+  {
+    "seq": 38,
+    "type": "agent_event",
+    "innerAt": 1791071708996,
+    "innerType": "prompt_inspection",
+    "agent": "builder-1"
+  },
+  {
+    "seq": 39,
+    "type": "heartbeat",
+    "at": 1791071709597,
+    "innerAt": 1791071709597,
+    "innerType": "heartbeat"
+  },
+  {
+    "seq": 40,
+    "type": "agent_event",
+    "innerAt": 1791071711746,
+    "innerType": "tool_start",
+    "name": "check_reachability",
+    "agent": "builder-1"
+  },
+  {
+    "seq": 41,
+    "type": "agent_event",
+    "innerAt": 1791071711746,
+    "innerType": "tool_start",
+    "name": "check_reachability",
+    "agent": "builder-1"
+  },
+  {
+    "seq": 42,
+    "type": "agent_event",
+    "innerAt": 1791071711746,
+    "innerType": "tool_end",
+    "name": "check_reachability",
+    "agent": "builder-1",
+    "ok": true
+  },
+  {
+    "seq": 43,
+    "type": "agent_event",
+    "innerAt": 1791071711747,
+    "innerType": "tool_end",
+    "name": "check_reachability",
+    "agent": "builder-1",
+    "ok": true
+  },
+  {
+    "seq": 44,
+    "type": "agent_event",
+    "innerAt": 1791071711773,
+    "innerType": "turn",
+    "agent": "builder-1"
+  },
+  {
+    "seq": 45,
+    "type": "agent_event",
+    "innerAt": 1791071711922,
+    "innerType": "prompt_inspection",
+    "agent": "builder-1"
+  },
+  {
+    "seq": 46,
+    "type": "agent_event",
+    "innerAt": 1791071717119,
+    "innerType": "tool_start",
+    "name": "run_lint",
+    "agent": "builder-1"
+  },
+  {
+    "seq": 47,
+    "type": "agent_event",
+    "innerAt": 1791071717119,
+    "innerType": "tool_end",
+    "name": "run_lint",
+    "agent": "builder-1",
+    "ok": true
+  },
+  {
+    "seq": 48,
+    "type": "heartbeat",
+    "at": 1791071717123,
+    "innerAt": 1791071717123,
+    "innerType": "heartbeat"
+  },
+  {
+    "seq": 49,
+    "type": "agent_event",
+    "innerAt": 1791071717154,
+    "innerType": "turn",
+    "agent": "builder-1"
+  },
+  {
+    "seq": 50,
+    "type": "agent_event",
+    "innerAt": 1791071717256,
+    "innerType": "prompt_inspection",
+    "agent": "builder-1"
+  },
+  {
+    "seq": 51,
+    "type": "checkpoint",
+    "innerType": "checkpoint",
+    "label": "upsert_actor"
+  },
+  {
+    "seq": 52,
+    "type": "agent_event",
+    "innerAt": 1791071721311,
+    "innerType": "tool_start",
+    "name": "upsert_actor",
+    "agent": "builder-1"
+  },
+  {
+    "seq": 53,
+    "type": "heartbeat",
+    "at": 1791071722125,
+    "innerAt": 1791071722125,
+    "innerType": "heartbeat"
+  },
+  {
+    "seq": 54,
+    "type": "heartbeat",
+    "at": 1791071727136,
+    "innerAt": 1791071727136,
+    "innerType": "heartbeat"
+  },
+  {
+    "seq": 55,
+    "type": "agent_event",
+    "innerAt": 1791071727791,
+    "innerType": "tool_end",
+    "name": "upsert_actor",
+    "agent": "builder-1",
+    "ok": true
+  },
+  {
+    "seq": 56,
+    "type": "agent_event",
+    "innerAt": 1791071727815,
+    "innerType": "turn",
+    "agent": "builder-1"
+  },
+  {
+    "seq": 57,
+    "type": "agent_event",
+    "innerAt": 1791071727922,
+    "innerType": "prompt_inspection",
+    "agent": "builder-1"
+  },
+  {
+    "seq": 58,
+    "type": "agent_event",
+    "innerAt": 1791071732110,
+    "innerType": "tool_start",
+    "name": "define_ending",
+    "agent": "builder-1"
+  },
+  {
+    "seq": 59,
+    "type": "agent_event",
+    "innerAt": 1791071732110,
+    "innerType": "tool_end",
+    "name": "define_ending",
+    "agent": "builder-1",
+    "ok": false
+  },
+  {
+    "seq": 60,
+    "type": "agent_event",
+    "innerAt": 1791071732133,
+    "innerType": "turn",
+    "agent": "builder-1"
+  },
+  {
+    "seq": 61,
+    "type": "agent_event",
+    "innerAt": 1791071732220,
+    "innerType": "prompt_inspection",
+    "agent": "builder-1"
+  },
+  {
+    "seq": 62,
+    "type": "heartbeat",
+    "at": 1791071732225,
+    "innerAt": 1791071732225,
+    "innerType": "heartbeat"
+  },
+  {
+    "seq": 63,
+    "type": "checkpoint",
+    "innerType": "checkpoint",
+    "label": "define_ending"
+  },
+  {
+    "seq": 64,
+    "type": "agent_event",
+    "innerAt": 1791071737349,
+    "innerType": "tool_start",
+    "name": "define_ending",
+    "agent": "builder-1"
+  },
+  {
+    "seq": 65,
+    "type": "heartbeat",
+    "at": 1791071737359,
+    "innerAt": 1791071737359,
+    "innerType": "heartbeat"
+  },
+  {
+    "seq": 66,
+    "type": "heartbeat",
+    "at": 1791071742363,
+    "innerAt": 1791071742363,
+    "innerType": "heartbeat"
+  },
+  {
+    "seq": 67,
+    "type": "agent_event",
+    "innerAt": 1791071743558,
+    "innerType": "tool_end",
+    "name": "define_ending",
+    "agent": "builder-1",
+    "ok": true
+  },
+  {
+    "seq": 68,
+    "type": "agent_event",
+    "innerAt": 1791071743580,
+    "innerType": "turn",
+    "agent": "builder-1"
+  },
+  {
+    "seq": 69,
+    "type": "agent_event",
+    "innerAt": 1791071743658,
+    "innerType": "prompt_inspection",
+    "agent": "builder-1"
+  },
+  {
+    "seq": 70,
+    "type": "heartbeat",
+    "at": 1791071747367,
+    "innerAt": 1791071747367,
+    "innerType": "heartbeat"
+  },
+  {
+    "seq": 71,
+    "type": "agent_event",
+    "innerAt": 1791071748801,
+    "innerType": "tool_start",
+    "name": "upsert_event",
+    "agent": "builder-1"
+  },
+  {
+    "seq": 72,
+    "type": "agent_event",
+    "innerAt": 1791071748801,
+    "innerType": "tool_end",
+    "name": "upsert_event",
+    "agent": "builder-1",
+    "ok": false
+  },
+  {
+    "seq": 73,
+    "type": "agent_event",
+    "innerAt": 1791071748830,
+    "innerType": "turn",
+    "agent": "builder-1"
+  },
+  {
+    "seq": 74,
+    "type": "agent_event",
+    "innerAt": 1791071748890,
+    "innerType": "prompt_inspection",
+    "agent": "builder-1"
+  },
+  {
+    "seq": 75,
+    "type": "heartbeat",
+    "at": 1791071752384,
+    "innerAt": 1791071752384,
+    "innerType": "heartbeat"
+  },
+  {
+    "seq": 76,
+    "type": "checkpoint",
+    "innerType": "checkpoint",
+    "label": "upsert_event"
+  },
+  {
+    "seq": 77,
+    "type": "agent_event",
+    "innerAt": 1791071754527,
+    "innerType": "tool_start",
+    "name": "upsert_event",
+    "agent": "builder-1"
+  },
+  {
+    "seq": 78,
+    "type": "heartbeat",
+    "at": 1791071757384,
+    "innerAt": 1791071757384,
+    "innerType": "heartbeat"
+  },
+  {
+    "seq": 79,
+    "type": "agent_event",
+    "innerAt": 1791071757926,
+    "innerType": "tool_end",
+    "name": "upsert_event",
+    "agent": "builder-1",
+    "ok": true
+  },
+  {
+    "seq": 80,
+    "type": "agent_event",
+    "innerAt": 1791071757927,
+    "innerType": "map_delta",
+    "agent": "builder-1"
+  },
+  {
+    "seq": 81,
+    "type": "agent_event",
+    "innerAt": 1791071757948,
+    "innerType": "turn",
+    "agent": "builder-1"
+  },
+  {
+    "seq": 82,
+    "type": "agent_event",
+    "innerAt": 1791071758016,
+    "innerType": "prompt_inspection",
+    "agent": "builder-1"
+  },
+  {
+    "seq": 83,
+    "type": "checkpoint",
+    "innerType": "checkpoint",
+    "label": "upsert_event"
+  },
+  {
+    "seq": 84,
+    "type": "agent_event",
+    "innerAt": 1791071762042,
+    "innerType": "tool_start",
+    "name": "upsert_event",
+    "agent": "builder-1"
+  },
+  {
+    "seq": 85,
+    "type": "heartbeat",
+    "at": 1791071762389,
+    "innerAt": 1791071762389,
+    "innerType": "heartbeat"
+  },
+  {
+    "seq": 86,
+    "type": "agent_event",
+    "innerAt": 1791071764577,
+    "innerType": "tool_end",
+    "name": "upsert_event",
+    "agent": "builder-1",
+    "ok": true
+  },
+  {
+    "seq": 87,
+    "type": "agent_event",
+    "innerAt": 1791071764577,
+    "innerType": "map_delta",
+    "agent": "builder-1"
+  },
+  {
+    "seq": 88,
+    "type": "agent_event",
+    "innerAt": 1791071764599,
+    "innerType": "turn",
+    "agent": "builder-1"
+  },
+  {
+    "seq": 89,
+    "type": "agent_event",
+    "innerAt": 1791071764674,
+    "innerType": "prompt_inspection",
+    "agent": "builder-1"
+  },
+  {
+    "seq": 90,
+    "type": "heartbeat",
+    "at": 1791071767395,
+    "innerAt": 1791071767395,
+    "innerType": "heartbeat"
+  },
+  {
+    "seq": 91,
+    "type": "agent_event",
+    "innerAt": 1791071767924,
+    "innerType": "tool_start",
+    "name": "run_lint",
+    "agent": "builder-1"
+  },
+  {
+    "seq": 92,
+    "type": "agent_event",
+    "innerAt": 1791071767925,
+    "innerType": "tool_end",
+    "name": "run_lint",
+    "agent": "builder-1",
+    "ok": true
+  },
+  {
+    "seq": 93,
+    "type": "agent_event",
+    "innerAt": 1791071767947,
+    "innerType": "turn",
+    "agent": "builder-1"
+  },
+  {
+    "seq": 94,
+    "type": "agent_event",
+    "innerAt": 1791071768030,
+    "innerType": "prompt_inspection",
+    "agent": "builder-1"
+  },
+  {
+    "seq": 95,
+    "type": "agent_event",
+    "innerAt": 1791071770678,
+    "innerType": "tool_start",
+    "name": "check_reachability",
+    "agent": "builder-1"
+  },
+  {
+    "seq": 96,
+    "type": "agent_event",
+    "innerAt": 1791071770678,
+    "innerType": "tool_start",
+    "name": "check_reachability",
+    "agent": "builder-1"
+  },
+  {
+    "seq": 97,
+    "type": "agent_event",
+    "innerAt": 1791071770679,
+    "innerType": "tool_end",
+    "name": "check_reachability",
+    "agent": "builder-1",
+    "ok": true
+  },
+  {
+    "seq": 98,
+    "type": "agent_event",
+    "innerAt": 1791071770679,
+    "innerType": "tool_end",
+    "name": "check_reachability",
+    "agent": "builder-1",
+    "ok": true
+  },
+  {
+    "seq": 99,
+    "type": "agent_event",
+    "innerAt": 1791071770700,
+    "innerType": "turn",
+    "agent": "builder-1"
+  },
+  {
+    "seq": 100,
+    "type": "agent_event",
+    "innerAt": 1791071770773,
+    "innerType": "prompt_inspection",
+    "agent": "builder-1"
+  },
+  {
+    "seq": 101,
+    "type": "heartbeat",
+    "at": 1791071772403,
+    "innerAt": 1791071772403,
+    "innerType": "heartbeat"
+  },
+  {
+    "seq": 102,
+    "type": "agent_event",
+    "innerAt": 1791071773546,
+    "innerType": "tool_start",
+    "name": "report_first_play",
+    "agent": "builder-1"
+  },
+  {
+    "seq": 103,
+    "type": "agent_event",
+    "innerAt": 1791071773546,
+    "innerType": "tool_end",
+    "name": "report_first_play",
+    "agent": "builder-1",
+    "ok": true
+  },
+  {
+    "seq": 104,
+    "type": "agent_event",
+    "innerAt": 1791071773568,
+    "innerType": "turn",
+    "agent": "builder-1"
+  },
+  {
+    "seq": 105,
+    "type": "agent_event",
+    "innerAt": 1791071773633,
+    "innerType": "prompt_inspection",
+    "agent": "builder-1"
+  },
+  {
+    "seq": 106,
+    "type": "heartbeat",
+    "at": 1791071777403,
+    "innerAt": 1791071777403,
+    "innerType": "heartbeat"
+  },
+  {
+    "seq": 107,
+    "type": "agent_event",
+    "innerAt": 1791071777756,
+    "innerType": "delta",
+    "agent": "builder-1"
+  },
+  {
+    "seq": 108,
+    "type": "agent_event",
+    "innerAt": 1791071777843,
+    "innerType": "delta",
+    "agent": "builder-1"
+  },
+  {
+    "seq": 109,
+    "type": "agent_event",
+    "innerAt": 1791071777843,
+    "innerType": "assistant",
+    "agent": "builder-1"
+  },
+  {
+    "seq": 110,
+    "type": "agent_event",
+    "innerAt": 1791071777865,
+    "innerType": "done",
+    "agent": "builder-1"
+  },
+  {
+    "seq": 111,
+    "type": "execution_status",
+    "innerType": "execution_status",
+    "name": "first_play.core_ready",
+    "ok": true
+  },
+  {
+    "seq": 112,
+    "type": "agent_done",
+    "innerType": "agent_done",
+    "agent": "builder-1",
+    "ok": true
+  },
+  {
+    "seq": 113,
+    "type": "agent_spawn",
+    "innerType": "agent_spawn",
+    "agent": "reviewer-1",
+    "role": "reviewer",
+    "label": "핵심 플레이 확인"
+  },
+  {
+    "seq": 114,
+    "type": "agent_event",
+    "innerAt": 1791071778443,
+    "innerType": "start",
+    "agent": "reviewer-1",
+    "model": "gemini-3.8-flash"
+  },
+  {
+    "seq": 115,
+    "type": "agent_event",
+    "innerAt": 1791071778478,
+    "innerType": "turn",
+    "agent": "reviewer-1"
+  },
+  {
+    "seq": 116,
+    "type": "agent_event",
+    "innerAt": 1791071778481,
+    "innerType": "prompt_inspection",
+    "agent": "reviewer-1"
+  },
+  {
+    "seq": 117,
+    "type": "agent_event",
+    "innerAt": 1791071780246,
+    "innerType": "tool_start",
+    "name": "get_database_records",
+    "agent": "reviewer-1"
+  },
+  {
+    "seq": 118,
+    "type": "agent_event",
+    "innerAt": 1791071780246,
+    "innerType": "tool_end",
+    "name": "get_database_records",
+    "agent": "reviewer-1",
+    "ok": true
+  },
+  {
+    "seq": 119,
+    "type": "agent_event",
+    "innerAt": 1791071780248,
+    "innerType": "turn",
+    "agent": "reviewer-1"
+  },
+  {
+    "seq": 120,
+    "type": "agent_event",
+    "innerAt": 1791071780250,
+    "innerType": "prompt_inspection",
+    "agent": "reviewer-1"
+  },
+  {
+    "seq": 121,
+    "type": "agent_event",
+    "innerAt": 1791071782245,
+    "innerType": "tool_start",
+    "name": "get_event",
+    "agent": "reviewer-1"
+  },
+  {
+    "seq": 122,
+    "type": "agent_event",
+    "innerAt": 1791071782245,
+    "innerType": "tool_end",
+    "name": "get_event",
+    "agent": "reviewer-1",
+    "ok": true
+  },
+  {
+    "seq": 123,
+    "type": "agent_event",
+    "innerAt": 1791071782267,
+    "innerType": "turn",
+    "agent": "reviewer-1"
+  },
+  {
+    "seq": 124,
+    "type": "agent_event",
+    "innerAt": 1791071782270,
+    "innerType": "prompt_inspection",
+    "agent": "reviewer-1"
+  },
+  {
+    "seq": 125,
+    "type": "heartbeat",
+    "at": 1791071782404,
+    "innerAt": 1791071782404,
+    "innerType": "heartbeat"
+  },
+  {
+    "seq": 126,
+    "type": "agent_event",
+    "innerAt": 1791071784444,
+    "innerType": "tool_start",
+    "name": "get_event",
+    "agent": "reviewer-1"
+  },
+  {
+    "seq": 127,
+    "type": "agent_event",
+    "innerAt": 1791071784444,
+    "innerType": "tool_end",
+    "name": "get_event",
+    "agent": "reviewer-1",
+    "ok": true
+  },
+  {
+    "seq": 128,
+    "type": "agent_event",
+    "innerAt": 1791071784477,
+    "innerType": "turn",
+    "agent": "reviewer-1"
+  },
+  {
+    "seq": 129,
+    "type": "agent_event",
+    "innerAt": 1791071784480,
+    "innerType": "prompt_inspection",
+    "agent": "reviewer-1"
+  },
+  {
+    "seq": 130,
+    "type": "agent_event",
+    "innerAt": 1791071786557,
+    "innerType": "tool_start",
+    "name": "run_lint",
+    "agent": "reviewer-1"
+  },
+  {
+    "seq": 131,
+    "type": "agent_event",
+    "innerAt": 1791071786557,
+    "innerType": "tool_end",
+    "name": "run_lint",
+    "agent": "reviewer-1",
+    "ok": true
+  },
+  {
+    "seq": 132,
+    "type": "agent_event",
+    "innerAt": 1791071786587,
+    "innerType": "turn",
+    "agent": "reviewer-1"
+  },
+  {
+    "seq": 133,
+    "type": "agent_event",
+    "innerAt": 1791071786589,
+    "innerType": "prompt_inspection",
+    "agent": "reviewer-1"
+  },
+  {
+    "seq": 134,
+    "type": "heartbeat",
+    "at": 1791071787407,
+    "innerAt": 1791071787407,
+    "innerType": "heartbeat"
+  },
+  {
+    "seq": 135,
+    "type": "agent_event",
+    "innerAt": 1791071788513,
+    "innerType": "tool_start",
+    "name": "check_reachability",
+    "agent": "reviewer-1"
+  },
+  {
+    "seq": 136,
+    "type": "agent_event",
+    "innerAt": 1791071788513,
+    "innerType": "tool_end",
+    "name": "check_reachability",
+    "agent": "reviewer-1",
+    "ok": true
+  },
+  {
+    "seq": 137,
+    "type": "agent_event",
+    "innerAt": 1791071788534,
+    "innerType": "turn",
+    "agent": "reviewer-1"
+  },
+  {
+    "seq": 138,
+    "type": "agent_event",
+    "innerAt": 1791071788537,
+    "innerType": "prompt_inspection",
+    "agent": "reviewer-1"
+  },
+  {
+    "seq": 139,
+    "type": "agent_event",
+    "innerAt": 1791071790428,
+    "innerType": "tool_start",
+    "name": "check_reachability",
+    "agent": "reviewer-1"
+  },
+  {
+    "seq": 140,
+    "type": "agent_event",
+    "innerAt": 1791071790428,
+    "innerType": "tool_end",
+    "name": "check_reachability",
+    "agent": "reviewer-1",
+    "ok": true
+  },
+  {
+    "seq": 141,
+    "type": "agent_event",
+    "innerAt": 1791071790450,
+    "innerType": "turn",
+    "agent": "reviewer-1"
+  },
+  {
+    "seq": 142,
+    "type": "agent_event",
+    "innerAt": 1791071790453,
+    "innerType": "prompt_inspection",
+    "agent": "reviewer-1"
+  },
+  {
+    "seq": 143,
+    "type": "heartbeat",
+    "at": 1791071792413,
+    "innerAt": 1791071792413,
+    "innerType": "heartbeat"
+  },
+  {
+    "seq": 144,
+    "type": "agent_event",
+    "innerAt": 1791071792880,
+    "innerType": "tool_start",
+    "name": "report_first_play_review",
+    "agent": "reviewer-1"
+  },
+  {
+    "seq": 145,
+    "type": "agent_event",
+    "innerAt": 1791071792880,
+    "innerType": "tool_end",
+    "name": "report_first_play_review",
+    "agent": "reviewer-1",
+    "ok": true
+  },
+  {
+    "seq": 146,
+    "type": "agent_event",
+    "innerAt": 1791071792881,
+    "innerType": "turn",
+    "agent": "reviewer-1"
+  },
+  {
+    "seq": 147,
+    "type": "agent_event",
+    "innerAt": 1791071792884,
+    "innerType": "prompt_inspection",
+    "agent": "reviewer-1"
+  },
+  {
+    "seq": 148,
+    "type": "agent_event",
+    "innerAt": 1791071795941,
+    "innerType": "delta",
+    "agent": "reviewer-1"
+  },
+  {
+    "seq": 149,
+    "type": "agent_event",
+    "innerAt": 1791071796519,
+    "innerType": "delta",
+    "agent": "reviewer-1"
+  },
+  {
+    "seq": 150,
+    "type": "agent_event",
+    "innerAt": 1791071796519,
+    "innerType": "assistant",
+    "agent": "reviewer-1"
+  },
+  {
+    "seq": 151,
+    "type": "agent_event",
+    "innerAt": 1791071796551,
+    "innerType": "done",
+    "agent": "reviewer-1"
+  },
+  {
+    "seq": 152,
+    "type": "error",
+    "innerType": "error"
+  }
+]

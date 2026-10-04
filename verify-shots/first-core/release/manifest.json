@@ -1,0 +1,648 @@
+{
+  "scenarioId": "live-first-game-release",
+  "projectPath": "output/qa/first-core/game-web/project.json",
+  "seed": 1,
+  "viewport": {
+    "width": 1280,
+    "height": 900
+  },
+  "errors": [],
+  "beats": [
+    {
+      "index": 0,
+      "id": "title",
+      "note": "다운로드한 ZIP의 실제 player.html 및 project.json 부팅",
+      "shot": "01-title.png",
+      "failures": [],
+      "state": null,
+      "actions": []
+    },
+    {
+      "index": 1,
+      "id": "opening",
+      "note": "저장된 오프닝",
+      "shot": "02-opening.png",
+      "failures": [],
+      "state": null,
+      "actions": [
+        {
+          "kind": "key",
+          "key": "Enter"
+        },
+        {
+          "kind": "waitForAttr",
+          "testid": "title-screen",
+          "attr": "data-seq-state",
+          "value": "done"
+        },
+        {
+          "kind": "key",
+          "key": "Enter"
+        },
+        {
+          "kind": "waitFor",
+          "testid": "cinematic-sequence",
+          "state": "present"
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "id": "field",
+      "note": "실제 시작 맵과 디코딩된 플레이어 그림",
+      "shot": "03-field.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_blank_start",
+        "x": 10,
+        "y": 8,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {}
+      },
+      "actions": [
+        {
+          "kind": "key",
+          "key": "Escape"
+        },
+        {
+          "kind": "waitForRuntime"
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "id": "clock",
+      "note": "정상 이동으로 회중시계 조사",
+      "shot": "04-clock.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_blank_start",
+        "x": 12,
+        "y": 8,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {},
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "map_blank_start",
+          "handled": true,
+          "farmAttempts": [
+            {
+              "kind": "ignored",
+              "x": 13,
+              "y": 8,
+              "reason": "not-farmable"
+            }
+          ],
+          "sequence": 1
+        }
+      },
+      "actions": [
+        {
+          "kind": "key",
+          "key": "ArrowRight",
+          "holdMs": 50
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_blank_start",
+          "x": 11,
+          "y": 8,
+          "timeoutMs": 5000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight",
+          "holdMs": 50
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_blank_start",
+          "x": 12,
+          "y": 8,
+          "timeoutMs": 5000
+        },
+        {
+          "kind": "face",
+          "dir": "right"
+        },
+        {
+          "kind": "action"
+        },
+        {
+          "kind": "pressUntil",
+          "key": "Enter",
+          "testid": "runtime-choices",
+          "state": "present",
+          "timeoutMs": 350,
+          "maxPresses": 18
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "id": "response",
+      "note": "실제 선택과 각기 다른 결과 대사",
+      "shot": "05-response.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_blank_start",
+        "x": 12,
+        "y": 8,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {},
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "map_blank_start",
+          "handled": true,
+          "farmAttempts": [
+            {
+              "kind": "ignored",
+              "x": 13,
+              "y": 8,
+              "reason": "not-farmable"
+            }
+          ],
+          "sequence": 1
+        }
+      },
+      "actions": [
+        {
+          "kind": "key",
+          "key": "2"
+        },
+        {
+          "kind": "waitFor",
+          "testid": "dialogue-box",
+          "state": "present"
+        },
+        {
+          "kind": "key",
+          "key": "Enter"
+        },
+        {
+          "kind": "waitForVisible",
+          "testid": "dialogue-box"
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "id": "route",
+      "note": "대사 종료 → 동쪽 문 → 기억의 길",
+      "shot": "06-route.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_segment_route",
+        "x": 0,
+        "y": 7,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {},
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "map_blank_start",
+          "handled": true,
+          "farmAttempts": [
+            {
+              "kind": "ignored",
+              "x": 13,
+              "y": 8,
+              "reason": "not-farmable"
+            }
+          ],
+          "sequence": 1
+        }
+      },
+      "actions": [
+        {
+          "kind": "pressUntil",
+          "key": "Enter",
+          "testid": "dialogue-box",
+          "state": "absent",
+          "maxPresses": 18,
+          "timeoutMs": 350
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight",
+          "holdMs": 50
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_blank_start",
+          "x": 13,
+          "y": 8,
+          "timeoutMs": 5000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight",
+          "holdMs": 50
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_blank_start",
+          "x": 14,
+          "y": 8,
+          "timeoutMs": 5000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight",
+          "holdMs": 50
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_blank_start",
+          "x": 15,
+          "y": 8,
+          "timeoutMs": 5000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight",
+          "holdMs": 50
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_blank_start",
+          "x": 16,
+          "y": 8,
+          "timeoutMs": 5000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight",
+          "holdMs": 50
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_blank_start",
+          "x": 17,
+          "y": 8,
+          "timeoutMs": 5000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight",
+          "holdMs": 50
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_blank_start",
+          "x": 18,
+          "y": 8,
+          "timeoutMs": 5000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight",
+          "holdMs": 50
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_segment_route",
+          "x": 0,
+          "y": 7,
+          "timeoutMs": 5000
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "id": "ending",
+      "note": "전환 완료 뒤 정상 이동·조사로 첫 구간 종료",
+      "shot": "07-ending.png",
+      "failures": [],
+      "state": {
+        "currentMapId": "map_segment_route",
+        "x": 22,
+        "y": 6,
+        "gold": 0,
+        "battleResult": null,
+        "farmPlots": {},
+        "makerInstances": {},
+        "actionReceipt": {
+          "kind": "action",
+          "mapId": "map_segment_route",
+          "handled": true,
+          "farmAttempts": [
+            {
+              "kind": "ignored",
+              "x": 23,
+              "y": 6,
+              "reason": "not-farmable"
+            }
+          ],
+          "sequence": 2
+        }
+      },
+      "actions": [
+        {
+          "kind": "waitForAttr",
+          "testid": "runtime-state-json",
+          "attr": "data-live-flags",
+          "value": "map_segment_route|0|7|true|false"
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight",
+          "holdMs": 50
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_segment_route",
+          "x": 1,
+          "y": 7,
+          "timeoutMs": 5000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight",
+          "holdMs": 50
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_segment_route",
+          "x": 2,
+          "y": 7,
+          "timeoutMs": 5000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight",
+          "holdMs": 50
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_segment_route",
+          "x": 3,
+          "y": 7,
+          "timeoutMs": 5000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight",
+          "holdMs": 50
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_segment_route",
+          "x": 4,
+          "y": 7,
+          "timeoutMs": 5000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight",
+          "holdMs": 50
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_segment_route",
+          "x": 5,
+          "y": 7,
+          "timeoutMs": 5000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight",
+          "holdMs": 50
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_segment_route",
+          "x": 6,
+          "y": 7,
+          "timeoutMs": 5000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight",
+          "holdMs": 50
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_segment_route",
+          "x": 7,
+          "y": 7,
+          "timeoutMs": 5000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight",
+          "holdMs": 50
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_segment_route",
+          "x": 8,
+          "y": 7,
+          "timeoutMs": 5000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight",
+          "holdMs": 50
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_segment_route",
+          "x": 9,
+          "y": 7,
+          "timeoutMs": 5000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight",
+          "holdMs": 50
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_segment_route",
+          "x": 10,
+          "y": 7,
+          "timeoutMs": 5000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight",
+          "holdMs": 50
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_segment_route",
+          "x": 11,
+          "y": 7,
+          "timeoutMs": 5000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight",
+          "holdMs": 50
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_segment_route",
+          "x": 12,
+          "y": 7,
+          "timeoutMs": 5000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight",
+          "holdMs": 50
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_segment_route",
+          "x": 13,
+          "y": 7,
+          "timeoutMs": 5000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight",
+          "holdMs": 50
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_segment_route",
+          "x": 14,
+          "y": 7,
+          "timeoutMs": 5000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight",
+          "holdMs": 50
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_segment_route",
+          "x": 15,
+          "y": 7,
+          "timeoutMs": 5000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight",
+          "holdMs": 50
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_segment_route",
+          "x": 16,
+          "y": 7,
+          "timeoutMs": 5000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight",
+          "holdMs": 50
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_segment_route",
+          "x": 17,
+          "y": 7,
+          "timeoutMs": 5000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight",
+          "holdMs": 50
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_segment_route",
+          "x": 18,
+          "y": 7,
+          "timeoutMs": 5000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight",
+          "holdMs": 50
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_segment_route",
+          "x": 19,
+          "y": 7,
+          "timeoutMs": 5000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight",
+          "holdMs": 50
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_segment_route",
+          "x": 20,
+          "y": 7,
+          "timeoutMs": 5000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight",
+          "holdMs": 50
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_segment_route",
+          "x": 21,
+          "y": 7,
+          "timeoutMs": 5000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowRight",
+          "holdMs": 50
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_segment_route",
+          "x": 22,
+          "y": 7,
+          "timeoutMs": 5000
+        },
+        {
+          "kind": "key",
+          "key": "ArrowUp",
+          "holdMs": 50
+        },
+        {
+          "kind": "waitForPosition",
+          "mapId": "map_segment_route",
+          "x": 22,
+          "y": 6,
+          "timeoutMs": 5000
+        },
+        {
+          "kind": "face",
+          "dir": "right"
+        },
+        {
+          "kind": "action"
+        },
+        {
+          "kind": "pressUntil",
+          "key": "Enter",
+          "testid": "ending-screen",
+          "state": "present",
+          "maxPresses": 18,
+          "timeoutMs": 350
+        }
+      ]
+    }
+  ]
+}
