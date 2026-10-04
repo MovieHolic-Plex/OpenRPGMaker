@@ -1,4 +1,39 @@
-# 캐릭터 칩 하네스 — Actor1 뼈대에 AI 가 직접 도트를 찍는다
+# 캐릭터 GIF 공방
+
+AI는 자유롭게 도트를 만들고 사용자는 걷는 GIF를 보며 **남기기 / 폐기**만 결정한다.
+화면: http://mdc-server:18314/ · 기본 모델 **GPT 6.1 sol high**.
+
+## 지금 사용하는 자유 저작
+
+```bash
+npm run harness -- charset-actor produce --count 100
+npm run harness -- charset-actor produce --count 100 --reference /absolute/reference.png --prompt '여러 장르의 개성 있는 인물'
+npm run harness -- charset-actor serve --port 18314
+npm run harness -- charset-actor export RUN
+```
+
+- `produce`는 manifest/작업 폴더를 만들고 터미널과 독립적으로 저작을 시작한다. `--par 4 --batch-size 2`가 기본이다.
+- UI의 「새 캐릭터 만들기」에서도 개수·선택적인 전체 방향·참고 시트만 넣고 시작한다. 비우면 AI가 인물과 복식을 정한다.
+- 모자·소품·장르·역할을 제한하는 미감 점수나 별도 Sonnet 심사는 없다. `free-worker.md`로 네 방향을 직접 그린다.
+- 구조·빈 프레임·키 색 ±8·머리/몸체 투명 결손·위/옆 잘림 위험은 자동 차단한다. 머리 판정은 원본 머리 내부 면을 유지하는 사람형 검사이며 모든 해부학 오류를 알아내지는 못한다.
+- 산출물은 `reviewMode: human`, `strength: free`. 작업자 종료 후 렌더와 `published.json` 해시가 일치하면 GIF 대기열에 올린다.
+- GIF 카드의 남기기/폐기는 한 번으로 저장된다. 하나씩 보기에서 A/R과 방향키를 쓸 수 있다. 이유와 메모 입력은 필수가 아니다.
+- 남김/폐기 탭에서 선택을 되돌릴 수 있다. 원본과 선택 journal은 보존한다. 결정은 본 격자·원본·강도·검사 버전에 묶이며 그림이 바뀌면 다시 선택한다.
+- 「일시 정지」는 진행 중인 묶음을 마치고 다음 묶음부터 멈춘다. 「이어 만들기」는 없는 결과만 재개하며 공개된 GIF는 다시 굽지 않는다.
+- 「남긴 캐릭터 다운로드」는 **실제 사람의 남기기 결정만** ZIP에 넣는다. 생성이 진행 중이어도 이미 남긴 캐릭터를 받을 수 있다.
+- ZIP: 8명씩 288×256 CharSet PNG·RGBA·걷기 GIF·격자·선택 해시·출처/라이선스. PNG 색 키 ±8 처리를 다시 읽어 확인한다.
+- 작업자 설명은 독립 관찰 심사가 아니다. 참고 시트 원본은 출처 문구까지 보존한다.
+- 데이터는 `CHR_HARNESS_DATA`(기본 `~/.local/share/oprn/charset-actor-harness/`) 아래다. 새로운 사람의 선택과 accepted 사본은 저장소 밖에 둔다.
+- 프로젝트 DB와 공용 캐릭터 라이브러리에 자동 설치하지 않는다. 과거에 격리한 불량 후보를 자동 복구하지 않는다.
+
+`studio.py`는 생성/재개를 저장 대상 잠금으로 직렬화하며 `driver.json`, `production-state.json`, `production.log`에 진행과 실패를 남긴다.
+`bulk.py`의 외부 manifest도 각 행에 `reviewMode: "human"`, `strength: "free"`를 넣으면 같은 자유 저작 계약을 사용한다.
+그 경우 최상위 manifest에도 `reviewMode: "human"`을 넣어 내보내기에서 사람 선택만 사용하게 한다.
+
+## 이전 지시 기반 저작과 독립 모델 검수
+
+아래는 기존 실행을 재현하는 절차다. 자유 저작의 현재 선택 계약은 위 절을 따른다.
+
 
 RPG Maker 2000 CharSet 캐릭터 한 명(72×128 = 24×32 프레임 3장 × 방향 4개)을 만든다.
 **생성 이미지는 쓰지 않는다.** 작업자 모델이 격자 글자(`.chr.txt`, 한 글자 = 한 픽셀)를 직접 고치고, 하네스가 PNG·GIF 로 굽는다.

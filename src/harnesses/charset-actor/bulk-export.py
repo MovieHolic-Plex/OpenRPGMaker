@@ -65,6 +65,11 @@ def contact(rows, dest, columns=10):
 def export(run, discard_failed=False):
     root = H.run_dir(run)
     manifest = json.loads((root / 'manifest.json').read_text())
+    if manifest.get('reviewMode') == 'human':
+        import studio
+        result = studio.export_kept(run)
+        print(json.dumps(result, ensure_ascii=False))
+        return result  # 미선택/모델 미감 FAIL을 자동 폐기하지 않는다.
     jobs = manifest['characters']
     loaded = []
     missing = []
