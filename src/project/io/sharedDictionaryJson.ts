@@ -69,8 +69,8 @@ export function serializeReusingSharedDictionaries(project: Project): string {
 }
 
 /**
- * 저장 왕복을 이미 통과한 공유 항목(같은 객체). 항목의 왕복 결과는 그 객체의 글만의 함수이고(위 전제), 항목 되읽기 검사
- * (`validateTileset` · 업로드 자산은 사전이 객체인지만 본다)는 항목마다 독립이다 — 그래서 통과한 객체는 다시 통과한다.
+ * 저장 왕복을 이미 통과한 공유 항목(같은 객체). 독립 자료의 검사는 같은 immutable 항목에 한해 재사용한다.
+ * 공간·graft 등 교차 참조 검사가 읽는 필드는 아래 투영본에도 그대로 남겨 매번 현재 문맥에서 검사한다.
  */
 const roundtripPassed = new WeakSet<object>();
 

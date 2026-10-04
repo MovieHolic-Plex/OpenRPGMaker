@@ -53,13 +53,13 @@ export function changedAssistantMapCells(a: GameMap, b: GameMap): Set<number> {
     if (a[key] === b[key]) continue;
     for (const index of new Set([...Object.keys(a[key] ?? {}), ...Object.keys(b[key] ?? {})])) {
       const i = Number(index);
-      if (i >= 0 && i < count && !sameStack(a[key]?.[i], b[key]?.[i])) changed.add(i);
+      if (Number.isInteger(i) && i >= 0 && i < count && !sameStack(a[key]?.[i], b[key]?.[i])) changed.add(i);
     }
   }
   if (a.relief?.wallDecor !== b.relief?.wallDecor || a.terrainDesign?.lockedCells !== b.terrainDesign?.lockedCells
     || a.doodadGroups !== b.doodadGroups || a.terrainDesign?.features !== b.terrainDesign?.features) {
     const before = cellMetadata(a), after = cellMetadata(b);
-    for (const i of new Set([...before.keys(), ...after.keys()])) if (i >= 0 && i < count && before.get(i) !== after.get(i)) changed.add(i);
+    for (const i of new Set([...before.keys(), ...after.keys()])) if (Number.isInteger(i) && i >= 0 && i < count && before.get(i) !== after.get(i)) changed.add(i);
   }
   return changed;
 }

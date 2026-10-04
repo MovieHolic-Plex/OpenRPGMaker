@@ -38,4 +38,12 @@ describe("descriptor-free human map edits", () => {
     expect([...changedAssistantMapCells(before, after)].sort((a, b) => a - b)).toEqual([23, 24]);
     expect(changedAssistantMapCells(before, structuredClone(before)).size).toBe(0);
   });
+  it("uses exact layer and shadow defaults without collapsing explicit negative tiles", () => {
+    const before = map(), after = { ...before,
+      lowerOverlayTiles: Array(256).fill(-1), upperOverlayTiles: Array(256).fill(-1), shadowBits: Array(256).fill(0) };
+    expect(changedAssistantMapCells(before, after).size).toBe(0);
+    after.lowerOverlayTiles[1] = 0; after.upperOverlayTiles[2] = -2; after.shadowBits[3] = 4;
+    expect([...changedAssistantMapCells(before, after)].sort((a, b) => a - b)).toEqual([1, 2, 3]);
+  });
+
 });

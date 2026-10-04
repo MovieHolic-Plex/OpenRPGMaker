@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { deserialize } from "@/project/io";
 import { markRoundtripPassed, serializeForRoundtripCheck } from "@/project/io/sharedDictionaryJson";
+import { cloneDetachedDraft } from "@/editor/detachedDraftMemory";
+import { assertSpatialToolAcceptance, beginSpatialToolProposal, sealSpatialToolProposal } from "@/editor/tools/spatialToolState";
 import { spatialFixture, spatialWire } from "./support/spatialSchemaFixture";
 
 function accepted() {
@@ -34,6 +36,23 @@ describe("spatial checkpoint roundtrip reuse", () => {
     expect(() => deserialize(serializeForRoundtripCheck(value))).toThrow(/kitId/);
   });
 
+  it.each(["geometry", "interiorMetadata", "tileGrafts"])("still refuses post-issue %s tampering after warming the projection", field => {
+    const { value, tilesetId } = accepted();
+    serializeForRoundtripCheck(value);
+    const proposal = cloneDetachedDraft(value);
+    beginSpatialToolProposal(proposal, value);
+    sealSpatialToolProposal(proposal);
+    expect(() => assertSpatialToolAcceptance(proposal, value)).not.toThrow();
+    const source = proposal.tilesets[tilesetId]!;
+    proposal.tilesets[tilesetId] = field === "geometry"
+      ? { ...source, structureKits: source.structureKits!.map(kit => ({ ...kit, width: 0 })) }
+      : field === "tileGrafts"
+        ? { ...source, tileGrafts: [{ targetTile: source.count, sourceTile: 0, sourceChipset: "source" }] }
+        : { ...source, interiorMetadata: { broken: true } } as typeof source;
+    // Lint's smaller JSON is never the authority fingerprint or proposal proof.
+    expect(() => assertSpatialToolAcceptance(proposal, value)).toThrow();
+  });
+
   it("validates replacement grafts and reference documents instead of caching the old entry's pass", () => {
     const { value, tilesetId } = accepted();
     const source = value.tilesets[tilesetId]!;
@@ -43,5 +62,9 @@ describe("spatial checkpoint roundtrip reuse", () => {
     const docsCandidate = { ...value, tilesets: { ...value.tilesets, [tilesetId]: { ...source,
       referenceDocuments: [{ id: "broken" }] as unknown as typeof source.referenceDocuments } } };
     expect(() => deserialize(serializeForRoundtripCheck(docsCandidate))).toThrow();
+    const kitDocs = { ...value, tilesets: { ...value.tilesets, [tilesetId]: { ...source,
+      structureKits: source.structureKits!.map(kit => ({ ...kit,
+        referenceDocuments: [{ id: "broken" }] as unknown as typeof kit.referenceDocuments })) } } };
+    expect(() => deserialize(serializeForRoundtripCheck(kitDocs))).toThrow();
   });
 });
