@@ -12,10 +12,28 @@ npm run harness -- worldmap-icons draw '<세트/이름>' --note '교정 지시' 
 npm run harness -- worldmap-icons export
 npm run harness -- worldmap-icons build
 npm run harness -- worldmap-icons check
+npm run harness -- worldmap-icons publish-shared --icons-only
 ```
 
 `harness.ts`는 가벼운 공통 등록, `node/cli.ts`는 기존 Python 입구를 호출한다.
 `build/check`는 `bake.py`다. 별도 선택 화면은 있지만 에디터 공방 실행기는 없으므로 `editorUi:false`다.
+
+## 호스트 공용 DB 등록 (2026-10-04)
+
+공용 번들과 호스트 `shared-content.sqlite`는 별개다. `publish-shared`는 먼저 현재 사람 선택·시트·해시를
+`bake.py check`로 대조한 뒤 로컬 등록 API의 CAS로 자기 라이브러리만 쓰고 같은 판본을 다시 읽는다.
+LegacyDb/원격에는 쓰지 않는다. `--dry`는 준비·그림 대조만 한다.
+
+- `--icons-only`: `worldmap-human-selected`의 `shared_worldmap_selected`에 선택 79개와 3용도 참고문서를 등록한다.
+  `projectDefaults:true`이므로 새·기존 프로젝트의 공용 기본 자료에 들어간다. 미선택 후보는 등록하지 않는다.
+- 지형 사례까지 등록: `publish-shared --joseon <정본 프로젝트 폴더> --yucatan <정본 프로젝트 폴더>`.
+  두 정본에서 `world_map`을 다시 읽고, 공용 사본 렌더가 원본과 픽셀 단위로 같은지 확인한다.
+  `worldmap-real-joseon`/`worldmap-real-yucatan`은 `projectDefaults:false`인 완성 지역 사례다.
+  두 큰 지도 그림은 부팅 기본 자료로 복제하지 않고 요청 시 가져온다.
+- 지도 사본의 실제 지형 설정·캐릭터 크기·장소 좌표와 필요한 업로드 그림을 함께 보존한다.
+  새 맵은 `worldmap_<새 mapId>` 전용 타일셋을 소유하여 공용 원본·다른 사본과 편집을 공유하지 않는다.
+  전이 이벤트는 원본 스냅샷에 보존하며 새 맵으로 가져올 때 기본값은 제외다.
+- 근거: `verify-shots/worldmap-shared-db/publication.json`, `contract.json`, 실제 조수 호출의 `assistant-*/summary.json`.
 
 ## 사람 선택만 굽기
 

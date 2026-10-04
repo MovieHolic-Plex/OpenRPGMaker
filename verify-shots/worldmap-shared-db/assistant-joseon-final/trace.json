@@ -1,0 +1,531 @@
+[
+  {
+    "i": 1,
+    "name": "get_project_summary",
+    "args": {},
+    "ok": true,
+    "summary": "프로젝트 '공용 월드맵 조수 실호출 · joseon-final' — 맵 1개, 아이템 1000, 트룹 7"
+  },
+  {
+    "i": 2,
+    "name": "read_project_wiki",
+    "args": {
+      "query": "조선 팔도 전도 실제 지형 세계지도 아이콘 제작 규칙",
+      "mapId": "",
+      "ids": [],
+      "offset": 0,
+      "includeHistory": false
+    },
+    "ok": true,
+    "summary": "프로젝트 위키 0개 문서"
+  },
+  {
+    "i": 3,
+    "name": "find_tools",
+    "args": {
+      "query": "list_spatial_designs read_spatial_reference import_region_reference",
+      "domain": "world",
+      "limit": 3
+    },
+    "ok": true,
+    "summary": "편집기 툴 3개 발견: import_region_reference, list_spatial_designs, read_spatial_reference"
+  },
+  {
+    "i": 4,
+    "name": "find_tools",
+    "args": {
+      "query": "list_worldmap_icons inspect_worldmap_icon stamp_worldmap_icon",
+      "domain": "world",
+      "limit": 3
+    },
+    "ok": true,
+    "summary": "편집기 툴 3개 발견: list_worldmap_icons, stamp_worldmap_icon, inspect_worldmap_icon"
+  },
+  {
+    "i": 5,
+    "name": "list_spatial_designs",
+    "args": {
+      "kind": "place",
+      "query": "조선",
+      "limit": 100,
+      "offset": 0
+    },
+    "ok": true,
+    "summary": "장소 저작 비활성(프로젝트 설계 0) · 공용 15건"
+  },
+  {
+    "i": 6,
+    "name": "list_worldmap_icons",
+    "args": {
+      "theme": "fantasy",
+      "query": ""
+    },
+    "ok": true,
+    "summary": "사람 선택 월드맵 아이콘 36개"
+  },
+  {
+    "i": 7,
+    "name": "find_tools",
+    "args": {
+      "query": "read_world_terrain set_map_properties show_map_region check_reachability",
+      "domain": "map",
+      "limit": 4
+    },
+    "ok": true,
+    "summary": "편집기 툴 4개 발견: read_world_terrain, show_map_region, set_map_properties, check_reachability"
+  },
+  {
+    "i": 8,
+    "name": "read_spatial_reference",
+    "args": {
+      "kind": "region",
+      "id": "shared_worldmap_real_joseon",
+      "offset": 0
+    },
+    "ok": true,
+    "summary": "공간 참고문서 용도"
+  },
+  {
+    "i": 9,
+    "name": "list_tileset_references",
+    "args": {
+      "tilesetId": "worldmap_selected",
+      "categoryId": "wmi-fantasy",
+      "offset": 0
+    },
+    "ok": true,
+    "summary": "월드맵 · 판타지 자료 목록. nextOffset이 있으면 다음 목록도 확인하세요."
+  },
+  {
+    "i": 10,
+    "name": "read_spatial_reference",
+    "args": {
+      "kind": "region",
+      "id": "shared_worldmap_real_joseon",
+      "categoryId": "worldmap-real-joseon",
+      "documentId": "worldmap-real-joseon-guide",
+      "offset": 0
+    },
+    "ok": true,
+    "summary": "실제 지형 · 조선 팔도 전도 / 저장된 지형·사용 절차"
+  },
+  {
+    "i": 11,
+    "name": "read_spatial_reference",
+    "args": {
+      "kind": "region",
+      "id": "shared_worldmap_real_joseon",
+      "categoryId": "worldmap-real-joseon",
+      "imageId": "worldmap-real-joseon-image",
+      "offset": 0
+    },
+    "ok": true,
+    "summary": "실제 지형 · 조선 팔도 전도 / 정본 지도"
+  },
+  {
+    "i": 12,
+    "name": "read_tileset_reference",
+    "args": {
+      "tilesetId": "worldmap_selected",
+      "categoryId": "wmi-fantasy",
+      "documentId": "wmi-fantasy-catalog",
+      "imageId": "",
+      "offset": 0
+    },
+    "ok": true,
+    "summary": "월드맵 · 판타지 / 판타지 전체 배열·조립 순서 (0–5930, 1/2쪽)"
+  },
+  {
+    "i": 13,
+    "name": "read_tileset_reference",
+    "args": {
+      "tilesetId": "worldmap_selected",
+      "categoryId": "wmi-fantasy",
+      "documentId": "",
+      "imageId": "wmi-fantasy-sheet",
+      "offset": 0
+    },
+    "ok": true,
+    "summary": "월드맵 · 판타지 / 선택 아이콘 실제 그림 — 실제 이미지를 확인하세요."
+  },
+  {
+    "i": 14,
+    "name": "read_tileset_reference",
+    "args": {
+      "tilesetId": "worldmap_selected",
+      "categoryId": "wmi-fantasy",
+      "documentId": "wmi-fantasy-catalog",
+      "imageId": "",
+      "offset": 5930
+    },
+    "ok": true,
+    "summary": "월드맵 · 판타지 / 판타지 전체 배열·조립 순서 (5930–11428, 2/2쪽)"
+  },
+  {
+    "i": 15,
+    "name": "import_region_reference",
+    "args": {
+      "id": "shared_worldmap_real_joseon",
+      "newMapId": "map_joseon_travel",
+      "name": "조선 여행 지도",
+      "includeEvents": false,
+      "referencePurpose": "worldmap-real-joseon"
+    },
+    "ok": true,
+    "summary": "「실제 지형 · 조선 팔도 전도」 새 맵 map_joseon_travel 96×72 · 타일셋 worldmap_map_joseon_travel 설치",
+    "data": {
+      "mapId": "map_joseon_travel",
+      "created": true,
+      "rect": {
+        "x": 0,
+        "y": 0,
+        "width": 96,
+        "height": 72
+      },
+      "clipped": false,
+      "tileset": {
+        "tilesetId": "worldmap_map_joseon_travel",
+        "mode": "installed",
+        "tilesAdded": 6912,
+        "graftsAdded": 0
+      },
+      "eventsCopied": 0,
+      "eventsSkipped": 1,
+      "extraLayers": [],
+      "referenceId": "shared_worldmap_real_joseon",
+      "source": "snapshot"
+    }
+  },
+  {
+    "i": 16,
+    "name": "get_map_region",
+    "args": {
+      "mapId": "map_joseon_travel",
+      "x": 8,
+      "y": 10,
+      "w": 24,
+      "h": 18
+    },
+    "ok": true,
+    "summary": "조선 여행 지도(map_joseon_travel) 영역 (8,10)~(32,28) — 이벤트 0개, 물 0칸"
+  },
+  {
+    "i": 17,
+    "name": "show_map_region",
+    "args": {
+      "mapId": "map_joseon_travel",
+      "x": 0,
+      "y": 0,
+      "w": 96,
+      "h": 72
+    },
+    "ok": true,
+    "summary": "맵 미리보기: (0,0) 96×72 (조선 여행 지도)"
+  },
+  {
+    "i": 18,
+    "name": "read_world_terrain",
+    "args": {
+      "mapId": "map_joseon_travel"
+    },
+    "ok": true,
+    "summary": "세계 지형 joseon-korea+edit(joseon) — 장소 31곳, 여정 검사 통과"
+  },
+  {
+    "i": 19,
+    "name": "show_map_region",
+    "args": {
+      "mapId": "map_joseon_travel",
+      "x": 4,
+      "y": 13,
+      "w": 9,
+      "h": 8
+    },
+    "ok": true,
+    "summary": "맵 미리보기: (4,13) 9×8 (조선 여행 지도)"
+  },
+  {
+    "i": 20,
+    "name": "get_map_region",
+    "args": {
+      "mapId": "map_joseon_travel",
+      "x": 34,
+      "y": 49,
+      "w": 8,
+      "h": 6
+    },
+    "ok": true,
+    "summary": "조선 여행 지도(map_joseon_travel) 영역 (34,49)~(42,55) — 이벤트 0개, 물 0칸"
+  },
+  {
+    "i": 21,
+    "name": "show_map_region",
+    "args": {
+      "mapId": "map_joseon_travel",
+      "x": 34,
+      "y": 49,
+      "w": 8,
+      "h": 6
+    },
+    "ok": true,
+    "summary": "맵 미리보기: (34,49) 8×6 (조선 여행 지도)"
+  },
+  {
+    "i": 22,
+    "name": "show_map_region",
+    "args": {
+      "mapId": "map_joseon_travel",
+      "x": 47,
+      "y": 0,
+      "w": 12,
+      "h": 9
+    },
+    "ok": true,
+    "summary": "맵 미리보기: (47,0) 12×9 (조선 여행 지도)"
+  },
+  {
+    "i": 23,
+    "name": "get_map_region",
+    "args": {
+      "mapId": "map_joseon_travel",
+      "x": 47,
+      "y": 0,
+      "w": 12,
+      "h": 9
+    },
+    "ok": true,
+    "summary": "조선 여행 지도(map_joseon_travel) 영역 (47,0)~(59,9) — 이벤트 0개, 물 0칸"
+  },
+  {
+    "i": 24,
+    "name": "get_map_region",
+    "args": {
+      "mapId": "map_joseon_travel",
+      "x": 6,
+      "y": 14,
+      "w": 5,
+      "h": 6
+    },
+    "ok": true,
+    "summary": "조선 여행 지도(map_joseon_travel) 영역 (6,14)~(11,20) — 이벤트 0개, 물 0칸"
+  },
+  {
+    "i": 25,
+    "name": "show_map_region",
+    "args": {
+      "mapId": "map_joseon_travel",
+      "x": 6,
+      "y": 14,
+      "w": 5,
+      "h": 6
+    },
+    "ok": true,
+    "summary": "맵 미리보기: (6,14) 5×6 (조선 여행 지도)"
+  },
+  {
+    "i": 26,
+    "name": "stamp_worldmap_icon",
+    "args": {
+      "mapId": "map_joseon_travel",
+      "iconId": "fantasy/castle_dark_grand",
+      "at": {
+        "x": 6,
+        "y": 14
+      },
+      "referencePurpose": "wmi-fantasy"
+    },
+    "ok": true,
+    "summary": "조선 여행 지도: 대성 — 바깥 성벽과 문·모서리 탑 둘 뒤로 안쪽 성이 솟는 5x5 5×5 (6,14) 배치",
+    "data": {
+      "iconId": "fantasy/castle_dark_grand",
+      "sha256": "f144946d5540426542583e759e4d9e596a71405e55c246196b89252ca8d96660",
+      "entrance": {
+        "x": 8,
+        "y": 18
+      },
+      "approach": {
+        "x": 8,
+        "y": 19
+      },
+      "tilesetId": "worldmap_map_joseon_travel",
+      "eventsCreated": false
+    }
+  },
+  {
+    "i": 27,
+    "name": "stamp_worldmap_icon",
+    "args": {
+      "mapId": "map_joseon_travel",
+      "iconId": "fantasy/village_wood",
+      "at": {
+        "x": 35,
+        "y": 50
+      },
+      "referencePurpose": "wmi-fantasy"
+    },
+    "ok": true,
+    "summary": "조선 여행 지도: 촌락 — 목조 집 세 채·덤불 (2x2) 2×2 (35,50) 배치",
+    "data": {
+      "iconId": "fantasy/village_wood",
+      "sha256": "5796fede768ba92fed925e1e06e3e4b63bb7387bf9c4289f6151503072f9e594",
+      "entrance": {
+        "x": 36,
+        "y": 51
+      },
+      "approach": {
+        "x": 36,
+        "y": 52
+      },
+      "tilesetId": "worldmap_map_joseon_travel",
+      "eventsCreated": false
+    }
+  },
+  {
+    "i": 28,
+    "name": "set_map_properties",
+    "args": {
+      "mapId": "map_joseon_travel",
+      "characterScale": 0.75,
+      "referencePurpose": "worldmap-real-joseon"
+    },
+    "ok": true,
+    "summary": "조선 여행 지도 속성 변경 — 캐릭터 크기=75%"
+  },
+  {
+    "i": 29,
+    "name": "inspect_worldmap_icon",
+    "args": {
+      "mapId": "map_joseon_travel",
+      "iconId": "fantasy/castle_dark_grand",
+      "at": {
+        "x": 6,
+        "y": 14
+      }
+    },
+    "ok": true,
+    "summary": "대성 — 바깥 성벽과 문·모서리 탑 둘 뒤로 안쪽 성이 솟는 5x5: 전체 배열 일치",
+    "data": {
+      "ok": true,
+      "iconId": "fantasy/castle_dark_grand",
+      "sha256": "f144946d5540426542583e759e4d9e596a71405e55c246196b89252ca8d96660",
+      "issues": []
+    }
+  },
+  {
+    "i": 30,
+    "name": "inspect_worldmap_icon",
+    "args": {
+      "mapId": "map_joseon_travel",
+      "iconId": "fantasy/village_wood",
+      "at": {
+        "x": 35,
+        "y": 50
+      }
+    },
+    "ok": true,
+    "summary": "촌락 — 목조 집 세 채·덤불 (2x2): 전체 배열 일치",
+    "data": {
+      "ok": true,
+      "iconId": "fantasy/village_wood",
+      "sha256": "5796fede768ba92fed925e1e06e3e4b63bb7387bf9c4289f6151503072f9e594",
+      "issues": []
+    }
+  },
+  {
+    "i": 31,
+    "name": "check_reachability",
+    "args": {
+      "mapId": "map_joseon_travel",
+      "from": {
+        "x": 8,
+        "y": 19
+      },
+      "targets": [
+        {
+          "x": 8,
+          "y": 18
+        }
+      ]
+    },
+    "ok": true,
+    "summary": "도달성: 전부 도달 가능"
+  },
+  {
+    "i": 32,
+    "name": "check_reachability",
+    "args": {
+      "mapId": "map_joseon_travel",
+      "from": {
+        "x": 36,
+        "y": 52
+      },
+      "targets": [
+        {
+          "x": 36,
+          "y": 51
+        }
+      ]
+    },
+    "ok": true,
+    "summary": "도달성: 전부 도달 가능"
+  },
+  {
+    "i": 33,
+    "name": "get_project_summary",
+    "args": {},
+    "ok": true,
+    "summary": "프로젝트 '공용 월드맵 조수 실호출 · joseon-final' — 맵 2개, 아이템 1000, 트룹 7"
+  },
+  {
+    "i": 34,
+    "name": "show_map_region",
+    "args": {
+      "mapId": "map_joseon_travel",
+      "x": 0,
+      "y": 0,
+      "w": 96,
+      "h": 72
+    },
+    "ok": true,
+    "summary": "맵 미리보기: (0,0) 96×72 (조선 여행 지도)"
+  },
+  {
+    "i": 35,
+    "name": "show_map_region",
+    "args": {
+      "mapId": "map_joseon_travel",
+      "x": 12,
+      "y": 12,
+      "w": 14,
+      "h": 14
+    },
+    "ok": true,
+    "summary": "맵 미리보기: (12,12) 14×14 (조선 여행 지도)"
+  },
+  {
+    "i": 36,
+    "name": "show_map_region",
+    "args": {
+      "mapId": "map_joseon_travel",
+      "x": 0,
+      "y": 0,
+      "w": 6,
+      "h": 6
+    },
+    "ok": true,
+    "summary": "맵 미리보기: (0,0) 6×6 (조선 여행 지도)"
+  },
+  {
+    "i": 37,
+    "name": "show_map_region",
+    "args": {
+      "mapId": "map_joseon_travel",
+      "x": 32,
+      "y": 0,
+      "w": 12,
+      "h": 6
+    },
+    "ok": true,
+    "summary": "맵 미리보기: (32,0) 12×6 (조선 여행 지도)"
+  }
+]

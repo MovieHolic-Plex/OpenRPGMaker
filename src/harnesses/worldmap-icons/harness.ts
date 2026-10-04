@@ -17,6 +17,7 @@ export const WORLDMAP_ICONS_HARNESS = defineHarness({
     { id: "export", title: "선택 사본", summary: "현재 그림에 유효한 선택·검수 기록을 내보낸다." },
     { id: "build", title: "공용 시트 굽기", summary: "사람이 받은 원본·후보만 해시를 확인해 굽는다. 칸 번호는 덧붙이기 전용이다." },
     { id: "check", title: "굽기 확인", summary: "선택 기록·원본 해시·칸 좌표·번들 PNG·참고문서를 대조한다." },
+    { id: "publish-shared", title: "공용 DB 등록", summary: "선택 시트와 정본 지형 사례를 호스트 공용 SQLite에 등록하고 같은 판본을 다시 읽는다." },
     { id: "preview", title: "후보 미리보기", summary: "후보의 크기·색표와 실제 지도 자리를 확인한다." },
   ],
   entrypoints: { cli: true, editorUi: false, assistantTool: false },

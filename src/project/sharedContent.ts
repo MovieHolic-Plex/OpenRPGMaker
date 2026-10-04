@@ -158,7 +158,12 @@ export function sharedRegionSnapshot(id: string) {
     if (!Object.hasOwn(lib.regions ?? {}, id)) continue;
     const map = lib.maps[id];
     const tileset = map && lib.tilesets[map.tilesetId];
-    if (map && tileset) return { map, tileset };
+    if (map && tileset) {
+      const ids = new Set(tileset.image.type === 'uploaded' ? [tileset.image.id] : []);
+      for (const graft of tileset.tileGrafts ?? []) ids.add(graft.sourceChipset);
+      const assets = Object.fromEntries([...ids].filter(key => lib.assets[key]).map(key => [key, lib.assets[key]!]));
+      return { map, tileset, assets };
+    }
   }
   return undefined;
 }
