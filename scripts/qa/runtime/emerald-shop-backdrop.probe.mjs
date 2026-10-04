@@ -1,23 +1,23 @@
 // Existing actual campaign + genuine slot; native Continue/door/shop/transactions.
 import { chromium } from '@playwright/test';
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
-import { resolve, dirname } from 'node:path';
+import { resolve, dirname, extname } from 'node:path';
 import { createHash } from 'node:crypto';
 const url=process.env.OPRN_QA_URL, projectPath=process.env.OPRN_QA_PROJECT, slotPath=process.env.OPRN_QA_SLOT;
 if(!url||!projectPath||!slotPath)throw new Error('Set OPRN_QA_URL, OPRN_QA_PROJECT and OPRN_QA_SLOT');
 const out=resolve(process.env.OPRN_QA_OUT??'verify-shots/emerald-shop-backdrop');await mkdir(out,{recursive:true});
 const body=await readFile(projectPath,'utf8'), project=JSON.parse(body), slot=await readFile(slotPath,'utf8');
-const namespace=`emerald-shop-backdrop-${Date.now()}`;
+const namespace="starlight-islands-v1";
 const browser=await chromium.launch({args:['--no-sandbox','--use-gl=swiftshader','--disable-gpu']});
 const page=await browser.newPage({viewport:{width:1280,height:960}}),errors=[],httpErrors=[];
 page.on('pageerror',e=>errors.push(e.message));page.on('response',r=>{if(r.status()>=400)httpErrors.push(`${r.status()} ${r.url()}`);});
 await page.addInitScript(({namespace,slot})=>{window.__OPENRPG_BOOT__={projectUrl:'/__shop_backdrop_project.json',saveNamespace:namespace,qaInstrumentation:true};localStorage.setItem(`${namespace}:save-slot:v5:1`,slot);},{namespace,slot});
-// Built player HTML contains its own BOOT; retain the private fixture/namespace
+// An isolated browser keeps the genuine shipping namespace; retain the private fixture/observation
 // above instead of letting the inline shipping defaults disable observation.
 await page.route('**/player.html',async r=>{const response=await r.fetch();const html=await response.text();await r.fulfill({response,body:html.replace(/<script>window\.__OPENRPG_BOOT__=\{[^<]+?\};<\/script>/u,`<script>window.__OPENRPG_BOOT__={projectUrl:"/__shop_backdrop_project.json",saveNamespace:${JSON.stringify(namespace)},qaInstrumentation:true};</script>`)});});
 await page.route('**/__shop_backdrop_project.json',r=>r.fulfill({contentType:'application/json',body}));
 // Portable uploaded files resolve beside this exact supplied export; source runtime assets use Vite.
-await page.route('**/assets/**',async r=>{const path=new URL(r.request().url()).pathname;try{await r.fulfill({body:await readFile(resolve(dirname(projectPath),`.${path}`))});}catch{await r.continue();}});
+await page.route('**/assets/**',async r=>{const path=new URL(r.request().url()).pathname;const contentType={'.png':'image/png','.jpg':'image/jpeg','.webp':'image/webp','.ogg':'audio/ogg','.wav':'audio/wav'}[extname(path)];if(!contentType){await r.continue();return;}try{await r.fulfill({contentType,body:await readFile(resolve(dirname(projectPath),`.${path}`))});}catch{await r.continue();}});
 const key=async k=>{await page.keyboard.press(k);await page.waitForTimeout(250);};
 const phase=async value=>await page.locator(`.emerald-shop-shell[data-shop-phase="${value}"]`).waitFor({timeout:20000});
 const state=()=>page.evaluate(()=>{const s=window.__oprnDebug.readState();return{gold:s.gold,inventory:s.inventory,mapId:s.currentMapId,x:s.x,y:s.y};});

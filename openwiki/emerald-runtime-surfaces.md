@@ -48,6 +48,12 @@ The shop probe supports both source and built player HTML. Built inline BOOT
 is replaced with the private fixture/namespace/observation configuration; native
 Continue is selected explicitly before loading the genuine predecessor slot.
 Failures preserve their original error even when runtime hooks are unavailable.
+Portable-media routing only intercepts PNG/JPEG/WebP/OGG/WAV and supplies their
+MIME types. JS and CSS stay with the server: fulfilling lazy player chunks as
+untyped buffers let the title load but rejected the runtime import on Continue.
+The genuine namespace is isolated by a fresh browser context. Final compiled
+shop evidence: native buy2 changes1600→1440G and capture orbs10→12, cancellation
+preserves state, desktop/narrow pending rows remain complete, errors0/HTTP0.
 
 `collectProjectStrings` in `webExportAssets.ts` includes an existing uploaded
 `_front` → `_icon` sibling for every Emerald species. The menu derives that ID at
