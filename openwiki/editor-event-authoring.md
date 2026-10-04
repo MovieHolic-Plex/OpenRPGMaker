@@ -994,3 +994,6 @@ Dialogues still pause autonomous movement. Entering a map applies its authored r
 These checks do not replace native walking/collision evidence. Reviewed expedition
 layouts add27 ambient patrols in9 towns, retaining key story/vendor positions and
 using inspected People1 roles. No terrain is repainted for NPC repairs.
+
+Patrol authoring also reserves all cells of other authored repeating patrols rather
+than only their initial positions, preventing intersecting resident loops.

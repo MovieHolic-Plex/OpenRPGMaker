@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **135쪽 / 4521KB / 약 1,307,235 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **135쪽 / 4527KB / 약 1,308,797 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -16,9 +16,9 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
 | `openwiki/editor-ai-panel.md` | 565KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 3475 | ~163,954 |
-| `openwiki/editor-ai-tools.md` | 313KB | 87KB ⚠상한 초과 — 절을 더 쪼개라 | 2598 | ~90,026 |
+| `openwiki/editor-ai-tools.md` | 314KB | 87KB ⚠상한 초과 — 절을 더 쪼개라 | 2617 | ~90,319 |
 | `openwiki/editor-database.md` | 402KB | 63KB ⚠상한 초과 — 절을 더 쪼개라 | 2358 | ~117,632 |
-| `openwiki/editor-event-authoring.md` | 167KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 977 | ~48,774 |
+| `openwiki/editor-event-authoring.md` | 169KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 1000 | ~49,156 |
 | `openwiki/editor-event-commands.md` | 67KB | 32KB | 301 | ~18,613 |
 | `openwiki/editor-interior-room-harness.md` | 98KB | 6KB | 469 | ~28,406 |
 | `openwiki/editor-observability.md` | 58KB | 6KB | 658 | ~16,843 |
@@ -27,7 +27,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/runtime-battle.md` | 322KB | 32KB | 1759 | ~94,254 |
 | `openwiki/runtime-pre-edit-routing.md` | 109KB | 76KB ⚠상한 초과 — 절을 더 쪼개라 | 791 | ~32,764 |
 | `openwiki/runtime-project-schema.md` | 208KB | 66KB ⚠상한 초과 — 절을 더 쪼개라 | 1483 | ~58,128 |
-| `openwiki/runtime-sessions.md` | 126KB | 50KB | 680 | ~34,255 |
+| `openwiki/runtime-sessions.md` | 128KB | 50KB | 700 | ~34,606 |
 | `openwiki/testing.md` | 213KB | 48KB | 2013 | ~59,223 |
 | `openwiki/tileset-reference-documents.md` | 54KB | 4KB | 558 | ~16,396 |
 
@@ -505,7 +505,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L3424` 검증 권한 정정과 브라우저 재실측 (2026-09-28)
 - `L3434` 실제 Pi 오프닝 제작 경로 복구 (2026-10-03)
 
-### `openwiki/editor-ai-tools.md` — 313KB · 2598줄 · ~90,026 토큰 · 통째읽기 잘림 · 깨진 줄 6
+### `openwiki/editor-ai-tools.md` — 314KB · 2617줄 · ~90,319 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
 - `L3` 조수 스킬 저작 — 기믹·연출 빌리기 (2026-09-30)
 - `L14` 실내 설계는 검토된 실내 프리셋을 함께 본다 (2026-09-28)
@@ -611,6 +611,8 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L2561` Pi 오프닝 제작·그림 검토 계약 (2026-10-03)
 - `L2589` Independent opening timelines
 - `L2593` Monster collector setup and verification (2026-10-03)
+- `L2599` Structured optional read arrays (2026-10-04)
+- `L2609` NPC, shop and readable opening production (2026-10-04)
 
 ### `openwiki/editor-database.md` — 402KB · 2358줄 · ~117,632 토큰 · 통째읽기 잘림 · 깨진 줄 8
 
@@ -747,7 +749,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L2350` 도트 연출의 이동·가속도·배우 경로 (2026-10-02)
 - `L2355` 저장 결과를 구분하는 적용 피드백 (2026-10-02)
 
-### `openwiki/editor-event-authoring.md` — 167KB · 977줄 · ~48,774 토큰 · 통째읽기 잘림 · 깨진 줄 16
+### `openwiki/editor-event-authoring.md` — 169KB · 1000줄 · ~49,156 토큰 · 통째읽기 잘림 · 깨진 줄 16
 
 - `L3` 명령 드래그 소유권과 레거시 페이지 붙여넣기 (2026-10-02)
 - `L10` 감사 후속: 조건 순서와 생활 경로 보존 (2026-09-20)
@@ -799,6 +801,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L926` 명령 툴바는 한 줄이다 — wrap 금지와 폭 흡수 순서 (2026-09-21)
 - `L968` 공통 이벤트 호출 그래프 경고 (2026-10-02)
 - `L974` Independent opening timelines
+- `L978` Safe ambient patrol authoring (2026-10-04)
 
 ### `openwiki/editor-event-command-fixes.md` — 24KB · 99줄 · ~6,295 토큰 · 깨진 줄 11
 
@@ -1228,7 +1231,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 절 제목 없음 (평면 목록 페이지).
 
-### `openwiki/monster-campaign-menu.md` — 5KB · 88줄 · ~1,366 토큰
+### `openwiki/monster-campaign-menu.md` — 6KB · 94줄 · ~1,468 토큰
 
 - `L10` Ownership and receipts
 - `L35` UI data and map
@@ -1288,7 +1291,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L90` 2026-09-05 실측
   - `L105` 사용자 플레이 후 체험 QA 정정 (2026-09-05)
 
-### `openwiki/opening-animatic-authoring.md` — 7KB · 58줄 · ~1,824 토큰
+### `openwiki/opening-animatic-authoring.md` — 8KB · 75줄 · ~2,139 토큰
 
 - `L3` Ownership and format
 - `L9` Assistant surface
@@ -1297,6 +1300,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L33` Functional verification
 - `L37` Older host storage compatibility
 - `L43` Narrative storybook recipe (2026-10-04)
+- `L68` Review includes authored layers
 
 ### `openwiki/opening-reference-study.md` — 10KB · 57줄 · ~2,901 토큰
 
@@ -1702,7 +1706,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L1454` 타일셋 참고문서 데이터 (2026-09-21)
 - `L1458` 몬스터 보유 조건 연결 작업 (2026-09-25, 진행 중)
 
-### `openwiki/runtime-sessions.md` — 126KB · 680줄 · ~34,255 토큰 · 통째읽기 잘림
+### `openwiki/runtime-sessions.md` — 128KB · 700줄 · ~34,606 토큰 · 통째읽기 잘림
 
 - `L3` 여러 게임 오버의 실행과 미리보기 (2026-09-23)
 - `L21` 장르별 패배와 엔딩 흐름 (2026-09-22)
@@ -1740,6 +1744,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L629` 오프닝 fade 표시 시간과 장면 유지 시간 (2026-10-03)
 - `L643` Original monster campaign journal and field menus (2026-10-03)
 - `L652` Monster party common UI dogfood follow-up (2026-10-03)
+- `L681` Collector supply shop (2026-10-04)
 
 ### `openwiki/se-catalog.md` — 15KB · 257줄 · ~3,910 토큰
 
@@ -2105,7 +2110,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L316` 칩셋 계열 규칙 (2026-09-25 사용자 결정)
 - `L351` 문서의 번호가 새 프로젝트에 있어야 한다 (2026-09-25)
 
-### `openwiki/team-project-host.md` — 43KB · 474줄 · ~13,338 토큰
+### `openwiki/team-project-host.md` — 44KB · 479줄 · ~13,457 토큰
 
 - `L5` 소유와 실행 위치
 - `L22` 실행
@@ -2130,6 +2135,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L434` Large bridge save requests (2026-09-24)
 - `L440` 웹 편집기 저장 경로 경량화 (2026-09-25)
   - `L455` 저장 경로의 전체 복제·직렬화 제거 (2026-09-26~27)
+  - `L475` Headless bridge readiness (2026-10-04)
 
 ### `openwiki/terrain-design-suite.md` — 5KB · 58줄 · ~1,555 토큰
 

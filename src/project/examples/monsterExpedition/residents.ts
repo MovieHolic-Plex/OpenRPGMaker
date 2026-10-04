@@ -15,7 +15,6 @@ const texts=[
 ];
 
 export function repairExpeditionResidents(project:Project):void {
- let resident=0;
  for(const [i,row] of patrolData.entries()){
   const map=project.maps[row.map];if(!map)continue;
   const existing=map.events.find(e=>e.id===row.event);
@@ -26,11 +25,12 @@ export function repairExpeditionResidents(project:Project):void {
   if(!safe)continue;
   let event=existing;
   if(!event){
+   const resident=Math.floor(i/3)*2+(i%3)-1;
    const template=map.events.find(e=>e.id===row.map+'_local');if(!template)continue;
    event=structuredClone(template);event.id=row.event;event.x=row.position.x;event.y=row.position.y;
    const character=[0,1,2,3,4,5,0,3,2,5,4,7,6,5,2,7,4,3][resident]??0;
    event.pages=[{...event.pages![0],id:row.event+'_page',name:'산책 주민',conditions:[],graphic:{...event.pages![0].graphic,pattern:25+(character%4)*3+Math.floor(character/4)*48},commands:[{kind:'text',speaker:resident%2?'마을 친구':'산책 주민',body:texts[Math.floor(resident/2)]![resident%2]!}]}];
-   map.events.push(event);resident++;
+   map.events.push(event);
   }
   if(event.pages?.length!==1||event.pages[0]!.commands.some(command=>command.kind!=='text'))continue;
   event.x=row.position.x;event.y=row.position.y;

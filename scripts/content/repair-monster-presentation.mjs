@@ -24,6 +24,7 @@ await withTsModule('src/editor/tools/openingStorybookTools.ts','book.mjs',m=>{
 await withTsModule('src/editor/tools/gameSystemAuthoringTools.ts','shop.mjs',m=>evidence.push(m.GAME_SYSTEM_AUTHORING_TOOLS.find(t=>t.name==='configure_shop_presentation').run(project,{preset:'collector'})));
 if(assistantOpening){const actual=JSON.parse(await fs.readFile(assistantOpening,'utf8'));if(actual.system.opening?.musicResourceId!==before.system.opening?.musicResourceId)throw Error('Assistant changed opening music');project.system.opening=actual.system.opening;project.meta.oprnOpeningBook=actual.meta.oprnOpeningBook;}
 await withTsModule('src/project/examples/monsterExpedition/npcLayout.ts','layout.mjs',m=>evidence.push({relocated:m.repairExpeditionNpcLayout(project)}));
+await withTsModule('src/editor/tools/lifeEconomyTools.ts','prices.mjs',m=>evidence.push(m.LIFE_ECONOMY_TOOLS.find(t=>t.name==='set_sell_prices').run(project,{entries:[{itemId:'item_capture_orb',price:40}]})));
 const locals=JSON.parse(await fs.readFile('verify-shots/monster-presentation-20261004/local-patrols.json','utf8')).rows.filter(r=>r.movement);
 const residents=JSON.parse(await fs.readFile('verify-shots/monster-presentation-20261004/resident-patrols.json','utf8')).rows;
 const texts=[

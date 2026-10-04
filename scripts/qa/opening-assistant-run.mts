@@ -13,12 +13,13 @@ import {runPiAgent} from '../lib/piAgentRuntime';
 import {requestPiOpeningGeneration,requestPiRender,resolvePiRender} from '../lib/piRenderBroker';
 import {restoreCheckpointProject,type PiAgentEvent} from '../../src/ai/piAgent/protocol';
 import {buildSessionRegistryTools} from '../../src/ai/sessionToolExposure';
+import {decodeCinematicWire} from '../../src/project/cinematicWire';
 import type {Project} from '../../src/project/types';
 const arg=(name:string,fallback?:string)=>{const i=process.argv.indexOf('--'+name);return i<0?fallback:process.argv[i+1];};
 const input=arg('project-json'),origin=arg('browser-url');
 if(!input||!origin)throw Error('--project-json and --browser-url are required');
 const out=path.resolve(arg('out','/tmp/oprn-opening-assistant-'+Date.now())!);fs.mkdirSync(out,{recursive:true,mode:0o700});
-const raw=fs.readFileSync(input),project=JSON.parse(raw.toString()) as Project;
+const raw=fs.readFileSync(input),project=decodeCinematicWire(JSON.parse(raw.toString()) as Project);
 const mediaPath=arg('media-json'),portable=mediaPath?JSON.parse(fs.readFileSync(mediaPath,'utf8')) as Project:undefined;
 const transport:{id:string;sha256:string}[]=[];
 for(const [id,asset] of Object.entries(project.assets.uploaded)) if(asset.ref){

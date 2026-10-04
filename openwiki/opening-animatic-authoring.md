@@ -68,3 +68,7 @@ is verified separately in the exported player. Music: music-score-authoring.md.
 ## Review includes authored layers
 
 `review_opening` counts real illustration IDs in animatic layers, includes displayed text layers in reading-time hints, and validates their illustration/audio cue references. A six-panel book with four source paintings reports four paintings rather than zero. Native playback and listening remain separate evidence.
+
+The real Pi dogfood runner decodes cinematicWire metadata before constructing its
+model baseline, matching editor deserialization. A raw older-host document otherwise
+hides the campaign and causes unrelated repair attempts in system tasks.

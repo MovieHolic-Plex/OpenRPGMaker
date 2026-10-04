@@ -32,13 +32,24 @@ export const NPC_PATROL_TOOLS:readonly ToolDefinition[]=[
    const x=args.x===undefined?event.x:Number(args.x),y=args.y===undefined?event.y:Number(args.y),interval=args.intervalMs===undefined?1600:Number(args.intervalMs);
    if(!Number.isSafeInteger(x)||!Number.isSafeInteger(y)||!Number.isSafeInteger(interval)||interval<800||interval>5000)throw new ToolError('좌표/걷기 간격 오류.',{code:'invalid-args'});
    if(event.pages.some(page=>!page.graphic.sprite||page.graphic.transparent===true||(page.footprint?.width??1)!==1||(page.footprint?.height??1)!==1))throw new ToolError('이 도구는 1칸 사람 NPC에 사용합니다.',{code:'invalid-args'});
+   const occupied=new Set<string>();
+   for(const other of map.events){
+     if(other.id===event.id)continue;
+     if(eventAlwaysBlocks(other))occupied.add(`${other.x},${other.y}`);
+     // Reserve every cell of another closed patrol, not just its initial position.
+     for(const page of other.pages??[]){
+       if(page.movement.type!=='custom'||!page.movement.route?.repeat)continue;
+       let current={x:other.x,y:other.y};occupied.add(`${current.x},${current.y}`);
+       for(const move of page.movement.route.moves){if(move.kind==='wait')continue;if(move.kind!=='move'||!Object.hasOwn(directions,move.dir))break;const [dx,dy]=directions[move.dir];current={x:current.x+dx,y:current.y+dy};occupied.add(`${current.x},${current.y}`);}
+     }
+   }
    const protectedAt=protectedCells(p,map),cells=[{x,y}];let at={x,y};
    for(const dir of route as Dir[]){const [dx,dy]=directions[dir],next={x:at.x+dx,y:at.y+dy};if(!canMove(p,map,at.x,at.y,next.x,next.y)||!canMove(p,map,next.x,next.y,at.x,at.y))throw new ToolError('벽/지형을 가로지르는 순찰입니다.',{code:'unsafe-patrol'});cells.push(next);at=next;}
    if(at.x!==x||at.y!==y)throw new ToolError('출발점으로 돌아오는 순찰이어야 합니다.',{code:'unsafe-patrol'});
    for(const cell of cells){
      if(cell.x<2||cell.y<2||cell.x>=map.width-2||cell.y>=map.height-2||protectedAt.some(entry=>Math.abs(entry.x-cell.x)+Math.abs(entry.y-cell.y)<=2))throw new ToolError('출입구/시작점/안내 주변 보호 구역입니다: '+JSON.stringify({cell,near:protectedAt.filter(entry=>Math.abs(entry.x-cell.x)+Math.abs(entry.y-cell.y)<=2)}),{code:'unsafe-patrol'});
      if(Object.values(directions).filter(([dx,dy])=>canMove(p,map,cell.x,cell.y,cell.x+dx,cell.y+dy)).length<3)throw new ToolError('좁은 통로에서 순찰할 수 없습니다.',{code:'unsafe-patrol'});
-     if(map.events.some(other=>other.id!==event.id&&eventAlwaysBlocks(other)&&other.x===cell.x&&other.y===cell.y))throw new ToolError('다른 NPC와 겹치는 순찰입니다.',{code:'unsafe-patrol'});
+     if(occupied.has(`${cell.x},${cell.y}`))throw new ToolError('다른 NPC 또는 순찰 경유 칸과 겹칩니다.',{code:'unsafe-patrol'});
      const candidate={...event,x:cell.x,y:cell.y};const cut=eventsCutOffBy(p,map,candidate);if(cut.length)throw new ToolError('다른 이벤트에 닿지 못하는 순찰입니다: '+cut.map(other=>other.id).join(','),{code:'unsafe-patrol'});
    }
    event.x=x;event.y=y;for(const page of event.pages)page.movement={type:'custom',speed:2,frequency:2,moveIntervalMs:interval,route:{repeat:true,skippable:false,moves:[...(route as Dir[]).map(dir=>({kind:'move' as const,dir})),{kind:'wait' as const}]}};

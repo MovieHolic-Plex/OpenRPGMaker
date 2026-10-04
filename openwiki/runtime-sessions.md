@@ -689,3 +689,11 @@ without writing an unsupported enum into their shop commands. `configure_shop_pr
 selects it or clears it with event-default; read_game_systems shows effective counts.
 The editor command picker also exposes collector for hosts that accept the current
 schema. configureMonsterPresentation authors collector for future collector games.
+
+Native supply-shop QA found a preserved0G capture-ball sell-price override, despite
+an80G catalog buy price. `set_sell_prices` changes that real authored table; this
+campaign now authors40G. Presentation tools do not invent prices. read_game_systems
+exposes sellPriceOverrides and the system review fingerprint includes that table.
+Collector detail uses one column and omits equipment comparison controls for supplies.
+Native Tab→ArrowRight→Enter switches buy/sell. Real pointer clicks remain blocked by
+the existing runtime input policy; test with the supported keyboard, not synthetic clicks.

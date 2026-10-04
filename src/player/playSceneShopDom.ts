@@ -485,7 +485,7 @@ function detailCard(scene: PlaySceneContext, step: ShopStep, goods: ShopGoods | 
   ownedSlot.append(ownedPanel(scene, goods));
   // 비어 두는 슬롯 — 첫 커서 확정(onSelect → updateComparison) 때 비교 요약이 채운다.
   const statSlot = el("div", { class: "runtime-shop-slot", dataset: { testid: "shop-stat-slot" } });
-  card.append(heroSlot, helpLine, statSlot, ownedSlot);
+  card.append(heroSlot, helpLine, ...(shopUiPresetOf(step)==="collector"?[]:[statSlot]), ownedSlot);
   return card;
 }
 

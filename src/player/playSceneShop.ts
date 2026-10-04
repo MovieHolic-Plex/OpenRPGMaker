@@ -298,7 +298,7 @@ export function playShop(
               showMenu,
               category,
               categorySource: baseForMode(mode),
-              onDetail: () => openDetail(),
+              onDetail: preset === "collector" ? undefined : () => openDetail(),
               // 파티 카드 — 이후 커서를 옮겨도 이 동료 기준으로 비교한다(상세 창에서 고른 것과 같다).
               onActor: preset === "pixel" ? (actorId) => {
                 comparisonActor = actorId;
