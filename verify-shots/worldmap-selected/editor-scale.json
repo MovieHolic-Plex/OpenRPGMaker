@@ -1,0 +1,13 @@
+{
+  "options": [
+    "100% (기본)",
+    "75%",
+    "50%"
+  ],
+  "before": 0.5,
+  "value": 0.75,
+  "reloaded": 0.75,
+  "saved": true,
+  "bridge": "SQLite host",
+  "errors": []
+}

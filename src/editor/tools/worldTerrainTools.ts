@@ -260,11 +260,37 @@ function applyWorldmap(
     throw new ToolError(`맵 ${mapId} 은 월드맵 키트 지도가 아니다 — 새 mapId 를 주거나 mapId 를 비워 새 세계 지도를 만들어라.`, { code: "not-worldmap" });
   }
   const mapName = name ?? existing?.name ?? "세계 지도";
+  const oldTileset = existing ? draft.tilesets[existing.tilesetId] : undefined;
+  const authored = existing && ([existing.upperTiles, existing.lowerOverlayTiles, existing.upperOverlayTiles]
+    .some((layer) => layer?.some((tile) => tile >= 0)) || oldTileset?.tileGrafts?.length || existing.shadowBits?.some((bits) => bits !== 0)
+    || existing.relief);
+  if (existing && authored && (existing.width !== world.width || existing.height !== world.height)) {
+    throw new ToolError("위층·이식 아이콘이 있는 지도는 지형 재생성으로 크기를 바꾸지 않습니다. 새 mapId로 만드세요.", { code: "authored-worldmap-resize" });
+  }
   draft.assets.uploaded[assetId] = {
     id: assetId, name: `${mapName} 지도 그림`, kind: "tileset", dataUrl: result.imageDataUrl,
     meta: { tileSize: TILE, width: world.width * TILE, height: world.height * TILE },
   };
   draft.tilesets[tilesetId] = worldmapTileset(tilesetId, assetId, `${mapName} (월드맵 키트)`, world.walk, world.width, world.height);
+  // 지형 그림을 다시 구워도 따로 저작한 아이콘의 소스·칸 번호·통행은 보존한다.
+  if (oldTileset?.tileGrafts?.length) {
+    const fresh = draft.tilesets[tilesetId]!;
+    fresh.tileGrafts = structuredClone(oldTileset.tileGrafts);
+    fresh.count = Math.max(fresh.count, oldTileset.count);
+    for (let i = world.width * world.height; i < fresh.count; i++) {
+      fresh.passability[i] = { up: true, down: true, left: true, right: true };
+      fresh.priority[i] = "upper";
+      fresh.terrain[i] = 0;
+    }
+    fresh.tileMeta ??= [];
+    for (const graft of fresh.tileGrafts) {
+      const i = graft.targetTile;
+      fresh.passability[i] = { ...oldTileset.passability[i]! };
+      fresh.priority[i] = oldTileset.priority[i]!;
+      fresh.terrain[i] = oldTileset.terrain[i] ?? 0;
+      if (oldTileset.tileMeta?.[i]) fresh.tileMeta[i] = { ...oldTileset.tileMeta[i]! };
+    }
+  }
   const size = world.width * world.height;
   const lowerTiles = Array.from({ length: size }, (_, i) => i);
   const locations: MapNamedLocation[] = world.places.map((p, i) => ({
@@ -280,7 +306,8 @@ function applyWorldmap(
   const map: GameMap = {
     ...(existing ?? { events: [] as GameMap["events"] }),
     id: mapId, name: mapName, width: world.width, height: world.height, tilesetId, tileSize: TILE,
-    lowerTiles, upperTiles: new Array<number>(size).fill(-1),
+    lowerTiles, upperTiles: existing?.width === world.width && existing.height === world.height
+      ? [...existing.upperTiles] : new Array<number>(size).fill(-1),
     locations,
     worldmapSource: {
       theme: request.theme, ops: request.terrain?.ops ?? [], terrainId: world.terrain, palette: world.palette,
@@ -288,9 +315,11 @@ function applyWorldmap(
       ...(world.layout ? { fitSalt: world.layout.salt } : {}),
     },
   } as GameMap;
-  delete (map as Partial<GameMap>).lowerOverlayTiles;
-  delete (map as Partial<GameMap>).upperOverlayTiles;
-  delete (map as Partial<GameMap>).shadowBits;
+  if (existing?.width !== world.width || existing.height !== world.height) {
+    delete (map as Partial<GameMap>).lowerOverlayTiles;
+    delete (map as Partial<GameMap>).upperOverlayTiles;
+    delete (map as Partial<GameMap>).shadowBits;
+  }
   draft.maps[mapId] = map;
   if (!existing) {
     if (!draft.maps[draft.mapTree.mapId]) draft.mapTree = { mapId, children: [] };

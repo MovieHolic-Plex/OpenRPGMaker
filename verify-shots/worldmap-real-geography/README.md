@@ -44,3 +44,7 @@
 
 이번 세션에서는 gates, vitest, 전체 typecheck, 모델 시험 및 런타임 하네스를 실행하지 않았다.
 추가한 회귀 fixture(추가 타일 층·그림자·높이를 빈 맵으로 취급하지 않음)도 미실행 상태다.
+
+## 이어서 확인 (2026-10-04)
+
+`verify-shots/runtime-qa/worldmap-real-joseon/`과 `worldmap-real-maya/`에서 저장한 원본 두 프로젝트의 출하 플레이어 시작·고을 입장·세계 지도 복귀를 확인했다. 각각 4/4 비트 통과, 런타임 오류 없음이다. 현재 공용 아이콘 등록과 UI 배율 저장 근거는 `verify-shots/worldmap-selected/README.md`에 있다.

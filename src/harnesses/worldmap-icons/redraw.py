@@ -509,6 +509,7 @@ def rounds_of(c, item_id):
             d = attempt_dir(r['id'], x['letter'], x['attempt'])
             key = f'r{r["id"]}/{x["letter"]}'
             cands.append(dict(key=key, letter=x['letter'], direction=x['direction'], status=x['status'], attempt=x['attempt'],
+                              image_sha256=__import__('hashlib').sha256((d / 'cand.png').read_bytes()).hexdigest() if (d / 'cand.png').exists() else None,
                               engine=x['engine'], verdict=x['verdict'], codes=json.loads(x['codes'] or '[]'),
                               body=json.loads(x['body']) if x['body'] else None,
                               check=json.loads(x['check_json']) if x['check_json'] else None,

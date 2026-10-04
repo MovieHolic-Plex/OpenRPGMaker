@@ -13,6 +13,7 @@
 | `super-harness` | 슈퍼하네스 (개념 카드 자동 공급) | 장르 무관 | `harness-data/super-harness/seed.json` | `openwiki/harnesses/super-harness.md` |
 | `romance-scene` | 연애 첫 대화 장면 | 장르 `story-cutscene` 전용 | `harness-data/romance-scene/seed.json` | `openwiki/harnesses/romance-scene.md` |
 | `charset-actor` | RM2000 캐릭터 GIF 공방 | 장르 무관 | `harness-data/charset-actor/briefs.json` | `openwiki/harnesses/charset-actor.md` |
+| `worldmap-icons` | 월드맵 아이콘 | 장르 무관 | `harness-data/worldmap-icons/seed.json` | `openwiki/harnesses/worldmap-icons.md` |
 
 ## monster-collect-species — 몬스터 수집 종 스프라이트
 
@@ -163,5 +164,27 @@ GPT 6.1 sol high가 자유롭게 도트를 만들고 사람이 걷는 GIF를 보
 - `export` — 선택 팩: 자유 저작은 사람이 남긴 캐릭터만 ZIP으로 묶는다. 기존 검수 실행은 이전 계약을 유지한다.
 - `status` — 현황: 저작 진행과 검수 판정을 표시한다.
 - `serve` — GIF 공방: 자동 걷기 GIF 갤러리·남기기/폐기·일시 정지/재개·선택 팩 다운로드 화면을 연다.
+
+**들어오는 길:** CLI 있음 · 에디터 화면 아직 없음 · 조수 도구 아직 없음
+
+## worldmap-icons — 월드맵 아이콘
+
+아이콘 검수·사람 선택·해시 확인·공용 월드맵 시트 굽기
+
+**이럴 때 쓴다:**
+- 월드맵 아이콘
+- 세계 지도 건물
+- 월드맵 아이콘 선택·굽기
+
+**단계** (`npm run harness -- worldmap-icons <단계>`):
+- `intake` — 후보 준비: 세트 원본을 단품·지도 자리 그림으로 준비한다.
+- `review` — 검수: 시점 계약에 따라 독립 검수자를 돌린다. 사람 선택을 대신하지 않는다.
+- `draw` — 다시 그리기: 사용자의 교정 지시로 후보 판을 연다.
+- `serve` — 선택 화면: 받기·버리기·후보 고르기 화면을 연다.
+- `status` — 현황: 세트별 검수·사람 선택 현황을 읽는다.
+- `export` — 선택 사본: 현재 그림에 유효한 선택·검수 기록을 내보낸다.
+- `build` — 공용 시트 굽기: 사람이 받은 원본·후보만 해시를 확인해 굽는다. 칸 번호는 덧붙이기 전용이다.
+- `check` — 굽기 확인: 선택 기록·원본 해시·칸 좌표·번들 PNG·참고문서를 대조한다.
+- `preview` — 후보 미리보기: 후보의 크기·색표와 실제 지도 자리를 확인한다.
 
 **들어오는 길:** CLI 있음 · 에디터 화면 아직 없음 · 조수 도구 아직 없음

@@ -13,6 +13,7 @@ function withoutEmptyIds(args: Record<string, unknown>): Record<string, unknown>
 
 export const TILESET_REFERENCE_READ_TOOLS = ["list_tileset_references", "read_tileset_reference"] as const;
 export const TILESET_REFERENCE_WRITERS: ReadonlySet<string> = new Set([
+  "stamp_worldmap_icon",
   "stamp_forest_recipe", "stamp_tile_recipe", "stamp_tileset_object", "build_pack_town",
   "create_map", "duplicate_map", "resize_map", "shift_map", "set_map_properties", "copy_map_region", "move_region", "import_region_reference", "stamp_object", "mirror_region", "clear_map", "build_shared_scene",
   "paint_tiles", "paint_road", "build_house", "build_village", "stamp_structure", "clear_region", "author_house", "author_village",

@@ -1,0 +1,24 @@
+{
+  "projectId": "858abf11-8be8-4ff7-b3a2-44a274a7f15a",
+  "projectDir": "/home/main/.local/share/oprn/worldmap-selected-20261004",
+  "revision": 7,
+  "characterScale": 0.75,
+  "intactStamp": true,
+  "missingCell": [
+    {
+      "code": "MISSING_CELL",
+      "x": 38,
+      "y": 8,
+      "expected": 946,
+      "actual": -1
+    }
+  ],
+  "regeneration": {
+    "layersPreserved": true,
+    "graftSlots": 36,
+    "passagePreserved": true,
+    "resizeRejectedAtomically": true
+  },
+  "renderer": "recorded actual Python output; injected builder; no re-render",
+  "canonicalModified": false
+}

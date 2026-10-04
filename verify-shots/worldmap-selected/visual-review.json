@@ -1,0 +1,67 @@
+{
+  "selectedIconsUnchanged": 79,
+  "modernTown": "terrain v9 full render inspected; icons still human-pending",
+  "steampunk": "3 item correction candidates, human must choose; gray crystal limit conflicts with reviewer READ requests restoring purple faces",
+  "rounds": [
+    {
+      "round": 61,
+      "letter": "A",
+      "attempt": 2,
+      "status": "done",
+      "verdict": "PASS",
+      "codes": "[]",
+      "item": "steampunk/지열 증기 화산",
+      "note": "이전 시각 QA 지적: 청록 화산이 아니라 지열 증기 화산으로 읽혀야 한다. 원본 화소 구조·16px 도트 결을 유지하고 바위는 짙은 회색·갈색, 균열은 따뜻한 주황, 증기는 회백색으로 바꾼다. 청록·파란 윤곽을 제거하고 정면+윗면 계약을 지킨다. 사람에게 후보만 제시한다.",
+      "imageSha256": "4061ca3d7623f2bcd8ee5a75407e12a052c28ef6999f214cabbeef5688af5cd2",
+      "humanSelected": false
+    },
+    {
+      "round": 62,
+      "letter": "A",
+      "attempt": 1,
+      "status": "done",
+      "verdict": "PASS",
+      "codes": "[]",
+      "item": "steampunk/부유 대륙",
+      "note": "이전 시각 QA 지적: 형광 초록·분홍 천공섬이 산업 테마와 따로 논다. 원본을 재료로 부유섬 실루엣·성·높이를 보존하고 산업 팔레트의 흙색·석재·구리로 낮은 채도를 맞춘다. 파란 테를 없애고 결을 보존한다. 검수 후 사람 선택 대기만 한다.",
+      "imageSha256": "1e609947a8e8d6abb805d78dd871c66511dfa434de1b17ecb5d9895299eb18ff",
+      "humanSelected": false
+    },
+    {
+      "round": 63,
+      "letter": "A",
+      "attempt": 2,
+      "status": "done",
+      "verdict": "PASS",
+      "codes": "[]",
+      "item": "steampunk/마석 수정 언덕",
+      "note": "이전 시각 QA 지적: 보라 형광 수정이 산업 테마를 깨뜨린다. 원본 바위산·수정 구조를 보존해 산업 테마의 구리·짙은 중성색 바위로 맞추고 마석의 보라는 작은 빛나는 내부만 남긴다. 파란 윤곽·단색 큰 면을 없애고 정면·윗면 계약으로 후보만 낸다.",
+      "imageSha256": "546ad2b6b09eac8ea4082b30044f4d0e1893c97043bc7130dcb5b9b4c6831f73",
+      "humanSelected": false
+    },
+    {
+      "round": 64,
+      "letter": "A",
+      "attempt": 2,
+      "status": "done",
+      "verdict": "PASS",
+      "codes": "[]",
+      "item": "steampunk/마석 수정 언덕",
+      "note": "이 후보의 보라색 수정 전체 면이 아직 강하다. 수정의 형태·높이·좌표는 그대로 두고, 수정 기둥의 바깥 면을 아래 바위와 같은 회갈색·청회색으로 바꿔라. 보라색은 내부 균열의 작은 발광 화소(각 기둥당 1~3px)만 허용한다. 구리·암석이 주색이어야 한다. 분홍 키와 그림자 키는 그대로, 정면 시점·칸 크기 유지.",
+      "imageSha256": "36d36331596d3f50ac60d649db5520af4522f7e29a7cd1f7e15f2482fa78b8bb",
+      "humanSelected": false
+    },
+    {
+      "round": 65,
+      "letter": "A",
+      "attempt": 3,
+      "status": "drawing",
+      "verdict": "FAIL",
+      "codes": "[\"READ\"]",
+      "item": "steampunk/마석 수정 언덕",
+      "note": "r64/A/a2는 검수 PASS지만 색 교정 지시 미달이다. 보라색 면이 넓게 남아 있으므로 사람이 고르기 전에 색 교정 후보를 다시 만든다. 키 큰 3개의 수정 외곽과 위치를 정확히 유지해라. 그 세 수정의 외피 전체를 청회색/회갈색/밝은 은회색 면으로 바꾸고, 각 기둥 안쪽에만 1~3px 보라색 균열을 남긴다. 아래 바위와 합쳐 보이지 않게 밝은 은회색 윗면과 어두운 청회색 정면 면의 명암 대비를 크게 준다. 팔레트 안의 기존 회색을 써라. 수정 형체를 없애거나 낮추지 말고 보라색 외피를 복원하지 마라. 지도 1배에서 뾰족한 광물 기둥 3개와 작은 마력 균열이 읽혀야 한다. 기존 구리 받침과 분홍 키를 보존한다.",
+      "imageSha256": "ad86817cb3c4090e096f4335d7d349c7e286062c1252f24b06168d448547a7b5",
+      "humanSelected": false
+    }
+  ]
+}
