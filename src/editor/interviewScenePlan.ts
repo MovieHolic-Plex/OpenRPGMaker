@@ -1,6 +1,6 @@
 import data from './projectInterviewScenes.json';
 
-export const INTERVIEW_SCENE_STYLE_VERSION = 1;
+export const INTERVIEW_SCENE_STYLE_VERSION = 2;
 /** Small deterministic freshness marker; SHA-256 receipts remain the publication authority. */
 export const INTERVIEW_SCENE_CATALOG_SIGNATURE = (() => {
   let hash = 0x811c9dc5;
@@ -15,8 +15,9 @@ export type InterviewSceneSpec = {
 export const interviewSceneKey = (genre: string, choices: readonly string[]) => [genre, ...choices].join('--');
 
 const style = `Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.
-OUTPUT: 320x180 landscape image, with a genuinely limited palette of at most 64 colors. Native pixel art only. Do not upscale. Do not simulate pixels with a filter.
-STYLE LOCK: premium 16-bit SNES RPG scenery. Hard square pixel clusters, deliberate stair-step contours, flat 2–4 shade ramps, selective patterned dithering. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter right 35% behind the interview controls. Edge-to-edge continuous artwork.
+OUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.
+STYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.
+REFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.
 FORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.
 Each prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.`;
 

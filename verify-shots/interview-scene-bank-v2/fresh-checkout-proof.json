@@ -1,0 +1,17 @@
+{
+  "scene": "romance--campus--talk",
+  "privateOriginalAbsent": true,
+  "privateRequestAbsent": true,
+  "published": 51,
+  "status": {
+    "planned": 1457,
+    "missing": 1405,
+    "outdated": 0,
+    "rejected": 1,
+    "waitingGate": 0,
+    "waitingReview": 0,
+    "accepted": 51,
+    "exhausted": 0
+  },
+  "passed": true
+}

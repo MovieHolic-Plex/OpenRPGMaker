@@ -1,0 +1,94 @@
+{
+  "syntheticCatalog": false,
+  "published": 76,
+  "generatedRequests": 0,
+  "flows": [
+    {
+      "genre": "romance",
+      "steps": [
+        {
+          "key": "romance",
+          "ms": 12.399999976158142,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance-c1c0375af9c5.png"
+        },
+        {
+          "key": "romance--campus",
+          "ms": 6.400000095367432,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus-dc2d1ec0b9de.png"
+        },
+        {
+          "key": "romance--campus--talk",
+          "ms": 5.200000047683716,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--talk-7c4690956d4f.png"
+        },
+        {
+          "key": "romance--campus--talk--bittersweet",
+          "ms": 5.5,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/romance--campus--talk--bittersweet-8dd8d759e98c.png"
+        }
+      ]
+    },
+    {
+      "genre": "monster",
+      "steps": [
+        {
+          "key": "monster",
+          "ms": 6.299999952316284,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster-d617a6f7ec71.png"
+        },
+        {
+          "key": "monster--hatch",
+          "ms": 6.399999976158142,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster--hatch-5f12de0e064f.png"
+        },
+        {
+          "key": "monster--hatch--collect",
+          "ms": 5.900000095367432,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/monster--hatch--collect-e3add366ad51.png"
+        }
+      ]
+    },
+    {
+      "genre": "adventure",
+      "steps": [
+        {
+          "key": "adventure",
+          "ms": 8.100000023841858,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/adventure-baeee4feb2b8.png"
+        },
+        {
+          "key": "adventure--reunion",
+          "ms": 4.800000071525574,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/adventure--reunion-5619402deef1.png"
+        },
+        {
+          "key": "adventure--reunion--battle",
+          "ms": 5.799999952316284,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/adventure--reunion--battle-de9f04fcc16b.png"
+        }
+      ]
+    },
+    {
+      "genre": "mystery",
+      "steps": [
+        {
+          "key": "mystery",
+          "ms": 6.600000023841858,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/mystery-fad4f6727c0f.png"
+        },
+        {
+          "key": "mystery--place",
+          "ms": 6.700000047683716,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/mystery--place-fe2c148e4de1.png"
+        },
+        {
+          "key": "mystery--place--evidence",
+          "ms": 4.200000047683716,
+          "src": "http://127.0.0.1:9812/assets/harnesses/interview-scene-bank/mystery--place--evidence-7d4384744aa3.png"
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "passed": true
+}

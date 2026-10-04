@@ -69,6 +69,36 @@
             "원본이 320×180 격자/64색 제한 팔레트를 통과하지 못했다."
           ]
         }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/opening-3-62062ac73a78.png",
+        "sha256": "62062ac73a78698f0d550f6ccabe9a5da5321ad660015b76baf98cb6eb101299",
+        "promptSha256": "95e5b6ce5ee3fdf49da07cf0f70455553c7ca4733d7990b1a561c5b216d8a9fd",
+        "generationPromptSha256": "86b7ebaa620a2ce40ecf9ec11406af62f340ecafba2c42eb86877c1a06d9a237",
+        "attempt": 3,
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 562753,
+          "findings": []
+        },
+        "review": {
+          "sourceSha256": "62062ac73a78698f0d550f6ccabe9a5da5321ad660015b76baf98cb6eb101299",
+          "promptSha256": "95e5b6ce5ee3fdf49da07cf0f70455553c7ca4733d7990b1a561c5b216d8a9fd",
+          "reviewer": "Codex: direct full-resolution visual inspection, style v2 batch 001",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Opening river crossing with small bridge and warm village windows. Independent bridge geometry, no protagonist or genre."
+        }
       }
     ],
     "romance": [
@@ -104,6 +134,36 @@
           "findings": [
             "원본이 320×180 격자/64색 제한 팔레트를 통과하지 못했다."
           ]
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance-2-c1c0375af9c5.png",
+        "sha256": "c1c0375af9c5b473768d256d12a06070d1d4639fe3b05a0f11a9503a41d61bac",
+        "promptSha256": "a5d8b9265b50355227189d2ac41708aa1f7afef10843bb2fd8b9b7903f3b6488",
+        "generationPromptSha256": "d742c9b6069aee0625c7a44f22fc20881333f616934ee029480988befe8f1fcb",
+        "attempt": 2,
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 529650,
+          "findings": []
+        },
+        "review": {
+          "sourceSha256": "c1c0375af9c5b473768d256d12a06070d1d4639fe3b05a0f11a9503a41d61bac",
+          "promptSha256": "a5d8b9265b50355227189d2ac41708aa1f7afef10843bb2fd8b9b7903f3b6488",
+          "reviewer": "Codex: direct full-resolution visual inspection, style v2 batch 001",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Empty flowering garden terrace and two chairs; relationship atmosphere without a selected meeting premise."
         }
       }
     ],
@@ -142,6 +202,36 @@
             "절벽·폭포·멀리 성이 있는 같은 장면 공식을 반복한다. 구도와 초점 장소를 다시 정해야 한다."
           ]
         }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster-2-d617a6f7ec71.png",
+        "sha256": "d617a6f7ec718aede0449f8a91aaec7feb0e63692bee57e5fcb70ac381b04031",
+        "promptSha256": "18f84cffe20d87feaf30b2b13049e92330c78dec1c17fe0b5fe00405c1a8cc5a",
+        "generationPromptSha256": "fa01c4b70e4c99085cd69212eac959aca2fc116c7f86a2f5087666c67f04ee36",
+        "attempt": 2,
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 586406,
+          "findings": []
+        },
+        "review": {
+          "sourceSha256": "d617a6f7ec718aede0449f8a91aaec7feb0e63692bee57e5fcb70ac381b04031",
+          "promptSha256": "18f84cffe20d87feaf30b2b13049e92330c78dec1c17fe0b5fe00405c1a8cc5a",
+          "reviewer": "Codex: direct full-resolution visual inspection, style v2 batch 001",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Open habitat lookout with empty field kit and footprints. No creature species, egg or capture method. Sign has plain wooden boards."
+        }
       }
     ],
     "adventure": [
@@ -178,6 +268,36 @@
             "원본이 320×180 격자/64색 제한 팔레트를 통과하지 못했다.",
             "절벽·폭포·멀리 성이 있는 같은 장면 공식을 반복한다. 구도와 초점 장소를 다시 정해야 한다."
           ]
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure-2-baeee4feb2b8.png",
+        "sha256": "baeee4feb2b81cf881235f9fe69c91fd41caedff7112375a9b411fe20e85009c",
+        "promptSha256": "e896b2475f708fbf94c2790d48a6b67832a9eef10647162396c0d39cbd04d27b",
+        "generationPromptSha256": "8ad7ff926174f9daeb4e66cc37297ef9446f64e14ff9ed0dfdf8b26540c895f7",
+        "attempt": 2,
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 590678,
+          "findings": []
+        },
+        "review": {
+          "sourceSha256": "baeee4feb2b81cf881235f9fe69c91fd41caedff7112375a9b411fe20e85009c",
+          "promptSha256": "e896b2475f708fbf94c2790d48a6b67832a9eef10647162396c0d39cbd04d27b",
+          "reviewer": "Codex: direct full-resolution visual inspection, style v2 batch 001",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Tree-side waystation and three terrain routes; no identity or reason for journey fixed. Stone relief is a geometric motif, not writing."
         }
       }
     ],
@@ -251,6 +371,68 @@
             "원본이 320×180 격자/64색 제한 팔레트를 통과하지 못했다."
           ]
         }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/mystery-3-71bc7fda0968.png",
+        "sha256": "71bc7fda096876be22978dba01f5869a1b536ccb014db0fb36ce3d12fd5f116f",
+        "promptSha256": "4801751f6efeb0ea5881e4ce9042906c86a3d94bbfa39ac5151f78ab58e8d8ee",
+        "generationPromptSha256": "0200c617f53a737f33e905caed600a7fb77e23543a1b42d6598730ebfc66fa90",
+        "attempt": 3,
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 281088,
+          "findings": []
+        },
+        "review": {
+          "sourceSha256": "71bc7fda096876be22978dba01f5869a1b536ccb014db0fb36ce3d12fd5f116f",
+          "promptSha256": "4801751f6efeb0ea5881e4ce9042906c86a3d94bbfa39ac5151f78ab58e8d8ee",
+          "reviewer": "Codex: direct full-resolution visual inspection, style v2 batch 001",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": false,
+            "distinctShot": true
+          },
+          "findings": [
+            "책상 위 종이와 벽 지도에 글자 유사 흔적이 보인다. 모든 종이·지도·글자·숫자 없는 새 구도를 그려라."
+          ],
+          "notes": "Pixel style and spatial composition are good; paper/map writing-like marks breach noText."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/mystery-4-fad4f6727c0f.png",
+        "sha256": "fad4f6727c0ff0890c779ea0c6bbe30dbc9258bdee651b61d78934b0824f59a4",
+        "promptSha256": "4801751f6efeb0ea5881e4ce9042906c86a3d94bbfa39ac5151f78ab58e8d8ee",
+        "generationPromptSha256": "f9b71757aa34bb83dcac2f81a205ca5ae3f1b335b3e01f12b9d695dad064ede5",
+        "attempt": 4,
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 260335,
+          "findings": []
+        },
+        "review": {
+          "sourceSha256": "fad4f6727c0ff0890c779ea0c6bbe30dbc9258bdee651b61d78934b0824f59a4",
+          "promptSha256": "4801751f6efeb0ea5881e4ce9042906c86a3d94bbfa39ac5151f78ab58e8d8ee",
+          "reviewer": "Codex direct full-resolution visual inspection: production v2 batch 001",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Redraw removes writing/papers/maps, plain books and objects in nighttime study. Strong pixel clusters and no human identity."
+        }
       }
     ],
     "romance--campus": [
@@ -286,6 +468,36 @@
           "findings": [
             "원본이 320×180 격자/64색 제한 팔레트를 통과하지 못했다."
           ]
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus-2-dc2d1ec0b9de.png",
+        "sha256": "dc2d1ec0b9de50ff4a5c987e3b1bc2b78e73682abeb54c8d016e985fd46acea8",
+        "promptSha256": "eeeff59eee26480d1fc492ee9ae5bf433ee2368386605ab2db56a8270c3560ca",
+        "generationPromptSha256": "f2213573077b747e8576499cd98a8208f8e0f39b6aae75a84364cfea9c886903",
+        "attempt": 2,
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 500161,
+          "findings": []
+        },
+        "review": {
+          "sourceSha256": "dc2d1ec0b9de50ff4a5c987e3b1bc2b78e73682abeb54c8d016e985fd46acea8",
+          "promptSha256": "eeeff59eee26480d1fc492ee9ae5bf433ee2368386605ab2db56a8270c3560ca",
+          "reviewer": "Codex: direct full-resolution visual inspection, style v2 batch 001",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Modern brick campus courtyard after rain; two separated closed books, no faces, writing or predefined tragedy."
         }
       }
     ],
@@ -358,6 +570,36 @@
             "원본이 320×180 격자/64색 제한 팔레트를 통과하지 못했다."
           ]
         }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace-3-65332626d76f.png",
+        "sha256": "65332626d76f21debaa1cb1b2a8df651216e8f93d39a8b961e0b1d41845e77eb",
+        "promptSha256": "c2599bc136d977995bf08f1206456056573a6178cf4a1a7568653aed0711261e",
+        "generationPromptSha256": "f1b08016e7b21e022eee22ecf6488061ce7a3e7a4e157407ad8bb61435e4c317",
+        "attempt": 3,
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 305389,
+          "findings": []
+        },
+        "review": {
+          "sourceSha256": "65332626d76f21debaa1cb1b2a8df651216e8f93d39a8b961e0b1d41845e77eb",
+          "promptSha256": "c2599bc136d977995bf08f1206456056573a6178cf4a1a7568653aed0711261e",
+          "reviewer": "Codex: direct full-resolution visual inspection, style v2 batch 001",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Empty masked ballroom, two prop masks and two vacant chairs; crisp pixel clusters. No guest silhouettes."
+        }
       }
     ],
     "romance--town": [
@@ -393,6 +635,36 @@
           "findings": [
             "원본이 320×180 격자/64색 제한 팔레트를 통과하지 못했다."
           ]
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town-2-269880336292.png",
+        "sha256": "26988033629220a1eb4ee637be930a9d2328d9923c00207e6158c656be8e9b78",
+        "promptSha256": "a3b507b88dcd0736af5baef14f33274e2a1dfd0083343071f97482cc5cdad13d",
+        "generationPromptSha256": "e58f1e7f811039512f63bc19be999679ad92b8256f5905e745c587938d2571bb",
+        "attempt": 2,
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 558868,
+          "findings": []
+        },
+        "review": {
+          "sourceSha256": "26988033629220a1eb4ee637be930a9d2328d9923c00207e6158c656be8e9b78",
+          "promptSha256": "a3b507b88dcd0736af5baef14f33274e2a1dfd0083343071f97482cc5cdad13d",
+          "reviewer": "Codex: direct full-resolution visual inspection, style v2 batch 001",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Modern neighboring gates, two garden stools and shared watering can. Clear setting change from ballroom/campus, no identities."
         }
       }
     ],
@@ -432,6 +704,68 @@
             "자연 서식지는 보이나 포획 또는 도움을 통한 신뢰라는 최신 선택이 충분히 드러나지 않는다."
           ]
         }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--wild-2-75d9fcaf2236.png",
+        "sha256": "75d9fcaf2236e357ca2364760310fd81b4aa9190ab76a751c707d23ab180eeda",
+        "promptSha256": "e5a8047e822a3b68c6274064aea004a4601933645f2f4951eb5d2795b09e345c",
+        "generationPromptSha256": "25be1cdfd4e9473fc74e9d02ce8fc45cf02755083af36bde5a8d23332ba6f3c8",
+        "attempt": 2,
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 642990,
+          "findings": []
+        },
+        "review": {
+          "sourceSha256": "75d9fcaf2236e357ca2364760310fd81b4aa9190ab76a751c707d23ab180eeda",
+          "promptSha256": "e5a8047e822a3b68c6274064aea004a4601933645f2f4951eb5d2795b09e345c",
+          "reviewer": "Codex: direct full-resolution visual inspection, style v2 batch 001",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": false,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": false
+          },
+          "findings": [
+            "야생 발견·포획이라는 선택 중 포획 방식이 이미지에 보이지 않는다. 소개 장면과 같은 왼쪽 전망대 구도가 반복된다. 낮은 웅덩이 가장자리의 빈 휴대용 포획 그물과 열린 작은 운반 바구니를 초점으로 새로 그려라. 종과 주인공은 보이지 않게 한다."
+          ],
+          "notes": "Clean pixel work and anonymous footprints, but capture method absent and observation-platform framing repeats intro."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--wild-3-e75fbbd8c352.png",
+        "sha256": "e75fbbd8c3526e5dd46578e5d90efdcf6ae7cf08ee7e27f83a9a9a9ea75f0fce",
+        "promptSha256": "e5a8047e822a3b68c6274064aea004a4601933645f2f4951eb5d2795b09e345c",
+        "generationPromptSha256": "44a0b8243872dac31e6cb8e4ef34afb3b3b36501cf8c68e40d1f2ef7b4947453",
+        "attempt": 3,
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 559471,
+          "findings": []
+        },
+        "review": {
+          "sourceSha256": "e75fbbd8c3526e5dd46578e5d90efdcf6ae7cf08ee7e27f83a9a9a9ea75f0fce",
+          "promptSha256": "e5a8047e822a3b68c6274064aea004a4601933645f2f4951eb5d2795b09e345c",
+          "reviewer": "Codex direct full-resolution visual inspection: production v2 batch 001",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Redraw shows empty capture net and basket beside paw marks; new pool-side framing. No creature species or person."
+        }
       }
     ],
     "monster--bond": [
@@ -469,6 +803,2854 @@
             "절벽·폭포·멀리 성이 있는 같은 장면 공식을 반복한다. 구도와 초점 장소를 다시 정해야 한다.",
             "자연 서식지는 보이나 포획 또는 도움을 통한 신뢰라는 최신 선택이 충분히 드러나지 않는다."
           ]
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond-2-93f8ac4b4eb5.png",
+        "sha256": "93f8ac4b4eb54a867e8cfb31369b5d197f0e6a99aa6ab0a09ba5b0ce6d53c9ab",
+        "promptSha256": "20eb6bf542f22029a4fe43b9b60e24b860fb37e8bf78e082d2023130da4619ab",
+        "generationPromptSha256": "8cec298a837f818825b9db924c292067e4e1400f72e989f6b07444dffc9d3e10",
+        "attempt": 2,
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 568295,
+          "findings": []
+        },
+        "review": {
+          "sourceSha256": "93f8ac4b4eb54a867e8cfb31369b5d197f0e6a99aa6ab0a09ba5b0ce6d53c9ab",
+          "promptSha256": "20eb6bf542f22029a4fe43b9b60e24b860fb37e8bf78e082d2023130da4619ab",
+          "reviewer": "Codex: direct full-resolution visual inspection, style v2 batch 001",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Care shelter, water bowl, protected path and blankets illustrate help/trust without inventing an animal or protagonist."
+        }
+      }
+    ],
+    "monster--hatch": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch-1-5f12de0e064f.png",
+        "sha256": "5f12de0e064f4263140457a8be26e3442442371adeee666693dbc35841004566",
+        "promptSha256": "7b82f1ae82bc1fc20cca5600ff30d4c1f3e7548fc6d337d7c74e5738e8f71f48",
+        "generationPromptSha256": "ca2189d2bc1c1ef08deb2c1954c9f5b47b19865a950658b3d97f5d478ee4c35a",
+        "attempt": 1,
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 398918,
+          "findings": []
+        },
+        "review": {
+          "sourceSha256": "5f12de0e064f4263140457a8be26e3442442371adeee666693dbc35841004566",
+          "promptSha256": "7b82f1ae82bc1fc20cca5600ff30d4c1f3e7548fc6d337d7c74e5738e8f71f48",
+          "reviewer": "Codex direct full-resolution visual inspection: production v2 batch 001",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Single cracked egg, straw nursery, water bowl and cloth. Intimate indoor shot, no hatchling or fixed species."
+        }
+      }
+    ],
+    "adventure--reunion": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--reunion-1-5619402deef1.png",
+        "sha256": "5619402deef1652319c25f596a956f8284905c9f8edb50773a1797e348f06aa3",
+        "promptSha256": "3cdfdd4f60088edd70a4f88af563eb636e978eee8041b093898d91b77d2be842",
+        "generationPromptSha256": "04d0c0685f4b3b4cc5064634ec1f6c30729d8832ca08326e44f2322230d1ea1b",
+        "attempt": 1,
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 560772,
+          "findings": []
+        },
+        "review": {
+          "sourceSha256": "5619402deef1652319c25f596a956f8284905c9f8edb50773a1797e348f06aa3",
+          "promptSha256": "3cdfdd4f60088edd70a4f88af563eb636e978eee8041b093898d91b77d2be842",
+          "reviewer": "Codex direct full-resolution visual inspection: production v2 batch 001",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Abandoned traveler shelter, keepsake and interrupted trail evoke searching for a missing loved one. Sign is blank; no human identity."
+        }
+      }
+    ],
+    "adventure--unknown": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--unknown-1-a6524ba30ba9.png",
+        "sha256": "a6524ba30ba9651447aa3143a51d628bdb4bb8290508a97c0ee901ad3a189370",
+        "promptSha256": "c020a4a8dab17125e2c0228622ad6777d35b84ea8e42364f123bad0126ea6cc7",
+        "generationPromptSha256": "dea8c48062ad54765c12af85abc1515122fd823db028f636e817b3a591eb0f20",
+        "attempt": 1,
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 408015,
+          "findings": []
+        },
+        "review": {
+          "sourceSha256": "a6524ba30ba9651447aa3143a51d628bdb4bb8290508a97c0ee901ad3a189370",
+          "promptSha256": "c020a4a8dab17125e2c0228622ad6777d35b84ea8e42364f123bad0126ea6cc7",
+          "reviewer": "Codex direct full-resolution visual inspection: production v2 batch 001",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Small ship, harbor pier, rope and low unknown islands; no crew, lettering or fixed hero."
+        }
+      }
+    ],
+    "adventure--mission": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--mission-1-6af2bf303a9c.png",
+        "sha256": "6af2bf303a9cbcc88aeba311eb9036277de37f215f62f65aac47671fee8a2d99",
+        "promptSha256": "401f7a0278a0ef559a80817c1226f4c1f5daacfc90dffc6ab339b2d3c06049ea",
+        "generationPromptSha256": "c72b56b50f4e3633b049c1a6f19c796ee9ab89162f48d89eeeabde919fa0cc65",
+        "attempt": 1,
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 492316,
+          "findings": []
+        },
+        "review": {
+          "sourceSha256": "6af2bf303a9cbcc88aeba311eb9036277de37f215f62f65aac47671fee8a2d99",
+          "promptSha256": "401f7a0278a0ef559a80817c1226f4c1f5daacfc90dffc6ab339b2d3c06049ea",
+          "reviewer": "Codex direct full-resolution visual inspection: production v2 batch 001",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Unmarked sealed parcel and travel supplies at village doorway express errand departure, no human silhouette."
+        }
+      }
+    ],
+    "mystery--missing": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/mystery--missing-1-7136aafe7032.png",
+        "sha256": "7136aafe7032b9d983139520b7028f749b8f1b3c53431a3a063e57488a67cdb3",
+        "promptSha256": "97caafc13d5eb95e828375dabe420ba0d43ca7d776dcc94d1b3b585c0b9e8665",
+        "generationPromptSha256": "23b33420ea9effb11b73086c46f26c834fe22be33030068ef170e4a63a9530f0",
+        "attempt": 1,
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 290721,
+          "findings": []
+        },
+        "review": {
+          "sourceSha256": "7136aafe7032b9d983139520b7028f749b8f1b3c53431a3a063e57488a67cdb3",
+          "promptSha256": "97caafc13d5eb95e828375dabe420ba0d43ca7d776dcc94d1b3b585c0b9e8665",
+          "reviewer": "Codex direct full-resolution visual inspection: production v2 batch 001",
+          "checks": {
+            "pixelArt": false,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "왼쪽 아래 전경 식물에 피사계 심도처럼 흐린 부분이 있다. 전경을 포함한 전체 그림을 같은 단단한 도트 표현으로 다시 그려라. 블러는 쓰지 않는다."
+          ],
+          "notes": "Missing-person environment and personal keys are appropriate, but blurred foreground plants breach pixel style."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/mystery--missing-2-9e2590b8e7ab.png",
+        "sha256": "9e2590b8e7abc0906b8cb4422deff519e1ff58b9eedb2f2b2511ec17e4af1e36",
+        "promptSha256": "97caafc13d5eb95e828375dabe420ba0d43ca7d776dcc94d1b3b585c0b9e8665",
+        "generationPromptSha256": "b671c476de6233cd595243de01aaa5a6774c583fcbef1675b7447dc0b5b233ad",
+        "attempt": 2,
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 253235,
+          "findings": []
+        },
+        "review": {
+          "sourceSha256": "9e2590b8e7abc0906b8cb4422deff519e1ff58b9eedb2f2b2511ec17e4af1e36",
+          "promptSha256": "97caafc13d5eb95e828375dabe420ba0d43ca7d776dcc94d1b3b585c0b9e8665",
+          "reviewer": "Codex direct original visual inspection: v2-redraw-001",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Sharp foreground plants, abandoned keys, coat on empty chair and unfinished drink in familiar room; no humans or writing."
+        }
+      }
+    ],
+    "mystery--record": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/mystery--record-1-958c6fd759c5.png",
+        "sha256": "958c6fd759c53dd5d12be7343d08ffc8055ad6c5b676b4166105b2a26dae940a",
+        "promptSha256": "182f8cad6d8986bd6574876c9016e27e2a3d3a5d73238d76949863cc24046249",
+        "generationPromptSha256": "0a6296249e78c27b255a3295fd1b10a80e021f8ad76db1b80cb1ca6897f40c90",
+        "attempt": 1,
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 224992,
+          "findings": []
+        },
+        "review": {
+          "sourceSha256": "958c6fd759c53dd5d12be7343d08ffc8055ad6c5b676b4166105b2a26dae940a",
+          "promptSha256": "182f8cad6d8986bd6574876c9016e27e2a3d3a5d73238d76949863cc24046249",
+          "reviewer": "Codex direct full-resolution visual inspection: production v2 batch 001",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Archive boxes and incompatible vase/shadow silhouette suggest physical evidence mismatch without literal words, numbers or maps."
+        }
+      }
+    ],
+    "mystery--place": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/mystery--place-1-0464070a138a.png",
+        "sha256": "0464070a138ab25aa1c8026673c377ab78c5b02e5ade549d7779c8fe3026ec5f",
+        "promptSha256": "3a95d563e034af43f67f927157252fc33581865dfd2c95a8c78e12e89ef1570c",
+        "generationPromptSha256": "490f2022cc62d1bdac6d5027e3ec7eb2bbc11957710867647fdc330550e8f2d5",
+        "attempt": 1,
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 158412,
+          "findings": []
+        },
+        "review": {
+          "sourceSha256": "0464070a138ab25aa1c8026673c377ab78c5b02e5ade549d7779c8fe3026ec5f",
+          "promptSha256": "3a95d563e034af43f67f927157252fc33581865dfd2c95a8c78e12e89ef1570c",
+          "reviewer": "Codex direct full-resolution visual inspection: production v2 batch 001",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": false,
+            "distinctShot": true
+          },
+          "findings": [
+            "왼쪽 아래에 열린 종이·지도처럼 보이는 무늬가 있다. 종이와 지도는 완전히 없애고 닫힌 무지 책과 실제 물건만 남겨라."
+          ],
+          "notes": "Hidden downward stair is correct and composition is distinct; open patterned parchment is an unwanted writing-like artifact."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/mystery--place-2-fe2c148e4de1.png",
+        "sha256": "fe2c148e4de16d156e45b2ed6837336247c62f70b7686bfa7498f651f316ec4f",
+        "promptSha256": "3a95d563e034af43f67f927157252fc33581865dfd2c95a8c78e12e89ef1570c",
+        "generationPromptSha256": "d5cdd36bf31620dea281ac2a528415ba7f4de9ee66bc8f09152301f65209d94b",
+        "attempt": 2,
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 176200,
+          "findings": []
+        },
+        "review": {
+          "sourceSha256": "fe2c148e4de16d156e45b2ed6837336247c62f70b7686bfa7498f651f316ec4f",
+          "promptSha256": "3a95d563e034af43f67f927157252fc33581865dfd2c95a8c78e12e89ef1570c",
+          "reviewer": "Codex direct original visual inspection: v2-redraw-001",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Plain closed books, prominent key and hidden descending stone stair; patterned open paper removed."
+        }
+      }
+    ],
+    "romance--campus--talk": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus--talk-1-266ae8d00fbc.png",
+        "sha256": "266ae8d00fbc12a27f76f40c66b154efa6978241dde4fefeeba009bf03271ad2",
+        "promptSha256": "adb8ea1938cc6dec558608bbe1366c23d36841a810d85d705f630ed3ff1f2186",
+        "generationPromptSha256": "fd6e498a47cc4d26469f4391b204e6c2053e1e964ad0aea4963d86078b8ea6b8",
+        "attempt": 1,
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 513029,
+          "findings": []
+        },
+        "review": {
+          "sourceSha256": "266ae8d00fbc12a27f76f40c66b154efa6978241dde4fefeeba009bf03271ad2",
+          "promptSha256": "adb8ea1938cc6dec558608bbe1366c23d36841a810d85d705f630ed3ff1f2186",
+          "reviewer": "Codex direct full-resolution visual inspection: production v2 batch 001",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": false,
+            "distinctShot": true
+          },
+          "findings": [
+            "배경 대학 깃발에 방패 문양 로고가 생겼다. 깃발·로고·문장을 전부 없애고 현대 대학 건물과 마주 보는 빈 의자 두 개, 책 두 권만으로 대화 장면을 그려라."
+          ],
+          "notes": "Modern campus and facing table preserve reunion and dialogue; unrequested shield logos breach the no-logo constraint."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus--talk-2-7c4690956d4f.png",
+        "sha256": "7c4690956d4f206962fc5166e148e6d0e5eb27d81528fbf9f9772624e796cda6",
+        "promptSha256": "adb8ea1938cc6dec558608bbe1366c23d36841a810d85d705f630ed3ff1f2186",
+        "generationPromptSha256": "bb46060d6e95b449e04e2c3d9bd31746c780d5ab801a737993b80b6860869dc9",
+        "attempt": 2,
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 601901,
+          "findings": []
+        },
+        "review": {
+          "sourceSha256": "7c4690956d4f206962fc5166e148e6d0e5eb27d81528fbf9f9772624e796cda6",
+          "promptSha256": "adb8ea1938cc6dec558608bbe1366c23d36841a810d85d705f630ed3ff1f2186",
+          "reviewer": "Codex direct original visual inspection: v2-redraw-001",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Modern campus facing vacant chairs and two plain books at shared table. All logo banners removed."
+        }
+      }
+    ],
+    "romance--campus--memory": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus--memory-1-955f37aa386a.png",
+        "sha256": "955f37aa386a48b19e6bd7ecc1981dc5c8aefe09b7b0a0541a91198867517288",
+        "promptSha256": "0e37779beff38ba7134bd824ee5153fcc94c6533996666ee35bba1b3fcfdd64a",
+        "generationPromptSha256": "fc0ce60850d4b52c2faac0c7c1506fa97ec899c23951997ca9a905b6042a4831",
+        "attempt": 1,
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 553076,
+          "findings": []
+        },
+        "review": {
+          "sourceSha256": "955f37aa386a48b19e6bd7ecc1981dc5c8aefe09b7b0a0541a91198867517288",
+          "promptSha256": "0e37779beff38ba7134bd824ee5153fcc94c6533996666ee35bba1b3fcfdd64a",
+          "reviewer": "Codex direct original visual inspection: v2-production-002",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Two closed books in modern campus foreground; meaningful reunion memory, sharp clusters and new framing."
+        }
+      }
+    ],
+    "romance--campus--choice": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus--choice-1-22ad5cb0ceb1.png",
+        "sha256": "22ad5cb0ceb1bbff354b3ffae38ebf8b0aabc8fafd9636ca17c41109d12501e5",
+        "promptSha256": "3358b279109947f11940ca6a6da75c925ec0d0cfcee0f647fe51a12f0eb24cd0",
+        "generationPromptSha256": "3dc9757d1a346b6b0b18dbbb7ec35f069fdc943ac19a1424be2f565a97e55b21",
+        "attempt": 1,
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 488158,
+          "findings": []
+        },
+        "review": {
+          "sourceSha256": "22ad5cb0ceb1bbff354b3ffae38ebf8b0aabc8fafd9636ca17c41109d12501e5",
+          "promptSha256": "3358b279109947f11940ca6a6da75c925ec0d0cfcee0f647fe51a12f0eb24cd0",
+          "reviewer": "Codex direct original visual inspection: v2-production-002",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": false,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "중앙 날개 달린 사람 형태의 동상이 금지된 인물 외형을 고정한다. 모든 사람·인체 형태 조각을 없애고 갈라지는 길과 책 두 권으로 갈등을 표현한다."
+          ],
+          "notes": "Forked campus paths express choice, but humanoid statue is forbidden."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus--choice-2-be064a7036cb.png",
+        "sha256": "be064a7036cb69d8cc7357f443b5b8f85e51e3a4e0c04469eb24ecb912092af2",
+        "promptSha256": "3358b279109947f11940ca6a6da75c925ec0d0cfcee0f647fe51a12f0eb24cd0",
+        "generationPromptSha256": "69365fc3a8dd2cb1cd3fe2ae3ec65c7b2fd19ea90fe00e5f31355dfdfb0c7ea1",
+        "attempt": 2,
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 575286,
+          "findings": []
+        },
+        "review": {
+          "sourceSha256": "be064a7036cb69d8cc7357f443b5b8f85e51e3a4e0c04469eb24ecb912092af2",
+          "promptSha256": "3358b279109947f11940ca6a6da75c925ec0d0cfcee0f647fe51a12f0eb24cd0",
+          "reviewer": "Codex direct original visual inspection: v2-redraw-001",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Two closed books and forked modern campus paths; humanoid statue removed. Choice cue retained."
+        }
+      }
+    ],
+    "romance--palace--talk": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--talk-1-6614ea73cb64.png",
+        "sha256": "6614ea73cb648c1a35f052aa8db4a512ad8d2197333af3045e37331a44617895",
+        "promptSha256": "8c1874058e289d7f7e2225275890b2920017938e525b998be787cec449940ca4",
+        "generationPromptSha256": "cf2660f11a98b9296a436d679076582ffc0178ceea8c2064e0850caa95b796ba",
+        "attempt": 1,
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 288977,
+          "findings": []
+        },
+        "review": {
+          "sourceSha256": "6614ea73cb648c1a35f052aa8db4a512ad8d2197333af3045e37331a44617895",
+          "promptSha256": "8c1874058e289d7f7e2225275890b2920017938e525b998be787cec449940ca4",
+          "reviewer": "Codex direct original visual inspection: v2-production-002",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Vacant facing chairs, shared table and masks express conversation in empty ballroom. Generic architectural ornament is not lettering."
+        }
+      }
+    ],
+    "romance--palace--memory": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--memory-1-04364a094eaf.png",
+        "sha256": "04364a094eafc7ff1da9e2f1bc64e5df9fe6cad7cea989091374019b7319abf6",
+        "promptSha256": "60dc60e12fc6c2561d87cd77670967f65e9cd648b3b366579c20f9a01215dc31",
+        "generationPromptSha256": "cca442352ca54fb235f8c43b0bc41a3773594b4be2964ae6302ba709cc2d78e4",
+        "attempt": 1,
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 374778,
+          "findings": []
+        },
+        "review": {
+          "sourceSha256": "04364a094eafc7ff1da9e2f1bc64e5df9fe6cad7cea989091374019b7319abf6",
+          "promptSha256": "60dc60e12fc6c2561d87cd77670967f65e9cd648b3b366579c20f9a01215dc31",
+          "reviewer": "Codex direct original visual inspection: v2-production-002",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Close keepsake chest and two masks in empty ballroom express memory; no identity or words."
+        }
+      }
+    ],
+    "romance--palace--choice": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--choice-1-6062d4d8ece9.png",
+        "sha256": "6062d4d8ece941446b6e9caab8752861f0a4543167ee34016736a6edc3ccdd23",
+        "promptSha256": "90cb9b25eb7da2198f4aa70712689fdfc2c764853d3b7d0a348c1670778d5632",
+        "generationPromptSha256": "2dd937d921f294ec24b2fe556689af04f2872b22dc3761a383e85e4a00abbe64",
+        "attempt": 1,
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 288281,
+          "findings": []
+        },
+        "review": {
+          "sourceSha256": "6062d4d8ece941446b6e9caab8752861f0a4543167ee34016736a6edc3ccdd23",
+          "promptSha256": "90cb9b25eb7da2198f4aa70712689fdfc2c764853d3b7d0a348c1670778d5632",
+          "reviewer": "Codex direct original visual inspection: v2-production-002",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": false,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": false
+          },
+          "findings": [
+            "무도회 테이블과 가면 구도가 반복되며 갈등 선택이 보이지 않는다. 갈라지는 두 출입구와 서로 충돌하는 물건을 중심으로 새 구도를 그려라. 가면과 무도회 장소는 보존한다."
+          ],
+          "notes": "Masks-on-table repeats parent; consequential trust choice lacks a visible cue."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--choice-2-2e3b55ee5bed.png",
+        "sha256": "2e3b55ee5bede208ec1e5fa657f188ad61b2d1387d2fa987c5295622966c91a3",
+        "promptSha256": "90cb9b25eb7da2198f4aa70712689fdfc2c764853d3b7d0a348c1670778d5632",
+        "generationPromptSha256": "4f08fc635828edd7e437b5f6b2ab4b2ae458e4a0cba853164176214d441df588",
+        "attempt": 2,
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 352236,
+          "findings": []
+        },
+        "review": {
+          "sourceSha256": "2e3b55ee5bede208ec1e5fa657f188ad61b2d1387d2fa987c5295622966c91a3",
+          "promptSha256": "90cb9b25eb7da2198f4aa70712689fdfc2c764853d3b7d0a348c1670778d5632",
+          "reviewer": "Codex direct original visual inspection: v2-redraw-001",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Two contrasting ballroom exits, masks, blank sealed letter and dagger express conflict; new divided spatial staging."
+        }
+      }
+    ],
+    "romance--town--talk": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk-1-81455f36d26c.png",
+        "sha256": "81455f36d26cb0bfa1ad16742380629289131813a758dc7a0501295af1fab45c",
+        "promptSha256": "4539fadc41cefca70952f82e149930c6c1caba840eedecd5af79530b8e9355ac",
+        "generationPromptSha256": "c036548f145472ffe36300cb8a28b4a479d00c7021200bba9656e6496df434da",
+        "attempt": 1,
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 474558,
+          "findings": []
+        },
+        "review": {
+          "sourceSha256": "81455f36d26cb0bfa1ad16742380629289131813a758dc7a0501295af1fab45c",
+          "promptSha256": "4539fadc41cefca70952f82e149930c6c1caba840eedecd5af79530b8e9355ac",
+          "reviewer": "Codex direct original visual inspection: v2-production-002",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Neighboring gates with facing empty stools and shared table, distinct dialogue setting."
+        }
+      }
+    ],
+    "romance--town--memory": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--memory-1-023bf66883c2.png",
+        "sha256": "023bf66883c289f41f4f43dcef2e6e6eac290db51e6d8c7ccb55d6546bff45e5",
+        "promptSha256": "babb7ed4342f56a613e5429dcb3d339d037b98d0783f9bb8862d5e569874dd1d",
+        "generationPromptSha256": "680f7c07b954d6d247fec5536c18345a56dc7ef5a48627b0d2749abccc95497f",
+        "attempt": 1,
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 527460,
+          "findings": []
+        },
+        "review": {
+          "sourceSha256": "023bf66883c289f41f4f43dcef2e6e6eac290db51e6d8c7ccb55d6546bff45e5",
+          "promptSha256": "babb7ed4342f56a613e5429dcb3d339d037b98d0783f9bb8862d5e569874dd1d",
+          "reviewer": "Codex direct original visual inspection: v2-production-002",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Old closed keepsake box at foreground neighborhood ledge; preserves ordinary adjacent gates."
+        }
+      }
+    ],
+    "romance--town--choice": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--choice-1-e8e9888ff8ce.png",
+        "sha256": "e8e9888ff8cefe4de7c8f5c14f70a92e0ca253a1656e6121e047627450a8fc8b",
+        "promptSha256": "67a1db0253070f430217d2e02c2665abba70427feffe53da868caafbc2766596",
+        "generationPromptSha256": "1afbb16c31ac0f07e341acdc471e41be3b8a10c52389b61cf1fa41c802a8be16",
+        "attempt": 1,
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 487757,
+          "findings": []
+        },
+        "review": {
+          "sourceSha256": "e8e9888ff8cefe4de7c8f5c14f70a92e0ca253a1656e6121e047627450a8fc8b",
+          "promptSha256": "67a1db0253070f430217d2e02c2665abba70427feffe53da868caafbc2766596",
+          "reviewer": "Codex direct original visual inspection: v2-production-002",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Open and closed neighboring thresholds with contrasting objects express conflict without people."
+        }
+      }
+    ],
+    "monster--wild--collect": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--wild--collect-1-5c05c4822a33.png",
+        "sha256": "5c05c4822a33f93bce939a9851bd2fa364f847fdd9e3b890cb4cfed9dcb9b250",
+        "promptSha256": "817408b3ebdf0a94a5d5fc753c4189949d56b2be5443f1e145eed2f0fa97dd6e",
+        "generationPromptSha256": "6321504e4e92eb89c6c24040278bae1f6ef35da2e2817634aa9984842602cef8",
+        "attempt": 1,
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 611928,
+          "findings": []
+        },
+        "review": {
+          "sourceSha256": "5c05c4822a33f93bce939a9851bd2fa364f847fdd9e3b890cb4cfed9dcb9b250",
+          "promptSha256": "817408b3ebdf0a94a5d5fc753c4189949d56b2be5443f1e145eed2f0fa97dd6e",
+          "reviewer": "Codex direct original visual inspection: v2-production-002",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Empty capture net and basket, tracks, and differing habitats express discovery plus capture."
+        }
+      }
+    ],
+    "monster--wild--team": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--wild--team-1-58bb401435a2.png",
+        "sha256": "58bb401435a2d0c3c291c3930bd31a7f17fb0160f5bdb16924c2101cfccfcd50",
+        "promptSha256": "827d524309d446dfa8fa682c23c828bdfe85fe55c4617e13c9e348257856cf56",
+        "generationPromptSha256": "651b60faf113fb4b61b281391f06663a4338ce494f4c35083b241f6fac4489bc",
+        "attempt": 1,
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 579649,
+          "findings": []
+        },
+        "review": {
+          "sourceSha256": "58bb401435a2d0c3c291c3930bd31a7f17fb0160f5bdb16924c2101cfccfcd50",
+          "promptSha256": "827d524309d446dfa8fa682c23c828bdfe85fe55c4617e13c9e348257856cf56",
+          "reviewer": "Codex direct original visual inspection: v2-production-002",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": false,
+            "distinctShot": true
+          },
+          "findings": [
+            "훈련장 깃발에 요청하지 않은 발바닥 문양 로고가 생겼다. 깃발과 로고를 없애고 무지 장애물·엄폐물·여러 접근로로 전술 훈련을 표현한다. 포획 그물과 바구니는 보존한다."
+          ],
+          "notes": "Capture gear and empty training arena retain choices; unrequested emblem flags violate no-logo rule."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--wild--team-2-049ea8dedbe9.png",
+        "sha256": "049ea8dedbe9bb44df80940e71a9e2000a6f55e723b04ebe779acd66095cc5ab",
+        "promptSha256": "827d524309d446dfa8fa682c23c828bdfe85fe55c4617e13c9e348257856cf56",
+        "generationPromptSha256": "365622b9ee5e04762f723a3470d8140d86b5357f7f65fe7602ea23fc8bfe291f",
+        "attempt": 2,
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 647106,
+          "findings": []
+        },
+        "review": {
+          "sourceSha256": "049ea8dedbe9bb44df80940e71a9e2000a6f55e723b04ebe779acd66095cc5ab",
+          "promptSha256": "827d524309d446dfa8fa682c23c828bdfe85fe55c4617e13c9e348257856cf56",
+          "reviewer": "Codex direct original visual inspection: v2-redraw-001",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Capture net and basket beside anonymous tracks, empty training lanes/cover/obstacles; all banners removed."
+        }
+      }
+    ],
+    "monster--wild--partner": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--wild--partner-1-822806f0fd7d.png",
+        "sha256": "822806f0fd7d19f579b90ca617a41d061147edef6aaa2cef8cc3ff0310b512b6",
+        "promptSha256": "036bfb5ec7cf68fe64d83ad973a44f0db7e1b4c4527878ee7b4076f6a94042c2",
+        "generationPromptSha256": "5b82280a25d23088ad8ff88a4630fef46fb9c0a7ff9fffcc05573b99a8f86281",
+        "attempt": 1,
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 626639,
+          "findings": []
+        },
+        "review": {
+          "sourceSha256": "822806f0fd7d19f579b90ca617a41d061147edef6aaa2cef8cc3ff0310b512b6",
+          "promptSha256": "036bfb5ec7cf68fe64d83ad973a44f0db7e1b4c4527878ee7b4076f6a94042c2",
+          "reviewer": "Codex direct original visual inspection: v2-production-003",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": false,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": false
+          },
+          "findings": [
+            "포획 바구니·계곡·폭포 구도만 반복되고 교감 돌봄 물건이 없다. 빈 휴식 매트와 물그릇을 크게 보여주는 가까운 새 구도를 그려라. 포획 도구와 발자국은 남기되 생물은 그리지 않는다."
+          ],
+          "notes": "Parent habitat panorama repeats with capture gear; partner care cue missing."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--wild--partner-2-96c463a05576.png",
+        "sha256": "96c463a05576bf557dea540ddb019c36455a274a66ae95a43beb3f659172c411",
+        "promptSha256": "036bfb5ec7cf68fe64d83ad973a44f0db7e1b4c4527878ee7b4076f6a94042c2",
+        "generationPromptSha256": "6c88849b2e9650930ae54f3abecda95f6f6fd474b5f1d88a4820e4e28275e02f",
+        "attempt": 2,
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 516246,
+          "findings": []
+        },
+        "review": {
+          "sourceSha256": "96c463a05576bf557dea540ddb019c36455a274a66ae95a43beb3f659172c411",
+          "promptSha256": "036bfb5ec7cf68fe64d83ad973a44f0db7e1b4c4527878ee7b4076f6a94042c2",
+          "reviewer": "Codex direct original visual inspection: v2-redraw-001",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Capture gear and tracks retained, prominent empty padded resting mat and bowl add latest care choice."
+        }
+      }
+    ],
+    "monster--bond--collect": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--collect-1-a60e69cb8864.png",
+        "sha256": "a60e69cb886488954379177959a2d8d15e2a62faf2ff19c0b3eb7ff9d0723f0f",
+        "promptSha256": "d19a18edcd9e231e7667a6ec9b33120126716b1a5a0e3ad92820aeec3755f3bd",
+        "generationPromptSha256": "750a1b205d789f6fd54f22d46806b5db7e7f4cf7c24d43e35d8b49e213306df6",
+        "attempt": 1,
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 574872,
+          "findings": []
+        },
+        "review": {
+          "sourceSha256": "a60e69cb886488954379177959a2d8d15e2a62faf2ff19c0b3eb7ff9d0723f0f",
+          "promptSha256": "d19a18edcd9e231e7667a6ec9b33120126716b1a5a0e3ad92820aeec3755f3bd",
+          "reviewer": "Codex direct original visual inspection: v2-production-003",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": false,
+            "distinctShot": true
+          },
+          "findings": [
+            "열린 책·지도 종이에 글자처럼 보이는 녹색 흔적이 있다. 열린 종이를 없애고 닫힌 무지 책과 관찰 도구, 실제로 서로 다른 서식지로 탐색을 표현한다. 담요와 물그릇은 유지한다."
+          ],
+          "notes": "Rescue care bed and binoculars retain choices, but open paper has pseudo-writing."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--collect-2-1f1eaa744ce7.png",
+        "sha256": "1f1eaa744ce75a508264b65fd681890f33c3ea54084592481522433f30387b47",
+        "promptSha256": "d19a18edcd9e231e7667a6ec9b33120126716b1a5a0e3ad92820aeec3755f3bd",
+        "generationPromptSha256": "aba920194c830b99ac0e773f9d6ff981da3ad417da07f0f23593224cc6807302",
+        "attempt": 2,
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 611972,
+          "findings": []
+        },
+        "review": {
+          "sourceSha256": "1f1eaa744ce75a508264b65fd681890f33c3ea54084592481522433f30387b47",
+          "promptSha256": "d19a18edcd9e231e7667a6ec9b33120126716b1a5a0e3ad92820aeec3755f3bd",
+          "reviewer": "Codex direct original visual inspection: v2-redraw-001",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Sheltered care bed and bowl retained, binoculars/closed plain book and varied habitats replace pseudo-written map."
+        }
+      }
+    ],
+    "monster--bond--team": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--team-1-a38b0e789970.png",
+        "sha256": "a38b0e7899709499f6f16f9029e77c53c175ecbf7aeebb91fa3ff3c3a72d25b0",
+        "promptSha256": "4b49aab0a46a41c7cc4f959d81c08ce22da4530af7d105e7c5c33baeea819ea3",
+        "generationPromptSha256": "107288bcdd25543439d742e52fe9552d3b7581a10f5fa6545866b5e47adea613",
+        "attempt": 1,
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 622318,
+          "findings": []
+        },
+        "review": {
+          "sourceSha256": "a38b0e7899709499f6f16f9029e77c53c175ecbf7aeebb91fa3ff3c3a72d25b0",
+          "promptSha256": "4b49aab0a46a41c7cc4f959d81c08ce22da4530af7d105e7c5c33baeea819ea3",
+          "reviewer": "Codex direct original visual inspection: v2-production-003",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": false,
+            "distinctShot": true
+          },
+          "findings": [
+            "훈련장 발바닥 문양 깃발을 전부 없애라. 무지 장애물과 여러 접근로로 팀 전술을 보여주고 기존 돌봄 침상과 물그릇을 남긴다."
+          ],
+          "notes": "Care bed and empty obstacle course communicate rescue plus tactical play; unrequested emblem flags fail."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--team-2-9dcc18645bda.png",
+        "sha256": "9dcc18645bda42191df8b69dc313a508b10e3f9f8311dd56b05354374a45c2f8",
+        "promptSha256": "4b49aab0a46a41c7cc4f959d81c08ce22da4530af7d105e7c5c33baeea819ea3",
+        "generationPromptSha256": "d0d0d5a82130a244f71237ca725af10871d1151e3669b46ae90273e48ec01814",
+        "attempt": 2,
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 524850,
+          "findings": []
+        },
+        "review": {
+          "sourceSha256": "9dcc18645bda42191df8b69dc313a508b10e3f9f8311dd56b05354374a45c2f8",
+          "promptSha256": "4b49aab0a46a41c7cc4f959d81c08ce22da4530af7d105e7c5c33baeea819ea3",
+          "reviewer": "Codex direct original visual inspection: v2-redraw-001",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Soft empty refuge bed and bowl beside tactical obstacle course; no logos or visible creature."
+        }
+      }
+    ],
+    "monster--bond--partner": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--partner-1-15d071cf81c1.png",
+        "sha256": "15d071cf81c130672a6f55b91a77f67f35a0f86018d487d72f166a4f2ab1bb6c",
+        "promptSha256": "e7c54ad228b839daa2fbe86ea8abaaf3ec768d1958cbef6442851251ce901fd3",
+        "generationPromptSha256": "bc888152f0507ede99c7717e05ff7b564012ab509ef2b9c4443c648d91738048",
+        "attempt": 1,
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 459374,
+          "findings": []
+        },
+        "review": {
+          "sourceSha256": "15d071cf81c130672a6f55b91a77f67f35a0f86018d487d72f166a4f2ab1bb6c",
+          "promptSha256": "e7c54ad228b839daa2fbe86ea8abaaf3ec768d1958cbef6442851251ce901fd3",
+          "reviewer": "Codex direct original visual inspection: v2-production-003",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Intimate empty care bed, bowl and play objects in woodland refuge; no creature appearance chosen."
+        }
+      }
+    ],
+    "monster--hatch--collect": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--collect-1-e3add366ad51.png",
+        "sha256": "e3add366ad5137ec603fb6dbf5b8b1337c14546dfab2380fe2592d252834223f",
+        "promptSha256": "8aed8618bd6a87e9f233b6fef7a59e8dc22954f1cff996809fc930a346dca5b6",
+        "generationPromptSha256": "1ef871616a143a299dce0fd308ef0db2f13957b0db02bb6ab1734c6bc33465cd",
+        "attempt": 1,
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 461684,
+          "findings": []
+        },
+        "review": {
+          "sourceSha256": "e3add366ad5137ec603fb6dbf5b8b1337c14546dfab2380fe2592d252834223f",
+          "promptSha256": "8aed8618bd6a87e9f233b6fef7a59e8dc22954f1cff996809fc930a346dca5b6",
+          "reviewer": "Codex direct original visual inspection: v2-production-003",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Cracked egg in nursery, observation/travel equipment and terrain-only wall map without letters express habitat discovery."
+        }
+      }
+    ],
+    "monster--hatch--team": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--team-1-189326d02301.png",
+        "sha256": "189326d023012e8ee85c0dc461120b18a1a563ca37054162a63b95651c428112",
+        "promptSha256": "5734ddf7ff045ec5c9c16f4ed6997238caa378f96dd3c4fb6ebbdd1ba086f984",
+        "generationPromptSha256": "2124ec2a6e0010d80f14ba522441fa24702426b24a1819b2fec867e6e0103d1d",
+        "attempt": 1,
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 412222,
+          "findings": []
+        },
+        "review": {
+          "sourceSha256": "189326d023012e8ee85c0dc461120b18a1a563ca37054162a63b95651c428112",
+          "promptSha256": "5734ddf7ff045ec5c9c16f4ed6997238caa378f96dd3c4fb6ebbdd1ba086f984",
+          "reviewer": "Codex direct original visual inspection: v2-production-003",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": false,
+            "distinctShot": true
+          },
+          "findings": [
+            "알 육아실과 훈련장은 적절하지만 발바닥 문양 깃발이 금지된 로고다. 모든 깃발·상징 로고를 없애고 무지 장애물과 접근로만 남긴다."
+          ],
+          "notes": "Nursery egg and empty training yard retain choices; emblem flags violate no-logo constraint."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--team-2-9cb24473e17e.png",
+        "sha256": "9cb24473e17ebf61b8249f88b5fc9986c06af5d0cda7a0fc5cc2cf2a8f8aa258",
+        "promptSha256": "5734ddf7ff045ec5c9c16f4ed6997238caa378f96dd3c4fb6ebbdd1ba086f984",
+        "generationPromptSha256": "4cf24027aea99ba47764b754ce1eecc8b9c10ff16c022061e4d85aace44bd9e8",
+        "attempt": 2,
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 430227,
+          "findings": []
+        },
+        "review": {
+          "sourceSha256": "9cb24473e17ebf61b8249f88b5fc9986c06af5d0cda7a0fc5cc2cf2a8f8aa258",
+          "promptSha256": "5734ddf7ff045ec5c9c16f4ed6997238caa378f96dd3c4fb6ebbdd1ba086f984",
+          "reviewer": "Codex direct original visual inspection: v2-redraw-001",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Single cracked egg nursery plus visible empty obstacle course and approaches; no banners, hatchling or identity."
+        }
+      }
+    ],
+    "monster--hatch--partner": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--partner-1-690ddee3c59f.png",
+        "sha256": "690ddee3c59fe95c68dd936f88ee7e0aae14bb2b9ff36d2594fcbf8d4a2a2d3b",
+        "promptSha256": "37389135c96d405f0183fa53fd91709d4a483cbcb05079de2898fc9e1d32fcc4",
+        "generationPromptSha256": "e5914b6afdf5f2f6037f46fedd66b4427d3c94c1ea6d603acd5d9057efcc0c0c",
+        "attempt": 1,
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 433076,
+          "findings": []
+        },
+        "review": {
+          "sourceSha256": "690ddee3c59fe95c68dd936f88ee7e0aae14bb2b9ff36d2594fcbf8d4a2a2d3b",
+          "promptSha256": "37389135c96d405f0183fa53fd91709d4a483cbcb05079de2898fc9e1d32fcc4",
+          "reviewer": "Codex direct original visual inspection: v2-production-003",
+          "checks": {
+            "pixelArt": false,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": false,
+            "distinctShot": true
+          },
+          "findings": [
+            "왼쪽 전경 식물이 흐려져 피사계심도 블러가 생겼다. 전경까지 단단한 사각 도트로 그린다. 발바닥 문양 로고와 깃발을 없애고 알·돌봄 침상·물그릇·놀이 물건만으로 교감을 표현한다."
+          ],
+          "notes": "Care props and egg are present, but soft foreground and unrequested emblems fail."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--partner-2-ea4062e65f5b.png",
+        "sha256": "ea4062e65f5b648c8a03d316831eaa09b8de07699fb7745dc5b456380342180c",
+        "promptSha256": "37389135c96d405f0183fa53fd91709d4a483cbcb05079de2898fc9e1d32fcc4",
+        "generationPromptSha256": "2901dae9947243e70ef6f2ce07cede0e02c33042c82f5f74028e5e09e60c9e11",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "ea4062e65f5b648c8a03d316831eaa09b8de07699fb7745dc5b456380342180c",
+          "promptSha256": "37389135c96d405f0183fa53fd91709d4a483cbcb05079de2898fc9e1d32fcc4",
+          "reviewer": "Codex direct original visual inspection: v2-production-004",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Cracked egg, cloth care bed, water bowl, wooden toy and woven play objects; foreground is crisp and logos removed."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 494531,
+          "findings": []
+        }
+      }
+    ],
+    "adventure--reunion--explore": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--explore-1-1e82ed67c8a4.png",
+        "sha256": "1e82ed67c8a4b6e47d75628194be72427dbc2527b0cee293e7c4ace0e3263a9b",
+        "promptSha256": "55f30f9fa681bcf82321a1872eb26ed4032cc5c4953f873ee3eea07f0965c221",
+        "generationPromptSha256": "fe18f178857aac130e3fc1943da63c5367cd99de097dabd68de0e7a221736ce2",
+        "attempt": 1,
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 428509,
+          "findings": []
+        },
+        "review": {
+          "sourceSha256": "1e82ed67c8a4b6e47d75628194be72427dbc2527b0cee293e7c4ace0e3263a9b",
+          "promptSha256": "55f30f9fa681bcf82321a1872eb26ed4032cc5c4953f873ee3eea07f0965c221",
+          "reviewer": "Codex direct original visual inspection: v2-production-003",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Abandoned traveler shelter with keepsake/pack and discoverable stone opening; investigation path sharply drawn."
+        }
+      }
+    ],
+    "adventure--reunion--battle": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--battle-1-af9b052a3edc.png",
+        "sha256": "af9b052a3edc1076f78b79a91fad358de77745e91525ae09e111818df91ed506",
+        "promptSha256": "b65181878b3fe1822c01996aa992e90ea47c3a2f75e63b728e2de3080dd32646",
+        "generationPromptSha256": "1aeaba03d02e9ac1ecabd02b8b437df4fbd679d2e9c6869f31161d5843daa95b",
+        "attempt": 1,
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 437903,
+          "findings": []
+        },
+        "review": {
+          "sourceSha256": "af9b052a3edc1076f78b79a91fad358de77745e91525ae09e111818df91ed506",
+          "promptSha256": "b65181878b3fe1822c01996aa992e90ea47c3a2f75e63b728e2de3080dd32646",
+          "reviewer": "Codex direct original visual inspection: v2-production-003",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "전술 엄폐 지형은 보이지만 소중한 사람을 찾는 시작 설정의 개인 유품·끊긴 흔적이 빠졌다. 전경에 무지 개인 유품과 이어지다 끊긴 여행 흔적을 분명히 추가하여 전투 선택과 함께 남긴다."
+          ],
+          "notes": "Cover terrain expresses confrontation but missing loved one keepsake/trail cue is absent."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--battle-2-e6c7df2568d7.png",
+        "sha256": "e6c7df2568d7d291a7eb16f6ab97e89fff117b4b118f5d10f3f3cbac9ec1e1fe",
+        "promptSha256": "b65181878b3fe1822c01996aa992e90ea47c3a2f75e63b728e2de3080dd32646",
+        "generationPromptSha256": "93f53017c97b8eef6162443ba583a99772c47f5996c2dc09cae927bd9d010156",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "e6c7df2568d7d291a7eb16f6ab97e89fff117b4b118f5d10f3f3cbac9ec1e1fe",
+          "promptSha256": "b65181878b3fe1822c01996aa992e90ea47c3a2f75e63b728e2de3080dd32646",
+          "reviewer": "Codex direct original visual inspection: v2-production-004",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": false,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "소중한 사람의 유품과 발자국은 복구했지만 전투 선택이 보이지 않는다. 전경과 중경에 방패 거치대·바리케이드·엄폐물·서로 다른 접근로가 있는 빈 전술 훈련 공간을 크게 그린다. 유품과 중단된 여행 흔적은 함께 보존한다."
+          ],
+          "notes": "Abandoned shelter, keepsake and interrupted footprints restored; confrontation cue remains generic terrain."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 565256,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--battle-3-de9f04fcc16b.png",
+        "sha256": "de9f04fcc16b4480ab63501acbda3dddf203bfdc9e6d444dbb3233d6ec829c3b",
+        "promptSha256": "b65181878b3fe1822c01996aa992e90ea47c3a2f75e63b728e2de3080dd32646",
+        "generationPromptSha256": "bf87b9d0a76bba7c4e0f8e400d4f7bc082c4b4d7ed7233ee9f3fdc4cee55c0f8",
+        "attempt": 3,
+        "review": {
+          "sourceSha256": "de9f04fcc16b4480ab63501acbda3dddf203bfdc9e6d444dbb3233d6ec829c3b",
+          "promptSha256": "b65181878b3fe1822c01996aa992e90ea47c3a2f75e63b728e2de3080dd32646",
+          "reviewer": "Codex direct original visual inspection: v2-production-005",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Large shield rack, barricades and multiple defense lanes now communicate tactical battle; personal keepsake and interrupted tracks retained."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 493498,
+          "findings": []
+        }
+      }
+    ],
+    "adventure--reunion--companions": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--companions-1-9adcb4ca347c.png",
+        "sha256": "9adcb4ca347c1e8f7fd2b276b9759fde72336d2ad054a6f9d377ef8aed82d9a0",
+        "promptSha256": "c866a57aa67a10e69cde09fede285997e97470ac189aa0d228b72856e14eae57",
+        "generationPromptSha256": "fb01ab8c71871a2123526809e7ff6a23722e71adc739238c534115490534c830",
+        "attempt": 1,
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 473782,
+          "findings": []
+        },
+        "review": {
+          "sourceSha256": "9adcb4ca347c1e8f7fd2b276b9759fde72336d2ad054a6f9d377ef8aed82d9a0",
+          "promptSha256": "c866a57aa67a10e69cde09fede285997e97470ac189aa0d228b72856e14eae57",
+          "reviewer": "Codex direct original visual inspection: v2-production-003",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": false,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "한 사람의 배낭·컵·벤치만 있어 동료 이야기가 드러나지 않는다. 여러 빈 여행 자리와 각기 다른 여행 물건을 함께 배치하고 실종된 소중한 사람의 유품을 구분해 남긴다. 사람은 그리지 않는다."
+          ],
+          "notes": "Single traveler kit and bench fail the companions choice; require several empty travel places."
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--companions-2-e9cc0474a625.png",
+        "sha256": "e9cc0474a625bfa0e5a374eff619350d2306f89a39593cde5dd4780182c0c06c",
+        "promptSha256": "c866a57aa67a10e69cde09fede285997e97470ac189aa0d228b72856e14eae57",
+        "generationPromptSha256": "5078ded8dd64775bfa70fc1fda5bd6e54bb50846b67bc59e124aad609eae5e4d",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "e9cc0474a625bfa0e5a374eff619350d2306f89a39593cde5dd4780182c0c06c",
+          "promptSha256": "c866a57aa67a10e69cde09fede285997e97470ac189aa0d228b72856e14eae57",
+          "reviewer": "Codex direct original visual inspection: v2-production-004",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Three distinct empty traveler places, separate backpacks and mugs, closed keepsake journal and plain locket; no people."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 511907,
+          "findings": []
+        }
+      }
+    ],
+    "adventure--unknown--explore": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--unknown--explore-1-3e70fbc532f2.png",
+        "sha256": "3e70fbc532f2fc907ab08eceb850b745f79d16d0645f91d4e775a317ce246347",
+        "promptSha256": "f008cb43413d5ffd98e4bed6c31931c54ecb9d76bed5cd7fd78e5df57fac49ff",
+        "generationPromptSha256": "c73ebc3a07528f0cdfda23290d01f1e58e2671bd12f81cba8aba236bc1b1167e",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "3e70fbc532f2fc907ab08eceb850b745f79d16d0645f91d4e775a317ce246347",
+          "promptSha256": "f008cb43413d5ffd98e4bed6c31931c54ecb9d76bed5cd7fd78e5df57fac49ff",
+          "reviewer": "Codex direct original visual inspection: v2-production-004",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Ship and new harbor preserved; hidden coastal arch and stairs lead toward unknown islands."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 553859,
+          "findings": []
+        }
+      }
+    ],
+    "adventure--unknown--battle": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--unknown--battle-1-3f2fb30d5fe4.png",
+        "sha256": "3f2fb30d5fe40caa7b6321fcf47e9f65e884d37c2dd4c03e607a1cf45860d231",
+        "promptSha256": "59d8f28114fc5595a1f04bdbb6699136a6815076187346b089568f425baf4960",
+        "generationPromptSha256": "573aa7feb337a7a59f3475406a471c8b671d8728ee152a1ead0ac278fe13eb97",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "3f2fb30d5fe40caa7b6321fcf47e9f65e884d37c2dd4c03e607a1cf45860d231",
+          "promptSha256": "59d8f28114fc5595a1f04bdbb6699136a6815076187346b089568f425baf4960",
+          "reviewer": "Codex direct original visual inspection: v2-production-004",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": false,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "배와 부두 화물만 있어 전략적 전투가 빠졌다. 배 또는 해안 전초기지의 빈 방어 구역을 중심으로 방패 거치대·바리케이드·엄폐물·여러 접근로를 분명히 보여준다. 배와 낯선 해안은 보존한다."
+          ],
+          "notes": "Ship and cargo dock shown, but strategic confrontation cue missing."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 456891,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--unknown--battle-2-347a86ca82a9.png",
+        "sha256": "347a86ca82a9f86331c3a1156ff36af80e7c72dbfc4054acb5d619b24fd89881",
+        "promptSha256": "59d8f28114fc5595a1f04bdbb6699136a6815076187346b089568f425baf4960",
+        "generationPromptSha256": "b4281a95acb2d03bce924c1bc79814d640e3a1811f8e4c1ec65384cc3bc46121",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "347a86ca82a9f86331c3a1156ff36af80e7c72dbfc4054acb5d619b24fd89881",
+          "promptSha256": "59d8f28114fc5595a1f04bdbb6699136a6815076187346b089568f425baf4960",
+          "reviewer": "Codex direct original visual inspection: v2-production-005",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Sailing ship and unknown coast now beside prominent shield rack, timber barricades and empty defensive approach lanes."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 427619,
+          "findings": []
+        }
+      }
+    ],
+    "adventure--unknown--companions": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--unknown--companions-1-b94d99800e2c.png",
+        "sha256": "b94d99800e2c441c75cc6c7d045eeab5bb6a3002799becc38bf06c91704fbda8",
+        "promptSha256": "434fcdb74244c295c1969a7a7be1019aaf7858f7ca1e52a83358ba7cd986d851",
+        "generationPromptSha256": "32d2241ea92fed35cd389373e3cf665e6c0e20ffe3b4acad34eeb6abc1f4715e",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "b94d99800e2c441c75cc6c7d045eeab5bb6a3002799becc38bf06c91704fbda8",
+          "promptSha256": "434fcdb74244c295c1969a7a7be1019aaf7858f7ca1e52a83358ba7cd986d851",
+          "reviewer": "Codex direct original visual inspection: v2-production-004",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Three traveler kits and bedrolls at sailing dock express companions; identity remains unset."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 344174,
+          "findings": []
+        }
+      }
+    ],
+    "adventure--mission--explore": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--mission--explore-1-a1a498e4a843.png",
+        "sha256": "a1a498e4a8438ec212b72ea462fc1ffc62b59a910883bdf38ab49b98821b5721",
+        "promptSha256": "cbd503f67bba35d60e3977e80a04b5226ecfe1b20928a4f2de823aa0b204abb4",
+        "generationPromptSha256": "ebf420aed53bbbe84119c53a41f559e0a4fd150f1f7cf155604fec6e6564939b",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "a1a498e4a8438ec212b72ea462fc1ffc62b59a910883bdf38ab49b98821b5721",
+          "promptSha256": "cbd503f67bba35d60e3977e80a04b5226ecfe1b20928a4f2de823aa0b204abb4",
+          "reviewer": "Codex direct original visual inspection: v2-production-004",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Plain errand parcel and supplies beside rural threshold, side steps and cliff trail emphasize exploration."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 573373,
+          "findings": []
+        }
+      }
+    ],
+    "adventure--mission--battle": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--mission--battle-1-50ecc937fb58.png",
+        "sha256": "50ecc937fb58510833e526da1d959cc9acd862a33249e9f279e644740573b44b",
+        "promptSha256": "78211c17ae809cb6e354c2be47130f1d99fa7adb1a7999ed666e8891080358b1",
+        "generationPromptSha256": "3e995d295f963da2ffaea25640d491fdeea6ad3f4de427051d40e0c5be93149e",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "50ecc937fb58510833e526da1d959cc9acd862a33249e9f279e644740573b44b",
+          "promptSha256": "78211c17ae809cb6e354c2be47130f1d99fa7adb1a7999ed666e8891080358b1",
+          "reviewer": "Codex direct original visual inspection: v2-production-004",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": false,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": false
+          },
+          "findings": [
+            "세 배낭과 시골 출발 구도가 동료 선택 장면과 반복되고 전투가 없다. 무지 소포를 들고 빈 방어 훈련 구역에 도착한 새 구도로 완전히 바꾼다. 전면에 방패 거치대·바리케이드·엄폐물과 접근로를 크게 보여준다. 선택된 전투를 표현하는 장비는 허용하되 인물·적은 금지한다."
+          ],
+          "notes": "Errand parcel and multiple kits shown, but no clear battle cover or strategy staging; companions scenery repeated."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 550927,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--mission--battle-2-619e65ac73bf.png",
+        "sha256": "619e65ac73bf03ac2afb49f7abcd3258c619a23096200afd6514d17b09a45e2e",
+        "promptSha256": "78211c17ae809cb6e354c2be47130f1d99fa7adb1a7999ed666e8891080358b1",
+        "generationPromptSha256": "5afa07a2bda7915195718c484402303d71de78ef45edd9778a7ed9856bd3b5a8",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "619e65ac73bf03ac2afb49f7abcd3258c619a23096200afd6514d17b09a45e2e",
+          "promptSha256": "78211c17ae809cb6e354c2be47130f1d99fa7adb1a7999ed666e8891080358b1",
+          "reviewer": "Codex direct original visual inspection: v2-production-005",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Sealed plain errand parcels retained at foreground empty defense yard; shield rack, barriers and targets make battle explicit."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 392696,
+          "findings": []
+        }
+      }
+    ],
+    "adventure--mission--companions": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--mission--companions-1-8f975596b7f3.png",
+        "sha256": "8f975596b7f3f25588f110321d6ad2d06beed6b83f4ad7bf52b328c265e20a01",
+        "promptSha256": "b51ceedc85a9764c0fa2b2492b92aca562927a6aa38d2029f3b44f884bd71162",
+        "generationPromptSha256": "ba1425e7d7c6702a376b77b2a058afbaa7e3e273d8a34637989d8ae13a2d520d",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "8f975596b7f3f25588f110321d6ad2d06beed6b83f4ad7bf52b328c265e20a01",
+          "promptSha256": "b51ceedc85a9764c0fa2b2492b92aca562927a6aa38d2029f3b44f884bd71162",
+          "reviewer": "Codex direct original visual inspection: v2-production-004",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Parcel retained with three separate travel kits and bedrolls; empty places without authored heroes."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 628091,
+          "findings": []
+        }
+      }
+    ],
+    "mystery--missing--inspect": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/mystery--missing--inspect-1-f402663a6310.png",
+        "sha256": "f402663a6310bfd3bf3adc6b843b073ea0d7c61626379052c22446bffb55ff0b",
+        "promptSha256": "df4a426bc5771d1442a3db201a0d4498f84b5e03a3f2293f7abe4f694bc27cd2",
+        "generationPromptSha256": "06016ffbd079d90cea2d840176c104afc9adaa4a612d5a500408c534eb86bb33",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "f402663a6310bfd3bf3adc6b843b073ea0d7c61626379052c22446bffb55ff0b",
+          "promptSha256": "df4a426bc5771d1442a3db201a0d4498f84b5e03a3f2293f7abe4f694bc27cd2",
+          "reviewer": "Codex direct original visual inspection: v2-production-004",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Abandoned belongings and open familiar door, prominent plain compass clue on foreground table; no writing or people."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 305483,
+          "findings": []
+        }
+      }
+    ],
+    "mystery--missing--testimony": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/mystery--missing--testimony-1-ab2f6189f61f.png",
+        "sha256": "ab2f6189f61f30bb4aaeeb0a6114a94ae561280ab5f64e29e222257d69cde16e",
+        "promptSha256": "608c8524264a50e69ca7ca9362d7359176e2cda410d34da892d148e24743268d",
+        "generationPromptSha256": "e4adb9c7c0ced1554ac26a3d6aeb120cc2f3f71b65a97004ca33b2aaf00e6618",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "ab2f6189f61f30bb4aaeeb0a6114a94ae561280ab5f64e29e222257d69cde16e",
+          "promptSha256": "608c8524264a50e69ca7ca9362d7359176e2cda410d34da892d148e24743268d",
+          "reviewer": "Codex direct original visual inspection: v2-production-005",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Two contrasting vacant belongings spaces, blue coat at table and green coat/bag in adjoining room; keys retained without faces or writing."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 270096,
+          "findings": []
+        }
+      }
+    ],
+    "mystery--missing--evidence": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/mystery--missing--evidence-1-7acca6816133.png",
+        "sha256": "7acca6816133fc36ff9c9b7d8e2c462ab9eb41a45b19557d388167c43c318267",
+        "promptSha256": "59ef849f0a668c7f26b29a508ae29b22659ecb878cc42341e653440f87ca493e",
+        "generationPromptSha256": "06b4c17c84b9e15edf0d8485df26e46337fd1e7f89702a65ca1e12a74a083ba2",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "7acca6816133fc36ff9c9b7d8e2c462ab9eb41a45b19557d388167c43c318267",
+          "promptSha256": "59ef849f0a668c7f26b29a508ae29b22659ecb878cc42341e653440f87ca493e",
+          "reviewer": "Codex direct original visual inspection: v2-production-005",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Abandoned keys, plain watch, dark phone and suitcase linked through familiar unfinished room routine; no written clues."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 236115,
+          "findings": []
+        }
+      }
+    ],
+    "mystery--record--inspect": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/mystery--record--inspect-1-bc0b3be3f3d0.png",
+        "sha256": "bc0b3be3f3d0c64a7cd3ae3b427fb764f696c16e3195ef0350608760c084c51b",
+        "promptSha256": "f26f9294413225beb66ef94244d6905ad468df40859d67212afceca14778c701",
+        "generationPromptSha256": "12d474558cedc29ac34068c667b7f424efa40b806e36afe8ff589d7f3b848770",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "bc0b3be3f3d0c64a7cd3ae3b427fb764f696c16e3195ef0350608760c084c51b",
+          "promptSha256": "f26f9294413225beb66ef94244d6905ad468df40859d67212afceca14778c701",
+          "reviewer": "Codex direct original visual inspection: v2-production-005",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Foreground artifact and archive shelf object/impression discrepancy, plain closed boxes; distinct close inspection view."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 286237,
+          "findings": []
+        }
+      }
+    ],
+    "mystery--record--testimony": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/mystery--record--testimony-1-bd568c4130b6.png",
+        "sha256": "bd568c4130b6190115902ca9101301b8b5d9fb3c859027ecff9a9a2690b2650e",
+        "promptSha256": "ccdcbfb60b65224053730c148d89f5fb33a06e323d61d63a31327e0c43c688a3",
+        "generationPromptSha256": "7c501ec2c92f133cb1de0e75f91c55e985d0c27da6ebb32c626b16d714c3570a",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "bd568c4130b6190115902ca9101301b8b5d9fb3c859027ecff9a9a2690b2650e",
+          "promptSha256": "ccdcbfb60b65224053730c148d89f5fb33a06e323d61d63a31327e0c43c688a3",
+          "reviewer": "Codex direct original visual inspection: v2-production-005",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Foreground vase and separate shelf vase/impression present contrasting physical versions in vacant archive spaces."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 259132,
+          "findings": []
+        }
+      }
+    ],
+    "mystery--record--evidence": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/mystery--record--evidence-1-f88b510d206c.png",
+        "sha256": "f88b510d206c457f6597b7ea0b092d1a6ca2f59a08a2dd1ca41d9bde1e54f0c4",
+        "promptSha256": "60b99018459d294a5fb4286bf224a9513f5ec33438e6fa5077cb1d8de04b43e8",
+        "generationPromptSha256": "784bb88e20bae8591034b283d66f73ab3bd8ba84a952051c473b26f9376b543d",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "f88b510d206c457f6597b7ea0b092d1a6ca2f59a08a2dd1ca41d9bde1e54f0c4",
+          "promptSha256": "60b99018459d294a5fb4286bf224a9513f5ec33438e6fa5077cb1d8de04b43e8",
+          "reviewer": "Codex direct original visual inspection: v2-production-005",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Key, locked chest, vase and contradictory shelf impression form tangible connected clues without diagrams."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 277802,
+          "findings": []
+        }
+      }
+    ],
+    "mystery--place--inspect": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/mystery--place--inspect-1-eab3084efa6d.png",
+        "sha256": "eab3084efa6db6d5d7fa33397825cd43ca601e4f2c56c5dfc43d979c0699a8a4",
+        "promptSha256": "e265073c4664fe67d6903496a1d4dd7fdda00d3c6976cd4263df29600c2e4eb1",
+        "generationPromptSha256": "6b9cb552d92121225616749212efdab12e0b4c4a9113af13a8173d77faedbc74",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "eab3084efa6db6d5d7fa33397825cd43ca601e4f2c56c5dfc43d979c0699a8a4",
+          "promptSha256": "e265073c4664fe67d6903496a1d4dd7fdda00d3c6976cd4263df29600c2e4eb1",
+          "reviewer": "Codex direct original visual inspection: v2-production-005",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Prominent key near hidden descending stairs with plain closed books; focal clue and doorway composed freshly."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 276352,
+          "findings": []
+        }
+      }
+    ],
+    "mystery--place--testimony": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/mystery--place--testimony-1-db4332a3995d.png",
+        "sha256": "db4332a3995df2d015430028247984c62b7684618e6f4fdace75dbbe47c750a7",
+        "promptSha256": "695f3969cf208d18707140dee38034bfdc840edcfed24d0c10278db6821054ad",
+        "generationPromptSha256": "230765f6a97be0f3abb20bcad255e96268cc9a6d3575708d0f6d14e9ce91c2ed",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "db4332a3995df2d015430028247984c62b7684618e6f4fdace75dbbe47c750a7",
+          "promptSha256": "695f3969cf208d18707140dee38034bfdc840edcfed24d0c10278db6821054ad",
+          "reviewer": "Codex direct original visual inspection: v2-production-005",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": false,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": false
+          },
+          "findings": [
+            "책장 비밀 통로와 열쇠만 반복되어 증언을 대조하는 선택이 드러나지 않는다. 마주 보는 빈 의자 두 개 사이의 가까운 테이블을 주 구도로 삼고, 같은 모양의 상자 두 개 중 하나는 열리고 하나는 닫힌 상태로 대조한다. 두 컵도 각각의 빈 자리 앞에 놓는다. 비밀 책장 통로와 열쇠는 배경·테이블에 보존한다. 기존 책장 파노라마 구도는 반복하지 않는다."
+          ],
+          "notes": "Hidden bookcase doorway and key repeated; contrasting accounts have no distinct tangible cue."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 241152,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/mystery--place--testimony-2-6573c830ea6e.png",
+        "sha256": "6573c830ea6edf2ccf1b526cf58edc4fdae7e3be692ac97e35db6a2269ad4ad1",
+        "promptSha256": "695f3969cf208d18707140dee38034bfdc840edcfed24d0c10278db6821054ad",
+        "generationPromptSha256": "c6a318dc529e1ffeee747f5e6b1e5430a834f1b280ade944284f8fb89f1c8539",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "6573c830ea6edf2ccf1b526cf58edc4fdae7e3be692ac97e35db6a2269ad4ad1",
+          "promptSha256": "695f3969cf208d18707140dee38034bfdc840edcfed24d0c10278db6821054ad",
+          "reviewer": "Codex direct original visual inspection: v2-production-006",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Facing empty chairs, two cups, open versus closed matching boxes and key now create contrasting account props; descending secret doorway retained."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 233241,
+          "findings": []
+        }
+      }
+    ],
+    "mystery--place--evidence": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/mystery--place--evidence-1-cf550dfc429f.png",
+        "sha256": "cf550dfc429fbca789277de2c03fa9dfe66d2ce8c434235c9e2c2c977328e059",
+        "promptSha256": "3eafcd6275d3de29ed1d50da0f74d80b7181b33d53d6a82b9219be0234f589ab",
+        "generationPromptSha256": "e8f8a2448ce277ecabe0663a85afce6a7cd9321c1f4b0f806184f9a7f3ef5ace",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "cf550dfc429fbca789277de2c03fa9dfe66d2ce8c434235c9e2c2c977328e059",
+          "promptSha256": "3eafcd6275d3de29ed1d50da0f74d80b7181b33d53d6a82b9219be0234f589ab",
+          "reviewer": "Codex direct original visual inspection: v2-production-006",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": false,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": false
+          },
+          "findings": [
+            "열쇠와 책장 문만 반복되어 단서 연결의 최신 선택이 드러나지 않는다. 낮은 바닥 시점으로 완전히 바꾸고, 떨어진 황동 문판·그 판이 빠진 잠금장치·그 사이 먼지 속 이동 흔적을 함께 보이게 한다. 기존 열쇠와 비밀 책장 통로는 유지한다. 연결은 실제 물건과 흔적으로 보여주고 도표·화살표·글자는 쓰지 않는다."
+          ],
+          "notes": "Key and bookcase doorway repeated without multiple connected physical clues; latest evidence connection lacks distinct cue."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 196187,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/mystery--place--evidence-2-7d4384744aa3.png",
+        "sha256": "7d4384744aa39b606976ff81340cc248a54def1ed4446edd4612bfa155ce7562",
+        "promptSha256": "3eafcd6275d3de29ed1d50da0f74d80b7181b33d53d6a82b9219be0234f589ab",
+        "generationPromptSha256": "befcecae816e042344d980103fc4fdf3cce008d00eee1f2738329b763fd4da89",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "7d4384744aa39b606976ff81340cc248a54def1ed4446edd4612bfa155ce7562",
+          "promptSha256": "3eafcd6275d3de29ed1d50da0f74d80b7181b33d53d6a82b9219be0234f589ab",
+          "reviewer": "Codex direct original visual inspection: v2-production-007",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "New low floor viewpoint, dropped brass faceplate, key and dust footprints toward missing latch and descending bookcase stair create connected physical evidence."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 222061,
+          "findings": []
+        }
+      }
+    ],
+    "romance--campus--talk--warm": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus--talk--warm-1-f5b051422b9c.png",
+        "sha256": "f5b051422b9cca4fb02f37baba7f88e47ae64576271441af9d4439609c4b1114",
+        "promptSha256": "9e59891c2a1e0099c4b73dd8fe80bab302732d074f1a4eaa4689dfb1f00d1f13",
+        "generationPromptSha256": "5848b78822fcbab2badedd7ce35ecf34c6f6561b8c485868181d7f9c30f7f438",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "f5b051422b9cca4fb02f37baba7f88e47ae64576271441af9d4439609c4b1114",
+          "promptSha256": "9e59891c2a1e0099c4b73dd8fe80bab302732d074f1a4eaa4689dfb1f00d1f13",
+          "reviewer": "Codex direct original visual inspection: v2-production-006",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Shared table, paired closed books, facing empty seats, bright tended blossoms and mug express warm campus conversation."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 637003,
+          "findings": []
+        }
+      }
+    ],
+    "romance--campus--talk--secret": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus--talk--secret-1-cc5137d7173b.png",
+        "sha256": "cc5137d7173bf113c50fcbbde7c841defe623685dd47841a4567d2902a66d956",
+        "promptSha256": "0d63ce219d368db9ebcc8c00ff2bff4dc74e4543db2e6924532d2f48516b849a",
+        "generationPromptSha256": "1ebbcc5de9ddab9d8a01c954892ad3337e18e1df9e64395c8fa836ae7d1da6b5",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "cc5137d7173bf113c50fcbbde7c841defe623685dd47841a4567d2902a66d956",
+          "promptSha256": "0d63ce219d368db9ebcc8c00ff2bff4dc74e4543db2e6924532d2f48516b849a",
+          "reviewer": "Codex direct original visual inspection: v2-production-006",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Facing vacant seats, separate closed books and umbrellas under enclosed arch with sharp stormy evening light retain private tense dialogue."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 385664,
+          "findings": []
+        }
+      }
+    ],
+    "romance--campus--talk--bittersweet": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus--talk--bittersweet-1-7d5ed2ef4a89.png",
+        "sha256": "7d5ed2ef4a894beda73a62c02421f9e1f38efc64a6f88ea8a09a8b3536300c53",
+        "promptSha256": "467bdadf3ba6e2359271ffd464f90ed444b53a7520a22cbeba7f9793f736a015",
+        "generationPromptSha256": "453e7cf0e0abd3578783619ffe7c4572eb602ecc03e6da668c7edd6b03323ad4",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "7d5ed2ef4a894beda73a62c02421f9e1f38efc64a6f88ea8a09a8b3536300c53",
+          "promptSha256": "467bdadf3ba6e2359271ffd464f90ed444b53a7520a22cbeba7f9793f736a015",
+          "reviewer": "Codex direct original visual inspection: v2-production-006",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": false,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": false
+          },
+          "findings": [
+            "따뜻함 선택과 같은 벚꽃·노을·테이블 구도로 아련함 차이가 약하다. 늦가을 비 갠 차분한 대학 복도 가까운 시점으로 바꾸고, 마주 보는 빈 자리 두 개와 서로 떨어진 닫힌 책 두 권·낡은 무지 유품·떨어진 갈색 잎을 보인다. 차가운 단계 명암으로 그리며 블러는 금지한다. 봄 날씨는 사용자 선택이 아니므로 이 분위기에 맞게 바꿔도 된다."
+          ],
+          "notes": "Same blossoming campus table and sunset as warm variant; little visual separation for bittersweet mood."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 940,
+          "colors": 514148,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus--talk--bittersweet-2-8dd8d759e98c.png",
+        "sha256": "8dd8d759e98c56862a5b20e4931c53dbb7f145bdff65e6382eb3d7767fc267d9",
+        "promptSha256": "467bdadf3ba6e2359271ffd464f90ed444b53a7520a22cbeba7f9793f736a015",
+        "generationPromptSha256": "4449eb57a500b125b4b59890e158217d61bafb763fdd30238edd0ab263a60be1",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "8dd8d759e98c56862a5b20e4931c53dbb7f145bdff65e6382eb3d7767fc267d9",
+          "promptSha256": "467bdadf3ba6e2359271ffd464f90ed444b53a7520a22cbeba7f9793f736a015",
+          "reviewer": "Codex direct original visual inspection: v2-production-007",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Facing vacant seats with separated books in rain-cleared autumn university arcade; brown leaves and cool stepped light replace cheerful spring sunset."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 413386,
+          "findings": []
+        }
+      }
+    ],
+    "romance--campus--memory--warm": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus--memory--warm-1-2bf91c7969a8.png",
+        "sha256": "2bf91c7969a87bb25e85093ad445616ea0d12f229d8f73bded51d89e1ae2a3c2",
+        "promptSha256": "a89523561066e25e534f60d463029a4cb65a5fdacf4c270522d833497633d4fc",
+        "generationPromptSha256": "dcc59272b3ddd93d7dcf619f9356755a67e7f3fd3dd8c32eecc24c5b09034992",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "2bf91c7969a87bb25e85093ad445616ea0d12f229d8f73bded51d89e1ae2a3c2",
+          "promptSha256": "a89523561066e25e534f60d463029a4cb65a5fdacf4c270522d833497633d4fc",
+          "reviewer": "Codex direct original visual inspection: v2-production-006",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Close paired keepsake books on sunny flowering campus stone ledge, bright welcoming quad and backpack; no identity or writing."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 594822,
+          "findings": []
+        }
+      }
+    ],
+    "romance--campus--memory--secret": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus--memory--secret-1-856454617dc1.png",
+        "sha256": "856454617dc12ad9a59bed1cd506e5b60ed6803dcfc65bf788cc33a9efd0bd30",
+        "promptSha256": "ba6525168549f450d7a339a303cfd67b1333ae183d3729205ec812b54dc7b0f2",
+        "generationPromptSha256": "95c66e019544c8ea6327886a91c6e4871e299b981007e99ecc80ab39538c4ee3",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "856454617dc12ad9a59bed1cd506e5b60ed6803dcfc65bf788cc33a9efd0bd30",
+          "promptSha256": "ba6525168549f450d7a339a303cfd67b1333ae183d3729205ec812b54dc7b0f2",
+          "reviewer": "Codex direct original visual inspection: v2-production-006",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Paired plain memory books at shadowed enclosed university stair corner, stormy dim palette and sharp shapes."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 398157,
+          "findings": []
+        }
+      }
+    ],
+    "romance--campus--memory--bittersweet": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus--memory--bittersweet-1-099f547a87a7.png",
+        "sha256": "099f547a87a7dcfea63d5d012cfb80693fc4143fa9611d01f96d7de07190900c",
+        "promptSha256": "8763ad8122e69d10c996f9699394467010ad0a0d9d42b6471f0932e7a92b04a6",
+        "generationPromptSha256": "567239da67d464f228969eba593523f617cfe68cb18f914abd4a84242ed414f0",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "099f547a87a7dcfea63d5d012cfb80693fc4143fa9611d01f96d7de07190900c",
+          "promptSha256": "8763ad8122e69d10c996f9699394467010ad0a0d9d42b6471f0932e7a92b04a6",
+          "reviewer": "Codex direct original visual inspection: v2-production-006",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Paired plain books left on vacant worn bench in quiet sunset quad evoke revisited absence; fresh bench-level framing."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 489979,
+          "findings": []
+        }
+      }
+    ],
+    "romance--campus--choice--warm": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus--choice--warm-1-17cd541fc712.png",
+        "sha256": "17cd541fc712297a6c2de4c7fd77512e59ffbbcd43cbad5e3795e70eecf7ff4f",
+        "promptSha256": "bca2c0974e0078e1a6b7ee008ecf6b3a1311a13ac3b7803ad7d343e3a2754e24",
+        "generationPromptSha256": "dc679c4d14ce3c5b00452ae8bc35d72197acfc7feb3f758a317a7f6fec4d8a2e",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "17cd541fc712297a6c2de4c7fd77512e59ffbbcd43cbad5e3795e70eecf7ff4f",
+          "promptSha256": "bca2c0974e0078e1a6b7ee008ecf6b3a1311a13ac3b7803ad7d343e3a2754e24",
+          "reviewer": "Codex direct original visual inspection: v2-production-006",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Paired books at university divided threshold, closed near door versus bright courtyard approach; welcoming blossoms and warm stepped light."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 646288,
+          "findings": []
+        }
+      }
+    ],
+    "romance--campus--choice--secret": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus--choice--secret-1-4a9d54369c20.png",
+        "sha256": "4a9d54369c205da3b74002b6b7be60bce4953f19fa362394e7fe762525a51b18",
+        "promptSha256": "1c685ecc256c1a4107951906f6df07ccdf5c3795e8672008100111116870095e",
+        "generationPromptSha256": "c81cb157152f3418f01b8b2c57efcb16a7054ac9f36e8b815df7386469319a38",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "4a9d54369c205da3b74002b6b7be60bce4953f19fa362394e7fe762525a51b18",
+          "promptSha256": "1c685ecc256c1a4107951906f6df07ccdf5c3795e8672008100111116870095e",
+          "reviewer": "Codex direct original visual inspection: v2-production-006",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Strongly separated bright stair doorway and dark lateral campus approach, closed books and storm-lit privacy; no human statues or writing."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 435929,
+          "findings": []
+        }
+      }
+    ],
+    "romance--campus--choice--bittersweet": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--campus--choice--bittersweet-1-55d302f9664e.png",
+        "sha256": "55d302f9664e91f8b76f281c879c5f3e8dfd8ce07bb0753d4f5e79f9e11c8b9b",
+        "promptSha256": "78e0c3efc3532253e259bce1a2d1a72fc4fce7fcd480b33aa9572d2bc6799f6c",
+        "generationPromptSha256": "ba33d7d20a2a039148d54bc90f23b6a44c41c8dc720580dd9ddac83e98f4deeb",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "55d302f9664e91f8b76f281c879c5f3e8dfd8ce07bb0753d4f5e79f9e11c8b9b",
+          "promptSha256": "78e0c3efc3532253e259bce1a2d1a72fc4fce7fcd480b33aa9572d2bc6799f6c",
+          "reviewer": "Codex direct original visual inspection: v2-production-007",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Separated plain books at threshold with alternative stair/courtyard approaches, damp quiet muted campus and falling petals; no identity fixed."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 422165,
+          "findings": []
+        }
+      }
+    ],
+    "romance--palace--talk--warm": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--talk--warm-1-db5674d10674.png",
+        "sha256": "db5674d1067489d16a0e3d4bd479848c3d446f4111904fe1bb59c7cc12c65f5d",
+        "promptSha256": "6a5b4c38f9b3071dba3e40887040152019110035e6b9fdec23230854f383dadc",
+        "generationPromptSha256": "74ec2011f3e399644bd71668a4f1d546d4ec9420d4cc169a588f575c53cb7f45",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "db5674d1067489d16a0e3d4bd479848c3d446f4111904fe1bb59c7cc12c65f5d",
+          "promptSha256": "6a5b4c38f9b3071dba3e40887040152019110035e6b9fdec23230854f383dadc",
+          "reviewer": "Codex direct original visual inspection: v2-production-007",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Facing vacant chairs, masks and shared candle table with fresh roses and welcoming ballroom lights."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 334752,
+          "findings": []
+        }
+      }
+    ],
+    "romance--palace--talk--secret": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--talk--secret-1-787532280e04.png",
+        "sha256": "787532280e041724ff52dc16bec48fc2e5e270b42cdc2554ac262f92542e66d2",
+        "promptSha256": "13f4915f7e8a5c101135530f97fdf22498af68d774bcee321abde15f8190226e",
+        "generationPromptSha256": "90c8ac520b320ba787d81745b12afe22a5deaa865d48750d3e3def715da98df5",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "787532280e041724ff52dc16bec48fc2e5e270b42cdc2554ac262f92542e66d2",
+          "promptSha256": "13f4915f7e8a5c101135530f97fdf22498af68d774bcee321abde15f8190226e",
+          "reviewer": "Codex direct original visual inspection: v2-production-007",
+          "checks": {
+            "pixelArt": false,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "左前景烛台和白玫瑰出现景深虚化。整幅画包括最前景都必须同样清晰的硬方形像素，不允许任何散焦、镜头景深、光晕或柔化。保留无人相对双椅、双面具与私密昏暗舞厅。"
+          ],
+          "notes": "Enclosed private ballroom dialogue table with two vacant facing chairs, but foreground candle and white roses are deliberately out of focus."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 291333,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--talk--secret-2-a25665c80da7.png",
+        "sha256": "a25665c80da7f0e714344701bd3c54118a507060a6907b777cfe00d9d3341608",
+        "promptSha256": "13f4915f7e8a5c101135530f97fdf22498af68d774bcee321abde15f8190226e",
+        "generationPromptSha256": "eb51cb6088b67479bf30591f831e28a7e8441bdad51f6ba50cb71258d6072945",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "a25665c80da7f0e714344701bd3c54118a507060a6907b777cfe00d9d3341608",
+          "promptSha256": "13f4915f7e8a5c101135530f97fdf22498af68d774bcee321abde15f8190226e",
+          "reviewer": "Codex direct original visual inspection: v2-production-008",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Foreground roses and candle now have sharp square pixel clusters. Two facing empty chairs, shared masks and partly opened private palace doorway preserve the dialogue and secret setting."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 285659,
+          "findings": []
+        }
+      }
+    ],
+    "romance--palace--talk--bittersweet": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--talk--bittersweet-1-562cf8fa9234.png",
+        "sha256": "562cf8fa9234cf6b8e04edb4b035e87701f4b7e00b0ff269e187381f596dd8fb",
+        "promptSha256": "7f1d06996ff2162ea52589717d7a374a1031c636e8316738be32643fd793f11a",
+        "generationPromptSha256": "87a239c8939040855f0cc57129aa7756491421295ae2344212799268d6eaaeb4",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "562cf8fa9234cf6b8e04edb4b035e87701f4b7e00b0ff269e187381f596dd8fb",
+          "promptSha256": "7f1d06996ff2162ea52589717d7a374a1031c636e8316738be32643fd793f11a",
+          "reviewer": "Codex direct original visual inspection: v2-production-007",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Two empty facing seats and masks, strong night rain through windows and scattered spent petals, fresh staircase framing."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 327567,
+          "findings": []
+        }
+      }
+    ],
+    "romance--palace--memory--warm": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--memory--warm-1-58794cbd5fe9.png",
+        "sha256": "58794cbd5fe962066d8f47bb8b31fea9e38941fa05693a624f0683fea2c19b63",
+        "promptSha256": "d1f53eb517f629cf17b6f9a6b9d6d174686d50c1bf2dffed9b689d4b69240c54",
+        "generationPromptSha256": "06af32d25365cacb3ec0b00abbe7a36eb6d3de0434031191cbfc200afc5015ad",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "58794cbd5fe962066d8f47bb8b31fea9e38941fa05693a624f0683fea2c19b63",
+          "promptSha256": "d1f53eb517f629cf17b6f9a6b9d6d174686d50c1bf2dffed9b689d4b69240c54",
+          "reviewer": "Codex direct original visual inspection: v2-production-007",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Closed keepsake chest with two masks amid bright welcoming banquet tables and fresh flowers; clear clustered pixel edges."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 369438,
+          "findings": []
+        }
+      }
+    ],
+    "romance--palace--memory--secret": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--memory--secret-1-b880ed09f32d.png",
+        "sha256": "b880ed09f32d2b1512dfbbe76924f4b55f7f40c51bb440572428ae7cd90e63f9",
+        "promptSha256": "a4290ac6a564b23adb928398d1410af08c0897b4ebbbe5b4ff91d03db9bc23f4",
+        "generationPromptSha256": "f9b835790b8f011c523f869b16200d45c14a7e819420ab14a31717e39889c70e",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "b880ed09f32d2b1512dfbbe76924f4b55f7f40c51bb440572428ae7cd90e63f9",
+          "promptSha256": "a4290ac6a564b23adb928398d1410af08c0897b4ebbbe5b4ff91d03db9bc23f4",
+          "reviewer": "Codex direct original visual inspection: v2-production-007",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Locked plain memory chest and masks at enclosed shadowed corner, empty dim moonlit hall and discrete shade bands."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 314290,
+          "findings": []
+        }
+      }
+    ],
+    "romance--palace--memory--bittersweet": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--memory--bittersweet-1-d1fedb6a357d.png",
+        "sha256": "d1fedb6a357de19eaffd05cbe5bc8db438c93062d0d2e3735940170ec73d3a29",
+        "promptSha256": "9c32dfbb1970bb7a3640bc4803e30b5e9780ebe6fe78bc5a4d82de4f9999f007",
+        "generationPromptSha256": "ecfa270633b02e7dab96ff85de493f3496e8d5829f473e58dd222be6acd52b34",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "d1fedb6a357de19eaffd05cbe5bc8db438c93062d0d2e3735940170ec73d3a29",
+          "promptSha256": "9c32dfbb1970bb7a3640bc4803e30b5e9780ebe6fe78bc5a4d82de4f9999f007",
+          "reviewer": "Codex direct original visual inspection: v2-production-007",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Worn keepsake chest, separated masks, spent rose petals across vacant large floor and moonlit stair hall convey revisited absence."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 420515,
+          "findings": []
+        }
+      }
+    ],
+    "romance--palace--choice--warm": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--choice--warm-1-28f3c5e92f34.png",
+        "sha256": "28f3c5e92f3455556a2def769de172fee2bcea630fef9aecc89ec3713870e808",
+        "promptSha256": "9c281d0a3f1852c7db3b9b0914c8de556d44ed18f2985b253e627246fa368313",
+        "generationPromptSha256": "6aa77002f694b436fc4a42e47fb3629f4f2eaf7f24fd5df558760ed27bc2e5e0",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "28f3c5e92f3455556a2def769de172fee2bcea630fef9aecc89ec3713870e808",
+          "promptSha256": "9c281d0a3f1852c7db3b9b0914c8de556d44ed18f2985b253e627246fa368313",
+          "reviewer": "Codex direct original visual inspection: v2-production-007",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "따뜻한 무도회만 남고 갈등 속 선택이 사라졌다. 크게 갈라지는 두 문을 왼쪽·중앙에 분명히 배치하고, 서로 상충하는 무지 봉인 편지와 잠긴 유품 상자를 전경에 놓는다. 두 가면과 따뜻한 배려 분위기는 유지한다. 이 선택의 물건과 분기 공간을 조명·꽃 장식으로 덮어버리지 않는다."
+          ],
+          "notes": "Warm decorated masks table shown, but opposing trust choices or divided threshold are not clearly retained."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 325730,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--choice--warm-2-2b6c9f09d593.png",
+        "sha256": "2b6c9f09d5939d4c72d25dbdfb8d2b522e9217e65fb4823207a92872894a1e91",
+        "promptSha256": "9c281d0a3f1852c7db3b9b0914c8de556d44ed18f2985b253e627246fa368313",
+        "generationPromptSha256": "eb9b7428ae4ef7c040053a9b45018e3abac5b96973d90e8a15cb69b4bd185142",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "2b6c9f09d5939d4c72d25dbdfb8d2b522e9217e65fb4823207a92872894a1e91",
+          "promptSha256": "9c281d0a3f1852c7db3b9b0914c8de556d44ed18f2985b253e627246fa368313",
+          "reviewer": "Codex direct original visual inspection: v2-production-008",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Two opposed banquet and blue balcony doorways, closed personal box, sealed letter and masks keep the consequential trust choice; fresh flowers and welcoming light convey warmth."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 449085,
+          "findings": []
+        }
+      }
+    ],
+    "romance--palace--choice--secret": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--choice--secret-1-f286c0c63f45.png",
+        "sha256": "f286c0c63f450471a7e1f7ace46926ac8963e880d691fbfe30836b83e50ec4e5",
+        "promptSha256": "64d087c79305fc7825990d5dba7556540895fd6165bd901f7c8aad2007ecab0a",
+        "generationPromptSha256": "2b96e5fe09cf546f397cb06dc36fb049cfc42162683e576600d4fcc175c31947",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "f286c0c63f450471a7e1f7ace46926ac8963e880d691fbfe30836b83e50ec4e5",
+          "promptSha256": "64d087c79305fc7825990d5dba7556540895fd6165bd901f7c8aad2007ecab0a",
+          "reviewer": "Codex direct original visual inspection: v2-production-008",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Opposed light ballroom and dark corridor exits with two masks and personal chest retain conflict and palace; deep enclosed stepped shadows make secrecy visible."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 336011,
+          "findings": []
+        }
+      }
+    ],
+    "romance--palace--choice--bittersweet": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--palace--choice--bittersweet-1-8dd8c1a5eea4.png",
+        "sha256": "8dd8c1a5eea45747fffce9cb3b915fd875e867c40e9e89e580299c80f36c848c",
+        "promptSha256": "4c1fb492fa87d0c98996804a9e1d1827ea6d6f85ecd677b70dbbae5e9ac8e7f7",
+        "generationPromptSha256": "6642232be7b65a5a970df51cfa9ae901fc784c33669b75323e671690987464a6",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "8dd8c1a5eea45747fffce9cb3b915fd875e867c40e9e89e580299c80f36c848c",
+          "promptSha256": "4c1fb492fa87d0c98996804a9e1d1827ea6d6f85ecd677b70dbbae5e9ac8e7f7",
+          "reviewer": "Codex direct original visual inspection: v2-production-008",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Opposed palace routes, masks and keepsake chest preserve conflict; spent rose petals and quiet blue moonlight convey the lingering mood in a new frontal composition."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 314868,
+          "findings": []
+        }
+      }
+    ],
+    "romance--town--talk--warm": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--warm-1-104ae7654009.png",
+        "sha256": "104ae765400937aedc11d4421bfbbf3ecbf81d6bff8d7169d16b98967dc9d224",
+        "promptSha256": "9512862043da0790172e007acef39614e544ac1ac518aecd95c2431f9eb370b2",
+        "generationPromptSha256": "2c7d6dbea63b2eaac49fbf408e70220891b3e6dc322452dfe89a7a1cbeb6c971",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "104ae765400937aedc11d4421bfbbf3ecbf81d6bff8d7169d16b98967dc9d224",
+          "promptSha256": "9512862043da0790172e007acef39614e544ac1ac518aecd95c2431f9eb370b2",
+          "reviewer": "Codex direct original visual inspection: v2-production-008",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Two neighboring ordinary house gates and facing empty chairs around a shared table convey neighbor dialogue with welcoming flowers and warm town sunset."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 529833,
+          "findings": []
+        }
+      }
+    ],
+    "romance--town--talk--secret": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--secret-1-b9fe66a4ee4a.png",
+        "sha256": "b9fe66a4ee4aa6e43a636c7ce25da07def909ecc06b7606dd1f03c0b7e51f3b0",
+        "promptSha256": "9eb92a26fe614419facb6d1252e547ad750af526be918c3768b566e7ad172d50",
+        "generationPromptSha256": "b0fe686ae6efe4d137f6a97213316284a2b6b81850ce7d9ffa6cc978de350eea",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "b9fe66a4ee4aa6e43a636c7ce25da07def909ecc06b7606dd1f03c0b7e51f3b0",
+          "promptSha256": "9eb92a26fe614419facb6d1252e547ad750af526be918c3768b566e7ad172d50",
+          "reviewer": "Codex direct original visual inspection: v2-production-008",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Two neighboring gates enclose a dim moonlit conversation nook with two empty stools and shared table. Discrete shadows and sharp foliage preserve pixel craft; no identities invented."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 307702,
+          "findings": []
+        }
+      }
+    ],
+    "romance--town--talk--bittersweet": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--talk--bittersweet-1-25c0d2bd060a.png",
+        "sha256": "25c0d2bd060a00b00af61a27a242229aaadae8f65d7878089d4510b767064dfb",
+        "promptSha256": "e925797049be4f9665829b1891e3ee5312fbb4495077f098b24edc0a79fc83c7",
+        "generationPromptSha256": "c30a22d97ea6a546a408d07186c31c36d6eb41f78c5b257e91b353b8ef1ee3c5",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "25c0d2bd060a00b00af61a27a242229aaadae8f65d7878089d4510b767064dfb",
+          "promptSha256": "e925797049be4f9665829b1891e3ee5312fbb4495077f098b24edc0a79fc83c7",
+          "reviewer": "Codex direct original visual inspection: v2-production-008",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": false,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Keep ordinary neighboring town gates and two facing empty dialogue seats. Replace cheerful flowering spring sunset and heart cups with a rain-cleared autumn evening, fallen brown leaves, two separated plain cups and a quiet wet empty walkway. Use a different camera angle and sharp discrete square pixel shade steps throughout; no blur, people or writing."
+          ],
+          "notes": "Facing chairs, cheerful blossoms, heart-shaped cup ornament and bright saturated sunset convey warmth more than bittersweet separation; this is too close in mood to the warm town dialogue image."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 460831,
+          "findings": []
+        }
+      }
+    ],
+    "romance--town--memory--warm": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--memory--warm-1-b6f71020f01f.png",
+        "sha256": "b6f71020f01f34a1af47fea8f9e2723e21af359524193118076d6b112a324f5e",
+        "promptSha256": "9fcd577c6a568a80517a53e12138dc01297b82667f866afa84a53075b39d03f3",
+        "generationPromptSha256": "fd0e2dff59ea515d702fc76171979b11d32f18e7d6c661fa8b2534521ffe7917",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "b6f71020f01f34a1af47fea8f9e2723e21af359524193118076d6b112a324f5e",
+          "promptSha256": "9fcd577c6a568a80517a53e12138dc01297b82667f866afa84a53075b39d03f3",
+          "reviewer": "Codex direct original visual inspection: v2-production-008",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Closed personal keepsake box prominent on shared town bench, ordinary neighboring gates, two empty stools and warm inviting light convey memory and warmth without selecting a hero."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 553196,
+          "findings": []
+        }
+      }
+    ],
+    "romance--town--memory--secret": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--memory--secret-1-407a41e058db.png",
+        "sha256": "407a41e058dbdae47552c29c45401eb0473fb6cab111b6fc4d7c5ddfb9a19ca6",
+        "promptSha256": "239ae833538c70006e60d47feb0f684f033eecf1a0c49cb2a96427259821a5a1",
+        "generationPromptSha256": "6167a1a7b970129ba273fc931300e9004a3b53a78b3acd573f16f4ccfc56a3dd",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "407a41e058dbdae47552c29c45401eb0473fb6cab111b6fc4d7c5ddfb9a19ca6",
+          "promptSha256": "239ae833538c70006e60d47feb0f684f033eecf1a0c49cb2a96427259821a5a1",
+          "reviewer": "Codex direct original visual inspection: v2-production-008",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Closed private box at partly opened neighboring door, walled dusk courtyard and vacant stone seats keep personal memory and secrecy. All visible edges remain hard pixel clusters."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 321874,
+          "findings": []
+        }
+      }
+    ],
+    "romance--town--memory--bittersweet": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/romance--town--memory--bittersweet-1-8fbe180590e6.png",
+        "sha256": "8fbe180590e66871f26bc13958b41fd6f7c8b00644ad001e0f9bda2c564958f4",
+        "promptSha256": "f6b32f87f8e2f7ed57b69d0ffc8149ab555a66a525c63e6f7cfaabf729f59d41",
+        "generationPromptSha256": "34f679d5eb2f2b2584d953e491a914055883f7ac69330094d48b9bdd50c61075",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "8fbe180590e66871f26bc13958b41fd6f7c8b00644ad001e0f9bda2c564958f4",
+          "promptSha256": "f6b32f87f8e2f7ed57b69d0ffc8149ab555a66a525c63e6f7cfaabf729f59d41",
+          "reviewer": "Codex direct original visual inspection: v2-production-008",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Closed keepsake box with falling spent petals at vacated neighboring threshold and long descending empty walkway convey personal memory and lingering departure; new left threshold composition."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 412741,
+          "findings": []
         }
       }
     ]

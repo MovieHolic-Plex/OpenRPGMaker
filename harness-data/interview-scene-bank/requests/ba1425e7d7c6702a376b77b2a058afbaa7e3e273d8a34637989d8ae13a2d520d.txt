@@ -1,0 +1,17 @@
+Use case: stylized-concept. Asset type: ONE game-maker interview background, not gameplay or a spritesheet.
+OUTPUT: ONE 16:9 landscape scene. File dimensions are unrestricted: do NOT force 320x180 or a physical file color count. Construct the art as magnified 1990s 16-bit RPG pixel scenery, never a realistic painting with pixel texture.
+STYLE LOCK: coarse visibly square pixel clusters at normal viewing size, deliberate stair-step contours and flat 2–4-step shade ramps. One coherent visible pixel grid across sky, water, architecture, foliage and foreground shadows. Sparse patterned dithering, no dense stippled texture. Use a restrained coherent palette as art direction. Rich foreground, readable midground, distant silhouettes. Composition focal point on the left 60%; quieter fully drawn right 35% behind interview controls. Edge-to-edge continuous artwork.
+REFERENCE POLICY: supplied images are pixel-craft STYLE references only. Copy square cluster scale and hard-edged shading, NEVER their scene, objects, bridge, river, castle, camera, composition or palette. Every scene must be independently composed for its actual choices.
+FORBIDDEN: smooth gradients, antialiasing, brush texture, painterly scenery, photographic detail, bloom, blur, 3D, vector art, UI, text, signs, readable writing, logos, frames, collage, reused composition. No humans or humanoids: the user has not selected a protagonist's appearance. Do not invent their identity, outfit, gender or profession.
+Each prefix gets an independent cinematic shot. Reflect ALL facts below without contradicting earlier answers. Change location framing, foreground motif and focal object to visibly emphasize the latest choice; do not copy a previous scene or only recolor it. Structure and scope choices are represented by environment staging, never menu graphics. Unchosen answers must not appear as established story facts.
+GENRE: 탐험·모험 — 미지의 장소를 탐험하고 동료와 함께 사건·전투·던전을 돌파해요.
+SELECTED FACTS:
+1. 모험의 이유: 중요한 임무를 맡아서 — 작은 부탁이 예상보다 큰 모험으로 이어져요.
+2. 중심 플레이: 동료들의 이야기와 선택 — 여행 중의 대화와 사건이 관계를 바꿔요.
+LATEST CHOICE: 중심 플레이: 동료들의 이야기와 선택 — 여행 중의 대화와 사건이 관계를 바꿔요.
+SCENE ID: adventure--mission--companions. This identifier is metadata; never draw it.
+CONCRETE SCENE BRIEF:
+SETTING ANCHOR: Village errand departure, unmarked sealed parcel and provisions beside a rural threshold, path forward. No crest text, writing, weapons or unselected apocalypse.
+SHOT: elevated near-corner view, focal prop prominent left, environment receding right. Make a fresh shot, never copy the reference composition.
+PLAY MOTIF: Several empty travel places and personal objects arranged together emphasize companions stories, not unchosen faces.
+FINAL CRAFT CHECK: No banners, emblems, lettering, open written papers, human statues or blurred foreground. If companions are selected, show at least three visibly different empty travel places with their supplies. If the missing loved one is selected, preserve a plain personal keepsake and interrupted travel trail in the same frame. Retain all selected facts; camera and objects should visibly differ from neighboring scenes.
