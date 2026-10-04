@@ -7,7 +7,7 @@ import { initLocalProjectStore, openLocalProjectStore } from "../../electron/loc
 import { createReliefGroundSurface } from "../../src/editor/reliefGroundSurface";
 import { tilesetBaseImageUrl } from "../../src/editor/tilesetImage";
 import { renderRelief } from "../../src/project/relief/render";
-import { reliefRenderOptions } from "../../src/project/relief/screen";
+import { reliefPickPoint, reliefRenderOptions } from "../../src/project/relief/screen";
 import { RELIEF_STYLES } from "../../src/project/relief/styles";
 import { reliefGrids, reliefImageFromRender, planReliefPatch, applyReliefPatch } from "../../src/project/relief/window";
 import { renderMapPng } from "../qa-game/render.mts";
@@ -34,6 +34,8 @@ const ground=createReliefGroundSurface(map,tileset,raster),results=[];
 for(const style of [undefined,...Object.keys(RELIEF_STYLES)]){
  const before={...map.relief!,style},grids=reliefGrids(before),opts=reliefRenderOptions(before,ground);
  const render=renderRelief(grids.eff,opts);
+ const pickRender=renderRelief(grids.eff,reliefRenderOptions(before));
+ for(let i=0;i<render.kind.length;i++)if(render.kind[i]!==pickRender.kind[i]||render.src[i]!==pickRender.src[i])throw Error(`${style??'default'}: picking geometry differs from native material geometry at ${i}`);
  // reliefImageFromRender shares RGBA; applyReliefPatch mutates its buffer.
  const image=reliefImageFromRender({...render,rgba:render.rgba.slice()},map.width,map.height);
  const after={...before,levels:before.levels.slice()};
@@ -46,9 +48,16 @@ for(const style of [undefined,...Object.keys(RELIEF_STYLES)]){
   if(image[key].length!==full[key].length)throw Error(`${style??'default'}: ${key} length`);
   for(let i=0;i<image[key].length;i++)if(image[key][i]!==full[key][i])throw Error(`${style??'default'}: partial ${key}[${i}] ${image[key][i]} != ${full[key][i]}`);
  }
- let untouched=0,outlined=0,banks=0;const sample=new Uint8ClampedArray(4);
+ let untouched=0,outlined=0,banks=0;const sample=new Uint8ClampedArray(4),picked=new Set<number>();
  for(let i=0;i<render.kind.length;i++){
-  if(render.kind[i]===1&&render.height[i]===0&&render.lev[i]===0)banks++;
+  if(render.kind[i]===1&&render.height[i]===0&&render.lev[i]===0){
+   banks++;
+   if(render.src[i]>=0&&picked.size<8&&!picked.has(render.src[i])){
+    const hit=reliefPickPoint(before,i%render.PW+.5,Math.floor(i/render.PW)-render.pad+.5,16);
+    if(hit?.face!=='wall'||hit.x!==render.src[i]%map.width||hit.y!==Math.floor(render.src[i]/map.width))throw Error(`${style??'default'}: rear bank picks the wrong surface at ${i}`);
+    picked.add(render.src[i]);
+   }
+  }
   if(render.kind[i]!==0||render.mpy[i]<0)continue;
   if(!ground.sample(i%render.PW,render.mpy[i],sample,0))continue;
   if(!render.edge[i]&&!render.slope[i]){
@@ -57,7 +66,7 @@ for(const style of [undefined,...Object.keys(RELIEF_STYLES)]){
   }else if(render.edge[i]&&render.rgba[i*4]<sample[0]*.6)outlined++;
  }
  if(!untouched||!outlined||!banks)throw Error(`${style??'default'}: missing actual ground, outline or rear bank`);
- results.push({style:style??'default',untouchedNativePixels:untouched,outlinedPixels:outlined,rearBankWallPixels:banks,partialMatchesFull:true});
+ results.push({style:style??'default',untouchedNativePixels:untouched,outlinedPixels:outlined,rearBankWallPixels:banks,partialMatchesFull:true,pickGeometryMatchesVisible:true,rearBankPickSamples:picked.size});
  if([undefined,'jungle','swamp-peat','tundra-snow','castle'].includes(style)){
   const png=renderMapPng(project,{...map,relief:before});if(png.note)throw Error(png.note);
   fs.writeFileSync(path.join(out,`${style??'default'}.png`),png.png);
