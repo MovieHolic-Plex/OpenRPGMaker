@@ -77,6 +77,12 @@ ZIP의 player.html에서 두 선택을 각각 완주한다. `LIVE_GAME_OUT`, `LI
 `LIVE_GAME_HOST`, `LIVE_GAME_PACKAGE_OUT`으로 이전 미완료 실험과 증거를 분리한다.
 회귀 테스트 `test/piFirstPlay.test.ts`는 추가했으며 세션 규칙에 따라 Vitest/전체 게이트는 실행하지 않았다.
 
+2026-10-04 실제 샘플은 `verify-shots/first-scene-v7/SUMMARY.md`에 있다. 단일 실제 요청으로
+장소·보이는 회중시계·일회성 도입·두 선택·첫 엔딩을 만들었고, SQLite 재로드 후 최신 main의
+출하 ZIP에서 정상 키보드 14/14 비트를 확인했다. 최초 Firefox 관측 실패는 그대로 보존했다.
+이 결과를 연출/베타 전체 합격으로 읽지 않는다. 첫 정본 변경 230초·129턴/159호출,
+기본 타이틀 문구/배경·비전투 HP 표시·341MB ZIP·배치 대칭 경고가 남아 있다.
+
 실제 내보내기는 기본 뼈대의 `create_map` BGM 자동 추천 결함도 드러냈다. `기억의 길`이 파일이
 없는 `cc0-bgm-rtp-emo-002`를 고르고, 전체 제작이 끝난 뒤 ZIP 의존 파일 검사에서 실패했다.
 `bgmThemeRecommendation`의 모든 후보/폴백 경로가 `isCatalogBgmAvailable`을 확인한다.
