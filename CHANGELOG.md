@@ -5,6 +5,40 @@
 
 <!-- releases -->
 
+## 0.125.0 — 2026-10-04
+
+### 기능
+
+- **ai** — 맵별 조수 실행 소유권과 실시간 작업 상태판 (`b756b47`)
+- **ai** — 실시간 적용에서도 맵 위에 시공 연출을 보인다 (`427ac20`)
+
+### 성능
+
+- **ai** — 타일셋 참고문서 한꺼번에 읽기 — 관문이 요구한 용도를 한 번에 (`b7567ac`)
+- **ai** — Pi 입력창 의도 선언 — 커버리지 감사를 라우팅과 동시에 (`c391844`)
+- **ai** — 조수 실행 준비 80s → 14s — 카탈로그 캐시·워커 해시 보관·해시 먼저 (`84ab9e7`)
+
+### 잡무
+
+- **qa** — 조수 프로브 — 파이어폭스 선택·실패 도구 사유 기록 (`0a0bc06`)
+- **qa** — 조수 실측 프로브 — CPU 프로파일·실제 클릭 시각·렌더러 사망 시 즉시 종료 (`d380c6d`)
+- **qa** — 조수 실시간 표시 실측 프로브 (`a03fae2`)
+
+## 0.124.0 — 2026-10-04
+
+### 기능
+
+- produce character variations from sealed human-kept pixels (`2ad3d82`)
+
+### 수정
+
+- retain native roof pixels behind gable seams (`0eb25bd`)
+
+### 문서
+
+- verify joined gable in canonical editor and player (`4aeec74`)
+- capture complete gabled house in shipping player (`4874087`)
+
 ## 0.123.1 — 2026-10-04
 
 ### 수정

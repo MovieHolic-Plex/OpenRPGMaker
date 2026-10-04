@@ -1,3 +1,4 @@
+import { piTimer } from './piRunTiming.mjs';
 import { PiInteriorCompletion } from '../../src/ai/piAgent/interiorCompletion.ts';
 import type { InteriorRequirements } from '../../src/project/interiorPlacementAudit.ts';
 import { randomUUID } from "node:crypto";
@@ -203,9 +204,11 @@ function trimText(value: unknown, max: number): string {
 }
 
 export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOptions = {}): Promise<PiAgentDoneEvent> {
+  const setupTimer = piTimer("worker runPiAgent setup");
   // Workers do not run browser boot; load the same host-wide region catalog for AI tools.
   const { preparePiWorkerSharedContent } = await import('./piWorkerSharedContent');
   await preparePiWorkerSharedContent();
+  setupTimer.mark("sharedCatalogs");
   const emit = (event: PiAgentEvent) => options.onEvent?.({ ...event, at: event.at ?? Date.now() });
   const base = request.project;
   const modernTilesetPolicy = request.modernTilesetOnly || requestsModernMap(base, request.task, [...request.mapIds, ...(request.currentMapId ? [request.currentMapId] : [])]) ? createModernTilesetPolicy(base) : undefined;
@@ -215,6 +218,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     ...(request.currentMapId && base.maps[request.currentMapId] ? { currentMapId: request.currentMapId } : {}),
     ...(request.approvedTilesetFamilies?.length ? { approvedTilesetFamilies: [...request.approvedTilesetFamilies] } : {}),
   };
+  setupTimer.mark("clone");
   const referenceGate = new PiTilesetReferenceGate();
   const model = options.model ?? resolvePiModel(request.provider, request.model);
   // 어댑터와 코어 이벤트의 호출 id로 결과를 연결한다. 같은 이름의 병렬 호출도 섞지 않는다.
@@ -331,6 +335,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   };
   const incremental = !contract && !!request.applyMode && request.applyMode !== "review" && !request.readOnly && !options.readOnlyTools && !!options.onCheckpoint;
   let accepted = snapshotProjectKeepingHeavy(ctx.project);
+  setupTimer.mark("snapshot");
+  setupTimer.done();
   let rejected = false;
   const checkpoint = async (label: string, toolName: string, signal?: AbortSignal): Promise<void> => {
     const constructionLogs = pendingConstructionLogs;

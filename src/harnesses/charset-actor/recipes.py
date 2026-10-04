@@ -9,9 +9,10 @@ from pathlib import Path
 
 import chr as C
 import harness as H
+import motion as M
 
 VERSION = 1
-TOOLS = ('chr.py', 'harness.py', 'bulk.py', 'pixel_ops.py', 'recipes.py', 'delivery.py', 'audit.py')
+TOOLS = ('chr.py', 'harness.py', 'bulk.py', 'pixel_ops.py', 'recipes.py', 'delivery.py', 'audit.py', 'motion.py')
 VARIATIONS = (
     '깃·소매·허리띠의 형태와 작은 무늬를 새로 정한다.',
     '앞머리·묶음·옆머리의 작은 형태와 옷깃을 새로 정한다.',
@@ -115,7 +116,7 @@ def create(source_run, name='남긴 그림 변주'):
                                   label=H._desc(w).get('label', row.get('name', '')), inputSha256=sha(folder / 'input.png')))
             recipe = dict(version=VERSION, id=rid, name=str(name)[:120], at=H.now(), sourceRun=source_run,
                           model={k: H.ENGINES['gpt'][k] for k in ('model', 'effort')},
-                          animationMode=H.FRAME_AUTHOR_MODE, initialImages=0, seeds=seeds, files=files,
+                          animationMode=H.FRAME_AUTHOR_MODE, motionPolicy=M.VERSION, initialImages=0, seeds=seeds, files=files,
                           tools={file: sha(H.HERE / file) for file in TOOLS})
             H.write_json_atomic(root / 'recipe.json', recipe)
             H.write_json_atomic(root / 'sealed.json', dict(version=VERSION, sha256=sha(root / 'recipe.json')))
@@ -140,10 +141,10 @@ def bind(root, rid, count, prompt=''):
                  + (str(prompt)[:4000] if prompt else '콘셉트와 세부 복식은 자유롭게 정한다.'))
         characters.append(dict(key=f'kept-{root.name[-8:]}-{i+1:03d}', name=f'변주 캐릭터 {i+1:03d}',
                                base=seed['base'], seed=seed['index'], brief=brief, strength='free', reviewMode='human',
-                               authoringMode=seed['authoringMode'], animationMode=H.FRAME_AUTHOR_MODE,
+                               authoringMode=seed['authoringMode'], animationMode=H.FRAME_AUTHOR_MODE, motionPolicy=recipe.get('motionPolicy'),
                                source='upload', genre='자유', role='', gender='', age=''))
     return dict(run=root.name, reviewMode='human', animationMode=H.FRAME_AUTHOR_MODE, characters=characters,
-                genres=['자유'], sourceOriginal=None, recipe=dict(id=rid, sha256=digest))
+                genres=['자유'], sourceOriginal=None, motionPolicy=recipe.get('motionPolicy'), recipe=dict(id=rid, sha256=digest))
 
 
 def verify_run(root, manifest=None, check_tools=False):
@@ -152,12 +153,15 @@ def verify_run(root, manifest=None, check_tools=False):
     recipe = load(root / 'recipe', manifest['recipe']['sha256'], check_tools)
     if manifest['recipe']['id'] != recipe['id'] or manifest.get('visualReferences'):
         raise ValueError('제작 기준 ID/초기 이미지 계약이 변경되었습니다')
+    if manifest.get('motionPolicy') != recipe.get('motionPolicy'):
+        raise ValueError('제작 기준 걷기 검사 정책이 변경되었습니다')
     for row in manifest['characters']:
         if type(row.get('seed')) is not int or not 0 <= row['seed'] < len(recipe['seeds']):
             raise ValueError('잘못된 원본 번호')
         seed = recipe['seeds'][row['seed']]
         if (seed['index'] != row['seed'] or row['base'] != seed['base'] or row['authoringMode'] != seed['authoringMode']
-                or row['reviewMode'] != 'human' or row['strength'] != 'free'):
+                or row['reviewMode'] != 'human' or row['strength'] != 'free'
+                or row.get('motionPolicy') != recipe.get('motionPolicy')):
             raise ValueError('후보의 원본/제작 방식이 기준과 다릅니다')
         if sha(H.base_sheet(seed['base'])[0]) != seed['inputSha256']:
             raise ValueError('기준 입력 PNG가 변경되었습니다')

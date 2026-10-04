@@ -29,6 +29,7 @@ const ACTIONS = {
   inspect: forms("정보를 살펴보는 중", "정보를 살펴봤어요", "정보를 살펴보지 못했어요"),
   inspectMap: forms("맵을 살펴보는 중", "맵을 살펴봤어요", "맵을 살펴보지 못했어요"),
   inspectTile: forms("타일을 살펴보는 중", "타일을 살펴봤어요", "타일을 살펴보지 못했어요"),
+  inspectReference: forms("참고문서를 읽는 중", "참고문서를 읽었어요", "참고문서를 읽지 못했어요"),
   inspectEvent: forms("이벤트를 살펴보는 중", "이벤트를 살펴봤어요", "이벤트를 살펴보지 못했어요"),
   inspectVillage: forms("마을을 살펴보는 중", "마을을 살펴봤어요", "마을을 살펴보지 못했어요"),
   inspectQuality: forms("완성도를 점검하는 중", "완성도를 점검했어요", "완성도를 점검하지 못했어요"),
@@ -146,6 +147,7 @@ addFamily(ACTIONS.titleArt, "generate_title_art");
 addFamily(ACTIONS.removeOpening, "remove_opening");
 
 function readOnlyAction(toolName: string): ActionForms | undefined {
+  if (["list_tileset_references", "read_tileset_reference", "read_spatial_reference", "read_region_reference"].includes(toolName)) return ACTIONS.inspectReference;
   if (READ_ONLY_MAP.has(toolName)) return ACTIONS.inspectMap;
   if (READ_ONLY_TILE.has(toolName)) return ACTIONS.inspectTile;
   if (READ_ONLY_EVENT.has(toolName)) return ACTIONS.inspectEvent;
@@ -164,6 +166,8 @@ function readOnlyAction(toolName: string): ActionForms | undefined {
 }
 
 function fallbackAction(toolName: string): ActionForms {
+  // author_beodeul_town 처럼 칩셋별 마을 시공기가 늘어난다 — 「author_」 일반 규칙(이야기)에 먼저 삼켜지지 않게 한다.
+  if (/^author_[a-z0-9_]*(?:town|village|city)$/.test(toolName)) return ACTIONS.village;
   if (/^(?:create|duplicate|resize|remove|shift|manage)_map(?:_|$)/.test(toolName)) return ACTIONS.editMap;
   if (/^(?:upsert|define|duplicate)_/.test(toolName)) return ACTIONS.database;
   if (/^(?:delete|remove|prune)_/.test(toolName)) return ACTIONS.deleteDatabase;

@@ -9,6 +9,7 @@ import audit
 import chr as C
 import harness as H
 import recipes as R
+import motion as M
 
 VERSION = 1
 ARTIFACTS = ('sheet.png', 'sheet_rgba.png', 'alpha_sheet.png', 'alpha.png',
@@ -37,6 +38,10 @@ def fresh(w, gate):
                 and digest(w / 'base.chr.txt') == proof['baseGridSha256']
                 and digest(w / 'desc.json') == proof['descriptionSha256']
                 and digest(w / 'model-frames.json') == proof['frameAuthorSha256']
+                and M.fresh(w, gate)
+                and (meta.get('motionPolicy') is None or
+                     (proof.get('motionPolicy') == meta['motionPolicy']
+                      and digest(w / 'views/motion.json') == proof['motionSha256']))
                 and set(proof['artifacts']) == set(ARTIFACTS)
                 and all(digest(w / 'views' / name) == value for name, value in proof['artifacts'].items()))
     except (OSError, ValueError, KeyError, TypeError):
@@ -50,6 +55,7 @@ def publish(w, gate):
     recipe = R.verify_run(root, check_tools=True)
     if meta['recipe'] != dict(id=recipe['id'], sha256=R.sha(root / 'recipe' / 'recipe.json')):
         raise ValueError('작업자 제작 기준 binding이 다릅니다')
+    motion = H.check_motion(w, gate)
     if not gate['ok'] or not H.model_frames_fresh(w, gate) or not H.views_fresh(w, gate) or not H.alpha_views_fresh(w, gate):
         raise ValueError('12프레임/투명/렌더 납품 미완료: ' + '; '.join(gate['fails']))
     desc = json.loads((w / 'desc.json').read_text())
@@ -96,6 +102,8 @@ def publish(w, gate):
                      rgbaSha256=rgba_hash, descriptionSha256=R.sha(w / 'desc.json'),
                      frameAuthorSha256=R.sha(w / 'model-frames.json'), roundtrip=roundtrip,
                      artifacts={name: R.sha(w / 'views' / name) for name in ARTIFACTS})
+        if motion is not None:
+            proof.update(motionPolicy=M.VERSION, motionSha256=R.sha(w / 'views/motion.json'))
         H.write_json_atomic(w / 'delivery.json', proof)
         H.write_json_atomic(w / 'published.json', H.binding(gate))
     return proof

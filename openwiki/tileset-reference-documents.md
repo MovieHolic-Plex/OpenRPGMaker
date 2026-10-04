@@ -143,6 +143,12 @@ UI 저장 성공 문구는 원격 저장 영수증이 아니다. 원격 완료�
 3. 각 MD를 `read_tileset_reference(tilesetId, categoryId, documentId, offset)`로 읽는다.
    6,000자 단위이며 `nextOffset: null`까지 조회한다.
 4. 각 그림을 같은 도구의 `imageId`로 조회한다. 실제 이미지 입력이 전달된다.
+   - **한꺼번에 읽기 (2026-10-04):** `documentId`·`imageId` 를 둘 다 빼면 그 용도의 이미지 전부(첫 묶음에만)와 MD 쪽을
+     응답 data 30,000자 안에서 담는다. 넘친 쪽은 `remaining` 에 남고, 응답의 `after`(읽은 `documentId:offset` 누적)를 그대로
+     넘기면 이어 읽는다. Pi 는 이 도구 결과만 32,000자까지 싣는다(`toolAdapter` `REFERENCE_MAX_DATA_CHARS`, 다른 도구는 12,000) —
+     잘린 결과는 읽은 것으로 치지 않기 때문이다. 관문(`TilesetReferenceEvidence`)은 `documents[]`·`images[]` 를 쪽·그림마다 읽은 것으로
+     치고, 거절 문구는 빠진 용도마다 한 번에 읽는 호출을 먼저 보여 준다. 왜: 버들항 길 깔기에서 관문이 물 용도 15건(MD 2쪽·그림 13장)을
+     요구했고, 모델은 한 건씩 두 번 읽다가 길을 포기하고 소품만 찍었다. 같은 용도가 이제 한 번(물), 두 번(조각 사전 53k자)에 끝난다.
 5. **다음 모델 응답에서** 타일 쓰기를 한다. 용도가 여러 개면 `referencePurpose: <categoryId>`를 지정한다.
    한 개면 자동 선택한다. 선택 용도의 모든 문서/그림이 필요하다. 다른 용도는 필요에 따라 추가 조회한다.
 

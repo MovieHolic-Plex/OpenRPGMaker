@@ -6,6 +6,24 @@
 
 ## 흐름
 
+### 세계관별 준비 상태와 우주 조수 (2026-10-04)
+
+`list_worldmap_themes`는 키트의 17개 테마 정의와 **현재 번들의 사람 선택 수**를 함께 돌려준다.
+생성기·팔레트가 있다는 것만으로 거점 그림·내부·게임 해금이 완성된 것은 아니다.
+우주 `starmap`(galaxy + space-5act)와 육지 외계 행성 `alien`을 구분한다.
+출처 JSON은 `node scripts/content/prepare-worldmap-theme-catalog.mjs`로 재생성하며 선택 수는 런타임에 계산한다.
+
+호스트 빌더는 `--selected-icons selected/selected.json`으로 사람 선택 그림만 원본 RGBA로 합성한다.
+선택 그림의 SHA256·크기를 검사하며 미선택/발자국 불일치는 `iconSelection.pending`으로 알려 준다.
+이 장소들은 **그림 없는 논리 위치**다. 후보 세트를 쓰는 키트 CLI/하네스 미리보기와 저작 경로를 혼동하지 않는다.
+우주·외계 전용 거점 칩셋이 없을 때 기본 로마풍 마을로 대체하라는 안내도 제거했다.
+
+실제 Astra가 좌표·테마 ID 없는 우주 요청을 19회 도구 호출/오류 0건으로 수행하고 SQLite 판본 2에서
+지형·캐릭터 75%·시작 맵 보존·실제 PNG를 다시 확인했다. 거점 그림 31곳과 워프 해금 이벤트는 미완성이다.
+근거: [`verify-shots/worldmap-theme-readiness/README.md`](../verify-shots/worldmap-theme-readiness/README.md).
+기본 미리보기 15/17 통과, 전국(바다에 막힌 길)·무협(좁은 배 장벽)은 이번 확인에서 실패했다.
+이 둘은 추가 보정 대상이며 17개 전부의 완성도를 주장하지 않는다.
+
 ### 호스트 공용 DB와 조수 (2026-10-04)
 
 `npm run harness -- worldmap-icons publish-shared`는 선택 아이콘과 정본 실제 지형 사례를 호스트 공용 SQLite에

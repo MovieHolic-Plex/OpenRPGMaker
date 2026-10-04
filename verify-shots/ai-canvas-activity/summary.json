@@ -1,0 +1,106 @@
+{
+  "mode": "scripted Pi events in actual editor; no project writes or live model",
+  "checks": [
+    {
+      "name": "References have a specific action",
+      "ok": true
+    },
+    {
+      "name": "Construction phase follows the actual tool",
+      "ok": true
+    },
+    {
+      "name": "Replayed completion is counted once",
+      "ok": true
+    },
+    {
+      "name": "Status remains between tools",
+      "ok": true
+    },
+    {
+      "name": "Concurrent tools retain the other agent's activity",
+      "ok": true
+    },
+    {
+      "name": "Failure uses the attention state",
+      "ok": true
+    },
+    {
+      "name": "Recent history is bounded",
+      "ok": true
+    },
+    {
+      "name": "Can collapse without hiding the clock",
+      "ok": true
+    },
+    {
+      "name": "Respects hidden activity preference",
+      "ok": true
+    },
+    {
+      "name": "Respects live canvas toggle",
+      "ok": true
+    },
+    {
+      "name": "Fits compact editor canvas",
+      "ok": true
+    },
+    {
+      "name": "Reduced motion stops the beacon",
+      "ok": true
+    },
+    {
+      "name": "Final event shows checking, never saved",
+      "ok": true
+    },
+    {
+      "name": "English translates status but preserves map names",
+      "ok": true
+    },
+    {
+      "name": "Old run cleanup preserves the new run",
+      "ok": true
+    },
+    {
+      "name": "Flat map workers are scoped before canvas delivery",
+      "ok": true
+    },
+    {
+      "name": "One worker ending does not clear another's tool",
+      "ok": true
+    },
+    {
+      "name": "Canvas running chip retains the surviving worker",
+      "ok": true
+    },
+    {
+      "name": "Matching IDs in other workers do not lose completion",
+      "ok": true
+    },
+    {
+      "name": "Checking starts after both workers finish",
+      "ok": true
+    },
+    {
+      "name": "Concurrent calls by one worker each have a row",
+      "ok": true
+    },
+    {
+      "name": "Earlier call ending keeps the later call visible",
+      "ok": true
+    },
+    {
+      "name": "Earlier call ending keeps the later canvas marker",
+      "ok": true
+    },
+    {
+      "name": "Cleanup removes the status panel",
+      "ok": true
+    },
+    {
+      "name": "No browser errors",
+      "ok": true
+    }
+  ],
+  "errors": []
+}
