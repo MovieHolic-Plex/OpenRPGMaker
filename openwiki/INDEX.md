@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **138쪽 / 4743KB / 약 1,376,059 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **139쪽 / 4758KB / 약 1,380,628 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -16,17 +16,17 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
 | `openwiki/editor-ai-panel.md` | 597KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 3690 | ~173,873 |
-| `openwiki/editor-ai-tools.md` | 323KB | 87KB ⚠상한 초과 — 절을 더 쪼개라 | 2661 | ~93,104 |
+| `openwiki/editor-ai-tools.md` | 324KB | 87KB ⚠상한 초과 — 절을 더 쪼개라 | 2672 | ~93,410 |
 | `openwiki/editor-database.md` | 404KB | 63KB ⚠상한 초과 — 절을 더 쪼개라 | 2376 | ~118,408 |
 | `openwiki/editor-event-authoring.md` | 168KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 986 | ~49,100 |
 | `openwiki/editor-event-commands.md` | 67KB | 32KB | 301 | ~18,613 |
 | `openwiki/editor-interior-room-harness.md` | 98KB | 6KB | 469 | ~28,406 |
-| `openwiki/editor-observability.md` | 61KB | 6KB | 693 | ~18,013 |
+| `openwiki/editor-observability.md` | 62KB | 6KB | 705 | ~18,297 |
 | `openwiki/editor-pre-edit-routing.md` | 184KB | 70KB ⚠상한 초과 — 절을 더 쪼개라 | 1141 | ~54,042 |
 | `openwiki/editor-workflows-misc.md` | 78KB | 33KB | 533 | ~21,749 |
 | `openwiki/runtime-battle.md` | 321KB | 32KB | 1758 | ~94,038 |
 | `openwiki/runtime-pre-edit-routing.md` | 111KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 809 | ~33,372 |
-| `openwiki/runtime-project-schema.md` | 212KB | 67KB ⚠상한 초과 — 절을 더 쪼개라 | 1519 | ~59,443 |
+| `openwiki/runtime-project-schema.md` | 213KB | 67KB ⚠상한 초과 — 절을 더 쪼개라 | 1528 | ~59,643 |
 | `openwiki/runtime-sessions.md` | 123KB | 50KB | 627 | ~33,263 |
 | `openwiki/testing.md` | 219KB | 48KB | 2088 | ~60,951 |
 | `openwiki/tileset-reference-documents.md` | 54KB | 4KB | 558 | ~16,396 |
@@ -85,7 +85,6 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/harnesses/interior-props.md` | 2 | `.loop.json`, `.loop.png` |
 | `openwiki/harnesses/jp-city.md` | 1 | `kit-x3.png` |
 | `openwiki/harnesses/monster-collect-species.md` | 1 | `qa-runs/battle-anim3/anim.js` |
-| `openwiki/harnesses/super-harness-integration.md` | 1 | `unified.py` |
 | `openwiki/harnesses/super-harness.md` | 12 | `B.json`, `art-context-review.json`, `art-result.json`, `card.json`, `ctx-cand.png`, `gaps.json`, `material-review.json`, `materials.json`, `parking-repair-brief.json`, `planning-reviews/A.json`, `planning.json`, `visual-input.json` |
 | `openwiki/horror-authoring.md` | 2 | `motion-sheet.png`, `projectLint.test.ts` |
 | `openwiki/joseon-baram.md` | 2 | `.oprn.json`, `map-from-sheet.png` |
@@ -544,7 +543,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L3671` 조수창
   - `L3680` 재현·증거
 
-### `openwiki/editor-ai-tools.md` — 323KB · 2661줄 · ~93,104 토큰 · 통째읽기 잘림 · 깨진 줄 6
+### `openwiki/editor-ai-tools.md` — 324KB · 2672줄 · ~93,410 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
 - `L3` 대화 초상 선택과 게임 글꼴 (2026-10-04)
 - `L32` 조수 스킬 저작 — 기믹·연출 빌리기 (2026-09-30)
@@ -649,9 +648,10 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L2601` Monster follower graphic authoring (2026-09-25)
 - `L2617` 기존 서사 플래그의 설명 수정 (2026-09-25)
 - `L2630` 타이틀 오프닝 효과 도구 (2026-09-25)
-- `L2642` 크로노 트리거식 필드 도구 인자 (2026-09-26)
-- `L2652` 세계 지도 지형 도구 (2026-10-03)
-- `L2658` Bounded romance authoring tools
+- `L2645` 크로노 트리거식 필드 도구 인자 (2026-09-26)
+- `L2655` 세계 지도 지형 도구 (2026-10-03)
+- `L2661` Bounded romance authoring tools
+  - `L2665` 선택 정수 enum의 Antigravity 전달 (2026-10-04)
 
 ### `openwiki/editor-database.md` — 404KB · 2376줄 · ~118,408 토큰 · 통째읽기 잘림 · 깨진 줄 8
 
@@ -931,7 +931,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L426` Reference-house correction: no shrub pots, cooking supports, inset cabinets (2026-09-14)
   - `L436` All-interior review (2026-09-15)
 
-### `openwiki/editor-observability.md` — 61KB · 693줄 · ~18,013 토큰 · 통째읽기 잘림 · 깨진 줄 1
+### `openwiki/editor-observability.md` — 62KB · 705줄 · ~18,297 토큰 · 통째읽기 잘림 · 깨진 줄 1
 
 - `L5` 지형 조수의 실제 UI 검증 (2026-10-04)
 - `L9` 작은 타일 편집의 undo/redo 경로 (2026-10-04)
@@ -960,7 +960,8 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L599` 텍스처 완료 redraw 합치기 (2026-09-28)
 - `L619` 조수 적용·체크리스트 경로의 전체 문서 비용 (2026-09-28)
 - `L659` store.update copy-on-write 와 자동저장 요약 (2026-09-30)
-- `L686` 편집기 UX 지연 조사 (2026-10-04)
+  - `L685` 미디어 분리의 저장용 교체와 AI 턴 (2026-10-04)
+- `L698` 편집기 UX 지연 조사 (2026-10-04)
 
 ### `openwiki/editor-pre-edit-routing.md` — 184KB · 1141줄 · ~54,042 토큰 · 통째읽기 잘림 · 깨진 줄 5
 
@@ -1203,7 +1204,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L70` 공간 제작에서의 공용 재료 사용
 - `L78` 이관·복구와 확인
 
-### `openwiki/harnesses/super-harness.md` — 25KB · 232줄 · ~7,708 토큰
+### `openwiki/harnesses/super-harness.md` — 28KB · 268줄 · ~8,759 토큰
 
 - `L9` 왜 (2026-10-03 실측)
 - `L16` 조수 쪽 연결 (제품 코드)
@@ -1219,6 +1220,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L174` 그림 실행은 감독이 직접 한다
   - `L188` 칩 선택 화면과 조립 예시 (2026-10-04)
   - `L212` 주차장 조립 검수 반려와 선택 관문 (2026-10-04)
+  - `L233` 칩 검수 피드백 → 자동 재생성 루프 (2026-10-04)
 
 ### `openwiki/harnesses/worldmap-icons.md` — 5KB · 65줄 · ~1,592 토큰
 
@@ -1554,6 +1556,10 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L138` 검증 도구 (이 브랜치에 들어온 것)
 - `L160` 가져오지 않은 것 (브랜치 `agent/r3-relief-stairs` 에 남아 있다)
 
+### `openwiki/rpg-opening-research.md` — 5KB · 27줄 · ~1,404 토큰
+
+- `L17` 이번 적용
+
 ### `openwiki/runtime-action-combat.md` — 31KB · 360줄 · ~7,947 토큰
 
 - `L14` Activation contract
@@ -1665,7 +1671,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L1750` 공용 몬스터 옛 그림 폐기 (2026-10-02)
   - `L1754` 공용 이동 설계·32종 전투 기믹 (2026-10-02)
 
-### `openwiki/runtime-m2-flow-controls.md` — 46KB · 305줄 · ~12,541 토큰
+### `openwiki/runtime-m2-flow-controls.md` — 46KB · 313줄 · ~12,754 토큰
 
 - `L5` Quest companion presence query (2026-10-01)
 - `L15` Map-effect repair boundary (2026-09-06)
@@ -1681,6 +1687,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L246` Map-wide atmosphere presets (2026-09-21)
   - `L267` Genre ambience presets and sound pairing (2026-09-21)
   - `L291` Thirty audiovisual presets — evidence (2026-09-21)
+  - `L306` 그림 컷 준비와 direction (2026-10-04)
 
 ### `openwiki/runtime-pre-edit-routing.md` — 111KB · 809줄 · ~33,372 토큰 · 통째읽기 잘림
 
@@ -1700,7 +1707,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L748` 8차 맵 진입 (2026-09-28)
 - `L781` 화면 주변 타일 유지 (2026-10-01)
 
-### `openwiki/runtime-project-schema.md` — 212KB · 1519줄 · ~59,443 토큰 · 통째읽기 잘림 · 깨진 줄 1
+### `openwiki/runtime-project-schema.md` — 213KB · 1528줄 · ~59,643 토큰 · 통째읽기 잘림 · 깨진 줄 1
 
 - `L3` 맵 캐릭터 크기 — 선택 필드 `map.characterScale` (2026-10-03)
 - `L11` 세계 지도 원본 — 선택 필드 `map.worldmapSource` (2026-10-03)
@@ -1782,6 +1789,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L1492` 재편집 지형과 게임 높이 규칙 (2026-10-03)
 - `L1501` Optional internal authoring contract
   - `L1505` Desktop fullscreen and mouse controls (2026-10-04)
+  - `L1520` Cinematic image direction (2026-10-04)
 
 ### `openwiki/runtime-sessions.md` — 123KB · 627줄 · ~33,263 토큰 · 통째읽기 잘림
 
@@ -2407,7 +2415,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L531` 수관 잎 채움 (2026-09-24)
 - `L542` 번들 참고 이미지는 정적 경로다 (2026-09-25)
 
-### `openwiki/title-opening-effects.md` — 22KB · 202줄 · ~6,490 토큰
+### `openwiki/title-opening-effects.md` — 25KB · 235줄 · ~7,601 토큰
 
 - `L6` 데이터
 - `L18` 프리셋
@@ -2418,6 +2426,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L119` 깊이 시차 `parallax` (2026-09-26)
 - `L137` 범위 밖 (이번에 안 한 것)
 - `L144` 소프트웨어 WebGL 입자 계산 분리 (2026-09-28)
+- `L203` 시네마틱 장면 연출과 백그라운드 준비 (2026-10-04)
 
 ### `openwiki/town-tile-benchmark.md` — 10KB · 153줄 · ~3,024 토큰
 

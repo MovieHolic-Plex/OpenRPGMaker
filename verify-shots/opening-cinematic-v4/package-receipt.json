@@ -1,0 +1,14 @@
+{
+  "zipSha256": "e8695cd758e67741fbbac2de0fbf3a473365a2707d86734ed797b8f3646929b9",
+  "zipBytes": 354890122,
+  "projectJsonSha256": "71868b60ff31c3f327a0c9927162ccd9d058598cec51413c5fde5cb74a2b0b58",
+  "playerJsSha256": "89fee1b562c4c9053a004ffe8e252c0d1e9dbd9bf1894fb84eefb4bb7678ab86",
+  "sdk": {
+    "artifactVersion": "2c6c22d6d0931002",
+    "artifactDigest": "2c6c22d6d0931002759f88541335b240172a0509371cd762238d85f3680c19d2",
+    "sourceDigest": "0fd27d049673b1770092eab5936b843735ea6230b587e6115f58a2494ffcc55a",
+    "sourceRevision": "9fb475b50a",
+    "schemaVersion": 4
+  },
+  "sourceRevisionNote": "SDK sourceRevision was captured before committing the already-present Phaser ordering fix as f53a101646; sourceDigest and the held-engine browser case verify the built content."
+}

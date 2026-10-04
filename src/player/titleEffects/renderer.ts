@@ -143,7 +143,7 @@ export interface TitleEffectsCanvasOptions {
   readonly freezeAtSec?: number;
 }
 
-type RendererHandle = { stop: () => void };
+type RendererHandle = { stop: () => void; freeze: () => void };
 const running = new WeakMap<HTMLCanvasElement, RendererHandle>();
 /** 살아 있는 캔버스의 효과 값만 바꾸는 함수 — 편집기 드래그·슬라이더가 WebGL 문맥을 새로 만들지 않게. */
 const uniformSetters = new WeakMap<HTMLCanvasElement, (uniforms: TitleEffectUniforms) => void>();
@@ -180,6 +180,11 @@ export function stopTitleEffects(canvas: HTMLCanvasElement): void {
   running.delete(canvas);
 }
 
+/** Keep the last composited frame for a cut/dissolve. Dispose only after removing the canvas. */
+export function freezeTitleEffects(canvas: HTMLCanvasElement): void {
+  running.get(canvas)?.freeze();
+}
+
 function startTitleEffects(canvas: HTMLCanvasElement, initialUniforms: TitleEffectUniforms, options: TitleEffectsCanvasOptions): void {
   let uniforms = initialUniforms;
   let gl: WebGL2RenderingContext | null = null;
@@ -199,7 +204,11 @@ function startTitleEffects(canvas: HTMLCanvasElement, initialUniforms: TitleEffe
   let lastSeconds = options.freezeAtSec ?? 0;
   let started: number | undefined;
   const remember = (next: TitleEffectUniforms) => { uniforms = next; };
-  const handle: RendererHandle = { stop: () => {
+  const handle: RendererHandle = { freeze: () => {
+    stopped = true;
+    cancelAnimationFrame(frame);
+    canvas.dataset.titleEffectsAnimated = 'false';
+  }, stop: () => {
     stopped = true;
     cancelAnimationFrame(frame);
     canvas.removeEventListener("webglcontextlost", onLost);

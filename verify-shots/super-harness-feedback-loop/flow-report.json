@@ -1,0 +1,19 @@
+{
+  "isolation": "copied SQLite and artifact files; no model calls; PASS branch is synthetic controller fixture only",
+  "failure": [
+    "art",
+    "queued",
+    1
+  ],
+  "duplicateRevision": 1,
+  "limit": [
+    "blocked",
+    1
+  ],
+  "pass": [
+    "art-review",
+    "idle"
+  ],
+  "feedbackHasConcreteFixes": true,
+  "paused": true
+}

@@ -201,7 +201,11 @@ export function createDatabaseCinematicActions(options: {
 
     setMotion(id: string, motion: CinematicMotion): boolean {
       return replaceScene(id, "이미지 움직임", scene =>
-        scene.kind === "image" ? { ...scene, motion } : scene);
+        scene.kind === "image" ? { ...scene, motion, ...(scene.direction ? { direction: { ...scene.direction, camera: undefined } } : {}) } : scene);
+    },
+
+    setDirection(id: string, direction: import('@/project/cinematicDirection').CinematicDirection): boolean {
+      return replaceScene(id, '장면 연출', scene => scene.kind === 'image' ? { ...scene, direction } : scene);
     },
 
     /** Image/video intents stay in the view until a resource is ready. */

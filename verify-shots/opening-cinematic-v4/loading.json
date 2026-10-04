@@ -1,0 +1,175 @@
+{
+  "projectId": "f25d1f04-88f9-475b-92ee-95a891286d33",
+  "paths": [
+    "assets/uploaded/opening_still_ba7e0a9f-9f39-4b2e-9951-76fd684cfe51.jpg",
+    "assets/uploaded/opening_still_431c13d3-11a6-47d9-8927-efcd41d98ea2.jpg",
+    "assets/uploaded/opening_still_95e44110-d5f7-4381-8633-c0efc75fbf3b.png"
+  ],
+  "cases": [
+    {
+      "name": "delayed-pictures",
+      "passed": true,
+      "requestsPerOpeningImage": [
+        1,
+        1,
+        1
+      ],
+      "prefetchDeadlineRetry": true,
+      "heldFrame": {
+        "sceneId": "op_scene_study_long",
+        "previousDecoded": true,
+        "effectsFrozen": true
+      },
+      "handoffBackdropObserved": true,
+      "decodedTimes": [
+        {
+          "id": "op_scene_study_long",
+          "state": "ready",
+          "time": 13628.199999928474
+        },
+        {
+          "id": "op_scene_watch_closeup",
+          "state": "ready",
+          "time": 21124.399999976158
+        },
+        {
+          "id": "op_scene_reach_medium",
+          "state": "ready",
+          "time": 25174.699999928474
+        }
+      ],
+      "times": [
+        {
+          "state": "loading",
+          "pending": "op_scene_study_long",
+          "time": 13263.399999976158
+        },
+        {
+          "id": "op_scene_study_long",
+          "state": "ready",
+          "time": 13628.199999928474
+        },
+        {
+          "id": "op_scene_study_long",
+          "state": "loading",
+          "pending": "op_scene_watch_closeup",
+          "time": 17628.699999928474
+        },
+        {
+          "id": "op_scene_watch_closeup",
+          "state": "ready",
+          "time": 21124.399999976158
+        },
+        {
+          "id": "op_scene_watch_closeup",
+          "state": "loading",
+          "pending": "op_scene_reach_medium",
+          "time": 25130.699999928474
+        },
+        {
+          "id": "op_scene_reach_medium",
+          "state": "ready",
+          "time": 25174.699999928474
+        }
+      ]
+    },
+    {
+      "name": "decoded-image-reuse-with-http-cache-disabled",
+      "passed": true,
+      "requestsPerOpeningImage": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "missing-picture-retry",
+      "passed": true
+    },
+    {
+      "name": "reduced-motion-and-skip-during-prefetch",
+      "passed": true,
+      "activeShotAnimations": 0,
+      "engineReadyBeforeSkip": false
+    }
+  ],
+  "errors": [],
+  "requestFailures": [
+    {
+      "path": "/assets/uploaded/opening_still_431c13d3-11a6-47d9-8927-efcd41d98ea2.jpg",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "path": "/assets/cc0/audio/catalog/rtp-ttl-001-dawn-guild-ledger_cab8051a.mp3",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "path": "/assets/cc0/audio/catalog/rtp-ttl-001-dawn-guild-ledger_cab8051a.mp3",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "path": "/assets/cc0/audio/catalog/rtp-ttl-001-dawn-guild-ledger_cab8051a.mp3",
+      "error": "net::ERR_ABORTED"
+    }
+  ],
+  "delayDiagnostics": {
+    "counts": [
+      1,
+      1,
+      1
+    ],
+    "requested": [
+      {
+        "path": "/assets/uploaded/opening_still_ba7e0a9f-9f39-4b2e-9951-76fd684cfe51.jpg",
+        "time": 1791103096916
+      },
+      {
+        "path": "/assets/uploaded/opening_still_431c13d3-11a6-47d9-8927-efcd41d98ea2.jpg",
+        "time": 1791103096917
+      },
+      {
+        "path": "/assets/uploaded/opening_still_95e44110-d5f7-4381-8633-c0efc75fbf3b.png",
+        "time": 1791103105846
+      },
+      {
+        "path": "/assets/uploaded/opening_still_431c13d3-11a6-47d9-8927-efcd41d98ea2.jpg",
+        "time": 1791103109845
+      }
+    ],
+    "times": [
+      {
+        "state": "loading",
+        "pending": "op_scene_study_long",
+        "time": 13263.399999976158
+      },
+      {
+        "id": "op_scene_study_long",
+        "state": "ready",
+        "time": 13628.199999928474
+      },
+      {
+        "id": "op_scene_study_long",
+        "state": "loading",
+        "pending": "op_scene_watch_closeup",
+        "time": 17628.699999928474
+      },
+      {
+        "id": "op_scene_watch_closeup",
+        "state": "ready",
+        "time": 21124.399999976158
+      },
+      {
+        "id": "op_scene_watch_closeup",
+        "state": "loading",
+        "pending": "op_scene_reach_medium",
+        "time": 25130.699999928474
+      },
+      {
+        "id": "op_scene_reach_medium",
+        "state": "ready",
+        "time": 25174.699999928474
+      }
+    ]
+  },
+  "passed": true
+}

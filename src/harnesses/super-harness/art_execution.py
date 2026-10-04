@@ -40,6 +40,27 @@ def prepare(root, request):
             raise ValueError('준비된 그림 판 state.json 없음')
     else:
         raise ValueError(f'감독 실행 경로가 아직 없는 하네스: {harness}')
+    limits = request.get('repairLimits')
+    if limits:
+        count, attempts = limits.get('candidateCount'), limits.get('nativeAttempts')
+        if not isinstance(count, int) or count < 1 or not isinstance(attempts, int) or attempts < 1:
+            raise ValueError('자동 수정 실행 상한 형식 오류')
+        if harness == 'modern-chipset':
+            state = json.loads((Path(local('runs')) / request['round'] / 'state.json').read_text())
+            if not state.get('cands') or len(state['cands']) > count:
+                raise ValueError(f'수정 후보는 최대 {count}개여야 합니다. 기본 풀 재실행 금지.')
+            if any(c.get('status') != 'queued' for c in state['cands'].values()):
+                raise ValueError('수정 실행은 새로 준비한 queued 후보만 받습니다.')
+            env['VEH_HARNESS_ATTEMPTS'] = str(attempts)
+        elif harness == 'interior-props':
+            import sqlite3
+            database = Path(local('data')) / 'harness.sqlite'
+            with sqlite3.connect(database.as_uri() + '?mode=ro', uri=True) as db:
+                queued = db.execute("SELECT round,count(*) FROM runs WHERE status='queued' GROUP BY round").fetchall()
+                live = db.execute("SELECT count(*) FROM runs WHERE status='running'").fetchone()[0]
+            if live or not queued or any(n > count for _, n in queued):
+                raise ValueError(f'수정 풀은 진행 작업 없이 품목당 최대 {count}개의 새 후보만 준비해야 합니다.')
+            env['PROP_HARNESS_ATTEMPTS'] = str(attempts)
     override = request.get('modelOverride')
     if override:
         if not isinstance(override, dict) or harness != 'modern-chipset' or override.get('backend') not in ('codex', 'claude') or not isinstance(override.get('model'), str) or not override['model'].strip() or override.get('effort') not in ('low', 'medium', 'high'):

@@ -11,6 +11,8 @@ import { DEFAULT_IMAGE_MODEL, DEFAULT_IMAGE_PROVIDER_ID } from '../../src/ai/ima
 import { generateProviderImage } from './ohMyPiImageRuntime';
 import { generateCodexImage } from './codexImageRuntime';
 import { completeProvider } from './ohMyPiPiAiRuntime';
+import type { GenerateAiImageRequest } from '../../src/ai/imageGenerationClient';
+import type { Project } from '../../src/project/types';
 
 export const PI_PRESENTATION_GENERATORS = [TITLE_ART_TOOL, OPENING_IMAGE_TOOL] as const;
 
@@ -25,6 +27,7 @@ export function createPiPresentationTool(
     readOnlyTools?: boolean;
     apply: (name: string, args: Record<string, unknown>, signal?: AbortSignal) => Promise<unknown>;
     onCall: (record: PiToolCallRecord) => void;
+    renderToolImage?: (project: Project, toolName: string, data: unknown, signal?: AbortSignal) => Promise<string>;
   },
 ): PiToolShape {
   const keyFor = (provider: string) => options.providerApiKeys?.[provider] ?? (provider === request.provider ? options.apiKey : undefined);
@@ -41,10 +44,10 @@ export function createPiPresentationTool(
       let dataUrl: string;
       try {
         signal?.throwIfAborted();
-        const generateImage = async ({ prompt, signal: imageSignal }: { prompt: string; signal?: AbortSignal }) => {
+        const generateImage = async ({ prompt, signal: imageSignal, referenceImages }: GenerateAiImageRequest) => {
           const provider = request.imageProvider ?? DEFAULT_IMAGE_PROVIDER_ID;
           const model = request.imageModel ?? (provider === DEFAULT_IMAGE_PROVIDER_ID ? DEFAULT_IMAGE_MODEL : 'codex-image-default');
-          const payload = { prompt, model };
+          const payload = { prompt, model, ...(referenceImages ? { referenceImages } : {}) };
           const image = provider === 'openai-codex'
             ? await generateCodexImage(payload, { apiKey: keyFor(provider), signal: imageSignal })
             : await generateProviderImage(provider, payload, { apiKey: keyFor(provider), signal: imageSignal });
@@ -67,7 +70,13 @@ export function createPiPresentationTool(
           result = { ok: true, summary: '타이틀 원화를 생성·등록하고 작품 타이틀에 연결했습니다. 등장 순서·전환은 set_title_screen으로 구성하세요.',
             data: { resourceId, titleScreen: ctx.project.system.titleScreen } };
         } else {
-          const art = await generateOpeningStill(args, { signal, generateImage });
+          const art = await generateOpeningStill(args, { signal, generateImage,
+            resolveReference: async (resourceId, refSignal) => {
+              if (!options.renderToolImage) throw new Error('오프닝 참조 그림을 읽을 경로가 없습니다.');
+              const png = await options.renderToolImage(ctx.project, 'show_title_opening', { resourceId }, refSignal);
+              return png.startsWith('data:') ? png : `data:image/png;base64,${png}`;
+            },
+          });
           if (!art.ok) throw new Error(art.summary);
           dataUrl = art.dataUrl; resourceId = art.resourceId;
           await options.apply('upsert_resource', { resource: { id: resourceId, name: art.name, kind: 'picture', dataUrl } }, signal);

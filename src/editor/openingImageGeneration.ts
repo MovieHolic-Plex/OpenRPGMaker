@@ -5,12 +5,14 @@ import { generateAiImage, ImageGenerationError, type GenerateAiImageRequest, typ
 import { prepareGameOverImageRequest, prepareOpeningImageRequest } from "@/editor/tools/cinematicTools";
 import { ToolError } from "@/editor/tools/types";
 import { genId } from "@/util/id";
+import { parseImageReferences } from '@/ai/imageReferences';
 
 const IMAGE_DATA_URL = /^data:image\/(?:png|jpeg|webp);base64,[A-Za-z0-9+/]+=*$/u;
 
 export type CinematicStillRequest = {
   readonly signal?: AbortSignal;
   readonly generateImage?: (request: GenerateAiImageRequest) => Promise<GeneratedImageAsset>;
+  readonly resolveReference?: (resourceId: string, signal?: AbortSignal) => Promise<string>;
 };
 
 export type CinematicStillResult =
@@ -29,7 +31,8 @@ export function buildCinematicStillPrompt(prompt: string, purpose: "opening" | "
   return [
     `Create exactly one full-screen, 16:9 cinematic background still for the ${screen} of a 2D JRPG.`,
     "Scene brief: " + JSON.stringify(prompt.replace(/\s+/gu, " ").trim()) + ".",
-    `Fill the entire canvas with the scene. Compose it as a wide establishing shot with clear foreground, middle ground and background. ${clearArea}`,
+    `Fill the entire canvas with the scene. Honor the requested shot distance, viewpoint and composition: an establishing shot, medium shot and close-up must look visibly different. ${clearArea}`,
+    "If a reference image is supplied, preserve the same object design, character, location, palette and drawing style while composing the requested new shot. Show the specific story change, not a repeated view of the reference.",
     "Render it as hand-painted 2D game art with coherent lighting and restrained detail. Avoid photographic rendering and 3D-rendered surfaces.",
     "Do not add any text, letters, captions, logos, watermarks, signatures, interface elements, borders, letterboxing bars or icon-style framing. Do not return a sprite sheet, an item icon or a character portrait on a flat background.",
   ].join("\n\n");
@@ -58,9 +61,17 @@ export async function generateCinematicStill(
   }
   try {
     options.signal?.throwIfAborted();
+    let referenceImages;
+    if (purpose === 'opening' && args.referenceResourceId !== undefined) {
+      if (!options.resolveReference || typeof args.referenceResourceId !== 'string' || !args.referenceResourceId.trim()) throw new Error('참조 그림을 실제 자산 저장소에서 읽을 수 없습니다.');
+      const reference = await options.resolveReference(args.referenceResourceId, options.signal);
+      if (!IMAGE_DATA_URL.test(reference)) throw new Error('참조 그림 데이터가 올바르지 않습니다.');
+      referenceImages = parseImageReferences([{ mimeType: reference.slice(5, reference.indexOf(';')), data: reference.slice(reference.indexOf(',') + 1) }]);
+    }
     const image = await (options.generateImage ?? generateAiImage)({
       prompt: buildCinematicStillPrompt(prompt, purpose),
       signal: options.signal,
+      ...(referenceImages ? { referenceImages } : {}),
     });
     options.signal?.throwIfAborted();
     if (!IMAGE_DATA_URL.test(image.dataUrl)) {

@@ -31,3 +31,8 @@
 parking-kit은 부품별 PASS 외에 실제 조립 예시의 독립 검수가 필요하다. 감독의
 art-context-review.json(identity/scale/attachments/circulation/style)을 준비 없이 PASS로 만들지 않는다.
 사용자 반려와 parking-repair-brief.json이 있으면 작은 실제 자동차 기준 표본의 범위를 먼저 따른다.
+
+자동 수정 판에서는 art-feedback.json의 반영 내역을 남기고 원본/새 후보를 혼동하지 않는다.
+작은 주차장 표본의 receipt.candidates[].contextImages(path/sha256/label)는 실제 native 조립 PNG를,
+contextSources는 같은 장면의 기준 자동차 등 출처 파일을 가리킨다. 해당 파일을 새로 그리거나 결과를 위조하지 않는다.
+감독이 조립 예시를 별도 독립 작업자에게 검수시키며 실패하면 그 지적으로 다시 제작한다. 수집 작업자는 조립 PASS를 만들지 않는다.

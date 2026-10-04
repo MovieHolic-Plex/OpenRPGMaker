@@ -5,6 +5,17 @@
 
 <!-- releases -->
 
+## 0.119.0 — 2026-10-04
+
+### 기능
+
+- add chip selection with assembled candidate previews (#2069) (`67500b1`)
+
+### 수정
+
+- 주차장 조립 검수 실패 시 후보 선택 차단 (#2071) (`3bd7023`)
+- run ci-full vitest as one 8GB worker (`dbd7616`)
+
 ## 0.118.3 — 2026-10-04
 
 ### 수정

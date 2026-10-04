@@ -65,6 +65,7 @@ export function sceneWithKind(
     kind,
     resourceId,
     motion: scene.kind === "image" ? scene.motion : "none",
+    ...(scene.kind === 'image' && scene.direction ? { direction: structuredClone(scene.direction) } : {}),
   };
 }
 
