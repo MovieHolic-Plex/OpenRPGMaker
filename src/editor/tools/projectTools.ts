@@ -160,7 +160,9 @@ const setProjectSettings: ToolDefinition = {
         description: "게임 공통 글꼴: ui=메뉴·일반 UI, pixel=도트 UI, mono=고정폭 숫자/기록. 대사(dialogue.font)와 전투(battle.look.font)의 개별 선택이 우선한다. 지정한 역할만 바꾸며 빈 문자열은 그 역할을 기본값으로 되돌린다. 조선 도트 RPG에는 galmuri9/galmuri11, 고전 둥근 도트에는 neodgm이 어울린다.",
         properties: Object.fromEntries(FONT_ROLES.map((role) => [role, {
           type: "string" as const,
-          enum: ["", ...fontOptionsForRole(role).map((font) => font.id)],
+          // Gemini rejects empty strings inside enum, even when this tool is unused.
+          // The execution boundary below validates IDs and preserves the reset value.
+          description: `글꼴 ID: ${fontOptionsForRole(role).map((font) => font.id).join(", ")}. 빈 문자열은 기본값으로 되돌린다.`,
         }])),
         additionalProperties: false,
       },

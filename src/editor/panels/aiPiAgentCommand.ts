@@ -555,7 +555,7 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
         mapName: mapIds[0] ? base.maps[mapIds[0]]?.name ?? null : null, task: command.task });
     }
     showConstructionEvent(team ? event : scopePiGhostEvent(event, agentId));
-    if (event.type === "assistant") lastAssistantText = event.text;
+    if (event.type === "assistant" || event.type === "team_report") lastAssistantText = event.text;
     // 팀 모드의 오류도 실행 요약에 실린다. 예전에는 여기서 곧장 return 해 streamErrors 가 늘 비었고,
     // 팀 런은 오류를 한 건도 안 낸 것처럼 기록됐다.
     if (event.type === "error" && streamErrors.length < 3) streamErrors.push(event.message);
@@ -756,31 +756,37 @@ ${contractReleased.message}`);
       + " 에이전트의 답과 달리 프로젝트는 그대로입니다.";
     // 「적용됨」은 커밋된 실행에만 쓴다 — 계획 턴과 답(질문) 턴은 바뀌지 않는 것이 정상이고,
     // "바뀐 것이 없다" 로 끝내면 성공한 질문이 실패로 읽힌다(2026-09-12 실측).
-    const caption = options.planOnly
-      ? "계획만 세웠습니다. 실행하려면 같은 지시를 다시 보내세요."
-      : droppedEverything
-        ? spillReason
-        : answer
-          ? "프로젝트는 바뀌지 않았습니다."
-          : "확인을 마쳤어요. 프로젝트는 바꾸지 않았어요.";
     ghost.dispose();
-    publishFinalOutcome();
     boardState = droppedEverything
       ? markTeamBoardFailed(boardState, spillReason)
       : markTeamBoardDone(
         boardState,
         options.planOnly ? "계획만 세웠습니다." : answer ? "답변했습니다 — 프로젝트는 그대로입니다." : "바뀐 것이 없습니다.",
       );
+    const failed = boardState.phase === "실패";
+    const failureReason = failed ? boardState.error
+      || boardState.agents.filter(agent => agent.state === "실패").map(agent => `${agent.roleLabel}: ${agent.summary || agent.lastLine}`).join("\n")
+      || "작업을 끝내지 못했어요." : undefined;
+    const caption = failed
+      ? droppedEverything ? spillReason : "작업을 끝내지 못했어요. 프로젝트는 바꾸지 않았어요."
+      : options.planOnly
+        ? "계획만 세웠습니다. 실행하려면 같은 지시를 다시 보내세요."
+        : answer ? "프로젝트는 바뀌지 않았습니다." : "확인을 마쳤어요. 프로젝트는 바꾸지 않았어요.";
+    if (failed) {
+      boardState = { ...boardState, applied: caption };
+      if (streamErrors.length === 0) streamErrors.push(failureReason!);
+    }
+    publishFinalOutcome();
     sync();
     finishLog({
       applied: false,
       changedCount: 0,
-      stoppedReason: options.planOnly ? "계획만" : droppedEverything ? "범위 밖 버림" : answer ? "답변" : "변경 없음",
+      stoppedReason: failed ? "작업 실패" : options.planOnly ? "계획만" : answer ? "답변" : "변경 없음",
       // 실행 기록의 ok 는 error 유무로 정해진다(activityLog). 버려진 턴을 성공으로 적으면
       // `npm run ai:log --failed` 가 이 실패를 영영 못 본다.
-      ...(droppedEverything ? { error: spillReason } : {}),
+      ...(failed ? { error: failureReason } : {}),
     });
-    surface.setStatus(droppedEverything ? "적용 실패" : "대기");
+    surface.setStatus(failed ? "작업 실패" : "대기");
     // 답이 곧 결과인 턴은 본문 말풍선이 먼저다 — 보드의 잘린 한 줄·시스템 줄이 답 앞에 서지 않게 한다.
     if (answer && !droppedEverything) surface.appendBubble("assistant", answer);
     if (streamErrors.length) {
@@ -789,7 +795,7 @@ ${contractReleased.message}`);
     }
     if (droppedEverything) surface.appendProcess?.(spillReason);
     surface.appendBubble("system", droppedEverything ? "요청한 변경이 선택한 작업 범위를 벗어나 적용하지 않았어요. 작업 범위를 바꿔 다시 요청해 주세요." : caption);
-    return true;
+    return !failed;
   }
   // 영수증이 그릴 맵: 먼저 바뀐 맵, 없으면 지시 범위의 첫 맵, 그것도 없으면 프로젝트의 첫 맵.
   // 마지막 후보가 없으면 맵 없는 프로젝트에서 영수증이 통째로 사라진다(그림은 못 그려도 이름은 남아야 한다).
