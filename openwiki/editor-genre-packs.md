@@ -236,7 +236,8 @@ falls back to the old branch image bank. Model judgment is not a mathematical
 certification of historical hardware bit depth.
 
 The header and navigation are outside the scrolling content, including the final
-confirmation. The shared first-world arrival permits selecting a genre and
+confirmation. The launcher `create()` also accepts an empty idea after genre
+selection; it must not retain the old mandatory one-sentence guard. The shared first-world arrival permits selecting a genre and
 starting with no typing; optional prose and example text remain available. There
 are no shortcut hints in these early surfaces. New-project name and screen-size
 controls remain visible with a separate scrolling content area and fixed actions.
