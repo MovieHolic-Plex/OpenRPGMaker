@@ -2,6 +2,7 @@ import { isRetiredInteriorTileset, retiredInteriorMessage } from "@/project/reti
 import { isDungeonSheetTilesetId } from "@/project/defaults/dungeonSheetTilesets";
 import { referenceManifest, referenceOwner, referencePage, referencePageStarts, referenceRevision } from "@/project/tilesetReferences";
 import { ToolError, type ToolDefinition } from "./types";
+import type { Project } from '@/project/types';
 
 /** 선택 인자를 빈 문자열로 채워 보내는 모델(엄격 스키마 — 2026-10-01 r2 시험: imageId:"" 로 12번 실패)을 위해 빈 id 는 없는 것으로 본다. */
 function withoutEmptyIds(args: Record<string, unknown>): Record<string, unknown> {
@@ -12,6 +13,8 @@ function withoutEmptyIds(args: Record<string, unknown>): Record<string, unknown>
 
 export const TILESET_REFERENCE_READ_TOOLS = ["list_tileset_references", "read_tileset_reference"] as const;
 export const TILESET_REFERENCE_WRITERS: ReadonlySet<string> = new Set([
+  "stamp_worldmap_icon",
+  "design_terrain", "place_terrain_house", "lay_terrain_road", "place_terrain_ramp",
   "stamp_forest_recipe", "stamp_tile_recipe", "stamp_tileset_object", "build_pack_town",
   "create_map", "duplicate_map", "resize_map", "shift_map", "set_map_properties", "copy_map_region", "move_region", "import_region_reference", "stamp_object", "mirror_region", "clear_map", "build_shared_scene",
   "paint_tiles", "paint_road", "build_house", "build_village", "stamp_structure", "clear_region", "author_house", "author_village",
@@ -21,7 +24,7 @@ export const TILESET_REFERENCE_WRITERS: ReadonlySet<string> = new Set([
   "start_interior_room_session", "advance_interior_room_build", "run_interior_room_pipeline", "furnish_interior_space",
   "start_dungeon_room_session", "advance_dungeon_room_build", "run_dungeon_room_pipeline",
   "run_village_pipeline", "start_village_session", "advance_village_build", "run_village_session", "plant_tree_clusters",
-  "arrange_tall_grass", "author_beodeul_town",
+  "arrange_tall_grass", "author_beodeul_town", "build_concept_example",
 ]);
 
 /**
@@ -41,13 +44,26 @@ export const TILESET_REFERENCE_TILE_CHOOSERS: ReadonlySet<string> = new Set([
   "stamp_layer_block", "paint_shadow",
 ]);
 
+/** A terrain kit is still a material choice, even when sent through an object API. */
+export function terrainStampSource(project: Project, name: string, args: Record<string, unknown>): string | undefined {
+  if (name !== 'stamp_object' || typeof args.objectId !== 'string' || !args.objectId.startsWith('kit:')) return undefined;
+  const rest = args.objectId.slice(4), slash = rest.indexOf('/');
+  if (slash < 1) return undefined;
+  const id = rest.slice(0, slash), kitId = rest.slice(slash + 1);
+  const kit = project.tilesets[id]?.structureKits?.find(k => k.id === kitId);
+  return kit?.ai?.role === 'terrain' ? id : undefined;
+}
+
 /** Purpose is explicit structured author intent, never inferred from prompt keywords. */
 export function withTilesetReferencePurpose(tool: ToolDefinition): ToolDefinition {
   if (!TILESET_REFERENCE_WRITERS.has(tool.name)) return tool;
   const gated = TILESET_REFERENCE_TILE_CHOOSERS.has(tool.name);
-  const description = gated ? `${tool.description} 타일셋 참고문서가 있으면 해당 용도를 먼저 조회한다.` : tool.description;
+  const terrainStamp = tool.name === 'stamp_object';
+  const description = gated ? `${tool.description} 타일셋 참고문서가 있으면 해당 용도를 먼저 조회한다.`
+    : terrainStamp ? `${tool.description} ai.role=terrain인 지형 키트는 재질 선택이므로 원본 타일셋의 해당 용도 MD 전체와 이미지를 먼저 읽어야 한다. 소품 도구로 참고문서 검사를 우회할 수 없다. 넓은 바닥·산책길은 fill_region/lay_path를 사용한다.` : tool.description;
   const purpose = gated
     ? "list_tileset_references의 용도 ID. 용도가 하나면 생략 가능. 선택한 용도의 MD 모든 페이지와 이미지를 먼저 읽어야 한다."
+    : terrainStamp ? '지형 키트에서는 원본 타일셋 참고문서의 용도 ID가 필요하다. 해당 용도 MD 전체와 이미지를 먼저 읽는다. 완성 소품 키트는 선택.'
     : "선택. 이 도구는 타일을 코드가 고르므로 타일셋 참고문서를 먼저 읽지 않아도 된다.";
   return { ...tool, description, parameters: {
     ...tool.parameters, properties: { ...tool.parameters.properties, referencePurpose: { type: "string", description: purpose } },
@@ -128,7 +144,8 @@ export const TILESET_REFERENCE_TOOLS: readonly ToolDefinition[] = [
         const pages = referencePageStarts(doc.markdown);
         return { summary: `${group.name} / ${doc.name} (${offset}–${page.end}, ${pages.indexOf(offset) + 1}/${pages.length}쪽)`, data: { ...base, document: { id: doc.id, name: doc.name, markdown: page.text, offset, nextOffset: page.nextOffset, page: pages.indexOf(offset) + 1, pages: pages.length, totalCharacters: doc.markdown.length } } };
       }
-      if (args.offset !== undefined) throw new ToolError("이미지에는 offset을 사용하지 않습니다.");
+      // Strict providers fill optional numeric fields with zero. An image's first page is the whole image.
+      if (args.offset !== undefined && args.offset !== 0) throw new ToolError("이미지 offset은 생략하거나 0이어야 합니다.");
       const img = group.images.find(i => i.id === args.imageId);
       if (!img) throw new ToolError(`첨부 이미지를 찾을 수 없습니다 — ${unknownIdMessage("imageId", args.imageId, group.images.map(i => i.id))}`);
       return { summary: `${group.name} / ${img.name} — 실제 이미지를 확인하세요.`, data: { ...base, image: { id: img.id, name: img.name, caption: img.caption } } };

@@ -1,0 +1,23 @@
+[
+  "find_tools",
+  "read_project_wiki",
+  "tile_query",
+  "create_map",
+  "resize_map",
+  "ask_tileset_change",
+  "get_project_summary",
+  "list_resources",
+  "get_database_records",
+  "focus_editor_view",
+  "web_search",
+  "get_map_region",
+  "find_events",
+  "get_event",
+  "find_layout_regions",
+  "edit_world_terrain",
+  "author_village",
+  "tile_erase",
+  "place_npc",
+  "upsert_enemy",
+  "author_beodeul_town"
+]

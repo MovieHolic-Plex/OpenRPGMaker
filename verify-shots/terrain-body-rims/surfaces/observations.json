@@ -1,0 +1,259 @@
+{
+  "projectId": "9f70cb93-c831-4ab9-a6fe-d46a3634beff",
+  "revision": 21,
+  "canonicalMapsWritten": false,
+  "results": [
+    {
+      "style": "default",
+      "untouchedNativePixels": 792720,
+      "outlinedPixels": 3972,
+      "rearBankWallPixels": 2532,
+      "partialMatchesFull": true,
+      "pickGeometryMatchesVisible": true,
+      "rearBankPickSamples": 8
+    },
+    {
+      "style": "jungle",
+      "untouchedNativePixels": 792720,
+      "outlinedPixels": 3972,
+      "rearBankWallPixels": 2532,
+      "partialMatchesFull": true,
+      "pickGeometryMatchesVisible": true,
+      "rearBankPickSamples": 8
+    },
+    {
+      "style": "tropical",
+      "untouchedNativePixels": 792720,
+      "outlinedPixels": 3972,
+      "rearBankWallPixels": 2532,
+      "partialMatchesFull": true,
+      "pickGeometryMatchesVisible": true,
+      "rearBankPickSamples": 8
+    },
+    {
+      "style": "skyisle",
+      "untouchedNativePixels": 792720,
+      "outlinedPixels": 3972,
+      "rearBankWallPixels": 2532,
+      "partialMatchesFull": true,
+      "pickGeometryMatchesVisible": true,
+      "rearBankPickSamples": 8
+    },
+    {
+      "style": "swamp",
+      "untouchedNativePixels": 792720,
+      "outlinedPixels": 3972,
+      "rearBankWallPixels": 2532,
+      "partialMatchesFull": true,
+      "pickGeometryMatchesVisible": true,
+      "rearBankPickSamples": 8
+    },
+    {
+      "style": "swamp-peat",
+      "untouchedNativePixels": 777028,
+      "outlinedPixels": 3828,
+      "rearBankWallPixels": 16752,
+      "partialMatchesFull": true,
+      "pickGeometryMatchesVisible": true,
+      "rearBankPickSamples": 8
+    },
+    {
+      "style": "swamp-dead",
+      "untouchedNativePixels": 777028,
+      "outlinedPixels": 3828,
+      "rearBankWallPixels": 16752,
+      "partialMatchesFull": true,
+      "pickGeometryMatchesVisible": true,
+      "rearBankPickSamples": 8
+    },
+    {
+      "style": "plague",
+      "untouchedNativePixels": 792720,
+      "outlinedPixels": 3972,
+      "rearBankWallPixels": 2532,
+      "partialMatchesFull": true,
+      "pickGeometryMatchesVisible": true,
+      "rearBankPickSamples": 8
+    },
+    {
+      "style": "mushroom",
+      "untouchedNativePixels": 792720,
+      "outlinedPixels": 3972,
+      "rearBankWallPixels": 2532,
+      "partialMatchesFull": true,
+      "pickGeometryMatchesVisible": true,
+      "rearBankPickSamples": 8
+    },
+    {
+      "style": "savanna",
+      "untouchedNativePixels": 792720,
+      "outlinedPixels": 3972,
+      "rearBankWallPixels": 2532,
+      "partialMatchesFull": true,
+      "pickGeometryMatchesVisible": true,
+      "rearBankPickSamples": 8
+    },
+    {
+      "style": "badlands",
+      "untouchedNativePixels": 792720,
+      "outlinedPixels": 3972,
+      "rearBankWallPixels": 2532,
+      "partialMatchesFull": true,
+      "pickGeometryMatchesVisible": true,
+      "rearBankPickSamples": 8
+    },
+    {
+      "style": "saltflat",
+      "untouchedNativePixels": 792720,
+      "outlinedPixels": 3972,
+      "rearBankWallPixels": 2532,
+      "partialMatchesFull": true,
+      "pickGeometryMatchesVisible": true,
+      "rearBankPickSamples": 8
+    },
+    {
+      "style": "desert",
+      "untouchedNativePixels": 792720,
+      "outlinedPixels": 3972,
+      "rearBankWallPixels": 2532,
+      "partialMatchesFull": true,
+      "pickGeometryMatchesVisible": true,
+      "rearBankPickSamples": 8
+    },
+    {
+      "style": "sandstone",
+      "untouchedNativePixels": 792720,
+      "outlinedPixels": 3972,
+      "rearBankWallPixels": 2532,
+      "partialMatchesFull": true,
+      "pickGeometryMatchesVisible": true,
+      "rearBankPickSamples": 8
+    },
+    {
+      "style": "dune",
+      "untouchedNativePixels": 792720,
+      "outlinedPixels": 3972,
+      "rearBankWallPixels": 2532,
+      "partialMatchesFull": true,
+      "pickGeometryMatchesVisible": true,
+      "rearBankPickSamples": 8
+    },
+    {
+      "style": "desert-cut",
+      "untouchedNativePixels": 792720,
+      "outlinedPixels": 3972,
+      "rearBankWallPixels": 2532,
+      "partialMatchesFull": true,
+      "pickGeometryMatchesVisible": true,
+      "rearBankPickSamples": 8
+    },
+    {
+      "style": "dune-cut",
+      "untouchedNativePixels": 792720,
+      "outlinedPixels": 3972,
+      "rearBankWallPixels": 2532,
+      "partialMatchesFull": true,
+      "pickGeometryMatchesVisible": true,
+      "rearBankPickSamples": 8
+    },
+    {
+      "style": "grass-cliff",
+      "untouchedNativePixels": 792720,
+      "outlinedPixels": 3972,
+      "rearBankWallPixels": 2532,
+      "partialMatchesFull": true,
+      "pickGeometryMatchesVisible": true,
+      "rearBankPickSamples": 8
+    },
+    {
+      "style": "tundra",
+      "untouchedNativePixels": 792720,
+      "outlinedPixels": 3972,
+      "rearBankWallPixels": 2532,
+      "partialMatchesFull": true,
+      "pickGeometryMatchesVisible": true,
+      "rearBankPickSamples": 8
+    },
+    {
+      "style": "tundra-snow",
+      "untouchedNativePixels": 791043,
+      "outlinedPixels": 3972,
+      "rearBankWallPixels": 2532,
+      "partialMatchesFull": true,
+      "pickGeometryMatchesVisible": true,
+      "rearBankPickSamples": 8
+    },
+    {
+      "style": "taiga",
+      "untouchedNativePixels": 792720,
+      "outlinedPixels": 3972,
+      "rearBankWallPixels": 2532,
+      "partialMatchesFull": true,
+      "pickGeometryMatchesVisible": true,
+      "rearBankPickSamples": 8
+    },
+    {
+      "style": "elf",
+      "untouchedNativePixels": 792720,
+      "outlinedPixels": 3972,
+      "rearBankWallPixels": 2532,
+      "partialMatchesFull": true,
+      "pickGeometryMatchesVisible": true,
+      "rearBankPickSamples": 8
+    },
+    {
+      "style": "gothic",
+      "untouchedNativePixels": 792720,
+      "outlinedPixels": 3972,
+      "rearBankWallPixels": 2532,
+      "partialMatchesFull": true,
+      "pickGeometryMatchesVisible": true,
+      "rearBankPickSamples": 8
+    },
+    {
+      "style": "holy",
+      "untouchedNativePixels": 792720,
+      "outlinedPixels": 3972,
+      "rearBankWallPixels": 2532,
+      "partialMatchesFull": true,
+      "pickGeometryMatchesVisible": true,
+      "rearBankPickSamples": 8
+    },
+    {
+      "style": "steampunk",
+      "untouchedNativePixels": 792720,
+      "outlinedPixels": 3972,
+      "rearBankWallPixels": 2532,
+      "partialMatchesFull": true,
+      "pickGeometryMatchesVisible": true,
+      "rearBankPickSamples": 8
+    },
+    {
+      "style": "dwarf",
+      "untouchedNativePixels": 792720,
+      "outlinedPixels": 3972,
+      "rearBankWallPixels": 2532,
+      "partialMatchesFull": true,
+      "pickGeometryMatchesVisible": true,
+      "rearBankPickSamples": 8
+    },
+    {
+      "style": "blight",
+      "untouchedNativePixels": 792720,
+      "outlinedPixels": 3972,
+      "rearBankWallPixels": 2532,
+      "partialMatchesFull": true,
+      "pickGeometryMatchesVisible": true,
+      "rearBankPickSamples": 8
+    },
+    {
+      "style": "crystal",
+      "untouchedNativePixels": 792720,
+      "outlinedPixels": 3972,
+      "rearBankWallPixels": 2532,
+      "partialMatchesFull": true,
+      "pickGeometryMatchesVisible": true,
+      "rearBankPickSamples": 8
+    }
+  ]
+}

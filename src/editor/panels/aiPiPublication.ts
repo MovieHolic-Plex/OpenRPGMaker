@@ -4,15 +4,21 @@ import type { PiProjectCheckpoint } from "@/ai/piAgent/protocol";
 import { changedProjectKeys, restoreCheckpointProject } from "@/ai/piAgent/protocol";
 import { mapLossConfirmRequest } from "@/ai/mapDestructionConfirm";
 import { applyProposedProject, captureApplyAuthority } from "@/editor/tools/applyChangesetToStore";
+import { describeMergeConflicts } from "@/project/projectMerge";
 import { adoptSpatialToolProof } from "@/editor/tools/spatialToolState";
 import type { Project } from "@/project/types";
-import { showConfirm } from "@/editor/ui/modal";
+import { requestAssistantDecision } from "./aiDecisionPrompt";
 import { createPendingReviewPrompt } from "./aiPendingReview";
 import { openWideChangeViewer } from "./aiChangePreview";
 import type { PiCommandSurface } from "./aiPiAgentCommand";
 
-/** A single serialized authoring lineage. Never recapture authority from unrelated live edits. */
+/**
+ * A single serialized authoring lineage. Never recapture authority from unrelated live edits.
+ * 단, 같은 프로젝트 안에서 사람이나 다른 맵의 실행이 그 사이 고친 것은 거절하지 않고 3-way 병합으로 살린다
+ * (`rebase` — 겹친 자리는 스토어 값을 남기고 작업 과정에 적는다). 다음 체크포인트의 계보는 병합 결과다.
+ */
 export function createPiPublication(base: Project, mode: PiApplyMode, surface: PiCommandSurface, presentation?: {
+  humanEdits?: import("@/editor/assistantHumanEdits").AssistantHumanEdits;
   beforeApply(before: Project, next: Project): Promise<void>;
   afterApply(project: Project): void;
 }) {
@@ -32,9 +38,9 @@ export function createPiPublication(base: Project, mode: PiApplyMode, surface: P
       apply: () => finish(true), discard: () => finish(false),
       report: () => openWideChangeViewer({ before: project, after: next, mapId: surface.getCurrentMapId() ?? Object.keys(next.maps)[0] ?? "", title, state: "proposed" }),
     });
-    prompt.root.querySelector("p")!.textContent = `${title} — 확인하고 적용하면 다음 단계로 진행합니다.`;
+    prompt.root.querySelector("p")!.textContent = `답변 필요 · ${title} — 확인하고 적용하면 다음 단계로 진행합니다.`;
     (surface.appendReviewPrompt ?? surface.appendCard)(prompt.root);
-    surface.setStatus("단계 적용 대기");
+    surface.setStatus("답변 필요");
     surface.signal?.addEventListener("abort", abort, { once: true });
   });
   const publish = async (checkpoint: PiProjectCheckpoint): Promise<Project> => {
@@ -45,7 +51,7 @@ export function createPiPublication(base: Project, mode: PiApplyMode, surface: P
     if (mode === "step") await approveStage(next, checkpoint.label);
     const loss = mapLossConfirmRequest(project, next) ?? (isMapDestruction(checkpoint.toolName) ? { title: "맵 전체 청소 확인", message: "맵의 타일을 전부 비웁니다. 계속할까요?", confirmLabel: "전체 청소", cancelNotice: "맵 청소를 취소했습니다." } : null);
     if (loss && mode !== "yolo" && mode !== "auto") {
-      const accepted = await showConfirm({ title: loss.title, message: loss.message, confirmLabel: loss.confirmLabel, cancelLabel: "그만두기", danger: true });
+      const accepted = await requestAssistantDecision(surface, { title: loss.title, message: loss.message, confirmLabel: loss.confirmLabel, cancelLabel: "그만두기", danger: true });
       if (!accepted) throw new Error(loss.cancelNotice);
     }
     surface.signal?.throwIfAborted();
@@ -53,11 +59,14 @@ export function createPiPublication(base: Project, mode: PiApplyMode, surface: P
     surface.signal?.throwIfAborted();
     adoptSpatialToolProof(next, checkpoint.spatialProof, project);
     const result = await applyProposedProject(next, {
+      humanEdits: presentation?.humanEdits,
       base: authority, baseline, source: "agent-milestone",
       summary: checkpoint.label, toolNames: [checkpoint.toolName],
       mapDestructionApproved: !!loss || mode === "yolo" || mode === "auto",
       skipSnapshot: mode !== "step" && count > 0,
       snapshotLabel: `AI ${checkpoint.label}`, snapshotMapId: surface.getCurrentMapId(),
+      rebase: { lineage: project },
+      ...(surface.focus ? { focus: surface.focus } : {}),
       onApplied: applied => {
         project = applied.commitProject ?? applied.applied;
         // Invoked at the actual mutation boundary, before subscribers can edit the store.
@@ -66,6 +75,8 @@ export function createPiPublication(base: Project, mode: PiApplyMode, surface: P
       },
     });
     if (!result.ok) throw new Error(`적용 실패(${result.reason}): ${result.issue ?? "무결성 오류"}`);
+    if (result.merge?.conflicts.length) surface.appendProcess?.(`다른 편집과 같은 자리를 바꿔 이미 반영된 쪽을 남겼어요: ${describeMergeConflicts(result.merge)}`);
+    if (result.preservedCells) surface.appendProcess?.(`직접 편집한 ${result.preservedCells}칸을 보존했어요.`);
     presentation?.afterApply(project);
     surface.setStatus("실제 맵에 반영하며 작업 중…");
     return project;

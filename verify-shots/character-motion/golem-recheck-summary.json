@@ -1,0 +1,101 @@
+{
+  "clips": 1,
+  "errors": [],
+  "rows": [
+    {
+      "skill": "skill_character_actor_golem_moss",
+      "completed": true,
+      "poses": [
+        {
+          "at": 14192,
+          "actor": "actor_golem_moss",
+          "pose": "idle",
+          "flip": false
+        },
+        {
+          "at": 14208,
+          "actor": "actor_golem_moss",
+          "pose": "attack_windup",
+          "flip": false
+        },
+        {
+          "at": 14387,
+          "actor": "actor_golem_moss",
+          "pose": "walk_b",
+          "flip": false
+        },
+        {
+          "at": 14569,
+          "actor": "actor_golem_moss",
+          "pose": "attack_windup",
+          "flip": false
+        },
+        {
+          "at": 14615,
+          "actor": "actor_golem_moss",
+          "pose": "attack_strike",
+          "flip": false
+        },
+        {
+          "at": 14823,
+          "actor": "actor_golem_moss",
+          "pose": "attack_follow",
+          "flip": false
+        },
+        {
+          "at": 14837,
+          "actor": "actor_golem_moss",
+          "pose": "walk_a",
+          "flip": true
+        },
+        {
+          "at": 14936,
+          "actor": "actor_golem_moss",
+          "pose": "walk_b",
+          "flip": true
+        },
+        {
+          "at": 15012,
+          "actor": "actor_golem_moss",
+          "pose": "walk_c",
+          "flip": true
+        },
+        {
+          "at": 15100,
+          "actor": "actor_golem_moss",
+          "pose": "walk_b",
+          "flip": true
+        },
+        {
+          "at": 15177,
+          "actor": "actor_golem_moss",
+          "pose": "walk_a",
+          "flip": true
+        },
+        {
+          "at": 15268,
+          "actor": "actor_golem_moss",
+          "pose": "walk_b",
+          "flip": true
+        },
+        {
+          "at": 15341,
+          "actor": "actor_golem_moss",
+          "pose": "idle",
+          "flip": false
+        }
+      ],
+      "cells": [
+        "idle",
+        "windup",
+        "move",
+        "windup",
+        "attack",
+        "recover",
+        "move",
+        "idle"
+      ],
+      "problems": []
+    }
+  ]
+}

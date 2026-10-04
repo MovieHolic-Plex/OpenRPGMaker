@@ -108,7 +108,7 @@ function verdictOf(it) { return it.review && it.review.status === 'done' ? it.re
 function visible() {
   return S.items.filter((it) => (F.set === 'all' || it.set === F.set) &&
     (F.show === 'all' || (F.show === 'todo' && !it.decision) || (F.show === 'fail' && verdictOf(it) === 'FAIL') ||
-     (F.show === 'pass' && verdictOf(it) === 'PASS') || (F.show === 'acc' && it.decision?.decision === 'accept') ||
+     (F.show === 'pass' && verdictOf(it) === 'PASS') || (F.show === 'acc' && ['accept', 'pick'].includes(it.decision?.decision)) ||
      (F.show === 'rej' && it.decision?.decision === 'reject')));
 }
 function render() { renderFilters(); renderList(); renderMain(); renderProg(); }
@@ -132,7 +132,8 @@ function renderFilters() {
   $('bBulk').onclick = async () => {
     if (!bulk.length || !confirm(`${scope}에서 검수 ✓ 이고 아직 안 정한 ${bulk.length}장을 받는다. 검수 ✗ 와 이미 정한 것은 건드리지 않는다.`)) return;
     const ids = bulk.map((it) => it.id);
-    const r = await fetch('/api/decide_bulk', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ids, decision: 'accept' }) });
+    const baseShas = Object.fromEntries(bulk.map((it) => [it.id, it.sha]));
+    const r = await fetch('/api/decide_bulk', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ids, baseShas, decision: 'accept' }) });
     if (!r.ok) { alert('저장 실패: ' + await r.text()); return; }
     lastBulk = ids; await load(true);
   };
@@ -214,7 +215,10 @@ async function loadRounds(id) {
         <div class="why">${esc(c.direction.split(' — ')[0])}${c.body?.reads_as ? ' · ' + esc(c.body.reads_as) : ''}${c.check && !c.check.ok ? ' · 깨짐: ' + esc(c.check.problems.join('; ')) : ''}</div>
         ${c.has_img && !busy && (c.verdict === 'PASS' || /^(render|hand):/.test(c.engine || '')) ? `<div class="btns"><button class="pk" data-pick="${c.key}">이걸로</button><button class="dp" data-drop="${c.key}">✕ 버림</button><button data-base="${c.key}">이걸로 다시 그리기</button></div>` : ''}
       </div>`; }).join('')}</div>${rd.cands.some((c) => c.status === 'discarded' || c.status === 'broken') ? `<div class="cur" style="margin-top:6px">시점 위반으로 자동 폐기 ${rd.cands.filter((c) => c.status === 'discarded' || c.status === 'broken').length}장 — 고를 수 없고, 판 안에서 새 후보로 다시 그린다.</div>` : ''}</div>`).join('') || '<p class="cur" style="margin-top:10px">아직 다시 그린 판이 없다.</p>';
-  $('rounds').querySelectorAll('[data-pick]').forEach((b) => b.onclick = () => candDecide(id, 'pick', b.dataset.pick));
+  $('rounds').querySelectorAll('[data-pick]').forEach((b) => b.onclick = () => {
+    const c = rounds.flatMap((rd) => rd.cands).find((c) => c.key === b.dataset.pick);
+    candDecide(id, 'pick', c.key, c.image_sha256, c.attempt);
+  });
   $('rounds').querySelectorAll('[data-drop]').forEach((b) => b.onclick = () => candDecide(id, 'drop', b.dataset.drop));
   $('rounds').querySelectorAll('[data-base]').forEach((b) => b.onclick = () => openRound(id, b.dataset.base));
   clearTimeout(roundsTimer);
@@ -228,10 +232,10 @@ async function openRound(id, base) {
   $('rdMsg').textContent = r.ok ? `판 ${d.round} 시작 — 한 장에 몇 분 걸린다` : '실패: ' + (d.error || r.status);
   $('rdNote').value = ''; loadRounds(id);
 }
-async function candDecide(id, decision, cand) {
+async function candDecide(id, decision, cand, imageSha256, attempt) {
   if (decision === 'drop' && !rej.size && !$('note').value.trim()) { $('reasons').animate([{ opacity: .3 }, { opacity: 1 }], 400); $('reasons').scrollIntoView({ block: 'nearest' }); return; }
   const r = await fetch('/api/decide', { method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ id, decision, cand, reasons: decision === 'drop' ? [...rej] : [], note: $('note').value.trim() }) });
+    body: JSON.stringify({ id, decision, cand, imageSha256, attempt, baseSha: S.items.find((it) => it.id === id)?.sha, reasons: decision === 'drop' ? [...rej] : [], note: $('note').value.trim() }) });
   if (!r.ok) { alert('저장 실패: ' + await r.text()); return; }
   rej.clear(); await load(true);
 }
@@ -239,7 +243,7 @@ async function decide(decision) {
   const it = S.items.find((x) => x.id === sel); if (!it) return;
   if (decision === 'reject' && !rej.size && !$('note').value.trim()) { $('reasons').animate([{ opacity: .3 }, { opacity: 1 }], 400); return; }
   const r = await fetch('/api/decide', { method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ id: it.id, decision, reasons: decision === 'reject' ? [...rej] : [], note: $('note').value.trim() }) });
+    body: JSON.stringify({ id: it.id, decision, baseSha: it.sha, reasons: decision === 'reject' ? [...rej] : [], note: $('note').value.trim() }) });
   if (!r.ok) { alert('저장 실패: ' + await r.text()); return; }
   rej.clear();
   const vis = visible(), i = vis.findIndex((x) => x.id === sel);

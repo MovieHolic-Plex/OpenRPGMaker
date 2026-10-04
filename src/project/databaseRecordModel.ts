@@ -1,3 +1,5 @@
+import { CHARACTER_MOTION_STYLES } from "@/battle/characterMotion";
+import { normalizeBattleGimmick } from "@/battle/battleGimmickRules";
 import { normalizeGallerySettings } from "./gallery";
 import { normalizeBattleAura } from "@/assets/battleStateAuras";
 import { normalizeSkillChoreographyRecords } from "./skillChoreographyRecords";
@@ -12,7 +14,7 @@ import {
   clampLevel,
   normalizeActorRecord,
 } from "@/project/actorModel";
-import { DEFAULT_BATTLE_SKIN_ID, resolveSkinId } from "@/battle/skins/registry";
+import { DEFAULT_BATTLE_SKIN_ID, resolveSkinId, retiredSkinLookWindow } from "@/battle/skins/registry";
 import { isPokemonMoveMotion } from "@/battle/pokemonMoveMotion";
 import { DEFAULT_BATTLE_HIT_FEEL, isBattleHitFeel } from "@/project/battleHitFeel";
 import { normalizeDisplayFilter } from "@/project/displayFilter";
@@ -195,6 +197,17 @@ export function normalizeSystemWindowSkinId(value: unknown): string | undefined 
   return id;
 }
 
+/**
+ * 지운 측면 스킨(먹빛·청람·세피아·금갈색·유리)의 창 색을 전투 화면 꾸미기 창으로 옮긴다(2026-10-02).
+ * 꾸밈을 손대지 않은 프로젝트(프리셋·창 칸이 없음)에서만 — 꾸밈을 고른 프로젝트는 그 꾸밈 창이 이미 보이고 있었다.
+ */
+function battleLookWithRetiredSkinWindow(system: { battleUiStyle?: unknown; battleLook?: unknown }): unknown {
+  const lookWindow = retiredSkinLookWindow(system.battleUiStyle);
+  const look = system.battleLook && typeof system.battleLook === "object" ? system.battleLook as Record<string, unknown> : undefined;
+  if (!lookWindow || look?.preset !== undefined || look?.window !== undefined) return system.battleLook;
+  return { ...look, window: lookWindow };
+}
+
 export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<SystemRecords, "startActorIds">): SystemRecords {
   const titleResourceId = cleanOptionalId(system.titleResourceId);
   const typeChart = normalizeTypeChart(system.typeChart);
@@ -262,7 +275,7 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
       : {}),
     ...(normalizeDisplayFilter(system.displayFilter) ? { displayFilter: normalizeDisplayFilter(system.displayFilter) } : {}),
     // 전투 화면 꾸미기도 같은 계약 — 프리셋과 같은 칸·미등록 값은 저장하지 않는다(project/battleLook.ts).
-    ...(normalizeBattleLook(system.battleLook) ? { battleLook: normalizeBattleLook(system.battleLook) } : {}),
+    ...(normalizeBattleLook(battleLookWithRetiredSkinWindow(system)) ? { battleLook: normalizeBattleLook(battleLookWithRetiredSkinWindow(system)) } : {}),
     // ESC 메뉴 스킨도 같은 계약 — 기본(workbench)과 미등록 값은 저장하지 않고 명시 선택만 남긴다.
     ...(isMenuSkinId(system.menuUiStyle) && system.menuUiStyle !== DEFAULT_MENU_SKIN_ID
       ? { menuUiStyle: system.menuUiStyle }
@@ -678,6 +691,7 @@ export function normalizeSkillRecord(record: Partial<SkillRecord> & Pick<SkillRe
     ...(typeof record.retroChoreographyId === "string" && record.retroChoreographyId.trim() ? { retroChoreographyId: record.retroChoreographyId.trim().slice(0, 96) } : {}),
     ...(isPokemonMoveMotion(record.moveMotion) ? { moveMotion: record.moveMotion } : {}),
     ...(Array.isArray(record.hitSequence) && record.hitSequence.length ? { hitSequence: record.hitSequence.slice(0, 16).map(value => Number.isFinite(value) ? Math.max(0, Math.min(10, value)) : 1) } : {}),
+    ...(normalizeBattleGimmick(record.battleGimmick) ? {battleGimmick:normalizeBattleGimmick(record.battleGimmick)} : {}),
     effect: normalizeSkillEffect(record.effect),
     elementId: typeof record.elementId === "string" ? record.elementId : undefined,
     stateEffects: normalizeStateEffects(record.stateEffects),
@@ -759,6 +773,7 @@ export function normalizeItemRecord(record: Partial<ItemRecord> & Pick<ItemRecor
 
 export function normalizeEquipmentRecord(record: Partial<EquipmentRecord> & Pick<EquipmentRecord, "id" | "name">): EquipmentRecord {
   return {
+    ...(record.battleMotionStyle && CHARACTER_MOTION_STYLES.includes(record.battleMotionStyle) ? {battleMotionStyle:record.battleMotionStyle} : {}),
     id: record.id,
     name: record.name,
     imageResourceId: cleanOptionalId(record.imageResourceId),
@@ -846,11 +861,12 @@ function normalizeBattleCommands(commands: readonly Partial<ClassBattleCommand>[
     kind: normalizeBattleCommandKind(command.kind),
     skillSubsetName: cleanOptionalId(command.skillSubsetName),
     skillId: cleanOptionalId(command.skillId),
+    ...(cleanOptionalId(command.commonEventId) ? { commonEventId: cleanOptionalId(command.commonEventId) } : {}),
   }));
 }
 
 function normalizeBattleCommandKind(kind: ClassBattleCommand["kind"] | undefined): ClassBattleCommand["kind"] {
-  return kind === "skill" || kind === "skillSubset" || kind === "defend" || kind === "guard" || kind === "item" || kind === "capture" || kind === "escape" || kind === "switch" || kind === "event"
+  return kind === "skill" || kind === "skillSubset" || kind === "defend" || kind === "guard" || kind === "item" || kind === "capture" || kind === "escape" || kind === "switch" || kind === "event" || kind === "commonEvent"
     ? kind
     : "attack";
 }

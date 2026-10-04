@@ -48,6 +48,7 @@ import type { ProjectRepository } from "./persistence/types";
 import { recordManualProjectCommitAfterSave, resetManualProjectCommitBaseline } from "./projectCommitLog";
 import { repairMapTreeOrphans } from "@/project/mapTree";
 import { cloneExtraLayers } from "@/project/mapLayers";
+import { restoreLockedTerrainCells } from "./terrainLocks";
 
 import { jsonEqual } from "@/util/structuralJson";
 import { randomUuid } from "@/util/id";
@@ -970,6 +971,7 @@ class ProjectStore {
       ...(currentMap.upperTileStacks ? { upperTileStacks: cloneTileStacks(currentMap.upperTileStacks) } : {}),
     };
     mapMutator(draftMap);
+    restoreLockedTerrainCells(currentMap, draftMap);
     this.current = {
       ...this.current,
       maps: {

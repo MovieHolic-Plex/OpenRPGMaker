@@ -24,6 +24,27 @@ export function resolveBattleBackdrop(input: {
   readonly overrideResourceId?: string;
   readonly location?: BattleBackdropLocation;
 }): string {
+  const id = resolveBattleBackdropId(input);
+  return input.project.system.battleUiStyle === "pokemon" ? pokemonBattleBackdropId(id) : id;
+}
+
+/** 포켓몬 전투의 정본 바닥(GBA 줄무늬). 이 id 의 배경 그림은 포켓몬 스킨 CSS 가 숨긴다. */
+export const POKEMON_BATTLE_BACKDROP_ID = "battle-skin-pokemon-backdrop";
+
+/**
+ * 포켓몬 전투는 도트 겹 배경(battle-scenery-*)을 쓰지 않는다 — 그 id 는 줄무늬 바닥 표지로 돌린다.
+ * Scarloxy 배경·업로드 그림처럼 저자가 고른 그림은 그대로 둔다.
+ */
+export function pokemonBattleBackdropId(id: string): string {
+  return id.startsWith("battle-scenery-") ? POKEMON_BATTLE_BACKDROP_ID : id;
+}
+
+function resolveBattleBackdropId(input: {
+  readonly project: Project;
+  readonly troopId: TroopId;
+  readonly overrideResourceId?: string;
+  readonly location?: BattleBackdropLocation;
+}): string {
   const troop = input.project.database.troops.find((entry) => entry.id === input.troopId);
   const override = normalizeBattleFieldBackgroundId(input.overrideResourceId);
   if (override) return override;
@@ -34,7 +55,7 @@ export function resolveBattleBackdrop(input: {
   const climateBg = climateBattleBackground(input.project, input.location?.mapId);
   if (climateBg) return climateBg;
   return input.project.system.battleUiStyle === "pokemon"
-    ? "battle-skin-pokemon-backdrop"
+    ? POKEMON_BATTLE_BACKDROP_ID
     : DEFAULT_BATTLE_FIELD_BACKGROUND_ID;
 }
 

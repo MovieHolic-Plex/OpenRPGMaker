@@ -1,12 +1,4 @@
-// 48px 영웅 전투 시트의 **고해상도 짝** 카탈로그(2026-09-03).
-//
-// 몬스터 배틀러는 384px 원본이 필드에서 밀도 1.6 으로 보이는데, 영웅은 48px 셀을 2배로 그려 0.5 였다.
-// `scripts/asset-gen/gen-battler-hires-sheets.mjs` 가 xBR 로 4배(192px 셀) 키운 시트를 `starter/hires/`
-// 아래에 원본과 같은 파일명으로 둔다. 화면 크기는 그대로다 — 스프라이트의 background-size 는 논리 px 로
-// 고정돼 있어(`battleFieldDom.actorBattleImage`) 시트 해상도와 무관하게 96 논리 px 셀로 그려진다.
-//
-// 이 카탈로그가 유일한 정본이다. 등록되지 않은 시트(사용자 저작 48px 캐릭터셋)는 지금까지처럼
-// 원본을 pixelated 로 그린다 — 옵트인이라 줄만 늘리면 된다(idle 스트립 카탈로그와 같은 규약).
+// Optional high resolution battler companions. No starter sheets are bundled.
 import { BATTLE_ASSET_PIXEL_SCALE } from "@/player/battleStageScale";
 import { withInlineAsset } from "@/assets/inlineAssetStore";
 
@@ -23,18 +15,8 @@ export type BattlerHiresSheet = {
 export const BATTLER_HIRES_CELL = 192;
 export const BATTLER_HIRES_FACTOR = BATTLER_HIRES_CELL / 48;
 
-const HERO_SHEETS: readonly BattlerHiresSheet[] = [1, 2, 3, 4, 5, 6].map((index) => ({
-  resourceId: `generated-actor-hero-0${index}-battle`,
-  path: `assets/generated/starter/hires/hero-0${index}-battle.png`,
-  cellWidth: BATTLER_HIRES_CELL,
-  cellHeight: BATTLER_HIRES_CELL,
-}));
-
-/** 레거시 별칭 `hero` 는 리졸버가 hero-01 시트로 보낸다 — 여기서도 같은 짝을 준다. */
-export const BATTLER_HIRES_SHEETS: readonly BattlerHiresSheet[] = [
-  ...HERO_SHEETS,
-  { ...HERO_SHEETS[0]!, resourceId: "hero" },
-];
+// The bundled starter sheets were removed on 2026-10-03.
+export const BATTLER_HIRES_SHEETS: readonly BattlerHiresSheet[] = [];
 
 export function battlerHiresSheet(resourceId: string | undefined): BattlerHiresSheet | undefined {
   if (!resourceId) return undefined;

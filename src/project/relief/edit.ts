@@ -15,6 +15,9 @@ export const emptyRelief = (width: number, height: number): ReliefData => ({
   levels: new Array(Math.max(0, width * height)).fill(0),
 });
 
+/** Planners must not change the source map while computing a preview. */
+export const copyRelief = (r: ReliefData): ReliefData => ({ ...r, levels: r.levels.slice(), ramps: r.ramps?.slice(), wallDecor: r.wallDecor?.map(d => ({ ...d })) });
+
 /** 불러온 값 → 맵 크기에 맞춘 ReliefData. 모양이 틀리거나 전부 0 이면 undefined(필드 없음). */
 export function normalizeRelief(raw: unknown, mapWidth: number, mapHeight: number): ReliefData | undefined {
   if (!raw || typeof raw !== "object") return undefined;
@@ -31,7 +34,7 @@ export function normalizeRelief(raw: unknown, mapWidth: number, mapHeight: numbe
   const out = src.width === mapWidth && src.height === mapHeight && src.levels.length === mapWidth * mapHeight
     ? src
     : resizeRelief(src, mapWidth, mapHeight);
-  return out.levels.some((v) => v > 0) ? out : undefined;
+  return out.levels.some((v) => v > 0) || out.ramps?.some(v=>v===9) ? out : undefined;
 }
 
 /** 맵 크기 변경: 왼쪽 위 기준으로 자르거나 0 으로 늘린다. */
@@ -138,7 +141,7 @@ function writeGrid(r: ReliefData, h: HeightGrid): boolean {
   return changed;
 }
 
-export const reliefIsFlat = (r: ReliefData | undefined) => !r || !r.levels.some((v) => v > 0);
+export const reliefIsFlat = (r: ReliefData | undefined) => !r || (!r.levels.some((v) => v > 0) && !r.ramps?.some(v=>v===9));
 
 export const gridMax = (h: HeightGrid) => h.reduce((m, row) => Math.max(m, ...row), 0);
 

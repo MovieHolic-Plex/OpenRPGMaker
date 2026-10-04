@@ -138,11 +138,10 @@ export function syncBattleScenery(backdrop: HTMLElement, project: Project, resou
       }
       camera.dataset.layers = "ready";
     };
-    // 겹 배경을 못 읽었을 때만 단일 그림을 대신 깐다(battleFieldDom 이 적어 둔 url, 없으면 숲 레퍼런스).
+    // 겹 배경을 못 읽었을 때만 단일 그림을 대신 깐다 — 같은 지형의 도트 미리보기 한 장(옛 숲 그림은 deprecated/).
     const paintFallback = (): void => {
       camera.dataset.layers = "fallback";
-      const url = backdrop.dataset.backdropFallbackUrl
-        ?? resolveAssetResourceUrl("generated-battle-reference-forest", { project });
+      const url = resolveAssetResourceUrl(`battle-scenery-${biome}`, { project });
       if (url) backdrop.style.backgroundImage = `url("${url}")`;
     };
     if (readyBiomes.has(biome)) mount();

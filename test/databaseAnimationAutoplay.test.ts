@@ -22,7 +22,7 @@ const frames = [0, 1, 2].map((pattern) => ({
   cells: [{ pattern, x: pattern * 8, y: 0, zoom: 100, opacity: 255, visible: true }],
 }));
 const animation: BattleAnimationRecord = {
-  id: "preview-a", name: "Preview A", resourceId: "easyrpg-battle-blow",
+  id: "preview-a", name: "Preview A", resourceId: "scarloxy-battle-anim-scratch",
   sheet: { frameWidth: 96, frameHeight: 96, columns: 5 }, frames,
 };
 let form: HTMLElement;

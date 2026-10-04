@@ -1,0 +1,52 @@
+{
+  "passed": true,
+  "database": "/home/main/.local/share/oprn/shared-content.sqlite",
+  "libraryRevisions": [
+    {
+      "id": "worldmap-human-selected",
+      "revision": "a8a08be18dd6d6fd17b9dd2514c6c0be659717040d0217fcb50a1750cb7cc86a"
+    },
+    {
+      "id": "worldmap-real-joseon",
+      "revision": "b158cfc0012902747cc581a76e85d5f5fe6828457b07aadf03235fce35ab96d9"
+    },
+    {
+      "id": "worldmap-real-yucatan",
+      "revision": "d943ac565e585654d89a3c1d1eb3e1b0e42a722f0840496e46f09c65ae767b45"
+    }
+  ],
+  "selectedIcons": 79,
+  "newProject": true,
+  "existingProject": {
+    "projectDir": "/home/main/.local/share/oprn/worldmap-shared-contract-20261004",
+    "projectId": "6cb4e9f1-1823-4a2c-b95d-4b2738c7b724",
+    "revision": 3,
+    "mapsPreserved": true,
+    "savedAndReopened": true
+  },
+  "imports": [
+    {
+      "referenceId": "shared_worldmap_real_joseon",
+      "mapId": "map_joseon_copy",
+      "tilesetId": "worldmap_map_joseon_copy",
+      "geometryPreserved": true,
+      "geographyPreserved": true,
+      "scale": 0.6,
+      "assetInstalled": true
+    },
+    {
+      "referenceId": "shared_worldmap_real_yucatan",
+      "mapId": "map_yucatan_copy",
+      "tilesetId": "worldmap_map_yucatan_copy",
+      "geometryPreserved": true,
+      "geographyPreserved": true,
+      "scale": 0.65,
+      "assetInstalled": true
+    }
+  ],
+  "ownedRowsOnly": true,
+  "defaults": [
+    "worldmap-human-selected"
+  ],
+  "exampleLibrariesOnDemand": true
+}

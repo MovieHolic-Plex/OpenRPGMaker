@@ -1,0 +1,43 @@
+{
+ "id": "20261002-2234-vary/v-long-hair-scholar__sonnet-r1",
+ "brief": "v-long-hair-scholar",
+ "name": "긴 머리 학자",
+ "base": "People3:2",
+ "base_label": "People3 3번",
+ "strength": "normal",
+ "files": {
+  "chr": "v-long-hair-scholar__sonnet-r1__20261002-2234-vary.chr.txt",
+  "sheet": "v-long-hair-scholar__sonnet-r1__20261002-2234-vary.png"
+ },
+ "description": {
+  "label": "은회색 긴 생머리 자주 법복 학자",
+  "gender": "남",
+  "attributes": {
+   "kind": "사람",
+   "age": "청년",
+   "hair": "은회색 긴 머리"
+  },
+  "role": "학자",
+  "appearance": "어깨를 지나 등 위까지 내려오는 은회색 생머리에 이마 쪽에 금빛 장식이 살짝 보인다. 짙은 자주색 긴 상의는 앞 가운데와 소매 끝, 옷단에 금 테두리가 있고 허리에 흰 띠를 매었으며 신발은 갈색이다.",
+  "colors": [
+   "은회색 긴 머리",
+   "짙은 자주색 긴 상의",
+   "금색 테두리와 앞 중앙선",
+   "흰 허리띠",
+   "갈색 신발"
+  ],
+  "tags": [
+   "학자",
+   "서생",
+   "마법사풍",
+   "긴 머리",
+   "도서관",
+   "서재",
+   "판타지",
+   "귀족"
+  ],
+  "fits": "도서관·서재·학원·신전 같은 차분한 실내에서 책을 다루는 학자나 스승 NPC 로 둔다.",
+  "by": "Claude Sonnet 5.5 · medium",
+  "at": "2026-10-02T22:41:22+00:00"
+ }
+}

@@ -91,6 +91,8 @@ const COMMAND_LEAF_SCHEMA: JsonSchema = {
     delta: { type: "integer", description: "changeFriendship 변화량" },
     speaker: { type: "string" },
     body: { type: "string", description: "text 대사 본문" },
+    // enum 을 두지 않는다 — 같은 키를 changeFace(left·right)·displayTextSettings(top·center·bottom)도 쓴다.
+    position: { type: "string", description: "text: 이 줄의 대화창 위치 auto|top|center|bottom(생략=문장 표시 설정; auto=화면 속 주인공을 안 가리는 쪽, 주인공이 화면 아래쪽이면 top). changeFace: left|right. displayTextSettings: top|center|bottom." },
     commandId: { type: "string", description: "m2Command id, 예: m2-098-change-enemy-hp. 주인공 모습 바꾸기(변신·효과·옷 갈아입기)는 m2-024-change-actor-graphic + fields {target:actorId, value:charset 검색 id(\"charset:<텍스처>:<칸>\") 또는 텍스처 키, characterIndex:0~7}" },
     fields: { type: "object", additionalProperties: true, description: 'm2Command 필수 필드 객체. 예: {target:"all",operation:"remove",value:10}' },
   },
@@ -160,9 +162,9 @@ export const GRAPHIC_SPEC_SCHEMA: JsonSchema = {
 /** `SimplePage.face` / place_npc `face` — 두 지정 방식의 키 합집합. */
 export const FACE_SCHEMA: JsonSchema = {
   type: "object",
-  description: "{resourceId} 또는 {textureKey,characterIndex}. resourceId는 얼굴 낱장 리소스 id(48×48 PNG 한 장). 생략 시 각 페이지 graphic의 공용 캐릭터·얼굴 매핑을 사용한다. 미검토·얼굴 없음·미등록은 얼굴을 추정하지 않는다.",
+  description: "{resourceId} 또는 {textureKey,characterIndex}. resourceId는 얼굴 낱장(48×48)·흉상(bust)·전신(full) 초상 id를 모두 받는다. list_resources(kind:faceset,portraitMode:bust|full)로 후보를 확인한다. 같은 인물의 초상만 고른다. 생략 시 각 페이지 graphic의 검토된 짝 얼굴을 사용하며, 미검토·얼굴 없음·미등록은 추정하지 않는다.",
   properties: {
-    resourceId: { type: "string", description: "얼굴 낱장 리소스 id. 예: easyrpg-faceset-actor1-07" },
+    resourceId: { type: "string", description: "얼굴 또는 초상 id. 예: easyrpg-faceset-actor1-07, shared-brown-headband-expressions-bust-base. id가 bust/full이면 큰 초상으로 표시된다." },
     position: { type: "string", enum: ["left", "right"] },
     flipHorizontally: { type: "boolean" },
     textureKey: { type: "string" },
@@ -181,7 +183,7 @@ const CUTSCENE_BEAT_BASE_SCHEMA: JsonSchema = {
       type: "string",
       // text·narrate 는 say 의 별칭 — 받아서 say 로 옮긴다(이벤트 명령 모양 {kind:"text",body} 가 enum 에서 통째로 튕기던 문제).
       enum: [
-        "say", "moveActor", "camera", "picture", "music", "fade", "tint", "distort", "background", "flash", "shake", "wait", "parallel",
+        "say", "moveActor", "camera", "picture", "music", "fade", "tint", "distort", "background", "flash", "animation", "shake", "wait", "parallel",
         "label", "jump", "switch", "transfer", "ending", "letterbox", "particles", "look", "emote", "weather", "text", "narrate",
       ],
     },
@@ -235,6 +237,7 @@ const CUTSCENE_BEAT_BASE_SCHEMA: JsonSchema = {
     mapId: { type: "string", description: "transfer 비트: 옮길 맵 id" },
     facing: { type: "string", enum: ["up", "down", "left", "right", "retain"], description: "transfer 비트: 도착 후 방향" },
     fade: { type: "string", enum: ["black", "white", "none"], description: "transfer 비트: 전환 페이드(기본 black)" },
+    animationId: { type: "string", description: "animation 비트: 게임에 등록된 전투 애니메이션 id(예: anim_scarloxy_fire). target(기본 player)의 몸 위에서 재생한다." },
     endingId: { type: "string", description: "ending 비트: define_ending 으로 정의한 엔딩 id" },
     speaker: { type: "string" },
     text: { type: "string", description: `say 본문. 인라인 태그를 쓸 수 있다(여는 태그는 [/] 로 닫음):\n${dialogueInlineTagGuideLines().join("\n")}` },
@@ -248,6 +251,7 @@ const CUTSCENE_BEAT_BASE_SCHEMA: JsonSchema = {
     },
     style: { type: "string", enum: [...DIALOGUE_STYLE_IDS], description: "say 전용. 이 대사만 다른 대화창. 보통 생략." },
     container: { type: "string", enum: [...DIALOGUE_CONTAINER_IDS], description: `say 전용 대사 그릇:\n${dialogueContainerGuideLines().join("\n")}\n마을 사람 잡담은 bark, 무전·동료 한마디는 corner.` },
+    position: { type: "string", enum: ["auto", "top", "center", "bottom"], description: `say 전용. 대화창 위치. 생략/auto = 화면 속 주인공을 가리지 않는 쪽으로 자동. top·center·bottom = 고정(그림·인물이 화면 아래쪽에 있으면 top).` },
     face: FACE_SCHEMA,
     direction: { type: "string", enum: ["in", "out"] },
     target: { type: "string" },

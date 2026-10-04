@@ -117,10 +117,9 @@ describe("buildRecordPrompt / artworkPromptFor", () => {
     expect(messages[1]).toEqual({ role: "user", content: "회복약" });
   });
 
-  it("그림 프롬프트는 아이템 아이콘에만 흰 배경을 고정한다 — 적 문장은 호환용이다", () => {
+  it("그림 프롬프트는 아이템 아이콘이고 흰 배경을 고정한다 — 몬스터 그림은 만들지 않는다", () => {
     expect(artworkPromptFor("item", "엘릭서", "회복")).toContain("inventory item icon");
     expect(artworkPromptFor("item", "엘릭서", "회복")).toContain("flat white background");
-    expect(artworkPromptFor("enemy", "슬라임", "젤리")).toContain("pixel side-view battle monster");
   });
 
   it("적 프롬프트는 도트 몬스터 목록에서 monsterResourceId 를 고르게 한다", () => {

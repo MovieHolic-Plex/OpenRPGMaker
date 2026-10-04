@@ -21,6 +21,7 @@ import make_map_v5 as m5  # noqa: E402
 import terrain_v4 as V  # noqa: E402
 import worldmap_easyrpg_plus as wm  # noqa: E402
 import boundary_v5 as B5  # noqa: E402
+import boundary_v9 as B9  # noqa: E402
 import fix3_patches as P  # noqa: E402
 import fix4_patches as P4  # noqa: E402
 import journey_world_v9 as J  # noqa: E402
@@ -68,7 +69,8 @@ def install(journey, roles, iconset, assign):
         sites.append((p['id'], 'ext', assign[p['id']], p['x'], p['y'], ground, p['kind'], p.get('note', '')))
     routes = [(r['id'], r['from'], r['to'], list(r.get('via', []))) for r in journey['roads']]
     cw, ch = roles['floating']['cells']
-    set_world_constants(journey['start']['cell'], gate[0]['gate'], (sky['id'], sky['x'], sky['y'], cw, ch))
+    ship = [b for b in journey['barriers'] if b['means'] == 'ship']
+    set_world_constants(journey['start']['cell'], gate[0]['gate'], (sky['id'], sky['x'], sky['y'], cw, ch), ship[0]['gate'] if ship else None)
     m5.SKY = (sky['id'], assign[sky['id']], sky['x'], sky['y'], sky.get('note', ''))
     m5.ext_with_cities = lambda: None
     m5.SKY_PASTE_ICON = False
@@ -78,14 +80,15 @@ def install(journey, roles, iconset, assign):
     def kit_build_v5(*a, **k):
         M4.SITES[:] = sites
         M4.ROUTES[:] = routes
-        M4.render_ground = B5.render_ground_v5
+        M4.render_ground = B9.render_ground_v9                  # 경계 v9(쌍 종류별 전이) — v5 의 일괄 어두운 테두리·칸 계단을 대신한다
         M4.render_depth = B5.render_depth_v5
         import coast_v6
         coast_v6.install(M4)
         import cliff_v8
         cliff_v8.install(M4)
         M, icon_cells, meta_, info0 = M4.build()
-        M.G[34, 40:45] = 0                                       # 항구 부두가 바다에 닿도록
+        if J.LAYOUT is None:
+            M.G[34, 40:45] = 0                                   # 항구 부두가 바다에 닿도록(생성 지형은 kit_fit 이 부두 줄을 미리 판다)
         return M, icon_cells, meta_
     m5.build_v5 = kit_build_v5
     ob = J.build_world
@@ -93,15 +96,18 @@ def install(journey, roles, iconset, assign):
     def bw():
         M, ic, meta_ = ob()
         P.soften_world(M, ic)                                    # 장소 밑 사각 패치(지형 코드·물체)
-        P4.add_pond(M)                                           # 분화구 호수 자리 = 연못 지형
+        if J.LAYOUT is None:
+            P4.add_pond(M)                                       # 분화구 호수 자리 = 연못 지형(손 대륙의 붉은 고원 자리)
         return M, ic, meta_
     J.build_world = bw
 
 
-def set_world_constants(start, gate, sky_site):
+def set_world_constants(start, gate, sky_site, harbour=None):
     J.START = tuple(start)
     J.GATE_SITE = gate
     J.SKY_SITE = tuple(sky_site)
+    if harbour:
+        J.HARBOUR_SITE = harbour
 
 
 def make_world():
@@ -125,16 +131,36 @@ def _render_base(w):
     return img, info, snap['g']
 
 
+def _paint_volcano_peaks(img):
+    """지형 편집 volcano 의 가운데에 큰 원뿔을 그린다 — 원래 화산(77,16)의 원뿔은 장소 아이콘이라, 새 화산은 고리만 있고 봉우리가 없었다(조수 시험).
+    그림은 공용 시트의 화산 장소 그림(18,14 2x2)을 화구 가운데에 화소 단위로 맞춘다."""
+    import terrain_render as TR
+    spr = TR.S.a[14 * 16:16 * 16, 18 * 16:20 * 16]
+    key = np.all(spr == np.array(KEY, np.uint8), axis=2)
+    shd = np.all(spr == np.array((254, 103, 139), np.uint8), axis=2)
+    H, W = img.shape[:2]
+    for vx, vy in M4.VOLCANOES[M4.VOLCANO_ICON_N:]:
+        x0, y0 = int(round(vx * 16)) - 16, int(round(vy * 16)) - 20
+        ys, xs = np.nonzero(~key)
+        for py, px in zip(ys, xs):
+            X, Y = x0 + px, y0 + py
+            if 0 <= X < W and 0 <= Y < H:
+                img[Y, X] = (img[Y, X].astype(np.float32) * .55).astype(np.uint8) if shd[py, px] else spr[py, px]
+
+
 def render_terrain(w):
     """아이콘 없는 지형 그림 C(길·다리·경사로·늪·연못·사구 후처리 포함)와 렌더 info."""
     old_ramps = M4.render_ramps
     M4.render_ramps = lambda M_, img_: P.render_ramps_fix3(M_, img_, old_ramps)
     img, info, snap = _render_base(w)
     M4.render_ramps = old_ramps
-    img = swamp_final.run(img, snap, w.M.G)
-    img = P4.paint_pond(img)
+    lab = getattr(w.M, '_label_px', None)                       # 바닥 경계 v9 라벨 — 늪·사구 후처리가 같은 경계를 따른다
+    img = swamp_final.run(img, snap, w.M.G, label=lab)
+    if J.LAYOUT is None:
+        img = P4.paint_pond(img)
     island = P.island_mask(w.M, w.ic)
-    C = P.dune_fx3(img, w.M, w.ic, w.dune | island, rnd, FX._vnoise, mesa=island)
+    C = P.dune_fx3(img, w.M, w.ic, w.dune | island, rnd, FX._vnoise, mesa=island, label=lab)
+    _paint_volcano_peaks(C)
     paths_same = [list(map(list, c)) for _, c in info['paths']] == [list(map(list, c)) for _, c in w.paths]
     return C, info, paths_same
 
@@ -147,7 +173,9 @@ def paste_icons(img, ic, sky_site, iconset, assign, tint_icon):
     sname, sx, sy, sw, sh = sky_site
     sky_icon = tint_icon(iconset.array(assign[sname]))
     dst = img[sy * 16:(sy + sh) * 16, sx * 16:(sx + sw) * 16]
-    solid = ~np.all(sky_icon == np.array(KEY, np.uint8), axis=2)
+    shd = np.all(sky_icon == np.array(iconset.shadow_key, np.uint8), axis=2)
+    solid = ~np.all(sky_icon == np.array(KEY, np.uint8), axis=2) & ~shd
+    dst[shd] = (dst[shd].astype(np.float32) * P.SHADOW_MUL).astype(np.uint8)   # 그림자 키는 밑을 어둡게 — 그대로 붙이면 분홍 덩이(QA 2026-10-02, 12개 테마)
     dst[solid] = sky_icon[solid]
     for name, (x, y, ww, hh) in ic.items():
         if name.endswith('경사로') or name not in assign:
@@ -167,6 +195,9 @@ def world_dict(w, journey, assign):
     d['schema'] = 'worldmap-world/1'
     d['journey'] = journey['id']
     d['sky_site'] = list(J.SKY_SITE)
+    if J.LAYOUT is not None:                                     # 생성 지형만 — 손 대륙 world.json 은 그대로(자체 검사 바이트 비교)
+        d['harbour'] = J.HARBOUR_SITE
+        d['layout'] = J.LAYOUT.get('summary')
     d['ic'] = {k: [int(v) for v in vv] for k, vv in w.ic.items()}
     d['face'] = [[int(x), int(y), int(j), int(n)] for (x, y), (j, n, _r) in sorted(w.M.face.items())]
     d['road_cells'] = [[int(x), int(y)] for y, x in zip(*np.nonzero(w.road))]
@@ -176,6 +207,8 @@ def world_dict(w, journey, assign):
     for s in d['sites']:
         p = byid[s['name']]
         d['places'].append(dict(id=s['name'], role=p['role'], act=p['act'], x=s['x'], y=s['y'], w=s['w'], h=s['h'], icon=assign[s['name']]))
+        if p.get('label'):
+            d['places'][-1]['label'] = p['label']                   # 표시 이름(우주 여정 등) — id 는 지형 코드·검사가 부르는 이름이라 그대로
     d['roads'] = d.pop('routes')
     d.pop('note', None)
     return d
@@ -208,9 +241,10 @@ class MapWorld(J.World):
     """J.World 와 같은 통행 규칙·막별 도달 영역. 지형 빌드·길 계획만 건너뛰고 world.json 에서 읽는다."""
 
     def __init__(self, d):
-        set_world_constants(d['start'], d['gate'], d['sky_site'])
+        set_world_constants(d['start'], d['gate'], d['sky_site'], d.get('harbour'))
         self.M = M = MapStub(d)
         self.ic = ic = {k: tuple(v) for k, v in d['ic'].items()}
+        self.generated = 'layout' in d                           # 생성 지형 — 장벽 두께를 고정 창 대신 BFS 로 잰다
         self.meta = None
         self.walk0 = J.base_walk(M, ic)
         self.road = np.zeros((M.H, M.W), bool)
@@ -225,7 +259,7 @@ class MapWorld(J.World):
             self.walk0[y, x] = True
         self.sites = {n: v for n, v in ic.items() if not n.endswith('경사로')}
         self.site_kind = {s['name']: s['kind'] for s in d['sites']}
-        self.site_kind['천공섬'] = 'sky'
+        self.site_kind[J.SKY_SITE[0]] = 'sky'
         self.gate = set(J.gate_cells(ic))
         for n, (x, y, ww, hh) in self.sites.items():
             self.walk0[y:y + hh, x:x + ww] = True

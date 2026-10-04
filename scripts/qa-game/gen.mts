@@ -5,6 +5,8 @@
 //
 // 옵션: --provider/--model/--lite-model/--brain-model  AiConfig 덮어쓰기(기본은 브라우저 기본 설정 defaultAiConfig)
 //       --autonomy balanced|autonomous|max   --apply default|auto|yolo   --timeout-ms N   --no-check
+//       --concept-card <card.json>  굽기 전 개념 카드를 이 실행에만 얹는다(슈퍼하네스 조수 시험)
+//       --text "<채팅 한 줄>"  기획 지시문 대신 조수 채팅에 친 문장 하나를 그대로 보낸다(씨앗은 --brief 의 새 프로젝트, 기획서는 뺀다)
 //
 // 브라우저 경로와 같은 함수를 부른다:
 //   씨앗          createNewProjectSeed(packId, title) + gameDesignBrief(generationPending) → 저장·다시 읽기
@@ -22,9 +24,10 @@ import { resolveRequestApiKey } from "../lib/aiAuthRuntime.ts";
 import { completeProvider } from "../lib/ohMyPiPiAiRuntime.ts";
 import { createPiRunRecorder } from "./lib/recorder.ts";
 import { buildBrowserSeed, type QaBrief } from "./lib/seed.ts";
+import { overrideConceptCards } from "../../src/ai/conceptCards.ts";
 export { buildBrowserSeed, type QaBrief };
 import { store } from "../../src/project/store.ts";
-import { serialize } from "../../src/project/io.ts";
+import { deserialize, serialize } from "../../src/project/io.ts";
 import { buildWelcomeGenrePresetPrompt, welcomeGenrePresetById } from "../../src/editor/welcomeGenrePresets.ts";
 import { defaultAiConfig, type AiConfig, type ChatRequest, type ChatResult } from "../../src/ai/llmClient.ts";
 import { createLlmIntentDeclarer } from "../../src/ai/intentDeclarationClient.ts";
@@ -45,6 +48,8 @@ import { renderToolRegionPngBase64 } from "./render.mts";
 import { setCutsceneArtGenerator } from "../../src/editor/tools/cutsceneArtTools.ts";
 import { headlessFetchAsset, headlessGenerateImage } from "./lib/headlessImage.mts";
 import { setCutsceneAssetFetcher } from "../../src/editor/cutsceneArt/charsetFrames.ts";
+import { setWorldmapBuilder } from "../../src/editor/worldmap/worldmapBuild.ts";
+import { buildWorldmap as headlessBuildWorldmap } from "../lib/worldmapBuild.mjs";
 
 let ARGV: readonly string[] = process.argv.slice(2);
 const arg = (name: string): string | undefined => { const i = ARGV.indexOf(`--${name}`); return i >= 0 ? ARGV[i + 1] : undefined; };
@@ -92,6 +97,8 @@ export async function genMain(argv: readonly string[] = process.argv.slice(2)): 
   // generate_cutscene_art 의 그림 생성은 편집기에서는 /v1/images/generations 로 가고, 헤드리스에서는 같은 동반 앱 경로를 프로세스 안에서 부른다.
   setCutsceneArtGenerator(headlessGenerateImage);
   setCutsceneAssetFetcher(headlessFetchAsset);
+  // edit_world_terrain 의 월드맵 빌드도 동반 앱 경로(/v1/worldmap/build)를 프로세스 안에서 부른다.
+  setWorldmapBuilder(headlessBuildWorldmap);
   ARGV = argv;
   const briefFile = arg("brief");
   const out = arg("out");
@@ -111,10 +118,17 @@ export async function genMain(argv: readonly string[] = process.argv.slice(2)): 
     ...(arg("autonomy") ? { autonomyLevel: arg("autonomy") as AutonomyLevel } : {}),
     ...(arg("apply") ? { piApply: arg("apply") as AiConfig["piApply"] } : {}),
   };
-  const { project: seed, brief } = buildBrowserSeed(input);
+  const built = buildBrowserSeed(input);
+  // --seed-project <project.json>: 새 프로젝트 대신 이미 있는 프로젝트(예: 포켓몬풍 데모) 위에서 같은 기획을 시킨다.
+  const seed = arg("seed-project") ? deserialize(fs.readFileSync(arg("seed-project")!, "utf8")) : built.project;
+  const brief = built.brief;
   const preset = welcomeGenrePresetById(input.presetId);
   if (!preset) throw new Error(`첫 화면 프리셋이 없습니다: ${input.presetId}`);
-  const instruction = buildWelcomeGenrePresetPrompt(preset, brief);
+  const chatText = arg("text");
+  if (arg("concept-card")) overrideConceptCards([JSON.parse(fs.readFileSync(arg("concept-card")!, "utf8"))]);
+  // --text: 기획서 없는 프로젝트에서 사용자가 채팅창에 한 줄을 친 것과 같게 — 지시문은 그 문장 그대로.
+  if (chatText) delete seed.gameDesignBrief;
+  const instruction = chatText ?? buildWelcomeGenrePresetPrompt(preset, brief);
   fs.writeFileSync(path.join(out, "seed.json"), serialize(seed));
   fs.writeFileSync(path.join(out, "instruction.txt"), instruction);
   store.replaceProject(seed);
@@ -135,7 +149,7 @@ export async function genMain(argv: readonly string[] = process.argv.slice(2)): 
   const t0 = Date.now();
   const classified = await classifyPlainPiTurn({
     project: base, text: instruction, currentMapId, selection: null, hasActivePlan: false, autonomy,
-    declarer: () => createLlmIntentDeclarer({ chat, audit: chat, getConfig: () => config, timeoutMs: 30_000 }),
+    declarer: () => createLlmIntentDeclarer({ chat, audit: chat, getConfig: () => config, timeoutMs: 30_000, coverageAudit: false }),
     piTeam: config.piTeam ?? DEFAULT_PI_TEAM,
   });
   mark("intent", t0);

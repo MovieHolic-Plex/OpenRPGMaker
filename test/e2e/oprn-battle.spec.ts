@@ -106,7 +106,7 @@ test("side-view battleProcessing plays through victory and restores the map", as
     animationId: "anim_magic",
     frameCount: "2",
     renderedFrameCount: "2",
-    resourceId: "easyrpg-battle-blow",
+    resourceId: "scarloxy-battle-anim-scratch",
     screenShake: "true",
   });
   expect(animationState.currentFrame).toMatch(/^[01]$/);

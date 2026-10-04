@@ -7,11 +7,23 @@ import { harnessAppliesTo, type HarnessManifest } from "./manifest";
 import { MONSTER_COLLECT_SPECIES_HARNESS } from "../monster-collect-species/harness";
 import { MODERN_CHIPSET_HARNESS } from "../modern-chipset/harness";
 import { INTERIOR_PROPS_HARNESS } from "../interior-props/harness";
+import { JP_CITY_HARNESS } from "../jp-city/harness";
+import { JOSEON_BARAM_HARNESS } from "../joseon-baram/harness";
+import { SUPER_HARNESS } from "../super-harness/harness";
+import { ROMANCE_SCENE_HARNESS } from "../romance-scene/harness";
+import { CHARSET_ACTOR_HARNESS } from "../charset-actor/harness";
+import { WORLDMAP_ICONS_HARNESS } from "../worldmap-icons/harness";
 
 export const HARNESSES: readonly HarnessManifest[] = [
   MONSTER_COLLECT_SPECIES_HARNESS,
   MODERN_CHIPSET_HARNESS,
   INTERIOR_PROPS_HARNESS,
+  JP_CITY_HARNESS,
+  JOSEON_BARAM_HARNESS,
+  SUPER_HARNESS,
+  ROMANCE_SCENE_HARNESS,
+  CHARSET_ACTOR_HARNESS,
+  WORLDMAP_ICONS_HARNESS,
 ];
 
 export function getHarness(id: string): HarnessManifest | undefined {

@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url';
 import Jimp from 'jimp';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
+// 옛 전투 배경·파티 일러스트는 2026-10-03 deprecated/assets/generated/battle-skins/ 로 옮겼다 — 다시 돌리려면 그 경로를 읽게 고친다.
 const sourceDir = 'public/assets/generated/battle-skins/';
 const outputDir = 'public/assets/generated/growth-presets/';
 const width = 1024;

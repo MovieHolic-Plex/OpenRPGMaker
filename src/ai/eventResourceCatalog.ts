@@ -131,17 +131,16 @@ function collect(
 
   switch (slot) {
     case "faceset":
-      // 흉상·전신 프리셋을 **맨 앞에** 둔다. 낱장 얼굴이 112장이라 뒤에 붙이면
+      // 공용 초상 예시가 MAX_REF_ENTRIES 밖으로 밀리지 않도록 옛 생성 초상보다 먼저 싣는다.
+      add("shared-brown-headband-expressions-bust-base", "공용 흉상 예시 — list_resources(kind:faceset,portraitMode:bust)로 같은 인물의 후보를 확인한다. emotion(happy·sad·angry·surprised)이 같은 인물의 표정 흉상으로 바꾼다");
+      add("shared-brown-headband-expressions-full-base", "공용 전신 예시 — list_resources(kind:faceset,portraitMode:full)로 조회. 대사 창 뒤에 크게 선다. 같은 인물인지 확인하여 선택한다");
+      // 옛 흉상·전신 프리셋도 낱장 얼굴보다 먼저 둔다. 낱장 얼굴이 112장이라 뒤에 붙이면
       // MAX_REF_ENTRIES(40) 에 잘려 프롬프트에서 사라진다 — 그러면 「초상을 크게 띄우기」가
       // 가능하다는 사실을 모델이 알 수가 없다. 이 둘이 대사창 위 대형 초상
       // 레이아웃(facesetPreview.faceDisplayModeOf)을 여는 유일한 열쇠다.
       for (const id of builtinGeneratedResourceIds()) {
         if (id.startsWith(GENERATED_FACE_PREFIX)) add(id, `${id} (대형 초상 레이아웃)`);
       }
-      // 공용 표정 세트 76종의 흉상·전신은 760장이라 다 실으면 낱장이 잘린다 — 규칙을 알리는 예시 두 줄만 앞에 둔다.
-      // 나머지는 아래에서 검증 집합에만 넣는다(프롬프트 머리 40칸 밖).
-      add("shared-brown-headband-expressions-bust-base", "공용 흉상 예시 — 모든 표정 세트에 shared-<세트>-expressions-bust-base 가 있다. 이어지는 대사의 emotion(happy·sad·angry·surprised)이 같은 인물의 표정 흉상으로 바꾼다");
-      add("shared-brown-headband-expressions-full-base", "공용 전신 예시 — shared-<세트>-expressions-full-base. 대사 창 뒤에 크게 선다. 표정은 위와 같이 emotion 으로");
       // 낱장 얼굴. 분할 전 4×4 시트 id 는 저장본 호환으로 등록만 남아 있으므로 뺀다 —
       // 시트를 얼굴 한 장으로 지정하면 대화창에 엉뚱한 칸이 뜬다. 생성 시리즈도 뺀다.
       for (const asset of AUTHORABLE_FACESET_FACE_ASSETS) add(asset.id, asset.name);

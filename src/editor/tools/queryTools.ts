@@ -3,7 +3,8 @@
 //         / list_resources / run_lint / check_reachability.
 // 읽기 툴은 project를 변형하지 않는다(runner가 read 모드로 처리).
 
-import { SHARED_PORTRAIT_ASSETS, SHARED_PORTRAIT_EXPRESSIONS } from "@/assets/sharedPortraitAssets";
+import { SHARED_PORTRAIT_ASSETS, SHARED_PORTRAIT_EXPRESSIONS, sharedExpressionSetIdOf } from "@/assets/sharedPortraitAssets";
+import { facePresentationForResource } from "@/project/facePresentation";
 import { queryNpcGraphics } from "@/assets/charsetQuery";
 import { reviewedCharsetFaceRow } from "@/assets/reviewedCharsetFaces";
 import reviewedCharacterGraphics from "@/assets/sharedCharacterGraphics.json";
@@ -11,6 +12,8 @@ import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import { listDatabaseResourceOptions } from "@/editor/resourceOptions";
 import { searchResources, type ResourceSearchKind, type ResourceSearchResult } from "@/assets/resourceSearch";
 import { isPassable } from "@/project/collision";
+import { resolveFontSelection } from "@/project/fontRegistry";
+import { DEFAULT_DIALOGUE_STYLE_ID } from "@/project/dialogueStyles";
 import { cellLayerTiles } from "@/project/mapLayers";
 import { isCombinedTownCompatibleTileset } from "@/project/tilesetHarness/combinedTown";
 import { isWaterChipsetTile } from "@/project/defaults/chipsetMapping";
@@ -83,7 +86,7 @@ function conditionReferencesSwitch(condition: Condition | undefined, switchId: s
 
 const getProjectSummary: ToolDefinition = {
   name: "get_project_summary",
-  description: "제목/맵 목록(크기·이벤트 수)/DB 카운트/스위치·변수/시작점 요약을 반환한다.",
+  description: "제목/맵 목록(크기·이벤트 수)/DB 카운트/스위치·변수/시작점/공통 글꼴·대화창·전투창 설정 요약을 반환한다.",
   mode: "read",
   parameters: { type: "object", properties: {} },
   run(project): ToolExecResult {
@@ -98,6 +101,12 @@ const getProjectSummary: ToolDefinition = {
     const namedVariables = project.variables.filter((entry) => entry.name !== "");
     const data = {
       title: project.meta.title,
+      appearance: {
+        fonts: resolveFontSelection(project.system.fonts),
+        dialogueStyle: project.system.dialogueStyle ?? DEFAULT_DIALOGUE_STYLE_ID,
+        dialogueFont: project.system.dialogueFont ?? null,
+        battleLook: project.system.battleLook ?? null,
+      },
       startMapId: project.startMapId,
       startPos: project.startPos,
       maps,
@@ -422,7 +431,7 @@ function searchFacesets(project: Project, query: string): Pick<ResourceSearchRes
   const others = listDatabaseResourceOptions("faceset", project)
     .filter((option) => !bundledIds.has(option.id))
     .map((option) => ({ id: option.id, label: option.name, description: "업로드·생성 얼굴", haystack: `${option.id} ${option.name} ${(option.searchTerms ?? []).join(" ")}`.toLocaleLowerCase() }));
-  // 공용 흉상·전신(세트당 기본 표정 한 장씩). 전체 둘러보기에는 넣지 않는다 — 이름·「흉상」「전신」으로 찾을 때만.
+  // 공용 흉상·전신도 전체 둘러보기에 포함한다. 기본 20칸에 얼굴만 차면 조수는 큰 초상을 보지 못한다.
   const portraits = SHARED_PORTRAIT_ASSETS.filter((asset) => asset.expression === "base").map((asset) => ({
     id: asset.id,
     label: asset.name,
@@ -430,8 +439,18 @@ function searchFacesets(project: Project, query: string): Pick<ResourceSearchRes
     haystack: `${asset.id} ${asset.name} ${asset.mode === "full" ? "전신 full body 초상 portrait" : "흉상 bust 초상 portrait"}`.toLocaleLowerCase(),
   }));
   const terms = needle.split(/\s+/).filter(Boolean);
-  return [...bundled, ...others, ...(browse ? [] : portraits)]
+  const candidates = browse
+    ? Array.from({ length: Math.max(bundled.length, portraits.length) }, (_, i) => [bundled[i], portraits[i]])
+      .flat().filter((face): face is (typeof bundled)[number] => face !== undefined).concat(others)
+    : [...bundled, ...others, ...portraits];
+  const seen = new Set<string>();
+  return candidates
     .filter((face) => browse || terms.every((term) => face.haystack.includes(term)))
+    .filter((face) => {
+      if (seen.has(face.id)) return false;
+      seen.add(face.id);
+      return true;
+    })
     .map(({ haystack: _haystack, ...face }) => face);
 }
 
@@ -442,7 +461,7 @@ function faceForNpcGraphic(textureKey: string, characterIndex: number): { readon
 
 const listNpcGraphics: ToolDefinition = {
   name: "list_npc_graphics",
-  description: "NPC/캐릭터셋 그래픽 후보를 조회한다. query는 자유 질의 가능(예: 할머니, old woman, 노인 남성, 기사). 상위 20개를 반환한다.",
+  description: "NPC/캐릭터셋 그래픽 후보와 검토된 짝 얼굴(face)을 조회한다. portraitOptions는 그 얼굴과 같은 공용 표정 세트의 얼굴·흉상·전신 선택지이며, 큰 초상이 없으면 얼굴만 반환한다. query는 자유 질의 가능(예: 할머니, old woman, 노인 남성, 기사). 상위 20개를 반환한다.",
   mode: "read",
   parameters: {
     type: "object",
@@ -462,8 +481,16 @@ const listNpcGraphics: ToolDefinition = {
       ...(match.entry.appearance ? { appearance: match.entry.appearance } : {}),
       // 이 그림의 검토된 짝 얼굴. null 이면 맞는 얼굴이 없다 — 다른 얼굴을 붙이지 말 것.
       face: faceForNpcGraphic(match.entry.textureKey, match.entry.characterIndex),
+      portraitOptions: (() => {
+        const face = faceForNpcGraphic(match.entry.textureKey, match.entry.characterIndex);
+        if (!face) return [];
+        const setId = sharedExpressionSetIdOf(face.resourceId);
+        return [{ mode: "face", resourceId: face.resourceId }, ...SHARED_PORTRAIT_ASSETS
+          .filter((asset) => asset.setId === setId && asset.expression === "base")
+          .map((asset) => ({ mode: asset.mode, resourceId: asset.id }))];
+      })(),
       nativeGraphic: {
-        sprite: { type: "bundled", id: match.entry.textureKey },
+        sprite: { type: match.entry.spriteType ?? "bundled", id: match.entry.textureKey },
         direction: "down",
         pattern: charsetFrameIndex({ characterIndex: match.entry.characterIndex, direction: "down", pattern: 1 }),
       },
@@ -475,13 +502,14 @@ const listNpcGraphics: ToolDefinition = {
 
 const listResources: ToolDefinition = {
   name: "list_resources",
-  description: "리소스를 검색한다. kind: tile/charset/monster/backdrop/bgm/se(시맨틱 검색), picture(업로드·생성 그림 name/id 부분 일치) 또는 faceset(얼굴: 라벨·특징·짝 걷기 그림으로 검색, 예: '금발 여성', 'people2'). NPC 얼굴은 보통 생략한다 — 걷기 그림의 짝이 자동으로 붙고, 짝이 아닌 번들 얼굴은 짝으로 교정된다. kind:\"tile\" 은 mapId(또는 tilesetId)의 타일셋에서 찾는다 — 생략하면 시작 맵의 타일셋.",
+  description: "리소스를 검색한다. kind: tile/charset/monster/backdrop/bgm/se(시맨틱 검색), picture(업로드·생성·공용 사물 그림 name/id 부분 일치, 사물은 영어도 검색: clock/book) 또는 faceset(얼굴·흉상·전신: 라벨·특징·짝 걷기 그림으로 검색). portraitMode로 얼굴/흉상/전신을 고를 수 있다. 일반 NPC는 검토된 짝 얼굴이 자동으로 붙으며, 큰 초상은 같은 인물의 후보를 확인해 face.resourceId로 명시한다. kind:\"tile\" 은 mapId(또는 tilesetId)의 타일셋에서 찾는다 — 생략하면 시작 맵의 타일셋.",
   mode: "read",
   parameters: {
     type: "object",
     properties: {
       kind: { type: "string", enum: RESOURCE_KINDS },
       query: { type: "string" },
+      portraitMode: { type: "string", enum: ["face", "bust", "full"], description: "kind:faceset 전용. 얼굴 낱장/흉상/전신을 구분해 검색. 생략하면 모두 포함한다. query:'*'로 해당 모양 전체를 페이지별로 둘러본다." },
       mapId: { type: "string", description: "kind:tile 일 때 이 맵의 타일셋에서 찾는다" },
       tilesetId: { type: "string", description: "kind:tile 일 때 이 타일셋에서 찾는다(mapId 보다 우선)" },
       offset: { type: "integer", minimum: 0, description: "시작 위치(기본 0)" },
@@ -495,6 +523,9 @@ const listResources: ToolDefinition = {
     if (typeof args.query !== "string") {
       throw new ToolError("query는 문자열이어야 합니다.", { code: "invalid-args" });
     }
+    if (args.portraitMode !== undefined && (kind !== "faceset" || !["face", "bust", "full"].includes(String(args.portraitMode)))) {
+      throw new ToolError("portraitMode는 kind:faceset에서 face/bust/full 중 하나여야 합니다.", { code: "invalid-args" });
+    }
     const offset = args.offset === undefined ? 0 : args.offset;
     const limit = args.limit === undefined ? 20 : args.limit;
     // The shared schema runner checks integer types, but not numeric bounds.
@@ -507,6 +538,7 @@ const listResources: ToolDefinition = {
     let all: Pick<ResourceSearchResult, "id" | "label" | "description">[];
     if (kind === "faceset") {
       all = searchFacesets(project, args.query);
+      if (args.portraitMode !== undefined) all = all.filter((face) => facePresentationForResource(face.id) === args.portraitMode);
     } else if (kind === "picture") {
       // 그림(picture)은 시맨틱 카탈로그가 아니라 DB 피커와 같은 단일 정본 목록에서
       // name/id 부분 일치로 찾는다. query='*' 는 전체 훑어보기 관례를 따른다.

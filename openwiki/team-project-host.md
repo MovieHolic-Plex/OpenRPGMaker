@@ -4,6 +4,10 @@
 
 ## 소유와 실행 위치
 
+`export-player/` 아래 SDK 파일은 HTML도 디스크 바이트 그대로 제공한다(2026-10-03).
+플레이어 매니페스트가 HTML의 SHA-256도 확인하므로 편집기 브리지나 nonce를 주입하면
+실제 ZIP 내보내기가 `bundle-integrity-mismatch`로 실패한다. 편집기 HTML의 브리지 계약은 유지한다.
+
 팀은 소유·권한 단위, 프로젝트는 게임 문서, 호스트는 정본을 쓰는 프로세스다.
 1인도 자동 생성된 팀의 owner다. 호스트는 기본 프로젝트와 그 아래 `.oprn-projects/<uuid>`에 만든 추가 프로젝트를 연다.
 추가 프로젝트는 기본 프로젝트의 팀 권한을 공유한다. 프로젝트 목록 대시보드/계정 서버는 아직 없다.
@@ -13,6 +17,10 @@ SQLite 파일 위치와 브라우저 UI 위치는 독립적이다. 원격 접속
   검증·권한·잠금·저장 처리를 호출한다. 같은 session registry에서는 작업 큐도 공유한다.
 - Electron: renderer → preload IPC → 공통 서비스 → SQLite.
 - 브라우저: renderer → browser bridge HTTP → 공통 서비스 → SQLite.
+- 편집 창이 포커스를 잃거나 최소화되어도 적용·저장은 진행한다(2026-10-04).
+  로컬 창과 팀 참여 창은 `backgroundThrottling:false`를 쓴다. 저장 패치 비교의
+  양보는 `src/util/yieldToTask.ts`의 메시지 태스크이며 프레임·짧은 타이머를 기다리지 않는다.
+  앱 종료·브라우저 freeze/discard·기기 절전 뒤 실행 보장은 별도 작업 큐의 범위다.
 - `electron/local-store/team.ts`: `workspace_team`, `workspace_members` 보조 테이블을 기존
   프로젝트 DB에 추가한다. 프로젝트 JSON/내보내기 게임 스키마와 분리된다.
   기존 폴더는 최초 오픈에 1인 팀이 만들어진다. 토큰은 SHA-256 해시만 저장한다.
@@ -20,6 +28,10 @@ SQLite 파일 위치와 브라우저 UI 위치는 독립적이다. 원격 접속
   클라이언트가 선택하지 않는다. 객체 저장소 구현은 아직 없고 향후 저장소 어댑터의 몫이다.
 
 ## 실행
+
+브라우저 팀 연결 상태는 `teamSession.ts`의 `.oprn-team-session-bar`다.
+높이/지형 도구 막대는 이 배지가 있으면 아래에서 64px 띄운다(2026-10-03).
+배지가 표면 모드의 높이 버튼을 가리던 실제 호스트 겹침을 막으며 팀 관리 링크는 유지한다.
 
 Electron에서 프로젝트를 연 뒤 **파일 → 팀 협업 시작 / 관리**. 앱이 같은 session registry를
 사용하는 HTTP 호스트를 실행한다. 기본은 코드 없이 주소로 바로 접속한다.
@@ -285,8 +297,16 @@ PAW의 기존 Chromium 설치는 `Target crashed` 후 저장되지 않았고 이
 ## 백업과 이전
 
 `store.backup()`은 `backups/<시간-uuid>/project.sqlite`와 `assets/`를 함께 만든다.
-DB 스냅샷의 에셋 목록으로 파일을 복사하며 실패 시 불완전 백업 폴더를 제거한다.
-복원은 **호스트를 끈 후** 새 폴더에 이 백업 폴더의 DB·assets를 함께 복사하여 연다.
+DB 스냅샷의 에셋 목록으로 파일을 복사하며 크기·SHA를 검사한다. 실패 시 불완전 백업 폴더를 제거한다.
+소재는 임시 파일에 write+fsync한 뒤 rename으로 게시하고 DB 참조를 등록한다. 같은 SHA 파일도 재사용 전 검사하고 손상되었으면 정상 입력 바이트로 교체한다. 읽기에서도 크기·SHA를 확인한다.
+첫 시작 장르 시드는 renderer의 `prepareProjectMedia`가 소재를 먼저 파일로 저장한 후 ref 문서로 채택한다. 공용 라이브러리가 부팅 뒤 주입한 inline 이미지도 같은 경로를 탄다. 파일 준비 실패는 열린 문서 교체 전에 전파한다. 중단 시 이미 등록한 미사용 파일은 남을 수 있으나 정본 문서를 바꾸지 않는다.
+저장소의 선택적 `saveSnapshot`은 store가 이미 분리한 committed 사본을 바로 직렬화한다. Electron의 일반 `save`는 기존처럼 먼저 복제하며, store의 첫 full-save만 중복 복제를 생략한다. 사본은 요청 완료까지 변경하지 않는 계약이다. CAS와 서버 반환 병합·저장 영수증 처리는 유지한다.
+
+`project.listBackups`/`project.restoreBackup`는 기존 백업과 같은 owner 범위를 쓴다. 프로젝트 메뉴의 **백업에서 복구...**로 사본을 복구해 열 수 있다. 호스트를 끄지 않아도 원본이 아닌 새 폴더에만 쓴다.
+`electron/local-store/recovery.ts`는 백업을 read-only로 열어 DB quick_check, 펼친 문서 SHA, 소재 참조와 모든 등록 파일의 크기·SHA를 검사한다. 형식 2의 접힌 문서는 백업 자체의 `tileset_blobs`를 직접 읽어 각 본문 SHA를 검사하고 펼친다(살아 있는 저장소의 본문 캐시는 쓰지 않는다). 형식 1도 지원한다. DB/소재를 임시 폴더에 복사하고 재검사한 뒤 새 폴더로 게시한다. 이미 존재하는 대상은 거절한다. 활성 WAL이 있는 프로젝트 DB는 백업 원본으로 받지 않는다.
+복구 사본은 **새 storage projectId**를 갖는다(meta와 project/maps/commits/AI 기록의 project_id를 함께 변경). 저장 문서와 SHA는 유지한다. 같은 원본·사본을 열었을 때 Electron asset URL 식별자가 겹치지 않게 한다.
+HTTP dispatch는 요청별 내부 context로 `.oprn-projects` 복구 루트를 전달하고 결과를 폴더 ID로 돌려준다. IPC/HTTP가 공유하는 핸들러 캐시에 루트를 저장하지 않는다. 데스크톱은 원본의 형제 폴더에 복구한다.
+편집기 부팅이 실패한 경우: `node scripts/oprn-store.mjs restore <백업폴더> --out <새폴더>`. 기존 프로젝트/백업을 직접 수정하지 않는다. UI는 현재 작업 저장에 실패하면 사본을 열지 않고 내보내기를 안내한다.
 팀 정보와 멤버 토큰 해시도 DB에 포함된다. 호스트 소유자 코드는 `.oprn-host-access`가 없거나 DB의 코드 해시와 다를 때만 새로 발급된다.
 원격 팀 관리 버튼은 서버 디스크에 백업을 만든다. 브라우저 다운로드는 기존 프로젝트
 내보내기를 사용한다. 팀원이 2명 이상이면 보류 중인 에셋 참조 보호를 위해 서비스의 prune을

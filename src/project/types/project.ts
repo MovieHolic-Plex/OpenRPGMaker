@@ -65,6 +65,9 @@ export interface GameMap {
    * `src/project/mapLayers.ts` 의 remap/crop 이 같이 옮긴다. 권위: `src/project/relief/`.
    */
   relief?: ReliefData;
+  /** Terrain prop clusters with underlying upper tiles for move/delete restoration. */
+  doodadGroups?: import("../doodadGroups").DoodadGroup[];
+  terrainDesign?: import("../terrainDesign").TerrainDesignData;
   lowerTileStacks?: Record<number, number[]>;
   upperTileStacks?: Record<number, number[]>;
   events: GameEvent[];
@@ -100,12 +103,24 @@ export interface GameMap {
   // RM2003 스타일 맵 속성
   /** 배경(패럴랙스) 이미지 설정. 없으면 타일셋 기본 배경. */
   background?: MapBackground;
+  /**
+   * 월드맵 키트(tiledata/worldmap-kit)로 만든 세계 지도의 원본(2026-10-03). 조수의 edit_world_terrain 이
+   * 여기 쌓인 지형 작업(ops)에 새 작업을 덧붙여 다시 빌드한다. 칸 그림은 타일셋 `worldmap_<mapId>`
+   * (지도 PNG 를 칸마다 한 타일로 자른 것)에 있고, 통행은 키트가 계산한 걷기 표다. 없으면 일반 맵.
+   */
+  worldmapSource?: WorldmapSource;
   /** 맵 전용 BGM. 없으면 프로젝트 기본 BGM. */
   bgm?: MapBgmSetting;
   /** 전투 배경 이미지 리소스 ID. 없으면 타일셋 기본. */
   battleBackground?: string;
   /** 가장자리가 반대편으로 이어지는 반복 맵(RM 「맵 루프」). 없으면 반복 없음. project/mapLoop.ts. */
   loop?: import("../mapLoop").MapLoop;
+  /**
+   * 이 맵에서 걷는 캐릭터(주인공·동료·탈것·캐릭터 칩 이벤트)의 크기 배율 0.25~1. 없으면 1(줄이지 않음).
+   * 월드맵처럼 칸이 작은 지도에서 캐릭터를 줄여 「땅 위를 걷는 축척」으로 보이게 하는 선택 옵션이다.
+   * 읽기는 `mapCharacterSizeFactor`(project/characterScale.ts) 하나로.
+   */
+  characterScale?: number;
   /** 세이브 금지 맵 (RM2003 "Save" 체크 해제). */
   disableSave?: boolean;
   /** 텔레포트(이동) 금지 맵. */
@@ -387,6 +402,21 @@ export interface EncounterConditions {
  * 사람이 이름 붙인 맵 영역 한 개. 맵 안에서만 유효한 ID 다(맵 복사는 ID 를 그대로 옮긴다 —
  * 참조도 같은 맵 안에서만 걸리므로 복사본은 자기 로케이션을 가리킨다).
  */
+/** 월드맵 키트 지도의 원본 — 테마와 지형 작업 목록(`worldmap-terrain/1` 의 ops, 칸 좌표). */
+export interface WorldmapSource {
+  /** tiledata/worldmap-kit/themes/<id> — 아이콘 세트·팔레트·지형 덧칠(우주·포장도로·철길…). */
+  theme: string;
+  /** 테마 지형 위에 얹은 편집 작업들(차례대로). 비면 테마 기본 지형. */
+  ops: Array<Record<string, unknown>>;
+  /** 빌드한 키트 쪽 지형 이름(예: archipelago+edit). 보고용. */
+  terrainId?: string;
+  palette?: string | null;
+  /** 지형 바탕. 없으면 테마 지형의 바탕(대부분 손 대륙 shared-v9, starmap 은 생성 은하). generate = 새 대륙 구조 + 여정 자동 맞춤. */
+  base?: "shared-v9" | "generate";
+  /** 생성 지형의 배치 번호 — 같은 작업이면 같은 배치를 다시 쓰게 저장한다. */
+  fitSalt?: number;
+}
+
 export interface MapNamedLocation {
   /** 맵 안에서 유일한 안정 ID. 이름을 바꿔도 변하지 않는다. */
   id: string;
@@ -709,6 +739,7 @@ export interface StoryFlagDef {
 }
 
 export interface Project {
+  terrainStamps?: import("../terrainDesign").TerrainStamp[];
   /** Confirmed new-project interview; travels with SQLite, export, and later AI turns. */
   gameDesignBrief?: import("../gameDesignBrief").GameDesignBrief;
   /** Prompt library and dialogue review preferences, saved with this project. */

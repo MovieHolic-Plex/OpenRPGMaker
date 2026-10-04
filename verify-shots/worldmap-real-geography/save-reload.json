@@ -1,0 +1,160 @@
+{
+  "receipts": [
+    {
+      "sourceRun": "joseon-wm3",
+      "projectId": "e85f0f8a-99b0-4098-abfe-3a0aefd7c3d8",
+      "projectDir": "/home/main/.local/share/oprn/worldmap-real-geo-20261004-joseon",
+      "storage": "SQLite + assets",
+      "saved": true,
+      "reopened": true,
+      "revision": 1,
+      "sha256": "1e12c9e6425119d31b443a12b85b516036881cda80bff0a110253fcb760d5734",
+      "mapFieldsSha256": "878070ed16e95be1be8f151b22162641364763d2cfa28521ebb86f464c189688",
+      "startMapId": "world_map",
+      "startPos": {
+        "x": 27,
+        "y": 26
+      },
+      "worldmapSource": {
+        "theme": "joseon",
+        "ops": [
+          {
+            "style": "real",
+            "region": "korea",
+            "op": "continents",
+            "count": 0
+          }
+        ],
+        "terrainId": "joseon-korea+edit",
+        "palette": "joseon",
+        "base": "generate",
+        "fitSalt": 0
+      },
+      "worldmapImageSha256": "61dd6dadfe57ec4a8e9c5ebcbf2772cf5ae6edf04430cce70517900beedac91d",
+      "townTilesetId": "joseon_baram"
+    },
+    {
+      "sourceRun": "maya-wm2",
+      "projectId": "abcd1257-74e2-4013-b403-dd247945beb3",
+      "projectDir": "/home/main/.local/share/oprn/worldmap-real-geo-20261004-maya",
+      "storage": "SQLite + assets",
+      "saved": true,
+      "reopened": true,
+      "revision": 1,
+      "sha256": "f5bf8ec286d5d546d3e47a7317a9fa59a68bed51bdcf8595ba076726966ffed4",
+      "mapFieldsSha256": "9c1dea58a38aecd7bc7ac564f1a370e25aba4726b02d67b913443216437f20d3",
+      "startMapId": "world_map",
+      "startPos": {
+        "x": 47,
+        "y": 11
+      },
+      "worldmapSource": {
+        "theme": "fantasy",
+        "ops": [
+          {
+            "style": "real",
+            "box": [
+              -93,
+              14,
+              -86,
+              22
+            ],
+            "home": [
+              -89,
+              20.8
+            ],
+            "op": "continents"
+          },
+          {
+            "style": "real",
+            "box": [
+              -93,
+              14,
+              -86,
+              22
+            ],
+            "op": "continents",
+            "home": [
+              -89,
+              20.8
+            ]
+          },
+          {
+            "kind": "broad",
+            "density": 0.65,
+            "poly": [
+              [
+                44,
+                4
+              ],
+              [
+                54,
+                4
+              ],
+              [
+                54,
+                8
+              ],
+              [
+                44,
+                8
+              ]
+            ],
+            "op": "forest"
+          },
+          {
+            "kind": "broad",
+            "poly": [
+              [
+                58,
+                11
+              ],
+              [
+                64,
+                11
+              ],
+              [
+                64,
+                18
+              ],
+              [
+                58,
+                18
+              ]
+            ],
+            "density": 0.6,
+            "op": "forest"
+          },
+          {
+            "ground": "grass",
+            "op": "biome",
+            "poly": [
+              [
+                44,
+                3
+              ],
+              [
+                55,
+                3
+              ],
+              [
+                55,
+                9
+              ],
+              [
+                44,
+                9
+              ]
+            ]
+          }
+        ],
+        "terrainId": "edit",
+        "palette": "original",
+        "base": "generate",
+        "fitSalt": 0
+      },
+      "worldmapImageSha256": "073d139314d98c110b580ef3aa2e47f068f7b4614ba77d86a2ed04319713b86d",
+      "townTilesetId": "beodeul_city"
+    }
+  ]
+}

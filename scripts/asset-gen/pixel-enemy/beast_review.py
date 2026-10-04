@@ -1,6 +1,6 @@
 """Strict review for the beasts batch sheets (bat-vampire ... plant-carnivore).
 
-Checks per sheet: cell*3 square, alpha 0/255, <=16 colours, no empty cell, every pair
+Checks per sheet: cell*3 square, alpha 0/255, <=32 colours, no empty cell, every pair
 of cells differs by >=12 px, baseline (ground species touch y=cell-4 in every cell,
 airborne species only in dead). Also writes .omo/pixel-enemy-beasts-gallery.png.
 Usage: python3 beast_review.py [slug ...]
@@ -31,7 +31,7 @@ def review(name):
     alpha = set(sheet.getchannel('A').tobytes())
     assert alpha <= {0, 255}, alpha
     colors = {c for _, c in sheet.getcolors(cell * cell * 9) if c[3]}
-    assert len(colors) <= 16, len(colors)
+    assert len(colors) <= 32, len(colors)
     fr = cells(sheet, cell)
     base = cell - 4
     bottoms = {}

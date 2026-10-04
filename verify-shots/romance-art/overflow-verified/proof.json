@@ -1,0 +1,33 @@
+{
+  "syntheticUiFixture": true,
+  "noStateInjection": true,
+  "cases": [
+    {
+      "width": 320,
+      "advances": 10,
+      "geometry": {
+        "scrollTop": 24,
+        "selectedText": "편지를 부치기까지 망설였던 마음을 조심스럽게 물어보며 이야기하고 싶을 때 언제든 기다리겠다고 말한다.",
+        "itemHeight": 25.59375,
+        "listHeight": 48,
+        "visible": true,
+        "pageOverflow": false
+      },
+      "choiceExecuted": true
+    },
+    {
+      "width": 960,
+      "advances": 10,
+      "geometry": {
+        "scrollTop": 24,
+        "selectedText": "편지를 부치기까지 망설였던 마음을 조심스럽게 물어보며 이야기하고 싶을 때 언제든 기다리겠다고 말한다.",
+        "itemHeight": 76.78125,
+        "listHeight": 144,
+        "visible": true,
+        "pageOverflow": false
+      },
+      "choiceExecuted": true
+    }
+  ],
+  "ok": true
+}

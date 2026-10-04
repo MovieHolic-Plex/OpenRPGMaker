@@ -1,0 +1,12 @@
+{
+ "schema": "worldmap-theme/1",
+ "id": "modern-town",
+ "name": "현대 소도시",
+ "iconset": "modern-town",
+ "palette": "original",
+ "overlays": [
+  "paved_roads",
+  "sprawl:modern"
+ ],
+ "kind": "land"
+}

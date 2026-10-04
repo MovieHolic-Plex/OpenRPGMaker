@@ -7,9 +7,13 @@ import { ensureElfTreetopReferences } from "./sharedElfTreetopReferences";
 import { CLIMATE_VILLAGE_TEXTURES, createClimateVillageTileset, ensureClimateBareTrees, ensureClimateVillageReferences } from "./climateVillages";
 import { ATLAS_BIOME_TEXTURES, createAtlasBiomeTileset, ensureAtlasBiomeReferences } from "./atlasBiomes";
 import { ATLAS_BIOME_WORLD_TEXTURE, createAtlasBiomeWorldTileset } from "./atlasBiomeWorld";
+import { WORLDMAP_SELECTED_TEXTURE, createWorldmapSelectedTileset, ensureWorldmapSelectedTileset } from "./worldmapSelected";
 import { createSharedVillageObjectsTileset, ensureSharedVillageObjectReferences, SHARED_VILLAGE_OBJECT_ID, SHARED_VILLAGE_OBJECT_TEXTURE } from "./sharedVillageObjects";
 import { createCastleTileset } from "./castleTileset";
 import { BEODEUL_CITY_TEXTURE, createBeodeulCityTileset, ensureBeodeulCityReferences, ensureBeodeulCityTileset } from "./beodeulCity";
+import { JOSEON_BARAM_TEXTURE, createJoseonBaramTileset, ensureJoseonBaramReferences, ensureJoseonBaramTileset } from "./joseonBaram";
+import { MODERN_CITY_TEXTURE, createModernCityTileset, ensureModernCityReferences, ensureModernCityTileset } from "./modernCity";
+import { JP_CITY_TEXTURE, createJpCityTileset, ensureJpCityReferences, ensureJpCityTileset } from "./jpCity";
 import { ensureForestGroveInterior } from "./forestGrove";
 import { ensureForestTallGrass } from "./forestTallGrass";
 import { createForestHarmonyTileset, ensureForestHarmonyReferences, FOREST_HARMONY_ID, FOREST_HARMONY_TEXTURE } from "./forestHarmony";
@@ -161,6 +165,7 @@ export function ensureBundledTilesets(project: { tilesets: Record<string, Tilese
       continue;
     }
     if (project.tilesets[id]) {
+      if (asset.textureKey === WORLDMAP_SELECTED_TEXTURE) changed = ensureWorldmapSelectedTileset(project.tilesets[id]) || changed;
       if (asset.textureKey === FOREST_GRASS_JOINS_TEXTURE) changed = extendForestGrassJoinsTileset(project.tilesets[id]) || changed;
       if (id === FOREST_HARMONY_ID) changed = ensureForestHarmonyReferences(project.tilesets[id]) || changed;
       // Older saves stop at 2550/2610: append the shared tail slots (only past the end or into blank slots).
@@ -193,6 +198,21 @@ export function ensureBundledTilesets(project: { tilesets: Record<string, Tilese
       if (asset.textureKey === BEODEUL_CITY_TEXTURE) {
         changed = ensureBeodeulCityTileset(project.tilesets[id]) || changed;
         changed = ensureBeodeulCityReferences(project.tilesets[id]) || changed;
+      }
+      // 조선 · 바람의나라풍 (tiledata/joseon-village): 번들 칸 표와 참고문서를 옛 사본에도 맞춘다.
+      if (asset.textureKey === JOSEON_BARAM_TEXTURE) {
+        changed = ensureJoseonBaramTileset(project.tilesets[id]) || changed;
+        changed = ensureJoseonBaramReferences(project.tilesets[id]) || changed;
+      }
+      // 현대 도시 · 도쿄풍 (modern-chipset 하네스 굽기): 번들 칸 표와 참고문서를 옛 사본에도 맞춘다(칸 번호는 덧붙이기 전용).
+      if (asset.textureKey === MODERN_CITY_TEXTURE) {
+        changed = ensureModernCityTileset(project.tilesets[id]) || changed;
+        changed = ensureModernCityReferences(project.tilesets[id]) || changed;
+      }
+      // 일본 도시 (jp_city 굽기): modern_city 와 별개 번들. 번들 칸 표·`jp-` 부품/오토타일·참고문서를 옛 사본에도 맞춘다(칸 번호는 덧붙이기 전용).
+      if (asset.textureKey === JP_CITY_TEXTURE) {
+        changed = ensureJpCityTileset(project.tilesets[id]) || changed;
+        changed = ensureJpCityReferences(project.tilesets[id]) || changed;
       }
       if (asset.textureKey === ATLAS_VEHICLES_TEXTURE) changed = ensureAtlasVehiclesReferences(project.tilesets[id]) || changed;
       if (id === TIBO_INTERIOR_ID) changed = extendTiboInteriorDefaults(project.tilesets[id]) || changed;
@@ -351,6 +371,9 @@ function bundledEasyRpgTilesetBase(asset: (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS
   if (asset.textureKey === CASTLE_TILESET_TEXTURE_KEY) return createCastleTileset();
   if (asset.textureKey === SHARED_VILLAGE_OBJECT_TEXTURE) return createSharedVillageObjectsTileset();
   if (asset.textureKey === BEODEUL_CITY_TEXTURE) return createBeodeulCityTileset();
+  if (asset.textureKey === JOSEON_BARAM_TEXTURE) return createJoseonBaramTileset();
+  if (asset.textureKey === MODERN_CITY_TEXTURE) return createModernCityTileset();
+  if (asset.textureKey === JP_CITY_TEXTURE) return createJpCityTileset();
   if (asset.textureKey === ATLAS_VEHICLES_TEXTURE) return createAtlasVehiclesTileset();
   // New projects start with the shared tail slots the place documents use (2550~2759).
   if (asset.textureKey === FOREST_HARMONY_TEXTURE) {
@@ -377,6 +400,13 @@ function bundledEasyRpgTilesetBase(asset: (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS
     const world = BUNDLED_EASYRPG_CHIPSET_ASSETS.find((a) => a.textureKey === "tex_easyrpg_chipset_world");
     if (!world) throw new Error("번들 칩셋 목록에 tex_easyrpg_chipset_world 가 없습니다.");
     return createAtlasBiomeWorldTileset(bundledStandardChipsetTileset(world));
+  }
+  if (asset.textureKey === WORLDMAP_SELECTED_TEXTURE) {
+    const world = BUNDLED_EASYRPG_CHIPSET_ASSETS.find((a) => a.textureKey === "tex_easyrpg_chipset_world");
+    if (!world) throw new Error("번들 월드 지형이 없습니다.");
+    const base = bundledStandardChipsetTileset(world);
+    ensureTilesetHarnesses({ tilesets: { [base.id]: base } });
+    return createWorldmapSelectedTileset(base);
   }
   return bundledStandardChipsetTileset(asset);
 }

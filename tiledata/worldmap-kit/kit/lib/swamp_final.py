@@ -85,15 +85,19 @@ def sprite(rows, key):
     return a, m
 
 
-def run(img, snap, G, out=None):
+def run(img, snap, G, out=None, label=None):
+    """label: 바닥 경계 v9 의 픽셀 라벨. 주면 늪 윤곽을 그 라벨로(바닥 그림과 같은 경계), 가장자리 풀 섞기는 실제 이웃 바닥 픽셀로."""
     import terrain_v4 as V
     H, W = img.shape[:2]
     sw_c = (G == V.SWAMP)
     up = lambda m: np.repeat(np.repeat(m, 16, 0), 16, 1)
-    # 칸 마스크를 노이즈로 휘어 불규칙한 윤곽
-    f = ndi.gaussian_filter(up(sw_c).astype(np.float32), 5.0, mode='nearest')
-    f += vnoise(H, W, 26, 1101) * .16 + vnoise(H, W, 11, 1102) * .12 + vnoise(H, W, 5, 1103) * .06
-    S = f > .46
+    if label is not None:
+        S = label == V.SWAMP
+    else:
+        # 칸 마스크를 노이즈로 휘어 불규칙한 윤곽
+        f = ndi.gaussian_filter(up(sw_c).astype(np.float32), 5.0, mode='nearest')
+        f += vnoise(H, W, 26, 1101) * .16 + vnoise(H, W, 11, 1102) * .12 + vnoise(H, W, 5, 1103) * .06
+        S = f > .46
     # 바닥이었던 초록 계열 픽셀만 (스냅숏과 같고, 파랑이 아니며, 모래가 아님)
     r, g, b = [img[..., i].astype(int) for i in range(3)]
     same = (img == snap).all(-1)
@@ -155,8 +159,17 @@ def run(img, snap, G, out=None):
     # ── 가장자리 전이: 안쪽 9px 는 풀이 섞이고, 바깥 7px 는 덤불 알갱이 ──
     p_gr = np.clip(1 - (dist_out - 1) / 9.0, 0, 1) ** 1.2
     mixg = inside & (grain < p_gr * .85)
-    gi = np.where(hash2(xa // 2, ya, 1240) > .66, 3, np.where(hash2(xa, ya // 2, 1241) > .4, 1, 0))
-    px[mixg] = np.array(GRASS, np.uint8)[gi][mixg]
+    if label is not None:                               # 경계 너머 같은 거리의 실제 바닥 픽셀(풀이 아니라 사바나·툰드라일 수도 있다)
+        oi = ndi.distance_transform_edt(S, return_distances=False, return_indices=True)
+        my, mx = 2 * oi[0] - ya, 2 * oi[1] - xa
+        my, mx = np.clip(my, 0, H - 1), np.clip(mx, 0, W - 1)
+        mirror = snap[my, mx]
+        ok = ~S[my, mx] & (label[my, mx] >= 10)
+        mixg &= ok
+        px[mixg] = mirror[mixg]
+    else:
+        gi = np.where(hash2(xa // 2, ya, 1240) > .66, 3, np.where(hash2(xa, ya // 2, 1241) > .4, 1, 0))
+        px[mixg] = np.array(GRASS, np.uint8)[gi][mixg]
     # 바깥 알갱이(풀 위에 짙은 이끼 덩이가 번진다): 스냅숏이 풀색인 곳만
     fringe = paint & ~S & (dist_in <= 7) & ~near_sea
     p_fr = np.clip(1 - dist_in / 7.0, 0, 1) * .55
@@ -225,6 +238,9 @@ def run(img, snap, G, out=None):
     outm = ~(inside | fringe | occupied)
     px[outm] = img[outm]
     area = int(inside.sum())
+    if not area:   # 늪 칸이 그림에 안 남은 세계(실제 지리의 작은 늪) — 통계만 건너뛴다
+        print('swamp px 0 — skipped stats')
+        return px
     cols = px[inside]
     uniq, cnt = np.unique(cols.reshape(-1, 3), axis=0, return_counts=True)
     top = cnt.max() / cnt.sum()

@@ -13,6 +13,7 @@ import { mentionedToolSchemas, planRequiredToolSchemas, toolSchemasForNames } fr
 import type { IntentDeclaration } from "./intentDeclaration";
 import { toOpenAiTools, type OpenAiTool } from "@/editor/tools";
 import type { WorkPlan } from "./workPlan";
+import { DEFAULT_COMPACTION_SETTINGS, estimateContextTokens } from "./contextCompaction";
 
 /** Read/control tools that must remain reachable before any search round. */
 export const DISCOVERY_CONTROL_TOOL_NAMES: readonly string[] = [
@@ -35,6 +36,22 @@ export interface SessionToolExposureInput {
   readonly requiredReadTools?: readonly string[];
   readonly workPlan?: WorkPlan | null;
   readonly fullCatalogFallback?: boolean;
+  /**
+   * 이 요청을 받을 모델의 컨텍스트 창. 주면 전체 카탈로그가 창에 안 들어갈 때 폴백도 좁힌 목록(코어+발견 도구)을 쓴다.
+   * 실측(2026-10-02): 전체 카탈로그 약 189,000 토큰 + 예비분 16,384 가 claude·glm(200,000)·미지 모델(128,000) 창을 넘어
+   * 폴백 턴이 요청 조립에서 죽었다.
+   */
+  readonly contextWindow?: number;
+}
+
+/** 폴백으로 전체 카탈로그를 보내도 대화가 쓸 자리(약 13,000 토큰)가 남는가. */
+const CONVERSATION_FLOOR_TOKENS = 13_000;
+let fullCatalogTokenCache: { readonly count: number; readonly tokens: number } | undefined;
+export function fullCatalogFitsWindow(full: readonly OpenAiTool[], contextWindow: number): boolean {
+  if (fullCatalogTokenCache?.count !== full.length) {
+    fullCatalogTokenCache = { count: full.length, tokens: estimateContextTokens([{ role: "system", content: JSON.stringify(full) }]) };
+  }
+  return fullCatalogTokenCache.tokens + DEFAULT_COMPACTION_SETTINGS.reserveTokens + CONVERSATION_FLOOR_TOKENS <= contextWindow;
 }
 
 function appendUnique(target: OpenAiTool[], seen: Set<string>, schemas: readonly OpenAiTool[]): void {
@@ -69,7 +86,9 @@ function schemasForIntent(intent: IntentDeclaration | null): OpenAiTool[] {
  */
 export function buildSessionRegistryTools(input: SessionToolExposureInput): OpenAiTool[] {
   if (input.fullCatalogFallback || input.intent === null || input.intent.source === "fallback") {
-    return toOpenAiTools() as OpenAiTool[];
+    const full = toOpenAiTools() as OpenAiTool[];
+    // 창이 좁으면 전체를 밀어 넣지 않고 아래 좁힌 목록으로 간다 — 발견 도구가 나머지를 찾아 준다.
+    if (input.contextWindow === undefined || fullCatalogFitsWindow(full, input.contextWindow)) return full;
   }
 
   const tools: OpenAiTool[] = [];

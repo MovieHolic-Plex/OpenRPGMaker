@@ -116,9 +116,9 @@ export function showNewProjectDialog(opts: NewProjectDialogOptions = {}): Promis
     const opener = document.activeElement;
     const overlay = el("div", { class: "app-modal-overlay", dataset: { testid: NEW_PROJECT_DIALOG_TESTIDS.host } });
     const card = el("section", { class: "app-modal-card project-start-window", attrs: { role: "dialog", "aria-modal": "true", "aria-labelledby": "project-start-title" } });
-    let choiceId: NewProjectChoiceId | null = opts.defaultChoiceId ?? null;
-    let startMode: ProjectStartMode = choiceId && !START_EXAMPLE_DETAILS[choiceId] ? "ai" : "example";
-    let choosing = !choiceId;
+    let choiceId: NewProjectChoiceId | null = opts.defaultChoiceId === undefined ? "story-cutscene" : opts.defaultChoiceId;
+    let startMode: ProjectStartMode = opts.defaultChoiceId === undefined || (choiceId && !START_EXAMPLE_DETAILS[choiceId]) ? "ai" : "example";
+    let choosing = opts.defaultChoiceId === null;
     let title = fallbackTitle;
     let screenSize: NewProjectScreenSize = "classic";
     let idea = "";
@@ -134,7 +134,7 @@ export function showNewProjectDialog(opts: NewProjectDialogOptions = {}): Promis
     });
     const choose = (id: NewProjectChoiceId | null, mode: ProjectStartMode) => {
       choiceId = id; startMode = mode; choosing = false;
-      title = id ? START_EXAMPLE_DETAILS[id]?.title ?? fallbackTitle : fallbackTitle;
+      title = mode === "example" && id ? START_EXAMPLE_DETAILS[id]?.title ?? fallbackTitle : fallbackTitle;
       render();
     };
     const confirm = async () => {
@@ -145,16 +145,16 @@ export function showNewProjectDialog(opts: NewProjectDialogOptions = {}): Promis
       if (confirmControl) confirmControl.disabled = true;
       try {
         if (startMode !== "ai" || !choiceId) { done(selection); return; }
-        if (opts.ensureAiConnected && !await opts.ensureAiConnected(newProjectChoiceLabel(choiceId)).catch(() => false)) return;
+        if (opts.ensureAiConnected && !await opts.ensureAiConnected("새 게임 기획").catch(() => false)) return;
         if (settled) return;
         const brief = await showProjectInterview(choiceId, { initialAnswer: idea });
-        if (brief && !settled) done({ ...selection, gameDesignBrief: brief });
+        if (brief && !settled) done({ ...selection, choiceId: brief.presetId, gameDesignBrief: brief });
       } finally { busy = false; if (!settled) render(); }
     };
     const render = () => {
       if (settled) return;
       card.replaceChildren(el("header", { class: "project-start-header", children: [
-        el("div", { children: [el("span", { class: "project-start-kicker", text: choosing ? "새 프로젝트" : "시작 방식 → 시작 준비 → 에디터" }), el("h2", { attrs: { id: "project-start-title" }, text: choosing ? "첫 게임, 작은 장면부터." : startMode === "ai" ? "AI와 게임 기획하기" : "이 장면으로 시작해 볼까요?" })] }),
+        el("div", { children: [el("span", { class: "project-start-kicker", text: choosing ? "새 프로젝트" : "새 게임" }), el("h2", { attrs: { id: "project-start-title" }, text: choosing ? "첫 게임, 작은 장면부터." : startMode === "ai" ? "AI와 게임 기획하기" : "이 장면으로 시작해 볼까요?" })] }),
         button(opts.cancelLabel ?? "취소", NEW_PROJECT_DIALOG_TESTIDS.cancel, () => done(null)),
       ] }));
       if (choosing) {
@@ -173,29 +173,30 @@ export function showNewProjectDialog(opts: NewProjectDialogOptions = {}): Promis
         const nameInput = el("input", { class: "app-modal-input", value: title, attrs: { type: "text", id: "project-start-name", maxlength: "80" }, dataset: { testid: NEW_PROJECT_DIALOG_TESTIDS.nameInput } }) as HTMLInputElement;
         nameInput.addEventListener("input", () => { title = nameInput.value; });
         const fields = el("div", { class: "project-start-fields", children: [
-          el("label", { attrs: { for: "project-start-name" }, text: "게임 이름" }), nameInput, el("p", { class: "project-start-hint", text: "나중에 바꿀 수 있어요." }),
-          el("p", { class: "project-start-hint", text: "새 폴더에 프로젝트와 작업 내용이 저장돼요." }),
+          el("label", { attrs: { for: "project-start-name" }, text: "게임 이름" }), nameInput,
         ] });
         if (startMode === "ai") {
           const input = el("textarea", { class: "app-modal-input", value: idea, attrs: { rows: "3", maxlength: "600", "aria-label": "만들고 싶은 게임", placeholder: "예: 눈 내리는 마을에서 잃어버린 기억을 찾는 이야기" } }) as HTMLTextAreaElement;
           input.addEventListener("input", () => { idea = input.value; });
-          fields.append(el("label", { text: "어떤 게임을 만들고 싶나요?" }), input);
-          const genres = el("select", { class: "app-modal-input", attrs: { "aria-label": "시작 장르" }, children: orderedChoices().map(c => el("option", { text: c.label, attrs: { value: c.id, ...(choiceId === c.id ? { selected: "" } : {}) } })) }) as HTMLSelectElement;
-          genres.addEventListener("change", () => { choiceId = genres.value as NewProjectChoiceId; });
-          fields.append(genres);
+          fields.append(el("label", { text: "아이디어 · 선택" }), input);
         }
         const sizes = el("div", { class: "project-start-size-options", children: NEW_PROJECT_SIZE_OPTIONS.map(size => {
           const radio = el("input", { attrs: { type: "radio", name: "project-start-size", value: size.id, ...(screenSize === size.id ? { checked: "" } : {}) }, dataset: { testid: NEW_PROJECT_DIALOG_TESTIDS.sizeOption + "-" + size.id } }) as HTMLInputElement;
           radio.addEventListener("change", () => { if (radio.checked) screenSize = size.id; });
           return el("label", { children: [radio, el("span", { text: size.label + " · " + size.blurb })] });
         }) });
-        fields.append(el("details", { children: [el("summary", { text: "화면 크기" }), sizes] }));
+        fields.append(el("label", { text: "화면 크기" }), sizes);
         card.append(el("div", { class: "project-start-setup", children: [el("section", { class: "project-start-preview", children: [
-          ...(choice ? [el("img", { attrs: { src: choice.thumb, alt: choice.label + " 참고 이미지" } })] : []),
-          el("div", { children: [el("h3", { text: choice?.label ?? "빈 프로젝트" }), el("p", { text: details?.description ?? "빈 맵에서 나만의 장면을 만들어요." }), el("ul", { children: (startMode === "ai" ? ["아이디어를 담은 기획 인터뷰", "생성 전 게임 기획 확인", "AI 팀과 첫 장면 만들기"] : details?.includes ?? ["빈 맵 한 개", "기본 타일과 캐릭터", "첫 편집 안내"]).map(text => el("li", { text })) })] }),
+          ...(choice ? [el("img", { attrs: { src: startMode === "ai" ? "/assets/project-interview/world-poster.webp" : choice.thumb, alt: "게임의 세계 참고 이미지" } })] : []),
+          el("div", { children: [el("h3", { text: startMode === "ai" ? "당신의 다음 이야기" : choice?.label ?? "빈 프로젝트" }), el("p", { text: startMode === "ai" ? "고르고, 만들기." : details?.description ?? "빈 맵에서 나만의 장면을 만들어요." }), ...(startMode === "ai" ? [] : [el("ul", { children: (details?.includes ?? ["빈 맵 한 개", "기본 타일과 캐릭터"]).map(text => el("li", { text })) })])] }),
         ] }), fields] }));
         card.append(el("footer", { class: "app-modal-actions", children: [button("시작 방식 다시 고르기", NEW_PROJECT_DIALOG_TESTIDS.back, () => { choosing = true; render(); }), button(opts.confirmLabel ?? (startMode === "ai" ? "다음 · 게임 기획" : choiceId ? "이 예제로 시작" : "프로젝트 만들기"), NEW_PROJECT_DIALOG_TESTIDS.confirm, () => void confirm(), true)] }));
       }
+      const content = el("div", { class: "project-start-scroll" });
+      for (const child of [...card.children]) {
+        if (!child.classList.contains("project-start-header") && !child.classList.contains("app-modal-actions")) content.append(child);
+      }
+      card.querySelector(".project-start-header")?.after(content);
       card.querySelector<HTMLElement>(choosing ? ".project-start-example" : "input[type=text]")?.focus();
     };
     card.addEventListener("click", event => event.stopPropagation());

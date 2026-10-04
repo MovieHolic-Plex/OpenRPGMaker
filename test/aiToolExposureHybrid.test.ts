@@ -9,7 +9,8 @@ import { declaredIntent, fixedDeclarer } from "./intentFixture";
 const CONFIG = {
   authMode: "apiKey" as const,
   baseUrl: "x",
-  model: "stub-model",
+  // 창이 넓은 모델이어야 전체 카탈로그 폴백이 실제로 나간다(좁은 창은 sessionToolExposure 가 좁힌 목록을 유지한다).
+  model: "gemini-3.8-flash",
   liteModel: "stub-model",
   apiKey: "sk",
   maxToolCalls: 4,
@@ -36,7 +37,8 @@ function names(request: ChatRequest | undefined): string[] {
   return request?.tools?.map((tool) => tool.function.name) ?? [];
 }
 
-describe("hybrid assistant tool exposure", () => {
+// 세션 한 판을 통째로 돌린다(전체 카탈로그 288개 직렬화 포함, 단독 약 10초) — 병렬 부하에서 기본 15초를 넘는다.
+describe("hybrid assistant tool exposure", { timeout: 60_000 }, () => {
   it("keeps the first catalog small while retaining RPG foundation tools", () => {
     const tools = buildSessionRegistryTools({
       requestText: "중세 게임 RPG를 만들어줘",

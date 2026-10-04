@@ -1,0 +1,80 @@
+{
+  "clips": 2,
+  "errors": [],
+  "rows": [
+    {
+      "skill": "skill_mage_fireball",
+      "completed": true,
+      "poses": [
+        {
+          "at": 16244,
+          "actor": "actor_mage",
+          "pose": "idle",
+          "flip": false
+        },
+        {
+          "at": 16756,
+          "actor": "actor_mage",
+          "pose": "cast_charge",
+          "flip": false
+        },
+        {
+          "at": 17086,
+          "actor": "actor_mage",
+          "pose": "cast_raise",
+          "flip": false
+        },
+        {
+          "at": 17162,
+          "actor": "actor_mage",
+          "pose": "cast_release",
+          "flip": false
+        },
+        {
+          "at": 17403,
+          "actor": "actor_mage",
+          "pose": "idle",
+          "flip": false
+        }
+      ],
+      "problems": []
+    },
+    {
+      "skill": "skill_mage_magic_missile",
+      "completed": true,
+      "poses": [
+        {
+          "at": 21424,
+          "actor": "actor_mage",
+          "pose": "idle",
+          "flip": false
+        },
+        {
+          "at": 22015,
+          "actor": "actor_mage",
+          "pose": "cast_charge",
+          "flip": false
+        },
+        {
+          "at": 22329,
+          "actor": "actor_mage",
+          "pose": "cast_raise",
+          "flip": false
+        },
+        {
+          "at": 22414,
+          "actor": "actor_mage",
+          "pose": "cast_release",
+          "flip": false
+        },
+        {
+          "at": 22657,
+          "actor": "actor_mage",
+          "pose": "idle",
+          "flip": false
+        }
+      ],
+      "problems": []
+    }
+  ]
+}

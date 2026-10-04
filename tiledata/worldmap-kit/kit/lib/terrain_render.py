@@ -179,8 +179,11 @@ def render_water(M, img, frame=0):
                             fr = np.maximum(fr, np.tile(prof[:, None], (1, 16)))
                 if fr.max() > 0:
                     sea = water_tile(M, x, y, False, frame)
-                    bay = (BAYER[np.arange(16)[:, None] % 4, np.arange(16)[None, :] % 4] + .5) / 16
-                    use = bay < (fr ** 1.3)
+                    # 바이어 디더로 섞으면 어두운 바다 화소가 체크무늬 네모로 떠 보였다(QA 2026-10-03, 군도 해협 어귀) —
+                    # 칸 안에서 굽이치는 한 줄 경계로 가른다. 위상은 칸 좌표로 정해 이웃 어귀끼리 같은 무늬가 되지 않게.
+                    yy, xx = np.mgrid[0:16, 0:16]
+                    wav = .5 + .13 * np.sin((yy + y * 16) / 2.6 + x * 1.7) + .09 * np.sin((xx + x * 16) / 2.1 + y * 2.3)
+                    use = fr > wav
                     tile[use] = sea[use]
             img[y * 16:(y + 1) * 16, x * 16:(x + 1) * 16] = tile
     return img

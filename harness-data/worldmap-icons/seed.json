@@ -1,0 +1,12 @@
+{
+  "schema": "worldmap-icons-seed/1",
+  "purpose": "기존 원본·검수·사람 선택을 이어 공용 월드맵 스탬프로 굽는다",
+  "selection": "현재 원본 해시와 일치하는 client=web의 accept 또는 pick만",
+  "tileSize": 16,
+  "tilesPerRow": 30,
+  "baseTexture": "tex_easyrpg_chipset_world",
+  "outputTexture": "tex_worldmap_selected",
+  "tileIds": "기존 0~479 지형을 보존하고 slots.json의 위치는 덧붙이기 전용",
+  "unselected": "미선택·버린 아이콘은 굽지 않는다",
+  "view": "윗면+정면 벽; 자연물 및 사용자가 허용한 desert-east/modern-sf 예외는 README 참조"
+}

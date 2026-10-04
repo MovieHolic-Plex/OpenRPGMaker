@@ -78,11 +78,11 @@ describe("database monster species view", () => {
     setNumber("db-monster-species-def", "22");
     setNumber("db-monster-species-mind", "23");
     setNumber("db-monster-species-agi", "24");
-    setNumber("db-monster-species-hue", "120");
 
     const record = store.getCurrent().database.monsterSpecies?.find((entry) => entry.id === id);
     expect(record?.baseStats).toEqual({ maxHp: 64, maxMp: 30, attack: 21, defense: 22, mind: 23, agility: 24 });
-    expect(record?.graphic.graphicHue).toBe(120);
+    // 색조 칸은 2026-10-02 지웠다(전투가 읽지 않는다).
+    expect(findByTestId(host, "db-monster-species-hue")).toBeNull();
   });
 
   it("duplicates with a 사본 suffix and blocks delete while an enemy references the species", () => {

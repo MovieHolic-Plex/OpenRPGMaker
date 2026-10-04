@@ -1,3 +1,4 @@
+import { MAP_CHARACTER_SCALE_MIN } from "@/project/characterScale";
 import { normalizeAtmosphereEffects } from "@/project/atmosphere";
 import { normalizeMapClimate, type MapClimate } from "@/project/mapClimate";
 // editor/actions.ts
@@ -392,6 +393,17 @@ export function setMapFlags(mapId: MapId, flags: { disableSave?: boolean; disabl
     if (flags.disableSave) map.disableSave = true; else delete map.disableSave;
     if (flags.disableTeleport) map.disableTeleport = true; else delete map.disableTeleport;
     if (flags.disableEscape) map.disableEscape = true; else delete map.disableEscape;
+  }, { scope: "map", mapId });
+}
+
+/** 이 맵의 걷는 캐릭터 크기 배율(0.25~1). undefined 나 1 이면 지워서 기본 크기로 돌아간다. */
+export function setMapCharacterScale(mapId: MapId, scale: number | undefined): void {
+  if (!allowMapMutation(mapId)) return;
+  store.update((p) => {
+    const map = p.maps[mapId];
+    if (!map) return;
+    if (scale === undefined || !Number.isFinite(scale) || scale >= 1) delete map.characterScale;
+    else map.characterScale = Math.max(MAP_CHARACTER_SCALE_MIN, scale);
   }, { scope: "map", mapId });
 }
 

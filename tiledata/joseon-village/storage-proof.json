@@ -1,0 +1,4052 @@
+{
+ "projectId": "937fedcb-bba5-44bd-aaf9-d709f1a48bc2",
+ "projectDir": "/tmp/oprn-joseon-baram-proof",
+ "note": "임시 증명 폴더(사용자의 실제 프로젝트 아님)",
+ "revision": 1,
+ "sha256": "e9d8435972506986925971a134ed3ecb9920bdb923ef10df8eb8b3d9bd856339",
+ "saved": true,
+ "reopened": true,
+ "deepEqual": {
+  "project": false,
+  "maps": true,
+  "tileset": true
+ },
+ "outsideMapsAndTilesetsFirstDiff": "project.database.actors.6.characterIndex: undefined != 0",
+ "tileset": {
+  "id": "joseon_baram",
+  "family": "oprn-joseon",
+  "count": 16776,
+  "tilesPerRow": 72,
+  "image": {
+   "type": "bundled",
+   "id": "tex_joseon_baram"
+  },
+  "structureKits": 542,
+  "tileGroups": 593,
+  "autotileGroups": [
+   "jb_road16_autotile",
+   "jb_yard16_autotile",
+   "jb_water47_autotile",
+   "jb_paddy16_autotile",
+   "jb_rice16_autotile",
+   "jb_road64_autotile",
+   "jb_yard64_autotile",
+   "jb_water47g_autotile",
+   "jb_slab_edge16_autotile",
+   "jb_palace_court16_autotile",
+   "jb_fld_trail32_autotile",
+   "jb_fld_tall32_autotile",
+   "jb_fld_forest32_autotile",
+   "jb_fld_bog94_autotile",
+   "jb_fld_rock32_autotile",
+   "jb_cav_roof47_autotile",
+   "jb_cav_pool94_autotile",
+   "jb_in_ceil47_autotile",
+   "jb_pal_ceil47_autotile"
+  ],
+  "referenceDocuments": [
+   {
+    "id": "joseon-baram-guide",
+    "docs": 2,
+    "images": 2
+   },
+   {
+    "id": "joseon-baram-terrain",
+    "docs": 2,
+    "images": 7
+   },
+   {
+    "id": "joseon-baram-buildings",
+    "docs": 6,
+    "images": 4
+   },
+   {
+    "id": "joseon-baram-props",
+    "docs": 21,
+    "images": 12
+   },
+   {
+    "id": "joseon-baram-examples",
+    "docs": 4,
+    "images": 4
+   },
+   {
+    "id": "joseon-baram-qa",
+    "docs": 1,
+    "images": 4
+   },
+   {
+    "id": "joseon-baram-field-cave",
+    "docs": 15,
+    "images": 27
+   },
+   {
+    "id": "joseon-baram-interior",
+    "docs": 18,
+    "images": 22
+   },
+   {
+    "id": "joseon-baram-palace",
+    "docs": 11,
+    "images": 15
+   }
+  ]
+ },
+ "maps": {
+  "gungnae": {
+   "size": [
+    96,
+    96
+   ],
+   "lower": 9216,
+   "upper": 5851,
+   "npcs": 21
+  },
+  "gungnae_full": {
+   "size": [
+    200,
+    208
+   ],
+   "lower": 41600,
+   "upper": 23102,
+   "npcs": 40
+  },
+  "joseon_cave": {
+   "size": [
+    48,
+    48
+   ],
+   "lower": 2304,
+   "upper": 227,
+   "npcs": 2
+  },
+  "joseon_field": {
+   "size": [
+    96,
+    96
+   ],
+   "lower": 9216,
+   "upper": 4894,
+   "npcs": 7
+  },
+  "joseon_in_bedchamber": {
+   "size": [
+    16,
+    14
+   ],
+   "lower": 224,
+   "upper": 96,
+   "npcs": 0
+  },
+  "joseon_in_corridor": {
+   "size": [
+    34,
+    10
+   ],
+   "lower": 340,
+   "upper": 141,
+   "npcs": 2
+  },
+  "joseon_in_house": {
+   "size": [
+    15,
+    15
+   ],
+   "lower": 225,
+   "upper": 99,
+   "npcs": 1
+  },
+  "joseon_in_inn": {
+   "size": [
+    22,
+    16
+   ],
+   "lower": 352,
+   "upper": 169,
+   "npcs": 2
+  },
+  "joseon_in_library": {
+   "size": [
+    20,
+    12
+   ],
+   "lower": 240,
+   "upper": 97,
+   "npcs": 1
+  },
+  "joseon_in_office": {
+   "size": [
+    17,
+    15
+   ],
+   "lower": 255,
+   "upper": 111,
+   "npcs": 2
+  },
+  "joseon_in_pharmacy": {
+   "size": [
+    12,
+    10
+   ],
+   "lower": 120,
+   "upper": 54,
+   "npcs": 1
+  },
+  "joseon_in_school": {
+   "size": [
+    16,
+    14
+   ],
+   "lower": 224,
+   "upper": 80,
+   "npcs": 2
+  },
+  "joseon_in_smith": {
+   "size": [
+    12,
+    10
+   ],
+   "lower": 120,
+   "upper": 51,
+   "npcs": 2
+  },
+  "joseon_in_throne": {
+   "size": [
+    24,
+    24
+   ],
+   "lower": 576,
+   "upper": 214,
+   "npcs": 2
+  },
+  "joseon_v20": {
+   "size": [
+    64,
+    56
+   ],
+   "lower": 3584,
+   "upper": 1698,
+   "npcs": 20
+  }
+ },
+ "engineChecks": {
+  "gungnae": {
+   "walk": {
+    "cells": 9216,
+    "same": 9216,
+    "mismatch": 0,
+    "samples": [],
+    "walkable": 5090
+   },
+   "reach": {
+    "crossLines": 59,
+    "crossLinesBlockedEnd": 2,
+    "exemptCrossings": [
+     {
+      "piece": "gungnae_bridge_narrow_h5",
+      "x": 19,
+      "y": 39,
+      "why": "좁은 다리 (19,39): 서쪽 끝 (18,40)은 대장간 벽, 동쪽 끝 (24,40)은 서낭당(24,39)이 막아 양끝이 모두 막힌 장식 다리다(국내성 맵 빌더 쪽 결함 — 빌더 수정 라운드에서 확인)."
+     }
+    ],
+    "exemptPeople": [
+     {
+      "x": 54,
+      "y": 49,
+      "why": "주민 (54,49) 가 드므(palace_deumeu, 54,48 1×2) 칸 안에 서 있어 걸어 닿지 못한다(국내성 맵 빌더 쪽 결함)."
+     }
+    ],
+    "crossingDetail": [
+     {
+      "piece": "gungnae_gate_great_12",
+      "axis": "v",
+      "x": 42,
+      "y": 2,
+      "lines": 4,
+      "tested": 4,
+      "crossed": 4
+     },
+     {
+      "piece": "gungnae_gate_great_12",
+      "axis": "v",
+      "x": 42,
+      "y": 75,
+      "lines": 4,
+      "tested": 4,
+      "crossed": 4
+     },
+     {
+      "piece": "gungnae_gate_side_5",
+      "axis": "h",
+      "x": 6,
+      "y": 42,
+      "lines": 4,
+      "tested": 4,
+      "crossed": 4
+     },
+     {
+      "piece": "gungnae_gate_side_5",
+      "axis": "h",
+      "x": 85,
+      "y": 42,
+      "lines": 4,
+      "tested": 4,
+      "crossed": 4
+     },
+     {
+      "piece": "gungnae_bridge_v6",
+      "axis": "v",
+      "x": 46,
+      "y": 21,
+      "lines": 4,
+      "tested": 4,
+      "crossed": 4
+     },
+     {
+      "piece": "gungnae_bridge_v6",
+      "axis": "v",
+      "x": 46,
+      "y": 66,
+      "lines": 4,
+      "tested": 4,
+      "crossed": 4
+     },
+     {
+      "piece": "gungnae_bridge_v6",
+      "axis": "v",
+      "x": 36,
+      "y": 21,
+      "lines": 4,
+      "tested": 4,
+      "crossed": 4
+     },
+     {
+      "piece": "gungnae_bridge_v6",
+      "axis": "v",
+      "x": 56,
+      "y": 21,
+      "lines": 4,
+      "tested": 4,
+      "crossed": 4
+     },
+     {
+      "piece": "gungnae_bridge_h6",
+      "axis": "h",
+      "x": 27,
+      "y": 45,
+      "lines": 4,
+      "tested": 4,
+      "crossed": 4
+     },
+     {
+      "piece": "gungnae_bridge_h6",
+      "axis": "h",
+      "x": 62,
+      "y": 45,
+      "lines": 4,
+      "tested": 4,
+      "crossed": 4
+     },
+     {
+      "piece": "gungnae_bridge_narrow_h5",
+      "axis": "h",
+      "x": 19,
+      "y": 39,
+      "lines": 1,
+      "tested": 0,
+      "crossed": 0
+     },
+     {
+      "piece": "gungnae_bridge_narrow_h6",
+      "axis": "h",
+      "x": 78,
+      "y": 60,
+      "lines": 1,
+      "tested": 1,
+      "crossed": 1
+     },
+     {
+      "piece": "palace_gate_side_3",
+      "axis": "h",
+      "x": 33,
+      "y": 42,
+      "lines": 4,
+      "tested": 4,
+      "crossed": 4
+     },
+     {
+      "piece": "palace_gate_side_3",
+      "axis": "h",
+      "x": 60,
+      "y": 42,
+      "lines": 4,
+      "tested": 4,
+      "crossed": 4
+     },
+     {
+      "piece": "palace_gate_4",
+      "axis": "v",
+      "x": 45,
+      "y": 30,
+      "lines": 2,
+      "tested": 2,
+      "crossed": 2
+     },
+     {
+      "piece": "palace_gate_4",
+      "axis": "v",
+      "x": 45,
+      "y": 58,
+      "lines": 2,
+      "tested": 2,
+      "crossed": 2
+     },
+     {
+      "piece": "gn_jm_daemun_6",
+      "axis": "v",
+      "x": 19,
+      "y": 64,
+      "lines": 2,
+      "tested": 1,
+      "crossed": 1
+     },
+     {
+      "piece": "gn_sarip_mud",
+      "axis": "v",
+      "x": 22,
+      "y": 71,
+      "lines": 2,
+      "tested": 2,
+      "crossed": 2
+     },
+     {
+      "piece": "gn_sarip_stone",
+      "axis": "v",
+      "x": 74,
+      "y": 33,
+      "lines": 1,
+      "tested": 1,
+      "crossed": 1
+     }
+    ],
+    "exemptDoors": [],
+    "itemFronts": {
+     "total": 0,
+     "reached": 0,
+     "wallHung": []
+    },
+    "crossings": 19,
+    "fronts": 1,
+    "waterOpenBare": 0,
+    "waterUnderObject": 171,
+    "start": [
+     52,
+     48
+    ],
+    "reachable": 4984,
+    "walkable": 5090,
+    "missed": {
+     "doorFront": [],
+     "doorStep": [],
+     "passageFront": [],
+     "passageBehind": [],
+     "people": [],
+     "crossEnd": [],
+     "crossing": [],
+     "front": [],
+     "itemFront": []
+    },
+    "missedCount": 0,
+    "wallAboveDoorOpen": 0
+   },
+   "masks": [
+    {
+     "group": "jb_road16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_yard16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_water47_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_paddy16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_rice16_autotile",
+     "cells": 36,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_road64_autotile",
+     "cells": 1623,
+     "mismatch": 332,
+     "edgeConnects": true,
+     "samples": [
+      [
+       10,
+       15
+      ],
+      [
+       11,
+       15
+      ],
+      [
+       12,
+       15
+      ],
+      [
+       13,
+       15
+      ],
+      [
+       14,
+       15
+      ],
+      [
+       15,
+       15
+      ],
+      [
+       16,
+       15
+      ],
+      [
+       17,
+       15
+      ],
+      [
+       18,
+       15
+      ],
+      [
+       19,
+       15
+      ],
+      [
+       20,
+       15
+      ],
+      [
+       21,
+       15
+      ]
+     ]
+    },
+    {
+     "group": "jb_yard64_autotile",
+     "cells": 856,
+     "mismatch": 94,
+     "edgeConnects": false,
+     "samples": [
+      [
+       37,
+       36
+      ],
+      [
+       38,
+       36
+      ],
+      [
+       39,
+       36
+      ],
+      [
+       40,
+       36
+      ],
+      [
+       41,
+       36
+      ],
+      [
+       42,
+       36
+      ],
+      [
+       43,
+       36
+      ],
+      [
+       44,
+       36
+      ],
+      [
+       45,
+       36
+      ],
+      [
+       50,
+       36
+      ],
+      [
+       51,
+       36
+      ],
+      [
+       52,
+       36
+      ]
+     ]
+    },
+    {
+     "group": "jb_water47g_autotile",
+     "cells": 914,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_slab_edge16_autotile",
+     "cells": 307,
+     "mismatch": 69,
+     "edgeConnects": true,
+     "samples": [
+      [
+       46,
+       2
+      ],
+      [
+       47,
+       2
+      ],
+      [
+       48,
+       2
+      ],
+      [
+       49,
+       2
+      ],
+      [
+       46,
+       15
+      ],
+      [
+       49,
+       15
+      ],
+      [
+       46,
+       16
+      ],
+      [
+       49,
+       16
+      ],
+      [
+       29,
+       17
+      ],
+      [
+       30,
+       17
+      ],
+      [
+       31,
+       17
+      ],
+      [
+       32,
+       17
+      ]
+     ]
+    },
+    {
+     "group": "jb_palace_court16_autotile",
+     "cells": 456,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_trail32_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_tall32_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_forest32_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_bog94_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_rock32_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_cav_roof47_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_cav_pool94_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_in_ceil47_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_pal_ceil47_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    }
+   ]
+  },
+  "gungnae_full": {
+   "walk": {
+    "cells": 41600,
+    "same": 41600,
+    "mismatch": 0,
+    "samples": [],
+    "walkable": 20496
+   },
+   "reach": {
+    "crossLines": 123,
+    "crossLinesBlockedEnd": 4,
+    "exemptCrossings": [],
+    "exemptPeople": [],
+    "crossingDetail": [
+     {
+      "piece": "gnf_gate_great_12",
+      "axis": "v",
+      "x": 94,
+      "y": 2,
+      "lines": 4,
+      "tested": 4,
+      "crossed": 4
+     },
+     {
+      "piece": "gnf_gate_great_12",
+      "axis": "v",
+      "x": 94,
+      "y": 187,
+      "lines": 4,
+      "tested": 4,
+      "crossed": 4
+     },
+     {
+      "piece": "gnf_gate_side_5",
+      "axis": "h",
+      "x": 9,
+      "y": 95,
+      "lines": 4,
+      "tested": 4,
+      "crossed": 4
+     },
+     {
+      "piece": "gnf_gate_side_5",
+      "axis": "h",
+      "x": 187,
+      "y": 95,
+      "lines": 4,
+      "tested": 4,
+      "crossed": 4
+     },
+     {
+      "piece": "gungnae_bridge_v6",
+      "axis": "v",
+      "x": 98,
+      "y": 41,
+      "lines": 4,
+      "tested": 4,
+      "crossed": 4
+     },
+     {
+      "piece": "gungnae_bridge_v6",
+      "axis": "v",
+      "x": 111,
+      "y": 41,
+      "lines": 4,
+      "tested": 4,
+      "crossed": 4
+     },
+     {
+      "piece": "gungnae_bridge_v6",
+      "axis": "v",
+      "x": 122,
+      "y": 41,
+      "lines": 4,
+      "tested": 4,
+      "crossed": 4
+     },
+     {
+      "piece": "gungnae_bridge_v6",
+      "axis": "v",
+      "x": 133,
+      "y": 41,
+      "lines": 4,
+      "tested": 4,
+      "crossed": 4
+     },
+     {
+      "piece": "gungnae_bridge_v6",
+      "axis": "v",
+      "x": 165,
+      "y": 48,
+      "lines": 4,
+      "tested": 2,
+      "crossed": 2
+     },
+     {
+      "piece": "gungnae_bridge_v6",
+      "axis": "v",
+      "x": 44,
+      "y": 53,
+      "lines": 4,
+      "tested": 4,
+      "crossed": 4
+     },
+     {
+      "piece": "gungnae_bridge_v6",
+      "axis": "v",
+      "x": 98,
+      "y": 168,
+      "lines": 4,
+      "tested": 4,
+      "crossed": 4
+     },
+     {
+      "piece": "gungnae_bridge_v5",
+      "axis": "v",
+      "x": 129,
+      "y": 161,
+      "lines": 3,
+      "tested": 3,
+      "crossed": 3
+     },
+     {
+      "piece": "gungnae_bridge_v5",
+      "axis": "v",
+      "x": 138,
+      "y": 184,
+      "lines": 3,
+      "tested": 3,
+      "crossed": 3
+     },
+     {
+      "piece": "gungnae_bridge_v6",
+      "axis": "v",
+      "x": 156,
+      "y": 180,
+      "lines": 4,
+      "tested": 4,
+      "crossed": 4
+     },
+     {
+      "piece": "gungnae_bridge_v5",
+      "axis": "v",
+      "x": 99,
+      "y": 154,
+      "lines": 3,
+      "tested": 3,
+      "crossed": 3
+     },
+     {
+      "piece": "gungnae_bridge_h6",
+      "axis": "h",
+      "x": 24,
+      "y": 36,
+      "lines": 4,
+      "tested": 4,
+      "crossed": 4
+     },
+     {
+      "piece": "gungnae_bridge_h6",
+      "axis": "h",
+      "x": 24,
+      "y": 133,
+      "lines": 4,
+      "tested": 4,
+      "crossed": 4
+     },
+     {
+      "piece": "gungnae_bridge_h6",
+      "axis": "h",
+      "x": 108,
+      "y": 138,
+      "lines": 4,
+      "tested": 4,
+      "crossed": 4
+     },
+     {
+      "piece": "gungnae_bridge_h6",
+      "axis": "h",
+      "x": 161,
+      "y": 126,
+      "lines": 4,
+      "tested": 4,
+      "crossed": 4
+     },
+     {
+      "piece": "gungnae_bridge_h6",
+      "axis": "h",
+      "x": 33,
+      "y": 183,
+      "lines": 4,
+      "tested": 2,
+      "crossed": 2
+     },
+     {
+      "piece": "gungnae_bridge_h6",
+      "axis": "h",
+      "x": 23,
+      "y": 98,
+      "lines": 4,
+      "tested": 4,
+      "crossed": 4
+     },
+     {
+      "piece": "gungnae_bridge_h6",
+      "axis": "h",
+      "x": 50,
+      "y": 98,
+      "lines": 4,
+      "tested": 4,
+      "crossed": 4
+     },
+     {
+      "piece": "gungnae_bridge_h6",
+      "axis": "h",
+      "x": 162,
+      "y": 98,
+      "lines": 4,
+      "tested": 4,
+      "crossed": 4
+     },
+     {
+      "piece": "gungnae_bridge_narrow_h",
+      "axis": "h",
+      "x": 17,
+      "y": 63,
+      "lines": 1,
+      "tested": 1,
+      "crossed": 1
+     },
+     {
+      "piece": "gungnae_bridge_narrow_h6",
+      "axis": "h",
+      "x": 23,
+      "y": 90,
+      "lines": 1,
+      "tested": 1,
+      "crossed": 1
+     },
+     {
+      "piece": "gnf_palace_gate_side_3",
+      "axis": "h",
+      "x": 72,
+      "y": 95,
+      "lines": 4,
+      "tested": 4,
+      "crossed": 4
+     },
+     {
+      "piece": "gnf_palace_gate_side_3",
+      "axis": "h",
+      "x": 126,
+      "y": 95,
+      "lines": 4,
+      "tested": 4,
+      "crossed": 4
+     },
+     {
+      "piece": "palace_gate_4",
+      "axis": "v",
+      "x": 97,
+      "y": 69,
+      "lines": 2,
+      "tested": 2,
+      "crossed": 2
+     },
+     {
+      "piece": "palace_gate_4",
+      "axis": "v",
+      "x": 97,
+      "y": 111,
+      "lines": 2,
+      "tested": 2,
+      "crossed": 2
+     },
+     {
+      "piece": "gn_jm_daemun_6",
+      "axis": "v",
+      "x": 45,
+      "y": 153,
+      "lines": 2,
+      "tested": 2,
+      "crossed": 2
+     },
+     {
+      "piece": "gnf_sarip_mud",
+      "axis": "v",
+      "x": 47,
+      "y": 159,
+      "lines": 2,
+      "tested": 2,
+      "crossed": 2
+     },
+     {
+      "piece": "gn_jm_daemun_6",
+      "axis": "v",
+      "x": 144,
+      "y": 91,
+      "lines": 2,
+      "tested": 2,
+      "crossed": 2
+     },
+     {
+      "piece": "gnf_sarip_mud",
+      "axis": "v",
+      "x": 146,
+      "y": 97,
+      "lines": 2,
+      "tested": 2,
+      "crossed": 2
+     },
+     {
+      "piece": "gnf_sarip_stone",
+      "axis": "v",
+      "x": 39,
+      "y": 95,
+      "lines": 2,
+      "tested": 2,
+      "crossed": 2
+     },
+     {
+      "piece": "gnf_sarip_stone",
+      "axis": "v",
+      "x": 175,
+      "y": 97,
+      "lines": 2,
+      "tested": 2,
+      "crossed": 2
+     },
+     {
+      "piece": "gnf_sarip_stone",
+      "axis": "v",
+      "x": 163,
+      "y": 55,
+      "lines": 2,
+      "tested": 2,
+      "crossed": 2
+     },
+     {
+      "piece": "gnf_sarip_stone",
+      "axis": "v",
+      "x": 165,
+      "y": 44,
+      "lines": 2,
+      "tested": 2,
+      "crossed": 2
+     },
+     {
+      "piece": "gnf_sarip_stone",
+      "axis": "v",
+      "x": 162,
+      "y": 177,
+      "lines": 2,
+      "tested": 2,
+      "crossed": 2
+     },
+     {
+      "piece": "gungnae_bridge_narrow_v",
+      "axis": "v",
+      "x": 73,
+      "y": 44,
+      "lines": 1,
+      "tested": 1,
+      "crossed": 1
+     },
+     {
+      "piece": "gungnae_bridge_narrow_v",
+      "axis": "v",
+      "x": 157,
+      "y": 164,
+      "lines": 1,
+      "tested": 1,
+      "crossed": 1
+     }
+    ],
+    "exemptDoors": [],
+    "itemFronts": {
+     "total": 0,
+     "reached": 0,
+     "wallHung": []
+    },
+    "crossings": 40,
+    "fronts": 1,
+    "waterOpenBare": 0,
+    "waterUnderObject": 488,
+    "start": [
+     100,
+     104
+    ],
+    "reachable": 18677,
+    "walkable": 20496,
+    "missed": {
+     "doorFront": [],
+     "doorStep": [],
+     "passageFront": [],
+     "passageBehind": [],
+     "people": [],
+     "crossEnd": [],
+     "crossing": [],
+     "front": [],
+     "itemFront": []
+    },
+    "missedCount": 0,
+    "wallAboveDoorOpen": 0
+   },
+   "masks": [
+    {
+     "group": "jb_road16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_yard16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_water47_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_paddy16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_rice16_autotile",
+     "cells": 24,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_road64_autotile",
+     "cells": 4010,
+     "mismatch": 22,
+     "edgeConnects": true,
+     "samples": [
+      [
+       13,
+       116
+      ],
+      [
+       13,
+       117
+      ],
+      [
+       13,
+       118
+      ],
+      [
+       13,
+       119
+      ],
+      [
+       13,
+       120
+      ],
+      [
+       13,
+       121
+      ],
+      [
+       13,
+       122
+      ],
+      [
+       13,
+       123
+      ],
+      [
+       13,
+       124
+      ],
+      [
+       13,
+       125
+      ],
+      [
+       13,
+       126
+      ],
+      [
+       13,
+       127
+      ]
+     ]
+    },
+    {
+     "group": "jb_yard64_autotile",
+     "cells": 5431,
+     "mismatch": 102,
+     "edgeConnects": false,
+     "samples": [
+      [
+       91,
+       15
+      ],
+      [
+       92,
+       15
+      ],
+      [
+       93,
+       15
+      ],
+      [
+       94,
+       15
+      ],
+      [
+       95,
+       15
+      ],
+      [
+       96,
+       15
+      ],
+      [
+       97,
+       15
+      ],
+      [
+       102,
+       15
+      ],
+      [
+       103,
+       15
+      ],
+      [
+       104,
+       15
+      ],
+      [
+       105,
+       15
+      ],
+      [
+       106,
+       15
+      ]
+     ]
+    },
+    {
+     "group": "jb_water47g_autotile",
+     "cells": 7189,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_slab_edge16_autotile",
+     "cells": 1196,
+     "mismatch": 3,
+     "edgeConnects": true,
+     "samples": [
+      [
+       29,
+       102
+      ],
+      [
+       98,
+       153
+      ],
+      [
+       98,
+       159
+      ]
+     ]
+    },
+    {
+     "group": "jb_palace_court16_autotile",
+     "cells": 1634,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_trail32_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_tall32_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_forest32_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_bog94_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_rock32_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_cav_roof47_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_cav_pool94_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_in_ceil47_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_pal_ceil47_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    }
+   ]
+  },
+  "joseon_cave": {
+   "walk": {
+    "cells": 2304,
+    "same": 2304,
+    "mismatch": 0,
+    "samples": [],
+    "walkable": 525
+   },
+   "reach": {
+    "crossLines": 0,
+    "crossLinesBlockedEnd": 0,
+    "exemptCrossings": [],
+    "exemptPeople": [],
+    "crossingDetail": [],
+    "exemptDoors": [],
+    "itemFronts": {
+     "total": 0,
+     "reached": 0,
+     "wallHung": []
+    },
+    "crossings": 0,
+    "fronts": 0,
+    "waterOpenBare": 0,
+    "waterUnderObject": 0,
+    "start": [
+     24,
+     44
+    ],
+    "reachable": 525,
+    "walkable": 525,
+    "missed": {
+     "doorFront": [],
+     "doorStep": [],
+     "passageFront": [],
+     "passageBehind": [],
+     "people": [],
+     "crossEnd": [],
+     "crossing": [],
+     "front": [],
+     "itemFront": []
+    },
+    "missedCount": 0,
+    "wallAboveDoorOpen": 0
+   },
+   "masks": [
+    {
+     "group": "jb_road16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_yard16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_water47_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_paddy16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_rice16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_road64_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_yard64_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_water47g_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_slab_edge16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_palace_court16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_trail32_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_tall32_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_forest32_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_bog94_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_rock32_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_cav_roof47_autotile",
+     "cells": 1434,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_cav_pool94_autotile",
+     "cells": 39,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_in_ceil47_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_pal_ceil47_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    }
+   ]
+  },
+  "joseon_field": {
+   "walk": {
+    "cells": 9216,
+    "same": 9216,
+    "mismatch": 0,
+    "samples": [],
+    "walkable": 6890
+   },
+   "reach": {
+    "crossLines": 2,
+    "crossLinesBlockedEnd": 0,
+    "exemptCrossings": [],
+    "exemptPeople": [],
+    "crossingDetail": [
+     {
+      "piece": "fort_gate",
+      "axis": "v",
+      "x": 43,
+      "y": 0,
+      "lines": 2,
+      "tested": 2,
+      "crossed": 2
+     }
+    ],
+    "exemptDoors": [],
+    "itemFronts": {
+     "total": 0,
+     "reached": 0,
+     "wallHung": []
+    },
+    "crossings": 1,
+    "fronts": 0,
+    "waterOpenBare": 0,
+    "waterUnderObject": 0,
+    "start": [
+     47,
+     0
+    ],
+    "reachable": 6890,
+    "walkable": 6890,
+    "missed": {
+     "doorFront": [],
+     "doorStep": [],
+     "passageFront": [],
+     "passageBehind": [],
+     "people": [],
+     "crossEnd": [],
+     "crossing": [],
+     "front": [],
+     "itemFront": []
+    },
+    "missedCount": 0,
+    "wallAboveDoorOpen": 0
+   },
+   "masks": [
+    {
+     "group": "jb_road16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_yard16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_water47_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_paddy16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_rice16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_road64_autotile",
+     "cells": 32,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_yard64_autotile",
+     "cells": 502,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_water47g_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_slab_edge16_autotile",
+     "cells": 110,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_palace_court16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_trail32_autotile",
+     "cells": 569,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_tall32_autotile",
+     "cells": 2435,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_forest32_autotile",
+     "cells": 1316,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_bog94_autotile",
+     "cells": 253,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_rock32_autotile",
+     "cells": 1129,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_cav_roof47_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_cav_pool94_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_in_ceil47_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_pal_ceil47_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    }
+   ]
+  },
+  "joseon_in_bedchamber": {
+   "walk": {
+    "cells": 224,
+    "same": 224,
+    "mismatch": 0,
+    "samples": [],
+    "walkable": 86
+   },
+   "reach": {
+    "crossLines": 0,
+    "crossLinesBlockedEnd": 0,
+    "exemptCrossings": [],
+    "exemptPeople": [],
+    "crossingDetail": [],
+    "exemptDoors": [],
+    "itemFronts": {
+     "total": 20,
+     "reached": 20,
+     "wallHung": []
+    },
+    "crossings": 0,
+    "fronts": 0,
+    "waterOpenBare": 0,
+    "waterUnderObject": 0,
+    "start": [
+     7,
+     10
+    ],
+    "reachable": 86,
+    "walkable": 86,
+    "missed": {
+     "doorFront": [],
+     "doorStep": [],
+     "passageFront": [],
+     "passageBehind": [],
+     "people": [],
+     "crossEnd": [],
+     "crossing": [],
+     "front": [],
+     "itemFront": []
+    },
+    "missedCount": 0,
+    "wallAboveDoorOpen": 0
+   },
+   "masks": [
+    {
+     "group": "jb_road16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_yard16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_water47_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_paddy16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_rice16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_road64_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_yard64_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_water47g_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_slab_edge16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_palace_court16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_trail32_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_tall32_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_forest32_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_bog94_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_rock32_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_cav_roof47_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_cav_pool94_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_in_ceil47_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_pal_ceil47_autotile",
+     "cells": 36,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    }
+   ]
+  },
+  "joseon_in_corridor": {
+   "walk": {
+    "cells": 340,
+    "same": 340,
+    "mismatch": 0,
+    "samples": [],
+    "walkable": 129
+   },
+   "reach": {
+    "crossLines": 0,
+    "crossLinesBlockedEnd": 0,
+    "exemptCrossings": [],
+    "exemptPeople": [],
+    "crossingDetail": [],
+    "exemptDoors": [],
+    "itemFronts": {
+     "total": 17,
+     "reached": 17,
+     "wallHung": []
+    },
+    "crossings": 0,
+    "fronts": 0,
+    "waterOpenBare": 0,
+    "waterUnderObject": 0,
+    "start": [
+     4,
+     6
+    ],
+    "reachable": 129,
+    "walkable": 129,
+    "missed": {
+     "doorFront": [],
+     "doorStep": [],
+     "passageFront": [],
+     "passageBehind": [],
+     "people": [],
+     "crossEnd": [],
+     "crossing": [],
+     "front": [],
+     "itemFront": []
+    },
+    "missedCount": 0,
+    "wallAboveDoorOpen": 0
+   },
+   "masks": [
+    {
+     "group": "jb_road16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_yard16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_water47_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_paddy16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_rice16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_road64_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_yard64_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_water47g_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_slab_edge16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_palace_court16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_trail32_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_tall32_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_forest32_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_bog94_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_rock32_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_cav_roof47_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_cav_pool94_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_in_ceil47_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_pal_ceil47_autotile",
+     "cells": 46,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    }
+   ]
+  },
+  "joseon_in_house": {
+   "walk": {
+    "cells": 225,
+    "same": 225,
+    "mismatch": 0,
+    "samples": [],
+    "walkable": 66
+   },
+   "reach": {
+    "crossLines": 0,
+    "crossLinesBlockedEnd": 0,
+    "exemptCrossings": [],
+    "exemptPeople": [],
+    "crossingDetail": [],
+    "exemptDoors": [],
+    "itemFronts": {
+     "total": 26,
+     "reached": 25,
+     "wallHung": [
+      [
+       "in_hang_sirae",
+       3,
+       8
+      ]
+     ]
+    },
+    "crossings": 0,
+    "fronts": 0,
+    "waterOpenBare": 0,
+    "waterUnderObject": 0,
+    "start": [
+     10,
+     11
+    ],
+    "reachable": 66,
+    "walkable": 66,
+    "missed": {
+     "doorFront": [],
+     "doorStep": [],
+     "passageFront": [],
+     "passageBehind": [],
+     "people": [],
+     "crossEnd": [],
+     "crossing": [],
+     "front": [],
+     "itemFront": []
+    },
+    "missedCount": 0,
+    "wallAboveDoorOpen": 0
+   },
+   "masks": [
+    {
+     "group": "jb_road16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_yard16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_water47_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_paddy16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_rice16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_road64_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_yard64_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_water47g_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_slab_edge16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_palace_court16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_trail32_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_tall32_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_forest32_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_bog94_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_rock32_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_cav_roof47_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_cav_pool94_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_in_ceil47_autotile",
+     "cells": 46,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_pal_ceil47_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    }
+   ]
+  },
+  "joseon_in_inn": {
+   "walk": {
+    "cells": 352,
+    "same": 352,
+    "mismatch": 0,
+    "samples": [],
+    "walkable": 107
+   },
+   "reach": {
+    "crossLines": 0,
+    "crossLinesBlockedEnd": 0,
+    "exemptCrossings": [],
+    "exemptPeople": [],
+    "crossingDetail": [],
+    "exemptDoors": [],
+    "itemFronts": {
+     "total": 36,
+     "reached": 34,
+     "wallHung": [
+      [
+       "in_hang_meju",
+       2,
+       9
+      ],
+      [
+       "in_hang_gochu",
+       4,
+       9
+      ]
+     ]
+    },
+    "crossings": 0,
+    "fronts": 0,
+    "waterOpenBare": 0,
+    "waterUnderObject": 0,
+    "start": [
+     10,
+     12
+    ],
+    "reachable": 107,
+    "walkable": 107,
+    "missed": {
+     "doorFront": [],
+     "doorStep": [],
+     "passageFront": [],
+     "passageBehind": [],
+     "people": [],
+     "crossEnd": [],
+     "crossing": [],
+     "front": [],
+     "itemFront": []
+    },
+    "missedCount": 0,
+    "wallAboveDoorOpen": 0
+   },
+   "masks": [
+    {
+     "group": "jb_road16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_yard16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_water47_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_paddy16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_rice16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_road64_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_yard64_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_water47g_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_slab_edge16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_palace_court16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_trail32_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_tall32_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_forest32_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_bog94_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_rock32_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_cav_roof47_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_cav_pool94_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_in_ceil47_autotile",
+     "cells": 67,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_pal_ceil47_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    }
+   ]
+  },
+  "joseon_in_library": {
+   "walk": {
+    "cells": 240,
+    "same": 240,
+    "mismatch": 0,
+    "samples": [],
+    "walkable": 86
+   },
+   "reach": {
+    "crossLines": 0,
+    "crossLinesBlockedEnd": 0,
+    "exemptCrossings": [],
+    "exemptPeople": [],
+    "crossingDetail": [],
+    "exemptDoors": [],
+    "itemFronts": {
+     "total": 21,
+     "reached": 19,
+     "wallHung": [
+      [
+       "in_jokja_b",
+       9,
+       1
+      ],
+      [
+       "in_jokja_a",
+       15,
+       1
+      ]
+     ]
+    },
+    "crossings": 0,
+    "fronts": 0,
+    "waterOpenBare": 0,
+    "waterUnderObject": 0,
+    "start": [
+     9,
+     8
+    ],
+    "reachable": 86,
+    "walkable": 86,
+    "missed": {
+     "doorFront": [],
+     "doorStep": [],
+     "passageFront": [],
+     "passageBehind": [],
+     "people": [],
+     "crossEnd": [],
+     "crossing": [],
+     "front": [],
+     "itemFront": []
+    },
+    "missedCount": 0,
+    "wallAboveDoorOpen": 0
+   },
+   "masks": [
+    {
+     "group": "jb_road16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_yard16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_water47_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_paddy16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_rice16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_road64_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_yard64_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_water47g_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_slab_edge16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_palace_court16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_trail32_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_tall32_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_forest32_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_bog94_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_rock32_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_cav_roof47_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_cav_pool94_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_in_ceil47_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_pal_ceil47_autotile",
+     "cells": 36,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    }
+   ]
+  },
+  "joseon_in_office": {
+   "walk": {
+    "cells": 255,
+    "same": 255,
+    "mismatch": 0,
+    "samples": [],
+    "walkable": 98
+   },
+   "reach": {
+    "crossLines": 0,
+    "crossLinesBlockedEnd": 0,
+    "exemptCrossings": [],
+    "exemptPeople": [
+     {
+      "x": 8,
+      "y": 5,
+      "why": "관아 방의 사또(8,5)가 의자 `in_gwan_chair`(8,4 1×2) 위에 앉은 자리라 걸어 닿지 못한다 — 앉은 NPC 로 의도한 배치(맵 빌더 쪽)."
+     }
+    ],
+    "crossingDetail": [],
+    "exemptDoors": [],
+    "itemFronts": {
+     "total": 37,
+     "reached": 37,
+     "wallHung": []
+    },
+    "crossings": 0,
+    "fronts": 0,
+    "waterOpenBare": 0,
+    "waterUnderObject": 0,
+    "start": [
+     8,
+     11
+    ],
+    "reachable": 98,
+    "walkable": 98,
+    "missed": {
+     "doorFront": [],
+     "doorStep": [],
+     "passageFront": [],
+     "passageBehind": [],
+     "people": [],
+     "crossEnd": [],
+     "crossing": [],
+     "front": [],
+     "itemFront": []
+    },
+    "missedCount": 0,
+    "wallAboveDoorOpen": 0
+   },
+   "masks": [
+    {
+     "group": "jb_road16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_yard16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_water47_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_paddy16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_rice16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_road64_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_yard64_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_water47g_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_slab_edge16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_palace_court16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_trail32_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_tall32_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_forest32_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_bog94_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_rock32_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_cav_roof47_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_cav_pool94_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_in_ceil47_autotile",
+     "cells": 39,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_pal_ceil47_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    }
+   ]
+  },
+  "joseon_in_pharmacy": {
+   "walk": {
+    "cells": 120,
+    "same": 120,
+    "mismatch": 0,
+    "samples": [],
+    "walkable": 30
+   },
+   "reach": {
+    "crossLines": 0,
+    "crossLinesBlockedEnd": 0,
+    "exemptCrossings": [],
+    "exemptPeople": [],
+    "crossingDetail": [],
+    "exemptDoors": [],
+    "itemFronts": {
+     "total": 13,
+     "reached": 12,
+     "wallHung": [
+      [
+       "in_herb_hang",
+       8,
+       1
+      ]
+     ]
+    },
+    "crossings": 0,
+    "fronts": 0,
+    "waterOpenBare": 0,
+    "waterUnderObject": 0,
+    "start": [
+     6,
+     6
+    ],
+    "reachable": 30,
+    "walkable": 30,
+    "missed": {
+     "doorFront": [],
+     "doorStep": [],
+     "passageFront": [],
+     "passageBehind": [],
+     "people": [],
+     "crossEnd": [],
+     "crossing": [],
+     "front": [],
+     "itemFront": []
+    },
+    "missedCount": 0,
+    "wallAboveDoorOpen": 0
+   },
+   "masks": [
+    {
+     "group": "jb_road16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_yard16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_water47_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_paddy16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_rice16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_road64_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_yard64_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_water47g_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_slab_edge16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_palace_court16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_trail32_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_tall32_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_forest32_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_bog94_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_rock32_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_cav_roof47_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_cav_pool94_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_in_ceil47_autotile",
+     "cells": 24,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_pal_ceil47_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    }
+   ]
+  },
+  "joseon_in_school": {
+   "walk": {
+    "cells": 224,
+    "same": 224,
+    "mismatch": 0,
+    "samples": [],
+    "walkable": 88
+   },
+   "reach": {
+    "crossLines": 0,
+    "crossLinesBlockedEnd": 0,
+    "exemptCrossings": [],
+    "exemptPeople": [],
+    "crossingDetail": [],
+    "exemptDoors": [],
+    "itemFronts": {
+     "total": 34,
+     "reached": 34,
+     "wallHung": []
+    },
+    "crossings": 0,
+    "fronts": 0,
+    "waterOpenBare": 0,
+    "waterUnderObject": 0,
+    "start": [
+     8,
+     10
+    ],
+    "reachable": 88,
+    "walkable": 88,
+    "missed": {
+     "doorFront": [],
+     "doorStep": [],
+     "passageFront": [],
+     "passageBehind": [],
+     "people": [],
+     "crossEnd": [],
+     "crossing": [],
+     "front": [],
+     "itemFront": []
+    },
+    "missedCount": 0,
+    "wallAboveDoorOpen": 0
+   },
+   "masks": [
+    {
+     "group": "jb_road16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_yard16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_water47_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_paddy16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_rice16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_road64_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_yard64_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_water47g_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_slab_edge16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_palace_court16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_trail32_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_tall32_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_forest32_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_bog94_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_rock32_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_cav_roof47_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_cav_pool94_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_in_ceil47_autotile",
+     "cells": 36,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_pal_ceil47_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    }
+   ]
+  },
+  "joseon_in_smith": {
+   "walk": {
+    "cells": 120,
+    "same": 120,
+    "mismatch": 0,
+    "samples": [],
+    "walkable": 26
+   },
+   "reach": {
+    "crossLines": 0,
+    "crossLinesBlockedEnd": 0,
+    "exemptCrossings": [],
+    "exemptPeople": [],
+    "crossingDetail": [],
+    "exemptDoors": [],
+    "itemFronts": {
+     "total": 15,
+     "reached": 13,
+     "wallHung": [
+      [
+       "in_tool_rack",
+       1,
+       1
+      ],
+      [
+       "in_tool_rack",
+       8,
+       1
+      ]
+     ]
+    },
+    "crossings": 0,
+    "fronts": 0,
+    "waterOpenBare": 0,
+    "waterUnderObject": 0,
+    "start": [
+     5,
+     6
+    ],
+    "reachable": 26,
+    "walkable": 26,
+    "missed": {
+     "doorFront": [],
+     "doorStep": [],
+     "passageFront": [],
+     "passageBehind": [],
+     "people": [],
+     "crossEnd": [],
+     "crossing": [],
+     "front": [],
+     "itemFront": []
+    },
+    "missedCount": 0,
+    "wallAboveDoorOpen": 0
+   },
+   "masks": [
+    {
+     "group": "jb_road16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_yard16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_water47_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_paddy16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_rice16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_road64_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_yard64_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_water47g_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_slab_edge16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_palace_court16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_trail32_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_tall32_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_forest32_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_bog94_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_rock32_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_cav_roof47_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_cav_pool94_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_in_ceil47_autotile",
+     "cells": 24,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_pal_ceil47_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    }
+   ]
+  },
+  "joseon_in_throne": {
+   "walk": {
+    "cells": 576,
+    "same": 576,
+    "mismatch": 0,
+    "samples": [],
+    "walkable": 318
+   },
+   "reach": {
+    "crossLines": 0,
+    "crossLinesBlockedEnd": 0,
+    "exemptCrossings": [],
+    "exemptPeople": [],
+    "crossingDetail": [],
+    "exemptDoors": [],
+    "itemFronts": {
+     "total": 58,
+     "reached": 58,
+     "wallHung": []
+    },
+    "crossings": 0,
+    "fronts": 0,
+    "waterOpenBare": 0,
+    "waterUnderObject": 0,
+    "start": [
+     10,
+     20
+    ],
+    "reachable": 318,
+    "walkable": 318,
+    "missed": {
+     "doorFront": [],
+     "doorStep": [],
+     "passageFront": [],
+     "passageBehind": [],
+     "people": [],
+     "crossEnd": [],
+     "crossing": [],
+     "front": [],
+     "itemFront": []
+    },
+    "missedCount": 0,
+    "wallAboveDoorOpen": 0
+   },
+   "masks": [
+    {
+     "group": "jb_road16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_yard16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_water47_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_paddy16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_rice16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_road64_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_yard64_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_water47g_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_slab_edge16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_palace_court16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_trail32_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_tall32_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_forest32_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_bog94_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_rock32_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_cav_roof47_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_cav_pool94_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_in_ceil47_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_pal_ceil47_autotile",
+     "cells": 64,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    }
+   ]
+  },
+  "joseon_v20": {
+   "walk": {
+    "cells": 3584,
+    "same": 3584,
+    "mismatch": 0,
+    "samples": [],
+    "walkable": 2175
+   },
+   "reach": {
+    "crossLines": 8,
+    "crossLinesBlockedEnd": 2,
+    "exemptCrossings": [
+     {
+      "piece": "bridge",
+      "x": 40,
+      "y": 24,
+      "why": "두 번째 다리 (40,24): 서쪽 끝 (39,25)(39,26)이 빨래터(38,25)에 막힌 막다른 다리다(마을 20호 원본 배치). 동쪽 끝만 건널목 길 (45,25)로 이어진다."
+     }
+    ],
+    "exemptPeople": [],
+    "crossingDetail": [
+     {
+      "piece": "gate_solseul",
+      "axis": "v",
+      "x": 12,
+      "y": 17,
+      "lines": 2,
+      "tested": 2,
+      "crossed": 2
+     },
+     {
+      "piece": "bridge",
+      "axis": "h",
+      "x": 40,
+      "y": 27,
+      "lines": 3,
+      "tested": 3,
+      "crossed": 3
+     },
+     {
+      "piece": "bridge",
+      "axis": "h",
+      "x": 40,
+      "y": 24,
+      "lines": 3,
+      "tested": 1,
+      "crossed": 0
+     }
+    ],
+    "exemptDoors": [],
+    "itemFronts": {
+     "total": 0,
+     "reached": 0,
+     "wallHung": []
+    },
+    "crossings": 3,
+    "fronts": 0,
+    "waterOpenBare": 0,
+    "waterUnderObject": 21,
+    "start": [
+     31,
+     28
+    ],
+    "reachable": 2166,
+    "walkable": 2175,
+    "missed": {
+     "doorFront": [],
+     "doorStep": [],
+     "passageFront": [],
+     "passageBehind": [],
+     "people": [],
+     "crossEnd": [],
+     "crossing": [],
+     "front": [],
+     "itemFront": []
+    },
+    "missedCount": 0,
+    "wallAboveDoorOpen": 0
+   },
+   "masks": [
+    {
+     "group": "jb_road16_autotile",
+     "cells": 306,
+     "mismatch": 33,
+     "edgeConnects": true,
+     "samples": [
+      [
+       47,
+       7
+      ],
+      [
+       6,
+       8
+      ],
+      [
+       31,
+       9
+      ],
+      [
+       47,
+       14
+      ],
+      [
+       6,
+       15
+      ],
+      [
+       31,
+       16
+      ],
+      [
+       47,
+       21
+      ],
+      [
+       6,
+       22
+      ],
+      [
+       31,
+       23
+      ],
+      [
+       31,
+       24
+      ],
+      [
+       31,
+       25
+      ],
+      [
+       45,
+       25
+      ]
+     ]
+    },
+    {
+     "group": "jb_yard16_autotile",
+     "cells": 408,
+     "mismatch": 65,
+     "edgeConnects": false,
+     "samples": [
+      [
+       50,
+       7
+      ],
+      [
+       51,
+       7
+      ],
+      [
+       52,
+       7
+      ],
+      [
+       53,
+       7
+      ],
+      [
+       57,
+       7
+      ],
+      [
+       58,
+       7
+      ],
+      [
+       59,
+       7
+      ],
+      [
+       3,
+       8
+      ],
+      [
+       4,
+       8
+      ],
+      [
+       34,
+       9
+      ],
+      [
+       35,
+       9
+      ],
+      [
+       36,
+       9
+      ]
+     ]
+    },
+    {
+     "group": "jb_water47_autotile",
+     "cells": 374,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_paddy16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_rice16_autotile",
+     "cells": 100,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_road64_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_yard64_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_water47g_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_slab_edge16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_palace_court16_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_trail32_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_tall32_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_forest32_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_bog94_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_fld_rock32_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_cav_roof47_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_cav_pool94_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": false,
+     "samples": []
+    },
+    {
+     "group": "jb_in_ceil47_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    },
+    {
+     "group": "jb_pal_ceil47_autotile",
+     "cells": 0,
+     "mismatch": 0,
+     "edgeConnects": true,
+     "samples": []
+    }
+   ]
+  }
+ },
+ "existingProjectEnsure": {
+  "missingTilesetRestored": true,
+  "oldShortCopyRestored": true,
+  "sameCountReferencesRestored": true,
+  "sameCountKitMergedAuthorKept": true,
+  "idempotent": true,
+  "prevReleaseOldPrefixMatchesLedger": true,
+  "prevReleaseUpgraded": true,
+  "prevReleaseNewReferences": true,
+  "prevReleaseAuthorKept": true,
+  "prevReleaseIdempotent": true,
+  "bundledPrefixMatchesLedger": true
+ },
+ "walkAfterReload": {
+  "gungnae": {
+   "cells": 9216,
+   "same": 9216,
+   "mismatch": 0,
+   "samples": [],
+   "walkable": 5090
+  },
+  "gungnae_full": {
+   "cells": 41600,
+   "same": 41600,
+   "mismatch": 0,
+   "samples": [],
+   "walkable": 20496
+  },
+  "joseon_cave": {
+   "cells": 2304,
+   "same": 2304,
+   "mismatch": 0,
+   "samples": [],
+   "walkable": 525
+  },
+  "joseon_field": {
+   "cells": 9216,
+   "same": 9216,
+   "mismatch": 0,
+   "samples": [],
+   "walkable": 6890
+  },
+  "joseon_in_bedchamber": {
+   "cells": 224,
+   "same": 224,
+   "mismatch": 0,
+   "samples": [],
+   "walkable": 86
+  },
+  "joseon_in_corridor": {
+   "cells": 340,
+   "same": 340,
+   "mismatch": 0,
+   "samples": [],
+   "walkable": 129
+  },
+  "joseon_in_house": {
+   "cells": 225,
+   "same": 225,
+   "mismatch": 0,
+   "samples": [],
+   "walkable": 66
+  },
+  "joseon_in_inn": {
+   "cells": 352,
+   "same": 352,
+   "mismatch": 0,
+   "samples": [],
+   "walkable": 107
+  },
+  "joseon_in_library": {
+   "cells": 240,
+   "same": 240,
+   "mismatch": 0,
+   "samples": [],
+   "walkable": 86
+  },
+  "joseon_in_office": {
+   "cells": 255,
+   "same": 255,
+   "mismatch": 0,
+   "samples": [],
+   "walkable": 98
+  },
+  "joseon_in_pharmacy": {
+   "cells": 120,
+   "same": 120,
+   "mismatch": 0,
+   "samples": [],
+   "walkable": 30
+  },
+  "joseon_in_school": {
+   "cells": 224,
+   "same": 224,
+   "mismatch": 0,
+   "samples": [],
+   "walkable": 88
+  },
+  "joseon_in_smith": {
+   "cells": 120,
+   "same": 120,
+   "mismatch": 0,
+   "samples": [],
+   "walkable": 26
+  },
+  "joseon_in_throne": {
+   "cells": 576,
+   "same": 576,
+   "mismatch": 0,
+   "samples": [],
+   "walkable": 318
+  },
+  "joseon_v20": {
+   "cells": 3584,
+   "same": 3584,
+   "mismatch": 0,
+   "samples": [],
+   "walkable": 2175
+  }
+ }
+}

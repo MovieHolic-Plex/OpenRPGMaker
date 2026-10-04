@@ -1,0 +1,842 @@
+{
+  "slime": {
+    "cell": 48,
+    "sheetSha256": "3efd4322589ca201d1450a5424f88428e0f3d81b84c0313a3363e6a59f412aec",
+    "portraitSha256": "ad4ba80f070d096f4e5786c20632d13a9facb25e49ca7f59cf53ad60f625f440",
+    "retained": false
+  },
+  "bat": {
+    "cell": 48,
+    "sheetSha256": "681bd85de0680f7ca7ca124b8b74cb6a214e49ca0b896f4ff79fbb10034fc275",
+    "portraitSha256": "0cb3b9f8c482f14378ff73b9d6de3dab7c0b0eacd4111393d0e75e1ee43bb788",
+    "retained": false
+  },
+  "golem": {
+    "cell": 64,
+    "sheetSha256": "a55e6c7d1f9492b259bf07499a3c5a644a15a5e2c57856fe74220817199d3efd",
+    "portraitSha256": "3da7fd283a35a559cfc98ea4dbf107a91d5afe1d69757a2cb63de17f5bf9d1b6",
+    "retained": false
+  },
+  "dragon": {
+    "cell": 96,
+    "sheetSha256": "0ea200c392fbd98ee7a2b1b2bae0f60c6dfa2e0c3323756a47c0e5f3193f8905",
+    "portraitSha256": "e85bf1c70c690915cb14a2480c387082c88352027751678bbe79728343b128ca",
+    "retained": false
+  },
+  "skeleton-archer": {
+    "cell": 48,
+    "sheetSha256": "31d52bf872936ac1453fe6e0f29ddf8464083428f0c847a02a551d2a06344105",
+    "portraitSha256": "3f744f81b09d79276e7051d5eb566ed4bdafbed9f48513ab8974af15405b3e0f",
+    "retained": false
+  },
+  "wolf-grey": {
+    "cell": 64,
+    "sheetSha256": "69bcde6644b5911cb74ae5f44c604929f04c3e81bcf5b22ebf5885e0be7a96c8",
+    "portraitSha256": "99d715527bd8006f7d6bca39f0b890d52e1acc35234baa6822a4168ec5507a15",
+    "retained": true
+  },
+  "spider-cave": {
+    "cell": 48,
+    "sheetSha256": "e002f1828ffbc299f564622c1010aabfdd99171b7689eec4525c381d95b4425b",
+    "portraitSha256": "5808d2c9560f1bffadc01c61d15685e9f9f2e3bd4818f326c8b0d5126be9771c",
+    "retained": false
+  },
+  "wisp-blue": {
+    "cell": 48,
+    "sheetSha256": "a6d4ae8d7be2b8a0e0fd758e222ca083ed40ba2a8a0cd18e4fc417d43262d419",
+    "portraitSha256": "0748d4f58f44d5c0f07d8b7339efc38203ee1e29d123c6b466661865e0946c72",
+    "retained": false
+  },
+  "slime-red": {
+    "cell": 48,
+    "sheetSha256": "7760b55f5918401468d2003d21607a819a93aefcfe6df052bb067e69d0e01c7e",
+    "portraitSha256": "da8432f7d9bb85f97b5c0df8da12ce4884b327499b4c2dd2ab54b92b60437d3b",
+    "retained": false
+  },
+  "zombie-rot": {
+    "cell": 48,
+    "sheetSha256": "68dda5d1607cea988c1cd0e62f48f4dbb5f4f39d3e1748ea3fa36b673595b500",
+    "portraitSha256": "e3c7b97176eaca817f7bb62a329b50c9e2c38c60cb46f45da6093c3d7e2616bb",
+    "retained": false
+  },
+  "bat-vampire": {
+    "cell": 48,
+    "sheetSha256": "9fd770311df51fe5c4cbf87687ac67b8e1de47e4aedf36acdf67427541d6e4b7",
+    "portraitSha256": "75e5a6be15b90d49d8d734a37178e2a7d5eb0a1f14ac356cf6093e65a0d31f87",
+    "retained": false
+  },
+  "bee-giant": {
+    "cell": 48,
+    "sheetSha256": "44cec2e8005033e291c76bc54157c21f5a8100377cba908ea98dcbb892796bda",
+    "portraitSha256": "cf5361818dba290b1f41034441884ed2d10f0390a2c40949e7a504d4926cefe4",
+    "retained": false
+  },
+  "scorpion-sand": {
+    "cell": 48,
+    "sheetSha256": "5ce7c1a21136c2a29b6fbc7e0538d45a51d684d75e279f7ff87feffaa2cd3501",
+    "portraitSha256": "4b25ffe0a877bfaa5705e7b17a949334b10ef3859797381d2466a69aa1ac0251",
+    "retained": false
+  },
+  "mantis-blade": {
+    "cell": 48,
+    "sheetSha256": "2229a2b5507f3deb9d26b627a36d56ce5744997332627808ba3aa1abede6c957",
+    "portraitSha256": "079e0bacbdf6d38daac3a558877a5bc2540387b00c0bcd1c9875d68cf0b5ec1b",
+    "retained": false
+  },
+  "boar-tusk": {
+    "cell": 64,
+    "sheetSha256": "e052887923475403b99e6e1bbc46e03c40f87946e3ddaa7f3d7fed7c3fd887ea",
+    "portraitSha256": "6335dcb23d34236e0dd6ad54f7f7c2c56cc1b043a1329736761676c0d3bb12c2",
+    "retained": false
+  },
+  "bear-brown": {
+    "cell": 64,
+    "sheetSha256": "6253e7529d873c1131818fc04543ff1acf5074d261c3c7ab5bac6602121f4dd2",
+    "portraitSha256": "e8122736a7c988154fb748b32c8088f9fb512c24c258fabc87a10a4b28e2f561",
+    "retained": false
+  },
+  "snake-viper": {
+    "cell": 48,
+    "sheetSha256": "6e1d9870b281638046bb09fbc3cb6fe4bf3c5ad0d9120325d81752f119af27aa",
+    "portraitSha256": "561ee630c2d2fd2ff4e54820b627d8ed6f3eeb352c53db4d8df0077e9a89752e",
+    "retained": false
+  },
+  "crab-rock": {
+    "cell": 48,
+    "sheetSha256": "1197eabc789977ca048fc0afed9516c164ab34918fbe5f253966fc432f9b5e00",
+    "portraitSha256": "b96dd30f930d6b1142431164bfc066b161d30ec246231d823fed89647ce4b03c",
+    "retained": false
+  },
+  "hound-hell": {
+    "cell": 64,
+    "sheetSha256": "db6ae4e8074a54c0e4719f16db302b20c91dcc53e739474b99a3c940673871b1",
+    "portraitSha256": "05e40b5f234604a9d68714ff16f39836d964916f62e2bf8a330d70c3fbf6ddc8",
+    "retained": false
+  },
+  "plant-carnivore": {
+    "cell": 64,
+    "sheetSha256": "acf8403fa83767bd7501e4b49d62c250867c497f4908cd173e51c8d3dcfb338e",
+    "portraitSha256": "22a243f013bd02d214be9d0c1d75462a9526aad80521d9035db54b509a637e36",
+    "retained": false
+  },
+  "skeleton-knight": {
+    "cell": 64,
+    "sheetSha256": "210a890709cef2dabad3a20643adbfe8d57e74536afa467ee6c8e6458054e576",
+    "portraitSha256": "727cce477be229cfe30dea78c2bea3c4641cbe9d648877f62bec8f4979e259a8",
+    "retained": true
+  },
+  "ghost-pale": {
+    "cell": 48,
+    "sheetSha256": "d607c392d42f4982363d48cafd0c38eb13bdf1f9bda179dc75e1a73353a8ae54",
+    "portraitSha256": "2174648781f3fd04b5a510c10a4071bfd1acea4438d9bac77543b2fa0d4c6144",
+    "retained": false
+  },
+  "lich-frost": {
+    "cell": 64,
+    "sheetSha256": "32d300bb473aacbcd4cd13846ec9d99b0e7d1b44766a53bf3560a32720058f01",
+    "portraitSha256": "d1c662f89689328f5263ffbd7c6efbfb2ac699ceff355013d8abdb584e4d698d",
+    "retained": false
+  },
+  "mummy-bandage": {
+    "cell": 48,
+    "sheetSha256": "1222e271a20207f0fd845aac4b121c786a1837d4f6ccd55c95ff7bdd271b78c5",
+    "portraitSha256": "72b243c21a91019a952761ac78813b323eb5f55cd5202f2741729d8b5e2e8b0b",
+    "retained": false
+  },
+  "spirit-fire": {
+    "cell": 48,
+    "sheetSha256": "95a3393cf5facf921f639bf44371608a559e2366631c1e87c25fad29be8a3add",
+    "portraitSha256": "69505ee68e42bde5b700fa883bd4f61dfb30b6e8dc77010f2420d0a9ec79b327",
+    "retained": false
+  },
+  "spirit-water": {
+    "cell": 48,
+    "sheetSha256": "5d0804de4e307f2c94b1a37bc5fc8b9549e3f21767dad5c59ec912d1c3504dc5",
+    "portraitSha256": "30f20da1b5ad1ad78d165c210feb8b637d5ee0e2901716245e3d5f4569f43571",
+    "retained": false
+  },
+  "golem-iron": {
+    "cell": 64,
+    "sheetSha256": "9cd8eb29993ef1f38d6f6ae977fdb00476ca3651cf0bf9f6865b1f0dbc3dd2f9",
+    "portraitSha256": "d3519c903b2a14f3104144f7eeb040709c606c0c77758b09ca38b32559d83038",
+    "retained": false
+  },
+  "armor-living": {
+    "cell": 48,
+    "sheetSha256": "d428799fba46e71aff1d46d4524d1ebe386cf0e673a392e2630c77a7c351a85b",
+    "portraitSha256": "65ebc49b095af3684be4656e18576e7c9a12eb554edc6b49319bcd880490cb2e",
+    "retained": false
+  },
+  "mimic-chest": {
+    "cell": 48,
+    "sheetSha256": "ff589cdbd73ba77fbdf78ab28a641fb4830871bb1dc401be45f422811121eb40",
+    "portraitSha256": "894ea0c23c7eb29801256158de2b1d477aa7157d2a010701c9fac79924fcb9de",
+    "retained": false
+  },
+  "eye-floating": {
+    "cell": 48,
+    "sheetSha256": "3adf09b186f68b9a5c00ff41b880d800348d571e2a671eb7dd4f7ff65f39e6da",
+    "portraitSha256": "c89257067426556415e6db75ea05738217a64619eebea5f62bfc0e65da651b79",
+    "retained": false
+  },
+  "goblin-scout": {
+    "cell": 48,
+    "sheetSha256": "2f45bc694eaae394f010cb4f51d1d2bb22bfebb417224d612a3ae5c32409bbd1",
+    "portraitSha256": "b30631bfcf56041d4944264a95043b3066b9b552541866e8be6f143b393839f0",
+    "retained": false
+  },
+  "orc-warrior": {
+    "cell": 64,
+    "sheetSha256": "7cfd60a44ca387c9aabb73e588a59ce87eeae360387f6fa361898f4b57a3b962",
+    "portraitSha256": "f0eed84586984de89122fbbec217953228e1dccaf1998c2e8f13f778f037bc5d",
+    "retained": false
+  },
+  "orc-shaman": {
+    "cell": 48,
+    "sheetSha256": "2ade9b8e2faeb59dd8b2243bfc2cb613be0f58fd23759da089c3447865f89d90",
+    "portraitSha256": "94658066ef892773a78503620693982bda56d552579690801abc1b3a3a9a9eb4",
+    "retained": false
+  },
+  "bandit-mask": {
+    "cell": 48,
+    "sheetSha256": "bf63c69aec72c8302c14dd84d20a84dc208e08f9ed75d6cc3fdaa8ff115dffec",
+    "portraitSha256": "b49c7be6764971a22b5d170079ecbb232514373edff23210f9de7453ccc1ab8c",
+    "retained": false
+  },
+  "lizardman-spear": {
+    "cell": 48,
+    "sheetSha256": "eb7ca24e4c19794c71a8b060cd2c96f18e2035a4f458700996fb10b8bed74aa3",
+    "portraitSha256": "ef7c4b640fe25e0257fdbc664909e88e07af4e8a57a64a904bc556c4e52e4a6d",
+    "retained": false
+  },
+  "harpy-cliff": {
+    "cell": 48,
+    "sheetSha256": "ae348e4d077cc4052ffdd0f29d1150ff80151b9557fbccef698cdab714b16bf0",
+    "portraitSha256": "b98295f35953239deae40a240b73b38aa7efba6cc948f7614d2a5878208db257",
+    "retained": false
+  },
+  "minotaur-maze": {
+    "cell": 96,
+    "sheetSha256": "c51c83a4af35d95190c56009de021e3fe8a36a513e732ee8eebb95029c0df859",
+    "portraitSha256": "0c8d121e8d01be827e72967c6bf62e8f4101ece44a9e2c496fb6c25d3403499d",
+    "retained": false
+  },
+  "troll-cave": {
+    "cell": 96,
+    "sheetSha256": "579852a15f863f327c5a11984ab5a34394e9a7868408de076cf4be457943d6b5",
+    "portraitSha256": "d42f6aa88082a47a0b89c8ccff5a295ddbab4aadb27e37f31fd82ffca448a282",
+    "retained": false
+  },
+  "gargoyle-stone": {
+    "cell": 64,
+    "sheetSha256": "77ceb289401d7184fe4c3a28e0e2bd49a38d02e18688e141145bf1cc22a21c1f",
+    "portraitSha256": "4e467649254fd6e8a37ba6c49467100139cd90d0e94ec80f32f8ee731d195847",
+    "retained": false
+  },
+  "demon-lord": {
+    "cell": 96,
+    "sheetSha256": "95d25d61b1b01fc784765cbef9f3454ffb45461054aa9aefbbe6c5080eae6117",
+    "portraitSha256": "0f117a117ccdab7b5b85f37e698904a104616e170d619afe4a74436c2e14bdbc",
+    "retained": false
+  },
+  "crab-01": {
+    "cell": 64,
+    "sheetSha256": "0cd8b08c57214364ce7cd746f82767696a4eb6aeeb9baaecfe27185b26bd0095",
+    "portraitSha256": "a295623d3cec6a6449ebd3663678516a573c1c144bb3bbc8a15a0b7540c4779e",
+    "retained": false
+  },
+  "spider-01": {
+    "cell": 64,
+    "sheetSha256": "e662074e366f0b3bc6b3763892acacea0447bdbe2cfcd4c8b6182eb4d4ba7f80",
+    "portraitSha256": "196141a79c79948399d17d590b0fdbfd6b787a092266eb6b78dfbebc78da9993",
+    "retained": false
+  },
+  "snake-01": {
+    "cell": 64,
+    "sheetSha256": "034dcf9ad18a338e818e595138b227e50e517ad0bf50f023ba26174ac2a1202e",
+    "portraitSha256": "6721841c8d4709f0c6e0cda3dffec9623704c2fe60edd035b2b631c64204cba3",
+    "retained": false
+  },
+  "scorpion-01": {
+    "cell": 64,
+    "sheetSha256": "0b98f8c55b068f7959d4b3d8a545d387867ca1b2a893260a3fa0b5f6178746a6",
+    "portraitSha256": "290331d02ee98533f24ee93863e51110af92cbc55d76161d4506358927835662",
+    "retained": false
+  },
+  "wolf-01": {
+    "cell": 64,
+    "sheetSha256": "26430512e136f09c0cfd4b0383ce56741e4e9c569c9b701203f35fc473c3bc33",
+    "portraitSha256": "5fe71d54c3e4466cd3b459924fba4c4ad00c30ad5150b7751b3ea758c8296716",
+    "retained": false
+  },
+  "centipede-01": {
+    "cell": 64,
+    "sheetSha256": "bb1fcb6706eab45205d105b2a0fbc6531d8ee3e07255cc6760d0c544733ecaf8",
+    "portraitSha256": "9a9366b7db16b9249543a21b3c80c37c5973c27d9a6c30a15973f8ec31c98084",
+    "retained": false
+  },
+  "horse-01": {
+    "cell": 64,
+    "sheetSha256": "511eee022f8add8d84186ae33fd01f60f2bb92e350f4049b784b8652bedcde56",
+    "portraitSha256": "ba015013dd5a3a5823bfaa0be21c91648932b43d966f6f84294a4dfe3a15817a",
+    "retained": false
+  },
+  "unicorn-01": {
+    "cell": 64,
+    "sheetSha256": "e5b1b39c688eddb2279cdbc92d5cb0e559895096b5baf4b7c8b081f0892ade5d",
+    "portraitSha256": "933dd1bb48d0d4eb959f151aecf299f6a8d9b633219632cc51764fdf66ad15b4",
+    "retained": false
+  },
+  "cat-01": {
+    "cell": 64,
+    "sheetSha256": "93b79524dc3b494f8ecb6f5d0eb7d90c4efe050b68d163b499207120a4a0b914",
+    "portraitSha256": "109a436f77042cc6424c305238aadafe614be056b1cb9ed1481a8ba65b8d7b7d",
+    "retained": false
+  },
+  "cockatrice-01": {
+    "cell": 64,
+    "sheetSha256": "970117a051ac6f07677594524beeb25bda66d07be1cfb9e35af74f2596e0075b",
+    "portraitSha256": "35a30bb4baed3c9f08b6f1bfcae29e6015a3796414c0314b1cdc9f06720ebd96",
+    "retained": false
+  },
+  "parasite-01": {
+    "cell": 64,
+    "sheetSha256": "f8dd26acb37d7a17a34b50e891dca3af23682fc7131dcfe12536dfdd6845eb8a",
+    "portraitSha256": "8553625884cd01a4cd8691752ea78fc6a0fd5682d6ed0c3a536c74651458d82b",
+    "retained": false
+  },
+  "mantis-01": {
+    "cell": 64,
+    "sheetSha256": "ce4fca688235c3a21b48a0a56d0288368f480c6c20ba6cb05e34039b9c18332d",
+    "portraitSha256": "6d3767a022eb4e87e9975de72454332e5f663c1e31597a234eae1c4a5ad071c1",
+    "retained": false
+  },
+  "fish-01": {
+    "cell": 64,
+    "sheetSha256": "7ee12b5cae120e49d47027bf5b4cf6a34beb31dc5b5ccbe7846f97a669654ada",
+    "portraitSha256": "37e799a454bb7749eb589aaa9040f9ffa98c0ddef45b351039cca8256e529132",
+    "retained": false
+  },
+  "bat-cave": {
+    "cell": 64,
+    "sheetSha256": "df90d855c2061a8d7352e31a235fc60574907adc156d58e551e6c1fb4021cf26",
+    "portraitSha256": "8e8a7261cdd7d3cb4197980c8331b70dd6dbdcf209bfec11cf7820729ace80fd",
+    "retained": true
+  },
+  "spider-widow": {
+    "cell": 64,
+    "sheetSha256": "b536f4ed73e5fb6af1e6979ac8670d92fb6e9be89fc815c739e474d64d99e98a",
+    "portraitSha256": "d342d24928c5495344eeffc53290a2c67746f040b4e15618154182d7ebb67cc8",
+    "retained": false
+  },
+  "beetle-horn": {
+    "cell": 64,
+    "sheetSha256": "a6a2b7cf99b451e996f3867eb7068776af29cdc02c2faebad2e47a1d65620dc9",
+    "portraitSha256": "8a6f39cffcf0bccbdfe32a7ae389a34dcc013ef1731b93810bee71a44956b8b2",
+    "retained": false
+  },
+  "centipede-fire": {
+    "cell": 64,
+    "sheetSha256": "a2609c618cdc6e8caae0d8217ac01334ce70b03314220bbac19efd16bb7cd2a4",
+    "portraitSha256": "a7acf8ecea87a611c74f7e50388d8f40f9879805fe1efdae943adcf40091671b",
+    "retained": false
+  },
+  "moth-dust": {
+    "cell": 64,
+    "sheetSha256": "0df554a655db0449bc6545031b80feba88788af756b2a8ff8d334304042921c0",
+    "portraitSha256": "c98650b15cf47c7d49d00d2b23bb892284a60f9adb018e3e172abcbad856a55f",
+    "retained": false
+  },
+  "worm-sand": {
+    "cell": 64,
+    "sheetSha256": "3fcc78dcbc52e97f9c28c7ec27294c94fef7546950e7d0f2494b3a40d1d1712b",
+    "portraitSha256": "84e5ae93f2c6b9e55fa6fd820483993320e386b4093c88f1b05e2582e014437c",
+    "retained": false
+  },
+  "ant-soldier": {
+    "cell": 64,
+    "sheetSha256": "e4fee7a380a19d0382a819c8c5976dd5a079ef88c34d0c19cceabababb324a1a",
+    "portraitSha256": "fc68cb37656182deea1d9af134a3838448d8fe5cd6f844ffff463bcfb0d364ff",
+    "retained": false
+  },
+  "wolf-dire": {
+    "cell": 64,
+    "sheetSha256": "50857a7725e220c8005b18bc31af2d765e5998a6b3bf06407e2aba4a8215f749",
+    "portraitSha256": "56a706bbfd5e07124dcf7bf121cc7637111d745138003000f5202124c0c7a3d2",
+    "retained": false
+  },
+  "tiger-saber": {
+    "cell": 64,
+    "sheetSha256": "05d4fa990c8bdd02b3ad19e127ddb1f0ae87b9d2d154039521409dee7e7f547b",
+    "portraitSha256": "c93f634176b47a73fa64f3804f386aa8f1e61f5e3f957ffd19599025e5e16df0",
+    "retained": false
+  },
+  "rat-giant": {
+    "cell": 64,
+    "sheetSha256": "d5238346bdd86f2782742dd488330eae8dfb938b4ab1d964fd7d74e0eeced859",
+    "portraitSha256": "c6da42bdf405bfa0e3beaf52621318c43d5a467b4833e8d66c05447cedad0918",
+    "retained": false
+  },
+  "bird-hawk": {
+    "cell": 64,
+    "sheetSha256": "2c49c94c0172a19a4edb6f197eecaaff3b0015623217141a52f22491a29ea2e0",
+    "portraitSha256": "6f426352174e08213d6dda46f328d22fb445565df5ffc59293b7a1ffef6e7c03",
+    "retained": false
+  },
+  "cat-shadow": {
+    "cell": 64,
+    "sheetSha256": "9030549df670497b4fd8da9491e53b18e31882644fc8f60cf949706b01d5a826",
+    "portraitSha256": "62191e2763f10f151ea7f844982bf81d58935930fec268d9cf45979506342bc8",
+    "retained": false
+  },
+  "goat-mountain": {
+    "cell": 64,
+    "sheetSha256": "988dc406cbb3349698dbd9d9483af17f7a4aa5d452f09271a28c1c47889be0f8",
+    "portraitSha256": "9108d1f10e70c31d6bb2dab5728743113de9b84e2d1cefaea9bb55086259a298",
+    "retained": false
+  },
+  "ape-stone": {
+    "cell": 64,
+    "sheetSha256": "99d21a702495681e65c6a040b9c88b9d671095f8420a025d220715266157004b",
+    "portraitSha256": "d01dd2d900ea76d3993ab9f752426d1d161bd0ca42bfed808c89b383b3d47523",
+    "retained": false
+  },
+  "deer-forest": {
+    "cell": 64,
+    "sheetSha256": "c5416b8eebec4ae88db7b57242295ce4c10acb39fe88817f2d1f822f84fa57aa",
+    "portraitSha256": "db71a965117e2dc835b87a585cd6e25c0e513ecff2067decec4cbebf18738ca9",
+    "retained": false
+  },
+  "fish-piranha": {
+    "cell": 64,
+    "sheetSha256": "78fe042041f3fd505efe056e2f8c641e9fcae6de103bae8f216d7e12e2290005",
+    "portraitSha256": "ade1d0990bb7d657084299f85a3269d44c3a83324f3078fee02db3870a67117e",
+    "retained": false
+  },
+  "squid-deep": {
+    "cell": 64,
+    "sheetSha256": "e80735ee262e0333159b9acfcfdfe99e278764a18335205cd6140bd07ceb1944",
+    "portraitSha256": "585a2f77a8ad6ad298128dd727b9d7f216af2ae4accbf516aaa443efa8017c52",
+    "retained": false
+  },
+  "shark-land": {
+    "cell": 64,
+    "sheetSha256": "974948a2cbef4b6185297d2b7b766ff6dd6ebbebd5fc98348ec05e63ef1f5d6b",
+    "portraitSha256": "5d0fae653d6f24233f1d7d787224f5cb82ba9df3ba244d64f05135157b0cac1f",
+    "retained": false
+  },
+  "eel-electric": {
+    "cell": 64,
+    "sheetSha256": "ee0f6036de4eb7257f8dac3cdda6bb1ab64dff44fb3a7c282f86a30142725050",
+    "portraitSha256": "10dd69e69e499e1598dfd1328312efb96036a178d7031256df5e149cb5dc0b72",
+    "retained": false
+  },
+  "leaf-fox": {
+    "cell": 64,
+    "sheetSha256": "2298d773cf49586c34f3adbc7f63bf43ce988d84f9d7a7f0f14cb2b49f4d3c94",
+    "portraitSha256": "623c791a3c5da47ace5a0a32048b75f161afd357e07cccd422794ee3141eebd8",
+    "retained": false
+  },
+  "fire-pup": {
+    "cell": 64,
+    "sheetSha256": "586ce9e0e2689ee2d984c602c0987111eee6f0b2b2d7c57bd87744c74bd80ce6",
+    "portraitSha256": "031257b0559983750553b6f816864a008ac6658fd03507dc1f8b62b7a6d70f97",
+    "retained": false
+  },
+  "ontology-8da61312": {
+    "cell": 64,
+    "sheetSha256": "de9f3c9b8d46e89d9fbae1d27a91bfa040b65e439e15cc6c1e5aef831af2c25a",
+    "portraitSha256": "ba9b66745ccb025f6b40e229c038a03a0285e88d55b2da1faadaf2bc95a93e82",
+    "retained": false
+  },
+  "sylph-hornet-transparent": {
+    "cell": 48,
+    "sheetSha256": "74ed6ee6de6cd107fa2eb0f6f5a976a40e88c29f42320f35a452612376e45232",
+    "portraitSha256": "fc1e00e857fdb179aea1dd4fd866d02e998896fca2be43d6359912ec2fd302de",
+    "retained": false
+  },
+  "skeleton-01": {
+    "cell": 48,
+    "sheetSha256": "72a0b306a93213b9701e362ecb2dcee240d99c20e4c875699bd5ff2a43c9b709",
+    "portraitSha256": "b5bcdf9ae0be8d71eb5055d32825b30f4e30125a6571ce907ea9b1d0f83ad823",
+    "retained": false
+  },
+  "ghost-01": {
+    "cell": 48,
+    "sheetSha256": "89d8d71f3181e27bf0641dcd79657d464c3628ef35e5525aa9f7de1900c6a8b7",
+    "portraitSha256": "97e86344ed42482c99f544d5728c2c978eb2f2ba0c5b6972c2b2ea660f49861a",
+    "retained": false
+  },
+  "plant-01": {
+    "cell": 64,
+    "sheetSha256": "cd33375ee080529e59a102c01b0d965c0b9182b5477e46882545c0b72002b8c1",
+    "portraitSha256": "0658bc7c664a1dabe92efb40b0b1e9a859603e4126bca343434ac6f8bca188bf",
+    "retained": false
+  },
+  "carbuncle-01": {
+    "cell": 48,
+    "sheetSha256": "8100c05cd4986323a61ebf2f3cfbc50daa320891b08af3246daaa96660b6ce2b",
+    "portraitSha256": "ef64bbbf37c3566e2cc42622f15fcba10da376b796c4d1d2860ac80b0b5ec070",
+    "retained": false
+  },
+  "jackolantern-01": {
+    "cell": 48,
+    "sheetSha256": "de8615744c332318bb88a60c31ce8d760f2b457f60dbea41bf29c354a64831bc",
+    "portraitSha256": "41986e3008195da88db4896c9d003b19b3704b834bac417196b099df4c0256e8",
+    "retained": false
+  },
+  "spirit-01": {
+    "cell": 48,
+    "sheetSha256": "23d5fe3deeb7a5d6b28ed6dfe01ec34381b1c7a630e2398444723da094511fd5",
+    "portraitSha256": "568616412db8f05b26b36722309a3fa90f136904ccebfb7a2a8c02912ca53996",
+    "retained": false
+  },
+  "ghoul-01": {
+    "cell": 48,
+    "sheetSha256": "0baa66e557ef9fb562dc3776abfcb28f7b9e4658b063911143cf7edf24a315fc",
+    "portraitSha256": "68c1d685a9b7dba706bede0c60c66863078ac89f62d73439a3358c61de9c44ce",
+    "retained": false
+  },
+  "specter-01": {
+    "cell": 48,
+    "sheetSha256": "c7696cc8f6d28dc46a60a24d42eee0ee321033531ed2f5d01a7e27d2be6c5d86",
+    "portraitSha256": "2a8b65cb6bb8200e3c6c51a19b1c922e506dfd943cab96e6ca504666ee6f196e",
+    "retained": false
+  },
+  "lemora-01": {
+    "cell": 64,
+    "sheetSha256": "8939ff62f5c4287825c5e497db626d7a9a864035cce1d9128e34d7aeb2b088fb",
+    "portraitSha256": "56377c811ae0f4bf97864e9c874754279b4e4367995811e4515fa7edccfb1419",
+    "retained": false
+  },
+  "sylph-01": {
+    "cell": 48,
+    "sheetSha256": "922b3c668dcc69547f2d0bfdc736fcbcca415148ba9e8b371f2ef5f3abcd0ab9",
+    "portraitSha256": "74f24ec6266bd79ade7766c999d017310819b6efd2d7752dbb37ff1cab8613f3",
+    "retained": false
+  },
+  "king-slime-01": {
+    "cell": 48,
+    "sheetSha256": "53c189edd7fd2991989422b7c7a68e246e30f97214b8ab90a181b709b23810eb",
+    "portraitSha256": "4cd91a83dec731bf4676b97ffbe90aef47000e55868fe5d286360c9356727f35",
+    "retained": false
+  },
+  "slime-blue": {
+    "cell": 48,
+    "sheetSha256": "60552114c0abaa6b50379894c9cbce561206860f0a98947e2a8c63222dfe41cf",
+    "portraitSha256": "176f9c0450048dbcec1ca07949cd1692f0094ae1391bb42ac7925434ebb39650",
+    "retained": false
+  },
+  "slime-green": {
+    "cell": 48,
+    "sheetSha256": "a0062b2ed9809d93e4476f80a42962485b5cb59ddce07ad9da8c7ec63be24774",
+    "portraitSha256": "be92bfbaaf951460f1d24fc52a3488107192840ed692eee3bf0e01b0368635bf",
+    "retained": false
+  },
+  "slime-metal": {
+    "cell": 48,
+    "sheetSha256": "fe040af232943c3844c5a20021bb0ce0815f41d6279c09c2a1aece201c367261",
+    "portraitSha256": "b03f5b12d358ae2defe7aa60aca1ea25092fb8b7851752405224cded748f287a",
+    "retained": false
+  },
+  "slime-king": {
+    "cell": 48,
+    "sheetSha256": "0f044238c5f8f084cd88e507e86de3bcffbe9293702bfa87b9984016baef552a",
+    "portraitSha256": "afba8c2055a3e98444a65474e142dbae33f247945abe5525021562937e7845af",
+    "retained": false
+  },
+  "slime-cube": {
+    "cell": 48,
+    "sheetSha256": "cf90c1bd05560c8909b96e2bbc04fb8d9f98ca8cb2fa7f85e0468dc6d0184b6f",
+    "portraitSha256": "be854179a25ae13c2bcb7b36c43ad551e6383f212bc85d25a3eb1a0aa8c26052",
+    "retained": false
+  },
+  "ooze-black": {
+    "cell": 48,
+    "sheetSha256": "9e9ac84081b2cbc0c32b44767966a84655e400b265f0174705fde8da1193608c",
+    "portraitSha256": "871d8a8f00790a37f060a3a6a228d09062ef9ba030dbc5482667f55ee6324c2f",
+    "retained": false
+  },
+  "ooze-acid": {
+    "cell": 48,
+    "sheetSha256": "5438107487d440ec0d5e420f355318969b725ec966028a0cf671ca6f105a852d",
+    "portraitSha256": "87c049d93996dc7e27426803a0b8b8b0752ea427722c2936614c370198466c7e",
+    "retained": false
+  },
+  "skeleton-bone": {
+    "cell": 48,
+    "sheetSha256": "e471e27d0095c6a7b364002d6c291af3f2e75586aeb605f3e887fb2d34597071",
+    "portraitSha256": "5a3adb9b5423302a7a87cc44991be8046742faccae472569b88aade230139257",
+    "retained": false
+  },
+  "ghoul-grave": {
+    "cell": 48,
+    "sheetSha256": "0649b8b1fc55b28a63eafb0d2c0876a4e66ec7c5970c05ddf0e8991900adad8b",
+    "portraitSha256": "7512ec1e5f5cf1ff46142ea197950fb8a472e6b0fe797b893d22e29e446cf0fa",
+    "retained": false
+  },
+  "wraith-dark": {
+    "cell": 48,
+    "sheetSha256": "bdff3be7f963ca91c42f46ac50466ae261be8a6abb1cbb418feabaf495743a0d",
+    "portraitSha256": "87ee81e37ce1cadf7c9908efe6dbf4dcc8a65a8d3a01d6f1bb92dd65646c9a94",
+    "retained": false
+  },
+  "banshee-wail": {
+    "cell": 48,
+    "sheetSha256": "3b9f69855132e5b2689b1f127477cc17a4ff070cb22124fc6eec53cb7f8375dd",
+    "portraitSha256": "4893262dc02eb2e439789a74ac15fa23e0b66ffa2d1d50eb4ba308e907e2cd8f",
+    "retained": false
+  },
+  "revenant-vengeful": {
+    "cell": 64,
+    "sheetSha256": "e661b4948e29e9777444debcfc89606612e0e83688911b45aa3fbcd1a7b4f19a",
+    "portraitSha256": "8dc8798613e4a83951911b68ab556cc4985465cd9ce6d7575dfb934508db6e8d",
+    "retained": false
+  },
+  "bonepile-crawler": {
+    "cell": 64,
+    "sheetSha256": "8b4fe335e3f95fe08e6fed1b2860d7433297ca8fa8a63152bd5e7c83574e949d",
+    "portraitSha256": "8a43d784149508f77d75cfd90de6e49e8aedb757f99cb7912ef1331636105b3d",
+    "retained": false
+  },
+  "spirit-wind": {
+    "cell": 48,
+    "sheetSha256": "a79018d47287b6772d5523cd89f9516290962f98e86fe9520129129f23c3279a",
+    "portraitSha256": "483a2daec6625c8a4adc6889bc5eefe8e6fad1c4be1da5a17b9e7c21e0989cde",
+    "retained": false
+  },
+  "spirit-light": {
+    "cell": 48,
+    "sheetSha256": "b7ce6e2054e678ed36c10fbd1db0b5cc03f39753cb87b2f13001cfda94c13362",
+    "portraitSha256": "c52f28e06adbe1a2de97093859288d050070633066a54216ad9467c7fa6718c0",
+    "retained": false
+  },
+  "spirit-dark": {
+    "cell": 48,
+    "sheetSha256": "2249dcc8ac4d3db77f873a52eb87e26b200876c54fcdc846b46e69c90df2f323",
+    "portraitSha256": "80c51da67528f353137a52cb82385c8347b2e118fa6c9c35abab45881f1fadb4",
+    "retained": false
+  },
+  "sylph-air": {
+    "cell": 48,
+    "sheetSha256": "f0d9cf4ed4d2f5b1fd0e761abcac6ea4bff8ff99fb00d3e21f96a89fb0f2a215",
+    "portraitSha256": "95516a33f26defaa8c5245a03b01758b66ef6dc9078eb62fa2880471215bb4b1",
+    "retained": false
+  },
+  "undine-sea": {
+    "cell": 48,
+    "sheetSha256": "87d7a23f6ab3344a10ab6906d31a2c8e380bf1e05460ecc9dc7facf64e7d506b",
+    "portraitSha256": "c7e1358ed5abe8a49b59a6b2013f7d9e66ed75ea990a55a731078ae0d19b0b5c",
+    "retained": false
+  },
+  "golem-stone": {
+    "cell": 64,
+    "sheetSha256": "932dbf905bfcb735a1d9acc8c9ab4bea2b8b852e95ac6e4a19b29da7853ab131",
+    "portraitSha256": "d5b1ff09f323702fcea7ef85b667d6b386d4321cbc529ee608d42f777439cfa3",
+    "retained": false
+  },
+  "golem-clay": {
+    "cell": 64,
+    "sheetSha256": "9bb71be34b31e4fff151fcca7136f5d8551b1b94aa81ed3c6da9c2f28da7e088",
+    "portraitSha256": "6c3395ec390152a8caa10d34ee6a4395e6c8b053805c9325d34c0247987be162",
+    "retained": false
+  },
+  "golem-crystal": {
+    "cell": 64,
+    "sheetSha256": "f283f054d0c42e57ba685e0fccb9881fbc24c3ef035fa3c1f0c9b0cc32f0ae3f",
+    "portraitSha256": "331f309bf415299e630a56299d8269627a37ae197761f1fcd0212c09af5ea050",
+    "retained": false
+  },
+  "sword-flying": {
+    "cell": 48,
+    "sheetSha256": "65bd68073189db395de88776149ca27d7b48ed14b72c96a85ce3e362a2bb506e",
+    "portraitSha256": "3c104e58f251b6386df6dbe4d9a7093c95c5d7682ee0b914e8f41dc05455e43f",
+    "retained": false
+  },
+  "scarecrow-field": {
+    "cell": 64,
+    "sheetSha256": "77e17c423324e976d31d41227aaba3c6d70b26ae2ee43360c1db6406455962a8",
+    "portraitSha256": "b63848f1541ea050a00e6b69e0140c547877a2f23dbb8556b253db1dde72ec11",
+    "retained": false
+  },
+  "puppet-string": {
+    "cell": 64,
+    "sheetSha256": "7027d935336414b5a94b96cfd3112db58a4c905eda0751cb770a5b7c57e29a82",
+    "portraitSha256": "a76aa193d0757342300ac7cf2797923800f011a01e69dc972001e5829066e6a9",
+    "retained": false
+  },
+  "totem-cursed": {
+    "cell": 64,
+    "sheetSha256": "3015996bdebffaafa742bd731a9e1686a2c5906c026be2ef2e0981ff0b618786",
+    "portraitSha256": "5a55a7d760928ffb8304942d3c2ad2a35582b6a5f25711e1f58e5b7ffbc36634",
+    "retained": false
+  },
+  "spirit-earth": {
+    "cell": 64,
+    "sheetSha256": "6e31539f69129e92e15b300842a9ed9532cd85b5b2c8d953f30363dbf4226db8",
+    "portraitSha256": "4231f1ee6d6b4004b788e9c0c0381e30ec9bd48e3708062542d2742c6b25eaea",
+    "retained": false
+  },
+  "zombie-01": {
+    "cell": 64,
+    "sheetSha256": "924ce2fa138cae4865c835db7595853dcbb55fa00a76d615652db2ca8681bda8",
+    "portraitSha256": "e3480f19ed642a791f6501efe52378d45b4615ac0f99345d75ddfbd41bc30484",
+    "retained": false
+  },
+  "orc-01": {
+    "cell": 64,
+    "sheetSha256": "13b5ea956b1b229f8f3e348f7741af3cc59bbe1a747bca1208e3874b4f69725f",
+    "portraitSha256": "e3c4c84164c55d20fc5d03ff7fa6ae8e21bed3682d9964750a707ae54d1c06b8",
+    "retained": false
+  },
+  "harpy-01": {
+    "cell": 64,
+    "sheetSha256": "2c97575446caf972e9cda12a2de6b3100cd5bd9fc272d3c22abcbef9d9d24020",
+    "portraitSha256": "02355807468300fe9b96bada97f109ca2d7f703457ab5276c2aa963c2fd5c197",
+    "retained": false
+  },
+  "salamander-01": {
+    "cell": 64,
+    "sheetSha256": "13189e4375db871aa3e995e40837a9706648a5145a1e86049ecef155b797acba",
+    "portraitSha256": "1816cca480197826adc9d61ebb4e2e0de75f1f0d10f25cfa08d3615ad633f061",
+    "retained": false
+  },
+  "kappa-01": {
+    "cell": 64,
+    "sheetSha256": "0bed420d7ccf2e13e99412e54a40d332192766e5f828392cc984f6ab18cf5897",
+    "portraitSha256": "063a97c7049d372f253d2bd040c0d121f18439a6867105e75dcd4bd5bcbcd35a",
+    "retained": true
+  },
+  "leafling-01": {
+    "cell": 48,
+    "sheetSha256": "797831d7357c6cf7a1ce799ad74f3859dc29e3ddacb0c9b2b86e0a901fa4fccf",
+    "portraitSha256": "6ff845087bbf37b35d9ebdb00d642a5c787af509617368da80359ce0e67b7737",
+    "retained": false
+  },
+  "sparkit-01": {
+    "cell": 48,
+    "sheetSha256": "f7e649745e1b10d20df29fa4309350646969816bf8016d042cc48e6455a44067",
+    "portraitSha256": "bf8fd9a9fe59b5c135003d0b688ab5c766cd8bd26339492d83053389d837d463",
+    "retained": false
+  },
+  "aqualing-01": {
+    "cell": 48,
+    "sheetSha256": "a8cd75364a01e7059fd21924e77dbff81cc9cb47d6651f21df3057b0600d56ca",
+    "portraitSha256": "b5ebb35f211914c8009bd1d787091c2a4d6e0d9f1f1308c5ad38e183b612e2ac",
+    "retained": false
+  },
+  "salamander-flame": {
+    "cell": 64,
+    "sheetSha256": "092bedcd1eab169f7854d6b68ed94ffde5f8c5c37aa42dbce23e49a601413ac3",
+    "portraitSha256": "d8deb28a53f9f04376a4f2cf61c27b78d7437172ded66d2fa3e92a8793b8e15f",
+    "retained": false
+  },
+  "goblin-brute": {
+    "cell": 64,
+    "sheetSha256": "db20250ba1887a1636dcc6817462f838dfd9a157c85df4f914cd57514ba86f5a",
+    "portraitSha256": "80d69b8b7644740009eca1a1d613df12d33ca671d5f8b983c320309cfc9c5a5d",
+    "retained": false
+  },
+  "kobold-digger": {
+    "cell": 64,
+    "sheetSha256": "66b6f5e7a31373f4e9ce903433d6481f9b892448e3140710618ea346645491c8",
+    "portraitSha256": "8124a918bc77b50b894f8fbf83e3c9eba13477600e8a6b68be63e3f849da83e6",
+    "retained": false
+  },
+  "mage-rogue": {
+    "cell": 64,
+    "sheetSha256": "cd643e9c8392d4055c7331246b90658fcf11cd4757a485d7141245c195e09e80",
+    "portraitSha256": "7c64f091d8da9dac725c724f50617d9a204c3ce95e3e8f39e0811ba6263fa6b0",
+    "retained": false
+  },
+  "knight-fallen": {
+    "cell": 64,
+    "sheetSha256": "d93f39e2df7f4dab3b831a84dbf9d0ac9332f5c93286013e74e24e4922809d42",
+    "portraitSha256": "0f9cc34be587c50089d237d20447e0e29b13781da0c9e4558a2ab975949f3307",
+    "retained": false
+  },
+  "centaur-plains": {
+    "cell": 96,
+    "sheetSha256": "502a16bca325971dbfcf2c0cb60defc818a1d5dbbf3403b5665b8d0a5585dfbb",
+    "portraitSha256": "ace6b70b0745bb7b57e58053e6628036183f6dde64a3a0efcaa183899dbb6198",
+    "retained": false
+  },
+  "ogre-club": {
+    "cell": 96,
+    "sheetSha256": "4a085372761674e915eab9fdc63374d662476711649abcebb80d12f1a3882512",
+    "portraitSha256": "5bde9fc4e3c4dbc6d9da7579f378d2ef735e2ce9c6ee29efe175046813a7aa1a",
+    "retained": false
+  },
+  "imp-mischief": {
+    "cell": 48,
+    "sheetSha256": "6bfc833b94983f7b1cea345b55791ca620ea8b3aefb978d03807a9c3f31d392b",
+    "portraitSha256": "da13eb2b5ee0aa26d606c0848dd1627ac209aaab5df0706a7788b08a99c29889",
+    "retained": false
+  },
+  "griffin-sky": {
+    "cell": 96,
+    "sheetSha256": "d9c89a53b2dedefe2f28cd74c3b2d9d68a65b9d794ef5706204968c372bacc7c",
+    "portraitSha256": "f7171a8974857f437aaec9a3c988b8c5f694d4d7b169e98eff3164faaade6793",
+    "retained": false
+  },
+  "wyvern-cliff": {
+    "cell": 96,
+    "sheetSha256": "156e4b084d16637e6de8c454e2e5af660036eb7eddb06b4e6de5ede5ddb8ce69",
+    "portraitSha256": "d6f884bfda500cd9a16ee6d8fe32ca3ce6a69970f82ecde80b32d3be92f7c83b",
+    "retained": false
+  },
+  "roc-giant": {
+    "cell": 64,
+    "sheetSha256": "0a71502da49dec16fe3d1d38fb80ba2526cc47fbf6f3b321ff4718c05af6570b",
+    "portraitSha256": "9f96e8778cc8b196e70ca4e58dd3755fc0cb73e0dfadc2cdf61d205531bf0b4a",
+    "retained": false
+  },
+  "phoenix-rebirth": {
+    "cell": 96,
+    "sheetSha256": "50a79c7d226ee2116ae165820cfe11a97a4297086a0aa988df17b26c8d2f3b5a",
+    "portraitSha256": "78b6673443a84f6587b282ae5c65bb70a76b9ed8ca770ee78465c47a6b3f6c5a",
+    "retained": false
+  },
+  "dragon-whelp": {
+    "cell": 64,
+    "sheetSha256": "0e9f51a8ce247392cc84734432c95ef152ddbff8ede1a70b70c6be618df36f71",
+    "portraitSha256": "e8e777a5cb140549cb837ee031d616fe2e1742df093097393552054c07131a0c",
+    "retained": false
+  },
+  "dragon-red": {
+    "cell": 96,
+    "sheetSha256": "49e898281f6905ee3a67beb940b13ce2acac3b0700e6f906c074b56246ae1071",
+    "portraitSha256": "fc608143620155b168a431aa1d38f0d7c172e77feeb4ce25300a7e8e4f9a6072",
+    "retained": false
+  },
+  "dragon-blue": {
+    "cell": 96,
+    "sheetSha256": "02294839ec637c24f7ab9b68587b538ab4d6bab7f8191694c16f693b1b3a5cac",
+    "portraitSha256": "5a37b9b9da485c7ee8c16a3df5a7739527d9450bc2e5be57aa7843d84fd63415",
+    "retained": false
+  },
+  "dragon-bone": {
+    "cell": 96,
+    "sheetSha256": "f1ff2466eeda390bd7e8c80ddfd5039c0b085af440c39536afb2ce4595c95cd8",
+    "portraitSha256": "bb43f78462787fc795e3a13f41ace6183282bbb560a73d0b87886e085491a4c2",
+    "retained": false
+  },
+  "hydra-three": {
+    "cell": 96,
+    "sheetSha256": "384530bcba93787c05af080c170e533fc5bd7616685d4df2a8887794b45676b2",
+    "portraitSha256": "fdff43ef297ed4bc6136e55d3b4c924a15fc244d66523838dc76ce26c3527b0c",
+    "retained": true
+  },
+  "behemoth-horn": {
+    "cell": 96,
+    "sheetSha256": "b5fa766262b39fe203e99ba330049955c87e3e29915db639040d738b05c493ca",
+    "portraitSha256": "60bdf48234f09b64aa86772b6350949ff833155d15f902e5c68a56393ca2e8eb",
+    "retained": false
+  },
+  "angel-fallen": {
+    "cell": 64,
+    "sheetSha256": "7a8ba8611d8651209ff62e529097359062a8734014f792bdd2886b008e646746",
+    "portraitSha256": "9df26ff505b04a417d167f5113ea01e1794661a7c854e365d69b9e72e6b2030d",
+    "retained": false
+  }
+}

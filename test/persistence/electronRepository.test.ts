@@ -28,6 +28,8 @@ function fakeBridge(): OprnBridge {
       dataVersion: async () => 1,
       separateMedia: async () => ({ changed: false, migratedAssetIds: [], revision: 1 }),
       backup: async () => `${DIR}/backups/x.sqlite`,
+      listBackups: async () => [],
+      restoreBackup: async () => ({ projectDir: `${DIR}-recovered`, projectId: "restored", sha256: SHA, title: "복구 사본" }),
     },
     commits: {
       record: async () => ({ kind: "saved", commitId: "c1" }),
@@ -60,6 +62,28 @@ afterEach(() => {
 });
 
 describe("electron repository", () => {
+  it("분리된 사본 저장은 전송 중 원본의 다음 변경과 섞이지 않는다", async () => {
+    const live = { ...PROJECT, meta: { ...PROJECT.meta, title: "제출 당시" } };
+    const bridge = fakeBridge();
+    let accept!: () => void;
+    let sent = "";
+    bridge.project.save = async (payload) => {
+      sent = payload.serialized;
+      await new Promise<void>(resolve => { accept = resolve; });
+      return { kind: "saved", sha256: SHA };
+    };
+    vi.stubGlobal("window", { oprn: bridge });
+    const repository = createElectronRepository();
+    await repository.open(DIR);
+    const pending = repository.save(live, { kind: "local", projectDir: DIR, projectId: PROJECT_ID });
+    live.meta.title = "전송 중 편집";
+    accept();
+    const result = await pending;
+    expect(JSON.parse(sent).meta.title).toBe("제출 당시");
+    expect(result).toMatchObject({ kind: "saved", project: { meta: { title: "제출 당시" } } });
+    expect(live.meta.title).toBe("전송 중 편집");
+  });
+
   it("브리지가 있으면 Electron 어댑터를 고른다", () => {
     vi.stubGlobal("window", { oprn: fakeBridge() });
 

@@ -1,0 +1,128 @@
+{
+  "bridge": "Isolated browser stub; no project store writes",
+  "screens": [
+    "01-first-visit.png",
+    "02-first-visit-1024.png",
+    "03-returning.png",
+    "04-create-en.png"
+  ],
+  "checks": [
+    {
+      "label": "No horizontal overflow 1440",
+      "value": true
+    },
+    {
+      "label": "No horizontal overflow 1280",
+      "value": true
+    },
+    {
+      "label": "No horizontal overflow 1024",
+      "value": true
+    },
+    {
+      "label": "No horizontal overflow 390",
+      "value": true
+    },
+    {
+      "label": "Village background switches",
+      "value": true
+    },
+    {
+      "label": "Motion paused",
+      "value": true
+    },
+    {
+      "label": "Pause persists after reload",
+      "value": true
+    },
+    {
+      "label": "Canceled folder dialog stays home",
+      "value": true
+    },
+    {
+      "label": "Example chooser wired",
+      "value": true
+    },
+    {
+      "label": "Selected example opens form",
+      "value": true
+    },
+    {
+      "label": "AI entry opens planning form",
+      "value": true
+    },
+    {
+      "label": "Blank creation handoff uses selected folder and mode",
+      "value": true
+    },
+    {
+      "label": "Recent project owns hero",
+      "value": true
+    },
+    {
+      "label": "Recent cover is used",
+      "value": true
+    },
+    {
+      "label": "Hidden entries never replace continue target",
+      "value": true
+    },
+    {
+      "label": "Missing folder error is visible",
+      "value": true
+    },
+    {
+      "label": "Team join error is visible",
+      "value": true
+    },
+    {
+      "label": "Continue works with keyboard",
+      "value": true
+    },
+    {
+      "label": "OS reduced motion stops animation",
+      "value": true
+    },
+    {
+      "label": "Redundant motion control hidden",
+      "value": true
+    },
+    {
+      "label": "en chrome fits",
+      "value": true
+    },
+    {
+      "label": "en lobby translated",
+      "value": true
+    },
+    {
+      "label": "ja chrome fits",
+      "value": true
+    },
+    {
+      "label": "ja lobby translated",
+      "value": true
+    },
+    {
+      "label": "zh chrome fits",
+      "value": true
+    },
+    {
+      "label": "zh lobby translated",
+      "value": true
+    },
+    {
+      "label": "Authored title is not translated",
+      "value": true
+    },
+    {
+      "label": "Recent-list failure still offers a usable lobby",
+      "value": true
+    },
+    {
+      "label": "No browser runtime errors",
+      "value": true
+    }
+  ],
+  "errors": []
+}

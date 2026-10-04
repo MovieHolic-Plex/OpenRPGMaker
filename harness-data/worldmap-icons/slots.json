@@ -1,0 +1,565 @@
+{
+  "schema": "worldmap-icon-slots/1",
+  "slots": {
+    "desert-east/3층 전탑": {
+      "x": 0,
+      "y": 16,
+      "width": 1,
+      "height": 2
+    },
+    "desert-east/9층 팔각탑": {
+      "x": 1,
+      "y": 16,
+      "width": 2,
+      "height": 4
+    },
+    "desert-east/검은 천막 야영": {
+      "x": 3,
+      "y": 16,
+      "width": 2,
+      "height": 2
+    },
+    "desert-east/게르 야영": {
+      "x": 5,
+      "y": 16,
+      "width": 2,
+      "height": 2
+    },
+    "desert-east/궁성 도시": {
+      "x": 7,
+      "y": 16,
+      "width": 6,
+      "height": 6
+    },
+    "desert-east/기와집 마을": {
+      "x": 13,
+      "y": 16,
+      "width": 3,
+      "height": 3
+    },
+    "desert-east/대사원": {
+      "x": 16,
+      "y": 16,
+      "width": 3,
+      "height": 3
+    },
+    "desert-east/모래에 묻힌 성채": {
+      "x": 19,
+      "y": 16,
+      "width": 4,
+      "height": 3
+    },
+    "desert-east/무너진 석탑": {
+      "x": 23,
+      "y": 16,
+      "width": 2,
+      "height": 2
+    },
+    "desert-east/사막 흙벽 마을": {
+      "x": 25,
+      "y": 16,
+      "width": 2,
+      "height": 2
+    },
+    "desert-east/산성 누각": {
+      "x": 27,
+      "y": 16,
+      "width": 3,
+      "height": 3
+    },
+    "desert-east/산성 요새": {
+      "x": 0,
+      "y": 22,
+      "width": 3,
+      "height": 3
+    },
+    "desert-east/석굴 사원": {
+      "x": 3,
+      "y": 22,
+      "width": 2,
+      "height": 2
+    },
+    "desert-east/석등과 선돌": {
+      "x": 5,
+      "y": 22,
+      "width": 2,
+      "height": 2
+    },
+    "desert-east/신목": {
+      "x": 7,
+      "y": 22,
+      "width": 3,
+      "height": 3
+    },
+    "desert-east/신선의 섬": {
+      "x": 10,
+      "y": 22,
+      "width": 5,
+      "height": 4
+    },
+    "desert-east/오아시스 마을": {
+      "x": 15,
+      "y": 22,
+      "width": 3,
+      "height": 3
+    },
+    "desert-east/읍성": {
+      "x": 18,
+      "y": 22,
+      "width": 4,
+      "height": 4
+    },
+    "desert-east/초가 촌락": {
+      "x": 22,
+      "y": 22,
+      "width": 2,
+      "height": 2
+    },
+    "desert-east/항구 읍성": {
+      "x": 24,
+      "y": 22,
+      "width": 5,
+      "height": 4
+    },
+    "desert-east/화산 제단": {
+      "x": 0,
+      "y": 26,
+      "width": 2,
+      "height": 2
+    },
+    "fantasy/adobe_village": {
+      "x": 2,
+      "y": 26,
+      "width": 2,
+      "height": 2
+    },
+    "fantasy/castle_dark": {
+      "x": 4,
+      "y": 26,
+      "width": 3,
+      "height": 3
+    },
+    "fantasy/castle_dark_grand": {
+      "x": 7,
+      "y": 26,
+      "width": 5,
+      "height": 5
+    },
+    "fantasy/cave_rock": {
+      "x": 12,
+      "y": 26,
+      "width": 2,
+      "height": 2
+    },
+    "fantasy/cave_vine": {
+      "x": 14,
+      "y": 26,
+      "width": 2,
+      "height": 2
+    },
+    "fantasy/city_capital": {
+      "x": 16,
+      "y": 26,
+      "width": 6,
+      "height": 6
+    },
+    "fantasy/city_fort": {
+      "x": 22,
+      "y": 26,
+      "width": 4,
+      "height": 4
+    },
+    "fantasy/city_harbor": {
+      "x": 0,
+      "y": 32,
+      "width": 5,
+      "height": 4
+    },
+    "fantasy/crypt": {
+      "x": 5,
+      "y": 32,
+      "width": 2,
+      "height": 2
+    },
+    "fantasy/desert_colonnade": {
+      "x": 7,
+      "y": 32,
+      "width": 2,
+      "height": 2
+    },
+    "fantasy/desert_temple": {
+      "x": 9,
+      "y": 32,
+      "width": 3,
+      "height": 3
+    },
+    "fantasy/flame_fortress": {
+      "x": 12,
+      "y": 32,
+      "width": 3,
+      "height": 3
+    },
+    "fantasy/giant_tower": {
+      "x": 15,
+      "y": 32,
+      "width": 2,
+      "height": 4
+    },
+    "fantasy/giant_tree": {
+      "x": 17,
+      "y": 32,
+      "width": 3,
+      "height": 3
+    },
+    "fantasy/harbor_town": {
+      "x": 20,
+      "y": 32,
+      "width": 3,
+      "height": 3
+    },
+    "fantasy/igloo_camp": {
+      "x": 23,
+      "y": 32,
+      "width": 2,
+      "height": 2
+    },
+    "fantasy/lighthouse": {
+      "x": 25,
+      "y": 32,
+      "width": 1,
+      "height": 2
+    },
+    "fantasy/log_village": {
+      "x": 26,
+      "y": 32,
+      "width": 3,
+      "height": 3
+    },
+    "fantasy/mage_spire": {
+      "x": 29,
+      "y": 32,
+      "width": 1,
+      "height": 2
+    },
+    "fantasy/mine_town": {
+      "x": 0,
+      "y": 36,
+      "width": 2,
+      "height": 2
+    },
+    "fantasy/monastery": {
+      "x": 2,
+      "y": 36,
+      "width": 2,
+      "height": 2
+    },
+    "fantasy/oasis_camp": {
+      "x": 4,
+      "y": 36,
+      "width": 2,
+      "height": 2
+    },
+    "fantasy/pass_fortress": {
+      "x": 6,
+      "y": 36,
+      "width": 3,
+      "height": 3
+    },
+    "fantasy/ruined_city": {
+      "x": 9,
+      "y": 36,
+      "width": 4,
+      "height": 3
+    },
+    "fantasy/sky_island": {
+      "x": 13,
+      "y": 36,
+      "width": 5,
+      "height": 4
+    },
+    "fantasy/stepped_pyramid": {
+      "x": 18,
+      "y": 36,
+      "width": 2,
+      "height": 2
+    },
+    "fantasy/stilt_village": {
+      "x": 20,
+      "y": 36,
+      "width": 2,
+      "height": 2
+    },
+    "fantasy/stone_circle": {
+      "x": 22,
+      "y": 36,
+      "width": 2,
+      "height": 2
+    },
+    "fantasy/tent_camp": {
+      "x": 24,
+      "y": 36,
+      "width": 2,
+      "height": 2
+    },
+    "fantasy/town_red": {
+      "x": 26,
+      "y": 36,
+      "width": 3,
+      "height": 3
+    },
+    "fantasy/town_snow": {
+      "x": 0,
+      "y": 40,
+      "width": 3,
+      "height": 3
+    },
+    "fantasy/treehouse_village": {
+      "x": 3,
+      "y": 40,
+      "width": 2,
+      "height": 2
+    },
+    "fantasy/village_snow": {
+      "x": 5,
+      "y": 40,
+      "width": 2,
+      "height": 2
+    },
+    "fantasy/village_wood": {
+      "x": 7,
+      "y": 40,
+      "width": 2,
+      "height": 2
+    },
+    "fantasy/volcano_altar": {
+      "x": 9,
+      "y": 40,
+      "width": 2,
+      "height": 2
+    },
+    "fantasy/witch_tower": {
+      "x": 11,
+      "y": 40,
+      "width": 1,
+      "height": 2
+    },
+    "modern-sf/camp_a": {
+      "x": 12,
+      "y": 40,
+      "width": 2,
+      "height": 2
+    },
+    "modern-sf/camp_b": {
+      "x": 14,
+      "y": 40,
+      "width": 2,
+      "height": 2
+    },
+    "modern-sf/capital": {
+      "x": 16,
+      "y": 40,
+      "width": 6,
+      "height": 6
+    },
+    "modern-sf/castle_a": {
+      "x": 22,
+      "y": 40,
+      "width": 3,
+      "height": 3
+    },
+    "modern-sf/castle_b": {
+      "x": 25,
+      "y": 40,
+      "width": 3,
+      "height": 3
+    },
+    "modern-sf/cave": {
+      "x": 28,
+      "y": 40,
+      "width": 2,
+      "height": 2
+    },
+    "modern-sf/circle": {
+      "x": 0,
+      "y": 46,
+      "width": 2,
+      "height": 2
+    },
+    "modern-sf/floating": {
+      "x": 2,
+      "y": 46,
+      "width": 5,
+      "height": 4
+    },
+    "modern-sf/fort_city": {
+      "x": 7,
+      "y": 46,
+      "width": 4,
+      "height": 4
+    },
+    "modern-sf/harbor_city": {
+      "x": 11,
+      "y": 46,
+      "width": 5,
+      "height": 4
+    },
+    "modern-sf/landmark_nature": {
+      "x": 16,
+      "y": 46,
+      "width": 3,
+      "height": 3
+    },
+    "modern-sf/large_town_a": {
+      "x": 19,
+      "y": 46,
+      "width": 3,
+      "height": 3
+    },
+    "modern-sf/large_town_b": {
+      "x": 22,
+      "y": 46,
+      "width": 3,
+      "height": 3
+    },
+    "modern-sf/ruin": {
+      "x": 25,
+      "y": 46,
+      "width": 2,
+      "height": 2
+    },
+    "modern-sf/ruin_city": {
+      "x": 0,
+      "y": 50,
+      "width": 4,
+      "height": 3
+    },
+    "modern-sf/shrine": {
+      "x": 4,
+      "y": 50,
+      "width": 3,
+      "height": 3
+    },
+    "modern-sf/tower_great": {
+      "x": 7,
+      "y": 50,
+      "width": 2,
+      "height": 4
+    },
+    "modern-sf/tower_small_a": {
+      "x": 9,
+      "y": 50,
+      "width": 1,
+      "height": 2
+    },
+    "modern-sf/tower_small_b": {
+      "x": 10,
+      "y": 50,
+      "width": 1,
+      "height": 2
+    },
+    "modern-sf/village_a": {
+      "x": 11,
+      "y": 50,
+      "width": 2,
+      "height": 2
+    },
+    "modern-sf/village_b": {
+      "x": 13,
+      "y": 50,
+      "width": 2,
+      "height": 2
+    },
+    "modern-sf/volcano": {
+      "x": 15,
+      "y": 50,
+      "width": 2,
+      "height": 2
+    }
+  },
+  "selections": {
+    "141": "fd72f321a03940e65be6490e6c18383057192060fb1354cd07ab5daff3b53ba7",
+    "140": "1d89a98ac91172d851970f255a18883d01342033c7634863efe83ab5d5299874",
+    "31": "5d861b4ad75fdc29a8c84dd117d2e3f638ed9222d3eea6232bd4a1640916fa98",
+    "32": "49b85859b8f406b356957786e32726164d400a4789dd3155eebf625bf6baae48",
+    "124": "032ea41416c0efae61e9d09210d0a44a134e9df004045e791bd5f6a4c7325182",
+    "135": "fdd66c6ada0643422c045866f4478cd30b3796329447b03a247b0796adcf6633",
+    "139": "38b63d42fb3899488e0bb7bfa5d52c1d00f84cc238b88d86315b0339153805d5",
+    "138": "c9234e25020b597d33067573c3e8cd14f74f63ca5c44a258d82f4fe4ad20b06b",
+    "137": "7192ea55ee28c0dbd44eeee9e90f293d954d0c18cec27588b59205ad012e08a9",
+    "142": "05465e67d8d9b5511418e33f6ae180b2285ac68d493b3e0064e0e0dc30a69dd3",
+    "125": "d8cd1ba0ff408b2cf63360d67c03936ea3139e40b87c59915fd048b581830678",
+    "126": "2ee8ba05d96ab691ea4ac48636841e5e42c353935d28b6a0fd10908aa13ff9fa",
+    "128": "f20b2a47484434e8cd9b49e7b7e3d010cac82f9b3847e6e6448a426ab333324f",
+    "129": "45a951977da433fb84cdf2359dd68835a39a28487bcf646c9971048364cdbafa",
+    "134": "d104b9bb8e0d15a59b70df11a49457b7f558ccd5e689f4d6e838e66e551316db",
+    "130": "8f3f91e29b7dcafb01328a84ee6388bf883b0e220c853ffd5b1680cbb43d203a",
+    "136": "1b3f969f0fd8973322716f6828e3f33a3b439e787b0748f8812d048d536c3d0b",
+    "131": "a478c5287c0206876e9d5d6f975f3adfef3cc339bb732fb76dd0265600d4321a",
+    "143": "9eb264ea4a346760536f06c9d78ca163a5571b9352de6ac068883dd5f23d7d01",
+    "132": "6a321afe5a9ad1ec0feee00f751f8a544ccf01dc8ff82ef7212302017edacd9d",
+    "104": "aef0c6152f229b5688abfe1cf28d2f82556bc76dc050b2b2000090a32dd86b04",
+    "80": "5154deb6b0d4c876968c467d4c1eb7ff606fb526b8162f7408bc56bef4b0b26e",
+    "4": "57233b0314137b352cca169958af2c3bcdf21024bece883f5b1cedbb75867fc6",
+    "3": "f144946d5540426542583e759e4d9e596a71405e55c246196b89252ca8d96660",
+    "5": "fb115976ffce24ab4d00e1669550c13d4984e3004f8073afcbb496d95341aaab",
+    "77": "fc69ccdefe212f6177cdb9a013cd9ea04626e788ed41be1e69031d64d62ff632",
+    "1": "97e419901f373be76493ea505b176a526c0073ff86264bff483ea1410a71855a",
+    "7": "b80df34dfb46ef9e50a420e9c2b83e488d0bb755ef6501e15662d6463c481823",
+    "8": "286c7f629172f18474fd6b19ece377ca86706541d007931c68c9c42577ee25cb",
+    "14": "17588372f8b3f9cb80cfcd8caaddc7a263e3622c7656419fb4e8e2b60d5da433",
+    "15": "b52991aaf2cba60aff6fb1eaaf421e8a1773d0301c83503ada75fbf8826eae5e",
+    "18": "e5adb0093f6c8faafd3fb02dcd51fbd38089c0d02739dfa55e08651b6acdb666",
+    "75": "116ca5274f704cb342a173ec63a2e802bdde6bb37feb48792c14bc97a339826b",
+    "79": "6723e9fafb24b0ec19416da2a40c52548dc58e31ef9add1984fae54b926cb59e",
+    "9": "ac74f2998bbe983f9e7d82490b312d6cad6ac404b4e5a86d2d7138f7a8be7e4f",
+    "10": "01728729ed2e631e5b15d2a252490ebe077ef8fb424964db9b9037e16a37deb9",
+    "23": "c6664f9954056eb03488601d7ac64c0b7e48b15afb948f3e601b9ade0823f790",
+    "19": "e55f05e0cc0fb2524ef2805a8cdd63e846dab13ef2a8e74f7f6318bec6b353f3",
+    "11": "1c6f2ddfc6f346d0722bbab4aa4fea1ed337ae1318795047bf5b0238165871fe",
+    "20": "3b332cde23a72bda7246a654df4da708f2761789ab6ecf9ea581f988f010f0dd",
+    "24": "0231023203a121864fba6b9b741c1d80b1d67e50fe4769edd7a1e3492e1d75c7",
+    "25": "9c7c95df58fb53becc4b973d751b1ba843f3b71dcc6a8a052431f9d5b4b3d151",
+    "2": "c37fbb21cdbc976e2cd10817af4a27c4186584f234b02694fe1793dca57ccbcd",
+    "76": "4f3c8623e1fd1a8ec133aa2a60198abdbc2fe071ab8b256e8ea1017d3d0d8dd2",
+    "17": "4686c2c2f722625c5c8cb24ad0d377f7f7cfbd98ef564a1b8d6643ace9d689db",
+    "6": "b67219af138cd9017e71470d2e163ec7f09f6a145485191e532ff6178d35098a",
+    "16": "0e97f002f7d8eebe7c1afe1cee666743c53cba38aae27f56638a848b39b13682",
+    "26": "01679b2a14d02282335cac700557402e9ce47f22e6836acb42a8a649e33bb731",
+    "78": "7fdc7092dc3db951c88c1bd93ac4fda402d6cea7a700950f03bb46fb01a7a082",
+    "103": "71ac75a3e8a1dcfdd8fc6e52c6fdd3dfa59e48ae50b4ea9740b220ee1596aebd",
+    "12": "6d63ce05c218f2d7e6287bdfd602c4559560188e241bc603c85de5e39b90eff5",
+    "13": "3389ba46a5524ab0e9d30e82f5f93651b7f85229c38c19f7c4e2bfb00d7c45cb",
+    "27": "a123b43629d1ef5ed5ef85eb294e3a9879568c9dadd3106423ed81e107955fd1",
+    "28": "29c1d4de885cfa816343da526d5622df0f3f6c23799b4638ec088fc357e56bf5",
+    "29": "5796fede768ba92fed925e1e06e3e4b63bb7387bf9c4289f6151503072f9e594",
+    "30": "5593b3b1ff10810f347b68a9c625647caede1a758d96afadc021c9dfa9707086",
+    "21": "f81bb113f24bd5a79b2a1297d5e4f82cfb3ed2d39bbeba38c262b02958f903b4",
+    "144": "2034d03681c2a77bf4278df2e404455b42a22b4ae1a173c556f13a8cda84e2f3",
+    "145": "7fa026f2f0d6ee1db74870b1d37d7aee7fda77d58878431148bdf49df9893d7d",
+    "146": "0f1995534ada37c55673866b399578ce15af7029c0d45fb09b8cebda6f36587b",
+    "147": "f1b23b06c0c49d5f64288a74afaec6ad0012d233639f1b89247c656bddd6dd0e",
+    "148": "39e1729241b422a0b94bd5a4d9e32f207f0d4fed85589a5099360a7bd87c236d",
+    "149": "c5c9139b67d75163391417b43069512ec1698a4ab8b90bb2a86ffe95b875408b",
+    "150": "4b9052e170def3754ce8f85871da63aa467668f9251c52237fe7b06a66bc8890",
+    "151": "349475c3618aa420855ae5ac4a2dbcbf6237766ac91e72e57bc2c1c5a7be5a99",
+    "152": "08e64e64309c770a7bb56c9eb8e41906f54a5be550ac5fee6eefcf59e9c190b7",
+    "153": "180c70a172c9a1998149117d3e8126c74269f4fde93d77367074d5606aa34cce",
+    "154": "7e2037aa3c86763be95bf9537f1ffa03a818f1f9afb6eca2b266183bc133ad65",
+    "155": "e215498976adf087a8b370473779c071b056688f55c02a06c70427c4e68bc099",
+    "156": "9c093c493a68db76b56fa778086c31b12e6171d2c829bd7d157d2cd9ab982b13",
+    "157": "4922d6213b116816766360857234611bec343f20923ed6eadff87b18eb523a86",
+    "158": "4208c0d8b8dd032a08bf6eea78f84f6dc3182552e4184b167c3e7dbb835a679d",
+    "159": "d5c965f192fd4859a8eb530375f9e664c45b86bf7b25a9e37d8133c334cae355",
+    "160": "3924d18ed8867a88147be0f72faeb4659d92260fded8719027ad3b3fc9f0232b",
+    "161": "e467f6f3a985d33e6c695a286e3060406a47a96e5a9948b991605812a02e53fc",
+    "162": "60222cf32fbf953b4e9fd28d420232c016b160dabbd35db2cc3f2e29cb617990",
+    "163": "5675907fad4c820931e8c45d95f10abceb07f80e99d3497fbf9a8f1afe99a192",
+    "164": "d1be82b8a74fb593623bb46f9376a46a0552cf380ddc150b7f6ab205a1f3d321",
+    "166": "c9a59da5061594f3a3db3604c0fa24c2cfff89594e883438f181750dff385c89"
+  },
+  "cursor": [
+    17,
+    50,
+    4
+  ]
+}

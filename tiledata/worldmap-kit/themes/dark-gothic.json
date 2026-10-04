@@ -1,0 +1,9 @@
+{
+ "schema": "worldmap-theme/1",
+ "id": "dark-gothic",
+ "name": "다크 판타지·고딕",
+ "iconset": "dark-gothic",
+ "palette": "gothic",
+ "overlays": [],
+ "kind": "land"
+}

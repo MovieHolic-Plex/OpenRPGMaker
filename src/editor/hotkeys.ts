@@ -167,10 +167,17 @@ export function historyHotkeyOwnedByPanel(): boolean {
  * 히스토리 키(Ctrl+Z/Y)는 스택이 비어 있어도 브라우저 기본 동작을 막는다.
  * @returns 프로젝트 상태가 실제로 복원/재적용되었으면 true(=재렌더 필요).
  */
+// A scene can briefly retain several keyboard listeners during remount. The
+// browser event is one user action even when Phaser delivers it more than once.
+const handledHistoryEvents = new WeakSet<KeyboardEvent>();
+
 export function handleHistoryHotkey(event: KeyboardEvent): boolean {
   if (!(event.ctrlKey || event.metaKey) || event.altKey) return false;
   if (isTextEditingFocus(event)) return false;
   const key = event.key.toLowerCase();
+  if (key !== "z" && key !== "y") return false;
+  if (handledHistoryEvents.has(event)) return false;
+  handledHistoryEvents.add(event);
   if (key === "z") {
     event.preventDefault();
     return event.shiftKey ? runRedoWithFeedback() : runUndoWithFeedback();

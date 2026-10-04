@@ -1,0 +1,17 @@
+{
+ "menu": [
+  "actor-command-attack:공격",
+  "actor-command-cmd_pray:기도",
+  "actor-command-skill:스킬",
+  "actor-command-escape:도주"
+ ],
+ "text": "슬라임 1\n동굴 박쥐\n슬라임 2\n주인공\n 514\n/514\nMP\n 43\n수호자\n 514\n/514\nMP\n 43\n마도사\n 514\n/514\nMP\n 43\n정찰병\n 514\n/514\nMP\n 43",
+ "text2": "주인공은 무엇을 할까?\n공격\n스킬\n방어\n아이템\n도주\n주인공\n 514\n/514\nMP\n 43\n수호자\n 514\n/514\nMP\n 43\n마도사\n 514\n/514\nMP\n 43\n정찰병\n 514\n/514\nMP\n 43\nF 자동 꺼짐 · Shift 1×",
+ "menu2": [
+  "actor-command-attack:공격",
+  "actor-command-skill:스킬",
+  "actor-command-defend:방어",
+  "actor-command-item:아이템없음",
+  "actor-command-escape:도주"
+ ]
+}

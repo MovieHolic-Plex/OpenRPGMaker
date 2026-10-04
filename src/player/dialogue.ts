@@ -6,6 +6,7 @@ import { playerTextDelay } from '@/player/playerPreferences';
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { dialogueFaceForEmotion, findSharedPortrait } from "@/assets/sharedPortraitAssets";
 import { FACE_IMAGE_SIZE } from "@/assets/resourceSlicing";
+import { facePresentationForResource } from "@/project/facePresentation";
 import { DEFAULT_MESSAGE_WINDOW_SETTINGS } from "@/project/session";
 import { store } from "@/project/store";
 import type { ChoiceCancelBehavior, FaceGraphic, MessageWindowPosition, MessageWindowSettings, Project } from "@/project/types";
@@ -59,6 +60,8 @@ type DialogueSurfaceSettings = {
   readonly settings?: MessageWindowSettings;
   readonly playerTileY: number;
   readonly mapHeight: number;
+  /** 화면 속 주인공의 세로 위치(0=맨 위, 1=맨 아래). 있으면 타일 위치 대신 이것으로 가림을 판정한다 — 카메라가 맵 가장자리에 걸리면 둘이 다르다. */
+  readonly playerScreenY?: number;
   readonly textContext?: DialogueTextContext;
   /**
    * 대화창 스타일·대사 종류·화자 목소리(project/dialogueStyles.ts resolveDialogueLook).
@@ -996,6 +999,13 @@ export function createDialogueUI(
         });
         const selected = buttons[selectedIndex];
         if (selected?.isConnected && document.activeElement !== selected) selected.focus({ preventScroll: true });
+        if (selected?.isConnected && overlay.dataset.dialogueStyle === 'pixel-cinematic') {
+          // Scroll only the compact choice list, never the page/game stage.
+          const item = selected.getBoundingClientRect(), list = choicesEl.getBoundingClientRect();
+          const scale = choicesEl.clientHeight > 0 ? list.height / choicesEl.clientHeight : 1;
+          if (scale > 0 && item.bottom > list.bottom) choicesEl.scrollTop += (item.bottom - list.bottom) / scale;
+          else if (scale > 0 && item.top < list.top) choicesEl.scrollTop -= (list.top - item.top) / scale;
+        }
       };
       onKey = (e: KeyboardEvent) => {
         if (settled || e.isComposing) return;
@@ -1549,6 +1559,7 @@ function applyOverlayPosition(overlay: HTMLElement, request: DialogueSurfaceSett
     settings,
     playerTileY: request.playerTileY,
     mapHeight: request.mapHeight,
+    ...(request.playerScreenY === undefined ? {} : { playerScreenY: request.playerScreenY }),
   });
   overlay.classList.add(`position-${position}`);
   return position;
@@ -1614,9 +1625,13 @@ function effectivePosition(model: {
   readonly settings: MessageWindowSettings;
   readonly playerTileY: number;
   readonly mapHeight: number;
+  readonly playerScreenY?: number;
 }): MessageWindowPosition {
   if (!model.settings.preventObscuringPlayer) return model.settings.position;
   const maxY = Math.max(1, model.mapHeight - 1);
+  // 화면 속 높이를 알면(카메라를 거친 값) 가운데 구간 없이 주인공에서 먼 쪽으로 보낸다 — 대사 상자는 화면 약 40%를 덮으므로
+  // 가운데(35~65%)에 선 주인공이 그대로 가려지던 문제(2026-10-02 컷신 시험)를 막는다.
+  if (model.playerScreenY !== undefined) return model.playerScreenY <= 0.5 ? "bottom" : "top";
   const normalizedY = model.playerTileY / maxY;
   if (normalizedY <= 0.35) return "bottom";
   if (normalizedY >= 0.65) return "top";
@@ -1636,20 +1651,7 @@ function cancelChoiceIndex(
 
 function dialoguePortraitMode(face: FaceGraphic | undefined): "face" | "bust" | "full" {
   if (!face?.resourceId) return "face";
-  if (face.presentation) return face.presentation;
-  const id = face.resourceId.trim().toLowerCase();
-  if (id.includes("-full") || id.includes("fullbody") || id.includes("-body") || id.endsWith("/full")) {
-    return "full";
-  }
-  if (
-    id.includes("-bust")
-    || id.includes("-portrait")
-    || id.startsWith("generated-face-")
-    || id.endsWith("/bust")
-  ) {
-    return "bust";
-  }
-  return "face";
+  return face.presentation ?? facePresentationForResource(face.resourceId);
 }
 
 function renderFace(face: FaceGraphic): HTMLElement {

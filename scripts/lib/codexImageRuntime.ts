@@ -40,8 +40,9 @@ async function resolveSession(apiKey: string | undefined, config: ReturnType<typ
 /** Codex 이미지 생성. 참조 그림은 최대 2장(parseImageReferences 경계), 크기는 god-tibo-imagen 이 받는 값만. */
 export async function generateCodexImage(
   body: Record<string, unknown>,
-  options?: { apiKey?: string; fetch?: typeof fetch },
+  options?: { apiKey?: string; fetch?: typeof fetch; signal?: AbortSignal },
 ): Promise<GeneratedImage> {
+  options?.signal?.throwIfAborted();
   const prompt = typeof body.prompt === "string" ? body.prompt.trim() : "";
   if (!prompt) throw statusError("prompt 가 필요합니다.", 400);
   if (body.model !== undefined && body.model !== CODEX_IMAGE_MODEL) {
@@ -78,17 +79,19 @@ export async function generateCodexImage(
       method: "POST",
       headers: request.headers,
       body: JSON.stringify(request.body),
-      signal: deadline,
+      signal: options?.signal ? AbortSignal.any([deadline, options.signal]) : deadline,
       redirect: "manual",
     });
     text = await response.text();
   } catch (error) {
+    options?.signal?.throwIfAborted();
     if (deadline.aborted || (error instanceof Error && error.name === "TimeoutError")) {
       throw statusError(`Codex 이미지 생성이 ${IMAGE_TIMEOUT_MS / 1000}초 안에 끝나지 않았습니다.`, 504);
     }
     // Transport/provider text may contain credentials; do not echo it into the browser.
     throw statusError("Codex 이미지 생성 서버에 연결하거나 응답을 읽지 못했습니다.", 502);
   }
+  options?.signal?.throwIfAborted();
   if (response.status === 401) throw statusError(AUTH_MESSAGE, 401);
   if (!response.ok) {
     throw statusError("Codex 이미지 생성 실패 (HTTP " + response.status + ").", response.status >= 400 ? response.status : 502);

@@ -1,0 +1,227 @@
+/* 「높이」 막대 · 지형지물 팝업 — src/editor/panels/reliefToolbar.ts.
+   캔버스 영역(.canvas-area) 안 가운데 아래에 뜬다. 클래스는 전부 relief- 접두라 다른 시트와 겹치지 않는다. */
+@layer map {
+
+.relief-toolbar-host {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 30;
+}
+.relief-toolbar-host[hidden] { display: none; }
+.relief-toolbar-host [hidden] { display: none; }
+.relief-pop-options { display: flex; align-items: center; gap: 6px; padding: 8px 10px; }
+
+/* 안내 한 줄 + 막대를 아래 가운데에 쌓는다. 오른쪽 아래 조수 ✦ 단추(약 56px)를 피해 양옆 72px 를 비우고,
+   캔버스가 좁으면 막대가 두 줄로 접힌다. */
+.relief-bar-dock {
+  position: absolute;
+  left: 12px;
+  right: 64px;
+  bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  pointer-events: none;
+}
+
+/* The persistent host badge occupies the bottom left of the canvas. */
+body:has(.oprn-team-session-bar) .relief-bar-dock {
+  bottom: 64px;
+}
+
+.relief-bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  max-width: 100%;
+  padding: 6px 8px;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  border-radius: 14px;
+  box-shadow: var(--shadow-pop);
+  pointer-events: auto;
+  white-space: nowrap;
+  font-size: 12px;
+  color: var(--text-1);
+}
+
+.relief-bar-group { display: flex; flex-wrap: wrap; justify-content: center; max-width: 100%; align-items: center; gap: 2px; }
+.relief-bar-sep { width: 1px; height: 26px; background: var(--border-default, #dfe2ea); margin: 0 4px; flex-shrink: 0; }
+
+.relief-bar-icon {
+  position: relative;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--text-2);
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+}
+.relief-bar-icon svg { width: 22px; height: 22px; }
+.relief-bar-icon:hover { background: var(--bg-hover); }
+.relief-bar-icon.is-active { background: var(--accent); color: var(--on-accent); }
+.relief-bar-icon:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.relief-bar-icon:disabled { opacity: .4; cursor: not-allowed; }
+.relief-bar-help { color: var(--accent); }
+.relief-bar-context { border-radius: 10px; gap: 6px 8px; padding: 4px 8px; max-width: min(440px, 100%); }
+.relief-bar-context > .relief-bar-group:first-child { flex-basis: 100%; }
+
+.relief-bar-size {
+  min-width: 30px;
+  padding: 4px 7px;
+  border: 1px solid var(--border-default, #dfe2ea);
+  border-radius: 7px;
+  background: var(--bg-raised);
+  font: inherit;
+  cursor: pointer;
+}
+.relief-bar-size.is-active { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+
+.relief-bar-level { display: flex; align-items: center; gap: 3px; flex-shrink: 0; color: var(--text-2, #667085); }
+.relief-bar-level button {
+  width: 22px;
+  height: 24px;
+  border: 1px solid var(--border-default, #dfe2ea);
+  border-radius: 6px;
+  background: var(--bg-raised);
+  cursor: pointer;
+  padding: 0;
+}
+.relief-bar-level-value { min-width: 30px; text-align: center; color: var(--text-1, #0f172a); }
+
+.relief-bar-toggle {
+  flex-shrink: 0;
+  padding: 5px 9px;
+  border: 1px solid var(--border-default, #dfe2ea);
+  border-radius: 8px;
+  background: var(--bg-raised);
+  font: inherit;
+  cursor: pointer;
+}
+.relief-bar-toggle.is-active { border-color: var(--success); background: var(--success-muted); color: var(--success); }
+.relief-bar-toggle:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.relief-bar-style {
+  flex-shrink: 0;
+  margin-left: 4px;
+  padding: 4px 6px;
+  border: 1px solid var(--border-default, #dfe2ea);
+  border-radius: 8px;
+  background: var(--bg-raised);
+  font: inherit;
+  max-width: 96px;
+}
+.relief-bar-style:disabled { opacity: 0.45; }
+
+.relief-bar-doodad {
+  flex-shrink: 0;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--accent);
+  color: var(--on-accent);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.relief-bar-doodad.is-active { background: var(--accent-active); }
+
+.relief-bar-hint {
+  max-width: 100%;
+  padding: 3px 10px;
+  border-radius: 8px;
+  background: var(--bg-raised);
+  color: var(--text-2);
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
+}
+.relief-bar-hint:empty { display: none; }
+.relief-bar-hint.is-ok { color: var(--success); }
+.relief-bar-hint.is-bad { color: var(--danger); }
+
+.relief-pop {
+  position: absolute;
+  right: 16px;
+  top: 116px;
+  width: min(340px, calc(100% - 32px));
+  max-height: calc(100% - 240px);
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default, #cfd4df);
+  border-radius: 12px;
+  box-shadow: var(--shadow-modal);
+  pointer-events: auto;
+  user-select: none;
+  font-size: 12px;
+  color: var(--text-1, #0f172a);
+}
+.relief-pop[hidden] { display: none; }
+.relief-pop-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--border-default, #dfe2ea);
+  cursor: move;
+}
+.relief-pop-head span { color: var(--text-2, #667085); }
+.relief-pop-head button { margin-left: auto; border: 0; background: none; font-size: 15px; cursor: pointer; color: var(--text-2, #667085); }
+.relief-pop-tabs { display: flex; gap: 2px; padding: 8px 10px 0; }
+.relief-pop-tab {
+  flex: 1;
+  padding: 6px 0;
+  border: 0;
+  border-radius: 7px 7px 0 0;
+  background: var(--bg-inset);
+  color: var(--text-2, #667085);
+  font: inherit;
+  cursor: pointer;
+}
+.relief-pop-tab.is-active { background: var(--bg-raised); color: var(--text-1); font-weight: 600; box-shadow: inset 0 2px 0 var(--accent); }
+.relief-pop-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  padding: 10px;
+  overflow-y: auto;
+}
+.relief-pop-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 6px 4px 5px;
+  border: 1px solid var(--border-default, #dfe2ea);
+  border-radius: 9px;
+  background: var(--bg-raised);
+  font: inherit;
+  cursor: pointer;
+  min-width: 0;
+}
+.relief-pop-item span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.relief-pop-item:hover { border-color: var(--accent-border); }
+.relief-pop-item.is-active { border-color: var(--accent); box-shadow: var(--focus-ring); }
+.relief-pop-thumb {
+  width: 64px;
+  height: 52px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  border-radius: 5px;
+  background: var(--bg-inset);
+}
+.relief-pop-empty { grid-column: 1 / -1; margin: 6px 0; color: var(--text-2, #667085); }
+.relief-pop-foot { padding: 8px 12px; border-top: 1px solid var(--border-default, #dfe2ea); color: var(--text-2, #667085); font-size: 11.5px; }
+}

@@ -1,0 +1,44 @@
+{
+ "id": "20261002-1142-sonnet-batch/m-merchant__sonnet-r1",
+ "brief": "m-merchant",
+ "name": "떠돌이 상인 아저씨",
+ "base": "Actor1:4",
+ "base_label": "Actor1 5번",
+ "strength": "normal",
+ "files": {
+  "chr": "m-merchant__sonnet-r1__20261002-1142-sonnet-batch.chr.txt",
+  "sheet": "m-merchant__sonnet-r1__20261002-1142-sonnet-batch.png"
+ },
+ "description": {
+  "label": "큰 짐 보따리 진 초록 외투 상인",
+  "gender": "남",
+  "attributes": {
+   "kind": "사람",
+   "age": "중년",
+   "hair": "갈색 모자 (턱수염 갈색)"
+  },
+  "role": "떠돌이 상인 (행상)",
+  "appearance": "챙 넓은 갈색 여행 모자에 노란 띠를 두르고 갈색 턱수염을 기른 남자로, 노란 단추가 달린 초록 외투를 입었다. 등에 몸통만 한 베이지색 짐 보따리를 붉은 끈으로 묶어 졌고, 뒷모습에서는 보따리가 등 전체를 덮고 옆모습에서는 등 뒤로 크게 튀어나온다.",
+  "colors": [
+   "갈색 챙 넓은 모자",
+   "노란 모자 띠",
+   "초록 외투",
+   "노란 단추",
+   "베이지 짐 보따리와 붉은 끈",
+   "갈색 턱수염"
+  ],
+  "tags": [
+   "상인",
+   "행상",
+   "떠돌이",
+   "여행자",
+   "짐꾼",
+   "중세",
+   "시장",
+   "길손"
+  ],
+  "fits": "마을 장터·여관 앞·길가나 마을 입구에서 물건을 팔거나 소식을 전하는 떠돌이 상인으로 두기 좋다.",
+  "by": "Claude Sonnet 5.5 · medium",
+  "at": "2026-10-02T22:40:08+00:00"
+ }
+}

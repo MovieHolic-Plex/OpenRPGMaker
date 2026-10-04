@@ -14,6 +14,8 @@ import { CODEX_PROVIDER_ID } from "../src/ai/oauth/credentials.ts";
 import { runPiAgent } from "./lib/piAgentRuntime.ts";
 import { runPiTeam } from "./lib/piTeamRuntime.ts";
 import { createPiAgentNdjsonStream } from "./lib/piAgentStream.ts";
+import { preparePiWorkerSharedContent } from "./lib/piWorkerSharedContent.ts";
+import { preparePiWorkerAudio } from './lib/piWorkerAudio.ts';
 import type { PiAgentRequest } from "../src/ai/piAgent/protocol.ts";
 import { applyLegacyEnvAliases } from "./lib/oprnEnv.mjs";
 
@@ -70,6 +72,10 @@ const server = Bun.serve({
           return json({ error: "request.task 와 request.project 가 필요합니다" }, 400);
         }
         const apiKey = typeof body.apiKey === "string" ? body.apiKey : undefined;
+        // Cold catalog parsing is preparation, before the live stream begins.
+        // Team members reuse this revision rather than blocking its heartbeat.
+        await preparePiWorkerSharedContent();
+        await preparePiWorkerAudio();
         const stream = createPiAgentNdjsonStream((onEvent) => (agentRequest.mode === "team" ? runPiTeam : runPiAgent)(agentRequest, {
           apiKey,
           providerApiKeys: body.providerApiKeys,

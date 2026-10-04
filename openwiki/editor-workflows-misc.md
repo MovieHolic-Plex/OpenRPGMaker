@@ -8,6 +8,20 @@ Map/event search, audio test, help modal, themed dungeons, resource manager, vil
 
 ## Other Editor Workflows
 
+### 첫 사용자 시작과 저장 안내 (2026-10-03)
+
+- 첫 방문은 `editorWelcome.ts`의 전체 창 장면에서 시작한다. `src/start/firstWorldArrival.ts`를 데스크톱 시작 화면과 공유한다. 장르 선택은 로컬 참고 장면을 전환하고 첫 문장 입력창만 연다. 선택만으로 연결·인터뷰·저장·AI 호출을 하지 않는다.
+- 전체 화면은 배경이 viewport에 고정되고 소유자(`editor-welcome-first-world` / launcher `is-first-world`)가 격리된 스택을 제공하는 구조다. 폭 제한은 내용에만 적용한다. 편집기의 1060px 창·흰 여백·별도 scrim은 제거했고, 브랜드/장르/어두운 입력창/보조 경로를 같은 장면에 배치한다. 낮은 데스크톱 창에서는 간격을 줄이고 좁은 화면은 세로 스크롤을 허용한다. `verify-shots/first-world-fullscreen/`은 화면 크기별 실제 viewport 캡처다.
+- ‘이 이야기로 시작’을 누르면 AI 연결 관문 → 기획 인터뷰로 이어지고, 원문은 인터뷰의 `initialAnswer`로 전달된다. 연결을 미루거나 인터뷰를 취소하면 선택과 문장을 유지한다. 연결 관문이 없는 호출에서 `canGenerate()`가 false면 연결 안내와 설정 버튼을 표시한다. 장르를 고르지 않은 자유 입력도 제출 시 연결을 확인하고 기존 조수 경로로 넘긴다.
+- 장면은 기존 `public/assets/project-interview/` 그림·영상이다. 움직임 끄기는 로비와 같은 설정을 쓰며 OS 모션 감소·문서 가림을 반영한다. 페이지 종료 때 영상과 리스너를 정리한다. 참고 그림의 등장인물은 저자의 주인공 설정이 아니다.
+- 각 장르 포스터 아래 `AI 없이 직접 만들기`는 작은 ⚙를 대체한다. 확인 창에서 빈 맵과 장르 기본 설정을 저장함을 설명하고, 실제 `store.flush()` 성공 후에만 환영 창을 닫는다. `mode.ts`의 성공 안내는 그리기 → 테스트 순서를 제시한다.
+- 환영 창은 `modalStack`에 등록하고 Tab 순환을 제공한다. 중첩 인터뷰/확인은 자신의 Escape만 처리한다. 저장 적용 중 Escape는 환영 창을 닫지 않는다.
+- `welcomeGenreSystemPresetAction.ts`는 새 시드를 채택하기 전 `prepareProjectMedia`로 inline 소재를 한 파일씩 저장하고 ref로 바꾼다. 공용 소재를 포함한 시드를 곧장 복제/직렬화하면 153MB JSON 저장 직전 renderer V8 OOM을 재현했다. 준비 실패/대상 폴더·projectId 변경이면 채택하지 않으며 기존 열린 문서는 유지된다. 채택 직전에도 대상과 원래 열린 문서 객체·버전을 다시 확인해 준비 중 로컬 편집/동료 갱신을 덮어쓰지 않는다. 준비 중 안내를 표시한다. 계약 회귀는 `test/persistence/prepareProjectMedia.test.ts`.
+- 저장 칩은 `프로젝트 저장`/`저장 위치 없음`/`임시 작업 · 저장 안 됨`을 구분한다. 임시 세션은 파일 내보내기를 안내한다. 도움말과 README도 같은 용어를 쓴다.
+- 프로젝트 메뉴의 `백업에서 복구...`는 목록 선택 → 검증한 새 사본 생성 → 현재 작업 저장 → 새 사본 열기다. 진행 안내를 표시하고 복구/저장 동안 열린 대상이 바뀌면 새 대상은 유지한다. 현재 저장 실패 시 사본은 남기고 현재 화면을 유지하며 내보내기/열기를 안내한다. 선택 취소는 쓰기를 하지 않는다.
+- 복구 UI: `src/editor/ui/backupRestoreDialog.ts`; 저장소 계약은 `team-project-host.md`의 백업과 이전 절. 회귀 사례는 `test/editorWelcome.test.ts`, `test/localStore/recovery.test.ts`에 추가했다. 테스트 실행은 감독자/사용자 지시를 따른다.
+- 첫 문장 화면 증거: `verify-shots/first-world-arrival/`와 `scripts/capture-first-world-arrival.mjs`. 실제 컴포넌트의 연결/인터뷰 취소, 원문 인계, 장르 변경, 직접 만들기 확인과 저장 대기, 320px·모션 감소, en/ja/zh를 확인했다. 저장·연결 콜백을 격리한 브라우저 확인이므로 실제 AI 생성이나 SQLite 저장 증거는 아니다.
+
 ### New-project name and player title (2026-09-07)
 
 `store.loadNewRemoteProject` and `store.loadNewRemoteProjectTransactionally`

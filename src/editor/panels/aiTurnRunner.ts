@@ -39,8 +39,8 @@ import {
 import { getPendingRegionApply } from "@/editor/regionTask/pendingRegionApply";
 import { regionPreviewProject } from "@/editor/regionTask/regionPreviewSelection";
 import { appliedBlueprintRegions } from "@/editor/agentBlueprintRegions";
-import { focusEditorRegion, type EditorFocusRegion } from "@/editor/editorReferenceNavigation";
-import { shouldClearAiHighlightSelection } from "@/editor/transientEditorChrome";
+import { createAssistantViewNavigation } from "@/editor/assistantViewNavigation";
+import { followConversationLog } from "./aiConversationScroll";
 import {
   clearAgentGhostPreview,
   replaceAgentGhostPreviewFromProjectDiff,
@@ -156,7 +156,7 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
     });
     continueRow.append(continueBtn);
     deps.surface.log.append(continueRow);
-    deps.surface.log.scrollTop = deps.surface.log.scrollHeight;
+    followConversationLog(deps.surface.log);
   };
   const executeTurn = async (
     session: AssistantSession,
@@ -201,6 +201,7 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
       });
     }
     const abortController = new AbortController();
+    const navigateView = createAssistantViewNavigation(() => session.allowsViewNavigation(), { signal: abortController.signal });
     const operation = new RunOperation(abortController.signal);
     let sessionOperation: RunOperation | undefined;
     let lastOwnedAudit = [...session.getAuditEntries()];
@@ -239,7 +240,6 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
     });
     // 고스트 렌더러가 승인 전 초안 맵을 에디터 컴포지터 경로로 합성해 찍도록 공급한다.
     setAgentGhostDraftMapProvider((mapId) => session.getProposedProject().maps[mapId]);
-    let highlightedRegionThisTurn = false;
     let turnFailed = false; // 접힘 레일 알림 점의 색(완료=초록/오류=빨강) 결정용.
     // 검토 대기로 초안을 넘긴 턴인가. 이 턴은 런을 retire 하지 않는다 — 승인이 런 시그널에
     // 묶여 있어 retire 하면 표면의 「적용」이 영원히 반려된다(실측 2026-09-16: signalAborted=true).
@@ -315,7 +315,7 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
           trackCurrentStreamNode(reasoningBox.box);
         }
         reasoningBox.body.textContent = (reasoningBox.body.textContent ?? "") + event.delta;
-        deps.surface.log.scrollTop = deps.surface.log.scrollHeight;
+        followConversationLog(deps.surface.log);
         return;
       }
       if (event.type === "assistant_token") {
@@ -327,7 +327,7 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
           deps.surface.closeToolActivity(); // 응답이 시작되면 다음 툴은 새 그룹으로.
         }
         assistantBubble.textContent = (assistantBubble.textContent ?? "") + event.delta;
-        deps.surface.log.scrollTop = deps.surface.log.scrollHeight;
+        followConversationLog(deps.surface.log);
       } else if (event.type === "assistant_message") {
         if (!event.content.trim()) return;
         if (!assistantBubble) {
@@ -411,22 +411,15 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
             ],
           });
           deps.surface.log.append(details);
-          deps.surface.log.scrollTop = deps.surface.log.scrollHeight;
+          followConversationLog(deps.surface.log);
           deps.surface.setStatus(`밑그림 확정 — 에셋 ${spec.assets.length}개`);
         }
-        // 인터뷰 하이라이트: 강조 툴콜을 에디터 selection으로 반영해 맵 위에 사각형을 그린다.
-        // 맵 전환·카메라까지 함께 옮긴다 — 선택만 세우면 강조 대상이 **다른 맵**이거나 화면 밖일 때
-        // 사용자에게는 아무 일도 일어나지 않는다(툴은 성공했는데 "어디를 묻는지" 가 안 보였다).
         if (event.name === "highlight_map_region" && event.result.ok) {
-          const region = event.result.data as EditorFocusRegion;
-          highlightedRegionThisTurn = true;
-          // 선택 사각형까지 focusEditorRegion 이 세운다 — 여기서 먼저 세우면 맵을 건너뛸 때
-          // 크로스페이드 밖에서 **옛 맵** 위에 목적지 좌표의 상자가 잠깐 그려진다.
-          focusEditorRegion(region, { onlyIfOffscreen: true, selectRegion: true });
+          navigateView(event.name, event.result.data);
         }
         // 조수의 화면 이동 요청: 맵을 열고 카메라를 보내고 잠깐 강조한다(선택 상태는 건드리지 않는다).
         if (event.name === "focus_editor_view" && event.result.ok) {
-          focusEditorRegion(event.result.data as EditorFocusRegion, { highlight: true });
+          navigateView(event.name, event.result.data);
         }
         // 타일 이미지 표시 요청: 채팅 버블에 썸네일로 렌더.
         if (event.name === "show_tiles" && event.result.ok) {
@@ -522,9 +515,6 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
         replaceAgentGhostPreviewFromProjectDiff(pendingRegion.baseProject, regionPreviewProject(pendingRegion));
       } else {
         setAgentGhostDraftMapProvider(null);
-      }
-      if (shouldClearAiHighlightSelection(highlightedRegionThisTurn) && editorState.get().selection) {
-        editorState.set({ selection: null });
       }
     };
 
@@ -935,7 +925,7 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
     }
     if (!session.canRetryLastTurn()) {
       if (actions.length > 0) bubble.append(el("div", { class: "ai-retry-row", children: actions }));
-      deps.surface.log.scrollTop = deps.surface.log.scrollHeight;
+      followConversationLog(deps.surface.log);
       return;
     }
     const retry = el("button", {
@@ -961,7 +951,7 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
     actions.unshift(retry);
     bubble.append(el("div", { class: "ai-retry-row", children: actions }));
     // 오류·복구 버튼이 로그 하단 잘림으로 반쯤 가려지던 결함(적대 평가 P1) — 끝까지 스크롤.
-    deps.surface.log.scrollTop = deps.surface.log.scrollHeight;
+    followConversationLog(deps.surface.log);
   };
 
   return { executeTurn, appendErrorWithRetry, abortTurn };

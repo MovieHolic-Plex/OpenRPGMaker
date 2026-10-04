@@ -24,10 +24,15 @@ export async function applyDatabaseChanges(status: HTMLElement): Promise<boolean
     const result = await store.flush();
     switch (result.kind) {
       case "saved":
-        writeStatus(status, "적용하고 온라인에 저장했습니다. 닫아도 안전합니다.", "ok");
-        toast("온라인에 저장했습니다.", "ok");
+        writeStatus(status, "변경 내용을 저장했습니다.", "ok");
+        toast("저장했습니다.", "ok");
         return true;
       case "saved-local":
+        if (result.written === false) {
+          writeStatus(status, "저장되지 않는 임시 세션입니다. 변경 내용을 기록하지 않았습니다.", "error");
+          toast("임시 세션의 변경 내용은 저장되지 않았습니다.", "error");
+          return false;
+        }
         writeStatus(status, "적용했습니다. 브라우저에 저장했습니다. 닫아도 안전합니다.", "ok");
         toast("브라우저에 저장했습니다.", "ok");
         return true;
@@ -40,12 +45,12 @@ export async function applyDatabaseChanges(status: HTMLElement): Promise<boolean
         toast("저장 충돌이 있습니다.", "error");
         return false;
       case "not-configured":
-        writeStatus(status, "온라인 저장 연결이 필요합니다. 상태바의 ‘온라인 저장’을 확인하세요.", "error");
-        toast("온라인 저장 연결이 필요합니다.", "error");
+        writeStatus(status, "프로젝트 저장소가 연결되지 않아 저장하지 않았습니다.", "error");
+        toast("프로젝트 저장소 연결이 필요합니다.", "error");
         return false;
       case "disabled":
-        writeStatus(status, "이 화면에서는 온라인 저장을 사용할 수 없습니다.", "error");
-        toast("온라인 저장을 사용할 수 없습니다.", "error");
+        writeStatus(status, "이 화면에서는 프로젝트 저장을 사용할 수 없습니다.", "error");
+        toast("이 화면에서는 저장할 수 없습니다.", "error");
         return false;
     }
   } catch (error) {

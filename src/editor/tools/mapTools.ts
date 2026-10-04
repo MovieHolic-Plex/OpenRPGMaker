@@ -1,3 +1,4 @@
+import { mapCharacterSizeFactor } from "@/project/characterScale";
 import { isRetiredInteriorTileset, retiredInteriorMessage } from "@/project/retiredInteriorTilesets";
 import { isMapLoop, mapLoopLabel, mapLoopsX, mapLoopsY, MAP_LOOP_VALUES } from "@/project/mapLoop";
 import { isMapRoleKind, MAP_ROLE_LABELS } from "@/project/mapRole";
@@ -42,6 +43,7 @@ import { extendedLowerTiles, groundFeaturePredicate } from "@/project/mapGroundF
 import { stampTownCityPlot, type TownCityPlotStyle } from "@/project/defaults/townHousePatterns";
 import { kitIdForSmallHouseMaterial, type SmallHouseMaterial } from "@/editor/content/dbExtractedHouseTemplate";
 import { recommendMapBgm } from "@/assets/bgmThemeRecommendation";
+import { isCatalogBgmAvailable } from '@/assets/audioResourceCatalog';
 import { genId } from "@/util/id";
 import { resolveWikiCombatMode } from "@/ai/projectWikiContext";
 import {
@@ -85,6 +87,7 @@ import {
   roadRepairWarnings,
   withWidthCells,
 } from "./roadObstacles";
+import { BATTLE_BACKDROP_ID_HINT } from "@/assets/battleSceneryCatalog";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 import { isSeason, isTimePhase, SEASONS, TIME_PHASES } from "@/project/gameTime";
 import { COORD_SCHEMA, RECT_SCHEMA } from "./schemaShapes";
@@ -151,6 +154,13 @@ function usedBgmResourceIds(draft: Project, excludeMapId: string): string[] {
    return mixed === 0 ? 1 : mixed;
  }
 
+function assertInstalledMapBgm(resourceId: string, mapId: string): void {
+  if (!isCatalogBgmAvailable(resourceId)) throw new ToolError(
+    `미설치 BGM '${resourceId}'는 지정할 수 없습니다. recommend_bgm으로 현재 사용 가능한 곡을 고르거나 bgm.mode를 none으로 설정하세요.`,
+    { code: 'resource-not-found', mapId },
+  );
+}
+
 export function assignCreatedMapBgm(
   map: GameMap,
   args: Record<string, unknown>,
@@ -169,12 +179,14 @@ export function assignCreatedMapBgm(
         throw new ToolError("bgm.mode가 custom이면 resourceId가 필요합니다.", { code: "invalid-args", mapId: map.id });
       }
       bgm.resourceId = resourceId;
+      assertInstalledMapBgm(resourceId, map.id);
     }
     map.bgm = bgm;
     return bgm.mode === "custom" ? (bgm.resourceId ?? bgm.mode) : bgm.mode;
   }
   const explicitId = typeof args.bgmResourceId === "string" ? args.bgmResourceId.trim() : "";
   if (explicitId) {
+    assertInstalledMapBgm(explicitId, map.id);
     map.bgm = { mode: "custom", resourceId: explicitId };
     return explicitId;
   }
@@ -1920,7 +1932,7 @@ function loopEdgeOpenings(project: Project, map: GameMap): number {
 // 맵 속성 설정. 크기 변경은 resize_map, 트리 위치는 manage_map_tree로 분리.
 const setMapProperties: ToolDefinition = {
   name: "set_map_properties",
-  description: "맵 편집기의 전체 속성을 설정한다: 이름·타일셋·인카운트·BGM·배경(먼 풍경 파노라마·parallax background — 회상·꿈·하늘 장면은 background.layerSet 한 칸 + showInEmptyCells + clearForBackground 로 하늘 자리 비우기, 층마다 깊이가 달라 시차 스크롤이 된다)·전투 배경·저장/이동/도주 제한·미니맵·구름 그림자·기후(실내 차단/고정/상속)·반복 맵(loop: 가장자리가 반대편으로 이어짐 — 끝없는 숲·꿈 세계·반복 복도는 가장자리 이동 이벤트 대신 이것).",
+  description: "맵 편집기의 전체 속성을 설정한다: 이름·타일셋·캐릭터 크기(characterScale — 월드맵에서 캐릭터를 작게)·인카운트·BGM·배경(먼 풍경 파노라마·parallax background — 회상·꿈·하늘 장면은 background.layerSet 한 칸 + showInEmptyCells + clearForBackground 로 하늘 자리 비우기, 층마다 깊이가 달라 시차 스크롤이 된다)·전투 배경·저장/이동/도주 제한·미니맵·구름 그림자·기후(실내 차단/고정/상속)·반복 맵(loop: 가장자리가 반대편으로 이어짐 — 끝없는 숲·꿈 세계·반복 복도는 가장자리 이동 이벤트 대신 이것).",
   mode: "write",
   parameters: {
     type: "object",
@@ -1935,7 +1947,7 @@ const setMapProperties: ToolDefinition = {
       background: backgroundSchema,
       clearBackground: { type: "boolean" },
       clearForBackground: clearForBackgroundSchema,
-      battleBackground: { type: "string" },
+      battleBackground: { type: "string", description: BATTLE_BACKDROP_ID_HINT },
       clearBattleBackground: { type: "boolean" },
       mapRole: {
         type: "string",
@@ -1953,6 +1965,7 @@ const setMapProperties: ToolDefinition = {
       clearCloudShadows: { type: "boolean" },
       climate: mapClimateSchema,
       clearClimate: { type: "boolean" },
+      characterScale: { type: "number", description: "이 맵에서 걷는 캐릭터(주인공·동료·탈것·캐릭터 이벤트) 크기 배율 0.25~1. 월드맵처럼 땅을 멀리서 보는 지도에서 0.5~0.75 로 줄인다. 1 이면 기본 크기로 되돌린다. 사용자가 원할 때만 — 기본은 줄이지 않는다." },
       loop: { type: "string", enum: ["none", ...MAP_LOOP_VALUES], description: "반복 맵. horizontal=좌우 끝이 이어짐, vertical=위아래, both=사방, none=끔. 플레이어가 가장자리를 넘으면 반대편 같은 줄에 선다(반대편 칸이 통행 가능해야 한다)." },
     },
     required: ["mapId"],
@@ -2008,6 +2021,7 @@ const setMapProperties: ToolDefinition = {
     } else if (args.bgm && typeof args.bgm === "object" && !Array.isArray(args.bgm)) {
       const bgm = structuredClone(args.bgm) as GameMap["bgm"];
       if (bgm?.mode === "custom" && !bgm.resourceId) throw new ToolError("bgm.mode가 custom이면 resourceId가 필요합니다.", { code: "invalid-args", mapId: map.id });
+      if (bgm?.mode === 'custom' && bgm.resourceId) assertInstalledMapBgm(bgm.resourceId, map.id);
       map.bgm = bgm;
       changed.push(`BGM=${bgm?.mode}`);
     }
@@ -2074,6 +2088,15 @@ const setMapProperties: ToolDefinition = {
       // 저장」하려고 모든 맵에 저장 금지를 걸었고, 일기장이 있는 방까지 막혀 저장할 곳이 사라졌다.
       if (map.disableSave && JSON.stringify(map.events).includes('"kind":"openSaveMenu"')) {
         saveWarnings.push(`${map.name} 에는 저장 메뉴를 여는 이벤트가 있는데 저장 금지를 켰습니다 — 그 이벤트(일기장·세이브 포인트)도 저장할 수 없게 됩니다. 메뉴 저장만 막으려면 이 맵은 저장 금지를 끄세요.`);
+      }
+    }
+    if (typeof args.characterScale === "number" && Number.isFinite(args.characterScale)) {
+      if (args.characterScale >= 1) {
+        delete map.characterScale;
+        changed.push("캐릭터 크기=기본");
+      } else {
+        map.characterScale = mapCharacterSizeFactor({ characterScale: args.characterScale });
+        changed.push(`캐릭터 크기=${Math.round(map.characterScale * 100)}%`);
       }
     }
     if (args.loop === "none") {

@@ -73,8 +73,9 @@ function report(name, ok, detail = "") {
   report("item-icon-field-exists", await page.getByTestId("db-field-item-icon-resource").count() > 0);
   await page.screenshot({ path: path.join(OUT, "items-rich.png") });
 
-  // ---------- 전투 애니메이션 탭 ----------
-  await page.getByTestId("db-tab-animations").click({ force: true });
+  // ---------- 전투 애니메이션 (도트 연출 탭의 하위 보기) ----------
+  await page.getByTestId("db-tab-retro-choreographies").click({ force: true });
+  await page.getByTestId("db-subview-animations").click({ force: true });
   await page.waitForTimeout(600);
   const play = page.getByTestId("db-animation-play");
   report("animation-play-button-exists", await play.count() > 0);

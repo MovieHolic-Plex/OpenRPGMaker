@@ -1,5 +1,5 @@
 import { createHash, randomUUID } from "node:crypto";
-import { copyFileSync, existsSync, mkdirSync, rmSync, readFileSync, unlinkSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, rmSync, unlinkSync } from "node:fs";
 import { join } from "node:path";
 import { decodeDataUrlBytes, dataUrlExtension, dataUrlMime } from "../../src/project/persistence/core/dataUrl";
 import { canonicalJsonString } from "../../src/project/persistence/core/canonicalJson";
@@ -12,6 +12,7 @@ import { applyStorePragmas, openNodeSqliteDriver, readDataVersion, type Driver, 
 import { LocalStoreError } from "./errors";
 import { ASSETS_DIR, BACKUPS_DIR, LOCAL_STORE_FORMAT_VERSION, META_KEYS, PROJECT_STORE_FILE, STORE_DDL, TILESET_BLOBS_DDL } from "./schema";
 import { blobOfText, createFoldHashCache, deepFreeze, foldDocument, foldedTilesetShas, foldSubmittedText, type FoldedDocument, type TilesetBlob } from "./tilesetFold";
+import { assetFileName, readVerifiedAsset, writeAssetFile } from "./assetFiles";
 
 export type LocalStoreSaveResult =
   | { readonly kind: "saved"; readonly sha256: string; readonly revision: number; readonly serialized?: string }
@@ -390,7 +391,7 @@ function writeAssetBytes(
   const assetsDir = join(projectDir, ASSETS_DIR);
   mkdirSync(assetsDir, { recursive: true });
   const filePath = join(assetsDir, `${sha256}.${input.extension}`);
-  if (!existsSync(filePath)) writeFileSync(filePath, bytes);
+  writeAssetFile(filePath, bytes, sha256);
   driver.prepare(
     `INSERT INTO assets (sha256, mime, bytes, extension, original_name, kind, created_at)
      VALUES (?, ?, ?, ?, ?, ?, ?)
@@ -660,9 +661,10 @@ function createStore(driver: Driver, options: OpenLocalProjectStoreOptions, proj
         driver.exec(`VACUUM INTO ${sqlLiteral(target)}`);
         const snapshot = openNodeSqliteDriver(target);
         try {
-          for (const row of snapshot.prepare('SELECT sha256,extension FROM assets').all([])) {
-            const name = `${String(row.sha256)}.${String(row.extension)}`;
-            copyFileSync(join(options.projectDir, ASSETS_DIR, name), join(backupDir, ASSETS_DIR, name));
+          for (const row of snapshot.prepare('SELECT sha256,extension,bytes FROM assets').all([])) {
+            const sha256 = String(row.sha256), extension = String(row.extension);
+            const bytes = readVerifiedAsset(join(options.projectDir, ASSETS_DIR), sha256, extension, Number(row.bytes));
+            writeAssetFile(join(backupDir, ASSETS_DIR, assetFileName(sha256, extension)), bytes, sha256);
           }
         } finally { snapshot.close(); }
       } catch (error) { rmSync(backupDir, { recursive: true, force: true }); throw error; }
@@ -796,10 +798,10 @@ function createStore(driver: Driver, options: OpenLocalProjectStoreOptions, proj
     putAsset(bytes: Uint8Array, input: LocalAssetInput): Promise<UploadedAssetRef> {
       return Promise.resolve(writeAssetBytes(options.projectDir, driver, bytes, input, clock()));
     },
-    assetBytes(sha256: string): Promise<Uint8Array> {
-      const row = driver.prepare("SELECT extension FROM assets WHERE sha256 = ?").get([sha256]);
-      if (!row) return Promise.reject(new LocalStoreError("asset", `asset ${sha256} is not registered`));
-      return Promise.resolve(new Uint8Array(readFileSync(join(options.projectDir, ASSETS_DIR, `${sha256}.${String(row.extension)}`))));
+    async assetBytes(sha256: string): Promise<Uint8Array> {
+      const row = driver.prepare("SELECT extension,bytes FROM assets WHERE sha256 = ?").get([sha256]);
+      if (!row) throw new LocalStoreError("asset", `asset ${sha256} is not registered`);
+      return readVerifiedAsset(join(options.projectDir, ASSETS_DIR), sha256, String(row.extension), Number(row.bytes));
     },
     listAssets(): readonly LocalAssetRow[] {
       return driver

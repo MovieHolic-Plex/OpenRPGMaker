@@ -1,0 +1,6 @@
+{"theme":"snow-north","preview":true,"ops":[
+ {"op":"biome","poly":[[27,9],[46,9],[47,19],[27,19]],"ground":"snow","note":"호수 둘레를 설원으로"},
+ {"op":"sea","poly":[[31,11],[41,11],[42,15],[31,16]],"note":"설원 한가운데 호수"},
+ {"op":"island","x":90,"y":66,"rx":4,"ry":3,"ground":"ash","note":"남동 화산섬"},
+ {"op":"move_place","id":"화산","x":89,"y":65}
+]}

@@ -1,0 +1,296 @@
+{
+  "label": "after",
+  "commit": "ca9bab5fbf253057489bad286b1f5ef813955db2",
+  "conditions": {
+    "viewport": "1440\u00d7900",
+    "map": "32\u00d724",
+    "zoom": 1,
+    "steps": 40,
+    "repetitions": 3,
+    "cpuThrottling": 1,
+    "screenshotRunSeparate": true,
+    "tracing": true,
+    "measurement": "browser capture pointermove to next rAF; includes Phaser/update/layout until callback, not pixel presentation"
+  },
+  "errors": [],
+  "final": {
+    "selection": {
+      "mapId": "map_page",
+      "x": 2,
+      "y": 2,
+      "width": 26,
+      "height": 17
+    },
+    "badge": "26\u00d717",
+    "scope": "\uc120\ud0dd (2,2) 26\u00d717"
+  },
+  "checks": [
+    {
+      "name": "live size and outline preview without publishing or opening action bar",
+      "passed": true,
+      "detail": {
+        "selection": null,
+        "badge": "4\u00d73",
+        "bar": false
+      }
+    },
+    {
+      "name": "release publishes preview and opens toolbar",
+      "passed": true
+    },
+    {
+      "name": "Escape cancels preview and later release keeps previous selection",
+      "passed": true
+    },
+    {
+      "name": "reverse drag normalizes bounds",
+      "passed": true,
+      "detail": {
+        "mapId": "map_page",
+        "x": 5,
+        "y": 6,
+        "width": 6,
+        "height": 5
+      }
+    },
+    {
+      "name": "map edge clips region",
+      "passed": true,
+      "detail": {
+        "mapId": "map_page",
+        "x": 2,
+        "y": 2,
+        "width": 30,
+        "height": 22
+      }
+    },
+    {
+      "name": "right click eyedropper leaves no preview",
+      "passed": true,
+      "detail": {
+        "tile": 16,
+        "selection": null,
+        "badge": false
+      }
+    },
+    {
+      "name": "left painting remains available",
+      "passed": true
+    }
+  ],
+  "runs": [
+    {
+      "wallMs": 1626,
+      "state": {
+        "selection": {
+          "mapId": "map_page",
+          "x": 2,
+          "y": 2,
+          "width": 26,
+          "height": 17
+        },
+        "badge": "26\u00d717",
+        "scope": "\uc120\ud0dd (2,2) 26\u00d717"
+      },
+      "sets": [
+        1.1999999284744263
+      ],
+      "moves": [
+        0.6000000238418579,
+        0.5,
+        1,
+        0.6000000238418579,
+        0.5999999046325684,
+        0.5,
+        0.3999999761581421,
+        0.5,
+        0.3999999761581421,
+        0.6000000238418579,
+        0.5,
+        0.5999999046325684,
+        0.6000000238418579,
+        0.5,
+        0.5,
+        0.6000000238418579,
+        0.6000000238418579,
+        0.40000009536743164,
+        0.5,
+        0.5,
+        1.100000023841858,
+        0.6000000238418579,
+        0.3999999761581421,
+        0.2999999523162842,
+        0.3999999761581421,
+        1.0999999046325684,
+        0.5,
+        0.5,
+        0.5,
+        0.3999999761581421,
+        0.40000009536743164,
+        0.3999999761581421,
+        0.40000009536743164,
+        0.6000000238418579,
+        0.6000000238418579,
+        0.5999999046325684,
+        0.30000007152557373,
+        0.5,
+        0.40000009536743164,
+        0.5
+      ],
+      "longTasks": [],
+      "mutations": 8,
+      "selectionChanges": 1
+    },
+    {
+      "wallMs": 2541,
+      "state": {
+        "selection": {
+          "mapId": "map_page",
+          "x": 2,
+          "y": 2,
+          "width": 26,
+          "height": 17
+        },
+        "badge": "26\u00d717",
+        "scope": "\uc120\ud0dd (2,2) 26\u00d717"
+      },
+      "sets": [
+        0.8000000715255737
+      ],
+      "moves": [
+        0.5,
+        0.3999999761581421,
+        0.6000000238418579,
+        0.2999999523162842,
+        0.3999999761581421,
+        0.40000009536743164,
+        0.5,
+        0.5,
+        0.3999999761581421,
+        0.30000007152557373,
+        0.40000009536743164,
+        3.5,
+        4.299999952316284,
+        3.5999999046325684,
+        4.600000023841858,
+        2.899999976158142,
+        5,
+        3.5,
+        3.399999976158142,
+        3.5,
+        3.600000023841858,
+        3.399999976158142,
+        4,
+        3.3000000715255737,
+        3,
+        3.600000023841858,
+        3,
+        3.799999952316284,
+        4,
+        3.100000023841858,
+        3,
+        4.600000023841858,
+        2.5,
+        2.8000000715255737,
+        3,
+        2.700000047683716,
+        2.700000047683716,
+        4.100000023841858,
+        4,
+        3.700000047683716
+      ],
+      "longTasks": [
+        52,
+        60
+      ],
+      "mutations": 8,
+      "selectionChanges": 1
+    },
+    {
+      "wallMs": 1636,
+      "state": {
+        "selection": {
+          "mapId": "map_page",
+          "x": 2,
+          "y": 2,
+          "width": 26,
+          "height": 17
+        },
+        "badge": "26\u00d717",
+        "scope": "\uc120\ud0dd (2,2) 26\u00d717"
+      },
+      "sets": [
+        1.3000000715255737
+      ],
+      "moves": [
+        0.5,
+        0.40000009536743164,
+        0.6000000238418579,
+        1.100000023841858,
+        1.7000000476837158,
+        2.399999976158142,
+        2.5,
+        2.299999952316284,
+        1.7000000476837158,
+        2.200000047683716,
+        1.7999999523162842,
+        2.0999999046325684,
+        2.399999976158142,
+        2.100000023841858,
+        3.200000047683716,
+        1.9000000953674316,
+        1.899999976158142,
+        1.399999976158142,
+        1.399999976158142,
+        2.100000023841858,
+        2.700000047683716,
+        1.600000023841858,
+        2.200000047683716,
+        1.5,
+        2.100000023841858,
+        1.600000023841858,
+        1.5,
+        1.4000000953674316,
+        2.100000023841858,
+        2.5,
+        1.9000000953674316,
+        2.200000047683716,
+        2.1999999284744263,
+        2,
+        2.100000023841858,
+        2.4000000953674316,
+        2.0999999046325684,
+        2,
+        1.9000000953674316,
+        1.9000000953674316
+      ],
+      "longTasks": [],
+      "mutations": 8,
+      "selectionChanges": 1
+    }
+  ],
+  "traceSummary": {
+    "mainThreadMs": {
+      "UpdateLayoutTree": 183.319,
+      "Layout": 36.04499999999999,
+      "PrePaint": 44.24600000000007,
+      "Paint": 86.9490000000001
+    }
+  },
+  "summary": {
+    "frameMedianMs": 1.600000023841858,
+    "frameP95Ms": 4,
+    "setMedianMs": 1.1999999284744263,
+    "setP95Ms": 1.3000000715255737,
+    "wallMedianMs": 1636,
+    "childListMutationsMedian": 8,
+    "selectionChangesMedian": 1,
+    "longTaskCount": 2,
+    "longTaskMaxMs": 60
+  },
+  "productionSources": {
+    "src/editor/EditScene.ts": "51df448a26713060899a659856695deeaddb4a55d4db25d9b8aff77c506b54cf",
+    "src/editor/editSceneRender.ts": "31dde21b605e6f5ba541652687b49ed0a653282ee218ac1e0003c187b68ea559"
+  },
+  "productionChanges": true
+}

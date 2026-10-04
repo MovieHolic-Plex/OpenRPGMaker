@@ -13,6 +13,27 @@ export type DelayedTooltipTarget = {
 };
 
 export const DELAYED_TOOLTIP_ROLLOUT: readonly DelayedTooltipTarget[] = [
+  { label: "높이", name: "높이", testid: "terrain-tool-height" },
+  { label: "표면", name: "표면", testid: "terrain-tool-surface" },
+  { label: "강", name: "강", testid: "terrain-tool-river" },
+  { label: "군집 선택", name: "군집 선택", testid: "terrain-tool-group" },
+  { label: "집", name: "집", testid: "terrain-tool-house" },
+  { label: "도로", name: "도로", testid: "terrain-tool-road" },
+  { label: "지형지물", name: "지형지물 (D)", testid: "relief-doodad-toggle" },
+  { label: "지형 설계", name: "지형 설계", testid: "terrain-design-toggle" },
+  { label: "통행 보기", name: "통행 미리보기", testid: "terrain-reachability" },
+  { label: "도움말", name: "지형 도움말", testid: "terrain-help-toggle" },
+  { label: "윗면 풀", name: "윗면을 풀로 덮기", testid: "relief-top-grass" },
+  { label: "군집 옮기기", name: "군집 옮기기", testid: "terrain-group-move" },
+  { label: "군집 지우기", name: "군집 지우기", testid: "terrain-group-delete" },
+  { label: "올리기", name: "올리기", testid: "relief-mode-raise" },
+  { label: "내리기", name: "내리기", testid: "relief-mode-lower" },
+  { label: "평탄", name: "평탄", testid: "relief-mode-flatten" },
+  { label: "단 지정", name: "단 지정", testid: "relief-mode-set" },
+  { label: "산", name: "산", testid: "relief-mode-mountain" },
+  { label: "골짜기", name: "골짜기", testid: "relief-mode-canyon" },
+  { label: "다듬기", name: "다듬기", testid: "relief-mode-smooth" },
+  { label: "거칠게", name: "거칠게", testid: "relief-mode-rough" },
   // 사이드바 탭(맵·그리기·AI)은 글자가 보이므로 넣지 않는다 — 접힌 레일에서만 title 로 이름을 보인다.
   { label: "사이드바", name: "왼쪽 패널 가리기/보이기", testid: "sidebar-collapse" },
   { label: "걷기 전투", name: "걸을 때 적 만나기 설정", testid: "walk-encounter-list-open" },

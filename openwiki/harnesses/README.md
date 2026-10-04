@@ -41,4 +41,8 @@ npm run harness -- <id> <단계> [옵션]    # src/harnesses/<id>/node/cli.ts �
 
 ## 하네스 목록
 
+- [worldmap-icons](worldmap-icons.md) — 월드맵 아이콘 검수·사람 선택·현재 해시 확인·공용 시트 굽기
+
 - [monster-collect-species](monster-collect-species.md) — 몬스터 수집(포켓몬류) 종 앞·뒤 전투 스프라이트
+- [jp-city](jp-city.md) — 일본 도시 칩셋(jp_city · modern3) 주택가·역·공원·신사 그림 후보
+- [joseon-baram](joseon-baram.md) — 조선(바람의나라풍) 칩셋 joseon_baram 조각 관문·판정·지도 관문·재굽기·16구역 적대 검수 (기존 도구를 한 입구로)

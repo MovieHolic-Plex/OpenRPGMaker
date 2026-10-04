@@ -1,0 +1,499 @@
+{
+  "slug": "wolf-grey",
+  "skin": "retro2003",
+  "nativeCell": 64,
+  "errors": [],
+  "forcedFrameDisplays": [
+    {
+      "pose": "idle_a",
+      "cell": "idle_a",
+      "backgroundPosition": "0% 0%",
+      "backgroundSize": "300% 300%",
+      "backgroundImage": "url(\"http://127.0.0.1:43777/assets/generated/pixel-enemies/wolf-grey.png\")"
+    },
+    {
+      "pose": "idle_b",
+      "cell": "idle_b",
+      "backgroundPosition": "50% 0%",
+      "backgroundSize": "300% 300%",
+      "backgroundImage": "url(\"http://127.0.0.1:43777/assets/generated/pixel-enemies/wolf-grey.png\")"
+    },
+    {
+      "pose": "idle_c",
+      "cell": "idle_c",
+      "backgroundPosition": "100% 0%",
+      "backgroundSize": "300% 300%",
+      "backgroundImage": "url(\"http://127.0.0.1:43777/assets/generated/pixel-enemies/wolf-grey.png\")"
+    },
+    {
+      "pose": "windup",
+      "cell": "windup",
+      "backgroundPosition": "0% 50%",
+      "backgroundSize": "300% 300%",
+      "backgroundImage": "url(\"http://127.0.0.1:43777/assets/generated/pixel-enemies/wolf-grey.png\")"
+    },
+    {
+      "pose": "move",
+      "cell": "move",
+      "backgroundPosition": "50% 50%",
+      "backgroundSize": "300% 300%",
+      "backgroundImage": "url(\"http://127.0.0.1:43777/assets/generated/pixel-enemies/wolf-grey.png\")"
+    },
+    {
+      "pose": "attack",
+      "cell": "attack",
+      "backgroundPosition": "100% 50%",
+      "backgroundSize": "300% 300%",
+      "backgroundImage": "url(\"http://127.0.0.1:43777/assets/generated/pixel-enemies/wolf-grey.png\")"
+    },
+    {
+      "pose": "recover",
+      "cell": "recover",
+      "backgroundPosition": "0% 100%",
+      "backgroundSize": "300% 300%",
+      "backgroundImage": "url(\"http://127.0.0.1:43777/assets/generated/pixel-enemies/wolf-grey.png\")"
+    },
+    {
+      "pose": "hit",
+      "cell": "hit",
+      "backgroundPosition": "50% 100%",
+      "backgroundSize": "300% 300%",
+      "backgroundImage": "url(\"http://127.0.0.1:43777/assets/generated/pixel-enemies/wolf-grey.png\")"
+    },
+    {
+      "pose": "dead",
+      "cell": "dead",
+      "backgroundPosition": "100% 100%",
+      "backgroundSize": "300% 300%",
+      "backgroundImage": "url(\"http://127.0.0.1:43777/assets/generated/pixel-enemies/wolf-grey.png\")"
+    }
+  ],
+  "actualInputTrace": [
+    {
+      "cell": "idle",
+      "at": 11944,
+      "phase": "actorCommand"
+    },
+    {
+      "cell": "windup",
+      "at": 12673.299999952316,
+      "phase": "actorCommand"
+    },
+    {
+      "cell": "move",
+      "at": 12928.600000023842,
+      "phase": "actorCommand"
+    },
+    {
+      "cell": "idle_c",
+      "at": 13078,
+      "phase": "actorCommand"
+    },
+    {
+      "cell": "move",
+      "at": 13141.399999976158,
+      "phase": "actorCommand"
+    },
+    {
+      "cell": "attack",
+      "at": 13311.600000023842,
+      "phase": "actorCommand"
+    },
+    {
+      "cell": "recover",
+      "at": 13445.399999976158,
+      "phase": "actorCommand"
+    },
+    {
+      "cell": "move",
+      "at": 13536.399999976158,
+      "phase": "actorCommand"
+    },
+    {
+      "cell": "idle_a",
+      "at": 13844.100000023842,
+      "phase": "actorCommand"
+    },
+    {
+      "cell": "idle",
+      "at": 13896.100000023842,
+      "phase": "actorCommand"
+    },
+    {
+      "cell": "hit",
+      "at": 14691.600000023842,
+      "phase": "resolved"
+    }
+  ],
+  "actualSelectionTrace": [
+    {
+      "cell": "idle",
+      "source": "attribute-previous",
+      "at": 12054.600000023842
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-current",
+      "at": 12054.600000023842
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-current",
+      "at": 12054.600000023842
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-previous",
+      "at": 12082.5
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-current",
+      "at": 12082.5
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-current",
+      "at": 12082.5
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-previous",
+      "at": 12373.199999928474
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-current",
+      "at": 12373.199999928474
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-current",
+      "at": 12373.199999928474
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-previous",
+      "at": 12373.199999928474
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-current",
+      "at": 12373.199999928474
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-current",
+      "at": 12373.199999928474
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-previous",
+      "at": 12662.799999952316
+    },
+    {
+      "cell": "windup",
+      "source": "attribute-current",
+      "at": 12662.799999952316
+    },
+    {
+      "cell": "windup",
+      "source": "attribute-current",
+      "at": 12662.799999952316
+    },
+    {
+      "cell": "windup",
+      "source": "attribute-previous",
+      "at": 12662.799999952316
+    },
+    {
+      "cell": "windup",
+      "source": "attribute-current",
+      "at": 12662.799999952316
+    },
+    {
+      "cell": "windup",
+      "source": "attribute-current",
+      "at": 12662.799999952316
+    },
+    {
+      "cell": "windup",
+      "source": "attribute-previous",
+      "at": 12926.100000023842
+    },
+    {
+      "cell": "move",
+      "source": "attribute-current",
+      "at": 12926.100000023842
+    },
+    {
+      "cell": "move",
+      "source": "attribute-current",
+      "at": 12926.100000023842
+    },
+    {
+      "cell": "move",
+      "source": "attribute-previous",
+      "at": 13069.799999952316
+    },
+    {
+      "cell": "idle_c",
+      "source": "attribute-current",
+      "at": 13069.799999952316
+    },
+    {
+      "cell": "idle_c",
+      "source": "attribute-current",
+      "at": 13069.799999952316
+    },
+    {
+      "cell": "idle_c",
+      "source": "attribute-previous",
+      "at": 13136.899999976158
+    },
+    {
+      "cell": "move",
+      "source": "attribute-current",
+      "at": 13136.899999976158
+    },
+    {
+      "cell": "move",
+      "source": "attribute-current",
+      "at": 13136.899999976158
+    },
+    {
+      "cell": "move",
+      "source": "attribute-previous",
+      "at": 13287.299999952316
+    },
+    {
+      "cell": "attack",
+      "source": "attribute-current",
+      "at": 13287.299999952316
+    },
+    {
+      "cell": "attack",
+      "source": "attribute-current",
+      "at": 13287.299999952316
+    },
+    {
+      "cell": "attack",
+      "source": "attribute-previous",
+      "at": 13287.299999952316
+    },
+    {
+      "cell": "attack",
+      "source": "attribute-current",
+      "at": 13287.299999952316
+    },
+    {
+      "cell": "attack",
+      "source": "attribute-current",
+      "at": 13287.299999952316
+    },
+    {
+      "cell": "attack",
+      "source": "attribute-previous",
+      "at": 13434
+    },
+    {
+      "cell": "recover",
+      "source": "attribute-current",
+      "at": 13434
+    },
+    {
+      "cell": "recover",
+      "source": "attribute-current",
+      "at": 13434
+    },
+    {
+      "cell": "recover",
+      "source": "attribute-previous",
+      "at": 13434
+    },
+    {
+      "cell": "recover",
+      "source": "attribute-current",
+      "at": 13434
+    },
+    {
+      "cell": "recover",
+      "source": "attribute-current",
+      "at": 13434
+    },
+    {
+      "cell": "recover",
+      "source": "attribute-previous",
+      "at": 13515.5
+    },
+    {
+      "cell": "move",
+      "source": "attribute-current",
+      "at": 13515.5
+    },
+    {
+      "cell": "move",
+      "source": "attribute-current",
+      "at": 13515.5
+    },
+    {
+      "cell": "move",
+      "source": "attribute-previous",
+      "at": 13829.199999928474
+    },
+    {
+      "cell": "idle_a",
+      "source": "attribute-current",
+      "at": 13829.199999928474
+    },
+    {
+      "cell": "idle_a",
+      "source": "attribute-current",
+      "at": 13829.199999928474
+    },
+    {
+      "cell": "idle_a",
+      "source": "attribute-previous",
+      "at": 13889.600000023842
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-current",
+      "at": 13889.600000023842
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-current",
+      "at": 13889.699999928474
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-previous",
+      "at": 13889.699999928474
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-current",
+      "at": 13889.699999928474
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-current",
+      "at": 13889.699999928474
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-previous",
+      "at": 14073.399999976158
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-current",
+      "at": 14073.399999976158
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-current",
+      "at": 14073.399999976158
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-previous",
+      "at": 14113.199999928474
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-current",
+      "at": 14113.199999928474
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-current",
+      "at": 14113.199999928474
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-previous",
+      "at": 14245.899999976158
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-current",
+      "at": 14245.899999976158
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-current",
+      "at": 14245.899999976158
+    },
+    {
+      "cell": "idle",
+      "source": "attribute-previous",
+      "at": 14688.899999976158
+    },
+    {
+      "cell": "hit",
+      "source": "attribute-current",
+      "at": 14688.899999976158
+    },
+    {
+      "cell": "hit",
+      "source": "attribute-current",
+      "at": 14688.899999976158
+    },
+    {
+      "cell": "hit",
+      "source": "attribute-previous",
+      "at": 14688.899999976158
+    },
+    {
+      "cell": "hit",
+      "source": "attribute-current",
+      "at": 14688.899999976158
+    },
+    {
+      "cell": "hit",
+      "source": "attribute-current",
+      "at": 14688.899999976158
+    },
+    {
+      "cell": "hit",
+      "source": "attribute-previous",
+      "at": 14874.199999928474
+    },
+    {
+      "cell": "dead",
+      "source": "attribute-current",
+      "at": 14874.199999928474
+    },
+    {
+      "cell": "dead",
+      "source": "attribute-current",
+      "at": 14874.199999928474
+    }
+  ],
+  "actualFrames": [
+    "idle",
+    "windup",
+    "move",
+    "idle_c",
+    "attack",
+    "recover",
+    "idle_a",
+    "hit",
+    "dead"
+  ],
+  "renderSampledFrames": [
+    "idle",
+    "windup",
+    "move",
+    "idle_c",
+    "attack",
+    "recover",
+    "idle_a",
+    "hit"
+  ],
+  "defended": true,
+  "playerAttackConfirmed": true,
+  "starterRequests": []
+}

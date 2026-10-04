@@ -67,12 +67,11 @@ export function renderCommandList(
     if (actions.insertCommands) actions.insertCommands(path, inserted);
     else inserted.reverse().forEach(command => actions.insertCommand(path, command));
   };
+  ensureListDropHandlers(host, actions);
   if (commands.length === 0) {
     host.append(el("div", { class: "empty-hint", text: "(명령 없음)" }));
     return;
   }
-  // 빈 리스트 드롭을 host 단위에서 잡기 위해 DnD 리스너를 보장한다.
-  ensureListDropHandlers(host, actions);
   const faceState: FaceState = { current: undefined };
   commands.forEach((cmd, index) => {
     const path = [...containerPath, index];
@@ -160,7 +159,7 @@ function renderCommandItem(
     children: [renderEditorIcon("drag")],
   });
   // 핸들에서 누르면 항목을 드래그 가능하게 만든다.
-  enableItemDrag(handle, item, path);
+  enableItemDrag(handle, item, path, actions);
   const supportBadge = renderRuntimeSupportBadge(commandRuntimeSupportDescriptor(cmd, options.pickerContext), `command-runtime-badge-list-${path.join("-")}`);
   const issueBadge = renderCommandIssueBadge(path, options.issues ?? []);
   // 문장 표시 줄: 직전 changeFace 상태를 화자 얼굴 16px 크롭으로 부가.

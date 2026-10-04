@@ -1,0 +1,5 @@
+{"theme":"snow-north","preview":true,"ops":[
+{"op":"sea","poly":[[30,11],[40,11],[41,14],[30,14]],"note":"북쪽 설원 한가운데 큰 호수"},
+{"op":"island","x":71,"y":54,"rx":4,"ry":4,"ground":"ash","note":"남동 바다 화산섬"},
+{"op":"volcano","x":71,"y":54,"lava":[[71,54],[74,57]],"note":"섬 가운데 화산"}
+]}

@@ -1,0 +1,153 @@
+{
+  "cell": 96,
+  "sheet": [
+    288,
+    288
+  ],
+  "colors": 22,
+  "alpha": [
+    0,
+    255
+  ],
+  "distinctFrames": 9,
+  "imageInput": false,
+  "imageModel": false,
+  "frames": {
+    "idle_a": {
+      "bounds": [
+        3,
+        3,
+        95,
+        93
+      ],
+      "vertexBounds": [
+        3,
+        3,
+        94,
+        92
+      ],
+      "sha256": "13ccf44d7413f3c49858b34ae5a91714c119ca0b3a7a5159245b268d9d23b558"
+    },
+    "idle_b": {
+      "bounds": [
+        3,
+        4,
+        93,
+        93
+      ],
+      "vertexBounds": [
+        3,
+        4,
+        92,
+        92
+      ],
+      "sha256": "08e74a3054c090d33e5e43f3a60f7b34989bd24153bc9de7f19f61cc67a24b7d"
+    },
+    "idle_c": {
+      "bounds": [
+        4,
+        3,
+        93,
+        93
+      ],
+      "vertexBounds": [
+        4,
+        3,
+        92,
+        92
+      ],
+      "sha256": "f1034a57df968473406778199e4d6af11657e06c904cdfa9063d03504c005403"
+    },
+    "windup": {
+      "bounds": [
+        3,
+        4,
+        90,
+        93
+      ],
+      "vertexBounds": [
+        3,
+        4,
+        89,
+        92
+      ],
+      "sha256": "edeb5cb16d193b17f1d04be49f203ecea8d9979c4e7ceb11f70ae196e1e0636b"
+    },
+    "move": {
+      "bounds": [
+        3,
+        8,
+        92,
+        93
+      ],
+      "vertexBounds": [
+        3,
+        8,
+        91,
+        92
+      ],
+      "sha256": "94aba5252e264e70b771d41d79b6dd6ea99fd43913add082d5efd0b449c929d0"
+    },
+    "attack": {
+      "bounds": [
+        4,
+        15,
+        93,
+        93
+      ],
+      "vertexBounds": [
+        4,
+        15,
+        92,
+        92
+      ],
+      "sha256": "f4df6a3f75fa74e18d6d96fd31442d8d5c218203a5723bc286950e891190be1f"
+    },
+    "recover": {
+      "bounds": [
+        3,
+        9,
+        92,
+        93
+      ],
+      "vertexBounds": [
+        3,
+        9,
+        91,
+        92
+      ],
+      "sha256": "c770654a9e08f3850a6c5c81e9a50e3f2a48a386b625da22eeed03ccb47318ca"
+    },
+    "hit": {
+      "bounds": [
+        4,
+        6,
+        91,
+        93
+      ],
+      "vertexBounds": [
+        4,
+        6,
+        90,
+        92
+      ],
+      "sha256": "2eefd0df4004c31e98fb04ff177f5e86564f46dd91898f24a08c95d62b81f08b"
+    },
+    "dead": {
+      "bounds": [
+        7,
+        51,
+        89,
+        93
+      ],
+      "vertexBounds": [
+        7,
+        51,
+        88,
+        92
+      ],
+      "sha256": "feb9f7d73b0dbd6fa97793e231a200d20c482879b72fd2f0daa1f2a76547dd47"
+    }
+  },
+  "sheetSha256": "384530bcba93787c05af080c170e533fc5bd7616685d4df2a8887794b45676b2"
+}

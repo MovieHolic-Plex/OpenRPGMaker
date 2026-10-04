@@ -115,6 +115,7 @@ import {
   estimateContextTokens,
   findCompactionCutPoint,
   findPreviousSummary,
+  resolveContextWindow,
   resolveThresholdContextTokens,
   shouldCompact,
   type ContextUsage,
@@ -820,6 +821,12 @@ export class AssistantSession {
 
   /** Capture before application/proof awaits; a later run never inherits this authority. */
   getRunOperation(): RunOperation { return this.runOperation; }
+
+  /** Current user request only; automatic continuation never carries navigation. */
+  allowsViewNavigation(): boolean {
+    return !this.turnIsDriverContinue && this.turnIntent?.source === "llm"
+      && this.turnIntent.viewNavigation === true;
+  }
 
   retireRun(): TurnResult | undefined {
     const owner = this.runResult;
@@ -4843,6 +4850,8 @@ export class AssistantSession {
           requiredReadTools: this.readEvidence.requiredReadTools(),
           workPlan: this.workPlan,
           fullCatalogFallback: this.eventCommandScope ? true : this.turnFullCatalogFallback,
+          // 이벤트 명령 범위는 전체에서 걸러 쓰므로 창 판정을 하지 않는다.
+          ...(this.eventCommandScope ? {} : { contextWindow: resolveContextWindow(this.config.model) }),
         }),
         GET_ORIGINAL_CONTEXT_TOOL,
         CORRECT_VERIFICATION_TOOL,
@@ -5327,7 +5336,7 @@ export class AssistantSession {
                 ? this.specGate(name, args)
                 : { warnings: [] };
               if (isSpecGatePass(gate)) {
-                if (name !== EVENT_COMMAND_ASSIST_TOOL && tool?.prepare) await operation.wait(prepareTool(name, args));
+                if (name !== EVENT_COMMAND_ASSIST_TOOL && tool?.prepare) await operation.wait(prepareTool(name, args, this.ctx.project));
                 const before = this.ctx.project;
                 toolResult = name === EVENT_COMMAND_ASSIST_TOOL
                   ? await operation.wait(runToolAsync(this.ctx, name, args, {

@@ -1,0 +1,10 @@
+{
+ "schema": "worldmap-theme/1",
+ "id": "sea-isles",
+ "name": "바다·군도",
+ "iconset": "sea-isles",
+ "palette": "tropic",
+ "overlays": [],
+ "kind": "land",
+ "terrain": "archipelago"
+}

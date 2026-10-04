@@ -44,6 +44,9 @@ export function formatBeodeulTownNote(target: BeodeulTownTarget, targetMap: { id
         ? `지금 맵 '${target.mapId}' 에는 이미 내용이 있다 → mapId 를 주지 말고 author_beodeul_town({name, theme, width?, height?}) 로 새 버들항 맵을 만든다. 기존 맵을 지우지 않는다.`
         : "author_beodeul_town({name, theme, width?, height?}) 로 새 버들항 맵을 만든다.";
   return [
+    // 2026-10-03 실측(r2): 모델이 위키·맵·요약·DB·참고문서 조회 6번(수십 초) 뒤에야 시공을 불렀다. 그동안 사용자는 빈 맵을 본다.
+    "[먼저 보이게] 사용자는 맵 위에서 마을이 지어지는 모습을 기다리고 있다. 프로젝트 요약·위키·DB·참고문서 조회로 시간을 쓰지 말고 "
+      + "곧바로 author_beodeul_town 을 부른다(이 도구는 타일을 코드가 고르므로 참고문서를 먼저 읽지 않아도 된다). 확인·보충은 시공 뒤에 한다.",
     "[마을 시공 — 버들항] 이 요청의 마을은 버들항 타일셋이다. author_village·author_house 는 숲마을 생성기라 쓰지 않는다. "
       + "author_beodeul_town 한 호출이 사용자가 고른 버들항 변형 마을의 문법(물 → 굽은 큰길 → 뒷길 고리 → 광장·앵커 건물 → 길을 보는 집 → 일터·밭·숲 덩이)으로 짓는다 — "
       + "paint_road·fill_region·place_props 로 길과 집을 손으로 깔지 말 것.",

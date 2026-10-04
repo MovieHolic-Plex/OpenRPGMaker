@@ -36,6 +36,8 @@ export function defaultElementRecords(): DatabaseElementRecord[] {
     elementRecord("int", "INT", "magical"),
     elementRecord("agi", "AGI", "magical"),
     elementRecord("absorb", "Absorb", "magical"),
+    // Leaf attacks and the farmer roster refer to this id. Keep existing slots stable.
+    elementRecord("grass", "Grass", "magical"),
   ];
 }
 
@@ -53,7 +55,7 @@ export function defaultTerrainRecords(): DatabaseTerrainRecord[] {
       name: "물",
       damage: 0,
       encounterRatePercent: 100,
-      battleBackgroundResourceId: "easyrpg-backdrop-sky1",
+      battleBackgroundResourceId: "battle-scenery-plains",
       characterDisplay: "normal",
       vehiclePassage: { boat: true, ship: true, airshipLand: false },
     },
@@ -62,7 +64,7 @@ export function defaultTerrainRecords(): DatabaseTerrainRecord[] {
       name: "모래",
       damage: 0,
       encounterRatePercent: 100,
-      battleBackgroundResourceId: "easyrpg-backdrop-sunset1",
+      battleBackgroundResourceId: "battle-scenery-desert",
       characterDisplay: "normal",
       vehiclePassage: { boat: false, ship: false, airshipLand: true },
     },
@@ -71,7 +73,7 @@ export function defaultTerrainRecords(): DatabaseTerrainRecord[] {
       name: "눈",
       damage: 0,
       encounterRatePercent: 100,
-      battleBackgroundResourceId: "easyrpg-backdrop-dawn2",
+      battleBackgroundResourceId: "battle-scenery-snow",
       characterDisplay: "normal",
       vehiclePassage: { boat: false, ship: false, airshipLand: true },
     },

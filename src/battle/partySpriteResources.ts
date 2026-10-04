@@ -15,7 +15,7 @@ function actorBackSpriteId(actor: PartyActorResource): string | null {
 export function skinPartySpriteUrl(
   project: Pick<Project, "assets">,
   skinId: BattleSkinId,
-  index: number,
+  _index: number,
   facing: BattlerPartyFacing,
   actor?: PartyActorResource,
 ): { url: string; perActor: boolean; resourceId: string } | null {
@@ -26,9 +26,10 @@ export function skinPartySpriteUrl(
     const backUrl = backId && resolveAssetResourceUrl(backId, { project });
     if (backId && backUrl) return { url: backUrl, perActor: true, resourceId: backId };
   }
-  const id = skinId === "pokemon"
-    ? "bskin-ally-creature-back"
-    : `bskin-party-${index % 2 === 0 ? "warrior" : "mage"}-${facing}`;
+  // 스킨 공용 전사·마법사 일러스트(bskin-party-*)는 2026-10-03 deprecated/ 로 옮겼다. 도트 측면은
+  // 배틀러 표시가 기본 도트(retroFallbackPartyBattler)로 물러나므로 여기 오지 않는다.
+  if (skinId !== "pokemon") return null;
+  const id = "bskin-ally-creature-back";
   const url = resolveAssetResourceUrl(id, { project });
   return url ? { url, perActor: false, resourceId: id } : null;
 }

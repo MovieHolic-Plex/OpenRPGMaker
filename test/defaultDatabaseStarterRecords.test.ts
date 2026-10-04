@@ -43,9 +43,11 @@ describe("default database starter records", () => {
     ]));
     expect(database.battleAnimations).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ id: DEFAULT_ANIMATION_ID, resourceId: "easyrpg-battle-blow" }),
-        expect.objectContaining({ id: "anim_sword", resourceId: "easyrpg-battle-sword1" }),
-        expect.objectContaining({ id: "anim_arrow", resourceId: "easyrpg-battle-arrow" }),
+        // 타격·검격·화살은 EasyRPG 시트(2026-10-03 deprecated/) 대신 같은 역할의 번들 효과 시트를 쓴다.
+        expect.objectContaining({ id: DEFAULT_ANIMATION_ID, resourceId: "generated-battle-anim-tackle-impact" }),
+        expect.objectContaining({ id: "anim_sword", resourceId: "generated-battle-anim-slash-steel" }),
+        expect.objectContaining({ id: "anim_arrow", resourceId: "generated-battle-anim-projectile-shot" }),
+        expect.objectContaining({ id: "anim_px_slash", resourceId: "pixel-fx-slash" }),
         // 마법·회복·독은 근접 타격 아트(blow/arrow) 대신 절차 생성 이펙트 시트를 쓴다.
         expect.objectContaining({ id: "anim_magic", resourceId: "generated-battle-anim-arcane-nova" }),
         expect.objectContaining({ id: "anim_heal", resourceId: "generated-battle-anim-heal-bloom" }),
