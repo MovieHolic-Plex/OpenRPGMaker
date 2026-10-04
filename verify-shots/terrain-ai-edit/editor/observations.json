@@ -4,20 +4,9 @@
   "uiIntentRequestExercised": true,
   "canonicalStore": "/home/main/.t3/worktrees/rpg-zzu/t3code-77478098/.vite-cache/terrain-ai-edit/editor-project",
   "requests": [
-    {
-      "endpoint": "/v1/chat/completions",
-      "provider": "google-antigravity",
-      "model": "gemini-3.8-flash"
-    },
-    {
-      "endpoint": "/v1/agent/run",
-      "model": "gemini-3.8-flash"
-    },
-    {
-      "endpoint": "/v1/chat/completions",
-      "provider": "google-antigravity",
-      "model": "gemini-3.8-flash"
-    }
+    {"endpoint":"/v1/chat/completions","provider":"google-antigravity","model":"gemini-3.8-flash"},
+    {"endpoint":"/v1/agent/run","model":"gemini-3.8-flash"},
+    {"endpoint":"/v1/chat/completions","provider":"google-antigravity","model":"gemini-3.8-flash"}
   ],
   "errors": [],
   "before": {
@@ -29,55 +18,20 @@
       "houses_native": "0369a80e28889973ac4fc7d42aa4f7e536c3cc25d903a7dfd17ea2ada783fd9c"
     }
   },
-  "indexedDb": {
-    "conversations": 0,
-    "userEntries": 0
-  },
+  "indexedDb": {"conversations":0,"userEntries":0},
   "task": "현재 houses_native 지도에서 기존 지형을 수정해 주세요. 다른 지도는 건드리지 말고 기존 집 4채, 세 원본 외관의 형태와 높이, 모든 절벽 경사로는 보존하세요. 시야 차단은 꺼진 상태로 유지합니다.\n1. 지도 왼쪽 아래 (2,38)~(8,38)의 별도 능선은 폭 5칸에서 7칸으로 넓혀 주세요. 높이 증가량 3과 시드 42, 양 끝 위치는 유지해 주세요. 새 능선을 겹쳐 올리지 말고 기존 능선을 수정하세요.\n2. 문이 (24,46)에 있는 조립식 집은 지붕 폭만 11칸에서 15칸으로 넓혀 주세요. 벽 너비 9칸과 2층, 벽·창·문 위치는 그대로 유지해 주세요. 원본 탑 저택·박공 오두막·날개 집은 그대로 두세요.\n3. (24,54)에서 그 집 문 앞 (24,47)로 올라가는 기존 길은 폭 2칸에서 3칸으로 넓혀 주세요. 시작점과 끝점은 유지해 주세요. 다른 집으로 가는 절벽 경사로를 계단으로 바꾸지 마세요.\n잠긴 (0,0) 칸을 바꾸지 말고, 지형과 집 정보를 먼저 읽어 정확한 기존 대상을 고르세요. 마지막에 (4,58)에서 네 집의 문 앞까지 실제로 걸어갈 수 있는지 확인하고 수정된 그림을 확인한 뒤 완료해 주세요.\n",
   "events": [
-    {
-      "seq": 3,
-      "type": "tool_start",
-      "id": "call_1835732",
-      "name": "get_project_summary",
-      "args": {},
-      "at": 1791100779140
-    },
+    {"seq":3,"type":"tool_start","id":"call_1835732","name":"get_project_summary","args":{},"at":1791100779140},
     {
       "seq": 4,
       "type": "tool_start",
       "id": "call_1835735",
       "name": "get_map_region",
-      "args": {
-        "x": 0,
-        "w": 24,
-        "mapId": "houses_native",
-        "h": 24,
-        "y": 36
-      },
+      "args": {"x":0,"w":24,"mapId":"houses_native","h":24,"y":36},
       "at": 1791100779140
     },
-    {
-      "seq": 5,
-      "type": "tool_start",
-      "id": "call_1835738",
-      "name": "find_events",
-      "args": {
-        "mapId": "houses_native"
-      },
-      "at": 1791100779140
-    },
-    {
-      "seq": 6,
-      "type": "tool_start",
-      "id": "call_1835741",
-      "name": "inspect_terrain",
-      "args": {
-        "mapId": "houses_native",
-        "includeCatalog": false
-      },
-      "at": 1791100779140
-    },
+    {"seq":5,"type":"tool_start","id":"call_1835738","name":"find_events","args":{"mapId":"houses_native"},"at":1791100779140},
+    {"seq":6,"type":"tool_start","id":"call_1835741","name":"inspect_terrain","args":{"mapId":"houses_native","includeCatalog":false},"at":1791100779140},
     {
       "seq": 7,
       "type": "tool_end",
@@ -86,113 +40,31 @@
         "summary": "프로젝트 '지형 조수 재편집 QA' — 맵 3개, 아이템 1000, 트룹 7",
         "data": {
           "title": "지형 조수 재편집 QA",
-          "appearance": {
-            "fonts": {
-              "ui": "system-sans",
-              "pixel": "neodgm",
-              "mono": "system-mono"
-            },
-            "dialogueStyle": "glass",
-            "dialogueFont": null,
-            "battleLook": null
-          },
+          "appearance": {"fonts":{"ui":"system-sans","pixel":"neodgm","mono":"system-mono"},"dialogueStyle":"glass","dialogueFont":null,"battleLook":null},
           "startMapId": "houses_native",
-          "startPos": {
-            "x": 4,
-            "y": 58
-          },
+          "startPos": {"x":4,"y":58},
           "maps": [
-            {
-              "id": "terrain_ai",
-              "name": "AI 절벽 마을",
-              "width": 64,
-              "height": 48,
-              "events": 0
-            },
-            {
-              "id": "ramps_four",
-              "name": "ramps_four",
-              "width": 80,
-              "height": 48,
-              "events": 0
-            },
-            {
-              "id": "houses_native",
-              "name": "houses_native",
-              "width": 72,
-              "height": 64,
-              "events": 0
-            }
+            {"id":"terrain_ai","name":"AI 절벽 마을","width":64,"height":48,"events":0},
+            {"id":"ramps_four","name":"ramps_four","width":80,"height":48,"events":0},
+            {"id":"houses_native","name":"houses_native","width":72,"height":64,"events":0}
           ],
-          "db": {
-            "items": 1000,
-            "enemies": 106,
-            "troops": 7,
-            "actors": 136,
-            "equipment": 86,
-            "skills": 1243
-          },
+          "db": {"items":1000,"enemies":106,"troops":7,"actors":136,"equipment":86,"skills":1243},
           "switches": [
-            {
-              "id": "sw_gen2_sun_relay",
-              "name": "태양 기동석 작동"
-            },
-            {
-              "id": "sw_gen2_moon_relay",
-              "name": "달 기동석 작동"
-            },
-            {
-              "id": "sw_gen2_bridge_relay",
-              "name": "교량 기동석 작동"
-            },
-            {
-              "id": "sw_gen2_seal_relay",
-              "name": "봉인 기동석 작동"
-            },
-            {
-              "id": "sw_catalog_gate_open",
-              "name": "성문 개방"
-            },
-            {
-              "id": "sw_catalog_lighthouse_lit",
-              "name": "등대 점화"
-            },
-            {
-              "id": "sw_catalog_mine_lift",
-              "name": "광산 승강기 작동"
-            },
-            {
-              "id": "sw_catalog_fountain_flow",
-              "name": "분수 작동"
-            },
-            {
-              "id": "sw_catalog_archive_unlock",
-              "name": "서고 봉인 해제"
-            },
-            {
-              "id": "sw_catalog_beacon_lit",
-              "name": "봉화 점화"
-            },
-            {
-              "id": "sw_catalog_aqueduct_route",
-              "name": "수로 전환"
-            },
-            {
-              "id": "switch_shared_relay_sun",
-              "name": "태양 신호석"
-            },
-            {
-              "id": "switch_shared_relay_moon",
-              "name": "달 신호석"
-            },
-            {
-              "id": "switch_shared_relay_tide",
-              "name": "조수 신호석"
-            },
-            {
-              "id": "switch_shared_relay_earth",
-              "name": "대지 신호석"
-            }
+            {"id":"sw_gen2_sun_relay","name":"태양 기동석 작동"},
+            {"id":"sw_gen2_moon_relay","name":"달 기동석 작동"},
+            {"id":"sw_gen2_bridge_relay","name":"교량 기동석 작동"},
+            {"id":"sw_gen2_seal_relay","name":"봉인 기동석 작동"},
+            {"id":"sw_catalog_gate_open","name":"성문 개방"},
+            {"id":"sw_catalog_lighthouse_lit","name":"등대 점화"},
+            {"id":"sw_catalog_mine_lift","name":"광산 승강기 작동"},
+            {"id":"sw_catalog_fountain_flow","name":"분수 작동"},
+            {"id":"sw_catalog_archive_unlock","name":"서고 봉인 해제"},
+            {"id":"sw_catalog_beacon_lit","name":"봉화 점화"},
+            {"id":"sw_catalog_aqueduct_route","name":"수로 전환"},
+            {"id":"switch_shared_relay_sun","name":"태양 신호석"},
+            {"id":"switch_shared_relay_moon","name":"달 신호석"},
+            {"id":"switch_shared_relay_tide","name":"조수 신호석"},
+            {"id":"switch_shared_relay_earth","name":"대지 신호석"}
           ],
           "variables": []
         }
@@ -214,44 +86,10 @@
         "data": {
           "mapId": "houses_native",
           "mapName": "houses_native",
-          "grid": [
-            "........................",
-            "........................",
-            "........................",
-            "....................####",
-            "...................#####",
-            "...................#####",
-            "....................####",
-            "....................####",
-            "....................####",
-            "....................####",
-            "....................####",
-            "........................",
-            "........................",
-            "........................",
-            "........................",
-            "........................",
-            "........................",
-            "........................",
-            "........................",
-            "........................",
-            "........................",
-            "........................",
-            "........................",
-            "........................"
-          ],
-          "legend": {
-            "#": "통행 불가/벽",
-            ".": "통행 가능",
-            "~": "물/호수",
-            "T": "나무",
-            "E": "이벤트"
-          },
+          "grid": ["........................","........................","........................","....................####","...................#####","...................#####","....................####","....................####","....................####","....................####","....................####","........................","........................","........................","........................","........................","........................","........................","........................","........................","........................","........................","........................","........................"],
+          "legend": {"#":"통행 불가/벽",".":"통행 가능","~":"물/호수","T":"나무","E":"이벤트"},
           "events": [],
-          "water": {
-            "cellCount": 0,
-            "bounds": null
-          }
+          "water": {"cellCount":0,"bounds":null}
         }
       },
       "visuals": [],
@@ -265,13 +103,7 @@
     {
       "seq": 9,
       "type": "tool_end",
-      "result": {
-        "ok": true,
-        "summary": "이벤트 0개 검색됨",
-        "data": {
-          "matches": []
-        }
-      },
+      "result": {"ok":true,"summary":"이벤트 0개 검색됨","data":{"matches":[]}},
       "visuals": [],
       "durationMs": 2,
       "id": "call_1835738",
@@ -293,31 +125,14 @@
             {
               "id": "terrain_d2b28f3a-c592-42a5-b81d-11d45cff5ec8",
               "tool": "road",
-              "points": [
-                {
-                  "x": 4,
-                  "y": 58
-                },
-                {
-                  "x": 4,
-                  "y": 54
-                },
-                {
-                  "x": 60,
-                  "y": 54
-                }
-              ],
+              "points": [{"x":4,"y":58},{"x":4,"y":54},{"x":60,"y":54}],
               "options": {
                 "symmetry": "none",
                 "areaShape": "polygon",
                 "width": 2,
                 "delta": 1,
                 "seed": 1,
-                "weights": [
-                  60,
-                  30,
-                  10
-                ],
+                "weights": [60,30,10],
                 "waterLevel": 0,
                 "maxDepth": 3,
                 "shallowWidth": 1,
@@ -330,27 +145,14 @@
             {
               "id": "terrain_aa64d896-b0e1-46f5-86c5-bc179e86697b",
               "tool": "road",
-              "points": [
-                {
-                  "x": 15,
-                  "y": 54
-                },
-                {
-                  "x": 15,
-                  "y": 24
-                }
-              ],
+              "points": [{"x":15,"y":54},{"x":15,"y":24}],
               "options": {
                 "symmetry": "none",
                 "areaShape": "polygon",
                 "width": 2,
                 "delta": 1,
                 "seed": 1,
-                "weights": [
-                  60,
-                  30,
-                  10
-                ],
+                "weights": [60,30,10],
                 "waterLevel": 0,
                 "maxDepth": 3,
                 "shallowWidth": 1,
@@ -363,27 +165,14 @@
             {
               "id": "terrain_770fd695-4d7c-4353-9d2c-4153fdbf3f14",
               "tool": "road",
-              "points": [
-                {
-                  "x": 36,
-                  "y": 54
-                },
-                {
-                  "x": 36,
-                  "y": 22
-                }
-              ],
+              "points": [{"x":36,"y":54},{"x":36,"y":22}],
               "options": {
                 "symmetry": "none",
                 "areaShape": "polygon",
                 "width": 2,
                 "delta": 1,
                 "seed": 1,
-                "weights": [
-                  60,
-                  30,
-                  10
-                ],
+                "weights": [60,30,10],
                 "waterLevel": 0,
                 "maxDepth": 3,
                 "shallowWidth": 1,
@@ -396,27 +185,14 @@
             {
               "id": "terrain_83fde956-02af-451b-b5de-fa64ec399b89",
               "tool": "road",
-              "points": [
-                {
-                  "x": 60,
-                  "y": 54
-                },
-                {
-                  "x": 60,
-                  "y": 19
-                }
-              ],
+              "points": [{"x":60,"y":54},{"x":60,"y":19}],
               "options": {
                 "symmetry": "none",
                 "areaShape": "polygon",
                 "width": 2,
                 "delta": 1,
                 "seed": 1,
-                "weights": [
-                  60,
-                  30,
-                  10
-                ],
+                "weights": [60,30,10],
                 "waterLevel": 0,
                 "maxDepth": 3,
                 "shallowWidth": 1,
@@ -429,27 +205,14 @@
             {
               "id": "terrain_3ad618d4-3240-4d17-a9ea-0513821dfe88",
               "tool": "ridge",
-              "points": [
-                {
-                  "x": 2,
-                  "y": 38
-                },
-                {
-                  "x": 8,
-                  "y": 38
-                }
-              ],
+              "points": [{"x":2,"y":38},{"x":8,"y":38}],
               "options": {
                 "symmetry": "none",
                 "areaShape": "polygon",
                 "width": 5,
                 "delta": 3,
                 "seed": 42,
-                "weights": [
-                  60,
-                  30,
-                  10
-                ],
+                "weights": [60,30,10],
                 "waterLevel": 0,
                 "maxDepth": 3,
                 "shallowWidth": 1,
@@ -462,27 +225,14 @@
             {
               "id": "terrain_f835c29b-8b85-4eb5-a11e-bf56841968e1",
               "tool": "road",
-              "points": [
-                {
-                  "x": 24,
-                  "y": 54
-                },
-                {
-                  "x": 24,
-                  "y": 47
-                }
-              ],
+              "points": [{"x":24,"y":54},{"x":24,"y":47}],
               "options": {
                 "symmetry": "none",
                 "areaShape": "polygon",
                 "width": 2,
                 "delta": 1,
                 "seed": 1,
-                "weights": [
-                  60,
-                  30,
-                  10
-                ],
+                "weights": [60,30,10],
                 "waterLevel": 0,
                 "maxDepth": 3,
                 "shallowWidth": 1,
@@ -493,20 +243,11 @@
               "patchCount": 16
             }
           ],
-          "lockedCells": [
-            0
-          ],
+          "lockedCells": [0],
           "maxHeight": 9,
           "rampCells": 22,
           "stairCells": 0,
-          "gameplay": {
-            "visionBlocking": false,
-            "highGroundVision": false,
-            "projectileHeight": false,
-            "visionRadius": 8,
-            "visionGain": 1,
-            "eyeHeight": 1
-          },
+          "gameplay": {"visionBlocking":false,"highGroundVision":false,"projectileHeight":false,"visionRadius":8,"visionGain":1,"eyeHeight":1},
           "houses": [
             {
               "placementId": "sp_a2ff01d4-09f0-4e24-a2c7-65a12be34406",
@@ -515,26 +256,12 @@
               "y": 13,
               "width": 14,
               "height": 11,
-              "doorFront": {
-                "x": 15,
-                "y": 22
-              },
+              "doorFront": {"x":15,"y":22},
               "level": 4,
               "flat": true,
-              "heights": [
-                4
-              ],
+              "heights": [4],
               "roofResizable": false,
-              "parts": [
-                {
-                  "id": "door",
-                  "kind": "entrance",
-                  "x": 15,
-                  "y": 21,
-                  "width": 1,
-                  "height": 1
-                }
-              ]
+              "parts": [{"id":"door","kind":"entrance","x":15,"y":21,"width":1,"height":1}]
             },
             {
               "placementId": "sp_dbe5965d-2ed8-410c-bf8a-109803471270",
@@ -543,26 +270,12 @@
               "y": 16,
               "width": 5,
               "height": 6,
-              "doorFront": {
-                "x": 36,
-                "y": 22
-              },
+              "doorFront": {"x":36,"y":22},
               "level": 6,
               "flat": true,
-              "heights": [
-                6
-              ],
+              "heights": [6],
               "roofResizable": false,
-              "parts": [
-                {
-                  "id": "door",
-                  "kind": "entrance",
-                  "x": 36,
-                  "y": 21,
-                  "width": 1,
-                  "height": 1
-                }
-              ]
+              "parts": [{"id":"door","kind":"entrance","x":36,"y":21,"width":1,"height":1}]
             },
             {
               "placementId": "sp_6c3b74ec-e76d-487b-96b8-574751c06182",
@@ -571,26 +284,12 @@
               "y": 13,
               "width": 8,
               "height": 6,
-              "doorFront": {
-                "x": 60,
-                "y": 19
-              },
+              "doorFront": {"x":60,"y":19},
               "level": 9,
               "flat": true,
-              "heights": [
-                9
-              ],
+              "heights": [9],
               "roofResizable": false,
-              "parts": [
-                {
-                  "id": "door",
-                  "kind": "entrance",
-                  "x": 60,
-                  "y": 18,
-                  "width": 1,
-                  "height": 1
-                }
-              ]
+              "parts": [{"id":"door","kind":"entrance","x":60,"y":18,"width":1,"height":1}]
             },
             {
               "placementId": "sp_4e36815d-5fed-4f58-acc9-253a9b2b5201",
@@ -599,41 +298,15 @@
               "y": 39,
               "width": 11,
               "height": 8,
-              "doorFront": {
-                "x": 24,
-                "y": 47
-              },
+              "doorFront": {"x":24,"y":47},
               "level": 0,
               "flat": true,
-              "heights": [
-                0
-              ],
+              "heights": [0],
               "roofResizable": true,
               "parts": [
-                {
-                  "id": "roof",
-                  "kind": "anchor",
-                  "x": 19,
-                  "y": 39,
-                  "width": 11,
-                  "height": 3
-                },
-                {
-                  "id": "walls",
-                  "kind": "anchor",
-                  "x": 20,
-                  "y": 42,
-                  "width": 9,
-                  "height": 5
-                },
-                {
-                  "id": "door",
-                  "kind": "entrance",
-                  "x": 24,
-                  "y": 45,
-                  "width": 1,
-                  "height": 2
-                }
+                {"id":"roof","kind":"anchor","x":19,"y":39,"width":11,"height":3},
+                {"id":"walls","kind":"anchor","x":20,"y":42,"width":9,"height":5},
+                {"id":"door","kind":"entrance","x":24,"y":45,"width":1,"height":2}
               ]
             }
           ]
@@ -652,11 +325,7 @@
       "type": "tool_start",
       "id": "call_1642203",
       "name": "design_terrain",
-      "args": {
-        "editId": "terrain_3ad618d4-3240-4d17-a9ea-0513821dfe88",
-        "mapId": "houses_native",
-        "width": 7
-      },
+      "args": {"editId":"terrain_3ad618d4-3240-4d17-a9ea-0513821dfe88","mapId":"houses_native","width":7},
       "at": 1791100786599
     },
     {
@@ -689,11 +358,7 @@
           "warnings": []
         },
         "issues": null,
-        "data": {
-          "mapId": "houses_native",
-          "affectedCells": 148,
-          "featureId": "terrain_3ad618d4-3240-4d17-a9ea-0513821dfe88"
-        }
+        "data": {"mapId":"houses_native","affectedCells":148,"featureId":"terrain_3ad618d4-3240-4d17-a9ea-0513821dfe88"}
       },
       "visuals": [],
       "durationMs": 2740,
@@ -708,11 +373,7 @@
       "type": "tool_start",
       "id": "call_1642209",
       "name": "resize_terrain_house_roof",
-      "args": {
-        "roofWidth": 15,
-        "mapId": "houses_native",
-        "placementId": "sp_4e36815d-5fed-4f58-acc9-253a9b2b5201"
-      },
+      "args": {"roofWidth":15,"mapId":"houses_native","placementId":"sp_4e36815d-5fed-4f58-acc9-253a9b2b5201"},
       "at": 1791100790212
     },
     {
@@ -745,11 +406,7 @@
           "warnings": []
         },
         "issues": null,
-        "data": {
-          "placementId": "sp_4e36815d-5fed-4f58-acc9-253a9b2b5201",
-          "kitId": "quick_house_beodeul-manor-a_9_2_roof15x3",
-          "roofWidth": 15
-        }
+        "data": {"placementId":"sp_4e36815d-5fed-4f58-acc9-253a9b2b5201","kitId":"quick_house_beodeul-manor-a_9_2_roof15x3","roofWidth":15}
       },
       "visuals": [],
       "durationMs": 10960,
@@ -764,11 +421,7 @@
       "type": "tool_start",
       "id": "call_1642216",
       "name": "lay_terrain_road",
-      "args": {
-        "editId": "terrain_f835c29b-8b85-4eb5-a11e-bf56841968e1",
-        "mapId": "houses_native",
-        "width": 3
-      },
+      "args": {"editId":"terrain_f835c29b-8b85-4eb5-a11e-bf56841968e1","mapId":"houses_native","width":3},
       "at": 1791100802125
     },
     {
@@ -801,12 +454,7 @@
           "warnings": []
         },
         "issues": null,
-        "data": {
-          "reachable": true,
-          "blocked": [],
-          "featureId": "terrain_f835c29b-8b85-4eb5-a11e-bf56841968e1",
-          "rampCells": 22
-        }
+        "data": {"reachable":true,"blocked":[],"featureId":"terrain_f835c29b-8b85-4eb5-a11e-bf56841968e1","rampCells":22}
       },
       "visuals": [],
       "durationMs": 6729,
@@ -821,56 +469,16 @@
       "type": "tool_start",
       "id": "call_1768020",
       "name": "check_terrain_access",
-      "args": {
-        "from": {
-          "x": 4,
-          "y": 58
-        },
-        "mapId": "houses_native",
-        "targets": [
-          {
-            "x": 15,
-            "y": 22
-          },
-          {
-            "x": 36,
-            "y": 22
-          },
-          {
-            "x": 60,
-            "y": 19
-          },
-          {
-            "x": 24,
-            "y": 47
-          }
-        ]
-      },
+      "args": {"from":{"x":4,"y":58},"mapId":"houses_native","targets":[{"x":15,"y":22},{"x":36,"y":22},{"x":60,"y":19},{"x":24,"y":47}]},
       "at": 1791100815409
     },
-    {
-      "seq": 36,
-      "type": "tool_start",
-      "id": "call_1768026",
-      "name": "inspect_terrain",
-      "args": {
-        "mapId": "houses_native",
-        "includeCatalog": false
-      },
-      "at": 1791100815410
-    },
+    {"seq":36,"type":"tool_start","id":"call_1768026","name":"inspect_terrain","args":{"mapId":"houses_native","includeCatalog":false},"at":1791100815410},
     {
       "seq": 37,
       "type": "tool_start",
       "id": "call_1768029",
       "name": "show_map_region",
-      "args": {
-        "h": 24,
-        "mapId": "houses_native",
-        "y": 36,
-        "w": 24,
-        "x": 0
-      },
+      "args": {"h":24,"mapId":"houses_native","y":36,"w":24,"x":0},
       "at": 1791100815410
     },
     {
@@ -878,13 +486,7 @@
       "type": "tool_start",
       "id": "call_1768032",
       "name": "show_map_region",
-      "args": {
-        "mapId": "houses_native",
-        "h": 24,
-        "x": 16,
-        "w": 24,
-        "y": 36
-      },
+      "args": {"mapId":"houses_native","h":24,"x":16,"w":24,"y":36},
       "at": 1791100815410
     },
     {
@@ -897,1028 +499,281 @@
           "reachable": true,
           "routes": [
             {
-              "target": {
-                "x": 15,
-                "y": 22
-              },
+              "target": {"x":15,"y":22},
               "reachable": true,
               "path": [
-                {
-                  "x": 4,
-                  "y": 58
-                },
-                {
-                  "x": 4,
-                  "y": 57
-                },
-                {
-                  "x": 4,
-                  "y": 56
-                },
-                {
-                  "x": 4,
-                  "y": 55
-                },
-                {
-                  "x": 4,
-                  "y": 54
-                },
-                {
-                  "x": 4,
-                  "y": 53
-                },
-                {
-                  "x": 4,
-                  "y": 52
-                },
-                {
-                  "x": 4,
-                  "y": 51
-                },
-                {
-                  "x": 4,
-                  "y": 50
-                },
-                {
-                  "x": 4,
-                  "y": 49
-                },
-                {
-                  "x": 4,
-                  "y": 48
-                },
-                {
-                  "x": 4,
-                  "y": 47
-                },
-                {
-                  "x": 4,
-                  "y": 46
-                },
-                {
-                  "x": 4,
-                  "y": 45
-                },
-                {
-                  "x": 4,
-                  "y": 44
-                },
-                {
-                  "x": 4,
-                  "y": 43
-                },
-                {
-                  "x": 4,
-                  "y": 42
-                },
-                {
-                  "x": 5,
-                  "y": 42
-                },
-                {
-                  "x": 6,
-                  "y": 42
-                },
-                {
-                  "x": 7,
-                  "y": 42
-                },
-                {
-                  "x": 8,
-                  "y": 42
-                },
-                {
-                  "x": 9,
-                  "y": 42
-                },
-                {
-                  "x": 10,
-                  "y": 42
-                },
-                {
-                  "x": 10,
-                  "y": 41
-                },
-                {
-                  "x": 11,
-                  "y": 41
-                },
-                {
-                  "x": 11,
-                  "y": 40
-                },
-                {
-                  "x": 12,
-                  "y": 40
-                },
-                {
-                  "x": 12,
-                  "y": 39
-                },
-                {
-                  "x": 12,
-                  "y": 38
-                },
-                {
-                  "x": 12,
-                  "y": 37
-                },
-                {
-                  "x": 13,
-                  "y": 37
-                },
-                {
-                  "x": 14,
-                  "y": 37
-                },
-                {
-                  "x": 15,
-                  "y": 37
-                },
-                {
-                  "x": 15,
-                  "y": 36
-                },
-                {
-                  "x": 15,
-                  "y": 35
-                },
-                {
-                  "x": 15,
-                  "y": 34
-                },
-                {
-                  "x": 15,
-                  "y": 33
-                },
-                {
-                  "x": 15,
-                  "y": 32
-                },
-                {
-                  "x": 15,
-                  "y": 31
-                },
-                {
-                  "x": 15,
-                  "y": 30
-                },
-                {
-                  "x": 15,
-                  "y": 29
-                },
-                {
-                  "x": 15,
-                  "y": 28
-                },
-                {
-                  "x": 15,
-                  "y": 27
-                },
-                {
-                  "x": 15,
-                  "y": 26
-                },
-                {
-                  "x": 15,
-                  "y": 25
-                },
-                {
-                  "x": 15,
-                  "y": 24
-                },
-                {
-                  "x": 15,
-                  "y": 23
-                },
-                {
-                  "x": 15,
-                  "y": 22
-                }
+                {"x":4,"y":58},
+                {"x":4,"y":57},
+                {"x":4,"y":56},
+                {"x":4,"y":55},
+                {"x":4,"y":54},
+                {"x":4,"y":53},
+                {"x":4,"y":52},
+                {"x":4,"y":51},
+                {"x":4,"y":50},
+                {"x":4,"y":49},
+                {"x":4,"y":48},
+                {"x":4,"y":47},
+                {"x":4,"y":46},
+                {"x":4,"y":45},
+                {"x":4,"y":44},
+                {"x":4,"y":43},
+                {"x":4,"y":42},
+                {"x":5,"y":42},
+                {"x":6,"y":42},
+                {"x":7,"y":42},
+                {"x":8,"y":42},
+                {"x":9,"y":42},
+                {"x":10,"y":42},
+                {"x":10,"y":41},
+                {"x":11,"y":41},
+                {"x":11,"y":40},
+                {"x":12,"y":40},
+                {"x":12,"y":39},
+                {"x":12,"y":38},
+                {"x":12,"y":37},
+                {"x":13,"y":37},
+                {"x":14,"y":37},
+                {"x":15,"y":37},
+                {"x":15,"y":36},
+                {"x":15,"y":35},
+                {"x":15,"y":34},
+                {"x":15,"y":33},
+                {"x":15,"y":32},
+                {"x":15,"y":31},
+                {"x":15,"y":30},
+                {"x":15,"y":29},
+                {"x":15,"y":28},
+                {"x":15,"y":27},
+                {"x":15,"y":26},
+                {"x":15,"y":25},
+                {"x":15,"y":24},
+                {"x":15,"y":23},
+                {"x":15,"y":22}
               ],
               "blocked": [],
               "bottlenecks": [],
               "reason": "47칸 경로 · 폭 1칸 미만 병목 0칸"
             },
             {
-              "target": {
-                "x": 36,
-                "y": 22
-              },
+              "target": {"x":36,"y":22},
               "reachable": true,
               "path": [
-                {
-                  "x": 4,
-                  "y": 58
-                },
-                {
-                  "x": 4,
-                  "y": 57
-                },
-                {
-                  "x": 4,
-                  "y": 56
-                },
-                {
-                  "x": 4,
-                  "y": 55
-                },
-                {
-                  "x": 4,
-                  "y": 54
-                },
-                {
-                  "x": 4,
-                  "y": 53
-                },
-                {
-                  "x": 4,
-                  "y": 52
-                },
-                {
-                  "x": 4,
-                  "y": 51
-                },
-                {
-                  "x": 4,
-                  "y": 50
-                },
-                {
-                  "x": 4,
-                  "y": 49
-                },
-                {
-                  "x": 4,
-                  "y": 48
-                },
-                {
-                  "x": 4,
-                  "y": 47
-                },
-                {
-                  "x": 4,
-                  "y": 46
-                },
-                {
-                  "x": 4,
-                  "y": 45
-                },
-                {
-                  "x": 4,
-                  "y": 44
-                },
-                {
-                  "x": 4,
-                  "y": 43
-                },
-                {
-                  "x": 4,
-                  "y": 42
-                },
-                {
-                  "x": 5,
-                  "y": 42
-                },
-                {
-                  "x": 6,
-                  "y": 42
-                },
-                {
-                  "x": 7,
-                  "y": 42
-                },
-                {
-                  "x": 8,
-                  "y": 42
-                },
-                {
-                  "x": 9,
-                  "y": 42
-                },
-                {
-                  "x": 10,
-                  "y": 42
-                },
-                {
-                  "x": 10,
-                  "y": 41
-                },
-                {
-                  "x": 11,
-                  "y": 41
-                },
-                {
-                  "x": 11,
-                  "y": 40
-                },
-                {
-                  "x": 12,
-                  "y": 40
-                },
-                {
-                  "x": 12,
-                  "y": 39
-                },
-                {
-                  "x": 12,
-                  "y": 38
-                },
-                {
-                  "x": 12,
-                  "y": 37
-                },
-                {
-                  "x": 13,
-                  "y": 37
-                },
-                {
-                  "x": 14,
-                  "y": 37
-                },
-                {
-                  "x": 15,
-                  "y": 37
-                },
-                {
-                  "x": 16,
-                  "y": 37
-                },
-                {
-                  "x": 17,
-                  "y": 37
-                },
-                {
-                  "x": 18,
-                  "y": 37
-                },
-                {
-                  "x": 19,
-                  "y": 37
-                },
-                {
-                  "x": 20,
-                  "y": 37
-                },
-                {
-                  "x": 21,
-                  "y": 37
-                },
-                {
-                  "x": 22,
-                  "y": 37
-                },
-                {
-                  "x": 23,
-                  "y": 37
-                },
-                {
-                  "x": 24,
-                  "y": 37
-                },
-                {
-                  "x": 25,
-                  "y": 37
-                },
-                {
-                  "x": 26,
-                  "y": 37
-                },
-                {
-                  "x": 27,
-                  "y": 37
-                },
-                {
-                  "x": 28,
-                  "y": 37
-                },
-                {
-                  "x": 29,
-                  "y": 37
-                },
-                {
-                  "x": 30,
-                  "y": 37
-                },
-                {
-                  "x": 31,
-                  "y": 37
-                },
-                {
-                  "x": 32,
-                  "y": 37
-                },
-                {
-                  "x": 33,
-                  "y": 37
-                },
-                {
-                  "x": 34,
-                  "y": 37
-                },
-                {
-                  "x": 35,
-                  "y": 37
-                },
-                {
-                  "x": 36,
-                  "y": 37
-                },
-                {
-                  "x": 36,
-                  "y": 36
-                },
-                {
-                  "x": 36,
-                  "y": 35
-                },
-                {
-                  "x": 36,
-                  "y": 34
-                },
-                {
-                  "x": 36,
-                  "y": 33
-                },
-                {
-                  "x": 36,
-                  "y": 32
-                },
-                {
-                  "x": 36,
-                  "y": 31
-                },
-                {
-                  "x": 36,
-                  "y": 30
-                },
-                {
-                  "x": 36,
-                  "y": 29
-                },
-                {
-                  "x": 36,
-                  "y": 28
-                },
-                {
-                  "x": 36,
-                  "y": 27
-                },
-                {
-                  "x": 36,
-                  "y": 26
-                },
-                {
-                  "x": 36,
-                  "y": 25
-                },
-                {
-                  "x": 36,
-                  "y": 24
-                },
-                {
-                  "x": 36,
-                  "y": 23
-                },
-                {
-                  "x": 36,
-                  "y": 22
-                }
+                {"x":4,"y":58},
+                {"x":4,"y":57},
+                {"x":4,"y":56},
+                {"x":4,"y":55},
+                {"x":4,"y":54},
+                {"x":4,"y":53},
+                {"x":4,"y":52},
+                {"x":4,"y":51},
+                {"x":4,"y":50},
+                {"x":4,"y":49},
+                {"x":4,"y":48},
+                {"x":4,"y":47},
+                {"x":4,"y":46},
+                {"x":4,"y":45},
+                {"x":4,"y":44},
+                {"x":4,"y":43},
+                {"x":4,"y":42},
+                {"x":5,"y":42},
+                {"x":6,"y":42},
+                {"x":7,"y":42},
+                {"x":8,"y":42},
+                {"x":9,"y":42},
+                {"x":10,"y":42},
+                {"x":10,"y":41},
+                {"x":11,"y":41},
+                {"x":11,"y":40},
+                {"x":12,"y":40},
+                {"x":12,"y":39},
+                {"x":12,"y":38},
+                {"x":12,"y":37},
+                {"x":13,"y":37},
+                {"x":14,"y":37},
+                {"x":15,"y":37},
+                {"x":16,"y":37},
+                {"x":17,"y":37},
+                {"x":18,"y":37},
+                {"x":19,"y":37},
+                {"x":20,"y":37},
+                {"x":21,"y":37},
+                {"x":22,"y":37},
+                {"x":23,"y":37},
+                {"x":24,"y":37},
+                {"x":25,"y":37},
+                {"x":26,"y":37},
+                {"x":27,"y":37},
+                {"x":28,"y":37},
+                {"x":29,"y":37},
+                {"x":30,"y":37},
+                {"x":31,"y":37},
+                {"x":32,"y":37},
+                {"x":33,"y":37},
+                {"x":34,"y":37},
+                {"x":35,"y":37},
+                {"x":36,"y":37},
+                {"x":36,"y":36},
+                {"x":36,"y":35},
+                {"x":36,"y":34},
+                {"x":36,"y":33},
+                {"x":36,"y":32},
+                {"x":36,"y":31},
+                {"x":36,"y":30},
+                {"x":36,"y":29},
+                {"x":36,"y":28},
+                {"x":36,"y":27},
+                {"x":36,"y":26},
+                {"x":36,"y":25},
+                {"x":36,"y":24},
+                {"x":36,"y":23},
+                {"x":36,"y":22}
               ],
               "blocked": [],
               "bottlenecks": [],
               "reason": "68칸 경로 · 폭 1칸 미만 병목 0칸"
             },
             {
-              "target": {
-                "x": 60,
-                "y": 19
-              },
+              "target": {"x":60,"y":19},
               "reachable": true,
               "path": [
-                {
-                  "x": 4,
-                  "y": 58
-                },
-                {
-                  "x": 4,
-                  "y": 57
-                },
-                {
-                  "x": 4,
-                  "y": 56
-                },
-                {
-                  "x": 4,
-                  "y": 55
-                },
-                {
-                  "x": 4,
-                  "y": 54
-                },
-                {
-                  "x": 4,
-                  "y": 53
-                },
-                {
-                  "x": 4,
-                  "y": 52
-                },
-                {
-                  "x": 4,
-                  "y": 51
-                },
-                {
-                  "x": 4,
-                  "y": 50
-                },
-                {
-                  "x": 4,
-                  "y": 49
-                },
-                {
-                  "x": 4,
-                  "y": 48
-                },
-                {
-                  "x": 4,
-                  "y": 47
-                },
-                {
-                  "x": 5,
-                  "y": 47
-                },
-                {
-                  "x": 6,
-                  "y": 47
-                },
-                {
-                  "x": 7,
-                  "y": 47
-                },
-                {
-                  "x": 8,
-                  "y": 47
-                },
-                {
-                  "x": 9,
-                  "y": 47
-                },
-                {
-                  "x": 10,
-                  "y": 47
-                },
-                {
-                  "x": 11,
-                  "y": 47
-                },
-                {
-                  "x": 12,
-                  "y": 47
-                },
-                {
-                  "x": 13,
-                  "y": 47
-                },
-                {
-                  "x": 14,
-                  "y": 47
-                },
-                {
-                  "x": 15,
-                  "y": 47
-                },
-                {
-                  "x": 16,
-                  "y": 47
-                },
-                {
-                  "x": 17,
-                  "y": 47
-                },
-                {
-                  "x": 18,
-                  "y": 47
-                },
-                {
-                  "x": 19,
-                  "y": 47
-                },
-                {
-                  "x": 20,
-                  "y": 47
-                },
-                {
-                  "x": 21,
-                  "y": 47
-                },
-                {
-                  "x": 22,
-                  "y": 47
-                },
-                {
-                  "x": 23,
-                  "y": 47
-                },
-                {
-                  "x": 24,
-                  "y": 47
-                },
-                {
-                  "x": 25,
-                  "y": 47
-                },
-                {
-                  "x": 26,
-                  "y": 47
-                },
-                {
-                  "x": 27,
-                  "y": 47
-                },
-                {
-                  "x": 28,
-                  "y": 47
-                },
-                {
-                  "x": 29,
-                  "y": 47
-                },
-                {
-                  "x": 29,
-                  "y": 46
-                },
-                {
-                  "x": 29,
-                  "y": 45
-                },
-                {
-                  "x": 29,
-                  "y": 44
-                },
-                {
-                  "x": 29,
-                  "y": 43
-                },
-                {
-                  "x": 29,
-                  "y": 42
-                },
-                {
-                  "x": 30,
-                  "y": 42
-                },
-                {
-                  "x": 31,
-                  "y": 42
-                },
-                {
-                  "x": 32,
-                  "y": 42
-                },
-                {
-                  "x": 32,
-                  "y": 41
-                },
-                {
-                  "x": 33,
-                  "y": 41
-                },
-                {
-                  "x": 34,
-                  "y": 41
-                },
-                {
-                  "x": 35,
-                  "y": 41
-                },
-                {
-                  "x": 36,
-                  "y": 41
-                },
-                {
-                  "x": 37,
-                  "y": 41
-                },
-                {
-                  "x": 38,
-                  "y": 41
-                },
-                {
-                  "x": 39,
-                  "y": 41
-                },
-                {
-                  "x": 40,
-                  "y": 41
-                },
-                {
-                  "x": 41,
-                  "y": 41
-                },
-                {
-                  "x": 42,
-                  "y": 41
-                },
-                {
-                  "x": 43,
-                  "y": 41
-                },
-                {
-                  "x": 44,
-                  "y": 41
-                },
-                {
-                  "x": 45,
-                  "y": 41
-                },
-                {
-                  "x": 46,
-                  "y": 41
-                },
-                {
-                  "x": 47,
-                  "y": 41
-                },
-                {
-                  "x": 48,
-                  "y": 41
-                },
-                {
-                  "x": 49,
-                  "y": 41
-                },
-                {
-                  "x": 50,
-                  "y": 41
-                },
-                {
-                  "x": 51,
-                  "y": 41
-                },
-                {
-                  "x": 52,
-                  "y": 41
-                },
-                {
-                  "x": 53,
-                  "y": 41
-                },
-                {
-                  "x": 54,
-                  "y": 41
-                },
-                {
-                  "x": 55,
-                  "y": 41
-                },
-                {
-                  "x": 56,
-                  "y": 41
-                },
-                {
-                  "x": 57,
-                  "y": 41
-                },
-                {
-                  "x": 58,
-                  "y": 41
-                },
-                {
-                  "x": 59,
-                  "y": 41
-                },
-                {
-                  "x": 60,
-                  "y": 41
-                },
-                {
-                  "x": 60,
-                  "y": 40
-                },
-                {
-                  "x": 60,
-                  "y": 39
-                },
-                {
-                  "x": 60,
-                  "y": 38
-                },
-                {
-                  "x": 60,
-                  "y": 37
-                },
-                {
-                  "x": 60,
-                  "y": 36
-                },
-                {
-                  "x": 60,
-                  "y": 35
-                },
-                {
-                  "x": 60,
-                  "y": 34
-                },
-                {
-                  "x": 60,
-                  "y": 33
-                },
-                {
-                  "x": 60,
-                  "y": 32
-                },
-                {
-                  "x": 60,
-                  "y": 31
-                },
-                {
-                  "x": 60,
-                  "y": 30
-                },
-                {
-                  "x": 60,
-                  "y": 29
-                },
-                {
-                  "x": 60,
-                  "y": 28
-                },
-                {
-                  "x": 60,
-                  "y": 27
-                },
-                {
-                  "x": 60,
-                  "y": 26
-                },
-                {
-                  "x": 60,
-                  "y": 25
-                },
-                {
-                  "x": 60,
-                  "y": 24
-                },
-                {
-                  "x": 60,
-                  "y": 23
-                },
-                {
-                  "x": 60,
-                  "y": 22
-                },
-                {
-                  "x": 60,
-                  "y": 21
-                },
-                {
-                  "x": 60,
-                  "y": 20
-                },
-                {
-                  "x": 60,
-                  "y": 19
-                }
+                {"x":4,"y":58},
+                {"x":4,"y":57},
+                {"x":4,"y":56},
+                {"x":4,"y":55},
+                {"x":4,"y":54},
+                {"x":4,"y":53},
+                {"x":4,"y":52},
+                {"x":4,"y":51},
+                {"x":4,"y":50},
+                {"x":4,"y":49},
+                {"x":4,"y":48},
+                {"x":4,"y":47},
+                {"x":5,"y":47},
+                {"x":6,"y":47},
+                {"x":7,"y":47},
+                {"x":8,"y":47},
+                {"x":9,"y":47},
+                {"x":10,"y":47},
+                {"x":11,"y":47},
+                {"x":12,"y":47},
+                {"x":13,"y":47},
+                {"x":14,"y":47},
+                {"x":15,"y":47},
+                {"x":16,"y":47},
+                {"x":17,"y":47},
+                {"x":18,"y":47},
+                {"x":19,"y":47},
+                {"x":20,"y":47},
+                {"x":21,"y":47},
+                {"x":22,"y":47},
+                {"x":23,"y":47},
+                {"x":24,"y":47},
+                {"x":25,"y":47},
+                {"x":26,"y":47},
+                {"x":27,"y":47},
+                {"x":28,"y":47},
+                {"x":29,"y":47},
+                {"x":29,"y":46},
+                {"x":29,"y":45},
+                {"x":29,"y":44},
+                {"x":29,"y":43},
+                {"x":29,"y":42},
+                {"x":30,"y":42},
+                {"x":31,"y":42},
+                {"x":32,"y":42},
+                {"x":32,"y":41},
+                {"x":33,"y":41},
+                {"x":34,"y":41},
+                {"x":35,"y":41},
+                {"x":36,"y":41},
+                {"x":37,"y":41},
+                {"x":38,"y":41},
+                {"x":39,"y":41},
+                {"x":40,"y":41},
+                {"x":41,"y":41},
+                {"x":42,"y":41},
+                {"x":43,"y":41},
+                {"x":44,"y":41},
+                {"x":45,"y":41},
+                {"x":46,"y":41},
+                {"x":47,"y":41},
+                {"x":48,"y":41},
+                {"x":49,"y":41},
+                {"x":50,"y":41},
+                {"x":51,"y":41},
+                {"x":52,"y":41},
+                {"x":53,"y":41},
+                {"x":54,"y":41},
+                {"x":55,"y":41},
+                {"x":56,"y":41},
+                {"x":57,"y":41},
+                {"x":58,"y":41},
+                {"x":59,"y":41},
+                {"x":60,"y":41},
+                {"x":60,"y":40},
+                {"x":60,"y":39},
+                {"x":60,"y":38},
+                {"x":60,"y":37},
+                {"x":60,"y":36},
+                {"x":60,"y":35},
+                {"x":60,"y":34},
+                {"x":60,"y":33},
+                {"x":60,"y":32},
+                {"x":60,"y":31},
+                {"x":60,"y":30},
+                {"x":60,"y":29},
+                {"x":60,"y":28},
+                {"x":60,"y":27},
+                {"x":60,"y":26},
+                {"x":60,"y":25},
+                {"x":60,"y":24},
+                {"x":60,"y":23},
+                {"x":60,"y":22},
+                {"x":60,"y":21},
+                {"x":60,"y":20},
+                {"x":60,"y":19}
               ],
               "blocked": [],
               "bottlenecks": [],
               "reason": "95칸 경로 · 폭 1칸 미만 병목 0칸"
             },
             {
-              "target": {
-                "x": 24,
-                "y": 47
-              },
+              "target": {"x":24,"y":47},
               "reachable": true,
               "path": [
-                {
-                  "x": 4,
-                  "y": 58
-                },
-                {
-                  "x": 4,
-                  "y": 57
-                },
-                {
-                  "x": 4,
-                  "y": 56
-                },
-                {
-                  "x": 4,
-                  "y": 55
-                },
-                {
-                  "x": 4,
-                  "y": 54
-                },
-                {
-                  "x": 4,
-                  "y": 53
-                },
-                {
-                  "x": 4,
-                  "y": 52
-                },
-                {
-                  "x": 4,
-                  "y": 51
-                },
-                {
-                  "x": 4,
-                  "y": 50
-                },
-                {
-                  "x": 4,
-                  "y": 49
-                },
-                {
-                  "x": 4,
-                  "y": 48
-                },
-                {
-                  "x": 4,
-                  "y": 47
-                },
-                {
-                  "x": 5,
-                  "y": 47
-                },
-                {
-                  "x": 6,
-                  "y": 47
-                },
-                {
-                  "x": 7,
-                  "y": 47
-                },
-                {
-                  "x": 8,
-                  "y": 47
-                },
-                {
-                  "x": 9,
-                  "y": 47
-                },
-                {
-                  "x": 10,
-                  "y": 47
-                },
-                {
-                  "x": 11,
-                  "y": 47
-                },
-                {
-                  "x": 12,
-                  "y": 47
-                },
-                {
-                  "x": 13,
-                  "y": 47
-                },
-                {
-                  "x": 14,
-                  "y": 47
-                },
-                {
-                  "x": 15,
-                  "y": 47
-                },
-                {
-                  "x": 16,
-                  "y": 47
-                },
-                {
-                  "x": 17,
-                  "y": 47
-                },
-                {
-                  "x": 18,
-                  "y": 47
-                },
-                {
-                  "x": 19,
-                  "y": 47
-                },
-                {
-                  "x": 20,
-                  "y": 47
-                },
-                {
-                  "x": 21,
-                  "y": 47
-                },
-                {
-                  "x": 22,
-                  "y": 47
-                },
-                {
-                  "x": 23,
-                  "y": 47
-                },
-                {
-                  "x": 24,
-                  "y": 47
-                }
+                {"x":4,"y":58},
+                {"x":4,"y":57},
+                {"x":4,"y":56},
+                {"x":4,"y":55},
+                {"x":4,"y":54},
+                {"x":4,"y":53},
+                {"x":4,"y":52},
+                {"x":4,"y":51},
+                {"x":4,"y":50},
+                {"x":4,"y":49},
+                {"x":4,"y":48},
+                {"x":4,"y":47},
+                {"x":5,"y":47},
+                {"x":6,"y":47},
+                {"x":7,"y":47},
+                {"x":8,"y":47},
+                {"x":9,"y":47},
+                {"x":10,"y":47},
+                {"x":11,"y":47},
+                {"x":12,"y":47},
+                {"x":13,"y":47},
+                {"x":14,"y":47},
+                {"x":15,"y":47},
+                {"x":16,"y":47},
+                {"x":17,"y":47},
+                {"x":18,"y":47},
+                {"x":19,"y":47},
+                {"x":20,"y":47},
+                {"x":21,"y":47},
+                {"x":22,"y":47},
+                {"x":23,"y":47},
+                {"x":24,"y":47}
               ],
               "blocked": [],
               "bottlenecks": [],
@@ -1948,31 +803,14 @@
             {
               "id": "terrain_d2b28f3a-c592-42a5-b81d-11d45cff5ec8",
               "tool": "road",
-              "points": [
-                {
-                  "x": 4,
-                  "y": 58
-                },
-                {
-                  "x": 4,
-                  "y": 54
-                },
-                {
-                  "x": 60,
-                  "y": 54
-                }
-              ],
+              "points": [{"x":4,"y":58},{"x":4,"y":54},{"x":60,"y":54}],
               "options": {
                 "symmetry": "none",
                 "areaShape": "polygon",
                 "width": 2,
                 "delta": 1,
                 "seed": 1,
-                "weights": [
-                  60,
-                  30,
-                  10
-                ],
+                "weights": [60,30,10],
                 "waterLevel": 0,
                 "maxDepth": 3,
                 "shallowWidth": 1,
@@ -1985,27 +823,14 @@
             {
               "id": "terrain_aa64d896-b0e1-46f5-86c5-bc179e86697b",
               "tool": "road",
-              "points": [
-                {
-                  "x": 15,
-                  "y": 54
-                },
-                {
-                  "x": 15,
-                  "y": 24
-                }
-              ],
+              "points": [{"x":15,"y":54},{"x":15,"y":24}],
               "options": {
                 "symmetry": "none",
                 "areaShape": "polygon",
                 "width": 2,
                 "delta": 1,
                 "seed": 1,
-                "weights": [
-                  60,
-                  30,
-                  10
-                ],
+                "weights": [60,30,10],
                 "waterLevel": 0,
                 "maxDepth": 3,
                 "shallowWidth": 1,
@@ -2018,27 +843,14 @@
             {
               "id": "terrain_770fd695-4d7c-4353-9d2c-4153fdbf3f14",
               "tool": "road",
-              "points": [
-                {
-                  "x": 36,
-                  "y": 54
-                },
-                {
-                  "x": 36,
-                  "y": 22
-                }
-              ],
+              "points": [{"x":36,"y":54},{"x":36,"y":22}],
               "options": {
                 "symmetry": "none",
                 "areaShape": "polygon",
                 "width": 2,
                 "delta": 1,
                 "seed": 1,
-                "weights": [
-                  60,
-                  30,
-                  10
-                ],
+                "weights": [60,30,10],
                 "waterLevel": 0,
                 "maxDepth": 3,
                 "shallowWidth": 1,
@@ -2051,27 +863,14 @@
             {
               "id": "terrain_83fde956-02af-451b-b5de-fa64ec399b89",
               "tool": "road",
-              "points": [
-                {
-                  "x": 60,
-                  "y": 54
-                },
-                {
-                  "x": 60,
-                  "y": 19
-                }
-              ],
+              "points": [{"x":60,"y":54},{"x":60,"y":19}],
               "options": {
                 "symmetry": "none",
                 "areaShape": "polygon",
                 "width": 2,
                 "delta": 1,
                 "seed": 1,
-                "weights": [
-                  60,
-                  30,
-                  10
-                ],
+                "weights": [60,30,10],
                 "waterLevel": 0,
                 "maxDepth": 3,
                 "shallowWidth": 1,
@@ -2084,27 +883,14 @@
             {
               "id": "terrain_3ad618d4-3240-4d17-a9ea-0513821dfe88",
               "tool": "ridge",
-              "points": [
-                {
-                  "x": 2,
-                  "y": 38
-                },
-                {
-                  "x": 8,
-                  "y": 38
-                }
-              ],
+              "points": [{"x":2,"y":38},{"x":8,"y":38}],
               "options": {
                 "symmetry": "none",
                 "areaShape": "polygon",
                 "width": 7,
                 "delta": 3,
                 "seed": 42,
-                "weights": [
-                  60,
-                  30,
-                  10
-                ],
+                "weights": [60,30,10],
                 "waterLevel": 0,
                 "maxDepth": 3,
                 "shallowWidth": 1,
@@ -2117,27 +903,14 @@
             {
               "id": "terrain_f835c29b-8b85-4eb5-a11e-bf56841968e1",
               "tool": "road",
-              "points": [
-                {
-                  "x": 24,
-                  "y": 54
-                },
-                {
-                  "x": 24,
-                  "y": 47
-                }
-              ],
+              "points": [{"x":24,"y":54},{"x":24,"y":47}],
               "options": {
                 "symmetry": "none",
                 "areaShape": "polygon",
                 "width": 3,
                 "delta": 1,
                 "seed": 1,
-                "weights": [
-                  60,
-                  30,
-                  10
-                ],
+                "weights": [60,30,10],
                 "waterLevel": 0,
                 "maxDepth": 3,
                 "shallowWidth": 1,
@@ -2148,20 +921,11 @@
               "patchCount": 24
             }
           ],
-          "lockedCells": [
-            0
-          ],
+          "lockedCells": [0],
           "maxHeight": 9,
           "rampCells": 22,
           "stairCells": 0,
-          "gameplay": {
-            "visionBlocking": false,
-            "highGroundVision": false,
-            "projectileHeight": false,
-            "visionRadius": 8,
-            "visionGain": 1,
-            "eyeHeight": 1
-          },
+          "gameplay": {"visionBlocking":false,"highGroundVision":false,"projectileHeight":false,"visionRadius":8,"visionGain":1,"eyeHeight":1},
           "houses": [
             {
               "placementId": "sp_a2ff01d4-09f0-4e24-a2c7-65a12be34406",
@@ -2170,26 +934,12 @@
               "y": 13,
               "width": 14,
               "height": 11,
-              "doorFront": {
-                "x": 15,
-                "y": 22
-              },
+              "doorFront": {"x":15,"y":22},
               "level": 4,
               "flat": true,
-              "heights": [
-                4
-              ],
+              "heights": [4],
               "roofResizable": false,
-              "parts": [
-                {
-                  "id": "door",
-                  "kind": "entrance",
-                  "x": 15,
-                  "y": 21,
-                  "width": 1,
-                  "height": 1
-                }
-              ]
+              "parts": [{"id":"door","kind":"entrance","x":15,"y":21,"width":1,"height":1}]
             },
             {
               "placementId": "sp_dbe5965d-2ed8-410c-bf8a-109803471270",
@@ -2198,26 +948,12 @@
               "y": 16,
               "width": 5,
               "height": 6,
-              "doorFront": {
-                "x": 36,
-                "y": 22
-              },
+              "doorFront": {"x":36,"y":22},
               "level": 6,
               "flat": true,
-              "heights": [
-                6
-              ],
+              "heights": [6],
               "roofResizable": false,
-              "parts": [
-                {
-                  "id": "door",
-                  "kind": "entrance",
-                  "x": 36,
-                  "y": 21,
-                  "width": 1,
-                  "height": 1
-                }
-              ]
+              "parts": [{"id":"door","kind":"entrance","x":36,"y":21,"width":1,"height":1}]
             },
             {
               "placementId": "sp_6c3b74ec-e76d-487b-96b8-574751c06182",
@@ -2226,26 +962,12 @@
               "y": 13,
               "width": 8,
               "height": 6,
-              "doorFront": {
-                "x": 60,
-                "y": 19
-              },
+              "doorFront": {"x":60,"y":19},
               "level": 9,
               "flat": true,
-              "heights": [
-                9
-              ],
+              "heights": [9],
               "roofResizable": false,
-              "parts": [
-                {
-                  "id": "door",
-                  "kind": "entrance",
-                  "x": 60,
-                  "y": 18,
-                  "width": 1,
-                  "height": 1
-                }
-              ]
+              "parts": [{"id":"door","kind":"entrance","x":60,"y":18,"width":1,"height":1}]
             },
             {
               "placementId": "sp_4e36815d-5fed-4f58-acc9-253a9b2b5201",
@@ -2254,41 +976,15 @@
               "y": 39,
               "width": 15,
               "height": 8,
-              "doorFront": {
-                "x": 24,
-                "y": 47
-              },
+              "doorFront": {"x":24,"y":47},
               "level": 0,
               "flat": true,
-              "heights": [
-                0
-              ],
+              "heights": [0],
               "roofResizable": true,
               "parts": [
-                {
-                  "id": "roof",
-                  "kind": "anchor",
-                  "x": 17,
-                  "y": 39,
-                  "width": 15,
-                  "height": 3
-                },
-                {
-                  "id": "walls",
-                  "kind": "anchor",
-                  "x": 20,
-                  "y": 42,
-                  "width": 9,
-                  "height": 5
-                },
-                {
-                  "id": "door",
-                  "kind": "entrance",
-                  "x": 24,
-                  "y": 45,
-                  "width": 1,
-                  "height": 2
-                }
+                {"id":"roof","kind":"anchor","x":17,"y":39,"width":15,"height":3},
+                {"id":"walls","kind":"anchor","x":20,"y":42,"width":9,"height":5},
+                {"id":"door","kind":"entrance","x":24,"y":45,"width":1,"height":2}
               ]
             }
           ]
@@ -2308,15 +1004,7 @@
       "name": "map.image.delivered",
       "ok": true,
       "summary": "현재 초안 이미지를 모델 도구 응답에 포함했습니다.",
-      "data": {
-        "toolCallId": "call_1768029",
-        "base64Length": 247080,
-        "mapId": "houses_native",
-        "x": 0,
-        "y": 36,
-        "w": 24,
-        "h": 24
-      }
+      "data": {"toolCallId":"call_1768029","base64Length":247080,"mapId":"houses_native","x":0,"y":36,"w":24,"h":24}
     },
     {
       "seq": 43,
@@ -2327,1257 +1015,57 @@
         "data": {
           "h": 24,
           "lower": [
-            [
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              2666,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737
-            ],
-            [
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              2666,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737
-            ],
-            [
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              2666,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737
-            ],
-            [
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              2666,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737
-            ],
-            [
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              2666,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737
-            ],
-            [
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              2666,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737
-            ],
-            [
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              2666,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737
-            ],
-            [
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              2666,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737
-            ],
-            [
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              2666,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737
-            ],
-            [
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              2666,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737
-            ],
-            [
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              2666,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737
-            ],
-            [
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              2666,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              23020
-            ],
-            [
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              2666,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              4674
-            ],
-            [
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              2666,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              4674
-            ],
-            [
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              2666,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              4674
-            ],
-            [
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              2666,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              4674
-            ],
-            [
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              2666,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              4674
-            ],
-            [
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              2666,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              4674
-            ],
-            [
-              737,
-              737,
-              737,
-              737,
-              23020,
-              23023,
-              23023,
-              23023,
-              23023,
-              23023,
-              23023,
-              23023,
-              23023,
-              23023,
-              23023,
-              3353,
-              23023,
-              23023,
-              23023,
-              23023,
-              23023,
-              23023,
-              23023,
-              3353
-            ],
-            [
-              737,
-              737,
-              737,
-              737,
-              2666,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737
-            ],
-            [
-              737,
-              737,
-              737,
-              737,
-              2666,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737
-            ],
-            [
-              737,
-              737,
-              737,
-              737,
-              2666,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737
-            ],
-            [
-              737,
-              737,
-              737,
-              737,
-              23016,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737
-            ],
-            [
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737
-            ]
+            [737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,2666,737,737,737,737,737,737,737,737],
+            [737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,2666,737,737,737,737,737,737,737,737],
+            [737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,2666,737,737,737,737,737,737,737,737],
+            [737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,2666,737,737,737,737,737,737,737,737],
+            [737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,2666,737,737,737,737,737,737,737,737],
+            [737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,2666,737,737,737,737,737,737,737,737],
+            [737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,2666,737,737,737,737,737,737,737,737],
+            [737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,2666,737,737,737,737,737,737,737,737],
+            [737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,2666,737,737,737,737,737,737,737,737],
+            [737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,2666,737,737,737,737,737,737,737,737],
+            [737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,2666,737,737,737,737,737,737,737,737],
+            [737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,2666,737,737,737,737,737,737,737,23020],
+            [737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,2666,737,737,737,737,737,737,737,4674],
+            [737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,2666,737,737,737,737,737,737,737,4674],
+            [737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,2666,737,737,737,737,737,737,737,4674],
+            [737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,2666,737,737,737,737,737,737,737,4674],
+            [737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,2666,737,737,737,737,737,737,737,4674],
+            [737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,2666,737,737,737,737,737,737,737,4674],
+            [737,737,737,737,23020,23023,23023,23023,23023,23023,23023,23023,23023,23023,23023,3353,23023,23023,23023,23023,23023,23023,23023,3353],
+            [737,737,737,737,2666,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737],
+            [737,737,737,737,2666,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737],
+            [737,737,737,737,2666,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737],
+            [737,737,737,737,23016,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737],
+            [737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737]
           ],
           "mapId": "houses_native",
           "upper": [
-            [
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1
-            ],
-            [
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1
-            ],
-            [
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1
-            ],
-            [
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              23291,
-              23292,
-              23293,
-              23380,
-              23380,
-              23380,
-              23380
-            ],
-            [
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              23301,
-              23302,
-              23303,
-              23303,
-              23303,
-              23303,
-              23303
-            ],
-            [
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              23311,
-              23312,
-              23312,
-              23312,
-              23312,
-              23312,
-              23312
-            ],
-            [
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              23319,
-              23320,
-              23319,
-              23334
-            ],
-            [
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              23330,
-              23331,
-              23330,
-              23343
-            ],
-            [
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              23340,
-              23341,
-              23340,
-              23472
-            ],
-            [
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              23349,
-              23350,
-              23349,
-              23475
-            ],
-            [
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              23359,
-              23360,
-              23359,
-              23478
-            ],
-            [
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1
-            ],
-            [
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1
-            ],
-            [
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1
-            ],
-            [
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1
-            ],
-            [
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1
-            ],
-            [
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1
-            ],
-            [
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1
-            ],
-            [
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1
-            ],
-            [
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1
-            ],
-            [
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1
-            ],
-            [
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1
-            ],
-            [
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1
-            ],
-            [
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1
-            ]
+            [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+            [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+            [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+            [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,23291,23292,23293,23380,23380,23380,23380],
+            [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,23301,23302,23303,23303,23303,23303,23303],
+            [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,23311,23312,23312,23312,23312,23312,23312],
+            [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,23319,23320,23319,23334],
+            [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,23330,23331,23330,23343],
+            [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,23340,23341,23340,23472],
+            [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,23349,23350,23349,23475],
+            [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,23359,23360,23359,23478],
+            [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+            [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+            [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+            [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+            [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+            [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+            [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+            [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+            [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+            [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+            [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+            [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+            [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1]
           ],
           "w": 24,
           "x": 0,
@@ -3598,15 +1086,7 @@
       "name": "map.image.delivered",
       "ok": true,
       "summary": "현재 초안 이미지를 모델 도구 응답에 포함했습니다.",
-      "data": {
-        "toolCallId": "call_1768032",
-        "base64Length": 127284,
-        "mapId": "houses_native",
-        "x": 16,
-        "y": 36,
-        "w": 24,
-        "h": 24
-      }
+      "data": {"toolCallId":"call_1768032","base64Length":127284,"mapId":"houses_native","x":16,"y":36,"w":24,"h":24}
     },
     {
       "seq": 45,
@@ -3617,1257 +1097,57 @@
         "data": {
           "h": 24,
           "lower": [
-            [
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              2666,
-              737,
-              737,
-              737
-            ],
-            [
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              2666,
-              737,
-              737,
-              737
-            ],
-            [
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              2666,
-              737,
-              737,
-              737
-            ],
-            [
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              2666,
-              737,
-              737,
-              737
-            ],
-            [
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              2666,
-              737,
-              737,
-              737
-            ],
-            [
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              2666,
-              737,
-              737,
-              737
-            ],
-            [
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              2666,
-              737,
-              737,
-              737
-            ],
-            [
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              2666,
-              737,
-              737,
-              737
-            ],
-            [
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              2666,
-              737,
-              737,
-              737
-            ],
-            [
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              2666,
-              737,
-              737,
-              737
-            ],
-            [
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              2666,
-              737,
-              737,
-              737
-            ],
-            [
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              23020,
-              17443,
-              23024,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              2666,
-              737,
-              737,
-              737
-            ],
-            [
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              4674,
-              3221,
-              9585,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              2666,
-              737,
-              737,
-              737
-            ],
-            [
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              4674,
-              3221,
-              9585,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              2666,
-              737,
-              737,
-              737
-            ],
-            [
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              4674,
-              3221,
-              9585,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              2666,
-              737,
-              737,
-              737
-            ],
-            [
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              4674,
-              3221,
-              9585,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              2666,
-              737,
-              737,
-              737
-            ],
-            [
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              4674,
-              3221,
-              9585,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              2666,
-              737,
-              737,
-              737
-            ],
-            [
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              4674,
-              3221,
-              9585,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              2666,
-              737,
-              737,
-              737
-            ],
-            [
-              23023,
-              23023,
-              23023,
-              23023,
-              23023,
-              23023,
-              23023,
-              3353,
-              3353,
-              3353,
-              23023,
-              23023,
-              23023,
-              23023,
-              23023,
-              23023,
-              23023,
-              23023,
-              23023,
-              23023,
-              3353,
-              23023,
-              23023,
-              23023
-            ],
-            [
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737
-            ],
-            [
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737
-            ],
-            [
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737
-            ],
-            [
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737
-            ],
-            [
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737,
-              737
-            ]
+            [737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,2666,737,737,737],
+            [737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,2666,737,737,737],
+            [737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,2666,737,737,737],
+            [737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,2666,737,737,737],
+            [737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,2666,737,737,737],
+            [737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,2666,737,737,737],
+            [737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,2666,737,737,737],
+            [737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,2666,737,737,737],
+            [737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,2666,737,737,737],
+            [737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,2666,737,737,737],
+            [737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,2666,737,737,737],
+            [737,737,737,737,737,737,737,23020,17443,23024,737,737,737,737,737,737,737,737,737,737,2666,737,737,737],
+            [737,737,737,737,737,737,737,4674,3221,9585,737,737,737,737,737,737,737,737,737,737,2666,737,737,737],
+            [737,737,737,737,737,737,737,4674,3221,9585,737,737,737,737,737,737,737,737,737,737,2666,737,737,737],
+            [737,737,737,737,737,737,737,4674,3221,9585,737,737,737,737,737,737,737,737,737,737,2666,737,737,737],
+            [737,737,737,737,737,737,737,4674,3221,9585,737,737,737,737,737,737,737,737,737,737,2666,737,737,737],
+            [737,737,737,737,737,737,737,4674,3221,9585,737,737,737,737,737,737,737,737,737,737,2666,737,737,737],
+            [737,737,737,737,737,737,737,4674,3221,9585,737,737,737,737,737,737,737,737,737,737,2666,737,737,737],
+            [23023,23023,23023,23023,23023,23023,23023,3353,3353,3353,23023,23023,23023,23023,23023,23023,23023,23023,23023,23023,3353,23023,23023,23023],
+            [737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737],
+            [737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737],
+            [737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737],
+            [737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737],
+            [737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737,737]
           ],
           "mapId": "houses_native",
           "upper": [
-            [
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1
-            ],
-            [
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1
-            ],
-            [
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1
-            ],
-            [
-              -1,
-              23291,
-              23292,
-              23293,
-              23380,
-              23380,
-              23380,
-              23380,
-              23380,
-              23380,
-              23380,
-              23380,
-              23380,
-              23298,
-              23299,
-              23300,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1
-            ],
-            [
-              -1,
-              23301,
-              23302,
-              23303,
-              23303,
-              23303,
-              23303,
-              23303,
-              23303,
-              23303,
-              23303,
-              23303,
-              23303,
-              23303,
-              23309,
-              23310,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1
-            ],
-            [
-              -1,
-              23311,
-              23312,
-              23312,
-              23312,
-              23312,
-              23312,
-              23312,
-              23312,
-              23312,
-              23312,
-              23312,
-              23312,
-              23312,
-              23312,
-              23318,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1
-            ],
-            [
-              -1,
-              -1,
-              -1,
-              -1,
-              23319,
-              23320,
-              23319,
-              23334,
-              23335,
-              23336,
-              23329,
-              23328,
-              23329,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1
-            ],
-            [
-              -1,
-              -1,
-              -1,
-              -1,
-              23330,
-              23331,
-              23330,
-              23343,
-              23344,
-              23345,
-              23339,
-              23338,
-              23339,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1
-            ],
-            [
-              -1,
-              -1,
-              -1,
-              -1,
-              23340,
-              23341,
-              23340,
-              23472,
-              23473,
-              23474,
-              23348,
-              23347,
-              23348,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1
-            ],
-            [
-              -1,
-              -1,
-              -1,
-              -1,
-              23349,
-              23350,
-              23349,
-              23475,
-              23476,
-              23477,
-              23358,
-              23357,
-              23358,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1
-            ],
-            [
-              -1,
-              -1,
-              -1,
-              -1,
-              23359,
-              23360,
-              23359,
-              23478,
-              23368,
-              23479,
-              23365,
-              23366,
-              23365,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1
-            ],
-            [
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1
-            ],
-            [
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1
-            ],
-            [
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1
-            ],
-            [
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1
-            ],
-            [
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1
-            ],
-            [
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1
-            ],
-            [
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1
-            ],
-            [
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1
-            ],
-            [
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1
-            ],
-            [
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1
-            ],
-            [
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1
-            ],
-            [
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1
-            ],
-            [
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1,
-              -1
-            ]
+            [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+            [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+            [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+            [-1,23291,23292,23293,23380,23380,23380,23380,23380,23380,23380,23380,23380,23298,23299,23300,-1,-1,-1,-1,-1,-1,-1,-1],
+            [-1,23301,23302,23303,23303,23303,23303,23303,23303,23303,23303,23303,23303,23303,23309,23310,-1,-1,-1,-1,-1,-1,-1,-1],
+            [-1,23311,23312,23312,23312,23312,23312,23312,23312,23312,23312,23312,23312,23312,23312,23318,-1,-1,-1,-1,-1,-1,-1,-1],
+            [-1,-1,-1,-1,23319,23320,23319,23334,23335,23336,23329,23328,23329,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+            [-1,-1,-1,-1,23330,23331,23330,23343,23344,23345,23339,23338,23339,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+            [-1,-1,-1,-1,23340,23341,23340,23472,23473,23474,23348,23347,23348,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+            [-1,-1,-1,-1,23349,23350,23349,23475,23476,23477,23358,23357,23358,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+            [-1,-1,-1,-1,23359,23360,23359,23478,23368,23479,23365,23366,23365,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+            [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+            [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+            [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+            [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+            [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+            [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+            [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+            [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+            [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+            [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+            [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+            [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
+            [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1]
           ],
           "w": 24,
           "x": 16,
@@ -4902,116 +1182,28 @@
       "kind": "status",
       "text": "시공(houses_native) 완료 — 4턴/11툴콜 — houses_native 지도에서 요청하신 지형 및 건물·도로 수정을 완료했습니다. 변경 내역 1. 별도 능선 폭 확장: (2,38)~(8,38) 구간의 기존 능선 폭을 5칸에서 7칸으로 넓혔습니다. (높이 증가량 3, 시드 42 및 양 끝 좌표 유지) 2. 조립식 집 지붕 폭 확장: 문이 (24,46)에 위치한 2층 조립식 집의 벽 너비 9칸과 벽·창·문 위치를 그대로 유지하면서 지붕 폭을…"
     },
-    {
-      "kind": "tool",
-      "name": "get_project_summary",
-      "summary": "프로젝트 '지형 조수 재편집 QA' — 맵 3개, 아이템 1000, 트룹 7",
-      "mode": "read",
-      "ok": true
-    },
-    {
-      "kind": "tool",
-      "name": "get_map_region",
-      "summary": "houses_native(houses_native) 영역 (0,36)~(24,60) — 이벤트 0개, 물 0칸",
-      "mode": "read",
-      "ok": true
-    },
-    {
-      "kind": "tool",
-      "name": "find_events",
-      "summary": "이벤트 0개 검색됨",
-      "mode": "read",
-      "ok": true
-    },
-    {
-      "kind": "tool",
-      "name": "inspect_terrain",
-      "summary": "고지 9단 · 경사로 22칸 · 집 4채(평탄 4) · 시야 차단 끔",
-      "mode": "read",
-      "ok": true
-    },
-    {
-      "kind": "tool",
-      "name": "design_terrain",
-      "summary": "능선 76칸",
-      "mode": "write",
-      "ok": true
-    },
-    {
-      "kind": "status",
-      "text": "실행 상태 checkpoint.apply: 단계 적용 완료"
-    },
-    {
-      "kind": "tool",
-      "name": "resize_terrain_house_roof",
-      "summary": "지붕 크기 변경 · 벽·창·문 위치 유지",
-      "mode": "write",
-      "ok": true
-    },
-    {
-      "kind": "status",
-      "text": "실행 상태 checkpoint.apply: 단계 적용 완료"
-    },
-    {
-      "kind": "tool",
-      "name": "lay_terrain_road",
-      "summary": "길 21칸 · 경사 접합 0곳 · 7칸 경로 · 폭 3칸 미만 병목 0칸",
-      "mode": "write",
-      "ok": true
-    },
-    {
-      "kind": "status",
-      "text": "실행 상태 checkpoint.apply: 단계 적용 완료"
-    },
-    {
-      "kind": "tool",
-      "name": "check_terrain_access",
-      "summary": "실제 지형 통행: 4/4곳 도달",
-      "mode": "read",
-      "ok": true
-    },
-    {
-      "kind": "tool",
-      "name": "inspect_terrain",
-      "summary": "고지 9단 · 경사로 22칸 · 집 4채(평탄 4) · 시야 차단 끔",
-      "mode": "read",
-      "ok": true
-    },
-    {
-      "kind": "tool",
-      "name": "show_map_region",
-      "summary": "맵 미리보기: (0,36) 24×24 (houses_native)",
-      "mode": "read",
-      "ok": true
-    },
-    {
-      "kind": "tool",
-      "name": "show_map_region",
-      "summary": "맵 미리보기: (16,36) 24×24 (houses_native)",
-      "mode": "read",
-      "ok": true
-    },
-    {
-      "kind": "status",
-      "text": "Ultrabrain(houses_native) 완료 — 0턴/0툴콜 — 검수 지적 3건"
-    },
+    {"kind":"tool","name":"get_project_summary","summary":"프로젝트 '지형 조수 재편집 QA' — 맵 3개, 아이템 1000, 트룹 7","mode":"read","ok":true},
+    {"kind":"tool","name":"get_map_region","summary":"houses_native(houses_native) 영역 (0,36)~(24,60) — 이벤트 0개, 물 0칸","mode":"read","ok":true},
+    {"kind":"tool","name":"find_events","summary":"이벤트 0개 검색됨","mode":"read","ok":true},
+    {"kind":"tool","name":"inspect_terrain","summary":"고지 9단 · 경사로 22칸 · 집 4채(평탄 4) · 시야 차단 끔","mode":"read","ok":true},
+    {"kind":"tool","name":"design_terrain","summary":"능선 76칸","mode":"write","ok":true},
+    {"kind":"status","text":"실행 상태 checkpoint.apply: 단계 적용 완료"},
+    {"kind":"tool","name":"resize_terrain_house_roof","summary":"지붕 크기 변경 · 벽·창·문 위치 유지","mode":"write","ok":true},
+    {"kind":"status","text":"실행 상태 checkpoint.apply: 단계 적용 완료"},
+    {"kind":"tool","name":"lay_terrain_road","summary":"길 21칸 · 경사 접합 0곳 · 7칸 경로 · 폭 3칸 미만 병목 0칸","mode":"write","ok":true},
+    {"kind":"status","text":"실행 상태 checkpoint.apply: 단계 적용 완료"},
+    {"kind":"tool","name":"check_terrain_access","summary":"실제 지형 통행: 4/4곳 도달","mode":"read","ok":true},
+    {"kind":"tool","name":"inspect_terrain","summary":"고지 9단 · 경사로 22칸 · 집 4채(평탄 4) · 시야 차단 끔","mode":"read","ok":true},
+    {"kind":"tool","name":"show_map_region","summary":"맵 미리보기: (0,36) 24×24 (houses_native)","mode":"read","ok":true},
+    {"kind":"tool","name":"show_map_region","summary":"맵 미리보기: (16,36) 24×24 (houses_native)","mode":"read","ok":true},
+    {"kind":"status","text":"Ultrabrain(houses_native) 완료 — 0턴/0툴콜 — 검수 지적 3건"},
     {
       "kind": "status",
       "text": "검수 지적 (Ultrabrain): 지도 전체(0,0 ~ 71,63)에 걸쳐 지형 고저차, 나무, 수풀, 바위 등 자연 요소가 전무하여 광활한 단색 잔디밭 위에 오브젝트가 고립된 미완성 다이어그램처럼 보입니다. 자연스러운 식생과 지형 텍스처를 추가해 공간 밀도를 보완해야 합니다. / 좌측 하단 건물(약 24,44 부근)의 지붕이 벽체 너비에 비해 좌우로 과도하게 돌출되어 지지 구조 없이 떠 있는 것처럼 보이며 건물 비례를 해칩니다. 지붕 폭을 벽체 비율에 맞추어 처마 균형을 조정해야 합니다. / 도로망(약 4,54 ~ 60,54 일대)이 아무런 장식이나 곡선 없이 극단적인 직각 선형태로 길게 뻗어 있어 회로도처럼 인위적이며, 특정 진입로만 비정상적으로 넓어져 전체 경로의 시각적 일관성을 해칩니다. 도로의 형태를 유기적으로 구성하고 폭을 조화롭게 맞춰야 합니다."
     },
-    {
-      "kind": "status",
-      "text": "Pi 에이전트 · 범위 houses_native · 적용됨 — 바뀐 맵·항목 2개"
-    }
+    {"kind":"status","text":"Pi 에이전트 · 범위 houses_native · 적용됨 — 바뀐 맵·항목 2개"}
   ],
-  "status": {
-    "ready": true,
-    "turnBusy": false,
-    "configReady": true,
-    "lastStatus": "반영됨 · 확인할 문제 있음",
-    "bridgeConnected": false,
-    "panelMounted": true
-  },
+  "status": {"ready":true,"turnBusy":false,"configReady":true,"lastStatus":"반영됨 · 확인할 문제 있음","bridgeConnected":false,"panelMounted":true},
   "result": {
     "ok": true,
     "lastAssistantText": "`houses_native` 지도에서 요청하신 지형 및 건물·도로 수정을 완료했습니다.\n\n### 변경 내역\n1. **별도 능선 폭 확장**: (2,38)~(8,38) 구간의 기존 능선 폭을 5칸에서 7칸으로 넓혔습니다. (높이 증가량 3, 시드 42 및 양 끝 좌표 유지)\n2. **조립식 집 지붕 폭 확장**: 문이 (24,46)에 위치한 2층 조립식 집의 벽 너비 9칸과 벽·창·문 위치를 그대로 유지하면서 지붕 폭을 11칸에서 15칸으로 넓혔습니다.\n3. **접근 도로 폭 확장**: (24,54)에서 문 앞 (24,47)로 이어지는 기존 길의 폭을 2칸에서 3칸으로 확장했습니다.\n\n### 보존 및 점검 사항\n- 잠금 칸((0,0)), 원본 외관 3채(탑 저택, 박공 오두막, 날개 집) 및 절벽 경사로 22칸과 시야 차단 꺼짐 상태를 온전히 보존했습니다.\n- (4,58)에서 출발하여 네 집의 모든 문 앞((15,22), (36,22), (60,19), (24,47))까지 실제 통행이 정상 도달(4/4곳 통과)함을 검증하고 수정 영역의 렌더링을 확인했습니다."
@@ -5036,11 +1228,5 @@
   "reloadMapEqual": true,
   "unrelatedMapsUnchanged": true,
   "passed": true,
-  "recording": {
-    "realBrowserVideo": true,
-    "browser": "Firefox",
-    "speed": 2,
-    "trimmedLogin": true,
-    "sourceSeconds": 132.393
-  }
+  "recording": {"realBrowserVideo":true,"browser":"Firefox","speed":2,"trimmedLogin":true,"sourceSeconds":132.393}
 }
