@@ -5,6 +5,17 @@
 
 <!-- releases -->
 
+## 0.121.1 — 2026-10-04
+
+### 수정
+
+- follow native building silhouettes when casting sunlight shadows (`142d37a`)
+- 공간 도면·여백·구성을 실제 제작 관문으로 검수 (#2086) (`71d1af5`)
+
+### 문서
+
+- record native building shadow comparisons and shipping QA (`bb72e14`)
+
 ## 0.121.0 — 2026-10-04
 
 ### 기능
