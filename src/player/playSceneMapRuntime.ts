@@ -1,4 +1,5 @@
 import { phaserBlendMode } from "@/project/blendMode";
+import { invalidateSunlight } from "./sunlightLayer";
 import { mapTileSize } from "@/project/tileGeometry";
 import { mapCharacterSizeFactor } from "@/project/characterScale";
 import { projectReferenceTileSize } from "@/project/mapViewScale";
@@ -283,6 +284,7 @@ export function renderTiles<
     return;
   }
   tileLayerSignatures.set(host, signature);
+  invalidateSunlight(scene);
   bumpPerfCounter(scene, "tileRebuilds");
   scene.tileLayer.removeAll(true);
   scene.upperTileLayer?.removeAll(true);

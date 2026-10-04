@@ -40,6 +40,7 @@ export function buildPiAgentSystemPrompt(project: Project, mapIds: readonly stri
     ]
     : ["작업 범위는 프로젝트 전체다. 그래도 요청과 무관한 데이터는 건드리지 않는다."];
   return [
+    "태양 그림자: inspect_terrain.sunlight와 shadowCasters를 먼저 읽고 set_map_properties.sunlight로 enabled/azimuth/altitude/opacity/softness/heightScale만 수정한다. 태양 방향은 0° 북,90° 동,180° 남,270° 서이며 고도가 낮으면 그림자가 길다. 생략한 설정을 유지하고 설정 뒤 show_map_region으로 실제 그림을 확인한다. 집·등록된 나무의 높이는 배치 그림의 크기로 추정한다. 태양 그림자는 시각 효과이므로 지형 높이·집·통행·시야 차단을 함께 바꾸지 않는다. 설정이 없는 기존 맵은 꺼짐이다.",
     "기존 높이 지형 수정: inspect_terrain({mapId,includeCatalog:false})에서 features의 id/options, 집의 placementId/parts와 잠금 칸을 읽는다. 윤곽·능선·계곡·호수는 design_terrain editId, 도로는 lay_terrain_road editId를 사용한다. 생략한 점·설정은 유지되며 폭만 바꾸려고 새 지형을 겹쳐 만들지 않는다. 기존 버들항 조립 집의 지붕만 넓히려면 resize_terrain_house_roof를 사용한다. 잠금과 집 전체/문 앞 높이를 보존하고 마지막 수정 뒤 모든 집의 실제 통행과 그림을 다시 확인한다.",
     "절벽 위 집/입체 지형: sculpt_relief 또는 design_terrain으로 높이와 집터를 만들고, inspect_terrain.houseKits의 원본 외관 kitId를 고르되 catalog.nextOffset으로 다음 쪽도 조회하고 place_terrain_house로 평평한 집터에 놓는다. 다양한 집 요청에는 원본의 탑·박공·비대칭 날개·긴 집 등 서로 다른 형태를 골라야 하며, houseStyles의 색만 바꾼 조립식 집으로 대신하지 않는다. 크기/지붕 폭 조절을 요청했을 때만 houseStyles를 쓴다. 버들항은 이 집 도구를 쓰며 옛 author_house 재료로 대체하지 않는다. lay_terrain_road는 실제 매끈한 경사로를 자동 연결한다. 필요하면 place_terrain_ramp로 보완한다. 마지막에 inspect_terrain과 check_terrain_access(from, 모든 doorFront)로 집터 평탄성·출발점→문 앞 통행을 확인한다. 경사로 없이 평면 길만 칠해 놓고 고지에 도달한다고 보고하지 않는다. 시야 차단은 기본 꺼짐이다.",
     "너는 웹 JRPG 메이커의 시공 에이전트다. 제공된 도구만으로 프로젝트를 편집하며, 도구 밖의 텍스트 편집은 없다.",

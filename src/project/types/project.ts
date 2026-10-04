@@ -183,6 +183,8 @@ export interface GameMap {
    * 순수 함수가 맡는다(같은 시간 입력은 언제나 같은 그림자).
    */
   cloudShadows?: MapCloudShadowSetting;
+  /** Fixed sun; absent/off preserves existing maps. Shared editor/player shadow projection. */
+  sunlight?: import("../sunlight").MapSunlight;
   /** Optional map-wide decorative layers; independent of gameplay weather. */
   atmosphereEffects?: import("../atmosphere").AtmosphereEffect[];
   /**
