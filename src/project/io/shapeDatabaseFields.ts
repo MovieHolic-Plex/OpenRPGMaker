@@ -1,3 +1,4 @@
+import { parseCinematicPresentation } from '@/project/cinematicPresentation';
 import { validateFieldHud } from "./shapeFieldHud";
 import { parseCinematicDirection } from '../cinematicDirection';
 import { isEquipmentSlotId } from "@/project/equipmentSlots";
@@ -228,10 +229,14 @@ function validateCinematicSequence(label: string, value: unknown): void {
     const kind = requireString(`${sceneLabel}.kind`, scene.kind);
     assert(kind === "text" || kind === "image" || kind === "video", `${sceneLabel}.kind is invalid.`);
     requireOnlyFields(sceneLabel, scene, [
-      "id", "kind", "narration", "narrationAudioResourceId", "durationMs",
+      "id", "kind", "narration", "narrationAudioResourceId", "durationMs", "presentation",
       ...(kind !== "text" ? ["resourceId"] : []),
       ...(kind === "image" ? ["motion", "direction"] : []),
     ]);
+    if (scene.presentation !== undefined) {
+      try { parseCinematicPresentation(scene.presentation); }
+      catch (error) { assert(false, `${sceneLabel}: ${error instanceof Error ? error.message : String(error)}`); }
+    }
     requireString(`${sceneLabel}.narration`, scene.narration);
     assertSafeIntegerInRange(`${sceneLabel}.durationMs`, scene.durationMs, 0, CINEMATIC_DURATION_MAX_MS);
     if (scene.narrationAudioResourceId !== undefined) requireNonBlankString(`${sceneLabel}.narrationAudioResourceId`, scene.narrationAudioResourceId);

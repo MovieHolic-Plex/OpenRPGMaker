@@ -4,7 +4,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 const out = resolve(process.env.LIVE_GAME_OUT ?? 'verify-shots/live-first-game');
-const initial = JSON.parse(readFileSync(out + '/generation.json', 'utf8'));
+const initial = existsSync(out + '/generation.json') ? JSON.parse(readFileSync(out + '/generation.json', 'utf8')) : null;
 const completion = existsSync(out + '/completion.json') ? JSON.parse(readFileSync(out + '/completion.json', 'utf8')) : null;
 const recovered = existsSync(out + '/reloaded.json') ? JSON.parse(readFileSync(out + '/reloaded.json', 'utf8')) : null;
 const generation = completion?.passed ? completion : recovered?.passed ? recovered : initial;

@@ -232,3 +232,40 @@ RPG 일곱 작품 공식 자료 조사/적용의 범위는 [rpg-opening-research
 현재 `.cinematic-shot:not([data-previous-shot])`의 원화를 검사한다.
 
 배경 엔진 준비에서도 `ensurePhaser()` → `import(PlayScene)` 순서를 지킨다. `PlayScene`은 모듈 평가 때 `getLoadedPhaser()`를 읽으므로 둘을 `Promise.all`로 병렬화하면 빠른 스킵에서 부팅이 실패한다. 로딩 QA는 Phaser 응답을 잡아 둔 채 Esc를 누른 뒤 해제해 이 의존성을 실제 출하물에서 확인한다.
+
+## 글자·장면 오프닝 연출 (2026-10-04)
+
+모든 `CinematicScene`(text/image/video)에 선택 `presentation`을 저장한다. 없는 기존
+프로젝트는 기존 연출을 유지한다. `cinematicPresentation.ts`의 같은 엄격 파서가 프로젝트
+로드와 조수 도구 입력을 검사한다. 스키마 버전·SQL 변경은 없다. 꺼진 장면과 게임오버
+시퀀스에도 보존하며 종류 변경은 공통 연출을 유지하고 이미지 전용 direction만 분리한다.
+
+- 기본형 `subtitle`/`prologue`/`chapter`/`memory`/`credits` + 선택 덮어쓰기.
+- `text`: layout(center/bottom/left/credits), font(serif/sans/pixel), size(무대 8~64px),
+  color(#RRGGBB), animation(none/fade/rise/typewriter/blur/scroll), delayMs/revealMs/exitMs(0~10000).
+- `transition`: enter(cut/fade/dissolve/wipe/iris/flash), enterMs/exitMs(0~5000).
+- `backgroundColor`(#RRGGBB), `letterbox`(상하 각각 0~20%).
+
+시간은 durationMs 안에 포함된다. 짧은 장면은 등장·읽기·퇴장 예산으로 제한한다.
+0ms는 수동 진행이므로 자동 퇴장/스크롤을 하지 않는다. 이미지는 direction 카메라·빛·SE를
+함께 쓰며 presentation 전환과 글자 지연이 기존 direction 전환/자막 지연보다 우선한다.
+
+플레이어 `cinematicText.ts`는 Intl.Segmenter grapheme 단위로 한국어·결합 문자·이모지를
+안전하게 보인다. textContent만 사용한다. 1200자를 넘으면 전체 블록 페이드로 제한한다.
+확인 첫 입력은 등장 중인 글자를 모두 표시하고 다음 입력은 장면을 넘긴다. Esc/중단/
+미디어 재시도/장면 변경에서 타이머·애니메이션을 해제한다. 다음 그림 디코딩 중에는 이전
+합성 프레임을 고정한다. reduced-motion은 전체 문장을 즉시 표시하고 크레딧도 정지된
+스크롤 가능한 가운데 글로 보여 준다. 첫 프레임을 두 번의 requestAnimationFrame으로 정착시킨 뒤 장면/글자 시간을 시작한다.
+마지막 이미지의 퇴장은 플레이어 셸이 소유한다: 맵 준비 중 마지막 그림을 유지하고 준비 완료 후
+저작된 exitMs로 실제 맵을 드러낸다. 미리보기와 마지막 텍스트 장면은 장면 내 암전을 재생한다.
+
+DB 「오프닝」/「게임오버」 장면 폼에서 기본형·글자·장면 전환·독립 퇴장 시간·색·띠를
+직접 고른다. 새 편지/영화형/크레딧 시퀀스 프리셋은 같은 프로젝트 레코드를 쓰며 미리보기도
+같은 재생기를 쓴다. AI set_opening/edit_opening은 presentation을 노출한다. 첫 제작은
+사용자가 글자 중심을 요청한 경우 서로 다른 기본형으로 저작한 2개 이상의 text 장면도
+인정한다. 기본 그림형은 최소 3개 이야기 장면과 서로 다른 실제 그림 2장 이상을 유지한다.
+
+근거: `verify-shots/opening-typography/README.md`(실제 조수 → 정본 저장·재로드 →
+수정하지 않은 UI 내보내기 → 출하 player.html 재생/GIF). 기능별 fixture는 실제 게임
+저작과 구별하여 `features/SUMMARY.md`에 기록한다. vitest/전체 typecheck/게이트는
+세션 실행 제한 때문에 실행하지 않는다. 회귀 계약은 `test/cinematicPresentation.test.ts`.
