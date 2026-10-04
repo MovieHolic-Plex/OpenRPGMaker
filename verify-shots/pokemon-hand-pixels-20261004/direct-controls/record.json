@@ -1,0 +1,158 @@
+{
+  "checks": [
+    {
+      "name": "hero native16x32 field bytes unchanged",
+      "pass": true
+    },
+    {
+      "name": "hero native64 trainer bytes unchanged",
+      "pass": true
+    },
+    {
+      "name": "rival native16x32 field bytes unchanged",
+      "pass": true
+    },
+    {
+      "name": "rival native64 trainer bytes unchanged",
+      "pass": true
+    },
+    {
+      "name": "professor native16x32 field bytes unchanged",
+      "pass": true
+    },
+    {
+      "name": "professor native64 trainer bytes unchanged",
+      "pass": true
+    },
+    {
+      "name": "nurse native16x32 field bytes unchanged",
+      "pass": true
+    },
+    {
+      "name": "nurse native64 trainer bytes unchanged",
+      "pass": true
+    },
+    {
+      "name": "merchant native16x32 field bytes unchanged",
+      "pass": true
+    },
+    {
+      "name": "merchant native64 trainer bytes unchanged",
+      "pass": true
+    },
+    {
+      "name": "mother native16x32 field bytes unchanged",
+      "pass": true
+    },
+    {
+      "name": "mother native64 trainer bytes unchanged",
+      "pass": true
+    },
+    {
+      "name": "resident native16x32 field bytes unchanged",
+      "pass": true
+    },
+    {
+      "name": "resident native64 trainer bytes unchanged",
+      "pass": true
+    },
+    {
+      "name": "gym_leader native16x32 field bytes unchanged",
+      "pass": true
+    },
+    {
+      "name": "gym_leader native64 trainer bytes unchanged",
+      "pass": true
+    },
+    {
+      "name": "company_agent native16x32 field bytes unchanged",
+      "pass": true
+    },
+    {
+      "name": "company_agent native64 trainer bytes unchanged",
+      "pass": true
+    },
+    {
+      "name": "captain native16x32 field bytes unchanged",
+      "pass": true
+    },
+    {
+      "name": "captain native64 trainer bytes unchanged",
+      "pass": true
+    },
+    {
+      "name": "worker native16x32 field bytes unchanged",
+      "pass": true
+    },
+    {
+      "name": "worker native64 trainer bytes unchanged",
+      "pass": true
+    },
+    {
+      "name": "explorer native16x32 field bytes unchanged",
+      "pass": true
+    },
+    {
+      "name": "explorer native64 trainer bytes unchanged",
+      "pass": true
+    },
+    {
+      "name": "student native16x32 field bytes unchanged",
+      "pass": true
+    },
+    {
+      "name": "student native64 trainer bytes unchanged",
+      "pass": true
+    },
+    {
+      "name": "ranger native16x32 field bytes unchanged",
+      "pass": true
+    },
+    {
+      "name": "ranger native64 trainer bytes unchanged",
+      "pass": true
+    },
+    {
+      "name": "moon_leader native16x32 field bytes unchanged",
+      "pass": true
+    },
+    {
+      "name": "moon_leader native64 trainer bytes unchanged",
+      "pass": true
+    },
+    {
+      "name": "hiker native16x32 field bytes unchanged",
+      "pass": true
+    },
+    {
+      "name": "hiker native64 trainer bytes unchanged",
+      "pass": true
+    },
+    {
+      "name": "native64 player back bytes unchanged",
+      "pass": true
+    },
+    {
+      "name": "all6 native64 professor poses unchanged",
+      "pass": true
+    },
+    {
+      "name": "native64 clip rejects mismatched declared grid",
+      "pass": true
+    },
+    {
+      "name": "native portrait rejects partial alpha without automatic repair",
+      "pass": true
+    },
+    {
+      "name": "native portrait rejects64x96 instead of shrinking it",
+      "pass": true
+    },
+    {
+      "name": "native portrait rejects excess palette instead of quantizing",
+      "pass": true
+    }
+  ],
+  "sourceMethod": "python-native-pixel-authoring",
+  "scope": "Exact source/final RGBA for all34 native artifacts plus4 no-repair rejection controls. Pixel craft and campaign gameplay are separate reviews."
+}

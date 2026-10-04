@@ -1,15 +1,15 @@
 {
   "version": "pokemon-motion-2",
   "kind": "portrait",
-  "mode": "extracted-existing-pixels",
-  "createdAt": "2026-10-04T09:58:12.450Z",
+  "mode": "native",
+  "createdAt": "2026-10-04T14:13:22.753Z",
   "role": "hero",
-  "sourceSha256": "329871a5fa0d2e378f6988749846dd78bf45659c59e6870cc30ca728cade5429",
-  "promptSha256": "2d87b77c4e98c80f3a5369894bb99edf7361acd1dc6486f932df58107fc5590b",
-  "finalSha256": "0fb3aa38772e1e58e5e05ba531b3d1c509e38d0fa91c03735b470997e91feb5e",
+  "sourceSha256": "47c069e89869440bffa68e591b9fc2d1a8431f3f8cd88e931a630e6d3157d60b",
+  "promptSha256": "f52e37a84509d1366cedf2b26551a089d6a7c6b629c9df27e153813b80ea5fb6",
+  "finalSha256": "a9163ba5ea144c00af2852c7297e3341ec639845af2ab9c8b9974c984113673b",
   "sourceDimensions": {
     "width": 64,
-    "height": 96
+    "height": 64
   },
   "contract": {
     "width": 64,
@@ -29,92 +29,6 @@
     "bottomExclusive": 63,
     "margin": 1
   },
-  "sourceInk": {
-    "width": 53,
-    "height": 90
-  },
-  "scale": 0.6888888888888889,
-  "palette": [
-    [
-      16,
-      20,
-      32
-    ],
-    [
-      253,
-      204,
-      167
-    ],
-    [
-      45,
-      56,
-      87
-    ],
-    [
-      64,
-      81,
-      129
-    ],
-    [
-      247,
-      244,
-      244
-    ],
-    [
-      231,
-      142,
-      100
-    ],
-    [
-      87,
-      159,
-      160
-    ],
-    [
-      29,
-      116,
-      112
-    ],
-    [
-      187,
-      184,
-      196
-    ],
-    [
-      147,
-      99,
-      79
-    ],
-    [
-      194,
-      56,
-      57
-    ],
-    [
-      97,
-      82,
-      74
-    ],
-    [
-      104,
-      116,
-      159
-    ],
-    [
-      225,
-      94,
-      92
-    ]
-  ],
-  "alphaThreshold": 128,
-  "sampling": "nearest-existing-pixels",
-  "nativeFrame": {
-    "width": 64,
-    "height": 64,
-    "maxOpaqueColors": 15,
-    "alphaThreshold": 128,
-    "fitInkMax": 62,
-    "bottomExclusive": 63,
-    "margin": 1
-  }
+  "scale": 1,
+  "sampling": "native-pixels-unchanged"
 }

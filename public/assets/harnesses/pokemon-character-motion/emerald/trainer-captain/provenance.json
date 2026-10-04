@@ -1,15 +1,15 @@
 {
   "version": "pokemon-motion-2",
   "kind": "portrait",
-  "mode": "extracted-existing-pixels",
-  "createdAt": "2026-10-04T09:58:16.120Z",
+  "mode": "native",
+  "createdAt": "2026-10-04T14:13:33.325Z",
   "role": "captain",
-  "sourceSha256": "cd9ae91918c6e18cbc30dab367f7c5bd1cb6c9685643eff5e2a4a7c938bcde66",
-  "promptSha256": "f945990d12d35040664f5e0cf5f94f625e6f097c2dd5d276ee8293607e41e22f",
-  "finalSha256": "47fb041feefee121f9db0d855319bc79c03b7792b3015f16cefc277f2666ebb8",
+  "sourceSha256": "895e9b6400b8e0898d10be1fe80a020854e2982d4e50704c8f6bfe3cca9707e6",
+  "promptSha256": "67fd26e37a1dff60a48c96abfe386d290e778ecba51e9d57fad6af1ff1fb9c47",
+  "finalSha256": "140e31ebe0976cdcf7003160c071d3fb3c387f95d6eb84911d228cb59eaefd66",
   "sourceDimensions": {
     "width": 64,
-    "height": 96
+    "height": 64
   },
   "contract": {
     "width": 64,
@@ -29,92 +29,6 @@
     "bottomExclusive": 63,
     "margin": 1
   },
-  "sourceInk": {
-    "width": 46,
-    "height": 88
-  },
-  "scale": 0.7045454545454546,
-  "palette": [
-    [
-      7,
-      8,
-      9
-    ],
-    [
-      56,
-      69,
-      105
-    ],
-    [
-      28,
-      33,
-      49
-    ],
-    [
-      211,
-      210,
-      212
-    ],
-    [
-      169,
-      171,
-      176
-    ],
-    [
-      91,
-      58,
-      41
-    ],
-    [
-      110,
-      93,
-      62
-    ],
-    [
-      185,
-      155,
-      74
-    ],
-    [
-      194,
-      117,
-      83
-    ],
-    [
-      231,
-      183,
-      80
-    ],
-    [
-      141,
-      141,
-      145
-    ],
-    [
-      0,
-      0,
-      0
-    ],
-    [
-      31,
-      128,
-      136
-    ],
-    [
-      250,
-      218,
-      78
-    ]
-  ],
-  "alphaThreshold": 128,
-  "sampling": "nearest-existing-pixels",
-  "nativeFrame": {
-    "width": 64,
-    "height": 64,
-    "maxOpaqueColors": 15,
-    "alphaThreshold": 128,
-    "fitInkMax": 62,
-    "bottomExclusive": 63,
-    "margin": 1
-  }
+  "scale": 1,
+  "sampling": "native-pixels-unchanged"
 }

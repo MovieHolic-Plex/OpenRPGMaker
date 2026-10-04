@@ -2,15 +2,15 @@
   "provenance": {
     "version": "pokemon-motion-2",
     "kind": "portrait",
-    "mode": "extracted-existing-pixels",
-    "createdAt": "2026-10-04T09:58:15.756Z",
+    "mode": "native",
+    "createdAt": "2026-10-04T14:13:32.206Z",
     "role": "company_agent",
-    "sourceSha256": "65c95df71a0cf66694ce37d80f0d0fda6067ee830fc5432a9f214f595225ae07",
-    "promptSha256": "f945990d12d35040664f5e0cf5f94f625e6f097c2dd5d276ee8293607e41e22f",
-    "finalSha256": "ffe3e7e76f366a7e56d64e907b431f4897b83134ec1d0b62bb157289c914b51b",
+    "sourceSha256": "b4a6243c82c343ba5fa2005bc204c13cd9784d1617560cb2142813d983e5c116",
+    "promptSha256": "bb6464875944e317a309bd5fcb5ff954235121bf179b97ef63994ddeb5b6d93b",
+    "finalSha256": "a77ae0cb9becd8ea3a2d9ad4f1064c35332648ebc5c1404cd98f255532ab6124",
     "sourceDimensions": {
       "width": 64,
-      "height": 96
+      "height": 64
     },
     "contract": {
       "width": 64,
@@ -30,107 +30,16 @@
       "bottomExclusive": 63,
       "margin": 1
     },
-    "sourceInk": {
-      "width": 44,
-      "height": 90
-    },
-    "scale": 0.6888888888888889,
-    "palette": [
-      [
-        8,
-        8,
-        9
-      ],
-      [
-        79,
-        76,
-        91
-      ],
-      [
-        33,
-        32,
-        40
-      ],
-      [
-        253,
-        207,
-        171
-      ],
-      [
-        193,
-        193,
-        196
-      ],
-      [
-        141,
-        141,
-        147
-      ],
-      [
-        215,
-        153,
-        112
-      ],
-      [
-        242,
-        248,
-        248
-      ],
-      [
-        174,
-        113,
-        86
-      ],
-      [
-        0,
-        0,
-        0
-      ],
-      [
-        190,
-        57,
-        134
-      ],
-      [
-        105,
-        104,
-        115
-      ],
-      [
-        39,
-        153,
-        164
-      ],
-      [
-        153,
-        38,
-        103
-      ],
-      [
-        144,
-        89,
-        66
-      ]
-    ],
-    "alphaThreshold": 128,
-    "sampling": "nearest-existing-pixels",
-    "nativeFrame": {
-      "width": 64,
-      "height": 64,
-      "maxOpaqueColors": 15,
-      "alphaThreshold": 128,
-      "fitInkMax": 62,
-      "bottomExclusive": 63,
-      "margin": 1
-    }
+    "scale": 1,
+    "sampling": "native-pixels-unchanged"
   },
   "hashes": {
-    "source.png": "65c95df71a0cf66694ce37d80f0d0fda6067ee830fc5432a9f214f595225ae07",
-    "prompt.txt": "f945990d12d35040664f5e0cf5f94f625e6f097c2dd5d276ee8293607e41e22f",
-    "portrait.png": "ffe3e7e76f366a7e56d64e907b431f4897b83134ec1d0b62bb157289c914b51b"
+    "source.png": "b4a6243c82c343ba5fa2005bc204c13cd9784d1617560cb2142813d983e5c116",
+    "prompt.txt": "bb6464875944e317a309bd5fcb5ff954235121bf179b97ef63994ddeb5b6d93b",
+    "portrait.png": "a77ae0cb9becd8ea3a2d9ad4f1064c35332648ebc5c1404cd98f255532ab6124"
   },
-  "implementationSha256": "7bf84ac17234c16b2dad8515b59e09038a21df9c986d5837202f844d632d28e0",
-  "provenanceSha256": "baf3314d072f0d79708a7f1b2bd9f5fa58168d04a6a5def7d927bc1e90a6ede5",
+  "implementationSha256": "5b37cb705514fcb21d151fa048053f4f6eedd86602e3c812a9b3cf4fda775ffd",
+  "provenanceSha256": "39a94ec6f248f34d5798735b06bdf6df0c89cb3da2e3f601f2844fe51e072260",
   "version": "pokemon-motion-2",
   "limits": {
     "width": 64,
@@ -141,22 +50,22 @@
     "bottomExclusive": 63,
     "margin": 1
   },
-  "createdAt": "2026-10-04T10:32:41.587Z",
+  "createdAt": "2026-10-04T14:36:23.986Z",
   "verdict": "pass",
-  "who": "root-supervisor",
-  "why": "Supervisor inspected native64square and3x; role outfit/hair/cap match field identity and independent reviewer. Fronts show completefigures; hero_back has waist-up composition. New nurse/resident/hero_back generated using builtinimagegen. Existing otherfronts uniformly normalized from genuine generated pixels.",
+  "who": "root / Python pixel author and visual reviewer",
+  "why": "Root directly authored native64x64 and viewed the current browser sheet: complete face, hands and shoes within margins; role hair/hat/uniform/prop agrees with field identity. Bare-leg rear shadow was corrected to skin, matching both legs. Hero_back is waist-up rear cap/navy hair/gold bag/red pocket. Face/anatomy and wide stances are shared style limitations; no shrink or quantization is approved.",
   "evidence": [
     {
       "file": "review-evidence-0.png",
-      "sha256": "345a15b1bcba1358f4b9f3c63eb050834421742d695ca25979253c136726054f"
+      "sha256": "370b016e4ba58f0d198378042383834fda33e147c98537bd9d7f0ea45d523534"
     }
   ],
   "semanticChecklist": [
     "native1x silhouette and anatomy readable",
-    "role/outfit matches generated source identity",
+    "role/outfit matches declared source identity",
     "palette and edge pixels reviewed at1x2x3x",
-    "uniform nearest fit retains aspect and complete pose",
+    "native source pixels and complete pose retained without fit",
     "front/back orientation is correct for declared role"
   ],
-  "previewSha256": "5a538a1084bcf70b284173ba1f65f21ba70d0b5e0ebd8f0584892e655f58a644"
+  "previewSha256": "cde81ff00d10cc1f724215d3b9c049329c80beb65c387569cbb66caa147d85df"
 }

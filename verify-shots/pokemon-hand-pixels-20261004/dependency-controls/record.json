@@ -1,0 +1,49 @@
+{
+  "evidenceCopy": {
+    "originalRecordSha256": "be7ae5e47128e0085852c8a93915b82a684dd9616c190b645cbd5d00e1bf9d86",
+    "largeMediaStrings": "Replaced by original string SHA and length; the full temporary record is preserved."
+  },
+  "checks": [
+    {
+      "name": "all17 actual native trainer dependencies survive pruning",
+      "pass": true
+    },
+    {
+      "name": "actual authored portrait motion survives pruning",
+      "pass": true
+    },
+    {
+      "name": "explicit legacy64x96 trainer dependency survives pruning",
+      "pass": true
+    },
+    {
+      "name": "invalid trainer shape remains unused",
+      "pass": true
+    },
+    {
+      "name": "unrelated unreferenced portrait remains unused",
+      "pass": true
+    },
+    {
+      "name": "actual AI repair adds native motion to owned professor introduction",
+      "pass": true
+    },
+    {
+      "name": "AI repair preserves authored story and Enter timings",
+      "pass": true
+    },
+    {
+      "name": "AI repair preserves session and start",
+      "pass": true
+    },
+    {
+      "name": "AI repair preserves an already authored motion controller",
+      "pass": true
+    },
+    {
+      "name": "AI repair preserves a different authored professor portrait",
+      "pass": true
+    }
+  ],
+  "scope": "Actual resource collector and actual AI repair tool on detached canonical clones. No browser, canonical write, or campaign completion claim."
+}

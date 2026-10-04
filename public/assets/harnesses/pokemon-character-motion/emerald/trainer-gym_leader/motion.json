@@ -7,8 +7,8 @@
   "frameCount": 1,
   "paletteUnionMax": 15,
   "alphaThreshold": 128,
-  "sourceSha256": "6b67d376ec8d4fb0ca4ac23e9e24092c9f065665f6b75362b80e43eb7db0885e",
-  "promptSha256": "2d87b77c4e98c80f3a5369894bb99edf7361acd1dc6486f932df58107fc5590b",
-  "portraitSha256": "20e701d3006f727e6452b4902626f3ae9bf0e2a4286ab24c6b6812d5e2d56ccb",
-  "gateSha256": "9e922994f33ad4213d5a60b9bfb82c0a8ba2bcb0706fa4c6444cbf47e4f3bc60"
+  "sourceSha256": "3debc9e641f6b84819183ce619064761a2545f00eec01c6b7fc066cbc6b4f9f3",
+  "promptSha256": "547289245713b3fe3876b964597c405fab94abecb2a3465a875ca838212fe019",
+  "portraitSha256": "b1aad84fa367afbf16bd24213c4323790d51e25f2ace2eda7ff4cda741bd0df9",
+  "gateSha256": "c40a925a63593ab3a5773cddec98c69fbc479f7dff4efcca554d821cc8e64bf7"
 }

@@ -3,7 +3,7 @@
     "id": "oprn_emerald_field_cast_1",
     "kind": "charset",
     "file": "cast-1.png",
-    "sha256": "f0819c345da77b2e8b541e78f7f49a0521df0c247eb42c15eac0f2db6cd0a0bf",
+    "sha256": "5b48727962299ca078e2d3caa56528c2f0fbacd01ba831a8b3d4a39e0585fad0",
     "meta": {
       "width": 288,
       "height": 256,
@@ -18,7 +18,7 @@
     "id": "oprn_emerald_field_cast_2",
     "kind": "charset",
     "file": "cast-2.png",
-    "sha256": "88402834b431763d14da498ade7856fc3a5977c34bedd238cd0ed2fe4050a197",
+    "sha256": "bf6e40f19d55ff86d438afc8f6fa59df2d7be2d1a271943ee2f7880e3dba7174",
     "meta": {
       "width": 288,
       "height": 256,
@@ -48,7 +48,7 @@
     "id": "oprn_emerald_trainer_hero",
     "kind": "picture",
     "file": "trainer-hero.png",
-    "sha256": "0fb3aa38772e1e58e5e05ba531b3d1c509e38d0fa91c03735b470997e91feb5e",
+    "sha256": "a9163ba5ea144c00af2852c7297e3341ec639845af2ab9c8b9974c984113673b",
     "meta": {
       "mime": "image/png",
       "width": 64,
@@ -61,7 +61,7 @@
     "id": "oprn_emerald_trainer_rival",
     "kind": "picture",
     "file": "trainer-rival.png",
-    "sha256": "4ba0ba3ae7cb154afa9979d9736d65bbf4ad3607db070c91f13c1b3132b5a171",
+    "sha256": "ac9cefe3733621d1be3043247d84b218af6dd863d8226ebaa0cca107f5c618a5",
     "meta": {
       "mime": "image/png",
       "width": 64,
@@ -74,7 +74,7 @@
     "id": "oprn_emerald_trainer_professor",
     "kind": "picture",
     "file": "trainer-professor.png",
-    "sha256": "f7c022f34ba4fd063bbd82bd44646220d05b9a0a0f194d91e4a6cb960bb00583",
+    "sha256": "ac3d423d5587d590c3188efc17306b35fa4e21a6398433ffe2f39b4a87b84ad6",
     "meta": {
       "mime": "image/png",
       "width": 64,
@@ -87,7 +87,7 @@
     "id": "oprn_emerald_trainer_nurse",
     "kind": "picture",
     "file": "trainer-nurse.png",
-    "sha256": "0d59d995cedb564519eec458fa37a0c2adafddd7eb5ec5465b817bf0df91113f",
+    "sha256": "ee55b5a35905d3817b323d5e7f5a9959b13b7ac0af4779af7a778387f567ade8",
     "meta": {
       "mime": "image/png",
       "width": 64,
@@ -100,7 +100,7 @@
     "id": "oprn_emerald_trainer_merchant",
     "kind": "picture",
     "file": "trainer-merchant.png",
-    "sha256": "734befcc5b7cad680233b18609944742716f5935b94c3d46b9a611bd0d0d64ea",
+    "sha256": "60a9f2f2d8848e2369406adfd4328bb5b2f57b07888ed46ddcc3c04463fea331",
     "meta": {
       "mime": "image/png",
       "width": 64,
@@ -113,7 +113,7 @@
     "id": "oprn_emerald_trainer_mother",
     "kind": "picture",
     "file": "trainer-mother.png",
-    "sha256": "66daea271097efbb8588c8b7b771556895ad6ed0ae65d934781fd2f2a42a9464",
+    "sha256": "84591ac7a14105c6295039f6df617e61d8f0733c383b7977d9c41bfc43484080",
     "meta": {
       "mime": "image/png",
       "width": 64,
@@ -126,7 +126,7 @@
     "id": "oprn_emerald_trainer_resident",
     "kind": "picture",
     "file": "trainer-resident.png",
-    "sha256": "274a2f2301ba7afcd22aa31ede27fa8d15a762b073f25bab6f0c9bf550ec2c3b",
+    "sha256": "5133a41e38520d3a4aba4051c2c903929d714967db6cf62b6e3b35a81058a902",
     "meta": {
       "mime": "image/png",
       "width": 64,
@@ -139,7 +139,7 @@
     "id": "oprn_emerald_trainer_gym_leader",
     "kind": "picture",
     "file": "trainer-gym_leader.png",
-    "sha256": "20e701d3006f727e6452b4902626f3ae9bf0e2a4286ab24c6b6812d5e2d56ccb",
+    "sha256": "b1aad84fa367afbf16bd24213c4323790d51e25f2ace2eda7ff4cda741bd0df9",
     "meta": {
       "mime": "image/png",
       "width": 64,
@@ -152,7 +152,7 @@
     "id": "oprn_emerald_trainer_company_agent",
     "kind": "picture",
     "file": "trainer-company_agent.png",
-    "sha256": "ffe3e7e76f366a7e56d64e907b431f4897b83134ec1d0b62bb157289c914b51b",
+    "sha256": "a77ae0cb9becd8ea3a2d9ad4f1064c35332648ebc5c1404cd98f255532ab6124",
     "meta": {
       "mime": "image/png",
       "width": 64,
@@ -165,7 +165,7 @@
     "id": "oprn_emerald_trainer_captain",
     "kind": "picture",
     "file": "trainer-captain.png",
-    "sha256": "47fb041feefee121f9db0d855319bc79c03b7792b3015f16cefc277f2666ebb8",
+    "sha256": "140e31ebe0976cdcf7003160c071d3fb3c387f95d6eb84911d228cb59eaefd66",
     "meta": {
       "mime": "image/png",
       "width": 64,
@@ -178,7 +178,7 @@
     "id": "oprn_emerald_trainer_worker",
     "kind": "picture",
     "file": "trainer-worker.png",
-    "sha256": "0ff6b4097d06923a5647151e2adb1d4d677bf9e5ae84c89d87a194846e151869",
+    "sha256": "6a2a4cfad3d946451387e8d46ef3a55885a353893ed4f2bf669f0c3eb20f5b5f",
     "meta": {
       "mime": "image/png",
       "width": 64,
@@ -191,7 +191,7 @@
     "id": "oprn_emerald_trainer_explorer",
     "kind": "picture",
     "file": "trainer-explorer.png",
-    "sha256": "16014fce358972f6fb1ed87cfe33ac2e7a6ae57c0b9881944c06ddc45a94e516",
+    "sha256": "6af6de41cbcdcf213099dbba54b63ba2bb4819d6bd216fbe4ab271e4f756375e",
     "meta": {
       "mime": "image/png",
       "width": 64,
@@ -204,7 +204,7 @@
     "id": "oprn_emerald_trainer_student",
     "kind": "picture",
     "file": "trainer-student.png",
-    "sha256": "adf1f1f3587261559280824a7fae57333b143b0fe4957542c6397c7390d17859",
+    "sha256": "f77fa030756574143ede0d9bbc698073431e883fefd702c8f7e2990df5c0cee9",
     "meta": {
       "mime": "image/png",
       "width": 64,
@@ -217,7 +217,7 @@
     "id": "oprn_emerald_trainer_ranger",
     "kind": "picture",
     "file": "trainer-ranger.png",
-    "sha256": "2dbd4af8dc5d95f08a668b10e1917f390ffe3bb9b48c34265c7d2592988c4164",
+    "sha256": "4e19c96a9797aadc9196b8e42e6c95c4500f94119677f4a4519fe48149d96083",
     "meta": {
       "mime": "image/png",
       "width": 64,
@@ -230,7 +230,7 @@
     "id": "oprn_emerald_trainer_moon_leader",
     "kind": "picture",
     "file": "trainer-moon_leader.png",
-    "sha256": "95fd8fb40f5806a1ff822c0a1bd3ecdb8e90e1b46f99212f005a637b56908311",
+    "sha256": "39ae0d6bab08f30e3b91215200971bc22feb245886a89deccac50e234d405c98",
     "meta": {
       "mime": "image/png",
       "width": 64,
@@ -243,7 +243,7 @@
     "id": "oprn_emerald_trainer_hiker",
     "kind": "picture",
     "file": "trainer-hiker.png",
-    "sha256": "3a49691580f1c381d619b400b35c188885dde697fce513fe6c6a18edad18e57f",
+    "sha256": "8105def624d97c7863f858c2d5f16915d03e211f227d59283a287df7389b99b9",
     "meta": {
       "mime": "image/png",
       "width": 64,
@@ -256,7 +256,7 @@
     "id": "oprn_emerald_trainer_hero_back",
     "kind": "picture",
     "file": "trainer-hero_back.png",
-    "sha256": "04e76ad26aee4566e06ae0c016e2357fdd00ec2ccf33bb6983651ecebc70ef37",
+    "sha256": "aa0c10a9c403089441c8b268831a0bb41fdaa8fb1f9cef6230891a362a60910a",
     "meta": {
       "mime": "image/png",
       "width": 64,

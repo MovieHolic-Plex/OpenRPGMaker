@@ -21,8 +21,8 @@
     1
   ],
   "frameMs": 140,
-  "sourceSha256": "63a7f5f62688da62c73ba891ba8262e5599b9e821395dfa6a3b5751d80a5183e",
-  "charsetSha256": "db3828618a756ad49c0911ebbfcbed901c0a9cc300c1025587ea228ac25148b5",
+  "sourceSha256": "dce8eff7da9419ca39ae79f28b5170760220410648eee06531c5fdda09d20d8d",
+  "charsetSha256": "63a5b40b336d222bb932047e22dd4465122a7fdfa4d2f74c2023b5ebe3f0ff7d",
   "nativeSheetWidth": 48,
   "nativeSheetHeight": 128,
   "editorAdapter": {
@@ -31,8 +31,8 @@
     "frameHeight": 32,
     "paddingX": 4,
     "resize": false,
-    "sha256": "519eca9d62c497161eb26383ec38725457851bdaacdba4ccf7402439d768366f"
+    "sha256": "d01eba13562a56cda21271947fba9be7f51d62503dc806f4514814a281cbdb50"
   },
-  "gateSha256": "6eba501c530894c1e1dde17810c2d7ec8f76cd209a8e20a7c7e9bb16088f6ef7",
+  "gateSha256": "ff9f0678e2748248bd045c3f8c87c8666fdc9cbd613e67ab8e8c2cb5ab7b5787",
   "clip": null
 }

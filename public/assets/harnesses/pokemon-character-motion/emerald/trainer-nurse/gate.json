@@ -3,15 +3,15 @@
   "provenance": {
     "version": "pokemon-motion-2",
     "kind": "portrait",
-    "mode": "extracted-existing-pixels",
-    "createdAt": "2026-10-04T10:23:06.397Z",
+    "mode": "native",
+    "createdAt": "2026-10-04T14:13:26.545Z",
     "role": "nurse",
-    "sourceSha256": "7164e1f44b2d2e1e0faa154fbc97bf43ceaf945e045b7043a641561d65c3f5fd",
-    "promptSha256": "3a77948ed5d507853bbc1022279aee88c22e70b550154082c16ae91a9510383a",
-    "finalSha256": "0d59d995cedb564519eec458fa37a0c2adafddd7eb5ec5465b817bf0df91113f",
+    "sourceSha256": "59d9f3d5129440d0ec4f5da0ffcab2536833ebc95222ce453321f9bf2f4f6aea",
+    "promptSha256": "a0e650810f57c128f08f912080615b55a28801ca97e2219ee93946368dfc304c",
+    "finalSha256": "ee55b5a35905d3817b323d5e7f5a9959b13b7ac0af4779af7a778387f567ade8",
     "sourceDimensions": {
-      "width": 1254,
-      "height": 1254
+      "width": 64,
+      "height": 64
     },
     "contract": {
       "width": 64,
@@ -31,102 +31,16 @@
       "bottomExclusive": 63,
       "margin": 1
     },
-    "sourceInk": {
-      "width": 1113,
-      "height": 1197
-    },
-    "scale": 0.05179615705931495,
-    "palette": [
-      [
-        250,
-        248,
-        247
-      ],
-      [
-        26,
-        13,
-        13
-      ],
-      [
-        172,
-        222,
-        188
-      ],
-      [
-        243,
-        136,
-        149
-      ],
-      [
-        3,
-        100,
-        91
-      ],
-      [
-        4,
-        47,
-        56
-      ],
-      [
-        16,
-        136,
-        146
-      ],
-      [
-        31,
-        202,
-        192
-      ],
-      [
-        78,
-        51,
-        42
-      ],
-      [
-        128,
-        41,
-        63
-      ],
-      [
-        135,
-        146,
-        160
-      ],
-      [
-        174,
-        70,
-        59
-      ],
-      [
-        233,
-        129,
-        14
-      ],
-      [
-        246,
-        191,
-        156
-      ]
-    ],
-    "alphaThreshold": 128,
-    "sampling": "nearest-existing-pixels",
-    "nativeFrame": {
-      "width": 64,
-      "height": 64,
-      "maxOpaqueColors": 15,
-      "alphaThreshold": 128,
-      "fitInkMax": 62,
-      "bottomExclusive": 63,
-      "margin": 1
-    }
+    "scale": 1,
+    "sampling": "native-pixels-unchanged"
   },
   "hashes": {
-    "source.png": "7164e1f44b2d2e1e0faa154fbc97bf43ceaf945e045b7043a641561d65c3f5fd",
-    "prompt.txt": "3a77948ed5d507853bbc1022279aee88c22e70b550154082c16ae91a9510383a",
-    "portrait.png": "0d59d995cedb564519eec458fa37a0c2adafddd7eb5ec5465b817bf0df91113f"
+    "source.png": "59d9f3d5129440d0ec4f5da0ffcab2536833ebc95222ce453321f9bf2f4f6aea",
+    "prompt.txt": "a0e650810f57c128f08f912080615b55a28801ca97e2219ee93946368dfc304c",
+    "portrait.png": "ee55b5a35905d3817b323d5e7f5a9959b13b7ac0af4779af7a778387f567ade8"
   },
-  "implementationSha256": "7bf84ac17234c16b2dad8515b59e09038a21df9c986d5837202f844d632d28e0",
-  "provenanceSha256": "42946084feba75e7e765bfb34e4f06d2d5806c507d449918e2bb69947975b424",
+  "implementationSha256": "5b37cb705514fcb21d151fa048053f4f6eedd86602e3c812a9b3cf4fda775ffd",
+  "provenanceSha256": "7ae0c9502a2bc0fc81729190564557b8d451b25e29f5268e669794551f06845a",
   "version": "pokemon-motion-2",
   "limits": {
     "width": 64,
@@ -141,16 +55,16 @@
   "errors": [],
   "warnings": [],
   "metrics": {
-    "paletteUnion": 14,
+    "paletteUnion": 12,
     "nonBinaryAlpha": 0,
     "bounds": {
-      "x": 21,
-      "y": 2,
-      "width": 20,
-      "height": 57
+      "x": 18,
+      "y": 5,
+      "width": 38,
+      "height": 58
     }
   },
   "clip": null,
-  "createdAt": "2026-10-04T10:33:21.480Z",
-  "reviewSha256": "39b367ec3cf5b2aa6f1d005699f6b22509db5a657002a74c22a3fbe5de794b86"
+  "createdAt": "2026-10-04T14:41:36.915Z",
+  "reviewSha256": "b7b492f6988657b20570c42d9301efa7d3b1e3c72225988aebdea40ebb43fd86"
 }

@@ -2,11 +2,11 @@
   "kind": "gate",
   "provenance": {
     "version": "pokemon-motion-2",
-    "createdAt": "2026-10-04T09:48:23.414Z",
+    "createdAt": "2026-10-04T14:13:22.133Z",
     "role": "hero",
-    "sourceSha256": "18e331e076a0a9cc49eb0ba5dbd3d9f19f73f4ba4b83af8ec6e6109778cb04cc",
-    "promptSha256": "44810bd1a24403d6ff34fd89521468f073b7573d0a59c6749922339576a7fd79",
-    "finalSha256": "5eece3daabc47bcf03fc64d4f71187bc04ef3d6efbb0c8537ca182a4c6ca8ce2",
+    "sourceSha256": "3efd6ab5c98cab81aeb95921bfa7320129ef560a5483d02376443ff7db3d8339",
+    "promptSha256": "f52e37a84509d1366cedf2b26551a089d6a7c6b629c9df27e153813b80ea5fb6",
+    "finalSha256": "21d3813777d338adae46825e769197895b2b861ccded67de8815d7f7e4e66121",
     "contract": {
       "frameWidth": 16,
       "frameHeight": 32,
@@ -56,344 +56,18 @@
       "stepChangeMin": 4,
       "margin": 0
     },
-    "mode": "generated",
-    "rects": [
-      {
-        "x": 175,
-        "y": 107,
-        "width": 170,
-        "height": 266
-      },
-      {
-        "x": 474,
-        "y": 107,
-        "width": 140,
-        "height": 266
-      },
-      {
-        "x": 741,
-        "y": 107,
-        "width": 170,
-        "height": 266
-      },
-      {
-        "x": 168,
-        "y": 433,
-        "width": 185,
-        "height": 272
-      },
-      {
-        "x": 438,
-        "y": 433,
-        "width": 187,
-        "height": 272
-      },
-      {
-        "x": 706,
-        "y": 433,
-        "width": 187,
-        "height": 272
-      },
-      {
-        "x": 193,
-        "y": 752,
-        "width": 177,
-        "height": 267
-      },
-      {
-        "x": 464,
-        "y": 752,
-        "width": 179,
-        "height": 267
-      },
-      {
-        "x": 733,
-        "y": 752,
-        "width": 179,
-        "height": 267
-      },
-      {
-        "x": 190,
-        "y": 1077,
-        "width": 191,
-        "height": 266
-      },
-      {
-        "x": 461,
-        "y": 1077,
-        "width": 191,
-        "height": 266
-      },
-      {
-        "x": 731,
-        "y": 1077,
-        "width": 191,
-        "height": 266
-      }
-    ],
-    "scale": 0.07272727272727272,
-    "commonScaleFit": {
-      "anchorX": 7.5,
-      "anchorY": 11,
-      "halfWidth": 8,
-      "fitInkHeight": 21,
-      "widthScale": 0.08376963350785341,
-      "heightScale": 0.07720588235294118,
-      "scale": 0.07272727272727272,
-      "iterations": [
-        {
-          "scale": 0.07720588235294118,
-          "leftScale": 0.07272727272727272,
-          "rightScale": 0.07272727272727272
-        },
-        {
-          "scale": 0.07272727272727272,
-          "leftScale": 0.07272727272727272,
-          "rightScale": 0.07272727272727272
-        }
-      ],
-      "frames": [
-        {
-          "skullCenter": 97.5,
-          "leftExtent": 98,
-          "rightExtent": 72,
-          "topRelativeHeight": 266,
-          "ink": {
-            "x": 0,
-            "y": 2,
-            "width": 170,
-            "height": 264
-          }
-        },
-        {
-          "skullCenter": 69.5,
-          "leftExtent": 70,
-          "rightExtent": 70,
-          "topRelativeHeight": 261,
-          "ink": {
-            "x": 0,
-            "y": 0,
-            "width": 140,
-            "height": 261
-          }
-        },
-        {
-          "skullCenter": 72.5,
-          "leftExtent": 73,
-          "rightExtent": 97,
-          "topRelativeHeight": 266,
-          "ink": {
-            "x": 0,
-            "y": 1,
-            "width": 170,
-            "height": 265
-          }
-        },
-        {
-          "skullCenter": 108,
-          "leftExtent": 108.5,
-          "rightExtent": 76.5,
-          "topRelativeHeight": 272,
-          "ink": {
-            "x": 0,
-            "y": 1,
-            "width": 185,
-            "height": 271
-          }
-        },
-        {
-          "skullCenter": 109.5,
-          "leftExtent": 110,
-          "rightExtent": 77,
-          "topRelativeHeight": 271,
-          "ink": {
-            "x": 0,
-            "y": 0,
-            "width": 187,
-            "height": 271
-          }
-        },
-        {
-          "skullCenter": 107,
-          "leftExtent": 107.5,
-          "rightExtent": 79.5,
-          "topRelativeHeight": 272,
-          "ink": {
-            "x": 0,
-            "y": 0,
-            "width": 187,
-            "height": 272
-          }
-        },
-        {
-          "skullCenter": 80.5,
-          "leftExtent": 81,
-          "rightExtent": 96,
-          "topRelativeHeight": 267,
-          "ink": {
-            "x": 0,
-            "y": 0,
-            "width": 177,
-            "height": 267
-          }
-        },
-        {
-          "skullCenter": 80,
-          "leftExtent": 80.5,
-          "rightExtent": 98.5,
-          "topRelativeHeight": 264,
-          "ink": {
-            "x": 0,
-            "y": 0,
-            "width": 179,
-            "height": 264
-          }
-        },
-        {
-          "skullCenter": 80.5,
-          "leftExtent": 81,
-          "rightExtent": 98,
-          "topRelativeHeight": 267,
-          "ink": {
-            "x": 0,
-            "y": 0,
-            "width": 179,
-            "height": 267
-          }
-        },
-        {
-          "skullCenter": 82.5,
-          "leftExtent": 83,
-          "rightExtent": 108,
-          "topRelativeHeight": 266,
-          "ink": {
-            "x": 0,
-            "y": 0,
-            "width": 191,
-            "height": 266
-          }
-        },
-        {
-          "skullCenter": 81,
-          "leftExtent": 81.5,
-          "rightExtent": 109.5,
-          "topRelativeHeight": 266,
-          "ink": {
-            "x": 0,
-            "y": 0,
-            "width": 191,
-            "height": 266
-          }
-        },
-        {
-          "skullCenter": 80.5,
-          "leftExtent": 81,
-          "rightExtent": 110,
-          "topRelativeHeight": 266,
-          "ink": {
-            "x": 0,
-            "y": 0,
-            "width": 191,
-            "height": 266
-          }
-        }
-      ]
-    },
-    "palette": [
-      [
-        35,
-        54,
-        96
-      ],
-      [
-        0,
-        2,
-        22
-      ],
-      [
-        255,
-        255,
-        255
-      ],
-      [
-        16,
-        26,
-        52
-      ],
-      [
-        252,
-        185,
-        138
-      ],
-      [
-        204,
-        131,
-        48
-      ],
-      [
-        242,
-        80,
-        72
-      ],
-      [
-        35,
-        100,
-        93
-      ],
-      [
-        64,
-        37,
-        7
-      ],
-      [
-        85,
-        65,
-        62
-      ],
-      [
-        119,
-        93,
-        89
-      ],
-      [
-        134,
-        126,
-        136
-      ],
-      [
-        161,
-        164,
-        174
-      ],
-      [
-        181,
-        72,
-        68
-      ],
-      [
-        212,
-        211,
-        214
-      ]
-    ],
-    "sampling": "common-source-raster",
-    "alphaThreshold": 128,
-    "phase": 0.5,
-    "nativeFrameWidth": 16,
-    "nativeFrameHeight": 32,
-    "fitInkHeight": 21,
-    "idleFeetBottomExclusive": 31,
-    "headBandRows": 6,
-    "headAlignment": "source dominant contiguous skull-row median before sampling",
+    "mode": "native",
+    "slot": 0,
+    "scale": 1,
     "clip": null
   },
   "hashes": {
-    "source.png": "18e331e076a0a9cc49eb0ba5dbd3d9f19f73f4ba4b83af8ec6e6109778cb04cc",
-    "prompt.txt": "44810bd1a24403d6ff34fd89521468f073b7573d0a59c6749922339576a7fd79",
-    "charset.png": "5eece3daabc47bcf03fc64d4f71187bc04ef3d6efbb0c8537ca182a4c6ca8ce2"
+    "source.png": "3efd6ab5c98cab81aeb95921bfa7320129ef560a5483d02376443ff7db3d8339",
+    "prompt.txt": "f52e37a84509d1366cedf2b26551a089d6a7c6b629c9df27e153813b80ea5fb6",
+    "charset.png": "21d3813777d338adae46825e769197895b2b861ccded67de8815d7f7e4e66121"
   },
-  "implementationSha256": "7bf84ac17234c16b2dad8515b59e09038a21df9c986d5837202f844d632d28e0",
-  "provenanceSha256": "9a6d9473a159a1f7b78ce18fa1111831164914b6a26e907734a69eb2f79f542b",
+  "implementationSha256": "5b37cb705514fcb21d151fa048053f4f6eedd86602e3c812a9b3cf4fda775ffd",
+  "provenanceSha256": "6811d60cab6bd8ae411e454e1fa65a9a1abf3841975aa51bf9ac02061b8f29ed",
   "version": "pokemon-motion-2",
   "limits": {
     "paletteUnionMax": 15,
@@ -414,33 +88,31 @@
   "pass": true,
   "errors": [],
   "warnings": [
-    "up: whole-frame exact color/pose change 0.510; semantic playback required",
-    "right: whole-frame exact color/pose change 0.486; semantic playback required",
-    "left: whole-frame exact color/pose change 0.453; semantic playback required"
+    "left: whole-frame exact color/pose change 0.370; semantic playback required"
   ],
   "metrics": {
-    "paletteUnion": 15,
+    "paletteUnion": 13,
     "nonBinaryAlpha": 0,
     "up": {
       "jitterX": 0,
       "jitterY": 0,
-      "widthRatio": 1.3333333333333333,
+      "widthRatio": 1,
       "heightRatio": 1,
-      "areaRatio": 1.05,
-      "headWidthRatio": 1.125,
-      "headAreaRatio": 1.0985915492957747,
-      "stepChange": 52,
+      "areaRatio": 1,
+      "headWidthRatio": 1,
+      "headAreaRatio": 1,
+      "stepChange": 39,
       "changes": [
-        0.23,
-        0.2222222222222222,
-        0.2222222222222222,
-        0.23
+        0,
+        0,
+        0,
+        0
       ],
       "alphaChanges": [
-        0.1,
-        0.08080808080808081,
-        0.08080808080808081,
-        0.1
+        0,
+        0,
+        0,
+        0
       ],
       "comparisonRegistration": [
         {
@@ -473,74 +145,74 @@
         }
       ],
       "wholeExactChanges": [
-        0.4838709677419355,
-        0.5098039215686274,
-        0.5098039215686274,
-        0.4838709677419355
+        0.2550335570469799,
+        0.2684563758389262,
+        0.2684563758389262,
+        0.2550335570469799
       ],
       "upperEnd": 24,
       "bounds": [
         {
-          "x": 1,
-          "y": 12,
+          "x": 2,
+          "y": 10,
           "width": 12,
-          "height": 19
+          "height": 21
         },
         {
-          "x": 3,
-          "y": 12,
-          "width": 10,
-          "height": 19
+          "x": 2,
+          "y": 10,
+          "width": 12,
+          "height": 21
         },
         {
-          "x": 3,
-          "y": 12,
+          "x": 2,
+          "y": 10,
           "width": 12,
-          "height": 19
+          "height": 21
         }
       ],
       "head": [
         {
           "x": 8,
-          "y": 12,
-          "width": 9,
+          "y": 10,
+          "width": 6,
           "skullCenter": 7.5
         },
         {
           "x": 8,
-          "y": 12,
-          "width": 8,
+          "y": 10,
+          "width": 6,
           "skullCenter": 7.5
         },
         {
           "x": 8,
-          "y": 12,
-          "width": 9,
+          "y": 10,
+          "width": 6,
           "skullCenter": 7.5
         }
       ],
       "torso": [
         {
-          "width": 6,
-          "core": 20,
-          "headArea": 78
+          "width": 8,
+          "core": 34,
+          "headArea": 53
         },
         {
           "width": 8,
-          "core": 21,
-          "headArea": 71
+          "core": 34,
+          "headArea": 53
         },
         {
-          "width": 6,
-          "core": 20,
-          "headArea": 78
+          "width": 8,
+          "core": 34,
+          "headArea": 53
         }
       ],
       "torsoBand": {
         "referenceFrame": 1,
-        "startY": 21,
+        "startY": 19,
         "endY": 24,
-        "rows": 3,
+        "rows": 5,
         "centerX": 8,
         "halfWidth": 3
       },
@@ -571,23 +243,23 @@
     "right": {
       "jitterX": 0,
       "jitterY": 0,
-      "widthRatio": 1.6,
+      "widthRatio": 1,
       "heightRatio": 1,
-      "areaRatio": 1.0869565217391304,
+      "areaRatio": 1.1666666666666667,
       "headWidthRatio": 1,
-      "headAreaRatio": 1.0348837209302326,
-      "stepChange": 11,
+      "headAreaRatio": 1,
+      "stepChange": 39,
       "changes": [
-        0.13157894736842105,
-        0.16521739130434782,
-        0.16521739130434782,
-        0.13157894736842105
+        0.07692307692307693,
+        0.06756756756756757,
+        0.06756756756756757,
+        0.07692307692307693
       ],
       "alphaChanges": [
-        0.043859649122807015,
-        0.043478260869565216,
-        0.043478260869565216,
-        0.043859649122807015
+        0.05128205128205128,
+        0,
+        0,
+        0.05128205128205128
       ],
       "comparisonRegistration": [
         {
@@ -620,74 +292,74 @@
         }
       ],
       "wholeExactChanges": [
-        0.4367816091954023,
-        0.4858757062146893,
-        0.4858757062146893,
-        0.4367816091954023
+        0.31932773109243695,
+        0.3565217391304348,
+        0.3565217391304348,
+        0.31932773109243695
       ],
       "upperEnd": 24,
       "bounds": [
         {
-          "x": 0,
-          "y": 11,
-          "width": 14,
-          "height": 20
+          "x": 3,
+          "y": 10,
+          "width": 11,
+          "height": 21
         },
         {
-          "x": 0,
-          "y": 11,
-          "width": 14,
-          "height": 20
+          "x": 4,
+          "y": 10,
+          "width": 8,
+          "height": 21
         },
         {
-          "x": 0,
-          "y": 11,
-          "width": 14,
-          "height": 20
+          "x": 3,
+          "y": 10,
+          "width": 10,
+          "height": 21
         }
       ],
       "head": [
         {
           "x": 8,
-          "y": 11,
-          "width": 11,
+          "y": 10,
+          "width": 6,
           "skullCenter": 7.5
         },
         {
           "x": 8,
-          "y": 11,
-          "width": 11,
-          "skullCenter": 7.75
+          "y": 10,
+          "width": 6,
+          "skullCenter": 7.5
         },
         {
           "x": 8,
-          "y": 11,
-          "width": 11,
-          "skullCenter": 7.75
+          "y": 10,
+          "width": 6,
+          "skullCenter": 7.5
         }
       ],
       "torso": [
         {
-          "width": 8,
-          "core": 25,
-          "headArea": 86
-        },
-        {
-          "width": 7,
-          "core": 23,
-          "headArea": 89
+          "width": 5,
+          "core": 28,
+          "headArea": 50
         },
         {
           "width": 5,
           "core": 24,
-          "headArea": 89
+          "headArea": 50
+        },
+        {
+          "width": 5,
+          "core": 24,
+          "headArea": 50
         }
       ],
       "torsoBand": {
         "referenceFrame": 1,
-        "startY": 20,
+        "startY": 19,
         "endY": 24,
-        "rows": 4,
+        "rows": 5,
         "centerX": 8,
         "halfWidth": 3
       },
@@ -722,18 +394,18 @@
       "heightRatio": 1,
       "areaRatio": 1,
       "headWidthRatio": 1,
-      "headAreaRatio": 1.0126582278481013,
-      "stepChange": 24,
+      "headAreaRatio": 1,
+      "stepChange": 39,
       "changes": [
-        0.05,
-        0.07920792079207921,
-        0.07920792079207921,
-        0.05
+        0,
+        0,
+        0,
+        0
       ],
       "alphaChanges": [
         0,
-        0.009900990099009901,
-        0.009900990099009901,
+        0,
+        0,
         0
       ],
       "comparisonRegistration": [
@@ -767,74 +439,74 @@
         }
       ],
       "wholeExactChanges": [
-        0.2625,
-        0.275,
-        0.275,
-        0.2625
+        0.24836601307189543,
+        0.26143790849673204,
+        0.26143790849673204,
+        0.24836601307189543
       ],
       "upperEnd": 24,
       "bounds": [
         {
           "x": 2,
-          "y": 12,
-          "width": 13,
-          "height": 19
+          "y": 10,
+          "width": 12,
+          "height": 21
         },
         {
           "x": 2,
-          "y": 12,
-          "width": 13,
-          "height": 19
+          "y": 10,
+          "width": 12,
+          "height": 21
         },
         {
           "x": 2,
-          "y": 12,
-          "width": 13,
-          "height": 19
+          "y": 10,
+          "width": 12,
+          "height": 21
         }
       ],
       "head": [
         {
           "x": 8,
-          "y": 12,
-          "width": 10,
+          "y": 10,
+          "width": 7,
           "skullCenter": 7.5
         },
         {
           "x": 8,
-          "y": 12,
-          "width": 10,
+          "y": 10,
+          "width": 7,
           "skullCenter": 7.5
         },
         {
           "x": 8,
-          "y": 12,
-          "width": 10,
+          "y": 10,
+          "width": 7,
           "skullCenter": 7.5
         }
       ],
       "torso": [
         {
           "width": 8,
-          "core": 21,
-          "headArea": 79
+          "core": 34,
+          "headArea": 57
         },
         {
           "width": 8,
-          "core": 21,
-          "headArea": 79
+          "core": 34,
+          "headArea": 57
         },
         {
           "width": 8,
-          "core": 21,
-          "headArea": 80
+          "core": 34,
+          "headArea": 57
         }
       ],
       "torsoBand": {
         "referenceFrame": 1,
-        "startY": 21,
+        "startY": 19,
         "endY": 24,
-        "rows": 3,
+        "rows": 5,
         "centerX": 8,
         "halfWidth": 3
       },
@@ -865,23 +537,23 @@
     "left": {
       "jitterX": 0,
       "jitterY": 0,
-      "widthRatio": 1.2,
+      "widthRatio": 1,
       "heightRatio": 1,
-      "areaRatio": 1.1111111111111112,
-      "headWidthRatio": 1.1,
-      "headAreaRatio": 1.0344827586206897,
-      "stepChange": 31,
+      "areaRatio": 1.125,
+      "headWidthRatio": 1,
+      "headAreaRatio": 1,
+      "stepChange": 40,
       "changes": [
-        0.1559633027522936,
-        0.10909090909090909,
-        0.10909090909090909,
-        0.1559633027522936
+        0.1038961038961039,
+        0.04,
+        0.04,
+        0.1038961038961039
       ],
       "alphaChanges": [
-        0.03669724770642202,
-        0.03636363636363636,
-        0.03636363636363636,
-        0.03669724770642202
+        0.03896103896103896,
+        0.013333333333333334,
+        0.013333333333333334,
+        0.03896103896103896
       ],
       "comparisonRegistration": [
         {
@@ -914,74 +586,74 @@
         }
       ],
       "wholeExactChanges": [
-        0.45294117647058824,
-        0.4046242774566474,
-        0.4046242774566474,
-        0.45294117647058824
+        0.3697478991596639,
+        0.3017241379310345,
+        0.3017241379310345,
+        0.3697478991596639
       ],
       "upperEnd": 24,
       "bounds": [
         {
-          "x": 2,
-          "y": 12,
-          "width": 14,
-          "height": 19
+          "x": 3,
+          "y": 10,
+          "width": 10,
+          "height": 21
         },
         {
-          "x": 2,
-          "y": 12,
-          "width": 14,
-          "height": 19
+          "x": 4,
+          "y": 10,
+          "width": 8,
+          "height": 21
         },
         {
-          "x": 2,
-          "y": 12,
-          "width": 14,
-          "height": 19
+          "x": 3,
+          "y": 10,
+          "width": 11,
+          "height": 21
         }
       ],
       "head": [
         {
           "x": 8,
-          "y": 12,
-          "width": 10,
+          "y": 10,
+          "width": 6,
           "skullCenter": 7.5
         },
         {
           "x": 8,
-          "y": 12,
-          "width": 11,
+          "y": 10,
+          "width": 6,
           "skullCenter": 7.5
         },
         {
           "x": 8,
-          "y": 12,
-          "width": 11,
+          "y": 10,
+          "width": 6,
           "skullCenter": 7.5
         }
       ],
       "torso": [
         {
           "width": 5,
-          "core": 19,
-          "headArea": 87
+          "core": 27,
+          "headArea": 50
         },
         {
           "width": 5,
-          "core": 18,
-          "headArea": 90
+          "core": 24,
+          "headArea": 50
         },
         {
-          "width": 6,
-          "core": 20,
-          "headArea": 88
+          "width": 5,
+          "core": 25,
+          "headArea": 50
         }
       ],
       "torsoBand": {
         "referenceFrame": 1,
-        "startY": 21,
+        "startY": 19,
         "endY": 24,
-        "rows": 3,
+        "rows": 5,
         "centerX": 8,
         "halfWidth": 3
       },
@@ -1011,6 +683,6 @@
     }
   },
   "clip": null,
-  "createdAt": "2026-10-04T10:33:20.837Z",
-  "reviewSha256": "5cc594069c4c6d6b7e4ba2c244b1e3636b42439e5d6fa50e27af65e54abe67a6"
+  "createdAt": "2026-10-04T14:41:36.532Z",
+  "reviewSha256": "7c8899fc08f9e92d011d6feb2de73900bfe2bd61a1a659f9f9c2fb083dda5f02"
 }

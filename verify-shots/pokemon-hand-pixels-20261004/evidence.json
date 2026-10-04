@@ -1,0 +1,315 @@
+{
+  "generatedAt": "2026-10-04T14:13:43.135Z",
+  "scope": "Real selected native PNGs at1×/3×, actual browser animation; separate from exported-game QA.",
+  "models": [
+    {
+      "id": "hero",
+      "candidate": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/hero-1791123202124-3efd6ab5",
+      "nativeSha256": "21d3813777d338adae46825e769197895b2b861ccded67de8815d7f7e4e66121",
+      "files": [
+        "hero-phase-0.png",
+        "hero-phase-1.png",
+        "hero-phase-2.png"
+      ]
+    },
+    {
+      "id": "rival",
+      "candidate": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/rival-1791123203357-06f2c537",
+      "nativeSha256": "86949d2136d6f2069884d31750a263a72e0846e37ca7cf39685173c1d44e7cda",
+      "files": [
+        "rival-phase-0.png",
+        "rival-phase-1.png",
+        "rival-phase-2.png"
+      ]
+    },
+    {
+      "id": "professor",
+      "candidate": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/professor-1791123204597-3053505c",
+      "nativeSha256": "de35bfe236256fc35a5f8fc0ab50241538a230c888e69c565a29c16e5060d7a2",
+      "files": [
+        "professor-phase-0.png",
+        "professor-phase-1.png",
+        "professor-phase-2.png"
+      ]
+    },
+    {
+      "id": "nurse",
+      "candidate": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/nurse-1791123205931-5f9e2de5",
+      "nativeSha256": "82a81a5edb1555788ed57fd2dd0d86f557874597c362564c5e40007a8138e7ee",
+      "files": [
+        "nurse-phase-0.png",
+        "nurse-phase-1.png",
+        "nurse-phase-2.png"
+      ]
+    },
+    {
+      "id": "merchant",
+      "candidate": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/merchant-1791123207114-dce8eff7",
+      "nativeSha256": "63a5b40b336d222bb932047e22dd4465122a7fdfa4d2f74c2023b5ebe3f0ff7d",
+      "files": [
+        "merchant-phase-0.png",
+        "merchant-phase-1.png",
+        "merchant-phase-2.png"
+      ]
+    },
+    {
+      "id": "mother",
+      "candidate": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/mother-1791123208217-9374f661",
+      "nativeSha256": "798ccad415ca9cede41097e779c5e86bea1cdb662955b9bec04662a4b76c8c75",
+      "files": [
+        "mother-phase-0.png",
+        "mother-phase-1.png",
+        "mother-phase-2.png"
+      ]
+    },
+    {
+      "id": "resident",
+      "candidate": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/resident-1791123209333-0244f50f",
+      "nativeSha256": "2539af00e3cb6933adaec6db1169fe8c90a329787f8581dc0b01b31d2b97020f",
+      "files": [
+        "resident-phase-0.png",
+        "resident-phase-1.png",
+        "resident-phase-2.png"
+      ]
+    },
+    {
+      "id": "gym_leader",
+      "candidate": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/gym_leader-1791123210485-a07275c8",
+      "nativeSha256": "1b362b76b23ec285caf52976d7662f6dc0ec123eb759d52ecd113c3afe082989",
+      "files": [
+        "gym_leader-phase-0.png",
+        "gym_leader-phase-1.png",
+        "gym_leader-phase-2.png"
+      ]
+    },
+    {
+      "id": "company_agent",
+      "candidate": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/company_agent-1791123211630-4b4be5dc",
+      "nativeSha256": "e9c58a8ad84ee0274a733f22bf7393f37abf730954a9afb71c9c899190f7fad4",
+      "files": [
+        "company_agent-phase-0.png",
+        "company_agent-phase-1.png",
+        "company_agent-phase-2.png"
+      ]
+    },
+    {
+      "id": "captain",
+      "candidate": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/captain-1791123212754-87b5b3b7",
+      "nativeSha256": "dbe1e3dd17c818ec409f4cf83e774af8291678d50d4b62c22489661b736a4426",
+      "files": [
+        "captain-phase-0.png",
+        "captain-phase-1.png",
+        "captain-phase-2.png"
+      ]
+    },
+    {
+      "id": "worker",
+      "candidate": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/worker-1791123213832-1ee64e7b",
+      "nativeSha256": "96f9ee9f271f650967f2aba37444a294775b065091a632e4e2dc1b8f255a83e4",
+      "files": [
+        "worker-phase-0.png",
+        "worker-phase-1.png",
+        "worker-phase-2.png"
+      ]
+    },
+    {
+      "id": "explorer",
+      "candidate": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/explorer-1791123214937-277240dc",
+      "nativeSha256": "bac9a82d13007eb904cd3af0aea4a93198e1a9331bc31d646d5787eb19286ef0",
+      "files": [
+        "explorer-phase-0.png",
+        "explorer-phase-1.png",
+        "explorer-phase-2.png"
+      ]
+    },
+    {
+      "id": "student",
+      "candidate": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/student-1791123216099-86750fde",
+      "nativeSha256": "4210ef6a0041e7084a963020985776a5f25c9076160be16a6b1426a3fafcdfae",
+      "files": [
+        "student-phase-0.png",
+        "student-phase-1.png",
+        "student-phase-2.png"
+      ]
+    },
+    {
+      "id": "ranger",
+      "candidate": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/ranger-1791123217262-7c242991",
+      "nativeSha256": "11907e219fd270333ef54d9fe0afa1d8dfa352c6d9a3ae964b6a6c08cadad453",
+      "files": [
+        "ranger-phase-0.png",
+        "ranger-phase-1.png",
+        "ranger-phase-2.png"
+      ]
+    },
+    {
+      "id": "moon_leader",
+      "candidate": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/moon_leader-1791123218390-08ddd7cf",
+      "nativeSha256": "bac1692e781fdbadc0892161717ed12de10b6f0adf9e8f86bdc5955832605697",
+      "files": [
+        "moon_leader-phase-0.png",
+        "moon_leader-phase-1.png",
+        "moon_leader-phase-2.png"
+      ]
+    },
+    {
+      "id": "hiker",
+      "candidate": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/hiker-1791123219555-797c9781",
+      "nativeSha256": "d7ec5fd2db5be13ef6d10e8498304529ebf1b0da6260be66e2ff740df016283a",
+      "files": [
+        "hiker-phase-0.png",
+        "hiker-phase-1.png",
+        "hiker-phase-2.png"
+      ]
+    },
+    {
+      "id": "trainer-hero",
+      "candidate": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-hero-1791123202744-47c069e8",
+      "nativeSha256": "a9163ba5ea144c00af2852c7297e3341ec639845af2ab9c8b9974c984113673b",
+      "files": [
+        "trainer-hero-phase-0.png"
+      ]
+    },
+    {
+      "id": "trainer-rival",
+      "candidate": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-rival-1791123203968-9d40db78",
+      "nativeSha256": "ac9cefe3733621d1be3043247d84b218af6dd863d8226ebaa0cca107f5c618a5",
+      "files": [
+        "trainer-rival-phase-0.png"
+      ]
+    },
+    {
+      "id": "trainer-professor",
+      "candidate": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-professor-1791123205319-0c1988c6",
+      "nativeSha256": "ac3d423d5587d590c3188efc17306b35fa4e21a6398433ffe2f39b4a87b84ad6",
+      "files": [
+        "trainer-professor-phase-0.png"
+      ]
+    },
+    {
+      "id": "trainer-nurse",
+      "candidate": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-nurse-1791123206538-59d9f3d5",
+      "nativeSha256": "ee55b5a35905d3817b323d5e7f5a9959b13b7ac0af4779af7a778387f567ade8",
+      "files": [
+        "trainer-nurse-phase-0.png"
+      ]
+    },
+    {
+      "id": "trainer-merchant",
+      "candidate": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-merchant-1791123207672-1ab272ed",
+      "nativeSha256": "60a9f2f2d8848e2369406adfd4328bb5b2f57b07888ed46ddcc3c04463fea331",
+      "files": [
+        "trainer-merchant-phase-0.png"
+      ]
+    },
+    {
+      "id": "trainer-mother",
+      "candidate": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-mother-1791123208789-0ac7a00e",
+      "nativeSha256": "84591ac7a14105c6295039f6df617e61d8f0733c383b7977d9c41bfc43484080",
+      "files": [
+        "trainer-mother-phase-0.png"
+      ]
+    },
+    {
+      "id": "trainer-resident",
+      "candidate": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-resident-1791123209929-a5cabb15",
+      "nativeSha256": "5133a41e38520d3a4aba4051c2c903929d714967db6cf62b6e3b35a81058a902",
+      "files": [
+        "trainer-resident-phase-0.png"
+      ]
+    },
+    {
+      "id": "trainer-gym_leader",
+      "candidate": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-gym_leader-1791123211053-3debc9e6",
+      "nativeSha256": "b1aad84fa367afbf16bd24213c4323790d51e25f2ace2eda7ff4cda741bd0df9",
+      "files": [
+        "trainer-gym_leader-phase-0.png"
+      ]
+    },
+    {
+      "id": "trainer-company_agent",
+      "candidate": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-company_agent-1791123212199-b4a6243c",
+      "nativeSha256": "a77ae0cb9becd8ea3a2d9ad4f1064c35332648ebc5c1404cd98f255532ab6124",
+      "files": [
+        "trainer-company_agent-phase-0.png"
+      ]
+    },
+    {
+      "id": "trainer-captain",
+      "candidate": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-captain-1791123213318-895e9b64",
+      "nativeSha256": "140e31ebe0976cdcf7003160c071d3fb3c387f95d6eb84911d228cb59eaefd66",
+      "files": [
+        "trainer-captain-phase-0.png"
+      ]
+    },
+    {
+      "id": "trainer-worker",
+      "candidate": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-worker-1791123214390-054d4785",
+      "nativeSha256": "6a2a4cfad3d946451387e8d46ef3a55885a353893ed4f2bf669f0c3eb20f5b5f",
+      "files": [
+        "trainer-worker-phase-0.png"
+      ]
+    },
+    {
+      "id": "trainer-explorer",
+      "candidate": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-explorer-1791123215535-562045dc",
+      "nativeSha256": "6af6de41cbcdcf213099dbba54b63ba2bb4819d6bd216fbe4ab271e4f756375e",
+      "files": [
+        "trainer-explorer-phase-0.png"
+      ]
+    },
+    {
+      "id": "trainer-student",
+      "candidate": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-student-1791123216724-34893493",
+      "nativeSha256": "f77fa030756574143ede0d9bbc698073431e883fefd702c8f7e2990df5c0cee9",
+      "files": [
+        "trainer-student-phase-0.png"
+      ]
+    },
+    {
+      "id": "trainer-ranger",
+      "candidate": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-ranger-1791123217823-081898c7",
+      "nativeSha256": "4e19c96a9797aadc9196b8e42e6c95c4500f94119677f4a4519fe48149d96083",
+      "files": [
+        "trainer-ranger-phase-0.png"
+      ]
+    },
+    {
+      "id": "trainer-moon_leader",
+      "candidate": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-moon_leader-1791123218997-d3ab3356",
+      "nativeSha256": "39ae0d6bab08f30e3b91215200971bc22feb245886a89deccac50e234d405c98",
+      "files": [
+        "trainer-moon_leader-phase-0.png"
+      ]
+    },
+    {
+      "id": "trainer-hiker",
+      "candidate": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-hiker-1791123220176-42f322fa",
+      "nativeSha256": "8105def624d97c7863f858c2d5f16915d03e211f227d59283a287df7389b99b9",
+      "files": [
+        "trainer-hiker-phase-0.png"
+      ]
+    },
+    {
+      "id": "trainer-hero_back",
+      "candidate": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-hero_back-1791123220755-eb87e06b",
+      "nativeSha256": "aa0c10a9c403089441c8b268831a0bb41fdaa8fb1f9cef6230891a362a60910a",
+      "files": [
+        "trainer-hero_back-phase-0.png"
+      ]
+    },
+    {
+      "id": "professor-intro",
+      "candidate": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/clip-professor-intro-1791123221359-e0a284a2",
+      "nativeSha256": "01d00e0065ece5827e1af1da605642eb36c024d85ee529ffcc7cd95750733a26",
+      "files": [
+        "professor-intro-phase-0.png",
+        "professor-intro-phase-1.png",
+        "professor-intro-phase-2.png",
+        "professor-intro-phase-3.png",
+        "professor-intro-phase-4.png",
+        "professor-intro-phase-5.png"
+      ]
+    }
+  ]
+}

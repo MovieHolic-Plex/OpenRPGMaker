@@ -1,15 +1,15 @@
 {
   "version": "pokemon-motion-2",
   "kind": "portrait",
-  "mode": "extracted-existing-pixels",
-  "createdAt": "2026-10-04T09:58:15.394Z",
+  "mode": "native",
+  "createdAt": "2026-10-04T14:13:31.060Z",
   "role": "gym_leader",
-  "sourceSha256": "6b67d376ec8d4fb0ca4ac23e9e24092c9f065665f6b75362b80e43eb7db0885e",
-  "promptSha256": "2d87b77c4e98c80f3a5369894bb99edf7361acd1dc6486f932df58107fc5590b",
-  "finalSha256": "20e701d3006f727e6452b4902626f3ae9bf0e2a4286ab24c6b6812d5e2d56ccb",
+  "sourceSha256": "3debc9e641f6b84819183ce619064761a2545f00eec01c6b7fc066cbc6b4f9f3",
+  "promptSha256": "547289245713b3fe3876b964597c405fab94abecb2a3465a875ca838212fe019",
+  "finalSha256": "b1aad84fa367afbf16bd24213c4323790d51e25f2ace2eda7ff4cda741bd0df9",
   "sourceDimensions": {
     "width": 64,
-    "height": 96
+    "height": 64
   },
   "contract": {
     "width": 64,
@@ -29,92 +29,6 @@
     "bottomExclusive": 63,
     "margin": 1
   },
-  "sourceInk": {
-    "width": 55,
-    "height": 89
-  },
-  "scale": 0.6966292134831461,
-  "palette": [
-    [
-      8,
-      14,
-      22
-    ],
-    [
-      36,
-      113,
-      92
-    ],
-    [
-      253,
-      199,
-      160
-    ],
-    [
-      15,
-      40,
-      40
-    ],
-    [
-      236,
-      154,
-      116
-    ],
-    [
-      247,
-      245,
-      242
-    ],
-    [
-      198,
-      130,
-      107
-    ],
-    [
-      175,
-      105,
-      37
-    ],
-    [
-      75,
-      67,
-      81
-    ],
-    [
-      172,
-      169,
-      178
-    ],
-    [
-      243,
-      177,
-      50
-    ],
-    [
-      69,
-      141,
-      115
-    ],
-    [
-      205,
-      152,
-      39
-    ],
-    [
-      118,
-      57,
-      48
-    ]
-  ],
-  "alphaThreshold": 128,
-  "sampling": "nearest-existing-pixels",
-  "nativeFrame": {
-    "width": 64,
-    "height": 64,
-    "maxOpaqueColors": 15,
-    "alphaThreshold": 128,
-    "fitInkMax": 62,
-    "bottomExclusive": 63,
-    "margin": 1
-  }
+  "scale": 1,
+  "sampling": "native-pixels-unchanged"
 }

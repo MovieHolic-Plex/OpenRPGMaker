@@ -3,405 +3,97 @@
   "provenance": {
     "version": "pokemon-motion-2",
     "kind": "clip",
-    "mode": "generated",
-    "createdAt": "2026-10-04T10:27:41.117Z",
+    "mode": "native",
+    "createdAt": "2026-10-04T14:13:41.371Z",
     "role": "professor",
     "clipId": "professor-intro",
-    "sourceSha256": "7658e1fe0583a352123761353b01dd40d609fb8553d6cc766ff3c17a3a231f0b",
-    "promptSha256": "9846158f6c625876a4b13979300fa387f8f078cbc88eedc8642c7a8690f252aa",
-    "finalSha256": "fdba46432044c5b9b82168a19cf61601b84112b410d2980c4a31e94b79adcafa",
+    "sourceSha256": "e0a284a2d4df66839d91f9a3c3e831d45978004564b2865a9c2b64838d1584c8",
+    "promptSha256": "c67f2cf9e0dbd174458ded947c25295250ccfdd0c704019a913bfef41a6e3091",
+    "finalSha256": "01d00e0065ece5827e1af1da605642eb36c024d85ee529ffcc7cd95750733a26",
     "metadataSha256": "4a12707dba15f43d39dd29e5470cb4f70d382e79aab55d8ebd013f83d20db1fb",
     "columns": 6,
     "rows": 1,
     "frameWidth": 64,
     "frameHeight": 64,
     "frameCount": 6,
-    "commonBlock": null,
-    "inferredBlocks": [],
     "sourceRects": [
       {
-        "x": 79,
-        "y": 172,
-        "width": 220,
-        "height": 457
+        "x": 0,
+        "y": 0,
+        "width": 64,
+        "height": 64
       },
       {
-        "x": 441,
-        "y": 172,
-        "width": 219,
-        "height": 457
+        "x": 64,
+        "y": 0,
+        "width": 64,
+        "height": 64
       },
       {
-        "x": 795,
-        "y": 172,
-        "width": 221,
-        "height": 457
+        "x": 128,
+        "y": 0,
+        "width": 64,
+        "height": 64
       },
       {
-        "x": 1119,
-        "y": 172,
-        "width": 266,
-        "height": 457
+        "x": 192,
+        "y": 0,
+        "width": 64,
+        "height": 64
       },
       {
-        "x": 1496,
-        "y": 172,
-        "width": 252,
-        "height": 457
+        "x": 256,
+        "y": 0,
+        "width": 64,
+        "height": 64
       },
       {
-        "x": 1850,
-        "y": 172,
-        "width": 253,
-        "height": 457
+        "x": 320,
+        "y": 0,
+        "width": 64,
+        "height": 64
       }
     ],
-    "commonScale": 0.13129102844638948,
-    "palette": [
-      [
-        0,
-        0,
-        0
-      ],
-      [
-        250,
-        239,
-        222
-      ],
-      [
-        92,
-        54,
-        63
-      ],
-      [
-        11,
-        0,
-        0
-      ],
-      [
-        177,
-        172,
-        184
-      ],
-      [
-        249,
-        191,
-        141
-      ],
-      [
-        32,
-        33,
-        49
-      ],
-      [
-        117,
-        114,
-        132
-      ],
-      [
-        146,
-        143,
-        156
-      ],
-      [
-        90,
-        87,
-        104
-      ],
-      [
-        133,
-        91,
-        59
-      ],
-      [
-        171,
-        118,
-        86
-      ],
-      [
-        202,
-        149,
-        108
-      ],
-      [
-        222,
-        103,
-        24
-      ]
-    ],
-    "alphaThreshold": 128,
-    "headAlignment": "source dominant contiguous skull-row median before sampling",
+    "commonScale": 1,
+    "headAlignment": "top silhouette root, native translations only",
+    "scale": 1,
+    "sampling": "native-pixels-unchanged",
     "rects": [
       {
-        "x": 79,
-        "y": 172,
-        "width": 220,
-        "height": 457
+        "x": 0,
+        "y": 0,
+        "width": 64,
+        "height": 64
       },
       {
-        "x": 441,
-        "y": 172,
-        "width": 219,
-        "height": 457
+        "x": 64,
+        "y": 0,
+        "width": 64,
+        "height": 64
       },
       {
-        "x": 795,
-        "y": 172,
-        "width": 221,
-        "height": 457
+        "x": 128,
+        "y": 0,
+        "width": 64,
+        "height": 64
       },
       {
-        "x": 1119,
-        "y": 172,
-        "width": 266,
-        "height": 457
+        "x": 192,
+        "y": 0,
+        "width": 64,
+        "height": 64
       },
       {
-        "x": 1496,
-        "y": 172,
-        "width": 252,
-        "height": 457
+        "x": 256,
+        "y": 0,
+        "width": 64,
+        "height": 64
       },
       {
-        "x": 1850,
-        "y": 172,
-        "width": 253,
-        "height": 457
-      }
-    ],
-    "block": null,
-    "scale": 0.13129102844638948,
-    "sampling": "common-source-raster",
-    "phase": 0.5,
-    "headBandRows": 6,
-    "commonScaleFit": {
-      "anchorX": 31.5,
-      "anchorY": 2,
-      "halfWidth": 30,
-      "fitInkHeight": 60,
-      "heightScale": 0.13129102844638948,
-      "widthScale": 0.22556390977443608,
-      "scale": 0.13129102844638948,
-      "iterations": [
-        {
-          "scale": 0.13129102844638948,
-          "leftScale": 0.19230769230769232,
-          "rightScale": 0.27149321266968324
-        }
-      ],
-      "frames": [
-        {
-          "skullCenter": 109,
-          "leftExtent": 109.5,
-          "rightExtent": 110.5,
-          "sourceRowOriginY": 172,
-          "sourceHeadTop": 172,
-          "sourceFeetBottom": 629,
-          "sourceInk": {
-            "x": 79,
-            "y": 172,
-            "width": 220,
-            "height": 457
-          }
-        },
-        {
-          "skullCenter": 110,
-          "leftExtent": 110.5,
-          "rightExtent": 108.5,
-          "sourceRowOriginY": 172,
-          "sourceHeadTop": 172,
-          "sourceFeetBottom": 629,
-          "sourceInk": {
-            "x": 441,
-            "y": 172,
-            "width": 219,
-            "height": 457
-          }
-        },
-        {
-          "skullCenter": 110,
-          "leftExtent": 110.5,
-          "rightExtent": 110.5,
-          "sourceRowOriginY": 172,
-          "sourceHeadTop": 172,
-          "sourceFeetBottom": 629,
-          "sourceInk": {
-            "x": 795,
-            "y": 172,
-            "width": 221,
-            "height": 457
-          }
-        },
-        {
-          "skullCenter": 155.5,
-          "leftExtent": 156,
-          "rightExtent": 110,
-          "sourceRowOriginY": 172,
-          "sourceHeadTop": 172,
-          "sourceFeetBottom": 629,
-          "sourceInk": {
-            "x": 1119,
-            "y": 172,
-            "width": 266,
-            "height": 457
-          }
-        },
-        {
-          "skullCenter": 143.5,
-          "leftExtent": 144,
-          "rightExtent": 108,
-          "sourceRowOriginY": 172,
-          "sourceHeadTop": 172,
-          "sourceFeetBottom": 629,
-          "sourceInk": {
-            "x": 1496,
-            "y": 172,
-            "width": 252,
-            "height": 457
-          }
-        },
-        {
-          "skullCenter": 143.5,
-          "leftExtent": 144,
-          "rightExtent": 109,
-          "sourceRowOriginY": 172,
-          "sourceHeadTop": 172,
-          "sourceFeetBottom": 629,
-          "sourceInk": {
-            "x": 1850,
-            "y": 172,
-            "width": 253,
-            "height": 457
-          }
-        }
-      ]
-    },
-    "sourceFrameMetrics": [
-      {
-        "skullCenter": 109,
-        "leftExtent": 109.5,
-        "rightExtent": 110.5,
-        "sourceRowOriginY": 172,
-        "sourceHeadTop": 172,
-        "sourceFeetBottom": 629,
-        "sourceInk": {
-          "x": 79,
-          "y": 172,
-          "width": 220,
-          "height": 457
-        },
-        "sourceHeadCenterX": 188,
-        "outputInk": {
-          "x": 18,
-          "y": 2,
-          "width": 29,
-          "height": 60
-        }
-      },
-      {
-        "skullCenter": 110,
-        "leftExtent": 110.5,
-        "rightExtent": 108.5,
-        "sourceRowOriginY": 172,
-        "sourceHeadTop": 172,
-        "sourceFeetBottom": 629,
-        "sourceInk": {
-          "x": 441,
-          "y": 172,
-          "width": 219,
-          "height": 457
-        },
-        "sourceHeadCenterX": 551,
-        "outputInk": {
-          "x": 18,
-          "y": 2,
-          "width": 28,
-          "height": 60
-        }
-      },
-      {
-        "skullCenter": 110,
-        "leftExtent": 110.5,
-        "rightExtent": 110.5,
-        "sourceRowOriginY": 172,
-        "sourceHeadTop": 172,
-        "sourceFeetBottom": 629,
-        "sourceInk": {
-          "x": 795,
-          "y": 172,
-          "width": 221,
-          "height": 457
-        },
-        "sourceHeadCenterX": 905,
-        "outputInk": {
-          "x": 18,
-          "y": 2,
-          "width": 29,
-          "height": 60
-        }
-      },
-      {
-        "skullCenter": 155.5,
-        "leftExtent": 156,
-        "rightExtent": 110,
-        "sourceRowOriginY": 172,
-        "sourceHeadTop": 172,
-        "sourceFeetBottom": 629,
-        "sourceInk": {
-          "x": 1119,
-          "y": 172,
-          "width": 266,
-          "height": 457
-        },
-        "sourceHeadCenterX": 1274.5,
-        "outputInk": {
-          "x": 12,
-          "y": 2,
-          "width": 35,
-          "height": 60
-        }
-      },
-      {
-        "skullCenter": 143.5,
-        "leftExtent": 144,
-        "rightExtent": 108,
-        "sourceRowOriginY": 172,
-        "sourceHeadTop": 172,
-        "sourceFeetBottom": 629,
-        "sourceInk": {
-          "x": 1496,
-          "y": 172,
-          "width": 252,
-          "height": 457
-        },
-        "sourceHeadCenterX": 1639.5,
-        "outputInk": {
-          "x": 13,
-          "y": 2,
-          "width": 33,
-          "height": 60
-        }
-      },
-      {
-        "skullCenter": 143.5,
-        "leftExtent": 144,
-        "rightExtent": 109,
-        "sourceRowOriginY": 172,
-        "sourceHeadTop": 172,
-        "sourceFeetBottom": 629,
-        "sourceInk": {
-          "x": 1850,
-          "y": 172,
-          "width": 253,
-          "height": 457
-        },
-        "sourceHeadCenterX": 1993.5,
-        "outputInk": {
-          "x": 13,
-          "y": 2,
-          "width": 33,
-          "height": 60
-        }
+        "x": 320,
+        "y": 0,
+        "width": 64,
+        "height": 64
       }
     ],
     "limits": {
@@ -422,13 +114,13 @@
     }
   },
   "hashes": {
-    "source.png": "7658e1fe0583a352123761353b01dd40d609fb8553d6cc766ff3c17a3a231f0b",
-    "prompt.txt": "9846158f6c625876a4b13979300fa387f8f078cbc88eedc8642c7a8690f252aa",
-    "clip.png": "fdba46432044c5b9b82168a19cf61601b84112b410d2980c4a31e94b79adcafa",
+    "source.png": "e0a284a2d4df66839d91f9a3c3e831d45978004564b2865a9c2b64838d1584c8",
+    "prompt.txt": "c67f2cf9e0dbd174458ded947c25295250ccfdd0c704019a913bfef41a6e3091",
+    "clip.png": "01d00e0065ece5827e1af1da605642eb36c024d85ee529ffcc7cd95750733a26",
     "clip-metadata.json": "4a12707dba15f43d39dd29e5470cb4f70d382e79aab55d8ebd013f83d20db1fb"
   },
-  "implementationSha256": "7bf84ac17234c16b2dad8515b59e09038a21df9c986d5837202f844d632d28e0",
-  "provenanceSha256": "a04b85d36fc182ffd5c4dfc88814fb19f44aa269fd4f5153e0bf765ff53687a8",
+  "implementationSha256": "5b37cb705514fcb21d151fa048053f4f6eedd86602e3c812a9b3cf4fda775ffd",
+  "provenanceSha256": "ef3bb06deed2516945b647cc26c1f32615c863dbbf0c36aae5eeae5db6fdb7fb",
   "version": "pokemon-motion-2",
   "limits": {
     "paletteUnionMax": 15,
@@ -452,12 +144,12 @@
   "metrics": {
     "paletteUnion": 14,
     "normalized": [
-      "a4dc86dc7814f5ff400fff444933aef042ec3b9efc5bf1249549ac91fa8dc19a",
-      "0a8d93bf92f38765420cef706af2b6a0fdaed0cb0ff2645a993ef6501597aa6e",
-      "ed102569c98460ff936223a26ddf42b4c0e70c01edce69b25ccd336b253bf8b6",
-      "885588b0f059d03c6b12d264455250bb3d18b788625aac6343c2cd5ae5dfb736",
-      "6548e38362953221d0ac7a4a75395bcb7a8cca77875c61dc90b9be22400948c1",
-      "98050c9efd99c598a760b85f24a1078354db597f08df1d2e6ed0ee863273227e"
+      "5fe1a12eeb3116925a1185e31245854aa13465a75e10c9bd5498bfeb7f1aab7b",
+      "a72b4076aead145832a984f1a62332940c44764ac12c59545f02897839b9e317",
+      "df56e4f4b6c74de2c9fb65155dd9b50636fb3310c23b1f4a3833357b35b86240",
+      "6871ee639aa4c985fd685110531891734c6013993afcffa528b01604d7e663c4",
+      "80fe3ac5d7527ef35f441a57e641c1c4d85232b566eefa7b21d0f37ca9776ffa",
+      "0201a6f0cc590948e9cf9e6ab367e08594d837baef297a80aeadbf93ab64d523"
     ],
     "frames": 6
   },
@@ -465,14 +157,14 @@
     "pass": true,
     "errors": [],
     "normalized": [
-      "a4dc86dc7814f5ff400fff444933aef042ec3b9efc5bf1249549ac91fa8dc19a",
-      "0a8d93bf92f38765420cef706af2b6a0fdaed0cb0ff2645a993ef6501597aa6e",
-      "ed102569c98460ff936223a26ddf42b4c0e70c01edce69b25ccd336b253bf8b6",
-      "885588b0f059d03c6b12d264455250bb3d18b788625aac6343c2cd5ae5dfb736",
-      "6548e38362953221d0ac7a4a75395bcb7a8cca77875c61dc90b9be22400948c1",
-      "98050c9efd99c598a760b85f24a1078354db597f08df1d2e6ed0ee863273227e"
+      "5fe1a12eeb3116925a1185e31245854aa13465a75e10c9bd5498bfeb7f1aab7b",
+      "a72b4076aead145832a984f1a62332940c44764ac12c59545f02897839b9e317",
+      "df56e4f4b6c74de2c9fb65155dd9b50636fb3310c23b1f4a3833357b35b86240",
+      "6871ee639aa4c985fd685110531891734c6013993afcffa528b01604d7e663c4",
+      "80fe3ac5d7527ef35f441a57e641c1c4d85232b566eefa7b21d0f37ca9776ffa",
+      "0201a6f0cc590948e9cf9e6ab367e08594d837baef297a80aeadbf93ab64d523"
     ]
   },
-  "createdAt": "2026-10-04T10:33:21.423Z",
-  "reviewSha256": "a0c7d6bb3d5b95ef31f45ad33752834963d862e8a5aa4ffcac66e3845c78d6e3"
+  "createdAt": "2026-10-04T14:41:36.876Z",
+  "reviewSha256": "17c6fc89566d745cb6f4fdc0195640210e48a7a6356e5fb5aff7f42e6f1541a2"
 }

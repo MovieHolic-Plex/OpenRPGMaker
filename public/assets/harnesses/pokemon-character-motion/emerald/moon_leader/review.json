@@ -1,11 +1,11 @@
 {
   "provenance": {
     "version": "pokemon-motion-2",
-    "createdAt": "2026-10-04T09:48:36.498Z",
+    "createdAt": "2026-10-04T14:13:38.399Z",
     "role": "moon_leader",
-    "sourceSha256": "cf5fefe28a0241aa5df2ac2cf07f0df798591fda833f474b95dce6ee6c80b7d0",
-    "promptSha256": "dc2ba7fcc58301902cb43cabc9c095f02c920a8c7ed37c7b77595c0252d66854",
-    "finalSha256": "2d4092a41488b62ef022a7b1b22c40074910b3fd183a0838635c60f58fa88ee6",
+    "sourceSha256": "08ddd7cf355a906237ed369ce7e27b62439962a5fb06127107954e9468b43762",
+    "promptSha256": "b36a6d811a81c7c0331459b51648ff0a65e4cdde958221f42669d796ec584714",
+    "finalSha256": "bac1692e781fdbadc0892161717ed12de10b6f0adf9e8f86bdc5955832605697",
     "contract": {
       "frameWidth": 16,
       "frameHeight": 32,
@@ -55,339 +55,18 @@
       "stepChangeMin": 4,
       "margin": 0
     },
-    "mode": "generated",
-    "rects": [
-      {
-        "x": 219,
-        "y": 88,
-        "width": 147,
-        "height": 283
-      },
-      {
-        "x": 470,
-        "y": 88,
-        "width": 147,
-        "height": 283
-      },
-      {
-        "x": 720,
-        "y": 88,
-        "width": 147,
-        "height": 283
-      },
-      {
-        "x": 212,
-        "y": 410,
-        "width": 154,
-        "height": 287
-      },
-      {
-        "x": 463,
-        "y": 410,
-        "width": 154,
-        "height": 287
-      },
-      {
-        "x": 712,
-        "y": 410,
-        "width": 155,
-        "height": 287
-      },
-      {
-        "x": 207,
-        "y": 739,
-        "width": 163,
-        "height": 283
-      },
-      {
-        "x": 462,
-        "y": 739,
-        "width": 163,
-        "height": 283
-      },
-      {
-        "x": 716,
-        "y": 739,
-        "width": 163,
-        "height": 283
-      },
-      {
-        "x": 213,
-        "y": 1063,
-        "width": 157,
-        "height": 287
-      },
-      {
-        "x": 465,
-        "y": 1063,
-        "width": 154,
-        "height": 287
-      },
-      {
-        "x": 721,
-        "y": 1063,
-        "width": 154,
-        "height": 287
-      }
-    ],
-    "scale": 0.07317073170731707,
-    "commonScaleFit": {
-      "anchorX": 7.5,
-      "anchorY": 11,
-      "halfWidth": 8,
-      "fitInkHeight": 21,
-      "widthScale": 0.09815950920245399,
-      "heightScale": 0.07317073170731707,
-      "scale": 0.07317073170731707,
-      "iterations": [
-        {
-          "scale": 0.07317073170731707,
-          "leftScale": 0.09523809523809523,
-          "rightScale": 0.09411764705882353
-        }
-      ],
-      "frames": [
-        {
-          "skullCenter": 73,
-          "leftExtent": 73.5,
-          "rightExtent": 73.5,
-          "topRelativeHeight": 283,
-          "ink": {
-            "x": 0,
-            "y": 0,
-            "width": 147,
-            "height": 283
-          }
-        },
-        {
-          "skullCenter": 72.5,
-          "leftExtent": 73,
-          "rightExtent": 74,
-          "topRelativeHeight": 274,
-          "ink": {
-            "x": 0,
-            "y": 0,
-            "width": 147,
-            "height": 274
-          }
-        },
-        {
-          "skullCenter": 73,
-          "leftExtent": 73.5,
-          "rightExtent": 73.5,
-          "topRelativeHeight": 283,
-          "ink": {
-            "x": 0,
-            "y": 0,
-            "width": 147,
-            "height": 283
-          }
-        },
-        {
-          "skullCenter": 79.5,
-          "leftExtent": 80,
-          "rightExtent": 74,
-          "topRelativeHeight": 287,
-          "ink": {
-            "x": 0,
-            "y": 0,
-            "width": 154,
-            "height": 287
-          }
-        },
-        {
-          "skullCenter": 80,
-          "leftExtent": 80.5,
-          "rightExtent": 73.5,
-          "topRelativeHeight": 281,
-          "ink": {
-            "x": 0,
-            "y": 0,
-            "width": 154,
-            "height": 281
-          }
-        },
-        {
-          "skullCenter": 81,
-          "leftExtent": 81.5,
-          "rightExtent": 73.5,
-          "topRelativeHeight": 287,
-          "ink": {
-            "x": 0,
-            "y": 0,
-            "width": 155,
-            "height": 287
-          }
-        },
-        {
-          "skullCenter": 83.5,
-          "leftExtent": 84,
-          "rightExtent": 79,
-          "topRelativeHeight": 283,
-          "ink": {
-            "x": 0,
-            "y": 0,
-            "width": 163,
-            "height": 283
-          }
-        },
-        {
-          "skullCenter": 80.5,
-          "leftExtent": 81,
-          "rightExtent": 82,
-          "topRelativeHeight": 276,
-          "ink": {
-            "x": 0,
-            "y": 0,
-            "width": 163,
-            "height": 276
-          }
-        },
-        {
-          "skullCenter": 77.5,
-          "leftExtent": 78,
-          "rightExtent": 85,
-          "topRelativeHeight": 283,
-          "ink": {
-            "x": 0,
-            "y": 0,
-            "width": 163,
-            "height": 283
-          }
-        },
-        {
-          "skullCenter": 74,
-          "leftExtent": 74.5,
-          "rightExtent": 82.5,
-          "topRelativeHeight": 287,
-          "ink": {
-            "x": 0,
-            "y": 0,
-            "width": 157,
-            "height": 287
-          }
-        },
-        {
-          "skullCenter": 73.75,
-          "leftExtent": 74.25,
-          "rightExtent": 79.75,
-          "topRelativeHeight": 279,
-          "ink": {
-            "x": 0,
-            "y": 0,
-            "width": 154,
-            "height": 279
-          }
-        },
-        {
-          "skullCenter": 73,
-          "leftExtent": 73.5,
-          "rightExtent": 80.5,
-          "topRelativeHeight": 286,
-          "ink": {
-            "x": 0,
-            "y": 0,
-            "width": 154,
-            "height": 286
-          }
-        }
-      ]
-    },
-    "palette": [
-      [
-        198,
-        193,
-        201
-      ],
-      [
-        0,
-        0,
-        7
-      ],
-      [
-        234,
-        229,
-        232
-      ],
-      [
-        76,
-        43,
-        105
-      ],
-      [
-        12,
-        11,
-        12
-      ],
-      [
-        41,
-        42,
-        50
-      ],
-      [
-        95,
-        91,
-        112
-      ],
-      [
-        145,
-        141,
-        155
-      ],
-      [
-        229,
-        189,
-        85
-      ],
-      [
-        26,
-        7,
-        69
-      ],
-      [
-        104,
-        70,
-        42
-      ],
-      [
-        114,
-        44,
-        149
-      ],
-      [
-        139,
-        96,
-        70
-      ],
-      [
-        166,
-        129,
-        62
-      ],
-      [
-        197,
-        156,
-        131
-      ]
-    ],
-    "sampling": "common-source-raster",
-    "alphaThreshold": 128,
-    "phase": 0.5,
-    "nativeFrameWidth": 16,
-    "nativeFrameHeight": 32,
-    "fitInkHeight": 21,
-    "idleFeetBottomExclusive": 31,
-    "headBandRows": 6,
-    "headAlignment": "source dominant contiguous skull-row median before sampling",
+    "mode": "native",
+    "slot": 0,
+    "scale": 1,
     "clip": null
   },
   "hashes": {
-    "source.png": "cf5fefe28a0241aa5df2ac2cf07f0df798591fda833f474b95dce6ee6c80b7d0",
-    "prompt.txt": "dc2ba7fcc58301902cb43cabc9c095f02c920a8c7ed37c7b77595c0252d66854",
-    "charset.png": "2d4092a41488b62ef022a7b1b22c40074910b3fd183a0838635c60f58fa88ee6"
+    "source.png": "08ddd7cf355a906237ed369ce7e27b62439962a5fb06127107954e9468b43762",
+    "prompt.txt": "b36a6d811a81c7c0331459b51648ff0a65e4cdde958221f42669d796ec584714",
+    "charset.png": "bac1692e781fdbadc0892161717ed12de10b6f0adf9e8f86bdc5955832605697"
   },
-  "implementationSha256": "7bf84ac17234c16b2dad8515b59e09038a21df9c986d5837202f844d632d28e0",
-  "provenanceSha256": "e96f3e8f3a4a9e91b426ddb2300bd1a1fcb89d3e795da18823112efde0060838",
+  "implementationSha256": "5b37cb705514fcb21d151fa048053f4f6eedd86602e3c812a9b3cf4fda775ffd",
+  "provenanceSha256": "d1ddd699651c1f24379dd7ae681ce9d7889c0fa0e72c2cafad7a97b9f0e12341",
   "version": "pokemon-motion-2",
   "limits": {
     "paletteUnionMax": 15,
@@ -405,22 +84,22 @@
     "stepChangeMin": 4,
     "margin": 0
   },
-  "createdAt": "2026-10-04T10:32:39.625Z",
+  "createdAt": "2026-10-04T14:36:23.905Z",
   "verdict": "pass",
-  "who": "root-supervisor",
-  "why": "Supervisor inspected native size and3x, browser-captured stepA/idle/stepB in allfour directions, and independent read-only review: correctdirections, groundedfeet, stablehead/outfit/accessories, realleg/arm phases. Hero/student/resident side stride remains subtle; no perfect original-equivalence claimed.",
+  "who": "root / Python pixel author and visual reviewer",
+  "why": "Root directly authored Python native16x32 pixels and viewed all three browser phase sheets at1x/3x: up/right/down/left match, head identity is fixed, opposing planted and lifted feet and arm swing are visible, [0,1,2,1] returns to idle. Hair, hat, uniform and bag keep role identity. Pixel preservation is separately checked. Boxy torsos remain a style limitation; this is original cast, not a claim of original Pokemon art quality.",
   "evidence": [
     {
       "file": "review-evidence-0.png",
-      "sha256": "9282bf6d219bb336edb781be1db9eb70e74b377a4477a9495150f38a3918cd51"
+      "sha256": "808fb221b3df80045060866b82ddc7522a575196b35f070e0ba505876388e0e2"
     },
     {
       "file": "review-evidence-1.png",
-      "sha256": "8ca0cbda021b988a2ba56a977572a9b0add7590b07414b22b63e418485776d4d"
+      "sha256": "cdd9fc3ff9a95648bb7f6245a24c593e87352c66ccb35f12234cbe1b6b719611"
     },
     {
       "file": "review-evidence-2.png",
-      "sha256": "7cd652ea5e3a848af34b133769cabcf8c24d5e298e66b0a6876060e648255a4b"
+      "sha256": "edef75eb28d9944e8aa9dd23ffd7d49230093f38bae748d2b63e1b4a62df8765"
     }
   ],
   "semanticChecklist": [
@@ -430,5 +109,5 @@
     "loop seam natural",
     "clip is actual drawn poses if advertised drawn"
   ],
-  "previewSha256": "a6d71b5d941e57ed558acaaec3e96d4567defb1e65131a020ef08548a28fe206"
+  "previewSha256": "ee2e8339a61002b3984f1d3cb87a230e808764709e526b91db4e91930875cf0d"
 }

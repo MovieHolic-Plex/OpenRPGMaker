@@ -1,15 +1,15 @@
 {
   "version": "pokemon-motion-2",
   "kind": "portrait",
-  "mode": "extracted-existing-pixels",
-  "createdAt": "2026-10-04T09:58:17.649Z",
+  "mode": "native",
+  "createdAt": "2026-10-04T14:13:37.831Z",
   "role": "ranger",
-  "sourceSha256": "ded15da5513d7f123e7b2cac72c56059984a7c255c43a33be8206431aff32950",
-  "promptSha256": "f945990d12d35040664f5e0cf5f94f625e6f097c2dd5d276ee8293607e41e22f",
-  "finalSha256": "2dbd4af8dc5d95f08a668b10e1917f390ffe3bb9b48c34265c7d2592988c4164",
+  "sourceSha256": "081898c73b35ed2f16ce3bacea39907e0c2e8bd1f3a2b1da8485dc51702bd3b4",
+  "promptSha256": "f34294d74e6397c01bcc62578cff7f2c8d638dd99a47e96c49d2b4d7cd5bfc8a",
+  "finalSha256": "4e19c96a9797aadc9196b8e42e6c95c4500f94119677f4a4519fe48149d96083",
   "sourceDimensions": {
     "width": 64,
-    "height": 96
+    "height": 64
   },
   "contract": {
     "width": 64,
@@ -29,97 +29,6 @@
     "bottomExclusive": 63,
     "margin": 1
   },
-  "sourceInk": {
-    "width": 49,
-    "height": 90
-  },
-  "scale": 0.6888888888888889,
-  "palette": [
-    [
-      9,
-      8,
-      7
-    ],
-    [
-      121,
-      112,
-      73
-    ],
-    [
-      69,
-      45,
-      33
-    ],
-    [
-      253,
-      206,
-      170
-    ],
-    [
-      99,
-      64,
-      43
-    ],
-    [
-      248,
-      238,
-      220
-    ],
-    [
-      53,
-      85,
-      57
-    ],
-    [
-      145,
-      83,
-      56
-    ],
-    [
-      217,
-      169,
-      141
-    ],
-    [
-      1,
-      0,
-      0
-    ],
-    [
-      193,
-      208,
-      179
-    ],
-    [
-      182,
-      118,
-      87
-    ],
-    [
-      143,
-      142,
-      116
-    ],
-    [
-      155,
-      177,
-      146
-    ],
-    [
-      27,
-      129,
-      134
-    ]
-  ],
-  "alphaThreshold": 128,
-  "sampling": "nearest-existing-pixels",
-  "nativeFrame": {
-    "width": 64,
-    "height": 64,
-    "maxOpaqueColors": 15,
-    "alphaThreshold": 128,
-    "fitInkMax": 62,
-    "bottomExclusive": 63,
-    "margin": 1
-  }
+  "scale": 1,
+  "sampling": "native-pixels-unchanged"
 }

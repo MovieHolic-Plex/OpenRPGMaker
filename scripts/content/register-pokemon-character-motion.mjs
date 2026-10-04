@@ -12,6 +12,11 @@ const roles=['hero','rival','professor','nurse','merchant','mother','resident','
 if(Object.keys(selection.walk??{}).length!==roles.length||roles.some(role=>!selection.walk[role])||!selection.clip||Object.keys(selection.trainers??{}).length!==17||[...roles,'hero_back'].some(role=>!selection.trainers[role]))throw Error('All sixteen roles and the professor clip require an explicit selection');
 const root=process.cwd(),dir=path.resolve('src/harnesses/pokemon-character-motion/node'),temp=fs.mkdtempSync(path.join(os.tmpdir(),'pokemon-motion-register-'));
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
+const authored=selection.authoring?JSON.parse(fs.readFileSync(selection.authoring,'utf8')):null;
+if(authored){
+  if(authored.method!=='python-native-pixel-authoring'||authored.resizing!==false||authored.quantization!==false)throw Error('Wrong native authoring declaration');
+  for(const [file,sha] of Object.entries(authored.sources))if(hash(fs.readFileSync(path.resolve('scripts/asset-gen/pokemon-characters',file)))!==sha)throw Error('Authored Python source changed: '+file);
+}
 try {
   const entry=path.join(temp,'entry.ts'),compiled=path.join(temp,'harness.cjs');
   fs.writeFileSync(entry,'export {run} from '+JSON.stringify(path.join(dir,'cli.ts'))+';\nexport * from '+JSON.stringify(path.resolve('src/harnesses/monster-collect-species/node/png.ts'))+';\nexport * from '+JSON.stringify(path.resolve('src/harnesses/monster-collect-species/pixel/image.ts'))+';');
@@ -25,6 +30,14 @@ try {
     if(await h.run(['build','--candidate',candidate,'--out',out])!==0)throw Error('Current build rejected '+role);
     const provenance=JSON.parse(fs.readFileSync(path.join(out,'provenance.json'),'utf8'));
     if(provenance.role!==(trainer?role.slice(8):role==='professor-intro'?'professor':role))throw Error('Wrong role '+role);
+    if(authored){
+      const key=trainer?role.slice(8):role;
+      const record=authored.roles.find(r=>r.role===key);
+      const expected=role==='professor-intro'?authored.professorClip.sha256:key==='hero_back'?authored.heroBack.sha256:trainer?record?.portraitSha256:record?.charsetSha256;
+      if(provenance.mode!=='native'||provenance.sourceSha256!==expected)throw Error('Authored native source mismatch: '+role);
+      const src=h.readPng(path.join(candidate,'source.png')),final=h.readPng(path.join(out,trainer?'portrait.png':role==='professor-intro'?'clip.png':'charset.png'));
+      if(src.width!==final.width||src.height!==final.height||!Buffer.from(src.data).equals(Buffer.from(final.data)))throw Error('Native authoring import changed pixels: '+role);
+    }
     outputs.set(role,{candidate,out,provenance});
   }
   const sheets=[h.createImage(288,256),h.createImage(288,256)];
@@ -78,6 +91,7 @@ try {
   fs.writeFileSync(path.join(castDir,'uploaded-cast.json'),JSON.stringify(catalog));
   for(const a of previous)if(a.id.startsWith('oprn_emerald_field_cast_')||a.id.startsWith('oprn_emerald_trainer_')){a.sha256=hash(Buffer.from(catalog[a.id].dataUrl.split(',')[1],'base64'));a.meta={...catalog[a.id].meta};a.source='public/assets/harnesses/pokemon-character-motion/emerald/generation.json';a.pipeline='scripts/content/register-pokemon-character-motion.mjs';}
   fs.writeFileSync(path.join(castDir,'catalog.json'),JSON.stringify(previous,null,2));
-  fs.writeFileSync(path.join(dest,'generation.json'),JSON.stringify({version:2,native:{frameWidth:16,frameHeight:32,opaqueColorsMax:15},editorAdapter:{frameWidth:24,frameHeight:32,paddingX:4,resizing:false},imageGeneration:'builtin-imagegen',roles:ledger},null,2));
+  if(authored)fs.copyFileSync(selection.authoring,path.join(dest,'authoring.json'));
+  fs.writeFileSync(path.join(dest,'generation.json'),JSON.stringify({version:2,native:{frameWidth:16,frameHeight:32,opaqueColorsMax:15},editorAdapter:{frameWidth:24,frameHeight:32,paddingX:4,resizing:false},imageGeneration:authored?'none / native Python pixels':'builtin-imagegen',...(authored?{authoring:{method:authored.method,manifestSha256:hash(fs.readFileSync(selection.authoring)),sources:authored.sources}}:{}),roles:ledger},null,2));
   console.log(JSON.stringify({sharedRoles:roles.length,nativeWalkingFrames:192,professorFrames:6,trainerPortraits:17,canonicalSaved:false}));
 } finally {fs.rmSync(temp,{recursive:true,force:true});}

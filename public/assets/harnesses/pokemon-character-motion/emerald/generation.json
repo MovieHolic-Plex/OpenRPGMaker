@@ -11,279 +11,291 @@
     "paddingX": 4,
     "resizing": false
   },
-  "imageGeneration": "builtin-imagegen",
+  "imageGeneration": "none / native Python pixels",
+  "authoring": {
+    "method": "python-native-pixel-authoring",
+    "manifestSha256": "0fe7b24c41c703fc8df4e2f0b8c2c238b8fe5db07a72b8799c52aee13f4fd1ff",
+    "sources": {
+      "build.py": "48fbf17243eee6301b1ed0805ad9133df1d4271c48f04cc1ebdf3d94df2fc0f8",
+      "cast.py": "91d7a26047f6bd8c645c54c472611897861eb0aeb6885287d6c7f0d2f1107302",
+      "field.py": "598ee816b7e37ba35bad316b4df9934fc1514ed6ab10ec642942b9f57e5f0c02",
+      "pixels.py": "91bffbc9b36678369fc5a70f1a89016df41c0ff34bfc89f98bd3d5f662762a77",
+      "portraits.py": "c4adc53238eaf1162bb5e5adcc50c0c981d98d9ad0b83f5f14e06c7f9c3425a3",
+      "prepare-review.py": "10ab515d6294c2a645b6b1a6d81718ceb66af936f8d85cb65653335634cd93ea"
+    }
+  },
   "roles": [
     {
       "role": "hero",
-      "source": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/hero-1791107303405-18e331e0",
-      "sourceSha256": "18e331e076a0a9cc49eb0ba5dbd3d9f19f73f4ba4b83af8ec6e6109778cb04cc",
-      "promptSha256": "44810bd1a24403d6ff34fd89521468f073b7573d0a59c6749922339576a7fd79",
-      "finalSha256": "5eece3daabc47bcf03fc64d4f71187bc04ef3d6efbb0c8537ca182a4c6ca8ce2",
-      "gateSha256": "73a2098897479f43372b4a60ac206368324e9e1b7d217c13c38984f1da02e2cd"
+      "source": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/hero-1791123202124-3efd6ab5",
+      "sourceSha256": "3efd6ab5c98cab81aeb95921bfa7320129ef560a5483d02376443ff7db3d8339",
+      "promptSha256": "f52e37a84509d1366cedf2b26551a089d6a7c6b629c9df27e153813b80ea5fb6",
+      "finalSha256": "21d3813777d338adae46825e769197895b2b861ccded67de8815d7f7e4e66121",
+      "gateSha256": "dfd63949a20a0c7b83c98fd6531020e2fcdc42be900d08772a8b871e8c9ebc6b"
     },
     {
       "role": "rival",
-      "source": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/rival-1791107304411-bc312baf",
-      "sourceSha256": "bc312baf85cad936042c9046634b04dc74552514c5a66f391e93325cb7ca89c5",
-      "promptSha256": "e5ae2fd851d5c1f6a425cded2d4765d2e4e7cef36a46baf27e6b7f3d50c167e5",
-      "finalSha256": "6d78d4a02f25b9b115ca58bf2ef13be27ac1e4b36d6396ffef44817022bd67d2",
-      "gateSha256": "f51c871fe63108acabab2f5f4149f46dd35c73dbfd2bb61e0c08f6c809fbad78"
+      "source": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/rival-1791123203357-06f2c537",
+      "sourceSha256": "06f2c537e8ec8bade4bbdea545c4c7b7fae403b33a5d5c1c450885f8c14ead8a",
+      "promptSha256": "8f385fec2ef9fb3cd3728e9e3fc3840f7bc3a621e0cf97b68a024fa3caffe093",
+      "finalSha256": "86949d2136d6f2069884d31750a263a72e0846e37ca7cf39685173c1d44e7cda",
+      "gateSha256": "44c71684e70eb4f2eae5e41d245c0b172f3957779df49b9d110d375badba10d7"
     },
     {
       "role": "professor",
-      "source": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/professor-1791107305387-a86576eb",
-      "sourceSha256": "a86576eb1b9933857b31765d34447e4c142270b3e219f63ac797037eb9d0fdb2",
-      "promptSha256": "49ef049f68a8b035ea9fd86b2a21f7bb51017c5104e78da96c5307d31a2c9f43",
-      "finalSha256": "1b1aac225bcbffb141a9731d714c45bd2e5035e0babfa73ced4041bad14175c1",
-      "gateSha256": "832875184e38940670149a4d080f9880fa0073161ff3c6cdd7c78ed7371aa6d5"
+      "source": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/professor-1791123204597-3053505c",
+      "sourceSha256": "3053505c06baf834b06acdc4b73303d6cbf9e971a739cf1683b5c51a92ac99fc",
+      "promptSha256": "89d8a6734c8d440d79e2ade303266d89418143e5e6bfc2c3bd77751900125bad",
+      "finalSha256": "de35bfe236256fc35a5f8fc0ab50241538a230c888e69c565a29c16e5060d7a2",
+      "gateSha256": "b2894e4a9399fb97fc4ac9b1d49a45c3f75a72a7593e944fcc92751d4a178f6d"
     },
     {
       "role": "nurse",
-      "source": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/nurse-1791107306505-2173f39b",
-      "sourceSha256": "2173f39b1aa272bc6d22e7ed59c57a0eb089cab081f64196fe32df475e52471c",
-      "promptSha256": "84b13611d363f092c62a3146d3e8d3d861fb534b1fbbcfa081cc42b78288be02",
-      "finalSha256": "51fd64722f24dee63464d076d1ec4360cee0711e9de58826692a23550c67ed04",
-      "gateSha256": "bbc108ddc8980f970159db863f975394ac567ba26023b692e278dd6aa627c5d5"
+      "source": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/nurse-1791123205931-5f9e2de5",
+      "sourceSha256": "5f9e2de5f2dfd59480bfda7ef14678f1511edd2bca5db4d30cdd800e4949f362",
+      "promptSha256": "a0e650810f57c128f08f912080615b55a28801ca97e2219ee93946368dfc304c",
+      "finalSha256": "82a81a5edb1555788ed57fd2dd0d86f557874597c362564c5e40007a8138e7ee",
+      "gateSha256": "6675f0f31f9e6346c6c7406410129a18a7e7bfbee06f0ddeb21f7f14c8ff68d4"
     },
     {
       "role": "merchant",
-      "source": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/merchant-1791107307521-63a7f5f6",
-      "sourceSha256": "63a7f5f62688da62c73ba891ba8262e5599b9e821395dfa6a3b5751d80a5183e",
-      "promptSha256": "1c0bb432d5f4492ee6faf8918e9b3478645a766bc36e7af39292adfe1453a25f",
-      "finalSha256": "db3828618a756ad49c0911ebbfcbed901c0a9cc300c1025587ea228ac25148b5",
-      "gateSha256": "6eba501c530894c1e1dde17810c2d7ec8f76cd209a8e20a7c7e9bb16088f6ef7"
+      "source": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/merchant-1791123207114-dce8eff7",
+      "sourceSha256": "dce8eff7da9419ca39ae79f28b5170760220410648eee06531c5fdda09d20d8d",
+      "promptSha256": "0717fa152bdd810efdc67d3493ce3af5a012ca7d0cb6a7680a5409268045bf90",
+      "finalSha256": "63a5b40b336d222bb932047e22dd4465122a7fdfa4d2f74c2023b5ebe3f0ff7d",
+      "gateSha256": "ff9f0678e2748248bd045c3f8c87c8666fdc9cbd613e67ab8e8c2cb5ab7b5787"
     },
     {
       "role": "mother",
-      "source": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/mother-1791107308465-05b506cb",
-      "sourceSha256": "05b506cbd31f0e2fc2f345b1e82947f13fc9404cc2856b80b0300593544b8d01",
-      "promptSha256": "3a00e05f21ab4049aa3b7209047993d2b38af7d23e985ed43097a4cd4e5e4c3b",
-      "finalSha256": "6040bffd90a680a7f45ddfe3d9e984d4ea0fe97712e96c279c0cdf741868f5e9",
-      "gateSha256": "1a2b4986c6358b051b1c578c68cc6b469ab94a016b58d3f8dd0ef3aa376be5d0"
+      "source": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/mother-1791123208217-9374f661",
+      "sourceSha256": "9374f661e7fcbb7d5e840e8f235b729df5f192de80cd8e80d622aa428c2e9b3e",
+      "promptSha256": "1909a97477c4edf9073af6039b9cebe2fb8fa0caac32f678886b8d91bee3f740",
+      "finalSha256": "798ccad415ca9cede41097e779c5e86bea1cdb662955b9bec04662a4b76c8c75",
+      "gateSha256": "eff51d59cb92662dd6a749c270326044e157a441c2612057120c53186540fb20"
     },
     {
       "role": "resident",
-      "source": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/resident-1791107309412-099ea13f",
-      "sourceSha256": "099ea13fe1a84cfd05c4d5c1a62407ed1944fa5a5d84a71832edfd65e37e30c1",
-      "promptSha256": "4b6af1369c18910aeec723092feaa2c70d708a32755d66d5f3b06ecba66d0eff",
-      "finalSha256": "164bbdf26cf1af2fe348cfb2e4a7ca41c51a71d6b26fd0539cd4a3ffd0705fb3",
-      "gateSha256": "b7e4347eeb77e9ef3c3fc549a4a59139efcd8595982cd9a4f33a1c773798ac6c"
+      "source": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/resident-1791123209333-0244f50f",
+      "sourceSha256": "0244f50f8602dfe89be6c2e6fdce293ba05e4a7ee1fb5c1b9746a1f9037593a0",
+      "promptSha256": "105d8f140d802f4be936a2c186ad8d9f65d468ac296d6ab8da3d1822eeacdab7",
+      "finalSha256": "2539af00e3cb6933adaec6db1169fe8c90a329787f8581dc0b01b31d2b97020f",
+      "gateSha256": "2aa0732c21294b309b55eae5d336b268c2c2da9a287f1073be80a239627d75d9"
     },
     {
       "role": "gym_leader",
-      "source": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/gym_leader-1791107431692-dabfe5d8",
-      "sourceSha256": "dabfe5d83e236a7d7a174e2eb56bbff0f53deb0db3f3b2126af9aa62c431f472",
-      "promptSha256": "f0bb0d4b61b00f9d8af08bcfa9212c9aefc07a026fee34cb713f11067b8eb761",
-      "finalSha256": "5f92ad97053167911580aa69131000be11ce150bd96c5349cf902795422b2470",
-      "gateSha256": "342e75263429802cdaf2692ca9a08f8f2a341183e479c4e4cdd087141503a069"
+      "source": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/gym_leader-1791123210485-a07275c8",
+      "sourceSha256": "a07275c89794003d4e6eb58513a448e82a0ee1e11b2394976594a01080f5bd5d",
+      "promptSha256": "547289245713b3fe3876b964597c405fab94abecb2a3465a875ca838212fe019",
+      "finalSha256": "1b362b76b23ec285caf52976d7662f6dc0ec123eb759d52ecd113c3afe082989",
+      "gateSha256": "2f5d722d1b20f30d41c0d693835d6afd543aa2054b84c2fd798038bbebf889a9"
     },
     {
       "role": "company_agent",
-      "source": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/company_agent-1791107310357-f8f600bf",
-      "sourceSha256": "f8f600bf605c7a65ba785d3a22b39b00e18825e3679d5e7b63294a6f23f13dde",
-      "promptSha256": "46d4078ab1c9d39bb6216dc3e4a315fb5a410cd7a66ad7aa679dd9d19f257b8a",
-      "finalSha256": "0cd8230f55d0aa109d39e9da21c419d5582bcb040fcc3eec208034328849dfcd",
-      "gateSha256": "192080d3619ce2a73106a76f9117a834b828e3af45050b11feef6b7f47b4f4e7"
+      "source": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/company_agent-1791123211630-4b4be5dc",
+      "sourceSha256": "4b4be5dcfa4488f3c24f4f853adba5cbcf616f49d42d189e482a156e9d35267c",
+      "promptSha256": "bb6464875944e317a309bd5fcb5ff954235121bf179b97ef63994ddeb5b6d93b",
+      "finalSha256": "e9c58a8ad84ee0274a733f22bf7393f37abf730954a9afb71c9c899190f7fad4",
+      "gateSha256": "18b49dcbdabaea1b4cada78e372f9c1e486feae6c5f80a7078f1a55fde84a66b"
     },
     {
       "role": "captain",
-      "source": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/captain-1791107311361-f7f33799",
-      "sourceSha256": "f7f3379908f0a39f0a3a35070ee33e67c2f62edbeaf6a16de0429df1de2ef7b8",
-      "promptSha256": "8ded591a3d5d650fc52316dbf1ac6ab0216794972c84feff40d8c487fd41a8df",
-      "finalSha256": "751e39f47ad177292a4ee7a5a69c76f073764e158f19558ee2852e0ab0862400",
-      "gateSha256": "6a8cb5c0c96ebc11493f3883812ac2a7a17d351337f4d7e7228b1d70bd41b6ec"
+      "source": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/captain-1791123212754-87b5b3b7",
+      "sourceSha256": "87b5b3b712dba2c6695b6221a2016d497f45c780cbb150354a73258a90028f85",
+      "promptSha256": "67fd26e37a1dff60a48c96abfe386d290e778ecba51e9d57fad6af1ff1fb9c47",
+      "finalSha256": "dbe1e3dd17c818ec409f4cf83e774af8291678d50d4b62c22489661b736a4426",
+      "gateSha256": "c66040331d4554a7a0b1415fff5034b6665a0ce51cfa0ab60db62489cc048cfa"
     },
     {
       "role": "worker",
-      "source": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/worker-1791107312383-6e9338c9",
-      "sourceSha256": "6e9338c9524ee65b16946bc59a45953e3016f9d1de1b3c40272271c3cf3d13ef",
-      "promptSha256": "52d2b3ffa1359f46f45a5439844ad651269f56ed9b2a74c2b22cf603d2078da0",
-      "finalSha256": "497c1d131ff1ee8820c8abbdeaaffff31cd7158f333a36bf513dab4ab34c3268",
-      "gateSha256": "012ba4521b88b3ae0e84475c1bcfab22bd3bc305d35750a197fe35f71b6bbfbe"
+      "source": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/worker-1791123213832-1ee64e7b",
+      "sourceSha256": "1ee64e7bb0c6ca1413657992fad4f146dc2a071faae8fecad50207e448bbc52e",
+      "promptSha256": "50ae8367c8ea5132faefb2296c61451ddc4cef0e9fd1f410919a0e14724c0103",
+      "finalSha256": "96f9ee9f271f650967f2aba37444a294775b065091a632e4e2dc1b8f255a83e4",
+      "gateSha256": "f96a2fdf32a2ac24c2d7a7c4baf1f527a581142f1653ae1f0bf7b6012322b7e9"
     },
     {
       "role": "explorer",
-      "source": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/explorer-1791107313351-499fc170",
-      "sourceSha256": "499fc1704d4c2ef22412d7fbc366bb52154b596600f419efb016dc08ab8b15c2",
-      "promptSha256": "87816f567282dead7fb4d6430d757f32ebfa7bce176e7fd80a0ef795ed64b52a",
-      "finalSha256": "e9f21d7281537f05f3a3b61bcfd1f44fbcdac73512f5a34050b1df1931502020",
-      "gateSha256": "25c95e51a4db894d78491c61bf6cb5472636062bfa7d9b9846b9e98442e2ac40"
+      "source": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/explorer-1791123214937-277240dc",
+      "sourceSha256": "277240dc2e7b10854b9c672fc299337583d11acebb3e183309674e6d2f27f652",
+      "promptSha256": "c68561ebd296860a95f38eb1878d64f5dac2586034d1bb0180639a4b628ec03a",
+      "finalSha256": "bac9a82d13007eb904cd3af0aea4a93198e1a9331bc31d646d5787eb19286ef0",
+      "gateSha256": "061fdd8f2ad0984d24f653bb0abc36769f3309494e04ca06e159bf1d3154759e"
     },
     {
       "role": "student",
-      "source": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/student-1791107314385-ca2e90c2",
-      "sourceSha256": "ca2e90c242dc166ea2e408b10a6f8ffc777494cf5b60bb3b00350d2ee949eb0d",
-      "promptSha256": "6070225f9f81152182095b29b09a3d7f6e8c5e8f888c15752e431f5b9cff3364",
-      "finalSha256": "e7d1440b9901418df4df5e90cd8dbe86460c1041e0babf3150fca53b8ab187ce",
-      "gateSha256": "8e5f69ba152f529c6910b75cdaa97834146b6a6b1d9d9c4f862e9b88734d4c80"
+      "source": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/student-1791123216099-86750fde",
+      "sourceSha256": "86750fde0b80ea7ec371579b8958c47fb11a5ae44128bffac9e9a9ff18b0f473",
+      "promptSha256": "f90dfe223008f07be75ce4922815594d648f8c619d9fa24ae906ec09c9cbed17",
+      "finalSha256": "4210ef6a0041e7084a963020985776a5f25c9076160be16a6b1426a3fafcdfae",
+      "gateSha256": "92119c8595234b2b47a6e8273c8ecec25daeecc6ebe736fc58834ef011a54dd0"
     },
     {
       "role": "ranger",
-      "source": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/ranger-1791107315345-506f7e17",
-      "sourceSha256": "506f7e175f7cee446c762105eb84e2c78f50c5e039350551596e5c2b869254d7",
-      "promptSha256": "0be6da5dfa9806ab3f8cb039b59ba6f57adfe9f382eab355cd542098f4ee2b16",
-      "finalSha256": "6b717c96c6c8cf65069b48a9c1d65096fd1a6f9aa776df6cdc28d8ea4e61b2ef",
-      "gateSha256": "074c3f0f28f4170d88e60bd7c4fbe7232f6a6c3d1980065757ff11377a037cac"
+      "source": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/ranger-1791123217262-7c242991",
+      "sourceSha256": "7c2429911ffff07e0490d1b869eb51247ae1b405272b05959cbf0c062bacae4e",
+      "promptSha256": "f34294d74e6397c01bcc62578cff7f2c8d638dd99a47e96c49d2b4d7cd5bfc8a",
+      "finalSha256": "11907e219fd270333ef54d9fe0afa1d8dfa352c6d9a3ae964b6a6c08cadad453",
+      "gateSha256": "95e734f196ab0b057b93a847bdb814438fc6b578083512647464065c94536764"
     },
     {
       "role": "moon_leader",
-      "source": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/moon_leader-1791107316488-cf5fefe2",
-      "sourceSha256": "cf5fefe28a0241aa5df2ac2cf07f0df798591fda833f474b95dce6ee6c80b7d0",
-      "promptSha256": "dc2ba7fcc58301902cb43cabc9c095f02c920a8c7ed37c7b77595c0252d66854",
-      "finalSha256": "2d4092a41488b62ef022a7b1b22c40074910b3fd183a0838635c60f58fa88ee6",
-      "gateSha256": "0348e3077ebe16f89c39259a5ebe6757058cb0bbfd8b26567f16196638c9ffe4"
+      "source": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/moon_leader-1791123218390-08ddd7cf",
+      "sourceSha256": "08ddd7cf355a906237ed369ce7e27b62439962a5fb06127107954e9468b43762",
+      "promptSha256": "b36a6d811a81c7c0331459b51648ff0a65e4cdde958221f42669d796ec584714",
+      "finalSha256": "bac1692e781fdbadc0892161717ed12de10b6f0adf9e8f86bdc5955832605697",
+      "gateSha256": "564336f79ad4627b20de71d14a1a613a78e54d156d853241e1776756a0dedf5d"
     },
     {
       "role": "hiker",
-      "source": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/hiker-1791107432813-da70113f",
-      "sourceSha256": "da70113fff1f66d092e2a19ec33afb64fb508159468719d5a52c501a67a9dd7a",
-      "promptSha256": "ce88eaad62931df9a1c0df16a57397fc1f554d28500155808834632cf2c819ef",
-      "finalSha256": "14f304600467a8dfbc8e0e4ef932ee9d30aa0a537772e774a50e18f63f21c886",
-      "gateSha256": "16d22d596a38617e2baaaa46b58ad9677667b452b6c521306d41add518dbfb9d"
+      "source": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/hiker-1791123219555-797c9781",
+      "sourceSha256": "797c9781b6d5b7324bcefc84919d2239ba2fbe4f17ea9908f4cf3137ec058790",
+      "promptSha256": "1ca67ea37f56e7b80f6da1a8dd057c2c2254055d398215a4b0ffaa5bb6115975",
+      "finalSha256": "d7ec5fd2db5be13ef6d10e8498304529ebf1b0da6260be66e2ff740df016283a",
+      "gateSha256": "97d9c9edf586effb0bbefd69a4d90b7821829975294e87636a55d3a593ee15ef"
     },
     {
       "role": "professor-intro",
-      "source": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/clip-professor-intro-1791109661101-7658e1fe",
-      "sourceSha256": "7658e1fe0583a352123761353b01dd40d609fb8553d6cc766ff3c17a3a231f0b",
-      "promptSha256": "9846158f6c625876a4b13979300fa387f8f078cbc88eedc8642c7a8690f252aa",
-      "finalSha256": "fdba46432044c5b9b82168a19cf61601b84112b410d2980c4a31e94b79adcafa",
-      "gateSha256": "627cf09fffb4170a85d52248698514bff2a98a3565e3cfaea13f30462faebd93"
+      "source": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/clip-professor-intro-1791123221359-e0a284a2",
+      "sourceSha256": "e0a284a2d4df66839d91f9a3c3e831d45978004564b2865a9c2b64838d1584c8",
+      "promptSha256": "c67f2cf9e0dbd174458ded947c25295250ccfdd0c704019a913bfef41a6e3091",
+      "finalSha256": "01d00e0065ece5827e1af1da605642eb36c024d85ee529ffcc7cd95750733a26",
+      "gateSha256": "2aa5c01f067c366f1214ef13d9e6e536c8b2c380918e050d7ee7eefd8b268b5c"
     },
     {
       "role": "trainer-hero",
-      "source": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/portrait-hero-1791107892443-329871a5",
-      "sourceSha256": "329871a5fa0d2e378f6988749846dd78bf45659c59e6870cc30ca728cade5429",
-      "promptSha256": "2d87b77c4e98c80f3a5369894bb99edf7361acd1dc6486f932df58107fc5590b",
-      "finalSha256": "0fb3aa38772e1e58e5e05ba531b3d1c509e38d0fa91c03735b470997e91feb5e",
-      "gateSha256": "c37de8e6b15286f8c2479607f9af7bd575f02b60824e71dceb358a9618df5aa0"
+      "source": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-hero-1791123202744-47c069e8",
+      "sourceSha256": "47c069e89869440bffa68e591b9fc2d1a8431f3f8cd88e931a630e6d3157d60b",
+      "promptSha256": "f52e37a84509d1366cedf2b26551a089d6a7c6b629c9df27e153813b80ea5fb6",
+      "finalSha256": "a9163ba5ea144c00af2852c7297e3341ec639845af2ab9c8b9974c984113673b",
+      "gateSha256": "0828fdd8b2f69d865551fc6e0c9d42da824037f85dab5691bd4540d1b6aad2b3"
     },
     {
       "role": "trainer-rival",
-      "source": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/portrait-rival-1791107892905-a6e4ab1b",
-      "sourceSha256": "a6e4ab1b743ed50f6949a37b05c22eefecee3750370ce3fe81a03056e5b98b1a",
-      "promptSha256": "2d87b77c4e98c80f3a5369894bb99edf7361acd1dc6486f932df58107fc5590b",
-      "finalSha256": "4ba0ba3ae7cb154afa9979d9736d65bbf4ad3607db070c91f13c1b3132b5a171",
-      "gateSha256": "ba6a7c915e5c6ce9e7bdd3815fc68b8fb5fb284c361c67f712c4b55be7f0a6a1"
+      "source": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-rival-1791123203968-9d40db78",
+      "sourceSha256": "9d40db789ac4e2229387a1bd953b46a4cfedeb9e1a7a684f21c607126b5f2182",
+      "promptSha256": "8f385fec2ef9fb3cd3728e9e3fc3840f7bc3a621e0cf97b68a024fa3caffe093",
+      "finalSha256": "ac9cefe3733621d1be3043247d84b218af6dd863d8226ebaa0cca107f5c618a5",
+      "gateSha256": "1660589f1cfd20a8040ff1791c903052e88e9991524cf65497902a87a67c6688"
     },
     {
       "role": "trainer-professor",
-      "source": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/portrait-professor-1791107893352-c428e668",
-      "sourceSha256": "c428e66830d0ab88327717bbf2caa1415d710e26092d17f11ecada0f93b9b69e",
-      "promptSha256": "2d87b77c4e98c80f3a5369894bb99edf7361acd1dc6486f932df58107fc5590b",
-      "finalSha256": "f7c022f34ba4fd063bbd82bd44646220d05b9a0a0f194d91e4a6cb960bb00583",
-      "gateSha256": "3ee25dbf9b0ed7f0723693c84b20a71018ad4c3a05a9cd1f001f3716bbbad973"
+      "source": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-professor-1791123205319-0c1988c6",
+      "sourceSha256": "0c1988c64edb9e1e4a486fd2e39c888aa824b04800a9fab13737c3a779965515",
+      "promptSha256": "89d8a6734c8d440d79e2ade303266d89418143e5e6bfc2c3bd77751900125bad",
+      "finalSha256": "ac3d423d5587d590c3188efc17306b35fa4e21a6398433ffe2f39b4a87b84ad6",
+      "gateSha256": "821b830f29d1a0b5835e05577f87bd81bfa143409e29f725207426abc29437cd"
     },
     {
       "role": "trainer-nurse",
-      "source": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/portrait-nurse-1791109386380-7164e1f4",
-      "sourceSha256": "7164e1f44b2d2e1e0faa154fbc97bf43ceaf945e045b7043a641561d65c3f5fd",
-      "promptSha256": "3a77948ed5d507853bbc1022279aee88c22e70b550154082c16ae91a9510383a",
-      "finalSha256": "0d59d995cedb564519eec458fa37a0c2adafddd7eb5ec5465b817bf0df91113f",
-      "gateSha256": "6f7260bb2f4b0c593aa0ab575abd67688c47bd13e52a9e91efec7ae1c6a67d4e"
+      "source": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-nurse-1791123206538-59d9f3d5",
+      "sourceSha256": "59d9f3d5129440d0ec4f5da0ffcab2536833ebc95222ce453321f9bf2f4f6aea",
+      "promptSha256": "a0e650810f57c128f08f912080615b55a28801ca97e2219ee93946368dfc304c",
+      "finalSha256": "ee55b5a35905d3817b323d5e7f5a9959b13b7ac0af4779af7a778387f567ade8",
+      "gateSha256": "2fcd7bb3f723bc8034935e7f510ab6925631a69c809ae7165be2b1ed5f1089a2"
     },
     {
       "role": "trainer-merchant",
-      "source": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/portrait-merchant-1791107894196-906e9e79",
-      "sourceSha256": "906e9e79340d67b55e233023eb334b5813c92b927faab614727f838901e6ec4f",
-      "promptSha256": "2d87b77c4e98c80f3a5369894bb99edf7361acd1dc6486f932df58107fc5590b",
-      "finalSha256": "734befcc5b7cad680233b18609944742716f5935b94c3d46b9a611bd0d0d64ea",
-      "gateSha256": "a77dd978f89e8ea80b0544cfa70be8d06409baf21dfb7c33e9c275f3c48c8ac5"
+      "source": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-merchant-1791123207672-1ab272ed",
+      "sourceSha256": "1ab272ed5854acd475324cffafc8c5b50b8ed7c6f3b1be551cd7f6446707a5f4",
+      "promptSha256": "0717fa152bdd810efdc67d3493ce3af5a012ca7d0cb6a7680a5409268045bf90",
+      "finalSha256": "60a9f2f2d8848e2369406adfd4328bb5b2f57b07888ed46ddcc3c04463fea331",
+      "gateSha256": "3f0420e6aadb742fd98f09dbe9844787c616df2c3b7418bd0e89066676130c49"
     },
     {
       "role": "trainer-mother",
-      "source": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/portrait-mother-1791107894603-0bc4ca7d",
-      "sourceSha256": "0bc4ca7d5ca8f6e9116504b1dc95d1296a560da1930dfbdbf79cc98d93990e1f",
-      "promptSha256": "2d87b77c4e98c80f3a5369894bb99edf7361acd1dc6486f932df58107fc5590b",
-      "finalSha256": "66daea271097efbb8588c8b7b771556895ad6ed0ae65d934781fd2f2a42a9464",
-      "gateSha256": "55ab2189472fcf654a2255ebc05246edc7e91333d5e63ab049e95f6a4bbfee7e"
+      "source": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-mother-1791123208789-0ac7a00e",
+      "sourceSha256": "0ac7a00ef8c193bf7bf43bdb9dd01c4144711546f76f6908e039aa369263e8e6",
+      "promptSha256": "1909a97477c4edf9073af6039b9cebe2fb8fa0caac32f678886b8d91bee3f740",
+      "finalSha256": "84591ac7a14105c6295039f6df617e61d8f0733c383b7977d9c41bfc43484080",
+      "gateSha256": "a4503ab06bdbca5213606db086475eb0dee35e38a6fe980011e95b91f73624be"
     },
     {
       "role": "trainer-resident",
-      "source": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/portrait-resident-1791108479082-11934266",
-      "sourceSha256": "11934266531d852a885ea328c38521df6f4ad4bab0b43eaa3305cf9aeaa49c04",
-      "promptSha256": "7ed4ed7b5c896fa66efdae6ddd816ea8fd48f4d9b1f6c39573c86ba6b6f8e7ee",
-      "finalSha256": "274a2f2301ba7afcd22aa31ede27fa8d15a762b073f25bab6f0c9bf550ec2c3b",
-      "gateSha256": "dd9d22c7809d1597d80dd5ed21d4051971288af04c8d3b9e249d359ae3e0b942"
+      "source": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-resident-1791123209929-a5cabb15",
+      "sourceSha256": "a5cabb15589eb8734314dbad291d8dfdea4cd09ec7e93c44c73c74f93594ace1",
+      "promptSha256": "105d8f140d802f4be936a2c186ad8d9f65d468ac296d6ab8da3d1822eeacdab7",
+      "finalSha256": "5133a41e38520d3a4aba4051c2c903929d714967db6cf62b6e3b35a81058a902",
+      "gateSha256": "5ba9b31fe2e86d9a71ae3f4f8bc3d8edb9b8b1eca3c2ff8f155a451c66d47576"
     },
     {
       "role": "trainer-gym_leader",
-      "source": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/portrait-gym_leader-1791107895386-6b67d376",
-      "sourceSha256": "6b67d376ec8d4fb0ca4ac23e9e24092c9f065665f6b75362b80e43eb7db0885e",
-      "promptSha256": "2d87b77c4e98c80f3a5369894bb99edf7361acd1dc6486f932df58107fc5590b",
-      "finalSha256": "20e701d3006f727e6452b4902626f3ae9bf0e2a4286ab24c6b6812d5e2d56ccb",
-      "gateSha256": "9e922994f33ad4213d5a60b9bfb82c0a8ba2bcb0706fa4c6444cbf47e4f3bc60"
+      "source": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-gym_leader-1791123211053-3debc9e6",
+      "sourceSha256": "3debc9e641f6b84819183ce619064761a2545f00eec01c6b7fc066cbc6b4f9f3",
+      "promptSha256": "547289245713b3fe3876b964597c405fab94abecb2a3465a875ca838212fe019",
+      "finalSha256": "b1aad84fa367afbf16bd24213c4323790d51e25f2ace2eda7ff4cda741bd0df9",
+      "gateSha256": "c40a925a63593ab3a5773cddec98c69fbc479f7dff4efcca554d821cc8e64bf7"
     },
     {
       "role": "trainer-company_agent",
-      "source": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/portrait-company_agent-1791107895749-65c95df7",
-      "sourceSha256": "65c95df71a0cf66694ce37d80f0d0fda6067ee830fc5432a9f214f595225ae07",
-      "promptSha256": "f945990d12d35040664f5e0cf5f94f625e6f097c2dd5d276ee8293607e41e22f",
-      "finalSha256": "ffe3e7e76f366a7e56d64e907b431f4897b83134ec1d0b62bb157289c914b51b",
-      "gateSha256": "a8d813f756d9d08b4feb92da076f9d4c99ab1378748c2de90e10e079fe418b40"
+      "source": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-company_agent-1791123212199-b4a6243c",
+      "sourceSha256": "b4a6243c82c343ba5fa2005bc204c13cd9784d1617560cb2142813d983e5c116",
+      "promptSha256": "bb6464875944e317a309bd5fcb5ff954235121bf179b97ef63994ddeb5b6d93b",
+      "finalSha256": "a77ae0cb9becd8ea3a2d9ad4f1064c35332648ebc5c1404cd98f255532ab6124",
+      "gateSha256": "9f18f1974eeb9b636a67051cf35cb276b5d914a493453f7b475c530242708119"
     },
     {
       "role": "trainer-captain",
-      "source": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/portrait-captain-1791107896113-cd9ae919",
-      "sourceSha256": "cd9ae91918c6e18cbc30dab367f7c5bd1cb6c9685643eff5e2a4a7c938bcde66",
-      "promptSha256": "f945990d12d35040664f5e0cf5f94f625e6f097c2dd5d276ee8293607e41e22f",
-      "finalSha256": "47fb041feefee121f9db0d855319bc79c03b7792b3015f16cefc277f2666ebb8",
-      "gateSha256": "6ce1b6866427668fc02c361c1543bb251a735c407a2c4399c57823d0a00cf491"
+      "source": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-captain-1791123213318-895e9b64",
+      "sourceSha256": "895e9b6400b8e0898d10be1fe80a020854e2982d4e50704c8f6bfe3cca9707e6",
+      "promptSha256": "67fd26e37a1dff60a48c96abfe386d290e778ecba51e9d57fad6af1ff1fb9c47",
+      "finalSha256": "140e31ebe0976cdcf7003160c071d3fb3c387f95d6eb84911d228cb59eaefd66",
+      "gateSha256": "555c1a48465b7f72372c7f1d384603e57b261bb4cda2c71c3fb560327091b06e"
     },
     {
       "role": "trainer-worker",
-      "source": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/portrait-worker-1791107896495-3643459d",
-      "sourceSha256": "3643459dc92ee7dce59fe58d33e29f35b9d6b7d6e48c01d85eb8b33ada56fe37",
-      "promptSha256": "f945990d12d35040664f5e0cf5f94f625e6f097c2dd5d276ee8293607e41e22f",
-      "finalSha256": "0ff6b4097d06923a5647151e2adb1d4d677bf9e5ae84c89d87a194846e151869",
-      "gateSha256": "89ee0e35ee227b380fffe99571e0a64f304f0fbcf91ca3a69f04923dfb363200"
+      "source": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-worker-1791123214390-054d4785",
+      "sourceSha256": "054d4785fb788fd5689cca24a34f3d46c54c4670370ab46ba974075eaa576c91",
+      "promptSha256": "50ae8367c8ea5132faefb2296c61451ddc4cef0e9fd1f410919a0e14724c0103",
+      "finalSha256": "6a2a4cfad3d946451387e8d46ef3a55885a353893ed4f2bf669f0c3eb20f5b5f",
+      "gateSha256": "b2fe6d16f9845d1bce65d02990dbe9b56a752c6514caa320a96a55069bdbe328"
     },
     {
       "role": "trainer-explorer",
-      "source": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/portrait-explorer-1791107896879-e6018dd0",
-      "sourceSha256": "e6018dd07a13ea8710d380e1b03b5ae0ba7d4da6fad9f06ffd42e585ecce5a48",
-      "promptSha256": "f945990d12d35040664f5e0cf5f94f625e6f097c2dd5d276ee8293607e41e22f",
-      "finalSha256": "16014fce358972f6fb1ed87cfe33ac2e7a6ae57c0b9881944c06ddc45a94e516",
-      "gateSha256": "0a7b8c6db2566f331592a7c2dcce5295e156523d6a47a5c5bc24996b666e9a87"
+      "source": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-explorer-1791123215535-562045dc",
+      "sourceSha256": "562045dcb0cc4e8beffd69280b20518bee9c1d9a79c9e951a90f4a7fff79d7a0",
+      "promptSha256": "c68561ebd296860a95f38eb1878d64f5dac2586034d1bb0180639a4b628ec03a",
+      "finalSha256": "6af6de41cbcdcf213099dbba54b63ba2bb4819d6bd216fbe4ab271e4f756375e",
+      "gateSha256": "bc48be0f1f99f2b85ea039a51e0e430efba71e46748ad011779f3f451e737cb8"
     },
     {
       "role": "trainer-student",
-      "source": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/portrait-student-1791107897268-ee96bd7a",
-      "sourceSha256": "ee96bd7a9c4bf67a03f0a3a44c84fa3d2148dbebfac78b4f840548f48e62021b",
-      "promptSha256": "f945990d12d35040664f5e0cf5f94f625e6f097c2dd5d276ee8293607e41e22f",
-      "finalSha256": "adf1f1f3587261559280824a7fae57333b143b0fe4957542c6397c7390d17859",
-      "gateSha256": "2be9ff65a5eed0ebcaeac6d25ef02454a8bd611191705be157e36a12b747863c"
+      "source": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-student-1791123216724-34893493",
+      "sourceSha256": "348934931a8992b899a9413698d9a37980c02e4c363273512f481eba13a93fcc",
+      "promptSha256": "f90dfe223008f07be75ce4922815594d648f8c619d9fa24ae906ec09c9cbed17",
+      "finalSha256": "f77fa030756574143ede0d9bbc698073431e883fefd702c8f7e2990df5c0cee9",
+      "gateSha256": "13103ffb2581537058a48ffa2acdb14746e7010c446731dff4a7f1c78bf5a39c"
     },
     {
       "role": "trainer-ranger",
-      "source": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/portrait-ranger-1791107897644-ded15da5",
-      "sourceSha256": "ded15da5513d7f123e7b2cac72c56059984a7c255c43a33be8206431aff32950",
-      "promptSha256": "f945990d12d35040664f5e0cf5f94f625e6f097c2dd5d276ee8293607e41e22f",
-      "finalSha256": "2dbd4af8dc5d95f08a668b10e1917f390ffe3bb9b48c34265c7d2592988c4164",
-      "gateSha256": "0b233885bb291484f7673d488609a52ccfa282db7cf528f4183e9e6d6e333e35"
+      "source": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-ranger-1791123217823-081898c7",
+      "sourceSha256": "081898c73b35ed2f16ce3bacea39907e0c2e8bd1f3a2b1da8485dc51702bd3b4",
+      "promptSha256": "f34294d74e6397c01bcc62578cff7f2c8d638dd99a47e96c49d2b4d7cd5bfc8a",
+      "finalSha256": "4e19c96a9797aadc9196b8e42e6c95c4500f94119677f4a4519fe48149d96083",
+      "gateSha256": "ea92b0917da7a8ebd1a1b8c256f3ff45f4c32cf05e156a9057bcfffa7ab8e873"
     },
     {
       "role": "trainer-moon_leader",
-      "source": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/portrait-moon_leader-1791107898013-1706436e",
-      "sourceSha256": "1706436e7c015538c9e58045b28111629b85246d6b32aae98b001a0886a5ed73",
-      "promptSha256": "f945990d12d35040664f5e0cf5f94f625e6f097c2dd5d276ee8293607e41e22f",
-      "finalSha256": "95fd8fb40f5806a1ff822c0a1bd3ecdb8e90e1b46f99212f005a637b56908311",
-      "gateSha256": "13b79aa8f160127187e15ca6443b58470a2a73f479a3f37129004540f632f7f1"
+      "source": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-moon_leader-1791123218997-d3ab3356",
+      "sourceSha256": "d3ab33569a54ebb19493b8ff054b64f96cb30a019135af62bc633a6ed4c404d2",
+      "promptSha256": "b36a6d811a81c7c0331459b51648ff0a65e4cdde958221f42669d796ec584714",
+      "finalSha256": "39ae0d6bab08f30e3b91215200971bc22feb245886a89deccac50e234d405c98",
+      "gateSha256": "93763d97d8b90b2e1a8b131d6919d99fd177fdb7603cf5c0744f1bfa18cdf38f"
     },
     {
       "role": "trainer-hiker",
-      "source": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/portrait-hiker-1791107898402-6f7acc25",
-      "sourceSha256": "6f7acc259fa505302ba71c89473988f21509a62a12f65801c134d87d28bffe00",
-      "promptSha256": "f945990d12d35040664f5e0cf5f94f625e6f097c2dd5d276ee8293607e41e22f",
-      "finalSha256": "3a49691580f1c381d619b400b35c188885dde697fce513fe6c6a18edad18e57f",
-      "gateSha256": "2b54c80c249bbb7186b6ef4f90c65c7b3bb5b0c33b75664d27fd10e11ebb7bb2"
+      "source": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-hiker-1791123220176-42f322fa",
+      "sourceSha256": "42f322fae6b2d2bda6c3662882f4009345db2074065cc00f576c2bf77db7dcd0",
+      "promptSha256": "1ca67ea37f56e7b80f6da1a8dd057c2c2254055d398215a4b0ffaa5bb6115975",
+      "finalSha256": "8105def624d97c7863f858c2d5f16915d03e211f227d59283a287df7389b99b9",
+      "gateSha256": "f4dfa07d39cd11fc8238ddad141f79cd65c9735850b1a28696022709e2c03666"
     },
     {
       "role": "trainer-hero_back",
-      "source": "/home/main/z-project/pokemon-character-motion-review-20261004/candidates/portrait-hero_back-1791108198897-9bf298f5",
-      "sourceSha256": "9bf298f5101922ffdd79cd8ccfa261cceb1062811f88a3e15fe7459661253af1",
-      "promptSha256": "7bf2f72b3befbc0eacb7ad74deb0ba6af0df24a5114be4fcd30ecc9960e366d5",
-      "finalSha256": "04e76ad26aee4566e06ae0c016e2357fdd00ec2ccf33bb6983651ecebc70ef37",
-      "gateSha256": "b9a9aa78397272cb237b708e9b216fda9e0a78fbd69b1950c8518540ca032463"
+      "source": "/home/main/z-project/pokemon-hand-pixels-20261004/review/candidates/portrait-hero_back-1791123220755-eb87e06b",
+      "sourceSha256": "eb87e06b569b551bf879cbb5568916124e988c5274d9c57395256a903ffbbfa8",
+      "promptSha256": "f97d9958a2819df6af9d2606664c6d8176df63a4941fd41be1be1094464c7a10",
+      "finalSha256": "aa0c10a9c403089441c8b268831a0bb41fdaa8fb1f9cef6230891a362a60910a",
+      "gateSha256": "a9b26cfaf9b88ecc3116adfc80e892d340331fe66bfc1fa6756c14d75e434942"
     }
   ]
 }

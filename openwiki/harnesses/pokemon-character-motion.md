@@ -145,3 +145,21 @@ CLI generated field/clip import defaults to source raster; explicit `--sampling 
 ### Actual shipping evidence
 
 `verify-shots/emerald-native-motion-20261004/SUMMARY.md` links the final native generated-source reviews, canonical fresh-load receipt,107focused structural/lifecycle controls,10actual export/AI-repair controls, and compiled standalone player checks. Runtime QA uses `scripts/qa/runtime/pokemon-native-motion.mjs` plus `emerald-native-battle.mjs`, not the editor shell. Palette/padding/scaling checks inspect actual rendered native frames. Browser records replace large inline media payloads with hashes in the committed evidence copy; full temporary records and durable source/prompt selections remain separate. Side strides for hero/student/resident are subtle at1×, so a structural pass is not proof of original-game art quality.
+
+## Direct native Python authoring (2026-10-04, supersedes sampled cast)
+
+사용자가 축소된 인물 도트를 거부하여 root가 `scripts/asset-gen/pokemon-characters/`에서 최종 격자에 직접 그린다. `pixels.py`는 integer pixel primitives, `cast.py`는 역할별 palette/head rows, `field.py`는16×32 방향/팔/다리/복장, `portraits.py`는 독립64×64 인물/교수 포즈다. 이미지 생성 도구나 원본 resize/quantization은 사용하지 않는다. 표시 확대와 원본 저작을 혼동하지 않는다.
+
+```bash
+python3 scripts/asset-gen/pokemon-characters/build.py --out /path/native-source
+python3 scripts/asset-gen/pokemon-characters/prepare-review.py /path/native-source /path/review
+node scripts/qa/runtime/pokemon-candidate-review.mjs /path/review/selection.json /path/visual-evidence
+# 이후 실제1배·3배 검토 → review → gate → build. 준비 스크립트는 승인하지 않는다.
+node scripts/qa/runtime/pokemon-hand-authoring.mjs /path/review/selection.json /path/controls
+```
+
+`portrait-import --native`는 정확히64×64 원본을 그대로 보존하고 partial-alpha/16색/64×96 등을 거부한다. 기본 generated-source importer의 균일 fit는 별도 경로로 유지한다. `clip-import --native --columns6 --rows1`는 원본384×64를 정확한 cell로 읽어 픽셀을 복사한다. 선언 grid와 dimensions가 다르면 거부하며 crop/scale/quantize를 수행하지 않는다. 공통 gate 및 의미 검수 계약은 그대로 적용한다.
+
+`authoring.json`은 method=`python-native-pixel-authoring`, resizing=false, quantization=false, Python sourceSHA와34 PNG SHA를 담는다. selection.authoring을 준 공용 등록은 현재 Python SHA·native provenance·source/final decoded RGBA 동일성을 추가로 검증한다. 숫자 gate로 예술 품질을 주장하지 않는다. 맨다리 인물의 뒤다리 바지색 오류를 독립 검수로 발견해 피부 shadow로 수정했고, 가방 배색도 필드/후면을 맞췄다. 여러 인물의 얼굴·자세 유사성과 각진 작은 몸통은 남은 표현상 제한이다.
+
+새 적용 증거는 `verify-shots/pokemon-hand-pixels-20261004/SUMMARY.md`에 둔다. 정본은 공식 호스트 CAS save/fresh connection load/media bytes 확인 후에만 완료한다. 실제 standalone opening/walk/battle/old Continue QA는 이전과 같은 전용 player 경로다. 별도60종 몬스터 후보 선택을 우회하지 않는다.

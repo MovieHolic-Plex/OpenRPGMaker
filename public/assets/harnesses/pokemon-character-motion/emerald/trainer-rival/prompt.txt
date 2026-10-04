@@ -1,5 +1,1 @@
-ORIGINAL BUILTIN IMAGEGEN PROMPT (prior generation, extracted native64x96 view):
-Edit this sprite sheet only to remove ALL background, colored glows, gradients, haze and shadows. Preserve exactly these eight characters, their poses, faces, clothes, pixels, size and positions. Replace every background area and spaces between limbs with ONE perfectly flat solid pure magenta #FF00FF background. Do not add or change any character detail, do not add labels or scenery. The eight full figures must remain isolated with no halo. Professional sprite extraction sheet.
-
-Original ledger: assets/emerald-monster-v2/npc-generation.json; extraction pipeline scripts/content/emerald-art-v2-pack.mjs.
-This revision uniformly fits existing generated pixels into native64x64, alpha128,15opaque colors; no painting, no claim of new generation.
+Original native Python pixel artwork, requested by user. Role=rival. Every primitive is placed on16x32; four authored head views, planted/swing legs, individual outfit. No image generation, resampling, palette conversion or imported artwork. Source scripts: scripts/asset-gen/pokemon-characters/. Source hashes in authoring.json.
