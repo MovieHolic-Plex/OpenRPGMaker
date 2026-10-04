@@ -1,5 +1,6 @@
+import { activeTileGrafts } from "@/assets/tileGrafts";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
-import { cloneExtraLayers, cropExtraLayers } from "@/project/mapLayers";
+import { cropExtraLayers, EXTRA_LAYER_KEYS, type ExtraLayerFields } from "@/project/mapLayers";
 import type { GameMap, Project, TilesetDef, UploadedAsset } from "@/project/types";
 
 /** Execution-time, bounded visual evidence. No live project references or command bodies. */
@@ -12,6 +13,8 @@ export interface ActivityVisual {
   resourceId?: string;
   uploaded?: string;
   uploadedAsset?: UploadedAsset;
+  /** Immutable uploaded graft sources; absent legacy sources fail closed. */
+  graftAssets?: Record<string, UploadedAsset>;
   pattern?: number;
   stats?: [string, string][];
   map?: GameMap;
@@ -54,6 +57,60 @@ function canDrawAsset(project: Project, resourceId: string): boolean {
   return Boolean(drawn.uploaded || drawn.uploadedAsset || (drawn.resourceId && resolveAssetResourceUrl(drawn.resourceId)));
 }
 
+// Tileset entries follow the projectClone immutable-entry contract. Share only
+// frozen execution snapshots, never mutable editor entries, across small captures.
+const capturedTilesets = new WeakMap<TilesetDef, { tileset: TilesetDef; chars: number }>();
+function freezeSnapshot<T>(value: T): T {
+  if (value && typeof value === "object" && !Object.isFrozen(value)) {
+    for (const child of Object.values(value)) freezeSnapshot(child);
+    Object.freeze(value);
+  }
+  return value;
+}
+function captureTileset(source: TilesetDef) {
+  const hit = capturedTilesets.get(source);
+  if (hit) return hit;
+  const { id, name, image, kind, tileSize, tilesPerRow, count, passability, priority, terrain, transparentColor, autotileGroups, tileMeta, tileGrafts } = source;
+  const fields = { id, name, image, kind, tileSize, tilesPerRow, count, passability, priority, terrain, transparentColor, autotileGroups, tileMeta, tileGrafts };
+  const chars = JSON.stringify(fields).length;
+  // Reject large metadata BEFORE cloning or touching auxiliary map grids.
+  const tileset = chars <= 1_100_000 ? freezeSnapshot(structuredClone(fields)) : source;
+  const snapshot = { tileset, chars };
+  capturedTilesets.set(source, snapshot);
+  return snapshot;
+}
+const capturedGraftAssets = new WeakMap<UploadedAsset, { asset?: UploadedAsset; chars: number }>();
+function captureGraftAssets(project: Project, tileset: TilesetDef, budget: number): Record<string, UploadedAsset> | null {
+  const assets: Record<string, UploadedAsset> = Object.create(null);
+  let chars = 0;
+  for (const graft of activeTileGrafts(tileset)) {
+    const source = project.assets.uploaded[graft.sourceChipset];
+    if (!source || Object.hasOwn(assets, graft.sourceChipset)) continue;
+    let snapshot = capturedGraftAssets.get(source);
+    if (!snapshot) {
+      const fields = source.ref ? { ...source, dataUrl: undefined } : source;
+      const size = JSON.stringify(fields).length;
+      snapshot = { chars: size, ...(size <= 1_100_000 ? { asset: freezeSnapshot(structuredClone(fields)) } : {}) };
+      capturedGraftAssets.set(source, snapshot);
+    }
+    chars += snapshot.chars + JSON.stringify(graft.sourceChipset).length + 2;
+    if (!snapshot.asset || chars > budget) return null;
+    assets[graft.sourceChipset] = snapshot.asset;
+  }
+  return assets;
+}
+function cropAuxiliary(map: GameMap, x: number, y: number, width: number, height: number): ExtraLayerFields {
+  const out: ExtraLayerFields = {};
+  for (const key of EXTRA_LAYER_KEYS) if (map[key]) out[key] = map[key];
+  if (map.relief) out.relief = map.relief;
+  if (map.terrainDesign) out.terrainDesign = map.terrainDesign;
+  if (map.doodadGroups) out.doodadGroups = map.doodadGroups;
+  // The remapper reads original arrays and assigns fresh cropped arrays. It never
+  // mutates them: no full-grid clone, and sparse memberships are copied only inside.
+  cropExtraLayers(out, map.width, map.height, x, y, width, height);
+  return out;
+}
+
 export function captureActivityVisuals(project: Project, name: string, input: unknown, result?: unknown, phase: ActivityVisual["phase"] = "read"): ActivityVisual[] {
   // Observability must never prevent a tool from executing.
   try { return capture(project, name, obj(input), obj(obj(result).data), phase); } catch { return []; }
@@ -77,12 +134,17 @@ function capture(project: Project, name: string, args: Record<string, any>, data
       const cut = (tiles: number[]) => Array.from({ length: width * height }, (_, i) => tiles[(oy + Math.floor(i / width)) * map.width + ox + i % width] ?? -1);
       const source = project.tilesets[map.tilesetId];
       if (source) {
-        const { id, name: title, image, kind, tileSize, tilesPerRow, count, passability, priority, terrain, transparentColor, autotileGroups, tileMeta, tileGrafts } = source;
-        const tileset = structuredClone({ id, name: title, image, kind, tileSize, tilesPerRow, count, passability, priority, terrain, transparentColor, autotileGroups, tileMeta, tileGrafts });
-        const cropped: GameMap = { id: map.id, name: map.name, width, height, tileSize: map.tileSize, tilesetId: map.tilesetId, lowerTiles: cut(map.lowerTiles), upperTiles: cut(map.upperTiles), ...cloneExtraLayers(map), events: map.events.filter(e => e.x >= ox && e.y >= oy && e.x < ox + width && e.y < oy + height).slice(0, 40).map(e => ({ id: e.id, name: e.name, x: e.x - ox, y: e.y - oy, trigger: e.trigger, commands: [] })) };
-        cropExtraLayers(cropped, map.width, map.height, ox, oy, width, height);
-        const visual: ActivityVisual = { kind: "map", title: map.name, caption: `영역 (${ox}, ${oy}) · ${width}×${height} · 이벤트는 위치 표시`, phase, target: `map:${mapId}:${ox},${oy}`, map: cropped, tileset, ...asset(project, image.type === "uploaded" ? image.id : undefined), origin: { x: ox, y: oy } };
-        if (JSON.stringify(visual).length <= 1_100_000) visuals.push(visual);
+        const snapshot = captureTileset(source);
+        const tileset = snapshot.tileset;
+        const graftAssets = snapshot.chars <= 1_100_000 ? captureGraftAssets(project, tileset, 1_100_000 - snapshot.chars) : null;
+        if (graftAssets) {
+          const cropped: GameMap = { id: map.id, name: map.name, width, height, tileSize: map.tileSize, tilesetId: map.tilesetId, lowerTiles: cut(map.lowerTiles), upperTiles: cut(map.upperTiles), ...cropAuxiliary(map, ox, oy, width, height), events: map.events.filter(e => e.x >= ox && e.y >= oy && e.x < ox + width && e.y < oy + height).slice(0, 40).map(e => ({ id: e.id, name: e.name, x: e.x - ox, y: e.y - oy, trigger: e.trigger, commands: [] })) };
+          const visual: ActivityVisual = { kind: "map", title: map.name, caption: `영역 (${ox}, ${oy}) · ${width}×${height} · 이벤트는 위치 표시`, phase, target: `map:${mapId}:${ox},${oy}`, map: cropped, tileset, ...asset(project, tileset.image.type === "uploaded" ? tileset.image.id : undefined), ...(Object.keys(graftAssets).length ? { graftAssets } : {}), origin: { x: ox, y: oy } };
+          // Account the cached immutable metadata without reserializing its full
+          // atlas-sized arrays for every tiny crop. This is exact JSON length.
+          const { tileset: _capturedTileset, ...rest } = visual;
+          if (JSON.stringify(rest).length + snapshot.chars + 11 <= 1_100_000) visuals.push(visual);
+        }
       }
     }
     if (event) {

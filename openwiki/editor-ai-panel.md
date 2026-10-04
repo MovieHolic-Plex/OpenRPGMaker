@@ -21,6 +21,32 @@
 `test/assistantUx2HumanFallback.test.ts`. 이번 작업은 실행 금지 지시에 따라 Vitest/게이트/
 typecheck/브라우저를 실행하지 않는다. 소스 검토와 esbuild 구문 검사만 사용하며 성능 실측값은 없다.
 
+## UX 추가 조사 2 — 활동 그림 캡처·그림판·보관 정리 (2026-10-04)
+
+`activityVisual.captureActivityVisuals`는 최대 32×24 crop 좌표를 먼저 계산하고 원본 보조 층에서
+그 칸만 복사한다. 전체 relief/overlay/shadow 배열을 clone한 뒤 자르지 않는다. 벽 장식·잠금·
+그룹 소속은 기존 remapper로 필터/좌표 변환하며 원본은 바꾸지 않는다. 불변 타일셋 항목은
+문서/kit을 제외한 캡처 메타데이터를 한 번 크기 검사·복제·freeze하여 공유한다. 110만 글자
+예산을 넘는 메타데이터는 grid crop/clone 전 거절한다. 업로드 graft 소스도 실행 시점의
+바이트 또는 content ref를 보존하며 새 업로드 항목은 별도 스냅샷이다.
+
+`toolImageCanvas.loadActivityTilesetAtlas`는 활동 그림 전용 LRU를 사용한다. 정확한 source URL/
+바이트, transparency key, 그림판 크기와 graft 내용/캡처 소스가 key다. 서로 다른 visual id도
+같은 불변 그림판은 decode/keying Promise를 공유한다. 보유 상한은 8항목·64MiB이며 key 문자열과
+추정 decoded pixel 메모리를 함께 계수한다. 실패/큰 항목은 보유하지 않는다. 이것은 브라우저
+전체/작업 중 임시 할당의 엄격한 메모리 상한이 아니다. 예전 graft 기록에 업로드 소스가 없으면
+누락 그림으로 처리하고 현재 편집기 그림으로 대체하지 않는다. 기존 유휴 예약·raster 3 lane·
+저장 Blob 재사용·표시 숨김 중 기록·ACK/백그라운드 양보는 유지한다.
+
+`oprn-ai-activity-media` v2는 payload와 `id/orderAt/bytes` 메타데이터를 같은 트랜잭션으로 쓴다.
+v1 자료는 스키마 업그레이드 때 한 번만 cursor로 읽어 메타데이터를 만든다. 일반 prune은
+`metadata.newest.openKeyCursor`의 key만 순회하고 payload/Blob을 조회하지 않는다. 기존 7일/
+64,000,000 byte·동시간 id 순서·메모리 256개/16MB 정책을 유지한다. 조용한 600ms 뒤 정리,
+연속 쓰기는 최초 예약부터 최대 5초 내 정리를 예약한다(저장 큐 완료 시간 보장은 아니다).
+
+추가 회귀 계약: `test/assistantUx2ActivityVisual.test.ts`, `test/assistantUx2ActivityAtlas.test.ts`,
+`test/assistantUx2MediaPrune.test.ts`. 테스트/브라우저는 실행하지 않았고 esbuild 구문 검사만 한다.
+
 ## 조수 실행 중 읽기·손편집·승인 보존 (2026-10-04)
 
 - `aiConversationScroll.ts`는 로그별로 따라가기 상태를 소유한다. 맨 아래(24px 이내)에서만 새 출력·이미지 크기 변화를 따라간다. 위로 읽으면 현재 위치를 유지하고 로그 밖의 「새 응답 보기」를 보여 준다. 버튼을 누르거나 맨 아래로 돌아오면 따라가기를 재개한다. 스트리밍·영역 실행·첨부·카드도 이 정책을 공유한다. 위를 읽는 중 사용자 발화가 추가돼도 지난 대화를 자동으로 접지 않는다. 패널 폐기 때 관찰자·프레임·리스너를 정리한다.

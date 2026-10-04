@@ -57,6 +57,60 @@ export function keyedTilesetImage(tileset: TilesetDef, image: HTMLImageElement):
   return createTransparentColorKeyCanvas(sourceKey, image) ?? image;
 }
 
+/** Activity evidence uses exact immutable bytes/refs, color policy, geometry and
+ * graft sources as its identity. LRU bounds both retained source text and decoded
+ * pixels; failed or oversize atlases are never retained. Pending jobs share work.
+ */
+const activityAtlases = new Map<string, { promise: Promise<HTMLImageElement | HTMLCanvasElement>; bytes: number }>();
+const ACTIVITY_ATLAS_MAX_ENTRIES = 8, ACTIVITY_ATLAS_MAX_BYTES = 64 * 1024 * 1024;
+function trimActivityAtlases(): void {
+  let bytes = 0;
+  for (const item of activityAtlases.values()) bytes += item.bytes;
+  for (const [key, item] of activityAtlases) {
+    if (activityAtlases.size <= ACTIVITY_ATLAS_MAX_ENTRIES && bytes <= ACTIVITY_ATLAS_MAX_BYTES) break;
+    activityAtlases.delete(key); bytes -= item.bytes;
+  }
+}
+export function clearActivityAtlasCache(): void { activityAtlases.clear(); }
+export function loadActivityTilesetAtlas(tileset: TilesetDef, source: string, graftSources: ReadonlyMap<string, string>): Promise<HTMLImageElement | HTMLCanvasElement> {
+  const key = JSON.stringify([source, tileset.image, normalizeRgbHexColor(tileset.transparentColor ?? ""),
+    tileset.count, tileset.tileSize, tileset.tilesPerRow, activeTileGrafts(tileset), [...graftSources].sort(([a], [b]) => a.localeCompare(b))]);
+  const existing = activityAtlases.get(key);
+  if (existing) { activityAtlases.delete(key); activityAtlases.set(key, existing); return existing.promise; }
+  const snapshot = { image: { ...tileset.image }, transparentColor: tileset.transparentColor,
+    count: tileset.count, tileSize: tileset.tileSize, tilesPerRow: tileset.tilesPerRow,
+    tileGrafts: activeTileGrafts(tileset).map(graft => ({ ...graft })) } as TilesetDef;
+  const urls = new Map(graftSources);
+  const entry = { promise: undefined as unknown as Promise<HTMLImageElement | HTMLCanvasElement>, bytes: key.length * 2 };
+  entry.promise = (async () => {
+    let url = source;
+    if (activeTileGrafts(snapshot).length) {
+      let timer: ReturnType<typeof setTimeout> | undefined;
+      try {
+        const baked = await Promise.race([bakeSnapshotGraftedTilesetImage(snapshot, source, urls),
+          new Promise<null>(resolve => { timer = setTimeout(() => resolve(null), GRAFT_EVIDENCE_WAIT_MS); })]);
+        if (!baked) throw new Error("Graft atlas snapshot unavailable");
+        url = baked;
+      } finally { if (timer !== undefined) clearTimeout(timer); }
+    }
+    const image = await new Promise<HTMLImageElement>((resolve, reject) => {
+      const image = new Image(); image.crossOrigin = "anonymous";
+      const timer = setTimeout(() => { image.src = ""; reject(new Error("image timeout")); }, 8000);
+      image.onload = () => { clearTimeout(timer); resolve(image); };
+      image.onerror = () => { clearTimeout(timer); reject(new Error("image unavailable")); };
+      image.src = url;
+    });
+    const atlas = keyedTilesetImage(snapshot, image);
+    entry.bytes += image.naturalWidth * image.naturalHeight * (atlas === image ? 4 : 8);
+    if (activityAtlases.get(key) === entry) trimActivityAtlases();
+    return atlas;
+  })();
+  activityAtlases.set(key, entry);
+  trimActivityAtlases();
+  void entry.promise.catch(() => { if (activityAtlases.get(key) === entry) activityAtlases.delete(key); });
+  return entry.promise;
+}
+
 export function drawTile(context: CanvasRenderingContext2D, image: CanvasImageSource, tile: number, tileset: TilesetDef, targetX: number, targetY: number, targetSize: number): void {
   const sourceX = (tile % tileset.tilesPerRow) * tileset.tileSize;
   const sourceY = Math.floor(tile / tileset.tilesPerRow) * tileset.tileSize;
