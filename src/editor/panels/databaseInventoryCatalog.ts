@@ -5,6 +5,7 @@ import { matchesNameOrId } from "@/editor/panels/databaseControls";
 import { emptyState, listPane, listRow, listToolbar, workspaceShell } from "@/editor/panels/databaseWorkspace";
 import { aiGenerateButton, deleteButton, recordCategoryLabel, recordForm } from "@/editor/panels/databaseRecordViews";
 import { recordListThumbnail } from "@/editor/panels/databaseRecordThumbnails";
+import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import {
   inventoryCatalogSession, listScrollTopForCollection, searchQueryForCollection,
   selectedRecordIdForSession, setListScrollTopForCollection, setSearchQueryForCollection,
@@ -35,6 +36,17 @@ function isSelected(entry: CatalogEntry): boolean {
     && entry.record.id === selectedRecordIdForSession(entry.collection);
 }
 
+// Value snapshots: database edits clone records, including unchanged catalog fields.
+type CatalogProjection = readonly [name: string, subtype: string, category: string, resourceId: string | undefined, url: string | null];
+function projection(entry: CatalogEntry): CatalogProjection {
+  const resourceId = entry.record.iconResourceId ?? entry.record.imageResourceId;
+  return [entry.record.name, subtype(entry), category(entry), resourceId,
+    resolveAssetResourceUrl(resourceId, { project: store.getCurrent() })];
+}
+function sameProjection(a: CatalogProjection, b: CatalogProjection): boolean {
+  return a.every((value, index) => value === b[index]);
+}
+
 /** One view over two collections. Search/filter updates never replace the input or inspector. */
 export function renderInventoryCatalog(host: HTMLElement, rerender: () => void): void {
   const session = inventoryCatalogSession();
@@ -43,6 +55,8 @@ export function renderInventoryCatalog(host: HTMLElement, rerender: () => void):
   if (selected) setSelectedRecordId(selected.collection, selected.record.id);
   const detail = el("div", { class: "db-detail-pane oprn-record-detail-pane db-catalog-detail" });
   const rows = el("div", { class: "db-list db-ws-list db-catalog-rows", dataset: { testid: "db-catalog-rows" } });
+  // Retain only visible rows, scoped to this mounted catalog (no historical cache).
+  let rowCache = new Map<string, { row: HTMLElement; projection: CatalogProjection; gallery: boolean }>();
   rows.scrollTop = listScrollTopForCollection("items");
   rows.addEventListener("scroll", () => setListScrollTopForCollection("items", rows.scrollTop));
   const count = el("span", { class: "db-ws-count", dataset: { testid: "db-catalog-count" }, attrs: { role: "status" } });
@@ -119,8 +133,26 @@ export function renderInventoryCatalog(host: HTMLElement, rerender: () => void):
       if (testid) detail.querySelector<HTMLElement>(`[data-testid="${testid}"]`)?.focus();
     };
     const form = recordForm(entry.collection, entry.record, refreshForm, host);
-    form.addEventListener("input", renderRows);
-    form.addEventListener("change", () => { updateSubtypes(); renderRows(); });
+    let previous = projection(entry);
+    const refreshProjection = (): void => {
+      const database = store.getCurrent().database;
+      let current: CatalogEntry | undefined;
+      if (entry.collection === "items") {
+        const record = database.items.find((record) => record.id === entry.record.id);
+        if (record) current = { collection: "items", record };
+      } else {
+        const record = database.equipment.find((record) => record.id === entry.record.id);
+        if (record) current = { collection: "equipment", record };
+      }
+      if (!current) return;
+      const next = projection(current);
+      if (sameProjection(previous, next)) return;
+      if (previous[1] !== next[1] || previous[2] !== next[2]) updateSubtypes();
+      previous = next;
+      renderRows();
+    };
+    form.addEventListener("input", refreshProjection);
+    form.addEventListener("change", refreshProjection);
     detail.replaceChildren(form);
   };
   const updateSubtypes = (): void => {
@@ -154,7 +186,35 @@ export function renderInventoryCatalog(host: HTMLElement, rerender: () => void):
       button.classList.toggle("active", active); button.setAttribute("aria-pressed", String(active));
     }
     const scrollTop = rows.scrollTop;
-    rows.replaceChildren(...visible.map((entry) => {
+    const nextCache: typeof rowCache = new Map();
+    const nextRows = visible.map((entry) => {
+      const key = `${entry.collection}:${entry.record.id}`;
+      const next = projection(entry);
+      const cached = rowCache.get(key);
+      if (cached) {
+        const active = isSelected(entry);
+        if (cached.row.getAttribute("aria-pressed") !== String(active)) {
+          cached.row.classList.toggle("active", active);
+          cached.row.setAttribute("aria-pressed", String(active));
+        }
+        const previous = cached.projection;
+        if (!sameProjection(previous, next) || cached.gallery !== gallery) {
+          const name = cached.row.querySelector(".db-list-name");
+          if (name) name.textContent = next[0] || "(이름 없음)";
+          const sub = cached.row.querySelector<HTMLElement>(".db-list-sub");
+          if (sub) sub.textContent = sub.title = `${LABELS[entry.collection]} · ${next[2]}`;
+          cached.row.title = `${next[0]} (${entry.record.id})`;
+          if (previous[0] !== next[0] || previous[3] !== next[3] || previous[4] !== next[4] || cached.gallery !== gallery) {
+            const thumb = recordListThumbnail(entry.collection, entry.record, store.getCurrent(), gallery ? 48 : 24);
+            cached.row.querySelector(".db-list-thumb")?.remove();
+            if (thumb) cached.row.prepend(thumb);
+          }
+          cached.row.classList.toggle("db-gallery-card", gallery);
+          cached.row.dataset.testid = `db-record-${gallery ? "card" : "row"}-${entry.record.id}`;
+        }
+        nextCache.set(key, { row: cached.row, projection: next, gallery });
+        return cached.row;
+      }
       const thumb = recordListThumbnail(entry.collection, entry.record, store.getCurrent(), gallery ? 48 : 24);
       const row = listRow({ name: entry.record.name, sub: `${LABELS[entry.collection]} · ${category(entry)}`,
         ...(thumb ? { thumb } : {}), active: isSelected(entry), title: `${entry.record.name} (${entry.record.id})`,
@@ -171,9 +231,19 @@ export function renderInventoryCatalog(host: HTMLElement, rerender: () => void):
         },
       });
       if (gallery) row.classList.add("db-gallery-card");
+      nextCache.set(key, { row, projection: next, gallery });
       return row;
-    }));
-    if (!visible.length) rows.append(emptyState({ title: all.length ? "검색 결과가 없습니다" : "아직 항목이 없습니다",
+    });
+    rowCache = nextCache;
+    if (visible.length) {
+      const retained = new Set(nextRows);
+      for (const child of Array.from(rows.children)) {
+        if (!retained.has(child as HTMLElement)) child.remove();
+      }
+      nextRows.forEach((row, index) => {
+        if (rows.children[index] !== row) rows.insertBefore(row, rows.children[index] ?? null);
+      });
+    } else rows.replaceChildren(emptyState({ title: all.length ? "검색 결과가 없습니다" : "아직 항목이 없습니다",
       compact: true, testid: "db-record-list-empty", action: { label: "필터 지우기", onClick: revealSelected, testid: "db-record-list-empty-clear" } }));
     rows.scrollTop = scrollTop;
     updateSelectionNotice();
