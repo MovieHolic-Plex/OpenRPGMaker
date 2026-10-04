@@ -267,6 +267,16 @@ The Resource Manager's music/sound categories use the complete shared catalog fr
 effective description/source and editor-only preview. Raw ID follows description.
 Search matches names, IDs, tags and descriptions;
 the empty-description filter tests the effective value, including deliberate clears.
+Audio rows opt in to `databaseListVirtualizer.ts` keyed DOM retention. Scrolling
+keeps overlapping buttons and their focus; a focused row leaving the window hands
+focus to the nearest mounted row without reversing the scroll. Tab/Shift+Tab use
+`focusRow` to reveal adjacent resources across window boundaries, with native exit
+at the catalog ends. `setItems` rebuilds fresh content and recovers focus by key.
+Other virtualizer callers retain their existing replacement behavior. Manager
+teardown calls `dispose` to disconnect the virtualizer's ResizeObserver, remove its
+scroll listener and clear its rows, as well as disconnecting the editor's observer.
+Regressions: `test/databaseListVirtualizerLifecycle.test.ts` and
+`test/resourceManagerPerformance.test.ts` (audio focus and repeated teardown).
 `audio-description-search`, `audio-description-input` and `audio-description-save`
 are the feature's browser test controls.
 

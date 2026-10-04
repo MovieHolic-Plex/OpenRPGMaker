@@ -51,6 +51,7 @@ export class AudioDescriptionEditor {
     Object.assign(this.entries.style, { display: "flex", flexDirection: "column", minHeight: "0", overflow: "hidden" });
     Object.assign(this.rows.style, { display: "block", overflowY: "auto", flex: "1 1 auto", minHeight: "0" });
     this.virtualRows = createVirtualList({ container: this.rows, items: [] as AudioResource[], rowHeight: 32, overscan: 6,
+      getRowKey: item => `${item.kind}:${item.id}`,
       renderRow: item => this.renderRow(item) });
     // A zero-height/detached initial host must not trigger the virtualizer's
     // full-list fallback. Feed a bounded slice until the real viewport exists.
@@ -176,7 +177,12 @@ export class AudioDescriptionEditor {
       class: `rm-profile-row rm-audio-row${item.id === this.selectedId ? " active" : ""}`, text: item.name,
       attrs: { type: "button", "aria-pressed": String(item.id === this.selectedId), title: item.name },
       dataset: { testid: "audio-resource-row", resourceId: item.id, resourceKind: item.kind, descriptionSource: item.descriptionSource },
-      on: { click: () => {
+      on: { keydown: event => {
+        const key = event as KeyboardEvent;
+        if (key.key !== "Tab" || key.altKey || key.ctrlKey || key.metaKey) return;
+        const index = this.appliedRows?.findIndex(row => row.id === item.id && row.kind === item.kind) ?? -1;
+        if (index >= 0 && this.virtualRows.focusRow(index + (key.shiftKey ? -1 : 1))) key.preventDefault();
+      }, click: () => {
         if (item.id === this.selectedId) return;
         this.request(() => { this.releaseDetail(); this.selectedId = item.id; this.refresh(); this.detail?.input.focus(); });
       } },
@@ -253,7 +259,7 @@ export class AudioDescriptionEditor {
     this.disposed = true;
     ++this.rowUpdate;
     this.resize?.disconnect();
-    this.virtualRows.setItems([]);
+    this.virtualRows.dispose();
     this.closePrompt?.();
     this.closePrompt = undefined;
     this.releaseDetail();

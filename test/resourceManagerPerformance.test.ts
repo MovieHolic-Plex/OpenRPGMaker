@@ -1,5 +1,6 @@
 // @vitest-environment happy-dom
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { listAudioResources } from "@/assets/audioResourceCatalog";
 import { listMonsterResources } from "@/assets/monsterResourceCatalog";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
@@ -129,6 +130,93 @@ describe("resource workbench catalog and DOM boundaries", () => {
     expect(root.querySelector('[data-testid="audio-resource-row"]')?.getAttribute("data-resource-kind"))
       .toBe(kind === "music" ? "sound" : "music");
     expect(listMonsterResources).not.toHaveBeenCalled();
+  });
+
+  it.each(["music", "sound"] as const)("retains %s row focus on scroll and tabs across both window boundaries", async kind => {
+    vi.spyOn(HTMLElement.prototype, "clientHeight", "get").mockReturnValue(320);
+    renderResourceManager(root, kind); await Promise.resolve();
+    const scroller = root.querySelector<HTMLElement>(".rm-audio-rows")!;
+    const mountedRows = () => [...scroller.querySelectorAll<HTMLButtonElement>('[data-testid="audio-resource-row"]')];
+    const initial = mountedRows();
+    const selected = initial.find(row => row.getAttribute("aria-pressed") === "true")!.dataset.resourceId;
+    const focused = initial[8]!;
+    focused.focus();
+    scroller.scrollTop = 224;
+    scroller.dispatchEvent(new Event("scroll"));
+    expect(mountedRows()).toContain(focused);
+    expect(document.activeElement).toBe(focused);
+
+    const beforeForward = mountedRows();
+    const tail = beforeForward.at(-1)!;
+    tail.focus();
+    const detail = root.querySelector('[data-testid="audio-description-input"]');
+    const forward = new KeyboardEvent("keydown", { key: "Tab", bubbles: true, cancelable: true });
+    tail.dispatchEvent(forward);
+    expect(forward.defaultPrevented).toBe(true);
+    const next = document.activeElement as HTMLButtonElement;
+    expect(next.dataset.testid).toBe("audio-resource-row");
+    expect(next.dataset.resourceId).not.toBe(tail.dataset.resourceId);
+    expect(initial).not.toContain(next);
+    const backward = new KeyboardEvent("keydown", { key: "Tab", shiftKey: true, bubbles: true, cancelable: true });
+    next.dispatchEvent(backward);
+    expect(backward.defaultPrevented).toBe(true);
+    expect((document.activeElement as HTMLElement).dataset.resourceId).toBe(tail.dataset.resourceId);
+    expect(root.querySelector('[data-testid="audio-description-input"]')).toBe(detail);
+
+    const head = mountedRows()[0]!;
+    const headIndex = beforeForward.findIndex(row => row.dataset.resourceId === head.dataset.resourceId);
+    const previous = beforeForward[headIndex - 1]!;
+    expect(previous).toBeDefined();
+    head.focus();
+    const reverseBoundary = new KeyboardEvent("keydown", { key: "Tab", shiftKey: true, bubbles: true, cancelable: true });
+    head.dispatchEvent(reverseBoundary);
+    expect(reverseBoundary.defaultPrevented).toBe(true);
+    expect((document.activeElement as HTMLElement).dataset.resourceId).toBe(previous.dataset.resourceId);
+
+    // Shift+Tab at the catalog's first row must still leave the list natively.
+    scroller.scrollTop = 0; scroller.dispatchEvent(new Event("scroll"));
+    const first = mountedRows()[0]!;
+    first.focus();
+    const exit = new KeyboardEvent("keydown", { key: "Tab", shiftKey: true, bubbles: true, cancelable: true });
+    first.dispatchEvent(exit);
+    expect(exit.defaultPrevented).toBe(false);
+    expect(root.querySelector('[data-testid="audio-resource-row"][aria-pressed="true"]')?.getAttribute("data-resource-id")).toBe(selected);
+
+    // Tab at the last resource also leaves natively, rather than trapping focus.
+    const count = listAudioResources(kind, store.getCurrent()).length;
+    scroller.scrollTop = (count - 10) * 32; scroller.dispatchEvent(new Event("scroll"));
+    const last = mountedRows().at(-1)!;
+    last.focus();
+    const lastExit = new KeyboardEvent("keydown", { key: "Tab", bubbles: true, cancelable: true });
+    last.dispatchEvent(lastExit);
+    expect(lastExit.defaultPrevented).toBe(false);
+    expect(root.querySelector('[data-testid="audio-description-input"]')).toBe(detail);
+  });
+
+  it.each(["picture", "music", "sound"] as const)("releases both audio row observers on repeated %s manager teardown", async kind => {
+    const observers: { target?: Element; disconnect: ReturnType<typeof vi.fn>; callback: ResizeObserverCallback }[] = [];
+    vi.stubGlobal("ResizeObserver", class {
+      target?: Element;
+      readonly disconnect = vi.fn();
+      constructor(readonly callback: ResizeObserverCallback) { observers.push(this); }
+      observe(target: Element): void { this.target = target; }
+    });
+    vi.spyOn(HTMLElement.prototype, "clientHeight", "get").mockReturnValue(320);
+    for (let attempt = 0; attempt < 3; attempt += 1) {
+      renderResourceManager(root, kind); await Promise.resolve();
+      const owned = observers.filter(observer => observer.target?.classList.contains("rm-audio-rows"));
+      expect(owned).toHaveLength(2 * (attempt + 1));
+      const scroller = owned.at(-1)!.target as HTMLElement;
+      const removeListener = vi.spyOn(scroller, "removeEventListener");
+      disposeResourceManager(root); root.replaceChildren();
+      for (const observer of owned) {
+        expect(observer.disconnect).toHaveBeenCalledTimes(1);
+        observer.callback([], observer as unknown as ResizeObserver);
+      }
+      scroller.scrollTop = 1600; scroller.dispatchEvent(new Event("scroll"));
+      expect(scroller.querySelectorAll('[data-testid="audio-resource-row"]')).toHaveLength(0);
+      expect(removeListener).toHaveBeenCalledWith("scroll", expect.any(Function));
+    }
   });
 });
 
