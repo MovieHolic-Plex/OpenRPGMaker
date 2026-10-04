@@ -2637,3 +2637,11 @@ runner의 draft/admission/audit 경로를 통과한다. 다른 요청의 preserv
 480×320/camera2를 검사한다. 최종 읽기/검토와 실제 이미지 전달 영수증은
 `PiMonsterGameProduction`가 보유한다. 구조/리소스 검사이며 정상 난이도 플레이,
 청취, 실제 상점 거래와 정본 SQLite 저장/재로드 증거를 대신하지 않는다.
+
+기존 별빛섬 정본의 표현 이관은 `scripts/content/adopt-emerald-monster.mjs`로
+분리된 문서를 준비한다. 세션·시작 위치·맵 ID와 레이어·이벤트 명령/경로·충돌표·
+기술/종족/진행 데이터가 유지되는지 확인하며, 배우는 캐릭터 그림 두 필드만 허용한다.
+정본 저장은 별도 `monster-expedition-store.mjs save`의 백업·SHA 비교·호스트 API·
+새 연결 재로드 및 자산 바이트 비교를 통과해야 한다. 이관 준비만으로 저장을 보고하지 않는다.
+공용 기존 몬스터 그림은 ID가 키인 객체이며 `Object.values`로 순회한다. repair의
+`replaceCreatureArt:true`는 명시적 그림 교체 요청에만 쓰며 종족 데이터와 세이브를 유지한다.

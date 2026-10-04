@@ -6,7 +6,7 @@ export function configureEmeraldMonsterCreatureArt(project: Project, replaceExis
   const used = new Set((project.database.monsterSpecies ?? []).flatMap(species =>
     [species.graphic.monsterResourceId, species.graphic.backResourceId].filter(Boolean)));
   const updated: string[] = [];
-  for (const asset of artwork as UploadedAsset[]) {
+  for (const asset of Object.values(artwork) as UploadedAsset[]) {
     const front = asset.id.endsWith('_icon') ? asset.id.replace(/_icon$/u, '_front') : undefined;
     if (!used.has(asset.id) && !(front && used.has(front))) continue;
     if (project.assets.uploaded[asset.id] && !replaceExisting) continue;
