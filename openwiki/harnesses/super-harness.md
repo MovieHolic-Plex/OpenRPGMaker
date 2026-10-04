@@ -167,3 +167,12 @@ ports는 side/offset/width/kind/level/connectsTo를 갖는다. 양쪽 포트의 
 정본 SQLite의 tileset이 `$blob`이면 `tileset_blobs`를 읽어 펼치고, `referenceDocumentsOwner=bundle`이면
 실제 호스트 판본의 소유 번들 문서를 `referenceOwnership.ts`와 같은 계약으로 복원한 뒤 추출한다.
 이 표지를 '참고자료 없음'으로 오판하지 않는다. 자료를 임의로 생성하거나 정본 DB에 다시 쓰지 않는다.
+
+### 그림 실행은 감독이 직접 한다
+
+중첩 Codex 실행은 설정 폴더 쓰기 오류, 중첩 Claude 실행은 네트워크 EPERM으로 후보 0장이 된 실측이 있다.
+`art` 준비 작업자는 시드·격리 판을 만들고 art-result.json에 execution 요청을 반환한다.
+`art-native`는 감독 프로세스에서 interior-props pool 또는 modern-chipset _run을 실행한다. 임의 명령/외부 경로는 받지 않는다.
+종료 후 별도 결과 수집 작업자가 실제 PNG·검사 JSON을 art-result.json에 기록한다.
+하위 작업의 종료를 관리하며, art와 art-native를 합쳐 동시 칩 제작 개념 상한을 적용한다.
+조선/jp-city의 직접 실행 어댑터는 아직 없으므로 준비 단계에서 명시적으로 막힌다.
