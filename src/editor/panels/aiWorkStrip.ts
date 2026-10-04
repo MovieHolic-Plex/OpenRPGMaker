@@ -342,7 +342,7 @@ export function beginAiWorkCard(input: { readonly title: string; readonly onStop
           class: "ai-work-card-action ai-work-card-locate",
           attrs: { type: "button", title: "이 변경이 있는 자리로 화면을 옮깁니다" },
           dataset: { testid: "ai-work-card-locate" },
-          children: actionLabel("보기", "맵에서 보기"),
+          children: actionLabel("보기", "변경된 곳 보기"),
           on: {
             click: () => {
               focusEditorRegion({ mapId: preview.mapId, x: region.x, y: region.y, w: region.width, h: region.height }, { highlight: true });

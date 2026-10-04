@@ -3,8 +3,9 @@ import { requestEditorCameraFocus } from "@/editor/editorCameraFocus";
 import { editorState } from "@/editor/editorState";
 import { selectEditorMap } from "@/editor/mapSelection";
 import { isAiLiveCanvasEnabled } from "@/editor/aiLiveCanvas";
-import { planConstructionReveal, requestAgentConstructionReveal } from "@/editor/agentConstructionReveal";
+import { discardConstructionLogs, planConstructionReveal, requestAgentConstructionReveal } from "@/editor/agentConstructionReveal";
 import { prefersReducedMotion } from "@/util/reducedMotion";
+import { isUiInBackground } from "@/ai/yieldToUi";
 import type { GameEvent, GameMap, MapId, Project } from "@/project/types";
 
 export type AgentFocusLayer = "lower" | "upper" | "event";
@@ -52,15 +53,22 @@ export function requestAgentFocusHighlight(target: AgentFocusTarget): void {
 }
 
 /**
- * @param options.follow false 면 사용자가 보고 있는 맵의 변경만 강조·재생하고, 맵을 바꾸거나 카메라를 옮기지 않는다 —
- *   다른 맵에서 도는 백그라운드 실행이 적용될 때마다 화면을 끌고 가지 않게(2026-10-03 맵별 실행).
+ * Application keeps the user's view by default. follow:true is reserved for a
+ * direct user action such as the preview button; model tool calls do not set it.
  */
 export function focusAcceptedAgentChanges(before: Project, after: Project, options: { readonly follow?: boolean } = {}): AgentFocusTarget | null {
   const target = summarizeAcceptedAgentChanges(before, after);
   if (!target) return null;
   const currentMapId = editorState.get().currentMapId ?? before.startMapId ?? null;
-  if (options.follow === false) {
-    if (target.mapId !== currentMapId) return target;
+  if (isUiInBackground()) {
+    discardConstructionLogs();
+    return target;
+  }
+  if (options.follow !== true) {
+    if (target.mapId !== currentMapId) {
+      discardConstructionLogs(target.mapId);
+      return target;
+    }
     const map = after.maps[target.mapId];
     const plan = map && isAiLiveCanvasEnabled() && !prefersReducedMotion()
       ? planConstructionReveal(before.maps[target.mapId], map, after.tilesets[map.tilesetId])

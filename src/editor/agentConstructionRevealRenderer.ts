@@ -18,6 +18,7 @@ import { CONSTRUCTION_FADE_OUT_MS, type ConstructionRevealFrame, type Constructi
 import type { ConstructionStep } from "@/editor/tools/constructionLog";
 import { store } from "@/project/store";
 import type { MapId } from "@/project/types";
+import { isUiInBackground } from "@/ai/yieldToUi";
 
 /** 계획 격자 한 칸의 그림 크기(px). */
 const PLAN_PX = 8;
@@ -64,6 +65,7 @@ type Active = {
 
 export class AgentConstructionRevealRenderer {
   private active: Active | null = null;
+  private readonly stopInBackground = (): void => { if (isUiInBackground()) this.clear(); };
 
   constructor(
     private readonly scene: Phaser.Scene,
@@ -76,6 +78,7 @@ export class AgentConstructionRevealRenderer {
   }
 
   play(plan: ConstructionRevealPlan): boolean {
+    if (isUiInBackground()) return false;
     if (plan.mapId !== this.mapId()) return false;
     const tileset = store.getCurrent().tilesets[plan.tilesetId];
     if (!tileset) return false;
@@ -110,6 +113,10 @@ export class AgentConstructionRevealRenderer {
       onUpdate: (_time, delta) => this.tick(delta),
     };
     this.active = active;
+    if (typeof document !== "undefined") {
+      document.addEventListener("visibilitychange", this.stopInBackground);
+      document.defaultView?.addEventListener("blur", this.stopInBackground);
+    }
     const initial = plan.log.initial;
     if (initial) this.drawCells(active, initial, initial.cells.map((_, k) => k), true);
     // 관측점: QA·디버깅이 연출 중인지 DOM 에서 읽는다(캔버스 안 객체는 셀렉터로 못 잡는다).
@@ -123,6 +130,10 @@ export class AgentConstructionRevealRenderer {
     const active = this.active;
     if (!active) return;
     this.active = null;
+    if (typeof document !== "undefined") {
+      document.removeEventListener("visibilitychange", this.stopInBackground);
+      document.defaultView?.removeEventListener("blur", this.stopInBackground);
+    }
     this.scene.events.off("update", active.onUpdate);
     active.root.destroy(true);
     active.caption?.remove();

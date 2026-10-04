@@ -83,6 +83,9 @@ jobs:
       #   충분하다. 잡 상한 240분, 게이트 본체 75분이라 여유는 있다.
       - name: 전체 게이트 (기준선 대비 회귀만 실패)
         id: gates
+        env:
+          # verify-gates 의 타입체크만 이 락을 잡는다. 힙 10GB 를 ci-fast 와 동시에 열지 않기 위해서다.
+          OPRN_TYPECHECK_LOCK: /home/dev/ci/typecheck.lock
         run: node scripts/verify-gates.mjs --flake-budget-min=90
 
       # 게이트가 실패해도 자원 리포트는 반드시 남긴다 — 조용히 죽는 경우가 바로 이걸로 진단된다.

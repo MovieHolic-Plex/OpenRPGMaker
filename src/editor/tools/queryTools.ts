@@ -463,7 +463,7 @@ const listNpcGraphics: ToolDefinition = {
       // 이 그림의 검토된 짝 얼굴. null 이면 맞는 얼굴이 없다 — 다른 얼굴을 붙이지 말 것.
       face: faceForNpcGraphic(match.entry.textureKey, match.entry.characterIndex),
       nativeGraphic: {
-        sprite: { type: "bundled", id: match.entry.textureKey },
+        sprite: { type: match.entry.spriteType ?? "bundled", id: match.entry.textureKey },
         direction: "down",
         pattern: charsetFrameIndex({ characterIndex: match.entry.characterIndex, direction: "down", pattern: 1 }),
       },
