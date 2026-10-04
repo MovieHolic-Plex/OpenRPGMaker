@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **135쪽 / 4646KB / 약 1,346,312 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **135쪽 / 4661KB / 약 1,350,794 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -15,7 +15,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
-| `openwiki/editor-ai-panel.md` | 595KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 3672 | ~173,373 |
+| `openwiki/editor-ai-panel.md` | 597KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 3690 | ~173,873 |
 | `openwiki/editor-ai-tools.md` | 320KB | 87KB ⚠상한 초과 — 절을 더 쪼개라 | 2648 | ~92,286 |
 | `openwiki/editor-database.md` | 403KB | 63KB ⚠상한 초과 — 절을 더 쪼개라 | 2359 | ~117,890 |
 | `openwiki/editor-event-authoring.md` | 167KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 973 | ~48,704 |
@@ -82,7 +82,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/harnesses/charset-actor.md` | 1 | `walk-transfer.json` |
 | `openwiki/harnesses/jp-city.md` | 1 | `kit-x3.png` |
 | `openwiki/harnesses/monster-collect-species.md` | 1 | `qa-runs/battle-anim3/anim.js` |
-| `openwiki/harnesses/super-harness.md` | 6 | `art-result.json`, `card.json`, `gaps.json`, `material-review.json`, `materials.json`, `visual-input.json` |
+| `openwiki/harnesses/super-harness.md` | 9 | `B.json`, `art-result.json`, `card.json`, `gaps.json`, `material-review.json`, `materials.json`, `planning-reviews/A.json`, `planning.json`, `visual-input.json` |
 | `openwiki/horror-authoring.md` | 2 | `motion-sheet.png`, `projectLint.test.ts` |
 | `openwiki/joseon-baram.md` | 2 | `.oprn.json`, `map-from-sheet.png` |
 | `openwiki/jp-city.md` | 1 | `scripts/tmp-jp-gen.mts` |
@@ -422,7 +422,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L60` 설치 지점
 - `L66` 테스트
 
-### `openwiki/editor-ai-panel.md` — 595KB · 3672줄 · ~173,373 토큰 · 통째읽기 잘림 · 깨진 줄 26
+### `openwiki/editor-ai-panel.md` — 597KB · 3690줄 · ~173,873 토큰 · 통째읽기 잘림 · 깨진 줄 26
 
 - `L5` 조수 실행 중 읽기·손편집·승인 보존 (2026-10-04)
 - `L15` 사용자가 요청한 위치 안내만 화면을 옮긴다 (2026-10-04)
@@ -524,18 +524,19 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L3450` 대형 프로젝트의 AI 적용 기준선 메모리 (2026-09-24)
 - `L3461` 체크포인트 적용 권위는 노드 요약으로 비교한다 (2026-09-25)
 - `L3483` 우클릭 드래그 바 → 채팅 한 경로 («영역 작업» 창 폐기, 2026-09-25)
-- `L3501` 턴 단계 계측과 실행 추론 강도 (2026-09-26)
-  - `L3506` 기록은 어디서 만들고 어디에 쓰이나
-  - `L3523` 다이얼이 실행 루프의 사고 강도를 정한다
-  - `L3531` 실측 (2026-09-26, 동반 서비스 127.0.0.1:17832 직결 · 실제 OAuth · gemini-3.8-flash)
-- `L3544` AI 패널 렌더 비용 (2026-09-28)
-  - `L3566` 검증 권한 정정과 브라우저 재실측 (2026-09-28)
-- `L3575` 전송 직후 캔버스 피드백과 체크포인트 따라가기 (2026-10-03)
-- `L3583` 마을 요청 바로 시공 · 실제 시공 순서 재생 · 조수창 제때 반영 (2026-10-03)
-  - `L3596` 실제 시공 순서 재생 (`tools/constructionLog.ts` 기록 + `agentConstructionReveal.ts` 계획 + `agentConstructionRevealRenderer.ts` 그리기)
-  - `L3628` 맵별 실행 대기열과 3-way 병합 (`editor/aiMapRunQueue.ts` + `panels/aiMapRunCard.ts` + `project/projectMerge.ts`)
-  - `L3653` 조수창
-  - `L3662` 재현·증거
+- `L3501` 우클릭 영역 드래그 미리보기와 최종 선택 (2026-10-04)
+- `L3519` 턴 단계 계측과 실행 추론 강도 (2026-09-26)
+  - `L3524` 기록은 어디서 만들고 어디에 쓰이나
+  - `L3541` 다이얼이 실행 루프의 사고 강도를 정한다
+  - `L3549` 실측 (2026-09-26, 동반 서비스 127.0.0.1:17832 직결 · 실제 OAuth · gemini-3.8-flash)
+- `L3562` AI 패널 렌더 비용 (2026-09-28)
+  - `L3584` 검증 권한 정정과 브라우저 재실측 (2026-09-28)
+- `L3593` 전송 직후 캔버스 피드백과 체크포인트 따라가기 (2026-10-03)
+- `L3601` 마을 요청 바로 시공 · 실제 시공 순서 재생 · 조수창 제때 반영 (2026-10-03)
+  - `L3614` 실제 시공 순서 재생 (`tools/constructionLog.ts` 기록 + `agentConstructionReveal.ts` 계획 + `agentConstructionRevealRenderer.ts` 그리기)
+  - `L3646` 맵별 실행 대기열과 3-way 병합 (`editor/aiMapRunQueue.ts` + `panels/aiMapRunCard.ts` + `project/projectMerge.ts`)
+  - `L3671` 조수창
+  - `L3680` 재현·증거
 
 ### `openwiki/editor-ai-tools.md` — 320KB · 2648줄 · ~92,286 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
@@ -1095,7 +1096,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 절 제목 없음 (평면 목록 페이지).
 
-### `openwiki/harnesses/joseon-baram.md` — 15KB · 105줄 · ~4,339 토큰
+### `openwiki/harnesses/joseon-baram.md` — 15KB · 105줄 · ~4,358 토큰
 
 - `L8` 이럴 때 쓴다 / 쓰지 않는다
 - `L13` 단계 (`npm run harness -- joseon-baram <단계>`)
@@ -1151,15 +1152,16 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L35` Maker-owned repair loop (2026-10-04)
 - `L45` Reproduction
 
-### `openwiki/harnesses/super-harness.md` — 12KB · 111줄 · ~3,797 토큰
+### `openwiki/harnesses/super-harness.md` — 15KB · 136줄 · ~4,677 토큰
 
 - `L6` 왜 (2026-10-03 실측)
 - `L13` 조수 쪽 연결 (제품 코드)
-- `L26` 제작 전 재료 관문 (2026-10-04)
-- `L48` 공간과 시각 관문
-- `L61` 한 바퀴
-- `L87` 화면
-- `L98` 운영
+- `L26` 제작 전 공간 기획·텍스트 도면 관문 (2026-10-04)
+- `L49` 제작 전 재료 관문 (2026-10-04)
+- `L71` 공간과 시각 관문
+- `L84` 한 바퀴
+- `L112` 화면
+- `L123` 운영
 
 ### `openwiki/harnesses/worldmap-icons.md` — 5KB · 65줄 · ~1,592 토큰
 
@@ -1204,18 +1206,20 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L144` 안티-게이밍 규칙
 - `L154` 이 페이지를 갱신해야 하는 변경
 
-### `openwiki/joseon-baram.md` — 26KB · 148줄 · ~7,937 토큰
+### `openwiki/joseon-baram.md` — 34KB · 182줄 · ~10,324 토큰
 
 - `L16` 재실행 한 줄 (국내성 맵이 다시 바뀌면)
 - `L32` 변환기와 시트 합치기
   - `L38` 두 시트를 한 시트로 (칸 번호 불변 규칙)
-- `L52` 통행 (X/C/F)
-- `L74` 등록 배선 (한 곳이라도 빠지면 어느 프로젝트에선가 빈 화면)
-- `L84` 참고문서 (번들 소유, AI-REFERENCE-CONTRACT 8항목)
-- `L90` 검증 (실측, 임시 폴더 프로젝트, 세 맵 합친 판)
-- `L109` 새 판이 오면 손볼 곳
-- `L115` 새 장소 12장 (2026-10-04, 사냥터·동굴·실내 방 6·궁 내부 4)
-- `L142` 한계
+  - `L48` 동결 장부 (`tiledata/joseon-village/frozen-layout.json`) — 새 시트를 더하는 법
+- `L60` 통행 (X/C/F)
+- `L82` 등록 배선 (한 곳이라도 빠지면 어느 프로젝트에선가 빈 화면)
+- `L92` 참고문서 (번들 소유, AI-REFERENCE-CONTRACT 8항목)
+- `L98` 검증 (실측, 임시 폴더 프로젝트, 14맵 합친 판)
+- `L117` 사냥터·동굴·실내·궁 내부 (2026-10-04, 새 11장)
+- `L143` 새 판이 오면 손볼 곳
+- `L149` 새 장소 12장 (2026-10-04, 사냥터·동굴·실내 방 6·궁 내부 4)
+- `L176` 한계
 
 ### `openwiki/jp-city.md` — 26KB · 206줄 · ~7,732 토큰
 
@@ -1479,19 +1483,19 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L190` 검증
 - `L201` 자동화 — 제안 PR 과 발행 타이머
 
-### `openwiki/relief-terrain.md` — 20KB · 147줄 · ~6,188 토큰
+### `openwiki/relief-terrain.md` — 22KB · 162줄 · ~6,884 토큰
 
 - `L9` 파일 지도
 - `L28` depth 규칙(런타임, `playSceneRelief.ts` 머리말)
-- `L38` 편집기 성능 계약 (2026-10-03 부분 굽기)
-- `L55` 지형 설치 확장 (2026-10-03)
-- `L61` 러프 붓·지형지물 막대 (2026-10-03)
-- `L71` 기본 계단의 돌 디딤판 (2026-10-03 수정)
-- `L83` 연속 경사로 — 계단과 구분 (2026-10-03 사용자 정정)
-- `L102` 발 접지·클릭·바닥 접합 수정 (2026-10-04)
-- `L111` 알려진 한계 · 결정이 필요한 것
-- `L120` 검증 도구 (이 브랜치에 들어온 것)
-- `L142` 가져오지 않은 것 (브랜치 `agent/r3-relief-stairs` 에 남아 있다)
+- `L43` 편집기 성능 계약 (2026-10-03 부분 굽기)
+- `L60` 지형 설치 확장 (2026-10-03)
+- `L66` 러프 붓·지형지물 막대 (2026-10-03)
+- `L76` 기본 계단의 돌 디딤판 (2026-10-03 수정)
+- `L88` 연속 경사로 — 계단과 구분 (2026-10-03 사용자 정정)
+- `L107` 발 접지·클릭·바닥 접합 수정 (2026-10-04)
+- `L126` 알려진 한계 · 결정이 필요한 것
+- `L135` 검증 도구 (이 브랜치에 들어온 것)
+- `L157` 가져오지 않은 것 (브랜치 `agent/r3-relief-stairs` 에 남아 있다)
 
 ### `openwiki/runtime-action-combat.md` — 31KB · 360줄 · ~7,947 토큰
 
