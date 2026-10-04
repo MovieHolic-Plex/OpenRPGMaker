@@ -1,0 +1,10 @@
+{
+  "contacts": 774,
+  "counts": {
+    "houses_native": 227,
+    "ramps_four": 348,
+    "terrain_ai": 199
+  },
+  "images": 8,
+  "selection": "north-facing and east/west height contacts, including hidden contacts"
+}

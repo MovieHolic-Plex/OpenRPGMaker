@@ -1,0 +1,186 @@
+{
+  "transport": "scripted model; native author_beodeul_town + checkpoint apply",
+  "errors": [],
+  "checks": [
+    {
+      "name": "선택 창이 뜨지 않는다",
+      "passed": true
+    },
+    {
+      "name": "의도 선언 콜은 한 번(감사 콜 없음)",
+      "passed": true,
+      "detail": [
+        "You classify ONE user request addressed to an RPG map/event editor assistant. Output JSON only — no prose, no fences.\n\nFields:\n- \"mode\": \"create\" (새로 만든다) | \"mo",
+        "You are Ultrabrain, the map art-direction reviewer. Judge the WHOLE map's visual harmony: coherent style and palette, building/terrain proportions, density and ",
+        "You are Ultrabrain, the map art-direction reviewer. Judge the WHOLE map's visual harmony: coherent style and palette, building/terrain proportions, density and "
+      ]
+    },
+    {
+      "name": "새 마을 맵으로 화면이 옮겨졌다",
+      "passed": true,
+      "detail": {
+        "current": "map_beodeul_river_7",
+        "newMapId": "map_beodeul_river_7"
+      }
+    },
+    {
+      "name": "시공 연출이 재생됐다",
+      "passed": false
+    },
+    {
+      "name": "도구가 남긴 실제 시공 단계를 순서대로 재생했다(계획 → 칠하기 → 찍기)",
+      "detail": {
+        "logSteps": 569,
+        "toolElapsedMs": 2995,
+        "shownSteps": 0,
+        "first": [],
+        "last": []
+      }
+    },
+    {
+      "name": "조수 말이 간단히 보기에 보인다",
+      "passed": true,
+      "detail": 17791.100000023842
+    },
+    {
+      "name": "체크포인트 직후 「맵에 반영 중」 행",
+      "passed": true,
+      "detail": 27266.600000023842
+    },
+    {
+      "name": "페이지 오류 없음",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "실행 중 사람 편집과 마을이 둘 다 남는다(3-way 병합)",
+      "passed": true,
+      "detail": {
+        "foreign": {
+          "mapId": "map_blank_start",
+          "tile": 7
+        },
+        "tile": 7,
+        "hasVillage": true,
+        "failed": false
+      }
+    }
+  ],
+  "timeline": [
+    {
+      "name": "model-call-1",
+      "ms": 207
+    },
+    {
+      "name": "intent-reply",
+      "ms": 1234
+    },
+    {
+      "name": "run-request-sent",
+      "ms": 12531
+    },
+    {
+      "name": "run-request-decoded(대본 비용)",
+      "ms": 14921
+    },
+    {
+      "name": "assistant-1",
+      "ms": 17789
+    },
+    {
+      "name": "chat-assistant-say-1",
+      "ms": 17791
+    },
+    {
+      "name": "tool-start",
+      "ms": 18289
+    },
+    {
+      "name": "chat-building-row",
+      "ms": 21289
+    },
+    {
+      "name": "foreign-edit",
+      "ms": 21636
+    },
+    {
+      "name": "checkpoint-sent",
+      "ms": 25551
+    },
+    {
+      "name": "chat-applying-row",
+      "ms": 27267
+    },
+    {
+      "name": "chat-built-row",
+      "ms": 27267
+    },
+    {
+      "name": "chat-applied-row",
+      "ms": 40816
+    },
+    {
+      "name": "ack-1",
+      "ms": 57575
+    },
+    {
+      "name": "assistant-2",
+      "ms": 61861
+    },
+    {
+      "name": "done",
+      "ms": 65936
+    },
+    {
+      "name": "model-call-2",
+      "ms": 69427
+    },
+    {
+      "name": "model-call-3",
+      "ms": 72485
+    }
+  ],
+  "videoAt": {
+    "model-call-1": 49.4,
+    "intent-reply": 50.4,
+    "run-request-sent": 61.7,
+    "run-request-decoded(대본 비용)": 64.1,
+    "assistant-1": 67,
+    "chat-assistant-say-1": 67,
+    "tool-start": 67.5,
+    "chat-building-row": 70.5,
+    "foreign-edit": 70.8,
+    "checkpoint-sent": 74.7,
+    "chat-applying-row": 76.4,
+    "chat-built-row": 76.4,
+    "chat-applied-row": 90,
+    "ack-1": 106.7,
+    "assistant-2": 111,
+    "done": 115.1,
+    "model-call-2": 118.6,
+    "model-call-3": 121.7
+  },
+  "replay": {
+    "logSteps": 569,
+    "toolElapsedMs": 2995,
+    "shownSteps": 0,
+    "first": [],
+    "last": []
+  },
+  "intentCalls": 3,
+  "modelCalls": [
+    "You classify ONE user request addressed to an RPG map/event editor assistant. Output JSON only — no prose, no fences.\n\nFields:\n- \"mode\": \"create\" (새로 만든다) | \"mo",
+    "You are Ultrabrain, the map art-direction reviewer. Judge the WHOLE map's visual harmony: coherent style and palette, building/terrain proportions, density and ",
+    "You are Ultrabrain, the map art-direction reviewer. Judge the WHOLE map's visual harmony: coherent style and palette, building/terrain proportions, density and "
+  ],
+  "newMapId": "map_beodeul_river_7",
+  "foreign": {
+    "foreign": {
+      "mapId": "map_blank_start",
+      "tile": 7
+    },
+    "tile": 7,
+    "hasVillage": true,
+    "failed": false
+  }
+}

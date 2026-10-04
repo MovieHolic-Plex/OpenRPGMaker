@@ -1,0 +1,120 @@
+{
+  "readOnlyFollowUp": true,
+  "realProvider": true,
+  "tools": [
+    {
+      "name": "get_project_summary",
+      "ok": true,
+      "summary": "프로젝트 '첫 만남 실행 하네스 QA' — 맵 1개, 아이템 1000, 트룹 7"
+    },
+    {
+      "name": "get_map_region",
+      "ok": true,
+      "summary": "별빛 우체국 앞(map_blank_start) 영역 (0,0)~(20,15) — 이벤트 1개, 물 0칸"
+    },
+    {
+      "name": "find_events",
+      "ok": true,
+      "summary": "이벤트 1개 검색됨"
+    },
+    {
+      "name": "show_map_region",
+      "ok": true,
+      "summary": "맵 미리보기: (0,0) 20×15 (별빛 우체국 앞)"
+    },
+    {
+      "name": "get_event",
+      "ok": true,
+      "summary": "이벤트 'ev_romance_partner' (11,8) — 페이지 3개"
+    },
+    {
+      "name": "run_lint",
+      "ok": true,
+      "summary": "lint: error 0건 / warning 1건 / info 0건 — 구조 무결성만 검사한다. 보상 중복·경제 균형·진행 순서는 범위 밖이고, warning 도 결함이다. 이 결과를 '결함 없이 통과'로 옮겨 적지 말 것."
+    },
+    {
+      "name": "inspect_romance_scene",
+      "ok": true,
+      "summary": "첫 만남 동작 검사 통과"
+    },
+    {
+      "name": "report_review",
+      "ok": true
+    },
+    {
+      "name": "review_map",
+      "ok": true
+    },
+    {
+      "name": "run_lint",
+      "ok": true,
+      "summary": "lint: error 0건 / warning 1건 / info 0건 — 구조 무결성만 검사한다. 보상 중복·경제 균형·진행 순서는 범위 밖이고, warning 도 결함이다. 이 결과를 '결함 없이 통과'로 옮겨 적지 말 것."
+    },
+    {
+      "name": "finish",
+      "ok": true
+    },
+    {
+      "name": "find_tools",
+      "ok": true,
+      "summary": "편집기 툴 6개 발견: author_house, read_region_reference, import_region_reference, list_spatial_designs, get_spatial_design, upsert_spatial_design"
+    },
+    {
+      "name": "inspect_romance_scene",
+      "ok": true,
+      "summary": "첫 만남 동작 검사 통과"
+    },
+    {
+      "name": "run_lint",
+      "ok": true,
+      "summary": "lint: error 0건 / warning 1건 / info 0건 — 구조 무결성만 검사한다. 보상 중복·경제 균형·진행 순서는 범위 밖이고, warning 도 결함이다. 이 결과를 '결함 없이 통과'로 옮겨 적지 말 것."
+    },
+    {
+      "name": "show_map_region",
+      "ok": true,
+      "summary": "맵 미리보기: (0,0) 20×15 (별빛 우체국 앞)"
+    },
+    {
+      "name": "report_task",
+      "ok": true
+    }
+  ],
+  "images": [
+    {
+      "tool": "show_map_region",
+      "bytes": 85300,
+      "ackStatus": 200
+    },
+    {
+      "tool": "show_map_region",
+      "bytes": 85300,
+      "ackStatus": 200
+    }
+  ],
+  "reviews": [
+    {
+      "ok": true,
+      "findings": []
+    }
+  ],
+  "errors": [],
+  "imageDelivered": true,
+  "done": true,
+  "stats": {
+    "ms": 102650,
+    "turns": 11,
+    "toolCalls": 16,
+    "toolErrors": 0,
+    "usage": {
+      "input": 99731,
+      "output": 2478,
+      "cacheRead": 349212,
+      "cacheWrite": 0,
+      "totalTokens": 451421,
+      "calls": 11
+    }
+  },
+  "ok": true,
+  "projectId": "d3d07ee1-309e-4d1b-a0f3-4fd54dc41ea0",
+  "canonicalRevision": 20
+}

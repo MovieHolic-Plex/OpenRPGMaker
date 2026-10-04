@@ -238,6 +238,9 @@ def run(img, snap, G, out=None, label=None):
     outm = ~(inside | fringe | occupied)
     px[outm] = img[outm]
     area = int(inside.sum())
+    if not area:   # 늪 칸이 그림에 안 남은 세계(실제 지리의 작은 늪) — 통계만 건너뛴다
+        print('swamp px 0 — skipped stats')
+        return px
     cols = px[inside]
     uniq, cnt = np.unique(cols.reshape(-1, 3), axis=0, return_counts=True)
     top = cnt.max() / cnt.sum()

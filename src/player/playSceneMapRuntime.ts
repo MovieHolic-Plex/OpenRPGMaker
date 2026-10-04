@@ -1,4 +1,5 @@
 import { phaserBlendMode } from "@/project/blendMode";
+import { invalidateSunlight } from "./sunlightLayer";
 import { mapTileSize } from "@/project/tileGeometry";
 import { mapCharacterSizeFactor } from "@/project/characterScale";
 import { projectReferenceTileSize } from "@/project/mapViewScale";
@@ -87,6 +88,7 @@ import {
 } from "@/player/playSceneRelief";
 import { reliefFieldOf, type ReliefTextureManager } from "@/player/reliefStrips";
 import { reliefPaintsCell, reliefSignature } from "@/project/relief/screen";
+import { reliefGroundFromImage, reliefTilesetImage } from "@/editor/reliefGroundSurface";
 
 interface RenderedTileImage {
   /** 높이 지형 들림을 얹을 때 쓴다. 테스트 스텁은 생략한다. */
@@ -282,6 +284,7 @@ export function renderTiles<
     return;
   }
   tileLayerSignatures.set(host, signature);
+  invalidateSunlight(scene);
   bumpPerfCounter(scene, "tileRebuilds");
   scene.tileLayer.removeAll(true);
   scene.upperTileLayer?.removeAll(true);
@@ -301,7 +304,8 @@ export function renderTiles<
     backing: new Map(), animations: new Map(), lakes: new Map(), above: new Map(),
   };
   // 높이 지형: 절벽 띠와 벽면 장식을 먼저 올린다(만든 GameObject 는 타일과 같이 파괴된다).
-  renderReliefLayer(scene, host, { tileSize: pass.size, wallDecor: { textureKey: pass.textureKey, frame: (tile) => `tile_${tile}` } }, (image) => {
+  const ground = reliefGroundFromImage(map, tileset, reliefTilesetImage(scene.textures, pass.textureKey));
+  renderReliefLayer(scene, host, { tileSize: pass.size, ground, wallDecor: { textureKey: pass.textureKey, frame: (tile) => `tile_${tile}` } }, (image) => {
     bumpPerfCounter(scene, "tileObjectsCreated");
     trackRootYSortTile(scene, image);
   });
@@ -309,10 +313,12 @@ export function renderTiles<
     const index = y * map.width + x;
     renderEmptyCellCover(drawingScene, x, y, index);
     // 경사로 도트가 있는 바이옴의 경사로 칸은 relief 경사로 도트가 바닥을 칠한다 — 타일은 그리지 않는다.
-    if (!reliefPaintsCell(map.relief, x, y)) renderTile(drawingScene, tileset, x, y, map.lowerTiles[index], "lower", pass);
-    for (const tile of tileStackAt(map, "lower", index)) renderTile(drawingScene, tileset, x, y, tile, "lower", pass);
-    renderRawTile(drawingScene, tileset, x, y, layerTileAt(map, 2, index), "lower", OVERLAY_LAYER_DEPTH_OFFSET, pass);
-    renderShadow(drawingScene, x, y, shadowAt(map, index));
+    if (!ground) {
+      if (!reliefPaintsCell(map.relief, x, y)) renderTile(drawingScene, tileset, x, y, map.lowerTiles[index], "lower", pass);
+      for (const tile of tileStackAt(map, "lower", index)) renderTile(drawingScene, tileset, x, y, tile, "lower", pass);
+      renderRawTile(drawingScene, tileset, x, y, layerTileAt(map, 2, index), "lower", OVERLAY_LAYER_DEPTH_OFFSET, pass);
+      renderShadow(drawingScene, x, y, shadowAt(map, index));
+    }
     renderTile(drawingScene, tileset, x, y, map.upperTiles[index], "upper", pass);
     for (const tile of tileStackAt(map, "upper", index)) renderTile(drawingScene, tileset, x, y, tile, "upper", pass);
     renderRawTile(drawingScene, tileset, x, y, layerTileAt(map, 4, index), "upper", OVERLAY_LAYER_DEPTH_OFFSET, pass);

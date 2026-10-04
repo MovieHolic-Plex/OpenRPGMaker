@@ -1,0 +1,33 @@
+{
+  "actualEditor": true,
+  "actualProvider": true,
+  "manualContentChanges": 0,
+  "requests": [
+    {
+      "mode": "team",
+      "model": "gemini-3.8-flash",
+      "runId": "974ab6fe-1fe5-4dac-919a-abefa48c9c6b",
+      "taskCharacters": 43913,
+      "internalTasks": true,
+      "protagonist": true,
+      "pixelGate": true,
+      "scope": true,
+      "time": "2026-10-04T01:19:01.282Z"
+    }
+  ],
+  "finished": true,
+  "uiTaskLeak": false,
+  "sameProjectAfterReload": true,
+  "sameBriefAfterReload": true,
+  "projectId": "a9b6d91b-cc4d-4552-b0da-bd4682715618",
+  "revision": 39,
+  "browserErrors": [
+    "Framebuffer status: Incomplete Attachment"
+  ],
+  "compositePassed": false,
+  "readOnlyReloadProbe": {
+    "errors": [],
+    "frames": [],
+    "trap": ""
+  }
+}

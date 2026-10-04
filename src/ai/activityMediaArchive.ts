@@ -5,14 +5,34 @@ const memory = new Map<string, MediaRecord>();
 let database: Promise<IDBDatabase> | undefined;
 let writing = Promise.resolve();
 let prepare: ((id: string, visual: ActivityVisual) => void) | undefined;
+let firstPruneScheduledAt: number | undefined;
 let pruneTimer: ReturnType<typeof setTimeout> | undefined;
 const MAX_BYTES = 64_000_000, TTL = 7 * 86400_000;
 function db(): Promise<IDBDatabase> {
   return database ??= new Promise((resolve, reject) => {
     if (typeof indexedDB === "undefined") { reject(new Error("IndexedDB unavailable")); return; }
-    const request = indexedDB.open("oprn-ai-activity-media", 1);
-    request.onupgradeneeded = () => { request.result.createObjectStore("media", { keyPath: "id" }); };
-    request.onsuccess = () => resolve(request.result);
+    const request = indexedDB.open("oprn-ai-activity-media", 2);
+    request.onupgradeneeded = () => {
+      const database = request.result, tx = request.transaction!;
+      if (!database.objectStoreNames.contains("media")) database.createObjectStore("media", { keyPath: "id" });
+      const metadata = database.createObjectStore("metadata", { keyPath: "id" });
+      // Bytes are in the key: ordinary pruning uses openKeyCursor, never a Blob
+      // or visual value. Existing v1 payloads are inspected only during upgrade.
+      metadata.createIndex("newest", ["orderAt", "id", "bytes"]);
+      const cursor = tx.objectStore("media").openCursor();
+      cursor.onsuccess = () => {
+        const row = cursor.result;
+        if (!row) return;
+        const value = row.value as MediaRecord;
+        metadata.put({ id: value.id, orderAt: -value.at, bytes: value.bytes });
+        row.continue();
+      };
+    };
+    request.onsuccess = () => {
+      const connection = request.result;
+      connection.onversionchange = () => { connection.close(); database = undefined; };
+      resolve(connection);
+    };
     request.onerror = () => reject(request.error);
   });
 }
@@ -27,13 +47,18 @@ function remember(record: MediaRecord): void {
 function persist(record: MediaRecord): void {
   remember(record);
   if (pruneTimer !== undefined) clearTimeout(pruneTimer);
-  pruneTimer = setTimeout(() => { pruneTimer = undefined; prune(); }, 600);
+  firstPruneScheduledAt ??= Date.now();
+  const delay = Math.max(0, Math.min(600, 5000 - (Date.now() - firstPruneScheduledAt)));
+  pruneTimer = setTimeout(() => { pruneTimer = undefined; firstPruneScheduledAt = undefined; prune(); }, delay);
   writing = writing.then(async () => {
     const database = await db();
     await new Promise<void>((resolve, reject) => {
-      const tx = database.transaction("media", "readwrite"), store = tx.objectStore("media");
-      store.put(record);
+      const tx = database.transaction(["media", "metadata"], "readwrite"), store = tx.objectStore("media");
       tx.oncomplete = () => resolve(); tx.onerror = () => reject(tx.error); tx.onabort = () => reject(tx.error);
+      try {
+        store.put(record);
+        tx.objectStore("metadata").put({ id: record.id, orderAt: -record.at, bytes: record.bytes });
+      } catch (error) { tx.abort(); reject(error); }
     });
   }).catch(() => { /* A missing archive image is explicitly shown by the view. */ });
 }
@@ -41,14 +66,18 @@ function prune(): void {
   writing = writing.then(async () => {
     const database = await db();
     await new Promise<void>((resolve, reject) => {
-      const tx = database.transaction("media", "readwrite"), store = tx.objectStore("media");
-      const request = store.getAll();
+      const tx = database.transaction(["media", "metadata"], "readwrite");
+      const store = tx.objectStore("media"), metadata = tx.objectStore("metadata");
+      const request = metadata.index("newest").openKeyCursor();
+      let bytes = 0;
+      const cutoff = Date.now() - TTL;
       request.onsuccess = () => {
-        let bytes = 0;
-        (request.result as MediaRecord[]).sort((a, b) => b.at - a.at).forEach(item => {
-          bytes += item.bytes;
-          if (bytes > MAX_BYTES || Date.now() - item.at > TTL) { store.delete(item.id); memory.delete(item.id); }
-        });
+        const cursor = request.result;
+        if (!cursor) return;
+        const [orderAt, id, size] = cursor.key as [number, string, number];
+        bytes += size;
+        if (bytes > MAX_BYTES || -orderAt < cutoff) { store.delete(id); metadata.delete(id); memory.delete(id); }
+        cursor.continue();
       };
       tx.oncomplete = () => resolve(); tx.onerror = () => reject(tx.error); tx.onabort = () => reject(tx.error);
     });
@@ -86,6 +115,6 @@ export async function saveActivityMediaBlob(id: string, blob: Blob): Promise<voi
   if (record && !record.blob) persist({ ...record, blob, bytes: record.bytes + blob.size });
 }
 export async function flushActivityMedia(): Promise<void> {
-  if (pruneTimer !== undefined) { clearTimeout(pruneTimer); pruneTimer = undefined; prune(); }
+  if (pruneTimer !== undefined) { clearTimeout(pruneTimer); pruneTimer = undefined; firstPruneScheduledAt = undefined; prune(); }
   await writing;
 }

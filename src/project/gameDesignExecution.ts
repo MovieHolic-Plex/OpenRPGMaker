@@ -1,4 +1,5 @@
 import type { GameBriefSlot, GameDesignBrief } from "./gameDesignBrief";
+import { authoringPresetManifest, detailedAuthoringTasks } from "./gameAuthoringPresets";
 
 export interface GameDesignExecutionTask {
   id: string;
@@ -7,6 +8,10 @@ export interface GameDesignExecutionTask {
   action: string;
   output: string;
   acceptance: string;
+  input?: string;
+  presetDocument?: string;
+  presetSection?: string;
+  applicability?: string;
 }
 
 /** Derived model context, never user-facing copy or an assertion that work was performed. */
@@ -44,7 +49,9 @@ export function buildGameDesignExecution(brief: GameDesignBrief) {
   add("F01", ["Q05"], ["scope"], "기존 저장 서비스를 통해 정본에 저장하고 같은 project id를 재로드해 비교한다.", "저장 대상·revision·재로드 근거", "메모리 상태나 JSON 내보내기를 정본 저장으로 보고하지 않는다.");
   add("F02", ["F01"], ["scope", "activity"], "재로드된 게임으로 시작·핵심 행동·결과를 다시 확인한다.", "저장 후 실행 증거", "저장 전후의 핵심 흐름이 일치한다.");
   add("F03", ["F02"], ["scope"], "실제로 검증한 결과, 미확인 사항, 임시 결정과 이어갈 작업을 짧게 인계한다.", "실행 기록과 인계", "계획 작성만으로 제작 완료라고 보고하지 않는다.");
+  tasks.push(...detailedAuthoringTasks(brief));
   return { version: 1 as const, presetId: brief.presetId, authority: "latest-confirmed-summary" as const,
+    authoringPresets: authoringPresetManifest(brief),
     requirements: { summary: brief.summary, answers: structuredClone(brief.answers),
       ...(brief.interview ? { interview: structuredClone(brief.interview) } : {}) }, tasks };
 }
@@ -56,6 +63,7 @@ export function gameDesignExecutionContext(brief: GameDesignBrief): string {
     "사용자는 게임의 방향을 확정하면 된다. 상세 TODO·도구명·검증 규칙을 다시 사용자에게 승인받거나 복사/가져오기를 요구하지 않는다. 필요한 미정 사항은 합리적인 가역적 기본값으로 보완하고 출처를 남긴다. 핵심 요구 충돌이나 실제 접근 부재만 필요한 질문으로 남긴다.",
     "아래는 최신 기획에서 매번 파생한 내부 작업 골격이며 진행 기록이 아니다. 최신 사용자 수정 > 확정 요약 > 원문 답변 > 추천/임시 설정 순서를 따른다. 최초 계획에서 실제 맵·이벤트·분기·자산·검증 경로별로 하위 TODO를 충분히 확장하고 의존관계를 검사한다. 개수를 채우려고 범위를 늘리지 않는다.",
     "실행 순서: 대상 읽기 → 선행 작업과 실제 ID 확인 → 제작 → 결과 재조회 → 완료 조건 검증 → 작업 상태·산출물·증거 기록. 계획만 반환하고 끝내지 않는다. 이미 완료된 작업은 실제 결과를 확인하고 재사용한다.",
+    "첫 화면 우선: 첫 제작에서는 필요한 대상·도구·소재 확인을 마치는 즉시 M01의 최소 작업부터 실제 시작 맵에 쓰고 체크포인트로 전달한다. 첫 화면에 보이는 바닥·길·배치와 M02의 첫 상호작용을 작은 작업 단위로 이어서 반영한다. 전체 계획 완성·웹 검색·타이틀 이미지 생성·긴 오프닝을 첫 맵 변경보다 먼저 기다리지 않는다. 첫 장면에 필요한 하위 의존관계만 먼저 충족하고 나머지 설계·미술은 제작과 병행한다. 임의 타일 번호·원치 않는 주인공·가짜 진행률로 첫 화면을 채우지 않는다. 이 순서 지시는 속도나 완료를 보증하는 실행 영수증이 아니다.",
     "검증 증거 없이 done/pass로 처리하지 않는다. 실패 시 원인과 증거를 남겨 수정하고, 같은 원인으로 세 번 실패하면 해당 작업을 재계획한다. 수정 영향이 있는 후속 작업과 검증을 다시 연다. 실제 저장·재로드와 플레이 확인을 구분한다. 이 지시문 자체는 실행기 검증 영수증이 아니다.",
     JSON.stringify({ version: 1, tasks: buildGameDesignExecution(brief).tasks }),
   ].join("\n");

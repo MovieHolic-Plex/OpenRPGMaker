@@ -1,0 +1,21 @@
+/* 맵별 실행 카드(aiMapRunCard.ts) — 다른 맵에서 같이 도는 조수 실행 하나. 모양은 30-tileset-change-card 를 따른다. */
+.ai-map-run-card { --map-run-accent: #3f7fd1; margin: 8px 0; padding: 10px 12px; border: 1px solid var(--border-default); border-left: 3px solid var(--map-run-accent); border-radius: 10px; background: var(--bg-raised); color: var(--text-1); font: 12px/1.55 var(--font-ui); }
+.ai-map-run-card[data-state="waiting"] { --map-run-accent: #a08a52; }
+.ai-map-run-card[data-state="done"] { --map-run-accent: #3d9a62; }
+.ai-map-run-card[data-state="failed"], .ai-map-run-card[data-state="cancelled"] { --map-run-accent: #b4523e; }
+.ai-map-run-head { display: flex; align-items: center; gap: 8px; }
+.ai-map-run-map { padding: 1px 8px; border-radius: 99px; background: var(--bg-inset); font-weight: 650; }
+.ai-map-run-status { flex: 1; min-width: 0; color: var(--text-3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ai-map-run-stop { cursor: pointer; border: 1px solid var(--border-default); border-radius: 7px; padding: 2px 9px; font: inherit; color: var(--text-2); background: var(--bg-raised); }
+.ai-map-run-stop:hover { border-color: var(--map-run-accent); color: var(--text-1); }
+.ai-map-run-label { margin: 6px 0 2px; font-weight: 600; }
+.ai-map-run-steps { margin: 4px 0 0; padding-left: 16px; color: var(--text-2); }
+.ai-map-run-steps li[data-kind="ok"]::marker { content: "✓ "; color: #3d9a62; }
+.ai-map-run-steps li[data-kind="fail"]::marker { content: "✗ "; color: #b4523e; }
+.ai-map-run-steps li[data-kind="say"] { color: var(--text-1); }
+.ai-map-run-messages:not(:empty) { margin-top: 6px; display: grid; gap: 4px; }
+.ai-map-run-say { margin: 0; }
+.ai-map-run-say.is-system { color: var(--text-2); }
+.ai-map-run-process { margin-top: 6px; color: var(--text-3); }
+.ai-map-run-process summary { cursor: pointer; }
+.ai-map-run-note { margin: 4px 0 0; }

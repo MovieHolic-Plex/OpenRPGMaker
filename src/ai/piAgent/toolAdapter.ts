@@ -1,10 +1,12 @@
 import { PiTilesetReferenceGate } from "./tilesetReferenceGate";
+import { NULLABLE_OPTIONAL_TOOLS, nullableOptionalParameters, omitUnusedOptionalArguments } from './optionalToolArguments';
 import { spatialReferenceImages } from '@/editor/tools/spatialReferenceTools';
 import { interiorPresetImages } from '@/editor/tools/interiorPresetExamples';
 import { villageReferenceImages } from '@/ai/villageReferenceExamples';
 import { retroChoreographyPreviewImages } from '@/assets/retroChoreographyPreviewImage';
 import { cutscenePreviewImages } from '@/editor/tools/cutscenePreviewTools';
 import { cutsceneArtImages } from '@/editor/tools/cutsceneArtTools';
+import { presentationArtImages } from '@/editor/tools/presentationTools';
 import { worldTerrainImages } from '@/editor/tools/worldTerrainTools';
 import { TILESET_REFERENCE_READ_TOOLS, TILESET_REFERENCE_WRITERS } from "@/editor/tools/tilesetReferenceTools";
 // 레지스트리 툴 → Pi AgentTool 모양 어댑터. 순수 함수라 브라우저/Bun/Node 어디서나 같다.
@@ -22,6 +24,7 @@ import { runTool } from "@/editor/tools";
 import { EVENT_COMMAND_ASSIST_TOOL } from "@/editor/tools/eventCommandAssistTool";
 import { prepareTool, runToolAsync } from "@/editor/tools/asyncToolRunner";
 import type { ToolContext, ToolResult } from "@/editor/tools/types";
+import { synthesizeToolConstructionLogs, withConstructionLog, type ConstructionLog } from "@/editor/tools/constructionLog";
 import type { Project } from "@/project/types";
 import { mapBundleMapSpill } from "./mapBundle";
 import { modernTilesetViolation, type ModernTilesetPolicy } from '../modernTilesetPolicy';
@@ -52,6 +55,8 @@ export interface PiToolCallRecord {
   readonly name: string;
   readonly args: unknown;
   readonly result: ToolResult;
+  /** 쓰기 도구가 남긴 시공 단계(마을 짓기 등). 체크포인트에 실려 편집기 재생에만 쓰인다. */
+  readonly constructionLogs?: readonly ConstructionLog[];
 }
 
 export interface CreatePiToolsetOptions {
@@ -222,17 +227,23 @@ export function createPiToolset(ctx: ToolContext, options: CreatePiToolsetOption
     name: tool.name,
     label: tool.name,
     description: tool.description,
-    parameters: tool.parameters,
+    parameters: NULLABLE_OPTIONAL_TOOLS.has(tool.name) ? nullableOptionalParameters(tool.parameters) : tool.parameters,
     concurrency: tool.mode === "read" ? "shared" as const : "exclusive" as const,
     async execute(_toolCallId, params, signal) {
-      const args = params && typeof params === "object" ? (params as Record<string, unknown>) : {};
+      const raw = params && typeof params === "object" ? params as Record<string, unknown> : {};
+      const args = NULLABLE_OPTIONAL_TOOLS.has(tool.name)
+        ? omitUnusedOptionalArguments(tool.parameters, raw) as Record<string, unknown> : raw;
       const before = tool.mode === "write" ? captureActivityVisuals(ctx.project, tool.name, args, undefined, "before") : [];
       const gate = tool.mode === "write" ? referenceGate.beforeWrite(ctx.project, tool.name, args) : null;
       const beforeProject = ctx.project;
       if (!gate && tool.prepare) await prepareTool(tool.name, args, ctx.project);
+      let constructionLogs: readonly ConstructionLog[] = [];
+      const writeStarted = Date.now();
       let result = gate ?? (tool.name === EVENT_COMMAND_ASSIST_TOOL
         ? await runToolAsync(ctx, tool.name, args, { signal })
-        : runTool(ctx, tool.name, args));
+        : tool.mode === "write"
+          ? (({ value, logs }) => { constructionLogs = logs; return value; })(withConstructionLog(tool.name, () => runTool(ctx, tool.name, args)))
+          : runTool(ctx, tool.name, args));
       if (tool.mode === 'write' && result.ok && options.modernTilesetPolicy) {
         const violation = modernTilesetViolation(beforeProject, ctx.project, options.modernTilesetPolicy);
         if (violation) { ctx.project = beforeProject; result = { ok: false, summary: violation }; }
@@ -248,14 +259,25 @@ export function createPiToolset(ctx: ToolContext, options: CreatePiToolsetOption
           if (warnings.length > 0) result = { ...result, warnings: [...(result.warnings ?? []), ...warnings] };
         }
       }
+      // 시공 기록이 없는 쓰기 도구도 실제 변경을 아래층 → 위층 순서로 맵 위에서 다시 튼다(예전 밑그림, 2026-10-04).
+      if (tool.mode === "write" && result.ok && ctx.project !== beforeProject) {
+        constructionLogs = [...constructionLogs, ...synthesizeToolConstructionLogs(tool.name, beforeProject, ctx.project, constructionLogs, Date.now() - writeStarted)];
+      }
       const after = captureActivityVisuals(ctx.project, tool.name, args, result, !result.ok ? "failed" : tool.mode === "write" ? "draft" : "read");
-      options.onCall?.({ toolCallId: _toolCallId, name: tool.name, args, result, visuals: [...before, ...after] });
+      options.onCall?.({ toolCallId: _toolCallId, name: tool.name, args, result, visuals: [...before, ...after],
+        ...(result.ok && constructionLogs.length ? { constructionLogs } : {}) });
       if (!result.ok) throw new Error(formatPiToolFailure(result, maxIssues));
       const content: PiToolExecResult["content"] = [{ type: "text", text: formatPiToolSuccess(result, tool.name === "read_tileset_reference" ? Math.max(maxDataChars, REFERENCE_MAX_DATA_CHARS) : maxDataChars) }];
       if (tool.name === "read_tileset_reference") {
         for (const image of await referenceGate.read(ctx.project, result)) {
           const comma = image.dataUrl.indexOf(",");
           content.push({ type: "image", mimeType: image.dataUrl.slice(5, image.dataUrl.indexOf(";")), data: image.dataUrl.slice(comma + 1) });
+        }
+      }
+      if (tool.name === 'show_title_opening') {
+        for (const image of presentationArtImages(ctx.project)) {
+          content.push({ type: 'text', text: `${image.resourceId}: ${image.label}` });
+          content.push({ type: 'image', mimeType: image.dataUrl.slice(5, image.dataUrl.indexOf(';')), data: image.dataUrl.slice(image.dataUrl.indexOf(',') + 1) });
         }
       }
       if (tool.name === 'read_spatial_reference') for (const image of await spatialReferenceImages(ctx.project,args,result.data)) {

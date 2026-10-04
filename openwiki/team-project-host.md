@@ -4,6 +4,10 @@
 
 ## 소유와 실행 위치
 
+`export-player/` 아래 SDK 파일은 HTML도 디스크 바이트 그대로 제공한다(2026-10-03).
+플레이어 매니페스트가 HTML의 SHA-256도 확인하므로 편집기 브리지나 nonce를 주입하면
+실제 ZIP 내보내기가 `bundle-integrity-mismatch`로 실패한다. 편집기 HTML의 브리지 계약은 유지한다.
+
 팀은 소유·권한 단위, 프로젝트는 게임 문서, 호스트는 정본을 쓰는 프로세스다.
 1인도 자동 생성된 팀의 owner다. 호스트는 기본 프로젝트와 그 아래 `.oprn-projects/<uuid>`에 만든 추가 프로젝트를 연다.
 추가 프로젝트는 기본 프로젝트의 팀 권한을 공유한다. 프로젝트 목록 대시보드/계정 서버는 아직 없다.
@@ -13,6 +17,10 @@ SQLite 파일 위치와 브라우저 UI 위치는 독립적이다. 원격 접속
   검증·권한·잠금·저장 처리를 호출한다. 같은 session registry에서는 작업 큐도 공유한다.
 - Electron: renderer → preload IPC → 공통 서비스 → SQLite.
 - 브라우저: renderer → browser bridge HTTP → 공통 서비스 → SQLite.
+- 편집 창이 포커스를 잃거나 최소화되어도 적용·저장은 진행한다(2026-10-04).
+  로컬 창과 팀 참여 창은 `backgroundThrottling:false`를 쓴다. 저장 패치 비교의
+  양보는 `src/util/yieldToTask.ts`의 메시지 태스크이며 프레임·짧은 타이머를 기다리지 않는다.
+  앱 종료·브라우저 freeze/discard·기기 절전 뒤 실행 보장은 별도 작업 큐의 범위다.
 - `electron/local-store/team.ts`: `workspace_team`, `workspace_members` 보조 테이블을 기존
   프로젝트 DB에 추가한다. 프로젝트 JSON/내보내기 게임 스키마와 분리된다.
   기존 폴더는 최초 오픈에 1인 팀이 만들어진다. 토큰은 SHA-256 해시만 저장한다.
@@ -471,3 +479,12 @@ Manual wire check used the actual109MB canonical document plus its asset patch: 
 실측(새 폴더 · oprn-serve · Playwright, 박스 load 22~35): 칠하기 획의 최장 메인 스레드 정지 12~13s → 0.1~0.46s.
 「자동 저장됨」까지는 7~11s 이고 대부분 호스트 쓰기(81MB 직렬화·해시·SQLite)다 — 남은 바닥은 문서 분리다.
 두 경로 모두 웹(HTTP 브리지)과 Electron(IPC)이 같은 `electronRepository`·`store` 코드를 탄다.
+
+
+### 공용 라이브러리 게시 후 재로드 (2026-10-04)
+
+`scripts/lib/sharedContentSqlite.ts`의 `publishSharedContent`는 CAS 트랜잭션 커밋 뒤
+게시한 라이브러리 행만 새 연결로 다시 읽고 판본 해시를 비교한다.
+공용 DB 전체(수 GB)를 매번 `readSharedContent`로 역직렬화하지 않는다.
+서버 소품 하네스는 이 API로 사용자 확정을 모든 프로젝트용 기본 팩에 자동 등록한다.
+대기열·실패 재시도·칸 번호 보존: [interior-props](harnesses/interior-props.md).

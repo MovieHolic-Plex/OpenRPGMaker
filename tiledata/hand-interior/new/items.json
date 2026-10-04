@@ -19089,6 +19089,74 @@
     ],
     "cover": 0.7
    }
+  },
+  {
+   "id": "royal chest ~open",
+   "name_ko": "왕실 상자(열림)",
+   "name_en": "royal chest (open)",
+   "category": "decor",
+   "category_ko": "장식",
+   "kind": "floor",
+   "footprint": {
+    "w": 1,
+    "h": 1
+   },
+   "canvas": [
+    16,
+    16
+   ],
+   "description": "붉은 칠 보물 상자. 저택 침실·보물고. (상태 파생: 열림)",
+   "tags": [
+    "안방·왕의 침소",
+    "보물 창고",
+    "서재",
+    "도박장"
+   ],
+   "use": [
+    "open"
+   ],
+   "refs": [
+    "royal chest"
+   ],
+   "contextRoom": null,
+   "parent": "royal chest",
+   "derive": "state",
+   "slot": "open"
+  },
+  {
+   "id": "armchair ~2x2",
+   "name_ko": "안락의자(2×2)",
+   "name_en": "armchair (2x2)",
+   "category": "home",
+   "category_ko": "가구·살림",
+   "kind": "floor",
+   "footprint": {
+    "w": 2,
+    "h": 2
+   },
+   "canvas": [
+    32,
+    32
+   ],
+   "description": "천을 씌운 안락의자. 벽난로·찻상 옆. (크기 파생: 2×2칸 큰 판 — 원본을 늘리지 말고 새 칸 수에 맞게 다시 그린 같은 물건) (크기 2×2: 꼭대기 윗면 10행 이상 — 위에서 내려다본 면이 깊이만큼 길다)",
+   "tags": [
+    "서고",
+    "선술집 홀·바",
+    "거실·응접실",
+    "복도",
+    "안방·왕의 침소",
+    "서재"
+   ],
+   "use": [
+    "sit"
+   ],
+   "refs": [
+    "armchair"
+   ],
+   "contextRoom": null,
+   "parent": "armchair",
+   "derive": "size",
+   "slot": "2x2"
   }
  ]
 }

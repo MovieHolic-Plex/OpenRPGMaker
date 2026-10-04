@@ -1,0 +1,150 @@
+{
+  "implementationCommit": "49b4c8c48d02a44304d33d23a54b105c12d908a3",
+  "captures": {
+    "storage": {
+      "commit": "7ce9a7655510e82360efe154bc888a0754e06d04",
+      "rows": 41,
+      "pageErrors": 0,
+      "sha256": "a36e5b0b0fc76dd0ef65f13d8c6c35707942fb09999774ff9c9dbade06e82ff3"
+    },
+    "storage-final": {
+      "commit": "4fa25cd598c1b5db4325e72ca4306e140de035b4",
+      "rows": 2,
+      "pageErrors": 0,
+      "sha256": "f4ad66419ea72dfcb31be63ff833795c9ffb69b5ca56adfb58a92ee3a748cde6"
+    },
+    "life": {
+      "commit": "1a1f4059ba6d91d3f278f531148a5a773d965fad",
+      "rows": 12,
+      "pageErrors": 0,
+      "sha256": "9756c0ae7895721038d04844691dbb57fb9f61705e21d4c7cea5d621af91f2c4"
+    },
+    "contracts": {
+      "commit": "f1bb35b6820b0925c70a39a583fb52e3c81c8ca5",
+      "rows": 11,
+      "pageErrors": 0,
+      "sha256": "58e5c68cb62202a8f6e4c043b82727fdf800ef776d81c5d0bd2718341eaa5644"
+    },
+    "data-resources": {
+      "commit": "4fa25cd598c1b5db4325e72ca4306e140de035b4",
+      "rows": 10,
+      "pageErrors": 0,
+      "sha256": "46bbc1fb4ad612bd8177f6e0ec3e722d46c9cd04548f619cbb7de6643d9ce4b1"
+    },
+    "animation": {
+      "commit": "49b4c8c48d02a44304d33d23a54b105c12d908a3",
+      "rows": 1,
+      "pageErrors": 0,
+      "sha256": "e281f8d74363de0c7c86e6abd4dadd8ae09db8d736212a93c701d86f79da10e1"
+    },
+    "selection": {
+      "commit": "f1bb35b6820b0925c70a39a583fb52e3c81c8ca5",
+      "rows": 6,
+      "pageErrors": 0,
+      "sha256": "4964f27bc159c86f0016d373767a89c0a6a58cfea07f78e03858b06df74dead6"
+    },
+    "selection-warm": {
+      "commit": "4fa25cd598c1b5db4325e72ca4306e140de035b4",
+      "rows": 6,
+      "pageErrors": 0,
+      "sha256": "fc22fe170cb7b0c59bd81fba945e58f22122f2e9c199171ec0735eea81021f50"
+    },
+    "progress-events": {
+      "commit": "f1bb35b6820b0925c70a39a583fb52e3c81c8ca5",
+      "rows": 15,
+      "pageErrors": 0,
+      "sha256": "7ccf5dd912cef928048a0223f4ff166ee7adb51ce299facb02b1baa373cb7a7d"
+    },
+    "progress-events-warm": {
+      "commit": "4fa25cd598c1b5db4325e72ca4306e140de035b4",
+      "rows": 15,
+      "pageErrors": 0,
+      "sha256": "bc62e8bddd40a08571b5cbcad01366155c95e892b71080937eae86079860d8dc"
+    },
+    "extras": {
+      "commit": "f1bb35b6820b0925c70a39a583fb52e3c81c8ca5",
+      "rows": 12,
+      "pageErrors": 0,
+      "sha256": "41b5adf931b0ab42de96fefdf1531beebaef7a8600265d6d4d15f368d1d26c87"
+    },
+    "extras-motion": {
+      "commit": "49b4c8c48d02a44304d33d23a54b105c12d908a3",
+      "rows": 12,
+      "pageErrors": 0,
+      "sha256": "ba93a049cb5254840b2080c6b0d6223768476a84cd3d3a82cc3298853c0c4bb4"
+    },
+    "data-resources-final": {
+      "commit": "16a0a5d54b87071f23bd945a2b4594c23e76a415",
+      "rows": 10,
+      "pageErrors": 0,
+      "sha256": "3b05d57e1058e9d7c190679a7d4e9cdcc6e14dabe046f5db9501bd6f286b8deb"
+    }
+  },
+  "currentProductionSources": {
+    "electron/main/protocols.ts": "4096a0b0730284ddf5a22a5ead4abd64f7d4eb9401ef2defde5a1c27d5b14fe6",
+    "src/ai/activityMediaArchive.ts": "fb7f8b8e3ae1f2adfaa84b99baa8524394927a36c734852b7f80a6cdae1bd056",
+    "src/ai/activityVisual.ts": "e48bfb33ad5f547672a028abce688262b2f0f9cd685c29d0f65ffdaf96a68dd2",
+    "src/ai/aiRecordDb.ts": "200854678557997bf50916473f741674c803bc17943c5c3b570547f5b61b7b8a",
+    "src/ai/conversationStore.ts": "e1f1482deca660376a670eb2e1ebadededd15f1fd0819f9e3dfb05d9e5b3a562",
+    "src/ai/toolImageCanvas.ts": "6a57655b250c00f18f1f1aa748b398fce089682d72360b0191edf2911fa4bf98",
+    "src/editor/EditScene.ts": "f0956e62bf6a43673a7ece9fa0de3abbdb7b15b4d5e78022bef266ca15ab003c",
+    "src/editor/assistantHumanEdits.ts": "433e117e51748a08ebf9fb184301daf59125dbcc714913da5699644a5e6d4488",
+    "src/editor/authoringJourney.ts": "60e55c0891351a3eb7a4bab6a89d72aa2f04c00339c50660f28b17eeed3bd101",
+    "src/editor/databaseCommandReferences.ts": "7be06c89fcdb549cff6065b3d6babdf076837b5a2ddcd1aeb5b9d3618c9b7530",
+    "src/editor/databaseRecordConnections.ts": "6ee29822cae43ffebdb4df9011140f591023dd416ce880bc304a1733ddece47e",
+    "src/editor/editSceneHoverPreview.ts": "49e088344eba5acc1b2ecb2eb1fbed2327543482358a0be229737c7fdfe5dece",
+    "src/editor/editSceneRender.ts": "10ffd6483eeb66c023d09bec8107d1ca9a5711a55c42462e9b80d209b521b6e3",
+    "src/editor/eventActions.ts": "4e9968481529610d0344577e89e579ad59e2f1715a8c8d638f5838073f7da5da",
+    "src/editor/eventPages.ts": "636d3d3759e32f686344bb0b3b7330a8bdb299266762bf3c2b12c52e44500f51",
+    "src/editor/mapEditHistory.ts": "34b566319ba4ae802f3f21faa023b3b7400c12d4df80a8cc2ef1267b2dc71daf",
+    "src/editor/panels/aiActivityMedia.ts": "4b78d4e7081fd4c7cf7940ca4c3b9e464503657a2e622e48d8dde2e652299ddf",
+    "src/editor/panels/aiConversationHistoryModal.ts": "f5ac5767a50d525c61b872d2be283af85048b6d13f0b3fee8e4a5cb74eb7dec8",
+    "src/editor/panels/aiSidebarWorkspace.ts": "f3542428ff0ad6ff871c28eb28a21e1120cb1a47b93f0e1dfe0d12a66e25fd7d",
+    "src/editor/panels/audioDescriptionEditor.ts": "b9568043ab505bdfabd6d1af9788c73cdaed9450947fcd6a94f436e25e4d197d",
+    "src/editor/panels/database.ts": "56e0e8d2ee6b1e4e101be9894ef214d6469bd72c0bbf0e774b86c27ca4e059f1",
+    "src/editor/panels/databaseAnimationPreview.ts": "0f9aa9871b0e4a7f0847177a006a4b49a5c3e182efae350f7ac1327af6495c91",
+    "src/editor/panels/databaseConnectionsPanel.ts": "9ca1f886f9a7f2c0f64bb67e9cb7a7e2ba400d25f3e23860720f32993c1337a6",
+    "src/editor/panels/databaseEnemyPixelPreview.ts": "d1221b4d7aab5027da6b101a15b89320b3adc1776a88b52c74203af67b16e0e7",
+    "src/editor/panels/databaseLifeCollectionsView.ts": "79c9a901037bf6dd3032decc6f9ea3445b0fc16f3f1b0d5df9f56ffabc0540d7",
+    "src/editor/panels/databaseListVirtualizer.ts": "075e881d198ffcb95261277955c2133a7c6cc145d76fc2f8e73a39f9c9bb47c9",
+    "src/editor/panels/databaseModal.ts": "a5dd50b59b9a900acf3293735ab68450015d052197f8267fcbef62bdc3cf219b",
+    "src/editor/panels/databaseMonsterSkillStage.ts": "6bca42afb19a38e5444e45065ecdd32ccb9d0d494f32aa9247337bed06dbdd59",
+    "src/editor/panels/databasePreviewLifecycle.ts": "72d3adaa8ab2884efa9c1818bc35f75024861e96d2af6d11156cbbd224d09fc8",
+    "src/editor/panels/databaseSkillAnimationStage.ts": "b66c2af68ca83f3b2c21010cb1073d12c0882a13f8955fabd377471b83cfaaa9",
+    "src/editor/panels/databaseSkillRetroStage.ts": "6889654485920ab55af8f59518028d33360e6ab26ad39b789d6be8e265b50f7c",
+    "src/editor/panels/eventEditor/commandInspector.ts": "c2649c702141ef07f52096b6e31d259d8312330f407367541009e8f29138f08f",
+    "src/editor/panels/eventEditor/commandList.ts": "06c5f63e5a2b490ced86b67c36c8e39a78e8ef4aa966ca59967f6a419841899d",
+    "src/editor/panels/eventEditor/commandToolbarHistory.ts": "099811fed68928e5f181193ae72c6f11b9fbf27aa92cf9e815a9394223a9a10e",
+    "src/editor/panels/eventEditor/content.ts": "ad53751c0934ab6286dd439c828049775292efe63b774900637ad42cd2c559fc",
+    "src/editor/panels/eventEditor/modal.ts": "0558c0bd9d55fb74e483f3578a85efe9030499ca5766f0d8ef3d9e9867f54809",
+    "src/editor/panels/leftProgressPane.ts": "e4c0d7ed1092e421b50ecf7e48cdd82d1759db27387dda80d766520a6b5b7762",
+    "src/editor/panels/mapList.ts": "5fb81c27c7f5e8b571b6e55c2f223b840191933c4a585e73ba9262ab00765064",
+    "src/editor/panels/resourceManager.ts": "c0e8be5254a35599b1f1d2c6757e729d716798c96671ff9ef8e0a45de7d0cb89",
+    "src/editor/panels/resourceManagerViews.ts": "c1c95d5f9db9f2bc1028e28c6927ee82d81ccb1868d27b40dfbfeabb0ac191db",
+    "src/editor/panels/tilePalette.ts": "66f11fe714a10e07748762a4a956f037ba58bf8be046df5d55faf82391622fab",
+    "src/editor/panels/tilePalettePreviewPanel.ts": "fabf9de7e6acbf819b982d57673e3f6f899e36412c43b3e03a2902219bcae1e9",
+    "src/editor/reliefActions.ts": "e1ea249c7cd8ccdd498b6ac2eb0851cc615fc65bc3e1c89fc68ba8d7db68f2a2",
+    "src/editor/reliefGroundSurface.ts": "cb1f516b2bac31e21379a59f79b4515e0658bf2f8dd79a395eb04201991b74ad",
+    "src/editor/reliefLiveStrips.ts": "1f8a7121511dd67373de7c9ef964edd33b344ae85da7e70bd4a238e1f191d693",
+    "src/editor/terrainBrush.ts": "b1ef0300460ded1b54278b5e9657511790e10e919b796ec56d4aeeb74139a3ee",
+    "src/editor/terrainStamps.ts": "0e363eed30642f559933705485c4f5c09ed32ca007f867d4f927964e4497a7f1",
+    "src/player/playSceneTileCulling.ts": "4894f64d065c09884c82472ff1d8a15d5c15b9e60bad882f98188a4d105183b8",
+    "src/project/eventDraftVault.ts": "198c15e458303224b9cdba9899fac5da44a6213c929c6934f0cf71c13c9329d8",
+    "src/project/io/sharedDictionaryJson.ts": "5265bd2a8da9a22b13c07a3a4b881a05b853ff4ef280d8529252cfb5a8c865e9",
+    "src/project/persistence/core/projectPatch.ts": "5c2d51aa6db84e1049e0f7384a753ecd1fe22aff2b55626557c38926b28c77e7",
+    "src/project/persistence/electronRepository.ts": "db5b8fb17545a5784db901382f91c4b6e0aba6308e240db089b06a3e5e7f7569",
+    "src/project/projectClone.ts": "985f68f0b817f8bb3e196f296feb527511e7e864a2003ff6c1f458816a5b9f50",
+    "src/project/relief/changes.ts": "51147528fda6e529e9988d91d16bb842ce3770614779608fbe9a829d2d3304ae",
+    "src/project/relief/edit.ts": "7b9d693c2afbf210c950659da4a8f368f847c06c910091b5ab2c5959309496af",
+    "src/project/relief/paged.ts": "aa2c36a72f80ace38a8f21c0a0c6045a8702abacdb386ada9a9e7c511997be81",
+    "src/project/relief/render.ts": "101ffaad57b2e904889337f6176e971d78a14939f19fc85df28a9108064b4569",
+    "src/project/relief/revision.ts": "60d35957ff714cb9fc6fd42434d3561803c9d7700a2e18786aada4088fa7a838",
+    "src/project/relief/roughBrush.ts": "7b4a878bc51d882ac9a84327e18e5dba9d5434e2c10ff4b5598a10c0d05b7fb6",
+    "src/project/relief/screen.ts": "16e0c521c12e789adc83d922a0194ceda71b0cae80c1ca59d132c4615391f9fd",
+    "src/project/relief/walk.ts": "806ff73d31ddbce9af35c94828585fb54a3667e608c995529e8a6dada40760e4",
+    "src/project/relief/window.ts": "4989f6e87e2c1b5278a95aa559933122c3c979b4a4bcbe1815d1a554f7a7e828",
+    "src/project/store.ts": "9f623b4a87645a3bf2617269cd2c5278c9734631648ec31af0bc87fb327ca41f",
+    "src/styles/event/command-list-4.css": "1416921f83dcdac417e6340626e67c43d99fd4652d50227b20b547866eb52b10"
+  },
+  "latestIntegrationCommit": "16a0a5d54b87071f23bd945a2b4594c23e76a415"
+}

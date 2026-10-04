@@ -17,6 +17,7 @@ export const PLAYER_EDITOR_ONLY_ASSETS = Object.freeze({
   "src/assets/sharedClimateVillageReferences.json": "whole",
   "src/assets/sharedFieldRouteReferences.json": "whole",
   "src/assets/sharedRpgPlaceReferences.json": "whole",
+  "src/assets/worldmapSelectedReferences.json": "whole",
   "src/assets/forestHarmonyTileset.json": "field",
   "src/assets/sharedVillageObjects.json": "field",
 });

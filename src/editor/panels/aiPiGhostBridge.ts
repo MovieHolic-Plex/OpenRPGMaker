@@ -2,9 +2,6 @@ import { clearAgentBlueprint, setAgentBlueprintFromSpec, markAgentBlueprintProgr
 import { blueprintRegionsForToolCall } from "@/editor/agentBlueprintRegions";
 import { SPATIAL_BUILD_TOOLS, TILE_WRITE_TOOLS, type BuildSpec } from "@/ai/buildSpec";
 import { isAiLiveCanvasEnabled, subscribeAiLiveCanvas } from "@/editor/aiLiveCanvas";
-import { resolveCurrentMapId } from "@/editor/mapSelection";
-import { requestEditorCameraFocus } from "@/editor/editorCameraFocus";
-import { startConstructionRevealForProjects } from "@/editor/agentConstructionReveal";
 import { createCanvasActivity } from "@/editor/panels/aiCanvasActivity";
 // Pi 실행 이벤트 → 캔버스 시공 표시(고스트). 워커가 툴마다 흘리는 `map_delta` 를 초안 맵으로
 // 복원하고, **기존 고스트 기계를 그대로** 돌린다(base↔초안 diff).
@@ -37,8 +34,8 @@ export interface PiGhostBridge {
   readonly handleEvent: (event: PiAgentEvent) => void;
   /** 밀린 갱신을 지금 그린다 — 실행이 끝났는데 마지막 증분이 스로틀 안에서 잠들지 않게. */
   readonly flush: () => void;
-  /** 실시간 적용 직전 — 바뀔 칸에 시공 막을 친다(적용을 붙잡지 않는다). */
-  readonly present: (before: Project, next: Project, signal?: AbortSignal, toolName?: string) => Promise<void>;
+  /** 실시간 적용 직전 — 기준선을 갱신한다(적용을 붙잡지 않는다). */
+  readonly present: (before: Project, next: Project, signal?: AbortSignal) => Promise<void>;
   readonly accept: (project: Project) => void;
   /** 검토 화면에는 실제 수용된 병합 결과만 표시한다. */
   readonly reconcile: (project: Project) => void;
@@ -140,14 +137,11 @@ export function createPiGhostBridge(options: PiGhostBridgeOptions): PiGhostBridg
   return {
     observeActivity(event) { if (!disposed && activeOwner === owner) activity.handleEvent(event); },
     reconcile,
-    async present(before, next, signal, toolName) {
+    async present(before, _next, signal) {
       if (disposed || activeOwner !== owner) return;
       // 공개 애니메이션은 다음 쓰기 도구를 붙잡지 않는다. 실제 칸은 적용 알림이 그린다.
       signal?.throwIfAborted();
       base = before;
-      // 실시간 적용에서는 이 직후 base 가 결과로 바뀌어 고스트가 그릴 차이가 0칸이 된다.
-      // 그래서 바뀔 칸을 여기서 뽑아 시공 막을 친다 — 막이 걷히며 실제 타일이 드러난다.
-      if (isAiLiveCanvasEnabled()) startConstructionRevealForProjects(before, next, toolName ?? "");
     },
     accept(project) {
       if (disposed || activeOwner !== owner) return;
@@ -195,11 +189,6 @@ export function createPiGhostBridge(options: PiGhostBridgeOptions): PiGhostBridg
             })) });
           }
           if (explicitPlan) markAgentBlueprintProgress(event.name, args, { write: true });
-          const region = regions[0];
-          if (isAiLiveCanvasEnabled() && region && region.mapId === resolveCurrentMapId()) requestEditorCameraFocus({
-            mapId: region.mapId, tileX: region.x + region.w / 2, tileY: region.y + region.h / 2,
-            bounds: { x: region.x, y: region.y, width: region.w, height: region.h }, onlyIfOffscreen: true,
-          });
         }
         runningTools.set(JSON.stringify([agentId, event.id]), { agentId, name: event.name, args });
         syncRunningTool();

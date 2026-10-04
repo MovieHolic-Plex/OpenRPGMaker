@@ -1,0 +1,6545 @@
+{
+  "source": "Chrome DevTools Protocol devtools.timeline; CrRendererMain; three drag runs plus their Escape/reset pauses",
+  "events": [
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 11.835
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.535
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.736
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.011
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 10.526
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.383
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 8.914
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.355
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.466
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 0.043
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.004
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.824
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.193
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.065
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.017
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.059
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 0.017
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 0.066
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.115
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.137
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.129
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.108
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.088
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.124
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.099
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.114
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.144
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.13
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.129
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.038
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.012
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.008
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 0.152
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.009
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.016
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.002
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.039
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.008
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 11.475
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.85
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.651
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 0.06
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "Paint",
+      "durationMs": 1.094
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.229
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.024
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.049
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.021
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.094
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.013
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 0.138
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.242
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 21.054
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.743
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.585
+    },
+    {
+      "name": "Paint",
+      "durationMs": 1.077
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.242
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.02
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.02
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.09
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.02
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.01
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.094
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 10.314
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.606
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.461
+    },
+    {
+      "name": "Paint",
+      "durationMs": 1.077
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.235
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.028
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.026
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.084
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.009
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.106
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 12.436
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.736
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.571
+    },
+    {
+      "name": "Paint",
+      "durationMs": 1.085
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.242
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.029
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.023
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.071
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.085
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.016
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.014
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.051
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.009
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 12.253
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.548
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.407
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.797
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.177
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.015
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.015
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.058
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.01
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.004
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.057
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.021
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 10.518
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.717
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.422
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.938
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.183
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.024
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.026
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.074
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.061
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.008
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.122
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 10.485
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.576
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.438
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.936
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.201
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.021
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.025
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.059
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.06
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.015
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.004
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 9.458
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.727
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.559
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.847
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.194
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.019
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.031
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.065
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.018
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.023
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.008
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.03
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.008
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.004
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.012
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.117
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 11.905
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.648
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.477
+    },
+    {
+      "name": "Paint",
+      "durationMs": 1.121
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.307
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.022
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.019
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.07
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.012
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.004
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.018
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 12.498
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.703
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.548
+    },
+    {
+      "name": "Paint",
+      "durationMs": 1.124
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.24
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.031
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.028
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.084
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.009
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.008
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.004
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.075
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.008
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.012
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.147
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 10.687
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.599
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.425
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.858
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.205
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.022
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.016
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.073
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.013
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.008
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.027
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.004
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.057
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.032
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 10.138
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.639
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.457
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.874
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.206
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.03
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.016
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.09
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.012
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.119
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 12.213
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.835
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.588
+    },
+    {
+      "name": "Paint",
+      "durationMs": 1.148
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.266
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.025
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.024
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.075
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.017
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.04
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.013
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.037
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 14.52
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.784
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.528
+    },
+    {
+      "name": "Paint",
+      "durationMs": 1.082
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.233
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.025
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.022
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.102
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.011
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.078
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.151
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 13.765
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.72
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.567
+    },
+    {
+      "name": "Paint",
+      "durationMs": 1.129
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.248
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.024
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.025
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.075
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.016
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.004
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.008
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.032
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.013
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.031
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 13.142
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.721
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.511
+    },
+    {
+      "name": "Paint",
+      "durationMs": 1.11
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.213
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.038
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.025
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.088
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.01
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.154
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.008
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.013
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.029
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.049
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 10.162
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.55
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.358
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.832
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.216
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.016
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.017
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.064
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.039
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.061
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 11.033
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.706
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.522
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.842
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.187
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.015
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.017
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.105
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.013
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.009
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.031
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.004
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.111
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.019
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 10.482
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.559
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.458
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.813
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.197
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.021
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.019
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.058
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.008
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.004
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.035
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.028
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.004
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 9.759
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.585
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.384
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.969
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.272
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.02
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.019
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.068
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.012
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.004
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.055
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.02
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 10.833
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.595
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.475
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.825
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.18
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.015
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.017
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.071
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.061
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.004
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.098
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 9.928
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.581
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.359
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.749
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.163
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.013
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.015
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.054
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.065
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.004
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.003
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.013
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.092
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.101
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 10.133
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.561
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.42
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.784
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.176
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.015
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.032
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.053
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.015
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.094
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 12.293
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.793
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.574
+    },
+    {
+      "name": "Paint",
+      "durationMs": 1.226
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.245
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.031
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.034
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.099
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.016
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.004
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.127
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 10.333
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.629
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.442
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.96
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.198
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.023
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.028
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.089
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.012
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.011
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 0.365
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.147
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 13.048
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.72
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.497
+    },
+    {
+      "name": "Paint",
+      "durationMs": 1.192
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.261
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.027
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.025
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.091
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.073
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.013
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.008
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.038
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 9.213
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.532
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.437
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.791
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.182
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.016
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.02
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.055
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.017
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.004
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.126
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 10.805
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.783
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.538
+    },
+    {
+      "name": "Paint",
+      "durationMs": 1.189
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.245
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.028
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.049
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.099
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.015
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.015
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 10.126
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.618
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.389
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.858
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.185
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.02
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.022
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.07
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.033
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.004
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.019
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 10.744
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.609
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.386
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.784
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.21
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.017
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.023
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.067
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.062
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.004
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.004
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.1
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 10.577
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.582
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.388
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.826
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.245
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.015
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.017
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.063
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.017
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.009
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.016
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 13.204
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.81
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 0.779
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 0.245
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.135
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 0.018
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 0.014
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.835
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.002
+    },
+    {
+      "name": "Paint",
+      "durationMs": 1.146
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.237
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.047
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.22
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 0.147
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.119
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 0.204
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.107
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 0.163
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.115
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 0.149
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.105
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 0.162
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.11
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 0.082
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.192
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.634
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.074
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.114
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.105
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.09
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 8.908
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.4
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.508
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.02
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 10.056
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.357
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 8.95
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.318
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.493
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 0.038
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.004
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.834
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.2
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.028
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.018
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.069
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.019
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 0.093
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.054
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.088
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.147
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.129
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.098
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.095
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.095
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.09
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.106
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.084
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.089
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.148
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.11
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.095
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.09
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.09
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.012
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.013
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.018
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.059
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.012
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.011
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.015
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.012
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.013
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.014
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.012
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.015
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.023
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.036
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.009
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.112
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.02
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 0.144
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.012
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.004
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.003
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.086
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.015
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 10.953
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.643
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.477
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 0.043
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.837
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.18
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.017
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.019
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.014
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.124
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.017
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 0.105
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.091
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.029
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.004
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 8.817
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.715
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.435
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.798
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.218
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.016
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.016
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.066
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.019
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.236
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.025
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 10.35
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.687
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.429
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.913
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.218
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.022
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.018
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.071
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.014
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.077
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.021
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 9.847
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.586
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.378
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.819
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.211
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.017
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.017
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.062
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.016
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.008
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.091
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.016
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.072
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.102
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.017
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 14.073
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.547
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.441
+    },
+    {
+      "name": "Paint",
+      "durationMs": 1.13
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.227
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.021
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.069
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.072
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.014
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.097
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.017
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.008
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 10.021
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.586
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.386
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.961
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.182
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.067
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.026
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.071
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.012
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.004
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.087
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.021
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 13.493
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.732
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.548
+    },
+    {
+      "name": "Paint",
+      "durationMs": 1.082
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.219
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.019
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.023
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.12
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.014
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.069
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.118
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.025
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 16.747
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.805
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.581
+    },
+    {
+      "name": "Paint",
+      "durationMs": 1.108
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.223
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.027
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.024
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.077
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.014
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.106
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.02
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.071
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.085
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.016
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 8.9
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.693
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.387
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.934
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.201
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.066
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.023
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.067
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.013
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.004
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.1
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.011
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.004
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 10.205
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.51
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.345
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.908
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.174
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.025
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.022
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.116
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.012
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.004
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.061
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.03
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.009
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.066
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.097
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.036
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.009
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 17.875
+    },
+    {
+      "name": "Layout",
+      "durationMs": 2.707
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.69
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.836
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.175
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.018
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.016
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.08
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.016
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.004
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.021
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.025
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.103
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 16.193
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.639
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.499
+    },
+    {
+      "name": "Paint",
+      "durationMs": 1.765
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.219
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.068
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.041
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.012
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.009
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.073
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.009
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.008
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.011
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.008
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.014
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.008
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.009
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.009
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.008
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.014
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.009
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.009
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.009
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.009
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.013
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.008
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.008
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.008
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.008
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.008
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.013
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.012
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.009
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.009
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.008
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.018
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.022
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.011
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.009
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.008
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.04
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.015
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.02
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.058
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.023
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.014
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.034
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 14.204
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.726
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.578
+    },
+    {
+      "name": "Paint",
+      "durationMs": 1.185
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.271
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.03
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.026
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.083
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.028
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.023
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.11
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.034
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 12.716
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.636
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.516
+    },
+    {
+      "name": "Paint",
+      "durationMs": 1.069
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.206
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.022
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.022
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.073
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.012
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.031
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 10.637
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.674
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.505
+    },
+    {
+      "name": "Paint",
+      "durationMs": 1.023
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.209
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.023
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.023
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.095
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.012
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.016
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.103
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.088
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 8.671
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.607
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.384
+    },
+    {
+      "name": "Paint",
+      "durationMs": 1.057
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.202
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.039
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.082
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.086
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.014
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.152
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.011
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.112
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.052
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 9.364
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.603
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.39
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.856
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.175
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.015
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.016
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.054
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.016
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.011
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.004
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 9.45
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.509
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.382
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.778
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.2
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.014
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.015
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.051
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.01
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.004
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.069
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.004
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.012
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.1
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.029
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 8.072
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.531
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.353
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.786
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.162
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.021
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.068
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.052
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.016
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.02
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 11.838
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.653
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.5
+    },
+    {
+      "name": "Paint",
+      "durationMs": 1.169
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.248
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.025
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.084
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.077
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.01
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.028
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 12.068
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.615
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.509
+    },
+    {
+      "name": "Paint",
+      "durationMs": 1.118
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.213
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.026
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.025
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.124
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.011
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.011
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.033
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 8.995
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.542
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.347
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.787
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.171
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.018
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.016
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.096
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.079
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.004
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.14
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.101
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.115
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 9.956
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.545
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.415
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.807
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.169
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.019
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.02
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.088
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.015
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.152
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 9.262
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.485
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.462
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.759
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.156
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.02
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.023
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.087
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.013
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.474
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 9.998
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.587
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.514
+    },
+    {
+      "name": "Paint",
+      "durationMs": 1.323
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.222
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.031
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.028
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.092
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.011
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.003
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.064
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 10.218
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.676
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.53
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.919
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.204
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.02
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.019
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.055
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.078
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.109
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 14.751
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.85
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.513
+    },
+    {
+      "name": "Paint",
+      "durationMs": 1.148
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.266
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.025
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.025
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.095
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.024
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.027
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.026
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.032
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.004
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 11.112
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.733
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.4
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.828
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.199
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.018
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.017
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.055
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.009
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.004
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.003
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.015
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.008
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 10.659
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.55
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.445
+    },
+    {
+      "name": "Paint",
+      "durationMs": 1.028
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.205
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.029
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.024
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.07
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.092
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.008
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.106
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 9.632
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.563
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.424
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.913
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.199
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.023
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.02
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.065
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.084
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.087
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.003
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 9.752
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.63
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.494
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.919
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.172
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.091
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.024
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.063
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.016
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.095
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 13.049
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.623
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 0.776
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 0.224
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.057
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 0.015
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 0.014
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.566
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.003
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.964
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.2
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.028
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.148
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 0.11
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.015
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 0.162
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.169
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 0.164
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.198
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 0.224
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.152
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 0.212
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.136
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 0.15
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.21
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.99
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.17
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.152
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 9.804
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.429
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.475
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 8.387
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.358
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 9.206
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.274
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.453
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 0.039
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.004
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.749
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.157
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.022
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.016
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.065
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 0.041
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.018
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 0.121
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.116
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.142
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.127
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.129
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.237
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.182
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.028
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.009
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 0.111
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.003
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.003
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.013
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.004
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 9.22
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.63
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.48
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 0.056
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.763
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.156
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.024
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.019
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.014
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.071
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.078
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.004
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 0.165
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.117
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 10.911
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.556
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.416
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.776
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.174
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.016
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.016
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.052
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.013
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.008
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.105
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 9.335
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.687
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.458
+    },
+    {
+      "name": "Paint",
+      "durationMs": 1.097
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.241
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.029
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.033
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.142
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.017
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.004
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.012
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.097
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 9.764
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.546
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.362
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.795
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.189
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.014
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.015
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.093
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.014
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.004
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.004
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.127
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.014
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.145
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.009
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 11.946
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.716
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.529
+    },
+    {
+      "name": "Paint",
+      "durationMs": 1.109
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.222
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.023
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.075
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.079
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.017
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.008
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.037
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 12.33
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.763
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.476
+    },
+    {
+      "name": "Paint",
+      "durationMs": 1.098
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.264
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.02
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.091
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.071
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.01
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.031
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 9.33
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.544
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.38
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.805
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.173
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.013
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.02
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.093
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.075
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.114
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 10.936
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.538
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.424
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.807
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.18
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.04
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.018
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.065
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.193
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.016
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.004
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.098
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.105
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.008
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 10.234
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.671
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.49
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.833
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.174
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.019
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.027
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.082
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.12
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.115
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 12.018
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.699
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.555
+    },
+    {
+      "name": "Paint",
+      "durationMs": 1.078
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.231
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.022
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.02
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.104
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.097
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.127
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.012
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.141
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.116
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 10.179
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.581
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.493
+    },
+    {
+      "name": "Paint",
+      "durationMs": 1.069
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.213
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.029
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.026
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.07
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.014
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.021
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.024
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.019
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.004
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 11.211
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.698
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.507
+    },
+    {
+      "name": "Paint",
+      "durationMs": 1.113
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.255
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.026
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.035
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.076
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.072
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.041
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.009
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 12.038
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.659
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.5
+    },
+    {
+      "name": "Paint",
+      "durationMs": 1.087
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.202
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.024
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.04
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.082
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.152
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.123
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.009
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.073
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.014
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.116
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 10.272
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.569
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.396
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.84
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.189
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.02
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.019
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.055
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.089
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.03
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.004
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 10.644
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.609
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.516
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.864
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.182
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.018
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.018
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.066
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.082
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.104
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.008
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.014
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.101
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 10.006
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.685
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.422
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.92
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.208
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.025
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.023
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.066
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.017
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.009
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.12
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.014
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.161
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 10.553
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.623
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.457
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.806
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.167
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.018
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.021
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.055
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.015
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.004
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.035
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 10.901
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.632
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.426
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.893
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.243
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.018
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.016
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.053
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.01
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.004
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.004
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.032
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.008
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.017
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.039
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.009
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 14.346
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.667
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.549
+    },
+    {
+      "name": "Paint",
+      "durationMs": 1.262
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.243
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.031
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.099
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.095
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.089
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.008
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.135
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 13.975
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.744
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.516
+    },
+    {
+      "name": "Paint",
+      "durationMs": 1.264
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.238
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.08
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.029
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.085
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.016
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.004
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.053
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 11.305
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.632
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.46
+    },
+    {
+      "name": "Paint",
+      "durationMs": 1.08
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.214
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.074
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.022
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.07
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.008
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.004
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.034
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.009
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 11.924
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.663
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.486
+    },
+    {
+      "name": "Paint",
+      "durationMs": 1.108
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.237
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.018
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.066
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.084
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.011
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.004
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.052
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.143
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.076
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 14.005
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.831
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.707
+    },
+    {
+      "name": "Paint",
+      "durationMs": 1.406
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.281
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.031
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.028
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.109
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.017
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.096
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 11.47
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.579
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.472
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.807
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.205
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.015
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.018
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.057
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.012
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.034
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.057
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 11.235
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.515
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.425
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.89
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.17
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.022
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.02
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.066
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.085
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.008
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.123
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 14.631
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.781
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.611
+    },
+    {
+      "name": "Paint",
+      "durationMs": 1.212
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.257
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.026
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.032
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.097
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.121
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.009
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.009
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.034
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 12.796
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.76
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.586
+    },
+    {
+      "name": "Paint",
+      "durationMs": 1.242
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.247
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.052
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.031
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.092
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.013
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.037
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.008
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 12.066
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.815
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.597
+    },
+    {
+      "name": "Paint",
+      "durationMs": 1.343
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.32
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.03
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.039
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.095
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.015
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.008
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.155
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.01
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 10.458
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.656
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.454
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.947
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.214
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.022
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.019
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.064
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.014
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.008
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.004
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 10.341
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.558
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.412
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.807
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.189
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.019
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.016
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.055
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.018
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.009
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.019
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 10.736
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.568
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.435
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.936
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.248
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.025
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.026
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.075
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.016
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.006
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.005
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.01
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 13.623
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.804
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 0.728
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 0.278
+    },
+    {
+      "name": "Layout",
+      "durationMs": 0.083
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 0.022
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 0.013
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.861
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.007
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.009
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.004
+    },
+    {
+      "name": "Paint",
+      "durationMs": 1.228
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.279
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.032
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.206
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 0.04
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 0.152
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.171
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 0.164
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.116
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 0.182
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.154
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 0.17
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.212
+    },
+    {
+      "name": "UpdateLayoutTree",
+      "durationMs": 0.118
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.201
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.911
+    },
+    {
+      "name": "Paint",
+      "durationMs": 0.131
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.138
+    },
+    {
+      "name": "PrePaint",
+      "durationMs": 0.096
+    }
+  ]
+}

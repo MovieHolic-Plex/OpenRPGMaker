@@ -54,7 +54,7 @@ export const LIST_JP_CITY_BUILDING_PARTS_TOOL: ToolDefinition = {
     if (ex) {
       const hit = SPEC.examples[ex];
       if (!hit) throw new ToolError(`완성 예제 '${ex}' 가 없다 — ${first(Object.keys(SPEC.examples), 40)}`, { code: "unknown-example" });
-      return { summary: `예제 ${ex}(${hit.ko}) — args 에 mapId·x·y(발 = 왼쪽 아래 칸)를 더해 build_jp_city_building 에 그대로 넣는다. 일부 예제는 에디터 층 한계(DECO_CLASH)로 거부된다: machiya_izakaya · L_machiya_annex · L_flats_lot.`, data: { example: ex, ko: hit.ko, args: exampleToToolArgs(hit.input as Record<string, unknown>) } };
+      return { summary: `예제 ${ex}(${hit.ko}) — args 에 mapId·x·y(발 = 왼쪽 아래 칸)를 더해 build_jp_city_building 에 그대로 넣는다. 일부 예제는 에디터 층 한계(DECO_CLASH)로 이 도구가 거부한다: machiya_izakaya · L_machiya_annex · L_flats_lot — 그 셋은 같은 모양의 완성 키트를 stamp_object({objectId:\"kit:jp_city/jp-recipe-machiya-izakaya\"(또는 jp-recipe-l-machiya-annex · jp-recipe-l-flats-lot), mapId, x, y(왼쪽 위 칸)}) 로 찍는다.`, data: { example: ex, ko: hit.ko, args: exampleToToolArgs(hit.input as Record<string, unknown>) } };
     }
     if (q) {
       const toks = q.toLowerCase().split(/\s+/u).filter(Boolean);
@@ -175,6 +175,45 @@ function toBuildingInput(a: Record<string, unknown>): JpCityWingInput {
 const MIN_REACH = 6;
 function formatIssue(i: JpCityIssue): string { return `${i.code}${i.x !== undefined ? `(${i.x},${i.y})` : ""} ${i.message}`; }
 
+/** 오류 코드별 «다음에 할 일» — 조수가 메시지만 읽고 바로 인자를 고치게 한다(DOOR_BLOCKED 는 문 앞 바닥 fill_region 인자까지 만들어 준다). */
+const NEXT_ACTION: Partial<Record<JpCityIssue["code"], string>> = {
+  TOO_NARROW: "w 를 늘린다(최소 3, 문 폭 이상, 별채는 본채 폭-2 이하, 셋백은 양쪽 ins 를 뺀 폭이 남게)",
+  ROOF_ORDER: "roof(또는 head) 를 주고, eave 는 1층 바로 위에만 둔다",
+  FLOOR_PAIR: "floorPlan 의 층 kind 를 2줄 한 쌍 종류(pairs·slide·veranda·koushi·ribbon…)로 바꾼다",
+  NO_DOOR: "door 를 빼면 1층 기본 문이 오른쪽 끝에 붙는다 — door.type 을 문 종류로 준다",
+  DECO_CLASH: "창 위에 얹은 부착물의 col·row 를 옮기거나 floor 를 바꾸거나 빼고, 한 칸에 위층 칸이 3장 겹치지 않게 한다",
+  UNKNOWN_PART: "list_jp_city_building_parts(인자 없이, 또는 query) 로 실제 id 를 확인해 쓴다",
+  OUT_OF_MAP: "x,y 는 건물 발(왼쪽 아래)이다 — 건물은 위로 자라므로 y 는 (층수×2+지붕·1층 줄 수)-1 이상, x+w 는 맵 폭 이하",
+  DOOR_OUT_OF_RANGE: "door.col 이 0~w-1 안이고 문 폭이 건물 안에 들어가는지 확인한다",
+  DECO_OUT_OF_RANGE: "decos[].col 이 0~w-1 안인지, floor 가 윗층 번호·ground·head 중 하나인지 확인한다",
+  BAD_INPUT: "인자 이름과 타입을 스키마대로 고친다",
+};
+
+/** 문 앞 접근칸을 걸을 수 있게 만드는 fill_region 인자 — 접근칸 둘레(좌우 1칸, 아래 3줄)를 보도 연석으로. 접근칸이 맵 밖이면 건물을 위로 옮기라고 한다. */
+function doorBlockedFix(mapId: string, map: GameMap, cells: readonly { x: number; y: number }[]): string {
+  const inside = cells.filter((c) => inMapBounds(map, c.x, c.y));
+  const moveUp = "접근칸이 맵 밖이면(건물 아래에 한 줄도 안 남음) 건물을 위로 옮긴다(y 를 줄인다)";
+  if (!inside.length) return moveUp;
+  const xs = inside.map((c) => c.x), ys = inside.map((c) => c.y);
+  const x0 = Math.max(0, Math.min(...xs) - 1), x1 = Math.min(map.width - 1, Math.max(...xs) + 1);
+  const y0 = Math.min(...ys), y1 = Math.min(map.height - 1, Math.max(...ys) + 2);
+  return `문 앞 바닥을 깐다 — fill_region({mapId:"${mapId}", rect:{x:${x0},y:${y0},w:${x1 - x0 + 1},h:${y1 - y0 + 1}}, material:"보도 연석", referencePurpose:"jp-start"}) 후 같은 인자로 다시 부른다. ${moveUp}`;
+}
+
+/** 오류 목록 → 「→ 다음: …」 꼬리. 코드마다 한 번씩. */
+function nextActions(mapId: string, map: GameMap, errors: readonly JpCityIssue[]): string {
+  const lines: string[] = [];
+  const seen = new Set<string>();
+  const blocked = errors.filter((e) => e.code === "DOOR_BLOCKED" && e.x !== undefined && e.y !== undefined).map((e) => ({ x: e.x!, y: e.y! }));
+  for (const e of errors) {
+    if (seen.has(e.code)) continue;
+    seen.add(e.code);
+    const text = e.code === "DOOR_BLOCKED" ? (blocked.length ? doorBlockedFix(mapId, map, blocked) : "문 앞 접근칸을 걸을 수 있는 바닥에 이어 둔다(문 앞 보도·도로를 fill_region 으로 먼저 깐다)") : NEXT_ACTION[e.code];
+    if (text) lines.push(`${e.code}: ${text}`);
+  }
+  return lines.length ? ` → 다음: ${lines.join(" / ")}` : "";
+}
+
 /** 찍은 뒤의 맵에서 문 앞 접근칸이 실제로 걸을 수 있는 바닥에 이어지는가(엔진 통행 규칙 isPassable). */
 function accessReach(project: Project, map: GameMap, a: { x: number; y: number }, limit: number): number {
   if (!isPassable(project, map, a.x, a.y)) return 0;
@@ -199,7 +238,7 @@ export const BUILD_JP_CITY_BUILDING_TOOL: ToolDefinition = {
     + "건물을 낱칸으로 칠하지 말고 이 도구로 짓는다. x,y = 건물 발(왼쪽 아래 칸), 사각형은 위쪽으로 자란다. 한 층 = 위·아래 2줄, floorPlan[0] 이 맨 위 층. "
     + "먼저 list_jp_city_building_parts 로 id 를 확인한다(example 로 완성 예제 입력을 받을 수 있다). wing 을 주면 L자(본채 + 앞으로 튀어나온 별채·마당). "
     + "오류가 하나라도 있으면 맵을 바꾸지 않고 코드·좌표·고칠 방법을 돌려준다(TOO_NARROW·ROOF_ORDER·FLOOR_PAIR·NO_DOOR·DOOR_BLOCKED·DECO_CLASH·UNKNOWN_PART 등). "
-    + "문 앞에는 걸을 수 있는 바닥(보도·도로)을 먼저 깔고, 뒷줄 건물을 앞줄보다 먼저 찍는다. jp_city 맵에서만 동작한다.",
+    + "새 jp_city 맵은 비어 있다 — 땅(fill_region 보도 연석·생활도로)을 먼저 깔고 문 앞이 걸을 수 있어야 하며, 뒷줄 건물을 앞줄보다 먼저 찍는다. jp_city 맵에서만 동작한다.",
   parameters: {
     type: "object",
     properties: {
@@ -219,7 +258,7 @@ export const BUILD_JP_CITY_BUILDING_TOOL: ToolDefinition = {
     const map = requireMap(draft, mapId);
     const tileset = draft.tilesets[map.tilesetId];
     if (!tileset || !isJpCityTileset(tileset)) {
-      throw new ToolError(`맵 '${map.name}'(${mapId}) 의 칩셋 '${map.tilesetId}'(계열 ${tileset?.family ?? "없음"}) 은 일본 도시(${JP_CITY_ID}, 계열 ${JP_CITY_FAMILY})가 아니다 — 이 도구는 jp_city 맵에서만 동작한다. 다른 칩셋 맵에는 그 칩셋의 참고문서·도구를 쓴다.`, { code: "tileset-family-mismatch", mapId });
+      throw new ToolError(`맵 '${map.name}'(${mapId}) 의 칩셋 '${map.tilesetId}'(계열 ${tileset?.family ?? "없음"}) 은 일본 도시(${JP_CITY_ID}, 계열 ${JP_CITY_FAMILY})가 아니다 — 이 도구는 jp_city 맵에서만 동작한다. 일본 상가 거리가 목적이면 create_map({tilesetId:\"${JP_CITY_ID}\"}) 로 새 맵을 만든다(보는 맵이 다른 계열이면 ask_tileset_change 로 사용자에게 먼저 묻는다). 다른 칩셋 맵에는 그 칩셋의 참고문서·도구를 쓴다.`, { code: "tileset-family-mismatch", mapId });
     }
     if (tileset.count < SPEC.count) throw new ToolError(`이 프로젝트의 jp_city 사본(${tileset.count}칸)이 부품 사전(${SPEC.count}칸)보다 작다 — 프로젝트를 다시 열어 번들 타일셋을 갱신한다`, { code: "tileset-outdated", mapId });
     if (!Number.isInteger(args.x) || !Number.isInteger(args.y)) throw new ToolError("x·y 는 정수(건물 발 = 왼쪽 아래 칸)", { code: "BAD_INPUT", mapId });
@@ -233,7 +272,7 @@ export const BUILD_JP_CITY_BUILDING_TOOL: ToolDefinition = {
     const errors = built.issues.filter((i) => i.severity === "error");
     if (errors.length) {
       const e0 = errors[0]!;
-      throw new ToolError(`건물을 짓지 않았다 — 오류 ${errors.length}건: ${errors.slice(0, 6).map(formatIssue).join(" / ")}${errors.length > 6 ? " …" : ""}`, { code: e0.code, mapId, ...(e0.x !== undefined ? { x: e0.x, y: e0.y } : {}) });
+      throw new ToolError(`건물을 짓지 않았다 — 오류 ${errors.length}건: ${errors.slice(0, 6).map(formatIssue).join(" / ")}${errors.length > 6 ? " …" : ""}${nextActions(mapId, map, errors)}`, { code: e0.code, mapId, ...(e0.x !== undefined ? { x: e0.x, y: e0.y } : {}) });
     }
 
     // 복제본에 찍어 엔진 통행으로 다시 확인한 뒤에만 맵에 반영한다.
@@ -258,7 +297,7 @@ export const BUILD_JP_CITY_BUILDING_TOOL: ToolDefinition = {
     const blockedAccess = built.access.filter((a) => accessReach(draft, next, a, MIN_REACH) < MIN_REACH);
     if (blockedAccess.length) {
       const a0 = blockedAccess[0]!;
-      throw new ToolError(`건물을 짓지 않았다 — 오류 ${blockedAccess.length}건: DOOR_BLOCKED(${a0.x},${a0.y}) 찍고 난 뒤 문 앞 접근칸에서 걸어갈 수 있는 칸이 ${MIN_REACH}개 미만 — 문 앞 바닥(보도·도로)을 먼저 깐다`, { code: "DOOR_BLOCKED", mapId, x: a0.x, y: a0.y });
+      throw new ToolError(`건물을 짓지 않았다 — 오류 ${blockedAccess.length}건: DOOR_BLOCKED(${a0.x},${a0.y}) 찍고 난 뒤 문 앞 접근칸에서 걸어갈 수 있는 칸이 ${MIN_REACH}개 미만 — 문 앞 바닥(보도·도로)을 먼저 깐다 → 다음: ${doorBlockedFix(mapId, map, blockedAccess)}`, { code: "DOOR_BLOCKED", mapId, x: a0.x, y: a0.y });
     }
     if (solidMismatch) throw new ToolError(`건물을 짓지 않았다 — 막힘 칸 ${solidMismatch}개가 엔진 통행에서 열려 있다(칸 번호의 통행 정의가 부품 사전과 다르다). 번들 타일셋을 갱신한다`, { code: "passability-mismatch", mapId });
     draft.maps[mapId] = next;

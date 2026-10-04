@@ -135,6 +135,7 @@ function validateCinematicResources(label: string, sequence: CinematicSequence |
     const sceneLabel = `${label}.scenes[${index}]`;
     if (scene.kind !== "text") validateOptionalResource(`${sceneLabel}.resourceId`, scene.resourceId, resourceIds);
     validateOptionalResource(`${sceneLabel}.narrationAudioResourceId`, scene.narrationAudioResourceId, resourceIds);
+    if (scene.kind === 'image') validateOptionalResource(`${sceneLabel}.direction.soundResourceId`, scene.direction?.soundResourceId, resourceIds);
   }
 }
 

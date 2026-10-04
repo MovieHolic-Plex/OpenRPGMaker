@@ -2,8 +2,8 @@
  "map": {
   "id": "jp-city-shopstreet",
   "size": [
-   48,
-   40
+   40,
+   32
   ]
  },
  "start": [
@@ -30,7 +30,7 @@
   }
  },
  "crossings": {
-  "zebraCells": 116,
+  "zebraCells": 39,
   "railPlateCells": 4,
   "allPassable": true,
   "allReached": true,
@@ -38,11 +38,11 @@
  },
  "autotileMasks": {
   "jp-lane-road": {
-   "cells": 164,
+   "cells": 140,
    "mismatchEngineExact": 8,
    "mismatchEngineExactInterior": 0,
    "mismatchBorderOnlyOfThose": 8,
-   "mismatchPlainEngineNoKitExtension": 16,
+   "mismatchPlainEngineNoKitExtension": 24,
    "mismatchEdgeConnect": 0,
    "bad": []
   },
@@ -75,7 +75,7 @@
  },
  "emptiness": {
   "bareCells": 108,
-  "bareRatioOfMap": 0.056,
+  "bareRatioOfMap": 0.084,
   "maxEmptySquare": 3,
   "maxEmptySquareAt": [
    8,
@@ -87,6 +87,10 @@
    0
   ],
   "note": "bare = 보도·판석 칸이고 3·4층이 비어 있는 칸(아스팔트·선로·주차 바닥은 동선·기능이라 제외)"
+ },
+ "asphalt": {
+  "cells": 599,
+  "ratio": 0.468
  },
  "buildings": [
   {
@@ -217,21 +221,21 @@
   },
   {
    "id": "jp-prop-utility-pole2",
-   "x": 32,
-   "y": 21,
-   "why": "간선 보도 코인 파킹 곁 전봇대"
+   "x": 31,
+   "y": 13,
+   "why": "간선 보도(남북 길 끝) 전봇대 — 교차로 신호기와 한 칸이라도 겹치지 않게 북쪽에 둔다"
   },
   {
    "id": "jp-road-sign-mirror",
-   "x": 16,
-   "y": 12,
-   "why": "골목 교차 모퉁이 커브 미러"
+   "x": 11,
+   "y": 11,
+   "why": "골목 서쪽 길가 커브 미러(표지와 같은 쪽에 쌓지 않는다)"
   },
   {
    "id": "jp-road-sign-tomare",
-   "x": 11,
+   "x": 16,
    "y": 11,
-   "why": "남북 골목 일시정지 표지"
+   "why": "남북 골목 북쪽 갈래, 남행 차 일시정지 표지(차가 달리는 동쪽 반의 길가)"
   },
   {
    "id": "jp-prop-vending-aka",
@@ -286,12 +290,6 @@
    "x": 15,
    "y": 27,
    "why": "간선 가로 서쪽 팔 동행(교차로 쪽) 차선 택시 — 왼쪽 통행이라 북쪽 반"
-  },
-  {
-   "id": "jp-prop-car-blue-r",
-   "x": 7,
-   "y": 34,
-   "why": "간선 가로 서쪽 팔 서행 차선 차(반전 그림) — 남쪽 반"
   }
  ],
  "reach": {
@@ -299,8 +297,8 @@
    28,
    12
   ],
-  "reachableCells": 1748,
-  "walkableCells": 1748
+  "reachableCells": 1107,
+  "walkableCells": 1107
  },
  "ok": true
 }

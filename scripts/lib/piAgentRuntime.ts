@@ -2,6 +2,7 @@ import { piTimer } from './piRunTiming.mjs';
 import { PiInteriorCompletion } from '../../src/ai/piAgent/interiorCompletion.ts';
 import type { InteriorRequirements } from '../../src/project/interiorPlacementAudit.ts';
 import { randomUUID } from "node:crypto";
+import { cloneProjectSharingSharedDictionaries } from '../../src/project/projectClone.ts';
 import { PiTilesetReferenceGate } from "../../src/ai/piAgent/tilesetReferenceGate.ts";
 import { TILESET_REFERENCE_READ_TOOLS } from "../../src/editor/tools/tilesetReferenceTools.ts";
 import { SET_BUILD_SPEC_TOOL } from "../../src/ai/session/sessionTools.ts";
@@ -12,6 +13,7 @@ import { connectContractVillage } from "../../src/ai/piAgent/villageConnection.t
 import type { ActivityVisual } from "../../src/ai/activityVisual";
 import { authoredVillageMapId, inspectPiVillageCompletion, piVillageRepairPrompt } from "../../src/ai/piAgent/villageCompletion.ts";
 import { inspectPiLayoutQuality, piLayoutRepairPrompt } from "../../src/ai/piAgent/layoutQuality.ts";
+import { conceptSkipsLayoutQuality } from "../../src/ai/conceptCards.ts";
 import { PiRepeatBreaker } from "../../src/ai/piAgent/repeatBreaker.ts";
 import { inspectPromptPayload } from "../../src/ai/authoring/promptInspection.ts";
 import { activityPayload } from "../../src/ai/activityTrace.ts";
@@ -20,6 +22,8 @@ import { mergeMapBundles } from "../../src/ai/piAgent/mapBundle.ts";
 import type { PiProjectCheckpoint } from "../../src/ai/piAgent/protocol.ts";
 import { createWriterTool } from "./piWriterTool.ts";
 import { completeProvider } from "./ohMyPiPiAiRuntime.ts";
+import { createPiPresentationTool, PI_PRESENTATION_GENERATORS } from './piPresentationTools';
+import { presentationArtIds, presentationArtImages } from '../../src/editor/tools/presentationTools';
 // Bun 전용 Pi 에이전트 런타임. `@oh-my-pi/pi-agent-core` 루프에 레지스트리 툴을 붙여 프로젝트
 // 사본 위에서 작업을 끝까지 돈다. 결과 프로젝트는 `done` 이벤트로 돌려주고, 적용(커밋 게이트·
 // undo·저장)은 호출자(브라우저 패널 또는 CLI)가 맡는다.
@@ -51,6 +55,7 @@ import { normalizePiThinkingLevel } from "../../src/ai/piAgent/thinkingLevel.ts"
 import { antigravityToolEnumPayload } from "./ohMyPiToolEnums.ts";
 import { searchWebWithCodex } from "./codexWebSearchRuntime.ts";
 import { WEB_SEARCH_TOOL } from "../../src/editor/tools/webSearchTool.ts";
+import { mergeConstructionLogs } from "../../src/editor/tools/constructionLog.ts";
 import { CODEX_PROVIDER_ID } from "../../src/ai/oauth/credentials.ts";
 import { setWorldmapBuilder } from "../../src/editor/worldmap/worldmapBuild.ts";
 import { buildWorldmap } from "./worldmapBuild.mjs";
@@ -198,44 +203,18 @@ function trimText(value: unknown, max: number): string {
   return text.length > max ? `${text.slice(0, max)}…` : text;
 }
 
-/**
- * 워커는 브라우저 부팅을 안 거치므로 공용 카탈로그(장소·지역 참고·공용 콘텐츠)를 스스로 설치한다. 판본이 같으면 다시 읽지 않는다.
- *
- * 왜(2026-10-03 실측): 실행마다 2.4GB shared-content.sqlite 의 모든 payload(505MB) 를 두 번 읽어 파싱했다 — 실행 준비 41.4s 중
- * 거의 전부였고, 동기 SQLite 라 그동안 워커가 응답 헤더도 못 보냈다(브라우저는 「작업 중」만 보며 40초 넘게 기다렸다).
- * 판본은 행 판본만 읽어 센다(payload 안 읽음). 게시 스크립트가 행을 바꾸면 판본이 바뀌어 다음 실행이 다시 설치한다.
- * 팀 모드는 팀원 실행이 동시에 들어오므로 한 번만 읽게 묶는다.
- */
-let sharedCatalogs: { revision: string; loading: Promise<void> } | null = null;
-async function ensureWorkerSharedCatalogs(): Promise<void> {
-  const { sharedTileReferencesRevision } = await import('./sharedTileReferencesSqlite');
-  const revision = sharedTileReferencesRevision();
-  if (sharedCatalogs?.revision === revision) return sharedCatalogs.loading;
-  const loading = (async () => {
-    // 같은 행을 두 번 읽어 두 번 파싱하지 않는다(readSharedCatalogsOnce 주석).
-    const { readSharedCatalogsOnce } = await import('./sharedTileReferencesSqlite');
-    const { tileReferences, content } = readSharedCatalogsOnce();
-    const { installSharedSpatialReferences } = await import('../../src/project/sharedSpatialReferences');
-    installSharedSpatialReferences(tileReferences.spatial);
-    const { installSharedContent } = await import('../../src/project/sharedContent');
-    await installSharedContent(content);
-  })();
-  sharedCatalogs = { revision, loading };
-  // 실패한 설치를 기억하면 다음 실행도 같은 실패를 그냥 넘긴다 — 지우고 다시 시도하게 한다.
-  loading.catch(() => { if (sharedCatalogs?.loading === loading) sharedCatalogs = null; });
-  return loading;
-}
-
 export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOptions = {}): Promise<PiAgentDoneEvent> {
   const setupTimer = piTimer("worker runPiAgent setup");
-  await ensureWorkerSharedCatalogs();
+  // Workers do not run browser boot; load the same host-wide region catalog for AI tools.
+  const { preparePiWorkerSharedContent } = await import('./piWorkerSharedContent');
+  await preparePiWorkerSharedContent();
   setupTimer.mark("sharedCatalogs");
   const emit = (event: PiAgentEvent) => options.onEvent?.({ ...event, at: event.at ?? Date.now() });
   const base = request.project;
   const modernTilesetPolicy = request.modernTilesetOnly || requestsModernMap(base, request.task, [...request.mapIds, ...(request.currentMapId ? [request.currentMapId] : [])]) ? createModernTilesetPolicy(base) : undefined;
   // 지금 보는 맵·승인 계열은 실행기의 칩셋 계열 검사와 create_map 기본 칩셋이 읽는다(ToolContext 주석).
   const ctx: ToolContext = {
-    project: structuredClone(base) as Project,
+    project: cloneProjectSharingSharedDictionaries(base),
     ...(request.currentMapId && base.maps[request.currentMapId] ? { currentMapId: request.currentMapId } : {}),
     ...(request.approvedTilesetFamilies?.length ? { approvedTilesetFamilies: [...request.approvedTilesetFamilies] } : {}),
   };
@@ -278,6 +257,18 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     readOnly: request.readOnly || options.readOnlyTools, toolNames: options.toolNames,
   });
   const shapeFor = (name: string): PiToolShape | undefined => {
+    if (PI_PRESENTATION_GENERATORS.some(generator => generator === name)) {
+      if (request.readOnly || options.readOnlyTools) return undefined;
+      const definition = allowedDefinitions.find(tool => tool.name === name);
+      if (!definition) return undefined;
+      return wrapTool(createPiPresentationTool(definition, ctx, request, { ...options, onCall: recordCall,
+        apply: async (toolName, args, signal) => {
+          const write = resolvePiToolShape(ctx, toolName, { toolNames: [toolName], referenceGate, modernTilesetPolicy, ...scopeGuard });
+          if (!write) throw new Error(`그림 등록/연결 도구가 없습니다: ${toolName}`);
+          return write.execute(`${name}:apply`, args, signal);
+        },
+      }));
+    }
     // 웹 검색은 레지스트리 셰이프가 순수 핸드오프라 네트워크가 없다 — 발견 경로도 실제 실행으로 보낸다.
     if (name === WEB_SEARCH_TOOL) {
       return allowedDefinitions.some(tool => tool.name === WEB_SEARCH_TOOL)
@@ -300,7 +291,11 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     tools.push(shape);
     exposed.add(shape.name);
   };
+  // 방금 쓰기 도구가 남긴 시공 단계 — 바로 다음 체크포인트에 실어 보낸다(편집기가 그 순서대로 다시 튼다).
+  let pendingConstructionLogs: PiToolCallRecord["constructionLogs"];
   const recordCall = (record: PiToolCallRecord): void => {
+    // 체크포인트 사이에 쓰기가 여러 번이면(단계 적용·비배타 도구) 같은 맵 기록을 순서대로 잇는다.
+    if (record.constructionLogs?.length) pendingConstructionLogs = mergeConstructionLogs([...(pendingConstructionLogs ?? []), ...record.constructionLogs]);
     interiorCompletion.record(ctx.project, record);
     try { options.onToolCall?.(record); } catch { /* recording must never change the run */ }
     if (record.toolCallId) pendingSummaries.set(record.toolCallId, { ok: record.result.ok, summary: trimText(record.result.summary, 400), result: activityPayload(record.result), visuals: record.visuals });
@@ -318,7 +313,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
           doorFronts: receipt.data.village.doorFronts ?? [],
         });
         emit({ type: "execution_status", name: "village.connection", ok: linked.ok, summary: linked.summary });
-        if (linked.ok) receipt = { ...receipt, built: structuredClone(ctx.project), connection: linked.connection };
+        if (linked.ok) receipt = { ...receipt, built: cloneProjectSharingSharedDictionaries(ctx.project), connection: linked.connection };
       }
       // 계약 인자 그대로 부른 시공이 대상·범위·칩셋·설계서 규칙에 거부되면 몇 번을 다시 불러도 같다 — 계약을 푼다.
       // 2026-09-28: 풀 길이 없어서 village-requires-scope 로 5번 헛돌았다.
@@ -344,6 +339,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   setupTimer.done();
   let rejected = false;
   const checkpoint = async (label: string, toolName: string, signal?: AbortSignal): Promise<void> => {
+    const constructionLogs = pendingConstructionLogs;
+    pendingConstructionLogs = undefined;
     if (!incremental || changedProjectKeys(accepted, ctx.project).length === 0) return;
     const scoped = request.scopeStrict !== false && request.mapIds.length > 0;
     const project = scoped ? mergeMapBundles(accepted, [{ mapIds: request.mapIds, project: ctx.project }]).project : ctx.project;
@@ -356,9 +353,10 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     const unchangedKeys: PiCheckpointHeavyKey[] = wire.unchangedKeys;
     try {
       const published = await options.onCheckpoint!({
-        project: structuredClone(wire.project) as Project,
+        project: cloneProjectSharingSharedDictionaries(wire.project),
         label, toolName, spatialProof: exportSpatialToolProof(project), unchangedKeys,
         ...(wire.unchangedTilesetIds.length ? { unchangedTilesetIds: wire.unchangedTilesetIds } : {}),
+        ...(constructionLogs?.length ? { constructionLogs } : {}),
       }, signal ?? options.signal);
       // ACK 는 같은 모양으로 돌아온다 — 뺀 타일셋은 이쪽 사본에서 다시 붙인다.
       const merged = restoreCheckpointProject(project, published ?? project, unchangedKeys, wire.unchangedTilesetIds);
@@ -381,7 +379,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       throw error;
     }
   };
-  const wrapTool = (tool: PiToolShape): PiToolShape => !incremental && !contract && tool.name !== "show_map_region" && tool.name !== "inspect_interior_layout" ? tool : ({ ...tool,
+  const wrapTool = (tool: PiToolShape): PiToolShape => !incremental && !contract && tool.name !== "show_map_region" && tool.name !== "inspect_interior_layout" && tool.name !== 'show_title_opening' ? tool : ({ ...tool,
     async execute(id, params, signal) {
       // The core owns ordering: consecutive reads overlap; writes hold an exclusive
       // barrier through publication. A second queue here would serialize reads too.
@@ -392,6 +390,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         else if (tool.name !== "author_npc_cast" || !receipt) throw new Error("마을 계약: author_village로 시공하고 주민 대사만 보충하세요. 다른 쓰기는 별도 요청으로 진행합니다.");
       }
       const heldContract = !!contract;
+      if (contract && PI_PRESENTATION_GENERATORS.some(name => name === tool.name)) throw new Error('마을 계약 실행에서 타이틀/오프닝을 변경할 수 없습니다.');
       let result: Awaited<ReturnType<PiToolShape["execute"]>>;
       try {
         result = await tool.execute(id, params, signal);
@@ -407,10 +406,25 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         if (!options.renderToolImage) throw new Error("맵 이미지 전달 경로가 없습니다. 배열만으로 시각 검토를 완료할 수 없습니다.");
         const inspectedMap = tool.name === 'inspect_interior_layout' ? ctx.project.maps[String((params as { mapId?: unknown }).mapId)] : undefined;
         const data = inspectedMap ? { mapId: inspectedMap.id, x: 0, y: 0, w: inspectedMap.width, h: inspectedMap.height } : (result.details as { data?: unknown } | undefined)?.data;
-        const png = await options.renderToolImage(structuredClone(ctx.project), tool.name, data, signal ?? options.signal);
+        const png = await options.renderToolImage(cloneProjectSharingSharedDictionaries(ctx.project), tool.name, data, signal ?? options.signal);
         result.content.push({ type: "image", mimeType: "image/png", data: png });
         if (png && data && typeof data === "object") interiorCompletion.recordPreview(ctx.project, data);
-        options.onEvent?.({ type: "execution_status", name: "map.image.delivered", ok: true, summary: "현재 초안 이미지를 모델 도구 응답에 포함했습니다.", data: { toolCallId: id, base64Length: png.length } });
+        const region = data && typeof data === 'object' ? data as Record<string, unknown> : {};
+        options.onEvent?.({ type: "execution_status", name: "map.image.delivered", ok: true, summary: "현재 초안 이미지를 모델 도구 응답에 포함했습니다.", data: { toolCallId: id, base64Length: png.length,
+          ...Object.fromEntries(['mapId', 'x', 'y', 'w', 'h'].map(key => [key, region[key]])) } });
+      }
+      if (tool.name === 'show_title_opening') {
+        const ids = presentationArtImages(ctx.project).map(image => image.resourceId);
+        // Count the image parts actually returned, not metadata or an authored success claim.
+        if (ids.length !== result.content.filter(part => part.type === 'image').length) throw new Error('타이틀/오프닝 그림 전달이 일치하지 않습니다.');
+        for (const resourceId of presentationArtIds(ctx.project).filter(resourceId => !ids.includes(resourceId))) {
+          if (!options.renderToolImage) throw new Error('타이틀/오프닝 그림을 실제 자산 저장소에서 읽을 경로가 없습니다.');
+          const png = await options.renderToolImage(cloneProjectSharingSharedDictionaries(ctx.project), tool.name, { resourceId }, signal ?? options.signal);
+          result.content.push({ type: 'text', text: resourceId }, { type: 'image', mimeType: 'image/png', data: png });
+          ids.push(resourceId);
+        }
+        emit({ type: 'execution_status', name: 'presentation.image.delivered', ok: true,
+          summary: '연결된 타이틀·오프닝 원화를 모델 도구 응답에 포함했습니다.', data: { toolCallId: id, resourceIds: ids } });
       }
       if (tool.concurrency === "exclusive" && request.applyMode !== "step") await checkpoint(tool.name, tool.name, signal);
       return result;
@@ -430,9 +444,14 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   // 레지스트리 쪽 web_search 는 순수 핸드오프라 네트워크가 없다 — 아래 실제 실행 셰이프가 대신한다.
   // 둘을 함께 선언하면 같은 이름이 두 번 나가고 어느 쪽이 도는지가 순서에 달린다.
   tools.push(
-    ...registryTools.filter(tool => tool.name !== WEB_SEARCH_TOOL).map(wrapTool),
+    ...registryTools.filter(tool => tool.name !== WEB_SEARCH_TOOL && !PI_PRESENTATION_GENERATORS.some(name => name === tool.name)).map(wrapTool),
     ...(options.extraTools ?? []),
   );
+  for (const name of PI_PRESENTATION_GENERATORS) {
+    if (!registryTools.some(tool => tool.name === name)) continue;
+    const shape = shapeFor(name);
+    if (shape) declare(shape);
+  }
   if (allowedDefinitions.some(tool => tool.name === WEB_SEARCH_TOOL)) {
     // Codex 자격이 없어도 선언한다 — 툴이 실패 이유를 말하는 편이 "없는 툴" 보다 정직하다.
     declare(wrapTool(createWebSearchTool({ codexApiKey: options.codexApiKey, onCall: recordCall })));
@@ -714,7 +733,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       await promptResuming(piVillageRepairPrompt(ctx.project, base, completion, receipt?.data.village.residentEventIds));
     }
     // 배치 품질은 권고 한 번뿐이다 — 거부하지 않고, 두 번째 결과는 숫자만 알린다(layoutQuality.ts).
-    if (!fatal && !rejected && !contract && !request.readOnly && turns < maxTurns && !options.signal?.aborted) {
+    // 개념 카드가 빈칸이 정상이라고 한 공간(미궁 통로 등)은 빈칸·대칭 수리를 시키지 않는다(src/ai/conceptCards.ts).
+    if (!fatal && !rejected && !contract && !request.readOnly && turns < maxTurns && !options.signal?.aborted && !conceptSkipsLayoutQuality(request.task)) {
       const describe = (issues: typeof layout) => issues.map(i => `${i.mapId} ${[...i.problems, ...(i.pack ?? [])].join(", ")}`).join(" / ");
       let layout = inspectPiLayoutQuality(ctx.project, base, request.mapIds, villageMapIds);
       // 팩 세트 맵(check_pack_map)은 좌표가 붙은 확실한 결함이라 한 번 더 권고한다(같은 결과면 멈춘다). 나머지는 한 번뿐.

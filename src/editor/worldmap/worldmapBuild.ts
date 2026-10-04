@@ -5,8 +5,6 @@
  * - 브라우저: 동반 서비스 `POST /v1/worldmap/build`(scripts/lib/ohMyPiHttp.mjs → scripts/lib/worldmapBuild.mjs)
  * - Pi 워커·헤드리스: 시작할 때 `setWorldmapBuilder(buildWorldmap)` 로 노드 구현을 직접 꽂는다.
  */
-import { companionTokenHeaders } from "@/ai/companionToken";
-import { companionRequestBaseUrl } from "@/ai/llmClient";
 
 export const WORLDMAP_GROUNDS = [
   "grass", "farm", "crop", "savanna", "sand", "dune", "dirt", "badlands", "ash", "basalt", "swamp", "marsh", "tundra", "snow", "glacier", "jungle",
@@ -19,7 +17,9 @@ export const WORLDMAP_OPS = [
 export const WORLDMAP_BASES = ["shared-v9", "generate"] as const;
 export type WorldmapBase = (typeof WORLDMAP_BASES)[number];
 /** 앞 여섯은 추상 구조, 뒤 셋은 문화권을 닮은 지리 구조(반도·강 문명 대륙·열도 — 척추 산줄기·큰 강·사막 자리까지 정해진다). */
-export const WORLDMAP_STYLES = ["blobs", "shards", "ring", "pangaea", "archipelago", "galaxy", "peninsula", "river-continent", "arc-islands", "korea"] as const;
+export const WORLDMAP_STYLES = ["blobs", "shards", "ring", "pangaea", "archipelago", "galaxy", "peninsula", "river-continent", "arc-islands", "korea", "real"] as const;
+/** style real 의 지역 이름(키트 kit_realgeo.REGIONS 와 같은 목록). 없는 지역은 box 로 범위를 직접 준다. */
+export const WORLDMAP_REGIONS = ["korea", "east-asia", "china", "japan", "southeast-asia", "india", "middle-east", "mediterranean", "europe", "britain", "scandinavia", "greece", "italy", "egypt", "africa", "north-america", "caribbean", "south-america", "australia", "iceland"] as const;
 
 /** label = 표시 이름(우주 여정 등). id 는 키트가 부르는 이름이라 그대로. */
 export interface WorldmapPlace { id: string; label?: string; role: string; act: number; x: number; y: number; w: number; h: number; icon: string }
@@ -109,6 +109,10 @@ const REQUEST_TIMEOUT_MS = 7 * 60 * 1000;
 
 export async function buildWorldmap(request: WorldmapBuildRequest): Promise<WorldmapBuildResult> {
   if (builderOverride) return builderOverride(request);
+  // LLM 클라이언트는 도구 레지스트리를 다시 읽는다. 빌드 도구 초기화와 순환하지 않게 HTTP 경로에서만 불러온다.
+  const [{ companionTokenHeaders }, { companionRequestBaseUrl }] = await Promise.all([
+    import("@/ai/companionToken"), import("@/ai/llmClient"),
+  ]);
   let response: Response;
   try {
     response = await fetch(`${companionRequestBaseUrl().replace(/\/$/, "")}/worldmap/build`, {

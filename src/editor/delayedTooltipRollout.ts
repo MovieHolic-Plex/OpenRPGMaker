@@ -13,6 +13,19 @@ export type DelayedTooltipTarget = {
 };
 
 export const DELAYED_TOOLTIP_ROLLOUT: readonly DelayedTooltipTarget[] = [
+  { label: "높이", name: "높이", testid: "terrain-tool-height" },
+  { label: "표면", name: "표면", testid: "terrain-tool-surface" },
+  { label: "강", name: "강", testid: "terrain-tool-river" },
+  { label: "군집 선택", name: "군집 선택", testid: "terrain-tool-group" },
+  { label: "집", name: "집", testid: "terrain-tool-house" },
+  { label: "도로", name: "도로", testid: "terrain-tool-road" },
+  { label: "지형지물", name: "지형지물 (D)", testid: "relief-doodad-toggle" },
+  { label: "지형 설계", name: "지형 설계", testid: "terrain-design-toggle" },
+  { label: "통행 보기", name: "통행 미리보기", testid: "terrain-reachability" },
+  { label: "도움말", name: "지형 도움말", testid: "terrain-help-toggle" },
+  { label: "윗면 풀", name: "윗면을 풀로 덮기", testid: "relief-top-grass" },
+  { label: "군집 옮기기", name: "군집 옮기기", testid: "terrain-group-move" },
+  { label: "군집 지우기", name: "군집 지우기", testid: "terrain-group-delete" },
   { label: "올리기", name: "올리기", testid: "relief-mode-raise" },
   { label: "내리기", name: "내리기", testid: "relief-mode-lower" },
   { label: "평탄", name: "평탄", testid: "relief-mode-flatten" },

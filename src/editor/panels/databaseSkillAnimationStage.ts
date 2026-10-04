@@ -1,3 +1,4 @@
+import { registerDatabasePreview, setDatabasePreviewsActiveIn, type DatabasePreviewLifecycle } from "./databasePreviewLifecycle";
 // 스킬 탭 `연출` 카드의 애니메이션 스테이지.
 //
 // 개편 전: 시트의 첫 칸을 backgroundPosition "0 0" 으로 잘라 보여주는 정지 이미지 한 장이었다
@@ -21,19 +22,9 @@ import {
 } from "@/editor/panels/eventEditor/showAnimationPlayback";
 import type { BattleAnimationSheet, Project, SkillRecord } from "@/project/types";
 import { el } from "@/util/dom";
-import { resumeRetroSkillStagesIn, stopRetroSkillStagesIn } from "@/editor/panels/databaseSkillRetroStage";
-import { resumeEnemyPixelPreviewsIn, stopEnemyPixelPreviewsIn } from "@/editor/panels/databaseEnemyPixelPreview";
 
 const DEFAULT_ANIMATION_SHEET: BattleAnimationSheet = { frameWidth: 96, frameHeight: 96, columns: 5 };
 const PLAYBACK_FPS = Math.round(1000 / SHOW_ANIMATION_FRAME_MS);
-
-type SkillAnimationStageController = {
-  readonly stop: () => void;
-  readonly resume: () => void;
-  readonly canAutoplay: boolean;
-};
-
-const stageControllers = new WeakMap<HTMLElement, SkillAnimationStageController>();
 
 export type SkillAnimationStage = {
   /** 카드에 붙일 표시면 루트(db-skill-animation-preview). */
@@ -112,16 +103,13 @@ export function renderSkillAnimationStage(record: SkillRecord, project: Project)
   if (!source || total < 2) {
     if (source) renderShowAnimationFrame(cells, source, 0);
     toggle.disabled = true;
-    stageControllers.set(stage, {
-      stop: () => setRunning(false),
-      resume: () => undefined,
-      canAutoplay: false,
-    });
     return { element: wrap, stop: () => setRunning(false) };
   }
 
   const canAutoplay = autoplayAllowed();
   let handle: ShowAnimationPlaybackHandle | null = null;
+  let wantsPlayback = canAutoplay;
+  let lifecycle: DatabasePreviewLifecycle;
   const stop = (): void => {
     const running = handle;
     handle = null;
@@ -129,7 +117,7 @@ export function renderSkillAnimationStage(record: SkillRecord, project: Project)
     setRunning(false);
   };
   const play = (): void => {
-    if (handle) return;
+    if (handle || !lifecycle?.isActive()) return;
     handle = playShowAnimation(stage, cells, source, {
       loop: true,
       onFrame: (frameIndex, frameTotal) => {
@@ -139,56 +127,35 @@ export function renderSkillAnimationStage(record: SkillRecord, project: Project)
       onStop: () => {
         handle = null;
         setRunning(false);
+        if (!stage.isConnected) lifecycle.dispose();
       },
     });
     setRunning(true);
   };
   toggle.addEventListener("click", () => {
     if (handle) {
+      wantsPlayback = false;
       stop();
       return;
     }
+    wantsPlayback = true;
     play();
   });
 
-  const controller: SkillAnimationStageController = {
-    stop,
-    resume: () => {
-      // 별도 사용자 일시정지 상태는 두지 않는다. 캐시 재부착의 자동재생 계약을 우선해,
-      // 자동재생 가능한 정지 스테이지라면 resume 소유자가 다시 시작한다.
-      if (canAutoplay && !handle) play();
-    },
-    canAutoplay,
-  };
-  stageControllers.set(stage, controller);
-
-  if (!canAutoplay) {
-    renderShowAnimationFrame(cells, source, 0);
-    return { element: wrap, stop };
-  }
-  play();
-  return { element: wrap, stop };
+  lifecycle = registerDatabasePreview(stage, {
+    suspend: stop,
+    resume: () => { if (wantsPlayback) play(); },
+  });
+  renderShowAnimationFrame(cells, source, 0);
+  return { element: wrap, stop: () => lifecycle.dispose() };
 }
 
 /** scope 가 소유한 모든 스킬 애니메이션 인터벌을 즉시 정리한다. */
 export function stopSkillAnimationStagesIn(scope: ParentNode): void {
-  for (const stage of scope.querySelectorAll<HTMLElement>("[data-testid='db-skill-animation-stage']")) {
-    stageControllers.get(stage)?.stop();
-  }
-  // 같은 카드의 도트 전투 미리보기(retro2003)도 같은 소유자 경로로 멈춘다.
-  stopRetroSkillStagesIn(scope);
-  // 적 탭 도트 미리보기 카드도 같은 소유자(탭 전환·레코드 전환·모달 닫기) 경로를 탄다.
-  stopEnemyPixelPreviewsIn(scope);
+  setDatabasePreviewsActiveIn(scope, false);
 }
-
-/** 캐시에서 다시 붙은 자동재생 가능 스테이지를 재시작한다. */
 export function resumeSkillAnimationStagesIn(scope: ParentNode): void {
-  for (const stage of scope.querySelectorAll<HTMLElement>("[data-testid='db-skill-animation-stage']")) {
-    const controller = stageControllers.get(stage);
-    if (controller?.canAutoplay) controller.resume();
-  }
-  resumeRetroSkillStagesIn(scope);
-  resumeEnemyPixelPreviewsIn(scope);
+  setDatabasePreviewsActiveIn(scope, true);
 }
 
 function chip(testid: string, text: string): HTMLElement {

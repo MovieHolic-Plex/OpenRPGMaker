@@ -10,8 +10,9 @@ import { homedir, tmpdir } from "node:os";
 import { join, resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
-const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
-const KIT = join(ROOT, "tiledata", "worldmap-kit");
+// 키트 경로는 쓸 때만 계산한다. Electron 메인(CJS 번들)에서는 import.meta.url 이 비어 fileURLToPath 가 던진다 —
+// 모듈 로드 때 평가하면 앱이 켜지지도 않는다(2026-10-04 실측: v0.108.0 윈도우 앱 시작 실패).
+const kitDir = () => process.env.OPRN_WORLDMAP_KIT || join(resolve(dirname(fileURLToPath(import.meta.url)), "..", ".."), "tiledata", "worldmap-kit");
 const CACHE = process.env.OPRN_WORLDMAP_CACHE || join(homedir(), ".cache", "oprn", "worldmap-kit");
 const THEME_RE = /^[a-z0-9][a-z0-9-]{0,40}$/;
 /** 전체 렌더는 지형이 바뀌면 100초 남짓 걸린다(캐시가 맞으면 몇 초). */
@@ -19,7 +20,13 @@ const TIMEOUT_MS = 6 * 60 * 1000;
 
 function run(args, timeoutMs) {
   return new Promise((resolvePromise) => {
-    const child = spawn(process.env.OPRN_PYTHON || "python3", args, { cwd: KIT, stdio: ["ignore", "pipe", "pipe"] });
+    let child;
+    try {
+      child = spawn(process.env.OPRN_PYTHON || "python3", args, { cwd: kitDir(), stdio: ["ignore", "pipe", "pipe"] });
+    } catch (error) {
+      resolvePromise({ code: -1, signal: null, stdout: "", stderr: String(error) });
+      return;
+    }
     let stdout = "";
     let stderr = "";
     child.stdout.on("data", (d) => { stdout += d; });
@@ -33,9 +40,9 @@ function run(args, timeoutMs) {
 /** 테마가 지형을 어떻게 칠하는지 한 줄 — 글자 지도는 바닥 종류라서, 지역 팔레트(desert-east 등)가 정글을 모래빛으로 칠하면 조수가 오해했다. */
 async function themeNote(theme) {
   try {
-    const t = JSON.parse(await readFile(join(KIT, "themes", `${theme}.json`), "utf8"));
-    const p = t.palette ? JSON.parse(await readFile(join(KIT, "palettes", `${t.palette}.json`), "utf8")) : null;
-    const tt = t.terrain ? JSON.parse(await readFile(join(KIT, "terrains", `${t.terrain}.json`), "utf8")) : null;
+    const t = JSON.parse(await readFile(join(kitDir(), "themes", `${theme}.json`), "utf8"));
+    const p = t.palette ? JSON.parse(await readFile(join(kitDir(), "palettes", `${t.palette}.json`), "utf8")) : null;
+    const tt = t.terrain ? JSON.parse(await readFile(join(kitDir(), "terrains", `${t.terrain}.json`), "utf8")) : null;
     const head = tt?.base === "generate"
       ? `${t.name}: 이 테마는 손 대륙 대신 생성 구조 「${t.terrain}」(${tt.name ?? ""})를 깐다 — 장소 배치는 자동 맞춤(layout). ${tt.note ?? ""}`
       : t.terrain

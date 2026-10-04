@@ -18,6 +18,7 @@
 @import "./ai-canvas-activity.css" layer(map);
 @import "./delayed-tooltip.css" layer(map);
 @import "./ai-activity-live.css" layer(map);
+@import "./ai-canvas-progress.css" layer(map);
 @import "./from-shell-figma-editor-02-menus-toolbar-tools.css" layer(map);
 @import "./from-shell-figma-editor-03-layout-left-palette.css" layer(map);
 @import "./from-shell-figma-editor-04-chipset-events.css" layer(map);

@@ -1,4 +1,5 @@
 import { mapCharacterSizeFactor } from "@/project/characterScale";
+import { patchSunlight, type MapSunlight } from "@/project/sunlight";
 import { isRetiredInteriorTileset, retiredInteriorMessage } from "@/project/retiredInteriorTilesets";
 import { isMapLoop, mapLoopLabel, mapLoopsX, mapLoopsY, MAP_LOOP_VALUES } from "@/project/mapLoop";
 import { isMapRoleKind, MAP_ROLE_LABELS } from "@/project/mapRole";
@@ -43,6 +44,7 @@ import { extendedLowerTiles, groundFeaturePredicate } from "@/project/mapGroundF
 import { stampTownCityPlot, type TownCityPlotStyle } from "@/project/defaults/townHousePatterns";
 import { kitIdForSmallHouseMaterial, type SmallHouseMaterial } from "@/editor/content/dbExtractedHouseTemplate";
 import { recommendMapBgm } from "@/assets/bgmThemeRecommendation";
+import { isCatalogBgmAvailable } from '@/assets/audioResourceCatalog';
 import { genId } from "@/util/id";
 import { resolveWikiCombatMode } from "@/ai/projectWikiContext";
 import {
@@ -153,6 +155,13 @@ function usedBgmResourceIds(draft: Project, excludeMapId: string): string[] {
    return mixed === 0 ? 1 : mixed;
  }
 
+function assertInstalledMapBgm(resourceId: string, mapId: string): void {
+  if (!isCatalogBgmAvailable(resourceId)) throw new ToolError(
+    `미설치 BGM '${resourceId}'는 지정할 수 없습니다. recommend_bgm으로 현재 사용 가능한 곡을 고르거나 bgm.mode를 none으로 설정하세요.`,
+    { code: 'resource-not-found', mapId },
+  );
+}
+
 export function assignCreatedMapBgm(
   map: GameMap,
   args: Record<string, unknown>,
@@ -171,12 +180,14 @@ export function assignCreatedMapBgm(
         throw new ToolError("bgm.mode가 custom이면 resourceId가 필요합니다.", { code: "invalid-args", mapId: map.id });
       }
       bgm.resourceId = resourceId;
+      assertInstalledMapBgm(resourceId, map.id);
     }
     map.bgm = bgm;
     return bgm.mode === "custom" ? (bgm.resourceId ?? bgm.mode) : bgm.mode;
   }
   const explicitId = typeof args.bgmResourceId === "string" ? args.bgmResourceId.trim() : "";
   if (explicitId) {
+    assertInstalledMapBgm(explicitId, map.id);
     map.bgm = { mode: "custom", resourceId: explicitId };
     return explicitId;
   }
@@ -1850,6 +1861,15 @@ const cloudShadowSchema: JsonSchema = {
   additionalProperties: false,
 };
 
+const sunlightSchema: JsonSchema = {
+  type: "object", description: "고정 태양의 지형·집·나무 그림자. 생략한 설정은 유지. enabled:true로 켠다. azimuth는 태양이 있는 방향(0 북,90 동,180 남,270 서). 통행/시야 차단과 독립.",
+  properties: {
+    enabled: { type: "boolean" }, azimuth: { type: "number", minimum: 0, maximum: 359 },
+    altitude: { type: "number", minimum: 12, maximum: 85 }, opacity: { type: "number", minimum: 0, maximum: .65 },
+    softness: { type: "number", minimum: 0, maximum: 4 }, heightScale: { type: "number", minimum: .25, maximum: 2 },
+  }, additionalProperties: false,
+};
+
 /**
  * `background` 인자 → 저작값. `layerSet` 이 있으면 세트를 펴고(`mapBackgroundFromLayerSet`), 같이 준
  * 개별 값(scrollX·fit·showInEmptyCells 등)은 첫 장에 덮어쓴다. 없으면 예전처럼 그대로 정규화한다.
@@ -1953,6 +1973,8 @@ const setMapProperties: ToolDefinition = {
       clearMinimap: { type: "boolean" },
       cloudShadows: cloudShadowSchema,
       clearCloudShadows: { type: "boolean" },
+      sunlight: sunlightSchema,
+      clearSunlight: { type: "boolean" },
       climate: mapClimateSchema,
       clearClimate: { type: "boolean" },
       characterScale: { type: "number", description: "이 맵에서 걷는 캐릭터(주인공·동료·탈것·캐릭터 이벤트) 크기 배율 0.25~1. 월드맵처럼 땅을 멀리서 보는 지도에서 0.5~0.75 로 줄인다. 1 이면 기본 크기로 되돌린다. 사용자가 원할 때만 — 기본은 줄이지 않는다." },
@@ -2011,6 +2033,7 @@ const setMapProperties: ToolDefinition = {
     } else if (args.bgm && typeof args.bgm === "object" && !Array.isArray(args.bgm)) {
       const bgm = structuredClone(args.bgm) as GameMap["bgm"];
       if (bgm?.mode === "custom" && !bgm.resourceId) throw new ToolError("bgm.mode가 custom이면 resourceId가 필요합니다.", { code: "invalid-args", mapId: map.id });
+      if (bgm?.mode === 'custom' && bgm.resourceId) assertInstalledMapBgm(bgm.resourceId, map.id);
       map.bgm = bgm;
       changed.push(`BGM=${bgm?.mode}`);
     }
@@ -2113,6 +2136,12 @@ const setMapProperties: ToolDefinition = {
       if (!climate) throw new ToolError("climate.mode는 inherit, indoor, fixed 중 하나여야 합니다.", { code: "invalid-args" });
       map.climate = climate;
       changed.push(`기후=${climate.mode}`);
+    }
+    if (args.clearSunlight === true) {
+      delete map.sunlight; changed.push("태양 그림자 지움");
+    } else if (args.sunlight && typeof args.sunlight === "object" && !Array.isArray(args.sunlight)) {
+      map.sunlight = patchSunlight(map.sunlight, args.sunlight as Partial<MapSunlight>);
+      changed.push(`태양 그림자 ${map.sunlight.enabled ? "켬" : "끔"} · 방향 ${map.sunlight.azimuth}° · 고도 ${map.sunlight.altitude}°`);
     }
     if (args.clearCloudShadows === true) {
       delete map.cloudShadows;

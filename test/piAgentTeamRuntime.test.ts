@@ -88,6 +88,25 @@ function harness(
   };
 }
 
+describe("프리셋 첫 생성의 실제 팀원 턴 상한", () => {
+  it.each([[300, 120], [5, 5]])("팀 공통 예산이 팀원 상한 %i를 덮어쓰지 않는다", async (memberLimit, expected) => {
+    const seen: number[] = [];
+    const req = { ...request(seeded()), task: "장르 프리셋: 작은 첫 구간", team: {
+      ...TEAM, workBudget: 600, reviewAfterWork: false,
+      members: [{ ...TEAM.members[0]!, maxTurns: memberLimit }],
+    } };
+    await runPiTeam(req, { runAgent: async (child, options) => {
+      if (options.extraTools?.some(t => t.name === "assign_map_agent")) {
+        await callTool(options.extraTools, "assign_map_agent", { mapId: "map_a", task: "첫 상호작용" });
+        await callTool(options.extraTools, "wait_agents", {});
+        await callTool(options.extraTools, "finish", { report: "끝" });
+      } else seen.push(child.maxTurns!);
+      return doneWith(child.project);
+    } });
+    expect(seen).toEqual([expected]);
+  });
+});
+
 describe("팀 런타임 — 맵 in-flight 락", () => {
   // 깨질 것: 락이 없으면 같은 턴의 두 배정이 같은 사본에서 출발해 나중 결과가 앞 결과를 통째로
   // 덮는다. 팀장 프롬프트의 문장 하나가 아니라 툴 계약이 막아야 한다.

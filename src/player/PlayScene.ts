@@ -1,3 +1,5 @@
+import { syncTerrainVision } from "./terrainVision";
+import { syncTerrainWater } from "./terrainWater";
 import { prepareFieldAbility } from "@/player/fieldAbility";
 import { installPointerMove } from "@/player/playScenePointerMove";
 import { createDefeatRecovery } from "@/player/defeatRecovery";
@@ -5,6 +7,8 @@ import { mapTileSize } from "@/project/tileGeometry";
 import { syncPlayerCharacterScale } from "@/player/playerCharacterScale";
 import { syncVehicleSprites } from "@/player/playSceneVehicles";
 import { ACTION_STAMINA_MAX } from "@/player/actionCombatTypes";
+import { SunlightLayer } from "@/player/sunlightLayer";
+import { reliefRowDepth } from "@/player/playSceneRelief";
 import type Phaser from "phaser";
 import { clearAllSceneEmotes, syncSceneEmotes } from "@/player/playSceneEmotes";
 import { getLoadedPhaser } from "@/app/phaserRuntime";
@@ -124,6 +128,7 @@ export type FailedPlayAsset = {
 };
 
 export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
+  private sunlightLayer: SunlightLayer | null = null;
   declare tileLayer: Phaser.GameObjects.Container;
   declare upperTileLayer: Phaser.GameObjects.Container;
   declare player: Phaser.GameObjects.Sprite;
@@ -377,6 +382,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     this.events.once("destroy", destroyZoneFeedback);
     // 컬링의 직전 짝 기억은 모듈 스코프의 **강한** 참조다(WeakMap 인 본체와 다르다).
     // 풀지 않으면 내려간 씬과 타일 GameObject 1만~2.1만개가 그대로 남는다.
+    this.sunlightLayer = new SunlightLayer(this, { depthOf: (row, size) => reliefRowDepth(row, size, -.275) });
     const releaseCulling = (): void => releaseRuntimeTileWindow(this);
     this.events.once("shutdown", releaseCulling);
     this.events.once("destroy", releaseCulling);
@@ -390,8 +396,11 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   }
 
   update(_time: number, deltaMs: number): void {
+    this.sunlightLayer?.sync(this.map, store.getCurrent().tilesets[this.map.tilesetId]);
     this.perfCounters.frames += 1;
     updatePlayScene(this, deltaMs);
+    syncTerrainWater(this, this.map);
+    syncTerrainVision(this, this.map, this.tileX, this.tileY, store.getCurrent().tilesets[this.map.tilesetId]);
     updateGameTime(this, deltaMs);
     tickNpcSchedules(this, isGameTimePausedForRuntime(this), deltaMs);
     updateWeather(this, deltaMs);

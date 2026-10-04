@@ -1,0 +1,50 @@
+{
+  "projectId": "f25d1f04-88f9-475b-92ee-95a891286d33",
+  "paths": [
+    "assets/uploaded/opening_still_ba7e0a9f-9f39-4b2e-9951-76fd684cfe51.jpg",
+    "assets/uploaded/opening_still_431c13d3-11a6-47d9-8927-efcd41d98ea2.jpg",
+    "assets/uploaded/opening_still_95e44110-d5f7-4381-8633-c0efc75fbf3b.png"
+  ],
+  "cases": [
+    {
+      "name": "missing-picture-retry",
+      "passed": true
+    }
+  ],
+  "errors": [],
+  "requestFailures": [
+    {
+      "path": "/assets/cc0/audio/catalog/rtp-ttl-001-dawn-guild-ledger_cab8051a.mp3",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "path": "/assets/phaser.min-CwlHMuXa.js",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "path": "/assets/uploaded/opening_still_431c13d3-11a6-47d9-8927-efcd41d98ea2.jpg",
+      "error": "net::ERR_ABORTED"
+    },
+    {
+      "path": "/assets/cc0/audio/catalog/rtp-ttl-001-dawn-guild-ledger_cab8051a.mp3",
+      "error": "net::ERR_ABORTED"
+    }
+  ],
+  "failure": "locator.waitFor: Timeout 40000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByTestId('play-loading-overlay') to be hidden\u001b[22m\n\u001b[2m    83 × locator resolved to visible <div role=\"status\" aria-busy=\"false\" aria-live=\"polite\" data-stage=\"error\" aria-label=\"플레이를 시작하지 못했습니다\" data-testid=\"play-loading-overlay\" class=\"play-loading-overlay has-cinematic-backdrop is-error\">…</div>\u001b[22m\n",
+  "passed": false,
+  "failureState": {
+    "overlay": "곧 시작합니다…3 / 엔진플레이를 시작하지 못했습니다Error: Phaser runtime has not been loaded다시 시도안전 모드로 시작진단 내용 복사",
+    "shotTimes": [
+      {
+        "state": "loading",
+        "pending": "op_scene_study_long",
+        "time": 7093.600000023842
+      },
+      {
+        "id": "op_scene_study_long",
+        "state": "ready",
+        "time": 7124.200000047684
+      }
+    ]
+  }
+}

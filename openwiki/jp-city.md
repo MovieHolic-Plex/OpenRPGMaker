@@ -139,6 +139,43 @@ node scripts/content/jp-city/tamper_builder.mjs               # 조립기 32건 
 위 「조수 정책」 문단은 M1 시점 기록이다. M3 에서 `src/ai/modernTilesetPolicy.ts` 를 **최소 수정**했다 — 정책 의도(사용자가 설치한 PAW 원본만 쓰고 다른 외부 현대 소재로 대체·혼합 금지)는 외부 소재를 막는 것이고, `jp_city` 는 저장소가 손 도트로 구운 번들이다.
 `isBundledJpCityTileset`(텍스처 키 `tex_jp_city`) 를 추가해 ① `requestsModernMap` 은 다루는 맵이 전부 jp_city 이면 false ② `modernTilesetViolation` 은 jp_city 맵을 건너뛴다. `MODERN_TILESET_POLICY_LINE` 문구와 `modern_city` 는 그대로다(`modern_city` 도 같은 한 줄로 허용 가능하나 제안만 한다).
 
+### 조수 연결 (2026-10-04 조사·수정) — 조수가 이 칩셋과 건물 도구를 «고르는» 길
+
+도구(`build_jp_city_building`)는 있었지만 **조수 쪽에는 jp_city 가 어디에도 없었다**(시스템 프롬프트·의도 노트·초기 도구 노출). 정본 파일은 `src/ai/jpCityPolicy.ts`.
+
+| 막힘(실측) | 수정 |
+|---|---|
+| 일본 상가 거리 요청 + 선언 `author_village` 이면 버들항 마을 노트(`beodeulTownRoute`)가 먼저 잡았다(새 프로젝트 기본 맵이 버들항) — jp_city 는 모델에 한 번도 안 나왔다 | `plainTurn.classifyPlainPiTurn` 에 jp_city 라우트를 팩 마을 다음·버들항 앞에 둔다: 대상 맵이 jp_city 이거나 **생성 요청**이 칩셋(`jp_city`·`oprn-jp`·「일본 도시 칩셋」)·일본 상가/거리를 말했을 때 → 숲마을 마을 계약을 건너뛰고 노트가 `formatJpCityNote`(`buildPiIntentNote` 의 `jpCity`)로 바뀐다. 실내·질문·NPC 의도는 제외 |
+| `requestsModernMap`(PAW 전용 게이트) — 칩셋 이름을 부른 새 맵 요청은 맵이 아직 없어 jp_city 맵 예외에 안 걸렸다 | 요청이 jp_city 를 직접 부르면(`namesJpCityTileset`) 게이트가 물러선다. 「현대 일본 상가」는 설치 PAW 가 하나도 없을 때만 물러선다(PAW 가 있으면 사용자가 그쪽을 기대할 수 있다 — **제품 판단 대기**) |
+| 시스템 프롬프트에 칩셋이 없다 | `buildPiAgentSystemPrompt` 에 한 줄(항상, 약 300자) + jp_city 맵이 범위에 있으면 상세 순서(땅 → 도로 키트 → 문 앞 → 뒷줄 건물 → 투명 덧그림 2층 → 검사) |
+| 초기 도구 노출이 자연어 점수에만 기댔다 — 「이자카야 빌딩 세워줘」「일본풍 상점가」는 승격 0건, 「일본 상가 거리 맵」은 조립 도구만 오고 부품 조회 도구는 안 왔다 | jp 라우트면 `JP_CITY_EXPOSED_TOOLS`(조립·부품 조회·참고문서 읽기·create_map·fill_region·lay_path·paint_tiles·stamp_object·check_reachability·show_map_region·ask_tileset_change)를 첫 요청부터 노출. `capabilityEscalation` 은 build ↔ list 를 짝으로 승격 |
+| 의도 선언이 마을·거리를 `author_village` 로 고르는 경향 | `INTENT_SYSTEM_PROMPT` Rules 에 한 줄 |
+| 레거시 채팅 경로 | `TASK_RECIPES` 에 `jp-city`(Pi 경로는 레시피를 쓰지 않는다 — 색인 이름만; 지시는 위 시스템 프롬프트가 맡는다) |
+
+**조수가 길을 걸으면 일어나는 일(실측, 도구 직접 호출):**
+1. 보는 맵이 버들항이면 `create_map(tilesetId:"jp_city")` 는 `tileset-family-change` 로 거부되고 `ask_tileset_change` 를 가리킨다(사용자 결정 2026-09-25 — 칩셋 계열 규칙은 jp_city 도 예외가 아니다). 현재 맵이 없거나 승인된 계열이면 통과. 새 jp_city 맵은 `lowerTiles` 가 -1 로 비어 있다(검게 보임).
+2. 칠하기 도구(`fill_region`·`lay_path`·`paint_tiles`)는 참고문서 게이트가 걸린다 — 용도 하나를 통째로 읽어야 하는데 jp_city 는 용도 6(jp-start 4쪽·그림 3 … jp-autotile 26쪽·그림 51)이라 **용도를 반드시 지정**해야 한다. 가장 가벼운 입구 용도 `jp-start` 를 지시문이 권한다. `build_jp_city_building`·`stamp_object`·`create_map` 은 게이트 밖이다.
+3. `fill_region("보도 연석"|"생활도로"|"잔디")` · `lay_path("생활도로")` 는 동작, `중앙선` 같은 투명 덧그림은 `fill_region`/`lay_path` 가 거부(`material-not-found`·`path-needs-autotile`)하고 `paint_tiles` layer "1"·"3" 은 **조용히 3층으로 돌려 성공**한다(재성형 안 됨, 경고 없음) — 오직 layer "2" 만 정상. 이 사실은 지시문·스킬·참고문서에만 있고 도구 오류 문장에는 없다(`paint_tiles`·`fill_region` 은 이 담당 밖 파일 — **남은 일**).
+4. `stamp_object(kit:jp_city/jp-road-*)` 동작(x,y = 키트 왼쪽 위). 없는 키트 id 는 목록 없이 「킷 …가 없습니다」만 준다(남은 일).
+5. 예제 25개 중 22개는 `list_jp_city_building_parts({example})` 인자 그대로 지어진다. `machiya_izakaya`·`L_machiya_annex`·`L_flats_lot` 는 `DECO_CLASH` — 도구 설명이 같은 모양의 `jp-recipe-*` 키트(`stamp_object`)를 가리킨다.
+6. 오류 문장에 「→ 다음: …」 꼬리(코드별 고칠 행동, `DOOR_BLOCKED` 는 문 앞 `fill_region` 인자까지)를 붙였다 — `jpCityTools.ts` 의 `NEXT_ACTION`·`doorBlockedFix`.
+7. **건물 사각형이 겹쳐도 도구는 거부하지 않는다**(둘 다 «성공», 나중 것이 앞 것을 덮어쓴다). 지시문·스킬이 «발 y 를 높이+1 이상 띄우라»고 한다. 검사를 도구에 넣는 것은 `jpCity/builder.ts` 규칙(이번 담당 밖)이다.
+
+8. **참고문서 게이트가 jp-start 를 통과시키지 못했다(헤드리스 시험 2026-10-04 에서 발견·수정).** `fill_region`/`paint_tiles` 는 선택 용도의 모든 쪽을 «읽은 증거»로 요구하는데, Pi 도구 결과는 12,000자에서 잘리고(`dataTruncated`) 잘린 쪽은 증거로 안 쳐진다. `jp-dict-groups` 첫 쪽이 JSON 15,723자라 조수가 몇 번을 다시 읽어도 거부가 같았고 땅을 못 깔았다. 모든 번들 참고문서 1,403쪽 중 61쪽(12개 타일셋: forest_harmony 계열·easyrpg_chipset_dungeon·atlas_biome_interior·jp_city 5쪽 등, 최대 15,776자)이 같은 처지다. `toolAdapter.createPiToolset` 가 `read_tileset_reference` 결과만 상한 30,000자로 보낸다(`REFERENCE_PAGE_MAX_DATA_CHARS`; 한 쪽 최대는 코드 울타리 3쪽분 약 18,000자).
+
+**헤드리스 조수 시험(`scripts/tmp-jp-gen.mts` — `scripts/qa-game/gen.mts` 를 요청 문장·승인 계열을 받게 줄인 사본, gitignore): 「일본 상가 거리 맵 만들어 줘」, 새 프로젝트(버들항 맵), google-antigravity/gemini-3.8-flash, 계열 승인 `oprn-jp` 선적용, 판당 약 6~8분. 각 1판이라 통계가 아니다.**
+
+| 판 | 코드 | build_jp_city_building | 땅(fill_region) | 도달 |
+|---|---|---|---|---|
+| C1 대조군(HEAD 그대로, 같은 승인) | main | 1회 시도 → DOOR_BLOCKED 로 포기, 이후 stamp_object 75회 | 4번 거부 → 땅 못 깜 | 검사 안 함 |
+| T1 | jp 라우트·노트·노출 | 8회 중 6 성공(OUT_OF_MAP 1·DECO_CLASH 1) | 거부(76건 jp-autotile 선택) → 땅 못 깜 | 전부 도달 |
+| T2 | + 읽기 목록 지시 | 11회 중 9 성공 | 6번 거부(위 8번 원인) → 땅 못 깜 | 전부 도달 |
+| T3 | + 쪽 상한 수정 | 18회 중 17 성공(OUT_OF_MAP 1) | **성공**(보도·도로 2회 + paint_tiles) | 전부 도달, 렌더 확인 |
+
+대조군도 모델이 `build_jp_city_building` 이름을 골라 jp_city 로 갔다(의도 선언이 도구 목록에서 고름) — 연결의 효과는 «고르는가»보다 «끝까지 쓰는가·땅을 까는가»에서 났다. 건물 사각형이 겹치는 판(T3 가운데)도 나왔다(위 7번).
+
+조수 스킬 원본 `assistant-skills/jp-city-building-authoring/SKILL.md`. 편집기 안 조수가 읽는 `read_assistant_skill` 도구는 **main 에 없다**(agent/atlas-policy 브랜치 미병합, 2026-10-04 확인) — 그래서 조수는 같은 내용을 시스템 프롬프트·도구 설명·오류 문장·참고문서 `jp-*` 로 받는다. 시험 `test/jpCityAssistantWiring.test.ts`.
+
 ## AI 참고문서 (6용도 · 47쪽 · 그림 124장)
 
 계약 `tiledata/AI-REFERENCE-CONTRACT.md` 8항목을 모두 채운 번들 소유 참고문서다. 범위는 **지금 있는 부품만**(오토타일 17세트 · `build_jp_city_building` · 도로 키트 29 · 상가 키트: 레시피 25·문 9·소품 142)이고, 주택가·역·공원·신사 구역은 그림이 없어 「후속 추가 자리」 한 줄뿐이다.

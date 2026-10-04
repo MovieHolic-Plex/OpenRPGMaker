@@ -1,0 +1,44 @@
+{
+ "id": "20261002-1142-sonnet-batch/f-innkeeper__sonnet-r1",
+ "brief": "f-innkeeper",
+ "name": "여관 주인",
+ "base": "Actor1:1",
+ "base_label": "Actor1 2번",
+ "strength": "normal",
+ "files": {
+  "chr": "f-innkeeper__sonnet-r1__20261002-1142-sonnet-batch.chr.txt",
+  "sheet": "f-innkeeper__sonnet-r1__20261002-1142-sonnet-batch.png"
+ },
+ "description": {
+  "label": "쪽머리 자주 드레스 여관 주인",
+  "gender": "여",
+  "attributes": {
+   "kind": "사람",
+   "age": "청년",
+   "hair": "갈색 머리"
+  },
+  "role": "여관 주인 (앞치마를 두른 주점·여관 일꾼)",
+  "appearance": "짙은 갈색 머리를 뒤로 올려 정수리에 둥글게 쪽을 묶었고, 자주색 드레스 위에 갈색 앞치마를 두르고 앞치마 가운데에 노란 단추 같은 포인트가 있다. 소매를 걷어 맨팔이 드러나 있고 정면 얼굴은 볼이 붉으며 미소 짓는 인상이다.",
+  "colors": [
+   "짙은 갈색 머리",
+   "자주색 드레스",
+   "갈색 앞치마",
+   "살구색 걷은 팔",
+   "어두운 회색 신발",
+   "노란 단추"
+  ],
+  "tags": [
+   "여관",
+   "주점",
+   "여관 주인",
+   "마을 사람",
+   "앞치마",
+   "중세",
+   "쪽머리",
+   "여성"
+  ],
+  "fits": "여관·선술집·식당 카운터나 마을 주점 안에서 손님을 맞는 주인 NPC로 어울린다.",
+  "by": "Claude Sonnet 5.5 · medium",
+  "at": "2026-10-02T22:40:08+00:00"
+ }
+}

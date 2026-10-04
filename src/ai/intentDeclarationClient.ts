@@ -97,6 +97,7 @@ export function createLlmIntentDeclarer(
      * 기존 테스트와 세션 경로는 그대로다.
      */
     readonly parallelAudit?: boolean;
+    readonly coverageAudit?: boolean;
   } = {},
 ): IntentDeclarer {
   const chat = options.chat ?? chatCompletion;
@@ -165,7 +166,7 @@ export function createLlmIntentDeclarer(
       return { requirements: coverage.requirements, ...(coverage.error ? { error: coverage.error } : {}) };
     };
     const assessed = async (intent: IntentDeclaration, error?: string): Promise<IntentDeclarationOutcome> => {
-      if (intent.mode !== "create" && intent.mode !== "modify") {
+      if ((intent.mode !== "create" && intent.mode !== "modify") || options.coverageAudit === false) {
         earlyAudit?.cancel();
         earlyAudit = null;
         return { intent, elapsedMs: Date.now() - started, error };
@@ -189,7 +190,7 @@ export function createLlmIntentDeclarer(
         disableTransientRetry: true,
       };
       const routing = chat(config, request);
-      if (options.parallelAudit) earlyAudit = startAudit();
+      if (options.parallelAudit && options.coverageAudit !== false) earlyAudit = startAudit();
       const result = await routing;
       const parsed = parseIntentDeclaration(contentText(result), facts);
       if (parsed.intent) {

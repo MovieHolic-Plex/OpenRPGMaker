@@ -1,139 +1,139 @@
-# 나무·소품·담·다리 조각 사전 9/10
+# 나무·소품·담·다리 조각 사전 9/21
 
-tilesetId `joseon_baram` · 그림 `public/assets/joseon-baram/joseon-baram-chipset.png`(텍스처 `tex_joseon_baram`, **13632칸**, 16px 칸, 한 줄 **64칸** — 번호 n 의 칸은 행 n÷64, 열 n%64, 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 칸 13490 이상은 같은 그림이 다른 통행으로 쓰이는 복사본 칸이다(맵이 알아서 쓴다 — 번호를 직접 고르지 않는다).
+tilesetId `joseon_baram` · 그림 `public/assets/joseon-baram/joseon-baram-chipset.png`(텍스처 `tex_joseon_baram`, **16776칸**, 16px 칸, 한 줄 **72칸** — 번호 n 의 칸은 행 n÷72, 열 n%72, 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 칸 16551 이상은 같은 그림이 다른 통행으로 쓰이는 복사본 칸이다(맵이 알아서 쓴다 — 번호를 직접 고르지 않는다).
 
 나무(수관 `C` 위·줄기 `X` 아래), 덤불, 담·성벽(전부 `X`), 소품(`X`), 다리·선착장·돌계단·징검돌·성문 통로(`F`).
 
 `upperTiles` = 윗층 칸 번호(행 위→아래, -1 = 그림 없음), `walk` = 칸 통행(X 막힘 / C 걸음★ / F 걸음 / . 없음). 아래층은 -1(찍는 자리의 땅을 그대로 둔다). `door` = 디딤돌 칸(문 앞 접근칸은 그 바로 아래 칸), `passage` = 통로 열 범위.
 
-### jb-market_stall_pots · market stall pots 3×3 · 3×3 · 분류 prop
-막힘 9 · 걸음★ 0 · 걸음 0칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
-```json
-{"kit":"kit:joseon_baram/jb-market_stall_pots","w":3,"h":3,"class":"prop","upperTiles":[[2153,2154,2155],[2169,2170,2171],[2185,2186,2187]],"walk":["XXX","XXX","XXX"]}
-```
-
-### jb-market_stall_thatch · market stall thatch 3×3 · 3×3 · 분류 prop
-막힘 9 · 걸음★ 0 · 걸음 0칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
-```json
-{"kit":"kit:joseon_baram/jb-market_stall_thatch","w":3,"h":3,"class":"prop","upperTiles":[[2147,2148,2149],[2163,2164,2165],[2179,2180,2181]],"walk":["XXX","XXX","XXX"]}
-```
-
-### jb-mat_peppers · 고추 멍석 2×1 · 2×1 · 분류 prop
-막힘 0 · 걸음★ 0 · 걸음 2칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
-```json
-{"kit":"kit:joseon_baram/jb-mat_peppers","w":2,"h":1,"class":"prop","upperTiles":[[2393,2394]],"walk":["FF"]}
-```
-
-### jb-millstone · 맷돌 2×1 · 2×1 · 분류 prop
+### jb-bench · 벤치 2×1 · 2×1 · 분류 prop
 막힘 2 · 걸음★ 0 · 걸음 0칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
 ```json
-{"kit":"kit:joseon_baram/jb-millstone","w":2,"h":1,"class":"prop","upperTiles":[[2983,2984]],"walk":["XX"]}
+{"kit":"kit:joseon_baram/jb-bench","w":2,"h":1,"class":"prop","upperTiles":[[2391,2392]],"walk":["XX"]}
 ```
 
-### jb-nugak · 누각 8×8 · 8×8 · 분류 prop
-막힘 50 · 걸음★ 0 · 걸음 4칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
-```json
-{"kit":"kit:joseon_baram/jb-nugak","w":8,"h":8,"class":"prop","upperTiles":[[-1,2209,2210,2211,2212,2213,2214,-1],[-1,2225,2226,2227,2228,2229,2230,-1],[-1,2241,2242,2243,2244,2245,2246,-1],[-1,2257,2258,2259,2260,2261,2262,-1],[-1,2273,2274,2275,2276,2277,2278,-1],[2288,2289,2290,2291,2292,2293,2294,2295],[2304,2305,2306,2307,2308,2309,2310,2311],[2320,2321,2322,2323,2324,2325,2326,2327]],"walk":[".XXXXXX.",".XXXXXX.",".XXXXXX.",".XXXXXX.",".XXXXXX.","XXXXXXXX","XXXFFXXX","XXXFFXXX"]}
-```
-
-### jb-palace_censer · 궁궐 censer 1×2 · 1×2 · 분류 prop
-막힘 2 · 걸음★ 0 · 걸음 0칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
-```json
-{"kit":"kit:joseon_baram/jb-palace_censer","w":1,"h":2,"class":"prop","upperTiles":[[4240],[4256]],"walk":["X","X"]}
-```
-
-### jb-palace_deumeu · 궁궐 deumeu 1×2 · 1×2 · 분류 prop
-막힘 2 · 걸음★ 0 · 걸음 0칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
-```json
-{"kit":"kit:joseon_baram/jb-palace_deumeu","w":1,"h":2,"class":"prop","upperTiles":[[4159],[4175]],"walk":["X","X"]}
-```
-
-### jb-palace_eodo · 궁궐 eodo 4×1 · 4×1 · 분류 prop
-막힘 0 · 걸음★ 0 · 걸음 4칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
-```json
-{"kit":"kit:joseon_baram/jb-palace_eodo","w":4,"h":1,"class":"prop","upperTiles":[[4009,4010,4011,4012]],"walk":["FFFF"]}
-```
-
-### jb-palace_eodo_end · 궁궐 eodo_end 4×1 · 4×1 · 분류 prop
-막힘 0 · 걸음★ 0 · 걸음 4칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
-```json
-{"kit":"kit:joseon_baram/jb-palace_eodo_end","w":4,"h":1,"class":"prop","upperTiles":[[4096,4097,4098,4099]],"walk":["FFFF"]}
-```
-
-### jb-palace_gate_side_3 · 궁문 side_3 3×8 · 3×8 · 분류 prop
-막힘 10 · 걸음★ 0 · 걸음 14칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
-```json
-{"kit":"kit:joseon_baram/jb-palace_gate_side_3","w":3,"h":8,"class":"prop","upperTiles":[[5365,5366,5367],[5381,5382,5383],[5397,5398,5399],[5413,5414,5415],[5429,5430,5431],[5445,5446,5447],[5461,5462,5463],[5477,5478,5479]],"walk":["FXF","XXX","XXX","XXX","FFF","FFF","FFF","FFF"]}
-```
-
-### jb-palace_haetae · 궁궐 haetae 2×2 · 2×2 · 분류 prop
-막힘 4 · 걸음★ 0 · 걸음 0칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
-```json
-{"kit":"kit:joseon_baram/jb-palace_haetae","w":2,"h":2,"class":"prop","upperTiles":[[4157,4158],[4173,4174]],"walk":["XX","XX"]}
-```
-
-### jb-palace_lantern · 궁궐 lantern 1×2 · 1×2 · 분류 prop
-막힘 2 · 걸음★ 0 · 걸음 0칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
-```json
-{"kit":"kit:joseon_baram/jb-palace_lantern","w":1,"h":2,"class":"prop","upperTiles":[[4156],[4172]],"walk":["X","X"]}
-```
-
-### jb-palace_pond_4 · 궁궐 pond_4 4×3 · 4×3 · 분류 prop
-막힘 12 · 걸음★ 0 · 걸음 0칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
-```json
-{"kit":"kit:joseon_baram/jb-palace_pond_4","w":4,"h":3,"class":"prop","upperTiles":[[4100,4101,4102,4103],[4116,4117,4118,4119],[4132,4133,4134,4135]],"walk":["XXXX","XXXX","XXXX"]}
-```
-
-### jb-palace_pond_6 · 궁궐 pond_6 6×3 · 6×3 · 분류 prop
-막힘 18 · 걸음★ 0 · 걸음 0칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
-```json
-{"kit":"kit:joseon_baram/jb-palace_pond_6","w":6,"h":3,"class":"prop","upperTiles":[[4104,4105,4106,4107,4108,4109],[4120,4121,4122,4123,4124,4125],[4136,4137,4138,4139,4140,4141]],"walk":["XXXXXX","XXXXXX","XXXXXX"]}
-```
-
-### jb-pyeongsang · 평상 3×2 · 3×2 · 분류 prop
+### jb-boat · 나룻배 3×2 · 3×2 · 분류 prop
 막힘 6 · 걸음★ 0 · 걸음 0칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
 ```json
-{"kit":"kit:joseon_baram/jb-pyeongsang","w":3,"h":2,"class":"prop","upperTiles":[[2985,2986,2987],[3001,3002,3003]],"walk":["XXX","XXX"]}
+{"kit":"kit:joseon_baram/jb-boat","w":3,"h":2,"class":"prop","upperTiles":[[3051,3052,3053],[3067,3068,3069]],"walk":["XXX","XXX"]}
 ```
 
-### jb-reeds · 갈대 1×2 · 1×2 · 분류 prop
-막힘 0 · 걸음★ 2 · 걸음 0칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
+### jb-bridge · 나무다리 5×4 · 5×4 · 분류 prop
+막힘 5 · 걸음★ 0 · 걸음 10칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
 ```json
-{"kit":"kit:joseon_baram/jb-reeds","w":1,"h":2,"class":"prop","upperTiles":[[2341],[2357]],"walk":["C","C"]}
+{"kit":"kit:joseon_baram/jb-bridge","w":5,"h":4,"class":"prop","upperTiles":[[2384,2385,2386,2387,2388],[2400,2401,2402,2403,2404],[2416,2417,2418,2419,2420],[-1,-1,-1,-1,-1]],"walk":["XXXXX","FFFFF","FFFFF","....."]}
 ```
 
-### jb-rocks · 바위 1×1 · 1×1 · 분류 prop
+### jb-cav_brazier · cav brazier 1×2 · 1×2 · 분류 prop
+막힘 2 · 걸음★ 0 · 걸음 0칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
+```json
+{"kit":"kit:joseon_baram/jb-cav_brazier","w":1,"h":2,"class":"prop","upperTiles":[[15520],[15521]],"walk":["X","X"]}
+```
+
+### jb-cav_cart · cav cart 2×1 · 2×1 · 분류 prop
+막힘 2 · 걸음★ 0 · 걸음 0칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
+```json
+{"kit":"kit:joseon_baram/jb-cav_cart","w":2,"h":1,"class":"prop","upperTiles":[[15536,15537]],"walk":["XX"]}
+```
+
+### jb-cav_chest · cav chest 1×1 · 1×1 · 분류 prop
 막힘 1 · 걸음★ 0 · 걸음 0칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
 ```json
-{"kit":"kit:joseon_baram/jb-rocks","w":1,"h":1,"class":"prop","upperTiles":[[2342]],"walk":["X"]}
+{"kit":"kit:joseon_baram/jb-cav_chest","w":1,"h":1,"class":"prop","upperTiles":[[15543]],"walk":["X"]}
 ```
 
-### jb-sarip · 사립문 2×1 · 2×1 · 분류 prop
+### jb-cav_chest_dais · cav chest dais 3×2 · 3×2 · 분류 prop
+막힘 3 · 걸음★ 0 · 걸음 3칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
+```json
+{"kit":"kit:joseon_baram/jb-cav_chest_dais","w":3,"h":2,"class":"prop","upperTiles":[[15528,15529,15530],[15531,15532,15533]],"walk":["XXX","FFF"]}
+```
+
+### jb-cav_crystal · cav crystal 1×1 · 1×1 · 분류 prop
+막힘 1 · 걸음★ 0 · 걸음 0칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
+```json
+{"kit":"kit:joseon_baram/jb-cav_crystal","w":1,"h":1,"class":"prop","upperTiles":[[15542]],"walk":["X"]}
+```
+
+### jb-cav_crystal_b · cav crystal b 2×1 · 2×1 · 분류 prop
+막힘 2 · 걸음★ 0 · 걸음 0칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
+```json
+{"kit":"kit:joseon_baram/jb-cav_crystal_b","w":2,"h":1,"class":"prop","upperTiles":[[15526,15527]],"walk":["XX"]}
+```
+
+### jb-cav_crystal_c · cav crystal c 1×2 · 1×2 · 분류 prop
+막힘 2 · 걸음★ 0 · 걸음 0칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
+```json
+{"kit":"kit:joseon_baram/jb-cav_crystal_c","w":1,"h":2,"class":"prop","upperTiles":[[15534],[15535]],"walk":["X","X"]}
+```
+
+### jb-cav_moss · cav moss 1×1 · 1×1 · 분류 prop
+막힘 0 · 걸음★ 0 · 걸음 1칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
+```json
+{"kit":"kit:joseon_baram/jb-cav_moss","w":1,"h":1,"class":"prop","upperTiles":[[15559]],"walk":["F"]}
+```
+
+### jb-cav_mushroom_a · cav mushroom a 1×1 · 1×1 · 분류 prop
+막힘 1 · 걸음★ 0 · 걸음 0칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
+```json
+{"kit":"kit:joseon_baram/jb-cav_mushroom_a","w":1,"h":1,"class":"prop","upperTiles":[[15551]],"walk":["X"]}
+```
+
+### jb-cav_mushroom_b · cav mushroom b 1×1 · 1×1 · 분류 prop
+막힘 1 · 걸음★ 0 · 걸음 0칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
+```json
+{"kit":"kit:joseon_baram/jb-cav_mushroom_b","w":1,"h":1,"class":"prop","upperTiles":[[15552]],"walk":["X"]}
+```
+
+### jb-cav_nest · cav nest 2×1 · 2×1 · 분류 prop
 막힘 0 · 걸음★ 0 · 걸음 2칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
 ```json
-{"kit":"kit:joseon_baram/jb-sarip","w":2,"h":1,"class":"prop","upperTiles":[[1356,1357]],"walk":["FF"]}
+{"kit":"kit:joseon_baram/jb-cav_nest","w":2,"h":1,"class":"prop","upperTiles":[[15538,15539]],"walk":["FF"]}
 ```
 
-### jb-scarecrow · 허수아비 1×2 · 1×2 · 분류 prop
+### jb-cav_puddle · cav puddle 1×1 · 1×1 · 분류 prop
+막힘 0 · 걸음★ 0 · 걸음 1칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
+```json
+{"kit":"kit:joseon_baram/jb-cav_puddle","w":1,"h":1,"class":"prop","upperTiles":[[15560]],"walk":["F"]}
+```
+
+### jb-cav_rock_a · cav rock a 1×1 · 1×1 · 분류 prop
+막힘 1 · 걸음★ 0 · 걸음 0칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
+```json
+{"kit":"kit:joseon_baram/jb-cav_rock_a","w":1,"h":1,"class":"prop","upperTiles":[[15556]],"walk":["X"]}
+```
+
+### jb-cav_rock_b · cav rock b 2×1 · 2×1 · 분류 prop
 막힘 2 · 걸음★ 0 · 걸음 0칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
 ```json
-{"kit":"kit:joseon_baram/jb-scarecrow","w":1,"h":2,"class":"prop","upperTiles":[[2991],[3007]],"walk":["X","X"]}
+{"kit":"kit:joseon_baram/jb-cav_rock_b","w":2,"h":1,"class":"prop","upperTiles":[[15557,15558]],"walk":["XX"]}
 ```
 
-### jb-seonangdang · 서낭당 2×3 · 2×3 · 분류 prop
-막힘 6 · 걸음★ 0 · 걸음 0칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
+### jb-cav_rock_c · cav rock c 1×1 · 1×1 · 분류 prop
+막힘 1 · 걸음★ 0 · 걸음 0칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
 ```json
-{"kit":"kit:joseon_baram/jb-seonangdang","w":2,"h":3,"class":"prop","upperTiles":[[1353,1354],[1369,1370],[1385,1386]],"walk":["XX","XX","XX"]}
+{"kit":"kit:joseon_baram/jb-cav_rock_c","w":1,"h":1,"class":"prop","upperTiles":[[15553]],"walk":["X"]}
 ```
 
-### jb-sotdae · 솟대 1×2 · 1×2 · 분류 prop
+### jb-cav_rubble · cav rubble 2×1 · 2×1 · 분류 prop
 막힘 2 · 걸음★ 0 · 걸음 0칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
 ```json
-{"kit":"kit:joseon_baram/jb-sotdae","w":1,"h":2,"class":"prop","upperTiles":[[2397],[2413]],"walk":["X","X"]}
+{"kit":"kit:joseon_baram/jb-cav_rubble","w":2,"h":1,"class":"prop","upperTiles":[[15554,15555]],"walk":["XX"]}
 ```
 
-### jb-stele · 비석 1×2 · 1×2 · 분류 prop
+### jb-cav_stalagmite · cav stalagmite 1×2 · 1×2 · 분류 prop
+막힘 1 · 걸음★ 0 · 걸음 1칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
+```json
+{"kit":"kit:joseon_baram/jb-cav_stalagmite","w":1,"h":2,"class":"prop","upperTiles":[[15548],[15549]],"walk":["F","X"]}
+```
+
+### jb-cav_stalagmite_b · cav stalagmite b 1×2 · 1×2 · 분류 prop
 막힘 2 · 걸음★ 0 · 걸음 0칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
 ```json
-{"kit":"kit:joseon_baram/jb-stele","w":1,"h":2,"class":"prop","upperTiles":[[3055],[3071]],"walk":["X","X"]}
+{"kit":"kit:joseon_baram/jb-cav_stalagmite_b","w":1,"h":2,"class":"prop","upperTiles":[[15540],[15541]],"walk":["X","X"]}
+```
+
+### jb-cav_stalagmite_c · cav stalagmite c 1×1 · 1×1 · 분류 prop
+막힘 1 · 걸음★ 0 · 걸음 0칸. 땅 위. 그림이 있는 칸이 막힌다(다리·선착장·돌계단 같은 바닥 조각은 걸을 수 있다).
+```json
+{"kit":"kit:joseon_baram/jb-cav_stalagmite_c","w":1,"h":1,"class":"prop","upperTiles":[[15550]],"walk":["X"]}
 ```

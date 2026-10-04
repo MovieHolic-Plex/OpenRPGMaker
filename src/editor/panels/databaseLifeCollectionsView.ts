@@ -15,8 +15,8 @@
 // 큰 장식 히어로 이미지(≈245px)는 상세 히어로의 56px 미디어로 강등했다.
 //
 // DOM 계약: `db-life-collections-name-<kind>-<id>` / `-delete-<kind>-<id>` /
-// `db-life-collections-<kind>` 섹션 앵커는 그대로 둔다. 비활성 레코드 인스펙터는
-// `hidden` 으로 감추되 DOM 에는 남긴다(용어 탭과 같은 계약 보존 패턴).
+// `db-life-collections-<kind>` 섹션 앵커는 그대로 둔다. 선택한 인스펙터만
+// 생성한다. 검색·분류 변경은 목록만 갱신하며 상세 폼을 유지한다.
 
 import { FARMING_LIFE_UI_ASSETS } from "@/assets/farmingLifeUi";
 import { recordCoalescedSnapshot, recordProjectSnapshot } from "@/editor/mapEditHistory";
@@ -85,26 +85,71 @@ export function renderLifeCollectionsTab(host: HTMLElement, rerender: () => void
   lifeSelection = resolveSelection(project, lifeSelection);
   const selection = lifeSelection;
 
-  const rows: HTMLElement[] = [];
-  pushGroup(rows, "fish", fish.map((row, index) => collectionRow("fish", row.id, row.name, itemName(project, row.itemId), index, rerender)));
-  pushGroup(rows, "fishing", spots.map((row, index) => collectionRow("fishing", row.id, row.name ?? row.id, `${row.catches.length}종`, index, rerender)));
-  pushGroup(rows, "forage", areas.map((row, index) => collectionRow("forage", row.id, row.name ?? row.id, `하루 ${row.dailySpawnCount}`, index, rerender)));
-  pushGroup(rows, "museum", rewards.map((row, index) => collectionRow("museum", row.id, row.name ?? row.id, row.minDonations ? `${row.minDonations}개` : `${row.requiredItemIds?.length ?? 0}종`, index, rerender)));
-
+  // 검색은 목록만 바꾼다. 검색 노드·캐럿·상세 폼의 미커밋 입력은 그대로 둔다.
+  let rowsHost: HTMLElement;
+  let countBadge: HTMLElement | null = null;
+  let itemSource = project.database.items;
+  let itemNames = new Map(itemSource.map((item) => [item.id, item.name]));
+  const updateList = (): void => {
+    const current = store.getCurrent();
+    if (itemSource !== current.database.items) {
+      itemSource = current.database.items;
+      itemNames = new Map(itemSource.map((item) => [item.id, item.name]));
+    }
+    const rows: HTMLElement[] = [];
+    let visibleCount = 0;
+    const group = <T extends { readonly id: string; readonly name?: string }>(
+      kind: LifeCollectionKind, records: readonly T[], summary: (record: T) => string,
+    ): void => {
+      if (lifeFilter !== "all" && lifeFilter !== kind) return;
+      // 원래 행 번호를 유지하고 DOM·요약을 만들기 전에 데이터부터 거른다.
+      const matching = records.map((record, index) => ({ record, index }))
+        .filter(({ record }) => matchesNameOrId(record.name ?? record.id, record.id, lifeSearch));
+      visibleCount += matching.length;
+      pushGroup(rows, kind, records.length, matching.map(({ record, index }) =>
+        collectionRow(kind, record.id, record.name ?? record.id, summary(record), index, rerender)));
+    };
+    group("fish", current.database.fishSpecies ?? [], (record) => itemNames.get(record.itemId) ?? record.itemId);
+    group("fishing", current.system.fishing?.spots ?? [], (record) => `${record.catches.length}종`);
+    group("forage", current.system.seasonalForage?.areas ?? [], (record) => `하루 ${record.dailySpawnCount}`);
+    group("museum", current.system.museum?.rewards ?? [], (record) => record.minDonations ? `${record.minDonations}개` : `${record.requiredItemIds?.length ?? 0}종`);
+    rowsHost.replaceChildren(...(rows.length ? rows : [lifeSearch
+      ? emptyState({ icon: "⌕", title: "검색 결과가 없습니다", body: `"${lifeSearch}" 와 일치하는 항목이 없습니다.`, compact: true })
+      : emptyState({ icon: "🎣", title: "아직 컬렉션이 없습니다", compact: true })]));
+    rowsHost.classList.toggle("db-ws-list-empty", rows.length === 0);
+    const currentTotal = (current.database.fishSpecies?.length ?? 0) + (current.system.fishing?.spots.length ?? 0)
+      + (current.system.seasonalForage?.areas.length ?? 0) + (current.system.museum?.rewards.length ?? 0);
+    if (countBadge) countBadge.textContent = lifeSearch || lifeFilter !== "all" ? `${visibleCount}/${currentTotal}개` : `${currentTotal}개`;
+  };
+  const changeFilter = (kind: LifeCollectionKind | "all"): void => {
+    lifeFilter = kind;
+    for (const chip of Array.from(chips.children)) {
+      const active = (chip as HTMLElement).dataset.testid === `db-life-collections-chip-${kind}`;
+      chip.classList.toggle("active", active);
+      chip.setAttribute("aria-pressed", String(active));
+    }
+    updateList();
+  };
+  const chips = filterChips(changeFilter, { fish: fish.length, fishing: spots.length, forage: areas.length, museum: rewards.length });
+  const search = listSearch({
+    placeholder: "이름 또는 ID 검색",
+    value: lifeSearch,
+    testid: "db-life-collections-search",
+    onInput: (value) => {
+      // 이전 탭의 디바운스 콜백은 새 탭의 검색 상태를 덮어쓰지 않는다.
+      if (!search.isConnected) return;
+      lifeSearch = value;
+      updateList();
+    },
+  });
+  // 탭/레코드 전환이 디바운스보다 먼저 일어나도 최신 쿼리를 보존한다.
+  search.querySelector("input")?.addEventListener("input", (event) => { lifeSearch = (event.target as HTMLInputElement).value; });
   const list = listPane({
     title: "생활 컬렉션",
     count: total,
-    search: listSearch({
-      placeholder: "이름 또는 ID 검색",
-      value: lifeSearch,
-      testid: "db-life-collections-search",
-      onInput: (value) => { lifeSearch = value; rerender(); },
-    }),
-    chips: filterChips(rerender, { fish: fish.length, fishing: spots.length, forage: areas.length, museum: rewards.length }),
-    rows,
-    empty: lifeSearch
-      ? emptyState({ icon: "⌕", title: "검색 결과가 없습니다", body: `"${lifeSearch}" 와 일치하는 항목이 없습니다.`, compact: true })
-      : emptyState({ icon: "🎣", title: "아직 컬렉션이 없습니다", compact: true }),
+    search,
+    chips,
+    rows: [],
     toolbar: listToolbar([
       { label: "+ 물고기", kind: "primary", testid: "db-life-collections-add-fish", onClick: () => addFish(rerender) },
       { label: "+ 낚시터", testid: "db-life-collections-add-spot", onClick: () => addSpot(rerender) },
@@ -113,24 +158,29 @@ export function renderLifeCollectionsTab(host: HTMLElement, rerender: () => void
     ]),
     testid: "db-life-collections-list-pane",
   });
+  countBadge = list.querySelector<HTMLElement>(".db-ws-count");
+  rowsHost = list.querySelector<HTMLElement>(".db-ws-list")!;
+  updateList();
 
   const panels = el("div", { class: "db-ws-section-panels db-life-panels" });
   // .db-ws-detail-body 는 flex column 이라 자식이 내용보다 작게 눌릴 수 있다 —
   // 그러면 그리드 내용이 넘쳐 아래 형제(시스템 카드)와 겹쳐 보인다.
   panels.style.flexShrink = "0";
-  for (const record of fish) {
-    panels.append(panelHost(`db-life-collections-panel-fish-${record.id}`, isActive(selection, "fish", record.id), fishInspector(record, rerender)));
+  if (selection?.kind === "fish") {
+    const record = fish.find((record) => record.id === selection.id)!;
+    panels.append(panelHost(`db-life-collections-panel-fish-${record.id}`, fishInspector(record, rerender)));
+  } else if (selection?.kind === "fishing") {
+    const record = spots.find((record) => record.id === selection.id)!;
+    panels.append(panelHost(`db-life-collections-panel-fishing-${record.id}`, spotInspector(record, project, rerender)));
+  } else if (selection?.kind === "forage") {
+    const record = areas.find((record) => record.id === selection.id)!;
+    panels.append(panelHost(`db-life-collections-panel-forage-${record.id}`, areaInspector(record, project, rerender)));
+  } else if (selection?.kind === "museum") {
+    const record = rewards.find((record) => record.id === selection.id)!;
+    panels.append(panelHost(`db-life-collections-panel-museum-${record.id}`, rewardInspector(record, project, rerender)));
+  } else {
+    panels.append(panelHost("db-life-collections-empty", onboardingBoard(rerender)));
   }
-  for (const record of spots) {
-    panels.append(panelHost(`db-life-collections-panel-fishing-${record.id}`, isActive(selection, "fishing", record.id), spotInspector(record, project, rerender)));
-  }
-  for (const record of areas) {
-    panels.append(panelHost(`db-life-collections-panel-forage-${record.id}`, isActive(selection, "forage", record.id), areaInspector(record, project, rerender)));
-  }
-  for (const record of rewards) {
-    panels.append(panelHost(`db-life-collections-panel-museum-${record.id}`, isActive(selection, "museum", record.id), rewardInspector(record, project, rerender)));
-  }
-  if (!selection) panels.append(panelHost("db-life-collections-empty", true, onboardingBoard(rerender)));
 
   const summary = renderLifePanel({
     testid: "db-life-collections-stats",
@@ -143,10 +193,10 @@ export function renderLifeCollectionsTab(host: HTMLElement, rerender: () => void
     }),
     compact: true,
     cards: [
-      { testid: "db-life-collections-stat-fish", icon: "capture", label: "물고기", value: String(fish.length), detail: "지급 아이템 연결", state: fish.length ? "ready" : "info", onClick: () => { lifeFilter = "fish"; rerender(); } },
-      { testid: "db-life-collections-stat-fishing", icon: "field", label: "낚시터", value: String(spots.length), detail: "출현 조건 표", state: spots.length ? "ready" : "info", onClick: () => { lifeFilter = "fishing"; rerender(); } },
-      { testid: "db-life-collections-stat-forage", icon: "crop", label: "채집", value: String(areas.length), detail: "계절별 드롭", state: areas.length ? "ready" : "info", onClick: () => { lifeFilter = "forage"; rerender(); } },
-      { testid: "db-life-collections-stat-museum", icon: "item", label: "박물관", value: String(rewards.length), detail: "한 번만 지급", state: rewards.length ? "ready" : "info", onClick: () => { lifeFilter = "museum"; rerender(); } },
+      { testid: "db-life-collections-stat-fish", icon: "capture", label: "물고기", value: String(fish.length), detail: "지급 아이템 연결", state: fish.length ? "ready" : "info", onClick: () => changeFilter("fish") },
+      { testid: "db-life-collections-stat-fishing", icon: "field", label: "낚시터", value: String(spots.length), detail: "출현 조건 표", state: spots.length ? "ready" : "info", onClick: () => changeFilter("fishing") },
+      { testid: "db-life-collections-stat-forage", icon: "crop", label: "채집", value: String(areas.length), detail: "계절별 드롭", state: areas.length ? "ready" : "info", onClick: () => changeFilter("forage") },
+      { testid: "db-life-collections-stat-museum", icon: "item", label: "박물관", value: String(rewards.length), detail: "한 번만 지급", state: rewards.length ? "ready" : "info", onClick: () => changeFilter("museum") },
     ],
   });
 
@@ -162,10 +212,8 @@ export function renderLifeCollectionsTab(host: HTMLElement, rerender: () => void
   host.append(workspaceShell({ list, detail, legacyClass: "db-life-collections-ws", testid: "db-life-collections-workspace" }));
 }
 
-function pushGroup(rows: HTMLElement[], kind: LifeCollectionKind, built: readonly HTMLElement[]): void {
-  if (built.length === 0) return;
-  if (lifeFilter !== "all" && lifeFilter !== kind) return;
-  const visible = built.filter((node) => node.dataset.lifeHidden !== "1");
+function pushGroup(rows: HTMLElement[], kind: LifeCollectionKind, total: number, visible: readonly HTMLElement[]): void {
+  if (total === 0) return;
   rows.push(el("div", {
     class: "db-life-group",
     dataset: { testid: `db-life-collections-${kind}` },
@@ -174,7 +222,7 @@ function pushGroup(rows: HTMLElement[], kind: LifeCollectionKind, built: readonl
         class: "db-life-group-head",
         children: [
           el("span", { class: "db-life-group-title", text: GROUP_LABEL[kind] }),
-          el("span", { class: "db-life-group-count", text: `${built.length}` }),
+          el("span", { class: "db-life-group-count", text: visible.length === total ? `${total}` : `${visible.length}/${total}` }),
         ],
       }),
       ...(visible.length > 0 ? visible : [el("p", { class: "db-life-group-empty", text: "검색과 일치하는 항목이 없습니다." })]),
@@ -197,10 +245,8 @@ function isActive(selection: Selection | null, kind: LifeCollectionKind, id: str
   return selection?.kind === kind && selection.id === id;
 }
 
-function panelHost(testid: string, active: boolean, body: HTMLElement): HTMLElement {
-  const node = el("div", { class: "db-ws-section-panel", dataset: { testid }, children: [body] });
-  if (!active) node.setAttribute("hidden", "");
-  return node;
+function panelHost(testid: string, body: HTMLElement): HTMLElement {
+  return el("div", { class: "db-ws-section-panel", dataset: { testid }, children: [body] });
 }
 
 function resolveSelection(project: Project, current: Selection | null): Selection | null {
@@ -227,13 +273,13 @@ function selectionTitle(project: Project, selection: Selection): string {
   return project.system.museum?.rewards.find((row) => row.id === selection.id)?.name ?? selection.id;
 }
 
-function filterChips(rerender: () => void, counts: Readonly<Record<LifeCollectionKind, number>>): HTMLElement {
+function filterChips(changeFilter: (kind: LifeCollectionKind | "all") => void, counts: Readonly<Record<LifeCollectionKind, number>>): HTMLElement {
   const chip = (id: LifeCollectionKind | "all", label: string): HTMLElement => el("button", {
     class: `db-filter-chip${lifeFilter === id ? " active" : ""}`,
     text: label,
     attrs: { type: "button", "aria-pressed": lifeFilter === id ? "true" : "false" },
     dataset: { testid: `db-life-collections-chip-${id}` },
-    on: { click: () => { lifeFilter = id; rerender(); } },
+    on: { click: () => changeFilter(id) },
   });
   return el("div", {
     class: "db-filter-chips db-life-chips",
@@ -277,7 +323,6 @@ function collectionRow(
     on: { click: () => deleteRecord(kind, id, rerender) },
   });
   const wrap = el("div", { class: "db-ws-row-wrap db-life-row-wrap", children: [row, remove] });
-  if (!matchesNameOrId(name, id, lifeSearch)) wrap.dataset.lifeHidden = "1";
   return wrap;
 }
 
@@ -606,7 +651,6 @@ function rewardInspector(record: MuseumRewardDefinition, project: Project, reren
 // ---------------------------------------------------------------------------
 
 function systemStack(project: Project, rerender: () => void): HTMLElement {
-  const items = itemOptions(project);
   return el("div", {
     class: "db-ws-stack db-life-system",
     dataset: { testid: "db-life-collections-system" },
@@ -623,24 +667,47 @@ function systemStack(project: Project, rerender: () => void): HTMLElement {
         ],
         testid: "db-life-collections-system-toggles",
       }),
-      sectionCard({
+      lazyItemCard({
         title: "박물관 기부 가능 아이템",
         hint: `${project.system.museum?.eligibleItemIds.length ?? 0}종`,
         collapsible: true,
         collapsed: (project.system.museum?.eligibleItemIds.length ?? 0) === 0,
-        children: [itemChips(items, project.system.museum?.eligibleItemIds ?? [], "db-life-collections-museum-eligible", (next) => setEligibleItems(next, rerender))],
+        build: () => itemChips(itemOptions(project), project.system.museum?.eligibleItemIds ?? [], "db-life-collections-museum-eligible", (next) => setEligibleItems(next, rerender)),
         testid: "db-life-collections-museum-eligible-card",
       }),
-      sectionCard({
+      lazyItemCard({
         title: "도감 추적 아이템",
         hint: `${project.system.collections?.trackedItemIds?.length ?? 0}종`,
         collapsible: true,
         collapsed: (project.system.collections?.trackedItemIds?.length ?? 0) === 0,
-        children: [itemChips(items, project.system.collections?.trackedItemIds ?? [], "db-life-collections-tracked", (next) => setTrackedItems(next, rerender))],
+        build: () => itemChips(itemOptions(project), project.system.collections?.trackedItemIds ?? [], "db-life-collections-tracked", (next) => setTrackedItems(next, rerender)),
         testid: "db-life-collections-tracked-card",
       }),
     ],
   });
+}
+
+// Keep sectionCard's toggle/ARIA behavior, but build a collapsed item list only
+// on first expansion. Search leaves these cards attached.
+function lazyItemCard(options: {
+  readonly title: string;
+  readonly hint: string;
+  readonly collapsible: true;
+  readonly collapsed: boolean;
+  readonly build: () => HTMLElement;
+  readonly testid: string;
+}): HTMLElement {
+  const contents = el("div");
+  let built = false;
+  const ensureContents = (): void => {
+    if (built) return;
+    contents.append(options.build());
+    built = true;
+  };
+  if (!options.collapsed) ensureContents();
+  const card = sectionCard({ ...options, children: [contents] });
+  card.querySelector(".db-ws-card-toggle")?.addEventListener("click", ensureContents);
+  return card;
 }
 
 // ---------------------------------------------------------------------------
@@ -811,10 +878,6 @@ function mapOptions(project: Project): { id: string; name: string }[] {
 
 function namedOption(record: { readonly id: string; readonly name: string }): { id: string; name: string } {
   return { id: record.id, name: record.name };
-}
-
-function itemName(project: Project, itemId: string): string {
-  return project.database.items.find((item) => item.id === itemId)?.name ?? itemId;
 }
 
 // ---------------------------------------------------------------------------

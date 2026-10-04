@@ -1,0 +1,72 @@
+{
+  "realModel": true,
+  "provider": "opencodex",
+  "modelId": "gpt-6-astra",
+  "uiIntentRequestExercised": false,
+  "folder": "/home/main/.t3/worktrees/rpg-zzu/t3code-77478098/.vite-cache/terrain-ai-edit/project",
+  "projectId": "af864cef-5fc3-4655-a3aa-1a15db4dccf1",
+  "mapId": "houses_native",
+  "elapsedSeconds": 94.64,
+  "reloadMapEqual": true,
+  "revision": 5,
+  "counts": {
+    "inspect_terrain": 2,
+    "read_project_wiki": 1,
+    "design_terrain": 1,
+    "resize_terrain_house_roof": 1,
+    "lay_terrain_road": 1,
+    "check_terrain_access": 1,
+    "show_map_region": 1
+  },
+  "maxHeight": 9,
+  "rampCells": 22,
+  "stairs": 0,
+  "placements": [
+    {
+      "id": "sp_a2ff01d4-09f0-4e24-a2c7-65a12be34406",
+      "kitId": "bd-manor-tower",
+      "x": 6,
+      "y": 13,
+      "w": 14,
+      "h": 11
+    },
+    {
+      "id": "sp_dbe5965d-2ed8-410c-bf8a-109803471270",
+      "kitId": "bd-out-cabin",
+      "x": 34,
+      "y": 16,
+      "w": 5,
+      "h": 6
+    },
+    {
+      "id": "sp_6c3b74ec-e76d-487b-96b8-574751c06182",
+      "kitId": "bd-out-house-plank",
+      "x": 54,
+      "y": 13,
+      "w": 8,
+      "h": 6
+    },
+    {
+      "id": "sp_decc2cd1-612b-43ff-bd65-ce5b1895da52",
+      "kitId": "quick_house_beodeul-manor-a_9_2_roof15x3",
+      "x": 17,
+      "y": 39,
+      "w": 15,
+      "h": 8
+    }
+  ],
+  "stats": {
+    "ms": 84088,
+    "turns": 7,
+    "toolCalls": 9,
+    "toolErrors": 0,
+    "usage": {
+      "input": 239086,
+      "output": 1158,
+      "cacheRead": 0,
+      "cacheWrite": 0,
+      "totalTokens": 240244,
+      "calls": 7
+    }
+  }
+}

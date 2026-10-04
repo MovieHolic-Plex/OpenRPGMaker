@@ -33,12 +33,72 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return !!value && typeof value === "object" && !Array.isArray(value);
 }
 
-function sameValue(left: unknown, right: unknown): boolean {
+function legacySameValue(left: unknown, right: unknown): boolean {
   if (left === right) return true;
   const leftText = JSON.stringify(left);
   const rightText = JSON.stringify(right);
   if (leftText === rightText) return true;
   return canonicalJsonString(left) === canonicalJsonString(right);
+}
+
+/** Compare ordinary JSON branches without creating whole-map comparison strings. */
+function* sameValueSteps(
+  left: unknown, right: unknown,
+  ancestorsLeft = new Set<object>(), ancestorsRight = new Set<object>(),
+): Generator<void, boolean | undefined> {
+  if (left === right) return true;
+  if (left === null || right === null || typeof left !== "object" || typeof right !== "object") {
+    if ((left !== null && typeof left === "object") || (right !== null && typeof right === "object")) return undefined;
+    return JSON.stringify(left) === JSON.stringify(right);
+  }
+  if (ancestorsLeft.has(left) || ancestorsRight.has(right)) return undefined;
+  const aArray = Array.isArray(left), bArray = Array.isArray(right);
+  if (aArray !== bArray) return undefined;
+  if (typeof (left as { toJSON?: unknown }).toJSON === "function" || typeof (right as { toJSON?: unknown }).toJSON === "function") return undefined;
+  if (!aArray && [left, right].some(value => {
+    const prototype = Object.getPrototypeOf(value);
+    return prototype !== Object.prototype && prototype !== null;
+  })) return undefined;
+  ancestorsLeft.add(left); ancestorsRight.add(right);
+  try {
+    if (aArray) {
+      const a = left as unknown[], b = right as unknown[];
+      if (a.length !== b.length) return false;
+      for (let index = 0; index < a.length; index++) {
+        if ((index & 255) === 0) yield;
+        // Legacy equality also accepts raw canonical JSON after stringify. Keep
+        // that union for non-JSON entries rather than silently broadening it.
+        const aType = typeof a[index], bType = typeof b[index];
+        if (aType === "undefined" || aType === "function" || aType === "symbol"
+          || bType === "undefined" || bType === "function" || bType === "symbol") return undefined;
+        if (a[index] === b[index]) continue;
+        const same = yield* sameValueSteps(a[index], b[index], ancestorsLeft, ancestorsRight);
+        if (same !== true) return same;
+      }
+      return true;
+    }
+    const a = left as Record<string, unknown>, b = right as Record<string, unknown>;
+    const included = (value: unknown): boolean => value !== undefined && typeof value !== "function" && typeof value !== "symbol";
+    const aKeys = Object.keys(a), bKeys = Object.keys(b);
+    if (aKeys.some(key => !included(a[key])) || bKeys.some(key => !included(b[key]))) return undefined;
+    if (aKeys.length !== bKeys.length) return false;
+    for (let index = 0; index < aKeys.length; index++) {
+      if ((index & 255) === 0) yield;
+      const key = aKeys[index]!;
+      if (!Object.prototype.hasOwnProperty.call(b, key) || !included(b[key])) return false;
+      const same = yield* sameValueSteps(a[key], b[key], ancestorsLeft, ancestorsRight);
+      if (same !== true) return same;
+    }
+    return true;
+  } finally {
+    ancestorsLeft.delete(left); ancestorsRight.delete(right);
+  }
+}
+
+function* sameJsonValueSteps(left: unknown, right: unknown): Generator<void, boolean> {
+  const result = yield* sameValueSteps(left, right);
+  // Preserve the established toJSON/wrapper/non-JSON fallback, including errors.
+  return result === undefined ? legacySameValue(left, right) : result;
 }
 
 /**
@@ -55,7 +115,7 @@ function sameValue(left: unknown, right: unknown): boolean {
  */
 function sameTilesetValue(base: unknown, local: unknown): boolean {
   if (base === local) return true;
-  if (!isRecord(base) || !isRecord(local)) return sameValue(base, local);
+  if (!isRecord(base) || !isRecord(local)) return legacySameValue(base, local);
   // 항목 통째를 요약으로 본다(문서·그림·타일 속성 모두 — 요약의 동일성은 `canonicalJsonOf` 와 같다).
   // 예전에는 문서를 뗀 나머지를 스프레드로 새 객체 둘로 만들어 비교했다 — 새 객체는 기억이 없어 매 저장 전 필드를 글로 만들고 해시했다.
   // `sharedEntryDigest` 는 이미 대조를 마친 항목은 아래 가지를 다시 훑지 않는다(2026-09-30 실측, 타일셋 385칸: 자동저장 diff 1.1s → 한 번 대조한 뒤 O(1)).
@@ -83,7 +143,6 @@ function* diffProjectDocumentsSteps(base: unknown, local: unknown): Generator<vo
     const localValue = localRecord[key];
     const hasBase = Object.prototype.hasOwnProperty.call(baseRecord, key);
     const baseValue = hasBase ? baseRecord[key] : undefined;
-    const same = key === "tilesets" ? sameTilesetValue : sameValue;
     if ((NESTED_KEYS as readonly string[]).includes(key) && isRecord(baseValue) && isRecord(localValue)) {
       // 사전 가지는 항목별로 본다 — 통째 비교가 같으면 항목별 비교도 모두 같으므로 결과는 그대로다.
       if (baseValue === localValue) continue;
@@ -95,7 +154,12 @@ function* diffProjectDocumentsSteps(base: unknown, local: unknown): Generator<vo
           continue;
         }
         yield;
-        if (Object.prototype.hasOwnProperty.call(baseValue, childKey) && same(baseValue[childKey], localValue[childKey])) continue;
+        if (Object.prototype.hasOwnProperty.call(baseValue, childKey)) {
+          const same = key === "tilesets"
+            ? sameTilesetValue(baseValue[childKey], localValue[childKey])
+            : yield* sameJsonValueSteps(baseValue[childKey], localValue[childKey]);
+          if (same) continue;
+        }
         childSet[childKey] = localValue[childKey];
       }
       if (Object.keys(childSet).length > 0 || childDel.length > 0) {
@@ -107,7 +171,7 @@ function* diffProjectDocumentsSteps(base: unknown, local: unknown): Generator<vo
       continue;
     }
     yield;
-    if (hasBase && same(baseValue, localValue)) continue;
+    if (hasBase && (yield* sameJsonValueSteps(baseValue, localValue))) continue;
     set[key] = localValue;
   }
   return {
@@ -160,27 +224,92 @@ export async function diffProjectDocumentsSliced(
  * 변경량(칠하기 한 번 = 바뀜 맵 하나, 수십 KB)에 밀척 붙는다.
  */
 export function withWirePatchValues(patch: ProjectDocumentPatch): ProjectDocumentPatch {
-  const wireDict = (dict: DictPatch | undefined): DictPatch | undefined => {
-    if (!dict?.set) return dict;
-    const set: Record<string, unknown> = {};
-    for (const [key, value] of Object.entries(dict.set)) set[key] = toWireValue(value);
-    return { ...dict, set };
-  };
-  const next: ProjectDocumentPatch = {
-    ...patch,
-    ...(patch.set ? { set: Object.fromEntries(Object.entries(patch.set).map(([key, value]) => [key, toWireValue(value)])) } : {}),
-  };
-  const withNested: Record<string, unknown> = { ...next };
-  for (const key of NESTED_KEYS) {
-    const child = wireDict(patch[key]);
-    if (child) withNested[key] = child;
+  const steps = wirePatchSteps(patch);
+  for (;;) {
+    const step = steps.next();
+    if (step.done) return step.value;
   }
-  return withNested as ProjectDocumentPatch;
 }
 
-function toWireValue(value: unknown): unknown {
-  if (value === null || typeof value !== "object") return value;
-  return JSON.parse(JSON.stringify(value)) as unknown;
+/** Wire preparation yields inside dense maps, not just between maps. */
+export async function withWirePatchValuesSliced(
+  patch: ProjectDocumentPatch, yieldToMain: () => Promise<void>, sliceMs = 12,
+): Promise<ProjectDocumentPatch> {
+  const steps = wirePatchSteps(patch);
+  let sliceStart = performance.now();
+  for (;;) {
+    const step = steps.next();
+    if (step.done) return step.value;
+    if (performance.now() - sliceStart >= sliceMs) {
+      await yieldToMain();
+      sliceStart = performance.now();
+    }
+  }
+}
+
+function* wirePatchSteps(patch: ProjectDocumentPatch): Generator<void, ProjectDocumentPatch> {
+  const wireDict = function* (dict: DictPatch | undefined): Generator<void, DictPatch | undefined> {
+    if (!dict?.set) return dict;
+    const entries: [string, unknown][] = [];
+    for (const [key, value] of Object.entries(dict.set)) {
+      yield;
+      const wire = value === null || typeof value !== "object" ? value : yield* wireValueSteps(value, "", new Set(), true);
+      entries.push([key, wire]);
+    }
+    return { ...dict, set: Object.fromEntries(entries) };
+  };
+  const top = yield* wireDict(patch);
+  const next: Record<string, unknown> = { ...top };
+  for (const key of NESTED_KEYS) {
+    const child = yield* wireDict(patch[key]);
+    if (child) next[key] = child;
+  }
+  return next as ProjectDocumentPatch;
+}
+
+/** JSON wire copy with bounded array work; historical references never escape. */
+function* wireValueSteps(value: unknown, key: string, ancestors: Set<object>, root = false): Generator<void, unknown> {
+  if (value === null) return null;
+  if (typeof value === "number") return Number.isFinite(value) ? value : null;
+  if (typeof value === "bigint") return JSON.parse(JSON.stringify(value)); // Same TypeError as JSON.stringify.
+  if (typeof value === "undefined" || typeof value === "function" || typeof value === "symbol") return undefined;
+  if (typeof value !== "object") return value;
+  if (ancestors.has(value)) throw new TypeError("Converting circular structure to JSON");
+  const array = Array.isArray(value);
+  const prototype = Object.getPrototypeOf(value);
+  if (typeof (value as { toJSON?: unknown }).toJSON === "function" || (!array && prototype !== Object.prototype && prototype !== null)) {
+    if (root) return JSON.parse(JSON.stringify(value)) as unknown;
+    // Use the original JSON behavior for wrappers/custom serializers, with the proper nested key.
+    const parsed = JSON.parse(JSON.stringify({ [key]: value })) as Record<string, unknown>;
+    return Object.prototype.hasOwnProperty.call(parsed, key) ? parsed[key] : undefined;
+  }
+  ancestors.add(value);
+  try {
+    if (array) {
+      const source = value as unknown[], next = new Array<unknown>(source.length);
+      for (let index = 0; index < source.length; index++) {
+        if ((index & 255) === 0) yield;
+        const entry = source[index];
+        // Dense tile grids avoid a generator frame per primitive cell.
+        next[index] = typeof entry === "number" ? (Number.isFinite(entry) ? entry : null)
+          : entry === null || typeof entry === "string" || typeof entry === "boolean" ? entry
+            : (yield* wireValueSteps(entry, String(index), ancestors)) ?? null;
+      }
+      return next;
+    }
+    const source = value as Record<string, unknown>, next: Record<string, unknown> = {};
+    const keys = Object.keys(source);
+    for (let index = 0; index < keys.length; index++) {
+      if ((index & 255) === 0) yield;
+      const name = keys[index]!, wire = yield* wireValueSteps(source[name], name, ancestors);
+      if (wire === undefined) continue;
+      if (name === "__proto__") Object.defineProperty(next, name, { value: wire, enumerable: true, configurable: true, writable: true });
+      else next[name] = wire;
+    }
+    return next;
+  } finally {
+    ancestors.delete(value);
+  }
 }
 
 function applyDict(base: Record<string, unknown>, patch: DictPatch | undefined): Record<string, unknown> {

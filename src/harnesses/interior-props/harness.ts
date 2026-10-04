@@ -6,7 +6,7 @@ import { defineHarness } from "../_core/manifest";
  */
 export const INTERIOR_PROPS_HARNESS = defineHarness({
   id: "interior-props",
-  title: "손 도트 실내 기물 (16px)",
+  title: "슈퍼하네싱 · 실내 기물 (16px)",
   summary:
     "실내 칩셋(interior-chipset, 48칸 폭)의 가구·소품을 3/4 시점(꼭대기 윗면 3행 이상 + 남쪽 면)으로 다시 찍거나 새로 정의한다. "
     + "후보 5장을 다른 방향으로 그리고 기계 검사 → 자기 점검 → 독립 검수(꼭대기 면 규칙) → 최대 3번 다시 그린 뒤 사람이 고른다.",

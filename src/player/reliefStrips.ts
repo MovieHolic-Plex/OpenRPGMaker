@@ -1,6 +1,6 @@
 // 높이 지형 절벽 그림을 맵 줄마다 잘라 Phaser 텍스처 프레임으로 올린다. 런타임(playSceneMapRuntime)과 편집기(EditScene)가 같이 쓴다.
 // 줄 띠는 텍스처 몇 장(페이지)에 세로로 쌓아 프레임으로 나눈다 — 줄마다 텍스처를 만들면 100줄 맵이 텍스처 100장이 된다.
-import { effectiveHeights, renderRelief } from "@/project/relief/render";
+import { effectiveHeights, renderRelief, type ReliefGroundSurface } from "@/project/relief/render";
 import { hasRelief } from "@/project/relief/walk";
 import { cellLift, reliefLiftField, reliefRenderOptions, reliefRowStrips, type ReliefLiftField, type ReliefRowStrip, type ReliefStripPart } from "@/project/relief/screen";
 import { gridFromRelief, RELIEF_TILE, type ReliefData } from "@/project/relief/types";
@@ -52,9 +52,18 @@ export interface ReliefStripTextures {
   readonly frames: readonly ReliefStripFrame[];
 }
 
-/** 평지·relief 없음이면 null. 들림 표는 relief 객체마다 한 번 계산된다(screen.ts). */
+const reliefPresence = new WeakMap<ReliefData, boolean>();
+
+/**
+ * 평지·relief 없음이면 null. 들림 표는 relief 객체마다 한 번 계산된다(screen.ts).
+ * 「높이가 있는가」도 객체마다 한 번만 잰다 — 편집기는 다시 그리는 타일마다 이것을 불러 맵 전체 단을 훑었다
+ * (2026-10-03 높이 붓 프로필: 드래그 한 번에 약 0.35초).
+ */
 export function reliefFieldOf(relief: ReliefData | undefined): ReliefLiftField | null {
-  return hasRelief(relief) ? reliefLiftField(relief) : null;
+  if (!relief) return null;
+  let present = reliefPresence.get(relief);
+  if (present === undefined) reliefPresence.set(relief, present = hasRelief(relief));
+  return present ? reliefLiftField(relief) : null;
 }
 
 /** 칸 (x, y) 에 선 것을 올릴 월드 px. relief 가 없으면 0. */
@@ -75,6 +84,7 @@ function packPages(strips: readonly ReliefRowStrip[]): ReliefRowStrip[][] {
 }
 
 export interface ReliefStripBuildOptions {
+  readonly ground?: ReliefGroundSurface;
   /**
    * 직전에 만든 페이지 텍스처 키. 주면 캔버스 크기가 같은 페이지는 새로 만들지 않고 그 캔버스를 고쳐 쓴다 —
    * 높이 붓 드래그 중 텍스처를 만들고 지우기를 되풀이하면 GPU 업로드가 겹친다(편집기 EditScene).
@@ -100,7 +110,7 @@ export function buildReliefStripTextures(
   tileSize: number,
   options: ReliefStripBuildOptions = {},
 ): ReliefStripTextures {
-  const render = renderRelief(effectiveHeights(gridFromRelief(relief)), reliefRenderOptions(relief));
+  const render = renderRelief(effectiveHeights(gridFromRelief(relief)), reliefRenderOptions(relief, options.ground));
   const scale = tileSize / RELIEF_TILE;
   const reuseKeys = options.reuseKeys;
   const textureKeys: string[] = [];

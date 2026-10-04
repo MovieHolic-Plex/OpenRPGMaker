@@ -19,6 +19,7 @@ import { TILE_SIZE } from "@/assets/bundled";
 
 export interface CullableImage {
   visible?: boolean;
+  once?(event: "destroy", callback: () => void): unknown;
   /** Phaser GameObject 는 파괴되면 active=false 가 된다. 증분 재렌더 경로에서
    *  파괴된 객체가 추적 목록에 남아 setVisible 을 부르면 런타임 에러가 나므로 건너뛴다.
    *  화면 밖 정지는 이 플래그를 쓰지 않는다 — 쓰면 다음 창에서 죽은 객체로 버려진다. */
@@ -43,7 +44,8 @@ interface CullableTiles {
   readonly images: CullableImage[];
   readonly xs: number[];
   readonly ys: number[];
-  readonly buckets: Map<string, number[]>;
+  readonly buckets: Map<string, Set<number>>;
+  readonly indices: Map<CullableImage, number>;
 }
 
 interface TileWindow {
@@ -93,16 +95,22 @@ export function trackCullableTile(host: object, image: CullableImage, x: number,
   if (typeof image.setVisible !== "function") return;
   let tiles = lastTrackedHost === host ? lastTrackedTiles : null;
   if (!tiles) {
-    tiles = cullableTiles.get(host) ?? { images: [], xs: [], ys: [], buckets: new Map() };
+    tiles = cullableTiles.get(host) ?? { images: [], xs: [], ys: [], buckets: new Map(), indices: new Map() };
     cullableTiles.set(host, tiles);
     lastTrackedHost = host;
     lastTrackedTiles = tiles;
   }
+  if (tiles.indices.has(image)) return;
   const index = tiles.images.length;
+  tiles.indices.set(image, index);
+  // Destruction is independent of camera buckets and same-window early returns.
+  image.once?.("destroy", () => untrackCullableTile(host, image));
   tiles.images.push(image);
   tiles.xs.push(x);
   tiles.ys.push(y);
   pushCullBucket(tiles, index, x, y);
+  const applied = appliedWindows.get(host);
+  if (applied) applyImageCulling(image, x, y, applied);
 }
 
 export interface CullViewport {
@@ -116,9 +124,8 @@ export interface CullViewport {
  * 카메라가 보는 영역 밖 타일을 숨긴다. viewport 는 월드 픽셀(카메라 worldView).
  * 창이 직전과 같으면 아무것도 하지 않는다.
  *
- * 증분 재렌더 경로(에디터)에서 파괴된 객체가 배열에 남아 누적될 수 있다.
- * 파괴된 항목이 절반을 넘으면 배열을 compaction 한다 — 전체 재렌더(resetCullableTiles)
- * 가 자주 일어나지 않는 긴 페인트 세션에서 배열이 무한 자라는 것을 막는다.
+ * 실제 Phaser destroy 이벤트와 명시적 untrack은 창과 무관하게 즉시 swap-remove 한다.
+ * active=false만 제공하는 fixture는 관측된 죽은 항목을 동일 경로로 제거한다.
  */
 export function syncTileCulling(host: object, viewport: CullViewport | undefined, tileSize: number = TILE_SIZE): void {
   const tiles = cullableTiles.get(host);
@@ -134,58 +141,67 @@ export function syncTileCulling(host: object, viewport: CullViewport | undefined
   const applied = appliedWindows.get(host);
   if (applied && sameWindow(applied, next)) return;
   appliedWindows.set(host, next);
-  const deadCount = applied
-    ? applyChangedCullBuckets(tiles, applied, next)
-    : applyCullIndices(tiles, null, next);
-  if (deadCount > 0 && deadCount * 2 >= tiles.images.length) compactCullableTiles(tiles);
+  const dead = new Set<CullableImage>();
+  if (applied) applyChangedCullBuckets(tiles, applied, next, dead);
+  else applyCullIndices(tiles, null, next, dead);
+  // Fixtures without destroy events still remove observed dead entries globally.
+  for (const image of dead) untrackCullableTile(host, image);
 }
 
-/**
- * 파괴된 항목을 빼고 살아있는 항목만 남겨 배열을 다시 만든다.
- * syncTileCulling 이 이미 전체를 순회했으므로 추가 순회 비용은 같다.
- */
-function compactCullableTiles(tiles: CullableTiles): void {
-  const { images, xs, ys } = tiles;
-  const liveImages: CullableImage[] = [];
-  const liveXs: number[] = [];
-  const liveYs: number[] = [];
-  for (let index = 0; index < images.length; index += 1) {
-    if (images[index].active === false) continue;
-    liveImages.push(images[index]);
-    liveXs.push(xs[index]);
-    liveYs.push(ys[index]);
+/** Dense swap removal: neither tombstones nor empty buckets survive destruction. */
+export function untrackCullableTile(host: object, image: CullableImage): void {
+  const tiles = cullableTiles.get(host);
+  if (!tiles) return;
+  const index = tiles.indices.get(image);
+  if (index === undefined) return;
+  const removeIndex = (i: number) => {
+    const key = bucketKey(tiles.xs[i]!, tiles.ys[i]!);
+    const bucket = tiles.buckets.get(key);
+    bucket?.delete(i);
+    if (!bucket?.size) tiles.buckets.delete(key);
+  };
+  removeIndex(index);
+  const last = tiles.images.length - 1;
+  if (last !== index) {
+    removeIndex(last);
+    tiles.images[index] = tiles.images[last]!;
+    tiles.xs[index] = tiles.xs[last]!;
+    tiles.ys[index] = tiles.ys[last]!;
+    tiles.indices.set(tiles.images[index]!, index);
+    pushCullBucket(tiles, index, tiles.xs[index]!, tiles.ys[index]!);
   }
-  images.length = 0;
-  xs.length = 0;
-  ys.length = 0;
-  images.push(...liveImages);
-  xs.push(...liveXs);
-  ys.push(...liveYs);
-  tiles.buckets.clear();
-  for (let index = 0; index < xs.length; index += 1) pushCullBucket(tiles, index, xs[index], ys[index]);
+  tiles.images.pop(); tiles.xs.pop(); tiles.ys.pop();
+  tiles.indices.delete(image);
 }
+
+/** Counts are useful for pan/heap QA; no GameObject references escape. */
+export function tileCullingStats(host: object): { tracked: number; buckets: number; destroyed: number } {
+  const tiles = cullableTiles.get(host);
+  return { tracked: tiles?.images.length ?? 0, buckets: tiles?.buckets.size ?? 0,
+    destroyed: tiles?.images.reduce((n, image) => n + Number(image.active === false), 0) ?? 0 };
+}
+
+const bucketKey = (x: number, y: number) => `${Math.floor(x / CULL_BUCKET_TILES)},${Math.floor(y / CULL_BUCKET_TILES)}`;
 
 function pushCullBucket(tiles: CullableTiles, index: number, x: number, y: number): void {
-  const key = `${Math.floor(x / CULL_BUCKET_TILES)},${Math.floor(y / CULL_BUCKET_TILES)}`;
+  const key = bucketKey(x, y);
   const bucket = tiles.buckets.get(key);
-  if (bucket) bucket.push(index);
-  else tiles.buckets.set(key, [index]);
+  if (bucket) bucket.add(index);
+  else tiles.buckets.set(key, new Set([index]));
 }
 
 /**
  * 직전 창과 새 창에서 보임이 바뀔 수 있는 16×16 버킷만 순회한다.
  * 창 한가운데 버킷은 통째로 안이거나 통째로 밖이라 타일마다 다시 볼 필요가 없다.
  */
-function applyChangedCullBuckets(tiles: CullableTiles, applied: TileWindow, next: TileWindow): number {
-  let deadCount = 0;
+function applyChangedCullBuckets(tiles: CullableTiles, applied: TileWindow, next: TileWindow, dead: Set<CullableImage>): void {
   for (const [key, indices] of tiles.buckets) {
     const span = cullBucketSpan(key);
     const before = windowCoverage(applied, span);
     const after = windowCoverage(next, span);
     if (before === after && before !== "edge") continue;
-    deadCount += applyCullIndices(tiles, indices, next);
+    applyCullIndices(tiles, indices, next, dead);
   }
-  return deadCount;
 }
 
 function cullBucketSpan(key: string): TileWindow {
@@ -212,25 +228,24 @@ function windowCoverage(window: TileWindow, span: TileWindow): "in" | "out" | "e
   return "edge";
 }
 
-/** indices 가 null 이면 추적 목록 전체. 반환값은 파괴된 객체 수. */
-function applyCullIndices(tiles: CullableTiles, indices: readonly number[] | null, next: TileWindow): number {
+/** indices 가 null 이면 추적 목록 전체. 죽은 항목은 순회가 끝난 뒤 제거한다. */
+function applyCullIndices(tiles: CullableTiles, indices: ReadonlySet<number> | null, next: TileWindow, dead: Set<CullableImage>): void {
   const { images, xs, ys } = tiles;
-  const count = indices ? indices.length : images.length;
-  let deadCount = 0;
-  for (let cursor = 0; cursor < count; cursor += 1) {
-    const index = indices ? indices[cursor] : cursor;
-    const image = images[index];
-    if (image.active === false) {
-      deadCount += 1;
-      continue;
-    }
-    const visible = xs[index] >= next.minX && xs[index] <= next.maxX && ys[index] >= next.minY && ys[index] <= next.maxY;
-    if (image.visible === visible) continue;
-    image.setVisible?.(visible);
-    if (visible) image.anims?.resume();
-    else image.anims?.pause();
-  }
-  return deadCount;
+  const apply = (index: number) => {
+    const image = images[index]!;
+    if (image.active === false) { dead.add(image); return; }
+    applyImageCulling(image, xs[index]!, ys[index]!, next);
+  };
+  if (indices) for (const index of indices) apply(index);
+  else for (let index = 0; index < images.length; index++) apply(index);
+}
+
+function applyImageCulling(image: CullableImage, x: number, y: number, next: TileWindow): void {
+  const visible = x >= next.minX && x <= next.maxX && y >= next.minY && y <= next.maxY;
+  if (image.visible === visible) return;
+  image.setVisible?.(visible);
+  if (visible) image.anims?.resume();
+  else image.anims?.pause();
 }
 
 function sameWindow(left: TileWindow, right: TileWindow): boolean {

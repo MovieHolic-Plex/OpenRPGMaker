@@ -89,6 +89,52 @@
 }
 
 /* ── 고전 · 윈도스킨 ── 자료집 시스템 그림(system.systemResourceId)을 9칸으로 편다. */
+/* A separate authored style: existing cream/gold projects keep their appearance. */
+.dialogue-overlay[data-dialogue-style="pixel-cinematic"],
+.dialogue-ambient-layer [data-dialogue-style="pixel-cinematic"] {
+  --runtime-dialogue-panel-height: 25%;
+  --runtime-choice-panel-height: 25%;
+  --runtime-dialogue-speaker-inset: 12px;
+  --runtime-dialogue-font: "Galmuri9", "NeoDunggeunmo", monospace;
+  --runtime-dialogue-font-size: 9px;
+  --dlg-bg: rgba(17, 28, 35, 0.82);
+  --dlg-border: 1px solid rgb(173, 181, 151);
+  --dlg-radius: 0;
+  --dlg-shadow: inset 0 0 0 1px rgba(17, 28, 35, 0.9), inset 0 0 0 2px rgba(173, 181, 151, 0.2);
+  --dlg-text: rgb(247, 242, 219);
+  --dlg-text-shadow: 1px 1px 0 rgb(17, 28, 35);
+  --dlg-accent: rgb(242, 207, 142);
+  --dlg-name-bg: rgb(26, 40, 43);
+  --dlg-name-text: rgb(242, 207, 142);
+  --dlg-name-radius: 0;
+  --dlg-select-bg: rgba(242, 207, 142, 0.14);
+  --dlg-weight: 400;
+}
+
+.dialogue-overlay[data-dialogue-style="pixel-cinematic"] .dialogue-box .speaker.speaker-nameplate {
+  padding: 2px 5px;
+}
+
+.dialogue-overlay[data-dialogue-style="pixel-cinematic"] .choice-prompt-row {
+  font-family: var(--runtime-dialogue-font);
+  font-size: var(--runtime-dialogue-font-size);
+  font-weight: 400;
+  color: var(--dlg-text);
+  text-shadow: var(--dlg-text-shadow);
+}
+
+.dialogue-overlay[data-dialogue-style="pixel-cinematic"] .choice-list .choice-btn {
+  border-radius: 0;
+  flex-shrink: 0;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.dialogue-overlay[data-dialogue-style="pixel-cinematic"] .choice-list {
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
 .dialogue-overlay[data-dialogue-style="classic"],
 .dialogue-ambient-layer [data-dialogue-style="classic"] {
   --runtime-dialogue-speaker-inset: 12px;
@@ -233,6 +279,36 @@
   --dlg-name-border: 2px solid rgb(72, 42, 20);
   --dlg-name-radius: 4px;
   --dlg-select-bg: rgba(122, 74, 38, 0.16);
+}
+
+/* ── 한지 · 먹빛 나무틀 ── 작은 도트 화면에서 읽히는 각진 틀. */
+.dialogue-overlay[data-dialogue-style="joseon"],
+.dialogue-ambient-layer [data-dialogue-style="joseon"] {
+  --runtime-dialogue-speaker-inset: 13px;
+  --runtime-dialogue-font: var(--runtime-pixel-font);
+  --runtime-dialogue-font-size: var(--runtime-font-size-9);
+  --dlg-bg: rgb(237, 224, 188);
+  --dlg-border: 3px solid rgb(62, 44, 32);
+  --dlg-radius: 0;
+  --dlg-shadow: inset 0 0 0 1px rgb(174, 135, 79), inset 0 0 0 3px rgb(248, 239, 211), 0 2px 0 rgb(32, 26, 22);
+  --dlg-hairline: transparent;
+  --dlg-text: rgb(46, 35, 28);
+  --dlg-text-shadow: none;
+  --dlg-accent: rgb(153, 48, 33);
+  --dlg-name-bg: rgb(62, 44, 32);
+  --dlg-name-text: rgb(248, 239, 211);
+  --dlg-name-border: 1px solid rgb(174, 135, 79);
+  --dlg-name-radius: 0;
+  --dlg-name-shadow: 0 1px 0 rgb(32, 26, 22);
+  --dlg-select-bg: rgba(153, 48, 33, 0.12);
+  --dlg-weight: 400;
+}
+
+.dialogue-overlay[data-dialogue-style="joseon"].choices-active .choice-prompt-row {
+  color: var(--dlg-text);
+  border-color: rgba(62, 44, 32, 0.28);
+  font-weight: var(--dlg-weight);
+  text-shadow: none;
 }
 
 /* ── 말랑 크림 · 이름 알약 ── */

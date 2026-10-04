@@ -16,7 +16,7 @@ import {
   validateResourceDimensions,
 } from "@/project/resourceProfiles";
 import type { PassFlag, ResourceKind, TilesetDef, UploadedAsset } from "@/project/types";
-import { renderResourceWorkbench, type ResourceCategory } from "./resourceManagerViews";
+import { disposeResourceWorkbench, refreshResourceWorkbenchCategories, resourceManagerUploadDependency, renderResourceWorkbench, type ResourceCategory } from "./resourceManagerViews";
 import { faceCellSuffix, planFacesetSheetSplit, sliceFacesetSheetDataUrls, type FacesetSheetSplitPlan } from "@/assets/facesetSheetSlicing";
 import { FACE_IMAGE_SIZE } from "@/assets/resourceSlicing";
 import {
@@ -58,6 +58,10 @@ export const RESOURCE_MANAGER_CATEGORIES = [
 
 const expressionViews = new WeakSet<HTMLElement>();
 
+type AudioActions = { readonly import: () => void; readonly delete: (asset: UploadedAsset) => void };
+const managerMounts = new WeakMap<HTMLElement, { kind: ResourceKind; profiles: readonly unknown[];
+  uploads: object; audioActions?: AudioActions }>();
+
 const audioEditors = new WeakMap<HTMLElement, AudioDescriptionEditor>();
 
 function audioEditorFor(container: HTMLElement): AudioDescriptionEditor {
@@ -75,6 +79,8 @@ export function requestResourceManagerClose(container: HTMLElement, close: () =>
 }
 
 export function disposeResourceManager(container: HTMLElement): void {
+  disposeResourceWorkbench(container);
+  managerMounts.delete(container);
   audioEditors.get(container)?.dispose();
   audioEditors.delete(container);
 }
@@ -118,10 +124,28 @@ export function renderResourceManager(
 ): void {
   const focused = document.activeElement;
   const editor = audioEditorFor(container);
-  if (initialKind) editor.selectKind(initialKind);
+  const mounted = managerMounts.get(container);
+  // resourceModal passes its original initialKind on every store refresh.
+  // It is an opening hint, never an instruction to reset the user's current tab.
+  if (!mounted && initialKind) editor.kind = initialKind;
   const selectedResourceKind = editor.kind;
-  clearChildren(container);
   const project = store.getCurrent();
+  const uploadDependency = resourceManagerUploadDependency(project);
+  if (mounted?.kind === selectedResourceKind && mounted.audioActions
+    && (selectedResourceKind === "music" || selectedResourceKind === "sound")) {
+    const shell = container.querySelector<HTMLElement>(".rm-classic-shell");
+    if (shell) {
+      const panes = editor.render(selectedResourceKind, mounted.audioActions);
+      if (shell.lastElementChild !== panes.commands) shell.lastElementChild?.replaceWith(panes.commands);
+      if (mounted.profiles !== project.resourceProfiles || mounted.uploads !== uploadDependency) {
+        refreshResourceWorkbenchCategories(container);
+        mounted.profiles = project.resourceProfiles; mounted.uploads = uploadDependency;
+      }
+      return;
+    }
+  }
+  disposeResourceWorkbench(container);
+  clearChildren(container);
   const uploaded = Object.values(project.assets.uploaded);
   const kindSel = el("select", { dataset: { testid: "resource-kind-select" } }) as HTMLSelectElement;
   kindSel.className = "rm-hidden-kind-select";
@@ -193,6 +217,7 @@ export function renderResourceManager(
       toast(err instanceof Error ? err.message : "URL 가져오기 실패", "error");
     }
   };
+  const audioActions: AudioActions = { import: onImport, delete: deleteUploadedAsset };
   renderResourceWorkbench(container, {
     categories: RESOURCE_MANAGER_CATEGORIES,
     selectedKind: selectedResourceKind,
@@ -212,7 +237,7 @@ export function renderResourceManager(
       deleteAsset: deleteUploadedAsset,
     },
     ...(selectedResourceKind === "music" || selectedResourceKind === "sound"
-      ? { audioPanes: editor.render(selectedResourceKind, { import: onImport, delete: deleteUploadedAsset }) }
+      ? { audioPanes: editor.render(selectedResourceKind, audioActions) }
       : {}),
     onSelectKind: kind => {
       const wasExpressions = expressionViews.delete(container);
@@ -230,6 +255,8 @@ export function renderResourceManager(
         .catch((error: unknown) => toast(error instanceof Error ? error.message : "팩 가져오기 실패", "error")),
     }),
   });
+  managerMounts.set(container, { kind: selectedResourceKind, profiles: project.resourceProfiles, uploads: uploadDependency,
+    ...((selectedResourceKind === "music" || selectedResourceKind === "sound") ? { audioActions } : {}) });
   if (focused instanceof HTMLElement && container.contains(focused)) {
     focused.focus({ preventScroll: true });
   }

@@ -1,0 +1,23 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "width": 164.375,
+      "hidden": false,
+      "background": "rgb(247, 248, 248)"
+    },
+    {
+      "width": 164.375,
+      "hidden": false,
+      "background": "rgb(247, 248, 248)"
+    },
+    {
+      "started": "AI 작업이웃과 첫 만남을 만들어줘타일을 칠하는 중",
+      "off": true,
+      "preserved": "AI 작업새 요청요청을 읽고 있어요",
+      "remaining": 0
+    }
+  ],
+  "errors": [],
+  "scope": "production component isolated; no model or canonical writes"
+}

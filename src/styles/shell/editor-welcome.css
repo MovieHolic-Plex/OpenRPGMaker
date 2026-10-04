@@ -4,30 +4,27 @@
     position: fixed;
     inset: 0;
     z-index: var(--z-welcome);
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
+    isolation: isolate;
     overflow-y: auto;
-    padding: 25px;
-    color: var(--text-1);
+    color: var(--cinema-paper);
     font-family: var(--font-ui);
-    background: var(--bg-base);
+    background: var(--cinema-night);
   }
-  .editor-welcome-first-world .editor-welcome-scrim { position: fixed; inset: 0; background: var(--bg-base); }
-  .editor-welcome-first-world .editor-welcome-stage { position: relative; width: min(1060px,100%); margin: auto 0; }
-  .editor-welcome-brand { padding: 0 0 17px; color: var(--text-1); font-size: 17px; font-weight: 700; letter-spacing: -.03em; }
+  .editor-welcome-first-world .editor-welcome-stage { display: flex; flex-direction: column; min-height: 100vh; min-height: 100svh; width: 100%; padding: 25px clamp(20px,4vw,64px); }
+  .editor-welcome-brand { width: min(1120px,100%); margin: 0 auto; padding-bottom: 20px; color: var(--cinema-paper); font-size: 17px; font-weight: 700; letter-spacing: -.03em; }
+  .editor-welcome-first-world .first-world-arrival { flex: 1; display: flex; align-items: center; }
   .editor-welcome-first-world .editor-welcome-poster-system { width: 100%; margin-top: 8px; min-height: 36px; padding: 8px 10px; border: 1px solid #ffffff33; border-radius: 8px; color: #eee9ff; background: #111a30bf; font: inherit; font-size: 11px; cursor: pointer; }
   .editor-welcome-first-world .editor-welcome-poster-system:disabled { opacity: .5; cursor: default; }
-  .editor-welcome-first-world .editor-welcome-footer { display: flex; justify-content: flex-end; margin: 15px 0 0; }
-  .editor-welcome-first-world .editor-welcome-skip { min-height: 36px; padding: 5px 0; border: 0; color: var(--text-2); background: transparent; font: inherit; font-size: 12px; cursor: pointer; }
-  .editor-welcome-first-world .editor-welcome-skip:hover { color: var(--text-1); text-decoration: underline; }
+  .editor-welcome-first-world .editor-welcome-footer { display: flex; justify-content: flex-end; width: min(1120px,100%); margin: 15px auto 0; }
+  .editor-welcome-first-world .editor-welcome-skip { min-height: 36px; padding: 5px 0; border: 0; color: #e3ddcf; background: transparent; font: inherit; font-size: 12px; cursor: pointer; }
+  .editor-welcome-first-world .editor-welcome-skip:hover { color: var(--cinema-paper); text-decoration: underline; }
   .editor-welcome-first-world .editor-welcome-skip:focus-visible,.editor-welcome-ai-notice-action:focus-visible { outline: var(--focus-outline); outline-offset: 3px; }
-  .editor-welcome-first-world .editor-welcome-ai-notice { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; margin: 12px 0 0; padding: 12px; border: 1px solid var(--border-default); border-radius: 9px; background: var(--bg-raised); color: var(--text-2); font-size: 12px; line-height: 1.6; }
+  .editor-welcome-first-world .editor-welcome-ai-notice { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; width: min(780px,100%); margin: 12px auto 0; padding: 12px; border: 1px solid #fff9eb38; border-radius: 9px; background: var(--cinema-night); color: var(--cinema-paper); font-size: 12px; line-height: 1.6; }
   .editor-welcome-first-world [hidden] { display: none !important; }
   .editor-welcome-first-world .editor-welcome-ai-notice-action { padding: 8px 12px; border: 1px solid var(--border-default); border-radius: 6px; background: var(--bg-surface); color: var(--text-1); font: inherit; cursor: pointer; }
-  .editor-welcome-first-world .editor-welcome-system-preset-error { color: var(--danger); margin: 12px 0 0; font-size: 12px; line-height: 1.5; }
-  .editor-welcome-first-world .editor-welcome-note { color: var(--text-2); font-size: 12px; margin: 12px 0 0; }
+  .editor-welcome-first-world .editor-welcome-system-preset-error { width: min(780px,100%); color: #ffb4a9; margin: 12px auto 0; font-size: 12px; line-height: 1.5; }
+  .editor-welcome-first-world .editor-welcome-note { width: min(780px,100%); color: #e3ddcf; font-size: 12px; margin: 12px auto 0; }
   body.director-briefing-open .ai-command-bar,body.director-briefing-open [data-testid="standard-welcome-card"] { visibility: hidden; pointer-events: none; }
-  @media(max-width:640px) { .editor-welcome-first-world { padding: 16px 12px; } .editor-welcome-brand { padding-bottom: 12px; font-size: 15px; } }
+  @media(max-width:640px) { .editor-welcome-first-world .editor-welcome-stage { padding: 16px; } .editor-welcome-brand { padding-bottom: 12px; font-size: 15px; } }
   @media(pointer:coarse) { .editor-welcome-first-world .editor-welcome-poster-system,.editor-welcome-first-world .editor-welcome-skip { min-height: 44px; } }
 }

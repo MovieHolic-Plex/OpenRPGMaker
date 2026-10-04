@@ -1,0 +1,14 @@
+{
+  "projectId": "b2b88fc2-66b1-4455-9a2a-d97674cd5d1f",
+  "revision": 28,
+  "generationMode": "automatic first build; observation recovered by ordinary reload",
+  "projectUrl": "http://127.0.0.1:18435/index.html?hostProject=c7af65e5-be5f-407a-ad23-ff85612649fd",
+  "started": "2026-10-04T04:27:38.391Z",
+  "errors": [],
+  "networkFailures": [],
+  "exportStarted": "2026-10-04T04:28:01.595Z",
+  "path": "/home/main/.codex/worktrees/0a57/rpg-zzu/output/qa/first-scene-v7-final/game-web.zip",
+  "downloadFailure": null,
+  "seconds": 49.528,
+  "passed": true
+}

@@ -1,6 +1,6 @@
 # 일본 도시 — 오토타일 · 생활도로 (`jp-lane-road`)
 
-tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **3728칸**, 16px 칸, 시트 768×1248px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
+tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스처 `tex_jp_city`, **3747칸**, 16px 칸, 시트 768×1264px, 한 줄 **48칸** — 번호 n 의 칸은 열 n%48, 행 n÷48(내림), 픽셀 좌표 (열×16, 행×16), 모두 0 기준). 계열 `oprn-jp` — 버들항(`oprn-atlas`)·현대 도시(`modern_city`, `oprn-modern`)·조선·숲마을·EasyRPG 칩셋의 칸 번호와 섞지 않는다.
 
 보도 없는 생활도로 아스팔트. 가장자리에 1px 간격의 흰 외측선.
 
@@ -15,7 +15,7 @@ tilesetId `jp_city` · 그림 `public/assets/jp-city/jp-city-chipset.png`(텍스
 | 몸통 칸(맵에 칠하는 칸) | **3232**(생활도로 · 몸통) = `variantMap[255]` |
 | 통행·그림 순서(몸통 칸, 엔진) | 아래층(1층)·걸음·캐릭터 아래 |
 | 바깥 지형 가정 | 집 앞 콘크리트(`sw` 칸) |
-| 이어지는 칸(connectTileIds) | 자기 세트 49칸뿐(복사본인 도로 키트 칸·다른 오토타일과 이어지지 않음) |
+| 이어지는 칸(connectTileIds) | 자기 세트 64칸뿐(복사본인 도로 키트 칸·다른 오토타일과 이어지지 않음) |
 | 속칸 변형 | 단 0 = 3232, 3233, 3234 · 단 1 = 3232, 3233, 3234 |
 | 몸통 변형 칸(사전 밖 멤버) | 3233(몸통 변형 1), 3234(몸통 변형 2) |
 

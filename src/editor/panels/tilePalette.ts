@@ -12,8 +12,8 @@ import { TILE_GRAFT_IMAGE_BAKED_EVENT } from "@/assets/tileGraftImageCache";
 import { openTilePropsDialog } from "@/editor/panels/tilePropsDialog";
 import { openMapPropertiesDialog } from "@/editor/panels/mapPropertiesDialog";
 import { makeStructureKitShelf } from "@/editor/harnessSuggestion/structureKitShelf";
-import { makeComboBrushShelf } from "@/editor/panels/comboBrushShelf";
-import { makeTileBrushAssistPanel } from "@/editor/panels/tilePalettePreviewPanel";
+import { comboBrushShelfEntries, makeComboBrushShelf } from "@/editor/panels/comboBrushShelf";
+import { makeTileBrushAssistControls, makeTileBrushAssistPanel, syncTileBrushAssistSelection } from "@/editor/panels/tilePalettePreviewPanel";
 import { makeTileBrushControls } from "@/editor/panels/tilePaletteStampStatus";
 import { selectPaletteStamp } from "@/editor/panels/tileToolbarActions";
 import { dismissLocationDrawModeForTool } from "@/editor/locationDrawMode";
@@ -496,17 +496,19 @@ function makePaletteSurface(input: {
   // 타일 선택이 이 면의 주 작업이므로 순서를 뒤집고, 내장 킷은 기본 접힘으로 둔다.
   // 「조합」 = 검토를 통과한 큐레이션 Combo Brush 목록 (OPRN-OUT-022).
   // 구조 킷 선반보다 **먼저** 온다: 내장 조합은 항상 있고, 킷은 사용자가 등록해야 생긴다.
-  const comboShelf = makeComboBrushShelf({ rerender: renderPalettePreservingViewport, tileset });
-  if (comboShelf) utilities.append(makeSidebarSurface({ id: 'combos', label: '조합', triggerId: 'sidebar-combo-brushes',
-    rerender: renderPalettePreservingViewport, body: () => comboShelf }));
-
-  const kitShelf = makeStructureKitShelf({
-    tileset,
-    activeKitId: state.activePaletteStamp?.kitId ?? null,
+  if (comboBrushShelfEntries(tileset).length > 0) utilities.append(makeSidebarSurface({ id: 'combos', label: '조합', triggerId: 'sidebar-combo-brushes',
     rerender: renderPalettePreservingViewport,
-  });
-  if (kitShelf) utilities.append(makeSidebarSurface({ id: 'kits', label: '내 구조물', triggerId: 'sidebar-structure-kits',
-    rerender: renderPalettePreservingViewport, body: () => kitShelf }));
+    body: () => makeComboBrushShelf({ rerender: renderPalettePreservingViewport, tileset })! }));
+
+  // Trigger availability needs metadata only. Build assembled canvases only
+  // when makeSidebarSurface actually opens the body (725 kits in Beodeul).
+  if (tileset.structureKits?.some((kit) => kit.kind === "section")) utilities.append(makeSidebarSurface({ id: 'kits', label: '내 구조물', triggerId: 'sidebar-structure-kits',
+    rerender: renderPalettePreservingViewport,
+    body: () => makeStructureKitShelf({
+      tileset,
+      activeKitId: state.activePaletteStamp?.kitId ?? null,
+      rerender: renderPalettePreservingViewport,
+    })! }));
   root.append(utilities);
 
   return { root, palette, sheetSlot };
@@ -635,7 +637,7 @@ function makeBrushAssistSection(
   state: ReturnType<typeof editorState.get>,
   tileset: TilesetDef
 ): { readonly clusterRow: HTMLElement | null; readonly modeRow: HTMLElement | null; readonly section: HTMLElement } {
-  const panel = makeTileBrushAssistPanel({
+  const model = {
     autoConnectMode: state.autoConnectMode,
     clusterAssistMode: state.clusterAssistMode,
     mapId,
@@ -643,14 +645,10 @@ function makeBrushAssistSection(
     rerender: renderPalettePreservingViewport,
     selectedTile: state.selectedTile,
     tileset,
-  });
-  const modeRow = panel.querySelector<HTMLElement>(".tile-brush-mode-row");
-  const clusterRow = panel.querySelector<HTMLElement>(".tile-brush-cluster-row");
-
-  modeRow?.remove();
-  clusterRow?.remove();
+  };
+  const { modeRow, clusterRow } = makeTileBrushAssistControls(model);
   const section = makeSidebarSurface({ id: 'assist', label: '붓 보조', triggerId: 'palette-brush-assist-toggle',
-    rerender: renderPalettePreservingViewport, body: () => panel });
+    rerender: renderPalettePreservingViewport, body: () => makeTileBrushAssistPanel(model, false) });
   return { clusterRow, modeRow, section };
 }
 
@@ -783,7 +781,8 @@ function filteredTileIndexes(tileset: TilesetDef): readonly number[] {
 
 /**
  * 선택 타일만 바뀐 클릭. 시트를 비우고 칸을 다시 만들지 않고 활성 칸·선택 칩만 옮긴다.
- * 필터가 켜져 있거나 보조 창이 열려 있거나 대상 칸이 아직 없으면 false — 호출부가 전체를 다시 그린다.
+ * 커스텀 판은 필터 예외·최근 분류도 제자리에서 맞춘다. RM2K 필터는 칸 집합이
+ * 달라지므로 다시 그린다. 열린 보조 창/없는 대상 칸도 전체 갱신으로 돌아간다.
  */
 export function syncMountedPaletteSelection(): boolean {
   if (typeof document === "undefined") return false;
@@ -796,16 +795,52 @@ export function syncMountedPaletteSelection(): boolean {
   if (!tileset) return false;
   const displayTile = isCustomTileset(tileset) ? state.selectedTile : gridPaletteDisplayTile(tileset, state.selectedTile);
 
-  if (isFilterActive()) return false;
+  const custom = isCustomTileset(tileset);
+  if (isFilterActive() && !custom) return false;
   const sheet = root.querySelector<HTMLElement>('[data-testid="tile-palette"]');
-  if (!sheet || !movePaletteActiveCell(sheet, displayTile)) return false;
+  if (!sheet || sheet.dataset.retainKey !== paintSheetRetainKey(tileset, state.layer)) return false;
+  // Update the filter exception before moving the virtual active cell, which
+  // also stores selectedTile. The former selection must return to its filter state.
+  if (custom && !syncCustomPaletteSelectionFilter(root, sheet, tileset, state.layer, state.selectedTile)) return false;
+  if (!movePaletteActiveCell(sheet, displayTile)) return false;
   const map = store.getCurrent().maps[currentMapId()];
   const status = root.querySelector<HTMLElement>('[data-testid="selected-tile-status"]');
   if (status && map && !updateSelectedTileStatus(status, state.selectedTile, tileset, map)) {
     status.replaceWith(makeSelectedTileStatus(state.selectedTile, tileset, map));
   }
+  syncTileBrushAssistSelection(root, state.selectedTile, tileset);
   rememberMountedPaletteInputs(root);
   return true;
+}
+
+function syncCustomPaletteSelectionFilter(
+  root: HTMLElement,
+  sheet: HTMLElement,
+  tileset: TilesetDef,
+  layer: Exclude<Layer, "event">,
+  selectedTile: number,
+): boolean {
+  const visibleTiles = filteredTileIdSet(tileset);
+  // With no filter there is no selection exception to restore; keep that
+  // common path limited to moving the active cell and updating Recent's count.
+  if (isFilterActive() && !setCustomPaletteFilter(sheet, visibleTiles, selectedTile)) return false;
+  // Recent membership is mutable (18-entry MRU); neither its count nor a
+  // search within Recent may be retained from the previous selected tile.
+  const recentOption = root.querySelector<HTMLOptionElement>('[data-testid="tile-category-select"] option[value="recent"]');
+  const recentCategory = TILE_CATEGORIES.find((category) => category.id === "recent");
+  if (recentOption && recentCategory) {
+    const count = paletteMatchCount(tileset, layer, selectedTile, categoryVisibleTileSet(tileset, "recent"));
+    setPaletteText(recentOption, `${recentCategory.label} (${count})`);
+  }
+  const status = root.querySelector<HTMLElement>('[data-testid="palette-filter-status"] span');
+  if (status) setPaletteText(status, `${paletteMatchCount(tileset, layer, selectedTile, visibleTiles)}칸 표시`);
+  return true;
+}
+
+function setPaletteText(node: HTMLElement, text: string): void {
+  if (node.textContent === text) return;
+  if (node.firstChild instanceof Text && node.childNodes.length === 1) node.firstChild.data = text;
+  else node.textContent = text;
 }
 
 /**
@@ -844,7 +879,8 @@ function rememberMountedPaletteInputs(root: HTMLElement): void {
 /**
  * 타일을 고르며 레이어도 바뀐 클릭(상위 전용 타일). 커스텀 아틀라스는 두 레이어에 같은 칸을
  * 보이므로 활성 칸·선택 글·붓 상태만 옮기면 된다. 기본 칩셋은 레이어마다 보이는 칸이 다르고,
- * 필터가 걸린 팔레트는 빈 칸 안내가 레이어를 말한다 — 둘 다 false 를 돌려 호출부가 전체를 다시 그린다.
+ * RM2K는 레이어마다 보이는 칸이 달라 전체 갱신으로 돌아간다. 커스텀 판의
+ * 필터는 레이어와 무관하므로 선택 예외와 붓 상태만 맞춘다.
  */
 export function syncMountedPaletteLayerSelection(): boolean {
   if (typeof document === "undefined") return false;

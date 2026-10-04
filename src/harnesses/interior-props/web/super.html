@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>슈퍼하네싱</title>
+<style>
+:root{color-scheme:dark;--bg:#1b191e;--panel:#25222a;--line:#3a3640;--ink:#ece7e0;--dim:#aaa39d;--sel:#f2c14e}
+*{box-sizing:border-box} [hidden]{display:none!important}
+body{margin:0;height:100dvh;display:flex;flex-direction:column;background:var(--bg);color:var(--ink);font:14px/1.5 system-ui,sans-serif}
+header{flex:none;display:flex;align-items:center;gap:18px;padding:10px 16px;border-bottom:1px solid var(--line);background:var(--panel);flex-wrap:wrap}
+h1{font-size:18px;margin:0;white-space:nowrap} nav{display:flex;gap:5px;flex-wrap:wrap}
+button,a{font:inherit} button{cursor:pointer;background:transparent;color:var(--ink);border:1px solid var(--line);padding:5px 12px;border-radius:7px}
+button[aria-selected=true]{background:#3a3442;border-color:var(--sel)} button:hover,a:hover{color:var(--sel)}
+#status{color:var(--dim);font-size:12px;margin-left:auto} #status .bad{color:#ff9d8f}
+#flow{padding:6px 16px;color:var(--dim);font-size:12px;border-bottom:1px solid var(--line);flex:none}
+.pane{flex:1;min-height:0} iframe{border:0;display:block;width:100%;height:100%;background:var(--bg)}
+.offline{padding:32px;max-width:700px;color:var(--dim)} .offline h2{color:var(--ink)}
+a{color:#8fb3e8} #materials{overflow:auto;padding:24px 32px} #materials h2{margin:0 0 12px}
+.actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:18px 0}
+.download{display:inline-block;background:var(--sel);color:#1a1a1a;text-decoration:none;font-weight:700;border-radius:7px;padding:8px 14px}
+.download:hover{color:#1a1a1a;background:#ffce61} input{font:inherit;background:#25222a;color:var(--ink);border:1px solid var(--line);border-radius:7px;padding:7px 10px;width:min(320px,100%)}
+.muted{color:var(--dim)} #inventory{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;margin-top:18px}
+.kit{border:1px solid var(--line);border-radius:8px;padding:12px;background:var(--panel)} .kit b{display:block} .kit small{color:var(--dim)}
+.kit p{font-size:12px;color:var(--dim);margin-bottom:0} #count{font-size:13px;color:var(--dim)}
+@media(max-width:750px){header{gap:8px} #status{margin-left:0;width:100%} #materials{padding:20px 16px}}
+</style>
+</head>
+<body>
+<header>
+  <h1>슈퍼하네싱</h1>
+  <nav aria-label="슈퍼하네싱 작업">
+    <button role="tab" data-pane="props" aria-selected="true">기물·파생</button>
+    <button role="tab" data-pane="spaces" aria-selected="false">공간·개념</button>
+    <button role="tab" data-pane="orders" aria-selected="false">재료 주문서</button>
+    <button role="tab" data-pane="materials" aria-selected="false">공용 재료</button>
+  </nav>
+  <div id="status" role="status">연결 확인 중…</div>
+</header>
+<div id="flow">필요한 재료 조사 → 기물·파생 제작 → 내가 고르기 → 공용 등록 → 공간 제작·검수</div>
+<section class="pane" id="props" role="tabpanel"><iframe title="기물·파생 제작과 자동 제안" src="/harness/props"></iframe></section>
+<section class="pane" id="spaces" role="tabpanel" hidden>
+  <div class="offline" hidden><h2>공간·개념 연결 대기</h2><p>공간 상태를 읽을 수 없어. 잠시 뒤 다시 확인할게.</p><button class="retry">다시 확인</button> <a class="direct" target="_blank" rel="noopener">별도 화면 열기</a></div>
+  <iframe title="공간·개념 제작과 검수" hidden></iframe>
+</section>
+<section class="pane" id="orders" role="tabpanel" hidden>
+  <div class="offline" hidden><h2>재료 주문서 연결 대기</h2><p>재료 주문서를 불러오고 있어.</p><button class="retry">다시 확인</button> <a class="direct" target="_blank" rel="noopener">별도 화면 열기</a></div>
+  <iframe title="공간별 부족한 재료 주문서" hidden></iframe>
+</section>
+<section class="pane" id="materials" role="tabpanel" hidden>
+  <h2>내가 고른 공용 재료</h2>
+  <p class="muted">확정한 기물과 파생은 공용에 자동 등록돼. 같은 호스트의 프로젝트를 다시 열면 최신 기물을 쓸 수 있어.</p>
+  <div class="actions"><a class="download" href="/api/super-harness/materials.zip" hidden>재료 자료 받기</a><span id="count" role="status">불러오는 중…</span></div>
+  <p class="muted">「재료 자료 받기」로 그림과 배치 지침을 함께 전달할 수 있어. 공간 쪽에 자료를 연결한 뒤 「재료 다시 확인」으로 쓰임새와 시대를 검수해.</p>
+  <label>기물 찾기 <input id="query" type="search" placeholder="이름 또는 설명"></label>
+  <div id="inventory"></div>
+</section>
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let current='props', lastStatus=null, kits=null, loadedRevision=null, pendingStatus=false, pendingMaterials=false;
+function spaceURL(pane){const u=new URL(location.href);if(!lastStatus?.unified)u.port=String(lastStatus?.spacePort||18315);u.pathname=pane==='orders'?'/orders':lastStatus?.unified?'/spaces':'/';u.search='';u.hash='';return u.href}
+function syncSpace(pane){
+  if(!lastStatus)return;
+  const p=$('#'+pane), online=lastStatus.space.online, f=p.querySelector('iframe');
+  p.querySelector('.offline').hidden=online;f.hidden=!online;p.querySelector('.direct').href=spaceURL(pane);
+  if(online&&!f.hasAttribute('src'))f.src=spaceURL(pane);
+}
+function show(pane){
+  if(!['props','spaces','orders','materials'].includes(pane))pane='props';
+  current=pane;for(const p of document.querySelectorAll('.pane'))p.hidden=p.id!==pane;
+  for(const b of document.querySelectorAll('[data-pane]'))b.setAttribute('aria-selected',String(b.dataset.pane===pane));
+  if(pane==='spaces'||pane==='orders'){syncSpace(pane);refreshStatus()}
+  if(pane==='materials')loadMaterials();
+  history.replaceState(null,'','#'+pane);
+}
+async function refreshStatus(){
+  if(pendingStatus||document.hidden)return;pendingStatus=true;
+  try{
+    const r=await fetch('/api/super-harness/status',{cache:'no-store'});if(!r.ok)throw Error('상태를 읽을 수 없어');lastStatus=await r.json();
+    const s=lastStatus.space,p=lastStatus.publication;
+    const pub={done:'공용 반영 완료',queued:'공용 반영 대기',publishing:'공용 반영 중',error:'공용 반영 실패',idle:'공용 반영 대기'}[p.state]||'공용 반영 확인 중';
+    $('#status').innerHTML=`${esc(pub)} · ${s.online?`공간 ${s.concepts}개 · ${s.paused?'일시정지':`진행 중 ${s.running}개`}`:'<span class="bad">공간 서버 연결 대기</span>'}`;
+    if(current==='spaces'||current==='orders')syncSpace(current);
+    if(current==='materials'&&lastStatus.shared.revision!==loadedRevision)loadMaterials();
+  }catch(e){$('#status').textContent='연결 상태를 읽을 수 없어. 잠시 뒤 다시 확인할게.'}
+  finally{pendingStatus=false}
+}
+function renderKits(){
+  const q=$('#query').value.trim().toLowerCase(), all=Object.values(kits||{});
+  const list=all.filter(k=>`${k.name} ${k.kit.ai?.description||''}`.toLowerCase().includes(q));
+  $('#count').textContent=`공용 기물·킷 ${all.length}개 · 표시 ${list.length}개`;
+  $('#inventory').innerHTML=list.map(k=>`<article class="kit"><b>${esc(k.name)}</b><small>${k.width} × ${k.height}칸</small><p>${esc(k.kit.ai?.description||'')}</p></article>`).join('');
+}
+async function loadMaterials(){
+  if(pendingMaterials)return;pendingMaterials=true;
+  try{
+    const r=await fetch('/api/super-harness/materials',{cache:'no-store'}),d=await r.json();if(!r.ok)throw Error(d.error);
+    kits=d.kits;loadedRevision=d.revision;$('.download').hidden=false;renderKits();
+  }catch(e){$('#count').textContent=e.message||'공용 재료를 읽을 수 없어';$('.download').hidden=true;$('#inventory').replaceChildren()}
+  finally{pendingMaterials=false}
+}
+for(const b of document.querySelectorAll('[data-pane]'))b.onclick=()=>show(b.dataset.pane);
+for(const b of document.querySelectorAll('.retry'))b.onclick=refreshStatus;
+$('#query').oninput=renderKits;
+show(location.hash.slice(1)||'props');refreshStatus();setInterval(refreshStatus,15000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshStatus()});
+</script>
+</body>
+</html>

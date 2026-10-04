@@ -1,0 +1,174 @@
+{
+  "commit": "2cd0368b939bc5430ab8daa0e5ea52a38c5c5d00",
+  "conditions": "Native editor, 1440x900, reduced motion, synthetic fixtures, no host saves/model calls; wallMs includes automation and a fixed 250ms settling period; longTasks are browser tasks >=50ms. Shared host load is uncontrolled.",
+  "errors": [],
+  "rows": [
+    {
+      "name": "maps:10:switch:0",
+      "wallMs": 409,
+      "longTasks": [
+        54
+      ],
+      "addedNodes": 21,
+      "removedNodes": 21,
+      "treeReplacements": 4,
+      "totalNodes": 5491,
+      "lifeOptions": 0,
+      "hiddenFishPanels": 0,
+      "focused": "map-tree-node-ux_map_1",
+      "currentMapId": "ux_map_1"
+    },
+    {
+      "name": "maps:10:switch:1",
+      "wallMs": 389,
+      "longTasks": [],
+      "addedNodes": 18,
+      "removedNodes": 18,
+      "treeReplacements": 4,
+      "totalNodes": 5491,
+      "lifeOptions": 0,
+      "hiddenFishPanels": 0,
+      "focused": "map-tree-node-map_page",
+      "currentMapId": "map_page"
+    },
+    {
+      "name": "maps:10:switch:2",
+      "wallMs": 395,
+      "longTasks": [],
+      "addedNodes": 18,
+      "removedNodes": 18,
+      "treeReplacements": 4,
+      "totalNodes": 5491,
+      "lifeOptions": 0,
+      "hiddenFishPanels": 0,
+      "focused": "map-tree-node-ux_map_1",
+      "currentMapId": "ux_map_1"
+    },
+    {
+      "name": "maps:100:switch:0",
+      "wallMs": 555,
+      "longTasks": [
+        143,
+        105,
+        60
+      ],
+      "addedNodes": 18,
+      "removedNodes": 18,
+      "treeReplacements": 4,
+      "totalNodes": 6391,
+      "lifeOptions": 0,
+      "hiddenFishPanels": 0,
+      "focused": "map-tree-node-ux_map_1",
+      "currentMapId": "ux_map_1"
+    },
+    {
+      "name": "maps:100:switch:1",
+      "wallMs": 540,
+      "longTasks": [
+        132,
+        97
+      ],
+      "addedNodes": 18,
+      "removedNodes": 18,
+      "treeReplacements": 4,
+      "totalNodes": 6391,
+      "lifeOptions": 0,
+      "hiddenFishPanels": 0,
+      "focused": "map-tree-node-map_page",
+      "currentMapId": "map_page"
+    },
+    {
+      "name": "maps:100:switch:2",
+      "wallMs": 576,
+      "longTasks": [
+        127,
+        137,
+        105
+      ],
+      "addedNodes": 21,
+      "removedNodes": 21,
+      "treeReplacements": 4,
+      "totalNodes": 6391,
+      "lifeOptions": 0,
+      "hiddenFishPanels": 0,
+      "focused": "map-tree-node-ux_map_1",
+      "currentMapId": "ux_map_1"
+    },
+    {
+      "name": "maps:300:switch:0",
+      "wallMs": 2521,
+      "longTasks": [
+        305,
+        143,
+        85,
+        130,
+        82
+      ],
+      "addedNodes": 21,
+      "removedNodes": 21,
+      "treeReplacements": 4,
+      "totalNodes": 8391,
+      "lifeOptions": 0,
+      "hiddenFishPanels": 0,
+      "focused": "map-tree-node-ux_map_1",
+      "currentMapId": "ux_map_1"
+    },
+    {
+      "name": "maps:300:switch:1",
+      "wallMs": 2540,
+      "longTasks": [
+        296,
+        186,
+        87,
+        81,
+        66
+      ],
+      "addedNodes": 21,
+      "removedNodes": 21,
+      "treeReplacements": 4,
+      "totalNodes": 8391,
+      "lifeOptions": 0,
+      "hiddenFishPanels": 0,
+      "focused": "map-tree-node-map_page",
+      "currentMapId": "map_page"
+    },
+    {
+      "name": "maps:300:switch:2",
+      "wallMs": 2573,
+      "longTasks": [
+        331,
+        229,
+        127,
+        82,
+        90
+      ],
+      "addedNodes": 21,
+      "removedNodes": 21,
+      "treeReplacements": 4,
+      "totalNodes": 8391,
+      "lifeOptions": 0,
+      "hiddenFishPanels": 0,
+      "focused": "map-tree-node-ux_map_1",
+      "currentMapId": "ux_map_1"
+    },
+    {
+      "name": "charset:idle:2000ms",
+      "visible": 320,
+      "offscreen": 1216,
+      "other": 0,
+      "cards": 24
+    },
+    {
+      "name": "charset:closed:1200ms",
+      "visible": 0,
+      "offscreen": 0,
+      "other": 0
+    },
+    {
+      "name": "life:slow-native-typing",
+      "value": "a",
+      "focused": null,
+      "activeTag": "BODY"
+    }
+  ]
+}

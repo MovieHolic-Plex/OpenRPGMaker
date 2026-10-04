@@ -9,14 +9,18 @@
 import glob, json, os, shutil, sqlite3, subprocess, sys
 from PIL import Image
 
+if not __package__:
+    sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
+    __package__ = 'src.harnesses.interior-props'
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, '..', '..', '..'))
 sys.path.insert(0, os.path.join(ROOT, 'scripts/content/hand-interior-pick'))
 from check_candidate import LINE_THICK_MAX, LINE_NONE_MAX  # noqa: E402
-from common import CAND, SHARED_PAL, TOP_MIN_SHALLOW, blockout_image, geom, objects_by_id, slug, top_min, top_rule_text  # noqa: E402
+from common import CONTENT_ROOT, CAND, SHARED_PAL, TOP_MIN_SHALLOW, blockout_image, geom, objects_by_id, slug, top_min, top_rule_text  # noqa: E402
 import picks_db  # noqa: E402
 import outline_select  # noqa: E402
-import store  # noqa: E402
+from . import store  # noqa: E402
 
 # 방향 — 한 판 5장의 작업자마다 하나. 같은 기물을 다른 해석으로 찍게 해서 사용자가 고를 폭을 만든다.
 DIRECTIONS = [
@@ -56,7 +60,10 @@ def is_new(item):
     return bool(objects_by_id()[item].get('new')) and current_choice(item) == 'v5'
 
 
-def directions(item, base=''):
+def directions(item, base='', slot=''):
+    from . import derive
+    d = derive.directions(objects_by_id()[item], slot)   # 파생(묶음·큰 판)은 그 갈래
+    if d: return d
     if '@' in (base or ''): return STATE_DIRECTIONS
     if base: return DIRECTIONS
     return NEW_DIRECTIONS if is_new(item) else DIRECTIONS
@@ -113,7 +120,7 @@ def family(item):
     return [i for i, m in by.items() if i != item and i.split()[0].split(':')[0] == head and m['category_ko'] == cat]
 
 
-AUDIT = os.path.join(ROOT, 'tiledata/hand-interior/pick/audit/v34-audit-verdicts.json')
+AUDIT = os.path.join(CONTENT_ROOT, 'tiledata/hand-interior/pick/audit/v34-audit-verdicts.json')
 FLATKINDS = ('hang', 'flat')   # 벽면 걸이·바닥 무늬 — 평평한 게 정상이라 가구의 기준 그림으로 주면 정면도를 배운다(투구 선반 h49)
 
 
@@ -166,7 +173,7 @@ def anchors(item, k=4):
     return out
 
 
-def make(rid, item, note='', base=''):
+def make(rid, item, note='', base='', slot=''):
     o = objects_by_id()[item]; d = ensure_folder(item); s = slug(item); G = geom(o)
     out = os.path.join(store.DATA, 'rounds', f'h{rid}'); os.makedirs(out, exist_ok=True)
     cur = current_choice(item)
@@ -220,7 +227,10 @@ def make(rid, item, note='', base=''):
           + (' (크기 바뀜: resize.json)' if G['resized'] else ''),
           f'- 후보 폴더: `{os.path.relpath(d, ROOT)}` (팔레트 `palette.pal`, 지금 그림 `{"v5.pxg" if cur == "v5" else cur + ".pxg"}`)',
           f'- 방 안 맥락: `context.png` ({room})', '']
-    if is_new(item):
+    from . import derive
+    if o.get('set'):
+        md += derive.brief_lines(o, base, slot)
+    elif is_new(item):
         md += ['## 새 기물 — 지금 그림이 없다', '',
                f'`v5.pxg` 는 빈 캔버스다({G["canvas"][0]}×{G["canvas"][1]}). **위 「물건」 설명대로 처음부터 그린다.** current-x8.png·context.png 에는 아직 이 물건이 없다(방 자리만 본다).',
                f'- 쓰임: {", ".join(o.get("use") or [])} · 놓는 곳: {o.get("place", "")}',
@@ -228,7 +238,14 @@ def make(rid, item, note='', base=''):
                '- 같은 방에 놓을 기존 가구(anchors/)와 윤곽 굵기·명암 단 수·크기감이 같아야 한다.', '']
     if note: md += ['## 사용자 메모 (가장 먼저 따른다)', '', note, '']
     if notes: md += ['## 이 기물에 대한 사용자의 지난 말', ''] + [f'- {n}' for n in notes[-5:]] + ['']
-    if base and '@' in base:
+    if base and '@' in base and o.get('derive') == 'size':
+        bitem, bc = base_src(item, base)
+        md += ['## 출발점 — 같은 물건의 작은 판 (크기 파생)', '',
+               f'이 기물은 「{objects_by_id()[bitem]["name_ko"]}」(`{bitem}`)를 {G["footprint"]["w"]}×{G["footprint"]["h"]}칸으로 키운 판이다. 사용자가 고른 그 그림 `{bpxg}`(`base-x8.png`)가 기준이다.',
+               '- **늘리지(확대하지) 않는다.** 2배 확대 계단 화소는 떨어진다. 새 캔버스에 같은 물건을 16px 칸 화풍 그대로 다시 그린다 — 윤곽 1칸, 명암 단 수·나뭇결 굵기는 원본과 같다.',
+               '- 재료·색·장식·비례 느낌은 원본을 따른다. 칸이 늘어난 만큼 세부(결·이음·장식)를 더해도 된다.',
+               '- 색은 출발 그림 폴더 palette.pal 의 색만(검사는 이 폴더 palette.pal 로 본다 — 없는 색이면 가장 가까운 공통 팔레트 색).', '']
+    elif base and '@' in base:
         bitem, bc = base_src(item, base)
         md += ['## 출발점 — 같은 물건의 다른 상태', '',
                f'이 기물은 「{objects_by_id()[bitem]["name_ko"]}」(`{bitem}`)의 다른 상태다. 사용자가 고른 그 그림 `{bpxg}`(`base-x8.png`)를 **복사해서 출발**한다 — `cp {bpxg} <네 결과 파일>.pxg`.',

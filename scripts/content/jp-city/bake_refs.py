@@ -302,7 +302,7 @@ ROAD_KITS = [k for k in KITS if k.startswith(('jp-road-', 'jp-fumikiri', 'jp-und
 RECIPES = [k for k in KITS if k.startswith('jp-recipe-')]
 DOORS = [k for k in KITS if k.startswith('jp-door-')]
 PROPS = [k for k in KITS if k.startswith('jp-prop-')]
-assert (len(ROAD_KITS), len(RECIPES), len(DOORS), len(PROPS)) == (29, 25, 9, 142), (len(ROAD_KITS), len(RECIPES), len(DOORS), len(PROPS))
+assert (len(ROAD_KITS), len(RECIPES), len(DOORS), len(PROPS)) == (39, 25, 9, 142), (len(ROAD_KITS), len(RECIPES), len(DOORS), len(PROPS))
 assert len(AT) == 17 and len(SPEC['examples']) == 25 and len(SPEC['decos']) == 73 and len(SPEC['bands']) == 60
 
 
@@ -325,7 +325,7 @@ modern3 팔레트(154색) 손 도트로 그린 **일본 상가 거리** 칩셋�
 - **사람(행인)**: 없다. 851~1005({NCELL['people']}칸)은 행인이 있던 자리의 **빈 칸**(번호만 유지, 통행 막힘)이다 — 칠하지 않는다. 행인·NPC 는 이벤트의 캐릭터 그래픽(Actor1 등)으로 둔다.
 - **움직이는 칸**: 없다(`animationStrips` {len(D['animationStrips'])}개). 연못·수로 물도 정지 그림이다.
 - **실내**: 없다. 거리와 건물 외관만이다. 실내는 다른 칩셋의 실내 맵으로 만든다.
-- **止まれ(정지) 글자**: 없다(역삼각 도형 `jp-road-sign-tomare` 만). 16px 에서 읽히지 않아 글리프에서 뺐다.
+- **止まれ(정지) 글자**: 역삼각 표지(`jp-road-sign-tomare`, 글자 없음)와 별개로 노면 글자 키트 `jp-road-mark-tomare-n/e/s/w`(JIS 16×16 글리프, 운전자가 읽는 방향 4가지)가 있다. 위에서 보는 지도에서는 동·서·남행은 글자가 돌아가 있어 읽기 어렵다 — 북행(글자가 바로 선다)을 우선 쓴다.
 - **후속 추가 자리**: 주택가·역·공원·신사 구역 키트와 그 조립 지침은 그림이 들어온 뒤 이 용도에 덧붙인다(지금은 없다). 지금 있는 것은 소품 사전의 개별 소품뿐이다.
 - 다른 칩셋(버들항·현대 도시·조선·EasyRPG)의 칸 번호를 이 맵에 섞지 않는다. 같은 번호가 전혀 다른 그림이다.
 
@@ -1156,14 +1156,14 @@ img_bld_errors()
 
 # ====================================================================== 분류 4 — 도로·교차로 키트
 C_ROAD = new_cat('road', '일본 도시 · 도로·교차로 키트',
-                 '도로·교차로·건널목 키트 29종(생활도로 직선·T자·십자·굽은 길·막다른 길, 간선도로 4차선 직선·십자 교차로, 철도 건널목 4, 지하도·육교, 노면 표시·표지): 키트 id·크기·앵커·반복축·변 연결(팔) 위치·칸 번호 전체 배열·통행 코드, 키트를 이어 붙이는 공식과 정답 조립(생활도로 직선→T→십자, 굽은 길, 간선 교차로, 건널목), 오토타일과의 이음 한계, 정상/오류 그림.')
+                 '도로·교차로·건널목 키트 39종(생활도로 직선·T자·십자·굽은 길·막다른 길·횡단보도 2, 간선도로 4차선 직선·십자 교차로(신호기 4기 포함), 철도 건널목 4, 지하도·육교, 노면 표시·止まれ 글자 4방향·표지, 신호기 4종): 키트 id·크기·앵커·반복축·변 연결(팔) 위치·칸 번호 전체 배열·통행 코드, 키트를 이어 붙이는 공식과 정답 조립(생활도로 직선→T→십자, 굽은 길, 간선 교차로, 건널목), 오토타일과의 이음 한계, 정상/오류 그림.')
 RC = {c['name']: c for c in EN['roadComps']}
 RERR = EN['roadErrors']
 KIT_CODES = EN['kitCodes']
 LANE_KITS = [k for k in ROAD_KITS if k.startswith('jp-road-lane-')]
 TRUNK_KITS = [k for k in ROAD_KITS if k.startswith('jp-road-trunk-')]
 MISC_ROAD = [k for k in ROAD_KITS if k not in LANE_KITS and k not in TRUNK_KITS]
-assert (len(LANE_KITS), len(TRUNK_KITS), len(MISC_ROAD)) == (15, 3, 11), (len(LANE_KITS), len(TRUNK_KITS), len(MISC_ROAD))
+assert (len(LANE_KITS), len(TRUNK_KITS), len(MISC_ROAD)) == (17, 3, 19), (len(LANE_KITS), len(TRUNK_KITS), len(MISC_ROAD))
 
 
 def kit_grid(kid):
@@ -1261,12 +1261,12 @@ def doc_road_kit_dict(did, title, ids, extra=''):
 '''
 
 
-add_doc(C_ROAD, 'road-dict-lane', '일본 도시 · 도로 키트 사전 · 생활도로 15종', doc_road_kit_dict('road-dict-lane', '생활도로 15종', LANE_KITS,
-        '생활도로: 폭 4칸, 보도 없음, 가장자리에 흰 외측선. 직선(`lane-h` 6×4 가로 반복, `lane-v` 4×6 세로 반복)·T자 4방향·십자·굽은 길 4방향·막다른 길 4방향.'))
+add_doc(C_ROAD, 'road-dict-lane', '일본 도시 · 도로 키트 사전 · 생활도로 17종', doc_road_kit_dict('road-dict-lane', '생활도로 17종', LANE_KITS,
+        '생활도로: 폭 4칸, 보도 없음, 가장자리에 흰 외측선. 직선(`lane-h` 6×4 가로 반복, `lane-v` 4×6 세로 반복)·T자 4방향·십자·굽은 길 4방향·막다른 길 4방향·횡단보도 2종(`lane-crosswalk-h` 6×4 가로 도로 · `lane-crosswalk-v` 4×6 세로 도로: 가운데 2칸 폭에 횡단보도 오토타일 칸을 얹은 직선 키트 — 직선 키트 한 곳을 이 키트로 바꿔 찍는다).'))
 add_doc(C_ROAD, 'road-dict-trunk', '일본 도시 · 도로 키트 사전 · 간선도로 3종', doc_road_kit_dict('road-dict-trunk', '간선도로 3종', TRUNK_KITS,
-        '간선도로 4차선: 차도 13줄(3칸 차선 넷 + 중앙분리대 1칸) + 양쪽 보도 2칸 = 폭 17칸. 왼쪽 통행(동쪽으로 가는 차는 북쪽 반). 분리대는 생울타리, 차선 경계는 점선. 직선은 `trunk-h` 8×17 가로 반복·`trunk-v` 17×8 세로 반복, 십자 교차로 `trunk-x` 는 29×29(정지선·방향 화살표·횡단보도 포함, 분리대는 횡단보도 앞에서 끝난다).'))
-add_doc(C_ROAD, 'road-dict-misc', '일본 도시 · 도로 키트 사전 · 건널목·지하도·육교·노면 표시·표지', doc_road_kit_dict('road-dict-misc', '철도 건널목 4 · 지하도 · 육교 · 노면 표시 · 표지 4', MISC_ROAD,
-        '건널목: 폭 4칸 생활도로 × 선로 한 줄, 경보기 둘 + 차단기 둘 + 바닥판 + 정지선. `-closed` 는 차단기 팔이 내려와 접근 차선을 막은 상태(열차 통과 연출용). 위층(경보기 머리·올라간 차단기 팔)은 지나갈 수 있고 기둥·본체·내려온 팔은 막힌다. 지하도·육교는 북쪽을 향한 한 방향. 신호기·가로등은 시트의 기존 소품(`jp-prop-signal`·`jp-prop-lamp-post` 등)을 쓴다.'))
+        '간선도로 4차선: 차도 13줄(3칸 차선 넷 + 중앙분리대 1칸) + 양쪽 보도 2칸 = 폭 17칸. 왼쪽 통행(동쪽으로 가는 차는 북쪽 반). 분리대는 생울타리, 차선 경계는 점선. 직선은 `trunk-h` 8×17 가로 반복·`trunk-v` 17×8 세로 반복, 십자 교차로 `trunk-x` 는 29×29(정지선·방향 화살표·횡단보도 포함, 분리대는 횡단보도 앞에서 끝난다, 네 모퉁이 보도 끝에 신호기: 차량 3색 머리 + 보행 신호 달린 기둥, 마주 보는 모퉁이는 같은 신호).'))
+add_doc(C_ROAD, 'road-dict-misc', '일본 도시 · 도로 키트 사전 · 건널목·지하도·육교·노면 표시·표지·신호기', doc_road_kit_dict('road-dict-misc', '철도 건널목 4 · 지하도 · 육교 · 노면 표시(자전거·止まれ 4방향) · 표지 4 · 신호기 4', MISC_ROAD,
+        '건널목: 폭 4칸 생활도로 × 선로 한 줄, 경보기 둘 + 차단기 둘 + 바닥판 + 정지선. `-closed` 는 차단기 팔이 내려와 접근 차선을 막은 상태(열차 통과 연출용). 위층(경보기 머리·올라간 차단기 팔)은 지나갈 수 있고 기둥·본체·내려온 팔은 막힌다. 지하도·육교는 북쪽을 향한 한 방향. 신호기 1×2: `jp-road-signal-car`(차량 3색 머리, 青 켜짐)·`-car-red`(赤 켜짐)·`jp-road-signal-ped`(보행 신호, 赤 선 사람)·`-ped-green`(青 걷는 사람) — 머리칸(★ 지나감) 아래 기둥 받침(막힘). 큰 신호기·가로등은 시트의 기존 소품(`jp-prop-signal`·`jp-prop-lamp-post` 등)을 쓴다. 노면 글자 `jp-road-mark-tomare-n/e/s/w`(止まれ, 운전자가 북·동·남·서쪽으로 가며 읽는 방향)는 흰 칠 투명 오버레이라 도로(아래층) 위에 `stamp_object`(3층)로 얹는다.'))
 
 
 def comp_doc(name, title, note):
@@ -1305,7 +1305,7 @@ def doc_road_assembly():
 
 ## 키트 한눈에
 {kit_table(ROAD_KITS)}
-- **반복/고정**: 반복 가능 = 직선 4종(`lane-h`·`lane-v`·`trunk-h`·`trunk-v`, 같은 키트를 축 방향으로 키트 크기만큼 간격을 두고 연달아 찍는다). 나머지(교차로·굽은 길·막다른 길·건널목·지하도·육교·표시·표지)는 **고정** — 늘리거나 이어 붙이지 않는다.
+- **반복/고정**: 반복 가능 = 직선 4종(`lane-h`·`lane-v`·`trunk-h`·`trunk-v`, 같은 키트를 축 방향으로 키트 크기만큼 간격을 두고 연달아 찍는다). 나머지(교차로·굽은 길·막다른 길·횡단보도·건널목·지하도·육교·표시·표지·신호기)는 **고정** — 늘리거나 이어 붙이지 않는다.
 - 도로 폭: 생활도로 4칸, 간선 17칸(차도 13 + 보도 2×2). 팔(`arms`)은 도로가 이어 나가는 변이다.
 
 ## 이어 붙이는 공식 (정답 조립 좌표로 검증됨)
@@ -1319,7 +1319,9 @@ A 키트 왼쪽 위 (ax,ay), A 의 `S` 변 팔 시작 오프셋 a0, B 키트의 
 1. **바닥**: 키트 밖(-1 칸)은 비어 있다. 집 앞 땅(보도 `sw`·콘크리트)을 먼저 깐다 — 키트 모서리 바깥이 비면 검게 보인다.
 2. **도로 키트를 찍는다**: 교차로(T·십자)를 먼저 놓고 위 공식으로 직선·굽은 길·막다른 길을 이어 붙인다(찍는 순서는 결과에 영향이 없다 — 키트 칸이 겹치지 않는다).
 3. 간선도로는 건물 쪽 보도가 키트 밖으로 이어지는 것으로 그려져 있으니 **건물 앞 보도에 겹쳐** 놓는다.
-4. 소품(신호기·가로등·볼라드)은 도로 키트 밖 보도에 소품 키트로 찍는다(용도 「상가 키트·문·소품」).
+4. 신호기는 교차로 키트 `trunk-x` 에 네 모퉁이로 이미 들어 있다. 다른 곳(생활도로 십자·횡단보도 끝)에는 `jp-road-signal-car`·`jp-road-signal-ped` 1×2 를 보도 가장자리에 한 개씩 세운다(머리칸이 위, 기둥 받침이 아래 — 보도 폭이 2칸이면 한 칸만 막히니 안쪽 칸으로 지나가게 둔다). 가로등·볼라드는 도로 키트 밖 보도에 소품 키트로 찍는다(용도 「상가 키트·문·소품」).
+5. **생활도로 횡단보도**: 가로 생활도로의 한 곳(6칸)을 `jp-road-lane-crosswalk-h`, 세로 생활도로의 한 곳(6칸)을 `jp-road-lane-crosswalk-v` 로 바꿔 찍는다. 도로 칸은 직선 키트와 같아 앞뒤 직선·오토타일 도로와 이음새가 맞는다.
+6. **止まれ 노면 글자**: 일시정지 표지 `jp-road-sign-tomare`(1×2, 글자 없는 역삼각)를 길가에 세우고 그 앞 접근 차선에 `jp-road-mark-tomare-<방향>`(1×3 또는 3×1)을 얹는다. 방향 n=북행(글자가 똑바로 선다)·e=동행·s=남행·w=서행 — 운전자가 앞을 보고 읽는 방향이라 위에서 보는 지도에서는 n 만 바로 읽힌다(나머지는 글자가 돌아 있다).
 
 ## 정답 조립 4가지 (입력 = 배치 목록 → 전체 배열 → 그림은 실제 `stamp_object` 결과)
 - 생활도로 직선 → T → 십자: `jp-road-ex-lane`(`lane-chain` 30×32: 직선 반복, T자 남쪽 가지, 세로 직선, 십자, 막다른 길).
@@ -1332,10 +1334,10 @@ A 키트 왼쪽 위 (ax,ay), A 의 `S` 변 팔 시작 오프셋 a0, B 키트의 
 키트 쪽 이웃을 못 보고 첫 칸 (6,0) 이 가장자리 칸 {lj[0][6]}(「{suffix_label(AT['jp-lane-road'], lj[0][6])}」)로 닫혔다 — **키트와 오토타일은 이음새에서 끊긴다**. 키트는 키트끼리, 오토타일은 오토타일끼리 이어 칠한다.
 
 ## 한계
-- 止まれ 글자 없음(역삼각 도형 `jp-road-sign-tomare` 만): 16px 에서 글자가 읽히지 않는다.
+- 止まれ: 표지(`jp-road-sign-tomare`)는 역삼각 도형뿐(16px 도형 안에 글자가 안 들어간다). 글자는 노면 키트 `jp-road-mark-tomare-*` 가 맡지만 JIS 16×16 글리프를 가로로 1px 부풀린 것이라 가늘고, 동·서·남행은 글자가 돌아가 지도에서 읽기 어렵다(북행만 바로 읽힌다). 실제 예제 맵 ①(상가 거리)에는 쓰지 않았다.
 - 차선 폭 3칸이라 간선 키트가 17칸 높이, 십자는 29×29(정의 크기)다.
 - 건널목은 단선·생활도로(폭 4) 한 가지. 지하도·육교는 북쪽을 향한 한 방향.
-- 신호기·가로등은 시트의 기존 소품 키트를 쓴다(도로 키트에 포함돼 있지 않다).
+- 신호기: 간선 십자 교차로 `trunk-x` 네 모퉁이에 4기가 들어 있고(위쪽 둘은 보도 ㄱ자 바깥 끝 칸, 아래쪽 둘은 한 칸 바깥), 단독 키트 `jp-road-signal-*`(1×2)도 있다. 신호는 정지 그림(青/赤 고정)이라 신호가 바뀌는 연출은 없다. 생활도로 십자·T자·건널목에는 신호기를 따로 찍어야 한다. 가로등·큰 신호기(`jp-prop-signal` 2×6)는 소품 키트다.
 - 키트 칸 배열은 한 방향(canonical)으로 만들고 90도 회전해 4방향을 구웠다(T·굽은 길·막다른 길).
 - **검사 범위**: 칸 번호·키트 id 와 좌표(공식 일치·도로 줄 끊김·층)만 본다. 신호·차량 흐름·이벤트·미적 품질은 보지 않는다.
 
@@ -1383,11 +1385,11 @@ def img_roads():
         layers = {'1': [t for r in lo for t in r], '3': [t for r in upv for t in r]}
         return up(render(layers, w, h, bg=(0, 0, 0, 0)), k)
     for i, pg in enumerate(shelf_pack([(k[8:], kit_img(k)) for k in LANE_KITS])):
-        save_img(f'road-kits-lane-{i + 1}' if i else 'road-kits-lane', pg, f'생활도로 키트 15종 도감(원본 해상도, 라벨 = 키트 id 에서 `jp-road-` 를 뺀 것, 투명 칸은 체크 무늬 = -1 칸). 칸 번호는 `jp-road-dict-lane`.', C_ROAD)
+        save_img(f'road-kits-lane-{i + 1}' if i else 'road-kits-lane', pg, f'생활도로 키트 17종 도감(원본 해상도, 라벨 = 키트 id 에서 `jp-road-` 를 뺀 것, 투명 칸은 체크 무늬 = -1 칸). 칸 번호는 `jp-road-dict-lane`.', C_ROAD)
     for i, pg in enumerate(shelf_pack([(k[8:], kit_img(k)) for k in TRUNK_KITS])):
-        save_img(f'road-kits-trunk-{i + 1}' if i else 'road-kits-trunk', pg, f'간선도로 키트 3종 도감(원본 해상도). 칸 번호는 `jp-road-dict-trunk`.', C_ROAD)
+        save_img(f'road-kits-trunk-{i + 1}' if i else 'road-kits-trunk', pg, f'간선도로 키트 3종 도감(원본 해상도, `trunk-x` 는 네 모퉁이에 신호기가 선 상태). 칸 번호는 `jp-road-dict-trunk`.', C_ROAD)
     for i, pg in enumerate(shelf_pack([(k[3:], kit_img(k, 2)) for k in MISC_ROAD])):
-        save_img(f'road-kits-misc-{i + 1}' if i else 'road-kits-misc', pg, f'건널목 4·지하도·육교·노면 표시·표지 키트 도감(원본 ×2). 칸 번호는 `jp-road-dict-misc`.', C_ROAD)
+        save_img(f'road-kits-misc-{i + 1}' if i else 'road-kits-misc', pg, f'건널목 4·지하도·육교·노면 표시(止まれ 4방향 포함)·표지·신호기 키트 도감(원본 ×2). 칸 번호는 `jp-road-dict-misc`.', C_ROAD)
     # 정답 조립
     for name, k in (('lane-chain', 1), ('lane-bends', 1), ('trunk-cross', 1), ('fumikiri', 2), ('fumikiri-closed', 2)):
         c = RC[name]; im = up(render(c['layers'], c['W'], c['H']), k)
@@ -1654,13 +1656,15 @@ OLD_GROUP_LAYER = {'jp:lane-center': 'lower', 'jp:lane-dash': 'lower', 'jp:cross
                    'jp:prop:storefront': 'upper', 'jp:prop:play': 'upper', 'jp:underpass-footbridge': 'upper'}
 _GROUP_HOMES = collections.OrderedDict()            # 정정 대상 그룹 → {'upper': [칸], 'lower': [칸]} (엔진 홈 기준)
 _LEFT_MISMATCH = []                                  # 정정 후에도 그룹 층과 칸 홈이 어긋난 (그룹, 칸) — 0 이어야 한다
+HIST_TILES = 3728      # 정정(2026-10-03) 당시 칸 수 — 이후에 덧붙은 칸(번호 ≥ 3728)은 정정 전/후 비교 표에 세지 않는다
 for _g in D['tileGroups']:
-    _homes = {'upper': [], 'lower': []}
+    _homes = {'upper': [], 'lower': []}; _hist = {'upper': [], 'lower': []}
     for _t in _g['tileIds']:
         _c = CODES[_t]
         if not _c or _c[0] == 'b': continue
         _homes['lower' if _c[0] == 'l' else 'upper'].append(_t)
-    if _g['id'] in OLD_GROUP_LAYER: _GROUP_HOMES[_g['id']] = _homes
+        if _t < HIST_TILES: _hist['lower' if _c[0] == 'l' else 'upper'].append(_t)
+    if _g['id'] in OLD_GROUP_LAYER: _GROUP_HOMES[_g['id']] = _hist
     if _g['defaultLayer'] == 'event': continue
     _want = 'mixed' if (_homes['upper'] and _homes['lower']) else ('upper' if _homes['upper'] else 'lower' if _homes['lower'] else _g['defaultLayer'])
     if _g['defaultLayer'] != _want: _LEFT_MISMATCH.append(_g['id'])

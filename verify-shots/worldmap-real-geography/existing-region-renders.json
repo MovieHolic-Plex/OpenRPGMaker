@@ -1,0 +1,204 @@
+{
+  "regions": [
+    {
+      "region": "africa",
+      "sourceReport": "/tmp/wm-full/africa/build-report.json",
+      "sourceSha256": "56277c8c71bd143979f3fe1006849d2900e1196178c338f549bdc1ee264b5574",
+      "journeyCheck": {
+        "ok": true,
+        "bad": []
+      },
+      "renderExists": true
+    },
+    {
+      "region": "australia",
+      "sourceReport": "/tmp/wm-full/australia/build-report.json",
+      "sourceSha256": "2a2f990b752fcf38f5c631eab1ade732c25b75232e29254228c38c4e5744d57c",
+      "journeyCheck": {
+        "ok": true,
+        "bad": []
+      },
+      "renderExists": true
+    },
+    {
+      "region": "britain",
+      "sourceReport": "/tmp/wm-full/britain/build-report.json",
+      "sourceSha256": "52ece3b488ac224cb09eacf41ed033089fc9d015e98de632d4289d6b8eb257fd",
+      "journeyCheck": {
+        "ok": true,
+        "bad": []
+      },
+      "renderExists": true
+    },
+    {
+      "region": "caribbean",
+      "sourceReport": "/tmp/wm-full/caribbean/build-report.json",
+      "sourceSha256": "24c4f64a99b07e86419709bda30b71c62c91481687b02769e8cb4f4e51adfeaa",
+      "journeyCheck": {
+        "ok": true,
+        "bad": []
+      },
+      "renderExists": true
+    },
+    {
+      "region": "china",
+      "sourceReport": "/tmp/wm-full/china/build-report.json",
+      "sourceSha256": "93caa36e0760a47b17ec79d32e4c2be350e5e1f2b8ff9f66141f0dde531fc4c2",
+      "journeyCheck": {
+        "ok": true,
+        "bad": []
+      },
+      "renderExists": true
+    },
+    {
+      "region": "east-asia",
+      "sourceReport": "/tmp/wm-full/east-asia/build-report.json",
+      "sourceSha256": "7170e168397088ae16ad30cd621d80d05dc7ab8e5b9a9742c97ee206170b9b29",
+      "journeyCheck": {
+        "ok": true,
+        "bad": []
+      },
+      "renderExists": true
+    },
+    {
+      "region": "egypt",
+      "sourceReport": "/tmp/wm-full/egypt/build-report.json",
+      "sourceSha256": "9a59525a7e35d7e8476e842bbe234036f89a7ffffc643f7a487f8de753cd7ecd",
+      "journeyCheck": {
+        "ok": true,
+        "bad": []
+      },
+      "renderExists": true
+    },
+    {
+      "region": "europe",
+      "sourceReport": "/tmp/wm-full/europe/build-report.json",
+      "sourceSha256": "d432165b15ae9d2fd74f4815294b3224c76a739167e9a7bd5095a2b92dea5035",
+      "journeyCheck": {
+        "ok": true,
+        "bad": []
+      },
+      "renderExists": true
+    },
+    {
+      "region": "greece",
+      "sourceReport": "/tmp/wm-full/greece/build-report.json",
+      "sourceSha256": "07d0595784141b0ba5e8a293d19725aef2550588ae276e6fa733496c4a76f881",
+      "journeyCheck": {
+        "ok": true,
+        "bad": []
+      },
+      "renderExists": true
+    },
+    {
+      "region": "iceland",
+      "sourceReport": "/tmp/wm-full/iceland/build-report.json",
+      "sourceSha256": "abd2991991112b2a19c172d47e8a0821a4fe7d6da2b187daff298a24e4253844",
+      "journeyCheck": {
+        "ok": true,
+        "bad": []
+      },
+      "renderExists": true
+    },
+    {
+      "region": "india",
+      "sourceReport": "/tmp/wm-full/india/build-report.json",
+      "sourceSha256": "52258ae694c2e64d921e56b044de64a908dce0ca546c358cda881db69ba898d0",
+      "journeyCheck": {
+        "ok": true,
+        "bad": []
+      },
+      "renderExists": true
+    },
+    {
+      "region": "italy",
+      "sourceReport": "/tmp/wm-full/italy/build-report.json",
+      "sourceSha256": "a5a830a1aefa60b1759eabfa9cad3c5856ade9826b5b9ab1802e6e9ad0e0a004",
+      "journeyCheck": {
+        "ok": true,
+        "bad": []
+      },
+      "renderExists": true
+    },
+    {
+      "region": "japan",
+      "sourceReport": "/tmp/wm-full/japan/build-report.json",
+      "sourceSha256": "14a484477369f53a1f81df2dd1904cedc705c04e1381002869a91d7413327f94",
+      "journeyCheck": {
+        "ok": true,
+        "bad": []
+      },
+      "renderExists": true
+    },
+    {
+      "region": "korea",
+      "sourceReport": "/tmp/wm-full/korea/build-report.json",
+      "sourceSha256": "f5e3ed7077d45eca42711fe3b7b028c0170be11ea213457793d1dfd3ea8903ad",
+      "journeyCheck": {
+        "ok": true,
+        "bad": []
+      },
+      "renderExists": true
+    },
+    {
+      "region": "mediterranean",
+      "sourceReport": "/tmp/wm-full/mediterranean/build-report.json",
+      "sourceSha256": "dc53557599c91f0eb23ede01349a6ca3f13c7d7ae5d1580a70af8b1192c96444",
+      "journeyCheck": {
+        "ok": true,
+        "bad": []
+      },
+      "renderExists": true
+    },
+    {
+      "region": "middle-east",
+      "sourceReport": "/tmp/wm-full/middle-east/build-report.json",
+      "sourceSha256": "d7be816f4ce83a7bec95d589088dd2f0adf95fd6a4c74c19b819032c1cf32d58",
+      "journeyCheck": {
+        "ok": true,
+        "bad": []
+      },
+      "renderExists": true
+    },
+    {
+      "region": "north-america",
+      "sourceReport": "/tmp/wm-full/north-america/build-report.json",
+      "sourceSha256": "3c41d737b080410d34b0b0e805b32b818b6a3c7b58786b5f1f94549a10a1d27e",
+      "journeyCheck": {
+        "ok": true,
+        "bad": []
+      },
+      "renderExists": true
+    },
+    {
+      "region": "scandinavia",
+      "sourceReport": "/tmp/wm-full/scandinavia/build-report.json",
+      "sourceSha256": "18aaefd71d303871020fbf379cab5fa8f0fe33e1399eb4df5d76714261675ed2",
+      "journeyCheck": {
+        "ok": true,
+        "bad": []
+      },
+      "renderExists": true
+    },
+    {
+      "region": "south-america",
+      "sourceReport": "/tmp/wm-full/south-america/build-report.json",
+      "sourceSha256": "bb75c422c938a92025732911d93c35b83bfe4662eda72f875dac143eb0cbfe2e",
+      "journeyCheck": {
+        "ok": true,
+        "bad": []
+      },
+      "renderExists": true
+    },
+    {
+      "region": "southeast-asia",
+      "sourceReport": "/tmp/wm-full/southeast-asia/build-report.json",
+      "sourceSha256": "8c3c562d7dfa41e644002081f87facbb3c67afaadeccf8c8fd120e88d0199848",
+      "journeyCheck": {
+        "ok": true,
+        "bad": []
+      },
+      "renderExists": true
+    }
+  ]
+}

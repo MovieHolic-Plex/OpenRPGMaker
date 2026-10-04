@@ -1,3 +1,4 @@
+import { cinematicPresentationForm } from './databaseCinematicPresentationForm';
 import { store } from "@/project/store";
 import type { DatabaseCinematicActions } from "@/editor/panels/databaseCinematicActions";
 import {
@@ -139,7 +140,17 @@ export function cinematicSceneForm(options: FormContext & {
       if (usable() && option) actions.setMotion(scene.id, option.id);
     });
     children.push(field("이미지 움직임", motion));
+    const transition = el('select', { dataset: { testid: 'db-cinematic-transition' }, children: [
+      ['cut', '컷'], ['dissolve', '디졸브'], ['fade', '페이드'], ['flash', '섬광'],
+    ].map(([value, text]) => el('option', { attrs: { value }, text })) });
+    transition.value = scene.direction?.transition?.kind ?? 'cut';
+    transition.addEventListener('change', () => {
+      if (usable()) actions.setDirection(scene.id, { ...scene.direction, transition: { kind: transition.value as 'cut' | 'dissolve' | 'fade' | 'flash', durationMs: transition.value === 'cut' ? 0 : 500 } });
+    });
+    children.push(field('장면 전환', transition));
+    if (scene.direction) children.push(note(`장면 연출: ${scene.direction.camera ? '초점 이동 · ' : ''}${scene.direction.effects?.map(effect => (({ godRays: '빛내림', glow: '발광', motes: '입자', mist: '안개' } as Record<string, string>)[effect.kind] ?? effect.kind)).join(' · ') || ''}${scene.direction.soundResourceId ? ' · 효과음' : ''}`));
   }
+  children.push(cinematicPresentationForm({ id: scene.id, actions, usable, redraw }));
   return sectionCard({ title: `장면 ${index + 1}`, children });
 }
 

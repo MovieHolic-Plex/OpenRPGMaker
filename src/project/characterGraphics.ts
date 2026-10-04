@@ -5,6 +5,7 @@ import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver
 import { PRODUCT_SLUG } from "@/brand";
 import faceExpressionSources from "../../scripts/shared-face-expression-sources.json";
 import { FACESET_PEOPLE1_FACES } from "@/assets/charsetFaceMap";
+import { sharedCharacterIndices } from './sharedCharacters';
 import type { Project, ResourceProfile } from "./types";
 
 export const GRAPHIC_ATTRIBUTE_AXES = ["kind", "age", "gender", "skin", "hair", "clothing", "role"] as const;
@@ -90,7 +91,7 @@ export function listCharacterSprites(project: Project): CharacterSprite[] {
     if (!assets.has(textureKey)) assets.set(textureKey, { path: resolveAssetResourceUrl(profile.assetId, { project }) ?? "", name: profile.name });
   }
   const labels = new Map((project.charsetLabels ?? []).map((entry) => [graphicSpriteKey(entry.textureKey, entry.characterIndex), entry.label]));
-  return [...assets].flatMap(([textureKey, asset]) => Array.from({ length: 8 }, (_, characterIndex) => {
+  return [...assets].flatMap(([textureKey, asset]) => (sharedCharacterIndices(textureKey) ?? Array.from({length:8}, (_, index) => index)).map(characterIndex => {
     const profile = profiles.get(textureKey);
     const slot = profile?.characterSlots?.find((entry) => entry.characterIndex === characterIndex);
     const semantic = findCharsetSemantic(textureKey, characterIndex);

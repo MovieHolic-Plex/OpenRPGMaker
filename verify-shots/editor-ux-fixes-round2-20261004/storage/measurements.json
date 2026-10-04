@@ -1,0 +1,424 @@
+{
+  "commit": "7ce9a7655510e82360efe154bc888a0754e06d04",
+  "conditions": "Same browser exports and current store, baseline modules from7ce9a76555; CPU durations are performance.now around functions, not canonical-save or host time; synthetic fixtures only.",
+  "errors": [],
+  "rows": [
+    {
+      "case": "patch",
+      "name": "before",
+      "size": 128,
+      "location": "first",
+      "run": 0,
+      "diffMs": 13.5,
+      "wireMs": 0.7999999523162842,
+      "yields": 0
+    },
+    {
+      "case": "patch",
+      "name": "before",
+      "size": 128,
+      "location": "first",
+      "run": 1,
+      "diffMs": 5.899999976158142,
+      "wireMs": 0.6000000238418579,
+      "yields": 0
+    },
+    {
+      "case": "patch",
+      "name": "before",
+      "size": 128,
+      "location": "first",
+      "run": 2,
+      "diffMs": 5.899999976158142,
+      "wireMs": 0.6000000238418579,
+      "yields": 0
+    },
+    {
+      "case": "patch",
+      "name": "after",
+      "size": 128,
+      "location": "first",
+      "run": 0,
+      "diffMs": 0.2999999523162842,
+      "wireMs": 2.600000023841858,
+      "yields": 0
+    },
+    {
+      "case": "patch",
+      "name": "after",
+      "size": 128,
+      "location": "first",
+      "run": 1,
+      "diffMs": 0.10000002384185791,
+      "wireMs": 0.5,
+      "yields": 0
+    },
+    {
+      "case": "patch",
+      "name": "after",
+      "size": 128,
+      "location": "first",
+      "run": 2,
+      "diffMs": 0,
+      "wireMs": 0.5,
+      "yields": 0
+    },
+    {
+      "case": "patch",
+      "name": "before",
+      "size": 128,
+      "location": "last",
+      "run": 0,
+      "diffMs": 6,
+      "wireMs": 0.6999999284744263,
+      "yields": 0
+    },
+    {
+      "case": "patch",
+      "name": "before",
+      "size": 128,
+      "location": "last",
+      "run": 1,
+      "diffMs": 5.199999928474426,
+      "wireMs": 0.6000000238418579,
+      "yields": 0
+    },
+    {
+      "case": "patch",
+      "name": "before",
+      "size": 128,
+      "location": "last",
+      "run": 2,
+      "diffMs": 5.399999976158142,
+      "wireMs": 0.7000000476837158,
+      "yields": 0
+    },
+    {
+      "case": "patch",
+      "name": "after",
+      "size": 128,
+      "location": "last",
+      "run": 0,
+      "diffMs": 1.899999976158142,
+      "wireMs": 0.7999999523162842,
+      "yields": 0
+    },
+    {
+      "case": "patch",
+      "name": "after",
+      "size": 128,
+      "location": "last",
+      "run": 1,
+      "diffMs": 0.19999992847442627,
+      "wireMs": 0.6000000238418579,
+      "yields": 0
+    },
+    {
+      "case": "patch",
+      "name": "after",
+      "size": 128,
+      "location": "last",
+      "run": 2,
+      "diffMs": 0.3999999761581421,
+      "wireMs": 0.5,
+      "yields": 0
+    },
+    {
+      "case": "patch",
+      "name": "before",
+      "size": 128,
+      "location": "metadata",
+      "run": 0,
+      "diffMs": 5.700000047683716,
+      "wireMs": 0.7999999523162842,
+      "yields": 0
+    },
+    {
+      "case": "patch",
+      "name": "before",
+      "size": 128,
+      "location": "metadata",
+      "run": 1,
+      "diffMs": 7,
+      "wireMs": 0.7999999523162842,
+      "yields": 0
+    },
+    {
+      "case": "patch",
+      "name": "before",
+      "size": 128,
+      "location": "metadata",
+      "run": 2,
+      "diffMs": 8.5,
+      "wireMs": 0.6000000238418579,
+      "yields": 0
+    },
+    {
+      "case": "patch",
+      "name": "after",
+      "size": 128,
+      "location": "metadata",
+      "run": 0,
+      "diffMs": 0.10000002384185791,
+      "wireMs": 0.3999999761581421,
+      "yields": 0
+    },
+    {
+      "case": "patch",
+      "name": "after",
+      "size": 128,
+      "location": "metadata",
+      "run": 1,
+      "diffMs": 0.10000002384185791,
+      "wireMs": 0.2999999523162842,
+      "yields": 0
+    },
+    {
+      "case": "patch",
+      "name": "after",
+      "size": 128,
+      "location": "metadata",
+      "run": 2,
+      "diffMs": 0,
+      "wireMs": 0.2999999523162842,
+      "yields": 0
+    },
+    {
+      "case": "patch",
+      "name": "before",
+      "size": 512,
+      "location": "first",
+      "run": 0,
+      "diffMs": 121.29999995231628,
+      "wireMs": 14.600000023841858,
+      "yields": 0
+    },
+    {
+      "case": "patch",
+      "name": "before",
+      "size": 512,
+      "location": "first",
+      "run": 1,
+      "diffMs": 113.5,
+      "wireMs": 12.600000023841858,
+      "yields": 0
+    },
+    {
+      "case": "patch",
+      "name": "before",
+      "size": 512,
+      "location": "first",
+      "run": 2,
+      "diffMs": 121.39999997615814,
+      "wireMs": 15.100000023841858,
+      "yields": 0
+    },
+    {
+      "case": "patch",
+      "name": "after",
+      "size": 512,
+      "location": "first",
+      "run": 0,
+      "diffMs": 0.10000002384185791,
+      "wireMs": 6.899999976158142,
+      "yields": 0
+    },
+    {
+      "case": "patch",
+      "name": "after",
+      "size": 512,
+      "location": "first",
+      "run": 1,
+      "diffMs": 0.10000002384185791,
+      "wireMs": 6.099999904632568,
+      "yields": 0
+    },
+    {
+      "case": "patch",
+      "name": "after",
+      "size": 512,
+      "location": "first",
+      "run": 2,
+      "diffMs": 0.10000002384185791,
+      "wireMs": 6.200000047683716,
+      "yields": 0
+    },
+    {
+      "case": "patch",
+      "name": "before",
+      "size": 512,
+      "location": "last",
+      "run": 0,
+      "diffMs": 112.30000007152557,
+      "wireMs": 13.199999928474426,
+      "yields": 0
+    },
+    {
+      "case": "patch",
+      "name": "before",
+      "size": 512,
+      "location": "last",
+      "run": 1,
+      "diffMs": 119.60000002384186,
+      "wireMs": 12.899999976158142,
+      "yields": 0
+    },
+    {
+      "case": "patch",
+      "name": "before",
+      "size": 512,
+      "location": "last",
+      "run": 2,
+      "diffMs": 105.69999992847443,
+      "wireMs": 13.800000071525574,
+      "yields": 0
+    },
+    {
+      "case": "patch",
+      "name": "after",
+      "size": 512,
+      "location": "last",
+      "run": 0,
+      "diffMs": 8,
+      "wireMs": 5.700000047683716,
+      "yields": 0
+    },
+    {
+      "case": "patch",
+      "name": "after",
+      "size": 512,
+      "location": "last",
+      "run": 1,
+      "diffMs": 6.399999976158142,
+      "wireMs": 6.100000023841858,
+      "yields": 0
+    },
+    {
+      "case": "patch",
+      "name": "after",
+      "size": 512,
+      "location": "last",
+      "run": 2,
+      "diffMs": 4,
+      "wireMs": 6,
+      "yields": 0
+    },
+    {
+      "case": "patch",
+      "name": "before",
+      "size": 512,
+      "location": "metadata",
+      "run": 0,
+      "diffMs": 106.30000007152557,
+      "wireMs": 11.199999928474426,
+      "yields": 0
+    },
+    {
+      "case": "patch",
+      "name": "before",
+      "size": 512,
+      "location": "metadata",
+      "run": 1,
+      "diffMs": 115.60000002384186,
+      "wireMs": 14.299999952316284,
+      "yields": 0
+    },
+    {
+      "case": "patch",
+      "name": "before",
+      "size": 512,
+      "location": "metadata",
+      "run": 2,
+      "diffMs": 117,
+      "wireMs": 12.700000047683716,
+      "yields": 0
+    },
+    {
+      "case": "patch",
+      "name": "after",
+      "size": 512,
+      "location": "metadata",
+      "run": 0,
+      "diffMs": 0.10000002384185791,
+      "wireMs": 6.100000023841858,
+      "yields": 0
+    },
+    {
+      "case": "patch",
+      "name": "after",
+      "size": 512,
+      "location": "metadata",
+      "run": 1,
+      "diffMs": 0,
+      "wireMs": 7,
+      "yields": 0
+    },
+    {
+      "case": "patch",
+      "name": "after",
+      "size": 512,
+      "location": "metadata",
+      "run": 2,
+      "diffMs": 0.09999990463256836,
+      "wireMs": 7.300000071525574,
+      "yields": 0
+    },
+    {
+      "case": "history-jump",
+      "name": "before",
+      "mapCount": 1,
+      "steps": 10,
+      "undoMs": 877.5,
+      "redoMs": 247.79999995231628
+    },
+    {
+      "case": "history-jump",
+      "name": "after",
+      "mapCount": 1,
+      "steps": 10,
+      "undoMs": 1045.3000000715256,
+      "redoMs": 232.30000007152557
+    },
+    {
+      "case": "history-jump",
+      "name": "before",
+      "mapCount": 12,
+      "steps": 10,
+      "undoMs": 1545.7000000476837,
+      "redoMs": 562.6999999284744
+    },
+    {
+      "case": "history-jump",
+      "name": "after",
+      "mapCount": 12,
+      "steps": 10,
+      "undoMs": 436.1999999284744,
+      "redoMs": 429.8000000715256
+    },
+    {
+      "case": "vault-repeat",
+      "entries": 10,
+      "commandsPerEntry": 1000,
+      "repeats": 3,
+      "persistMs": 2.100000023841858,
+      "cloneCalls": 0,
+      "stringifyCalls": 0
+    }
+  ],
+  "checks": [
+    "Diff key order/omissions/nonfinite/exotic compatibility and sync/sliced wire parity",
+    "10-step undo/redo preserves cells: before,1maps",
+    "10-step undo/redo preserves cells: after,1maps",
+    "10-step undo/redo preserves cells: before,12maps",
+    "10-step undo/redo preserves cells: after,12maps",
+    "Wire preparation yields inside a map and preserves newer COW edit",
+    "Mixed project/map/tileset history restoration order",
+    "Vault repeated save and public clone isolation"
+  ],
+  "productionSources": {
+    "src/editor/mapEditHistory.ts": "34b566319ba4ae802f3f21faa023b3b7400c12d4df80a8cc2ef1267b2dc71daf",
+    "src/project/eventDraftVault.ts": "efadb4f496dbaeb195f535198448edaef5fbddc500211193ea33aa083441ea03",
+    "src/project/persistence/core/projectPatch.ts": "5c2d51aa6db84e1049e0f7384a753ecd1fe22aff2b55626557c38926b28c77e7",
+    "src/project/persistence/electronRepository.ts": "db5b8fb17545a5784db901382f91c4b6e0aba6308e240db089b06a3e5e7f7569"
+  }
+}

@@ -1,6 +1,13 @@
 import { drawMapTileLayer } from "@/editor/mapTileDraw";
+import { resolveAssetResourceUrl } from '@/assets/generatedAssetResourceResolver';
+import { presentationArtIds } from '@/editor/tools/presentationTools';
 import { tileBackingTile } from "@/editor/tileLayerPolicy";
 import { cropExtraLayers } from "@/project/mapLayers";
+import { reliefMapView } from "@/editor/reliefMapView";
+import { sunlightField } from "@/project/sunlight";
+import { canvasSunlightArt } from "@/project/sunlightArtCanvas";
+import { reliefGroundFromImage } from "@/editor/reliefGroundSurface";
+import { cellLift, reliefLiftField } from "@/project/relief/screen";
 import type { GameMap, Project, TilesetDef } from "@/project/types";
 import { mapVisualEvidenceUnavailable } from "./mapVisualEvidence";
 import {
@@ -68,6 +75,26 @@ export async function renderPiMapImage(project: Project, data: unknown): Promise
   return images[0].dataUrl;
 }
 
+/** Media refs stay in SQLite/assets. Resolve through the browser's real asset bridge. */
+export async function renderPiToolImage(project: Project, toolName: string, data: unknown): Promise<string> {
+  if (toolName !== 'show_title_opening') return renderPiMapImage(project, data);
+  const resourceId = (data as { resourceId?: unknown } | undefined)?.resourceId;
+  if (typeof resourceId !== 'string') throw new Error('presentation-rendering-unavailable: resource id missing');
+  const url = resolveAssetResourceUrl(resourceId, { project });
+  if (!url) throw new Error('presentation-rendering-unavailable: image missing');
+  const image = new Image();
+  await new Promise<void>((resolve, reject) => { image.onload = () => resolve(); image.onerror = () => reject(new Error('presentation-rendering-unavailable: image failed to load')); image.src = url; });
+  const scale = Math.min(1, 512 / Math.max(image.naturalWidth, image.naturalHeight));
+  const pair = createCanvas(Math.max(1, Math.round(image.naturalWidth * scale)), Math.max(1, Math.round(image.naturalHeight * scale)));
+  if (!pair) throw new Error('presentation-rendering-unavailable: canvas missing');
+  const { canvas, context } = pair;
+  context.imageSmoothingEnabled = true;
+  context.drawImage(image, 0, 0, canvas.width, canvas.height);
+  const png = canvasDataUrl(canvas);
+  if (!png) throw new Error('presentation-rendering-unavailable: no PNG');
+  return png;
+}
+
 export async function renderToolImages(project: Project, toolName: string, data: unknown): Promise<RenderedToolImage[]> {
   if (typeof document === "undefined") return [];
   try {
@@ -78,6 +105,14 @@ export async function renderToolImages(project: Project, toolName: string, data:
     if (toolName === "preview_house") return await renderTileGrid(project, data, "집 미리보기");
     if (toolName === "look_at_houses") return await renderTileGrid(project, data, "깔린 집 관찰");
     if (toolName === "render_group_sample") return await renderGroupSamples(project, data);
+    if (toolName === 'show_title_opening') {
+      const images: RenderedToolImage[] = [];
+      for (const resourceId of presentationArtIds(project)) images.push({
+        dataUrl: await renderPiToolImage(project, toolName, { resourceId }),
+        label: `${resourceId}: ${project.assets.uploaded[resourceId]?.name ?? resourceId}`,
+      });
+      return images;
+    }
     return [];
   } catch (cause) {
     // Intentional unavailable contracts must stay observable; load/decode noise stays soft.
@@ -148,18 +183,61 @@ async function renderTileGridPayload(payload: TileGridPayload, label: string, dr
   // Whole-map coverage renders reach here, so the canvas is sized to the delivered
   // image rather than drawn huge and shrunk. Small regions keep the native scale.
   const drawSize = tileDrawSize(payload.w, payload.h, payload.tileset.tileSize);
-  const canvasPair = createCanvas(payload.w * drawSize, payload.h * drawSize);
+  const region = payload.map ? cropMapRegion(payload.map, payload.x, payload.y, payload.w, payload.h) : undefined;
+  const relief = region ? reliefMapView(region, drawSize, reliefGroundFromImage(region, payload.tileset, image)) : null;
+  const canvasPair = createCanvas(payload.w * drawSize, relief?.height ?? payload.h * drawSize);
   if (!canvasPair) return [];
   const { canvas, context } = canvasPair;
+  const sunlight = payload.map ? sunlightField(payload.map, payload.tileset,
+    canvasSunlightArt(image, payload.tileset.tileSize, payload.tileset.tilesPerRow)) : null;
+  const sunRow = (row: number, pad = 0) => {
+    if (!sunlight) return;
+    const s = sunlight.row(payload.y + row, payload.x, payload.x + payload.w), pair = createCanvas(s.w, s.h);
+    if (!pair) throw new Error("map-sunlight-rendering-unavailable: canvas unavailable");
+    pair.context.putImageData(new ImageData(new Uint8ClampedArray(s.rgba), s.w, s.h), 0, 0);
+    context.drawImage(pair.canvas, 0, (s.y * s.scale - payload.y) * drawSize + pad, s.w * s.scale * drawSize, s.h * s.scale * drawSize);
+  };
   drawCheckerBackground(context, canvas.width, canvas.height, Math.max(4, Math.floor(drawSize / 2)));
   if (payload.map) {
     const scale = drawSize / payload.tileset.tileSize;
-    const region = cropMapRegion(payload.map, payload.x, payload.y, payload.w, payload.h);
+    if (relief && region) {
+      const lower = createCanvas(payload.w * drawSize, payload.h * drawSize), upper = createCanvas(payload.w * drawSize, payload.h * drawSize);
+      if (!lower || !upper) throw new Error("map-relief-rendering-unavailable: canvas unavailable");
+      drawMapTileLayer(lower.context, image, region, payload.tileset, "lower", scale);
+      drawMapTileLayer(upper.context, image, region, payload.tileset, "upper", scale);
+      const field = reliefLiftField(region.relief!);
+      const events = payload.events.map(event => {
+        const source = payload.map!.events.find(e => e.id === event.eventId);
+        const x = (source?.x ?? payload.x) - payload.x, y = (source?.y ?? payload.y) - payload.y;
+        return { ...event, row: y, destY: event.destY + relief.pad - cellLift(field, x, y) * drawSize };
+      });
+      const strip = (s: (typeof relief.rows)[number]["under"]) => {
+        if (!s) return;
+        const pair = createCanvas(s.w, s.h);
+        if (!pair) throw new Error("map-relief-rendering-unavailable: strip canvas unavailable");
+        pair.context.putImageData(new ImageData(new Uint8ClampedArray(s.rgba), s.w, s.h), 0, 0);
+        context.drawImage(pair.canvas, s.x * relief.scale, s.y * relief.scale, s.w * relief.scale, s.h * relief.scale);
+      };
+      for (const row of relief.rows) {
+        strip(row.under);
+        for (const cell of row.cells) if (cell.paintLower) context.drawImage(lower.canvas, cell.x * drawSize, row.y * drawSize, drawSize, drawSize, cell.x * drawSize, cell.y, drawSize, drawSize);
+        await drawRegionEventSprites(context, events.filter(e => e.row === row.y && e.priority === "below"));
+        strip(row.over);
+        for (const cell of row.cells) context.drawImage(upper.canvas, cell.x * drawSize, row.y * drawSize, drawSize, drawSize, cell.x * drawSize, cell.y, drawSize, drawSize);
+        sunRow(row.y, relief.pad);
+        await drawRegionEventSprites(context, events.filter(e => e.row === row.y && e.priority === "same"));
+      }
+      await drawRegionEventSprites(context, events.filter(e => e.priority === "above"));
+      const dataUrl = canvasDataUrl(canvas);
+      return dataUrl ? [{ dataUrl, label: `${label} · 실제 절벽 높이 포함` }] : [];
+    }
+    if (!region) return [];
     drawMapTileLayer(context, image, region, payload.tileset, "lower", scale);
     const below = payload.events.filter((event) => event.priority === "below");
     const rest = payload.events.filter((event) => event.priority !== "below");
     await drawRegionEventSprites(context, below);
     drawMapTileLayer(context, image, region, payload.tileset, "upper", scale);
+    for (let row = 0; row < payload.h; row++) sunRow(row);
     await drawRegionEventSprites(context, rest);
     const dataUrl = canvasDataUrl(canvas);
     return dataUrl ? [{ dataUrl, label }] : [];

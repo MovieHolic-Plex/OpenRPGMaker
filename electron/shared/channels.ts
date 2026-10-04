@@ -1,6 +1,7 @@
 export const OPRN_CHANNEL_PREFIX = "oprn:" as const;
 
 export const OPRN_CHANNELS = {
+  windowControl: "oprn:window.control",
   teamStatus: "oprn:team.status",
   teamInvite: "oprn:team.invite",
   teamRevoke: "oprn:team.revoke",

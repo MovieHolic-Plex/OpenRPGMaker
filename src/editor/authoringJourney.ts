@@ -1,8 +1,8 @@
-import { committedEvents, projectWithoutEventDrafts } from "@/project/eventDrafts";
+import { projectWithoutEventDrafts } from "@/project/eventDrafts";
 import { serialize } from "@/project/io";
 import { collectProjectReferenceIssues } from "@/project/io/references";
 import type { ProjectChangeDescriptor } from "@/project/store";
-import type { Project } from "@/project/types";
+import type { GameEvent, Project } from "@/project/types";
 import { STORAGE_PREFIX } from "@/util/appStorage";
 
 export type AuthoringJourneyStageId = "project" | "map" | "event" | "data" | "test";
@@ -35,6 +35,28 @@ export type AuthoringJourneyStage = {
 const STORAGE_KEY = `${STORAGE_PREFIX}authoring-journey:v1`;
 export const AUTHORING_TEST_BOOT_SUCCESS_EVENT = "oprn:authoring-test-boot-success";
 
+const committedEventCounts = new WeakMap<readonly GameEvent[], number>();
+
+/** Count the committedEvents projection without cloning command/page payloads.
+ * Store mutations replace event arrays; tile/relief edits retain them. Cache at
+ * that boundary, not at map identity (a painted map gets a new object).
+ */
+export function countJourneyCommittedEvents(events: readonly GameEvent[]): number {
+  const cached = committedEventCounts.get(events);
+  if (cached !== undefined) return cached;
+  let count = 0;
+  for (const event of events) {
+    if (event.draft?.kind === "new") continue;
+    if (event.draft?.kind === "edit") {
+      if (event.draft.conflict?.kind !== "remote-delete" && event.draft.original) count += 1;
+      continue;
+    }
+    count += 1;
+  }
+  committedEventCounts.set(events, count);
+  return count;
+}
+
 export function emptyAuthoringJourneyProgress(): AuthoringJourneyProgress {
   return {
     mapTouched: false,
@@ -63,7 +85,7 @@ export function evaluateAuthoringJourney(
   const acknowledged = new Set(progress.manualAcknowledged);
   const mapCount = Object.keys(project.maps).length;
   const committedEventCount = Object.values(project.maps)
-    .reduce((count, map) => count + committedEvents(map.events).length, 0);
+    .reduce((count, map) => count + countJourneyCommittedEvents(map.events), 0);
   const referenceIssueCount = referenceIssues.length;
   // 참조 문제는 테스트를 막지 않는다 — 지적은 데이터 단계가 하고, 테스트 완료는 실제 부팅으로 판정한다.
   const testComplete = progress.testedProjectFingerprint !== null

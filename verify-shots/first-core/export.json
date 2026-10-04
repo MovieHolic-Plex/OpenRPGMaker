@@ -1,0 +1,14 @@
+{
+  "projectId": "6ebe2a00-c94b-4957-b088-bf3b1886c776",
+  "revision": 13,
+  "generationMode": "automatic first build",
+  "projectUrl": "http://127.0.0.1:18433/index.html?hostProject=929ae633-1d03-4a34-8275-ef970616d53f",
+  "started": "2026-10-04T00:43:55.367Z",
+  "errors": [],
+  "networkFailures": [],
+  "exportStarted": "2026-10-04T00:44:50.825Z",
+  "path": "/home/main/.codex/worktrees/0a57/rpg-zzu/output/qa/first-core/game-web.zip",
+  "downloadFailure": null,
+  "seconds": 107.508,
+  "passed": true
+}

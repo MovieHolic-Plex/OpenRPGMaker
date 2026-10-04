@@ -36,7 +36,8 @@ def piece_hash(cv):
     return hashlib.sha1(cv.a.tobytes()).hexdigest()[:12]
 
 
-TERRAIN_VERDICT = ('water47', 'water47g', 'water_deep')
+# 사냥터·동굴 새 지형(fld_ground.py)도 눈으로 본 판정이 있어야 한다. 한 줄이어야 하네스 validate 가 시드와 대조한다.
+TERRAIN_VERDICT = ('water47', 'water47g', 'water_deep', 'fld_trail32', 'fld_tall32', 'fld_forest32', 'fld_bog94', 'fld_rock32', 'fld_rock_in8', 'fld_face32', 'cav_floor', 'cav_floor_lit', 'cav_floor_sh', 'cav_roof47', 'cav_face24', 'cav_pool94', 'in_floor_ondol', 'in_floor_maru', 'in_floor_dirt', 'in_floor_stone', 'in_floor_jeondol', 'in_floor_deck', 'in_floor_yard', 'in_ceil47', 'in_ceil_front', 'in_void', 'pal_floor_jeon', 'pal_floor_maru', 'pal_floor_ondol', 'pal_floor_dais', 'pal_floor_yard', 'pal_floor_carpet', 'pal_ceil47', 'pal_ceil_front')
 
 
 def group_hash(tiles):
@@ -130,7 +131,20 @@ def run(skip_a=False):
     return rows, fails, warns, objs
 
 
+_INB = {}
+
+
 def ref_image(name, idx=0):
+    if name.startswith('v5:'):                    # 조선 실내 기준 = 손 도트 실내 v5 기물(atlas_biome_interior 와 같은 그림)
+        import inb_preview
+        return inb_preview.v5(name[3:])
+    if name.startswith('inb:'):                   # 조선 궁 내부 기준 = 후보 B 실내 조각(in_b_*, 이미 판정을 받은 사가 실내 기물)
+        if not _INB:
+            import inb_kit, inb_props, inb_props2, inb_props3
+            for m in (inb_kit, inb_props, inb_props2, inb_props3):
+                _INB.update(m.objects())
+        cv = _INB.get(name[4:])
+        return cv.img() if cv is not None else None
     items = json.load(open(os.path.join(ROOT, 'tiledata/beodeul-city/render/city6_objects.json')))
     hs, seen = [], set()
     for it in sorted([i for i in items if i['name'] == name], key=lambda i: -(i['w'] * i['h'])):

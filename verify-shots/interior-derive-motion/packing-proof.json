@@ -1,0 +1,68 @@
+{
+  "isolatedRoot": "/tmp/oprn-derive-proof-13udr68b",
+  "sqliteReload": true,
+  "originalUnchanged": true,
+  "frames": 4,
+  "ms": 150,
+  "fps": 6.666666666666667,
+  "animatedCells": 1,
+  "invalidHashRejected": true,
+  "timingInDedupKey": true,
+  "derivationMetadata": {
+    "ko": "용암 화로(움직임)",
+    "category": "demon",
+    "category_ko": "마왕성",
+    "kind": "floor",
+    "w": 1,
+    "h": 1,
+    "up": 16,
+    "cells": [
+      [
+        0,
+        0,
+        5076,
+        3
+      ]
+    ],
+    "animated": true,
+    "parent": "lava brazier",
+    "derive": "loop",
+    "slot": "loop",
+    "setId": "lava brazier #loop",
+    "animation": {
+      "frames": 4,
+      "ms": 150
+    }
+  },
+  "selectedSets": [
+    {
+      "id": "lava brazier #loop",
+      "parent": "lava brazier",
+      "derive": "loop",
+      "slots": [
+        {
+          "key": "f0",
+          "id": "lava brazier ~motion",
+          "locked": true
+        },
+        {
+          "key": "f1",
+          "id": "lava brazier ~motion",
+          "locked": false
+        },
+        {
+          "key": "f2",
+          "id": "lava brazier ~motion",
+          "locked": false
+        },
+        {
+          "key": "f3",
+          "id": "lava brazier ~motion",
+          "locked": false
+        }
+      ],
+      "ms": 150
+    }
+  ],
+  "libraryTiles": 5724
+}

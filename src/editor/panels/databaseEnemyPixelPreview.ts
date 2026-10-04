@@ -1,3 +1,4 @@
+import { registerDatabasePreview, setDatabasePreviewsActiveIn, type DatabasePreviewLifecycle } from "./databasePreviewLifecycle";
 // 적 탭 「미리보기」 열의 **도트 미리보기 카드**(retro2003 손도트 시트가 있는 몬스터만).
 //
 // 시트 계약은 src/assets/pixelEnemySheets.ts — 셀 cell×cell 3×3, 오른쪽(아군 쪽)을 본다, 바닥 y = cell−4.
@@ -110,8 +111,6 @@ function probeSheet(url: string): Promise<boolean> {
 
 // ---- 카드 ----
 
-type Controller = { readonly stop: () => void; readonly resume: () => void; readonly canAutoplay: boolean };
-const controllers = new WeakMap<HTMLElement, Controller>();
 
 /** 목록 배지·카드 조건: 이 리소스에 retro2003 도트 시트가 있는가. */
 export function enemyHasPixelSheet(resourceId: string | undefined): boolean {
@@ -176,11 +175,13 @@ export function renderEnemyPixelPreview(
     attrs: { role: "img", "aria-label": `${name} 도트 미리보기` },
     children: [world],
   });
+  let resizeObserver: ResizeObserver | undefined;
   if (typeof ResizeObserver === "function") {
-    new ResizeObserver((entries) => {
+    resizeObserver = new ResizeObserver((entries) => {
       const width = entries[0]?.contentRect.width ?? 0;
       if (width > 0) world.style.setProperty("--enemy-pixel-scale", String(Math.round((width / STAGE_W) * 1000) / 1000));
-    }).observe(stage);
+    });
+    resizeObserver.observe(stage);
   }
 
   // ---- 칸 표(9칸) ----
@@ -206,17 +207,21 @@ export function renderEnemyPixelPreview(
 
   // ---- 재생 상태 ----
   const canAutoplay = autoplayAllowed();
+  let lifecycle: DatabasePreviewLifecycle;
   let frame: number | null = null;
   let last = 0;
   let clock = 0;
-  let detachedTicks = 0;
   let beats: readonly Beat[] = [];
   let beatAt = 0;
   let action: EnemyPixelAction | "idle" | "still" | "skill" = "idle";
   let still: PixelEnemyCell = "idle_a";
   let from = { x: 0, y: 0 };
 
+  let lastDrawing = "";
   const draw = (current: PixelEnemyCell, dx: number, dy: number, allyStruck = current === "attack"): void => {
+    const drawing = [current, Math.round(dx), Math.round(dy), allyStruck, action, still].join("|");
+    if (drawing === lastDrawing) return;
+    lastDrawing = drawing;
     const pos = PIXEL_ENEMY_FRAME[current];
     sprite.style.backgroundPosition = -pos.col * cell + "px " + -pos.row * cell + "px";
     sprite.style.left = Math.round(HOME_X - cell / 2 + dx) + "px";
@@ -329,10 +334,8 @@ export function renderEnemyPixelPreview(
 
   function tick(stamp: number): void {
     frame = null;
-    if (!stage.isConnected) {
-      detachedTicks += 1;
-      if (detachedTicks >= 2) { stop(); return; }
-    } else detachedTicks = 0;
+    if (!stage.isConnected) { lifecycle.dispose(); return; }
+    if (!lifecycle.isActive()) { stop(); return; }
     const dt = Math.min(64, Math.max(0, stamp - (last || stamp)));
     last = stamp;
     // 칸 정지 보기는 루프를 세운다(대기·동작 버튼이 다시 켠다).
@@ -347,9 +350,8 @@ export function renderEnemyPixelPreview(
   }
 
   const start = (): void => {
-    if (frame !== null) return;
+    if (frame !== null || !lifecycle?.isActive() || action === "still") return;
     last = 0;
-    detachedTicks = 0;
     stage.dataset.running = "true";
     schedule();
   };
@@ -435,16 +437,19 @@ export function renderEnemyPixelPreview(
     ],
   });
 
-  controllers.set(stage, { stop, resume: () => { if (canAutoplay) start(); }, canAutoplay });
+  lifecycle = registerDatabasePreview(stage, {
+    suspend: stop,
+    resume: () => { if (canAutoplay && action !== "still") start(); },
+    dispose: () => resizeObserver?.disconnect(),
+  });
   draw("idle_a", 0, 0);
-  if (canAutoplay) start();
   void probeSheet(url).then((ok) => {
     if (ok) return;
     // 없는 시트: 카드를 조용히 걷는다.
-    stop();
+    lifecycle.dispose();
     wrap.remove();
   });
-  return { element: wrap, stop };
+  return { element: wrap, stop: () => lifecycle.dispose() };
 }
 
 function autoplayAllowed(): boolean {
@@ -454,14 +459,8 @@ function autoplayAllowed(): boolean {
 
 /** scope 안의 도트 미리보기 루프를 모두 멈춘다. stopSkillAnimationStagesIn 이 함께 부른다. */
 export function stopEnemyPixelPreviewsIn(scope: ParentNode): void {
-  for (const stage of scope.querySelectorAll<HTMLElement>("[data-testid='db-enemy-pixel-stage']")) controllers.get(stage)?.stop();
+  setDatabasePreviewsActiveIn(scope, false);
 }
-
-/** 캐시에서 다시 붙은 카드를 대기 루프로 되돌린다. resumeSkillAnimationStagesIn 이 함께 부른다. */
 export function resumeEnemyPixelPreviewsIn(scope: ParentNode): void {
-  for (const stage of scope.querySelectorAll<HTMLElement>("[data-testid='db-enemy-pixel-stage']")) {
-    const controller = controllers.get(stage);
-    if (controller?.canAutoplay) controller.resume();
-  }
+  setDatabasePreviewsActiveIn(scope, true);
 }
-

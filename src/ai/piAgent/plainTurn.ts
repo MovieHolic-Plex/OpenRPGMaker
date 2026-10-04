@@ -4,6 +4,7 @@
 // (`scripts/qa-game/gen.mts`)가 **같은 함수**를 부른다. 문장·상수를 두 곳에 베끼면 헤드리스 결과가
 // 브라우저 결과를 대표하지 못한다 — 여기 하나만 고치면 두 경로가 같이 바뀐다.
 
+import { conceptCardsForText } from "../conceptCards";
 import { packTownTargetFor } from "./packTownRoute";
 import { beodeulTownTargetFor } from "./beodeulTownRoute";
 import type { AutonomyResolution } from "@/ai/autonomyLevels";
@@ -24,6 +25,7 @@ export { normalizePiThinkingLevel } from "./thinkingLevel";
 import { normalizePiThinkingLevel } from "./thinkingLevel";
 import { resolveVillageContract, type VillageContract } from "./villageContract";
 import { MODERN_MAP_INITIAL_TOOLS, requestsModernMap } from '../modernTilesetPolicy';
+import { JP_CITY_EXPOSED_TOOLS, jpCityTargetFor } from '../jpCityPolicy';
 import { isGenrePresetBriefRequest } from "@/ai/genrePresetBrief";
 import { PLAN_EXECUTION_PREAMBLE, ULTRABRAIN_PLAN_HEADING } from "./planExecution";
 
@@ -51,7 +53,7 @@ export interface PlainPiTurnInput {
   readonly selection: IntentSelectionFact | null;
   readonly hasActivePlan: boolean;
   readonly autonomy: AutonomyResolution;
-  /** 쓰기 턴에서만 부른다(읽기 전용 다이얼은 선언을 건너뛴다). */
+  /** 계획 전용 턴 이외에 요청 의도와 위치 안내 권한을 읽는다. */
   readonly declarer: () => IntentDeclarer;
   readonly piTeam: boolean;
   /** 선언 호출 직전 — 패널은 「의도 읽는 중…」 을 띄운다. */
@@ -84,13 +86,13 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
   // 의도 선언은 모델을 두 번 불러 10~24초를 쓰고, 30초 창을 넘기면 첫 생성이 시작조차 못 한다(2026-09-27 실측).
   // 마을 계약도 이미 이 머리글을 보고 빠진다(villageContract.ts) — 선언이 바꿀 수 있는 판정이 남지 않았다.
   // 도구는 좁히지 않는다(initialToolNames 없음 = 전체) — 게임 전체 저작은 DB·시스템·맵 도구를 모두 쓴다.
-  if (!plan.readOnly && isGenrePresetBriefRequest(input.text)) {
-    const team = input.piTeam;
+  if (isGenrePresetBriefRequest(input.text)) {
+    const team = input.piTeam && !plan.readOnly;
     return { mode: team ? "team" : "single", plan: { ...plan, routineEdit: false, routingAudit: GENRE_PRESET_ROUTING }, questionPromoted: false, intentNote: null,
       routingAudit: GENRE_PRESET_ROUTING };
   }
-  let routingAudit = plan.readOnly ? "intent:skipped(read-only dial)" : "intent:none";
-  if (!plan.readOnly) {
+  let routingAudit = plan.planOnly ? "intent:skipped(plan-only dial)" : "intent:none";
+  if (!plan.planOnly) {
     input.onDeclaring?.();
     const { project, text, currentMapId, selection } = input;
     const declared = await declareIntentCached(input.declarer(), buildIntentFacts({
@@ -100,20 +102,28 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
       selection,
       hasActivePlan: input.hasActivePlan,
     }));
-    if (declared.intent.source === "fallback") throw new Error(declared.error ?? "요청 범위를 확정하지 못했습니다. 다시 시도해 주세요.");
+    if (declared.intent.source === "fallback" && !plan.readOnly) throw new Error(declared.error ?? "요청 범위를 확정하지 못했습니다. 다시 시도해 주세요.");
+    plan = { ...plan, viewNavigation: declared.intent.source === "llm" && declared.intent.viewNavigation === true };
     // 선언이 확정한 것을 본문도 읽게 한다 — 세션 경로의 pushOrchestrationMessage(intentNote) 와 같은 자리.
     // Pi 이관(2026-09-11)에서 빠져 author_village·권장 크기·선택 사각형 지시가 모델에 닿지 않았다(2026-09-17 실측).
     const noteTargetMapId = declared.intent.targetMapId ?? currentMapId;
     const noteTargetMap = noteTargetMapId ? project.maps[noteTargetMapId] : undefined;
     // 선언이 숲마을 도구를 고른 «마을» 요청일 때만 — 팩 맵에서 가로등 하나 고치는 요청에 마을 노트를 붙이지 않는다.
     const packTown = declared.intent.tools.includes("author_village") ? packTownTargetFor(project, text, noteTargetMapId) : null;
-    // 팩 마을이 아니고 대상 계열이 버들항이면 author_beodeul_town — 숲마을 생성기·마을 계약을 건너뛴다(beodeulTownRoute).
-    const beodeulTown = packTown ? null
+    // 일본 도시(jp_city) — 대상 맵이 jp_city 이거나 사용자가 칩셋·일본 거리를 말했을 때. 숲마을 계약·버들항 노트 대신 jp_city 노트가 간다(jpCityPolicy).
+    // 실측(2026-10-04): 새 프로젝트(버들항 맵)에서 「일본 상가 거리」+author_village 선언이면 버들항 마을 노트가 먼저 잡아 jp_city 는 어디에도 안 나왔다 — 그래서 버들항보다 앞선다.
+    // PAW 전용 게이트가 켜진 요청은 게이트가 이기고, 팩 도시 타일셋 마을은 그쪽이 이긴다.
+    const modernMap = requestsModernMap(project, text, currentMapId ? [currentMapId] : []);
+    const jpCity = packTown || modernMap ? null
+      : jpCityTargetFor(project, declared.intent, text, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
+    // 팩 마을·jp_city 가 아니고 대상 계열이 버들항이면 author_beodeul_town — 숲마을 생성기·마을 계약을 건너뛴다(beodeulTownRoute).
+    const beodeulTown = packTown || jpCity ? null
       : beodeulTownTargetFor(project, declared.intent, noteTargetMapId, noteTargetMap ? isLivedMap(noteTargetMap) : false);
     intentNote = buildPiIntentNote({
       project,
       packTown,
       beodeulTown,
+      jpCity,
       requestText: text,
       intent: declared.intent,
       targetMap: noteTargetMap
@@ -129,11 +139,10 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
     // 팀을 켠 사용자에게는 마을 계약을 걸지 않는다. 계약은 단독 실행 전용이라(runPiCommand 가 계약이 있으면
     // 팀을 끈다) 「마을 만들어」 한 마디가 설정과 무관하게 조용히 혼자 실행이 됐다 — 2026-09-18 이후 일반 채팅
     // 67회 실행 중 팀 실행 0회. 팀은 팀장 배정·검수 팀원이 마을 품질을 맡는다.
-    const modernMap = requestsModernMap(project, text, currentMapId ? [currentMapId] : []);
-    const skipVillageContract = input.piTeam || modernMap || !!beodeulTown;
+    const skipVillageContract = input.piTeam || modernMap || !!beodeulTown || !!jpCity;
     plan = { ...plan, villageContract: skipVillageContract ? undefined : resolveVillageContract(project, declared.intent, currentMapId, selection ?? null, text) };
     // 계약이 없으면 왜 없는지까지 적는다 — 「마을 계약 없음」만으로는 팀 설정 때문인지 판정 때문인지 모른다.
-    const noContractReason = input.piTeam ? "팀 실행" : modernMap ? "현대 맵" : beodeulTown ? "버들항 마을" : "판정";
+    const noContractReason = input.piTeam ? "팀 실행" : modernMap ? "현대 맵" : beodeulTown ? "버들항 마을" : jpCity ? "일본 도시 맵" : "판정";
     routingAudit = `${formatIntentAudit(declared.intent, declared.elapsedMs)}${declared.error ? ` — 선언 오류: ${declared.error}` : ""}`
       + ` → ${plan.villageContract ? villageContractAudit(plan.villageContract) : `마을 계약 없음(${noContractReason})`}`;
     if (declared.intent.mode === "question") {
@@ -142,9 +151,15 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
     } else {
       // Send exact intent/adventure candidates through the real Pi request path.
       // This is exposure only: discovery can expand it, including full fallback.
-      initialToolNames = requestsModernMap(project, text, currentMapId ? [currentMapId] : [])
+      initialToolNames = modernMap
         ? [...MODERN_MAP_INITIAL_TOOLS]
-        : buildSessionRegistryTools({ requestText: text, intent: declared.intent, contextWindow: input.contextWindow }).map(tool => tool.function.name);
+        : [...new Set([
+          ...buildSessionRegistryTools({ requestText: text, intent: declared.intent, contextWindow: input.contextWindow }).map(tool => tool.function.name),
+          // jp_city 작업은 첫 요청부터 조립 도구·참고문서·도로 키트 스키마가 보인다 — 자연어 점수 승격은 «이자카야 빌딩 세워줘» 같은 문장을 놓친다.
+          ...(jpCity ? JP_CITY_EXPOSED_TOOLS : []),
+        ])];
+      // 개념 카드 노트가 붙는 요청이면 예제를 짓는 도구를 처음부터 쥐여 준다 — 노트가 이 도구 이름을 부른다.
+      if (conceptCardsForText(text).length && !initialToolNames.includes("build_concept_example")) initialToolNames = [...initialToolNames, "build_concept_example"];
     }
   }
   const team = input.piTeam && !plan.readOnly;

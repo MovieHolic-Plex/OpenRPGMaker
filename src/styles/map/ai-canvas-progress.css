@@ -1,0 +1,24 @@
+.ai-canvas-progress {
+  position: absolute;
+  left: var(--space-4);
+  bottom: calc(var(--space-4) + var(--space-6));
+  z-index: var(--z-canvas-chip, 22);
+  max-width: min(340px, calc(100% - 2 * var(--space-4)));
+  box-sizing: border-box;
+  padding: var(--space-3) var(--space-4);
+  border: var(--stroke-1) solid var(--accent-border);
+  border-radius: var(--radius-m);
+  background: var(--bg-surface);
+  color: var(--text-1);
+  box-shadow: var(--shadow-pop);
+  font-family: var(--font-ui);
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+  pointer-events: none;
+  overflow-wrap: anywhere;
+}
+.ai-canvas-progress[hidden] { display: none; }
+.ai-canvas-progress strong { font-weight: var(--font-weight-medium); }
+.ai-canvas-progress p { margin: var(--space-1) 0 0; }
+.ai-canvas-progress-request { color: var(--text-2); }
+.ai-canvas-progress-stage { color: var(--text-1); }

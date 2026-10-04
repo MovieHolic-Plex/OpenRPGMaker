@@ -6,6 +6,7 @@ import "@/styles/editor/relief-toolbar.css";
 import { editorState, type EditorState } from "@/editor/editorState";
 import { installDelayedTooltips } from "@/editor/delayedTooltipRollout";
 import { hideDelayedTooltip } from "@/editor/delayedTooltip";
+import { hasOpenModalLayer } from "@/editor/ui/modalStack";
 import { shouldIgnoreEditorShortcut } from "@/editor/hotkeys";
 import { recordMapEditIfChanged } from "@/editor/mapEditHistory";
 import { renderTileCellsToCanvas } from "@/editor/harnessSuggestion/kitRender";
@@ -26,6 +27,9 @@ import { el } from "@/util/dom";
 import { terrainMaterialTile, MATERIAL_LABEL, type TerrainMaterial } from "@/editor/terrainMaterials";
 import { deleteDoodadGroup } from "@/editor/terrainClusters";
 import { mountTerrainDesignPanel } from "./terrainDesignPanel";
+import { openTerrainHelpModal } from "./terrainHelpModal";
+import { openMapPropertiesDialog } from "./mapPropertiesDialog";
+import { terrainToolbarIcon } from "./terrainToolbarIcons";
 import { isTerrainDesignTool, selectTerrainDesignTool, TERRAIN_DESIGN_TOOLS, commitTerrainDesign } from "../terrainDesignActions";
 
 const MODES: readonly (readonly [ReliefBrushMode, string, string, string])[] = [
@@ -171,7 +175,7 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
     ],
   });
   const grass = el("button", {
-    class: "relief-bar-toggle", text: "윗면 풀",
+    class: "relief-bar-icon", children: [terrainToolbarIcon("grass")],
     attrs: { type: "button", title: "올린 칸 윗면을 칩셋의 기본 풀로 덮는다 — 0단으로 내리면 원래 바닥으로 돌린다", "aria-pressed": "true" },
     dataset: { testid: "relief-top-grass" },
     on: { click: () => editorState.set({ reliefTopGrass: !editorState.get().reliefTopGrass }) },
@@ -190,41 +194,53 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
   style.append(el("option", { value: "", text: "흙벽(기본)" }));
   for (const key of Object.keys(RELIEF_STYLES)) style.append(el("option", { value: key, text: STYLE_LABELS[key] ?? key }));
   const doodadButton = el("button", {
-    class: "relief-bar-doodad", text: "◆ 지형지물",
+    class: "relief-bar-icon", children: [terrainToolbarIcon("doodad")],
     attrs: { type: "button", title: "경사로·계단·덩굴·나무·바위·다리를 골라 놓는다 (D)", "aria-pressed": "false", "aria-haspopup": "dialog", "aria-controls": "relief-doodad-popup", "aria-expanded": "false" },
     dataset: { testid: "relief-doodad-toggle" },
     on: { click: () => {
       const open = !editorState.get().reliefDoodadOpen;
-      editorState.set({ reliefDoodadOpen: open, ...(open ? {} : { reliefDoodad: null, reliefBridgeStart:null }) });
+      editorState.set({ reliefDoodadOpen: open, ...(open ? { terrainDesignOpen: false, terrainHouseDrag: null, terrainVisionPreview: false } : { reliefDoodad: null, reliefBridgeStart:null }) });
     } },
   }) as HTMLButtonElement;
   const sep = () => el("span", { class: "relief-bar-sep", attrs: { "aria-hidden": "true" } });
   const terrainTools=el("div",{class:"relief-bar-group",attrs:{role:"group","aria-label":"지형 설치 방식"}});
   const terrainButtons=new Map<string,HTMLButtonElement>();
   for(const [value,label] of [["height","높이"],["surface","표면"],["river","강"],["group","군집 선택"]] as const){
-    const b=el("button",{class:"relief-bar-size",text:label,attrs:{type:"button","aria-pressed":"false"},dataset:{testid:`terrain-tool-${value}`},
-      on:{click:()=>editorState.set({terrainBrush:value,reliefDoodad:null,reliefBridgeStart:null,terrainMoveGroup:false,terrainPoints:null})}}) as HTMLButtonElement;
+    const b=el("button",{class:"relief-bar-icon",children:[terrainToolbarIcon(value)],attrs:{type:"button","aria-label":label,"aria-pressed":"false"},dataset:{testid:`terrain-tool-${value}`},
+      on:{click:()=>editorState.set({terrainBrush:value,terrainDesignOpen:false,reliefDoodadOpen:false,reliefDoodad:null,reliefBridgeStart:null,terrainMoveGroup:false,terrainPoints:null,terrainHouseDrag:null,terrainVisionPreview:false})}}) as HTMLButtonElement;
     terrainButtons.set(value,b);terrainTools.append(b);
+  }
+  for (const [value, label] of [["house", "집"], ["road", "도로"]] as const) {
+    const button = el("button", { class: "relief-bar-icon", children: [terrainToolbarIcon(value)], attrs: { type: "button", "aria-label": label, "aria-pressed": "false" }, dataset: { testid: `terrain-tool-${value}` }, on: { click: () => { selectTerrainDesignTool(value); editorState.set({ terrainVisionPreview: false, ...(value === "road" ? { terrainRoadDrag: true } : {}) }); } } }) as HTMLButtonElement;
+    terrainButtons.set(value, button); terrainTools.append(button);
   }
   const material=el("select",{class:"relief-bar-style",attrs:{"aria-label":"표면 재질"},dataset:{testid:"terrain-material"},on:{change:e=>editorState.set({terrainMaterial:(e.target as HTMLSelectElement).value as "grass"|"dirt"|"stone"})}}) as HTMLSelectElement;
   for(const key of ["grass","dirt","stone"] as const)material.append(el("option",{value:key,text:MATERIAL_LABEL[key]}));
   const brushWidth=el("select",{class:"relief-bar-style",attrs:{"aria-label":"표면·강 붓 폭"},dataset:{testid:"terrain-width"},on:{change:e=>editorState.set({terrainWidth:Number((e.target as HTMLSelectElement).value)})}}) as HTMLSelectElement;
   for(const width of [1,3,5,7])brushWidth.append(el("option",{value:String(width),text:`폭 ${width}칸`}));
-  const moveGroup=el("button",{class:"relief-bar-size",text:"옮기기",attrs:{type:"button"},dataset:{testid:"terrain-group-move"},on:{click:()=>editorState.set({terrainMoveGroup:true})}}) as HTMLButtonElement;
-  const deleteGroup=el("button",{class:"relief-bar-size",text:"군집 지우기",attrs:{type:"button"},dataset:{testid:"terrain-group-delete"},on:{click:()=>{
+  const moveGroup=el("button",{class:"relief-bar-icon",children:[terrainToolbarIcon("move")],attrs:{type:"button","aria-label":"군집 옮기기","aria-pressed":"false"},dataset:{testid:"terrain-group-move"},on:{click:()=>editorState.set({terrainMoveGroup:true})}}) as HTMLButtonElement;
+  const deleteGroup=el("button",{class:"relief-bar-icon",children:[terrainToolbarIcon("delete")],attrs:{type:"button","aria-label":"군집 지우기"},dataset:{testid:"terrain-group-delete"},on:{click:()=>{
     const selection=editorState.get().terrainSelectedGroup;if(!selection)return;
     const map=store.getCurrent().maps[selection.mapId],group=map?.doodadGroups?.find(g=>g.id===selection.id);if(!map||!group)return;
     const cells=group.cells.map(c=>({x:c.index%map.width,y:Math.floor(c.index/map.width),layer:"upper" as const}));
     recordMapEditIfChanged(selection.mapId,()=>store.updateMapTiles(selection.mapId,draft=>deleteDoodadGroup(draft,selection.id),{label:"군집 지우기",relief:true,cells}));
     editorState.set({terrainSelectedGroup:null,terrainMoveGroup:false});
   }}}) as HTMLButtonElement;
-  const reachable=el("button",{class:"relief-bar-toggle",text:"통행 미리보기",attrs:{type:"button","aria-pressed":"false",title:"시작 지점에서 닿는 땅은 초록, 닿지 못하는 땅은 붉게 표시한다"},dataset:{testid:"terrain-reachability"},on:{click:()=>editorState.set({terrainReachability:!editorState.get().terrainReachability})}}) as HTMLButtonElement;
-  const designButton = el("button", { class: "relief-bar-toggle", text: "지형 설계", attrs: { type: "button", "aria-pressed": "false", "aria-expanded": "false" }, dataset: { testid: "terrain-design-toggle" }, on: { click: () => { const s = editorState.get(); if (!s.terrainDesignOpen && !isTerrainDesignTool(s.terrainBrush)) selectTerrainDesignTool("contour"); else editorState.set({ terrainDesignOpen: !s.terrainDesignOpen, reliefDoodadOpen: false }); } } }) as HTMLButtonElement;
+  const reachable=el("button",{class:"relief-bar-icon",children:[terrainToolbarIcon("reachable")],attrs:{type:"button","aria-label":"통행 미리보기","aria-pressed":"false",title:"시작 지점에서 닿는 땅은 초록, 닿지 못하는 땅은 붉게 표시한다"},dataset:{testid:"terrain-reachability"},on:{click:()=>editorState.set({terrainReachability:!editorState.get().terrainReachability})}}) as HTMLButtonElement;
+  const designButton = el("button", { class: "relief-bar-icon", children: [terrainToolbarIcon("design")], attrs: { type: "button", "aria-label": "지형 설계", "aria-pressed": "false", "aria-expanded": "false", "aria-controls": "terrain-design-panel" }, dataset: { testid: "terrain-design-toggle" }, on: { click: () => { const s = editorState.get(); if (!s.terrainDesignOpen && !isTerrainDesignTool(s.terrainBrush)) selectTerrainDesignTool("contour"); else editorState.set({ terrainDesignOpen: !s.terrainDesignOpen, reliefDoodadOpen: false }); } } }) as HTMLButtonElement;
+  let closeHelp: (() => void) | undefined;
+  const helpButton = el("button", { class: "relief-bar-icon relief-bar-help", children: [terrainToolbarIcon("help")], attrs: { type: "button", "aria-label": "지형 도움말", "aria-haspopup": "dialog" }, dataset: { testid: "terrain-help-toggle" }, on: { click: () => { closeHelp = openTerrainHelpModal(helpButton); } } });
+  const context = el("div", { class: "relief-bar relief-bar-context", attrs: { role: "group", "aria-label": "선택한 지형 도구 설정" }, dataset: { testid: "terrain-tool-options" }, children: [modes, sizes, level, grass, style, material, brushWidth, moveGroup, deleteGroup] });
   const bar = el("div", {
     class: "relief-bar",
-    attrs: { role: "toolbar", "aria-label": "높이 붓" },
+    attrs: { role: "toolbar", "aria-label": "지형 도구" },
     dataset: { testid: "relief-brush-controls" },
-    children: [terrainTools, sep(), modes, sizes, level, grass, style, material, brushWidth, moveGroup, deleteGroup, sep(), doodadButton, designButton, reachable],
+    children: [terrainTools, sep(), doodadButton, designButton, reachable, el("button", {
+      class: "relief-bar-icon", children: [terrainToolbarIcon("sun")],
+      attrs: { type: "button", "aria-label": "태양과 그림자", title: "태양 방향·고도와 지형 그림자 설정", "aria-haspopup": "dialog" },
+      dataset: { testid: "terrain-sunlight-settings" },
+      on: { click: () => { const id = editorState.get().currentMapId; const map = id ? store.getCurrent().maps[id] : undefined; if (map) openMapPropertiesDialog(map.id, map.name, { focus: "sunlight" }); } },
+    }), sep(), helpButton],
   });
 
   // ── 지형지물 팝업 ──
@@ -317,7 +333,7 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
   head.addEventListener("pointerup", () => { drag = null; });
   head.addEventListener("pointercancel", () => { drag = null; });
 
-  const dock = el("div", { class: "relief-bar-dock", children: [hint, bar] });
+  const dock = el("div", { class: "relief-bar-dock", children: [hint, context, bar] });
   const host = el("div", { class: "relief-toolbar-host", dataset: { testid: "relief-toolbar" }, children: [pop, dock] });
   canvasArea.append(host);
   const offDesign = mountTerrainDesignPanel(host);
@@ -331,16 +347,19 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
     designButton.classList.toggle("is-active", state.terrainDesignOpen);
     designButton.setAttribute("aria-pressed", String(state.terrainDesignOpen));
     designButton.setAttribute("aria-expanded", String(state.terrainDesignOpen));
-    for(const [value,b] of terrainButtons){const on=value===state.terrainBrush;b.classList.toggle("is-active",on);b.setAttribute("aria-pressed",String(on));}
-    const heightMode=state.terrainBrush==="height";
+    for(const [value,b] of terrainButtons){const on=value===state.terrainBrush&&!state.reliefDoodad;b.classList.toggle("is-active",on);b.setAttribute("aria-pressed",String(on));}
+    const heightMode=state.terrainBrush==="height"&&!state.reliefDoodad;
     modes.hidden=level.hidden=grass.hidden=style.hidden=!heightMode;
-    sizes.hidden=!(heightMode||state.reliefDoodad);
+    const pickedTab = state.reliefDoodad ? reliefDoodadCatalog(currentMapAndTileset().tileset).find(d => d.id === state.reliefDoodad)?.tab : undefined;
+    sizes.hidden=!(heightMode||pickedTab === "tree"||pickedTab === "rock");
     material.hidden=state.terrainBrush!=="surface";brushWidth.hidden=state.terrainBrush!=="surface"&&state.terrainBrush!=="river";
     moveGroup.hidden=deleteGroup.hidden=state.terrainBrush!=="group";
     const selection=state.terrainSelectedGroup;
     const selectedExists=!!selection&&selection.mapId===editorState.get().currentMapId&&!!store.getCurrent().maps[selection.mapId]?.doodadGroups?.some(g=>g.id===selection.id);
     moveGroup.disabled=deleteGroup.disabled=!selectedExists;
     moveGroup.classList.toggle("is-active",state.terrainMoveGroup);
+    moveGroup.setAttribute("aria-pressed",String(state.terrainMoveGroup));
+    context.hidden = [...context.children].every(child => (child as HTMLElement).hidden);
     material.value=state.terrainMaterial;brushWidth.value=String(state.terrainWidth);rampWidth.value=String(state.reliefRampWidth);density.value=String(state.reliefClusterDensity);
     clusterToggle.setAttribute("aria-pressed",String(state.reliefClusterEnabled));clusterToggle.classList.toggle("is-active",state.reliefClusterEnabled);
     reachable.setAttribute("aria-pressed",String(state.terrainReachability));reachable.classList.toggle("is-active",state.terrainReachability);
@@ -363,8 +382,8 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
     grass.disabled = reliefTopGrassTile(tileset) === undefined;
     style.disabled = !hasRelief;
     style.value = currentStyle ?? "";
-    doodadButton.classList.toggle("is-active", state.reliefDoodadOpen);
-    doodadButton.setAttribute("aria-pressed", String(state.reliefDoodadOpen));
+    doodadButton.classList.toggle("is-active", state.reliefDoodadOpen || !!state.reliefDoodad);
+    doodadButton.setAttribute("aria-pressed", String(state.reliefDoodadOpen || !!state.reliefDoodad));
     doodadButton.setAttribute("aria-expanded", String(state.reliefDoodadOpen));
     pop.hidden = !state.reliefDoodadOpen;
     if (state.reliefDoodadOpen) renderGrid();
@@ -374,13 +393,18 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
     hint.textContent = picked
       ? hover && hover.label === picked.label
         ? `${picked.label} — ${hover.ok ? "✓" : "✕"} ${hover.reason} · 오른쪽 버튼·Esc: 그만 놓기`
-        : `${picked.label} — 언덕 가장자리에 대 보라 · 오른쪽 버튼·Esc: 그만 놓기`
-      : `왼쪽: ${MODE_LABEL[state.reliefMode]} · 오른쪽: ${rightButtonLabel(state.reliefMode)} · 누르고 있으면 계속 · Shift: 작은 정밀 붓`;
+        : `${picked.label} · 캔버스에서 배치 위치를 고르세요`
+      : `높이 · ${MODE_LABEL[state.reliefMode]} · Shift: 정밀 붓`;
     if(state.reliefBridgeStart?.mapId===state.currentMapId)hint.textContent="첫 둑 선택됨 — 같은 줄의 반대편 둑을 누른다 · Esc: 시작점 취소";
     if(state.terrainBrush==="surface")hint.textContent=(terrainMaterialTile(tileset,state.terrainMaterial)??-1)<0?"이 칩셋에 선택한 재질이 없다 — 다른 재질을 고르라":`표면 ${MATERIAL_LABEL[state.terrainMaterial]} · 높이 유지 · 폭 ${state.terrainWidth}칸`;
-    if(state.terrainBrush==="river")hint.textContent=`강 · 폭 ${state.terrainWidth}칸 · 첫 칸 높이로 강바닥 · 물가 자동 접합 · 통로·물체 보호`;
+    if(state.terrainBrush==="river")hint.textContent=`강 · 끌어서 그리기 · 폭 ${state.terrainWidth}칸`;
     if(state.terrainBrush==="group")hint.textContent=state.terrainMoveGroup?"옮길 자리를 누른다 · 오른쪽 버튼·Esc: 취소":selectedExists?"군집 선택됨 — 옮기기·군집 지우기":"나무·바위 군집을 눌러 선택한다";
-    if(isTerrainDesignTool(state.terrainBrush)) hint.textContent = `${TERRAIN_DESIGN_TOOLS.find(([key]) => key === state.terrainBrush)![1]} · 지형 설계에서 옵션을 고르세요 · Enter: 적용 · Esc: 점 취소`;
+    if(isTerrainDesignTool(state.terrainBrush)) hint.textContent = `${TERRAIN_DESIGN_TOOLS.find(([key]) => key === state.terrainBrush)![1]} · ${state.terrainBrush === "mix" || state.terrainBrush === "mixedCluster" ? "캔버스를 눌러 배치" : state.terrainBrush === "route" ? "출발점 → 목적지" : state.terrainBrush === "stamp" ? "지형 설계에서 도장을 고르세요" : "점을 찍고 Enter: 적용"}`;
+    if (state.terrainBrush === "house") {
+      hint.classList.toggle("is-bad", hover?.ok === false); hint.classList.toggle("is-ok", hover?.ok === true);
+      hint.textContent = hover?.label === "집 외관" ? hover.reason : state.terrainHouseResize === "roof" ? "집 · 지붕에서 좌우로 끌어 너비 조절" : "집 · 끌어서 크기 정하기";
+    }
+    if (state.terrainBrush === "road" && state.terrainRoadDrag && !state.terrainFeatureId) hint.textContent = `도로 · 폭 ${state.terrainWidth}칸 · 끌고 놓으면 적용 · Esc: 취소`;
     if(state.terrainReachability && store.getCurrent().startMapId!==state.currentMapId)hint.textContent+=" · 시작 맵에서 통행을 확인한다";
   };
   renderTabs();
@@ -393,7 +417,7 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
     if (!host.hidden) sync(editorState.get());
   };
   const onKey = (event: KeyboardEvent): void => {
-    if (host.hidden || event.defaultPrevented || shouldIgnoreEditorShortcut(event)) return;
+    if (host.hidden || event.defaultPrevented || hasOpenModalLayer() || shouldIgnoreEditorShortcut(event)) return;
     const state = editorState.get();
     if (event.key === "Enter" && isTerrainDesignTool(state.terrainBrush) && state.terrainPoints) {
       event.preventDefault(); event.stopPropagation(); commitTerrainDesign(); return;
@@ -401,11 +425,12 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
     if (event.code === "KeyD" && !event.ctrlKey && !event.metaKey && !event.altKey) {
       event.preventDefault();
       const open = !state.reliefDoodadOpen;
-      editorState.set({ reliefDoodadOpen: open, ...(open ? {} : { reliefDoodad: null, reliefBridgeStart:null }) });
+      editorState.set({ reliefDoodadOpen: open, ...(open ? { terrainDesignOpen: false, terrainHouseDrag: null, terrainVisionPreview: false } : { reliefDoodad: null, reliefBridgeStart:null }) });
       return;
     }
     if (event.key !== "Escape") return;
-    if (document.querySelector('[data-testid="delayed-tooltip"]')) hideDelayedTooltip();
+    if (state.terrainHouseDrag) editorState.set({ terrainHouseDrag: null });
+    else if (document.querySelector('[data-testid="delayed-tooltip"]')) hideDelayedTooltip();
     else if (state.reliefBridgeStart) editorState.set({ reliefBridgeStart: null });
     else if (state.terrainMoveGroup || state.terrainSelectedGroup) editorState.set({terrainMoveGroup:false,terrainSelectedGroup:null});
     else if (state.reliefDoodad) editorState.set({ reliefDoodad: null, reliefBridgeStart:null });
@@ -417,6 +442,7 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
   window.addEventListener(RELIEF_DOODAD_HOVER_EVENT, onHover);
   document.addEventListener("keydown", onKey, true);
   return () => {
+    closeHelp?.();
     offDesign();
     offState();
     offStore();

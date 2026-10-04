@@ -24,6 +24,14 @@ export function readSharedContent(file = sharedContentFile()): SharedContentSnap
     return { revision: snapshotRevision(rows), libraries: Object.fromEntries(rows.map(r => [r.id, JSON.parse(r.payload)])) };
   } finally { db.close(); }
 }
+/** Publication and readback need only their own row, not every image in every library. */
+export function readSharedContentLibrary(id: string, file = sharedContentFile()): { revision: string; library: SharedContentLibrary } | null {
+  const db = open(file);
+  try {
+    const row = db.prepare('SELECT revision, payload FROM content_libraries WHERE id=?').get(id) as {revision:string; payload:string} | undefined;
+    return row ? {revision:row.revision, library:JSON.parse(row.payload)} : null;
+  } finally { db.close(); }
+}
 /**
  * 편집기용 스냅샷. 게시 스크립트가 쓰는 readSharedContent 와 달리 미리보기 dataURL 을 주소로 바꾼다.
  * 실측(2026-09-26): 전체 응답 395MB 중 미리보기가 185MB 였고, 부팅마다 이걸 받고 파싱하느라
@@ -191,7 +199,8 @@ export function publishSharedContent(id: string, value: SharedContentLibrary, ex
     db.prepare('INSERT INTO content_libraries VALUES (?,?,?,?) ON CONFLICT(id) DO UPDATE SET revision=excluded.revision,payload=excluded.payload,updated_at=excluded.updated_at').run(id,revision,payload,new Date().toISOString());
     db.exec('COMMIT');
   } catch(error) { db.exec('ROLLBACK'); throw error; } finally { db.close(); }
-  const reloaded = readSharedContent(file).libraries[id];
+  // 게시한 한 행만 재로드한다. 편집기용 이미지 URL 변환도 적용하지 않는다.
+  const reloaded = readSharedContentLibrary(id, file)!.library;
   if(hash(JSON.stringify(reloaded)) !== revision) throw new Error('Shared SQLite reload mismatch');
   return {file,id,revision,reloaded};
 }

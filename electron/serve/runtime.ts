@@ -327,7 +327,9 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
     }
     const extension = extname(target);
     const contentType = MIME_BY_EXTENSION[extension] ?? "application/octet-stream";
-    if (extension !== ".html") {
+    // SDK files are hashed by the exporter, including player.html. Injecting
+    // the editor bridge changes those bytes and rejects every hosted ZIP export.
+    if (extension !== ".html" || relative.startsWith("export-player/")) {
       const fingerprinted = /^assets\/[^/]+-[A-Za-z0-9_-]{8}\.(?:js|css|woff2|png)$/.test(relative);
       await sendHttpBody(response, 200, bytes, {
         "content-type": contentType,

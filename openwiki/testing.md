@@ -65,6 +65,15 @@ PR 브랜치는 그대로 새 푸시가 옛 잡을 끊는다.
 몰리면 힙 바닥(3584MB)을 넘겨 cgroup 이 프로세스를 죽인다. 대응: `test:parity` 에 `--maxWorkers=2
 --minWorkers=1` 고정 (`test:quarantine`·게이트 browser 스테이지와 같은 패턴). 로컬(상한 없음)에는 영향 없다.
 
+## ci-full vitest 는 힙 합을 75% 안에 둔다 (2026-10-04)
+
+`ci-full.slice` 가 12GiB 이고 러너 서비스 `NODE_OPTIONS` 가 `--max-old-space-size=4096` 이면
+`withHeapOption` 이 그 힙을 유지한다. 오버커밋이 워커 3을 고르면 3×4096MB 가 memory.max 와 같아
+피크 12.00GiB, OOM kill 1 로 JSON 리포트가 안 남는다(run 37183989815).
+2×4096MB 로 줄여도 피크는 12.00GiB 였고 리포트 없이 exit 1 이었다(run 37185897310, OOM kill 0).
+워커 1개 × 8192MB 도 `invalid table size` 로 죽었다(run 37190574621).
+`ci-full.slice` 는 16GB 다. 그 슬라이스에서는 워커 1개 × 힙 12288MB 다. 서비스의 4096MB 는 덮어쓴다.
+
 ## 게이트 반복은 `--changed` 로 좁힌다 (2026-09-13)
 
 **워크트리·세션 에이전트는 `npm run gates` / vitest 를 스스로 돌리지 말라.** 게이트는 감독자가 돌린다.
@@ -1921,6 +1930,31 @@ under `test/fixtures` derives existing engine test data without remote persisten
 `scripts/qa/field-hud-editor.probe.mjs`는 글꼴·메뉴·수치 표시를 실제 DB 컨트롤로
 저장하고 serialize/deserialize 및 섹션 왕복을 확인한다. 운영 콘텐츠 작성은 하지 않는다.
 
+## 실제 첫 생성 → 정본 재로드 → 출하 ZIP 플레이 (2026-10-03)
+
+`scripts/qa/live-first-game.mjs`는 독립된 루프백 SQLite 호스트에서 실제 새 프로젝트 인터뷰와
+기본 모델을 실행한다. 프롬프트 원문 포함 여부·첫 커밋 지연·정본 재로드를 기록하며, 워커의
+`done` 신호 없이 보드만 유휴 상태가 된 실행은 성공으로 보지 않는다. 중간 체크포인트가
+저장된 것과 게임 제작 완료는 다르다.
+
+`live-first-game-export.mjs`는 같은 프로젝트의 실제 편집기 메뉴에서 ZIP을 내려받는다.
+`live-first-game-player.mjs`는 그 ZIP을 푼 폴더를 독립 서버에서 제공하고 실제 `player.html`과
+`project.json`을 전용 런타임 QA로 검사한다.
+두 기억 선택지의 서로 다른 대사, 정상 이동,
+첫 구간 엔딩을 각각 확인하며 외부 호스트 요청은 거절한다. fixture를 손으로 고쳐 통과시키지 않는다.
+전환 목적지 좌표는 페이드가 끝나기 전에 커밋된다. 다음 방향키를 보내기 전 `runtime-state-json`의
+`data-live-flags`에서 해당 목적지·입력 ON·실행 이벤트 종료를 기다린다. 좌표만 기다리면 첫 입력을 잃는다.
+
+`runRuntimeQa`의 `entryPath`·`projectUrl` 옵션은 출하 패키지의 실제 진입 파일과 프로젝트를
+검사하기 위한 것이다. 직접 프로젝트 URL을 쓰면 시스템 설정 패치를 허용하지 않는다.
+플레이어 부팅 실패도 `SUMMARY.md`·`boot-failure.json`·PNG를 남긴다. 먼저 SUMMARY를 읽는다.
+이 흐름은 전체 Vitest/gates 실행을 대신하지 않는다. 게이트 실행 제한은 AGENTS를 따른다.
+
+자동 실행이 기획을 완성하지 못하면 `live-first-game-complete.mjs`로 실제 조수에게 후속
+제작을 맡길 수 있다(`LIVE_GAME_REPAIR_TASK`로 수정 요청 지정). 기록은 `completion.json`으로
+분리하고 `automaticBuildCompleted:false`를 유지한다. 후속 제작의 성공을 자동 첫 생성 성공으로
+합산하지 않는다. 최종 패키지의 맵·이벤트·기획은 같은 SQLite 정본과 비교한다.
+
 ## 맵 크기 성능 실측 (2026-10-01)
 
 사용자가 성능 실측을 요청했을 때 `node scripts/qa/map-size-benchmark.mjs`로 256×256과
@@ -2010,3 +2044,44 @@ parity 목록의 `equipment.elementalDefenseIds` 소비자 주소는 전투 코�
 추가 heap을 구분한다. 원시 로그·스크린샷·코드 해시는 같은 폴더에 있다.
 바닥 타일 1층, 높이 없음, NPC 0명 조건이므로 1024의 비평탄 relief·많은 이벤트·길찾기
 성능까지 입증하지 않는다. 높이 붓은 기존 전체 맵 CanvasTexture 경로가 남아 있다.
+
+## 첫 자동 게임의 실제 대사 대기 (2026-10-04)
+
+`waitForText`는 DOM의 실제 typewriter 문구가 완성되기를 기다린다. 선택 직후 고정 Enter를
+누르면 짧은 결과 대사가 이미 끝난 경우 다음 대사로 넘어가 잘못된 실패를 만든다.
+페이지네이터가 삽입한 실제 줄바꿈은 `visibleText`와 같이 공백 하나로 정규화한다.
+`live-first-game-player.mjs`는 자연 motion·오프닝 전체·정상 키보드·충돌 기반 경로로 두 선택을
+확인하고 SQLite 정본의 4층 타일/대상 이벤트가 내보내기에 보존됐는지 비교한다.
+
+브라우저 관측기가 끊겨도 원래 서버 실행이 정상 종료됐다면 `live-first-game-reload.mjs`로
+같은 실행의 종료·핵심/장면 검수 기록을 읽고 같은 SQLite 프로젝트를 Chromium에서 재로드한다.
+추가 AI POST는 0이어야 한다. 원래 실패한 `generation.json`은 그대로 두고 `reloaded.json`을
+따로 기록한다. 이는 게임을 고치는 후속 제작이 아니며, 내보내기/플레이 성공을 뜻하지 않는다.
+출하 ZIP 다운로드와 두 선택의 실제 키보드 플레이도 Chromium으로 수행한다.
+엔딩은 루트 DOM의 생성만으로 통과시키지 않는다. `data-phase=epilogue`와 실제 엔딩 제목을
+확인하고 `waitForVisible`의 `descendant: '.ending-heading', minAlpha: 0.95`로 자식 페이드까지 기다린다.
+
+### Maker repair and click-first startup (2026-10-04)
+
+Focused QA scripts (no Vitest/full-gate invocation):
+- `scripts/qa/maker-art-repair.mts`: synthetic production worker scenarios for
+  review rejection, bounded repair, locks, immutable authored events, read-only,
+  cancellation and mandatory current-image completion.
+- `scripts/qa/maker-terrain-reference.mjs`: terrain-kit source-purpose evidence
+  gate, including the observed sewer bridge used as a garden-path bypass.
+- `scripts/qa/maker-interview-ui.mjs`: production component click-only completion
+  at desktop/short/mobile widths, fixed-action geometry and absence of branch
+  thumbnails/shortcut hints, with explicitly synthetic network failure.
+- `scripts/qa/maker-interview-art-live.mjs`: real generation + real vision image
+  receipt, including rejection/redraw. No game-content writes.
+- `scripts/qa/maker-fullscreen-electron.mjs`: actual packaged renderer startup in
+  Electron, native fullscreen flag and visible click toggle. Use Xvfb with a window
+  manager when asserting screen-sized bounds; a bare Xvfb has no WM to honor them.
+
+Do not turn an observer timeout, a synthetic provider test, a component fixture or
+an independently polished reference game into a claim that New Game's full
+production turn finished. Those are distinct evidence categories.
+Committed evidence and its limitations: `verify-shots/maker-click-first/README.md`.
+The live maker task finished and saved/reloaded, but its observer composite is
+FAIL because of one framebuffer error; the subsequent read-only resize probe and
+dedicated exported player passed. Do not describe this as all browser checks green.

@@ -1,0 +1,43 @@
+{
+ "id": "20261002-2144-recolor/c-old-gardener__sonnet-r1",
+ "brief": "c-old-gardener",
+ "name": "늙은 정원사",
+ "base": "People5:6",
+ "base_label": "People5 7번",
+ "strength": "normal",
+ "files": {
+  "chr": "c-old-gardener__sonnet-r1__20261002-2144-recolor.chr.txt",
+  "sheet": "c-old-gardener__sonnet-r1__20261002-2144-recolor.png"
+ },
+ "description": {
+  "label": "회색 수염 짙은 초록 옷 늙은 정원사",
+  "gender": "남",
+  "attributes": {
+   "kind": "사람",
+   "age": "노인",
+   "hair": "흰 회색 머리"
+  },
+  "role": "정원사·농부",
+  "appearance": "희끗한 회색 머리에 풍성한 회색 수염이 가슴께까지 내려오는 노인으로, 짙은 초록 겉옷에 갈색 소매와 갈색 바지를 입었다. 신발은 짙은 갈색이고, 뒷모습은 초록 등판에 둥근 흰회색 머리가 보인다.",
+  "colors": [
+   "회색 머리·수염",
+   "짙은 초록 겉옷",
+   "갈색 소매·바지",
+   "짙은 갈색 신발",
+   "붉은 갈색 머리 윤곽"
+  ],
+  "tags": [
+   "노인",
+   "정원사",
+   "농부",
+   "마을 사람",
+   "수염",
+   "중세",
+   "시골",
+   "할아버지"
+  ],
+  "fits": "마을 정원·밭·농가 마당이나 숲 가장자리 오두막에서 일하거나 길을 지키는 늙은 일꾼 NPC 로 어울린다.",
+  "by": "Claude Sonnet 5.5 · medium",
+  "at": "2026-10-02T22:41:04+00:00"
+ }
+}

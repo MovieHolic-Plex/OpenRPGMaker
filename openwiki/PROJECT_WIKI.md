@@ -32,6 +32,8 @@ This is not the in-app user manual. It is the pre-edit context layer for agents.
    - Editor validation: `openwiki/editor-validation.md`
    - Editor genre-pack authoring contract: `openwiki/editor-genre-packs.md`
    - Interior room harness: `openwiki/editor-interior-room-harness.md`
+   - 슈퍼하네싱 기물 파생(방향·상태·모션·크기, 사람 선택, 공용 자동 게시): `openwiki/harnesses/interior-prop-derivations.md` → `openwiki/harnesses/interior-prop-derivations-operations.md`. 기존 공간 실행기와의 연결 범위: `openwiki/harnesses/super-harness-integration.md`.
+   - 캐릭터 GIF 공방(GPT 자유 저작·결손 검사·사람의 남김/폐기·선택 팩): `openwiki/charset-actor-harness.md`
    - Editor index: `openwiki/editor-workflows.md` (slim TOC linking to the above)
    - 연결 던전 생성 (방 그래프·복합 절벽·맥락 소품): `openwiki/connected-dungeon-generation.md`
    - Castle / keep map modules (`map_castle_keep` gold): `openwiki/castle-map.md`
@@ -168,4 +170,8 @@ If source behavior disagrees with the wiki, the source wins for the immediate fi
 
 ## 지형 설치 도구 (2026-10-03)
 
+태양 방향·고도·지형/집/나무의 땅 그림자, 기본 off·편집기/플레이어/조수 이미지 공통 계산: [sunlight-shadows.md](sunlight-shadows.md).
+
 높이·표면·강·군집 선택, 네 방향 경사로·두 둑 다리·군집 복원·시작점 통행 미리보기: [terrain-placement-tools.md](terrain-placement-tools.md).
+
+지형 설계·적용 후 제어점 재편집·자동 경사 연결·침식/평활화·수심/폭포·게임 상태 경로 검사·공용 도장·시야 토글/발사체 높이: [terrain-design-suite.md](terrain-design-suite.md).

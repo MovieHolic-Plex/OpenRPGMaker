@@ -5,7 +5,7 @@
    "name": "일본 도시 · 읽는 순서·시트 지도",
    "documents": 3,
    "images": 3,
-   "chars": 29729
+   "chars": 29849
   },
   {
    "id": "jp-autotile",
@@ -25,8 +25,8 @@
    "id": "jp-road",
    "name": "일본 도시 · 도로·교차로 키트",
    "documents": 7,
-   "images": 12,
-   "chars": 66811
+   "images": 13,
+   "chars": 72082
   },
   {
    "id": "jp-shop",
@@ -46,17 +46,17 @@
  "totals": {
   "categories": 6,
   "documents": 47,
-  "images": 124,
-  "chars": 377621,
+  "images": 125,
+  "chars": 383012,
   "maxDocChars": 38250,
   "maxImagePx": 820
  },
- "tilesEmitted": 3463,
- "kitsEmitted": 205,
- "kitArrayItemsRoundtrip": 205,
+ "tilesEmitted": 3482,
+ "kitsEmitted": 215,
+ "kitArrayItemsRoundtrip": 215,
  "unknownTokens": [],
  "sha256": {
-  "json": "a3f68fa97fd3460ab1bebaf6c426ea5ee2d436910374240ae88c981a73874d0f",
-  "images": "8a19321fc021336e2c58ccac8063fbbc3c739d0206bd13e0666395905fc927a1"
+  "json": "b7c69ef1c64999d1819b3328a2051f9dc7c720d469afd9dec5d3234cad87c01b",
+  "images": "0c4e65f482b361bf4fb88d97c5737724cd5c47bc771c88a47f4c1361376ff8e2"
  }
 }

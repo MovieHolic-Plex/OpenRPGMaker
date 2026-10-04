@@ -1,0 +1,18 @@
+{
+  "source": "/home/main/.codex/worktrees/0a57/rpg-zzu/verify-shots/opening-typography/video/page@78e448407f66050ba583b762f2145017.webm",
+  "startSeconds": 10,
+  "durationSeconds": 44,
+  "crop": {
+    "x": 40,
+    "y": 0,
+    "width": 1200,
+    "height": 900
+  },
+  "fps": 10,
+  "width": 840,
+  "openingSkipped": false,
+  "timing": "normal playback, no accelerated transitions; 100ms snapshot and 2500ms dialogue reading pauses outside opening",
+  "includes": "title \u2192 4 actual opening scenes \u2192 first gameplay \u2192 first choice/response",
+  "shippingZip": "output/qa/opening-typography/game-web.zip",
+  "bytes": 18349821
+}

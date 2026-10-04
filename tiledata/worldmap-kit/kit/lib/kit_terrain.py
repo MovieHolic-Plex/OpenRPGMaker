@@ -45,7 +45,7 @@ OPS = {
     'river': (('line',), ('widen',)), 'forest': (('poly',), ('kind', 'density')), 'clear': (('poly',), ('what',)),
     'plateau': (('poly',), ('level', 'ground')), 'move_place': (('id', 'x', 'y'), ()),
     'volcano': (('x', 'y'), ('lava',)),
-    'continents': ((), ('style', 'count', 'land', 'seed')), 'climate': ((), ('seed', 'wet', 'cold')),
+    'continents': ((), ('style', 'count', 'land', 'seed', 'box', 'region', 'home', 'beyond', 'sands')), 'climate': ((), ('seed', 'wet', 'cold')),
     'wall': (('line',), ('gate',)), 'dune_sea': (('poly',), ()), 'sky_island': (('x', 'y'), ()),
 }
 GEN_ONLY = ('continents', 'climate', 'wall', 'dune_sea', 'sky_island')
@@ -92,8 +92,24 @@ def validate(spec):
             import kit_gen as KG
             if o.get('style', 'blobs') not in KG.STYLES:
                 raise TerrainError('ops[%d]: continents style 은 %s' % (i, ' | '.join(KG.STYLES)))
-            if not (0 if o.get('style') == 'korea' else 1) <= int(o.get('count', 4)) <= 40:   # korea 는 실제 지리라 섬 수 0 이 기본
+            if not (0 if KG.DEFAULT[o.get('style', 'blobs')]['count'] == 0 else 1) <= int(o.get('count', 4)) <= 40:   # korea·real 은 실제 지리라 섬 수 0 이 기본
                 raise TerrainError('ops[%d]: continents count 는 1~40' % i)
+            if o.get('style') == 'real':
+                import kit_realgeo as KReal
+                if 'region' in o and o['region'] not in KReal.REGIONS:
+                    raise TerrainError('ops[%d]: continents region 은 %s 중 하나 — 없는 지역이면 box [서경, 남위, 동경, 북위] 를 직접 준다' % (i, ', '.join(KReal.REGIONS)))
+                if 'region' not in o and 'box' not in o:
+                    raise TerrainError('ops[%d]: style real 은 region(지역 이름) 이나 box [서경, 남위, 동경, 북위] 가 있어야 한다' % i)
+                if 'box' in o:
+                    try:
+                        KReal.fit_box(o['box'])
+                    except KReal.RealGeoError as e:
+                        raise TerrainError('ops[%d]: %s' % (i, e))
+                for kk, what in (('home', '여정을 시작할 땅'), ('beyond', '관문 너머(2막) 땅 쪽'), ('sands', '4막 사구 바다 자리')):
+                    if kk in o and not (isinstance(o[kk], list) and len(o[kk]) == 2):
+                        raise TerrainError('ops[%d]: continents %s 는 [경도, 위도] — %s' % (i, kk, what))
+            elif any(kk in o for kk in ('box', 'region', 'home', 'beyond', 'sands')):
+                raise TerrainError('ops[%d]: box·region·home·beyond·sands 는 style "real"(실제 지리)에서만 쓴다' % i)
             if not .2 <= float(o.get('land', .42)) <= .7:
                 raise TerrainError('ops[%d]: continents land(땅 비율)는 0.2~0.7' % i)
         if k == 'climate':
@@ -410,7 +426,7 @@ def explain(bad, journey):
             out.append('줄거리 %s → %s 를 그 막의 수단으로 갈 수 없다 — 둘 사이 땅(또는 배·사막선이 지나는 물·사구)이 끊겼다.' % m.groups())
             continue
         if s.startswith('바다 장벽이 너무 좁다'):
-            out.append('서·동 대륙 사이 바다가 4칸보다 좁아졌다 — 그 바다에 섬·땅을 놓거나 대륙을 넓히지 마라(배 없이 건너진다).')
+            out.append('서·동 대륙 사이 바다가 너무 좁아졌다(생성 4칸·실제 지리 2칸 이상) — 그 바다에 섬·땅을 놓거나 대륙을 넓히지 마라(배 없이 건너진다).')
             continue
         m = re.match(r'걸어서 처음부터 닿으면 안 되는 곳이 닿는다: (.+)', s)
         if m:

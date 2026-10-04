@@ -100,7 +100,8 @@ export function closeAiSettingsModal(): void {
  * "AI 연결하기 → 로그인 → 모달 닫기 → 막 아무 데나 누르기" 라는 한 단계가 더 있었다.
  * 로그인을 마친 사람이 막이 걷히지 않은 화면을 보면 그게 더 나쁘다.
  */
-export const AI_SETTINGS_CLOSED_EVENT = "oprn:ai-settings-closed";
+import { AI_SETTINGS_CLOSED_EVENT } from "./aiSettingsEvents";
+export { AI_SETTINGS_CLOSED_EVENT } from "./aiSettingsEvents";
 
 export function notifyAiSettingsClosed(): void {
   if (typeof window === "undefined") return;

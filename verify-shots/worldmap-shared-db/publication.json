@@ -1,0 +1,65 @@
+{
+  "dry": false,
+  "selectedIcons": 79,
+  "sources": [
+    {
+      "label": "joseon",
+      "projectDir": "/home/main/.local/share/oprn/worldmap-real-geo-20261004-joseon",
+      "projectId": "e85f0f8a-99b0-4098-abfe-3a0aefd7c3d8",
+      "revision": 3,
+      "mapId": "world_map",
+      "mapSha256": "5547d04a3888e80143f605fe6146d35ff5a3adef6eb61d8d0811cf0cbf7eca82",
+      "atlasSha256": "61dd6dadfe57ec4a8e9c5ebcbf2772cf5ae6edf04430cce70517900beedac91d",
+      "pixelIdentical": true
+    },
+    {
+      "label": "yucatan",
+      "projectDir": "/home/main/.local/share/oprn/worldmap-real-geo-20261004-maya",
+      "projectId": "abcd1257-74e2-4013-b403-dd247945beb3",
+      "revision": 2,
+      "mapId": "world_map",
+      "mapSha256": "dde7b5f45f88688c9ff0c14cf530ec962b2ea3109e6b8c7de972fa18df5d9880",
+      "atlasSha256": "073d139314d98c110b580ef3aa2e47f068f7b4614ba77d86a2ed04319713b86d",
+      "pixelIdentical": true
+    }
+  ],
+  "receipts": [
+    {
+      "id": "worldmap-human-selected",
+      "file": "/home/main/.local/share/oprn/shared-content.sqlite",
+      "revision": "a8a08be18dd6d6fd17b9dd2514c6c0be659717040d0217fcb50a1750cb7cc86a",
+      "reloaded": true,
+      "bytes": 1221023,
+      "tilesets": [
+        "shared_worldmap_selected"
+      ],
+      "regions": []
+    },
+    {
+      "id": "worldmap-real-joseon",
+      "file": "/home/main/.local/share/oprn/shared-content.sqlite",
+      "revision": "b158cfc0012902747cc581a76e85d5f5fe6828457b07aadf03235fce35ab96d9",
+      "reloaded": true,
+      "bytes": 4938484,
+      "tilesets": [
+        "shared_worldmap_real_joseon_tiles"
+      ],
+      "regions": [
+        "shared_worldmap_real_joseon"
+      ]
+    },
+    {
+      "id": "worldmap-real-yucatan",
+      "file": "/home/main/.local/share/oprn/shared-content.sqlite",
+      "revision": "d943ac565e585654d89a3c1d1eb3e1b0e42a722f0840496e46f09c65ae767b45",
+      "reloaded": true,
+      "bytes": 5854440,
+      "tilesets": [
+        "shared_worldmap_real_yucatan_tiles"
+      ],
+      "regions": [
+        "shared_worldmap_real_yucatan"
+      ]
+    }
+  ]
+}

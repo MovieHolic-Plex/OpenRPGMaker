@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>슈퍼하네스</title>
+<style>
+:root{--bg:#141619;--card:#1d2025;--line:#2c3037;--ink:#ececee;--dim:#9a9fa8;--ok:#5cbf83;--run:#5aaed0;--wait:#d6a24a;--bad:#e06a5a}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 -apple-system,"Pretendard","Noto Sans KR",sans-serif}
+header{display:flex;flex-wrap:wrap;gap:12px;align-items:center;padding:14px 20px;border-bottom:1px solid var(--line)}
+header h1{font-size:18px;margin:0 8px 0 0}
+#line{color:var(--dim)}
+#pause{margin-left:auto}
+button{background:#2a2e35;color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:6px 12px;font:inherit;cursor:pointer}
+button:hover{border-color:#4a505a}
+.tabs{display:flex;gap:6px;padding:12px 20px 0;flex-wrap:wrap}
+.tabs button{border-radius:999px}
+.tabs button.on{background:var(--ink);color:var(--bg)}
+main{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;padding:16px 20px 40px}
+.c{background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column}
+.c:hover{border-color:#4a505a}
+.c .pic{position:relative;aspect-ratio:4/3;background:#0e0f11;display:flex;align-items:center;justify-content:center;color:#555;font-size:12px}
+.c .pic img{width:100%;height:100%;object-fit:cover;image-rendering:auto}
+.pic-kind{position:absolute;top:8px;left:8px;padding:3px 7px;background:#161a21e8;color:#f1c66c;border-radius:5px}
+.c .t{padding:10px 12px 12px}
+.c b{font-size:15px}
+.c .s{font-size:12px;margin:2px 0 4px}
+.c .a{font-size:12px;color:var(--dim);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.s.done{color:var(--ok)} .s.work{color:var(--run)} .s.wait{color:var(--wait)} .s.stop{color:var(--bad)}
+.dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--run);margin-right:5px;animation:p 1.6s infinite}
+@keyframes p{50%{opacity:.25}}
+.empty{color:var(--dim);padding:40px 20px}
+#modal{position:fixed;inset:0;background:rgba(0,0,0,.72);display:none;align-items:flex-start;justify-content:center;overflow:auto;padding:30px 12px}
+#modal.on{display:flex}
+.box{background:var(--card);border:1px solid var(--line);border-radius:12px;max-width:1000px;width:100%;padding:20px 22px}
+.box h2{margin:0 0 2px;font-size:20px}
+.box .about{color:var(--ink);margin:10px 0}
+.box .muted{color:var(--dim);font-size:13px}
+.pics{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;margin:12px 0}
+.pics figure{margin:0}
+.pics img{width:100%;border-radius:6px;background:#0e0f11;cursor:zoom-in}
+.pics figcaption{font-size:12px;color:var(--dim)}
+.box h3{font-size:14px;margin:16px 0 6px}
+.box ul{margin:0;padding-left:18px}
+.box li{margin:2px 0}
+textarea{width:100%;min-height:70px;background:#121418;color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px;font:inherit}
+.acts{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.primary{background:#2d5d8a;border-color:#2d5d8a}
+.danger{background:#5a2a26;border-color:#5a2a26}
+.close{float:right}
+#big{position:fixed;inset:0;background:rgba(0,0,0,.9);display:none;overflow:auto;cursor:zoom-out}
+#big.on{display:block}
+#big img{display:block;margin:20px auto;max-width:none;image-rendering:pixelated}
+a{color:var(--run)}
+
+.header-link,.doc-tools a{display:inline-block;padding:6px 12px;border:1px solid var(--line);border-radius:8px;text-decoration:none}
+.doc-tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:22px}
+.doc-tools button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.document{font-size:16px;line-height:1.8;overflow-wrap:anywhere}
+.document h1{font-size:28px;line-height:1.4;margin:0 0 20px}
+.document h2{font-size:22px;line-height:1.5;margin:32px 0 12px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+.document h3{font-size:18px;margin:24px 0 10px}
+.document p,.document ul,.document ol{margin:12px 0}
+.document li{margin:6px 0}
+.document blockquote{margin:16px 0;padding:12px 18px;border-left:3px solid var(--wait);background:#25282e}
+.document code{padding:2px 5px;background:#121418;border-radius:4px;font-size:14px}
+.document pre{white-space:pre-wrap;font:14px/1.8 ui-monospace,monospace;background:#121418;padding:16px;border-radius:8px}
+.document pre:has(code){white-space:pre;overflow-wrap:normal;overflow-x:auto}
+.document pre code{padding:0}
+.table-scroll{overflow-x:auto;margin:18px 0}
+.document table{border-collapse:collapse;width:100%;font-size:15px;min-width:620px}
+.document th,.document td{border:1px solid var(--line);padding:10px 12px;text-align:left;vertical-align:top}
+.document th{background:#272b32}
+.document th{white-space:nowrap}
+.document td:first-child{min-width:160px}
+.document td:nth-child(2),.document td:nth-child(3),.document td:nth-child(5){white-space:nowrap}
+.document td:nth-child(4){min-width:280px}
+.document figure{margin:18px 0}
+.document figure img{display:block;max-width:100%;height:auto;border-radius:8px;cursor:zoom-in}
+.document figcaption{color:var(--dim);font-size:14px;margin-top:6px}
+main.orders{display:block;max-width:1100px;margin:auto}
+@media(max-width:600px){.box{padding:18px 14px}.document{font-size:15px}.document h1{font-size:24px}header{padding:12px}.box h2{font-size:20px}}
+
+.s.pick{color:#efc16c}
+button:disabled{opacity:.5;cursor:not-allowed}
+button:focus-visible,summary:focus-visible{outline:3px solid #86c6ff;outline-offset:3px}
+.choice-panel h1{font-size:26px;margin:0 0 8px}
+.choice-lead{font-size:19px;margin:0 0 18px}
+.choice-steps{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;color:var(--dim);font-size:13px}
+.choice-steps span{padding:6px 10px;border-radius:6px;background:#141619}
+.choice-steps .done{color:#8dceaa}.choice-steps .current{background:#514027;color:#ffe0a4}
+.choice-notice{background:#242e3c;border:1px solid #3c526e;padding:14px 16px;border-radius:8px;line-height:1.8}
+.choice-notice div{color:#b2bdd0;font-size:13px;margin-top:5px}
+.choice-progress{font-weight:bold;color:#f1c66c}.choice-message{color:#a9d5ff;min-height:20px}
+.choice-message:empty{display:none}
+.choice-group{border-top:1px solid var(--line);padding:20px 0 30px}
+.choice-group h2{font-size:21px}.choice-group>p{color:var(--dim);margin:6px 0 16px}
+.candidate-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.candidate-tabs button{flex:1;min-width:110px;padding:12px;text-align:left}
+.candidate-tabs b,.candidate-tabs span{display:block}.candidate-tabs span{font-size:12px;margin-top:4px}
+.candidate-tabs button[aria-pressed=true]{border:2px solid #86c6ff;background:#263d55}
+.choice-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.choice-states{display:flex;gap:6px}.choice-states [aria-pressed=true]{background:#ececee;color:#141619}
+.scene-open{display:block;padding:0;width:100%;background:#111318;border:1px solid var(--line);overflow:hidden;cursor:zoom-in}
+.choice-scene{display:block;max-width:100%;width:auto;max-height:540px;margin:auto;image-rendering:pixelated}
+.choice-caption{font-size:13px;line-height:1.6}
+.choice-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:10px 0 14px}.choice-actions .primary{padding:12px 22px;font-weight:bold;background:#315f93}.choice-actions span{color:var(--dim);font-size:13px}
+.choice-reasons{color:#e9b0a7;background:#342824;padding:12px;border-radius:8px;font-size:14px;line-height:1.7}
+.choice-reasons summary,.choice-docs>summary{cursor:pointer;padding:6px 0}
+.choice-error{color:#f1ab94!important}
+.choice-docs{margin-top:20px;border-top:1px solid var(--line);padding-top:14px}.choice-docs>summary{font-size:16px;font-weight:bold}.choice-docs[open]>summary{margin-bottom:18px}
+</style>
+</head>
+<body>
+<header>
+  <h1>슈퍼하네스</h1>
+  <span id="line">불러오는 중…</span>
+  <a class="header-link" id="orders-link" href="/orders">그림 주문서</a>
+  <span class="muted">하루 상한 없음</span>
+  <button id="pause"></button>
+</header>
+<div class="tabs" id="tabs"></div>
+<main id="grid"></main>
+<div id="modal"><div class="box" id="box"></div></div>
+<div id="big"><img></div>
+<script type="module">
+import { renderMarkdown } from "/markdown.js";
+import { renderChoices } from "/art-choice.js";
+const ordersPage = location.pathname === "/orders";
+let requestId = 0;
+const TABS = [['all', '전체'], ['done', '완성'], ['work', '만드는 중'], ['pick', '내 선택 필요'], ['wait', '작업 대기'], ['stop', '막힘·폐기']];
+let L = null, tab = localStorage.getItem('sh-tab') || 'all', openId = null;
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const thumb = (im, w) => `/thumb?p=${encodeURIComponent(im.path)}&w=${w}&v=${im.v}`;
+const cards = new Map();
+
+function cardHtml(it) {
+  return `<div class="pic">${it.thumb ? `<img loading="lazy" src="${thumb(it.thumb, 360)}" alt="">` : (it.stage === 'plan' || it.stage === 'plan-review' ? '맵 제작 전 · 기획·도면 검토' : '맵 제작 전 · 재료 확인 중')}${it.thumb?.kind ? `<span class="pic-kind">${esc(it.thumb.kind)}</span>` : ''}</div>
+    <div class="t"><b>${esc(it.title)}</b><div class="s ${it.group}">${it.running ? '<span class="dot"></span>' : ''}${esc(it.status)}</div><div class="a">${esc(it.about)}</div></div>`;
+}
+
+function render() {
+  const n = (g) => L.items.filter((i) => g === 'all' || i.group === g).length;
+  $('tabs').innerHTML = TABS.map(([k, t]) => `<button class="${k === tab ? 'on' : ''}" onclick="setTab('${k}')">${t} ${n(k)}</button>`).join('');
+  const order = { pick: 0, work: 1, wait: 2, done: 3, stop: 4 };
+  const list = L.items.filter((i) => tab === 'all' || i.group === tab)
+    .sort((a, b) => (order[a.group] - order[b.group]) || (b.updated > a.updated ? 1 : -1));
+  const grid = $('grid');
+  if (!list.length) { grid.innerHTML = '<p class="empty">없다</p>'; cards.clear(); return; }
+  if (grid.querySelector('.empty')) grid.innerHTML = '';
+  const keep = new Set(list.map((i) => i.id));
+  for (const [id, el] of cards) if (!keep.has(id)) { el.remove(); cards.delete(id); }
+  list.forEach((it, idx) => {
+    const key = JSON.stringify([it.title, it.status, it.about, it.running, it.thumb?.v, it.group]);
+    let el = cards.get(it.id);
+    if (!el) { el = document.createElement('div'); el.className = 'c'; el.onclick = () => openConcept(it.id); cards.set(it.id, el); }
+    if (el.dataset.k !== key) { el.innerHTML = cardHtml(it); el.dataset.k = key; }
+    if (grid.children[idx] !== el) grid.insertBefore(el, grid.children[idx] || null);
+  });
+}
+
+function setTab(k) { tab = k; localStorage.setItem('sh-tab', k); render(); }
+
+async function refresh() {
+  if (document.hidden) return;
+  try { L = await (await fetch('/api/list')).json(); } catch { return; }
+  const work = L.items.filter((i) => i.running).length, done = L.items.filter((i) => i.group === 'done').length;
+  $('line').textContent = `${L.paused ? '전체 자동 실행 멈춤' : '자동으로 도는 중'} · 지금 ${work}개 작업 · 완성 ${done}개 · 전체 ${L.items.length}개`;
+  $('pause').textContent = L.paused ? '전체 큐 다시 돌리기' : '전체 큐 멈추기';
+  $('pause').onclick = () => post({ action: L.paused ? 'resume' : 'pause' });
+  if (!ordersPage) render();
+}
+
+async function documentView(target, path, { modal = false } = {}) {
+  target.innerHTML = '<p role="status">문서를 불러오는 중…</p>';
+  const current = ++requestId;
+  try {
+    const response = await fetch(path);
+    if (!response.ok) throw new Error('문서를 불러오지 못했습니다.');
+    const text = await response.text();
+    if (current !== requestId) return;
+    target.innerHTML = `${modal ? '<button class="close" onclick="closeModal()">닫기</button>' : ''}
+      <nav class="doc-tools" aria-label="문서 보기">
+        <button data-view="read" aria-pressed="true">읽기</button>
+        <button data-view="source" aria-pressed="false">Markdown 원문</button>
+        <a href="${esc(path)}" target="_blank" rel="noopener">원문 열기</a>
+        <button id="reload-doc">새로고침</button>
+      </nav><article class="document"></article>`;
+    const article = target.querySelector('article');
+    const show = (mode) => {
+      target.querySelectorAll('[data-view]').forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.view === mode)));
+      if (mode === 'source') {
+        const pre = document.createElement('pre'); pre.textContent = text; article.replaceChildren(pre); return;
+      }
+      const readable = text.replace(/\]\((\/(?!\/)[^)\s]*)\)/g, (_, path) => `](${new URL(path, location.origin).href})`);
+      article.replaceChildren(renderMarkdown(readable));
+      // 공용 표시기가 이미지 문법을 링크로 읽으므로 맵 그림만 figure로 표시한다.
+      article.querySelectorAll('p').forEach((p) => {
+        const imageLinks = [...p.querySelectorAll('a')];
+        if (!imageLinks.length || [...p.childNodes].some((n) => n.nodeType === Node.TEXT_NODE && n.textContent.trim() !== '!')) return;
+        const pictures = [];
+        for (const link of imageLinks) {
+          const url = new URL(link.href, location.origin);
+          if (url.origin !== location.origin || url.pathname !== '/thumb') return;
+          const figure = document.createElement('figure'), img = document.createElement('img'), caption = document.createElement('figcaption');
+          img.src = url.href; img.alt = link.textContent; img.loading = 'lazy';
+          const full = new URL(url); full.searchParams.set('w', '1600');
+          img.dataset.full = full.href; img.onclick = () => big(img);
+          caption.textContent = link.textContent; figure.append(img, caption); pictures.push(figure);
+        }
+        p.replaceWith(...pictures);
+      });
+      article.querySelectorAll('table').forEach((table) => {
+        const wrap = document.createElement('div'); wrap.className = 'table-scroll'; table.replaceWith(wrap); wrap.append(table);
+      });
+    };
+    target.querySelectorAll('[data-view]').forEach((button) => button.onclick = () => show(button.dataset.view));
+    target.querySelector('#reload-doc')?.addEventListener('click', async () => {
+      const draft = target.querySelector('#fix')?.value;
+      await documentView(target, path, { modal });
+      const field = target.querySelector('#fix'); if (field && draft) field.value = draft;
+    });
+    show('read');
+    if (modal) {
+      const cid = decodeURIComponent(path.slice(4, -3));
+      const response = await fetch('/api/art-choices?id=' + encodeURIComponent(cid));
+      const choice = response.ok ? await response.json() : null;
+      if (current !== requestId) return;
+      if (['art-review', 'art-layout-review', 'art-context-review', 'art', 'blocked'].includes(choice?.stage) && choice.groups.length) {
+        const panel = document.createElement('section'); panel.className = 'choice-panel';
+        const docs = document.createElement('details'); docs.className = 'choice-docs';
+        const summary = document.createElement('summary'); summary.textContent = '기획·그림 주문서·검수 기록 펼치기';
+        docs.append(summary, target.querySelector('.doc-tools'), article); target.append(docs); target.insertBefore(panel, docs);
+        renderChoices(panel, choice, refresh, url => { $('big').querySelector('img').src=url; $('big').classList.add('on'); });
+      }
+      const actions = document.createElement('section');
+      actions.innerHTML = '<div class="acts"><button onclick="act(\'recheck-materials\')">공용 등록 후 재료 다시 확인</button></div><h3>기획·도면 교정</h3><textarea id="fix" aria-label="교정 지시" placeholder="마음에 안 드는 점, 이렇게 고쳐라"></textarea><div class="acts"><button class="primary" onclick="act(\'fix\')">기획부터 다시 검수</button><button class="danger" onclick="act(\'discard\')">폐기</button></div>';
+      const correction = document.createElement('details'); correction.className='choice-docs';
+      const label=document.createElement('summary');label.textContent='교정 지시·재료 재확인·폐기';correction.append(label,actions);target.append(correction);
+    }
+  } catch (error) {
+    if (current !== requestId) return;
+    target.replaceChildren();
+    if (modal) { const close = document.createElement('button'); close.textContent = '닫기'; close.onclick = closeModal; target.append(close); }
+    const message = document.createElement('p'); message.textContent = error.message; target.append(message);
+    const retry = document.createElement('button'); retry.textContent = '다시 불러오기'; retry.onclick = () => documentView(target, path, { modal }); target.append(retry);
+  }
+}
+
+async function openConcept(id) {
+  openId = id;
+  $('modal').classList.add('on');
+  await documentView($('box'), '/md/' + encodeURIComponent(id) + '.md', { modal: true });
+}
+
+function closeModal() { requestId++; $('modal').classList.remove('on'); openId = null; }
+$('modal').onclick = (e) => { if (e.target.id === 'modal') closeModal(); };
+document.onkeydown = (e) => { if (e.key === 'Escape') { if ($('big').classList.contains('on')) $('big').classList.remove('on'); else closeModal(); } };
+function big(img) { $('big').querySelector('img').src = img.dataset.full; $('big').classList.add('on'); }
+$('big').onclick = () => $('big').classList.remove('on');
+
+async function act(kind) {
+  const text = $('fix')?.value ?? '';
+  if (kind === 'discard' && !confirm('폐기할까요? 이미 들어간 것이면 에디터에서 뺍니다.')) return;
+  await post({ cid: openId, action: kind, text });
+  closeModal();
+}
+async function post(body) {
+  const r = await (await fetch('/api/action', { method: 'POST', body: JSON.stringify(body) })).json();
+  if (!r.ok) alert(r.error);
+  refresh();
+}
+
+Object.assign(window, { setTab, closeModal, act });
+if (ordersPage) {
+  $('orders-link').textContent = '← 개념 갤러리'; $('orders-link').href = '/';
+  $('tabs').hidden = true; $('grid').className = 'orders';
+  documentView($('grid'), '/md/orders.md');
+} else {
+  const selected = new URLSearchParams(location.search).get('concept');
+  if (selected) openConcept(selected);
+}
+refresh();
+setInterval(refresh, 15000);
+document.addEventListener('visibilitychange', refresh);
+</script>
+</body>
+</html>

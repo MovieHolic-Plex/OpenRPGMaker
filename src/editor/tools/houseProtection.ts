@@ -1,4 +1,8 @@
-import type { GameMap, MapLayoutRegion, Project, Rect } from "@/project/types";
+import type { GameMap, MapLayoutRegion, Project, Rect, StructurePlacement } from "@/project/types";
+import { layerTileAt, setLayerTileAt } from "@/project/mapLayers";
+import { copiedTerrainMap } from "@/editor/terrainDesignPlans";
+import { planQuickHouseDrag, quickHouseStyles } from "@/editor/quickHouse";
+import { restoreStructurePlacementTiles } from "@/project/structurePlacements";
 import { ToolError } from "./types";
 
 type Cell = { readonly x: number; readonly y: number };
@@ -67,6 +71,8 @@ export function protectedHouseCells(map: GameMap): readonly Cell[] {
 type CellSnapshot = Cell & {
   readonly lower: number;
   readonly upper: number;
+  readonly lowerOverlay: number;
+  readonly upperOverlay: number;
   readonly lowerStack: readonly number[] | undefined;
   readonly upperStack: readonly number[] | undefined;
 };
@@ -80,6 +86,7 @@ export type HouseSnapshot = {
   readonly id: string;
   readonly rect: Rect;
   readonly cells: readonly CellSnapshot[];
+  readonly placement?: StructurePlacement;
 };
 
 function snapshotHouse(map: GameMap, owner: Ownership): HouseSnapshot {
@@ -91,9 +98,11 @@ function snapshotHouse(map: GameMap, owner: Ownership): HouseSnapshot {
   return {
     mapId: map.id, width: map.width, height: map.height, tileSize: map.tileSize, tilesetId: map.tilesetId,
     source: owner.source, id: owner.id, rect: { x, y, w, h },
+    ...(owner.source === "placement" ? { placement: structuredClone(map.structurePlacements?.find(p => p.id === owner.id)) } : {}),
     cells: owner.cells.map((cell) => {
       const index = cell.y * map.width + cell.x;
       return { ...cell, lower: map.lowerTiles[index], upper: map.upperTiles[index],
+        lowerOverlay: layerTileAt(map, 2, index), upperOverlay: layerTileAt(map, 4, index),
         lowerStack: map.lowerTileStacks?.[index]?.slice(), upperStack: map.upperTileStacks?.[index]?.slice() };
     }),
   };
@@ -159,6 +168,47 @@ function ownerKey(house: HouseSnapshot): string {
   return JSON.stringify([house.mapId, house.source, house.id]);
 }
 
+/** Rebuild a roof-only edit from the current accepted house, including final live proposals.
+ * No tool-name exemption: arbitrary raster edits, changed walls and stale human edits still fail. */
+function isExactRoofResize(before: HouseSnapshot, after: HouseSnapshot, project: Project): boolean {
+  const old = before.placement, next = after.placement, map = project.maps[before.mapId], ts = project.tilesets[before.tilesetId];
+  if (!old || !next || !map || !ts || ts.id !== "beodeul_city" || old.kitId === next.kitId
+    || !/^quick_house_beodeul-/.test(old.kitId) || !/^quick_house_beodeul-/.test(next.kitId)
+    || before.cells.some(c => c.lowerStack !== undefined || c.upperStack !== undefined)) return false;
+  const oldKit = ts.structureKits?.find(k => k.id === old.kitId), nextKit = ts.structureKits?.find(k => k.id === next.kitId);
+  const oldWalls = oldKit?.parts?.find(p => p.id === "walls"), nextWalls = nextKit?.parts?.find(p => p.id === "walls");
+  if (!oldWalls || !nextWalls || old.x + oldWalls.dx !== next.x + nextWalls.dx || old.y + oldWalls.dy !== next.y + nextWalls.dy
+    || oldWalls.w !== nextWalls.w || oldWalls.h !== nextWalls.h) return false;
+  for (const c of before.cells) if (c.y >= old.y + oldWalls.dy) {
+    const i = c.y * map.width + c.x;
+    if (layerTileAt(map, 1, i) !== c.lower || layerTileAt(map, 2, i) !== c.lowerOverlay
+      || layerTileAt(map, 3, i) !== c.upper || layerTileAt(map, 4, i) !== c.upperOverlay) return false;
+  }
+  const expected = copiedTerrainMap(map);
+  restoreStructurePlacementTiles(expected, next);
+  expected.structurePlacements = (map.structurePlacements ?? []).map(p => p.id === old.id ? structuredClone(old) : p);
+  for (const c of before.cells) {
+    const i = c.y * map.width + c.x;
+    setLayerTileAt(expected, 1, i, c.lower); setLayerTileAt(expected, 2, i, c.lowerOverlay);
+    setLayerTileAt(expected, 3, i, c.upper); setLayerTileAt(expected, 4, i, c.upperOverlay);
+  }
+  const at = { x: old.x, y: old.y };
+  const plan = planQuickHouseDrag(expected, ts, { mapId: map.id, start: at, end: at },
+    { style: quickHouseStyles(ts)[0]!, width: old.w, stories: 1, resize: "roof", roofWidth: next.w,
+      roofForm: next.kitId.endsWith("_gable") ? "gable" : "hip" });
+  if (!plan.ok || !plan.apply || plan.kit?.id !== next.kitId || plan.x !== next.x || plan.y !== next.y) return false;
+  plan.apply(expected);
+  const rebuilt = expected.structurePlacements?.find(p => p.id === old.id);
+  if (!rebuilt || JSON.stringify(rebuilt.before) !== JSON.stringify(next.before) || rebuilt.afterHash !== next.afterHash) return false;
+  // Includes the old roof fringe after shrinking, not merely the new footprint.
+  for (const c of [...before.cells, ...after.cells]) {
+    const i = c.y * map.width + c.x;
+    for (const layer of [1, 2, 3, 4] as const) if (layerTileAt(expected, layer, i) !== layerTileAt(map, layer, i)) return false;
+    if (!sameStack(expected.lowerTileStacks?.[i], map.lowerTileStacks?.[i]) || !sameStack(expected.upperTileStacks?.[i], map.upperTileStacks?.[i])) return false;
+  }
+  return true;
+}
+
 /** 셀에서 바로 잰 경계 — rect 가 아니다. 지붕 데크 사다리처럼 rect 밖에 붙는 칸이 있다. */
 type HouseIndex = { readonly keys: ReadonlySet<string>; readonly minX: number; readonly minY: number; readonly maxX: number; readonly maxY: number };
 const EMPTY_INDEX: HouseIndex = { keys: EMPTY_KEYS, minX: 1, minY: 1, maxX: 0, maxY: 0 };
@@ -221,11 +271,13 @@ export function assertHouseProtection(before: readonly HouseSnapshot[], project:
       || map.width < house.width || map.height < house.height) rejectWrite(house);
     const owners = afterByOwner.get(ownerKey(house)) ?? [];
     const owner = owners[0];
+    if (owners.length === 1 && owner && isExactRoofResize(house, owner, project)) continue;
     if (owners.length !== 1 || !owner || !containsRect(owner.rect, house.rect)) rejectWrite(house);
     const covered = houseIndexOf(keys, owner).keys;
     for (const cell of house.cells) {
       const index = cell.y * map.width + cell.x;
       if (!covered.has(cellKey(cell)) || map.lowerTiles[index] !== cell.lower || map.upperTiles[index] !== cell.upper
+        || layerTileAt(map, 2, index) !== cell.lowerOverlay || layerTileAt(map, 4, index) !== cell.upperOverlay
         || !sameStack(cell.lowerStack, map.lowerTileStacks?.[index]) || !sameStack(cell.upperStack, map.upperTileStacks?.[index])) rejectWrite(house, cell);
     }
   }

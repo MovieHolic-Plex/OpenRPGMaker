@@ -1,0 +1,43 @@
+{
+ "id": "20261002-2144-recolor/c-market-woman__sonnet-r1",
+ "brief": "c-market-woman",
+ "name": "시장 상인 아주머니",
+ "base": "People1:5",
+ "base_label": "People1 6번",
+ "strength": "normal",
+ "files": {
+  "chr": "c-market-woman__sonnet-r1__20261002-2144-recolor.chr.txt",
+  "sheet": "c-market-woman__sonnet-r1__20261002-2144-recolor.png"
+ },
+ "description": {
+  "label": "붉은 곱슬머리 빨강 윗옷 시장 아주머니",
+  "gender": "여",
+  "attributes": {
+   "kind": "사람",
+   "age": "중년",
+   "hair": "붉은 갈색 곱슬머리"
+  },
+  "role": "시장 상인 (장터 아주머니)",
+  "appearance": "붉은 기가 도는 갈색의 풍성한 곱슬머리가 어깨 위까지 부풀어 있다. 빨강 윗옷에 크림색 줄무늬·바탕이 섞이고 가슴 앞으로 노란 띠가 드리워지며, 아래는 크림색 치마나 바지를 입었다.",
+  "colors": [
+   "붉은 갈색 곱슬머리",
+   "빨강 윗옷",
+   "크림색 치마·바지",
+   "노란 띠",
+   "어두운 갈색 신발"
+  ],
+  "tags": [
+   "시장",
+   "상인",
+   "아주머니",
+   "마을 사람",
+   "중년 여성",
+   "장터",
+   "중세",
+   "곱슬머리"
+  ],
+  "fits": "장터 노점이나 시장 골목, 마을 광장에서 물건을 파는 상인이나 장 보러 나온 이웃 아주머니로 두기 좋다.",
+  "by": "Claude Sonnet 5.5 · medium",
+  "at": "2026-10-02T22:40:43+00:00"
+ }
+}
