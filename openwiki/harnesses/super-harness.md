@@ -181,3 +181,27 @@ ports는 side/offset/width/kind/level/connectsTo를 갖는다. 양쪽 포트의 
 `{backend, model, effort}`를 기록한다. 감독이 이 설정만 실행 요청에 넣으며, 준비 작업자의 modelOverride는 무시한다.
 2026-10-04 주차장 파일럿은 Sonnet 공급자의 4계정 한도 소진으로 사용자가 Codex(gpt-6.1-sol medium) 전환을 승인했다.
 이 변경은 해당 개념에만 적용하며 현대 하네스의 기본 Sonnet 설정을 바꾸지 않는다.
+
+### 칩 선택 화면과 조립 예시 (2026-10-04)
+
+`art-review` 상세는 이제 긴 문서 대신 **예시 → 후보 비교 → 선택**을 먼저 보여 준다.
+갤러리의 `내 선택 필요`와 `작업 대기`를 분리하며, 전체 자동 실행 멈춤은 별도로 표시한다.
+검수 통과는 추천/자동 선택이 아니다. 첫 화면에서 합격 후보를 미리 보여 주더라도 선택 수는 0이다.
+
+- 주차장: 13품목 세트 A~E를 같은 작은 배치에서 비교한다. 문·차단기 열림/닫힘 전환과 원본 시트 확대가 있다.
+- 감옥: 계단, 철문 상태 쌍, 나무문 상태 쌍의 세 그룹을 고른다. 문은 같은 글자의 열림·닫힘을 함께 선택한다.
+- `art_preview.py`는 실제 후보 PNG의 조각만 조립한다. 주차장은 부품 contract 좌표, 감옥 문은 해당 판의 `ctx-cand.png`, 계단은 기존 하네스 방 맥락에 현재 후보를 같은 배율로 놓는다.
+  새 픽셀 저작/게임맵 저장은 하지 않는다. 이 예시는 화풍·크기 비교용이며 통행·높이·문 상태 연결의 승인 근거가 아니다.
+- `art_choices.py`는 실제 receipt와 현재 이미지 해시를 확인해 `concepts/<id>/art-choices.json`을 만든다.
+  현재 어댑터는 두 파일럿의 modern parking-kit receipt와 interior-props runs/candidateImages receipt다.
+  미지원 receipt는 선택 예시 준비 필요로 보이며, 존재하지 않는 선택 기능/예시를 꾸며 내지 않는다.
+  `on_art`가 수집 종료 후 준비하며 기존 판은 `python3 src/harnesses/super-harness/art_choices.py <concept>`로 준비한다.
+- 선택 정본: `sh.sqlite.art_selections`의 `(concept, group_id)`. 후보 id, 후보·예시·검수·art-result fingerprint, 원본 refs snapshot, 선택 시각을 저장한다.
+  `GET /api/art-choices?id=…`, `POST /api/action`의 `choose-art`/`clear-art`.
+  원본/검수/예시/수집 결과가 바뀌면 선택이 낡았다고 표시한다. 불합격·해시 변경·선택 단계 아님은 서버도 거부한다.
+- 선택/변경/취소는 즉시 저장하고 재로드한다. **선택은 공용 설치가 아니다.** 모두 선택하면 `선택 완료 · 공용 등록 필요`로 표시하며 실제 등록·조립 연결은 후속 작업이다.
+  큐 pause, 재료 승인, 맵 제작 관문을 자동으로 풀지 않는다. 등록 작업자는 이 선택 snapshot의 현재 해시를 다시 확인해야 한다.
+- 긴 기획/주문서/검수 기록 및 교정·폐기는 접힌 영역으로 남긴다. 선택 저장 실패는 같은 화면에 보이고 다시 시도할 수 있다.
+
+화면 근거: `verify-shots/super-harness-chip-choice/`. 운영 선택은 0건을 유지한 채 별도 SQLite 사본에서
+선택→재로드→취소→재로드, 낡은 요청·불합격 후보 거부, 열림/닫힘 전환을 확인했다. 데스크톱/390px 화면의 오류·가로 넘침은 없었다.
