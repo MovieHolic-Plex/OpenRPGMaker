@@ -95,8 +95,9 @@ def _create(options):
         raise ValueError('머리/투명 결손 없는 캐릭터 칸을 찾을 수 없습니다')
     characters = [dict(key=f'free-{root.name[-8:]}-{i+1:03d}', name=f'자유 캐릭터 {i+1:03d}',
                        base=bases[i % len(bases)], brief=prompt, strength='free', reviewMode='human',
-                       source='upload' if source else 'rtp', genre='자유', role='', gender='', age='') for i in range(count)]
-    manifest = dict(run=root.name, reviewMode='human', characters=characters, genres=['자유'],
+                       source='upload' if source else 'rtp', genre='자유', role='', gender='', age='',
+                       animationMode=H.FRAME_AUTHOR_MODE) for i in range(count)]
+    manifest = dict(run=root.name, reviewMode='human', animationMode=H.FRAME_AUTHOR_MODE, characters=characters, genres=['자유'],
                     sourceOriginal=str(source) if source else None)
     H.write_json_atomic(root / 'manifest.json', manifest)
     return dict(launch(root, par, batch_size), count=count)
@@ -162,7 +163,8 @@ def export_kept(run='all'):
                 shutil.copy(w / 'views' / 'walk.gif', out / 'gifs' / f'{key}.gif')
                 catalog.append(dict(id=it['id'], name=it['desc'].get('label') if it['desc'] else it['name'],
                                     charset=f'charsets/{filename}', characterIndex=slot, description=it['desc'],
-                                    sourceBase=it['base'], acceptance=rec))
+                                    sourceBase=it['base'], acceptance=rec,
+                                    frameAuthor=json.loads((w / 'model-frames.json').read_text()) if it['animation_mode']==H.FRAME_AUTHOR_MODE else None))
             sheet.save(out / 'transparent' / filename)
             bg = Image.new('RGBA', sheet.size, C.KEY+(255,)); bg.alpha_composite(sheet)
             bg.convert('RGB').save(out / 'charsets' / filename)

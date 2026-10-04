@@ -31,6 +31,13 @@ def log(message):
         print(f'{H.now()} {message}', flush=True)
 
 
+def needs_draw(w):
+    if not (w / 'views' / 'gate.json').exists() or not (w / 'out.chr.txt').exists():
+        return True
+    meta = json.loads((w / 'meta.json').read_text()) if (w / 'meta.json').exists() else {}
+    return meta.get('animationMode') == H.FRAME_AUTHOR_MODE and not H.model_frames_fresh(w, H.current_gate(w))
+
+
 def prepare_batch(run, rows, index):
     root = H.run_dir(run)
     batch = root / '_batches' / f'{index:02d}'
@@ -120,8 +127,7 @@ def produce_batch(run, rows, index):
               and H._alive(json.loads((batch / r['folder'] / 'meta.json').read_text()).get('pid'))]
     if active:
         raise RuntimeError(f'기존 작업자가 아직 실행 중입니다: {active}')
-    pending = [r for r in assignments if not (batch / r['folder'] / 'views' / 'gate.json').exists()
-               or not (batch / r['folder'] / 'out.chr.txt').exists()]
+    pending = [r for r in assignments if needs_draw(batch / r['folder'])]
     if pending:
         write_json(batch / 'pending.json', pending)
         human = all(r.get('reviewMode') == 'human' for r in pending)
@@ -135,10 +141,13 @@ def produce_batch(run, rows, index):
             w = batch / row['folder']
             write_json(w / 'meta.json', dict(run=run, brief=row['key'], engine='gpt', **H.ENGINES['gpt'],
                                             pid=process.pid, started=H.now(), dir=str(w), base=row['base'],
-                                            strength=row['strength'], reviewMode=row.get('reviewMode', 'legacy'), batch=index, src=None))
-        log(f'batch {index}: GPT high 시작 ({len(pending)}명), pid={process.pid}')
+                                            strength=row['strength'], reviewMode=row.get('reviewMode', 'legacy'), batch=index, src=None,
+                                            animationMode=H.FRAME_AUTHOR_MODE))
+        log(f'batch {index}: GPT high 12프레임 직접 저작 시작 ({len(pending)}명), pid={process.pid}')
         process.wait()
         log(f'batch {index}: 작업자 종료={process.returncode}')
+        if process.returncode != 0:
+            raise RuntimeError(f'batch {index}: 모델 저작이 완료되지 않았습니다 (exit={process.returncode})')
     ready = []
     output_errors = []
     for row in assignments:
@@ -151,8 +160,10 @@ def produce_batch(run, rows, index):
                         ready.append(row)
                     continue  # 공개한 GIF와 사람의 선택은 재개할 때 그대로 보존한다.
                 (w / 'published.json').unlink(missing_ok=True)
-            H.propagate_file(w / 'out.chr.txt', row['base'])
+            receipt = H.record_model_frames(w)
             gate = H.make_views(w / 'out.chr.txt', w / 'views', row['base'], row['strength'])
+            if receipt and gate['sourceSha256'] != receipt['sourceSha256']:
+                raise ValueError('모델이 저작한 12프레임이 렌더 중 바뀌었습니다')
             if row.get('reviewMode') == 'human':
                 H.write_json_atomic(w / 'published.json', H.binding(gate))
             if gate['ok']:
