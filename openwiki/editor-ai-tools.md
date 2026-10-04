@@ -164,7 +164,7 @@
 쓰기 네 도구는 참고문서 게이트의 WRITERS와 패널 MAP_TILE_TOOLS에 등록한다. 고정 조립기가 실제 타일을 고르므로
 TILE_CHOOSERS는 아니다. `design_terrain`/도로/경사로는 맵 체크포인트, 집은 tileset.structureKits도 바꾸므로 프로젝트 체크포인트다.
 
-2026-10-04 재편집 점검: `design_terrain({mapId,editId,width})`와 `lay_terrain_road({mapId,editId,width})`는 생략한 점·높이 delta·시드·수위·평탄화 설정을 기존 feature에서 이어받는다. 새 지형/도로에는 tool/points 또는 points가 필요하다. `inspect_terrain`은 feature options, 잠금 칸, 집 parts의 절대 좌표와 roofResizable을 반환한다. 자연어 절벽·경사로·고지·지붕 요청에는 읽기→수정→통행/그림 검수 도구 묶음을 함께 노출한다.
+2026-10-04 재편집 점검: `design_terrain({mapId,editId,width})`와 `lay_terrain_road({mapId,editId,width})`는 생략한 점·높이 delta·시드·수위·평탄화 설정을 기존 feature에서 이어받는다. 새 지형/도로에는 tool/points 또는 points가 필요하다. `inspect_terrain({mapId,includeCatalog:false})`은 집 카탈로그를 빼고 feature options, 잠금 칸, 집 parts의 절대 좌표와 roofResizable을 반환한다. 원본 집 목록은 기본 16개씩 `catalogOffset`/`catalogLimit`으로 읽으며 `catalog.nextOffset`이 null이면 끝이다. 128개를 한 응답에 담으면 Pi 도구 결과의 12,000자 상한에 걸려 뒤쪽 feature ID가 사라지던 문제를 막는다. 자연어 절벽·경사로·고지·지붕 요청에는 읽기→수정→통행/그림 검수 도구 묶음을 함께 노출한다.
 
 `sculpt_relief`는 잠긴 높이 변경과 집 전체/문 앞을 비평탄하게 만드는 변경을 원자적으로 거부한다. 집터 전체와 문 앞을 같은 높이로 옮기는 작업은 허용한다. 일반 contour/ridge/lake/road 계획기는 구조 배치의 전체 사각형을 보호한다. 근거·실제 모델 수정/SQLite 재로드: `verify-shots/terrain-ai-edit/SUMMARY.md`.
 버들항 지도에 기존 `author_house`의 다른 칩셋 번호를 쓰는 경로는 거부하고 새 집 도구를 안내한다.

@@ -143,8 +143,12 @@ const rampTool: ToolDefinition = {
 
 const inspectTool: ToolDefinition = {
   name: "inspect_terrain", mode: "read", domains: ["map", "tile"],
-  description: "지형 도구의 실제 높이·매끈한 경사로/계단 수·시야 차단 설정·배치 집의 평탄성·문 앞 좌표·사용 가능한 기본 집 스타일을 읽는다. 집터가 전부 평평한지 확인하고 check_terrain_access로 아래 출발점부터 모든 문 앞까지 실제 통행을 검사한다. read_relief는 높이 행렬, show_map_region은 실제 화면 검수에 쓴다.",
-  parameters: { type: "object", properties: { mapId }, required: ["mapId"] },
+  description: "지형 도구의 실제 높이·매끈한 경사로/계단 수·시야 차단 설정·배치 집의 평탄성·문 앞 좌표·사용 가능한 기본 집 스타일을 읽는다. 집터가 전부 평평한지 확인하고 check_terrain_access로 아래 출발점부터 모든 문 앞까지 실제 통행을 검사한다. 기존 지형 수정·검수는 includeCatalog:false로 읽는다. 새 집 선택 시 houseKits는 쪽별 목록이며 catalog.nextOffset으로 다음 쪽을 조회한다. read_relief는 높이 행렬, show_map_region은 실제 화면 검수에 쓴다.",
+  parameters: { type: "object", properties: { mapId,
+    includeCatalog: { type: "boolean", description: "기존 지형 수정·검수는 false로 집 카탈로그를 제외한다. 기본 true" },
+    catalogOffset: { type: "integer", minimum: 0, description: "원본 집 목록의 시작 위치. 다음 쪽은 catalog.nextOffset 사용" },
+    catalogLimit: { type: "integer", minimum: 1, maximum: 24, description: "원본 집 목록의 쪽 크기. 기본 16" },
+  }, required: ["mapId"] },
   run(project, args) {
     const map = requireMap(project, args.mapId as string), ts = tilesetFor(project, map);
     const houses = structurePlacementsOf(map).flatMap(p => {
@@ -160,16 +164,21 @@ const inspectTool: ToolDefinition = {
         roofResizable: ts.id === "beodeul_city" && /^quick_house_beodeul-/.test(p.kitId),
         parts: kit?.parts?.map(part => ({ id: part.id, kind: part.kind, x: p.x + part.dx, y: p.y + part.dy, width: part.w, height: part.h })) }];
     });
-    const data = { mapId: map.id, tilesetId: map.tilesetId, maxHeight: Math.max(0, ...(map.relief?.levels ?? [])),
+    const kits = quickHouseCatalog(ts), offset = Number(args.catalogOffset ?? 0), limit = Number(args.catalogLimit ?? 16);
+    const data = { mapId: map.id, tilesetId: map.tilesetId,
+      features: map.terrainDesign?.features?.map(f => ({ id: f.id, tool: f.tool, points: f.points, options: f.options, patchCount: f.patches.length })) ?? [],
+      lockedCells: map.terrainDesign?.lockedCells ?? [],
+      maxHeight: Math.max(0, ...(map.relief?.levels ?? [])),
       rampCells: map.relief?.ramps?.filter(v => v >= 1 && v <= 4).length ?? 0, stairCells: map.relief?.ramps?.filter(v => v >= 5 && v <= 8).length ?? 0,
       gameplay: { ...DEFAULT_TERRAIN_GAMEPLAY, ...map.terrainDesign?.gameplay }, houses,
-      houseKits: quickHouseCatalog(ts).map(k => { const door = k.parts!.find(p => p.kind === "entrance")!; return {
-        id: k.id, name: k.name, width: k.width, height: k.height, tags: k.ai?.tags,
-        doorOffset: { x: door.dx, y: door.dy + door.h - 1 }, doorFrontOffset: { x: door.dx, y: door.dy + door.h }, resize: "original",
-      }; }),
-      houseStyles: quickHouseStyles(ts).map(id => ({ id, name: quickHouseStyleName(id), exampleSize: (() => { const kit = quickHouseKit(ts, { style: id, width: 9, stories: 1 }); return kit ? { width: kit.width, height: kit.height } : undefined; })() })),
-      lockedCells: map.terrainDesign?.lockedCells ?? [],
-      features: map.terrainDesign?.features?.map(f => ({ id: f.id, tool: f.tool, points: f.points, options: f.options, patchCount: f.patches.length })) ?? [] };
+      ...(args.includeCatalog === false ? {} : {
+        catalog: { total: kits.length, offset, limit, nextOffset: offset + limit < kits.length ? offset + limit : null },
+        houseKits: kits.slice(offset, offset + limit).map(k => { const door = k.parts!.find(p => p.kind === "entrance")!; return {
+          id: k.id, name: k.name, width: k.width, height: k.height, tags: k.ai?.tags,
+          doorOffset: { x: door.dx, y: door.dy + door.h - 1 }, doorFrontOffset: { x: door.dx, y: door.dy + door.h }, resize: "original",
+        }; }),
+        houseStyles: quickHouseStyles(ts).map(id => ({ id, name: quickHouseStyleName(id), exampleSize: (() => { const kit = quickHouseKit(ts, { style: id, width: 9, stories: 1 }); return kit ? { width: kit.width, height: kit.height } : undefined; })() })),
+      }) };
     return { summary: `고지 ${data.maxHeight}단 · 경사로 ${data.rampCells}칸 · 집 ${houses.length}채(평탄 ${houses.filter(h => h.flat).length}) · 시야 차단 ${data.gameplay.visionBlocking ? "켬" : "끔"}`, data };
   },
 };
