@@ -1,0 +1,897 @@
+{
+  "commit": "d7a3f0136eca4239fc5c340c8237048bfa848e25",
+  "viewport": "1440×900",
+  "conditions": "native editor; UI-only synthetic fixture; no model or canonical host; no CPU throttle; one browser; inputToTwoRafMs includes Playwright roundtrips and two animation frame waits, not pixel latency",
+  "errors": [],
+  "rows": [
+    {
+      "name": "32:paint:0",
+      "inputToTwoRafMs": 108,
+      "calls": [
+        {
+          "tag": "32:paint:0",
+          "ms": 8.5
+        }
+      ],
+      "longTasks": [],
+      "trace": {
+        "PrePaint": 3.5309999999999997,
+        "Layout": 17.15,
+        "Paint": 6.342,
+        "UpdateLayoutTree": 49.266000000000005
+      }
+    },
+    {
+      "name": "32:paint:1",
+      "inputToTwoRafMs": 106,
+      "calls": [
+        {
+          "tag": "32:paint:1",
+          "ms": 2
+        }
+      ],
+      "longTasks": [],
+      "trace": {
+        "PrePaint": 3.595999999999999,
+        "UpdateLayoutTree": 46.782,
+        "Layout": 23.397000000000002,
+        "Paint": 7.791999999999998
+      }
+    },
+    {
+      "name": "32:paint:2",
+      "inputToTwoRafMs": 58,
+      "calls": [
+        {
+          "tag": "32:paint:2",
+          "ms": 1.7999999523162842
+        }
+      ],
+      "longTasks": [],
+      "trace": {
+        "PrePaint": 2.706999999999999,
+        "UpdateLayoutTree": 34.863,
+        "Layout": 13.898,
+        "Paint": 5.835000000000001
+      }
+    },
+    {
+      "name": "32:undo:0",
+      "inputToTwoRafMs": 643,
+      "calls": [],
+      "longTasks": [
+        378,
+        175
+      ],
+      "trace": {
+        "PrePaint": 3.0290000000000004,
+        "UpdateLayoutTree": 68.818,
+        "Layout": 151.511,
+        "Paint": 5.176999999999999
+      }
+    },
+    {
+      "name": "32:undo:1",
+      "inputToTwoRafMs": 559,
+      "calls": [],
+      "longTasks": [
+        349,
+        156
+      ],
+      "trace": {
+        "UpdateLayoutTree": 60.022,
+        "Layout": 144.804,
+        "PrePaint": 3.452,
+        "Paint": 7.085999999999999
+      }
+    },
+    {
+      "name": "32:undo:2",
+      "inputToTwoRafMs": 528,
+      "calls": [],
+      "longTasks": [
+        311,
+        178
+      ],
+      "trace": {
+        "UpdateLayoutTree": 49.942,
+        "Layout": 145.402,
+        "PrePaint": 2.683,
+        "Paint": 4.663000000000002
+      }
+    },
+    {
+      "name": "32:layer:0",
+      "inputToTwoRafMs": 172,
+      "calls": [],
+      "longTasks": [
+        80
+      ],
+      "trace": {
+        "PrePaint": 1.456,
+        "UpdateLayoutTree": 21.674,
+        "Layout": 23.784000000000002,
+        "Paint": 4.525999999999989
+      }
+    },
+    {
+      "name": "32:layer:1",
+      "inputToTwoRafMs": 173,
+      "calls": [],
+      "longTasks": [
+        73
+      ],
+      "trace": {
+        "PrePaint": 2.947,
+        "UpdateLayoutTree": 32.098,
+        "Layout": 22.901,
+        "Paint": 9.392999999999997
+      }
+    },
+    {
+      "name": "32:layer:2",
+      "inputToTwoRafMs": 201,
+      "calls": [],
+      "longTasks": [
+        81
+      ],
+      "trace": {
+        "PrePaint": 1.7919999999999996,
+        "UpdateLayoutTree": 22.317,
+        "Layout": 20.543,
+        "Paint": 5.927999999999999
+      }
+    },
+    {
+      "name": "32:zoom:0",
+      "inputToTwoRafMs": 107,
+      "calls": [],
+      "longTasks": [],
+      "trace": {
+        "PrePaint": 1.288,
+        "UpdateLayoutTree": 21.195999999999998,
+        "Layout": 1.16,
+        "Paint": 2.497
+      }
+    },
+    {
+      "name": "32:zoom:1",
+      "inputToTwoRafMs": 123,
+      "calls": [],
+      "longTasks": [],
+      "trace": {
+        "PrePaint": 1.669,
+        "UpdateLayoutTree": 21.03000000000001,
+        "Layout": 1.4709999999999999,
+        "Paint": 3.0909999999999997
+      }
+    },
+    {
+      "name": "32:zoom:2",
+      "inputToTwoRafMs": 159,
+      "calls": [],
+      "longTasks": [],
+      "trace": {
+        "PrePaint": 1.6929999999999996,
+        "UpdateLayoutTree": 21.997,
+        "Layout": 1.4,
+        "Paint": 1.9769999999999999
+      }
+    },
+    {
+      "name": "32:paint-drag",
+      "inputToTwoRafMs": 1145,
+      "calls": [
+        {
+          "tag": "32:paint-drag",
+          "ms": 2.700000047683716
+        },
+        {
+          "tag": "32:paint-drag",
+          "ms": 2.1999999284744263
+        },
+        {
+          "tag": "32:paint-drag",
+          "ms": 1.7000000476837158
+        },
+        {
+          "tag": "32:paint-drag",
+          "ms": 1.7999999523162842
+        },
+        {
+          "tag": "32:paint-drag",
+          "ms": 2
+        },
+        {
+          "tag": "32:paint-drag",
+          "ms": 1.7000000476837158
+        },
+        {
+          "tag": "32:paint-drag",
+          "ms": 2.700000047683716
+        },
+        {
+          "tag": "32:paint-drag",
+          "ms": 1.600000023841858
+        },
+        {
+          "tag": "32:paint-drag",
+          "ms": 1.600000023841858
+        },
+        {
+          "tag": "32:paint-drag",
+          "ms": 1.5
+        },
+        {
+          "tag": "32:paint-drag",
+          "ms": 1.7000000476837158
+        },
+        {
+          "tag": "32:paint-drag",
+          "ms": 1.4000000953674316
+        },
+        {
+          "tag": "32:paint-drag",
+          "ms": 2.100000023841858
+        },
+        {
+          "tag": "32:paint-drag",
+          "ms": 1.6999999284744263
+        },
+        {
+          "tag": "32:paint-drag",
+          "ms": 1.7000000476837158
+        },
+        {
+          "tag": "32:paint-drag",
+          "ms": 1.600000023841858
+        },
+        {
+          "tag": "32:paint-drag",
+          "ms": 2.200000047683716
+        },
+        {
+          "tag": "32:paint-drag",
+          "ms": 1.6999999284744263
+        },
+        {
+          "tag": "32:paint-drag",
+          "ms": 1.600000023841858
+        }
+      ],
+      "longTasks": [],
+      "trace": {
+        "UpdateLayoutTree": 272.529,
+        "PrePaint": 15.620999999999999,
+        "Paint": 32.07300000000001,
+        "Layout": 24.136
+      }
+    },
+    {
+      "name": "32:pan",
+      "inputToTwoRafMs": 417,
+      "calls": [],
+      "longTasks": [],
+      "trace": {
+        "PrePaint": 4.628999999999998,
+        "UpdateLayoutTree": 7.66,
+        "Layout": 7.781,
+        "Paint": 1.4159999999999997
+      }
+    },
+    {
+      "name": "128:paint:0",
+      "inputToTwoRafMs": 74,
+      "calls": [
+        {
+          "tag": "128:paint:0",
+          "ms": 1.7000000476837158
+        }
+      ],
+      "longTasks": [],
+      "trace": {
+        "PrePaint": 2.8179999999999996,
+        "UpdateLayoutTree": 35.934000000000005,
+        "Layout": 15.647,
+        "Paint": 5.594
+      }
+    },
+    {
+      "name": "128:paint:1",
+      "inputToTwoRafMs": 82,
+      "calls": [
+        {
+          "tag": "128:paint:1",
+          "ms": 1.399999976158142
+        }
+      ],
+      "longTasks": [],
+      "trace": {
+        "PrePaint": 2.864,
+        "UpdateLayoutTree": 37.966,
+        "Layout": 18.954,
+        "Paint": 7.170000000000001
+      }
+    },
+    {
+      "name": "128:paint:2",
+      "inputToTwoRafMs": 67,
+      "calls": [
+        {
+          "tag": "128:paint:2",
+          "ms": 1.5
+        }
+      ],
+      "longTasks": [],
+      "trace": {
+        "PrePaint": 2.5989999999999998,
+        "UpdateLayoutTree": 34.775999999999996,
+        "Layout": 14.196,
+        "Paint": 6.3290000000000015
+      }
+    },
+    {
+      "name": "128:undo:0",
+      "inputToTwoRafMs": 481,
+      "calls": [],
+      "longTasks": [
+        310,
+        133
+      ],
+      "trace": {
+        "UpdateLayoutTree": 50.14,
+        "Layout": 114.955,
+        "PrePaint": 2.068,
+        "Paint": 3.736999999999999
+      }
+    },
+    {
+      "name": "128:undo:1",
+      "inputToTwoRafMs": 500,
+      "calls": [],
+      "longTasks": [
+        286,
+        151
+      ],
+      "trace": {
+        "PrePaint": 3.3699999999999997,
+        "UpdateLayoutTree": 49.846,
+        "Layout": 135.24899999999997,
+        "Paint": 6.015000000000001
+      }
+    },
+    {
+      "name": "128:undo:2",
+      "inputToTwoRafMs": 496,
+      "calls": [],
+      "longTasks": [
+        306,
+        151
+      ],
+      "trace": {
+        "UpdateLayoutTree": 54.345,
+        "Layout": 139.526,
+        "PrePaint": 3.01,
+        "Paint": 7.117
+      }
+    },
+    {
+      "name": "128:layer:0",
+      "inputToTwoRafMs": 165,
+      "calls": [],
+      "longTasks": [
+        64
+      ],
+      "trace": {
+        "PrePaint": 1.5390000000000001,
+        "UpdateLayoutTree": 19.330000000000002,
+        "Layout": 17.57,
+        "Paint": 6.477999999999998
+      }
+    },
+    {
+      "name": "128:layer:1",
+      "inputToTwoRafMs": 158,
+      "calls": [],
+      "longTasks": [
+        68
+      ],
+      "trace": {
+        "PrePaint": 1.98,
+        "UpdateLayoutTree": 27.204,
+        "Layout": 22.457,
+        "Paint": 8.217
+      }
+    },
+    {
+      "name": "128:layer:2",
+      "inputToTwoRafMs": 182,
+      "calls": [],
+      "longTasks": [
+        79
+      ],
+      "trace": {
+        "PrePaint": 2.168,
+        "UpdateLayoutTree": 22.601,
+        "Layout": 23.346,
+        "Paint": 6.58000000000001
+      }
+    },
+    {
+      "name": "128:zoom:0",
+      "inputToTwoRafMs": 126,
+      "calls": [],
+      "longTasks": [],
+      "trace": {
+        "PrePaint": 1.512,
+        "UpdateLayoutTree": 19.59,
+        "Layout": 1.303,
+        "Paint": 1.8849999999999996
+      }
+    },
+    {
+      "name": "128:zoom:1",
+      "inputToTwoRafMs": 125,
+      "calls": [],
+      "longTasks": [],
+      "trace": {
+        "PrePaint": 1.675,
+        "UpdateLayoutTree": 20.795999999999996,
+        "Layout": 1.254,
+        "Paint": 3.237
+      }
+    },
+    {
+      "name": "128:zoom:2",
+      "inputToTwoRafMs": 161,
+      "calls": [],
+      "longTasks": [],
+      "trace": {
+        "PrePaint": 1.666,
+        "UpdateLayoutTree": 25.054000000000002,
+        "Layout": 1.3399999999999999,
+        "Paint": 2.335
+      }
+    },
+    {
+      "name": "128:paint-drag",
+      "inputToTwoRafMs": 1061,
+      "calls": [
+        {
+          "tag": "128:paint-drag",
+          "ms": 2.0999999046325684
+        },
+        {
+          "tag": "128:paint-drag",
+          "ms": 2
+        },
+        {
+          "tag": "128:paint-drag",
+          "ms": 2.200000047683716
+        },
+        {
+          "tag": "128:paint-drag",
+          "ms": 1.600000023841858
+        },
+        {
+          "tag": "128:paint-drag",
+          "ms": 1.399999976158142
+        },
+        {
+          "tag": "128:paint-drag",
+          "ms": 1.7000000476837158
+        },
+        {
+          "tag": "128:paint-drag",
+          "ms": 1.5
+        },
+        {
+          "tag": "128:paint-drag",
+          "ms": 1.5
+        },
+        {
+          "tag": "128:paint-drag",
+          "ms": 1.2999999523162842
+        },
+        {
+          "tag": "128:paint-drag",
+          "ms": 1.7000000476837158
+        },
+        {
+          "tag": "128:paint-drag",
+          "ms": 1.7000000476837158
+        },
+        {
+          "tag": "128:paint-drag",
+          "ms": 1.7000000476837158
+        },
+        {
+          "tag": "128:paint-drag",
+          "ms": 2
+        },
+        {
+          "tag": "128:paint-drag",
+          "ms": 1.6999999284744263
+        },
+        {
+          "tag": "128:paint-drag",
+          "ms": 1.6999999284744263
+        },
+        {
+          "tag": "128:paint-drag",
+          "ms": 1.5
+        },
+        {
+          "tag": "128:paint-drag",
+          "ms": 1.5
+        },
+        {
+          "tag": "128:paint-drag",
+          "ms": 1.899999976158142
+        },
+        {
+          "tag": "128:paint-drag",
+          "ms": 1.6999999284744263
+        }
+      ],
+      "longTasks": [],
+      "trace": {
+        "UpdateLayoutTree": 247.269,
+        "PrePaint": 14.554999999999998,
+        "Paint": 31.717999999999986,
+        "Layout": 21.636999999999997
+      }
+    },
+    {
+      "name": "128:pan",
+      "inputToTwoRafMs": 381,
+      "calls": [],
+      "longTasks": [],
+      "trace": {
+        "PrePaint": 3.541999999999997,
+        "UpdateLayoutTree": 6.805000000000001,
+        "Layout": 5.835,
+        "Paint": 1.406
+      }
+    },
+    {
+      "name": "512:paint:0",
+      "inputToTwoRafMs": 197,
+      "calls": [
+        {
+          "tag": "512:paint:0",
+          "ms": 3
+        }
+      ],
+      "longTasks": [
+        132
+      ],
+      "trace": {
+        "PrePaint": 1.8859999999999997,
+        "UpdateLayoutTree": 34.209,
+        "Layout": 12.753,
+        "Paint": 4.117
+      }
+    },
+    {
+      "name": "512:paint:1",
+      "inputToTwoRafMs": 199,
+      "calls": [
+        {
+          "tag": "512:paint:1",
+          "ms": 1.8000000715255737
+        }
+      ],
+      "longTasks": [
+        100
+      ],
+      "trace": {
+        "PrePaint": 2.4049999999999994,
+        "UpdateLayoutTree": 38.034,
+        "Layout": 19.453999999999997,
+        "Paint": 5.555999999999998
+      }
+    },
+    {
+      "name": "512:paint:2",
+      "inputToTwoRafMs": 154,
+      "calls": [
+        {
+          "tag": "512:paint:2",
+          "ms": 3.4000000953674316
+        }
+      ],
+      "longTasks": [
+        104
+      ],
+      "trace": {
+        "PrePaint": 2.6799999999999993,
+        "UpdateLayoutTree": 33.374,
+        "Layout": 12.839,
+        "Paint": 5.718
+      }
+    },
+    {
+      "name": "512:undo:0",
+      "inputToTwoRafMs": 860,
+      "calls": [],
+      "longTasks": [
+        629,
+        136
+      ],
+      "trace": {
+        "PrePaint": 2.2929999999999997,
+        "UpdateLayoutTree": 49.283,
+        "Layout": 113.65599999999999,
+        "Paint": 4.3119999999999985
+      }
+    },
+    {
+      "name": "512:undo:1",
+      "inputToTwoRafMs": 839,
+      "calls": [],
+      "longTasks": [
+        627,
+        140
+      ],
+      "trace": {
+        "UpdateLayoutTree": 50.879000000000005,
+        "Layout": 115.15799999999999,
+        "PrePaint": 2.16,
+        "Paint": 4.202999999999999
+      }
+    },
+    {
+      "name": "512:undo:2",
+      "inputToTwoRafMs": 901,
+      "calls": [],
+      "longTasks": [
+        684,
+        150
+      ],
+      "trace": {
+        "PrePaint": 2.959999999999999,
+        "UpdateLayoutTree": 63.07799999999999,
+        "Layout": 132.82500000000002,
+        "Paint": 5.811999999999999
+      }
+    },
+    {
+      "name": "512:layer:0",
+      "inputToTwoRafMs": 152,
+      "calls": [],
+      "longTasks": [
+        64
+      ],
+      "trace": {
+        "PrePaint": 1.3669999999999998,
+        "UpdateLayoutTree": 17.516,
+        "Layout": 17.517,
+        "Paint": 5.087999999999998
+      }
+    },
+    {
+      "name": "512:layer:1",
+      "inputToTwoRafMs": 158,
+      "calls": [],
+      "longTasks": [
+        74
+      ],
+      "trace": {
+        "PrePaint": 1.865,
+        "UpdateLayoutTree": 17.505,
+        "Layout": 28.467000000000002,
+        "Paint": 5.574999999999998
+      }
+    },
+    {
+      "name": "512:layer:2",
+      "inputToTwoRafMs": 141,
+      "calls": [],
+      "longTasks": [
+        60
+      ],
+      "trace": {
+        "PrePaint": 1.2269999999999999,
+        "UpdateLayoutTree": 16.233,
+        "Layout": 17.078,
+        "Paint": 3.8369999999999833
+      }
+    },
+    {
+      "name": "512:zoom:0",
+      "inputToTwoRafMs": 108,
+      "calls": [],
+      "longTasks": [],
+      "trace": {
+        "PrePaint": 1.4500000000000004,
+        "UpdateLayoutTree": 20.779000000000003,
+        "Layout": 1.336,
+        "Paint": 2.2529999999999997
+      }
+    },
+    {
+      "name": "512:zoom:1",
+      "inputToTwoRafMs": 142,
+      "calls": [],
+      "longTasks": [],
+      "trace": {
+        "PrePaint": 1.5829999999999997,
+        "UpdateLayoutTree": 27.835000000000004,
+        "Layout": 1.722,
+        "Paint": 3.307
+      }
+    },
+    {
+      "name": "512:zoom:2",
+      "inputToTwoRafMs": 157,
+      "calls": [],
+      "longTasks": [],
+      "trace": {
+        "PrePaint": 1.243,
+        "UpdateLayoutTree": 18.952,
+        "Layout": 1.1429999999999998,
+        "Paint": 1.925
+      }
+    },
+    {
+      "name": "512:paint-drag",
+      "inputToTwoRafMs": 1090,
+      "calls": [
+        {
+          "tag": "512:paint-drag",
+          "ms": 1.9000000953674316
+        },
+        {
+          "tag": "512:paint-drag",
+          "ms": 1.600000023841858
+        },
+        {
+          "tag": "512:paint-drag",
+          "ms": 2.1999999284744263
+        },
+        {
+          "tag": "512:paint-drag",
+          "ms": 3.8000000715255737
+        },
+        {
+          "tag": "512:paint-drag",
+          "ms": 3.200000047683716
+        },
+        {
+          "tag": "512:paint-drag",
+          "ms": 2.700000047683716
+        },
+        {
+          "tag": "512:paint-drag",
+          "ms": 3.799999952316284
+        },
+        {
+          "tag": "512:paint-drag",
+          "ms": 3.200000047683716
+        },
+        {
+          "tag": "512:paint-drag",
+          "ms": 2.700000047683716
+        },
+        {
+          "tag": "512:paint-drag",
+          "ms": 2.5
+        },
+        {
+          "tag": "512:paint-drag",
+          "ms": 2.700000047683716
+        },
+        {
+          "tag": "512:paint-drag",
+          "ms": 3.1999999284744263
+        },
+        {
+          "tag": "512:paint-drag",
+          "ms": 3
+        },
+        {
+          "tag": "512:paint-drag",
+          "ms": 3.6999999284744263
+        },
+        {
+          "tag": "512:paint-drag",
+          "ms": 3.100000023841858
+        },
+        {
+          "tag": "512:paint-drag",
+          "ms": 2.899999976158142
+        },
+        {
+          "tag": "512:paint-drag",
+          "ms": 2.899999976158142
+        },
+        {
+          "tag": "512:paint-drag",
+          "ms": 3.3000000715255737
+        },
+        {
+          "tag": "512:paint-drag",
+          "ms": 3
+        }
+      ],
+      "longTasks": [
+        102
+      ],
+      "trace": {
+        "UpdateLayoutTree": 231.48999999999998,
+        "PrePaint": 12.949999999999996,
+        "Paint": 27.025999999999996,
+        "Layout": 21.214000000000002
+      }
+    },
+    {
+      "name": "512:pan",
+      "inputToTwoRafMs": 402,
+      "calls": [],
+      "longTasks": [],
+      "trace": {
+        "PrePaint": 3.766999999999998,
+        "UpdateLayoutTree": 6.233,
+        "Layout": 6.989,
+        "Paint": 1.4309999999999998
+      }
+    },
+    {
+      "name": "database:cold-open",
+      "inputToTwoRafMs": 326,
+      "calls": [],
+      "longTasks": [
+        170
+      ],
+      "trace": {
+        "PrePaint": 6.415000000000001,
+        "UpdateLayoutTree": 58.580999999999996,
+        "Layout": 62.304,
+        "Paint": 19.543000000000003
+      }
+    },
+    {
+      "name": "database:warm-open",
+      "inputToTwoRafMs": 258,
+      "calls": [],
+      "longTasks": [
+        166
+      ],
+      "trace": {
+        "PrePaint": 6.834,
+        "UpdateLayoutTree": 52.248000000000005,
+        "Layout": 65.323,
+        "Paint": 23.342
+      }
+    },
+    {
+      "name": "resources:cold-open",
+      "inputToTwoRafMs": 213,
+      "calls": [],
+      "longTasks": [
+        75
+      ],
+      "trace": {
+        "PrePaint": 2.8289999999999997,
+        "UpdateLayoutTree": 14.565000000000001,
+        "Layout": 45.37,
+        "Paint": 14.775999999999996
+      }
+    }
+  ],
+  "checks": [
+    {
+      "mapSize": 32,
+      "nativePaintVerified": true
+    },
+    {
+      "mapSize": 128,
+      "nativePaintVerified": true
+    },
+    {
+      "mapSize": 512,
+      "nativePaintVerified": true
+    }
+  ]
+}

@@ -29,6 +29,8 @@ export type EventDraftVaultEntry = {
 };
 
 const vault = new Map<string, EventDraftVaultEntry>();
+/** History must use full reconciliation when a draft could restore event data. */
+export function hasEventDraftVaultEntries(): boolean { return vault.size > 0; }
 let persistTimer: ReturnType<typeof setTimeout> | null = null;
 let persistTimerProjectId: string | null = null;
 const PERSIST_DELAY_MS = 250;

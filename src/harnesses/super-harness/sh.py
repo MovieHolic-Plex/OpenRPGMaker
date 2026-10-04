@@ -32,6 +32,7 @@ sys.path.insert(0, HERE)
 import store  # noqa: E402
 import gates  # noqa: E402
 import planning_details  # noqa: E402
+import art_execution  # noqa: E402
 
 DATA = store.DATA
 WORK = os.path.join(DATA, 'work')
@@ -45,7 +46,7 @@ BRIEF = os.path.join(ROOT, 'scripts/qa-game/briefs/ember-mine-jrpg.json')
 CODEX_TIMEOUT = int(os.environ.get('SUPER_HARNESS_CODEX_TIMEOUT', str(50 * 60)))
 PROBE_TIMEOUT = int(os.environ.get('SUPER_HARNESS_PROBE_TIMEOUT', str(30 * 60)))
 PROBE_RUNS = 2   # 전/후 각 2판
-ENV = dict(os.environ, PATH=os.pathsep.join([os.path.dirname(BUN), os.path.dirname(CODEX), os.path.expanduser('~/.local/bin'),
+ENV = dict(os.environ, SUPER_HARNESS_CODEX_BIN=CODEX, PATH=os.pathsep.join([os.path.dirname(BUN), os.path.dirname(CODEX), os.path.expanduser('~/.local/bin'),
                                               '/usr/local/bin', '/usr/bin', '/bin', os.environ.get('PATH', '')]))
 
 PROCS = {}   # job id → (Popen, deadline, meta)
@@ -376,7 +377,7 @@ def on_bake(meta, code, result):
     pass   # 굽기는 스레드에서 끝까지 처리한다(bake_thread).
 
 
-HANDLERS = {'plan': lambda *a: on_plan(*a), 'plan-review': lambda *a: on_plan_review(*a), 'survey': lambda *a: on_survey(*a), 'material-review': lambda *a: on_material_review(*a), 'art': lambda *a: on_art(*a), 'discover': on_discover, 'build': on_build, 'review': on_review, 'probe': on_probe, 'judge': on_judge, 'bake': on_bake}
+HANDLERS = {'plan': lambda *a: on_plan(*a), 'plan-review': lambda *a: on_plan_review(*a), 'survey': lambda *a: on_survey(*a), 'material-review': lambda *a: on_material_review(*a), 'art': lambda *a: on_art(*a), 'art-native': lambda *a: on_art_native(*a), 'discover': on_discover, 'build': on_build, 'review': on_review, 'probe': on_probe, 'judge': on_judge, 'bake': on_bake}
 
 
 def probe_scores(cid, attempt):
@@ -602,8 +603,11 @@ def start_art(c):
         subprocess.run(['git', 'worktree', 'add', '--detach', wt, 'HEAD'], cwd=ROOT, check=True, capture_output=True)
     if not os.path.exists(os.path.join(wt, 'node_modules')):
         subprocess.run(['npm', 'run', 'wt', '--', 'adopt', 'super-art-' + cid, '--path', wt], cwd=ROOT, check=True, capture_output=True)
+    previous = cdir(cid, 'art-result.json')
+    if os.path.isfile(previous):
+        os.replace(previous, cdir(cid, 'art-result.previous.json'))
     prompt = fill(prompt_template('art.md'), ROOT=wt, CDIR=cdir(cid), CONCEPT=concept_context(c))
-    start_codex(cid, 'art', 'candidates', prompt, cdir(cid, 'art-result.json'), write_root=wt)
+    start_codex(cid, 'art', 'prepare', prompt, cdir(cid, 'art-result.json'), write_root=wt)
     store.update_concept(cid, status='running', note='전용 하네스로 칩 후보 제작 중')
 
 
@@ -611,6 +615,26 @@ def on_art(meta, code, result):
     cid = meta['concept']
     wt = os.path.realpath(os.path.join(DATA, 'art-worktrees', cid))
     result = result if isinstance(result, dict) else {}
+    if code == 0 and result.get('execution') and meta.get('tag') != 'collect':
+        try:
+            request = dict(result['execution'])
+            # Models are chosen by the user/supervisor, never by a preparation worker.
+            request.pop('modelOverride', None)
+            override = json.loads(store.setting('art_model_overrides') or '{}').get(cid)
+            if override:
+                request['modelOverride'] = override
+            art_execution.prepare(wt, request)
+            request_path = cdir(cid, 'art-execution.json')
+            write_json(request_path, request)
+            native_result = cdir(cid, 'art-execution-result.json')
+            if os.path.exists(native_result): os.remove(native_result)
+            start_proc(cid, 'art-native', 'drawing', [sys.executable, os.path.join(HERE, 'art_execution.py'),
+                       wt, request_path, native_result], ROOT, cdir(cid, 'logs', 'art-native.log'), CODEX_TIMEOUT * 2,
+                       {'result': native_result})
+            store.update_concept(cid, status='running', note='전용 하네스 직접 실행 — 후보 제작·독립 검수')
+        except (OSError, ValueError, TypeError) as error:
+            store.update_concept(cid, stage='blocked', status='idle', note='그림 실행 준비 오류', reasons=[str(error)])
+        return
     candidates = result.get('candidates') or []
     valid = code == 0 and isinstance(candidates, list) and bool(candidates)
     if not isinstance(candidates, list):
@@ -647,6 +671,18 @@ def on_art(meta, code, result):
     else:
         store.update_concept(cid, stage='blocked', status='idle', note='칩 제작 미완료 — 하네스 결과·그림 근거 없음', reasons=(result or {}).get('reasons') or ['art-result.json에 실제 후보와 하네스 검사 근거가 필요함'])
     store.log(cid, '칩 제작 결과 — ' + ('사람 선택 대기' if valid else '미완료'))
+
+
+def on_art_native(meta, code, result):
+    cid = meta['concept']
+    wt = os.path.join(DATA, 'art-worktrees', cid)
+    if code != 0 or not isinstance(result, dict) or result.get('exitCode') != 0:
+        store.update_concept(cid, stage='blocked', status='idle', note='그림 하네스 실행 실패',
+                             reasons=[f'실행 종료 {code}; logs/art-native.log 확인'])
+        return
+    prompt = fill(prompt_template('art-collect.md'), ROOT=wt, CDIR=cdir(cid))
+    start_codex(cid, 'art', 'collect', prompt, cdir(cid, 'art-result.json'), write_root=wt)
+    store.update_concept(cid, status='running', note='실제 후보 그림·검수 결과 정리 중')
 
 
 def start_build(c):
@@ -896,7 +932,7 @@ def tick():
         start_discover()
 
     for c in store.concepts("stage='art' AND status='queued'"):
-        if len(running(['art'])) >= int(store.setting('max_art')) or not codex_free():
+        if len(running(['art', 'art-native'])) >= int(store.setting('max_art')) or not codex_free():
             break
         start_art(c)
 
