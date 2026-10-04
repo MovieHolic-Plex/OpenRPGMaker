@@ -4,6 +4,7 @@ import { presentationArtIds } from '@/editor/tools/presentationTools';
 import { tileBackingTile } from "@/editor/tileLayerPolicy";
 import { cropExtraLayers } from "@/project/mapLayers";
 import { reliefMapView } from "@/editor/reliefMapView";
+import { sunlightField } from "@/project/sunlight";
 import { reliefGroundFromImage } from "@/editor/reliefGroundSurface";
 import { cellLift, reliefLiftField } from "@/project/relief/screen";
 import type { GameMap, Project, TilesetDef } from "@/project/types";
@@ -186,6 +187,14 @@ async function renderTileGridPayload(payload: TileGridPayload, label: string, dr
   const canvasPair = createCanvas(payload.w * drawSize, relief?.height ?? payload.h * drawSize);
   if (!canvasPair) return [];
   const { canvas, context } = canvasPair;
+  const sunlight = payload.map ? sunlightField(payload.map, payload.tileset) : null;
+  const sunRow = (row: number, pad = 0) => {
+    if (!sunlight) return;
+    const s = sunlight.row(payload.y + row, payload.x, payload.x + payload.w), pair = createCanvas(s.w, s.h);
+    if (!pair) throw new Error("map-sunlight-rendering-unavailable: canvas unavailable");
+    pair.context.putImageData(new ImageData(new Uint8ClampedArray(s.rgba), s.w, s.h), 0, 0);
+    context.drawImage(pair.canvas, 0, (s.y * s.scale - payload.y) * drawSize + pad, s.w * s.scale * drawSize, s.h * s.scale * drawSize);
+  };
   drawCheckerBackground(context, canvas.width, canvas.height, Math.max(4, Math.floor(drawSize / 2)));
   if (payload.map) {
     const scale = drawSize / payload.tileset.tileSize;
@@ -213,6 +222,7 @@ async function renderTileGridPayload(payload: TileGridPayload, label: string, dr
         await drawRegionEventSprites(context, events.filter(e => e.row === row.y && e.priority === "below"));
         strip(row.over);
         for (const cell of row.cells) context.drawImage(upper.canvas, cell.x * drawSize, row.y * drawSize, drawSize, drawSize, cell.x * drawSize, cell.y, drawSize, drawSize);
+        sunRow(row.y, relief.pad);
         await drawRegionEventSprites(context, events.filter(e => e.row === row.y && e.priority === "same"));
       }
       await drawRegionEventSprites(context, events.filter(e => e.priority === "above"));
@@ -225,6 +235,7 @@ async function renderTileGridPayload(payload: TileGridPayload, label: string, dr
     const rest = payload.events.filter((event) => event.priority !== "below");
     await drawRegionEventSprites(context, below);
     drawMapTileLayer(context, image, region, payload.tileset, "upper", scale);
+    for (let row = 0; row < payload.h; row++) sunRow(row);
     await drawRegionEventSprites(context, rest);
     const dataUrl = canvasDataUrl(canvas);
     return dataUrl ? [{ dataUrl, label }] : [];

@@ -13,11 +13,12 @@ import { selectEditorMap } from "@/editor/mapSelection";
 import type { MapId } from "@/project/types";
 
 /** 창을 열자마자 초점을 둘 컨트롤. `tileset` = 「타일 그림판」 선택. */
-export type MapPropertiesFocus = "tileset" | "encounter";
+export type MapPropertiesFocus = "tileset" | "encounter" | "sunlight";
 
 const FOCUS_TESTID: Record<MapPropertiesFocus, string> = {
   tileset: "map-props-tileset-select",
   encounter: "map-props-tab-encounter",
+  sunlight: "map-props-tab-sunlight",
 };
 
 export function openMapPropertiesDialog(

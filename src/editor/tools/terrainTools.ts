@@ -5,6 +5,7 @@ import { planReliefRamp } from "@/editor/reliefRampPlan";
 import { planQuickHouse, planQuickHouseDrag, quickHouseCatalog, quickHouseStyles, quickHouseStyleName, quickHouseKit, type QuickHouseOptions } from "@/editor/quickHouse";
 import { inspectTerrainRoute, type TerrainRoutePoint } from "@/project/terrainRoute";
 import { terrainHeight } from "@/project/terrainGameplay";
+import { normalizeSunlight, sunlightField } from "@/project/sunlight";
 import { DEFAULT_TERRAIN_GAMEPLAY } from "@/project/terrainDesign";
 import { structurePlacementsOf } from "@/project/structurePlacements";
 import type { GameMap, Project } from "@/project/types";
@@ -165,12 +166,15 @@ const inspectTool: ToolDefinition = {
         parts: kit?.parts?.map(part => ({ id: part.id, kind: part.kind, x: p.x + part.dx, y: p.y + part.dy, width: part.w, height: part.h })) }];
     });
     const kits = quickHouseCatalog(ts), offset = Number(args.catalogOffset ?? 0), limit = Number(args.catalogLimit ?? 16);
-    const data = { mapId: map.id, tilesetId: map.tilesetId,
+    const sun = sunlightField(map, ts);
+    const data = { mapId: map.id, tilesetId: map.tilesetId, sunlight: normalizeSunlight(map.sunlight),
       features: map.terrainDesign?.features?.map(f => ({ id: f.id, tool: f.tool, points: f.points, options: f.options, patchCount: f.patches.length })) ?? [],
       lockedCells: map.terrainDesign?.lockedCells ?? [],
       maxHeight: Math.max(0, ...(map.relief?.levels ?? [])),
       rampCells: map.relief?.ramps?.filter(v => v >= 1 && v <= 4).length ?? 0, stairCells: map.relief?.ramps?.filter(v => v >= 5 && v <= 8).length ?? 0,
       gameplay: { ...DEFAULT_TERRAIN_GAMEPLAY, ...map.terrainDesign?.gameplay }, houses,
+      shadowCasterCount: sun?.casters.length ?? 0,
+      shadowCasters: sun?.casters.slice(0, 24).map(({ id, kind, height, base }) => ({ id, kind, height, base })) ?? [],
       ...(args.includeCatalog === false ? {} : {
         catalog: { total: kits.length, offset, limit, nextOffset: offset + limit < kits.length ? offset + limit : null },
         houseKits: kits.slice(offset, offset + limit).map(k => { const door = k.parts!.find(p => p.kind === "entrance")!; return {

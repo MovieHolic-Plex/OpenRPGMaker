@@ -171,6 +171,7 @@ import { reliefReadSignature as reliefSignature, reliefTileSlotChangedCells } fr
 import type { ReliefData } from "@/project/relief/types";
 import { reliefCellLiftPx } from "@/project/relief/screen";
 import { ReliefLiveStrips } from "@/editor/reliefLiveStrips";
+import { SunlightLayer } from "@/player/sunlightLayer";
 import { tilesetTextureKey } from "@/editor/tilesetImage";
 
 const PhaserRuntime = getLoadedPhaser();
@@ -263,6 +264,7 @@ export class EditScene extends PhaserRuntime.Scene {
   /** 높이(relief) 절벽 그림 — 하층 타일 위, 상층 타일 아래. 맵에 relief 가 없으면 비어 있다. */
   private reliefLayer: Phaser.GameObjects.Container | null = null;
   private reliefRenderKey = "";
+  private sunlightLayer: SunlightLayer | null = null;
   /** 절벽 띠 — 높이 붓이 바꾼 창만 다시 굽는다(reliefLiveStrips.ts). reliefLayer 를 만들 때 같이 만든다. */
   private reliefStrips: ReliefLiveStrips | null = null;
   /** 벽면 장식 이미지(띠와 같은 이름 — 타일 다시 그리기가 지우지 않는다). 장식·칩셋이 바뀔 때만 다시 만든다. */
@@ -529,6 +531,8 @@ export class EditScene extends PhaserRuntime.Scene {
       depthOf: (row, part) => row * EDIT_RELIEF_ROW_DEPTH + (part === 1 ? 0 : 7),
     });
     this.upperTileLayer = this.add.container(0, 0);
+    const sunlightContainer = this.add.container(0, 0).setDepth(.5);
+    this.sunlightLayer = new SunlightLayer(this, { container: sunlightContainer, depthOf: row => row });
     // tileLayer(기본 depth 0)와 upperTileLayer(기본 depth 0)는 add 순서대로 그려진다 —
     // 같은 depth면 display list 등록 순서가 드로 순서다. 명시 depth는 붙이지 않는다:
     // hover(8)·selection(8.5)·overlay(9)·grid(10)이 타일 두 컨테이너보다 위에 온다.
@@ -648,6 +652,7 @@ export class EditScene extends PhaserRuntime.Scene {
         __oprnEditMapViewport?: () => unknown;
         __oprnEditVisibleArea?: () => unknown;
         __oprnEditReliefStats?: () => unknown;
+        __oprnEditSunlightStats?: () => unknown;
         __oprnEditReliefRebuild?: () => void;
       };
       // 조수가 실제로 읽는 뷰포트 스냅샷과, 그 스냅샷을 만든 기하학(캔버스·가림 제외·worldView·줌).
@@ -656,6 +661,7 @@ export class EditScene extends PhaserRuntime.Scene {
       editWindow.__oprnEditVisibleArea = () => this.cameraVisibleArea();
       // 높이 붓 굽기 방식별 횟수 — 붓질이 전체 굽기로 떨어지지 않는지 e2e 가 본다(reliefLiveStrips.ts).
       editWindow.__oprnEditReliefStats = () => ({ ...this.reliefStrips?.counts, backing: this.reliefStrips?.backingStats, culling: tileCullingStats(this), residentTileCells: this.tileIndex.size, residentTileObjects: [...this.tileIndex.values()].reduce((n, objects) => n + objects.length, 0), chunks: this.tileChunks.size, emptyChunks: [...this.tileChunks.values()].filter(c => !c.list.length).length });
+      editWindow.__oprnEditSunlightStats = () => this.sunlightLayer?.diagnostics();
       // 띠를 버리고 전체를 다시 굽는다 — e2e 가 창 굽기 결과와 전체 굽기 결과의 화면이 같은지 비교한다.
       editWindow.__oprnEditReliefRebuild = () => {
         this.reliefStrips?.clear();
@@ -820,6 +826,9 @@ export class EditScene extends PhaserRuntime.Scene {
    * 바뀔 때 게시한다. 무변화 프레임은 수 번의 수치 복사·문자열 비교만 하고 끝난다.
    */
   update(): void {
+    const sunlightMapId = this.mapId();
+    const sunlightMap = sunlightMapId ? store.getCurrent().maps[sunlightMapId] : undefined;
+    if (this.sunlightLayer?.sync(sunlightMap, sunlightMap ? store.getCurrent().tilesets[sunlightMap.tilesetId] : undefined)) requestEditRenderFrame(this.game);
     if (this.activeCameraFocus && shouldDeferCameraFocus(this.pointerGestureState())) this.cancelCameraFocus();
     this.syncMapEdgeHint();
     this.syncNavigationGeometry();
