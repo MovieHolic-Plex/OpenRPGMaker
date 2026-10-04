@@ -1,0 +1,30 @@
+{
+  "previousCount": 9998,
+  "count": 10037,
+  "oldPinsMoved": 0,
+  "oldPixelsChanged": 0,
+  "reassembly": {
+    "kits_checked": 576,
+    "by_kind": {
+      "road": 2,
+      "street": 2,
+      "crosswalk": 2,
+      "junction": 2,
+      "building": 259,
+      "prop": 117,
+      "vehicle": 191,
+      "scene": 1
+    },
+    "mismatched_kits": 0,
+    "mismatched_pixels": 0,
+    "mismatched_ids": []
+  },
+  "definition": {
+    "violations": 0,
+    "by_code": {},
+    "examples": {},
+    "tiles_checked": 10037,
+    "kits_checked": 576,
+    "groups_checked": 62
+  }
+}

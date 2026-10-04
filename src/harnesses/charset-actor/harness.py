@@ -323,6 +323,28 @@ def cmd_check(a):
     sys.exit(0 if r['ok'] else 1)
 
 
+def cmd_motion_check(a):
+    import motion
+    proof = motion.audit_file(a.file, Path(a.file).parent / 'views', base_of(a.base))
+    print(json.dumps(proof, ensure_ascii=False, indent=1))
+    sys.exit(0 if proof['check']['ok'] else 1)
+
+
+def check_motion(w, gate):
+    import motion
+    meta = json.loads((w / 'meta.json').read_text())
+    manifest = json.loads((run_dir(meta['run']) / 'manifest.json').read_text())
+    policy = manifest.get('motionPolicy')
+    if policy is None and meta.get('motionPolicy') is None:
+        return None  # 옛 실행의 공개 픽셀과 선택은 당시 계약을 유지한다.
+    if policy != meta.get('motionPolicy') or policy != motion.VERSION:
+        raise ValueError('걷기 검사 정책의 실행/작업자 binding이 다릅니다')
+    proof = motion.audit_file(w / 'out.chr.txt', w / 'views', base_of(meta['base']), gate)
+    if not proof['check']['ok']:
+        raise ValueError('걷기 결함: ' + '; '.join(proof['check']['fails']))
+    return proof
+
+
 def make_views(file, out, base_n=None, strength='normal'):
     out = Path(out)
     out.mkdir(parents=True, exist_ok=True)
@@ -559,6 +581,12 @@ def human_ready(w, gate):
         if meta.get('recipe'):
             import delivery
             if not delivery.fresh(w, gate):
+                return False
+        manifest_file = run_dir(meta.get('run', w.parent.name)) / 'manifest.json'
+        manifest = json.loads(manifest_file.read_text()) if manifest_file.exists() else {}
+        if manifest.get('motionPolicy') is not None or meta.get('motionPolicy') is not None:
+            import motion
+            if not motion.fresh(w, gate):
                 return False
         return (not _alive(meta.get('pid'))
                 and (meta.get('animationMode') != FRAME_AUTHOR_MODE or model_frames_fresh(w, gate))
@@ -1177,6 +1205,7 @@ def _items():
                             gate=gate, review=review, quality=q, review_mode='human' if human_review(w) else 'legacy',
                             render_fresh=views_fresh(w, gate) if has else False,
                             alpha_previews_fresh=alpha_views_fresh(w, gate) if has else False,
+                            motion_previews_fresh=(has and m.get('motionPolicy') is not None and human_ready(w, gate)),
                             face=_face_state(w), face_gen=_gen_meta(w)))
     return out
 
@@ -1546,6 +1575,10 @@ def main():
     p.add_argument('--base', help='Actor2:3 처럼 (정수는 Actor1)')
     p.add_argument('--strength', default='normal', choices=list(C.STRENGTH))
     p.set_defaults(fn=cmd_check)
+    p = sp.add_parser('motion-check', help='몸통 정지·다리 교대·정지 전체 이동을 검사하고 비교 그림을 남긴다')
+    p.add_argument('file')
+    p.add_argument('--base', required=True)
+    p.set_defaults(fn=cmd_motion_check)
     p = sp.add_parser('propagate', help='걸음 0·2 를 서 있는 자세에서 다시 만든다')
     p.add_argument('file')
     p.add_argument('--base', required=True)

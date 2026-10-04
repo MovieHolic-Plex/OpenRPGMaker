@@ -1,0 +1,583 @@
+{
+  "passed": true,
+  "workerCompleted": true,
+  "mode": "actual assistant storyboard, music selection/composition and layered art repair of existing saved game",
+  "projectUrl": "http://127.0.0.1:18435/index.html?hostProject=ed85bb3b-e221-4955-8fd6-e0afdc2ce590",
+  "afterReload": {
+    "dir": "/home/main/.codex/worktrees/0a57/rpg-zzu/output/qa/first-presentation/project/.oprn-projects/ed85bb3b-e221-4955-8fd6-e0afdc2ce590",
+    "projectId": "f25d1f04-88f9-475b-92ee-95a891286d33",
+    "revision": 65,
+    "mapsHash": "6f80338d86155ff412e81b079790074d006a8556b4aa43811d62d42c30f107e0",
+    "opening": {
+      "enabled": true,
+      "skippable": true,
+      "musicResourceId": "original_bgm_41914295-3e6b-41cd-a5f8-716c377486dd",
+      "scenes": [
+        {
+          "id": "op_scene_01_prologue",
+          "narration": "어떤 기억은, 멈춘 시간 속에 남아 있다.",
+          "durationMs": 4500,
+          "presentation": {
+            "text": {
+              "font": "serif",
+              "revealMs": 2200,
+              "delayMs": 400,
+              "animation": "typewriter",
+              "layout": "center",
+              "color": "#f5ebd7",
+              "size": 20,
+              "exitMs": 600
+            },
+            "preset": "prologue",
+            "transition": {
+              "enterMs": 800,
+              "enter": "fade",
+              "exitMs": 600
+            }
+          },
+          "kind": "text"
+        },
+        {
+          "id": "op_scene_02_study_wide",
+          "narration": "따스한 볕이 머무는, 조용한 오후의 서재.",
+          "durationMs": 5200,
+          "presentation": {
+            "preset": "subtitle",
+            "text": {
+              "font": "serif",
+              "exitMs": 400,
+              "color": "#fff9e6",
+              "size": 16,
+              "delayMs": 400,
+              "revealMs": 800,
+              "animation": "fade",
+              "layout": "bottom"
+            },
+            "transition": {
+              "exitMs": 400,
+              "enterMs": 700,
+              "enter": "fade"
+            }
+          },
+          "kind": "image",
+          "resourceId": "opening_still_565e4343-b729-4e4a-a6a7-4eecc0ee1c28",
+          "motion": "pan",
+          "direction": {
+            "camera": {
+              "from": [
+                0.46,
+                0.48,
+                1
+              ],
+              "to": [
+                0.54,
+                0.48,
+                1
+              ]
+            },
+            "transition": {
+              "kind": "fade",
+              "durationMs": 700
+            },
+            "effects": [
+              {
+                "kind": "godRays",
+                "intensity": 0.5,
+                "color": "#fff4d6",
+                "source": [
+                  0.62,
+                  0.1
+                ],
+                "toward": [
+                  0.48,
+                  0.7
+                ]
+              },
+              {
+                "kind": "motes",
+                "intensity": 0.4,
+                "color": "#ffe8b0",
+                "source": [
+                  0.62,
+                  0.1
+                ],
+                "toward": [
+                  0.48,
+                  0.7
+                ]
+              }
+            ],
+            "narrationDelayMs": 400
+          }
+        },
+        {
+          "id": "op_scene_03_watch_detail",
+          "narration": "책상 위, 바늘이 굳어버린 은색 회중시계.",
+          "durationMs": 5000,
+          "presentation": {
+            "text": {
+              "revealMs": 700,
+              "animation": "fade",
+              "size": 16,
+              "color": "#fff9e6",
+              "exitMs": 400,
+              "delayMs": 300,
+              "font": "serif",
+              "layout": "bottom"
+            },
+            "transition": {
+              "enter": "dissolve",
+              "exitMs": 400,
+              "enterMs": 500
+            },
+            "preset": "subtitle"
+          },
+          "kind": "image",
+          "resourceId": "opening_still_eb637001-a738-49d8-8631-2e09fe9fd822",
+          "motion": "none",
+          "direction": {
+            "camera": {
+              "from": [
+                0.5,
+                0.5,
+                1
+              ],
+              "to": [
+                0.5,
+                0.5,
+                1
+              ]
+            },
+            "transition": {
+              "kind": "dissolve",
+              "durationMs": 500
+            },
+            "effects": [
+              {
+                "kind": "glow",
+                "intensity": 0.35,
+                "color": "#fff1cc",
+                "source": [
+                  0.62,
+                  0.52
+                ],
+                "spread": 0.25
+              }
+            ],
+            "narrationDelayMs": 300
+          }
+        },
+        {
+          "id": "op_scene_04_watch_light_event",
+          "narration": "정적을 깨고, 유리 틈새로 아련한 기억의 빛이 번진다.",
+          "durationMs": 5400,
+          "presentation": {
+            "preset": "memory",
+            "transition": {
+              "enter": "dissolve",
+              "exitMs": 400,
+              "enterMs": 600
+            },
+            "text": {
+              "exitMs": 450,
+              "revealMs": 850,
+              "layout": "bottom",
+              "font": "serif",
+              "color": "#ffe7a3",
+              "size": 16,
+              "animation": "blur",
+              "delayMs": 350
+            }
+          },
+          "kind": "image",
+          "resourceId": "opening_still_7f43848d-9471-4826-8784-21282c451be2",
+          "motion": "none",
+          "direction": {
+            "layers": [
+              {
+                "resourceId": "opening_still_33d287f3-ba40-4964-adb1-65ffcda5009d",
+                "width": 0.18,
+                "depth": "foreground",
+                "easing": "ease-out",
+                "frames": [
+                  {
+                    "at": 0,
+                    "x": 0.58,
+                    "y": 0.56,
+                    "scale": 0.4,
+                    "opacity": 0,
+                    "rotation": -15
+                  },
+                  {
+                    "at": 0.35,
+                    "x": 0.59,
+                    "y": 0.45,
+                    "scale": 0.7,
+                    "opacity": 0.95,
+                    "rotation": 5
+                  },
+                  {
+                    "at": 0.75,
+                    "x": 0.61,
+                    "y": 0.35,
+                    "scale": 0.8,
+                    "opacity": 0.85,
+                    "rotation": 25
+                  },
+                  {
+                    "at": 1,
+                    "x": 0.62,
+                    "y": 0.25,
+                    "scale": 0.9,
+                    "opacity": 0,
+                    "rotation": 40
+                  }
+                ]
+              },
+              {
+                "resourceId": "opening_still_4db4a53f-eae5-4f0b-99d8-efa799cc0008",
+                "width": 0.14,
+                "depth": "foreground",
+                "easing": "ease-in-out",
+                "frames": [
+                  {
+                    "at": 0,
+                    "x": 0.62,
+                    "y": 0.54,
+                    "scale": 0.3,
+                    "opacity": 0,
+                    "rotation": 0
+                  },
+                  {
+                    "at": 0.4,
+                    "x": 0.64,
+                    "y": 0.42,
+                    "scale": 0.55,
+                    "opacity": 0.85,
+                    "rotation": 30
+                  },
+                  {
+                    "at": 0.8,
+                    "x": 0.66,
+                    "y": 0.32,
+                    "scale": 0.6,
+                    "opacity": 0.75,
+                    "rotation": 60
+                  },
+                  {
+                    "at": 1,
+                    "x": 0.67,
+                    "y": 0.24,
+                    "scale": 0.65,
+                    "opacity": 0,
+                    "rotation": 90
+                  }
+                ]
+              }
+            ],
+            "transition": {
+              "kind": "dissolve",
+              "durationMs": 600
+            },
+            "effects": [
+              {
+                "kind": "glow",
+                "intensity": 0.7,
+                "color": "#ffe085",
+                "source": [
+                  0.62,
+                  0.52
+                ],
+                "spread": 0.25
+              }
+            ],
+            "soundResourceId": "easyrpg-sound-magic1",
+            "narrationDelayMs": 350
+          }
+        },
+        {
+          "id": "op_scene_05_seorin_over_shoulder",
+          "narration": "서린은 멈춰선 채, 빛나는 시계를 조용히 응시했다.",
+          "durationMs": 5200,
+          "presentation": {
+            "text": {
+              "size": 16,
+              "font": "serif",
+              "delayMs": 300,
+              "color": "#fff9e6",
+              "revealMs": 750,
+              "exitMs": 400,
+              "animation": "rise",
+              "layout": "bottom"
+            },
+            "transition": {
+              "exitMs": 400,
+              "enter": "dissolve",
+              "enterMs": 600
+            },
+            "preset": "subtitle"
+          },
+          "kind": "image",
+          "resourceId": "opening_still_14947500-8141-401c-971f-e1bd962c9de0",
+          "motion": "none",
+          "direction": {
+            "layers": [
+              {
+                "resourceId": "opening_still_33d287f3-ba40-4964-adb1-65ffcda5009d",
+                "width": 0.14,
+                "depth": "foreground",
+                "easing": "ease-out",
+                "frames": [
+                  {
+                    "at": 0,
+                    "x": 0.82,
+                    "y": 0.62,
+                    "scale": 0.5,
+                    "opacity": 0.6,
+                    "rotation": 10
+                  },
+                  {
+                    "at": 0.4,
+                    "x": 0.8,
+                    "y": 0.52,
+                    "scale": 0.65,
+                    "opacity": 0.85,
+                    "rotation": 25
+                  },
+                  {
+                    "at": 0.8,
+                    "x": 0.78,
+                    "y": 0.44,
+                    "scale": 0.7,
+                    "opacity": 0.5,
+                    "rotation": 40
+                  },
+                  {
+                    "at": 1,
+                    "x": 0.77,
+                    "y": 0.38,
+                    "scale": 0.75,
+                    "opacity": 0,
+                    "rotation": 55
+                  }
+                ]
+              }
+            ],
+            "camera": {
+              "from": [
+                0.48,
+                0.52,
+                1
+              ],
+              "to": [
+                0.52,
+                0.5,
+                1
+              ]
+            },
+            "transition": {
+              "kind": "dissolve",
+              "durationMs": 600
+            },
+            "effects": [
+              {
+                "kind": "glow",
+                "intensity": 0.5,
+                "color": "#ffe294",
+                "source": [
+                  0.84,
+                  0.6
+                ],
+                "spread": 0.2
+              }
+            ],
+            "narrationDelayMs": 300
+          }
+        },
+        {
+          "id": "op_scene_06_desk_transition",
+          "narration": "잃어버린 시간의 틈으로, 손을 뻗을 때가 되었다.",
+          "durationMs": 4800,
+          "presentation": {
+            "text": {
+              "revealMs": 800,
+              "exitMs": 600,
+              "animation": "fade",
+              "color": "#fff9e6",
+              "delayMs": 300,
+              "size": 16,
+              "font": "serif",
+              "layout": "bottom"
+            },
+            "transition": {
+              "exitMs": 600,
+              "enterMs": 600,
+              "enter": "fade"
+            },
+            "preset": "subtitle"
+          },
+          "kind": "image",
+          "resourceId": "opening_still_6ad49457-94fc-4e71-ac82-60b3ad42d884",
+          "motion": "none",
+          "direction": {
+            "transition": {
+              "kind": "fade",
+              "durationMs": 600
+            },
+            "effects": [
+              {
+                "kind": "godRays",
+                "intensity": 0.4,
+                "color": "#fff4d6",
+                "source": [
+                  0.5,
+                  0.1
+                ],
+                "toward": [
+                  0.65,
+                  0.6
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "title": {
+      "title": "멈춘 시계의 기억",
+      "backgroundResourceId": "title_art_b3914fa0-d433-440d-a779-d61f6f8ae361",
+      "layout": {
+        "titleX": 32,
+        "titleY": 48,
+        "menuX": 34,
+        "menuY": 128
+      },
+      "menuLabels": {
+        "newGame": "새 게임",
+        "continueGame": "불러오기",
+        "quit": "종료"
+      },
+      "menuVisibility": {
+        "newGame": true,
+        "continueGame": true,
+        "quit": true
+      },
+      "showInputHint": true,
+      "backgroundFit": "cover",
+      "backgroundRendering": "smooth",
+      "effects": [
+        {
+          "kind": "godRays",
+          "intensity": 1.2,
+          "color": "#fff3d1",
+          "source": [
+            0.72,
+            0.05
+          ],
+          "toward": [
+            0.52,
+            0.72
+          ]
+        },
+        {
+          "kind": "motes",
+          "intensity": 1.1,
+          "color": "#ffe89c",
+          "source": [
+            0.72,
+            0.05
+          ],
+          "toward": [
+            0.52,
+            0.72
+          ]
+        },
+        {
+          "kind": "glow",
+          "intensity": 1.3,
+          "color": "#ffd885",
+          "source": [
+            0.53,
+            0.67
+          ],
+          "spread": 0.15
+        },
+        {
+          "kind": "camera",
+          "speed": 0.4
+        }
+      ],
+      "logoStyle": "gold",
+      "logoSubtitle": "멈춘 시간 속 잃어버린 기억을 찾아서",
+      "menuStyle": "plain",
+      "sequence": {
+        "fadeMs": 1400,
+        "push": 0.06,
+        "logoAtMs": 800,
+        "logoReveal": "rise",
+        "menuAtMs": 1800
+      },
+      "logoShine": "once",
+      "transition": {
+        "kind": "fade",
+        "durationMs": 700
+      }
+    },
+    "art": [
+      {
+        "id": "opening_still_565e4343-b729-4e4a-a6a7-4eecc0ee1c28",
+        "name": "오프닝 1 - 고요한 서재 원경",
+        "ref": {
+          "sha256": "feff1585fec28c2c05422d7c01b8360438eb83a83ebc5c4440a2bfe6a28fcd2a",
+          "mime": "image/png",
+          "bytes": 2220078,
+          "extension": "png"
+        }
+      },
+      {
+        "id": "opening_still_eb637001-a738-49d8-8631-2e09fe9fd822",
+        "name": "오프닝 2 - 은색 회중시계 바늘 세부 클로즈업",
+        "ref": {
+          "sha256": "cbdb8a2c21eccb617c12db1ac0711859a1c33a8533c5cb887492bb710a12e337",
+          "mime": "image/png",
+          "bytes": 2285622,
+          "extension": "png"
+        }
+      },
+      {
+        "id": "opening_still_7f43848d-9471-4826-8784-21282c451be2",
+        "name": "오프닝 3 - 시계 유리 안에서 빛이 새는 사건 각도"
+      },
+      {
+        "id": "opening_still_33d287f3-ba40-4964-adb1-65ffcda5009d",
+        "name": "기억의 빛 파편 A"
+      },
+      {
+        "id": "opening_still_4db4a53f-eae5-4f0b-99d8-efa799cc0008",
+        "name": "기억의 빛 파편 B"
+      },
+      {
+        "id": "opening_still_14947500-8141-401c-971f-e1bd962c9de0",
+        "name": "오프닝 4 - 서린의 어깨 너머로 시계를 보는 중경"
+      },
+      {
+        "id": "opening_still_33d287f3-ba40-4964-adb1-65ffcda5009d",
+        "name": "기억의 빛 파편 A"
+      },
+      {
+        "id": "opening_still_6ad49457-94fc-4e71-ac82-60b3ad42d884",
+        "name": "오프닝 5 - 시계 조사로 넘어갈 서재 책상 구도"
+      },
+      {
+        "id": "original_bgm_41914295-3e6b-41cd-a5f8-716c377486dd",
+        "name": "기억의 태엽소리",
+        "ref": {
+          "sha256": "813ee4161cb1a9f4ba3b7ee87260e0fa4d006be401fd29ae1ea4b09ddbe56524",
+          "mime": "audio/wav",
+          "bytes": 4342200,
+          "extension": "wav"
+        }
+      }
+    ]
+  }
+}

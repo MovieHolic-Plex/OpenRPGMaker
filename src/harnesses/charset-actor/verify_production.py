@@ -12,6 +12,7 @@ import chr as C
 import delivery as D
 import harness as H
 import recipes as R
+import motion as M
 
 
 def verify(check, isolated_store):
@@ -71,6 +72,12 @@ def verify(check, isolated_store):
         wrong = copy.deepcopy(manifest)
         wrong['characters'][0]['seed'] = -1
         rejects('recipe-refuses-negative-seed-index', lambda: R.verify_run(root, wrong))
+        wrong = copy.deepcopy(manifest)
+        wrong.pop('motionPolicy')
+        rejects('recipe-refuses-removing-motion-policy', lambda: R.verify_run(root, wrong))
+        wrong = copy.deepcopy(manifest)
+        wrong['characters'][0].pop('motionPolicy')
+        rejects('recipe-refuses-row-motion-policy-drift', lambda: R.verify_run(root, wrong))
         for index in (0, 1):
             batch, rows = B.prepare_batch(root.name, [manifest['characters'][index]], index + 1)
             row = rows[0]
@@ -84,7 +91,7 @@ def verify(check, isolated_store):
             H.write_json_atomic(target / 'desc.json', dict(label='격리 변주', attributes=attrs))
             H.write_json_atomic(target / 'meta.json', dict(run=root.name, brief=row['key'], base=row['base'], seed=row['seed'],
                                                           strength='free', reviewMode='human', animationMode=H.FRAME_AUTHOR_MODE,
-                                                          engine='gpt', **H.ENGINES['gpt'], pid=0, recipe=manifest['recipe']))
+                                                          engine='gpt', **H.ENGINES['gpt'], pid=0, recipe=manifest['recipe'], motionPolicy=M.VERSION))
             H.record_model_frames(target)
             gate = H.make_views(target / 'out.chr.txt', target / 'views', row['base'], 'free')
             if index:
@@ -93,7 +100,15 @@ def verify(check, isolated_store):
                 continue
             D.publish(target, gate)
             check('delivery-ready-after-source-and-four-background-readback', H.human_ready(target, gate))
-            for filename in ('views/walk_checker.gif', 'base.chr.txt', 'desc.json', 'model-frames.json'):
+            check('delivery-binds-motion-source-and-region-evidence', M.fresh(target, gate))
+            meta_file = target / 'meta.json'
+            saved_meta = meta_file.read_bytes()
+            modified_meta = json.loads(saved_meta); modified_meta.pop('motionPolicy')
+            H.write_json_atomic(meta_file, modified_meta)
+            check('delivery-missing-worker-motion-policy-not-ready', not H.human_ready(target, gate))
+            meta_file.write_bytes(saved_meta)
+            for filename in ('views/walk_checker.gif', 'base.chr.txt', 'desc.json', 'model-frames.json',
+                             'views/motion.json', 'views/motion.png', 'views/motion.gif'):
                 path = target / filename
                 raw = path.read_bytes()
                 path.write_bytes(raw + b'corrupt')

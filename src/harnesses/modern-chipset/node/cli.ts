@@ -12,6 +12,14 @@ import { spawnSync } from "node:child_process";
 import { resolve } from "node:path";
 
 export async function run(argv: string[]): Promise<number> {
+  if (argv[0] === "save-parking-project") {
+    const result = spawnSync(process.execPath, [resolve(import.meta.dirname, "parkingProject.mjs"), ...argv.slice(1)], { stdio: "inherit" });
+    return result.status ?? 1;
+  }
+  if (argv[0] === "publish-parking") {
+    const result = spawnSync("python3", [resolve(import.meta.dirname, "../parking_bundle.py"), ...argv.slice(1)], { stdio: "inherit" });
+    return result.status ?? 1;
+  }
   const script = resolve(import.meta.dirname, "../harness.py");
   const result = spawnSync("python3", [script, ...argv], { stdio: "inherit" });
   return result.status ?? 1;

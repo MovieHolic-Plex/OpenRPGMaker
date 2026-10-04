@@ -5,6 +5,75 @@
 
 <!-- releases -->
 
+## 0.128.0 — 2026-10-05
+
+### 기능
+
+- 승인 주차장 공용 키트와 실제 보행 맵 완성 (#2120) (`a2a8cb5`)
+
+## 0.127.0 — 2026-10-05
+
+### 기능
+
+- author opening storyboards with independent art motion and original BGM (`69c8b4c`)
+
+### 수정
+
+- freeze art acceptance criteria and adjudicate conflicting reviews (#2118) (`134fc16`)
+- preserve opening depth and record live production evidence (`27d5bc9`)
+- retain painted detail in layered opening handoff (`42f8b86`)
+- keep opening music through map preparation (`40dd88e`)
+- preserve layered opening handoff at logical stage size (`34e96dc`)
+- use the installed image decoder for opening alpha validation (`ccf4204`)
+
+### 문서
+
+- refresh opening handoff wiki index (`c8fdde2`)
+
+## 0.126.1 — 2026-10-05
+
+### 수정
+
+- **editor** — 이벤트 그림 미리보기가 없는 스프라이트를 아이콘으로 보게 한다 (`8e05acb`)
+- **player** — preserve title on navigation and close credits by keyboard (`5365ca7`)
+- 그림 작업자에게 현재 도면 승인 전달 (#2112) (`7a016f8`)
+- show diary and item graphics in event editor (`a48b60a`)
+
+## 0.126.0 — 2026-10-04
+
+### 기능
+
+- **worldmap** — expose theme readiness and respect human icon selections (`5e20f70`)
+
+### 수정
+
+- align sunlight with visible terrain and height edits (`7372ae4`)
+- keep charset motion comparison readable at native scale (`42557d4`)
+- validate torso and leg motion before charset publication (`b3c800f`)
+
+### 문서
+
+- verify native terrain shadows in editor and shipped player (`7b086c9`)
+
+## 0.125.0 — 2026-10-04
+
+### 기능
+
+- **ai** — 맵별 조수 실행 소유권과 실시간 작업 상태판 (`b756b47`)
+- **ai** — 실시간 적용에서도 맵 위에 시공 연출을 보인다 (`427ac20`)
+
+### 성능
+
+- **ai** — 타일셋 참고문서 한꺼번에 읽기 — 관문이 요구한 용도를 한 번에 (`b7567ac`)
+- **ai** — Pi 입력창 의도 선언 — 커버리지 감사를 라우팅과 동시에 (`c391844`)
+- **ai** — 조수 실행 준비 80s → 14s — 카탈로그 캐시·워커 해시 보관·해시 먼저 (`84ab9e7`)
+
+### 잡무
+
+- **qa** — 조수 프로브 — 파이어폭스 선택·실패 도구 사유 기록 (`0a0bc06`)
+- **qa** — 조수 실측 프로브 — CPU 프로파일·실제 클릭 시각·렌더러 사망 시 즉시 종료 (`d380c6d`)
+- **qa** — 조수 실시간 표시 실측 프로브 (`a03fae2`)
+
 ## 0.124.0 — 2026-10-04
 
 ### 기능

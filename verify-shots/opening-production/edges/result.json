@@ -1,0 +1,70 @@
+{
+  "mode": "explicit isolated edge fixtures using real exported artwork/music; not canonical content",
+  "cases": [
+    {
+      "name": "independent-motion/frozen-delay/full-clock/flattened-handoff/audio-cache",
+      "passed": true,
+      "first": {
+        "left": "98.3594px",
+        "top": "166.219px",
+        "transform": "matrix(0.491114, -0.166281, 0.166281, 0.491114, -48, -48.5312)",
+        "opacity": "0.037",
+        "animations": 1
+      },
+      "moving": {
+        "left": "133.922px",
+        "top": "139.547px",
+        "transform": "matrix(0.796211, 0.0102763, -0.0102763, 0.796211, -48, -48.5312)",
+        "opacity": "0.592556",
+        "animations": 1
+      },
+      "frozen": {
+        "left": "223.984px",
+        "top": "72px",
+        "transform": "matrix(0.400072, 0.692805, -0.692805, 0.400072, -48, -48.5312)",
+        "opacity": "0.900011",
+        "animations": 0
+      },
+      "sceneElapsedMs": 4510,
+      "composition": {
+        "width": 1200,
+        "height": 900,
+        "stageWidth": 1200,
+        "stageHeight": 900,
+        "logicalWidth": 320,
+        "logicalHeight": 240,
+        "alpha": [
+          255,
+          255,
+          255,
+          255
+        ],
+        "flattened": true
+      },
+      "musicRequests": 1,
+      "musicHandoff": {
+        "paused": false,
+        "time": 7.565054,
+        "volume": 0.7
+      }
+    },
+    {
+      "name": "reduced-motion-visible-frame/skip-delayed-layer-and-music",
+      "passed": true,
+      "visible": {
+        "left": "160px",
+        "top": "120px",
+        "transform": "matrix(0.965926, 0.258819, -0.258819, 0.965926, -48, -48.5312)",
+        "opacity": "1",
+        "animations": 0
+      },
+      "lateMusicPlays": 0
+    },
+    {
+      "name": "missing-independent-layer/retry",
+      "passed": true
+    }
+  ],
+  "errors": [],
+  "passed": true
+}

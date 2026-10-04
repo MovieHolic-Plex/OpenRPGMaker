@@ -369,6 +369,8 @@ def verify():
         check('alpha-cull-preserves-human-journal', H._decisions()[blocked_record['id']]==blocked_record)
     import verify_production
     verify_production.verify(check, isolated_store)
+    import verify_motion
+    verify_motion.verify(check)
     return evidence
 
 

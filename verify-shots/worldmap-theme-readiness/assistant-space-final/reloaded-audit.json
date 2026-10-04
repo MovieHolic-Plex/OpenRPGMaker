@@ -1,0 +1,26 @@
+{
+  "passed": true,
+  "folder": "/home/main/.local/share/oprn/worldmap-shared-ai-space-readiness-final-20261004",
+  "projectId": "39f1a0ee-dc73-47f1-8e25-6834147a2a03",
+  "revision": 2,
+  "originalMapsPreserved": true,
+  "savedAndReopened": true,
+  "toolCalls": 19,
+  "toolErrors": 0,
+  "maps": [
+    {
+      "mapId": "world_star_voyage",
+      "theme": "starmap",
+      "sourcePreserved": true,
+      "characterScale": 0.75,
+      "locations": 31,
+      "events": 0,
+      "privateTileset": true,
+      "renderMatchesSavedEvidence": true,
+      "atlasSha256": "dd977edb308359da177974055dd61cd504311a0b9e26e06df91bf7f4a350e90c",
+      "journeyPassed": true,
+      "selectedIcons": 0,
+      "pendingIcons": 31
+    }
+  ]
+}

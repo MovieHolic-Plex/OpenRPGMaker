@@ -23,7 +23,8 @@ import type { Project } from '../../src/project/types.ts';
 const arg = (name: string, fallback?: string) => { const i = process.argv.indexOf('--'+name); return i < 0 ? fallback : process.argv[i+1]!; };
 const label = arg('label', 'yucatan')!;
 if (!/^[a-z0-9-]+$/.test(label)) throw Error('Invalid evidence label');
-const out = path.resolve('verify-shots/worldmap-shared-db/assistant-'+label);
+const generatedTheme = arg('generated-theme');
+const out = path.resolve(arg('out', 'verify-shots/worldmap-shared-db/assistant-'+label)!);
 const folder = path.resolve(arg('project', path.join(os.homedir(), '.local/share/oprn/worldmap-shared-ai-'+label+'-20261004'))!);
 if (fs.existsSync(path.join(folder, 'project.sqlite'))) throw Error('Choose a fresh project directory; existing content is never replaced');
 fs.mkdirSync(out, {recursive:true});
@@ -63,7 +64,7 @@ const done = await runPiAgent({provider:provider!,model:modelId!,task,mapIds:[],
   renderToolImage: async (draft,_name,data)=>renderToolRegionPngBase64(draft,data),
   onToolCall:r=>{ const data = r.result.data as any;
     trace.push({i:trace.length+1,name:r.name,args:r.args,ok:r.result.ok,summary:String(r.result.summary).slice(0,1200),warnings:r.result.warnings,
-      data:r.name==='stamp_worldmap_icon'||r.name==='inspect_worldmap_icon'||r.name==='import_region_reference'?data:undefined});record(); },
+      data:['stamp_worldmap_icon','inspect_worldmap_icon','import_region_reference','edit_world_terrain','read_world_terrain'].includes(r.name)?data:undefined});record(); },
   onCheckpoint:async checkpoint=>{ fs.writeFileSync(path.join(out,'checkpoint.json'),JSON.stringify(checkpoint)); },
   onEvent:e=>{ if (['assistant','tool_end','error','execution_status'].includes(e.type)) {
       const event = Object.fromEntries(Object.entries(e).filter(([key])=>['type','at','id','name','ok','summary','text','message','durationMs'].includes(key)));
@@ -102,13 +103,26 @@ const imported=trace.filter(t=>t.name==='import_region_reference'&&t.ok).map(t=>
 });
 const originalMaps = Object.fromEntries(Object.keys(project.maps).map(id=>[id,saved.maps[id]]));
 const originalMapsPreserved = createHash('sha256').update(canonicalJsonString(originalMaps)).digest('hex')===seedMapsHash;
+const generated = Object.values(portable.maps).filter(map=>map.worldmapSource&&!project.maps[map.id]).map(map=>{
+  const built = trace.findLast(t=>t.name==='edit_world_terrain'&&t.ok&&t.data?.mapId===map.id);
+  const image=renderMapPng(portable,map,1);if(image.note)throw Error(image.note);
+  fs.writeFileSync(path.join(out,map.id+'.png'),image.png);
+  return {mapId:map.id,theme:map.worldmapSource!.theme,source:map.worldmapSource,characterScale:map.characterScale,
+    locations:map.locations,events:map.events.length,privateTileset:map.tilesetId==='worldmap_'+map.id,
+    journeyCheck:built?.data?.journeyCheck,layout:built?.data?.layout,iconSelection:built?.data?.iconSelection,
+    warnings:built?.warnings,renderedPng:true};
+});
+const sharedPassed=imported.length>0&&placements.length>=2&&placements.every(p=>p.inspected.ok&&p.entranceWalkable)&&
+  imported.every(m=>m.worldmapSource?.ops.some(op=>op.op==='continents'&&op.style==='real')&&m.characterScale===0.75&&m.groundPreserved&&m.geographyPreserved&&m.privateTileset)&&originalMapsPreserved;
+const generatedPassed=generated.length===1&&generated[0]!.theme===generatedTheme&&generated[0]!.journeyCheck?.ok===true&&
+  generated[0]!.privateTileset&&generated[0]!.iconSelection?.mode==='human-selected'&&originalMapsPreserved&&
+  trace.every(t=>t.ok)&&saved.startMapId===project.startMapId&&canonicalJsonString(saved.startPos)===canonicalJsonString(project.startPos);
 const summary={realModel:true,provider,modelId,uiIntentRequestExercised:false,sharedDatabase:sharedContentFile(),libraries:Object.keys(libraries),
   folder,projectId,revision:snapshot.revision,elapsedSeconds:(Date.now()-started)/1000,
   counts:Object.fromEntries([...new Set(trace.map(t=>t.name))].map(name=>[name,trace.filter(t=>t.name===name).length])),
-  failures:trace.filter(t=>!t.ok).map(t=>({name:t.name,summary:t.summary})),imported,placements,stats:done.stats,
+  failures:trace.filter(t=>!t.ok).map(t=>({name:t.name,summary:t.summary})),imported,generated,placements,stats:done.stats,
   loadedCatalogLibraries:Object.keys(sharedContentSnapshot().libraries).length,originalMapsPreserved,
-  passed:imported.length>0&&placements.length>=2&&placements.every(p=>p.inspected.ok&&p.entranceWalkable)&&
-    imported.every(m=>m.worldmapSource?.ops.some(op=>op.op==='continents'&&op.style==='real')&&m.characterScale===0.75&&m.groundPreserved&&m.geographyPreserved&&m.privateTileset)&&originalMapsPreserved,
+  passed:generatedTheme?generatedPassed:sharedPassed,
   savedAndReopened:true};
 fs.writeFileSync(path.join(out,'summary.json'),JSON.stringify(summary,null,2));
 console.log(JSON.stringify(summary,null,2));

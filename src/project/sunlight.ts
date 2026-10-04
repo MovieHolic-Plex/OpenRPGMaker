@@ -1,7 +1,8 @@
 import type { GameMap, TilesetDef } from "./types";
-import { effectiveHeights, prune, samplePixelHeight } from "./relief/render";
-import { gridFromRelief, RELIEF_TILE, type HeightGrid } from "./relief/types";
-import { reliefLiftField, type ReliefLiftField } from "./relief/screen";
+import { renderRelief, samplePixelHeight } from "./relief/render";
+import { RELIEF_TILE, type HeightGrid } from "./relief/types";
+import { reliefLiftField, reliefRenderOptions, type ReliefLiftField } from "./relief/screen";
+import { reliefGrids } from "./relief/window";
 import { reliefBridgeMask } from "./relief/walk";
 import { structureSunlightArt, SUN_ART_RESOLUTION, type SunlightArt, type SunlightArtSource, type SunlightVolume } from "./sunlightArt";
 
@@ -57,6 +58,9 @@ interface Caster {
 export interface SunlightRow {
   row: number; x: number; y: number; w: number; h: number; scale: number; rgba: Uint8ClampedArray;
 }
+interface Receivers {
+  owner: Int16Array; y: Float32Array; z: Float32Array; wall: Uint8Array;
+}
 
 /** Ray receiver/caster model. World x/y/z are measured in map tiles, never screen coordinates. */
 export class SunlightField {
@@ -70,13 +74,14 @@ export class SunlightField {
   private readonly casterCells = new Map<number, Caster[]>();
   private readonly visibleArt = new Map<number, { caster: Caster; lift: number }[]>();
   private readonly pixelChunks = new Map<number, Float32Array>();
+  private readonly receiverChunks = new Map<number, Receivers>();
   private readonly vectors: readonly { x: number; y: number; slope: number }[];
   private readonly rayLength: number;
 
   constructor(readonly map: GameMap, tileset?: TilesetDef, artSource?: SunlightArtSource) {
     this.params = normalizeSunlight(map.sunlight);
     this.lift = map.relief ? reliefLiftField(map.relief) : null;
-    this.terrain = map.relief ? prune(effectiveHeights(gridFromRelief(map.relief))) : null;
+    this.terrain = map.relief ? reliefGrids(map.relief).pruned : null;
     this.bridges = map.relief ? reliefBridgeMask(map.relief) : undefined;
     this.maxTerrain = this.lift?.maxLift ?? 0;
     const casters: Caster[] = [];
@@ -136,6 +141,7 @@ export class SunlightField {
   }
 
   private squareCell(x: number, y: number): boolean {
+    if (this.lift?.slopes.some(s => x >= s.x - 1 && x <= s.x + s.w && y >= s.y - 1 && y <= s.y + s.h)) return true;
     if (!this.bridges) return false;
     for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
       const xx = x + dx, yy = y + dy;
@@ -230,6 +236,39 @@ export class SunlightField {
     return blocked / this.vectors.length;
   }
 
+  /** Read the same visible surface as the terrain renderer, including occlusion.
+   * Compact 4x samples are retained; native window buffers never enter the cache. */
+  private receivers(bx: number, by: number): Receivers {
+    const key = by * Math.ceil(this.map.width / 16) + bx;
+    const old = this.receiverChunks.get(key); if (old) return old;
+    const samples: Receivers = { owner: new Int16Array(4096).fill(-1), y: new Float32Array(4096),
+      z: new Float32Array(4096), wall: new Uint8Array(4096) };
+    const relief = this.map.relief!;
+    const cx = Math.max(0, bx * 16 - 2), cy = Math.max(0, by * 16 - 2);
+    const right = Math.min(this.map.width, (bx + 1) * 16 + 2);
+    const bottom = Math.min(this.map.height, (by + 1) * 16 + Math.ceil(this.maxTerrain) + 3);
+    const grids = reliefGrids(relief), crop = (grid: HeightGrid) => grid.slice(cy, bottom).map(row => row.slice(cx, right));
+    const pad = Math.ceil(this.maxTerrain) * RELIEF_TILE;
+    const native = renderRelief(crop(grids.eff), { ...reliefRenderOptions(relief), transparentGround: false,
+      window: { cx, cy, pad, PW: this.map.width * RELIEF_TILE, SH: this.map.height * RELIEF_TILE + pad, pruned: crop(grids.pruned) } });
+    const width = right - cx;
+    for (let sy = 0; sy < 64; sy++) for (let sx = 0; sx < 64; sx++) {
+      const x = bx * 16 + (sx + .5) / 4, screenY = by * 16 + (sy + .5) / 4;
+      const px = Math.floor((x - cx) * RELIEF_TILE), py = Math.floor((screenY - cy) * RELIEF_TILE) + pad;
+      if (px < 0 || px >= native.PW || py < 0 || py >= native.SH) continue;
+      const i = py * native.PW + px, j = sy * 64 + sx, source = native.src[i]!;
+      if (source < 0 || native.mpy[i]! < 0) continue;
+      samples.owner[j] = cy + Math.floor(source / width);
+      const mapY = cy + (native.mpy[i]! + .5) / RELIEF_TILE;
+      const wall = native.kind[i] === 1;
+      samples.wall[j] = +wall;
+      samples.y[j] = mapY + (wall ? .5 / RELIEF_TILE + .015 : 0);
+      samples.z[j] = wall ? Math.max(0, Math.min(native.height[i]!, mapY - screenY)) : native.height[i]!;
+    }
+    if (this.receiverChunks.size >= 128) this.receiverChunks.delete(this.receiverChunks.keys().next().value!);
+    this.receiverChunks.set(key, samples); return samples;
+  }
+
   /** A small row/column patch, independent of camera zoom and draw size. */
   row(row: number, startX = 0, endX = this.map.width): SunlightRow {
     const resolution = 4, lift = Math.ceil(this.maxTerrain * resolution), w = (endX - startX) * resolution, h = lift + resolution + 1;
@@ -244,7 +283,18 @@ export class SunlightField {
       rgba[offset] = 18; rgba[offset + 1] = 25; rgba[offset + 2] = 39;
       rgba[offset + 3] = Math.max(rgba[offset + 3]!, Math.round(255 * this.params.opacity * alpha));
     };
-    for (let px = 0; px < w; px++) for (let py = 0; py < resolution; py++) {
+    if (this.maxTerrain > 0) {
+      const facing = Math.max(0, -this.vectors[Math.floor(this.vectors.length / 2)]!.y) * .25;
+      for (let py = 0; py < h; py++) for (let px = 0; px < w; px++) {
+        const x = startX + (px + .5) / resolution, screenY = row + (py + .5 - lift) / resolution;
+        const bx = Math.floor(x / 16), by = Math.floor(screenY / 16), receivers = this.receivers(bx, by);
+        const index = Math.floor((screenY - by * 16) * 4) * 64 + Math.floor((x - bx * 16) * 4);
+        // Exactly one owner paints each screen pixel. Hidden ground cannot darken a road or a cliff twice.
+        if (receivers.owner[index] !== row) continue;
+        const shadow = this.shadowAt(x, receivers.y[index]!, receivers.z[index]!);
+        put(px, py, receivers.wall[index] ? Math.max(facing, shadow) : shadow);
+      }
+    } else for (let px = 0; px < w; px++) for (let py = 0; py < resolution; py++) {
       const x = startX + (px + .5) / resolution, y = row + (py + .5) / resolution;
       const z = this.terrainAt(x, y), next = this.terrainAt(x, y + 1 / resolution);
       const top = Math.round(py + lift - z * resolution), bottom = Math.round(py + 1 + lift - next * resolution);
