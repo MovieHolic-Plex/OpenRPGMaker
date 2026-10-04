@@ -174,7 +174,7 @@ def _planning_report(folder, approved=True, document=None, detail=False):
 def planning_report(folder, approved=True):
     try:
         return _planning_report(folder, approved)
-    except (OSError, ValueError, TypeError, AttributeError, KeyError) as error:
+    except (OSError, ValueError, TypeError, AttributeError, KeyError, IndexError) as error:
         return {'ok': False, 'problems': [f'기획 근거 형식 오류: {error}'], 'fingerprint': '', 'variants': []}
 
 
@@ -298,7 +298,7 @@ def _material_report(folder, approved=True):
 def material_report(folder, approved=True):
     try:
         return _material_report(folder, approved)
-    except (OSError, ValueError, TypeError, AttributeError, KeyError) as error:
+    except (OSError, ValueError, TypeError, AttributeError, KeyError, IndexError) as error:
         return {'ok': False, 'problems': [f'재료 근거 형식 오류: {error}'],
                 'missing': [], 'fingerprint': '', 'requirements': [], 'images': [], 'variants': []}
 
@@ -393,7 +393,7 @@ def _visual_report(folder, reviews):
 def visual_report(folder, reviews):
     try:
         return _visual_report(folder, reviews)
-    except (OSError, ValueError, TypeError, AttributeError, KeyError) as error:
+    except (OSError, ValueError, TypeError, AttributeError, KeyError, IndexError) as error:
         return {'ok': False, 'problems': [f'시각 검수 근거 형식 오류: {error}']}
 
 

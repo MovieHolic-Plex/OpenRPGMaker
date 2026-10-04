@@ -1,0 +1,16 @@
+{
+  "ok": true,
+  "fingerprint": "517ca8b17a665392abd73037cf12f443b339a203b090a49ec6309c4a8f4be840",
+  "problems": [],
+  "variants": [
+    {
+      "id": "medieval-cellblock",
+      "overview": {
+        "width": 16,
+        "height": 14,
+        "cellScale": 1
+      },
+      "details": []
+    }
+  ]
+}

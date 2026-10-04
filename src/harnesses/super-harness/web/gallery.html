@@ -20,8 +20,9 @@ button:hover{border-color:#4a505a}
 main{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;padding:16px 20px 40px}
 .c{background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column}
 .c:hover{border-color:#4a505a}
-.c .pic{aspect-ratio:4/3;background:#0e0f11;display:flex;align-items:center;justify-content:center;color:#555;font-size:12px}
+.c .pic{position:relative;aspect-ratio:4/3;background:#0e0f11;display:flex;align-items:center;justify-content:center;color:#555;font-size:12px}
 .c .pic img{width:100%;height:100%;object-fit:cover;image-rendering:auto}
+.pic-kind{position:absolute;top:8px;left:8px;padding:3px 7px;background:#161a21e8;color:#f1c66c;border-radius:5px}
 .c .t{padding:10px 12px 12px}
 .c b{font-size:15px}
 .c .s{font-size:12px;margin:2px 0 4px}
@@ -106,7 +107,7 @@ const thumb = (im, w) => `/thumb?p=${encodeURIComponent(im.path)}&w=${w}&v=${im.
 const cards = new Map();
 
 function cardHtml(it) {
-  return `<div class="pic">${it.thumb ? `<img loading="lazy" src="${thumb(it.thumb, 360)}" alt="">` : (it.stage === 'plan' || it.stage === 'plan-review' ? '맵 제작 전 · 기획·도면 검토' : '맵 제작 전 · 재료 확인 중')}</div>
+  return `<div class="pic">${it.thumb ? `<img loading="lazy" src="${thumb(it.thumb, 360)}" alt="">` : (it.stage === 'plan' || it.stage === 'plan-review' ? '맵 제작 전 · 기획·도면 검토' : '맵 제작 전 · 재료 확인 중')}${it.thumb?.kind ? `<span class="pic-kind">${esc(it.thumb.kind)}</span>` : ''}</div>
     <div class="t"><b>${esc(it.title)}</b><div class="s ${it.group}">${it.running ? '<span class="dot"></span>' : ''}${esc(it.status)}</div><div class="a">${esc(it.about)}</div></div>`;
 }
 
@@ -155,7 +156,7 @@ async function documentView(target, path, { modal = false } = {}) {
         <button data-view="read" aria-pressed="true">읽기</button>
         <button data-view="source" aria-pressed="false">Markdown 원문</button>
         <a href="${esc(path)}" target="_blank" rel="noopener">원문 열기</a>
-        ${modal ? '' : '<button id="reload-doc">새로고침</button>'}
+        <button id="reload-doc">새로고침</button>
       </nav><article class="document"></article>`;
     const article = target.querySelector('article');
     const show = (mode) => {
@@ -186,7 +187,11 @@ async function documentView(target, path, { modal = false } = {}) {
       });
     };
     target.querySelectorAll('[data-view]').forEach((button) => button.onclick = () => show(button.dataset.view));
-    target.querySelector('#reload-doc')?.addEventListener('click', () => documentView(target, path));
+    target.querySelector('#reload-doc')?.addEventListener('click', async () => {
+      const draft = target.querySelector('#fix')?.value;
+      await documentView(target, path, { modal });
+      const field = target.querySelector('#fix'); if (field && draft) field.value = draft;
+    });
     show('read');
     if (modal) {
       const actions = document.createElement('section');

@@ -1085,15 +1085,55 @@ def concept_about(c, card):
     return card.get('summary') or c['why']
 
 
+def verified_images(root, refs, label, kind):
+    root = os.path.realpath(root)
+    images = []
+    if not isinstance(refs, list):
+        return images
+    for ref in refs:
+        try:
+            path = os.path.realpath(os.path.join(root, ref['path']))
+            if path.startswith(root + os.sep) and os.path.isfile(path) and gates.digest(path) == ref.get('sha256'):
+                images.append({'path': os.path.relpath(path, DATA), 'label': ref.get('label') or label,
+                               'kind': kind, 'v': int(os.path.getmtime(path))})
+        except (OSError, TypeError, KeyError):
+            continue
+    return images
+
+
+def planning_images(cid):
+    manifest = read_json(cdir(cid, 'planning-visual.json'), {}) or {}
+    if not isinstance(manifest, dict) or manifest.get('fingerprint') != gates.planning_report(cdir(cid), approved=False)['fingerprint']:
+        return []
+    return verified_images(cdir(cid), manifest.get('images'), '기획도', '기획도')
+
+
+def candidate_images(cid):
+    result = read_json(cdir(cid, 'art-result.json'), {}) or {}
+    if not isinstance(result, dict) or not isinstance(result.get('candidates'), list):
+        return []
+    root = os.path.join(DATA, 'art-worktrees', cid)
+    return [image for candidate in result['candidates'] if isinstance(candidate, dict)
+            for image in verified_images(root, candidate.get('images'), '칩 후보 · 선택 전', '칩 후보')]
+
+
+def before_build(c):
+    return c['stage'] in ('plan', 'plan-review', 'survey', 'material-review', 'art', 'art-review') or (
+        c['stage'] == 'blocked' and not gates.material_report(cdir(c['id']))['ok'])
+
+
 def gallery_list():
     items = []
     for c in store.concepts():
         card = read_json(cdir(c['id'], 'card.json'), {}) or {}
-        imgs = example_images(c['id'])
+        if before_build(c):
+            imgs = candidate_images(c['id']) or planning_images(c['id'])
+        else:
+            imgs = example_images(c['id'])
         items.append({'id': c['id'], 'title': c['title'], 'stage': c['stage'], 'group': GROUP.get(c['stage'], 'work'),
                       'running': c['status'] == 'running', 'status': plain_status(c),
                       'about': first_sentence(concept_about(c, card)), 'updated': c['updated'],
-                      'thumb': imgs[0] if imgs and c['stage'] not in ('plan', 'plan-review', 'survey', 'material-review', 'art', 'art-review') else None, 'pr': c['pr'], 'parent': c.get('parent')})
+                      'thumb': imgs[0] if imgs else None, 'pr': c['pr'], 'parent': c.get('parent')})
     paused = store.setting('paused') == '1'
     return {'paused': paused, 'items': items}
 
@@ -1103,7 +1143,7 @@ def gallery_detail(cid):
     if not c:
         return None
     card = read_json(cdir(cid, 'card.json'), {}) or {}
-    imgs = example_images(cid) if c['stage'] not in ('plan', 'plan-review', 'survey', 'material-review', 'art', 'art-review') else []
+    imgs = example_images(cid) if not before_build(c) else []
     # 조수에게 실제로 시킨 결과(카드 붙여서) — 마지막 시도.
     tried = []
     for run in sorted(glob.glob(cdir(cid, 'probe', f'a{c["attempt"]}-*'))):
@@ -1112,7 +1152,7 @@ def gallery_detail(cid):
             path = os.path.join(run, 'score', m['png']) if os.path.exists(os.path.join(run, 'score', m['png'])) else os.path.join(run, m['png'])
             if os.path.exists(path):
                 tried.append({'path': os.path.relpath(path, DATA), 'label': f'조수가 지은 맵 · {m.get("width", "")}×{m.get("height", "")}', 'v': int(os.path.getmtime(path))})
-    if c['stage'] in ('plan', 'plan-review', 'survey', 'material-review', 'art', 'art-review'):
+    if before_build(c):
         tried = []
     orders = [g['item'] for g in store.gaps() if g['concept'] == cid and g.get('item')]
     variants = [f'{v.get("title", "")} — {v.get("worldview", "")}{" · " + v["size"] if v.get("size") else ""}' for v in card.get('variants', [])]
@@ -1143,31 +1183,25 @@ def concept_markdown(cid):
     card = read_json(cdir(cid, 'card.json'), {}) or {}
     L = [f'# {d["title"]}', '', f'**상태** {d["status"]}' + (f' · 「{d["parent"]}」의 하위' if d['parent'] else '') + (f' · [PR]({d["pr"]})' if d['pr'] else ''), '']
     L += ['> ' + line for line in str(d['about']).splitlines()] + ['']
-    diagram = read_json(cdir(cid, 'planning-visual.json'), {}) or {}
-    if diagram.get('fingerprint') == gates.planning_report(cdir(cid), approved=False)['fingerprint']:
-        L += ['## 기획 도면 이미지', '', '> 구역·연결을 보여주는 기획도입니다. 실제 칩으로 시공한 맵 그림은 다음 단계에서 별도로 만듭니다.', '']
-        for im in diagram.get('images', []):
-            path = cdir(cid, im['path'])
-            if os.path.isfile(path) and gates.digest(path) == im.get('sha256'):
-                L += [md_img({'path': os.path.relpath(path, DATA), 'label': im['label'], 'v': int(os.path.getmtime(path))}), '']
-    L += [gates.planning_markdown(cdir(cid)), '']
-    plan = read_json(cdir(cid, 'materials.json'), {}) or {}
-    if c['stage'] in ('plan', 'plan-review', 'survey', 'material-review', 'art', 'art-review'):
-        L += ['> 맵 제작 전 관문입니다. 이전 초안은 보존되어 있지만 기획·도면과 재료 준비가 승인되기 전에는 예제 맵으로 표시하지 않습니다.', '']
-    for variant in plan.get('variants', []):
-        L += [f'## 재료 준비 — {variant.get("id", "")}', '', '| 필요한 재료 | 준비 | 역할 |', '|---|---|---|']
-        L += [f'| {md_cell(r.get("what"))} | {"재고 근거 있음" if r.get("available") else "제작 필요"} | {md_cell(r.get("role"))} |' for r in variant.get('requirements', [])] + ['']
     art = read_json(cdir(cid, 'art-result.json'), {}) or {}
     if art:
         L += ['## 칩 제작 결과', '']
         for candidate in art.get('candidates', []):
             L += [f'- 담당: **{md_cell(candidate.get("harness"))}** · 후보: {md_cell(candidate.get("selection"))}']
-            for ref in candidate.get('images', []):
-                rel = os.path.join('art-worktrees', cid, ref.get('path', ''))
-                full = os.path.realpath(os.path.join(DATA, rel))
-                if full.startswith(os.path.realpath(os.path.join(DATA, 'art-worktrees', cid)) + os.sep) and os.path.isfile(full):
-                    L += ['', md_img({'label': '칩 후보 · 사람 선택 전', 'path': rel, 'v': int(os.path.getmtime(full))}), '']
+            for image in verified_images(os.path.join(DATA, 'art-worktrees', cid), candidate.get('images'), '칩 후보 · 사람 선택 전', '칩 후보'):
+                L += ['', md_img(image), '']
         L += [f'- 남은 일: {text}' for text in art.get('remaining', [])] + ['']
+    diagrams = planning_images(cid)
+    if diagrams:
+        L += ['## 기획 도면 이미지', '', '> 구역·연결을 보여주는 기획도입니다. 실제 칩으로 시공한 맵 그림은 다음 단계에서 별도로 만듭니다.', '']
+        L += [md_img(im) for im in diagrams] + ['']
+    L += [gates.planning_markdown(cdir(cid)), '']
+    plan = read_json(cdir(cid, 'materials.json'), {}) or {}
+    if before_build(c):
+        L += ['> 맵 제작 전 관문입니다. 이전 초안은 보존되어 있지만 기획·도면과 재료 준비가 승인되기 전에는 예제 맵으로 표시하지 않습니다.', '']
+    for variant in plan.get('variants', []):
+        L += [f'## 재료 준비 — {variant.get("id", "")}', '', '| 필요한 재료 | 준비 | 역할 |', '|---|---|---|']
+        L += [f'| {md_cell(r.get("what"))} | {"재고 근거 있음" if r.get("available") else "제작 필요"} | {md_cell(r.get("role"))} |' for r in variant.get('requirements', [])] + ['']
     if c['reasons']:
         L += ['## 지금 고치는 이유', ''] + [f'- {w}' for w in c['reasons']] + ['']
     if d['images']:
@@ -1175,7 +1209,7 @@ def concept_markdown(cid):
     if d['tried']:
         L += ['## 조수에게 「만들어줘」라고 시켜 본 결과', ''] + [md_img(im) for im in d['tried']] + ['']
     for v in card.get('variants', []):
-        prefix = '이전 초안 변형' if c['stage'] in ('plan', 'plan-review', 'survey', 'material-review', 'art', 'art-review') else '변형'
+        prefix = '이전 초안 변형' if before_build(c) else '변형'
         L += [f'## {prefix} — {v.get("title", "")}', '']
         meta = [v.get('worldview'), v.get('size') and f'크기 {v["size"]}', v.get('tilesetId') and f'칩셋 `{v["tilesetId"]}`']
         L += ['· '.join(m for m in meta if m), '']
