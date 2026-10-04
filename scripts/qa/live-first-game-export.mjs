@@ -10,7 +10,7 @@ const recovered = existsSync(out + '/reloaded.json') ? JSON.parse(readFileSync(o
 const generation = completion?.passed ? completion : recovered?.passed ? recovered : initial;
 if (!generation.generationPrerequisitePassed && !completion?.passed) throw Error('Live generation or explicit repair, plus canonical reload, must pass first');
 const report = { projectId: generation.afterReload.projectId, revision: generation.afterReload.revision,
-  generationMode: completion?.passed ? 'explicit completion after unfinished automatic build' : recovered?.passed ? 'automatic first build; observation recovered by ordinary reload' : 'automatic first build',
+  generationMode: completion?.passed ? (completion.mode ?? 'explicit completion after unfinished automatic build') : recovered?.passed ? 'automatic first build; observation recovered by ordinary reload' : 'automatic first build',
   projectUrl: generation.projectUrl, started: new Date().toISOString(), errors: [] };
 report.networkFailures = [];
 const save = () => writeFileSync(out + '/export.json', JSON.stringify(report, null, 2) + '\n');

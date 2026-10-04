@@ -1,4 +1,5 @@
 import { validateGameOverSettings } from "@/project/io/shapeDatabaseFields";
+import { parseCinematicDirection } from '@/project/cinematicDirection';
 // editor/tools/cinematicTools.ts
 // 오프닝 시네마틱(system.opening)의 AI 저작면. DB 「오프닝」 탭과 같은 레코드를 쓰므로
 // 런타임(새 게임 시작 전 재생)이 그대로 소비한다.
@@ -42,7 +43,7 @@ const MOTIONS: readonly CinematicMotion[] = ["none", "fade", "pan", "zoom"];
 const MEDIA_RESULT_LIMIT_MAX = 200;
 
 const OPENING_FIELD_NAMES = [
-  "id", "kind", "narration", "narrationAudioResourceId", "durationMs", "resourceId", "motion",
+  "id", "kind", "narration", "narrationAudioResourceId", "durationMs", "resourceId", "motion", "direction",
 ] as const;
 
 function requireRecord(value: unknown, label: string): Record<string, unknown> {
@@ -114,7 +115,7 @@ function resolveResourceId(
   kind: OpeningMediaKind,
   raw: unknown,
   index: number,
-  field: "resourceId" | "narrationAudioResourceId",
+  field: "resourceId" | "narrationAudioResourceId" | "direction.soundResourceId",
   isKnown: (kind: OpeningMediaKind, id: string) => boolean,
 ): string {
   if (typeof raw !== "string" || raw.trim().length === 0) {
@@ -163,7 +164,7 @@ function normalizeScene(project: Project, raw: unknown, index: number, isKnown: 
   };
 
   if (kind === "text") {
-    for (const forbidden of ["resourceId", "motion"] as const) {
+    for (const forbidden of ["resourceId", "motion", "direction"] as const) {
       if (scene[forbidden] !== undefined) {
         throw new ToolError(
           `scenes[${index}]는 텍스트 장면이라 ${forbidden}를 가질 수 없습니다. 그림/영상은 kind를 image/video로 두세요.`,
@@ -176,7 +177,7 @@ function normalizeScene(project: Project, raw: unknown, index: number, isKnown: 
 
   const resourceId = resolveResourceId(project, kind === "video" ? "movie" : "image", scene.resourceId, index, "resourceId", isKnown);
   if (kind === "video") {
-    if (scene.motion !== undefined) {
+    if (scene.motion !== undefined || scene.direction !== undefined) {
       throw new ToolError(`scenes[${index}]는 영상 장면이라 motion을 가질 수 없습니다(움직임은 image 전용).`, { code: "invalid-args" });
     }
     return { ...common, kind: "video", resourceId };
@@ -186,7 +187,14 @@ function normalizeScene(project: Project, raw: unknown, index: number, isKnown: 
   if (!MOTIONS.includes(motion as CinematicMotion)) {
     throw new ToolError(`scenes[${index}].motion은 ${MOTIONS.join("/")} 중 하나여야 합니다.`, { code: "invalid-args" });
   }
-  return { ...common, kind: "image", resourceId, motion: motion as CinematicMotion };
+  try {
+    const direction = scene.direction === undefined ? undefined : parseCinematicDirection(scene.direction);
+    if (direction?.soundResourceId) resolveResourceId(project, 'sound', direction.soundResourceId, index, 'direction.soundResourceId', isKnown);
+    return { ...common, kind: "image", resourceId, motion: motion as CinematicMotion, ...(direction ? { direction } : {}) };
+  } catch (error) {
+    if (error instanceof ToolError) throw error;
+    throw new ToolError(`scenes[${index}].direction: ${error instanceof Error ? error.message : String(error)}`, { code: 'invalid-args' });
+  }
 }
 
 function buildSequence(project: Project, args: Record<string, unknown>): { sequence: CinematicSequence; warnings: string[] } {
@@ -288,6 +296,25 @@ const OPENING_SCENE_SCHEMA: JsonSchema = {
     resourceId: { type: "string" },
     motion: { type: "string", enum: MOTIONS },
     narrationAudioResourceId: { type: "string" },
+    direction: {
+      type: 'object', additionalProperties: false, properties: {
+        camera: { type: 'object', additionalProperties: false, required: ['from', 'to'], properties: {
+          from: { type: 'array', items: { type: 'number' }, minItems: 3, maxItems: 3, description: '[초점 x(0..1), 초점 y(0..1), 배율(1..1.6)]' },
+          to: { type: 'array', items: { type: 'number' }, minItems: 3, maxItems: 3 },
+        } },
+        transition: { type: 'object', additionalProperties: false, required: ['kind', 'durationMs'], properties: {
+          kind: { type: 'string', enum: ['cut', 'dissolve', 'fade', 'flash'] }, durationMs: { type: 'number', minimum: 0, maximum: 1000 },
+        } },
+        effects: { type: 'array', maxItems: 4, items: { type: 'object', additionalProperties: false, required: ['kind'], properties: {
+          kind: { type: 'string', enum: ['godRays', 'motes', 'mist', 'glow'] }, intensity: { type: 'number', minimum: 0, maximum: 1.5 }, color: { type: 'string' },
+          source: { type: 'array', items: { type: 'number', minimum: 0, maximum: 1 }, minItems: 2, maxItems: 2 },
+          toward: { type: 'array', items: { type: 'number', minimum: 0, maximum: 1 }, minItems: 2, maxItems: 2 },
+          region: { type: 'array', minItems: 3, maxItems: 8, items: { type: 'array', minItems: 2, maxItems: 2, items: { type: 'number', minimum: 0, maximum: 1 } } },
+          spread: { type: 'number', minimum: 0.01, maximum: 0.5 }, speed: { type: 'number', minimum: 0, maximum: 2 },
+        } } },
+        soundResourceId: { type: 'string' }, narrationDelayMs: { type: 'number', minimum: 0, maximum: 2000 },
+      },
+    },
   },
 };
 
@@ -625,6 +652,7 @@ export function prepareOpeningImageRequest(args: Record<string, unknown>): { rea
   if (rawName !== undefined && typeof rawName !== "string") {
     throw new ToolError("name은 문자열이어야 합니다.", { code: "invalid-args" });
   }
+  if (args.referenceResourceId !== undefined && (typeof args.referenceResourceId !== 'string' || !args.referenceResourceId.trim())) throw new ToolError('referenceResourceId는 실제 그림 id 문자열이어야 합니다.', { code: 'invalid-args' });
   const prompt = raw.trim();
   const name = rawName?.trim() || `오프닝 그림: ${prompt.slice(0, 24)}`;
   return { prompt, name };
@@ -661,6 +689,7 @@ const generateOpeningImage: ToolDefinition = {
     properties: {
       prompt: { type: "string", minLength: OPENING_PROMPT_MIN_LENGTH, description: "장면 설명(분위기·시간대·장소). 글자는 넣지 않는다." },
       name: { type: "string" },
+      referenceResourceId: { type: "string", description: "기존 타이틀/오프닝 그림의 실제 id. 같은 물체·인물·장소·화풍을 유지한 다른 구도를 만든다." },
     },
   },
   run(_project, args): ToolExecResult {

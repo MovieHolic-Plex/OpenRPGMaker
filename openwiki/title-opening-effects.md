@@ -199,3 +199,28 @@ readPixels 완료까지 중앙값은 **90.8→73.7 / 98.4→76.5 / 88.2→77.9ms
 
 회귀 계약: `test/piFirstPlay.test.ts`, `test/piFirstPresentation.test.ts`.
 세션의 테스트 실행 제한을 따른다. 유닛/전체 게이트를 실행하지 않았을 때 통과로 보고하지 않는다.
+
+## 시네마틱 장면 연출과 백그라운드 준비 (2026-10-04)
+
+RPG 일곱 작품 공식 자료 조사/적용의 범위는 [rpg-opening-research.md](rpg-opening-research.md).
+`system.opening.scenes`의 image 장면은 선택 `direction`을 저장한다. camera.from/to는
+[초점x,초점y,배율](좌표0..1, 배율1..1.6), transition은 cut/dissolve/fade/flash와 0..1000ms,
+최대4개 effects(godRays/motes/mist/glow), soundResourceId, narrationDelayMs(0..2000)를 지원한다.
+`cinematicDirection.ts`가 파일 로드와 도구의 엄격한 계약을 공유한다. 틀린 좌표·효과 앵커·미지 필드는 버리지 않고 거부한다.
+기존 none/fade/pan/zoom 장면은 그대로 읽는다. 편집기 이미지→이미지 교체는 direction을 보존하고
+텍스트/영상으로 바꾸면 지운다. 움직임 변경은 기존 camera를 해제한다. 전환은 편집기에서도 선택할 수 있다.
+
+`generate_opening_image`는 원경을 강제하지 않는다. `referenceResourceId`가 있으면 정본 그림을 읽어
+512px PNG 참조로 이미지 모델에 실제 전달한다(브라우저·Bun 양쪽). 참조 읽기 실패는 생성 실패이며
+참조 없이 다른 그림을 만들고 성공했다고 하지 않는다. 첫 제작 계약은 세 컷/실제 그림2장 이상/총12초이고,
+`show_title_opening`으로 모든 연결된 원화를 검수한다. 단일 확대 스틸은 첫 제작 합격 조건을 충족하지 못한다.
+
+`cinematicAssets.ts`는 플레이어 셸이 소유하는 2병렬·완료8항목 이미지 준비 캐시다. HTTP 그림을 blob URL로
+공유해 컷 전환에서 같은 요청을 반복하지 않는다. 타이틀 첫 페인트 뒤 첫 두 컷을 준비하고 재생 중 다음 두 컷을 앞서 읽는다.
+빠른 새 게임 입력은 첫 그림의 decode까지 타이틀을 유지한다. 그림 장면의 시간·카메라·효과·음성은
+그림을 읽은 뒤 시작한다. 다음 그림을 기다릴 때 이전 프레임을 유지하고 실패에는 R 재시도/Enter 진행/Esc 건너뛰기를 제공한다.
+
+엔진 모듈을 미리 읽되 게임 세션·Phaser 씬을 먼저 만들지 않는다(오프닝 중 자동 이벤트/게임 음악/입력 선행 금지).
+기존 번들 워밍은 사용된 업로드 이미지·조사 아이콘도 포함하며 2병렬 low priority다. 오프닝 그림은 별도 캐시로 준비한다.
+마지막 오프닝 프레임은 맵 준비 동안 배경으로 이어진다. Phaser 텍스처 생성/맵 구성까지 백그라운드로 완료하는 것은 아니다.
+새 게임 취소/셸 종료는 타이머·미디어·WebGL·캐시를 정리한다. reduced motion은 카메라 이동/섬광/애니메이션을 비활성화한다.

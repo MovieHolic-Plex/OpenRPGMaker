@@ -1516,3 +1516,12 @@ Browser pages fill the viewport but cannot force OS fullscreen before a gesture.
 Launcher form typography/color reset is scoped to `.start-app`; its former global
 `button` reset overrode native window-control colors and the interview's primary
 button text across the start document's CSS layers.
+
+### Cinematic image direction (2026-10-04)
+
+Image 장면의 선택 direction은 camera.from/to([초점x,초점y,배율]), transition,
+최대4개 effects, soundResourceId, narrationDelayMs를 저장한다. `cinematicDirection.ts`가
+허용 필드·범위·효과별 필수 좌표를 파일 로드와 저작 도구 양쪽에서 검사한다.
+기존 direction 없는 장면은 그대로 읽는다. resourceReferenceValidation은 SE를 확인하고
+웹 내보내기의 사용 문자열 순회가 별도 SE 업로드도 포함한다. 정본 저장/재로드에서 direction을 버리지 않는다.
+세부 범위와 재생 순서는 [title-opening-effects.md](title-opening-effects.md).

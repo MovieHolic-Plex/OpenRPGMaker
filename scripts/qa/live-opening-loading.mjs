@@ -1,0 +1,71 @@
+// Shipping player only. Observe real requests, decoded shot clocks, recovery and cancellation.
+import assert from 'node:assert/strict';
+import { chromium } from 'playwright';
+import { createServer } from 'node:http';
+import { readFile, writeFile, mkdir } from 'node:fs/promises';
+import { resolve, extname, sep } from 'node:path';
+import { webUploadedAssetPath } from '../../src/project/webUploadedAssetPath.ts';
+const out=resolve(process.env.LIVE_GAME_OUT??'verify-shots/opening-cinematic-v4');
+const root=resolve(process.env.LIVE_GAME_PACKAGE_OUT??'output/qa/opening-cinematic-v4','game-web');
+const project=JSON.parse(await readFile(resolve(root,'project.json'),'utf8'));
+const shots=project.system.opening.scenes.filter(s=>s.kind==='image');
+assert.equal(shots.length,3);
+const paths=shots.map(s=>webUploadedAssetPath(project.assets.uploaded[s.resourceId]));
+const requests=[];
+const mime={'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json','.png':'image/png','.jpg':'image/jpeg','.webp':'image/webp','.ogg':'audio/ogg','.mp3':'audio/mpeg'};
+const server=createServer(async(req,res)=>{const path=resolve(root,'.'+decodeURIComponent(new URL(req.url,'http://local').pathname));if(!path.startsWith(root+sep)){res.writeHead(403).end();return;}try{const bytes=await readFile(path);requests.push({path:new URL(req.url,'http://local').pathname,time:Date.now()});res.writeHead(200,{'content-type':mime[extname(path)]??'application/octet-stream'}).end(bytes)}catch{res.writeHead(404).end()}});
+await new Promise(r=>server.listen(0,'127.0.0.1',r));
+const base='http://127.0.0.1:'+server.address().port;
+const browser=await chromium.launch({args:['--use-angle=swiftshader','--enable-unsafe-swiftshader']});
+const result={projectId:project.meta.id??null,paths,cases:[],errors:[]};
+await mkdir(resolve(out,'loading'),{recursive:true});
+async function open(options={}){
+ const ctx=await browser.newContext({viewport:{width:1280,height:900},reducedMotion:options.reduce?'reduce':'no-preference'});
+ const page=await ctx.newPage();page.on('pageerror',e=>result.errors.push(e.message));
+ const cdp=await ctx.newCDPSession(page);await cdp.send('Network.setCacheDisabled',{cacheDisabled:true});
+ await page.addInitScript(()=>{window.__shotTimes=[];window.__handoffBackdrops=[];let last='';new MutationObserver(()=>{const backdrop=document.querySelector('.play-loading-backdrop');if(backdrop)window.__handoffBackdrops.push(backdrop.getAttribute('src'));const n=document.querySelector('[data-testid="cinematic-sequence"]');if(!n)return;const state=[n.dataset.sceneId,n.dataset.mediaState,n.dataset.pendingSceneId].join(':');if(state===last)return;last=state;window.__shotTimes.push({id:n.dataset.sceneId,state:n.dataset.mediaState,pending:n.dataset.pendingSceneId,time:performance.now()});}).observe(document,{subtree:true,childList:true,attributes:true,attributeFilter:['data-scene-id','data-media-state','data-pending-scene-id']})});
+ return{ctx,page};
+}
+async function title(page){await page.goto(base+'/player.html',{waitUntil:'domcontentloaded'});await page.getByTestId('title-screen').waitFor({timeout:120000});await page.waitForTimeout(2000)}
+async function ready(page,index){await page.waitForFunction(id=>{const n=document.querySelector('[data-testid="cinematic-sequence"]');return n?.dataset.sceneId===id&&n.dataset.mediaState==='ready'},shots[index].id,{timeout:40000})}
+async function playing(page){await page.getByTestId('cinematic-sequence').waitFor({state:'hidden',timeout:40000});await page.getByTestId('play-loading-overlay').waitFor({state:'hidden',timeout:40000});assert(await page.locator('canvas').count()>0)}
+try{
+ {const{ctx,page}=await open();const begin=requests.length;
+  await page.route('**/*',async route=>{const url=new URL(route.request().url()).pathname;if(url.endsWith(paths[0]))await new Promise(r=>setTimeout(r,3000));if(url.endsWith(paths[1]))await new Promise(r=>setTimeout(r,9000));await route.continue()});
+  await title(page);await page.keyboard.press('Enter');await page.waitForTimeout(900);
+  assert(await page.getByTestId('title-screen').isVisible(),'Keep title while the first picture is decoded');
+  await page.screenshot({path:resolve(out,'loading/01-title-preparing.png')});
+  await ready(page,0);assert.equal(await page.locator('.cinematic-effects').first().getAttribute('data-title-effects-renderer'),'webgl');assert.equal(await page.locator('.cinematic-image').evaluate(n=>n.complete&&n.naturalWidth>0),true);
+  await page.waitForFunction(id=>{const n=document.querySelector('[data-testid="cinematic-sequence"]');return n?.dataset.pendingSceneId===id&&n.dataset.mediaState==='loading'},shots[1].id,{timeout:12000});
+  assert.equal(await page.getByTestId('cinematic-sequence').getAttribute('data-scene-id'),shots[0].id);
+  assert(await page.locator('.cinematic-image').count()>0,'Keep previous shot during the delayed next picture');
+  await page.screenshot({path:resolve(out,'loading/02-previous-shot-retained.png')});
+  await ready(page,1);await ready(page,2);await playing(page);
+  const handoff=await page.evaluate(()=>window.__handoffBackdrops);assert(handoff.some(url=>url?.startsWith('blob:')),'Keep the last opening artwork beneath remaining map preparation');
+  const times=await page.evaluate(()=>window.__shotTimes);const decoded=shots.map(s=>times.find(t=>t.id===s.id&&t.state==='ready'));
+  assert(decoded.every(Boolean));assert(decoded[2].time-decoded[1].time>=3900,'Second shot keeps its full duration after delayed decode');
+  const counts=paths.map(path=>requests.slice(begin).filter(r=>r.path.endsWith(path)).length);assert.deepEqual(counts,[1,1,1],'Reuse blob URLs even with HTTP cache disabled');
+  result.cases.push({name:'delayed-pictures',passed:true,requestsPerOpeningImage:counts,handoffBackdropObserved:true,decodedTimes:decoded,times});await ctx.close();
+ }
+ {const{ctx,page}=await open();let missing=true;
+  await page.route('**/*',async route=>{if(new URL(route.request().url()).pathname.endsWith(paths[1])&&missing)await route.fulfill({status:404,body:'Missing picture'});else await route.continue()});
+  await title(page);await page.keyboard.press('Enter');await ready(page,0);
+  await page.waitForFunction(()=>document.querySelector('[data-testid="cinematic-sequence"]')?.dataset.mediaState==='error',null,{timeout:15000});
+  assert((await page.getByTestId('cinematic-status').innerText()).includes('R'));
+  await page.screenshot({path:resolve(out,'loading/03-picture-retry.png')});missing=false;await page.keyboard.press('r');await ready(page,1);await ready(page,2);await playing(page);
+  result.cases.push({name:'missing-picture-retry',passed:true});await ctx.close();
+ }
+ {const{ctx,page}=await open({reduce:true});let release;const held=new Promise(r=>{release=r});
+  await page.route('**/*',async route=>{if(new URL(route.request().url()).pathname.endsWith(paths[1]))await held;await route.continue().catch(()=>{})});
+  await title(page);await page.keyboard.press('Enter');await ready(page,0);
+  const animations=await page.locator('.cinematic-shot').evaluate(n=>n.getAnimations({subtree:true}).length);assert.equal(animations,0,'Reduced motion disables shot camera/transition animations');
+  await page.keyboard.press('Escape');release();await playing(page);await page.waitForTimeout(1500);
+  assert.equal(await page.getByTestId('cinematic-sequence').count(),0,'Late prepared image cannot revive a skipped opening');
+  assert.equal(await page.locator('.cinematic-effects').count(),0);
+  await page.screenshot({path:resolve(out,'loading/04-reduced-skip-first-play.png')});
+  result.cases.push({name:'reduced-motion-and-skip-during-prefetch',passed:true,activeShotAnimations:animations});await ctx.close();
+ }
+ result.passed=result.cases.every(c=>c.passed)&&!result.errors.length;
+}catch(e){result.failure=e.message;result.passed=false}
+finally{await browser.close();await new Promise(r=>server.close(r));await writeFile(resolve(out,'loading.json'),JSON.stringify(result,null,2)+'\n');await writeFile(resolve(out,'loading/SUMMARY.md'),`# 출하 플레이어 로딩 QA\n\n결과: ${result.passed?'PASS':'FAIL'}\n\n${result.cases.map(c=>`- ${c.name}: PASS`).join('\n')}\n\n즉시 확인: 02-previous-shot-retained.png, 03-picture-retry.png, 04-reduced-skip-first-play.png\n\n${result.failure??''}\n`)}
+console.log(JSON.stringify(result));process.exitCode=result.passed?0:1;

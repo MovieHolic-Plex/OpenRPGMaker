@@ -5,13 +5,13 @@ import { presentationArtImages } from '@/editor/tools/presentationTools';
 
 function authored() {
   const project = createBlankProject();
-  for (const id of ['title-art', 'opening-art']) project.assets.uploaded[id] = {
+  for (const id of ['title-art', 'opening-art', 'detail-art']) project.assets.uploaded[id] = {
     id, name: id, kind: 'picture', dataUrl: 'data:image/png;base64,AAA=', meta: {},
   };
   project.system.titleScreen = { ...project.system.titleScreen!, title: '멈춘 시계의 기억', backgroundResourceId: 'title-art',
     backgroundFit: 'cover', logoStyle: 'gold', sequence: { logoReveal: 'rise' }, transition: { kind: 'fade' } };
-  project.system.opening = { enabled: true, skippable: true, scenes: [{ id: 'opening', kind: 'image', resourceId: 'opening-art',
-    narration: '멈춘 시계에 기억이 남았다.', durationMs: 8000, motion: 'zoom' }] };
+  project.assets.uploaded['detail-art'] = { ...project.assets.uploaded['opening-art']!, id: 'detail-art' };
+  project.system.opening = { enabled: true, skippable: true, scenes: ['opening-art', 'detail-art', 'opening-art'].map((resourceId, index) => ({ id: `opening-${index}`, kind: 'image' as const, resourceId, narration: '멈춘 시계에 기억이 남았다.', durationMs: 4000, motion: 'none' as const, direction: { transition: { kind: 'cut' as const, durationMs: 0 } } })) };
   return project;
 }
 
@@ -27,7 +27,7 @@ describe('first creation presentation boundary', () => {
   it('requires a linked real image, automatic bounded duration and a return path', () => {
     const project = authored();
     expect(inspectFirstPresentation(project)).toEqual([]);
-    expect(presentationArtImages(project).map(image => image.resourceId)).toEqual(['title-art', 'opening-art']);
+    expect(presentationArtImages(project).map(image => image.resourceId)).toEqual(['title-art', 'opening-art', 'detail-art']);
     delete project.assets.uploaded['opening-art'];
     project.system.opening!.scenes[0]!.durationMs = 0;
     project.system.opening!.skippable = false;
@@ -45,9 +45,14 @@ describe('first creation presentation boundary', () => {
     expect(issues).toContain('작품 전용 타이틀 배경');
     expect(presentationArtImages(project)).toEqual([]);
   });
+  it('rejects a single zoomed image as a storyboard', () => {
+    const project = authored();
+    project.system.opening!.scenes = [project.system.opening!.scenes[0]!];
+    expect(inspectFirstPresentation(project).join('\n')).toContain('세 컷');
+  });
   it('preserves the content-addressed canonical asset contract', () => {
     const project = authored();
-    for (const id of ['title-art', 'opening-art']) {
+    for (const id of ['title-art', 'opening-art', 'detail-art']) {
       const asset = project.assets.uploaded[id]!;
       asset.dataUrl = undefined;
       asset.ref = { sha256: id === 'title-art' ? 'a'.repeat(64) : 'b'.repeat(64), mime: 'image/png', bytes: 400000, extension: 'png' };

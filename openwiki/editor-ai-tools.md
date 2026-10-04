@@ -2651,3 +2651,11 @@ prepare 단계가 호스트 빌드(미리보기 1~3초, 실제 약 2분)를 기�
 ## Bounded romance authoring tools
 
 `author_romance_scene` and `inspect_romance_scene` are registered through `harnesses/_core/authoringRegistry.ts` in the event domain. The first authors fixed contract choices with model-written prose and validates native interpreter behavior before atomic commit. The second reports executable blockers; a read-tool transport success is not an `ok` scene verdict. Full contract and completion rules: [romance-scene](harnesses/romance-scene.md).
+
+### 선택 정수 enum의 Antigravity 전달 (2026-10-04)
+
+`nullableOptionalParameters`가 선택값에 null을 허용하는 도구(예: edit_world_terrain.level)는
+정본 스키마에서 type:[integer,null], enum:[1,2,null]이다. `ohMyPiToolEnums`는 SDK 정규화 뒤
+legacy Schema.enum에 ['1','2']를, nullable에 true를 전달한다. 숫자와 null을 문자열 enum 배열에
+함께 넣지 않는다. 원본 스키마는 바꾸지 않으며 중복·소수·잘못된 타입/회원 변경은 계속 거부한다.
+이 계약 불일치는 지형 도구를 직접 호출하지 않는 오프닝 제작 턴도 모델 요청 전에 중단시켰다.
