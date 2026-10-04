@@ -148,6 +148,11 @@ def worker_prompt(st, letter, redraw=''):
 
 def run_claude(prompt, log, effort, images=()):
     """VEH_HARNESS_BACKEND=codex 이면 codex exec 로, 아니면 claude -p 로 작업자를 띄운다."""
+    approval = os.environ.get('VEH_LAYOUT_APPROVAL')
+    if approval:
+        prompt += ('\n\n감독 실행기가 현재 파일 해시를 대조한 독립 도면 승인입니다. '
+                   '준비 단계의 pending 표기보다 이 현재 승인을 사용하세요. '
+                   '이는 도면 승인만이며 실제 그림의 검수는 여전히 필요합니다.\n' + approval)
     if os.environ.get('VEH_HARNESS_BACKEND') == 'codex':
         cmd = ['codex', 'exec', '--dangerously-bypass-approvals-and-sandbox', '--skip-git-repo-check', '-C', ROOT,
                '-c', f'model_reasoning_effort="{os.environ.get("VEH_CODEX_EFFORT", "high")}"']

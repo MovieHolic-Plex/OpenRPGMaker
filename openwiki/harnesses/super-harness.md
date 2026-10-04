@@ -278,6 +278,9 @@ PASS 분기는 컨트롤러 확인용 합성 fixture이며 실제 그림의 합�
   FAIL은 그림을 시작하지 않고 명세 준비로 돌아간다. 같은 art_revision에서 3회 반려 시 중단한다.
   실행 직전에 승인 fingerprint와 파일 해시를 다시 확인한다. 수집 때도 native 실행 경로와 도면 승인을 확인하고,
   실행 중 진행되는 후보 state/DB를 제외한 주문서·코드·참조 해시를 다시 확인한다. 파일이 바뀌면 승인이 무효다.
+  검증된 현재 도면 판정은 `VEH_LAYOUT_APPROVAL`로 modern-chipset 작업자 프롬프트에 전달한다.
+  준비 시점의 pending 표기는 수정하지 않는다. 그림 작업자가 오래된 준비 표기 때문에 현재 PASS를
+  놓치지 않게 하는 전달 경로이며, 실제 그림의 native/context 검수를 대신하지 않는다.
 - 최종 조립 검수는 기존5축에 spaceUse/composition/specification을 더한8축이다. 부품 FAIL에도 수행하여
   작은 부품 하나에 가려진 큰 공간 문제를 다음 수정에 함께 전달한다. native/context 수정 지시를 합친다.
 - gateVersion=2와8축 근거가 없으면 기존 PASS로 선택을 해제할 수 없다. 낮은 밀도에 임의 공통 수치 상한을
