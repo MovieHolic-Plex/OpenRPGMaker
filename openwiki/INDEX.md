@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **134쪽 / 4575KB / 약 1,324,363 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **134쪽 / 4579KB / 약 1,325,633 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -16,7 +16,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
 | `openwiki/editor-ai-panel.md` | 584KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 3610 | ~169,990 |
-| `openwiki/editor-ai-tools.md` | 312KB | 87KB ⚠상한 초과 — 절을 더 쪼개라 | 2582 | ~89,845 |
+| `openwiki/editor-ai-tools.md` | 313KB | 87KB ⚠상한 초과 — 절을 더 쪼개라 | 2588 | ~90,224 |
 | `openwiki/editor-database.md` | 402KB | 63KB ⚠상한 초과 — 절을 더 쪼개라 | 2358 | ~117,632 |
 | `openwiki/editor-event-authoring.md` | 167KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 973 | ~48,704 |
 | `openwiki/editor-event-commands.md` | 67KB | 32KB | 301 | ~18,613 |
@@ -38,7 +38,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | 페이지 | 깨진 줄 수 | 예시 줄 번호 |
 |---|---|---|
 | `openwiki/editor-ai-panel.md` | 26 | 2550, 2551, 2552, 2553, 2554, 2555, 2569, 2579 |
-| `openwiki/editor-ai-tools.md` | 6 | 1803, 1804, 1808, 1810, 1812, 2000 |
+| `openwiki/editor-ai-tools.md` | 6 | 1809, 1810, 1814, 1816, 1818, 2006 |
 | `openwiki/editor-database.md` | 8 | 997, 1001, 1002, 1004, 1005, 1014, 1040, 1043 |
 | `openwiki/editor-event-authoring.md` | 16 | 436, 437, 440, 445, 446, 447, 448, 449 |
 | `openwiki/editor-event-command-fixes.md` | 11 | 11, 12, 14, 15, 16, 17, 18, 19 |
@@ -528,7 +528,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L3591` 조수창
   - `L3600` 재현·증거
 
-### `openwiki/editor-ai-tools.md` — 312KB · 2582줄 · ~89,845 토큰 · 통째읽기 잘림 · 깨진 줄 6
+### `openwiki/editor-ai-tools.md` — 313KB · 2588줄 · ~90,224 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
 - `L3` 조수 스킬 저작 — 기믹·연출 빌리기 (2026-09-30)
 - `L14` 실내 설계는 검토된 실내 프리셋을 함께 본다 (2026-09-28)
@@ -540,100 +540,100 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L120` 조수 쓰기 도구의 네 층 — 1~4층·그림자 (MZ식 4층, 2026-09-25)
   - `L162` 실행기 계약 — 업로드 타일셋 칩셋 바꿔치기 거부 (2026-09-25)
   - `L182` 실행기 계약 — 칩셋 계열 검사 `tileset-family-change` 와 `ask_tileset_change` (2026-09-25)
-  - `L198` 남은 일 (네 층)
-- `L208` 일본 도시(jp_city) 조수 연결 (2026-10-04)
-- `L212` 조수가 보는 네 층 — 읽기 도구·도구 이미지 (MZ식 4층, 2026-09-25)
-- `L235` 그림 연출 — script_cutscene_staged · generate_cutscene_art · 대화창 위치 (2026-10-02)
-- `L245` 충격 연출 (2026-09-22)
-- `L251` 단독 조수의 병렬 도구 실행 (2026-09-21)
-  - `L274` 검색 중 사용자에게 보이는 것 (2026-09-21 실측)
-- `L275` AI 새 야외·마을의 기본 칩셋 (2026-09-21, 2026-10-01 갱신)
-- `L316` 숲 나무 물체 산포 — 수관이 빠지던 문제 (2026-09-27)
-- `L333` 나무 밑 그림자 (2026-09-27)
-- `L356` 마을 군락 — 굽이숲 절벽마을 조립 (2026-09-21)
-- `L398` 참조 작품 비유 → 자율 웹 검색 (2026-09-21)
-  - `L411` 죽은 Codex 자격이 검색·완성을 영구히 막던 문제
-  - `L419` 검증
-- `L427` 조수 웹 검색 도구 (2026-09-21)
-- `L451` 감사 후속: 부분 갱신과 미사용 삭제 (2026-09-20)
-- `L459` 전투 저작 입력 수정 (2026-09-20)
-- `L461` 이벤트 명령 AI 공용 도구 (2026-09-20)
-- `L511` 전투 저작 입력 수정 (2026-09-20)
-- `L522` NPC 공용 얼굴 매핑 연결 (2026-09-18)
-  - `L533` 얼굴 짝 전수 교정 (2026-09-28)
-- `L559` 이식 타일 최초 검수 준비 대기 (2026-09-18)
-- `L571` paint_tiles 타일 인덱스 검증 — 유일하게 빠져 있던 가드 (2026-09-16)
-- `L590` 오프닝 미디어 배선 — 스틸 카탈로그·배경음악·부분 편집 (2026-09-14)
-- `L627` 오프닝 시네마틱 AI 저작 — system.opening (2026-09-14)
-- `L662` 도면 문법에 wing(세로 복도) 추가 — 실루엣 변주와 물건 대체군 (2026-09-11)
-  - `L687` 후속: 석조 화로는 복도 끝 알코브에 (2026-09-11)
-  - `L704` 팔레트 확장 — 안 쓰던 칩셋 그림 16종을 물건으로 (2026-09-11)
-- `L724` 실내는 찍어내지 않는다 — place_concept 은 설계를 요구하고, author_house 는 interiorPlan 을 받는다 (2026-09-11)
-- `L756` 초안은 씨앗이고 저작본만 도면 정본이다 — 절차 도면 되살리기 + 실내 다양성 리포트 (2026-09-12)
-- `L783` 맵 생성 테두리 옵션은 모델에게 주지 않는다 (2026-09-11)
-- `L803` 맵 전체 청소 `clear_map` — 파괴적 한 콜 + 사용자 허가 모달 (2026-09-11)
-- `L868` 명명 로케이션 툴 7종 (OPRN-OUT-020 + LOC-ADOPT, 2026-09-10)
-- `L907` Exact project values and sourced declarations (2026-09-08)
-- `L935` Measured zero-prop rejection diagnostics (2026-09-07)
-- `L1032` Logical walkthrough versus real player traversal (2026-09-07)
-- `L1040` Tile-query selector and filter boundaries (2026-09-07)
-- `L1049` Action enemy profile edits (2026-09-07)
-- `L1067` Explicit field-spawn mutations (2026-09-07)
-- `L1093` Monster resource discovery and AI appearance evidence (2026-09-07)
-- `L1170` House-site tree clearance before ownership (2026-09-07)
-- `L1181` Flower-yard material in house lots (2026-09-07)
-- `L1194` Pre-write original grounding (2026-09-06)
-- `L1269` Hybrid native tool exposure (2026-09-19)
-- `L1308` Review approval lifetime (R3, 2026-09-06)
-- `L1326` Audio description tools and event candidates
-  - `L1346` Search pages and full detail
-  - `L1360` Event prompt projection is not ID authority
-- `L1394` list_resources picture 검색 (2026-09-21)
-- `L1406` P3 captured proposal base (2026-09-07)
-- `L1478` Project wiki application ownership (2026-09-07)
-- `L1491` Character appearance image candidates v1 (2026-09-06)
-- `L1549` Completed-house transaction protection - Phase 1 (2026-09-05)
-- `L1623` Completed-house construction protection - Phase 2 (2026-09-06)
-- `L1662` 퀘스트 입력과 완주 증거 계약 (2026-09-05)
-- `L1689` DB 조회 페이지와 마을 전체 범위 (2026-09-05)
-- `L1830` P2 requirement and exact-verdict inputs (2026-09-06)
-- `L1905` Project-wide quality evaluation
-- `L1919` prune_unused 의 참조 수집은 variableId 를 가진 명령 전부를 세야 한다 (2026-08-29 실측 결함 수정)
-- `L1955` Action controls guide (2026-09-07)
-- `L1998` NPC 대사는 코드가 지어내지 않는다 — 캐스트 라이터 계약 (2026-09-03)
-- `L2029` 「이 세계」 캐논은 문장 3채널에 강제된다 (2026-09-04)
-- `L2044` 마을 설계서 (2026-09-05)
-- `L2048` 저수준 이벤트 입력은 명령 위치를 검증한다 (2026-09-05)
-- `L2087` 보물상자는 노출된 수면을 거부한다 (2026-09-05)
-- `L2094` 모험 저작 완료와 재시도 (2026-09-05)
-- `L2124` 실제 이미지 입력 보존 (2026-09-07)
-- `L2138` Physical tile passage exposure (2026-09-08)
-- `L2162` NPC 자율 이동 아키타입 추론 (2026-09-17)
-- `L2192` Full RPG first-turn foundation (2026-09-19)
-- `L2210` Party, actor appearance, and event-linked inventory tools (2026-09-19)
-- `L2230` Opening, game-over, and audio discovery tools (2026-09-19)
-- `L2268` 범용 이미지 에셋 생성 (2026-09-19)
-- `L2280` Feature16 combat and climate authoring tools (2026-09-21)
-- `L2290` 마을 시공 후 완료 계약 (2026-09-21)
-- `L2312` 타일 참고문서 선행 조회 (2026-09-21)
-  - `L2319` 저장된 AI 계획 본문 조회 (2026-09-23)
-  - `L2323` 호스트 공용 DB 참고문서 갱신 (2026-09-23)
-- `L2345` 실제 타일 규칙 수정 도구 노출 (2026-09-23)
-  - `L2350` 타일셋별 맵 의미 조회 (2026-09-23)
-- `L2354` Pi 완성 맵 이미지 반환 경로 (2026-09-23)
-- `L2388` 공용 LPC 자료 정리와 지역·오브젝트 조회 (2026-09-23)
-  - `L2411` 공용 저작 장면 → 명시적인 복사 요청 (2026-09-25)
-  - `L2435` 실내 직접 배치와 읽기 전용 검사 (2026-09-25)
-  - `L2454` 현대 맵의 PAW 전용 소재 선택 (2026-09-25)
-  - `L2483` 실내 요구조건과 같은 실행 안의 재검사 (2026-09-25 후속)
-- `L2514` Isaiah 물 태그 판정 보완 (2026-09-24)
-- `L2518` 전투 결과 분기의 퀘스트 완료 플래그 (2026-09-24)
-- `L2528` Monster follower graphic authoring (2026-09-25)
-- `L2544` 기존 서사 플래그의 설명 수정 (2026-09-25)
-- `L2557` 타이틀 오프닝 효과 도구 (2026-09-25)
-- `L2563` 크로노 트리거식 필드 도구 인자 (2026-09-26)
-- `L2573` 세계 지도 지형 도구 (2026-10-03)
-- `L2579` Bounded romance authoring tools
+  - `L204` 남은 일 (네 층)
+- `L214` 일본 도시(jp_city) 조수 연결 (2026-10-04)
+- `L218` 조수가 보는 네 층 — 읽기 도구·도구 이미지 (MZ식 4층, 2026-09-25)
+- `L241` 그림 연출 — script_cutscene_staged · generate_cutscene_art · 대화창 위치 (2026-10-02)
+- `L251` 충격 연출 (2026-09-22)
+- `L257` 단독 조수의 병렬 도구 실행 (2026-09-21)
+  - `L280` 검색 중 사용자에게 보이는 것 (2026-09-21 실측)
+- `L281` AI 새 야외·마을의 기본 칩셋 (2026-09-21, 2026-10-01 갱신)
+- `L322` 숲 나무 물체 산포 — 수관이 빠지던 문제 (2026-09-27)
+- `L339` 나무 밑 그림자 (2026-09-27)
+- `L362` 마을 군락 — 굽이숲 절벽마을 조립 (2026-09-21)
+- `L404` 참조 작품 비유 → 자율 웹 검색 (2026-09-21)
+  - `L417` 죽은 Codex 자격이 검색·완성을 영구히 막던 문제
+  - `L425` 검증
+- `L433` 조수 웹 검색 도구 (2026-09-21)
+- `L457` 감사 후속: 부분 갱신과 미사용 삭제 (2026-09-20)
+- `L465` 전투 저작 입력 수정 (2026-09-20)
+- `L467` 이벤트 명령 AI 공용 도구 (2026-09-20)
+- `L517` 전투 저작 입력 수정 (2026-09-20)
+- `L528` NPC 공용 얼굴 매핑 연결 (2026-09-18)
+  - `L539` 얼굴 짝 전수 교정 (2026-09-28)
+- `L565` 이식 타일 최초 검수 준비 대기 (2026-09-18)
+- `L577` paint_tiles 타일 인덱스 검증 — 유일하게 빠져 있던 가드 (2026-09-16)
+- `L596` 오프닝 미디어 배선 — 스틸 카탈로그·배경음악·부분 편집 (2026-09-14)
+- `L633` 오프닝 시네마틱 AI 저작 — system.opening (2026-09-14)
+- `L668` 도면 문법에 wing(세로 복도) 추가 — 실루엣 변주와 물건 대체군 (2026-09-11)
+  - `L693` 후속: 석조 화로는 복도 끝 알코브에 (2026-09-11)
+  - `L710` 팔레트 확장 — 안 쓰던 칩셋 그림 16종을 물건으로 (2026-09-11)
+- `L730` 실내는 찍어내지 않는다 — place_concept 은 설계를 요구하고, author_house 는 interiorPlan 을 받는다 (2026-09-11)
+- `L762` 초안은 씨앗이고 저작본만 도면 정본이다 — 절차 도면 되살리기 + 실내 다양성 리포트 (2026-09-12)
+- `L789` 맵 생성 테두리 옵션은 모델에게 주지 않는다 (2026-09-11)
+- `L809` 맵 전체 청소 `clear_map` — 파괴적 한 콜 + 사용자 허가 모달 (2026-09-11)
+- `L874` 명명 로케이션 툴 7종 (OPRN-OUT-020 + LOC-ADOPT, 2026-09-10)
+- `L913` Exact project values and sourced declarations (2026-09-08)
+- `L941` Measured zero-prop rejection diagnostics (2026-09-07)
+- `L1038` Logical walkthrough versus real player traversal (2026-09-07)
+- `L1046` Tile-query selector and filter boundaries (2026-09-07)
+- `L1055` Action enemy profile edits (2026-09-07)
+- `L1073` Explicit field-spawn mutations (2026-09-07)
+- `L1099` Monster resource discovery and AI appearance evidence (2026-09-07)
+- `L1176` House-site tree clearance before ownership (2026-09-07)
+- `L1187` Flower-yard material in house lots (2026-09-07)
+- `L1200` Pre-write original grounding (2026-09-06)
+- `L1275` Hybrid native tool exposure (2026-09-19)
+- `L1314` Review approval lifetime (R3, 2026-09-06)
+- `L1332` Audio description tools and event candidates
+  - `L1352` Search pages and full detail
+  - `L1366` Event prompt projection is not ID authority
+- `L1400` list_resources picture 검색 (2026-09-21)
+- `L1412` P3 captured proposal base (2026-09-07)
+- `L1484` Project wiki application ownership (2026-09-07)
+- `L1497` Character appearance image candidates v1 (2026-09-06)
+- `L1555` Completed-house transaction protection - Phase 1 (2026-09-05)
+- `L1629` Completed-house construction protection - Phase 2 (2026-09-06)
+- `L1668` 퀘스트 입력과 완주 증거 계약 (2026-09-05)
+- `L1695` DB 조회 페이지와 마을 전체 범위 (2026-09-05)
+- `L1836` P2 requirement and exact-verdict inputs (2026-09-06)
+- `L1911` Project-wide quality evaluation
+- `L1925` prune_unused 의 참조 수집은 variableId 를 가진 명령 전부를 세야 한다 (2026-08-29 실측 결함 수정)
+- `L1961` Action controls guide (2026-09-07)
+- `L2004` NPC 대사는 코드가 지어내지 않는다 — 캐스트 라이터 계약 (2026-09-03)
+- `L2035` 「이 세계」 캐논은 문장 3채널에 강제된다 (2026-09-04)
+- `L2050` 마을 설계서 (2026-09-05)
+- `L2054` 저수준 이벤트 입력은 명령 위치를 검증한다 (2026-09-05)
+- `L2093` 보물상자는 노출된 수면을 거부한다 (2026-09-05)
+- `L2100` 모험 저작 완료와 재시도 (2026-09-05)
+- `L2130` 실제 이미지 입력 보존 (2026-09-07)
+- `L2144` Physical tile passage exposure (2026-09-08)
+- `L2168` NPC 자율 이동 아키타입 추론 (2026-09-17)
+- `L2198` Full RPG first-turn foundation (2026-09-19)
+- `L2216` Party, actor appearance, and event-linked inventory tools (2026-09-19)
+- `L2236` Opening, game-over, and audio discovery tools (2026-09-19)
+- `L2274` 범용 이미지 에셋 생성 (2026-09-19)
+- `L2286` Feature16 combat and climate authoring tools (2026-09-21)
+- `L2296` 마을 시공 후 완료 계약 (2026-09-21)
+- `L2318` 타일 참고문서 선행 조회 (2026-09-21)
+  - `L2325` 저장된 AI 계획 본문 조회 (2026-09-23)
+  - `L2329` 호스트 공용 DB 참고문서 갱신 (2026-09-23)
+- `L2351` 실제 타일 규칙 수정 도구 노출 (2026-09-23)
+  - `L2356` 타일셋별 맵 의미 조회 (2026-09-23)
+- `L2360` Pi 완성 맵 이미지 반환 경로 (2026-09-23)
+- `L2394` 공용 LPC 자료 정리와 지역·오브젝트 조회 (2026-09-23)
+  - `L2417` 공용 저작 장면 → 명시적인 복사 요청 (2026-09-25)
+  - `L2441` 실내 직접 배치와 읽기 전용 검사 (2026-09-25)
+  - `L2460` 현대 맵의 PAW 전용 소재 선택 (2026-09-25)
+  - `L2489` 실내 요구조건과 같은 실행 안의 재검사 (2026-09-25 후속)
+- `L2520` Isaiah 물 태그 판정 보완 (2026-09-24)
+- `L2524` 전투 결과 분기의 퀘스트 완료 플래그 (2026-09-24)
+- `L2534` Monster follower graphic authoring (2026-09-25)
+- `L2550` 기존 서사 플래그의 설명 수정 (2026-09-25)
+- `L2563` 타이틀 오프닝 효과 도구 (2026-09-25)
+- `L2569` 크로노 트리거식 필드 도구 인자 (2026-09-26)
+- `L2579` 세계 지도 지형 도구 (2026-10-03)
+- `L2585` Bounded romance authoring tools
 
 ### `openwiki/editor-database.md` — 402KB · 2358줄 · ~117,632 토큰 · 통째읽기 잘림 · 깨진 줄 8
 
@@ -2404,12 +2404,13 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L72` 다른 맵과 사용자 설정 보호
 - `L91` 검증
 
-### `openwiki/worldmap-terrain-editing.md` — 11KB · 107줄 · ~3,430 토큰
+### `openwiki/worldmap-terrain-editing.md` — 14KB · 128줄 · ~4,321 토큰
 
 - `L7` 흐름
 - `L29` 계약
 - `L46` 새 구조 만들기 — `base: "generate"` (2026-10-03)
-- `L79` 지형 경계 v9 (2026-10-03)
-- `L85` 글자 지도
-- `L91` 조수 역할 적대 시험 (2026-10-03)
-- `L98` 함정
+- `L92` 후속 조수 실행·SQLite 재로드 (2026-10-04)
+- `L100` 지형 경계 v9 (2026-10-03)
+- `L106` 글자 지도
+- `L112` 조수 역할 적대 시험 (2026-10-03)
+- `L119` 함정
