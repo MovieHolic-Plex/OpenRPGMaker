@@ -5,6 +5,7 @@ import { createBlankProject } from '../../../project/defaults/blankProject';
 import { createBlankMap } from '../../../project/defaults/defaultMaps';
 import { createModernCityTileset, ensureModernCityTileset, ensureModernCityReferences } from '../../../project/defaults/modernCity';
 import { canMove, isPassable } from '../../../project/collision';
+import { deserialize, serialize } from '../../../project/io/serialize';
 
 /** A new canonical project only. Never overwrite an existing author's project. */
 export async function saveParkingProject(projectDir: string, evidenceDir: string, repo: string) {
@@ -41,6 +42,7 @@ export async function saveParkingProject(projectDir: string, evidenceDir: string
   }
   for (const [x,y] of [[9,2],[9,4],[9,6],[9,5],[0,4]]) if (!reached.has(`${x},${y}`)) throw new Error(`Required walkway unreachable: ${x},${y}`);
   for (const [x,y] of [[5,0],[5,1],[0,2],[9,3],[12,4],[12,5]]) if (isPassable(project,map,x,y)) throw new Error(`Solid object is walkable: ${x},${y}`);
+  deserialize(serialize(project)); // Reject invalid generated metadata before creating a project.
   const store = await initLocalProjectStore({ projectDir });
   let saved;
   const projectId = store.projectId;

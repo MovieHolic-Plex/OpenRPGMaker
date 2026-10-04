@@ -603,7 +603,7 @@ def bake(out_root, dry=False, budget=BUDGET, inject=False, quiet=False):
     tileGroups = []
     for key, g in groups.items():
         ids = sorted(set(g['ids']))
-        tileGroups.append(dict(id=g['id'], name=g['name'], role=g['role'], defaultLayer=g['layer'], tileIds=ids, description=g['desc'], placementRules=g['rules'], source='bundled-default', confidence='high', layerHome=g['layer']))
+        tileGroups.append(dict(id=g['id'], name=g['name'], role=g['role'], defaultLayer=g['layer'], tileIds=ids, description=g['desc'], placementRules=g['rules'], source='bundled-default', confidence='high', layerHome=g['layer'] if g['layer'] in ('lower', 'upper') else 'perCell'))
     data = collections.OrderedDict(id=ID, name='현대 도시 · 도쿄풍 (도트)', textureKey=TEXTURE, family=FAMILY, tileSize=16, tilesPerRow=tpr, count=count, libraryEnd=count,
                                    passability=passability, priority=priority, terrain=terrain, tileMeta=tileMeta, tileGroups=tileGroups, autotileGroups=autotiles, animationStrips=[], structureKits=kits)
     # 6) 검증 — 쓰기 전에 메모리 시트·정의로, 쓴 뒤에는 파일에서 다시 읽어서
@@ -693,6 +693,7 @@ def check_definition(data):
         ids.add(g['id'])
         if g['role'] not in ENUM['grole']: no('group-role', g['id'])
         if g['defaultLayer'] not in ENUM['glayer']: no('group-layer', g['id'])
+        if g.get('layerHome') not in (None, 'lower', 'upper', 'perCell'): no('group-layer-home', g['id'])
         if any(not (0 <= t < n) for t in g['tileIds']): no('group-tile-range', g['id'])
         if not g.get('description') or not g.get('placementRules'): no('group-text', g['id'])
     kids = set()

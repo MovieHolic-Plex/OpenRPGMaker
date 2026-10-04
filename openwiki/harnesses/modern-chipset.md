@@ -68,3 +68,7 @@ pick ─► harness-data/modern-chipset/picked/<탈것>-<시점>.pxg|png + ledge
 
 범위는 14×7칸/224×112px, 차량 1대·주차면 2개의 고정 구역이다. 경사로·차단기·방화문을 갖춘
 12면 전체 시설의 재료 조사/개념 카드 완료와 구별한다. 문 개폐나 차량 운전은 구현하지 않는다.
+
+혼합 그룹은 `defaultLayer: mixed`, `layerHome: perCell`로 직렬화한다. `layerHome: mixed`는
+프로젝트 스키마가 거부한다. bake 정의 검사에 이 enum을 추가했고, 정본 생성기는 폴더를 만들기 전에
+직렬화/역직렬화 검증을 한다. 실제 정본 revision 4에서 다시 열어 확인했다.

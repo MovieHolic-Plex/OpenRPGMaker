@@ -429,7 +429,7 @@
   "roof_room_px": 16,
   "padding": "건물 그림 위쪽에 투명 패딩(밑변 = 발, 폭은 16 배수 그대로). 소품·차량은 알파 bbox 로 잘라 밑변 정렬·좌우 가운데로 16 배수 캔버스에(오프셋은 kit-index 의 pad/image)."
  },
- "elapsed_sec": 19.2,
+ "elapsed_sec": 19.6,
  "reassembly_from_files": {
   "kits_checked": 576,
   "by_kind": {
