@@ -23,6 +23,8 @@ const open=()=>page.getByTestId('terrain-sunlight-settings').click();
 const close=()=>page.keyboard.press('Escape');
 const number=async(testid,value)=>{const input=page.getByTestId(`map-sunlight-${testid}-number`);await input.fill(String(value));await input.press('Tab');};
 try{
+ let ready=false;for(let n=0;n<60;n++){try{ready=(await fetch('http://127.0.0.1:9855/',{signal:AbortSignal.timeout(2000)})).ok;}catch{}if(ready)break;await new Promise(r=>setTimeout(r,500));}
+ if(!ready)throw Error('Own QA host did not become ready');
  await page.goto('http://127.0.0.1:9855/',{waitUntil:'domcontentloaded',timeout:120000});
  if(await page.locator('#access-code').count()){await page.locator('#access-code').fill(readFileSync(resolve(folder,'.oprn-host-access'),'utf8').trim());await Promise.all([page.waitForNavigation({waitUntil:'domcontentloaded',timeout:120000}),page.locator('form[action="/__oprn/login"] button').click()]);}
  await page.getByTestId('boot-loader').waitFor({state:'hidden',timeout:240000});

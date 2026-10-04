@@ -35,6 +35,9 @@ relief/통행/충돌/visionBlocking/타일 층은 변경하지 않는다.
 높이/caster 없는 평지에는 투명 마스크를 만들지 않는다.
 런타임 마스크는 수신 줄 `reliefRowDepth(...,-.275)`로 캐릭터 아래에 놓는다.
 editor는 타일 위/편집 오버레이 아래의 별도 container(.5)에 같은 마스크를 올린다.
+마스크는 nearest 필터를 쓴다. Canvas `batchSprite`는 rounded camera에서 원본 크기를 .5px
+늘리므로 저해상도 마스크의 땅 부분이 2px 밀려 줄 사이가 비었다. 마스크의 Canvas 그리기 동안만
+roundPixels를 끄고 finally에서 복구한다. 다른 타일/캐릭터의 카메라 설정은 유지한다.
 씬 shutdown/off 맵 이동은 텍스처를 지운다. runtime 타일 제자리 변경은 `invalidateSunlight`를 호출한다.
 
 ## 조수와 검수

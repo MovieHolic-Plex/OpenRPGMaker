@@ -5,6 +5,7 @@ import {resolve} from 'node:path';
 import {createHash} from 'node:crypto';
 import {startProductionPlayerPreview} from './player-production-preview.mjs';
 import {execFileSync} from 'node:child_process';
+import {PNG} from 'pngjs';
 const out=resolve('verify-shots/sunlight/player');mkdirSync(out,{recursive:true});
 const wire=JSON.parse(readFileSync('.vite-cache/sunlight/project/player.json','utf8'));
 wire.maps.ramps_four.sunlight={...wire.maps.houses_native.sunlight};
@@ -51,6 +52,16 @@ try{
    }
   }
   proof.ramps.push({dir:c.dir,steps});await page.screenshot({path:resolve(out,`ramp-${c.dir}.png`)});
+  if(c.dir==='e'){
+   // Exact row starts on a flat shaded receiver: the previous Canvas half-pixel expansion left these unshaded.
+   const points=await page.evaluate(()=>{const s=window.__oprnHooksScene,c=s.cameras.main,r=s.game.canvas.getBoundingClientRect();return [12,13,14,15].map(row=>({row,x:Math.floor(r.left+((31.5*16-c.scrollX)*c.zoom+c.x)*r.width/s.scale.width),y:Math.floor(r.top+((row*16-c.scrollY)*c.zoom+c.y)*r.height/s.scale.height)}));});
+   const on=PNG.sync.read(await page.screenshot());const previous=await page.evaluate(()=>({...window.__oprnHooksScene.map.sunlight}));
+   await page.evaluate(()=>window.__oprnHooksScene.map.sunlight.enabled=false);await page.waitForFunction(()=>window.__oprnSunlight().textures===0);await page.waitForTimeout(200);
+   const off=PNG.sync.read(await page.screenshot());
+   proof.rowSeams=points.map(p=>({...p,darkening:off.data[(p.y*off.width+p.x)*4+1]-on.data[(p.y*on.width+p.x)*4+1]}));
+   if(proof.rowSeams.some(p=>p.darkening<20))throw Error('Unshaded stripe at a native Canvas row boundary');
+   await page.evaluate(sun=>window.__oprnHooksScene.map.sunlight=sun,previous);await idle();
+  }
  }
  const beforeSwitch=await page.evaluate(()=>window.__oprnSunlight());
  await page.evaluate(()=>window.__oprnDebug.teleport('terrain_ai',4,42));await moved(4,42);await idle();

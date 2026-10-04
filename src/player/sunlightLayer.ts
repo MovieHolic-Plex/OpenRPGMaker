@@ -7,6 +7,18 @@ const instances = new WeakMap<object, SunlightLayer>();
 let serial = 0;
 interface Patch { image: Phaser.GameObjects.Image; texture: string }
 
+/** Canvas batchSprite grows rounded images by half a source pixel. A 4x mask then
+ * shifts its opaque rows by two world pixels, opening a stripe between receivers.
+ * Mask coordinates already align to the world pixel grid; preserve their exact extent. */
+function renderShadowCanvas(renderer: Phaser.Renderer.Canvas.CanvasRenderer, image: Phaser.GameObjects.Image,
+  camera: Phaser.Cameras.Scene2D.Camera, parent?: Phaser.GameObjects.Components.TransformMatrix): void {
+  camera.addToRenderList(image);
+  const rounded = camera.roundPixels;
+  camera.roundPixels = false;
+  try { renderer.batchSprite(image, image.frame, camera, parent); }
+  finally { camera.roundPixels = rounded; }
+}
+
 /** Cached world-anchored receiver masks. Work is budgeted; unchanged frames only compare small inputs. */
 export class SunlightLayer {
   private readonly patches = new Map<number, Patch>();
@@ -76,6 +88,7 @@ export class SunlightLayer {
       const image = this.scene.add.image(raster.x * raster.scale * tileSize, raster.y * raster.scale * tileSize, texture)
         .setOrigin(0).setScale(raster.scale * tileSize).setDepth(this.options.depthOf(row, tileSize));
       image.setName("sunlight-shadow");
+      (image as Phaser.GameObjects.Image & { renderCanvas: typeof renderShadowCanvas }).renderCanvas = renderShadowCanvas;
       this.options.container?.add(image);
       this.patches.set(index, { image, texture });
       created = true;
