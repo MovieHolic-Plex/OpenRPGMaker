@@ -20,7 +20,7 @@ import { eventDraftDiffById, eventDraftHasUserChanges } from "@/project/eventDra
 import { showConfirm, type ConfirmOptions } from "@/editor/ui/modal";
 import { validateEventDraft, type EventDraftValidation } from "@/editor/eventDraftValidator";
 import { openSelectedEventTestModal } from "@/editor/panels/testPlayModal";
-import { isTileCellChange, store, type AutoSaveState } from "@/project/store";
+import { store, type AutoSaveState } from "@/project/store";
 import type { MapId } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
 import { renderEditorIcon } from "./editorIcons";
