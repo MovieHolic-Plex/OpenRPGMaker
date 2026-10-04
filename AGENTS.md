@@ -19,6 +19,13 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
 아래 작업은 손으로 하지 말고 해당 하네스를 실행한다. 목록·단계는 `src/harnesses/INDEX.md`(생성 파일),
 구조 규칙은 `openwiki/harnesses/README.md`.
 
+- **이미 선택한 실내 기물의 방향·상태·모션·크기 파생을 만들거나 유지보수할 때**
+  → 슈퍼하네싱의 `interior-props` 서버 하네스, 화면 `/harness` → 「기물·파생」.
+  → 먼저 `openwiki/harnesses/interior-prop-derivations.md`와 `interior-prop-derivations-operations.md`를 읽는다.
+  → 제안 후 사람이 주문·선택한다. 확정 후 공용 SQLite에 자동 게시한다. 에디터 공방 IndexedDB와 혼동하지 않는다.
+  → 서버 정본은 DB뿐 아니라 실제 체크아웃의 items/sets/후보·모션 파일과 판본 baseline을 함께 보존한다.
+    기존 공간 슈퍼하네스와의 자동 재료 수신은 별도 통합 단계다.
+
 - **에디터용 RM2000 캐릭터를 변형·대량 저작·검사·패킹할 때**
   → `charset-actor` · 시드 `harness-data/charset-actor/briefs.json`
   → `npm run harness -- charset-actor <단계>` · 문서 `openwiki/harnesses/charset-actor.md`

@@ -18,6 +18,7 @@ def slug(i):
     return re.sub(r'[^A-Za-z0-9]+', '_', i).strip('_')
 
 NEW_ITEMS = os.path.join(ROOT, 'tiledata/hand-interior/new/items.json')   # 새 기물 길: v5 381개 밖의 기물 명세
+SETS = os.path.join(ROOT, 'tiledata/hand-interior/new/sets.json')   # 파생 묶음(방향·상태·움직임) — 하네스 안에서만 쓰는 묶음 그림 기물(src/harnesses/interior-props/derive.py)
 KIND_KO = {'floor': '바닥 기물(막힘)', 'wall': '북쪽 벽 앞 기물(막힘, 벽에 붙임)', 'hang': '벽면 걸이(벽 두 줄 중 윗줄)', 'flat': '바닥 무늬(밟을 수 있음)'}
 
 def new_item_object(it):
@@ -47,7 +48,7 @@ def new_item_object(it):
             'atlas': {'x': -1, 'y': -1, 'w': w, 'h': h, 'frames': 1, 'padTop': 0},
             'summary': (head + '.') if sep else desc, 'where': tail, 'since': 'v6 새 기물',
             'new': True, 'contextRoom': it.get('contextRoom'),
-            **{k: it[k] for k in ('use', 'facing', 'states', 'place', 'pair', 'refs', 'blockout') if it.get(k)}}
+            **{k: it[k] for k in ('use', 'facing', 'states', 'place', 'pair', 'refs', 'blockout', 'parent', 'derive', 'slot', 'setId', 'animation') if it.get(k)}}
 
 def load_new_items(v5_ids=None):
     """tiledata/hand-interior/new/items.json → 가짜 객체 목록. v5 id·slug 와 겹치면 에러."""
@@ -60,15 +61,33 @@ def load_new_items(v5_ids=None):
         i = it['id']
         if i in v5_ids or slug(i) in v5_slugs: raise SystemExit(f'새 기물 id {i!r} 가 v5 기물과 겹친다 (new/items.json)')
         if slug(i) in seen: raise SystemExit(f'새 기물 id {i!r} 가 new/items.json 안에서 겹친다')
-        seen.add(slug(i)); out.append(new_item_object(it))
+        seen.add(slug(i)); out.append(apply_resize(new_item_object(it)))
+    if os.path.exists(SETS):   # 파생 묶음: 같은 새 기물 모양 + set(칸 자리). 칩셋에는 안 굽는다(install_picks 가 건너뛴다)
+        for e in json.load(open(SETS, encoding='utf-8')).get('sets', []):
+            if slug(e['id']) in seen or slug(e['id']) in v5_slugs: raise SystemExit(f'파생 묶음 id {e["id"]!r} 가 다른 기물과 겹친다')
+            seen.add(slug(e['id']))
+            o = new_item_object(e)
+            o['set'] = {k: e.get(k) for k in ('parent', 'derive', 'slots', 'ms', 'picked', 'canvas')}
+            o['kind_ko'] = f"파생 묶음 · {o['kind_ko']}"
+            out.append(o)
     return out
 
+_META = {}
 def load_meta(include_new=True):
-    """v5 메타. include_new 면 새 기물(new:True 가짜 객체)도 objects 끝에 붙인다. v5 파일은 읽기만 한다."""
-    m = json.load(open(os.path.join(V5, 'interior-meta.json'), encoding='utf-8'))
-    if include_new:
-        m = dict(m, objects=m['objects'] + load_new_items({o['id'] for o in m['objects']}))
-    return m
+    """v5 메타. include_new 면 새 기물(new:True 가짜 객체)도 objects 끝에 붙인다. v5 파일은 읽기만 한다.
+    세 파일(메타·새 기물 명세·크기 바꿈 표시)의 시각이 그대로면 지난 결과를 쓴다 — 그림·상태 요청마다 불려
+    한 번 30ms+ 씩 서버를 막았다(2026-10-03 「이미지 로딩 느림」). 객체는 얕은 사본으로 돌려 부르는 쪽이 고쳐도 캐시는 그대로."""
+    def mt(f):
+        try: return os.stat(f).st_mtime_ns
+        except OSError: return 0
+    k = (include_new, mt(os.path.join(V5, 'interior-meta.json')), mt(NEW_ITEMS), mt(RESIZE_STAMP), mt(SETS))
+    if _META.get(include_new, (None,))[0] != k:
+        m = json.load(open(os.path.join(V5, 'interior-meta.json'), encoding='utf-8'))
+        if include_new:
+            m = dict(m, objects=[apply_resize(o) for o in m['objects']] + load_new_items({o['id'] for o in m['objects']}))
+        _META[include_new] = (k, m)
+    m = _META[include_new][1]
+    return dict(m, objects=[dict(o) for o in m['objects']])
 
 def objects_by_id():
     return {o['id']: o for o in load_meta()['objects']}
@@ -87,10 +106,19 @@ def v5_atlas():
 def v5_slot(o):
     """v5 아틀라스의 칸 자리(패딩 포함, 첫 프레임). 후보 캔버스 크기 = 이 크기."""
     a = o['atlas']
+    from PIL import Image
+    if o.get('set'):   # 파생 묶음: 원본 칸을 채운 출발 그림(derive.make_set 이 만든 seed.png)
+        p = os.path.join(CAND, slug(o['id']), 'seed.png')
+        if os.path.exists(p): return Image.open(p).convert('RGBA')
     if o.get('new'):   # 새 기물은 v5 에 그림이 없다: 캔버스 크기의 투명 그림이 출발점
-        from PIL import Image
         return Image.new('RGBA', (a['w'], a['h']))
-    return v5_atlas().crop((a['x'], a['y'], a['x'] + a['w'], a['y'] + a['h']))
+    im = v5_atlas().crop((a['x'], a['y'], a['x'] + a['w'], a['y'] + a['h']))
+    rz = resize_for(slug(o['id']))
+    if rz and tuple(rz['canvas']) != im.size:   # 크기를 바꾼 v5 기물: 지금 그림을 새 캔버스 바닥 가운데에 두고 출발
+        c = Image.new('RGBA', tuple(rz['canvas']))
+        c.paste(im, ((c.width - im.width) // 2, c.height - im.height), im)   # 넘치면 잘린다(바닥 가운데 맞춤)
+        return c
+    return im
 
 def resize_for(s):
     """사용자가 크기를 바꾸라고 한 기물: candidates/<slug>/resize.json = {"canvas":[w,h],"footprint":{"w":2,"h":0},"why":"…"}.
@@ -102,7 +130,66 @@ def resize_for(s):
         w, h = r['canvas']; assert int(w) > 0 and int(h) > 0
     except (ValueError, KeyError, TypeError, AssertionError, OSError):
         return None
-    return dict(canvas=[int(w), int(h)], footprint=r.get('footprint'), why=r.get('why', ''))
+    return dict(canvas=[int(w), int(h)], footprint=r.get('footprint'), why=r.get('why', ''),
+                blockout=r.get('blockout'), top_note=r.get('top_note', ''))
+
+RESIZE_STAMP = os.path.join(CAND, '.resize-stamp')   # resize.json 을 쓰면 건드린다 — 메타 캐시가 이 시각도 본다
+
+def apply_resize(o):
+    """resize.json 이 있는 기물은 칸 수·(새 기물이면) 캔버스·밑그림·윗면 규칙 문장까지 그 크기로 본다.
+    2026-10-03: 고르는 화면 메모 「2x2 로 만들어」 가 작업지시서 글로만 가고 캔버스(16×32)·검사는 그대로라 작동하지 않았다."""
+    rz = resize_for(slug(o['id']))
+    if not rz: return o
+    o = dict(o)
+    if rz['footprint']: o['footprint'] = dict(rz['footprint'])
+    if o.get('new'):
+        o['atlas'] = dict(o['atlas'], w=rz['canvas'][0], h=rz['canvas'][1], padTop=0)
+        o['image'] = {'w': rz['canvas'][0], 'h': rz['canvas'][1]}
+    if rz.get('blockout'): o['blockout'] = rz['blockout']
+    if rz.get('top_note'): o['description'] = o['description'].rstrip() + ' ' + rz['top_note']
+    return o
+
+SIZE_RE = re.compile(r'(\d{1,2})\s*(?:칸)?\s*[xX×*]\s*(\d{1,2})')
+
+def size_from_note(note):
+    """메모에서 「2x2」「3×2」 같은 크기 요청(가로×세로 칸)을 찾는다. 없거나 말이 안 되면 None."""
+    m = SIZE_RE.search(note or '')
+    if not m: return None
+    w, h = int(m.group(1)), int(m.group(2))
+    return (w, h) if 1 <= w <= 8 and 1 <= h <= 8 else None
+
+def resize_spec(o, w, h, why):
+    """기물 o 를 가로 w × 세로 h 칸으로 — resize.json 내용. 바닥 기물은 깊이 h 칸 + 원래 솟음, 매다는 것(발밑 0칸)은 그림 높이 h 칸."""
+    fp = o['footprint']; fh0 = int(fp.get('h') or 0)
+    cw0, ch0 = (o['atlas']['w'], o['atlas']['h']) if o.get('new') else geom(o)['canvas']
+    if fh0 == 0:
+        footprint, canvas = {'w': w, 'h': 0}, [16 * w, 16 * h]
+    else:
+        rise = max(0, ch0 - 16 * fh0)
+        footprint, canvas = {'w': w, 'h': h}, [16 * w, 16 * h + rise]
+    spec = {'canvas': canvas, 'footprint': footprint, 'why': why}
+    probe = dict(o, footprint=footprint)
+    n = top_min(probe)
+    if n and h >= 2 and fh0 != 0:
+        spec['top_note'] = f'(크기 {w}×{h}: 꼭대기 윗면 {n}행 이상 — 위에서 내려다본 면이 깊이만큼 길다)'
+        if w * h >= BIG_AREA:   # 대형: 밑그림 띠가 있어야 판이 열린다 — 앞면 = 맨 아래 솟음 높이, 윗면 = 그 위 n+2 행
+            H = canvas[1]; fr = max(8, canvas[1] - 16 * h); c = H - fr; a = max(0, c - n - 2)
+            spec['blockout'] = {'top': [a, c - 1], 'front': [c, H - 1], 'cover': 0.7}
+    return spec
+
+def write_resize(o, w, h, why):
+    """resize.json 을 쓰고 후보 폴더를 다시 준비하게 한다(info.json 지움 → ensure_folder 가 새 캔버스로 prep)."""
+    d = os.path.join(CAND, slug(o['id'])); os.makedirs(d, exist_ok=True)
+    spec = resize_spec(o, w, h, why)
+    atomic_write(os.path.join(d, 'resize.json'), json.dumps(spec, ensure_ascii=False))
+    try: os.remove(os.path.join(d, 'info.json'))
+    except OSError: pass
+    atomic_write(RESIZE_STAMP, now_stamp())
+    return spec
+
+def now_stamp():
+    import time
+    return str(time.time())
 
 def geom(o):
     """후보가 따라야 할 캔버스·패딩·칸 수. resize.json 이 있으면 그 값(패딩 0), 없으면 v5 그대로."""
@@ -138,6 +225,7 @@ SPEC_TOP_RE = re.compile(r'꼭대기\s*윗면\s*(\d+)(?:\s*~\s*(\d+))?\s*행')
 def top_min(o):
     """꼭대기 면(가장 높은 수평 면 — 지붕·상판·뚜껑·받침) 윗면 최소 행 수. 바닥 기물·벽 앞 기물만, 나머지(걸이·바닥 무늬)는 None."""
     if o.get('kind') not in ('floor', 'wall'): return None
+    if o.get('set'): return None   # 파생 묶음: 칸마다 원본 칸과 같은 윗면이 기준이다(검수 지시문이 말한다) — 2026-10-04 의자 등받이 머리 1행이 「3행 미만」으로 떨어졌다
     fh = int((o.get('footprint') or {}).get('h') or 1)
     return TOP_MIN_SHALLOW if fh <= 1 else TOP_PER_DEPTH * (fh - 1)
 

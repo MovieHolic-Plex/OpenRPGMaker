@@ -199,6 +199,7 @@ export function publishSharedContent(id: string, value: SharedContentLibrary, ex
     db.prepare('INSERT INTO content_libraries VALUES (?,?,?,?) ON CONFLICT(id) DO UPDATE SET revision=excluded.revision,payload=excluded.payload,updated_at=excluded.updated_at').run(id,revision,payload,new Date().toISOString());
     db.exec('COMMIT');
   } catch(error) { db.exec('ROLLBACK'); throw error; } finally { db.close(); }
+  // 게시한 한 행만 재로드한다. 편집기용 이미지 URL 변환도 적용하지 않는다.
   const reloaded = readSharedContentLibrary(id, file)!.library;
   if(hash(JSON.stringify(reloaded)) !== revision) throw new Error('Shared SQLite reload mismatch');
   return {file,id,revision,reloaded};
