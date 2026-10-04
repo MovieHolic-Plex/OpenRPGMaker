@@ -702,3 +702,46 @@ At390×640 the game still mounts a320×240 shop stage. Collector compact CSS mus
 clear generic stacked-shop side max-height42% and description max-height2.6em,
 keep its two columns, compact hero/icon/text, and preserve full supply description.
 Quantity/transaction checks alone do not prove that the detail is readable.
+
+## Emerald reference shop stages (2026-10-04)
+
+`meta.oprnMonsterStyle={version:1,reference:'emerald'}` opts ordinary shops into
+`src/player/playSceneEmeraldShop.ts`. `emeraldShopDom.ts` owns the window model,
+`emeraldShopInput.ts` owns one keyboard lifetime across every phase, and
+`styles/runtime/emeraldShop.css` is imported by that runtime module in the runtime
+cascade layer. Collector without this authored profile retains its current flow.
+Specialist shopkeeper, repair/appraisal/pawn and haggle handlers retain their
+existing economics and UI; the profile does not reinterpret these services.
+
+The reference is [pret/pokeemerald src/shop.c](https://github.com/pret/pokeemerald/blob/master/src/shop.c):
+entry Buy/Sell/Quit, a map view beside goods and money, then separate quantity,
+confirmation and transaction-message windows. Its 240×160 screen geometry is
+scaled to a natural 480×320 shell. A ResizeObserver fits that shell inside the
+actual canvas/viewport bounds, including narrow displays. Buying snapshots the
+actual Phaser game canvas on the next rendered frame; the transparent panel
+keeps the live field visible if a snapshot is unavailable. There is no synthetic
+map. Selling derives positive owned stacks from the existing goods index.
+
+The shop phases are menu → items → quantity → confirm → receipt → items.
+Confirm commits only at Yes through the original `handleShopTransaction`; money,
+merchant budget, inventory limits, sell-price overrides, loyalty and event branch
+receipts keep their existing owners. Quantity preserves authored single/select
+mode. Up/Down changes one, Left/Right ten. Escape from confirmation returns to
+quantity, quantity/receipt to the list, list to entrance, entrance to the field.
+Repeated confirm/cancel events cannot cross phases. No modern mode tabs,
+permanent numeric input or action footer is mounted. Item descriptions can scroll
+with PageUp/PageDown/Home/End; an overflow triangle identifies longer text while
+the owned count stays visible. Scene shutdown/destroy or surface replacement
+releases listeners, ResizeObserver, snapshot handoff and the pending promise;
+an abandoned session does not receive later merchant-ledger writes.
+
+Focused reproduction: first build the player (`npm run build:player`) and start the
+assigned worktree through `npm run dev:worktree`, then set `OPRN_QA_URL` and run
+`node scripts/qa/runtime/emerald-shop-native.probe.mjs`. The optional
+`OPRN_SHOP_PLAYER_DIR` selects an already built player; `OPRN_SHOP_QA_OUT` selects
+the evidence folder. This uses a detached existing engine fixture and the actual
+`player.html` export-store path. Read `SUMMARY.md` first. The probe checks quantity,
+No, confirmation cancellation, a held Enter, exact buy/sell arithmetic, last-stack
+deletion, empty owned bag, long-description scroll, insufficient funds, 390px
+bounds and the unchanged collector flow without the profile. It proves neither canonical game
+storage nor old-save Continue; those remain supervisor-owned integration checks.
