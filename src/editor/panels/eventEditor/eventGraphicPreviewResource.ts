@@ -25,7 +25,7 @@ export function eventGraphicPreviewResource(project: Project, authored: EventPag
   if (!id) return null;
   const texture = resolveEventSpriteTexture(project, id, graphic.pattern);
   if (!texture) return null;
-  const def = project.assets.sprites[id];
+  const def = (project.assets.sprites as Partial<typeof project.assets.sprites>)[id];
   const imageId = def?.image.id ?? texture.texture;
   const charset = projectCharsetAssets(project).find(asset => asset.textureKey === imageId)
     ?? findCharsetAsset(imageId);
