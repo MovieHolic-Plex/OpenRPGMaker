@@ -10,7 +10,7 @@ import { checkRelief, reliefMatrixText } from "@/project/relief/check";
 import { carryReliefExtras, emptyRelief, reliefIsFlat } from "@/project/relief/edit";
 import { buildReliefOps, RELIEF_OPS_SPEC, type ReliefOpsSpec } from "@/project/relief/ops";
 import { gridFromRelief, reliefFromGrid, RELIEF_MAX_LEVEL } from "@/project/relief/types";
-import type { GameMap } from "@/project/types";
+import type { GameMap, TilesetDef } from "@/project/types";
 import { requireMap } from "./mapHelpers";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
@@ -24,6 +24,23 @@ const SCULPT_EXAMPLE = {
 };
 
 const reliefGrid = (map: GameMap) => gridFromRelief(map.relief ?? emptyRelief(map.width, map.height));
+
+function protectHeightEdits(map: GameMap, tileset: TilesetDef | undefined, h: number[][]): void {
+  for (const i of map.terrainDesign?.lockedCells ?? []) {
+    const x = i % map.width, y = Math.floor(i / map.width);
+    if (h[y]?.[x] !== (map.relief?.levels[i] ?? 0)) throw new ToolError(`잠긴 칸 (${x},${y})의 높이를 바꿀 수 없습니다. 영역을 피하거나 design_terrain lock/unlock으로 먼저 해제하세요`, { code: "terrain-locked-height", mapId: map.id });
+  }
+  for (const p of map.structurePlacements ?? []) {
+    const door = tileset?.structureKits?.find(k => k.id === p.kitId)?.parts?.find(part => part.kind === "entrance");
+    if (!door) continue;
+    const cells: { x: number; y: number }[] = [];
+    for (let y = p.y; y < p.y + p.h; y++) for (let x = p.x; x < p.x + p.w; x++) cells.push({ x, y });
+    cells.push({ x: p.x + door.dx, y: p.y + door.dy + door.h });
+    const changed = cells.some(({ x, y }) => h[y]?.[x] !== (map.relief?.levels[y * map.width + x] ?? 0));
+    if (changed && new Set(cells.map(({ x, y }) => h[y]?.[x] ?? 0)).size > 1)
+      throw new ToolError(`구조물 ${p.id}의 집터와 문 앞 높이가 어긋납니다. 집터 rect:[${p.x},${p.y},${p.x + p.w - 1},${p.y + p.h - 1}] 전체와 문 앞 (${p.x + door.dx},${p.y + door.dy + door.h})을 같은 높이로 유지하세요`, { code: "terrain-house-foundation", mapId: map.id });
+  }
+}
 
 const readRelief: ToolDefinition = {
   name: "read_relief",
@@ -49,6 +66,7 @@ const sculptRelief: ToolDefinition = {
   description:
     "맵의 절벽 높이를 ops 로 빚는다 — 지금 높이 위에 차례로 덧칠한다(reset:true 면 0단에서 시작). "
     + "절벽 벽면·45° 대각선은 렌더러가 그림으로 자동으로 그린다(타일 층은 바뀌지 않는다). "
+    + "잠금 칸의 높이 변경과 기존 집의 집터/문 앞을 기울이는 변경은 전체 작업을 거부한다. 집의 높이를 바꾸려면 전체 집터와 문 앞을 같은 높이로 정한다. "
     + "쓰고 나면 검사 글을 돌려준다 — 가려진 칸·일직선 벽이 있으면 ops 를 고쳐 다시 불러라. "
     + `ops 문법(size 는 맵 크기를 따르므로 무시된다):\n${RELIEF_OPS_SPEC}`,
   mode: "write",
@@ -77,6 +95,7 @@ const sculptRelief: ToolDefinition = {
     const seed = typeof args.seed === "number" && Number.isInteger(args.seed) ? args.seed : 1;
     const base = args.reset === true ? gridFromRelief(emptyRelief(map.width, map.height)) : reliefGrid(map);
     const { h, log } = buildReliefOps({ seed, ops: ops as ReliefOpsSpec["ops"] }, base);
+    protectHeightEdits(map, draft.tilesets[map.tilesetId], h);
     // reset 이면 경사로·벽면 장식은 버리고 양식만 잇는다. 아니면 단이 안 바뀐 칸의 경사로·장식도 잇는다.
     map.relief = carryReliefExtras(args.reset === true ? (map.relief?.style ? { ...emptyRelief(map.width, map.height), style: map.relief.style } : undefined) : map.relief, reliefFromGrid(h));
     if (reliefIsFlat(map.relief)) delete map.relief;

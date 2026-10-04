@@ -17,10 +17,23 @@ export function terrainEditable(map: GameMap, index: number, objects = true, ram
   return index >= 0 && index < map.width * map.height && !terrainLocked(map.terrainDesign, index)
     && (!objects || layerTileAt(map, 3, index) < 0 && layerTileAt(map, 4, index) < 0)
     && (!ramps || !(map.relief?.ramps?.[index] ?? 0))
+    && (!objects || !map.structurePlacements?.some(p => index % map.width >= p.x && index % map.width < p.x + p.w
+      && Math.floor(index / map.width) >= p.y && Math.floor(index / map.width) < p.y + p.h))
     && !map.events.some(e => e.x === index % map.width && e.y === Math.floor(index / map.width));
 }
 export function copiedTerrainMap(map: GameMap): GameMap { return { ...map, lowerTiles: map.lowerTiles.slice(), upperTiles: map.upperTiles.slice(), ...cloneExtraLayers(map), relief: map.relief && copyRelief(map.relief), terrainDesign: map.terrainDesign && { ...map.terrainDesign, waterDepth: map.terrainDesign.waterDepth?.slice() } }; }
 const copied = copiedTerrainMap;
+function houseApproachCells(map: GameMap, tileset: TilesetDef): Set<number> {
+  const cells = new Set<number>();
+  for (const p of map.structurePlacements ?? []) {
+    const door = tileset.structureKits?.find(k => k.id === p.kitId)?.parts?.find(part => part.kind === "entrance");
+    if (!door) continue;
+    const y = p.y + door.dy + door.h;
+    for (let x = p.x + door.dx; x < p.x + door.dx + door.w; x++)
+      if (x >= 0 && x < map.width && y >= 0 && y < map.height) cells.add(y * map.width + x);
+  }
+  return cells;
+}
 function clampHeight(v: number): number { return Math.min(RELIEF_MAX_LEVEL, Math.max(0, Math.round(v))); }
 function footprint(map: GameMap, points: readonly TerrainPoint[], width: number, distances?: Map<number, number>): TerrainPoint[] {
   const seen = new Map<number, TerrainPoint>(), r = Math.max(0, (width - 1) / 2);
@@ -50,7 +63,9 @@ function shapeMaterials(map: GameMap, tileset: TilesetDef, edits: { index: numbe
   for (const e of edits) { setLayerTileAt(map, 1, e.index, e.tile); setLayerTileAt(map, 2, e.index, -1); }
   for (const group of autotileGroupsForTileset(tileset)) if ((group.layer ?? "lower") === "lower" && edits.some((e, n) => autotileEditTriggersGroup(group, previous[n]!, e.tile))) shapeAutotileGroupAround(map, group, points);
 }
-function finish(map: GameMap, next: GameMap, cells: Set<number>, reason: string): TerrainDesignPlan {
+function finish(map: GameMap, next: GameMap, cells: Set<number>, reason: string, tileset: TilesetDef): TerrainDesignPlan {
+  for (const i of houseApproachCells(map, tileset)) if ((map.relief?.levels[i] ?? 0) !== (next.relief?.levels[i] ?? 0))
+    return { ok: false, reason: "기존 집의 문 앞 높이를 바꿀 수 없습니다. 집터 전체와 문 앞을 함께 평탄화하세요", indices: [] };
   // Autotiles can change a two-cell fringe; annotate it too for incremental rendering.
   const dirty = new Set(cells);
   for (const i of cells) for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) {
@@ -85,10 +100,11 @@ export function planTerrainDesign(map: GameMap, tileset: TilesetDef, tool: "cont
     const locked = new Set(map.terrainDesign?.lockedCells);
     for (const i of all.keys()) { if (o.unlock) locked.delete(i); else locked.add(i); touched.add(i); }
     next.terrainDesign = { ...next.terrainDesign, lockedCells: [...locked].sort((a, b) => a - b) };
-    return finish(map, next, touched, `${touched.size}칸 ${o.unlock ? "잠금 해제" : "보호"}`);
+    return finish(map, next, touched, `${touched.size}칸 ${o.unlock ? "잠금 해제" : "보호"}`, tileset);
   }
   if (tool === "mixedCluster") return planMixedCluster(map, tileset, points[0]!, o);
-  const cells = [...all.keys()].filter(i => terrainEditable(map, i));
+  const approaches = houseApproachCells(map, tileset);
+  const cells = [...all.keys()].filter(i => terrainEditable(map, i) && (tool === "road" || !approaches.has(i)));
   if (tool === "contour" || tool === "ridge" || tool === "valley") {
     next.relief ??= emptyRelief(map.width, map.height);
     const grass = terrainMaterialTile(tileset, "grass");
@@ -101,7 +117,7 @@ export function planTerrainDesign(map: GameMap, tileset: TilesetDef, tool: "cont
       if (grass !== undefined && layerTileAt(next, 1, i) < 0) setLayerTileAt(next, 1, i, grass);
       touched.add(i);
     }
-    return finish(map, next, touched, `${tool === "contour" ? "절벽 윤곽" : tool === "ridge" ? "능선" : "계곡"} ${touched.size}칸`);
+    return finish(map, next, touched, `${tool === "contour" ? "절벽 윤곽" : tool === "ridge" ? "능선" : "계곡"} ${touched.size}칸`, tileset);
   }
   if (tool === "lake") {
     const tile = terrainMaterialTile(tileset, "water"); if (tile === undefined) return { ok: false, reason: "이 칩셋에는 물 재질이 없습니다", indices: [] };
@@ -115,7 +131,7 @@ export function planTerrainDesign(map: GameMap, tileset: TilesetDef, tool: "cont
     next.terrainDesign ??= {}; next.terrainDesign.waterDepth ??= new Array<number>(map.width * map.height).fill(0);
     for (const i of cells) { next.relief.levels[i] = clampHeight(o.waterLevel); next.terrainDesign.waterDepth[i] = Math.min(o.maxDepth, (distance.get(i) ?? 0) < o.shallowWidth ? 1 : (distance.get(i) ?? 0) - o.shallowWidth + 2); touched.add(i); }
     shapeMaterials(next, tileset, cells.map(index => ({ index, tile })));
-    return finish(map, next, touched, `호수 ${cells.length}칸 · 수위 ${o.waterLevel} · 얕은 물 ${o.shallowWidth}칸`);
+    return finish(map, next, touched, `호수 ${cells.length}칸 · 수위 ${o.waterLevel} · 얕은 물 ${o.shallowWidth}칸`, tileset);
   }
   const materials = ["grass", "dirt", "stone"] as const, available = materials.map((m, n) => ({ tile: terrainMaterialTile(tileset, m), weight: Math.max(0, o.weights[n]) })).filter(m => m.tile !== undefined && m.weight > 0);
   const dirt = terrainRoadTile(tileset), edits: { index: number; tile: number }[] = [];
@@ -127,11 +143,11 @@ export function planTerrainDesign(map: GameMap, tileset: TilesetDef, tool: "cont
     if (tool === "mix") { let choice = terrainHash(i % map.width, Math.floor(i / map.width), o.seed) * sum; tile = available.at(-1)!.tile!; for (const m of available) { choice -= m.weight; if (choice < 0) { tile = m.tile!; break; } } }
     edits.push({ index: i, tile }); touched.add(i);
     if (next.terrainDesign?.waterDepth) next.terrainDesign.waterDepth[i] = 0;
-    if (tool === "road" && o.flattenRoad) { next.relief ??= emptyRelief(map.width, map.height); next.relief.levels[i] = map.relief?.levels[points[0]!.y * map.width + points[0]!.x] ?? 0; }
+    if (tool === "road" && o.flattenRoad && !approaches.has(i)) { next.relief ??= emptyRelief(map.width, map.height); next.relief.levels[i] = map.relief?.levels[points[0]!.y * map.width + points[0]!.x] ?? 0; }
   }
   shapeMaterials(next, tileset, edits);
   const connections = tool === "road" && !o.flattenRoad ? connectTerrainRoad(next, centers, o.width, touched) : { ramps: 0, blocked: 0 };
-  return finish(map, next, touched, tool === "road" ? `길 ${edits.length}칸 · 경사 접합 ${connections.ramps}곳${connections.blocked ? ` · 연결 불가 ${connections.blocked}곳 (경로 검사로 확인)` : ""}` : `재질 혼합 ${edits.length}칸 · 시드 ${o.seed}`);
+  return finish(map, next, touched, tool === "road" ? `길 ${edits.length}칸 · 경사 접합 ${connections.ramps}곳${connections.blocked ? ` · 연결 불가 ${connections.blocked}곳 (경로 검사로 확인)` : ""}` : `재질 혼합 ${edits.length}칸 · 시드 ${o.seed}`, tileset);
 }
 
 export function planMixedCluster(map: GameMap, tileset: TilesetDef, center: TerrainPoint, o: TerrainDesignOptions): TerrainDesignPlan {
@@ -139,6 +155,7 @@ export function planMixedCluster(map: GameMap, tileset: TilesetDef, center: Terr
   const buckets = [props.filter(d => d.tab === "tree"), props.filter(d => d.tab === "rock" && !/bush|덤불|관목/i.test(d.label)), props.filter(d => d.tab === "rock" && /bush|덤불|관목/i.test(d.label))];
   const choices = buckets.flatMap((b, n) => b.length && o.weights[n] > 0 ? [{ props: b, weight: o.weights[n] }] : []), total = choices.reduce((s, b) => s + b.weight, 0);
   if (!total) return { ok: false, reason: "이 칩셋에서 사용할 나무·바위·덤불을 고르세요", indices: [] };
+  const approaches = houseApproachCells(map, tileset);
   const radius = Math.max(1, (o.width - 1) / 2), anchors = new Map<number, TerrainPoint>();
   for (const v of symmetryVariants(o.symmetry, map.width, map.height)) {
     const c = transformPoint(center, map.width, map.height, v);
@@ -156,12 +173,12 @@ export function planMixedCluster(map: GameMap, tileset: TilesetDef, center: Terr
     const kit = prop.kit, stamp: typeof cells = [], base = map.relief?.levels[p.y * map.width + p.x] ?? 0; let blocked = false;
     for (let y = 0; y < kit.height; y++) for (let x = 0; x < kit.width; x++) {
       const X = p.x - Math.floor((kit.width - 1) / 2) + x, Y = p.y - kit.height + 1 + y, index = Y * map.width + X, tile = kit.rows[y]?.upperTiles?.[x] ?? -1;
-      if (X < 0 || Y < 0 || X >= map.width || Y >= map.height || !terrainEditable(map, index) || terrainIsReserved(map, tileset, index) || occupied.has(index) || (map.relief?.levels[index] ?? 0) !== base) blocked = true;
+      if (X < 0 || Y < 0 || X >= map.width || Y >= map.height || !terrainEditable(map, index) || approaches.has(index) || terrainIsReserved(map, tileset, index) || occupied.has(index) || (map.relief?.levels[index] ?? 0) !== base) blocked = true;
       if (tile >= 0) stamp.push({ index, tile, before: layerTileAt(map, 3, index) });
     }
     if (blocked || !stamp.length) continue;
     objects++; for (const c of stamp) { occupied.add(c.index); cells.push(c); setLayerTileAt(next, 3, c.index, c.tile); }
   }
   if (cells.length) next.doodadGroups = [...(next.doodadGroups ?? []), { id: genId("doodad"), label: "혼합 군집", kitId: "mixed", cells }];
-  return finish(map, next, occupied, `혼합 소품 ${objects}개 · 가장자리 밀도 완화`);
+  return finish(map, next, occupied, `혼합 소품 ${objects}개 · 가장자리 밀도 완화`, tileset);
 }
