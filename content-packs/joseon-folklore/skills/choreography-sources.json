@@ -32,6 +32,70 @@
     ]
   },
   {
+    "skillId": "skill_jf_whirlwind_cut",
+    "retroChoreographyId": "skill_hero_whirlwind",
+    "motion": "spin",
+    "kind": "class",
+    "layers": [
+      {
+        "key": "hero_whirl",
+        "anchor": "allTargets",
+        "frame": 64,
+        "frames": 10,
+        "path": "public/assets/generated/pixel-fx/hero_whirl.png",
+        "sha256": "729396cc25dc68e3bf95e78e6754f878012b4a3620d41e7dac1e851f56f9a8de"
+      }
+    ]
+  },
+  {
+    "skillId": "skill_jf_earth_split",
+    "retroChoreographyId": "skill_minotaur_pal_split_earth",
+    "motion": "leap-strike",
+    "kind": "class",
+    "layers": [
+      {
+        "key": "mon_quake_crack",
+        "anchor": "allTargets",
+        "frame": 64,
+        "frames": 10,
+        "path": "public/assets/generated/pixel-fx/mon_quake_crack.png",
+        "sha256": "0a5ce0446386228bfb78c026ba00065fcfcb0d9ee81be4c9df3f01f171fd50f7"
+      }
+    ]
+  },
+  {
+    "skillId": "skill_jf_blood_oath",
+    "retroChoreographyId": "skill_dark_knight_blood_price",
+    "motion": "buff",
+    "kind": "class",
+    "layers": [
+      {
+        "key": "dark_knight_blood",
+        "anchor": "user",
+        "frame": 64,
+        "frames": 10,
+        "path": "public/assets/generated/pixel-fx/dark_knight_blood.png",
+        "sha256": "7880f34ef593038004e9fbc9eae8f0d5950649697d66ce9f6ff162c456d2934e"
+      }
+    ]
+  },
+  {
+    "skillId": "skill_jf_mountain_guard",
+    "retroChoreographyId": "skill_guard_iron_wall",
+    "motion": "buff",
+    "kind": "class",
+    "layers": [
+      {
+        "key": "guard_barrier",
+        "anchor": "allAllies",
+        "frame": 64,
+        "frames": 10,
+        "path": "public/assets/generated/pixel-fx/guard_barrier.png",
+        "sha256": "c7aaa4701342afe971f954356a3cb7a27b8017734eef4d6dfa11858728de1d20"
+      }
+    ]
+  },
+  {
     "skillId": "skill_jf_double_stab",
     "retroChoreographyId": "skill_scout_twin_strike",
     "motion": "flurry",
@@ -60,6 +124,78 @@
         "frames": 8,
         "path": "public/assets/generated/pixel-fx/scout_venom.png",
         "sha256": "263e042d01d9a5d1b1dbe8df08e3fd519a8dcb7eecf98426fe16ec11f48781e9"
+      }
+    ]
+  },
+  {
+    "skillId": "skill_jf_shadow_step",
+    "retroChoreographyId": "skill_butler_bow",
+    "motion": "buff",
+    "kind": "class",
+    "layers": [
+      {
+        "key": "scout_afterimage",
+        "anchor": "user",
+        "frame": 64,
+        "frames": 8,
+        "path": "public/assets/generated/pixel-fx/scout_afterimage.png",
+        "sha256": "b238deddc3de32366ed82ca6796aaa50baf575b4e4ead942758e2e67d31f2b06"
+      }
+    ]
+  },
+  {
+    "skillId": "skill_jf_heart_pierce",
+    "retroChoreographyId": "skill_scout_shadow_step",
+    "motion": "blink-strike",
+    "kind": "class",
+    "layers": [
+      {
+        "key": "scout_shadow_puff",
+        "anchor": "user",
+        "frame": 64,
+        "frames": 6,
+        "path": "public/assets/generated/pixel-fx/scout_shadow_puff.png",
+        "sha256": "90802b755a2670798ff7feb2928b196bab01b76f39591ac5f5d04e2b8775a3a6"
+      },
+      {
+        "key": "scout_backstab",
+        "anchor": "target",
+        "frame": 64,
+        "frames": 8,
+        "path": "public/assets/generated/pixel-fx/scout_backstab.png",
+        "sha256": "290d150190cd2e2e68f63fdea251eb8f2c51fa2e49465774a5ab5add8f443828"
+      }
+    ]
+  },
+  {
+    "skillId": "skill_jf_smoke_screen",
+    "retroChoreographyId": "skill_hermit_mist",
+    "motion": "buff",
+    "kind": "class",
+    "layers": [
+      {
+        "key": "hermit_mist",
+        "anchor": "allAllies",
+        "frame": 64,
+        "frames": 10,
+        "path": "public/assets/generated/pixel-fx/hermit_mist.png",
+        "sha256": "28f1a0bc06b99cc48eeb9dfe11119abf0e348b4b72da2b14b33c3d0e6a569452"
+      }
+    ]
+  },
+  {
+    "skillId": "skill_jf_moon_slash",
+    "retroChoreographyId": "skill_samurai_twin_moon",
+    "motion": "flurry",
+    "kind": "class",
+    "layers": [
+      {
+        "key": "samurai_moon",
+        "anchor": "target",
+        "frame": 64,
+        "frames": 10,
+        "path": "public/assets/generated/pixel-fx/samurai_moon.png",
+        "sha256": "4051243593c63121c70805271a03f6bc3f1cef136be66239fa98e18085eda6f5"
       }
     ]
   },
@@ -112,6 +248,78 @@
     ]
   },
   {
+    "skillId": "skill_jf_thunder_charm",
+    "retroChoreographyId": "skill_mage_chain_lightning",
+    "motion": "cast",
+    "kind": "class",
+    "layers": [
+      {
+        "key": "mage_chain_bolt",
+        "anchor": "allTargets",
+        "frame": 64,
+        "frames": 8,
+        "path": "public/assets/generated/pixel-fx/mage_chain_bolt.png",
+        "sha256": "871b5e542c3cfcdee858f3d8e58bb0f6b6b7a61d43fc49849c6a7b70cf16fcd8"
+      }
+    ]
+  },
+  {
+    "skillId": "skill_jf_spirit_drain",
+    "retroChoreographyId": "skill_wraith_mage_drain",
+    "motion": "cast",
+    "kind": "class",
+    "layers": [
+      {
+        "key": "wraith_mage_drain",
+        "anchor": "target",
+        "frame": 64,
+        "frames": 10,
+        "path": "public/assets/generated/pixel-fx/wraith_mage_drain.png",
+        "sha256": "6681aca58ad7e44bbb658e1a6e061975bc1ef0d5f5bce8fa5f555a83193a6811"
+      }
+    ]
+  },
+  {
+    "skillId": "skill_jf_ghost_seal",
+    "retroChoreographyId": "skill_shrine_maiden_seal",
+    "motion": "cast",
+    "kind": "class",
+    "layers": [
+      {
+        "key": "shrine_maiden_seal",
+        "anchor": "target",
+        "frame": 64,
+        "frames": 10,
+        "path": "public/assets/generated/pixel-fx/shrine_maiden_seal.png",
+        "sha256": "f458383f1baae39631dd41ede50a67627d6a83a142a494a074f6267ffb496a0b"
+      }
+    ]
+  },
+  {
+    "skillId": "skill_jf_heaven_fire",
+    "retroChoreographyId": "skill_mage_meteor",
+    "motion": "cast",
+    "kind": "class",
+    "layers": [
+      {
+        "key": "mage_meteor_rock",
+        "anchor": "projectile",
+        "frame": 32,
+        "frames": 4,
+        "path": "public/assets/generated/pixel-fx/mage_meteor_rock.png",
+        "sha256": "0cdf0e8beb6c1d1026e465c3b8091ad58feab41edaacbb24c6d880446d8ca0e4"
+      },
+      {
+        "key": "mage_meteor_blast",
+        "anchor": "allTargets",
+        "frame": 64,
+        "frames": 10,
+        "path": "public/assets/generated/pixel-fx/mage_meteor_blast.png",
+        "sha256": "33f7abf63ec1cbf8cd063330311c460e6111a8dbadc79cde64bd47688d66ca92"
+      }
+    ]
+  },
+  {
     "skillId": "skill_jf_life_water",
     "retroChoreographyId": "skill_cleric_heal_light",
     "motion": "cast",
@@ -140,6 +348,78 @@
         "frames": 10,
         "path": "public/assets/generated/pixel-fx/cleric_purify.png",
         "sha256": "3b16db494b17cb164d840ec3f6127b0b65bf299ced0367d35816cb98ed8e22d2"
+      }
+    ]
+  },
+  {
+    "skillId": "skill_jf_protective_talisman",
+    "retroChoreographyId": "skill_shrine_maiden_barrier",
+    "motion": "buff",
+    "kind": "class",
+    "layers": [
+      {
+        "key": "guard_barrier",
+        "anchor": "allAllies",
+        "frame": 64,
+        "frames": 10,
+        "path": "public/assets/generated/pixel-fx/guard_barrier.png",
+        "sha256": "c7aaa4701342afe971f954356a3cb7a27b8017734eef4d6dfa11858728de1d20"
+      }
+    ]
+  },
+  {
+    "skillId": "skill_jf_revive",
+    "retroChoreographyId": "skill_cleric_revive",
+    "motion": "cast",
+    "kind": "class",
+    "layers": [
+      {
+        "key": "cleric_revive",
+        "anchor": "target",
+        "frame": 64,
+        "frames": 12,
+        "path": "public/assets/generated/pixel-fx/cleric_revive.png",
+        "sha256": "1195d3c8c99b8bea3bcb57979cea02507d19a9cb625a8b60f9d50b6de1cde562"
+      }
+    ]
+  },
+  {
+    "skillId": "skill_jf_spring_rain",
+    "retroChoreographyId": "skill_cleric_mass_heal",
+    "motion": "cast",
+    "kind": "class",
+    "layers": [
+      {
+        "key": "cleric_mass_heal",
+        "anchor": "allAllies",
+        "frame": 64,
+        "frames": 10,
+        "path": "public/assets/generated/pixel-fx/cleric_mass_heal.png",
+        "sha256": "77269ba06809a56698574ad66612c8b8935b1a7b775cce7843cc8701dd82d253"
+      },
+      {
+        "key": "cleric_halo",
+        "anchor": "screen",
+        "frame": 128,
+        "frames": 8,
+        "path": "public/assets/generated/pixel-fx/cleric_halo.png",
+        "sha256": "099a22c273895450aba51c0521dfbe349b864d3855048a3bb071ca7258b0824b"
+      }
+    ]
+  },
+  {
+    "skillId": "skill_jf_heaven_blessing",
+    "retroChoreographyId": "skill_cleric_blessing",
+    "motion": "buff",
+    "kind": "class",
+    "layers": [
+      {
+        "key": "cleric_blessing",
+        "anchor": "allAllies",
+        "frame": 64,
+        "frames": 10,
+        "path": "public/assets/generated/pixel-fx/cleric_blessing.png",
+        "sha256": "00109569370cc04dfc13359beb0ab19c897fdbaf93e662b63e2eddb71e0b052c"
       }
     ]
   },
@@ -212,6 +492,142 @@
         "frames": 10,
         "path": "public/assets/generated/pixel-fx/mon_quake_crack.png",
         "sha256": "0a5ce0446386228bfb78c026ba00065fcfcb0d9ee81be4c9df3f01f171fd50f7"
+      }
+    ]
+  },
+  {
+    "skillId": "skill_jf_enemy_poison_bite",
+    "retroChoreographyId": "skill_mon_venom_fang",
+    "motion": "lunge",
+    "kind": "monster",
+    "layers": [
+      {
+        "key": "mon_fang_bite",
+        "anchor": "target",
+        "frame": 64,
+        "frames": 8,
+        "path": "public/assets/generated/pixel-fx/mon_fang_bite.png",
+        "sha256": "9079d2cbc24c5900a5cfd09e5b757e88df5171aba30258cbedaae198dc5a8278"
+      }
+    ]
+  },
+  {
+    "skillId": "skill_jf_enemy_wing_flurry",
+    "retroChoreographyId": "skill_mon_gale_wing",
+    "motion": "cast",
+    "kind": "monster",
+    "layers": [
+      {
+        "key": "mon_gale_screen",
+        "anchor": "screen",
+        "frame": 128,
+        "frames": 8,
+        "path": "public/assets/generated/pixel-fx/mon_gale_screen.png",
+        "sha256": "0ad0feb83931258101323290e51551bbdf8640f71412a11e8146e5ec80c747ca"
+      }
+    ]
+  },
+  {
+    "skillId": "skill_jf_enemy_ghost_fire",
+    "retroChoreographyId": "skill_mon_hex_fire",
+    "motion": "cast",
+    "kind": "monster",
+    "layers": [
+      {
+        "key": "mon_hex_flame",
+        "anchor": "allTargets",
+        "frame": 64,
+        "frames": 10,
+        "path": "public/assets/generated/pixel-fx/mon_hex_flame.png",
+        "sha256": "39c9a1ec60f13802bbffffccd866e53d6909d7b2bb223b3711a300d6e90fd02b"
+      }
+    ]
+  },
+  {
+    "skillId": "skill_jf_enemy_drowning_hand",
+    "retroChoreographyId": "skill_mon_bandage_bind",
+    "motion": "cast",
+    "kind": "monster",
+    "layers": [
+      {
+        "key": "mon_bandage_wrap",
+        "anchor": "target",
+        "frame": 64,
+        "frames": 10,
+        "path": "public/assets/generated/pixel-fx/mon_bandage_wrap.png",
+        "sha256": "c5d8e38a251de434e19603411fc1fd177cdac65bef3ccbf6249e3d03d909a95f"
+      }
+    ]
+  },
+  {
+    "skillId": "skill_jf_enemy_grave_grasp",
+    "retroChoreographyId": "skill_mon_bone_curse",
+    "motion": "cast",
+    "kind": "monster",
+    "layers": [
+      {
+        "key": "mon_curse_skull",
+        "anchor": "target",
+        "frame": 64,
+        "frames": 10,
+        "path": "public/assets/generated/pixel-fx/mon_curse_skull.png",
+        "sha256": "08b452ffae9013d17fca960962e386cbcdd57ad132055ad3c057b13773f589e9"
+      }
+    ]
+  },
+  {
+    "skillId": "skill_jf_enemy_fox_charm",
+    "retroChoreographyId": "skill_mon_evil_eye",
+    "motion": "cast",
+    "kind": "monster",
+    "layers": [
+      {
+        "key": "mon_gaze_screen",
+        "anchor": "screen",
+        "frame": 128,
+        "frames": 8,
+        "path": "public/assets/generated/pixel-fx/mon_gaze_screen.png",
+        "sha256": "0a16e4bae10bb86fab82836b7da86a440c8c7626fced8a113c74d6a3828040e5"
+      }
+    ]
+  },
+  {
+    "skillId": "skill_jf_enemy_stone_crush",
+    "retroChoreographyId": "skill_mon_boulder_throw",
+    "motion": "shoot",
+    "kind": "monster",
+    "layers": [
+      {
+        "key": "mon_boulder",
+        "anchor": "projectile",
+        "frame": 32,
+        "frames": 4,
+        "path": "public/assets/generated/pixel-fx/mon_boulder.png",
+        "sha256": "e71f9f943f7bb69a98cc8c540ebd7b58e010f2035d1fe031f9a2f5570268e790"
+      },
+      {
+        "key": "mon_rock_burst",
+        "anchor": "target",
+        "frame": 64,
+        "frames": 8,
+        "path": "public/assets/generated/pixel-fx/mon_rock_burst.png",
+        "sha256": "8daffd97beda53120547c7c5c4e4c971fe18c49604aaff783895cea58b2caf9f"
+      }
+    ]
+  },
+  {
+    "skillId": "skill_jf_enemy_bamboo_whip",
+    "retroChoreographyId": "skill_mon_vine_whip",
+    "motion": "cast",
+    "kind": "monster",
+    "layers": [
+      {
+        "key": "mon_vine_lash",
+        "anchor": "target",
+        "frame": 64,
+        "frames": 10,
+        "path": "public/assets/generated/pixel-fx/mon_vine_lash.png",
+        "sha256": "44967c136ab85079a8d3869f82d9a915e3ba6d5f774e501f77c48e5380e703fd"
       }
     ]
   }

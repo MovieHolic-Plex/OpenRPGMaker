@@ -1,6 +1,6 @@
 {
   "packId": "joseon-folklore",
-  "phase": "pilot",
+  "phase": "full",
   "engine": "rm2k3",
   "skin": "retro2003",
   "resource": {
@@ -16,13 +16,37 @@
           "skillId": "skill_jf_cleaving_strike",
           "level": 1,
           "acquisition": "해당 직업 레벨 도달",
-          "region": "초반 마을·들판·폐사당"
+          "region": "마을·들판·폐사당"
         },
         {
           "skillId": "skill_jf_iron_breath",
           "level": 3,
           "acquisition": "해당 직업 레벨 도달",
-          "region": "초반 마을·들판·폐사당"
+          "region": "마을·들판·폐사당"
+        },
+        {
+          "skillId": "skill_jf_whirlwind_cut",
+          "level": 5,
+          "acquisition": "해당 직업 레벨 도달",
+          "region": "산길·무덤·수몰지"
+        },
+        {
+          "skillId": "skill_jf_earth_split",
+          "level": 8,
+          "acquisition": "해당 직업 레벨 도달",
+          "region": "산길·무덤·수몰지"
+        },
+        {
+          "skillId": "skill_jf_blood_oath",
+          "level": 12,
+          "acquisition": "해당 직업 레벨 도달",
+          "region": "산신당·대숲·깊은사당"
+        },
+        {
+          "skillId": "skill_jf_mountain_guard",
+          "level": 16,
+          "acquisition": "해당 직업 레벨 도달",
+          "region": "산신당·대숲·깊은사당"
         }
       ]
     },
@@ -33,13 +57,37 @@
           "skillId": "skill_jf_double_stab",
           "level": 1,
           "acquisition": "해당 직업 레벨 도달",
-          "region": "초반 마을·들판·폐사당"
+          "region": "마을·들판·폐사당"
         },
         {
           "skillId": "skill_jf_venom_edge",
           "level": 3,
           "acquisition": "해당 직업 레벨 도달",
-          "region": "초반 마을·들판·폐사당"
+          "region": "마을·들판·폐사당"
+        },
+        {
+          "skillId": "skill_jf_shadow_step",
+          "level": 5,
+          "acquisition": "해당 직업 레벨 도달",
+          "region": "산길·무덤·수몰지"
+        },
+        {
+          "skillId": "skill_jf_heart_pierce",
+          "level": 8,
+          "acquisition": "해당 직업 레벨 도달",
+          "region": "산길·무덤·수몰지"
+        },
+        {
+          "skillId": "skill_jf_smoke_screen",
+          "level": 12,
+          "acquisition": "해당 직업 레벨 도달",
+          "region": "산신당·대숲·깊은사당"
+        },
+        {
+          "skillId": "skill_jf_moon_slash",
+          "level": 16,
+          "acquisition": "해당 직업 레벨 도달",
+          "region": "산신당·대숲·깊은사당"
         }
       ]
     },
@@ -50,13 +98,37 @@
           "skillId": "skill_jf_ember_charm",
           "level": 1,
           "acquisition": "해당 직업 레벨 도달",
-          "region": "초반 마을·들판·폐사당"
+          "region": "마을·들판·폐사당"
         },
         {
           "skillId": "skill_jf_frost_charm",
           "level": 3,
           "acquisition": "해당 직업 레벨 도달",
-          "region": "초반 마을·들판·폐사당"
+          "region": "마을·들판·폐사당"
+        },
+        {
+          "skillId": "skill_jf_thunder_charm",
+          "level": 5,
+          "acquisition": "해당 직업 레벨 도달",
+          "region": "산길·무덤·수몰지"
+        },
+        {
+          "skillId": "skill_jf_spirit_drain",
+          "level": 8,
+          "acquisition": "해당 직업 레벨 도달",
+          "region": "산길·무덤·수몰지"
+        },
+        {
+          "skillId": "skill_jf_ghost_seal",
+          "level": 12,
+          "acquisition": "해당 직업 레벨 도달",
+          "region": "산신당·대숲·깊은사당"
+        },
+        {
+          "skillId": "skill_jf_heaven_fire",
+          "level": 16,
+          "acquisition": "해당 직업 레벨 도달",
+          "region": "산신당·대숲·깊은사당"
         }
       ]
     },
@@ -67,86 +139,1206 @@
           "skillId": "skill_jf_life_water",
           "level": 1,
           "acquisition": "해당 직업 레벨 도달",
-          "region": "초반 마을·들판·폐사당"
+          "region": "마을·들판·폐사당"
         },
         {
           "skillId": "skill_jf_purify",
           "level": 3,
           "acquisition": "해당 직업 레벨 도달",
-          "region": "초반 마을·들판·폐사당"
+          "region": "마을·들판·폐사당"
+        },
+        {
+          "skillId": "skill_jf_protective_talisman",
+          "level": 5,
+          "acquisition": "해당 직업 레벨 도달",
+          "region": "산길·무덤·수몰지"
+        },
+        {
+          "skillId": "skill_jf_revive",
+          "level": 8,
+          "acquisition": "해당 직업 레벨 도달",
+          "region": "산길·무덤·수몰지"
+        },
+        {
+          "skillId": "skill_jf_spring_rain",
+          "level": 12,
+          "acquisition": "해당 직업 레벨 도달",
+          "region": "산신당·대숲·깊은사당"
+        },
+        {
+          "skillId": "skill_jf_heaven_blessing",
+          "level": 16,
+          "acquisition": "해당 직업 레벨 도달",
+          "region": "산신당·대숲·깊은사당"
         }
       ]
     }
   ],
   "enemySkills": [
     {
+      "enemyId": "enemy_jf_field_rat",
+      "skillIds": [
+        "skill_jf_enemy_poison_bite"
+      ],
+      "boss": false,
+      "integration": "감독자/behavior 담당 연결용; 이 폴더는 적 행동 레코드를 수정하지 않음"
+    },
+    {
       "enemyId": "enemy_jf_wild_boar",
-      "skillId": "skill_jf_enemy_tusk_charge",
-      "region": "들판",
-      "suggestedLevel": 1
+      "skillIds": [
+        "skill_jf_enemy_tusk_charge"
+      ],
+      "boss": false,
+      "integration": "감독자/behavior 담당 연결용; 이 폴더는 적 행동 레코드를 수정하지 않음"
+    },
+    {
+      "enemyId": "enemy_jf_cave_bat",
+      "skillIds": [
+        "skill_jf_enemy_wing_flurry"
+      ],
+      "boss": false,
+      "integration": "감독자/behavior 담당 연결용; 이 폴더는 적 행동 레코드를 수정하지 않음"
     },
     {
       "enemyId": "enemy_jf_straw_dokkaebi",
-      "skillId": "skill_jf_enemy_straw_club",
-      "region": "폐사당 앞",
-      "suggestedLevel": 2
+      "skillIds": [
+        "skill_jf_enemy_straw_club"
+      ],
+      "boss": false,
+      "integration": "감독자/behavior 담당 연결용; 이 폴더는 적 행동 레코드를 수정하지 않음"
+    },
+    {
+      "enemyId": "enemy_jf_lantern_wisp",
+      "skillIds": [
+        "skill_jf_enemy_ghost_fire"
+      ],
+      "boss": false,
+      "integration": "감독자/behavior 담당 연결용; 이 폴더는 적 행동 레코드를 수정하지 않음"
     },
     {
       "enemyId": "enemy_jf_maiden_ghost",
-      "skillId": "skill_jf_enemy_sorrow_cry",
-      "region": "폐사당",
-      "suggestedLevel": 3
+      "skillIds": [
+        "skill_jf_enemy_sorrow_cry"
+      ],
+      "boss": false,
+      "integration": "감독자/behavior 담당 연결용; 이 폴더는 적 행동 레코드를 수정하지 않음"
+    },
+    {
+      "enemyId": "enemy_jf_drowned_ghost",
+      "skillIds": [
+        "skill_jf_enemy_drowning_hand"
+      ],
+      "boss": false,
+      "integration": "감독자/behavior 담당 연결용; 이 폴더는 적 행동 레코드를 수정하지 않음"
+    },
+    {
+      "enemyId": "enemy_jf_grave_ghoul",
+      "skillIds": [
+        "skill_jf_enemy_grave_grasp"
+      ],
+      "boss": false,
+      "integration": "감독자/behavior 담당 연결용; 이 폴더는 적 행동 레코드를 수정하지 않음"
+    },
+    {
+      "enemyId": "enemy_jf_fox_spirit",
+      "skillIds": [
+        "skill_jf_enemy_fox_charm"
+      ],
+      "boss": false,
+      "integration": "감독자/behavior 담당 연결용; 이 폴더는 적 행동 레코드를 수정하지 않음"
+    },
+    {
+      "enemyId": "enemy_jf_stone_dokkaebi",
+      "skillIds": [
+        "skill_jf_enemy_stone_crush"
+      ],
+      "boss": false,
+      "integration": "감독자/behavior 담당 연결용; 이 폴더는 적 행동 레코드를 수정하지 않음"
+    },
+    {
+      "enemyId": "enemy_jf_bamboo_specter",
+      "skillIds": [
+        "skill_jf_enemy_bamboo_whip"
+      ],
+      "boss": false,
+      "integration": "감독자/behavior 담당 연결용; 이 폴더는 적 행동 레코드를 수정하지 않음"
+    },
+    {
+      "enemyId": "enemy_jf_masked_bandit",
+      "skillIds": [
+        "skill_jf_enemy_poison_bite",
+        "skill_jf_enemy_straw_club"
+      ],
+      "boss": false,
+      "integration": "감독자/behavior 담당 연결용; 이 폴더는 적 행동 레코드를 수정하지 않음"
     },
     {
       "enemyId": "enemy_jf_bronze_dokkaebi",
+      "skillIds": [
+        "skill_jf_enemy_bronze_smash",
+        "skill_jf_enemy_straw_club"
+      ],
+      "boss": true,
+      "integration": "감독자/behavior 담당 연결용; 이 폴더는 적 행동 레코드를 수정하지 않음"
+    },
+    {
+      "enemyId": "enemy_jf_bride_wraith",
+      "skillIds": [
+        "skill_jf_enemy_sorrow_cry",
+        "skill_jf_enemy_drowning_hand"
+      ],
+      "boss": true,
+      "integration": "감독자/behavior 담당 연결용; 이 폴더는 적 행동 레코드를 수정하지 않음"
+    },
+    {
+      "enemyId": "enemy_jf_mountain_tiger",
+      "skillIds": [
+        "skill_jf_enemy_tusk_charge",
+        "skill_jf_enemy_wing_flurry"
+      ],
+      "boss": true,
+      "integration": "감독자/behavior 담당 연결용; 이 폴더는 적 행동 레코드를 수정하지 않음"
+    }
+  ],
+  "bossTelegraphs": [
+    {
+      "enemyId": "enemy_jf_bronze_dokkaebi",
       "skillId": "skill_jf_enemy_bronze_smash",
-      "region": "폐사당 보스방",
-      "suggestedLevel": 4
+      "chargeTurns": 1,
+      "sampleStats": {
+        "maxHp": 650,
+        "maxMp": 30,
+        "attack": 48,
+        "defense": 24,
+        "mind": 28,
+        "agility": 30
+      },
+      "counterplay": "예고 중 방어 또는 HP 회복",
+      "note": "공유 기술이므로 일반 멧돼지·처녀귀신도 동일하게 1차례 예고함; 시전자별 다른 수치를 발명하지 않음"
+    },
+    {
+      "enemyId": "enemy_jf_bride_wraith",
+      "skillId": "skill_jf_enemy_sorrow_cry",
+      "chargeTurns": 1,
+      "sampleStats": {
+        "maxHp": 650,
+        "maxMp": 30,
+        "attack": 48,
+        "defense": 24,
+        "mind": 28,
+        "agility": 30
+      },
+      "counterplay": "발동 후 맑힘부로 귀봉 해제",
+      "note": "공유 기술이므로 일반 멧돼지·처녀귀신도 동일하게 1차례 예고함; 시전자별 다른 수치를 발명하지 않음"
+    },
+    {
+      "enemyId": "enemy_jf_mountain_tiger",
+      "skillId": "skill_jf_enemy_tusk_charge",
+      "chargeTurns": 1,
+      "sampleStats": {
+        "maxHp": 650,
+        "maxMp": 30,
+        "attack": 48,
+        "defense": 24,
+        "mind": 28,
+        "agility": 30
+      },
+      "counterplay": "예고 중 방어 또는 HP 회복",
+      "note": "공유 기술이므로 일반 멧돼지·처녀귀신도 동일하게 1차례 예고함; 시전자별 다른 수치를 발명하지 않음"
     }
   ],
   "stateDefinitions": [
     {
       "id": "state_jf_iron_breath",
-      "effect": "물리 방어 계산 배율 1.6. 피해 40% 감소 보장은 아님.",
-      "source": "skill_jf_iron_breath"
+      "name": "쇠숨",
+      "runtimeEffects": {
+        "restrictsAction": false,
+        "blocksSkillUse": false,
+        "hpDamagePercentPerTurn": 0,
+        "hpHealPercentPerTurn": 0,
+        "attackMultiplier": 1,
+        "defenseMultiplier": 1,
+        "agilityMultiplier": 1,
+        "removeOnBattleEnd": true,
+        "physicalDefenseMultiplier": 1.6
+      },
+      "expiresAtOwnUpkeep": 3,
+      "sourceSkills": [
+        "skill_jf_iron_breath",
+        "skill_jf_mountain_guard"
+      ]
     },
     {
       "id": "state_jf_shadow_step",
-      "effect": "물리 피해 기술과 기본 공격의 명중률에서 30%p 차감. 마법 회피는 아님.",
-      "source": "후속 레벨5 기술용 정본 상태 정의; 파일럿 부여 기술 없음"
+      "name": "그림자걸음",
+      "runtimeEffects": {
+        "restrictsAction": false,
+        "blocksSkillUse": false,
+        "hpDamagePercentPerTurn": 0,
+        "hpHealPercentPerTurn": 0,
+        "attackMultiplier": 1,
+        "defenseMultiplier": 1,
+        "agilityMultiplier": 1,
+        "removeOnBattleEnd": true,
+        "evasionChance": 30
+      },
+      "expiresAtOwnUpkeep": 3,
+      "sourceSkills": [
+        "skill_jf_shadow_step",
+        "skill_jf_smoke_screen"
+      ]
     },
     {
       "id": "state_jf_protective_talisman",
-      "effect": "물리·마법 방어 계산 배율 각각 1.4. 피해 40% 감소 보장은 아님.",
-      "source": "후속 레벨5 기술용 정본 상태 정의; 파일럿 부여 기술 없음"
+      "name": "호신부",
+      "runtimeEffects": {
+        "restrictsAction": false,
+        "blocksSkillUse": false,
+        "hpDamagePercentPerTurn": 0,
+        "hpHealPercentPerTurn": 0,
+        "attackMultiplier": 1,
+        "defenseMultiplier": 1,
+        "agilityMultiplier": 1,
+        "removeOnBattleEnd": true,
+        "physicalDefenseMultiplier": 1.4,
+        "magicDefenseMultiplier": 1.4
+      },
+      "expiresAtOwnUpkeep": 3,
+      "sourceSkills": [
+        "skill_jf_mountain_guard",
+        "skill_jf_protective_talisman"
+      ]
     },
     {
       "id": "state_jf_ghost_seal",
-      "effect": "모든 기술 사용 봉쇄. 행동불가·마법만 봉쇄는 아님.",
-      "source": "skill_jf_enemy_sorrow_cry"
+      "name": "귀봉",
+      "runtimeEffects": {
+        "restrictsAction": false,
+        "blocksSkillUse": true,
+        "hpDamagePercentPerTurn": 0,
+        "hpHealPercentPerTurn": 0,
+        "attackMultiplier": 1,
+        "defenseMultiplier": 1,
+        "agilityMultiplier": 1,
+        "removeOnBattleEnd": true
+      },
+      "expiresAtOwnUpkeep": 2,
+      "sourceSkills": [
+        "skill_jf_ghost_seal",
+        "skill_jf_purify",
+        "skill_jf_enemy_sorrow_cry",
+        "skill_jf_enemy_drowning_hand"
+      ]
     },
     {
       "id": "state_jf_fox_charm",
-      "effect": "공격 계산 능력치 0.75배. 조종·혼란·아군 공격 없음.",
-      "source": "적 후속 기술용 정본 상태 정의; 파일럿 부여 기술 없음"
+      "name": "여우홀림",
+      "runtimeEffects": {
+        "restrictsAction": false,
+        "blocksSkillUse": false,
+        "hpDamagePercentPerTurn": 0,
+        "hpHealPercentPerTurn": 0,
+        "attackMultiplier": 0.75,
+        "defenseMultiplier": 1,
+        "agilityMultiplier": 1,
+        "removeOnBattleEnd": true
+      },
+      "expiresAtOwnUpkeep": 3,
+      "sourceSkills": [
+        "skill_jf_purify",
+        "skill_jf_enemy_grave_grasp",
+        "skill_jf_enemy_fox_charm"
+      ]
     },
     {
       "id": "state_jf_heaven_blessing",
-      "effect": "공격·방어 1.2배, 자기 차례 시작 최대 HP 5% 회복. 재생은 해제 차례에도 먼저 적용.",
-      "source": "후속 레벨16 기술용 정본 상태 정의; 파일럿 부여 기술 없음"
+      "name": "하늘복",
+      "runtimeEffects": {
+        "restrictsAction": false,
+        "blocksSkillUse": false,
+        "hpDamagePercentPerTurn": 0,
+        "hpHealPercentPerTurn": 5,
+        "attackMultiplier": 1.2,
+        "defenseMultiplier": 1.2,
+        "agilityMultiplier": 1,
+        "removeOnBattleEnd": true
+      },
+      "expiresAtOwnUpkeep": 3,
+      "sourceSkills": [
+        "skill_jf_blood_oath",
+        "skill_jf_heaven_blessing"
+      ]
+    },
+    {
+      "id": "state_death",
+      "name": "전투불능",
+      "runtimeEffects": {
+        "restrictsAction": true,
+        "blocksSkillUse": true,
+        "incapacitates": true,
+        "removeOnBattleEnd": false,
+        "hpDamagePercentPerTurn": 0,
+        "hpHealPercentPerTurn": 0
+      },
+      "expiresAtOwnUpkeep": null,
+      "sourceSkills": [
+        "skill_jf_revive"
+      ]
+    },
+    {
+      "id": "state_poison",
+      "name": "독",
+      "expiresAtOwnUpkeep": null,
+      "sourceSkills": [
+        "skill_jf_venom_edge",
+        "skill_jf_purify",
+        "skill_jf_spring_rain",
+        "skill_jf_enemy_poison_bite"
+      ]
+    },
+    {
+      "id": "state_deep_poison",
+      "name": "맹독",
+      "runtimeEffects": {
+        "hpDamagePercentPerTurn": 12,
+        "removeOnBattleEnd": false
+      },
+      "expiresAtOwnUpkeep": null,
+      "sourceSkills": [
+        "skill_jf_purify"
+      ]
+    },
+    {
+      "id": "state_silence",
+      "name": "침묵",
+      "runtimeEffects": {
+        "blocksSkillUse": true,
+        "removeOnBattleEnd": true
+      },
+      "expiresAtOwnUpkeep": null,
+      "sourceSkills": [
+        "skill_jf_purify"
+      ]
     }
   ],
+  "effectSamples": [
+    {
+      "skillId": "skill_jf_cleaving_strike",
+      "name": "장작가름",
+      "mp": 4,
+      "power": 20,
+      "scope": "enemy",
+      "effect": {
+        "kind": "damage",
+        "statistic": "attack",
+        "affects": "hp"
+      },
+      "hitSequence": [
+        1
+      ],
+      "hitRate": 95,
+      "stateEffects": [],
+      "chargeTurns": 0,
+      "description": "기력 4. 적1 물리 위력20·1타. 명중95%."
+    },
+    {
+      "skillId": "skill_jf_iron_breath",
+      "name": "쇠숨",
+      "mp": 5,
+      "power": 0,
+      "scope": "self",
+      "effect": {
+        "kind": "support"
+      },
+      "hitSequence": [
+        1
+      ],
+      "hitRate": 100,
+      "stateEffects": [
+        {
+          "stateId": "state_jf_iron_breath",
+          "chance": 100,
+          "operation": "add"
+        }
+      ],
+      "chargeTurns": 0,
+      "description": "기력 5. 자기 쇠숨100%: 물리 방어 계산1.6배. 3번째 자기 차례 시작 해제. (부여확률은 저항 적용)"
+    },
+    {
+      "skillId": "skill_jf_whirlwind_cut",
+      "name": "돌개베기",
+      "mp": 8,
+      "power": 18,
+      "scope": "allEnemies",
+      "effect": {
+        "kind": "damage",
+        "statistic": "attack",
+        "affects": "hp"
+      },
+      "hitSequence": [
+        1
+      ],
+      "hitRate": 95,
+      "stateEffects": [],
+      "chargeTurns": 0,
+      "description": "기력 8. 적전체 물리 위력18·각1타. 명중95%."
+    },
+    {
+      "skillId": "skill_jf_earth_split",
+      "name": "땅가르기",
+      "mp": 12,
+      "power": 32,
+      "scope": "allEnemies",
+      "effect": {
+        "kind": "damage",
+        "statistic": "attack",
+        "affects": "hp"
+      },
+      "hitSequence": [
+        1
+      ],
+      "hitRate": 95,
+      "stateEffects": [],
+      "chargeTurns": 1,
+      "description": "기력 12. 예고 후 다음 자기 차례 적전체 물리 위력32·각1타. 명중95%."
+    },
+    {
+      "skillId": "skill_jf_blood_oath",
+      "name": "피의서약",
+      "mp": 12,
+      "power": 0,
+      "scope": "self",
+      "effect": {
+        "kind": "support"
+      },
+      "hitSequence": [
+        1
+      ],
+      "hitRate": 100,
+      "stateEffects": [
+        {
+          "stateId": "state_jf_heaven_blessing",
+          "chance": 100,
+          "operation": "add"
+        }
+      ],
+      "chargeTurns": 0,
+      "description": "기력 12. 최대HP12% 대가(HP1하한). 자기 하늘복100%: 공격·방어1.2배, 차례당 HP5% 재생. 3번째 자기 차례 시작 해제. (부여확률은 저항 적용)"
+    },
+    {
+      "skillId": "skill_jf_mountain_guard",
+      "name": "산의수호",
+      "mp": 16,
+      "power": 0,
+      "scope": "allAllies",
+      "effect": {
+        "kind": "support"
+      },
+      "hitSequence": [
+        1
+      ],
+      "hitRate": 100,
+      "stateEffects": [
+        {
+          "stateId": "state_jf_iron_breath",
+          "chance": 100,
+          "operation": "add"
+        },
+        {
+          "stateId": "state_jf_protective_talisman",
+          "chance": 100,
+          "operation": "add"
+        }
+      ],
+      "chargeTurns": 0,
+      "description": "기력 16. 아군전체 쇠숨·호신부100%: 물리 방어 계산2.24배·마법1.4배. 3번째 자기 차례 시작 해제. (부여확률은 저항 적용)"
+    },
+    {
+      "skillId": "skill_jf_double_stab",
+      "name": "쌍바늘",
+      "mp": 4,
+      "power": 10,
+      "scope": "enemy",
+      "effect": {
+        "kind": "damage",
+        "statistic": "attack",
+        "affects": "hp"
+      },
+      "hitSequence": [
+        0.65,
+        0.65
+      ],
+      "hitRate": 95,
+      "stateEffects": [],
+      "chargeTurns": 0,
+      "description": "기력 4. 적1 물리 위력10 계산의65%씩2타. 타마다 명중95%."
+    },
+    {
+      "skillId": "skill_jf_venom_edge",
+      "name": "독묻힌날",
+      "mp": 5,
+      "power": 14,
+      "scope": "enemy",
+      "effect": {
+        "kind": "damage",
+        "statistic": "attack",
+        "affects": "hp"
+      },
+      "hitSequence": [
+        1
+      ],
+      "hitRate": 95,
+      "stateEffects": [
+        {
+          "stateId": "state_poison",
+          "chance": 60,
+          "operation": "add"
+        }
+      ],
+      "chargeTurns": 0,
+      "description": "기력 5. 적1 물리14·1타/명중95%. 명중 후 독60%: 자기 차례 최대HP6% 피해, HP1하한. (부여확률은 저항 적용)"
+    },
+    {
+      "skillId": "skill_jf_shadow_step",
+      "name": "그림자걸음",
+      "mp": 7,
+      "power": 0,
+      "scope": "self",
+      "effect": {
+        "kind": "support"
+      },
+      "hitSequence": [
+        1
+      ],
+      "hitRate": 100,
+      "stateEffects": [
+        {
+          "stateId": "state_jf_shadow_step",
+          "chance": 100,
+          "operation": "add"
+        }
+      ],
+      "chargeTurns": 0,
+      "description": "기력 7. 자기 그림자걸음100%: 물리 명중률30%p 차감. 마법 회피 없음. 3번째 자기 차례 시작 해제. (부여확률은 저항 적용)"
+    },
+    {
+      "skillId": "skill_jf_heart_pierce",
+      "name": "급소찌르기",
+      "mp": 10,
+      "power": 36,
+      "scope": "enemy",
+      "effect": {
+        "kind": "damage",
+        "statistic": "attack",
+        "affects": "hp"
+      },
+      "hitSequence": [
+        1
+      ],
+      "hitRate": 95,
+      "stateEffects": [],
+      "chargeTurns": 0,
+      "description": "기력 10. 적1 물리1타. 위력36+공격/2 수식으로 방어 계산 생략. 명중95%."
+    },
+    {
+      "skillId": "skill_jf_smoke_screen",
+      "name": "연막장막",
+      "mp": 13,
+      "power": 0,
+      "scope": "allAllies",
+      "effect": {
+        "kind": "support"
+      },
+      "hitSequence": [
+        1
+      ],
+      "hitRate": 100,
+      "stateEffects": [
+        {
+          "stateId": "state_jf_shadow_step",
+          "chance": 100,
+          "operation": "add"
+        }
+      ],
+      "chargeTurns": 0,
+      "description": "기력 13. 아군전체 그림자걸음100%: 물리 명중률30%p 차감. 3번째 자기 차례 시작 해제. (부여확률은 저항 적용)"
+    },
+    {
+      "skillId": "skill_jf_moon_slash",
+      "name": "달빛쌍참",
+      "mp": 16,
+      "power": 44,
+      "scope": "enemy",
+      "effect": {
+        "kind": "damage",
+        "statistic": "attack",
+        "affects": "hp"
+      },
+      "hitSequence": [
+        0.75,
+        0.75
+      ],
+      "hitRate": 95,
+      "stateEffects": [],
+      "chargeTurns": 1,
+      "description": "기력 16. 예고 후 다음 자기 차례 적1 물리44 계산의75%씩2타. 타마다 명중95%."
+    },
+    {
+      "skillId": "skill_jf_ember_charm",
+      "name": "잿불부",
+      "mp": 6,
+      "power": 28,
+      "scope": "enemy",
+      "effect": {
+        "kind": "damage",
+        "statistic": "mind",
+        "affects": "hp"
+      },
+      "hitSequence": [
+        1
+      ],
+      "hitRate": 100,
+      "stateEffects": [],
+      "chargeTurns": 0,
+      "description": "기력 6. 적1 불 속성 정신력 위력28·1타. 명중100%."
+    },
+    {
+      "skillId": "skill_jf_frost_charm",
+      "name": "서리부",
+      "mp": 7,
+      "power": 30,
+      "scope": "enemy",
+      "effect": {
+        "kind": "damage",
+        "statistic": "mind",
+        "affects": "hp"
+      },
+      "hitSequence": [
+        1
+      ],
+      "hitRate": 100,
+      "stateEffects": [],
+      "chargeTurns": 0,
+      "description": "기력 7. 적1 얼음 속성 정신력 위력30·1타. 명중100%. 행동 봉쇄 없음."
+    },
+    {
+      "skillId": "skill_jf_thunder_charm",
+      "name": "벼락부",
+      "mp": 9,
+      "power": 24,
+      "scope": "allEnemies",
+      "effect": {
+        "kind": "damage",
+        "statistic": "mind",
+        "affects": "hp"
+      },
+      "hitSequence": [
+        1
+      ],
+      "hitRate": 100,
+      "stateEffects": [],
+      "chargeTurns": 0,
+      "description": "기력 9. 적전체 번개 속성 정신력 위력24·각1타. 명중100%."
+    },
+    {
+      "skillId": "skill_jf_spirit_drain",
+      "name": "혼빨기",
+      "mp": 10,
+      "power": 34,
+      "scope": "enemy",
+      "effect": {
+        "kind": "damage",
+        "statistic": "mind",
+        "affects": "hp"
+      },
+      "hitSequence": [
+        1
+      ],
+      "hitRate": 100,
+      "stateEffects": [],
+      "chargeTurns": 0,
+      "description": "기력 10. 적1 영성 정신력 위력34·1타. 명중100%. 준 HP피해40%를 자기HP로 흡수(최소1)."
+    },
+    {
+      "skillId": "skill_jf_ghost_seal",
+      "name": "귀봉부",
+      "mp": 12,
+      "power": 0,
+      "scope": "enemy",
+      "effect": {
+        "kind": "support"
+      },
+      "hitSequence": [
+        1
+      ],
+      "hitRate": 100,
+      "stateEffects": [
+        {
+          "stateId": "state_jf_ghost_seal",
+          "chance": 70,
+          "operation": "add"
+        }
+      ],
+      "chargeTurns": 0,
+      "description": "기력 12. 적1 귀봉70%: 모든 기술 봉쇄, 기본 공격·아이템 허용. 2번째 자기 차례 시작 해제. (부여확률은 저항 적용)"
+    },
+    {
+      "skillId": "skill_jf_heaven_fire",
+      "name": "하늘불",
+      "mp": 22,
+      "power": 62,
+      "scope": "allEnemies",
+      "effect": {
+        "kind": "damage",
+        "statistic": "mind",
+        "affects": "hp"
+      },
+      "hitSequence": [
+        1
+      ],
+      "hitRate": 100,
+      "stateEffects": [],
+      "chargeTurns": 1,
+      "description": "기력 22. 예고 후 다음 자기 차례 적전체 불 속성 정신력 위력62·각1타. 명중100%."
+    },
+    {
+      "skillId": "skill_jf_life_water",
+      "name": "생명수",
+      "mp": 6,
+      "power": 45,
+      "scope": "ally",
+      "effect": {
+        "kind": "healing",
+        "statistic": "mind",
+        "affects": "hp"
+      },
+      "hitSequence": [
+        1
+      ],
+      "hitRate": 100,
+      "stateEffects": [],
+      "chargeTurns": 0,
+      "description": "기력 6. 살아 있는 아군1 HP45 회복(최대HP 상한)."
+    },
+    {
+      "skillId": "skill_jf_purify",
+      "name": "맑힘부",
+      "mp": 5,
+      "power": 0,
+      "scope": "ally",
+      "effect": {
+        "kind": "support"
+      },
+      "hitSequence": [
+        1
+      ],
+      "hitRate": 100,
+      "stateEffects": [
+        {
+          "stateId": "state_poison",
+          "chance": 100,
+          "operation": "remove"
+        },
+        {
+          "stateId": "state_deep_poison",
+          "chance": 100,
+          "operation": "remove"
+        },
+        {
+          "stateId": "state_silence",
+          "chance": 100,
+          "operation": "remove"
+        },
+        {
+          "stateId": "state_jf_ghost_seal",
+          "chance": 100,
+          "operation": "remove"
+        },
+        {
+          "stateId": "state_jf_fox_charm",
+          "chance": 100,
+          "operation": "remove"
+        }
+      ],
+      "chargeTurns": 0,
+      "description": "기력 5. 아군1 독·맹독·침묵·귀봉·여우홀림 해제100%."
+    },
+    {
+      "skillId": "skill_jf_protective_talisman",
+      "name": "호신부",
+      "mp": 8,
+      "power": 0,
+      "scope": "allAllies",
+      "effect": {
+        "kind": "support"
+      },
+      "hitSequence": [
+        1
+      ],
+      "hitRate": 100,
+      "stateEffects": [
+        {
+          "stateId": "state_jf_protective_talisman",
+          "chance": 100,
+          "operation": "add"
+        }
+      ],
+      "chargeTurns": 0,
+      "description": "기력 8. 아군전체 호신부100%: 물리·마법 방어 계산1.4배. 3번째 자기 차례 시작 해제. (부여확률은 저항 적용)"
+    },
+    {
+      "skillId": "skill_jf_revive",
+      "name": "되살림",
+      "mp": 12,
+      "power": 60,
+      "scope": "ally",
+      "effect": {
+        "kind": "healing",
+        "statistic": "mind",
+        "affects": "hp"
+      },
+      "hitSequence": [
+        1
+      ],
+      "hitRate": 100,
+      "stateEffects": [
+        {
+          "stateId": "state_death",
+          "chance": 100,
+          "operation": "remove"
+        }
+      ],
+      "chargeTurns": 0,
+      "description": "기력 12. 쓰러진 아군1 HP60 회복·전투불능 해제100%(최대HP 상한)."
+    },
+    {
+      "skillId": "skill_jf_spring_rain",
+      "name": "봄비",
+      "mp": 16,
+      "power": 40,
+      "scope": "allAllies",
+      "effect": {
+        "kind": "healing",
+        "statistic": "mind",
+        "affects": "hp"
+      },
+      "hitSequence": [
+        1
+      ],
+      "hitRate": 100,
+      "stateEffects": [
+        {
+          "stateId": "state_poison",
+          "chance": 100,
+          "operation": "remove"
+        }
+      ],
+      "chargeTurns": 0,
+      "description": "기력 16. 살아 있는 아군전체 각각 HP40 회복·독 해제100%(최대HP 상한)."
+    },
+    {
+      "skillId": "skill_jf_heaven_blessing",
+      "name": "하늘복",
+      "mp": 18,
+      "power": 0,
+      "scope": "allAllies",
+      "effect": {
+        "kind": "support"
+      },
+      "hitSequence": [
+        1
+      ],
+      "hitRate": 100,
+      "stateEffects": [
+        {
+          "stateId": "state_jf_heaven_blessing",
+          "chance": 100,
+          "operation": "add"
+        }
+      ],
+      "chargeTurns": 0,
+      "description": "기력 18. 아군전체 하늘복100%: 공격·방어1.2배, 자기 차례 최대HP5% 재생. 3번째 자기 차례 시작 해제. (부여확률은 저항 적용)"
+    },
+    {
+      "skillId": "skill_jf_enemy_tusk_charge",
+      "name": "엄니돌진",
+      "mp": 3,
+      "power": 20,
+      "scope": "enemy",
+      "effect": {
+        "kind": "damage",
+        "statistic": "attack",
+        "affects": "hp"
+      },
+      "hitSequence": [
+        1
+      ],
+      "hitRate": 90,
+      "stateEffects": [],
+      "chargeTurns": 1,
+      "description": "기력 3. 예고 후 다음 자기 차례 상대1 물리 위력20·1타. 명중90%."
+    },
+    {
+      "skillId": "skill_jf_enemy_straw_club",
+      "name": "짚방망이",
+      "mp": 3,
+      "power": 18,
+      "scope": "enemy",
+      "effect": {
+        "kind": "damage",
+        "statistic": "attack",
+        "affects": "hp"
+      },
+      "hitSequence": [
+        1
+      ],
+      "hitRate": 95,
+      "stateEffects": [],
+      "chargeTurns": 0,
+      "description": "기력 3. 상대1 물리 위력18·1타. 명중95%."
+    },
+    {
+      "skillId": "skill_jf_enemy_sorrow_cry",
+      "name": "한의울음",
+      "mp": 5,
+      "power": 0,
+      "scope": "allEnemies",
+      "effect": {
+        "kind": "support"
+      },
+      "hitSequence": [
+        1
+      ],
+      "hitRate": 100,
+      "stateEffects": [
+        {
+          "stateId": "state_jf_ghost_seal",
+          "chance": 50,
+          "operation": "add"
+        }
+      ],
+      "chargeTurns": 1,
+      "description": "기력 5. 예고 후 다음 자기 차례 상대전체 각각 귀봉50%. 기술 봉쇄, 2번째 자기 차례 시작 해제. (부여확률은 저항 적용)"
+    },
+    {
+      "skillId": "skill_jf_enemy_bronze_smash",
+      "name": "청동강타",
+      "mp": 0,
+      "power": 32,
+      "scope": "allEnemies",
+      "effect": {
+        "kind": "damage",
+        "statistic": "attack",
+        "affects": "hp"
+      },
+      "hitSequence": [
+        1
+      ],
+      "hitRate": 95,
+      "stateEffects": [],
+      "chargeTurns": 1,
+      "description": "기력 0. 예고 후 다음 자기 차례 상대전체 물리 위력32·각1타. 명중95%."
+    },
+    {
+      "skillId": "skill_jf_enemy_poison_bite",
+      "name": "독이빨",
+      "mp": 3,
+      "power": 12,
+      "scope": "enemy",
+      "effect": {
+        "kind": "damage",
+        "statistic": "attack",
+        "affects": "hp"
+      },
+      "hitSequence": [
+        1
+      ],
+      "hitRate": 95,
+      "stateEffects": [
+        {
+          "stateId": "state_poison",
+          "chance": 45,
+          "operation": "add"
+        }
+      ],
+      "chargeTurns": 0,
+      "description": "기력 3. 상대1 물리12·1타/명중95%. 명중 후 독45%: 차례당 최대HP6%, HP1하한. (부여확률은 저항 적용)"
+    },
+    {
+      "skillId": "skill_jf_enemy_wing_flurry",
+      "name": "날개쌍격",
+      "mp": 4,
+      "power": 14,
+      "scope": "allEnemies",
+      "effect": {
+        "kind": "damage",
+        "statistic": "attack",
+        "affects": "hp"
+      },
+      "hitSequence": [
+        0.6,
+        0.6
+      ],
+      "hitRate": 95,
+      "stateEffects": [],
+      "chargeTurns": 0,
+      "description": "기력 4. 상대전체 물리14 계산의60%씩각2타. 타마다 명중95%."
+    },
+    {
+      "skillId": "skill_jf_enemy_ghost_fire",
+      "name": "혼불",
+      "mp": 5,
+      "power": 22,
+      "scope": "allEnemies",
+      "effect": {
+        "kind": "damage",
+        "statistic": "mind",
+        "affects": "hp"
+      },
+      "hitSequence": [
+        1
+      ],
+      "hitRate": 100,
+      "stateEffects": [],
+      "chargeTurns": 0,
+      "description": "기력 5. 상대전체 불 속성 정신력 위력22·각1타. 명중100%."
+    },
+    {
+      "skillId": "skill_jf_enemy_drowning_hand",
+      "name": "물귀손",
+      "mp": 4,
+      "power": 26,
+      "scope": "enemy",
+      "effect": {
+        "kind": "damage",
+        "statistic": "mind",
+        "affects": "hp"
+      },
+      "hitSequence": [
+        1
+      ],
+      "hitRate": 100,
+      "stateEffects": [
+        {
+          "stateId": "state_jf_ghost_seal",
+          "chance": 35,
+          "operation": "add"
+        }
+      ],
+      "chargeTurns": 0,
+      "description": "기력 4. 상대1 영성 정신력 위력26·1타/명중100%. 명중 후 귀봉35%, 2번째 자기 차례 시작 해제. (부여확률은 저항 적용)"
+    },
+    {
+      "skillId": "skill_jf_enemy_grave_grasp",
+      "name": "무덤저주",
+      "mp": 4,
+      "power": 0,
+      "scope": "enemy",
+      "effect": {
+        "kind": "support"
+      },
+      "hitSequence": [
+        1
+      ],
+      "hitRate": 100,
+      "stateEffects": [
+        {
+          "stateId": "state_jf_fox_charm",
+          "chance": 55,
+          "operation": "add"
+        }
+      ],
+      "chargeTurns": 0,
+      "description": "기력 4. 상대1 여우홀림55%: 공격 계산0.75배. 조종 없음. 3번째 자기 차례 시작 해제. (부여확률은 저항 적용)"
+    },
+    {
+      "skillId": "skill_jf_enemy_fox_charm",
+      "name": "여우홀림",
+      "mp": 6,
+      "power": 0,
+      "scope": "allEnemies",
+      "effect": {
+        "kind": "support"
+      },
+      "hitSequence": [
+        1
+      ],
+      "hitRate": 100,
+      "stateEffects": [
+        {
+          "stateId": "state_jf_fox_charm",
+          "chance": 45,
+          "operation": "add"
+        }
+      ],
+      "chargeTurns": 0,
+      "description": "기력 6. 상대전체 각각 여우홀림45%: 공격 계산0.75배. 조종 없음. 3번째 자기 차례 시작 해제. (부여확률은 저항 적용)"
+    },
+    {
+      "skillId": "skill_jf_enemy_stone_crush",
+      "name": "돌내리치기",
+      "mp": 5,
+      "power": 36,
+      "scope": "enemy",
+      "effect": {
+        "kind": "damage",
+        "statistic": "attack",
+        "affects": "hp"
+      },
+      "hitSequence": [
+        1
+      ],
+      "hitRate": 90,
+      "stateEffects": [],
+      "chargeTurns": 1,
+      "description": "기력 5. 예고 후 다음 자기 차례 상대1 물리 위력36·1타. 명중90%."
+    },
+    {
+      "skillId": "skill_jf_enemy_bamboo_whip",
+      "name": "대채찍",
+      "mp": 4,
+      "power": 20,
+      "scope": "enemy",
+      "effect": {
+        "kind": "damage",
+        "statistic": "attack",
+        "affects": "hp"
+      },
+      "hitSequence": [
+        1
+      ],
+      "hitRate": 95,
+      "stateEffects": [],
+      "chargeTurns": 0,
+      "description": "기력 4. 상대1 물리 위력20·1타. 명중95%."
+    }
+  ],
+  "baseStateDefaults": {
+    "policy": "missing-only; preserve every existing authored state record and order",
+    "helper": "merge-state-defaults.mts",
+    "snapshotSha256": "a8d06a510f40ae239ed670a7aeba9a25c384ee98a0b623c7634d3c085c946965",
+    "snapshotPresence": {
+      "state_death": false,
+      "state_poison": true,
+      "state_deep_poison": true,
+      "state_silence": true
+    },
+    "addedDeathDefault": "state_death",
+    "existingFallbackSources": [
+      "state_poison",
+      "state_deep_poison",
+      "state_silence"
+    ]
+  },
   "integrationNotes": [
-    "기술 12개만 저작. 전체판 직업24+적12 확장은 감독자 후속 지시 이후.",
-    "아이템 효과 ownskill_jf_item_*는 consumables 소유. 이 폴더에는 해당 기술을 정의하지 않는다.",
-    "state_poison/state_deep_poison/state_silence는 prototype-database.json의 기존 상태 참조. 기존 상태를 덮어쓰지 않는다.",
-    "부활 기술은 레벨8 후속판. 현재 엔진은 healing + state_death remove로 죽은 아군 선택을 허용한다. state_death add는 지원하지 않는다.",
-    "회복량45는 damageFormula=45, variance=0, criticalRate=0. 상한 HP에서는 실제 증가량이 줄어든다.",
-    "확률은 stateEffects.chance와 대상 stateRates의 곱. damage hitRate는 물리 회피 상태에 따라 낮아진다.",
-    "고정 지속 턴은 전역 라운드가 아니라 대상 자신의 upkeep 횟수. 두 번째/세 번째 차례 시작에 해제.",
-    "속성 상성은 대상 elementRates가 있어야 달라진다. 미지정은 등급C 100%.",
-    "수치는 신규 레코드 소유. 빌린 연출 원본 mechanic/설명/타수를 가져오지 않는다.",
-    "SkillRecord에 iconResourceId/choreographySkillId는 없다. 아이콘은 art.json에 보관하고 감독자가 별도 리소스 등록한다.",
-    "시각 검토는 원본 FX PNG와 새 아이콘 증거. 실제 출하 플레이어 녹화·프로젝트 통합·정본 저장은 감독자 소유."
+    "전체 직업24·적12. 예약 상태6과 속성5 유지. 상태 총10 = 예약6 + 기본 전투불능/독/맹독/침묵4.",
+    "도사 되살림은 레벨8 실제 healing + state_death remove, HP60 고정 회복. 죽은 아군 선택·MP12 소모·상태 해제를 실제 엔진으로 검사.",
+    "기본 상태는 빈 대상에서 누락 시 추가할 정의이며, 기존 대상의 같은 ID 상태를 덮어쓰지 않는다.",
+    "확률은 stateEffects.chance × 상태 저항. 표기 명중률은 회피 적용 전이며, 물리 회피는 명중률30%p 차감.",
+    "귀봉은 기술 전체 봉쇄. 여우홀림은 공격0.75배이며 조종/혼란 없음. 방어 버프는 계산 배율이며 고정 피해감소율 아님.",
+    "3번째 자기 차례 시작에 해제되는 재생은 해제 직전에도 tick 적용. HP 대가는 최대HP 비율이며 HP1 하한.",
+    "소모품 ownskill_jf_item_*는 다른 담당 소유. 아이템 기술을 이 팩에 넣지 않는다.",
+    "원본 연출의 mechanic을 복사하지 않으며 타수·위력은 신규 레코드 소유. skill iconResourceId/choreographySkillId는 존재하지 않아 쓰지 않는다.",
+    "public 등록·실제 직업/적 통합·정본 저장/재로드·출하 플레이어 시각 QA는 감독자 소유. 스모크 저장은 로컬 fixture 파일만 사용."
   ]
 }

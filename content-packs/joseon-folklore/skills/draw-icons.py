@@ -122,13 +122,140 @@ def make(slug):
         poly(d,[(16,8),(21,8),(22,11),(20,14),(16,13),(14,10)],'ochre')
         rect(d,(16,9,18,10),'paper');d.line([(10,8),(12,6),(21,6)],fill=C['yellow'])
         star(d,28,24,'yellow');d.line([(24,27),(27,30)],fill=C['flame'])
+    elif slug == 'whirlwind-cut':
+        poly(d,[(4,12),(7,6),(15,3),(24,6),(28,13),(26,20),(20,26),(10,27),(4,23),(10,24),(19,22),(24,16),(23,11),(18,8),(12,8),(8,13)],'cyan',None)
+        blade(d,fill='silver');star(d,26,27,'white')
+    elif slug == 'earth-split':
+        poly(d,[(3,22),(9,15),(23,15),(29,22),(25,28),(7,28)],'brown')
+        poly(d,[(3,22),(9,15),(23,15),(29,22)],'tan')
+        d.line([(16,16),(13,19),(19,21),(14,25),(17,28)],fill=C['ink'],width=2)
+        poly(d,[(14,2),(18,2),(18,9),(22,9),(16,16),(10,9),(14,9)],'silver');star(d,5,14,'gold')
+    elif slug == 'blood-oath':
+        poly(d,[(8,27),(7,18),(4,12),(6,10),(10,15),(10,7),(12,6),(13,14),(14,4),(16,4),(17,14),(19,6),(21,7),(20,16),(23,12),(25,14),(22,23),(18,28)],'tan')
+        poly(d,[(14,15),(17,19),(17,22),(14,24),(12,22),(12,19)],'red')
+        d.line([(10,24),(19,25)],fill=C['brown']);star(d,26,5,'red')
+    elif slug == 'mountain-guard':
+        poly(d,[(2,20),(10,7),(15,15),(21,3),(30,21)],'deepgreen')
+        poly(d,[(17,9),(21,3),(25,11),(21,8)],'white',None)
+        poly(d,[(9,16),(16,13),(24,16),(23,24),(16,30),(10,24)],'steel')
+        poly(d,[(12,18),(16,16),(21,18),(20,23),(16,27),(12,23)],'gold')
+        rect(d,(15,18,17,24),'silver')
+    elif slug == 'shadow-step':
+        for x,y,fill in [(3,5,'dark'),(9,9,'purple'),(16,14,'silver')]:
+            poly(d,[(x,y),(x+5,y),(x+8,y+4),(x+7,y+12),(x+4,y+14),(x+1,y+11)],fill)
+            d.line([(x+1,y+4),(x+5,y+7),(x+7,y+3)],fill=C['ink'])
+        star(d,27,9,'cyan')
+    elif slug == 'heart-pierce':
+        poly(d,[(6,11),(6,6),(10,3),(15,6),(20,3),(25,7),(25,12),(15,22)],'red')
+        poly(d,[(12,25),(23,12),(27,10),(26,15),(16,28)],'silver')
+        d.line([(15,25),(25,13)],fill=C['white']);rect(d,(8,25,17,27),'gold','ink')
+        poly(d,[(10,27),(13,28),(10,31),(7,29)],'brown');star(d,28,6,'white')
+    elif slug == 'smoke-screen':
+        poly(d,[(9,21),(23,21),(22,28),(11,28)],'ochre')
+        rect(d,(8,20,24,22),'gold','ink')
+        for x,y,w,h in [(4,8,10,8),(11,3,10,10),(17,8,10,8),(7,13,15,7)]:
+            d.ellipse((x,y,x+w,y+h),fill=C['steel'])
+        d.line([(9,10),(14,6),(20,8),(23,12)],fill=C['silver'],width=2)
+        rect(d,(14,18,17,20),'dark')
+    elif slug == 'moon-slash':
+        for ox,oy in [(0,0),(4,8)]:
+            poly(d,[(4+ox,11+oy),(9+ox,4+oy),(17+ox,2+oy),(24+ox,6+oy),(18+ox,5+oy),(12+ox,7+oy),(9+ox,13+oy),(12+ox,20+oy),(7+ox,17+oy)],'silver')
+            d.line([(6+ox,11+oy),(11+ox,5+oy),(17+ox,4+oy)],fill=C['white'])
+        star(d,26,24,'cyan')
+    elif slug == 'thunder-charm':
+        paper(d)
+        poly(d,[(17,6),(11,16),(16,16),(13,24),(22,12),(17,12),(20,6)],'yellow','ochre')
+        star(d,4,9,'gold');star(d,27,21,'gold')
+    elif slug == 'spirit-drain':
+        poly(d,[(19,5),(24,8),(27,16),(25,23),(21,27),(24,21),(24,13),(20,9)],'purple',None)
+        poly(d,[(13,7),(17,6),(21,10),(20,16),(17,20),(13,18),(10,15)],'cyan')
+        rect(d,(13,11,14,12),'ink');rect(d,(17,10,18,11),'ink')
+        poly(d,[(18,19),(10,19),(10,16),(3,22),(10,28),(10,25),(18,25)],'green')
+        star(d,6,7,'white')
+    elif slug == 'ghost-seal':
+        paper(d)
+        rect(d,(11,11,20,22),'red','ink');rect(d,(13,14,18,19),'paper')
+        d.arc((12,6,19,16),180,360,fill=C['dark'],width=2)
+        rect(d,(15,15,16,18),'red');star(d,26,11,'gold')
+    elif slug == 'heaven-fire':
+        poly(d,[(13,2),(17,2),(19,9),(16,16),(12,9)],'gold')
+        poly(d,[(6,4),(8,6),(11,14),(8,20),(4,14)],'flame')
+        poly(d,[(23,4),(26,10),(28,17),(25,23),(21,16)],'flame')
+        poly(d,[(10,17),(14,10),(18,16),(22,14),(25,22),(21,28),(11,29),(7,24)],'red')
+        poly(d,[(12,24),(14,18),(17,23),(19,20),(21,26),(16,28)],'yellow',None)
+    elif slug == 'protective-talisman':
+        paper(d)
+        poly(d,[(10,11),(16,8),(22,11),(21,21),(16,25),(11,21)],'blue')
+        poly(d,[(12,12),(16,10),(20,12),(19,20),(16,22),(13,20)],'cyan')
+        rect(d,(15,12,17,19),'white');star(d,26,22,'cyan')
+    elif slug == 'revive':
+        poly(d,[(14,21),(14,10),(10,10),(16,3),(22,10),(18,10),(18,21)],'white')
+        poly(d,[(16,29),(7,26),(4,20),(11,22),(16,26),(21,22),(28,20),(25,27)],'green')
+        poly(d,[(16,26),(11,23),(10,17),(15,19),(16,23),(20,17),(22,21),(21,25)],'paper')
+        star(d,6,8,'gold');star(d,26,8,'gold')
+    elif slug == 'spring-rain':
+        for x,y in [(5,3),(15,1),(25,4)]:
+            poly(d,[(x,y),(x+3,y+5),(x+2,y+8),(x-1,y+8),(x-2,y+5)],'cyan')
+        d.line([(16,29),(16,15)],fill=C['deepgreen'],width=2)
+        poly(d,[(16,23),(12,17),(6,16),(9,22),(16,26)],'green')
+        poly(d,[(16,19),(21,13),(27,13),(24,19),(16,22)],'green')
+        d.line([(8,19),(15,24)],fill=C['yellow']);d.line([(18,19),(24,16)],fill=C['yellow'])
+    elif slug == 'heaven-blessing':
+        for box in [(4,6,13,14),(10,3,21,14),(18,6,28,14)]:
+            d.ellipse(box,fill=C['paper'],outline=C['ochre'])
+        rect(d,(5,11,27,14),'paper')
+        poly(d,[(9,18),(22,18),(22,28),(9,28)],'gold')
+        rect(d,(12,20,19,25),'red');rect(d,(14,22,17,23),'paper')
+        d.line([(8,17),(6,21)],fill=C['yellow']);d.line([(26,17),(28,21)],fill=C['yellow']);star(d,16,16,'white')
+    elif slug == 'poison-bite':
+        poly(d,[(3,5),(9,7),(16,5),(24,7),(28,4),(29,14),(26,20),(19,23),(10,22),(4,16)],'deepgreen')
+        poly(d,[(6,11),(25,11),(23,18),(16,20),(8,17)],'ink',None)
+        poly(d,[(8,9),(13,10),(11,18)],'white');poly(d,[(20,10),(25,9),(22,18)],'white')
+        poly(d,[(15,23),(18,27),(16,30),(13,29),(12,26)],'green')
+        rect(d,(15,26,16,28),'yellow')
+    elif slug == 'wing-flurry':
+        poly(d,[(14,15),(9,6),(2,3),(5,9),(3,11),(8,15),(6,19),(12,21),(15,26),(18,21),(25,19),(23,15),(28,11),(26,8),(29,3),(21,6),(17,15)],'dark')
+        d.line([(5,6),(10,12),(13,19)],fill=C['purple']);d.line([(25,6),(20,12),(17,19)],fill=C['purple'])
+        rect(d,(14,12,17,22),'brown');star(d,5,26,'cyan');star(d,27,25,'cyan')
+    elif slug == 'ghost-fire':
+        poly(d,[(16,3),(21,10),(25,9),(24,17),(28,21),(24,27),(17,30),(9,28),(5,22),(8,16),(7,10),(12,13)],'deepgreen')
+        poly(d,[(16,9),(18,15),(22,15),(21,22),(17,27),(10,24),(11,19)],'green',None)
+        poly(d,[(14,17),(18,16),(20,21),(17,25),(13,23)],'yellow',None)
+        rect(d,(13,19,14,20),'ink');rect(d,(17,19,18,20),'ink')
+    elif slug == 'drowning-hand':
+        poly(d,[(9,28),(7,17),(4,9),(6,7),(10,13),(10,4),(12,3),(14,13),(16,2),(18,3),(18,14),(22,5),(24,6),(22,17),(27,12),(29,14),(23,24),(20,29)],'blue')
+        d.line([(11,16),(13,23),(18,25),(22,21)],fill=C['cyan'],width=2)
+        d.line([(3,28),(8,26),(13,29),(21,28),(27,30)],fill=C['cyan']);star(d,26,5,'white')
+    elif slug == 'grave-grasp':
+        poly(d,[(3,27),(6,20),(10,18),(10,9),(12,5),(21,5),(24,10),(24,23),(28,27)],'steel')
+        poly(d,[(13,8),(20,8),(21,12),(20,21),(13,21)],'dark')
+        rect(d,(15,11,18,17),'purple');rect(d,(13,13,20,14),'purple')
+        poly(d,[(2,28),(8,25),(16,26),(23,24),(30,28)],'brown');star(d,5,13,'purple')
+    elif slug == 'fox-charm':
+        poly(d,[(5,3),(13,10),(18,10),(26,3),(25,16),(21,23),(16,27),(10,23),(6,16)],'tan')
+        poly(d,[(8,6),(12,12),(8,13)],'dark');poly(d,[(23,6),(19,12),(23,13)],'dark')
+        poly(d,[(9,17),(15,20),(22,17),(20,22),(16,25),(11,22)],'paper',None)
+        d.line([(9,15),(12,16)],fill=C['purple'],width=2);d.line([(19,16),(22,15)],fill=C['purple'],width=2)
+        rect(d,(14,21,17,22),'ink');star(d,3,22,'purple');star(d,28,24,'purple')
+    elif slug == 'stone-crush':
+        poly(d,[(8,4),(21,3),(28,10),(26,21),(20,27),(8,25),(3,15)],'steel')
+        poly(d,[(9,5),(20,5),(24,11),(13,15),(5,13)],'silver',None)
+        d.line([(21,6),(15,12),(18,17),(12,22),(14,25)],fill=C['dark'],width=2)
+        d.line([(2,27),(6,30),(10,28)],fill=C['ochre']);star(d,28,27,'gold')
+    elif slug == 'bamboo-whip':
+        poly(d,[(4,28),(7,14),(12,5),(20,3),(27,8),(28,15),(26,20),(24,18),(25,12),(22,8),(16,8),(12,13),(10,21),(8,30)],'green')
+        for pts in [[(5,23),(10,24)],[(7,16),(12,18)],[(12,6),(15,10)],[(22,4),(20,8)]]:
+            d.line(pts,fill=C['deepgreen'],width=2)
+        d.line([(8,27),(10,17),(14,11)],fill=C['yellow'])
+        poly(d,[(12,16),(17,15),(14,20)],'deepgreen')
     else:
         raise ValueError(slug)
     return im
 
 hashes = []
-native = Image.new('RGBA',(4*32,3*32))
-sheet = Image.new('RGB',(4*176,3*174),(29,29,43))
+columns=6;rows=(len(art)+columns-1)//columns
+native = Image.new('RGBA',(columns*32,rows*32))
+sheet = Image.new('RGB',(columns*176,rows*174),(29,29,43))
 sd = ImageDraw.Draw(sheet)
 font = ImageFont.load_default()
 for i,a in enumerate(art):
@@ -138,8 +265,8 @@ for i,a in enumerate(art):
     assert set(im.getchannel('A').tobytes()) == {0,255}
     path = ROOT/'icons'/f'{slug}.png'
     im.save(path)
-    native.paste(im,((i%4)*32,(i//4)*32))
-    x,y = (i%4)*176,(i//4)*174
+    native.paste(im,((i%columns)*32,(i//columns)*32))
+    x,y = (i%columns)*176,(i//columns)*174
     # Transparent image inspected on checkerboard at exactly 4x native.
     for cy in range(0,128,16):
         for cx in range(0,128,16):
@@ -169,6 +296,8 @@ for kind in ['class','monster']:
             fx.paste(snap,(24+col*184,row*176+24),snap)
             fd.text((24+col*184,row*176+156),f'f{index+1}/{n}',font=font,fill=(178,183,180))
     fx.save(ROOT/'review'/f'borrowed-fx-{kind}.png')
+    for start in range(0,len(layers),6):
+        fx.crop((0,start*176,576,min(start+6,len(layers))*176)).save(ROOT/'review'/f'borrowed-fx-{kind}-{start//6+1}.png')
     # Native source frames (no reduction); original sheet paths/hashes in manifest.
     fxn=Image.new('RGBA',(3*128,len(layers)*144))
     for row,(_,l) in enumerate(layers):

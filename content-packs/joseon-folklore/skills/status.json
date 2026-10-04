@@ -1,24 +1,33 @@
 {
-  "phase": "pilot",
+  "phase": "full",
   "ready": true,
-  "readyMeaning": "pilot-files-saved-and-scoped-checks-complete",
+  "readyMeaning": "full-files-saved-and-scoped-checks-complete",
   "counts": {
-    "skills": 12,
-    "classSkills": 8,
-    "enemySkills": 4,
-    "states": 6,
+    "skills": 36,
+    "classSkills": 24,
+    "enemySkills": 12,
+    "states": 10,
+    "reservedStates": 6,
+    "baseStateDefaults": 4,
     "elements": 5,
-    "icons": 12
+    "icons": 36
   },
   "reviewFiles": [
     "content-packs/joseon-folklore/skills/review/icons-native.png",
     "content-packs/joseon-folklore/skills/review/icons-4x.png",
-    "content-packs/joseon-folklore/skills/review/borrowed-fx-class.png",
-    "content-packs/joseon-folklore/skills/review/borrowed-fx-monster.png"
+    "content-packs/joseon-folklore/skills/review/borrowed-fx-class-1.png",
+    "content-packs/joseon-folklore/skills/review/borrowed-fx-class-2.png",
+    "content-packs/joseon-folklore/skills/review/borrowed-fx-class-3.png",
+    "content-packs/joseon-folklore/skills/review/borrowed-fx-class-4.png",
+    "content-packs/joseon-folklore/skills/review/borrowed-fx-class-5.png",
+    "content-packs/joseon-folklore/skills/review/borrowed-fx-monster-1.png",
+    "content-packs/joseon-folklore/skills/review/borrowed-fx-monster-2.png",
+    "content-packs/joseon-folklore/skills/review/borrowed-fx-monster-3.png"
   ],
-  "checkCount": 20,
+  "checkCount": 90,
   "userApproved": false,
   "approval": "pending-user-review",
+  "reportFile": "content-packs/joseon-folklore/skills/REPORT.md",
   "liveProjectWritten": false,
   "publicRegistered": false,
   "gameIntegrated": false,
@@ -31,48 +40,63 @@
     },
     {
       "path": "content-packs/joseon-folklore/skills/README.md",
-      "sha256": "49fb5877c49c5bd3b1ab1da279a1b06551b373cb6256145a015d7c1ad385632b",
-      "bytes": 6648
+      "sha256": "dd75c9af9755e2ec999e509e371973820b585a9636657c74c02ba47f7b0c2b59",
+      "bytes": 10026
+    },
+    {
+      "path": "content-packs/joseon-folklore/skills/REPORT.md",
+      "sha256": "6a34cd57938b17b4c1c054b1a8d9c29d5e9b755488a90fd45f9d249f64660403",
+      "bytes": 3716
     },
     {
       "path": "content-packs/joseon-folklore/skills/art-hashes.json",
-      "sha256": "39bf6cd553b2f92d169325557a07a04fed6c5bcfd0e6cc6030165b8b32b62be7",
-      "bytes": 5327
+      "sha256": "bf965cd218e35c8f380781c6ffcb40e0df964ca8a1f247de6dbf74f11a571762",
+      "bytes": 15996
     },
     {
       "path": "content-packs/joseon-folklore/skills/art.json",
-      "sha256": "490c1b26ae87dc8b769dad2690b980d096eefe12d66f20b08aa7b36d547248ba",
-      "bytes": 4379
+      "sha256": "68747fa48ec2d4dd85b69da5eaf6761b0a5a1b760ca313c6be50ea88a5aff271",
+      "bytes": 13215
     },
     {
       "path": "content-packs/joseon-folklore/skills/author-data.mts",
-      "sha256": "7bfee45f2874db38c8ffc5c059d481f5a3417bbf10aa8a198b5e6994eb20f340",
-      "bytes": 12650
+      "sha256": "38382001ff38174be8b597eaf25d5cf45e505490e169e32dac0ba6ba6e05d29c",
+      "bytes": 18480
     },
     {
       "path": "content-packs/joseon-folklore/skills/choreography-sources.json",
-      "sha256": "b2a4f4955cb88878be63c80785aeb2270ff5b2f7995b1f6a5cab2d74ee7f4804",
-      "bytes": 6157
+      "sha256": "5cb3d61e8588b9b1d9235509f6c08079c4598764fbf8375dd845799666d8de59",
+      "bytes": 18005
     },
     {
       "path": "content-packs/joseon-folklore/skills/data.json",
-      "sha256": "fb25568c68f3830e56d0dd021121a224ad24565070a8be486404e093dd1a8146",
-      "bytes": 14639
+      "sha256": "cac9ce83c28ba6300c3933ff75d5327a08567c38586ad436b40800e8c8c6c70f",
+      "bytes": 33012
     },
     {
       "path": "content-packs/joseon-folklore/skills/design.json",
-      "sha256": "f3bbdafb939fc744687f5152bc0ce64d06a7cbf00607f6accc25c2b8f3144d79",
-      "bytes": 5646
+      "sha256": "293f0dd327ba4d4b0a306c73d3215b4ebcc3e13b94dadc089fd4abdd7ab8dc1d",
+      "bytes": 37205
     },
     {
       "path": "content-packs/joseon-folklore/skills/draw-icons.py",
-      "sha256": "0de600528fd485ea7dfb0d35abd871ae8971c8fb559a0baa50dc461815af481b",
-      "bytes": 10384
+      "sha256": "0950c1d41f6a56f0712d569d0b64e022d13234d06713efe45dcfc9e0c7275907",
+      "bytes": 18901
     },
     {
       "path": "content-packs/joseon-folklore/skills/finalize.mjs",
-      "sha256": "d2f832b0ab7d218587bcd95d86057c9fb21bd17075d88c1129f29d9f1168025d",
-      "bytes": 2445
+      "sha256": "4eb99202474359b7c2a00ac2a0d6215dc96a0d5392f378953ae2c1841047223b",
+      "bytes": 2601
+    },
+    {
+      "path": "content-packs/joseon-folklore/skills/icons/bamboo-whip.png",
+      "sha256": "e3c465225d349dbc135586afafa167c9c84d8f43ef37eb0830266c6d6dde64d5",
+      "bytes": 471
+    },
+    {
+      "path": "content-packs/joseon-folklore/skills/icons/blood-oath.png",
+      "sha256": "e6b56c2ba4cefb682a090c339718b728ad462bd6f94eb8f58786087e4dbda158",
+      "bytes": 416
     },
     {
       "path": "content-packs/joseon-folklore/skills/icons/bronze-smash.png",
@@ -90,14 +114,59 @@
       "bytes": 350
     },
     {
+      "path": "content-packs/joseon-folklore/skills/icons/drowning-hand.png",
+      "sha256": "5e9a559f2c8ee3143d5ab38942e40260df6d9b396f189ccaba19e2ea44f56f7a",
+      "bytes": 453
+    },
+    {
+      "path": "content-packs/joseon-folklore/skills/icons/earth-split.png",
+      "sha256": "03ae4771c99b3aa98f8a99e389778c93ebfc2d72421c52c65ea75920b42d54dc",
+      "bytes": 374
+    },
+    {
       "path": "content-packs/joseon-folklore/skills/icons/ember-charm.png",
       "sha256": "76a15d84334eae17c03b6ef26e96f57f81228c9baa785a2ec7928a7b7fbd2314",
       "bytes": 473
     },
     {
+      "path": "content-packs/joseon-folklore/skills/icons/fox-charm.png",
+      "sha256": "9e7e138c8aca2173d401cc9731ecc840c875650a7271f8c92fd24a6ffd4e01ad",
+      "bytes": 456
+    },
+    {
       "path": "content-packs/joseon-folklore/skills/icons/frost-charm.png",
       "sha256": "b72996cbd332c50c23f6a7e2e52572b2e18c8dd0460495f36275d599b0969914",
       "bytes": 452
+    },
+    {
+      "path": "content-packs/joseon-folklore/skills/icons/ghost-fire.png",
+      "sha256": "818ab8007a33d266a52c34e73e5be6e08451f7c8b06b0306a80c315dc3070f1e",
+      "bytes": 431
+    },
+    {
+      "path": "content-packs/joseon-folklore/skills/icons/ghost-seal.png",
+      "sha256": "bc6d3d223c6022636b1b9b8e8a440898e424dee78a98f48fb22d655a0321ac69",
+      "bytes": 393
+    },
+    {
+      "path": "content-packs/joseon-folklore/skills/icons/grave-grasp.png",
+      "sha256": "1b09d4ffb552b5a429948f860b0202f9587218603d8fd09416411d5e64d786c2",
+      "bytes": 380
+    },
+    {
+      "path": "content-packs/joseon-folklore/skills/icons/heart-pierce.png",
+      "sha256": "28b963cdcdd96572b19ec01908eede468445744d6dea5eea9caf59fccd7814c7",
+      "bytes": 427
+    },
+    {
+      "path": "content-packs/joseon-folklore/skills/icons/heaven-blessing.png",
+      "sha256": "256ffd4d4d7dc9555423ff4574b3beec18b6e0f2ad1950ae2561e87d0a2d8f19",
+      "bytes": 365
+    },
+    {
+      "path": "content-packs/joseon-folklore/skills/icons/heaven-fire.png",
+      "sha256": "ced1f4e83b20354ab6289377f86b5dd525f3b36091c8e4c884e2f7961a2a6d4d",
+      "bytes": 447
     },
     {
       "path": "content-packs/joseon-folklore/skills/icons/iron-breath.png",
@@ -110,9 +179,44 @@
       "bytes": 408
     },
     {
+      "path": "content-packs/joseon-folklore/skills/icons/moon-slash.png",
+      "sha256": "f994d80c785cdcd851d4a357c88775c75aa77bf4717d215c7dc638a17072fae4",
+      "bytes": 395
+    },
+    {
+      "path": "content-packs/joseon-folklore/skills/icons/mountain-guard.png",
+      "sha256": "44ac105df05c147aeefdbfa82fd8bd26f631dcf922193d39ac5332624b150799",
+      "bytes": 491
+    },
+    {
+      "path": "content-packs/joseon-folklore/skills/icons/poison-bite.png",
+      "sha256": "fe36e2fd154c58b2bb3309f22d8b67a239d298f7d2a02a11cacefddc4bbecd8e",
+      "bytes": 415
+    },
+    {
+      "path": "content-packs/joseon-folklore/skills/icons/protective-talisman.png",
+      "sha256": "6870d7b28687e2d3483cafd5091950c113be626e16cff0ae4757d11af697ca3e",
+      "bytes": 441
+    },
+    {
       "path": "content-packs/joseon-folklore/skills/icons/purify.png",
       "sha256": "f49c9c6bbfa9aa831bda1a596c62b683369ba560e4ff9f4142f423e40336b483",
       "bytes": 465
+    },
+    {
+      "path": "content-packs/joseon-folklore/skills/icons/revive.png",
+      "sha256": "a301a8c11932fb772999e194febd450d5c1edf9697202d852769a926bc305d38",
+      "bytes": 402
+    },
+    {
+      "path": "content-packs/joseon-folklore/skills/icons/shadow-step.png",
+      "sha256": "5c7490c277250226586cbc1b8e75f6e5d0260ab7aa2e6a0acd5991dc49682558",
+      "bytes": 434
+    },
+    {
+      "path": "content-packs/joseon-folklore/skills/icons/smoke-screen.png",
+      "sha256": "95f5e1d9a3bd00b487c4f583bce2ff1c2398d5843ce359a80dd10b1e7af19ad9",
+      "bytes": 371
     },
     {
       "path": "content-packs/joseon-folklore/skills/icons/sorrow-cry.png",
@@ -120,9 +224,29 @@
       "bytes": 450
     },
     {
+      "path": "content-packs/joseon-folklore/skills/icons/spirit-drain.png",
+      "sha256": "f77448b551e905f3cb11fd7ac639838f7d2e81dd65c0625fe11aeb7715d5c4e1",
+      "bytes": 401
+    },
+    {
+      "path": "content-packs/joseon-folklore/skills/icons/spring-rain.png",
+      "sha256": "820698ee854d073067d948929fc550dab9a34348edca9b457799dd8e240f14b0",
+      "bytes": 451
+    },
+    {
+      "path": "content-packs/joseon-folklore/skills/icons/stone-crush.png",
+      "sha256": "d4e3749489e6b8a91f3f6738a7cf27346cda68a90f8b836008d7ab5dfaddf82d",
+      "bytes": 475
+    },
+    {
       "path": "content-packs/joseon-folklore/skills/icons/straw-club.png",
       "sha256": "84bf09452aaa70747041ab9e584bb7cc616e9f9cefbb96568a92826941d55b3d",
       "bytes": 532
+    },
+    {
+      "path": "content-packs/joseon-folklore/skills/icons/thunder-charm.png",
+      "sha256": "6d08c507fd2c2157f2d421efdafacda261c7372705661ef987ce428a94b849ca",
+      "bytes": 393
     },
     {
       "path": "content-packs/joseon-folklore/skills/icons/tusk-charge.png",
@@ -135,49 +259,104 @@
       "bytes": 458
     },
     {
+      "path": "content-packs/joseon-folklore/skills/icons/whirlwind-cut.png",
+      "sha256": "539a96b3dd7d675e40f184ce9b3ce723ca3d34dcb056e99cdc090d8496951a71",
+      "bytes": 487
+    },
+    {
+      "path": "content-packs/joseon-folklore/skills/icons/wing-flurry.png",
+      "sha256": "0d6caecbc55c8f3a6ae729fceb77608d903591be8f5e892f88ef9421346e6c8b",
+      "bytes": 487
+    },
+    {
+      "path": "content-packs/joseon-folklore/skills/merge-state-defaults.mts",
+      "sha256": "499283ac61d4f7446207dec18ae91f1bfdac6bbac0204d52ce33c79492b23f95",
+      "bytes": 505
+    },
+    {
+      "path": "content-packs/joseon-folklore/skills/review/borrowed-fx-class-1.png",
+      "sha256": "1fcd4c26e45bdf12a04a908b1e845c024b059b3fa90a9f7b384b36e640cfc049",
+      "bytes": 28726
+    },
+    {
+      "path": "content-packs/joseon-folklore/skills/review/borrowed-fx-class-2.png",
+      "sha256": "72acc4d4111feee0a6cc5128d6fee908a66953ca96cd2aecee4d5641d7c84117",
+      "bytes": 28759
+    },
+    {
+      "path": "content-packs/joseon-folklore/skills/review/borrowed-fx-class-3.png",
+      "sha256": "7a4ea5d9dc9148b50f1c4150a7142b431a49fba49ced073bab35fcdcaba2f713",
+      "bytes": 26187
+    },
+    {
+      "path": "content-packs/joseon-folklore/skills/review/borrowed-fx-class-4.png",
+      "sha256": "cc80f7b8991b509ef5c91dfd94304289432bd783c1d109213f63d8d8456d8690",
+      "bytes": 25970
+    },
+    {
+      "path": "content-packs/joseon-folklore/skills/review/borrowed-fx-class-5.png",
+      "sha256": "11d288a34ea37c6675b2a3e71c06993d98bd42ccb02e3019c6ca69fcd55b9ac1",
+      "bytes": 26207
+    },
+    {
       "path": "content-packs/joseon-folklore/skills/review/borrowed-fx-class-native.png",
-      "sha256": "5a1e2b79b2f0f675e801c598af23d36d550c7a12ffc8790e91106efdd827590b",
-      "bytes": 16243
+      "sha256": "47c35fd096ce757331a25944dc7b1eaa68ce41d9f51706a75d8d754ab51db8ed",
+      "bytes": 54840
     },
     {
       "path": "content-packs/joseon-folklore/skills/review/borrowed-fx-class.png",
-      "sha256": "7cde900efb175cc5208896167c6e9c9cac0baee8a4ffe1f4c3582318c606cea0",
-      "bytes": 43166
+      "sha256": "1c89918ca6756f1a8c3b6747e0dd2dafb29be85c3f98c2213b4494bace715481",
+      "bytes": 135542
+    },
+    {
+      "path": "content-packs/joseon-folklore/skills/review/borrowed-fx-monster-1.png",
+      "sha256": "f05eacd281b7bafb358cda4848707014f12318085333c8f0729c4652f3b25956",
+      "bytes": 33652
+    },
+    {
+      "path": "content-packs/joseon-folklore/skills/review/borrowed-fx-monster-2.png",
+      "sha256": "790e3d9c14b60687481623e9e026e8e552bea8d417b410d6ced98f2e1ea97e20",
+      "bytes": 34389
+    },
+    {
+      "path": "content-packs/joseon-folklore/skills/review/borrowed-fx-monster-3.png",
+      "sha256": "872347599f2eea83788bacda8abc0355acecc5f9541cd63405d8e5531d4826c3",
+      "bytes": 9567
     },
     {
       "path": "content-packs/joseon-folklore/skills/review/borrowed-fx-monster-native.png",
-      "sha256": "6e50925f21e83e82c0a1a8025cd824d801f56904cdc30cd3e9979535c18f42d9",
-      "bytes": 11038
+      "sha256": "d7ae09b56e53be7039b8ceaa78caafa9ec39e3356ac4fd085629ee5ce4da796a",
+      "bytes": 31984
     },
     {
       "path": "content-packs/joseon-folklore/skills/review/borrowed-fx-monster.png",
-      "sha256": "8d2123a177154b4aa5c4cc88a58aa11318399078a4c49bd918ffb91d0f6692a5",
-      "bytes": 29278
+      "sha256": "ce335156434be079da35cc62f0a492a43093a659f98ac739dbcd52fd1f8e5224",
+      "bytes": 77457
     },
     {
       "path": "content-packs/joseon-folklore/skills/review/icons-4x.png",
-      "sha256": "a6f0aacb3a3307add2f29745553750e5dfe06c394fd0fdc416c03529ed669417",
-      "bytes": 16296
+      "sha256": "d92e93b589f5ee83564e7f98d5b57cdd3df0b79913535c57bca2936b36ae6801",
+      "bytes": 44298
     },
     {
       "path": "content-packs/joseon-folklore/skills/review/icons-native.png",
-      "sha256": "96f35cfe5859979a756c47171caadfd1159c6394a563df292a7122671c6920c0",
-      "bytes": 3728
+      "sha256": "a88010b035b6dd939837f6cccf87e70f54914c2f1539724e551fe2529180b463",
+      "bytes": 9966
     },
     {
       "path": "content-packs/joseon-folklore/skills/smoke-results.json",
-      "sha256": "55018d93960b56816e34904b3b1092100e2375e33961424d844f2fd8b2ac0859",
-      "bytes": 7949
+      "sha256": "5eb04d63be7777e8b8444ff39bd6a8cc369707c0cafc0fb7a123a69a7c4e1908",
+      "bytes": 41718
     },
     {
       "path": "content-packs/joseon-folklore/skills/smoke.mts",
-      "sha256": "5162d7927774689d9f3ac9e457c92d5dd6fe3565f2f3c4c7887f46351e56728c",
-      "bytes": 12566
+      "sha256": "48383f20ff519e65994057581f35dd0c1f211c480170ddecafb5d0edf68b864f",
+      "bytes": 20409
     },
     {
       "path": "content-packs/joseon-folklore/skills/visual-review.json",
-      "sha256": "fdbae4367a65a4c405c75b9da029cc7cd5d5be1692de50e9d534e7457be535d4",
-      "bytes": 2749
+      "sha256": "4a0e3a093713bcf708a3c60953f15491951930789dd0d96f5e42c6b14025851f",
+      "bytes": 4128
     }
   ]
 }

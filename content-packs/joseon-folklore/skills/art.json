@@ -24,6 +24,54 @@
     "runtimeSkillIconField": null
   },
   {
+    "skillId": "skill_jf_whirlwind_cut",
+    "resourceId": "jf-icon-whirlwind-cut",
+    "path": "assets/joseon-folklore/skills/whirlwind-cut.png",
+    "sourcePath": "content-packs/joseon-folklore/skills/icons/whirlwind-cut.png",
+    "size": [
+      32,
+      32
+    ],
+    "usage": "review-and-supervisor-resource-registration",
+    "runtimeSkillIconField": null
+  },
+  {
+    "skillId": "skill_jf_earth_split",
+    "resourceId": "jf-icon-earth-split",
+    "path": "assets/joseon-folklore/skills/earth-split.png",
+    "sourcePath": "content-packs/joseon-folklore/skills/icons/earth-split.png",
+    "size": [
+      32,
+      32
+    ],
+    "usage": "review-and-supervisor-resource-registration",
+    "runtimeSkillIconField": null
+  },
+  {
+    "skillId": "skill_jf_blood_oath",
+    "resourceId": "jf-icon-blood-oath",
+    "path": "assets/joseon-folklore/skills/blood-oath.png",
+    "sourcePath": "content-packs/joseon-folklore/skills/icons/blood-oath.png",
+    "size": [
+      32,
+      32
+    ],
+    "usage": "review-and-supervisor-resource-registration",
+    "runtimeSkillIconField": null
+  },
+  {
+    "skillId": "skill_jf_mountain_guard",
+    "resourceId": "jf-icon-mountain-guard",
+    "path": "assets/joseon-folklore/skills/mountain-guard.png",
+    "sourcePath": "content-packs/joseon-folklore/skills/icons/mountain-guard.png",
+    "size": [
+      32,
+      32
+    ],
+    "usage": "review-and-supervisor-resource-registration",
+    "runtimeSkillIconField": null
+  },
+  {
     "skillId": "skill_jf_double_stab",
     "resourceId": "jf-icon-double-stab",
     "path": "assets/joseon-folklore/skills/double-stab.png",
@@ -40,6 +88,54 @@
     "resourceId": "jf-icon-venom-edge",
     "path": "assets/joseon-folklore/skills/venom-edge.png",
     "sourcePath": "content-packs/joseon-folklore/skills/icons/venom-edge.png",
+    "size": [
+      32,
+      32
+    ],
+    "usage": "review-and-supervisor-resource-registration",
+    "runtimeSkillIconField": null
+  },
+  {
+    "skillId": "skill_jf_shadow_step",
+    "resourceId": "jf-icon-shadow-step",
+    "path": "assets/joseon-folklore/skills/shadow-step.png",
+    "sourcePath": "content-packs/joseon-folklore/skills/icons/shadow-step.png",
+    "size": [
+      32,
+      32
+    ],
+    "usage": "review-and-supervisor-resource-registration",
+    "runtimeSkillIconField": null
+  },
+  {
+    "skillId": "skill_jf_heart_pierce",
+    "resourceId": "jf-icon-heart-pierce",
+    "path": "assets/joseon-folklore/skills/heart-pierce.png",
+    "sourcePath": "content-packs/joseon-folklore/skills/icons/heart-pierce.png",
+    "size": [
+      32,
+      32
+    ],
+    "usage": "review-and-supervisor-resource-registration",
+    "runtimeSkillIconField": null
+  },
+  {
+    "skillId": "skill_jf_smoke_screen",
+    "resourceId": "jf-icon-smoke-screen",
+    "path": "assets/joseon-folklore/skills/smoke-screen.png",
+    "sourcePath": "content-packs/joseon-folklore/skills/icons/smoke-screen.png",
+    "size": [
+      32,
+      32
+    ],
+    "usage": "review-and-supervisor-resource-registration",
+    "runtimeSkillIconField": null
+  },
+  {
+    "skillId": "skill_jf_moon_slash",
+    "resourceId": "jf-icon-moon-slash",
+    "path": "assets/joseon-folklore/skills/moon-slash.png",
+    "sourcePath": "content-packs/joseon-folklore/skills/icons/moon-slash.png",
     "size": [
       32,
       32
@@ -72,6 +168,54 @@
     "runtimeSkillIconField": null
   },
   {
+    "skillId": "skill_jf_thunder_charm",
+    "resourceId": "jf-icon-thunder-charm",
+    "path": "assets/joseon-folklore/skills/thunder-charm.png",
+    "sourcePath": "content-packs/joseon-folklore/skills/icons/thunder-charm.png",
+    "size": [
+      32,
+      32
+    ],
+    "usage": "review-and-supervisor-resource-registration",
+    "runtimeSkillIconField": null
+  },
+  {
+    "skillId": "skill_jf_spirit_drain",
+    "resourceId": "jf-icon-spirit-drain",
+    "path": "assets/joseon-folklore/skills/spirit-drain.png",
+    "sourcePath": "content-packs/joseon-folklore/skills/icons/spirit-drain.png",
+    "size": [
+      32,
+      32
+    ],
+    "usage": "review-and-supervisor-resource-registration",
+    "runtimeSkillIconField": null
+  },
+  {
+    "skillId": "skill_jf_ghost_seal",
+    "resourceId": "jf-icon-ghost-seal",
+    "path": "assets/joseon-folklore/skills/ghost-seal.png",
+    "sourcePath": "content-packs/joseon-folklore/skills/icons/ghost-seal.png",
+    "size": [
+      32,
+      32
+    ],
+    "usage": "review-and-supervisor-resource-registration",
+    "runtimeSkillIconField": null
+  },
+  {
+    "skillId": "skill_jf_heaven_fire",
+    "resourceId": "jf-icon-heaven-fire",
+    "path": "assets/joseon-folklore/skills/heaven-fire.png",
+    "sourcePath": "content-packs/joseon-folklore/skills/icons/heaven-fire.png",
+    "size": [
+      32,
+      32
+    ],
+    "usage": "review-and-supervisor-resource-registration",
+    "runtimeSkillIconField": null
+  },
+  {
     "skillId": "skill_jf_life_water",
     "resourceId": "jf-icon-life-water",
     "path": "assets/joseon-folklore/skills/life-water.png",
@@ -88,6 +232,54 @@
     "resourceId": "jf-icon-purify",
     "path": "assets/joseon-folklore/skills/purify.png",
     "sourcePath": "content-packs/joseon-folklore/skills/icons/purify.png",
+    "size": [
+      32,
+      32
+    ],
+    "usage": "review-and-supervisor-resource-registration",
+    "runtimeSkillIconField": null
+  },
+  {
+    "skillId": "skill_jf_protective_talisman",
+    "resourceId": "jf-icon-protective-talisman",
+    "path": "assets/joseon-folklore/skills/protective-talisman.png",
+    "sourcePath": "content-packs/joseon-folklore/skills/icons/protective-talisman.png",
+    "size": [
+      32,
+      32
+    ],
+    "usage": "review-and-supervisor-resource-registration",
+    "runtimeSkillIconField": null
+  },
+  {
+    "skillId": "skill_jf_revive",
+    "resourceId": "jf-icon-revive",
+    "path": "assets/joseon-folklore/skills/revive.png",
+    "sourcePath": "content-packs/joseon-folklore/skills/icons/revive.png",
+    "size": [
+      32,
+      32
+    ],
+    "usage": "review-and-supervisor-resource-registration",
+    "runtimeSkillIconField": null
+  },
+  {
+    "skillId": "skill_jf_spring_rain",
+    "resourceId": "jf-icon-spring-rain",
+    "path": "assets/joseon-folklore/skills/spring-rain.png",
+    "sourcePath": "content-packs/joseon-folklore/skills/icons/spring-rain.png",
+    "size": [
+      32,
+      32
+    ],
+    "usage": "review-and-supervisor-resource-registration",
+    "runtimeSkillIconField": null
+  },
+  {
+    "skillId": "skill_jf_heaven_blessing",
+    "resourceId": "jf-icon-heaven-blessing",
+    "path": "assets/joseon-folklore/skills/heaven-blessing.png",
+    "sourcePath": "content-packs/joseon-folklore/skills/icons/heaven-blessing.png",
     "size": [
       32,
       32
@@ -136,6 +328,102 @@
     "resourceId": "jf-icon-bronze-smash",
     "path": "assets/joseon-folklore/skills/bronze-smash.png",
     "sourcePath": "content-packs/joseon-folklore/skills/icons/bronze-smash.png",
+    "size": [
+      32,
+      32
+    ],
+    "usage": "review-and-supervisor-resource-registration",
+    "runtimeSkillIconField": null
+  },
+  {
+    "skillId": "skill_jf_enemy_poison_bite",
+    "resourceId": "jf-icon-poison-bite",
+    "path": "assets/joseon-folklore/skills/poison-bite.png",
+    "sourcePath": "content-packs/joseon-folklore/skills/icons/poison-bite.png",
+    "size": [
+      32,
+      32
+    ],
+    "usage": "review-and-supervisor-resource-registration",
+    "runtimeSkillIconField": null
+  },
+  {
+    "skillId": "skill_jf_enemy_wing_flurry",
+    "resourceId": "jf-icon-wing-flurry",
+    "path": "assets/joseon-folklore/skills/wing-flurry.png",
+    "sourcePath": "content-packs/joseon-folklore/skills/icons/wing-flurry.png",
+    "size": [
+      32,
+      32
+    ],
+    "usage": "review-and-supervisor-resource-registration",
+    "runtimeSkillIconField": null
+  },
+  {
+    "skillId": "skill_jf_enemy_ghost_fire",
+    "resourceId": "jf-icon-ghost-fire",
+    "path": "assets/joseon-folklore/skills/ghost-fire.png",
+    "sourcePath": "content-packs/joseon-folklore/skills/icons/ghost-fire.png",
+    "size": [
+      32,
+      32
+    ],
+    "usage": "review-and-supervisor-resource-registration",
+    "runtimeSkillIconField": null
+  },
+  {
+    "skillId": "skill_jf_enemy_drowning_hand",
+    "resourceId": "jf-icon-drowning-hand",
+    "path": "assets/joseon-folklore/skills/drowning-hand.png",
+    "sourcePath": "content-packs/joseon-folklore/skills/icons/drowning-hand.png",
+    "size": [
+      32,
+      32
+    ],
+    "usage": "review-and-supervisor-resource-registration",
+    "runtimeSkillIconField": null
+  },
+  {
+    "skillId": "skill_jf_enemy_grave_grasp",
+    "resourceId": "jf-icon-grave-grasp",
+    "path": "assets/joseon-folklore/skills/grave-grasp.png",
+    "sourcePath": "content-packs/joseon-folklore/skills/icons/grave-grasp.png",
+    "size": [
+      32,
+      32
+    ],
+    "usage": "review-and-supervisor-resource-registration",
+    "runtimeSkillIconField": null
+  },
+  {
+    "skillId": "skill_jf_enemy_fox_charm",
+    "resourceId": "jf-icon-fox-charm",
+    "path": "assets/joseon-folklore/skills/fox-charm.png",
+    "sourcePath": "content-packs/joseon-folklore/skills/icons/fox-charm.png",
+    "size": [
+      32,
+      32
+    ],
+    "usage": "review-and-supervisor-resource-registration",
+    "runtimeSkillIconField": null
+  },
+  {
+    "skillId": "skill_jf_enemy_stone_crush",
+    "resourceId": "jf-icon-stone-crush",
+    "path": "assets/joseon-folklore/skills/stone-crush.png",
+    "sourcePath": "content-packs/joseon-folklore/skills/icons/stone-crush.png",
+    "size": [
+      32,
+      32
+    ],
+    "usage": "review-and-supervisor-resource-registration",
+    "runtimeSkillIconField": null
+  },
+  {
+    "skillId": "skill_jf_enemy_bamboo_whip",
+    "resourceId": "jf-icon-bamboo-whip",
+    "path": "assets/joseon-folklore/skills/bamboo-whip.png",
+    "sourcePath": "content-packs/joseon-folklore/skills/icons/bamboo-whip.png",
     "size": [
       32,
       32

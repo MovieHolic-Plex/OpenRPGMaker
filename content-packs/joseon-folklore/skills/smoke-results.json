@@ -1,14 +1,47 @@
 {
-  "scope": "pilot-owned-data-and-in-memory-runtime-fixture",
+  "scope": "full-owned-data-and-local-roundtrip-runtime-fixture",
   "liveProjectWrites": false,
   "browserPlayback": false,
   "checks": [
     {
       "check": "normalize JSON roundtrip; reserved IDs; existing source FX hashes",
       "observed": {
-        "skills": 12,
-        "states": 6,
+        "skills": 36,
+        "states": 10,
         "elements": 5
+      },
+      "result": "pass"
+    },
+    {
+      "check": "snapshot/defaults/missing-only merge and learning ledger",
+      "observed": {
+        "snapshotDeath": false,
+        "snapshotDeepPoison": true,
+        "snapshotSilence": true,
+        "baseDefaults": 4,
+        "newStates": 6,
+        "levels": [
+          1,
+          3,
+          5,
+          8,
+          12,
+          16
+        ],
+        "reviveLevel": 8,
+        "existingRowsPreserved": 28
+      },
+      "result": "pass"
+    },
+    {
+      "check": "actual project serializer: local save/load/reload and zero reference issues",
+      "observed": {
+        "file": "content-packs/joseon-folklore/skills/.cache/full-roundtrip.oprn.json",
+        "liveProject": false,
+        "passes": 2,
+        "skills": 36,
+        "stateDeathPresent": true,
+        "referenceIssues": 0
       },
       "result": "pass"
     },
@@ -63,7 +96,780 @@
       "result": "pass"
     },
     {
-      "check": "actor skill skill_jf_cleaving_strike",
+      "check": "numeric skill_jf_cleaving_strike",
+      "observed": {
+        "power": 20,
+        "mp": 4,
+        "hitSequence": [
+          1
+        ],
+        "amounts": [
+          30
+        ],
+        "states": [],
+        "hpCost": 0,
+        "drain": 0
+      },
+      "result": "pass"
+    },
+    {
+      "check": "numeric skill_jf_iron_breath",
+      "observed": {
+        "power": 0,
+        "mp": 5,
+        "hitSequence": [
+          1
+        ],
+        "amounts": [],
+        "states": [
+          {
+            "stateId": "state_jf_iron_breath",
+            "chance": 100,
+            "operation": "add",
+            "resistancePercent": 100,
+            "effectiveChance": 100,
+            "probabilityBoundaryChecked": false
+          }
+        ],
+        "hpCost": 0,
+        "drain": 0
+      },
+      "result": "pass"
+    },
+    {
+      "check": "numeric skill_jf_whirlwind_cut",
+      "observed": {
+        "power": 18,
+        "mp": 8,
+        "hitSequence": [
+          1
+        ],
+        "amounts": [
+          28
+        ],
+        "states": [],
+        "hpCost": 0,
+        "drain": 0
+      },
+      "result": "pass"
+    },
+    {
+      "check": "numeric skill_jf_earth_split",
+      "observed": {
+        "power": 32,
+        "mp": 12,
+        "hitSequence": [
+          1
+        ],
+        "amounts": [
+          42
+        ],
+        "states": [],
+        "hpCost": 0,
+        "drain": 0
+      },
+      "result": "pass"
+    },
+    {
+      "check": "numeric skill_jf_blood_oath",
+      "observed": {
+        "power": 0,
+        "mp": 12,
+        "hitSequence": [
+          1
+        ],
+        "amounts": [],
+        "states": [
+          {
+            "stateId": "state_jf_heaven_blessing",
+            "chance": 100,
+            "operation": "add",
+            "resistancePercent": 100,
+            "effectiveChance": 100,
+            "probabilityBoundaryChecked": false
+          }
+        ],
+        "hpCost": 24,
+        "drain": 0
+      },
+      "result": "pass"
+    },
+    {
+      "check": "numeric skill_jf_mountain_guard",
+      "observed": {
+        "power": 0,
+        "mp": 16,
+        "hitSequence": [
+          1
+        ],
+        "amounts": [],
+        "states": [
+          {
+            "stateId": "state_jf_iron_breath",
+            "chance": 100,
+            "operation": "add",
+            "resistancePercent": 100,
+            "effectiveChance": 100,
+            "probabilityBoundaryChecked": false
+          },
+          {
+            "stateId": "state_jf_protective_talisman",
+            "chance": 100,
+            "operation": "add",
+            "resistancePercent": 100,
+            "effectiveChance": 100,
+            "probabilityBoundaryChecked": false
+          }
+        ],
+        "hpCost": 0,
+        "drain": 0
+      },
+      "result": "pass"
+    },
+    {
+      "check": "numeric skill_jf_double_stab",
+      "observed": {
+        "power": 10,
+        "mp": 4,
+        "hitSequence": [
+          0.65,
+          0.65
+        ],
+        "amounts": [
+          13,
+          13
+        ],
+        "states": [],
+        "hpCost": 0,
+        "drain": 0
+      },
+      "result": "pass"
+    },
+    {
+      "check": "numeric skill_jf_venom_edge",
+      "observed": {
+        "power": 14,
+        "mp": 5,
+        "hitSequence": [
+          1
+        ],
+        "amounts": [
+          24
+        ],
+        "states": [
+          {
+            "stateId": "state_poison",
+            "chance": 60,
+            "operation": "add",
+            "resistancePercent": 60,
+            "effectiveChance": 36,
+            "probabilityBoundaryChecked": true
+          }
+        ],
+        "hpCost": 0,
+        "drain": 0
+      },
+      "result": "pass"
+    },
+    {
+      "check": "numeric skill_jf_shadow_step",
+      "observed": {
+        "power": 0,
+        "mp": 7,
+        "hitSequence": [
+          1
+        ],
+        "amounts": [],
+        "states": [
+          {
+            "stateId": "state_jf_shadow_step",
+            "chance": 100,
+            "operation": "add",
+            "resistancePercent": 100,
+            "effectiveChance": 100,
+            "probabilityBoundaryChecked": false
+          }
+        ],
+        "hpCost": 0,
+        "drain": 0
+      },
+      "result": "pass"
+    },
+    {
+      "check": "numeric skill_jf_heart_pierce",
+      "observed": {
+        "power": 36,
+        "mp": 10,
+        "hitSequence": [
+          1
+        ],
+        "amounts": [
+          56
+        ],
+        "states": [],
+        "hpCost": 0,
+        "drain": 0
+      },
+      "result": "pass"
+    },
+    {
+      "check": "numeric skill_jf_smoke_screen",
+      "observed": {
+        "power": 0,
+        "mp": 13,
+        "hitSequence": [
+          1
+        ],
+        "amounts": [],
+        "states": [
+          {
+            "stateId": "state_jf_shadow_step",
+            "chance": 100,
+            "operation": "add",
+            "resistancePercent": 100,
+            "effectiveChance": 100,
+            "probabilityBoundaryChecked": false
+          }
+        ],
+        "hpCost": 0,
+        "drain": 0
+      },
+      "result": "pass"
+    },
+    {
+      "check": "numeric skill_jf_moon_slash",
+      "observed": {
+        "power": 44,
+        "mp": 16,
+        "hitSequence": [
+          0.75,
+          0.75
+        ],
+        "amounts": [
+          41,
+          41
+        ],
+        "states": [],
+        "hpCost": 0,
+        "drain": 0
+      },
+      "result": "pass"
+    },
+    {
+      "check": "numeric skill_jf_ember_charm",
+      "observed": {
+        "power": 28,
+        "mp": 6,
+        "hitSequence": [
+          1
+        ],
+        "amounts": [
+          33
+        ],
+        "states": [],
+        "hpCost": 0,
+        "drain": 0
+      },
+      "result": "pass"
+    },
+    {
+      "check": "numeric skill_jf_frost_charm",
+      "observed": {
+        "power": 30,
+        "mp": 7,
+        "hitSequence": [
+          1
+        ],
+        "amounts": [
+          35
+        ],
+        "states": [],
+        "hpCost": 0,
+        "drain": 0
+      },
+      "result": "pass"
+    },
+    {
+      "check": "numeric skill_jf_thunder_charm",
+      "observed": {
+        "power": 24,
+        "mp": 9,
+        "hitSequence": [
+          1
+        ],
+        "amounts": [
+          29
+        ],
+        "states": [],
+        "hpCost": 0,
+        "drain": 0
+      },
+      "result": "pass"
+    },
+    {
+      "check": "numeric skill_jf_spirit_drain",
+      "observed": {
+        "power": 34,
+        "mp": 10,
+        "hitSequence": [
+          1
+        ],
+        "amounts": [
+          39
+        ],
+        "states": [],
+        "hpCost": 0,
+        "drain": 15
+      },
+      "result": "pass"
+    },
+    {
+      "check": "numeric skill_jf_ghost_seal",
+      "observed": {
+        "power": 0,
+        "mp": 12,
+        "hitSequence": [
+          1
+        ],
+        "amounts": [],
+        "states": [
+          {
+            "stateId": "state_jf_ghost_seal",
+            "chance": 70,
+            "operation": "add",
+            "resistancePercent": 100,
+            "effectiveChance": 70,
+            "probabilityBoundaryChecked": true
+          }
+        ],
+        "hpCost": 0,
+        "drain": 0
+      },
+      "result": "pass"
+    },
+    {
+      "check": "numeric skill_jf_heaven_fire",
+      "observed": {
+        "power": 62,
+        "mp": 22,
+        "hitSequence": [
+          1
+        ],
+        "amounts": [
+          67
+        ],
+        "states": [],
+        "hpCost": 0,
+        "drain": 0
+      },
+      "result": "pass"
+    },
+    {
+      "check": "numeric skill_jf_life_water",
+      "observed": {
+        "power": 45,
+        "mp": 6,
+        "hitSequence": [
+          1
+        ],
+        "amounts": [
+          45
+        ],
+        "states": [],
+        "hpCost": 0,
+        "drain": 0
+      },
+      "result": "pass"
+    },
+    {
+      "check": "numeric skill_jf_purify",
+      "observed": {
+        "power": 0,
+        "mp": 5,
+        "hitSequence": [
+          1
+        ],
+        "amounts": [],
+        "states": [
+          {
+            "stateId": "state_poison",
+            "chance": 100,
+            "operation": "remove",
+            "deterministicRemoval": true
+          },
+          {
+            "stateId": "state_deep_poison",
+            "chance": 100,
+            "operation": "remove",
+            "deterministicRemoval": true
+          },
+          {
+            "stateId": "state_silence",
+            "chance": 100,
+            "operation": "remove",
+            "deterministicRemoval": true
+          },
+          {
+            "stateId": "state_jf_ghost_seal",
+            "chance": 100,
+            "operation": "remove",
+            "deterministicRemoval": true
+          },
+          {
+            "stateId": "state_jf_fox_charm",
+            "chance": 100,
+            "operation": "remove",
+            "deterministicRemoval": true
+          }
+        ],
+        "hpCost": 0,
+        "drain": 0
+      },
+      "result": "pass"
+    },
+    {
+      "check": "numeric skill_jf_protective_talisman",
+      "observed": {
+        "power": 0,
+        "mp": 8,
+        "hitSequence": [
+          1
+        ],
+        "amounts": [],
+        "states": [
+          {
+            "stateId": "state_jf_protective_talisman",
+            "chance": 100,
+            "operation": "add",
+            "resistancePercent": 100,
+            "effectiveChance": 100,
+            "probabilityBoundaryChecked": false
+          }
+        ],
+        "hpCost": 0,
+        "drain": 0
+      },
+      "result": "pass"
+    },
+    {
+      "check": "numeric skill_jf_revive",
+      "observed": {
+        "power": 60,
+        "mp": 12,
+        "hitSequence": [
+          1
+        ],
+        "amounts": [
+          60
+        ],
+        "states": [
+          {
+            "stateId": "state_death",
+            "chance": 100,
+            "operation": "remove",
+            "deterministicRemoval": true
+          }
+        ],
+        "hpCost": 0,
+        "drain": 0
+      },
+      "result": "pass"
+    },
+    {
+      "check": "numeric skill_jf_spring_rain",
+      "observed": {
+        "power": 40,
+        "mp": 16,
+        "hitSequence": [
+          1
+        ],
+        "amounts": [
+          40
+        ],
+        "states": [
+          {
+            "stateId": "state_poison",
+            "chance": 100,
+            "operation": "remove",
+            "deterministicRemoval": true
+          }
+        ],
+        "hpCost": 0,
+        "drain": 0
+      },
+      "result": "pass"
+    },
+    {
+      "check": "numeric skill_jf_heaven_blessing",
+      "observed": {
+        "power": 0,
+        "mp": 18,
+        "hitSequence": [
+          1
+        ],
+        "amounts": [],
+        "states": [
+          {
+            "stateId": "state_jf_heaven_blessing",
+            "chance": 100,
+            "operation": "add",
+            "resistancePercent": 100,
+            "effectiveChance": 100,
+            "probabilityBoundaryChecked": false
+          }
+        ],
+        "hpCost": 0,
+        "drain": 0
+      },
+      "result": "pass"
+    },
+    {
+      "check": "numeric skill_jf_enemy_tusk_charge",
+      "observed": {
+        "power": 20,
+        "mp": 3,
+        "hitSequence": [
+          1
+        ],
+        "amounts": [
+          30
+        ],
+        "states": [],
+        "hpCost": 0,
+        "drain": 0
+      },
+      "result": "pass"
+    },
+    {
+      "check": "numeric skill_jf_enemy_straw_club",
+      "observed": {
+        "power": 18,
+        "mp": 3,
+        "hitSequence": [
+          1
+        ],
+        "amounts": [
+          28
+        ],
+        "states": [],
+        "hpCost": 0,
+        "drain": 0
+      },
+      "result": "pass"
+    },
+    {
+      "check": "numeric skill_jf_enemy_sorrow_cry",
+      "observed": {
+        "power": 0,
+        "mp": 5,
+        "hitSequence": [
+          1
+        ],
+        "amounts": [],
+        "states": [
+          {
+            "stateId": "state_jf_ghost_seal",
+            "chance": 50,
+            "operation": "add",
+            "resistancePercent": 100,
+            "effectiveChance": 50,
+            "probabilityBoundaryChecked": true
+          }
+        ],
+        "hpCost": 0,
+        "drain": 0
+      },
+      "result": "pass"
+    },
+    {
+      "check": "numeric skill_jf_enemy_bronze_smash",
+      "observed": {
+        "power": 32,
+        "mp": 0,
+        "hitSequence": [
+          1
+        ],
+        "amounts": [
+          42
+        ],
+        "states": [],
+        "hpCost": 0,
+        "drain": 0
+      },
+      "result": "pass"
+    },
+    {
+      "check": "numeric skill_jf_enemy_poison_bite",
+      "observed": {
+        "power": 12,
+        "mp": 3,
+        "hitSequence": [
+          1
+        ],
+        "amounts": [
+          22
+        ],
+        "states": [
+          {
+            "stateId": "state_poison",
+            "chance": 45,
+            "operation": "add",
+            "resistancePercent": 60,
+            "effectiveChance": 27,
+            "probabilityBoundaryChecked": true
+          }
+        ],
+        "hpCost": 0,
+        "drain": 0
+      },
+      "result": "pass"
+    },
+    {
+      "check": "numeric skill_jf_enemy_wing_flurry",
+      "observed": {
+        "power": 14,
+        "mp": 4,
+        "hitSequence": [
+          0.6,
+          0.6
+        ],
+        "amounts": [
+          14,
+          14
+        ],
+        "states": [],
+        "hpCost": 0,
+        "drain": 0
+      },
+      "result": "pass"
+    },
+    {
+      "check": "numeric skill_jf_enemy_ghost_fire",
+      "observed": {
+        "power": 22,
+        "mp": 5,
+        "hitSequence": [
+          1
+        ],
+        "amounts": [
+          27
+        ],
+        "states": [],
+        "hpCost": 0,
+        "drain": 0
+      },
+      "result": "pass"
+    },
+    {
+      "check": "numeric skill_jf_enemy_drowning_hand",
+      "observed": {
+        "power": 26,
+        "mp": 4,
+        "hitSequence": [
+          1
+        ],
+        "amounts": [
+          31
+        ],
+        "states": [
+          {
+            "stateId": "state_jf_ghost_seal",
+            "chance": 35,
+            "operation": "add",
+            "resistancePercent": 100,
+            "effectiveChance": 35,
+            "probabilityBoundaryChecked": true
+          }
+        ],
+        "hpCost": 0,
+        "drain": 0
+      },
+      "result": "pass"
+    },
+    {
+      "check": "numeric skill_jf_enemy_grave_grasp",
+      "observed": {
+        "power": 0,
+        "mp": 4,
+        "hitSequence": [
+          1
+        ],
+        "amounts": [],
+        "states": [
+          {
+            "stateId": "state_jf_fox_charm",
+            "chance": 55,
+            "operation": "add",
+            "resistancePercent": 100,
+            "effectiveChance": 55,
+            "probabilityBoundaryChecked": true
+          }
+        ],
+        "hpCost": 0,
+        "drain": 0
+      },
+      "result": "pass"
+    },
+    {
+      "check": "numeric skill_jf_enemy_fox_charm",
+      "observed": {
+        "power": 0,
+        "mp": 6,
+        "hitSequence": [
+          1
+        ],
+        "amounts": [],
+        "states": [
+          {
+            "stateId": "state_jf_fox_charm",
+            "chance": 45,
+            "operation": "add",
+            "resistancePercent": 100,
+            "effectiveChance": 45,
+            "probabilityBoundaryChecked": true
+          }
+        ],
+        "hpCost": 0,
+        "drain": 0
+      },
+      "result": "pass"
+    },
+    {
+      "check": "numeric skill_jf_enemy_stone_crush",
+      "observed": {
+        "power": 36,
+        "mp": 5,
+        "hitSequence": [
+          1
+        ],
+        "amounts": [
+          46
+        ],
+        "states": [],
+        "hpCost": 0,
+        "drain": 0
+      },
+      "result": "pass"
+    },
+    {
+      "check": "numeric skill_jf_enemy_bamboo_whip",
+      "observed": {
+        "power": 20,
+        "mp": 4,
+        "hitSequence": [
+          1
+        ],
+        "amounts": [
+          30
+        ],
+        "states": [],
+        "hpCost": 0,
+        "drain": 0
+      },
+      "result": "pass"
+    },
+    {
+      "check": "actor runtime skill_jf_cleaving_strike",
       "observed": {
         "mpConsumed": 4,
         "timeline": [
@@ -77,7 +883,7 @@
       "result": "pass"
     },
     {
-      "check": "actor skill skill_jf_iron_breath",
+      "check": "actor runtime skill_jf_iron_breath",
       "observed": {
         "mpConsumed": 5,
         "timeline": [
@@ -91,7 +897,73 @@
       "result": "pass"
     },
     {
-      "check": "actor skill skill_jf_double_stab",
+      "check": "actor runtime skill_jf_whirlwind_cut",
+      "observed": {
+        "mpConsumed": 8,
+        "timeline": [
+          {
+            "kind": "damage",
+            "amount": 28,
+            "targetId": "enemy-1"
+          }
+        ]
+      },
+      "result": "pass"
+    },
+    {
+      "check": "actor runtime skill_jf_earth_split",
+      "observed": {
+        "mpConsumed": 12,
+        "timeline": [
+          {
+            "kind": "damage",
+            "amount": 42,
+            "targetId": "enemy-1"
+          }
+        ]
+      },
+      "result": "pass"
+    },
+    {
+      "check": "actor runtime skill_jf_blood_oath",
+      "observed": {
+        "mpConsumed": 12,
+        "timeline": [
+          {
+            "kind": "damage",
+            "amount": 240,
+            "targetId": "actor_hero"
+          },
+          {
+            "kind": "action",
+            "amount": 0,
+            "targetId": "actor_hero"
+          }
+        ]
+      },
+      "result": "pass"
+    },
+    {
+      "check": "actor runtime skill_jf_mountain_guard",
+      "observed": {
+        "mpConsumed": 16,
+        "timeline": [
+          {
+            "kind": "action",
+            "amount": 0,
+            "targetId": "actor_hero"
+          },
+          {
+            "kind": "action",
+            "amount": 0,
+            "targetId": "actor_jf_probe_two"
+          }
+        ]
+      },
+      "result": "pass"
+    },
+    {
+      "check": "actor runtime skill_jf_double_stab",
       "observed": {
         "mpConsumed": 4,
         "timeline": [
@@ -110,7 +982,7 @@
       "result": "pass"
     },
     {
-      "check": "actor skill skill_jf_venom_edge",
+      "check": "actor runtime skill_jf_venom_edge",
       "observed": {
         "mpConsumed": 5,
         "timeline": [
@@ -124,7 +996,73 @@
       "result": "pass"
     },
     {
-      "check": "actor skill skill_jf_ember_charm",
+      "check": "actor runtime skill_jf_shadow_step",
+      "observed": {
+        "mpConsumed": 7,
+        "timeline": [
+          {
+            "kind": "action",
+            "amount": 0,
+            "targetId": "actor_hero"
+          }
+        ]
+      },
+      "result": "pass"
+    },
+    {
+      "check": "actor runtime skill_jf_heart_pierce",
+      "observed": {
+        "mpConsumed": 10,
+        "timeline": [
+          {
+            "kind": "damage",
+            "amount": 56,
+            "targetId": "enemy-1"
+          }
+        ]
+      },
+      "result": "pass"
+    },
+    {
+      "check": "actor runtime skill_jf_smoke_screen",
+      "observed": {
+        "mpConsumed": 13,
+        "timeline": [
+          {
+            "kind": "action",
+            "amount": 0,
+            "targetId": "actor_hero"
+          },
+          {
+            "kind": "action",
+            "amount": 0,
+            "targetId": "actor_jf_probe_two"
+          }
+        ]
+      },
+      "result": "pass"
+    },
+    {
+      "check": "actor runtime skill_jf_moon_slash",
+      "observed": {
+        "mpConsumed": 16,
+        "timeline": [
+          {
+            "kind": "damage",
+            "amount": 41,
+            "targetId": "enemy-1"
+          },
+          {
+            "kind": "damage",
+            "amount": 41,
+            "targetId": "enemy-1"
+          }
+        ]
+      },
+      "result": "pass"
+    },
+    {
+      "check": "actor runtime skill_jf_ember_charm",
       "observed": {
         "mpConsumed": 6,
         "timeline": [
@@ -138,7 +1076,7 @@
       "result": "pass"
     },
     {
-      "check": "actor skill skill_jf_frost_charm",
+      "check": "actor runtime skill_jf_frost_charm",
       "observed": {
         "mpConsumed": 7,
         "timeline": [
@@ -152,7 +1090,63 @@
       "result": "pass"
     },
     {
-      "check": "actor skill skill_jf_life_water",
+      "check": "actor runtime skill_jf_thunder_charm",
+      "observed": {
+        "mpConsumed": 9,
+        "timeline": [
+          {
+            "kind": "damage",
+            "amount": 29,
+            "targetId": "enemy-1"
+          }
+        ]
+      },
+      "result": "pass"
+    },
+    {
+      "check": "actor runtime skill_jf_spirit_drain",
+      "observed": {
+        "mpConsumed": 10,
+        "timeline": [
+          {
+            "kind": "damage",
+            "amount": 39,
+            "targetId": "enemy-1"
+          }
+        ]
+      },
+      "result": "pass"
+    },
+    {
+      "check": "actor runtime skill_jf_ghost_seal",
+      "observed": {
+        "mpConsumed": 12,
+        "timeline": [
+          {
+            "kind": "action",
+            "amount": 0,
+            "targetId": "enemy-1"
+          }
+        ]
+      },
+      "result": "pass"
+    },
+    {
+      "check": "actor runtime skill_jf_heaven_fire",
+      "observed": {
+        "mpConsumed": 22,
+        "timeline": [
+          {
+            "kind": "damage",
+            "amount": 67,
+            "targetId": "enemy-1"
+          }
+        ]
+      },
+      "result": "pass"
+    },
+    {
+      "check": "actor runtime skill_jf_life_water",
       "observed": {
         "mpConsumed": 6,
         "timeline": [
@@ -166,7 +1160,7 @@
       "result": "pass"
     },
     {
-      "check": "actor skill skill_jf_purify",
+      "check": "actor runtime skill_jf_purify",
       "observed": {
         "mpConsumed": 5,
         "timeline": [
@@ -180,7 +1174,64 @@
       "result": "pass"
     },
     {
-      "check": "enemy skill skill_jf_enemy_tusk_charge strict",
+      "check": "actor runtime skill_jf_protective_talisman",
+      "observed": {
+        "mpConsumed": 8,
+        "timeline": [
+          {
+            "kind": "action",
+            "amount": 0,
+            "targetId": "actor_hero"
+          },
+          {
+            "kind": "action",
+            "amount": 0,
+            "targetId": "actor_jf_probe_two"
+          }
+        ]
+      },
+      "result": "pass"
+    },
+    {
+      "check": "actor runtime skill_jf_spring_rain",
+      "observed": {
+        "mpConsumed": 16,
+        "timeline": [
+          {
+            "kind": "healing",
+            "amount": 40,
+            "targetId": "actor_hero"
+          },
+          {
+            "kind": "healing",
+            "amount": 40,
+            "targetId": "actor_jf_probe_two"
+          }
+        ]
+      },
+      "result": "pass"
+    },
+    {
+      "check": "actor runtime skill_jf_heaven_blessing",
+      "observed": {
+        "mpConsumed": 18,
+        "timeline": [
+          {
+            "kind": "action",
+            "amount": 0,
+            "targetId": "actor_hero"
+          },
+          {
+            "kind": "action",
+            "amount": 0,
+            "targetId": "actor_jf_probe_two"
+          }
+        ]
+      },
+      "result": "pass"
+    },
+    {
+      "check": "enemy runtime skill_jf_enemy_tusk_charge strict",
       "observed": {
         "actions": [
           {
@@ -189,14 +1240,74 @@
             "targetId": "actor_hero"
           }
         ],
-        "chargeAnnouncements": [],
-        "chargingViews": [],
-        "enemyMp": 996
+        "chargeAnnouncements": [
+          {
+            "kind": "special",
+            "side": "enemy",
+            "userRecordId": "enemy_bat_cave",
+            "targetId": "enemy-1",
+            "charge": true,
+            "message": "굴박쥐가 엄니돌진을 준비한다! (1턴 뒤)",
+            "actionId": 3,
+            "sequence": 2
+          }
+        ],
+        "chargingViews": [
+          {
+            "skillId": "skill_jf_enemy_tusk_charge",
+            "skillName": "엄니돌진",
+            "turnsLeft": 1
+          },
+          {
+            "skillId": "skill_jf_enemy_tusk_charge",
+            "skillName": "엄니돌진",
+            "turnsLeft": 1
+          }
+        ],
+        "mpConsumed": 3
       },
       "result": "pass"
     },
     {
-      "check": "enemy skill skill_jf_enemy_straw_club strict",
+      "check": "enemy runtime skill_jf_enemy_tusk_charge gauge",
+      "observed": {
+        "actions": [
+          {
+            "kind": "damage",
+            "amount": 12,
+            "targetId": "actor_hero"
+          }
+        ],
+        "chargeAnnouncements": [
+          {
+            "kind": "special",
+            "side": "enemy",
+            "userRecordId": "enemy_bat_cave",
+            "targetId": "enemy-1",
+            "charge": true,
+            "message": "굴박쥐가 엄니돌진을 준비한다! (1턴 뒤)",
+            "actionId": 3,
+            "sequence": 2
+          }
+        ],
+        "chargingViews": [
+          {
+            "skillId": "skill_jf_enemy_tusk_charge",
+            "skillName": "엄니돌진",
+            "turnsLeft": 1
+          },
+          {
+            "skillId": "skill_jf_enemy_tusk_charge",
+            "skillName": "엄니돌진",
+            "turnsLeft": 1
+          }
+        ],
+        "mpConsumed": 3
+      },
+      "result": "pass"
+    },
+    {
+      "check": "enemy runtime skill_jf_enemy_straw_club strict",
       "observed": {
         "actions": [
           {
@@ -207,12 +1318,284 @@
         ],
         "chargeAnnouncements": [],
         "chargingViews": [],
-        "enemyMp": 996
+        "mpConsumed": 3
       },
       "result": "pass"
     },
     {
-      "check": "enemy skill skill_jf_enemy_sorrow_cry strict",
+      "check": "enemy runtime skill_jf_enemy_sorrow_cry strict",
+      "observed": {
+        "actions": [
+          {
+            "kind": "action",
+            "amount": 0,
+            "targetId": "actor_hero"
+          },
+          {
+            "kind": "action",
+            "amount": 0,
+            "targetId": "actor_jf_probe_two"
+          }
+        ],
+        "chargeAnnouncements": [
+          {
+            "kind": "special",
+            "side": "enemy",
+            "userRecordId": "enemy_bat_cave",
+            "targetId": "enemy-1",
+            "charge": true,
+            "message": "굴박쥐가 한의울음을 준비한다! (1턴 뒤)",
+            "actionId": 3,
+            "sequence": 2
+          }
+        ],
+        "chargingViews": [
+          {
+            "skillId": "skill_jf_enemy_sorrow_cry",
+            "skillName": "한의울음",
+            "turnsLeft": 1
+          },
+          {
+            "skillId": "skill_jf_enemy_sorrow_cry",
+            "skillName": "한의울음",
+            "turnsLeft": 1
+          }
+        ],
+        "mpConsumed": 5
+      },
+      "result": "pass"
+    },
+    {
+      "check": "enemy runtime skill_jf_enemy_sorrow_cry gauge",
+      "observed": {
+        "actions": [
+          {
+            "kind": "action",
+            "amount": 0,
+            "targetId": "actor_hero"
+          },
+          {
+            "kind": "action",
+            "amount": 0,
+            "targetId": "actor_jf_probe_two"
+          }
+        ],
+        "chargeAnnouncements": [
+          {
+            "kind": "special",
+            "side": "enemy",
+            "userRecordId": "enemy_bat_cave",
+            "targetId": "enemy-1",
+            "charge": true,
+            "message": "굴박쥐가 한의울음을 준비한다! (1턴 뒤)",
+            "actionId": 3,
+            "sequence": 2
+          }
+        ],
+        "chargingViews": [
+          {
+            "skillId": "skill_jf_enemy_sorrow_cry",
+            "skillName": "한의울음",
+            "turnsLeft": 1
+          },
+          {
+            "skillId": "skill_jf_enemy_sorrow_cry",
+            "skillName": "한의울음",
+            "turnsLeft": 1
+          }
+        ],
+        "mpConsumed": 5
+      },
+      "result": "pass"
+    },
+    {
+      "check": "enemy runtime skill_jf_enemy_bronze_smash strict",
+      "observed": {
+        "actions": [
+          {
+            "kind": "damage",
+            "amount": 18,
+            "targetId": "actor_hero"
+          },
+          {
+            "kind": "damage",
+            "amount": 18,
+            "targetId": "actor_jf_probe_two"
+          }
+        ],
+        "chargeAnnouncements": [
+          {
+            "kind": "special",
+            "side": "enemy",
+            "userRecordId": "enemy_bat_cave",
+            "targetId": "enemy-1",
+            "charge": true,
+            "message": "굴박쥐가 청동강타를 준비한다! (1턴 뒤)",
+            "actionId": 3,
+            "sequence": 2
+          }
+        ],
+        "chargingViews": [
+          {
+            "skillId": "skill_jf_enemy_bronze_smash",
+            "skillName": "청동강타",
+            "turnsLeft": 1
+          },
+          {
+            "skillId": "skill_jf_enemy_bronze_smash",
+            "skillName": "청동강타",
+            "turnsLeft": 1
+          }
+        ],
+        "mpConsumed": 0
+      },
+      "result": "pass"
+    },
+    {
+      "check": "enemy runtime skill_jf_enemy_bronze_smash gauge",
+      "observed": {
+        "actions": [
+          {
+            "kind": "damage",
+            "amount": 18,
+            "targetId": "actor_hero"
+          },
+          {
+            "kind": "damage",
+            "amount": 18,
+            "targetId": "actor_jf_probe_two"
+          }
+        ],
+        "chargeAnnouncements": [
+          {
+            "kind": "special",
+            "side": "enemy",
+            "userRecordId": "enemy_bat_cave",
+            "targetId": "enemy-1",
+            "charge": true,
+            "message": "굴박쥐가 청동강타를 준비한다! (1턴 뒤)",
+            "actionId": 3,
+            "sequence": 2
+          }
+        ],
+        "chargingViews": [
+          {
+            "skillId": "skill_jf_enemy_bronze_smash",
+            "skillName": "청동강타",
+            "turnsLeft": 1
+          },
+          {
+            "skillId": "skill_jf_enemy_bronze_smash",
+            "skillName": "청동강타",
+            "turnsLeft": 1
+          }
+        ],
+        "mpConsumed": 0
+      },
+      "result": "pass"
+    },
+    {
+      "check": "enemy runtime skill_jf_enemy_poison_bite strict",
+      "observed": {
+        "actions": [
+          {
+            "kind": "damage",
+            "amount": 8,
+            "targetId": "actor_hero"
+          }
+        ],
+        "chargeAnnouncements": [],
+        "chargingViews": [],
+        "mpConsumed": 3
+      },
+      "result": "pass"
+    },
+    {
+      "check": "enemy runtime skill_jf_enemy_wing_flurry strict",
+      "observed": {
+        "actions": [
+          {
+            "kind": "damage",
+            "amount": 5,
+            "targetId": "actor_hero"
+          },
+          {
+            "kind": "damage",
+            "amount": 5,
+            "targetId": "actor_hero"
+          },
+          {
+            "kind": "damage",
+            "amount": 5,
+            "targetId": "actor_jf_probe_two"
+          },
+          {
+            "kind": "damage",
+            "amount": 5,
+            "targetId": "actor_jf_probe_two"
+          }
+        ],
+        "chargeAnnouncements": [],
+        "chargingViews": [],
+        "mpConsumed": 4
+      },
+      "result": "pass"
+    },
+    {
+      "check": "enemy runtime skill_jf_enemy_ghost_fire strict",
+      "observed": {
+        "actions": [
+          {
+            "kind": "damage",
+            "amount": 11,
+            "targetId": "actor_hero"
+          },
+          {
+            "kind": "damage",
+            "amount": 11,
+            "targetId": "actor_jf_probe_two"
+          }
+        ],
+        "chargeAnnouncements": [],
+        "chargingViews": [],
+        "mpConsumed": 5
+      },
+      "result": "pass"
+    },
+    {
+      "check": "enemy runtime skill_jf_enemy_drowning_hand strict",
+      "observed": {
+        "actions": [
+          {
+            "kind": "damage",
+            "amount": 13,
+            "targetId": "actor_hero"
+          }
+        ],
+        "chargeAnnouncements": [],
+        "chargingViews": [],
+        "mpConsumed": 4
+      },
+      "result": "pass"
+    },
+    {
+      "check": "enemy runtime skill_jf_enemy_grave_grasp strict",
+      "observed": {
+        "actions": [
+          {
+            "kind": "action",
+            "amount": 0,
+            "targetId": "actor_hero"
+          }
+        ],
+        "chargeAnnouncements": [],
+        "chargingViews": [],
+        "mpConsumed": 4
+      },
+      "result": "pass"
+    },
+    {
+      "check": "enemy runtime skill_jf_enemy_fox_charm strict",
       "observed": {
         "actions": [
           {
@@ -228,23 +1611,18 @@
         ],
         "chargeAnnouncements": [],
         "chargingViews": [],
-        "enemyMp": 994
+        "mpConsumed": 6
       },
       "result": "pass"
     },
     {
-      "check": "enemy skill skill_jf_enemy_bronze_smash strict",
+      "check": "enemy runtime skill_jf_enemy_stone_crush strict",
       "observed": {
         "actions": [
           {
             "kind": "damage",
-            "amount": 18,
+            "amount": 20,
             "targetId": "actor_hero"
-          },
-          {
-            "kind": "damage",
-            "amount": 18,
-            "targetId": "actor_jf_probe_two"
           }
         ],
         "chargeAnnouncements": [
@@ -254,40 +1632,35 @@
             "userRecordId": "enemy_bat_cave",
             "targetId": "enemy-1",
             "charge": true,
-            "message": "굴박쥐가 청동내리울림을 준비한다! (1턴 뒤)",
+            "message": "굴박쥐가 돌내리치기를 준비한다! (1턴 뒤)",
             "actionId": 3,
             "sequence": 2
           }
         ],
         "chargingViews": [
           {
-            "skillId": "skill_jf_enemy_bronze_smash",
-            "skillName": "청동내리울림",
+            "skillId": "skill_jf_enemy_stone_crush",
+            "skillName": "돌내리치기",
             "turnsLeft": 1
           },
           {
-            "skillId": "skill_jf_enemy_bronze_smash",
-            "skillName": "청동내리울림",
+            "skillId": "skill_jf_enemy_stone_crush",
+            "skillName": "돌내리치기",
             "turnsLeft": 1
           }
         ],
-        "enemyMp": 999
+        "mpConsumed": 5
       },
       "result": "pass"
     },
     {
-      "check": "enemy skill skill_jf_enemy_bronze_smash gauge",
+      "check": "enemy runtime skill_jf_enemy_stone_crush gauge",
       "observed": {
         "actions": [
           {
             "kind": "damage",
-            "amount": 18,
+            "amount": 20,
             "targetId": "actor_hero"
-          },
-          {
-            "kind": "damage",
-            "amount": 18,
-            "targetId": "actor_jf_probe_two"
           }
         ],
         "chargeAnnouncements": [
@@ -297,39 +1670,187 @@
             "userRecordId": "enemy_bat_cave",
             "targetId": "enemy-1",
             "charge": true,
-            "message": "굴박쥐가 청동내리울림을 준비한다! (1턴 뒤)",
+            "message": "굴박쥐가 돌내리치기를 준비한다! (1턴 뒤)",
             "actionId": 3,
             "sequence": 2
           }
         ],
         "chargingViews": [
           {
-            "skillId": "skill_jf_enemy_bronze_smash",
-            "skillName": "청동내리울림",
+            "skillId": "skill_jf_enemy_stone_crush",
+            "skillName": "돌내리치기",
             "turnsLeft": 1
           },
           {
-            "skillId": "skill_jf_enemy_bronze_smash",
-            "skillName": "청동내리울림",
+            "skillId": "skill_jf_enemy_stone_crush",
+            "skillName": "돌내리치기",
             "turnsLeft": 1
           }
         ],
-        "enemyMp": 999
+        "mpConsumed": 5
       },
       "result": "pass"
     },
     {
-      "check": "engine revive contract only (not published data)",
+      "check": "enemy runtime skill_jf_enemy_bamboo_whip strict",
       "observed": {
+        "actions": [
+          {
+            "kind": "damage",
+            "amount": 12,
+            "targetId": "actor_hero"
+          }
+        ],
+        "chargeAnnouncements": [],
+        "chargingViews": [],
+        "mpConsumed": 4
+      },
+      "result": "pass"
+    },
+    {
+      "check": "published level8 revive: dead selection, HP60, death removal, MP12",
+      "observed": {
+        "skillId": "skill_jf_revive",
+        "level": 8,
         "beforeHp": 0,
-        "afterHp": 40,
-        "authoredReviveInPilot": false
+        "healAmount": 60,
+        "hpAfterEnemyTurn": 60,
+        "stateDeathRemoved": true,
+        "mpSpent": 12
+      },
+      "result": "pass"
+    },
+    {
+      "check": "boss telegraph enemy_jf_bronze_dokkaebi strict",
+      "observed": {
+        "skillId": "skill_jf_enemy_bronze_smash",
+        "chargeTurns": 1,
+        "announcedBeforeImpact": true,
+        "damagePerGuardedTarget": 23,
+        "startingHp": 120,
+        "remainingHp": [
+          97,
+          97
+        ],
+        "appliedStateIds": [
+          [],
+          []
+        ],
+        "mpConsumed": 0
+      },
+      "result": "pass"
+    },
+    {
+      "check": "boss telegraph enemy_jf_bronze_dokkaebi gauge",
+      "observed": {
+        "skillId": "skill_jf_enemy_bronze_smash",
+        "chargeTurns": 1,
+        "announcedBeforeImpact": true,
+        "damagePerGuardedTarget": 23,
+        "startingHp": 120,
+        "remainingHp": [
+          97,
+          97
+        ],
+        "appliedStateIds": [
+          [],
+          []
+        ],
+        "mpConsumed": 0
+      },
+      "result": "pass"
+    },
+    {
+      "check": "boss telegraph enemy_jf_bride_wraith strict",
+      "observed": {
+        "skillId": "skill_jf_enemy_sorrow_cry",
+        "chargeTurns": 1,
+        "announcedBeforeImpact": true,
+        "damagePerGuardedTarget": 0,
+        "startingHp": 120,
+        "remainingHp": [
+          120,
+          120
+        ],
+        "appliedStateIds": [
+          [
+            "state_jf_ghost_seal"
+          ],
+          [
+            "state_jf_ghost_seal"
+          ]
+        ],
+        "mpConsumed": 5
+      },
+      "result": "pass"
+    },
+    {
+      "check": "boss telegraph enemy_jf_bride_wraith gauge",
+      "observed": {
+        "skillId": "skill_jf_enemy_sorrow_cry",
+        "chargeTurns": 1,
+        "announcedBeforeImpact": true,
+        "damagePerGuardedTarget": 0,
+        "startingHp": 120,
+        "remainingHp": [
+          120,
+          120
+        ],
+        "appliedStateIds": [
+          [
+            "state_jf_ghost_seal"
+          ],
+          [
+            "state_jf_ghost_seal"
+          ]
+        ],
+        "mpConsumed": 5
+      },
+      "result": "pass"
+    },
+    {
+      "check": "boss telegraph enemy_jf_mountain_tiger strict",
+      "observed": {
+        "skillId": "skill_jf_enemy_tusk_charge",
+        "chargeTurns": 1,
+        "announcedBeforeImpact": true,
+        "damagePerGuardedTarget": 17,
+        "startingHp": 120,
+        "remainingHp": [
+          103,
+          120
+        ],
+        "appliedStateIds": [
+          [],
+          []
+        ],
+        "mpConsumed": 3
+      },
+      "result": "pass"
+    },
+    {
+      "check": "boss telegraph enemy_jf_mountain_tiger gauge",
+      "observed": {
+        "skillId": "skill_jf_enemy_tusk_charge",
+        "chargeTurns": 1,
+        "announcedBeforeImpact": true,
+        "damagePerGuardedTarget": 17,
+        "startingHp": 120,
+        "remainingHp": [
+          103,
+          120
+        ],
+        "appliedStateIds": [
+          [],
+          []
+        ],
+        "mpConsumed": 3
       },
       "result": "pass"
     }
   ],
   "result": "pass",
-  "checkCount": 20,
+  "checkCount": 90,
   "prototypeSha256": "a8d06a510f40ae239ed670a7aeba9a25c384ee98a0b623c7634d3c085c946965",
-  "dataSha256": "fb25568c68f3830e56d0dd021121a224ad24565070a8be486404e093dd1a8146"
+  "dataSha256": "cac9ce83c28ba6300c3933ff75d5327a08567c38586ad436b40800e8c8c6c70f"
 }

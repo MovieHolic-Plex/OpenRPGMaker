@@ -18,12 +18,13 @@ function walk(dir){for(const f of readdirSync(dir).sort()){
   if(statSync(path).isDirectory())walk(path);else files.push({path,sha256:hash(path),bytes:statSync(path).size});
 }}
 walk(root);
-for(const file of ['README.md','design.json','data.json','art.json','smoke-results.json','visual-review.json'])assert.ok(files.some(f=>f.path===`${root}/${file}`));
-assert.equal(data.skills.length,12);assert.equal(art.length,12);
-const status={phase:'pilot',ready:true,readyMeaning:'pilot-files-saved-and-scoped-checks-complete',
-  counts:{skills:12,classSkills:8,enemySkills:4,states:data.states.length,elements:data.elements.length,icons:art.length},
+for(const file of ['README.md','REPORT.md','design.json','data.json','art.json','smoke-results.json','visual-review.json'])assert.ok(files.some(f=>f.path===`${root}/${file}`));
+assert.equal(data.skills.length,36);assert.equal(art.length,36);assert.equal(data.states.length,10);assert.equal(data.elements.length,5);
+const status={phase:'full',ready:true,readyMeaning:'full-files-saved-and-scoped-checks-complete',
+  counts:{skills:36,classSkills:24,enemySkills:12,states:data.states.length,reservedStates:6,baseStateDefaults:4,elements:data.elements.length,icons:art.length},
   reviewFiles:review.inspectedFiles.filter(f=>f.path.startsWith(root)).map(f=>f.path),
   checkCount:smoke.checkCount,userApproved:false,approval:'pending-user-review',
+  reportFile:`${root}/REPORT.md`,
   liveProjectWritten:false,publicRegistered:false,gameIntegrated:false,browserPlaybackVerified:false,
   files};
 // The last artifact write: every other owned file has already been saved and hashed.

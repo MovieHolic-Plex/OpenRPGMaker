@@ -1,4 +1,5 @@
 {
+  "phase": "full",
   "reviewer": "GPT 6.1 sol high, skills worker",
   "reviewType": "agent-direct-image-inspection",
   "userApproved": false,
@@ -6,44 +7,68 @@
   "inspectedFiles": [
     {
       "path": "content-packs/joseon-folklore/skills/review/icons-native.png",
-      "sha256": "96f35cfe5859979a756c47171caadfd1159c6394a563df292a7122671c6920c0"
+      "sha256": "a88010b035b6dd939837f6cccf87e70f54914c2f1539724e551fe2529180b463"
     },
     {
       "path": "content-packs/joseon-folklore/skills/review/icons-4x.png",
-      "sha256": "a6f0aacb3a3307add2f29745553750e5dfe06c394fd0fdc416c03529ed669417"
+      "sha256": "d92e93b589f5ee83564e7f98d5b57cdd3df0b79913535c57bca2936b36ae6801"
     },
     {
-      "path": "content-packs/joseon-folklore/skills/review/borrowed-fx-class.png",
-      "sha256": "7cde900efb175cc5208896167c6e9c9cac0baee8a4ffe1f4c3582318c606cea0"
+      "path": "content-packs/joseon-folklore/skills/review/borrowed-fx-class-1.png",
+      "sha256": "1fcd4c26e45bdf12a04a908b1e845c024b059b3fa90a9f7b384b36e640cfc049"
     },
     {
-      "path": "content-packs/joseon-folklore/skills/review/borrowed-fx-monster.png",
-      "sha256": "8d2123a177154b4aa5c4cc88a58aa11318399078a4c49bd918ffb91d0f6692a5"
+      "path": "content-packs/joseon-folklore/skills/review/borrowed-fx-class-2.png",
+      "sha256": "72acc4d4111feee0a6cc5128d6fee908a66953ca96cd2aecee4d5641d7c84117"
     },
     {
-      "path": "public/assets/generated/pixel-fx/mon_slam_hit.png",
-      "sha256": "1e5f626152ef57c06324233de2b771771fe4c600175233fc9244c99ebc18044f"
+      "path": "content-packs/joseon-folklore/skills/review/borrowed-fx-class-3.png",
+      "sha256": "7a4ea5d9dc9148b50f1c4150a7142b431a49fba49ced073bab35fcdcaba2f713"
     },
     {
-      "path": "public/assets/generated/pixel-fx/mon_wail_sky.png",
-      "sha256": "8cde920ef57ee2c327a89414b18c2f1a7cb4b3496048438e168db1b1b0dbc759"
+      "path": "content-packs/joseon-folklore/skills/review/borrowed-fx-class-4.png",
+      "sha256": "cc80f7b8991b509ef5c91dfd94304289432bd783c1d109213f63d8d8456d8690"
     },
     {
-      "path": "public/assets/generated/pixel-fx/mage_fire_burst.png",
-      "sha256": "c8efa0185f50ccfa7d0328082b544bb1792af8e96cb3f6c39bbb4a49fb82bfde"
+      "path": "content-packs/joseon-folklore/skills/review/borrowed-fx-class-5.png",
+      "sha256": "11d288a34ea37c6675b2a3e71c06993d98bd42ccb02e3019c6ca69fcd55b9ac1"
+    },
+    {
+      "path": "content-packs/joseon-folklore/skills/review/borrowed-fx-monster-1.png",
+      "sha256": "f05eacd281b7bafb358cda4848707014f12318085333c8f0729c4652f3b25956"
+    },
+    {
+      "path": "content-packs/joseon-folklore/skills/review/borrowed-fx-monster-2.png",
+      "sha256": "790e3d9c14b60687481623e9e026e8e552bea8d417b410d6ced98f2e1ea97e20"
+    },
+    {
+      "path": "content-packs/joseon-folklore/skills/review/borrowed-fx-monster-3.png",
+      "sha256": "872347599f2eea83788bacda8abc0355acecc5f9541cd63405d8e5531d4826c3"
+    },
+    {
+      "path": "public/assets/generated/pixel-fx/cleric_revive.png",
+      "sha256": "1195d3c8c99b8bea3bcb57979cea02507d19a9cb625a8b60f9d50b6de1cde562"
+    },
+    {
+      "path": "public/assets/generated/pixel-fx/shrine_maiden_seal.png",
+      "sha256": "f458383f1baae39631dd41ede50a67627d6a83a142a494a074f6267ffb496a0b"
+    },
+    {
+      "path": "public/assets/generated/pixel-fx/wraith_mage_drain.png",
+      "sha256": "6681aca58ad7e44bbb658e1a6e061975bc1ef0d5f5bce8fa5f555a83193a6811"
     }
   ],
   "observations": [
-    "12 original 32px icons read as slash, body armor, paired daggers, poison blade, ember/frost talismans, life-water gourd, cleansing talisman, boar, straw club, wailing face, bronze striking head. Native and 4x nearest PNGs opened.",
-    "All borrowed FX layers sampled from actual original assets; source frame layouts checked, no fabricated runtime capture. Full original mon_slam_hit, mon_wail_sky and mage_fire_burst sheets opened directly.",
-    "Straw club initially borrowed axe cleave: sharp red blade arc was visually unsuitable. Replaced with blunt impact mon_slam_hit through skill_mon_body_slam.",
-    "Single-target effects use target or projectile/user anchors; sorrow cry uses screen; bronze smash uses allTargets. New skill record retains its actual hit count.",
-    "Final reference sheet uses native 64/128px cells or integer 2x32px cells. No downscaled 128px layer remains in the final annotated sheet."
+    "36 original 32px transparent code-drawn icons inspected at native size and integer 4x nearest. Distinct blade, armor, ground-crack, blood-hand, shield, afterimage, heart, smoke, moon, talisman, drain, barrier, revive, rain, blessing and enemy silhouettes.",
+    "All selected existing FX layers inspected as original native source-frame samples in five class and three monster sheets. Final changed class sheets reviewed again; originals cleric_revive, shrine_maiden_seal and wraith_mage_drain opened directly.",
+    "Earth split: rejected fiery meteor identity; changed to skill_minotaur_pal_split_earth using mon_quake_crack at allTargets. Damage and charge remain the new record values.",
+    "Protective talisman: replaced single-target holy-cross identity with shrine-maiden allAllies barrier; new skill scope and actual buff application now both allAllies.",
+    "Shadow step borrows only scout_afterimage at user from skill_butler_bow. Smoke screen uses allAllies mist. Revive uses target angel/lifting-light frames. Enemy club uses blunt impact, not an axe-cleave layer.",
+    "Source motion, anchors and frames are visual references. New skill hitSequence, costs, probabilities and magnitudes own the gameplay behavior."
   ],
   "limits": [
-    "Static source/identity review only. No shipped-player timing, actor-weapon pose or canonical-project save/load evidence.",
-    "Borrowed combat FX are existing repository art, not newly authored talisman animations.",
-    "The armor icon expresses bodily hardening; it is not an equipment record.",
-    "Approval has not been requested or received; this is the agent observation receipt."
+    "Static art/source-frame inspection; no exported-player animation timing, actor pose, integration or live canonical save/load evidence.",
+    "FX are existing repository artwork. New original assets are the 36 code-drawn icons, not newly authored combat FX.",
+    "Agent inspection is not user approval. No human acceptance is recorded."
   ]
 }
