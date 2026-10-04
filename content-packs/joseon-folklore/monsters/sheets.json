@@ -1,0 +1,30 @@
+[
+  {
+    "resourceId": "jf-enemy-wild-boar",
+    "path": "assets/joseon-folklore/monsters/wild-boar.png",
+    "cell": 64,
+    "motion": "dash",
+    "idleFrameMs": 190
+  },
+  {
+    "resourceId": "jf-enemy-straw-dokkaebi",
+    "path": "assets/joseon-folklore/monsters/straw-dokkaebi.png",
+    "cell": 64,
+    "motion": "stomp",
+    "idleFrameMs": 260
+  },
+  {
+    "resourceId": "jf-enemy-maiden-ghost",
+    "path": "assets/joseon-folklore/monsters/maiden-ghost.png",
+    "cell": 64,
+    "motion": "float",
+    "idleFrameMs": 240
+  },
+  {
+    "resourceId": "jf-enemy-bronze-dokkaebi",
+    "path": "assets/joseon-folklore/monsters/bronze-dokkaebi.png",
+    "cell": 96,
+    "motion": "stomp",
+    "idleFrameMs": 330
+  }
+]

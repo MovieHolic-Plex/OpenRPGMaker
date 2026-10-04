@@ -1,0 +1,372 @@
+{
+  "packId": "joseon-folklore",
+  "phase": "pilot",
+  "engine": "rm2k3 / retro2003",
+  "scope": {
+    "targetGeneral": 12,
+    "targetBosses": 3,
+    "implementedGeneral": 3,
+    "implementedBosses": 1
+  },
+  "records": [
+    {
+      "id": "enemy_jf_field_rat",
+      "slug": "field-rat",
+      "name": "들쥐",
+      "kind": "normal",
+      "recommendedPartyLevels": [
+        1,
+        2
+      ],
+      "region": "논둑",
+      "dropMaterialId": "item_jf_mat_rat_tail",
+      "artDirection": "낮은 쥐 몸통과 길게 휜 꼬리",
+      "implementation": "planned-only"
+    },
+    {
+      "id": "enemy_jf_wild_boar",
+      "slug": "wild-boar",
+      "name": "산멧돼지",
+      "kind": "normal",
+      "recommendedPartyLevels": [
+        2,
+        4
+      ],
+      "region": "산기슭",
+      "dropMaterialId": "item_jf_mat_boar_tusk",
+      "artDirection": "등의 강모·굽·위로 휘는 두 엄니",
+      "implementation": "pilot",
+      "authoredEnemyLevel": 2,
+      "description": "버려진 밭을 뒤지던 산짐승. 독이나 주술 없이 엄니로 위협한다.",
+      "acquisition": {
+        "kind": "battle-victory-drop",
+        "ratePercent": 35,
+        "quantity": 1
+      },
+      "currentBehavior": "skill_attack only: damage/attack/hp; no special debuffs, counters or charge mechanics",
+      "plannedBehaviorSkillId": "skill_jf_enemy_tusk_charge",
+      "behaviorOwner": "behavior worker replaces actions; skills worker defines reserved skill",
+      "cell": 64,
+      "sheetSource": "assets/wild-boar.png",
+      "portraitSource": "assets/portraits/wild-boar.png",
+      "poses": [
+        "idle_a",
+        "idle_b",
+        "idle_c",
+        "windup",
+        "move",
+        "attack",
+        "recover",
+        "hit",
+        "dead"
+      ]
+    },
+    {
+      "id": "enemy_jf_cave_bat",
+      "slug": "cave-bat",
+      "name": "굴박쥐",
+      "kind": "normal",
+      "recommendedPartyLevels": [
+        2,
+        5
+      ],
+      "region": "산굴",
+      "dropMaterialId": "item_jf_mat_bat_wing",
+      "artDirection": "날개막과 접힌 발·큰 귀",
+      "implementation": "planned-only"
+    },
+    {
+      "id": "enemy_jf_straw_dokkaebi",
+      "slug": "straw-dokkaebi",
+      "name": "볏짚 도깨비",
+      "kind": "normal",
+      "recommendedPartyLevels": [
+        3,
+        6
+      ],
+      "region": "폐방앗간",
+      "dropMaterialId": "item_jf_mat_straw_knot",
+      "artDirection": "볏짚 망토·새끼줄 매듭·갈래뿔·나무 방망이",
+      "implementation": "pilot",
+      "authoredEnemyLevel": 3,
+      "description": "추수 뒤 남은 볏짚과 새끼줄에 장난스러운 기운이 붙었다. 몸이 곡식 묶음인 창작 도깨비.",
+      "acquisition": {
+        "kind": "battle-victory-drop",
+        "ratePercent": 45,
+        "quantity": 1
+      },
+      "currentBehavior": "skill_attack only: damage/attack/hp; no special debuffs, counters or charge mechanics",
+      "plannedBehaviorSkillId": "skill_jf_enemy_straw_club",
+      "behaviorOwner": "behavior worker replaces actions; skills worker defines reserved skill",
+      "cell": 64,
+      "sheetSource": "assets/straw-dokkaebi.png",
+      "portraitSource": "assets/portraits/straw-dokkaebi.png",
+      "poses": [
+        "idle_a",
+        "idle_b",
+        "idle_c",
+        "windup",
+        "move",
+        "attack",
+        "recover",
+        "hit",
+        "dead"
+      ]
+    },
+    {
+      "id": "enemy_jf_lantern_wisp",
+      "slug": "lantern-wisp",
+      "name": "등불 혼령",
+      "kind": "normal",
+      "recommendedPartyLevels": [
+        4,
+        7
+      ],
+      "region": "버려진 장터",
+      "dropMaterialId": "item_jf_mat_ghost_ash",
+      "artDirection": "종이 등롱 안 불빛과 분리된 불꼬리",
+      "implementation": "planned-only"
+    },
+    {
+      "id": "enemy_jf_maiden_ghost",
+      "slug": "maiden-ghost",
+      "name": "처녀귀신",
+      "kind": "normal",
+      "recommendedPartyLevels": [
+        5,
+        8
+      ],
+      "region": "옛 마을 폐허",
+      "dropMaterialId": "item_jf_mat_ghost_ash",
+      "artDirection": "풀어진 가르마 머리·흰 저고리·고름·넓은 치마",
+      "implementation": "pilot",
+      "authoredEnemyLevel": 5,
+      "description": "마을을 떠나지 못하는 이름 없는 원혼. 흰 저고리와 치마를 입고 풀어진 머리를 드리운 창작 귀신.",
+      "acquisition": {
+        "kind": "battle-victory-drop",
+        "ratePercent": 40,
+        "quantity": 1
+      },
+      "currentBehavior": "skill_attack only: damage/attack/hp; no special debuffs, counters or charge mechanics",
+      "plannedBehaviorSkillId": "skill_jf_enemy_sorrow_cry",
+      "behaviorOwner": "behavior worker replaces actions; skills worker defines reserved skill",
+      "cell": 64,
+      "sheetSource": "assets/maiden-ghost.png",
+      "portraitSource": "assets/portraits/maiden-ghost.png",
+      "poses": [
+        "idle_a",
+        "idle_b",
+        "idle_c",
+        "windup",
+        "move",
+        "attack",
+        "recover",
+        "hit",
+        "dead"
+      ]
+    },
+    {
+      "id": "enemy_jf_drowned_ghost",
+      "slug": "drowned-ghost",
+      "name": "물귀신",
+      "kind": "normal",
+      "recommendedPartyLevels": [
+        7,
+        10
+      ],
+      "region": "나루 아래",
+      "dropMaterialId": "item_jf_mat_broken_jade",
+      "artDirection": "젖은 조선 포와 상투·늘어진 젖은 소매",
+      "implementation": "planned-only"
+    },
+    {
+      "id": "enemy_jf_grave_ghoul",
+      "slug": "grave-ghoul",
+      "name": "무덤 아귀",
+      "kind": "normal",
+      "recommendedPartyLevels": [
+        8,
+        12
+      ],
+      "region": "고분 언덕",
+      "dropMaterialId": "item_jf_mat_ghost_ash",
+      "artDirection": "해진 조선 포·굽은 등·흙 묻은 손",
+      "implementation": "planned-only"
+    },
+    {
+      "id": "enemy_jf_fox_spirit",
+      "slug": "fox-spirit",
+      "name": "여우 혼령",
+      "kind": "normal",
+      "recommendedPartyLevels": [
+        9,
+        13
+      ],
+      "region": "달맞이 숲",
+      "dropMaterialId": "item_jf_mat_fox_fur",
+      "artDirection": "여우 주둥이와 여러 갈래 꼬리·동물 몸",
+      "implementation": "planned-only"
+    },
+    {
+      "id": "enemy_jf_stone_dokkaebi",
+      "slug": "stone-dokkaebi",
+      "name": "돌 도깨비",
+      "kind": "normal",
+      "recommendedPartyLevels": [
+        10,
+        15
+      ],
+      "region": "채석터",
+      "dropMaterialId": "item_jf_mat_stone_core",
+      "artDirection": "돌 몸·깨진 외뿔·돌 방망이",
+      "implementation": "planned-only"
+    },
+    {
+      "id": "enemy_jf_bamboo_specter",
+      "slug": "bamboo-specter",
+      "name": "대숲 요괴",
+      "kind": "normal",
+      "recommendedPartyLevels": [
+        12,
+        17
+      ],
+      "region": "대숲 산길",
+      "dropMaterialId": "item_jf_mat_bamboo_heart",
+      "artDirection": "대나무 마디·잎·휘어지는 가지 팔",
+      "implementation": "planned-only"
+    },
+    {
+      "id": "enemy_jf_masked_bandit",
+      "slug": "masked-bandit",
+      "name": "탈 쓴 산적",
+      "kind": "normal",
+      "recommendedPartyLevels": [
+        14,
+        18
+      ],
+      "region": "산성 길목",
+      "dropMaterialId": "item_jf_mat_rusted_token",
+      "artDirection": "조선 바지저고리·탈·짧은 환도",
+      "implementation": "planned-only"
+    },
+    {
+      "id": "enemy_jf_bronze_dokkaebi",
+      "slug": "bronze-dokkaebi",
+      "name": "청동 도깨비",
+      "kind": "boss",
+      "recommendedPartyLevels": [
+        5,
+        7
+      ],
+      "region": "청동 종각",
+      "dropMaterialId": "item_jf_mat_bronze_shard",
+      "artDirection": "큰 뿔·금속 엄니·구름무늬 배·붉은 허리천·청동 방망이",
+      "implementation": "pilot",
+      "authoredEnemyLevel": 6,
+      "description": "종각의 오래된 청동에 붙은 수호 도깨비. 뿔·방망이·붉은 천과 금속 구름무늬가 큰 실루엣을 이룬다.",
+      "acquisition": {
+        "kind": "battle-victory-drop",
+        "ratePercent": 100,
+        "quantity": 1
+      },
+      "currentBehavior": "skill_attack only: damage/attack/hp; no special debuffs, counters or charge mechanics",
+      "plannedBehaviorSkillId": "skill_jf_enemy_bronze_smash",
+      "behaviorOwner": "behavior worker replaces actions; skills worker defines reserved skill",
+      "cell": 96,
+      "sheetSource": "assets/bronze-dokkaebi.png",
+      "portraitSource": "assets/portraits/bronze-dokkaebi.png",
+      "poses": [
+        "idle_a",
+        "idle_b",
+        "idle_c",
+        "windup",
+        "move",
+        "attack",
+        "recover",
+        "hit",
+        "dead"
+      ]
+    },
+    {
+      "id": "enemy_jf_bride_wraith",
+      "slug": "bride-wraith",
+      "name": "원혼 신부",
+      "kind": "boss",
+      "recommendedPartyLevels": [
+        11,
+        14
+      ],
+      "region": "폐가 혼례방",
+      "dropMaterialId": "item_jf_mat_broken_jade",
+      "artDirection": "족두리·원삼·긴 혼례 소매·비녀",
+      "implementation": "planned-only"
+    },
+    {
+      "id": "enemy_jf_mountain_tiger",
+      "slug": "mountain-tiger",
+      "name": "산군 호랑이",
+      "kind": "boss",
+      "recommendedPartyLevels": [
+        18,
+        20
+      ],
+      "region": "산 정상 사당",
+      "dropMaterialId": "item_jf_mat_tiger_claw",
+      "artDirection": "굵은 호랑이 몸통·줄무늬·갈기·큰 앞발",
+      "implementation": "planned-only"
+    }
+  ],
+  "balance": {
+    "status": "provisional; no integrated party battle measured",
+    "initialEnemyHpRange": [
+      110,
+      145
+    ],
+    "earlyBossHp": 680,
+    "bossOrder": [
+      "bronze-dokkaebi",
+      "bride-wraith",
+      "mountain-tiger"
+    ],
+    "bossPartyLevelBands": [
+      [
+        5,
+        7
+      ],
+      [
+        11,
+        14
+      ],
+      [
+        18,
+        20
+      ]
+    ],
+    "safetyIntent": "single-target basic fallback only; no scripted party wipe or unavoidable one-hit attack",
+    "limitations": "Damage/TTK depends on final class growth, equipment, skills and behavior; supervisor must verify after integration."
+  },
+  "drops": {
+    "implementation": "legacy single dropItemId/dropRatePercent; one unit; bronze guaranteed",
+    "materialDefinitionsOwner": "consumables worker; references are reserved in ids.json"
+  },
+  "troopIdPolicy": "ids.json reserves no troop IDs; deterministic troop_jf_<enemy slug with underscores>",
+  "resourceDelivery": {
+    "staging": "all files in this monsters folder only",
+    "publicCopyOwner": "supervisor",
+    "registrationOwner": "supervisor",
+    "runtimeRegistered": false,
+    "canonicalProjectWritten": false
+  },
+  "provenance": {
+    "author": "GPT 6.1 sol high monsters worker",
+    "method": "Original native-coordinate Python/Pillow code dots",
+    "importedArtwork": false,
+    "imageGenerationAPI": false,
+    "inspiration": "original fantasy interpretations of broadly known Joseon clothing and folklore motifs; no historical reconstruction or commercial game tracing"
+  },
+  "review": {
+    "authorViewedAllNativeSheets": true,
+    "userApproval": false,
+    "evidence": "review/VISUAL-REVIEW.md; exact PNG hashes in review/art-manifest.json"
+  }
+}

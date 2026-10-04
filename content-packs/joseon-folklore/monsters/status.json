@@ -1,0 +1,75 @@
+{
+  "phase": "pilot",
+  "ready": true,
+  "scope": "local monsters handoff only; user review pending",
+  "counts": {
+    "enemies": 4,
+    "troops": 4,
+    "sheets": 4,
+    "poses": 36,
+    "portraits": 4,
+    "general": 3,
+    "bosses": 1
+  },
+  "targetCounts": {
+    "general": 12,
+    "bosses": 3
+  },
+  "reviewFiles": [
+    "review/VISUAL-REVIEW.md",
+    "review/art-manifest.json",
+    "review/asset-smoke.json",
+    "review/normalize-smoke.json",
+    "review/wild-boar-poses.png",
+    "review/straw-dokkaebi-poses.png",
+    "review/maiden-ghost-poses.png",
+    "review/bronze-dokkaebi-poses.png"
+  ],
+  "review": {
+    "authorViewedAllNativeSheets": true,
+    "userApproved": false
+  },
+  "checks": {
+    "assetSmoke": "passed",
+    "actualEngineNormalizeAndJsonRoundtrip": "passed",
+    "integratedRuntime": "not-run"
+  },
+  "integration": {
+    "publicAssetsRegistered": false,
+    "engineRegistryModified": false,
+    "canonicalProjectWritten": false
+  },
+  "limitations": [
+    "Remaining 11 species are design-only; expansion waits for supervisor direction.",
+    "All four actions are skill_attack fallback; behavior worker replaces them.",
+    "Final class balance, exported assets and RM2003 stage rendering await supervisor integration.",
+    "Human art approval remains pending; ready does not express approval."
+  ],
+  "fileHashes": {
+    "README.md": "e9653a9e5a58c254e2155eaa717f11236106aa3288ea695647afd9fead09b344",
+    "data.json": "66b3a621f3842a397f91248434c156ff466cc90f0b3e5d803edd487e6fa3c3f7",
+    "design.json": "215cad6941a4dd2dc103c9f4cea92dc75aa40bfc928deee4dfe747f2fd3b56a3",
+    "sheets.json": "b96d777fe63f7875ff29a0e35ca301f7868ca52ee80e2d8d1ab6b3eca5cca6e6",
+    "source/draw.py": "8ca4159495c37af3905a515e627a4954fba0ffacf06a2087f01c69d126b3837c",
+    "source/data.py": "f58005f84fac430688ab42205a6f93731d0db80d97fb986cb1af83afef2d8994",
+    "source/asset-smoke.py": "dbb4cdc9f69c4d0792b8ce2705555d1084875d8a3368845c62b714fde73c33dd",
+    "source/run-smoke.mjs": "bbb764db1ff98589f5cb66b3c37820f92e99740475f3fdfd3922827f54bb7356",
+    "source/normalize-smoke.mts": "d05ebb6a342c1db49bc46acb059c28099d008ee1b7279f80b313acd65db3c5a4",
+    "review/art-manifest.json": "57abd4774cc14808e2d4582cb869339a76e74d7550289fe9faafa509f1ab5315",
+    "review/asset-smoke.json": "9119b144b40ad1c1768b9a8e261b34da21feb9b5ba7ea94ff2dd1edf2cf52c73",
+    "review/normalize-smoke.json": "5dfb3706d7a705e8641a8e96854c5c79a6857b63509133606cdead5f6c6f01f2",
+    "review/VISUAL-REVIEW.md": "76223e7d832eb8b9ef8b1ff0c907a9978e6fb24c356ae903f48c6e9a831c344a",
+    "assets/wild-boar.png": "3c8d5ccecfb04391c94ee4942a0aa0398b763610ac1519c383b749a67ac51db9",
+    "assets/portraits/wild-boar.png": "068df07b78c1b41e6a996449c6ca46674a3db0ffbdb9df2720b875e1e6e52e00",
+    "review/wild-boar-poses.png": "52d5a86ca8050f0dcfc14230de333bbf2c68f680cc8c6c8afa708303f8f11810",
+    "assets/straw-dokkaebi.png": "ce31c2e4f578e423d3f98b72f3e8f3900f112e5db17c04931d63aa44dca11d52",
+    "assets/portraits/straw-dokkaebi.png": "e55f53dd81a002094305a845ebb0783f415664532a1779208de64cd82246e71d",
+    "review/straw-dokkaebi-poses.png": "5d3383eb7cbee8da0896641868c6c6e73d3bfd325237bd46e32fe38e5dfd024a",
+    "assets/maiden-ghost.png": "3060cd8188ad41908a7515504c6df5887aeb7757211e39880cdbfed6888b90e0",
+    "assets/portraits/maiden-ghost.png": "e344dff69950172e34eb1ad911d46632dcaffcc3d0aa2766b1e4b092f67e53b1",
+    "review/maiden-ghost-poses.png": "58872cd3195bedddb69795ff3392f0f6eddb0d83d47d7adba9be52c6beccac56",
+    "assets/bronze-dokkaebi.png": "1de18fd38ec573cef4df9e2c362212137a5b9e9c91e6afb8ae328cd45f8ac5d1",
+    "assets/portraits/bronze-dokkaebi.png": "8454f4d6c8349b17dbcdf783859e30d58a142a338668bc4aaec1d8b074cef1c6",
+    "review/bronze-dokkaebi-poses.png": "088d95f9ab921e4909f4f9d80b769c4b79a3bd8708788f86e3c5110846cb74be"
+  }
+}

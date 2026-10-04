@@ -1,0 +1,290 @@
+{
+  "enemies": [
+    {
+      "id": "enemy_jf_wild_boar",
+      "name": "산멧돼지",
+      "level": 2,
+      "monsterResourceId": "jf-enemy-wild-boar",
+      "graphicHue": 0,
+      "transparent": false,
+      "flying": false,
+      "criticalHit": {
+        "enabled": false,
+        "oneIn": 30
+      },
+      "attackOptions": {
+        "normalAttacksMiss": false
+      },
+      "skillIds": [
+        "skill_attack"
+      ],
+      "stats": {
+        "maxHp": 110,
+        "maxMp": 0,
+        "attack": 14,
+        "defense": 10,
+        "mind": 8,
+        "agility": 12
+      },
+      "rewards": {
+        "exp": 22,
+        "gold": 9,
+        "dropItemId": "item_jf_mat_boar_tusk",
+        "dropRatePercent": 35
+      },
+      "actions": [
+        {
+          "skillId": "skill_attack",
+          "priority": 50,
+          "condition": {
+            "kind": "always"
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        }
+      ],
+      "stateRates": {
+        "state_death": "C"
+      },
+      "elementRates": {}
+    },
+    {
+      "id": "enemy_jf_straw_dokkaebi",
+      "name": "볏짚 도깨비",
+      "level": 3,
+      "monsterResourceId": "jf-enemy-straw-dokkaebi",
+      "graphicHue": 0,
+      "transparent": false,
+      "flying": false,
+      "criticalHit": {
+        "enabled": false,
+        "oneIn": 30
+      },
+      "attackOptions": {
+        "normalAttacksMiss": false
+      },
+      "skillIds": [
+        "skill_attack"
+      ],
+      "stats": {
+        "maxHp": 140,
+        "maxMp": 0,
+        "attack": 18,
+        "defense": 12,
+        "mind": 10,
+        "agility": 10
+      },
+      "rewards": {
+        "exp": 35,
+        "gold": 13,
+        "dropItemId": "item_jf_mat_straw_knot",
+        "dropRatePercent": 45
+      },
+      "actions": [
+        {
+          "skillId": "skill_attack",
+          "priority": 50,
+          "condition": {
+            "kind": "always"
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        }
+      ],
+      "stateRates": {
+        "state_death": "C"
+      },
+      "elementRates": {}
+    },
+    {
+      "id": "enemy_jf_maiden_ghost",
+      "name": "처녀귀신",
+      "level": 5,
+      "monsterResourceId": "jf-enemy-maiden-ghost",
+      "graphicHue": 0,
+      "transparent": false,
+      "flying": true,
+      "criticalHit": {
+        "enabled": false,
+        "oneIn": 30
+      },
+      "attackOptions": {
+        "normalAttacksMiss": false
+      },
+      "skillIds": [
+        "skill_attack"
+      ],
+      "stats": {
+        "maxHp": 145,
+        "maxMp": 20,
+        "attack": 17,
+        "defense": 8,
+        "mind": 23,
+        "agility": 16
+      },
+      "rewards": {
+        "exp": 42,
+        "gold": 17,
+        "dropItemId": "item_jf_mat_ghost_ash",
+        "dropRatePercent": 40
+      },
+      "actions": [
+        {
+          "skillId": "skill_attack",
+          "priority": 50,
+          "condition": {
+            "kind": "always"
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        }
+      ],
+      "stateRates": {
+        "state_death": "C"
+      },
+      "elementRates": {}
+    },
+    {
+      "id": "enemy_jf_bronze_dokkaebi",
+      "name": "청동 도깨비",
+      "level": 6,
+      "monsterResourceId": "jf-enemy-bronze-dokkaebi",
+      "graphicHue": 0,
+      "transparent": false,
+      "flying": false,
+      "criticalHit": {
+        "enabled": false,
+        "oneIn": 30
+      },
+      "attackOptions": {
+        "normalAttacksMiss": false
+      },
+      "skillIds": [
+        "skill_attack"
+      ],
+      "stats": {
+        "maxHp": 680,
+        "maxMp": 24,
+        "attack": 25,
+        "defense": 18,
+        "mind": 14,
+        "agility": 10
+      },
+      "rewards": {
+        "exp": 210,
+        "gold": 120,
+        "dropItemId": "item_jf_mat_bronze_shard",
+        "dropRatePercent": 100
+      },
+      "actions": [
+        {
+          "skillId": "skill_attack",
+          "priority": 50,
+          "condition": {
+            "kind": "always"
+          },
+          "switchOnAfterAction": {
+            "enabled": false
+          },
+          "switchOffAfterAction": {
+            "enabled": false
+          }
+        }
+      ],
+      "stateRates": {
+        "state_death": "C"
+      },
+      "elementRates": {}
+    }
+  ],
+  "troops": [
+    {
+      "id": "troop_jf_wild_boar",
+      "name": "산멧돼지 · 단독",
+      "enemyIds": [
+        "enemy_jf_wild_boar"
+      ],
+      "members": [
+        {
+          "enemyId": "enemy_jf_wild_boar",
+          "x": 88,
+          "y": 140,
+          "hidden": false
+        }
+      ],
+      "autoAlign": true,
+      "uncapturable": true,
+      "previewBackgroundResourceId": "battle-scenery-forest",
+      "battleEventPages": []
+    },
+    {
+      "id": "troop_jf_straw_dokkaebi",
+      "name": "볏짚 도깨비 · 단독",
+      "enemyIds": [
+        "enemy_jf_straw_dokkaebi"
+      ],
+      "members": [
+        {
+          "enemyId": "enemy_jf_straw_dokkaebi",
+          "x": 88,
+          "y": 140,
+          "hidden": false
+        }
+      ],
+      "autoAlign": true,
+      "uncapturable": true,
+      "previewBackgroundResourceId": "battle-scenery-forest",
+      "battleEventPages": []
+    },
+    {
+      "id": "troop_jf_maiden_ghost",
+      "name": "처녀귀신 · 단독",
+      "enemyIds": [
+        "enemy_jf_maiden_ghost"
+      ],
+      "members": [
+        {
+          "enemyId": "enemy_jf_maiden_ghost",
+          "x": 88,
+          "y": 140,
+          "hidden": false
+        }
+      ],
+      "autoAlign": true,
+      "uncapturable": true,
+      "previewBackgroundResourceId": "battle-scenery-forest",
+      "battleEventPages": []
+    },
+    {
+      "id": "troop_jf_bronze_dokkaebi",
+      "name": "청동 도깨비 · 단독",
+      "enemyIds": [
+        "enemy_jf_bronze_dokkaebi"
+      ],
+      "members": [
+        {
+          "enemyId": "enemy_jf_bronze_dokkaebi",
+          "x": 88,
+          "y": 140,
+          "hidden": false
+        }
+      ],
+      "autoAlign": true,
+      "uncapturable": true,
+      "previewBackgroundResourceId": "battle-scenery-forest",
+      "battleEventPages": []
+    }
+  ]
+}

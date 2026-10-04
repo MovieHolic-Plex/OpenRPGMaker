@@ -1,0 +1,18 @@
+{
+  "passed": true,
+  "scope": "actual normalizeEnemyRecord/normalizeTroopRecord + local JSON roundtrip only",
+  "counts": {
+    "enemies": 4,
+    "troops": 4,
+    "fallbackActions": 4,
+    "reservedMaterialDrops": 4
+  },
+  "inputSha256": "66b3a621f3842a397f91248434c156ff466cc90f0b3e5d803edd487e6fa3c3f7",
+  "normalizedSha256": "157aabea7958ee4029fb37e5120569c83e02e356096b3c645ed23e3b4c19c06c",
+  "normalizerSource": "src/project/databaseEnemyTroopRecordModel.ts",
+  "normalizerSourceSha256": "2ba7a39e65db67d20914cf8beab6e2875955fee427f049b609509f56a4af08e5",
+  "notes": [
+    "normalizer adds existing default neutral element rates",
+    "no live DB, no runtime registration, no integrated combat played"
+  ]
+}

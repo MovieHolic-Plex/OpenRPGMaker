@@ -1,0 +1,446 @@
+{
+  "author": "GPT 6.1 sol high monsters worker",
+  "method": "Original coordinate-authored Python/Pillow; no imported bitmap artwork",
+  "sourceSha256": "8ca4159495c37af3905a515e627a4954fba0ffacf06a2087f01c69d126b3837c",
+  "poseOrder": [
+    "idle_a",
+    "idle_b",
+    "idle_c",
+    "windup",
+    "move",
+    "attack",
+    "recover",
+    "hit",
+    "dead"
+  ],
+  "sheets": [
+    {
+      "slug": "wild-boar",
+      "source": "source/draw.py",
+      "sheet": "assets/wild-boar.png",
+      "sha256": "3c8d5ccecfb04391c94ee4942a0aa0398b763610ac1519c383b749a67ac51db9",
+      "size": [
+        192,
+        192
+      ],
+      "colors": 14,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "frames": [
+        {
+          "pose": "idle_a",
+          "bbox": [
+            4,
+            17,
+            58,
+            60
+          ],
+          "sha256": "82bfd2c9f330177d0bf32b70c0987b14e0aeacf155c575461cda41d61bd780f7"
+        },
+        {
+          "pose": "idle_b",
+          "bbox": [
+            4,
+            16,
+            58,
+            60
+          ],
+          "sha256": "5eb531f4fab27ee846ec8eb4fd66a1a461fe39a2bf35a096228a8af8df0e2f32"
+        },
+        {
+          "pose": "idle_c",
+          "bbox": [
+            4,
+            18,
+            58,
+            60
+          ],
+          "sha256": "747a4484c5b83aba81f739aa3758a4a2aee384fd3245f17f7199780108b06295"
+        },
+        {
+          "pose": "windup",
+          "bbox": [
+            2,
+            19,
+            55,
+            60
+          ],
+          "sha256": "9fc2aaf85918425ab1fd157c786b594766e44c8f94835bd2af2f35b9edf21dc5"
+        },
+        {
+          "pose": "move",
+          "bbox": [
+            4,
+            15,
+            58,
+            60
+          ],
+          "sha256": "9d8d833179c7798d3420fc6b0ccd6ff3226ba990f6cef978784759cebd27c5a2"
+        },
+        {
+          "pose": "attack",
+          "bbox": [
+            6,
+            20,
+            61,
+            60
+          ],
+          "sha256": "c77933d2a7908e096a5ec8ee9b37d99c2f272bb4500e072d52cf315917ef8054"
+        },
+        {
+          "pose": "recover",
+          "bbox": [
+            5,
+            19,
+            58,
+            61
+          ],
+          "sha256": "dbd0f27e2005a9875f81efa9bff9e86a55f3b38ab66bcb962aa2d0a9b8311285"
+        },
+        {
+          "pose": "hit",
+          "bbox": [
+            2,
+            16,
+            54,
+            60
+          ],
+          "sha256": "dbc7a03411a8e11088224ae0c18a8df6b2b28fe39c35c2b873cf5a08f5631034"
+        },
+        {
+          "pose": "dead",
+          "bbox": [
+            4,
+            24,
+            58,
+            60
+          ],
+          "sha256": "172863d89c0e71c27d2ea11b453d2c014c2dd8c2678e690ef2416c7a42324f77"
+        }
+      ]
+    },
+    {
+      "slug": "straw-dokkaebi",
+      "source": "source/draw.py",
+      "sheet": "assets/straw-dokkaebi.png",
+      "sha256": "ce31c2e4f578e423d3f98b72f3e8f3900f112e5db17c04931d63aa44dca11d52",
+      "size": [
+        192,
+        192
+      ],
+      "colors": 15,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "frames": [
+        {
+          "pose": "idle_a",
+          "bbox": [
+            8,
+            5,
+            52,
+            60
+          ],
+          "sha256": "ef7374a74cb00565117328c8d3d7c6e56e47340fc06a755c4ec732bacbbb7cd7"
+        },
+        {
+          "pose": "idle_b",
+          "bbox": [
+            8,
+            4,
+            51,
+            60
+          ],
+          "sha256": "6bfd45189aa088cabd7823eee84c157bf6c830d0a797e94913392b47f4805cfb"
+        },
+        {
+          "pose": "idle_c",
+          "bbox": [
+            8,
+            6,
+            53,
+            60
+          ],
+          "sha256": "be990a91b49d4d8790951af1331819ff791d1a2f9d5757ecacfa68d585d26535"
+        },
+        {
+          "pose": "windup",
+          "bbox": [
+            8,
+            6,
+            49,
+            60
+          ],
+          "sha256": "319fcad521af0723f4bbe53982dd81e3034a5b1a41afb1387a67b998cbaa6daa"
+        },
+        {
+          "pose": "move",
+          "bbox": [
+            5,
+            3,
+            53,
+            60
+          ],
+          "sha256": "5133cd59dc94360296020747af884ef8d78b2c58d3cb3fe6a7d38dbedbfe087c"
+        },
+        {
+          "pose": "attack",
+          "bbox": [
+            8,
+            7,
+            59,
+            61
+          ],
+          "sha256": "e1371ad2611cc5c14809ed80a6a2c59f6d0e5a9797d22ee21669b967bdabe465"
+        },
+        {
+          "pose": "recover",
+          "bbox": [
+            14,
+            7,
+            51,
+            60
+          ],
+          "sha256": "38cf553927b467facedbe211dc8f83c64aca35a94b1f87d332e2f1d032df878d"
+        },
+        {
+          "pose": "hit",
+          "bbox": [
+            8,
+            4,
+            51,
+            60
+          ],
+          "sha256": "0769df3c177f0711a03d0e892983923b37f511724f6b67d39163586e4d08dc70"
+        },
+        {
+          "pose": "dead",
+          "bbox": [
+            6,
+            36,
+            59,
+            61
+          ],
+          "sha256": "828b3ee5585cd4e5915533619c12dfebe137121f00cb40d100fe0b4f3273ea30"
+        }
+      ]
+    },
+    {
+      "slug": "maiden-ghost",
+      "source": "source/draw.py",
+      "sheet": "assets/maiden-ghost.png",
+      "sha256": "3060cd8188ad41908a7515504c6df5887aeb7757211e39880cdbfed6888b90e0",
+      "size": [
+        192,
+        192
+      ],
+      "colors": 16,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "frames": [
+        {
+          "pose": "idle_a",
+          "bbox": [
+            16,
+            7,
+            49,
+            60
+          ],
+          "sha256": "ce05cc4ba6d8e249cd8ddd196db595245868e95250ac5da80161f85917b5462f"
+        },
+        {
+          "pose": "idle_b",
+          "bbox": [
+            16,
+            6,
+            49,
+            60
+          ],
+          "sha256": "d42006e08e99705179f183b6e8e0cd6e27b917c558da7f91d271c72fc5d78183"
+        },
+        {
+          "pose": "idle_c",
+          "bbox": [
+            16,
+            8,
+            47,
+            60
+          ],
+          "sha256": "8984fe53e3e72b59bf5ce1562abe7862b9ad434e0ecd535a64b5df384789c1bb"
+        },
+        {
+          "pose": "windup",
+          "bbox": [
+            14,
+            5,
+            44,
+            60
+          ],
+          "sha256": "e19cbf0a960b01f84a2dc49f95da47291074c9958b193d5284b492dcf217f649"
+        },
+        {
+          "pose": "move",
+          "bbox": [
+            8,
+            5,
+            45,
+            60
+          ],
+          "sha256": "0c2aad07ee83060b3c568195504d773dc5d09df6ae8045566e624c99f71c8ee4"
+        },
+        {
+          "pose": "attack",
+          "bbox": [
+            11,
+            7,
+            60,
+            60
+          ],
+          "sha256": "2a29ad14aaea4bad4156c27d9ffb620e7c7aa17c819d0c4369a4b373cb2d86db"
+        },
+        {
+          "pose": "recover",
+          "bbox": [
+            17,
+            8,
+            47,
+            60
+          ],
+          "sha256": "6c3a9f233c751d9aab6898c31b475378ecb4e07baa3d2215feed5e842f08fd92"
+        },
+        {
+          "pose": "hit",
+          "bbox": [
+            16,
+            9,
+            47,
+            60
+          ],
+          "sha256": "0266aad042e7a36be9c0cd52a31cd770e27432bd5085c6518ec35a144b600b77"
+        },
+        {
+          "pose": "dead",
+          "bbox": [
+            9,
+            40,
+            52,
+            60
+          ],
+          "sha256": "cc8a8301069b3984da92cad6aaa021460260b0e48d930d2ca7e2c4fbf50c626d"
+        }
+      ]
+    },
+    {
+      "slug": "bronze-dokkaebi",
+      "source": "source/draw.py",
+      "sheet": "assets/bronze-dokkaebi.png",
+      "sha256": "1de18fd38ec573cef4df9e2c362212137a5b9e9c91e6afb8ae328cd45f8ac5d1",
+      "size": [
+        288,
+        288
+      ],
+      "colors": 17,
+      "alphaValues": [
+        0,
+        255
+      ],
+      "frames": [
+        {
+          "pose": "idle_a",
+          "bbox": [
+            11,
+            6,
+            86,
+            92
+          ],
+          "sha256": "cbf429dad1eda5c1b90b208a6da3c5f3098956f4bb8d60839bd9ebdd2036ab44"
+        },
+        {
+          "pose": "idle_b",
+          "bbox": [
+            11,
+            5,
+            85,
+            92
+          ],
+          "sha256": "6f0d433356ae67096fa57c89738d5cc34fc9b76f8f59066d1ff4298c84e95aa3"
+        },
+        {
+          "pose": "idle_c",
+          "bbox": [
+            11,
+            7,
+            87,
+            92
+          ],
+          "sha256": "9d057eb74d6540cf5494b37b74ee57b0e11040fc75256b5a872f9974f31c6bae"
+        },
+        {
+          "pose": "windup",
+          "bbox": [
+            9,
+            8,
+            78,
+            92
+          ],
+          "sha256": "71736cc8899657ef99527891e234a5970fd4f51286879da4e6dfe48cc37f35fd"
+        },
+        {
+          "pose": "move",
+          "bbox": [
+            5,
+            4,
+            85,
+            92
+          ],
+          "sha256": "24dff0c30f62294955bb04492add2b465eb5a86dd4ceb862404e454b49826120"
+        },
+        {
+          "pose": "attack",
+          "bbox": [
+            9,
+            8,
+            88,
+            92
+          ],
+          "sha256": "e8f870d88daec5d84d432820679b7c9cba56c5e0eb5aedc234a3e57331736bf2"
+        },
+        {
+          "pose": "recover",
+          "bbox": [
+            15,
+            9,
+            85,
+            92
+          ],
+          "sha256": "fc0fa5c0a66443f4ed41feaa1fa623401205b3a9db7f9c6a32bd4032daf08713"
+        },
+        {
+          "pose": "hit",
+          "bbox": [
+            12,
+            5,
+            81,
+            92
+          ],
+          "sha256": "0cd773f63deb322a2cfb8eb21bb5073327d7e24038c73385fa7c08cb2dd21332"
+        },
+        {
+          "pose": "dead",
+          "bbox": [
+            10,
+            54,
+            86,
+            93
+          ],
+          "sha256": "bbdc05ab1bf46319357ec2a15cfa931599bb1713ee7cc12205845d76a73a2b19"
+        }
+      ]
+    }
+  ]
+}
