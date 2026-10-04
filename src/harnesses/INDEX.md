@@ -14,6 +14,7 @@
 | `romance-scene` | 연애 첫 대화 장면 | 장르 `story-cutscene` 전용 | `harness-data/romance-scene/seed.json` | `openwiki/harnesses/romance-scene.md` |
 | `charset-actor` | RM2000 캐릭터 GIF 공방 | 장르 무관 | `harness-data/charset-actor/briefs.json` | `openwiki/harnesses/charset-actor.md` |
 | `worldmap-icons` | 월드맵 아이콘 | 장르 무관 | `harness-data/worldmap-icons/seed.json` | `openwiki/harnesses/worldmap-icons.md` |
+| `assistant-capability` | 조수 기능별 수행 검증 | 장르 무관 | `harness-data/assistant-capability/seed.json` | `openwiki/harnesses/assistant-capability.md` |
 
 ## monster-collect-species — 몬스터 수집 종 스프라이트
 
@@ -196,5 +197,26 @@ GPT 6.1 sol high가 정지·걷기 12프레임을 전부 직접 저작하고 사
 - `check` — 굽기 확인: 선택 기록·원본 해시·칸 좌표·번들 PNG·참고문서를 대조한다.
 - `publish-shared` — 공용 DB 등록: 선택 시트와 정본 지형 사례를 호스트 공용 SQLite에 등록하고 같은 판본을 다시 읽는다.
 - `preview` — 후보 미리보기: 후보의 크기·색표와 실제 지도 자리를 확인한다.
+
+**들어오는 길:** CLI 있음 · 에디터 화면 아직 없음 · 조수 도구 아직 없음
+
+## assistant-capability — 조수 기능별 수행 검증
+
+실제 입력창·Pi 모델로 자연어 과제를 수행하고 요구·보존·적대적 반례·플레이·시각·SQLite 재로드 증거를 각각 판정한다. 필수 증거 누락은 합격이 아니다.
+
+**이럴 때 쓴다:**
+- 에디터 조수의 기능별 수행 능력, 기존 콘텐츠 보존, 완료 보고와 실제 결과를 점검할 때
+
+**단계** (`npm run harness -- assistant-capability <단계>`):
+- `list` — 과제 목록: 요구·보존·플레이·시각 기준이 미리 정해진 사례를 나열한다.
+- `prepare` — 격리 정본 준비: 실행마다 별도 SQLite 프로젝트와 초기 상태를 만든다. 기존 폴더 덮어쓰기 금지.
+- `run` — 실제 수행: 직렬로 실제 입력창에 제출하고 적용·저장·새 브라우저 재로드·전용 플레이어를 확인한다.
+- `recheck` — 저장 결과 재관측: 원래 시도와 검증을 보존하고 모델 재실행 없이 같은 저장 결과만 재검증한다.
+- `recapture` — 화면 재관측: 이전 그림을 보존하고 모델 재실행 없이 저장 결과의 렌더 완료 화면을 다시 캡처한다.
+- `self-check` — 검증기 반례: 정상 결과와 무변경·잘못된 대상·범위 위반·분기 결손 결과의 오판을 검사한다.
+- `self-check-runtime` — 플레이 검증기 교정: 알려진 정상 결과를 출하 플레이어에서 실행하여 플레이 검사 자체의 오판을 확인한다.
+- `review` — 시각 검수: 실제로 열어 본 그림의 해시에 묶어 독립 검수 결과를 기록한다.
+- `report` — 결과 집계: 미검증·실패·환경 차단을 숨기지 않고 JSON·HTML·Markdown으로 집계한다.
+- `aggregate` — 여러 실행 집계: 각 기능의 최초 실제 모델 시도를 선택하고 입력 전 기동 장애와 모든 시도를 별도 보존한다.
 
 **들어오는 길:** CLI 있음 · 에디터 화면 아직 없음 · 조수 도구 아직 없음
