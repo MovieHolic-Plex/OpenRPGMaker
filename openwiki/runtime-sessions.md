@@ -697,3 +697,8 @@ exposes sellPriceOverrides and the system review fingerprint includes that table
 Collector detail uses one column and omits equipment comparison controls for supplies.
 Native Tab→ArrowRight→Enter switches buy/sell. Real pointer clicks remain blocked by
 the existing runtime input policy; test with the supported keyboard, not synthetic clicks.
+
+At390×640 the game still mounts a320×240 shop stage. Collector compact CSS must
+clear generic stacked-shop side max-height42% and description max-height2.6em,
+keep its two columns, compact hero/icon/text, and preserve full supply description.
+Quantity/transaction checks alone do not prove that the detail is readable.

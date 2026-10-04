@@ -1132,3 +1132,16 @@
 }
 
 .runtime-shop-preset-collector .runtime-shop-detail {display:flex;flex-direction:column;gap:16px;}
+/* The collector keeps its two columns on the 320x240 stage: do not inherit
+   the generic stacked shop's 42% detail crop or two-line description cap. */
+@media(max-width:600px){
+ .runtime-shop-preset-collector .runtime-shop-side{max-height:none;overflow:hidden;border-top:0;border-left:3px solid var(--shop-line-strong);}
+ .runtime-shop-preset-collector .runtime-shop-detail-panel{padding:4px 6px;overflow:hidden;}
+ .runtime-shop-preset-collector .runtime-shop-detail{gap:4px;}
+ .runtime-shop-preset-collector .runtime-shop-detail-hero{flex-direction:row;align-items:center;gap:4px;}
+ .runtime-shop-preset-collector .runtime-shop-detail-icon{width:20px;height:20px;flex:0 0 20px;}
+ .runtime-shop-preset-collector .runtime-shop-detail-name{font-size:12px;line-height:1.2;}
+ .runtime-shop-preset-collector .runtime-shop-detail-type{display:none;}
+ .runtime-shop-preset-collector .runtime-shop-help-line{max-height:none;overflow:visible;font-size:10px;line-height:1.3;word-break:keep-all;overflow-wrap:anywhere;}
+ .runtime-shop-preset-collector .runtime-shop-owned-panel{display:block;font-size:10px;}
+}
