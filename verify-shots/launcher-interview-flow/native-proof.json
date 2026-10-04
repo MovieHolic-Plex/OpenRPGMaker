@@ -1,0 +1,118 @@
+{
+  "actualElectron": true,
+  "mockedResponses": 0,
+  "chapters": [
+    {
+      "label": "전체 화면 영상으로 시작",
+      "at": 0.007
+    },
+    {
+      "label": "시작 화면에서 인터뷰 · 프로젝트 아직 없음",
+      "at": 4.604
+    },
+    {
+      "label": "선택하면 영상 종료 · 도트 장면 준비",
+      "at": 7.372
+    },
+    {
+      "label": "취소해도 빈 프로젝트를 만들지 않음",
+      "at": 9.43
+    },
+    {
+      "label": "인터뷰 1/5 · 같은 화면에서 선택",
+      "at": 10.408
+    },
+    {
+      "label": "인터뷰 2/5 · 같은 화면에서 선택",
+      "at": 11.285
+    },
+    {
+      "label": "인터뷰 3/5 · 같은 화면에서 선택",
+      "at": 11.916
+    },
+    {
+      "label": "인터뷰 4/5 · 같은 화면에서 선택",
+      "at": 12.591
+    },
+    {
+      "label": "인터뷰 5/5 · 같은 화면에서 선택",
+      "at": 13.204
+    },
+    {
+      "label": "기획 확인 · 여기까지 프로젝트를 열지 않음",
+      "at": 14.107
+    },
+    {
+      "label": "마지막 만들기 후 폴더 생성·편집기 준비",
+      "at": 16.652
+    }
+  ],
+  "errors": [],
+  "requests": [],
+  "http": [
+    {
+      "path": "/v1/images/generations",
+      "event": "request",
+      "at": 8.062
+    },
+    {
+      "path": "/v1/images/generations",
+      "event": "response",
+      "status": 500,
+      "at": 8.072
+    },
+    {
+      "path": "/v1/images/generations",
+      "event": "request",
+      "at": 10.631
+    },
+    {
+      "path": "/v1/images/generations",
+      "event": "response",
+      "status": 500,
+      "at": 10.634
+    },
+    {
+      "path": "/v1/images/generations",
+      "event": "request",
+      "at": 14.043
+    },
+    {
+      "path": "/v1/images/generations",
+      "event": "response",
+      "status": 500,
+      "at": 14.052
+    }
+  ],
+  "fullscreen": true,
+  "interviewUrl": "app://oprn/start-screen.html",
+  "foldersDuringInterview": [],
+  "firstChoice": {
+    "hidden": true,
+    "paused": true
+  },
+  "artState": "error",
+  "cancelCreatedNothing": true,
+  "beforeConfirm": {
+    "url": "app://oprn/start-screen.html",
+    "folders": []
+  },
+  "passedPlanning": true,
+  "failure": "Error: Confirmed plan saved/AI handoff has not been observed",
+  "duration": 287.066,
+  "canonicalReload": {
+    "canonicalApiReload": true,
+    "projectDir": "/home/main/.codex/worktrees/08da/rpg-zzu/output/qa/launcher-interview-flow/native-2/projects/새 게임",
+    "projectId": "97f10a48-51a6-43aa-b71b-3f6a0243b062",
+    "revision": 3,
+    "answers": 5,
+    "generationPending": true,
+    "genre": "romance",
+    "aiConversations": 0
+  },
+  "passedHandoff": false,
+  "limitations": [
+    "Image endpoint returned HTTP 500; choice-specific generated art was not accepted.",
+    "No agent request or AI conversation was observed; assistant execution is not certified."
+  ]
+}

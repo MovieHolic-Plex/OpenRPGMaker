@@ -1,0 +1,18 @@
+{
+  "productionComponents": true,
+  "syntheticAuthAndArtFailure": true,
+  "canonicalWrites": 0,
+  "errors": [],
+  "checks": [
+    "First question mounts directly on launcher with no preliminary submission, folder creation, editor imports or initial art request",
+    "All four genre buttons fit 1024×768 without horizontal overflow; keyboard navigation and reduced motion work",
+    "Choice pauses/hides film; failed generation stays on pixel still; cancellation creates no folder",
+    "Only explicit final confirmation creates folder; failed creation remains on launcher",
+    "Retry remains in the same confirmation screen without repeating questions",
+    "Storage preflight failure retains the plan and creates no folder",
+    "Declining account connection keeps confirmation visible without folder creation",
+    "Successful synthetic creation writes the complete confirmed five-answer brief, concept, protagonist and notes before navigating to the synthetic editor destination"
+  ],
+  "noEditorImports": [],
+  "passed": true
+}

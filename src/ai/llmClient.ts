@@ -1,5 +1,5 @@
 import { inspectPromptPayload, publishPromptInspection, inspectionEpoch } from "./authoring/promptInspection";
-import { normalizePiApplyMode } from "./piAgent/applyMode";
+import { DEFAULT_PI_APPLY, normalizePiApplyMode, type PiApplyMode } from "./piAgent/applyMode";
 import { configForRole, parseRoleModels, type SpecialistModels } from "./modelRoles";
 // ai/llmClient.ts
 // OpenAI Chat Completions 호환 LLM 클라이언트(의존성 추가 없이 fetch 직접 구현).
@@ -10,7 +10,7 @@ import { configForRole, parseRoleModels, type SpecialistModels } from "./modelRo
 // - Node(테스트/스모크)에서는 config를 직접 주입해 사용한다.
 
 import { DEFAULT_ULTRABRAIN_PROVIDER, DEFAULT_ULTRABRAIN_MODEL, DEFAULT_ULTRABRAIN_EFFORT } from "./ultrabrainConfig";
-import { DEFAULT_PI_APPLY, DEFAULT_PI_TEAM, LEGACY_PI_TEAM_ROUTE, type PiApplyMode } from "@/ai/piAgent/executionRoute";
+import { DEFAULT_PI_TEAM, LEGACY_PI_TEAM_ROUTE } from "./piAgent/executionDefaults";
 import type { AutonomyLevel } from "@/ai/autonomyLevels";
 import { AUTONOMY_LEVEL_IDS } from "@/ai/autonomyLevels";
 import { PRODUCT_BRAND } from "@/brand";
