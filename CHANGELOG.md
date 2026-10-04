@@ -5,6 +5,17 @@
 
 <!-- releases -->
 
+## 0.114.0 — 2026-10-04
+
+### 기능
+
+- connect AI terrain tools and verify cliff house access (`16d017f`)
+
+### 수정
+
+- keep elevated houses visible in large editor maps (`54ffb9c`)
+- verify terrain tools through the real editor assistant (`42ce965`)
+
 ## 0.113.0 — 2026-10-04
 
 ### 기능
