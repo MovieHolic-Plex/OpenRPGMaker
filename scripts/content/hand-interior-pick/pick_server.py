@@ -45,11 +45,11 @@ SAFE = re.compile(r'^[A-Za-z0-9_]+$'); SAFE_FILE = re.compile(r'^[A-Za-z0-9_.\-]
 
 def _harness_api():
     """소품 하네스(src/harnesses/interior-props) 경로 — /harness 화면과 /api/harness/*. 없으면 None(옛 화면만)."""
-    import importlib.util
+    import importlib
     p = os.path.join(ROOT, 'src', 'harnesses', 'interior-props', 'api.py')
     if not os.path.exists(p): return None
-    spec = importlib.util.spec_from_file_location('prop_harness_api', p); m = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(m); return m
+    sys.path.insert(0, ROOT)
+    return importlib.import_module('src.harnesses.interior-props.api')
 HAPI = _harness_api()
 
 def read_json(p, default):

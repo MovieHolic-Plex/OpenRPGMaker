@@ -1,0 +1,55 @@
+{
+  "url": "http://127.0.0.1:18315/harness#props",
+  "sameOriginViews": [
+    "http://127.0.0.1:18315/harness/props",
+    "http://127.0.0.1:18315/spaces",
+    "http://127.0.0.1:18315/orders"
+  ],
+  "errors": [],
+  "failures": [],
+  "postRequests": [],
+  "status": {
+    "space": {
+      "online": true,
+      "paused": true,
+      "concepts": 90,
+      "running": 0
+    },
+    "shared": {
+      "available": true,
+      "library": "oprn-hand-interior-harness",
+      "revision": "9478673f5896a1a0922d17e47ab748298c65178066249c3b4dbd162ee4d2760e",
+      "updated": "2026-10-04T05:29:03.323Z"
+    },
+    "publication": {
+      "id": 1,
+      "state": "done",
+      "requested": 1791091557.9636388,
+      "updated": 1791091743.9980016,
+      "error": "",
+      "receipt": {
+        "file": "/home/main/.local/share/oprn/shared-content.sqlite",
+        "id": "oprn-hand-interior-harness",
+        "revision": "9478673f5896a1a0922d17e47ab748298c65178066249c3b4dbd162ee4d2760e",
+        "reloaded": true,
+        "selected": 621,
+        "objects": 759,
+        "kits": 759,
+        "atlasSha256": "7e77c1895cebec524939e390dbc1c3afa60e1616458dadfc30a2893c7d9a4cf3"
+      },
+      "library": "oprn-hand-interior-harness"
+    },
+    "unified": true,
+    "spacePort": 18315
+  },
+  "runtime": {
+    "unified": true,
+    "pid": 1649468,
+    "port": 18315,
+    "propsStore": "/home/main/.local/share/oprn/prop-harness",
+    "spaceStore": "/home/main/.local/share/oprn/super-harness",
+    "contentRoot": "/home/main/z-project/rpg-zzu-interior-v34b",
+    "spaceCodeRoot": "/home/main/z-project/rpg-zzu-super-harness",
+    "codeRoot": "/home/main/z-project/rpg-zzu-super-harness-unified"
+  }
+}

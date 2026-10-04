@@ -20,6 +20,10 @@ def prepare(root, request):
             raise ValueError(f'워크트리 안의 기존 폴더 필요: {name}')
         return str(path)
     env = dict(os.environ)
+    # A unified supervisor may also own a live prop picker. This job must use its
+    # own prepared worktree and choice store instead of inheriting those paths.
+    env.pop('PROP_HARNESS_CONTENT_ROOT', None)
+    env.pop('HIP_DB', None)
     harness = request.get('harness')
     if harness == 'interior-props':
         env.update(PROP_HARNESS_DATA=local('data'), HIP_DATA=local('picks'), HIP_PICK=local('picks'))

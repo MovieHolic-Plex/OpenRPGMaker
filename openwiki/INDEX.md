@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **138쪽 / 4738KB / 약 1,374,590 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **138쪽 / 4743KB / 약 1,376,059 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -85,8 +85,8 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/harnesses/interior-props.md` | 2 | `.loop.json`, `.loop.png` |
 | `openwiki/harnesses/jp-city.md` | 1 | `kit-x3.png` |
 | `openwiki/harnesses/monster-collect-species.md` | 1 | `qa-runs/battle-anim3/anim.js` |
-| `openwiki/harnesses/super-harness-integration.md` | 2 | `library.json`, `references/index.json` |
-| `openwiki/harnesses/super-harness.md` | 10 | `B.json`, `art-result.json`, `card.json`, `ctx-cand.png`, `gaps.json`, `material-review.json`, `materials.json`, `planning-reviews/A.json`, `planning.json`, `visual-input.json` |
+| `openwiki/harnesses/super-harness-integration.md` | 1 | `unified.py` |
+| `openwiki/harnesses/super-harness.md` | 12 | `B.json`, `art-context-review.json`, `art-result.json`, `card.json`, `ctx-cand.png`, `gaps.json`, `material-review.json`, `materials.json`, `parking-repair-brief.json`, `planning-reviews/A.json`, `planning.json`, `visual-input.json` |
 | `openwiki/horror-authoring.md` | 2 | `motion-sheet.png`, `projectLint.test.ts` |
 | `openwiki/joseon-baram.md` | 2 | `.oprn.json`, `map-from-sheet.png` |
 | `openwiki/jp-city.md` | 1 | `scripts/tmp-jp-gen.mts` |
@@ -1104,33 +1104,33 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 절 제목 없음 (평면 목록 페이지).
 
-### `openwiki/harnesses/interior-prop-derivations-operations.md` — 13KB · 187줄 · ~4,021 토큰
+### `openwiki/harnesses/interior-prop-derivations-operations.md` — 14KB · 189줄 · ~4,124 토큰
 
 - `L6` 1. 실제 대상을 먼저 확인한다
 - `L43` 2. API와 쓰기 영향
 - `L71` 3. 설정을 바꿀 때
-- `L97` 4. 읽기 전용으로 선택·공용 판본 확인
-- `L124` 5. 증상별 복구
-- `L148` 6. 백업·이관
-- `L174` 7. 검증과 PR 완료 보고
+- `L99` 4. 읽기 전용으로 선택·공용 판본 확인
+- `L126` 5. 증상별 복구
+- `L150` 6. 백업·이관
+- `L176` 7. 검증과 PR 완료 보고
 
-### `openwiki/harnesses/interior-prop-derivations.md` — 24KB · 299줄 · ~7,485 토큰
+### `openwiki/harnesses/interior-prop-derivations.md` — 24KB · 301줄 · ~7,526 토큰
 
-- `L7` 1. 사용자가 결정한 제품 흐름
-- `L30` 2. 세 계층과 현재 완료 범위
-- `L43` 3. 수정할 때 찾을 파일
-- `L63` 4. 정본 데이터와 파일 관계
-- `L84` 5. ID·원본·묶음·자식의 계약
-- `L109` 6. 자동 제안 규칙
-- `L129` 7. 묶음 형식과 방향 기하
-- `L149` 8. seed·부분 재그림·검수
-- `L168` 9. 크기 파생과 기존 크기 변경은 다르다
-- `L179` 10. 확정·자식 저장의 실제 순서
-- `L197` 11. 모션 저장·재로드·패킹
-- `L223` 12. 공용 등록과 안정적인 칸 번호
-- `L249` 13. 다음 작업의 한계·우선순위
-- `L272` 14. 이어받는 에이전트의 시작·완료 기준
-- `L284` 15. 기존 근거와 세션 연혁
+- `L9` 1. 사용자가 결정한 제품 흐름
+- `L32` 2. 세 계층과 현재 완료 범위
+- `L45` 3. 수정할 때 찾을 파일
+- `L65` 4. 정본 데이터와 파일 관계
+- `L86` 5. ID·원본·묶음·자식의 계약
+- `L111` 6. 자동 제안 규칙
+- `L131` 7. 묶음 형식과 방향 기하
+- `L151` 8. seed·부분 재그림·검수
+- `L170` 9. 크기 파생과 기존 크기 변경은 다르다
+- `L181` 10. 확정·자식 저장의 실제 순서
+- `L199` 11. 모션 저장·재로드·패킹
+- `L225` 12. 공용 등록과 안정적인 칸 번호
+- `L251` 13. 다음 작업의 한계·우선순위
+- `L274` 14. 이어받는 에이전트의 시작·완료 기준
+- `L286` 15. 기존 근거와 세션 연혁
 
 ### `openwiki/harnesses/interior-props.md` — 8KB · 84줄 · ~2,442 토큰
 
@@ -1195,28 +1195,30 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L35` Maker-owned repair loop (2026-10-04)
 - `L45` Reproduction
 
-### `openwiki/harnesses/super-harness-integration.md` — 5KB · 66줄 · ~1,479 토큰
+### `openwiki/harnesses/super-harness-integration.md` — 7KB · 95줄 · ~2,093 토큰
 
-- `L5` 현재 통합 범위
-- `L27` 다른 세션이 작업 중인 기존 슈퍼하네스
-- `L36` 공용 재료 전달
-- `L47` 기존 공간 실행기의 다음 통합 지점
+- `L6` 운영 계약
+- `L19` 실행과 경로
+- `L56` API
+- `L70` 공간 제작에서의 공용 재료 사용
+- `L78` 이관·복구와 확인
 
-### `openwiki/harnesses/super-harness.md` — 23KB · 208줄 · ~6,997 토큰
+### `openwiki/harnesses/super-harness.md` — 25KB · 232줄 · ~7,708 토큰
 
-- `L6` 왜 (2026-10-03 실측)
-- `L13` 조수 쪽 연결 (제품 코드)
-- `L26` 제작 전 공간 기획·텍스트 도면 관문 (2026-10-04)
-- `L49` 제작 전 재료 관문 (2026-10-04)
-- `L71` 공간과 시각 관문
-- `L84` 한 바퀴
-- `L112` 화면
-- `L123` 운영
-  - `L137` 기획 두 건 실운영 표본 (2026-10-04)
-  - `L146` 큰 공간의 세부 도면·기획 이미지
-  - `L157` 실제 후보 표시와 참고자료 연결
-  - `L171` 그림 실행은 감독이 직접 한다
-  - `L185` 칩 선택 화면과 조립 예시 (2026-10-04)
+- `L9` 왜 (2026-10-03 실측)
+- `L16` 조수 쪽 연결 (제품 코드)
+- `L29` 제작 전 공간 기획·텍스트 도면 관문 (2026-10-04)
+- `L52` 제작 전 재료 관문 (2026-10-04)
+- `L74` 공간과 시각 관문
+- `L87` 한 바퀴
+- `L115` 화면
+- `L126` 운영
+  - `L140` 기획 두 건 실운영 표본 (2026-10-04)
+  - `L149` 큰 공간의 세부 도면·기획 이미지
+  - `L160` 실제 후보 표시와 참고자료 연결
+  - `L174` 그림 실행은 감독이 직접 한다
+  - `L188` 칩 선택 화면과 조립 예시 (2026-10-04)
+  - `L212` 주차장 조립 검수 반려와 선택 관문 (2026-10-04)
 
 ### `openwiki/harnesses/worldmap-icons.md` — 5KB · 65줄 · ~1,592 토큰
 
