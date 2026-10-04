@@ -1,6 +1,7 @@
 """고르기 서버(pick_server.py)에 붙는 소품 하네스 경로. pick_server 가 이 파일이 있으면 불러 쓴다.
 
-  GET  /harness                         고르는 화면(web/index.html)
+  GET  /harness                         슈퍼하네싱 통합 입구(web/super.html)
+  GET  /harness/props                   기물 고르는 화면(web/index.html)
   GET  /api/harness/state               판·후보·상태 + 일꾼 상태
   GET  /api/harness/suggestions        기존 원본의 자동 파생 제안(주문 전 읽기)
   GET  /api/harness/objects             시트의 기물 전부(기물 고르기 패널)

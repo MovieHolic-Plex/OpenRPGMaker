@@ -3,6 +3,10 @@
 서버 통합 화면의 이름은 **슈퍼하네싱**. `/harness`는 기물·파생과 기존 공간·개념/재료 주문서,
 공용 재료를 연결한다. 기물 단독 화면은 `/harness/props`.
 범위·다른 워크트리와의 재료 전달 계약은 [통합 문서](super-harness-integration.md).
+기물 파생을 이어받는 에이전트는 [설계·구현 계약](interior-prop-derivations.md) →
+[실행·복구·이관](interior-prop-derivations-operations.md)을 먼저 읽는다.
+
+## 에디터 공방 (아래 서버 하네스와 저장 경로가 다름)
 
 - 매니페스트: `src/harnesses/interior-props/harness.ts`. 들어오는 길: 에디터 「공방」(왼쪽 막대). CLI·조수 도구 없음.
 - 이 서버의 작업자용 파이썬 하네스는 같은 폴더의 `harness.py`·`web/`(README.md). 에디터 실행기는 `editor/`.
