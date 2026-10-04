@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { refreshDatabasePanel, renderDatabasePanel } from "@/editor/panels/database";
-import { openDatabaseModal, requestDatabaseModalClose } from "@/editor/panels/databaseModal";
+import { refreshDatabasePanel, renderDatabasePanel, setDatabaseActiveTab } from "@/editor/panels/database";
+import { openDatabaseModal, prewarmDatabaseModal, requestDatabaseModalClose } from "@/editor/panels/databaseModal";
 import { editorState } from "@/editor/editorState";
 import { resetMapEditHistory } from "@/editor/mapEditHistory";
 import { createBlankProject } from "@/project/defaults";
@@ -9,7 +9,7 @@ import { store } from "@/project/store";
 
 vi.mock("@/editor/panels/chromaKey", () => ({ applyAutoChromaKeyToBackground: vi.fn() }));
 
-// Delegate observation and interval delivery, tracking only live body observers
+// Body observers must remain absent; track only any accidentally added subscriptions
 // and the editor's 67ms playback intervals. Test signals use the native observer.
 const NativeMutationObserver = globalThis.MutationObserver;
 const observers = new Set<MutationObserver>();
@@ -101,7 +101,7 @@ async function mutate(target: Node, action: () => void): Promise<void> {
 async function open(): Promise<void> {
   await mutate(document.body, () => openDatabaseModal("animations"));
   loadPreview();
-  expect(observers.size).toBe(1);
+  expect(observers.size).toBe(0);
   expect(intervals.size).toBe(1);
 }
 async function close(): Promise<void> {
@@ -112,16 +112,15 @@ async function close(): Promise<void> {
 }
 function expectCurrentOnly(): void {
   expect(document.querySelectorAll(".db-animation-stage-panel")).toHaveLength(1);
-  expect(observers.size).toBe(1);
+  expect(observers.size).toBe(0);
   expect(intervals.size).toBe(1);
 }
 
 describe("battle animation preview ownership in the real modal tab cache", () => {
-  it("disposes evicted observers on repeated input/parent refresh cycles and modal close", async () => {
+  it("disposes previews on repeated input/parent refresh cycles and modal close", async () => {
     await open();
     for (const x of [12, 24, 36]) {
       const oldWorkspace = node(".oprn-record-battleAnimations");
-      const oldObserver = [...observers][0];
       const refreshed = nextMutation(node(".db-body"));
       const input = byTestId("db-animation-cell-x-0");
       if (!(input instanceof HTMLInputElement)) throw new Error("Expected cell input");
@@ -137,7 +136,6 @@ describe("battle animation preview ownership in the real modal tab cache", () =>
       expect(store.getCurrent().database.battleAnimations[0].frames?.[0].cells[0].x).toBe(x);
       loadPreview();
       expectCurrentOnly();
-      expect(observers.has(oldObserver)).toBe(false);
     }
     await close();
   });
@@ -158,15 +156,13 @@ describe("battle animation preview ownership in the real modal tab cache", () =>
     await close();
   });
 
-  it("retains one observer while genuinely cached, resumes its loop, and closes a detached tab", async () => {
+  it("retains cached DOM with no body observer, resumes its loop, and closes a detached tab", async () => {
     await open();
     const workspace = node(".oprn-record-battleAnimations");
-    const observer = [...observers][0];
     const imageRequests = PreviewImage.requests.length;
     await mutate(node(".db-body"), () => byTestId("db-tab-terms").click());
     expect(workspace.isConnected).toBe(false);
-    expect(observers.size).toBe(1);
-    expect(observers.has(observer)).toBe(true);
+    expect(observers.size).toBe(0);
     expect(intervals.size).toBe(0);
     // 전투 애니메이션은 도트 연출의 하위 보기다(2026-10-02) — 레일 버튼이 없어 연출 탭을 거쳐 연다.
     await mutate(node(".db-body"), () => byTestId("db-tab-retro-choreographies").click());
@@ -180,10 +176,43 @@ describe("battle animation preview ownership in the real modal tab cache", () =>
     await close();
   });
 
+  it("keeps a remembered prewarm static even after image load, and activates on reveal", async () => {
+    setDatabaseActiveTab("animations");
+    prewarmDatabaseModal();
+    await vi.advanceTimersByTimeAsync(0);
+    loadPreview();
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(intervals.size).toBe(0);
+    expect(observers.size).toBe(0);
+    expect(document.querySelector("[data-testid='database-modal-parked']")).not.toBeNull();
+    openDatabaseModal();
+    await vi.advanceTimersByTimeAsync(0);
+    expect(intervals.size).toBe(1);
+    await close();
+  });
+
+  it("keeps cell nodes during playback and ignores unrelated assistant DOM", async () => {
+    await open();
+    const layer = node(".db-animation-stage-cells");
+    const sprites = [...layer.children];
+    const mutations: MutationRecord[] = [];
+    const tracker = new NativeMutationObserver(records => mutations.push(...records));
+    tracker.observe(layer, { childList: true });
+    const assistant = document.createElement("aside");
+    document.body.append(assistant);
+    for (let i = 0; i < 30; i++) assistant.append(document.createElement("span"));
+    await vi.advanceTimersByTimeAsync(67 * 8);
+    expect([...layer.children]).toEqual(sprites);
+    expect(mutations).toHaveLength(0);
+    expect(observers.size).toBe(0);
+    tracker.disconnect(); assistant.remove();
+    await close();
+  });
+
   it("disposes a detached preview when a project mutation invalidates its cached tab", async () => {
     await open();
     await mutate(node(".db-body"), () => byTestId("db-tab-terms").click());
-    expect(observers.size).toBe(1);
+    expect(observers.size).toBe(0);
     const refreshed = nextMutation(node(".db-body"));
     store.update((project) => { project.meta.terms.gold = "Changed"; }, { scope: "database", collection: "terms" });
     vi.advanceTimersToNextFrame();

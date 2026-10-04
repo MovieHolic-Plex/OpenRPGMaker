@@ -1,3 +1,5 @@
+import { setDatabasePreviewSurfaceActive, disposeDatabasePreviewsIn } from "./databasePreviewLifecycle";
+import { disposeDatabasePanelPreviews } from "./database";
 import "@/styles/database/index.css";
 import { preloadRuntimeStyles } from "@/app/runtimeStyles";
 import { disposeAppearanceSlots } from "@/editor/panels/databaseAppearanceSlots";
@@ -22,7 +24,6 @@ import { worldCodexSessionFor } from "./worldCodexSession";
 import { applyDatabaseChanges, writeDatabaseFooterError, writeDatabaseFooterPending } from "@/editor/panels/databaseModalPersistence";
 import { startModalDrag, stopModalDrag } from "@/editor/panels/databaseModalWindowDrag";
 import { resetDatabaseRecordViewSession } from "@/editor/panels/databaseRecordViews";
-import { stopSkillAnimationStagesIn } from "@/editor/panels/databaseSkillAnimationStage";
 import { disposeDatabaseCinematicsIn } from "@/editor/panels/databaseCinematicView";
 import { inventoryCatalogSession, selectedRecordIdForSession, setSelectedRecordId } from "@/editor/panels/databaseRecordViewSession";
 import { invalidateFarmSpatialConfirmationContext } from "@/editor/panels/databaseFarmSpatialView";
@@ -161,6 +162,9 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
   // close() 가 backdrop 을 지우지만, 혹시 핸들 없이 남은 고아 DOM 도 방어적으로 제거.
   const orphan = document.querySelector<HTMLElement>("[data-testid='database-modal']");
   if (orphan) {
+    const orphanBody = orphan.querySelector<HTMLElement>(".database-modal-body");
+    if (orphanBody) disposeDatabasePanelPreviews(orphanBody);
+    disposeDatabasePreviewsIn(orphan);
     disposeDatabaseCinematicsIn(orphan);
     orphan.remove();
   }
@@ -407,7 +411,9 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
     unsubscribeStore(); // 구독 해제 — 리스너 누수 금지(1파 M11 교훈).
     unsubscribeActiveTab();
     aiBar.dispose();
-    stopSkillAnimationStagesIn(backdrop);
+    setDatabasePreviewSurfaceActive(backdrop, false);
+    disposeDatabasePanelPreviews(body);
+    disposeDatabasePreviewsIn(backdrop);
     disposeDatabaseCinematicsIn(backdrop);
     backdrop.remove();
     unregisterModal(backdrop);
@@ -710,6 +716,7 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
     // 숨겨 둔 창에도 걸려 조수 패널·오른쪽 패널·토스트가 사라졌다(2026-09-24 갤러리 도그푸딩: AI 탭이 빈 칸).
     backdrop.classList.add("is-parked");
   }
+  setDatabasePreviewSurfaceActive(backdrop, !parkingModal);
   document.body.append(backdrop);
   renderDatabasePanel(body);
   // 연결 칸은 본문(.db-body) 옆 형제다. 목록 선택은 구독 없이 부분 렌더로 끝나므로 본문 클릭 뒤에 다시 칠한다.
@@ -740,6 +747,7 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
         backdrop.removeAttribute("aria-hidden");
         backdrop.dataset.testid = "database-modal";
         backdrop.classList.remove("is-parked");
+        setDatabasePreviewSurfaceActive(backdrop, true);
         activeModal = handle;
         if (showOptions && handle) handle.onClose.add(showOptions.onClose);
         document.addEventListener("keydown", handleModalKeyDown);
