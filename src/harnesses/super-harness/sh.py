@@ -33,6 +33,7 @@ import store  # noqa: E402
 import gates  # noqa: E402
 import planning_details  # noqa: E402
 import art_execution  # noqa: E402
+import art_choices  # noqa: E402
 
 DATA = store.DATA
 WORK = os.path.join(DATA, 'work')
@@ -667,6 +668,10 @@ def on_art(meta, code, result):
             except (OSError, TypeError, KeyError, ValueError):
                 valid = False
     if valid:
+        try:
+            art_choices.prepare(DATA, cid)
+        except (OSError, ValueError, KeyError, StopIteration) as error:
+            store.log(cid, '선택 예시 준비 필요: ' + str(error))
         store.update_concept(cid, stage='art-review', status='idle', note='칩 후보 제작 완료 — 사람 선택·공용 등록 후 재료 재확인')
     else:
         store.update_concept(cid, stage='blocked', status='idle', note='칩 제작 미완료 — 하네스 결과·그림 근거 없음', reasons=(result or {}).get('reasons') or ['art-result.json에 실제 후보와 하네스 검사 근거가 필요함'])
@@ -1023,6 +1028,11 @@ def action(body):
     c = store.concept(cid) if cid else None
     if not c:
         return {'ok': False, 'error': '개념이 없다'}
+    if kind in ('choose-art', 'clear-art'):
+        try:
+            return {'ok': True, 'choices': art_choices.choose(DATA, cid, body)}
+        except (ValueError, KeyError, OSError) as error:
+            return {'ok': False, 'error': str(error)}
     if kind == 'recheck-materials':
         if any(m['concept'] == cid for _, _, m in PROCS.values()):
             return {'ok': False, 'error': '진행 중인 작업을 먼저 멈춰 주세요'}
@@ -1062,7 +1072,7 @@ def action(body):
 
 # ── 갤러리(사람용 화면) — 그림 한 장 + 한 줄 상태 + 한 줄 설명. 가볍게. ──
 THUMBS = os.path.join(DATA, 'thumbs')
-GROUP = {'plan': 'work', 'plan-review': 'work', 'survey': 'work', 'material-review': 'work', 'art-review': 'wait', 'done': 'done', 'discovered': 'wait', 'waiting': 'wait', 'art': 'wait', 'blocked': 'stop', 'discarded': 'stop'}
+GROUP = {'plan': 'work', 'plan-review': 'work', 'survey': 'work', 'material-review': 'work', 'art-review': 'pick', 'done': 'done', 'discovered': 'wait', 'waiting': 'wait', 'art': 'wait', 'blocked': 'stop', 'discarded': 'stop'}
 
 
 def first_sentence(text, limit=90):
@@ -1088,7 +1098,12 @@ def plain_status(c):
     if stage == 'material-review':
         return '시대·필수 칩 독립 검수'
     if stage == 'art-review':
-        return '칩 후보 선택·공용 등록 대기'
+        try:
+            choices = art_choices.view(DATA, c['id'])
+        except (ValueError, OSError, KeyError, TypeError):
+            return '선택 자료 확인 필요'
+        if choices.get('blocked'): return '후보 수정 필요 · 현재 선택 불가'
+        return '선택 완료 · 공용 등록 필요' if choices['complete'] else f'내 선택 필요 · {choices["selectedCount"]}/{choices["total"]} 선택' if choices['total'] else '선택 예시 준비 필요'
     if stage == 'art':
         orders = [g for g in store.gaps() if g['concept'] == c['id'] and g.get('item')]
         return '칩 후보 제작 중' if c['status'] == 'running' else f'부족분 {len(orders)}건 — 칩 제작 대기'
@@ -1166,8 +1181,10 @@ def gallery_list():
             imgs = candidate_images(c['id']) or planning_images(c['id'])
         else:
             imgs = example_images(c['id'])
-        items.append({'id': c['id'], 'title': c['title'], 'stage': c['stage'], 'group': GROUP.get(c['stage'], 'work'),
-                      'running': c['status'] == 'running', 'status': plain_status(c),
+        status = plain_status(c)
+        group = 'stop' if status.startswith('후보 수정 필요') else 'wait' if c['stage'] == 'art-review' and status.startswith('선택 완료') else GROUP.get(c['stage'], 'work')
+        items.append({'id': c['id'], 'title': c['title'], 'stage': c['stage'], 'group': group,
+                      'running': c['status'] == 'running', 'status': status,
                       'about': first_sentence(concept_about(c, card)), 'updated': c['updated'],
                       'thumb': imgs[0] if imgs else None, 'pr': c['pr'], 'parent': c.get('parent')})
     paused = store.setting('paused') == '1'
@@ -1311,16 +1328,18 @@ def orders_markdown():
 
 def thumb_bytes(rel, width):
     src = os.path.realpath(os.path.join(DATA, rel))
-    if not src.startswith(os.path.realpath(DATA)) or not os.path.isfile(src):
+    if not src.startswith(os.path.realpath(DATA) + os.sep) or not os.path.isfile(src):
         return None
     width = max(120, min(int(width or 360), 1600))
-    key = re.sub(r'[^A-Za-z0-9_.-]', '_', rel) + f'.{width}.{int(os.path.getmtime(src))}.png'
+    key = re.sub(r'[^A-Za-z0-9_.-]', '_', rel) + f'.{width}.{os.stat(src).st_mtime_ns}.png'
     out = os.path.join(THUMBS, key)
     if not os.path.exists(out):
         from PIL import Image
         os.makedirs(THUMBS, exist_ok=True)
         with Image.open(src) as im:
-            im = im.convert('RGB')
+            rgba = im.convert('RGBA')
+            im = Image.new('RGB', rgba.size, '#20252e')
+            im.paste(rgba, mask=rgba.getchannel('A'))
             if im.width > width:
                 im = im.resize((width, max(1, round(im.height * width / im.width))), Image.Resampling.BOX)
             im.save(out + '.tmp.png', optimize=True)
@@ -1355,6 +1374,9 @@ class Handler(BaseHTTPRequestHandler):
             page = 'gallery.html' if url.path != '/detail' else 'index.html'
             with open(os.path.join(HERE, 'web', page), 'rb') as f:
                 return self.send(200, f.read(), 'text/html; charset=utf-8')
+        if url.path == '/art-choice.js':
+            with open(os.path.join(HERE, 'web', 'art-choice.js'), 'rb') as f:
+                return self.send(200, f.read(), 'text/javascript; charset=utf-8')
         if url.path == '/markdown.js':
             try:
                 return self.send(200, markdown_module(), 'text/javascript; charset=utf-8')
@@ -1363,6 +1385,11 @@ class Handler(BaseHTTPRequestHandler):
         q = parse_qs(url.query)
         if url.path == '/api/list':
             return self.send(200, gallery_list())
+        if url.path == '/api/art-choices':
+            try:
+                return self.send(200, art_choices.view(DATA, q.get('id', [''])[0]))
+            except (ValueError, OSError, KeyError) as error:
+                return self.send(404, {'error': str(error)})
         if url.path == '/api/concept':
             d = gallery_detail(q.get('id', [''])[0])
             return self.send(200 if d else 404, d or {'error': 'not found'})
@@ -1384,7 +1411,7 @@ class Handler(BaseHTTPRequestHandler):
                 return self.send(200, f.read(), 'text/plain; charset=utf-8')
         if url.path.startswith('/data/'):
             path = os.path.realpath(os.path.join(DATA, unquote(url.path[6:])))
-            if not path.startswith(os.path.realpath(DATA)) or not os.path.isfile(path):
+            if not path.startswith(os.path.realpath(DATA) + os.sep) or not os.path.isfile(path):
                 return self.send(404, {'error': 'not found'})
             ctype = 'image/png' if path.endswith('.png') else 'application/json; charset=utf-8' if path.endswith('.json') else 'text/plain; charset=utf-8'
             with open(path, 'rb') as f:

@@ -18,6 +18,10 @@
 실제 브라우저의 혼합 맵/프로젝트/타일셋 복원과 반복 보관 계약, 측정 조건은
 `verify-shots/editor-ux-fixes-round2-20261004/storage/README.md`에 있다.
 
+## 지형 조수의 실제 UI 검증 (2026-10-04)
+
+현재 채팅 실행은 `ai-input`과 `ai-send`를 통한 Pi 경로로 확인한다. `__oprnAiBridge.send()`는 아직 `sendText`/옛 AssistantSession 경로를 호출하므로 Pi 의도 선언·도구 노출·실시간 적용 검증을 대신하지 못한다. 브리지의 `status()`/`audit()`는 읽기 관측에 쓴다. 실제 `/v1/agent/run` SSE와 모델 요청, 정본 SQLite 저장·재로드를 함께 기록한다. 근거는 `verify-shots/terrain-ai-edit/SUMMARY.md`.
+
 ## 작은 타일 편집의 undo/redo 경로 (2026-10-04)
 
 `mapEditHistory.restoredTileCells`는 맵 크기와 lowerTiles/upperTiles 이외의 모든 값이 같은 경우에만

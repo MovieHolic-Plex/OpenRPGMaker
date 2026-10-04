@@ -21,3 +21,13 @@
 }
 ```
 실제 후보가 없으면 candidates=[]와 정확한 실패 이유를 기록한다. 다른 판의 PNG나 승인 결과를 가져오지 않는다.
+
+사람 선택 화면은 감독의 art_choices.py가 실제 receipt에서 만든다. 현재 지원 receipt:
+- modern-chipset parking-kit: contractSha256, candidates[].candidate/imageSha256/machine/independent,
+  receipt와 같은 폴더의 A~E.png. independent는 png_sha256와 13품목 items[].id/verdict를 포함한다.
+- interior-props: runs(해당 native DB 행), candidateImages(path/sha256). 각 run.review의 pack/ctx-cand.png를 보존한다.
+다른 하네스는 선택 예시 어댑터가 필요하다고 remaining에 적는다. 검사 결과를 만들어 맞추거나 후보를 대신 선택하지 않는다.
+
+parking-kit은 부품별 PASS 외에 실제 조립 예시의 독립 검수가 필요하다. 감독의
+art-context-review.json(identity/scale/attachments/circulation/style)을 준비 없이 PASS로 만들지 않는다.
+사용자 반려와 parking-repair-brief.json이 있으면 작은 실제 자동차 기준 표본의 범위를 먼저 따른다.

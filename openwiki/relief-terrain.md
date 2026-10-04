@@ -1,5 +1,7 @@
 # 높이 지형(relief) — 편집기·런타임 지도 (2026-10-01 통합)
 
+2026-10-04 조수 재편집: 기존 feature의 ID로 부분 설정을 바꾸면 높이·시드·점·수위·평탄화 등 생략한 설정을 유지한다. 높이 ops는 잠금 칸과 집터/문 앞의 평탄성을 보호하며, 일반 지형 계획기도 구조물 전체 사각형을 피한다. 조립 집의 지붕 변경은 동일 roof 계획의 재실행과 네 층 화소 일치로 검증한다. 실제 조수 수정·SQLite 재로드·에디터 근거는 `verify-shots/terrain-ai-edit/SUMMARY.md`.
+
 `map.relief`(단·경사로·벽면 장식·양식)를 **한 렌더러**(`src/project/relief/render.ts`)가 그리고, 편집기(`EditScene`)와 게임(`PlayScene`)이
 같은 들림 표(`screen.ts`)로 타일·캐릭터를 올린다. 저장 필드 모양과 렌더러 r2/r3 변경 이력은 [runtime-project-schema.md](runtime-project-schema.md) 「높이 지형」,
 편집기 붓 경로는 [editor-pre-edit-routing.md](editor-pre-edit-routing.md) 「높이 붓」, 조수 도구는 [editor-ai-tools.md](editor-ai-tools.md) 「절벽 높이 도구」.

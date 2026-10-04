@@ -65,6 +65,15 @@ PR 브랜치는 그대로 새 푸시가 옛 잡을 끊는다.
 몰리면 힙 바닥(3584MB)을 넘겨 cgroup 이 프로세스를 죽인다. 대응: `test:parity` 에 `--maxWorkers=2
 --minWorkers=1` 고정 (`test:quarantine`·게이트 browser 스테이지와 같은 패턴). 로컬(상한 없음)에는 영향 없다.
 
+## ci-full vitest 는 힙 합을 75% 안에 둔다 (2026-10-04)
+
+`ci-full.slice` 가 12GiB 이고 러너 서비스 `NODE_OPTIONS` 가 `--max-old-space-size=4096` 이면
+`withHeapOption` 이 그 힙을 유지한다. 오버커밋이 워커 3을 고르면 3×4096MB 가 memory.max 와 같아
+피크 12.00GiB, OOM kill 1 로 JSON 리포트가 안 남는다(run 37183989815).
+2×4096MB 로 줄여도 피크는 12.00GiB 였고 리포트 없이 exit 1 이었다(run 37185897310, OOM kill 0).
+2×3584MB 는 워커가 heap limit 에 닿아 죽었다(run 37187303515, 피크는 그대로 12.00GiB).
+16GB 이하 슬라이스는 워커 1개 × 힙 8192MB 다. 서비스가 물려 준 4096MB 는 이 예산이 있으면 덮어쓴다.
+
 ## 게이트 반복은 `--changed` 로 좁힌다 (2026-09-13)
 
 **워크트리·세션 에이전트는 `npm run gates` / vitest 를 스스로 돌리지 말라.** 게이트는 감독자가 돌린다.

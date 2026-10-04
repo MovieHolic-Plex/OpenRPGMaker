@@ -2,7 +2,7 @@
 import { planTerrainDesign, type TerrainDesignOptions } from "@/editor/terrainDesignPlans";
 import { planTerrainFeature } from "@/editor/terrainFeatures";
 import { planReliefRamp } from "@/editor/reliefRampPlan";
-import { planQuickHouse, quickHouseCatalog, quickHouseStyles, quickHouseStyleName, quickHouseKit, type QuickHouseOptions } from "@/editor/quickHouse";
+import { planQuickHouse, planQuickHouseDrag, quickHouseCatalog, quickHouseStyles, quickHouseStyleName, quickHouseKit, type QuickHouseOptions } from "@/editor/quickHouse";
 import { inspectTerrainRoute, type TerrainRoutePoint } from "@/project/terrainRoute";
 import { terrainHeight } from "@/project/terrainGameplay";
 import { DEFAULT_TERRAIN_GAMEPLAY } from "@/project/terrainDesign";
@@ -28,25 +28,31 @@ const designDefaults: TerrainDesignOptions = { symmetry: "none", areaShape: "pol
   weights: [60, 30, 10], waterLevel: 0, maxDepth: 3, shallowWidth: 1, flattenRoad: false, unlock: false, density: 25 };
 const designTool: ToolDefinition = {
   name: "design_terrain", mode: "write", domains: ["map", "tile"],
-  description: "에디터 지형 설계 도구 그대로 절벽 윤곽·능선·계곡·호수·재질 혼합·군집·잠금을 저작한다. 높이는 delta로 현재 높이에 더한다(음수는 내림), 1·2·3 고지 프리셋 없음. contour/lake/lock은 polygon 점 3개 이상 또는 areaShape:rect의 대각점 2개. ridge/valley는 선 점 2개 이상. mix/mixedCluster는 점 1개 이상. 집터 평탄화는 sculpt_relief rect를 쓰고 집은 place_terrain_house로 놓는다. 기존 집은 피해 설계한다. 생성한 윤곽·능선·계곡·호수는 에디터 목록에서 재편집 가능하다.",
+  description: "에디터 지형 설계 도구 그대로 절벽 윤곽·능선·계곡·호수·재질 혼합·군집·잠금을 저작한다. 높이는 delta로 현재 높이에 더한다(음수는 내림), 1·2·3 고지 프리셋 없음. contour/lake/lock은 polygon 점 3개 이상 또는 areaShape:rect의 대각점 2개. ridge/valley는 선 점 2개 이상. mix/mixedCluster는 점 1개 이상. 집터 평탄화는 sculpt_relief rect를 쓴다. 기존 집은 보호한다. inspect_terrain.features의 editId로 윤곽·능선·계곡·호수를 재편집하며 생략한 tool,points,설정은 기존 값을 유지한다. 도로는 lay_terrain_road의 editId를 쓴다.",
   parameters: { type: "object", properties: { mapId, tool: { type: "string", enum: ["contour", "ridge", "valley", "lake", "mix", "mixedCluster", "lock"] }, points: { type: "array", items: point },
     delta: { type: "integer", minimum: -14, maximum: 14 }, width: { type: "integer", minimum: 1, maximum: 24 },
     areaShape: { type: "string", enum: ["polygon", "rect", "line"] }, seed: { type: "integer" },
     symmetry: { type: "string", enum: ["none", "mirrorX", "mirrorY", "both", "rotate2", "rotate4"] },
     waterLevel: { type: "integer", minimum: 0, maximum: 14 }, maxDepth: { type: "integer", minimum: 1, maximum: 14 }, shallowWidth: { type: "integer", minimum: 0, maximum: 12 },
     density: { type: "integer", minimum: 0, maximum: 100 }, weights: { type: "array", items: { type: "integer", minimum: 0, maximum: 100 } }, unlock: { type: "boolean" }, editId: { type: "string" },
-  }, required: ["mapId", "tool", "points"], additionalProperties: false },
+  }, required: ["mapId"], additionalProperties: false },
   run(project, args) {
     const map = requireMap(project, args.mapId as string), ts = tilesetFor(project, map);
-    const points = (args.points as unknown[]).map(p => checkedPoint(map, p));
+    const old = typeof args.editId === "string" ? map.terrainDesign?.features?.find(f => f.id === args.editId) : undefined;
+    if (args.editId && !old) throw new ToolError("편집할 지형을 찾을 수 없습니다. inspect_terrain으로 다시 조회하세요");
+    const selectedTool = args.tool ?? old?.tool;
+    if (!selectedTool || selectedTool === "road") throw new ToolError("새 지형은 tool과 points가 필요합니다. 도로 재편집은 lay_terrain_road를 쓰세요");
+    const rawPoints = args.points ?? old?.points;
+    if (!Array.isArray(rawPoints)) throw new ToolError("새 지형은 points가 필요합니다");
+    const points = rawPoints.map(p => checkedPoint(map, p));
     const { mapId: _id, tool, points: _points, editId, weights, ...settings } = args;
     if (weights !== undefined && (!Array.isArray(weights) || weights.length !== 3)) throw new ToolError("weights는 풀·흙·돌(군집은 나무·바위·덤불) 비중 세 개입니다");
-    const options: TerrainDesignOptions = { ...designDefaults, ...settings, ...(weights ? { weights: weights as [number, number, number] } : {}) };
-    const feature = ["contour", "ridge", "valley", "lake"].includes(String(tool));
+    const options: TerrainDesignOptions = { ...designDefaults, ...old?.options, ...settings, ...(weights ? { weights: weights as [number, number, number] } : {}) };
+    const feature = ["contour", "ridge", "valley", "lake"].includes(String(selectedTool));
     const shape = options.areaShape === "rect" && points.length === 2 ? [points[0]!, { x: points[1]!.x, y: points[0]!.y }, points[1]!, { x: points[0]!.x, y: points[1]!.y }] : points;
     if (editId && !feature) throw new ToolError("editId는 윤곽·능선·계곡·호수만 지원합니다");
-    const plan = feature ? planTerrainFeature(map, ts, tool as "contour" | "ridge" | "valley" | "lake", points, options, typeof editId === "string" && editId ? editId : null)
-      : planTerrainDesign(map, ts, tool as "mix" | "mixedCluster" | "lock", shape, options);
+    const plan = feature ? planTerrainFeature(map, ts, selectedTool as "contour" | "ridge" | "valley" | "lake", points, options, typeof editId === "string" && editId ? editId : null)
+      : planTerrainDesign(map, ts, selectedTool as "mix" | "mixedCluster" | "lock", shape, options);
     if (!plan.ok || !plan.apply) throw new ToolError(plan.reason, { code: "terrain-placement", mapId: map.id });
     plan.apply(map);
     return { summary: plan.reason, data: { mapId: map.id, affectedCells: plan.indices.length, featureId: feature ? map.terrainDesign?.features?.at(-1)?.id : undefined } };
@@ -83,18 +89,42 @@ const houseTool: ToolDefinition = {
 const roadTool: ToolDefinition = {
   name: "lay_terrain_road", mode: "write", domains: ["map", "tile"],
   description: "에디터의 도로 드래그 도구로 꺾은 점들을 잇고, 절벽 접합에는 매끈한 경사로를 자동으로 만든다. 계단 코드나 절벽 타일을 찍지 않는다. 높이 차 앞에 곧은 접근로(단차+1칸)가 있어야 한다. 집 안이 아니라 반환받은 doorFront까지만 잇는다. flattenRoad:true는 첫 점 높이로 길 전체를 평탄화하므로 고지 연결에는 기본 false를 쓴다. 결과 reachable:false나 warnings면 완료가 아니다. 경로를 고쳐 재시도하고 check_terrain_access로 실제 canMove 통행을 검사한다. 기존 물체와 잠금은 보존한다.",
-  parameters: { type: "object", properties: { mapId, points: { type: "array", items: point }, width: { type: "integer", minimum: 1, maximum: 12 }, flattenRoad: { type: "boolean" }, editId: { type: "string" } }, required: ["mapId", "points"], additionalProperties: false },
+  parameters: { type: "object", properties: { mapId, points: { type: "array", items: point }, width: { type: "integer", minimum: 1, maximum: 12 }, flattenRoad: { type: "boolean" }, editId: { type: "string", description: "기존 road의 ID. 생략한 points/width/flattenRoad는 원래 값을 유지한다" } }, required: ["mapId"], additionalProperties: false },
   run(project, args) {
-    const map = requireMap(project, args.mapId as string), points = (args.points as unknown[]).map(p => checkedPoint(map, p));
+    const map = requireMap(project, args.mapId as string);
+    const old = typeof args.editId === "string" ? map.terrainDesign?.features?.find(f => f.id === args.editId) : undefined;
+    if (args.editId && (!old || old.tool !== "road")) throw new ToolError("도로 editId가 필요합니다. inspect_terrain으로 다시 조회하세요");
+    const rawPoints = args.points ?? old?.points;
+    if (!Array.isArray(rawPoints)) throw new ToolError("새 도로는 points가 필요합니다");
+    const points = rawPoints.map(p => checkedPoint(map, p));
     if (points.length < 2) throw new ToolError("도로 점은 두 개 이상 필요합니다");
-    const width = typeof args.width === "number" ? args.width : 3;
-    const plan = planTerrainFeature(map, tilesetFor(project, map), "road", points, { ...designDefaults, width, flattenRoad: args.flattenRoad === true }, typeof args.editId === "string" && args.editId ? args.editId : null);
+    const width = typeof args.width === "number" ? args.width : old?.options.width ?? 3;
+    const plan = planTerrainFeature(map, tilesetFor(project, map), "road", points, { ...designDefaults, ...old?.options, width, flattenRoad: args.flattenRoad === undefined ? old?.options.flattenRoad ?? false : args.flattenRoad === true }, typeof args.editId === "string" && args.editId ? args.editId : null);
     if (!plan.ok || !plan.apply) throw new ToolError(plan.reason, { code: "terrain-road-placement", mapId: map.id });
     plan.apply(map);
     const route = inspectTerrainRoute(project, map, points[0]!, points.at(-1)!, width);
     return { summary: `${plan.reason} · ${route.reason}`, ...(route.reachable ? {} : { warnings: ["실제 통행이 끊겼습니다. 경로를 수정하고 다시 검사하세요."] }),
       data: { reachable: route.reachable, blocked: route.blocked, featureId: map.terrainDesign?.features?.at(-1)?.id,
         rampCells: map.relief?.ramps?.filter(v => v >= 1 && v <= 4).length ?? 0 } };
+  },
+};
+
+const roofTool: ToolDefinition = {
+  name: "resize_terrain_house_roof", mode: "write", domains: ["map", "tile"],
+  preservesAuthoredRaster: true,
+  description: "기존 버들항 조립식 집의 지붕 폭만 바꾼다. inspect_terrain.houses의 placementId와 roofResizable을 먼저 확인한다. 벽·창·문 좌표, 층수와 배치 ID는 유지하며 잠금·기물·직접 덧칠·다른 집과의 겹침·기울어진 집터는 거부한다. 원본 고정 형태 집의 지붕 변형은 지원하지 않는다.",
+  parameters: { type: "object", properties: { mapId, placementId: { type: "string" }, roofWidth: { type: "integer", minimum: 5, maximum: 24 } }, required: ["mapId", "placementId", "roofWidth"], additionalProperties: false },
+  run(project, args) {
+    const map = requireMap(project, args.mapId as string), ts = tilesetFor(project, map);
+    const placement = structurePlacementsOf(map).find(p => p.id === args.placementId);
+    if (!placement) throw new ToolError("편집할 집 배치를 찾을 수 없습니다");
+    const at = { x: placement.x, y: placement.y };
+    const plan = planQuickHouseDrag(map, ts, { mapId: map.id, start: at, end: at },
+      { style: quickHouseStyles(ts)[0]!, width: placement.w, stories: 1, resize: "roof", roofWidth: args.roofWidth as number });
+    if (!plan.ok || !plan.apply || !plan.kit || plan.resizedPlacementId !== placement.id) throw new ToolError(plan.reason, { code: "terrain-roof-resize", mapId: map.id });
+    if (!ts.structureKits?.some(k => k.id === plan.kit!.id)) ts.structureKits = [...(ts.structureKits ?? []), plan.kit];
+    plan.apply(map);
+    return { summary: plan.reason, data: { placementId: placement.id, kitId: plan.kit.id, roofWidth: plan.kit.parts?.find(p => p.id === "roof")?.w } };
   },
 };
 
@@ -113,8 +143,12 @@ const rampTool: ToolDefinition = {
 
 const inspectTool: ToolDefinition = {
   name: "inspect_terrain", mode: "read", domains: ["map", "tile"],
-  description: "지형 도구의 실제 높이·매끈한 경사로/계단 수·시야 차단 설정·배치 집의 평탄성·문 앞 좌표·사용 가능한 기본 집 스타일을 읽는다. 집터가 전부 평평한지 확인하고 check_terrain_access로 아래 출발점부터 모든 문 앞까지 실제 통행을 검사한다. read_relief는 높이 행렬, show_map_region은 실제 화면 검수에 쓴다.",
-  parameters: { type: "object", properties: { mapId }, required: ["mapId"] },
+  description: "지형 도구의 실제 높이·매끈한 경사로/계단 수·시야 차단 설정·배치 집의 평탄성·문 앞 좌표·사용 가능한 기본 집 스타일을 읽는다. 집터가 전부 평평한지 확인하고 check_terrain_access로 아래 출발점부터 모든 문 앞까지 실제 통행을 검사한다. 기존 지형 수정·검수는 includeCatalog:false로 읽는다. 새 집 선택 시 houseKits는 쪽별 목록이며 catalog.nextOffset으로 다음 쪽을 조회한다. read_relief는 높이 행렬, show_map_region은 실제 화면 검수에 쓴다.",
+  parameters: { type: "object", properties: { mapId,
+    includeCatalog: { type: "boolean", description: "기존 지형 수정·검수는 false로 집 카탈로그를 제외한다. 기본 true" },
+    catalogOffset: { type: "integer", minimum: 0, description: "원본 집 목록의 시작 위치. 다음 쪽은 catalog.nextOffset 사용" },
+    catalogLimit: { type: "integer", minimum: 1, maximum: 24, description: "원본 집 목록의 쪽 크기. 기본 16" },
+  }, required: ["mapId"] },
   run(project, args) {
     const map = requireMap(project, args.mapId as string), ts = tilesetFor(project, map);
     const houses = structurePlacementsOf(map).flatMap(p => {
@@ -126,17 +160,25 @@ const inspectTool: ToolDefinition = {
       for (let y = p.y; y < p.y + p.h; y++) for (let x = p.x; x < p.x + p.w; x++) heights.add(terrainHeight(map, x, y));
       const level = terrainHeight(map, doorFront.x, doorFront.y);
       return [{ placementId: p.id, kitId: p.kitId, x: p.x, y: p.y, width: p.w, height: p.h, doorFront,
-        level, flat: heights.size === 1 && heights.has(level), heights: [...heights] }];
+        level, flat: heights.size === 1 && heights.has(level), heights: [...heights],
+        roofResizable: ts.id === "beodeul_city" && /^quick_house_beodeul-/.test(p.kitId),
+        parts: kit?.parts?.map(part => ({ id: part.id, kind: part.kind, x: p.x + part.dx, y: p.y + part.dy, width: part.w, height: part.h })) }];
     });
-    const data = { mapId: map.id, tilesetId: map.tilesetId, maxHeight: Math.max(0, ...(map.relief?.levels ?? [])),
+    const kits = quickHouseCatalog(ts), offset = Number(args.catalogOffset ?? 0), limit = Number(args.catalogLimit ?? 16);
+    const data = { mapId: map.id, tilesetId: map.tilesetId,
+      features: map.terrainDesign?.features?.map(f => ({ id: f.id, tool: f.tool, points: f.points, options: f.options, patchCount: f.patches.length })) ?? [],
+      lockedCells: map.terrainDesign?.lockedCells ?? [],
+      maxHeight: Math.max(0, ...(map.relief?.levels ?? [])),
       rampCells: map.relief?.ramps?.filter(v => v >= 1 && v <= 4).length ?? 0, stairCells: map.relief?.ramps?.filter(v => v >= 5 && v <= 8).length ?? 0,
       gameplay: { ...DEFAULT_TERRAIN_GAMEPLAY, ...map.terrainDesign?.gameplay }, houses,
-      houseKits: quickHouseCatalog(ts).map(k => { const door = k.parts!.find(p => p.kind === "entrance")!; return {
-        id: k.id, name: k.name, width: k.width, height: k.height, tags: k.ai?.tags,
-        doorOffset: { x: door.dx, y: door.dy + door.h - 1 }, doorFrontOffset: { x: door.dx, y: door.dy + door.h }, resize: "original",
-      }; }),
-      houseStyles: quickHouseStyles(ts).map(id => ({ id, name: quickHouseStyleName(id), exampleSize: (() => { const kit = quickHouseKit(ts, { style: id, width: 9, stories: 1 }); return kit ? { width: kit.width, height: kit.height } : undefined; })() })),
-      features: map.terrainDesign?.features?.map(f => ({ id: f.id, tool: f.tool, points: f.points })) ?? [] };
+      ...(args.includeCatalog === false ? {} : {
+        catalog: { total: kits.length, offset, limit, nextOffset: offset + limit < kits.length ? offset + limit : null },
+        houseKits: kits.slice(offset, offset + limit).map(k => { const door = k.parts!.find(p => p.kind === "entrance")!; return {
+          id: k.id, name: k.name, width: k.width, height: k.height, tags: k.ai?.tags,
+          doorOffset: { x: door.dx, y: door.dy + door.h - 1 }, doorFrontOffset: { x: door.dx, y: door.dy + door.h }, resize: "original",
+        }; }),
+        houseStyles: quickHouseStyles(ts).map(id => ({ id, name: quickHouseStyleName(id), exampleSize: (() => { const kit = quickHouseKit(ts, { style: id, width: 9, stories: 1 }); return kit ? { width: kit.width, height: kit.height } : undefined; })() })),
+      }) };
     return { summary: `고지 ${data.maxHeight}단 · 경사로 ${data.rampCells}칸 · 집 ${houses.length}채(평탄 ${houses.filter(h => h.flat).length}) · 시야 차단 ${data.gameplay.visionBlocking ? "켬" : "끔"}`, data };
   },
 };
@@ -156,4 +198,4 @@ const accessTool: ToolDefinition = {
     return { summary: `실제 지형 통행: ${routes.filter(r => r.reachable).length}/${routes.length}곳 도달`, data: { reachable, routes } };
   },
 };
-export const TERRAIN_TOOLS: readonly ToolDefinition[] = [designTool, houseTool, roadTool, rampTool, inspectTool, accessTool];
+export const TERRAIN_TOOLS: readonly ToolDefinition[] = [designTool, houseTool, roadTool, rampTool, roofTool, inspectTool, accessTool];

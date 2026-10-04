@@ -157,11 +157,16 @@
 | `place_terrain_house` | `planQuickHouse` | `kitId`로 현재 타일셋 원본 외관/크기 유지. `style,width,stories,roofWidth`는 크기 조절용 조립 집. 전체 집터+문 앞의 동일 높이·빈 땅 검사, 생성 kit도 등록 |
 | `lay_terrain_road` | `planTerrainFeature(..., "road")` | 절벽 접합에 매끈한 경사로 자동 생성. 쓰기 성공과 실제 도달을 구분하여 reachable/warnings 반환 |
 | `place_terrain_ramp` | `planReliefRamp` | 네 방향 자동 판정, 폭 2·4·6칸, stairs=false |
+| `resize_terrain_house_roof` | `planQuickHouseDrag`의 roof 경로 | 기존 버들항 조립 집의 지붕 폭만 수정. 벽·창·문·층수·배치 ID 유지. 원본 고정 외관은 거부 |
 | `inspect_terrain` | 실제 relief / 구조 배치 읽기 | 집별 전체 footprint 높이·문 앞, 원본 `houseKits`와 조립 `houseStyles`, 경사로/계단 수, 시야 규칙 |
 | `check_terrain_access` | `inspectTerrainRoute` | 실제 canMove/canMoveFootprint로 목적지 **칸 자체** 도달. 몸 크기·이벤트·물·높이·경사 옆벽 반영 |
 
-쓰기 네 도구는 참고문서 게이트의 WRITERS와 패널 MAP_TILE_TOOLS에 등록한다. 고정 조립기가 실제 타일을 고르므로
+지형 쓰기 도구는 참고문서 게이트의 WRITERS와 패널 MAP_TILE_TOOLS에 등록한다. 고정 조립기가 실제 타일을 고르므로
 TILE_CHOOSERS는 아니다. `design_terrain`/도로/경사로는 맵 체크포인트, 집은 tileset.structureKits도 바꾸므로 프로젝트 체크포인트다.
+
+2026-10-04 재편집 점검: `design_terrain({mapId,editId,width})`와 `lay_terrain_road({mapId,editId,width})`는 생략한 점·높이 delta·시드·수위·평탄화 설정을 기존 feature에서 이어받는다. 새 지형/도로에는 tool/points 또는 points가 필요하다. `inspect_terrain({mapId,includeCatalog:false})`은 집 카탈로그를 빼고 feature options, 잠금 칸, 집 parts의 절대 좌표와 roofResizable을 반환한다. 원본 집 목록은 기본 16개씩 `catalogOffset`/`catalogLimit`으로 읽으며 `catalog.nextOffset`이 null이면 끝이다. 128개를 한 응답에 담으면 Pi 도구 결과의 12,000자 상한에 걸려 뒤쪽 feature ID가 사라지던 문제를 막는다. 자연어 절벽·경사로·고지·지붕 요청에는 읽기→수정→통행/그림 검수 도구 묶음을 함께 노출한다.
+
+`sculpt_relief`는 잠긴 높이 변경과 집 전체/문 앞을 비평탄하게 만드는 변경을 원자적으로 거부한다. 집터 전체와 문 앞을 같은 높이로 옮기는 작업은 허용한다. 일반 contour/ridge/lake/road 계획기는 구조 배치의 전체 사각형을 보호한다. 사각형 밖에 있는 문 앞도 높이·물·소품 변경에서 보호하고 길의 바닥 칠하기는 허용한다. 자동 경사 접합이 문 앞 높이를 바꾸면 계획 전체를 거부한다. 근거·실제 모델 수정/SQLite 재로드: `verify-shots/terrain-ai-edit/SUMMARY.md`.
 버들항 지도에 기존 `author_house`의 다른 칩셋 번호를 쓰는 경로는 거부하고 새 집 도구를 안내한다.
 `place_terrain_house` 필수 인자는 `mapId,anchor`다. 원본은 `houseKits`에서 고른 `kitId`만 지정하고 width/stories를 생략한다. 명시적 kitId가 없으면 기본 width=7/stories=1의 조립 스타일 경로이며 모르는 kit/style은 거부한다. 시스템 프롬프트는 원본 탑/박공/날개 등 형태를 섞도록 안내하고, 크기·지붕 조절 요청에만 조립 스타일을 사용한다. 버들항 원본 집 목록 128종에는 도시 구역과 세션 생성 집이 포함되지 않는다.
 `read_tileset_reference` 이미지의 offset=0은 첫 페이지로 허용한다(엄격한 공급자 스키마가 기본 숫자 0을 채우는 경우).
@@ -1619,6 +1624,8 @@ not the assistant session's initial baseline, then checks the detached draft aft
 selection, BuildSpec, map-target, or tool-name exemption. A rejected transaction
 returns `protected-house-write` or `house-overlap` and commits none of its maps,
 events, interiors, or map-tree additions. Human direct editing is unchanged.
+
+2026-10-04: 버들항 조립 집의 지붕 폭 변경은 현재 승인된 집으로 동일한 에디터 roof 계획을 다시 실행해 결과가 정확히 일치할 때만 통과한다. 도구 이름으로 보호를 끄지 않는다. 벽/창/문과 네 타일 층, 원본 집, 직접 덧칠, 나중 사람 편집은 계속 보호한다. 줄어든 옛 지붕 여백까지 비교하며 직렬화된 제안의 최종 적용에서도 같은 검사를 쓴다.
 
 Final application also checks the current live store before history or replacement.
 `applyProposedProject` covers chat proposals, autonomous milestones, and cluster

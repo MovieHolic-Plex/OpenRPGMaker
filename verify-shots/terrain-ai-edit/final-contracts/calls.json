@@ -1,0 +1,369 @@
+[
+  {
+    "name": "sculpt_relief",
+    "args": {
+      "mapId": "houses_native",
+      "ops": [
+        {
+          "op": "rect",
+          "rect": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "h": 10
+        }
+      ]
+    },
+    "ok": false,
+    "summary": "'sculpt_relief' 실행 실패: 잠긴 칸 (0,0)의 높이를 바꿀 수 없습니다. 영역을 피하거나 design_terrain lock/unlock으로 먼저 해제하세요",
+    "issues": [
+      {
+        "severity": "error",
+        "code": "terrain-locked-height",
+        "mapId": "houses_native",
+        "message": "잠긴 칸 (0,0)의 높이를 바꿀 수 없습니다. 영역을 피하거나 design_terrain lock/unlock으로 먼저 해제하세요"
+      }
+    ]
+  },
+  {
+    "name": "inspect_terrain",
+    "args": {
+      "mapId": "houses_native"
+    },
+    "ok": true,
+    "summary": "고지 9단 · 경사로 22칸 · 집 3채(평탄 3) · 시야 차단 끔"
+  },
+  {
+    "name": "sculpt_relief",
+    "args": {
+      "mapId": "houses_native",
+      "ops": [
+        {
+          "op": "rect",
+          "rect": [
+            6,
+            13,
+            6,
+            13
+          ],
+          "h": 14
+        }
+      ]
+    },
+    "ok": false,
+    "summary": "'sculpt_relief' 실행 실패: 구조물 sp_a2ff01d4-09f0-4e24-a2c7-65a12be34406의 집터와 문 앞 높이가 어긋납니다. 집터 rect:[6,13,19,23] 전체와 문 앞 (15,22)을 같은 높이로 유지하세요",
+    "issues": [
+      {
+        "severity": "error",
+        "code": "terrain-house-foundation",
+        "mapId": "houses_native",
+        "message": "구조물 sp_a2ff01d4-09f0-4e24-a2c7-65a12be34406의 집터와 문 앞 높이가 어긋납니다. 집터 rect:[6,13,19,23] 전체와 문 앞 (15,22)을 같은 높이로 유지하세요"
+      }
+    ]
+  },
+  {
+    "name": "sculpt_relief",
+    "args": {
+      "mapId": "houses_native",
+      "ops": [
+        {
+          "op": "rect",
+          "rect": [
+            6,
+            13,
+            19,
+            23
+          ],
+          "h": 5
+        },
+        {
+          "op": "rect",
+          "rect": [
+            15,
+            22,
+            15,
+            22
+          ],
+          "h": 5
+        }
+      ]
+    },
+    "ok": true,
+    "summary": "houses_native 높이 2개 op 적용 — 가려진 칸 336, 규칙에 깎인 칸 0"
+  },
+  {
+    "name": "inspect_terrain",
+    "args": {
+      "mapId": "houses_native"
+    },
+    "ok": true,
+    "summary": "고지 9단 · 경사로 22칸 · 집 3채(평탄 3) · 시야 차단 끔"
+  },
+  {
+    "name": "design_terrain",
+    "args": {
+      "mapId": "houses_native",
+      "tool": "contour",
+      "points": [
+        {
+          "x": 5,
+          "y": 12
+        },
+        {
+          "x": 21,
+          "y": 25
+        }
+      ],
+      "areaShape": "rect",
+      "delta": 1
+    },
+    "ok": true,
+    "summary": "절벽 윤곽 84칸"
+  },
+  {
+    "name": "inspect_terrain",
+    "args": {
+      "mapId": "houses_native"
+    },
+    "ok": true,
+    "summary": "고지 9단 · 경사로 22칸 · 집 3채(평탄 3) · 시야 차단 끔"
+  },
+  {
+    "name": "design_terrain",
+    "args": {
+      "mapId": "houses_native",
+      "tool": "ridge",
+      "points": [
+        {
+          "x": 2,
+          "y": 38
+        },
+        {
+          "x": 8,
+          "y": 38
+        }
+      ],
+      "width": 5,
+      "delta": 3,
+      "seed": 42
+    },
+    "ok": true,
+    "summary": "능선 51칸"
+  },
+  {
+    "name": "design_terrain",
+    "args": {
+      "mapId": "houses_native",
+      "editId": "terrain_385a215d-5152-478b-a77b-ac64567ec442",
+      "width": 7
+    },
+    "ok": true,
+    "summary": "능선 76칸"
+  },
+  {
+    "name": "design_terrain",
+    "args": {
+      "mapId": "houses_native",
+      "editId": "missing",
+      "width": 9
+    },
+    "ok": false,
+    "summary": "'design_terrain' 실행 실패: 편집할 지형을 찾을 수 없습니다. inspect_terrain으로 다시 조회하세요",
+    "issues": [
+      {
+        "severity": "error",
+        "code": "tool-error",
+        "message": "편집할 지형을 찾을 수 없습니다. inspect_terrain으로 다시 조회하세요"
+      }
+    ]
+  },
+  {
+    "name": "place_terrain_house",
+    "args": {
+      "mapId": "houses_native",
+      "anchor": {
+        "x": 24,
+        "y": 46
+      },
+      "style": "beodeul-manor-a",
+      "width": 9,
+      "stories": 2,
+      "roofWidth": 11
+    },
+    "ok": true,
+    "summary": "버들항 반목조 집 · 붉은 꽃 · 벽 9칸 2층 · 지붕 11×3칸 배치"
+  },
+  {
+    "name": "inspect_terrain",
+    "args": {
+      "mapId": "houses_native"
+    },
+    "ok": true,
+    "summary": "고지 9단 · 경사로 22칸 · 집 4채(평탄 4) · 시야 차단 끔"
+  },
+  {
+    "name": "design_terrain",
+    "args": {
+      "mapId": "houses_native",
+      "tool": "contour",
+      "points": [
+        {
+          "x": 24,
+          "y": 47
+        },
+        {
+          "x": 25,
+          "y": 49
+        }
+      ],
+      "areaShape": "rect",
+      "delta": 2
+    },
+    "ok": true,
+    "summary": "절벽 윤곽 5칸"
+  },
+  {
+    "name": "inspect_terrain",
+    "args": {
+      "mapId": "houses_native"
+    },
+    "ok": true,
+    "summary": "고지 9단 · 경사로 22칸 · 집 4채(평탄 4) · 시야 차단 끔"
+  },
+  {
+    "name": "design_terrain",
+    "args": {
+      "mapId": "houses_native",
+      "tool": "lake",
+      "points": [
+        {
+          "x": 24,
+          "y": 47
+        },
+        {
+          "x": 26,
+          "y": 50
+        }
+      ],
+      "areaShape": "rect",
+      "waterLevel": 0
+    },
+    "ok": true,
+    "summary": "호수 11칸 · 수위 0 · 얕은 물 1칸"
+  },
+  {
+    "name": "resize_terrain_house_roof",
+    "args": {
+      "mapId": "houses_native",
+      "placementId": "sp_62893a40-06c1-424b-8c9c-36f25dd6025a",
+      "roofWidth": 15
+    },
+    "ok": true,
+    "summary": "지붕 크기 변경 · 벽·창·문 위치 유지"
+  },
+  {
+    "name": "inspect_terrain",
+    "args": {
+      "mapId": "houses_native"
+    },
+    "ok": true,
+    "summary": "고지 9단 · 경사로 22칸 · 집 4채(평탄 4) · 시야 차단 끔"
+  },
+  {
+    "name": "resize_terrain_house_roof",
+    "args": {
+      "mapId": "houses_native",
+      "placementId": "sp_62893a40-06c1-424b-8c9c-36f25dd6025a",
+      "roofWidth": 9
+    },
+    "ok": true,
+    "summary": "지붕 크기 변경 · 벽·창·문 위치 유지"
+  },
+  {
+    "name": "resize_terrain_house_roof",
+    "args": {
+      "mapId": "houses_native",
+      "placementId": "sp_a2ff01d4-09f0-4e24-a2c7-65a12be34406",
+      "roofWidth": 17
+    },
+    "ok": false,
+    "summary": "'resize_terrain_house_roof' 실행 실패: 조립식 집의 지붕에서 끌어 주세요",
+    "issues": [
+      {
+        "severity": "error",
+        "code": "terrain-roof-resize",
+        "mapId": "houses_native",
+        "message": "조립식 집의 지붕에서 끌어 주세요"
+      }
+    ]
+  },
+  {
+    "name": "lay_terrain_road",
+    "args": {
+      "mapId": "houses_native",
+      "points": [
+        {
+          "x": 24,
+          "y": 54
+        },
+        {
+          "x": 24,
+          "y": 47
+        }
+      ],
+      "width": 2
+    },
+    "ok": true,
+    "summary": "길 14칸 · 경사 접합 0곳 · 7칸 경로 · 폭 2칸 미만 병목 0칸"
+  },
+  {
+    "name": "lay_terrain_road",
+    "args": {
+      "mapId": "houses_native",
+      "editId": "terrain_64b7dc2d-4bc1-4f1b-9f4d-5b490b59a443",
+      "width": 3
+    },
+    "ok": true,
+    "summary": "길 21칸 · 경사 접합 0곳 · 7칸 경로 · 폭 3칸 미만 병목 0칸"
+  },
+  {
+    "name": "inspect_terrain",
+    "args": {
+      "mapId": "houses_native"
+    },
+    "ok": true,
+    "summary": "고지 9단 · 경사로 22칸 · 집 4채(평탄 4) · 시야 차단 끔"
+  },
+  {
+    "name": "check_terrain_access",
+    "args": {
+      "mapId": "houses_native",
+      "from": {
+        "x": 4,
+        "y": 58
+      },
+      "targets": [
+        {
+          "x": 15,
+          "y": 22
+        },
+        {
+          "x": 36,
+          "y": 22
+        },
+        {
+          "x": 60,
+          "y": 19
+        },
+        {
+          "x": 24,
+          "y": 47
+        }
+      ]
+    },
+    "ok": true,
+    "summary": "실제 지형 통행: 4/4곳 도달"
+  }
+]

@@ -5,6 +5,41 @@
 
 <!-- releases -->
 
+## 0.119.0 — 2026-10-04
+
+### 기능
+
+- add chip selection with assembled candidate previews (#2069) (`67500b1`)
+
+### 수정
+
+- 주차장 조립 검수 실패 시 후보 선택 차단 (#2071) (`3bd7023`)
+- run ci-full vitest as one 8GB worker (`dbd7616`)
+
+## 0.118.3 — 2026-10-04
+
+### 수정
+
+- cap ci-full vitest at two 3584MB workers (`50cfaac`)
+- preserve optional terrain enums and house entrance approaches (`1280e07`)
+- paginate terrain inspection before assistant response truncation (`e443d3f`)
+- preserve terrain settings and houses during assistant edits (`fc5897e`)
+
+### 문서
+
+- compact terrain audit arrays for review (`e26f482`)
+
+### 테스트
+
+- verify real assistants editing saved relief terrain in the editor (`9c0796f`)
+
+## 0.118.2 — 2026-10-04
+
+### 수정
+
+- type the event storyboard host as HTMLElement (`82446a4`)
+- keep ci-full vitest inside the 12GB slice (`feb83ef`)
+
 ## 0.118.1 — 2026-10-04
 
 ### 수정
