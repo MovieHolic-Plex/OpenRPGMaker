@@ -471,6 +471,7 @@ until those removals have real ownership evidence.
 
 ## 캐릭터·얼굴 메타데이터 (2026-09-06)
 
+- 2026-10-04: GIF 공방에서 사람이 남긴 캐릭터와 `desc.json`도 같은 공용 화면에 표시한다. `sharedCharacters.ts`가 기존 호스트 공용 SQLite `charset-actor-kept`에서 그림·라벨·의상/역할 속성을 공급한다. 새/기존 프로젝트는 기존 공용 기본 자산 설치 경로를 사용하며 열린 에디터는 새로고침한다. `shared_charset_actor_` 그림은 실제 0번 칸만 표시하고 빈 7칸을 후보로 만들지 않는다. 폐기하면 공용 검색에서 빠지며 기존 프로젝트의 그림과 수동 얼굴 연결은 보존한다. 상세 저장/복구 계약은 `charset-actor-harness.md`의 「남김 → 공용 캐릭터와 설명」.
 - System 그룹의 `characterGraphics` (`db-tab-character-graphics`)는 `databaseCharacterGraphicsView.ts`가 기존 workspace/list/detail 빌더로 렌더한다. 주민 관계(`characters`)와 다른 면이며, 새로운 자산 목록이나 자동 이벤트 변경 경로를 만들지 않는다.
 - `project/characterGraphics.ts`가 기존 `resourceProfiles`의 얼굴 `graphicAttributes`/`graphicNote`, charset `characterSlots`를 읽고 쓴다. 이름은 sprite의 경우 기존 `charsetLabels`, 얼굴은 profile.name이다. 두 그림의 종류·나이·성별·피부·머리·의상·역할은 독립이며 명확한 글자 특징만 기본 표시한다. 모호함은 빈칸이다.
 - 상태는 pending/mapped/no-face, 품질은 unspecified/exact/approximate다. pending 이름 편집은 검토 완료가 아니며, no-face는 명시적인 값이다. 그림으로 얼굴을 지정해도 속성을 복사하지 않고 기존 맵·이벤트 명령을 바꾸지 않는다.

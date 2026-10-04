@@ -1218,6 +1218,76 @@ def decision_receipt(mutation_id):
     return None
 
 
+def prepare_shared_library():
+    """현재 그림을 보고 남긴 자유 후보만 공용 SQLite 게시용으로 만든다."""
+    import io
+    library = dict(version=1, projectDefaults=True, roots=[], places={}, tilesets={}, assets={}, maps={},
+                   sourceProjectId='charset-actor-harness', previews={}, characters={})
+    decisions = _decisions()
+    for item in _items():
+        rec = decisions.get(item['id'])
+        if item['review_mode'] != 'human' or not rec or rec['decision'] != 'accept':
+            continue
+        w = run_dir(item['run']) / item['dir']
+        gate = current_gate(w)
+        if not human_ready(w, gate) or not gate['ok'] or effective_decision(w, rec) != 'accept':
+            continue
+        raw = (w / 'out.chr.txt').read_bytes()
+        if hashlib.sha256(raw).hexdigest() != gate['sourceSha256']:
+            raise ValueError('선택한 격자가 게시 중 바뀌었습니다')
+        desc = _desc(w)
+        if not desc or not isinstance(desc.get('label'), str) or not desc['label'].strip():
+            raise ValueError(f"설명이 없는 남김 후보: {item['id']}")
+        pal, _, frames = C.parse(raw.decode())
+        sprite = C.sheet_rgba(pal, frames)
+        sheet = Image.new('RGBA', (288, 256)); sheet.paste(sprite, (0, 0))
+        buf = io.BytesIO(); sheet.save(buf, format='PNG'); image = buf.getvalue()
+        if Image.open(io.BytesIO(image)).convert('RGBA').tobytes() != sheet.tobytes():
+            raise ValueError('공용 PNG 재읽기 불일치')
+        inspected = binding(gate)
+        key = 'shared_charset_actor_' + hashlib.sha256((item['id'] + json.dumps(inspected, sort_keys=True)).encode()).hexdigest()[:24]
+        png, slot = base_sheet(item['base'])
+        reference = png.read_bytes()
+        source = dict(candidateId=item['id'], base=item['base'], inspected=inspected, acceptance=rec,
+                      grid=raw.decode(), imageSha256=hashlib.sha256(image).hexdigest(),
+                      model='gpt-6.1-sol', effort='high', descriptionBy=desc.get('by'),
+                      reference=dict(slot=slot, sha256=hashlib.sha256(reference).hexdigest(),
+                                     dataUrl='data:image/png;base64,' + base64.b64encode(reference).decode()))
+        if item['base'].startswith('input:'):
+            iid = item['base'].split(':')[1]
+            source['reference']['metadata'] = json.loads((INPUTS / f'{iid}.json').read_text())
+        else:
+            source['reference']['licenses'] = {file:(RTP / file).read_text() for file in ('AUTHORS.md', 'COPYING')}
+        library['assets'][key] = dict(id=key, name=desc['label'], kind='charset',
+                                     dataUrl='data:image/png;base64,' + base64.b64encode(image).decode(),
+                                     meta=dict(width=288, height=256, frameWidth=24, frameHeight=32, frames=96))
+        library['characters'][key] = dict(assetId=key, characterIndex=0, description=desc, source=source)
+    return library
+
+
+def publish_shared_library():
+    import tempfile
+    library = prepare_shared_library()
+    with tempfile.TemporaryDirectory(prefix='charset-shared-') as temp:
+        payload = Path(temp) / 'library.json'
+        write_json_atomic(payload, library)
+        result = subprocess.run(['node', str(HERE / 'publish-shared.mjs'), str(payload)], cwd=ROOT,
+                                capture_output=True, text=True, timeout=45)
+        if result.returncode:
+            raise RuntimeError('공용 캐릭터 등록 실패: ' + result.stderr[-1200:])
+        receipt = json.loads(result.stdout)
+        if not receipt.get('reloaded') or receipt['count'] != len(library['characters']):
+            raise RuntimeError('공용 캐릭터 재읽기 불일치')
+        write_json_atomic(DATA / 'shared-library.json', receipt)
+        (DATA / 'shared-library-error.json').unlink(missing_ok=True)
+        return receipt
+
+
+def cmd_publish_shared(a):
+    with data_lock('decisions'):
+        print(json.dumps(publish_shared_library(), ensure_ascii=False))
+
+
 def cmd_serve(a):
     from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
     from urllib.parse import unquote
@@ -1225,6 +1295,12 @@ def cmd_serve(a):
     root = (DATA / 'runs').resolve()
     import threading
     decisions_lock = threading.Lock()
+    # 기존 남김과 서버가 꺼져 있던 동안의 선택도 같은 공용 정본에 반영한다.
+    try:
+        with data_lock('decisions'):
+            publish_shared_library()
+    except Exception as error:
+        write_json_atomic(DATA / 'shared-library-error.json', dict(error=str(error), at=now()))
 
     class H(BaseHTTPRequestHandler):
         def log_message(self, *x):
@@ -1252,7 +1328,11 @@ def cmd_serve(a):
                     it['decision'] = rec if effective_decision(root / it['id'], rec, it['gate']) else None
                     it['decision_stale'] = bool(rec and not it['decision'])
                 import studio
-                return self._send(200, json.dumps(dict(items=items, reasons=REASONS, runs=studio.runs(items)), ensure_ascii=False))
+                library_file = DATA / 'shared-library.json'
+                library_error = DATA / 'shared-library-error.json'
+                shared = json.loads(library_file.read_text()) if library_file.exists() else None
+                error = json.loads(library_error.read_text()) if library_error.exists() else None
+                return self._send(200, json.dumps(dict(items=items, reasons=REASONS, runs=studio.runs(items), sharedLibrary=shared, sharedLibraryError=error), ensure_ascii=False))
             if path.startswith('/downloads/'):
                 downloads = (DATA / 'downloads').resolve()
                 f = (downloads / path.removeprefix('/downloads/')).resolve()
@@ -1296,7 +1376,11 @@ def cmd_serve(a):
             if d.get('decision') not in ('accept', 'reject', 'clear') or '/' not in str(d.get('id', '')):
                 return self._send(400, '{"error":"bad"}')
             with decisions_lock, data_lock('decisions'):
-                return self._decide(d)
+                try:
+                    return self._decide(d)
+                except Exception as error:
+                    write_json_atomic(DATA / 'shared-library-error.json', dict(error=str(error), at=now()))
+                    return self._send(500, json.dumps(dict(error='선택은 보관했습니다. 공용 등록을 재시도해 주세요: ' + str(error)), ensure_ascii=False))
 
         def _decide(self, d):
             receipt = decision_receipt(d.get('mutationId'))
@@ -1308,6 +1392,7 @@ def cmd_serve(a):
                     # 사본 동기화 전에 연결이 끊겨도, 재시도는 최신 선택을 복구한다.
                     latest = _decisions().get(receipt['id'])
                     sync_human_decision(candidate, latest or dict(receipt, decision='clear'))
+                    publish_shared_library()
                 return self._send(200, json.dumps(receipt, ensure_ascii=False))
             w = root / d['id']
             if not w.is_dir() or root not in w.resolve().parents:
@@ -1329,6 +1414,7 @@ def cmd_serve(a):
                 os.fsync(fh.fileno())
             if human_review(w):
                 sync_human_decision(w, rec)
+                publish_shared_library()
             else:
                 export_decisions()
             return self._send(200, json.dumps(rec, ensure_ascii=False))
@@ -1452,6 +1538,8 @@ def main():
     p.set_defaults(fn=cmd_describe)
     sp.add_parser('export', help='결정을 harness-data/charset-actor/decisions.json·accepted/ 로').set_defaults(
         fn=lambda a: export_decisions())
+    sp.add_parser('publish-shared', help='현재 남긴 자유 캐릭터와 설명을 사용자 공용 SQLite에 등록한다').set_defaults(
+        fn=cmd_publish_shared)
     a = ap.parse_args()
     a.fn(a)
 

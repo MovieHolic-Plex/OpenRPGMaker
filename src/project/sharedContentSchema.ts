@@ -27,6 +27,18 @@ export interface SharedContentLibrary {
   maps: Record<string, GameMap>;
   sourceProjectId: string;
   previews: Record<string,string>;
+  /** Human-kept sprites and their author descriptions; owned by this host's local catalog. */
+  characters?: Record<string, SharedCharacter>;
+}
+export interface SharedCharacter {
+  assetId: string;
+  characterIndex: number;
+  description: {
+    label: string; gender?: string; role?: string; appearance?: string;
+    tags?: string[]; fits?: string; attributes?: import('./characterGraphics').GraphicAttributes;
+    [key: string]: unknown;
+  };
+  source: { candidateId: string; base: string; inspected: Record<string, unknown>; acceptance: Record<string, unknown>; [key: string]: unknown };
 }
 export interface SharedContentSnapshot {
   revision: string;

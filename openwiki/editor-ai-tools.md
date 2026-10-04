@@ -2117,6 +2117,8 @@ author_village와 buildVillageDomain이 DB 설계서의 고정값·집 수 범�
 `list_npc_graphics` 는 `appearance`, `list_resources(kind:"charset")` 는 `description` 으로 그대로 돌려준다.
 문장에 있는 두 글자 이상 낱말은 라벨·태그보다 낮은 점수로 검색에도 걸린다. 라벨 문자열 자체는 바꾸지 않는다.
 
+2026-10-04: GIF 공방의 현재 사람 남김도 `sharedCharacters.ts`를 통해 두 검색에 포함한다. 작업자 설명의 이름·역할·의상·외형·태그를 검색하며 `nativeGraphic.sprite.type`은 이 그림에 한해 `uploaded`다. 고정 자산 ID와 0번 칸의 `pattern:25`를 사용한다. 고수준 NPC/동료 컴파일과 수동 그림 선택도 같은 uploaded 유형을 쓴다. 없는 나이를 추정하지 않는다. 폐기/되돌리면 다음 카탈로그 로드에서 검색 후보에서 제외하고 기존 프로젝트의 이벤트·그림은 유지한다. 상세 계약은 `charset-actor-harness.md`.
+
 ## 보물상자는 노출된 수면을 거부한다 (2026-09-05)
 
 `place_chest`는 요청 좌표와 자동 착지 결과를 모두 검사한다. 물 판정은 현재 타일셋의
