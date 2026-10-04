@@ -20,6 +20,8 @@ export type BattleDirectorStep = "intro" | "command" | "target" | "acting" | "im
 
 export interface BattleDirectorState {
   readonly step: BattleDirectorStep;
+  /** Presentation-only first trainer beat; send-out shares `intro` but has no portrait. */
+  readonly trainerIntroduction?: true;
   readonly lines: readonly string[];
   readonly activeActorRecordId?: string;
   readonly targetId?: string;
@@ -46,6 +48,7 @@ export function introDirectorState(snapshot: BattleSnapshot): BattleDirectorStat
   if (troop?.trainerBattle === true) {
     return {
       step: "intro",
+      trainerIntroduction: true,
       lines: [`${withJosa(troop.name, "이/가")} 승부를 걸어왔다!`],
       activeActorRecordId: snapshot.activeActorId,
     };

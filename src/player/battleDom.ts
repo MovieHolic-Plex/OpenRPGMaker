@@ -65,6 +65,7 @@ import { store } from "@/project/store";
 import { RETRO_PIXEL_FX_FRAMES, RETRO_PIXEL_FX_SOUNDS, retroPixelAnimationId, retroPixelFxForResource, retroPixelFxResourceId } from "@/assets/retroPixelAnimations";
 import { bindBattleStageScale } from "@/player/battleStageScale";
 import { bindEmeraldBattleSurface, stampEmeraldSurface } from "@/player/emeraldSurfaces";
+import { mountEmeraldTrainerIntro } from "@/player/emeraldTrainerIntro";
 import { applyRollingHpSurvival, createRollingHpMeter, startRollingHpTicker } from "@/player/rollingHp";
 import { syncBattleScreenFilter } from "@/player/battleScreenFilter";
 
@@ -199,6 +200,9 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   openBattleTimerScope();
 
   const initialSnapshot = options.runtime.snapshot();
+  const trainerIntro = emerald && !options.onField
+    ? mountEmeraldTrainerIntro(root, store.getCurrent(), options.audioContext?.session, initialSnapshot)
+    : undefined;
   options.onSnapshot?.(initialSnapshot);
   let destroyed = false;
   /** 포켓몬 피해 박자: 대상별로 돌고 있는 박자의 마무리(숫자 끝값·HP 지연 해제·쓰러짐 보류 해제).
@@ -1249,6 +1253,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     rebuildCommandPanelIfNeeded(snapshot);
     syncResultHost(snapshot, showingResult);
     applyBattleDirectorState(root, directorState, snapshot);
+    trainerIntro?.sync(directorState);
     // 명령 국면에 들어오면 커서 버튼이 포커스를 갖는다. acting 중 host 가 display:none 이라
     // rebuild 시점의 focus() 가 실패하고, 이후 시그니처가 같아 재포커스가 없었다(실측 BODY).
     if (directorState.step === "command" && !sequenceBusy && !commandHost.contains(document.activeElement)) {
@@ -1870,6 +1875,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       animationBlendObserver.disconnect();
       stopRetroClassSkill(field);
       impactContact.destroy();
+      trainerIntro?.destroy();
       clearBattleTimerScope();
       rollingHpTicker?.stop();
       choiceController?.abort();

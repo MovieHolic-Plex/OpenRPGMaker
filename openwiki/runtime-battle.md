@@ -1683,6 +1683,37 @@ Completed runtime timelines persist into bounded session reports accessible from
 적 이름에 소유자 이름이 있다는 이유만으로 트레이너라고 추정하지 않는다. 포획 차단 조건은 그대로다.
 새솔 라이벌 실전에서 몬스터 종족만 보고 「야생의 세린의 …」로 소개하던 불일치를 확인했다.
 
+### Emerald trainer portraits (2026-10-04)
+
+`introDirectorState` marks only the first trainer sentence with the local
+`trainerIntroduction` presentation flag. The following `sendOutDirectorState`
+still uses `step: intro`, without that flag; no project/save schema is added.
+`battleDom` mounts `emeraldTrainerIntro` only on the authored Emerald surface
+outside on-field battles, using the existing audio context's live play session.
+`mx_troop_${event.id}` identifies the event in the current map. The active page
+is selected with live session conditions and battle switches/variables/self
+switches, rather than assuming page zero or reading the editor start session.
+
+Only uploaded `oprn_emerald_field_cast_1` / `_2` graphics are supported. For a
+finite integer pattern in 0..95, character index is
+`floor(floor(pattern/12)/4)*4 + floor((pattern%12)/3)`. Slots map to hero, rival,
+professor, nurse, merchant, mother, resident, gym_leader, company_agent, captain,
+worker, explorer, student, ranger, moon_leader, hiker. The pair requires uploaded
+picture IDs `oprn_emerald_trainer_<role>` and `oprn_emerald_trainer_hero_back`,
+both with width64/height96 metadata and resolvable URLs. Actual loaded image
+dimensions must also be64×96; no placeholder art or custom-sheet inference.
+
+The separate `emeraldTrainerIntro.css` renders both portraits at128×192 with a
+short32px stepped entrance (disabled for reduced motion). Only after both
+images load does its root marker hide native monster groups and HP cards.
+Missing/corrupt pictures retain the native scene. Send-out immediately removes
+that marker; roster nodes are never replaced. Destruction removes the portrait
+layer and handlers, and late loads cannot revive a removed introduction.
+Focused native source-player evidence:
+`/tmp/oprn-emerald-20261004/trainer-intro-source/SUMMARY.md` (missing-art and
+custom-sheet fallback, first/sending-out distinction, repeated destroy). Real
+generated portrait appearance requires standalone QA after asset registration.
+
 ## 포획 불가 전투의 가방 목록 (2026-09-25)
 
 `battleCommandDom.captureItems`는 `snapshot.troopId`의 `trainerBattle` 또는
