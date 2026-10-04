@@ -51,6 +51,7 @@ import { cloneExtraLayers } from "@/project/mapLayers";
 import { restoreLockedTerrainCells } from "./terrainLocks";
 
 import { jsonEqual } from "@/util/structuralJson";
+import { isMediaSeparationOnly } from "@/project/mediaSeparationEquality";
 import { randomUuid } from "@/util/id";
 import { createLogger } from "@/util/logger";
 import {
@@ -705,6 +706,10 @@ class ProjectStore {
     // `jsonEqual` 은 같은 객제를 만나면 지나가고 첫 차이에서 멈춘다. 문서 로드 정규화가 기본값을
     // 메우는 만큼 «다르다» 로 달 수 있지만, 그 방향은 논리적으로 같은 스냅샷을 한 번 다시 얹는 것뿐이다.
     if (this.persistedBaseline && jsonEqual(snapshot.project, this.persistedBaseline)) return true;
+    const storageOnly = this.persistedBaseline ? await isMediaSeparationOnly(this.persistedBaseline, snapshot.project) : false;
+    // Hashing may yield. A new edit/save/project switch must win over this earlier snapshot.
+    if (generation !== this.mutationGeneration || lineage !== this.contentLineage
+      || this.dirtySinceLastPersist || this.persistInFlight || !sameProjectTarget(target, this.repository.currentTarget())) return false;
     this.current = preserveEventDraftsOnProject(snapshot.project, this.current);
     // 방금 받은 스냅숏은 이 스토어만 가진 사본이고 초안이 없다(호스트 행은 초안을 싣지 않는다). current 는 위에서
     // 따로 복제했으므로 스냅숏을 그대로 기준본으로 둔다. 실측(2026-09-28, 팀 참여 창): 동료 저장 반영마다 기준본
@@ -713,9 +718,9 @@ class ProjectStore {
     this.writeAuthority = snapshot.authority;
     this.lastPersistenceReceipt = null;
     this.lastSavedHostRevision = null;
-    resetManualProjectCommitBaseline(this.current);
+    if (!storageOnly) resetManualProjectCommitBaseline(this.current);
     // External changes invalidate local undo snapshots; do not let Ctrl+Z undo a teammate's work.
-    this.emit({ scope: 'project', origin: 'system', projectSwitch: true });
+    this.emit({ scope: 'project', origin: 'system', projectSwitch: !storageOnly });
     return true;
   }
 
