@@ -5,6 +5,8 @@ import { ensureUploadedTilesetTextures } from "@/assets/uploadedTilesets";
 // 데이터는 직접 쓰지 않고 store.subscribe 로 갱신을 받아 재렌더.
 
 import type Phaser from "phaser";
+import { reliefGroundFromImage, reliefTilesetImage } from "./reliefGroundSurface";
+import { hasRelief } from "@/project/relief/walk";
 import { getLoadedPhaser } from "@/app/phaserRuntime";
 import {
   ensureBundledProjectTextures,
@@ -1064,7 +1066,7 @@ export class EditScene extends PhaserRuntime.Scene {
     if (plan.kind === "cells") {
       this.redrawCells(plan.cells);
       // 높이 붓이 절벽을 타일로 구운 칸 — 옛 덧그림이 남아 있으면 걷어 낸다.
-      if (change.scope === "map" && change.relief) this.scheduleReliefRender();
+      if (change.scope === "map" && (change.relief || plan.cells.some(c => c.layer === "lower") && store.getCurrent().maps[mapId!]?.relief)) this.scheduleReliefRender();
       return;
     }
     this.redraw();
@@ -2420,11 +2422,14 @@ export class EditScene extends PhaserRuntime.Scene {
     const relief = map?.relief;
     const tileSize = this.activeTileSize();
     const tileset = map ? store.getCurrent().tilesets[map.tilesetId] : undefined;
-    const key = relief ? `${mapId}|${tileSize}|${map?.tilesetId}|${reliefSignature(relief)}` : "";
-    if (key === this.reliefRenderKey) return;
-    this.reliefRenderKey = key;
-    strips.sync(map && relief && !reliefIsFlat(relief) ? relief : undefined, tileSize, forceFull);
     const textureKey = tileset ? tilesetTextureKey(tileset) : null;
+    const ground = map && tileset && relief && textureKey ? reliefGroundFromImage(map, tileset, reliefTilesetImage(this.textures, textureKey)) : undefined;
+    const active = editorState.get().layer;
+    strips.setGroundAppearance(ground ? active === "upper" ? .58 : active === "event" ? .62 : 1 : 1, ground && active === "upper" ? 0xc8d9bf : null);
+    const key = relief ? `${mapId}|${tileSize}|${map?.tilesetId}|${reliefSignature(relief)}|${ground?.signature ?? "none"}` : "";
+    if (!forceFull && key === this.reliefRenderKey) return;
+    this.reliefRenderKey = key;
+    strips.sync(map && relief && !reliefIsFlat(relief) ? relief : undefined, tileSize, forceFull, ground);
     const decor = relief && !reliefIsFlat(relief) && textureKey && this.textures.exists(textureKey) ? relief.wallDecor ?? [] : [];
     // 장식 자리는 그 칸 들림을 따른다 — 장식 목록·들림이 그대로면(붓질 대부분) 다시 만들지 않는다
     const decorKey = decor.length
@@ -2457,7 +2462,9 @@ export class EditScene extends PhaserRuntime.Scene {
     if (!mapId || !map) return;
     const before = this.reliefTileRelief, after = map.relief;
     if (before === after) return;
-    const changed = reliefTileSlotChangedCells(before, after, map.width, map.height);
+    const changed = hasRelief(before) !== hasRelief(after)
+      ? Array.from({ length: map.width * map.height }, (_, i) => ({ x: i % map.width, y: Math.floor(i / map.width) }))
+      : reliefTileSlotChangedCells(before, after, map.width, map.height);
     this.reliefTileRelief = after;
     if (changed.length === 0) return;
     if (!this.canIncrementallyRenderCells(mapId)) {

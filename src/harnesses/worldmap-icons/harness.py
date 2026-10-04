@@ -64,6 +64,11 @@ def db():
       create table if not exists decisions(id integer primary key, item text, sha text, decision text, reasons text,
                                            note text, client text, at text);
     ''')
+    columns = {r['name'] for r in c.execute('pragma table_info(decisions)')}
+    for name, kind in [('image_sha256', 'text'), ('candidate_attempt', 'integer')]:
+        if name not in columns:
+            c.execute(f'alter table decisions add column {name} {kind}')
+    c.commit()
     return c
 
 
@@ -367,11 +372,21 @@ class H(BaseHTTPRequestHandler):
                 if d.get('decision') not in ('accept', 'clear') or not isinstance(d.get('ids'), list):
                     raise ValueError('decision/ids')
                 c = db()
-                sha = {r['id']: r['sha'] for r in c.execute('select id, sha from items')}
-                ids = [i for i in d['ids'] if i in sha]
+                items = {r['id']: r for r in c.execute('select * from items')}
+                ids = list(dict.fromkeys(d['ids']))
+                hashes = {}
+                for i in ids:
+                    if i not in items:
+                        raise ValueError('id')
+                    if d['decision'] == 'accept':
+                        file = item_dir(i) / 'icon.png'
+                        raw = file.read_bytes()
+                        if (d.get('baseShas') or {}).get(i) != items[i]['sha'] or hashlib.sha1(raw).hexdigest()[:12] != items[i]['sha']:
+                            raise ValueError('원본 그림이 바뀌었다. 화면을 새로 읽고 골라 주세요.')
+                        hashes[i] = hashlib.sha256(raw).hexdigest()
                 note = '일괄 받기' if d['decision'] == 'accept' else '일괄 받기 되돌림'
-                c.executemany('insert into decisions(item,sha,decision,reasons,note,client,at) values(?,?,?,?,?,?,?)',
-                              [(i, sha[i], d['decision'], '[]', note, 'web', now()) for i in ids])
+                c.executemany('insert into decisions(item,sha,decision,reasons,note,client,at,image_sha256) values(?,?,?,?,?,?,?,?)',
+                              [(i, items[i]['sha'], d['decision'], '[]', note, 'web', now(), hashes.get(i)) for i in ids])
                 c.commit()
                 export()
                 return self._send(200, json.dumps({'ok': True, 'n': len(ids)}))
@@ -391,9 +406,32 @@ class H(BaseHTTPRequestHandler):
             it = c.execute('select sha from items where id=?', (d.get('id'),)).fetchone()
             if not it:
                 raise ValueError('id')
-            c.execute('insert into decisions(item,sha,decision,reasons,note,client,at) values(?,?,?,?,?,?,?)',
+            image_sha256, candidate_attempt = None, None
+            if d['decision'] in ('accept', 'pick'):
+                raw = (item_dir(d['id']) / 'icon.png').read_bytes()
+                if d.get('baseSha') != it['sha'] or hashlib.sha1(raw).hexdigest()[:12] != it['sha']:
+                    raise ValueError('원본 그림이 바뀌었다. 화면을 새로 읽고 골라 주세요.')
+                image_sha256 = hashlib.sha256(raw).hexdigest()
+            if d['decision'] == 'pick':
+                import re
+                import redraw
+                match = re.fullmatch(r'r(\d+)/([A-Z])', d['cand'])
+                if not match:
+                    raise ValueError('cand')
+                candidate = c.execute('select c.*,r.item from cands c join rounds r on r.id=c.round '
+                                      'where c.round=? and c.letter=?', (int(match[1]), match[2])).fetchone()
+                if not candidate or candidate['item'] != d['id'] or candidate['status'] != 'done':
+                    raise ValueError('자기 아이콘의 완료된 후보만 고를 수 있다')
+                if candidate['verdict'] != 'PASS' and not (candidate['engine'] or '').startswith(('render:', 'hand:')):
+                    raise ValueError('검수를 통과한 후보만 고를 수 있다')
+                candidate_attempt = candidate['attempt']
+                file = redraw.attempt_dir(int(match[1]), match[2], candidate_attempt) / 'cand.png'
+                image_sha256 = hashlib.sha256(file.read_bytes()).hexdigest()
+                if d.get('imageSha256') != image_sha256 or d.get('attempt') != candidate_attempt:
+                    raise ValueError('후보 그림이 바뀌었다. 화면을 새로 읽고 골라 주세요.')
+            c.execute('insert into decisions(item,sha,decision,reasons,note,client,at,image_sha256,candidate_attempt) values(?,?,?,?,?,?,?,?,?)',
                       (d['id'], it['sha'], d['decision'], json.dumps(d.get('reasons') or [], ensure_ascii=False),
-                       str(d.get('note') or '')[:2000], 'web', now()))
+                       str(d.get('note') or '')[:2000], 'web', now(), image_sha256, candidate_attempt))
             c.commit()
             export()
             return self._send(200, '{"ok":true}')

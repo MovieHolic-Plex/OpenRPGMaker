@@ -1,6 +1,6 @@
 // 높이 지형 절벽 그림을 맵 줄마다 잘라 Phaser 텍스처 프레임으로 올린다. 런타임(playSceneMapRuntime)과 편집기(EditScene)가 같이 쓴다.
 // 줄 띠는 텍스처 몇 장(페이지)에 세로로 쌓아 프레임으로 나눈다 — 줄마다 텍스처를 만들면 100줄 맵이 텍스처 100장이 된다.
-import { effectiveHeights, renderRelief } from "@/project/relief/render";
+import { effectiveHeights, renderRelief, type ReliefGroundSurface } from "@/project/relief/render";
 import { hasRelief } from "@/project/relief/walk";
 import { cellLift, reliefLiftField, reliefRenderOptions, reliefRowStrips, type ReliefLiftField, type ReliefRowStrip, type ReliefStripPart } from "@/project/relief/screen";
 import { gridFromRelief, RELIEF_TILE, type ReliefData } from "@/project/relief/types";
@@ -84,6 +84,7 @@ function packPages(strips: readonly ReliefRowStrip[]): ReliefRowStrip[][] {
 }
 
 export interface ReliefStripBuildOptions {
+  readonly ground?: ReliefGroundSurface;
   /**
    * 직전에 만든 페이지 텍스처 키. 주면 캔버스 크기가 같은 페이지는 새로 만들지 않고 그 캔버스를 고쳐 쓴다 —
    * 높이 붓 드래그 중 텍스처를 만들고 지우기를 되풀이하면 GPU 업로드가 겹친다(편집기 EditScene).
@@ -109,7 +110,7 @@ export function buildReliefStripTextures(
   tileSize: number,
   options: ReliefStripBuildOptions = {},
 ): ReliefStripTextures {
-  const render = renderRelief(effectiveHeights(gridFromRelief(relief)), reliefRenderOptions(relief));
+  const render = renderRelief(effectiveHeights(gridFromRelief(relief)), reliefRenderOptions(relief, options.ground));
   const scale = tileSize / RELIEF_TILE;
   const reuseKeys = options.reuseKeys;
   const textureKeys: string[] = [];

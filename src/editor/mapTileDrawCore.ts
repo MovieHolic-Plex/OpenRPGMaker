@@ -54,6 +54,16 @@ export function drawMapTileLayer(
   }
 }
 
+/** One cell with the same backing, autotile, stack, overlay and shadow contract as the full layer. */
+export function drawMapTileCell(context: CanvasRenderingContext2D, image: TilesetCanvasImage, map: GameMap, tileset: TilesetDef, layer: "lower" | "upper", x: number, y: number, scale: number): void {
+  const index = y * map.width + x, tiles = layer === "lower" ? map.lowerTiles : map.upperTiles;
+  drawBaseTile(context, image, map, tileset, tiles, index, scale);
+  for (const tile of tileStackAt(map, layer, index)) drawRawTile(context, image, tileset, tile, x, y, scale);
+  const overlay = layerTileAt(map, layer === "lower" ? 2 : 4, index);
+  if (overlay >= 0) drawRawTile(context, image, tileset, overlay, x, y, scale);
+  if (layer === "lower") drawShadowQuarters(context, x, y, tileset.tileSize * scale, shadowAt(map, index));
+}
+
 /** 그림자 조각(칸의 ¼)마다 반투명 검정 사각형. bit0 왼위·bit1 오른위·bit2 왼아래·bit3 오른아래. size = 그려지는 칸 크기(px). */
 export function drawShadowQuarters(context: CanvasRenderingContext2D, x: number, y: number, size: number, bits: number): void {
   if (bits === 0) return;
@@ -90,34 +100,38 @@ function drawLayer(
   scale: number,
 ): void {
   for (let index = 0; index < tiles.length; index += 1) {
-    const tile = tiles[index] ?? -1;
-    if (tile < 0) continue;
-      const x = index % map.width;
-      const y = Math.floor(index / map.width);
-      // 투명 칩이 하위에 단독으로 앉으면 그 아래가 검게 뚫린다 — 정책이 정한 받침을
-      // 먼저 깔고 합성한다. 런타임(`playSceneMapRuntime`)·편집기 캔버스
-      // (`chipsetTileRender`)가 이미 하는 처리이고, 캔버스 계열 렌더러(맵 썸네일·
-      // 스크린샷·미니맵·구운 마을 전경)만 빠져 있어 나무 밑동 아래 검은 사각형이
-      // 남았다(실측: 마을 40×40 에서 밑동 57칸 6,641px, 원형 전경 1.51%).
-      // 받침은 **하위 레이어에만** 의미가 있다 — 상위는 아래 지면이 이미 있다.
-      if (tiles === map.lowerTiles) {
-        const backing = tileBackingTile(tileset, tile);
-        if (backing !== null) drawRawTile(context, image, tileset, backing, x, y, scale);
-      }
-      // 호수 쿼터 렌더 — 물 블록 배치가 동일한 실내 타일 그림판도 포함(supportsChipsetQuarterComposition).
-    if (tiles === map.lowerTiles && supportsChipsetQuarterComposition(tileset) && isLakeAutotileTile(tile, tileset)) {
-      drawLakeAutotile(context, image, map, tileset, x, y, scale);
-      continue;
-    }
-    if (tiles === map.lowerTiles && supportsChipsetQuarterComposition(tileset)) {
-      const composition = chipsetQuarterComposition(map, tileset, x, y);
-      if (composition) {
-        drawTerrainQuarter(context, image, tileset, x, y, composition, scale);
-        continue;
-      }
-    }
-    drawRawTile(context, image, tileset, tile, x, y, scale);
+    drawBaseTile(context, image, map, tileset, tiles, index, scale);
   }
+}
+
+function drawBaseTile(context: CanvasRenderingContext2D, image: TilesetCanvasImage, map: GameMap, tileset: TilesetDef, tiles: readonly number[], index: number, scale: number): void {
+  const tile = tiles[index] ?? -1;
+  if (tile < 0) return;
+  const x = index % map.width;
+  const y = Math.floor(index / map.width);
+  // 투명 칩이 하위에 단독으로 앉으면 그 아래가 검게 뚫린다 — 정책이 정한 받침을
+  // 먼저 깔고 합성한다. 런타임(`playSceneMapRuntime`)·편집기 캔버스
+  // (`chipsetTileRender`)가 이미 하는 처리이고, 캔버스 계열 렌더러(맵 썸네일·
+  // 스크린샷·미니맵·구운 마을 전경)만 빠져 있어 나무 밑동 아래 검은 사각형이
+  // 남았다(실측: 마을 40×40 에서 밑동 57칸 6,641px, 원형 전경 1.51%).
+  // 받침은 **하위 레이어에만** 의미가 있다 — 상위는 아래 지면이 이미 있다.
+  if (tiles === map.lowerTiles) {
+    const backing = tileBackingTile(tileset, tile);
+    if (backing !== null) drawRawTile(context, image, tileset, backing, x, y, scale);
+  }
+  // 호수 쿼터 렌더 — 물 블록 배치가 동일한 실내 타일 그림판도 포함(supportsChipsetQuarterComposition).
+  if (tiles === map.lowerTiles && supportsChipsetQuarterComposition(tileset) && isLakeAutotileTile(tile, tileset)) {
+    drawLakeAutotile(context, image, map, tileset, x, y, scale);
+    return;
+  }
+  if (tiles === map.lowerTiles && supportsChipsetQuarterComposition(tileset)) {
+    const composition = chipsetQuarterComposition(map, tileset, x, y);
+    if (composition) {
+      drawTerrainQuarter(context, image, tileset, x, y, composition, scale);
+      return;
+    }
+  }
+  drawRawTile(context, image, tileset, tile, x, y, scale);
 }
 
 function drawLakeAutotile(

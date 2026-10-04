@@ -125,15 +125,16 @@
 | 도구 | 같은 편집기 계획기 | 완료 근거 |
 |---|---|---|
 | `design_terrain` | `planTerrainFeature` / `planTerrainDesign` | 윤곽·능선·계곡·호수·혼합·군집·잠금. 높이 delta와 점을 사용하며 고지 1·2·3 프리셋 없음 |
-| `place_terrain_house` | `planQuickHouse` | 현재 타일셋의 집 부품. 벽 폭/층수/지붕 폭을 분리하고 전체 집터+문 앞의 동일 높이·빈 땅을 검사. 생성 kit도 등록하여 저장 후 부위/지붕 편집 가능 |
+| `place_terrain_house` | `planQuickHouse` | `kitId`로 현재 타일셋 원본 외관/크기 유지. `style,width,stories,roofWidth`는 크기 조절용 조립 집. 전체 집터+문 앞의 동일 높이·빈 땅 검사, 생성 kit도 등록 |
 | `lay_terrain_road` | `planTerrainFeature(..., "road")` | 절벽 접합에 매끈한 경사로 자동 생성. 쓰기 성공과 실제 도달을 구분하여 reachable/warnings 반환 |
 | `place_terrain_ramp` | `planReliefRamp` | 네 방향 자동 판정, 폭 2·4·6칸, stairs=false |
-| `inspect_terrain` | 실제 relief / 구조 배치 읽기 | 집별 전체 footprint 높이·문 앞·스타일 목록, 경사로/계단 수, 시야 규칙 |
+| `inspect_terrain` | 실제 relief / 구조 배치 읽기 | 집별 전체 footprint 높이·문 앞, 원본 `houseKits`와 조립 `houseStyles`, 경사로/계단 수, 시야 규칙 |
 | `check_terrain_access` | `inspectTerrainRoute` | 실제 canMove/canMoveFootprint로 목적지 **칸 자체** 도달. 몸 크기·이벤트·물·높이·경사 옆벽 반영 |
 
 쓰기 네 도구는 참고문서 게이트의 WRITERS와 패널 MAP_TILE_TOOLS에 등록한다. 고정 조립기가 실제 타일을 고르므로
 TILE_CHOOSERS는 아니다. `design_terrain`/도로/경사로는 맵 체크포인트, 집은 tileset.structureKits도 바꾸므로 프로젝트 체크포인트다.
 버들항 지도에 기존 `author_house`의 다른 칩셋 번호를 쓰는 경로는 거부하고 새 집 도구를 안내한다.
+`place_terrain_house` 필수 인자는 `mapId,anchor`다. 원본은 `houseKits`에서 고른 `kitId`만 지정하고 width/stories를 생략한다. 명시적 kitId가 없으면 기본 width=7/stories=1의 조립 스타일 경로이며 모르는 kit/style은 거부한다. 시스템 프롬프트는 원본 탑/박공/날개 등 형태를 섞도록 안내하고, 크기·지붕 조절 요청에만 조립 스타일을 사용한다. 버들항 원본 집 목록 128종에는 도시 구역과 세션 생성 집이 포함되지 않는다.
 `read_tileset_reference` 이미지의 offset=0은 첫 페이지로 허용한다(엄격한 공급자 스키마가 기본 숫자 0을 채우는 경우).
 0이 아닌 이미지 offset은 여전히 거부한다.
 
@@ -143,6 +144,7 @@ TILE_CHOOSERS는 아니다. `design_terrain`/도로/경사로는 맵 체크포�
 실제 모델 생성 전후·SQLite 재로드·출하 플레이어의 세 집 문 앞 실제 이동 근거는
 `verify-shots/terrain-assistant-live/SUMMARY.md`와 `scripts/qa/terrain-assistant-live.mts`를 본다.
 CLI는 UI 의도 분류 요청을 대신하지 않는다. 에디터 채팅과 출하 플레이어 확인은 별도 capture 스크립트에 있다.
+원본 집 3종의 실제 모델 배치·현재 칩셋 바닥 접합·네 방향 경사로의 키/마우스 왕복 근거는 `verify-shots/terrain-seams/SUMMARY.md`에 있다. 조수 그림도 `reliefGroundSurface`로 같은 원본 바닥 투영을 사용한다.
 
 ## 조수 쓰기 도구의 네 층 — 1~4층·그림자 (MZ식 4층, 2026-09-25)
 

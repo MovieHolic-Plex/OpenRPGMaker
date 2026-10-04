@@ -16,6 +16,8 @@ import type { GameMap, MapId } from "@/project/types";
 import { reliefCellLiftPx } from "@/player/reliefStrips";
 import { RELIEF_MAX_LEVEL } from "@/project/relief/types";
 import { reliefPaintsCell } from "@/project/relief/screen";
+import { reliefGroundAvailable, reliefTilesetImage } from "./reliefGroundSurface";
+import { tilesetTextureKey } from "./tilesetImage";
 import { cellLift, reliefLiftField } from "@/project/relief/screen";
 import { terrainReachability } from "@/project/terrainReachability";
 import { renderTerrainDesignOverlay } from "./terrainDesignOverlay";
@@ -339,8 +341,9 @@ function renderTileCellLayer(
     // event 에서도 0.62 로 내린다 — 이벤트 배지만 선명하면 배지가 어디에 떠 있는지가 즉시 읽힌다.
     const lowerAlpha = activeLayer === "upper" ? 0.58 : activeLayer === "event" ? 0.62 : 1;
     const lower = map.lowerTiles[i];
+    const ownsGround = reliefGroundAvailable(map, reliefTilesetImage(context.scene.textures, tilesetTextureKey(tileset)));
     // 경사로 도트가 있는 바이옴의 경사로 칸은 relief 경사로 도트가 바닥을 칠한다(게임과 같게) — 타일은 그리지 않는다
-    if (lower >= 0 && !reliefPaintsCell(map.relief, x, y)) {
+    if (lower >= 0 && !ownsGround && !reliefPaintsCell(map.relief, x, y)) {
       const lowerTile = createChipsetTileObject(context.scene, map, tileset, x, y, lower);
       lowerTile.setAlpha(lowerAlpha);
       if (activeLayer === "upper") tintIfPossible(lowerTile, 0xc8d9bf);
@@ -348,25 +351,27 @@ function renderTileCellLayer(
     } else if (lower < 0) {
       addTileObject(context, objects, createEmptyTile(context.scene, x, y, tileSize, context.backgroundPreview === true), 0, "lower", x, y);
     }
-    for (const stackedLower of tileStackAt(map, "lower", i)) {
-      const lowerTile = createChipsetTileObject(context.scene, map, tileset, x, y, stackedLower);
-      lowerTile.setAlpha(lowerAlpha);
-      if (activeLayer === "upper") tintIfPossible(lowerTile, 0xc8d9bf);
-      addTileObject(context, objects, lowerTile, 1, "lower", x, y);
-    }
-    // 2층·그림자 — 게임과 같은 순서(1층 → 1층 스택 → 2층 → 그림자). 2층은 합성 없이 칩 그대로.
-    const overlay = layerTileAt(map, 2, i);
-    if (overlay >= 0) {
-      const overlayTile = createRawChipsetTileObject(context.scene, map, tileset, x, y, overlay);
-      overlayTile.setAlpha(lowerAlpha);
-      if (activeLayer === "upper") tintIfPossible(overlayTile, 0xc8d9bf);
-      addTileObject(context, objects, overlayTile, 1, "lower", x, y);
-    }
-    const bits = shadowAt(map, i);
-    if (bits !== 0) {
-      for (const shade of createShadowQuarters(context.scene, x, y, tileSize, bits)) {
-        shade.setAlpha(0.5 * lowerAlpha);
-        addTileObject(context, objects, shade, 2, "lower", x, y);
+    if (!ownsGround) {
+      for (const stackedLower of tileStackAt(map, "lower", i)) {
+        const lowerTile = createChipsetTileObject(context.scene, map, tileset, x, y, stackedLower);
+        lowerTile.setAlpha(lowerAlpha);
+        if (activeLayer === "upper") tintIfPossible(lowerTile, 0xc8d9bf);
+        addTileObject(context, objects, lowerTile, 1, "lower", x, y);
+      }
+      // 2층·그림자 — 게임과 같은 순서(1층 → 1층 스택 → 2층 → 그림자). 2층은 합성 없이 칩 그대로.
+      const overlay = layerTileAt(map, 2, i);
+      if (overlay >= 0) {
+        const overlayTile = createRawChipsetTileObject(context.scene, map, tileset, x, y, overlay);
+        overlayTile.setAlpha(lowerAlpha);
+        if (activeLayer === "upper") tintIfPossible(overlayTile, 0xc8d9bf);
+        addTileObject(context, objects, overlayTile, 1, "lower", x, y);
+      }
+      const bits = shadowAt(map, i);
+      if (bits !== 0) {
+        for (const shade of createShadowQuarters(context.scene, x, y, tileSize, bits)) {
+          shade.setAlpha(0.5 * lowerAlpha);
+          addTileObject(context, objects, shade, 2, "lower", x, y);
+        }
       }
     }
   } else {

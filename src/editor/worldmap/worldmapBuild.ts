@@ -5,8 +5,6 @@
  * - 브라우저: 동반 서비스 `POST /v1/worldmap/build`(scripts/lib/ohMyPiHttp.mjs → scripts/lib/worldmapBuild.mjs)
  * - Pi 워커·헤드리스: 시작할 때 `setWorldmapBuilder(buildWorldmap)` 로 노드 구현을 직접 꽂는다.
  */
-import { companionTokenHeaders } from "@/ai/companionToken";
-import { companionRequestBaseUrl } from "@/ai/llmClient";
 
 export const WORLDMAP_GROUNDS = [
   "grass", "farm", "crop", "savanna", "sand", "dune", "dirt", "badlands", "ash", "basalt", "swamp", "marsh", "tundra", "snow", "glacier", "jungle",
@@ -111,6 +109,10 @@ const REQUEST_TIMEOUT_MS = 7 * 60 * 1000;
 
 export async function buildWorldmap(request: WorldmapBuildRequest): Promise<WorldmapBuildResult> {
   if (builderOverride) return builderOverride(request);
+  // LLM 클라이언트는 도구 레지스트리를 다시 읽는다. 빌드 도구 초기화와 순환하지 않게 HTTP 경로에서만 불러온다.
+  const [{ companionTokenHeaders }, { companionRequestBaseUrl }] = await Promise.all([
+    import("@/ai/companionToken"), import("@/ai/llmClient"),
+  ]);
   let response: Response;
   try {
     response = await fetch(`${companionRequestBaseUrl().replace(/\/$/, "")}/worldmap/build`, {

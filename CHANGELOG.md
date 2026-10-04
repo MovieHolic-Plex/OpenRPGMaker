@@ -5,6 +5,24 @@
 
 <!-- releases -->
 
+## 0.116.0 — 2026-10-04
+
+### 기능
+
+- review one character at a time with instant advance and visible walking previews (`ec98035`)
+- **worldmap** — ship human-selected icons and verify saved map journeys (`3e1fc51`)
+
+### 수정
+
+- **worldmap** — 선택 아이콘 키트에 배치 문장을 넣는다 (`0553f7f`)
+- **worldmap** — detect covered icon cells and record completed candidate review (`13614fd`)
+- **worldmap** — pass correction notes to candidate reviewers (`01e1db2`)
+- allow click-only launcher entry and record native flow failure (`eca3bbc`)
+
+### 문서
+
+- **worldmap** — record follow-up gallery verification (`8e7ecc7`)
+
 ## 0.115.0 — 2026-10-04
 
 ### 기능

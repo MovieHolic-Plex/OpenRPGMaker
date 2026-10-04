@@ -110,6 +110,10 @@ export function collectWebExportAssets(project: Project): readonly WebExportAsse
     const path = 'assets/harbor-kit/CREDITS.txt';
     assets.set(path, { kind: 'public', sourcePath: path, zipPath: path });
   }
+  if (ids.has('tex_worldmap_selected')) {
+    const path = 'assets/worldmap-icons/ATTRIBUTION.md';
+    assets.set(path, { kind: 'public', sourcePath: path, zipPath: path });
+  }
   if (ids.has('castle_courtyard_harbor_atlas')) {
     const path = 'assets/castle-surroundings/CREDITS.txt';
     assets.set(path, { kind: 'public', sourcePath: path, zipPath: path });

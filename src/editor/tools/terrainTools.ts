@@ -2,7 +2,7 @@
 import { planTerrainDesign, type TerrainDesignOptions } from "@/editor/terrainDesignPlans";
 import { planTerrainFeature } from "@/editor/terrainFeatures";
 import { planReliefRamp } from "@/editor/reliefRampPlan";
-import { planQuickHouse, quickHouseStyles, quickHouseStyleName, quickHouseKit, type QuickHouseOptions } from "@/editor/quickHouse";
+import { planQuickHouse, quickHouseCatalog, quickHouseStyles, quickHouseStyleName, quickHouseKit, type QuickHouseOptions } from "@/editor/quickHouse";
 import { inspectTerrainRoute, type TerrainRoutePoint } from "@/project/terrainRoute";
 import { terrainHeight } from "@/project/terrainGameplay";
 import { DEFAULT_TERRAIN_GAMEPLAY } from "@/project/terrainDesign";
@@ -55,16 +55,19 @@ const designTool: ToolDefinition = {
 
 const houseTool: ToolDefinition = {
   name: "place_terrain_house", mode: "write", domains: ["map", "tile"],
-  description: "에디터의 집 도구로 버들항 집 외관 한 채를 조립한다. 벽 폭·층수와 지붕 폭을 별도로 정하며, 지붕만 넓힐 수 있다. anchor는 문 맨 아랫칸, 실제 문 앞은 (anchor.x,anchor.y+1). 집 전체+문 앞은 같은 높이의 평평한 빈 땅이어야 한다. 물·잠금·다른 집 위는 거부한다. 고지에는 먼저 sculpt_relief rect로 집터를 만들고 놓은 뒤 lay_terrain_road로 문 앞까지 연결하고 check_terrain_access로 검사한다. 스타일 목록은 inspect_terrain으로 조회. 이것은 외관 도구이며 실내와 문 이벤트는 생성하지 않는다.",
+  description: "에디터 집 도구. 다양한 원본 외관은 inspect_terrain.houseKits에서 kitId를 골라 원본 크기·형태 그대로 놓는다(너비·층수 불필요). 크기나 지붕 폭 조절이 필요한 경우에만 houseStyles의 style과 width/stories/roofWidth로 조립한다. anchor는 문 맨 아랫칸, 문 앞은 (anchor.x,anchor.y+1). 집 전체+문 앞은 같은 높이의 평평한 빈 땅이어야 한다. 고지에는 sculpt_relief rect로 집터를 만들고 lay_terrain_road로 문 앞까지 연결한 뒤 check_terrain_access로 검사한다. 물·잠금·다른 집 위는 거부한다. 외관만 만들며 실내와 문 이벤트는 별도로 저작한다.",
   parameters: { type: "object", properties: { mapId, anchor: point,
     style: { type: "string", description: "inspect_terrain의 houseStyles에서 고른 ID" }, width: { type: "integer", minimum: 5, maximum: 24 },
     stories: { type: "integer", enum: [1, 2] }, roofWidth: { type: "integer", minimum: 5, maximum: 24 }, kitId: { type: "string" },
-  }, required: ["mapId", "anchor", "style", "width", "stories"], additionalProperties: false },
+  }, required: ["mapId", "anchor"], additionalProperties: false },
   run(project, args) {
     const map = requireMap(project, args.mapId as string), ts = tilesetFor(project, map), anchor = checkedPoint(map, args.anchor);
-    if (!quickHouseStyles(ts).includes(args.style as QuickHouseOptions["style"])) throw new ToolError(`지원하는 집 스타일: ${quickHouseStyles(ts).join(", ")}`);
-    const options: QuickHouseOptions = { style: args.style as QuickHouseOptions["style"], width: args.width as number,
-      stories: args.stories as 1 | 2, ...(typeof args.roofWidth === "number" ? { roofWidth: args.roofWidth } : {}),
+    const kitId = typeof args.kitId === "string" && args.kitId ? args.kitId : undefined;
+    const styles = quickHouseStyles(ts);
+    if (kitId ? !quickHouseCatalog(ts).some(k => k.id === kitId) : !styles.includes(args.style as QuickHouseOptions["style"]))
+      throw new ToolError("inspect_terrain의 houseKits에서 kitId 또는 houseStyles에서 style을 고르세요");
+    const options: QuickHouseOptions = { style: (args.style ?? styles[0]) as QuickHouseOptions["style"], width: typeof args.width === "number" ? args.width : 7,
+      stories: args.stories === 2 ? 2 : 1, ...(typeof args.roofWidth === "number" ? { roofWidth: args.roofWidth } : {}),
       ...(typeof args.kitId === "string" && args.kitId ? { kitId: args.kitId } : {}) };
     if (options.kitId && !ts.structureKits?.some(k => k.id === options.kitId)) throw new ToolError("kitId를 찾을 수 없습니다");
     const plan = planQuickHouse(map, ts, anchor, options);
@@ -128,6 +131,10 @@ const inspectTool: ToolDefinition = {
     const data = { mapId: map.id, tilesetId: map.tilesetId, maxHeight: Math.max(0, ...(map.relief?.levels ?? [])),
       rampCells: map.relief?.ramps?.filter(v => v >= 1 && v <= 4).length ?? 0, stairCells: map.relief?.ramps?.filter(v => v >= 5 && v <= 8).length ?? 0,
       gameplay: { ...DEFAULT_TERRAIN_GAMEPLAY, ...map.terrainDesign?.gameplay }, houses,
+      houseKits: quickHouseCatalog(ts).map(k => { const door = k.parts!.find(p => p.kind === "entrance")!; return {
+        id: k.id, name: k.name, width: k.width, height: k.height, tags: k.ai?.tags,
+        doorOffset: { x: door.dx, y: door.dy + door.h - 1 }, doorFrontOffset: { x: door.dx, y: door.dy + door.h }, resize: "original",
+      }; }),
       houseStyles: quickHouseStyles(ts).map(id => ({ id, name: quickHouseStyleName(id), exampleSize: (() => { const kit = quickHouseKit(ts, { style: id, width: 9, stories: 1 }); return kit ? { width: kit.width, height: kit.height } : undefined; })() })),
       features: map.terrainDesign?.features?.map(f => ({ id: f.id, tool: f.tool, points: f.points })) ?? [] };
     return { summary: `고지 ${data.maxHeight}단 · 경사로 ${data.rampCells}칸 · 집 ${houses.length}채(평탄 ${houses.filter(h => h.flat).length}) · 시야 차단 ${data.gameplay.visionBlocking ? "켬" : "끔"}`, data };

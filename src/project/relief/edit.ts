@@ -15,6 +15,9 @@ export const emptyRelief = (width: number, height: number): ReliefData => ({
   levels: new Array(Math.max(0, width * height)).fill(0),
 });
 
+/** Planners must not change the source map while computing a preview. */
+export const copyRelief = (r: ReliefData): ReliefData => ({ ...r, levels: r.levels.slice(), ramps: r.ramps?.slice(), wallDecor: r.wallDecor?.map(d => ({ ...d })) });
+
 /** 불러온 값 → 맵 크기에 맞춘 ReliefData. 모양이 틀리거나 전부 0 이면 undefined(필드 없음). */
 export function normalizeRelief(raw: unknown, mapWidth: number, mapHeight: number): ReliefData | undefined {
   if (!raw || typeof raw !== "object") return undefined;

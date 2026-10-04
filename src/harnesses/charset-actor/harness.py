@@ -276,6 +276,7 @@ def make_views(file, out, base_n=None, strength='normal'):
     C.gif_walk(pal, frames, out / 'walk.gif', 4, LAWN)
     C.gif_turn(pal, frames, out / 'turn.gif', 4, LAWN)
     C.gif_stroll(pal, frames, out / 'stroll.gif', 3, LAWN)
+    C.alpha_views(pal, frames, out)
     png = base_sheet(base_n)[0] if base_n is not None else ACTOR1
     others = (0, 1, 3, 6)
     if base_n is not None and norm_base(base_n).startswith('input:'):
@@ -290,6 +291,7 @@ def make_views(file, out, base_n=None, strength='normal'):
     r['baseSha256'] = hashlib.sha256(C.dump(base[0], {}, base[1]).encode()).hexdigest() if base else None
     write_json_atomic(out / 'gate.json', r)
     write_json_atomic(out / 'render.json', binding(r))
+    write_json_atomic(out / 'alpha-render.json', dict(binding(r), previewVersion=C.ALPHA_PREVIEW_VERSION))
     return r
 
 
@@ -401,13 +403,13 @@ def current_gate(w):
         result = json.loads(file.read_text())
     except (OSError, ValueError):
         result = {}
-    if (result.get('version'), result.get('sourceSha256'), result.get('baseSha256'), result.get('strength')) == (C.GATE_VERSION, source_hash, base_hash, strength):
+    if (result.get('version'), result.get('alphaPolicy'), result.get('sourceSha256'), result.get('baseSha256'), result.get('strength')) == (C.GATE_VERSION, C.ALPHA_POLICY_VERSION, source_hash, base_hash, strength):
         return result
     try:
         pal, _, frames = C.parse(raw.decode('utf-8'))
         result = C.gate(pal, frames, base, strength=strength)
     except (C.GridError, UnicodeError) as error:
-        result = dict(version=C.GATE_VERSION, ok=False, discard=True, fatal=[dict(code='structure', what=str(error))],
+        result = dict(version=C.GATE_VERSION, alphaPolicy=C.ALPHA_POLICY_VERSION, ok=False, discard=True, fatal=[dict(code='structure', what=str(error))],
                       fails=[str(error)], warns=[], metrics={})
     result.update(strength=strength, sourceSha256=source_hash, baseSha256=base_hash)
     file.parent.mkdir(exist_ok=True)
@@ -422,6 +424,16 @@ def binding(gate):
 def views_fresh(w, gate):
     try:
         return json.loads((w / 'views' / 'render.json').read_text()) == binding(gate)
+    except (OSError, ValueError):
+        return False
+
+
+def alpha_views_fresh(w, gate):
+    try:
+        return (json.loads((w / 'views' / 'alpha-render.json').read_text())
+                == dict(binding(gate), previewVersion=C.ALPHA_PREVIEW_VERSION)
+                and all((w / 'views' / name).is_file() for name in
+                        ('sheet_rgba.png', 'alpha_sheet.png', 'alpha.png', 'walk_checker.gif', 'walk_white.gif', 'walk_black.gif')))
     except (OSError, ValueError):
         return False
 
@@ -1090,6 +1102,7 @@ def _items():
                             status='running' if _alive(m['pid']) else ('done' if has and (human_ready(w, gate) if human_review(w) else views_fresh(w, gate)) else 'failed'),
                             gate=gate, review=review, quality=q, review_mode='human' if human_review(w) else 'legacy',
                             render_fresh=views_fresh(w, gate) if has else False,
+                            alpha_previews_fresh=alpha_views_fresh(w, gate) if has else False,
                             face=_face_state(w), face_gen=_gen_meta(w)))
     return out
 
@@ -1191,7 +1204,8 @@ def sync_human_decision(w, rec):
     run, candidate = rec['id'].split('/', 1)
     stem = f'{candidate}__{run}'
     dest = ACCEPTED_LOCAL
-    if effective_decision(w, rec) != 'accept':
+    gate = current_gate(w) if (w / 'out.chr.txt').exists() else None
+    if effective_decision(w, rec, gate) != 'accept' or not gate or not quality(w, 'accept', gate)['eligible']:
         for suffix in ('.chr.txt', '.png', '.json'):
             (dest / f'{stem}{suffix}').unlink(missing_ok=True)
         return
