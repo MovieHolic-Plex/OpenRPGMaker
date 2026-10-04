@@ -5,6 +5,15 @@
 
 <!-- releases -->
 
+## 0.126.1 — 2026-10-05
+
+### 수정
+
+- **editor** — 이벤트 그림 미리보기가 없는 스프라이트를 아이콘으로 보게 한다 (`8e05acb`)
+- **player** — preserve title on navigation and close credits by keyboard (`5365ca7`)
+- 그림 작업자에게 현재 도면 승인 전달 (#2112) (`7a016f8`)
+- show diary and item graphics in event editor (`a48b60a`)
+
 ## 0.126.0 — 2026-10-04
 
 ### 기능
