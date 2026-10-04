@@ -281,7 +281,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     });
   // Keep an inexpensive mount until Story is requested. The AI dock also calls
   // applyViewMode during setup, so repeated calls must not rebuild the same tree.
-  let storyboardEl = el("div");
+  let storyboardEl: HTMLElement = el("div");
   let storyboardRendered = false;
   const changeMode = (next: StoryboardMode): void => {
     currentMode = next;
