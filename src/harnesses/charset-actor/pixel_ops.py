@@ -43,8 +43,9 @@ def render_patch(raw, patch):
     if not isinstance(colors, dict):
         raise ValueError('palette는 {글자: "#rrggbb"} 객체입니다')
     for ch, color in colors.items():
-        if not isinstance(ch, str) or len(ch) != 1 or not ch.isascii() or ch.isspace() or ch == '.':
-            raise ValueError('새 팔레트 글자는 점을 제외한 ASCII 한 글자입니다')
+        if (not isinstance(ch, str) or len(ch) != 1 or not ch.isascii()
+                or not ch.isprintable() or ch.isspace() or ch in ('.', '#')):
+            raise ValueError('새 팔레트 글자는 .과 #을 제외한 출력 가능한 ASCII 한 글자입니다')
         if not isinstance(color, str) or not re.fullmatch(r'#[0-9a-fA-F]{6}', color):
             raise ValueError('팔레트 색은 #rrggbb입니다')
         rgb = tuple(int(color[i:i + 2], 16) for i in (1, 3, 5))
