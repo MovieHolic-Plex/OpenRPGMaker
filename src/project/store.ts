@@ -52,8 +52,6 @@ import { repairMapTreeOrphans } from "@/project/mapTree";
 import { cloneExtraLayers } from "@/project/mapLayers";
 import type { ReliefCellChange } from "./relief/changes";
 import { restoreLockedTerrainCells } from "./terrainLocks";
-
-import { jsonEqual } from "@/util/structuralJson";
 import { isMediaSeparationOnly } from "@/project/mediaSeparationEquality";
 import { randomUuid } from "@/util/id";
 import { createLogger } from "@/util/logger";

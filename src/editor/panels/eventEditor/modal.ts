@@ -20,7 +20,7 @@ import { eventDraftDiffById, eventDraftHasUserChanges } from "@/project/eventDra
 import { showConfirm, type ConfirmOptions } from "@/editor/ui/modal";
 import { validateEventDraft, type EventDraftValidation } from "@/editor/eventDraftValidator";
 import { openSelectedEventTestModal } from "@/editor/panels/testPlayModal";
-import { isTileCellChange, store, type AutoSaveState } from "@/project/store";
+import { store, type AutoSaveState } from "@/project/store";
 import type { MapId } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
 import { renderEditorIcon } from "./editorIcons";
@@ -398,7 +398,7 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
       closeHandler(true);
       return;
     }
-    if (isTileCellChange(change)) {
+    if (change.scope === "map" && (!!change.cells?.length || change.relief === true)) {
       // Painting emits per pointer sample and never touches events. Other maps cannot
       // affect this body; on this map only the validation bell can, so settle first.
       if (change.mapId !== request.mapId) return;

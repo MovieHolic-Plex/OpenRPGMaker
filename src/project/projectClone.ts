@@ -470,7 +470,10 @@ export function cloneCommandContainersForMove(commands: Command[], paths: readon
         for (const key of Object.keys(record)) {
           if (record[key] === originalBranch) { record[key] = copy; replaced = true; }
         }
-        if (!replaced && (draft.kind === "choices" || draft.kind === "presentItem") && branch >= 0) {
+        if (!replaced && draft.kind === "choices" && branch >= 0) {
+          draft.options = draft.options.map((option, optionIndex) => optionIndex === branch ? { ...option, branch: copy } : option);
+          replaced = true;
+        } else if (!replaced && draft.kind === "presentItem" && branch >= 0) {
           draft.options = draft.options.map((option, optionIndex) => optionIndex === branch ? { ...option, branch: copy } : option);
           replaced = true;
         }
