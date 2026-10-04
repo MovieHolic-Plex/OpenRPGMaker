@@ -47,6 +47,53 @@ npm run harness -- pokemon-character-motion build --candidate /path/candidates/h
 
 build 결과 **charset.png=48×128 native**, **editor-charset.png=72×128 x4padding**이다. motion.json에 native dimensions와 editorAdapter.resize=false/해시를 따로 기록한다. 루트의288×256공용 캐스트 팩은 editor-charset.png로 조립한다.
 
+## 트레이너 정적 그림64×64
+
+```bash
+npm run harness -- pokemon-character-motion portrait-import --sandbox /path/review \
+  --role hero_back --source /path/existing-generated64x96.png \
+  --prompt-file /path/original-generation-prompt.txt
+# 반환후보로 check → preview → review → gate → build를 수행한다.
+npm run harness -- pokemon-character-motion check --candidate /path/candidates/portrait-hero_back-...
+npm run harness -- pokemon-character-motion preview --candidate /path/candidates/portrait-hero_back-...
+npm run harness -- pokemon-character-motion review --candidate /path/candidates/portrait-hero_back-... \
+  --who supervisor --why '원본1·2·3배 얼굴·옷·앞뒤·실루엣 검토' \
+  --verdict pass --evidence /path/native-review.png
+npm run harness -- pokemon-character-motion gate --candidate /path/candidates/portrait-hero_back-...
+npm run harness -- pokemon-character-motion build --candidate /path/candidates/portrait-hero_back-... \
+  --out /path/output/portraits/hero_back
+```
+
+역할은16개 cast 역할 또는 `hero_back`이다. 기존 실제 생성 원본을 잉크 영역으로
+크롭하고 **하나의 균일 배율**로 최대62×62 안에 nearest sampling한다. x중앙·잉크
+bottom exclusive63, alpha>=128만255로 보존, 불투명15색으로 양자화한다. 기존 픽셀만
+샘플하며 새 윤곽·눈·입·포즈를 그리지 않는다. source/prompt 원문 파일과 각각 SHA,
+후보 PNG SHA, 원본 크기·잉크 크기·공통 배율·팔레트·샘플 방식이 provenance에 남는다.
+이 과정은64×96 그림을 높이만64로 찌그러뜨리는 resize가 아니다.
+
+후보의 `kind:portrait`는 field16×32 계약을 사용하지 않고 전용
+`{width:64,height:64,maxOpaqueColors:15,alphaThreshold:128,fitInkMax:62,bottomExclusive:63,margin:1}`
+계약을 정확히 요구한다. 구조 검사는64×64·최대15불투명색·이진alpha·빈 그림·투명
+1px 여백을 확인한다. 직접 완성 PNG만 검사하려면 `check --kind portrait --source PNG`를
+쓸 수 있다. source64×96은 import 원본으로 허용하지만 완성 native 그림으로는 거부한다.
+
+미리보기는 정적 원본1배·2배·3배다. 얼굴·옷·도트 가독성·앞뒤 방향·원본 정체성·비율을
+사람이 확인하고 증거를 남긴다. 구조 pass/structural-only 또는 review 단독으로 build할 수
+없다. source/prompt/final/provenance/구현(`portrait.ts` 포함)/preview/review/evidence가
+현재 해시와 같은 gate만 build한다. field 임계와 portrait 임계를 섞지 않는다.
+
+출력은 `portrait.png`, `provenance.json`, `review.json`, `gate.json`, `motion.json`이다.
+motion.json은 `kind:portrait/profile:emerald-trainer-native/frameCount:1/width:64/height:64`와
+source/prompt/portrait/gate SHA를 담는다. 필드 charset 어댑터를 만들거나 런타임·공용·정본에
+자동 등록하지 않는다. 감독자가 최종17개 그림의 실제 native 검토와 등록·저장·재로드를 수행한다.
+
+집중 negative/browser 제어:
+`node src/harnesses/pokemon-character-motion/node/verify-portrait.mjs`.
+64×96/16색/empty/partial-alpha/margin 위반, alpha127/128, 역할·원본·프롬프트·후보
+해시, 미검수/structural-only/stale-review/stale-preview/evidence 변조, 전용 전체 CLI
+생활주기와 실제 브라우저1·2·3배 표시를 검사한다. `SUMMARY.md`를 먼저 읽는다.
+합성 도형과 fixture 증거는 ledger/가공 검증용이며 실제 생성 그림 승인 근거가 아니다.
+
 ## 생성 원본 가져오기
 
 실제 alpha와 기존 backgroundMask로 투명/단색 마젠타 배경을 구분하고3×4포즈의 여백을 읽는다. RGBhidden을 투명색으로 오해하지 않는다. 각 방향의 세 포즈가 공유하는 source-row 좌표를 보존한다.
