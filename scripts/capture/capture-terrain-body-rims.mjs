@@ -34,7 +34,11 @@ async function probeMove(from,to,name){
    ctx.drawImage(f.texture.getSourceImage(),f.cutX,f.cutY,f.cutWidth,f.cutHeight,0,0,f.cutWidth,f.cutHeight);
    const source=ctx.getImageData(0,0,f.cutWidth,f.cutHeight).data;
    const body={x:p.x,y:p.y,depth:p.depth,scaleX:p.scaleX,scaleY:p.scaleY,originX:p.originX,originY:p.originY,progress:s.moveProgress,through:s.playerRoute?.through===true};
+   // Snapshot's Image.onload can run after another game frame. Freeze the camera
+   // from the frame being read back, rather than comparing to its later scroll.
+   let camera;s.cameras.main.once('postrender',()=>{camera={x:c.x,y:c.y,viewX:c.worldView.x,viewY:c.worldView.y,zoom:c.zoom};});
    s.game.renderer.snapshot(image=>{
+    if(!camera)throw Error('Snapshot camera frame missing');
     const actual=document.createElement('canvas');actual.width=image.width;actual.height=image.height;
     const a=actual.getContext('2d',{willReadFrequently:true});a.drawImage(image,0,0);
     const pixels=a.getImageData(0,0,actual.width,actual.height).data;
@@ -42,7 +46,7 @@ async function probeMove(from,to,name){
     let opaque=0,visible=0;
     for(let y=Math.floor(f.cutHeight/2);y<f.cutHeight;y++)for(let x=0;x<f.cutWidth;x++){
      const o=(y*f.cutWidth+x)*4;if(source[o+3]!==255)continue;opaque++;
-     const sx=Math.floor((left+(x+.5)*body.scaleX-c.worldView.x)*c.zoom+c.x),sy=Math.floor((top+(y+.5)*body.scaleY-c.worldView.y)*c.zoom+c.y);
+     const sx=Math.floor((left+(x+.5)*body.scaleX-camera.viewX)*camera.zoom+camera.x),sy=Math.floor((top+(y+.5)*body.scaleY-camera.viewY)*camera.zoom+camera.y);
      let match=false;
      for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){
       const X=sx+dx,Y=sy+dy;if(X<0||Y<0||X>=actual.width||Y>=actual.height)continue;
@@ -51,7 +55,7 @@ async function probeMove(from,to,name){
      }
      if(match)visible++;
     }
-    const bounds={x:Math.max(0,Math.floor((left-c.worldView.x)*c.zoom+c.x)-24),y:Math.max(0,Math.floor((top-c.worldView.y)*c.zoom+c.y)-24),w:Math.ceil(f.cutWidth*body.scaleX*c.zoom)+48,h:Math.ceil(f.cutHeight*body.scaleY*c.zoom)+48};
+    const bounds={x:Math.max(0,Math.floor((left-camera.viewX)*camera.zoom+camera.x)-24),y:Math.max(0,Math.floor((top-camera.viewY)*camera.zoom+camera.y)-24),w:Math.ceil(f.cutWidth*body.scaleX*camera.zoom)+48,h:Math.ceil(f.cutHeight*body.scaleY*camera.zoom)+48};
     const crop=document.createElement('canvas');crop.width=bounds.w;crop.height=bounds.h;
     crop.getContext('2d').drawImage(actual,bounds.x,bounds.y,bounds.w,bounds.h,0,0,bounds.w,bounds.h);
     window.__bodyProbe={...body,opaque,visible,visibleFraction:visible/opaque,frame:f.name,image:crop.toDataURL('image/png')};
