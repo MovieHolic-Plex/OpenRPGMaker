@@ -74,6 +74,7 @@ import {
   listTitleMenuOptions,
   playTitleTransition,
   renderTitleScreen,
+  updateTitleSelection,
   type TitleMenuOptionId,
 } from "@/player/titleScreen";
 import { openLicenseDialog } from "@/player/titleLicenseNotice";
@@ -715,7 +716,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   const handleTitleKey = (key: RuntimeMenuKey): boolean => {
     // 불러오기 패널도 testid=title-screen 이지만 data-screen 을 달고 있다(자체 커서 메뉴가
     // 키를 처리). 이걸 진짜 타이틀로 오인하면 방향키가 renderTitle 로 패널을 덮어쓴다(B1).
-    const titleEl = layout.querySelector("[data-testid='title-screen']");
+    const titleEl = layout.querySelector<HTMLElement>("[data-testid='title-screen']");
     if (game || !titleEl || titleEl.hasAttribute("data-screen")) return false;
     if (titleConfirming) return true;
     const project = store.getCurrent();
@@ -726,10 +727,12 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     const titleDir = directionForKey(key);
     if (titleDir === "down" || titleDir === "up") {
       titleMenuIndex = moveTitleSelection(titleMenuIndex, titleDir === "down" ? "ArrowDown" : "ArrowUp", visibleCount);
-      renderTitle({ emitEnterJuice: false });
+      updateTitleSelection(titleEl, titleMenuIndex);
       emitTitleJuice("title-select");
       return true;
     }
+    // Horizontal arrows are also title input, never browser scrolling.
+    if (titleDir) return true;
     if (!isConfirmKey(key)) return false;
     const selected = options[titleMenuIndex];
     // 크레딧은 타이틀을 떠나지 않는다 — 확정 연출·BGM 정지 없이 창만 띄운다.

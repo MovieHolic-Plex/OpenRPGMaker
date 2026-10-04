@@ -135,6 +135,24 @@ export function focusSelectedTitleOption(title: HTMLElement): void {
   option?.focus({ preventScroll: true });
 }
 
+/** Move only the cursor; rebuilding the stage resets background/intro animations and audio. */
+export function updateTitleSelection(title: HTMLElement, selectedIndex: number): void {
+  const options = Array.from(title.querySelectorAll<HTMLElement>(".rm-title-menu-button"));
+  const index = clampTitleMenuIndex(selectedIndex, options.length);
+  options.forEach((option, i) => {
+    const selected = i === index;
+    option.classList.toggle("primary", selected);
+    option.classList.toggle("selected", selected);
+    option.setAttribute("aria-selected", String(selected));
+    option.setAttribute("tabindex", selected ? "0" : "-1");
+    if (selected) option.setAttribute("aria-current", "true");
+    else option.removeAttribute("aria-current");
+  });
+  const debug = title.querySelector("[data-testid='title-selection-json']");
+  if (debug) debug.textContent = JSON.stringify({ selectedIndex: index });
+  focusSelectedTitleOption(title);
+}
+
 export function renderTitleScreen(
   project: Project,
   actions: TitleScreenActions,
