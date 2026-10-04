@@ -1,0 +1,130 @@
+[
+  {
+    "name": "get_project_summary",
+    "args": {},
+    "ok": true,
+    "summary": "프로젝트 '지형 조수 재편집 QA' — 맵 3개, 아이템 1000, 트룹 7"
+  },
+  {
+    "name": "get_map_region",
+    "args": {
+      "x": 0,
+      "w": 24,
+      "mapId": "houses_native",
+      "h": 24,
+      "y": 36
+    },
+    "ok": true,
+    "summary": "houses_native(houses_native) 영역 (0,36)~(24,60) — 이벤트 0개, 물 0칸"
+  },
+  {
+    "name": "find_events",
+    "args": {
+      "mapId": "houses_native"
+    },
+    "ok": true,
+    "summary": "이벤트 0개 검색됨"
+  },
+  {
+    "name": "inspect_terrain",
+    "args": {
+      "mapId": "houses_native",
+      "includeCatalog": false
+    },
+    "ok": true,
+    "summary": "고지 9단 · 경사로 22칸 · 집 4채(평탄 4) · 시야 차단 끔"
+  },
+  {
+    "name": "design_terrain",
+    "args": {
+      "editId": "terrain_3ad618d4-3240-4d17-a9ea-0513821dfe88",
+      "mapId": "houses_native",
+      "width": 7
+    },
+    "ok": true,
+    "summary": "능선 76칸"
+  },
+  {
+    "name": "resize_terrain_house_roof",
+    "args": {
+      "roofWidth": 15,
+      "mapId": "houses_native",
+      "placementId": "sp_4e36815d-5fed-4f58-acc9-253a9b2b5201"
+    },
+    "ok": true,
+    "summary": "지붕 크기 변경 · 벽·창·문 위치 유지"
+  },
+  {
+    "name": "lay_terrain_road",
+    "args": {
+      "editId": "terrain_f835c29b-8b85-4eb5-a11e-bf56841968e1",
+      "mapId": "houses_native",
+      "width": 3
+    },
+    "ok": true,
+    "summary": "길 21칸 · 경사 접합 0곳 · 7칸 경로 · 폭 3칸 미만 병목 0칸"
+  },
+  {
+    "name": "check_terrain_access",
+    "args": {
+      "from": {
+        "x": 4,
+        "y": 58
+      },
+      "mapId": "houses_native",
+      "targets": [
+        {
+          "x": 15,
+          "y": 22
+        },
+        {
+          "x": 36,
+          "y": 22
+        },
+        {
+          "x": 60,
+          "y": 19
+        },
+        {
+          "x": 24,
+          "y": 47
+        }
+      ]
+    },
+    "ok": true,
+    "summary": "실제 지형 통행: 4/4곳 도달"
+  },
+  {
+    "name": "inspect_terrain",
+    "args": {
+      "mapId": "houses_native",
+      "includeCatalog": false
+    },
+    "ok": true,
+    "summary": "고지 9단 · 경사로 22칸 · 집 4채(평탄 4) · 시야 차단 끔"
+  },
+  {
+    "name": "show_map_region",
+    "args": {
+      "h": 24,
+      "mapId": "houses_native",
+      "y": 36,
+      "w": 24,
+      "x": 0
+    },
+    "ok": true,
+    "summary": "맵 미리보기: (0,36) 24×24 (houses_native)"
+  },
+  {
+    "name": "show_map_region",
+    "args": {
+      "mapId": "houses_native",
+      "h": 24,
+      "x": 16,
+      "w": 24,
+      "y": 36
+    },
+    "ok": true,
+    "summary": "맵 미리보기: (16,36) 24×24 (houses_native)"
+  }
+]

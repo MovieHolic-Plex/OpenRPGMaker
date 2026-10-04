@@ -50,6 +50,10 @@ def init():
         CREATE TABLE IF NOT EXISTS log(
           id INTEGER PRIMARY KEY AUTOINCREMENT, at TEXT, concept TEXT, text TEXT);
         CREATE TABLE IF NOT EXISTS settings(key TEXT PRIMARY KEY, value TEXT);
+        CREATE TABLE IF NOT EXISTS art_selections(
+          concept TEXT NOT NULL, group_id TEXT NOT NULL, candidate_id TEXT NOT NULL,
+          fingerprint TEXT NOT NULL, source_json TEXT NOT NULL, selected_at TEXT NOT NULL,
+          PRIMARY KEY(concept,group_id));
         CREATE TABLE IF NOT EXISTS gaps(
           id INTEGER PRIMARY KEY AUTOINCREMENT, concept TEXT, kind TEXT, what TEXT, route TEXT,
           status TEXT DEFAULT 'open', created TEXT);

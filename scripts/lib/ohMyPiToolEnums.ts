@@ -30,15 +30,15 @@ export function antigravityToolEnumPayload(
     const numericType = node.type === "integer" || node.type === "number"
       || (Array.isArray(node.type) && node.type.some(type => type === "integer" || type === "number"));
     if (Object.hasOwn(node, "enum") && (numericType || (Array.isArray(node.enum) && node.enum.some(value => typeof value === "number")))) {
-      const nullable = Array.isArray(node.type) && node.type.length === 2 && node.type.includes('integer') && node.type.includes('null');
-      if ((node.type !== "integer" && !nullable) || !Array.isArray(node.enum) || node.enum.length === 0
-        || !node.enum.every(value => (nullable && value === null) || (typeof value === "number" && Number.isSafeInteger(value)))
-        || (nullable && !node.enum.includes(null))
-        || !node.enum.some(value => typeof value === 'number')
+      const nullable = Array.isArray(node.type) && node.type.length === 2
+        && node.type.includes("integer") && node.type.includes("null") && Array.isArray(node.enum) && node.enum.includes(null);
+      const members = Array.isArray(node.enum) ? node.enum.filter(value => value !== null) : [];
+      if ((!nullable && node.type !== "integer") || !Array.isArray(node.enum) || members.length === 0
+        || !node.enum.every(value => nullable && value === null || typeof value === "number" && Number.isSafeInteger(value))
         || new Set(node.enum).size !== node.enum.length) {
         throw new ToolSchemaTransportError(model, tool, path, "expected a nonempty integer enum of distinct safe integers");
       }
-      fields.push({ tool, path, members: node.enum.filter((value): value is number => typeof value === 'number'), nullable });
+      fields.push({ tool, path, members: members as number[], nullable });
     }
     // Walk schema slots, never instance data (enum/default/examples) or property names
     // as keywords. Unsupported structural translations are caught by exact path lookup.
@@ -83,23 +83,23 @@ export function antigravityToolEnumPayload(
         fail("enum-bearing field changed type during normalization");
       }
       const schema = node;
+      if (field.nullable) {
+        if (Object.hasOwn(schema, "nullable") && schema.nullable !== true) fail("optional integer enum changed null omission semantics during normalization");
+        schema.nullable = true;
+      }
       const encoded = field.members.map(String);
       if (Object.hasOwn(schema, "enum")) {
-        const current = schema.enum;
-        const members = Array.isArray(current) ? current.filter(value => value !== null) : [];
-        if (!Array.isArray(current) || members.length !== encoded.length
-          || (!field.nullable && current.includes(null))
-          || !(members.every(value => typeof value === "number") || members.every(value => typeof value === "string"))
-          || new Set(current).size !== current.length
-          || members.some(value => !encoded.includes(String(value)))) {
+        const raw = schema.enum;
+        const current = field.nullable && Array.isArray(raw) ? raw.filter(value => value !== null) : raw;
+        if (!Array.isArray(raw) || new Set(raw).size !== raw.length || !Array.isArray(current) || current.length !== encoded.length
+          || !(current.every(value => typeof value === "number") || current.every(value => typeof value === "string"))
+          || new Set<string | number>(current).size !== current.length
+          || current.some(value => !encoded.includes(String(value)))) {
           fail("enum membership changed during normalization");
         }
       }
       // Absent on Gemini, numeric on Claude, already encoded on repeated invocation.
       schema.enum = encoded;
-      // SDK normalization loses the null type. Legacy Schema represents it through nullable,
-      // never a null entry in its repeated-string enum (which the protobuf decoder rejects).
-      if (field.nullable) schema.nullable = true;
     }
     return copy;
   };

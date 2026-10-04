@@ -5,6 +5,23 @@
 
 <!-- releases -->
 
+## 0.118.3 — 2026-10-04
+
+### 수정
+
+- cap ci-full vitest at two 3584MB workers (`50cfaac`)
+- preserve optional terrain enums and house entrance approaches (`1280e07`)
+- paginate terrain inspection before assistant response truncation (`e443d3f`)
+- preserve terrain settings and houses during assistant edits (`fc5897e`)
+
+### 문서
+
+- compact terrain audit arrays for review (`e26f482`)
+
+### 테스트
+
+- verify real assistants editing saved relief terrain in the editor (`9c0796f`)
+
 ## 0.118.2 — 2026-10-04
 
 ### 수정
