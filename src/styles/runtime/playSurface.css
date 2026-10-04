@@ -229,6 +229,7 @@
 }
 
 /* Logical stage pixels: the same surface is used by the shell and authoring preview. */
+.title-preparing { position: absolute; bottom: 12px; left: 0; right: 0; text-align: center; font-size: 10px; color: #f5e7d2; text-shadow: 0 1px 4px #000; }
 .cinematic-sequence,
 .cinematic-terminal {
   position: absolute;
@@ -263,6 +264,10 @@
 }
 .cinematic-background { object-fit: cover; opacity: 0.65; }
 .cinematic-image { object-fit: cover; }
+.cinematic-shot { position: absolute; inset: 0; z-index: -1; overflow: hidden; }
+.cinematic-shot > .cinematic-image { z-index: 0; }
+.cinematic-shot > .cinematic-effects { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+.cinematic-narration[hidden] { display: none; }
 .cinematic-narration {
   max-height: 65%;
   overflow-y: auto;
@@ -288,12 +293,12 @@
 }
 .cinematic-status:empty { display: none; }
 .cinematic-terminal > .game-over-panel { max-width: 90%; }
-.cinematic-image[data-motion="fade"] { animation: cinematic-fade var(--cinematic-motion-ms) linear both; }
-.cinematic-image[data-motion="pan"] { animation: cinematic-pan var(--cinematic-motion-ms) linear both; }
-.cinematic-image[data-motion="zoom"] { animation: cinematic-zoom var(--cinematic-motion-ms) linear both; }
+.cinematic-image[data-motion="fade"], .cinematic-effects[data-motion="fade"] { animation: cinematic-fade var(--cinematic-motion-ms) linear both; }
+.cinematic-image[data-motion="pan"], .cinematic-effects[data-motion="pan"] { animation: cinematic-pan var(--cinematic-motion-ms) linear both; }
+.cinematic-image[data-motion="zoom"], .cinematic-effects[data-motion="zoom"] { animation: cinematic-zoom var(--cinematic-motion-ms) linear both; }
 @keyframes cinematic-fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes cinematic-pan { from { transform: scale(1.1) translateX(-3%); } to { transform: scale(1.1) translateX(3%); } }
 @keyframes cinematic-zoom { from { transform: scale(1); } to { transform: scale(1.12); } }
 @media (prefers-reduced-motion: reduce) {
-  .cinematic-image[data-motion] { animation: none; }
+  .cinematic-image[data-motion], .cinematic-effects[data-motion] { animation: none; }
 }

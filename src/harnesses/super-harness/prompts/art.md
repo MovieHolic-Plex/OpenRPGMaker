@@ -44,3 +44,19 @@ joseon-baram/jp-city는 아직 감독 직접 실행 어댑터가 없으므로 �
 기존 기본 풀(A~E 전체/13품목)을 그대로 재실행하지 않는다. 작은 자동차 기준 표본을 만들 수 있도록
 격리 하네스의 시드와 실행 범위를 준비한다. 실행기가 그 범위를 지킬 수 없으면 execution을 반환하지 말고
 정확한 미지원 이유를 기록한다. 조립 예시 검수 실패를 부품별 PASS로 덮어쓰지 않는다.
+
+## 자동 수정 입력 (있으면 기본 후보 수보다 우선)
+현재 실행 상한: {{ART_LIMITS}}
+현재 검수 피드백: {{ART_FEEDBACK}}
+
+art-feedback.json의 repairs에는 실패 후보의 그림·검수 해시, 구체 문제, fixes(대상/변경/보존)가 있다.
+반드시 이 피드백을 읽고 실패 지적을 실행 가능한 작업으로 반영한다. preserveGroups는 다시 그리지 않고
+기존 후보와 근거를 유지한다. asset 문제는 해당 칩, assembly 문제는 조립 배치, spec 문제는 치수 계약을 고친다.
+새 판의 후보 수는 candidateCount 이하, 각 native 실행의 수정 횟수는 nativeAttempts 이하다.
+modern-chipset state.json의 cands에는 실제로 실행할 후보만 queued로 넣는다. 새 판 id를 써 기존 그림과 검수 기록을 보존한다.
+execution.feedbackSha256에 현재 art-feedback.json 파일의 SHA-256을 넣는다. 감독은 해시와 준비된 후보 수를 직접 검사한다.
+작은 표본은 native receipt의 contextImages에 실제 조립 PNG(path/sha256/label), contextSources에 기준 자동차 원본 refs를 넣을 수 있다.
+수집 작업자가 같은 정보를 보존하도록 준비한다. 후보를 직접 고르거나 조립 검수를 PASS로 기록하지 않는다.
+
+피드백의 archivedEvidence는 실패 당시 원본/조립 예시/검수의 해시 확인된 보존 사본이다. 수정 전 반드시 실제 그림을 연다.
+재생성으로 현재 파일이 바뀌어도 이 사본은 바꾸지 않는다. 새 후보와 비교할 기준으로 사용한다.

@@ -302,3 +302,11 @@ in `.omo/evidence/atmosphere-30/`. No new game/map content or remote project is 
 New effect primitives: runes (rotating six-point sigils), shades (drifting multi-stroke wisps),
 frost (rotating six-arm crystals), using the same amount/speed/size/tint/audio controls.
 Existing preset IDs are retained; saved maps hold copied layer settings, not catalog references.
+
+### 그림 컷 준비와 direction (2026-10-04)
+
+이미지 시네마틱은 선택 direction(초점 카메라·장면 전환·좌표 효과·효과음·자막 지연)을 가진다.
+원화 decode 이전에 장면 시간을 소비하지 않는다. 다음 그림 준비 중 이전 컷을 유지하고 취소된 컷의
+늦은 decode는 표시/진행하지 않는다. 기존 영상 최대 시간은 재생 실패에도 진행하는 계약을 유지한다.
+플레이어 셸의 `cinematicAssets`와 `warmPlayGameRuntime`이 타이틀 뒤에서 미리 준비하지만
+오프닝 이전에 게임 세션/Phaser를 생성하지 않는다. 상세 계약은 [title-opening-effects.md](title-opening-effects.md).

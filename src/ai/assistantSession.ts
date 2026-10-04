@@ -5214,7 +5214,12 @@ export class AssistantSession {
             toolResult = this.applyBuildSpec(args);
           } else if (name === OPENING_IMAGE_TOOL) {
             const { generateOpeningStill } = await operation.wait(import("@/editor/openingImageGeneration"));
-            const still = await operation.wait(generateOpeningStill(args, { signal }));
+            const still = await operation.wait(generateOpeningStill(args, { signal,
+              resolveReference: async resourceId => {
+                const { renderPiToolImage } = await operation.wait(import('@/ai/toolImageRenderer'));
+                return operation.wait(renderPiToolImage(this.ctx.project, 'show_title_opening', { resourceId }));
+              },
+            }));
             if (!still.ok) {
               toolResult = { ok: false, summary: still.summary, issues: [{ severity: "error", code: still.code, message: still.summary }] };
             } else {

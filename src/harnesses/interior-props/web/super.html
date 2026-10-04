@@ -40,11 +40,11 @@ a{color:#8fb3e8} #materials{overflow:auto;padding:24px 32px} #materials h2{margi
 <div id="flow">필요한 재료 조사 → 기물·파생 제작 → 내가 고르기 → 공용 등록 → 공간 제작·검수</div>
 <section class="pane" id="props" role="tabpanel"><iframe title="기물·파생 제작과 자동 제안" src="/harness/props"></iframe></section>
 <section class="pane" id="spaces" role="tabpanel" hidden>
-  <div class="offline" hidden><h2>공간·개념 연결 대기</h2><p>기존 슈퍼하네스에 연결할 수 없어. 연결이 돌아오면 이 화면도 다시 열려.</p><button class="retry">다시 확인</button> <a class="direct" target="_blank" rel="noopener">별도 화면 열기</a></div>
+  <div class="offline" hidden><h2>공간·개념 연결 대기</h2><p>공간 상태를 읽을 수 없어. 잠시 뒤 다시 확인할게.</p><button class="retry">다시 확인</button> <a class="direct" target="_blank" rel="noopener">별도 화면 열기</a></div>
   <iframe title="공간·개념 제작과 검수" hidden></iframe>
 </section>
 <section class="pane" id="orders" role="tabpanel" hidden>
-  <div class="offline" hidden><h2>재료 주문서 연결 대기</h2><p>기존 슈퍼하네스의 주문서를 연결하고 있어.</p><button class="retry">다시 확인</button> <a class="direct" target="_blank" rel="noopener">별도 화면 열기</a></div>
+  <div class="offline" hidden><h2>재료 주문서 연결 대기</h2><p>재료 주문서를 불러오고 있어.</p><button class="retry">다시 확인</button> <a class="direct" target="_blank" rel="noopener">별도 화면 열기</a></div>
   <iframe title="공간별 부족한 재료 주문서" hidden></iframe>
 </section>
 <section class="pane" id="materials" role="tabpanel" hidden>
@@ -59,7 +59,7 @@ a{color:#8fb3e8} #materials{overflow:auto;padding:24px 32px} #materials h2{margi
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let current='props', lastStatus=null, kits=null, loadedRevision=null, pendingStatus=false, pendingMaterials=false;
-function spaceURL(pane){const u=new URL(location.href);u.port=String(lastStatus?.spacePort||18315);u.pathname=pane==='orders'?'/orders':'/';u.search='';u.hash='';return u.href}
+function spaceURL(pane){const u=new URL(location.href);if(!lastStatus?.unified)u.port=String(lastStatus?.spacePort||18315);u.pathname=pane==='orders'?'/orders':lastStatus?.unified?'/spaces':'/';u.search='';u.hash='';return u.href}
 function syncSpace(pane){
   if(!lastStatus)return;
   const p=$('#'+pane), online=lastStatus.space.online, f=p.querySelector('iframe');

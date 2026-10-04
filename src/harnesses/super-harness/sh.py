@@ -2,7 +2,7 @@
 """슈퍼하네스 — 조수가 모르는 낱말(미궁·카타콤…)을 에이전트가 스스로 찾아 개념 카드로 만들고, 적대 검수·조수 시험을 거쳐
 공용 번들(src/assets/conceptCards.json)에 굽는다. 사람은 화면(http://mdc-server:18315/)에서 큐를 보고 교정·폐기만 한다.
 
-  python3 src/harnesses/super-harness/sh.py run        # 데몬 + 화면 (systemd --user super-harness.service)
+  python3 src/harnesses/super-harness/unified.py run   # 기물·파생·공간 통합 (systemd --user super-harness.service)
   python3 src/harnesses/super-harness/sh.py status
   python3 src/harnesses/super-harness/sh.py add <id> <제목> [별칭…]
   python3 src/harnesses/super-harness/sh.py pause|resume
@@ -34,6 +34,7 @@ import gates  # noqa: E402
 import planning_details  # noqa: E402
 import art_execution  # noqa: E402
 import art_choices  # noqa: E402
+import art_feedback  # noqa: E402
 
 DATA = store.DATA
 WORK = os.path.join(DATA, 'work')
@@ -378,7 +379,7 @@ def on_bake(meta, code, result):
     pass   # 굽기는 스레드에서 끝까지 처리한다(bake_thread).
 
 
-HANDLERS = {'plan': lambda *a: on_plan(*a), 'plan-review': lambda *a: on_plan_review(*a), 'survey': lambda *a: on_survey(*a), 'material-review': lambda *a: on_material_review(*a), 'art': lambda *a: on_art(*a), 'art-native': lambda *a: on_art_native(*a), 'discover': on_discover, 'build': on_build, 'review': on_review, 'probe': on_probe, 'judge': on_judge, 'bake': on_bake}
+HANDLERS = {'plan': lambda *a: on_plan(*a), 'plan-review': lambda *a: on_plan_review(*a), 'survey': lambda *a: on_survey(*a), 'material-review': lambda *a: on_material_review(*a), 'art': lambda *a: on_art(*a), 'art-native': lambda *a: on_art_native(*a), 'art-context-review': lambda *a: on_art_context_review(*a), 'discover': on_discover, 'build': on_build, 'review': on_review, 'probe': on_probe, 'judge': on_judge, 'bake': on_bake}
 
 
 def probe_scores(cid, attempt):
@@ -607,7 +608,9 @@ def start_art(c):
     previous = cdir(cid, 'art-result.json')
     if os.path.isfile(previous):
         os.replace(previous, cdir(cid, 'art-result.previous.json'))
-    prompt = fill(prompt_template('art.md'), ROOT=wt, CDIR=cdir(cid), CONCEPT=concept_context(c))
+    feedback = read_json(cdir(cid, 'art-feedback.json'), {}) or {}
+    prompt = fill(prompt_template('art.md'), ROOT=wt, CDIR=cdir(cid), CONCEPT=concept_context(c),
+                  ART_FEEDBACK=feedback, ART_LIMITS=art_feedback.limits(DATA, cid))
     start_codex(cid, 'art', 'prepare', prompt, cdir(cid, 'art-result.json'), write_root=wt)
     store.update_concept(cid, status='running', note='전용 하네스로 칩 후보 제작 중')
 
@@ -621,6 +624,12 @@ def on_art(meta, code, result):
             request = dict(result['execution'])
             # Models are chosen by the user/supervisor, never by a preparation worker.
             request.pop('modelOverride', None)
+            request.pop('repairLimits', None)
+            feedback = read_json(cdir(cid, 'art-feedback.json'), {}) or {}
+            if (store.concept(cid).get('art_revision') or 0) > 0:
+                if request.get('feedbackSha256') != gates.digest(cdir(cid, 'art-feedback.json')):
+                    raise ValueError('재생성 준비에 현재 검수 피드백 해시가 필요합니다.')
+                request['repairLimits'] = art_feedback.limits(DATA, cid)
             override = json.loads(store.setting('art_model_overrides') or '{}').get(cid)
             if override:
                 request['modelOverride'] = override
@@ -672,10 +681,74 @@ def on_art(meta, code, result):
             art_choices.prepare(DATA, cid)
         except (OSError, ValueError, KeyError, StopIteration) as error:
             store.log(cid, '선택 예시 준비 필요: ' + str(error))
-        store.update_concept(cid, stage='art-review', status='idle', note='칩 후보 제작 완료 — 사람 선택·공용 등록 후 재료 재확인')
+            store.update_concept(cid, stage='blocked', status='idle', note='조립 예시 준비 오류', reasons=[str(error)])
+            return
+        advance_art_review(cid)
     else:
         store.update_concept(cid, stage='blocked', status='idle', note='칩 제작 미완료 — 하네스 결과·그림 근거 없음', reasons=(result or {}).get('reasons') or ['art-result.json에 실제 후보와 하네스 검사 근거가 필요함'])
-    store.log(cid, '칩 제작 결과 — ' + ('사람 선택 대기' if valid else '미완료'))
+    store.log(cid, '칩 제작 결과 — ' + (store.concept(cid)['note'] if valid else '미완료'))
+
+
+
+def advance_art_review(cid):
+    state = art_choices.view(DATA, cid)
+    if not state['groups']:
+        store.update_concept(cid, stage='blocked', status='idle', note='선택 예시 어댑터 필요 — 실제 후보를 보존함')
+    elif all(any(c['ready'] for c in g['candidates']) for g in state['groups']):
+        store.update_concept(cid, stage='art-review', status='idle', reasons=[], note='부품·조립 검수 완료 — 사람 선택 필요')
+    else:
+        request = art_feedback.review_input(DATA, cid)
+        if request['groups']:
+            store.update_concept(cid, stage='art-context-review', status='queued', art_review_attempt=0,
+                                 note='새 후보 조립 예시 독립 검수 대기')
+        else:
+            art_feedback.queue_repair(DATA, cid)
+
+
+def start_art_context_review(c):
+    cid = c['id']
+    request = art_feedback.review_input(DATA, cid)
+    if not request['groups']:
+        advance_art_review(cid)
+        return
+    attempt = (c.get('art_review_attempt') or 0) + 1
+    input_path = cdir(cid, 'art-context-input.json')
+    output_path = cdir(cid, 'art-context-result.json')
+    write_json(input_path, request)
+    if os.path.exists(output_path): os.remove(output_path)
+    prompt = fill(prompt_template('art-context-review.md'), CDIR=cdir(cid), INPUT=input_path,
+                  OUTPUT=output_path, ROOT=request['root'])
+    jid = start_codex(cid, 'art-context-review', f'r{c.get("art_revision", 0)}-v{attempt}', prompt, output_path)
+    PROCS[jid][2]['context_input'] = request
+    store.update_concept(cid, status='running', art_review_attempt=attempt, note='조립 예시 독립 검수 중')
+
+
+def on_art_context_review(meta, code, result):
+    cid = meta['concept']
+    if store.concept(cid)['stage'] != 'art-context-review': return
+    try:
+        if code != 0: raise ValueError(f'조립 검수 작업 종료 {code}')
+        request = meta.get('context_input') or read_json(cdir(cid, 'art-context-input.json'))
+        report = art_feedback.validate_review(DATA, cid, result, request)
+    except (ValueError, OSError, KeyError, TypeError) as error:
+        c = store.concept(cid)
+        retry = (c.get('art_review_attempt') or 0) < 2
+        store.update_concept(cid, stage='art-context-review' if retry else 'blocked', status='queued' if retry else 'idle',
+                             note='조립 검수 결과 재확인 대기' if retry else '조립 검수 실행 오류 — 2회 실패', reasons=[str(error)])
+        store.log(cid, str(error))
+        return
+    art_feedback.write(cdir(cid, 'art-context-history', request['manifestSha256'] + '.json'), report)
+    current = read_json(cdir(cid, 'art-context-review.json'), {}) or {}
+    merged = current.setdefault('groups', {})
+    for gid, candidates in report['groups'].items(): merged.setdefault(gid, {}).update(candidates)
+    current['version'] = 1
+    write_json(cdir(cid, 'art-context-review.json'), current)
+    state = art_choices.view(DATA, cid)
+    if all(any(c['ready'] for c in g['candidates']) for g in state['groups']):
+        store.update_concept(cid, stage='art-review', status='idle', reasons=[], note='부품·조립 검수 완료 — 사람 선택 필요')
+        store.log(cid, '조립 검수 통과 → 사람 선택')
+    else:
+        art_feedback.queue_repair(DATA, cid)
 
 
 def on_art_native(meta, code, result):
@@ -919,10 +992,10 @@ def tick():
         return
     max_codex = int(store.setting('max_codex'))
     # 하루 상한은 없다(2026-10-04 사용자) — 동시 실행 수만 지킨다.
-    codex_free = lambda need=1: len(running(['discover', 'plan', 'plan-review', 'survey', 'material-review', 'art', 'build', 'review', 'judge'])) + need <= max_codex
+    codex_free = lambda need=1: len(running(['discover', 'plan', 'plan-review', 'survey', 'material-review', 'art', 'art-context-review', 'build', 'review', 'judge'])) + need <= max_codex
 
     release_waiting()
-    active = store.concepts("stage IN ('plan','plan-review','survey','material-review','build','review','probe','bake','unbake')")
+    active = store.concepts("stage IN ('plan','plan-review','survey','material-review','art-context-review','build','review','probe','bake','unbake')")
     for c in store.concepts("stage='discovered'"):
         if len([a for a in active if a['stage'] != 'bake']) >= int(store.setting('max_active')):
             break
@@ -958,6 +1031,8 @@ def tick():
             start_survey(c)
         elif c['stage'] == 'material-review' and codex_free():
             start_material_review(c)
+        elif c['stage'] == 'art-context-review' and codex_free():
+            start_art_context_review(c)
         elif c['stage'] == 'build' and codex_free():
             start_build(c)
         elif c['stage'] == 'review' and codex_free(2):
@@ -1072,7 +1147,7 @@ def action(body):
 
 # ── 갤러리(사람용 화면) — 그림 한 장 + 한 줄 상태 + 한 줄 설명. 가볍게. ──
 THUMBS = os.path.join(DATA, 'thumbs')
-GROUP = {'plan': 'work', 'plan-review': 'work', 'survey': 'work', 'material-review': 'work', 'art-review': 'pick', 'done': 'done', 'discovered': 'wait', 'waiting': 'wait', 'art': 'wait', 'blocked': 'stop', 'discarded': 'stop'}
+GROUP = {'plan': 'work', 'plan-review': 'work', 'survey': 'work', 'material-review': 'work', 'art-review': 'pick', 'art-context-review': 'work', 'done': 'done', 'discovered': 'wait', 'waiting': 'wait', 'art': 'wait', 'blocked': 'stop', 'discarded': 'stop'}
 
 
 def first_sentence(text, limit=90):
@@ -1097,6 +1172,8 @@ def plain_status(c):
         return '재료 조사 — 맵 제작 전'
     if stage == 'material-review':
         return '시대·필수 칩 독립 검수'
+    if stage == 'art-context-review':
+        return '조립 예시 독립 검수 중' if c['status'] == 'running' else '조립 예시 검수 대기'
     if stage == 'art-review':
         try:
             choices = art_choices.view(DATA, c['id'])
@@ -1105,6 +1182,8 @@ def plain_status(c):
         if choices.get('blocked'): return '후보 수정 필요 · 현재 선택 불가'
         return '선택 완료 · 공용 등록 필요' if choices['complete'] else f'내 선택 필요 · {choices["selectedCount"]}/{choices["total"]} 선택' if choices['total'] else '선택 예시 준비 필요'
     if stage == 'art':
+        if c.get('art_revision'):
+            return f'피드백 반영 재생성 {c["art_revision"]}차 ' + ('진행 중' if c['status'] == 'running' else '대기 · 전체 멈춤' if store.setting('paused') == '1' else '대기')
         orders = [g for g in store.gaps() if g['concept'] == c['id'] and g.get('item')]
         return '칩 후보 제작 중' if c['status'] == 'running' else f'부족분 {len(orders)}건 — 칩 제작 대기'
     if stage == 'build':
@@ -1169,7 +1248,7 @@ def candidate_images(cid):
 
 
 def before_build(c):
-    return c['stage'] in ('plan', 'plan-review', 'survey', 'material-review', 'art', 'art-review') or (
+    return c['stage'] in ('plan', 'plan-review', 'survey', 'material-review', 'art', 'art-review', 'art-context-review') or (
         c['stage'] == 'blocked' and not gates.material_report(cdir(c['id']))['ok'])
 
 
@@ -1236,6 +1315,14 @@ def concept_markdown(cid):
     card = read_json(cdir(cid, 'card.json'), {}) or {}
     L = [f'# {d["title"]}', '', f'**상태** {d["status"]}' + (f' · 「{d["parent"]}」의 하위' if d['parent'] else '') + (f' · [PR]({d["pr"]})' if d['pr'] else ''), '']
     L += ['> ' + line for line in str(d['about']).splitlines()] + ['']
+    feedback = read_json(cdir(cid, 'art-feedback.json'), {}) or {}
+    if feedback:
+        L += ['## 검수 피드백 → 자동 수정', '', f'수정 차수: {feedback.get("revision")} / {feedback.get("limits", {}).get("maxRevisions")} · {c.get("note", "")}', '']
+        for repair in feedback.get('repairs', []):
+            L += [f'### {repair.get("group")} / {repair.get("candidate")}', '']
+            for fix in repair.get('fixes', []):
+                L += [f'- **{fix.get("target")}**: {fix.get("problem")}', f'  - 변경: {fix.get("change")}', f'  - 유지: {fix.get("keep")}']
+        L += ['']
     art = read_json(cdir(cid, 'art-result.json'), {}) or {}
     if art:
         L += ['## 칩 제작 결과', '']

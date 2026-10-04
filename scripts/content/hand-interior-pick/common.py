@@ -4,8 +4,9 @@ import json, os, re, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, '..', '..', '..'))
-V5 = os.path.join(ROOT, 'tiledata/hand-interior/v5')
-PICK = os.path.join(ROOT, 'tiledata/hand-interior/pick')
+CONTENT_ROOT = os.path.abspath(os.environ.get('PROP_HARNESS_CONTENT_ROOT', ROOT))
+V5 = os.path.join(CONTENT_ROOT, 'tiledata/hand-interior/v5')
+PICK = os.path.join(CONTENT_ROOT, 'tiledata/hand-interior/pick')
 CAND = os.path.join(PICK, 'candidates')
 PAL_DIR = os.path.join(PICK, 'palette')
 V5_PAL = os.path.join(PAL_DIR, 'v5.pal')       # v5 재료 램프(make_palette.py 가 만든다)
@@ -17,8 +18,8 @@ WORKER_RE = re.compile(r'^(w[0-9]{1,3}|h[0-9]{1,4}|pilot)-([A-Z])\.pxg$')   # �
 def slug(i):
     return re.sub(r'[^A-Za-z0-9]+', '_', i).strip('_')
 
-NEW_ITEMS = os.path.join(ROOT, 'tiledata/hand-interior/new/items.json')   # 새 기물 길: v5 381개 밖의 기물 명세
-SETS = os.path.join(ROOT, 'tiledata/hand-interior/new/sets.json')   # 파생 묶음(방향·상태·움직임) — 하네스 안에서만 쓰는 묶음 그림 기물(src/harnesses/interior-props/derive.py)
+NEW_ITEMS = os.path.join(CONTENT_ROOT, 'tiledata/hand-interior/new/items.json')   # 새 기물 길: v5 381개 밖의 기물 명세
+SETS = os.path.join(CONTENT_ROOT, 'tiledata/hand-interior/new/sets.json')   # 파생 묶음(방향·상태·움직임) — 하네스 안에서만 쓰는 묶음 그림 기물(src/harnesses/interior-props/derive.py)
 KIND_KO = {'floor': '바닥 기물(막힘)', 'wall': '북쪽 벽 앞 기물(막힘, 벽에 붙임)', 'hang': '벽면 걸이(벽 두 줄 중 윗줄)', 'flat': '바닥 무늬(밟을 수 있음)'}
 
 def new_item_object(it):

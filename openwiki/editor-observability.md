@@ -698,6 +698,18 @@ requestEditRenderFrame으로 한 프레임만 요청하고, 카메라·포인터
 
 실시간 표시 보강(2026-10-03): `aiCanvasProgress`의 클릭 직후 준비 표시와 `tool_start`/`tool_end` 표시는 UI 관측이며 적용·저장 영수증으로 세지 않는다. 기본 시공 표시를 켜되 저장된 off는 유지한다. 실제 수용·맵 focus는 기존 체크포인트 적용 경로가 담당한다.
 
+### 미디어 분리의 저장용 교체와 AI 턴 (2026-10-04)
+
+호스트는 새 생성 그림의 inline dataUrl을 자산 파일/ref로 분리하면서 리비전을 올린다.
+두 번째 그림 생성 전에 팀 폴링이 이 변경을 projectSwitch로 통지해 `assistantHumanEdits`를
+영구 무효화했던 실측 오류를 수정했다. `refreshFromHost`는 `isMediaSeparationOnly`로
+업로드 이외의 프로젝트 전체와 자산 메타데이터가 동일하고, 기존 바이트의 SHA-256/MIME/길이가
+새 ref와 정확히 같은 경우만 저장 방식 변경으로 인정한다. 이 경우 origin:system,
+projectSwitch:false로 알리며 undo와 진행 중 AI 의도를 폐기하지 않는다.
+해시 계산 뒤에는 generation/lineage/대상/dirty/in-flight를 재확인한다. 실제 자산·맵·기획
+변경이나 잘못된 해시는 기존 projectSwitch와 충돌 검사를 그대로 통과해야 한다.
+
+
 
 ## 편집기 UX 지연 조사 (2026-10-04)
 

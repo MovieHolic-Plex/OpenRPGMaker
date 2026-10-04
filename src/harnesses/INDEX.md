@@ -10,7 +10,7 @@
 | `interior-props` | 슈퍼하네싱 · 실내 기물 (16px) | 장르 무관 | `src/assets/handInteriorSpec.json` | `openwiki/harnesses/interior-props.md` |
 | `jp-city` | 일본 도시 칩셋 도트 (jp_city · modern3) | 장르 무관 | `harness-data/jp-city/seed.json` | `openwiki/harnesses/jp-city.md` |
 | `joseon-baram` | 조선 칩셋 도트 (joseon_baram · 바람의나라풍) | 장르 무관 | `harness-data/joseon-baram/seed.json` | `openwiki/harnesses/joseon-baram.md` |
-| `super-harness` | 슈퍼하네스 (개념 카드 자동 공급) | 장르 무관 | `harness-data/super-harness/seed.json` | `openwiki/harnesses/super-harness.md` |
+| `super-harness` | 슈퍼하네싱 (기물·파생·공간) | 장르 무관 | `harness-data/super-harness/seed.json` | `openwiki/harnesses/super-harness.md` |
 | `romance-scene` | 연애 첫 대화 장면 | 장르 `story-cutscene` 전용 | `harness-data/romance-scene/seed.json` | `openwiki/harnesses/romance-scene.md` |
 | `charset-actor` | RM2000 캐릭터 GIF 공방 | 장르 무관 | `harness-data/charset-actor/briefs.json` | `openwiki/harnesses/charset-actor.md` |
 | `worldmap-icons` | 월드맵 아이콘 | 장르 무관 | `harness-data/worldmap-icons/seed.json` | `openwiki/harnesses/worldmap-icons.md` |
@@ -118,7 +118,7 @@ modern4 팔레트 현대 거리 칩셋의 기물·건물·타일을 3/4 시점�
 
 **들어오는 길:** CLI 있음 · 에디터 화면 아직 없음 · 조수 도구 아직 없음
 
-## super-harness — 슈퍼하네스 (개념 카드 자동 공급)
+## super-harness — 슈퍼하네싱 (기물·파생·공간)
 
 조수가 재료·구조를 모르는 낱말을 실패 로그·어휘 탐침에서 찾아 개념 카드로 만든다. 만들기·검수·판정은 codex(gpt-6.1-sol medium), 통과한 카드는 PR 로 자동 머지된다. 공간 기획·텍스트 도면의 적대적 검수와 재료 승인 전에는 맵을 만들지 않는다. 부족한 칩은 전용 하네스 후보 제작과 사람 선택을 거친다.
 

@@ -1,0 +1,17 @@
+{
+  "source": "/home/main/.codex/worktrees/0a57/rpg-zzu/verify-shots/opening-cinematic-v4/video/page@bfe920442e704d010cbdb8f20e5fba80.webm",
+  "startSeconds": 10,
+  "durationSeconds": 53,
+  "crop": {
+    "x": 40,
+    "y": 0,
+    "width": 1200,
+    "height": 900
+  },
+  "fps": 8,
+  "width": 840,
+  "includes": "title \u2192 all 3 opening cuts \u2192 first gameplay \u2192 first choice/response",
+  "openingSkipped": false,
+  "timing": "normal playback; recorded 2500ms dialogue/1800ms snapshot reading pauses; no accelerated transitions",
+  "shippingZip": "output/qa/opening-cinematic-v4-ordered/game-web.zip"
+}
