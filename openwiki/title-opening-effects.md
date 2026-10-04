@@ -174,3 +174,98 @@ readPixels 완료까지 중앙값은 **90.8→73.7 / 98.4→76.5 / 88.2→77.9ms
 공유 머신 loadavg 121.58/77.35/45.29, 실제 GPU/60fps 달성을 뜻하지 않는다.
 블록 단위 교대 측정에는 한 회 역전(89.3→95.3ms)도 있어 성능 수치를 일반화하지 않는다.
 브라우저 전용 테스트는 `--config vitest.browser.config.ts`로 파일 하나만 실행한다.
+# 첫 제작의 필수 타이틀·오프닝 (2026-10-04)
+
+첫 플레이 제작(`firstPlay` 계약)은 핵심 행동 → 장소 → 첫 조작 안내 → 작품 타이틀/오프닝 → 이미지 검수 순서다.
+`scripts/lib/piTeamRuntime.ts`의 마지막 제작 단계는 24턴 + 보수 12턴 예산과 전용 도구를 가진다.
+맵 담당의 예산 소진으로 타이틀을 생략하지 않는다. `system.opening`을 기본으로 끄던 지침을 제거했다.
+
+- `scripts/lib/piPresentationTools.ts`: Pi의 `generate_title_art`·`generate_opening_image`를 실제 생성으로 대체한다.
+  사용자의 독립 이미지 제공자/모델 설정을 상속하고 자격은 Node 동반 서비스에서 해결한다.
+  생성 호출은 exclusive 쓰기이며 읽기 전용/마을 계약에서는 금지한다. 등록·연결 실패 시 전체 작업을 되돌리고,
+  성공한 변경은 기존 체크포인트/SQLite 저장 경로를 따른다. 이미지 바이트를 텍스트 기록에 넣지 않는다.
+- 타이틀 생성은 기존 16:9/중앙 4:3 안전 구도 프롬프트와 비전 효과 맞춤을 재사용한다.
+  제공자의 상위 이미지 지침도 장면 그림에 단색 배경을 강제하지 않는다. 두 이미지 제공자의 취소 신호를 전달한다.
+  원화의 smooth 설정은 효과 캔버스에도 적용한다. 확대되는 게임 무대의 실제 부모 크기로 그리며
+  GPU 해상도 상한과 소프트웨어 GPU 0.5 배율은 유지한다. 오프닝 정지 그림도 cover로 화면을 채운다.
+  서술은 keep-all로 한국어 낱말을 보존하며, 한 낱말이 화면보다 길 때만 anywhere로 나눈다.
+- `firstPresentation.ts`: 작품 전용 등록 배경, 제목, 로고 스타일, 등장 순서, 전환, cover 맞춤을 요구한다.
+  오프닝은 활성화·장면 그림/영상·짧은 서술·건너뛰기·각 양수 durationMs와 전체 12초 이내를 요구한다.
+  기본 마을에 제목만 바꾼 결과와 꺼진/빈/글뿐인 오프닝은 거부한다.
+- `show_title_opening`: 현재 연결된 타이틀/오프닝의 실제 원화와 설정을 모델에 전달한다.
+  검수 완료는 전체 맵 이미지와 모든 연결 원화의 전달 및 5축 근거를 요구한다. 원화 교체도 검수 서명을 만료시킨다.
+  SQLite 자산이 dataUrl 대신 내용 주소 ref를 가지면 브라우저 자산 브리지에서 실제 그림을 읽어 512px PNG로 전달한다.
+  원화 검수는 실제 재생의 증거가 아니다. 정본 저장 후 재로드 및 내려받은 전용 플레이어에서 자연 재생을 별도로 확인한다.
+
+회귀 계약: `test/piFirstPlay.test.ts`, `test/piFirstPresentation.test.ts`.
+세션의 테스트 실행 제한을 따른다. 유닛/전체 게이트를 실행하지 않았을 때 통과로 보고하지 않는다.
+
+## 시네마틱 장면 연출과 백그라운드 준비 (2026-10-04)
+
+RPG 일곱 작품 공식 자료 조사/적용의 범위는 [rpg-opening-research.md](rpg-opening-research.md).
+`system.opening.scenes`의 image 장면은 선택 `direction`을 저장한다. camera.from/to는
+[초점x,초점y,배율](좌표0..1, 배율1..1.6), transition은 cut/dissolve/fade/flash와 0..1000ms,
+최대4개 effects(godRays/motes/mist/glow), soundResourceId, narrationDelayMs(0..2000)를 지원한다.
+`cinematicDirection.ts`가 파일 로드와 도구의 엄격한 계약을 공유한다. 틀린 좌표·효과 앵커·미지 필드는 버리지 않고 거부한다.
+기존 none/fade/pan/zoom 장면은 그대로 읽는다. 편집기 이미지→이미지 교체는 direction을 보존하고
+텍스트/영상으로 바꾸면 지운다. 움직임 변경은 기존 camera를 해제한다. 전환은 편집기에서도 선택할 수 있다.
+
+`generate_opening_image`는 원경을 강제하지 않는다. `referenceResourceId`가 있으면 정본 그림을 읽어
+512px PNG 참조로 이미지 모델에 실제 전달한다(브라우저·Bun 양쪽). 참조 읽기 실패는 생성 실패이며
+참조 없이 다른 그림을 만들고 성공했다고 하지 않는다. 첫 제작 계약은 세 컷/실제 그림2장 이상/총12초이고,
+`show_title_opening`으로 모든 연결된 원화를 검수한다. 단일 확대 스틸은 첫 제작 합격 조건을 충족하지 못한다.
+
+`cinematicAssets.ts`는 플레이어 셸이 소유하는 2병렬·완료8항목 이미지 준비 캐시다. HTTP 그림을 blob URL로
+공유해 컷 전환에서 같은 요청을 반복하지 않는다. 타이틀 첫 페인트 뒤 첫 두 컷을 준비하고 재생 중 다음 두 컷을 앞서 읽는다.
+빠른 새 게임 입력은 첫 그림의 decode까지 타이틀을 유지한다. 그림 장면의 시간·카메라·효과·음성은
+그림을 읽은 뒤 시작한다. 다음 그림을 기다릴 때 이전 프레임을 유지하고 실패에는 R 재시도/Enter 진행/Esc 건너뛰기를 제공한다.
+
+엔진 모듈을 미리 읽되 게임 세션·Phaser 씬을 먼저 만들지 않는다(오프닝 중 자동 이벤트/게임 음악/입력 선행 금지).
+기존 번들 워밍은 사용된 업로드 이미지·조사 아이콘도 포함하며 2병렬 low priority다. 오프닝 그림은 별도 캐시로 준비한다.
+마지막 오프닝 프레임은 맵 준비 동안 배경으로 이어진다. Phaser 텍스처 생성/맵 구성까지 백그라운드로 완료하는 것은 아니다.
+새 게임 취소/셸 종료는 타이머·미디어·WebGL·캐시를 정리한다. reduced motion은 카메라 이동/섬광/애니메이션을 비활성화한다.
+
+시각 QA 보강: 다음 컷을 읽는 동안 이전 WebGL은 `freezeTitleEffects`로 rAF만 멈춘다.
+디졸브가 끝나거나 이전 컷이 제거된 뒤 `stopTitleEffects`로 문맥을 해제한다. 화면에 남은
+캔버스에 loseContext를 먼저 호출하면 Chromium이 흰 lost-context 그림을 합성할 수 있다.
+출하 플레이어 촬영은 animations:allow로 실제 카메라·전환을 보존하고 이전 컷 대신
+현재 `.cinematic-shot:not([data-previous-shot])`의 원화를 검사한다.
+
+배경 엔진 준비에서도 `ensurePhaser()` → `import(PlayScene)` 순서를 지킨다. `PlayScene`은 모듈 평가 때 `getLoadedPhaser()`를 읽으므로 둘을 `Promise.all`로 병렬화하면 빠른 스킵에서 부팅이 실패한다. 로딩 QA는 Phaser 응답을 잡아 둔 채 Esc를 누른 뒤 해제해 이 의존성을 실제 출하물에서 확인한다.
+
+## 글자·장면 오프닝 연출 (2026-10-04)
+
+모든 `CinematicScene`(text/image/video)에 선택 `presentation`을 저장한다. 없는 기존
+프로젝트는 기존 연출을 유지한다. `cinematicPresentation.ts`의 같은 엄격 파서가 프로젝트
+로드와 조수 도구 입력을 검사한다. 스키마 버전·SQL 변경은 없다. 꺼진 장면과 게임오버
+시퀀스에도 보존하며 종류 변경은 공통 연출을 유지하고 이미지 전용 direction만 분리한다.
+
+- 기본형 `subtitle`/`prologue`/`chapter`/`memory`/`credits` + 선택 덮어쓰기.
+- `text`: layout(center/bottom/left/credits), font(serif/sans/pixel), size(무대 8~64px),
+  color(#RRGGBB), animation(none/fade/rise/typewriter/blur/scroll), delayMs/revealMs/exitMs(0~10000).
+- `transition`: enter(cut/fade/dissolve/wipe/iris/flash), enterMs/exitMs(0~5000).
+- `backgroundColor`(#RRGGBB), `letterbox`(상하 각각 0~20%).
+
+시간은 durationMs 안에 포함된다. 짧은 장면은 등장·읽기·퇴장 예산으로 제한한다.
+0ms는 수동 진행이므로 자동 퇴장/스크롤을 하지 않는다. 이미지는 direction 카메라·빛·SE를
+함께 쓰며 presentation 전환과 글자 지연이 기존 direction 전환/자막 지연보다 우선한다.
+
+플레이어 `cinematicText.ts`는 Intl.Segmenter grapheme 단위로 한국어·결합 문자·이모지를
+안전하게 보인다. textContent만 사용한다. 1200자를 넘으면 전체 블록 페이드로 제한한다.
+확인 첫 입력은 등장 중인 글자를 모두 표시하고 다음 입력은 장면을 넘긴다. Esc/중단/
+미디어 재시도/장면 변경에서 타이머·애니메이션을 해제한다. 다음 그림 디코딩 중에는 이전
+합성 프레임을 고정한다. reduced-motion은 전체 문장을 즉시 표시하고 크레딧도 정지된
+스크롤 가능한 가운데 글로 보여 준다. 첫 프레임을 두 번의 requestAnimationFrame으로 정착시킨 뒤 장면/글자 시간을 시작한다.
+마지막 이미지의 퇴장은 플레이어 셸이 소유한다: 맵 준비 중 마지막 그림을 유지하고 준비 완료 후
+저작된 exitMs로 실제 맵을 드러낸다. 미리보기와 마지막 텍스트 장면은 장면 내 암전을 재생한다.
+
+DB 「오프닝」/「게임오버」 장면 폼에서 기본형·글자·장면 전환·독립 퇴장 시간·색·띠를
+직접 고른다. 새 편지/영화형/크레딧 시퀀스 프리셋은 같은 프로젝트 레코드를 쓰며 미리보기도
+같은 재생기를 쓴다. AI set_opening/edit_opening은 presentation을 노출한다. 첫 제작은
+사용자가 글자 중심을 요청한 경우 서로 다른 기본형으로 저작한 2개 이상의 text 장면도
+인정한다. 기본 그림형은 최소 3개 이야기 장면과 서로 다른 실제 그림 2장 이상을 유지한다.
+
+근거: `verify-shots/opening-typography/README.md`(실제 조수 → 정본 저장·재로드 →
+수정하지 않은 UI 내보내기 → 출하 player.html 재생/GIF). 기능별 fixture는 실제 게임
+저작과 구별하여 `features/SUMMARY.md`에 기록한다. vitest/전체 typecheck/게이트는
+세션 실행 제한 때문에 실행하지 않는다. 회귀 계약은 `test/cinematicPresentation.test.ts`.

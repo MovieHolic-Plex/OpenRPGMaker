@@ -1,0 +1,143 @@
+{
+  "shippingPlayer": true,
+  "editorShell": false,
+  "states": [
+    {
+      "altitude": 35,
+      "sha256": "25f94c0c52235e6091092f39bb98823213f4f22a62290065ad4d8b100a1fdde8",
+      "stats": {
+        "builds": 2,
+        "frames": 188,
+        "pending": 0,
+        "visible": 93,
+        "textures": 93,
+        "enabled": true,
+        "params": {
+          "enabled": true,
+          "azimuth": 315,
+          "altitude": 35,
+          "opacity": 0.36,
+          "softness": 2,
+          "heightScale": 1
+        },
+        "nativeArt": true,
+        "casters": [
+          {
+            "id": "sp_a2ff01d4-09f0-4e24-a2c7-65a12be34406",
+            "kind": "house",
+            "height": 7.875,
+            "base": 4,
+            "x": 6,
+            "y": 19.75,
+            "w": 14,
+            "d": 4.25,
+            "components": 3
+          },
+          {
+            "id": "sp_dbe5965d-2ed8-410c-bf8a-109803471270",
+            "kind": "house",
+            "height": 5.25,
+            "base": 6,
+            "x": 34,
+            "y": 20.5,
+            "w": 5,
+            "d": 1.5,
+            "components": 1
+          },
+          {
+            "id": "sp_6c3b74ec-e76d-487b-96b8-574751c06182",
+            "kind": "house",
+            "height": 5.25,
+            "base": 9,
+            "x": 54,
+            "y": 17.5,
+            "w": 8,
+            "d": 1.5,
+            "components": 1
+          },
+          {
+            "id": "sp_4e36815d-5fed-4f58-acc9-253a9b2b5201",
+            "kind": "house",
+            "height": 7.875,
+            "base": 0,
+            "x": 19,
+            "y": 44.75,
+            "w": 11,
+            "d": 2.25,
+            "components": 1
+          }
+        ]
+      }
+    },
+    {
+      "altitude": 65,
+      "sha256": "bf684340a084fd1c8a59e746d71284e6f21f7442fb806716134dcdc6443d18ac",
+      "stats": {
+        "builds": 3,
+        "frames": 281,
+        "pending": 0,
+        "visible": 93,
+        "textures": 93,
+        "enabled": true,
+        "params": {
+          "enabled": true,
+          "azimuth": 315,
+          "altitude": 65,
+          "opacity": 0.36,
+          "softness": 2,
+          "heightScale": 1
+        },
+        "nativeArt": true,
+        "casters": [
+          {
+            "id": "sp_a2ff01d4-09f0-4e24-a2c7-65a12be34406",
+            "kind": "house",
+            "height": 7.875,
+            "base": 4,
+            "x": 6,
+            "y": 19.75,
+            "w": 14,
+            "d": 4.25,
+            "components": 3
+          },
+          {
+            "id": "sp_dbe5965d-2ed8-410c-bf8a-109803471270",
+            "kind": "house",
+            "height": 5.25,
+            "base": 6,
+            "x": 34,
+            "y": 20.5,
+            "w": 5,
+            "d": 1.5,
+            "components": 1
+          },
+          {
+            "id": "sp_6c3b74ec-e76d-487b-96b8-574751c06182",
+            "kind": "house",
+            "height": 5.25,
+            "base": 9,
+            "x": 54,
+            "y": 17.5,
+            "w": 8,
+            "d": 1.5,
+            "components": 1
+          },
+          {
+            "id": "sp_4e36815d-5fed-4f58-acc9-253a9b2b5201",
+            "kind": "house",
+            "height": 7.875,
+            "base": 0,
+            "x": 19,
+            "y": 44.75,
+            "w": 11,
+            "d": 2.25,
+            "components": 1
+          }
+        ]
+      }
+    }
+  ],
+  "errors": [],
+  "idleCache": true,
+  "offCleanup": true
+}

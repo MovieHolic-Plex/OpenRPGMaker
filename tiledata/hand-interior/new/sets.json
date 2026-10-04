@@ -1,0 +1,242 @@
+{
+ "about": "소품 하네스 파생 묶음(src/harnesses/interior-props/derive.py). 하네스 안에서만 쓰는 묶음 그림 기물 — 칩셋에는 안 굽고, 고르면 칸을 잘라 자식 기물에 넣는다.",
+ "sets": [
+  {
+   "id": "chair S #facing",
+   "name_ko": "의자 S · 방향 묶음",
+   "parent": "chair S",
+   "derive": "facing",
+   "kind": "floor",
+   "category": "home",
+   "category_ko": "가구·살림",
+   "canvas": [
+    64,
+    16
+   ],
+   "footprint": {
+    "w": 4,
+    "h": 1
+   },
+   "description": "남쪽(화면 아래)을 보는 나무 의자 — 등받이가 위. 식탁 북쪽 줄에 1칸마다 1개. 식탁 폭만큼 나란히, 뒤로 걸을 줄을 남긴다.",
+   "use": [
+    "sit"
+   ],
+   "tags": [
+    "선술집 홀·바",
+    "식당",
+    "도박장"
+   ],
+   "slots": [
+    {
+     "key": "S",
+     "label": "원본 · 남",
+     "w": 16,
+     "h": 16,
+     "child": "chair S",
+     "locked": true,
+     "see": "남쪽(화면 아래·카메라 쪽)을 본다 — 앞모습",
+     "foot": [
+      1,
+      1
+     ],
+     "x": 0,
+     "y": 0
+    },
+    {
+     "key": "E",
+     "label": "동",
+     "w": 16,
+     "h": 16,
+     "child": "chair E",
+     "locked": false,
+     "see": "동쪽(화면 오른쪽)을 본다 — 오른쪽을 향한 옆모습",
+     "foot": [
+      1,
+      1
+     ],
+     "x": 16,
+     "y": 0
+    },
+    {
+     "key": "N",
+     "label": "북",
+     "w": 16,
+     "h": 16,
+     "child": "chair N",
+     "locked": false,
+     "see": "북쪽(벽 쪽)을 본다 — 뒷모습(등받이·뒤판이 앞에 온다)",
+     "foot": [
+      1,
+      1
+     ],
+     "x": 32,
+     "y": 0
+    },
+    {
+     "key": "W",
+     "label": "서",
+     "w": 16,
+     "h": 16,
+     "child": "chair W",
+     "locked": false,
+     "see": "서쪽(화면 왼쪽)을 본다 — 왼쪽을 향한 옆모습",
+     "foot": [
+      1,
+      1
+     ],
+     "x": 48,
+     "y": 0
+    }
+   ],
+   "ms": null,
+   "created": "2026-10-04T09:47:32",
+   "note": ""
+  },
+  {
+   "id": "royal chest #state-open",
+   "name_ko": "왕실 상자 · 열림",
+   "parent": "royal chest",
+   "derive": "state",
+   "kind": "floor",
+   "category": "decor",
+   "category_ko": "장식",
+   "canvas": [
+    32,
+    16
+   ],
+   "footprint": {
+    "w": 2,
+    "h": 1
+   },
+   "description": "붉은 칠 보물 상자. 저택 침실·보물고.",
+   "use": [
+    "open"
+   ],
+   "tags": [
+    "안방·왕의 침소",
+    "보물 창고",
+    "서재",
+    "도박장"
+   ],
+   "slots": [
+    {
+     "key": "base",
+     "label": "원본",
+     "w": 16,
+     "h": 16,
+     "child": "royal chest",
+     "locked": true,
+     "foot": [
+      1,
+      1
+     ],
+     "x": 0,
+     "y": 0
+    },
+    {
+     "key": "open",
+     "label": "열림",
+     "w": 16,
+     "h": 16,
+     "child": "royal chest ~open",
+     "locked": false,
+     "foot": [
+      1,
+      1
+     ],
+     "x": 16,
+     "y": 0
+    }
+   ],
+   "ms": null,
+   "created": "2026-10-04T09:47:34",
+   "note": ""
+  },
+  {
+   "id": "lava brazier #loop",
+   "name_ko": "용암 화로 · 움직임 4프레임",
+   "parent": "lava brazier",
+   "derive": "loop",
+   "kind": "floor",
+   "category": "demon",
+   "category_ko": "마왕성",
+   "canvas": [
+    64,
+    32
+   ],
+   "footprint": {
+    "w": 4,
+    "h": 1
+   },
+   "description": "검은 쇠 화로에 끓는 주황 용암(16px 솟음) — 화로 입구의 용암 윗면이 위에서 보인다.",
+   "use": [
+    "light"
+   ],
+   "tags": [
+    "마왕성",
+    "화산"
+   ],
+   "slots": [
+    {
+     "key": "f0",
+     "label": "원본 · 0",
+     "w": 16,
+     "h": 32,
+     "child": null,
+     "locked": true,
+     "foot": [
+      1,
+      1
+     ],
+     "x": 0,
+     "y": 0
+    },
+    {
+     "key": "f1",
+     "label": "1",
+     "w": 16,
+     "h": 32,
+     "child": null,
+     "locked": false,
+     "foot": [
+      1,
+      1
+     ],
+     "x": 16,
+     "y": 0
+    },
+    {
+     "key": "f2",
+     "label": "2",
+     "w": 16,
+     "h": 32,
+     "child": null,
+     "locked": false,
+     "foot": [
+      1,
+      1
+     ],
+     "x": 32,
+     "y": 0
+    },
+    {
+     "key": "f3",
+     "label": "3",
+     "w": 16,
+     "h": 32,
+     "child": null,
+     "locked": false,
+     "foot": [
+      1,
+      1
+     ],
+     "x": 48,
+     "y": 0
+    }
+   ],
+   "ms": 150,
+   "created": "2026-10-04T09:47:36",
+   "note": ""
+  }
+ ]
+}

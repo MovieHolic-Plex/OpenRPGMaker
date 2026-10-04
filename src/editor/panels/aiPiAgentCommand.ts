@@ -45,13 +45,17 @@ import {
   type TeamBoardState,
 } from "@/ai/piAgent/teamBoardState";
 import { changeChipsWithAreas, openWideChangeViewer, renderChangePreviewCard, type ChangePreviewInput } from "./aiChangePreview";
-import { createPiGhostBridge } from "./aiPiGhostBridge";
+import { createPiGhostBridge, scopePiGhostEvent } from "./aiPiGhostBridge";
 import { loadAiConfig } from "@/ai/llmClient";
+import { mapRunScope, independentMapRunRoots, settleMapRuns } from "@/ai/piAgent/mapRunLocks.mjs";
+import { editorAiMapRuns } from "@/ai/piAgent/editorMapRunLocks";
+import { aiProjectRunKey } from "@/editor/aiMapRunOwnership";
 import { composePiTask } from "@/ai/piAgent/executionRoute";
 import { buildPiRunRequest, buildUltrabrainPlanRequest, needsUltrabrainPlanTurn, prefersCallerThinking, withUltrabrainPlan } from "@/ai/piAgent/plainTurn";
 import { applyProposedProject, captureApplyAuthority } from "@/editor/tools/applyChangesetToStore";
 import { mapLossConfirmRequest } from "@/ai/mapDestructionConfirm";
-import { showConfirm } from "@/editor/ui/modal";
+import { requestAssistantDecision } from "./aiDecisionPrompt";
+import { createAssistantHumanEdits, type AssistantHumanEdits } from "@/editor/assistantHumanEdits";
 import { adoptSpatialToolProof, authorMergedSpatialProposal, exportSpatialToolProof } from "@/editor/tools/spatialToolState";
 import { summarizeChanges } from "@/editor/tools/changeset";
 import { store } from "@/project/store";
@@ -261,6 +265,31 @@ export async function runPiCommand(
   surface: PiCommandSurface,
   options: PiRunOptions = {},
 ): Promise<boolean> {
+  const projectKey = aiProjectRunKey();
+  editorAiMapRuns.refreshBundles(projectKey, store.getCurrent());
+  const claim = editorAiMapRuns.acquire(projectKey, mapRunScope({
+    mode: command.mode, mapIds: command.mapIds, project: store.getCurrent(), scopeStrict: command.scopedByUser === true,
+  }), "Pi");
+  if (!claim.ok) {
+    surface.appendBubble("system", "같은 맵의 조수 작업이 이미 진행 중이에요. 앞선 작업이 끝난 뒤 다시 요청해 주세요.");
+    return false;
+  }
+  try { return await runOwnedPiCommand(command, surface, options, projectKey); }
+  finally { claim.release(); }
+}
+
+async function runOwnedPiCommand(
+  command: ParsedPiCommand,
+  surface: PiCommandSurface,
+  options: PiRunOptions,
+  projectKey: string,
+): Promise<boolean> {
+  const humanEdits = createAssistantHumanEdits();
+  try { return await runPiCommandProtected(command, surface, options, humanEdits, projectKey); }
+  finally { humanEdits.dispose(); }
+}
+
+async function runPiCommandProtected(command: ParsedPiCommand, surface: PiCommandSurface, options: PiRunOptions, humanEdits: AssistantHumanEdits, projectKey: string): Promise<boolean> {
   if (!command.task) {
     surface.appendBubble("system", "사용법: /pi <지시> · /pi 맵id,맵id <지시> · /team <지시>");
     return false;
@@ -287,6 +316,7 @@ export async function runPiCommand(
   const config = loadAiConfig();
   const applyMode = normalizePiApplyMode(config.piApply);
   const publication = createPiPublication(base, applyMode, surface, {
+    humanEdits,
     beforeApply: (before, next) => ghost.present(before, next, surface.signal),
     afterApply: project => ghost.accept(project),
   });
@@ -328,7 +358,8 @@ export async function runPiCommand(
   }
   const routineEdit = options.routineEdit === true && !readOnly && !team
     && command.mapIds.length === 1 && Boolean(base.maps[command.mapIds[0]!]);
-  const groups = team || options.planOnly ? [command.mapIds] : command.mapIds.length > 0 ? command.mapIds.map((id) => [id]) : [[] as string[]];
+  const mapRoots = independentMapRunRoots(base, command.mapIds);
+  const groups = team || options.planOnly ? [mapRoots] : mapRoots.length > 0 ? mapRoots.map((id) => [id]) : [[] as string[]];
   // 병합 여부 한 곳 — 체크포인트 발행·최종 병합·요청의 가드 신호(mapBundleMerge)가 같은 값을 쓴다.
   // 가드가 꺼진 채 병합만 하면 범위 밖 맵 변경이 도구에선 성공하고 병합에서 버려진다.
   const mergedFromBundles = mergesMapBundles({ team, mapIds: command.mapIds, scopedByUser: command.scopedByUser === true, groupCount: groups.length });
@@ -469,7 +500,11 @@ export async function runPiCommand(
       navigateView(nested.name, result?.data);
     }
     // Live modes preview authoritative checkpoints; post-commit deltas must not replay.
-    if (!options.villageContract && isLiveApplyMode(applyMode) && (nested.type === "map_delta" || nested.type === "done")) return;
+    if (!options.villageContract && isLiveApplyMode(applyMode)
+      && (nested.type === "map_delta" || (nested.type === "done" && event.type !== "agent_event"))) {
+      ghost.observeActivity(event);
+      return;
+    }
     ghost.handleEvent(event);
   };
   // 워커의 「턴 상한(N)을 넘어 중단했습니다.」를 다이얼 어휘로 옮긴다. 옮기는 자리가 여기인 이유:
@@ -513,7 +548,12 @@ export async function runPiCommand(
     if (question) surface.onTilesetChangeQuestion?.(question);
     // 오류 문구는 갈라지기 **전에** 한 번만 고친다(explainTurnCap 주석 참고).
     const event: PiAgentEvent = raw.type === "error" ? { ...raw, message: explainTurnCap(raw.message) } : raw;
-    showConstructionEvent(event);
+    const agentId = mapIds.join(",") || `agent-${index + 1}`;
+    if (!team && event.type === "start") {
+      ghost.observeActivity({ type: "agent_spawn", agentId, role: "builder", mapId: mapIds[0] ?? null,
+        mapName: mapIds[0] ? base.maps[mapIds[0]]?.name ?? null : null, task: command.task });
+    }
+    showConstructionEvent(team ? event : scopePiGhostEvent(event, agentId));
     if (event.type === "assistant") lastAssistantText = event.text;
     // 팀 모드의 오류도 실행 요약에 실린다. 예전에는 여기서 곧장 return 해 streamErrors 가 늘 비었고,
     // 팀 런은 오류를 한 건도 안 낸 것처럼 기록됐다.
@@ -526,7 +566,6 @@ export async function runPiCommand(
       push(event);
       return;
     }
-    const agentId = mapIds.join(",") || `agent-${index + 1}`;
     if (event.type === "start") {
       push({ type: "agent_spawn", agentId, role: "builder", mapId: mapIds[0] ?? null, mapName: mapIds[0] ? base.maps[mapIds[0]]?.name ?? null : null, task: command.task });
     }
@@ -560,7 +599,7 @@ export async function runPiCommand(
       let planError = "";
       push({ type: "agent_spawn", agentId: "ultrabrain-plan", role: "orchestrator", mapId: null, mapName: null, task: command.task, label: "Ultrabrain · 계획" });
       const planned = await stage("plan", () => runPiAgentViaCompanion(buildUltrabrainPlanRequest({
-        brain, modelTask, mapIds: command.mapIds, ...here, project: base,
+        brain, modelTask, mapIds: command.mapIds, ...here, project: base, projectKey,
         scopedByUser: command.scopedByUser === true,
         ...(options.maxTurns === undefined ? {} : { maxTurns: options.maxTurns }),
         ...(options.initialToolNames ? { initialToolNames: options.initialToolNames } : {}),
@@ -572,7 +611,7 @@ export async function runPiCommand(
         const question = tilesetQuestionFromEvent(raw);
         if (question) surface.onTilesetChangeQuestion?.(question);
         const event: PiAgentEvent = raw.type === "error" ? { ...raw, message: explainTurnCap(raw.message) } : raw;
-        showConstructionEvent(event);
+        showConstructionEvent(scopePiGhostEvent(event, "ultrabrain-plan"));
         push({ type: "agent_event", agentId: "ultrabrain-plan", event });
         // 계획 턴이 참고 작품을 검색하는 자리다 — 사용자는 아직 화면에 "어떻게 바꿀지 정리하고 있어요"만 보고 있다.
         trackWebSearchStatus(event, "어떻게 바꿀지 정리하고 있어요.");
@@ -587,11 +626,11 @@ export async function runPiCommand(
       (surface.appendProcess ?? ((text: string) => surface.appendBubble("assistant", text)))(`계획\n${plan}`);
       executionTask = withUltrabrainPlan(modelTask, plan);
     }
-    results = await stage("exec", () => Promise.all(groups.map((mapIds, index) => runPiAgentViaCompanion(
+    results = await stage("exec", () => settleMapRuns(groups.map((mapIds, index) => runPiAgentViaCompanion(
       buildPiRunRequest({
         team, planOnly: options.planOnly, readOnly, applyMode, villageContract: options.villageContract,
         brain, deep, writer: modelForRole(config, "writer"),
-        modelTask, executionTask, mapIds, ...here, project: base,
+        modelTask, executionTask, mapIds, ...here, project: base, projectKey,
         scopedByUser: command.scopedByUser === true, mapBundleMerge: mergedFromBundles,
         ...(options.maxTurns === undefined ? {} : { maxTurns: options.maxTurns }),
         ...(options.toolDomains ? { toolDomains: options.toolDomains } : {}),
@@ -792,7 +831,7 @@ ${contractReleased.message}`);
         const repairBase = publication.count ? publication.project : merged.project;
         surface.setStatus(`AI가 검수 문제를 수정하고 있어요 (${attempt + 1}/2).`);
         const repaired = await stage("review", () => runPiAgentViaCompanion({
-          mode: "single", provider: deep.provider, model: deep.model, project: repairBase,
+          mode: "single", provider: deep.provider, model: deep.model, project: repairBase, projectKey,
           mapIds: command.mapIds, ...here, scopeStrict: command.scopedByUser === true,
           task: `사용자 요청: ${command.task}\n기존 요청 범위를 유지하며 다음 검수 문제만 수정하세요.\n${reviews.filter(r => !r.harmonious).map(r => `${r.mapId}: ${r.summary} ${r.findings.join("; ")}`).join("\n")}`,
           applyMode: "auto", maxTurns: options.maxTurns, thinkingLevel: execThinkingLevel,
@@ -908,7 +947,7 @@ ${contractReleased.message}`);
     // 한 줄에 맵 16→4, 이벤트 20→0, 확인 한 번 없이 「적용 완료」).
     const loss = mapLossConfirmRequest(publication.project, merged.project);
     if (loss && applyMode !== "yolo" && applyMode !== "auto") {
-      const approved = await showConfirm({
+      const approved = await requestAssistantDecision(surface, {
         title: loss.title,
         message: loss.message,
         confirmLabel: loss.confirmLabel,
@@ -937,6 +976,7 @@ ${contractReleased.message}`);
     // 스냅숏이 구간이 닫히기 전에 찍혔다 — 그래서 표의 apply 는 구조적으로 항상 0ms 였다(2026-09-26 리뷰 실측).
     // 사람이 삭제 확인 모달을 보는 시간도 이제 들어가지 않는다 — 알아야 하는 값은 적용 자체의 벽시계다.
     const appliedResult = alreadyPublished ? { ok: true as const } : await stage("apply", () => applyProposedProject(merged.project, {
+    humanEdits,
     base: publication.count ? publication.authority : proposalBase,
     baseline: publication.count ? publication.baseline : baseline,
     source: "agent",
@@ -963,6 +1003,7 @@ ${contractReleased.message}`);
       surface.appendBubble("system", "변경 내용을 적용하지 못했어요. 현재 맵과 작업 과정을 확인해 주세요.");
       return false;
     }
+    if ("preservedCells" in appliedResult && appliedResult.preservedCells) surface.appendProcess?.(`직접 편집한 ${appliedResult.preservedCells}칸을 보존했어요.`);
     applied = true;
     const mergeNote = "merge" in appliedResult ? appliedResult.merge : undefined;
     if (mergeNote?.conflicts.length) surface.appendProcess?.(`다른 편집과 같은 자리를 바꿔 이미 반영된 쪽을 남겼어요: ${describeMergeConflicts(mergeNote)}`);

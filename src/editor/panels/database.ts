@@ -17,7 +17,7 @@ import { renderLifeCollectionsTab } from "@/editor/panels/databaseLifeCollection
 import { renderInventoryCatalog } from "@/editor/panels/databaseInventoryCatalog";
 import { inventoryCatalogSession, setSearchQueryForCollection } from "@/editor/panels/databaseRecordViewSession";
 import { renderRecordTab } from "@/editor/panels/databaseRecordViews";
-import { disposeAnimationPreviewsIn } from "@/editor/panels/databaseAnimationPreview";
+import { disposeDatabasePreviewsIn, retainDatabasePreviewsIn } from "./databasePreviewLifecycle";
 import {
   resumeSkillAnimationStagesIn,
   stopSkillAnimationStagesIn,
@@ -508,6 +508,7 @@ export function renderDatabasePanel(container: HTMLElement): void {
   spatialDatabaseHost = container;
   const cache = tabRenderCaches.get(container);
   if (cache) for (const tab of cache.views.keys()) evictDatabaseTabView(cache, tab);
+  disposeDatabasePreviewsIn(container);
   clearChildren(container);
   tabRenderCaches.delete(container);
   resetWorldGenTabViewState();
@@ -563,6 +564,7 @@ export function renderDatabasePanel(container: HTMLElement): void {
 
   renderActiveTab(body, container);
   container.append(buildGroupStrip(header), header, body);
+  resumeSkillAnimationStagesIn(body);
   syncGroupStrip(header);
   revealActiveTab(header);
   if (typeof ResizeObserver !== "undefined") {
@@ -1137,12 +1139,15 @@ function renderActiveTabUnguarded(
   if (options.forceFresh || mapView || tab === "characterAppearances") evictDatabaseTabView(cache, tab);
   const cached = cache.views.get(tab);
   if (cached) {
+    retainDatabasePreviewsIn(body, true);
     stopSkillAnimationStagesIn(body);
     body.replaceChildren(...cached);
+    retainDatabasePreviewsIn(body, false);
     resumeSkillAnimationStagesIn(body);
     return;
   }
 
+  retainDatabasePreviewsIn(body, true);
   stopSkillAnimationStagesIn(body);
   body.replaceChildren();
   const content = mapView ? el("div", { class: "db-map-content" }) : body;
@@ -1309,6 +1314,7 @@ function renderActiveTabUnguarded(
   // project after rendering so such a mutation invalidates every older tab entry.
   cache = tabRenderCacheFor(container);
   cache.views.set(tab, Array.from(body.childNodes));
+  resumeSkillAnimationStagesIn(body);
 }
 
 registerAppearanceGenerationUI((appearanceId) => {
@@ -1319,11 +1325,20 @@ registerAppearanceGenerationUI((appearanceId) => {
 function evictDatabaseTabView(cache: DatabaseTabRenderCache, tab: DatabaseTab): void {
   for (const node of cache.views.get(tab) ?? []) {
     if (node instanceof HTMLElement) {
-      disposeAnimationPreviewsIn(node);
+      disposeDatabasePreviewsIn(node);
       disposeDatabaseCinematicsIn(node);
     }
   }
   cache.views.delete(tab);
+}
+
+/** Close includes detached cache entries, not just the connected modal subtree. */
+export function disposeDatabasePanelPreviews(container: HTMLElement): void {
+  disposeDatabasePreviewsIn(container);
+  const cache = tabRenderCaches.get(container);
+  if (cache) for (const nodes of cache.views.values()) {
+    for (const node of nodes) if (node instanceof HTMLElement) disposeDatabasePreviewsIn(node);
+  }
 }
 
 function tabRenderCacheFor(container: HTMLElement): DatabaseTabRenderCache {

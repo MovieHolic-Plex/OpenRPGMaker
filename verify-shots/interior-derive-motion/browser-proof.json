@@ -1,0 +1,8 @@
+{
+  "url": "http://mdc-server:18312/harness",
+  "loopPreview": true,
+  "animationPixelsChanged": true,
+  "facingPreview": true,
+  "pageErrors": [],
+  "mutationsBlocked": true
+}

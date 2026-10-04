@@ -1,0 +1,361 @@
+{
+ "baseline": {
+  "joseon_field": {
+   "findings": 0,
+   "maskMismatchKnown": 110
+  },
+  "joseon_cave": {
+   "findings": 0,
+   "maskMismatchKnown": 0
+  },
+  "joseon_in_house_b": {
+   "findings": 0,
+   "maskMismatchKnown": 0
+  },
+  "joseon_in_inn_b": {
+   "findings": 0,
+   "maskMismatchKnown": 0
+  },
+  "joseon_in_smith_b": {
+   "findings": 0,
+   "maskMismatchKnown": 0
+  },
+  "joseon_in_pharmacy_b": {
+   "findings": 0,
+   "maskMismatchKnown": 0
+  },
+  "joseon_in_school_b": {
+   "findings": 0,
+   "maskMismatchKnown": 0
+  },
+  "joseon_in_office_b": {
+   "findings": 0,
+   "maskMismatchKnown": 0
+  },
+  "joseon_in_throne": {
+   "findings": 0,
+   "maskMismatchKnown": 0
+  },
+  "joseon_in_corridor": {
+   "findings": 0,
+   "maskMismatchKnown": 0
+  },
+  "joseon_in_bedchamber": {
+   "findings": 0,
+   "maskMismatchKnown": 0
+  }
+ },
+ "cases": [
+  {
+   "map": "joseon_field",
+   "code": "door-unreachable",
+   "at": [
+    8,
+    46
+   ],
+   "change": "굴 입구 `fld_cave_a` 문 앞 칸 (8,46) 에 돌탑(`fld_cairn`) 1칸을 윗층에 놓음",
+   "detected": [
+    [
+     8,
+     46
+    ]
+   ],
+   "detectedCount": 1
+  },
+  {
+   "map": "joseon_cave",
+   "code": "region-unreachable",
+   "at": [
+    19,
+    9
+   ],
+   "change": "동굴 길목 4칸 (23, 13)~(26, 13) 에 돌탑을 놓아 길을 끊음(그 너머 34칸이 갇힘)",
+   "detected": [
+    [
+     19,
+     9
+    ]
+   ],
+   "detectedCount": 1
+  },
+  {
+   "map": "joseon_field",
+   "code": "object-tile-in-lower-layer",
+   "at": [
+    68,
+    15
+   ],
+   "change": "소나무 `fld_pine_a` (68,15) 수관 위 두 줄 8칸을 lowerTiles 에 칠함",
+   "detected": [
+    [
+     68,
+     15
+    ],
+    [
+     69,
+     15
+    ],
+    [
+     70,
+     15
+    ],
+    [
+     71,
+     15
+    ],
+    [
+     68,
+     16
+    ],
+    [
+     69,
+     16
+    ]
+   ],
+   "detectedCount": 8
+  },
+  {
+   "map": "joseon_field",
+   "code": "autotile-mask-mismatch",
+   "at": [
+    75,
+    76
+   ],
+   "change": "늪 서쪽 둑 칸 (75,76) 을 동쪽 둑 모양(마스크 102→108)으로 바꿈",
+   "detected": [
+    [
+     "jb_fld_bog94_autotile",
+     75,
+     76
+    ]
+   ],
+   "detectedCount": 1
+  },
+  {
+   "map": "joseon_field",
+   "code": "same-prop-three-in-row",
+   "at": [
+    30,
+    9
+   ],
+   "change": "풀밭 (30,9)~(32,9) 에 같은 작은 바위(`fld_rock_s_a`) 셋을 가로로 일렬로 놓음",
+   "detected": [
+    [
+     30,
+     9
+    ]
+   ],
+   "detectedCount": 1
+  },
+  {
+   "map": "joseon_cave",
+   "code": "wall-missing-under-ceiling",
+   "at": [
+    21,
+    5
+   ],
+   "change": "동굴 벽 앞면 아랫줄 (21,6) 을 바닥 칸으로 바꿈(앞면 두 줄 구조가 깨짐)",
+   "detected": [
+    [
+     21,
+     5
+    ]
+   ],
+   "detectedCount": 1
+  },
+  {
+   "map": "joseon_in_inn_b",
+   "code": "entry-blocked",
+   "at": [
+    11,
+    11
+   ],
+   "change": "들어오는 칸 (11,11) 에 걸상(`in_b_stool`)을 놓음",
+   "detected": [
+    [
+     11,
+     11
+    ]
+   ],
+   "detectedCount": 1
+  },
+  {
+   "map": "joseon_in_house_b",
+   "code": "region-unreachable",
+   "at": [
+    1,
+    5
+   ],
+   "change": "민가 칸막이 문 틈 (4,6) 에 걸상을 놓음(그 너머 6칸이 갇힘)",
+   "detected": [
+    [
+     1,
+     5
+    ]
+   ],
+   "detectedCount": 1
+  },
+  {
+   "map": "joseon_in_school_b",
+   "code": "wall-missing-under-ceiling",
+   "at": [
+    1,
+    1
+   ],
+   "change": "서당 북벽 벽면 윗줄 (1,1) 의 벽 조각 칸을 지움",
+   "detected": [
+    [
+     1,
+     1
+    ]
+   ],
+   "detectedCount": 1
+  },
+  {
+   "map": "joseon_in_office_b",
+   "code": "object-tile-in-lower-layer",
+   "at": [
+    1,
+    1
+   ],
+   "change": "관아 벽 조각 칸 (1,1) 을 lowerTiles 에 칠함",
+   "detected": [
+    [
+     1,
+     1
+    ]
+   ],
+   "detectedCount": 1
+  },
+  {
+   "map": "joseon_in_smith_b",
+   "code": "same-prop-three-in-row",
+   "at": [
+    3,
+    4
+   ],
+   "change": "대장간 바닥 (3,4)~(5,4) 에 같은 걸상 셋을 가로로 일렬로 놓음",
+   "detected": [
+    [
+     3,
+     4
+    ]
+   ],
+   "detectedCount": 1
+  },
+  {
+   "map": "joseon_in_house_b",
+   "code": "autotile-mask-mismatch",
+   "at": [
+    12,
+    9
+   ],
+   "change": "천장 가장자리 칸 (12,9) 을 반대쪽 가장자리 모양(마스크 102→108)으로 바꿈",
+   "detected": [
+    [
+     "jb_in_b_ceil47_autotile",
+     12,
+     9
+    ]
+   ],
+   "detectedCount": 1
+  },
+  {
+   "map": "joseon_in_throne",
+   "code": "aisle-blocked",
+   "at": [
+    9,
+    8
+   ],
+   "change": "어도(카펫) y=12 의 세 칸 x=9~11 에 걸상 셋을 놓음",
+   "detected": [
+    [
+     9,
+     8
+    ]
+   ],
+   "detectedCount": 1
+  },
+  {
+   "map": "joseon_in_corridor",
+   "code": "wall-missing-under-ceiling",
+   "at": [
+    2,
+    1
+   ],
+   "change": "회랑 북벽 (2,1) 의 벽 조각 칸을 지움",
+   "detected": [
+    [
+     2,
+     1
+    ]
+   ],
+   "detectedCount": 1
+  },
+  {
+   "map": "joseon_in_bedchamber",
+   "code": "door-unreachable",
+   "at": [
+    9,
+    10
+   ],
+   "change": "침전 칸막이 문 앞 칸 (9,10) 에 걸상을 놓음",
+   "detected": [
+    [
+     9,
+     10
+    ]
+   ],
+   "detectedCount": 1
+  },
+  {
+   "map": "joseon_in_bedchamber",
+   "code": "region-unreachable",
+   "at": [
+    11,
+    3
+   ],
+   "change": "침전 칸막이 틈 [(11, 5), (11, 6)] 두 칸을 걸상으로 막음(침소 26칸이 갇힘)",
+   "detected": [
+    [
+     11,
+     3
+    ]
+   ],
+   "detectedCount": 1
+  },
+  {
+   "map": "joseon_in_throne",
+   "code": "object-tile-in-lower-layer",
+   "at": [
+    7,
+    3
+   ],
+   "change": "어좌 단 윗면 칸 (7,3) 을 lowerTiles 에 칠함",
+   "detected": [
+    [
+     7,
+     3
+    ]
+   ],
+   "detectedCount": 1
+  },
+  {
+   "map": "joseon_in_throne",
+   "code": "autotile-mask-mismatch",
+   "at": [
+    11,
+    21
+   ],
+   "change": "궁 천장(단청 띠) 가장자리 칸 (11,21) 을 반대쪽 가장자리 모양(마스크 102→108)으로 바꿈",
+   "detected": [
+    [
+     "jb_pal_ceil47_autotile",
+     11,
+     21
+    ]
+   ],
+   "detectedCount": 1
+  }
+ ]
+}

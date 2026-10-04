@@ -1,0 +1,222 @@
+{
+  "commit": "f1bb35b6820b0925c70a39a583fb52e3c81c8ca5",
+  "conditions": "Native Chromium, synthetic UI fixtures only, no host save/model calls. Pixel comparisons use independent full relief raster <=96x96. Retained byte counts cover page arrays, not process heap.",
+  "errors": [],
+  "checks": [
+    "Relief page seams, world patterns, ramps/stairs, bridges and changed pad: RGBA+owner+under/over match independent full bake",
+    "Repeated pan evicts and reconstructs pages on return",
+    "Versioned warm reads avoid scans; draft in-place writes remain detectable",
+    "Sparse metadata and descriptor-free relief protection retain exact affected cells",
+    "Assistant protects authored heights independently of mixed tile descriptors",
+    "Actual editor pan has no destroyed tracking/empty chunks and retains viewport relief pages"
+  ],
+  "rows": [
+    {
+      "case": "relief-pixel-parity",
+      "style": "default",
+      "visiblePixels": 43008,
+      "states": 4,
+      "differences": 0,
+      "pages": 12,
+      "bytes": 5505024,
+      "pad": 32,
+      "originY": -32
+    },
+    {
+      "case": "relief-pixel-parity",
+      "style": "grass-cliff",
+      "visiblePixels": 43008,
+      "states": 4,
+      "differences": 0,
+      "pages": 12,
+      "bytes": 5505024,
+      "pad": 32,
+      "originY": -32
+    },
+    {
+      "case": "relief-pixel-parity",
+      "style": "tundra-snow",
+      "visiblePixels": 43008,
+      "states": 4,
+      "differences": 0,
+      "pages": 12,
+      "bytes": 5505024,
+      "pad": 32,
+      "originY": -32
+    },
+    {
+      "case": "relief-pan-pages",
+      "laps": 3,
+      "maxPages": 9,
+      "pages": 6,
+      "bytes": 2752512,
+      "pad": 32,
+      "originY": -32
+    },
+    {
+      "case": "warm-relief-signature",
+      "calls": 100,
+      "arrayReads": 0,
+      "arrayReadsIncludingInvalidation": 2304
+    },
+    {
+      "case": "native-editor-pan",
+      "x": 20,
+      "y": 20,
+      "full": 1,
+      "window": 0,
+      "same": 0,
+      "clear": 0,
+      "backing": {
+        "pages": 20,
+        "bytes": 9175040,
+        "pad": 32,
+        "originY": -32,
+        "strips": 526
+      },
+      "culling": {
+        "tracked": 2728,
+        "buckets": 14,
+        "destroyed": 0
+      },
+      "residentTileCells": 5456,
+      "residentTileObjects": 2728,
+      "chunks": 14,
+      "emptyChunks": 0
+    },
+    {
+      "case": "native-editor-pan",
+      "x": 64,
+      "y": 64,
+      "full": 1,
+      "window": 0,
+      "same": 0,
+      "clear": 0,
+      "backing": {
+        "pages": 36,
+        "bytes": 16515072,
+        "pad": 32,
+        "originY": -32,
+        "strips": 1178
+      },
+      "culling": {
+        "tracked": 3243,
+        "buckets": 20,
+        "destroyed": 0
+      },
+      "residentTileCells": 6486,
+      "residentTileObjects": 3243,
+      "chunks": 20,
+      "emptyChunks": 0
+    },
+    {
+      "case": "native-editor-pan",
+      "x": 105,
+      "y": 105,
+      "full": 1,
+      "window": 0,
+      "same": 0,
+      "clear": 0,
+      "backing": {
+        "pages": 16,
+        "bytes": 7340032,
+        "pad": 32,
+        "originY": -32,
+        "strips": 508
+      },
+      "culling": {
+        "tracked": 2300,
+        "buckets": 12,
+        "destroyed": 0
+      },
+      "residentTileCells": 4600,
+      "residentTileObjects": 2300,
+      "chunks": 12,
+      "emptyChunks": 0
+    },
+    {
+      "case": "native-editor-pan",
+      "x": 20,
+      "y": 20,
+      "full": 1,
+      "window": 0,
+      "same": 0,
+      "clear": 0,
+      "backing": {
+        "pages": 20,
+        "bytes": 9175040,
+        "pad": 32,
+        "originY": -32,
+        "strips": 526
+      },
+      "culling": {
+        "tracked": 2728,
+        "buckets": 14,
+        "destroyed": 0
+      },
+      "residentTileCells": 5456,
+      "residentTileObjects": 2728,
+      "chunks": 14,
+      "emptyChunks": 0
+    },
+    {
+      "case": "native-editor-pan",
+      "x": 64,
+      "y": 64,
+      "full": 1,
+      "window": 0,
+      "same": 0,
+      "clear": 0,
+      "backing": {
+        "pages": 36,
+        "bytes": 16515072,
+        "pad": 32,
+        "originY": -32,
+        "strips": 1178
+      },
+      "culling": {
+        "tracked": 3243,
+        "buckets": 20,
+        "destroyed": 0
+      },
+      "residentTileCells": 6486,
+      "residentTileObjects": 3243,
+      "chunks": 20,
+      "emptyChunks": 0
+    },
+    {
+      "case": "native-editor-pan",
+      "x": 20,
+      "y": 20,
+      "full": 1,
+      "window": 0,
+      "same": 0,
+      "clear": 0,
+      "backing": {
+        "pages": 20,
+        "bytes": 9175040,
+        "pad": 32,
+        "originY": -32,
+        "strips": 526
+      },
+      "culling": {
+        "tracked": 2728,
+        "buckets": 14,
+        "destroyed": 0
+      },
+      "residentTileCells": 5456,
+      "residentTileObjects": 2728,
+      "chunks": 14,
+      "emptyChunks": 0
+    }
+  ],
+  "productionSources": {
+    "src/project/relief/paged.ts": "aa2c36a72f80ace38a8f21c0a0c6045a8702abacdb386ada9a9e7c511997be81",
+    "src/project/relief/revision.ts": "60d35957ff714cb9fc6fd42434d3561803c9d7700a2e18786aada4088fa7a838",
+    "src/project/relief/render.ts": "101ffaad57b2e904889337f6176e971d78a14939f19fc85df28a9108064b4569",
+    "src/editor/reliefLiveStrips.ts": "1f8a7121511dd67373de7c9ef964edd33b344ae85da7e70bd4a238e1f191d693",
+    "src/editor/reliefGroundSurface.ts": "cb1f516b2bac31e21379a59f79b4515e0658bf2f8dd79a395eb04201991b74ad",
+    "src/player/playSceneTileCulling.ts": "4894f64d065c09884c82472ff1d8a15d5c15b9e60bad882f98188a4d105183b8",
+    "src/editor/assistantHumanEdits.ts": "433e117e51748a08ebf9fb184301daf59125dbcc714913da5699644a5e6d4488"
+  }
+}

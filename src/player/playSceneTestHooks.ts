@@ -12,6 +12,7 @@ import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { cloneRngState, normalizeRngState, type RngState } from "@/util/rng";
 import type { RuntimePerfCounters } from "@/player/runtimePerfCounters";
 import { subscribeActionCombatObservations } from "@/player/playSceneActionCombat";
+import { sunlightDiagnostics } from "./sunlightLayer";
 import {
   normalizeCloudShadowParams,
 } from "@/player/cloudShadows";
@@ -83,6 +84,7 @@ type TestHookWindow = Window & {
   __oprnEmotes?: () => readonly SceneEmoteDebug[];
   /** 구름 그림자 레이어 관측. 계측이 꺼진 씬에는 없다. */
   __oprnCloudShadows?: () => CloudShadowDebug;
+  __oprnSunlight?: () => ReturnType<typeof sunlightDiagnostics>;
   /** 이 훅들을 심은 씬. 옛 씬의 shutdown 이 새 씬의 훅을 지우지 않게 하는 소유권 표다. */
   __oprnHooksScene?: Phaser.Scene;
 
@@ -274,6 +276,7 @@ export function installPlaySceneTestHooks(
   w.__oprnCamera = () => cameraDebug(scene);
   w.__oprnPerf = () => perfCountersDebug(scene);
   w.__oprnCloudShadows = () => cloudShadowsDebug(scene);
+  w.__oprnSunlight = () => sunlightDiagnostics(scene);
   w.__oprnEmotes = () => describeSceneEmotes(scene as unknown as Parameters<typeof describeSceneEmotes>[0]);
 
   w.__oprnActionCombat = () => actionCombatDebug(scene);
@@ -383,6 +386,7 @@ export function installPlaySceneTestHooks(
     delete w.__oprnPerf;
     delete w.__oprnEmotes;
     delete w.__oprnCloudShadows;
+    delete w.__oprnSunlight;
     delete w.__oprnHooksScene;
 
     delete w.__oprnSetActorVitals;

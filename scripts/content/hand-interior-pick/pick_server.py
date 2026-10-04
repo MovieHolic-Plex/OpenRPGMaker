@@ -38,18 +38,18 @@ _OBJ = {}
 def objects_by_slug():
     """common.objects_by_slug 는 부를 때마다 메타 두 파일을 다시 읽는다(약 27ms). 그림 요청마다 두 번 불러 10장을 한꺼번에 받으면
     1초 넘게 줄을 섰다(실측) → 두 파일 시각이 그대로면 지난 결과를 쓴다."""
-    k = tuple(os.path.getmtime(f) if os.path.exists(f) else 0 for f in (os.path.join(V5, 'interior-meta.json'), NEW_ITEMS))
+    k = tuple(os.path.getmtime(f) if os.path.exists(f) else 0 for f in (os.path.join(V5, 'interior-meta.json'), NEW_ITEMS, RESIZE_STAMP, SETS))
     if _OBJ.get('k') != k: _OBJ.update(k=k, v=common_objects_by_slug())
     return _OBJ['v']
 SAFE = re.compile(r'^[A-Za-z0-9_]+$'); SAFE_FILE = re.compile(r'^[A-Za-z0-9_.\-]+$')
 
 def _harness_api():
     """소품 하네스(src/harnesses/interior-props) 경로 — /harness 화면과 /api/harness/*. 없으면 None(옛 화면만)."""
-    import importlib.util
+    import importlib
     p = os.path.join(ROOT, 'src', 'harnesses', 'interior-props', 'api.py')
     if not os.path.exists(p): return None
-    spec = importlib.util.spec_from_file_location('prop_harness_api', p); m = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(m); return m
+    sys.path.insert(0, ROOT)
+    return importlib.import_module('src.harnesses.interior-props.api')
 HAPI = _harness_api()
 
 def read_json(p, default):
@@ -295,6 +295,7 @@ class H(BaseHTTPRequestHandler):
             picks_db.export()   # 커밋은 끝났다. 내보내기 실패는 저장 실패가 아니다(다음 쓰기·시작 때 다시 쓴다)
         except Exception as e:
             print('picks.json 내보내기 실패:', repr(e), flush=True)
+        if HAPI: HAPI.queue_shared_publish()
         return self.send(200, json.dumps({'ok': True, 'id': i, 'event': eid, 'pick': rec}, ensure_ascii=False))
 
 def main():
@@ -304,6 +305,7 @@ def main():
     picks_db.export()
     picks_db.backup_loop()
     warm_loop()
+    if HAPI: HAPI.start()   # 하네스 상태: 지난 스냅숏을 올리고 뒤에서 미리 만든다
     ThreadingHTTPServer.daemon_threads = True
     srv = ThreadingHTTPServer((a.host, a.port), H)
     print(f'http://{a.host}:{a.port}/ — {PICK}', flush=True)

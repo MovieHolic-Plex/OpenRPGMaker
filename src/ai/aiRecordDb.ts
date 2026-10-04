@@ -11,7 +11,7 @@
 // 산다. 호출자는 `writeAiRecords` 가 돌려주는 backend 종류로 «새로 고침 뒤에도 남는가» 를 안다.
 
 export const AI_RECORD_DB_NAME = "oprn-ai-records";
-export const AI_RECORD_DB_VERSION = 3;
+export const AI_RECORD_DB_VERSION = 4;
 export const AI_RECORD_STORES = { conversations: "conversations", runCheckpoints: "runCheckpoints" } as const;
 export type AiRecordStoreName = (typeof AI_RECORD_STORES)[keyof typeof AI_RECORD_STORES];
 export type AiRecordBackendKind = "indexeddb" | "memory";
@@ -21,6 +21,39 @@ interface ScopedAiRecordRow extends AiRecordRow { readonly projectContextKey?: s
 const TOMBSTONES = "conversationTombstones";
 const memoryTombstones = new Set<string>();
 const tombstoneKey = (id: string, scope: string | null): string => JSON.stringify([scope, id]);
+
+const SUMMARIES = "conversationSummaries", SUMMARY_META = "conversationSummaryMeta";
+interface SummaryValue extends ScopedAiRecordRow { readonly mapIds: readonly string[]; readonly mapAttribution: string }
+interface SummaryRow { id: string; scope: string; orderAt: number; attribution: string; mapOrderKeys: IDBValidKey[]; summary: SummaryValue }
+let summaryProjector: ((row: unknown) => SummaryValue | null) | undefined;
+let summaryPreparation: Promise<void> | undefined;
+const memorySummaries = new Map<string, SummaryRow>();
+let memorySummariesReady = false;
+const scopeToken = (scope: string | null) => JSON.stringify(scope);
+export function registerConversationSummaryProjector(projector: (row: unknown) => SummaryValue | null): void {
+  summaryProjector = projector;
+  memorySummariesReady = false;
+}
+function summaryRow(value: SummaryValue): SummaryRow {
+  const scope = scopeToken(value.projectContextKey ?? null), orderAt = -value.savedAt;
+  return { id: value.id, scope, orderAt, attribution: value.mapAttribution,
+    mapOrderKeys: value.mapIds.map(map => [scope, map, orderAt, value.id]), summary: value };
+}
+function updateMemorySummary(id: string, value: unknown): void {
+  const projected = value == null ? null : summaryProjector?.(value);
+  if (projected) memorySummaries.set(id, summaryRow(projected)); else memorySummaries.delete(id);
+  if (!summaryProjector) memorySummariesReady = false;
+}
+function summaryTransactionStores(store: AiRecordStoreName): string[] {
+  return store === AI_RECORD_STORES.conversations ? [store, SUMMARIES, SUMMARY_META] : [store];
+}
+function updateSummary(tx: IDBTransaction, id: string, value: unknown): void {
+  const projected = value == null ? null : summaryProjector?.(value);
+  if (projected) tx.objectStore(SUMMARIES).put(summaryRow(projected)); else tx.objectStore(SUMMARIES).delete(id);
+  // A caller without the conversation module can still seed old rows. Its next
+  // archive query must rebuild once, rather than expose a silently stale index.
+  if (!summaryProjector) { tx.objectStore(SUMMARY_META).delete("ready"); summaryPreparation = undefined; }
+}
 
 let dbPromise: Promise<IDBDatabase | null> | null = null;
 let openFailureWarned = false;
@@ -64,6 +97,14 @@ function upgrade(db: IDBDatabase): void {
     store.createIndex("savedAt", "savedAt");
     store.createIndex("projectContextKey", "projectContextKey");
   }
+  if (!db.objectStoreNames.contains(SUMMARIES)) {
+    const summaries = db.createObjectStore(SUMMARIES, { keyPath: "id" });
+    summaries.createIndex("newest", ["orderAt", "id"]);
+    summaries.createIndex("scopeOrder", ["scope", "orderAt", "id"]);
+    summaries.createIndex("attributionOrder", ["scope", "attribution", "orderAt", "id"]);
+    summaries.createIndex("mapOrder", "mapOrderKeys", { multiEntry: true });
+    db.createObjectStore(SUMMARY_META, { keyPath: "id" });
+  }
 }
 
 function openDatabase(): Promise<IDBDatabase | null> {
@@ -78,6 +119,7 @@ function openDatabase(): Promise<IDBDatabase | null> {
       db.onversionchange = () => {
         db.close();
         dbPromise = null;
+        summaryPreparation = undefined;
       };
       return db;
     } catch (error) {
@@ -94,6 +136,135 @@ function openDatabase(): Promise<IDBDatabase | null> {
 /** 이 세션이 실제로 쓰는 저장소 종류. 열기 실패는 세션 내에서 다시 시도하지 않는다. */
 export async function aiRecordBackendKind(): Promise<AiRecordBackendKind> {
   return (await openDatabase()) ? "indexeddb" : "memory";
+}
+
+/** One-time v1-v3 backfill, coalesced across queries and serialized with writes
+ * across tabs. Invalid records remain untouched and are excluded by the projector.
+ */
+async function ensureConversationSummaries(db: IDBDatabase | null): Promise<void> {
+  if (!summaryProjector) throw new Error("Conversation summary projector unavailable");
+  if (!db) {
+    if (!memorySummariesReady) {
+      memorySummaries.clear();
+      for (const [id, row] of memoryStore(AI_RECORD_STORES.conversations)) updateMemorySummary(id, row);
+      memorySummariesReady = true;
+    }
+    return;
+  }
+  if (summaryPreparation) return summaryPreparation;
+  summaryPreparation = (async () => {
+    const tx = db.transaction([AI_RECORD_STORES.conversations, SUMMARIES, SUMMARY_META], "readwrite");
+    const done = transactionDone(tx), metadata = tx.objectStore(SUMMARY_META);
+    const ready = metadata.get("ready");
+    ready.onsuccess = () => {
+      if (ready.result) return;
+      tx.objectStore(SUMMARIES).clear();
+      const request = tx.objectStore(AI_RECORD_STORES.conversations).openCursor();
+      request.onsuccess = () => {
+        const cursor = request.result;
+        if (!cursor) { metadata.put({ id: "ready" }); return; }
+        try { updateSummary(tx, String(cursor.primaryKey), cursor.value); cursor.continue(); }
+        catch { tx.abort(); }
+      };
+    };
+    await done;
+  })().finally(() => { summaryPreparation = undefined; });
+  return summaryPreparation;
+}
+export async function queryConversationSummaries<T extends SummaryValue>(options: {
+  scope?: string | null; mapId?: string; unknownOnly?: boolean; offset: number; limit: number;
+  matches?: (row: T) => boolean; signal?: AbortSignal;
+}): Promise<{ records: T[]; total: number; hasMore: boolean; durable: boolean }> {
+  const db = await openDatabase();
+  await ensureConversationSummaries(db);
+  options.signal?.throwIfAborted();
+  const records: T[] = [];
+  let total = 0;
+  const accept = (row: SummaryRow) => {
+    const value = row.summary as T;
+    if (options.matches && !options.matches(value)) return;
+    if (total >= options.offset && records.length < options.limit) records.push(value);
+    total++;
+  };
+  if (!db) {
+    const rows = [...memorySummaries.values()].filter(row => (options.scope === undefined || row.scope === scopeToken(options.scope))
+      && (!options.mapId || row.summary.mapIds.includes(options.mapId)) && (!options.unknownOnly || row.attribution === "unknown"));
+    rows.sort((a, b) => a.orderAt - b.orderAt || a.id.localeCompare(b.id)).forEach(accept);
+  } else {
+    const tx = db.transaction(SUMMARIES, "readonly"), done = transactionDone(tx);
+    const store = tx.objectStore(SUMMARIES);
+    const prefix = options.scope === undefined ? undefined : options.mapId ? [scopeToken(options.scope), options.mapId]
+      : options.unknownOnly ? [scopeToken(options.scope), "unknown"] : [scopeToken(options.scope)];
+    const index = prefix ? store.index(options.mapId ? "mapOrder" : options.unknownOnly ? "attributionOrder" : "scopeOrder") : store.index("newest");
+    const range = prefix ? IDBKeyRange.bound([...prefix, -Infinity], [...prefix, Infinity, []]) : undefined;
+    // Global compatibility lists are small; scoped archive pages stream compact
+    // metadata only. No transcript getAll, validation or full-array sort here.
+    const abort = () => { try { tx.abort(); } catch { /* Already settled. */ } };
+    options.signal?.addEventListener("abort", abort, { once: true });
+    if (!options.matches) {
+      const countRequest = index.count(range);
+      countRequest.onsuccess = () => { total = countRequest.result; };
+      const request = index.openKeyCursor(range);
+      let skipped = false, firstGroup = true;
+      const orderPrefix = prefix ?? [];
+      request.onsuccess = () => {
+        const cursor = request.result;
+        if (!cursor) return;
+        if (!skipped && options.offset > 0) { skipped = true; cursor.advance(options.offset); return; }
+        const orderAt = (cursor.key as IDBValidKey[])[orderPrefix.length] as number;
+        let beforeGroup = 0;
+        if (firstGroup && options.offset > 0) {
+          const before = index.count(IDBKeyRange.bound([...orderPrefix, -Infinity], [...orderPrefix, orderAt], false, true));
+          before.onsuccess = () => { beforeGroup = before.result; };
+        }
+        // Native IDB string order differs from the old localeCompare tie break.
+        // Fetch only timestamp groups intersecting this page, then restore that
+        // order. Ordinary unique timestamps stay bounded by the page window.
+        const group: SummaryRow[] = [];
+        const ties = index.openCursor(IDBKeyRange.bound([...orderPrefix, orderAt], [...orderPrefix, orderAt, []]));
+        ties.onsuccess = () => {
+          const tied = ties.result;
+          if (tied) { group.push(tied.value as SummaryRow); tied.continue(); return; }
+          group.sort((a, b) => a.id.localeCompare(b.id));
+          const start = firstGroup ? Math.max(0, options.offset - beforeGroup) : 0;
+          firstGroup = false;
+          for (const row of group.slice(start, start + options.limit - records.length)) records.push(row.summary as T);
+          if (records.length < options.limit) cursor.continue([...orderPrefix, orderAt, []]);
+        };
+      };
+    } else {
+      const values = index.openCursor(range);
+      let group: SummaryRow[] = [], orderAt: number | undefined;
+      const finishGroup = () => { group.sort((a, b) => a.id.localeCompare(b.id)).forEach(accept); group = []; };
+      values.onsuccess = () => {
+        const cursor = values.result;
+        try {
+          if (!cursor) { finishGroup(); return; }
+          const row = cursor.value as SummaryRow;
+          if (orderAt !== row.orderAt) { finishGroup(); orderAt = row.orderAt; }
+          group.push(row);
+          cursor.continue();
+        } catch { tx.abort(); }
+      };
+    }
+    try { await done; } finally { options.signal?.removeEventListener("abort", abort); }
+  }
+  return { records, total, hasMore: options.offset + records.length < total, durable: db !== null };
+}
+/** Separate map catalog: read index KEYS only, not summary or transcript bodies. */
+export async function conversationSummaryMapIds(scope: string): Promise<string[]> {
+  const db = await openDatabase();
+  await ensureConversationSummaries(db);
+  const ids = new Set<string>(), token = scopeToken(scope);
+  if (!db) {
+    for (const row of memorySummaries.values()) if (row.scope === token) for (const id of row.summary.mapIds) ids.add(id);
+  } else {
+    const tx = db.transaction(SUMMARIES, "readonly"), done = transactionDone(tx);
+    const request = tx.objectStore(SUMMARIES).index("mapOrder").openKeyCursor(IDBKeyRange.bound([token], [token, []]));
+    request.onsuccess = () => { const cursor = request.result; if (!cursor) return; ids.add((cursor.key as [string, string])[1]); cursor.continue(); };
+    await done;
+  }
+  return [...ids].sort();
 }
 
 export async function readAllAiRecords<T extends AiRecordRow>(store: AiRecordStoreName): Promise<T[]> {
@@ -119,14 +290,20 @@ export async function writeAiRecords<T extends AiRecordRow>(store: AiRecordStore
   const db = await openDatabase();
   if (!db) {
     const map = memoryStore(store);
-    for (const row of rows) map.set(row.id, row);
+    for (const row of rows) { map.set(row.id, row); if (store === AI_RECORD_STORES.conversations) updateMemorySummary(row.id, row); }
     return "memory";
   }
   if (rows.length === 0) return "indexeddb";
-  const transaction = db.transaction(store, "readwrite");
-  const objectStore = transaction.objectStore(store);
-  for (const row of rows) objectStore.put(row);
-  await transactionDone(transaction);
+  const transaction = db.transaction(summaryTransactionStores(store), "readwrite");
+  const done = transactionDone(transaction), objectStore = transaction.objectStore(store);
+  try {
+    for (const row of rows) { objectStore.put(row); if (store === AI_RECORD_STORES.conversations) updateSummary(transaction, row.id, row); }
+  } catch (error) {
+    transaction.abort();
+    await done.catch(() => undefined);
+    throw error;
+  }
+  await done;
   return "indexeddb";
 }
 
@@ -143,7 +320,7 @@ export async function mutateAiRecord(
     else if (next !== undefined) rows.set(id, structuredClone(next));
     return { backend: "memory", written: next !== undefined };
   }
-  const transaction = db.transaction(store, "readwrite");
+  const transaction = db.transaction(summaryTransactionStores(store), "readwrite");
   // Subscribe before scheduling requests. Request success alone is not durable completion.
   const done = transactionDone(transaction);
   const rows = transaction.objectStore(store);
@@ -170,13 +347,19 @@ export async function deleteAiRecords(store: AiRecordStoreName, ids: readonly st
   const db = await openDatabase();
   if (!db) {
     const map = memoryStore(store);
-    for (const id of ids) map.delete(id);
+    for (const id of ids) { map.delete(id); if (store === AI_RECORD_STORES.conversations) updateMemorySummary(id, null); }
     return;
   }
-  const transaction = db.transaction(store, "readwrite");
-  const objectStore = transaction.objectStore(store);
-  for (const id of ids) objectStore.delete(id);
-  await transactionDone(transaction);
+  const transaction = db.transaction(summaryTransactionStores(store), "readwrite");
+  const done = transactionDone(transaction), objectStore = transaction.objectStore(store);
+  try {
+    for (const id of ids) { objectStore.delete(id); if (store === AI_RECORD_STORES.conversations) updateSummary(transaction, id, null); }
+  } catch (error) {
+    transaction.abort();
+    await done.catch(() => undefined);
+    throw error;
+  }
+  await done;
 }
 
 export async function clearAiRecords(store: AiRecordStoreName): Promise<void> {
@@ -187,9 +370,10 @@ export async function clearAiRecords(store: AiRecordStoreName): Promise<void> {
       memoryTombstones.add(tombstoneKey(scoped.id, scoped.projectContextKey ?? null));
     }
     memoryStore(store).clear();
+    if (store === AI_RECORD_STORES.conversations) memorySummaries.clear();
     return;
   }
-  const transaction = db.transaction([store, TOMBSTONES], "readwrite");
+  const transaction = db.transaction([...summaryTransactionStores(store), TOMBSTONES], "readwrite");
   const cursor = transaction.objectStore(store).openCursor();
   cursor.onsuccess = () => {
     const current = cursor.result;
@@ -197,6 +381,7 @@ export async function clearAiRecords(store: AiRecordStoreName): Promise<void> {
     const row = current.value as ScopedAiRecordRow;
     transaction.objectStore(TOMBSTONES).put({ id: tombstoneKey(row.id, row.projectContextKey ?? null) });
     current.delete();
+    if (store === AI_RECORD_STORES.conversations) updateSummary(transaction, row.id, null);
     current.continue();
   };
   await transactionDone(transaction);
@@ -225,9 +410,10 @@ export async function mutateScopedAiRecord<T extends ScopedAiRecordRow>(
     const next = decide((rows.get(key.id) as T | undefined) ?? null, memoryTombstones.has(deletedKey));
     if (next === null) { memoryTombstones.add(deletedKey); rows.delete(key.id); }
     else if (next) rows.set(key.id, structuredClone(next));
+    if (key.store === AI_RECORD_STORES.conversations && next !== undefined) updateMemorySummary(key.id, next);
     return { backend: "memory", written: next !== undefined };
   }
-  const transaction = db.transaction([key.store, TOMBSTONES], "readwrite");
+  const transaction = db.transaction([...summaryTransactionStores(key.store), TOMBSTONES], "readwrite");
   const done = transactionDone(transaction);
   const rows = transaction.objectStore(key.store);
   const tombstones = transaction.objectStore(TOMBSTONES);
@@ -240,6 +426,7 @@ export async function mutateScopedAiRecord<T extends ScopedAiRecordRow>(
       const next = decide(currentRequest.result ?? null, deletedRequest.result !== undefined);
       if (next === null) { tombstones.put({ id: deletedKey }); rows.delete(key.id); }
       else if (next) rows.put(next);
+      if (key.store === AI_RECORD_STORES.conversations && next !== undefined) updateSummary(transaction, key.id, next);
       written = next !== undefined;
     } catch (error) {
       transaction.abort();
@@ -274,6 +461,7 @@ export function resetAiRecordDbForTest(): void {
   openFailureWarned = false;
   memoryStores.clear();
   memoryTombstones.clear();
+  memorySummaries.clear(); memorySummariesReady = false; summaryPreparation = undefined;
   for (const hook of resetHooks) hook();
   void pending?.then((db) => db?.close()).catch(() => undefined);
 }

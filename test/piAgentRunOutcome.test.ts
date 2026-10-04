@@ -34,7 +34,7 @@ const h = vi.hoisted(() => ({
     maps: { map_a: { id: "map_a", name: "A", width: 4, height: 4 } },
   } as unknown,
   piApply: "default" as "yolo" | "auto" | "default" | "review" | "step",
-  /** showConfirm 의 대답. 맵 소실 확인 모달을 사람 없이 굴린다. */
+  /** 인라인 결정의 대답. 맵 소실 확인 카드를 사람 없이 굴린다. */
   confirmAnswer: true,
   /** true 면 시공 실행이 도구마다 체크포인트를 올린다 — 실시간 반영(publication.count > 0) 경로. */
   checkpoint: false,
@@ -107,9 +107,9 @@ vi.mock("@/ai/piAgent/mapBundle", () => ({
 vi.mock("@/project/authoredProjectBaseline", () => ({ AuthoredProjectBaseline: class {} }));
 // subscribe 가 빠져 있어 mapEditHistory 의 모듈 초기화가 즉시 죽었다 — 파일 전체가 로드조차
 // 되지 않아 여기 담긴 12개 케이스가 통째로 침묵했다(main 기준으로도 빨간불).
-vi.mock("@/project/store", () => ({ store: { getCurrent: () => h.project, getProjectIdentity: () => ({ kind: "local-session", id: "outcome-fixture" }), subscribe: () => () => {}, flush: async () => ({ kind: h.saveKind }) } }));
-// 실제 모달을 띄우지 않는다. 맵 소실 확인은 별도 케이스에서 반환값을 갈아 끼워 검사한다.
-vi.mock("@/editor/ui/modal", () => ({ showConfirm: async () => h.confirmAnswer }));
+vi.mock("@/project/store", () => ({ store: { getCurrent: () => h.project, getVersionToken: () => ({ lineage: 1 }), getProjectIdentity: () => ({ kind: "local-session", id: "outcome-fixture" }), subscribe: () => () => {}, flush: async () => ({ kind: h.saveKind }) } }));
+// 실제 결정 카드를 띄우지 않는다. 맵 소실 확인은 별도 케이스에서 반환값을 갈아 끼워 검사한다.
+vi.mock("@/editor/panels/aiDecisionPrompt", () => ({ requestAssistantDecision: async () => h.confirmAnswer }));
 vi.mock("@/ai/llmClient", () => ({ loadAiConfig: () => ({ providerId: "google-antigravity", model: "m", piApply: h.piApply, roleModels: h.roleModels }) }));
 vi.mock("@/editor/tools/changeset", () => ({ summarizeChanges: () => ({}) }));
 vi.mock("@/editor/tools/applyChangesetToStore", () => ({

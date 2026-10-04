@@ -78,6 +78,7 @@ import { RETRO_CHOREOGRAPHY_TOOLS } from "./retroChoreographyTools";
 import { CINEMATIC_TOOLS } from "./cinematicTools";
 import { IMAGE_ASSET_TOOLS } from "./imageAssetTools";
 import { TITLE_ART_TOOLS } from "./titleArtTools";
+import { PRESENTATION_TOOLS } from "./presentationTools";
 import { TITLE_IMPROVE_TOOLS } from "./titleImproveTools";
 import { FENCE_REPAIR_TOOLS } from "./fenceRepairTools";
 import { AUDIO_DESCRIPTION_TOOLS } from "./audioDescriptionTools";
@@ -297,6 +298,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(CINEMATIC_TOOLS, "system"),
   ...withDomain(IMAGE_ASSET_TOOLS, "system"),
   ...withDomain(TITLE_ART_TOOLS, "system"),
+  ...withDomain(PRESENTATION_TOOLS, "system"),
   ...withDomain(TITLE_IMPROVE_TOOLS, "system"),
   ...withDomain(AUDIO_DESCRIPTION_TOOLS, "system"),
   ...withDomain(EXPORT_TOOLS, "system"),

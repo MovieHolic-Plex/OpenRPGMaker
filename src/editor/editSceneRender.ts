@@ -1,5 +1,5 @@
 import type Phaser from "phaser";
-import { editorState, type Layer } from "@/editor/editorState";
+import { editorState, type Layer, type TileSelection } from "@/editor/editorState";
 import { createChipsetTileObject, createRawChipsetTileObject } from "@/editor/chipsetTileRender";
 import { renderEventMarkers } from "@/editor/editSceneEventMarkers";
 import { editorCameraBounds } from "@/editor/cameraFocusViewport";
@@ -10,13 +10,13 @@ import { tileStackAt } from "@/project/mapOverlayTiles";
 import { store, type ProjectChangeCell } from "@/project/store";
 import { renderWalkEncounterOverlay } from "@/editor/walkEncounterOverlay";
 import { repaintEditGrid } from "@/editor/editSceneViewChrome";
-import { invalidateCullingWindow, resetCullableTiles, trackCullableTile } from "@/player/playSceneTileCulling";
+import { invalidateCullingWindow, resetCullableTiles, trackCullableTile, untrackCullableTile } from "@/player/playSceneTileCulling";
 import { mapTileSize } from "@/project/tileGeometry";
 import type { GameMap, MapId } from "@/project/types";
-import { reliefCellLiftPx } from "@/player/reliefStrips";
+import { reliefCellLiftPx } from "@/project/relief/screen";
 import { RELIEF_MAX_LEVEL } from "@/project/relief/types";
 import { reliefPaintsCell } from "@/project/relief/screen";
-import { reliefGroundAvailable, reliefTilesetImage } from "./reliefGroundSurface";
+import { prepareReliefRead, reliefGroundAvailable, reliefTilesetImage } from "./reliefGroundSurface";
 import { tilesetTextureKey } from "./tilesetImage";
 import { cellLift, reliefLiftField } from "@/project/relief/screen";
 import { terrainReachability } from "@/project/terrainReachability";
@@ -138,7 +138,7 @@ export function shouldLazilyRenderEditMap(map: GameMap): boolean {
   return map.width * map.height > LAZY_EDIT_MAP_CELL_THRESHOLD;
 }
 
-function cameraTileWindow(scene: Phaser.Scene, map: GameMap): EditSceneTileWindow {
+export function cameraTileWindow(scene: Phaser.Scene, map: GameMap): EditSceneTileWindow {
   const view = scene.cameras?.main?.worldView;
   if (!view || view.width <= 0 || view.height <= 0) {
     return { minX: 0, minY: 0, maxX: map.width - 1, maxY: map.height - 1 };
@@ -153,6 +153,19 @@ function cameraTileWindow(scene: Phaser.Scene, map: GameMap): EditSceneTileWindo
   // Elevated cells are drawn north of their stored row. Materialize those source rows too.
   const maxY = Math.min(map.height - 1, Math.floor((view.y + view.height) / tileSize) + margin + (map.relief ? RELIEF_MAX_LEVEL : 0));
   return { minX, minY, maxX, maxY };
+}
+
+/** Candidate source cells before neighbour expansion/sort. Include old residents
+ * so a reduced overhang can destroy tiles outside the new source window. */
+export function residentReliefTileCells(scene: Phaser.Scene, map: GameMap, index: EditSceneTileIndex): { x: number; y: number }[] {
+  const indices = new Set<number>();
+  const window = cameraTileWindow(scene, map);
+  for (let y = window.minY; y <= window.maxY; y++) for (let x = window.minX; x <= window.maxX; x++) indices.add(y * map.width + x);
+  for (const key of index.keys()) {
+    const cell = parseTileIndexKey(key);
+    if (cell) indices.add(cell.y * map.width + cell.x);
+  }
+  return [...indices].map(i => ({ x: i % map.width, y: Math.floor(i / map.width) }));
 }
 
 export function editSceneTileWindowKey(scene: Phaser.Scene, map: GameMap): string {
@@ -183,6 +196,7 @@ export const RELIEF_STRIP_NAME = "relief-strip";
 export function renderEditScene(context: EditSceneRenderContext): EditSceneRenderStats {
   const map = store.getCurrent().maps[context.mapId];
   if (!map) return { tileObjectsUpdated: 0 };
+  prepareReliefRead(map);
   const mapOnlyCapture = isMapOnlyCaptureMode();
   const state = editorState.get();
 
@@ -233,6 +247,7 @@ export function renderEditSceneTileCells(
 ): EditSceneRenderStats {
   const map = store.getCurrent().maps[context.mapId];
   if (!map) return { tileObjectsUpdated: 0 };
+  prepareReliefRead(map);
   const mapOnlyCapture = isMapOnlyCaptureMode();
   const activeLayer = mapOnlyCapture ? "event" : editorState.get().layer;
   // lower 재추가가 upper 위에 올라가지 않도록 항상 lower → upper 순으로 그린다.
@@ -299,6 +314,7 @@ export function renderVisibleEditSceneTiles(
 ): EditSceneRenderStats {
   const map = store.getCurrent().maps[context.mapId];
   if (!map || !shouldLazilyRenderEditMap(map)) return { tileObjectsUpdated: 0 };
+  prepareReliefRead(map);
   const window = cameraTileWindow(context.scene, map);
   for (const [key, objects] of context.tileIndex) {
     const parsed = parseTileIndexKey(key);
@@ -407,20 +423,33 @@ function renderTileCellLayer(
 function destroyTrackedTile(
   context: EditSceneRenderContext,
   object: Phaser.GameObjects.GameObject,
-  x: number,
-  y: number,
+  _x: number,
+  _y: number,
 ): void {
-  if (context.reliefLayer && object.parentContainer === context.reliefLayer) {
-    context.reliefLayer.remove(object, true);
-    return;
-  }
-  // Use the actual previous parent: a height edit can move the tile to another visual chunk.
-  if (object.parentContainer) {
-    object.parentContainer.remove(object, true);
+  untrackCullableTile(context.scene, object as unknown as Parameters<typeof untrackCullableTile>[1]);
+  const parent = object.parentContainer;
+  if (parent) {
+    parent.remove(object, true);
+    // Chunk identity reflects visual Y and layer, which can differ from stored Y.
+    if (parent !== context.reliefLayer && parent.list?.length === 0) {
+      for (const [key, chunk] of context.tileChunks ?? []) if (chunk === parent) {
+        context.tileChunks!.delete(key);
+        parent.parentContainer?.remove(parent);
+        parent.destroy();
+        break;
+      }
+    }
     return;
   }
   // Renderer fixtures do not always attach parentContainer.
-  for (const layer of ["lower", "upper"] as const) context.tileChunks?.get(chunkKey(layer, chunkCoord(x), chunkCoord(y)))?.remove(object, true);
+  for (const [key, chunk] of context.tileChunks ?? []) {
+    chunk.remove(object, true);
+    if (chunk.list?.length === 0) {
+      context.tileChunks!.delete(key);
+      chunk.parentContainer?.remove(chunk);
+      chunk.destroy();
+    }
+  }
   context.tileLayer.remove(object, true);
   context.upperTileLayer.remove(object, true);
 }
@@ -627,9 +656,10 @@ export function syncSelectionOverlay(
   scene: Phaser.Scene,
   layer: Phaser.GameObjects.Container,
   mapId: MapId,
+  preview?: TileSelection,
 ): void {
   const state = editorState.get();
-  const selection = state.selection;
+  const selection = preview ?? state.selection;
   if (!selection || selection.mapId !== mapId || state.pastePreview) {
     layer.removeAll(true);
     return;
@@ -698,7 +728,7 @@ function readCameraLookAt(cam: Phaser.Cameras.Scene2D.Camera): { x: number; y: n
   });
 }
 
-function isMapOnlyCaptureMode(): boolean {
+export function isMapOnlyCaptureMode(): boolean {
   if (typeof window === "undefined" || !isLocalDevHost(window.location.hostname)) return false;
   return new URLSearchParams(window.location.search).get("mapOnlyCapture") === "1";
 }

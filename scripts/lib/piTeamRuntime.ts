@@ -2,6 +2,8 @@ import { createHash } from 'node:crypto';
 import { inspectPiVillageCompletion } from "../../src/ai/piAgent/villageCompletion.ts";
 import type { PiProjectCheckpoint } from "../../src/ai/piAgent/protocol.ts";
 import { buildPiAgentSystemPrompt } from "../../src/ai/piAgent/systemPrompt.ts";
+import { inspectFirstPresentation, FIRST_PRESENTATION_INSTRUCTIONS } from '../../src/ai/piAgent/firstPresentation';
+import { presentationArtIds } from '../../src/editor/tools/presentationTools';
 import { PiTeamMessaging, teamCommunicationPrompt } from "./piTeamMessaging.ts";
 import { describeMapSeams, formatSeamIssues, inspectWorldSeams } from "../../src/ai/piAgent/worldSeams.ts";
 // Pi 팀 런타임. 팀장 에이전트(orchestrator)가 커스텀 툴로 시공·검수 에이전트를 띄운다.
@@ -20,6 +22,7 @@ import { describeMapSeams, formatSeamIssues, inspectWorldSeams } from "../../src
 // 팀장이 wait 없이 끝나도(턴 상한 등) 런타임이 남은 배정을 거두어 병합한다.
 
 import { mapBundleIds, mergeMapBundles } from "../../src/ai/piAgent/mapBundle.ts";
+import { createMapRunLocks, mapRunScope, mapRunBundleIds } from "../../src/ai/piAgent/mapRunLocks.mjs";
 import { authorMergedSpatialProposal, exportSpatialToolProof } from "../../src/editor/tools/spatialToolState.ts";
 import { addPiAgentUsage, changedProjectKeys, restoreCheckpointProject, slimDoneEvent, slimProjectForWire, type PiAgentDoneEvent, type PiAgentUsage, type PiAgentEvent, type PiAgentRequest, type PiTeamRoleId } from "../../src/ai/piAgent/protocol.ts";
 import { createModernTilesetPolicy, modernTilesetViolation, requestsModernMap } from '../../src/ai/modernTilesetPolicy.ts';
@@ -173,6 +176,13 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   const tasks = new Map<string, { mode: "read" | "project"; memberId: string; task: string }>();
   const runningTasks = () => [...tasks.entries()].filter(([id]) => !outcomes.has(id));
   const projectWriter = () => runningTasks().find(([, task]) => task.mode === "project");
+  const mapOwners = createMapRunLocks();
+  const claimMaps = (agentId: string, mapIds: readonly string[] | null) => {
+    mapOwners.refreshBundles("team", working);
+    const claim = mapOwners.acquire("team", mapIds, agentId);
+    if (!claim.ok) throw new Error(`같은 맵은 한 번에 한 조수만 실행합니다. ${claim.owner} 작업/검수가 진행 중입니다. wait_agents로 완료를 확인한 뒤 다시 배정하세요.`);
+    return claim;
+  };
 
   const pickMember = (id: unknown, pool: PiTeamMember[], what: string): PiTeamMember => {
     if (typeof id !== "string" || !id.trim()) return pool[0]!;
@@ -323,6 +333,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
     const agentId = `builder-${counters.builder + 1}`;
     const claim = claimAssignment(ledger, { mapId, agentId, memberId: member.id });
     if (!claim.ok) throw new Error(claim.reason);
+    const ownership = claimMaps(agentId, mapRunBundleIds(working, [mapId]));
     if (coreFirst) firstBuildAssignments += 1;
     counters.builder += 1;
     ledger = claim.ledger;
@@ -333,9 +344,9 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
       memberId: member.id, label: member.label, ...(fixOf ? { fixOf } : {}),
     });
     mailbox.register(agentId, member.label, mapId);
-    const snapshot = cloneProjectSharingSharedDictionaries(working);
     const promise = (async (): Promise<AgentOutcome> => {
       try {
+        const snapshot = cloneProjectSharingSharedDictionaries(working);
         const done = await runAgent(
           {
             ...request, ...exposureFor(member, false), ...request.roleModels?.deep, mode: "single", mapIds: [mapId], project: snapshot, task,
@@ -366,13 +377,14 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
         return outcome;
       } finally {
         mailbox.close(agentId);
+        ownership.release();
       }
     })();
     inflight.push({ agentId, promise });
     return { ok: true, agentId, mapId, member: member.id, phase, state: "실행 중" as AgentState };
   }
 
-  /** Read-only designs can run alongside construction; project writes own the entire working copy. */
+  /** Map reads, reviews and writes use the same ownership; project work reserves all maps. */
   function startTask(task: string, mode: "read" | "project", member: PiTeamMember): Record<string, unknown> {
     if (coreFirst && mode === 'project' && firstBuildAssignments >= 3) throw new Error('첫 제작의 후속 배정은 3회까지입니다. 추가 작업은 다음 할 일로 보고하고 finish 하세요.');
     if (coreFirst) member = { ...member, maxTurns: Math.min(member.maxTurns, 24) };
@@ -386,12 +398,13 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
     }
     if (coreFirst && mode === 'project') firstBuildAssignments += 1;
     const role = member.kind;
-    const agentId = `${role}-${++counters[role]}`;
+    const agentId = `${role}-${counters[role] + 1}`;
+    const ownership = claimMaps(agentId, mode === "project" ? null : mapRunScope({ ...request, mode: "single", project: working }));
+    counters[role] += 1;
     tasks.set(agentId, { mode, memberId: member.id, task });
     progress.set(agentId, { turns: 0, toolCalls: 0, toolErrors: 0, lastLine: "" });
     mailbox.register(agentId, member.label, null);
     emit({ type: "agent_spawn", agentId, role, mapId: null, mapName: null, task, memberId: member.id, label: member.label });
-    const snapshot = cloneProjectSharingSharedDictionaries(working);
     let report: string | undefined;
     const reportTool: PiToolShape = {
       name: "report_task", label: "report_task",
@@ -406,6 +419,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
     };
     const promise = (async (): Promise<AgentOutcome> => {
       try {
+        const snapshot = cloneProjectSharingSharedDictionaries(working);
         const done = await runAgent({
           ...request, ...exposureFor(member, mode === "read"), ...request.roleModels?.deep, mode: "single", project: snapshot,
           mapIds: mode === "project" ? [] : request.mapIds, task, readOnly: mode === "read", maxTurns: member.maxTurns,
@@ -439,7 +453,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
         outcomes.set(agentId, outcome);
         emit({ type: "agent_done", agentId, ok: false, summary, stats: { ms: 0, turns: 0, toolCalls: 0, toolErrors: 0 }, changedKeys: [], spills: [], conflicts: [] });
         return outcome;
-      } finally { mailbox.close(agentId); }
+      } finally { mailbox.close(agentId); ownership.release(); }
     })();
     inflight.push({ agentId, promise });
     return { ok: true, agentId, mode, state: "실행 중" };
@@ -469,6 +483,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
     const busy = runningAssignments(ledger).find((assignment) => assignment.mapId === mapId);
     if (busy) throw new Error(`맵 '${mapId}' 은 아직 ${busy.memberId}(${busy.agentId})가 작업 중입니다. wait_agents 로 끝난 뒤 검수하세요 — 반쯤 지어진 맵을 검수하면 엉뚱한 지적이 나옵니다.`);
     const agentId = `reviewer-${counters.reviewer + 1}`;
+    const ownership = claimMaps(agentId, mapRunBundleIds(working, [mapId]));
     counters.reviewer += 1;
     const romanceArt = authoringHarnessFor(base)?.id === 'romance-scene';
     const task = [focus ? `맵 '${mapId}' 검수. 특히: ${focus}` : `맵 '${mapId}' 의 시공 결과를 검수하라.`,
@@ -493,12 +508,14 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
         return text({ ok: true, recorded: true });
       },
     };
-    const snapshot = cloneProjectSharingSharedDictionaries(working);
     mailbox.register(agentId, member.label, mapId);
     const reviewOptions = child(agentId, request.roleModels?.deep?.provider ?? request.provider);
-    const reviewSignature = authoringHarnessFor(base) ? authoringSignature(snapshot) : undefined;
+    let reviewSignature: string | undefined;
+    let snapshot: Project;
     let done: PiAgentDoneEvent;
     try {
+      snapshot = cloneProjectSharingSharedDictionaries(working);
+      reviewSignature = authoringHarnessFor(base) ? authoringSignature(snapshot) : undefined;
       done = await runAgent(
         {
           ...request, ...exposureFor(member, true), ...request.roleModels?.deep, mode: "single", mapIds: [mapId], project: snapshot, task,
@@ -512,7 +529,10 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
             if (event.type === 'execution_status' && event.name === 'map.image.delivered' && event.ok) imageDelivered = true;
           } },
       );
-    } finally { mailbox.close(agentId); }
+    } catch (error) {
+      emit({ type: "agent_done", agentId, ok: false, summary: error instanceof Error ? error.message : String(error), stats: { ms: 0, turns: 0, toolCalls: 0, toolErrors: 0 }, changedKeys: [], spills: [], conflicts: [] });
+      throw error;
+    } finally { mailbox.close(agentId); ownership.release(); }
     toolCalls += done.stats.toolCalls; toolErrors += done.stats.toolErrors; subTurns += done.stats.turns; subUsage = addPiAgentUsage(subUsage, done.stats.usage);
     const result: { ok: boolean; findings: string[]; artChecks?: unknown } = verdict ?? { ok: false, findings: ["검수 에이전트가 report_review 를 호출하지 않았습니다: " + summaryOf(done)] };
     if (romanceArt) result.findings.push(...romanceArtReviewFindings(result.artChecks), ...romanceTownLayoutFindings(snapshot));
@@ -575,7 +595,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
     ...mailbox.tools("orchestrator-1"),
     {
       name: "assign_task_agent", label: "assign_task_agent",
-      description: "맵에 속하지 않는 설계·대사안·검사(mode=read) 또는 공유 DB·빈 맵 생성·오프닝·공통 텍스트 제작(mode=project)을 배정하고 즉시 반환한다. read는 병렬 가능하고 보고서만 반환한다. project는 모든 다른 쓰기가 끝난 뒤 한 명만 배정한다. 결과는 check_agents/wait_agents의 summary로 받아 다음 담당자에게 전달한다.",
+      description: "설계·대사안·검사(mode=read) 또는 공유 DB·빈 맵 생성·오프닝·공통 텍스트 제작(mode=project)을 배정하고 즉시 반환한다. 같은 맵을 읽거나 쓰는 다른 조수가 있으면 거절한다. 맵 범위가 없는 read와 project는 프로젝트 전체를 예약하므로 다른 배정 완료 후 사용한다. 결과는 check_agents/wait_agents의 summary로 받아 다음 담당자에게 전달한다.",
       parameters: { type: "object", properties: { task: { type: "string" }, mode: { type: "string", enum: ["read", "project"] }, member: { type: "string", enum: [...builders, ...reviewers].map(m => m.id) } }, required: ["task", "mode"], additionalProperties: false },
       async execute(_id, params) {
         const rec = (params ?? {}) as Record<string, unknown>;
@@ -647,11 +667,12 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
         if (running.length > 0) {
           throw new Error(`아직 ${running.map((assignment) => `${assignment.memberId}(${assignment.agentId}, ${assignment.mapId})`).join(", ")} 가 작업 중입니다. wait_agents 로 결과를 받은 뒤 보고하세요.`);
         }
+        if (mapOwners.busy()) throw new Error("진행 중인 맵 검수가 있습니다. 완료 후 finish 하세요.");
         if (mailbox.unread("orchestrator-1")) throw new Error("팀장에게 미열람 메시지 또는 반영 확인이 있습니다. read_team_messages로 확인하고 질문에 답한 뒤 finish 하세요.");
         if (firstPlay) {
           const issues = inspectFirstPlay(base, working, firstPlay);
           if (issues.length) throw new Error('핵심 플레이 미완료: ' + issues.join(' / '));
-          const sceneIssues = inspectFirstScene(base, working, firstPlay);
+          const sceneIssues = [...inspectFirstScene(base, working, firstPlay), ...inspectFirstPresentation(working)];
           if (sceneIssues.length) throw new Error('첫 장면 미완료: ' + sceneIssues.join(' / '));
           if (firstPlaySignature(working, firstPlay) !== reviewedFirstPlay) await reviewFirstPlay();
           if (firstSceneSignature(working, firstPlay) !== reviewedFirstScene) await reviewFirstScene();
@@ -788,12 +809,15 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
     const snapshot = cloneProjectSharingSharedDictionaries(working);
     const mapIds = firstSceneMapIds(snapshot, receipt);
     const delivered = new Set<string>();
+    const requiredArt = presentationArtIds(snapshot);
+    const deliveredArt = new Set<string>();
     let verdict: { ok: boolean; blockers: string[] } | undefined;
     const member = reviewers[0] ?? builders[0]!;
     const agentId = `reviewer-${++counters.reviewer}`;
     const task = [
       '첫 사용자 경험을 냉정하게 검수한다. 필수: 각 맵을 show_map_region(x:0,y:0,w:맵너비,h:맵높이)으로 실제 그림까지 본다.',
-      '확인 축: ① 원문 기획과 실제 장소(방/길)의 일치 ② 핵심 조사물/인물과 마무리 대상이 눈에 보이고 식별됨 ③ 시작 위치에서 첫 행동 대상/출구까지 정상 동선 ④ 오프닝의 설명/안내와 실제 그림·위치의 일치. 빈 풀밭, 안 보이는 시계, 이름만 방인 맵은 반드시 실패다.',
+      '확인 축: ① 원문 기획과 실제 장소(방/길)의 일치 ② 핵심 조사물/인물과 마무리 대상이 눈에 보이고 식별됨 ③ 시작 위치에서 첫 행동 대상/출구까지 정상 동선 ④ 오프닝의 설명/안내와 실제 그림·위치의 일치 ⑤ 작품 전용 타이틀의 분위기/로고/등장 순서와 실제 장면 오프닝의 연결. show_title_opening으로 실제 타이틀/오프닝 그림도 반드시 본다. 빈 풀밭, 안 보이는 시계, 이름만 방인 맵, 기본 마을 타이틀, 기획과 다른 오프닝 그림은 반드시 실패다.',
+      '현재 타이틀:\n' + JSON.stringify(snapshot.system.titleScreen),
       '전체 원문:\n' + request.task,
       '핵심 근거:\n' + JSON.stringify(receipt),
       '현재 오프닝:\n' + JSON.stringify(snapshot.system.opening),
@@ -804,13 +828,15 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
     ].join('\n');
     const reportTool: PiToolShape = {
       name: 'report_first_scene_review', label: 'report_first_scene_review',
-      description: '각 장소의 실제 이미지를 확인한 첫 사용자 경험 검수. blockers는 실패, evidence는 4축의 구체적 그림/좌표/이벤트 근거다.',
-      parameters: { type: 'object', properties: { ok: { type: 'boolean' }, blockers: { type: 'array', items: { type: 'string' } }, evidence: { type: 'array', minItems: 4, items: { type: 'string' } } }, required: ['ok', 'blockers', 'evidence'], additionalProperties: false },
+      description: '각 장소와 타이틀/오프닝의 실제 이미지를 확인한 첫 사용자 경험 검수. blockers는 실패, evidence는 5축의 구체적 그림/좌표/설정 근거다.',
+      parameters: { type: 'object', properties: { ok: { type: 'boolean' }, blockers: { type: 'array', items: { type: 'string' } }, evidence: { type: 'array', minItems: 5, items: { type: 'string' } } }, required: ['ok', 'blockers', 'evidence'], additionalProperties: false },
       async execute(_id, params) {
         const rec = params as { ok?: unknown; blockers?: unknown; evidence?: unknown };
         const missing = mapIds.filter(id => !delivered.has(id));
         if (missing.length) throw new Error('실제 전체 맵 이미지를 아직 보지 않았습니다: ' + missing.join(', '));
-        if (!Array.isArray(rec.blockers) || !Array.isArray(rec.evidence) || rec.evidence.length < 4) throw new Error('4축의 구체적 그림 근거와 blockers를 따로 보고하세요.');
+        const missingArt = requiredArt.filter(id => !deliveredArt.has(id));
+        if (missingArt.length) throw new Error('연결된 실제 타이틀/오프닝 그림을 아직 보지 않았습니다: ' + missingArt.join(', '));
+        if (!Array.isArray(rec.blockers) || !Array.isArray(rec.evidence) || rec.evidence.length < 5) throw new Error('5축의 구체적 그림 근거와 blockers를 따로 보고하세요.');
         verdict = { ok: rec.ok === true, blockers: rec.blockers.map(String).slice(0, 12) };
         return text({ recorded: true });
       },
@@ -824,9 +850,13 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
         initialToolNames: undefined, toolDomains: undefined, readOnly: true, task, maxTurns: Math.min(member.maxTurns, 16),
         ...(!request.roleModels?.deep && member.model ? { model: member.model } : {}),
         systemPrompt: ['읽기 전용 첫 장면 검수다. 실제 맵 이미지를 보고 원문/오프닝/이벤트와 대조한다. ' + FIRST_SCENE_INSTRUCTIONS.join('\n')] },
-      { ...reviewOptions, readOnlyTools: true, toolNames: ['show_map_region', 'get_map_region', 'get_event', 'get_opening', 'get_database_records', 'run_lint', 'check_reachability'], extraTools: [reportTool],
+      { ...reviewOptions, readOnlyTools: true, toolNames: ['show_map_region', 'get_map_region', 'get_event', 'get_opening', 'get_title_screen', 'show_title_opening', 'get_database_records', 'run_lint', 'check_reachability'], extraTools: [reportTool],
         onEvent(event) {
           reviewOptions.onEvent?.(event);
+          if (event.type === 'execution_status' && event.name === 'presentation.image.delivered' && event.ok) {
+            const ids = (event.data as { resourceIds?: unknown } | undefined)?.resourceIds;
+            if (Array.isArray(ids)) for (const id of ids) if (typeof id === 'string' && requiredArt.includes(id)) deliveredArt.add(id);
+          }
           if (event.type !== 'execution_status' || event.name !== 'map.image.delivered' || !event.ok || !event.data || typeof event.data !== 'object') return;
           const data = event.data as { mapId?: unknown; x?: unknown; y?: unknown; w?: unknown; h?: unknown };
           if (typeof data.mapId !== 'string' || !mapIds.includes(data.mapId)) return;
@@ -837,9 +867,9 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
       toolCalls += done.stats.toolCalls; toolErrors += done.stats.toolErrors; subTurns += done.stats.turns; subUsage = addPiAgentUsage(subUsage, done.stats.usage);
       if (changedProjectKeys(snapshot, done.project).length) throw new Error('읽기 전용 첫 장면 검수가 변경을 반환했습니다.');
       const report = verdict as { ok: boolean; blockers: string[] } | undefined;
-      if (!report?.ok || report.blockers.length || mapIds.some(id => !delivered.has(id))) throw new Error('첫 장면 검수 실패: ' + (report?.blockers.join(' / ') || '실제 이미지 확인/검수 보고가 없습니다.'));
+      if (!report?.ok || report.blockers.length || mapIds.some(id => !delivered.has(id)) || requiredArt.some(id => !deliveredArt.has(id))) throw new Error('첫 장면 검수 실패: ' + (report?.blockers.join(' / ') || '실제 이미지 확인/검수 보고가 없습니다.'));
       reviewedFirstScene = firstSceneSignature(working, receipt);
-      emit({ type: 'execution_status', name: 'first_scene.review_passed', ok: true, summary: '실제 장소 그림·상호작용 대상·동선·오프닝 일치를 확인했습니다.' });
+      emit({ type: 'execution_status', name: 'first_scene.review_passed', ok: true, summary: '실제 장소·대상·동선과 작품 타이틀/오프닝 원화 일치를 확인했습니다.' });
       emit({ type: 'agent_done', agentId, ok: true, summary: '첫 장면 이미지 확인', stats: done.stats, changedKeys: [], spills: [], conflicts: [] });
     } finally { mailbox.close(agentId); }
   }
@@ -854,7 +884,8 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
       'move_event', 'upsert_event'];
     for (const stage of ['places', 'entry'] as const) {
       const places = stage === 'places';
-      const inspect = places ? inspectFirstScenePlaces : inspectFirstScene;
+      const inspect = places ? inspectFirstScenePlaces
+        : (before: Project, project: Project, receipt: FirstPlayReceipt) => inspectFirstScene(before, project, receipt, true);
       let repair = '';
       for (let attempt = 0; attempt < 2; attempt += 1) {
         const member = builders[0]!;
@@ -891,7 +922,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
             systemPrompt: [...buildPiAgentSystemPrompt(snapshot, []), ...(places ? FIRST_SCENE_INSTRUCTIONS.slice(1, 3) : FIRST_SCENE_INSTRUCTIONS),
               places ? '이번 단계는 두 장소의 구조/가구/통행만 작성하고 report_first_scene_places로 끝낸다. 오프닝과 대상 이벤트는 다음 단계에서 작성한다.' : '이번 단계는 보이는 첫 대상/마무리 대상과 짧은 맵 도입을 작성하고 report_first_scene로 끝낸다.'] },
           { ...child(agentId, request.roleModels?.deep?.provider ?? request.provider), toolNames: places ? placeTools
-            : ['get_event','get_map_region','get_database_records','upsert_event','move_event','get_opening','set_opening','show_map_region','check_reachability','run_lint'],
+            : ['get_event','get_map_region','get_database_records','upsert_event','move_event','get_opening','show_map_region','check_reachability','run_lint'],
             onCheckpoint: checkpointFor(null, snapshot), extraTools: [reportTool] });
           toolCalls += done.stats.toolCalls; toolErrors += done.stats.toolErrors; subTurns += done.stats.turns; subUsage = addPiAgentUsage(subUsage, done.stats.usage);
           if (!reported) throw new Error('첫 장소의 제작 보고가 없습니다.');
@@ -901,7 +932,6 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
           assertModernProposal(working, done.project);
           working = cloneProjectSharingSharedDictionaries(done.project);
           emit({ type: 'agent_done', agentId, ok: true, summary: places ? '첫 장소 구조 제작' : '첫 대상과 도입 제작', stats: done.stats, changedKeys: done.changedKeys, spills: [], conflicts: [] });
-          if (!places) await reviewFirstScene();
           break;
         } catch (error) {
           if (attempt || options.signal?.aborted) throw error;
@@ -909,6 +939,58 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
           emit({ type: 'execution_status', name: 'first_scene.repair', ok: false, summary: repair });
         } finally { mailbox.close(agentId); }
       }
+    }
+    // Presentation gets its own budget and real image tools. Room/event construction
+    // cannot consume this budget or silently finish with the default snowy village.
+    let presentationRepair = '';
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      const member = builders[0]!;
+      const agentId = `builder-${++counters.builder}`;
+      const snapshot = cloneProjectSharingSharedDictionaries(working);
+      let reported = false;
+      const task = ['작품 타이틀·오프닝 담당이다. 핵심 플레이와 장소 및 첫 조작 안내는 이미 작성했다. 지금 작품 전용 타이틀과 실제 장면 오프닝을 끝까지 제작한다.',
+        ...FIRST_PRESENTATION_INSTRUCTIONS,
+        '핵심 플레이 근거: ' + JSON.stringify(firstPlay),
+        '시작 맵: ' + JSON.stringify({ mapId: snapshot.startMapId, name: snapshot.maps[snapshot.startMapId]?.name, startPos: snapshot.startPos }),
+        '핵심 대상의 실제 자산 이름/태그: ' + JSON.stringify(firstSceneGraphicEvidence(snapshot, firstPlay)),
+        presentationRepair, '실제 연결 그림을 show_title_opening으로 확인한 뒤 report_first_presentation을 반드시 호출한다.',
+        '전체 사용자 지시:\n' + request.task].join('\n');
+      const reportTool: PiToolShape = {
+        name: 'report_first_presentation', label: 'report_first_presentation',
+        description: '작품 전용 타이틀·등장 순서·전환과 활성화된 실제 장면 오프닝의 제작을 보고한다. 기본 타이틀과 꺼진 오프닝은 거부한다.',
+        parameters: { type: 'object', properties: { report: { type: 'string', minLength: 1, maxLength: 4000 } }, required: ['report'], additionalProperties: false },
+        async execute(_id, params) {
+          const issues = [...inspectFirstPlay(base, working, firstPlay!), ...inspectFirstScene(base, working, firstPlay!), ...inspectFirstPresentation(working)];
+          if (issues.length) throw new Error(issues.join(' / '));
+          reported = true;
+          return text({ ok: true, report: str((params as { report?: unknown }).report, 'report') });
+        },
+      };
+      progress.set(agentId, { turns: 0, toolCalls: 0, toolErrors: 0, lastLine: '' });
+      mailbox.register(agentId, member.label, null);
+      emit({ type: 'agent_spawn', agentId, role: 'builder', mapId: null, mapName: null, task, memberId: member.id, label: '작품 타이틀과 오프닝 제작' });
+      try {
+        const done = await runAgent({ ...request, ...request.roleModels?.deep, mode: 'single', project: snapshot, mapIds: [], task,
+          initialToolNames: undefined, toolDomains: undefined, maxTurns: Math.min(member.maxTurns, attempt ? 12 : 24),
+          ...(!request.roleModels?.deep && member.model ? { model: member.model } : {}),
+          systemPrompt: [...buildPiAgentSystemPrompt(snapshot, []), ...FIRST_PRESENTATION_INSTRUCTIONS] },
+        { ...child(agentId, request.roleModels?.deep?.provider ?? request.provider),
+          toolNames: ['get_title_screen', 'get_opening', 'get_map_region', 'get_event', 'show_map_region',
+            'generate_title_art', 'generate_opening_image', 'set_title_screen', 'set_opening', 'show_title_opening', 'list_opening_media'],
+          onCheckpoint: checkpointFor(null, snapshot), extraTools: [reportTool] });
+        toolCalls += done.stats.toolCalls; toolErrors += done.stats.toolErrors; subTurns += done.stats.turns; subUsage = addPiAgentUsage(subUsage, done.stats.usage);
+        if (!reported) throw new Error('작품 타이틀/오프닝 제작 보고가 없습니다.');
+        const issues = [...inspectFirstPlay(base, done.project, firstPlay), ...inspectFirstScene(base, done.project, firstPlay), ...inspectFirstPresentation(done.project)];
+        if (issues.length) throw new Error(issues.join(' / '));
+        working = cloneProjectSharingSharedDictionaries(done.project);
+        emit({ type: 'agent_done', agentId, ok: true, summary: '작품 타이틀과 오프닝 제작', stats: done.stats, changedKeys: done.changedKeys, spills: [], conflicts: [] });
+        await reviewFirstScene();
+        break;
+      } catch (error) {
+        if (attempt || options.signal?.aborted) throw error;
+        presentationRepair = '타이틀/오프닝에 남은 문제만 수정한다. 장소와 핵심 플레이를 보존한다. 오류: ' + (error instanceof Error ? error.message : String(error));
+        emit({ type: 'execution_status', name: 'first_presentation.repair', ok: false, summary: presentationRepair });
+      } finally { mailbox.close(agentId); }
     }
   }
 
@@ -922,6 +1004,10 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
       { ...request, initialToolNames: undefined, mode: "single", mapIds: candidateMaps, project: working, systemPrompt: [...orch.systemPrompt(working, request.mapIds, request.task, team, request.currentMapId), ...(firstPlay ? [`핵심 플레이 제작과 원문 요구 검사, 실제 장소 구성과 이미지 검수를 이미 마쳤다: ${JSON.stringify(firstPlay)}. 불필요한 재시공 없이 finish 한다. 꼭 필요한 남은 작업만 최대 3회 배정한다. 기존 두 맵과 도입/첫 행동 안내를 보존한다. 빈 바닥/안 보이는 대상은 장식으로 미루지 않는다. 기획의 플레이를 다시 처음부터 만들지 않는다.`] : []), teamCommunicationPrompt(orchestratorId)], maxTurns: coreFirst ? Math.min(team.workBudget ?? orch.maxTurns, 32) : team.workBudget ?? orch.maxTurns },
       { ...child(orchestratorId), toolNames: orch.toolNames, extraTools: orchestratorTools },
     );
+  } catch (error) {
+    // Keep the parent run's host reservation until all previously launched children stop.
+    await Promise.all(inflight.map(entry => entry.promise));
+    throw error;
   } finally { mailbox.close(orchestratorId); }
   // 팀장이 wait 없이 끝났을 수 있다(턴 상한·조기 finish 실패). 남은 배정을 거두어 병합한다 —
   // 여기서 놓치면 이미 끝난 시공 결과가 조용히 사라진다.

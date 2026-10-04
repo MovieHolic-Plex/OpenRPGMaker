@@ -1,4 +1,6 @@
+import { parseCinematicPresentation, CINEMATIC_PRESENTATION_PRESETS, CINEMATIC_TEXT_ANIMATIONS, CINEMATIC_ENTRANCES } from '@/project/cinematicPresentation';
 import { validateGameOverSettings } from "@/project/io/shapeDatabaseFields";
+import { parseCinematicDirection } from '@/project/cinematicDirection';
 // editor/tools/cinematicTools.ts
 // 오프닝 시네마틱(system.opening)의 AI 저작면. DB 「오프닝」 탭과 같은 레코드를 쓰므로
 // 런타임(새 게임 시작 전 재생)이 그대로 소비한다.
@@ -42,7 +44,7 @@ const MOTIONS: readonly CinematicMotion[] = ["none", "fade", "pan", "zoom"];
 const MEDIA_RESULT_LIMIT_MAX = 200;
 
 const OPENING_FIELD_NAMES = [
-  "id", "kind", "narration", "narrationAudioResourceId", "durationMs", "resourceId", "motion",
+  "id", "kind", "narration", "narrationAudioResourceId", "durationMs", "resourceId", "motion", "direction", "presentation",
 ] as const;
 
 function requireRecord(value: unknown, label: string): Record<string, unknown> {
@@ -114,7 +116,7 @@ function resolveResourceId(
   kind: OpeningMediaKind,
   raw: unknown,
   index: number,
-  field: "resourceId" | "narrationAudioResourceId",
+  field: "resourceId" | "narrationAudioResourceId" | "direction.soundResourceId",
   isKnown: (kind: OpeningMediaKind, id: string) => boolean,
 ): string {
   if (typeof raw !== "string" || raw.trim().length === 0) {
@@ -155,15 +157,21 @@ function normalizeScene(project: Project, raw: unknown, index: number, isKnown: 
   const narrationAudioResourceId = scene.narrationAudioResourceId === undefined
     ? undefined
     : resolveResourceId(project, "sound", scene.narrationAudioResourceId, index, "narrationAudioResourceId", isKnown);
+  let presentation;
+  if (scene.presentation !== undefined) {
+    try { presentation = parseCinematicPresentation(scene.presentation); }
+    catch (error) { throw new ToolError(error instanceof Error ? error.message : String(error), { code: 'invalid-args' }); }
+  }
   const common = {
     id: id.trim(),
     narration,
     durationMs,
     ...(narrationAudioResourceId ? { narrationAudioResourceId } : {}),
+    ...(presentation ? { presentation } : {}),
   };
 
   if (kind === "text") {
-    for (const forbidden of ["resourceId", "motion"] as const) {
+    for (const forbidden of ["resourceId", "motion", "direction"] as const) {
       if (scene[forbidden] !== undefined) {
         throw new ToolError(
           `scenes[${index}]는 텍스트 장면이라 ${forbidden}를 가질 수 없습니다. 그림/영상은 kind를 image/video로 두세요.`,
@@ -176,7 +184,7 @@ function normalizeScene(project: Project, raw: unknown, index: number, isKnown: 
 
   const resourceId = resolveResourceId(project, kind === "video" ? "movie" : "image", scene.resourceId, index, "resourceId", isKnown);
   if (kind === "video") {
-    if (scene.motion !== undefined) {
+    if (scene.motion !== undefined || scene.direction !== undefined) {
       throw new ToolError(`scenes[${index}]는 영상 장면이라 motion을 가질 수 없습니다(움직임은 image 전용).`, { code: "invalid-args" });
     }
     return { ...common, kind: "video", resourceId };
@@ -186,7 +194,14 @@ function normalizeScene(project: Project, raw: unknown, index: number, isKnown: 
   if (!MOTIONS.includes(motion as CinematicMotion)) {
     throw new ToolError(`scenes[${index}].motion은 ${MOTIONS.join("/")} 중 하나여야 합니다.`, { code: "invalid-args" });
   }
-  return { ...common, kind: "image", resourceId, motion: motion as CinematicMotion };
+  try {
+    const direction = scene.direction === undefined ? undefined : parseCinematicDirection(scene.direction);
+    if (direction?.soundResourceId) resolveResourceId(project, 'sound', direction.soundResourceId, index, 'direction.soundResourceId', isKnown);
+    return { ...common, kind: "image", resourceId, motion: motion as CinematicMotion, ...(direction ? { direction } : {}) };
+  } catch (error) {
+    if (error instanceof ToolError) throw error;
+    throw new ToolError(`scenes[${index}].direction: ${error instanceof Error ? error.message : String(error)}`, { code: 'invalid-args' });
+  }
 }
 
 function buildSequence(project: Project, args: Record<string, unknown>): { sequence: CinematicSequence; warnings: string[] } {
@@ -288,6 +303,49 @@ const OPENING_SCENE_SCHEMA: JsonSchema = {
     resourceId: { type: "string" },
     motion: { type: "string", enum: MOTIONS },
     narrationAudioResourceId: { type: "string" },
+    presentation: {
+      type: 'object', additionalProperties: false,
+      description: '모든 text/image/video 장면의 글자·페이드 연출. preset의 기본값에 text/transition을 덮어쓴다. 영상/실제 배우 동작은 별도로 저작한다.',
+      properties: {
+        preset: { type: 'string', enum: CINEMATIC_PRESENTATION_PRESETS, description: 'subtitle 자막, prologue 서문, chapter 챕터 카드, memory 회상, credits 크레딧' },
+        backgroundColor: { type: 'string', pattern: '^#[0-9a-fA-F]{6}$' },
+        letterbox: { type: 'integer', minimum: 0, maximum: 20 },
+        text: { type: 'object', additionalProperties: false, properties: {
+          layout: { type: 'string', enum: ['center', 'bottom', 'left', 'credits'] },
+          font: { type: 'string', enum: ['serif', 'sans', 'pixel'] },
+          size: { type: 'integer', minimum: 8, maximum: 64, description: '논리 게임 무대 px. 기본 320×240 무대에서 14~26 권장.' },
+          color: { type: 'string', pattern: '^#[0-9a-fA-F]{6}$' },
+          animation: { type: 'string', enum: CINEMATIC_TEXT_ANIMATIONS },
+          delayMs: { type: 'integer', minimum: 0, maximum: 10000 },
+          revealMs: { type: 'integer', minimum: 0, maximum: 10000 },
+          exitMs: { type: 'integer', minimum: 0, maximum: 10000 },
+        } },
+        transition: { type: 'object', additionalProperties: false, properties: {
+          enter: { type: 'string', enum: CINEMATIC_ENTRANCES },
+          enterMs: { type: 'integer', minimum: 0, maximum: 5000 },
+          exitMs: { type: 'integer', minimum: 0, maximum: 5000, description: '장면 끝 암전. durationMs 안에 포함. 0은 없음.' },
+        } },
+      },
+    },
+    direction: {
+      type: 'object', additionalProperties: false, properties: {
+        camera: { type: 'object', additionalProperties: false, required: ['from', 'to'], properties: {
+          from: { type: 'array', items: { type: 'number' }, minItems: 3, maxItems: 3, description: '[초점 x(0..1), 초점 y(0..1), 배율(1..1.6)]' },
+          to: { type: 'array', items: { type: 'number' }, minItems: 3, maxItems: 3 },
+        } },
+        transition: { type: 'object', additionalProperties: false, required: ['kind', 'durationMs'], properties: {
+          kind: { type: 'string', enum: ['cut', 'dissolve', 'fade', 'flash'] }, durationMs: { type: 'number', minimum: 0, maximum: 1000 },
+        } },
+        effects: { type: 'array', maxItems: 4, items: { type: 'object', additionalProperties: false, required: ['kind'], properties: {
+          kind: { type: 'string', enum: ['godRays', 'motes', 'mist', 'glow'] }, intensity: { type: 'number', minimum: 0, maximum: 1.5 }, color: { type: 'string' },
+          source: { type: 'array', items: { type: 'number', minimum: 0, maximum: 1 }, minItems: 2, maxItems: 2 },
+          toward: { type: 'array', items: { type: 'number', minimum: 0, maximum: 1 }, minItems: 2, maxItems: 2 },
+          region: { type: 'array', minItems: 3, maxItems: 8, items: { type: 'array', minItems: 2, maxItems: 2, items: { type: 'number', minimum: 0, maximum: 1 } } },
+          spread: { type: 'number', minimum: 0.01, maximum: 0.5 }, speed: { type: 'number', minimum: 0, maximum: 2 },
+        } } },
+        soundResourceId: { type: 'string' }, narrationDelayMs: { type: 'number', minimum: 0, maximum: 2000 },
+      },
+    },
   },
 };
 
@@ -334,6 +392,7 @@ const setOpening: ToolDefinition = {
     + "장면: kind text/image/video, image·video 는 resourceId 필수, motion 은 image 전용, "
     + "durationMs 0 은 확인 입력(영상은 재생 끝)까지 기다린다. 장면 하나만 고치거나 순서만 바꿀 땐 edit_opening 을 쓴다. "
     + "musicResourceId 는 시퀀스 전체에 반복 재생되는 배경음악(생략 시 기존 유지, 빈 문자열은 제거). "
+    + "presentation은 text/image/video 모두 지원: preset subtitle/prologue/chapter/memory/credits, text.animation none/fade/rise/typewriter/blur/scroll, transition.enter cut/fade/dissolve/wipe/iris/flash와 enterMs·exitMs. 글자·장면 페이드 시간은 durationMs 안에 포함된다. 검은 글자 한 줄이나 동일한 확대만 반복하지 말고, 작품 분위기에 맞는 서문/카드/자막을 선택한다. "
     + "미디어 id 는 list_opening_media 로 확인하고, 재생되게 하려면 enabled:true.",
   mode: "write",
   parameters: {
@@ -625,6 +684,7 @@ export function prepareOpeningImageRequest(args: Record<string, unknown>): { rea
   if (rawName !== undefined && typeof rawName !== "string") {
     throw new ToolError("name은 문자열이어야 합니다.", { code: "invalid-args" });
   }
+  if (args.referenceResourceId !== undefined && (typeof args.referenceResourceId !== 'string' || !args.referenceResourceId.trim())) throw new ToolError('referenceResourceId는 실제 그림 id 문자열이어야 합니다.', { code: 'invalid-args' });
   const prompt = raw.trim();
   const name = rawName?.trim() || `오프닝 그림: ${prompt.slice(0, 24)}`;
   return { prompt, name };
@@ -661,6 +721,7 @@ const generateOpeningImage: ToolDefinition = {
     properties: {
       prompt: { type: "string", minLength: OPENING_PROMPT_MIN_LENGTH, description: "장면 설명(분위기·시간대·장소). 글자는 넣지 않는다." },
       name: { type: "string" },
+      referenceResourceId: { type: "string", description: "기존 타이틀/오프닝 그림의 실제 id. 같은 물체·인물·장소·화풍을 유지한 다른 구도를 만든다." },
     },
   },
   run(_project, args): ToolExecResult {

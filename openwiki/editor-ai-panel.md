@@ -2,6 +2,112 @@
 
 # Editor AI Panel & Tools
 
+## UX 추가 조사 2 — 공간 체크포인트·사람 칸 비교 (2026-10-04)
+
+`sharedDictionaryJson.serializeForRoundtripCheck`는 `spatialAuthoring`이 있어도 항목별로
+왕복을 통과한 불변 타일셋을 재사용한다. 독립 검증을 이미 통과한 참고문서 본문만 빼며,
+`kind`, `count`, `tileSize`, `tilesPerRow`, `structureKits`의 모든 비문서 필드,
+`tileGrafts`, 실제 통행·레이어·지형 규칙 등 나머지 필드는 보존한다. 소유 문서의 wire view도
+통과한 뒤에만 기억한다. 새/교체 항목은 전체 형태로 검사하고, 공간 참조·정규화·린트·적용
+권위 게이트는 매번 기존 경로를 지난다. 자료를 뺀 투영본은 저장/ACK가 아니라 린트 입력 전용이다.
+
+`assistantHumanEdits`의 descriptor 없는 복원·높이 비교는 같은 dense 배열을 건너뛰고,
+바뀐 배열만 숫자로 비교한다. 벽 장식·잠금·군집·feature patch는 비교 한 번당 칸별로 색인한다.
+전 맵의 칸마다 JSON/멤버십 검색을 반복하지 않는다. 실제 바뀐 칸만 보존하며, descriptor가
+있는 같은 값 붓질 의도와 ACK 뒤 실행 수명 동안의 보호, 최신 live 값 검사, 프로젝트 전환
+무효화는 유지한다. relief 액션 자체의 descriptor 변경은 relief 담당 작업 범위다.
+
+추가 회귀 계약: `test/assistantUx2SpatialRoundtrip.test.ts`,
+`test/assistantUx2HumanFallback.test.ts`. 이번 작업은 실행 금지 지시에 따라 Vitest/게이트/
+typecheck/브라우저를 실행하지 않는다. 소스 검토와 esbuild 구문 검사만 사용하며 성능 실측값은 없다.
+
+## UX 추가 조사 2 — 활동 그림 캡처·그림판·보관 정리 (2026-10-04)
+
+`activityVisual.captureActivityVisuals`는 최대 32×24 crop 좌표를 먼저 계산하고 원본 보조 층에서
+그 칸만 복사한다. 전체 relief/overlay/shadow 배열을 clone한 뒤 자르지 않는다. 벽 장식·잠금·
+그룹 소속은 기존 remapper로 필터/좌표 변환하며 원본은 바꾸지 않는다. 불변 타일셋 항목은
+문서/kit을 제외한 캡처 메타데이터를 한 번 크기 검사·복제·freeze하여 공유한다. 110만 글자
+예산을 넘는 메타데이터는 grid crop/clone 전 거절한다. 업로드 graft 소스도 실행 시점의
+바이트 또는 content ref를 보존하며 새 업로드 항목은 별도 스냅샷이다.
+
+`toolImageCanvas.loadActivityTilesetAtlas`는 활동 그림 전용 LRU를 사용한다. 정확한 source URL/
+바이트, transparency key, 그림판 크기와 graft 내용/캡처 소스가 key다. 서로 다른 visual id도
+같은 불변 그림판은 decode/keying Promise를 공유한다. 보유 상한은 8항목·64MiB이며 key 문자열과
+추정 decoded pixel 메모리를 함께 계수한다. 실패/큰 항목은 보유하지 않는다. 이것은 브라우저
+전체/작업 중 임시 할당의 엄격한 메모리 상한이 아니다. 예전 graft 기록에 업로드 소스가 없으면
+누락 그림으로 처리하고 현재 편집기 그림으로 대체하지 않는다. 기존 유휴 예약·raster 3 lane·
+저장 Blob 재사용·표시 숨김 중 기록·ACK/백그라운드 양보는 유지한다.
+
+`oprn-ai-activity-media` v2는 payload와 `id/orderAt/bytes` 메타데이터를 같은 트랜잭션으로 쓴다.
+v1 자료는 스키마 업그레이드 때 한 번만 cursor로 읽어 메타데이터를 만든다. 일반 prune은
+`metadata.newest.openKeyCursor`의 key만 순회하고 payload/Blob을 조회하지 않는다. 기존 7일/
+64,000,000 byte·동시간 id 순서·메모리 256개/16MB 정책을 유지한다. 조용한 600ms 뒤 정리,
+연속 쓰기는 최초 예약부터 최대 5초 내 정리를 예약한다(저장 큐 완료 시간 보장은 아니다).
+
+추가 회귀 계약: `test/assistantUx2ActivityVisual.test.ts`, `test/assistantUx2ActivityAtlas.test.ts`,
+`test/assistantUx2MediaPrune.test.ts`. 테스트/브라우저는 실행하지 않았고 esbuild 구문 검사만 한다.
+
+## UX 추가 조사 2 — 대화 요약 색인·범위 검색 (2026-10-04)
+
+`oprn-ai-records` v4는 대화 payload와 `conversationSummaries`/준비 표식을 함께 보존한다.
+`aiRecordDb`가 트랜잭션 소유 helper인 이유는 저장·복구·삭제/tombstone과 요약을 원자적으로
+갱신하기 위해서다. `conversationStore`는 순수 projector를 등록한다. 오래된 v1~v3 대화는 첫
+조회 때 cursor로 한 번 검증/요약하며 payload는 다시 쓰거나 버리지 않는다. 잘못된 옛 행은
+원본 그대로 남고 목록에서 제외한다. projector 없이 raw seed한 쓰기는 준비 표식을 무효화한다.
+
+일반 페이지는 scope/저장시각·map multi-entry·unknown attribution 색인에서 count와 cursor
+advance를 사용한다. 같은 시각의 id는 기존 `localeCompare` 순서로 묶어 정렬하여 페이지 경계도
+보존한다(같은 시각에 몰린 행은 그 묶음의 compact 요약만 더 읽는다). 검색은 해당 범위의 작은
+요약만 순회하며 기존 제목+80자 미리보기 부분일치를 유지한다. 키 입력마다 전체 transcript
+getAll/검증/전체 아카이브 정렬을 하지 않는다. 최근 50개 목록·최신 대화 복원도 요약 색인을 쓰고
+선택된 payload만 읽는다. 원문 전체 읽기는 명시적 복구/전체 삭제 등 기존 경로에 남는다.
+
+기록 모달은 현재 맵의 첫 페이지와 별도 map catalog key cursor를 동시에 한 번씩 요청한다.
+검색은 180ms debounce하며 새 입력 즉시 이전 조회를 abort/세대 무효화한다. 닫기/필터 변경은
+예약을 취소하고 pending-work Promise도 정착시킨다. catalog는 독립 세대이므로 검색 입력으로
+초기 맵 목록이 버려지지 않는다. scope·legacy 읽기 전용·복구 admission·프로젝트/modal 소유권·
+compaction/맵 provenance/삭제 억제 계약은 유지한다.
+
+회귀 계약은 `test/assistantUx2HistoryIndex.test.ts`와 갱신된
+`test/aiConversationHistoryStartup.test.ts`이다. 기존 저장/복구/압축 회귀 계약도 유지한다.
+실행하지 않았으며 source-level 검토와 esbuild parse만 완료한다.
+
+통합 뒤 감독자 브라우저/native QA 재현(이 작업에서 실행하지 않음):
+
+1. 폐기 가능한 profile/project에서 v3 DB에 100/1000/5000개의 가짜 대화를 두 scope+legacy로
+   심는다. 일부는 압축 표시·viewed A/target B·unknown·동시간 대소문자/한글 id를 포함한다.
+   v4를 열어 원본 payload/압축 provenance를 비교한다. 최초 migration 뒤 transcript store의
+   `getAll/openCursor`와 summary index 요청을 계수한다. 현재 맵으로 모달을 열면 scoped page 1회+
+   key catalog 1회, 180ms 안에 10글자를 입력하면 마지막 검색 1회여야 한다. page 2·unknown·legacy·
+   제목/미리보기 검색을 확인하고 검색/복구 중 닫기·프로젝트 전환 시 늦은 결과/원격 쓰기가 없어야 한다.
+2. 자료가 많은 유효 spatial fixture의 동일 immutable 항목을 먼저 roundtrip lint로 warm한 뒤
+   한 칸 checkpoint 10개를 적용한다. 새 kit의 width/rows, `interiorMetadata`, graft target/count,
+   새 참고문서를 각각 망가뜨려 기존 deserialize/lint/권위 거절 경로를 확인한다. projection은 모든
+   비문서 교차 참조 필드를 보존하고 새 참고문서 본문은 전체 검증해야 한다. 숨김/blur 상태에서도
+   실제 apply→ACK가 이어지고 돌아온 뒤 과거 연출을 재생하지 않아야 한다.
+3. 조수 실행 중 128×128/512×512 맵에서 descriptor 없는 높이/복원 편집과 같은 값 붓질을 한다.
+   overlay의 missing↔-1, shadow의 missing↔0은 보호 칸을 늘리지 않고 실제 층/높이/경사로/벽·잠금·
+   그룹 변경 칸만 보존해야 한다. 두 ACK 뒤 최신 사람 값은 남고 이웃 조수 칸은 적용되어야 한다.
+   차원/tileset 변경은 fallback 전에 구조 변경으로 처리한다.
+4. 동일 keyed 2048×2048 업로드 그림판으로 서로 다른 작은 활동 crop 20개를 만든다. 원본 보조
+   층의 전체 clone이 없고 캐시 보유 동안 whole-atlas key scan 1회인지 계수한다. key/graft 소스
+   바이트/ref를 바꾸면 새 그림, 옛 기록은 옛 pixels여야 한다. 자료 누락은 누락 표면으로 처리한다.
+   표시 수준 none에서도 기록을 보존한다. 9개 이상의 다른 그림판을 써서 eviction을 확인한다.
+5. 작은 실제 Blob이 있는 v1 media archive를 v2로 올려 재로드한다. synthetic bytes metadata로
+   8/32/64MB와 7일 경계를 만들고 600ms 이상 간격 burst와 5초 연속 쓰기를 비교한다. 일반 prune은
+   metadata key만 읽고 payload/Blob getAll/sort가 없어야 한다. 삭제 대상과 retained Blob을 재로드하고,
+   image 부재/저장 quota 실패가 tool/apply/ACK를 막지 않는지 확인한다. 이 fixture는 실제 기록과 분리한다.
+
+## 조수 실행 중 읽기·손편집·승인 보존 (2026-10-04)
+
+- `aiConversationScroll.ts`는 로그별로 따라가기 상태를 소유한다. 맨 아래(24px 이내)에서만 새 출력·이미지 크기 변화를 따라간다. 위로 읽으면 현재 위치를 유지하고 로그 밖의 「새 응답 보기」를 보여 준다. 버튼을 누르거나 맨 아래로 돌아오면 따라가기를 재개한다. 스트리밍·영역 실행·첨부·카드도 이 정책을 공유한다. 위를 읽는 중 사용자 발화가 추가돼도 지난 대화를 자동으로 접지 않는다. 패널 폐기 때 관찰자·프레임·리스너를 정리한다.
+- 조수 강조는 사용자 선택을 소유하지 않는다. `aiTurnRunner`의 옛 `highlightedRegionThisTurn`에 따른 선택 해제를 제거했다. 강조 도구가 끝나거나 실행이 중단돼도 뒤늦게 사람이 고른 영역을 지우지 않는다.
+- Pi 단계 승인은 기존 펼친 적용 카드에서 「답변 필요」로 표시한다. 맵 소실 확인은 `aiDecisionPrompt.ts`의 작업 소유 카드로 표시한다(Pi 발행·최종 적용·레거시 제안 표면). 모달·자동 포커스·화면 잠금 없이 해당 Promise만 기다린다. 기존 승인 정책(auto/yolo 예외 포함)은 유지한다. 중단 신호가 오면 카드를 걷고 기다리던 소유자를 중단한다. 질문 카드는 기존 인라인 표면을 사용한다.
+- Pi 실행은 `assistantHumanEdits.ts`의 스토어 구독을 작업 시작부터 종료까지 유지하고 `finally`로 해제한다. `human`(생략 포함)·직접 `tool` 편집 좌표를 기억하며 `ai`·`system`은 보호 좌표를 만들지 않는다. 명시적 칸 descriptor는 같은 값으로 칠한 의도도 남긴다. descriptor 없는 되돌리기·높이 편집은 변경 칸을 비교한다.
+- `applyProposedProject`는 기존 3-way 병합 뒤에도 이 좌표의 최신 스토어 값을 보존한다. ACK가 그 값을 다음 기준으로 받아간 뒤의 체크포인트도 계속 보호한다. 네 타일 층·그림자·스택·높이·경사로·벽 장식·물 깊이·칸 잠금·그룹/지형 패치 소속을 함께 보존하고 이웃 칸은 적용한다. 보호 칸이 있는 맵의 삭제·크기·타일셋 변경은 그 적용을 반려한다. 보호는 저장 데이터나 영구 잠금이 아니며 다음 사용자 작업은 새 범위다.
+- 원래 공간 도구 증명을 확인한 뒤 보호 결과를 병합 증명으로 검증한다. 커밋 게이트·권위 검사는 그대로 사용한다. 실제 보존한 칸 수를 작업 과정에 기록하고 diff는 실제 적용 결과로 계산한다. 레거시 세션의 기존 stale-base 거절 정책은 유지한다.
+- 수동 브라우저 재현: `scripts/qa/assistant-human-work.mjs`, 증거: `verify-shots/assistant-human-work/`. 실제 편집기·포인터 입력·도구·체크포인트 적용과 대본 세션 이벤트를 사용한다. 라이브 모델·호스트 SQLite 저장을 검증하지 않는다. 회귀 계약은 `test/assistantHumanEdits.test.ts`와 `test/aiAssistantTurnCleanup.test.ts`; 사용자 지시에 따라 전체 게이트/Vitest/typecheck는 실행하지 않았다.
+
 ## 사용자가 요청한 위치 안내만 화면을 옮긴다 (2026-10-04)
 
 사용자: 「'찾아달라'는 식의 요청이 아니면 화면이 움직이지 않았으면 좋겠음」,
@@ -353,14 +459,15 @@ x=8, y=278, 300×383으로 화면 안에 놓인다. 설정 변경·팀 메뉴 �
 기존 게임 오류 수정, 게임 전체 번역. 각 레시피는 분업·선행 조건·A2A 협의·
 통합 검수 기준을 포함한다. 키워드 분류기로 자동 모드를 바꾸는 기능은 아니다.
 
-- `assign_task_agent(mode=read)`: 설계·대사안·용어집·검사 등을 병렬 배정.
+- `assign_task_agent(mode=read)`: 설계·대사안·용어집·검사 등을 배정.
   읽기 도구만 제공하고 반환 데이터에 변경이 있으면 병합 단계에서도 거절한다.
+  2026-10-04부터 맵 소유권 규칙을 조회에도 적용한다. 맵 범위가 없으면 전체를 예약하므로 하나씩 실행한다.
   `report_task`의 산출물을 `check_agents`/`wait_agents`의 summary로 전달한다.
   읽기 사본은 시작 시점 기준이므로 후속 제작/최종 검수는 최신 사본으로 재배정한다.
 - `assign_task_agent(mode=project)`: 공통 DB·오프닝·공통 번역문·빈 맵 준비를
   실제 작업 사본에 적용한다. 맵 묶음 병합으로 버려지던 최상위 변경도 보존한다.
-  프로젝트 쓰기는 모든 다른 맵/프로젝트 쓰기와 상호 배제하고 읽기 작업만
-  병행한다. 레코드별 병렬 병합은 제공하지 않는다. 기존 커밋/적용 게이트는 유지한다.
+  프로젝트 쓰기는 다른 맵/프로젝트 조회·시공·검수와 상호 배제한다.
+  레코드별 병렬 병합은 제공하지 않는다. 기존 커밋/적용 게이트는 유지한다.
 - 명시된 맵 범위나 읽기 전용 요청을 project 쓰기로 승격하지 않는다.
   맵 작업은 기존 `assign_map_agent`, 맵 검수는 `review_map`을 사용한다.
   read 배정에는 검수 프로필도 사용할 수 있다. 기본 제작 프로필의 소개를
@@ -370,7 +477,7 @@ x=8, y=278, 300×383으로 화면 안에 놓인다. 설정 변경·팀 메뉴 �
   진행 중인 비맵 작업은 finish를 막고, 실패 결과는 최종 보고에 명시한다.
   실행당 비맵 배정 최대 64건, 산출물 보고 최대 16,000자. 긴 번역 등은 장별로 나눈다.
 - 테스트: `piAgentTeamWorkflows` (실제 프롬프트 연결), `piAgentTeamRuntime`
-  (병렬 설계→보고서→공통 텍스트 적용, 쓰기 잠금 양방향, 결과 보존, 권한 범위,
+  (직렬 설계→보고서→공통 텍스트 적용, 쓰기 잠금 양방향, 결과 보존, 권한 범위,
   보고서 누락/읽기 변경 거부). 라이브 모델의 7가지 완성품을 만든 증거는 아니다.
 
 
@@ -850,9 +957,10 @@ import 하므로 베어 경로는 **다른 인스턴스**가 된다(실측: 게�
 
 - 소유: `src/editor/stampOrderQueue.ts`(모듈 싱글턴, 스토어 import 없음). 러너 배선은 `aiChatPanel.ts` 모듈 최상단 `configureStampOrderQueue`.
   패널이 아니라 모듈이 소유하는 이유는 레인과 같다 — 스튜디오에서 장면을 더하면 패널이 다시 만들어진다(`aiLaneSession.ts`).
-- 규칙: 같은 맵에서 **영역이 겹치는 주문만** 앞 주문이 끝날 때까지 기다린다(선택 없음 = 맵 전체 = 그 맵의 모든 주문과 겹침).
-  동시에 도는 주문은 `STAMP_ORDER_CONCURRENCY`(3). 모델 읽기는 겹쳐 돌고, 적용(`applyToolSequenceToStore`)은 동기라 자연히 하나씩이다.
-- 조수 턴과의 경계: 주문은 **적용 직전에** `waitForApply` 로 조수 턴(`turnBusy`)이 끝나기를 기다린다. Pi 턴은 시작 시 프로젝트를 바닥으로 잡고
+- 규칙(2026-10-04 갱신): 같은 맵은 **영역과 무관하게 최대 한 주문**만 실행하고 나머지는 FIFO로 기다린다.
+  다른 맵에서는 `STAMP_ORDER_CONCURRENCY`(3)까지 병렬 실행한다. 주문의 모델 읽기부터 적용/수리 완료까지 맵을 점유한다.
+- 조수 턴과의 경계: 주문은 모델 호출 전에도 `turnBusy`와 공용 `editorAiMapRuns` 소유권을 확인한다.
+  적용 직전의 `waitForApply`도 유지한다. Pi 턴은 시작 시 프로젝트를 바닥으로 잡고
   적용 때 stale-base 를 보므로, 턴 도중에 깔면 조수 결과가 통째로 거절된다. `runSurface.turnBusy=false`·대화 은퇴·패널 해제가 `pokeGate()` 를 부른다.
   기다린 뒤 러너는 **지금 맵**으로 `resolveStampOverlaps` 를 다시 돌린다(먼저 끝난 주문이 세운 NPC 와 겹치지 않게). 프로젝트가 바뀌었으면 그 주문은 중단.
 - 표면: 채팅 말풍선은 `#번호 문장` → 끝나면 `#번호 이름 — 완료/일부 적용/실패` + 단계 줄(`takeUnreported` 로 한 번만).
@@ -861,7 +969,8 @@ import 하므로 베어 경로는 **다른 인스턴스**가 된다(실측: 게�
   바로 깔기가 켜져 있으면 조수 턴 중에도 전송 버튼이 살아 있다(`refreshSendEnabled`).
 - 검증: `test/stampOrderQueue.test.ts`(겹침·상한·조수 게이트·프로젝트 교체·중단·보고 1회).
   브라우저: `BASE=http://127.0.0.1:<포트> node scripts/qa/rapid-stamp-orders.mjs` — 모델을 2.5s 늦춘 스텁으로 표준 편집기·스튜디오에서 드래그 3번.
-  실측(2026-09-28): 두 모드 모두 거절 0·오류 0, 떨어진 두 주문 동시 읽기(`inflightMax` 2), 겹친 셋째는 첫째 뒤에 깔림. 증거 `verify-shots/rapid-stamp/`.
+  과거 실측(2026-09-28): 같은 맵의 떨어진 두 주문 동시 읽기(`inflightMax` 2)는 당시 규칙의 증거다.
+  현재 맵당 하나 규칙은 `verify-shots/ai-map-ownership/controlled.json`의 주문 직렬 관측을 따른다.
 - **드래그·적용 성능(2026-09-28 고침)**: 새 프로젝트(149MB = 타일셋 82MB + 업로드 자산 66MB)에서 적용 한 번에 메인 스레드가 5~6s 멈추고,
   드래그 한 칸이 중앙값 140ms 였다. 표준 편집기·스튜디오가 같은 캔버스·같은 패널이라 두 모드 모두 같았다. 원인과 고친 자리:
   - 오버레이 강제 레이아웃: `renderRegionSizeBadge`/`positionBuildPaletteOverlay`/`publishMapViewport` 가 부를 때마다 `getBoundingClientRect`.
@@ -3368,6 +3477,74 @@ validateVillageContract → applyProposedProject`로 처리한다. 의도 선언
 - 헤드리스에서도 도구 실행, 증분으로 복원한 초안, 검토, 적용은 그대로다. `replaceAgentGhostPreviewFromProjectDiff` 를 쓰는 경로(Pi, 레인, 세션, 영역 작업)는 꺼져 있는 동안 맵 비교를 하지 않고, 켜기 직전에 쌓인 프리뷰는 비운다. Pi 는 다시 켜는 순간 현재 초안을 한 번 그린다. 그 외 경로는 다음 변경에서 그린다. 공개 애니메이션만큼 체크포인트를 기다리지 않는다.
 - 켜 둔 상태의 렉: 손대지 않은 맵은 객체 동일성으로 비교를 건너뛴다. 라이브 프리뷰 id 에 셀 전체를 문자열로 넣지 않는다. 스프라이트는 카메라 주변만 만들고, 이미 내려앉은 칸은 프레임마다 다시 움직이지 않는다. 상태 칩은 문구가 바뀔 때만 배치를 다시 잰다.
 
+## 맵 하나에 조수 한 명 (2026-10-04)
+
+사용자 계약: 같은 프로젝트의 맵별 실행 수는 최대 1이다. 조회·시공·검수를 같은 소유권으로 센다.
+프롬프트와 보드의 표시만으로 지키지 않고 실행 전에 동기적으로 예약한다.
+
+- `src/ai/piAgent/mapRunLocks.mjs`: 브라우저·companion·팀이 공유하는 예약 정책. 같은 프로젝트의 맵 집합이 겹치면
+  두 번째 호출을 거절한다. 맵 범위가 없거나 제한 없는 작업/팀 요청은 프로젝트 전체를 예약한다.
+  프로젝트 키가 없는 옛 호출자는 알려진 프로젝트와도 보수적으로 충돌 검사한다.
+- `aiPiAgentCommand`: 전체 턴이 브라우저 예약을 소유하며 계획·수리 호출에도 같은 `projectKey`를 전달한다.
+  같은 대상 ID와 부모에 포함된 하위 대상은 별도 워커를 띄우지 않는다. 서로 독립인 맵 묶음만 병렬 전송한다.
+  묶음의 모든 호출은 `settleMapRuns`로 수거한다. 한 호출이 먼저 실패해도 다른 호출이 종료되기 전에 전체 예약을 풀지 않는다.
+  대상 제한이 없는 평문 작업은 다른 맵을 수정할 수 있으므로 전체 예약이다.
+- `scripts/lib/piRunRelay.mjs`: 워커 시작을 await하기 전에 예약한다. 다른 탭/HTTP 호출의 중복도 409 `map-busy`로 거절한다.
+  워커 NDJSON 종료/오류 때 해제하며, 시작 실패도 해제한다. 스트림 재연결은 같은 runId의 예약을 유지한다.
+  클라이언트 연결 단절·중단 요청만으로 예약을 풀지 않는다. 호스트 재시작은 기존 워커 프로세스도 종료하는 기존 수명을 따른다.
+- `scripts/lib/piTeamRuntime.ts`: 시공 배정과 검수를 같은 원장으로 예약한다. 검수 중 시공/또 다른 검수,
+  부모 묶음과 하위 맵의 동시 배정, 프로젝트 공통 작업과 맵 배정의 겹침을 거절한다.
+  결과 병합·체크포인트 반영·실패 처리를 마친 뒤 예약을 해제한다. 팀장 실패 때도 시작한 자식을 수거한다.
+- 기존 맵 묶음 병합은 mapTree 하위 맵을 함께 받아들인다. 그 범위를 예약하고, 실행 중 새로 생긴 하위 맵도
+  후속 요청의 최신 트리로 예약 범위에 보충한다. 묶음이 겹치는 부모/자식은 완료 뒤 최신 상태로 재배정한다.
+- `stampOrderQueue`: 같은 맵의 주문은 떨어진 영역도 FIFO 직렬 실행한다. Pi 턴과 브라우저 예약을 공유한다.
+  완료·실패·실제 중단 처리 뒤 다음 주문이 출발한다.
+- 프로젝트 키는 저장소가 ready면 정본 `projectId`, 임시 세션이면 store의 프로젝트 세션 정체성이다.
+  같은 호스트의 localhost/도메인 별칭은 URL이 달라도 동일 예약을 사용한다.
+  companion 예약은 **한 companion 프로세스**에서 공유된다. 별도 호스트들 사이의 분산 잠금이나 사람 편집 잠금은 아니다.
+  바로 깔기의 공용 예약은 한 브라우저 안에서 공유된다. 저장 충돌/기준본 수용 검사도 계속 필요하다.
+
+확인: `bun scripts/qa/ai-map-ownership.mts`는 실제 relay/팀/주문 대기열에 완료를 제어하는 워커를 붙인다.
+같은 맵·하위 맵 거절, 다른 맵 병렬, 검수 역방향 차단, 연결 단절/중단 시 예약 유지, 완료/오류/시작 실패 후 재사용,
+떨어진 영역 주문 직렬화를 관측한다. 모델 실행 증거와 구분하여 `verify-shots/ai-map-ownership/controlled.json`에 남긴다.
+실제 모델 경로의 관측은 `node scripts/qa/ai-parallel-live-evidence.mjs --map-ownership`이며,
+서로 독립인 A/B 조회 중 A의 추가 호출을 브라우저와 companion에 각각 제출한다. 정본 콘텐츠를 수정하지 않는다.
+2026-10-04 실제 Gemini 3.8 Flash 관측: A/B 스트림 6,580ms 겹침, A의 추가 호출은 브라우저에서 모델 호출 전에 거절되고
+직접 HTTP 호출도 409 `map-busy`로 거절됐다. A 완료 뒤 B는 2,074ms 더 진행했고 양쪽 changedKeys는 비었다.
+같은 날 `--three-maps` 추가 관측: 독립 A/B/C 세 실행이 5,709ms 겹쳤고 전체 최대 3명/각 맵 최대 1명이었다.
+각 맵에 추가한 브라우저 요청 3건은 HTTP 전송 전에 차단, 서버 직접 요청 3건은 모두 409 `map-busy`였다.
+거절 runId에 start 이벤트가 없고, 실제 조회 호출은 A 1회/B 2회/C 3회였다. 원본은
+`verify-shots/ai-map-ownership/three-maps/timeline.json`. 세 실행 완료와 프로젝트 불변을 포함한 11개 관측 조건을 충족했다.
+
+## 실시간 작업 상태판 (2026-10-04)
+
+`src/editor/panels/aiCanvasActivity.ts`는 Pi 실행 동안 맵 위에 현재 작업·대상·경과 시간과 최근 처리한 작업 세 건을 유지한다.
+시공 막이 끝나고 다음 모델 응답을 기다리는 동안에도 상태판은 남는다. `aiPiGhostBridge`가 실행 소유권과 폐기를 관리하며,
+`aiPiAgentCommand`는 실시간 적용에서 재생하지 않는 최종 `done`도 `observeActivity`로 전달한다.
+
+- 실제 `tool_start`/`tool_end`에 따라 조회·시공·검토·실패 표시를 바꾼다. 조회 종료도 처리 건수에 포함하며, 적용·저장 완료를 뜻하지 않는다.
+- 팀원 ID와 호출 ID를 함께 키로 사용한다. 같은 종료 이벤트를 다시 받아도 중복 집계하지 않고 다른 팀원의 실행 중 표시를 지우지 않는다.
+  맵별 병렬 실행의 평평한 이벤트도 `scopePiGhostEvent`로 **캔버스 전달 전에** 실행 ID를 붙인다. 팀 런타임의 `agent_event`는 그대로 받는다.
+  한 실행의 `done`은 그 실행의 호출만 정리한다. 전체 종료와 구분하여 다른 실행의 작업을 결과 확인 상태로 바꾸거나 초안 맵을 덮지 않는다.
+- 동시에 진행하는 실행·도구 호출은 각각 한 줄로 표시한다. 기다리는 모델도 실행 시작/턴 이벤트로 표시한다.
+  진행 중인 줄을 먼저 최대 네 줄 보이고 나머지는 추가 개수로 표시한다. 같은 조수의 도구 두 개도 호출 ID가 다르면 각각 보인다.
+  `aiPiGhostBridge`의 실행 중 도구도 같은 키로 추적하므로 앞선 호출의 종료가 나중 호출의 캔버스 상태칩을 지우지 않는다.
+- 채팅 입력의 서로 다른 사용자 지시는 `aiChatPanel`의 기존 대기열로 직렬 처리한다. 상태판 하나가 한 실행 묶음을 소유한다.
+- 다른 맵의 작업은 그 대상 이름을 표시한다. 현재 보고 있는 맵의 작업인 것처럼 영역에 붙이지 않는다.
+- 접기 단추 외에는 포인터를 가로채지 않는다. 「작업 표시 숨김」과 실시간 맵 꺼짐을 따르며, reduced motion에서는 상태판의 애니메이션만 멈춘다.
+- 새로운 실행이 이전 상태판을 폐기한다. 이전 실행의 늦은 dispose는 새 상태판을 제거하지 않는다. 종료 시 타이머·구독·DOM을 함께 해제한다.
+- 참고문서 조회는 `aiActivityNarration`에서 「참고문서를 읽는 중」으로 구분한다. 새 상태 문구는 en/ja/zh 카탈로그에 함께 둔다.
+
+시각 확인: `node scripts/qa/ai-canvas-activity.mjs` → `verify-shots/ai-canvas-activity/summary.json`과 PNG.
+실제 편집기에서 지정한 Pi 이벤트를 주입하는 관찰 프로브이며, 실모델 실행 시간이나 콘텐츠 정본 저장의 근거로 쓰지 않는다.
+
+실제 병렬 호출 증거: `node scripts/qa/ai-parallel-live-evidence.mjs` → `verify-shots/ai-parallel-live/timeline.json`과 PNG/녹화.
+`runPiCommand`의 맵별 `Promise.all` → 실제 companion → Gemini 3.8 Flash 경로를 읽기 전용으로 실행한다.
+2026-10-04 관측에서 서로 다른 runId 두 개가 정상 완료했고, 브라우저에서 받은 start→done 구간이 6,430ms 겹쳤다.
+A 완료 후 B가 1,886ms 더 진행하는 동안 A는 완료·B는 진행 표시를 유지했다. A는 조회 1회/모델 2턴, B는 조회 2회/모델 3턴이며
+양쪽 changedKeys는 비었다. 이 증거는 병렬 조회의 이벤트 배선과 화면 수명 확인이다. 같은 맵의 동시 쓰기·병합·저장 충돌이나
+제공자 내부의 요청 스케줄링은 이 프로브가 확인하지 않는다. 첫 409는 heavy-missing에 대한 정상 재전송으로, 별도 실행으로 세지 않는다.
+
 ## 조수 적용은 바뀐 칸만 다시 그린다 (2026-09-22)
 
 실시간 적용(DEFAULT/AUTO/YOLO)은 쓰기 도구마다 `store.replace`를 한다. 알림에 칸 목록이 있으면 `redrawCells`가 그 칸과 이벤트 마커만 고친다. 맵 크기·타일셋·맵 추가/삭제·맵 밖 참조가 바뀌거나 칸이 2048개를 넘으면 예전처럼 전체를 다시 그린다. 공개 애니메이션은 체크포인트를 기다리지 않는다. 체크포인트 줄은 타일셋·데이터베이스 참조가 그대로면 그 둘을 빼고, 브라우저와 ACK가 직전 객체를 다시 붙인다. 맵 비교는 타일 배열을 문자열로 만들지 않고 칸 값으로 한다.
@@ -3391,6 +3568,27 @@ validateVillageContract → applyProposedProject`로 처리한다. 의도 선언
   `scripts/lib/piRunRelay.mjs` 의 `resolveHeavyProject` 가 내용을 해시로 검증해 LRU 캐시(512MB)에 두고 워커 몸통에 다시 붙인다. 모르는 해시면
   `409 {error:"heavy-missing", missing}` 을 돌려주고, 클라이언트는 그 해시만 실어 한 번 더 보낸다(호스트 재시작·축출). 브라우저의 "보낸 해시" 표는
   추측일 뿐이고 권위는 409 다. `crypto.subtle` 이 없으면 예전처럼 통째로 보낸다. 체크포인트 슬림·복원(`protocol.ts`)도 `assets` 를 같은 무거운 키로 다룬다.
+- **실행 준비 속도 (2026-10-04):** 보내기 → 첫 도구가 실측 80s 였다(새 프로젝트 168MB, 부하 걸린 머신). 고친 뒤 반복 실행 14~15s, 호스트·워커가
+  막 뜬 첫 실행 43s. 단계별 시각은 `OPRN_PI_TIMING=1 npm run dev:worktree` 로 서버 로그에 `[pi-timing]` 줄로 찍힌다(`scripts/lib/piRunTiming.mjs`).
+  - **첫 시도는 해시만:** `client.ts` 의 `openRun` 은 이 탭이 아직 안 보낸 해시라도 내용 없이 먼저 보낸다. 호스트 캐시는 새로고침보다 오래 살아서
+    새로고침 뒤 첫 턴마다 150MB 를 다시 gzip·업로드·파싱했다(브라우저 약 7s + 호스트 약 6s). 모르면 409 한 번으로 받는다.
+  - **워커도 해시로 쥔다:** 어댑터가 `runAgentHeavyRefs: true` 면 중계는 프로젝트를 되살리지 않고(`resolveHeavyRefs`) 해시·글을 넘긴다.
+    `ohMyPiPiAi.runAgent` 는 워커에 해시만 보내고, 워커(`oh-my-pi-worker.ts` `resolveWorkerHeavy`)가 모르면 409 → 원문을 `heavyRaw` 로
+    문자열 감싸기 없이 이어 붙여 보낸다(워커가 `request.json()` 한 번으로 객체를 받는다). 워커는 파싱한 객체를 해시 6개까지 쥔다 — 실행은
+    요청 프로젝트를 `structuredClone` 해서 고치므로 쥔 객체는 오염되지 않는다. 없앤 것: 실행마다 호스트 JSON.parse(1.4~1.9s)·워커 몸통 직렬화
+    (1.5~1.7s)·워커 파싱(1.6~1.8s). 응답 헤더 `X-Oprn-Heavy-Refs: 1` 이 없는 옛 워커면 되살린 프로젝트로 다시 보낸다.
+  - **공용 카탈로그는 판본이 같으면 다시 안 읽는다:** 워커 `runPiAgent` 첫머리가 실행마다 shared-content.sqlite 의 payload(37행 505MB)를
+    `readSharedTileReferences`·`readSharedContent` 로 두 번 읽고 파싱했다 — 실행 준비 41s 의 거의 전부. 이제 `ensureWorkerSharedCatalogs` 가 행 판본만 세어
+    같으면 건너뛰고, 다시 읽을 때도 `readSharedCatalogsOnce` 로 한 번만 읽는다(따로 읽기 6.6~9.0s → 3.8~4.7s).
+  - **감사는 라우팅과 동시에:** Pi 입력창의 선언자는 `createLlmIntentDeclarer({ parallelAudit: true })` 다. 커버리지 감사는 라우팅 결과가 아니라
+    같은 사실만 보므로 라우팅을 띄운 직후 같이 띄우고, 만들기·고치기가 아니면 끊는다(파싱만 라우팅의 `functionalRefinements` 를 쓴다).
+    의도 단계 6.4~8.5s → 3.9~5.7s. 기본은 꺼짐 — 세션 경로와 호출 순서·횟수를 세는 기존 테스트는 그대로다.
+  - **참고문서 한꺼번에 읽기:** 배치 관문이 요구하는 용도를 `read_tileset_reference({tilesetId, categoryId})` 한 번에 읽는다(`openwiki/tileset-reference-documents.md`).
+    고치기 전엔 모델이 관문에 막힌 뒤 한 건씩 읽다가 길을 포기하고 소품만 찍었다.
+  - 남은 것: 워커의 `structuredClone(base)` 2s(무거운 키를 제자리에서 고치는 곳이 55군데라 공유 불가 — 예비 사본을 미리 만들면 워커 메모리가
+    프로젝트당 수백 MB 늘어 보류), 호스트·워커가 막 뜬 첫 실행(카탈로그 3.8~8.8s + 409 왕복 뒤 브라우저 재압축).
+  - QA 함정: 도커 veth 가 바쁜 날엔 크로미움이 플래그를 붙여도 모듈을 `ERR_NETWORK_CHANGED` 로 끊는다 — 프로브에 `--browser firefox`
+    (`network.notify.changed=false`). 실행 중에 `src/` 를 고치면 HMR 이 프로브 페이지를 다시 읽혀 그 회차가 날아간다.
 - **실행 기록과 이어 받기 (2026-09-27):** 실행은 브라우저 연결이 아니라 호스트의 실행 기록에 묶인다(`piRunRelay.mjs`).
   POST `/v1/agent/run` 은 몸통의 `runId`(없으면 호스트가 만든다)로 기록을 열고, 워커 NDJSON 을 끝까지 읽어 쌓으며, 줄마다 `"seq"` 를 붙여 흘린다.
   응답 헤더 `X-Oprn-Run-Id` 가 이어 받기 가능 표시다 — 두 동반 서비스 진입점(`companion/middleware.mjs`, `chatgpt-oauth-companion.mjs`)은
@@ -3487,6 +3685,24 @@ validateVillageContract → applyProposedProject`로 처리한다. 의도 선언
 - 남은 것: `regionTaskModal.ts` 와 `regionTask/*` UI 조각은 e2e 브리지(`editorToolHook` `openModal`)만 쓴다 — 삭제는 후속.
   `test/aiActivityLiveRow` 는 옛 영역 경로로 라이브 행을 몰았으므로 격리했다(Pi 경로로 다시 써야 한다).
 - 증거: `verify-shots/drag-toolbar-handoff/` (02: Enter 뒤 창 0개·채팅 말풍선, 06: 바로 깔기로 숲이 바로 깔림).
+
+## 우클릭 영역 드래그 미리보기와 최종 선택 (2026-10-04)
+
+`EditScene.rightRegionGesture.preview`는 드래그 중의 임시 영역이다. 포인터가 새 타일에 들어오면
+Phaser의 두 선택 테두리와 크기 배지만 갱신한다. `editorState.selection`은 버튼을 놓을 때
+`selectTileRegion`으로 한 번 전달하므로 조수의 선택 칩·작업 범위와 다른 구독자는 완성된 영역을 받는다.
+마지막 영역은 릴리스 포인터에서 다시 계산한다(pointerupoutside도 같은 경로). 역방향 드래그와
+맵 경계 제한은 기존 `regionRectFromDrag`를 쓴다. 같은 영역을 다시 잡아도 액션 바와 입력 초점은 열린다.
+
+크기 배지의 숫자는 같은 Text 노드의 data만 바꾼다. 매 타일마다 textContent로 자식을 교체하면
+문서의 `:has()` 스타일 무효화와 body 하위 MutationObserver가 깨어난다. 드래그 동안 페인트
+호버도 그리지 않는다. Esc는 임시 영역만 취소하고 이전 확정 선택을 유지하며, 뒤따른 릴리스가
+취소한 영역을 다시 선택하지 않는다. 클릭만 하면 기존 스포이트/선택 안 액션 바가 동작한다.
+
+실측과 네이티브 UI GIF: `verify-shots/right-region-drag/README.md`. 1440×900, 32×24 fixture,
+배율 1, 40걸음×3회에서 스타일 재계산 합계 1,190ms → 183ms, 선택 통지 31 → 1,
+DOM 자식 변이 188 → 8(각 드래그 중앙값). GIF는 동일 시간 간격의 동작 스냅샷이며 속도 녹화가 아니다.
+고정 rAF 간격 입력의 전체 재생 시간은 1,634ms → 1,636ms로 거의 같았다.
 
 ## 턴 단계 계측과 실행 추론 강도 (2026-09-26)
 
@@ -3659,3 +3875,5 @@ run20개의 현재run 저장 getAll1→0, 비활성 스튜디오 DOM365→0.
 남은 것: 첫 실행의 무거운 키 해시·gzip(새 프로젝트에서 보내기~실행 요청 약 10s, 이 박스)과 체크포인트 적용 비용(권위 다이제스트·왕복 검사)은 그대로다 — 2026-09-25·28 절의 남은 비용 목록.
 연출은 도구 결과가 한 번에 오는 것을 「지어지는 모습」으로 보여 줄 뿐, 워커 안 단계별 증분 전송은 아니다(`buildBeodeulVillage` §11·§12 사이에 증분을 내려면 비동기 생성기가 필요).
 
+
+높이 붓의 `reliefCells`와 타일 `cells`는 독립적으로 사람 편집 보호에 합친다. 높이 변경 범위를 모르는 작성자는 `relief: true`만 보내면 실제 변경 비교로 보호한다. 혼합 붓에서 타일 descriptor만 보고 높이 편집을 누락하면 안 된다.

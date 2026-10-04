@@ -1,0 +1,38 @@
+{
+  "commit": "4fa25cd598c1b5db4325e72ca4306e140de035b4",
+  "conditions": "Same browser exports and current store, baseline modules from7ce9a76555; CPU durations are performance.now around functions, not canonical-save or host time; synthetic fixtures only.",
+  "errors": [],
+  "rows": [
+    {
+      "case": "vault-warm-event-lists",
+      "events": 1000,
+      "calls": 100,
+      "eventReads": 0
+    },
+    {
+      "case": "vault-repeat",
+      "entries": 10,
+      "commandsPerEntry": 1000,
+      "repeats": 3,
+      "persistMs": 1.6999999284744263,
+      "cloneCalls": 0,
+      "stringifyCalls": 0
+    }
+  ],
+  "checks": [
+    "Diff key order/omissions/nonfinite/exotic compatibility and sync/sliced wire parity",
+    "Wire preparation yields inside a map and preserves newer COW edit",
+    "Actual surface brush during wire yields preserves submitted tiles and water depth",
+    "Warm vault sync skips immutable non-draft event arrays",
+    "Mixed project/map/tileset history restoration order",
+    "Vault repeated save and public clone isolation"
+  ],
+  "productionSources": {
+    "src/editor/mapEditHistory.ts": "34b566319ba4ae802f3f21faa023b3b7400c12d4df80a8cc2ef1267b2dc71daf",
+    "src/project/eventDraftVault.ts": "198c15e458303224b9cdba9899fac5da44a6213c929c6934f0cf71c13c9329d8",
+    "src/project/persistence/core/projectPatch.ts": "5c2d51aa6db84e1049e0f7384a753ecd1fe22aff2b55626557c38926b28c77e7",
+    "src/project/persistence/electronRepository.ts": "db5b8fb17545a5784db901382f91c4b6e0aba6308e240db089b06a3e5e7f7569",
+    "src/editor/terrainBrush.ts": "b1ef0300460ded1b54278b5e9657511790e10e919b796ec56d4aeeb74139a3ee",
+    "src/editor/terrainStamps.ts": "0e363eed30642f559933705485c4f5c09ed32ca007f867d4f927964e4497a7f1"
+  }
+}

@@ -1,4 +1,5 @@
-import type { Project, TilesetDef } from "@/project/types";
+import type { Command, GameEvent, MapId, Project, TilesetDef } from "@/project/types";
+import { resolveCommandListAtPath } from "@/editor/eventCommandPaths";
 import { jsonEqual } from "@/util/structuralJson";
 import { shareContentDigests } from "@/project/persistence/core/contentDigest";
 
@@ -423,4 +424,64 @@ function applyProjection(real: Record<string, unknown>, projected: Record<string
     }
     real[key] = value;
   }
+}
+
+/** Publish an isolated event revision. Only the map shell/events array are copied;
+ * every tile grid and unrelated event keeps its identity. No shared object is
+ * exposed to a general Project/GameMap mutator by this path. */
+export function projectWithEventRevision(project: Project, mapId: MapId, eventId: string, event: GameEvent | null): Project {
+  const map = project.maps[mapId];
+  if (!map) return project;
+  const index = map.events.findIndex(candidate => candidate.id === eventId);
+  const events = map.events.slice();
+  if (event === null) {
+    if (index < 0) return project;
+    events.splice(index, 1);
+  } else if (index < 0) events.push(event);
+  else events[index] = event;
+  return { ...project, maps: { ...project.maps, [mapId]: { ...map, events } } };
+}
+
+/** Copy only the containers on existing command paths for array-only moves.
+ * The caller may splice these lists, but must never edit their command objects.
+ * All other event edits use a deep event clone. Branch resolution stays owned
+ * by eventCommandPaths; both ordinary properties and option.branch are kept. */
+export function cloneCommandContainersForMove(commands: Command[], paths: readonly (readonly number[])[]): Command[] {
+  const next = commands.slice();
+  for (const path of paths) {
+    if (path.length % 2 !== 0) throw new Error("Invalid command container path");
+    let originalList = commands;
+    let draftList = next;
+    for (let depth = 0; depth < path.length; depth += 2) {
+      const index = path[depth]!;
+      const branch = path[depth + 1]!;
+      const original = originalList[index];
+      if (!original) throw new Error("Missing command container");
+      const originalBranch = resolveCommandListAtPath([original], [0, branch]);
+      if (!originalBranch) throw new Error("Missing command branch");
+      if (draftList[index] === original) draftList[index] = { ...original };
+      const draft = draftList[index]!;
+      const draftBranch = resolveCommandListAtPath([draft], [0, branch]);
+      if (draftBranch === originalBranch) {
+        const copy = originalBranch.slice();
+        // A branch is either a direct command property or an option's branch.
+        const record = draft as unknown as Record<string, unknown>;
+        let replaced = false;
+        for (const key of Object.keys(record)) {
+          if (record[key] === originalBranch) { record[key] = copy; replaced = true; }
+        }
+        if (!replaced && draft.kind === "choices" && branch >= 0) {
+          draft.options = draft.options.map((option, optionIndex) => optionIndex === branch ? { ...option, branch: copy } : option);
+          replaced = true;
+        } else if (!replaced && draft.kind === "presentItem" && branch >= 0) {
+          draft.options = draft.options.map((option, optionIndex) => optionIndex === branch ? { ...option, branch: copy } : option);
+          replaced = true;
+        }
+        if (!replaced) throw new Error("Unrecognized command branch storage");
+      }
+      originalList = originalBranch;
+      draftList = resolveCommandListAtPath([draft], [0, branch])!;
+    }
+  }
+  return next;
 }

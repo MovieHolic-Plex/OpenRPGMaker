@@ -15,7 +15,7 @@ import harness as H
 
 @contextmanager
 def isolated_store(root):
-    names = ['DATA', 'DECISIONS', 'EXPORT', 'ACCEPTED', 'ACCEPTED_LOCAL', 'LOCAL_BRIEFS']
+    names = ['DATA', 'DECISIONS', 'EXPORT', 'ACCEPTED', 'ACCEPTED_LOCAL', 'LOCAL_BRIEFS', 'INPUTS']
     previous = {n: getattr(H, n) for n in names}
     try:
         H.DATA = root
@@ -24,6 +24,7 @@ def isolated_store(root):
         H.ACCEPTED = root / 'accepted-repo'
         H.ACCEPTED_LOCAL = root / 'accepted-local'
         H.LOCAL_BRIEFS = root / 'briefs-local.json'
+        H.INPUTS = root / 'inputs'
         yield
     finally:
         for name, value in previous.items():
@@ -154,7 +155,39 @@ def verify():
         check('walk-provenance-four-standing-RGBA-binding', saved['standingSha256']==hashlib.sha256(b''.join(C.frame_rgba(colors,authored[d,1]).tobytes() for d in C.DIRS)).hexdigest())
         check('walk-provenance-backup-preserves-author-input', transfer_file.with_name('out.worker.chr.txt').read_bytes()==original_bytes)
         check('walk-provenance-persists-exact-surface-transfers', saved['transferred']==trace)
+        # 12장을 납품한 모델 출력은 기록/렌더가 수정하지 않으며 전파가 접근하지 못한다.
+        model_dir = H.DATA / 'model-fixture'; model_dir.mkdir()
+        model_file = model_dir / 'out.chr.txt'
+        model_colors = dict(colors, a=(55, 75, 96))
+        model_raw = C.dump(model_colors, {}, authored).encode()
+        model_file.write_bytes(model_raw)
+        H.write_json_atomic(model_dir / 'meta.json', dict(animationMode=H.FRAME_AUTHOR_MODE, pid=0, base='Actor1:0',
+                                                        engine='gpt', model='gpt-6.1-sol', effort='high'))
+        with patch.object(H, 'base_of', return_value=(colors, skeleton)):
+            receipt = H.record_model_frames(model_dir)
+        check('model-12-record-preserves-exact-authored-file', model_file.read_bytes()==model_raw and receipt['sourceSha256']==hashlib.sha256(model_raw).hexdigest())
+        check('model-12-records-all-frames-and-real-changes', len(receipt['frames'])==12 and all(r['changedPixels']>0 for r in receipt['frames'].values()))
+        gate_binding = {k:receipt[k] for k in ('sourceSha256','baseSha256')}
+        check('model-12-receipt-bound-to-current-source', H.model_frames_fresh(model_dir, gate_binding))
+        check('model-12-old-receipt-refuses-changed-source', not H.model_frames_fresh(model_dir, dict(gate_binding, sourceSha256='modified')))
+        try:
+            H.propagate_file(model_file, 'Actor1:0')
+        except ValueError:
+            check('model-12-refuses-automatic-walk-overwrite', model_file.read_bytes()==model_raw)
+        else:
+            check('model-12-refuses-automatic-walk-overwrite', False)
+        model_file.write_bytes(C.dump(colors, {}, authored).encode())
+        with patch.object(H, 'base_of', return_value=(colors, skeleton)):
+            try:
+                H.record_model_frames(model_dir)
+            except ValueError:
+                check('model-12-refuses-unfinished-original-walks', True)
+            else:
+                check('model-12-refuses-unfinished-original-walks', False)
         import bulk as B
+        H.write_json_atomic(model_dir / 'views' / 'gate.json', {})
+        with patch.object(H, 'current_gate', return_value=dict(gate_binding, sourceSha256='partial-output')):
+            check('model-12-resume-redraws-unrecorded-partial-output', B.needs_draw(model_dir))
         manifest = H.DATA / 'failed-manifest.json'
         H.write_json_atomic(manifest, dict(run='failed-production', characters=[dict(key='fixture', name='fixture', base='Actor1:0', strength='weak')]))
         failed = False
@@ -334,6 +367,8 @@ def verify():
         check('blocked-accept-cannot-recreate-accepted-copy', not (H.ACCEPTED_LOCAL / 'human__gpt-r1__human-fixture.png').exists())
         check('blocked-accept-excluded-from-shared-publication', not H.prepare_shared_library()['characters'])
         check('alpha-cull-preserves-human-journal', H._decisions()[blocked_record['id']]==blocked_record)
+    import verify_production
+    verify_production.verify(check, isolated_store)
     return evidence
 
 

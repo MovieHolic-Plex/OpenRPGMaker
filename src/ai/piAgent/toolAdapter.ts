@@ -6,6 +6,7 @@ import { villageReferenceImages } from '@/ai/villageReferenceExamples';
 import { retroChoreographyPreviewImages } from '@/assets/retroChoreographyPreviewImage';
 import { cutscenePreviewImages } from '@/editor/tools/cutscenePreviewTools';
 import { cutsceneArtImages } from '@/editor/tools/cutsceneArtTools';
+import { presentationArtImages } from '@/editor/tools/presentationTools';
 import { worldTerrainImages } from '@/editor/tools/worldTerrainTools';
 import { TILESET_REFERENCE_READ_TOOLS, TILESET_REFERENCE_WRITERS } from "@/editor/tools/tilesetReferenceTools";
 // 레지스트리 툴 → Pi AgentTool 모양 어댑터. 순수 함수라 브라우저/Bun/Node 어디서나 같다.
@@ -86,12 +87,11 @@ export interface CreatePiToolsetOptions {
 
 const DEFAULT_MAX_DATA_CHARS = 12_000;
 /**
- * read_tileset_reference 한 쪽의 결과 상한. 쪽은 코드 울타리를 통째로 지키느라 최대 약 18,000자(JSON 으로 약 24,000)까지 갈 수 있는데,
- * 기본 상한 12,000 에서 잘린 쪽(dataTruncated)은 선행 읽기 게이트가 «읽은 증거»로 인정하지 않는다(tilesetReferenceGate.payload) —
- * 그 쪽은 몇 번을 다시 읽어도 영영 통과하지 못한다. 실측(2026-10-04): jp_city 입구 용도 jp-start 의 jp-dict-groups 첫 쪽(15,723자)이 그랬고
- * fill_region·paint_tiles 가 끝내 막혀 새 맵의 땅을 못 깔았다. 모든 번들 참고문서 1,403쪽 중 61쪽(12개 타일셋)이 12,000자를 넘는다(최대 15,776).
+ * 참고문서 읽기는 배치 관문이 **반드시** 읽게 하는 글이라 더 크게 싣는다 — 잘린 결과는 읽은 것으로 치지 않아(tilesetReferenceGate)
+ * 12,000자에 맞추면 한꺼번에 읽기가 쪽 하나씩 나뉘고, 턴마다 전체 맥락이 다시 실린다. 실을 글의 총량은 같다.
+ * 도구의 한꺼번에 읽기 상한(tilesetReferenceTools BUNDLE_DATA_BUDGET)이 이 값보다 작아야 한다.
  */
-const REFERENCE_PAGE_MAX_DATA_CHARS = 30_000;
+const REFERENCE_MAX_DATA_CHARS = 32_000;
 const DEFAULT_MAX_ISSUES = 8;
 
 export function selectPiToolDefinitions(
@@ -267,11 +267,17 @@ export function createPiToolset(ctx: ToolContext, options: CreatePiToolsetOption
       options.onCall?.({ toolCallId: _toolCallId, name: tool.name, args, result, visuals: [...before, ...after],
         ...(result.ok && constructionLogs.length ? { constructionLogs } : {}) });
       if (!result.ok) throw new Error(formatPiToolFailure(result, maxIssues));
-      const content: PiToolExecResult["content"] = [{ type: "text", text: formatPiToolSuccess(result, tool.name === "read_tileset_reference" ? Math.max(maxDataChars, REFERENCE_PAGE_MAX_DATA_CHARS) : maxDataChars) }];
+      const content: PiToolExecResult["content"] = [{ type: "text", text: formatPiToolSuccess(result, tool.name === "read_tileset_reference" ? Math.max(maxDataChars, REFERENCE_MAX_DATA_CHARS) : maxDataChars) }];
       if (tool.name === "read_tileset_reference") {
         for (const image of await referenceGate.read(ctx.project, result)) {
           const comma = image.dataUrl.indexOf(",");
           content.push({ type: "image", mimeType: image.dataUrl.slice(5, image.dataUrl.indexOf(";")), data: image.dataUrl.slice(comma + 1) });
+        }
+      }
+      if (tool.name === 'show_title_opening') {
+        for (const image of presentationArtImages(ctx.project)) {
+          content.push({ type: 'text', text: `${image.resourceId}: ${image.label}` });
+          content.push({ type: 'image', mimeType: image.dataUrl.slice(5, image.dataUrl.indexOf(';')), data: image.dataUrl.slice(image.dataUrl.indexOf(',') + 1) });
         }
       }
       if (tool.name === 'read_spatial_reference') for (const image of await spatialReferenceImages(ctx.project,args,result.data)) {

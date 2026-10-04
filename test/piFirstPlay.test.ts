@@ -101,6 +101,7 @@ describe('first playable creation boundary', () => {
         const review = tools.find(tool => tool.name === 'report_first_play_review');
         const places = tools.find(tool => tool.name === 'report_first_scene_places');
         const scene = tools.find(tool => tool.name === 'report_first_scene');
+        const presentation = tools.find(tool => tool.name === 'report_first_presentation');
         const sceneReview = tools.find(tool => tool.name === 'report_first_scene_review');
         if (core) {
           order.push('core');
@@ -130,7 +131,8 @@ describe('first playable creation boundary', () => {
           expect(options.toolNames).not.toContain('list_resources');
           expect(options.toolNames).not.toContain('find_tools');
           expect(request.task).toContain('cc0-jetrel-clock');
-          request.project.system.opening = { enabled: false, skippable: true, scenes: [] };
+          // The entry stage must finish its in-map guide while the separate opening stage is pending.
+          request.project.system.opening = { enabled: true, skippable: true, scenes: [{ id: 'seed', kind: 'text', narration: '기본 제목', durationMs: 4200 }] };
           const page = request.project.maps[request.project.startMapId]!.events.find(e => e.id === 'ev_segment_starter')!.pages![0]!;
           request.project.maps[request.project.startMapId]!.events.push({ id: 'intro', x: 0, y: 0, trigger: { kind: 'auto' }, commands: [], pages: [
             { ...page, id: 'intro-on', graphic: { transparent: true }, trigger: { kind: 'auto' }, conditions: [], commands: [{ kind: 'text', body: '오른쪽 시계를 Z로 조사하세요.' }, { kind: 'setSelfSwitch', key: 'A', value: true }] },
@@ -138,14 +140,25 @@ describe('first playable creation boundary', () => {
           ] });
           await options.onCheckpoint!({ project: request.project, toolName: 'upsert_event', label: '첫 장소' });
           await scene.execute('scene-report', { report: '보이는 대상과 도입' });
+        } else if (presentation) {
+          order.push('presentation');
+          expect(options.toolNames).toContain('generate_title_art');
+          expect(options.toolNames).toContain('generate_opening_image');
+          for (const id of ['title-art', 'opening-art']) request.project.assets.uploaded[id] = { id, name: id, kind: 'picture', dataUrl: 'data:image/png;base64,AAA=', meta: {} };
+          request.project.system.titleScreen = { ...request.project.system.titleScreen!, title: '시계의 기억', backgroundResourceId: 'title-art', backgroundFit: 'cover', logoStyle: 'gold', sequence: { logoReveal: 'rise' }, transition: { kind: 'fade' } };
+          request.project.system.opening = { enabled: true, skippable: true, scenes: [{ id: 'opening', kind: 'image', resourceId: 'opening-art', narration: '시계가 멈췄다.', durationMs: 6000, motion: 'zoom' }] };
+          await options.onCheckpoint!({ project: request.project, toolName: 'set_opening', label: '타이틀과 오프닝' });
+          await presentation.execute('presentation-report', { report: '작품 원화와 짧은 오프닝' });
         } else if (sceneReview) {
           order.push('scene-review');
-          const report = { ok: true, blockers: [], evidence: ['장소', '대상', '동선', '도입'] };
+          const report = { ok: true, blockers: [], evidence: ['장소', '대상', '동선', '도입', '타이틀'] };
           await expect(sceneReview.execute('without-images', report)).rejects.toThrow('실제 전체 맵 이미지');
           for (const mapId of request.mapIds) {
             const map = request.project.maps[mapId]!;
             options.onEvent!({ type: 'execution_status', name: 'map.image.delivered', ok: true, summary: '테스트 이미지 전달', data: { mapId, x: 0, y: 0, w: map.width, h: map.height } });
           }
+          await expect(sceneReview.execute('without-art', report)).rejects.toThrow('실제 타이틀/오프닝 그림');
+          options.onEvent!({ type: 'execution_status', name: 'presentation.image.delivered', ok: true, summary: '테스트 원화 전달', data: { resourceIds: ['title-art', 'opening-art'] } });
           await sceneReview.execute('with-images', report);
         } else {
           order.push('coordinator');
@@ -155,6 +168,6 @@ describe('first playable creation boundary', () => {
         return done(request);
       },
     });
-    expect(order).toEqual(['core', 'review', 'places', 'scene', 'scene-review', 'coordinator', 'review']);
+    expect(order).toEqual(['core', 'review', 'places', 'scene', 'presentation', 'scene-review', 'coordinator', 'review']);
   });
 });

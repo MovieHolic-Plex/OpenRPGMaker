@@ -1,3 +1,6 @@
+import type { CinematicPresentation } from './cinematicPresentation';
+import type { CinematicDirection } from './cinematicDirection';
+
 export const CINEMATIC_SCENE_LIMIT = 100;
 export const CINEMATIC_DURATION_MAX_MS = 120_000;
 /** Also included by the web exporter when no project-specific game-over art is authored. */
@@ -7,9 +10,9 @@ export type CinematicMotion = "none" | "fade" | "pan" | "zoom";
 
 /** Mutable authored records, shared by project persistence and editor mutations. */
 export type CinematicScene =
-  | { id: string; kind: "text"; narration: string; narrationAudioResourceId?: string; durationMs: number }
-  | { id: string; kind: "image"; resourceId: string; narration: string; narrationAudioResourceId?: string; durationMs: number; motion: CinematicMotion }
-  | { id: string; kind: "video"; resourceId: string; narration: string; narrationAudioResourceId?: string; durationMs: number };
+  | { id: string; kind: "text"; narration: string; narrationAudioResourceId?: string; presentation?: CinematicPresentation; durationMs: number }
+  | { id: string; kind: "image"; resourceId: string; narration: string; narrationAudioResourceId?: string; presentation?: CinematicPresentation; durationMs: number; motion: CinematicMotion; direction?: CinematicDirection }
+  | { id: string; kind: "video"; resourceId: string; narration: string; narrationAudioResourceId?: string; presentation?: CinematicPresentation; durationMs: number };
 
 /** musicResourceId: 시퀀스 전체에 깔리는 배경음악(장면별 내레이션 음성과 별개). */
 export type CinematicSequence = {

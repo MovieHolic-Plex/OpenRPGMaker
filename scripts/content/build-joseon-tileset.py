@@ -27,7 +27,7 @@
 # 통행 규칙 요약(scripts/content/lib/joseon_tileset/walk.py): X 막힘(priority upper, 사람과 y 정렬) / C 걸음★(upper, 사람 위) /
 # F 걸음(lower, 사람 아래). 같은 그림이 맵에서 다른 통행으로 쓰이면 시트 꼬리에 복사본을 덧붙인다(앞 칸 번호 불변).
 # 오토타일: 이웃 8비트(N1 E2 S4 W8 NE16 SE32 SW64 NW128 = 엔진 AUTOTILE_DIR). 마스크 16종은 하위 4비트, 물은 47종 블롭(water_blob.py 와 같은 정규화).
-import argparse, json, os, pathlib, sys
+import argparse, hashlib, json, os, pathlib, sys
 import numpy as np
 from PIL import Image
 
@@ -53,7 +53,10 @@ ap.add_argument("--texture", default="tex_joseon_baram")
 ap.add_argument("--prefix", default="jb-")
 ap.add_argument("--name", default="조선 · 바람의나라풍 (손 도트)")
 ap.add_argument("--family", default="oprn-joseon")
-ap.add_argument("--cols", default="auto", help="번들 시트 열 수. auto = 원본 열 수로 4096px 안에 들면 그대로, 아니면 64")
+ap.add_argument("--cols", default="auto", help="번들 시트 열 수. auto = 원본 열 수로 4096px 안에 들면 그대로, 아니면 64, 그래도 안 들면 128")
+ap.add_argument("--frozen", default="tiledata/joseon-village/frozen-layout.json",
+                help="이미 배포된 칸 배치(동결 장부). 앞 시트 N 장의 칸 번호와 그 꼬리 복사본·끝 빈칸까지 번호가 절대 바뀌지 않는다. 없으면 장부 없이 합친다(옛 동작).")
+ap.add_argument("--write-frozen", default=None, help="이번 배치를 동결 장부로 쓴다(최초 1 회, 또는 배치를 일부러 새 판으로 올릴 때)")
 ap.add_argument("--public-png", default="public/assets/joseon-baram/joseon-baram-chipset.png")
 ap.add_argument("--def-json", default="src/assets/joseonBaramTileset.json")
 ap.add_argument("--sheet-json", default="src/assets/joseonBaramSheet.json")
@@ -97,6 +100,24 @@ overrides = json.loads(P(args.overrides).read_text()) if P(args.overrides).exist
 OV_TERRAIN = overrides.get("terrain", {})
 
 
+FROZEN = json.loads(P(args.frozen).read_text()) if args.frozen and P(args.frozen).exists() else None
+WAVES = FROZEN["waves"] if FROZEN else []     # 동결 장부: 배포된 판(wave)마다 {sheets: 앞 시트 수, cells: 그 시트들이 만든 칸 수, tail: 통행 복사본, total: 끝 빈칸까지 칸 수}
+NFROZEN = WAVES[-1]["sheets"] if WAVES else len(SRC)     # 장부가 덮는 앞 시트 수(그 시트들의 칸·꼬리·끝 빈칸은 번호 불변)
+FROZEN_TAIL, FROZEN_POS = [], []              # 동결된 꼬리 항목 (원본 칸, 클래스) 과 그 칸 번호
+_wave_i = [0]
+
+
+def close_wave():
+    """장부의 다음 판을 닫는다: 그 판의 칸 수를 확인하고, 꼬리(통행 복사본)와 끝 빈칸 자리를 비워 둔다(placeholder)."""
+    wv = WAVES[_wave_i[0]]
+    assert len(CELLS) == wv["cells"], f"동결 장부와 다르다: 판 {_wave_i[0]} 의 시트들이 만든 칸 {len(CELLS)} != 장부 {wv['cells']} (옛 시트 입력이 바뀌었다)"
+    for j, e in enumerate(wv["tail"]):
+        FROZEN_TAIL.append((int(e[0]), e[1]))
+        FROZEN_POS.append(len(CELLS) + j)
+    CELLS.extend([None] * (wv["total"] - len(CELLS)))
+    _wave_i[0] += 1
+
+
 def src_cell(k, i):
     sk = SRC[k]
     x, y = (i % sk["cols"]) * T, (i // sk["cols"]) * T
@@ -127,6 +148,8 @@ def cell_equiv(a, b):
 
 _hash_ovl = {CELLS[i].tobytes(): i for i in sorted(OVL) if i < len(CELLS)}
 for k in range(1, len(SRC)):
+    while _wave_i[0] < len(WAVES) and WAVES[_wave_i[0]]["sheets"] == k:
+        close_wave()      # 배포된 판이 여기서 끝난다 — 그 판의 꼬리·끝 빈칸 자리를 비워 두고 그 뒤에서 새 시트의 칸을 덧붙인다
     remap, rename = {}, {}
     REMAP[k], RENAME[k] = remap, rename
     sk = SRC[k]
@@ -144,9 +167,17 @@ for k in range(1, len(SRC)):
         ex = pieces.get(name)
         target = name
         if ex is not None:
-            efl = flat_tiles(ex)
-            same_shape = (("w" in ex) == is_obj and (not is_obj or (ex["w"], ex["h"]) == (v["w"], v["h"])) and len(efl) == len(fl))
-            if same_shape and all(cell_equiv(CELLS[a], src_cell(k, b)) for a, b in zip(efl, fl)):
+            # 기준 이름뿐 아니라 이미 만들어진 변형(`<이름>__s<N>`)도 후보다 — 같은 그림이면 변형끼리 합친다(방마다 같은 변형을 또 만들지 않는다).
+            matched = None
+            for cand in [name] + sorted(n_ for n_ in pieces if n_.startswith(name + "__s") and W.base_name(n_) == name):
+                cv = pieces[cand]
+                cfl = flat_tiles(cv)
+                same_shape = (("w" in cv) == is_obj and (not is_obj or (cv["w"], cv["h"]) == (v["w"], v["h"])) and len(cfl) == len(fl))
+                if same_shape and all(cell_equiv(CELLS[a], src_cell(k, b)) for a, b in zip(cfl, fl)):
+                    matched = (cand, cfl)
+                    break
+            if matched:
+                cand, efl = matched
                 for a, b in zip(efl, fl):
                     remap.setdefault(b, a)
                     d = np.abs(CELLS[a].astype(int) - src_cell(k, b).astype(int))[..., :3].max()
@@ -154,7 +185,9 @@ for k in range(1, len(SRC)):
                         sd = merge_report["softDiff"]
                         sd["cells"] = sd.get("cells", 0) + 1
                         sd["maxRgbDelta"] = max(sd.get("maxRgbDelta", 0), int(d))
-                merge_report["merged"].append(name)
+                if cand != name:
+                    rename[name] = cand
+                merge_report["merged"].append(name if cand == name else cand)
                 continue
             target = f"{name}__s{k}"
             rename[name] = target
@@ -181,7 +214,11 @@ for k in range(1, len(SRC)):
         OVL.add(remap[b])
         _hash_ovl[key] = remap[b]
 
-count0 = len(CELLS)
+while _wave_i[0] < len(WAVES):            # 입력 시트가 장부가 덮는 시트 수와 같을 때(새 시트 없음) — 마지막 판의 꼬리·끝 빈칸까지 같은 자리를 채운다
+    assert WAVES[_wave_i[0]]["sheets"] <= len(SRC), f"동결 장부는 시트 {WAVES[_wave_i[0]]['sheets']} 장을 덮는데 입력은 {len(SRC)} 장이다"
+    close_wave()
+count0 = WAVES[0]["cells"] if WAVES else len(CELLS)    # 첫 판의 꼬리(통행 복사본)가 시작하는 번호(옛 `baseCount`)
+count_cells = len(CELLS)                               # 아직 장부에 없는 새 꼬리가 시작하는 번호
 
 
 def cell(i):
@@ -216,10 +253,14 @@ assert len(ALL47) == 47
 terrain_spec = {}       # 묶음 이름 → 정의
 tile_terrain = {}       # 칸 번호 → (묶음 이름, 묶음 안 순번)
 for gname, g in groups.items():
-    if gname not in OV_TERRAIN:
+    obase = gname if gname in OV_TERRAIN else W.base_name(gname)      # 변형 묶음(`in_b_ondol__s12`)은 기준 이름의 지형 정의를 이어받는다
+    if obase not in OV_TERRAIN:
         warn(f"지형 묶음 {gname} 이 piece-walk-overrides.json 의 terrain 에 없어 걸을 수 있는 평면으로 둔다 — 물·논이면 막힘으로 정의해야 한다")
-    spec = dict(OV_TERRAIN.get(gname, {}))
+    spec = dict(OV_TERRAIN.get(obase, {}))
     spec.setdefault("name", gname)
+    if obase != gname:
+        spec["name"] = f"{spec['name']} (변형 {gname.rsplit('__s', 1)[1]})"
+        spec["connect"] = [gname if c == obase else c for c in spec.get("connect", [])]
     spec.setdefault("walk", True)
     spec.setdefault("kind", "flat")
     spec["tiles"] = g["tiles"]
@@ -245,9 +286,18 @@ for name, p in objects.items():
                 piece_cell_owner[t] = (name, j, i)
 
 # ---------------------------------------------------------------- 맵 → 칸 분리(통행이 다른 같은 그림은 꼬리 복사)
-tail = []                # [(원본 칸 번호, 클래스)]
-tail_index = {}
+tail = list(FROZEN_TAIL)  # [(원본 칸 번호, 클래스)] — 앞 LEN_A 줄은 장부에 동결된 꼬리, 그 뒤는 새 시트 맵이 더한 꼬리
+LEN_A = len(tail)
 overlap_class = {}       # 겹침 칸 번호 → 첫 사용 클래스
+CUR_SK = [0]             # 지금 칸을 풀고 있는 맵의 시트 순번(동결 시트의 맵이 새 복사본을 요구하면 장부 위반)
+
+
+def tail_pos(k):
+    """꼬리 k 번째의 칸 번호. 동결 꼬리는 장부의 자리, 새 꼬리는 모든 시트 칸이 끝난 뒤(count_cells)."""
+    return FROZEN_POS[k] if k < LEN_A else count_cells + (k - LEN_A)
+
+
+tail_index = {key: tail_pos(k) for k, key in enumerate(tail)}
 
 
 def resolve(t, need):
@@ -259,11 +309,15 @@ def resolve(t, need):
         return t
     key = (t, need)
     if key not in tail_index:
-        tail_index[key] = count0 + len(tail)
+        if FROZEN and CUR_SK[0] < NFROZEN:
+            raise SystemExit(f"동결 장부 위반: 동결 시트(순번 {CUR_SK[0]})의 맵이 장부에 없는 통행 복사본 {key} 을 요구한다 — 옛 맵·통행 보정이 바뀌었다")
+        tail_index[key] = tail_pos(len(tail))
         tail.append(key)
     return tail_index[key]
 
 
+# 맵 빌더가 적은 바닥 종류 중 걸을 수 없는 것. 기본은 물·논·다리 밑 물·실내 천장. 사냥터는 바위산(wall·cityback)·절벽 앞면(tface)이 막힘이고 늪(water)도 막힘이다.
+NONWALK_KINDS = {"joseon_field": ("water", "wall", "cityback", "tface0", "tface1", "void")}
 maps_out = []
 for mi, spec in enumerate(args.maps):
     parts = spec.split(":")
@@ -274,6 +328,7 @@ for mi, spec in enumerate(args.maps):
     assert 0 <= sk < len(SRC), f"{mid}: 시트순번 {sk} 이 없다"
     mj = json.loads(P(mpath).read_text())
     ex = json.loads(P(epath).read_text()) if epath and P(epath).exists() else None
+    CUR_SK[0] = sk
     if sk > 0:
         rm, rn = REMAP[sk], RENAME[sk]
 
@@ -342,7 +397,7 @@ for t in sorted(OVL):
     piece_cell_class.setdefault(t, overlap_class[t])
 
 # ---------------------------------------------------------------- 최종 칸 표
-count_raw = count0 + len(tail)
+count_raw = count_cells + len(tail) - LEN_A
 if args.cols == "auto":
     rows_try = -(-count_raw // COLS0)
     cols_out = COLS0 if rows_try * T <= MAX_SHEET_H else 64
@@ -355,10 +410,11 @@ count = rows_out * cols_out
 assert rows_out * T <= MAX_SHEET_H, f"시트 높이 {rows_out * T}px > {MAX_SHEET_H}"
 
 tile_img = [None] * count
-for i in range(count0):
-    tile_img[i] = cell(i)
+for i in range(count_cells):
+    if CELLS[i] is not None:
+        tile_img[i] = cell(i)
 for k, (src, need) in enumerate(tail):
-    tile_img[count0 + k] = cell(src)
+    tile_img[tail_pos(k)] = cell(src)
 blank = np.zeros((T, T, 4), np.uint8)
 out_sheet = np.zeros((rows_out * T, cols_out * T, 4), np.uint8)
 for i in range(count):
@@ -369,7 +425,7 @@ pub.parent.mkdir(parents=True, exist_ok=True)
 Image.fromarray(out_sheet, "RGBA").save(pub, optimize=True)
 
 passability, priority, terrain_arr, tile_meta = [], [], [], []
-tail_info = {count0 + k: (src, need) for k, (src, need) in enumerate(tail)}
+tail_info = {tail_pos(k): (src, need) for k, (src, need) in enumerate(tail)}
 TAGS_BASE = ["조선"]
 CH_KO = {"X": "막힘", "C": "걸음(사람 위에 그려짐 ★)", "F": "걸음(바닥)"}
 PASSAGE = {"X": "solid", "C": "star", "F": "passable"}
@@ -428,6 +484,37 @@ for t in range(count):
                           passage=PASSAGE[cls_ch], source="bundled-default"))
 
 assert len(passability) == len(priority) == len(terrain_arr) == len(tile_meta) == count
+
+
+def frozen_digests(n):
+    """앞 n 칸의 그림(RGBA 바이트)과 칸 표(통행·우선순위·지형·메타)의 해시. 동결 장부가 이 값을 지켜 준다."""
+    hc = hashlib.sha256()
+    for i in range(n):
+        hc.update((tile_img[i] if tile_img[i] is not None else blank).tobytes())
+    hm = hashlib.sha256(json.dumps([passability[:n], priority[:n], terrain_arr[:n], tile_meta[:n]], ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode())
+    return dict(cells=hc.hexdigest(), meta=hm.hexdigest())
+
+
+frozen_report = None
+if WAVES:
+    nfz = WAVES[-1]["total"]
+    got = frozen_digests(nfz)
+    want = FROZEN["digest"]
+    frozen_report = dict(frozenCells=nfz, waves=len(WAVES), cellsSha256=got["cells"], metaSha256=got["meta"])
+    if got["cells"] != want["cells"] or got["meta"] != want["meta"]:
+        raise SystemExit(f"동결 장부 위반: 앞 {nfz} 칸의 {'그림' if got['cells'] != want['cells'] else '칸 표(통행·우선순위·지형·메타)'}이 배포된 판과 다르다. "
+                         f"이미 배포된 칸 번호는 바뀔 수 없다(새 칸은 꼬리에만 덧붙인다). 옛 시트·맵·통행 보정·지형 정의가 바뀌었는지 본다.")
+    print(f"동결 장부 확인: 앞 {nfz} 칸(그림·통행·메타) 해시 일치")
+if args.write_frozen:
+    waves = [dict(w) for w in WAVES]
+    if not waves or waves[-1]["sheets"] < len(SRC):
+        waves.append(dict(sheets=len(SRC), cells=count_cells, tail=[[int(a), b] for a, b in tail[LEN_A:]], total=count))
+    tot = waves[-1]["total"]
+    P(args.write_frozen).write_text(json.dumps(dict(
+        version=1, _doc="조선 번들 시트의 동결 장부(append-only). 배포된 판마다 {sheets: 앞 시트 수, cells: 그 시트들의 칸(조각·묶음·겹침) 수, tail: 통행 복사본 (원본 칸, 클래스), total: 끝 빈칸까지 칸 수}. "
+                          "build-joseon-tileset.py 는 이 장부의 칸 번호·그림·칸 표를 한 칸도 바꾸지 못한다(해시로 확인). 새 시트는 마지막 판 뒤에 덧붙고, 배포한 뒤에 --write-frozen 으로 판을 올린다.",
+        tilesPerRow=cols_out, waves=waves, digest=frozen_digests(tot)), ensure_ascii=False, indent=1) + "\n")
+    print(f"동결 장부 기록: {args.write_frozen} (판 {len(waves)}, 앞 {tot} 칸)")
 
 # ---------------------------------------------------------------- 오토타일·묶음
 autotiles = []
@@ -584,7 +671,7 @@ for m in maps_out:
             row += "1" if w_ else "0"
             if ex and g:
                 gk = ex["groundKind"][y][x]
-                want = gk not in ("water", "paddy", "bridge")
+                want = gk not in NONWALK_KINDS.get(m["id"], ("water", "paddy", "bridge", "void"))   # void = 실내 천장·어둠(걸을 수 없는 칸, 지형 묶음 *_ceil47 의 walk:false)
                 if gw != want:
                     bad_ground.append([x, y, gk, g[0]])
         exp.append(row)
@@ -676,13 +763,13 @@ dist = {c: sum(1 for t in range(count) if t in piece_cell_class and piece_cell_c
     _doc="조각별 칸 통행 격자 — 자동 규칙(lib/joseon_tileset/walk.py) + piece-walk-overrides.json. X 막힘 / C 걸음★(사람 위) / F 걸음(바닥) / . 그림 없음. build-joseon-tileset.py 가 매번 다시 쓴다(손 수정은 overrides 에).",
     pieces=walk), ensure_ascii=False, indent=0))
 
-stats = dict(tileset=args.id, textureKey=args.texture, sourceSheet=args.sheets[0], sourceSheets=args.sheets, sourceCells=count0, baseSheetCells=SRC[0]["count"],
+stats = dict(tileset=args.id, textureKey=args.texture, sourceSheet=args.sheets[0], sourceSheets=args.sheets, sourceCells=count_cells, baseSheetCells=SRC[0]["count"],
              tailCopies=len(tail), tailByClass={c: sum(1 for _, n in tail if n == c) for c in "XCF"}, count=count, tilesPerRow=cols_out,
              sheetPx=[cols_out * T, rows_out * T], pieces=len(objects), terrainGroups=len(groups), autotileGroups=len(autotiles),
              structureKits=len(KITS), tileGroups=len(tile_groups), overlapCells=len(OVL), overlapByClass=dict(
                  (c, sum(1 for t in sorted(OVL) if overlap_class[t] == c)) for c in "XCF"),
              pieceWalkSource=dict((s, sum(1 for v in walk.values() if v["source"] == s)) for s in ("auto", "override")),
-             maps=stats_maps, sheetMerge=merge_report, warnings=warnings)
+             maps=stats_maps, sheetMerge=merge_report, frozen=frozen_report, warnings=warnings)
 (OUT / "build-stats.json").write_text(json.dumps(stats, ensure_ascii=False, indent=1) + "\n")
 
 # ---------------------------------------------------------------- 검토용 그림

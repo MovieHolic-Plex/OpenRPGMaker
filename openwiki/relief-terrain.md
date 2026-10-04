@@ -1,5 +1,10 @@
 # 높이 지형(relief) — 편집기·런타임 지도 (2026-10-01 통합)
 
+태양 방향·고도에 따른 지형/집 그림자(기본 off)는 [sunlight-shadows.md](sunlight-shadows.md).
+높이/통행 데이터와 별도의 수신 마스크를 editor/player/AI 이미지에 적용한다.
+
+2026-10-04 조수 재편집: 기존 feature의 ID로 부분 설정을 바꾸면 높이·시드·점·수위·평탄화 등 생략한 설정을 유지한다. 높이 ops는 잠금 칸과 집터/문 앞의 평탄성을 보호하며, 일반 지형 계획기도 구조물 전체 사각형을 피한다. 조립 집의 지붕 변경은 동일 roof 계획의 재실행과 네 층 화소 일치로 검증한다. 실제 조수 수정·SQLite 재로드·에디터 근거는 `verify-shots/terrain-ai-edit/SUMMARY.md`.
+
 `map.relief`(단·경사로·벽면 장식·양식)를 **한 렌더러**(`src/project/relief/render.ts`)가 그리고, 편집기(`EditScene`)와 게임(`PlayScene`)이
 같은 들림 표(`screen.ts`)로 타일·캐릭터를 올린다. 저장 필드 모양과 렌더러 r2/r3 변경 이력은 [runtime-project-schema.md](runtime-project-schema.md) 「높이 지형」,
 편집기 붓 경로는 [editor-pre-edit-routing.md](editor-pre-edit-routing.md) 「높이 붓」, 조수 도구는 [editor-ai-tools.md](editor-ai-tools.md) 「절벽 높이 도구」.
@@ -18,7 +23,7 @@
 | 그림 | `relief/render.ts` · `styles.ts` · `rampArt.json` | 절벽·경사로·계단·다리 판 그리기, 양식(`RELIEF_STYLES`, 칩셋 id → 양식 `reliefStyleForTileset`), 경사로 도트. `window` 옵션(잘라 낸 격자를 절대 좌표 무늬로 굽기), `reliefPadPx`(굽지 않고 pad 계산) |
 | 부분 굽기 | `relief/window.ts` | `reliefGrids`(다듬은·깎은 높이, relief·단 서명마다 한 번), `planReliefPatch`(바뀐 칸 → 창·덮어쓸 사각형, pad 가 바뀌면 버퍼 밀기 + 맨 위 띠), `applyReliefPatch`. 전체 굽기와 화소 일치를 `scripts/check-relief-window.mts` 가 확인한다 |
 | 띠 텍스처 | `player/reliefStrips.ts` | 그림을 줄마다 윗면(under)·벽(over) 띠로 잘라 페이지 텍스처 몇 장에 쌓는다(런타임). `reliefFieldOf` 는 「높이가 있는가」를 relief 객체마다 한 번만 잰다 |
-| 편집기 띠 | `editor/reliefLiveStrips.ts` | 전체 그림 버퍼를 들고 붓질마다 바뀐 창만 다시 굽고, 띠를 (줄, 윗면/벽, 256px 열 묶음) 텍스처로 나눠 덮어쓴 사각형에 걸린 것만 다시 올린다 |
+| 편집기 띠 | `editor/reliefLiveStrips.ts` · `relief/paged.ts` | 화면 주변 땅 좌표 페이지를 보존하고 붓질/팬에 필요한 페이지만 굽는다. (줄, 윗면/벽, 256px 열 묶음) 텍스처의 바뀐 상자만 올린다 |
 | 런타임 | `player/playSceneRelief.ts` | 띠·벽면 장식 배치, depth 규칙, 캐릭터 들림(`installReliefSpriteLift`), 카메라 위 확장(`reliefTopOverhangPx`) |
 | 런타임 연결 | `playSceneMapRuntime.ts` | `renderTiles` 가 `renderReliefLayer` 를 먼저 부르고, `placeMapTileImage`·`renderShadow` 가 들린 칸 타일을 올린다. 타일 서명(`reliefSignature`)에 relief 가 들어간다 |
 | 편집기 연결 | `EditScene.ts` · `editSceneRender.ts` · `editSceneEventMarkers.ts` | 절벽 컨테이너(`reliefLayer`)에 띠와 들린 하층 타일을 줄 depth 로 섞는다. 이벤트 그림은 이벤트 레이어에서만, 들림만큼 올린다 |
@@ -34,6 +39,11 @@
 
 캐릭터 들림은 **그리는 프레임에만** 얹는다(`postupdate` 에서 올리고 `render` 에서 되돌림). `sprite.y` 는 접지선이라 depth·`Math.floor(y/칸)` 역산·트윈이 그대로 맞는다.
 말풍선·이모트·위치 칩은 `spriteReliefLiftPx` 만큼 올려 머리 위에 붙인다.
+
+**이동 중 바닥 가림 수정(2026-10-04):** 바닥 띠의 depth는 칸 남쪽 끝이다. same 캐릭터의 연속 발 y를 그대로 depth로 쓰면
+자기 바닥보다 뒤로 가서 하반신이 지워진다. 그리는 동안만 발이 속한 줄(`ceil(y/칸−epsilon)−1`)의 띠 위로 정렬하고
+같은 줄 캐릭터 사이의 발 y 순서는 작은 소수로 유지한다. `above` 우선순위는 그대로다. below·체공 그림자도 같은 주인 줄에
+맞추며, 들림 0인 아랫땅도 실제 바닥 띠가 있으므로 정렬한다. 렌더 후 y와 depth를 함께 되돌린다. 남쪽의 높은 지형은 계속 캐릭터를 가린다.
 
 ## 편집기 성능 계약 (2026-10-03 부분 굽기)
 
@@ -51,6 +61,93 @@
 - 실측(2026-10-03, 기본 100×100 마을, swiftshader, 부하 걸린 머신): 같은 세 번 드래그에서 긴 멈춤 최대 2.0~2.5초 → 0.25~0.8초(첫 붓의 JIT 예열이 가장 길다).
   창 굽기 한 번은 node 기준 중앙값 약 32ms(반지름 2 붓, 6단 언덕).
 - 붓질 중 `refreshAuthoringJourney` 는 프로젝트 참조 점검을 다시 돌리지 않는다 — 칠하기마다 store 세대가 올라 문서 키가 늘 달라져, 키만 보고 표본마다 점검을 돌리던 것을 막았다.
+
+## UX2 높이·컬링 수정 (2026-10-04, 소스 변경 · 브라우저 QA 대기)
+
+이 절은 위의 전체 픽셀 backing/shift 설명을 대체한다. `reliefLiveStrips.ts`는
+`relief/paged.ts`의 256×256 페이지를 화면과 한 페이지 여유 범위에 보존한다.
+페이지 y는 `화면 raster y − pad`인 땅 좌표다. 최고 단 변경은 논리적 원점만 바꾸며
+기존 페이지 배열을 밀거나 복사하지 않는다. 화면 밖 페이지는 원본 격자/경사로/재질에서
+다시 생성한다. 페이지 화소의 행 주인과 under/over, 경사로 전체 의존 범위, 24px 뒤 패스
+여백, 절대 무늬 좌표를 유지한다. 맵 가장자리의 반대쪽 열 읽기는 기존 창 규칙대로 전체
+가로 폭을 읽는다. 이는 임시 raster 작업 범위이며 보존 backing은 여전히 페이지다.
+벽 보로노이 표도 창 크기와 원점으로 할당하며 필요한 화소만 계산한다.
+
+서명 기본 API `reliefSignature`는 내용 검사를 생략하지 않는다. 저장소 게시 전 얕은 초안이
+같은 배열/장식 객체를 수정한 경우도 감지한다. 편집기 읽기는 `prepareReliefRead`와
+`reliefReadSignature`를 쓰고, `store.getVersionToken()`의 lineage/generation에 서명·높이 유무를
+기억한다. 따라서 같은 세대의 호버는 배열을 다시 읽지 않고, levels/ramps/style/wallDecor의
+제자리 쓰기·undo·프로젝트 교체는 새 세대에서 다시 읽는다. 게시 전에 기하를 조회하는
+쓰기 도우미는 `invalidateReliefRevision`/`invalidateReliefSlopes`를 호출한다.
+`prepareReliefRead`는 현재 저장소의 맵 객체에만 세대를 연결한다. 얕은 초안이 이미 연결된 relief를
+공유하면 그 연결을 풀어, 게시 전 제자리 변경도 내용으로 검사한다. 버전 없는 입력은 계속 내용 검사한다. 내보내기 플레이어는 쓰기 API가 없는 정적 프로젝트를
+읽으며, 편집 가능한 store와 별도의 읽기 전용 계약이다. picking의 탐색 상한은 `field.maxLift`다.
+편집기 타일/벽 장식은 `screen.ts`의 revision-aware `reliefCellLiftPx`를 쓴다. 범위 밖 파일인
+`player/reliefStrips.ts`의 `reliefFieldOf`에는 여전히 identity-only presence 캐시가 남아 있다.
+런타임에서 동일 relief 객체의 flat↔hill 변경까지 지원하려면 소유자가 이 캐시를 고쳐야 한다.
+
+지면은 같은 입력이면 기존 surface/fingerprint를 그대로 쓴다. lower 셀 통지는 1층·2층·그림자·
+스택의 해당 지문을 갱신하고 8이웃 합성 캐시를 비운다. relief만/upper만 바뀌면 ground 서명은
+바뀌지 않는다. 범위 없는 맵 변경·자산/프로젝트 교체는 보수적으로 캐시를 버린다.
+첫/마지막 언덕은 현재 원본 행 창(최대 들림 포함)과 남아 있는 tileIndex 셀을 먼저 합친다.
+이후에만 타일 자리 비교·이웃 확장·정렬을 한다. 전체 맵 좌표 객체를 만들고 거르는 경로는 제거했다.
+
+`playSceneTileCulling`은 실제 destroy 이벤트에서 즉시 dense swap-remove하며, 편집기도 제거 전에
+명시적으로 unregister한다. 버킷과 좌표를 함께 갱신하므로 카메라가 같은 창에 있거나 다른 버킷을
+방문하지 않아도 죽은 GameObject가 보존되지 않는다. 숨김은 active를 변경하지 않고 물 애니메이션을
+pause/resume한다. 마지막 자식을 제거한 청크는 실제 부모 정체성으로 찾아 registry에서 제거하고 파괴한다.
+relief 페이지 팬 갱신은 lazy 타일 생성과 독립적으로 실행한다. 작은 길쭉한 맵도 화면 밖 페이지를
+복원하며, resident 페이지 범위가 같으면 `syncView`는 페이지 순회 전에 반환한다.
+
+조수 구독용 추가 계약은 `relief/changes.ts`의 `ReliefCellChange.reliefCells`다. `commitReliefEdit`은
+잠금 복원을 적용한 최종 relief의 원시 변경 칸을 이 필드로 통지한다. 기존 `cells`는 실제 바닥/상층
+편집 칸이며 두 필드는 서로 대신하지 않는다. `[]`는 알려진 변경 없음, 필드 부재는 범위를 모르는
+전체 변경(양식 변경 포함)이다. store/조수 구독 타입 소유자는 이 확장 필드를 받아야 한다.
+이 슬라이스는 해당 파일을 수정하지 않는다.
+
+전체 raster 기준 경로(`renderRelief`와 `window.ts`의 전체 image/patch)는 남겨 둔다.
+편집기 `__oprnEditReliefRebuild()`의 full 기준 비교는 96×96 이하 QA 맵으로 제한한다.
+일반 fallback은 모든 **resident 페이지**를 다시 굽으며 전체 맵 화소 배열을 만들지 않는다.
+`__oprnEditReliefStats()`는 기존 mode 횟수에 backing(page 수·7바이트/화소 배열 크기·pad·원점),
+culling(추적 수·버킷 수·죽은 수), resident 타일 객체 수, 청크 수와 빈 청크 수를 추가한다.
+바이트 수는 세 보존 배열만이며 atlas/scratch/canvas/GPU/격자를 포함하지 않는다.
+
+회귀: `test/reliefUx2Pages.test.ts`는 페이지 RGBA·주인 행·under/over와 전체 렌더,
+재질/계단/경사로/다리, pad 증감, 왕복 팬의 보존량, 게시 전 제자리 서명과 warm 읽기 비용을 비교한다.
+`test/reliefUx2Contracts.test.ts`는 lower overlay·shadow와 upper-only ground 재사용, 세대별 한 번 해시,
+얕은 초안 서명과 잠금 적용 후 조수 descriptor를 다룬다. `test/reliefUx2Residents.test.ts`는 destroy/swap
+버킷 좌표, 실제 부모의 빈 청크 제거, nonempty lower/upper 팬, 후보 창과 동일 객체의 첫/마지막 언덕을 다룬다.
+이번 세션은 테스트/게이트/typecheck/브라우저를 실행하지 않는다. native 기하/raster QA는 통합 후 수행한다.
+
+### 통합 후 브라우저 QA 레시피 (실행 담당자용)
+
+1. 하나의 disposable 48×48 fixture와 96×96 fixture를 차례로 쓴다. 높이 ≤4, 작은 native atlas,
+   유효한 nonempty lower/upper 타일, 2층 overlay와 shadow를 넣고 화면은 맵보다 작게 확대한다.
+   upper가 전부 -1이면 native ground가 lower를 소유해 resident 타일 객체가 0일 수 있으므로
+   그 상태에서 culling leak 검사를 합격으로 보지 않는다. 별도로 96×16 작은 길쭉한 맵의 팬도 본다.
+2. atlas/JIT를 한 번 데운 뒤 같은 칸 안에서 100번 이동, 칸 경계 이동, 변경 없는 redraw를 세 차례 기록한다.
+   content hash의 warm 배열 읽기 0, ground surface/cells 재사용과 mode= same을 확인한다.
+   0→2단 첫 언덕과 마지막 2→0단, 최고 높이 2→4→1단을 각각 기록한다. raw relief와 타일 descriptor를
+   따로 확인하고 잠긴 칸은 reliefCells에 들어가지 않는지 본다. style의 reliefCells 부재는 전체 변경이다.
+3. 한 칸의 2층 overlay와 shadow를 lower descriptor로 바꾸면 ground 서명/화소가 바뀌어야 한다.
+   3층/4층만 바꾸면 ground는 같아야 한다. undo/redo와 범위 없는 맵 복원도 본다. 얕은 초안에서
+   levels/ramps/style/wallDecor와 장식 속성을 제자리 수정해 기본 서명이 달라지는지 확인한다.
+4. 평지와 언덕에서 여섯 위치를 지나는 serpentine 팬을 20바퀴 돈다. 중간 layer/zoom/map 변경은 하지 않는다.
+   시작·첫 탐색 후·귀환 후·마지막의 `__oprnEditReliefStats()`를 기록한다. culling.tracked는 실제
+   residentTileObjects와 맞고 0보다 커야 한다. culling.destroyed와 emptyChunks는 0이며,
+   backing.pages/bytes와 chunks는 화면 범위에 따라 오르내려도 반복 탐색 횟수에 따라 늘지 않아야 한다.
+   JS heap과 별도로 ArrayBuffer/canvas/GPU를 본다. heap snapshot은 latency 기록과 분리한다.
+5. 페이지 x/y seam, 북쪽 maxpad 원점, 네 방향 유효 경사로·계단·다리, 벽 장식,
+   들린 upper·overlay·shadow, under/over 주인 행과 picking을 본다. 팬 중 pad를 증감하고 떠났다가
+   돌아와 그림이 같은지 확인한다. retention 측정을 마친 뒤에만 `__oprnEditReliefRebuild()`를 불러
+   96×96 이하 전체 기준과 비교한다(이 호출은 텍스처/카운터를 바꾼다).
+6. runtime 확인은 별도의 `player.html` 내보내기 하네스에서 같은 작은 fixture를 쓴다.
+   destroy 후 동일 카메라 창, 새 offscreen 타일 숨김, 물 애니메이션 pause/resume,
+   맵 재진입과 relief 통행/캐릭터 depth를 본다. 실행 HEAD, fixture/zoom/renderer와 raw trace를 남긴다.
+
+초기 ground 지문/기하 격자는 여전히 O(WH) 셀 저장이며, 기하가 바뀐 때의 patch-plan 비교도 전체 격자를 본다.
+이 수정은 warm 서명·ground 준비와 보존 픽셀·죽은 객체/빈 청크를 줄인다. total 메모리/프레임 지연의
+상한을 입증하지 않으며, 맵 가장자리의 전체 폭 임시 dependency raster도 따로 계측해야 한다.
 
 ## 지형 설치 확장 (2026-10-03)
 
@@ -104,9 +201,20 @@
 - 경사로 표기의 연결 덩어리를 큰 사각형으로 채우지 않는다. 낮은 층계참 → 같은 방향/낮은 높이의 연속 칸 → 높은 층계참을 가진 통로만 인정한다. 나란한 통로도 시작/끝/높이가 같은 경우만 병합한다. 옆구리 진입, 다른 경사로로 가로질러 이동, 끊긴 경사 표기는 막는다.
 - 캐릭터는 타일 중심 들림을 보간하지 않고 `footLift`로 실제 `sprite.x/y` 발 좌표의 연속 기하를 읽는다. 타일·상층 그림은 기존 중심 좌표를 쓴다. 클릭은 `camera.worldView`를 사용해 줌 원점을 보정하고, 작은 렌더 창의 화소 소유권(`reliefPickPoint`)으로 보이는 윗면을 고른다. 절벽 벽 클릭은 목표 칸이 아니다.
 - `ReliefRenderOptions.ground`가 있으면 실제 원본 칩셋 바닥을 윗면·비탈·대각선 접점과 풀 턱에 투영한다. 바닥 없는 헤드리스 호출은 기존 절차적 팔레트가 대체한다. 원본 바닥의 kind=0 띠는 전부 under로 배치하며 하층/2층/그림자를 별도로 중복해서 그리지 않는다. 계단/다리 밑면의 전용 그림은 유지한다.
+- 북·동·서 외곽선과 안쪽 턱은 실제 바닥 무늬에 지형 명암을 곱한다. 바깥 흙 둑은 `kind=1` 벽으로 분리해서 바닥 재질 투영에 지워지지 않는다.
+  기본 흙벽도 `RELIEF_DEFAULT_RIM`의 북쪽 뒤 둑을 가진다. 재질 없이 그리는 `reliefPickPoint`도 같은 둑/벽 경계를 쓴다.
+  지도 밖 여백에 걸친 둑은 윗단 주인 `src`를 받아 띠에 남는다.
+  최상단 외곽선은 전체 그림 `sy+oy=0` 경계에서만 그리며 부분 창의 상단에 가짜 선을 만들지 않는다.
 - 바닥 변경도 relief 부분 굽기를 예약한다. autotile 이웃까지 셀 변경 창을 넓힌다. 높이 유무가 처음 바뀌면 기존 바닥 객체도 함께 갱신한다. 비활성 하층의 투명도/색조는 under 띠에도 적용한다.
 - 미리보기 계획은 `copyRelief`와 수심 배열을 복사한다. 미리보기 중 원본 높이/경사/수심을 바꾸면 Undo와 캐시가 함께 깨진다. 배열을 직접 저작하는 도로 연결은 `invalidateReliefSlopes`를 호출한다.
 - 재현: `scripts/capture/inspect-terrain-seams.mts` + `terrain-seam-sheets.py`의 세 SQLite QA 지도 접점 1,186곳(가려진 접점 포함)의 윗면/발치 시트 전량 검토. `capture-terrain-seams-runtime.mjs`는 출하 `player.html`에서 네 방향 키보드/클릭 왕복·옆구리 차단·실제 AI 원본 집 3채 문 앞 이동을 기록한다. `capture-terrain-seams-editor.mjs`는 실제 패키지 에디터에서 원본 선택·부분 바닥 갱신/전체 굽기 일치·폭 2칸 도로·저장/Undo/재로드를 확인한다. 상세 근거와 범위는 `verify-shots/terrain-seams/SUMMARY.md`.
+- **발 좌표 오차 0은 몸이 보인다는 증거가 아니다.** 앞선 접점/발 위치 QA가 하반신 가림과 북쪽 외곽선 소실을 놓쳤다.
+  `capture-terrain-body-rims.mjs`는 실제 출하 플레이어에서 걸음 중 WebGL 스냅샷과 해당 애니메이션 프레임의 불투명 하반신 화소를 비교하고,
+  높은 앞 지형의 가림도 별도로 확인한다. `inspect-terrain-rim-surfaces.mts`는 재로드한 버들항 재질로 28개 양식(기본 포함)의
+  부분/전체 RGBA·주인 줄·띠 일치를 비교한다. 렌더 fixture는 사본이며 원본 SQLite 지도에는 쓰지 않는다. 출하용 별도 SQLite에는
+  같은 맵과 참조한 아틀라스를 저장하고 재로드한다. 근거: `verify-shots/terrain-body-rims/SUMMARY.md`.
+  화소 비교는 카메라 postrender에서 고정한 해당 프레임의 view를 사용한다. WebGL snapshot Image.onload에서 현재 카메라를 읽으면
+  카메라가 이미 다음 프레임으로 진행해 온전한 몸을 가림으로 오판할 수 있다. 재질 유무의 클릭 기하와 뒤 둑 hit도 함께 비교한다.
 
 ## 알려진 한계 · 결정이 필요한 것
 

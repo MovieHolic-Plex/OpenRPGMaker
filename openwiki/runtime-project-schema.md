@@ -290,6 +290,15 @@ Electron IPC와 브라우저 HTTP가 같은 서비스로 SQLite·에셋을 사�
 
 ## 로컬 SQLite 정본과 저장소 포트 (2026-09-16)
 
+렌더러 맵 패치 준비 보강(2026-10-04): `projectPatch`는 일반 JSON 가지를 참조/구조로
+비교하며 첫 차이에서 멈춘다. `diffProjectDocumentsSliced`와 `withWirePatchValuesSliced`는
+맵 내부의 긴 배열도 256항목마다 양보 시간을 확인한다. Electron 저장소는 두 단계를 모두
+사용한다. 타일셋 요약·기준 SHA·호스트 CAS 계약은 유지한다. 와이어 값은 소유된 JSON 사본이며
+제출 중 새 store 편집은 쓰기 시 복제로 분리된다. 비표준 값의 비교와 custom `toJSON`은
+기존 직렬화 경로로 처리한다. 크기가 큰 custom serializer 자체는 동기 실행이라는 한계가 있다.
+브라우저 증거는 `verify-shots/editor-ux-fixes-round2-20261004/storage/README.md`이며,
+이 수치는 호스트 저장·SQLite 재로드 지연이 아니라 렌더러 패치 준비 비용이다.
+
 정본이 "원격 Postgres 프로젝트 행"에서 "사용자가 고른 폴더의 `project.sqlite`"로 옮겨가는 중이다.
 설계는 `docs/superpowers/specs/2026-09-15-oprn-local-sqlite-store-design.md`, P1(포트 추출)은
 PR #845, P2(로컬 어댑터·Electron 셸)는 브랜치 `local-store/p2`가 main에 병합된 상태다.
@@ -1516,3 +1525,22 @@ Browser pages fill the viewport but cannot force OS fullscreen before a gesture.
 Launcher form typography/color reset is scoped to `.start-app`; its former global
 `button` reset overrode native window-control colors and the interview's primary
 button text across the start document's CSS layers.
+
+### Cinematic image direction (2026-10-04)
+
+Image 장면의 선택 direction은 camera.from/to([초점x,초점y,배율]), transition,
+최대4개 effects, soundResourceId, narrationDelayMs를 저장한다. `cinematicDirection.ts`가
+허용 필드·범위·효과별 필수 좌표를 파일 로드와 저작 도구 양쪽에서 검사한다.
+기존 direction 없는 장면은 그대로 읽는다. resourceReferenceValidation은 SE를 확인하고
+웹 내보내기의 사용 문자열 순회가 별도 SE 업로드도 포함한다. 정본 저장/재로드에서 direction을 버리지 않는다.
+세부 범위와 재생 순서는 [title-opening-effects.md](title-opening-effects.md).
+
+## 글자·장면 오프닝 연출 (2026-10-04)
+
+모든 text/image/video 장면에 선택 `presentation`을 저장한다. 기존 필드가 없으면 기존
+재생을 유지한다. 기본형 subtitle/prologue/chapter/memory/credits, 글자 등장 6종,
+장면 등장 6종, 독립적인 글자·장면 퇴장 시간·색·글꼴·위치·상하 띠를 지원한다.
+`cinematicPresentation.ts`의 엄격 파서를 프로젝트 로드와 AI 도구가 공유하며
+DB 오프닝/게임오버 폼과 미리보기는 같은 레코드/재생기를 쓴다. 꺼진 시퀀스도 보존한다.
+전체 계약·시간·우선순위·reduced-motion·저장/출하 증거는
+[title-opening-effects.md](title-opening-effects.md#글자장면-오프닝-연출-2026-10-04)를 따른다.

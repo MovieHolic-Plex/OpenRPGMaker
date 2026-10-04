@@ -29,7 +29,7 @@ let store = await openLocalProjectStore({ projectDir: folder });
 const project = store.loadSnapshot()!.project as Project;
 const projectId = store.info().projectId;
 store.close();
-const intent = { mode: "create", space: "none", facility: null, targetMapId: mapId, useSelection: false,
+const intent = { mode: arg("mode", "create"), space: "none", facility: null, targetMapId: mapId, useSelection: false,
   clarify: null, clarifyOptions: [], needsPlan: true, resetsContext: false, summary: task, source: "llm",
   tools: ["fill_region", "paint_tiles", "paint_road", "stamp_object", "show_map_region", "get_map_region",
     "check_reachability", "list_tileset_references", "read_tileset_reference", "tile_query", "get_tile_info"] };

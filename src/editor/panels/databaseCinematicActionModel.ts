@@ -54,6 +54,7 @@ export function sceneWithKind(
     id: scene.id,
     narration: scene.narration,
     durationMs: scene.durationMs,
+    ...(scene.presentation ? { presentation: structuredClone(scene.presentation) } : {}),
     ...(scene.narrationAudioResourceId
       ? { narrationAudioResourceId: scene.narrationAudioResourceId }
       : {}),
@@ -65,6 +66,7 @@ export function sceneWithKind(
     kind,
     resourceId,
     motion: scene.kind === "image" ? scene.motion : "none",
+    ...(scene.kind === 'image' && scene.direction ? { direction: structuredClone(scene.direction) } : {}),
   };
 }
 

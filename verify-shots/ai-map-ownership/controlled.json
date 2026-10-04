@@ -1,0 +1,14 @@
+{
+  "mode": "Real relay/team/queue, controlled workers; no live models",
+  "checks": [
+    "A child failure does not release the parent's map ownership while another child runs",
+    "Relay blocks same map and owned child before worker startup; different map starts",
+    "Disconnect/cancel does not release ownership before worker stops",
+    "Relay releases completed and failed workers; map can be reused",
+    "Worker startup failure releases the reservation",
+    "Team blocks duplicate/child/review during construction; another map runs",
+    "Review blocks construction, another review, project write and premature finish",
+    "Map can be reassigned after reviewer finishes",
+    "Separated stamp regions on one map are serialized; another map runs concurrently"
+  ]
+}

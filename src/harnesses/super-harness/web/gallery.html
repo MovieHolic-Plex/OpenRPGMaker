@@ -20,8 +20,9 @@ button:hover{border-color:#4a505a}
 main{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;padding:16px 20px 40px}
 .c{background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column}
 .c:hover{border-color:#4a505a}
-.c .pic{aspect-ratio:4/3;background:#0e0f11;display:flex;align-items:center;justify-content:center;color:#555;font-size:12px}
+.c .pic{position:relative;aspect-ratio:4/3;background:#0e0f11;display:flex;align-items:center;justify-content:center;color:#555;font-size:12px}
 .c .pic img{width:100%;height:100%;object-fit:cover;image-rendering:auto}
+.pic-kind{position:absolute;top:8px;left:8px;padding:3px 7px;background:#161a21e8;color:#f1c66c;border-radius:5px}
 .c .t{padding:10px 12px 12px}
 .c b{font-size:15px}
 .c .s{font-size:12px;margin:2px 0 4px}
@@ -65,6 +66,8 @@ a{color:var(--run)}
 .document blockquote{margin:16px 0;padding:12px 18px;border-left:3px solid var(--wait);background:#25282e}
 .document code{padding:2px 5px;background:#121418;border-radius:4px;font-size:14px}
 .document pre{white-space:pre-wrap;font:14px/1.8 ui-monospace,monospace;background:#121418;padding:16px;border-radius:8px}
+.document pre:has(code){white-space:pre;overflow-wrap:normal;overflow-x:auto}
+.document pre code{padding:0}
 .table-scroll{overflow-x:auto;margin:18px 0}
 .document table{border-collapse:collapse;width:100%;font-size:15px;min-width:620px}
 .document th,.document td{border:1px solid var(--line);padding:10px 12px;text-align:left;vertical-align:top}
@@ -78,6 +81,35 @@ a{color:var(--run)}
 .document figcaption{color:var(--dim);font-size:14px;margin-top:6px}
 main.orders{display:block;max-width:1100px;margin:auto}
 @media(max-width:600px){.box{padding:18px 14px}.document{font-size:15px}.document h1{font-size:24px}header{padding:12px}.box h2{font-size:20px}}
+
+.s.pick{color:#efc16c}
+button:disabled{opacity:.5;cursor:not-allowed}
+button:focus-visible,summary:focus-visible{outline:3px solid #86c6ff;outline-offset:3px}
+.choice-panel h1{font-size:26px;margin:0 0 8px}
+.choice-lead{font-size:19px;margin:0 0 18px}
+.choice-steps{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;color:var(--dim);font-size:13px}
+.choice-steps span{padding:6px 10px;border-radius:6px;background:#141619}
+.choice-steps .done{color:#8dceaa}.choice-steps .current{background:#514027;color:#ffe0a4}
+.choice-notice{background:#242e3c;border:1px solid #3c526e;padding:14px 16px;border-radius:8px;line-height:1.8}
+.choice-notice div{color:#b2bdd0;font-size:13px;margin-top:5px}
+.choice-progress{font-weight:bold;color:#f1c66c}.choice-message{color:#a9d5ff;min-height:20px}
+.choice-message:empty{display:none}
+.choice-group{border-top:1px solid var(--line);padding:20px 0 30px}
+.choice-group h2{font-size:21px}.choice-group>p{color:var(--dim);margin:6px 0 16px}
+.candidate-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.candidate-tabs button{flex:1;min-width:110px;padding:12px;text-align:left}
+.candidate-tabs b,.candidate-tabs span{display:block}.candidate-tabs span{font-size:12px;margin-top:4px}
+.candidate-tabs button[aria-pressed=true]{border:2px solid #86c6ff;background:#263d55}
+.choice-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.choice-states{display:flex;gap:6px}.choice-states [aria-pressed=true]{background:#ececee;color:#141619}
+.scene-open{display:block;padding:0;width:100%;background:#111318;border:1px solid var(--line);overflow:hidden;cursor:zoom-in}
+.choice-scene{display:block;max-width:100%;width:auto;max-height:540px;margin:auto;image-rendering:pixelated}
+.choice-caption{font-size:13px;line-height:1.6}
+.choice-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:10px 0 14px}.choice-actions .primary{padding:12px 22px;font-weight:bold;background:#315f93}.choice-actions span{color:var(--dim);font-size:13px}
+.choice-reasons{color:#e9b0a7;background:#342824;padding:12px;border-radius:8px;font-size:14px;line-height:1.7}
+.choice-reasons summary,.choice-docs>summary{cursor:pointer;padding:6px 0}
+.choice-error{color:#f1ab94!important}
+.choice-docs{margin-top:20px;border-top:1px solid var(--line);padding-top:14px}.choice-docs>summary{font-size:16px;font-weight:bold}.choice-docs[open]>summary{margin-bottom:18px}
 </style>
 </head>
 <body>
@@ -94,9 +126,10 @@ main.orders{display:block;max-width:1100px;margin:auto}
 <div id="big"><img></div>
 <script type="module">
 import { renderMarkdown } from "/markdown.js";
+import { renderChoices } from "/art-choice.js";
 const ordersPage = location.pathname === "/orders";
 let requestId = 0;
-const TABS = [['all', '전체'], ['done', '완성'], ['work', '만드는 중'], ['wait', '기다림'], ['stop', '막힘·폐기']];
+const TABS = [['all', '전체'], ['done', '완성'], ['work', '만드는 중'], ['pick', '내 선택 필요'], ['wait', '작업 대기'], ['stop', '막힘·폐기']];
 let L = null, tab = localStorage.getItem('sh-tab') || 'all', openId = null;
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -104,14 +137,14 @@ const thumb = (im, w) => `/thumb?p=${encodeURIComponent(im.path)}&w=${w}&v=${im.
 const cards = new Map();
 
 function cardHtml(it) {
-  return `<div class="pic">${it.thumb ? `<img loading="lazy" src="${thumb(it.thumb, 360)}" alt="">` : '아직 그림 없음'}</div>
+  return `<div class="pic">${it.thumb ? `<img loading="lazy" src="${thumb(it.thumb, 360)}" alt="">` : (it.stage === 'plan' || it.stage === 'plan-review' ? '맵 제작 전 · 기획·도면 검토' : '맵 제작 전 · 재료 확인 중')}${it.thumb?.kind ? `<span class="pic-kind">${esc(it.thumb.kind)}</span>` : ''}</div>
     <div class="t"><b>${esc(it.title)}</b><div class="s ${it.group}">${it.running ? '<span class="dot"></span>' : ''}${esc(it.status)}</div><div class="a">${esc(it.about)}</div></div>`;
 }
 
 function render() {
   const n = (g) => L.items.filter((i) => g === 'all' || i.group === g).length;
   $('tabs').innerHTML = TABS.map(([k, t]) => `<button class="${k === tab ? 'on' : ''}" onclick="setTab('${k}')">${t} ${n(k)}</button>`).join('');
-  const order = { work: 0, wait: 1, done: 2, stop: 3 };
+  const order = { pick: 0, work: 1, wait: 2, done: 3, stop: 4 };
   const list = L.items.filter((i) => tab === 'all' || i.group === tab)
     .sort((a, b) => (order[a.group] - order[b.group]) || (b.updated > a.updated ? 1 : -1));
   const grid = $('grid');
@@ -134,8 +167,8 @@ async function refresh() {
   if (document.hidden) return;
   try { L = await (await fetch('/api/list')).json(); } catch { return; }
   const work = L.items.filter((i) => i.running).length, done = L.items.filter((i) => i.group === 'done').length;
-  $('line').textContent = `${L.paused ? '멈춤' : '자동으로 도는 중'} · 지금 ${work}개 작업 · 완성 ${done}개 · 전체 ${L.items.length}개`;
-  $('pause').textContent = L.paused ? '▶ 다시 돌리기' : '❚❚ 멈추기';
+  $('line').textContent = `${L.paused ? '전체 자동 실행 멈춤' : '자동으로 도는 중'} · 지금 ${work}개 작업 · 완성 ${done}개 · 전체 ${L.items.length}개`;
+  $('pause').textContent = L.paused ? '전체 큐 다시 돌리기' : '전체 큐 멈추기';
   $('pause').onclick = () => post({ action: L.paused ? 'resume' : 'pause' });
   if (!ordersPage) render();
 }
@@ -153,7 +186,7 @@ async function documentView(target, path, { modal = false } = {}) {
         <button data-view="read" aria-pressed="true">읽기</button>
         <button data-view="source" aria-pressed="false">Markdown 원문</button>
         <a href="${esc(path)}" target="_blank" rel="noopener">원문 열기</a>
-        ${modal ? '' : '<button id="reload-doc">새로고침</button>'}
+        <button id="reload-doc">새로고침</button>
       </nav><article class="document"></article>`;
     const article = target.querySelector('article');
     const show = (mode) => {
@@ -184,12 +217,28 @@ async function documentView(target, path, { modal = false } = {}) {
       });
     };
     target.querySelectorAll('[data-view]').forEach((button) => button.onclick = () => show(button.dataset.view));
-    target.querySelector('#reload-doc')?.addEventListener('click', () => documentView(target, path));
+    target.querySelector('#reload-doc')?.addEventListener('click', async () => {
+      const draft = target.querySelector('#fix')?.value;
+      await documentView(target, path, { modal });
+      const field = target.querySelector('#fix'); if (field && draft) field.value = draft;
+    });
     show('read');
     if (modal) {
+      const cid = decodeURIComponent(path.slice(4, -3));
+      const response = await fetch('/api/art-choices?id=' + encodeURIComponent(cid));
+      const choice = response.ok ? await response.json() : null;
+      if (current !== requestId) return;
+      if (['art-review', 'art-layout-review', 'art-context-review', 'art', 'blocked'].includes(choice?.stage) && choice.groups.length) {
+        const panel = document.createElement('section'); panel.className = 'choice-panel';
+        const docs = document.createElement('details'); docs.className = 'choice-docs';
+        const summary = document.createElement('summary'); summary.textContent = '기획·그림 주문서·검수 기록 펼치기';
+        docs.append(summary, target.querySelector('.doc-tools'), article); target.append(docs); target.insertBefore(panel, docs);
+        renderChoices(panel, choice, refresh, url => { $('big').querySelector('img').src=url; $('big').classList.add('on'); });
+      }
       const actions = document.createElement('section');
-      actions.innerHTML = '<h3>교정</h3><textarea id="fix" aria-label="교정 지시" placeholder="마음에 안 드는 점, 이렇게 고쳐라"></textarea><div class="acts"><button class="primary" onclick="act(\'fix\')">교정 지시</button><button class="danger" onclick="act(\'discard\')">폐기</button></div>';
-      target.append(actions);
+      actions.innerHTML = '<div class="acts"><button onclick="act(\'recheck-materials\')">공용 등록 후 재료 다시 확인</button></div><h3>기획·도면 교정</h3><textarea id="fix" aria-label="교정 지시" placeholder="마음에 안 드는 점, 이렇게 고쳐라"></textarea><div class="acts"><button class="primary" onclick="act(\'fix\')">기획부터 다시 검수</button><button class="danger" onclick="act(\'discard\')">폐기</button></div>';
+      const correction = document.createElement('details'); correction.className='choice-docs';
+      const label=document.createElement('summary');label.textContent='교정 지시·재료 재확인·폐기';correction.append(label,actions);target.append(correction);
     }
   } catch (error) {
     if (current !== requestId) return;

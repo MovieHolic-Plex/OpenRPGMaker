@@ -1,0 +1,414 @@
+{
+  "events": [
+    {
+      "t": 124858,
+      "runId": "7d18a4f1-d932-40f6-b549-dd4f98bdd379",
+      "type": "start",
+      "seq": 0
+    },
+    {
+      "t": 124858,
+      "runId": "7d18a4f1-d932-40f6-b549-dd4f98bdd379",
+      "type": "heartbeat",
+      "seq": 1
+    },
+    {
+      "t": 124862,
+      "runId": "ca6984d9-c774-4c32-864f-edfa68f87810",
+      "type": "start",
+      "seq": 0
+    },
+    {
+      "t": 124890,
+      "runId": "7d18a4f1-d932-40f6-b549-dd4f98bdd379",
+      "type": "turn",
+      "seq": 2
+    },
+    {
+      "t": 124894,
+      "runId": "ca6984d9-c774-4c32-864f-edfa68f87810",
+      "type": "turn",
+      "seq": 1
+    },
+    {
+      "t": 124944,
+      "runId": "7d18a4f1-d932-40f6-b549-dd4f98bdd379",
+      "type": "prompt_inspection",
+      "seq": 3
+    },
+    {
+      "t": 124944,
+      "runId": "ca6984d9-c774-4c32-864f-edfa68f87810",
+      "type": "prompt_inspection",
+      "seq": 2
+    },
+    {
+      "t": 125935,
+      "runId": "ca6984d9-c774-4c32-864f-edfa68f87810",
+      "type": "heartbeat",
+      "seq": 3
+    },
+    {
+      "t": 127791,
+      "runId": "ca6984d9-c774-4c32-864f-edfa68f87810",
+      "type": "tool_start",
+      "seq": 4,
+      "toolId": "call_1784552",
+      "name": "get_map_region"
+    },
+    {
+      "t": 127791,
+      "runId": "ca6984d9-c774-4c32-864f-edfa68f87810",
+      "type": "tool_end",
+      "seq": 5,
+      "toolId": "call_1784552",
+      "name": "get_map_region",
+      "ok": true
+    },
+    {
+      "t": 127815,
+      "runId": "ca6984d9-c774-4c32-864f-edfa68f87810",
+      "type": "turn",
+      "seq": 6
+    },
+    {
+      "t": 127815,
+      "runId": "ca6984d9-c774-4c32-864f-edfa68f87810",
+      "type": "prompt_inspection",
+      "seq": 7
+    },
+    {
+      "t": 128130,
+      "runId": "7d18a4f1-d932-40f6-b549-dd4f98bdd379",
+      "type": "tool_start",
+      "seq": 4,
+      "toolId": "call_2033892",
+      "name": "get_map_region"
+    },
+    {
+      "t": 128130,
+      "runId": "7d18a4f1-d932-40f6-b549-dd4f98bdd379",
+      "type": "tool_end",
+      "seq": 5,
+      "toolId": "call_2033892",
+      "name": "get_map_region",
+      "ok": true
+    },
+    {
+      "t": 128160,
+      "runId": "7d18a4f1-d932-40f6-b549-dd4f98bdd379",
+      "type": "turn",
+      "seq": 6
+    },
+    {
+      "t": 128160,
+      "runId": "7d18a4f1-d932-40f6-b549-dd4f98bdd379",
+      "type": "prompt_inspection",
+      "seq": 7
+    },
+    {
+      "t": 129850,
+      "runId": "7d18a4f1-d932-40f6-b549-dd4f98bdd379",
+      "type": "heartbeat",
+      "seq": 8
+    },
+    {
+      "t": 130196,
+      "runId": "ca6984d9-c774-4c32-864f-edfa68f87810",
+      "type": "tool_start",
+      "seq": 8,
+      "toolId": "call_1973402",
+      "name": "get_map_region"
+    },
+    {
+      "t": 130196,
+      "runId": "ca6984d9-c774-4c32-864f-edfa68f87810",
+      "type": "tool_end",
+      "seq": 9,
+      "toolId": "call_1973402",
+      "name": "get_map_region",
+      "ok": true
+    },
+    {
+      "t": 130220,
+      "runId": "ca6984d9-c774-4c32-864f-edfa68f87810",
+      "type": "turn",
+      "seq": 10
+    },
+    {
+      "t": 130220,
+      "runId": "ca6984d9-c774-4c32-864f-edfa68f87810",
+      "type": "prompt_inspection",
+      "seq": 11
+    },
+    {
+      "t": 131407,
+      "runId": "7d18a4f1-d932-40f6-b549-dd4f98bdd379",
+      "type": "delta",
+      "seq": 9
+    },
+    {
+      "t": 131407,
+      "runId": "7d18a4f1-d932-40f6-b549-dd4f98bdd379",
+      "type": "assistant",
+      "seq": 10
+    },
+    {
+      "t": 131442,
+      "runId": "7d18a4f1-d932-40f6-b549-dd4f98bdd379",
+      "type": "done",
+      "seq": 11,
+      "stats": {
+        "ms": 7600,
+        "turns": 2,
+        "toolCalls": 1,
+        "toolErrors": 0,
+        "usage": {
+          "input": 9160,
+          "output": 45,
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "totalTokens": 9205,
+          "calls": 2
+        }
+      },
+      "changedKeys": []
+    },
+    {
+      "t": 131445,
+      "runId": "ca6984d9-c774-4c32-864f-edfa68f87810",
+      "type": "heartbeat",
+      "seq": 12
+    },
+    {
+      "t": 133498,
+      "runId": "ca6984d9-c774-4c32-864f-edfa68f87810",
+      "type": "delta",
+      "seq": 13
+    },
+    {
+      "t": 133498,
+      "runId": "ca6984d9-c774-4c32-864f-edfa68f87810",
+      "type": "assistant",
+      "seq": 14
+    },
+    {
+      "t": 133516,
+      "runId": "ca6984d9-c774-4c32-864f-edfa68f87810",
+      "type": "done",
+      "seq": 15,
+      "stats": {
+        "ms": 7904,
+        "turns": 3,
+        "toolCalls": 2,
+        "toolErrors": 0,
+        "usage": {
+          "input": 13995,
+          "output": 84,
+          "cacheRead": 0,
+          "cacheWrite": 0,
+          "totalTokens": 14079,
+          "calls": 3
+        }
+      },
+      "changedKeys": []
+    },
+    {
+      "t": 143489,
+      "type": "bubble",
+      "role": "assistant",
+      "text": "동시성 검증 B"
+    },
+    {
+      "t": 143489,
+      "type": "bubble",
+      "role": "system",
+      "text": "프로젝트는 바뀌지 않았습니다."
+    }
+  ],
+  "hud": [
+    {
+      "t": 10276,
+      "visible": false,
+      "rows": []
+    },
+    {
+      "t": 72291,
+      "visible": true,
+      "phase": "preparing",
+      "rows": []
+    },
+    {
+      "t": 124858,
+      "visible": true,
+      "phase": "thinking",
+      "rows": []
+    },
+    {
+      "t": 124865,
+      "visible": true,
+      "phase": "thinking",
+      "rows": [
+        {
+          "agentId": "parallel_evidence_a",
+          "toolId": "",
+          "phase": "is-thinking",
+          "text": "•\n동시성 검증 A\n다음 작업을 정리하는 중"
+        },
+        {
+          "agentId": "parallel_evidence_b",
+          "toolId": "",
+          "phase": "is-thinking",
+          "text": "•\n동시성 검증 B\n다음 작업을 정리하는 중"
+        }
+      ]
+    },
+    {
+      "t": 131444,
+      "visible": true,
+      "phase": "thinking",
+      "rows": [
+        {
+          "agentId": "parallel_evidence_b",
+          "toolId": "",
+          "phase": "is-thinking",
+          "text": "•\n동시성 검증 B\n다음 작업을 정리하는 중"
+        },
+        {
+          "agentId": "parallel_evidence_a",
+          "toolId": "",
+          "phase": "is-done",
+          "text": "✓\n동시성 검증 A\n작업을 마쳤어요"
+        }
+      ]
+    },
+    {
+      "t": 133518,
+      "visible": true,
+      "phase": "reviewing",
+      "rows": [
+        {
+          "agentId": "parallel_evidence_a",
+          "toolId": "",
+          "phase": "is-done",
+          "text": "✓\n동시성 검증 A\n작업을 마쳤어요"
+        },
+        {
+          "agentId": "parallel_evidence_b",
+          "toolId": "",
+          "phase": "is-done",
+          "text": "✓\n동시성 검증 B\n작업을 마쳤어요"
+        }
+      ]
+    },
+    {
+      "t": 143490,
+      "visible": false,
+      "rows": []
+    }
+  ],
+  "requests": [
+    {
+      "id": "7d18a4f1-d932-40f6-b549-dd4f98bdd379",
+      "mapIds": [
+        "parallel_evidence_a"
+      ],
+      "provider": "google-antigravity",
+      "model": "gemini-3.8-flash",
+      "readOnly": true,
+      "projectKey": "{\"kind\":\"local-session\",\"id\":\"5b903b9d-3f74-49db-b189-fe4d051727ba\"}",
+      "started": 77693,
+      "status": 409,
+      "head": 77763
+    },
+    {
+      "id": "ca6984d9-c774-4c32-864f-edfa68f87810",
+      "mapIds": [
+        "parallel_evidence_b"
+      ],
+      "provider": "google-antigravity",
+      "model": "gemini-3.8-flash",
+      "readOnly": true,
+      "projectKey": "{\"kind\":\"local-session\",\"id\":\"5b903b9d-3f74-49db-b189-fe4d051727ba\"}",
+      "started": 77774,
+      "status": 409,
+      "head": 77989
+    },
+    {
+      "id": "ca6984d9-c774-4c32-864f-edfa68f87810",
+      "mapIds": [
+        "parallel_evidence_b"
+      ],
+      "provider": "google-antigravity",
+      "model": "gemini-3.8-flash",
+      "readOnly": true,
+      "projectKey": "{\"kind\":\"local-session\",\"id\":\"5b903b9d-3f74-49db-b189-fe4d051727ba\"}",
+      "started": 103683,
+      "status": 200,
+      "head": 124851,
+      "agentStarted": 124862,
+      "firstTurn": 124894,
+      "done": 133516,
+      "streamEnded": 133534
+    },
+    {
+      "id": "7d18a4f1-d932-40f6-b549-dd4f98bdd379",
+      "mapIds": [
+        "parallel_evidence_a"
+      ],
+      "provider": "google-antigravity",
+      "model": "gemini-3.8-flash",
+      "readOnly": true,
+      "projectKey": "{\"kind\":\"local-session\",\"id\":\"5b903b9d-3f74-49db-b189-fe4d051727ba\"}",
+      "started": 105655,
+      "status": 200,
+      "head": 124850,
+      "agentStarted": 124858,
+      "firstTurn": 124890,
+      "done": 131442,
+      "streamEnded": 131464
+    },
+    {
+      "id": "bac61fed-3285-4bc7-ae69-0cb13787f854",
+      "mapIds": [
+        "parallel_evidence_a"
+      ],
+      "provider": "google-antigravity",
+      "model": "gemini-3.8-flash",
+      "readOnly": true,
+      "projectKey": "{\"kind\":\"local-session\",\"id\":\"5b903b9d-3f74-49db-b189-fe4d051727ba\"}",
+      "started": 124968,
+      "status": 409,
+      "head": 124978
+    }
+  ],
+  "finished": true,
+  "startedAt": "2026-10-04T12:56:21.077Z",
+  "t0": 72173,
+  "ownership": {
+    "browserRejected": true,
+    "hostRejected": true,
+    "hostStatus": 409,
+    "hostCode": "map-busy"
+  },
+  "ok": true,
+  "projectUnchangedAfterRun": true,
+  "finishedAt": 145157,
+  "errors": [],
+  "captures": [
+    "ownership-checked",
+    "01-both-live",
+    "02-one-done-other-live"
+  ],
+  "overlapMs": 6580,
+  "checks": {
+    "twoRealCompletedRuns": true,
+    "overlappingAgentLifetimes": true,
+    "twoVisibleWorkers": true,
+    "completedWorkerDoesNotClearOther": true,
+    "projectUnchanged": true,
+    "noPageErrors": true,
+    "duplicateBlockedBeforeModel": true,
+    "duplicateBlockedByCompanion": true
+  }
+}

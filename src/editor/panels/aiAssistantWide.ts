@@ -35,7 +35,7 @@ const GLYPH = {
 } as const;
 
 /** Move the live surfaces together; never create a second session or duplicate controls. */
-export function createAssistantWide(panel: HTMLElement, team: HTMLElement, trigger: HTMLButtonElement, selectMember: () => void): { open(): void; dispose(): void } {
+export function createAssistantWide(panel: HTMLElement, team: HTMLElement, trigger: HTMLButtonElement, selectMember: () => void): { open(): void; close(): void; dispose(): void } {
   let close: (() => void) | undefined;
   let teamPercent = 30;
   const open = () => {
@@ -126,5 +126,5 @@ export function createAssistantWide(panel: HTMLElement, team: HTMLElement, trigg
     minimize.focus({ preventScroll: true });
   };
   trigger.addEventListener("click", open);
-  return { open, dispose: () => { close?.(); trigger.removeEventListener("click", open); } };
+  return { open, close: () => close?.(), dispose: () => { close?.(); trigger.removeEventListener("click", open); } };
 }

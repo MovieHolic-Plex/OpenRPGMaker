@@ -86,6 +86,9 @@ import {
   type PlayLoadingOverlay,
 } from "@/player/playLoadingOverlay";
 import { warmBundledPlayAssets } from "@/assets/bundledAssetWarmup";
+import { createCinematicAssets } from './cinematicAssets';
+import { warmPlayGameRuntime } from './createPlayGame';
+import { resolveAssetResourceUrl } from '@/assets/generatedAssetResourceResolver';
 import {
   recordPlayBootDiagnostic,
   type PlayBootDiagnosticSink,
@@ -164,6 +167,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   const audioEngine = getAudioEngine({ qaInstrumentation: options.qaInstrumentation === true });
 
   let openingController: AbortController | null = null;
+  const cinematicAssets = createCinematicAssets();
   let titleConfirmTimer: ReturnType<typeof setTimeout> | undefined;
   let game: Phaser.Game | null = null;
   let startRun = 0;
@@ -280,18 +284,20 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       surface.sync();
       const controller = new AbortController();
       openingController = controller;
-      const playback = playCinematicSequence({ host: surface.stage, project: store.getCurrent(), sequence: opening, signal: controller.signal });
+      let lastFrame: string | undefined;
+      let handoffFadeMs = 500;
+      const playback = playCinematicSequence({ host: surface.stage, project: store.getCurrent(), sequence: opening, signal: controller.signal, assets: cinematicAssets, onFrame: (url, fadeMs) => { lastFrame = url; if (fadeMs !== undefined) handoffFadeMs = fadeMs; } });
       void playback.done.then(result => {
         if (result === "aborted" || !shellActive || openingController !== controller) return;
         openingController = null;
-        bootRun(request);
+        bootRun(request, lastFrame, handoffFadeMs);
       });
       return;
     }
     bootRun(request);
   };
 
-  const bootRun = (request: PlayBootRequest): void => {
+  const bootRun = (request: PlayBootRequest, cinematicBackdrop?: string, cinematicFadeMs = 500): void => {
     stopGame();
     // 새 플레이 런은 이전 런의 오토세이브 디바운스 기준 시각을 물려받지 않는다.
     resetAutosaveDebounce();
@@ -319,7 +325,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     layout.append(surface.viewport);
     mountHostControls(surface.viewport);
     // 엔진/에셋 기동 동안 검은 화면만 보이지 않도록 단계 표시.
-    const loading = mountPlayLoadingOverlay(layout, "engine");
+    const loading = mountPlayLoadingOverlay(layout, "engine", cinematicBackdrop, cinematicFadeMs);
     surface.sync();
     cleanupPlaySurface = surface.cleanup;
     // 터치 기기에서만 가상 패드를 부착(데스크톱은 no-op). 방향키/Enter/Escape
@@ -835,7 +841,6 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     titleMenuIndex = clampTitleMenuIndex(titleMenuIndex, options.length);
     // 타이틀을 보는 동안 맵/캐릭셋 이미지를 HTTP 캐시에 미리 올려
     // "새 게임" 직후 로딩 체감을 줄인다(Phaser 텍스처 등록은 여전히 씬 preload).
-    void warmBundledPlayAssets(project);
     const surface = createPlaySurface(resolvePlayResolution(project.system), surfaceScaleMode, project.system.displayFilter);
     clearChildren(surface.stage);
     playStage = surface.stage;
@@ -857,6 +862,13 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     focusSelectedTitleOption(title);
     surface.sync();
     startTitleBgm(titleProject);
+    // Let the title paint before scans/engine imports. No game/session starts in the background.
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      if (!shellActive || !firstEnter) return;
+      cinematicAssets.warm(project, project.system.opening);
+      void warmBundledPlayAssets(project);
+      void warmPlayGameRuntime().catch(() => undefined); // Actual boot retains normal recovery/retry.
+    }));
     if (firstEnter) emitTitleJuice("title-enter");
   };
 
@@ -984,19 +996,40 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     if (titleConfirming) return;
     titleConfirming = true;
     emitTitleJuice("title-confirm");
-    stopTitleBgm();
-    const transitionMs = withTransition
-      ? playTitleTransition(
-          layout.querySelector<HTMLElement>("[data-testid='title-screen']"),
-          store.getCurrent().system.titleScreen ?? defaultTitleScreenSettings(),
-        )
-      : null;
-    titleConfirmTimer = setTimeout(() => {
-      titleConfirmTimer = undefined;
-      if (!shellActive) return;
-      titleConfirming = false;
-      callback();
-    }, transitionMs ?? TITLE_CONFIRM_JUICE_MS);
+    const title = layout.querySelector<HTMLElement>("[data-testid='title-screen']");
+    const generation = startRun;
+    const beginTransition = (): void => {
+      if (!shellActive || startRun !== generation) return;
+      clearTimeout(titleConfirmTimer);
+      title?.removeAttribute('aria-busy');
+      title?.querySelector('.title-preparing')?.remove();
+      stopTitleBgm();
+      const transitionMs = withTransition
+        ? playTitleTransition(
+            layout.querySelector<HTMLElement>("[data-testid='title-screen']"),
+            store.getCurrent().system.titleScreen ?? defaultTitleScreenSettings(),
+          )
+        : null;
+      titleConfirmTimer = setTimeout(() => {
+        titleConfirmTimer = undefined;
+        if (!shellActive) return;
+        titleConfirming = false;
+        callback();
+      }, transitionMs ?? TITLE_CONFIRM_JUICE_MS);
+    };
+    const project = store.getCurrent();
+    const first = withTransition && project.system.opening?.enabled ? project.system.opening.scenes[0] : undefined;
+    const url = first?.kind === 'image' ? resolveAssetResourceUrl(first.resourceId, { project }) : null;
+    if (url) {
+      // A fast confirmation or slow network keeps the animated title visible until the first shot is decoded.
+      title?.setAttribute('aria-busy', 'true');
+      titleConfirmTimer = setTimeout(() => {
+        if (shellActive && startRun === generation && title?.isConnected) {
+          title.append(el('div', { class: 'title-preparing', text: '이야기를 준비하고 있습니다…', attrs: { role: 'status' } }));
+        }
+      }, 800);
+      void cinematicAssets.prepare(url).catch(() => undefined).then(beginTransition);
+    } else beginTransition();
   };
 
   const exitPlayer = (): void => {
@@ -1025,6 +1058,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   document.addEventListener("keydown", onKeyDown);
   teardownShell = () => {
     shellActive = false;
+    cinematicAssets.dispose();
     document.removeEventListener("keydown", onKeyDown);
     cleanupPointerBlocker();
     stopGame();

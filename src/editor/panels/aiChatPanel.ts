@@ -1,4 +1,5 @@
 import type { ActivityVisual } from "@/ai/activityVisual";
+import { conversationScroll, followConversationLog } from "./aiConversationScroll";
 import { startAiCanvasProgress, type AiCanvasProgress } from "@/editor/aiCanvasProgress";
 import { clearPromptInspection } from "@/ai/authoring/promptInspection";
 import { openAiAuthoringModal, closeAiAuthoringModal } from "./aiAuthoring/modal";
@@ -59,6 +60,7 @@ import { AUTONOMY_LEVELS, resolveAutonomy, type AutonomyLevel, type AutonomyReso
 import { isAutonomyLevel, loadAiConfig, saveAiConfig, type AiConfig } from "@/ai/llmClient";
 import { store } from "@/project/store";
 import { parsePiCommand, plainPiCommand, runPiCommand, type ParsedPiCommand, type PiChangeReceipt, type PiRunOptions } from "./aiPiAgentCommand";
+import { aiProjectRunKey } from "@/editor/aiMapRunOwnership";
 import { createTeamPanel } from "./aiTeamPanel";
 import { createAiTeamSidebar } from "./aiTeamSidebar";
 import { createTilesetChangeCard } from "./aiTilesetChangeCard";
@@ -324,7 +326,7 @@ const panelPendingWork = createPendingWorkTracker();
 // 실제 러너·스토어 배선은 여기서 한 번 건다. 대기열 모듈은 스토어를 import 하지 않는다.
 configureStampOrderQueue(() => createStampOrderQueue({
   run: (input) => runStampPlace(input),
-  projectKey: () => store.getProjectIdentity().id,
+  projectKey: aiProjectRunKey,
   mapSize: (mapId) => store.getCurrent().maps[mapId],
 }));
 
@@ -482,6 +484,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     if (record) controller.statusTimeline.push({ at: new Date().toISOString(), status: text });
   };
   const log = el("div", { class: "ai-chat-log", attrs: { tabindex: "0", role: "region", "aria-label": "조수 대화" }, dataset: { testid: "ai-chat-log", editorNavigationOwner: "true" } });
+  const logScroll = conversationScroll(log);
   let panelRoot: HTMLElement | null = null;
   let studioShell: StudioShell | null = null;
   const studioToolLines: string[] = [];
@@ -2134,7 +2137,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
           pendingReviewPrompt?.remove();
           pendingReviewPrompt = element;
           log.append(element);
-          element.scrollIntoView({ block: "nearest" });
+          followConversationLog(log);
         },
         setStatus,
         getCurrentMapId: () => editorState.get().currentMapId ?? null,
@@ -2182,7 +2185,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       void send();
     });
     log.append(card);
-    card.scrollIntoView?.({ block: "nearest" });
+    followConversationLog(log);
   };
   // do 레벨의 질문 발화를 읽기 전용으로 승격하는 분류 호출 — 세션 경로의 mode=question→ask 자동
   // 승격이 Pi 이관(2026-09-11)에서 빠져 「균형」 질문 턴에 쓰기 툴이 달려 갔다(2026-09-12 실측).
@@ -2299,7 +2302,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const card = createMapRunCard({ mapName: exclusive ? "프로젝트 전체" : mapName, label: run.shown.replace(/\s+/gu, " ").trim().slice(0, 80),
       onCancel: () => { if (ticketId !== null) mapRunQueue().cancel(ticketId); } });
     log.append(card.root);
-    card.root.scrollIntoView?.({ block: "nearest" });
+    followConversationLog(log);
     let ticket: MapRunTicket | null = null;
     const unsubscribe = mapRunQueue().subscribe(() => {
       if (!ticket) return;
@@ -3266,7 +3269,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     class: "ai-glass-log",
     dataset: { testid: "ai-glass-log" },
     // 로그의 최초 부모. 예전에는 휘발 존이 들고 있다가 mountLog 가 즉시 옮겨 왔다.
-    children: [log],
+    children: [log, logScroll.notice],
   });
   const mainColumn = el("div", {
     class: "ai-chat-main",
@@ -3467,7 +3470,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     panel.dataset.logSlot = slot;
     if (log.parentElement === target) return;
     log.remove();
-    target.append(log);
+    target.append(log, logScroll.notice);
   };
   /**
    * 조수가 **일하는 중이거나 사용자의 결정을 기다리는 중**인가 — 유휴 판정의 단일 소스.
@@ -4070,6 +4073,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   activeAiChatPanelCleanup = () => {
     if (disposed) return;
     disposed = true;
+    logScroll.dispose();
     canvasProgress?.finish();
     canvasProgress = null;
     lockScrim.dispose();

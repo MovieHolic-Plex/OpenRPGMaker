@@ -90,6 +90,10 @@ def audit(run, out, refresh_previews=False):
         record = dict(id=f'{run}/{w.name}', name=H._desc(w).get('label', w.name), base=meta['base'],
                       inspected=H.binding(gate), decision=decisions.get(f'{run}/{w.name}'), gate=gate,
                       files=roundtrip(pal, frames, w / 'views'), evidence=None)
+        record['animationMode'] = meta.get('animationMode', 'legacy')
+        if record['animationMode'] == H.FRAME_AUTHOR_MODE:
+            record['modelFramesFresh'] = H.model_frames_fresh(w, gate)
+            record['frameAuthor'] = json.loads((w / 'model-frames.json').read_text()) if (w / 'model-frames.json').exists() else None
         # 원본과 후보를 같은 배경/배율로 비교하고 모든 결손 좌표를 표시한다.
         if gate['fatal']:
             proof = Image.new('RGB', (1120, 820), '#202228')

@@ -1,3 +1,4 @@
+import type { CinematicPresentation } from '@/project/cinematicPresentation';
 // editor/openingPresets.ts
 // 오프닝 프리셋 — 한 번 눌러 «완성된 연출»이 들어오게 하는 카탈로그.
 //
@@ -29,6 +30,7 @@ export type OpeningPresetSceneSpec = {
   /** 있으면 이미지 장면, 없으면 텍스트 장면. */
   readonly resourceId?: string;
   readonly motion?: CinematicMotion;
+  readonly presentation?: CinematicPresentation;
 };
 
 export type OpeningPreset = {
@@ -44,10 +46,24 @@ const TITLE_CARD_MS = 4200;
 
 /** 타이틀 카드로 닫는다 — 마지막 한 장이 있어야 «오프닝»처럼 끝난다. */
 function titleCard(): OpeningPresetSceneSpec {
-  return { narration: `— ${OPENING_PRESET_TITLE_TOKEN} —`, durationMs: TITLE_CARD_MS };
+  return { narration: `— ${OPENING_PRESET_TITLE_TOKEN} —`, durationMs: TITLE_CARD_MS, presentation: { preset: "chapter" } };
 }
 
 export const OPENING_PRESETS: readonly OpeningPreset[] = [
+  { id: 'written-prologue', name: '편지로 시작하는 이야기', mood: '명조 서문 · 한 글자씩 · 암전', musicResourceId: STARTER_TITLE_BGM_ID, scenes: [
+    { narration: '그날, 나에게 한 통의 편지가 도착했다.', durationMs: 4000, presentation: { preset: 'prologue' } },
+    { narration: '잊었다고 생각했던 이름.\n다시는 돌아갈 수 없었던 장소.', durationMs: 4500, presentation: { preset: 'memory' } },
+    { narration: '{제목}\n첫 번째 이야기', durationMs: 3500, presentation: { preset: 'chapter' } },
+  ] },
+  { id: 'film-opening', name: '영화처럼 열리는 장면', mood: '와이프 · 자막 등장 · 디졸브', musicResourceId: STARTER_TITLE_BGM_ID, scenes: [
+    { narration: '누군가 이 길을 먼저 걸었다.', resourceId: 'oprn-still-forest-path', motion: 'pan', durationMs: 4200, presentation: { preset: 'subtitle', transition: { enter: 'wipe', enterMs: 900 } } },
+    { narration: '남겨진 빛을 따라, 이야기가 시작된다.', resourceId: 'oprn-still-hero-dawn', motion: 'zoom', durationMs: 4300, presentation: { preset: 'subtitle' } },
+    { narration: '{제목}', durationMs: 3500, presentation: { preset: 'chapter' } },
+  ] },
+  { id: 'opening-credits', name: '흐르는 오프닝 크레딧', mood: '스크롤 글자 · 장면 페이드', musicResourceId: STARTER_TITLE_BGM_ID, scenes: [
+    { narration: '{제목}\n\n기억을 걷는 사람들\n\n이야기 · 당신\n세계 · 당신\n\n그리고, 지금 시작하는 모험', resourceId: 'oprn-still-moon-meadow', motion: 'none', durationMs: 8500, presentation: { preset: 'credits' } },
+    { narration: '첫 번째 아침', durationMs: 3500, presentation: { preset: 'chapter', transition: { enter: 'fade', enterMs: 700 } } },
+  ] },
   {
     id: "kingdom-prologue",
     name: "왕국의 서막",
@@ -186,14 +202,15 @@ export function buildOpeningPresetSequence(
   const scenes: CinematicScene[] = preset.scenes.map(spec => {
     const narration = fillTitle(spec.narration, options.title);
     const id = genId("cinematic-scene");
-    if (!spec.resourceId) return { id, kind: "text", narration, durationMs: spec.durationMs };
+    if (!spec.resourceId) return { id, kind: "text", narration, durationMs: spec.durationMs, presentation: structuredClone(spec.presentation ?? { preset: "prologue" }) };
     return {
       id,
       kind: "image",
       resourceId: spec.resourceId,
       narration,
       durationMs: spec.durationMs,
-      motion: spec.motion ?? "fade",
+      motion: spec.motion ?? "none",
+      presentation: structuredClone(spec.presentation ?? { preset: "subtitle" }),
     };
   });
   return {

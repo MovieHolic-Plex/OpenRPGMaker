@@ -35,7 +35,12 @@ export function paintTerrainBrush(mapId:string,x:number,y:number,material:Terrai
   }
   store.updateMapTiles(mapId,draft=>{
     for(const c of points){const i=c.y*draft.width+c.x;clearTileStack(draft,"lower",i);setLayerTileAt(draft,1,i,tile);setLayerTileAt(draft,2,i,-1);}
-    if (draft.terrainDesign?.waterDepth) for (const c of points) draft.terrainDesign.waterDepth[c.y*draft.width+c.x] = material === "water" ? 3 : 0;
+    if (draft.terrainDesign?.waterDepth) {
+      // updateMapTiles shares metadata; keep the submitted save revision intact
+      // when asynchronous diff/wire preparation yields to another brush stroke.
+      draft.terrainDesign = { ...draft.terrainDesign, waterDepth: draft.terrainDesign.waterDepth.slice() };
+      for (const c of points) draft.terrainDesign.waterDepth![c.y*draft.width+c.x] = material === "water" ? 3 : 0;
+    }
     for(const group of autotileGroupsForTileset(tileset)) if((group.layer??"lower")==="lower" && previous.some(v=>autotileEditTriggersGroup(group,v,tile)))shapeAutotileGroupAround(draft,group,points);
     if(material==="water" && draft.relief){
       const levels=draft.relief.levels.slice();for(const c of points)levels[c.y*draft.width+c.x]=bedLevel;

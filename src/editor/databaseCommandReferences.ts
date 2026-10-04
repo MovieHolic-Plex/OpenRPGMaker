@@ -1,8 +1,9 @@
+import { jsonEqual } from "@/util/structuralJson";
 import { eventReferenceMatches } from "@/editor/databaseEventReferences";
 import { eventCommandBranches } from "@/editor/eventCommandBranches";
 import type { DatabaseCollection } from "@/editor/databaseActions";
 import { eventDisplayName } from "@/project/eventDisplayName";
-import type { BattleEventCondition, Command, Condition, GiftPrefs, MoveCommand, Project } from "@/project/types";
+import type { BattleEventCondition, Command, Condition, GameEvent, GiftPrefs, MoveCommand, PersistedGameEvent, Project } from "@/project/types";
 import { presentItemBranchLists } from "@/project/eventCommands/presentItemBranches";
 import { TROOP_AFTER_BATTLE_LABELS, troopAfterBattleLists } from "@/project/troopAfterBattle";
 
@@ -21,17 +22,23 @@ export type DatabaseReferenceLocation =
   | { readonly kind: "troopBattleEvent"; readonly troopName: string; readonly pageName: string };
 
 export function commandsReferenceLocations(project: Project, collection: CommandReferenceCollection, id: string): DatabaseReferenceLocation[] {
+  return referenceLocations(project, collection, id, (_inputs, scan) => scan());
+}
+
+type ReferenceMatcher = (inputs: () => readonly unknown[], scan: () => boolean) => boolean;
+
+function referenceLocations(project: Project, collection: CommandReferenceCollection, id: string, match: ReferenceMatcher): DatabaseReferenceLocation[] {
   const locations: DatabaseReferenceLocation[] = [];
 
   for (const event of project.commonEvents) {
-    if (commandListReferences(event.commands, collection, id)) {
+    if (match(() => [event.commands], () => commandListReferences(event.commands, collection, id))) {
       locations.push({ kind: "commonEvent", eventName: event.name, eventId: event.id });
     }
   }
 
   for (const map of Object.values(project.maps)) {
     for (const event of map.events) {
-      const matches = eventReferenceMatches(event, (body) =>
+      const matches = match(() => eventReferenceInputs(event), () => eventReferenceMatches(event, (body) =>
         conditionReferencesDatabase(body.condition, collection, id) ||
         eventGiftPrefsReferences(body, collection, id) ||
         commandListReferences(body.commands, collection, id) ||
@@ -40,24 +47,66 @@ export function commandsReferenceLocations(project: Project, collection: Command
             page.conditions.some((condition) => conditionReferencesDatabase(condition, collection, id)) ||
             commandListReferences(page.commands, collection, id)
         )
-      );
+      ));
       if (matches) locations.push({ kind: "mapEvent", mapName: map.name, eventName: eventDisplayName(event), eventId: event.id });
     }
   }
 
   for (const troop of project.database.troops) {
     for (const page of troop.battleEventPages) {
-      const matches =
+      const matches = match(() => [page.conditions, page.commands], () =>
         page.conditions.some((condition) => conditionReferencesDatabase(condition, collection, id)) ||
-        commandListReferences(page.commands, collection, id);
+        commandListReferences(page.commands, collection, id));
       if (matches) locations.push({ kind: "troopBattleEvent", troopName: troop.name, pageName: page.name });
     }
     for (const list of troopAfterBattleLists(troop)) {
-      if (commandListReferences(list.commands, collection, id)) locations.push({ kind: "troopBattleEvent", troopName: troop.name, pageName: afterBattlePageName(list.outcome) });
+      if (match(() => [list.commands], () => commandListReferences(list.commands, collection, id))) locations.push({ kind: "troopBattleEvent", troopName: troop.name, pageName: afterBattlePageName(list.outcome) });
     }
   }
 
   return locations;
+}
+
+/** Panel-local reader for immutable snapshots. Cache predicates, not labels. */
+export function createCommandReferenceLocationsReader(): typeof commandsReferenceLocations {
+  let lastCollection: CommandReferenceCollection | undefined;
+  let lastId: string | undefined;
+  let lastRoots: readonly unknown[] | undefined;
+  let locations: DatabaseReferenceLocation[] = [];
+  let entries: { inputs: readonly unknown[]; matches: boolean }[] = [];
+  return (project, collection, id) => {
+    const roots = [project.commonEvents, project.maps, project.database.troops];
+    const sameSelection = lastCollection === collection && lastId === id;
+    if (sameSelection && lastRoots?.every((root, index) => root === roots[index])) return locations;
+    if (!sameSelection) entries = [];
+    let index = 0;
+    const nextEntries: typeof entries = [];
+    locations = referenceLocations(project, collection, id, (getInputs, scan) => {
+      const inputs = getInputs();
+      const previous = entries[index++];
+      const matches = previous && jsonEqual(previous.inputs, inputs) ? previous.matches : scan();
+      nextEntries.push({ inputs, matches });
+      return matches;
+    });
+    // Rebuild location labels from current map/event/troop/page names even when
+    // all predicates are cached. Addition/removal and changed draft ownership
+    // naturally replace the corresponding predicate entries.
+    entries = nextEntries;
+    lastRoots = roots;
+    lastCollection = collection;
+    lastId = id;
+    return locations;
+  };
+}
+
+function eventReferenceInputs(event: GameEvent): readonly unknown[] {
+  const bodyInputs = (body: PersistedGameEvent): readonly unknown[] => [
+    body.condition, body.giftPrefs, body.commands,
+    body.pages?.map((page) => [page.conditions, page.commands]),
+  ];
+  const draft = event.draft;
+  return [bodyInputs(event), draft?.kind === "edit" && draft.conflict?.kind !== "remote-delete" && draft.original
+    ? bodyInputs(draft.original) : undefined];
 }
 
 export function commandsResourceReference(project: Project, resourceId: string): boolean {

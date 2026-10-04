@@ -47,6 +47,8 @@ export interface EventAiAssistOptions {
   readonly page: EventPage;
   // 현재 선택 커맨드 조회용 커맨드 리스트 루트(.cmd-item.selected 탐색).
   readonly cmdList: HTMLElement;
+  // Lazy command views can supply the editor's native selection without list rows.
+  readonly selectionPath?: () => readonly number[] | undefined;
   // 모달 안에서 초안을 검토·수정할 컨테이너.
   readonly stagedHost: HTMLElement;
   // 초안 갱신 뒤 저작 표면의 상태를 동기화한다.
@@ -290,7 +292,7 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
         : "이 페이지의 명령 목록을 만듭니다";
       return;
     }
-    const name = selectedCommandName(cmdList, page.commands);
+    const name = selectedCommandName(cmdList, page.commands, options.selectionPath);
     target.textContent = name
       ? `페이지가 길어 「${name}」 다음에 새로 넣기만 합니다`
       : "페이지가 길어 맨 아래에 새로 넣기만 합니다";
@@ -453,9 +455,9 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
     setStatus("명령 초안을 만들고 있어요…", "busy");
     const beforeCommands = JSON.stringify(page.commands);
     try {
-      const selection = selectedCommandPath(cmdList);
+      const selection = selectedCommandPath(cmdList, options.selectionPath);
       const target = { mapId, eventId, pageId: page.id, selection,
-        selectionLabel: selectedCommandName(cmdList, page.commands) ?? undefined,
+        selectionLabel: selectedCommandName(cmdList, page.commands, options.selectionPath) ?? undefined,
         mode: scope === "append" ? "append" as const : "edit" as const };
       const message = `${prompt}\n\n[이벤트 편집기 컨텍스트]\n${JSON.stringify(target)}\n` +
         "get_event로 확인한 뒤 event_command_assist로 이 페이지의 명령만 수정하세요. 다른 페이지나 설정은 수정할 수 없습니다.";
@@ -750,7 +752,11 @@ function syncDockModalRegistration(root: HTMLDetailsElement): void {
 }
 
 // 현재 선택된 커맨드의 경로(.cmd-item.selected → data-cmd-path). 없으면 null.
-function selectedCommandPath(cmdList: HTMLElement): number[] | null {
+function selectedCommandPath(cmdList: HTMLElement, selectionPath?: () => readonly number[] | undefined): number[] | null {
+  if (selectionPath) {
+    const path = selectionPath();
+    return path ? [...path] : null;
+  }
   const selected = cmdList.querySelector<HTMLElement>(".cmd-item.selected");
   const raw = selected?.dataset.cmdPath;
   if (!raw) return null;
@@ -762,8 +768,8 @@ function selectedCommandPath(cmdList: HTMLElement): number[] | null {
   }
 }
 
-function selectedCommandName(cmdList: HTMLElement, commands: Command[]): string | null {
-  const path = selectedCommandPath(cmdList);
+function selectedCommandName(cmdList: HTMLElement, commands: Command[], selectionPath?: () => readonly number[] | undefined): string | null {
+  const path = selectedCommandPath(cmdList, selectionPath);
   return path ? commandNameAtPath(commands, path) : null;
 }
 

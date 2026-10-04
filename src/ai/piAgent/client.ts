@@ -9,6 +9,7 @@ import { createPiAgentLineDecoder, PI_AGENT_STALE_MS, restoreCheckpointProject, 
 import { piRequestBody } from "./requestBody";
 import { forgetHeavySent, markHeavySent, planHeavyWire, withHeavyBlobs } from "./heavyWire";
 import { defaultYieldToUi } from "../yieldToUi";
+import { loadAiConfig } from '../llmClient';
 
 export interface RunPiAgentClientOptions {
   readonly onCheckpoint?: (event: Extract<PiAgentEvent, { type: "checkpoint" }>) => Promise<Project | void>;
@@ -44,6 +45,10 @@ function newRunId(): string {
  * 실행을 연다. 무거운 키(타일셋·DB·에셋)는 해시로 보내고, 호스트가 모르는 해시만 내용을 싣는다(heavyWire).
  * 호스트가 409 heavy-missing 이면 그 해시만 실어 한 번 더 보낸다. 옛 호스트(해시를 모르는)는 heavy 필드를 무시하고
  * 빈 키를 받게 되므로, 해시 전송은 실행 기록 헤더(X-Oprn-Run-Id)를 돌려주는 호스트에서만 기억한다.
+ *
+ * 첫 시도는 내용 없이 해시만 보낸다 — 이 탭이 아직 안 보낸 해시라도. 호스트 캐시는 탭·새로고침보다 오래 살아서
+ * (2026-10-04 실측) 새로고침 뒤 첫 턴마다 이미 가진 150MB 를 다시 gzip·업로드·해제·파싱했다: 보내기 쪽 약 5s,
+ * 호스트 쪽 약 6s. 호스트가 정말 모르면 409 한 번(작은 몸통 왕복)으로 그 해시만 받는다.
  */
 async function openRun(request: PiAgentRequest, runId: string, doFetch: typeof fetch, signal: AbortSignal | undefined): Promise<Response> {
   const url = companionAuthUrl("/v1/agent/run", request.provider);
@@ -54,7 +59,7 @@ async function openRun(request: PiAgentRequest, runId: string, doFetch: typeof f
     return doFetch(url, { method: "POST", ...wire, headers: { ...wire.headers, ...companionTokenHeaders() }, ...(signal ? { signal } : {}) });
   };
   if (!plan) return post({ ...request, runId });
-  let response = await post({ ...withHeavyBlobs(plan, origin), runId });
+  let response = await post({ ...withHeavyBlobs(plan, origin, []), runId });
   if (response.status === 409) {
     const payload = await readError(response.clone());
     if (payload.error === "heavy-missing" && Array.isArray(payload.missing)) {
@@ -72,6 +77,9 @@ async function openRun(request: PiAgentRequest, runId: string, doFetch: typeof f
 }
 
 export async function runPiAgentViaCompanion(request: PiAgentRequest, options: RunPiAgentClientOptions = {}): Promise<PiAgentDoneEvent> {
+  const imageConfig = loadAiConfig();
+  request = { ...request, imageProvider: request.imageProvider ?? imageConfig.imageProviderId,
+    imageModel: request.imageModel ?? imageConfig.imageModel };
   const captureEpoch = inspectionEpoch();
   const doFetch = options.fetchImpl ?? fetch;
   const runId = newRunId();
@@ -123,9 +131,9 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
       let png: string | undefined, issue: string | undefined;
       try {
         options.signal?.throwIfAborted();
-        const { renderPiMapImage } = await import("../toolImageRenderer");
+        const { renderPiToolImage } = await import("../toolImageRenderer");
         const draft = restoreCheckpointProject(request.project, event.project, event.unchangedKeys, event.unchangedTilesetIds);
-        const url = await renderPiMapImage(draft, event.data);
+        const url = await renderPiToolImage(draft, event.toolName, event.data);
         png = url.replace(/^data:image\/png;base64,/, "");
       } catch (error) { issue = error instanceof Error ? error.message : String(error); }
       const ack = await doFetch(companionAuthUrl("/v1/agent/render", request.provider), {

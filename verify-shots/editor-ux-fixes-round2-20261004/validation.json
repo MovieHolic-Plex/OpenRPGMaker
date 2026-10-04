@@ -1,0 +1,7 @@
+{
+  "kind": "esbuild-syntax-only",
+  "commit": "16a0a5d54b87071f23bd945a2b4594c23e76a415",
+  "files": 91,
+  "failures": [],
+  "localVitestGatesTypecheck": "not run; AGENTS session restriction"
+}

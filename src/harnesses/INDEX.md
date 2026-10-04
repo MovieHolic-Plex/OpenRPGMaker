@@ -7,10 +7,10 @@
 |---|---|---|---|---|
 | `monster-collect-species` | 몬스터 수집 종 스프라이트 | 장르 `monster-collect` 전용 | `harness-data/monster-collect-species/seed.json` | `openwiki/harnesses/monster-collect-species.md` |
 | `modern-chipset` | 현대 칩셋 도트 (modern4) | 장르 무관 | `harness-data/modern-chipset/seed.json` | `openwiki/harnesses/modern-chipset.md` |
-| `interior-props` | 손 도트 실내 기물 (16px) | 장르 무관 | `src/assets/handInteriorSpec.json` | `openwiki/harnesses/interior-props.md` |
+| `interior-props` | 슈퍼하네싱 · 실내 기물 (16px) | 장르 무관 | `src/assets/handInteriorSpec.json` | `openwiki/harnesses/interior-props.md` |
 | `jp-city` | 일본 도시 칩셋 도트 (jp_city · modern3) | 장르 무관 | `harness-data/jp-city/seed.json` | `openwiki/harnesses/jp-city.md` |
 | `joseon-baram` | 조선 칩셋 도트 (joseon_baram · 바람의나라풍) | 장르 무관 | `harness-data/joseon-baram/seed.json` | `openwiki/harnesses/joseon-baram.md` |
-| `super-harness` | 슈퍼하네스 (개념 카드 자동 공급) | 장르 무관 | `harness-data/super-harness/seed.json` | `openwiki/harnesses/super-harness.md` |
+| `super-harness` | 슈퍼하네싱 (기물·파생·공간) | 장르 무관 | `harness-data/super-harness/seed.json` | `openwiki/harnesses/super-harness.md` |
 | `romance-scene` | 연애 첫 대화 장면 | 장르 `story-cutscene` 전용 | `harness-data/romance-scene/seed.json` | `openwiki/harnesses/romance-scene.md` |
 | `charset-actor` | RM2000 캐릭터 GIF 공방 | 장르 무관 | `harness-data/charset-actor/briefs.json` | `openwiki/harnesses/charset-actor.md` |
 | `worldmap-icons` | 월드맵 아이콘 | 장르 무관 | `harness-data/worldmap-icons/seed.json` | `openwiki/harnesses/worldmap-icons.md` |
@@ -57,7 +57,7 @@ modern4 팔레트 현대 거리 칩셋의 기물·건물·타일을 3/4 시점�
 
 **들어오는 길:** CLI 있음 · 에디터 화면 아직 없음 · 조수 도구 아직 없음
 
-## interior-props — 손 도트 실내 기물 (16px)
+## interior-props — 슈퍼하네싱 · 실내 기물 (16px)
 
 실내 칩셋(interior-chipset, 48칸 폭)의 가구·소품을 3/4 시점(꼭대기 윗면 3행 이상 + 남쪽 면)으로 다시 찍거나 새로 정의한다. 후보 5장을 다른 방향으로 그리고 기계 검사 → 자기 점검 → 독립 검수(꼭대기 면 규칙) → 최대 3번 다시 그린 뒤 사람이 고른다.
 
@@ -118,9 +118,9 @@ modern4 팔레트 현대 거리 칩셋의 기물·건물·타일을 3/4 시점�
 
 **들어오는 길:** CLI 있음 · 에디터 화면 아직 없음 · 조수 도구 아직 없음
 
-## super-harness — 슈퍼하네스 (개념 카드 자동 공급)
+## super-harness — 슈퍼하네싱 (기물·파생·공간)
 
-조수가 재료·구조를 모르는 낱말을 실패 로그·어휘 탐침에서 찾아 개념 카드로 만든다. 만들기·검수·판정은 codex(gpt-6.1-sol medium), 통과한 카드는 PR 로 자동 머지된다. 에디터에 없는 재료는 부족분으로 남겨 다른 하네스로 보낸다.
+조수가 재료·구조를 모르는 낱말을 실패 로그·어휘 탐침에서 찾아 개념 카드로 만든다. 만들기·검수·판정은 codex(gpt-6.1-sol medium), 통과한 카드는 PR 로 자동 머지된다. 공간 기획·텍스트 도면의 적대적 검수와 재료 승인 전에는 맵을 만들지 않는다. 부족한 칩은 전용 하네스 후보 제작과 사람 선택을 거친다.
 
 **이럴 때 쓴다:**
 - 조수가 특정 공간 낱말(미궁·감옥·하수도…)에서 쓸데없는 기물을 채우거나 장치를 바닥 그림으로만 칠할 때
@@ -128,8 +128,14 @@ modern4 팔레트 현대 거리 칩셋의 기물·건물·타일을 3/4 시점�
 
 **단계** (`npm run harness -- super-harness <단계>`):
 - `discover` — 낱말 찾기: 조수 실패 로그(검색 0건·빈칸 수리 턴)와 낱말 은행에서 다음 개념을 고른다.
+- `plan` — 공간 기획: 용도·활동·구역·동선·축척·필수 재료를 정하고 ASCII 평면도로 그린다.
+- `plan-review` — 기획 적대적 검수: 별도 세션 A/B가 텍스트 도면의 정체성·사용·동선·경계·축척·재료를 검수한다. 둘 다 현재 기획을 승인해야 재료 조사.
+- `survey` — 재료 조사: 필수 칩·시대·실제 그림·공용 재고·조립 지침을 조사한다. 없으면 맵 제작 금지.
+- `material-review` — 재료 승인: 독립 검수자가 핵심 재료·시대·도구 시공 가능성을 확인한다. 파일 해시에 승인을 묶는다.
+- `art` — 칩 후보 제작: 격리 워크트리에서 전용 그림 하네스로 후보를 만든다. 그림과 하네스 결과가 없으면 막힘.
+- `art-review` — 후보 선택 대기: 사람이 선택하고 공용 등록한 뒤 재료를 다시 조사한다. 자동 선택·설치하지 않는다.
 - `build` — 카드 만들기: 재료(그림/이벤트)·구조·금지·예제 호출을 쓰고 새 프로젝트에서 예제가 실제로 지어질 때까지 고친다.
-- `review` — 적대 검수: 서로 안 보는 검수자 2명(개념·구조 / 동작·재료). 둘 다 통과해야 다음으로.
+- `review` — 적대 검수: 서로 안 보는 검수자 2명(개념·구조 / 동작·재료). 전체·네 구역 그림과 사방 벽·시대·통행을 모두 확인한다. 둘 다 현재 해시를 통과해야 다음으로.
 - `probe` — 조수 시험: 같은 요청을 카드 없이 2판·붙여서 2판 돌리고 판정자가 전후 그림을 비교한다.
 - `bake` — 굽기: origin/main 위 브랜치로 번들에 넣고 PR·머지. 사람이 폐기하면 빼는 PR.
 
@@ -149,18 +155,20 @@ modern4 팔레트 현대 거리 칩셋의 기물·건물·타일을 3/4 시점�
 
 ## charset-actor — RM2000 캐릭터 GIF 공방
 
-GPT 6.1 sol high가 자유롭게 도트를 만들고 사람이 걷는 GIF를 보며 남기기/폐기한다. 결손만 자동 차단하며 남긴 캐릭터만 다운로드한다.
+GPT 6.1 sol high가 정지·걷기 12프레임을 전부 직접 저작하고 사람이 GIF를 보며 남기기/폐기한다. 결손만 자동 차단하며 남긴 캐릭터만 다운로드한다.
 
 **이럴 때 쓴다:**
 - 에디터용 24×32 캐릭터를 변형·대량 저작하거나 머리 잘림·투명 결손을 검사하고 CharSet 팩을 만들 때
 
 **단계** (`npm run harness -- charset-actor <단계>`):
 - `ingest` — 원본 입력: 원본 칩을 저장하고 실제 캐릭터 칸과 수정 강도를 정한다.
-- `produce` — 자유 대량 저작: --count 100 [--reference 원본.png] [--prompt 방향]으로 자유 저작을 시작한다. 작업은 터미널과 독립적으로 계속된다.
+- `produce` — 자유 대량 저작: --count 100 [--reference 원본.png] [--prompt 방향]으로 GPT가 12프레임을 전부 직접 저작한다. 작업은 터미널과 독립적으로 계속된다.
+- `recipe` — 남긴 제작 기준: --source-run RUN으로 사람이 현재 남긴 그림·원본·작업 지시·도구 해시를 보존한다. produce --recipe ID 또는 --seed-run RUN으로 같은 계열을 1명씩 만든다.
 - `bulk` — 묶음 저작: manifest를 읽어 GPT high 원샷 저작과 독립 검수를 실행한다. --detach로 드라이버를 유지한다.
 - `check` — 픽셀 검사: 12프레임 구조·색 키·투명 구멍·머리 결손·걸음 동작을 검사한다.
 - `views` — 그림 굽기: 현재 격자 해시에 결부한 PNG·GIF·필름 띠를 만든다.
 - `audit` — 투명 결손 QA: --run RUN으로 모든 12프레임을 체커·흰색·검정 배경에서 펼치고 결손 좌표·출하 PNG 재읽기를 기록한다. --refresh-previews로 동일 픽셀의 진단 GIF를 추가한다.
+- `walk-qa` — 이전 걷기 전파 전후 QA: --run RUN --out 저장소밖경로로 이전 전파 실행의 격자를 보존하고 걷기 출처·PNG/GIF 전후를 재읽는다. 모델 12프레임 저작은 audit을 쓴다.
 - `verify` — 계약 확인: 임시 저장 대상에서 결손·GIF·사람의 선택 해시·패킹과 이전 검수 계약을 확인한다.
 - `export` — 선택 팩: 자유 저작은 사람이 남긴 캐릭터만 ZIP으로 묶는다. 기존 검수 실행은 이전 계약을 유지한다.
 - `status` — 현황: 저작 진행과 검수 판정을 표시한다.

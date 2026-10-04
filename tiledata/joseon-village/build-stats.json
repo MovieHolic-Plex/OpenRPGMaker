@@ -3247,11 +3247,16 @@
    "pal_gungnyeo_jari",
    "pal_changgeori"
   ],
-  "variants": [],
   "softDiff": {
    "cells": 803,
    "maxRgbDelta": 198
   }
+ },
+ "frozen": {
+  "frozenCells": 13632,
+  "waves": 1,
+  "cellsSha256": "208676e80b305df12b2e4dacff529de36d2a3438201787a79e2feba44f0a8eba",
+  "metaSha256": "41ff494ec596a756eb43c4ce24bea528e144ee30f10445994719b16ab77c6f03"
  },
  "warnings": []
 }

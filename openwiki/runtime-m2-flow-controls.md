@@ -302,3 +302,21 @@ in `.omo/evidence/atmosphere-30/`. No new game/map content or remote project is 
 New effect primitives: runes (rotating six-point sigils), shades (drifting multi-stroke wisps),
 frost (rotating six-arm crystals), using the same amount/speed/size/tint/audio controls.
 Existing preset IDs are retained; saved maps hold copied layer settings, not catalog references.
+
+### 그림 컷 준비와 direction (2026-10-04)
+
+이미지 시네마틱은 선택 direction(초점 카메라·장면 전환·좌표 효과·효과음·자막 지연)을 가진다.
+원화 decode 이전에 장면 시간을 소비하지 않는다. 다음 그림 준비 중 이전 컷을 유지하고 취소된 컷의
+늦은 decode는 표시/진행하지 않는다. 기존 영상 최대 시간은 재생 실패에도 진행하는 계약을 유지한다.
+플레이어 셸의 `cinematicAssets`와 `warmPlayGameRuntime`이 타이틀 뒤에서 미리 준비하지만
+오프닝 이전에 게임 세션/Phaser를 생성하지 않는다. 상세 계약은 [title-opening-effects.md](title-opening-effects.md).
+
+## 글자·장면 오프닝 연출 (2026-10-04)
+
+모든 text/image/video 장면에 선택 `presentation`을 저장한다. 기존 필드가 없으면 기존
+재생을 유지한다. 기본형 subtitle/prologue/chapter/memory/credits, 글자 등장 6종,
+장면 등장 6종, 독립적인 글자·장면 퇴장 시간·색·글꼴·위치·상하 띠를 지원한다.
+`cinematicPresentation.ts`의 엄격 파서를 프로젝트 로드와 AI 도구가 공유하며
+DB 오프닝/게임오버 폼과 미리보기는 같은 레코드/재생기를 쓴다. 꺼진 시퀀스도 보존한다.
+전체 계약·시간·우선순위·reduced-motion·저장/출하 증거는
+[title-opening-effects.md](title-opening-effects.md#글자장면-오프닝-연출-2026-10-04)를 따른다.

@@ -150,7 +150,7 @@ function testsGate() {
   // A runner/bootstrap failure must not be allowed to reuse evidence from an older run.
   // Remove the fixed evidence file first; only this invocation may recreate it.
   rmSync(reportPath, { force: true });
-  const { code, signal, error } = run("node", [
+  const { code, signal, error, out } = run("node", [
     "scripts/run-vitest.mjs",
     "run",
     "--configLoader",
@@ -176,10 +176,12 @@ function testsGate() {
     // 그래서 시그널·스폰 에러를 함께 찍는다(2026-09-17 에 exit=-1 만 남고 원인 불명이었다).
     const why = [`exit=${code}`, signal ? `signal=${signal}` : null, error ? `error=${error}` : null]
       .filter(Boolean).join(" ");
+    const tail = out.trim().split("\n").filter((line) => line.trim()).slice(-30).join("\n");
     throw new Error(
       `vitest JSON 리포트가 생성되지 않았다: ${reportPath} (${why})\n` +
       "  signal 이 찍혔으면 vitest 가 외부에서 죽은 것이다 — cgroup 예산(ci.slice 의 MemoryMax)과\n" +
-      "  `node scripts/ci-resource-report.mjs report` 의 oom_kill 수를 먼저 확인하라.",
+      "  `node scripts/ci-resource-report.mjs report` 의 oom_kill 수를 먼저 확인하라." +
+      (tail ? `\n--- vitest 출력(끝) ---\n${tail}` : ""),
     );
   }
   const parsed = JSON.parse(readFileSync(reportPath, "utf8"));

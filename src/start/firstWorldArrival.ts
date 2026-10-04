@@ -69,7 +69,7 @@ export function createFirstWorldArrival(options: FirstWorldArrivalOptions): Firs
     motion.hidden = reduced?.matches === true;
     motion.setAttribute("aria-pressed", String(paused));
     motion.textContent = paused ? "움직임 켜기" : "움직임 멈추기";
-    if (still || disposed || document.hidden) video.pause();
+    if (still || busy || disposed || document.hidden) video.pause();
     else void video.play().catch(() => { /* The poster is already visible when autoplay is denied. */ });
   };
   motion.addEventListener("click", () => {
@@ -152,6 +152,7 @@ export function createFirstWorldArrival(options: FirstWorldArrivalOptions): Firs
       busy = value; root.setAttribute("aria-busy", String(value));
       root.querySelectorAll<HTMLButtonElement | HTMLTextAreaElement>("button, textarea").forEach(control => { control.disabled = value; });
       sync();
+      updateMotion();
     },
     dispose: () => {
       disposed = true;

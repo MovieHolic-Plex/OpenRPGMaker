@@ -28,6 +28,7 @@ import { terrainMaterialTile, MATERIAL_LABEL, type TerrainMaterial } from "@/edi
 import { deleteDoodadGroup } from "@/editor/terrainClusters";
 import { mountTerrainDesignPanel } from "./terrainDesignPanel";
 import { openTerrainHelpModal } from "./terrainHelpModal";
+import { openMapPropertiesDialog } from "./mapPropertiesDialog";
 import { terrainToolbarIcon } from "./terrainToolbarIcons";
 import { isTerrainDesignTool, selectTerrainDesignTool, TERRAIN_DESIGN_TOOLS, commitTerrainDesign } from "../terrainDesignActions";
 
@@ -234,7 +235,12 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
     class: "relief-bar",
     attrs: { role: "toolbar", "aria-label": "지형 도구" },
     dataset: { testid: "relief-brush-controls" },
-    children: [terrainTools, sep(), doodadButton, designButton, reachable, sep(), helpButton],
+    children: [terrainTools, sep(), doodadButton, designButton, reachable, el("button", {
+      class: "relief-bar-icon", children: [terrainToolbarIcon("sun")],
+      attrs: { type: "button", "aria-label": "태양과 그림자", title: "태양 방향·고도와 지형 그림자 설정", "aria-haspopup": "dialog" },
+      dataset: { testid: "terrain-sunlight-settings" },
+      on: { click: () => { const id = editorState.get().currentMapId; const map = id ? store.getCurrent().maps[id] : undefined; if (map) openMapPropertiesDialog(map.id, map.name, { focus: "sunlight" }); } },
+    }), sep(), helpButton],
   });
 
   // ── 지형지물 팝업 ──

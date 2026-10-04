@@ -4,13 +4,15 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 const out = resolve(process.env.LIVE_GAME_OUT ?? 'verify-shots/live-first-game');
-const initial = JSON.parse(readFileSync(out + '/generation.json', 'utf8'));
+const initial = existsSync(out + '/generation.json') ? JSON.parse(readFileSync(out + '/generation.json', 'utf8')) : null;
 const completion = existsSync(out + '/completion.json') ? JSON.parse(readFileSync(out + '/completion.json', 'utf8')) : null;
 const recovered = existsSync(out + '/reloaded.json') ? JSON.parse(readFileSync(out + '/reloaded.json', 'utf8')) : null;
-const generation = completion?.passed ? completion : recovered?.passed ? recovered : initial;
-if (!generation.generationPrerequisitePassed && !completion?.passed) throw Error('Live generation or explicit repair, plus canonical reload, must pass first');
+const generation = recovered?.passed && (!completion?.passed || recovered.afterReload.revision >= completion.afterReload.revision)
+  ? recovered : completion?.passed ? completion : initial;
+if (!generation) throw Error('A saved and reloaded live authoring receipt is required');
+if (!generation.generationPrerequisitePassed && !completion?.passed && !(recovered?.passed && recovered.workerCompleted)) throw Error('Live generation or explicit repair, plus canonical reload, must pass first');
 const report = { projectId: generation.afterReload.projectId, revision: generation.afterReload.revision,
-  generationMode: completion?.passed ? 'explicit completion after unfinished automatic build' : recovered?.passed ? 'automatic first build; observation recovered by ordinary reload' : 'automatic first build',
+  generationMode: generation.mode ?? 'automatic first build',
   projectUrl: generation.projectUrl, started: new Date().toISOString(), errors: [] };
 report.networkFailures = [];
 const save = () => writeFileSync(out + '/export.json', JSON.stringify(report, null, 2) + '\n');

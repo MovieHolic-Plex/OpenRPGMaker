@@ -32,6 +32,7 @@ export function mountQuickBuildPanel(host: HTMLElement): () => void {
   const stories = choice("stories", "집 층수", [["1", "1층"], ["2", "2층"]], v => editorState.set({ terrainHouseStories: Number(v) as 1 | 2 }));
   const resize = choice("resize", "드래그 대상", [["house", "집 전체"], ["roof", "지붕만"]], v => editorState.set({ terrainHouseResize: v as "house" | "roof", terrainHouseKitId: null, terrainHouseDrag: null }));
   const roofWidth = choice("roof-width", "지붕 너비", Array.from({ length: 20 }, (_, n) => [String(n + 5), `${n + 5}칸`] as const), v => editorState.set({ terrainHouseRoofWidth: Number(v) }));
+  const roofForm = choice("roof-form", "지붕 형태", [["auto", "기존 형태 유지"], ["gable", "뾰족한 박공"], ["hip", "모임 지붕"]], v => editorState.set({ terrainHouseRoofForm: v as "auto" | "gable" | "hip" }));
   const instructions = el("p"); house.append(instructions);
   const drag = el("input", { attrs: { type: "checkbox" }, dataset: { testid: "quick-road-drag" }, on: { change: e => editorState.set({ terrainRoadDrag: (e.target as HTMLInputElement).checked, terrainPoints: null, terrainFeatureId: null }) } }) as HTMLInputElement;
   road.append(el("label", { class: "terrain-design-check", children: [drag, el("span", { text: "끌고 놓으면 도로 적용" })] }), el("p", { text: "길 폭을 고르고 캔버스를 끌어 그리세요. 기존 길과 연결되고, 높이 차이는 경사로로 이어집니다." }));
@@ -41,6 +42,7 @@ export function mountQuickBuildPanel(host: HTMLElement): () => void {
     house.hidden = s.terrainBrush !== "house"; road.hidden = s.terrainBrush !== "road"; drag.checked = s.terrainRoadDrag;
     width.value = String(s.terrainHouseWidth); stories.value = String(s.terrainHouseStories);
     resize.value = s.terrainHouseResize; roofWidth.value = String(Math.max(s.terrainHouseWidth, s.terrainHouseRoofWidth));
+    roofForm.value = s.terrainHouseRoofForm;
     const styles = tileset ? quickHouseStyles(tileset) : [], catalog = tileset ? quickHouseCatalog(tileset) : [];
     const effectiveKit = catalog.some(k => k.id === s.terrainHouseKitId) ? s.terrainHouseKitId : !styles.length ? catalog[0]?.id : null;
     if (effectiveKit && groupOf(effectiveKit) !== group) { group = groupOf(effectiveKit); page = 0; }
@@ -60,13 +62,15 @@ export function mountQuickBuildPanel(host: HTMLElement): () => void {
     stories.closest("label")!.querySelector("span")!.textContent = roofMode ? "벽 층수" : "집 층수";
     for (const option of roofWidth.options) option.disabled = Number(option.value) < s.terrainHouseWidth;
     const effectiveStyle = styles.includes(s.terrainHouseStyle) ? s.terrainHouseStyle : styles[0];
+    roofForm.closest("label")!.hidden = !!effectiveKit || !effectiveStyle?.startsWith("beodeul-manor-");
+    roofForm.options[0]!.text = roofMode ? "기존 형태 유지" : "기본 · 뾰족한 박공";
     for (const option of width.options) option.disabled = !!effectiveStyle && Number(option.value) < quickHouseMinWidth(effectiveStyle);
     instructions.textContent = effectiveKit ? "저장된 집은 원본 크기로 배치합니다. 끌어서 위치를 잡거나 문 위치를 한 번 누르세요." : "끌어서 집 너비·높이를 정하고 놓으세요. 한 번 클릭하면 선택한 크기로 문 위치에 놓습니다. 초록은 배치 가능 · 빨강은 불가 · Esc는 취소.";
     if (!effectiveKit && tileset?.id === "beodeul_city" && styles.length) instructions.textContent = "버들항 집 · 끌어서 너비·높이를 정하고 놓으세요. 높이는 창·문을 보존하며 층 단위로 맞춥니다. 초록은 가능 · 빨강은 불가 · Esc는 취소.";
-    if (roofMode) instructions.textContent = "지붕에서 좌우로 끌어 너비를 정합니다. 벽 크기는 유지합니다. 기존 조립식 집의 지붕에서 끌면 벽·창·문 위치도 그대로 유지합니다. Esc는 취소.";
+    if (roofMode) instructions.textContent = "지붕에서 좌우로 끌어 너비를 정합니다. 반목조 집은 지붕 형태도 고를 수 있습니다. 기존 조립식 집의 벽·창·문 위치는 그대로 유지합니다. Esc는 취소.";
     if (!styles.length && !catalog.length) instructions.textContent = "이 지도 타일셋에 집 부품이 없습니다. 타일의 구조물에 입구가 있는 집을 등록해 주세요.";
     if (house.hidden) return;
-    const key = `${tileset?.id}:${tileset?.count}:${group}:${page}:${s.terrainHouseWidth}:${s.terrainHouseStories}:${s.terrainHouseResize}:${s.terrainHouseRoofWidth}:${catalog.map(k => k.id).join(",")}`;
+    const key = `${tileset?.id}:${tileset?.count}:${group}:${page}:${s.terrainHouseWidth}:${s.terrainHouseStories}:${s.terrainHouseResize}:${s.terrainHouseRoofWidth}:${s.terrainHouseRoofForm}:${catalog.map(k => k.id).join(",")}`;
     if (key !== rendered) {
       rendered = key; cards.replaceChildren(); saved.replaceChildren();
       for (const kit of visibleCatalog) saved.append(el("option", { value: kit.id, text: `${kit.name ?? kit.id} · ${kit.width}×${kit.height}` }));

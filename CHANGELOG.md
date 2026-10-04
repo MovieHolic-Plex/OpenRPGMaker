@@ -5,6 +5,292 @@
 
 <!-- releases -->
 
+## 0.124.0 — 2026-10-04
+
+### 기능
+
+- produce character variations from sealed human-kept pixels (`2ad3d82`)
+
+### 수정
+
+- retain native roof pixels behind gable seams (`0eb25bd`)
+
+### 문서
+
+- verify joined gable in canonical editor and player (`4aeec74`)
+- capture complete gabled house in shipping player (`4874087`)
+
+## 0.123.1 — 2026-10-04
+
+### 수정
+
+- 시점 표본 합격 저장 오류와 제작 메타데이터 누락 차단 (#2103) (`1a38e62`)
+- use native gabled roofs and shorten default sunlight (`5bd47dc`)
+
+### 문서
+
+- record native roof and sunlight save reload evidence (`16bcd88`)
+
+## 0.123.0 — 2026-10-04
+
+### 기능
+
+- add opt-in coordinate pixel editing experiment for character harness (`79c89c7`)
+
+### 수정
+
+- reject reserved palette symbols in coordinate pixel edits (`8429bf5`)
+
+### 문서
+
+- record coordinate character experiment delivery (`063b66a`)
+
+## 0.122.1 — 2026-10-04
+
+### 수정
+
+- 반복 도면 교정에도 후보 근거와 표본 단계 보존 (#2098) (`f302e41`)
+- 재제작 중 이전 후보와 실제 진행 상태를 유지해 표시 (#2095) (`efc6a61`)
+
+## 0.122.0 — 2026-10-04
+
+### 기능
+
+- add authored opening typography and scene transitions (`707bf09`)
+
+### 수정
+
+- 반복 그림 실패를 시점 명세와 표본 검수로 되돌리기 (#2094) (`b54829b`)
+- export from the newest canonical reload receipt (`5b94985`)
+- retain the preceding composition until the next scene paints (`a2b2db9`)
+
+### 문서
+
+- record canonical opening authoring and shipping playback evidence (`27a4b45`)
+
+## 0.121.1 — 2026-10-04
+
+### 수정
+
+- follow native building silhouettes when casting sunlight shadows (`142d37a`)
+- 공간 도면·여백·구성을 실제 제작 관문으로 검수 (#2086) (`71d1af5`)
+
+### 문서
+
+- record native building shadow comparisons and shipping QA (`bb72e14`)
+
+## 0.121.0 — 2026-10-04
+
+### 기능
+
+- give cinematic interview controls a pixel-framed finish (`321f1ee`)
+- add configurable sun shadows to terrain editor and player (`731f7e0`)
+
+### 수정
+
+- **sunlight** — 다리 마스크가 없을 때 null 대신 undefined를 둔다 (`0a504b0`)
+- restore original grid editing for charset production (`2f5feaa`)
+- preserve exact shadow mask extent in canvas rendering (`1491e2d`)
+
+## 0.120.1 — 2026-10-04
+
+### 수정
+
+- attach charset pixel references to GPT artist input (`05f3584`)
+- pass approved drawing model to harness preparation (#2081) (`0a68516`)
+- give the ci-full vitest worker a 12GB heap (`a9e8aa6`)
+
+## 0.120.0 — 2026-10-04
+
+### 기능
+
+- regenerate chip candidates from bounded review feedback (#2073) (`3d7e3d8`)
+- preload cinematic assets and direct opening storyboards (`2011f47`)
+
+### 수정
+
+- **editor** — 안 쓰는 타일 판별 import를 지우고 스키마 배열 길이를 허용한다 (`2ec5edb`)
+- **editor** — UX 2차 병합이 깨뜨린 타입 네 곳을 되돌린다 (`6543728`)
+- animate charset strips only when their pixels enter the viewport (`49b4c8c`)
+- run latest spatial workflow from the unified checkout (`09d5b7c`)
+- unify prop derivation and spatial harness under one service (`34e2590`)
+- keep command edit popovers clickable beside history controls (`7817c83`)
+- retain resource audio row focus and dispose virtual lists (`db90de5`)
+- protect authored height cells alongside tile brush intent (`f1bb35b`)
+- verify relief drafts and finish resident paging contracts (`18c5c6d`)
+- keep sparse human wall comparisons within map coordinates (`5d59a0e`)
+- page scoped conversation summaries and debounce archive search (`ba0007e`)
+- bound historical activity capture rendering and archive pruning (`8e697ed`)
+- bound resource galleries and retain virtualized audio workbench (`d17f257`)
+- preserve yielded terrain save snapshots and cache live draft lists (`9be3ce4`)
+- load Phaser before evaluating the background play scene (`f53a101`)
+- preserve exact human layer defaults and spatial proposal refusal (`7e9612d`)
+- bound event selection rendering and isolate event mutations (`1039a2d`)
+- cache database connections by reference sources and reuse More results (`37616ae`)
+- count persisted presentation artwork and observe real playback reliably (`9fb475b`)
+- retain relief pixels in resident pages and bound editor culling (`1a1f405`)
+- suspend inactive database previews and reuse animation sprites (`9a39365`)
+- retain filtered atlas selection and defer closed palette popup bodies (`de1cd0b`)
+- reuse spatial roundtrip projections and index human map edits (`aea9c06`)
+- preserve native shared catalog conditional responses (`84ee8c9`)
+- stop hidden Progress work and count committed events without clones (`13ef63e`)
+- avoid duplicate map navigation tree renders (`7dc479d`)
+- retain Life collection search and mount only selected inspector (`2fa4d8f`)
+- slice map save preparation and collapse history jump copies (`f1f95ff`)
+- retain opening effects until cinematic transitions finish (`8d5734f`)
+- distinguish recovered opening repair receipts from automatic creation (`16814e3`)
+- preserve active authoring through verified media separation (`71a7281`)
+
+### 문서
+
+- verify editor interactions after the latest main integration (`9852bf6`)
+- report the observed visible charset draw count (`aeeb38e`)
+- capture native round-two editor UX fixes and remaining latency limits (`4569a9b`)
+- record further editor UX performance findings (`7ce9a76`)
+
+### 테스트
+
+- capture directed opening playback and asset recovery evidence (`19c0104`)
+
+### 잡무
+
+- normalize opening QA evidence formatting (`5b33206`)
+
+## 0.119.0 — 2026-10-04
+
+### 기능
+
+- add chip selection with assembled candidate previews (#2069) (`67500b1`)
+
+### 수정
+
+- 주차장 조립 검수 실패 시 후보 선택 차단 (#2071) (`3bd7023`)
+- run ci-full vitest as one 8GB worker (`dbd7616`)
+
+## 0.118.3 — 2026-10-04
+
+### 수정
+
+- cap ci-full vitest at two 3584MB workers (`50cfaac`)
+- preserve optional terrain enums and house entrance approaches (`1280e07`)
+- paginate terrain inspection before assistant response truncation (`e443d3f`)
+- preserve terrain settings and houses during assistant edits (`fc5897e`)
+
+### 문서
+
+- compact terrain audit arrays for review (`e26f482`)
+
+### 테스트
+
+- verify real assistants editing saved relief terrain in the editor (`9c0796f`)
+
+## 0.118.2 — 2026-10-04
+
+### 수정
+
+- type the event storyboard host as HTMLElement (`82446a4`)
+- keep ci-full vitest inside the 12GB slice (`feb83ef`)
+
+## 0.118.1 — 2026-10-04
+
+### 수정
+
+- reduce editor typing, undo, and event-opening latency (#2061) (`edd0361`)
+- retain user approved drawing model per concept (#2060) (`fbe6563`)
+- retain user approved drawing model per concept (`1fb92f2`)
+- run drawing harnesses through the supervisor (#2058) (`faafc3a`)
+
+## 0.118.0 — 2026-10-04
+
+### 기능
+
+- 큰 공간 상세도 검수와 기획·칩 후보 이미지 표시 (#2057) (`be3cac9`)
+- unify prop and space harness entry as super harnessing (`922f645`)
+- **harness** — surface automatic derivation proposals before ordering (`58d2a68`)
+- **harness** — automatically publish confirmed props to shared SQLite (`ea97bf3`)
+- **harness** — bake selected prop motions with preserved timing and derivation metadata (`0f3dd8c`)
+- **harness** — 소품 파생 — 방향 4·상태·움직임 묶음과 큰 판 (`524cd42`)
+- **interior-surfaces** — SF 벽 다시 설계(갈비 기둥·짧은 빛 홈) + 엄격 검수 3판 — 4종 더 탈락, 7종 손질 (`4f3acc5`)
+- **interior-surfaces** — 적대 검수 두 판 — 9종 탈락(CUT), 디더 전면 제거, 나머지 손질 (`903f144`)
+- **interior-surfaces** — 바닥·벽 후보 다시 그림 — 모서리 명암·나뭇결·몰딩·부드러운 얼룩, 고르기 방에 가구 (`31e2e52`)
+- **interior-surfaces** — 현대·동양·SF 바닥 10종·벽 7종 후보(A/B) + 고르기 화면 (`d58b5b1`)
+
+### 수정
+
+- start new-game interview directly in launcher (`db31c00`)
+- make first creation author its title and illustrated opening (#2046) (`775832d`)
+- let GPT author all twelve character frames (`80eebcc`)
+- keep new-game planning in launcher until confirmation (`89a710d`)
+- show current spatial plan summary in harness gallery (`f0b8beb`)
+- avoid repeated UI work during right-button region drag (`d3f9c36`)
+- keep planning reviewers owned by super harness scheduler (`ee9fad2`)
+- **harness** — 파생 묶음 화면 — 움직임 미리보기 크기, 나란히 보기 숨김 (`6b24b4b`)
+- **harness** — 파생 묶음 검수는 원본 칸 기준 — 절대 윗면 행 수 대신 (`245944b`)
+- **harness** — 고르기 화면 버그·편의 — 되돌리기, 실패 복구, 기물별 메모, 폴링 재시도 (`52a25ad`)
+- **harness** — 그림 로딩 — 왼쪽 목록 썸네일 300장이 후보 그림 앞에 줄을 섰다 (`f7c731c`)
+- **harness** — 메모의 「2x2」 크기 요청이 실제 캔버스·칸 수·검사까지 바꾼다 (`6aad69b`)
+- **harness** — 상태 25초 → 3ms(지문·gzip 스냅숏·derived.sqlite) · 다시 뽑기는 바로 고를 차례에서 빠진다 (`7a76dfb`)
+
+### 문서
+
+- document prop derivation contracts operations recovery and agent handoff (`ffcdb8b`)
+- record model-authored walking frame evidence (`c7ad291`)
+- verify installed terrain rendering with real body pixels (`a7198dd`)
+- clarify terrain fixture storage and refresh wiki index (`a119a4d`)
+
+### 기타
+
+- **harness** — 첫 파생 주문 — 의자 S 방향, 왕실 상자 열림, 용암 화로 움직임, 안락의자 2×2 (`ac962e3`)
+
+## 0.117.0 — 2026-10-04
+
+### 기능
+
+- require adversarial review of spatial plans and text diagrams (`fed3ecb`)
+- **worldmap** — publish shared SQLite examples and verify real assistant authoring (`577acfa`)
+- **joseon** — 하네스 시드·단계를 지도 14장으로 확장하고 문서를 맞춘다 (`be2210c`)
+- **joseon** — 장소 카드 14장(사냥터·동굴 natural, 실내·궁 facility)과 내려받기·축소본 (`8fb41a9`)
+- **joseon** — 새 참고문서 3용도(사냥터·동굴 / 실내 / 궁 내부)를 번들이 소유하게 추가 (`6da8e1e`)
+- **joseon** — 새 지도 11장을 번들 시트에 덧붙이고 옛 칸 번호를 동결 장부로 고정 (`28f7c29`)
+- **joseon-palace-int** — 자가 검수 라운드 — 벽 걸이 그리는 순서·용 문양·모퉁이 소품 정리·문 앞 깔개 3종, 보기 페이지 생성기 (`2ca62bb`)
+- **joseon-palace-int** — 궁 내부 방 3장(정전 어좌 홀 21x22·회랑 32x10·침전 20x15) 평면·배치·굽기·점검, mapgate palace_int 프로필 (`22446ef`)
+- **joseon-palace-int** — 궁 내부 조각 77종(pal_) — 단청 키트·어좌 단·카펫·병풍·용상·향로·북·종·침구·용장 (`db1fa57`)
+- **joseon-interior-b** — 조각 판정 149건(통과 94·보충 55), 사람 캐릭터 범위 바로잡음, 서당·동헌 단 배치 수정, 바가지 다시 그림 (`d9f6ada`)
+- **joseon-interior-b** — 계획서, 지도 게이트 interior_b 프로필, 호피 다시 그림, 얇은 줄 조각 정리 (`f34c643`)
+- **joseon-interior-b** — 관아 동헌(21x14) 방과 6방 전체 굽기·점검 통과 (`d0b3ce1`)
+- **joseon-interior-b** — 서당 방(18x13) 평면·배치 (`83c9360`)
+- **joseon-interior-b** — 약방 방(14x10) 평면·배치 (`7036c11`)
+- **joseon-interior-b** — 대장간 방(14x10) 평면·배치 (`35e6e78`)
+- **joseon-interior-b** — 주막 방(22x14) 평면·배치, 맨바닥 판 점검을 2x2 판 기준으로 (`6250144`)
+- **joseon-interior-b** — 조각 메타·통행 보정, 점검기, 민가 방 굽기 (`1892534`)
+- **joseon-interior-b** — 후보 B 실내 키트·기물 초안(inb_*, 접두 in_b_) — 구조 키트·기물 149종과 카탈로그 덧붙임 (`85db58a`)
+
+### 수정
+
+- **joseon** — 번들 타일셋의 그룹·부품이 없을 때를 허용한다 (`3934e1b`)
+- expose dialogue portraits and honor Joseon game fonts (`4f4992e`)
+- preserve reading, selection and human edits during assistant work (`d08d096`)
+- use the visible rear bank boundary when picking cliff surfaces (`bd3d93b`)
+- gate super harness maps on approved materials and visual evidence (`189fa6d`)
+- transfer authored surfaces into charset walking gaps (`fa4a456`)
+- keep moving characters above their floor and preserve cliff rims (`778f4aa`)
+- **joseon** — TREE_KINDS 에 grove 복원, 조각 관문이 쓴 검수 시트 190장은 병합에서 뺀다(생성물) (`e338baf`)
+- **joseon-palace-int** — 엄격 검수 반영 2차 — 바닥 보 띠 제거·정전 비대칭 의례 배치·회랑 기둥 간격 변주·침전 기능 묶음 (`0c43f80`)
+- **joseon-interior-b** — 독립 엄격 검수 반영 — 엮은 돗자리, 무작위 온돌·마루 바닥, 넓은 이부자리, 문틀, 진열대, 방 구성 차별화 (`74fa273`)
+- **joseon-interior-b** — 블라인드 검수 고침 — 서당 목재 단·관아 단/의자/붉은 길/호피·약방 선반·주막 이부자리·문 조각·대장간 정리 (`cbcd59f`)
+
+### 문서
+
+- record moving-body pixel, cliff rim and canonical editor QA (`56e315e`)
+- verify bank picking and retain northern contact evidence (`850d29d`)
+- identify canonical sources in rendered character QA (`dc15a8c`)
+- add packaged editor and canonical runtime fixture QA (`e5a5816`)
+- **joseon-palace-int** — 궁 내부 방 3장 계획서(정전 어좌 홀·회랑·침전) (`c36c539`)
+
+### 잡무
+
+- **joseon** — 새 지도 11장 등록 후 화면 확인 사진 9장과 요약 추가 (`aebcb4e`)
+
 ## 0.116.1 — 2026-10-04
 
 ### 수정

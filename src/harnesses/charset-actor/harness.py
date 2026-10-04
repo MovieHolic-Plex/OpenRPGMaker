@@ -49,6 +49,7 @@ ENGINES = {
     'opus': dict(label='Claude Opus 5.5 · high', model='claude-opus-5-5', effort='high'),
 }
 CLAUDE_ENGINES = ('sonnet', 'opus')
+FRAME_AUTHOR_MODE = 'model-12'
 DEFAULT_KEEP = ('몸 비율·머리 크기·팔다리 위치·걸음 동작(다리 모양과 1px 출렁임)은 뼈대 그대로 둔다. 무엇을 얼마나 바꾸는지는 '
                 '아래 6번(수정 강도)을 따른다.')
 
@@ -237,6 +238,9 @@ def cmd_base(a):
 def propagate_file(file, base_key, keep_worker=True):
     """out.chr.txt 의 걸음 0·2 를 서 있는 자세에서 다시 만든다(chr.propagate). 작업자 원본은 out.worker.chr.txt 로 남긴다."""
     file = Path(file)
+    meta_file = file.parent / 'meta.json'
+    if meta_file.exists() and json.loads(meta_file.read_text()).get('animationMode') == FRAME_AUTHOR_MODE:
+        raise ValueError('이 후보는 모델이 12프레임을 직접 저작합니다. 해당 프레임의 격자를 수정하세요.')
     pal, notes, frames = C.load(file)
     bp, bf = base_of(base_key)
     if keep_worker:
@@ -252,6 +256,58 @@ def propagate_file(file, base_key, keep_worker=True):
                       baseSha256=hashlib.sha256(C.dump(bp, {}, bf).encode()).hexdigest(),
                       outputSha256=hashlib.sha256(data.encode()).hexdigest(), transferred=trace))
     return new
+
+
+def record_model_frames(w):
+    """종료한 모델의 12프레임을 수정 없이 읽고 저작 기록을 저장한다."""
+    w = Path(w)
+    meta = json.loads((w / 'meta.json').read_text())
+    if meta.get('animationMode') != FRAME_AUTHOR_MODE:
+        return None
+    if _alive(meta.get('pid')):
+        raise ValueError('모델 저작이 끝난 뒤 12프레임을 공개합니다')
+    raw = (w / 'out.chr.txt').read_bytes()
+    pal, _, frames = C.parse(raw.decode('utf-8'))
+    errors = C.structural_errors(pal, frames)
+    if errors:
+        raise C.GridError('; '.join(errors[:5]))
+    bp, bf = base_of(meta['base'])
+    authored = {}
+    for d in C.DIRS:
+        for f in range(3):
+            rgba = C.frame_rgba(pal, frames[d, f]).tobytes()
+            base_rgba = C.frame_rgba(bp, bf[d, f]).tobytes()
+            changed = sum(rgba[i:i+4] != base_rgba[i:i+4] for i in range(0, len(rgba), 4))
+            if not changed:
+                raise ValueError(f'{d} {f}: 원본 그대로인 프레임입니다. 모델이 12장 모두 저작해야 합니다.')
+            authored[f'{d} {f}'] = dict(rgbaSha256=hashlib.sha256(rgba).hexdigest(), changedPixels=changed)
+    receipt = dict(version=1, animationMode=FRAME_AUTHOR_MODE, sourceSha256=hashlib.sha256(raw).hexdigest(),
+                   baseSha256=hashlib.sha256(C.dump(bp, {}, bf).encode()).hexdigest(), frames=authored,
+                   model={k:meta[k] for k in ('engine', 'model', 'effort')})
+    if meta.get('authoringMode') == 'pixel-patches-v1':
+        import pixel_ops
+        receipt['pixelEdits'] = pixel_ops.replay(w / 'out.chr.txt', w / 'base.chr.txt')
+    write_json_atomic(w / 'model-frames.json', receipt)
+    return receipt
+
+
+def model_frames_fresh(w, gate):
+    try:
+        receipt = json.loads((w / 'model-frames.json').read_text())
+        meta = json.loads((w / 'meta.json').read_text())
+        fresh = (receipt['version'] == 1 and receipt['animationMode'] == FRAME_AUTHOR_MODE
+                and receipt['sourceSha256'] == gate['sourceSha256'] and receipt['baseSha256'] == gate['baseSha256']
+                and set(receipt['frames']) == {f'{d} {f}' for d in C.DIRS for f in range(3)}
+                and all(r['changedPixels'] > 0 for r in receipt['frames'].values())
+                and receipt['model'] == {k:meta[k] for k in ('engine', 'model', 'effort')})
+        if meta.get('authoringMode') == 'pixel-patches-v1':
+            edits = receipt['pixelEdits']
+            fresh = (fresh and edits['sourceSha256'] == gate['sourceSha256']
+                     and edits['journalSha256'] == hashlib.sha256((w / 'pixel-edits.json').read_bytes()).hexdigest()
+                     and set(edits['frames']) == set(receipt['frames']))
+        return fresh
+    except (OSError, ValueError, KeyError, TypeError):
+        return False
 
 
 def cmd_propagate(a):
@@ -339,22 +395,32 @@ def start_draw(brief, engine, run, w, src=None, fix_text=None):
     (w / 'prompt.md').write_text(t, encoding='utf-8')
     p = _spawn(engine, w, w / 'prompt.md', w / 'worker.log')
     meta = dict(run=run, brief=brief, engine=engine, label=eng['label'], model=eng['model'], effort=eng['effort'],
-                pid=p.pid, started=now(), dir=str(w), base=bk, strength=stg, src=str(src) if src else None)
+                pid=p.pid, started=now(), dir=str(w), base=bk, strength=stg, src=str(src) if src else None,
+                animationMode=FRAME_AUTHOR_MODE)
     if src:
         meta['label'] += f' — {json.loads((src / "meta.json").read_text())["label"]} 결과를 수정'
     (w / 'meta.json').write_text(json.dumps(meta, ensure_ascii=False, indent=1), encoding='utf-8')
     return p, meta
 
 
-def _spawn(engine, cwd, prompt, log):
+def _spawn(engine, cwd, prompt, log, images=()):
     eng = ENGINES[engine]
+    image_paths = [Path(p).resolve(strict=True) for p in images]
+    for path in image_paths:
+        with Image.open(path) as picture:
+            picture.verify()
     if engine in CLAUDE_ENGINES:
+        if image_paths:
+            raise ValueError('초기 이미지 첨부는 GPT 작업자 경로에서 사용합니다')
         cmd = [shutil.which('claude') or 'claude', '-p', '--model', eng['model'], '--effort', eng['effort'],
                '--dangerously-skip-permissions', '--add-dir', str(HERE), '--output-format', 'text']
     else:
         cmd = [shutil.which('codex') or os.path.expanduser('~/.local/bin/codex'), 'exec', '-m', eng['model'],
                '-c', f'model_reasoning_effort="{eng["effort"]}"', '--skip-git-repo-check', '-s', 'workspace-write',
-               '--add-dir', str(HERE), '-C', str(cwd), '-']
+               '--add-dir', str(HERE), '-C', str(cwd)]
+        for path in image_paths:
+            cmd.extend(['--image', str(path)])
+        cmd.append('-')
     return subprocess.Popen(['timeout', str(TIMEOUT_S)] + cmd, cwd=cwd, stdin=open(prompt, 'rb'), stdout=open(log, 'w'),
                             stderr=subprocess.STDOUT, start_new_session=True)
 
@@ -489,7 +555,13 @@ def effective_decision(w, record, gate=None):
 
 def human_ready(w, gate):
     try:
-        return (not _alive(json.loads((w / 'meta.json').read_text()).get('pid'))
+        meta = json.loads((w / 'meta.json').read_text())
+        if meta.get('recipe'):
+            import delivery
+            if not delivery.fresh(w, gate):
+                return False
+        return (not _alive(meta.get('pid'))
+                and (meta.get('animationMode') != FRAME_AUTHOR_MODE or model_frames_fresh(w, gate))
                 and json.loads((w / 'published.json').read_text()) == binding(gate) and views_fresh(w, gate))
     except (OSError, ValueError):
         return False
@@ -542,7 +614,7 @@ def _wait(p):
     p.wait()
 
 
-def run_loop(brief, run, drawer, reviewer, rounds, log, face=None, gen_face=True, propagate=True):
+def run_loop(brief, run, drawer, reviewer, rounds, log, face=None, gen_face=True):
     prev = None
     for r in range(1, rounds + 1):
         w = run_dir(run) / f'{brief}__{drawer}-r{r}'
@@ -555,15 +627,10 @@ def run_loop(brief, run, drawer, reviewer, rounds, log, face=None, gen_face=True
         p, _ = start_draw(brief, drawer, run, w, prev, fix)
         log(f'{brief} r{r}: {drawer} 그리기 시작 pid={p.pid}')
         _wait(p)
-        if not (w / 'out.chr.txt').exists():
+        if p.returncode != 0 or not (w / 'out.chr.txt').exists():
             log(f'{brief} r{r}: 결과 없음 — 멈춤')
             return
-        if propagate:
-            try:
-                propagate_file(w / 'out.chr.txt', briefs()[brief]['base'])
-                log(f'{brief} r{r}: 걸음 0·2 전파')
-            except Exception as e:  # noqa: BLE001
-                log(f'{brief} r{r}: 전파 실패 {e!r}'[:300])
+        record_model_frames(w)
         make_views(w / 'out.chr.txt', w / 'views', norm_base(briefs()[brief]['base']), strength_of(brief))
         rp = start_review(w, reviewer)
         log(f'{brief} r{r}: {reviewer} 검수 시작 pid={rp.pid}')
@@ -616,7 +683,7 @@ def cmd_loop(a):
     from concurrent.futures import ThreadPoolExecutor
     names = list(briefs()) if a.briefs == ['all'] else a.briefs
     with ThreadPoolExecutor(max_workers=a.par) as ex:  # codex 동시 실행 수 제한
-        for f in [ex.submit(run_loop, b, run, a.drawer, a.reviewer, a.rounds, log, a.face or None, not a.no_gen_face, not a.no_propagate) for b in names]:
+        for f in [ex.submit(run_loop, b, run, a.drawer, a.reviewer, a.rounds, log, a.face or None, not a.no_gen_face) for b in names]:
             try:
                 f.result()
             except Exception as e:  # noqa: BLE001 — 한 캐릭터가 죽어도 나머지는 계속
@@ -1104,6 +1171,7 @@ def _items():
                             gender=b.get('gender', ''), brief_text=b.get('brief', ''), base=norm_base(m['base']), base_label=base_label(m['base']),
                             has_face=face_ref(m['base']) is not None, label=m['label'],
                             strength=m.get('strength') or b.get('strength', 'normal'), upload=b.get('source') == 'upload',
+                            animation_mode=m.get('animationMode', 'legacy'),
                             desc=_desc(w),
                             status='running' if _alive(m['pid']) else ('done' if has and (human_ready(w, gate) if human_review(w) else views_fresh(w, gate)) else 'failed'),
                             gate=gate, review=review, quality=q, review_mode='human' if human_review(w) else 'legacy',
@@ -1273,6 +1341,8 @@ def prepare_shared_library():
                       model='gpt-6.1-sol', effort='high', descriptionBy=desc.get('by'),
                       reference=dict(slot=slot, sha256=hashlib.sha256(reference).hexdigest(),
                                      dataUrl='data:image/png;base64,' + base64.b64encode(reference).decode()))
+        if item['animation_mode'] == FRAME_AUTHOR_MODE:
+            source['frameAuthor'] = json.loads((w / 'model-frames.json').read_text())
         if item['base'].startswith('input:'):
             iid = item['base'].split(':')[1]
             source['reference']['metadata'] = json.loads((INPUTS / f'{iid}.json').read_text())
@@ -1512,7 +1582,7 @@ def main():
     p.add_argument('--rounds', type=int, default=1)
     p.add_argument('--face', default='sonnet', help='칩이 끝나면 짝 얼굴을 붙일 엔진(빈 문자열이면 안 붙임)')
     p.add_argument('--no-gen-face', action='store_true', help='손 도트 얼굴 뒤 생성 얼굴(v3)을 건너뛴다')
-    p.add_argument('--no-propagate', action='store_true', help='걸음 0·2 를 작업자가 그린 그대로 둔다')  # 2026-10-02 사용자 판단: 원샷이 제일 낫다 — 반복 고치기는 명시할 때만
+    p.add_argument('--no-propagate', action='store_true', help=argparse.SUPPRESS)  # 이전 호출 호환. 현재는 항상 모델 12프레임 저작.
     p.set_defaults(fn=cmd_loop)
     p = sp.add_parser('serve', help='받기/버리기 화면')
     p.add_argument('--port', type=int, default=18314)

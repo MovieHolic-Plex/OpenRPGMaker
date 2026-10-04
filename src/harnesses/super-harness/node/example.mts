@@ -7,6 +7,7 @@
 // 카드에 이벤트로 적은 재료가 실제 이벤트로 존재.
 import fs from "node:fs";
 import path from "node:path";
+import { spawnSync } from "node:child_process";
 import { buildBrowserSeed, type QaBrief } from "../../../../scripts/qa-game/lib/seed.ts";
 import { runTool } from "../../../editor/tools/index.ts";
 import { exampleMapIds } from "../../../editor/tools/conceptExampleTool.ts";
@@ -17,19 +18,7 @@ type Worldview = { id: string; ko: string; native: string[] };
 const seedFile = new URL("../../../../harness-data/super-harness/seed.json", import.meta.url);
 const seedData = JSON.parse(fs.readFileSync(seedFile, "utf8")) as { worldviews?: Worldview[]; borrowStructure?: { tilesets: string[] } };
 const WORLDVIEWS = new Map((seedData.worldviews ?? []).map((w) => [w.id, w]));
-const BORROW = new Set(seedData.borrowStructure?.tilesets ?? []);
 const INTERIOR = new Set(["atlas_biome_interior"]);
-
-/** build_hand_interior_room 호출이 놓는 기물 id — 세계관 검사용. */
-function placedPieces(calls: readonly { name: string; args: Record<string, unknown> }[], mapId: string): string[] {
-  const out: string[] = [];
-  for (const call of calls) {
-    if (call.name !== "build_hand_interior_room" || (call.args.mapId && call.args.mapId !== mapId)) continue;
-    for (const key of ["objects", "goods", "lines", "daises"]) for (const it of (call.args[key] as { id?: string }[] | undefined) ?? []) if (it?.id) out.push(it.id);
-    for (const it of (call.args.tables as { style?: string }[] | undefined) ?? []) if (it?.style) out.push(`table:${it.style}`);
-  }
-  return [...new Set(out)];
-}
 
 const argv = process.argv.slice(2);
 const arg = (name: string) => { const i = argv.indexOf(`--${name}`); return i >= 0 ? argv[i + 1] : undefined; };
@@ -38,6 +27,56 @@ if (!cardFile || !out) { console.error("사용법: --card <card.json> --out <폴
 const briefFile = arg("brief") ?? "scripts/qa-game/briefs/ember-mine-jrpg.json";
 const card = JSON.parse(fs.readFileSync(cardFile, "utf8")) as ConceptCard;
 const brief = JSON.parse(fs.readFileSync(briefFile, "utf8")) as QaBrief;
+// No map tools run before current inventory evidence and an independent material approval.
+const gate = spawnSync("python3", [new URL("../gates.py", import.meta.url).pathname, "materials", path.dirname(path.resolve(cardFile))], { encoding: "utf8" });
+if (gate.status !== 0) {
+  console.error("재료 관문 미통과 — 예제 생성 금지\n" + (gate.stdout || gate.stderr));
+  process.exit(1);
+}
+type MaterialVariant = { id: string; worldviewId: string; tilesetId: string; spaceProfile: string; layout: string;
+  requirements: { bindings?: { tool: string; field: string; id: string }[] }[] };
+const readiness = JSON.parse(gate.stdout) as { variants: MaterialVariant[]; planningFingerprint: string };
+const materials = new Map(readiness.variants.map(v => [v.id, v]));
+if ((card as ConceptCard & { planningFingerprint?: string }).planningFingerprint !== readiness.planningFingerprint || card.needsArt || card.variants.length !== materials.size || card.variants.some(v => {
+  const approved = materials.get(v.id);
+  return !approved || approved.tilesetId !== v.tilesetId || approved.worldviewId !== v.worldviewId || approved.layout !== v.layout;
+})) {
+  console.error("재료 조사서와 시대·칩셋·변형이 다르거나 필수 재료가 없음 — 예제 생성 금지");
+  process.exit(1);
+}
+function materialCallProblem(call: { name: string; args: Record<string, unknown> }, approved: MaterialVariant): string[] {
+  const errors: string[] = [];
+  const bindings = approved.requirements.flatMap(r => r.bindings ?? []);
+  const check = (field: string, id: unknown) => {
+    if (id != null && !bindings.some(b => b.tool === call.name && b.field === field && b.id === String(id)))
+      errors.push(`${call.name}.${field}: 승인 재고에 없는 재료 ${String(id)}`);
+  };
+  if (call.name === "build_hand_interior_room") {
+    for (const key of ["floor", "wall", "ceiling"]) {
+      if (call.args[key] == null) errors.push(`재료 기본값으로 우회 금지: ${key} 명시 필요`);
+      else check(key, call.args[key]);
+    }
+    if (approved.tilesetId !== "atlas_biome_interior") errors.push("손 도트 실내 도구는 승인된 칩셋을 시공할 수 없음");
+    for (const zone of (call.args.zones as { floor?: string; wall?: string }[] | undefined) ?? []) {
+      check("floor", zone.floor); check("wall", zone.wall);
+    }
+    for (const key of ["objects", "tables", "goods", "lines", "daises"])
+      for (const item of (call.args[key] as { id?: string; style?: string }[] | undefined) ?? []) check(key, item.id ?? item.style);
+  }
+  if (call.name === "stamp_object") check("objectId", call.args.objectId);
+  if (call.name === "fill_region") check("material", call.args.material);
+  if (call.name === "paint_tiles") check("tile", call.args.tile);
+  if (call.name === "create_map" && !call.args.tilesetId) errors.push("create_map.tilesetId 명시 필요");
+  if (["create_map", "set_map_properties"].includes(call.name) && call.args.tilesetId && call.args.tilesetId !== approved.tilesetId)
+    errors.push("조사서와 다른 칩셋 사용 금지");
+  return errors;
+}
+// Check the entire call list before executing even the first mutating tool.
+for (const v of card.variants) for (const ex of v.examples) {
+  const failures = (ex.calls ?? []).flatMap(call => materialCallProblem(call, materials.get(v.id)!));
+  if (failures.length) { console.error(failures.join("\n")); process.exit(1); }
+}
+
 fs.mkdirSync(out, { recursive: true });
 
 const problems: string[] = [];
@@ -50,6 +89,16 @@ for (const variant of card.variants ?? []) {
   const world = variant.worldviewId ? WORLDVIEWS.get(variant.worldviewId) : undefined;
   if (!world) problems.push(`변형 ${variant.id}: worldviewId 가 없거나 모르는 값(${variant.worldviewId ?? "없음"}) — ${[...WORLDVIEWS.keys()].join("·")} 중 하나`);
   for (const example of variant.examples ?? []) {
+    // The room plan must declare every intentional opening along its outside boundary.
+    for (const call of example.calls ?? []) if (call.name === "build_hand_interior_room") {
+      const plan = call.args.plan as string[] | undefined;
+      const openings = (example as typeof example & { openings?: { x: number; y: number; reason: string }[] }).openings ?? [];
+      if (Array.isArray(plan)) for (let y = 0; y < plan.length; y++) for (let x = 0; x < (plan[y]?.length ?? 0); x++) {
+        if (x !== 0 && y !== 0 && y !== plan.length - 1 && x !== plan[y]!.length - 1) continue;
+        if (plan[y]![x] !== "#" && !openings.some(o => o.x === x && o.y === y && o.reason?.trim()))
+          problems.push(`${variant.id}/${example.id}: 외곽 벽 (${x},${y})에 선언되지 않은 틈`);
+      }
+    }
     const seed = buildBrowserSeed(brief).project;
     delete (seed as { gameDesignBrief?: unknown }).gameDesignBrief;
     const ctx = { project: seed } as { project: typeof seed };
@@ -78,20 +127,18 @@ for (const variant of card.variants ?? []) {
       const space = spaceStats(ctx.project, map);
       const outdoor = !INTERIOR.has(map.tilesetId);
       const lonelyMax = outdoor ? 35 : 30, squareMax = outdoor ? 8 : 6;
-      if (space.lonelyShare > lonelyMax) problems.push(`${at}: 빈 공간이 많다 — 외딴 바닥 ${space.lonelyShare}% (기준 ≤${lonelyMax}%). 소품으로 메우지 말고 맵·방을 줄여라`);
-      if (space.emptySquare > squareMax) problems.push(`${at}: (${space.emptySquareAt?.x},${space.emptySquareAt?.y}) 에 빈 정사각형 ${space.emptySquare}×${space.emptySquare} (기준 ≤${squareMax}) — 그 방이 너무 넓다`);
+      const compact = materials.get(variant.id)?.spaceProfile === "compact";
+      if (compact && space.lonelyShare > lonelyMax) problems.push(`${at}: 빈 공간이 많다 — 외딴 바닥 ${space.lonelyShare}% (기준 ≤${lonelyMax}%). 소품으로 메우지 말고 맵·방을 줄여라`);
+      if (compact && space.emptySquare > squareMax) problems.push(`${at}: (${space.emptySquareAt?.x},${space.emptySquareAt?.y}) 에 빈 정사각형 ${space.emptySquare}×${space.emptySquare} (기준 ≤${squareMax}) — 그 방이 너무 넓다`);
       // 격언 2 — ㅁ자 하나뿐인 방 금지.
-      if (space.floor >= 80 && space.reflexCorners <= 2 && space.rectangularity >= 0.9)
+      if (compact && space.floor >= 80 && space.reflexCorners <= 2 && space.rectangularity >= 0.9)
         problems.push(`${at}: 평면이 직사각형 하나(ㅁ자, 오목 모서리 ${space.reflexCorners}·꽉 찬 정도 ${space.rectangularity}) — ㄱ·ㄷ·T 평면, 벽감, 칸막이 곁방, 기둥 열로 나눠라`);
       if (variant.layout === "dungeon" && space.loops < 1) problems.push(`${at}: 던전·미궁인데 고리가 없다 — 되돌아가기만 하는 나무형. 순환 1개 이상(잠긴 길과 열쇠 길, 돌아오는 지름길)`);
       // 격언 3 — 세계관의 재료로만.
       if (world) {
         const native = world.native.includes(map.tilesetId);
-        if (!native && !BORROW.has(map.tilesetId)) problems.push(`${at}: 칩셋 ${map.tilesetId} 는 「${world.ko}」 것이 아니다 — 쓸 수 있는 것: ${world.native.join("·") || "없음(needsArt 로 그림 주문)"}`);
-        if (!native && BORROW.has(map.tilesetId)) {
-          const pieces = placedPieces(example.calls ?? [], map.id);
-          if (pieces.length) problems.push(`${at}: 「${world.ko}」 맵에 다른 세계관 기물 ${pieces.length}종(${pieces.slice(0, 8).join(", ")}${pieces.length > 8 ? " …" : ""}) — 구조(바닥·벽)만 빌릴 수 있다. 기물은 gaps.json 에 그림으로 주문하고 needsArt:true`);
-        }
+        if (!native) problems.push(`${at}: 칩셋 ${map.tilesetId} 는 「${world.ko}」 것이 아니다 — 쓸 수 있는 것: ${world.native.join("·") || "없음(needsArt 로 그림 주문)"}`);
+
       }
       return { mapId: map.id, name: map.name, width: map.width, height: map.height, tilesetId: map.tilesetId, png: path.basename(file), events: eventCounts(map), gimmicksWithoutEvents: gimmicks, space };
     });

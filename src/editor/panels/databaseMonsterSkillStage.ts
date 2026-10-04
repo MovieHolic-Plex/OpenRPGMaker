@@ -1,3 +1,4 @@
+import { registerDatabasePreview, setDatabasePreviewsActiveIn, type DatabasePreviewLifecycle } from "./databasePreviewLifecycle";
 import { buildBattleMotionPreview, type BattleMotionPreviewOutcome } from "@/battle/battleMotionPreview";
 import {partyPixelSheet,partyPixelSheetUrl,partyPixelFrame} from "@/assets/partyPixelSheets";
 import { applyChoreographyHandles } from "@/battle/retroChoreographyHandles";
@@ -400,8 +401,6 @@ const PARTY_BATTLERS = ["charset-battler-actor1-0", "charset-battler-actor2-0", 
 /** 한 대상 스킬의 과녁 — 가운데 아군. */
 const FRONT_ALLY = 1;
 
-type StageController = { readonly stop: () => void; readonly resume: () => void; readonly canAutoplay: boolean };
-const controllers = new WeakMap<HTMLElement, StageController>();
 let sessionSpeed: 0.5 | 1 = 1;
 let sessionRepeat = true;
 
@@ -568,42 +567,43 @@ export function renderMonsterSkillStage(skill: RetroMonsterSkill, name?: string,
   outcome.addEventListener("change",()=>{stop();previewHit=outcome.value!=="miss";previewTriggered=outcome.value!=="cancel";if(timeline.movement)timeline=buildBattleMotionPreview(record,count=>retroMonsterSkillTimeline(skill,{hits:count}),{hits:baseTimeline.hitCount,outcome:outcome.value as BattleMotionPreviewOutcome,preparing:record?.motion==="buff"});now=timeline.representativeMs;draw();});
   const controls = el("div", { class: "db-skill-retro-controls", children: [playButton, repeatButton, speedGroup, counter,...(timeline.movement?[outcome]:[])] });
   const wrap = el("div", { class: "db-skill-retro-preview db-skill-mon-preview", dataset: { testid: "db-skill-mon-preview", skill: skill.id }, children: [caption, stage, controls, chips] });
+  let resizeObserver: ResizeObserver | undefined;
   if (typeof ResizeObserver === "function") {
-    new ResizeObserver((entries) => {
+    resizeObserver = new ResizeObserver((entries) => {
       const width = entries[0]?.contentRect.width ?? 0;
       if (width > 0) world.style.setProperty("--retro-stage-scale", String(Math.round((width / STAGE_W) * 1000) / 1000));
-    }).observe(stage);
+    });
+    resizeObserver.observe(stage);
   }
 
   let frame: number | null = null;
   let last = 0;
-  let detachedTicks = 0;
   let withSound = false;
   let userPlay = false;
   let soundToken = 0;
   let restUntil = -1;
   const canAutoplay = autoplayAllowed();
+  let wantsPlayback = canAutoplay;
+  let lifecycle: DatabasePreviewLifecycle;
   const setRunning = (running: boolean): void => {
     const userPlaying = running && userPlay;
     playButton.textContent = userPlaying ? "■ 정지" : "▶ 재생";
     playButton.setAttribute("aria-pressed", String(userPlaying));
     stage.dataset.running = String(running);
   };
-  const stop = (): void => {
+  const suspend = (): void => {
     soundToken += 1;
-    userPlay = false;
     if (frame !== null && typeof cancelAnimationFrame === "function") cancelAnimationFrame(frame);
     frame = null;
     withSound = false;
     setRunning(false);
   };
   const schedule = (): void => { if (typeof requestAnimationFrame === "function") frame = requestAnimationFrame(tick); };
+  const stop = (): void => { wantsPlayback = false; userPlay = false; suspend(); };
   function tick(stamp: number): void {
     frame = null;
-    if (!stage.isConnected) {
-      detachedTicks += 1;
-      if (detachedTicks >= 2) { stop(); return; }
-    } else detachedTicks = 0;
+    if (!stage.isConnected) { lifecycle.dispose(); return; }
+    if (!lifecycle.isActive()) { suspend(); return; }
     const dt = Math.min(64, Math.max(0, stamp - (last || stamp)));
     last = stamp;
     clock += dt;
@@ -624,12 +624,13 @@ export function renderMonsterSkillStage(skill: RetroMonsterSkill, name?: string,
     schedule();
   }
   const start = (sound: boolean): void => {
-    stop();
+    if (!lifecycle?.isActive()) return;
+    suspend();
+    wantsPlayback = true;
     userPlay = sound;
     now = 0;
     restUntil = -1;
     last = 0;
-    detachedTicks = 0;
     setRunning(true);
     draw();
     if (!sound) { schedule(); return; }
@@ -637,7 +638,7 @@ export function renderMonsterSkillStage(skill: RetroMonsterSkill, name?: string,
     const ready = Promise.all(retroTimelineSounds(timeline).map((id) => loadBattleSample(id)));
     const wait = new Promise<void>((resolve) => { setTimeout(resolve, SOUND_WAIT_MS); });
     void Promise.race([ready, wait]).then(() => {
-      if (token !== soundToken || !stage.isConnected) return;
+      if (token !== soundToken || !lifecycle.isActive()) return;
       withSound = true;
       for (const id of retroSoundsBetween(timeline, -1, 0)) playBattleSample(id, SOUND_VOLUME);
       schedule();
@@ -656,14 +657,21 @@ export function renderMonsterSkillStage(skill: RetroMonsterSkill, name?: string,
     speedButtons.forEach((other, otherIndex) => other.setAttribute("aria-pressed", String(otherIndex === index)));
   }));
 
-  controllers.set(stage, { stop, resume: () => { if (canAutoplay && frame === null) start(false); }, canAutoplay });
-  if (canAutoplay) start(false);
-  else {
-    // 감속 모드·타이머 없는 호스트: 대표 칸에 선다. ▶ 재생으로만 움직인다.
-    now = timeline.representativeMs;
-    draw();
-  }
-  return { element: wrap, stop };
+  lifecycle = registerDatabasePreview(stage, {
+    suspend,
+    resume: () => {
+      if (!wantsPlayback || frame !== null || stage.dataset.running === "true") return;
+      // Resume the retained timeline without replaying buffered sound or hidden elapsed time.
+      last = 0;
+      setRunning(true);
+      schedule();
+    },
+    dispose: () => resizeObserver?.disconnect(),
+  });
+  // Construction is static, including startup prewarm.
+  now = canAutoplay ? 0 : timeline.representativeMs;
+  draw();
+  return { element: wrap, stop: () => lifecycle.dispose() };
 }
 
 function seconds(ms: number): string {
@@ -677,15 +685,10 @@ function autoplayAllowed(): boolean {
 
 /** scope 안의 몬스터 스킬 무대를 모두 멈춘다. stopRetroSkillStagesIn 이 함께 부른다. */
 export function stopMonsterSkillStagesIn(scope: ParentNode): void {
-  for (const stage of scope.querySelectorAll<HTMLElement>("[data-testid='db-skill-mon-stage']")) controllers.get(stage)?.stop();
+  setDatabasePreviewsActiveIn(scope, false);
 }
-
-/** 캐시에서 다시 붙은 무대를 자동 반복으로 되돌린다. resumeRetroSkillStagesIn 이 함께 부른다. */
 export function resumeMonsterSkillStagesIn(scope: ParentNode): void {
-  for (const stage of scope.querySelectorAll<HTMLElement>("[data-testid='db-skill-mon-stage']")) {
-    const controller = controllers.get(stage);
-    if (controller?.canAutoplay) controller.resume();
-  }
+  setDatabasePreviewsActiveIn(scope, true);
 }
 
 /**

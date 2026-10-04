@@ -1,5 +1,34 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 대화 초상 선택과 게임 글꼴 (2026-10-04)
+
+초상을 잘 고르지 못한 경로: `FACE_SCHEMA`가 얼굴 낱장 48×48만 안내했고,
+`make_villager`는 실행 코드에서 읽는 `face`를 도구 스키마에 노출하지 않았다.
+`list_resources(kind:faceset,query:'*')`의 첫 20개도 작은 얼굴만 반환했다.
+저수준 `upsert_event`에는 `place_npc`의 얼굴 자동 삽입이 적용되지 않는다.
+
+- 얼굴 스키마는 낱장·흉상·전신을 안내한다. `make_villager.face`도 같은 스키마를 쓴다.
+- `list_resources.portraitMode=face|bust|full`로 모양별 검색·페이지 이동한다. 전체 둘러보기는
+  낱장과 공용 기본 표정 초상을 섞어 보여 주고 중복 id를 제거한다.
+- `list_npc_graphics.portraitOptions`는 검토된 짝 얼굴과 **같은 표정 세트**의 큰 초상만 알려 준다.
+  맞는 큰 초상이 없는 걷기 그림에는 임의로 비슷한 초상을 추천하지 않는다.
+- 기존 주민에 `make_villager({mapId,id,name,home,face})`로 대사 없이 초상을 주면 첫 초상을 갱신하고 대사·조건·퀘스트 분기를 보존한다.
+  페이지별 실제 걷기 그림과 번들 얼굴의 짝 검사는 유지한다.
+- 조수 지침은 초상을 선택하고 저수준 대사 앞에 실제 `changeFace`를 넣도록 안내한다.
+  `eventResourceCatalog`의 공용 흉상·전신 예시도 프롬프트 맨 앞에 둔다.
+- 표시 모드의 공통 소유자는 `project/facePresentation.ts`다. 검색·편집기 미리보기·플레이어가
+  같은 resource id를 얼굴/흉상/전신으로 해석한다. 명시한 `presentation`이 우선한다.
+
+`set_project_settings.fonts`는 공통 ui/pixel/mono 글꼴을 지정한 역할만 갱신한다.
+역할에 맞지 않는 글꼴은 거부하고 빈 문자열은 기본값으로 되돌린다. 개별 `dialogue.font`와
+`battle.look.font`가 우선하며 `get_project_summary.data.appearance`에서 현재 설정을 읽는다.
+대화창 `joseon`은 한지색·각진 나무틀·먹색 픽셀 글씨·주홍 선택 표시를 함께 쓴다.
+내보낸 플레이어도 저장된 공통 글꼴을 문서 루트에 적용한다.
+
+회귀 계약은 `test/dialoguePortraitDiscovery.test.ts`. 이 세션은 AGENTS에 따라 Vitest/전체 게이트를
+실행하지 않았다. 직접 도구 실행·JSON 재로드·출하 플레이어의 브라우저 근거는
+`docs/experiments/dialogue-portraits-20261004/`에 기록한다. 실제 모델이 항상 적절한 초상을 고른다는 보장은 아니다.
+
 ## 조수 스킬 저작 — 기믹·연출 빌리기 (2026-09-30)
 
 - `upsert_skill`(`dbTools.ts`) 는 `hpCostPercent`·`drainPercent`·`retroChoreographyId` 도 받는다. 없는 연출 id 는 `nearbyRetroChoreographies` 후보와 함께 거부한다.
@@ -128,11 +157,16 @@
 | `place_terrain_house` | `planQuickHouse` | `kitId`로 현재 타일셋 원본 외관/크기 유지. `style,width,stories,roofWidth`는 크기 조절용 조립 집. 전체 집터+문 앞의 동일 높이·빈 땅 검사, 생성 kit도 등록 |
 | `lay_terrain_road` | `planTerrainFeature(..., "road")` | 절벽 접합에 매끈한 경사로 자동 생성. 쓰기 성공과 실제 도달을 구분하여 reachable/warnings 반환 |
 | `place_terrain_ramp` | `planReliefRamp` | 네 방향 자동 판정, 폭 2·4·6칸, stairs=false |
+| `resize_terrain_house_roof` | `planQuickHouseDrag`의 roof 경로 | 기존 버들항 조립 집의 지붕 폭만 수정. 벽·창·문·층수·배치 ID 유지. 원본 고정 외관은 거부 |
 | `inspect_terrain` | 실제 relief / 구조 배치 읽기 | 집별 전체 footprint 높이·문 앞, 원본 `houseKits`와 조립 `houseStyles`, 경사로/계단 수, 시야 규칙 |
 | `check_terrain_access` | `inspectTerrainRoute` | 실제 canMove/canMoveFootprint로 목적지 **칸 자체** 도달. 몸 크기·이벤트·물·높이·경사 옆벽 반영 |
 
-쓰기 네 도구는 참고문서 게이트의 WRITERS와 패널 MAP_TILE_TOOLS에 등록한다. 고정 조립기가 실제 타일을 고르므로
+지형 쓰기 도구는 참고문서 게이트의 WRITERS와 패널 MAP_TILE_TOOLS에 등록한다. 고정 조립기가 실제 타일을 고르므로
 TILE_CHOOSERS는 아니다. `design_terrain`/도로/경사로는 맵 체크포인트, 집은 tileset.structureKits도 바꾸므로 프로젝트 체크포인트다.
+
+2026-10-04 재편집 점검: `design_terrain({mapId,editId,width})`와 `lay_terrain_road({mapId,editId,width})`는 생략한 점·높이 delta·시드·수위·평탄화 설정을 기존 feature에서 이어받는다. 새 지형/도로에는 tool/points 또는 points가 필요하다. `inspect_terrain({mapId,includeCatalog:false})`은 집 카탈로그를 빼고 feature options, 잠금 칸, 집 parts의 절대 좌표와 roofResizable을 반환한다. 원본 집 목록은 기본 16개씩 `catalogOffset`/`catalogLimit`으로 읽으며 `catalog.nextOffset`이 null이면 끝이다. 128개를 한 응답에 담으면 Pi 도구 결과의 12,000자 상한에 걸려 뒤쪽 feature ID가 사라지던 문제를 막는다. 자연어 절벽·경사로·고지·지붕 요청에는 읽기→수정→통행/그림 검수 도구 묶음을 함께 노출한다.
+
+`sculpt_relief`는 잠긴 높이 변경과 집 전체/문 앞을 비평탄하게 만드는 변경을 원자적으로 거부한다. 집터 전체와 문 앞을 같은 높이로 옮기는 작업은 허용한다. 일반 contour/ridge/lake/road 계획기는 구조 배치의 전체 사각형을 보호한다. 사각형 밖에 있는 문 앞도 높이·물·소품 변경에서 보호하고 길의 바닥 칠하기는 허용한다. 자동 경사 접합이 문 앞 높이를 바꾸면 계획 전체를 거부한다. 근거·실제 모델 수정/SQLite 재로드: `verify-shots/terrain-ai-edit/SUMMARY.md`.
 버들항 지도에 기존 `author_house`의 다른 칩셋 번호를 쓰는 경로는 거부하고 새 집 도구를 안내한다.
 `place_terrain_house` 필수 인자는 `mapId,anchor`다. 원본은 `houseKits`에서 고른 `kitId`만 지정하고 width/stories를 생략한다. 명시적 kitId가 없으면 기본 width=7/stories=1의 조립 스타일 경로이며 모르는 kit/style은 거부한다. 시스템 프롬프트는 원본 탑/박공/날개 등 형태를 섞도록 안내하고, 크기·지붕 조절 요청에만 조립 스타일을 사용한다. 버들항 원본 집 목록 128종에는 도시 구역과 세션 생성 집이 포함되지 않는다.
 `read_tileset_reference` 이미지의 offset=0은 첫 페이지로 허용한다(엄격한 공급자 스키마가 기본 숫자 0을 채우는 경우).
@@ -1591,6 +1625,8 @@ selection, BuildSpec, map-target, or tool-name exemption. A rejected transaction
 returns `protected-house-write` or `house-overlap` and commits none of its maps,
 events, interiors, or map-tree additions. Human direct editing is unchanged.
 
+2026-10-04: 버들항 조립 집의 지붕 폭 변경은 현재 승인된 집으로 동일한 에디터 roof 계획을 다시 실행해 결과가 정확히 일치할 때만 통과한다. 도구 이름으로 보호를 끄지 않는다. 벽/창/문과 네 타일 층, 원본 집, 직접 덧칠, 나중 사람 편집은 계속 보호한다. 줄어든 옛 지붕 여백까지 비교하며 직렬화된 제안의 최종 적용에서도 같은 검사를 쓴다.
+
 Final application also checks the current live store before history or replacement.
 `applyProposedProject` covers chat proposals, autonomous milestones, and cluster
 AI acceptance. `applyRegionProjectWithHistory` covers full and partial region
@@ -2596,6 +2632,15 @@ retired된 플래그도 설명은 고칠 수 있으나 다시 활성화하지 �
 `set_title_screen` 의 `openingPreset`·`effects` 와 `generate_title_art`(키아트 생성 → 비전 맞춤)는
 [title-opening-effects.md](title-opening-effects.md) 에 정리했다.
 
+2026-10-04: 첫 플레이 제작은 장소/첫 입력 뒤 **작품 타이틀·오프닝 전용 단계**를 반드시 실행한다.
+Pi의 `generate_title_art`·`generate_opening_image`는 UI 핸드오프를 실제 제공자 호출로 대체하고
+그림을 등록한다(타이틀은 연결까지). `get_title_screen`은 설정 조회,
+`show_title_opening`은 연결된 원화와 설정을 함께 전달한다. 기본 타이틀·꺼진 오프닝은 완료를 막으며,
+첫 장면 검수는 전체 맵과 연결된 원화의 실제 이미지 전달을 각각 확인한다.
+`show_title_opening`의 요약과 `data.images`는 inline 바이트 유무와 관계없이 연결된 원화를 센다.
+파일 분리된 `ref` 그림은 Pi 래퍼가 브라우저 자산 브리지에서 읽어 모델에 전달하며,
+실제로 보낸 id 목록은 `presentation.image.delivered`에 남긴다. 연결 수와 전달 성공을 혼동하지 않는다.
+
 
 ## 크로노 트리거식 필드 도구 인자 (2026-09-26)
 
@@ -2616,3 +2661,21 @@ prepare 단계가 호스트 빌드(미리보기 1~3초, 실제 약 2분)를 기�
 ## Bounded romance authoring tools
 
 `author_romance_scene` and `inspect_romance_scene` are registered through `harnesses/_core/authoringRegistry.ts` in the event domain. The first authors fixed contract choices with model-written prose and validates native interpreter behavior before atomic commit. The second reports executable blockers; a read-tool transport success is not an `ok` scene verdict. Full contract and completion rules: [romance-scene](harnesses/romance-scene.md).
+
+### 선택 정수 enum의 Antigravity 전달 (2026-10-04)
+
+`nullableOptionalParameters`가 선택값에 null을 허용하는 도구(예: edit_world_terrain.level)는
+정본 스키마에서 type:[integer,null], enum:[1,2,null]이다. `ohMyPiToolEnums`는 SDK 정규화 뒤
+legacy Schema.enum에 ['1','2']를, nullable에 true를 전달한다. 숫자와 null을 문자열 enum 배열에
+함께 넣지 않는다. 원본 스키마는 바꾸지 않으며 중복·소수·잘못된 타입/회원 변경은 계속 거부한다.
+이 계약 불일치는 지형 도구를 직접 호출하지 않는 오프닝 제작 턴도 모델 요청 전에 중단시켰다.
+
+## 글자·장면 오프닝 연출 (2026-10-04)
+
+모든 text/image/video 장면에 선택 `presentation`을 저장한다. 기존 필드가 없으면 기존
+재생을 유지한다. 기본형 subtitle/prologue/chapter/memory/credits, 글자 등장 6종,
+장면 등장 6종, 독립적인 글자·장면 퇴장 시간·색·글꼴·위치·상하 띠를 지원한다.
+`cinematicPresentation.ts`의 엄격 파서를 프로젝트 로드와 AI 도구가 공유하며
+DB 오프닝/게임오버 폼과 미리보기는 같은 레코드/재생기를 쓴다. 꺼진 시퀀스도 보존한다.
+전체 계약·시간·우선순위·reduced-motion·저장/출하 증거는
+[title-opening-effects.md](title-opening-effects.md#글자장면-오프닝-연출-2026-10-04)를 따른다.

@@ -1,3 +1,5 @@
+import { isContainerInsideCommand, moveCommandBetweenLists, resolveCommandListAtPath } from "@/editor/eventCommandPaths";
+import { jsonEqual } from "@/util/structuralJson";
 import { applySharedTileReferenceEntries, ensureSharedTileReferences, sharedTileReferencesTouch } from "./sharedTileReferences";
 import { bootNormalizationMatches, currentBootNormalizationMarker, stampBootNormalization } from "./bootNormalization";
 import { externalizeBundledReferenceImages } from "./bundledReferenceImages";
@@ -25,7 +27,7 @@ import type { RemoteProjectTarget } from "./persistence/target";
 import { isSharedDemoProjectId, SHARED_DEMO_PROJECT_ID } from "./sharedDemoProject";
 import { projectViewWithoutEventDrafts, projectWithoutEventDrafts } from "./eventDrafts";
 import { forgetTrustedSharedEntries, jsonContentDigest, shareContentDigests, sharedEntryDigest } from "./persistence/core/contentDigest";
-import { applyCleanedProjection, cloneProjectForUpdate, cloneProjectSharingReferenceDocuments, finishProjectUpdate } from "./projectClone";
+import { applyCleanedProjection, cloneCommandContainersForMove, projectWithEventRevision, cloneProjectForUpdate, cloneProjectSharingReferenceDocuments, finishProjectUpdate } from "./projectClone";
 import { assertCanonicalReplacement, ProjectRoutingError } from "./spatial/saveRouting";
 import { SpatialPersistenceError, type MirrorStatus } from "./spatial/persistenceTypes";
 import { applyAudioDescriptionDelta } from "./audioDescriptions";
@@ -48,9 +50,9 @@ import type { ProjectRepository } from "./persistence/types";
 import { recordManualProjectCommitAfterSave, resetManualProjectCommitBaseline } from "./projectCommitLog";
 import { repairMapTreeOrphans } from "@/project/mapTree";
 import { cloneExtraLayers } from "@/project/mapLayers";
+import type { ReliefCellChange } from "./relief/changes";
 import { restoreLockedTerrainCells } from "./terrainLocks";
-
-import { jsonEqual } from "@/util/structuralJson";
+import { isMediaSeparationOnly } from "@/project/mediaSeparationEquality";
 import { randomUuid } from "@/util/id";
 import { createLogger } from "@/util/logger";
 import {
@@ -58,7 +60,7 @@ import {
   type EditActivityField,
   type EditActivityOrigin,
 } from "@/editor/editActivityLog";
-import type { GameMap, MapId, Project } from "./types";
+import type { Command, GameEvent, GameMap, MapId, Project } from "./types";
 
 const log = createLogger("store");
 
@@ -95,9 +97,11 @@ export type ProjectChangeDescriptor =
       readonly scope: "map";
       readonly mapId: MapId;
       readonly cells?: readonly ProjectChangeCell[];
+      /** Array-only move; lets the event workbench refresh its List in place. */
+      readonly eventCommandMove?: { readonly pageId: string };
       /** 높이(map.relief)만 바뀐 편집 — 높이 붓이 포인터 표본마다 낸다. 타일·이벤트·속성은 안 바뀐다. */
       readonly relief?: true;
-    } & ProjectChangeAnnotation)
+    } & ProjectChangeAnnotation & ReliefCellChange)
   | ({ readonly scope: "database"; readonly collection?: string } & ProjectChangeAnnotation)
   | ({ readonly scope: "system" | "assets" | "project" } & ProjectChangeAnnotation);
 
@@ -705,6 +709,10 @@ class ProjectStore {
     // `jsonEqual` 은 같은 객제를 만나면 지나가고 첫 차이에서 멈춘다. 문서 로드 정규화가 기본값을
     // 메우는 만큼 «다르다» 로 달 수 있지만, 그 방향은 논리적으로 같은 스냅샷을 한 번 다시 얹는 것뿐이다.
     if (this.persistedBaseline && jsonEqual(snapshot.project, this.persistedBaseline)) return true;
+    const storageOnly = this.persistedBaseline ? await isMediaSeparationOnly(this.persistedBaseline, snapshot.project) : false;
+    // Hashing may yield. A new edit/save/project switch must win over this earlier snapshot.
+    if (generation !== this.mutationGeneration || lineage !== this.contentLineage
+      || this.dirtySinceLastPersist || this.persistInFlight || !sameProjectTarget(target, this.repository.currentTarget())) return false;
     this.current = preserveEventDraftsOnProject(snapshot.project, this.current);
     // 방금 받은 스냅숏은 이 스토어만 가진 사본이고 초안이 없다(호스트 행은 초안을 싣지 않는다). current 는 위에서
     // 따로 복제했으므로 스냅숏을 그대로 기준본으로 둔다. 실측(2026-09-28, 팀 참여 창): 동료 저장 반영마다 기준본
@@ -713,9 +721,9 @@ class ProjectStore {
     this.writeAuthority = snapshot.authority;
     this.lastPersistenceReceipt = null;
     this.lastSavedHostRevision = null;
-    resetManualProjectCommitBaseline(this.current);
+    if (!storageOnly) resetManualProjectCommitBaseline(this.current);
     // External changes invalidate local undo snapshots; do not let Ctrl+Z undo a teammate's work.
-    this.emit({ scope: 'project', origin: 'system', projectSwitch: true });
+    this.emit({ scope: 'project', origin: 'system', projectSwitch: !storageOnly });
     return true;
   }
 
@@ -874,6 +882,83 @@ class ProjectStore {
     this.scheduleAutoSave();
   }
 
+  /** Deep isolate the selected event, including draft.original and every page.
+   * The callback cannot reach shared grids, other events, or project roots. */
+  updateEvent(mapId: MapId, eventId: string, mutator: (event: GameEvent) => void,
+    change: ProjectChangeDescriptor = { scope: "map", mapId, eventId }): void {
+    if (!canWriteTeamProject()) return;
+    const original = this.current.maps[mapId]?.events.find(event => event.id === eventId);
+    if (!original) return;
+    const event = structuredClone(original);
+    mutator(event);
+    removeLegacySpriteReferences(event);
+    if (jsonEqual(original, event)) return;
+    this.publishEventRevision(mapId, eventId, event, change);
+  }
+
+  /** Add/delete one event without exposing shared map branches to mutation. */
+  replaceEvent(mapId: MapId, eventId: string, event: GameEvent | null,
+    change: ProjectChangeDescriptor = { scope: "map", mapId, eventId }): void {
+    if (!canWriteTeamProject()) return;
+    const copy = event === null ? null : structuredClone(event);
+    if (copy && copy.id !== eventId) throw new Error("Event revision ID mismatch");
+    if (copy) removeLegacySpriteReferences(copy);
+    this.publishEventRevision(mapId, eventId, copy, change);
+  }
+
+  /** Replace a page tree with caller-isolated commands; do not clone the tree
+   * being replaced. Undo/redo and batch insertion retain immutable old revisions. */
+  replaceEventCommands(mapId: MapId, eventId: string, pageId: string, commands: readonly Command[],
+    change: ProjectChangeDescriptor = { scope: "map", mapId, eventId }): void {
+    if (!canWriteTeamProject()) return;
+    const event = this.current.maps[mapId]?.events.find(candidate => candidate.id === eventId);
+    const page = event?.pages?.find(candidate => candidate.id === pageId);
+    if (!event || !page || jsonEqual(page.commands, commands)) return;
+    const nextCommands = structuredClone([...commands]);
+    removeLegacySpriteReferences(nextCommands);
+    const nextEvent = { ...event, pages: event.pages!.map(candidate => candidate === page ? { ...page, commands: nextCommands } : candidate) };
+    this.publishEventRevision(mapId, eventId, nextEvent, change);
+  }
+
+  /** Existing-container moves only: immutable commands/snapshots remain shared.
+   * Resolve both containers before splicing so ancestor/sibling index changes
+   * cannot redirect a cross-container destination. Invalid/no-op moves emit nothing. */
+  reorderEventCommands(mapId: MapId, eventId: string, pageId: string,
+    sourcePath: readonly number[], targetPath: readonly number[], toIndex: number,
+    change: ProjectChangeDescriptor = { scope: "map", mapId, eventId }): void {
+    if (!canWriteTeamProject() || !Number.isInteger(toIndex) || sourcePath.length % 2 !== 1
+      || targetPath.length % 2 !== 0 || !sourcePath.every(Number.isInteger) || !targetPath.every(Number.isInteger)
+      || isContainerInsideCommand(sourcePath, targetPath)) return;
+    const event = this.current.maps[mapId]?.events.find(candidate => candidate.id === eventId);
+    const page = event?.pages?.find(candidate => candidate.id === pageId);
+    if (!event || !page) return;
+    const from = sourcePath.at(-1)!;
+    const sourceContainer = sourcePath.slice(0, -1);
+    const source = resolveCommandListAtPath(page.commands, sourceContainer);
+    const target = resolveCommandListAtPath(page.commands, targetPath);
+    if (!source || !target || from < 0 || from >= source.length) return;
+    if (source === target && Math.max(0, Math.min(source.length - 1, toIndex)) === from) return;
+    const commands = cloneCommandContainersForMove(page.commands, [sourceContainer, targetPath]);
+    const draftSource = resolveCommandListAtPath(commands, sourceContainer)!;
+    const draftTarget = resolveCommandListAtPath(commands, targetPath)!;
+    if (!moveCommandBetweenLists(draftSource, from, draftTarget, toIndex)) return;
+    const nextEvent = { ...event, pages: event.pages!.map(candidate => candidate === page ? { ...page, commands } : candidate) };
+    this.publishEventRevision(mapId, eventId, nextEvent, { ...change, scope: "map", mapId, eventId, eventCommandMove: { pageId } });
+  }
+
+  private publishEventRevision(mapId: MapId, eventId: string, event: GameEvent | null, change: ProjectChangeDescriptor): void {
+    if (event && event.id !== eventId) throw new Error("Event revision ID mismatch");
+    const draft = projectWithEventRevision(this.current, mapId, eventId, event);
+    if (draft === this.current) return;
+    assertCanonicalReplacement(draft, this.writeAuthority);
+    // Event edits cannot create map-tree/connections or database slot shapes.
+    this.current = draft;
+    syncEventDraftVaultFromProject(this.current);
+    this.markLocalMutation(change);
+    this.emit(change);
+    this.scheduleAutoSave();
+  }
+
   /**
    * Fast path for database record edits. DB 레코드 편집은 `database[collection]` 하나만 건드리므로,
    * 키스트로크마다 프로젝트 전체를 복제할 이유가 없다.
@@ -957,7 +1042,7 @@ class ProjectStore {
   updateMapTiles(
     mapId: MapId,
     mapMutator: (draft: GameMap) => void,
-    change: { readonly cells?: readonly ProjectChangeCell[]; readonly relief?: true } & ProjectChangeAnnotation = {},
+    change: { readonly cells?: readonly ProjectChangeCell[]; readonly relief?: true } & ProjectChangeAnnotation & ReliefCellChange = {},
   ): void {
     if (!canWriteTeamProject()) return;
     const currentMap = this.current.maps[mapId];

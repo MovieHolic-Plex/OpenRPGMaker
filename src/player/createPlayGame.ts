@@ -23,13 +23,24 @@ export type PlayGameBootOptions = {
   readonly onPlaySceneReady?: () => void;
 };
 
+let runtimeWarmup: Promise<{ PhaserRuntime: typeof Phaser; PlayScene: typeof import('@/player/PlayScene')['PlayScene'] }> | undefined;
+function preparePlayRuntime() {
+  // PlayScene reads getLoadedPhaser() during module evaluation; this dependency is ordered.
+  return runtimeWarmup ??= ensurePhaser().then(async PhaserRuntime => {
+      const { PlayScene } = await importWithRetry(() => import('@/player/PlayScene'));
+      return { PhaserRuntime, PlayScene };
+    })
+    .catch(error => { runtimeWarmup = undefined; throw error; });
+}
+/** Fetch/parse engine chunks while the title is visible; never creates a game/session. */
+export async function warmPlayGameRuntime(): Promise<void> { await preparePlayRuntime(); }
+
 export async function createPlayGame(
   parent: HTMLElement,
   initialSession?: PlaySession,
   options: PlayGameBootOptions = {}
 ): Promise<Phaser.Game> {
-  const PhaserRuntime = await ensurePhaser();
-  const { PlayScene } = await importWithRetry(() => import("@/player/PlayScene"));
+  const { PhaserRuntime, PlayScene } = await preparePlayRuntime();
   const project = store.getCurrent();
   const resolution = resolvePlayResolution(project.system);
   // 타일 크기가 섞인 프로젝트는 큰 칸의 맵을 도트 손실 없이 그리도록 캔버스만 촘촘하게 만든다.

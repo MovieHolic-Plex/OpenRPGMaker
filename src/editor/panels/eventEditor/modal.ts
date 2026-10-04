@@ -20,7 +20,7 @@ import { eventDraftDiffById, eventDraftHasUserChanges } from "@/project/eventDra
 import { showConfirm, type ConfirmOptions } from "@/editor/ui/modal";
 import { validateEventDraft, type EventDraftValidation } from "@/editor/eventDraftValidator";
 import { openSelectedEventTestModal } from "@/editor/panels/testPlayModal";
-import { isTileCellChange, store, type AutoSaveState } from "@/project/store";
+import { store, type AutoSaveState } from "@/project/store";
 import type { MapId } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
 import { renderEditorIcon } from "./editorIcons";
@@ -31,6 +31,7 @@ import { clearEventAiDockOpenRequest, requestEventAiDockOpen } from "./aiDockOpe
 import {
   openActiveEventCommandPicker,
   renderEventEditorDynamic,
+  refreshEventCommandMove,
   renderEventEditorStable,
   undoActiveEventCommands,
   clearEventCommandNavigation,
@@ -40,6 +41,7 @@ import {
   refreshEventValidationBell,
   renderEventValidationBell,
 } from "./validationBell";
+import { finishCommandListMount } from "./commandList";
 import { clearCommandToolbarHistories } from "./commandToolbarHistory";
 import { clearCommandInspector, setCommandInspectorHost, setCommandSelectionListener } from "./commandInspector";
 import { resetEventViewSession } from "./storyboardView";
@@ -396,7 +398,7 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
       closeHandler(true);
       return;
     }
-    if (isTileCellChange(change)) {
+    if (change.scope === "map" && (!!change.cells?.length || change.relief === true)) {
       // Painting emits per pointer sample and never touches events. Other maps cannot
       // affect this body; on this map only the validation bell can, so settle first.
       if (change.mapId !== request.mapId) return;
@@ -408,6 +410,29 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
     if (!live && !store.restoreEventDraftFromVault(request.mapId, request.eventId)) {
       closeHandler(true);
       return;
+    }
+    if (!minimized && !refreshing && change.scope === "map" && change.mapId === request.mapId
+      && change.eventId === request.eventId && change.eventCommandMove) {
+      // Replacing a focused row/inspector can synchronously commit another field.
+      // Share the staged renderer's guard so that nested changes render afterward.
+      refreshing = true;
+      let refreshed = false;
+      try {
+        const scrollSnapshots = captureEventEditorScroll(dynamicBody);
+        const interactionSnapshot = captureEventEditorInteraction(dynamicBody);
+        if (refreshEventCommandMove(request.mapId, request.eventId, change)) {
+          customSelects.refresh();
+          restoreEventEditorScroll(dynamicBody, scrollSnapshots);
+          restoreEventEditorInteraction(dynamicBody, interactionSnapshot);
+          refreshEventValidationBell(header, validateEventDraft(store.getCurrent(), request.mapId, request.eventId));
+          refreshModalFooterStatus(footer, request);
+          refreshModalHeaderSaveState(header, footer);
+          refreshed = true;
+        }
+      } catch (error) { console.error("[event-editor] failed to refresh command move", error); }
+      finally { refreshing = false; }
+      if (refreshed && !refreshPending) return;
+      refreshPending = false;
     }
     refresh();
   });
@@ -966,30 +991,78 @@ function footerButtonAccessibleName(text: string): string {
   }
 }
 
-function installFocusTrap(backdropEl: HTMLElement, windowEl: HTMLElement): () => void {
+/** Cached boundary candidates; interior traversal stays native. Observer records
+ * are drained on the key itself, so same-task hidden/disabled changes are seen. */
+export function installFocusTrap(backdropEl: HTMLElement, windowEl: HTMLElement): () => void {
+  const doc = windowEl.ownerDocument;
+  const view = doc.defaultView;
+  const selector = "button, [href], input, select, textarea, summary, [tabindex]";
+  let dirty = true;
+  let first: HTMLElement | undefined;
+  let last: HTMLElement | undefined;
+  const invalidate = () => { dirty = true; };
+  const observer = typeof MutationObserver === "undefined" ? undefined : new MutationObserver(invalidate);
+  const attributes = ["hidden", "disabled", "tabindex", "href", "class", "style", "open", "inert", "type"];
+  observer?.observe(windowEl, { subtree: true, childList: true, attributes: true, attributeFilter: attributes });
+  // Visibility may also be controlled by an ancestor of the dialog window.
+  for (let parent = windowEl.parentElement; parent; parent = parent.parentElement) observer?.observe(parent, { attributes: true, attributeFilter: attributes });
+  view?.addEventListener("resize", invalidate);
+  const usable = (element: HTMLElement): boolean => {
+    if (element.tabIndex < 0 || element.matches(":disabled, [inert], input[type='hidden']") || element.closest("[hidden], [inert]")) return false;
+    for (let parent = element.parentElement; parent && parent !== windowEl; parent = parent.parentElement) {
+      if (parent.tagName === "DETAILS" && !parent.hasAttribute("open")) {
+        const summary = parent.querySelector("summary");
+        if (!summary?.contains(element)) return false;
+      }
+    }
+    if (element.offsetParent === null && element.getClientRects().length === 0) return false;
+    const visibility = view?.getComputedStyle(element).visibility;
+    return visibility !== "hidden" && visibility !== "collapse";
+  };
+  const refresh = (): void => {
+    first = undefined;
+    last = undefined;
+    // Reject known hidden subtrees before asking any candidate for geometry.
+    const walker = doc.createTreeWalker(windowEl, 1, {
+      acceptNode(node) {
+        const element = node as HTMLElement;
+        if (element.hidden || element.hasAttribute("inert")) return 2; // FILTER_REJECT
+        if (element.parentElement?.tagName === "DETAILS" && !element.parentElement.hasAttribute("open") && element.tagName !== "SUMMARY") return 2;
+        return element.matches(selector) ? 1 : 3; // ACCEPT / SKIP
+      },
+    });
+    // First/last only: reverse traversal avoids geometry reads for every row.
+    let node = walker.nextNode();
+    while (node && !usable(node as HTMLElement)) node = walker.nextNode();
+    first = (node as HTMLElement | null) ?? undefined;
+    walker.currentNode = windowEl;
+    node = walker.lastChild();
+    if (node) {
+      let child: Node | null;
+      while ((child = walker.lastChild())) node = child;
+      while (node && !usable(node as HTMLElement)) node = walker.previousNode();
+      last = (node as HTMLElement | null) ?? undefined;
+    }
+    dirty = false;
+  };
   const trap = (event: KeyboardEvent): void => {
     if (event.key !== "Tab" || !isTopModal(backdropEl)) return;
-    const focusable = Array.from(
-      windowEl.querySelectorAll<HTMLElement>(
-        "button:not(:disabled), [href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex='-1'])",
-      ),
-    ).filter((el) => el.offsetParent !== null || el === document.activeElement);
-    if (focusable.length === 0) return;
-    const first = focusable[0]!;
-    const last = focusable[focusable.length - 1]!;
-    if (!windowEl.contains(document.activeElement)) {
+    if (observer?.takeRecords().length) dirty = true;
+    // Without observer support, recompute rather than use stale boundaries.
+    if (dirty || !observer || (first && !usable(first)) || (last && !usable(last))) refresh();
+    if (!first || !last) { event.preventDefault(); return; }
+    const active = doc.activeElement;
+    if (!windowEl.contains(active) || (active instanceof HTMLElement && !usable(active))) {
       event.preventDefault();
       (event.shiftKey ? last : first).focus({ preventScroll: true });
-      return;
-    }
-    if (event.shiftKey) {
-      if (document.activeElement === first) { event.preventDefault(); last.focus(); }
-    } else {
-      if (document.activeElement === last) { event.preventDefault(); first.focus(); }
+    } else if (event.shiftKey && active === first) {
+      event.preventDefault(); last.focus({ preventScroll: true });
+    } else if (!event.shiftKey && active === last) {
+      event.preventDefault(); first.focus({ preventScroll: true });
     }
   };
-  document.addEventListener("keydown", trap, true);
-  return () => document.removeEventListener("keydown", trap, true);
+  doc.addEventListener("keydown", trap, true);
+  return () => { doc.removeEventListener("keydown", trap, true); observer?.disconnect(); view?.removeEventListener("resize", invalidate); };
 }
 function focusFirstDialogControl(root: HTMLElement): void {
   const first = root.querySelector<HTMLElement>(
@@ -1111,7 +1184,12 @@ function restoreEventEditorInteraction(root: HTMLElement, snapshot: EventEditorI
     ] ?? null;
   }
   if (!focusTarget && snapshot.focusCommandPath) {
-    const row = findRenderedCommand(root, snapshot.focusCommandPath);
+    let row = findRenderedCommand(root, snapshot.focusCommandPath);
+    const list = root.querySelector<HTMLElement>(".cmd-list");
+    if (!row && list && !list.hidden && list.hasAttribute("aria-busy")) {
+      finishCommandListMount(list);
+      row = findRenderedCommand(root, snapshot.focusCommandPath);
+    }
     focusTarget = row?.querySelector<HTMLElement>(".cmd-head, .line") ?? row;
   }
   if (!focusTarget) return;

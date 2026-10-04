@@ -13,10 +13,14 @@
 """
 import argparse, collections, datetime, fcntl, glob, json, os, shutil, signal, subprocess, sys, time
 
+if not __package__:
+    sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
+    __package__ = 'src.harnesses.interior-props'
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, '..', '..', '..'))
 sys.path.insert(0, HERE)
-import store  # noqa: E402
+from . import derive, store  # noqa: E402
 
 # 엔진: codex(기본, 2026-10-01 사용자 「전체 다 codex 가」 — gpt-6.1-sol medium) | claude(Sonnet 5.5)
 ENGINE = os.environ.get('PROP_HARNESS_ENGINE', 'codex')
@@ -28,7 +32,7 @@ TIMEOUT_S = int(os.environ.get('PROP_HARNESS_TIMEOUT', str(40 * 60)))
 REVIEW_EFFORT = os.environ.get('PROP_HARNESS_REVIEW_EFFORT', 'medium' if ENGINE == 'codex' else 'high')
 MAX_ATTEMPTS = int(os.environ.get('PROP_HARNESS_ATTEMPTS', '3'))   # 한 장 = 그리기 최대 3번(처음 + 다시 그리기 2번)
 N_DEFAULT = 2   # 후보 둘(설명 충실·같은 방 화풍, 또는 최소 수정 둘). 셋째 자리는 고르는 화면의 「다시 뽑기」(2026-10-03 사용자)
-CANDS = 'tiledata/hand-interior/pick/candidates'
+CANDS = os.path.join(os.path.abspath(os.environ['PROP_HARNESS_CONTENT_ROOT']), 'tiledata/hand-interior/pick/candidates') if os.environ.get('PROP_HARNESS_CONTENT_ROOT') else 'tiledata/hand-interior/pick/candidates'
 POOL_LOCK = os.path.join(store.DATA, 'pool.lock')
 LOGS = os.path.join(store.DATA, 'logs')
 WORK = os.path.join(store.DATA, 'work')   # 작업자 세션의 작업 폴더(저장소 밖 — 저장소 문맥을 안 싣는다)
@@ -38,19 +42,21 @@ def claude_bin():
     return shutil.which('claude') or os.path.expanduser('~/.local/bin/claude')
 
 
-def draw(items, n=N_DEFAULT, note='', base='', start_pool=True):
-    import brief
+def draw(items, n=N_DEFAULT, note='', base='', start_pool=True, slot=''):
+    from . import brief
     from common import objects_by_id
     from common import spec_top_lint
     by = objects_by_id(); out = []
     for item in items:
         if item not in by: raise SystemExit(f'모르는 기물: {item!r}')
-    errs = [e for item in items for e in spec_top_lint(by[item])]   # 명세가 옆모습을 허락하면 판을 열지 않는다(2026-10-02 기관차)
+    errs = [e for item in items if not by[item].get('set') for e in spec_top_lint(by[item])]   # 명세가 옆모습을 허락하면 판을 열지 않는다(2026-10-02 기관차). 파생 묶음은 칸마다 원본 명세를 따른다
     if errs: raise SystemExit('명세 검사 불합격 — 설명을 고친 뒤 다시:\n' + '\n'.join(errs))
     for item in items:
-        dirs = brief.directions(item, base)
+        dirs = brief.directions(item, base, slot)
         rid = store.new_round(item, n, dirs, note=note, base=base, model=MODEL, effort=EFFORT, root=ROOT)
-        brief.make(rid, item, note=note, base=base)
+        bd = brief.make(rid, item, note=note, base=base, slot=slot)
+        if slot:   # 묶음에서 칸 하나만 다시 — 다른 칸은 출발 후보 그대로여야 한다(derive.lock_check)
+            open(os.path.join(bd, 'lock.json'), 'w', encoding='utf-8').write(json.dumps({'base': base, 'slot': slot}, ensure_ascii=False))
         out.append(rid)
         print(f'h{rid}: {item} — 후보 {n}장 대기열에', flush=True)
     if start_pool: ensure_pool()
@@ -73,7 +79,14 @@ def pool_alive():
 def ensure_pool():
     if pool_alive(): return
     os.makedirs(LOGS, exist_ok=True)
-    subprocess.Popen([sys.executable, os.path.abspath(__file__), 'pool'], cwd=ROOT, start_new_session=True,
+    cmd = [sys.executable, os.path.abspath(__file__), 'pool']
+    # 고르는 서버(systemd 서비스) 안에서 띄우면 서버를 다시 켤 때 일꾼까지 같이 죽는다(2026-10-03) → 되면 따로 된 user 서비스로
+    if shutil.which('systemd-run') and os.environ.get('XDG_RUNTIME_DIR'):
+        r = subprocess.run(['systemd-run', '--user', '--collect', '--quiet', f'--unit=prop-harness-pool-{int(time.time())}',
+                            f'--working-directory={ROOT}', '-p', f'StandardOutput=append:{os.path.join(LOGS, "pool.log")}',
+                            '-p', f'StandardError=append:{os.path.join(LOGS, "pool.log")}'] + cmd, capture_output=True)
+        if r.returncode == 0: return
+    subprocess.Popen(cmd, cwd=ROOT, start_new_session=True,
                      stdout=open(os.path.join(LOGS, 'pool.log'), 'a'), stderr=subprocess.STDOUT, stdin=subprocess.DEVNULL)
 
 
@@ -152,7 +165,8 @@ def _is_deep(item):
 def _review_pack(r):
     """검수자가 볼 그림: 지금|후보 8배 나란히, 각각 8배, 같은 방 안(4배)."""
     from PIL import Image
-    import brief, context
+    from . import brief
+    import context
     from common import objects_by_id, slug
     o = objects_by_id()[r['item']]; s = slug(r['item']); cand = _out(r); att = r.get('attempt') or 1
     pack = _pack_dir(r); os.makedirs(pack, exist_ok=True)
@@ -189,7 +203,7 @@ def _review_pack(r):
 
 
 def _review_prompt(r):
-    import brief
+    from . import brief
     from common import top_rule_text
     pack, o = _review_pack(r)
     t = open(os.path.join(HERE, 'review.md'), encoding='utf-8').read()
@@ -206,7 +220,8 @@ def _review_prompt(r):
            '{CAND}': f"{_folder(r, absolute=True)}/{_out(r)}.pxg", '{ATTEMPT}': str(r.get('attempt') or 1), '{MAX}': str(MAX_ATTEMPTS),
            '{LETTER}': r['letter'], '{DIRECTION}': r['direction'], '{PACK}': pack, '{PREV}': prev,
            '{FAMILY}': ', '.join(f'`{p}`' for p in fam) or '(없음)', '{ANCHORS}': ', '.join(f'`{p}`' for p in anc) or '(없음)',
-           '{NEWMODE}': NEW_REVIEW if brief.is_new(r['item']) else '', '{TOPRULE}': top_rule_text(o) or '해당 없음(벽면 걸이·바닥 무늬).'}
+           '{NEWMODE}': (derive.review_text(o) or NEW_REVIEW) if brief.is_new(r['item']) else '', '{TOPRULE}': ('파생 묶음 — 칸마다 **원본 칸과 같은 시점·같은 윗면 두께**가 기준이다(원본 칸보다 윗면이 눈에 띄게 얇거나 옆모습이면 `FRONT`). 원본 칸 자체의 행 수는 따지지 않는다.'
+                           if o.get('set') else top_rule_text(o) or '해당 없음(벽면 걸이·바닥 무늬).')}
     for k, v in rep.items(): t = t.replace(k, v)
     return t, pack
 
@@ -257,7 +272,7 @@ def _start_codex(r, prompt, effort, log):
     pf = log[:-4] + '.prompt.txt'; open(pf, 'w', encoding='utf-8').write(prompt)
     cmd = [shutil.which('codex') or os.path.expanduser('~/.local/bin/codex'), 'exec', '-m', CODEX_MODEL,
            '-c', f'model_reasoning_effort="{effort}"', '--skip-git-repo-check', '-s', 'workspace-write',
-           '--add-dir', r['root'], '--add-dir', store.DATA, '-C', WORK, '-']
+           '--add-dir', r['root'], '--add-dir', os.environ.get('PROP_HARNESS_CONTENT_ROOT', r['root']), '--add-dir', store.DATA, '-C', WORK, '-']
     p = subprocess.Popen(cmd, cwd=WORK, stdin=open(pf, 'rb'), stdout=open(log, 'w'), stderr=subprocess.STDOUT,
                          start_new_session=True)
     store.update_run(r['id'], status='running', pid=p.pid, started=store.now(), log=log)
@@ -358,6 +373,11 @@ def _finish(r, code):
         hard = j.get('hard', []); ok = 0 if hard or not j.get('ok') else 1
     except (OSError, ValueError):
         hard, ok = [(ck.stdout + ck.stderr)[-400:]], 0
+    if ok and os.path.exists(base + '.png'):   # 파생 묶음: 원본 칸·고치지 않는 칸은 화소 그대로(derive.lock_check)
+        from . import derive
+        from common import objects_by_id
+        lk = derive.lock_check(objects_by_id().get(r['item']) or {}, base + '.png', r.get('brief'))
+        if lk: hard, ok = hard + lk, 0
     store.update_run(r['id'], ok=ok, error='; '.join(hard)[:500], review='')
     if not ok:
         if _again(r, dict(stage='hard', attempt=att, hard=hard)): return
@@ -476,13 +496,13 @@ REDO_NOTE = '다시 뽑기(2026-10-02 새 지시서): 「시점 (3/4)」 절과 
 
 def _ready_items():
     """화면의 「고를 차례」 순서(위에서부터)."""
-    import api
+    from . import api
     return [i['id'] for i in api.state()['items'] if i['status'] == 'ready']
 
 
 def _drop_round(rd, keep):
     """안 고른 판 하나를 지운다: 일꾼(pid 로) → 후보 파일(keep 제외) → 작업지시서 폴더 → DB 행."""
-    import brief
+    from . import brief
     from common import slug
     for r in store.runs(rd['id']):
         if r['status'] == 'running' and r['pid'] and _alive(r['pid']):
@@ -502,7 +522,7 @@ def redo(items, note=REDO_NOTE, dry=False):
     """안 고른 판의 후보를 지우고 새 작업지시서로 다시 뽑는다(사용자 2026-10-02 「고를 차례 위에서부터, 후보는 다 지우고」).
     지키는 것: 고른 판, 지금 고른 그림·다른 판의 출발 그림(base), 사용자가 버린 후보(새 판의 「이렇게 하지 말 것」).
     건너뛰는 것: 이미 새 지시서로 뽑은 판, REDO_SKIP."""
-    import brief
+    from . import brief
     items = items or _ready_items()
     allr = store.rounds()
     based = {b.split('@')[0] for b in (rd.get('base') or '' for rd in allr) if b}

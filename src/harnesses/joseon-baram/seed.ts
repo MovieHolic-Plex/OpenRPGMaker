@@ -8,6 +8,8 @@ export type JoseonMap = {
   name: string;
   profile: string;
   builder: string;
+  /** 한 빌더가 방 여러 장을 굽는 경우(inb_demo.py·pal_demo.py) 방 id 와 플래그. 없으면 인자 없이 부른다. */
+  builderArgs?: string[];
   builderSeed: number;
   size: [number, number];
   out: string;
@@ -119,6 +121,7 @@ export function validateSeed(raw: unknown): JoseonSeed {
     if (mapIds.has(id)) fail(`지도 id 중복: ${id}`);
     mapIds.add(id);
     str(map.builder, `maps[${index}].builder`);
+    if (map.builderArgs !== undefined && (!Array.isArray(map.builderArgs) || map.builderArgs.some((a) => typeof a !== "string"))) fail(`maps[${index}].builderArgs 는 문자열 배열`);
     str(map.out, `maps[${index}].out`);
     str(map.stem, `maps[${index}].stem`);
     if (!Array.isArray(map.size) || map.size.length !== 2 || map.size.some((v) => !Number.isInteger(v) || (v as number) <= 0)) fail(`maps[${index}].size 는 [칸w, 칸h]`);

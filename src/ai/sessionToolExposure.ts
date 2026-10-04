@@ -97,6 +97,16 @@ export function buildSessionRegistryTools(input: SessionToolExposureInput): Open
   appendUnique(tools, seen, core);
   appendUnique(tools, seen, toolSchemasForNames(DISCOVERY_CONTROL_TOOL_NAMES) as OpenAiTool[]);
   appendUnique(tools, seen, schemasForIntent(input.intent));
+  if (/(태양|햇빛|그림자|\bsun(?:light)?\b|\bshadow\b)/i.test(input.requestText)) {
+    appendUnique(tools, seen, toolSchemasForNames(["set_map_properties", "inspect_terrain", "show_map_region"]) as OpenAiTool[]);
+  }
+  // 높이 편집에는 읽기·재편집·통행 검사까지 함께 필요하다. 단어 순위 상한에
+  // 걸려 조수가 평면 paint_road로 우회하지 않도록 같은 도구 묶음을 보인다.
+  if (/(절벽|경사로|고지|지붕|입체\s*지형|높이\s*지형|\bterrain\b|\brelief\b)/i.test(input.requestText)
+    || input.intent?.tools.some(name => ["sculpt_relief", "design_terrain", "inspect_terrain", "lay_terrain_road"].includes(name))) {
+    appendUnique(tools, seen, toolSchemasForNames(["read_relief", "sculpt_relief", "check_relief", "design_terrain",
+      "inspect_terrain", "place_terrain_house", "lay_terrain_road", "place_terrain_ramp", "resize_terrain_house_roof", "check_terrain_access", "show_map_region"]) as OpenAiTool[]);
+  }
   appendUnique(tools, seen, mentionedToolSchemas(input.requestText) as OpenAiTool[]);
   appendUnique(tools, seen, input.discoveredToolNames
     ? toolSchemasForNames(input.discoveredToolNames) as OpenAiTool[]

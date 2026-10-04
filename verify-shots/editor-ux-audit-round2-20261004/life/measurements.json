@@ -1,0 +1,192 @@
+{
+  "commit": "2cd0368b939bc5430ab8daa0e5ea52a38c5c5d00",
+  "conditions": "Native editor, 1440x900, reduced motion, synthetic fixtures, no host saves/model calls; wallMs includes automation and a fixed 250ms settling period; longTasks are browser tasks >=50ms. Shared host load is uncontrolled.",
+  "errors": [],
+  "rows": [
+    {
+      "name": "life:10:100:open",
+      "wallMs": 440,
+      "longTasks": [
+        133
+      ],
+      "addedNodes": 18,
+      "removedNodes": 21,
+      "treeReplacements": 0,
+      "totalNodes": 3546,
+      "lifeOptions": 1000,
+      "hiddenFishPanels": 9,
+      "focused": "db-tab-life-collections",
+      "currentMapId": "map_page"
+    },
+    {
+      "name": "life:10:100:zero-match:0",
+      "wallMs": 286,
+      "longTasks": [],
+      "addedNodes": 11,
+      "removedNodes": 11,
+      "treeReplacements": 0,
+      "totalNodes": 3487,
+      "lifeOptions": 1000,
+      "hiddenFishPanels": 9,
+      "focused": null,
+      "currentMapId": "map_page"
+    },
+    {
+      "name": "life:10:100:zero-match:1",
+      "wallMs": 286,
+      "longTasks": [],
+      "addedNodes": 11,
+      "removedNodes": 11,
+      "treeReplacements": 0,
+      "totalNodes": 3487,
+      "lifeOptions": 1000,
+      "hiddenFishPanels": 9,
+      "focused": null,
+      "currentMapId": "map_page"
+    },
+    {
+      "name": "life:10:100:zero-match:2",
+      "wallMs": 288,
+      "longTasks": [],
+      "addedNodes": 11,
+      "removedNodes": 11,
+      "treeReplacements": 0,
+      "totalNodes": 3487,
+      "lifeOptions": 1000,
+      "hiddenFishPanels": 9,
+      "focused": null,
+      "currentMapId": "map_page"
+    },
+    {
+      "name": "life:50:500:open",
+      "wallMs": 654,
+      "longTasks": [
+        284
+      ],
+      "addedNodes": 18,
+      "removedNodes": 18,
+      "treeReplacements": 0,
+      "totalNodes": 29816,
+      "lifeOptions": 25000,
+      "hiddenFishPanels": 49,
+      "focused": "db-tab-life-collections",
+      "currentMapId": "map_page"
+    },
+    {
+      "name": "life:50:500:zero-match:0",
+      "wallMs": 615,
+      "longTasks": [
+        318,
+        137
+      ],
+      "addedNodes": 11,
+      "removedNodes": 11,
+      "treeReplacements": 0,
+      "totalNodes": 29517,
+      "lifeOptions": 25000,
+      "hiddenFishPanels": 49,
+      "focused": null,
+      "currentMapId": "map_page"
+    },
+    {
+      "name": "life:50:500:zero-match:1",
+      "wallMs": 672,
+      "longTasks": [
+        340,
+        159
+      ],
+      "addedNodes": 11,
+      "removedNodes": 11,
+      "treeReplacements": 0,
+      "totalNodes": 29517,
+      "lifeOptions": 25000,
+      "hiddenFishPanels": 49,
+      "focused": null,
+      "currentMapId": "map_page"
+    },
+    {
+      "name": "life:50:500:zero-match:2",
+      "wallMs": 612,
+      "longTasks": [
+        302,
+        156
+      ],
+      "addedNodes": 11,
+      "removedNodes": 11,
+      "treeReplacements": 0,
+      "totalNodes": 29517,
+      "lifeOptions": 25000,
+      "hiddenFishPanels": 49,
+      "focused": null,
+      "currentMapId": "map_page"
+    },
+    {
+      "name": "life:100:1000:open",
+      "wallMs": 1455,
+      "longTasks": [
+        988,
+        56
+      ],
+      "addedNodes": 18,
+      "removedNodes": 18,
+      "treeReplacements": 0,
+      "totalNodes": 107666,
+      "lifeOptions": 100000,
+      "hiddenFishPanels": 99,
+      "focused": "db-tab-life-collections",
+      "currentMapId": "map_page"
+    },
+    {
+      "name": "life:100:1000:zero-match:0",
+      "wallMs": 2168,
+      "longTasks": [
+        60,
+        1353,
+        451,
+        59
+      ],
+      "addedNodes": 11,
+      "removedNodes": 11,
+      "treeReplacements": 0,
+      "totalNodes": 107067,
+      "lifeOptions": 100000,
+      "hiddenFishPanels": 99,
+      "focused": null,
+      "currentMapId": "map_page"
+    },
+    {
+      "name": "life:100:1000:zero-match:1",
+      "wallMs": 2233,
+      "longTasks": [
+        1415,
+        463,
+        64
+      ],
+      "addedNodes": 11,
+      "removedNodes": 11,
+      "treeReplacements": 0,
+      "totalNodes": 107067,
+      "lifeOptions": 100000,
+      "hiddenFishPanels": 99,
+      "focused": null,
+      "currentMapId": "map_page"
+    },
+    {
+      "name": "life:100:1000:zero-match:2",
+      "wallMs": 3678,
+      "longTasks": [
+        1513,
+        1824,
+        57
+      ],
+      "addedNodes": 11,
+      "removedNodes": 11,
+      "treeReplacements": 0,
+      "totalNodes": 107067,
+      "lifeOptions": 100000,
+      "hiddenFishPanels": 99,
+      "focused": null,
+      "currentMapId": "map_page"
+    }
+  ]
+}

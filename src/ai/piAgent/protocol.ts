@@ -30,7 +30,12 @@ export interface PiAgentRequest {
   /** 기본 single. team 이면 팀장 에이전트가 맵별 시공·검수 에이전트를 띄운다. */
   readonly mode?: PiAgentMode;
   readonly roleModels?: SpecialistModels;
+  /** The user's image slot, inherited by every specialist; credentials stay on the companion. */
+  readonly imageProvider?: string;
+  readonly imageModel?: string;
   readonly provider: string;
+  /** Stable persistence identity for companion-wide map ownership. Omission is conservative. */
+  readonly projectKey?: string;
   /** 비우면 제공자 기본 모델. */
   readonly model?: string;
   readonly task: string;

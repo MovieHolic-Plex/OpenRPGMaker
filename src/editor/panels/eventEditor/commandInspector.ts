@@ -38,6 +38,11 @@ let host: HTMLElement | undefined;
 let emptyPreview: (() => HTMLElement) | undefined;
 let selectedPath: number[] | undefined;
 let selectedPaths: number[][] = [];
+let selectedKeys = new Set<string>();
+let paintedKeys = new Set<string>();
+let selectionRows = new Map<string, HTMLElement[]>();
+let selectionRowsDirty = true;
+let selectionObserver: MutationObserver | undefined;
 let selectionScope: string | HTMLElement | undefined;
 let selectionSurface: HTMLElement | undefined;
 let selectionListener: (() => void) | undefined;
@@ -50,7 +55,14 @@ export function beginCommandSelectionScope(scope: string | HTMLElement): void {
 }
 
 export function setCommandSelectionSurface(surface: HTMLElement): void {
+  if (selectionSurface === surface) return;
+  selectionObserver?.disconnect();
   selectionSurface = surface;
+  selectionRowsDirty = true;
+  paintedKeys = new Set();
+  selectionRows.clear();
+  selectionObserver = typeof MutationObserver === "undefined" ? undefined : new MutationObserver(records => { selectionRowsDirty ||= mutationsChangeCommandRows(records); });
+  selectionObserver?.observe(surface, { subtree: true, childList: true, attributes: true, attributeFilter: ["data-cmd-path"] });
 }
 
 export function selectedCommandPaths(): readonly (readonly number[])[] {
@@ -58,7 +70,7 @@ export function selectedCommandPaths(): readonly (readonly number[])[] {
 }
 
 export function isCommandSelected(path: readonly number[]): boolean {
-  return selectedPaths.some(selected => sameInspectorPath(path, selected));
+  return selectedKeys.has(JSON.stringify(path));
 }
 
 export function authoredCommandPaths(commands: readonly Command[], container: readonly number[] = []): number[][] {
@@ -71,8 +83,13 @@ export function authoredCommandPaths(commands: readonly Command[], container: re
 
 /** Parent selection subsumes descendants; input order follows the authored tree. */
 export function selectedCommandRoots(paths: readonly (readonly number[])[]): number[][] {
-  return paths.filter(path => !paths.some(parent => parent.length < path.length
-    && parent.every((part, index) => path[index] === part))).map(path => [...path]);
+  const keys = new Set(paths.map(path => JSON.stringify(path)));
+  return paths.filter(path => {
+    for (let length = 1; length < path.length; length += 2) {
+      if (keys.has(JSON.stringify(path.slice(0, length)))) return false;
+    }
+    return true;
+  }).map(path => [...path]);
 }
 
 export function selectAllAuthoredCommands(commands: readonly Command[]): void {
@@ -81,24 +98,72 @@ export function selectAllAuthoredCommands(commands: readonly Command[]): void {
   notifyCommandSelectionChanged();
 }
 
+function mutationsChangeCommandRows(records: readonly MutationRecord[]): boolean {
+  return records.some(record => record.type === "attributes" || [...record.addedNodes, ...record.removedNodes].some(node => {
+    const element = node as HTMLElement;
+    return element.dataset?.cmdPath !== undefined || element.querySelector?.("[data-cmd-path]") != null;
+  }));
+}
+
+/** Explicitly invalidate after synchronous mounting; MutationObserver is asynchronous. */
+export function invalidateCommandSelectionRows(): void { selectionRowsDirty = true; }
+
 export function notifyCommandSelectionChanged(): void {
-  selectionSurface?.querySelectorAll<HTMLElement>("[data-cmd-path]").forEach(row => {
-    const selected = selectedPaths.some(path => JSON.stringify(path) === row.dataset.cmdPath);
-    row.classList.toggle("selected", selected);
-    if (!row.classList.contains("cmd-item")) {
-      row.classList.toggle("sel", selected);
-      row.classList.toggle("is-selected", selected);
-      if (selected) row.setAttribute("aria-current", "step");
-      else row.removeAttribute("aria-current");
+  if (selectionObserver && mutationsChangeCommandRows(selectionObserver.takeRecords())) selectionRowsDirty = true;
+  const rebuilt = selectionRowsDirty;
+  if (selectionRowsDirty) {
+    selectionRows.clear();
+    selectionSurface?.querySelectorAll<HTMLElement>("[data-cmd-path]").forEach(row => {
+      const key = row.dataset.cmdPath!;
+      const rows = selectionRows.get(key) ?? [];
+      rows.push(row);
+      selectionRows.set(key, rows);
+    });
+    // New mounts may already contain selected classes supplied by their renderer.
+    paintedKeys = new Set();
+    for (const [key, rows] of selectionRows) {
+      if (rows.some(row => row.classList.contains("selected") || row.classList.contains("sel") || row.classList.contains("is-selected"))) paintedKeys.add(key);
     }
-  });
+    selectionRowsDirty = false;
+  }
+  selectedKeys = new Set(selectedPaths.map(path => JSON.stringify(path)));
+  const changed = new Set<string>(rebuilt ? selectionRows.keys() : []);
+  for (const key of paintedKeys) if (!selectedKeys.has(key)) changed.add(key);
+  for (const key of selectedKeys) if (!paintedKeys.has(key)) changed.add(key);
+  for (const key of changed) {
+    const selected = selectedKeys.has(key);
+    for (const row of selectionRows.get(key) ?? []) {
+      row.classList.toggle("selected", selected);
+      if (!row.classList.contains("cmd-item")) {
+        row.classList.toggle("sel", selected);
+        row.classList.toggle("is-selected", selected);
+        if (selected) row.setAttribute("aria-current", "step");
+        else row.removeAttribute("aria-current");
+      }
+    }
+  }
+  paintedKeys = selectedKeys;
   selectionListener?.();
+}
+
+/** Shared by List/Story: navigation and unhandled keys must not change selection. */
+export function isCommandActionKey(event: KeyboardEvent): boolean {
+  if ((event.ctrlKey || event.metaKey) && !event.altKey) return ["z", "y", "x", "c", "v", "a", "k", "/", "?"].includes(event.key.toLowerCase());
+  return !event.ctrlKey && !event.metaKey && !event.altKey && ["Enter", " ", "Spacebar", "Delete", "Del", "Backspace"].includes(event.key);
 }
 
 /** content.ts 가 인스펙터 컬럼을 만들 때 호출한다. */
 export function setCommandInspectorHost(next: HTMLElement | undefined, empty?: () => HTMLElement): void {
   host = next;
   emptyPreview = empty;
+  if (!next) {
+    selectionObserver?.disconnect();
+    selectionObserver = undefined;
+    selectionSurface = undefined;
+    selectionRows.clear();
+    selectionRowsDirty = true;
+    paintedKeys = new Set();
+  }
 }
 
 /**

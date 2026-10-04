@@ -1,3 +1,4 @@
+import { jsonEqual } from "@/util/structuralJson";
 import { clearChildren, el } from "@/util/dom";
 import { CHARSET_ASSETS } from "@/assets/charsetCatalog";
 import { branchEmptyActionLabel, eventCommandBranches } from "@/editor/eventCommandBranches";
@@ -14,7 +15,7 @@ import {
   CHARSET_FRAME_HEIGHT,
 } from "@/assets/easyrpgRtp";
 import { applyCharsetFrameCrop } from "@/assets/charsetFrameCrop";
-import { beginCommandSelectionScope, isCommandSelected, sameInspectorPath, selectedCommandPath, setCommandSelectionSurface, showCommandInspector } from "./commandInspector";
+import { beginCommandSelectionScope, invalidateCommandSelectionRows, isCommandActionKey, notifyCommandSelectionChanged, isCommandSelected, sameInspectorPath, selectedCommandPath, setCommandSelectionSurface, showCommandInspector } from "./commandInspector";
 import { drawTransferFallback, drawTransferMapPreview } from "./transferMapPreview";
 import { commandRuntimeSupportDescriptor, type M2RuntimeContext } from "@/project/eventCommands/runtimeSupport";
 import { store } from "@/project/store";
@@ -27,6 +28,10 @@ type CommandListRenderOptions = {
   readonly selectionScope?: string | HTMLElement;
   readonly rootCommands?: readonly Command[];
   readonly issues?: readonly EventDraftIssue[];
+  readonly deferMount?: boolean;
+  readonly reuseImmutableRows?: boolean;
+  readonly onMount?: () => void;
+  readonly issuesByPath?: ReadonlyMap<string, readonly EventDraftIssue[]>;
   /** 목록 설명과 "삽입..." 피커가 공유하는 실행 맥락. 없으면 맥락 미지정 안내. */
   readonly pickerContext?: M2RuntimeContext;
   /** 빈 분기 버튼이 이 컨테이너에 명령을 추가하는 피커를 연다. */
@@ -42,6 +47,26 @@ type CommandListRenderOptions = {
 import type { ActiveFace } from "./previewSimulation";
 type FaceState = { current: ActiveFace | undefined };
 
+type CachedCommandRow = {
+  readonly command: Command;
+  readonly row: HTMLElement;
+  readonly face: ActiveFace | undefined;
+  readonly issues: readonly EventDraftIssue[];
+  readonly options: CommandListRenderOptions;
+};
+type CommandRowCache = {
+  readonly actions: CommandListActions;
+  readonly rows: Map<string, CachedCommandRow>;
+  readonly used: Set<string>;
+  anchor?: HTMLElement;
+  cancel?: () => void;
+  finish?: () => void;
+  resume?: () => void;
+  cursor?: Node | null;
+  reconcile?: boolean;
+};
+const commandRowCaches = new WeakMap<HTMLElement, CommandRowCache>();
+
 export function renderCommandList(
   host: HTMLElement,
   commands: Command[],
@@ -51,7 +76,16 @@ export function renderCommandList(
 ): void {
   beginCommandSelectionScope(options.selectionScope ?? host);
   setCommandSelectionSurface(host);
-  clearChildren(host);
+  const previous = commandRowCaches.get(host);
+  const reconcile = options.reuseImmutableRows === true && previous?.actions === actions && !host.hasAttribute("aria-busy");
+  previous?.cancel?.();
+  const cache: CommandRowCache = options.reuseImmutableRows && previous?.actions === actions ? previous : { actions, rows: new Map(), used: new Set() };
+  cache.used.clear();
+  cache.anchor = undefined;
+  commandRowCaches.set(host, cache);
+  cache.reconcile = reconcile;
+  cache.cursor = reconcile ? host.firstChild : null;
+  if (!reconcile) clearChildren(host);
   host.dataset.containerPath = JSON.stringify(containerPath);
   // The append line remains a clipboard destination even after Select All/Cut.
   // A property handler is replaced on rerender, unlike accumulating listeners.
@@ -69,23 +103,112 @@ export function renderCommandList(
   };
   ensureListDropHandlers(host, actions);
   if (commands.length === 0) {
+    clearChildren(host);
+    cache.rows.clear();
+    host.removeAttribute("aria-busy");
+    invalidateCommandSelectionRows();
+    notifyCommandSelectionChanged();
     host.append(el("div", { class: "empty-hint", text: "(명령 없음)" }));
     return;
   }
+  const issuesByPath = options.issuesByPath ?? indexCommandIssues(options.issues ?? []);
   const faceState: FaceState = { current: undefined };
-  commands.forEach((cmd, index) => {
-    const path = [...containerPath, index];
-    // 행 하나가 터져도 형제는 살아남는다. 실패한 행만 자리 표시자로 그린다.
-    try {
-      renderCommandTree(host, cmd, path, containerPath, actions, 0, faceState, { ...options, rootCommands: commands });
-    } catch (error) {
-      console.error("[event-editor] failed to render command row", path, error);
-      host.append(renderBrokenCommandRow(cmd, path, actions));
+  const renderOptions = { ...options, rootCommands: options.rootCommands ?? commands, issuesByPath };
+  const iterator = (function* (): Generator<void> {
+    for (let index = 0; index < commands.length; index += 1) {
+      const cmd = commands[index]!;
+      const path = [...containerPath, index];
+      try { yield* renderCommandTree(host, cmd, path, containerPath, actions, 0, faceState, renderOptions); }
+      catch (error) {
+        console.error("[event-editor] failed to render command row", path, error);
+        appendCommandNode(host, renderBrokenCommandRow(cmd, path, actions));
+        yield;
+      }
     }
-  });
+  })();
+  const view = host.ownerDocument?.defaultView;
+  let frame: number | undefined;
+  let cancelled = false;
+  let paused = false;
+  const complete = (): void => {
+    if (cache.reconcile) {
+      while (cache.cursor) {
+        const node = cache.cursor;
+        cache.cursor = node.nextSibling;
+        host.removeChild(node);
+      }
+    }
+    cache.anchor?.remove();
+    cache.anchor = undefined;
+    host.removeAttribute("aria-busy");
+    cache.finish = undefined;
+    cache.resume = undefined;
+    for (const key of cache.rows.keys()) if (!cache.used.has(key)) cache.rows.delete(key);
+    invalidateCommandSelectionRows();
+    const selected = selectedCommandPath();
+    const cached = selected ? cache.rows.get(JSON.stringify(selected)) : undefined;
+    if (selected && cached) showCommandInspector({ command: cached.command, path: [...selected], actions, previewFace: cached.face, preserveSelection: true });
+    else notifyCommandSelectionChanged();
+  };
+  cache.cancel = () => {
+    cancelled = true;
+    if (frame !== undefined) view?.cancelAnimationFrame(frame);
+    iterator.return(undefined);
+    cache.finish = undefined;
+    cache.resume = undefined;
+  };
+  const mount = (all = false): void => {
+    if (cancelled) return;
+    const started = performance.now();
+    let done = false;
+    let count = 0;
+    do {
+      done = iterator.next().done === true;
+      count += 1;
+    } while (!done && (all || count < 80 && performance.now() - started < 8));
+    if (done) complete();
+    else {
+      if (!cache.anchor) {
+        cache.anchor = el("div", { class: "empty-hint", text: "명령 목록을 불러오는 중…", attrs: { role: "status" }, dataset: { testid: "event-command-list-loading" } });
+        host.append(cache.anchor);
+        host.setAttribute("aria-busy", "true");
+      }
+      frame = view!.requestAnimationFrame(() => {
+        frame = undefined;
+        if (!host.isConnected) { cache.cancel?.(); return; }
+        if (host.hidden) { paused = true; return; }
+        mount();
+      });
+    }
+    options.onMount?.();
+  };
+  cache.resume = () => { if (paused && !cancelled) { paused = false; mount(); } };
+  cache.finish = () => { if (frame !== undefined) view?.cancelAnimationFrame(frame); mount(true); };
+  mount(!options.deferMount || !view?.requestAnimationFrame);
 }
 
-function renderCommandTree(
+/** Validation navigation must be able to reach a row beyond the mounted prefix. */
+export function finishCommandListMount(host: HTMLElement): void { commandRowCaches.get(host)?.finish?.(); }
+export function resumeCommandListMount(host: HTMLElement): void { commandRowCaches.get(host)?.resume?.(); }
+
+function appendCommandNode(host: HTMLElement, node: HTMLElement): void {
+  const cache = commandRowCaches.get(host)!;
+  if (cache.reconcile) {
+    const cursor = cache.cursor;
+    if (cursor && node === cursor) { cache.cursor = cursor.nextSibling; return; }
+    // Same-path replacements leave unaffected siblings mounted and focused.
+    if (cursor instanceof HTMLElement && (
+      node.dataset.cmdPath && cursor.dataset.cmdPath === node.dataset.cmdPath
+      || node.dataset.containerPath && cursor.dataset.containerPath === node.dataset.containerPath && cursor.dataset.testid === node.dataset.testid
+    )) {
+      cache.cursor = cursor.nextSibling;
+      host.replaceChild(node, cursor);
+    } else host.insertBefore(node, cursor ?? null);
+  } else if (cache.anchor) host.insertBefore(node, cache.anchor);
+  else host.append(node);
+}
+
+function* renderCommandTree(
   host: HTMLElement,
   cmd: Command,
   path: number[],
@@ -94,8 +217,24 @@ function renderCommandTree(
   depth: number,
   faceState: FaceState,
   options: CommandListRenderOptions
-): void {
-  host.append(renderCommandItem(cmd, path, containerPath, actions, depth, faceState, options));
+): Generator<void> {
+  const key = JSON.stringify(path);
+  const cache = commandRowCaches.get(host)!;
+  cache.used.add(key);
+  const cached = cache.rows.get(key);
+  const issues = options.issuesByPath?.get(key) ?? [];
+  if (cached && cached.command === cmd && cached.options.pickerContext === options.pickerContext && jsonEqual(cached.face, faceState.current) && jsonEqual(cached.issues, issues)) {
+    // Event handlers read this render-options object; refresh its root command tree
+    // so Copy/Select All never retain the tree from before an immutable reorder.
+    Object.assign(cached.options, options);
+    appendCommandNode(host, cached.row);
+  } else {
+    const rowOptions = { ...options };
+    const row = renderCommandItem(cmd, path, containerPath, actions, depth, faceState, rowOptions);
+    cache.rows.set(key, { command: cmd, row, face: faceState.current, issues, options: rowOptions });
+    appendCommandNode(host, row);
+  }
+  yield;
   if (cmd.kind === "changeFace") {
     faceState.current = cmd.resourceId ? {
       resourceId: cmd.resourceId,
@@ -103,7 +242,7 @@ function renderCommandTree(
       flipHorizontally: cmd.flipHorizontally,
     } : undefined;
   }
-  appendCommandChildren(host, cmd, path, containerPath, actions, depth, faceState, options);
+  yield* appendCommandChildren(host, cmd, path, containerPath, actions, depth, faceState, options);
 }
 
 function renderCommandItem(
@@ -161,7 +300,7 @@ function renderCommandItem(
   // 핸들에서 누르면 항목을 드래그 가능하게 만든다.
   enableItemDrag(handle, item, path, actions);
   const supportBadge = renderRuntimeSupportBadge(commandRuntimeSupportDescriptor(cmd, options.pickerContext), `command-runtime-badge-list-${path.join("-")}`);
-  const issueBadge = renderCommandIssueBadge(path, options.issues ?? []);
+  const issueBadge = renderCommandIssueBadge(path, options.issuesByPath?.get(JSON.stringify(path)) ?? []);
   // 문장 표시 줄: 직전 changeFace 상태를 화자 얼굴 16px 크롭으로 부가.
   const activeFaceForItem = faceState.current;
   const speakerFace =
@@ -197,13 +336,11 @@ function renderCommandItem(
   // 한 번 클릭은 선택뿐이다 — 오른쪽 인스펙터 칼럼을 채우고 툴바 이동/복사의 대상을 정한다.
   // 편집 창은 더블클릭·Enter/Space·우클릭 "편집" 이 연다.
   head.addEventListener("click", () => {
-    selectCommandLine(item);
     showCommandInspector({ command: cmd, path, actions, previewFace: activeFaceForItem });
   });
   // 재렌더 뒤에도 선택과 인스펙터가 유지되도록 복원한다.
   if (sameInspectorPath(path, selectedCommandPath())) {
     item.classList.add("selected");
-    showCommandInspector({ command: cmd, path, actions, previewFace: activeFaceForItem, preserveSelection: true });
   }
   if (isCommandSelected(path)) item.classList.add("selected");
   head.addEventListener("contextmenu", (event) => {
@@ -217,12 +354,11 @@ function renderCommandItem(
     if (target?.closest?.(".cmd-actions, .cmd-drag-handle")) return;
     event.preventDefault();
     event.stopPropagation();
-    selectCommandLine(item);
     openEditor();
   });
   head.addEventListener("keydown", (event) => {
     // fakeDom 에는 KeyboardEvent 생성자가 없을 수 있다 — duck-type 으로 키 이벤트를 받는다.
-    if (!isKeyboardLike(event)) return;
+    if (!isKeyboardLike(event) || !isCommandActionKey(event)) return;
     if (!isCommandSelected(path)) showCommandInspector({ command: cmd, path, actions, previewFace: activeFaceForItem });
     handleCommandShortcut(event as KeyboardEvent, { x: 0, y: 0, item, command: cmd, path, actions, openEditor, pickerContext: options.pickerContext, commands: options.rootCommands });
   });
@@ -246,7 +382,7 @@ function commandStepLabel(path: readonly number[]): string {
 }
 
 function renderCommandIssueBadge(path: readonly number[], issues: readonly EventDraftIssue[]): HTMLElement | null {
-  const matches = issues.filter((issue) => issue.commandPath && sameCommandPath(issue.commandPath, path));
+  const matches = issues;
   if (matches.length === 0) return null;
   const severity = matches.some((issue) => issue.severity === "error")
     ? "error"
@@ -261,8 +397,17 @@ function renderCommandIssueBadge(path: readonly number[], issues: readonly Event
   });
 }
 
-function sameCommandPath(a: readonly number[], b: readonly number[]): boolean {
-  return a.length === b.length && a.every((part, index) => part === b[index]);
+/** One pass per validation result, preserving order/severity/title/count. */
+export function indexCommandIssues(issues: readonly EventDraftIssue[]): ReadonlyMap<string, readonly EventDraftIssue[]> {
+  const index = new Map<string, EventDraftIssue[]>();
+  for (const issue of issues) {
+    if (!issue.commandPath) continue;
+    const key = JSON.stringify(issue.commandPath);
+    const matches = index.get(key) ?? [];
+    matches.push(issue);
+    index.set(key, matches);
+  }
+  return index;
 }
 
 // 표시할 수 없는 명령의 자리 표시 행. 원시값을 펼쳐 보여주고 삭제는 살린다.
@@ -403,7 +548,7 @@ function terminalEditorHint(cmd: Command): { readonly testId: string; readonly t
   return undefined;
 }
 
-function appendCommandChildren(
+function* appendCommandChildren(
   host: HTMLElement,
   cmd: Command,
   path: number[],
@@ -412,20 +557,23 @@ function appendCommandChildren(
   depth: number,
   faceState: FaceState,
   options: CommandListRenderOptions
-): void {
+): Generator<void> {
   // 분기 목록·라벨·경로 칸은 `eventCommandBranches` 가 정본이다. 예전에는 여기에 명령
   // 종류별 블록이 일곱 개 늘어서 있었고, 상점 실패 분기는 상수 import 자체가 없어서
   // «주소를 못 매기는» 분기였다 — 런타임은 실행하는데 목록에는 줄이 안 났다.
   for (const branch of eventCommandBranches(cmd)) {
     const branchPath = [...path, branch.branchIndex];
-    host.append(renderBranchDropLine(branch.label, depth, branch.tone, branchPath, actions));
+    appendCommandNode(host, renderBranchDropLine(branch.label, depth, branch.tone, branchPath, actions));
+    yield;
     if (branch.commands.length === 0) {
-      host.append(renderEmptyBranchLine(depth + 1, branch.tone, branchPath, actions, options.openCommandPicker));
+      appendCommandNode(host, renderEmptyBranchLine(depth + 1, branch.tone, branchPath, actions, options.openCommandPicker));
+      yield;
     }
-    branch.commands.forEach((child, childIndex) => {
+    for (let childIndex = 0; childIndex < branch.commands.length; childIndex += 1) {
+      const child = branch.commands[childIndex]!;
       const childPath = [...path, branch.branchIndex, childIndex];
       try {
-        renderCommandTree(
+        yield* renderCommandTree(
           host,
           child,
           childPath,
@@ -437,13 +585,15 @@ function appendCommandChildren(
         );
       } catch (error) {
         console.error("[event-editor] failed to render branch command row", childPath, error);
-        host.append(renderBrokenCommandRow(child, childPath, actions));
+        appendCommandNode(host, renderBrokenCommandRow(child, childPath, actions));
+        yield;
       }
-    });
+    }
     // 분기에 명령이 있어도 넣을 자리를 남긴다. 예전엔 명령 하나가 들어가면 「여기에 명령 추가」
     // 슬롯이 사라져 두 번째 명령을 넣을 곳이 없었다(2026-09-17 적대적 리뷰 P0-3).
     if (branch.commands.length > 0) {
-      host.append(renderBranchAddLine(depth + 1, branch.tone, branchPath, actions, options.openCommandPicker));
+      appendCommandNode(host, renderBranchAddLine(depth + 1, branch.tone, branchPath, actions, options.openCommandPicker));
+      yield;
     }
   }
   // 「선택 끝」「분기 끝」 마커 행은 두지 않는다 — 들여쓰기와 분기 머리 행이 이미 구조를 말하고,
@@ -517,12 +667,6 @@ function renderBranchDropLine(
   line.dataset.containerPath = JSON.stringify(containerPath);
   ensureListDropHandlers(line, actions);
   return line;
-}
-
-function selectCommandLine(item: HTMLElement): void {
-  // 복합 클래스 셀렉터 대신 클래스 목록으로 지운다 — 형제 행 중 실제로 선택된 것만 해제한다.
-  item.parentElement?.querySelectorAll(".cmd-item").forEach((node) => node.classList.remove("selected"));
-  item.classList.add("selected");
 }
 
 // 더블클릭/Enter·Space·우클릭"편집" 모두 이 모달로 진입한다(인라인 collapse 폐지).

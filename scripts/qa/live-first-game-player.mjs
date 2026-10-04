@@ -9,6 +9,7 @@ import { DatabaseSync } from 'node:sqlite';
 import { chromium } from 'playwright';
 import { execFileSync } from 'node:child_process';
 import { runRuntimeQa } from '../lib/runtimeQaRun.mjs';
+import { webUploadedAssetPath } from '../../src/project/webUploadedAssetPath.ts';
 
 const out = resolve(process.env.LIVE_GAME_OUT ?? 'verify-shots/live-first-game');
 const root = resolve(process.env.LIVE_GAME_PACKAGE_OUT ?? 'output/qa/live-first-game', 'game-web');
@@ -34,6 +35,24 @@ assert.deepEqual(project.startPos, canonical.document.startPos);
 assert.deepEqual(project.system, canonical.document.system, 'Opening, title, dialogue settings and game rules must match canonical storage');
 assert.deepEqual(project.database, canonical.document.database, 'The AI-authored protagonist and records must survive export');
 assert.deepEqual(project.endings, canonical.document.endings, 'The actual authored ending must survive export');
+const presentationAssets = [];
+const artIds = [...new Set([project.system.titleScreen?.backgroundResourceId,
+  ...(project.system.opening?.scenes ?? []).filter(scene => scene.kind === 'image').map(scene => scene.resourceId)].filter(Boolean))];
+for (const id of artIds) {
+  const saved = canonical.document.assets.uploaded[id];
+  if (!saved) continue; // Legacy fixtures can use bundled artwork.
+  const inline = saved.dataUrl?.startsWith('data:image/') ? Buffer.from(saved.dataUrl.split(',')[1],'base64') : null;
+  assert(saved.ref || inline,'Generated artwork bytes must be present in canonical SQLite/assets');
+  if (saved.ref) assert.deepEqual(project.assets.uploaded[id]?.ref,saved.ref,'The exported artwork reference must match canonical storage');
+  const expectedHash = saved.ref?.sha256 ?? createHash('sha256').update(inline).digest('hex');
+  const expectedBytes = saved.ref?.bytes ?? inline.length;
+  const file = resolve(root,webUploadedAssetPath(saved));
+  assert(existsSync(file),'The shipping package must include the actual saved artwork');
+  const bytes = await readFile(file);
+  assert.equal(createHash('sha256').update(bytes).digest('hex'),expectedHash,'Exported artwork bytes must match the canonical hash');
+  assert.equal(bytes.length,expectedBytes);
+  presentationAssets.push({resourceId:id,sha256:expectedHash,bytes:bytes.length,canonicalForm:saved.ref?'asset-ref':'sqlite-inline'});
+}
 for (const row of canonical.maps) {
   const map = JSON.parse(row.map_json), exported = project.maps[row.map_id];
   assert(exported, 'Every saved map must be exported');
@@ -73,7 +92,9 @@ const result = { projectId: canonical.projectId, title: project.meta.title, cano
   automaticBuildCompleted: Boolean(completion.generationPrerequisitePassed && (completion.automaticGeneration || !completion.passed)),
   projectJsonSha256: createHash('sha256').update(json).digest('hex'),
   projectJsonBytes: (await stat(projectPath)).size, openingSkipped:false, reducedMotion:false, normalKeyboardOnly:true,
-  recordedReadingPauseMs:2500, snapshotReadingPauseMs:1800, recordingTimeline:[], paths, choices: choice.options.map(o => o.text), branches: [] };
+  openingSnapshots:process.env.LIVE_GAME_OPENING_VIDEO_ONLY === '1'?'extract from continuous native video after QA':'browser screenshots',
+  screenshotMethod:process.env.LIVE_GAME_FAST_SHOTS === '1'?'CDP captureScreenshot (no font/animation settling)':'Playwright screenshot',
+  recordedReadingPauseMs:2500, snapshotReadingPauseMs:Number(process.env.LIVE_GAME_READING_PAUSE_MS ?? 1800), recordingTimeline:[], presentationAssets, presentationEvidence: [], paths, choices: choice.options.map(o => o.text), branches: [] };
 // Pointer movement is an authored opt-in. Use ordinary arrow keys for the
 // unchanged game, one tile at a time, and verify each committed position.
 const walk = (mapId, path, arrivalOverride) => path.steps.flatMap((step, index) => [
@@ -89,8 +110,10 @@ const opening = project.system.opening;
 const introduction = opening?.enabled && opening.scenes?.length ? opening.scenes.map((scene,index) => ({
   id:'opening-'+(index+1),note:'실제 오프닝을 건너뛰지 않고 자연 재생',
   ops:[...(index===0?[{kind:'key',key:'Enter'}]:[]),
-    {kind:'waitForAttr',testid:'cinematic-sequence',attr:'data-scene-id',value:scene.id,timeoutMs:30000}],
-  expect:{testidPresent:['cinematic-sequence']},shot:true,
+    {kind:'waitForAttr',testid:'cinematic-sequence',attr:'data-scene-id',value:scene.id,timeoutMs:30000},
+    {kind:'waitForVisible',testid:'cinematic-sequence',timeoutMs:10000},
+    ...(scene.narration?[{kind:'waitForText',testid:'cinematic-sequence',text:scene.narration,timeoutMs:10000}]:[])],
+  expect:{testidPresent:['cinematic-sequence']},shot:process.env.LIVE_GAME_OPENING_VIDEO_ONLY !== '1',
 })) : [{id:'in-map-introduction',note:'첫 장소가 보이는 상태에서 실제 도입과 행동 안내',
   ops:[{kind:'key',key:'Enter'},{kind:'waitForRuntime'},
     {kind:'waitFor',testid:'dialogue-box',state:'present'}],
@@ -103,13 +126,77 @@ try {
       ...(index===0?{recordVideo:{dir:resolve(out,'video'),size:{width:1280,height:900}}}:{})});
     const recordingStarted = Date.now();
     const page = await context.newPage();
+    await page.addInitScript(() => {
+      window.__openingTimeline = [];
+      let last = '';
+      new MutationObserver(() => {
+        const root = document.querySelector('[data-testid="cinematic-sequence"]');
+        if (!root || !root.dataset.sceneId || root.dataset.transitionState !== 'playing' || root.dataset.sceneId === last) return;
+        last = root.dataset.sceneId;
+        const image = root.querySelector('.cinematic-shot:not([data-previous-shot]) img');
+        const text = root.querySelector('.cinematic-frame:not([data-previous-frame]) .cinematic-narration');
+        window.__openingTimeline.push({ id: last, at: Date.now(), kind: root.dataset.sceneKind,
+          text: text?.textContent, animation: text?.dataset.animation,
+          imageWidth: image?.naturalWidth, imageHeight: image?.naturalHeight,
+          objectFit: image ? getComputedStyle(image).objectFit : null });
+      }).observe(document, { childList: true, subtree: true, attributes: true, attributeFilter: ['data-scene-id', 'data-transition-state'] });
+    });
+    // Software WebGL can stall animation-frame polling while the scene clock keeps running.
+    // Observe the same conditions on a wall-clock interval, without changing playback.
+    const waitForFunction = page.waitForFunction.bind(page);
+    page.waitForFunction = (fn, arg, options) => waitForFunction(fn, arg, {polling:100, ...options});
     // Give the recorded first run a short reading pause at each real beat.
     // These pauses do not change the game, skip animation, or advance dialogue.
-    const screenshot = page.screenshot.bind(page);
+    const cdp = process.env.LIVE_GAME_FAST_SHOTS === '1' ? await context.newCDPSession(page) : null;
+    const screenshot = cdp ? async options => {
+      const capture = await cdp.send('Page.captureScreenshot', { format: 'png', fromSurface: true, captureBeyondViewport: false });
+      const bytes = Buffer.from(capture.data, 'base64');
+      if (options.path) await writeFile(options.path, bytes);
+      return bytes;
+    } : page.screenshot.bind(page);
     page.screenshot = async options => {
-      const bytes = await screenshot(options);
+      if (await page.getByTestId('title-screen').count() && project.system.titleScreen?.effects?.length) {
+        await page.waitForFunction(() => document.querySelector('[data-testid="title-effects"]')?.dataset.titleEffectsRenderer === 'webgl');
+        const facts = await page.getByTestId('title-screen').evaluate(node => {
+          const effects = node.querySelector('[data-testid="title-effects"]');
+          return { kind:'title', sequence:node.dataset.seqState, effects:effects ? {...effects.dataset} : null,
+            imageRendering:effects ? getComputedStyle(effects).imageRendering : null,
+            canvasWidth:effects?.width,canvasHeight:effects?.height,stageWidth:node.getBoundingClientRect().width,
+            text:node.textContent, defaultEditorialCopy:!!node.querySelector('[data-testid="title-kicker"]') };
+        });
+        assert.equal(facts.defaultEditorialCopy,false,'The generic editorial title must be replaced');
+        assert(facts.effects?.titleEffectsAnimated === 'true','Normal title effects must actually animate');
+        if (project.system.titleScreen.backgroundRendering === 'smooth') {
+          assert.equal(facts.imageRendering,'auto','Painted artwork must use smooth canvas compositing');
+          assert(facts.canvasWidth >= facts.stageWidth * Number(facts.effects.titleEffectsResolutionScale) * 0.9,'The art canvas must use the displayed stage size');
+        }
+        result.presentationEvidence.push({ branch:name, ...facts });
+      }
+      if (await page.getByTestId('cinematic-sequence').count()) {
+        const kind = await page.getByTestId('cinematic-sequence').getAttribute('data-scene-kind');
+        if (kind === 'image') {
+          await page.waitForFunction(() => {
+            const image = document.querySelector('[data-testid="cinematic-sequence"] .cinematic-shot:not([data-previous-shot]) > .cinematic-image');
+            return image?.complete && image.naturalWidth > 256 && image.naturalHeight > 192;
+          });
+          const facts = await page.getByTestId('cinematic-sequence').evaluate(node => {
+            const image = node.querySelector('.cinematic-shot:not([data-previous-shot]) > .cinematic-image');
+            return { kind:'opening', sceneId:node.dataset.sceneId, width:image.naturalWidth,height:image.naturalHeight,
+              motion:image.dataset.motion,objectFit:getComputedStyle(image).objectFit,narration:node.querySelector('.cinematic-frame:not([data-previous-frame]) .cinematic-narration')?.textContent,
+              narrationWordBreak:getComputedStyle(node.querySelector('.cinematic-frame:not([data-previous-frame]) .cinematic-narration')).wordBreak,mediaState:node.dataset.mediaState };
+          });
+          result.presentationEvidence.push({ branch:name, ...facts });
+          assert.equal(facts.objectFit,'cover','Opening artwork must fill the stage');
+          assert.equal(facts.narrationWordBreak,'keep-all','Opening narration must preserve Korean words when wrapping');
+        }
+      }
+      const cinematic = page.getByTestId('cinematic-sequence');
+      const expectedScene = await cinematic.count() ? await cinematic.getAttribute('data-scene-id') : null;
+      if (expectedScene) await page.locator('.cinematic-narration:not([hidden])').waitFor({timeout:1000});
+      const bytes = await screenshot({...options, animations:'allow'});
+      if (expectedScene) assert.equal(await page.getByTestId('cinematic-sequence').getAttribute('data-scene-id'), expectedScene, 'Screenshot must belong to the observed shot');
       if (index === 0) result.recordingTimeline.push({shot:basename(String(options.path)),atSec:(Date.now()-recordingStarted)/1000});
-      if (index === 0) await page.waitForTimeout(1800);
+      if (index === 0) await page.waitForTimeout(Number(process.env.LIVE_GAME_READING_PAUSE_MS ?? 1800));
       return bytes;
     };
     const press = page.keyboard.press.bind(page.keyboard);
@@ -134,7 +221,7 @@ try {
         ...introduction,
         {id:'field',note:'짧은 실제 도입 완료 뒤 조작 반환',ops:[
           ...(opening?.enabled && opening.scenes?.length?[
-            {kind:'waitFor',testid:'cinematic-sequence',state:'absent',timeoutMs:30000},{kind:'waitForRuntime'}]:[advance]),
+            {kind:'waitFor',testid:'cinematic-sequence',state:'absent',timeoutMs:30000},{kind:'waitForRuntime'}, advance]:[advance]),
           {kind:'waitForAttr',testid:'runtime-state-json',attr:'data-live-flags',
             value:`${start.id}|${project.startPos.x}|${project.startPos.y}|true|false`,timeoutMs:30000}],
           expect:{mapId:start.id,x:project.startPos.x,y:project.startPos.y,playerSpriteTextureLoaded:true},shot:true},
@@ -170,6 +257,9 @@ try {
         const box = node.getBoundingClientRect();
         return {x:box.x,y:box.y,width:box.width,height:box.height};
       });
+      const nativeOpeningTimeline = await page.evaluate(() => window.__openingTimeline);
+      assert.deepEqual(nativeOpeningTimeline.map(scene => scene.id), opening.scenes.map(scene => scene.id), 'Native recording must observe every actual opening scene in order');
+      result.presentationEvidence.push({ branch:name, nativeOpeningTimeline:nativeOpeningTimeline.map(scene => ({...scene, atSec:(scene.at-recordingStarted)/1000})) });
       result.branches.push({ name, seconds: (Date.now() - started) / 1000,
         passed: !report.errors.length && report.beats.every(b => !b.failures.length) && !external.length,
         errors: report.errors, beats: report.beats.map(b => ({ id: b.id, failures: b.failures })), external, requestsFailed: failures });

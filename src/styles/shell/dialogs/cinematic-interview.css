@@ -1,4 +1,11 @@
 @layer shell {
+  .cinematic-interview-backdrop.is-embedded { position: relative; inset: auto; z-index: auto; display: block; background: transparent; }
+  .is-embedded .cinematic-interview { height: calc(100dvh - 100px); min-height: 590px; border: 0; box-shadow: none; }
+  .ci-extras { margin: 16px 0; }
+  .ci-extras > summary { color: var(--cinema-paper); cursor: pointer; min-height: 44px; padding-block: 12px; font-size: 12px; }
+  .ci-backdrop::after { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .07; background: linear-gradient(120deg, transparent 28%, var(--cinema-accent) 29%, transparent 33%, transparent 52%, var(--cinema-paper) 53%, transparent 57%); animation: ci-ambient-light 14s ease-in-out infinite alternate; }
+  .cinematic-interview.is-still .ci-backdrop::after { animation: none; opacity: 0; }
+  @keyframes ci-ambient-light { from { opacity: .03; } to { opacity: .11; } }
   .cinematic-interview-backdrop { position: fixed; inset: 0; z-index: calc(var(--z-app-modal, 2600) + 2); padding: 0; background: color-mix(in srgb, var(--cinema-night) 92.2%, transparent); display: grid; place-items: center; }
   .cinematic-interview { position: relative; isolation: isolate; width: 100%; height: 100dvh; overflow: hidden; border: 1px solid color-mix(in srgb, var(--cinema-paper) 18.8%, transparent); border-radius: 0; color: var(--cinema-paper); background: var(--cinema-night); box-shadow: 0 25px 100px color-mix(in srgb, var(--cinema-night) 60.0%, transparent); font-family: inherit; word-break: keep-all; }
   .ci-backdrop, .ci-backdrop > img, .ci-backdrop > video, .ci-vignette { position: absolute; inset: 0; width: 100%; height: 100%; }
@@ -73,5 +80,78 @@
   }
   @media (prefers-reduced-motion: reduce) {
     .ci-backdrop > img { transition: none; transform: none; }
+    .ci-backdrop::after { animation: none; opacity: 0; }
+  }
+
+  /* Cinematic controls share the scenery's pixel language without rasterizing text. */
+  .ci-controls {
+    --ci-metal: color-mix(in srgb, var(--cinema-accent) 62%, var(--cinema-night));
+    border: 1px solid var(--ci-metal); border-radius: 3px; isolation: isolate;
+    background: linear-gradient(145deg, color-mix(in srgb,var(--cinema-accent) 9%,transparent), transparent 38%), color-mix(in srgb,var(--cinema-night) 78%,transparent);
+    box-shadow: inset 0 0 0 4px color-mix(in srgb,var(--cinema-night) 75%,transparent), inset 0 0 0 5px color-mix(in srgb,var(--cinema-accent) 16%,transparent), 0 18px 50px color-mix(in srgb,var(--cinema-night) 45%,transparent);
+    backdrop-filter: blur(5px);
+  }
+  .ci-controls::before {
+    content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 2;
+    background: linear-gradient(var(--cinema-accent),var(--cinema-accent)) left top / 24px 3px no-repeat,
+      linear-gradient(var(--cinema-accent),var(--cinema-accent)) left top / 3px 24px no-repeat,
+      linear-gradient(var(--cinema-accent),var(--cinema-accent)) right top / 24px 3px no-repeat,
+      linear-gradient(var(--cinema-accent),var(--cinema-accent)) right top / 3px 24px no-repeat,
+      linear-gradient(var(--cinema-accent),var(--cinema-accent)) left bottom / 24px 3px no-repeat,
+      linear-gradient(var(--cinema-accent),var(--cinema-accent)) left bottom / 3px 24px no-repeat,
+      linear-gradient(var(--cinema-accent),var(--cinema-accent)) right bottom / 24px 3px no-repeat,
+      linear-gradient(var(--cinema-accent),var(--cinema-accent)) right bottom / 3px 24px no-repeat;
+  }
+  .ci-controls::after {
+    content: ""; position: absolute; inset: 9px; border: 1px solid color-mix(in srgb,var(--cinema-accent) 12%,transparent); pointer-events: none; z-index: -1;
+    background: repeating-linear-gradient(0deg, transparent 0 3px, color-mix(in srgb,var(--cinema-paper) 2%,transparent) 3px 4px);
+  }
+  .ci-eyebrow { display: inline-flex; align-items: center; gap: 9px; }
+  .ci-eyebrow::before { content: ""; width: 6px; height: 6px; background: var(--cinema-accent); box-shadow: 3px 3px 0 color-mix(in srgb,var(--cinema-accent) 25%,transparent); }
+  .ci-progress { border-image: linear-gradient(90deg,var(--cinema-accent),color-mix(in srgb,var(--cinema-accent) 6%,transparent)) 1; }
+  .ci-navigation { border-color: var(--ci-metal); border-radius: 0; background: linear-gradient(180deg,color-mix(in srgb,var(--cinema-accent) 6%,transparent),transparent),color-mix(in srgb,var(--cinema-night) 92%,transparent); }
+  .ci-button {
+    position: relative; border-radius: 3px;
+    border-color: color-mix(in srgb,var(--cinema-accent) 35%,var(--cinema-night));
+    background: linear-gradient(145deg,color-mix(in srgb,var(--cinema-paper) 7%,transparent),transparent 58%),color-mix(in srgb,var(--cinema-night) 88%,transparent);
+    box-shadow: inset 0 1px 0 color-mix(in srgb,var(--cinema-paper) 14%,transparent), inset 0 -3px 0 color-mix(in srgb,var(--cinema-night) 80%,transparent);
+    transition: background-color 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+  }
+  .ci-button.ci-motion { position: absolute; }
+  .ci-button:not(:disabled):hover {
+    background: linear-gradient(120deg,color-mix(in srgb,var(--cinema-accent) 16%,transparent),transparent 72%),color-mix(in srgb,var(--cinema-night) 88%,transparent);
+    border-color: var(--cinema-accent); box-shadow: inset 3px 0 0 var(--cinema-accent), 0 0 18px color-mix(in srgb,var(--cinema-accent) 10%,transparent);
+  }
+  .ci-button[aria-pressed="true"] {
+    background: linear-gradient(120deg,color-mix(in srgb,var(--cinema-accent) 21%,transparent),transparent),color-mix(in srgb,var(--cinema-night) 90%,transparent);
+    box-shadow: inset 3px 0 0 var(--cinema-accent), inset 0 1px 0 color-mix(in srgb,var(--cinema-accent) 45%,transparent); border-color: var(--cinema-accent);
+  }
+  .ci-button[aria-pressed="true"]::after { content: ""; position: absolute; right: 10px; top: 10px; width: 5px; height: 5px; background: var(--cinema-accent); box-shadow: 0 0 10px color-mix(in srgb,var(--cinema-accent) 45%,transparent); }
+  .ci-button.is-primary {
+    color: var(--cinema-night); border-color: var(--cinema-accent);
+    background: linear-gradient(115deg,var(--cinema-accent),color-mix(in srgb,var(--cinema-accent) 65%,var(--cinema-paper)) 48%,var(--cinema-accent));
+    background-size: 200% 100%;
+    box-shadow: inset 0 2px 0 color-mix(in srgb,var(--cinema-paper) 65%,transparent), inset 0 -3px 0 color-mix(in srgb,var(--cinema-night) 25%,transparent), 0 0 24px color-mix(in srgb,var(--cinema-accent) 14%,transparent);
+  }
+  .ci-button.is-primary:not(:disabled):hover { color: var(--cinema-night); background-image: linear-gradient(115deg,var(--cinema-accent),var(--cinema-paper) 48%,var(--cinema-accent)); animation: ci-metal-sweep 650ms ease-out both; }
+  .ci-field { position: relative; }
+  .ci-field > span { color: var(--cinema-accent); display: flex; align-items: center; gap: 8px; }
+  .ci-field > span::before { content: ""; width: 4px; height: 4px; background: currentColor; flex: none; }
+  .ci-input {
+    border-radius: 2px; border-color: color-mix(in srgb,var(--cinema-accent) 38%,var(--cinema-night)); border-left: 3px solid var(--cinema-accent);
+    background: linear-gradient(125deg,color-mix(in srgb,var(--cinema-accent) 6%,transparent),transparent 50%),repeating-linear-gradient(0deg,transparent 0 27px,color-mix(in srgb,var(--cinema-paper) 4%,transparent) 27px 28px),color-mix(in srgb,var(--cinema-night) 95%,transparent);
+    box-shadow: inset 0 0 0 3px color-mix(in srgb,var(--cinema-night) 90%,transparent), inset 0 0 0 4px color-mix(in srgb,var(--cinema-accent) 10%,transparent);
+    caret-color: var(--cinema-accent); transition: border-color 180ms ease, box-shadow 180ms ease;
+  }
+  .ci-input:focus { border-color: var(--cinema-accent); box-shadow: inset 0 0 0 3px color-mix(in srgb,var(--cinema-night) 90%,transparent), inset 0 0 0 4px color-mix(in srgb,var(--cinema-accent) 28%,transparent), 0 0 22px color-mix(in srgb,var(--cinema-accent) 12%,transparent); }
+  .ci-input::selection { color: var(--cinema-night); background: var(--cinema-accent); }
+  .ci-extras { border-block: 1px solid color-mix(in srgb,var(--cinema-accent) 20%,transparent); }
+  .ci-extras > summary { color: var(--cinema-accent); }
+  .ci-extras[open] { border-top-color: var(--cinema-accent); }
+  @keyframes ci-metal-sweep { from { background-position: 100% 0; } to { background-position: 0 0; } }
+  .cinematic-interview.is-still .ci-button { animation: none !important; transition: none; }
+  .cinematic-interview.is-still .ci-input { transition: none; }
+  @media (prefers-reduced-motion: reduce) {
+    .ci-button, .ci-input { animation: none !important; transition: none; }
   }
 }
