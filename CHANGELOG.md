@@ -5,6 +5,19 @@
 
 <!-- releases -->
 
+## 0.121.0 — 2026-10-04
+
+### 기능
+
+- give cinematic interview controls a pixel-framed finish (`321f1ee`)
+- add configurable sun shadows to terrain editor and player (`731f7e0`)
+
+### 수정
+
+- **sunlight** — 다리 마스크가 없을 때 null 대신 undefined를 둔다 (`0a504b0`)
+- restore original grid editing for charset production (`2f5feaa`)
+- preserve exact shadow mask extent in canvas rendering (`1491e2d`)
+
 ## 0.120.1 — 2026-10-04
 
 ### 수정
