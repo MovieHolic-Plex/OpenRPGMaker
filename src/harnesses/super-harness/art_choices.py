@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 
 import store
+import art_layout
 
 
 def digest(path):
@@ -161,10 +162,10 @@ def view(data, cid):
             if needs_context:
                 matches = context.get('fingerprint') == candidate_token
                 checks = context.get('checks', {})
-                context_ok = (matches and context.get('verdict') == 'PASS' and
+                context_ok = (matches and context.get('gateVersion') == art_layout.VERSION and context.get('verdict') == 'PASS' and
                     all(isinstance(checks.get(k), dict) and checks[k].get('verdict') == 'PASS'
                         and len(str(checks[k].get('evidence', '')).strip()) >= 12
-                        for k in ('identity', 'scale', 'attachments', 'circulation', 'style')))
+                        for k in art_layout.SCENE_CHECKS))
                 if not context_ok:
                     explanation = context.get('reasons', []) if matches else []
                     item['reasons'] = list(item['reasons']) + (explanation or ['조립한 공간의 정체성·축척·접합·동선·화풍 검수가 필요합니다.'])

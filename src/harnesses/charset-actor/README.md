@@ -16,7 +16,7 @@ npm run harness -- charset-actor walk-qa --run RUN --out /absolute/evidence-outs
 ```
 
 - `produce`는 manifest/작업 폴더를 만들고 터미널과 독립적으로 저작을 시작한다. `--par 4 --batch-size 2`가 기본이다.
-- `bulk`는 pending의 원본 시트를 GPT 첫 입력에 `--image`로 직접 첨부한다. manifest의 `visualReferences: ["pixel-style-reference.png"]`는 실행 폴더 안에 보존한 사람 선택 참고 그림을 최대 4장 함께 첨부한다. 입력 순서·파일 SHA256은 묶음 `visual-inputs.json`과 후보 meta에 기록한다. 경로를 적은 지시나 작업자의 열람 선언만으로 그림이 모델 입력에 들어갔다고 보지 않는다.
+- 기본 제작은 원본 ASCII 격자 편집으로 돌아간다(2026-10-04 사용자 피드백). 초기 PNG 첨부·남김/폐기 비교·추가 조형 지시를 자동으로 넣지 않는다. manifest에 `visualReferences: ["pixel-style-reference.png"]`를 명시한 실험만 원본과 실행 폴더 안 참고 최대 4장을 `--image`로 첨부한다. `visual-inputs.json`/후보 meta는 기본 `[]`, 실험은 첨부 순서·파일 SHA256을 기록한다. 경로 지시나 열람 선언만으로 이미지 입력을 증명하지 않는다.
 - UI의 「새 캐릭터 만들기」에서도 개수·선택적인 전체 방향·참고 시트만 넣고 시작한다. 비우면 AI가 인물과 복식을 정한다.
 - 모자·소품·장르·역할을 제한하는 미감 점수나 별도 Sonnet 심사는 없다. `free-worker.md`로 네 방향의 세 자세, 12장을 직접 그린다.
 - `animationMode: model-12`인 새 제작은 모델 종료 0 뒤 정확한 제출 격자를 읽고 렌더한다. `model-frames.json`에 격자/원본/프레임별 RGBA 해시와 실제 변경 수·모델을 기록한다. 원본 그대로인 프레임은 납품 미완료다. `human_ready`는 이 기록의 현재 binding도 요구한다.
