@@ -8,6 +8,7 @@ import { EASYRPG_RTP_ASSETS, charsetFrameIndex, decodeCharsetFrameIndex } from "
 import { CHARSET_ASSETS } from "@/assets/charsetCatalog";
 import { reconcileFaceWithCharset } from "@/assets/reviewedCharsetFaces";
 import { npcGraphicExampleLabels, pickNpcGraphic, type NpcGraphicPickOptions } from "@/assets/charsetQuery";
+import { HARNESS_CHARACTER_PREFIX } from '@/project/sharedCharacters';
 import { searchResources } from "@/assets/resourceSearch";
 import { COMMAND_KINDS, CONDITION_KINDS } from "@/project/commandKindRegistry";
 import { validateConditionShape } from "@/project/io/shapeCommandFields";
@@ -161,7 +162,7 @@ function resolveCharsetGraphicSelection(textureKey: string, characterIndex: numb
 export function charsetGraphic(textureKey: string, characterIndex: number | undefined = 0): EventPageGraphic {
   const graphic = resolveCharsetGraphicSelection(textureKey, characterIndex);
   return {
-    sprite: { type: "bundled", id: graphic.textureKey },
+    sprite: { type: graphic.textureKey.startsWith(HARNESS_CHARACTER_PREFIX) ? "uploaded" : "bundled", id: graphic.textureKey },
     direction: "down",
     pattern: charsetFrameIndex({ characterIndex: graphic.characterIndex, direction: "down", pattern: 1 }),
   };

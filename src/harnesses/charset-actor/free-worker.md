@@ -18,7 +18,7 @@
   {TOOL} views characters/KEY__gpt-r1/out.chr.txt characters/KEY__gpt-r1/views --base BASE --strength free
   ```
 - views/strip.png와 views/sheet_x8.png를 직접 열어 네 방향과 걸음을 확인한다. 머리 잘림/투명 결손 검사 실패는 서 있는 프레임을 고쳐 다시 전파한다.
-- 각 폴더에 desc.json을 쓴다: {"label":"인물 이름","gender":"남|여|불명","role":"역할","appearance":"실제로 그린 외형","tags":["장르","복식"],"fits":"쓰임","by":"GPT 6.1 sol high · 작업자 설명"}.
+- 각 폴더에 desc.json을 쓴다: {"label":"인물 이름","gender":"남|여|불명","attributes":{"kind":"사람","age":"어린이|청년|중년|노년|불명","hair":"머리 모양·색","clothing":"의상 종류·색"},"role":"역할","appearance":"실제로 그린 외형","tags":["장르","복식"],"fits":"쓰임","by":"GPT 6.1 sol high · 작업자 설명"}. age는 네가 선택한 캐릭터 설정이며 실제 나이를 그림으로 확정한 관찰값이 아니다. 모르면 불명으로 쓴다. 각 속성 문자열은 80자 이하다.
 - notes.md에 선택한 콘셉트와 아쉬움을 적는다. 모든 지정된 사람의 결과를 남긴다.
 
 후보를 PASS/FAIL 점수로 선별하거나 사용자를 대신해 남기기/폐기하지 않는다. 별도 모델 미감 심사도 없다.

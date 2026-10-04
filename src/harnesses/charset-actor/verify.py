@@ -218,6 +218,25 @@ def verify():
         other=H.ACCEPTED_LOCAL/'unrelated.png';other.write_bytes(b'preserve other selection')
         H.sync_human_decision(w,dict(rec,decision='reject',inspected=H.binding(H.current_gate(w))))
         check('single-selection-sync-preserves-other-copies', other.read_bytes()==b'preserve other selection')
+        H.write_json_atomic(w/'desc.json', dict(label='격리 공용 캐릭터', gender='불명', role='검증용', appearance='원본 격자 기반 확인', tags=['확인'], fits='격리 확인', by='fixture'))
+        kept = dict(rec, decision='accept', inspected=H.binding(H.current_gate(w)), mutationId='shared-kept-fixture')
+        with H.DECISIONS.open('a') as file: file.write(json.dumps(kept)+'\n')
+        prepared = H.prepare_shared_library()
+        check('shared-library-only-human-kept', len(prepared['characters'])==1)
+        key, row = next(iter(prepared['characters'].items()))
+        check('shared-description-and-selection-preserved', row['description']==H._desc(w) and row['source']['acceptance']==kept)
+        from base64 import b64decode
+        from io import BytesIO
+        sprite = Image.open(BytesIO(b64decode(prepared['assets'][key]['dataUrl'].split(',')[1]))).convert('RGBA')
+        check('shared-native-sheet-geometry', sprite.size==(288,256) and sprite.crop((72,0,288,256)).getbbox() is None and sprite.crop((0,128,72,256)).getbbox() is None)
+        check('shared-id-stable-on-repeat', list(H.prepare_shared_library()['characters'])==[key])
+        import os
+        with patch.dict(os.environ, {'OPRN_SHARED_CONTENT_SQLITE':str(H.DATA/'shared.sqlite')}):
+            published=H.publish_shared_library()
+            check('shared-SQLite-save-and-reload', published['count']==1 and published['reloaded'] and published['file']==str(H.DATA/'shared.sqlite'))
+            check('shared-publication-idempotent', H.publish_shared_library()['revision']==published['revision'])
+            with H.DECISIONS.open('a') as file: file.write(json.dumps(dict(kept, decision='reject', mutationId='shared-reject-fixture'))+'\n')
+            check('discard-withdraws-from-shared-library', H.publish_shared_library()['count']==0)
     return evidence
 
 

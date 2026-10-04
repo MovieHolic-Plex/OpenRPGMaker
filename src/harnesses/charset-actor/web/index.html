@@ -9,7 +9,7 @@
 </style>
 </head>
 <body>
-<header><div><h1>캐릭터 GIF 공방</h1><p>AI가 만들면, GIF를 보고 남기거나 폐기하세요.</p></div><div class="row"><button id="download">남긴 캐릭터 다운로드</button><button class="keep" id="generate">새 캐릭터 만들기</button></div></header>
+<header><div><h1>캐릭터 GIF 공방</h1><p>AI가 만들면, GIF를 보고 남기거나 폐기하세요. 남긴 캐릭터와 설명은 에디터 공용 라이브러리에 등록됩니다.</p></div><div class="row"><button id="download">남긴 캐릭터 다운로드</button><button class="keep" id="generate">새 캐릭터 만들기</button></div></header>
 <section class="toolbar"><div class="row"><div id="tabs" class="row"><button data-tab="todo" class="on">검토 대기</button><button data-tab="accept">남김</button><button data-tab="reject">폐기</button><button data-tab="all">전체</button></div><select id="runs" aria-label="실행 선택"><option value="all">모든 실행</option></select><input id="search" type="search" placeholder="캐릭터 찾기" aria-label="캐릭터 검색"><button id="view">하나씩 보기</button><span id="saveStatus" role="status" aria-live="polite"></span><button id="saveRetry" hidden>저장 재시도</button><span id="stats"></span></div></section>
 <div id="production"></div><p id="notice" role="status" aria-live="polite"></p>
 <main id="main"><p class="empty">GIF 불러오는 중…</p></main>
@@ -63,7 +63,7 @@ function visible(){return scoped().filter(it=>{const decision=it.decision?.decis
 async function load(){if(loading)return;loading=true;try{const started=ackVersion;const response=await fetch('/api/state');if(!response.ok)throw Error('불러오기 실패');state=await response.json();for(const [id,receipt]of confirmed)if(receipt.version<=started)confirmed.delete(id);if(initial){initial=false;if(!params.has('run')&&state.runs.length)run=state.runs[0].run}render();flushDecisions()}catch(error){notice(error.message,true)}finally{loading=false}}
 function render(){
   const all=scoped(), kept=all.filter(it=>it.decision?.decision==='accept').length, rejected=all.filter(it=>it.decision?.decision==='reject').length, todo=all.filter(it=>it.status==='done'&&!it.decision).length;
-  $('stats').textContent=`대기 ${todo} · 남김 ${kept} · 폐기 ${rejected}`;
+  $('stats').textContent=`대기 ${todo} · 남김 ${kept} · 폐기 ${rejected}`+(state.sharedLibraryError?' · 공용 등록 재시도 필요':state.sharedLibrary?` · 공용 ${state.sharedLibrary.count}명`:'');
   $('download').disabled=!kept||busy||!!outbox.length;
   $('saveStatus').textContent=outbox.length?`저장 ${lastSaveError?'대기':'중'} ${outbox.length}건`:'';
   $('saveRetry').hidden=!outbox.length||!lastSaveError;
