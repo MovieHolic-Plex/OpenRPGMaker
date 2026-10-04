@@ -677,3 +677,15 @@ party flags, empty party, inspect-before-move, known moves/PP, last-member reaso
 shop preview purity, save/load UI state, element labels, actor path compatibility).
 Tests were not run by the worktree agent under AGENTS.md session restrictions;
 shipping-player dogfood verification is owned by the integrating supervisor.
+
+## Collector supply shop (2026-10-04)
+
+`collector` is an authored white pixel supply-counter skin, sharing native commerce,
+quantity selection, buy/sell, budget, inventory and keyboard handlers. It removes
+actor equipment party preview from this surface; prices/merchant budgets are unchanged.
+`effectiveShopUiPreset(step, project)` resolves explicit `meta.oprnShopPreset`, then
+event preset, then pixel. The project override is serialized through older hosts
+without writing an unsupported enum into their shop commands. `configure_shop_presentation`
+selects it or clears it with event-default; read_game_systems shows effective counts.
+The editor command picker also exposes collector for hosts that accept the current
+schema. configureMonsterPresentation authors collector for future collector games.

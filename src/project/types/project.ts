@@ -723,6 +723,8 @@ export interface Project {
   growth?: import("../growth/types").GrowthDefinition;
   version: number;
   meta: {
+    oprnOpeningBook?: {version:1;sceneIds:string[];ink:'amber'|'ivory'};
+    oprnShopPreset?: import('./events').ShopUiPreset;
     oprnFieldMenu?: import('../fieldMenu').AuthoredFieldMenu;
     oprnMenuSounds?: Partial<Record<'cursor'|'confirm'|'cancel',string>>;
     oprnMusicScores?: Record<string,{sha256:string;score:import('../musicScore').MusicScore;measurements:ReturnType<typeof import('../musicScore').renderMusicScore>['measurements']}>;

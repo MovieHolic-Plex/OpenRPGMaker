@@ -360,7 +360,7 @@ const MAX_BLOCKED_STEP_RETRIES = 8;
 function retryBlockedStep(mover: AutonomousMover): void {
   if (mover.retryBlockedSteps !== true) return;
   const attempts = (mover.blockedSteps ?? 0) + 1;
-  if (!mover.livingRoute && attempts > MAX_BLOCKED_STEP_RETRIES) {
+  if (!mover.livingRoute && !mover.preserveBlockedSteps && attempts > MAX_BLOCKED_STEP_RETRIES) {
     mover.blockedSteps = 0;
     return;
   }

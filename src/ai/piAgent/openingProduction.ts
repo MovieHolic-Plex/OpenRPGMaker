@@ -40,7 +40,7 @@ export class PiOpeningProduction {
     this.animatics.set(shotId, { fingerprint, times: [...new Set([...(previous?.fingerprint === fingerprint ? previous.times : []), ...times])] });
   }
   private media(project: Project, id: string): string { return JSON.stringify(project.assets.uploaded[id] ?? resolveAssetResourceUrl(id, { project }) ?? null); }
-  fingerprint(project: Project): string { return JSON.stringify(project.system.opening ?? null); }
+  fingerprint(project: Project): string { return JSON.stringify([project.system.opening ?? null,project.meta.oprnOpeningBook??null]); }
   inspect(project: Project, base: Project): string[] {
     if (!this.requested) return [];
     const issues: string[] = [];
@@ -68,7 +68,7 @@ export const OPENING_PRODUCTION_PROMPT = `[오프닝 제작]
 계획·진행·최종 보고는 사용자가 요청한 언어로 작성한다. 한국어 요청이면 한국어로 보고한다. 이미지 모델용 프롬프트는 영어여도 된다.
 기존 오프닝·시작 세션·등장인물 리소스를 먼저 읽고 plan_opening으로 샷의 사건, 구도, 연속성, 플레이 진입을 설계한다. 장르와 사용자 의도가 우선이며 샷 수나 시간을 획일화하지 않는다.
 get_opening.generatedStills에는 앞선 제작에서 만든 그림과 미연결 여부가 있다. 이미 생성한 그림을 활용하라는 요청이면 이 ID들을 실제로 보고 계획에 연결한다. list_opening_media는 프로젝트 그림을 공용 샘플보다 먼저 반환한다. 그림을 다시 만들기 전에 제작 중인 소재가 있는지 확인한다.
-사용자가 언더테일 같은 서사 도입이나 그림책을 요청하면 get_opening_direction을 읽고 세계→균열→위기→플레이 진입을 원문과 단색 패널로 설계한다. 정지 패널과 짧은 내레이션도 의도적인 연출이다. make_opening_storybook으로 읽기 시간과 화면 계층을 저작할 수 있다. 그 요청에 캐릭터 소개 몽타주를 강요하지 않는다. 새 음악을 원하면 get_music_composer/compose_music로 기억할 원문 모티프와 구간별 악보를 만들고 실제 WAV를 연결한다. 모델은 소리를 듣지 않으므로 청취 검증을 주장하지 않는다.
+사용자가 언더테일 같은 서사 도입이나 그림책을 요청하면 get_opening_direction을 읽고 세계→균열→위기→플레이 진입을 원문과 단색 패널로 설계한다. 정지 패널과 짧은 내레이션도 의도적인 연출이다. make_opening_storybook의 기본 progression=confirm으로 Enter까지 문장을 유지한다. 같은 그림은 여러 문장 페이지에 재사용하고 페이지마다 페이드/자동 넘김을 넣지 않는다. 자동 연출은 사용자가 요청한 경우에만 progression=auto와 읽기 시간을 명시한다. 그 요청에 캐릭터 소개 몽타주를 강요하지 않는다. 새 음악을 원하면 get_music_composer/compose_music로 기억할 원문 모티프와 구간별 악보를 만들고 실제 WAV를 연결한다. 모델은 소리를 듣지 않으므로 청취 검증을 주장하지 않는다.
 설명문을 배경 위에 반복하는 것으로 연출을 대체하지 않는다. 각 샷에서 무엇이 실제로 달라지고 다음 샷을 보고 싶게 하는지 정한다. 먼저 사건을 보여주고 필요한 문구만 붙인다. 동료 선택 전에는 이미 선택·소유한 동료처럼 그리지 않는다.
 샷 사이의 시간대·광원·사건 결과를 유지한다. 꺼진 등대가 이유 없이 다시 켜지거나 같은 밤이 갑자기 노을로 바뀌면 생성 그림을 수정한다. 참고 그림의 분위기보다 현재 이야기의 사건 상태를 우선한다.
 캐릭터와 장소가 나오면 show_opening_image로 실제 참고 외형을 보고 generate_opening_image의 referenceResourceIds로 전달한다. 새 그림은 실제 생성·등록된 resourceId만 사용한다. 생성 실패를 이름만 있는 리소스로 덮지 않는다.

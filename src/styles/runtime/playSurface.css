@@ -296,3 +296,12 @@
 @media (prefers-reduced-motion: reduce) {
   .cinematic-image[data-motion] { animation: none; }
 }
+
+/* Enter-paced illustrated story: persistent artwork, immediate readable pages. */
+.cinematic-sequence[data-presentation="storybook"] { padding:0; color:#e8bc72; }
+.cinematic-sequence[data-presentation="storybook"][data-ink="ivory"] { color:#f0e9d7; }
+.cinematic-sequence[data-presentation="storybook"] .cinematic-image { inset:6.25% auto auto 12.5%; width:75%; height:56.25%; z-index:0; animation:none; }
+.cinematic-sequence[data-presentation="storybook"] .cinematic-narration { position:absolute; top:68.3%; left:5.7%; width:88.6%; max-height:23.6%; margin:0; padding:0; background:none; font-size:14px; line-height:1.6; text-shadow:none; z-index:1; }
+.cinematic-sequence[data-presentation="storybook"][data-scene-kind="text"] .cinematic-narration { top:35%; max-height:45%; }
+.cinematic-book-hint { position:absolute; bottom:3%; width:100%; color:#aba49a; font-size:8px; }
+.cinematic-sequence[data-presentation="storybook"] .cinematic-status:not(:empty) { position:absolute; bottom:10%; z-index:2; }

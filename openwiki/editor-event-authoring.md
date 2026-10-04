@@ -974,3 +974,23 @@ friendshipAtLeast/battleResult/run)을 틀리게 확신했고, 특히 거의 모
 ## Independent opening timelines
 
 See [opening-animatic-authoring.md](opening-animatic-authoring.md) for assistant tools, shared renderer, poses, audio, preview evidence, and entry timing; [opening-reference-study.md](opening-reference-study.md) holds source-qualified research.
+
+## Safe ambient patrol authoring (2026-10-04)
+
+`read_npc_layout` reads actual graphics/positions/movement and pure eventsCutOffBy;
+never call passageBlockWarning in a read tool (it can relocate the event).
+`configure_npc_patrol` accepts mapId/eventId, optional x/y,2..12 directions closing
+at the origin and800..5000ms interval. It protects nested transfer source/landings,
+start and guide/sign areas by Manhattan radius2, map borders, real bidirectional
+terrain, other solid NPC cells and event access; every cell needs at least3 exits.
+Only one unconditional text-only1×1 NPC page is allowed: story/commerce/battle pages
+are rejected atomically. The same source tools serve browser and headless assistants.
+A fresh read_npc_layout is required before and after patrol writes by Pi production.
+
+Authored custom route.skippable:false now retries blocked absolute steps indefinitely;
+it cannot consume a blocked right step and later take its unmatched left step.
+Default/skippable custom, living replans and schedule retry limits keep their rules.
+Dialogues still pause autonomous movement. Entering a map applies its authored route.
+These checks do not replace native walking/collision evidence. Reviewed expedition
+layouts add27 ambient patrols in9 towns, retaining key story/vendor positions and
+using inspected People1 roles. No terrain is repainted for NPC repairs.

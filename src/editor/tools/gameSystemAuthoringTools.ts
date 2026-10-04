@@ -1,3 +1,4 @@
+import { SHOP_UI_PRESETS, effectiveShopUiPreset, isShopUiPreset } from '@/project/shopUiPresets';
 import type { ToolDefinition, JsonSchema } from './types';
 import { ToolError } from './types';
 import { FIELD_MENU_COMMANDS, collectorFieldMenu, validateFieldMenu, fieldMenu, type AuthoredFieldMenu } from '@/project/fieldMenu';
@@ -23,13 +24,20 @@ function systemView(p:Project){const c=monsterCampaign(p),session=p.session as P
   player:{mapId:session.currentMapId,x:session.x,y:session.y,actorId:trainer?.id,name:trainer?.name,characterResourceId:trainer?.characterResourceId,characterIndex:trainer?.characterIndex??0,companions:(session.monsterParty??[]).length},
   battle:{collection:p.system.monsterCollection===true,party:p.system.battleParty??(p.system.monsterBattleParty?'monsters':'actors'),rules:p.system.battleModel??'rm2k3',skin:p.system.battleUiStyle},
   fieldMenu:{style:p.system.fieldHud?.menuStyle&&p.system.fieldHud.menuStyle!=='project'?p.system.fieldHud.menuStyle:p.system.menuUiStyle??'pixel',authored:fieldMenu(p)??null,effectiveCommands:listStatusMenuCommandIds(p,session),effectiveRail:listStatusMenuRailIds(p,session).map(command=>({command,label:statusMenuRailLabel(command,true,p)}))},
+  shop:{projectPreset:p.meta.oprnShopPreset??null,eventPresetCounts:(()=>{const counts:Record<string,number>={};const walk=(commands:unknown[])=>{for(const raw of commands){if(!raw||typeof raw!=='object')continue;const command=raw as Record<string,unknown>;if(command.kind==='shop'){const preset=effectiveShopUiPreset(command as {shopUiPreset?:import('@/project/types').ShopUiPreset},p);counts[preset]=(counts[preset]??0)+1;}for(const v of Object.values(command))if(Array.isArray(v))walk(v);}};for(const map of Object.values(p.maps))for(const event of map.events)for(const page of event.pages??[])walk(page.commands);return counts;})()},
   hud:p.system.fieldHud, campaign:c?{id:c.id,name:c.name,species:c.speciesIds.length,badges:c.badges.length,locations:c.locations.length,objectives:c.objectives.length}:null,
   audio:{title:p.system.titleScreen?.musicResourceId,opening:p.system.opening?.musicResourceId,field:p.system.defaultBgmResourceId,battle:p.system.battleBgmResourceId,victory:p.system.battleVictoryMeResourceId,menu:p.meta.oprnMenuSounds,composed:Object.keys(p.meta.oprnMusicScores??{})},
   issues:issues(p),verificationScope:'configuration and effective menu model; not native input/play/save proof',
 };}
 export const GAME_SYSTEM_AUTHORING_TOOLS:readonly ToolDefinition[]=[
   tool('read_game_systems','전투 규칙·출전 파티·ESC 실제 항목·HUD·도감/지도/배지 정의·음악 연결을 함께 읽고 불일치를 표시.','read',schema({},[]),p=>({summary:'현재 게임 시스템과 실제 메뉴 모델을 조회했습니다.',data:systemView(p)})),
-  tool('configure_field_menu','ESC 메뉴의 실제 항목·순서·표시 이름과 창 스타일을 저작. collector는 도감/동료/가방/수첩/지도/배지/저장/설정. 기본 기능의 가용성·저장 제한은 유지.','write',schema({preset:{type:'string',enum:['collector','default','custom']},entries:{type:'array',items:{type:'object',additionalProperties:false,properties:{command:{type:'string',enum:[...FIELD_MENU_COMMANDS]},label:str},required:['command','label']}},style:{type:'string',enum:['field-list','pixel','classic','sheet','workbench']}},['preset']),(p,args)=>{
+  tool('configure_shop_presentation','전체 상점의 표현을 명시적으로 선택. collector는 흰 도트 창의 도구점. 상품·가격·수량·매입 예산은 유지. event-default는 각 명령 스킨 사용.','write',schema({preset:{type:'string',enum:[...SHOP_UI_PRESETS,'event-default']}},['preset']),(p,args)=>{
+    if(args.preset==='event-default')delete p.meta.oprnShopPreset;
+    else if(typeof args.preset==='string'&&isShopUiPreset(args.preset))p.meta.oprnShopPreset=args.preset;
+    else throw new ToolError('상점 스킨 오류.',{code:'invalid-args'});
+    return {summary:'상점 표현을 저장했습니다. 실제 거래 검증은 별도입니다.',data:systemView(p)};
+  }),
+  tool('configure_field_menu' ,'ESC 메뉴의 실제 항목·순서·표시 이름과 창 스타일을 저작. collector는 도감/동료/가방/수첩/지도/배지/저장/설정. 기본 기능의 가용성·저장 제한은 유지.','write',schema({preset:{type:'string',enum:['collector','default','custom']},entries:{type:'array',items:{type:'object',additionalProperties:false,properties:{command:{type:'string',enum:[...FIELD_MENU_COMMANDS]},label:str},required:['command','label']}},style:{type:'string',enum:['field-list','pixel','classic','sheet','workbench']}},['preset']),(p,args)=>{
     const preset=String(args.preset);if(!['collector','default','custom'].includes(preset))throw new ToolError('메뉴 프리셋 오류.',{code:'invalid-args'});
     // Presets own their entries; structured model providers may emit optional arrays.
     // Custom explicitly owns user labels/order. Preset entries are not a mutation input.

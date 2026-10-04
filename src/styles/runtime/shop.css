@@ -1102,3 +1102,25 @@
   .runtime-shop-statement-portrait > .runtime-shop-party-walker { animation: none; }
 }
 
+
+/* Collector supply shop: white pixel windows; native keyboard trade controls. */
+.runtime-shop-preset-collector {
+  --shop-ink:#242936; --shop-ink-dim:#515967; --shop-surface:#fffdf1; --shop-surface-flat:#fffdf1;
+  --shop-inset:#f1eee2; --shop-card:#fffdf1; --shop-line:#85909a; --shop-line-strong:#293346;
+  --shop-accent:#344767; --shop-accent-soft:#e5e9ed; --shop-radius:0px; --shop-radius-small:0px;
+  --shop-line-width:3px; --shop-ui-font:var(--runtime-pixel-font,monospace); --shop-counter-width:880px;
+  --shop-entry-width:450px; --shop-text-entry:24px; --shop-art-display:80px; --shop-display-column:38%;
+  background:rgb(16 25 40 / 55%); animation:none;
+}
+.runtime-shop-preset-collector .runtime-shop-window,
+.runtime-shop-preset-collector .runtime-shop-items-shell { background:#fffdf1; border:3px solid #293346; border-radius:0; box-shadow:inset 0 0 0 2px #fffdf1,inset 0 0 0 3px #8c97a1; }
+.runtime-shop-preset-collector .runtime-shop-topbar { background:#fffdf1; border-bottom:3px solid #293346; }
+.runtime-shop-preset-collector .runtime-shop-item-row { border-radius:0; min-height:44px; }
+.runtime-shop-preset-collector .runtime-shop-item-row.selected { background:#e5e9ed; outline:2px solid #344767; outline-offset:-2px; }
+.runtime-shop-preset-collector .runtime-shop-item-row.selected::before { content:'▶'; color:#293346; margin-right:6px; }
+.runtime-shop-preset-collector button,
+.runtime-shop-preset-collector input { color:#242936; background:#fffdf1; border-radius:0; }
+.runtime-shop-preset-collector button.selected,
+.runtime-shop-preset-collector button:focus-visible { outline:2px solid #344767; outline-offset:2px; }
+.runtime-shop-preset-collector .runtime-shop-side { background:#fffdf1; }
+@media(max-width:600px){.runtime-shop-preset-collector{padding:8px;--shop-space-6:12px;--shop-text-title:18px;--shop-art-display:48px;}.runtime-shop-preset-collector .runtime-shop-main{display:grid;grid-template-columns:minmax(0,1fr) minmax(100px,36%);}.runtime-shop-preset-collector .runtime-shop-side{flex:none;width:auto;}}

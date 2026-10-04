@@ -1,4 +1,5 @@
 import { validateTilesetReferences } from "../tilesetReferences";
+import { isShopUiPreset } from '../shopUiPresets';
 import { validateFieldMenu } from '../fieldMenu';
 import { validateMusicScore } from '../musicScore';
 import { isInteriorRoomShape } from "@/project/interiorRoomFootprint";
@@ -23,6 +24,14 @@ export function validateMeta(value: unknown): void {
   const meta = requireRecord("meta", value);
   requireString("meta.title", meta.title);
   requireString("meta.author", meta.author);
+  if(meta.oprnShopPreset!==undefined)assert(isShopUiPreset(requireString('shop preset',meta.oprnShopPreset)),'Unknown shop preset');
+  if(meta.oprnOpeningBook!==undefined){
+    const book=requireRecord('opening book',meta.oprnOpeningBook);
+    assert(book.version===1&&['amber','ivory'].includes(String(book.ink)),'Invalid opening book');
+    const ids=requireArray('opening book sceneIds',book.sceneIds);
+    assert(ids.length>=1&&ids.length<=64&&new Set(ids).size===ids.length,'Invalid opening book pages');
+    for(const id of ids)assert(requireString('opening page id',id).length>0,'Empty page id');
+  }
   if (meta.oprnFieldMenu !== undefined) validateFieldMenu(meta.oprnFieldMenu);
   if(meta.oprnMenuSounds!==undefined) {
     const sounds=requireRecord('meta.oprnMenuSounds',meta.oprnMenuSounds);

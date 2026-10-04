@@ -12,6 +12,7 @@ const BUILTIN_OPENING_TEXTS = [
 export function configureMonsterPresentation(project: Project): { defaultOpeningDisabled: boolean } {
   project.system.menuUiStyle = 'field-list';
   project.meta.oprnFieldMenu = collectorFieldMenu();
+  project.meta.oprnShopPreset = 'collector';
   project.system.fieldHud = {
     ...project.system.fieldHud,
     theme: 'collector', font: 'pixel', menuStyle: 'project',

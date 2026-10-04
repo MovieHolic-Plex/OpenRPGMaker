@@ -2605,3 +2605,12 @@ exact real IDs. `read_game_systems` exposes actual current actor ID/name/charset
 index/map/coordinates and companion count, so artists need not infer these from
 a generic catalog. Preset menu entries and non-map audio bindings similarly
 accept empty optional arrays. Mutation/delete lists retain their explicit contract.
+
+## NPC, shop and readable opening production (2026-10-04)
+
+Use read_npc_layout/configure_npc_patrol for unconditional ambient residents; see
+editor-event-authoring.md. See runtime-sessions.md for configure_shop_presentation,
+explicit project shop override and effective counts. make_opening_storybook defaults
+to Enter-confirm pages and persistent illustration; automatic timelines require
+progression:auto. See opening-animatic-authoring.md. Successful tool output is authoring
+evidence; shipping playback and canonical save/reload remain separate requirements.

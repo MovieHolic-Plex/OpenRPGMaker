@@ -92,6 +92,8 @@ export type AutonomousMover = {
    * 이번엔 건너뛴다" 를 전제로 경로를 짠다.
    */
   retryBlockedSteps?: boolean;
+  /** Authored non-skippable patrols never consume a blocked absolute step. */
+  preserveBlockedSteps?: boolean;
 };
 
 export type AutonomousMoveTween = {

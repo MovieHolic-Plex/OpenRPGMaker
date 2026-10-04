@@ -1,0 +1,1120 @@
+{
+  "rows": [
+    {
+      "map": "mx_map_home",
+      "event": "mx_map_home_ambient_resident_1",
+      "position": {
+        "x": 12,
+        "y": 8
+      },
+      "cells": [
+        {
+          "x": 12,
+          "y": 8
+        },
+        {
+          "x": 13,
+          "y": 8
+        },
+        {
+          "x": 14,
+          "y": 8
+        }
+      ],
+      "movement": {
+        "type": "custom",
+        "speed": 2,
+        "frequency": 2,
+        "route": {
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "wait"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "wait"
+            }
+          ],
+          "repeat": true,
+          "skippable": false
+        }
+      },
+      "validation": {
+        "threeOpenDirections": true,
+        "separationManhattanMin": 3,
+        "protectedKeysEntrancesLandingRadius": 2,
+        "allMoverPositionCombinations": 9,
+        "preservesFloorAndTouchPortalReachabilityFromEachLanding": true
+      }
+    },
+    {
+      "map": "mx_map_home",
+      "event": "mx_map_home_ambient_resident_2",
+      "position": {
+        "x": 13,
+        "y": 11
+      },
+      "cells": [
+        {
+          "x": 13,
+          "y": 11
+        },
+        {
+          "x": 13,
+          "y": 12
+        },
+        {
+          "x": 13,
+          "y": 13
+        }
+      ],
+      "movement": {
+        "type": "custom",
+        "speed": 2,
+        "frequency": 2,
+        "route": {
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "wait"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "wait"
+            }
+          ],
+          "repeat": true,
+          "skippable": false
+        }
+      },
+      "validation": {
+        "threeOpenDirections": true,
+        "separationManhattanMin": 3,
+        "protectedKeysEntrancesLandingRadius": 2,
+        "allMoverPositionCombinations": 27,
+        "preservesFloorAndTouchPortalReachabilityFromEachLanding": true
+      }
+    },
+    {
+      "map": "mx_map_grove",
+      "event": "mx_map_grove_ambient_resident_1",
+      "position": {
+        "x": 12,
+        "y": 8
+      },
+      "cells": [
+        {
+          "x": 12,
+          "y": 8
+        },
+        {
+          "x": 13,
+          "y": 8
+        },
+        {
+          "x": 14,
+          "y": 8
+        }
+      ],
+      "movement": {
+        "type": "custom",
+        "speed": 2,
+        "frequency": 2,
+        "route": {
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "wait"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "wait"
+            }
+          ],
+          "repeat": true,
+          "skippable": false
+        }
+      },
+      "validation": {
+        "threeOpenDirections": true,
+        "separationManhattanMin": 3,
+        "protectedKeysEntrancesLandingRadius": 2,
+        "allMoverPositionCombinations": 9,
+        "preservesFloorAndTouchPortalReachabilityFromEachLanding": true
+      }
+    },
+    {
+      "map": "mx_map_grove",
+      "event": "mx_map_grove_ambient_resident_2",
+      "position": {
+        "x": 9,
+        "y": 11
+      },
+      "cells": [
+        {
+          "x": 9,
+          "y": 11
+        },
+        {
+          "x": 9,
+          "y": 12
+        },
+        {
+          "x": 9,
+          "y": 13
+        }
+      ],
+      "movement": {
+        "type": "custom",
+        "speed": 2,
+        "frequency": 2,
+        "route": {
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "wait"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "wait"
+            }
+          ],
+          "repeat": true,
+          "skippable": false
+        }
+      },
+      "validation": {
+        "threeOpenDirections": true,
+        "separationManhattanMin": 3,
+        "protectedKeysEntrancesLandingRadius": 2,
+        "allMoverPositionCombinations": 27,
+        "preservesFloorAndTouchPortalReachabilityFromEachLanding": true
+      }
+    },
+    {
+      "map": "mx_map_harbor",
+      "event": "mx_map_harbor_ambient_resident_1",
+      "position": {
+        "x": 19,
+        "y": 16
+      },
+      "cells": [
+        {
+          "x": 19,
+          "y": 16
+        },
+        {
+          "x": 19,
+          "y": 17
+        },
+        {
+          "x": 19,
+          "y": 18
+        }
+      ],
+      "movement": {
+        "type": "custom",
+        "speed": 2,
+        "frequency": 2,
+        "route": {
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "wait"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "wait"
+            }
+          ],
+          "repeat": true,
+          "skippable": false
+        }
+      },
+      "validation": {
+        "threeOpenDirections": true,
+        "separationManhattanMin": 3,
+        "protectedKeysEntrancesLandingRadius": 2,
+        "allMoverPositionCombinations": 9,
+        "preservesFloorAndTouchPortalReachabilityFromEachLanding": true
+      }
+    },
+    {
+      "map": "mx_map_harbor",
+      "event": "mx_map_harbor_ambient_resident_2",
+      "position": {
+        "x": 21,
+        "y": 15
+      },
+      "cells": [
+        {
+          "x": 21,
+          "y": 15
+        },
+        {
+          "x": 22,
+          "y": 15
+        },
+        {
+          "x": 23,
+          "y": 15
+        }
+      ],
+      "movement": {
+        "type": "custom",
+        "speed": 2,
+        "frequency": 2,
+        "route": {
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "wait"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "wait"
+            }
+          ],
+          "repeat": true,
+          "skippable": false
+        }
+      },
+      "validation": {
+        "threeOpenDirections": true,
+        "separationManhattanMin": 3,
+        "protectedKeysEntrancesLandingRadius": 2,
+        "allMoverPositionCombinations": 27,
+        "preservesFloorAndTouchPortalReachabilityFromEachLanding": true
+      }
+    },
+    {
+      "map": "mx_map_ember",
+      "event": "mx_map_ember_ambient_resident_1",
+      "position": {
+        "x": 18,
+        "y": 11
+      },
+      "cells": [
+        {
+          "x": 18,
+          "y": 11
+        },
+        {
+          "x": 19,
+          "y": 11
+        },
+        {
+          "x": 20,
+          "y": 11
+        }
+      ],
+      "movement": {
+        "type": "custom",
+        "speed": 2,
+        "frequency": 2,
+        "route": {
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "wait"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "wait"
+            }
+          ],
+          "repeat": true,
+          "skippable": false
+        }
+      },
+      "validation": {
+        "threeOpenDirections": true,
+        "separationManhattanMin": 3,
+        "protectedKeysEntrancesLandingRadius": 2,
+        "allMoverPositionCombinations": 9,
+        "preservesFloorAndTouchPortalReachabilityFromEachLanding": true
+      }
+    },
+    {
+      "map": "mx_map_ember",
+      "event": "mx_map_ember_ambient_resident_2",
+      "position": {
+        "x": 13,
+        "y": 11
+      },
+      "cells": [
+        {
+          "x": 13,
+          "y": 11
+        },
+        {
+          "x": 13,
+          "y": 12
+        },
+        {
+          "x": 13,
+          "y": 13
+        }
+      ],
+      "movement": {
+        "type": "custom",
+        "speed": 2,
+        "frequency": 2,
+        "route": {
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "wait"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "wait"
+            }
+          ],
+          "repeat": true,
+          "skippable": false
+        }
+      },
+      "validation": {
+        "threeOpenDirections": true,
+        "separationManhattanMin": 3,
+        "protectedKeysEntrancesLandingRadius": 2,
+        "allMoverPositionCombinations": 27,
+        "preservesFloorAndTouchPortalReachabilityFromEachLanding": true
+      }
+    },
+    {
+      "map": "mx_map_prism",
+      "event": "mx_map_prism_ambient_resident_1",
+      "position": {
+        "x": 22,
+        "y": 12
+      },
+      "cells": [
+        {
+          "x": 22,
+          "y": 12
+        },
+        {
+          "x": 23,
+          "y": 12
+        },
+        {
+          "x": 24,
+          "y": 12
+        }
+      ],
+      "movement": {
+        "type": "custom",
+        "speed": 2,
+        "frequency": 2,
+        "route": {
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "wait"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "wait"
+            }
+          ],
+          "repeat": true,
+          "skippable": false
+        }
+      },
+      "validation": {
+        "threeOpenDirections": true,
+        "separationManhattanMin": 3,
+        "protectedKeysEntrancesLandingRadius": 2,
+        "allMoverPositionCombinations": 9,
+        "preservesFloorAndTouchPortalReachabilityFromEachLanding": true
+      }
+    },
+    {
+      "map": "mx_map_prism",
+      "event": "mx_map_prism_ambient_resident_2",
+      "position": {
+        "x": 15,
+        "y": 14
+      },
+      "cells": [
+        {
+          "x": 15,
+          "y": 14
+        },
+        {
+          "x": 15,
+          "y": 15
+        },
+        {
+          "x": 15,
+          "y": 16
+        }
+      ],
+      "movement": {
+        "type": "custom",
+        "speed": 2,
+        "frequency": 2,
+        "route": {
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "wait"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "wait"
+            }
+          ],
+          "repeat": true,
+          "skippable": false
+        }
+      },
+      "validation": {
+        "threeOpenDirections": true,
+        "separationManhattanMin": 3,
+        "protectedKeysEntrancesLandingRadius": 2,
+        "allMoverPositionCombinations": 27,
+        "preservesFloorAndTouchPortalReachabilityFromEachLanding": true
+      }
+    },
+    {
+      "map": "mx_map_dune",
+      "event": "mx_map_dune_ambient_resident_1",
+      "position": {
+        "x": 11,
+        "y": 7
+      },
+      "cells": [
+        {
+          "x": 11,
+          "y": 7
+        },
+        {
+          "x": 12,
+          "y": 7
+        },
+        {
+          "x": 13,
+          "y": 7
+        }
+      ],
+      "movement": {
+        "type": "custom",
+        "speed": 2,
+        "frequency": 2,
+        "route": {
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "wait"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "wait"
+            }
+          ],
+          "repeat": true,
+          "skippable": false
+        }
+      },
+      "validation": {
+        "threeOpenDirections": true,
+        "separationManhattanMin": 3,
+        "protectedKeysEntrancesLandingRadius": 2,
+        "allMoverPositionCombinations": 9,
+        "preservesFloorAndTouchPortalReachabilityFromEachLanding": true
+      }
+    },
+    {
+      "map": "mx_map_dune",
+      "event": "mx_map_dune_ambient_resident_2",
+      "position": {
+        "x": 9,
+        "y": 11
+      },
+      "cells": [
+        {
+          "x": 9,
+          "y": 11
+        },
+        {
+          "x": 9,
+          "y": 12
+        },
+        {
+          "x": 9,
+          "y": 13
+        }
+      ],
+      "movement": {
+        "type": "custom",
+        "speed": 2,
+        "frequency": 2,
+        "route": {
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "wait"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "wait"
+            }
+          ],
+          "repeat": true,
+          "skippable": false
+        }
+      },
+      "validation": {
+        "threeOpenDirections": true,
+        "separationManhattanMin": 3,
+        "protectedKeysEntrancesLandingRadius": 2,
+        "allMoverPositionCombinations": 27,
+        "preservesFloorAndTouchPortalReachabilityFromEachLanding": true
+      }
+    },
+    {
+      "map": "mx_map_frost",
+      "event": "mx_map_frost_ambient_resident_1",
+      "position": {
+        "x": 16,
+        "y": 10
+      },
+      "cells": [
+        {
+          "x": 16,
+          "y": 10
+        },
+        {
+          "x": 17,
+          "y": 10
+        },
+        {
+          "x": 18,
+          "y": 10
+        }
+      ],
+      "movement": {
+        "type": "custom",
+        "speed": 2,
+        "frequency": 2,
+        "route": {
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "wait"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "wait"
+            }
+          ],
+          "repeat": true,
+          "skippable": false
+        }
+      },
+      "validation": {
+        "threeOpenDirections": true,
+        "separationManhattanMin": 3,
+        "protectedKeysEntrancesLandingRadius": 2,
+        "allMoverPositionCombinations": 9,
+        "preservesFloorAndTouchPortalReachabilityFromEachLanding": true
+      }
+    },
+    {
+      "map": "mx_map_frost",
+      "event": "mx_map_frost_ambient_resident_2",
+      "position": {
+        "x": 11,
+        "y": 8
+      },
+      "cells": [
+        {
+          "x": 11,
+          "y": 8
+        },
+        {
+          "x": 11,
+          "y": 9
+        },
+        {
+          "x": 11,
+          "y": 10
+        }
+      ],
+      "movement": {
+        "type": "custom",
+        "speed": 2,
+        "frequency": 2,
+        "route": {
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "wait"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "wait"
+            }
+          ],
+          "repeat": true,
+          "skippable": false
+        }
+      },
+      "validation": {
+        "threeOpenDirections": true,
+        "separationManhattanMin": 3,
+        "protectedKeysEntrancesLandingRadius": 2,
+        "allMoverPositionCombinations": 27,
+        "preservesFloorAndTouchPortalReachabilityFromEachLanding": true
+      }
+    },
+    {
+      "map": "mx_map_moon",
+      "event": "mx_map_moon_ambient_resident_1",
+      "position": {
+        "x": 12,
+        "y": 8
+      },
+      "cells": [
+        {
+          "x": 12,
+          "y": 8
+        },
+        {
+          "x": 13,
+          "y": 8
+        },
+        {
+          "x": 14,
+          "y": 8
+        }
+      ],
+      "movement": {
+        "type": "custom",
+        "speed": 2,
+        "frequency": 2,
+        "route": {
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "wait"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "wait"
+            }
+          ],
+          "repeat": true,
+          "skippable": false
+        }
+      },
+      "validation": {
+        "threeOpenDirections": true,
+        "separationManhattanMin": 3,
+        "protectedKeysEntrancesLandingRadius": 2,
+        "allMoverPositionCombinations": 9,
+        "preservesFloorAndTouchPortalReachabilityFromEachLanding": true
+      }
+    },
+    {
+      "map": "mx_map_moon",
+      "event": "mx_map_moon_ambient_resident_2",
+      "position": {
+        "x": 9,
+        "y": 11
+      },
+      "cells": [
+        {
+          "x": 9,
+          "y": 11
+        },
+        {
+          "x": 9,
+          "y": 12
+        },
+        {
+          "x": 9,
+          "y": 13
+        }
+      ],
+      "movement": {
+        "type": "custom",
+        "speed": 2,
+        "frequency": 2,
+        "route": {
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "wait"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "wait"
+            }
+          ],
+          "repeat": true,
+          "skippable": false
+        }
+      },
+      "validation": {
+        "threeOpenDirections": true,
+        "separationManhattanMin": 3,
+        "protectedKeysEntrancesLandingRadius": 2,
+        "allMoverPositionCombinations": 27,
+        "preservesFloorAndTouchPortalReachabilityFromEachLanding": true
+      }
+    },
+    {
+      "map": "mx_map_summit",
+      "event": "mx_map_summit_ambient_resident_1",
+      "position": {
+        "x": 15,
+        "y": 13
+      },
+      "cells": [
+        {
+          "x": 15,
+          "y": 13
+        },
+        {
+          "x": 15,
+          "y": 14
+        },
+        {
+          "x": 15,
+          "y": 15
+        }
+      ],
+      "movement": {
+        "type": "custom",
+        "speed": 2,
+        "frequency": 2,
+        "route": {
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "move",
+              "dir": "down"
+            },
+            {
+              "kind": "wait"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "move",
+              "dir": "up"
+            },
+            {
+              "kind": "wait"
+            }
+          ],
+          "repeat": true,
+          "skippable": false
+        }
+      },
+      "validation": {
+        "threeOpenDirections": true,
+        "separationManhattanMin": 3,
+        "protectedKeysEntrancesLandingRadius": 2,
+        "allMoverPositionCombinations": 9,
+        "preservesFloorAndTouchPortalReachabilityFromEachLanding": true
+      }
+    },
+    {
+      "map": "mx_map_summit",
+      "event": "mx_map_summit_ambient_resident_2",
+      "position": {
+        "x": 18,
+        "y": 15
+      },
+      "cells": [
+        {
+          "x": 18,
+          "y": 15
+        },
+        {
+          "x": 19,
+          "y": 15
+        },
+        {
+          "x": 20,
+          "y": 15
+        }
+      ],
+      "movement": {
+        "type": "custom",
+        "speed": 2,
+        "frequency": 2,
+        "route": {
+          "moves": [
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "move",
+              "dir": "right"
+            },
+            {
+              "kind": "wait"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "move",
+              "dir": "left"
+            },
+            {
+              "kind": "wait"
+            }
+          ],
+          "repeat": true,
+          "skippable": false
+        }
+      },
+      "validation": {
+        "threeOpenDirections": true,
+        "separationManhattanMin": 3,
+        "protectedKeysEntrancesLandingRadius": 2,
+        "allMoverPositionCombinations": 27,
+        "preservesFloorAndTouchPortalReachabilityFromEachLanding": true
+      }
+    }
+  ]
+}

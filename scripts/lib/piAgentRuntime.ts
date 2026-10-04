@@ -1,3 +1,4 @@
+import { PiNpcLayoutProduction } from '../../src/ai/piAgent/npcLayoutProduction.ts';
 import { PiGameSystemProduction } from '../../src/ai/piAgent/gameSystemProduction.ts';
 import { PiInteriorCompletion } from '../../src/ai/piAgent/interiorCompletion.ts';
 import type { InteriorRequirements } from '../../src/project/interiorPlacementAudit.ts';
@@ -227,6 +228,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   const exposed = new Set<string>();
   const villageMapIds = new Set<string>();
   const gameSystemProduction = new PiGameSystemProduction();
+  const npcLayoutProduction = new PiNpcLayoutProduction();
   const openingProduction = new PiOpeningProduction(!request.readOnly && !options.readOnlyTools && requestsOpeningProduction(request.task), request.task);
   const interiorCompletion = new PiInteriorCompletion(!request.readOnly && !options.readOnlyTools && (!!modernTilesetPolicy || !!options.interiorRequirements), options.interiorRequirements);
   // let: 얼린 인자가 도구 규칙에 막히면 실행 도중 계약을 푼다(releaseContract). 풀린 뒤에는 일반 실행과 같다.
@@ -280,6 +282,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   const recordCall = (record: PiToolCallRecord): void => {
     openingProduction.record(record.name, record.result.ok, ctx.project, record.args);
     gameSystemProduction.record(record.name, record.result, ctx.project);
+    npcLayoutProduction.record(record.name,record.result,ctx.project);
     interiorCompletion.record(ctx.project, record);
     try { options.onToolCall?.(record); } catch { /* recording must never change the run */ }
     if (record.toolCallId) pendingSummaries.set(record.toolCallId, { ok: record.result.ok, summary: trimText(record.result.summary, 400), result: activityPayload(record.result), visuals: record.visuals });
@@ -457,7 +460,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   if (openingProduction.requested) for (const name of ['plan_opening', 'show_opening_image', 'get_opening', 'review_opening', 'list_opening_media', 'generate_opening_image', 'set_opening', 'edit_opening', 'get_animatic_capabilities', 'get_opening_references', 'preview_opening_reference', 'configure_opening_entry', 'create_opening_animatic_shot', 'upsert_opening_layer', 'remove_opening_layer', 'animate_opening_layer', 'apply_opening_motion', 'animate_opening_camera', 'set_opening_transition', 'upsert_opening_audio_cue', 'remove_opening_audio_cue', 'retime_opening_shot', 'inspect_opening_timeline', 'preview_opening_animatic', 'generate_opening_layer', 'get_opening_direction', 'make_opening_storybook', 'get_music_composer', 'compose_music', 'get_music_score', 'set_game_audio']) {
     const shape = shapeFor(name); if (shape) declare(shape);
   }
-  if (/시스템|메뉴|esc|포켓몬|몬스터|음악|작곡|\bost\b|\bbgm\b/iu.test(request.task)) for (const name of ['read_game_systems','configure_field_menu','configure_monster_campaign','configure_monster_system','review_game_systems','get_music_composer','compose_music','get_music_score','set_game_audio']) { const shape = shapeFor(name); if(shape) declare(shape); }
+  if (/npc|주민|인물|배치|순찰|움직/iu.test(request.task)) for(const name of ['read_npc_layout','configure_npc_patrol']) {const shape=shapeFor(name);if(shape)declare(shape);}
+  if (/시스템|상점|shop|메뉴|esc|포켓몬|몬스터|음악|작곡|\bost\b|\bbgm\b/iu.test(request.task)) for (const name of ['read_game_systems','configure_shop_presentation','configure_field_menu','configure_monster_campaign','configure_monster_system','review_game_systems','get_music_composer','compose_music','get_music_score','set_game_audio']) { const shape = shapeFor(name); if(shape) declare(shape); }
   if (allowedDefinitions.some(tool => tool.name === WEB_SEARCH_TOOL)) {
     // Codex 자격이 없어도 선언한다 — 툴이 실패 이유를 말하는 편이 "없는 툴" 보다 정직하다.
     declare(wrapTool(createWebSearchTool({ codexApiKey: options.codexApiKey, onCall: recordCall })));
@@ -512,7 +516,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     ? [...request.systemPrompt]
     : buildPiAgentSystemPrompt(base, request.mapIds, request.scopeStrict !== false);
   if (openingProduction.requested) systemPrompt.push(OPENING_PRODUCTION_PROMPT);
-  if (/시스템|메뉴|포켓몬|몬스터/iu.test(request.task)) systemPrompt.push('[게임 시스템 저작] read_game_systems로 실제 전투 규칙·파티·ESC 항목·도감/지도/배지·음악을 함께 확인한다. configure_monster_system rules:gen1, presentation:collector 또는 configure_field_menu로 실제 기능 ID를 설정한다. status는 몬스터 상태이고 원정 수첩은 trainer-card다. 존재하지 않는 기능을 이름만 붙여서 구현했다고 하지 않는다. 마지막 설정 뒤 review_game_systems로 불일치를 확인한다. 설정/모델 검토는 출하 플레이·저장 검증과 구분한다.');
+  if (/npc|주민|인물|배치|순찰|움직/iu.test(request.task)) systemPrompt.push('[NPC 저작] read_npc_layout으로 실제 좌표/외형/충돌을 읽는다. 주민 순찰은 configure_npc_patrol의 닫힌 안전 경로를 쓴다. 교수·상인·중요 이야기 인물은 접근 가능한 고정 자리로 둔다. 랜덤 이동을 전원에게 넣거나 캐릭터 시트 칸을 이름만 추측하지 않는다. 실제 그림을 확인한다.');
+  if (/시스템|상점|shop|메뉴|포켓몬|몬스터/iu.test(request.task)) systemPrompt.push('[게임 시스템 저작] read_game_systems로 실제 전투 규칙·파티·ESC 항목·도감/지도/배지·음악을 함께 확인한다. configure_monster_system rules:gen1, presentation:collector 또는 configure_field_menu로 실제 기능 ID를 설정한다. 상점 스킨은 configure_shop_presentation preset:collector로 명시하고 실제 eventPresetCounts를 확인한다. status는 몬스터 상태이고 원정 수첩은 trainer-card다. 존재하지 않는 기능을 이름만 붙여서 구현했다고 하지 않는다. 마지막 설정 뒤 review_game_systems로 불일치를 확인한다. 설정/모델 검토는 출하 플레이·저장 검증과 구분한다.');
   if (/음악|작곡|\bost\b|\bbgm\b/iu.test(request.task)) systemPrompt.push('[음악 저작] 기존 recommend_bgm은 곡 선택이다. 새 곡 요청이면 get_music_composer -> compose_music -> get_music_score -> set_game_audio로 실제 원문 음표와 독립 파트를 만든다. 모티프/응답/쉼/구간별 악기 진입을 설계한다. 다른 게임의 곡을 복사하지 않는다. WAV 바이트와 측정값은 실제 합성이며 모델은 소리를 듣지 않는다. 원곡 수준/청취 완료/스튜디오 오케스트라라고 주장하지 않는다. 세션/M2 전투곡 우선순위를 확인한다.');
   if (modernTilesetPolicy) systemPrompt.push(modernTilesetPolicyPrompt(modernTilesetPolicy));
   if (allowedDefinitions.some(tool => tool.name === "find_tools")) {
@@ -729,7 +734,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     }
     let previousOpeningIssues = '';
     for (let attempt = 0; !fatal && !rejected && attempt < 2 && turns < maxTurns && !options.signal?.aborted; attempt++) {
-      const issues = [...openingProduction.inspect(ctx.project, base),...gameSystemProduction.inspect(ctx.project)], signature = JSON.stringify(issues);
+      const issues = [...openingProduction.inspect(ctx.project, base),...gameSystemProduction.inspect(ctx.project),...npcLayoutProduction.inspect(ctx.project)], signature = JSON.stringify(issues);
       if (!issues.length || signature === previousOpeningIssues) break;
       previousOpeningIssues = signature;
       emit({ type: 'execution_status', name: 'opening.production.incomplete', ok: false, summary: issues.join(' '), data: { issues, playbackVerified: false } });

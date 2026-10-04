@@ -50,11 +50,20 @@ and memorable motifs; its text/art/melody are not game assets or quality proof.
 
 `make_opening_storybook` validates4..8 uniquely named panels, actual images,
 first-world/last-handoff roles and at least world/rupture/stakes/handoff. Lines are
-at most80 characters/3rows, with at least nonspace characters/5 seconds +700ms
-and2.2..15seconds per panel. It atomically creates real960×720 black animatics
-with separate image/narrative layers, fades and typewriter reveal. Existing entry
-and music persist unless explicitly changed. The final shot sampling/review gate
-continues to apply after the last change. Music authoring: music-score-authoring.md.
+at most80 characters/3rows. **Default progression is confirm:** image/text scenes
+have durationMs:0 and motion:none; Enter advances one page, held repeats do not.
+`meta.oprnOpeningBook` stores version1, exact ordered scene IDs and amber/ivory ink.
+The shipping renderer uses it only for a matching all-confirm image/text sequence,
+keeps the same illustration DOM node mounted across dialogue pages, and shows
+Enter/Esc hints. Ordinary videos and other cinematic sequences keep their rules.
+
+Explicit progression:auto retains timed960×720 animatics and minimum reading time
+(nonspace characters/5 seconds +700ms,2.2..15seconds); it clears stale book metadata.
+Repeated panel fades are not the narrative default. Existing entry/music persist.
+Opening production fingerprints include book metadata, so editing pacing/presentation
+invalidates old review evidence. Actual assistant dogfood made8 confirm pages from
+4 inspected existing paintings without changing maps/database/session; playback
+is verified separately in the exported player. Music: music-score-authoring.md.
 
 ## Review includes authored layers
 

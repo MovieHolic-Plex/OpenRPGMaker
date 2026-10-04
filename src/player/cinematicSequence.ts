@@ -31,6 +31,11 @@ export function playCinematicSequence(options: {
   const view = host.ownerDocument.defaultView ?? window;
   const reducedMotion = view.matchMedia?.("(prefers-reduced-motion: reduce)").matches === true;
   const detachPointer = installPlayPointerBlocker(root);
+  const book = project.meta.oprnOpeningBook;
+  const isBook = book?.version===1 && sequence.scenes.every((s,i)=>s.id===book.sceneIds[i] && s.durationMs===0 && (s.kind==='image'||s.kind==='text')) && sequence.scenes.length===book.sceneIds.length;
+  if(isBook){root.dataset.presentation='storybook';root.dataset.ink=book!.ink;root.setAttribute('aria-label','이야기 오프닝');}
+  let bookImage:HTMLImageElement|undefined;
+  let bookImageId:string|undefined;
   let index = 0;
   let settled = false;
   let cleanScene = (): void => undefined;
@@ -110,7 +115,11 @@ export function playCinematicSequence(options: {
       releaseMedia();
       clearTimeout(advanceTimer);
     };
-    root.replaceChildren();
+    // Keep the same illustration node mounted while its dialogue pages change.
+    const keepImage=isBook&&scene.kind==='image'&&bookImageId===scene.resourceId&&bookImage?.parentElement===root;
+    if(keepImage){for(const child of Array.from(root.children))if(child!==bookImage)child.remove();}
+    else {root.replaceChildren();bookImage=undefined;bookImageId=undefined;}
+    root.dataset.page=String(index+1);
     root.dataset.sceneId = scene.id;
     root.dataset.sceneKind = scene.kind;
     root.dataset.mediaState = "ready";
@@ -179,13 +188,14 @@ export function playCinematicSequence(options: {
     switch (scene.kind) {
       case "text": break;
       case "image": {
-        const image = el("img", { class: "cinematic-image", attrs: { alt: "", draggable: "false" } });
+        const image = keepImage ? bookImage! : el("img", { class: "cinematic-image", attrs: { alt: "", draggable: "false" } });
         image.dataset.motion = reducedMotion ? "none" : scene.motion;
         const url = resolveAssetResourceUrl(scene.resourceId, { project });
         image.addEventListener("error", () => { image.remove(); fail("error"); }, { signal: lifetime.signal });
-        if (url) image.src = url;
-        else fail("error");
-        root.append(image);
+        if (url && !keepImage) image.src = url;
+        else if(!url) fail("error");
+        if(!keepImage)root.append(image);
+        if(isBook){bookImage=image;bookImageId=scene.resourceId;}
         break;
       }
       case "animatic": {
@@ -226,6 +236,7 @@ export function playCinematicSequence(options: {
       }
     }
     root.append(narration, status);
+    if(isBook)root.append(el('div',{class:'cinematic-book-hint',text:`${index+1} / ${sequence.scenes.length}   Enter 다음${sequence.skippable?' · Esc 건너뛰기':''}`}));
     if (scene.narrationAudioResourceId && mediaActive) {
       const audio = el("audio", {});
       root.append(audio);

@@ -3,7 +3,7 @@ import { SHOP_TRANSACTION_BRANCH_INDEX, SHOP_FAILED_TRANSACTION_BRANCH_INDEX } f
 import { store } from "@/project/store";
 import { SHOP_MESSAGE_LABELS, SHOP_MESSAGE_TYPES, shopGreetingText, shopListHeaderText, shopBuyPromptText } from "@/project/shopMessages";
 import { resolveTerms } from "@/project/terms";
-import { DEFAULT_SHOP_UI_PRESET } from "@/project/shopUiPresets";
+import { DEFAULT_SHOP_UI_PRESET, effectiveShopUiPreset } from "@/project/shopUiPresets";
 import type { ShopMessageType, ShopType, ShopUiPreset } from "@/project/types";
 import { el } from "@/util/dom";
 import { commandKindSelect, selectedOptionValue } from "./dom";
@@ -20,6 +20,7 @@ const SHOP_TYPE_OPTIONS: readonly { value: ShopType; label: string; hint: string
 ];
 const SHOP_MESSAGE_OPTIONS = SHOP_MESSAGE_TYPES.map((value) => ({ value, label: SHOP_MESSAGE_LABELS[value] }));
 const SHOP_UI_PRESET_OPTIONS: readonly { value: ShopUiPreset; label: string; hint: string }[] = [
+  { value: "collector", label: "수집 게임 · 흰 창 도구점", hint: "상품·가격·보유 수량·설명과 수량 선택을 흰 도트 창에 표시합니다" },
   { value: "pixel", label: "도트 비교 상점 (기본)", hint: "도트 창에 파티원별 능력치 변화와 회복량을 바로 보여줍니다" },
   { value: "classic", label: "단순 목록 상점", hint: "상품명·가격·소지금 중심의 전통 상점" },
   { value: "tabs", label: "카테고리·일일 재고", hint: "카테고리와 오늘의 판매 목록을 함께 보여줍니다" },
@@ -64,7 +65,8 @@ export function shopBody(context: CommandEditContext, command: ShopCommand): HTM
   const syncSummary = () => {
     const c = current();
     const mode = SHOP_TYPE_OPTIONS.find((option) => option.value === (c.shopType ?? "normal"))!.label;
-    summary.textContent = `${mode} · 진열 상품 ${c.itemIds.length}개 · 흥정 ${c.economy?.haggleEnabled ? "사용" : "사용 안 함"}`;
+    const project=store.getCurrent();const effective=SHOP_UI_PRESET_OPTIONS.find(option=>option.value===effectiveShopUiPreset(c,project))?.label;
+    summary.textContent = `${mode} · 진열 상품 ${c.itemIds.length}개 · ${effective}${project.meta.oprnShopPreset?" (프로젝트 지정)":""} · 흥정 ${c.economy?.haggleEnabled ? "사용" : "사용 안 함"}`;
   };
   const refreshMessages = () => {
     const c = current();
