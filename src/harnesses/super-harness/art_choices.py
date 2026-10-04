@@ -208,8 +208,16 @@ def view(data, cid):
             'groups': output, 'selectedCount': count, 'total': len(groups), 'complete': bool(groups) and count == len(groups)}
 
 
-def choose(data, cid, body):
+def choose(data, cid, body, *, delegated=False):
     with store._lock:
+        actor = '사람'
+        authority = None
+        if delegated:
+            authorization = Path(data) / 'concepts' / cid / 'supervisor-authorization.json'
+            authority = read(authorization)
+            if authority.get('scope') != cid or authority.get('autonomousCandidateApproval') is not True:
+                raise ValueError('이 개념에 대한 사용자 위임 승인 근거가 필요합니다.')
+            actor = '사용자 위임 감독'
         state = view(data, cid)
         if state['stage'] != 'art-review': raise ValueError('현재는 칩 선택 단계가 아닙니다.')
         group = next((g for g in state['groups'] if g['id'] == body.get('group')), None)
@@ -217,7 +225,7 @@ def choose(data, cid, body):
             if not group: raise ValueError('선택 항목을 찾을 수 없습니다.')
             with store.connect() as con:
                 con.execute('DELETE FROM art_selections WHERE concept=? AND group_id=?', (cid, group['id']))
-            store.log(cid, f'사람 선택 취소: {group["title"]}')
+            store.log(cid, f'{actor} 선택 취소: {group["title"]}')
             store.update_concept(cid, note='칩 선택 필요')
             return view(data, cid)
         candidate = next((c for c in group['candidates'] if c['id'] == body.get('candidate')), None) if group else None
@@ -229,10 +237,15 @@ def choose(data, cid, body):
         context_path = Path(data) / 'concepts' / cid / 'art-context-review.json'
         if context_path.is_file():
             chosen = dict(chosen, contextReview=read(context_path).get('groups', {}).get(group['id'], {}).get(candidate['id']))
+        if authority is not None:
+            chosen = dict(chosen, selectionActor={
+                'kind': 'delegated-supervisor', 'authorization': authority,
+                'authorizationSha256': digest(authorization),
+            })
         with store.connect() as con:
             con.execute('INSERT OR REPLACE INTO art_selections VALUES(?,?,?,?,?,?)',
                         (cid, group['id'], candidate['id'], candidate['fingerprint'], json.dumps(chosen, ensure_ascii=False), store.now()))
-        store.log(cid, f'사람 선택: {group["title"]} / {candidate["title"]} — 공용 등록 전')
+        store.log(cid, f'{actor} 선택: {group["title"]} / {candidate["title"]} — 공용 등록 전')
         result = view(data, cid)
         store.update_concept(cid, note='칩 선택 완료 — 공용 등록·조립 연결 필요' if result['complete'] else f'칩 선택 {result["selectedCount"]}/{result["total"]}')
         return result
