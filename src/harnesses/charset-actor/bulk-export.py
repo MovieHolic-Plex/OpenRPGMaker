@@ -115,6 +115,11 @@ def export(run, discard_failed=False):
     original = manifest.get('sourceOriginal')
     if original:
         shutil.copy(original, out / 'source-original.png')
+    if any(not H.norm_base(r['base']).startswith('input:') for r in loaded):
+        credits = out / 'licenses' / 'easyrpg'
+        credits.mkdir(parents=True)
+        for name in ('AUTHORS.md', 'COPYING'):
+            shutil.copy(H.RTP / name, credits / name)
     (out / 'charsets').mkdir(exist_ok=True)
     (out / 'transparent').mkdir(exist_ok=True)
     (out / 'grids').mkdir(exist_ok=True)
@@ -181,6 +186,8 @@ def export(run, discard_failed=False):
 원본 첨부 그림: `{manifest['sourceOriginal']}`. 원본 파일의 아래 출처 문구도 원본에 보존했다.
 첨부 원본에 적힌 제작자: 창조도시 뱀신의교주. 첨부 원본에 적힌 주소: http://blog.naver.com/c0930jh
 실제 사람별 픽셀 원본 sourceBase는 characters.json에 기록했다. RTP 원본을 쓰는 경우 저장소의 EasyRPG 출처/이용 조건을 따른다.
+RTP 파생물이 있으면 원본 저작자 목록과 이용조건을 `licenses/easyrpg/AUTHORS.md`와 `licenses/easyrpg/COPYING`에 함께 넣었다.
+sourceBase의 RTP 파일 이름과 칸 번호로 해당 저작자를 찾는다. 원본 저작자 목록의 칸 번호는 1부터, sourceBase의 칸 번호는 0부터 센다.
 {manifest.get('sourceAttribution', '')}
 별도 라이선스 부여는 하지 않는다.
 변형: GPT 6.1 sol high, 서 있는 4방향 직접 격자 편집. 걸음은 원본 동작에서 전파했다.
