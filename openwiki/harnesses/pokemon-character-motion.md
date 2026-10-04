@@ -51,7 +51,7 @@ build 결과 **charset.png=48×128 native**, **editor-charset.png=72×128 x4padd
 
 실제 alpha와 기존 backgroundMask로 투명/단색 마젠타 배경을 구분하고3×4포즈의 여백을 읽는다. RGBhidden을 투명색으로 오해하지 않는다. 각 방향의 세 포즈가 공유하는 source-row 좌표를 보존한다.
 
-raster mode는 **source-space 상단6native행의 최장 연속 잉크 행 중심 중앙값을 샘플링 전에** 맞춘다. head center7.5, y11, 전체12포즈 공통 scale(최대 잉크폭16/높이21), 고정 phase0.5, alpha128, 공통15색이다. idle feet bottom exclusive31에 각 direction trio를 **같이** ±1px만 이동하며 걷기 포즈의1px phase를 보존한다. 그 이동 전에 임시 높이34에서 샘플하고 최종32범위 바깥 잉크는 거부한다. 가로 바깥 샘플도 검사해 비대칭 큰 팔을 조용히 잘라버리지 않는다. 새 픽셀 그림·윤곽 재그리기·포즈별 배율·실패에 맞춘 샘플 위치 탐색은 없다.
+raster mode는 **source-space 상단6native행의 최장 연속 잉크 행 중심 중앙값을 샘플링 전에** 맞춘다. head center7.5, y11, 전체12포즈 공통 scale(최대 잉크폭16/row 공통원점 기준 높이21 및 skull중심→좌우반픽셀 잉크외곽 extent가 각각8px안에 들어가는 상한), 고정 phase0.5, alpha128, 공통15색이다. idle feet bottom exclusive31에 각 direction trio를 **같이** ±1px만 이동하며 걷기 포즈의1px phase를 보존한다. 그 이동 전에 임시 높이34에서 샘플하고 최종32범위 바깥 잉크는 거부한다. 가로 바깥 샘플도 검사해 비대칭 큰 팔을 조용히 잘라버리지 않는다. 6행 두개골 측정과 extent 상한은 공통 scale이 안정될 때까지만 계산하며 sampling phase는 항상0.5다. commonScaleFit에 frame별 중심·좌우extent·top-relativeheight와 공통 width/height/extent 상한·계산 이력을 남긴다. 이렇게 맞춘 공통배율로 native 최소높이와 idle발31±1까지 함께 만족하지 못하면 원본 비율을 거부한다. 중심 임의이동·크롭으로 우회하지 않는다. 새 픽셀 그림·윤곽 재그리기·포즈별 배율·실패에 맞춘 샘플 위치 탐색은 없다.
 
 grid mode는12원본의 추정값 중앙값/명시 --block2..40을 **공통**으로 사용한다. 한 배율로만 줄이고15색을 공유한다. 포즈별 inferred 값·공통 블록·배율·crop/provenance를 기록한다. `quantizePalette(image,max)`는 공유되는 원본색/Lab대표색 변환이며 image를 직접 갱신하고 대표RGB배열을 반환한다. 색 위치의 alpha 형상을 추가·삭제하지 않는다.
 

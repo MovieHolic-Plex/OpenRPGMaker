@@ -187,22 +187,33 @@ export function importRasterAtlas(source:RgbaImage){
     ranges(profile,3).forEach(x=>rects.push({x:x.start,y:y.start,width:x.end-x.start,height:y.end-y.start}));
   });
   const inkBoxes=rects.map(r=>{const visible=createImage(r.width,r.height);for(let y=0;y<r.height;y++)for(let x=0;x<r.width;x++)if(!bg[(r.y+y)*source.width+r.x+x])setPixel(visible,x,y,[0,0,0,255]);const b=opaqueBounds(visible);if(!b)throw Error("empty source head silhouette");return b;});
-  const scale=Math.min(1,WIDTH/Math.max(...inkBoxes.map(r=>r.width)),LIMITS.fitInkHeight/Math.max(...inkBoxes.map(r=>r.height)));
-  const frames=rects.map(r=>{
+  // All poses share both a scale and row origin. Include walking bob above the ink bbox.
+  const widthScale=WIDTH/Math.max(...inkBoxes.map(r=>r.width)),heightScale=LIMITS.fitInkHeight/Math.max(...inkBoxes.map(r=>r.y+r.height));
+  let scale=Math.min(1,widthScale,heightScale);
+  const iterations:{scale:number;leftScale:number;rightScale:number}[]=[];
+  let fit:{skullCenter:number;leftExtent:number;rightExtent:number;topRelativeHeight:number;ink:Box}[]=[];
+  for(let iteration=0;iteration<16;iteration++){
+    fit=rects.map((r,i)=>{const ink=inkBoxes[i]!,isInk=(x:number,y:number)=>!bg[(r.y+y)*source.width+r.x+x],rows=skullRows(r.width,ink.y,Math.min(r.height,ink.y+6/scale),isInk);if(!rows.length)throw Error("empty source head silhouette");const skullCenter=median(rows.map(row=>row.center));return {skullCenter,leftExtent:skullCenter-ink.x+.5,rightExtent:ink.x+ink.width-.5-skullCenter,topRelativeHeight:ink.y+ink.height,ink};});
+    const leftScale=(WIDTH/2)/Math.max(...fit.map(f=>f.leftExtent)),rightScale=(WIDTH/2)/Math.max(...fit.map(f=>f.rightExtent));
+    iterations.push({scale,leftScale,rightScale});
+    const next=Math.min(scale,leftScale,rightScale);
+    if(Math.abs(next-scale)<1e-10)break;
+    scale=next;if(iteration===15)throw Error("common source skull/extent scale did not converge; regenerate source");
+  }
+  const commonScaleFit={anchorX:7.5,anchorY:11,halfWidth:WIDTH/2,fitInkHeight:LIMITS.fitInkHeight,widthScale,heightScale,scale,iterations,frames:fit};
+  const frames=rects.map((r,i)=>{
     const isInk=(x:number,y:number)=>!bg[(r.y+y)*source.width+r.x+x];
-    const ink=inkBoxes[rects.indexOf(r)]!;
-    const rows=skullRows(r.width,ink.y,Math.min(r.height,ink.y+6/scale),isInk);
-    if(!rows.length)throw Error("empty source head silhouette");
-    const cx=median(rows.map(row=>row.center)),out=createImage(WIDTH,HEIGHT+2);
+    const cx=fit[i]!.skullCenter,out=createImage(WIDTH,HEIGHT+2);
     // Inspect samples outside the output as well: a bad anchor must fail rather than silently crop ink.
     for(let y=11;y<Math.ceil(r.height*scale)+12;y++)for(let x=-WIDTH;x<WIDTH*2;x++){
       const sx=Math.floor(cx+(x-7.5)/scale),sy=Math.floor((y-11+.5)/scale);
       if(sx<0||sx>=r.width||sy<0||sy>=r.height||!isInk(sx,sy))continue;
-      if(x<0||x>=WIDTH||y<0||y>=HEIGHT+2)throw Error("aligned source raster clips: regenerate source");
+      if(x<0||x>=WIDTH||y<0||y>=HEIGHT+2)throw Error("aligned source raster clips: regenerate source; common fit="+JSON.stringify(commonScaleFit));
       const pixel=pixelAt(source,r.x+sx,r.y+sy);setPixel(out,x,y,[pixel[0],pixel[1],pixel[2],255]);
     }
     return out;
   });
-  const image=pack(normalizeIdleBaseline(frames)),palette=quantizePalette(image,15);
-  return {image,rects,scale,palette,sampling:"common-source-raster",alphaThreshold:128,phase:0.5,nativeFrameWidth:16,nativeFrameHeight:32,fitInkHeight:21,idleFeetBottomExclusive:31,headBandRows:6,headAlignment:"source dominant contiguous skull-row median before sampling"};
+  let aligned:RgbaImage[];try{aligned=normalizeIdleBaseline(frames);}catch(error){throw Error(String(error)+"; common fit="+JSON.stringify(commonScaleFit));}
+  const image=pack(aligned),palette=quantizePalette(image,15);
+  return {image,rects,scale,commonScaleFit,palette,sampling:"common-source-raster",alphaThreshold:128,phase:0.5,nativeFrameWidth:16,nativeFrameHeight:32,fitInkHeight:21,idleFeetBottomExclusive:31,headBandRows:6,headAlignment:"source dominant contiguous skull-row median before sampling"};
 }
