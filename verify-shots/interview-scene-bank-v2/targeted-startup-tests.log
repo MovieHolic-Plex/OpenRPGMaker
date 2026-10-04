@@ -1,0 +1,17 @@
+
+> oprn@0.120.1 test
+> node scripts/run-vitest.mjs run --configLoader bundle test/cinematicInterview.test.ts test/projectInterviewStartup.test.ts test/startScreenPresetInterview.test.ts --maxWorkers=2 --minWorkers=1
+
+
+ RUN  v3.2.4 /home/main/.codex/worktrees/08da/rpg-zzu
+
+ ✓ test/projectInterviewStartup.test.ts (8 tests) 73ms
+ ✓ test/cinematicInterview.test.ts (2 tests) 2331ms
+   ✓ cinematic interview persistence and internal handoff > roundtrips author genre, mixture and protagonist through the real project serializer  2326ms
+ ✓ test/startScreenPresetInterview.test.ts (5 tests) 2827ms
+   ✓ an interview genre change replaces fresh system defaults and preserves the folder's map and resolution  2813ms
+
+ Test Files  3 passed (3)
+      Tests  15 passed (15)
+   Start at  08:50:21
+   Duration  23.41s (transform 9.98s, setup 0ms, collect 29.53s, tests 5.23s, environment 1ms, prepare 326ms)

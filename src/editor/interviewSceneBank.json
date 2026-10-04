@@ -329,6 +329,11 @@
       "sha256": "15d071cf81c130672a6f55b91a77f67f35a0f86018d487d72f166a4f2ab1bb6c",
       "promptSha256": "e7c54ad228b839daa2fbe86ea8abaaf3ec768d1958cbef6442851251ce901fd3"
     },
+    "monster--bond--partner--bright": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--bond--partner--bright-47928a23cbe4.png",
+      "sha256": "47928a23cbe40aaf432caa8040cbf5a37c21770783410be8805043b116b8f8bb",
+      "promptSha256": "2e82d75f27786fb12dc7e401b27d60dffe2eda807c2d36fd4c43f7e1d99b926d"
+    },
     "monster--bond--partner--secret": {
       "url": "/assets/harnesses/interview-scene-bank/monster--bond--partner--secret-d9fa94d350e3.png",
       "sha256": "d9fa94d350e39242bb0a8b9025abff601b26c60ff29b2547d914d5b57cd9a8d3",
@@ -374,6 +379,11 @@
       "sha256": "87ee75e2504e109c1c95d7f39e05dd951eab7c3adb2c333e5bc85b4c0d53d3ea",
       "promptSha256": "6db89812f25adfd260d16ef3fdfa2360e9e474ece5a59afa6fce9bef38bfc1e9"
     },
+    "monster--hatch--team--secret": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--hatch--team--secret-f064b87dfa99.png",
+      "sha256": "f064b87dfa993c37f9ce1acf889d0931f39ac1f7a61dca8318adff71a5cd6583",
+      "promptSha256": "f355c6b7189684bb5698ad35d7f3c75ea16927b763bbb310786b49fc19e6a59e"
+    },
     "monster--hatch--team--warm": {
       "url": "/assets/harnesses/interview-scene-bank/monster--hatch--team--warm-a3f5ea69b6eb.png",
       "sha256": "a3f5ea69b6ebb6cd4f64463e0b58b108ac9014a02ed64012e0bb97afdf558f6d",
@@ -388,6 +398,16 @@
       "url": "/assets/harnesses/interview-scene-bank/monster--hatch--partner--bright-2dae2b5a5e8b.png",
       "sha256": "2dae2b5a5e8b427812690ad6dbdf515c95fa4a42005514ff5f4147f2161761ed",
       "promptSha256": "f16e8282cd688b61dd1702546df89bb488b9a598c4a007b1cbaab3ee9003ae8e"
+    },
+    "monster--hatch--partner--secret": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--hatch--partner--secret-41665576165e.png",
+      "sha256": "41665576165e7df730927d5121ce3eef0a27b285bef008ba265b93cf08f2a3f3",
+      "promptSha256": "bd952c022f46c5884830e92ca81913b019b1ee70ea9b529de4a354c7c547134c"
+    },
+    "monster--hatch--partner--warm": {
+      "url": "/assets/harnesses/interview-scene-bank/monster--hatch--partner--warm-38a4a684c228.png",
+      "sha256": "38a4a684c22858a3c999aa2c2313c5fc7de7913fdd459a8ebea3677acee2c20f",
+      "promptSha256": "898c39c7905b2d55add3a23b7b8af069315982e33a5ec34e693990e5a4118616"
     },
     "adventure": {
       "url": "/assets/harnesses/interview-scene-bank/adventure-baeee4feb2b8.png",
@@ -404,15 +424,60 @@
       "sha256": "1e82ed67c8a4b6e47d75628194be72427dbc2527b0cee293e7c4ace0e3263a9b",
       "promptSha256": "55f30f9fa681bcf82321a1872eb26ed4032cc5c4953f873ee3eea07f0965c221"
     },
+    "adventure--reunion--explore--bright": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--reunion--explore--bright-b2cf3a11279b.png",
+      "sha256": "b2cf3a11279b721568eb795e03a46652d05a1903040464bb3909026074fdd5ff",
+      "promptSha256": "a1fda0a970e9a66d457481c53b863273485423c025a99971c23ff4165d235967"
+    },
+    "adventure--reunion--explore--mystic": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--reunion--explore--mystic-f63db0190ca8.png",
+      "sha256": "f63db0190ca8519834ab4d1f9d6e530172d43f7ed2050edcf4d3935ae808735e",
+      "promptSha256": "8a64e4ccc5e35f266efa678408110902ef8e0e2fad277dd498506c2d6aa8f715"
+    },
+    "adventure--reunion--explore--warm": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--reunion--explore--warm-3b628c7f63f4.png",
+      "sha256": "3b628c7f63f46291dd3af6c4f04086e0fa0ed52b85ad96b1a037bcf66b81cdd8",
+      "promptSha256": "a6b9c60fb36f9c1de6e10264e0950abe1c3588eab311b13f6d44daaa1a2913bb"
+    },
     "adventure--reunion--battle": {
       "url": "/assets/harnesses/interview-scene-bank/adventure--reunion--battle-de9f04fcc16b.png",
       "sha256": "de9f04fcc16b4480ab63501acbda3dddf203bfdc9e6d444dbb3233d6ec829c3b",
       "promptSha256": "b65181878b3fe1822c01996aa992e90ea47c3a2f75e63b728e2de3080dd32646"
     },
+    "adventure--reunion--battle--bright": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--reunion--battle--bright-69f4ccce4a09.png",
+      "sha256": "69f4ccce4a09641a2773ac518741a46a342baad2bfbef138a5b62be5aadd71c2",
+      "promptSha256": "56aec037ddf454a8fb3a024f2cf8955c0f940376640f3e5432edbd3498dd50dd"
+    },
+    "adventure--reunion--battle--mystic": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--reunion--battle--mystic-f714413c557b.png",
+      "sha256": "f714413c557b8d094734614e90e37f86d007121f57d6203f62df1d120cd948aa",
+      "promptSha256": "5cee18ac1e036f4f06c06d8768aac9b888bf87b75444db66e6f91ff97512cfd9"
+    },
+    "adventure--reunion--battle--warm": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--reunion--battle--warm-2f26bcb5e7b0.png",
+      "sha256": "2f26bcb5e7b0eb238524ed711ed599654aec625da049addcad429acc9dd4dce9",
+      "promptSha256": "ffc817eb60a62ccb74aa1e81125bf719fb41f70174fe7040362c6d1c9a076434"
+    },
     "adventure--reunion--companions": {
       "url": "/assets/harnesses/interview-scene-bank/adventure--reunion--companions-e9cc0474a625.png",
       "sha256": "e9cc0474a625bfa0e5a374eff619350d2306f89a39593cde5dd4780182c0c06c",
       "promptSha256": "c866a57aa67a10e69cde09fede285997e97470ac189aa0d228b72856e14eae57"
+    },
+    "adventure--reunion--companions--bright": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--reunion--companions--bright-121834833879.png",
+      "sha256": "121834833879cbc82de46fab2d163bf9a0b2bb51674d5477ee37132fe58e9813",
+      "promptSha256": "9db9cebe1b7ade527eba2adc224160baa83d6972832935345d77862d08638522"
+    },
+    "adventure--reunion--companions--mystic": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--reunion--companions--mystic-118ec809304b.png",
+      "sha256": "118ec809304b936f3777cd2d4c2067e5f632f5247767bcdb11240f962ed2c94e",
+      "promptSha256": "ff74571e3f5254dc927e866d094999c563c5c28de88f17df8c34561c25697e82"
+    },
+    "adventure--reunion--companions--warm": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--reunion--companions--warm-b5fd18c48632.png",
+      "sha256": "b5fd18c4863265c2143a0bc5c1104cfcc7a23be785f7ee7797b17c46ce405495",
+      "promptSha256": "4ab84cfee0a1e63d32234a080b88fbee81bba1fa7481c84d2c63a26a1a687c75"
     },
     "adventure--unknown": {
       "url": "/assets/harnesses/interview-scene-bank/adventure--unknown-a6524ba30ba9.png",
@@ -424,15 +489,60 @@
       "sha256": "3e70fbc532f2fc907ab08eceb850b745f79d16d0645f91d4e775a317ce246347",
       "promptSha256": "f008cb43413d5ffd98e4bed6c31931c54ecb9d76bed5cd7fd78e5df57fac49ff"
     },
+    "adventure--unknown--explore--bright": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--unknown--explore--bright-071d5ea3c70f.png",
+      "sha256": "071d5ea3c70f742f010b024aa33bd6b914b12c71a606c1f6999974e3555f9812",
+      "promptSha256": "e6568c80d1dc02bb1a22b57aef3d96df82687f40417096ec65313ee5de09f645"
+    },
+    "adventure--unknown--explore--mystic": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--unknown--explore--mystic-32e137fc8fb9.png",
+      "sha256": "32e137fc8fb9e6e9da57a0e814465df84362f52609dcd3a7734ba2a9c02364e5",
+      "promptSha256": "14e239589eb67d8c27da1931b276ddcec6abfe14f1e5dd3f84e92ff2277830d5"
+    },
+    "adventure--unknown--explore--warm": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--unknown--explore--warm-9f6d73219394.png",
+      "sha256": "9f6d732193945b6943aeb5ff3743f59a81c0ddb09e5c091ea7cde958cd01b4f5",
+      "promptSha256": "d361b8f3e538ae7776e43e0271d83a963bd272b61e7d8428e19125badea0fbfa"
+    },
     "adventure--unknown--battle": {
       "url": "/assets/harnesses/interview-scene-bank/adventure--unknown--battle-347a86ca82a9.png",
       "sha256": "347a86ca82a9f86331c3a1156ff36af80e7c72dbfc4054acb5d619b24fd89881",
       "promptSha256": "59d8f28114fc5595a1f04bdbb6699136a6815076187346b089568f425baf4960"
     },
+    "adventure--unknown--battle--bright": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--unknown--battle--bright-a15444979998.png",
+      "sha256": "a154449799980f76d83d9cbad4a36d159224f7fd3bc1be1d432cdf7e4e4a078d",
+      "promptSha256": "cda8261e6ce9d8e4beba53b6a5561828209189cb91ccdbefbd5eacf263d3bc82"
+    },
+    "adventure--unknown--battle--mystic": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--unknown--battle--mystic-2856b9707b57.png",
+      "sha256": "2856b9707b57b8729d22d219fd59a137e0657201d953136061dad040c15f5ddf",
+      "promptSha256": "0410de3ee3b61734993bfec65db9b5d7c68492f144fd9914d200f57688643ad1"
+    },
+    "adventure--unknown--battle--warm": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--unknown--battle--warm-af62e83793d4.png",
+      "sha256": "af62e83793d4bd3a60ca54b28f6efcbb0de2974d137fb141bc599535d786fe5c",
+      "promptSha256": "53e953272006834990cf18e5152bc8eb7523629bd50506c86d4891c683ebdde0"
+    },
     "adventure--unknown--companions": {
       "url": "/assets/harnesses/interview-scene-bank/adventure--unknown--companions-b94d99800e2c.png",
       "sha256": "b94d99800e2c441c75cc6c7d045eeab5bb6a3002799becc38bf06c91704fbda8",
       "promptSha256": "434fcdb74244c295c1969a7a7be1019aaf7858f7ca1e52a83358ba7cd986d851"
+    },
+    "adventure--unknown--companions--bright": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--unknown--companions--bright-b83ce6d2dec2.png",
+      "sha256": "b83ce6d2dec273343208c5871d778a89e941cbdf53ec8d96614569a8f9ac3ce9",
+      "promptSha256": "802dad1ba404d5a9da31b10002a4f993a23ae598d9991920fb1d1f165ee7fe4b"
+    },
+    "adventure--unknown--companions--mystic": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--unknown--companions--mystic-3abbb39a6094.png",
+      "sha256": "3abbb39a6094abaac166ea0c56226597dd1f96f3b231c33243ab19b5edd9702a",
+      "promptSha256": "1d47f441c4cc10f1a510740ebae61669f7a57aded25ac5e6e258cb3d4c76fdb8"
+    },
+    "adventure--unknown--companions--warm": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--unknown--companions--warm-8ba4e42d4e07.png",
+      "sha256": "8ba4e42d4e07bfd3dba3b988e59312605074cb5554259050daeadf29c5f1b049",
+      "promptSha256": "172ea0767ff9d7db2fef39a9169a01a00d16e0b75808b545635f76b7becef692"
     },
     "adventure--mission": {
       "url": "/assets/harnesses/interview-scene-bank/adventure--mission-6af2bf303a9c.png",
@@ -444,15 +554,55 @@
       "sha256": "a1a498e4a8438ec212b72ea462fc1ffc62b59a910883bdf38ab49b98821b5721",
       "promptSha256": "cbd503f67bba35d60e3977e80a04b5226ecfe1b20928a4f2de823aa0b204abb4"
     },
+    "adventure--mission--explore--bright": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--mission--explore--bright-180a37f316aa.png",
+      "sha256": "180a37f316aaed486345a35069dfa4e412ad70afc4bb97b86d6b01ae46474224",
+      "promptSha256": "edee72d4c171341ff030bc3a8e354a5a9dc5583637aef1ca70c8c30cb837baf1"
+    },
+    "adventure--mission--explore--mystic": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--mission--explore--mystic-55680c2cfd40.png",
+      "sha256": "55680c2cfd40fc9f14960df7f893311ecbbd355c21c61c49c21792a69e8d368a",
+      "promptSha256": "7dbf7044a331eb74809a49cb102821bc98c8b8216e310554ef700d76ad01d9ed"
+    },
+    "adventure--mission--explore--warm": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--mission--explore--warm-f2b893d436fb.png",
+      "sha256": "f2b893d436fb28173f7755bdfc2c3ed69dd208d5e9af787880b457b216a98272",
+      "promptSha256": "3b9c24066d0f95b67ec460f4ae8ed839ad99c67474e31230f0a463ca6c6e1265"
+    },
     "adventure--mission--battle": {
       "url": "/assets/harnesses/interview-scene-bank/adventure--mission--battle-619e65ac73bf.png",
       "sha256": "619e65ac73bf03ac2afb49f7abcd3258c619a23096200afd6514d17b09a45e2e",
       "promptSha256": "78211c17ae809cb6e354c2be47130f1d99fa7adb1a7999ed666e8891080358b1"
     },
+    "adventure--mission--battle--bright": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--mission--battle--bright-075fc172ece2.png",
+      "sha256": "075fc172ece21940f574217798828bed3fa09f71c1bff94d256c1e7617d83fe5",
+      "promptSha256": "a7122f95fd278ed3aaa9ceaf8468dd944712cd090f7a2f3c83ff9e380e350208"
+    },
+    "adventure--mission--battle--mystic": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--mission--battle--mystic-afd1b9ea4672.png",
+      "sha256": "afd1b9ea46726a95d03d18e9c74918e6c5df88d5e128b9f9f16f5cc18a3eb2cf",
+      "promptSha256": "7fc7fd60db1b261939ff1b5a1647524de90b1c8fef84901e0c9c4831cdc22236"
+    },
+    "adventure--mission--battle--warm": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--mission--battle--warm-75c0f4a43629.png",
+      "sha256": "75c0f4a43629d2503572a2b57aa73c904fbc537e56ab9c909269fc37c94ff5c0",
+      "promptSha256": "bdbbb6cf2f586fa0e4cfc7c0c35df0bb70b248a886aa944f24a608538164cc57"
+    },
     "adventure--mission--companions": {
       "url": "/assets/harnesses/interview-scene-bank/adventure--mission--companions-8f975596b7f3.png",
       "sha256": "8f975596b7f3f25588f110321d6ad2d06beed6b83f4ad7bf52b328c265e20a01",
       "promptSha256": "b51ceedc85a9764c0fa2b2492b92aca562927a6aa38d2029f3b44f884bd71162"
+    },
+    "adventure--mission--companions--bright": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--mission--companions--bright-79f23a911ef7.png",
+      "sha256": "79f23a911ef726f865f0ddf37c0cf0aec97a16697645dca9523c466fb1b92b4e",
+      "promptSha256": "ecd93d55fe66586f038e20ef0a62833846d5c60cb3e071fcfc973aacf62411d5"
+    },
+    "adventure--mission--companions--warm": {
+      "url": "/assets/harnesses/interview-scene-bank/adventure--mission--companions--warm-9f195bd4e1b2.png",
+      "sha256": "9f195bd4e1b2412efdf206b8672f1049f570d77c5c750b9f6ffb0c6882005f54",
+      "promptSha256": "8091513b0b10aaab048bdade7698e385ea709fd4e705c41b4c970603540b85d1"
     },
     "mystery": {
       "url": "/assets/harnesses/interview-scene-bank/mystery-fad4f6727c0f.png",
@@ -469,10 +619,35 @@
       "sha256": "f402663a6310bfd3bf3adc6b843b073ea0d7c61626379052c22446bffb55ff0b",
       "promptSha256": "df4a426bc5771d1442a3db201a0d4498f84b5e03a3f2293f7abe4f694bc27cd2"
     },
+    "mystery--missing--inspect--wonder": {
+      "url": "/assets/harnesses/interview-scene-bank/mystery--missing--inspect--wonder-b421f157c0c5.png",
+      "sha256": "b421f157c0c5752e4cf9eadd32b70248b3fd4072fe3281d545c71ab1b64caa86",
+      "promptSha256": "727f7057f0efd21c715844b4b1f82d5f8724cca99f6beb1e099a2fc32897dbae"
+    },
+    "mystery--missing--inspect--tension": {
+      "url": "/assets/harnesses/interview-scene-bank/mystery--missing--inspect--tension-4c4464dcc493.png",
+      "sha256": "4c4464dcc493b5e03f5fb464196fb7efa8af79b2f011009e5d248d0bace6bb15",
+      "promptSha256": "7f65d8769f0ca2805c33680c507e9b370a048b7d4f8a083fa9cd566c2fdf036f"
+    },
+    "mystery--missing--inspect--danger": {
+      "url": "/assets/harnesses/interview-scene-bank/mystery--missing--inspect--danger-a9676ced1c8d.png",
+      "sha256": "a9676ced1c8d3255309eca6f91b2ba036f7428b34dd9efa2ceea62caf47ebd37",
+      "promptSha256": "3ad4714b72a8af586c05424bb6cf976d1c969dd198c9e45e6f7806fb7c0b6d33"
+    },
     "mystery--missing--testimony": {
       "url": "/assets/harnesses/interview-scene-bank/mystery--missing--testimony-ab2f6189f61f.png",
       "sha256": "ab2f6189f61f30bb4aaeeb0a6114a94ae561280ab5f64e29e222257d69cde16e",
       "promptSha256": "608c8524264a50e69ca7ca9362d7359176e2cda410d34da892d148e24743268d"
+    },
+    "mystery--missing--testimony--wonder": {
+      "url": "/assets/harnesses/interview-scene-bank/mystery--missing--testimony--wonder-a45a111f8f46.png",
+      "sha256": "a45a111f8f464f09f7330b953e24023663047b080d62c848f56a113ea2d02454",
+      "promptSha256": "8dfa7bea47094db750affe0adecb0763a6c0b5f1e56533eb1ccf800ee12f3979"
+    },
+    "mystery--missing--testimony--tension": {
+      "url": "/assets/harnesses/interview-scene-bank/mystery--missing--testimony--tension-7537b8e6d665.png",
+      "sha256": "7537b8e6d66556f45eb2a8c7049a5c50a21eff6643d9eb8061165d4bc239eb80",
+      "promptSha256": "bb565c653c201f6aa66ab829f544bb6b8ea1110fdc8a4fd8ac4918ebe5a99db0"
     },
     "mystery--missing--evidence": {
       "url": "/assets/harnesses/interview-scene-bank/mystery--missing--evidence-7acca6816133.png",

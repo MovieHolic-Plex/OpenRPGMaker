@@ -4516,6 +4516,36 @@
           "colors": 473132,
           "findings": []
         }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--bond--partner--bright-3-47928a23cbe4.png",
+        "sha256": "47928a23cbe40aaf432caa8040cbf5a37c21770783410be8805043b116b8f8bb",
+        "promptSha256": "2e82d75f27786fb12dc7e401b27d60dffe2eda807c2d36fd4c43f7e1d99b926d",
+        "generationPromptSha256": "f093c2dcc6feb0c4e6d22773c731f81f47ebd41896549a4db2db4a8bf91ddec1",
+        "attempt": 3,
+        "review": {
+          "sourceSha256": "47928a23cbe40aaf432caa8040cbf5a37c21770783410be8805043b116b8f8bb",
+          "promptSha256": "2e82d75f27786fb12dc7e401b27d60dffe2eda807c2d36fd4c43f7e1d99b926d",
+          "reviewer": "Codex direct original visual inspection: v2-production-013",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Repaired bright trust refuge, empty soft bed, food/water bowls and folded cloth preserve deep care. All wall notices and writing removed; new low floor composition."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 419112,
+          "findings": []
+        }
       }
     ],
     "monster--bond--partner--secret": [
@@ -4870,6 +4900,36 @@
           "colors": 310682,
           "findings": []
         }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--team--secret-2-f064b87dfa99.png",
+        "sha256": "f064b87dfa993c37f9ce1acf889d0931f39ac1f7a61dca8318adff71a5cd6583",
+        "promptSha256": "f355c6b7189684bb5698ad35d7f3c75ea16927b763bbb310786b49fc19e6a59e",
+        "generationPromptSha256": "7343be345fc7b288f7d78c43138d93bf6ae37aada467372b64d2814d6275c211",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "f064b87dfa993c37f9ce1acf889d0931f39ac1f7a61dca8318adff71a5cd6583",
+          "promptSha256": "f355c6b7189684bb5698ad35d7f3c75ea16927b763bbb310786b49fc19e6a59e",
+          "reviewer": "Codex direct original visual inspection: v2-production-013",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Cracked egg and varied empty challenge stations in concealed night yard; only one moon remains. Physical sky/window continuity corrected, no hatchling or flags."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 406207,
+          "findings": []
+        }
       }
     ],
     "monster--hatch--team--warm": [
@@ -4932,6 +4992,1224 @@
           "width": 1672,
           "height": 941,
           "colors": 522609,
+          "findings": []
+        }
+      }
+    ],
+    "monster--hatch--partner--secret": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--partner--secret-1-41665576165e.png",
+        "sha256": "41665576165e7df730927d5121ce3eef0a27b285bef008ba265b93cf08f2a3f3",
+        "promptSha256": "bd952c022f46c5884830e92ca81913b019b1ee70ea9b529de4a354c7c547134c",
+        "generationPromptSha256": "2adffc3e485b2f7bf106992349bf881f267f91c144da1ca9643302833bf40e78",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "41665576165e7df730927d5121ce3eef0a27b285bef008ba265b93cf08f2a3f3",
+          "promptSha256": "bd952c022f46c5884830e92ca81913b019b1ee70ea9b529de4a354c7c547134c",
+          "reviewer": "Codex direct original visual inspection: v2-production-013",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Cracked egg, empty soft partner bed, food/water bowls and closed plain notebook beside hidden moonlit cave preserve hatch, deep care and species mystery."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 333010,
+          "findings": []
+        }
+      }
+    ],
+    "monster--hatch--partner--warm": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/monster--hatch--partner--warm-1-38a4a684c228.png",
+        "sha256": "38a4a684c22858a3c999aa2c2313c5fc7de7913fdd459a8ebea3677acee2c20f",
+        "promptSha256": "898c39c7905b2d55add3a23b7b8af069315982e33a5ec34e693990e5a4118616",
+        "generationPromptSha256": "befd6f67fc07538ffb259706a246ce2f4a38afaeca5b2175579bea0c96f3489c",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "38a4a684c22858a3c999aa2c2313c5fc7de7913fdd459a8ebea3677acee2c20f",
+          "promptSha256": "898c39c7905b2d55add3a23b7b8af069315982e33a5ec34e693990e5a4118616",
+          "reviewer": "Codex direct original visual inspection: v2-production-013",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Cracked egg with protected empty companion bed, bowls and folded care cloth in warm welcoming nursery; no unrelated tactical or collection equipment."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 491699,
+          "findings": []
+        }
+      }
+    ],
+    "adventure--reunion--explore--bright": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--explore--bright-1-b2cf3a11279b.png",
+        "sha256": "b2cf3a11279b721568eb795e03a46652d05a1903040464bb3909026074fdd5ff",
+        "promptSha256": "a1fda0a970e9a66d457481c53b863273485423c025a99971c23ff4165d235967",
+        "generationPromptSha256": "06671afd7ecce7c9a8ae8cfcb8c7652a8171d5c364a3bc34e8fc8c494e1a31e3",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "b2cf3a11279b721568eb795e03a46652d05a1903040464bb3909026074fdd5ff",
+          "promptSha256": "a1fda0a970e9a66d457481c53b863273485423c025a99971c23ff4165d235967",
+          "reviewer": "Codex direct original visual inspection: v2-production-013",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Abandoned personal pocket watch at empty stopping point beside clear hidden stairs/opening into ruins; bright inviting discovery remains, no hero or writing."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 675274,
+          "findings": []
+        }
+      }
+    ],
+    "adventure--reunion--explore--mystic": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--explore--mystic-1-f63db0190ca8.png",
+        "sha256": "f63db0190ca8519834ab4d1f9d6e530172d43f7ed2050edcf4d3935ae808735e",
+        "promptSha256": "8a64e4ccc5e35f266efa678408110902ef8e0e2fad277dd498506c2d6aa8f715",
+        "generationPromptSha256": "dc74d1f7d676c4ef1a6e9fb7724b6178f692b8a8c8aa2cfcca94b57309b228ee",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "f63db0190ca8519834ab4d1f9d6e530172d43f7ed2050edcf4d3935ae808735e",
+          "promptSha256": "8a64e4ccc5e35f266efa678408110902ef8e0e2fad277dd498506c2d6aa8f715",
+          "reviewer": "Codex direct original visual inspection: v2-production-013",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Plain keepsake and empty travelers bench beside discovered ruin passage overlook monumental ancient arches in discrete sunset mist; missing-person search and exploration retain mystical mood."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 503058,
+          "findings": []
+        }
+      }
+    ],
+    "adventure--reunion--explore--warm": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--explore--warm-1-3b628c7f63f4.png",
+        "sha256": "3b628c7f63f46291dd3af6c4f04086e0fa0ed52b85ad96b1a037bcf66b81cdd8",
+        "promptSha256": "a6b9c60fb36f9c1de6e10264e0950abe1c3588eab311b13f6d44daaa1a2913bb",
+        "generationPromptSha256": "141e8c6aec050487fa4efa805fc051fb8374a5a249381ccd85fa72a8df18f4a8",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "3b628c7f63f46291dd3af6c4f04086e0fa0ed52b85ad96b1a037bcf66b81cdd8",
+          "promptSha256": "a6b9c60fb36f9c1de6e10264e0950abe1c3588eab311b13f6d44daaa1a2913bb",
+          "reviewer": "Codex direct original visual inspection: v2-production-013",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Personal token hanging at empty rest stop, several warm shared cups and blankets beside hidden ruin stairs convey search, exploration and warm companionship."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 425185,
+          "findings": []
+        }
+      }
+    ],
+    "adventure--reunion--battle--bright": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--battle--bright-1-69f4ccce4a09.png",
+        "sha256": "69f4ccce4a09641a2773ac518741a46a342baad2bfbef138a5b62be5aadd71c2",
+        "promptSha256": "56aec037ddf454a8fb3a024f2cf8955c0f940376640f3e5432edbd3498dd50dd",
+        "generationPromptSha256": "1043f27debc4caa8622e54924a7d9ac13d80cf6eefdf006bcc48ab0a82209850",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "69f4ccce4a09641a2773ac518741a46a342baad2bfbef138a5b62be5aadd71c2",
+          "promptSha256": "56aec037ddf454a8fb3a024f2cf8955c0f940376640f3e5432edbd3498dd50dd",
+          "reviewer": "Codex direct original visual inspection: v2-production-013",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Abandoned travel gear at empty stopping place beside shield racks, barricades and tactical approach lanes preserve search and battle in bright open landscape."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 631830,
+          "findings": []
+        }
+      }
+    ],
+    "adventure--reunion--battle--mystic": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--battle--mystic-1-f714413c557b.png",
+        "sha256": "f714413c557b8d094734614e90e37f86d007121f57d6203f62df1d120cd948aa",
+        "promptSha256": "5cee18ac1e036f4f06c06d8768aac9b888bf87b75444db66e6f91ff97512cfd9",
+        "generationPromptSha256": "6509e5c7aafc574b38a9c0d7e653b75be794f99821a9961bbaf3c56f2533b4e5",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "f714413c557b8d094734614e90e37f86d007121f57d6203f62df1d120cd948aa",
+          "promptSha256": "5cee18ac1e036f4f06c06d8768aac9b888bf87b75444db66e6f91ff97512cfd9",
+          "reviewer": "Codex direct original visual inspection: v2-production-013",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Personal keepsake at vacated bench, shields/spears, barricades and tactical lanes overlook monumental forgotten arches; battle and search retain mystical wonder."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 455377,
+          "findings": []
+        }
+      }
+    ],
+    "adventure--reunion--battle--warm": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--battle--warm-1-2f26bcb5e7b0.png",
+        "sha256": "2f26bcb5e7b0eb238524ed711ed599654aec625da049addcad429acc9dd4dce9",
+        "promptSha256": "ffc817eb60a62ccb74aa1e81125bf719fb41f70174fe7040362c6d1c9a076434",
+        "generationPromptSha256": "3443322c9660b9561b1594c2d014d91afa64c2f4d1452fca8151f82e60a2a20a",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "2f26bcb5e7b0eb238524ed711ed599654aec625da049addcad429acc9dd4dce9",
+          "promptSha256": "ffc817eb60a62ccb74aa1e81125bf719fb41f70174fe7040362c6d1c9a076434",
+          "reviewer": "Codex direct original visual inspection: v2-production-013",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Abandoned personal pouch and travel pack beside protected shared campfire/cups, shield racks and defensive barriers convey search, battle and warm companion shelter."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 410799,
+          "findings": []
+        }
+      }
+    ],
+    "adventure--reunion--companions--bright": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--companions--bright-1-121834833879.png",
+        "sha256": "121834833879cbc82de46fab2d163bf9a0b2bb51674d5477ee37132fe58e9813",
+        "promptSha256": "9db9cebe1b7ade527eba2adc224160baa83d6972832935345d77862d08638522",
+        "generationPromptSha256": "dd3bf825ef2a9f247b839401a2919797ad34c4f4354b51a7cf1ec43ef95d1271",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "121834833879cbc82de46fab2d163bf9a0b2bb51674d5477ee37132fe58e9813",
+          "promptSha256": "9db9cebe1b7ade527eba2adc224160baa83d6972832935345d77862d08638522",
+          "reviewer": "Codex direct original visual inspection: v2-production-014",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Shared ruined traveler shelter with several empty stools, distinct bedrolls/scarves and blue keepsake retains companion search in bright lake landscape. Sharp stepped clusters, no identity or writing."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 555975,
+          "findings": []
+        }
+      }
+    ],
+    "adventure--reunion--companions--mystic": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--companions--mystic-1-844c21a86c7e.png",
+        "sha256": "844c21a86c7ec4ed218bcf576fa0718bf512ca8b8496c4367b9b5f0a0a7108b9",
+        "promptSha256": "ff74571e3f5254dc927e866d094999c563c5c28de88f17df8c34561c25697e82",
+        "generationPromptSha256": "bbe62b144b02b550d892f47c7fc9b2f755954660cabe907df5078c60a71eb5b6",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "844c21a86c7ec4ed218bcf576fa0718bf512ca8b8496c4367b9b5f0a0a7108b9",
+          "promptSha256": "ff74571e3f5254dc927e866d094999c563c5c28de88f17df8c34561c25697e82",
+          "reviewer": "Codex direct original visual inspection: v2-production-014",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Recompose as a genuinely shared ruined travelers shelter: at least three distinct empty resting places with clearly different bedrolls and personal packs, several cups, and a separate blue lost keepsake. Retain monumental ancient ruin mystery and the search/reunion premise. Avoid a single pack on a ledge with a panorama; use a new oblique sheltered courtyard composition. No people or writing."
+          ],
+          "notes": "Monumental ruined arches retain mystery and personal token, but one pack, one mug and one ledge read as solitary traveler, not selected companions."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 471521,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--companions--mystic-2-118ec809304b.png",
+        "sha256": "118ec809304b936f3777cd2d4c2067e5f632f5247767bcdb11240f962ed2c94e",
+        "promptSha256": "ff74571e3f5254dc927e866d094999c563c5c28de88f17df8c34561c25697e82",
+        "generationPromptSha256": "b2277229f23ac3774eef9363b878c38cd5bda119fc56c23ddb54fa20af011c83",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "118ec809304b936f3777cd2d4c2067e5f632f5247767bcdb11240f962ed2c94e",
+          "promptSha256": "ff74571e3f5254dc927e866d094999c563c5c28de88f17df8c34561c25697e82",
+          "reviewer": "Codex direct original visual inspection: v2-production-015",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Redesigned shared ruin shelter has three empty resting places, distinct green, blue and white bedrolls and packs, several cups and blue keepsake cloth. Monumental dusk ruin mystery retained; no figures or writing."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 552509,
+          "findings": []
+        }
+      }
+    ],
+    "adventure--reunion--companions--warm": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--reunion--companions--warm-1-b5fd18c48632.png",
+        "sha256": "b5fd18c4863265c2143a0bc5c1104cfcc7a23be785f7ee7797b17c46ce405495",
+        "promptSha256": "4ab84cfee0a1e63d32234a080b88fbee81bba1fa7481c84d2c63a26a1a687c75",
+        "generationPromptSha256": "dd6645af67af2a7aae8aa1a16ae69d1c6100e4116339ae6e88b2ac0144a55b2a",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "b5fd18c4863265c2143a0bc5c1104cfcc7a23be785f7ee7797b17c46ce405495",
+          "promptSha256": "4ab84cfee0a1e63d32234a080b88fbee81bba1fa7481c84d2c63a26a1a687c75",
+          "reviewer": "Codex direct original visual inspection: v2-production-014",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Shared timber table, separate scarves, multiple bedrolls and seating, personal watch and compass retain search with warm shared camp. Terrain-only map contains no writing."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 398610,
+          "findings": []
+        }
+      }
+    ],
+    "adventure--unknown--explore--bright": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--unknown--explore--bright-1-071d5ea3c70f.png",
+        "sha256": "071d5ea3c70f742f010b024aa33bd6b914b12c71a606c1f6999974e3555f9812",
+        "promptSha256": "e6568c80d1dc02bb1a22b57aef3d96df82687f40417096ec65313ee5de09f645",
+        "generationPromptSha256": "a28b733da280a312fbb71f540ef730233846db31ad511e7445d6edf06462fcaf",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "071d5ea3c70f742f010b024aa33bd6b914b12c71a606c1f6999974e3555f9812",
+          "promptSha256": "e6568c80d1dc02bb1a22b57aef3d96df82687f40417096ec65313ee5de09f645",
+          "reviewer": "Codex direct original visual inspection: v2-production-014",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Unoccupied furled-sail vessel and rope coil retain departure; ivy side arch with stone stairs reveals hidden path. Bright cyan sea and stepped clouds, new harbor close view."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 570092,
+          "findings": []
+        }
+      }
+    ],
+    "adventure--unknown--explore--mystic": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--unknown--explore--mystic-1-32e137fc8fb9.png",
+        "sha256": "32e137fc8fb9e6e9da57a0e814465df84362f52609dcd3a7734ba2a9c02364e5",
+        "promptSha256": "14e239589eb67d8c27da1931b276ddcec6abfe14f1e5dd3f84e92ff2277830d5",
+        "generationPromptSha256": "2c81145c698a423a96a4fb419f6d0a8af45f44985b82d070dd13c61634f5c7aa",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "32e137fc8fb9e6e9da57a0e814465df84362f52609dcd3a7734ba2a9c02364e5",
+          "promptSha256": "14e239589eb67d8c27da1931b276ddcec6abfe14f1e5dd3f84e92ff2277830d5",
+          "reviewer": "Codex direct original visual inspection: v2-production-014",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Furled vessel left, weathered steps into dark ruin right and monumental island arches create mysterious discovery. Plain spiral masonry is ornament without writing."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 539411,
+          "findings": []
+        }
+      }
+    ],
+    "adventure--unknown--explore--warm": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--unknown--explore--warm-1-9f6d73219394.png",
+        "sha256": "9f6d732193945b6943aeb5ff3743f59a81c0ddb09e5c091ea7cde958cd01b4f5",
+        "promptSha256": "d361b8f3e538ae7776e43e0271d83a963bd272b61e7d8428e19125badea0fbfa",
+        "generationPromptSha256": "503640b2c22b8c22edb0d907ffac712ca4d485ea14603d38794f1a12f7f4f58e",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "9f6d732193945b6943aeb5ff3743f59a81c0ddb09e5c091ea7cde958cd01b4f5",
+          "promptSha256": "d361b8f3e538ae7776e43e0271d83a963bd272b61e7d8428e19125badea0fbfa",
+          "reviewer": "Codex direct original visual inspection: v2-production-014",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Covered dock shelter with warm lantern, red rolled blanket and stool beside ivy hidden stair route and moored boat. Warm sheltered departure differs in foreground staging."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 425581,
+          "findings": []
+        }
+      }
+    ],
+    "adventure--unknown--battle--bright": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--unknown--battle--bright-1-a15444979998.png",
+        "sha256": "a154449799980f76d83d9cbad4a36d159224f7fd3bc1be1d432cdf7e4e4a078d",
+        "promptSha256": "cda8261e6ce9d8e4beba53b6a5561828209189cb91ccdbefbd5eacf263d3bc82",
+        "generationPromptSha256": "2e1dbf40d5fab9882517449ccea547049cdcd148fe204c0c60ce3923894be844",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "a154449799980f76d83d9cbad4a36d159224f7fd3bc1be1d432cdf7e4e4a078d",
+          "promptSha256": "cda8261e6ce9d8e4beba53b6a5561828209189cb91ccdbefbd5eacf263d3bc82",
+          "reviewer": "Codex direct original visual inspection: v2-production-014",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Empty pier, furled vessel and rope retain unfamiliar departure. Plain shield rack, stakes and cover on opposite pier express battle. Bright square water and crisp steps without emblem flags."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 541514,
+          "findings": []
+        }
+      }
+    ],
+    "adventure--unknown--battle--mystic": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--unknown--battle--mystic-1-2856b9707b57.png",
+        "sha256": "2856b9707b57b8729d22d219fd59a137e0657201d953136061dad040c15f5ddf",
+        "promptSha256": "0410de3ee3b61734993bfec65db9b5d7c68492f144fd9914d200f57688643ad1",
+        "generationPromptSha256": "662b92ab73ebf0e7f2da3eeb46c6d5a282e534fd0250ab1d567545e348032e81",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "2856b9707b57b8729d22d219fd59a137e0657201d953136061dad040c15f5ddf",
+          "promptSha256": "0410de3ee3b61734993bfec65db9b5d7c68492f144fd9914d200f57688643ad1",
+          "reviewer": "Codex direct original visual inspection: v2-production-014",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Unoccupied moored boat beside spiked barricade and plain shields, distant monumental drowned arches express departure and mysterious battle. Crisp original foreground, no figures or script."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 474810,
+          "findings": []
+        }
+      }
+    ],
+    "adventure--unknown--battle--warm": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--unknown--battle--warm-1-af62e83793d4.png",
+        "sha256": "af62e83793d4bd3a60ca54b28f6efcbb0de2974d137fb141bc599535d786fe5c",
+        "promptSha256": "53e953272006834990cf18e5152bc8eb7523629bd50506c86d4891c683ebdde0",
+        "generationPromptSha256": "7a10da75fcf9a69ec33f3b3a78f724764462738fcf47cc016168363e68538178",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "af62e83793d4bd3a60ca54b28f6efcbb0de2974d137fb141bc599535d786fe5c",
+          "promptSha256": "53e953272006834990cf18e5152bc8eb7523629bd50506c86d4891c683ebdde0",
+          "reviewer": "Codex direct original visual inspection: v2-production-014",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Protected lantern-lit dock, stools, plain weapon rack and moored boat preserve departure and preparation. Warm orange light and sheltered foreground vary composition from open bright defenses."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 394938,
+          "findings": []
+        }
+      }
+    ],
+    "adventure--unknown--companions--bright": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--unknown--companions--bright-1-b83ce6d2dec2.png",
+        "sha256": "b83ce6d2dec273343208c5871d778a89e941cbdf53ec8d96614569a8f9ac3ce9",
+        "promptSha256": "802dad1ba404d5a9da31b10002a4f993a23ae598d9991920fb1d1f165ee7fe4b",
+        "generationPromptSha256": "2fd12539c3a4de631807ba6eac031555660577748f154c29da0099e6ab51918e",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "b83ce6d2dec273343208c5871d778a89e941cbdf53ec8d96614569a8f9ac3ce9",
+          "promptSha256": "802dad1ba404d5a9da31b10002a4f993a23ae598d9991920fb1d1f165ee7fe4b",
+          "reviewer": "Codex direct original visual inspection: v2-production-014",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Two distinct red and green bedrolls, lute, cups, separate stored travel belongings and empty dock retain shared party departure; furled boat and bright unfamiliar islands. No invented companions rendered."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 523134,
+          "findings": []
+        }
+      }
+    ],
+    "adventure--unknown--companions--mystic": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--unknown--companions--mystic-1-44624e19bf92.png",
+        "sha256": "44624e19bf921375ba3b4f9b86650cedbe173d9a9f1c2aa8b5223cdeaeba9388",
+        "promptSha256": "1d47f441c4cc10f1a510740ebae61669f7a57aded25ac5e6e258cb3d4c76fdb8",
+        "generationPromptSha256": "4b0cb531203d66f9e9ffb4bfe2c9a238453d3addb06e78fc7e65011ff7190556",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "44624e19bf921375ba3b4f9b86650cedbe173d9a9f1c2aa8b5223cdeaeba9388",
+          "promptSha256": "1d47f441c4cc10f1a510740ebae61669f7a57aded25ac5e6e258cb3d4c76fdb8",
+          "reviewer": "Codex direct original visual inspection: v2-production-015",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Replace solitary dock-table setup with an oblique view inside an empty timber ship cabin, three clearly separate empty bunks, different red green and blue bedrolls and personal packs at each, three plain cups. Through a large left open hatch show the empty pier, furled sail and monumental unfamiliar ruined islands. Companion travel and mysterious departure must both be obvious. No people, writing or heraldry."
+          ],
+          "notes": "Moored vessel, islands and ruins retain unknown departure and mystic mood, but solitary table with one pack and jug lacks distinct companion resting places."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 488024,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--unknown--companions--mystic-2-3abbb39a6094.png",
+        "sha256": "3abbb39a6094abaac166ea0c56226597dd1f96f3b231c33243ab19b5edd9702a",
+        "promptSha256": "1d47f441c4cc10f1a510740ebae61669f7a57aded25ac5e6e258cb3d4c76fdb8",
+        "generationPromptSha256": "243e126daf08ceaeb032415d6a6e55e3065b024415ae8abe59a710e86c7e4d5e",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "3abbb39a6094abaac166ea0c56226597dd1f96f3b231c33243ab19b5edd9702a",
+          "promptSha256": "1d47f441c4cc10f1a510740ebae61669f7a57aded25ac5e6e258cb3d4c76fdb8",
+          "reviewer": "Codex direct original visual inspection: v2-production-016",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Fresh ship cabin has three separate empty bunks with different red green blue bedding and packs, three plain cups, empty pier and sail through left hatch and monumental island ruins. Companions now explicit, no writing or people."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 320313,
+          "findings": []
+        }
+      }
+    ],
+    "adventure--unknown--companions--warm": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--unknown--companions--warm-1-8ba4e42d4e07.png",
+        "sha256": "8ba4e42d4e07bfd3dba3b988e59312605074cb5554259050daeadf29c5f1b049",
+        "promptSha256": "172ea0767ff9d7db2fef39a9169a01a00d16e0b75808b545635f76b7becef692",
+        "generationPromptSha256": "fa37cf54af94afc39b4520f8a315421f804f1c6f1be9499d95b65e5f110dbc06",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "8ba4e42d4e07bfd3dba3b988e59312605074cb5554259050daeadf29c5f1b049",
+          "promptSha256": "172ea0767ff9d7db2fef39a9169a01a00d16e0b75808b545635f76b7becef692",
+          "reviewer": "Codex direct original visual inspection: v2-production-015",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Protected harbor benches with different red/blue blankets, stored kits and lantern frame moored boat at welcoming dusk. Empty shared seating retains companions; sharp foreground clusters."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 394000,
+          "findings": []
+        }
+      }
+    ],
+    "adventure--mission--explore--bright": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--mission--explore--bright-1-180a37f316aa.png",
+        "sha256": "180a37f316aaed486345a35069dfa4e412ad70afc4bb97b86d6b01ae46474224",
+        "promptSha256": "edee72d4c171341ff030bc3a8e354a5a9dc5583637aef1ca70c8c30cb837baf1",
+        "generationPromptSha256": "db6a553ce37dbf3c3bdd8eb7b31d5a40d32deef5006c0b3f7f223e01f3c786ba",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "180a37f316aaed486345a35069dfa4e412ad70afc4bb97b86d6b01ae46474224",
+          "promptSha256": "edee72d4c171341ff030bc3a8e354a5a9dc5583637aef1ca70c8c30cb837baf1",
+          "reviewer": "Codex direct original visual inspection: v2-production-015",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "String-tied delivery parcel, road fork, empty traveler kit and discoverable ivy arch staircase retain entrusted mission and exploration under energetic daylight. No writing."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 690255,
+          "findings": []
+        }
+      }
+    ],
+    "adventure--mission--explore--mystic": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--mission--explore--mystic-1-55680c2cfd40.png",
+        "sha256": "55680c2cfd40fc9f14960df7f893311ecbbd355c21c61c49c21792a69e8d368a",
+        "promptSha256": "7dbf7044a331eb74809a49cb102821bc98c8b8216e310554ef700d76ad01d9ed",
+        "generationPromptSha256": "854933770d367253527241c59e34c4be758bf3dd6d54348b8beec583c619e706",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "55680c2cfd40fc9f14960df7f893311ecbbd355c21c61c49c21792a69e8d368a",
+          "promptSha256": "7dbf7044a331eb74809a49cb102821bc98c8b8216e310554ef700d76ad01d9ed",
+          "reviewer": "Codex direct original visual inspection: v2-production-015",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Delivery parcel left and fork/hidden turquoise ruin entry preserve entrusted mission and discovery; monumental ruins in depth provide mystery. Plain direction plank has no script."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 570543,
+          "findings": []
+        }
+      }
+    ],
+    "adventure--mission--explore--warm": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--mission--explore--warm-1-01d31971a17d.png",
+        "sha256": "01d31971a17d9ed1394669de9b972773ec7a56f27cb5cd0572ac5d68ed235998",
+        "promptSha256": "3b9c24066d0f95b67ec460f4ae8ed839ad99c67474e31230f0a463ca6c6e1265",
+        "generationPromptSha256": "1f5296b2911dbbf4f0245f643ee1b68ba107eba8622805029ca6900b3b2955b5",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "01d31971a17d9ed1394669de9b972773ec7a56f27cb5cd0572ac5d68ed235998",
+          "promptSha256": "3b9c24066d0f95b67ec460f4ae8ed839ad99c67474e31230f0a463ca6c6e1265",
+          "reviewer": "Codex direct original visual inspection: v2-production-015",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": false
+          },
+          "findings": [
+            "Recompose completely as an empty warm timber road shelter interior, shared bench and plain cups, large tied entrusted parcel with blank smooth unmarked wax blob, optional blank delivery pouch. Through a wide LEFT doorway an unfamiliar path forks toward a hidden ivy arch; a near floor stair leads down to another discoverable route. No exterior left-door-pack-right-valley panorama, no duplicated bright version staging. Warm lantern pixel clusters, no people, no script."
+          ],
+          "notes": "Warm lantern and sealed parcel retain mission, but repeats left door-pack-table, climbing ivy stairs and distant valley arrangement from bright version too closely."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 532623,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--mission--explore--warm-2-f2b893d436fb.png",
+        "sha256": "f2b893d436fb28173f7755bdfc2c3ed69dd208d5e9af787880b457b216a98272",
+        "promptSha256": "3b9c24066d0f95b67ec460f4ae8ed839ad99c67474e31230f0a463ca6c6e1265",
+        "generationPromptSha256": "40577d48979f01dcac78c875e798aa7914311d4e61d92f885e0f22955adfdea3",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "f2b893d436fb28173f7755bdfc2c3ed69dd208d5e9af787880b457b216a98272",
+          "promptSha256": "3b9c24066d0f95b67ec460f4ae8ed839ad99c67474e31230f0a463ca6c6e1265",
+          "reviewer": "Codex direct original visual inspection: v2-production-016",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Fresh warm timber shelter interior with shared bench, cups and tied entrusted parcel. Left doorway reveals fork toward ruin and descending near stairs toward hidden glowing arch. Replaces repetitive exterior framing; seal contains no identifiable glyph."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 405729,
+          "findings": []
+        }
+      }
+    ],
+    "adventure--mission--battle--bright": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--mission--battle--bright-1-075fc172ece2.png",
+        "sha256": "075fc172ece21940f574217798828bed3fa09f71c1bff94d256c1e7617d83fe5",
+        "promptSha256": "a7122f95fd278ed3aaa9ceaf8468dd944712cd090f7a2f3c83ff9e380e350208",
+        "generationPromptSha256": "d85e94a20b45a918c7801fc31bc1e95a72180b6867f3edc0d50624942c0fdff4",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "075fc172ece21940f574217798828bed3fa09f71c1bff94d256c1e7617d83fe5",
+          "promptSha256": "a7122f95fd278ed3aaa9ceaf8468dd944712cd090f7a2f3c83ff9e380e350208",
+          "reviewer": "Codex direct original visual inspection: v2-production-015",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Delivery parcel and travel kit at fortified approach with plain shields and barricades retain mission/battle in energetic daylight. Cloth is unmarked two-color pennant, not heraldry or writing."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 671434,
+          "findings": []
+        }
+      }
+    ],
+    "adventure--mission--battle--mystic": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--mission--battle--mystic-1-eb0e38f23eb7.png",
+        "sha256": "eb0e38f23eb788cb090d10a8b55ec14f0eac4ec179ebbf1d1506e4199acdfc02",
+        "promptSha256": "7fc7fd60db1b261939ff1b5a1647524de90b1c8fef84901e0c9c4831cdc22236",
+        "generationPromptSha256": "d92fc5c4eefa64d7a8d39a8c5eb5aacdca807d0c47d320b31138c8097babbc38",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "eb0e38f23eb788cb090d10a8b55ec14f0eac4ec179ebbf1d1506e4199acdfc02",
+          "promptSha256": "7fc7fd60db1b261939ff1b5a1647524de90b1c8fef84901e0c9c4831cdc22236",
+          "reviewer": "Codex direct original visual inspection: v2-production-015",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": false,
+            "distinctShot": true
+          },
+          "findings": [
+            "Wax seal contains letter R. Redraw every seal as a smooth featureless red blob with NO stamped letter, insignia or glyph. Fresh oblique shot of empty ruined gate defenses and plain shields with unmarked tied entrusted delivery parcel, traveler kit, monumental ancient ruin mystery. No people or textual marks anywhere."
+          ],
+          "notes": "Parcel and kit, empty shield rack and barriers before monumental ruins retain chosen facts, but wax seal visibly contains a letter-like R stamp."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 563451,
+          "findings": []
+        }
+      },
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--mission--battle--mystic-2-afd1b9ea4672.png",
+        "sha256": "afd1b9ea46726a95d03d18e9c74918e6c5df88d5e128b9f9f16f5cc18a3eb2cf",
+        "promptSha256": "7fc7fd60db1b261939ff1b5a1647524de90b1c8fef84901e0c9c4831cdc22236",
+        "generationPromptSha256": "fdd4fb190e4733cd9bd31c6c2e5dcb984ce3a02790f1772a093ecd735193b00b",
+        "attempt": 2,
+        "review": {
+          "sourceSha256": "afd1b9ea46726a95d03d18e9c74918e6c5df88d5e128b9f9f16f5cc18a3eb2cf",
+          "promptSha256": "7fc7fd60db1b261939ff1b5a1647524de90b1c8fef84901e0c9c4831cdc22236",
+          "reviewer": "Codex direct original visual inspection: v2-production-016",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Fresh monumental broken gate terraces, empty shield and sword, unmarked tied parcel and kit retain entrusted mission/battle. Seal now featureless; hanging red cloth has no insignia. Sharp square contours and stepped waterfall."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 599040,
+          "findings": []
+        }
+      }
+    ],
+    "adventure--mission--battle--warm": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--mission--battle--warm-1-75c0f4a43629.png",
+        "sha256": "75c0f4a43629d2503572a2b57aa73c904fbc537e56ab9c909269fc37c94ff5c0",
+        "promptSha256": "bdbbb6cf2f586fa0e4cfc7c0c35df0bb70b248a886aa944f24a608538164cc57",
+        "generationPromptSha256": "a7c5f89d4cafaef3e9d5777e96abf01bf07daae12758dec4d51d88253d3f60f8",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "75c0f4a43629d2503572a2b57aa73c904fbc537e56ab9c909269fc37c94ff5c0",
+          "promptSha256": "bdbbb6cf2f586fa0e4cfc7c0c35df0bb70b248a886aa944f24a608538164cc57",
+          "reviewer": "Codex direct original visual inspection: v2-production-015",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Tied parcel and kit at palisade settlement defenses with shield rack, covered doorstep and warm protected dusk retain mission, battle and warmth. No marked flags or script."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 527612,
+          "findings": []
+        }
+      }
+    ],
+    "adventure--mission--companions--bright": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--mission--companions--bright-1-79f23a911ef7.png",
+        "sha256": "79f23a911ef726f865f0ddf37c0cf0aec97a16697645dca9523c466fb1b92b4e",
+        "promptSha256": "ecd93d55fe66586f038e20ef0a62833846d5c60cb3e071fcfc973aacf62411d5",
+        "generationPromptSha256": "57fdbdf1ac85e4274df9b571eefc27214f6c0dc824df3730daa16bd5141e76d3",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "79f23a911ef726f865f0ddf37c0cf0aec97a16697645dca9523c466fb1b92b4e",
+          "promptSha256": "ecd93d55fe66586f038e20ef0a62833846d5c60cb3e071fcfc973aacf62411d5",
+          "reviewer": "Codex direct original visual inspection: v2-production-015",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Distinct green/blue bedrolls, separate pack and tube, shared stocked departure porch and entrusted parcel before fork road retain companions and mission. Empty scene in bright daylight, no invented people."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 637972,
+          "findings": []
+        }
+      }
+    ],
+    "adventure--mission--companions--mystic": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--mission--companions--mystic-1-eb199804820b.png",
+        "sha256": "eb199804820b3dfd5c0ce8d0adcea0eb763f834ce22ad9551194f12bb34e11ee",
+        "promptSha256": "fd5c76e943852a039cf2f383b5b2c0176ed7b2288a788c1fb26121f505309628",
+        "generationPromptSha256": "6dc35f453737556b203a8e03671bae6242c3420e907a5e4032a9d8163186d246",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "eb199804820b3dfd5c0ce8d0adcea0eb763f834ce22ad9551194f12bb34e11ee",
+          "promptSha256": "fd5c76e943852a039cf2f383b5b2c0176ed7b2288a788c1fb26121f505309628",
+          "reviewer": "Codex direct original visual inspection: v2-production-016",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": false,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [
+            "Recompose entirely INSIDE an empty ruined waystation, three clearly separated vacant resting places, each with a different red green or blue bedroll and own personal pack, three cups at a shared table. Put entrusted string-tied parcel with featureless red wax blob prominently near-left. Left arched doorway looks onto monumental forgotten ruin passage and unmarked route fork. No lone pack against a panoramic valley, no people or writing."
+          ],
+          "notes": "Ruined panoramic departure path has entrusted parcel but only one obvious bedroll and small clustered bags, lacking distinct shared companion places."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 544099,
+          "findings": []
+        }
+      }
+    ],
+    "adventure--mission--companions--warm": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/adventure--mission--companions--warm-1-9f195bd4e1b2.png",
+        "sha256": "9f195bd4e1b2412efdf206b8672f1049f570d77c5c750b9f6ffb0c6882005f54",
+        "promptSha256": "8091513b0b10aaab048bdade7698e385ea709fd4e705c41b4c970603540b85d1",
+        "generationPromptSha256": "277fb7b43f0a51940025fd292f0f577f86ade8996c24db38701a8d78326fb821",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "9f195bd4e1b2412efdf206b8672f1049f570d77c5c750b9f6ffb0c6882005f54",
+          "promptSha256": "8091513b0b10aaab048bdade7698e385ea709fd4e705c41b4c970603540b85d1",
+          "reviewer": "Codex direct original visual inspection: v2-production-016",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Several separate red green blue kits and bedrolls, stools and departure supply porch with tied parcel retain group mission. Warm protected threshold and welcoming village dusk, no figures or writing."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 531300,
+          "findings": []
+        }
+      }
+    ],
+    "mystery--missing--inspect--wonder": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/mystery--missing--inspect--wonder-1-b421f157c0c5.png",
+        "sha256": "b421f157c0c5752e4cf9eadd32b70248b3fd4072fe3281d545c71ab1b64caa86",
+        "promptSha256": "727f7057f0efd21c715844b4b1f82d5f8724cca99f6beb1e099a2fc32897dbae",
+        "generationPromptSha256": "135a48cfed1fa8322f110a0d0b3104f5dba7018a0aaa93d38055519947b209c6",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "b421f157c0c5752e4cf9eadd32b70248b3fd4072fe3281d545c71ab1b64caa86",
+          "promptSha256": "727f7057f0efd21c715844b4b1f82d5f8724cca99f6beb1e099a2fc32897dbae",
+          "reviewer": "Codex direct original visual inspection: v2-production-016",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Empty room with abandoned open travel bag, closed books, scarf, keys and moon-decorated pocket watch presents mundane evidence at close inspection; inviting sunset unfamiliar view. Landscape pictures have no figures or writing."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 388455,
+          "findings": []
+        }
+      }
+    ],
+    "mystery--missing--inspect--tension": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/mystery--missing--inspect--tension-1-4c4464dcc493.png",
+        "sha256": "4c4464dcc493b5e03f5fb464196fb7efa8af79b2f011009e5d248d0bace6bb15",
+        "promptSha256": "7f65d8769f0ca2805c33680c507e9b370a048b7d4f8a083fa9cd566c2fdf036f",
+        "generationPromptSha256": "bc034392369ccdd7ce98dffc4a55a52ef529cebb2925ed6b6688cc9498df6d26",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "4c4464dcc493b5e03f5fb464196fb7efa8af79b2f011009e5d248d0bace6bb15",
+          "promptSha256": "7f65d8769f0ca2805c33680c507e9b370a048b7d4f8a083fa9cd566c2fdf036f",
+          "reviewer": "Codex direct original visual inspection: v2-production-016",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Confined empty room with left desk lamp and prominent abandoned keys, chair coat and packed bag near untouched bed retains missing-person investigation with constrained doorway shadows. Distinct clue foreground from wonder bag setup."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 225531,
+          "findings": []
+        }
+      }
+    ],
+    "mystery--missing--inspect--danger": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/mystery--missing--inspect--danger-1-a9676ced1c8d.png",
+        "sha256": "a9676ced1c8d3255309eca6f91b2ba036f7428b34dd9efa2ceea62caf47ebd37",
+        "promptSha256": "3ad4714b72a8af586c05424bb6cf976d1c969dd198c9e45e6f7806fb7c0b6d33",
+        "generationPromptSha256": "19df69e99a814cb607add775bcd6b3e9d13c3177e76b497b42940ac69d51c938",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "a9676ced1c8d3255309eca6f91b2ba036f7428b34dd9efa2ceea62caf47ebd37",
+          "promptSha256": "3ad4714b72a8af586c05424bb6cf976d1c969dd198c9e45e6f7806fb7c0b6d33",
+          "reviewer": "Codex direct original visual inspection: v2-production-016",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Empty room with abandoned watch and keys at evidence table and dangerous fractured threshold toward precarious outdoor steps. Elevated near-corner composition, no attacker/body; clock face shows ticks only."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 220585,
+          "findings": []
+        }
+      }
+    ],
+    "mystery--missing--testimony--wonder": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/mystery--missing--testimony--wonder-1-a45a111f8f46.png",
+        "sha256": "a45a111f8f464f09f7330b953e24023663047b080d62c848f56a113ea2d02454",
+        "promptSha256": "8dfa7bea47094db750affe0adecb0763a6c0b5f1e56533eb1ccf800ee12f3979",
+        "generationPromptSha256": "6048eeb811a574f483e91ee5283fd6ec895ce61ffca921eeeb63e12d7d44d166",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "a45a111f8f464f09f7330b953e24023663047b080d62c848f56a113ea2d02454",
+          "promptSha256": "8dfa7bea47094db750affe0adecb0763a6c0b5f1e56533eb1ccf800ee12f3979",
+          "reviewer": "Codex direct original visual inspection: v2-production-016",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Several contrasting vacant seats, different scarves and landscape-only cards at shared table suggest comparing accounts after disappearance. Bag and unfinished belongings remain; inviting open balcony, no invented portraits."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 375372,
+          "findings": []
+        }
+      }
+    ],
+    "mystery--missing--testimony--tension": [
+      {
+        "file": "qa-runs/harnesses/interview-scene-bank/mystery--missing--testimony--tension-1-7537b8e6d665.png",
+        "sha256": "7537b8e6d66556f45eb2a8c7049a5c50a21eff6643d9eb8061165d4bc239eb80",
+        "promptSha256": "bb565c653c201f6aa66ab829f544bb6b8ea1110fdc8a4fd8ac4918ebe5a99db0",
+        "generationPromptSha256": "255db6bdd085c2f0b657c1fb7428f01fd25b32f10e472fc67e63b1eb70dd7f4b",
+        "attempt": 1,
+        "review": {
+          "sourceSha256": "7537b8e6d66556f45eb2a8c7049a5c50a21eff6643d9eb8061165d4bc239eb80",
+          "promptSha256": "bb565c653c201f6aa66ab829f544bb6b8ea1110fdc8a4fd8ac4918ebe5a99db0",
+          "reviewer": "Codex direct original visual inspection: v2-production-016",
+          "checks": {
+            "pixelArt": true,
+            "composition": true,
+            "allChoices": true,
+            "latestChoice": true,
+            "identityUnset": true,
+            "noText": true,
+            "distinctShot": true
+          },
+          "findings": [],
+          "notes": "Near-overhead communal table with three distinct vacant chair coverings, mismatching cups and isolated personal keys/bag in confined silent room. Contrasting account props, sharp square materials, no people or text."
+        },
+        "gate": {
+          "ok": true,
+          "width": 1672,
+          "height": 941,
+          "colors": 221255,
           "findings": []
         }
       }
