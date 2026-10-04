@@ -9,6 +9,7 @@ npm run harness -- charset-actor serve --port 18314
 npm run harness -- charset-actor export RUN
 python3 src/harnesses/charset-actor/harness.py publish-shared
 npm run harness -- charset-actor audit --run RUN --refresh-previews
+npm run harness -- charset-actor walk-qa --run RUN --out /absolute/evidence-outside-repo
 ```
 
 `produce`는 작업을 터미널과 독립적으로 시작한다. 화면에서도 개수·선택적인 전체 방향·참고 그림을 넣어 시작할 수 있다.
@@ -16,6 +17,8 @@ npm run harness -- charset-actor audit --run RUN --refresh-previews
 이전/다음·A/R·직전 선택 되돌리기, 일시 정지/재개, 실제 남긴 캐릭터만 ZIP 다운로드한다.
 걷기는 자홍색 체커가 기본이며 흰색·검정·잔디로 바로 전환한다. `audit`는 12프레임과 세 배경의 원본 비교·결손 좌표·출하 PNG/GIF 대조를 저장소 밖에 남긴다.
 새 옷/장식 안에 가둔 원본 배경도 투명 구멍이다. alpha 검사 정책 갱신은 같은 픽셀의 사용자 선택 binding을 유지한다.
+걷기 전파 v2는 그런 새 구멍에 대응하는 저작된 정지 픽셀을 출처가 있는 영역 전체에만 전달한다. 정지 그림의 구멍은 차단한다.
+`walk-transfer.json`에 해시/좌표/색을 보존하며 `walk-qa`가 사본의 전후 12프레임·걷기 GIF·PNG/GIF 재읽기를 증거로 남긴다.
 현재 그림의 해시가 바뀌면 사람의 선택도 다시 확인한다. 사용자 선택·산출·원본은 `CHR_HARNESS_DATA` 아래 보존한다.
 사람이 남긴 그림과 설명은 사용자 공용 SQLite의 `charset-actor-kept`에 자동 등록한다. 에디터를 새로고침하면 새/기존 프로젝트와 AI NPC 검색에서 쓴다.
 폐기/되돌리기는 공용 목록에서 제외하고 기존 프로젝트 그림을 보존한다. 과거 모델 검수 모드는 이전 실행 재현용으로 유지한다.
